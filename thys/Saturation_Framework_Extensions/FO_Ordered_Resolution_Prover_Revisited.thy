@@ -13,9 +13,9 @@ theory FO_Ordered_Resolution_Prover_Revisited
     Soundness
 begin
 
-text \<open>The main results about Bachmair and Ganzinger's \textsf{RP} prover, as established in Section 4.3 of
-their \emph{Handbook} chapter and formalized by Schlichtkrull et al., are re-proved here using
-the saturation framework of Waldmann et al.\<close>
+text \<open>The main results about Bachmair and Ganzinger's \textsf{RP} prover, as established in
+Section 4.3 of their \emph{Handbook} chapter and formalized by Schlichtkrull et al., are re-proved
+here using the saturation framework of Waldmann et al.\<close>
 
 
 subsection \<open>Setup\<close>
@@ -55,6 +55,10 @@ subsection \<open>Ground Layer\<close>
 
 context FO_resolution_prover
 begin
+
+no_notation RP (infix "\<leadsto>" 50)
+
+notation RP (infix "\<leadsto>RP" 50)
 
 interpretation gr: ground_resolution_with_selection "S_M S M"
   using selection_axioms by unfold_locales (fact S_M_selects_subseteq S_M_selects_neg_lits)+
@@ -189,8 +193,6 @@ next
         \<rho>_infer: "Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) \<in> G_Inf M"
         unfolding \<G>_I_def by blast
 
-      let ?DD1 = "{concl_of \<iota> \<cdot> \<rho>}"
-
       show "\<iota>' \<in> G.Red_I M (\<G>_F (concl_of \<iota>))"
         unfolding G.Red_I_def G.redundant_infer_def mem_Collect_eq using \<iota>' \<rho>_gr \<rho>_infer
         by (metis inference.sel(2) G_Inf_reductive empty_iff ground_subst_ground_cls
@@ -239,7 +241,7 @@ proof
 qed
 
 lemma G_Inf_overapproximates_F_Inf:
-  "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota>. \<iota> \<in> F.Inf_from M \<and> \<iota>\<^sub>0 \<in> \<G>_I M \<iota>"
+  "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota> \<in> F.Inf_from M. \<iota>\<^sub>0 \<in> \<G>_I M \<iota>"
 proof -
   assume \<iota>\<^sub>0_in: "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M))"
   have prems_\<iota>\<^sub>0_in: "set (prems_of \<iota>\<^sub>0) \<subseteq> \<Union> (\<G>_F ` M)"
@@ -395,7 +397,7 @@ qed (auto simp: FL_Inf_def FL_Infer_of_def F_Inf_have_prems)
 notation FL.Prec_FL (infix "\<sqsubset>" 50)
 notation FL.entails_\<G>_L (infix "\<TTurnstile>\<G>Le" 50)
 notation FL.derive (infix "\<rhd>RedL" 50)
-notation FL.step (infix "\<Longrightarrow>GC" 50)
+notation FL.step (infix "\<leadsto>GC" 50)
 
 lemma FL_Red_F_eq:
   "FL.Red_F N =
@@ -498,42 +500,24 @@ proof -
     (\<lambda>C. (C, New)) ` Liminf_llist (lmap N_of_state Sts) \<union>
     (\<lambda>C. (C, Processed)) ` Liminf_llist (lmap P_of_state Sts) \<union>
     (\<lambda>C. (C, Old)) ` Liminf_llist (lmap Q_of_state Sts)\<close>
-  proof -
-    have \<open>inj_on (\<lambda>C. (C, Old)) (Sup_llist (lmap Q_of_state Sts))\<close>
-      by (meson Pair_inject inj_onI)
-    moreover have \<open>inj_on (\<lambda>C. (C, Processed)) (Sup_llist (lmap P_of_state Sts))\<close>
-      by (meson Pair_inject inj_onI)
-    moreover have \<open>inj_on (\<lambda>C. (C, New)) (Sup_llist (lmap N_of_state Sts))\<close>
-      by (meson Pair_inject inj_onI)
-    moreover have \<open> \<forall>x\<in>lset Sts. \<forall>Y\<in>lset Sts. ((\<lambda>C. (C, New)) ` N_of_state x \<union>
-      (\<lambda>C. (C, Processed)) ` P_of_state x) \<inter> (\<lambda>C. (C, Old)) ` Q_of_state Y = {}\<close>
-      by auto
-    moreover have \<open> \<forall>x\<in>lset Sts. \<forall>Y\<in>lset Sts. (\<lambda>C. (C, New)) ` N_of_state x \<inter>
-      (\<lambda>C. (C, Processed)) ` P_of_state Y = {}\<close>
-      by auto
-    ultimately show ?thesis
-      unfolding lclss_of_state_def[abs_def]
-      using Liminf_llist_lmap_union Liminf_llist_lmap_image
-     by (smt llist.map_cong)
- qed
+    unfolding lclss_of_state_def using Liminf_llist_lmap_union Liminf_llist_lmap_image
+    by (smt Pair_inject Un_iff disjoint_iff_not_equal imageE inj_onI label.simps(1,3,5)
+        llist.map_cong)
  then show ?thesis
    unfolding lclss_of_state_def Liminf_state_def by auto
 qed
 
 lemma GC_tautology_step:
   assumes tauto: "Neg A \<in># C" "Pos A \<in># C"
-  shows "lclss_of_state (N \<union> {C}, P, Q) \<Longrightarrow>GC lclss_of_state (N, P, Q)"
+  shows "lclss_of_state (N \<union> {C}, P, Q) \<leadsto>GC lclss_of_state (N, P, Q)"
 proof -
-  have c\<theta>_red:
-    "C\<theta> \<in> G.Red_F (\<Union>D \<in> N'. \<G>_F (fst D))" if in_g: "C\<theta> \<in> \<G>_F C"
+  have c\<theta>_red: "C\<theta> \<in> G.Red_F (\<Union>D \<in> N'. \<G>_F (fst D))" if in_g: "C\<theta> \<in> \<G>_F C"
     for N' :: "('a clause \<times> label) set" and C\<theta>
   proof -
     obtain \<theta> where
       "C\<theta> = C \<cdot> \<theta>"
        using in_g unfolding \<G>_F_def by blast
-    then have compl_lits:
-      "Neg (A \<cdot>a \<theta>) \<in># C\<theta>"
-      "Pos (A \<cdot>a \<theta>) \<in># C\<theta>"
+    then have "Neg (A \<cdot>a \<theta>) \<in># C\<theta>" and "Pos (A \<cdot>a \<theta>) \<in># C\<theta>"
       using tauto Neg_Melem_subst_atm_subst_cls Pos_Melem_subst_atm_subst_cls by auto
     then have "{} \<TTurnstile>e {C\<theta>}"
       unfolding true_clss_def true_cls_def true_lit_def if_distrib_fun
@@ -544,26 +528,17 @@ proof -
 
   show ?thesis
   proof (rule FL.step.process[of _ "lclss_of_state (N, P, Q)" "{(C, New)}" _ "{}"])
-    show \<open>lclss_of_state (N \<union> {C}, P, Q) = lclss_of_state (N, P, Q) \<union> {(C, New)}\<close>
-      unfolding lclss_of_state_def by auto
-  next
-    show \<open>lclss_of_state (N, P, Q) = lclss_of_state (N, P, Q) \<union> {}\<close>
-      unfolding lclss_of_state_def by auto
-  next
     show \<open>{(C, New)} \<subseteq> FL.Red_F_\<G> (lclss_of_state (N, P, Q) \<union> {})\<close>
       using mem_FL_Red_F_because_G_Red_F c\<theta>_red[of _ "lclss_of_state (N, P, Q)"]
       unfolding lclss_of_state_def by auto
-  next
-    show \<open>FL.active_subset {} = {}\<close>
-      unfolding FL.active_subset_def by auto
-  qed
+  qed (auto simp: lclss_of_state_def FL.active_subset_def)
 qed
 
 lemma GC_subsumption_step:
   assumes
     d_in: "Dl \<in> N" and
     d_sub_c: "strictly_subsumes (fst Dl) (fst Cl) \<or> subsumes (fst Dl) (fst Cl) \<and> snd Dl \<sqsubset>l snd Cl"
-  shows "N \<union> {Cl} \<Longrightarrow>GC N"
+  shows "N \<union> {Cl} \<leadsto>GC N"
 proof -
   have d_sub'_c: "Cl \<in> FL.Red_F {Dl} \<or> Dl \<sqsubset> Cl"
   proof (cases "size (fst Dl) = size (fst Cl)")
@@ -587,7 +562,7 @@ proof -
           subset_mset.antisym_conv2)
     have "Cl \<in> FL.Red_F {Dl}"
     proof (rule mem_FL_Red_F_because_G_Red_F)
-      show \<open>\<forall>D\<in>\<G>_F (fst Cl). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl}))\<close>
+      show \<open>\<forall>D \<in> \<G>_F (fst Cl). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl}))\<close>
         using d_ssub_c unfolding G.Red_F_def strictly_subsumes_def subsumes_def \<G>_F_def
       proof clarsimp
         fix \<sigma> \<sigma>'
@@ -602,15 +577,15 @@ proof -
         moreover have \<open>\<forall>I. I \<TTurnstile>s {fst Dl \<cdot> \<sigma> \<cdot> \<sigma>'} \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>'\<close>
           using fst_in
           by (meson subst_cls_mono_mset true_clss_insert true_clss_subclause)
-        moreover have \<open>\<forall>D\<in>{fst Dl \<cdot> \<sigma> \<cdot> \<sigma>'}. D < fst Cl \<cdot> \<sigma>'\<close>
+        moreover have \<open>\<forall>D \<in> {fst Dl \<cdot> \<sigma> \<cdot> \<sigma>'}. D < fst Cl \<cdot> \<sigma>'\<close>
           using fst_not_in fst_in gr_sig
         proof clarify
           show \<open>\<forall>\<sigma>. \<not> fst Cl \<cdot> \<sigma> \<subseteq># fst Dl \<Longrightarrow> fst Dl \<cdot> \<sigma> \<subseteq># fst Cl \<Longrightarrow> is_ground_subst \<sigma>' \<Longrightarrow>
             fst Dl \<cdot> \<sigma> \<cdot> \<sigma>' < fst Cl \<cdot> \<sigma>'\<close>
             by (metis False size_subst subset_imp_less_mset subset_mset.le_less subst_subset_mono)
         qed
-        ultimately show \<open>\<exists>DD\<subseteq>{fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}. (\<forall>I. I \<TTurnstile>s DD \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>')
-           \<and> (\<forall>D\<in>DD. D < fst Cl \<cdot> \<sigma>')\<close>
+        ultimately show \<open>\<exists>DD \<subseteq> {fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}.
+           (\<forall>I. I \<TTurnstile>s DD \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>') \<and> (\<forall>D \<in> DD. D < fst Cl \<cdot> \<sigma>')\<close>
           by blast
       qed
     qed
@@ -619,52 +594,46 @@ proof -
   qed
   show ?thesis
   proof (rule FL.step.process[of _ N "{Cl}" _ "{}"], simp+)
-    show \<open>Cl \<in> FL.Red_F_\<G> N\<close> using d_sub'_c unfolding FL_Red_F_eq
+    show \<open>Cl \<in> FL.Red_F_\<G> N\<close>
+      using d_sub'_c unfolding FL_Red_F_eq
     proof -
-      have \<open>\<And>D. D \<in> \<G>_F (fst Cl) \<Longrightarrow> \<forall>E\<in>N. E \<sqsubset> Cl \<longrightarrow> D \<notin> \<G>_F (fst E) \<Longrightarrow>
-        \<forall>D\<in>\<G>_F (fst Cl). D \<in> G.Red_F (\<G>_F (fst Dl)) \<or> Dl \<sqsubset> Cl \<and> D \<in> \<G>_F (fst Dl) \<Longrightarrow>
-        D \<in> G.Red_F (\<Union>a\<in>N. \<G>_F (fst a))\<close>
+      have \<open>\<And>D. D \<in> \<G>_F (fst Cl) \<Longrightarrow> \<forall>E \<in> N. E \<sqsubset> Cl \<longrightarrow> D \<notin> \<G>_F (fst E) \<Longrightarrow>
+        \<forall>D \<in> \<G>_F (fst Cl). D \<in> G.Red_F (\<G>_F (fst Dl)) \<or> Dl \<sqsubset> Cl \<and> D \<in> \<G>_F (fst Dl) \<Longrightarrow>
+        D \<in> G.Red_F (\<Union>a \<in> N. \<G>_F (fst a))\<close>
         by (metis (no_types, lifting) G.Red_F_of_subset SUP_upper d_in subset_iff)
-      moreover have \<open>\<And>D. D \<in> \<G>_F (fst Cl) \<Longrightarrow> \<forall>E\<in>N. E \<sqsubset> Cl \<longrightarrow> D \<notin> \<G>_F (fst E) \<Longrightarrow> Dl \<sqsubset> Cl \<Longrightarrow>
-        D \<in> G.Red_F (\<Union>a\<in>N. \<G>_F (fst a))\<close>
+      moreover have \<open>\<And>D. D \<in> \<G>_F (fst Cl) \<Longrightarrow> \<forall>E \<in> N. E \<sqsubset> Cl \<longrightarrow> D \<notin> \<G>_F (fst E) \<Longrightarrow> Dl \<sqsubset> Cl \<Longrightarrow>
+        D \<in> G.Red_F (\<Union>a \<in> N. \<G>_F (fst a))\<close>
         by (smt FL.Prec_FL_def FL.equiv_F_grounding FL.prec_F_grounding UNIV_witness d_in in_mono)
-      ultimately show \<open>Cl \<in> {C. \<forall>D\<in>\<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl})) \<or>
-        (\<exists>E\<in>{Dl}. E \<sqsubset> C \<and> D \<in> \<G>_F (fst E))} \<or> Dl \<sqsubset> Cl \<Longrightarrow>
-        Cl \<in> {C. \<forall>D\<in>\<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` N)) \<or>
-        (\<exists>E\<in>N. E \<sqsubset> C \<and> D \<in> \<G>_F (fst E))}\<close>
+      ultimately show \<open>Cl \<in> {C. \<forall>D \<in> \<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl})) \<or>
+        (\<exists>E \<in> {Dl}. E \<sqsubset> C \<and> D \<in> \<G>_F (fst E))} \<or> Dl \<sqsubset> Cl \<Longrightarrow>
+        Cl \<in> {C. \<forall>D \<in> \<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` N)) \<or>
+        (\<exists>E \<in> N. E \<sqsubset> C \<and> D \<in> \<G>_F (fst E))}\<close>
         by auto
     qed
-  next
-    show \<open>FL.active_subset {} = {}\<close>
-      unfolding FL.active_subset_def by simp
-  qed
+  qed (simp add: FL.active_subset_def)
 qed
 
 lemma GC_reduction_step:
   assumes
     young: "snd Dl \<noteq> Old" and
     d_sub_c: "fst Dl \<subset># fst Cl"
-  shows "N \<union> {Cl} \<Longrightarrow>GC N \<union> {Dl}"
+  shows "N \<union> {Cl} \<leadsto>GC N \<union> {Dl}"
 proof (rule FL.step.process[of _ N "{Cl}" _ "{Dl}"])
   have "Cl \<in> FL.Red_F {Dl}"
   proof (rule mem_FL_Red_F_because_G_Red_F)
-    show \<open>\<forall>D\<in>\<G>_F (fst Cl). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl}))\<close>
+    show \<open>\<forall>D \<in> \<G>_F (fst Cl). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl}))\<close>
       using d_sub_c unfolding G.Red_F_def strictly_subsumes_def subsumes_def \<G>_F_def
     proof clarsimp
       fix \<sigma>
-      assume
-        fst_not_in: \<open>\<not> fst Cl \<subseteq># fst Dl\<close> and
-        fst_in: \<open>fst Dl \<subseteq># fst Cl\<close> and
-        gr_sig: \<open>is_ground_subst \<sigma>\<close>
-      have \<open>{fst Dl \<cdot> \<sigma>} \<subseteq> {fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}\<close>
-        using gr_sig by blast
+      assume \<open>is_ground_subst \<sigma>\<close>
+      then have \<open>{fst Dl \<cdot> \<sigma>} \<subseteq> {fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}\<close>
+        by blast
       moreover have \<open>fst Dl \<cdot> \<sigma> < fst Cl \<cdot> \<sigma>\<close>
-        using subst_subset_mono[OF d_sub_c, of \<sigma>] gr_sig
-        by (simp add: subset_imp_less_mset)
+        using subst_subset_mono[OF d_sub_c, of \<sigma>] by (simp add: subset_imp_less_mset)
       moreover have \<open>\<forall>I. I \<TTurnstile> fst Dl \<cdot> \<sigma> \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>\<close>
         using subst_subset_mono[OF d_sub_c] true_clss_subclause by fast
-      ultimately show \<open>\<exists>DD\<subseteq>{fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}. (\<forall>I. I \<TTurnstile>s DD \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>)
-        \<and> (\<forall>D\<in>DD. D < fst Cl \<cdot> \<sigma>)\<close>
+      ultimately show \<open>\<exists>DD \<subseteq> {fst Dl \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}. (\<forall>I. I \<TTurnstile>s DD \<longrightarrow> I \<TTurnstile> fst Cl \<cdot> \<sigma>)
+        \<and> (\<forall>D \<in> DD. D < fst Cl \<cdot> \<sigma>)\<close>
         by blast
     qed
   qed
@@ -672,7 +641,7 @@ proof (rule FL.step.process[of _ N "{Cl}" _ "{Dl}"])
     using FL.Red_F_of_subset by blast
 qed (auto simp: FL.active_subset_def young)
 
-lemma GC_processing_step: "N \<union> {(C, New)} \<Longrightarrow>GC N \<union> {(C, Processed)}"
+lemma GC_processing_step: "N \<union> {(C, New)} \<leadsto>GC N \<union> {(C, Processed)}"
 proof (rule FL.step.process[of _ N "{(C, New)}" _ "{(C, Processed)}"])
   have "(C, New) \<in> FL.Red_F {(C, Processed)}"
     by (rule mem_FL_Red_F_because_Prec_FL) (simp add: FL.Prec_FL_def generalizes_refl)
@@ -701,7 +670,8 @@ proof (intro set_eqI iffI)
       using e_res cd_sub c_in F_Inf_def by auto
     then show \<open>E \<in> concl_of ` {\<iota> \<in> F_Inf. \<iota> \<in> {\<iota> \<in> F_Inf. set (prems_of \<iota>) \<subseteq> N \<union> {C}} \<and>
       set (prems_of \<iota>) \<inter> {C} \<noteq> {}}\<close>
-      by (smt Un_insert_right boolean_algebra_cancel.sup0 disjoint_insert(2) mem_Collect_eq image_def)
+      by (smt Un_insert_right boolean_algebra_cancel.sup0 disjoint_insert(2) mem_Collect_eq
+          image_def)
   qed
 next
   fix E
@@ -727,7 +697,7 @@ lemma GC_inference_step:
     no_active: "FL.active_subset M = {}" and
     m_sup: "fst ` M \<supseteq> old_concl_of ` inference_system.inferences_between (ord_FO_\<Gamma> S)
       (fst ` FL.active_subset N) C"
-  shows "N \<union> {(C, l)} \<Longrightarrow>GC N \<union> {(C, Old)} \<union> M"
+  shows "N \<union> {(C, l)} \<leadsto>GC N \<union> {(C, Old)} \<union> M"
 proof (rule FL.step.infer[of _ N C l _ M])
   have m_sup': "fst ` M \<supseteq> concl_of ` F.Inf_between (fst ` FL.active_subset N) {C}"
     using m_sup unfolding old_inferences_between_eq_new_inferences_between .
@@ -736,9 +706,7 @@ proof (rule FL.step.infer[of _ N C l _ M])
   proof
     fix \<iota>
     assume \<iota>_in_if2: "\<iota> \<in> F.Inf_between (fst ` FL.active_subset N) {C}"
-
     note \<iota>_in = F.Inf_if_Inf_between[OF \<iota>_in_if2]
-
     have "concl_of \<iota> \<in> fst ` M"
       using m_sup' \<iota>_in_if2 m_sup' by (auto simp: image_def Collect_mono_iff F.Inf_between_alt)
     then have "concl_of \<iota> \<in> fst ` (N \<union> {(C, Old)} \<union> M)"
@@ -748,7 +716,7 @@ proof (rule FL.step.infer[of _ N C l _ M])
   qed
 qed (use young no_active in auto)
 
-lemma RP_step_imp_GC_step: "St \<leadsto> St' \<Longrightarrow> lclss_of_state St \<Longrightarrow>GC lclss_of_state St'"
+lemma RP_step_imp_GC_step: "St \<leadsto>RP St' \<Longrightarrow> lclss_of_state St \<leadsto>GC lclss_of_state St'"
 proof (induction rule: RP.induct)
   case (tautology_deletion A C N P Q)
   then show ?case
@@ -807,9 +775,10 @@ next
       unfolding n by (auto simp: FL.active_subset_def)
     moreover have \<open>old_concls_of (inference_system.inferences_between (ord_FO_\<Gamma> S)
       (fst ` FL.active_subset (lclss_of_state ({}, P, Q))) C) \<subseteq> N\<close>
-      unfolding n inference_system.inferences_between_def image_def mem_Collect_eq lclss_of_state_def
-      infer_from_def by (auto simp: FL.active_subset_def)
-    ultimately have \<open>lclss_of_state ({}, insert C P, Q) \<Longrightarrow>GC lclss_of_state (N, P, insert C Q)\<close>
+      unfolding n inference_system.inferences_between_def image_def mem_Collect_eq
+        lclss_of_state_def infer_from_def
+      by (auto simp: FL.active_subset_def)
+    ultimately have \<open>lclss_of_state ({}, insert C P, Q) \<leadsto>GC lclss_of_state (N, P, insert C Q)\<close>
       using GC_inference_step[of Processed "lclss_of_state (N, {}, {})"
         "lclss_of_state ({}, P, Q)" C, simplified] by blast
     then show ?case
@@ -817,19 +786,19 @@ next
   qed
 qed
 
-lemma RP_derivation_imp_GC_derivation: "chain (\<leadsto>) Sts \<Longrightarrow> chain (\<Longrightarrow>GC) (lmap lclss_of_state Sts)"
+lemma RP_derivation_imp_GC_derivation: "chain (\<leadsto>RP) Sts \<Longrightarrow> chain (\<leadsto>GC) (lmap lclss_of_state Sts)"
   using chain_lmap RP_step_imp_GC_step by blast
 
-lemma RP_step_imp_derive_step: "St \<leadsto> St' \<Longrightarrow> lclss_of_state St \<rhd>RedL lclss_of_state St'"
+lemma RP_step_imp_derive_step: "St \<leadsto>RP St' \<Longrightarrow> lclss_of_state St \<rhd>RedL lclss_of_state St'"
   by (rule FL.one_step_equiv) (rule RP_step_imp_GC_step)
 
 lemma RP_derivation_imp_derive_derivation:
-  "chain (\<leadsto>) Sts \<Longrightarrow> chain (\<rhd>RedL) (lmap lclss_of_state Sts)"
+  "chain (\<leadsto>RP) Sts \<Longrightarrow> chain (\<rhd>RedL) (lmap lclss_of_state Sts)"
   using chain_lmap RP_step_imp_derive_step by blast
 
 theorem RP_sound_new_statement:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     bot_in: "{#} \<in> clss_of_state (Liminf_state Sts)"
   shows "clss_of_state (lhd Sts) \<TTurnstile>\<G>e {{#}}"
 proof -
@@ -841,14 +810,14 @@ proof -
     using FL.labeled_entailment_lifting by simp
   then have "lhd (lmap lclss_of_state Sts) \<TTurnstile>\<G>Le FL.Bot_FL"
   proof -
-    assume entails_lim: \<open>FL.entails_\<G> (Liminf_llist (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
-    have \<open>chain (\<rhd>RedL) (lmap lclss_of_state Sts)\<close>
+    assume \<open>FL.entails_\<G> (Liminf_llist (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
+    moreover have \<open>chain (\<rhd>RedL) (lmap lclss_of_state Sts)\<close>
       using deriv RP_derivation_imp_derive_derivation by simp
     moreover have \<open>chain FL.entails_\<G> (lmap lclss_of_state Sts)\<close>
       by (smt F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fs_def
         image_hd_lclss_of_state)
     ultimately show \<open>FL.entails_\<G> (lhd (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
-      using entails_lim FL.unsat_limit_iff by blast
+      using FL.unsat_limit_iff by blast
   qed
   then have "lclss_of_state (lhd Sts) \<TTurnstile>\<G>Le FL.Bot_FL"
     using chain_not_lnull deriv by fastforce
@@ -858,13 +827,13 @@ qed
 
 theorem RP_saturated_if_fair_new_statement:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     init: "FL.active_subset (lclss_of_state (lhd Sts)) = {}" and
     final: "FL.passive_subset (Liminf_llist (lmap lclss_of_state Sts)) = {}"
   shows "FL.saturated (Liminf_llist (lmap lclss_of_state Sts))"
 proof -
   note nnil = chain_not_lnull[OF deriv]
-  have gc_deriv: "chain (\<Longrightarrow>GC) (lmap lclss_of_state Sts)"
+  have gc_deriv: "chain (\<leadsto>GC) (lmap lclss_of_state Sts)"
     by (rule RP_derivation_imp_GC_derivation[OF deriv])
   show ?thesis
     using nnil init final
@@ -874,7 +843,7 @@ qed
 
 corollary RP_complete_if_fair_new_statement:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     init: "FL.active_subset (lclss_of_state (lhd Sts)) = {}" and
     final: "FL.passive_subset (Liminf_llist (lmap lclss_of_state Sts)) = {}" and
     unsat: "grounding_of_state (lhd Sts) \<TTurnstile>e {{#}}"
@@ -882,39 +851,18 @@ corollary RP_complete_if_fair_new_statement:
 proof -
   note nnil = chain_not_lnull[OF deriv]
   note len = chain_length_pos[OF deriv]
-  have gc_deriv: "chain (\<Longrightarrow>GC) (lmap lclss_of_state Sts)"
+  have gc_deriv: "chain (\<leadsto>GC) (lmap lclss_of_state Sts)"
     by (rule RP_derivation_imp_GC_derivation[OF deriv])
+
+  have hd_lcls: "fst ` lhd (lmap lclss_of_state Sts) = lhd (lmap clss_of_state Sts)"
+    using len zero_enat_def by auto
   have hd_unsat: "fst ` lhd (lmap lclss_of_state Sts) \<TTurnstile>\<G>e {{#}}"
-  proof -
-    have hd_lcls: "fst ` lhd (lmap lclss_of_state Sts) = lhd (lmap clss_of_state Sts)"
-      using len zero_enat_def by auto
-    show ?thesis
-      unfolding hd_lcls F_entails_\<G>_iff
-      unfolding true_clss_def
-    proof
-      fix I
-      show "Ball (\<Union> (\<G>_F ` lhd (lmap (\<lambda>St. N_of_state St \<union> P_of_state St \<union> Q_of_state St) Sts)))
-        ((\<TTurnstile>) I) \<longrightarrow> Ball (\<Union> (\<G>_F ` {{#}})) ((\<TTurnstile>) I)"
-        using unsat unfolding \<G>_Fs_def
-        by (metis (no_types, lifting) chain_length_pos gc_deriv gr.ex_min_counterex i0_less
-            llength_eq_0 llength_lmap llength_lmap llist.map_sel(1) true_cls_empty
-            true_clss_singleton)
-    qed
-  qed
+    unfolding hd_lcls F_entails_\<G>_iff unfolding true_clss_def using unsat unfolding \<G>_Fs_def
+    by (metis (no_types, lifting) chain_length_pos gc_deriv gr.ex_min_counterex i0_less
+        llength_eq_0 llength_lmap llength_lmap llist.map_sel(1) true_cls_empty true_clss_singleton)
   have "\<exists>BL \<in> {{#}} \<times> UNIV. BL \<in> Liminf_llist (lmap lclss_of_state Sts)"
-  proof (rule FL.gc_complete_Liminf[OF gc_deriv,of "{#}"])
-    show \<open>FL.active_subset (lhd (lmap lclss_of_state Sts)) = {}\<close>
-      by (simp add: init nnil)
-  next
-    show \<open>FL.passive_subset (Liminf_llist (lmap lclss_of_state Sts)) = {}\<close>
-      using final by blast
-  next
-    show \<open>{#} \<in> {{#}}\<close>
-      by simp
-  next
-    show \<open>fst ` lhd (lmap lclss_of_state Sts) \<TTurnstile>\<G>e {{#}}\<close>
-      using hd_unsat by blast
-  qed
+    by (rule FL.gc_complete_Liminf[OF gc_deriv,of "{#}"])
+      (use final hd_unsat in \<open>auto simp: init nnil\<close>)
   then show ?thesis
     unfolding Liminf_state_def lclss_Liminf_commute
     using final[unfolded FL.passive_subset_def] Liminf_state_def lclss_Liminf_commute by fastforce
@@ -929,21 +877,16 @@ lemma old_fair_imp_new_fair:
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}"
   shows
-    "FL.active_subset (lclss_of_state (lhd Sts)) = {}"
+    "FL.active_subset (lclss_of_state (lhd Sts)) = {}" and
     "FL.passive_subset (Liminf_llist (lmap lclss_of_state Sts)) = {}"
 proof -
   show "FL.active_subset (lclss_of_state (lhd Sts)) = {}"
     using nnul empty_Q0 unfolding FL.active_subset_def by (cases Sts) auto
 next
   show "FL.passive_subset (Liminf_llist (lmap lclss_of_state Sts)) = {}"
-    using fair unfolding fair_state_seq_def FL.passive_subset_def
-  proof
-    assume
-      \<open>N_of_state (Liminf_state Sts) = {}\<close> and
-      \<open>P_of_state (Liminf_state Sts) = {}\<close>
-    then show \<open>{CL \<in> Liminf_llist (lmap lclss_of_state Sts). snd CL \<noteq> Old} = {}\<close>
-      unfolding lclss_Liminf_commute lclss_of_state_def by auto
-  qed
+    using fair
+    unfolding fair_state_seq_def FL.passive_subset_def lclss_Liminf_commute lclss_of_state_def
+    by auto
 qed
 
 lemma old_redundant_infer_iff:
@@ -969,13 +912,9 @@ next
     all_dd: "\<forall>D \<in> DD. D < old_main_prem_of \<gamma>"
     using entails_concl_compact_union[of "{old_concl_of \<gamma>}" DD0 "set_mset (old_side_prems_of \<gamma>)"]
     by fast
-  show ?lhs unfolding src.redundant_infer_def
-  proof
-    show \<open>set_mset (mset_set DD) \<subseteq> N \<and>
-      (\<forall>I. I \<TTurnstile>m mset_set DD + old_side_prems_of \<gamma> \<longrightarrow> I \<TTurnstile> old_concl_of \<gamma>) \<and>
-      (\<forall>D. D \<in># mset_set DD \<longrightarrow> D < old_main_prem_of \<gamma>)\<close>
-      using fin_dd dd_in dd_un all_dd by auto
-  qed
+  show ?lhs
+    unfolding src.redundant_infer_def using fin_dd dd_in dd_un all_dd
+    by simp (metis finite_set_mset_mset_set true_clss_set_mset)
 qed
 
 definition old_infer_of :: "'a clause inference \<Rightarrow> 'a old_inference" where
@@ -998,44 +937,14 @@ proof -
   define G where
     "G = \<Union> (\<G>_F ` Q)"
 
-  have limuls_eq: "Liminf_llist (lmap lclss_of_state Sts) = Ql"
-    unfolding Ql_def Q_def
-    using no_passive[unfolded FL.passive_subset_def]
-  proof (simp) (* Sledgehammer-generated *)
-    assume a1: "\<forall>a b. (a, b) \<in> Liminf_llist (lmap lclss_of_state Sts) \<longrightarrow> b = Old"
-    obtain mm :: "'a literal multiset set \<Rightarrow> 'a literal multiset" where
-      f2: "\<forall>M. {} = M \<or> mm M \<in> M"
-      by (metis (no_types) equals0I)
-    have f3: "\<forall>ps. Liminf_llist (lmap lclss_of_state ps) =
-      lclss_of_state (Liminf_llist (lmap N_of_state ps), Liminf_llist (lmap P_of_state ps),
-        Liminf_llist (lmap Q_of_state ps))"
-      using Liminf_state_def lclss_Liminf_commute by presburger
-    then have f4: "Liminf_llist (lmap P_of_state Sts) = {}"
-      using f2 a1 by (metis (no_types) label.simps(5) mem_lclss_of_state(2))
-    have "Liminf_llist (lmap N_of_state Sts) = {}"
-      using f3 f2 a1 by (metis (no_types) label.simps(3) mem_lclss_of_state(1))
-    then show "Liminf_llist (lmap lclss_of_state Sts) =
-      (\<lambda>m. (m, Old)) ` Liminf_llist (lmap Q_of_state Sts)"
-      using f4 f3 by (simp add: lclss_of_state_def)
-  qed
+  have n_empty: "N_of_state (Liminf_state Sts) = {}" and
+    p_empty: "P_of_state (Liminf_state Sts) = {}"
+    using no_passive[unfolded FL.passive_subset_def] Liminf_state_def lclss_Liminf_commute
+    by fastforce+
+  then have limuls_eq: "Liminf_llist (lmap lclss_of_state Sts) = Ql"
+    unfolding Ql_def Q_def using Liminf_state_def lclss_Liminf_commute lclss_of_state_def by auto
   have clst_eq: "clss_of_state (Liminf_state Sts) = Q"
-  proof - (* Sledgehammer-generated *)
-    have f1: "Q_of_state (Liminf_state Sts) = Q"
-      using Liminf_state_def Q_def Q_of_state.simps by presburger
-    then have f2: "Ql \<union> ((\<lambda>m. (m, New)) ` N_of_state (Liminf_state Sts)
-      \<union> (\<lambda>m. (m, Processed)) ` P_of_state (Liminf_state Sts)) = lclss_of_state (Liminf_state Sts)"
-      by (simp add: Ql_def lclss_of_state_def sup_commute)
-    have f3: "lclss_of_state ({}, {}, Q_of_state (Liminf_state Sts)) = {} \<union> Ql"
-      using f1 by (simp add: Ql_def lclss_of_state_def)
-    have "Ql = (\<lambda>m. (m, New)) ` N_of_state (Liminf_state Sts)
-      \<union> (\<lambda>m. (m, Processed)) ` P_of_state (Liminf_state Sts) \<union> (Ql \<union> {})"
-      using f1 lclss_Liminf_commute lclss_of_state_def limuls_eq by auto
-    then have "clss_of_state (Liminf_state Sts) =
-      fst ` lclss_of_state ({}, {}, Q_of_state (Liminf_state Sts))"
-      using f3 f2 by (simp add: sup_commute)
-    then show ?thesis
-      unfolding Q_def by (simp add: Liminf_state_def)
-  qed
+    unfolding n_empty p_empty Q_def by (auto simp: Liminf_state_def)
   have gflimuls_eq: "(\<Union>Cl \<in> Ql. \<G>_F (fst Cl)) = G"
     unfolding Ql_def G_def by auto
 
@@ -1047,8 +956,8 @@ proof -
     obtain \<iota> where
       \<iota>_inff: "\<iota> \<in> G.Inf_from Q G" and
       \<gamma>: "\<gamma> = old_infer_of \<iota>"
-      using \<gamma>_inf unfolding gd.inferences_from_def old_infer_from_def G.Inf_from_def
-        old_infer_of_def
+      using \<gamma>_inf
+      unfolding gd.inferences_from_def old_infer_from_def G.Inf_from_def old_infer_of_def
     proof (atomize_elim, clarify)
       assume
         g_is: \<open>\<gamma> \<in> gd.ord_\<Gamma> Sts\<close> and
@@ -1060,7 +969,8 @@ proof -
       define \<iota>_\<gamma> where "\<iota>_\<gamma> = Infer (CAs @ [DA]) E"
       then have \<open>\<iota>_\<gamma> \<in> G_Inf Q\<close>  using Q_of_state.simps g_is g_is2 ord_res Liminf_state_def S_Q_def
         unfolding gd.ord_\<Gamma>_def G_Inf_def Q_def by auto
-      moreover have \<open>set (prems_of \<iota>_\<gamma>) \<subseteq> G\<close> using g_is2 prems_in unfolding \<iota>_\<gamma>_def by simp
+      moreover have \<open>set (prems_of \<iota>_\<gamma>) \<subseteq> G\<close>
+        using g_is2 prems_in unfolding \<iota>_\<gamma>_def by simp
       moreover have \<open>\<gamma> = old_Infer (mset (side_prems_of \<iota>_\<gamma>)) (main_prem_of \<iota>_\<gamma>) (concl_of \<iota>_\<gamma>)\<close>
         using g_is2 unfolding \<iota>_\<gamma>_def by simp
       ultimately show
@@ -1108,7 +1018,7 @@ qed
 
 theorem RP_sound_old_statement:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     bot_in: "{#} \<in> clss_of_state (Liminf_state Sts)"
   shows "\<not> satisfiable (grounding_of_state (lhd Sts))"
   using RP_sound_new_statement[OF deriv bot_in] unfolding F_entails_\<G>_iff \<G>_Fs_def by simp
@@ -1120,31 +1030,28 @@ saturation is neither monotone nor antimonotone, the two results are incomparabl
 
 theorem RP_saturated_if_fair_old_statement_altered:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}"
   shows "src.saturated_upto Sts (grounding_of_state (Liminf_state Sts))"
 proof -
   note fair' = old_fair_imp_new_fair[OF chain_not_lnull[OF deriv] fair empty_Q0]
   show ?thesis
-  proof (rule saturated_imp_saturated_RP[OF _ fair'(2)], rule RP_saturated_if_fair_new_statement)
-    show \<open>chain (\<leadsto>) Sts\<close> by (rule deriv)
-  qed (rule fair')+
+    by (rule saturated_imp_saturated_RP[OF _ fair'(2)], rule RP_saturated_if_fair_new_statement)
+      (rule deriv fair')+
 qed
 
 corollary RP_complete_if_fair_old_statement:
   assumes
-    deriv: "chain (\<leadsto>) Sts" and
+    deriv: "chain (\<leadsto>RP) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}" and
     unsat: "\<not> satisfiable (grounding_of_state (lhd Sts))"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof (rule RP_complete_if_fair_new_statement)
-  show \<open>chain (\<leadsto>) Sts\<close> by (rule deriv)
-next
   show \<open>\<G>_Fs (N_of_state (lhd Sts) \<union> P_of_state (lhd Sts) \<union> Q_of_state (lhd Sts)) \<TTurnstile>e {{#}}\<close>
     using unsat unfolding F_entails_\<G>_iff by auto
-qed (rule old_fair_imp_new_fair[OF chain_not_lnull[OF deriv] fair empty_Q0])+
+qed (rule deriv old_fair_imp_new_fair[OF chain_not_lnull[OF deriv] fair empty_Q0])+
 
 end
 

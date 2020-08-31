@@ -72,7 +72,7 @@ lemma gc_invar_gc_step:
   assumes
     Si_lt: "enat (Suc i) < llength Ns" and
     invar: "gc_invar Ns i" and
-    step: "lnth Ns i \<Longrightarrow>GC lnth Ns (Suc i)"
+    step: "lnth Ns i \<leadsto>GC lnth Ns (Suc i)"
   shows "gc_invar Ns (Suc i)"
   using step Si_lt invar
 proof cases
@@ -144,7 +144,7 @@ qed
 
 lemma gc_invar_gc:
   assumes
-    gc: "chain (\<Longrightarrow>GC) Ns" and
+    gc: "chain (\<leadsto>GC) Ns" and
     init: "active_subset (lhd Ns) = {}" and
     i_lt: "i < llength Ns"
   shows "gc_invar Ns i"
@@ -168,7 +168,7 @@ qed simp
 
 lemma gc_fair_new_proof:
   assumes
-    gc: "chain (\<Longrightarrow>GC) Ns" and
+    gc: "chain (\<leadsto>GC) Ns" and
     init: "active_subset (lhd Ns) = {}" and
     lim: "passive_subset (Liminf_llist Ns) = {}"
   shows "fair Ns"
@@ -290,7 +290,7 @@ lemma lgc_invar_lgc_step:
   assumes
     Si_lt: "enat (Suc i) < llength TNs" and
     invar: "lgc_invar TNs i" and
-    step: "lnth TNs i \<Longrightarrow>LGC lnth TNs (Suc i)"
+    step: "lnth TNs i \<leadsto>LGC lnth TNs (Suc i)"
   shows "lgc_invar TNs (Suc i)"
   using step Si_lt invar
 proof cases
@@ -449,7 +449,7 @@ qed
 
 lemma lgc_invar_lgc:
   assumes
-    lgc: "chain (\<Longrightarrow>LGC) TNs" and
+    lgc: "chain (\<leadsto>LGC) TNs" and
     n_init: "active_subset (snd (lhd TNs)) = {}" and
     t_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and
     i_lt: "i < llength TNs"
@@ -474,7 +474,7 @@ qed simp
 
 lemma lgc_fair_new_proof:
   assumes
-    lgc: "chain (\<Longrightarrow>LGC) TNs" and
+    lgc: "chain (\<leadsto>LGC) TNs" and
     n_init: "active_subset (snd (lhd TNs)) = {}" and
     n_lim: "passive_subset (Liminf_llist (lmap snd TNs)) = {}" and
     t_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and

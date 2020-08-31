@@ -412,22 +412,22 @@ begin
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
   using inf_have_prems Inf_FL_to_Inf_F by fastforce
 
-inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where
+inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>GC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
-    active_subset M' = {} \<Longrightarrow> N1 \<Longrightarrow>GC N2"
+    active_subset M' = {} \<Longrightarrow> N1 \<leadsto>GC N2"
 | infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
     active_subset M = {} \<Longrightarrow>
     no_labels.Inf_between (fst ` (active_subset N)) {C}
     \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
-    N1 \<Longrightarrow>GC N2"
+    N1 \<leadsto>GC N2"
 
-lemma one_step_equiv: "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
+lemma one_step_equiv: "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases N1 N2 rule: step.cases)
-  show "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<Longrightarrow>GC N2" by blast
+  show "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<leadsto>GC N2" by blast
 next
   fix N M M'
   assume
-    gc_step: "N1 \<Longrightarrow>GC N2" and
+    gc_step: "N1 \<leadsto>GC N2" and
     n1_is: "N1 = N \<union> M" and
     n2_is: "N2 = N \<union> M'" and
     m_red: "M \<subseteq> Red_F (N \<union> M')" and
@@ -439,7 +439,7 @@ next
 next
   fix N C L M
   assume
-    gc_step: "N1 \<Longrightarrow>GC N2" and
+    gc_step: "N1 \<leadsto>GC N2" and
     n1_is: "N1 = N \<union> {(C, L)}" and
     not_active: "L \<noteq> active" and
     n2_is: "N2 = N \<union> {(C, active)} \<union> M" and
@@ -457,7 +457,7 @@ next
 qed
 
 (* lem:gc-derivations-are-red-derivations *)
-lemma gc_to_red: "chain (\<Longrightarrow>GC) Ns \<Longrightarrow> chain (\<rhd>RedL) Ns"
+lemma gc_to_red: "chain (\<leadsto>GC) Ns \<Longrightarrow> chain (\<rhd>RedL) Ns"
   using one_step_equiv Lazy_List_Chain.chain_mono by blast
 
 lemma (in-) all_ex_finite_set: "(\<forall>(j::nat)\<in>{0..<m}. \<exists>(n::nat). P j n) \<Longrightarrow>
@@ -478,7 +478,7 @@ qed
 (* lem:fair-gc-derivations *)
 lemma gc_fair:
   assumes
-    deriv: "chain (\<Longrightarrow>GC) Ns" and
+    deriv: "chain (\<leadsto>GC) Ns" and
     init_state: "active_subset (lhd Ns) = {}" and
     final_state: "passive_subset (Liminf_llist Ns) = {}"
   shows "fair Ns"
@@ -600,7 +600,7 @@ proof
   have C0_in: "(C0, active) \<in> (lnth Ns (Suc n))"
     using C0_is j0_allin suc_n_length by (simp add: active_subset_def)
   have C0_notin: "(C0, active) \<notin> (lnth Ns n)" using C0_is j0_notin unfolding active_subset_def by simp
-  have step_n: "lnth Ns n \<Longrightarrow>GC lnth Ns (Suc n)"
+  have step_n: "lnth Ns n \<leadsto>GC lnth Ns (Suc n)"
     using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
   have "\<exists>N C L M. (lnth Ns n = N \<union> {(C, L)} \<and>
       lnth Ns (Suc n) = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
@@ -676,7 +676,7 @@ qed
 
 theorem gc_complete_Liminf:
   assumes
-    deriv: "chain (\<Longrightarrow>GC) Ns" and
+    deriv: "chain (\<leadsto>GC) Ns" and
     init_state: "active_subset (lhd Ns) = {}" and
     final_state: "passive_subset (Liminf_llist Ns) = {}" and
     b_in: "B \<in> Bot_F" and
@@ -697,7 +697,7 @@ qed
 (* thm:gc-completeness *)
 theorem gc_complete:
   assumes
-    deriv: "chain (\<Longrightarrow>GC) Ns" and
+    deriv: "chain (\<leadsto>GC) Ns" and
     init_state: "active_subset (lhd Ns) = {}" and
     final_state: "passive_subset (Liminf_llist Ns) = {}" and
     b_in: "B \<in> Bot_F" and
@@ -737,23 +737,23 @@ locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_
 begin
 
 inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
-  'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
+  'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>LGC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
-    active_subset M' = {} \<Longrightarrow> (T, N1) \<Longrightarrow>LGC (T, N2)" |
+    active_subset M' = {} \<Longrightarrow> (T, N1) \<leadsto>LGC (T, N2)" |
   schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
     L \<noteq> active \<Longrightarrow> T' = no_labels.Inf_between (fst ` (active_subset N)) {C} \<Longrightarrow>
-    (T1, N1) \<Longrightarrow>LGC (T2, N2)" |
+    (T1, N1) \<leadsto>LGC (T2, N2)" |
   compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
-    \<iota> \<in> no_labels.Red_I (fst ` (N1 \<union> M)) \<Longrightarrow> (T1, N1) \<Longrightarrow>LGC (T2, N2)" |
+    \<iota> \<in> no_labels.Red_I (fst ` (N1 \<union> M)) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" |
   delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
-    T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<Longrightarrow>LGC (T2, N)"
+    T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
 
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
 
-lemma one_step_equiv: "(T1, N1) \<Longrightarrow>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>RedL N2"
+lemma one_step_equiv: "(T1, N1) \<leadsto>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases "(T1, N1)" "(T2, N2)" rule: step.cases)
-  show "(T1, N1) \<Longrightarrow>LGC (T2, N2) \<Longrightarrow> (T1, N1) \<Longrightarrow>LGC (T2, N2)" by blast
+  show "(T1, N1) \<leadsto>LGC (T2, N2) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" by blast
 next
   fix N M M'
   assume
@@ -796,13 +796,13 @@ next
 qed
 
 (* lem:lgc-derivations-are-red-derivations *)
-lemma lgc_to_red: "chain (\<Longrightarrow>LGC) Ns \<Longrightarrow> chain (\<rhd>RedL) (lmap snd Ns)"
+lemma lgc_to_red: "chain (\<leadsto>LGC) Ns \<Longrightarrow> chain (\<rhd>RedL) (lmap snd Ns)"
   using one_step_equiv Lazy_List_Chain.chain_mono by (smt chain_lmap prod.collapse)
 
 (* lem:fair-lgc-derivations *)
 lemma lgc_fair:
   assumes
-    deriv: "chain (\<Longrightarrow>LGC) Ns" and
+    deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
@@ -933,7 +933,7 @@ proof
       using C0_is j0_allin suc_n_length by (simp add: active_subset_def)
     have C0_notin: "(C0, active) \<notin> (snd (lnth Ns n))"
       using C0_is j0_notin unfolding active_subset_def by simp
-    have step_n: "lnth Ns n \<Longrightarrow>LGC lnth Ns (Suc n)"
+    have step_n: "lnth Ns n \<leadsto>LGC lnth Ns (Suc n)"
       using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
     have is_scheduled: "\<exists>T2 T1 T' N1 N C L N2. lnth Ns n = (T1, N1) \<and> lnth Ns (Suc n) = (T2, N2) \<and>
         T2 = T1 \<union> T' \<and> N1 = N \<union> {(C, L)} \<and> N2 = N \<union> {(C, active)} \<and> L \<noteq> active \<and>
@@ -1064,7 +1064,7 @@ proof
     i_in_p: "to_F \<iota> \<in> (fst (lnth Ns p))" and i_notin_suc_p: "to_F \<iota> \<notin> (fst (lnth Ns (Suc p)))"
     by blast
   have p_neq_n: "Suc p \<noteq> n" using i_notin_suc_p i_in_suc_n by blast
-  have step_p: "lnth Ns p \<Longrightarrow>LGC lnth Ns (Suc p)" using deriv p_smaller_d chain_lnth_rel by blast
+  have step_p: "lnth Ns p \<leadsto>LGC lnth Ns (Suc p)" using deriv p_smaller_d chain_lnth_rel by blast
   then have "\<exists>T1 T2 \<iota> N2 N1 M. lnth Ns p = (T1, N1) \<and> lnth Ns (Suc p) = (T2, N2) \<and>
       T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
       \<iota> \<in> no_labels.Red_I_\<G> (fst ` (N1 \<union> M))"
@@ -1129,7 +1129,7 @@ qed
 
 theorem lgc_complete_Liminf:
   assumes
-    deriv: "chain (\<Longrightarrow>LGC) Ns" and
+    deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
@@ -1154,7 +1154,7 @@ qed
 (* thm:lgc-completeness *)
 theorem lgc_complete:
   assumes
-    deriv: "chain (\<Longrightarrow>LGC) Ns" and
+    deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
