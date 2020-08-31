@@ -385,10 +385,6 @@ qed
 end
   
   
-text "In the report and papers about the framework, the symbol \<Longrightarrow> is used to describe procedures
-  but this is confusing in Isabelle so we chose to use \<leadsto> instead in the given_clause and
-  lazy_given_clause locales"
-
 subsection \<open>Given Clause Procedure\<close>
 
 locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
