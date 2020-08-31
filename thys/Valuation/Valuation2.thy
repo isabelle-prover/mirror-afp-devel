@@ -45,7 +45,7 @@ apply (frule aGroup.ag_pOp_closed[of K "1\<^sub>r" "x \<cdot>\<^sub>r (1\<^sub>r
         thin_tac "1\<^sub>r \<plusminus> -\<^sub>a x^\<^bsup>K (Suc (Suc 0))\<^esup> = (1\<^sub>r \<plusminus> x) \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a x)")
  apply (subst val_t2p[of v], assumption+,
         rule aGroup.ag_pOp_closed, assumption+,
-        subst value_of_inv[of v "1\<^sub>r \<plusminus> x \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a x)"], assumption+)
+        subst value_of_inv[of v "1\<^sub>r \<plusminus> x \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a x)"], tactic \<open>CHANGED distinct_subgoals_tac\<close>, assumption+)
 
  apply (rule contrapos_pp, simp+,
         frule Ring.ring_tOp_closed[of K x "(1\<^sub>r \<plusminus> -\<^sub>a x)"], assumption+,

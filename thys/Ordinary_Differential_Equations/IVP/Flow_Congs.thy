@@ -273,7 +273,7 @@ proof -
     apply (rule bexI)
     apply (rule conjI)
        apply assumption
-    apply (subst flow0_cong[symmetric, OF cong])
+     apply (subst flow0_cong[symmetric, OF cong])
      apply auto
       apply (subst existence_ivl0_cong[OF cong])
     apply auto
@@ -288,10 +288,11 @@ proof -
     apply auto defer
     apply (subst Dflow_cong[symmetric])
      apply auto
-      apply (subst existence_ivl0_cong[OF cong])
+     apply (subst existence_ivl0_cong[OF cong])
     apply auto
-    apply (drule Y.closed_segment_subset_existence_ivl)
-    by (auto simp: open_segment_eq_real_ivl closed_segment_eq_real_ivl split: if_splits)
+     apply (drule Y.closed_segment_subset_existence_ivl;
+        auto simp: open_segment_eq_real_ivl closed_segment_eq_real_ivl split: if_splits)+
+    done
 qed
 
 lemma flowsto_congI2:

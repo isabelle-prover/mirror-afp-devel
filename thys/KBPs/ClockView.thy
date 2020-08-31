@@ -849,9 +849,7 @@ next
      apply (simp add: toSet_def[symmetric])
      apply (rule_tac x=y in bexI)
       apply (subst clock_commonKnowledge_relation_image[OF aec_cec_subset[OF tC Kcknows(3) Kcknows(4)]])
-      apply assumption
-     apply simp
-     apply (rule refl)
+       apply simp_all
     done
   also have "... = clock_repMC (ODList.toSet cec), s \<Turnstile> Kknows a (Kcknows as \<psi>)"
     using clock_repMC_aec[OF tC Kcknows(3) Kcknows(4) Kcknows(2)]

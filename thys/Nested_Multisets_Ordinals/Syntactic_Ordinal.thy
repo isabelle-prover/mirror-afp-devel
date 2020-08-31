@@ -138,7 +138,7 @@ lemma times_hmultiset_monoL:
       intro!: image_mset_strict_mono Times_mset_monoL elim!: plus_nmultiset_mono)
 
 instance hmultiset :: linordered_semiring_strict
-  by intro_classes (subst (1 2) mult.commute, rule times_hmultiset_monoL)
+  by intro_classes (subst (1 2) mult.commute, (fact times_hmultiset_monoL)+)
 
 lemma mult_le_mono1_hmset: "i \<le> j \<Longrightarrow> i * k \<le> j * k" for i j k :: hmultiset
   by (simp add: mult_right_mono)
