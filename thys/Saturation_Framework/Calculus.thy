@@ -375,18 +375,18 @@ proof
     refut_N: "N \<Turnstile> {B}"
   define Ns where "Ns = LCons N LNil"
   have[simp]: \<open>\<not> lnull Ns\<close> by (auto simp: Ns_def)
-  have deriv_D: \<open>chain (\<rhd>Red) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
+  have deriv_Ns: \<open>chain (\<rhd>Red) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
   have liminf_is_N: "Liminf_llist Ns = N" by (simp add: Ns_def Liminf_llist_LCons)
-  have head_D: "N = lhd Ns" by (simp add: Ns_def)
+  have head_Ns: "N = lhd Ns" by (simp add: Ns_def)
   have "Sup_llist (lmap Red_I Ns) = Red_I N" by (simp add: Ns_def)
-  then have fair_D: "fair Ns" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
+  then have fair_Ns: "fair Ns" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
   obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth Ns i" and \<open>i < llength Ns\<close>
-    using dynamically_complete[of B Ns] bot_elem fair_D head_D saturated_N deriv_D refut_N
+    using dynamically_complete[of B Ns] bot_elem fair_Ns head_Ns saturated_N deriv_Ns refut_N
     by auto
   then have "i = 0"
     by (auto simp: Ns_def enat_0_iff)
   show \<open>\<exists>B'\<in>Bot. B' \<in> N\<close>
-    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] Ns_def by auto
+    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_Ns[symmetric] Ns_def by auto
 qed
 
 end

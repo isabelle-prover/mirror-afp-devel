@@ -383,7 +383,11 @@ proof -
 qed
 
 end
-
+  
+  
+text "In the report and papers about the framework, the symbol \<Longrightarrow> is used to describe procedures
+  but this is confusing in Isabelle so we chose to use \<leadsto> instead in the given_clause and
+  lazy_given_clause locales"
 
 subsection \<open>Given Clause Procedure\<close>
 
@@ -408,7 +412,7 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
   assumes
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
-
+  
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
   using inf_have_prems Inf_FL_to_Inf_F by fastforce
 
@@ -420,7 +424,7 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
     no_labels.Inf_between (fst ` (active_subset N)) {C}
     \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<leadsto>GC N2"
-
+  
 lemma one_step_equiv: "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases N1 N2 rule: step.cases)
   show "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<leadsto>GC N2" by blast
