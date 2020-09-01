@@ -57,7 +57,6 @@ context FO_resolution_prover
 begin
 
 no_notation RP (infix "\<leadsto>" 50)
-
 notation RP (infix "\<leadsto>RP" 50)
 
 interpretation gr: ground_resolution_with_selection "S_M S M"
@@ -175,20 +174,17 @@ next
   show "consequence_relation {{#}} (\<TTurnstile>e)"
     by (fact consequence_relation_axioms)
 next
-  show "\<And>M. tiebreaker_lifting {{#}} F_Inf {{#}} (\<TTurnstile>e) (G_Inf M) (G.Red_I M)
-    G.Red_F \<G>_F (\<G>_I_opt M) (\<lambda>D C C'. False)"
+  show "\<And>M. tiebreaker_lifting {{#}} F_Inf {{#}} (\<TTurnstile>e) (G_Inf M) (G.Red_I M) G.Red_F \<G>_F (\<G>_I_opt M)
+    (\<lambda>D C C'. False)"
   proof
     fix M \<iota>
-    assume \<iota>_in: "\<iota> \<in> F_Inf"
-
     show "the (\<G>_I_opt M \<iota>) \<subseteq> G.Red_I M (\<G>_F (concl_of \<iota>))"
       unfolding option.sel
     proof
       fix \<iota>'
-      assume \<iota>'_in: "\<iota>' \<in> \<G>_I M \<iota>"
+      assume "\<iota>' \<in> \<G>_I M \<iota>"
       then obtain \<rho> \<rho>s where
         \<iota>': "\<iota>' = Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>)" and
-        \<rho>s_gr: "is_ground_subst_list \<rho>s" and
         \<rho>_gr: "is_ground_subst \<rho>" and
         \<rho>_infer: "Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) \<in> G_Inf M"
         unfolding \<G>_I_def by blast
@@ -318,7 +314,7 @@ next
 qed
 
 
-subsection \<open>Labeled First-Order Layer (or Given Clause Layer)\<close>
+subsection \<open>Labeled First-Order or Given Clause Layer\<close>
 
 datatype label =
   New
@@ -452,7 +448,7 @@ interpretation FL: refutationally_compact_calculus FL.Bot_FL FL_Inf "(\<TTurnsti
   ..
 
 
-subsection \<open>\textsf{RP} Layer\<close>
+subsection \<open>Resolution Prover Layer\<close>
 
 interpretation sq: selection "S_Q Sts"
   unfolding S_Q_def using S_M_selects_subseteq S_M_selects_neg_lits selection_axioms
@@ -494,7 +490,7 @@ lemma mem_lclss_of_state[simp]:
   unfolding lclss_of_state_def image_def by auto
 
 lemma lclss_Liminf_commute:
- "Liminf_llist (lmap lclss_of_state Sts) = lclss_of_state (Liminf_state Sts)"
+  "Liminf_llist (lmap lclss_of_state Sts) = lclss_of_state (Liminf_state Sts)"
 proof -
   have \<open>Liminf_llist (lmap lclss_of_state Sts) =
     (\<lambda>C. (C, New)) ` Liminf_llist (lmap N_of_state Sts) \<union>
