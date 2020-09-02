@@ -203,7 +203,7 @@ notation F.entails_\<G> (infix "\<TTurnstile>\<G>e" 50)
 lemma F_entails_\<G>_iff: "N1 \<TTurnstile>\<G>e N2 \<longleftrightarrow> \<Union> (\<G>_F ` N1) \<TTurnstile>e \<Union> (\<G>_F ` N2)"
   unfolding F.entails_\<G>_def by simp
 
-lemma true_Union_grounding_of_cls_iff_true_all_interps_ground_substs:
+lemma true_Union_grounding_of_cls_iff:
   "I \<TTurnstile>s (\<Union>C \<in> N. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}) \<longleftrightarrow> (\<forall>\<sigma>. is_ground_subst \<sigma> \<longrightarrow> I \<TTurnstile>s N \<cdot>cs \<sigma>)"
   unfolding true_clss_def subst_clss_def by blast
 
@@ -231,13 +231,10 @@ proof
       by (metis set_mset_mset set_mset_subst_cls_mset_subst_clss true_clss_set_mset)
   }
   ultimately show "set (inference.prems_of \<iota>) \<TTurnstile>\<G>e {concl_of \<iota>}"
-    unfolding F.entails_\<G>_def \<G>_F_def
-      true_Union_grounding_of_cls_iff_true_all_interps_ground_substs
-    by auto
+    unfolding F.entails_\<G>_def \<G>_F_def true_Union_grounding_of_cls_iff by auto
 qed
 
-lemma G_Inf_overapproximates_F_Inf:
-  "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota> \<in> F.Inf_from M. \<iota>\<^sub>0 \<in> \<G>_I M \<iota>"
+lemma G_Inf_overapprox_F_Inf: "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota> \<in> F.Inf_from M. \<iota>\<^sub>0 \<in> \<G>_I M \<iota>"
 proof -
   assume \<iota>\<^sub>0_in: "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M))"
   have prems_\<iota>\<^sub>0_in: "set (prems_of \<iota>\<^sub>0) \<subseteq> \<Union> (\<G>_F ` M)"
@@ -287,7 +284,6 @@ proof -
 
   have i_F_Inf: \<open>\<iota> \<in> F_Inf\<close>
     unfolding \<iota>_def F_Inf_def using ngr_res by auto
-
   have "\<exists>\<rho> \<rho>s. \<iota>\<^sub>0 = Infer ((CAs0 @ [DA0]) \<cdot>\<cdot>cl \<rho>s) (E0 \<cdot> \<rho>) \<and> is_ground_subst_list \<rho>s
     \<and> is_ground_subst \<rho> \<and> Infer ((CAs0 @ [DA0]) \<cdot>\<cdot>cl \<rho>s) (E0 \<cdot> \<rho>) \<in> G_Inf M"
     by (rule exI[of _ \<eta>2], rule exI[of _ "\<eta>s @ [\<eta>]"], use ground_ns in
@@ -310,16 +306,13 @@ next
   assume "F.saturated N"
   show "F.ground.Inf_from_q N (\<Union> (\<G>_F ` N)) \<subseteq> {\<iota>. \<exists>\<iota>' \<in> F.Inf_from N. \<iota> \<in> \<G>_I N \<iota>'}
     \<union> G.Red_I N (\<Union> (\<G>_F ` N))"
-    using G_Inf_overapproximates_F_Inf unfolding F.ground.Inf_from_q_def \<G>_I_def by fastforce
+    using G_Inf_overapprox_F_Inf unfolding F.ground.Inf_from_q_def \<G>_I_def by fastforce
 qed
 
 
 subsection \<open>Labeled First-Order or Given Clause Layer\<close>
 
-datatype label =
-  New
-| Processed
-| Old
+datatype label = New | Processed | Old
 
 definition FL_Infer_of :: "'a clause inference \<Rightarrow> ('a clause \<times> label) inference set" where
   "FL_Infer_of \<iota> = {Infer Cls (D, New) |Cls D. \<iota> = Infer (map fst Cls) D}"
@@ -392,7 +385,7 @@ qed (auto simp: FL_Inf_def FL_Infer_of_def F_Inf_have_prems)
 
 notation FL.Prec_FL (infix "\<sqsubset>" 50)
 notation FL.entails_\<G>_L (infix "\<TTurnstile>\<G>Le" 50)
-notation FL.derive (infix "\<rhd>RedL" 50)
+notation FL.derive (infix "\<rhd>L" 50)
 notation FL.step (infix "\<leadsto>GC" 50)
 
 lemma FL_Red_F_eq:
@@ -455,9 +448,6 @@ interpretation sq: selection "S_Q Sts"
   by unfold_locales auto
 
 interpretation gd: ground_resolution_with_selection "S_Q Sts"
-  by unfold_locales
-
-interpretation src: standard_redundancy_criterion_reductive "gd.ord_\<Gamma> Sts"
   by unfold_locales
 
 interpretation src: standard_redundancy_criterion_counterex_reducing "gd.ord_\<Gamma> Sts"
@@ -666,8 +656,7 @@ proof (intro set_eqI iffI)
       using e_res cd_sub c_in F_Inf_def by auto
     then show \<open>E \<in> concl_of ` {\<iota> \<in> F_Inf. \<iota> \<in> {\<iota> \<in> F_Inf. set (prems_of \<iota>) \<subseteq> N \<union> {C}} \<and>
       set (prems_of \<iota>) \<inter> {C} \<noteq> {}}\<close>
-      by (smt Un_insert_right boolean_algebra_cancel.sup0 disjoint_insert(2) mem_Collect_eq
-          image_def)
+      by (smt Un_insert_right boolean_algebra_cancel.sup0 disjoint_insert mem_Collect_eq image_def)
   qed
 next
   fix E
@@ -785,11 +774,11 @@ qed
 lemma RP_derivation_imp_GC_derivation: "chain (\<leadsto>RP) Sts \<Longrightarrow> chain (\<leadsto>GC) (lmap lclss_of_state Sts)"
   using chain_lmap RP_step_imp_GC_step by blast
 
-lemma RP_step_imp_derive_step: "St \<leadsto>RP St' \<Longrightarrow> lclss_of_state St \<rhd>RedL lclss_of_state St'"
+lemma RP_step_imp_derive_step: "St \<leadsto>RP St' \<Longrightarrow> lclss_of_state St \<rhd>L lclss_of_state St'"
   by (rule FL.one_step_equiv) (rule RP_step_imp_GC_step)
 
 lemma RP_derivation_imp_derive_derivation:
-  "chain (\<leadsto>RP) Sts \<Longrightarrow> chain (\<rhd>RedL) (lmap lclss_of_state Sts)"
+  "chain (\<leadsto>RP) Sts \<Longrightarrow> chain (\<rhd>L) (lmap lclss_of_state Sts)"
   using chain_lmap RP_step_imp_derive_step by blast
 
 theorem RP_sound_new_statement:
@@ -807,7 +796,7 @@ proof -
   then have "lhd (lmap lclss_of_state Sts) \<TTurnstile>\<G>Le FL.Bot_FL"
   proof -
     assume \<open>FL.entails_\<G> (Liminf_llist (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
-    moreover have \<open>chain (\<rhd>RedL) (lmap lclss_of_state Sts)\<close>
+    moreover have \<open>chain (\<rhd>L) (lmap lclss_of_state Sts)\<close>
       using deriv RP_derivation_imp_derive_derivation by simp
     moreover have \<open>chain FL.entails_\<G> (lmap lclss_of_state Sts)\<close>
       by (smt F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fs_def
@@ -833,8 +822,7 @@ proof -
     by (rule RP_derivation_imp_GC_derivation[OF deriv])
   show ?thesis
     using nnil init final
-      FL.fair_implies_Liminf_saturated[OF FL.gc_to_red[OF gc_deriv] FL.gc_fair[OF gc_deriv]]
-    by simp
+      FL.fair_implies_Liminf_saturated[OF FL.gc_to_red[OF gc_deriv] FL.gc_fair[OF gc_deriv]] by simp
 qed
 
 corollary RP_complete_if_fair_new_statement:
@@ -891,10 +879,6 @@ lemma old_redundant_infer_iff:
       \<and> (\<forall>D \<in> DD. D < old_main_prem_of \<gamma>))"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
-  assume ?lhs
-  then show ?rhs
-    unfolding src.redundant_infer_def by auto
-next
   assume ?rhs
   then obtain DD0 where
     "DD0 \<subseteq> N" and
@@ -911,7 +895,7 @@ next
   show ?lhs
     unfolding src.redundant_infer_def using fin_dd dd_in dd_un all_dd
     by simp (metis finite_set_mset_mset_set true_clss_set_mset)
-qed
+qed (auto simp: src.redundant_infer_def)
 
 definition old_infer_of :: "'a clause inference \<Rightarrow> 'a old_inference" where
   "old_infer_of \<iota> = old_Infer (mset (side_prems_of \<iota>)) (main_prem_of \<iota>) (concl_of \<iota>)"
@@ -977,7 +961,7 @@ proof -
     obtain \<iota>' where
       \<iota>'_inff: "\<iota>' \<in> F.Inf_from Q" and
       \<iota>_in_\<iota>': "\<iota> \<in> \<G>_I Q \<iota>'"
-      using G_Inf_overapproximates_F_Inf \<iota>_inff unfolding G_def by blast
+      using G_Inf_overapprox_F_Inf \<iota>_inff unfolding G_def by blast
 
     note \<iota>'_inf = F.Inf_if_Inf_from[OF \<iota>'_inff]
 

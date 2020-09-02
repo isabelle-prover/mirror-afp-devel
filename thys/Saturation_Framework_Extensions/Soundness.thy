@@ -112,17 +112,17 @@ The next three lemmas correspond to Lemma 4.2:
 \<close>
 
 lemma Red_F_Sup_subset_Red_F_Liminf:
-  "chain (\<rhd>Red) Ns \<Longrightarrow> Red_F (Sup_llist Ns) \<subseteq> Red_F (Liminf_llist Ns)"
+  "chain (\<rhd>) Ns \<Longrightarrow> Red_F (Sup_llist Ns) \<subseteq> Red_F (Liminf_llist Ns)"
   by (metis Liminf_llist_subset_Sup_llist Red_in_Sup Un_absorb1 calculus.Red_F_of_Red_F_subset
       calculus_axioms double_diff sup_ge2)
 
 lemma Red_I_Sup_subset_Red_I_Liminf:
-  "chain (\<rhd>Red) Ns \<Longrightarrow> Red_I (Sup_llist Ns) \<subseteq> Red_I (Liminf_llist Ns)"
+  "chain (\<rhd>) Ns \<Longrightarrow> Red_I (Sup_llist Ns) \<subseteq> Red_I (Liminf_llist Ns)"
   by (metis Liminf_llist_subset_Sup_llist Red_I_of_Red_F_subset Red_in_Sup double_diff subset_refl)
 
 lemma unsat_limit_iff:
   assumes
-    chain_red: "chain (\<rhd>Red) Ns" and
+    chain_red: "chain (\<rhd>) Ns" and
     chain_ent: "chain (\<Turnstile>) Ns"
   shows "Liminf_llist Ns \<Turnstile> Bot \<longleftrightarrow> lhd Ns \<Turnstile> Bot"
 proof
@@ -143,11 +143,11 @@ qed
 
 text \<open>Some easy consequences:\<close>
 
-lemma Red_F_limit_Sup: "chain (\<rhd>Red) Ns \<Longrightarrow> Red_F (Liminf_llist Ns) = Red_F (Sup_llist Ns)"
+lemma Red_F_limit_Sup: "chain (\<rhd>) Ns \<Longrightarrow> Red_F (Liminf_llist Ns) = Red_F (Sup_llist Ns)"
   by (metis Liminf_llist_subset_Sup_llist Red_F_of_Red_F_subset Red_F_of_subset Red_in_Sup
       double_diff order_refl subset_antisym)
 
-lemma Red_I_limit_Sup: "chain (\<rhd>Red) Ns \<Longrightarrow> Red_I (Liminf_llist Ns) = Red_I (Sup_llist Ns)"
+lemma Red_I_limit_Sup: "chain (\<rhd>) Ns \<Longrightarrow> Red_I (Liminf_llist Ns) = Red_I (Sup_llist Ns)"
   by (metis Liminf_llist_subset_Sup_llist Red_I_of_Red_F_subset Red_I_of_subset Red_in_Sup
       double_diff order_refl subset_antisym)
 

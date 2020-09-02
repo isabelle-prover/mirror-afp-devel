@@ -199,8 +199,8 @@ qed
 definition fair :: "'f set llist \<Rightarrow> bool" where
   "fair Ns \<longleftrightarrow> Inf_from (Liminf_llist Ns) \<subseteq> Sup_llist (lmap Red_I Ns)"
 
-inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
-  derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
+inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>" 50) where
+  derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd> N"
 
 lemma gt_Max_notin: \<open>finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> x > Max A \<Longrightarrow> x \<notin> A\<close> by auto
 
@@ -235,7 +235,7 @@ qed
 
 (* lem:nonpersistent-is-redundant *)
 lemma Red_in_Sup:
-  assumes deriv: "chain (\<rhd>Red) Ns"
+  assumes deriv: "chain (\<rhd>) Ns"
   shows "Sup_llist Ns - Liminf_llist Ns \<subseteq> Red_F (Sup_llist Ns)"
 proof
   fix C
@@ -245,7 +245,7 @@ proof
     assume
       in_ith_elem: "C \<in> lnth Ns i - lnth Ns (Suc i)" and
       i: "enat (Suc i) < llength Ns"
-    have "lnth Ns i \<rhd>Red lnth Ns (Suc i)" using i deriv in_ith_elem chain_lnth_rel by auto
+    have "lnth Ns i \<rhd> lnth Ns (Suc i)" using i deriv in_ith_elem chain_lnth_rel by auto
     then have "C \<in> Red_F (lnth Ns (Suc i))" using in_ith_elem derive.cases by blast
     then have "C \<in> Red_F (Sup_llist Ns)" using Red_F_of_subset
       by (meson contra_subsetD i lnth_subset_Sup_llist)
@@ -255,7 +255,7 @@ qed
 
 (* lem:redundant-remains-redundant-during-run 1/2 *)
 lemma Red_I_subset_Liminf:
-  assumes deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+  assumes deriv: \<open>chain (\<rhd>) Ns\<close> and
     i: \<open>enat i < llength Ns\<close>
   shows \<open>Red_I (lnth Ns i) \<subseteq> Red_I (Liminf_llist Ns)\<close>
 proof -
@@ -273,7 +273,7 @@ qed
 
 (* lem:redundant-remains-redundant-during-run 2/2 *)
 lemma Red_F_subset_Liminf:
- assumes deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+  assumes deriv: \<open>chain (\<rhd>) Ns\<close> and
     i: \<open>enat i < llength Ns\<close>
   shows \<open>Red_F (lnth Ns i) \<subseteq> Red_F (Liminf_llist Ns)\<close>
 proof -
@@ -292,7 +292,7 @@ qed
 (* lem:N-i-is-persistent-or-redundant *)
 lemma i_in_Liminf_or_Red_F:
   assumes
-    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    deriv: \<open>chain (\<rhd>) Ns\<close> and
     i: \<open>enat i < llength Ns\<close>
   shows \<open>lnth Ns i \<subseteq> Red_F (Liminf_llist Ns) \<union> Liminf_llist Ns\<close>
 proof (rule,rule)
@@ -310,7 +310,7 @@ qed
 (* lem:fairness-implies-saturation *)
 lemma fair_implies_Liminf_saturated:
   assumes
-    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    deriv: \<open>chain (\<rhd>) Ns\<close> and
     fair: \<open>fair Ns\<close>
   shows \<open>saturated (Liminf_llist Ns)\<close>
   unfolding saturated_def
@@ -334,7 +334,7 @@ lemma dynamically_complete_Liminf:
   fixes B Ns
   assumes
     bot_elem: \<open>B \<in> Bot\<close> and
-    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    deriv: \<open>chain (\<rhd>) Ns\<close> and
     fair: \<open>fair Ns\<close> and
     unsat: \<open>lhd Ns \<Turnstile> {B}\<close>
   shows \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist Ns\<close>
@@ -361,7 +361,7 @@ end
 
 locale dynamically_complete_calculus = calculus +
   assumes
-    dynamically_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) Ns \<Longrightarrow> fair Ns \<Longrightarrow> lhd Ns \<Turnstile> {B} \<Longrightarrow>
+    dynamically_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>) Ns \<Longrightarrow> fair Ns \<Longrightarrow> lhd Ns \<Turnstile> {B} \<Longrightarrow>
       \<exists>i \<in> {i. enat i < llength Ns}. \<exists>B'\<in>Bot. B' \<in> lnth Ns i"
 begin
 
@@ -375,7 +375,7 @@ proof
     refut_N: "N \<Turnstile> {B}"
   define Ns where "Ns = LCons N LNil"
   have[simp]: \<open>\<not> lnull Ns\<close> by (auto simp: Ns_def)
-  have deriv_Ns: \<open>chain (\<rhd>Red) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
+  have deriv_Ns: \<open>chain (\<rhd>) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
   have liminf_is_N: "Liminf_llist Ns = N" by (simp add: Ns_def Liminf_llist_LCons)
   have head_Ns: "N = lhd Ns" by (simp add: Ns_def)
   have "Sup_llist (lmap Red_I Ns) = Red_I N" by (simp add: Ns_def)
@@ -397,7 +397,7 @@ proof
   fix B Ns
   assume
     \<open>B \<in> Bot\<close> and
-    \<open>chain (\<rhd>Red) Ns\<close> and
+    \<open>chain (\<rhd>) Ns\<close> and
     \<open>fair Ns\<close> and
     \<open>lhd Ns \<Turnstile> {B}\<close>
   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist Ns\<close>

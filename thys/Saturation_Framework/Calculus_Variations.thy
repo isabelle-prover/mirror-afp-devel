@@ -322,7 +322,7 @@ proof
     refut_N: "N \<Turnstile> {B}"
   define Ns where "Ns = LCons N LNil"
   have[simp]: \<open>\<not> lnull Ns\<close> by (auto simp: Ns_def)
-  have deriv_D: \<open>chain (\<rhd>Red) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
+  have deriv_D: \<open>chain (\<rhd>) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
   have liminf_is_N: "Liminf_llist Ns = N" by (simp add: Ns_def Liminf_llist_LCons)
   have head_D: "N = lhd Ns" by (simp add: Ns_def)
   have "Sup_llist (lmap Red_F Ns) = Red_F N" by (simp add: Ns_def)
@@ -346,7 +346,7 @@ proof
   fix B Ns
   assume
     bot_elem: \<open>B \<in> Bot\<close> and
-    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    deriv: \<open>chain (\<rhd>) Ns\<close> and
     fair: \<open>reduc_fair Ns\<close> and
     unsat: \<open>lhd Ns \<Turnstile> {B}\<close>
     have non_empty: \<open>\<not> lnull Ns\<close> using chain_not_lnull[OF deriv] .

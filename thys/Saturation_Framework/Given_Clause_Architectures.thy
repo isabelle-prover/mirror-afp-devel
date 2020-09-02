@@ -182,7 +182,7 @@ sublocale lifting_intersection Inf_FL Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q
       no_labels.ground.consequence_relation_family_axioms
       no_labels.ground.inference_system_family_axioms)
 
-notation derive (infix "\<rhd>RedL" 50)
+notation derive (infix "\<rhd>L" 50)
 
 lemma std_Red_I_eq: "std.Red_I = Red_I_\<G>"
   unfolding Red_I_\<G>_q_def Red_I_\<G>_L_q_def by simp
@@ -421,7 +421,7 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
     \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<leadsto>GC N2"
   
-lemma one_step_equiv: "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
+lemma one_step_equiv: "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<rhd>L N2"
 proof (cases N1 N2 rule: step.cases)
   show "N1 \<leadsto>GC N2 \<Longrightarrow> N1 \<leadsto>GC N2" by blast
 next
@@ -434,7 +434,7 @@ next
     active_empty: "active_subset M' = {}"
   have "N1 - N2 \<subseteq> Red_F N2"
     using n1_is n2_is m_red by auto
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 next
   fix N C L M
@@ -452,12 +452,12 @@ next
   moreover have "N1 - N2 = {} \<or> N1 - N2 = {(C, L)}" using n1_is n2_is by blast
   ultimately have "N1 - N2 \<subseteq> Red_F N2"
     using std_Red_F_eq by blast
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 qed
 
 (* lem:gc-derivations-are-red-derivations *)
-lemma gc_to_red: "chain (\<leadsto>GC) Ns \<Longrightarrow> chain (\<rhd>RedL) Ns"
+lemma gc_to_red: "chain (\<leadsto>GC) Ns \<Longrightarrow> chain (\<rhd>L) Ns"
   using one_step_equiv Lazy_List_Chain.chain_mono by blast
 
 lemma (in-) all_ex_finite_set: "(\<forall>(j::nat)\<in>{0..<m}. \<exists>(n::nat). P j n) \<Longrightarrow>
@@ -751,7 +751,7 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
 
-lemma one_step_equiv: "(T1, N1) \<leadsto>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>RedL N2"
+lemma one_step_equiv: "(T1, N1) \<leadsto>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>L N2"
 proof (cases "(T1, N1)" "(T2, N2)" rule: step.cases)
   show "(T1, N1) \<leadsto>LGC (T2, N2) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" by blast
 next
@@ -762,7 +762,7 @@ next
     m_red: "M \<subseteq> Red_F (N \<union> M')"
   have "N1 - N2 \<subseteq> Red_F N2"
     using n1_is n2_is m_red by auto
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 next
   fix N C L M
@@ -777,7 +777,7 @@ next
     using red_labeled_clauses by blast
   then have "N1 - N2 \<subseteq> Red_F N2"
     using std_Red_F_eq using n1_is n2_is by blast
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 next
   fix M
@@ -785,18 +785,18 @@ next
     n2_is: "N2 = N1 \<union> M"
   have "N1 - N2 \<subseteq> Red_F N2"
     using n2_is by blast
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 next
   assume n2_is: "N2 = N1"
   have "N1 - N2 \<subseteq> Red_F N2"
     using n2_is by blast
-  then show "N1 \<rhd>RedL N2"
+  then show "N1 \<rhd>L N2"
     unfolding derive.simps by blast
 qed
 
 (* lem:lgc-derivations-are-red-derivations *)
-lemma lgc_to_red: "chain (\<leadsto>LGC) Ns \<Longrightarrow> chain (\<rhd>RedL) (lmap snd Ns)"
+lemma lgc_to_red: "chain (\<leadsto>LGC) Ns \<Longrightarrow> chain (\<rhd>L) (lmap snd Ns)"
   using one_step_equiv Lazy_List_Chain.chain_mono by (smt chain_lmap prod.collapse)
 
 (* lem:fair-lgc-derivations *)
