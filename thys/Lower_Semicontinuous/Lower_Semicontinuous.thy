@@ -45,19 +45,19 @@ definition
   "usc_at x0 f \<longleftrightarrow> (\<forall>X l. X \<longlonglongrightarrow> x0 \<and> (f \<circ> X) \<longlonglongrightarrow> l \<longrightarrow> l \<le> f x0)"
 
 lemma lsc_at_mem:
-assumes "lsc_at x0 f"
-assumes "x \<longlonglongrightarrow> x0"
-assumes "(f \<circ> x) \<longlonglongrightarrow> A"
-shows "f x0 \<le> A"
-using assms lsc_at_def[of x0 f] by blast
+  assumes "lsc_at x0 f"
+  assumes "x \<longlonglongrightarrow> x0"
+  assumes "(f \<circ> x) \<longlonglongrightarrow> A"
+  shows "f x0 \<le> A"
+  using assms lsc_at_def[of x0 f] by blast
 
 
 lemma usc_at_mem:
-assumes "usc_at x0 f"
-assumes "x \<longlonglongrightarrow> x0"
-assumes "(f \<circ> x) \<longlonglongrightarrow> A"
-shows "f x0 \<ge> A"
-using assms usc_at_def[of x0 f] by blast
+  assumes "usc_at x0 f"
+  assumes "x \<longlonglongrightarrow> x0"
+  assumes "(f \<circ> x) \<longlonglongrightarrow> A"
+  shows "f x0 \<ge> A"
+  using assms usc_at_def[of x0 f] by blast
 
 lemma lsc_at_open:
   fixes f :: "'a::first_countable_topology \<Rightarrow> 'b::{complete_linorder, linorder_topology}"
@@ -111,24 +111,24 @@ qed
 
 lemma lsc_at_open_mem:
   fixes f :: "'a::first_countable_topology \<Rightarrow> 'b::{complete_linorder, linorder_topology}"
-assumes "lsc_at x0 f"
-assumes "open S \<and> f x0 : S"
-obtains T where "open T \<and> x0 \<in> T \<and> (\<forall>x'\<in>T. (f x' \<le> f x0 \<longrightarrow> f x' \<in> S))"
-using assms lsc_at_open[of x0 f] by blast
+  assumes "lsc_at x0 f"
+  assumes "open S \<and> f x0 : S"
+  obtains T where "open T \<and> x0 \<in> T \<and> (\<forall>x'\<in>T. (f x' \<le> f x0 \<longrightarrow> f x' \<in> S))"
+  using assms lsc_at_open[of x0 f] by blast
 
 
 lemma lsc_at_MInfty:
   fixes f :: "'a::topological_space \<Rightarrow> ereal"
   assumes "f x0 = -\<infinity>"
   shows "lsc_at x0 f"
-unfolding lsc_at_def using assms by auto
+  unfolding lsc_at_def using assms by auto
 
 
 lemma lsc_at_PInfty:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-assumes "f x0 = \<infinity>"
-shows "lsc_at x0 f \<longleftrightarrow> continuous (at x0) f"
-unfolding lsc_at_open continuous_at_open using assms by auto
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  assumes "f x0 = \<infinity>"
+  shows "lsc_at x0 f \<longleftrightarrow> continuous (at x0) f"
+  unfolding lsc_at_open continuous_at_open using assms by auto
 
 
 lemma lsc_at_real:
@@ -219,31 +219,31 @@ lemma lst_at_ball:
 fixes f :: "'a::metric_space => ereal"
 shows "lsc_at x0 f \<longleftrightarrow> (\<forall>C<f(x0). \<exists>d>0. \<forall>y \<in> (ball x0 d). C<f(y))"
 (is "?lhs \<longleftrightarrow> ?rhs")
-proof-
-{ assume lsc: "lsc_at x0 f"
-  { fix C :: ereal assume "C<f x0"
-    from this obtain T where "open T \<and> x0 : T \<and> (\<forall>y \<in> T. C < f y)"
+proof
+  assume lsc: "lsc_at x0 f"
+  show ?rhs
+  proof (intro strip)
+   fix C :: ereal assume "C<f x0"
+   then obtain T where "open T \<and> x0 : T \<and> (\<forall>y \<in> T. C < f y)"
       using lsc lsc_at_ereal[of x0 f] by auto
-    hence "\<exists>d. d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)"
+    then show "\<exists>d. d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)"
       by (force simp add: open_contains_ball)
-  }
-}
-moreover
-{ assume "?rhs"
+  qed
+
+next
+  assume "?rhs"
   { fix C :: ereal assume "C<f x0"
-    from this obtain d where "d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)" using \<open>?rhs\<close> by auto
-    hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y \<in> T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
-      apply (simp add: centre_in_ball) done
-  } hence "lsc_at x0 f" using lsc_at_ereal[of x0 f] by auto
-}
-ultimately show ?thesis by auto
+    then obtain d where "d>0 \<and> (\<forall>y \<in> (ball x0 d). C < f y)" using \<open>?rhs\<close> by auto
+    hence "\<exists>T. open T \<and> x0 \<in> T \<and> (\<forall>y \<in> T. C < f y)"
+      by (meson Elementary_Metric_Spaces.open_ball centre_in_ball) 
+  } then show ?lhs using lsc_at_ereal[of x0 f] by auto
 qed
 
 
 lemma lst_at_delta:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (\<forall>C<f(x0). \<exists>d>0. \<forall>y. dist x0 y < d \<longrightarrow> C < f y)"
-(is "?lhs \<longleftrightarrow> ?rhs")
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  shows "lsc_at x0 f \<longleftrightarrow> (\<forall>C<f(x0). \<exists>d>0. \<forall>y. dist x0 y < d \<longrightarrow> C < f y)"
+    (is "?lhs \<longleftrightarrow> ?rhs")
 proof-
   have "?rhs \<longleftrightarrow> (\<forall>C<f(x0). \<exists>d>0. \<forall>y \<in> (ball x0 d). C < f y)" unfolding ball_def by auto
   thus ?thesis using lst_at_ball[of x0 f] by auto
@@ -283,38 +283,38 @@ next
     hence "liminf (f \<circ> x) \<ge> f x0 - e" by (intro Liminf_bounded) (auto simp: eventually_sequentially intro!: exI[of _ N])
     hence "f x0 \<le> liminf (f \<circ> x) + e" apply (cases e) unfolding ereal_minus_le_iff by auto
   }
-  then show ?thesis by (intro ereal_le_epsilon) auto
+  then show ?thesis
+    using ereal_le_epsilon by blast
 qed auto
 
 lemma lsc_liminf:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x. x \<longlonglongrightarrow> x0 \<longrightarrow> f x0 \<le> liminf (f \<circ> x))"
-(is "?lhs \<longleftrightarrow> ?rhs")
-proof-
-{ assume "?rhs"
-  { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f \<circ> x) \<longlonglongrightarrow> A"
-    hence "f x0 \<le> A" using \<open>?rhs\<close> lim_imp_Liminf[of sequentially] by auto
-  } hence "?lhs" unfolding lsc_at_def by blast
-} from this show ?thesis using lsc_imp_liminf by auto
-qed
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x. x \<longlonglongrightarrow> x0 \<longrightarrow> f x0 \<le> liminf (f \<circ> x))"
+    (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume "?rhs"
+    { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f \<circ> x) \<longlonglongrightarrow> A"
+      hence "f x0 \<le> A" using \<open>?rhs\<close> lim_imp_Liminf[of sequentially] by auto
+    } thus "?lhs" unfolding lsc_at_def by blast
+qed (use lsc_imp_liminf in auto)
 
 
 lemma lsc_sequentially:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x c. x \<longlonglongrightarrow> x0 \<and> (\<forall>n. f(x n)\<le>c) \<longrightarrow> f(x0)\<le>c)"
-(is "?lhs \<longleftrightarrow> ?rhs")
-proof-
-{ assume "?rhs"
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x c. x \<longlonglongrightarrow> x0 \<and> (\<forall>n. f(x n)\<le>c) \<longrightarrow> f(x0)\<le>c)"
+    (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume "?rhs"
   { fix x l assume "x \<longlonglongrightarrow> x0" "(f \<circ> x) \<longlonglongrightarrow> l"
     { assume "l = \<infinity>" hence "f x0 \<le> l" by auto }
     moreover
     { assume "l = -\<infinity>"
       { fix B :: real obtain N where N_def: "\<forall>n\<ge>N. f(x n) \<le> ereal B"
-           using Lim_MInfty[of "f \<circ> x"] \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> \<open>l = -\<infinity>\<close> by auto
+          using Lim_MInfty[of "f \<circ> x"] \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> \<open>l = -\<infinity>\<close> by auto
         define g where "g n = (if n\<ge>N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
           by (intro filterlim_cong[THEN iffD1, OF refl refl _ \<open>x \<longlonglongrightarrow> x0\<close>])
-             (auto simp: eventually_sequentially)
+            (auto simp: eventually_sequentially)
         moreover have "\<forall>n. f(g n) \<le> ereal B" using g_def N_def by auto
         ultimately have "f x0 \<le> ereal B" using \<open>?rhs\<close> by auto
       } hence "f x0 = -\<infinity>" using ereal_bot by auto
@@ -323,84 +323,80 @@ proof-
     { assume fin: "\<bar>l\<bar> \<noteq> \<infinity>"
       { fix e assume e_def: "(e :: ereal)>0"
         from this obtain N where N_def: "\<forall>n\<ge>N. f(x n) \<in> {l - e <..< l + e}"
-           apply (subst tendsto_obtains_N[of "f \<circ> x" l "{l - e <..< l + e}"])
-           using fin e_def ereal_between \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> by auto
+          apply (subst tendsto_obtains_N[of "f \<circ> x" l "{l - e <..< l + e}"])
+          using fin e_def ereal_between \<open>(f \<circ> x) \<longlonglongrightarrow> l\<close> by auto
         define g where "g n = (if n\<ge>N then x n else x N)" for n
         hence "g \<longlonglongrightarrow> x0"
           by (intro filterlim_cong[THEN iffD1, OF refl refl _ \<open>x \<longlonglongrightarrow> x0\<close>])
-             (auto simp: eventually_sequentially)
+            (auto simp: eventually_sequentially)
         moreover have "\<forall>n. f(g n) \<le> l + e" using g_def N_def by auto
         ultimately have "f x0 \<le> l + e" using \<open>?rhs\<close> by auto
       } hence "f x0 \<le> l" using ereal_le_epsilon by auto
     } ultimately have "f x0 \<le> l" by blast
-  } hence "lsc_at x0 f" unfolding lsc_at_def by auto
-}
-moreover
-{ assume lsc: "lsc_at x0 f"
+  } then show ?lhs unfolding lsc_at_def by auto
+next
+  assume lsc: ?lhs
   { fix x c assume xc_def: "x \<longlonglongrightarrow> x0 \<and> (\<forall>n. f(x n)\<le>c)"
     hence "liminf (f \<circ> x) \<le> c"
       using Limsup_bounded[where F = sequentially and X = "f \<circ> x" and C = c]
-            Liminf_le_Limsup[of sequentially "f \<circ> x"]
+        Liminf_le_Limsup[of sequentially "f \<circ> x"]
       by auto
     hence "f x0 \<le> c" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
-  } hence "?rhs" by auto
-} ultimately show ?thesis by blast
+  } thus "?rhs" by auto
 qed
 
 
 lemma lsc_sequentially_gen:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x c c0. x \<longlonglongrightarrow> x0 \<and> c \<longlonglongrightarrow> c0 \<and> (\<forall>n. f(x n)\<le>c n) \<longrightarrow> f(x0)\<le>c0)"
-(is "?lhs \<longleftrightarrow> ?rhs")
-proof-
-{ assume "?rhs"
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  shows "lsc_at x0 f \<longleftrightarrow> (\<forall>x c c0. x \<longlonglongrightarrow> x0 \<and> c \<longlonglongrightarrow> c0 \<and> (\<forall>n. f(x n)\<le>c n) \<longrightarrow> f(x0)\<le>c0)"
+    (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume "?rhs"
   { fix x c0 assume a: "x \<longlonglongrightarrow> x0 \<and> (\<forall>n. f (x n) \<le> c0)"
     define c where "c = (\<lambda>n::nat. c0)"
     hence "c \<longlonglongrightarrow> c0" by auto
     hence "f(x0)\<le>c0" using \<open>?rhs\<close>[rule_format, of x c c0] using a c_def by auto
-  } hence "?lhs" using lsc_sequentially[of x0 f] by auto
-}
-moreover
-{ assume lsc: "lsc_at x0 f"
+  } then show "?lhs" using lsc_sequentially[of x0 f] by auto
+next
+  assume lsc: "lsc_at x0 f"
   { fix x c c0 assume xc_def: "x \<longlonglongrightarrow> x0 \<and> c \<longlonglongrightarrow> c0 \<and> (\<forall>n. f(x n)\<le>c n)"
-    hence "liminf (f \<circ> x) \<le> c0" using Liminf_mono[of "f \<circ> x" c sequentially] lim_imp_Liminf[of sequentially] by auto
+    hence "liminf (f \<circ> x) \<le> c0" 
+      using Liminf_mono[of "f \<circ> x" c sequentially] lim_imp_Liminf[of sequentially] by auto
     hence "f x0 \<le> c0" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
-  } hence "?rhs" by auto
-} ultimately show ?thesis by blast
+  } then show "?rhs" by auto
 qed
 
 
 lemma lsc_sequentially_mem:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-assumes "lsc_at x0 f"
-assumes "x \<longlonglongrightarrow> x0" "c \<longlonglongrightarrow> c0"
-assumes "\<forall>n. f(x n)\<le>c n"
-shows "f(x0)\<le>c0"
-using lsc_sequentially_gen[of x0 f] assms by auto
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  assumes "lsc_at x0 f"
+  assumes "x \<longlonglongrightarrow> x0" "c \<longlonglongrightarrow> c0"
+  assumes "\<forall>n. f(x n)\<le>c n"
+  shows "f(x0)\<le>c0"
+  using lsc_sequentially_gen[of x0 f] assms by auto
 
 
 lemma lsc_uminus:
-fixes f :: "'a::metric_space \<Rightarrow> ereal"
-shows "lsc_at x0 (\<lambda>x. -f x) \<longleftrightarrow> usc_at x0 f"
-proof-
-{ assume lsc: "lsc_at x0 (\<lambda>x. -f x)"
+  fixes f :: "'a::metric_space \<Rightarrow> ereal"
+  shows "lsc_at x0 (\<lambda>x. -f x) \<longleftrightarrow> usc_at x0 f"
+proof
+  assume lsc: "lsc_at x0 (\<lambda>x. -f x)"
   { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f \<circ> x) \<longlonglongrightarrow> A"
     hence "(\<lambda>i. - f (x i)) \<longlonglongrightarrow> -A" using tendsto_uminus_ereal[of "f \<circ> x" A] by auto
     hence "((\<lambda>x. - f x) \<circ> x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence " - f x0 \<le> - A" apply (subst lsc_at_mem[of x0 "(\<lambda>x. -f x)" x]) using lsc x_def by auto
     hence "f x0 \<ge> A" by auto
-  } hence "usc_at x0 f" unfolding usc_at_def by auto
-}
-moreover
-{ assume usc: "usc_at x0 f"
+  } then show "usc_at x0 f" unfolding usc_at_def by auto
+
+next
+  assume usc: "usc_at x0 f"
   { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "((\<lambda>x. - f x) \<circ> x) \<longlonglongrightarrow> A"
     hence "(\<lambda>i. - f (x i)) \<longlonglongrightarrow> A" unfolding o_def by auto
     hence "(\<lambda>i. f (x i)) \<longlonglongrightarrow> - A" using tendsto_uminus_ereal[of "(\<lambda>i. - f (x i))" A] by auto
     hence "(f \<circ> x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence "f x0 \<ge> - A" apply (subst usc_at_mem[of x0 "f" x]) using usc x_def by auto
     hence "-f x0 \<le> A" by (auto simp: ereal_uminus_le_reorder)
-  } hence "lsc_at x0 (\<lambda>x. -f x)" unfolding lsc_at_def by auto
-} ultimately show ?thesis by blast
+  } then show "lsc_at x0 (\<lambda>x. -f x)" unfolding lsc_at_def by auto
 qed
 
 
@@ -1352,15 +1348,14 @@ definition
 
 lemma proper_iff:
   "proper f \<longleftrightarrow> ((\<forall>x. f x \<noteq> -\<infinity>) \<and> (\<exists>x. f x \<noteq> \<infinity>))"
-unfolding proper_def proper_on_def by auto
-
+  unfolding proper_def proper_on_def by auto
 
 lemma improper_iff:
   "~(proper f) \<longleftrightarrow> ((\<exists>x. f x = -\<infinity>) | (\<forall>x. f x = \<infinity>))"
-using proper_iff by auto
+  by (simp add: proper_iff) 
 
 lemma ereal_MInf_plus[simp]: "-\<infinity> + x = (if x = \<infinity> then \<infinity> else -\<infinity>::ereal)"
-  by (cases x) auto
+  by simp
 
 lemma convex_improper:
   fixes f :: "'a::euclidean_space \<Rightarrow> ereal"
@@ -1479,7 +1474,8 @@ lemma convex_with_rel_open_domain:
   shows "(\<forall>x. f x > -\<infinity>) | (\<forall>x. (f x = \<infinity> | f x = -\<infinity>))"
 proof-
 { assume "\<not>(\<forall>x. f x > -\<infinity>)"
-  hence "\<not>(proper f)" using proper_iff by auto
+  hence "\<not>(proper f)" using proper_iff
+    by (simp add: proper_iff)
   hence "\<forall>x\<in>rel_interior(domain f). f x = -\<infinity>" by (metis assms(1) convex_improper)
   hence "\<forall>x\<in>domain f. f x = -\<infinity>" by (metis assms(2) rel_open_def)
   hence "\<forall>x. (f x = \<infinity> | f x = -\<infinity>)" unfolding domain_def by auto
@@ -1718,7 +1714,8 @@ proof-
      by (metis assms convex_less_ri_domain ereal_less_PInfty proper_iff)
   hence "f x = (lsc_hull f) x" using lsc_hull_of_convex_agrees[of f] assms
      unfolding rel_frontier_def by auto
-  moreover have "f x > -\<infinity>" using assms proper_iff by auto
+   moreover have "f x > -\<infinity>" 
+     using assms proper_iff by blast
   ultimately have "(lsc_hull f) x < \<infinity> \<and> (lsc_hull f) x > -\<infinity>" using x_def by auto
   thus ?thesis using convex_lsc_improper[of "lsc_hull f" x]
     lsc_lsc_hull[of f] assms convex_lsc_hull[of f] by auto
