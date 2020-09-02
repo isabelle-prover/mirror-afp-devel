@@ -9568,3 +9568,16 @@ abstract =
   by synthesis via the Refinement Framework.  This is the formalization
   going with our FMCAD'20 tool presentation.
 
+[BirdKMP]
+title = Putting the `K' into Bird's derivation of Knuth-Morris-Pratt string matching
+author = Peter Gammie <http://peteg.org>
+topic = Computer science/Functional programming
+date = 2020-08-25
+notify = peteg42@gmail.com
+abstract = 
+  Richard Bird and collaborators have proposed a derivation of an
+  intricate cyclic program that implements the Morris-Pratt string
+  matching algorithm. Here we provide a proof of total correctness for
+  Bird's derivation and complete it by adding Knuth's
+  optimisation.
+

@@ -42,6 +42,19 @@ array-based implementation of disjoint-set forests with a naive union
 operation and a find operation with path compression.</description>
     </item>
     <item>
+       <title>Putting the `K' into Bird's derivation of Knuth-Morris-Pratt string matching</title>
+              <link>https://www.isa-afp.org/entries/BirdKMP.html</link>
+       <guid>https://www.isa-afp.org/entries/BirdKMP.html</guid>
+       <dc:creator> Peter Gammie       </dc:creator>
+       <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+Richard Bird and collaborators have proposed a derivation of an
+intricate cyclic program that implements the Morris-Pratt string
+matching algorithm. Here we provide a proof of total correctness for
+Bird&#39;s derivation and complete it by adding Knuth&#39;s
+optimisation.</description>
+    </item>
+    <item>
        <title>Amicable Numbers</title>
               <link>https://www.isa-afp.org/entries/Amicable_Numbers.html</link>
        <guid>https://www.isa-afp.org/entries/Amicable_Numbers.html</guid>
@@ -571,26 +584,6 @@ topology, the infinitude of primes is then easily obtained.&lt;/p&gt;
 general: it is second countable, metrizable, and perfect. All of these
 (well-known) facts are formally proven, including an explicit metric
 for the topology given by Zulfeqarr.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>An Under-Approximate Relational Logic</title>
-              <link>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</guid>
-       <dc:creator> Toby Murray       </dc:creator>
-       <pubDate>12 Mar 2020 00:00:00 +0000</pubDate>
-       <description>
-Recently, authors have proposed under-approximate logics for reasoning
-about programs. So far, all such logics have been confined to
-reasoning about individual program behaviours. Yet there exist many
-over-approximate relational logics for reasoning about pairs of
-programs and relating their behaviours. We present the first
-under-approximate relational logic, for the simple imperative language
-IMP. We prove our logic is both sound and complete. Additionally, we
-show how reasoning in this logic can be decomposed into non-relational
-reasoning in an under-approximate Hoare logic, mirroring Beringer’s
-result for over-approximate relational logics. We illustrate the
-application of our logic on some small examples in which we provably
-demonstrate the presence of insecurity.</description>
     </item>
   </channel>
 </rss>
