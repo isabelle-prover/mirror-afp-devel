@@ -176,18 +176,19 @@ abbreviation \<G>_F_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) \<Rightarrow
 abbreviation \<G>_I_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) inference \<Rightarrow> 'g inference set option\<close> where
   \<open>\<G>_I_L_q q \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_I_q q (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
-abbreviation \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> 'g set" where
-  "\<G>_set_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
+abbreviation \<G>_Fset_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> 'g set" where
+  "\<G>_Fset_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
 
 definition Red_I_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_I_\<G>_L_q q N = {\<iota> \<in> Inf_FL. (\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q N))
-    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N))}"
+  "Red_I_\<G>_L_q q N =
+   {\<iota> \<in> Inf_FL. (\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_Fset_L_q q N))
+    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_Fset_L_q q N \<union> Red_F_q q (\<G>_Fset_L_q q N))}"
 
 abbreviation Red_I_\<G>_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_I_\<G>_L N \<equiv> (\<Inter>q \<in> Q. Red_I_\<G>_L_q q N)"
 
 abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
-  "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
+  "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_Fset_L_q q N1) (\<G>_Fset_L_q q N2)"
 
 lemma lifting_q:
   assumes "q \<in> Q"
@@ -226,7 +227,7 @@ proof -
 qed
 
 definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L_q q N = {C. \<forall>D \<in> \<G>_F_L_q q C. D \<in> Red_F_q q (\<G>_set_L_q q N) \<or>
+  "Red_F_\<G>_empty_L_q q N = {C. \<forall>D \<in> \<G>_F_L_q q C. D \<in> Red_F_q q (\<G>_Fset_L_q q N) \<or>
     (\<exists>E \<in> N. False \<and> D \<in> \<G>_F_L_q q E)}"
 
 abbreviation Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
@@ -289,14 +290,14 @@ proof clarify
   have rephrase1: "(\<Union>CL\<in>NL. \<G>_F_q q (fst CL)) = (\<Union> (\<G>_F_q q ` fst ` NL))" by blast
   have rephrase2: "fst (concl_of \<iota>) = concl_of (to_F \<iota>)"
     unfolding concl_of_def to_F_def by simp
-  have subs_red: "(\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q NL))
-    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q NL \<union> Red_F_q q (\<G>_set_L_q q NL))"
+  have subs_red: "(\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_Fset_L_q q NL))
+    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_Fset_L_q q NL \<union> Red_F_q q (\<G>_Fset_L_q q NL))"
     using i_in_q unfolding Red_I_\<G>_L_q_def by blast
   then have to_F_subs_red: "(\<G>_I_q q (to_F \<iota>) \<noteq> None \<and>
-      the (\<G>_I_q q (to_F \<iota>)) \<subseteq> Red_I_q q (no_labels.\<G>_set_q q (fst ` NL)))
+      the (\<G>_I_q q (to_F \<iota>)) \<subseteq> Red_I_q q (no_labels.\<G>_Fset_q q (fst ` NL)))
     \<or> (\<G>_I_q q (to_F \<iota>) = None \<and>
       \<G>_F_q q (concl_of (to_F \<iota>))
-      \<subseteq> no_labels.\<G>_set_q q (fst ` NL) \<union> Red_F_q q (no_labels.\<G>_set_q q (fst ` NL)))"
+      \<subseteq> no_labels.\<G>_Fset_q q (fst ` NL) \<union> Red_F_q q (no_labels.\<G>_Fset_q q (fst ` NL)))"
     using rephrase1 rephrase2 by metis
   then show "to_F \<iota> \<in> no_labels.Red_I_\<G>_q q (fst ` NL)"
     using to_F_in unfolding no_labels.Red_I_\<G>_q_def by simp

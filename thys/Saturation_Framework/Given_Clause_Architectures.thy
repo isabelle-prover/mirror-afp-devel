@@ -216,9 +216,9 @@ proof
         using x0_is by argo
       then obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL" and
         subs1: "((\<G>_I_L_q q0 \<iota>0_FL) \<noteq> None \<and>
-            the (\<G>_I_L_q q0 \<iota>0_FL) \<subseteq> Red_I_q q0 (\<G>_set_q q0 N))
+            the (\<G>_I_L_q q0 \<iota>0_FL) \<subseteq> Red_I_q q0 (\<G>_Fset_q q0 N))
             \<or> ((\<G>_I_L_q q0 \<iota>0_FL = None) \<and>
-            \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> \<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N))"
+            \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> \<G>_Fset_q q0 N \<union> Red_F_q q0 (\<G>_Fset_q q0 N))"
         unfolding Red_I_\<G>_q_def by blast
       have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
         unfolding concl_of_def i0_to_i0_FL to_F_def by simp
@@ -229,14 +229,14 @@ proof
           not_none: "\<G>_I_q q0 \<iota>0 \<noteq> None" and
           "the (\<G>_I_q q0 \<iota>0) \<noteq> {}"
         then obtain \<iota>1 where i1_in: "\<iota>1 \<in> the (\<G>_I_q q0 \<iota>0)" by blast
-        have "the (\<G>_I_q q0 \<iota>0) \<subseteq> Red_I_q q0 (no_labels.\<G>_set_q q0 (fst ` N))"
+        have "the (\<G>_I_q q0 \<iota>0) \<subseteq> Red_I_q q0 (no_labels.\<G>_Fset_q q0 (fst ` N))"
           using subs1 i0_to_i0_FL not_none by auto
       }
       moreover {
         assume
           is_none: "\<G>_I_q q0 \<iota>0 = None"
-        then have "\<G>_F_q q0 (concl_of \<iota>0) \<subseteq> no_labels.\<G>_set_q q0 (fst ` N)
-            \<union> Red_F_q q0 (no_labels.\<G>_set_q q0 (fst ` N))"
+        then have "\<G>_F_q q0 (concl_of \<iota>0) \<subseteq> no_labels.\<G>_Fset_q q0 (fst ` N)
+            \<union> Red_F_q q0 (no_labels.\<G>_Fset_q q0 (fst ` N))"
           using subs1 i0_to_i0_FL concl_swap by simp
       }
       ultimately show "\<iota>0 \<in> no_labels.Red_I_\<G>_q q0 (fst ` N)"
@@ -255,9 +255,9 @@ proof
       have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
         unfolding concl_of_def i0_to_i0_FL to_F_def by simp
       have subs1: "((\<G>_I_L_q q0 \<iota>0_FL) \<noteq> None \<and>
-           the (\<G>_I_L_q q0 \<iota>0_FL) \<subseteq> Red_I_q q0 (\<G>_set_q q0 N))
+           the (\<G>_I_L_q q0 \<iota>0_FL) \<subseteq> Red_I_q q0 (\<G>_Fset_q q0 N))
            \<or> ((\<G>_I_L_q q0 \<iota>0_FL = None) \<and>
-           \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> (\<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N)))"
+           \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> (\<G>_Fset_q q0 N \<union> Red_F_q q0 (\<G>_Fset_q q0 N)))"
         using i0_in i0_to_i0_FL concl_swap unfolding no_labels.Red_I_\<G>_q_def by simp
       then have "\<iota>0_FL \<in> Red_I_\<G>_q q0 N"
         using i0_FL_in unfolding Red_I_\<G>_q_def by simp
@@ -304,9 +304,9 @@ next
         using Inf_FL_to_Inf_F unfolding to_F_def by simp
       have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
         unfolding concl_of_def to_F_def by simp
-      then have "((\<G>_I_L_q q0 \<iota>1) \<noteq> None \<and> the (\<G>_I_L_q q0 \<iota>1) \<subseteq> Red_I_q q0 (\<G>_set_q q0 N))
+      then have "((\<G>_I_L_q q0 \<iota>1) \<noteq> None \<and> the (\<G>_I_L_q q0 \<iota>1) \<subseteq> Red_I_q q0 (\<G>_Fset_q q0 N))
         \<or> (\<G>_I_L_q q0 \<iota>1 = None \<and>
-          \<G>_F_L_q q0 (concl_of \<iota>1) \<subseteq> \<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N))"
+          \<G>_F_L_q q0 (concl_of \<iota>1) \<subseteq> \<G>_Fset_q q0 N \<union> Red_F_q q0 (\<G>_Fset_q q0 N))"
         using i1_in unfolding no_labels.Red_I_\<G>_q_def by auto
       then show "\<iota>1 \<in> Red_I_\<G>_q q0 N"
         using i1_in2 unfolding Red_I_\<G>_q_def by blast
@@ -330,9 +330,9 @@ proof -
     assume "C \<in> no_labels.Red_F_\<G>_empty (fst ` N)"
     then have "C \<in> no_labels.Red_F_\<G>_empty_q q (fst ` N)" if "q \<in> Q" for q
       unfolding no_labels.Red_F_\<G>_empty_def using that by fast
-    then have g_in_red: "\<G>_F_q q C \<subseteq> Red_F_q q (no_labels.\<G>_set_q q (fst ` N))" if "q \<in> Q" for q
+    then have g_in_red: "\<G>_F_q q C \<subseteq> Red_F_q q (no_labels.\<G>_Fset_q q (fst ` N))" if "q \<in> Q" for q
       unfolding no_labels.Red_F_\<G>_empty_q_def using that by blast
-    have "\<G>_F_L_q q (C, L) \<subseteq> Red_F_q q (\<G>_set_q q N)" if "q \<in> Q" for q
+    have "\<G>_F_L_q q (C, L) \<subseteq> Red_F_q q (\<G>_Fset_q q N)" if "q \<in> Q" for q
       using that g_in_red by simp
     then show ?thesis
       unfolding Red_F_def Red_F_\<G>_q_def by blast

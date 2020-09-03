@@ -41,7 +41,7 @@ lemma entail_unions: "(\<forall>i \<in> I. N \<Turnstile> Ni i) \<longleftrighta
     Complete_Lattices.UN_ball_bex_simps(2)[of Ni I "\<lambda>C. N \<Turnstile> {C}", symmetric]
   by meson
 
-lemma entail_all_bot: "(\<exists>B \<in> Bot. N \<Turnstile> {B}) \<Longrightarrow> (\<forall>B' \<in> Bot. N \<Turnstile> {B'})"
+lemma entail_all_bot: "(\<exists>B \<in> Bot. N \<Turnstile> {B}) \<Longrightarrow> \<forall>B' \<in> Bot. N \<Turnstile> {B'}"
   using bot_entails_all entails_trans by blast
 
 lemma entails_trans_strong: "N1 \<Turnstile> N2 \<Longrightarrow> N1 \<union> N2 \<Turnstile> N3 \<Longrightarrow> N1 \<Turnstile> N3"
@@ -56,7 +56,7 @@ locale consequence_relation_family =
   fixes
     Bot :: "'f set" and
     Q :: "'q set" and
-    entails_q :: "'q \<Rightarrow> ('f set \<Rightarrow> 'f set \<Rightarrow> bool)"
+    entails_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool"
   assumes
     Q_nonempty: "Q \<noteq> {}" and
     q_cons_rel: "\<forall>q \<in> Q. consequence_relation Bot (entails_q q)"
