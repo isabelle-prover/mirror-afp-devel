@@ -65,6 +65,7 @@ code_identifier
 | code_module Parity \<rightharpoonup> (SML) Bit_Operations
 | type_class semiring_parity \<rightharpoonup> (SML) Bit_Operations.semiring_parity
 | class_instance int :: semiring_parity \<rightharpoonup> (SML) Bit_Operations.semiring_parity_int
+| class_instance int :: ring_parity \<rightharpoonup> (SML) Bit_Operations.semiring_parity_int
 | constant member_i_i \<rightharpoonup> (SML) Set.member_i_i
 
 export_code
