@@ -10,6 +10,8 @@ theory Labeled_Lifting_to_Non_Ground_Calculi
   imports Lifting_to_Non_Ground_Calculi
 begin
 
+lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
+  unfolding po_on_def irreflp_on_def transp_on_def by auto
 
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 

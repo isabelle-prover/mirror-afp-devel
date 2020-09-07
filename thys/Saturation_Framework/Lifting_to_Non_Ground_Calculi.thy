@@ -418,131 +418,10 @@ proof
   show \<open>\<iota> \<in> Inf_F \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_I_\<G> N\<close> using Red_I_of_Inf_to_N_F by simp
 qed
 
-lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_I \<iota> \<noteq> None \<Longrightarrow> the (\<G>_I \<iota>) \<subseteq> Inf_G"
-  using inf_map ground.Red_I_to_Inf by blast
-
-abbreviation ground_Inf_redundant :: "'f set \<Rightarrow> bool" where
-  "ground_Inf_redundant N \<equiv>
-   ground.Inf_from (\<G>_Fset N)
-   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')} \<union> Red_I_G (\<G>_Fset N)"
-
-lemma sat_inf_imp_ground_red:
-  assumes
-    "saturated N" and
-    "\<iota>' \<in> Inf_from N" and
-    "\<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')"
-  shows "\<iota> \<in> Red_I_G (\<G>_Fset N)"
-  using assms Red_I_\<G>_def unfolding saturated_def by auto
-
-(* lem:sat-wrt-finf *)
-lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N \<Longrightarrow> ground.saturated (\<G>_Fset N)"
-  unfolding ground.saturated_def using sat_inf_imp_ground_red by auto
-
-(* thm:finf-complete *)
-theorem stat_ref_comp_to_non_ground:
-  assumes
-    stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G" and
-    sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
-  shows
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
-proof
-  fix B N
-  assume
-    b_in: "B \<in> Bot_F" and
-    sat_n: "saturated N" and
-    n_entails_bot: "N \<Turnstile>\<G> {B}"
-  have ground_n_entails: "\<G>_Fset N \<Turnstile>G \<G>_F B"
-    using n_entails_bot by simp
-  then obtain BG where bg_in1: "BG \<in> \<G>_F B"
-    using Bot_map_not_empty[OF b_in] by blast
-  then have bg_in: "BG \<in> Bot_G"
-    using Bot_map[OF b_in] by blast
-  have ground_n_entails_bot: "\<G>_Fset N \<Turnstile>G {BG}"
-    using ground_n_entails bg_in1 ground.entail_set_all_formulas by blast
-  have "ground.Inf_from (\<G>_Fset N) \<subseteq>
-    {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')} \<union> Red_I_G (\<G>_Fset N)"
-    using sat_n_imp[OF sat_n] .
-  have "ground.saturated (\<G>_Fset N)"
-    using sat_imp_ground_sat[OF sat_n sat_n_imp[OF sat_n]] .
-  then have "\<exists>BG'\<in>Bot_G. BG' \<in> (\<G>_Fset N)"
-    using stat_ref_G ground.calculus_axioms bg_in ground_n_entails_bot
-    unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
-    by blast
-  then show "\<exists>B'\<in> Bot_F. B' \<in> N"
-    using bg_in Bot_cond Bot_map_not_empty Bot_cond by blast
-qed
-
 end
 
 lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
   by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
-
-lemma any_to_empty_ord:
-  "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F
-    \<G>_I Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
-    Red_F_G \<G>_F \<G>_I (\<lambda>g C C'. False)"
-proof -
-  fix Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
-  assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
-    Red_F_G \<G>_F \<G>_I Prec_F_g"
-  then interpret lift_g:
-    tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
-    by auto
-  show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I
-    (\<lambda>g C C'. False)"
-    by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
-      tiebreaker_lifting_axioms.intro tiebreaker_lifting_def)
-qed
-
-lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
-  unfolding po_on_def irreflp_on_def transp_on_def by auto
-
-locale lifting_equivalence_with_empty_order =
-  any_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
-    Red_F_G \<G>_F \<G>_I Prec_F_g +
-  empty_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
-    Red_F_G \<G>_F \<G>_I "\<lambda>g C C'. False"
-  for
-    \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
-    \<G>_I :: \<open>'f inference \<Rightarrow> 'g inference set option\<close> and
-    Bot_F :: \<open>'f set\<close> and
-    Inf_F :: \<open>'f inference set\<close> and
-    Bot_G :: \<open>'g set\<close> and
-    Inf_G :: \<open>'g inference set\<close> and
-    entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
-    Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
-    Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
-    Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
-
-sublocale tiebreaker_lifting \<subseteq> lifting_equivalence_with_empty_order
-  by unfold_locales simp+
-
-context lifting_equivalence_with_empty_order
-begin
-
-(* lem:saturation-indep-of-sqsubset *)
-lemma saturated_empty_order_equiv_saturated:
-  "any_ord.saturated N = empty_ord.saturated N"
-  by (rule refl)
-
-(* lem:static-ref-compl-indep-of-sqsubset *)
-lemma static_empty_order_equiv_static:
-  "statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
-     any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
-   statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
-     any_ord.Red_I_\<G> any_ord.Red_F_\<G>"
-  unfolding statically_complete_calculus_def
-  by (rule iffI) (standard,(standard)[],simp)+
-
-(* thm:FRedsqsubset-is-dyn-ref-compl *)
-theorem static_to_dynamic:
-  "statically_complete_calculus Bot_F Inf_F
-    any_ord.entails_\<G> any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
-    dynamically_complete_calculus Bot_F Inf_F
-    any_ord.entails_\<G> any_ord.Red_I_\<G> any_ord.Red_F_\<G> "
-  using any_ord.dyn_equiv_stat static_empty_order_equiv_static by blast
-
-end
 
 lemma standard_empty_tiebreaker_equiv: "standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G
   Red_F_G \<G>_F \<G>_I = tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
@@ -564,22 +443,157 @@ begin
   lemma red_f_equiv: "empt_ord.Red_F_\<G> = Red_F_\<G>_std"
     unfolding Red_F_\<G>_std_def empt_ord.Red_F_\<G>_def by simp
 
-  sublocale calc: calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std
+  sublocale calc?: calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std
     using empt_ord.calculus_axioms red_f_equiv by fastforce
 
-  lemma sat_imp_ground_sat_std: "calc.saturated N \<Longrightarrow> empt_ord.ground_Inf_redundant N \<Longrightarrow> ground.saturated (\<G>_Fset N)"
-    using empt_ord.sat_imp_ground_sat .
+  lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_I \<iota> \<noteq> None \<Longrightarrow> the (\<G>_I \<iota>) \<subseteq> Inf_G"
+    using inf_map ground.Red_I_to_Inf by blast
 
-  theorem stat_ref_comp_to_non_ground_std:
+  abbreviation ground_Inf_redundant :: "'f set \<Rightarrow> bool" where
+    "ground_Inf_redundant N \<equiv> ground.Inf_from (\<G>_Fset N)
+      \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')} \<union> Red_I_G (\<G>_Fset N)"
+
+(* abbreviation "saturated \<equiv> calc.saturated" *)
+
+  lemma sat_inf_imp_ground_red:
+    assumes
+      "saturated N" and
+      "\<iota>' \<in> Inf_from N" and
+      "\<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')"
+    shows "\<iota> \<in> Red_I_G (\<G>_Fset N)"
+      using assms Red_I_\<G>_def unfolding saturated_def by auto
+
+(* lem:sat-wrt-finf *)
+  lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N \<Longrightarrow> ground.saturated (\<G>_Fset N)"
+    unfolding ground.saturated_def using sat_inf_imp_ground_red by auto
+
+(* thm:finf-complete *)
+  theorem stat_ref_comp_to_non_ground:
     assumes
       stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G" and
-      sat_n_imp: "\<And>N. calc.saturated N \<Longrightarrow> empt_ord.ground_Inf_redundant N"
+      sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
     shows
       "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
-      using empt_ord.stat_ref_comp_to_non_ground[OF stat_ref_G sat_n_imp] red_f_equiv by simp 
-
+  proof
+    fix B N
+    assume
+      b_in: "B \<in> Bot_F" and
+      sat_n: "saturated N" and
+      n_entails_bot: "N \<Turnstile>\<G> {B}"
+    have ground_n_entails: "\<G>_Fset N \<Turnstile>G \<G>_F B"
+      using n_entails_bot by simp
+    then obtain BG where bg_in1: "BG \<in> \<G>_F B"
+      using Bot_map_not_empty[OF b_in] by blast
+    then have bg_in: "BG \<in> Bot_G"
+      using Bot_map[OF b_in] by blast
+    have ground_n_entails_bot: "\<G>_Fset N \<Turnstile>G {BG}"
+      using ground_n_entails bg_in1 ground.entail_set_all_formulas by blast
+    have "ground.Inf_from (\<G>_Fset N) \<subseteq>
+      {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_I \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_I \<iota>')} \<union> Red_I_G (\<G>_Fset N)"
+      using sat_n_imp[OF sat_n] .
+    have "ground.saturated (\<G>_Fset N)"
+      using sat_imp_ground_sat[OF sat_n sat_n_imp[OF sat_n]] .
+    then have "\<exists>BG'\<in>Bot_G. BG' \<in> (\<G>_Fset N)"
+      using stat_ref_G ground.calculus_axioms bg_in ground_n_entails_bot
+      unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
+      by blast
+    then show "\<exists>B'\<in> Bot_F. B' \<in> N"
+      using bg_in Bot_cond Bot_map_not_empty Bot_cond
+      by blast
+  qed
+    
 end
 
+context tiebreaker_lifting 
+begin
+
+  (* lem:saturation-indep-of-sqsubset *)
+  lemma saturated_empty_order_equiv_saturated:
+    "saturated N = calc.saturated N"
+    by (rule refl)
+    
+    (* lem:static-ref-compl-indep-of-sqsubset *)
+  lemma static_empty_order_equiv_static:
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
+      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
+    unfolding statically_complete_calculus_def
+    by (rule iffI) (standard,(standard)[],simp)+
+
+    (* thm:FRedsqsubset-is-dyn-ref-compl *)
+  theorem static_to_dynamic:
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
+      dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
+    using calc.dyn_equiv_stat static_empty_order_equiv_static
+    by blast
+   
+end
+
+(* lemma any_to_empty_ord:
+ *   "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F
+ *     \<G>_I Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
+ *     Red_F_G \<G>_F \<G>_I (\<lambda>g C C'. False)"
+ * proof -
+ *   fix Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
+ *   assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
+ *     Red_F_G \<G>_F \<G>_I Prec_F_g"
+ *   then interpret lift_g:
+ *     tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
+ *     by auto
+ *   show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I
+ *     (\<lambda>g C C'. False)"
+ *     by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
+ *       tiebreaker_lifting_axioms.intro tiebreaker_lifting_def)
+ * qed
+ * 
+ * lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
+ *   unfolding po_on_def irreflp_on_def transp_on_def by auto
+ * 
+ * locale lifting_equivalence_with_empty_order =
+ *   any_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
+ *     Red_F_G \<G>_F \<G>_I Prec_F_g +
+ *   empty_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
+ *     Red_F_G \<G>_F \<G>_I "\<lambda>g C C'. False"
+ *   for
+ *     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
+ *     \<G>_I :: \<open>'f inference \<Rightarrow> 'g inference set option\<close> and
+ *     Bot_F :: \<open>'f set\<close> and
+ *     Inf_F :: \<open>'f inference set\<close> and
+ *     Bot_G :: \<open>'g set\<close> and
+ *     Inf_G :: \<open>'g inference set\<close> and
+ *     entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
+ *     Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
+ *     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
+ *     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
+ * 
+ * sublocale tiebreaker_lifting \<subseteq> lifting_equivalence_with_empty_order
+ *   by unfold_locales simp+
+ * 
+ * context lifting_equivalence_with_empty_order
+ * begin
+ * 
+ * (\* lem:saturation-indep-of-sqsubset *\)
+ * lemma saturated_empty_order_equiv_saturated:
+ *   "any_ord.saturated N = empty_ord.saturated N"
+ *   by (rule refl)
+ * 
+ * (\* lem:static-ref-compl-indep-of-sqsubset *\)
+ * lemma static_empty_order_equiv_static:
+ *   "statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
+ *      any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
+ *    statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
+ *      any_ord.Red_I_\<G> any_ord.Red_F_\<G>"
+ *   unfolding statically_complete_calculus_def
+ *   by (rule iffI) (standard,(standard)[],simp)+
+ * 
+ * (\* thm:FRedsqsubset-is-dyn-ref-compl *\)
+ * theorem static_to_dynamic:
+ *   "statically_complete_calculus Bot_F Inf_F
+ *     any_ord.entails_\<G> any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
+ *     dynamically_complete_calculus Bot_F Inf_F
+ *     any_ord.entails_\<G> any_ord.Red_I_\<G> any_ord.Red_F_\<G> "
+ *   using any_ord.dyn_equiv_stat static_empty_order_equiv_static by blast
+ * 
+ * end *)
 
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 
@@ -648,10 +662,10 @@ proof -
     using standard_lifting_family q_in by metis
   have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
     unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
-  moreover have "Red_F_\<G>_empty_q q = wf_lift.empty_ord.Red_F_\<G>"
-    unfolding Red_F_\<G>_empty_q_def wf_lift.empty_ord.Red_F_\<G>_def by blast
+  moreover have "Red_F_\<G>_empty_q q = wf_lift.Red_F_\<G>_std"
+    unfolding Red_F_\<G>_empty_q_def wf_lift.Red_F_\<G>_std_def by blast
   ultimately show ?thesis
-    using wf_lift.empty_ord.calculus_axioms by simp
+    using wf_lift.calc.calculus_axioms by simp
 qed
 
 sublocale consequence_relation_family Bot_F Q entails_\<G>_q
@@ -754,7 +768,7 @@ proof (standard, clarify)
     tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_I_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q"
     using q_in by (simp add: standard_lifting_family)
-  have n_lift_sat: "lifted_q_calc.empty_ord.saturated N"
+  have n_lift_sat: "lifted_q_calc.calc.saturated N"
     using n_q_sat unfolding Red_I_\<G>_q_def lifted_q_calc.Red_I_\<G>_def
       lifted_q_calc.saturated_def q_calc.saturated_def by auto
   have ground_sat_n: "lifted_q_calc.ground.saturated (\<G>_Fset_q q N)"
@@ -790,7 +804,8 @@ lemma static_empty_ord_inter_equiv_static_inter:
 theorem stat_eq_dyn_ref_comp_fam_inter: "statically_complete_calculus Bot_F Inf_F
     entails Red_I Red_F_\<G>_empty =
   dynamically_complete_calculus Bot_F Inf_F entails Red_I Red_F"
-  using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
+  using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter
+  by blast
 
 end
 
