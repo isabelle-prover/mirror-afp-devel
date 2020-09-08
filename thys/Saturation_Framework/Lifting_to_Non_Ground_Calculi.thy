@@ -521,9 +521,9 @@ begin
 
     (* thm:FRedsqsubset-is-dyn-ref-compl *)
   theorem static_to_dynamic:
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
-      dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
-    using calc.dyn_equiv_stat static_empty_order_equiv_static
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std =
+      dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
+    using dyn_equiv_stat static_empty_order_equiv_static
     by blast
    
 end
