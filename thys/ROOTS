@@ -44,6 +44,7 @@ BinarySearchTree
 Binding_Syntax_Theory
 Binomial-Heaps
 Binomial-Queues
+BirdKMP
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
@@ -229,6 +230,7 @@ Impossible_Geometry
 Incompleteness
 Incredible_Proof_Machine
 Inductive_Confidentiality
+Inductive_Inference
 InfPathElimination
 InformationFlowSlicing
 InformationFlowSlicing_Inter
@@ -363,6 +365,7 @@ PCF
 PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
+PAC_Checker
 Pairing_Heap
 Paraconsistency
 Parity_Game
