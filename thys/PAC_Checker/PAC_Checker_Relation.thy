@@ -62,7 +62,7 @@ lemma nat_of_uint64_uint64_of_nat_id: \<open>n < 2^64 \<Longrightarrow> nat_of_u
   unfolding uint64_of_nat_def
   apply simp
   apply transfer
-  apply (auto simp: unat_def)
+  apply (subst unat_eq_nat_uint)
   apply transfer
   by (auto simp: less_upper_bintrunc_id)
 
@@ -282,8 +282,7 @@ proof
     with \<open>aa < aaa\<close> have \<open>aa' < aaa'\<close>
       by (auto simp: string_rel_def less_literal.rep_eq less_list_def
         lexordp_conv_lexord lexordp_def char.lexordp_conv_lexord
-          simp flip: lexord_code less_char_def
-            PAC_Polynomials_Term.less_char_def)
+          simp flip: less_char_def PAC_Polynomials_Term.less_char_def)
     then show \<open>b < b'\<close>
       using \<open>b = u' @ aa' # v'\<close> \<open>b' = u' @ aaa' # w'\<close>
       by (subst less_list_def)
@@ -323,8 +322,7 @@ next
     with \<open>aa < aaa\<close> have \<open>aa' < aaa'\<close>
       by (auto simp: string_rel_def less_literal.rep_eq less_list_def
         lexordp_conv_lexord lexordp_def char.lexordp_conv_lexord
-          simp flip: lexord_code less_char_def
-            PAC_Polynomials_Term.less_char_def)
+          simp flip: less_char_def PAC_Polynomials_Term.less_char_def)
     then show \<open>a < a'\<close>
       using \<open>a = u' @ aa' # v'\<close> \<open>a' = u' @ aaa' # w'\<close>
       by (subst less_list_def)

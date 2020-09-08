@@ -933,7 +933,7 @@ proof -
      subgoal for y
        apply (induction x2c y  rule: list_rel_induct)
        apply (auto simp: list_mset_rel_def br_def)
-       apply (rule_tac b = \<open>(aa, - ba) # map (\<lambda>(a, b). (a, - b)) l'\<close> in relcompI)
+       apply (rename_tac a ba aa l l', rule_tac b = \<open>(aa, - ba) # map (\<lambda>(a, b). (a, - b)) l'\<close> in relcompI)
        by auto
      done
   have [simp]: \<open>(\<lambda>x. fst (case x of (a, b) \<Rightarrow> (a, - b))) = fst\<close>
@@ -977,6 +977,7 @@ proof -
           dest!: sorted_poly_rel_vars_llist)
       subgoal by auto
       subgoal by auto
+      subgoal using assms by auto
       subgoal using assms by auto
       apply (rule uminus)
       subgoal using assms by auto

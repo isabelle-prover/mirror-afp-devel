@@ -397,8 +397,14 @@ proof -
     by (intro fun_relI)
      (auto simp: string_rel_def less_literal.rep_eq
         less_list_def char.lexordp_conv_lexord lexordp_eq_refl
-        lexord_code lexordp_eq_conv_lexord)
+        lexordp_eq_conv_lexord)
 qed
+
+
+lemma lexordp_char_char: \<open>ord_class.lexordp = char.lexordp\<close>
+  unfolding char.lexordp_def ord_class.lexordp_def
+  by (rule arg_cong[of _ _ lfp])
+    (auto intro!: ext)
 
 lemma [sepref_import_param]:
   \<open>( (\<le>), (\<le>)) \<in> string_rel \<rightarrow> string_rel \<rightarrow>bool_rel\<close>
@@ -407,7 +413,7 @@ lemma [sepref_import_param]:
   by (intro fun_relI)
    (auto simp: string_rel_def less_eq_literal.rep_eq less_than_char_def
     less_eq_list_def char.lexordp_eq_conv_lexord lexordp_eq_refl
-    lexord_code lexordp_eq_conv_lexord
+    lexordp_eq_conv_lexord lexordp_char_char
     simp flip: less_char_def[abs_def])
 
 sepref_register lexord_eq
@@ -753,7 +759,7 @@ lemma string_rel_order_map:
     less_eq_list_def PAC_Polynomials_Term.less_char_def[symmetric]
   by (auto simp: string_rel_def less_eq_literal.rep_eq less_than_char_def
     less_eq_list_def char.lexordp_eq_conv_lexord lexordp_eq_refl
-    lexord_code lexordp_eq_conv_lexord
+    lexordp_char_char lexordp_eq_conv_lexord
     simp flip: less_char_def[abs_def])
 
 lemma merge_monoms_merge_monoms:

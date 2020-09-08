@@ -87,16 +87,15 @@ lemma add_to_coefficient_simps:
 
 interpretation comp_fun_commute \<open>add_to_coefficient\<close>
 proof -
-  have [simp]:
+  have [iff]:
     \<open>a \<noteq> aa \<Longrightarrow>
-    ((case x of (a', _) \<Rightarrow> a' \<noteq> aa) \<and> (case x of (a', _) \<Rightarrow> a' = a)) \<longleftrightarrow>
+    ((case x of (a', _) \<Rightarrow> a' = a) \<and> (case x of (a', _) \<Rightarrow> a' \<noteq> aa)) \<longleftrightarrow>
     (case x of (a', _) \<Rightarrow> a' = a)\<close> for a' aa a x
     by auto
   show \<open>comp_fun_commute add_to_coefficient\<close>
     unfolding add_to_coefficient_def
     by standard
-      (auto intro!: ext simp: filter_filter_mset ac_simps add_eq_0_iff
-      intro: filter_mset_cong)
+     (auto intro!: ext simp: filter_filter_mset ac_simps add_eq_0_iff)
 qed
 
 lemma normalized_poly_normalize_poly[simp]:

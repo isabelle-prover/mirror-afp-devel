@@ -442,7 +442,7 @@ lemma drop_ext':
   apply (rewrite in \<open>_ = \<hole>\<close> List.drop_rev)
   apply simp
   apply (rule take_ext)
-  by (auto simp add: nth_rev)
+  by (auto simp add: rev_nth)
 
 lemma drop_ext:
 \<open>(\<forall>i. i\<ge>k \<and> i<length xs \<longrightarrow> xs'!i=xs!i) \<Longrightarrow>
