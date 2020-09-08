@@ -5700,6 +5700,50 @@ abstract =
 	Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.
 notify = bentkamp@gmail.com
 
+[Inductive_Inference]
+title = Some classical results in inductive inference of recursive functions
+author = Frank J. Balbach <mailto:frank-balbach@gmx.de>
+topic = Logic/Computability, Computer science/Machine learning
+date = 2020-08-31
+notify = frank-balbach@gmx.de
+abstract =
+  <p> This entry formalizes some classical concepts and results
+  from inductive inference of recursive functions. In the basic setting
+  a partial recursive function ("strategy") must identify
+  ("learn") all functions from a set ("class") of
+  recursive functions. To that end the strategy receives more and more
+  values $f(0), f(1), f(2), \ldots$ of some function $f$ from the given
+  class and in turn outputs descriptions of partial recursive functions,
+  for example, Gödel numbers. The strategy is considered successful if
+  the sequence of outputs ("hypotheses") converges to a
+  description of $f$. A class of functions learnable in this sense is
+  called "learnable in the limit". The set of all these
+  classes is denoted by LIM. </p>  <p> Other types of
+  inference considered are finite learning (FIN), behaviorally correct
+  learning in the limit (BC), and some variants of LIM with restrictions
+  on the hypotheses: total learning (TOTAL), consistent learning (CONS),
+  and class-preserving learning (CP). The main results formalized are
+  the proper inclusions $\mathrm{FIN} \subset \mathrm{CP} \subset
+  \mathrm{TOTAL} \subset \mathrm{CONS} \subset \mathrm{LIM} \subset
+  \mathrm{BC} \subset 2^{\mathcal{R}}$, where $\mathcal{R}$ is the set
+  of all total recursive functions.  Further results show that for all
+  these inference types except CONS, strategies can be assumed to be
+  total recursive functions; that all inference types but CP are closed
+  under the subset relation between classes; and that no inference type
+  is closed under the union of classes. </p>  <p> The above
+  is based on a formalization of recursive functions heavily inspired by
+  the <a
+  href="https://www.isa-afp.org/entries/Universal_Turing_Machine.html">Universal
+  Turing Machine</a> entry by Xu et al., but different in that it
+  models partial functions with codomain <em>nat
+  option</em>. The formalization contains a construction of a
+  universal partial recursive function, without resorting to Turing
+  machines, introduces decidability and recursive enumerability, and
+  proves some standard results: existence of a Kleene normal form, the
+  <em>s-m-n</em> theorem, Rice's theorem, and assorted
+  fixed-point theorems (recursion theorems) by Kleene, Rogers, and
+  Smullyan. </p>
+
 [Applicative_Lifting]
 title = Applicative Lifting
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Joshua Schneider <>
@@ -9534,7 +9578,7 @@ author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
 topic = Mathematics/Number theory
 date = 2020-08-04
 notify = ak2110@cam.ac.uk
-abstract = 
+abstract =
   This is a formalisation of Amicable Numbers, involving some relevant
   material including Euler's sigma function, some relevant
   definitions, results and examples as well as rules such as
@@ -9547,7 +9591,7 @@ author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Combinatorics, Logic/Set theory
 date = 2020-08-03
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   The theory of partition relations concerns generalisations of
   Ramsey's theorem. For any ordinal $\alpha$, write $\alpha \to
   (\alpha, m)^2$ if for each function $f$ from unordered pairs of
@@ -9571,11 +9615,41 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Computer science/Data structures
 date = 2020-08-26
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We give a simple relation-algebraic semantics of read and write
   operations on associative arrays. The array operations seamlessly
   integrate with assignments in the Hoare-logic library. Using relation
   algebras and Kleene algebras we verify the correctness of an
   array-based implementation of disjoint-set forests with a naive union
   operation and a find operation with path compression.
+
+[PAC_Checker]
+title = Practical Algebraic Calculus Checker
+author = Mathias Fleury <http://fmv.jku.at/fleury>, Daniela Kaufmann <http://fmv.jku.at/kaufmann>
+topic = Computer science/Algorithms
+date = 2020-08-31
+notify = mathias.fleury@jku.at
+abstract =
+  Generating and checking proof certificates is important to increase
+  the trust in automated reasoning tools. In recent years formal
+  verification using computer algebra became more important and is
+  heavily used in automated circuit verification.  An existing proof
+  format which covers algebraic reasoning and allows efficient proof
+  checking is the practical algebraic calculus (PAC). In this
+  development, we present the verified checker Pastèque that is obtained
+  by synthesis via the Refinement Framework.  This is the formalization
+  going with our FMCAD'20 tool presentation.
+
+[BirdKMP]
+title = Putting the `K' into Bird's derivation of Knuth-Morris-Pratt string matching
+author = Peter Gammie <http://peteg.org>
+topic = Computer science/Functional programming
+date = 2020-08-25
+notify = peteg42@gmail.com
+abstract =
+  Richard Bird and collaborators have proposed a derivation of an
+  intricate cyclic program that implements the Morris-Pratt string
+  matching algorithm. Here we provide a proof of total correctness for
+  Bird's derivation and complete it by adding Knuth's
+  optimisation.
 
