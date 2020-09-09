@@ -72,9 +72,9 @@ next
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-sublocale tiebreaker_lifting Bot_FL Inf_FL Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F_L \<G>_I_L
-  "\<lambda>g Cl Cl'. False"
-  by unfold_locales simp+
+(* sublocale tiebreaker_lifting Bot_FL Inf_FL Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F_L \<G>_I_L
+ *   "\<lambda>g Cl Cl'. False"
+ *   by unfold_locales simp+ *)
 
 notation entails_\<G> (infix "\<Turnstile>\<G>L" 50)
 

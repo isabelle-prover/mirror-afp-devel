@@ -94,8 +94,8 @@ definition Red_I_\<G> :: "'f set \<Rightarrow> 'f inference set" where
   \<open>Red_I_\<G> N = {\<iota> \<in> Inf_F. (\<G>_I \<iota> \<noteq> None \<and> the (\<G>_I \<iota>) \<subseteq> Red_I_G (\<G>_Fset N))
   \<or> (\<G>_I \<iota> = None \<and> \<G>_F (concl_of \<iota>) \<subseteq> \<G>_Fset N \<union> Red_F_G (\<G>_Fset N))}\<close>
 
-definition Red_F_\<G>_std :: "'f set \<Rightarrow> 'f set" where
-  \<open>Red_F_\<G>_std N = {C. \<forall>D \<in> \<G>_F C. D \<in> Red_F_G (\<G>_Fset N)}\<close>
+definition Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
+  \<open>Red_F_\<G> N = {C. \<forall>D \<in> \<G>_F C. D \<in> Red_F_G (\<G>_Fset N)}\<close>
 end
 
 subsection \<open>Strong Standard Lifting\<close>
@@ -152,12 +152,12 @@ next
 qed
 
 end
-
+  
 
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale tiebreaker_lifting =
-  standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
+  std?: standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
@@ -440,10 +440,10 @@ begin
     Red_F_G \<G>_F \<G>_I "\<lambda>g C C'. False"
     using standard_empty_tiebreaker_equiv using standard_lifting_axioms by blast
 
-  lemma red_f_equiv: "empt_ord.Red_F_\<G> = Red_F_\<G>_std"
-    unfolding Red_F_\<G>_std_def empt_ord.Red_F_\<G>_def by simp
+  lemma red_f_equiv: "empt_ord.Red_F_\<G> = Red_F_\<G>"
+    unfolding Red_F_\<G>_def empt_ord.Red_F_\<G>_def by simp
 
-  sublocale calc?: calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std
+  sublocale calc?: calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>
     using empt_ord.calculus_axioms red_f_equiv by fastforce
 
   lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_I \<iota> \<noteq> None \<Longrightarrow> the (\<G>_I \<iota>) \<subseteq> Inf_G"
@@ -473,7 +473,7 @@ begin
       stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G" and
       sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
     shows
-      "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
+      "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
   proof
     fix B N
     assume
@@ -515,13 +515,13 @@ begin
     (* lem:static-ref-compl-indep-of-sqsubset *)
   lemma static_empty_order_equiv_static:
     "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
-      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std"
+      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> std.Red_F_\<G>"
     unfolding statically_complete_calculus_def
     by (rule iffI) (standard,(standard)[],simp)+
 
     (* thm:FRedsqsubset-is-dyn-ref-compl *)
   theorem static_to_dynamic:
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_std =
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> std.Red_F_\<G> =
       dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
     using dyn_equiv_stat static_empty_order_equiv_static
     by blast
@@ -662,8 +662,8 @@ proof -
     using standard_lifting_family q_in by metis
   have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
     unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
-  moreover have "Red_F_\<G>_empty_q q = wf_lift.Red_F_\<G>_std"
-    unfolding Red_F_\<G>_empty_q_def wf_lift.Red_F_\<G>_std_def by blast
+  moreover have "Red_F_\<G>_empty_q q = wf_lift.std.Red_F_\<G>"
+    unfolding Red_F_\<G>_empty_q_def wf_lift.std.Red_F_\<G>_def by blast
   ultimately show ?thesis
     using wf_lift.calc.calculus_axioms by simp
 qed
