@@ -9,6 +9,5 @@ session Launchbury (AFP) = HOLCF +
     EverythingAdequacy
   document_files
     "map.tex"
-    "mathpartir.sty"
     "root.bib"
     "root.tex"

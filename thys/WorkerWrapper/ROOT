@@ -20,6 +20,5 @@ session WorkerWrapper (AFP) = HOLCF +
     Last
   document_files
     "haskell.sty"
-    "mathpartir.sty"
     "root.bib"
     "root.tex"

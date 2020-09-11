@@ -42,7 +42,6 @@ session Iptables_Semantics (AFP) = Routing +
   document_files
     "root.tex"
     "root.bib"
-    "mathpartir.sty"
 
 session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
   options [timeout = 2400]
@@ -70,7 +69,6 @@ session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
   document_files (in "../document")
     "root.tex"
     "root.bib"
-    "mathpartir.sty"
 
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) in "Examples_Big" = Iptables_Semantics_Examples +
   options [timeout = 60000]
@@ -90,4 +88,3 @@ session Iptables_Semantics_Examples_Big (AFP slow very_slow) in "Examples_Big" =
   document_files (in "../document")
     "root.tex"
     "root.bib"
-    "mathpartir.sty"

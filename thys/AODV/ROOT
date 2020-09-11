@@ -14,7 +14,6 @@ session AODV (AFP slow) = AWN +
   document_files
     "root.bib"
     "root.tex"
-    "mathpartir.sty"
 
 (* Separate single-variant sesssions removed for build performance. 
    See rev 4fd7ada36eb9 to recover if necessary. *)

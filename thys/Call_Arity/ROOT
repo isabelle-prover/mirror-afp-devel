@@ -12,6 +12,5 @@ session Call_Arity (AFP) = "Launchbury" +
   document_files
     "root.tex"
     "root.bib"
-    "mathpartir.sty"
 
 

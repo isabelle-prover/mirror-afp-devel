@@ -36,6 +36,5 @@ session AWN (AFP) = HOL +
     AWN_Term_Graph
 
   document_files
-    "mathpartir.sty"
     "root.bib"
     "root.tex"

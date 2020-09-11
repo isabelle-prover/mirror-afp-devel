@@ -7,6 +7,5 @@ session "Lam-ml-Normalization" (AFP) = "HOL-Nominal" +
   document_files
     "figureCR3.tex"
     "figureLemma7.tex"
-    "mathpartir.sty"
     "root.bib"
     "root.tex"

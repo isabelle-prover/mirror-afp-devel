@@ -10,4 +10,3 @@ session Store_Buffer_Reduction (AFP) = HOL +
      "root.tex"
      "root.bib"
      "llncs.cls"
-     "mathpartir.sty"
