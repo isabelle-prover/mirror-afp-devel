@@ -16,7 +16,7 @@ lemma finite_nat_Int_greaterThan_iff:
 subsection \<open>Initial segments\<close>
 
 definition init_segment :: "nat set \<Rightarrow> nat set \<Rightarrow> bool"
-  where "init_segment \<equiv> \<lambda>S T. \<exists>S'. T = S \<union> S' \<and> less_sets S S'"
+  where "init_segment S T \<equiv> \<exists>S'. T = S \<union> S' \<and> less_sets S S'"
 
 lemma init_segment_subset: "init_segment S T \<Longrightarrow> S \<subseteq> T"
   by (auto simp: init_segment_def)
@@ -127,9 +127,9 @@ qed
 subsection \<open>Definitions and basic properties\<close>
 
 definition Ramsey :: "[nat set set, nat] \<Rightarrow> bool"
-  where "Ramsey \<F> r \<equiv> \<forall>f :: nat set \<Rightarrow> nat.
-                       \<forall>M. f ` \<F> \<subseteq> {..<r} \<longrightarrow> infinite M \<longrightarrow>
-                             (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and> (\<forall>j<r. i\<noteq>j \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {}))"
+  where "Ramsey \<F> r \<equiv> \<forall>f \<in> \<F> \<rightarrow> {..<r}.
+                       \<forall>M. infinite M \<longrightarrow>
+                           (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and> (\<forall>j<r. j\<noteq>i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {}))"
 
 definition thin_set :: "nat set set \<Rightarrow> bool"
   where "thin_set \<F> \<equiv> \<F> \<subseteq> Collect finite \<and> (\<forall>S\<in>\<F>. \<forall>T\<in>\<F>. init_segment S T \<longrightarrow> S=T)"
@@ -715,7 +715,7 @@ proof clarify
     using \<open>infinite M\<close> ex_infinite_decides_subsets thin by blast
   then consider "rejects (?\<F> 0) {} N" | "strongly_accepts (?\<F> 0) {} N"
     unfolding decides_def decides_subsets_def by blast
-  then show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<2 \<and> (\<forall>j<2. i \<noteq> j \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {})"
+  then show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<2 \<and> (\<forall>j<2. j \<noteq> i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {})"
   proof cases
     case 1
     then have "?\<F> 0 \<inter> Pow N = {}"
@@ -793,14 +793,14 @@ proof (induction r)
       unfolding Ramsey_def
     proof clarify
       fix f and M :: "nat set"
-      assume fim: "f ` \<F> \<subseteq> {..<Suc r}"
+      assume fim: "f \<in> \<F> \<rightarrow> {..<Suc r}"
         and "infinite M"
       define g where "g \<equiv> \<lambda>x. if f x = r then r-1 else f x"
-      have gim: "g ` \<F> \<subseteq> {..<r}"
-        using fim False by (auto simp: g_def)
+      have gim: "g \<in> \<F> \<rightarrow> {..<r}"
+        using fim False by (force simp: g_def)
       then obtain N i where  "N \<subseteq> M" "infinite N" "i<r" and i: "\<And>j. \<lbrakk>j<r; i\<noteq>j\<rbrakk> \<Longrightarrow> g -` {j} \<inter> \<F> \<inter> Pow N = {}"
         using Ram \<open>infinite M\<close> by (metis Ramsey_def)
-      show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i < Suc r \<and> (\<forall>j<Suc r. i \<noteq> j \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {})"
+      show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i < Suc r \<and> (\<forall>j<Suc r. j \<noteq> i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {})"
       proof (cases "i<r-1")
         case True
         have "f -` {j} \<inter> \<F> \<inter> Pow N = {}" if "j < Suc r" "i \<noteq> j" for j
@@ -818,8 +818,8 @@ proof (induction r)
         then have null: "f -` {j} \<inter> \<F> \<inter> Pow N = {}" if "j<r-1" for j
           using that i [of j] \<open>i < r\<close> by (auto simp: g_def disjoint_iff split: if_split_asm)
         define h where "h \<equiv> \<lambda>x. if f x = r then 0 else f x"
-        have him: "h ` \<F> \<subseteq> {..<r}"
-          using fim i False \<open>i<r\<close> by (auto simp: h_def)
+        have him: "h \<in> \<F> \<rightarrow> {..<r}"
+          using fim i False \<open>i<r\<close> by (force simp: h_def)
         then obtain P j where "P \<subseteq> N" "infinite P" "j<r" and j: "\<forall>k<r. j\<noteq>k \<longrightarrow> h -` {k} \<inter> \<F> \<inter> Pow P = {}"
           by (metis Ramsey_def Ram \<open>infinite N\<close>)
         show ?thesis

@@ -571,7 +571,7 @@ proof -
     by (simp add: AM_def image_subset_iff thin_set_def)
   then have "Ramsey (list.set ` AM) 2"
     using Nash_Williams_2 by metis
-  moreover have "(h \<circ> list_of) ` list.set ` AM \<subseteq> {..<2}"
+  moreover have "(h \<circ> list_of) \<in> list.set ` AM \<rightarrow> {..<2}"
     unfolding AM_def
   proof clarsimp
     fix l
