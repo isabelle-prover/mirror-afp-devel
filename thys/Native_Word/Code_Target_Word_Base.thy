@@ -83,7 +83,7 @@ proof -
   moreover obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)"
     by (rule that [of \<open>unat y\<close>]) simp_all
   ultimately have [simp]: \<open>unat (of_nat n :: 'a word) = n\<close> \<open>unat (of_nat m :: 'a word) = m\<close>
-    by (transfer, simp add: take_bit_of_nat take_bit_eq_self)+
+    by (transfer, simp add: take_bit_of_nat take_bit_nat_eq_self_iff)+
   let ?q = "(x >> 1) div y << 1"
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ LENGTH('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
