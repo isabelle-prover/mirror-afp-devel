@@ -403,7 +403,6 @@ using assms proof (induction t t' arbitrary: s s')
     using term_to_nterm_vars0[where \<Gamma> = "[]"]
     by force+
   from step have "nterm_to_term' ?t\<^sub>n = t"
-    find_theorems nterm_to_term fdisjnt
     by (auto intro!: term_to_nterm_nterm_to_term0)
 
   obtain pat rhs' where "r = (pat, rhs')"

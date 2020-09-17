@@ -301,8 +301,6 @@ begin
     apply (autoref (keep_goal))
     done
 
-  find_theorems list_map_update  
-    
   concrete_definition wset_find_path_impl for node_eq_impl succi U0' Pimpl 
     uses wset_find_path'_refine_aux
 

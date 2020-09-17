@@ -215,8 +215,6 @@ begin
   
   end
 
-  find_theorems is_valid_def_hm_size
-  
   schematic_goal skeleton_code_aux:
     "(?c,skeleton_impl) \<in> \<langle>oGSi_rel\<rangle>nres_rel"
     unfolding skeleton_impl_def[abs_def] initial_impl_def GS_initial_impl_def
