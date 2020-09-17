@@ -131,7 +131,7 @@ lemma int_of_uint32_mod: "int_of_uint32 (x mod y) = (int_of_uint32 x mod int_of_
   by (transfer, unfold uint_mod two_32, rule refl)  
 
 lemma int_of_uint32_inv: "0 \<le> x \<Longrightarrow> x < 4294967296 \<Longrightarrow> int_of_uint32 (uint32_of_int x) = x"
-  by (transfer, simp add: int_word_uint) 
+  by transfer (simp add: take_bit_int_eq_self)
 
 function power_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "power_p32 x n = (if n = 0 then 1 else
@@ -620,8 +620,19 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
-    have "urel32 (y AND 1) r'" unfolding r' using y unfolding urel32_def using small
-      unfolding ppp by transfer (auto simp add: uint_nat unat_mod and_one_eq)
+    have "urel32 (y AND 1) r'"
+      unfolding r'
+      using y
+      unfolding urel32_def
+      using small
+      apply (simp add: ppp and_one_eq)
+      apply transfer
+      apply transfer
+      apply (auto simp add: zmod_int take_bit_int_eq_self)
+      apply (rule le_less_trans)
+       apply (rule zmod_le_nonneg_dividend)
+      apply simp_all
+      done
     from urel32_eq[OF this urel32_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel32 (shiftr y 1) (int d')" unfolding d' using y unfolding urel32_def using small
@@ -813,7 +824,7 @@ lemma int_of_uint64_mod: "int_of_uint64 (x mod y) = (int_of_uint64 x mod int_of_
   by (transfer, unfold uint_mod two_64, rule refl)  
 
 lemma int_of_uint64_inv: "0 \<le> x \<Longrightarrow> x < 18446744073709551616 \<Longrightarrow> int_of_uint64 (uint64_of_int x) = x"
-  by (transfer, simp add: int_word_uint) 
+  by transfer (simp add: take_bit_int_eq_self)
 
 function power_p64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" where
   "power_p64 x n = (if n = 0 then 1 else
@@ -1031,8 +1042,19 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
-    have "urel64 (y AND 1) r'" unfolding r' using y unfolding urel64_def using small
-      unfolding ppp by transfer (auto simp add: uint_nat unat_mod and_one_eq) 
+    have "urel64 (y AND 1) r'"
+      unfolding r'
+      using y
+      unfolding urel64_def
+      using small
+      apply (simp add: ppp and_one_eq)
+      apply transfer apply transfer
+      apply (auto simp add: int_eq_iff nat_take_bit_eq nat_mod_distrib zmod_int)
+       apply (auto simp add: zmod_int mod_2_eq_odd)
+       apply (metis (full_types) even_take_bit_eq le_less_trans odd_iff_mod_2_eq_one take_bit_nonnegative zero_neq_numeral zmod_le_nonneg_dividend)
+      apply (auto simp add: less_le)
+      apply (simp add: le_less)
+      done
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel64 (shiftr y 1) (int d')" unfolding d' using y unfolding urel64_def using small

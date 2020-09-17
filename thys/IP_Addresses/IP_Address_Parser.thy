@@ -78,7 +78,7 @@ local
 in
   val mk_ipv6addr = map (fn p => case p of NONE => @{const None ("16 word")}
                                         |  SOME i => @{const Some ("16 word")} $
-                                                      (@{const word_of_int (16)} $
+                                                      (@{const of_int ("16 word")} $
                                                                   HOLogic.mk_number HOLogic.intT i)
                         )
                  #> HOLogic.mk_list @{typ "16 word option"}

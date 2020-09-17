@@ -234,7 +234,7 @@ where
 
 | RedALength:
   "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> 
-  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>addr a\<bullet>length, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_int (int n))), (h, l)\<rangle>"
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>addr a\<bullet>length, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_nat n)), (h, l)\<rangle>"
 
 | RedALengthNull:
   "extTA,P,t \<turnstile> \<langle>null\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"

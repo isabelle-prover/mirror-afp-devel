@@ -892,7 +892,7 @@ by(simp add: integer_of_uint64_def)
 
 lemma nat_of_uint64_code [code]:
   "nat_of_uint64 x = nat_of_integer (integer_of_uint64 x)"
-unfolding integer_of_uint64_def including integer.lifting by transfer (simp add: unat_def)
+unfolding integer_of_uint64_def including integer.lifting by transfer simp
 
 definition integer_of_uint64_signed :: "uint64 \<Rightarrow> integer"
 where

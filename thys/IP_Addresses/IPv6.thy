@@ -18,8 +18,8 @@ section \<open>IPv6 Addresses\<close>
   definition ipv6addr_of_nat :: "nat \<Rightarrow> ipv6addr" where
     "ipv6addr_of_nat n =  of_nat n"
 
-  lemma "ipv6addr_of_nat n = word_of_int (int n)"
-    by(simp add: ipv6addr_of_nat_def word_of_nat)
+lemma "ipv6addr_of_nat n = word_of_int (int n)"
+    by(simp add: ipv6addr_of_nat_def)
 
   text\<open>The maximum IPv6 address\<close>
   definition max_ipv6_addr :: "ipv6addr" where 
@@ -37,11 +37,11 @@ section \<open>IPv6 Addresses\<close>
     by(simp add: max_ipv6_addr_max_word) fastforce
 
   text\<open>identity functions\<close>
+  lemma nat_of_ipv6addr_ipv6addr_of_nat_mod: "nat_of_ipv6addr (ipv6addr_of_nat n) = n mod 2^128"
+    by (simp add: ipv6addr_of_nat_def nat_of_ipv6addr_def unat_of_nat take_bit_eq_mod)
   lemma nat_of_ipv6addr_ipv6addr_of_nat:
     "n \<le> nat_of_ipv6addr max_ipv6_addr \<Longrightarrow> nat_of_ipv6addr (ipv6addr_of_nat n) = n"
-    by(simp add: nat_of_ipv6addr_def ipv6addr_of_nat_def le_unat_uoi)
-  lemma nat_of_ipv6addr_ipv6addr_of_nat_mod: "nat_of_ipv6addr (ipv6addr_of_nat n) = n mod 2^128"
-    by(simp add: ipv6addr_of_nat_def nat_of_ipv6addr_def unat_of_nat)
+    by (simp add: nat_of_ipv6addr_ipv6addr_of_nat_mod max_ipv6_addr_def)
   lemma ipv6addr_of_nat_nat_of_ipv6addr: "ipv6addr_of_nat (nat_of_ipv6addr addr) = addr"
     by(simp add: ipv6addr_of_nat_def nat_of_ipv6addr_def)
 

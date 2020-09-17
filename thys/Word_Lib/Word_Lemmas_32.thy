@@ -219,7 +219,14 @@ lemma ucast_of_nats [simp]:
   "(ucast (of_nat x :: word16) :: sword16) = (of_nat x)"
   "(ucast (of_nat x :: word16) :: sword8) = (of_nat x)"
   "(ucast (of_nat x :: word8) :: sword8) = (of_nat x)"
-  by (auto simp: ucast_of_nat is_down)
+       apply (simp_all add: of_nat_take_bit)
+       apply (transfer, simp)
+      apply (transfer, simp)
+     apply (transfer, simp)
+    apply (transfer, simp)
+   apply (transfer, simp)
+  apply (transfer, simp)
+  done
 
 lemmas signed_shift_guard_simpler_32'
     = power_strict_increasing_iff[where b="2 :: nat" and y=31]
@@ -275,8 +282,8 @@ qed
 lemma unat_of_int_32:
   "\<lbrakk>i \<ge> 0; i \<le>2 ^ 31\<rbrakk> \<Longrightarrow> (unat ((of_int i)::sword32)) = nat i"
   unfolding unat_eq_nat_uint
-  apply (subst eq_nat_nat_iff, clarsimp+)
-  apply (simp add: word_of_int uint_word_of_int)
+  apply (subst eq_nat_nat_iff)
+    apply (auto simp add: take_bit_int_eq_self)
   done
 
 lemmas word_ctz_not_minus_1_32 = word_ctz_not_minus_1[where 'a=32, simplified]

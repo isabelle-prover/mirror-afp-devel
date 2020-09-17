@@ -605,10 +605,9 @@ lemma scast_1':
    (word_of_int (sbintrunc (LENGTH('a::len) - Suc 0) (1::int)))"
   by transfer simp
 
-lemma scast_1 [simp]:
+lemma scast_1:
   "(scast (1::'a::len word) :: 'b::len word) = (if LENGTH('a) = 1 then -1 else 1)"
-  by (clarsimp simp: scast_1')
-     (metis Suc_pred len_gt_0 nat.exhaust sbintrunc_Suc_numeral(1) uint_1 word_uint.Rep_inverse')
+  by (fact signed_1)
 
 lemma scast_eq_scast_id [simp]:
   "((scast (a :: 'a::len signed word) :: 'a word) = scast b) = (a = b)"
@@ -629,9 +628,9 @@ lemma of_bl_drop:
   apply (safe; simp add: word_size to_bl_nth)
   done
 
-lemma of_int_uint [simp]:
+lemma of_int_uint:
   "of_int (uint x) = x"
-  by (metis word_of_int word_uint.Rep_inverse')
+  by (fact word_of_int_uint)
 
 lemma shiftr_mask2:
   "n \<le> LENGTH('a) \<Longrightarrow> (mask n >> m :: ('a :: len) word) = mask (n - m)"

@@ -168,7 +168,7 @@ where
 
 | Red1ALength:
   "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> 
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>addr a\<bullet>length, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_int (int n))), (h, xs)\<rangle>"
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>addr a\<bullet>length, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_nat n)), (h, xs)\<rangle>"
 
 | Red1ALengthNull:
   "uf,P,t \<turnstile>1 \<langle>null\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -1155,7 +1155,7 @@ lemma red1_False_into_red1_True:
   "False,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> True,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   and reds1_False_into_reds1_True:
   "False,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> True,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>"
-by(induct rule: red1_reds1.inducts)(auto intro: red1_reds1.intros)
+  by (induct rule: red1_reds1.inducts) (auto intro: red1_reds1.intros)
 
 lemma Red1_False_into_Red1_True:
   assumes "False,P,t \<turnstile>1 \<langle>ex/exs,shr s\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>"

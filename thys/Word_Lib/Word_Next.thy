@@ -17,6 +17,30 @@ definition word_prev :: "'a::len word \<Rightarrow> 'a::len word" where
 
 text\<open>Examples:\<close>
 
+lemma [code]:
+  \<open>Word.the_int (word_next w :: 'a::len word) =
+    (if w = - 1 then Word.the_int w else Word.the_int w + 1)\<close>
+  apply (simp add: word_next_def) apply transfer
+  apply (simp add: take_bit_minus_one_eq_mask mask_eq_exp_minus_1)
+  subgoal for k
+    using take_bit_incr_eq [of \<open>LENGTH('a)\<close> k]
+    apply (simp add: ac_simps)
+    done
+  done
+
+lemma [code]:
+  \<open>Word.the_int (word_prev w :: 'a::len word) =
+    (if w = 0 then Word.the_int w else Word.the_int w - 1)\<close>
+  apply (simp add: word_prev_def)
+  apply transfer
+  subgoal for k
+    apply rule
+    apply (subst take_bit_diff [symmetric])
+    using take_bit_int_less_exp [of \<open>LENGTH('a)\<close> k]
+    apply (simp add: take_bit_int_eq_self_iff less_le)
+    done
+  done
+
 lemma "word_next (2:: 8 word) = 3" by eval
 lemma "word_next (255:: 8 word) = 255" by eval
 lemma "word_prev (2:: 8 word) = 1" by eval

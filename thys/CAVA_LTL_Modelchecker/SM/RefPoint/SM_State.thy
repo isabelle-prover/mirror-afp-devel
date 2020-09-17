@@ -53,10 +53,8 @@ section \<open>Utilities\<close>
 
   lemma is_inv[simp]: 
     "\<lbrakk> i\<ge>min_signed; i\<le>max_signed \<rbrakk> \<Longrightarrow> (int_of_signed (signed_of_int i)) = i"
-    unfolding int_of_signed_def signed_of_int_def min_signed_def max_signed_def
-    by (simp add: sints_num word_sint.Abs_inverse)
+    by (simp add: signed_take_bit_int_eq_self min_signed_def max_signed_def int_of_signed_def signed_of_int_def)
 
-  
   primrec val_of_bool :: "bool \<Rightarrow> val" where
     "val_of_bool False = 0" | "val_of_bool True = 1"
 

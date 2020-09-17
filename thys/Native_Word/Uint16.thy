@@ -576,7 +576,7 @@ by(simp add: integer_of_uint16_def)
 
 lemma nat_of_uint16_code [code]:
   "nat_of_uint16 x = nat_of_integer (integer_of_uint16 x)"
-unfolding integer_of_uint16_def including integer.lifting by transfer (simp add: unat_def)
+unfolding integer_of_uint16_def including integer.lifting by transfer simp
 
 lemma integer_of_uint16_code [code]:
   "integer_of_uint16 n = integer_of_int (uint (Rep_uint16' n))"

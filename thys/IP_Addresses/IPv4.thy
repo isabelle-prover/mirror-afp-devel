@@ -34,11 +34,11 @@ section \<open>IPv4 Adresses\<close>
     by(simp add: max_ipv4_addr_max_word) fastforce
 
   text\<open>identity functions\<close>
+  lemma nat_of_ipv4addr_ipv4addr_of_nat_mod: "nat_of_ipv4addr (ipv4addr_of_nat n) = n mod 2^32"
+    by (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def unat_of_nat take_bit_eq_mod)
   lemma nat_of_ipv4addr_ipv4addr_of_nat:
     "\<lbrakk> n \<le> nat_of_ipv4addr max_ipv4_addr \<rbrakk> \<Longrightarrow> nat_of_ipv4addr (ipv4addr_of_nat n) = n"
-    by (simp add: ipv4addr_of_nat_def le_unat_uoi nat_of_ipv4addr_def)
-  lemma nat_of_ipv4addr_ipv4addr_of_nat_mod: "nat_of_ipv4addr (ipv4addr_of_nat n) = n mod 2^32"
-    by(simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def unat_of_nat)
+    by (simp add: nat_of_ipv4addr_ipv4addr_of_nat_mod max_ipv4_addr_def)
   lemma ipv4addr_of_nat_nat_of_ipv4addr: "ipv4addr_of_nat (nat_of_ipv4addr addr) = addr"
     by(simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
 
@@ -98,9 +98,9 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     assume  "a < 256" and "b < 256" and "c < 256" and "d < 256"
     note assms= \<open>a < 256\<close> \<open>b < 256\<close> \<open>c < 256\<close> \<open>d < 256\<close>
     hence a:  "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 24) AND mask 8) = a"
-      apply (simp add: ipv4addr_of_nat_def word_of_nat nat_of_ipv4addr_def)
+      apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
       apply transfer
-      apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
+      apply (simp add: drop_bit_take_bit nat_take_bit_eq flip: take_bit_eq_mask)
       apply (simp add: drop_bit_eq_div take_bit_eq_mod)
       done
     have ipv4addr_of_nat_AND_mask8: "(ipv4addr_of_nat a) AND mask 8 = (ipv4addr_of_nat (a mod 256))"

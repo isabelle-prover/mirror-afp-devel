@@ -397,7 +397,8 @@ proof -
   show ?thesis
   proof (cases "sz = 0")
     case True
-    then show ?thesis using off ptrq qv by clarsimp
+    then show ?thesis using off ptrq qv
+      by (simp add: take_bit_nat_less_exp)
   next
     case False
     then have sne: "0 < sz" ..
@@ -597,7 +598,7 @@ lemma is_aligned_add_multI:
 
 lemma unat_of_nat_len:
   "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x :: 'a::len word) = x"
-  by (simp add: word_size unat_of_nat)
+  by (simp add: take_bit_nat_eq_self_iff)
 
 lemma is_aligned_no_wrap''':
   fixes ptr :: "'a::len word"
@@ -606,8 +607,7 @@ lemma is_aligned_no_wrap''':
   apply (drule is_aligned_no_wrap[where off="of_nat off"])
    apply (simp add: word_less_nat_alt)
    apply (erule order_le_less_trans[rotated])
-   apply (subst unat_of_nat)
-   apply (rule mod_less_eq_dividend)
+  apply (simp add: take_bit_eq_mod)
   apply (subst(asm) unat_of_nat_len)
    apply (erule order_less_trans)
    apply (erule power_strict_increasing)
@@ -711,23 +711,12 @@ lemma aligned_inter_non_empty:
 lemma not_aligned_mod_nz:
   assumes al: "\<not> is_aligned a n"
   shows "a mod 2 ^ n \<noteq> 0"
-proof cases
-  assume "n < LENGTH('a)"
-  with al
-  show ?thesis
-    apply (simp add: is_aligned_iff_dvd_nat dvd_eq_mod_eq_0 word_arith_nat_mod)
-    apply (erule of_nat_neq_0)
-    apply (rule order_less_trans)
-     apply (rule mod_less_divisor)
-     apply simp
-    apply simp
-    done
-next
-  assume "\<not> n < LENGTH('a)"
-  with al
-  show ?thesis
-    by transfer simp
-qed
+  apply (rule ccontr)
+  using al apply (rule notE)
+  apply simp
+  apply (rule is_alignedI [of _ _ \<open>a div 2 ^ n\<close>])
+  apply (metis add.right_neutral mult.commute word_mod_div_equality)
+  done
 
 lemma nat_add_offset_le:
   fixes x :: nat
@@ -761,11 +750,7 @@ proof -
   proof (cases "sz = 0")
     case True
     then show ?thesis using off ptrq qv
-      apply (clarsimp)
-      apply (erule le_SucE)
-       apply (simp add: unat_of_nat)
-      apply (simp add: less_eq_Suc_le [symmetric] unat_of_nat)
-      done
+      by (auto simp add: le_Suc_eq Suc_le_eq) (simp add: le_less)
   next
     case False
     then have sne: "0 < sz" ..

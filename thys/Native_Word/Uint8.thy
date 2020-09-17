@@ -616,7 +616,7 @@ by(simp add: integer_of_uint8_def)
 
 lemma nat_of_uint8_code [code]:
   "nat_of_uint8 x = nat_of_integer (integer_of_uint8 x)"
-unfolding integer_of_uint8_def including integer.lifting by transfer (simp add: unat_def)
+unfolding integer_of_uint8_def including integer.lifting by transfer simp
 
 definition integer_of_uint8_signed :: "uint8 \<Rightarrow> integer"
 where

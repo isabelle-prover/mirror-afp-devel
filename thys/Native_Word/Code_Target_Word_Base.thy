@@ -88,9 +88,7 @@ proof -
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ LENGTH('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    apply (auto simp add: shiftr_word_eq drop_bit_eq_div shiftl_t2n word_arith_nat_div uno_simps)
-    apply (metis \<open>unat (of_nat n) = n\<close> uno_simps(2))
-    done
+    by (auto simp add: shiftr_word_eq drop_bit_eq_div shiftl_t2n word_arith_nat_div uno_simps take_bit_nat_eq_self)
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"
@@ -104,10 +102,16 @@ proof -
   have r: "x - ?q * y = of_nat (n - ?q' * m)"
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)"
     using n m unfolding q
-    by (simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] of_nat_diff word_le_nat_alt del: of_nat_mult)
-      (metis diff_diff_left less_imp_diff_less of_nat_diff of_nat_inverse word_of_nat)
-  thus ?thesis using n m div_half_nat[OF \<open>m \<noteq> 0\<close>, of n] unfolding q
-    by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: if_split split: if_split_asm)
+     apply (simp_all add: of_nat_diff)
+    apply (subst of_nat_diff)
+    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths)
+    apply (cases \<open>2 \<le> LENGTH('a)\<close>)
+    apply (simp_all add: unat_word_ariths take_bit_nat_eq_self)
+    done
+  then show ?thesis using n m div_half_nat [OF \<open>m \<noteq> 0\<close>, of n] unfolding q
+    by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self
+      flip: zdiv_int zmod_int
+      split del: if_split split: if_split_asm)
 qed
 
 lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
@@ -229,9 +233,9 @@ proof(cases "1 << (LENGTH('a) - 1) \<le> y")
     also have "\<dots> = 2 * 2 ^ (LENGTH('a) - 1)"
       by(metis Suc_pred len_gt_0 power_Suc One_nat_def)
     also have "\<dots> \<le> 2 * n" using y n
-      by(simp add: word_le_nat_alt unat_of_nat unat_p2)
+      by transfer (simp add: push_bit_of_1 take_bit_eq_mod)
     finally have div: "x div of_nat n = 1" using False n
-      by(simp add: word_div_eq_1_iff not_less word_le_nat_alt unat_of_nat)
+      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self)
     moreover have "x mod y = x - x div y * y"
       by (simp add: minus_div_mult_eq_mod)
     with div n have "x mod y = x - y" by simp
@@ -247,7 +251,7 @@ next
       (simp_all, simp only: of_nat_numeral [where ?'a = int, symmetric]
       zdiv_int [symmetric] of_nat_power [symmetric])
   with y n have "sint (x >> 1) = uint (x >> 1)"
-    by (simp add: sint_uint sbintrunc_mod2p shiftr_div_2n) (simp add: uint_nat unat_of_nat)
+    by (simp add: sint_uint sbintrunc_mod2p shiftr_div_2n take_bit_nat_eq_self)
   moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
     using y by (cases "LENGTH('a)")
       (simp_all add: not_le word_2p_lem word_size)
@@ -269,9 +273,9 @@ lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_inte
 by(simp add: word_of_integer.rep_eq)
 end
 
-lemma word_of_int_code [code abstract]:
+lemma word_of_int_code:
   "uint (word_of_int x :: 'a word) = x AND mask (LENGTH('a :: len))"
-by(simp add: uint_word_of_int and_bin_mask_conv_mod)
+  by (simp add: take_bit_eq_mask)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 
@@ -334,7 +338,7 @@ proof -
       by(cases "LENGTH('a)")(auto simp add: not_le elim: less_le_trans)
     moreover
     have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using \<open>i' < shift\<close>
-      by(auto intro!: word_eqI simp add: i'_def shift_def mask_def bin_nth_ops bin_nth_minus_p2 bin_sign_and)
+      by (simp add: i'_def shift_def mask_def shiftl_eq_push_bit push_bit_of_1 flip: take_bit_eq_mask)
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False
@@ -345,7 +349,7 @@ proof -
       by(simp add: bin_mask_p1_conv_shift[symmetric])
     also
     have "least \<le> 0" unfolding least_def overflow_def by simp
-    have "0 \<le> i'" by(simp add: i'_def mask_def bin_mask_ge0)
+    have "0 \<le> i'" by (simp add: i'_def mask_def)
     hence "least \<le> i'" using \<open>least \<le> 0\<close> by simp
     moreover
     have "word_of_int i' = (word_of_int i :: 'a word)"

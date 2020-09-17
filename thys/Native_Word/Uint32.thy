@@ -691,7 +691,7 @@ by(simp add: integer_of_uint32_def)
 
 lemma nat_of_uint32_code [code]:
   "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
-unfolding integer_of_uint32_def including integer.lifting by transfer (simp add: unat_def)
+unfolding integer_of_uint32_def including integer.lifting by transfer simp
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where

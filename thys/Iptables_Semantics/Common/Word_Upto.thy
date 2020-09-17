@@ -111,7 +111,8 @@ next
     proof(goal_cases)
        case (1 a b)
        from 1(2-4) have "b \<noteq> 0" by force
-       from 1(2,4) have "x \<le> b - 1" by (metis \<open>b \<noteq> 0\<close> dual_order.antisym le_step_down_nat unat_minus_one word_le_nat_alt) 
+       from 1(2,4) have "x \<le> b - 1"
+         using le_step_down_word by auto
        from 1(1) this show ?case by simp
     qed
 qed
@@ -120,11 +121,11 @@ lemma word_upto_distinct_hlp: "a \<le> b \<Longrightarrow> a \<noteq> b \<Longri
    apply(rule ccontr, unfold not_not)
    apply(subgoal_tac "a \<le> b - 1")
     apply(drule iffD1[OF word_upto_set_eq[of a "b -1" b]])
-     apply(simp add: word_upto.simps; fail)
+     apply(simp add: word_upto.simps)
     apply(subgoal_tac "b \<noteq> 0")
      apply(meson leD measure_unat word_le_nat_alt)
-    apply(blast intro: iffD1[OF word_le_0_iff])
-   apply(metis antisym_conv le_step_down_nat unat_minus_one word_le_0_iff word_le_nat_alt)
+   apply(blast intro: iffD1[OF word_le_0_iff])
+  using le_step_down_word apply blast
 done
 
 lemma distinct_word_upto: "a \<le> b \<Longrightarrow> distinct (word_upto a b)"
@@ -135,10 +136,10 @@ apply(case_tac "a = b")
 apply(subst word_upto.simps)
 apply(case_tac "a \<le> b - 1")
  apply(simp)
- apply(rule word_upto_distinct_hlp; simp; fail)
+ apply(rule word_upto_distinct_hlp; simp)
 apply(simp)
-apply(rule ccontr)
-apply(metis le_step_down_nat less_le not_le unat_minus_one word_le_nat_alt word_not_simps(1))
+  apply(rule ccontr)
+  apply (simp add: not_le antisym word_minus_one_le_leq)
 done
 
 
@@ -189,6 +190,11 @@ proof -
     apply (rule sorted_wrt_mono_rel [of _ \<open>(\<le>)\<close>])
      apply (simp_all flip: sorted_sorted_wrt)
     apply (simp add: le_unat_uoi less_Suc_eq_le n_def word_of_nat_le)
+    apply transfer
+    apply simp
+    apply (subst take_bit_int_eq_self)
+      apply (simp_all add: le_less_trans)
+    apply (metis le_unat_uoi of_int_of_nat_eq of_nat_mono uint_word_of_int_eq unat_eq_nat_uint unsigned_of_int)
     done
   ultimately have \<open>sorted (map of_nat [unat a..<Suc (unat b)] :: 'l word list)\<close>
     by simp

@@ -20,25 +20,26 @@ begin
         by (auto intro!: image_eqI [of _ int "nat k" for k])
       have helpX:"\<And>f (i::nat) (j::nat). (f \<circ> nat) ` {int i..int j} = f ` {i .. j}"
         by (auto simp add: image_comp int_interval_eq_image)
-    {   fix xa :: int
-        assume a1: "int (unat i) \<le> xa \<and> xa \<le> int (unat j)"
-        then have f2: "int (nat xa) = xa"
-          by force
-        then have "unat (of_int xa::32 word) = nat xa"
-          using a1 by (metis (full_types) le_unat_uoi nat_int nat_mono of_int_of_nat_eq)
-        then have "i \<le> of_int xa" and "of_int xa \<le> j"
-          using f2 a1 by (metis (no_types) uint_nat word_le_def)+
-    } note hlp=this
+      have hlp: \<open>i \<le> word_of_nat (nat xa)\<close> \<open>word_of_nat (nat xa) \<le> j\<close>
+        if \<open>uint i \<le> xa\<close> \<open>xa \<le> uint j\<close> for xa :: int
+      proof -
+        from uint_nonnegative [of i] \<open>uint i \<le> xa\<close>
+          have \<open>0 \<le> xa\<close> by (rule order_trans)
+        moreover from \<open>xa \<le> uint j\<close> uint_bounded [of j]
+          have \<open>xa < 2 ^ 32\<close> by simp
+        ultimately have xa: \<open>take_bit 32 xa = xa\<close>
+          by (simp add: take_bit_int_eq_self)
+        from xa \<open>uint i \<le> xa\<close> show \<open>i \<le> word_of_nat (nat xa)\<close>
+          by transfer simp
+        from xa \<open>xa \<le> uint j\<close> show \<open>word_of_nat (nat xa) \<le> j\<close>
+          by transfer simp
+      qed
     show ?thesis
       unfolding ipv4addr_upto_def
-      apply(intro set_eqI)
-      apply(simp)
-      apply(safe)
-        apply(simp_all)
-        using hlp apply blast
-        using hlp apply blast
-        apply (metis atLeastAtMost_iff imageI image_int_atLeastAtMost of_int_of_nat_eq word_le_nat_alt word_unat.Rep_inverse)
-        done
+      apply (rule set_eqI)
+      apply (auto simp add: hlp)
+      apply (metis (mono_tags) atLeastAtMost_iff image_iff unat_eq_nat_uint word_less_eq_iff_unsigned word_unat.Rep_inverse)
+      done
     qed
 
   text\<open>The function @{const ipv4addr_upto} gives back a list of all the ips in the list.

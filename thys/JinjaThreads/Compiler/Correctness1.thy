@@ -1046,7 +1046,7 @@ lemma sim_move10_reds:
      heap_write h a (ACell (nat (sint i))) v h';
      ta1 = \<lbrace>WriteMem a (ACell (nat (sint i))) v\<rbrace>; ta = \<lbrace>WriteMem a (ACell (nat (sint i))) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (AAss (addr a) (Val (Intg i)) (Val v)) e1' (AAss (addr a) (Val (Intg i)) (Val v)) h xs ta unit h' xs"
-  "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<bullet>length) e1' (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int n)))) h xs"
+  "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<bullet>length) e1' (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_nat n))) h xs"
   "sim_move10 P t \<epsilon> (null\<bullet>length) e1' (null\<bullet>length) h xs \<epsilon> (THROW NullPointer) h xs"
   "\<lbrakk> heap_read h a (CField D F) v; ta1 = \<lbrace>ReadMem a (CField D F) v\<rbrace>; ta = \<lbrace>ReadMem a (CField D F) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (addr a\<bullet>F{D}) e1' (addr a\<bullet>F{D}) h xs ta (Val v) h xs"

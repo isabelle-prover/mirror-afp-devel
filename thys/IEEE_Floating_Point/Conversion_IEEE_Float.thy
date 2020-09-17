@@ -127,8 +127,9 @@ lemma exponent_normal_of_Float:"exponent (normal_of_Float x::('e, 'f)float) =
   using that
   apply (transfer fixing: x)
   apply (simp flip: uint_nat nat_uint_eq add: Let_def)
-  apply (subst uint_word_of_int_bitlen_eq)
-    apply (auto simp: is_normal_Float_def bitlen_le_iff_power uint_word_of_int_bitlen_eq Let_def)
+  apply (auto simp: is_normal_Float_def bitlen_le_iff_power uint_word_of_int_bitlen_eq Let_def)
+  apply transfer
+  apply (simp add: nat_take_bit_eq take_bit_int_eq_self)
   done
 
 lift_definition denormal_of_Float :: "Float.float \<Rightarrow> ('e, 'f)float"

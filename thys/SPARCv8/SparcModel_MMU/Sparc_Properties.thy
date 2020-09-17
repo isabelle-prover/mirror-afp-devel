@@ -7205,40 +7205,44 @@ using write_cpu_low_equal write_reg_low_equal
 by fastforce
 
 lemma get_WIM_bit_low_equal: 
-assumes a1: "low_equal s1 s2"
-shows "get_WIM_bit (unat (((word_of_int ((uint (fst (fst (get_curr_win () s1))) - 1) mod NWINDOWS)))::word5))
- (cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
-get_WIM_bit (unat (((word_of_int ((uint (fst (fst (get_curr_win () s2))) -1) mod NWINDOWS)))::word5))
-  (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))"
+  \<open>get_WIM_bit (nat ((uint (fst (fst (get_curr_win () s1))) - 1) mod NWINDOWS))
+     (cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
+    get_WIM_bit (nat ((uint (fst (fst (get_curr_win () s2))) - 1) mod NWINDOWS))
+     (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))\<close>
+  if \<open>low_equal s1 s2\<close>
 proof -
-  from a1 have f1: "low_equal (snd (fst (get_curr_win () s1))) (snd (fst (get_curr_win () s2)))"
+  from that have f1: "low_equal (snd (fst (get_curr_win () s1))) (snd (fst (get_curr_win () s2)))"
   using get_curr_win2_low_equal by blast
   then have f2: "(cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
     (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))"
   using cpu_reg_val_low_equal by auto
-  from a1 have "(fst (fst (get_curr_win () s1))) = (fst (fst (get_curr_win () s2)))"
+  from that have "(fst (fst (get_curr_win () s1))) = (fst (fst (get_curr_win () s2)))"
+  using get_curr_win_low_equal by auto
+  then show ?thesis using f1 f2
+    by auto
+qed
+
+lemma get_WIM_bit_low_equal2: 
+  \<open>get_WIM_bit (nat ((uint (fst (fst (get_curr_win () s1))) + 1) mod NWINDOWS))
+    (cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
+    get_WIM_bit (nat ((uint (fst (fst (get_curr_win () s2))) + 1) mod NWINDOWS))
+      (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))\<close>
+  if \<open>low_equal s1 s2\<close>
+proof -
+  from that have f1: "low_equal (snd (fst (get_curr_win () s1))) (snd (fst (get_curr_win () s2)))"
+  using get_curr_win2_low_equal by blast
+  then have f2: "(cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
+    (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))"
+  using cpu_reg_val_low_equal by auto
+  from that have "(fst (fst (get_curr_win () s1))) = (fst (fst (get_curr_win () s2)))"
   using get_curr_win_low_equal by auto
   then show ?thesis using f1 f2
   by auto 
 qed
 
-lemma get_WIM_bit_low_equal2: 
-assumes a1: "low_equal s1 s2"
-shows "get_WIM_bit (unat (((word_of_int ((uint (fst (fst (get_curr_win () s1))) + 1) mod NWINDOWS)))::word5))
- (cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
-get_WIM_bit (unat (((word_of_int ((uint (fst (fst (get_curr_win () s2))) + 1) mod NWINDOWS)))::word5))
-  (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))"
-proof -
-  from a1 have f1: "low_equal (snd (fst (get_curr_win () s1))) (snd (fst (get_curr_win () s2)))"
-  using get_curr_win2_low_equal by blast
-  then have f2: "(cpu_reg_val WIM (snd (fst (get_curr_win () s1)))) =
-    (cpu_reg_val WIM (snd (fst (get_curr_win () s2))))"
-  using cpu_reg_val_low_equal by auto
-  from a1 have "(fst (fst (get_curr_win () s1))) = (fst (fst (get_curr_win () s2)))"
-  using get_curr_win_low_equal by auto
-  then show ?thesis using f1 f2
-  by auto 
-qed
+lemma take_bit_5_mod_NWINDOWS_eq [simp]:
+  \<open>take_bit 5 (k mod NWINDOWS) = k mod NWINDOWS\<close>
+  by (simp add: NWINDOWS_def take_bit_eq_mod)
 
 lemma save_restore_instr_low_equal:
 assumes a1: "low_equal s1 s2 \<and>
@@ -7261,7 +7265,8 @@ proof (cases "fst instr = ctrl_type SAVE")
   apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
   apply (simp add: get_curr_win_low_equal)
   using get_curr_win2_low_equal save_restore_instr_sub1_low_equal get_addr2_low_equal
-  by metis 
+  apply metis
+  done
 next
   case False
   then show ?thesis using a1
@@ -8273,7 +8278,7 @@ proof -
             by (auto simp add: empty_delayed_pool_write_privilege)  
           then show ?thesis using a1 f_fetch_error
           apply (simp add: fetch_instruction_def)
-          apply (simp add: Let_def ucast_def)         
+          apply (simp add: Let_def)         
           apply clarsimp
           apply (case_tac "uint (3 AND cpu_reg_val PC (delayed_pool_write s1)) = 0")
            apply auto
@@ -8339,7 +8344,7 @@ proof -
             by (auto simp add: empty_delayed_pool_write_privilege)  
           then show ?thesis using a1 f_fetch_suc
           apply (simp add: fetch_instruction_def)
-          apply (simp add: Let_def ucast_def) 
+          apply (simp add: Let_def) 
           apply clarsimp
           apply (case_tac "uint (3 AND cpu_reg_val PC (delayed_pool_write s1)) = 0")
            apply auto
