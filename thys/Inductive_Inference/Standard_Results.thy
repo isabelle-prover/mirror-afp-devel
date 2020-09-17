@@ -79,7 +79,7 @@ proof (rule exteqI)
     have "length xs = 2"
       using that by simp
     then obtain i x where ix: "[i, x] = xs"
-      by (metis length_0_conv length_Suc_conv numeral_2_eq_2)
+      by (smt Suc_length_conv length_0_conv numeral_2_eq_2)
     have "eval r_univ [i, x] = eval r_normal_form [i, x]"
     proof (cases "\<forall>t. eval r_result [t, i, x] \<down>= 0")
       case True
@@ -773,7 +773,8 @@ proof -
     also have "... = eval (r_universal 3) [?p, u, x, y]"
       using r_univuniv2_recfn r_universal r_phi by auto
     also have "... = eval r_univuniv2 [u, x, y]"
-      using r_universal by (simp add: r_univuniv2_recfn)
+      using r_universal
+      by (simp add: r_universal r_univuniv2_recfn) 
     finally have "eval r_phi [the (eval h [u, x]), y] =  eval r_univuniv2 [u, x, y]" .
   }
   then have *: "eval r_phi [the (eval h [u, x]), y] =

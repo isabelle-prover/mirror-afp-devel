@@ -929,7 +929,7 @@ proof -
     also have "... = eval (r_universal 3) [?p, i, j, x]" 
       by simp
     also have "... = eval r [i, j, x]" 
-      using r_universal r by simp
+      using r_universal r by force
     also have "... = adverse z i j x" 
       using r(3) by metis
     finally have "\<phi> (the (f i j)) x = adverse z i j x" .

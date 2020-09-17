@@ -333,7 +333,8 @@ next
       (is "_ (?stack1, None)")
     by simp
   also have "reachable ... ((gs ! k, xs, []) # ?stack1, None)"
-    using step_reachable `k < length gs` by (simp add: min_absorb2)
+    using step_reachable `k < length gs`
+    by (auto simp: min_absorb2)
   also have "reachable ... (?stack1, eval (gs ! k) xs)"
       (is "_ (_, ?rv)")
     using Suc.prems(1) \<open>k < length gs\<close> assms(3) valid valid_ConsI by auto
@@ -345,7 +346,7 @@ next
     also have "... = ((Cn n f gs, xs, (take (Suc k) ?ys)) # rest, None)"
       by (simp add: \<open>k < length gs\<close> take_Suc_conv_app_nth)
     finally show ?thesis
-      using step_reachable by simp
+      using step_reachable by auto
   qed
   finally show "reachable (?stack, None) (?stack2, None)" .
 qed
@@ -402,7 +403,7 @@ proof -
     proof -
       have "length (take k ?ys) < length gs"
         by (simp add: \<open>k < length gs\<close> less_imp_le_nat min_less_iff_disj)
-      then show ?thesis using step_reachable by simp
+      then show ?thesis using step_reachable by auto
     qed
     finally have "reachable (?stack, None) (?stack1, None)" .
     moreover have "nonterminating (?stack1, None)"
@@ -433,7 +434,7 @@ proof -
     also have "reachable ... ((Cn n f gs, xs, ?ys) # rest, None)" (is "_ (?stack1, None)")
       by (simp add: reachable_refl)
     also have "reachable ... ((f, ?ys, []) # ?stack1, None)"
-      using step_reachable by simp
+      using step_reachable by auto
     also have "reachable ... (?stack1, eval f ?ys)"
       using assms(2)[of "?ys"] correct_convergE valid f valid_ConsI by auto
     also have "reachable (?stack1, eval f ?ys) (rest, eval f ?ys)"
@@ -479,13 +480,13 @@ proof (induction y)
   then have f: "eval f xs \<down>" using 0 by simp
   let ?as = "x # xs"
   have "reachable (?stack, None) ((f, xs, []) # ((Pr n f g), ?as, []) # rest, None)"
-    using step_reachable by simp
+    using step_reachable by auto
   also have "reachable ... (?stack, eval f xs)"
     using assms(2)[of xs "((Pr n f g), ?as, []) # rest"]
       correct_convergE[OF _ f] f valid valid_ConsI
     by simp
   also have "reachable ... ((Pr n f g, ?as, [the (eval f xs)]) # rest, None)"
-    using step_reachable valid(1) f by simp
+    using step_reachable valid(1) f by auto
   finally have "reachable (?stack, None) ((Pr n f g, ?as, [the (eval f xs)]) # rest, None)" .
   then show ?case using trace_def valid(1) by simp
 next
@@ -554,7 +555,7 @@ proof -
         (is "_ = (?stack1, None)")
       using assms(1,2) y_ys by simp
     then have "reachable (?stack, None) (?stack1, None)"
-      using step_reachable by simp
+      using step_reachable by force
     moreover have "nonterminating (?stack1, None)"
       using assms diverg_f valid valid_ConsI * by auto
     ultimately have "nonterminating (?stack, None)"
@@ -622,7 +623,7 @@ proof (induction z)
   then have "step (?stack, None) = ((f, 0 # xs, []) # (Mn n f, xs, [0]) # rest, None)"
     using assms by simp
   then show ?case
-    using step_reachable assms(1) by simp
+    using step_reachable assms(1) by force
 next
   case (Suc z)
   have valid: "valid rest" "recfn (length xs) (Mn n f)"
@@ -635,7 +636,7 @@ next
     using f assms(2)[of "z # xs"] valid correct_convergE valid_ConsI by auto
   also have "reachable ... ((f, (Suc z) # xs, []) # (Mn n f, xs, [Suc z]) # rest, None)"
       (is "_  (?stack1, None)")
-    using step_reachable f by simp
+    using step_reachable f by force
   finally have "reachable (?stack, None) (?stack1, None)" .
   then show ?case by simp
 qed
@@ -769,7 +770,7 @@ proof -
       using assms(2)[of "z # xs"] valid f_z valid_ConsI correct_convergE
       by auto
     also have "reachable ... (rest, Some z)"
-      using f_z f_less_z step_reachable by simp
+      using f_z f_less_z step_reachable by auto
     finally have "reachable (?stack, None) (rest, Some z)" .
     then show ?thesis using z by simp
   qed
@@ -781,10 +782,10 @@ theorem step_correct:
   using assms
 proof (induction f arbitrary: xs rest)
   case Z
-  then show ?case using valid_ConsE[of Z] step_reachable by simp
+  then show ?case using valid_ConsE[of Z] step_reachable by auto
 next
   case S
-  then show ?case using valid_ConsE[of S] step_reachable by simp
+  then show ?case using valid_ConsE[of S] step_reachable by auto
 next
   case (Id m n)
   then show ?case using valid_ConsE[of "Id m n"] by auto
@@ -1187,7 +1188,7 @@ lemma estep_Pr:
   assumes "c = (((Pr n f g, xs, ls) # fs), rv)"
     and "recfn (length xs) (Pr n f g)"
   shows "estep_Pr (encode_config c) = encode_config (step c)"
-  using assms estep_Pr1 estep_Pr2 estep_Pr3 estep_Pr4 by simp
+  using assms estep_Pr1 estep_Pr2 estep_Pr3 estep_Pr4 by auto
 
 definition "estep_Mn e \<equiv>
   if e2ls e = 0
@@ -1647,7 +1648,7 @@ next
     using iterate_step_valid by simp
   have "eval r_leap [Suc t, i, x] =
       eval (Cn 4 r_step [Id 4 1]) [t, the (eval r_leap [t, i, x]), i, x]"
-    unfolding r_leap_def using eval_Pr_prim_Suc r_step_prim assms by simp
+    by (smt One_nat_def Suc_eq_plus1 eq_numeral_Suc eval_Pr_converg_Suc list.size(3) list.size(4) nat_1_add_1 pred_numeral_simps(3) r_leap_def r_leap_prim r_leap_total)
   then have "eval r_leap [Suc t, i, x] = eval (Cn 4 r_step [Id 4 1]) [t, encode_config ?tc, i, x]"
     using Suc by simp
   then have "eval r_leap [Suc t, i, x] = eval r_step [encode_config ?tc]"
@@ -1887,7 +1888,7 @@ lemma r_phi_recfn [simp]: "recfn 2 r_phi"
 theorem r_phi:
   assumes "i = encode f" and "recfn 1 f"
   shows "eval r_phi [i, x] = eval f [x]"
-  unfolding r_phi_def using r_universal assms by simp
+  unfolding r_phi_def using r_universal assms by force
 
 corollary r_phi':
   assumes "recfn 1 f"
