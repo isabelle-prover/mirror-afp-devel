@@ -7015,6 +7015,31 @@ abstract =
   entry by Larry Paulson</a>; our instantiation reuses the
   infrastructure developed in that entry.
 
+[Goedel_HFSet_Semanticless]
+title = From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We validate an abstract formulation of G&ouml;del's Second
+  Incompleteness Theorem from a <a
+  href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html>separate
+  AFP entry</a> by instantiating it to the case of <i>finite
+  consistent extensions of the Hereditarily Finite (HF) Set
+  theory</i>, i.e., consistent FOL theories extending the HF Set
+  theory with a finite set of axioms.  The instantiation draws heavily
+  on infrastructure previously developed by Larry Paulson in his <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">direct
+  formalisation of the concrete result</a>. It strengthens
+  Paulson's formalization of G&ouml;del's Second from that
+  entry by <i>not</i> assuming soundness, and in fact not
+  relying on any notion of model or semantic interpretation. The
+  strengthening was obtained by first replacing some of Paulson’s
+  semantic arguments with proofs within his HF calculus, and then
+  plugging in some of Paulson's (modified) lemmas to instantiate
+  our soundness-free G&ouml;del's Second locale.
+
 [Elliptic_Curves_Group_Law]
 title = The Group Law for Elliptic Curves
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
