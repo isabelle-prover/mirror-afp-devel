@@ -42,6 +42,31 @@ Formally Verified Abstract Account of Gödel&#39;s Incompleteness
 Theorems&lt;/a&gt;.</description>
     </item>
     <item>
+       <title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems</title>
+              <link>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</link>
+       <guid>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We present an abstract formalization of G&amp;ouml;del&#39;s
+incompleteness theorems. We analyze sufficient conditions for the
+theorems&#39; applicability to a partially specified logic. Our
+abstract perspective enables a comparison between alternative
+approaches from the literature. These include Rosser&#39;s variation
+of the first theorem, Jeroslow&#39;s variation of the second theorem,
+and the Swierczkowski&amp;ndash;Paulson semantics-based approach. This
+AFP entry is the main entry point to the results described in our
+CADE-27 paper &lt;a
+href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
+Formally Verified Abstract Account of Gödel&#39;s Incompleteness
+Theorems&lt;/a&gt;.  As part of our abstract formalization&#39;s
+validation, we instantiate our locales twice in the separate AFP
+entries &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
+and &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
+    </item>
+    <item>
        <title>Practical Algebraic Calculus Checker</title>
               <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
        <guid>https://www.isa-afp.org/entries/PAC_Checker.html</guid>
@@ -606,27 +631,6 @@ with mutable state that may span several sessions. The approach
 supports reachability goals like secrecy and authentication. We also
 include a simple user-friendly transaction-based protocol
 specification language that is embedded into Isabelle.</description>
-    </item>
-    <item>
-       <title>Lucas's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
-       <dc:creator> Chelsea Edmonds       </dc:creator>
-       <pubDate>07 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-This work presents a formalisation of a generating function proof for
-Lucas&#39;s theorem. We first outline extensions to the existing
-Formal Power Series (FPS) library, including an equivalence relation
-for coefficients modulo &lt;em&gt;n&lt;/em&gt;, an alternate binomial theorem statement,
-and a formalised proof of the Freshman&#39;s dream (mod &lt;em&gt;p&lt;/em&gt;) lemma.
-The second part of the work presents the formal proof of Lucas&#39;s
-Theorem. Working backwards, the formalisation first proves a well
-known corollary of the theorem which is easier to formalise, and then
-applies induction to prove the original theorem statement. The proof
-of the corollary aims to provide a good example of a formalised
-generating function equivalence proof using the FPS library. The final
-theorem statement is intended to be integrated into the formalised
-proof of Hilbert&#39;s 10th Problem.</description>
     </item>
   </channel>
 </rss>

@@ -6971,6 +6971,31 @@ abstract =
   Formally Verified Abstract Account of Gödel's Incompleteness
   Theorems</a>.
 
+[Goedel_Incompleteness]
+title = An Abstract Formalization of G&ouml;del's Incompleteness Theorems
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We present an abstract formalization of G&ouml;del's
+  incompleteness theorems. We analyze sufficient conditions for the
+  theorems' applicability to a partially specified logic. Our
+  abstract perspective enables a comparison between alternative
+  approaches from the literature. These include Rosser's variation
+  of the first theorem, Jeroslow's variation of the second theorem,
+  and the Swierczkowski&ndash;Paulson semantics-based approach. This
+  AFP entry is the main entry point to the results described in our
+  CADE-27 paper <a
+  href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
+  Formally Verified Abstract Account of Gödel's Incompleteness
+  Theorems</a>.  As part of our abstract formalization's
+  validation, we instantiate our locales twice in the separate AFP
+  entries <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
+  and <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html>Goedel_HFSet_Semanticless</a>.
+
 [Elliptic_Curves_Group_Law]
 title = The Group Law for Elliptic Curves
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
