@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Syntax-Independent Logic Infrastructure - Archive of Formal Proofs
+<title>Robinson Arithmetic - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,9 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>yntax-Independent
+  <h1>          <font class="first">R</font>obinson
   
-          <font class="first">L</font>ogic
-  
-          <font class="first">I</font>nfrastructure
+          <font class="first">A</font>rithmetic
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +85,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Syntax-Independent Logic Infrastructure</td>
+  <td class="data" width="80%">Robinson Arithmetic</td>
 </tr>
 
 <tr>
@@ -110,42 +108,28 @@ MathJax = {
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize a notion of logic whose terms and formulas are kept
-abstract. In particular, logical connectives, substitution, free
-variables, and provability are not defined, but characterized by their
-general properties as locale assumptions. Based on this abstract
-characterization, we develop further reusable reasoning
-infrastructure. For example, we define parallel substitution (along
-with proving its characterizing theorems) from single-point
-substitution. Similarly, we develop a natural deduction style proof
-system starting from the abstract Hilbert-style one. These one-time
-efforts benefit different concrete logics satisfying our locales'
-assumptions.  We instantiate the syntax-independent logic
-infrastructure to Robinson arithmetic (also known as Q) in the AFP
-entry <a
-href="https://www.isa-afp.org/entries/Robinson_Arithmetic.html">Robinson_Arithmetic</a>
-and to hereditarily finite set theory in the AFP entries <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
-and <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html">Goedel_HFSet_Semanticless</a>,
-which are part of our formalization of G&ouml;del's
-Incompleteness Theorems described in our CADE-27 paper <a
-href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
-Formally Verified Abstract Account of Gödel's Incompleteness
-Theorems</a>.</td>
+We instantiate our syntax-independent logic infrastructure developed
+in <a
+href="https://www.isa-afp.org/entries/Syntax_Independent_Logic.html">a
+separate AFP entry</a> to the FOL theory of Robinson arithmetic
+(also known as Q). The latter was formalised using Nominal Isabelle by
+adapting <a
+href="https://www.isa-afp.org/entries/Incompleteness.html">Larry
+Paulson’s formalization of the Hereditarily Finite Set
+theory</a>.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Syntax_Independent_Logic-AFP,
+        <pre>@article{Robinson_Arithmetic-AFP,
   author  = {Andrei Popescu and Dmitriy Traytel},
-  title   = {Syntax-Independent Logic Infrastructure},
+  title   = {Robinson Arithmetic},
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Syntax_Independent_Logic.html},
+  note    = {\url{http://isa-afp.org/entries/Robinson_Arithmetic.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -156,10 +140,10 @@ Theorems</a>.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Goedel_Incompleteness.html">Goedel_Incompleteness</a>, <a href="Robinson_Arithmetic.html">Robinson_Arithmetic</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Nominal2.html">Nominal2</a>, <a href="Syntax_Independent_Logic.html">Syntax_Independent_Logic</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -171,17 +155,17 @@ Theorems</a>.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Robinson_Arithmetic/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Robinson_Arithmetic/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Robinson_Arithmetic/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Syntax_Independent_Logic-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Robinson_Arithmetic-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

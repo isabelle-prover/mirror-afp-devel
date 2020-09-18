@@ -42,6 +42,23 @@ Formally Verified Abstract Account of Gödel&#39;s Incompleteness
 Theorems&lt;/a&gt;.</description>
     </item>
     <item>
+       <title>Robinson Arithmetic</title>
+              <link>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</link>
+       <guid>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We instantiate our syntax-independent logic infrastructure developed
+in &lt;a
+href=&#34;https://www.isa-afp.org/entries/Syntax_Independent_Logic.html&#34;&gt;a
+separate AFP entry&lt;/a&gt; to the FOL theory of Robinson arithmetic
+(also known as Q). The latter was formalised using Nominal Isabelle by
+adapting &lt;a
+href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;Larry
+Paulson’s formalization of the Hereditarily Finite Set
+theory&lt;/a&gt;.</description>
+    </item>
+    <item>
        <title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems</title>
               <link>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</link>
        <guid>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</guid>
@@ -610,33 +627,6 @@ href=&#34;http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf&#34;&gt;on
 the Matryoshka website&lt;/a&gt;. The names of the Isabelle lemmas and
 theorems corresponding to the results in the report are indicated in
 the margin of the report.</description>
-    </item>
-    <item>
-       <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-              <link>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
-       <guid>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
-       <dc:creator> Thibault Dardinier, Lukas Heimes, Martin Raszyk, Joshua Schneider, Dmitriy Traytel       </dc:creator>
-       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-dynamic logic (MFODL), which combines the features of metric
-first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
-MFODL supports real-time constraints, first-order parameters, and
-regular expressions. Additionally, the monitor supports aggregation
-operations such as count and sum. This formalization, which is
-described in a &lt;a
-href=&#34;http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf&#34;&gt;
-forthcoming paper at IJCAR 2020&lt;/a&gt;, significantly extends &lt;a
-href=&#34;https://www.isa-afp.org/entries/MFOTL_Monitor.html&#34;&gt;previous
-work on a verified monitor&lt;/a&gt; for MFOTL. Apart from the
-addition of regular expressions and aggregations, we implemented &lt;a
-href=&#34;https://www.isa-afp.org/entries/Generic_Join.html&#34;&gt;multi-way
-joins&lt;/a&gt; and a specialized sliding window algorithm to further
-optimize the monitor.</description>
     </item>
   </channel>
 </rss>

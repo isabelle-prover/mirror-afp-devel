@@ -7040,6 +7040,23 @@ abstract =
   plugging in some of Paulson's (modified) lemmas to instantiate
   our soundness-free G&ouml;del's Second locale.
 
+[Robinson_Arithmetic]
+title = Robinson Arithmetic
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We instantiate our syntax-independent logic infrastructure developed
+  in <a
+  href="https://www.isa-afp.org/entries/Syntax_Independent_Logic.html">a
+  separate AFP entry</a> to the FOL theory of Robinson arithmetic
+  (also known as Q). The latter was formalised using Nominal Isabelle by
+  adapting <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">Larry
+  Paulson’s formalization of the Hereditarily Finite Set
+  theory</a>.
+
 [Elliptic_Curves_Group_Law]
 title = The Group Law for Elliptic Curves
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
