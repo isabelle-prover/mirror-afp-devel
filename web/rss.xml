@@ -81,7 +81,7 @@ validation, we instantiate our locales twice in the separate AFP
 entries &lt;a
 href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
 and &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
     </item>
     <item>
        <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II</title>
@@ -92,7 +92,7 @@ href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&gt;Goed
        <description>
 We validate an abstract formulation of G&amp;ouml;del&#39;s Second
 Incompleteness Theorem from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&gt;separate
+href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
 AFP entry&lt;/a&gt; by instantiating it to the case of &lt;i&gt;finite
 consistent extensions of the Hereditarily Finite (HF) Set
 theory&lt;/i&gt;, i.e., consistent FOL theories extending the HF Set
@@ -117,7 +117,7 @@ our soundness-free G&amp;ouml;del&#39;s Second locale.</description>
        <description>
 We validate an abstract formulation of G&amp;ouml;del&#39;s First and
 Second Incompleteness Theorems from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&gt;separate
+href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
 AFP entry&lt;/a&gt; by instantiating them to the case of
 &lt;i&gt;finite sound extensions of the Hereditarily Finite (HF) Set
 theory&lt;/i&gt;, i.e., FOL theories extending the HF Set theory with
