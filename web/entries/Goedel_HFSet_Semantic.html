@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems - Archive of Formal Proofs
+<title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,19 +74,21 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>n
+  <h1>          <font class="first">F</font>rom
   
           <font class="first">A</font>bstract
   
-          <font class="first">F</font>ormalization
+          to
   
-          of
+          <font class="first">C</font>oncrete
   
           <font class="first">G</font>&ouml;del's
   
           <font class="first">I</font>ncompleteness
   
-          <font class="first">T</font>heorems
+          <font class="first">T</font>heorems&mdash;Part
+  
+          <font class="first">I</font>
   
 </h1>
   <p>&nbsp;</p>
@@ -95,7 +97,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">An Abstract Formalization of G&ouml;del's Incompleteness Theorems</td>
+  <td class="data" width="80%">From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</td>
 </tr>
 
 <tr>
@@ -118,36 +120,30 @@ MathJax = {
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We present an abstract formalization of G&ouml;del's
-incompleteness theorems. We analyze sufficient conditions for the
-theorems' applicability to a partially specified logic. Our
-abstract perspective enables a comparison between alternative
-approaches from the literature. These include Rosser's variation
-of the first theorem, Jeroslow's variation of the second theorem,
-and the Swierczkowski&ndash;Paulson semantics-based approach. This
-AFP entry is the main entry point to the results described in our
-CADE-27 paper <a
-href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
-Formally Verified Abstract Account of Gödel's Incompleteness
-Theorems</a>.  As part of our abstract formalization's
-validation, we instantiate our locales twice in the separate AFP
-entries <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
-and <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html>Goedel_HFSet_Semanticless</a>.</td>
+We validate an abstract formulation of G&ouml;del's First and
+Second Incompleteness Theorems from a <a
+href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html>separate
+AFP entry</a> by instantiating them to the case of
+<i>finite sound extensions of the Hereditarily Finite (HF) Set
+theory</i>, i.e., FOL theories extending the HF Set theory with
+a finite set of axioms that are sound in the standard model. The
+concrete results had been previously formalised in an <a
+href="https://www.isa-afp.org/entries/Incompleteness.html">AFP
+entry by Larry Paulson</a>; our instantiation reuses the
+infrastructure developed in that entry.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Goedel_Incompleteness-AFP,
+        <pre>@article{Goedel_HFSet_Semantic-AFP,
   author  = {Andrei Popescu and Dmitriy Traytel},
-  title   = {An Abstract Formalization of G&ouml;del's Incompleteness Theorems},
+  title   = {From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I},
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Goedel_Incompleteness.html},
+  note    = {\url{http://isa-afp.org/entries/Goedel_HFSet_Semantic.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -159,11 +155,9 @@ href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html>Goedel_HFSe
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Syntax_Independent_Logic.html">Syntax_Independent_Logic</a>      </td></tr>
+          <td class="data"><a href="Goedel_Incompleteness.html">Goedel_Incompleteness</a>, <a href="Incompleteness.html">Incompleteness</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -175,17 +169,17 @@ href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html>Goedel_HFSe
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Goedel_Incompleteness/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Goedel_Incompleteness/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Goedel_Incompleteness/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Goedel_Incompleteness-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Goedel_HFSet_Semantic-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

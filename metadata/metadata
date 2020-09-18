@@ -6996,6 +6996,25 @@ abstract =
   and <a
   href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html>Goedel_HFSet_Semanticless</a>.
 
+[Goedel_HFSet_Semantic]
+title = From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We validate an abstract formulation of G&ouml;del's First and
+  Second Incompleteness Theorems from a <a
+  href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html>separate
+  AFP entry</a> by instantiating them to the case of
+  <i>finite sound extensions of the Hereditarily Finite (HF) Set
+  theory</i>, i.e., FOL theories extending the HF Set theory with
+  a finite set of axioms that are sound in the standard model. The
+  concrete results had been previously formalised in an <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">AFP
+  entry by Larry Paulson</a>; our instantiation reuses the
+  infrastructure developed in that entry.
+
 [Elliptic_Curves_Group_Law]
 title = The Group Law for Elliptic Curves
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>

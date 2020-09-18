@@ -67,6 +67,25 @@ and &lt;a
 href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
     </item>
     <item>
+       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</title>
+              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
+       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We validate an abstract formulation of G&amp;ouml;del&#39;s First and
+Second Incompleteness Theorems from a &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&gt;separate
+AFP entry&lt;/a&gt; by instantiating them to the case of
+&lt;i&gt;finite sound extensions of the Hereditarily Finite (HF) Set
+theory&lt;/i&gt;, i.e., FOL theories extending the HF Set theory with
+a finite set of axioms that are sound in the standard model. The
+concrete results had been previously formalised in an &lt;a
+href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;AFP
+entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
+infrastructure developed in that entry.</description>
+    </item>
+    <item>
        <title>Practical Algebraic Calculus Checker</title>
               <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
        <guid>https://www.isa-afp.org/entries/PAC_Checker.html</guid>
@@ -615,22 +634,6 @@ the protocols under which the results hold are furthermore syntactic
 in nature allowing for full automation. The foundation presented here
 is used in another entry to provide fully automated and formalized
 security proofs of stateful protocols.</description>
-    </item>
-    <item>
-       <title>Automated Stateful Protocol Verification</title>
-              <link>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
-       <guid>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
-       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker, Anders Schlichtkrull       </dc:creator>
-       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-In protocol verification we observe a wide spectrum from fully
-automated methods to interactive theorem proving with proof assistants
-like Isabelle/HOL. In this AFP entry, we present a fully-automated
-approach for verifying stateful security protocols, i.e., protocols
-with mutable state that may span several sessions. The approach
-supports reachability goals like secrecy and authentication. We also
-include a simple user-friendly transaction-based protocol
-specification language that is embedded into Isabelle.</description>
     </item>
   </channel>
 </rss>
