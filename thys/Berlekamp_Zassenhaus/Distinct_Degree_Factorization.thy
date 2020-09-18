@@ -212,9 +212,7 @@ lemma x_power_aq_minus_1_rw:
     and a: "a > 0" 
     and b: "b > 0"
   shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum ((^) (x^a)) {..<q}"
-proof (cases "q=0")
-  case False
-  note q0 = False     
+proof -     
   have xa: "(x ^ a) > 0" using x by auto
   have int_rw1: "int (x ^ a) - 1 = int ((x ^ a) - 1)"
     using xa by linarith
@@ -223,7 +221,7 @@ proof (cases "q=0")
   have "int (x ^ a) ^ q = int (Suc ((x ^ a) ^ q - 1))" using xa by auto
   hence "int ((x ^ a) ^ q - 1) = int (x ^ a) ^ q - 1" using xa by presburger    
   also have "... = (int (x ^ a) - 1) * sum ((^) (int (x ^ a))) {..<q}" 
-    by (rule power_diff_1_eq[OF q0])
+    by (rule power_diff_1_eq)
   also have "... = (int ((x ^ a) - 1)) * int (sum ((^) ( (x ^ a))) {..<q})" 
     unfolding int_rw1 int_rw2 by simp
   also have "... = int (((x ^ a) - 1) * (sum ((^) ( (x ^ a))) {..<q}))" by auto
@@ -233,7 +231,7 @@ proof (cases "q=0")
   also have "... = ((x^a) - 1) * sum ((^) (x^a)) {..<q}" 
     using aux unfolding int_int_eq .
   finally show ?thesis .
-qed auto
+qed 
 
 lemma dvd_power_minus_1_conv1:
   fixes x::nat
