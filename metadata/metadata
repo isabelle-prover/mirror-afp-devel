@@ -6940,6 +6940,123 @@ abstract =
   Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
   Platzer: Formally verified differential dynamic logic. CPP 2017.
 
+[Syntax_Independent_Logic]
+title = Syntax-Independent Logic Infrastructure
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We formalize a notion of logic whose terms and formulas are kept
+  abstract. In particular, logical connectives, substitution, free
+  variables, and provability are not defined, but characterized by their
+  general properties as locale assumptions. Based on this abstract
+  characterization, we develop further reusable reasoning
+  infrastructure. For example, we define parallel substitution (along
+  with proving its characterizing theorems) from single-point
+  substitution. Similarly, we develop a natural deduction style proof
+  system starting from the abstract Hilbert-style one. These one-time
+  efforts benefit different concrete logics satisfying our locales'
+  assumptions.  We instantiate the syntax-independent logic
+  infrastructure to Robinson arithmetic (also known as Q) in the AFP
+  entry <a
+  href="https://www.isa-afp.org/entries/Robinson_Arithmetic.html">Robinson_Arithmetic</a>
+  and to hereditarily finite set theory in the AFP entries <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
+  and <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html">Goedel_HFSet_Semanticless</a>,
+  which are part of our formalization of G&ouml;del's
+  Incompleteness Theorems described in our CADE-27 paper <a
+  href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
+  Formally Verified Abstract Account of Gödel's Incompleteness
+  Theorems</a>.
+
+[Goedel_Incompleteness]
+title = An Abstract Formalization of G&ouml;del's Incompleteness Theorems
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We present an abstract formalization of G&ouml;del's
+  incompleteness theorems. We analyze sufficient conditions for the
+  theorems' applicability to a partially specified logic. Our
+  abstract perspective enables a comparison between alternative
+  approaches from the literature. These include Rosser's variation
+  of the first theorem, Jeroslow's variation of the second theorem,
+  and the Swierczkowski&ndash;Paulson semantics-based approach. This
+  AFP entry is the main entry point to the results described in our
+  CADE-27 paper <a
+  href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
+  Formally Verified Abstract Account of Gödel's Incompleteness
+  Theorems</a>.  As part of our abstract formalization's
+  validation, we instantiate our locales twice in the separate AFP
+  entries <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
+  and <a
+  href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html">Goedel_HFSet_Semanticless</a>.
+
+[Goedel_HFSet_Semantic]
+title = From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We validate an abstract formulation of G&ouml;del's First and
+  Second Incompleteness Theorems from a <a
+  href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html">separate
+  AFP entry</a> by instantiating them to the case of
+  <i>finite sound extensions of the Hereditarily Finite (HF) Set
+  theory</i>, i.e., FOL theories extending the HF Set theory with
+  a finite set of axioms that are sound in the standard model. The
+  concrete results had been previously formalised in an <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">AFP
+  entry by Larry Paulson</a>; our instantiation reuses the
+  infrastructure developed in that entry.
+
+[Goedel_HFSet_Semanticless]
+title = From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We validate an abstract formulation of G&ouml;del's Second
+  Incompleteness Theorem from a <a
+  href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html">separate
+  AFP entry</a> by instantiating it to the case of <i>finite
+  consistent extensions of the Hereditarily Finite (HF) Set
+  theory</i>, i.e., consistent FOL theories extending the HF Set
+  theory with a finite set of axioms.  The instantiation draws heavily
+  on infrastructure previously developed by Larry Paulson in his <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">direct
+  formalisation of the concrete result</a>. It strengthens
+  Paulson's formalization of G&ouml;del's Second from that
+  entry by <i>not</i> assuming soundness, and in fact not
+  relying on any notion of model or semantic interpretation. The
+  strengthening was obtained by first replacing some of Paulson’s
+  semantic arguments with proofs within his HF calculus, and then
+  plugging in some of Paulson's (modified) lemmas to instantiate
+  our soundness-free G&ouml;del's Second locale.
+
+[Robinson_Arithmetic]
+title = Robinson Arithmetic
+author = Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
+topic = Logic/Proof theory
+date = 2020-09-16
+notify = a.popescu@sheffield.ac.uk, traytel@di.ku.dk
+abstract =
+  We instantiate our syntax-independent logic infrastructure developed
+  in <a
+  href="https://www.isa-afp.org/entries/Syntax_Independent_Logic.html">a
+  separate AFP entry</a> to the FOL theory of Robinson arithmetic
+  (also known as Q). The latter was formalised using Nominal Isabelle by
+  adapting <a
+  href="https://www.isa-afp.org/entries/Incompleteness.html">Larry
+  Paulson’s formalization of the Hereditarily Finite Set
+  theory</a>.
+
 [Elliptic_Curves_Group_Law]
 title = The Group Law for Elliptic Curves
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
@@ -9653,3 +9770,42 @@ abstract =
   Bird's derivation and complete it by adding Knuth's
   optimisation.
 
+[Extended_Finite_State_Machines]
+title = A Formal Model of Extended Finite State Machines
+author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+topic = Computer science/Automata and formal languages
+date = 2020-09-07
+notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+abstract = 
+  In this AFP entry, we provide a formalisation of extended finite state
+  machines (EFSMs) where models are represented as finite sets of
+  transitions between states. EFSMs execute traces to produce observable
+  outputs. We also define various simulation and equality metrics for
+  EFSMs in terms of traces and prove their strengths in relation to each
+  other. Another key contribution is a framework of function definitions
+  such that LTL properties can be phrased over EFSMs. Finally, we
+  provide a simple example case study in the form of a drinks machine.
+
+[Extended_Finite_State_Machine_Inference]
+title = Inference of Extended Finite State Machines
+author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+topic = Computer science/Automata and formal languages
+date = 2020-09-07
+notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+abstract = 
+  In this AFP entry, we provide a formal implementation of a
+  state-merging technique to infer extended finite state machines
+  (EFSMs), complete with output and update functions, from black-box
+  traces. In particular, we define the subsumption in context relation
+  as a means of determining whether one transition is able to account
+  for the behaviour of another. Building on this, we define the direct
+  subsumption relation, which lifts the subsumption in context relation
+  to EFSM level such that we can use it to determine whether it is safe
+  to merge a given pair of transitions. Key proofs include the
+  conditions necessary for subsumption to occur and that subsumption
+  and direct subsumption are preorder relations.  We also provide a
+  number of different heuristics which can be used to abstract away
+  concrete values into registers so that more states and transitions can
+  be merged and provide proofs of the various conditions which must hold
+  for these abstractions to subsume their ungeneralised counterparts. A
+  Code Generator setup to create executable Scala code is also defined.

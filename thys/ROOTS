@@ -145,6 +145,8 @@ Error_Function
 Euler_MacLaurin
 Euler_Partition
 Example-Submission
+Extended_Finite_State_Machines
+Extended_Finite_State_Machine_Inference
 FFT
 FLP
 FOL-Fitting
@@ -194,6 +196,9 @@ Generic_Join
 GewirthPGCProof
 Girth_Chromatic
 GoedelGod
+Goedel_HFSet_Semantic
+Goedel_HFSet_Semanticless
+Goedel_Incompleteness
 Goodstein_Lambda
 GraphMarkingIBP
 Graph_Saturation
@@ -361,11 +366,11 @@ Ordinal
 Ordinal_Partitions
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
+PAC_Checker
 PCF
 PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
-PAC_Checker
 Pairing_Heap
 Paraconsistency
 Parity_Game
@@ -417,6 +422,7 @@ Quaternions
 Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
+Robinson_Arithmetic
 RSAPSS
 Ramsey-Infinite
 Random_BSTs
@@ -506,6 +512,7 @@ SumSquares
 SuperCalc
 Surprise_Paradox
 Symmetric_Polynomials
+Syntax_Independent_Logic
 Szpilrajn
 TESL_Language
 TLA

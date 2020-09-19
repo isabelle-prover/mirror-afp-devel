@@ -9,7 +9,164 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Aug 2020 00:00:00 +0000</pubDate>
+    <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Syntax-Independent Logic Infrastructure</title>
+              <link>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize a notion of logic whose terms and formulas are kept
+abstract. In particular, logical connectives, substitution, free
+variables, and provability are not defined, but characterized by their
+general properties as locale assumptions. Based on this abstract
+characterization, we develop further reusable reasoning
+infrastructure. For example, we define parallel substitution (along
+with proving its characterizing theorems) from single-point
+substitution. Similarly, we develop a natural deduction style proof
+system starting from the abstract Hilbert-style one. These one-time
+efforts benefit different concrete logics satisfying our locales&#39;
+assumptions.  We instantiate the syntax-independent logic
+infrastructure to Robinson arithmetic (also known as Q) in the AFP
+entry &lt;a
+href=&#34;https://www.isa-afp.org/entries/Robinson_Arithmetic.html&#34;&gt;Robinson_Arithmetic&lt;/a&gt;
+and to hereditarily finite set theory in the AFP entries &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
+and &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;,
+which are part of our formalization of G&amp;ouml;del&#39;s
+Incompleteness Theorems described in our CADE-27 paper &lt;a
+href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
+Formally Verified Abstract Account of Gödel&#39;s Incompleteness
+Theorems&lt;/a&gt;.</description>
+    </item>
+    <item>
+       <title>Robinson Arithmetic</title>
+              <link>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</link>
+       <guid>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We instantiate our syntax-independent logic infrastructure developed
+in &lt;a
+href=&#34;https://www.isa-afp.org/entries/Syntax_Independent_Logic.html&#34;&gt;a
+separate AFP entry&lt;/a&gt; to the FOL theory of Robinson arithmetic
+(also known as Q). The latter was formalised using Nominal Isabelle by
+adapting &lt;a
+href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;Larry
+Paulson’s formalization of the Hereditarily Finite Set
+theory&lt;/a&gt;.</description>
+    </item>
+    <item>
+       <title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems</title>
+              <link>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</link>
+       <guid>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We present an abstract formalization of G&amp;ouml;del&#39;s
+incompleteness theorems. We analyze sufficient conditions for the
+theorems&#39; applicability to a partially specified logic. Our
+abstract perspective enables a comparison between alternative
+approaches from the literature. These include Rosser&#39;s variation
+of the first theorem, Jeroslow&#39;s variation of the second theorem,
+and the Swierczkowski&amp;ndash;Paulson semantics-based approach. This
+AFP entry is the main entry point to the results described in our
+CADE-27 paper &lt;a
+href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
+Formally Verified Abstract Account of Gödel&#39;s Incompleteness
+Theorems&lt;/a&gt;.  As part of our abstract formalization&#39;s
+validation, we instantiate our locales twice in the separate AFP
+entries &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
+and &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
+    </item>
+    <item>
+       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II</title>
+              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
+       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We validate an abstract formulation of G&amp;ouml;del&#39;s Second
+Incompleteness Theorem from a &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
+AFP entry&lt;/a&gt; by instantiating it to the case of &lt;i&gt;finite
+consistent extensions of the Hereditarily Finite (HF) Set
+theory&lt;/i&gt;, i.e., consistent FOL theories extending the HF Set
+theory with a finite set of axioms.  The instantiation draws heavily
+on infrastructure previously developed by Larry Paulson in his &lt;a
+href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;direct
+formalisation of the concrete result&lt;/a&gt;. It strengthens
+Paulson&#39;s formalization of G&amp;ouml;del&#39;s Second from that
+entry by &lt;i&gt;not&lt;/i&gt; assuming soundness, and in fact not
+relying on any notion of model or semantic interpretation. The
+strengthening was obtained by first replacing some of Paulson’s
+semantic arguments with proofs within his HF calculus, and then
+plugging in some of Paulson&#39;s (modified) lemmas to instantiate
+our soundness-free G&amp;ouml;del&#39;s Second locale.</description>
+    </item>
+    <item>
+       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</title>
+              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
+       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
+       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
+       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+We validate an abstract formulation of G&amp;ouml;del&#39;s First and
+Second Incompleteness Theorems from a &lt;a
+href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
+AFP entry&lt;/a&gt; by instantiating them to the case of
+&lt;i&gt;finite sound extensions of the Hereditarily Finite (HF) Set
+theory&lt;/i&gt;, i.e., FOL theories extending the HF Set theory with
+a finite set of axioms that are sound in the standard model. The
+concrete results had been previously formalised in an &lt;a
+href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;AFP
+entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
+infrastructure developed in that entry.</description>
+    </item>
+    <item>
+       <title>A Formal Model of Extended Finite State Machines</title>
+              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</link>
+       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</guid>
+       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
+       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we provide a formalisation of extended finite state
+machines (EFSMs) where models are represented as finite sets of
+transitions between states. EFSMs execute traces to produce observable
+outputs. We also define various simulation and equality metrics for
+EFSMs in terms of traces and prove their strengths in relation to each
+other. Another key contribution is a framework of function definitions
+such that LTL properties can be phrased over EFSMs. Finally, we
+provide a simple example case study in the form of a drinks machine.</description>
+    </item>
+    <item>
+       <title>Inference of Extended Finite State Machines</title>
+              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</link>
+       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</guid>
+       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
+       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we provide a formal implementation of a
+state-merging technique to infer extended finite state machines
+(EFSMs), complete with output and update functions, from black-box
+traces. In particular, we define the subsumption in context relation
+as a means of determining whether one transition is able to account
+for the behaviour of another. Building on this, we define the direct
+subsumption relation, which lifts the subsumption in context relation
+to EFSM level such that we can use it to determine whether it is safe
+to merge a given pair of transitions. Key proofs include the
+conditions necessary for subsumption to occur and that subsumption
+and direct subsumption are preorder relations.  We also provide a
+number of different heuristics which can be used to abstract away
+concrete values into registers so that more states and transitions can
+be merged and provide proofs of the various conditions which must hold
+for these abstractions to subsume their ungeneralised counterparts. A
+Code Generator setup to create executable Scala code is also defined.</description>
+    </item>
     <item>
        <title>Practical Algebraic Calculus Checker</title>
               <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
@@ -464,159 +621,6 @@ Then we use them to prove that square matrices form a Banach space,
 and in this setting, we show an instance of Picard-Lindelöf’s
 theorem for affine systems of ODEs. Finally, we use this formalisation
 to verify three simple hybrid programs.</description>
-    </item>
-    <item>
-       <title>Authenticated Data Structures As Functors</title>
-              <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
-       <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
-       <dc:creator> Andreas Lochbihler, Ognjen Marić       </dc:creator>
-       <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Authenticated data structures allow several systems to convince each
-other that they are referring to the same data structure, even if each
-of them knows only a part of the data structure. Using inclusion
-proofs, knowledgeable systems can selectively share their knowledge
-with other systems and the latter can verify the authenticity of what
-is being shared.  In this article, we show how to modularly define
-authenticated data structures, their inclusion proofs, and operations
-thereon as datatypes in Isabelle/HOL, using a shallow embedding.
-Modularity allows us to construct complicated trees from reusable
-building blocks, which we call Merkle functors. Merkle functors
-include sums, products, and function spaces and are closed under
-composition and least fixpoints.  As a practical application, we model
-the hierarchical transactions of &lt;a
-href=&#34;https://www.canton.io&#34;&gt;Canton&lt;/a&gt;, a
-practical interoperability protocol for distributed ledgers, as
-authenticated data structures. This is a first step towards
-formalizing the Canton protocol and verifying its integrity and
-security guarantees.</description>
-    </item>
-    <item>
-       <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-              <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
-       <guid>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
-       <dc:creator> Lukas Heimes, Dmitriy Traytel, Joshua Schneider       </dc:creator>
-       <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Basin et al.&#39;s &lt;a
-href=&#34;https://doi.org/10.1016/j.ipl.2014.09.009&#34;&gt;sliding
-window algorithm (SWA)&lt;/a&gt; is an algorithm for combining the
-elements of subsequences of a sequence with an associative operator.
-It is greedy and minimizes the number of operator applications. We
-formalize the algorithm and verify its functional correctness. We
-extend the algorithm with additional operations and provide an
-alternative interface to the slide operation that does not require the
-entire input sequence.</description>
-    </item>
-    <item>
-       <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-              <link>https://www.isa-afp.org/entries/Saturation_Framework.html</link>
-       <guid>https://www.isa-afp.org/entries/Saturation_Framework.html</guid>
-       <dc:creator> Sophie Tourret       </dc:creator>
-       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization is the companion of the technical
-report “A comprehensive framework for saturation theorem proving”,
-itself companion of the eponym IJCAR 2020 paper, written by Uwe
-Waldmann, Sophie Tourret, Simon Robillard and Jasmin Blanchette. It
-verifies a framework for formal refutational completeness proofs of
-abstract provers that implement saturation calculi, such as ordered
-resolution or superposition, and allows to model entire prover
-architectures in such a way that the static refutational completeness
-of a calculus immediately implies the dynamic  refutational
-completeness of a prover implementing the calculus using a variant of
-the given clause loop.  The technical report “A comprehensive
-framework for saturation theorem proving” is available &lt;a
-href=&#34;http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf&#34;&gt;on
-the Matryoshka website&lt;/a&gt;. The names of the Isabelle lemmas and
-theorems corresponding to the results in the report are indicated in
-the margin of the report.</description>
-    </item>
-    <item>
-       <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-              <link>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
-       <guid>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
-       <dc:creator> Thibault Dardinier, Lukas Heimes, Martin Raszyk, Joshua Schneider, Dmitriy Traytel       </dc:creator>
-       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-dynamic logic (MFODL), which combines the features of metric
-first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
-MFODL supports real-time constraints, first-order parameters, and
-regular expressions. Additionally, the monitor supports aggregation
-operations such as count and sum. This formalization, which is
-described in a &lt;a
-href=&#34;http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf&#34;&gt;
-forthcoming paper at IJCAR 2020&lt;/a&gt;, significantly extends &lt;a
-href=&#34;https://www.isa-afp.org/entries/MFOTL_Monitor.html&#34;&gt;previous
-work on a verified monitor&lt;/a&gt; for MFOTL. Apart from the
-addition of regular expressions and aggregations, we implemented &lt;a
-href=&#34;https://www.isa-afp.org/entries/Generic_Join.html&#34;&gt;multi-way
-joins&lt;/a&gt; and a specialized sliding window algorithm to further
-optimize the monitor.</description>
-    </item>
-    <item>
-       <title>Stateful Protocol Composition and Typing</title>
-              <link>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</link>
-       <guid>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
-       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker       </dc:creator>
-       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-We provide in this AFP entry several relative soundness results for
-security protocols. In particular, we prove typing and
-compositionality results for stateful protocols (i.e., protocols with
-mutable state that may span several sessions), and that focuses on
-reachability properties. Such results are useful to simplify protocol
-verification by reducing it to a simpler problem: Typing results give
-conditions under which it is safe to verify a protocol in a typed
-model where only &#34;well-typed&#34; attacks can occur whereas
-compositionality results allow us to verify a composed protocol by
-only verifying the component protocols in isolation. The conditions on
-the protocols under which the results hold are furthermore syntactic
-in nature allowing for full automation. The foundation presented here
-is used in another entry to provide fully automated and formalized
-security proofs of stateful protocols.</description>
-    </item>
-    <item>
-       <title>Automated Stateful Protocol Verification</title>
-              <link>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
-       <guid>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
-       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker, Anders Schlichtkrull       </dc:creator>
-       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-In protocol verification we observe a wide spectrum from fully
-automated methods to interactive theorem proving with proof assistants
-like Isabelle/HOL. In this AFP entry, we present a fully-automated
-approach for verifying stateful security protocols, i.e., protocols
-with mutable state that may span several sessions. The approach
-supports reachability goals like secrecy and authentication. We also
-include a simple user-friendly transaction-based protocol
-specification language that is embedded into Isabelle.</description>
-    </item>
-    <item>
-       <title>Lucas's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
-       <dc:creator> Chelsea Edmonds       </dc:creator>
-       <pubDate>07 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-This work presents a formalisation of a generating function proof for
-Lucas&#39;s theorem. We first outline extensions to the existing
-Formal Power Series (FPS) library, including an equivalence relation
-for coefficients modulo &lt;em&gt;n&lt;/em&gt;, an alternate binomial theorem statement,
-and a formalised proof of the Freshman&#39;s dream (mod &lt;em&gt;p&lt;/em&gt;) lemma.
-The second part of the work presents the formal proof of Lucas&#39;s
-Theorem. Working backwards, the formalisation first proves a well
-known corollary of the theorem which is easier to formalise, and then
-applies induction to prove the original theorem statement. The proof
-of the corollary aims to provide a good example of a formalised
-generating function equivalence proof using the FPS library. The final
-theorem statement is intended to be integrated into the formalised
-proof of Hilbert&#39;s 10th Problem.</description>
     </item>
   </channel>
 </rss>
