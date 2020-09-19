@@ -2054,7 +2054,7 @@ notify = nipkow@in.tum.de, krauss@in.tum.de, christian.urban@kcl.ac.uk
 
 [Regex_Equivalence]
 title = Unified Decision Procedures for Regular Expression Equivalence
-author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Dmitriy Traytel <mailto:traytel@in.tum.de>
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Automata and formal languages
 date = 2014-01-30
 abstract =
@@ -2073,7 +2073,7 @@ notify = nipkow@in.tum.de, traytel@in.tum.de
 
 [MSO_Regex_Equivalence]
 title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions
-author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+author = Dmitriy Traytel <https://traytel.bitbucket.io>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 topic = Computer science/Automata and formal languages, Logic/General logic/Decidability of theories
 date = 2014-06-12
 abstract =
@@ -2098,7 +2098,7 @@ notify = traytel@in.tum.de, nipkow@in.tum.de
 
 [Formula_Derivatives]
 title = Derivatives of Logical Formulas
-author = Dmitriy Traytel <http://www21.in.tum.de/~traytel>
+author = Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Automata and formal languages, Logic/General logic/Decidability of theories
 date = 2015-05-28
 abstract =
@@ -2216,7 +2216,7 @@ notify = Stephan.Merz@loria.fr
 
 [Coinductive_Languages]
 title = A Codatatype of Formal Languages
-author = Dmitriy Traytel <mailto:traytel@in.tum.de>
+author = Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Automata and formal languages
 date = 2013-11-15
 abstract = <p>We define formal languages as a codataype of infinite trees
@@ -3303,7 +3303,7 @@ notify = giamp@dmi.unict.it
 
 [Possibilistic_Noninterference]
 title = Possibilistic Noninterference
-author = Andrei Popescu <mailto:uuomul@yahoo.com>, Johannes Hölzl <mailto:hoelzl@in.tum.de>
+author = Andrei Popescu <https://www.andreipopescu.uk>, Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2012-09-10
 topic = Computer science/Security, Computer science/Programming languages/Type systems
 abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
@@ -3842,7 +3842,7 @@ notify = lcp@cl.cam.ac.uk
 
 [Ordinals_and_Cardinals]
 title = Ordinals and Cardinals
-author = Andrei Popescu <>
+author = Andrei Popescu <https://www.andreipopescu.uk>
 date = 2009-09-01
 topic = Logic/Set theory
 abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.
@@ -3919,7 +3919,7 @@ notify = brianh@cs.pdx.edu
 
 [Sort_Encodings]
 title = Sound and Complete Sort Encodings for First-Order Logic
-author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <https://www.andreipopescu.uk>
 date = 2013-06-27
 topic = Logic/General logic/Mechanization of proofs
 abstract =
@@ -3969,7 +3969,7 @@ abstract =
 
 [Nested_Multisets_Ordinals]
 title = Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals
-author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Mathias Fleury <mailto:fleury@mpi-inf.mpg.de>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Mathias Fleury <mailto:fleury@mpi-inf.mpg.de>, Dmitriy Traytel <https://traytel.bitbucket.io>
 date = 2016-11-12
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.
@@ -4257,7 +4257,7 @@ notify = hoelzl@in.tum.de
 title = A Zoo of Probabilistic Systems
 author = Johannes Hölzl <http://in.tum.de/~hoelzl>,
 	Andreas Lochbihler <http://www.andreas-lochbihler.de>,
-	Dmitriy Traytel <http://www21.in.tum.de/~traytel>
+	Dmitriy Traytel <https://traytel.bitbucket.io>
 date = 2015-05-27
 topic = Computer science/Automata and formal languages
 abstract =
@@ -5189,7 +5189,7 @@ notify = stvienna@gmail.com
 
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
-author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://in.tum.de/~hoelzl>
+author = Andrei Popescu <https://www.andreipopescu.uk>, Johannes Hölzl <http://in.tum.de/~hoelzl>
 date = 2014-03-11
 topic = Computer science/Security
 abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
@@ -5197,7 +5197,7 @@ notify = hoelzl@in.tum.de
 
 [HyperCTL]
 title = A shallow embedding of HyperCTL*
-author = Markus N. Rabe <http://www.react.uni-saarland.de/people/rabe.html>, Peter Lammich <http://www21.in.tum.de/~lammich>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+author = Markus N. Rabe <http://www.react.uni-saarland.de/people/rabe.html>, Peter Lammich <http://www21.in.tum.de/~lammich>, Andrei Popescu <https://www.andreipopescu.uk>
 date = 2014-04-16
 topic = Computer science/Security, Logic/General logic/Temporal logic
 abstract = We formalize HyperCTL*, a temporal logic for expressing security properties. We
@@ -5211,7 +5211,7 @@ notify = uuomul@yahoo.com
 
 [Bounded_Deducibility_Security]
 title = Bounded-Deducibility Security
-author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Peter Lammich <http://www21.in.tum.de/~lammich>
+author = Andrei Popescu <https://www.andreipopescu.uk>, Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-04-22
 topic = Computer science/Security
 abstract = This is a formalization of bounded-deducibility security (BD
@@ -5273,7 +5273,7 @@ notify = diekmann@net.in.tum.de
 
 [Abstract_Completeness]
 title = Abstract Completeness
-author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
 date = 2014-04-16
 topic = Logic/Proof theory
 abstract = A formalization of an abstract property of possibly infinite derivation trees (modeled by a codatatype),  representing the core of a proof (in Beth/Hintikka style) of the first-order logic completeness theorem, independent of the concrete syntax or inference rules. This work is described in detail in the IJCAR 2014 publication by the authors.
@@ -6909,7 +6909,7 @@ abstract =
 
 [Abstract_Soundness]
 title = Abstract Soundness
-author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Logic/Proof theory
 date = 2017-02-10
 notify = jasmin.blanchette@gmail.com
@@ -7562,7 +7562,7 @@ abstract =
 
 [Ordered_Resolution_Prover]
 title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
-author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <https://traytel.bitbucket.io>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
 topic = Logic/General logic/Mechanization of proofs
 date = 2018-01-18
 notify = andschl@dtu.dk, j.c.blanchette@vu.nl
@@ -7577,7 +7577,7 @@ abstract =
 
 [Chandy_Lamport]
 title = A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm
-author = Ben Fiedler <mailto:ben.fiedler@inf.ethz.ch>, Dmitriy Traytel <https://people.inf.ethz.ch/trayteld/>
+author = Ben Fiedler <mailto:ben.fiedler@inf.ethz.ch>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Algorithms/Distributed
 date = 2020-07-21
 notify = ben.fiedler@inf.ethz.ch, traytel@inf.ethz.ch
@@ -7590,7 +7590,7 @@ abstract =
 
 [BNF_Operations]
 title = Operations on Bounded Natural Functors
-author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <https://www.andreipopescu.uk>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Tools
 date = 2017-12-19
 notify = jasmin.blanchette@gmail.com,uuomul@yahoo.com,traytel@inf.ethz.ch
@@ -8197,7 +8197,7 @@ abstract =
 
 [Functional_Ordered_Resolution_Prover]
 title = A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover
-author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Logic/General logic/Mechanization of proofs
 date = 2018-11-23
 notify = andschl@dtu.dk,j.c.blanchette@vu.nl,traytel@inf.ethz.ch
@@ -8569,7 +8569,7 @@ abstract =
 
 [Binding_Syntax_Theory]
 title = A General Theory of Syntax with Bindings
-author = Lorenzo Gheri <mailto:lor.gheri@gmail.com>, Andrei Popescu <mailto:a.popescu@mdx.ac.uk>
+author = Lorenzo Gheri <mailto:lor.gheri@gmail.com>, Andrei Popescu <https://www.andreipopescu.uk>
 topic = Computer science/Programming languages/Lambda calculi, Computer science/Functional programming, Logic/General logic/Mechanization of proofs
 date = 2019-04-06
 notify = a.popescu@mdx.ac.uk, lor.gheri@gmail.com
@@ -8609,7 +8609,7 @@ abstract =
 
 [LambdaAuth]
 title = Formalization of Generic Authenticated Data Structures
-author = Matthias Brun<>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+author = Matthias Brun<>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Security, Computer science/Programming languages/Lambda calculi
 date = 2019-05-14
 notify = traytel@inf.ethz.ch
@@ -8775,7 +8775,7 @@ abstract =
 
 [MFOTL_Monitor]
 title = Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic
-author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Algorithms, Logic/General logic/Temporal logic, Computer science/Automata and formal languages
 date = 2019-07-04
 notify = joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
@@ -9300,7 +9300,7 @@ abstract =
 
 [MFODL_Monitor_Optimized]
 title = Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations
-author = Thibault Dardinier<>, Lukas Heimes<>, Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+author = Thibault Dardinier<>, Lukas Heimes<>, Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <https://traytel.bitbucket.io>
 topic = Computer science/Algorithms, Logic/General logic/Modal logic, Computer science/Automata and formal languages
 date = 2020-04-09
 notify = martin.raszyk@inf.ethz.ch, joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
@@ -9327,7 +9327,7 @@ abstract =
 
 [Sliding_Window_Algorithm]
 title = Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows
-author = Lukas Heimes<>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>, Joshua Schneider<>
+author = Lukas Heimes<>, Dmitriy Traytel <https://traytel.bitbucket.io>, Joshua Schneider<>
 topic = Computer science/Algorithms
 date = 2020-04-10
 notify = heimesl@student.ethz.ch, traytel@inf.ethz.ch, joshua.schneider@inf.ethz.ch
@@ -9748,7 +9748,7 @@ author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <m
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
 notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we provide a formalisation of extended finite state
   machines (EFSMs) where models are represented as finite sets of
   transitions between states. EFSMs execute traces to produce observable
@@ -9764,7 +9764,7 @@ author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <m
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
 notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we provide a formal implementation of a
   state-merging technique to infer extended finite state machines
   (EFSMs), complete with output and update functions, from black-box
