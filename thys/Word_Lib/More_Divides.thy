@@ -11,11 +11,12 @@ imports Main
 begin
 
 lemma div_mult_le:
-  "(a::nat) div b * b \<le> a"
+  \<open>a div b * b \<le> a\<close> for a b :: nat
   by (fact div_times_less_eq_dividend)
 
 lemma diff_mod_le:
-  "\<lbrakk> (a::nat) < d; b dvd d \<rbrakk> \<Longrightarrow> a - a mod b \<le> d - b"
+  \<open>a - a mod b \<le> d - b\<close> if \<open>a < d\<close> \<open>b dvd d\<close> for a b d :: nat
+  using that
   apply(subst minus_mod_eq_mult_div)
   apply(clarsimp simp: dvd_def)
   apply(case_tac "b = 0")
@@ -41,14 +42,14 @@ lemma diff_mod_le:
   done
 
 lemma int_div_same_is_1 [simp]:
-  "0 < a \<Longrightarrow> ((a :: int) div b = a) = (b = 1)"
-  by (metis div_by_1 abs_ge_zero abs_of_pos int_div_less_self neq_iff
+  \<open>a div b = a \<longleftrightarrow> b = 1\<close> if \<open>0 < a\<close> for a b :: int
+  using that by (metis div_by_1 abs_ge_zero abs_of_pos int_div_less_self neq_iff
             nonneg1_imp_zdiv_pos_iff zabs_less_one_iff)
 
-declare div_eq_dividend_iff [simp]
-
 lemma int_div_minus_is_minus1 [simp]:
-    "a < 0 \<Longrightarrow> ((a :: int) div b = -a) = (b = -1)"
-  by (metis div_minus_right equation_minus_iff int_div_same_is_1 neg_0_less_iff_less)
+  \<open>a div b = - a \<longleftrightarrow> b = - 1\<close> if \<open>0 > a\<close> for a b :: int
+  using that by (metis div_minus_right equation_minus_iff int_div_same_is_1 neg_0_less_iff_less)
+
+declare div_eq_dividend_iff [simp]
 
 end

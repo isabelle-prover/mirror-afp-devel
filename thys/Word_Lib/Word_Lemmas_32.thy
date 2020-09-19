@@ -219,14 +219,7 @@ lemma ucast_of_nats [simp]:
   "(ucast (of_nat x :: word16) :: sword16) = (of_nat x)"
   "(ucast (of_nat x :: word16) :: sword8) = (of_nat x)"
   "(ucast (of_nat x :: word8) :: sword8) = (of_nat x)"
-       apply (simp_all add: of_nat_take_bit)
-       apply (transfer, simp)
-      apply (transfer, simp)
-     apply (transfer, simp)
-    apply (transfer, simp)
-   apply (transfer, simp)
-  apply (transfer, simp)
-  done
+  by (simp_all add: of_nat_take_bit take_bit_word_eq_self)
 
 lemmas signed_shift_guard_simpler_32'
     = power_strict_increasing_iff[where b="2 :: nat" and y=31]

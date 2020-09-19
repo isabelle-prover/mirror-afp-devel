@@ -113,6 +113,21 @@ definition
 where
   "sign_extend n w \<equiv> if w !! n then w || ~~ (mask n) else w && mask n"
 
+lemma sign_extend_eq_signed_take_bit:
+  \<open>sign_extend = signed_take_bit\<close>
+proof (rule ext)+
+  fix n and w :: \<open>'a::len word\<close>
+  show \<open>sign_extend n w = signed_take_bit n w\<close>
+  proof (rule bit_word_eqI)
+    fix q
+    assume \<open>q < LENGTH('a)\<close>
+    then show \<open>bit (sign_extend n w) q \<longleftrightarrow> bit (signed_take_bit n w) q\<close>
+      by (auto simp add: test_bit_eq_bit bit_signed_take_bit_iff
+        sign_extend_def bit_and_iff bit_or_iff bit_not_iff bit_mask_iff not_less
+        exp_eq_0_imp_not_bit not_le min_def)
+  qed
+qed
+
 definition
   sign_extended :: "nat \<Rightarrow> 'a::len word \<Rightarrow> bool"
 where
