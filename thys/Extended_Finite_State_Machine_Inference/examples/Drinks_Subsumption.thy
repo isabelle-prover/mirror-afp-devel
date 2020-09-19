@@ -1,5 +1,5 @@
-subsection{*Example*}
-text{*This theory shows how contexts can be used to prove transition subsumption.*}
+subsection\<open>Example\<close> 
+text\<open>This theory shows how contexts can be used to prove transition subsumption.\<close>
 theory Drinks_Subsumption
 imports "Extended_Finite_State_Machine_Inference.Subsumption" "Extended_Finite_State_Machines.Drinks_Machine_2"
 begin
@@ -74,7 +74,6 @@ next
     apply clarify
     apply (simp add: in_possible_steps[symmetric])
     apply (simp add: drinks2_def)
-    apply clarsimp
     apply (simp add: drinks2_def[symmetric])
     apply (simp add: select_def can_take apply_updates_def)
     using no_change_1_1 by fastforce

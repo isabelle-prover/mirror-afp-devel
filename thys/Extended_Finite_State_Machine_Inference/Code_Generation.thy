@@ -68,12 +68,10 @@ lemma mutex_not_gval:
       apply simp
      apply simp
     apply simp
-    apply (case_tac "s v")
-     apply (case_tac "s v'")
-      apply simp
+    apply (case_tac "s v'")
+     apply simp
     apply simp
-   apply simp
-    apply (case_tac "s v")
+   apply (case_tac "s v")
      apply (case_tac "s v'")
   by auto
 

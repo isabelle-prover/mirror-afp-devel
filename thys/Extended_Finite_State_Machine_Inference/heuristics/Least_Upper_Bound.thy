@@ -704,7 +704,7 @@ next
     apply (induct a)
         apply simp
        apply simp
-    subgoal for _ x2 i ia
+    subgoal for x2 i ia
       apply (case_tac x2)
           apply (rule_tac x="list_update i ia x1" in exI)
           apply (simp add: apply_guards_cons unconstrained_input filter_empty_conv)
