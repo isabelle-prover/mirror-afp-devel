@@ -128,6 +128,46 @@ entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
 infrastructure developed in that entry.</description>
     </item>
     <item>
+       <title>A Formal Model of Extended Finite State Machines</title>
+              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</link>
+       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</guid>
+       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
+       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we provide a formalisation of extended finite state
+machines (EFSMs) where models are represented as finite sets of
+transitions between states. EFSMs execute traces to produce observable
+outputs. We also define various simulation and equality metrics for
+EFSMs in terms of traces and prove their strengths in relation to each
+other. Another key contribution is a framework of function definitions
+such that LTL properties can be phrased over EFSMs. Finally, we
+provide a simple example case study in the form of a drinks machine.</description>
+    </item>
+    <item>
+       <title>Inference of Extended Finite State Machines</title>
+              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</link>
+       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</guid>
+       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
+       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we provide a formal implementation of a
+state-merging technique to infer extended finite state machines
+(EFSMs), complete with output and update functions, from black-box
+traces. In particular, we define the subsumption in context relation
+as a means of determining whether one transition is able to account
+for the behaviour of another. Building on this, we define the direct
+subsumption relation, which lifts the subsumption in context relation
+to EFSM level such that we can use it to determine whether it is safe
+to merge a given pair of transitions. Key proofs include the
+conditions necessary for subsumption to occur and that subsumption
+and direct subsumption are preorder relations.  We also provide a
+number of different heuristics which can be used to abstract away
+concrete values into registers so that more states and transitions can
+be merged and provide proofs of the various conditions which must hold
+for these abstractions to subsume their ungeneralised counterparts. A
+Code Generator setup to create executable Scala code is also defined.</description>
+    </item>
+    <item>
        <title>Practical Algebraic Calculus Checker</title>
               <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
        <guid>https://www.isa-afp.org/entries/PAC_Checker.html</guid>
@@ -586,47 +626,6 @@ practical interoperability protocol for distributed ledgers, as
 authenticated data structures. This is a first step towards
 formalizing the Canton protocol and verifying its integrity and
 security guarantees.</description>
-    </item>
-    <item>
-       <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-              <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
-       <guid>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
-       <dc:creator> Lukas Heimes, Dmitriy Traytel, Joshua Schneider       </dc:creator>
-       <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Basin et al.&#39;s &lt;a
-href=&#34;https://doi.org/10.1016/j.ipl.2014.09.009&#34;&gt;sliding
-window algorithm (SWA)&lt;/a&gt; is an algorithm for combining the
-elements of subsequences of a sequence with an associative operator.
-It is greedy and minimizes the number of operator applications. We
-formalize the algorithm and verify its functional correctness. We
-extend the algorithm with additional operations and provide an
-alternative interface to the slide operation that does not require the
-entire input sequence.</description>
-    </item>
-    <item>
-       <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-              <link>https://www.isa-afp.org/entries/Saturation_Framework.html</link>
-       <guid>https://www.isa-afp.org/entries/Saturation_Framework.html</guid>
-       <dc:creator> Sophie Tourret       </dc:creator>
-       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization is the companion of the technical
-report “A comprehensive framework for saturation theorem proving”,
-itself companion of the eponym IJCAR 2020 paper, written by Uwe
-Waldmann, Sophie Tourret, Simon Robillard and Jasmin Blanchette. It
-verifies a framework for formal refutational completeness proofs of
-abstract provers that implement saturation calculi, such as ordered
-resolution or superposition, and allows to model entire prover
-architectures in such a way that the static refutational completeness
-of a calculus immediately implies the dynamic  refutational
-completeness of a prover implementing the calculus using a variant of
-the given clause loop.  The technical report “A comprehensive
-framework for saturation theorem proving” is available &lt;a
-href=&#34;http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf&#34;&gt;on
-the Matryoshka website&lt;/a&gt;. The names of the Isabelle lemmas and
-theorems corresponding to the results in the report are indicated in
-the margin of the report.</description>
     </item>
   </channel>
 </rss>

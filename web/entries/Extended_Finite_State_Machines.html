@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Stateful Protocol Composition and Typing - Archive of Formal Proofs
+<title>A Formal Model of Extended Finite State Machines - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,21 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>tateful
+  <h1>          <font class="first">A</font>
   
-          <font class="first">P</font>rotocol
+          <font class="first">F</font>ormal
   
-          <font class="first">C</font>omposition
+          <font class="first">M</font>odel
   
-          and
+          of
   
-          <font class="first">T</font>yping
+          <font class="first">E</font>xtended
+  
+          <font class="first">F</font>inite
+  
+          <font class="first">S</font>tate
+  
+          <font class="first">M</font>achines
   
 </h1>
   <p>&nbsp;</p>
@@ -91,7 +97,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Stateful Protocol Composition and Typing</td>
+  <td class="data" width="80%">A Formal Model of Extended Finite State Machines</td>
 </tr>
 
 <tr>
@@ -99,9 +105,10 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      Andreas V. Hess (avhe /at/ dtu /dot/ dk),
-                <a href="https://people.compute.dtu.dk/samo/">Sebastian Mödersheim</a> and
-          Achim D. Brucker (a /dot/ brucker /at/ exeter /dot/ ac /dot/ uk)
+                      Michael Foster (jmafoster1 /at/ sheffield /dot/ ac /dot/ uk),
+                  Achim D. Brucker (a /dot/ brucker /at/ exeter /dot/ ac /dot/ uk),
+                Ramsay G. Taylor (r /dot/ g /dot/ taylor /at/ sheffield /dot/ ac /dot/ uk) and
+          John Derrick (j /dot/ derrick /at/ sheffield /dot/ ac /dot/ uk)
       </td>
 </tr>
 
@@ -109,39 +116,33 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-04-08</td>
+  <td class="data">2020-09-07</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We provide in this AFP entry several relative soundness results for
-security protocols. In particular, we prove typing and
-compositionality results for stateful protocols (i.e., protocols with
-mutable state that may span several sessions), and that focuses on
-reachability properties. Such results are useful to simplify protocol
-verification by reducing it to a simpler problem: Typing results give
-conditions under which it is safe to verify a protocol in a typed
-model where only "well-typed" attacks can occur whereas
-compositionality results allow us to verify a composed protocol by
-only verifying the component protocols in isolation. The conditions on
-the protocols under which the results hold are furthermore syntactic
-in nature allowing for full automation. The foundation presented here
-is used in another entry to provide fully automated and formalized
-security proofs of stateful protocols.</td>
+In this AFP entry, we provide a formalisation of extended finite state
+machines (EFSMs) where models are represented as finite sets of
+transitions between states. EFSMs execute traces to produce observable
+outputs. We also define various simulation and equality metrics for
+EFSMs in terms of traces and prove their strengths in relation to each
+other. Another key contribution is a framework of function definitions
+such that LTL properties can be phrased over EFSMs. Finally, we
+provide a simple example case study in the form of a drinks machine.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Stateful_Protocol_Composition_and_Typing-AFP,
-  author  = {Andreas V. Hess and Sebastian Mödersheim and Achim D. Brucker},
-  title   = {Stateful Protocol Composition and Typing},
+        <pre>@article{Extended_Finite_State_Machines-AFP,
+  author  = {Michael Foster and Achim D. Brucker and Ramsay G. Taylor and John Derrick},
+  title   = {A Formal Model of Extended Finite State Machines},
   journal = {Archive of Formal Proofs},
-  month   = apr,
+  month   = sep,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html},
+  note    = {\url{http://isa-afp.org/entries/Extended_Finite_State_Machines.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -153,10 +154,10 @@ security proofs of stateful protocols.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>      </td></tr>
+          <td class="data"><a href="FinFun.html">FinFun</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Automated_Stateful_Protocol_Verification.html">Automated_Stateful_Protocol_Verification</a>      </td></tr>
+          <td class="data"><a href="Extended_Finite_State_Machine_Inference.html">Extended_Finite_State_Machine_Inference</a>      </td></tr>
           
 
         
@@ -169,17 +170,17 @@ security proofs of stateful protocols.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Extended_Finite_State_Machines/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Extended_Finite_State_Machines/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Extended_Finite_State_Machines/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Stateful_Protocol_Composition_and_Typing-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Extended_Finite_State_Machines-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

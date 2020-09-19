@@ -9742,3 +9742,42 @@ abstract =
   Bird's derivation and complete it by adding Knuth's
   optimisation.
 
+[Extended_Finite_State_Machines]
+title = A Formal Model of Extended Finite State Machines
+author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+topic = Computer science/Automata and formal languages
+date = 2020-09-07
+notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+abstract = 
+  In this AFP entry, we provide a formalisation of extended finite state
+  machines (EFSMs) where models are represented as finite sets of
+  transitions between states. EFSMs execute traces to produce observable
+  outputs. We also define various simulation and equality metrics for
+  EFSMs in terms of traces and prove their strengths in relation to each
+  other. Another key contribution is a framework of function definitions
+  such that LTL properties can be phrased over EFSMs. Finally, we
+  provide a simple example case study in the form of a drinks machine.
+
+[Extended_Finite_State_Machine_Inference]
+title = Inference of Extended Finite State Machines
+author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+topic = Computer science/Automata and formal languages
+date = 2020-09-07
+notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+abstract = 
+  In this AFP entry, we provide a formal implementation of a
+  state-merging technique to infer extended finite state machines
+  (EFSMs), complete with output and update functions, from black-box
+  traces. In particular, we define the subsumption in context relation
+  as a means of determining whether one transition is able to account
+  for the behaviour of another. Building on this, we define the direct
+  subsumption relation, which lifts the subsumption in context relation
+  to EFSM level such that we can use it to determine whether it is safe
+  to merge a given pair of transitions. Key proofs include the
+  conditions necessary for subsumption to occur and that subsumption
+  and direct subsumption are preorder relations.  We also provide a
+  number of different heuristics which can be used to abstract away
+  concrete values into registers so that more states and transitions can
+  be merged and provide proofs of the various conditions which must hold
+  for these abstractions to subsume their ungeneralised counterparts. A
+  Code Generator setup to create executable Scala code is also defined.
