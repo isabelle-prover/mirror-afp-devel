@@ -133,7 +133,6 @@ Discrete_Summation
 DiskPaxos
 DynamicArchitectures
 Dynamic_Tables
-EFSM_Inference
 E_Transcendental
 Echelon_Form
 EdmondsKarp_Maxflow
@@ -147,6 +146,7 @@ Euler_MacLaurin
 Euler_Partition
 Example-Submission
 Extended_Finite_State_Machines
+Extended_Finite_State_Machine_Inference
 FFT
 FLP
 FOL-Fitting

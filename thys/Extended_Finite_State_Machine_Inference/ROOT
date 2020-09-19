@@ -1,6 +1,6 @@
 chapter AFP
 
-session EFSM_Inference (AFP) = Extended_Finite_State_Machines +
+session Extended_Finite_State_Machine_Inference (AFP) = Extended_Finite_State_Machines +
 options [timeout = 600]
 directories
   "heuristics"
