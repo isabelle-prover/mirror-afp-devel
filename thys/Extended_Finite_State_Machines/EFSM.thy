@@ -586,8 +586,7 @@ lemma observe_execution_step:
    apply simp
   subgoal for a b
     apply (case_tac "SOME x. x |\<in>| possible_steps e s r a b")
-    apply (simp add: random_member_def)
-    by auto
+    by (simp add: random_member_def)
   done
 
 lemma observe_execution_possible_step:
@@ -949,7 +948,7 @@ next
       apply simp
      apply simp
     apply clarsimp
-    subgoal for _ _ i o l
+    subgoal for l o _ _ i
       apply (case_tac "ffilter (\<lambda>(s1', t1). evaluate_outputs t1 i r1 = map Some o) (possible_steps e1 s1 r1 l i) = {||}")
        apply auto[1]
       by fastforce
@@ -1129,7 +1128,7 @@ proof(induct t arbitrary: s1 s2 r1 r2)
      apply simp
     apply clarsimp
     apply standard
-    subgoal for p l i
+    subgoal for i p l
       apply (rule accepts_trace.cases)
         apply simp
        apply simp
@@ -1145,11 +1144,13 @@ proof(induct t arbitrary: s1 s2 r1 r2)
       apply simp
      apply simp
     apply clarsimp
-    apply (rule accepts_trace.step)
-    apply (erule_tac x="(aa, b)" in fBallE)
-     defer apply simp
-    apply simp
-    by fastforce
+    subgoal for _ _ _ aa b
+      apply (rule accepts_trace.step)
+      apply (erule_tac x="(aa, b)" in fBallE)
+       defer apply simp
+      apply simp
+      by fastforce
+    done
 qed auto
 
 lemma executionally_equivalent_acceptance:
