@@ -15,42 +15,40 @@ priority queues that have logarithmic (albeit amortized) complexity.
 The implementation below should be generalized to separate the elements from
 their priorities.\<close>
 
-type_synonym 'a heap = "'a tree"
-
 
 subsection "Get Minimum"
 
-fun get_min :: "'a::linorder heap \<Rightarrow> 'a" where
+fun get_min :: "('a::linorder) tree \<Rightarrow> 'a" where
 "get_min(Node l m r) = m"
 
-lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> get_min h = Min_mset (mset_tree h)"
+lemma get_min: "\<lbrakk> heap t;  t \<noteq> Leaf \<rbrakk> \<Longrightarrow> get_min t = Min_mset (mset_tree t)"
 by (auto simp add: eq_Min_iff neq_Leaf_iff)
 
 subsection "Merge"
 
-function merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"merge Leaf h = h" |
-"merge h Leaf = h" |
-"merge (Node l1 a1 r1 =: h1) (Node l2 a2 r2 =: h2) =
-   (if a1 \<le> a2 then Node (merge h2 r1) a1 l1
-    else Node (merge h1 r2) a2 l2)" 
+function merge :: "('a::linorder) tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"merge Leaf t = t" |
+"merge t Leaf = t" |
+"merge (Node l1 a1 r1 =: t1) (Node l2 a2 r2 =: t2) =
+   (if a1 \<le> a2 then Node (merge t2 r1) a1 l1
+    else Node (merge t1 r2) a2 l2)" 
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
 
-lemma merge_code: "merge h1 h2 =
-  (case h1 of
-   Leaf \<Rightarrow> h2 |
-   Node l1 a1 r1 \<Rightarrow> (case h2 of
-     Leaf \<Rightarrow> h1 |
+lemma merge_code: "merge t1 t2 =
+  (case t1 of
+   Leaf \<Rightarrow> t2 |
+   Node l1 a1 r1 \<Rightarrow> (case t2 of
+     Leaf \<Rightarrow> t1 |
      Node l2 a2 r2 \<Rightarrow> 
        (if a1 \<le> a2
-        then Node (merge h2 r1) a1 l1
-        else Node (merge h1 r2) a2 l2)))"
+        then Node (merge t2 r1) a1 l1
+        else Node (merge t1 r2) a2 l2)))"
 by(auto split: tree.split)
 
 text\<open>An alternative version that always walks to the Leaf of both heaps:\<close>
-function merge2 :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+function merge2 :: "('a::linorder) tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "merge2 Leaf Leaf = Leaf" |
 "merge2 Leaf (Node l2 a2 r2) = Node (merge2 r2 Leaf) a2 l2" |
 "merge2 (Node l1 a1 r1) Leaf = Node (merge2 r1 Leaf) a1 l1" |
@@ -68,42 +66,42 @@ by(induction t1 t2 rule: merge.induct) auto
 lemma size_merge2[simp]: "size(merge2 t1 t2) = size t1 + size t2"
 by(induction t1 t2 rule: merge2.induct) auto
 
-lemma mset_merge: "mset_tree (merge h1 h2) = mset_tree h1 + mset_tree h2"
-by (induction h1 h2 rule: merge.induct) (auto simp add: ac_simps)
+lemma mset_merge: "mset_tree (merge t1 t2) = mset_tree t1 + mset_tree t2"
+by (induction t1 t2 rule: merge.induct) (auto simp add: ac_simps)
 
-lemma set_merge: "set_tree (merge h1 h2) = set_tree h1 \<union> set_tree h2"
+lemma set_merge: "set_tree (merge t1 t2) = set_tree t1 \<union> set_tree t2"
 by (metis mset_merge set_mset_tree set_mset_union)
 
 lemma heap_merge:
-  "heap h1 \<Longrightarrow> heap h2 \<Longrightarrow> heap (merge h1 h2)"
-by (induction h1 h2 rule: merge.induct)(auto simp: ball_Un set_merge)
+  "heap t1 \<Longrightarrow> heap t2 \<Longrightarrow> heap (merge t1 t2)"
+by (induction t1 t2 rule: merge.induct)(auto simp: ball_Un set_merge)
 
 
 subsection "Insert"
 
 hide_const (open) insert
 
-definition insert :: "'a::linorder \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+definition insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert a t = merge (Node Leaf a Leaf) t"
 
-lemma heap_insert: "heap h \<Longrightarrow> heap (insert a h)"
+lemma heap_insert: "heap t \<Longrightarrow> heap (insert a t)"
 by (simp add: insert_def heap_merge)
 
-lemma mset_insert: "mset_tree (insert a h) = {#a#} + mset_tree h"
+lemma mset_insert: "mset_tree (insert a t) = {#a#} + mset_tree t"
 by (auto simp: mset_merge insert_def)
 
 
 subsection "Delete minimum"
 
-fun del_min :: "'a::linorder heap \<Rightarrow> 'a heap" where
+fun del_min :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "del_min Leaf = Leaf" |
 "del_min (Node l m r) = merge l r"
 
-lemma heap_del_min: "heap h \<Longrightarrow> heap (del_min h)"
-by (cases h) (auto simp: heap_merge)
+lemma heap_del_min: "heap t \<Longrightarrow> heap (del_min t)"
+by (cases t) (auto simp: heap_merge)
 
-lemma mset_del_min: "mset_tree (del_min h) = mset_tree h - {# get_min h #}"
-by (cases h) (auto simp: mset_merge ac_simps)
+lemma mset_del_min: "mset_tree (del_min t) = mset_tree t - {# get_min t #}"
+by (cases t) (auto simp: mset_merge ac_simps)
 
 
 interpretation skew_heap: Priority_Queue_Merge
