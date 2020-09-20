@@ -1,4 +1,4 @@
-chapter {*Predicates for Terms, Formulas and Substitution*}
+chapter \<open>Predicates for Terms, Formulas and Substitution\<close>
 
 theory Coding_Predicates
 imports Coding Sigma
@@ -6,11 +6,11 @@ begin
 
 declare succ_iff [simp del]
 
-text {*This material comes from Section 3, greatly modified for de Bruijn syntax.*}
+text \<open>This material comes from Section 3, greatly modified for de Bruijn syntax.\<close>
 
-section {*Predicates for atomic terms*}
+section \<open>Predicates for atomic terms\<close>
 
-subsection {*Free Variables*}
+subsection \<open>Free Variables\<close>
 
 definition VarP :: "tm \<Rightarrow> fm" where "VarP x \<equiv> OrdP x AND Zero IN x"
 
@@ -32,7 +32,7 @@ lemma VarP_cong: "H \<turnstile> x EQ x' \<Longrightarrow> H \<turnstile> VarP x
 lemma VarP_HPairE [intro!]: "insert (VarP (HPair x y)) H \<turnstile> A"
   by (auto simp: VarP_def)
 
-subsection {*De Bruijn Indexes*}
+subsection \<open>De Bruijn Indexes\<close>
 
 abbreviation Q_Ind :: "tm \<Rightarrow> tm"
   where "Q_Ind k \<equiv> HPair (HTuple 6) k"
@@ -70,9 +70,9 @@ qed
 lemma IndP_cong: "H \<turnstile> x EQ x' \<Longrightarrow> H \<turnstile> IndP x IFF IndP x'"
   by (rule P1_cong) auto
 
-subsection {*Various syntactic lemmas*}
+subsection \<open>Various syntactic lemmas\<close>
 
-section {*The predicate @{text SeqCTermP}, for Terms and Constants*}
+section \<open>The predicate \<open>SeqCTermP\<close>, for Terms and Constants\<close>
 
 (*SeqCTerm(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>l\<in>k)[s l=0 \<or> Var(s l)\<or>(\<exists>m,n\<in>l)[s l = \<langle>Eats, s m, s n\<rangle>]]*)
 nominal_function SeqCTermP :: "bool \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
@@ -152,9 +152,9 @@ proof -
 qed
 
 
-section {*The predicates @{text TermP} and @{text ConstP}*}
+section \<open>The predicates \<open>TermP\<close> and \<open>ConstP\<close>\<close>
 
-subsection {*Definition*}
+subsection \<open>Definition\<close>
 
 nominal_function CTermP :: "bool \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom k \<sharp> (s,t); atom s \<sharp> t\<rbrakk> \<Longrightarrow>
@@ -188,7 +188,7 @@ abbreviation TermP :: "tm \<Rightarrow> fm"
 abbreviation ConstP :: "tm \<Rightarrow> fm"
   where "ConstP \<equiv> CTermP False"
 
-subsection {*Correctness properties for constants*}
+subsection \<open>Correctness properties for constants\<close>
 
 lemma ConstP_imp_TermP: "{ConstP t} \<turnstile> TermP t"
 proof -
@@ -202,7 +202,7 @@ proof -
 qed
 
 
-section {*Abstraction over terms*}
+section \<open>Abstraction over terms\<close>
 
 nominal_function SeqStTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,v,i,sl,sl',m,n,sm,sm',sn,sn');
@@ -275,7 +275,7 @@ lemma SeqStTermP_cong:
 
 declare SeqStTermP.simps [simp del]
 
-subsection {*Defining the syntax: main predicate*}
+subsection \<open>Defining the syntax: main predicate\<close>
 
 nominal_function AbstTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,t,u,k); atom k \<sharp> (v,i,t,u)\<rbrakk> \<Longrightarrow>
@@ -313,9 +313,9 @@ qed
 
 declare AbstTermP.simps [simp del]
 
-section {*Substitution over terms*}
+section \<open>Substitution over terms\<close>
 
-subsection {*Defining the syntax*}
+subsection \<open>Defining the syntax\<close>
 
 nominal_function SubstTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,t,u,k); atom k \<sharp> (v,i,t,u)\<rbrakk> \<Longrightarrow>
@@ -358,9 +358,9 @@ lemma SubstTermP_cong:
 
 declare SubstTermP.simps [simp del]
 
-section {*Abstraction over formulas*}
+section \<open>Abstraction over formulas\<close>
 
-subsection {*The predicate @{text AbstAtomicP}*}
+subsection \<open>The predicate \<open>AbstAtomicP\<close>\<close>
 
 nominal_function AbstAtomicP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom t \<sharp> (v,i,y,y',t',u,u'); atom t' \<sharp> (v,i,y,y',u,u');
@@ -401,7 +401,7 @@ qed
 
 declare AbstAtomicP.simps [simp del]
 
-subsection {*The predicate @{text AbsMakeForm}*}
+subsection \<open>The predicate \<open>AbsMakeForm\<close>\<close>
 
 nominal_function SeqAbstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,v,sli,sl,sl',m,n,smi,sm,sm',sni,sn,sn');
@@ -483,7 +483,7 @@ qed
 
 declare SeqAbstFormP.simps [simp del]
 
-subsection {*Defining the syntax: the main AbstForm predicate*}
+subsection \<open>Defining the syntax: the main AbstForm predicate\<close>
 
 nominal_function AbstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,x,x',k);
@@ -517,9 +517,9 @@ qed
 
 declare AbstFormP.simps [simp del]
 
-section {*Substitution over formulas*}
+section \<open>Substitution over formulas\<close>
 
-subsection {*The predicate @{text SubstAtomicP}*}
+subsection \<open>The predicate \<open>SubstAtomicP\<close>\<close>
 
 nominal_function SubstAtomicP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom t \<sharp> (v,tm,y,y',t',u,u');
@@ -566,7 +566,7 @@ lemma SubstAtomicP_cong:
   by (rule P4_cong) auto
 
 
-subsection {*The predicate @{text SubstMakeForm}*}
+subsection \<open>The predicate \<open>SubstMakeForm\<close>\<close>
 
 nominal_function SeqSubstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,v,u,sl,sl',m,n,sm,sm',sn,sn');
@@ -640,7 +640,7 @@ lemma SeqSubstFormP_cong:
 
 declare SeqSubstFormP.simps [simp del]
 
-subsection {*Defining the syntax: the main SubstForm predicate*}
+subsection \<open>Defining the syntax: the main SubstForm predicate\<close>
 
 nominal_function SubstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,x,x',k); atom k \<sharp> (v,i,x,x')\<rbrakk> \<Longrightarrow>
@@ -683,7 +683,7 @@ lemma ground_SubstFormP [simp]: "ground_fm (SubstFormP v y x x') \<longleftright
 
 declare SubstFormP.simps [simp del]
 
-section {*The predicate @{text AtomicP}*}
+section \<open>The predicate \<open>AtomicP\<close>\<close>
 
 nominal_function AtomicP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom t \<sharp> (u,y); atom u \<sharp> y\<rbrakk> \<Longrightarrow>
@@ -714,7 +714,7 @@ proof -
 qed
 
 
-section {*The predicate @{text MakeForm} *}
+section \<open>The predicate \<open>MakeForm\<close>\<close>
 
 nominal_function MakeFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom v \<sharp> (y,u,w,au); atom au \<sharp> (y,u,w)\<rbrakk> \<Longrightarrow>
@@ -749,7 +749,7 @@ proof -
 qed
 
 
-section {*The predicate @{text SeqFormP} *}
+section \<open>The predicate \<open>SeqFormP\<close>\<close>
 
 (*SeqForm(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>n\<in>k)[Atomic (s n) \<or> (\<exists>m,l\<in>n)[MakeForm (s m) (s l) (s n)]]*)
 
@@ -798,9 +798,9 @@ proof -
     by (auto simp: SeqFormP.simps [of l _ _ _ sl m n sm sn])
 qed
 
-section {*The predicate @{text FormP}*}
+section \<open>The predicate \<open>FormP\<close>\<close>
 
-subsection {*Definition*}
+subsection \<open>Definition\<close>
 
 nominal_function FormP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom k \<sharp> (s,y); atom s \<sharp> y\<rbrakk> \<Longrightarrow>
@@ -829,7 +829,7 @@ proof -
 qed
 
 
-subsection {*The predicate @{text VarNonOccFormP} (Derived from @{text SubstFormP})*}
+subsection \<open>The predicate \<open>VarNonOccFormP\<close> (Derived from \<open>SubstFormP\<close>)\<close>
 
 nominal_function VarNonOccFormP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "VarNonOccFormP v x = FormP x AND SubstFormP v Zero x x"

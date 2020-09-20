@@ -1,10 +1,10 @@
-chapter{*Uniqueness Results: Syntactic Relations are Functions*}
+chapter\<open>Uniqueness Results: Syntactic Relations are Functions\<close>
 
 theory Functions
 imports Coding_Predicates
 begin
 
-subsection {*SeqStTermP*}
+subsection \<open>SeqStTermP\<close>
 
 lemma not_IndP_VarP: "{IndP x, VarP x} \<turnstile> A"
 proof -
@@ -14,7 +14,7 @@ proof -
     by  (auto simp: fresh_Pair) (blast intro: ExFalso cut_same [OF VarP_cong [THEN Iff_MP_same]])
 qed
 
-text{*It IS a pair, but not just any pair.*}
+text\<open>It IS a pair, but not just any pair.\<close>
 lemma IndP_HPairE: "insert (IndP (HPair (HPair Zero (HPair Zero Zero)) x)) H \<turnstile> A"
 proof -
   obtain m::name  where "atom m \<sharp> (x,A)"
@@ -222,7 +222,7 @@ proof -
        (metis SeqStTermP_unique rotate3 thin1)
 qed
 
-subsection{*@{term SubstAtomicP}*}
+subsection\<open>@{term SubstAtomicP}\<close>
 
 lemma SubstTermP_eq:
   "\<lbrakk>H \<turnstile> SubstTermP v tm x z; insert (SubstTermP v tm y z) H \<turnstile> A\<rbrakk> \<Longrightarrow> insert (x EQ y) H \<turnstile> A"
@@ -259,7 +259,7 @@ proof -
     done
 qed
 
-subsection{*@{term SeqSubstFormP}*}
+subsection\<open>@{term SeqSubstFormP}\<close>
 
 lemma SeqSubstFormP_lemma:
   assumes "atom m \<sharp> (v,u,x,y,s,k,n,sm,sm',sn,sn')" "atom n \<sharp> (v,u,x,y,s,k,sm,sm',sn,sn')"
@@ -480,7 +480,7 @@ proof -
     using atoms by simp (metis DisjAssoc2 Disj_commute anti_deduction)
 qed
 
-subsection{*@{term SubstFormP}*}
+subsection\<open>@{term SubstFormP}\<close>
 
 theorem SubstFormP_unique: "{SubstFormP v tm x y, SubstFormP v tm x y'} \<turnstile> y' EQ y"
 proof -

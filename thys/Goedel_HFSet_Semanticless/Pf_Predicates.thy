@@ -1,12 +1,12 @@
-chapter{*Formalizing Provability*}
+chapter\<open>Formalizing Provability\<close>
 
 theory Pf_Predicates
 imports Coding_Predicates
 begin
 
-section {* Section 4 Predicates (Leading up to Pf)*}
+section \<open>Section 4 Predicates (Leading up to Pf)\<close>
 
-subsection {*The predicate @{text SentP}, for the Sentiential (Boolean) Axioms*}
+subsection \<open>The predicate \<open>SentP\<close>, for the Sentiential (Boolean) Axioms\<close>
 
 nominal_function SentP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom y \<sharp> (z,w,x); atom z \<sharp> (w,x); atom w \<sharp> x\<rbrakk> \<Longrightarrow>
@@ -33,7 +33,7 @@ proof -
     by auto
 qed
 
-subsection {*The predicate @{text Equality_axP}, for the Equality Axioms*}
+subsection \<open>The predicate \<open>Equality_axP\<close>, for the Equality Axioms\<close>
 
 function Equality_axP :: "tm \<Rightarrow> fm"
   where "Equality_axP x =
@@ -43,7 +43,7 @@ by auto
 termination
   by lexicographic_order
 
-subsection {*The predicate @{text HF_axP}, for the HF Axioms*}
+subsection \<open>The predicate \<open>HF_axP\<close>, for the HF Axioms\<close>
 
 function HF_axP :: "tm \<Rightarrow> fm"
   where "HF_axP x = x EQ \<lceil>HF1\<rceil> OR x EQ \<lceil>HF2\<rceil>"
@@ -56,9 +56,9 @@ lemma HF_axP_sf [iff]: "Sigma_fm (HF_axP t)"
   by auto
 
 
-subsection {*The specialisation axioms*}
+subsection \<open>The specialisation axioms\<close>
 
-subsubsection {*Defining the syntax*}
+subsubsection \<open>Defining the syntax\<close>
 
 nominal_function Special_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom v \<sharp> (p,sx,y,ax,x); atom x \<sharp> (p,sx,y,ax);
@@ -85,9 +85,9 @@ proof -
     by auto
 qed
 
-subsection {*The induction axioms*}
+subsection \<open>The induction axioms\<close>
 
-subsubsection {*Defining the syntax*}
+subsubsection \<open>Defining the syntax\<close>
 
 nominal_function Induction_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom ax \<sharp> (p,v,w,x,x0,xw,xevw,allw,allvw);
@@ -124,7 +124,7 @@ proof -
     by auto
 qed
 
-subsection {*The predicate @{text AxiomP}, for any Axioms*}
+subsection \<open>The predicate \<open>AxiomP\<close>, for any Axioms\<close>
 
 definition AxiomP :: "tm \<Rightarrow> fm"
   where "AxiomP x \<equiv> x EQ \<lceil>extra_axiom\<rceil> OR SentP x OR Equality_axP x OR
@@ -155,7 +155,7 @@ lemma AxiomP_sf [iff]: "Sigma_fm (AxiomP t)"
   by (auto simp: AxiomP_def)
 
 
-subsection {*The predicate @{text ModPonP}, for the inference rule Modus Ponens*}
+subsection \<open>The predicate \<open>ModPonP\<close>, for the inference rule Modus Ponens\<close>
 
 definition ModPonP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "ModPonP x y z = (y EQ Q_Imp x z)"
@@ -174,8 +174,8 @@ lemma ModPonP_subst [simp]:
   by (auto simp: ModPonP_def)
 
 
-subsection {*The predicate @{text ExistsP}, for the existential rule *}
-subsubsection {*Definition*}
+subsection \<open>The predicate \<open>ExistsP\<close>, for the existential rule\<close>
+subsubsection \<open>Definition\<close>
 
 (*  "\<turnstile> A IMP B \<Longrightarrow> atom i \<sharp> B \<Longrightarrow>  \<turnstile> (Ex i A) IMP B" *)
 nominal_function ExistsP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
@@ -212,14 +212,14 @@ proof -
     by (auto simp: ExistsP.simps [of x _ _ x' y v])
 qed
 
-subsection {*The predicate @{text SubstP}, for the substitution rule *}
+subsection \<open>The predicate \<open>SubstP\<close>, for the substitution rule\<close>
 
-text{*Although the substitution rule is derivable in the calculus, the derivation is
+text\<open>Although the substitution rule is derivable in the calculus, the derivation is
 too complicated to reproduce within the proof function. It is much easier to
 provide it as an immediate inference step, justifying its soundness in terms
-of other inference rules.*}
+of other inference rules.\<close>
 
-subsubsection {*Definition*}
+subsubsection \<open>Definition\<close>
 
 nominal_function SubstP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
   "\<lbrakk>atom u \<sharp> (p,q,v); atom v \<sharp> (p,q)\<rbrakk> \<Longrightarrow>
@@ -248,7 +248,7 @@ proof -
 qed
 
 
-subsection {*The predicate @{text PrfP}*}
+subsection \<open>The predicate \<open>PrfP\<close>\<close>
 
 (*Prf(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>n\<in>k)[Sent (s n) \<or> (\<exists>m,l\<in>n)[ModPon (s m) (s l) (s n)]]*)
 nominal_function PrfP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
@@ -296,7 +296,7 @@ proof -
 qed
 
 
-subsection {*The predicate @{text PfP}*}
+subsection \<open>The predicate \<open>PfP\<close>\<close>
 
 nominal_function PfP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom k \<sharp> (s,y); atom s \<sharp> y\<rbrakk> \<Longrightarrow>

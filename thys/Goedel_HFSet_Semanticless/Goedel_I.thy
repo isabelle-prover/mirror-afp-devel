@@ -1,12 +1,12 @@
-chapter {* Section 6 Material and Gödel's First Incompleteness Theorem*}
+chapter \<open>Section 6 Material and Gödel's First Incompleteness Theorem\<close>
 
 theory Goedel_I
 imports Pf_Predicates Functions II_Prelims
 begin
 
-section{*The Function W and Lemma 6.1*}
+section\<open>The Function W and Lemma 6.1\<close>
 
-subsection{*Predicate form, defined on sequences*}
+subsection\<open>Predicate form, defined on sequences\<close>
 
 nominal_function SeqWRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl); atom sl \<sharp> (s)\<rbrakk> \<Longrightarrow>
@@ -48,7 +48,7 @@ lemma SeqWRP_cong:
 
 declare SeqWRP.simps [simp del]
 
-subsection{*Predicate form of W*}
+subsection\<open>Predicate form of W\<close>
 
 nominal_function WRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (x,y)\<rbrakk> \<Longrightarrow>
@@ -186,7 +186,7 @@ lemma prove_WRP:  "{} \<turnstile> WRP \<lceil>Var x\<rceil> \<lceil>\<lceil>Var
   unfolding quot_Var quot_Succ
   by (rule WRP_Succ[THEN cut2]) (auto simp: WRP)
 
-subsection{*Proving that these relations are functions*}
+subsection\<open>Proving that these relations are functions\<close>
 
 lemma SeqWRP_Zero_E:
   assumes "insert (y EQ Zero) H \<turnstile> A"  "H \<turnstile> k EQ Zero"
@@ -281,9 +281,9 @@ proof -
     by (auto simp: SeqWRP_unique [THEN rotate3] WRP.simps [of s _ y]  WRP.simps [of s' _ y'])
 qed
 
-section{*The Function HF and Lemma 6.2*}
+section\<open>The Function HF and Lemma 6.2\<close>
 
-subsection {*Defining the syntax: quantified body*}
+subsection \<open>Defining the syntax: quantified body\<close>
 
 nominal_function SeqHRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl,sl',m,n,sm,sm',sn,sn');
@@ -350,7 +350,7 @@ lemma SeqHRP_cong:
   shows "H \<turnstile> SeqHRP x y s k IFF SeqHRP x' y' s' k'"
   by (rule P4_cong [OF _ assms], auto)
 
-subsection {*Defining the syntax: main predicate*}
+subsection \<open>Defining the syntax: main predicate\<close>
 
 nominal_function HRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (x,x',k); atom k \<sharp> (x,x')\<rbrakk> \<Longrightarrow>
@@ -378,7 +378,7 @@ proof -
     by (auto simp: HRP.simps [of s _ _ k])
 qed
 
-subsection{*Proving that these relations are functions*}
+subsection\<open>Proving that these relations are functions\<close>
 
 lemma SeqHRP_lemma:
   assumes "atom m \<sharp> (x,x',s,k,n,sm,sm',sn,sn')" "atom n \<sharp> (x,x',s,k,sm,sm',sn,sn')"
@@ -738,7 +738,7 @@ lemma prove_HRP_coding_tm: fixes t::tm shows "coding_tm t \<Longrightarrow> {} \
 
 lemmas prove_HRP = prove_HRP_coding_tm[OF quot_fm_coding]
 
-section{*The Function K and Lemma 6.3*}
+section\<open>The Function K and Lemma 6.3\<close>
 
 nominal_function KRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom y \<sharp> (v,x,x') \<Longrightarrow>
