@@ -155,6 +155,7 @@ nominal_function eval_fmla :: "(name, nat) finfun \<Rightarrow> fmla \<Rightarro
  | "eval_fmla e (A OR B) \<longleftrightarrow> eval_fmla e A \<or> eval_fmla e B"
  | "eval_fmla e (neg A) \<longleftrightarrow> (~ eval_fmla e A)"
  | "atom k \<sharp> e \<Longrightarrow> eval_fmla e (exi k A) \<longleftrightarrow> (\<exists>x. eval_fmla (finfun_update e k x) A)"
+supply [[simproc del: defined_all]]
 apply(simp add: eqvt_def eval_fmla_graph_aux_def)
 apply(auto del: iffI) [11]
 apply(rule_tac y=b and c="(a)" in fmla.strong_exhaust)
