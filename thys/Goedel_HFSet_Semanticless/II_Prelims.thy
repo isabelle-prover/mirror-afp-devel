@@ -14,7 +14,7 @@ proof -
     by (rule thin0)
 qed
 
-lemma VarP_Var [intro]: "H \<turnstile> VarP \<lceil>Var i\<rceil>"
+lemma VarP_Var [intro]: "H \<turnstile> VarP \<guillemotleft>Var i\<guillemotright>"
   unfolding VarP_def
   by (auto simp: quot_Var OrdP_ORD_OF intro!: OrdP_SUCC_I cut1[OF Zero_In_SUCC])
 
@@ -1686,7 +1686,7 @@ proof -
     done
 qed (*>*)
 
-corollary SubstTermP_Zero: "{TermP t} \<turnstile> SubstTermP \<lceil>Var v\<rceil> t Zero Zero"
+corollary SubstTermP_Zero: "{TermP t} \<turnstile> SubstTermP \<guillemotleft>Var v\<guillemotright> t Zero Zero"
 proof -
   obtain s::name and k::name where "atom s \<sharp> (v,t,k)"  "atom k \<sharp> (v,t)"
     by (metis obtain_fresh)
@@ -1938,7 +1938,7 @@ proof -
     done
 qed (*>*)
 
-lemma SeqConstP_imp_SubstTermP: "{SeqConstP s kk c, TermP t} \<turnstile> SubstTermP \<lceil>Var w\<rceil> t c c" (*<*)
+lemma SeqConstP_imp_SubstTermP: "{SeqConstP s kk c, TermP t} \<turnstile> SubstTermP \<guillemotleft>Var w\<guillemotright> t c c" (*<*)
 proof -
   obtain j::name and k::name and l::name and sl::name and m::name and n::name and sm::name and sn::name
     where atoms: "atom j \<sharp> (s,kk,c,t,k,l,sl,m,n,sm,sn)"  "atom k \<sharp> (s,kk,c,t,l,sl,m,n,sm,sn)"
@@ -1946,7 +1946,7 @@ proof -
                  "atom m \<sharp> (s,kk,c,t,n,sm,sn)"  "atom n \<sharp> (s,kk,c,t,sm,sn)"
                  "atom sm \<sharp> (s,kk,c,t,sn)"      "atom sn \<sharp> (s,kk,c,t)"
     by (metis obtain_fresh)
-  have "{ OrdP (Var k), TermP t } \<turnstile> All j (SeqConstP s (Var k) (Var j) IMP SubstTermP \<lceil>Var w\<rceil> t (Var j) (Var j))"
+  have "{ OrdP (Var k), TermP t } \<turnstile> All j (SeqConstP s (Var k) (Var j) IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t (Var j) (Var j))"
         (is "_ \<turnstile> ?scheme")
     proof (rule OrdIndH [where j=l])
       show "atom l \<sharp> (k, ?scheme)" using atoms
@@ -1971,17 +1971,17 @@ proof -
         apply (rule All_E [where x="Var sn"], auto)
         done
     qed
-  hence "{OrdP (Var k), TermP t} \<turnstile> (SeqConstP s (Var k) (Var j) IMP SubstTermP \<lceil>Var w\<rceil> t (Var j) (Var j))(j::=c)"
+  hence "{OrdP (Var k), TermP t} \<turnstile> (SeqConstP s (Var k) (Var j) IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t (Var j) (Var j))(j::=c)"
     by (metis All_D)
-  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<lceil>Var w\<rceil> t c c)"
+  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t c c)"
     using atoms by simp (metis Imp_cut SeqCTermP_imp_OrdP)
-  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<lceil>Var w\<rceil> t c c)(k::=kk)"
+  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t c c)(k::=kk)"
     using atoms by (force intro!: Subst)
   thus ?thesis
     using atoms by (simp add: anti_deduction)
 qed (*>*)
 
-theorem SubstTermP_Const: "{ConstP c, TermP t} \<turnstile> SubstTermP \<lceil>Var w\<rceil> t c c"
+theorem SubstTermP_Const: "{ConstP c, TermP t} \<turnstile> SubstTermP \<guillemotleft>Var w\<guillemotright> t c c"
 proof -
   obtain s::name and k::name where "atom s \<sharp> (c,t,w,k)" "atom k \<sharp> (c,t,w)"
     by (metis obtain_fresh)
@@ -2676,7 +2676,7 @@ proof -
     done
 qed
 
-lemma TermP_Var: "{} \<turnstile> TermP \<lceil>Var x\<rceil>"
+lemma TermP_Var: "{} \<turnstile> TermP \<guillemotleft>Var x\<guillemotright>"
 proof -
   obtain s::name and k::name and l::name and sl::name and m::name and n::name and sm::name and sn::name
     where atoms:
@@ -2691,10 +2691,10 @@ proof -
     by (metis obtain_fresh)
   then show ?thesis
     apply (subst CTermP.simps[of k s]; auto?)
-    apply (rule Ex_I[of _ _ _ "Eats Zero (HPair Zero \<lceil>Var x\<rceil>)"]; auto?)
+    apply (rule Ex_I[of _ _ _ "Eats Zero (HPair Zero \<guillemotleft>Var x\<guillemotright>)"]; auto?)
     apply (rule Ex_I[of _ _ _ "Zero"]; auto?)
     apply (subst SeqCTermP.simps[of l _ _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>Var x\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>Var x\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -2996,13 +2996,13 @@ qed
 theorem PfP_implies_ModPon_PfP: "\<lbrakk>H \<turnstile> PfP (Q_Imp x y); H \<turnstile> PfP x\<rbrakk> \<Longrightarrow> H \<turnstile> PfP y"
   by (force intro: PfP_inference [of x, THEN cut3] Disj_I1  simp add: ModPonP_def)
 
-corollary PfP_implies_ModPon_PfP_quot: "\<lbrakk>H \<turnstile> PfP \<lceil>\<alpha> IMP \<beta>\<rceil>; H \<turnstile> PfP \<lceil>\<alpha>\<rceil>\<rbrakk> \<Longrightarrow> H \<turnstile> PfP \<lceil>\<beta>\<rceil>"
+corollary PfP_implies_ModPon_PfP_quot: "\<lbrakk>H \<turnstile> PfP \<guillemotleft>\<alpha> IMP \<beta>\<guillemotright>; H \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>\<rbrakk> \<Longrightarrow> H \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>"
   by (auto simp: quot_fm_def intro: PfP_implies_ModPon_PfP)
 
 
 lemma TermP_quot:
   fixes \<alpha> :: tm
-  shows "{} \<turnstile> TermP \<lceil>\<alpha>\<rceil>"
+  shows "{} \<turnstile> TermP \<guillemotleft>\<alpha>\<guillemotright>"
   by (induct \<alpha> rule: tm.induct)
     (auto simp: quot_Eats intro: TermP_Zero TermP_Var TermP_Eats[THEN cut2])
 
@@ -3616,7 +3616,7 @@ proof -
         intro!: SeqAbstFormP_Ex [THEN cut3] Ord_IN_Ord[OF Mem_SUCC_I2[OF Refl], of _ i])
 qed
 
-corollary AbstTermP_Zero: "{OrdP t} \<turnstile> AbstTermP \<lceil>Var v\<rceil> t Zero Zero"
+corollary AbstTermP_Zero: "{OrdP t} \<turnstile> AbstTermP \<guillemotleft>Var v\<guillemotright> t Zero Zero"
 proof -
   obtain s::name and k::name where "atom s \<sharp> (v,t,k)"  "atom k \<sharp> (v,t)"
     by (metis obtain_fresh)
@@ -3672,10 +3672,10 @@ proof (induct x arbitrary: y)
     by (cases y) (auto simp: gr0_conv_Suc Eats_EQ_Zero_E SUCC_def)
 qed (auto simp: gr0_conv_Suc SUCC_def)
 
-lemma quot_Var_EQ_diff: "i \<noteq> x \<Longrightarrow> {\<lceil>Var i\<rceil> EQ \<lceil>Var x\<rceil>} \<turnstile> Fls"
+lemma quot_Var_EQ_diff: "i \<noteq> x \<Longrightarrow> {\<guillemotleft>Var i\<guillemotright> EQ \<guillemotleft>Var x\<guillemotright>} \<turnstile> Fls"
   by (auto simp: quot_Var ORD_OF_EQ_diff)
 
-lemma AbstTermP_dbtm: "{} \<turnstile> AbstTermP \<lceil>Var i\<rceil> (ORD_OF n) (quot_dbtm u) (quot_dbtm (abst_dbtm i n u))"
+lemma AbstTermP_dbtm: "{} \<turnstile> AbstTermP \<guillemotleft>Var i\<guillemotright> (ORD_OF n) (quot_dbtm u) (quot_dbtm (abst_dbtm i n u))"
 proof (induct u rule: dbtm.induct)
   case (DBVar x)
   then show ?case
@@ -3683,7 +3683,7 @@ proof (induct u rule: dbtm.induct)
       intro!: AbstTermP_Var_same[THEN cut2] AbstTermP_Var_diff[THEN cut4] TermP_Zero)
 qed (auto intro!: AbstTermP_Zero[THEN cut1] AbstTermP_Eats[THEN cut2] AbstTermP_Ind[THEN cut3] IndP_Q_Ind)
 
-lemma AbstFormP_dbfm: "{} \<turnstile> AbstFormP \<lceil>Var i\<rceil> (ORD_OF n) (quot_dbfm db) (quot_dbfm (abst_dbfm i n db))"
+lemma AbstFormP_dbfm: "{} \<turnstile> AbstFormP \<guillemotleft>Var i\<guillemotright> (ORD_OF n) (quot_dbfm db) (quot_dbfm (abst_dbfm i n db))"
   by (induction db arbitrary: n rule: dbfm.induct)
     (auto intro!: AbstTermP_dbtm AbstFormP_Mem[THEN cut2] AbstFormP_Eq[THEN cut2]
         AbstFormP_Disj[THEN cut2] AbstFormP_Neg[THEN cut1] AbstFormP_Ex[THEN cut1]
@@ -3693,7 +3693,7 @@ lemmas AbstFormP = AbstFormP_dbfm[where db="trans_fm [] A" and n = 0 for A,
     simplified, folded quot_fm_def, unfolded abst_trans_fm]
 
 lemma SubstTermP_trivial_dbtm:
-  "atom i \<sharp> u \<Longrightarrow> {} \<turnstile> SubstTermP \<lceil>Var i\<rceil> Zero (quot_dbtm u) (quot_dbtm u)"
+  "atom i \<sharp> u \<Longrightarrow> {} \<turnstile> SubstTermP \<guillemotleft>Var i\<guillemotright> Zero (quot_dbtm u) (quot_dbtm u)"
 proof (induct u rule: dbtm.induct)
   case (DBVar x)
   then show ?case
@@ -3703,7 +3703,7 @@ qed (auto intro!: SubstTermP_Zero[THEN cut1] SubstTermP_Eats[THEN cut2] SubstTer
   TermP_Zero IndP_Q_Ind)
 
 lemma SubstTermP_dbtm: "wf_dbtm t \<Longrightarrow>
-   {} \<turnstile> SubstTermP \<lceil>Var i\<rceil> (quot_dbtm t) (quot_dbtm u) (quot_dbtm (subst_dbtm t i u))"
+   {} \<turnstile> SubstTermP \<guillemotleft>Var i\<guillemotright> (quot_dbtm t) (quot_dbtm u) (quot_dbtm (subst_dbtm t i u))"
 proof (induct u rule: dbtm.induct)
   case (DBVar x)
   then show ?case
@@ -3719,7 +3719,7 @@ qed (auto intro!: SubstTermP_Zero[THEN cut1] SubstTermP_Ind[THEN cut3] SubstTerm
 lemma SubstFormP_trivial_dbfm:
   fixes X :: fm
   assumes "atom i \<sharp> db"
-  shows "{} \<turnstile> SubstFormP \<lceil>Var i\<rceil> Zero (quot_dbfm db) (quot_dbfm db)"
+  shows "{} \<turnstile> SubstFormP \<guillemotleft>Var i\<guillemotright> Zero (quot_dbfm db) (quot_dbfm db)"
   using assms
   by (induct db rule: dbfm.induct)
     (auto intro!: SubstFormP_Ex[THEN cut1] SubstFormP_Neg[THEN cut1] SubstFormP_Disj[THEN cut2]
@@ -3727,7 +3727,7 @@ lemma SubstFormP_trivial_dbfm:
 
 lemma SubstFormP_dbfm:
   assumes "wf_dbtm t"
-  shows "{} \<turnstile> SubstFormP \<lceil>Var i\<rceil> (quot_dbtm t) (quot_dbfm db) (quot_dbfm (subst_dbfm t i db))"
+  shows "{} \<turnstile> SubstFormP \<guillemotleft>Var i\<guillemotright> (quot_dbtm t) (quot_dbfm db) (quot_dbfm (subst_dbfm t i db))"
   by (induct db rule: dbfm.induct)
     (auto intro!: SubstTermP_dbtm assms SubstFormP_Ex[THEN cut1] SubstFormP_Neg[THEN cut1]
            SubstFormP_Disj[THEN cut2] SubstFormP_Eq[THEN cut2] SubstFormP_Mem[THEN cut2])+
@@ -4227,7 +4227,7 @@ proof -
   qed
 qed (*>*)
 
-theorem FormP_Ex: "{FormP t, AbstFormP \<lceil>Var i\<rceil> Zero t x} \<turnstile> FormP (Q_Ex x)"
+theorem FormP_Ex: "{FormP t, AbstFormP \<guillemotleft>Var i\<guillemotright> Zero t x} \<turnstile> FormP (Q_Ex x)"
 proof -
   obtain k1::name and s1::name and k::name and s::name
     where "atom s1 \<sharp> (i,t,x)" "atom k1 \<sharp> (i,t,x,s1)" "atom s  \<sharp> (i,t,x,k1,s1)"  "atom k \<sharp> (i,t,x,s,k1,s1)"
@@ -4247,7 +4247,7 @@ lemma FormP_quot_dbfm:
 
 lemma FormP_quot:
   fixes A :: fm
-  shows "{} \<turnstile> FormP \<lceil>A\<rceil>"
+  shows "{} \<turnstile> FormP \<guillemotleft>A\<guillemotright>"
   unfolding quot_fm_def
   by (rule FormP_quot_dbfm, rule wf_dbfm_trans_fm)
 
@@ -4263,9 +4263,9 @@ proof -
     done
 qed
 
-lemmas PfP_Single_I = PfP_I[of "Eats Zero (HPair Zero \<lceil>A\<rceil>)" Zero for A]
+lemmas PfP_Single_I = PfP_I[of "Eats Zero (HPair Zero \<guillemotleft>A\<guillemotright>)" Zero for A]
 
-lemma PfP_extra: "{} \<turnstile> PfP \<lceil>extra_axiom\<rceil>"
+lemma PfP_extra: "{} \<turnstile> PfP \<guillemotleft>extra_axiom\<guillemotright>"
 proof -
   obtain l::name and sl::name and m::name and n::name and sm::name and sn::name
     where atoms:
@@ -4278,7 +4278,7 @@ proof -
   with Extra show ?thesis
     apply (intro PfP_Single_I[of extra_axiom])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>extra_axiom\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>extra_axiom\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4288,7 +4288,7 @@ qed
 
 lemma SentP_I:
   assumes "A \<in> boolean_axioms"
-  shows "{} \<turnstile> SentP \<lceil>A\<rceil>"
+  shows "{} \<turnstile> SentP \<guillemotleft>A\<guillemotright>"
 proof -
   obtain x y z :: name where "atom z \<sharp> (x,y)" "atom y \<sharp> x" by (metis obtain_fresh)
   with assms show ?thesis
@@ -4297,27 +4297,27 @@ proof -
     proof (erule boolean_axioms.cases, goal_cases Ident DisjI1 DisjCont DisjAssoc DisjConj)
       case (Ident A)
       then show ?thesis
-        by (intro Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; simp)+
+        by (intro Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; simp)+
           (auto simp: FormP_quot[THEN thin0] quot_simps intro!: Disj_I1)
     next
       case (DisjI1 A B)
       then show ?thesis
-        by (intro Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; simp, (intro Ex_I[of _ _ _ "\<lceil>B\<rceil>"]; simp)?)+
+        by (intro Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; simp, (intro Ex_I[of _ _ _ "\<guillemotleft>B\<guillemotright>"]; simp)?)+
           (auto simp: FormP_quot[THEN thin0] quot_simps intro!: Disj_I2[OF Disj_I1])
     next
       case (DisjCont A)
       then show ?thesis
-        by (intro Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; simp)+
+        by (intro Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; simp)+
           (auto simp: FormP_quot[THEN thin0] quot_simps intro!: Disj_I2[OF Disj_I2[OF Disj_I1]])
     next
       case (DisjAssoc A B C)
       then show ?thesis
-        by (intro Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; simp, intro Ex_I[of _ _ _ "\<lceil>B\<rceil>"]; simp, intro Ex_I[of _ _ _ "\<lceil>C\<rceil>"]; simp)+
+        by (intro Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; simp, intro Ex_I[of _ _ _ "\<guillemotleft>B\<guillemotright>"]; simp, intro Ex_I[of _ _ _ "\<guillemotleft>C\<guillemotright>"]; simp)+
           (auto simp: FormP_quot[THEN thin0] quot_simps intro!: Disj_I2[OF Disj_I2[OF Disj_I2[OF Disj_I1]]])
     next
       case (DisjConj A B C)
       then show ?thesis
-        by (intro Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; simp, intro Ex_I[of _ _ _ "\<lceil>B\<rceil>"]; simp, intro Ex_I[of _ _ _ "\<lceil>C\<rceil>"]; simp)+
+        by (intro Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; simp, intro Ex_I[of _ _ _ "\<guillemotleft>B\<guillemotright>"]; simp, intro Ex_I[of _ _ _ "\<guillemotleft>C\<guillemotright>"]; simp)+
           (auto simp: FormP_quot[THEN thin0] quot_simps intro!: Disj_I2[OF Disj_I2[OF Disj_I2[OF Disj_I2]]])
     qed
     done
@@ -4333,7 +4333,7 @@ qed
 
 theorem proved_imp_proved_PfP:
   assumes "{} \<turnstile> \<alpha>"
-  shows "{} \<turnstile> PfP \<lceil>\<alpha>\<rceil>"
+  shows "{} \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>"
   using assms
 proof (induct "{} :: fm set" \<alpha> rule: hfthm.induct)
   case (Hyp A)
@@ -4359,7 +4359,7 @@ next
   with Bool show ?case
     apply (intro PfP_Single_I[of A])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4384,7 +4384,7 @@ next
   with Eq show ?case
     apply (intro PfP_Single_I[of A])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4412,7 +4412,7 @@ next
   from Spec atoms show ?case
     apply (intro PfP_Single_I[of A])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4433,11 +4433,11 @@ next
         by (metis obtain_fresh)
       with I show ?thesis
         apply (subst Special_axP.simps[of ii _ res tt AA XX]; simp?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>Var i\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X\<rceil>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>Var i\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X\<guillemotright>"]; auto?)
         apply (rule Ex_I[of _ _ _ "quot_dbfm (trans_fm [i] X)"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>t\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X(i::=t)\<rceil>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>t\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X(i::=t)\<guillemotright>"]; auto?)
             apply (auto simp: TermP_quot[THEN thin0] FormP_quot[THEN thin0]
                SubstFormP[THEN thin0] AbstFormP[THEN thin0]
                quot_Ex quot_Disj quot_Neg vquot_fm_def)
@@ -4461,7 +4461,7 @@ next
   with HF show ?case
     apply (intro PfP_Single_I[of A])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4488,7 +4488,7 @@ next
   from Ind atoms show ?case
     apply (intro PfP_Single_I[of A])
     apply (subst PrfP.simps[of l _ sl m n sm sn]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
      apply (rule Mem_SUCC_E[OF Mem_Zero_E])
      apply (rule Mem_Eats_I2)
      apply (rule HPair_cong[OF Assume Refl])
@@ -4515,12 +4515,12 @@ next
         unfolding ind(1)
         apply (subst Induction_axP.simps[of ax _ allvw allw xevw xw x0 xa w v])
                  apply simp_all
-        apply (rule Ex_I[of _ _ _ "\<lceil>Var i\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>Var j\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X(i::=Zero)\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X(i::=Var j)\<rceil>"]; auto?)
-        apply (rule Ex_I[of _ _ _ "\<lceil>X(i::=Eats (Var i) (Var j))\<rceil>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>Var i\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>Var j\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X(i::=Zero)\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X(i::=Var j)\<guillemotright>"]; auto?)
+        apply (rule Ex_I[of _ _ _ "\<guillemotleft>X(i::=Eats (Var i) (Var j))\<guillemotright>"]; auto?)
         apply (rule Ex_I[of _ _ _ "quot_dbfm (trans_fm [j] (X IMP (X(i::= Var j) IMP X(i::= Eats(Var i)(Var j)))))"]; auto?)
         apply (rule Ex_I[of _ _ _ "Q_All (quot_dbfm (trans_fm [j,i] (X IMP (X(i::= Var j) IMP X(i::= Eats(Var i)(Var j))))))"]; auto?)
         apply (rule Ex_I[of _ _ _ "quot_dbfm (trans_fm [i] X)"]; auto?)
@@ -4570,10 +4570,10 @@ next
   with Exists show ?case
     apply (auto elim!: PfP_inference [THEN cut3] intro!: PfP_extra Disj_I2[OF Disj_I1])
     apply (subst ExistsP.simps[of x _ _ a y z]; (auto simp: VarNonOccFormP.simps)?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>A\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>A\<guillemotright>"]; auto?)
     apply (rule Ex_I[of _ _ _ "quot_dbfm (trans_fm [i] A)"]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>B\<rceil>"]; auto?)
-    apply (rule Ex_I[of _ _ _ "\<lceil>Var i\<rceil>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>B\<guillemotright>"]; auto?)
+    apply (rule Ex_I[of _ _ _ "\<guillemotleft>Var i\<guillemotright>"]; auto?)
          apply (auto simp: FormP_quot quot_Disj quot_Neg quot_Ex SubstFormP_trivial AbstFormP)
     done
 qed

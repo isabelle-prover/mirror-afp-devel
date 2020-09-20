@@ -12,11 +12,11 @@ by auto
 abbreviation Q_Subset :: "tm \<Rightarrow> tm \<Rightarrow> tm"
   where "Q_Subset t u \<equiv> (Q_All (Q_Imp (Q_Mem (Q_Ind Zero) t) (Q_Mem (Q_Ind Zero) u)))"
 
-lemma NEQ_quot_tm: "i\<noteq>j \<Longrightarrow> {} \<turnstile> \<lceil>Var i\<rceil> NEQ \<lceil>Var j\<rceil>"
+lemma NEQ_quot_tm: "i\<noteq>j \<Longrightarrow> {} \<turnstile> \<guillemotleft>Var i\<guillemotright> NEQ \<guillemotleft>Var j\<guillemotright>"
   using VarP_Var[of "{}" i] VarP_Var[of "{}" j]
   by (intro OrdNotEqP_I) (auto simp: VarP_def quot_Var ORD_OF_EQ_diff dest!: Conj_E1)
 
-lemma EQ_quot_tm_Fls: "i\<noteq>j \<Longrightarrow> insert (\<lceil>Var i\<rceil> EQ \<lceil>Var j\<rceil>) H \<turnstile> Fls"
+lemma EQ_quot_tm_Fls: "i\<noteq>j \<Longrightarrow> insert (\<guillemotleft>Var i\<guillemotright> EQ \<guillemotleft>Var j\<guillemotright>) H \<turnstile> Fls"
   by (metis (full_types) NEQ_quot_tm Assume OrdNotEqP_E cut2 thin0)
 
 lemma perm_commute: "a \<sharp> p \<Longrightarrow> a' \<sharp> p \<Longrightarrow> (a \<rightleftharpoons> a') + p = p + (a \<rightleftharpoons> a')"
@@ -203,11 +203,11 @@ lemma ground_ssubst_eq: "\<lbrakk>finite V; supp t = {}\<rbrakk> \<Longrightarro
   by (induct V rule: finite_induct) (auto simp: ssubst_insert fresh_def)
 
 lemma ssubst_quot_tm [simp]:
-  fixes t::tm shows "finite V \<Longrightarrow> ssubst \<lceil>t\<rceil> V F = \<lceil>t\<rceil>"
+  fixes t::tm shows "finite V \<Longrightarrow> ssubst \<guillemotleft>t\<guillemotright> V F = \<guillemotleft>t\<guillemotright>"
   by (simp add: ground_ssubst_eq supp_conv_fresh)
 
 lemma ssubst_quot_fm [simp]:
-  fixes A::fm shows "finite V \<Longrightarrow> ssubst \<lceil>A\<rceil> V F = \<lceil>A\<rceil>"
+  fixes A::fm shows "finite V \<Longrightarrow> ssubst \<guillemotleft>A\<guillemotright> V F = \<guillemotleft>A\<guillemotright>"
   by (simp add: ground_ssubst_eq supp_conv_fresh)
 
 lemma atom_in_p_Vs: "\<lbrakk>i \<in> p \<bullet> V; V \<subseteq> Vs\<rbrakk> \<Longrightarrow> i \<in> p \<bullet> Vs"
@@ -221,7 +221,7 @@ lemma SubstTermP_vquot_dbtm:
       and s: "supp dbtm \<subseteq> atom ` Vs"
   shows
   "insert (ConstP (F w)) {ConstP (F i) | i. i \<in> V}
-   \<turnstile> SubstTermP \<lceil>Var w\<rceil> (F w)
+   \<turnstile> SubstTermP \<guillemotleft>Var w\<guillemotright> (F w)
                 (ssubst (vquot_dbtm V dbtm) V F)
                 (subst w (F w) (ssubst (vquot_dbtm (insert w V) dbtm) V F))"
 using s
@@ -264,7 +264,7 @@ lemma SubstFormP_vquot_dbfm:
       and s: "supp dbfm \<subseteq> atom ` Vs"
   shows
   "insert (ConstP (F w)) {ConstP (F i) | i. i \<in> V}
-   \<turnstile> SubstFormP \<lceil>Var w\<rceil> (F w)
+   \<turnstile> SubstFormP \<guillemotleft>Var w\<guillemotright> (F w)
                 (ssubst (vquot_dbfm V dbfm) V F)
                 (subst w (F w) (ssubst (vquot_dbfm (insert w V) dbfm) V F))"
 using w s
@@ -292,7 +292,7 @@ lemma ssubst_SubstFormP:
       and s: "supp A \<subseteq> atom ` Vs"
   shows
   "insert (ConstP (F w)) {ConstP (F i) | i. i \<in> V}
-   \<turnstile> SubstFormP \<lceil>Var w\<rceil> (F w)
+   \<turnstile> SubstFormP \<guillemotleft>Var w\<guillemotright> (F w)
                 (ssubst \<lfloor>A\<rfloor>V V F)
                 (ssubst \<lfloor>A\<rfloor>(insert w V) (insert w V) F)"
 proof -
@@ -305,7 +305,7 @@ qed
 text\<open>Theorem 7.3\<close>
 theorem PfP_implies_PfP_ssubst:
   fixes \<beta>::fm
-  assumes \<beta>: "{} \<turnstile> PfP \<lceil>\<beta>\<rceil>"
+  assumes \<beta>: "{} \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>"
       and V: "V \<subseteq> Vs"
       and s: "supp \<beta> \<subseteq> atom ` Vs"
     shows    "{ConstP (F i) | i. i \<in> V} \<turnstile> PfP (ssubst \<lfloor>\<beta>\<rfloor>V V F)"

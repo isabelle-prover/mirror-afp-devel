@@ -37,7 +37,7 @@ subsection \<open>The predicate \<open>Equality_axP\<close>, for the Equality Ax
 
 function Equality_axP :: "tm \<Rightarrow> fm"
   where "Equality_axP x =
-    x EQ \<lceil>refl_ax\<rceil> OR x EQ \<lceil>eq_cong_ax\<rceil> OR x EQ \<lceil>mem_cong_ax\<rceil> OR x EQ \<lceil>eats_cong_ax\<rceil>"
+    x EQ \<guillemotleft>refl_ax\<guillemotright> OR x EQ \<guillemotleft>eq_cong_ax\<guillemotright> OR x EQ \<guillemotleft>mem_cong_ax\<guillemotright> OR x EQ \<guillemotleft>eats_cong_ax\<guillemotright>"
 by auto
 
 termination
@@ -46,7 +46,7 @@ termination
 subsection \<open>The predicate \<open>HF_axP\<close>, for the HF Axioms\<close>
 
 function HF_axP :: "tm \<Rightarrow> fm"
-  where "HF_axP x = x EQ \<lceil>HF1\<rceil> OR x EQ \<lceil>HF2\<rceil>"
+  where "HF_axP x = x EQ \<guillemotleft>HF1\<guillemotright> OR x EQ \<guillemotleft>HF2\<guillemotright>"
 by auto
 
 termination
@@ -127,11 +127,11 @@ qed
 subsection \<open>The predicate \<open>AxiomP\<close>, for any Axioms\<close>
 
 definition AxiomP :: "tm \<Rightarrow> fm"
-  where "AxiomP x \<equiv> x EQ \<lceil>extra_axiom\<rceil> OR SentP x OR Equality_axP x OR
+  where "AxiomP x \<equiv> x EQ \<guillemotleft>extra_axiom\<guillemotright> OR SentP x OR Equality_axP x OR
                     HF_axP x OR Special_axP x OR Induction_axP x"
 
 lemma AxiomP_I:
-  "{} \<turnstile> AxiomP \<lceil>extra_axiom\<rceil>"
+  "{} \<turnstile> AxiomP \<guillemotleft>extra_axiom\<guillemotright>"
   "{} \<turnstile> SentP x \<Longrightarrow> {} \<turnstile> AxiomP x"
   "{} \<turnstile> Equality_axP x \<Longrightarrow> {} \<turnstile> AxiomP x"
   "{} \<turnstile> HF_axP x \<Longrightarrow> {} \<turnstile> AxiomP x"

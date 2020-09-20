@@ -178,11 +178,11 @@ proof -
     by (subst WRP.simps[of s], simp, subst WRP.simps[of t], simp) (force intro: SeqWRP_Succ[THEN cut1])
 qed
 
-lemma WRP: "{} \<turnstile> WRP (ORD_OF i) \<lceil>ORD_OF i\<rceil>"
+lemma WRP: "{} \<turnstile> WRP (ORD_OF i) \<guillemotleft>ORD_OF i\<guillemotright>"
   by (induct i)
     (auto simp: WRP_Zero quot_Succ intro!: WRP_Succ[THEN cut2])
 
-lemma prove_WRP:  "{} \<turnstile> WRP \<lceil>Var x\<rceil> \<lceil>\<lceil>Var x\<rceil>\<rceil>"
+lemma prove_WRP:  "{} \<turnstile> WRP \<guillemotleft>Var x\<guillemotright> \<guillemotleft>\<guillemotleft>Var x\<guillemotright>\<guillemotright>"
   unfolding quot_Var quot_Succ
   by (rule WRP_Succ[THEN cut2]) (auto simp: WRP)
 
@@ -530,7 +530,7 @@ proof -
     by (auto simp: SeqHRP_unique HRP.simps [of s x y k]  HRP.simps [of s' x y' k'])
 qed
 
-lemma HRP_ORD_OF: "{} \<turnstile> HRP (ORD_OF i) \<lceil>ORD_OF i\<rceil>"
+lemma HRP_ORD_OF: "{} \<turnstile> HRP (ORD_OF i) \<guillemotleft>ORD_OF i\<guillemotright>"
 proof -
   let ?vs = "(i)"
   obtain s k l::name and sl::name and sl'::name and m::name and n::name and
@@ -547,13 +547,13 @@ proof -
   then show ?thesis
   apply (subst HRP.simps[of s _ _ k]; simp)
     apply (subst SeqHRP.simps[of l _ _ sl sl' m n sm sm' sn sn']; simp?)
-    apply (rule Ex_I[where x="Eats Zero (HPair Zero (HPair (ORD_OF i) \<lceil>ORD_OF i\<rceil>))"]; simp)
+    apply (rule Ex_I[where x="Eats Zero (HPair Zero (HPair (ORD_OF i) \<guillemotleft>ORD_OF i\<guillemotright>))"]; simp)
     apply (rule Ex_I[where x="Zero"]; simp)
     apply (rule Conj_I[OF LstSeqP_single])
     apply (rule All2_SUCC_I, simp)
      apply auto [2]
     apply (rule Ex_I[where x="ORD_OF i"], simp)
-    apply (rule Ex_I[where x="\<lceil>ORD_OF i\<rceil>"], simp)
+    apply (rule Ex_I[where x="\<guillemotleft>ORD_OF i\<guillemotright>"], simp)
     apply (auto intro!: Disj_I1 WRP Mem_Eats_I2)
     done
 qed
@@ -728,11 +728,11 @@ proof -
         intro: SeqHRP_HPair [THEN cut2])
 qed
 
-lemma HRP_HPair_quot: "{HRP x \<lceil>x\<rceil>, HRP y \<lceil>y\<rceil>} \<turnstile> HRP (HPair x y) \<lceil>HPair x y\<rceil>"
-  using HRP_HPair[of x "\<lceil>x\<rceil>" y "\<lceil>y\<rceil>"]
+lemma HRP_HPair_quot: "{HRP x \<guillemotleft>x\<guillemotright>, HRP y \<guillemotleft>y\<guillemotright>} \<turnstile> HRP (HPair x y) \<guillemotleft>HPair x y\<guillemotright>"
+  using HRP_HPair[of x "\<guillemotleft>x\<guillemotright>" y "\<guillemotleft>y\<guillemotright>"]
   unfolding HPair_def quot_simps by auto
 
-lemma prove_HRP_coding_tm: fixes t::tm shows "coding_tm t \<Longrightarrow> {} \<turnstile> HRP t \<lceil>t\<rceil>"
+lemma prove_HRP_coding_tm: fixes t::tm shows "coding_tm t \<Longrightarrow> {} \<turnstile> HRP t \<guillemotleft>t\<guillemotright>"
   by (induct t rule: coding_tm.induct)
     (auto simp: quot_simps HRP_ORD_OF HRP_HPair_quot[THEN cut2])
 
@@ -766,12 +766,12 @@ qed
 
 declare KRP.simps [simp del]
 
-lemma prove_SubstFormP: "{} \<turnstile> SubstFormP \<lceil>Var i\<rceil> \<lceil>\<lceil>A\<rceil>\<rceil> \<lceil>A\<rceil> \<lceil>A(i::=\<lceil>A\<rceil>)\<rceil>"
+lemma prove_SubstFormP: "{} \<turnstile> SubstFormP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright> \<guillemotleft>A\<guillemotright> \<guillemotleft>A(i::=\<guillemotleft>A\<guillemotright>)\<guillemotright>"
   using SubstFormP by blast
 
-lemma prove_KRP: "{} \<turnstile> KRP \<lceil>Var i\<rceil> \<lceil>A\<rceil> \<lceil>A(i::=\<lceil>A\<rceil>)\<rceil>"
+lemma prove_KRP: "{} \<turnstile> KRP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>A\<guillemotright> \<guillemotleft>A(i::=\<guillemotleft>A\<guillemotright>)\<guillemotright>"
   by (auto simp: KRP.simps [of y]
-           intro!: Ex_I [where x="\<lceil>\<lceil>A\<rceil>\<rceil>"] prove_HRP prove_SubstFormP)
+           intro!: Ex_I [where x="\<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright>"] prove_HRP prove_SubstFormP)
 
 lemma KRP_unique: "{KRP v x y, KRP v x y'} \<turnstile> y' EQ y"
 proof -
@@ -783,7 +783,7 @@ proof -
                     SubstFormP_unique [THEN cut2] HRP_unique [THEN cut2])
 qed
 
-lemma KRP_subst_fm: "{KRP \<lceil>Var i\<rceil> \<lceil>\<beta>\<rceil> (Var j)} \<turnstile> Var j EQ \<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil>"
+lemma KRP_subst_fm: "{KRP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>\<beta>\<guillemotright> (Var j)} \<turnstile> Var j EQ \<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright>"
   by (metis KRP_unique cut0 prove_KRP)
 
 end
