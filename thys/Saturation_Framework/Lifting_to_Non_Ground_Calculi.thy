@@ -157,7 +157,7 @@ end
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale tiebreaker_lifting =
-  std?: standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
+  stk?: standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
@@ -173,10 +173,6 @@ locale tiebreaker_lifting =
   assumes
     all_wf: "minimal_element (Prec_F_g g) UNIV"
 begin
-
-(* definition Red_I_\<G> :: "'f set \<Rightarrow> 'f inference set" where
- *   \<open>Red_I_\<G> N = {\<iota> \<in> Inf_F. (\<G>_I \<iota> \<noteq> None \<and> the (\<G>_I \<iota>) \<subseteq> Red_I_G (\<G>_Fset N))
- *     \<or> (\<G>_I \<iota> = None \<and> \<G>_F (concl_of \<iota>) \<subseteq> \<G>_Fset N \<union> Red_F_G (\<G>_Fset N))}\<close> *)
 
 definition Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
   \<open>Red_F_\<G> N = {C. \<forall>D \<in> \<G>_F C. D \<in> Red_F_G (\<G>_Fset N) \<or> (\<exists>E \<in> N. Prec_F_g D E C \<and> D \<in> \<G>_F E)}\<close>
@@ -515,85 +511,18 @@ begin
     (* lem:static-ref-compl-indep-of-sqsubset *)
   lemma static_empty_order_equiv_static:
     "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
-      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> std.Red_F_\<G>"
+      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> stk.Red_F_\<G>"
     unfolding statically_complete_calculus_def
     by (rule iffI) (standard,(standard)[],simp)+
 
     (* thm:FRedsqsubset-is-dyn-ref-compl *)
   theorem static_to_dynamic:
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> std.Red_F_\<G> =
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> stk.Red_F_\<G> =
       dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
     using dyn_equiv_stat static_empty_order_equiv_static
     by blast
    
 end
-
-(* lemma any_to_empty_ord:
- *   "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F
- *     \<G>_I Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
- *     Red_F_G \<G>_F \<G>_I (\<lambda>g C C'. False)"
- * proof -
- *   fix Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
- *   assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
- *     Red_F_G \<G>_F \<G>_I Prec_F_g"
- *   then interpret lift_g:
- *     tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
- *     by auto
- *   show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I
- *     (\<lambda>g C C'. False)"
- *     by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
- *       tiebreaker_lifting_axioms.intro tiebreaker_lifting_def)
- * qed
- * 
- * lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
- *   unfolding po_on_def irreflp_on_def transp_on_def by auto
- * 
- * locale lifting_equivalence_with_empty_order =
- *   any_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
- *     Red_F_G \<G>_F \<G>_I Prec_F_g +
- *   empty_ord: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
- *     Red_F_G \<G>_F \<G>_I "\<lambda>g C C'. False"
- *   for
- *     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
- *     \<G>_I :: \<open>'f inference \<Rightarrow> 'g inference set option\<close> and
- *     Bot_F :: \<open>'f set\<close> and
- *     Inf_F :: \<open>'f inference set\<close> and
- *     Bot_G :: \<open>'g set\<close> and
- *     Inf_G :: \<open>'g inference set\<close> and
- *     entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
- *     Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
- *     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
- *     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
- * 
- * sublocale tiebreaker_lifting \<subseteq> lifting_equivalence_with_empty_order
- *   by unfold_locales simp+
- * 
- * context lifting_equivalence_with_empty_order
- * begin
- * 
- * (\* lem:saturation-indep-of-sqsubset *\)
- * lemma saturated_empty_order_equiv_saturated:
- *   "any_ord.saturated N = empty_ord.saturated N"
- *   by (rule refl)
- * 
- * (\* lem:static-ref-compl-indep-of-sqsubset *\)
- * lemma static_empty_order_equiv_static:
- *   "statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
- *      any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
- *    statically_complete_calculus Bot_F Inf_F any_ord.entails_\<G>
- *      any_ord.Red_I_\<G> any_ord.Red_F_\<G>"
- *   unfolding statically_complete_calculus_def
- *   by (rule iffI) (standard,(standard)[],simp)+
- * 
- * (\* thm:FRedsqsubset-is-dyn-ref-compl *\)
- * theorem static_to_dynamic:
- *   "statically_complete_calculus Bot_F Inf_F
- *     any_ord.entails_\<G> any_ord.Red_I_\<G> empty_ord.Red_F_\<G> =
- *     dynamically_complete_calculus Bot_F Inf_F
- *     any_ord.entails_\<G> any_ord.Red_I_\<G> any_ord.Red_F_\<G> "
- *   using any_ord.dyn_equiv_stat static_empty_order_equiv_static by blast
- * 
- * end *)
 
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 
@@ -662,8 +591,8 @@ proof -
     using standard_lifting_family q_in by metis
   have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
     unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
-  moreover have "Red_F_\<G>_empty_q q = wf_lift.std.Red_F_\<G>"
-    unfolding Red_F_\<G>_empty_q_def wf_lift.std.Red_F_\<G>_def by blast
+  moreover have "Red_F_\<G>_empty_q q = wf_lift.stk.Red_F_\<G>"
+    unfolding Red_F_\<G>_empty_q_def wf_lift.stk.Red_F_\<G>_def by blast
   ultimately show ?thesis
     using wf_lift.calc.calculus_axioms by simp
 qed
