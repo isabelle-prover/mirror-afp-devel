@@ -27,28 +27,28 @@ fun rlh :: "'a tree \<Rightarrow> nat" where
 "rlh Leaf = 0" |
 "rlh (Node l _ r) = (1 - rh l r) + rlh r"
 
-lemma Gexp: "2 ^ lrh h \<le> size h + 1"
-by (induction h) (auto simp: rh_def)
+lemma Gexp: "2 ^ lrh t \<le> size t + 1"
+by (induction t) (auto simp: rh_def)
 
-corollary Glog: "lrh h \<le> log 2 (size1 h)"
+corollary Glog: "lrh t \<le> log 2 (size1 t)"
 by (metis Gexp le_log2_of_power size1_size)
 
-lemma Dexp: "2 ^ rlh h \<le> size h + 1"
-by (induction h) (auto simp: rh_def)
+lemma Dexp: "2 ^ rlh t \<le> size t + 1"
+by (induction t) (auto simp: rh_def)
 
-corollary Dlog: "rlh h \<le> log 2 (size1 h)"
+corollary Dlog: "rlh t \<le> log 2 (size1 t)"
 by (metis Dexp le_log2_of_power size1_size)
 
-function t_merge :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
-"t_merge Leaf h = 1" |
-"t_merge h Leaf = 1" |
+function t_merge :: "'a::linorder tree \<Rightarrow> 'a tree \<Rightarrow> nat" where
+"t_merge Leaf t = 1" |
+"t_merge t Leaf = 1" |
 "t_merge (Node l1 a1 r1) (Node l2 a2 r2) =
    (if a1 \<le> a2 then t_merge (Node l2 a2 r2) r1 else t_merge (Node l1 a1 r1) r2) + 1"
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
 
-fun \<Phi> :: "'a heap \<Rightarrow> int" where
+fun \<Phi> :: "'a tree \<Rightarrow> int" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + rh l r"
 
@@ -116,18 +116,18 @@ proof -
   finally show ?thesis by(simp)
 qed
 
-definition t_insert :: "'a::linorder \<Rightarrow> 'a heap \<Rightarrow> int" where
-"t_insert a h = t_merge (Node Leaf a Leaf) h + 1"
+definition t_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> int" where
+"t_insert a t = t_merge (Node Leaf a Leaf) t + 1"
 
-lemma a_insert: "t_insert a h + \<Phi>(Skew_Heap.insert a h) - \<Phi> h \<le> 3 * log 2 (size1 h + 2) + 2"
-using a_merge[of "Node Leaf a Leaf" "h"]
+lemma a_insert: "t_insert a t + \<Phi>(Skew_Heap.insert a t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+using a_merge[of "Node Leaf a Leaf" "t"]
 by (simp add: numeral_eq_Suc t_insert_def Skew_Heap.insert_def rh_def)
 
-definition t_del_min :: "('a::linorder) heap \<Rightarrow> int" where
-"t_del_min h = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2 + 1)"
+definition t_del_min :: "('a::linorder) tree \<Rightarrow> int" where
+"t_del_min t = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2 + 1)"
 
-lemma a_del_min: "t_del_min h + \<Phi>(del_min h) - \<Phi> h \<le> 3 * log 2 (size1 h + 2) + 2"
-proof (cases h)
+lemma a_del_min: "t_del_min t + \<Phi>(del_min t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+proof (cases t)
   case Leaf thus ?thesis by (simp add: t_del_min_def)
 next
   case (Node t1 _ t2)
@@ -140,26 +140,26 @@ qed
 
 subsubsection "Instantiation of Amortized Framework"
 
-lemma t_merge_nneg: "t_merge h1 h2 \<ge> 0"
-by(induction h1 h2 rule: t_merge.induct) auto
+lemma t_merge_nneg: "t_merge t1 t2 \<ge> 0"
+by(induction t1 t2 rule: t_merge.induct) auto
 
-fun exec :: "'a::linorder op \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
+fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
-"exec (Insert a) [h] = Skew_Heap.insert a h" |
-"exec Del_min [h] = del_min h" |
-"exec Merge [h1,h2] = merge h1 h2"
+"exec (Insert a) [t] = Skew_Heap.insert a t" |
+"exec Del_min [t] = del_min t" |
+"exec Merge [t1,t2] = merge t1 t2"
 
-fun cost :: "'a::linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" where
+fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Insert a) [h] = t_merge (Node Leaf a Leaf) h" |
-"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2)" |
-"cost Merge [h1,h2] = t_merge h1 h2"
+"cost (Insert a) [t] = t_merge (Node Leaf a Leaf) t" |
+"cost Del_min [t] = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2)" |
+"cost Merge [t1,t2] = t_merge t1 t2"
 
 fun U where
 "U Empty [] = 1" |
-"U (Insert _) [h] = 3 * log 2 (size1 h + 2) + 1" |
-"U Del_min [h] = 3 * log 2 (size1 h + 2) + 3" |
-"U Merge [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 1"
+"U (Insert _) [t] = 3 * log 2 (size1 t + 2) + 1" |
+"U Del_min [t] = 3 * log 2 (size1 t + 2) + 3" |
+"U Merge [t1,t2] = 3 * log 2 (size1 t1 + size1 t2) + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
@@ -167,7 +167,7 @@ and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
-  case (2 h) show ?case using \<Phi>_nneg[of h] by linarith
+  case (2 t) show ?case using \<Phi>_nneg[of t] by linarith
 next
   case (3 ss f)
   show ?case
@@ -175,14 +175,14 @@ next
     case Empty thus ?thesis using 3(2) by (auto)
   next
     case [simp]: (Insert a)
-    obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
-    thus ?thesis using a_merge[of "Node Leaf a Leaf" "h"]
+    obtain t where [simp]: "ss = [t]" using 3(2) by (auto)
+    thus ?thesis using a_merge[of "Node Leaf a Leaf" "t"]
       by (simp add: numeral_eq_Suc insert_def rh_def t_merge_nneg)
   next
     case [simp]: Del_min
-    obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
+    obtain t where [simp]: "ss = [t]" using 3(2) by (auto)
     thus ?thesis
-    proof (cases h)
+    proof (cases t)
       case Leaf with Del_min show ?thesis by simp
     next
       case (Node t1 _ t2)
@@ -193,8 +193,8 @@ next
     qed
   next
     case [simp]: Merge
-    obtain h1 h2 where "ss = [h1,h2]" using 3(2) by (auto simp: numeral_eq_Suc)
-    thus ?thesis using a_merge[of h1 h2] by (simp add: t_merge_nneg)
+    obtain t1 t2 where "ss = [t1,t2]" using 3(2) by (auto simp: numeral_eq_Suc)
+    thus ?thesis using a_merge[of t1 t2] by (simp add: t_merge_nneg)
   qed
 qed
 
