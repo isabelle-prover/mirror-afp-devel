@@ -157,7 +157,7 @@ end
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale tiebreaker_lifting =
-  stk?: standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
+  empty_ord?: standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
@@ -511,13 +511,13 @@ begin
     (* lem:static-ref-compl-indep-of-sqsubset *)
   lemma static_empty_order_equiv_static:
     "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
-      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> stk.Red_F_\<G>"
+      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> empty_ord.Red_F_\<G>"
     unfolding statically_complete_calculus_def
     by (rule iffI) (standard,(standard)[],simp)+
 
     (* thm:FRedsqsubset-is-dyn-ref-compl *)
   theorem static_to_dynamic:
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> stk.Red_F_\<G> =
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> empty_ord.Red_F_\<G> =
       dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
     using dyn_equiv_stat static_empty_order_equiv_static
     by blast
@@ -591,8 +591,8 @@ proof -
     using standard_lifting_family q_in by metis
   have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
     unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
-  moreover have "Red_F_\<G>_empty_q q = wf_lift.stk.Red_F_\<G>"
-    unfolding Red_F_\<G>_empty_q_def wf_lift.stk.Red_F_\<G>_def by blast
+  moreover have "Red_F_\<G>_empty_q q = wf_lift.empty_ord.Red_F_\<G>"
+    unfolding Red_F_\<G>_empty_q_def wf_lift.empty_ord.Red_F_\<G>_def by blast
   ultimately show ?thesis
     using wf_lift.calc.calculus_axioms by simp
 qed
@@ -739,3 +739,4 @@ theorem stat_eq_dyn_ref_comp_fam_inter: "statically_complete_calculus Bot_F Inf_
 end
 
 end
+
