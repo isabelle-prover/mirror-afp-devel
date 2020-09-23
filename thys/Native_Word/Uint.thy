@@ -650,16 +650,6 @@ declare [[code abort: mod0_uint]]
 definition wivs_overflow_uint :: uint 
   where "wivs_overflow_uint \<equiv> 1 << (dflt_size - 1)"
 
-(* TODO: Move to Word *)
-lemma dflt_size_word_pow_ne_zero [simp]:
-  "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) \<noteq> 0"
-proof
-  assume "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) = 0"
-  then have "unat ((2 :: 'a word) ^ (LENGTH('a::len) - Suc 0)) = unat 0"
-    by simp
-  then show False by (simp add: unat_p2)
-qed
-
 lemma uint_divmod_code [code]:
   "uint_divmod x y =
   (if wivs_overflow_uint \<le> y then if x < y then (0, x) else (1, x - y)
@@ -670,7 +660,9 @@ lemma uint_divmod_code [code]:
   including undefined_transfer 
   unfolding uint_divmod_def uint_sdiv_def div0_uint_def mod0_uint_def
     wivs_overflow_uint_def
-  by transfer (simp add: divmod_via_sdivmod)
+  apply transfer
+  apply (simp add: divmod_via_sdivmod)
+  done
 
 lemma uint_sdiv_code [code abstract]:
   "Rep_uint (uint_sdiv x y) =

@@ -673,8 +673,7 @@ lemma bool_of_val_impl: "(bool_of_val_impl, bool_of_val) \<in> val_rel \<rightar
   by (simp add: rel_fun_2set)
   
 
-
-lemma smod_by_div_abs: "a smod b = a - a sdiv b * b"
+lemma smod_by_div_abs: "a smod b = a - a sdiv b * b" for a b :: \<open>'a::len word\<close>
   by (subst (2) sdiv_smod_id [of a b, symmetric]) simp
 
 lift_definition sdiv_impl :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(sdiv)" .

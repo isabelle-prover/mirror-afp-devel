@@ -2893,9 +2893,12 @@ lemma sdiv_int_range:
     "(a :: int) sdiv b \<in> { - (abs a) .. (abs a) }"
   apply (unfold sdiv_int_def)
   apply (subgoal_tac "(abs a) div (abs b) \<le> (abs a)")
-   apply (clarsimp simp: sgn_if)
-   apply (meson abs_ge_zero neg_le_0_iff_le nonneg_mod_div order_trans)
-  apply (metis abs_eq_0 abs_ge_zero div_by_0 zdiv_le_dividend zero_less_abs_iff)
+   apply (auto simp add: sgn_if not_less)
+      apply (metis le_less le_less_trans neg_equal_0_iff_equal neg_less_iff_less not_le pos_imp_zdiv_neg_iff)
+     apply (metis add.inverse_neutral div_int_pos_iff le_less neg_le_iff_le order_trans)
+    apply (metis div_minus_right le_less_trans neg_imp_zdiv_neg_iff neg_less_0_iff_less not_le)
+  using div_int_pos_iff apply fastforce
+  apply (metis abs_0_eq abs_ge_zero div_by_0 zdiv_le_dividend zero_less_abs_iff)
   done
 
 lemma word_sdiv_div1 [simp]:
@@ -2989,11 +2992,11 @@ qed
 lemmas sdiv_word_min' = sdiv_word_min [simplified word_size, simplified]
 lemmas sdiv_word_max' = sdiv_word_max [simplified word_size, simplified]
 
-lemmas word_sdiv_numerals_lhs = sdiv_word_def[where a="numeral x" for x]
-    sdiv_word_def[where a=0] sdiv_word_def[where a=1]
+lemmas word_sdiv_numerals_lhs = sdiv_word_def[where v="numeral x" for x]
+    sdiv_word_def[where v=0] sdiv_word_def[where v=1]
 
-lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where b="numeral y" for y]
-    word_sdiv_numerals_lhs[where b=0] word_sdiv_numerals_lhs[where b=1]
+lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where w="numeral y" for y]
+    word_sdiv_numerals_lhs[where w=0] word_sdiv_numerals_lhs[where w=1]
 
 (*
  * Signed modulo properties.
@@ -3078,11 +3081,11 @@ lemma smod_word_alt_def:
   apply (clarsimp simp: smod_word_def smod_int_def)
   done
 
-lemmas word_smod_numerals_lhs = smod_word_def[where a="numeral x" for x]
-    smod_word_def[where a=0] smod_word_def[where a=1]
+lemmas word_smod_numerals_lhs = smod_word_def[where v="numeral x" for x]
+    smod_word_def[where v=0] smod_word_def[where v=1]
 
-lemmas word_smod_numerals = word_smod_numerals_lhs[where b="numeral y" for y]
-    word_smod_numerals_lhs[where b=0] word_smod_numerals_lhs[where b=1]
+lemmas word_smod_numerals = word_smod_numerals_lhs[where w="numeral y" for y]
+    word_smod_numerals_lhs[where w=0] word_smod_numerals_lhs[where w=1]
 
 lemma sint_of_int_eq:
   "\<lbrakk> - (2 ^ (LENGTH('a) - 1)) \<le> x; x < 2 ^ (LENGTH('a) - 1) \<rbrakk> \<Longrightarrow> sint (of_int x :: ('a::len) word) = x"
@@ -3303,9 +3306,11 @@ lemma sint_ucast_eq_uint:
     "\<lbrakk> \<not> is_down (ucast :: ('a::len word \<Rightarrow> 'b::len word)) \<rbrakk>
             \<Longrightarrow> sint ((ucast :: ('a::len word \<Rightarrow> 'b::len word)) x) = uint x"
   apply (subst sint_eq_uint)
-   apply (clarsimp simp: msb_nth nth_ucast is_down)
-   apply (metis Suc_leI Suc_pred len_gt_0)
-  apply (clarsimp simp: uint_up_ucast is_up is_down)
+   apply (simp add: msb_word_eq)
+   apply transfer
+   apply (simp add: bit_take_bit_iff)
+  apply transfer
+  apply simp
   done
 
 lemma word_less_nowrapI':
@@ -3364,9 +3369,6 @@ lemma zero_sle_ucast_up:
   apply (subgoal_tac "\<not> msb (ucast b :: 'b signed word)")
    apply (clarsimp simp: word_sle_msb_le)
   apply (clarsimp simp: is_down not_le msb_nth nth_ucast)
-  apply (subst (asm) test_bit_conj_lt [symmetric])
-  apply clarsimp
-  apply arith
   done
 
 lemma word_le_ucast_sless:

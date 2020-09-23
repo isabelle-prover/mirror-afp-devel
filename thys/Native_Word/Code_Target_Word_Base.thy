@@ -6,8 +6,14 @@ chapter \<open>Common base for target language implementations of word types\<cl
 
 theory Code_Target_Word_Base imports
   "HOL-Word.Word"
+  "Word_Lib.Word_Lib"
   Bits_Integer
 begin
+
+(* TODO: Move to Word ? *)
+lemma dflt_size_word_pow_ne_zero [simp]:
+  "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) \<noteq> 0"
+  by (simp add: not_le)
 
 text \<open>More lemmas\<close>
 
@@ -145,61 +151,30 @@ qed
 
 text \<open>Division on @{typ "'a word"} is unsigned, but Scala and OCaml only have signed division and modulus.\<close>
 
-definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
-where [code]:
+lemmas word_sdiv_def = sdiv_word_def
+lemmas word_smod_def = smod_word_def
+
+lemma [code]:
   "x sdiv y =
    (let x' = sint x; y' = sint y;
         negative = (x' < 0) \<noteq> (y' < 0);
         result = abs x' div abs y'
     in word_of_int (if negative then -result else result))"
+  for x y :: \<open>'a::len word\<close>
+  by (simp add: sdiv_word_def signed_divide_int_def sgn_if Let_def not_less not_le)
 
-definition word_smod :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "smod" 70)
-where [code]:
+lemma [code]:
   "x smod y =
    (let x' = sint x; y' = sint y;
         negative = (x' < 0);
         result = abs x' mod abs y'
     in word_of_int (if negative then -result else result))"
-
-lemma sdiv_smod_id: "(a sdiv b) * b + (a smod b) = a"
+  for x y :: \<open>'a::len word\<close>
 proof -
-  note [simp] = word_sdiv_def word_smod_def
-  have F5: "\<forall>u::'a word. - (- u) = u" by (metis minus_minus)
-  have F7: "\<forall>v u::'a word. u + v = v + u" by(metis add.left_commute add_0_right)
-  have F8: "\<forall>(w::'a word) (v::int) u::int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
-    by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3))
-  have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
-    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute mult_div_mod_eq [symmetric])
-  hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
-  hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
-    using F8 by(metis mult.commute mult_minus_left)
-  hence eq: "word_of_int (- (sint a div - sint b)) * b + word_of_int (sint a mod - sint b) = a" using F7 by metis
-
+  have *: \<open>k mod l = k - k div l * l\<close> for k l :: int
+    by (simp add: minus_div_mult_eq_mod)
   show ?thesis
-  proof(cases "sint a < 0")
-    case True note a = this
-    show ?thesis
-    proof(cases "sint b < 0")
-      case True
-      with a show ?thesis
-        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_mult_eq)
-    next
-      case False
-      from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
-        by (metis div_minus_right mod_minus_right)
-      with a False show ?thesis by simp
-    qed
-  next
-    case False note a = this
-    show ?thesis
-    proof(cases "sint b < 0")
-      case True
-      with a eq show ?thesis by simp
-    next
-      case False with a show ?thesis
-        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute mult_div_mod_eq [symmetric])
-    qed
-  qed
+    by (simp add: smod_word_def signed_modulo_int_def signed_divide_int_def * sgn_if) (simp add: signed_eq_0_iff)
 qed
 
 text \<open>
@@ -258,7 +233,9 @@ next
   then have "sint y = uint y"
     by (simp add: sint_uint sbintrunc_mod2p)
   ultimately show ?thesis using y
-    by(subst div_half_word[OF assms])(simp add: word_sdiv_def uint_div[symmetric])
+    apply (subst div_half_word [OF assms])
+    apply (simp add: sdiv_word_def signed_divide_int_def flip: uint_div)
+    done
 qed
 
 
@@ -286,7 +263,7 @@ lemma set_bits_aux_conv:
   \<open>set_bits_aux w n = (w << n) OR (set_bits f AND mask n)\<close>
   for w :: \<open>'a::len word\<close>
   by (rule bit_word_eqI)
-    (auto simp add: set_bits_aux_def shiftl_word_eq bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff exp_eq_zero_iff)
+    (auto simp add: set_bits_aux_def shiftl_word_eq bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff)
 
 corollary set_bits_conv_set_bits_aux:
   \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
@@ -299,7 +276,7 @@ lemma set_bits_aux_0 [simp]:
 lemma set_bits_aux_Suc [simp]:
   \<open>set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n\<close>
   by (simp add: set_bits_aux_def shiftl_word_eq bit_eq_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_set_bits_word_iff)
-    (auto simp add: bit_exp_iff not_less bit_1_iff less_Suc_eq_le exp_eq_zero_iff)
+    (auto simp add: bit_exp_iff not_less bit_1_iff less_Suc_eq_le)
 
 lemma set_bits_aux_simps [code]:
   \<open>set_bits_aux w 0 = w\<close>
@@ -328,8 +305,11 @@ proof -
   show ?thesis
   proof(cases "i' !! index")
     case True
-    hence unf: "i' = overflow OR i'" unfolding assms i'_def
-      by(auto intro!: bin_eqI simp add: bin_nth_ops)
+    then have unf: "i' = overflow OR i'"
+      apply (simp add: assms i'_def shiftl_eq_push_bit push_bit_of_1 flip: take_bit_eq_mask)
+      apply (rule bit_eqI)
+      apply (auto simp add: bit_take_bit_iff bit_or_iff bit_exp_iff)
+      done
     have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
       by(cases "LENGTH('a)")(simp_all add: not_less)

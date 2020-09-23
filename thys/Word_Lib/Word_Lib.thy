@@ -7,8 +7,10 @@
 section "Additional Word Operations"
 
 theory Word_Lib
-imports
-  "HOL-Word.Misc_set_bit" Word_Syntax
+  imports
+  "HOL-Library.Signed_Division"
+  "HOL-Word.Misc_set_bit"
+  Word_Syntax
 begin
 
 definition
@@ -36,28 +38,38 @@ definition
   w2byte :: "'a :: len word \<Rightarrow> 8 word" where
   "w2byte \<equiv> ucast"
 
+lemmas sdiv_int_def = signed_divide_int_def
+lemmas smod_int_def = signed_modulo_int_def
 
-(*
- * Signed division: when the result of a division is negative,
- * we will round towards zero instead of towards minus infinity.
- *)
-class signed_div =
-  fixes sdiv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "sdiv" 70)
-  fixes smod :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "smod" 70)
-
-instantiation int :: signed_div
+instantiation word :: (len) signed_division
 begin
-definition "(a :: int) sdiv b \<equiv> sgn (a * b) * (abs a div abs b)"
-definition "(a :: int) smod b \<equiv> a - (a sdiv b) * b"
+
+lift_definition signed_divide_word :: \<open>'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>
+  is \<open>\<lambda>k l. signed_take_bit (LENGTH('a) - Suc 0) k sdiv signed_take_bit (LENGTH('a) - Suc 0) l\<close>
+  by (simp flip: signed_take_bit_decr_length_iff)
+
+lift_definition signed_modulo_word :: \<open>'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>
+  is \<open>\<lambda>k l. signed_take_bit (LENGTH('a) - Suc 0) k smod signed_take_bit (LENGTH('a) - Suc 0) l\<close>
+  by (simp flip: signed_take_bit_decr_length_iff)
+
 instance ..
+
 end
 
-instantiation word :: (len) signed_div
-begin
-definition "(a :: ('a::len) word) sdiv b = word_of_int (sint a sdiv sint b)"
-definition "(a :: ('a::len) word) smod b = word_of_int (sint a smod sint b)"
-instance ..
-end
+lemma sdiv_word_def:
+  \<open>v sdiv w = word_of_int (sint v sdiv sint w)\<close>
+  for v w :: \<open>'a::len word\<close>
+  by transfer simp
+
+lemma smod_word_def:
+  \<open>v smod w = word_of_int (sint v smod sint w)\<close>
+  for v w :: \<open>'a::len word\<close>
+  by transfer simp
+
+lemma sdiv_smod_id:
+  \<open>(a sdiv b) * b + (a smod b) = a\<close>
+  for a b :: \<open>'a::len word\<close>
+  by (cases \<open>sint a < 0\<close>; cases \<open>sint b < 0\<close>) (simp_all add: signed_modulo_int_def sdiv_word_def smod_word_def)
 
 (* Tests *)
 lemma
@@ -68,7 +80,7 @@ lemma
   "(-3 :: word32) sdiv -4 =  0"
   "(-5 :: word32) sdiv -4 =  1"
   "( 5 :: word32) sdiv -4 = -1"
-  by (simp_all add: sdiv_word_def sdiv_int_def)
+  by (simp_all add: sdiv_word_def signed_divide_int_def)
 
 lemma
   "( 4 :: word32) smod  4 =   0"
@@ -78,7 +90,7 @@ lemma
   "(-3 :: word32) smod -4 =  -3"
   "(-5 :: word32) smod -4 =  -1"
   "( 5 :: word32) smod -4 =   1"
-  by (simp_all add: smod_word_def smod_int_def sdiv_int_def)
+  by (simp_all add: smod_word_def signed_modulo_int_def signed_divide_int_def)
 
 
 (* Count leading zeros  *)
