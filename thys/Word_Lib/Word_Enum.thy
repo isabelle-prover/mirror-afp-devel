@@ -12,30 +12,6 @@ theory Word_Enum
 imports Enumeration Word_Lib
 begin
 
-instantiation word :: (len) enum
-begin
-
-definition
-  "(enum_class.enum :: ('a :: len) word list) \<equiv> map of_nat [0 ..< 2 ^ LENGTH('a)]"
-
-definition
-  "enum_class.enum_all (P :: ('a :: len) word \<Rightarrow> bool) \<longleftrightarrow> Ball UNIV P"
-
-definition
-  "enum_class.enum_ex (P :: ('a :: len) word \<Rightarrow> bool) \<longleftrightarrow> Bex UNIV P"
-
-instance
-  apply (intro_classes)
-     apply (force simp: enum_word_def)
-    apply (simp add: distinct_map enum_word_def)
-    apply (rule subset_inj_on, rule word_unat.Abs_inj_on)
-    apply (clarsimp simp add: unats_def)
-   apply (simp add: enum_all_word_def)
-  apply (simp add: enum_ex_word_def)
-  done
-
-end
-
 lemma fromEnum_unat[simp]: "fromEnum (x :: 'a::len word) = unat x"
 proof -
   have "enum ! the_index enum x = x" by (auto intro: nth_the_index)
