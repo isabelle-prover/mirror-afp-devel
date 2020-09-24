@@ -143,11 +143,11 @@ subsection \<open>First-Order Layer\<close>
 abbreviation \<G>_F :: \<open>'a clause \<Rightarrow> 'a clause set\<close> where
   \<open>\<G>_F \<equiv> grounding_of_cls\<close>
 
-abbreviation \<G>_Fs :: \<open>'a clause set \<Rightarrow> 'a clause set\<close> where
-  \<open>\<G>_Fs \<equiv> grounding_of_clss\<close>
+abbreviation \<G>_Fset :: \<open>'a clause set \<Rightarrow> 'a clause set\<close> where
+  \<open>\<G>_Fset \<equiv> grounding_of_clss\<close>
 
 lemmas \<G>_F_def = grounding_of_cls_def
-lemmas \<G>_Fs_def = grounding_of_clss_def
+lemmas \<G>_Fset_def = grounding_of_clss_def
 
 definition \<G>_I :: \<open>'a clause set \<Rightarrow> 'a clause inference \<Rightarrow> 'a clause inference set\<close> where
   \<open>\<G>_I M \<iota> = {Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) |\<rho> \<rho>s.
@@ -257,8 +257,8 @@ proof -
     grounded_res: \<open>ord_resolve (S_M S M) CAs DA AAs As \<sigma> E\<close>
     using ground_ord_resolve_imp_ord_resolve[OF ground_DA ground_CAs
         gr.ground_resolution_with_selection_axioms gr_res] by auto
-  have prems_ground: \<open>{DA} \<union> set CAs \<subseteq> \<G>_Fs M\<close>
-    using prems_\<iota>\<^sub>0_in CAs_in DA_in unfolding \<G>_Fs_def by fast
+  have prems_ground: \<open>{DA} \<union> set CAs \<subseteq> \<G>_Fset M\<close>
+    using prems_\<iota>\<^sub>0_in CAs_in DA_in unfolding \<G>_Fset_def by fast
 
   obtain \<eta>s \<eta> \<eta>2 CAs0 DA0 AAs0 As0 E0 \<tau> where
     ground_n: "is_ground_subst \<eta>" and
@@ -400,45 +400,6 @@ lemma mem_FL_Red_F_because_G_Red_F:
 lemma mem_FL_Red_F_because_Prec_FL:
   "(\<forall>D \<in> \<G>_F (fst Cl). \<exists>El \<in> N. El \<sqsubset> Cl \<and> D \<in> \<G>_F (fst El)) \<Longrightarrow> Cl \<in> FL.Red_F N"
   unfolding FL_Red_F_eq by auto
-
-interpretation FL: compact_consequence_relation FL.Bot_FL "(\<TTurnstile>\<G>Le)"
-proof
-  fix CCl
-  assume unsat: "CCl \<TTurnstile>\<G>Le FL.Bot_FL"
-
-  let ?bot = "({#}, undefined)"
-
-  have "CCl \<TTurnstile>\<G>Le {?bot}"
-    using unsat by (metis (lifting) FL.entail_set_all_formulas UNIV_I insertI1 mem_Sigma_iff)
-  then have "\<not> satisfiable (\<Union>CL \<in> CCl. \<G>_F (fst CL))"
-    unfolding FL.labeled_entailment_lifting F_entails_\<G>_iff by auto
-  then obtain DD where
-    d_sub: "DD \<subseteq> (\<Union>Cl \<in> CCl. \<G>_F (fst Cl))" and
-    d_fin: "finite DD" and
-    d_unsat: "\<forall>I. \<not> I \<TTurnstile>s DD"
-    unfolding clausal_logic_compact[of "\<Union>CL \<in> CCl. \<G>_F (fst CL)"] by blast
-
-  define CCl' :: "('a clause \<times> label) set" where
-    "CCl' = {SOME Cl. Cl \<in> CCl \<and> D \<in> \<G>_F (fst Cl) |D. D \<in> DD}"
-
-  have ex_in_cl: "\<exists>Cl. Cl \<in> CCl \<and> D \<in> \<G>_F (fst Cl)" if "D \<in> DD" for D
-    using that d_sub by blast
-  then have d_sub': "DD \<subseteq> (\<Union>Cl \<in> CCl'. \<G>_F (fst Cl))"
-    using ex_in_cl unfolding CCl'_def by clarsimp (metis (lifting) eq_fst_iff ex_in_cl someI_ex)
-  have "CCl' \<subseteq> CCl"
-    unfolding CCl'_def using someI_ex[OF ex_in_cl] by blast
-  moreover have "finite CCl'"
-    unfolding CCl'_def using d_fin by simp
-  moreover have "CCl' \<TTurnstile>\<G>Le FL.Bot_FL"
-    unfolding CCl'_def using d_unsat ex_in_cl d_sub' CCl'_def
-    by (metis (no_types, lifting) FL.entails_\<G>_L_def subsetD true_clss_def)
-  ultimately show "\<exists>CCl' \<subseteq> CCl. finite CCl' \<and> CCl' \<TTurnstile>\<G>Le FL.Bot_FL"
-    by blast
-qed
-
-interpretation FL: refutationally_compact_calculus FL.Bot_FL FL_Inf "(\<TTurnstile>\<G>Le)" FL.Red_I
-  FL.Red_F
-  ..
 
 
 subsection \<open>Resolution Prover Layer\<close>
@@ -799,7 +760,7 @@ proof -
     moreover have \<open>chain (\<rhd>L) (lmap lclss_of_state Sts)\<close>
       using deriv RP_derivation_imp_derive_derivation by simp
     moreover have \<open>chain FL.entails_\<G> (lmap lclss_of_state Sts)\<close>
-      by (smt F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fs_def
+      by (smt F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fset_def
         image_hd_lclss_of_state)
     ultimately show \<open>FL.entails_\<G> (lhd (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
       using FL.unsat_limit_iff by blast
@@ -841,7 +802,7 @@ proof -
   have hd_lcls: "fst ` lhd (lmap lclss_of_state Sts) = lhd (lmap clss_of_state Sts)"
     using len zero_enat_def by auto
   have hd_unsat: "fst ` lhd (lmap lclss_of_state Sts) \<TTurnstile>\<G>e {{#}}"
-    unfolding hd_lcls F_entails_\<G>_iff unfolding true_clss_def using unsat unfolding \<G>_Fs_def
+    unfolding hd_lcls F_entails_\<G>_iff unfolding true_clss_def using unsat unfolding \<G>_Fset_def
     by (metis (no_types, lifting) chain_length_pos gc_deriv gr.ex_min_counterex i0_less
         llength_eq_0 llength_lmap llength_lmap llist.map_sel(1) true_cls_empty true_clss_singleton)
   have "\<exists>BL \<in> {{#}} \<times> UNIV. BL \<in> Liminf_llist (lmap lclss_of_state Sts)"
@@ -993,7 +954,7 @@ proof -
   qed
   then show ?thesis
     unfolding G_def clst_eq src.saturated_upto_def
-    by clarsimp (smt Diff_subset gd.inferences_from_mono subset_eq \<G>_Fs_def)
+    by clarsimp (smt Diff_subset gd.inferences_from_mono subset_eq \<G>_Fset_def)
 qed
 
 theorem RP_sound_old_statement:
@@ -1001,7 +962,7 @@ theorem RP_sound_old_statement:
     deriv: "chain (\<leadsto>RP) Sts" and
     bot_in: "{#} \<in> clss_of_state (Liminf_state Sts)"
   shows "\<not> satisfiable (grounding_of_state (lhd Sts))"
-  using RP_sound_new_statement[OF deriv bot_in] unfolding F_entails_\<G>_iff \<G>_Fs_def by simp
+  using RP_sound_new_statement[OF deriv bot_in] unfolding F_entails_\<G>_iff \<G>_Fset_def by simp
 
 text \<open>The theorem below is stated differently than the original theorem in \textsf{RP}:
 The grounding of the limit might be a strict subset of the limit of the groundings. Because
@@ -1029,7 +990,7 @@ corollary RP_complete_if_fair_old_statement:
     unsat: "\<not> satisfiable (grounding_of_state (lhd Sts))"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof (rule RP_complete_if_fair_new_statement)
-  show \<open>\<G>_Fs (N_of_state (lhd Sts) \<union> P_of_state (lhd Sts) \<union> Q_of_state (lhd Sts)) \<TTurnstile>e {{#}}\<close>
+  show \<open>\<G>_Fset (N_of_state (lhd Sts) \<union> P_of_state (lhd Sts) \<union> Q_of_state (lhd Sts)) \<TTurnstile>e {{#}}\<close>
     using unsat unfolding F_entails_\<G>_iff by auto
 qed (rule deriv old_fair_imp_new_fair[OF chain_not_lnull[OF deriv] fair empty_Q0])+
 

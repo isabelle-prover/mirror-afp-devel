@@ -33,17 +33,17 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
   + fixes
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
     active :: "'l"
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
     wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
-    wf_prec_l: "minimal_element (\<sqsubset>l) UNIV" and
+    wf_prec_L: "minimal_element (\<sqsubset>L) UNIV" and
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
-    active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>l l2" and
-    at_least_two_labels: "\<exists>l2. active \<sqsubset>l l2" and
+    active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>L l2" and
+    at_least_two_labels: "\<exists>l2. active \<sqsubset>L l2" and
     inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active" and
     static_ref_comp: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_I_\<G> no_labels.Red_F_\<G>_empty"
@@ -53,7 +53,7 @@ abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<pre
   "C \<preceq>\<cdot> D \<equiv> C \<doteq> D \<or> C \<prec>\<cdot> D"
 
 definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool" (infix "\<sqsubset>" 50) where
-  "Cl1 \<sqsubset> Cl2 \<longleftrightarrow> fst Cl1 \<prec>\<cdot> fst Cl2 \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>l snd Cl2)"
+  "Cl1 \<sqsubset> Cl2 \<longleftrightarrow> fst Cl1 \<prec>\<cdot> fst Cl2 \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
 
 lemma irrefl_prec_F: "\<not> C \<prec>\<cdot> C"
   by (simp add: minimal_element.po[OF wf_prec_F, unfolded po_on_def irreflp_on_def])
@@ -71,23 +71,23 @@ proof
       fix Cl
       assume a_in: "Cl \<in> (UNIV::('f \<times> 'l) set)"
       have "\<not> (fst Cl \<prec>\<cdot> fst Cl)" using wf_prec_F minimal_element.min_elt_ex by force
-      moreover have "\<not> (snd Cl \<sqsubset>l snd Cl)" using wf_prec_l minimal_element.min_elt_ex by force
-      ultimately show "\<not> (fst Cl \<prec>\<cdot> fst Cl \<or> fst Cl \<doteq> fst Cl \<and> snd Cl \<sqsubset>l snd Cl)" by blast
+      moreover have "\<not> (snd Cl \<sqsubset>L snd Cl)" using wf_prec_L minimal_element.min_elt_ex by force
+      ultimately show "\<not> (fst Cl \<prec>\<cdot> fst Cl \<or> fst Cl \<doteq> fst Cl \<and> snd Cl \<sqsubset>L snd Cl)" by blast
     qed
   next
     show "transp_on (\<sqsubset>) UNIV" unfolding transp_on_def Prec_FL_def
     proof (simp, intro allI impI)
       fix C1 l1 C2 l2 C3 l3
-      assume trans_hyp: "(C1 \<prec>\<cdot> C2 \<or> C1 \<doteq> C2 \<and> l1 \<sqsubset>l l2) \<and> (C2 \<prec>\<cdot> C3 \<or> C2 \<doteq> C3 \<and> l2 \<sqsubset>l l3)"
+      assume trans_hyp: "(C1 \<prec>\<cdot> C2 \<or> C1 \<doteq> C2 \<and> l1 \<sqsubset>L l2) \<and> (C2 \<prec>\<cdot> C3 \<or> C2 \<doteq> C3 \<and> l2 \<sqsubset>L l3)"
       have "C1 \<prec>\<cdot> C2 \<Longrightarrow> C2 \<doteq> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
         using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
       moreover have "C1 \<doteq> C2 \<Longrightarrow> C2 \<prec>\<cdot> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
         using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "l1 \<sqsubset>l l2 \<Longrightarrow> l2 \<sqsubset>l l3 \<Longrightarrow> l1 \<sqsubset>l l3"
-        using wf_prec_l unfolding minimal_element_def po_on_def transp_on_def by (meson UNIV_I)
+      moreover have "l1 \<sqsubset>L l2 \<Longrightarrow> l2 \<sqsubset>L l3 \<Longrightarrow> l1 \<sqsubset>L l3"
+        using wf_prec_L unfolding minimal_element_def po_on_def transp_on_def by (meson UNIV_I)
       moreover have "C1 \<doteq> C2 \<Longrightarrow> C2 \<doteq> C3 \<Longrightarrow> C1 \<doteq> C3"
         using equiv_equiv_F by (meson equivp_transp)
-      ultimately show "C1 \<prec>\<cdot> C3 \<or> C1 \<doteq> C3 \<and> l1 \<sqsubset>l l3" using trans_hyp
+      ultimately show "C1 \<prec>\<cdot> C3 \<or> C1 \<doteq> C3 \<and> l1 \<sqsubset>L l3" using trans_hyp
         using trans_prec_F by blast
     qed
   qed
@@ -102,7 +102,7 @@ next
     define R :: "(('f \<times> 'l) \<times> ('f \<times> 'l)) set" where
       "R = {(Cl1, Cl2). fst Cl1 \<prec>\<cdot> fst Cl2}"
     define S :: "(('f \<times> 'l) \<times> ('f \<times> 'l)) set" where
-      "S = {(Cl1, Cl2). fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>l snd Cl2}"
+      "S = {(Cl1, Cl2). fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2}"
 
     obtain k where
       f_chain: "\<forall>i. (f (Suc (i + k)), f (i + k)) \<in> S"
@@ -126,7 +126,7 @@ next
       unfolding g_def using f_chain by simp
     have wf_s: "wf S"
       unfolding S_def
-      by (rule wf_subset[OF wf_app[OF wf_prec_l[unfolded minimal_element_def, THEN conjunct2,
+      by (rule wf_subset[OF wf_app[OF wf_prec_L[unfolded minimal_element_def, THEN conjunct2,
                 unfolded wfp_on_UNIV wfP_def], of snd]])
         fast
     show False
@@ -321,7 +321,7 @@ qed
 (* lem:redundant-labeled-formulas *)
 lemma red_labeled_clauses:
   assumes \<open>C \<in> no_labels.Red_F_\<G>_empty (fst ` N) \<or>
-    (\<exists>C' \<in> fst ` N. C' \<prec>\<cdot> C) \<or> (\<exists>(C', L') \<in> N. L' \<sqsubset>l L \<and> C' \<preceq>\<cdot> C)\<close>
+    (\<exists>C' \<in> fst ` N. C' \<prec>\<cdot> C) \<or> (\<exists>(C', L') \<in> N. L' \<sqsubset>L L \<and> C' \<preceq>\<cdot> C)\<close>
   shows \<open>(C, L) \<in> Red_F N\<close>
 proof -
   note assms
@@ -353,10 +353,10 @@ proof -
     then show ?thesis
       unfolding Red_F_def by blast
   qed
-  moreover have iii: \<open>\<exists>(C', L') \<in> N. L' \<sqsubset>l L \<and> C' \<preceq>\<cdot> C \<Longrightarrow> (C, L) \<in> Red_F N\<close>
+  moreover have iii: \<open>\<exists>(C', L') \<in> N. L' \<sqsubset>L L \<and> C' \<preceq>\<cdot> C \<Longrightarrow> (C, L) \<in> Red_F N\<close>
   proof -
-    assume "\<exists>(C', L') \<in> N. L' \<sqsubset>l L \<and> C' \<preceq>\<cdot> C"
-    then obtain C' L' where c'_l'_in: "(C', L') \<in> N" and l'_sub_l: "L' \<sqsubset>l L" and c'_sub_c: "C' \<preceq>\<cdot> C"
+    assume "\<exists>(C', L') \<in> N. L' \<sqsubset>L L \<and> C' \<preceq>\<cdot> C"
+    then obtain C' L' where c'_l'_in: "(C', L') \<in> N" and l'_sub_l: "L' \<sqsubset>L L" and c'_sub_c: "C' \<preceq>\<cdot> C"
       by fast
     have "(C, L) \<in> Red_F N" if "C' \<prec>\<cdot> C"
       using that c'_l'_in ii by fastforce
@@ -388,7 +388,7 @@ end
 subsection \<open>Given Clause Procedure\<close>
 
 locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_l active
+  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -403,7 +403,7 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
     active :: 'l +
   assumes
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
@@ -446,7 +446,7 @@ next
     active_empty: "active_subset M = {}"
   have "(C, active) \<in> N2" using n2_is by auto
   moreover have "C \<preceq>\<cdot> C" using equiv_equiv_F by (metis equivp_def)
-  moreover have "active \<sqsubset>l L" using active_minimal[OF not_active] .
+  moreover have "active \<sqsubset>L L" using active_minimal[OF not_active] .
   ultimately have "{(C, L)} \<subseteq> Red_F N2"
     using red_labeled_clauses by blast
   moreover have "N1 - N2 = {} \<or> N1 - N2 = {(C, L)}" using n1_is n2_is by blast
@@ -717,7 +717,7 @@ end
 subsection \<open>Lazy Given Clause Procedure\<close>
 
 locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_l active
+  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -732,7 +732,7 @@ locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
     active :: 'l
 begin
 
@@ -772,7 +772,7 @@ next
     n2_is: "N2 = N \<union> {(C, active)}"
   have "(C, active) \<in> N2" using n2_is by auto
   moreover have "C \<preceq>\<cdot> C" by (metis equivp_def equiv_equiv_F)
-  moreover have "active \<sqsubset>l L" using active_minimal[OF not_active] .
+  moreover have "active \<sqsubset>L L" using active_minimal[OF not_active] .
   ultimately have "{(C, L)} \<subseteq> Red_F N2"
     using red_labeled_clauses by blast
   then have "N1 - N2 \<subseteq> Red_F N2"
