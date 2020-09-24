@@ -105,7 +105,7 @@ text \<open>Last step: prove all axioms of the priority queue specification:\<cl
 interpretation braun: Priority_Queue
 where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
 and insert = insert and del_min = del_min2
-and get_min = "value" and invar = "\<lambda>h. braun h \<and> heap h"
+and get_min = get_min and invar = "\<lambda>h. braun h \<and> heap h"
 and mset = mset_tree
 proof(standard, goal_cases)
   case 1 show ?case by simp
