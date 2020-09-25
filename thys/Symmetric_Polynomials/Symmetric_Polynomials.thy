@@ -110,7 +110,7 @@ next
     have "insert x B \<subseteq> insert x A"
       using B insert by auto
     moreover have "card (insert x B) = k"
-      using insert B finite_subset[of B A] False by (subst card_insert) auto
+      using insert B finite_subset[of B A] False by (subst card.insert_remove) auto
     ultimately show ?thesis by blast
   qed
 qed

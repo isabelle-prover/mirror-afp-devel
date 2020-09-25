@@ -581,7 +581,7 @@ qed
 
 lemma nths_rep_2_n:
   "nths (replicate n 2) {n} = []"
-  by (metis (no_types, lifting) Collect_empty_eq card_empty length_0_conv length_replicate less_Suc_eq not_less_eq nths_replicate singletonD)
+  by (metis (no_types, lifting) Collect_empty_eq card.empty length_0_conv length_replicate less_Suc_eq not_less_eq nths_replicate singletonD)
 
 lemma dims_vars2:
   "nths dims vars2 = [K]"

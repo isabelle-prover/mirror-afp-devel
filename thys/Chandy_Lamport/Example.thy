@@ -143,7 +143,7 @@ proof
     have "(UNIV :: PType set) = {P, Q}"
       using PType.exhaust by blast
     then have "card (UNIV :: PType set) = 2" 
-      by (metis One_nat_def PType.distinct(1) Suc_1 card.insert card_empty finite.emptyI finite.insertI insert_absorb insert_not_empty singletonD)
+      by (metis One_nat_def PType.distinct(1) Suc_1 card.insert card.empty finite.emptyI finite.insertI insert_absorb insert_not_empty singletonD)
     then show ?thesis by auto
   qed
   show "finite (UNIV :: PType set)"

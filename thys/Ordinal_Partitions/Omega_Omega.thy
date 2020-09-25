@@ -3223,7 +3223,7 @@ proof -
       apply (drule grab_eqD, metis grab_eqD infinite_nxtN)+
       apply (safe, simp_all add: less_sets_UN2 less_sets_grab card_fst_bf)
              apply (meson less_sets_weaken2)
-            apply (metis (no_types, hide_lams) IntE Min_in card_empty greaterThan_iff leD not_less_eq_eq nxt_def subsetD zero_less_Suc)
+            apply (metis (no_types, hide_lams) IntE Min_in card.empty greaterThan_iff leD not_less_eq_eq nxt_def subsetD zero_less_Suc)
            apply (meson bf_subset less_sets_weaken2)
           apply (meson nxt_subset subset_eq)
          apply (meson bf_subset nxt_subset subset_eq)
@@ -3257,7 +3257,7 @@ proof -
   then have finite_d [simp]: "finite (d k)" for k
     by simp
   then have d_ne [simp]: "d k \<noteq> {}" for k
-    by (metis card_empty card_grab d_eq infinite_M infinite_nxtN nat.distinct(1))
+    by (metis card.empty card_grab d_eq infinite_M infinite_nxtN nat.distinct(1))
   have a_eq: "\<exists>M. a k = fst (grab M (Min (d k))) \<and> infinite M" for k
     apply (simp add: a_def d_def M_def Let_def DF_simps F_def split: prod.split)
     by (metis fst_conv grab_eqD infinite_nxtN local.inf)
@@ -3334,7 +3334,7 @@ proof -
     apply (clarsimp simp add: a_def M_def DF_simps F_def Let_def split: prod.split)
     by (meson bf_subset grab_eqD infinite_nxtN less_sets_weaken2 local.inf)
   then have "less_sets (a k) (a (Suc k))" for k
-    by (metis IntE card_d card_empty d_eq da fst_grab_subset less_sets_trans less_sets_weaken2 nat.distinct(1) nxt_def subsetI)
+    by (metis IntE card_d card.empty d_eq da fst_grab_subset less_sets_trans less_sets_weaken2 nat.distinct(1) nxt_def subsetI)
   then have aa: "less_sets (a j) (a k)" if "j<k" for k j
     by (meson UNIV_I a_ne less_sets_imp_strict_mono_sets strict_mono_sets_def that)
   then have ab: "less_sets (a k') (b k (j,i))" if "k'\<le>k" for k k' j i
@@ -4570,7 +4570,7 @@ next
           by (metis m_f_0)
         then obtain Y where "f (h ` Y) = 0" "finite Y" "card Y = 2" "Y \<subseteq> M"
           apply (simp add: nsets_def subset_image_iff)
-          by (metis \<open>M \<subseteq> WW\<close> \<open>bij_betw h WW WW'\<close> bij_betw_def card_image card_infinite inj_on_subset zero_neq_numeral)
+          by (metis \<open>M \<subseteq> WW\<close> \<open>bij_betw h WW WW'\<close> bij_betw_def card_image card.infinite inj_on_subset zero_neq_numeral)
         then show ?thesis
           by (auto simp: nsets_def)
       qed

@@ -82,7 +82,7 @@ lemma inter_empty_fst2: "(\<lambda>(p, m, a). (p, m)) ` S \<inter> (\<lambda>(p,
 subsection\<open>Cardinality and Existence of Distinct Members\<close>
 
 lemma card1_eI: "1 \<le> card S \<Longrightarrow> \<exists>y S'. S = {y} \<union> S' \<and> y \<notin> S'"
-	by (metis One_nat_def card_infinite card_le_Suc_iff insert_is_Un leD zero_less_Suc)
+	by (metis One_nat_def card.infinite card_le_Suc_iff insert_is_Un leD zero_less_Suc)
 lemma card2_eI: "2 \<le> card S \<Longrightarrow> \<exists>x y. x \<noteq> y \<and> x \<in> S \<and> y \<in> S"
 proof goal_cases
 	case (1)
@@ -90,7 +90,7 @@ proof goal_cases
 	note card1_eI[OF this]
 	then obtain x S' where xs: "S = {x} \<union> S' \<and> x \<notin> S'" by presburger
 	then have "1 \<le> card S'" 
-		by (metis 1 Suc_1 card_infinite card_insert_if finite_Un insert_is_Un le0 not_less_eq_eq) 
+		by (metis 1 Suc_1 card.infinite card_insert_if finite_Un insert_is_Un le0 not_less_eq_eq) 
 	then obtain y where "y \<in> S'" by fastforce
 	then show ?case using xs by force
 qed
@@ -102,7 +102,7 @@ proof goal_cases
 	then obtain x y S' where xs: "S = {x,y} \<union> S' \<and> x \<notin> S' \<and> y \<notin> S' \<and> x \<noteq> y" 
 	  by (metis Set.set_insert Un_insert_left insert_eq_iff insert_is_Un)
 	then have "1 \<le> card S'"
-	  using 1  by (metis One_nat_def Suc_leI Un_insert_left card_gt_0_iff insert_absorb numeral_3_eq_3 singleton_insert_inj_eq card_infinite card_insert_if finite_Un insert_is_Un le0 not_less_eq_eq) (* uuuh *)
+	  using 1  by (metis One_nat_def Suc_leI Un_insert_left card_gt_0_iff insert_absorb numeral_3_eq_3 singleton_insert_inj_eq card.infinite card_insert_if finite_Un insert_is_Un le0 not_less_eq_eq) (* uuuh *)
 	then obtain z where "z \<in> S'" by fastforce
 	then show ?case using xs by force
 qed

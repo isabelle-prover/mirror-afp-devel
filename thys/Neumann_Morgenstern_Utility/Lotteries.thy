@@ -32,7 +32,7 @@ lemma lotteries_on_nonempty:
 lemma finite_support_one_oc:
   assumes "card outcomes = 1"
   shows "\<forall>l \<in> lotteries_on outcomes. finite (set_pmf l)"
-  by (metis assms card_infinite finite_subset lotteries_on_def mem_Collect_eq zero_neq_one)
+  by (metis assms card.infinite finite_subset lotteries_on_def mem_Collect_eq zero_neq_one)
 
 lemma one_outcome_card_support_1:
   assumes "card outcomes = 1"
@@ -41,7 +41,7 @@ proof
   fix l
   assume "l \<in> lotteries_on outcomes"
   have "finite outcomes"
-    using assms card_infinite by force
+    using assms card.infinite by force
   then have "l \<in> lotteries_on outcomes \<longrightarrow> 1 = card (set_pmf l)"
     by (metis assms card_eq_0_iff card_mono finite_support_one_oc le_neq_implies_less 
         less_one lotteries_on_def mem_Collect_eq set_pmf_not_empty)
@@ -60,7 +60,7 @@ proof (rule ccontr)
   then have "\<forall>e. e \<in> lotteries_on out \<longrightarrow> ((\<Sum>i\<in>set_pmf e. pmf e i) = 1)"
     using sum_pmf_eq_1 by (metis subset  assms(2) finite_subset order_refl)
   then show False
-    by (metis (no_types, lifting) a assms(1) assms(2) card_empty card_gt_0_iff card_seteq 
+    by (metis (no_types, lifting) a assms(1) assms(2) card.empty card_gt_0_iff card_seteq 
         empty_subsetI finite.emptyI finite_insert insert_subset lotteries_on_def subsetI
         measure_measure_pmf_finite mem_Collect_eq nat_less_le pmf.rep_eq set_pmf_of_set )
 qed
@@ -80,7 +80,7 @@ proof -
     x: "outcomes = {x}"
     using assms card_1_singletonE by blast
   have exl: "\<exists>l \<in> lotteries_on outcomes. pmf l x = 1"
-    by (metis x assms card_infinite empty_iff 
+    by (metis x assms card.infinite empty_iff 
         finite_nempty_ex_degernate_in_lotteries insert_iff zero_neq_one)
   have pmfs: "\<forall>l \<in> lotteries_on outcomes. set_pmf l = {x}"
     by (simp add: lotteries_on_def set_pmf_subset_singleton x)

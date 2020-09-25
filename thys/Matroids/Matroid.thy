@@ -16,7 +16,7 @@ proof (induction A arbitrary: n rule: finite_induct)
   show ?case
   proof (cases n)
     case 0
-    then show ?thesis using card_empty by blast
+    then show ?thesis using card.empty by blast
   next
     case (Suc k)
     then have "\<exists>B \<subseteq> A. card B = k" using insert by auto
@@ -129,9 +129,9 @@ proof -
     have "card (insert x ?B\<^sub>1') > card B\<^sub>1"
     proof -
       have "card (insert x ?B\<^sub>1') = Suc (card ?B\<^sub>1')"
-        using insert card_insert[OF indep_finite, of ?B\<^sub>1'] y by auto
+        using insert card.insert_remove[OF indep_finite, of ?B\<^sub>1'] y by auto
       also have "\<dots> = Suc (Suc (card ?B\<^sub>1))"
-        using card_insert[OF indep_finite, of ?B\<^sub>1] \<open>indep ?B\<^sub>1\<close> y by auto
+        using card.insert_remove[OF indep_finite, of ?B\<^sub>1] \<open>indep ?B\<^sub>1\<close> y by auto
       also have "\<dots> = Suc (card B\<^sub>1)"
         using assms basis_finite[of B\<^sub>1] card.remove[of B\<^sub>1] by auto
       finally show ?thesis by auto
@@ -507,7 +507,7 @@ proof -
     then have "rank_of (insert x X) = card (insert x B)"
       using assms rank_of_eq_card_basis_in by auto
     also have "\<dots> = Suc (card (B - {x}))"
-      using assms card_insert[of B x] using B basis_in_finite by auto
+      using assms card.insert_remove[of B x] using B basis_in_finite by auto
     also have "\<dots> \<le> Suc (card B)"
       using assms B basis_in_finite card_Diff1_le[of B] by auto
     also have "\<dots> = Suc (rank_of X)"
@@ -1170,7 +1170,7 @@ next
         also have "X \<inter> insert t (Y - {y}) = insert t ((X \<inter> Y) - {y})"
           using y \<open>t \<in> X - Y\<close> by blast
         also have "card \<dots> = Suc (card (X \<inter> Y))"
-          using y \<open>t \<in> X - Y\<close> \<open>finite Y\<close> by (simp add: card_insert)
+          using y \<open>t \<in> X - Y\<close> \<open>finite Y\<close> by (simp add: card.insert_remove)
         finally show False using XY by simp
       qed
       with XY show False by blast

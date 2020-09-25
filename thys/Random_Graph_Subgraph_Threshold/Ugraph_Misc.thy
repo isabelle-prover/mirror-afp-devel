@@ -113,7 +113,7 @@ proof -
   have "finite ?E'"
     using assms card_ge_0_finite by force
   hence "card (insert a ?E') = 1 + card ?E'"
-    using card_insert by fastforce
+    using card.insert_remove by fastforce
   moreover have "E = insert a ?E'"
     using \<open>a \<in> E\<close> by blast
   ultimately have "card E = 1 + card ?E'"
@@ -137,7 +137,7 @@ proof -
   have "finite ?E'"
     using assms card_ge_0_finite by force
   hence "card (insert a ?E') = 1 + card ?E'"
-    using card_insert by fastforce
+    using card.insert_remove by fastforce
   moreover have "E = insert a ?E'"
     using \<open>a \<in> E\<close> by blast
   ultimately have "card E = 1 + card ?E'"

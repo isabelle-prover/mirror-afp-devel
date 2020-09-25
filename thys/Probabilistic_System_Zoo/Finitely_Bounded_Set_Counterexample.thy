@@ -102,21 +102,21 @@ lemma Collect_split_in_rel: "{(x, y). in_rel R x y} = R"
   by auto
 
 lift_definition X :: "('a :: enum x, 'a x) bset" is "insert A Bs"
-  by (subst finite_card_of_iff_card3) (auto simp: card_insert card_Diff_singleton_if)
+  by (subst finite_card_of_iff_card3) (auto simp: card.insert_remove card_Diff_singleton_if)
 
 lift_definition Y :: "('a :: enum x, 'a x) bset" is "insert C Bs"
-  by (subst finite_card_of_iff_card3) (auto simp: card_insert card_Diff_singleton_if)
+  by (subst finite_card_of_iff_card3) (auto simp: card.insert_remove card_Diff_singleton_if)
 
 lift_definition Z :: "('a :: enum x, 'a x) bset" is "{A, C}"
-  by (subst finite_card_of_iff_card3) (auto simp: card_insert card_Diff_singleton_if)
+  by (subst finite_card_of_iff_card3) (auto simp: card.insert_remove card_Diff_singleton_if)
 
 lift_definition R :: "('a x \<times> 'a x, 'a :: enum x) bset" is "insert (A, A) ((\<lambda>B. (B, C)) ` Bs)"
   by (subst finite_card_of_iff_card3)
-    (auto simp: card_insert card_Diff_singleton_if image_iff card_image inj_on_def)
+    (auto simp: card.insert_remove card_Diff_singleton_if image_iff card_image inj_on_def)
 
 lift_definition S :: "('a x \<times> 'a x, 'a :: enum x) bset" is "insert (C, C) ((\<lambda>B. (A, B)) ` Bs)"
   by (subst finite_card_of_iff_card3)
-    (auto simp: card_insert card_Diff_singleton_if image_iff card_image inj_on_def)
+    (auto simp: card.insert_remove card_Diff_singleton_if image_iff card_image inj_on_def)
 
 lift_definition in_brel :: "('a \<times> 'b, 'k) bset \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool" is in_rel .
 
@@ -150,7 +150,7 @@ proof -
     moreover assume "|Z| <o |UNIV :: 'a x set|"
     ultimately show False unfolding \<open>Z = ?RS\<close>
       by (subst (asm) finite_card_of_iff_card3, simp, simp, subst (asm) card_Un_disjoint)
-        (auto simp: card_insert card_Diff_singleton_if card_image inj_on_def split: if_splits)
+        (auto simp: card.insert_remove card_Diff_singleton_if card_image inj_on_def split: if_splits)
   qed
   ultimately show False by blast
 qed

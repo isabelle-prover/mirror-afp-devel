@@ -28,7 +28,7 @@ next
   from this obtain B where "B \<subseteq> A" "card B = n" by auto
   from this \<open>B \<subseteq> A\<close> \<open>card B = n\<close> have "card B < card A"
     using Suc.prems by linarith
-  from \<open>Suc n \<le> card A\<close> card_infinite have "finite A" by force
+  from \<open>Suc n \<le> card A\<close> card.infinite have "finite A" by force
   from this \<open>B \<subseteq> A\<close> finite_subset have "finite B" by blast
   from \<open>card B < card A\<close> \<open>B \<subseteq> A\<close> obtain a where "a \<in> A" "a \<notin> B"
     by (metis less_irrefl subsetI subset_antisym)
@@ -191,7 +191,7 @@ next
   next
     assume "\<exists>X \<in> {x \<in> A. P x} // R. infinite X"
     from this \<open>infinite {x \<in> A. P x}\<close> show ?thesis
-      using \<open>\<And>F. F \<in> {x \<in> A. P x} // R \<Longrightarrow> card F = k\<close> card_infinite by auto
+      using \<open>\<And>F. F \<in> {x \<in> A. P x} // R \<Longrightarrow> card F = k\<close> card.infinite by auto
   qed
 qed
 

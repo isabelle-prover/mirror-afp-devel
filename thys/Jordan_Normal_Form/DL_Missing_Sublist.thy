@@ -160,7 +160,7 @@ next
       using not_less_Least UnCI mem_Collect_eq nat_neq_iff singleton_conv
        pick_mono_inf[OF Suc.prems, of n "Suc n"] pick_in_set_inf[OF Suc.prems, of n] by fastforce+
     then have "card {a \<in> S. a < pick S (Suc n)} = card {a \<in> S. a < pick S n} + card {pick S n}"  using card_Un_disjoint by auto
-    then show ?thesis by (metis One_nat_def Suc_eq_plus1 Suc card_empty card_insert_if empty_iff finite.emptyI)
+    then show ?thesis by (metis One_nat_def Suc_eq_plus1 Suc card.empty card_insert_if empty_iff finite.emptyI)
   qed
 qed
 
@@ -191,16 +191,16 @@ next
       card_Un_le[of "{a \<in> S. a < pick S n}" "{a \<in> S. pick S n \<le> a}"] by force
     then have 0:"{a \<in> S. a \<ge> pick S n} \<subseteq> {pick S n} \<union> {a \<in> S. a > pick S n}" by auto
     have 1:"finite ({pick S n} \<union> {a \<in> S. pick S n < a})"
-      unfolding finite_Un using Collect_mem_eq assms card_infinite conjI by force
+      unfolding finite_Un using Collect_mem_eq assms card.infinite conjI by force
     have "1 < card {pick S n} + card {a \<in> S. pick S n < a}"
       using card_mono[OF 1 0] card_Un_le[of "{pick S n}" "{a \<in> S. a > pick S n}"]  \<open>card {a \<in> S. a \<ge> pick S n} > 1\<close>
       by linarith
     then show ?thesis by simp
   qed
   then show "pick S (Suc n) \<in> S" unfolding pick.simps
-    by (metis (no_types, lifting) Collect_empty_eq LeastI card_0_eq card_infinite less_numeral_extra(3))
+    by (metis (no_types, lifting) Collect_empty_eq LeastI card_0_eq card.infinite less_numeral_extra(3))
   have "pick S (Suc n) > pick S n"
-    by (metis (no_types, lifting) pick.simps(2) \<open>card {a \<in> S. a > pick S n} > 0\<close> Collect_empty_eq LeastI card_0_eq card_infinite less_numeral_extra(3))
+    by (metis (no_types, lifting) pick.simps(2) \<open>card {a \<in> S. a > pick S n} > 0\<close> Collect_empty_eq LeastI card_0_eq card.infinite less_numeral_extra(3))
   then show "m < Suc n \<Longrightarrow> pick S m < pick S (Suc n)"
     using \<open>m < n \<Longrightarrow> n < card S \<Longrightarrow> pick S m < pick S n\<close>
     using \<open>Suc n < card S\<close> dual_order.strict_trans less_Suc_eq by auto
@@ -210,7 +210,7 @@ next
       apply (rule subset_antisym; rule subsetI)
       using pick.simps not_less_Least \<open>pick S (Suc n) > pick S n\<close> \<open>pick S n \<in> S\<close> by fastforce+
     then have "card {a \<in> S. a < pick S (Suc n)} = card {a \<in> S. a < pick S n} + card {pick S n}"  using card_Un_disjoint by auto
-    then show ?thesis by (metis One_nat_def Suc_eq_plus1 \<open>card {a \<in> S. a < pick S n} = n\<close> card_empty card_insert_if empty_iff finite.emptyI)
+    then show ?thesis by (metis One_nat_def Suc_eq_plus1 \<open>card {a \<in> S. a < pick S n} = n\<close> card.empty card_insert_if empty_iff finite.emptyI)
   qed
 qed
 
@@ -303,7 +303,7 @@ shows "pick I i = pick {a. a < m \<and> a \<in> I} i"
 using assms proof (induction i)
   let ?L = "LEAST a. a \<in> {a. a < m \<and> a \<in> I}"
   case 0
-  then have "{a. a < m \<and> a \<in> I} \<noteq> {}" using card_empty less_numeral_extra(3) by fastforce
+  then have "{a. a < m \<and> a \<in> I} \<noteq> {}" using card.empty less_numeral_extra(3) by fastforce
   then have "?L \<in> I" "?L < m" by (metis (mono_tags, lifting) Collect_empty_eq LeastI mem_Collect_eq)+
   have "\<And>x. x \<in> {a. a < m \<and> a \<in> I} \<Longrightarrow> ?L \<le> x" by (simp add: Least_le)
   have "\<And>x. x \<in> I \<Longrightarrow> ?L \<le> x"

@@ -22,23 +22,23 @@ lemma pick_insert:
 proof -
   have finI: "finite I"
     using i2
-    using card_infinite by force
+    using card.infinite by force
   have "pick (insert a I) i = sorted_list_of_set (insert a I) ! i"
   proof (rule sorted_list_of_set_eq_pick[symmetric])
     have "finite (insert a I)"
-      using card_infinite i2 by force
+      using card.infinite i2 by force
     thus "i < length (sorted_list_of_set (insert a I))"
       by (metis a_notin_I card_insert_disjoint distinct_card finite_insert
           i2 less_Suc_eq sorted_list_of_set(1) sorted_list_of_set(3))
   qed
   also have "... = insort a (sorted_list_of_set I) ! i"
     using sorted_list_of_set.insert
-    by (metis a_notin_I card_infinite i2 not_less0)
+    by (metis a_notin_I card.infinite i2 not_less0)
   also have "... = (sorted_list_of_set I) ! i"
   proof (rule insort_nth[OF])
      show "sorted (sorted_list_of_set I)" by auto
      show "a \<notin> set (sorted_list_of_set I)" using a_notin_I
-       by (metis card_infinite i2 not_less_zero set_sorted_list_of_set)
+       by (metis card.infinite i2 not_less_zero set_sorted_list_of_set)
      have "index (sorted_list_of_set (insert a I)) a = a'"
        using pick_index a_def
        using a'_card a_notin_I finI by auto
@@ -49,7 +49,7 @@ proof -
    qed
   also have "... = pick I i"
   proof (rule sorted_list_of_set_eq_pick)
-    have "finite I" using card_infinite i2 by fastforce
+    have "finite I" using card.infinite i2 by fastforce
     thus "i < length (sorted_list_of_set I)"
       by (metis distinct_card distinct_sorted_list_of_set i2 set_sorted_list_of_set)
   qed
@@ -72,7 +72,7 @@ next
   case False
   hence i0: "i = Suc (i - 1)" using a'_card ia' by auto
   have finI: "finite I"
-    using i2 card_infinite by force
+    using i2 card.infinite by force
   have index_a'1: "index (sorted_list_of_set (insert a I)) a = a'"
     using pick_index
     using a'_card a_def a_notin_I finI by auto
@@ -84,14 +84,14 @@ next
   have 1: "pick (insert a I) i = sorted_list_of_set (insert a I) ! i"
   proof (rule sorted_list_of_set_eq_pick[symmetric])
     have "finite (insert a I)"
-      using card_infinite i2 by force
+      using card.infinite i2 by force
     thus "i < length (sorted_list_of_set (insert a I))"
       by (metis a_notin_I card_insert_disjoint distinct_card finite_insert
           i2 less_Suc_eq sorted_list_of_set(1) sorted_list_of_set(3))
   qed
   also have 2: "... = insort a (sorted_list_of_set I) ! i"
     using sorted_list_of_set.insert
-    by (metis a_notin_I card_infinite i2 not_less0)
+    by (metis a_notin_I card.infinite i2 not_less0)
   also have "... = insort a (sorted_list_of_set I) ! Suc (i-1)" using i0 by auto
   also have "... < pick I i"
   proof (cases "i = a'")
@@ -138,7 +138,7 @@ proof (cases "i = 0")
 next
   case False
   have finI: "finite I"
-    using i2 card_infinite by force
+    using i2 card.infinite by force
   have index_a'1: "index (sorted_list_of_set (insert a I)) a = a'"
     using pick_index
     using a'_card a_def a_notin_I finI by auto
@@ -149,14 +149,14 @@ next
   have 1: "pick (insert a I) (Suc i) = sorted_list_of_set (insert a I) ! (Suc i)"
   proof (rule sorted_list_of_set_eq_pick[symmetric])
     have "finite (insert a I)"
-      using card_infinite i2 by force
+      using card.infinite i2 by force
     thus "Suc i < length (sorted_list_of_set (insert a I))"
       by (metis Suc_mono a_notin_I card_insert_disjoint distinct_card distinct_sorted_list_of_set
           finI i2 set_sorted_list_of_set)
   qed
   also have 2: "... = insort a (sorted_list_of_set I) ! Suc i"
     using sorted_list_of_set.insert
-    by (metis a_notin_I card_infinite i2 not_less0)
+    by (metis a_notin_I card.infinite i2 not_less0)
   also have "... = pick I i"
   proof (cases "i = a'")
     case True
@@ -194,7 +194,7 @@ next
   let ?P = "\<lambda>aa. (aa = a \<or> aa \<in> I) \<and> pick (insert a I) i < aa"
   let ?Q = "\<lambda>aa. aa \<in> I \<and> pick (insert a I) i < aa"
   have "?P = ?Q" using a_notin_I unfolding fun_eq_iff
-    by (auto, metis False Ik a_def card_infinite card_insert_disjoint ik less_SucI
+    by (auto, metis False Ik a_def card.infinite card_insert_disjoint ik less_SucI
         linorder_neqE_nat not_less_zero order.asym pick_mono_le)
   hence "Least ?P = Least ?Q" by simp
   also have "... = pick I i"
@@ -209,12 +209,12 @@ next
     from this obtain j where xs_j_y: "?xs ! j = y" and j: "j < length ?xs"
       using in_set_conv_nth by metis
     have ij: "i<j"
-      by (metis (no_types, lifting) Ik a_notin_I card_infinite card_insert_disjoint ik j less_SucI
+      by (metis (no_types, lifting) Ik a_notin_I card.infinite card_insert_disjoint ik j less_SucI
           linorder_neqE_nat not_less_zero order.asym pick_mono_le sorted_list_of_set_eq_pick xs_j_y y)
     have "pick I i = pick (insert a I) (Suc i)"
       by (rule pick_insert3[symmetric, OF a_notin_I _ a_def _ a'k], insert False Ik ik, auto)
     also have "... \<le> pick (insert a I) j"
-      by (metis Ik Suc_lessI card_infinite distinct_card distinct_sorted_list_of_set eq_iff
+      by (metis Ik Suc_lessI card.infinite distinct_card distinct_sorted_list_of_set eq_iff
           finite_insert ij ik j less_imp_le_nat not_less_zero pick_mono_le set_sorted_list_of_set)
     also have "... = ?xs ! j" by (rule sorted_list_of_set_eq_pick[symmetric, OF j])
     also have "... = y" by (rule xs_j_y)

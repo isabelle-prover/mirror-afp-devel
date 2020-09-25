@@ -2139,7 +2139,7 @@ proof -
     unfolding card_PiE[OF finite_Basis] by (auto simp add: prod_constant)
   finally have "card F = n^(DIM('a))" by auto
   then have "finite F" using \<open>n > 0\<close>
-    using card_infinite by force
+    using card.infinite by force
   have "card F \<ge> c * R^(DIM('a))"
     using \<open>c * R^(DIM('a)) \<le> n^(DIM('a))\<close> \<open>card F = n^(DIM('a))\<close> by auto
 

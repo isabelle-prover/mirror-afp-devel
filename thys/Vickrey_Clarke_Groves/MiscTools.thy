@@ -871,12 +871,12 @@ corollary lm112:
 corollary subsetCardinality: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
   shows "(sum (X <| Y) X) - (sum (X <| Y) Z) = card X - card (Z \<inter> X)" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card.infinite equalityE sum.infinite)
 
 corollary differenceSumVsCardinality: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
   shows "int (sum (X <| Y) X) - int (sum (X <| Y) Z) =  int (card X) - int (card (Z \<inter> X))" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card.infinite equalityE sum.infinite)
 
 (* type conversion in Isabelle *)
 lemma lm113: 
@@ -888,7 +888,7 @@ corollary differenceSumVsCardinalityReal:
   assumes "Z\<subseteq>X\<union>Y" "finite Z" 
   shows "real (sum (X <| Y) X) - real (sum (X <| Y) Z) = 
          real (card X) - real (card (Z \<inter> X))" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card.infinite equalityE sum.infinite)
 
 
 subsection \<open>Lists\<close>
@@ -1160,7 +1160,7 @@ corollary lm145:
 lemma lm146: 
   assumes "card (Pow A) \<noteq> 0" 
   shows "card A=Discrete.log (card (Pow A))" 
-  using assms log_exp card_Pow by (metis card_infinite finite_Pow_iff)
+  using assms log_exp card_Pow by (metis card.infinite finite_Pow_iff)
 
 lemma log_2 [simp]:
   "Discrete.log 2 = 1"
@@ -1232,10 +1232,10 @@ lemma cardOneImageCardOne:
   shows "card (f`A) = 1" 
   using assms card_image card_image_le 
 proof -
-  have "finite (f`A)" using assms One_nat_def Suc_not_Zero card_infinite finite_imageI 
+  have "finite (f`A)" using assms One_nat_def Suc_not_Zero card.infinite finite_imageI 
        by (metis(no_types)) 
   moreover have "f`A \<noteq> {}" using assms by fastforce
-  moreover have "card (f`A) \<le> 1" using assms card_image_le One_nat_def Suc_not_Zero card_infinite
+  moreover have "card (f`A) \<le> 1" using assms card_image_le One_nat_def Suc_not_Zero card.infinite
        by (metis)
   ultimately show ?thesis by (metis assms image_empty image_insert 
                                     cardinalityOneTheElemIdentity the_elem_eq)

@@ -288,7 +288,7 @@ next
       then obtain S where  "V = insert v S" "v \<notin> S"
         using  mk_disjoint_insert[OF True] by auto
       moreover have "finite V" using \<open>2\<le>card V\<close> 
-        by (metis add_leE card_infinite not_one_le_zero numeral_Bit0 numeral_One)
+        by (metis add_leE card.infinite not_one_le_zero numeral_Bit0 numeral_One)
       ultimately have "1\<le>card S" 
         using \<open>2\<le>card V\<close>  card.insert[of S v]  finite_insert[of v S] by auto
       hence "S\<noteq>{}" by auto
@@ -638,7 +638,7 @@ proof -
     proof -
       have "inj_on (\<lambda>x. {n. R x n}) A" unfolding inj_on_def
         using \<open>\<forall>v1 v2. v1\<noteq>v2 \<longrightarrow> {n. R v1 n} \<inter> {n. R v2 n}={}\<close> 
-        by (metis assms(1) assms(2) card_empty inf.idem less_le)
+        by (metis assms(1) assms(2) card.empty inf.idem less_le)
       thus ?thesis by (metis card_image)
     qed
   ultimately show ?thesis using card_partition[of "(\<lambda>x. {n. R x n}) ` A"] by auto
@@ -805,7 +805,7 @@ proof -
       obtain l2_v where l2_v:"l2_v={ps. length ps=2\<and> adj_path v ps}" by auto
       hence "card l2_v=k*k" using path_count[OF k_adj,of v 2] \<open>0<k\<close> \<open>finite V\<close> \<open>v\<in>V\<close>
         by (simp add: power2_eq_square)
-      hence "finite l2_v" using \<open>k>0\<close> by (metis card_infinite mult_is_0 neq0_conv) 
+      hence "finite l2_v" using \<open>k>0\<close> by (metis card.infinite mult_is_0 neq0_conv) 
       moreover have "l2_v=l2_neq_v \<union> l2_eq_v" using l2_v l2_neq_v l2_eq_v by auto
       moreover have "l2_neq_v \<inter> l2_eq_v ={}" using l2_neq_v l2_eq_v by auto
       ultimately have "card l2_neq_v = card l2_v - card l2_eq_v"
@@ -1025,7 +1025,7 @@ proof (rule ccontr)
         proof -
           have "C (l+1) \<subseteq> T (l+1)" using C T by auto
           moreover have "(k * k - k + 1) * k ^ (l + 1)\<noteq>0" using \<open>k\<ge>4\<close> by auto
-          hence "finite (T (l+1))" using T_count[of "l+1"] by (metis card_infinite) 
+          hence "finite (T (l+1))" using T_count[of "l+1"] by (metis card.infinite) 
           ultimately show ?thesis by (metis finite_subset)
         qed
       ultimately have "card (C (l+1)) = card {ps. length ps = l+2 \<and> adj_path (hd ps) (tl ps) 
@@ -1106,7 +1106,7 @@ proof (rule ccontr)
             proof -
               have "C_star l \<subseteq> T l" using C_star T by auto
               moreover have "(k * k - k + 1) * k ^ l\<noteq>0" using \<open>k\<ge>4\<close> by auto
-              hence "finite (T l)" using T_count[of "l"] by (metis card_infinite) 
+              hence "finite (T l)" using T_count[of "l"] by (metis card.infinite) 
               ultimately show ?thesis by (metis finite_subset)
             qed
           moreover have "\<forall>ps1 ps2. ps1 \<noteq> ps2 \<longrightarrow> {ps'. ext ps1 ps'} \<inter> {ps'. ext ps2 ps'} = {}" 
@@ -1341,7 +1341,7 @@ proof (rule ccontr)
       fix l::nat
       have "C_star l \<subseteq> T l" using C_star T by auto
       moreover have "card (T l)\<noteq>0" using T_count \<open>k\<ge>4\<close> by auto
-      hence "finite (T l)" using \<open>k\<ge>4\<close> by (metis card_infinite)
+      hence "finite (T l)" using \<open>k\<ge>4\<close> by (metis card.infinite)
       ultimately have "card (T l - C_star l)=card(T l) - card(C_star l)" 
         by (metis card_Diff_subset rev_finite_subset) 
       hence "card (C (l + 1))=k*card (C_star l) + (card (T l) - card (C_star l))" 

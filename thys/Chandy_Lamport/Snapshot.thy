@@ -69,7 +69,7 @@ lemma exists_some_channel:
   shows "\<exists>i p q. channel i = Some (p, q)"
 proof -
   obtain p q where "p : (UNIV :: 'a set) \<and> q : (UNIV :: 'a set) \<and> p \<noteq> q" 
-    by (metis (mono_tags) One_nat_def UNIV_eq_I all_not_in_conv at_least_two_processes card_Suc_Diff1 card_empty finite_processes insert_iff iso_tuple_UNIV_I less_numeral_extra(4) n_not_Suc_n)
+    by (metis (mono_tags) One_nat_def UNIV_eq_I all_not_in_conv at_least_two_processes card_Suc_Diff1 card.empty finite_processes insert_iff iso_tuple_UNIV_I less_numeral_extra(4) n_not_Suc_n)
   then have "(tranclp has_channel) p q" using strongly_connected by simp
   then obtain r s where "has_channel r s" 
     by (meson tranclpD)

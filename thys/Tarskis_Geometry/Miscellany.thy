@@ -296,7 +296,7 @@ lemma partition_Image_element:
   by (metis Image_singleton_iff assms equiv_class_eq_iff quotientE)
 
 lemma card_insert_ge: "card (insert x A) \<ge> card A"
-  by (metis card_infinite card_insert_le zero_le)
+  by (metis card.infinite card_insert_le zero_le)
 
 lemma choose_1:
   assumes "card S = 1"

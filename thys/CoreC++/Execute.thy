@@ -454,7 +454,7 @@ apply(rule iffI)
    apply(auto intro: ccontr)[1]
   apply(rule card_mono)
    apply simp_all
-apply(metis Suc_n_not_n card_infinite)
+apply(metis Suc_n_not_n card.infinite)
 done
 
 lemma FinalOverriderMethodDef_unfold [code_pred_def]:

@@ -143,7 +143,7 @@ next
   have eq: "{p. p partitions Suc m \<and> sum p {..Suc m} = 0} = {}"
     by (fastforce elim!: partitionsE simp add: le_Suc_eq)
   from this show "card {p. p partitions Suc m \<and> sum p {..Suc m} = 0} = Partition (Suc m) 0"
-    by (simp only: Partition.simps card_empty)
+    by (simp only: Partition.simps card.empty)
 next
   case (4 m k)
   let ?set1 = "{p. p partitions Suc m \<and> sum p {..Suc m} = Suc k \<and> p 1 \<noteq> 0}"
@@ -303,7 +303,7 @@ proof -
   have "\<forall>N \<in> {N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N}. size N = n"
     unfolding number_partition1_eq_replicate_mset by simp
   from this number_partition1_eq_replicate_mset\<open>x < n\<close> have "?N = {}" by auto
-  from this show ?thesis by (simp only: card_empty)
+  from this show ?thesis by (simp only: card.empty)
 qed
 
 end

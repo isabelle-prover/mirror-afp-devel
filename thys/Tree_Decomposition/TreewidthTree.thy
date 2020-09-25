@@ -67,7 +67,7 @@ proof-
     {
       fix v
       have "card { v, parent v } \<le> 2"
-        by (metis card.insert card_empty finite.emptyI finite_insert insert_absorb insert_not_empty
+        by (metis card.insert card.empty finite.emptyI finite_insert insert_absorb insert_not_empty
             lessI less_or_eq_imp_le numerals(2))
       hence "card (bag v) \<le> 2" unfolding bag_def by simp
     }

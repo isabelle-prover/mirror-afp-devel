@@ -24,7 +24,7 @@ inductive rel_bset :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a
 lift_definition bempty :: "'a bset" is "{}"  by (auto simp: card_of_empty4 ctwo_def)
 lift_definition bsingleton :: "'a \<Rightarrow> 'a bset" is "\<lambda>x. {x}" by (auto simp: ctwo_def)
 lift_definition bdoubleton :: "'a \<Rightarrow> 'a \<Rightarrow> 'a bset" is "\<lambda>x y. {x, y}"
-  by (auto simp: ctwo_def finite_card_of_iff_card2 card_insert card_Diff_singleton_if)
+  by (auto simp: ctwo_def finite_card_of_iff_card2 card.insert_remove card_Diff_singleton_if)
 
 lemma map_bset_bempty[simp]: "map_bset f bempty = bempty"
   by transfer simp

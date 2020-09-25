@@ -9,13 +9,13 @@ subsection \<open>Instantiations\<close>
 global_interpretation Max_getIJ: getIJ "\<lambda>_ _ V. (V - {Max V}, {Max V})"
   defines Max_getIJ_genericJoin = "Max_getIJ.genericJoin"
   and Max_getIJ_wrapperGenericJoin = "Max_getIJ.wrapperGenericJoin"
-  by standard (metis Diff_disjoint Max_in One_nat_def Pair_inject Suc_1 Suc_le_mono card.insert_remove card_empty card_infinite card_insert_disjoint finite.emptyI inf_commute insert_Diff insert_absorb insert_is_Un insert_not_empty le_numeral_extra(4) not_numeral_le_zero sup_commute)
+  by standard (metis Diff_disjoint Max_in One_nat_def Pair_inject Suc_1 Suc_le_mono card.insert_remove card.empty card.infinite card_insert_disjoint finite.emptyI inf_commute insert_Diff insert_absorb insert_is_Un insert_not_empty le_numeral_extra(4) not_numeral_le_zero sup_commute)
 
 
 global_interpretation Min_getIJ: getIJ "\<lambda>_ _ V. ({Min V}, V - {Min V})"
   defines Min_getIJ_genericJoin = "Min_getIJ.genericJoin"
   and Min_getIJ_wrapperGenericJoin = "Min_getIJ.wrapperGenericJoin"
-  by standard (metis Diff_disjoint Min_in One_nat_def Pair_inject Suc_1 card.insert_remove card_empty card_infinite card_insert_disjoint finite.emptyI insert_Diff insert_absorb insert_is_Un insert_not_empty le_numeral_extra(4) not_less_eq_eq not_numeral_le_zero)
+  by standard (metis Diff_disjoint Min_in One_nat_def Pair_inject Suc_1 card.insert_remove card.empty card.infinite card_insert_disjoint finite.emptyI insert_Diff insert_absorb insert_is_Un insert_not_empty le_numeral_extra(4) not_less_eq_eq not_numeral_le_zero)
 
 subsection \<open>Queries\<close>
 

@@ -187,7 +187,7 @@ proof (induct rule:poly_root_induct[of _ "\<lambda>x. x\<in>s"])
 next
   case (no_roots p)
   then show ?case 
-    by (metis all_not_in_conv card_empty proots_count_def proots_within_iff sum.empty)
+    by (metis all_not_in_conv card.empty proots_count_def proots_within_iff sum.empty)
 next
   case (root a p)
   have "proots_count ([:a, - 1:] * p) s = 1 + proots_count p s"

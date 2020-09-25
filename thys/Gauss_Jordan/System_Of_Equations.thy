@@ -390,7 +390,7 @@ proof-
  fix x assume as:"x \<in> s" "\<forall>y. y \<in> s \<longrightarrow> y = x"
  have *:"s = insert x {}" apply - apply(rule,rule) unfolding singleton_iff     
  apply(rule as(2)[rule_format]) using as(1) by auto
- show "card s = Suc 0" unfolding * using card_insert by auto 
+ show "card s = Suc 0" unfolding * using card.insert_remove by auto 
 qed auto
  
 

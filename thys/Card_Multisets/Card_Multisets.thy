@@ -190,7 +190,7 @@ lemma card_too_small_multisets_covering_set:
 proof -
   from \<open>k < card A\<close> have eq: "{M. set_mset M = A \<and> size M = k} = {}"
     using card_set_mset_leq Collect_empty_eq leD by auto
-  from this show ?thesis by (metis card_empty)
+  from this show ?thesis by (metis card.empty)
 qed
 
 lemma card_multisets_covering_set:

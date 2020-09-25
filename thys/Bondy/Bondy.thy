@@ -11,7 +11,7 @@ theorem Bondy :
   shows "\<exists>D. D \<subseteq> X & card D < card X & card (inter D ` F) = card F"
 proof -
   from assms(2,3) have "finite F" and "finite X"
-    by (metis card_infinite not_one_le_zero)+
+    by (metis card.infinite not_one_le_zero)+
   { fix m
     have "m < card F \<Longrightarrow> \<exists>D. D \<subseteq> X & card D \<le> m & card (inter D ` F) \<ge> m + 1"
     proof (induction m)

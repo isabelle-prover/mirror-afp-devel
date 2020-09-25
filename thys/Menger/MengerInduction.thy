@@ -129,7 +129,7 @@ lemma P_k: "P_k \<in> paths_with_new" "hd (tl P_k) \<notin> Q.second_vertices" p
       using finite_paths second_vertices_def by auto
     then show ?thesis
       using that card_finite_less_ex
-      by (metis Q.finite_paths Q.second_vertices_def Zero_not_Suc card_infinite finite_imageI lessI)
+      by (metis Q.finite_paths Q.second_vertices_def Zero_not_Suc card.infinite finite_imageI lessI)
   qed
   then have "\<exists>P_k. P_k \<in> paths_with_new \<and> hd (tl P_k) \<notin> Q.second_vertices"
     by (metis (mono_tags, lifting) image_iff insertCI insertE paths_with_new_def second_vertex_def

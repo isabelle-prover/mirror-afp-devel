@@ -83,7 +83,7 @@ theorem (in v0_v1_Digraph) menger:
   shows "\<exists>paths. DisjointPaths G v0 v1 paths \<and> card paths = n"
 using assms v0_v1_Digraph_axioms proof (induct n arbitrary: G)
   case (0 G)
-  then show ?case using v0_v1_Digraph.DisjointPaths_empty[of G] card_empty by blast
+  then show ?case using v0_v1_Digraph.DisjointPaths_empty[of G] card.empty by blast
 next
   case (Suc n G)
   interpret G: v0_v1_Digraph G v0 v1 using Suc(3) .

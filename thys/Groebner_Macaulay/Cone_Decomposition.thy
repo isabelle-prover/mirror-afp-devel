@@ -3760,7 +3760,7 @@ proof (rule standard_decompI)
     from this(1) have "(h', U') \<in> set (?p1 # ps)" by simp
     moreover note \<open>poly_deg h' = d\<close>
     moreover from _ \<open>card U2 \<le> card U'\<close> have "card U \<le> card U'" unfolding U
-      by (rule le_trans) (metis Diff_empty card_Diff1_le card_infinite finite_Diff_insert order_refl)
+      by (rule le_trans) (metis Diff_empty card_Diff1_le card.infinite finite_Diff_insert order_refl)
     ultimately show ?thesis ..
   next
     assume "(h, U) \<in> set (ps\<^sub>+)"
@@ -3950,7 +3950,7 @@ proof -
   then obtain y where "y \<in> U" by blast
   hence "x \<in> U" unfolding assms(4) by (rule someI)
   with card_U have card_Ux: "card (U - {x}) = m"
-    by (metis card_Diff_singleton card_infinite diff_Suc_1 nat.simps(3))
+    by (metis card_Diff_singleton card.infinite diff_Suc_1 nat.simps(3))
   from assms(1) have B: "B = {q \<in> set qs. poly_deg (fst q) = d \<and> m < card (snd q)}"
     and inv2: "shift2_inv qs" by (rule shift1_invD)+
   from inv2 have valid_qs: "valid_decomp X qs" by (rule shift2_invD)
@@ -4156,7 +4156,7 @@ proof -
       let ?args = "(shift_list (h, U) x qs, B - {(h, U)})"
       assume "1 < card B"
       with step.prems have card_U: "card U = Suc m" using hU by (rule shift1_inv_some_snd)
-      from card_U have "finite U" using card_infinite by fastforce
+      from card_U have "finite U" using card.infinite by fastforce
       from card_U have "U \<noteq> {}" by auto
       then obtain y where "y \<in> U" by blast
       hence "x \<in> U" unfolding x_def by (rule someI)
@@ -4528,7 +4528,7 @@ proof (rule shift2_invI)
     }
     thus ?thesis by blast
   qed
-  thus "card {q \<in> set qs. poly_deg (fst q) = d0 \<and> m < card (snd q)} \<le> 1" by (simp only: card_empty)
+  thus "card {q \<in> set qs. poly_deg (fst q) = d0 \<and> m < card (snd q)} \<le> 1" by (simp only: card.empty)
 qed
 
 lemma shift:

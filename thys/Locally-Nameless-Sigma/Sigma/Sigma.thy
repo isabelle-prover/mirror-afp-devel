@@ -2421,7 +2421,7 @@ proof
       moreover
       from obksnd finite_dom_fmap finite_subset 
       have "finite (snd (ob!k))" by auto
-      from card_insert[OF this]
+      from card.insert_remove[OF this]
       have "card (insert l' (snd (ob!k))) = Suc (card (snd(ob!k) - {l'}))" 
         by simp
       with \<open>l' \<notin> snd (ob!k)\<close> \<open>card (snd(ob!k)) = k\<close> last

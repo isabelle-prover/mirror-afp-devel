@@ -28,7 +28,7 @@ next
     from \<open>n < card A\<close> show "n \<le> card A" by simp
   qed
   from \<open>n < card A\<close> have "card A \<noteq> 0" by simp
-  with card_infinite[of A] have "finite A" by blast
+  with card.infinite[of A] have "finite A" by blast
   let ?C = "A - B"
   have "?C \<noteq> {}"
   proof
@@ -42,10 +42,10 @@ next
   hence "B - {c} = B" by simp
   show ?case
   proof (rule ind(2))
-    thm card_insert
+    thm card.insert_remove
     have "card (B \<union> {c}) = card (insert c B)" by simp
     also have "... = Suc (card (B - {c}))"
-      by (rule card_insert, rule finite_subset, fact \<open>B \<subseteq> A\<close>, fact)
+      by (rule card.insert_remove, rule finite_subset, fact \<open>B \<subseteq> A\<close>, fact)
     finally show "card (B \<union> {c}) = Suc n" unfolding \<open>B - {c} = B\<close> card .
   next
     show "B \<union> {c} \<subseteq> A" unfolding Un_subset_iff
@@ -72,7 +72,7 @@ proof -
   proof
     show "A = {x, y}"
     proof (rule sym, rule card_seteq)
-      from assms(1) show "finite A" using card_infinite by fastforce
+      from assms(1) show "finite A" using card.infinite by fastforce
     next
       from \<open>x \<in> A\<close> \<open>y \<in> A\<close> show "{x, y} \<subseteq> A" by simp
     next

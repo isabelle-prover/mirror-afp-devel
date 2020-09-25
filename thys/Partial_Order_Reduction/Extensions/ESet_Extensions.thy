@@ -208,7 +208,7 @@ begin
   proof (induct n arbitrary: A)
     case 0
     have 1: "{k \<in> A. k < least A} = {}" using least_not_less by auto
-    show ?case using nth_least.simps(1) card_empty 1 by metis
+    show ?case using nth_least.simps(1) card.empty 1 by metis
   next
     case (Suc n)
     have 1: "A \<noteq> {}" using Suc(2) by auto
@@ -218,7 +218,7 @@ begin
       {least A} \<union> {k \<in> A - {least A}. k < nth_least (A - {least A}) n}" using 1 3 by auto
     have 5: "card {k \<in> A - {least A}. k < nth_least (A - {least A}) n} = n" using Suc(1) 2 by this
     have 6: "finite {k \<in> A - {least A}. k < nth_least (A - {least A}) n}"
-      using 5 Collect_empty_eq card_infinite infinite_imp_nonempty least_not_less nth_least.simps(1)
+      using 5 Collect_empty_eq card.infinite infinite_imp_nonempty least_not_less nth_least.simps(1)
       by (metis (no_types, lifting))
     have "card {k \<in> A. k < nth_least A (Suc n)} =
       card ({least A} \<union> {k \<in> A - {least A}. k < nth_least (A - {least A}) n})" using 4 by simp
@@ -236,7 +236,7 @@ begin
       using assms by auto
     have 2: "card {k \<in> A. k < nth_least A n} = n" using assms by simp
     have 3: "finite {k \<in> A. k < nth_least A n}"
-      using 2 Collect_empty_eq card_infinite infinite_imp_nonempty least_not_less nth_least.simps(1)
+      using 2 Collect_empty_eq card.infinite infinite_imp_nonempty least_not_less nth_least.simps(1)
       by (metis (no_types, lifting))
     have "card {k \<in> A. k \<le> nth_least A n} = card ({nth_least A n} \<union> {k \<in> A. k < nth_least A n})"
       unfolding 1 by rule

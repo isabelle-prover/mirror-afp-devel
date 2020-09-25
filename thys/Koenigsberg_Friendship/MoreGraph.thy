@@ -1395,7 +1395,7 @@ qed
 lemma odd_card: 
   assumes "finite A" "odd(card A)"
   shows "\<exists>x. x\<in>A" 
-by (metis all_not_in_conv assms(2) card_empty even_zero) 
+by (metis all_not_in_conv assms(2) card.empty even_zero) 
 
 lemma (in valid_unMultigraph) extend_distinct_path: 
   assumes "finite E"  "is_trail v' ps v" 
@@ -2041,7 +2041,7 @@ next
       moreover have "inj_on (\<lambda>(v1,w,v2). (v1,v2)) E" unfolding inj_on_def by auto
       ultimately show ?thesis by (metis card_image)
     qed
-  ultimately show "finite E" by (metis card_infinite)
+  ultimately show "finite E" by (metis card.infinite)
 qed
 
 
@@ -2087,10 +2087,10 @@ proof (induct "degree v G" arbitrary: G)
       hence "degree v G\<noteq>0" using \<open>finite (edges G)\<close> unfolding degree_def by auto
       thus False using \<open>0 = degree v G\<close> by auto
     qed
-  thus ?case by (metis "0.hyps" card_empty)
+  thus ?case by (metis "0.hyps" card.empty)
 next
   case (Suc n)
-  hence "{e \<in> edges G. fst e = v}\<noteq>{}" using card_empty unfolding degree_def  by force
+  hence "{e \<in> edges G. fst e = v}\<noteq>{}" using card.empty unfolding degree_def  by force
   then obtain w u where "(v,w,u)\<in>edges G" by auto
   have valid:"valid_unMultigraph G" using \<open>valid_unSimpGraph G\<close> valid_unSimpGraph_def by auto
   hence valid':"valid_unMultigraph (del_unEdge v w u G)" by auto

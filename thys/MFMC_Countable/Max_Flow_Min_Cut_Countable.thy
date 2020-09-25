@@ -5586,7 +5586,7 @@ proof -
       also have "[(x', y') \<leftarrow> E. x' = None] = [(None, Some y)]"
         using q_Nil by(cases q)(auto simp add: E_def filter_map cong: filter_cong split_beta)
       hence "\<zeta> * 1 \<le> \<zeta> * card (set [(x', y') \<leftarrow> E. x' = None])" using \<zeta>_pos
-        by(intro mult_left_mono)(auto simp add: E_def real_of_nat_ge_one_iff neq_Nil_conv card_insert)
+        by(intro mult_left_mono)(auto simp add: E_def real_of_nat_ge_one_iff neq_Nil_conv card.insert_remove)
       also have "value_flow \<Psi> j + \<dots> = value_flow \<Psi> ?j'"
         using OUT_j' by(simp add: add.commute)
       also have "\<dots> = value_flow \<Psi> j'" unfolding j'_def

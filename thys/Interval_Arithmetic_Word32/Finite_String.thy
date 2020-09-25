@@ -78,7 +78,7 @@ instance proof
     have isCons:"?A = ?B"
       using lr rl by auto
   show ?case
-      using finiteB isCons IH by (simp add: card_insert)
+      using finiteB isCons IH by (simp add: card.insert_remove)
   qed
   done 
   note finMax = card_ge_0_finite[OF spec[OF any, of MAX_STR]]

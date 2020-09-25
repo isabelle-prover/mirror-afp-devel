@@ -212,7 +212,7 @@ proof -
   thus "card (Domain  R) = card  R"
     unfolding univalent_fn[OF assms].
   thus "finite (Domain R) \<longleftrightarrow> finite R"
-    by (metis Domain_empty_iff card_0_eq card_infinite finite.emptyI)
+    by (metis Domain_empty_iff card_0_eq card.infinite finite.emptyI)
 qed
 
 lemma trancl_power_least:

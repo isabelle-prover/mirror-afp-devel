@@ -57,7 +57,7 @@ proof
 next
   assume *: " 2 \<le> card A"
   hence "finite A"
-    using card_infinite
+    using card.infinite
     by force
   moreover
   have "\<exists>x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
@@ -80,7 +80,7 @@ lemma card_geq_3_iff_contains_3_elems:
 proof
   assume *: "card A \<ge> 3"
   hence "finite A"
-    using card_infinite
+    using card.infinite
     by force
   moreover
   have "\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"

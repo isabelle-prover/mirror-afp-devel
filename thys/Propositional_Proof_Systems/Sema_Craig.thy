@@ -94,7 +94,7 @@ proof -
     case (Suc n)
     let ?inf = "Min (atoms F - atoms H)"
     define G where "G = (F[\<top> / ?inf]) \<^bold>\<or> (F[\<bottom> / ?inf])"
-    have e: "Min (atoms F - atoms H) \<in> atoms F - atoms H" by (metis Min_in Suc.hyps(2) Suc.prems(1) card_empty nat.simps(3))
+    have e: "Min (atoms F - atoms H) \<in> atoms F - atoms H" by (metis Min_in Suc.hyps(2) Suc.prems(1) card.empty nat.simps(3))
     with Suc(2) have "n = card (atoms G - atoms H)" unfolding G_def subst_atoms_simp
     proof -
       assume a1: "Suc n = card (atoms F - atoms H)"

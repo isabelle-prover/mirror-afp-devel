@@ -199,7 +199,7 @@ Given a set of cardinality at least $n$, we can find up to $n$ distinct
 witnesses. The built-in @{term "card"} function unfortunately satisfies:
 
 \begin{center}
- @{thm [source] "Finite_Set.card_infinite"}: @{thm "Finite_Set.card_infinite"
+ @{thm [source] "Finite_Set.card.infinite"}: @{thm "Finite_Set.card.infinite"
  [no_vars]}
 \end{center}
 

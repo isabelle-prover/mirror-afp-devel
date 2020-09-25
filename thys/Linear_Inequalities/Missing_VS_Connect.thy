@@ -96,7 +96,7 @@ proof -
   have fin: "finite X"
   proof (cases "n = 0")
     case False
-    with card show "finite X" by (meson card_infinite)
+    with card show "finite X" by (meson card.infinite)
   next
     case True
     with X have "X \<subseteq> carrier_vec 0" by auto

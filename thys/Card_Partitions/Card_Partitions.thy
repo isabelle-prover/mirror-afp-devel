@@ -347,7 +347,7 @@ proof -
   }
   from this assms(2) have "{P. partition_on A P \<and> card P \<le> k \<and> (\<forall>X\<in>P. card X = 1)} = {}"
     using Collect_empty_eq leD by fastforce
-  from this show ?thesis by (simp only: card_empty)
+  from this show ?thesis by (simp only: card.empty)
 qed
 
 end

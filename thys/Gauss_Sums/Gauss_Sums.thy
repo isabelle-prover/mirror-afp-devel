@@ -1240,7 +1240,7 @@ proof -
   
   from residue_mult_group_kernel_partition(2)[OF \<open>d > 1\<close> \<open>0 < k\<close> \<open>d dvd k\<close>]
   have fin_cosets: "finite (rcosets\<^bsub>G\<^esub> kernel G H f)"         
-   using \<open>1 < d\<close> card_infinite by (fastforce simp: G_def H_def f_def)
+   using \<open>1 < d\<close> card.infinite by (fastforce simp: G_def H_def f_def)
           
   have fin_G: "finite (carrier G)"
     unfolding G_def residue_mult_group_def by simp

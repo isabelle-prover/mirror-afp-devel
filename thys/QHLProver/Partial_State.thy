@@ -1415,7 +1415,7 @@ proof -
   show "{0..<length xs} \<subseteq> ind_in_set (A \<union> B) ` B \<union> ind_in_set (A \<union> B) ` A"
     apply (auto simp add: * assms(2))
     using ind_in_set_id
-    by (metis assms(2) atLeastLessThan_iff card_infinite not_le_imp_less not_less_zero)
+    by (metis assms(2) atLeastLessThan_iff card.infinite not_le_imp_less not_less_zero)
 qed
 
 lemma ind_in_set_inj':

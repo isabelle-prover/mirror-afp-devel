@@ -196,7 +196,7 @@ proof -
           by (metis \<open>covering I QQp\<close> assms(2) card_eq_0_iff covering_def not_one_le_zero subset_empty)
       qed
       moreover have "finite QQp"
-        by (metis assms(3) assms(4) card_infinite filterQuery.simps finite_filter not_one_le_zero rwf_query_def wf_query_def)
+        by (metis assms(3) assms(4) card.infinite filterQuery.simps finite_filter not_one_le_zero rwf_query_def wf_query_def)
       then show ?thesis
         by (metis One_nat_def Set.is_empty_def Suc_leI calculation card_gt_0_iff)
     qed
@@ -600,7 +600,7 @@ proof -
   then have "(\<forall>(S, X)\<in>Q. S \<subseteq> {i})" by (simp add: included_def)
   then obtain "sa \<subseteq> {i}" "sb \<subseteq> {i}" using assms(2) assms(3) by blast
   then obtain "sa = {i}" "sb = {i}"
-    by (metis \<open>1 \<le> card sa\<close> \<open>1 \<le> card sb\<close> card_empty not_one_le_zero subset_singletonD)
+    by (metis \<open>1 \<le> card sa\<close> \<open>1 \<le> card sb\<close> card.empty not_one_le_zero subset_singletonD)
   then show ?thesis
     using assms(1) assms(2) inf_le1 prod.sel(1) prod.sel(2) rwf_query_def wf_atable_def
       wf_atable_subset wf_query_def Un_iff by metis
@@ -651,12 +651,12 @@ proof -
     obtain xx where "xx \<in> Q" by (metis Suc.hyps(2) all_not_in_conv card.empty nat.simps(3) zero_diff)
     moreover obtain H where "H = Q - {xx}" by simp
     then have "card H - 1 = y"
-      by (metis Suc.hyps(2) calculation card_Diff_singleton card_infinite diff_Suc_1 less_imp_le not_one_le_zero zero_less_Suc zero_less_diff)
+      by (metis Suc.hyps(2) calculation card_Diff_singleton card.infinite diff_Suc_1 less_imp_le not_one_le_zero zero_less_Suc zero_less_diff)
     moreover have "wf_query n V H Qn \<and> included V H \<and> non_empty_query H"
     proof -
       have "wf_query n V H Qn"
         using DiffD1 Suc.hyps(2) Suc.prems \<open>H = Q - {xx}\<close> calculation(1) card_Diff_singleton
-          card_infinite le_add1 not_one_le_zero plus_1_eq_Suc wf_query_def
+          card.infinite le_add1 not_one_le_zero plus_1_eq_Suc wf_query_def
         by (metis (no_types, lifting) Un_iff)
       then show ?thesis
         using DiffD1 Suc.prems \<open>H = Q - {xx}\<close> included_def non_empty_query_def by fastforce
@@ -664,10 +664,10 @@ proof -
     then have "wf_query n V H Qn \<and> included V H \<and> non_empty_query H" by simp
     then have "table n V ((\<Inter>(_, x)\<in>H. x) - (\<Union>(_, x)\<in>Qn. x))" using Suc.hyps(1) calculation(2) by simp
     moreover obtain sa a where "(sa, a) \<in> H"
-      by (metis One_nat_def Suc.hyps(2) \<open>H = Q - {xx}\<close> calculation(1) calculation(2) card_empty card_eq_0_iff card_le_Suc0_iff_eq diff_is_0_eq' equals0I insert_Diff le0 nat.simps(3) prod.collapse singletonD)
+      by (metis One_nat_def Suc.hyps(2) \<open>H = Q - {xx}\<close> calculation(1) calculation(2) card.empty card_eq_0_iff card_le_Suc0_iff_eq diff_is_0_eq' equals0I insert_Diff le0 nat.simps(3) prod.collapse singletonD)
     moreover have "\<not> (Set.is_empty sa)"
       by (metis Set.is_empty_def \<open>wf_query n V H Qn \<and> included V H \<and> non_empty_query H\<close> calculation(4)
-          card_empty non_empty_query_def not_one_le_zero prod.sel(1))
+          card.empty non_empty_query_def not_one_le_zero prod.sel(1))
     then have "table n V (((\<Inter>(_, x) \<in> H. x) \<inter> (snd xx)) - (\<Union>(_, x)\<in>Qn. x))"
       by (metis Diff_Int2 Diff_Int_distrib2 IntE calculation(3) table_def)
     then show ?case using INF_insert Int_commute \<open>H = Q - {xx}\<close> calculation(1) insert_Diff snd_def by metis
@@ -867,7 +867,7 @@ proof -
         moreover have "A \<subseteq> V"
           using \<open>(A, X) \<in> Q\<close> assms(2) included_def rwf_query_def by fastforce
         then show ?thesis
-          by (metis One_nat_def assms(1) calculation card_infinite card_seteq nat.simps(3))
+          by (metis One_nat_def assms(1) calculation card.infinite card_seteq nat.simps(3))
       qed
       then have "restrict A z = z" using calculation restrict_idle by blast
       moreover have "z \<in> (\<Inter>(_, x) \<in> Q. x)"

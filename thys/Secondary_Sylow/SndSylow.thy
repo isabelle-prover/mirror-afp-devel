@@ -45,7 +45,7 @@ proof(cases "finite (carrier G)")
   thus ?thesis by (metis dvd_triv_left mult.commute)
 next
   case False
-  hence "order G = 0" unfolding order_def by (metis card_infinite)
+  hence "order G = 0" unfolding order_def by (metis card.infinite)
   thus ?thesis by (metis dvd_0_right)
 qed
 
@@ -215,7 +215,7 @@ proof -
   with order_G Psize have "p ^ a * m = card (subgroups_of_size (p ^ a)) * card (conj.stabilizer P)" by (metis num_eq_card_orbit)
   moreover from Psize interpret stabGroup: group "G\<lparr>carrier := conj.stabilizer P\<rparr>" by (metis conj.stabilizer_is_subgroup subgroup_imp_group)
   from finite_G Psize have PStab:"subgroup P (G\<lparr>carrier := conj.stabilizer P\<rparr>)" by (rule stabilizer_supergrp_P)
-  from finite_G Psize have "finite (conj.stabilizer P)" by (metis card_infinite conj.stabilizer_is_subgroup less_nat_zero_code subgroup.finite_imp_card_positive)
+  from finite_G Psize have "finite (conj.stabilizer P)" by (metis card.infinite conj.stabilizer_is_subgroup less_nat_zero_code subgroup.finite_imp_card_positive)
   with finite_G PStab stabGroup.lagrange have "card (rcosets\<^bsub>G\<lparr>carrier := conj.stabilizer P\<rparr>\<^esub> P) * card P = order (G\<lparr>carrier := conj.stabilizer P\<rparr>)" by force
   with cardP show ?thesis unfolding order_def by auto 
 qed

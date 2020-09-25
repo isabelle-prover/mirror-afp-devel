@@ -400,7 +400,7 @@ proof
     case True thus ?thesis using fin by auto
     next case False 
       hence "card A > 0" unfolding card_image[OF inj] by auto
-      thus ?thesis using card_infinite by force
+      thus ?thesis using card.infinite by force
   qed
 qed auto
 

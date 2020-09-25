@@ -296,7 +296,7 @@ lemma size_fsingleton: "(size f = 1) = (\<exists>e. f = {|e|})"
   apply clarify
   apply (simp only: size_fset_of_list)
   apply (simp add: fset_of_list_def fset_both_sides Abs_fset_inverse)
-  by (metis List.card_set One_nat_def card.insert card_1_singletonE card_empty empty_iff finite.intros(1))
+  by (metis List.card_set One_nat_def card.insert card_1_singletonE card.empty empty_iff finite.intros(1))
 
 lemma ffilter_mono: "(ffilter X xs = f) \<Longrightarrow> \<forall>x |\<in>| xs. X x = Y x \<Longrightarrow> (ffilter Y xs = f)"
   by auto

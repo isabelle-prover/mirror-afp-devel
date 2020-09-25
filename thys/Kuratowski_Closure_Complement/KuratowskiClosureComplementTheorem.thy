@@ -289,7 +289,7 @@ qed
 
 theorem CK_card:
   shows "card {f. CK f} \<le> 14"
-by (auto simp: CK_nf CK_nf_set card_insert intro!: le_trans[OF card_Diff1_le])
+by (auto simp: CK_nf CK_nf_set card.insert_remove intro!: le_trans[OF card_Diff1_le])
 
 text\<open>
 
@@ -448,7 +448,7 @@ qed
 
 theorem IK_card:
   shows "card {f. IK f} \<le> 7"
-by (auto simp: IK_nf IK_nf_set card_insert intro!: le_trans[OF card_Diff1_le])
+by (auto simp: IK_nf IK_nf_set card.insert_remove intro!: le_trans[OF card_Diff1_le])
 
 theorem IK_nf_real_card:
   shows "card ((\<lambda> f. f RRR) ` {f . IK_nf f}) = 7"

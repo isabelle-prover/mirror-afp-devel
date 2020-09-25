@@ -736,7 +736,7 @@ It follows from the previous lemma, that the cardinality of the set of orbits fo
 \<close>
 lemma card_orbit: "card (tetrahedral.orbit A) = 4"
 proof -
-  from card_empty card_insert_if have "card vertices = 4" unfolding vertices_def by auto
+  from card.empty card_insert_if have "card vertices = 4" unfolding vertices_def by auto
   with orbit_is_transitive show "card (tetrahedral.orbit A) = 4" by simp
 qed
 
@@ -862,7 +862,7 @@ proof -
     moreover have "(rotate_A \<circ> rotate_A) B = D" by (simp add: rotate_A_def)
     ultimately show "rotate_A \<noteq> rotate_A \<circ> rotate_A" by force
   qed
-  from idA idAA AAA card_empty card_insert_if show
+  from idA idAA AAA card.empty card_insert_if show
     "(card stabiliser_A) = 3" unfolding stabiliser_A_def by auto
 qed
 

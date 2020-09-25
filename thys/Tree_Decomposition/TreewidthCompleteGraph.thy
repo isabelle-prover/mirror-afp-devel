@@ -78,7 +78,7 @@ proof-
       by (metis bag_finite card_seteq insert_subset not_le)
     hence False using s Max.coboundedI bag_cards_finite not_le unfolding max_bag_card_def by auto
   }
-  thus ?thesis using treewidth_upper_bound_V card_empty diff_diff_cancel zero_diff by fastforce
+  thus ?thesis using treewidth_upper_bound_V card.empty diff_diff_cancel zero_diff by fastforce
 qed
 
 end

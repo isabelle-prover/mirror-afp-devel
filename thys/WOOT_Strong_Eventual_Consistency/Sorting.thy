@@ -107,18 +107,18 @@ next
   hence "acyclic ({(x,y). r\<^sup>+\<^sup>+ x y} \<inter> s \<times> s)"
     by (meson acyclic_subset inf_le1)
   hence "wf ({(x,y). r\<^sup>+\<^sup>+ x y} \<inter> s \<times> s)" using Suc 
-    by (metis card_infinite finite_Int finite_SigmaI nat.distinct(1) 
+    by (metis card.infinite finite_Int finite_SigmaI nat.distinct(1) 
         wf_iff_acyclic_if_finite)
   ultimately obtain z where 
     "z \<in> s \<and> (\<forall>y. (y, z) \<in>  ({(x,y). r\<^sup>+\<^sup>+ x y} \<inter> s \<times> s) \<longrightarrow> y \<notin> s)" 
     by (metis ex_in_conv wf_eq_minimal)
   hence z_def: "z \<in> s \<and> (\<forall>y. r\<^sup>+\<^sup>+ y z \<longrightarrow> y \<notin> s)" by blast
   hence "card (s - {z}) = n"
-    by (metis One_nat_def Suc.hyps(2) card_Diff_singleton_if card_infinite 
+    by (metis One_nat_def Suc.hyps(2) card_Diff_singleton_if card.infinite 
         diff_Suc_Suc diff_zero nat.simps(3))
   then obtain l where l_def: 
     "set l = s - {z} \<and> sorted_wrt (to_ord r) l \<and> distinct l" 
-    by (metis Zero_not_Suc card_infinite finite_Diff Suc)
+    by (metis Zero_not_Suc card.infinite finite_Diff Suc)
   hence "set (z#l) = s" using z_def by auto
   moreover have "\<forall>y \<in> set l. \<not>(r\<^sup>*\<^sup>* y z)" using z_def l_def rtranclpD by force
   ultimately show ?case 

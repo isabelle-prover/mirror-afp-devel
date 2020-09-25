@@ -1027,7 +1027,7 @@ text \<open>This lemma version drops the superfluous precondition @{term "finite
 lemma card_partition: "
   \<lbrakk> finite C; \<And>c. c \<in> C \<Longrightarrow> card c = k; \<And>c1 c2. \<lbrakk>c1 \<in> C; c2 \<in> C; c1 \<noteq> c2\<rbrakk> \<Longrightarrow> c1 \<inter> c2 = {} \<rbrakk> \<Longrightarrow>
   card (\<Union>C) = k * card C"
-by (metis card_infinite card_partition finite_Union mult_eq_if)
+by (metis card.infinite card_partition finite_Union mult_eq_if)
 
 
 

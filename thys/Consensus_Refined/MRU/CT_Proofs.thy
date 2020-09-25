@@ -346,7 +346,7 @@ proof -
       by(auto simp add: r2_def r1_def r0_def)
 
     moreover then have "HOs r2 p \<noteq> {}"
-      by (metis card_empty less_nat_zero_code)
+      by (metis card.empty less_nat_zero_code)
     ultimately show "decide (cfg3 p) = Some dec_v" 
     using three_step2[THEN spec, where x=p] send2[THEN spec, where x=p] all_vote
       by(auto simp add: next2_def send2_def Let_def get_msgs_benign 

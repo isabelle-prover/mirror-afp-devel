@@ -33,7 +33,7 @@ lemma lm01: "card P = card (P^-1)"
   using card_image flip_conv injflip by metis
 
 lemma cardinalityOneTheElemIdentity: "(card X = 1) = (X={the_elem X})" 
-  by (metis One_nat_def card_Suc_eq card_empty empty_iff the_elem_eq)
+  by (metis One_nat_def card_Suc_eq card.empty empty_iff the_elem_eq)
 
 lemma lm02: "trivial X = (X={} \<or> card X=1)" 
   using cardinalityOneTheElemIdentity order_refl subset_singletonD trivial_def trivial_empty by (metis(no_types))

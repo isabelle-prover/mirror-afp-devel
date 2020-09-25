@@ -2772,7 +2772,7 @@ next
     with finite_keys have "card (keys p) \<noteq> 0" by auto
     with False have "2 \<le> card (keys p)" unfolding is_monomial_def by linarith
     then obtain s t where "s \<in> keys p" and "t \<in> keys p" and "s \<prec> t"
-      by (metis (mono_tags, lifting) card_empty card_infinite card_insert_disjoint card_mono empty_iff
+      by (metis (mono_tags, lifting) card.empty card.infinite card_insert_disjoint card_mono empty_iff
           finite.emptyI insertCI lessI not_less numeral_2_eq_2 ordered_powerprod_lin.infinite_growing
           ordered_powerprod_lin.neqE preorder_class.less_le_trans subsetI)
     from this(1) this(3) have "punit.tt p \<prec> t" by (rule punit.tt_less)

@@ -126,7 +126,7 @@ lemma max_getIJ_coreProperties:
   assumes "(I, J) = max_getIJ Q_pos Q_neg V"
   shows "card I \<ge> 1 \<and> card J \<ge> 1 \<and> V = I \<union> J \<and> I \<inter> J = {}"
 proof -
-  have "finite V" using assms(1) card_infinite by force
+  have "finite V" using assms(1) card.infinite by force
   define l where "l = sorted_list_of_set V"
   then have "length l \<ge> 1" by (metis Suc_1 Suc_le_lessD \<open>finite V\<close> assms(1) distinct_card
         distinct_sorted_list_of_set less_imp_le set_sorted_list_of_set)

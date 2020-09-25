@@ -26,7 +26,7 @@ lemma card_bijections_eq_zero:
   assumes "finite A" "finite B"
   assumes "card A \<noteq> card B"
   shows "card {f \<in> A \<rightarrow>\<^sub>E B. bij_betw f A B} = 0"
-using bij_betw_set_is_empty[OF assms] by (simp only: card_empty)
+using bij_betw_set_is_empty[OF assms] by (simp only: card.empty)
 
 text \<open>Two alternative proofs for the cardinality of bijections up to a permutation on A.\<close>
 
@@ -66,7 +66,7 @@ using \<open>card A \<noteq> card B\<close> bij_betw_same_card by auto
 lemma card_bijections_domain_permutation_eq_0:
   assumes "card A \<noteq> card B"
   shows "card ({f \<in> A \<rightarrow>\<^sub>E B. bij_betw f A B} // domain_permutation A B) = 0"
-using bij_betw_quotient_domain_permutation_eq_empty[OF assms] by (simp only: card_empty)
+using bij_betw_quotient_domain_permutation_eq_empty[OF assms] by (simp only: card.empty)
 
 text \<open>Two alternative proofs for the cardinality of bijections up to a permutation on A.\<close>
 
@@ -110,7 +110,7 @@ using \<open>card A \<noteq> card B\<close> bij_betw_same_card by auto
 lemma card_bijections_range_permutation_eq_0:
   assumes "card A \<noteq> card B"
   shows "card ({f \<in> A \<rightarrow>\<^sub>E B. bij_betw f A B} // range_permutation A B) = 0"
-using bij_betw_quotient_range_permutation_eq_empty[OF assms] by (simp only: card_empty)
+using bij_betw_quotient_range_permutation_eq_empty[OF assms] by (simp only: card.empty)
 
 text \<open>Two alternative proofs for the cardinality of bijections up to a permutation on B.\<close>
 
@@ -154,7 +154,7 @@ using \<open>card A \<noteq> card B\<close> bij_betw_same_card by auto
 lemma card_bijections_domain_and_range_permutation_eq_0:
   assumes "card A \<noteq> card B"
   shows "card ({f \<in> A \<rightarrow>\<^sub>E B. bij_betw f A B} // domain_and_range_permutation A B) = 0"
-using bij_betw_quotient_domain_and_range_permutation_eq_empty[OF assms] by (simp only: card_empty)
+using bij_betw_quotient_domain_and_range_permutation_eq_empty[OF assms] by (simp only: card.empty)
 
 text \<open>Two alternative proofs for the cardinality of bijections up to a permutation on A and B.\<close>
 

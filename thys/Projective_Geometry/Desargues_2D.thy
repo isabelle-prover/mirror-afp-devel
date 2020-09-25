@@ -95,7 +95,7 @@ lemma rk_A'B'PQ :
   shows "rk {A', B', P, Q} = 4"
 proof-
   have "card {A', B', P, Q} \<le> 4"
-    by (smt One_nat_def Suc_numeral card.insert card_empty finite.emptyI finite_insert insert_absorb 
+    by (smt One_nat_def Suc_numeral card.insert card.empty finite.emptyI finite_insert insert_absorb 
         insert_not_empty linear nat_add_left_cancel_le numeral_3_eq_3 numeral_Bit0 numeral_code(3) 
         numeral_le_one_iff numerals(1) one_plus_numeral semiring_norm(4) semiring_norm(69) 
         semiring_norm(70) semiring_norm(8))
@@ -138,7 +138,7 @@ lemma rk_A'B'PR :
 shows "rk {A', B', P, R} = 4"
 proof-
   have "card {A', B', P, R} \<le> 4"
-    by (smt Suc_numeral assms(2) card_empty card_insert_disjoint dual_order.trans finite.emptyI 
+    by (smt Suc_numeral assms(2) card.empty card_insert_disjoint dual_order.trans finite.emptyI 
         finite_insert insert_absorb linear nat_add_left_cancel_le numeral_2_eq_2 numeral_3_eq_3 
         numeral_Bit0 numeral_code(3) numeral_le_one_iff rk_singleton rk_triple_le semiring_norm(2) 
         semiring_norm(69) semiring_norm(8))

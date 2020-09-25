@@ -480,7 +480,7 @@ next
         = card (((\<lambda>s. fmupd x True s) ` {s. fmdom' s = F}))
           + card ((\<lambda>s. fmupd x False s) ` {s. fmdom' s = F})
       "
-      using calculation card_Un_disjoint card_infinite
+      using calculation card_Un_disjoint card.infinite
         power_eq_0_iff rel_simps(76)
       by metis
     then have "card (

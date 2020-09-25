@@ -1151,9 +1151,9 @@ lemma pick_index:
   assumes a: "a \<in> I" and a'_card: "a' < card I"
   shows "(pick I a' = a) = (index (sorted_list_of_set I) a = a')"
 proof -
-  have finI: "finite I" using a'_card card_infinite by force
+  have finI: "finite I" using a'_card card.infinite by force
   have length_I: "length (sorted_list_of_set I) = card I"
-    by (metis a'_card card_infinite distinct_card distinct_sorted_list_of_set
+    by (metis a'_card card.infinite distinct_card distinct_sorted_list_of_set
         not_less_zero set_sorted_list_of_set)
   let ?i = "index (sorted_list_of_set I) a"
   have "(sorted_list_of_set I) ! a' = pick I a'"

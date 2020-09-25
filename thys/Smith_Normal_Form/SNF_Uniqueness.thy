@@ -326,10 +326,10 @@ next
       have aI: "a \<in> I" using aI' by auto
       have bJ: "b \<in> J" using bJ' by auto
       have cardI':  "card I' = k"
-        by (metis aI' a_notin cardI card_infinite card_insert_disjoint
+        by (metis aI' a_notin cardI card.infinite card_insert_disjoint
             finite_insert nat.inject nat.simps(3))
       have cardJ':  "card J' = k"
-        by (metis bJ' b_notin cardJ card_infinite card_insert_disjoint
+        by (metis bJ' b_notin cardJ card.infinite card_insert_disjoint
             finite_insert nat.inject nat.simps(3))
       have I': "I' \<subseteq> {0..<n}" using I aI' by blast
       have J': "J' \<subseteq> {0..<m}" using J bJ' by blast
@@ -580,10 +580,10 @@ next
       have aI: "a \<in> I" using aI' by auto
       have bJ: "b \<in> J" using bJ' by auto
       have cardI':  "card I' = k"
-        by (metis aI' a_notin cardI card_infinite card_insert_disjoint
+        by (metis aI' a_notin cardI card.infinite card_insert_disjoint
             finite_insert nat.inject nat.simps(3))
       have cardJ':  "card J' = k"
-        by (metis bJ' b_notin cardJ card_infinite card_insert_disjoint
+        by (metis bJ' b_notin cardJ card.infinite card_insert_disjoint
             finite_insert nat.inject nat.simps(3))
       have I': "I' \<subseteq> {0..<n}" using I aI' by blast
       have J': "J' \<subseteq> {0..<m}" using J bJ' by blast

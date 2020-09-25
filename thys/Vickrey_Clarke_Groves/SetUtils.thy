@@ -93,12 +93,12 @@ lemma trivial_implies_finite: assumes "trivial X"
 
 lemma lm01: assumes "trivial (A \<times> B)" 
               shows   "(finite (A\<times>B) & card A * (card B) \<le> 1)" 
-      using trivial_def assms One_nat_def card_cartesian_product card_empty card_insert_disjoint
+      using trivial_def assms One_nat_def card_cartesian_product card.empty card_insert_disjoint
             empty_iff finite.emptyI le0 trivial_implies_finite order_refl subset_singletonD by (metis(no_types))
 
 lemma lm02: assumes "finite X" 
             shows   "trivial X=(card X \<le> 1)" 
-      using assms One_nat_def card_empty card_insert_if card_mono card_seteq empty_iff 
+      using assms One_nat_def card.empty card_insert_if card_mono card_seteq empty_iff 
             empty_subsetI finite.cases finite.emptyI finite_insert insert_mono 
             trivial_def trivial_singleton
       by (metis(no_types))
@@ -126,7 +126,7 @@ lemma trivial_empty_or_singleton: "trivial X = (X = {} \<or> X = {the_elem X})"
 
 lemma trivial_cartesian: assumes "trivial X" "trivial Y" 
             shows   "trivial (X \<times> Y)"
-      using assms lm07 One_nat_def Sigma_empty1 Sigma_empty2 card_empty card_insert_if
+      using assms lm07 One_nat_def Sigma_empty1 Sigma_empty2 card.empty card_insert_if
             finite_SigmaI trivial_implies_finite nat_1_eq_mult_iff order_refl subset_singletonD trivial_def trivial_empty
       by (metis (full_types))
 
