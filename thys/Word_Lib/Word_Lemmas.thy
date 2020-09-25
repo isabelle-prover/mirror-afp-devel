@@ -8,10 +8,14 @@ section "Lemmas with Generic Word Length"
 
 theory Word_Lemmas
   imports
+    "HOL-Library.Sublist"
     "HOL-Word.Misc_lsb"
     Word_EqI
     Word_Enum
-    "HOL-Library.Sublist"
+    Norm_Words
+    Word_Type_Syntax
+    Bitwise_Signed
+    Hex_Words
 begin
 
 lemmas is_aligned_def = is_aligned_iff_dvd_nat
@@ -373,11 +377,12 @@ lemma upto_enum_word:
 lemma word_upto_Cons_eq:
   "x < y \<Longrightarrow> [x::'a::len word .e. y] = x # [x + 1 .e. y]"
   apply (subst upto_enum_red)
-  apply (subst upt_conv_Cons, unat_arith)
+  apply (subst upt_conv_Cons)
+  apply simp_all
+   apply unat_arith
   apply (simp only: list.map list.inject upto_enum_red to_from_enum simp_thms)
-  apply (rule map_cong[OF _ refl])
-  apply (rule arg_cong2[where f = "\<lambda>x y. [x ..< y]"], unat_arith)
-  apply (rule refl)
+  apply simp_all
+  apply unat_arith
   done
 
 lemma distinct_enum_upto:
@@ -1882,7 +1887,7 @@ lemmas is_aligned_limited_and
     = is_aligned_neg_mask_eq[unfolded mask_eq_decr_exp, folded limited_and_def]
 
 lemma compl_of_1: "~~ 1 = (-2 :: 'a :: len word)"
-  by simp
+  by (fact not_one)
 
 lemmas limited_and_simps = limited_and_simps1
        limited_and_simps1[OF is_aligned_limited_and]

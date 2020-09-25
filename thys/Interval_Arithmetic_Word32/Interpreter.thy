@@ -422,13 +422,11 @@ proof -
     apply(rule exI[where x="((2 ^ 31) -1)"])
     using weq by (auto simp add: repe.simps)
   have boundU:"w \<noteq> NEG_INF \<Longrightarrow> w \<noteq> POS_INF \<Longrightarrow> sint (Rep_bword bw) < sint POS_INF"
-    using Rep_bword weq
-    by (metis (no_types, lifting) mem_Collect_eq min.absorb_iff2 min_def not_le 
-        Word.word_sint.Rep_eqD)
+    using Rep_bword [of bw]
+    by (auto simp: less_le weq [symmetric] dest: sint_dist)
   have boundL:"w \<noteq> NEG_INF \<Longrightarrow> w \<noteq> POS_INF \<Longrightarrow> sint NEG_INF < sint (Rep_bword bw)"
-    using Rep_bword weq
-    by (metis (no_types, lifting) mem_Collect_eq min.absorb_iff2 min_def not_le 
-        Word.word_sint.Rep_eqD)
+    using Rep_bword [of bw]
+    by (auto simp: less_le weq [symmetric] dest: sint_dist)
   have intCase:"w \<noteq> NEG_INF \<Longrightarrow> w \<noteq> POS_INF \<Longrightarrow> ?thesis bw"
     apply(rule exI[where x=" (real_of_int (sint (Rep_bword bw)))"])
     apply(rule repINT)

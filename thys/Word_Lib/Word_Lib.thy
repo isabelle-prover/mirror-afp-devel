@@ -11,6 +11,7 @@ theory Word_Lib
   "HOL-Library.Signed_Division"
   "HOL-Word.Misc_set_bit"
   Word_Syntax
+  Signed_Words
 begin
 
 definition
