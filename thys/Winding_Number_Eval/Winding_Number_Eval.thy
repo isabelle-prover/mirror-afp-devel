@@ -2234,11 +2234,11 @@ lemma pathfinish_pathstart_partcirclepath_simps:
   subgoal 
     apply(simp, subst sin.minus_1[symmetric],subst cos.minus_1[symmetric])
     by (simp add: complex_of_real_i)
-  subgoal by (simp, subst sin.minus_1[symmetric],subst cos.minus_1[symmetric],auto)
   subgoal 
-    apply (simp, subst sin.minus_1[symmetric],subst cos.minus_1[symmetric])
     by (simp add: complex_of_real_i)
-  subgoal by (simp, subst sin.minus_1[symmetric],subst cos.minus_1[symmetric],auto)
+  subgoal
+    apply(simp, subst sin.minus_1[symmetric],subst cos.minus_1[symmetric])
+    by (simp add: complex_of_real_i)
   by (simp_all add: complex_of_real_i)
     
 lemma winding_eq_intro:
