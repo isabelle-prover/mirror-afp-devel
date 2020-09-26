@@ -57,5 +57,6 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     Factorize_Int_Poly
     Factorize_Rat_Poly
   document_files
+    "algorithm2e.sty"
     "root.bib"
     "root.tex" 
