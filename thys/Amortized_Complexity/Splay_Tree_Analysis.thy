@@ -265,7 +265,7 @@ subsubsection "Analysis of delete"
 definition a_splay_max :: "'a::linorder tree \<Rightarrow> real" where
 "a_splay_max t = t_splay_max t + \<Phi>(splay_max t) - \<Phi> t"
 
-lemma a_splay_max_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> a_splay_max t \<le> 3 * (\<phi> t - 1) + 1"
+lemma a_splay_max_ub: "t \<noteq> Leaf \<Longrightarrow> a_splay_max t \<le> 3 * (\<phi> t - 1) + 1"
 proof(induction t rule: splay_max.induct)
   case 1 thus ?case by (simp)
 next
@@ -304,13 +304,13 @@ next
   qed
 qed
 
-lemma a_splay_max_ub3: assumes "bst t" shows "a_splay_max t \<le> 3 * \<phi> t + 1"
+lemma a_splay_max_ub3: "a_splay_max t \<le> 3 * \<phi> t + 1"
 proof cases
   assume "t = Leaf" thus ?thesis by(simp add: a_splay_max_def)
 next
   assume "t \<noteq> Leaf"
   have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using a_splay_max_ub[OF assms \<open>t \<noteq> Leaf\<close>] by(simp add: a_splay_max_def)
+  show ?thesis using a_splay_max_ub[OF \<open>t \<noteq> Leaf\<close>] by(simp add: a_splay_max_def)
 qed
 
 lemma amor_delete: assumes "bst t"
@@ -350,7 +350,7 @@ next
       have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
       have "\<Phi> r' \<ge> 0" apply (induction r') by (auto)
       have optm: "real(t_splay_max l) + \<Phi> (splay_max l) - \<Phi> l  \<le> 3 * \<phi> l + 1"
-        using a_splay_max_ub3[OF \<open>bst l\<close>, simplified a_splay_max_def] by (simp add: field_simps Node)
+        using a_splay_max_ub3[of l, simplified a_splay_max_def] by (simp add: field_simps Node)
       have 1: "log 2 (2+(real(size l')+real(size r))) \<le> log 2 (2+(real(size l)+real(size r)))"
         using size_splay_max[of l] Node by simp
       have 2: "log 2 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
