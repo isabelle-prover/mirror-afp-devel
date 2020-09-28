@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 section \<open>Proving Type-Flaw Resistance of the TLS Handshake Protocol\<close>
+text \<open>\label{sec:Example-TLS}\<close>
 theory Example_TLS
 imports "../Typed_Model"
 begin

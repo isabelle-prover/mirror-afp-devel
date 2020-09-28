@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 section \<open>Stateful Protocol Compositionality\<close>
+text \<open>\label{Stateful-Compositionality}\<close>
 
 theory Stateful_Compositionality
 imports Stateful_Typing Parallel_Compositionality Labeled_Stateful_Strands

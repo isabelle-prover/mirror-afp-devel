@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 section \<open>Parallel Compositionality of Security Protocols\<close>
+text \<open>\label{sec:Parallel-Compositionality}\<close>
 theory Parallel_Compositionality
 imports Typing_Result Labeled_Strands
 begin

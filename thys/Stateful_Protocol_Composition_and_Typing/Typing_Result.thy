@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 section \<open>The Typing Result\<close>
+text \<open>\label{sec:Typing-Result}\<close>
 
 theory Typing_Result
 imports Typed_Model

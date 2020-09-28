@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 section \<open>The Keyserver Example\<close>
+text \<open>\label{sec:Example-Keyserver}\<close>
 theory Example_Keyserver
 imports "../Stateful_Compositionality"
 begin

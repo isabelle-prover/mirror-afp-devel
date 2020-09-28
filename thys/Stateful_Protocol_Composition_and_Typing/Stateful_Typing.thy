@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *)
 
 section \<open>Extending the Typing Result to Stateful Constraints\<close>
+text \<open>\label{sec:Stateful-Typing}\<close>
 
 theory Stateful_Typing
 imports Typing_Result Stateful_Strands
