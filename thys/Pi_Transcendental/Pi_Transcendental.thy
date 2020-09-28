@@ -122,7 +122,7 @@ text \<open>
 
   An independent previous formalisation in Coq that uses the same basic techniques was given by
   Bernard et al.~\cite{bernard_pi16}. They later also formalised the much stronger
-  Lindemann--Weierstraß theorem~\cite{bernard_lw17}.
+  Lindemann--Weierstra{\ss} theorem~\cite{bernard_lw17}.
 \<close>
 lemma transcendental_i_pi: "\<not>algebraic (\<i> * pi)"
 proof
