@@ -162,7 +162,7 @@ text \<open>
   To construct $f(s)$, we express it as
   \[f(s) = \frac{1}{z-1}\left(\bar f(s) - \frac{\zeta'(s)}{\zeta(s)}\right)\ ,\]
   where $\bar f(s)$ (which we shall call \<open>pre_newman\<close>) is a function that is analytic on
-  $\Re(s) > \frac{1}{2}$, which can be shown fairly easily using the Weierstraß M test.
+  $\Re(s) > \frac{1}{2}$, which can be shown fairly easily using the Weierstra{\ss} M test.
   
   $\zeta'(s)/\zeta(s)$ is meromorphic except for a single pole at $s = 1$ and one $k$-th order
   pole for any $k$-th order zero of $\zeta$, but for the Prime Number Theorem, we are only
@@ -186,7 +186,7 @@ definition newman where "newman s = 1 / (s - 1) * (pre_newman s - deriv zeta s /
 
 text \<open>
   The sum used in the definition of \<open>pre_newman\<close> converges uniformly on any disc within the
-  half-space with $\mathfrak{R}(s) > \frac{1}{2}$ by the Weierstraß M test.
+  half-space with $\mathfrak{R}(s) > \frac{1}{2}$ by the Weierstra{\ss} M test.
 \<close>
 lemma uniform_limit_pre_newman:
   assumes r: "r \<ge> 0" "Re s - r > 1 / 2"

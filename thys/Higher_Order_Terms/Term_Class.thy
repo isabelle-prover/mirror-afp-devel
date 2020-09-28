@@ -1268,7 +1268,7 @@ using assms by (induction t u env rule: match_some_induct) auto
 section \<open>Related work\<close>
 
 text \<open>
-  Schmidt-Schauß and Siekmann @{cite schmidt1988unification} discuss the concept of
+  Schmidt-Schau{\ss} and Siekmann @{cite schmidt1988unification} discuss the concept of
   \<^emph>\<open>unification algebras\<close>. They generalize terms to \<^emph>\<open>objects\<close> and substitutions to \<^emph>\<open>mappings\<close>.
   A unification problem can be rephrased to finding a mapping such that a set of objects are mapped
   to the same object. The advantage of this generalization is that other -- superficially unrelated
@@ -1287,7 +1287,7 @@ text \<open>
   Williams @{cite williams1991instantiation} defines substitutions as elements in a monoid.
   In this setting, instantiations can be represented as \<^emph>\<open>monoid actions\<close>. Williams then proceeds to
   define -- for arbitrary sets of terms and variables -- the notion of \<^emph>\<open>instantiation systems,\<close>
-  heavily drawing on notation from Schmidt-Schauß and Siekmann. Some of the presented axioms
+  heavily drawing on notation from Schmidt-Schau{\ss} and Siekmann. Some of the presented axioms
   are also present in this formalization, as are some theorems that have a direct correspondence.
 \<close>
 

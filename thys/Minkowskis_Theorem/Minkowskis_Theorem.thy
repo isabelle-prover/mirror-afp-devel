@@ -485,7 +485,7 @@ next
   then obtain v where v: "v n \<in> B' (1/Suc n) - {0}" "v n $ i \<in> \<int>" for i n
     by blast
 
-  \<comment> \<open>By the Bolzano--Weierstraß theorem, there exists a convergent subsequence of @{term v}.\<close>
+  \<comment> \<open>By the Bolzano--Weierstra{\ss} theorem, there exists a convergent subsequence of @{term v}.\<close>
   have "\<exists>h l. strict_mono (h::nat\<Rightarrow>nat) \<and> (v \<circ> h) \<longlonglongrightarrow> l"
   proof (rule compactD)
     show "compact (B' 1)" by (rule compact')

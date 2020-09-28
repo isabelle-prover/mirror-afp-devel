@@ -408,7 +408,7 @@ proof (induct ts arbitrary: f)
 qed simp
 
 
-subsection \<open>Definition 10 and Lemma 11 from Schmidt-Schauß's paper\<close>
+subsection \<open>Definition 10 and Lemma 11 from Schmidt-Schau{\ss}'s paper\<close>
 
 abbreviation "closed t \<equiv> fv t = {||}"
 
