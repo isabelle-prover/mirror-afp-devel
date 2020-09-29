@@ -25,15 +25,15 @@ locale compiler =
   for
     step1 and step2 and
     final1 and final2 and
-    load1 :: "'prog1 \<Rightarrow> 'state1 option" and
-    load2 :: "'prog2 \<Rightarrow> 'state2 option" and
+    load1 :: "'prog1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
+    load2 :: "'prog2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
     order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
     match +
   fixes
     compile :: "'prog1 \<Rightarrow> 'prog2 option"
   assumes
     compile_load:
-      "compile p1 = Some p2 \<Longrightarrow> load1 p1 = Some s1 \<Longrightarrow> \<exists>s2 i. load2 p2 = Some s2 \<and> match i s1 s2"
+      "compile p1 = Some p2 \<Longrightarrow> load2 p2 s2 \<Longrightarrow> \<exists>s1 i. load1 p1 s1 \<and> match i s1 s2"
 begin
 
 text \<open>
@@ -47,16 +47,18 @@ subsection \<open>Preservation of behaviour\<close>
 corollary behaviour_preservation:
   assumes
     compiles: "compile p1 = Some p2" and
-    loads: "load1 p1 = Some s1" "load2 p2 = Some s2" and
-    behaves: "L2.behaves s2 b2" and
+    behaves: "L2.behaves p2 b2" and
     not_wrong: "\<not> is_wrong b2"
-  shows "\<exists>b1 i. L1.behaves s1 b1 \<and> rel_behaviour (match i) b1 b2"
+  shows "\<exists>b1 i.  L1.behaves p1 b1 \<and> rel_behaviour (match i) b1 b2"
 proof -
-  obtain i where "match i s1 s2"
-    using compile_load[OF compiles] loads by auto
+  obtain s2 where "load2 p2 s2" and "L2.sem_behaves s2 b2"
+    using behaves L2.behaves_def by auto
+  obtain i s1 where "load1 p1 s1" "match i s1 s2"
+    using compile_load[OF compiles \<open>load2 p2 s2\<close>]
+    by auto
   then show ?thesis
-    using simulation_behaviour[OF behaves not_wrong]
-    by simp
+    using simulation_behaviour[OF \<open>L2.sem_behaves s2 b2\<close> not_wrong \<open>match i s1 s2\<close>]
+    by (auto simp: L1.behaves_def)
 qed
 
 end
@@ -82,19 +84,19 @@ next
 next
   show "compiler_axioms load1 load3 (rel_comp match1 match2) (compile2 \<Lleftarrow> compile1)"
   proof unfold_locales
-    fix p1 p3 s1
+    fix p1 p3 s3
     assume
       compile: "(compile2 \<Lleftarrow> compile1) p1 = Some p3" and
-      load: "load1 p1 = Some s1"
-    obtain p2 where "compile1 p1 = Some p2" and "compile2 p2 = Some p3"
+      load: "load3 p3 s3"
+    obtain p2 where c1: "compile1 p1 = Some p2" and c2: "compile2 p2 = Some p3"
       using compile by (auto simp: bind_eq_Some_conv option_comp_def)
-    then obtain s2 i where "load2 p2 = Some s2" and "match1 i s1 s2"
-      using assms(1)[THEN compiler.compile_load] load
-      by blast
-    moreover obtain s3 i' where "load3 p3 = Some s3" and "match2 i' s2 s3"
-      using assms(2)[THEN compiler.compile_load, OF \<open>compile2 p2 = Some p3\<close> \<open>load2 p2 = Some s2\<close>]
+    obtain s2 i' where l2: "load2 p2 s2" and "match2 i' s2 s3"
+      using assms(2)[THEN compiler.compile_load, OF c2 load]
       by auto
-    ultimately show "\<exists>s3 i. load3 p3 = Some s3 \<and> rel_comp match1 match2 i s1 s3"
+    moreover obtain s1 i where "load1 p1 s1" and "match1 i s1 s2"
+      using assms(1)[THEN compiler.compile_load, OF c1 l2]
+      by auto
+    ultimately show "\<exists>s1 i. load1 p1 s1 \<and> rel_comp match1 match2 i s1 s3"
       unfolding rel_comp_def by auto
   qed
 qed
@@ -115,11 +117,11 @@ next
   proof (rule compiler.intro)
     show "compiler_axioms load load (rel_comp_pow match) (option_comp_pow compile (Suc 0))"
     proof unfold_locales
-      fix p1 p2 s1
+      fix p1 p2 s2
       assume
         "option_comp_pow compile (Suc 0) p1 = Some p2" and
-        "load p1 = Some s1"
-      thus "\<exists>s2 i. load p2 = Some s2 \<and> rel_comp_pow match i s1 s2"
+        "load p2 s2"
+      thus "\<exists>s1 i. load p1 s1 \<and> rel_comp_pow match i s1 s2"
         using compiler.compile_load[OF assms(1)]
         by (metis option_comp_pow.simps(2) rel_comp_pow.simps(2))
     qed
@@ -130,23 +132,24 @@ next
   proof (rule compiler.intro)
     show "compiler_axioms load load (rel_comp_pow match) (option_comp_pow compile (Suc (Suc n')))"
     proof unfold_locales
-      fix p1 p3 s1
+      fix p1 p3 s3
       assume
         "option_comp_pow compile  (Suc (Suc n')) p1 = Some p3" and
-        "load p1 = Some s1"
+        "load p3 s3"
       then obtain p2 where
         comp: "compile p1 = Some p2" and
         comp_IH: "option_comp_pow compile (Suc n') p2 = Some p3"
         by (auto simp: option_comp_def bind_eq_Some_conv)
-      then obtain s2 i where "load p2 = Some s2" and "match i s1 s2"
-        using compiler.compile_load[OF assms(1) _ \<open>load p1 = Some s1\<close>] by blast
-      then obtain s3 i' where "load p3 = Some s3" and "rel_comp_pow match i' s2 s3"
-        using compiler.compile_load[OF "3.IH" comp_IH] by blast
-      moreover have "rel_comp_pow match (i # i') s1 s3"
-        using \<open>match i s1 s2\<close> \<open>rel_comp_pow match i' s2 s3\<close>
-        using rel_comp_pow.elims(2) by fastforce
-      ultimately show "\<exists>s3 i. load p3 = Some s3 \<and> rel_comp_pow match i s1 s3"
+      obtain s2 i' where "load p2 s2" and "rel_comp_pow match i' s2 s3"
+        using compiler.compile_load[OF "3.IH" comp_IH \<open>load p3 s3\<close>]
         by auto
+      moreover obtain s1 i where "load p1 s1" and "match i s1 s2"
+        using compiler.compile_load[OF assms comp \<open>load p2 s2\<close>]
+        by auto
+      moreover have "rel_comp_pow match (i # i') s1 s3"
+        using \<open>rel_comp_pow match i' s2 s3\<close> \<open>match i s1 s2\<close> rel_comp_pow.elims(2) by fastforce
+      ultimately show "\<exists>s1 i. load p1 s1 \<and> rel_comp_pow match i s1 s3"
+        by blast
     qed
   qed (auto intro: assms compiler.axioms backward_simulation_pow)
 qed

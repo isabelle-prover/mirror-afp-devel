@@ -67,27 +67,27 @@ qed
 
 subsection \<open>Behaviour of a dynamic execution\<close>
 
-inductive behaves :: "'state \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<Down>" 50) where
+inductive sem_behaves :: "'state \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<down>" 50) where
   state_terminates:
-    "s1 \<rightarrow>\<^sup>* s2 \<Longrightarrow> finished step s2 \<Longrightarrow> final s2 \<Longrightarrow> s1 \<Down> (Terminates s2)" |
+    "s1 \<rightarrow>\<^sup>* s2 \<Longrightarrow> finished step s2 \<Longrightarrow> final s2 \<Longrightarrow> s1 \<down> (Terminates s2)" |
   state_diverges:
-    "s1 \<rightarrow>\<^sup>\<infinity> \<Longrightarrow> s1 \<Down> Diverges" |
+    "s1 \<rightarrow>\<^sup>\<infinity> \<Longrightarrow> s1 \<down> Diverges" |
   state_goes_wrong:
-    "s1 \<rightarrow>\<^sup>* s2 \<Longrightarrow> finished step s2 \<Longrightarrow> \<not> final s2 \<Longrightarrow> s1 \<Down> (Goes_wrong s2)"
+    "s1 \<rightarrow>\<^sup>* s2 \<Longrightarrow> finished step s2 \<Longrightarrow> \<not> final s2 \<Longrightarrow> s1 \<down> (Goes_wrong s2)"
 
 
 text \<open>
 Even though the @{term step} transition relation in the @{locale semantics} locale need not be deterministic, if it happens to be, then the behaviour of a program becomes deterministic too.
 \<close>
 
-lemma behaves_deterministic:
+lemma sem_behaves_deterministic:
   assumes
     deterministic: "\<And>x y z. step x y \<Longrightarrow> step x z \<Longrightarrow> y = z"
-  shows "s \<Down> b1 \<Longrightarrow> s \<Down> b2 \<Longrightarrow> b1 = b2"
-proof (induction s b1 rule: behaves.induct)
+  shows "s \<down> b1 \<Longrightarrow> s \<down> b2 \<Longrightarrow> b1 = b2"
+proof (induction s b1 rule: sem_behaves.induct)
   case (state_terminates s1 s2)
   show ?case using state_terminates.prems state_terminates.hyps
-  proof (induction s1 b2 rule: behaves.induct)
+  proof (induction s1 b2 rule: sem_behaves.induct)
     case (state_terminates s1 s3)
     then show ?case
       using eval_deterministic deterministic by simp
@@ -103,7 +103,7 @@ proof (induction s b1 rule: behaves.induct)
 next
   case (state_diverges s1)
   show ?case using state_diverges.prems state_diverges.hyps
-  proof (induction s1 b2 rule: behaves.induct)
+  proof (induction s1 b2 rule: sem_behaves.induct)
     case (state_terminates s1 s2)
     then show ?case
       using deterministic star_inf[THEN finished_inf] by simp
@@ -118,7 +118,7 @@ next
 next
   case (state_goes_wrong s1 s2)
   show ?case using state_goes_wrong.prems state_goes_wrong.hyps
-  proof (induction s1 b2)
+  proof (induction s1 b2 rule: sem_behaves.induct)
     case (state_terminates s1 s3)
     then show ?case 
       using eval_deterministic deterministic by blast

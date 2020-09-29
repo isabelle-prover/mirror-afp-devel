@@ -148,15 +148,15 @@ In other words, if the compiled program does not crash, then its behaviour, whet
 \<close>
 
 lemma simulation_behaviour :
-  "L2.behaves s\<^sub>2 b\<^sub>2 \<Longrightarrow> \<not>is_wrong b\<^sub>2 \<Longrightarrow> match i s\<^sub>1 s\<^sub>2 \<Longrightarrow>
-    \<exists>b\<^sub>1 i'. L1.behaves s\<^sub>1 b\<^sub>1 \<and> rel_behaviour (match i') b\<^sub>1 b\<^sub>2"
-proof(induction rule: L2.behaves.cases)
+  "L2.sem_behaves s\<^sub>2 b\<^sub>2 \<Longrightarrow> \<not>is_wrong b\<^sub>2 \<Longrightarrow> match i s\<^sub>1 s\<^sub>2 \<Longrightarrow>
+    \<exists>b\<^sub>1 i'. L1.sem_behaves s\<^sub>1 b\<^sub>1 \<and> rel_behaviour (match i') b\<^sub>1 b\<^sub>2"
+proof(induction rule: L2.sem_behaves.cases)
   case (state_terminates s2 s2')
   then obtain i' s1' where "L1.eval s\<^sub>1 s1'" and "match i' s1' s2'"
     using lift_simulation_eval by blast
   hence "final1 s1'"
     by (auto intro: state_terminates.hyps match_final)
-  hence "L1.behaves s\<^sub>1 (Terminates s1')"
+  hence "L1.sem_behaves s\<^sub>1 (Terminates s1')"
     using L1.final_finished
     by (simp add: L1.state_terminates \<open>L1.eval s\<^sub>1 s1'\<close>)
   moreover have "rel_behaviour (match i') (Terminates s1') b\<^sub>2"
