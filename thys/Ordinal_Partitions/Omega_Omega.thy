@@ -839,8 +839,8 @@ subsubsection \<open>Interactions\<close>
 
 lemma interact:
   assumes "Form l U" "l>0"
-  obtains k xs ys zs where "l = 2*k-1" "U = {xs,ys}" "Form_Body k k xs ys zs" "k > 0"
-  | k xs ys zs where "l = 2*k" "U = {xs,ys}" "Form_Body (Suc k) k xs ys zs" "k > 0"
+  obtains k xs ys zs where "l = 2*k-1" "U = {xs,ys}" "k > 0" "Form_Body k k xs ys zs"
+        | k xs ys zs where "l = 2*k"   "U = {xs,ys}" "k > 0" "Form_Body (Suc k) k xs ys zs"
   by (rule Form.cases [OF \<open>Form l U\<close>]) (use \<open>l>0\<close> in \<open>force+\<close>)
 
 
@@ -1548,8 +1548,8 @@ qed
 subsection \<open>Larson's Lemma 3.6\<close>
 
 proposition lemma_3_6:
-  fixes g
-  assumes g: "g \<in> [WW]\<^bsup>2\<^esup> \<rightarrow> {..<Suc (Suc 0)}"
+  fixes g :: "nat list set \<Rightarrow> nat"
+  assumes g: "g \<in> [WW]\<^bsup>2\<^esup> \<rightarrow> {0,1}"
   obtains N j where "infinite N"
     and "\<And>k u. \<lbrakk>k > 0; u \<in> [WW]\<^bsup>2\<^esup>; Form k u; [enum N k] < inter_scheme k u; List.set (inter_scheme k u) \<subseteq> N\<rbrakk> \<Longrightarrow> g u = j k"
 proof -
@@ -4534,8 +4534,10 @@ next
       let ?fh = "f \<circ> image h"
       have "bij_betw h WW WW'"
         using h unfolding iso_ll_def iso_iff2 by (fastforce simp: FR_WW FR_WW')
-      then have fh: "?fh \<in> [WW]\<^bsup>2\<^esup> \<rightarrow> {..<Suc (Suc 0)}"
-        unfolding Pi_iff using bij_betwE f' bij_betw_nsets by fastforce
+      moreover have "{..<Suc (Suc 0)} = {0,1}"
+        by auto
+      ultimately have fh: "?fh \<in> [WW]\<^bsup>2\<^esup> \<rightarrow> {0,1}"
+        unfolding Pi_iff using bij_betwE f' bij_betw_nsets by (metis PiE comp_apply)
 
       have "f{x,y} = 0" if "x \<in> WW'" "y \<in> WW'" "length x = length y" "x \<noteq> y" for x y
       proof -
