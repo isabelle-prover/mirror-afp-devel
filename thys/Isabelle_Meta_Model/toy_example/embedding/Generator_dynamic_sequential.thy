@@ -1050,7 +1050,7 @@ fun f_command l_mode =
               let val tmp_export_code = Deep.mk_path_export_code tmp_export_code ml_compiler i
                   fun mk_fic s = Path.append tmp_export_code (Path.make [s])
                   val () = Deep0.Find.check_compil ml_compiler ()
-                  val () = Isabelle_System.mkdirs tmp_export_code in
+                  val () = Isabelle_System.make_directory tmp_export_code in
               ((( (ml_compiler, ml_module)
                 , Path.implode (if Deep0.Find.export_mode ml_compiler = Deep0.Export_code_env.Directory then
                                   tmp_export_code

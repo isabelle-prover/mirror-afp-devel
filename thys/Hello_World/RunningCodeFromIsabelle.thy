@@ -29,7 +29,7 @@ val cmd =
     Bash.string ghc ^ " Main.hs && " ^
     "(  echo 'Cyber Cat 42' | ./Main )";
 
-Isabelle_System.mkdirs target;
+Isabelle_System.make_directory target;
 
 app (fn ([file], content) =>
    let
@@ -66,7 +66,7 @@ val cmd =
     "\"${POLYML_EXE?}\" --use " ^ Path.implode file ^
     " --eval 'HelloWorld.main ()'";
 
-Isabelle_System.mkdirs target;
+Isabelle_System.make_directory target;
 File.write file content;
 
 val exitcode = Isabelle_System.bash cmd;
