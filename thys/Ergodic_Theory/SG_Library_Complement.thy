@@ -338,7 +338,7 @@ proof (rule convex_onI)
 
   have *: "f(w n) \<le> (1-t) * f(u n) + t * f (v n)" for n
     using *(1) *(3) \<open>convex_on C f\<close> \<open>0<t\<close> \<open>t<1\<close> less_imp_le unfolding w_def
-    convex_on_alt[OF assms(1)] by (simp add: add.commute)
+    convex_on_alt by (simp add: add.commute)
   have i: "(\<lambda>n. f (w n)) \<longlonglongrightarrow> f ((1-t) *\<^sub>R x + t *\<^sub>R y)"
     by (rule continuous_on_closure_sequentially'[OF assms(3) \<open>\<And>n. w n \<in> C\<close> \<open>w \<longlonglongrightarrow> ((1-t) *\<^sub>R x + t *\<^sub>R y)\<close>])
   have ii: "(\<lambda>n. (1-t) * f(u n) + t * f (v n)) \<longlonglongrightarrow> (1-t) * f x + t * f y"
