@@ -89,7 +89,7 @@ lemma unat_less_2p_word_bits:
 lemma Suc_unat_mask_div:
   "Suc (unat (mask sz div word_size::word32)) = 2 ^ (min sz word_bits - 2)"
   apply (case_tac "sz < word_bits")
-   apply (case_tac "2\<le>sz")
+   apply (case_tac "2 \<le> sz")
     apply (clarsimp simp: word_size_def word_bits_def min_def mask_eq)
     apply (drule (2) Suc_div_unat_helper
            [where 'a=32 and sz=sz and us=2, simplified, symmetric])

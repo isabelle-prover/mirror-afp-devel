@@ -18,6 +18,10 @@ theory Word_Lemmas
     Hex_Words
 begin
 
+lemmas word_next_def = word_next_unfold
+
+lemmas word_prev_def = word_prev_unfold
+
 lemmas is_aligned_def = is_aligned_iff_dvd_nat
 
 lemma word_plus_mono_left:
@@ -1808,7 +1812,7 @@ lemma shiftl_shiftr3:
   done
 
 lemma and_mask_shiftr_comm:
-  "m\<le>size w \<Longrightarrow> (w && mask m) >> n = (w >> n) && mask (m-n)"
+  "m \<le> size w \<Longrightarrow> (w && mask m) >> n = (w >> n) && mask (m-n)"
   by (simp add: and_mask shiftr_shiftr) (simp add: word_size shiftl_shiftr3)
 
 lemma and_mask_shiftl_comm:

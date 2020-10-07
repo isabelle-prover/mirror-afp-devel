@@ -8,5 +8,6 @@ session Word_Lib (AFP) = "HOL-Word" +
     Word_Lemmas_32
     Word_Lemmas_64
     Examples
+    Guide
   document_files
     "root.tex"

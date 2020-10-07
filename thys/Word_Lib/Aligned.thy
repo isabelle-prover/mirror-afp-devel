@@ -14,15 +14,23 @@ imports
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
-  is \<open>\<lambda>k n. take_bit (min LENGTH('a) n) k = 0\<close>
-  by (simp only: ac_simps flip: take_bit_take_bit)
+  is \<open>\<lambda>k n. 2 ^ n dvd take_bit LENGTH('a) k\<close>
+  by simp
+
+lemma is_aligned_iff_udvd:
+  \<open>is_aligned w n \<longleftrightarrow> 2 ^ n udvd w\<close>
+  by transfer (simp flip: take_bit_eq_0_iff)
+
+lemma is_aligned_iff_take_bit_eq_0:
+  \<open>is_aligned w n \<longleftrightarrow> take_bit n w = 0\<close>
+  by (simp add: is_aligned_iff_udvd take_bit_eq_0_iff exp_dvd_iff_exp_udvd)
 
 lemma is_aligned_iff_dvd_int:
   \<open>is_aligned ptr n \<longleftrightarrow> 2 ^ n dvd uint ptr\<close>
-  by transfer (simp add: take_bit_eq_mod dvd_eq_mod_eq_0 mod_exp_eq)
+  by transfer simp
 
 lemma is_aligned_iff_dvd_nat:
-  \<open>is_aligned ptr n \<longleftrightarrow> 2 ^ n dvd unat ptr\<close> (is \<open>?P \<longleftrightarrow> ?Q\<close>)
+  \<open>is_aligned ptr n \<longleftrightarrow> 2 ^ n dvd unat ptr\<close>
 proof -
   have \<open>unat ptr = nat \<bar>uint ptr\<bar>\<close>
     by transfer simp
@@ -32,69 +40,74 @@ proof -
     by (simp add: is_aligned_iff_dvd_int)
 qed
 
-lemma is_aligned_mask:
-  \<open>is_aligned w n \<longleftrightarrow> w && mask n = 0\<close>
-  by transfer (simp flip: take_bit_eq_mask)
+lemma is_aligned_0 [simp]:
+  \<open>is_aligned 0 n\<close>
+  by transfer simp
 
-lemma is_aligned_to_bl:
-  "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
-  apply (simp add: is_aligned_mask eq_zero_set_bl)
-  apply (clarsimp simp: in_set_conv_nth word_size)
-  apply (simp add: to_bl_nth word_size cong: conj_cong)
-  apply (simp add: diff_diff_less)
-  apply safe
-   apply (case_tac "n \<le> LENGTH('a)")
-    prefer 2
-    apply (rule_tac x=i in exI)
-    apply clarsimp
-   apply (subgoal_tac "\<exists>j < LENGTH('a). j < n \<and> LENGTH('a) - n + j = i")
-    apply (erule exE)
-    apply (rule_tac x=j in exI)
-    apply clarsimp
-   apply (thin_tac "w !! t" for t)
-   apply (rule_tac x="i + n - LENGTH('a)" in exI)
-   apply clarsimp
-   apply arith
-  apply (rule_tac x="LENGTH('a) - n + i" in exI)
-  apply clarsimp
-  apply arith
+lemma is_aligned_at_0 [simp]:
+  \<open>is_aligned w 0\<close>
+  by transfer simp
+
+lemma is_aligned_beyond_length:
+  \<open>is_aligned w n \<longleftrightarrow> w = 0\<close> if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
+  using that
+  apply (simp add: is_aligned_iff_udvd)
+  apply transfer
+  apply auto
   done
 
-lemma unat_power_lower [simp]:
-  assumes nv: "n < LENGTH('a::len)"
-  shows "unat ((2::'a::len word) ^ n) = 2 ^ n"
-  using assms by transfer simp
-
-lemma power_overflow:
-  "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
-  by simp
-
 lemma is_alignedI [intro?]:
-  fixes x::"'a::len word"
-  assumes xv: "x = 2 ^ n * k"
-  shows   "is_aligned x n"
-proof cases
-  assume nv: "n < LENGTH('a)"
-  show ?thesis
-    unfolding is_aligned_iff_dvd_nat
-  proof (rule dvdI [where k = "unat k mod 2 ^ (LENGTH('a) - n)"])
-    from xv
-    have "unat x = (unat (2::word32) ^ n * unat k) mod 2 ^ LENGTH('a)"
-      using nv
-      by (subst (asm) word_unat.Rep_inject [symmetric], simp,
-          subst unat_word_ariths, simp)
-
-    also have "\<dots> =  2 ^ n * (unat k mod 2 ^ (LENGTH('a) - n))" using nv
-      by (simp add: mult_mod_right power_add [symmetric] add_diff_inverse)
-
-    finally show "unat x = 2 ^ n * (unat k mod 2 ^ (LENGTH('a) - n))" .
-  qed
-next
-  assume "\<not> n < LENGTH('a)"
-  with xv
-  show ?thesis
-    by (simp add: not_less power_overflow is_aligned_iff_dvd_nat)
+  \<open>is_aligned x n\<close> if \<open>x = 2 ^ n * k\<close> for x :: \<open>'a::len word\<close>
+proof (unfold is_aligned_iff_udvd)
+  from that show \<open>2 ^ n udvd x\<close>
+    using dvd_triv_left exp_dvd_iff_exp_udvd by blast
 qed
+
+lemma is_alignedE [elim?]:
+  fixes w :: \<open>'a::len word\<close>
+  assumes \<open>is_aligned w n\<close>
+  obtains q where \<open>w = 2 ^ n * word_of_nat q\<close> \<open>q < 2 ^ (LENGTH('a) - n)\<close>
+proof (cases \<open>n < LENGTH('a)\<close>)
+  case False
+  with assms have \<open>w = 0\<close>
+    by (simp add: is_aligned_beyond_length)
+  with that [of 0] show thesis
+    by simp
+next
+  case True
+  moreover define m where \<open>m = LENGTH('a) - n\<close>
+  ultimately have l: \<open>LENGTH('a) = n + m\<close> and \<open>m \<noteq> 0\<close>
+    by simp_all
+  from \<open>n < LENGTH('a)\<close> have *: \<open>unat (2 ^ n :: 'a word) = 2 ^ n\<close>
+    by transfer simp
+  from assms have \<open>2 ^ n udvd w\<close>
+    by (simp add: is_aligned_iff_udvd)
+  then obtain v :: \<open>'a word\<close>
+    where \<open>unat w = unat (2 ^ n :: 'a word) * unat v\<close> ..
+  moreover define q where \<open>q = unat v\<close>
+  ultimately have unat_w: \<open>unat w = 2 ^ n * q\<close>
+    by (simp add: *)
+  then have \<open>word_of_nat (unat w) = (word_of_nat (2 ^ n * q) :: 'a word)\<close>
+    by simp
+  then have w: \<open>w = 2 ^ n * word_of_nat q\<close>
+    by simp
+  moreover have \<open>q < 2 ^ (LENGTH('a) - n)\<close>
+  proof (rule ccontr)
+    assume \<open>\<not> q < 2 ^ (LENGTH('a) - n)\<close>
+    then have \<open>2 ^ (LENGTH('a) - n) \<le> q\<close>
+      by simp
+    then have \<open>2 ^ LENGTH('a) \<le> 2 ^ n * q\<close>
+      by (simp add: l power_add)
+    with unat_w [symmetric] show False
+      by (simp add: le_def)
+  qed
+  ultimately show thesis
+    using that by blast
+qed
+
+lemma is_aligned_mask:
+  \<open>is_aligned w n \<longleftrightarrow> w && mask n = 0\<close>
+  by (simp add: is_aligned_iff_take_bit_eq_0 take_bit_eq_mask)
 
 lemma is_aligned_weaken:
   "\<lbrakk> is_aligned w x; x \<ge> y \<rbrakk> \<Longrightarrow> is_aligned w y"
@@ -129,32 +142,40 @@ lemma is_alignedE_pre:
   fixes w::"'a::len word"
   assumes aligned: "is_aligned w n"
   shows        rl: "\<exists>q. w = 2 ^ n * (of_nat q) \<and> q < 2 ^ (LENGTH('a) - n)"
-proof -
-  from aligned obtain q where wv: "unat w = 2 ^ n * q"
-    unfolding is_aligned_iff_dvd_nat ..
+  using aligned is_alignedE by blast
 
-  show ?thesis
-  proof (rule exI, intro conjI)
-    show "q < 2 ^ (LENGTH('a) - n)"
-    proof (rule nat_power_less_diff)
-      have "unat w < 2 ^ size w" unfolding word_size ..
-      then have "unat w < 2 ^ LENGTH('a)" by simp
-      with wv show "2 ^ n * q < 2 ^ LENGTH('a)" by simp
-    qed
+lemma is_aligned_to_bl:
+  "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
+  apply (simp add: is_aligned_mask eq_zero_set_bl)
+  apply (clarsimp simp: in_set_conv_nth word_size)
+  apply (simp add: to_bl_nth word_size cong: conj_cong)
+  apply (simp add: diff_diff_less)
+  apply safe
+   apply (case_tac "n \<le> LENGTH('a)")
+    prefer 2
+    apply (rule_tac x=i in exI)
+    apply clarsimp
+   apply (subgoal_tac "\<exists>j < LENGTH('a). j < n \<and> LENGTH('a) - n + j = i")
+    apply (erule exE)
+    apply (rule_tac x=j in exI)
+    apply clarsimp
+   apply (thin_tac "w !! t" for t)
+   apply (rule_tac x="i + n - LENGTH('a)" in exI)
+   apply clarsimp
+   apply arith
+  apply (rule_tac x="LENGTH('a) - n + i" in exI)
+  apply clarsimp
+  apply arith
+  done
 
-    have r: "of_nat (2 ^ n) = (2::word32) ^ n"
-      by (induct n) simp+
+lemma unat_power_lower [simp]:
+  assumes nv: "n < LENGTH('a::len)"
+  shows "unat ((2::'a::len word) ^ n) = 2 ^ n"
+  using assms by transfer simp
 
-    from wv have "of_nat (unat w) = of_nat (2 ^ n * q)" by simp
-    then have "w = of_nat (2 ^ n * q)" by (subst word_unat.Rep_inverse [symmetric])
-    then show "w = 2 ^ n * (of_nat q)" by (simp add: r)
-  qed
-qed
-
-lemma is_alignedE:
-  "\<lbrakk>is_aligned (w::'a::len word) n;
-    \<And>q. \<lbrakk>w = 2 ^ n * (of_nat q); q < 2 ^ (LENGTH('a) - n)\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
-  by (auto dest: is_alignedE_pre)
+lemma power_overflow:
+  "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
+  by simp
 
 lemma is_aligned_replicate:
   fixes w::"'a::len word"
@@ -569,10 +590,6 @@ next
     using \<open>\<not> n' < LENGTH('a)\<close> by auto
 qed
 
-lemma is_aligned_0 [simp]:
-  "is_aligned p 0"
-  by (simp add: is_aligned_iff_dvd_nat)
-
 lemma is_aligned_replicateD:
   "\<lbrakk> is_aligned (w::'a::len word) n; n \<le> LENGTH('a) \<rbrakk>
      \<Longrightarrow> \<exists>xs. to_bl w = xs @ replicate n False
@@ -795,13 +812,13 @@ lemma unat_minus:
   by (simp add: unat_eq_0 word_size)
 
 lemma is_aligned_minus:
-  "is_aligned p n \<Longrightarrow> is_aligned (- p) n"
-  apply (clarsimp simp: is_aligned_iff_dvd_nat unat_minus word_size word_neq_0_conv)
-  apply (rule dvd_diff_nat, simp_all)
-  apply (rule le_imp_power_dvd)
-  apply (fold is_aligned_iff_dvd_nat)
-  apply (erule_tac Q="0<p" in contrapos_pp)
+  \<open>is_aligned (- p) n\<close> if \<open>is_aligned p n\<close> for p :: \<open>'a::len word\<close>
+  using that
+  apply (cases \<open>n < LENGTH('a)\<close>)
+  apply (simp_all add: not_less is_aligned_beyond_length)
   apply transfer
+  apply (simp flip: take_bit_eq_0_iff)
+  apply (subst take_bit_minus [symmetric])
   apply simp
   done
 

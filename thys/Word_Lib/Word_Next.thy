@@ -7,50 +7,25 @@ imports
   Aligned
 begin
 
-text\<open>Previous and next words addresses, without wrap around.\<close>
-
-definition word_next :: "'a::len word \<Rightarrow> 'a::len word" where
-  "word_next a \<equiv> if a = max_word then max_word else a + 1"
-
-definition word_prev :: "'a::len word \<Rightarrow> 'a::len word" where
-  "word_prev a \<equiv> if a = 0 then 0 else a - 1"
-
-text\<open>Examples:\<close>
-
-lemma [code]:
-  \<open>Word.the_int (word_next w :: 'a::len word) =
-    (if w = - 1 then Word.the_int w else Word.the_int w + 1)\<close>
-  apply (simp add: word_next_def) apply transfer
-  apply (simp add: take_bit_minus_one_eq_mask mask_eq_exp_minus_1)
-  subgoal for k
-    using take_bit_incr_eq [of \<open>LENGTH('a)\<close> k]
-    apply (simp add: ac_simps)
-    done
+lemma take_bit_eq_mask_iff:
+  \<open>take_bit n k = mask n \<longleftrightarrow> take_bit n (k + 1) = 0\<close>
+  for k :: int
+  apply auto
+   apply (subst take_bit_add [symmetric])
+   apply (simp add: mask_eq_exp_minus_1)
+  apply (metis bintrunc_bintrunc diff_0 diff_add_cancel diff_minus_eq_add mask_eq_take_bit_minus_one take_bit_diff)
   done
 
-lemma [code]:
-  \<open>Word.the_int (word_prev w :: 'a::len word) =
-    (if w = 0 then Word.the_int w else Word.the_int w - 1)\<close>
-  apply (simp add: word_prev_def)
-  apply transfer
-  subgoal for k
-    apply rule
-    apply (subst take_bit_diff [symmetric])
-    using take_bit_int_less_exp [of \<open>LENGTH('a)\<close> k]
-    apply (simp add: take_bit_int_eq_self_iff less_le)
-    done
-  done
-
-lemma "word_next (2:: 8 word) = 3" by eval
-lemma "word_next (255:: 8 word) = 255" by eval
-lemma "word_prev (2:: 8 word) = 1" by eval
-lemma "word_prev (0:: 8 word) = 0" by eval
+lemma take_bit_eq_mask_iff_exp_dvd:
+  \<open>take_bit n k = mask n \<longleftrightarrow> 2 ^ n dvd k + 1\<close>
+  for k :: int
+  by (simp add: take_bit_eq_mask_iff flip: take_bit_eq_0_iff)
 
 lemma plus_one_helper[elim!]:
   "x < n + (1 :: 'a :: len word) \<Longrightarrow> x \<le> n"
   apply (simp add: word_less_nat_alt word_le_nat_alt field_simps)
   apply (case_tac "1 + n = 0")
-   apply simp
+   apply simp_all
   apply (subst(asm) unatSuc, assumption)
   apply arith
   done
@@ -74,11 +49,12 @@ lemma less_x_plus_1:
   apply simp
   done
 
-
-lemma word_Suc_leq: fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrightarrow> x < k + 1 \<longleftrightarrow> x \<le> k"
+lemma word_Suc_leq:
+  fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrightarrow> x < k + 1 \<longleftrightarrow> x \<le> k"
   using less_x_plus_1 word_le_less_eq by auto
 
-lemma word_Suc_le: fixes k::"'a::len word" shows "x \<noteq> max_word \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
+lemma word_Suc_le:
+   fixes k::"'a::len word" shows "x \<noteq> max_word \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
   by (meson not_less word_Suc_leq)
 
 lemma word_lessThan_Suc_atMost:
@@ -104,11 +80,47 @@ lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
 
 lemma max_word_less_eq_iff [simp]:
   \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len word\<close>
-  by (auto simp add: le_less)  
+  by (fact word_order.extremum_unique)
+
+text \<open>Previous and next words addresses, without wrap around.\<close>
+
+lift_definition word_next :: \<open>'a::len word \<Rightarrow> 'a word\<close>
+  is \<open>\<lambda>k. if 2 ^ LENGTH('a) dvd k + 1 then - 1 else k + 1\<close>
+  by (simp flip: take_bit_eq_0_iff) (metis take_bit_add)
+
+lift_definition word_prev :: \<open>'a::len word \<Rightarrow> 'a word\<close>
+  is \<open>\<lambda>k. if 2 ^ LENGTH('a) dvd k then 0 else k - 1\<close>
+  by (simp flip: take_bit_eq_0_iff) (metis take_bit_diff)
+
+lemma word_next_unfold:
+  \<open>word_next w = (if w = - 1 then - 1 else w + 1)\<close>
+  by transfer (simp add: take_bit_minus_one_eq_mask flip: take_bit_eq_mask_iff_exp_dvd)
+
+lemma word_prev_unfold:
+  \<open>word_prev w = (if w = 0 then 0 else w - 1)\<close>
+  by transfer (simp flip: take_bit_eq_0_iff)
+
+lemma [code]:
+  \<open>Word.the_int (word_next w :: 'a::len word) =
+    (if w = - 1 then Word.the_int w else Word.the_int w + 1)\<close>
+  by transfer
+    (simp add: take_bit_minus_one_eq_mask mask_eq_exp_minus_1 take_bit_incr_eq flip: take_bit_eq_mask_iff_exp_dvd) 
+
+lemma [code]:
+  \<open>Word.the_int (word_prev w :: 'a::len word) =
+    (if w = 0 then Word.the_int w else Word.the_int w - 1)\<close>
+  by transfer (simp add: take_bit_eq_0_iff take_bit_decr_eq)
+
+text\<open>Examples:\<close>
+
+lemma "word_next (2:: 8 word) = 3" by eval
+lemma "word_next (255:: 8 word) = 255" by eval
+lemma "word_prev (2:: 8 word) = 1" by eval
+lemma "word_prev (0:: 8 word) = 0" by eval
 
 lemma word_adjacent_union:
   "word_next e = s' \<Longrightarrow> s \<le> e \<Longrightarrow> s' \<le> e' \<Longrightarrow> {s..e} \<union> {s'..e'} = {s .. e'}"
-  apply (simp add: word_next_def ivl_disj_un_two_touch split: if_splits)
+  apply (simp add: word_next_unfold ivl_disj_un_two_touch split: if_splits)
   apply (drule sym)
   apply simp
   apply (subst word_atLeastLessThan_Suc_atLeastAtMost_union)

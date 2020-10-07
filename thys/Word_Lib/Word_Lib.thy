@@ -57,12 +57,12 @@ instance ..
 
 end
 
-lemma sdiv_word_def:
+lemma sdiv_word_def [code]:
   \<open>v sdiv w = word_of_int (sint v sdiv sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
 
-lemma smod_word_def:
+lemma smod_word_def [code]:
   \<open>v smod w = word_of_int (sint v smod sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
@@ -212,7 +212,7 @@ lemma and_mask:
 
 lemma AND_twice [simp]:
   "(w && m) && m = w && m"
-  by (simp add: word_eqI)
+  by (fact and.right_idem)
 
 lemma word_combine_masks:
   "w && m = z \<Longrightarrow> w && m' = z' \<Longrightarrow> w && (m || m') = (z || z')"

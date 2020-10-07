@@ -19,7 +19,7 @@ lemma diff_mod_le:
   using that
   apply(subst minus_mod_eq_mult_div)
   apply(clarsimp simp: dvd_def)
-  apply(case_tac "b = 0")
+  apply(cases \<open>b = 0\<close>)
    apply simp
   apply(subgoal_tac "a div b \<le> k - 1")
    prefer 2
