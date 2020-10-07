@@ -25,9 +25,9 @@
 \newcommand{\true}{{\ensuremath{\mathbf{t\hspace{-0.5pt}t}}}}
 \newcommand{\false}{{\ensuremath{\mathbf{ff}}}}
 \newcommand{\F}{{\ensuremath{\mathbf{F}}}}
-\newcommand{\G}{{\ensuremath{\mathbf{G}}}}
+\newcommand{\GG}{{\ensuremath{\mathbf{G}}}}
 \newcommand{\X}{{\ensuremath{\mathbf{X}}}}
-\newcommand{\U}{{\ensuremath{\mathbf{U}}}}
+\newcommand{\UU}{{\ensuremath{\mathbf{U}}}}
 \newcommand{\W}{{\ensuremath{\mathbf{W}}}}
 \newcommand{\M}{{\ensuremath{\mathbf{M}}}}
 \newcommand{\R}{{\ensuremath{\mathbf{R}}}}
@@ -68,7 +68,7 @@
 \maketitle
 
 \begin{abstract}
-In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical theorem stating that every formula of Past LTL (the extension of LTL with past operators) is equivalent to a formula of the form $\bigwedge_{i=1}^n \G\F \varphi_i \vee \F\G \psi_i $, where $\varphi_i$ and $\psi_i$ contain only past operators \cite{DBLP:conf/lop/LichtensteinPZ85,XXXX:phd/Zuck86}. Some years later, Chang, Manna, and Pnueli built on this result to derive a similar normal form for LTL \cite{DBLP:conf/icalp/ChangMP92}. Both normalisation procedures have a non-elementary worst-case blow-up, and follow an involved path from formulas to counter-free automata to star-free regular expressions and back to formulas. We improve on both points. We present an executable formalisation of a direct and purely syntactic normalisation procedure for LTL yielding a normal form, comparable to the one by Chang, Manna, and Pnueli, that has only a single exponential blow-up.
+In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical theorem stating that every formula of Past LTL (the extension of LTL with past operators) is equivalent to a formula of the form $\bigwedge_{i=1}^n \GG\F \varphi_i \vee \F\GG \psi_i $, where $\varphi_i$ and $\psi_i$ contain only past operators \cite{DBLP:conf/lop/LichtensteinPZ85,XXXX:phd/Zuck86}. Some years later, Chang, Manna, and Pnueli built on this result to derive a similar normal form for LTL \cite{DBLP:conf/icalp/ChangMP92}. Both normalisation procedures have a non-elementary worst-case blow-up, and follow an involved path from formulas to counter-free automata to star-free regular expressions and back to formulas. We improve on both points. We present an executable formalisation of a direct and purely syntactic normalisation procedure for LTL yielding a normal form, comparable to the one by Chang, Manna, and Pnueli, that has only a single exponential blow-up.
 \end{abstract}
 
 \tableofcontents
@@ -82,7 +82,7 @@ The central result of this document is the following theorem:
 \begin{theorem}
 Let $\varphi$ be an LTL formula and let $\Delta_2$, $\Sigma_1$, $\Sigma_2$, and $\Pi_1$ be the classes of LTL formulas from Definition \ref{def:future_hierarchy}. Then $\varphi$ is equivalent to the following formula from the class $\Delta_2$:
 \[
-\bigvee_{\substack{\setmu \subseteq \sfmu(\varphi)\\\setnu \subseteq \sfnu(\varphi)}} \left( \flatten{\varphi}{\setmu} \wedge \bigwedge_{\psi \in \setmu} \G\F(\evalmu{\psi}{\setnu}) \wedge \bigwedge_{\psi \in \setnu} \F\G(\evalnu{\psi}{\setmu}) \right)
+\bigvee_{\substack{\setmu \subseteq \sfmu(\varphi)\\\setnu \subseteq \sfnu(\varphi)}} \left( \flatten{\varphi}{\setmu} \wedge \bigwedge_{\psi \in \setmu} \GG\F(\evalmu{\psi}{\setnu}) \wedge \bigwedge_{\psi \in \setnu} \F\GG(\evalnu{\psi}{\setmu}) \right)
 \]
 \noindent where $\flatten{\psi}{\setmu}$, $\evalmu{\psi}{\setnu}$, and $\evalnu{\psi}{\setmu}$ are functions mapping $\psi$ to a formula from $\Sigma_2$, $\Sigma_1$, and $\Pi_1$, respectively.
 \end{theorem}
@@ -92,7 +92,7 @@ Let $\varphi$ be an LTL formula and let $\Delta_2$, $\Sigma_1$, $\Sigma_2$, and 
 We define the following classes of LTL formulas:
 \begin{itemize}
 	\item The class $\Sigma_0 = \Pi_0 = \Delta_0$ is the least set containing all atomic propositions and their negations, and is closed under the application of conjunction and disjunction.
-	\item The class $\Sigma_{i+1}$ is the least set containing $\Pi_i$ and is closed under the application of conjunction, disjunction, and the $\X$, $\U$, and $\M$ operators.
+	\item The class $\Sigma_{i+1}$ is the least set containing $\Pi_i$ and is closed under the application of conjunction, disjunction, and the $\X$, $\UU$, and $\M$ operators.
 	\item The class $\Pi_{i+1}$ is the least set containing $\Sigma_i$ and is closed under the application of conjunction, disjunction, and the $\X$, $\R$, and $\W$ operators.
 	\item The class $\Delta_{i+1}$ is the least set containing $\Sigma_{i+1}$ and $\Pi_{i+1}$ and is closed under the application of conjunction and disjunction.
 \end{itemize}
