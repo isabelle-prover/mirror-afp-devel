@@ -128,7 +128,7 @@ text \<open>
 
         \<^item> @{thm [mode=iff] udvd_iff_dvd [no_vars]}
 
-    \<^item> Operations with with signed interpretation of words:
+    \<^item> Operations with signed interpretation of words:
 
         \<^item> @{thm [mode=iff] word_sle_eq [no_vars]}
 
