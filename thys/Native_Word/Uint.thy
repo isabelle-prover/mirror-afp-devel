@@ -194,7 +194,7 @@ end
 
 instantiation uint :: bit_comprehension begin
 lift_definition set_bits_uint :: "(nat \<Rightarrow> bool) \<Rightarrow> uint" is "set_bits" .
-instance ..
+instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
 lemmas [code] = test_bit_uint.rep_eq lsb_uint.rep_eq msb_uint.rep_eq

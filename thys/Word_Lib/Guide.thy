@@ -278,6 +278,12 @@ text \<open>
 
       \<^item> @{thm shiftr_eq_drop_bit [no_vars]}
 
+  \<^descr>[\<^theory>\<open>HOL-Word.Bit_Comprehension\<close>]
+
+    Comprehension syntax for bit values over predicates
+    \<^typ>\<open>nat \<Rightarrow> bool\<close>.  For \<^typ>\<open>'a::len word\<close>, straightforward
+    alternatives exist; difficult to handle for \<^typ>\<open>int\<close>.
+
   \<^descr>[\<^theory>\<open>HOL-Word.Reversed_Bit_Lists\<close>]
 
     Representation of bit values as explicit list in

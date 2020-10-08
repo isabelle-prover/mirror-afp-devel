@@ -146,7 +146,7 @@ end
 
 instantiation uint32 :: bit_comprehension begin
 lift_definition set_bits_uint32 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32" is "set_bits" .
-instance ..
+instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
 lemmas [code] = test_bit_uint32.rep_eq lsb_uint32.rep_eq msb_uint32.rep_eq
