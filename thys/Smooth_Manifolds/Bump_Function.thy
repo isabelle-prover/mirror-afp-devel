@@ -257,8 +257,8 @@ lemma has_derivative_at_left_at_right':
     "(g has_derivative g') (at x within {x..})"
   for x::real
   apply (rule has_derivative_split_at)
-  subgoal by (rule has_derivative_within_subset) (fact, auto)
-  subgoal by (rule has_derivative_within_subset) (fact, auto)
+  subgoal by (rule has_derivative_subset) (fact, auto)
+  subgoal by (rule has_derivative_subset) (fact, auto)
   done
 
 lemma real_polynomial_function_tendsto:

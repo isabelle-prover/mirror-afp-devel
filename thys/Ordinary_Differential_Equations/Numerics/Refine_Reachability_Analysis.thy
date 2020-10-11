@@ -336,7 +336,7 @@ lemma fderiv'[derivative_intros]:
   assumes "(g y) \<in> Csafe"
   shows "((\<lambda>y. ode (g y)) has_derivative
     (blinfun_apply (ode_d1 (g y)) \<circ>\<circ> g') y) (at y within X)"
-  using diff_chain_within[OF assms(1) has_derivative_within_subset[OF fderiv]] assms(2)
+  using diff_chain_within[OF assms(1) has_derivative_subset[OF fderiv]] assms(2)
   by (simp add: o_def)
 
 lemma fderiv2'[derivative_intros]:
@@ -344,7 +344,7 @@ lemma fderiv2'[derivative_intros]:
   assumes "(g y) \<in> Csafe"
   shows "((\<lambda>y. ode_d1 (g y)) has_derivative
     (blinfun_apply (ode_d2 (g y)) \<circ>\<circ> g') y) (at y within X)"
-  using diff_chain_within[OF assms(1) has_derivative_within_subset[OF fderiv2]] assms(2)
+  using diff_chain_within[OF assms(1) has_derivative_subset[OF fderiv2]] assms(2)
   by (simp add: o_def)
 
 

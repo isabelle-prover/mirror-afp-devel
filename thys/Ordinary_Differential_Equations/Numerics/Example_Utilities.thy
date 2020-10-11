@@ -2687,7 +2687,7 @@ proof (rule banach_fix)
     using derivative_bounded
     by auto
   with \<open>S \<subseteq> T\<close> have "(\<And>x. x \<in> S \<Longrightarrow> (poincare_map \<Sigma> has_derivative D x) (at x within S))"
-    by (auto intro: has_derivative_within_subset)
+    by (auto intro: has_derivative_subset)
   from bounded_derivative_imp_lipschitz[of S "poincare_map \<Sigma>" D B, OF this] \<open>convex S\<close> D c
     \<open>0 \<le> B\<close>
   have "B-lipschitz_on S (poincare_map \<Sigma>)" by auto

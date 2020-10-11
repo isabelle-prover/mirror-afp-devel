@@ -309,7 +309,7 @@ proof (rule has_derivativeI)
             (at y within closed_segment (x \<bullet> E ! j) (x' \<bullet> E ! j))"
           if "y \<in> closed_segment (x \<bullet> E ! j) (x' \<bullet> E ! j)"
           for y
-          apply (rule has_derivative_within_subset)
+          apply (rule has_derivative_subset)
            apply (rule f'[unfolded has_vector_derivative_def,
                 where x= "x + z j + ((y *\<^sub>R E!j - (x + z j))\<bullet> E!j) *\<^sub>R E ! j" and i="E ! j", unfolded eq])
           subgoal by (simp add: j)

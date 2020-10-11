@@ -41,7 +41,7 @@ proof goal_cases
   proof -
     from that have [intro]: "line t \<in> ?G" using assms
       by (auto simp: segment_eq)
-    note [derivative_intros] = has_derivative_in_compose[OF _ has_derivative_within_subset[OF Df_Cons]]
+    note [derivative_intros] = has_derivative_in_compose[OF _ has_derivative_subset[OF Df_Cons]]
     interpret Df: linear "(\<lambda>d. Df (line t) (Suc m) d)"
       by (auto intro!: has_derivative_linear derivative_intros \<open>m < n\<close>)
     note [derivative_intros] =

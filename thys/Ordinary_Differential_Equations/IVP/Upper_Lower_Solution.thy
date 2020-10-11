@@ -88,13 +88,13 @@ proof -
   {
     from v' x0_in
     have "(v has_derivative (\<lambda>x. x * v' x0)) (at x0 within {t0<..<x0})"
-      by (force intro: has_derivative_within_subset simp: has_vector_derivative_def has_vderiv_on_def)
+      by (force intro: has_derivative_subset simp: has_vector_derivative_def has_vderiv_on_def)
     then have v: "((\<lambda>y. (v y - (v x0 + (y - x0) * v' x0)) / norm (y - x0)) \<longlongrightarrow> 0) (at x0 within {t0<..<x0})"
       unfolding has_derivative_within
       by (simp add: ac_simps)
     from w' x0_in
     have "(w has_derivative (\<lambda>x. x * w' x0)) (at x0 within {t0<..<x0})"
-      by (force intro: has_derivative_within_subset simp: has_vector_derivative_def has_vderiv_on_def)
+      by (force intro: has_derivative_subset simp: has_vector_derivative_def has_vderiv_on_def)
     then have w: "((\<lambda>y. (w y - (w x0 + (y - x0) * w' x0)) / norm (y - x0)) \<longlongrightarrow> 0) (at x0 within {t0<..<x0})"
       unfolding has_derivative_within
       by (simp add: ac_simps)

@@ -671,7 +671,7 @@ next
     have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
       using assms ht mta T x
-      by (force intro!: derivative_eq_intros has_derivative_within_subset[OF f'])
+      by (force intro!: derivative_eq_intros has_derivative_subset[OF f'])
     then show ?thesis
       using mta ht
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x' p')
