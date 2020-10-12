@@ -542,7 +542,7 @@ fun all_meta aux ret = let open META open META_overload in fn
                                      #> f
                                      #> Local_Theory.reset_group
                                      #> (fn lthy =>
-                                          #1 (Named_Target.switch NONE (Context.Proof lthy)) lthy
+                                          #1 (Target_Context.switch_named_cmd NONE (Context.Proof lthy)) lthy
                                           |> Context.the_proof)))) l
        |> Local_Theory.exit_global)
 | META_boot_generation_syntax _ => ret o I

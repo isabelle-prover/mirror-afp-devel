@@ -255,7 +255,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
       
     fun instantiate_comb_type lthy =
       let
-        val thy = Named_Target.exit lthy
+        val thy = Local_Theory.exit_global lthy
         val (T,xs) = Derive_Util.typ_and_vs_of_typname thy comb_type_name_full class
         val filtered_params = 
           params |> filter (fn (c,_) => 

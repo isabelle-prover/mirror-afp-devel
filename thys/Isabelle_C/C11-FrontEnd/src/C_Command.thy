@@ -491,7 +491,7 @@ struct
 val theory = Context.map_theory
 fun local_theory' target f gthy =
   let
-    val (finish, lthy) = Named_Target.switch target gthy;
+    val (finish, lthy) = Target_Context.switch_named_cmd target gthy;
     val lthy' = lthy
       |> Local_Theory.new_group
       |> f false

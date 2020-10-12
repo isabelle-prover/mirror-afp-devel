@@ -93,8 +93,9 @@ let
   val classname_full = hd class
   val axioms = Axclass.get_info thy classname_full |> #axioms
   val (class_law,class_def,axioms_def,vars,lthy) = define_class_law classname (Named_Target.theory_init thy) 
-  (* Exit so that class law is defined properly before the next step *)
-  val thy' = Named_Target.exit lthy
+  (* Exit so that class law is defined properly before the next step
+     FIXME use begin / end block instead (?) *)
+  val thy' = Local_Theory.exit_global lthy
   val lthy' = Named_Target.theory_init thy'
 
   val tfree_dt = get_tvar (map (dest_Free #> snd) vars)
