@@ -14,6 +14,15 @@ lemmas induct = wfP_induct_rule[OF wf]
 
 end
 
+subsection \<open>Unit\<close>
+
+lemma wfP_unit: "wfP (\<lambda>() (). False)"
+  by (simp add: Nitpick.case_unit_unfold wfP_eq_minimal)
+
+interpretation well_founded "\<lambda>() (). False"
+  apply unfold_locales
+  by (auto intro: wfP_unit)
+
 subsection \<open>Lexicographic product\<close>
 
 context
