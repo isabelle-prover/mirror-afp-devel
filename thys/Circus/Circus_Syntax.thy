@@ -151,8 +151,11 @@ fun define_channels (params, binding) typesyn channels thy =
  val thy2 =
       thy1
       |> Class.instantiation ([dt_name], params, @{sort ev_eq})
-      |> Local_Theory.subtarget (Function_Fun.add_fun [(Binding.name fun_name, NONE, NoSyn)]
-           (map (fn t => ((Binding.empty_atts, t), [], [])) eqs) Function_Fun.fun_config)
+      |> Local_Theory.begin_nested
+      |> snd
+      |> Function_Fun.add_fun [(Binding.name fun_name, NONE, NoSyn)]
+           (map (fn t => ((Binding.empty_atts, t), [], [])) eqs) Function_Fun.fun_config
+      |> Local_Theory.end_nested
       |> Class.prove_instantiation_exit (fn ctxt => proof ctxt);
   in
     ((dt_name, constrs), thy2)

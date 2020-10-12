@@ -538,7 +538,6 @@ fun all_meta aux ret = let open META open META_overload in fn
            #> snd)
        |> fold (fold (semi__theory Local_Theory.background_theory
                                    (fn f =>
-                                     \<comment> \<open>Note: This function is not equivalent to \<^ML>\<open>Local_Theory.subtarget\<close>.\<close>
                                      Local_Theory.new_group
                                      #> f
                                      #> Local_Theory.reset_group

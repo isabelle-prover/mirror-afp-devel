@@ -262,9 +262,14 @@ let
   val raw_bn_eqvt =
     raw_prove_eqvt raw_bns raw_bn_inducts (raw_bn_defs @ raw_perm_simps) lthy4
 
-  (* noting the raw_bn_eqvt lemmas in a temprorary theory *)
-  val lthy_tmp = Local_Theory.subtarget
-    (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt) #> snd) lthy4
+  (* noting the raw_bn_eqvt lemmas in a temporary theory *)
+  val lthy_tmp =
+    lthy4
+    |> Local_Theory.begin_nested
+    |> snd
+    |> Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt)
+    |> snd
+    |> Local_Theory.end_nested
 
   val raw_fv_eqvt =
     raw_prove_eqvt (raw_fvs @ raw_fv_bns) raw_fv_bns_induct (raw_fv_defs @ raw_perm_simps)

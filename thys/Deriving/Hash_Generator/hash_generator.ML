@@ -205,10 +205,14 @@ fun generate_hashs_from_bnf_fp tyco lthy =
     val eqs = map (generate_phash_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_phash
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
-    val ((phashs, phash_simps), lthy) = Local_Theory.subtarget_result
-      (fn phi => fn (phashs, _, phash_simps) => (map (Morphism.term phi) phashs, map (Morphism.fact phi) phash_simps))
-      (BNF_LFP_Rec_Sugar.primrec false [] bindings
-        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)) lthy
+    val ((phashs, phash_simps), lthy) =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> BNF_LFP_Rec_Sugar.primrec false [] bindings
+          (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
+      |> Local_Theory.end_nested_result
+          (fn phi => fn (phashs, _, phash_simps) => (map (Morphism.term phi) phashs, map (Morphism.fact phi) phash_simps))
 
     (* definitions of hashs via partial hashs and maps *)
 
@@ -232,9 +236,14 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         |>> the_single o snd
         |>> `(K hash)
       end
-    val ((hashs, hash_defs), lthy) = Local_Theory.subtarget_result
-      (fn phi => fn (hashs, hash_defs) => (map (Morphism.term phi) hashs, map (Morphism.thm phi) hash_defs))
-      (fold_map generate_hash_def tycos #>> split_list) lthy
+    val ((hashs, hash_defs), lthy) =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> fold_map generate_hash_def tycos
+      |>> split_list
+      |> Local_Theory.end_nested_result
+          (fn phi => fn (hashs, hash_defs) => (map (Morphism.term phi) hashs, map (Morphism.thm phi) hash_defs))
 
     (* alternative simp-rules for hashs *)
 
@@ -294,7 +303,13 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         |> (fn lthy => (thms, lthy))
       end
 
-    val lthy = Local_Theory.subtarget (fold_map generate_hash_simps (tycos ~~ Ts) #> snd) lthy
+    val lthy =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> fold_map generate_hash_simps (tycos ~~ Ts)
+      |> snd
+      |> Local_Theory.end_nested
 
   in
     ((phashs ~~ phash_simps, hashs ~~ hash_defs), lthy)

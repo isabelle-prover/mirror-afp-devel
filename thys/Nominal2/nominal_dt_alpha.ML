@@ -248,12 +248,15 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
       (alpha_names @ alpha_bn_names ~~ alpha_tys @ alpha_bn_tys)
     val all_alpha_intros = map (pair Binding.empty_atts) (flat alpha_intros @ flat alpha_bn_intros)
 
-    val (alpha_info, lthy') = lthy
-      |> Local_Theory.subtarget_result Inductive.transform_result
-        (Inductive.add_inductive
+    val (alpha_info, lthy') =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> Inductive.add_inductive
          {quiet_mode = true, verbose = false, alt_name = Binding.empty,
           coind = false, no_elim = false, no_ind = false, skip_mono = false}
-           all_alpha_names [] all_alpha_intros [])
+           all_alpha_names [] all_alpha_intros []
+      |> Local_Theory.end_nested_result Inductive.transform_result;
 
     val phi =
       Proof_Context.export_morphism lthy'
@@ -601,7 +604,7 @@ fun prep_trans_goal alpha_trm (arg1, arg2) =
 
 fun raw_prove_trans ctxt alpha_result raw_dt_thms alpha_eqvt =
   let
-    val AlphaResult {alpha_names, alpha_trms, alpha_bn_names, alpha_bn_trms,
+    val AlphaResult {alpha_trms, alpha_bn_trms,
       alpha_raw_induct, ...} = alpha_result
 
     val alpha_trms = alpha_trms @ alpha_bn_trms

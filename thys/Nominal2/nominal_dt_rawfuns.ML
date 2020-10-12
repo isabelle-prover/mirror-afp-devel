@@ -115,9 +115,14 @@ fun define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy =
       val RawDtInfo
         {raw_dt_names, raw_dts, raw_inject_thms, raw_distinct_thms, raw_size_thms, ...} = raw_dt_info
 
-      val lthy1 = Local_Theory.subtarget (Function.add_function raw_bn_funs raw_bn_eqs
-        Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
-        #> snd) lthy;
+      val lthy1 =
+        lthy
+        |> Local_Theory.begin_nested
+        |> snd
+        |> Function.add_function raw_bn_funs raw_bn_eqs
+            Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
+        |> snd
+        |> Local_Theory.end_nested;
 
       val ({fs, simps, inducts, ...}, lthy2) =
         prove_termination_fun raw_size_thms    lthy1
@@ -252,9 +257,14 @@ fun define_raw_fvs raw_dt_info bn_info bclausesss lthy =
     val all_fun_names = map (fn s => (Binding.name s, NONE, NoSyn)) (fv_names @ fv_bn_names)
     val all_fun_eqs = map (fn t => ((Binding.empty_atts, t), [], [])) (flat fv_eqs @ flat fv_bn_eqs)
 
-    val lthy' = Local_Theory.subtarget (Function.add_function all_fun_names all_fun_eqs
-      Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
-      #> snd) lthy
+    val lthy' =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> Function.add_function all_fun_names all_fun_eqs
+          Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
+      |> snd
+      |> Local_Theory.end_nested;
 
     val ({fs, simps, inducts, ...}, lthy'') = prove_termination_fun raw_size_thms lthy'
 
@@ -325,9 +335,14 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
 
       val prod_simps = @{thms prod.inject HOL.simp_thms}
 
-      val lthy' = Local_Theory.subtarget (Function.add_function all_fun_names all_fun_eqs
-        Function_Common.default_config (pat_completeness_simp (prod_simps @ raw_inject_thms @ raw_distinct_thms))
-        #> snd) lthy
+      val lthy' =
+        lthy
+        |> Local_Theory.begin_nested
+        |> snd
+        |> Function.add_function all_fun_names all_fun_eqs
+            Function_Common.default_config (pat_completeness_simp (prod_simps @ raw_inject_thms @ raw_distinct_thms))
+        |> snd
+        |> Local_Theory.end_nested;
 
       val ({fs, simps, ...}, lthy'') = prove_termination_fun raw_size_thms lthy'
 

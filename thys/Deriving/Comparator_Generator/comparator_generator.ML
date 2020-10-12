@@ -229,10 +229,13 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
 
-    val ((pcomps, pcomp_simps), lthy) = Local_Theory.subtarget_result
-      (fn phi => fn (pcomps, _, pcomp_simps) => (map (Morphism.term phi) pcomps, map (Morphism.fact phi) pcomp_simps))
-      (BNF_LFP_Rec_Sugar.primrec false [] bindings
-        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)) lthy
+    val ((pcomps, pcomp_simps), lthy) =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> (BNF_LFP_Rec_Sugar.primrec false [] bindings
+          (map (fn t => ((Binding.empty_atts, t), [], [])) eqs))
+      |> Local_Theory.end_nested_result (fn phi => fn (pcomps, _, pcomp_simps) => (map (Morphism.term phi) pcomps, map (Morphism.fact phi) pcomp_simps))
 
     (* definitions of comparators via partial comparators and maps *)
 
@@ -257,9 +260,14 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         |>> `(K comp)
       end
 
-    val ((comps, comp_defs), lthy) = Local_Theory.subtarget_result
-      (fn phi => fn (comps, comp_defs) => (map (Morphism.term phi) comps, map (Morphism.thm phi) comp_defs))
-      (fold_map generate_comp_def tycos #>> split_list) lthy
+    val ((comps, comp_defs), lthy) =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> fold_map generate_comp_def tycos
+      |>> split_list
+      |> Local_Theory.end_nested_result 
+          (fn phi => fn (comps, comp_defs) => (map (Morphism.term phi) comps, map (Morphism.thm phi) comp_defs))
 
     (* alternative simp-rules for comparators *)
 
@@ -338,9 +346,12 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         |> (fn lthy => (thms, lthy))
       end
 
-    val (comp_simps, lthy) = Local_Theory.subtarget_result
-      (fn phi => map (Morphism.fact phi))
-      (fold_map generate_comp_simps (tycos ~~ Ts)) lthy
+    val (comp_simps, lthy) =
+      lthy
+      |> Local_Theory.begin_nested
+      |> snd
+      |> fold_map generate_comp_simps (tycos ~~ Ts)
+      |> Local_Theory.end_nested_result (fn phi => map (Morphism.fact phi))
 
     (* partial theorems *)
 
