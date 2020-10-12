@@ -298,7 +298,7 @@ fun embed_def_cmd def_binding binding raw_consts opts lthy =
         warning "Skipping certificate proofs"
       else ()
 
-    val lthy' = Local_Theory.open_target lthy
+    val lthy' = (snd o Local_Theory.begin_nested) lthy
     val def_binding =
       if Binding.is_empty_atts def_binding then
         (Thm.def_binding binding, @{attributes [code]})
@@ -306,7 +306,7 @@ fun embed_def_cmd def_binding binding raw_consts opts lthy =
         apsnd (fn attribs => @{attributes [code]} @ attribs) def_binding
     val terms = map (Syntax.parse_term lthy') raw_consts
     val ((rs_term, _, C_term, thm), lthy'') = embed_def (binding, def_binding) terms opts lthy'
-    val lthy''' = Local_Theory.close_target lthy''
+    val lthy''' = Local_Theory.end_nested lthy''
     val phi = Proof_Context.export_morphism lthy'' lthy'''
     val rs_term' = Morphism.term phi rs_term
     val C_term' = Morphism.term phi C_term

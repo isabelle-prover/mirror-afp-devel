@@ -75,14 +75,14 @@ fun mk_funs {T, ctrs, ...} lthy =
     if exists then
       lthy
     else
-      Local_Theory.open_target lthy
+      (snd o Local_Theory.begin_nested) lthy
       |> Proof_Context.concealed
       |> Local_Theory.map_background_naming
           (Name_Space.mandatory_path typ_name #> Name_Space.mandatory_path "constructor_fun")
       |> fold_map mk_fun ctrs
       |>> map_filter I |>> split_list
       |-> upd
-      |> Local_Theory.close_target
+      |> Local_Theory.end_nested
     end
 
 fun mk_funs_typ typ lthy =

@@ -56,12 +56,12 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
         val binding = Binding.name "case_lazy"
 
         val ((term, thm), (lthy', lthy)) =
-          Local_Theory.open_target lthy
+          (snd o Local_Theory.begin_nested) lthy
           |> Proof_Context.concealed
           |> Local_Theory.map_background_naming (Name_Space.mandatory_path typ_name)
           |> Local_Theory.define ((binding, NoSyn), ((Thm.def_binding binding, []), def))
           |>> apsnd snd
-          ||> `Local_Theory.close_target
+          ||> `Local_Theory.end_nested
         val phi = Proof_Context.export_morphism lthy lthy'
         val thm' = Morphism.thm phi thm
         val term' = Logic.unvarify_global (Morphism.term phi term)

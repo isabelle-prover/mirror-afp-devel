@@ -243,10 +243,10 @@ ML \<open>
     fun wrap_lthy_global f = wrap_lthy_result_global (pair () o f) (K I) #> #2;
 
     fun wrap_lthy_result_local f rmap lthy = let
-      val lthy = Local_Theory.open_target lthy;
+      val lthy = (snd o Local_Theory.begin_nested) lthy;
       val (r,lthy) = f lthy;
       val m = Local_Theory.target_morphism lthy;
-      val lthy = Local_Theory.close_target lthy;
+      val lthy = Local_Theory.end_nested lthy;
       val r = rmap m r;
     in
       (r,lthy)
@@ -266,10 +266,10 @@ ML \<open>
 
     (* Define name\<equiv>rhs, yielding constant *)
     fun define_simple_local name rhs lthy = let
-      val lthy = Local_Theory.open_target lthy;
+      val lthy = (snd o Local_Theory.begin_nested) lthy;
       val (r,lthy) = define_simple name rhs lthy;
       val m = Local_Theory.target_morphism lthy;
-      val lthy = Local_Theory.close_target lthy;
+      val lthy = Local_Theory.end_nested lthy;
       fun map_res m (t,thm) = (Morphism.term m t,Morphism.thm m thm);
       val (r,lthy) = (map_res m r,lthy);
     in (r,lthy) end;

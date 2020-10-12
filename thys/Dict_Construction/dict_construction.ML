@@ -580,9 +580,9 @@ fun instance consts tyco class lthy =
 
         val (def, (lthy', lthy)) = lthy
           |> tap print_info
-          |> Local_Theory.open_target
+          |> (snd o Local_Theory.begin_nested)
           |> define_params_nosyn term
-          ||> `Local_Theory.close_target
+          ||> `Local_Theory.end_nested
         val phi = Proof_Context.export_morphism lthy lthy'
         val def = Morphism.thm phi def
 
@@ -883,11 +883,11 @@ fun consts consts proof group lthy =
            conceptually, everything happening locally would be great, but the type checker won't
            allow us to add sort constraints to TFrees after they have been declared *)
         val ((side, prove_eq), (lthy', lthy)) = lthy'
-          |> Local_Theory.open_target
+          |> (snd o Local_Theory.begin_nested)
           |> (if is_fun then mk_fun else mk_def)
           |-> (fn ((simps, inducts), prove_eq) =>
                 apfst (rpair prove_eq) o Side_Conditions.mk_side simps inducts)
-          ||> `Local_Theory.close_target
+          ||> `Local_Theory.end_nested
         val phi = Proof_Context.export_morphism lthy lthy'
       in
         lthy'

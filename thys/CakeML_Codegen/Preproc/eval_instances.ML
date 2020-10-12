@@ -109,9 +109,9 @@ fun make typ_name thy =
     val ind_rules = map (pair (Binding.empty, [])) (Syntax.check_terms lthy (map mk_ind_rule parts))
 
     val (info, (lthy', lthy)) =
-      Local_Theory.open_target lthy
+      (snd o Local_Theory.begin_nested) lthy
       |> Inductive.add_ind_def ind_flags [ind_head] ind_rules [] [rs] [(Binding.name name, NoSyn)]
-      ||> `Local_Theory.close_target
+      ||> `Local_Theory.end_nested
     val phi = Proof_Context.export_morphism lthy lthy'
     val info' = Inductive.transform_result phi info
 
