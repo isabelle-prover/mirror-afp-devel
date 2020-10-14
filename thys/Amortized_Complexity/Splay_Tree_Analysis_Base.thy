@@ -14,7 +14,7 @@ abbreviation "\<phi> t == log 2 (size1 t)"
 
 fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> Leaf = 0" |
-"\<Phi> (Node l a r) = \<Phi> l + \<Phi> r + \<phi> (Node l a r)"
+"\<Phi> (Node l a r) = \<phi> (Node l a r) + \<Phi> l + \<Phi> r"
 
 fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t_splay x Leaf = 1" |
@@ -36,79 +36,80 @@ fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 
 lemma t_splay_simps[simp]:
   "t_splay a (Node l a r) = 1"
-  "a<b \<Longrightarrow> t_splay a (Node Leaf b r) = 1"
-  "a<b \<Longrightarrow> t_splay a (Node (Node ll a lr) b r) = 1"
-  "a<b \<Longrightarrow> a<c \<Longrightarrow> t_splay a (Node (Node ll c lr) b r) =
-   (if ll = Leaf then 1 else t_splay a ll + 1)"
-  "a<b \<Longrightarrow> c<a \<Longrightarrow> t_splay a (Node (Node ll c lr) b r) =
-   (if lr = Leaf then 1 else t_splay a lr + 1)"
-  "b<a \<Longrightarrow> t_splay a (Node l b Leaf) = 1"
-  "b<a \<Longrightarrow> t_splay a (Node l b (Node rl a rr)) = 1"
-  "b<a \<Longrightarrow> a<c \<Longrightarrow> t_splay a (Node l b (Node rl c rr)) =
-  (if rl=Leaf then 1 else t_splay a rl + 1)"
-  "b<a \<Longrightarrow> c<a \<Longrightarrow> t_splay a (Node l b (Node rl c rr)) =
-  (if rr=Leaf then 1 else t_splay a rr + 1)"
+  "x<b \<Longrightarrow> t_splay x (Node Leaf b CD) = 1"
+  "a<b \<Longrightarrow> t_splay a (Node (Node A a B) b CD) = 1"
+  "x<a \<Longrightarrow> x<b \<Longrightarrow> t_splay x (Node (Node A a B) b CD) =
+   (if A = Leaf then 1 else t_splay x A + 1)"
+  "x<b \<Longrightarrow> a<x \<Longrightarrow> t_splay x (Node (Node A a B) b CD) =
+   (if B = Leaf then 1 else t_splay x B + 1)"
+  "b<x \<Longrightarrow> t_splay x (Node AB b Leaf) = 1"
+  "b<a \<Longrightarrow> t_splay a (Node AB b (Node C a D)) = 1"
+  "b<x \<Longrightarrow> x<c \<Longrightarrow> t_splay x (Node AB b (Node C c D)) =
+  (if C=Leaf then 1 else t_splay x C + 1)"
+  "b<x \<Longrightarrow> c<x \<Longrightarrow> t_splay x (Node AB b (Node C c D)) =
+  (if D=Leaf then 1 else t_splay x D + 1)"
 by auto
 
 declare t_splay.simps(2)[simp del]
 
 fun t_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 "t_splay_max Leaf = 1" |
-"t_splay_max (Node l b Leaf) = 1" |
-"t_splay_max (Node l b (Node rl c rr)) = (if rr=Leaf then 1 else t_splay_max rr + 1)"
+"t_splay_max (Node A a Leaf) = 1" |
+"t_splay_max (Node A a (Node B b C)) = (if C=Leaf then 1 else t_splay_max C + 1)"
 
 definition t_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_delete a t = (if t = Leaf then 0 else t_splay a t + (case splay a t of
-  Node l x r \<Rightarrow>
-    if x=a then case l of Leaf \<Rightarrow> 0 | _ \<Rightarrow> t_splay_max l
-    else 0))"
+"t_delete x t =
+  (if t = Leaf then 0
+   else t_splay x t +
+     (case splay x t of
+        Node l a r \<Rightarrow> if x=a then case l of Leaf \<Rightarrow> 0 | _ \<Rightarrow> t_splay_max l else 0))"
 
 lemma ex_in_set_tree: "t \<noteq> Leaf \<Longrightarrow> bst t \<Longrightarrow>
-  \<exists>a' \<in> set_tree t. splay a' t = splay a t \<and> t_splay a' t = t_splay a t"
-proof(induction a t rule: splay.induct)
-  case (6 a b c ll)
-  hence "splay a ll \<noteq> Leaf" by simp
-  then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
+  \<exists>x' \<in> set_tree t. splay x' t = splay x t \<and> t_splay x' t = t_splay x t"
+proof(induction x t rule: splay.induct)
+  case (6 x b c A)
+  hence "splay x A \<noteq> Leaf" by simp
+  then obtain A1 u A2 where [simp]: "splay x A = Node A1 u A2"
     by (metis tree.exhaust)
-  have "b < c" "bst ll" using "6.prems" by auto
-  from "6.IH"[OF \<open>ll \<noteq> Leaf\<close> \<open>bst ll\<close>]
-  obtain e where "e \<in> set_tree ll" "splay e ll = splay a ll" "t_splay e ll = t_splay a ll"
+  have "b < c" "bst A" using "6.prems" by auto
+  from "6.IH"[OF \<open>A \<noteq> Leaf\<close> \<open>bst A\<close>]
+  obtain x' where "x' \<in> set_tree A" "splay x' A = splay x A" "t_splay x' A = t_splay x A"
     by blast
-  moreover hence "e<b" using "6.prems"(2) by auto
-  ultimately show ?case using \<open>a<c\<close> \<open>a<b\<close> \<open>b<c\<close> \<open>bst ll\<close> by force
+  moreover hence "x'<b" using "6.prems"(2) by auto
+  ultimately show ?case using \<open>x<c\<close> \<open>x<b\<close> \<open>b<c\<close> \<open>bst A\<close> by force
 next
-  case (8 b a c lr)
-  hence "splay a lr \<noteq> Leaf" by simp
-  then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
+  case (8 a x c B)
+  hence "splay x B \<noteq> Leaf" by simp
+  then obtain B1 u B2 where [simp]: "splay x B = Node B1 u B2"
     by (metis tree.exhaust)
-  have "b < c" "bst lr" using "8.prems" by auto
-  from "8.IH"[OF \<open>lr \<noteq> Leaf\<close> \<open>bst lr\<close>]
-  obtain e where "e \<in> set_tree lr" "splay e lr = splay a lr" "t_splay e lr = t_splay a lr"
+  have "a < c" "bst B" using "8.prems" by auto
+  from "8.IH"[OF \<open>B \<noteq> Leaf\<close> \<open>bst B\<close>]
+  obtain x' where "x' \<in> set_tree B" "splay x' B = splay x B" "t_splay x' B = t_splay x B"
     by blast
-  moreover hence "b<e & e<c" using "8.prems"(2) by simp
-  ultimately show ?case using \<open>a<c\<close> \<open>b<a\<close> \<open>b<c\<close> \<open>bst lr\<close> by force
+  moreover hence "a<x' & x'<c" using "8.prems"(2) by simp
+  ultimately show ?case using \<open>x<c\<close> \<open>a<x\<close> \<open>a<c\<close> \<open>bst B\<close> by force
 next
-  case (11 c a b rl)
-  hence "splay a rl \<noteq> Leaf" by simp
-  then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
+  case (11 b x c C)
+  hence "splay x C \<noteq> Leaf" by simp
+  then obtain C1 u C2 where [simp]: "splay x C = Node C1 u C2"
     by (metis tree.exhaust)
-  have "c < b" "bst rl" using "11.prems" by auto
-  from "11.IH"[OF \<open>rl \<noteq> Leaf\<close> \<open>bst rl\<close>]
-  obtain e where "e \<in> set_tree rl" "splay e rl = splay a rl" "t_splay e rl = t_splay a rl"
+  have "b < c" "bst C" using "11.prems" by auto
+  from "11.IH"[OF \<open>C \<noteq> Leaf\<close> \<open>bst C\<close>]
+  obtain x' where "x' \<in> set_tree C" "splay x' C = splay x C" "t_splay x' C = t_splay x C"
     by blast
-  moreover hence "c<e & e<b" using "11.prems" by simp
-  ultimately show ?case using \<open>c<a\<close> \<open>a<b\<close> \<open>c<b\<close> \<open>bst rl\<close> by force
+  moreover hence "b<x' & x'<c" using "11.prems" by simp
+  ultimately show ?case using \<open>b<x\<close> \<open>x<c\<close> \<open>b<c\<close> \<open>bst C\<close> by force
 next
-  case (14 c a b rr)
-  hence "splay a rr \<noteq> Leaf" by simp
-  then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
+  case (14 a x c D)
+  hence "splay x D \<noteq> Leaf" by simp
+  then obtain D1 u D2 where [simp]: "splay x D = Node D1 u D2"
     by (metis tree.exhaust)
-  have "c < b" "bst rr" using "14.prems" by auto
-  from "14.IH"[OF \<open>rr \<noteq> Leaf\<close> \<open>bst rr\<close>]
-  obtain e where "e \<in> set_tree rr" "splay e rr = splay a rr" "t_splay e rr = t_splay a rr"
+  have "a < c" "bst D" using "14.prems" by auto
+  from "14.IH"[OF \<open>D \<noteq> Leaf\<close> \<open>bst D\<close>]
+  obtain x' where "x' \<in> set_tree D" "splay x' D = splay x D" "t_splay x' D = t_splay x D"
     by blast
-  moreover hence "b<e" using "14.prems"(2) by simp
-  ultimately show ?case using \<open>c<a\<close> \<open>b<a\<close> \<open>c<b\<close> \<open>bst rr\<close> by force
+  moreover hence "c<x'" using "14.prems"(2) by simp
+  ultimately show ?case using \<open>a<x\<close> \<open>c<x\<close> \<open>a<c\<close> \<open>bst D\<close> by force
 qed (auto simp: le_less)
 
 
@@ -116,20 +117,20 @@ datatype 'a op = Empty | Splay 'a | Insert 'a | Delete 'a
 
 fun arity :: "'a::linorder op \<Rightarrow> nat" where
 "arity Empty = 0" |
-"arity (Splay a) = 1" |
-"arity (Insert a) = 1" |
-"arity (Delete a) = 1"
+"arity (Splay x) = 1" |
+"arity (Insert x) = 1" |
+"arity (Delete x) = 1"
 
 fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
-"exec (Splay a) [t] = splay a t" |
-"exec (Insert a) [t] = Splay_Tree.insert a t" |
-"exec (Delete a) [t] = Splay_Tree.delete a t"
+"exec (Splay x) [t] = splay x t" |
+"exec (Insert x) [t] = Splay_Tree.insert x t" |
+"exec (Delete x) [t] = Splay_Tree.delete x t"
 
 fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Splay a) [t] = t_splay a t" |
-"cost (Insert a) [t] = t_splay a t" |
-"cost (Delete a) [t] = t_delete a t"
+"cost (Splay x) [t] = t_splay x t" |
+"cost (Insert x) [t] = t_splay x t" |
+"cost (Delete x) [t] = t_delete x t"
 
 end
