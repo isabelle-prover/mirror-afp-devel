@@ -55,6 +55,9 @@ end
 
 subsection "Binary Counter"
 
+locale BinCounter
+begin
+
 fun incr where
 "incr [] = [True]" |
 "incr (False#bs) = True # bs" |
@@ -90,6 +93,7 @@ qed
 
 thm incr.ub
 
+end
 
 subsection "Dynamic tables: insert only"
 
