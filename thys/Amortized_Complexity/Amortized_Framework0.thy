@@ -60,22 +60,22 @@ fun incr where
 "incr (False#bs) = True # bs" |
 "incr (True#bs) = False # incr bs"
 
-fun t\<^sub>i\<^sub>n\<^sub>c\<^sub>r :: "bool list \<Rightarrow> real" where
-"t\<^sub>i\<^sub>n\<^sub>c\<^sub>r [] = 1" |
-"t\<^sub>i\<^sub>n\<^sub>c\<^sub>r (False#bs) = 1" |
-"t\<^sub>i\<^sub>n\<^sub>c\<^sub>r (True#bs) = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs + 1"
+fun t_incr :: "bool list \<Rightarrow> real" where
+"t_incr [] = 1" |
+"t_incr (False#bs) = 1" |
+"t_incr (True#bs) = t_incr bs + 1"
 
-definition p_incr :: "bool list \<Rightarrow> real" ("\<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r") where
-"\<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs = length(filter id bs)"
+definition p_incr :: "bool list \<Rightarrow> real" ("\<Phi>") where
+"\<Phi> bs = length(filter id bs)"
 
-lemma a_incr: "t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs + \<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r(incr bs) - \<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs = 2"
+lemma a_incr: "t_incr bs + \<Phi>(incr bs) - \<Phi> bs = 2"
 apply(induction bs rule: incr.induct)
 apply (simp_all add: p_incr_def)
 done
 
 interpretation incr: Amortized
 where init = "[]" and nxt = "%_. incr" and inv = "\<lambda>_. True"
-and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>c\<^sub>r" and \<Phi> = \<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r and U = "\<lambda>_ _. 2"
+and t = "\<lambda>_. t_incr" and \<Phi> = \<Phi> and U = "\<lambda>_ _. 2"
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
