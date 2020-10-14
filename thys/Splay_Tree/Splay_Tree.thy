@@ -15,27 +15,27 @@ subsection "Function \<open>splay\<close>"
 
 function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay x Leaf = Leaf" |
-"splay x (Node A x B) = Node A x B" |
-"x<b \<Longrightarrow> splay x (Node (Node A x B) b C) = Node A x (Node B b C)" |
-"x<b \<Longrightarrow> splay x (Node Leaf b A) = Node Leaf b A" |
-"x<a \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node Leaf a A) b B) = Node Leaf a (Node A b B)" |
-"x<b \<Longrightarrow> x<c \<Longrightarrow> AB \<noteq> Leaf \<Longrightarrow>
- splay x (Node (Node AB b C) c D) =
- (case splay x AB of Node A a B \<Rightarrow> Node A a (Node B b (Node C c D)))" |
-"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node A a Leaf) b B) = Node A a (Node Leaf b B)" |
-"a<x \<Longrightarrow> x<c \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
- splay x (Node (Node A a BC) c D) =
- (case splay x BC of Node B b C \<Rightarrow> Node (Node A a B) b (Node C c D))" |
-"a<x \<Longrightarrow> splay x (Node A a (Node B x C)) = Node (Node A a B) x C" |
-"a<x \<Longrightarrow> splay x (Node A a Leaf) = Node A a Leaf" |
-"a<x \<Longrightarrow> x<c \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
- splay x (Node A a (Node BC c D)) =
- (case splay x BC of Node B b C \<Rightarrow> Node (Node A a B) b (Node C c D))" |
-"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node A a (Node Leaf b C)) = Node (Node A a Leaf) b C" |
-"a<x \<Longrightarrow> b<x \<Longrightarrow> splay x (Node A a (Node B b Leaf)) = Node (Node A a B) b Leaf" |
-"a<x \<Longrightarrow> b<x \<Longrightarrow> CD \<noteq> Leaf \<Longrightarrow>
- splay x (Node A a (Node B b CD)) =
- (case splay x CD of Node C c D \<Rightarrow> Node (Node (Node A a B) b C) c D)"
+"splay x (Node AB x CD) = Node AB x CD" |
+"x<b \<Longrightarrow> splay x (Node (Node A x B) b CD) = Node A x (Node B b CD)" |
+"x<b \<Longrightarrow> splay x (Node Leaf b CD) = Node Leaf b CD" |
+"x<a \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node Leaf a B) b CD) = Node Leaf a (Node B b CD)" |
+"x<a \<Longrightarrow> x<b \<Longrightarrow> A \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node A a B) b CD) =
+ (case splay x A of Node A1 a' A2 \<Rightarrow> Node A1 a' (Node A2 a (Node B b CD)))" |
+"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node A a Leaf) b CD) = Node A a (Node Leaf b CD)" |
+"a<x \<Longrightarrow> x<b \<Longrightarrow> B \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node A a B) b CD) =
+ (case splay x B of Node B1 b' B2 \<Rightarrow> Node (Node A a B1) b' (Node B2 b CD))" |
+"b<x \<Longrightarrow> splay x (Node AB b (Node C x D)) = Node (Node AB b C) x D" |
+"b<x \<Longrightarrow> splay x (Node AB b Leaf) = Node AB b Leaf" |
+"b<x \<Longrightarrow> x<c \<Longrightarrow> C \<noteq> Leaf \<Longrightarrow>
+ splay x (Node AB b (Node C c D)) =
+ (case splay x C of Node C1 c' C \<Rightarrow> Node (Node AB b C1) c' (Node C c D))" |
+"b<x \<Longrightarrow> x<c \<Longrightarrow> splay x (Node AB b (Node Leaf c D)) = Node (Node AB b Leaf) c D" |
+"b<x \<Longrightarrow> c<x \<Longrightarrow> splay x (Node AB b (Node C c Leaf)) = Node (Node AB b C) c Leaf" |
+"a<x \<Longrightarrow> c<x \<Longrightarrow> D \<noteq> Leaf \<Longrightarrow>
+ splay x (Node AB a (Node C c D)) =
+ (case splay x D of Node D1 d' D2 \<Rightarrow> Node (Node (Node AB a C) c D1) d' D2)"
 apply(atomize_elim)
 apply(auto)
 (* 1 subgoal *)
@@ -190,11 +190,25 @@ next
   case 4 thus ?case by(simp add: inorder_delete)
 qed (auto simp: empty_def)
 
+text \<open>Corollaries:\<close>
 
-subsection "Functional Correctness Proofs II"
+lemma bst_splay: "bst t \<Longrightarrow> bst (splay x t)"
+by (simp add: bst_iff_sorted_wrt_less inorder_splay)
 
-text \<open>This subsection follows the traditional approach, is less automated
-and is retained more for historic reasons.\<close>
+lemma bst_insert: "bst t \<Longrightarrow> bst(insert x t)"
+using splay.invar_insert[of t x] by (simp add: bst_iff_sorted_wrt_less splay.invar_def)
+
+lemma bst_delete: "bst t \<Longrightarrow> bst(delete x t)"
+using splay.invar_delete[of t x] by (simp add: bst_iff_sorted_wrt_less splay.invar_def)
+
+lemma splay_bstL: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree l \<Longrightarrow> x < a"
+by (metis bst_iff_sorted_wrt_less list.set_intros(1) set_inorder sorted_splay sorted_wrt_append)
+
+lemma splay_bstR: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree r \<Longrightarrow> a < x"
+by (metis bst_iff_sorted_wrt_less sorted_Cons_iff set_inorder sorted_splay sorted_wrt_append)
+
+
+subsubsection "Size lemmas"
 
 lemma size_splay[simp]: "size (splay a t) = size t"
 apply(induction a t rule: splay.induct)
@@ -207,6 +221,22 @@ by (metis One_nat_def size_splay tree.size(4))
 
 lemma splay_not_Leaf: "t \<noteq> Leaf \<Longrightarrow> \<exists>l x r. splay a t = Node l x r"
 by (metis neq_Leaf_iff splay_Leaf_iff)
+
+lemma size_splay_max: "size(splay_max t) = size t"
+apply(induction t rule: splay_max.induct)
+  apply(simp)
+ apply(simp)
+apply(clarsimp split: tree.split)
+done
+
+lemma size_if_splay_max: "splay_max t = Node l u r \<Longrightarrow> size t = size l + size r + 1"
+by (metis One_nat_def size_splay_max tree.size(4))
+
+(*
+subsection "Functional Correctness Proofs II"
+
+text \<open>This subsection follows the traditional approach, is less automated
+and is retained more for historic reasons.\<close>
 
 lemma set_splay: "set_tree(splay a t) = set_tree t"
 proof(induction a t rule: splay.induct)
@@ -297,16 +327,6 @@ by(auto simp: ball_Un split: tree.split)
 
 
 subsubsection "Verification of \<open>splay_max\<close>"
-
-lemma size_splay_max: "size(splay_max t) = size t"
-apply(induction t rule: splay_max.induct)
-  apply(simp)
- apply(simp)
-apply(clarsimp split: tree.split)
-done
-
-lemma size_if_splay_max: "splay_max t = Node l u r \<Longrightarrow> size t = size l + size r + 1"
-by (metis One_nat_def size_splay_max tree.size(4))
 
 lemma set_splay_max: "set_tree(splay_max t) = set_tree t"
 apply(induction t rule: splay_max.induct)
@@ -422,5 +442,6 @@ next
       by(auto simp: delete_def split: tree.split prod.split)
   qed
 qed
+*)
 
 end
