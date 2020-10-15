@@ -822,26 +822,59 @@ lemma Form_Body_length:
 
 lemma form_cases:
   fixes l::nat
-  obtains (zero) "l = 0" | (odd) k where "l = 2*k-1" "k > 0" | (even) k where "l = 2*k" "k > 0"
+  obtains (zero) "l = 0" | (nz) ka kb where "l = ka+kb - 1" "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
 proof -
-  have "l = 0 \<or> (\<exists>k. l = 2*k-1 \<and> k > 0) \<or> (\<exists>k. l = 2*k \<and> k > 0)"
+  have "l = 0 \<or> (\<exists>ka kb. l = ka+kb - 1 \<and> 0 < kb \<and> kb \<le> ka \<and> ka \<le> Suc kb)"
     by presburger
   then show thesis
-    using even odd zero by blast
+    using nz zero by blast
 qed
-
-lemma odd_eq_iffs: "2 * k - Suc 0 = 2 * k' - Suc 0 \<longleftrightarrow> k = k' \<or> k=0 \<and> k'=0"
-                   "2 * k - Suc 0 = 2 * k' \<longleftrightarrow> k=0 \<and> k'=0"
-                   "2 * k = 2 * k' - Suc 0 \<longleftrightarrow> k=0 \<and> k'=0"
-  by presburger+
 
 subsubsection \<open>Interactions\<close>
 
 lemma interact:
   assumes "Form l U" "l>0"
-  obtains k xs ys zs where "l = 2*k-1" "U = {xs,ys}" "k > 0" "Form_Body k k xs ys zs"
-        | k xs ys zs where "l = 2*k"   "U = {xs,ys}" "k > 0" "Form_Body (Suc k) k xs ys zs"
-  by (rule Form.cases [OF \<open>Form l U\<close>]) (use \<open>l>0\<close> in \<open>force+\<close>)
+  obtains ka kb xs ys zs where "l = ka+kb - 1" "U = {xs,ys}" "Form_Body ka kb xs ys zs" "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
+  using form_cases [of l]
+proof cases
+  case zero
+  then show ?thesis
+    using Form_0_cases_raw assms that(1) by auto
+next
+  case (nz ka kb)
+  obtain xs ys where xys: "xs \<noteq> ys" "U = {xs,ys}" "length xs \<le> length ys"
+    using Form_elim_upair assms by blast
+  show ?thesis
+  proof (cases "ka = kb")
+    case True
+    show ?thesis
+      using Form.cases [OF \<open>Form l U\<close>]
+    proof cases
+      case (2 k xs' ys' zs')
+      then have "xs' = xs \<and> ys' = ys"
+        by (metis Form_Body_length Set.doubleton_eq_iff leD xys(2) xys(3))
+      moreover have "k = ka"
+        using 2 True nz by presburger
+      ultimately show ?thesis
+        using 2 True nz(1) nz(4) that xys(1) by blast
+    qed (use True nz in \<open>presburger+\<close>)
+  next
+    case False
+    show ?thesis
+      using Form.cases [OF \<open>Form l U\<close>]
+    proof cases
+      case (3 k xs' ys' zs')
+      then have "xs' = xs \<and> ys' = ys"
+        by (metis Form_Body_length Set.doubleton_eq_iff leD xys(2) xys(3))
+      moreover have "k = kb"
+        using 3 False nz
+        by linarith 
+      ultimately show ?thesis
+        using 3 False nz \<open>xs \<noteq> ys\<close>
+        by (metis le_SucE le_antisym that)
+    qed (use False nz in \<open>presburger+\<close>)
+  qed
+qed
 
 
 definition inter_scheme :: "nat \<Rightarrow> nat list set \<Rightarrow> nat list"
@@ -852,54 +885,49 @@ definition inter_scheme :: "nat \<Rightarrow> nat list set \<Rightarrow> nat lis
 
 lemma inter_scheme:
   assumes "Form l U" "l>0"
-  obtains (odd) k xs ys where "l = 2*k-1" "U = {xs,ys}" "Form_Body k k xs ys (inter_scheme l U)"
-        | (even) k xs ys where "l = 2*k" "U = {xs,ys}" "Form_Body (Suc k) k xs ys (inter_scheme l U)"
-  using form_cases [of l]
+  obtains ka kb xs ys where "l = ka+kb - 1" "U = {xs,ys}" "Form_Body ka kb xs ys (inter_scheme l U)" "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
+  using interact [OF \<open>Form l U\<close>]
 proof cases
-  case zero
-  with \<open>l > 0\<close> show ?thesis
+  case 1
+  with \<open>l > 0\<close> show ?case
     by auto
 next
-  case (odd k)
-  show ?thesis
-    using interact [OF assms]
-  proof cases
-    case (1 k' xs ys zs)
+  case (2 ka kb xs ys zs)
+  then have \<section>: "\<And>ka kb zs. \<not> Form_Body ka kb ys xs zs"
+    using Form_Body_length less_asym' by blast
+  have "Form_Body ka kb xs ys (inter_scheme l U)"
+  proof (cases "ka = kb")
+    case True
+    with 2 have l: "\<forall>k. l \<noteq> k * 2"
+      by presburger
+    have [simp]: "\<And>k. kb + kb - Suc 0 = k * 2 - Suc 0 \<longleftrightarrow> k=kb"
+      by auto
     show ?thesis
-    proof (rule that(1))
-      have "\<not> Form_Body k k ys xs zs" for zs
-        using 1 Form_Body_length less_asym' by blast
-      then show "Form_Body k k xs ys (inter_scheme l U)"
-        using odd 1
-        by (force simp: Set.doubleton_eq_iff odd_eq_iffs inter_scheme_def conj_disj_distribR ex_disj_distrib some_eq_ex)
-    qed (use 1 odd in auto)
-  qed (use odd in presburger)
-next
-  case (even k)
-  show ?thesis
-    using interact [OF assms]
-  proof cases
-    case (2 k' xs ys zs)
+      unfolding inter_scheme_def using 2 l True
+      by (auto simp add: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
+  next
+    case False
+    with 2 have l: "\<forall>k. l \<noteq> k * 2 - Suc 0" and [simp]: "ka = Suc kb"
+      by presburger+
+    have [simp]: "\<And>k. kb + kb = k * 2 \<longleftrightarrow> k=kb"
+      by auto
     show ?thesis
-    proof (rule that(2))
-      have "\<not> Form_Body (Suc k) k ys xs zs" for zs
-        using 2 Form_Body_length less_asym' by blast
-      then show "Form_Body (Suc k) k xs ys (inter_scheme l U)"
-        using even 2
-        by (force simp: Set.doubleton_eq_iff odd_eq_iffs inter_scheme_def conj_disj_distribR ex_disj_distrib some_eq_ex)
-    qed (use 2 even in auto)
-  qed (use even in presburger)
+      unfolding inter_scheme_def using 2 l False
+      by (auto simp add: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
+  qed
+  then show ?thesis
+    by (simp add: 2 that)
 qed
 
 
 lemma inter_scheme_simple:
-  assumes "Form k U" "k>0"
-  shows "inter_scheme k U \<in> WW \<and> length (inter_scheme k U) > 0"
-  using inter_scheme by (meson Form_Body_WW Form_Body_nonempty assms)
+  assumes "Form l U" "l>0"
+  shows "inter_scheme l U \<in> WW \<and> length (inter_scheme l U) > 0"
+  using inter_scheme [OF assms] by (meson Form_Body_WW Form_Body_nonempty)
 
 lemma inter_scheme_strict_sorted:
-  assumes "Form k U" "k>0"
-  shows "strict_sorted (inter_scheme k U)"
+  assumes "Form l U" "l>0"
+  shows "strict_sorted (inter_scheme l U)"
   using inter_scheme_simple [OF assms] by (auto simp: WW_def)
 
 subsubsection \<open>Injectivity of interactions\<close>
@@ -907,103 +935,51 @@ subsubsection \<open>Injectivity of interactions\<close>
 proposition inter_scheme_injective:
   assumes "Form l U" "Form l U'" "l > 0" and eq: "inter_scheme l U' = inter_scheme l U"
   shows "U' = U"
-  using inter_scheme [OF \<open>Form l U\<close> \<open>l>0\<close>]
-proof cases
-  case (1 k xs ys)
+proof -
+  obtain ka kb xs ys 
+    where l: "l = ka+kb - 1" and U: "U = {xs,ys}" 
+      and FB: "Form_Body ka kb xs ys (inter_scheme l U)" and "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
+    using assms inter_scheme by blast
   then obtain a as b bs c d
-      where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
-        and len: "length (a#as) = k" "length (b#bs) = k"
-        and c: "c = acc_lengths 0 (a#as)"
-        and d: "d = acc_lengths 0 (b#bs)"
-        and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
+    where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
+      and len: "length (a#as) = ka" "length (b#bs) = kb"
+      and c: "c = acc_lengths 0 (a#as)"
+      and d: "d = acc_lengths 0 (b#bs)"
+      and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
+    by (auto simp: Form_Body.simps)
+  obtain ka' kb' xs' ys' 
+    where l': "l = ka'+kb' - 1" and U': "U' = {xs',ys'}" 
+      and FB': "Form_Body ka' kb' xs' ys' (inter_scheme l U')" and "0 < kb'" "kb' \<le> ka'" "ka' \<le> Suc kb'"
+    using assms inter_scheme by blast
+  then obtain a' as' b' bs' c' d'
+    where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
+      and len': "length (a'#as') = ka'" "length (b'#bs') = kb'"
+      and c': "c' = acc_lengths 0 (a'#as')"
+      and d': "d' = acc_lengths 0 (b'#bs')"
+      and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
     using Form_Body.simps by auto
-  note one = 1
-  show ?thesis
-    using inter_scheme [OF \<open>Form l U'\<close> \<open>l>0\<close>]
-  proof cases
-    case (1 k' xs' ys')
-    then obtain a' as' b' bs' c' d'
-      where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
-        and len': "length (a'#as') = k'" "length (b'#bs') = k'"
-        and c': "c' = acc_lengths 0 (a'#as')"
-        and d': "d' = acc_lengths 0 (b'#bs')"
-        and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
-      using Form_Body.simps by auto
-    have [simp]: "k' = k"
-      using 1 one \<open>l>0\<close> by (simp add: odd_eq_iffs)
-    have [simp]: "length c = length c'" "length d = length d'"
-      using c c' d d' len' len by auto
-    have c_off: "c' = c" "a' @ d' @ b' @ interact as' bs' = a @ d @ b @ interact as bs"
-      using eq by (auto simp: Ueq Ueq')
-    then have len_a: "length a' = length a"
-      by (metis acc_lengths.simps(2) add.left_neutral c c' nth_Cons_0)
-    with c_off have \<section>: "a' = a" "d' = d" "b' @ interact as' bs' = b @ interact as bs"
-      by auto
-    then have "length (interact as' bs') = length (interact as bs)"
-      by (metis acc_lengths.simps(2) add_left_cancel append_eq_append_conv d d' list.inject)
-    with \<section> have "b' = b" "interact as' bs' = interact as bs"
-      by auto
-    moreover have "acc_lengths 0 as' = acc_lengths 0 as"
-      using \<open>a' = a\<close> \<open>c' = c\<close> by (simp add: c' c acc_lengths.simps acc_lengths_shift)
-    moreover have "acc_lengths 0 bs' = acc_lengths 0 bs"
-      using \<open>b' = b\<close> \<open>d' = d\<close> by (simp add: d' d acc_lengths.simps acc_lengths_shift)
-    ultimately have "as' = as \<and> bs' = bs"
-      using acc_lengths_interact_injective by blast
-    with one 1 show ?thesis
-      by (simp add: xs ys xs' ys' \<open>a' = a\<close> \<open>b' = b\<close>)
-  next
-    case (2 k' xs' ys')
-    then show ?thesis
-      using 1 \<open>l>0\<close> by (simp add: odd_eq_iffs)
-  qed
-next
-  case (2 k xs ys)
-  then obtain a as b bs c d
-      where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
-        and len: "length (a#as) = Suc k" "length (b#bs) = k"
-        and c: "c = acc_lengths 0 (a#as)"
-        and d: "d = acc_lengths 0 (b#bs)"
-        and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
-    using Form_Body.simps by auto
-  note two = 2
-  show ?thesis
-    using inter_scheme [OF \<open>Form l U'\<close> \<open>l>0\<close>]
-  proof cases
-    case (1 k' xs' ys')
-    then show ?thesis
-      using 2 \<open>l>0\<close> by (simp add: odd_eq_iffs)
-  next
-    case (2 k' xs' ys')
-    then obtain a' as' b' bs' c' d'
-      where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
-        and len': "length (a'#as') = Suc k'" "length (b'#bs') = k'"
-        and c': "c' = acc_lengths 0 (a'#as')"
-        and d': "d' = acc_lengths 0 (b'#bs')"
-        and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
-      using Form_Body.simps by auto
-    have [simp]: "k' = k"
-      using 2 two \<open>l>0\<close> by (simp add: odd_eq_iffs)
-    have [simp]: "length c = length c'" "length d = length d'"
-      using c c' d d' len' len by auto
-    have c_off: "c' = c" "a' @ d' @ b' @ interact as' bs' = a @ d @ b @ interact as bs"
-      using eq by (auto simp: Ueq Ueq')
-    then have len_a: "length a' = length a"
-      by (metis acc_lengths.simps(2) add.left_neutral c c' nth_Cons_0)
-    with c_off have \<section>: "a' = a" "d' = d" "b' @ interact as' bs' = b @ interact as bs"
-      by auto
-    then have "length (interact as' bs') = length (interact as bs)"
-      by (metis acc_lengths.simps(2) add_left_cancel append_eq_append_conv d d' list.inject)
-    with \<section> have "b' = b" "interact as' bs' = interact as bs"
-      by auto
-    moreover have "acc_lengths 0 as' = acc_lengths 0 as"
-      using \<open>a' = a\<close> \<open>c' = c\<close> by (simp add: c' c acc_lengths.simps acc_lengths_shift)
-    moreover have "acc_lengths 0 bs' = acc_lengths 0 bs"
-      using \<open>b' = b\<close> \<open>d' = d\<close> by (simp add: d' d acc_lengths.simps acc_lengths_shift)
-    ultimately have "as' = as \<and> bs' = bs"
-      using acc_lengths_interact_injective by blast
-    with two 2 show ?thesis
-      by (simp add: xs ys xs' ys' \<open>a' = a\<close> \<open>b' = b\<close>)
-  qed
+  have [simp]: "ka' = ka \<and> kb' = kb"
+    using \<open>l > 0\<close> l l' \<open>ka \<le> Suc kb\<close> \<open>ka' \<le> Suc kb'\<close> \<open>kb \<le> ka\<close> \<open>kb' \<le> ka'\<close> le_SucE le_antisym mult_2 by linarith 
+  have [simp]: "length c = length c'" "length d = length d'"
+    using c c' d d' len' len by auto
+  have c_off: "c' = c" "a' @ d' @ b' @ interact as' bs' = a @ d @ b @ interact as bs"
+    using eq by (auto simp: Ueq Ueq')
+  then have len_a: "length a' = length a"
+    by (metis acc_lengths.simps(2) add.left_neutral c c' nth_Cons_0)
+  with c_off have \<section>: "a' = a" "d' = d" "b' @ interact as' bs' = b @ interact as bs"
+    by auto
+  then have "length (interact as' bs') = length (interact as bs)"
+    by (metis acc_lengths.simps(2) add_left_cancel append_eq_append_conv d d' list.inject)
+  with \<section> have "b' = b" "interact as' bs' = interact as bs"
+    by auto
+  moreover have "acc_lengths 0 as' = acc_lengths 0 as"
+    using \<open>a' = a\<close> \<open>c' = c\<close> by (simp add: c' c acc_lengths.simps acc_lengths_shift)
+  moreover have "acc_lengths 0 bs' = acc_lengths 0 bs"
+    using \<open>b' = b\<close> \<open>d' = d\<close> by (simp add: d' d acc_lengths.simps acc_lengths_shift)
+  ultimately have "as' = as \<and> bs' = bs"
+    using acc_lengths_interact_injective by blast
+  then show ?thesis
+    by (simp add: \<open>a' = a\<close> U U' \<open>b' = b\<close> xs xs' ys ys')
 qed
 
 
@@ -1413,37 +1389,39 @@ proof cases
   then show ?thesis
     using assms by auto
 next
-  case (odd k)
+  case (nz ka kb)
   show ?thesis
     unfolding thin_def
   proof clarify
     fix U U'
     assume ne: "inter_scheme l U \<noteq> inter_scheme l U'" and init: "initial_segment (inter_scheme l U) (inter_scheme l U')"
     assume "Form l U"
-    then obtain xs ys where "U = {xs,ys}"
-      and U: "Form_Body k k xs ys (inter_scheme l U)"
-      using inter_scheme [OF \<open>Form l U\<close> \<open>l > 0\<close>]
-      by (metis One_nat_def less_numeral_extra(3) odd odd_eq_iffs(1) odd_eq_iffs(3))
+    then obtain kp kq xs ys 
+      where "l = kp+kq - 1" "U = {xs,ys}" and U: "Form_Body kp kq xs ys (inter_scheme l U)" and "0 < kq" "kq \<le> kp" "kp \<le> Suc kq"
+      using assms inter_scheme by blast
+    then have "kp = ka \<and> kq = kb"
+      using nz by linarith
     then obtain a as b bs c d
       where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
-        and len: "length (a#as) = k" "length (b#bs) = k"
+        and len: "length (a#as) = ka" "length (b#bs) = kb"
         and c: "c = acc_lengths 0 (a#as)"
         and d: "d = acc_lengths 0 (b#bs)"
         and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
-      using Form_Body.cases by metis
+      using U by (auto simp: Form_Body.simps)
     assume "Form l U'"
-    then obtain xs' ys' where "U' = {xs',ys'}"
-      and U': "Form_Body k k xs' ys' (inter_scheme l U')"
-      using inter_scheme [OF \<open>Form l U'\<close> \<open>l > 0\<close>]
-      by (metis One_nat_def Suc_pred assms double_not_eq_Suc_double odd(1) odd_eq_iffs(1) odd_eq_iffs(3))
+    then obtain kp' kq' xs' ys' 
+      where "l = kp'+kq' - 1" "U' = {xs',ys'}" and U': "Form_Body kp' kq' xs' ys' (inter_scheme l U')" and "0 < kq'" "kq' \<le> kp'" "kp' \<le> Suc kq'"
+      using assms inter_scheme by blast
+    then have "kp' = ka \<and> kq' = kb"
+      using nz by linarith
     then obtain a' as' b' bs' c' d'
       where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
-        and len': "length (a'#as') = k" "length (b'#bs') = k"
+        and len': "length (a'#as') = ka" "length (b'#bs') = kb"
         and c': "c' = acc_lengths 0 (a'#as')"
         and d': "d' = acc_lengths 0 (b'#bs')"
         and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
-      using Form_Body.cases by metis
-    have [simp]: "length bs = length as" "length bs' = length as'"
+      using U' by (auto simp: Form_Body.simps)
+    have [simp]: "length bs' = length bs" "length as' = length as"
       using len len' by auto
     have "inter_scheme l U \<noteq> []" "inter_scheme l U' \<noteq> []"
       using Form_Body_nonempty U U' by auto
@@ -1454,89 +1432,23 @@ next
       by (simp add: u1_def Ueq c acc_lengths.simps)
     have au1': "u1 = length a'"
       by (simp add: u1_eq' Ueq' c' acc_lengths.simps)
-    have len_eqk: "length c = k" "length d = k" "length c' = k" "length d' = k"
+    have len_eqk: "length c' = ka" "length d' = kb" "length c' = ka" "length d' = kb"
       using c d len c' d' len' by auto
-    have take: "take (k + u1 + k) (c @ a @ d @ l) = c @ a @ d"
-                "take (k + u1 + k) (c' @ a' @ d' @ l) = c' @ a' @ d'" for l
-      by (simp_all add: len_eqk flip: au1 au1')
-    have leU: "k + u1 + k \<le> length (inter_scheme l U)"
-      by (simp add: len_eqk au1 Ueq)
-    then have "take (k + u1 + k) (inter_scheme l U) = take (k + u1 + k) (inter_scheme l U')"
+    have take: "take (ka + u1 + kb) (c @ a @ d @ l) = c @ a @ d"
+               "take (ka + u1 + kb) (c' @ a' @ d' @ l) = c' @ a' @ d'" for l
+      using c d c' d' len by (simp_all add: flip: au1 au1')
+    have leU: "ka + u1 + kb \<le> length (inter_scheme l U)"
+      using c d len by (simp add: au1 Ueq)
+    then have "take (ka + u1 + kb) (inter_scheme l U) = take (ka + u1 + kb) (inter_scheme l U')"
       using take_initial_segment init by blast
     then have \<section>: "c @ a @ d = c' @ a' @ d'"
-      by (metis append.assoc Ueq Ueq' concat.simps take)
-    have "length (inter_scheme l U) = k + (c @ a @ d)!(k-1) + k + last d"
-      by (simp add: Ueq c d length_interact nth_append len_eqk flip: len)
-    moreover
-    have "length (inter_scheme l U') = k + (c' @ a' @ d')!(k-1) + k + last d'"
-      by (simp add: Ueq' c' d' length_interact nth_append len_eqk flip: len')
+      by (metis Ueq Ueq' append.assoc concat.simps(2) take)
+    have "length (inter_scheme l U) = ka + (c @ a @ d)!(ka-1) + kb + last d"
+      by (simp add: Ueq c d length_interact nth_append flip: len)
+    moreover have "length (inter_scheme l U') = ka + (c' @ a' @ d')!(ka-1) + kb + last d'"
+      by (simp add: Ueq' c' d' length_interact nth_append flip: len')
     moreover have "last d = last d'"
-      using "\<section>" au1 au1' len_eqk by auto
-    ultimately have "length (inter_scheme l U) = length (inter_scheme l U')"
-      by (simp add: \<section>)
-    then show False
-      using init initial_segment_length_eq ne by blast
-  qed
-next
-  case (even k)
-  show ?thesis
-    unfolding thin_def
-  proof clarify
-    fix U U'
-    assume ne: "inter_scheme l U \<noteq> inter_scheme l U'" and init: "initial_segment (inter_scheme l U) (inter_scheme l U')"
-    assume "Form l U"
-    then obtain xs ys where "U = {xs,ys}"
-      and U: "Form_Body (Suc k) k xs ys (inter_scheme l U)"
-      using inter_scheme [OF \<open>Form l U\<close> \<open>l > 0\<close>]
-      by (metis One_nat_def Suc_1 Suc_mult_cancel1 even less_numeral_extra(3) odd_eq_iffs(3))
-    then obtain a as b bs c d
-      where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
-        and len: "length (a#as) = Suc k" "length (b#bs) = k"
-        and c: "c = acc_lengths 0 (a#as)"
-        and d: "d = acc_lengths 0 (b#bs)"
-        and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
-      using Form_Body.cases by metis
-    assume "Form l U'"
-    then obtain xs' ys' where "U' = {xs',ys'}"
-      and U': "Form_Body (Suc k) k xs' ys' (inter_scheme l U')"
-      using inter_scheme [OF \<open>Form l U'\<close> \<open>l > 0\<close>]
-      by (metis One_nat_def Suc_1 Suc_mult_cancel1 even not_gr0 odd_eq_iffs(3))
-    then obtain a' as' b' bs' c' d'
-      where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
-        and len': "length (a'#as') = Suc k" "length (b'#bs') = k"
-        and c': "c' = acc_lengths 0 (a'#as')"
-        and d': "d' = acc_lengths 0 (b'#bs')"
-        and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
-      using Form_Body.cases by metis
-    have [simp]: "length as = Suc (length bs)" "length as' = Suc (length bs')"
-      using len len' by auto
-    have "inter_scheme l U \<noteq> []" "inter_scheme l U' \<noteq> []"
-      using Form_Body_nonempty U U' by auto
-    define u1 where "u1 \<equiv> hd (inter_scheme l U)"
-    have u1_eq': "u1 = hd (inter_scheme l U')"
-      using \<open>inter_scheme l U \<noteq> []\<close> init u1_def initial_segment_ne by fastforce
-    have au1: "u1 = length a"
-      by (simp add: u1_def Ueq c acc_lengths.simps)
-    have au1': "u1 = length a'"
-      by (simp add: u1_eq' Ueq' c' acc_lengths.simps)
-    have len_eqk: "length c = Suc k" "length d = k" "length c' = Suc k" "length d' = k"
-      using c d len c' d' len' by auto
-    have take: "take (Suc k + u1 + k) (c @ a @ d @ l) = c @ a @ d"
-                "take (Suc k + u1 + k) (c' @ a' @ d' @ l) = c' @ a' @ d'" for l
-      by (simp_all add: len_eqk flip: au1 au1')
-    have leU: "Suc k + u1 + k \<le> length (inter_scheme l U)"
-      by (simp add: len_eqk au1 Ueq)
-    then have "take (Suc k + u1 + k) (inter_scheme l U) = take (Suc k + u1 + k) (inter_scheme l U')"
-      using take_initial_segment init by blast
-    then have \<section>: "c @ a @ d = c' @ a' @ d'"
-      by (metis append.assoc Ueq Ueq' concat.simps take)
-    have "length (inter_scheme l U) = Suc k + (c @ a @ d)!k + k + last d"
-      by (simp add: Ueq c d length_interact nth_append len_eqk flip: len)
-    moreover
-    have "length (inter_scheme l U') = Suc k + (c' @ a' @ d')!k + k + last d'"
-      by (simp add: Ueq' c' d' length_interact nth_append len_eqk flip: len')
-    moreover have "last d = last d'"
-      using "\<section>" au1 au1' len_eqk by auto
+      using "\<section>" c d d' len'(1) len_eqk(1) by auto
     ultimately have "length (inter_scheme l U) = length (inter_scheme l U')"
       by (simp add: \<section>)
     then show False
@@ -2045,20 +1957,7 @@ next
   qed
 
   obtain ka k where "k>0" and kka: "k \<le> ka" "ka \<le> Suc k" "l = ((ka+k) - Suc 0)"
-  proof -
-    consider (odd) k where "l = 2*k - Suc 0" "k > 0" | (even) k where "l = 2*k" "k > 0"
-      by (metis One_nat_def \<open>l > 0\<close> form_cases not_gr0)
-    then show thesis
-    proof cases
-      case odd
-      then show ?thesis
-        by (metis lessI less_or_eq_imp_le mult_2 that)
-    next
-      case even
-      then show ?thesis
-        by (metis add_Suc diff_Suc_Suc lessI less_or_eq_imp_le minus_nat.diff_0 mult_2 that)
-    qed
-  qed
+    by (metis One_nat_def assms(2) diff_add_inverse form_cases le0 le_refl)
   then have "ka > 0"
     using dual_order.strict_trans1 by blast
   have ka_k_or_Suc: "ka = k \<or> ka = Suc k"
