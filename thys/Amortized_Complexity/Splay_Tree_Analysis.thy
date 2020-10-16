@@ -194,8 +194,7 @@ next
   from ex_in_set_tree[OF this assms] obtain x' where
     a': "x' \<in> set_tree t"  "splay x' t = splay x t"  "t_splay x' t = t_splay x t"
     by blast
-  have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using a_splay_ub2[OF assms a'(1)] by(simp add: a_splay_def a' log_divide)
+  show ?thesis using a_splay_ub2[OF assms a'(1)] by(simp add: a_splay_def a')
 qed
 
 
@@ -306,8 +305,7 @@ proof cases
   assume "t = Leaf" thus ?thesis by(simp add: a_splay_max_def)
 next
   assume "t \<noteq> Leaf"
-  have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using a_splay_max_ub[OF \<open>t \<noteq> Leaf\<close>] by(simp add: a_splay_max_def)
+  show ?thesis using a_splay_max_ub[OF \<open>t \<noteq> Leaf\<close>] by(simp)
 qed
 
 lemma amor_delete: assumes "bst t"
