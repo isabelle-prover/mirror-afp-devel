@@ -155,11 +155,11 @@ text \<open>
     \<^item> Using the @{method transfer} method.
 \<close>
 
-subsection \<open>More theories\<close>
+subsection \<open>More library theories\<close>
 
 text \<open>
   Note: currently, the theories listed here are hardly separate
-  entites since they import each other in various ways.
+  entities since they import each other in various ways.
   Always inspect them to understand what you pull in if you
   want to import one.
 
@@ -187,6 +187,36 @@ text \<open>
 
     \<^descr>[Operations]
 
+      \<^descr>[\<^theory>\<open>HOL-Word.Misc_lsb\<close>]
+    
+        The least significant bit as an alias:
+        @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
+    
+      \<^descr>[\<^theory>\<open>HOL-Word.Misc_msb\<close>]
+    
+        The most significant bit:
+    
+          \<^item> @{thm [mode=iff] msb_int_def [of k]}
+    
+          \<^item> @{thm [mode=iff] word_msb_sint [no_vars]}
+    
+          \<^item> @{thm [mode=iff] msb_word_iff_sless_0 [no_vars]}
+    
+          \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
+
+      \<^descr>[\<^theory>\<open>HOL-Word.Traditional_Syntax\<close>]
+    
+        Clones of existing operations decorated with
+        traditional syntax:
+    
+          \<^item> @{thm test_bit_eq_bit [no_vars]}
+    
+          \<^item> @{thm shiftl_eq_push_bit [no_vars]}
+    
+          \<^item> @{thm shiftr_eq_drop_bit [no_vars]}
+
+          \<^item> @{thm sshiftr_eq [no_vars]}
+
       \<^descr>[\<^theory>\<open>Word_Lib.Word_Lib\<close>]
         Various operations on word, particularly:
 
@@ -208,9 +238,7 @@ text \<open>
 
       \<^descr>[\<^theory>\<open>Word_Lib.Signed_Words\<close>]
 
-          Formal tagging of word types with a \<^text>\<open>signed\<close> marker;
-          currently it is not clear what practical relevance
-          this bears.
+          Formal tagging of word types with a \<^text>\<open>signed\<close> marker.
 
     \<^descr>[Mechanisms]
 
@@ -230,6 +258,14 @@ text \<open>
 \<close>
 
 
+subsection \<open>More library sessions\<close>
+
+text \<open>
+  \<^descr>[\<^text>\<open>Native_Word\<close>] Makes machine words and machine arithmetic available for code generation.
+  It provides a common abstraction that hides the differences between the different target languages.
+  The code generator maps these operations to the APIs of the target languages.
+\<close>
+
 subsection \<open>Legacy theories\<close>
 
 text \<open>
@@ -242,41 +278,16 @@ text \<open>
   from those theories.  However theorem coverage may still
   be terse in some cases.
 
-  \<^descr>[\<^theory>\<open>HOL-Word.Misc_lsb\<close>]
-
-    A mere alias: @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
-
-  \<^descr>[\<^theory>\<open>HOL-Word.Misc_msb\<close>]
-
-    An alias for the most significant bit; suggested replacements:
-
-      \<^item> @{thm [mode=iff] msb_int_def [of k]}
-
-      \<^item> @{thm [mode=iff] word_msb_sint [no_vars]}
-
-      \<^item> @{thm [mode=iff] msb_word_iff_sless_0 [no_vars]}
-
-      \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
 
   \<^descr>[\<^theory>\<open>HOL-Word.Misc_set_bit\<close>]
 
-    An alias: @{thm set_bit_eq [no_vars]}
+    Kind of an alias: @{thm set_bit_eq [no_vars]}
 
   \<^descr>[\<^theory>\<open>HOL-Word.Misc_Typedef\<close>]
 
-    An invasive low-level extension to HOL typedef to provide
-    conversions along type morphisms.
-
-  \<^descr>[\<^theory>\<open>HOL-Word.Traditional_Syntax\<close>]
-
-    Clones of existing operations decorated with
-    traditional syntax:
-
-      \<^item> @{thm test_bit_eq_bit [no_vars]}
-
-      \<^item> @{thm shiftl_eq_push_bit [no_vars]}
-
-      \<^item> @{thm shiftr_eq_drop_bit [no_vars]}
+    A low-level extension to HOL typedef providing
+    conversions along type morphisms.  The @{method transfer} method
+    seems to be sufficient for most applications though.
 
   \<^descr>[\<^theory>\<open>HOL-Word.Bit_Comprehension\<close>]
 
