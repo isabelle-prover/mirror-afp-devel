@@ -2731,15 +2731,14 @@ apply (simp add: nop_instr_def)
 by (simp add: return_def)
 
 lemma ucast_0: "(((get_S w))::word1) = 0 \<Longrightarrow> get_S w = 0"
-by (simp add: ucast_id)
+by simp
 
 lemma ucast_02: "get_S w = 0 \<Longrightarrow> (((get_S w))::word1) = 0"
 by simp
 
 lemma ucast_s: "(((get_S w))::word1) = 0 \<Longrightarrow> 
   (AND) w (0b00000000000000000000000010000000::word32) = 0"
-apply (simp add: get_S_def)
-by (metis (mono_tags) ucast_id zero_neq_one)
+  by (simp add: get_S_def split: if_splits)
 
 lemma ucast_s2: "(AND) w 0b00000000000000000000000010000000 = 0
   \<Longrightarrow> (((get_S w))::word1) = 0"
