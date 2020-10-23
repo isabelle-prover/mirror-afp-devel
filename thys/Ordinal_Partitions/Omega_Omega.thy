@@ -626,6 +626,7 @@ lemma set_acc_lengths:
   assumes "ls \<in> lists (- {[]})" shows "list.set (acc_lengths acc ls) \<subseteq> {acc<..}"
   using assms by (induction ls rule: acc_lengths.induct) fastforce+
 
+text \<open>Useful because @{text acc_lengths.simps} will later be deleted from the simpset.\<close>
 lemma hd_acc_lengths [simp]: "hd (acc_lengths acc (l#ls)) = acc + length l"
   by simp
 
@@ -1048,7 +1049,7 @@ proposition interaction_scheme_unique_aux:
     and "length bs \<le> length as" "length as \<le> Suc (length bs)"
     and ne': "as' \<in> lists (- {[]})" "bs' \<in> lists (- {[]})"
     and ss_zs': "strict_sorted (interact as' bs')"
-    and "length bs' \<le> length as'" "length as' \<le>Suc (length bs')"
+    and "length bs' \<le> length as'" "length as' \<le> Suc (length bs')"
     and "length as = length as'" "length bs = length bs'"
   shows "as = as' \<and> bs = bs'"
   using assms
@@ -2757,13 +2758,12 @@ qed auto
 
 subsubsection \<open>The final part of 3.8, where two sequences are merged\<close>
 
-definition cconcat where [simp]: "cconcat x l \<equiv> if x=[] then l else concat x#l"
-
 inductive merge :: "[nat list list,nat list list,nat list list,nat list list] \<Rightarrow> bool"
-  where Null: "merge as [] (cconcat as []) []"
+  where NullNull: "merge [] [] [] []"
+      | Null: "as \<noteq> [] \<Longrightarrow> merge as [] [concat as] []"
       | App: "\<lbrakk>as1 \<noteq> []; bs1 \<noteq> [];
                concat as1 < concat bs1; concat bs1 < concat as2; merge as2 bs2 as bs\<rbrakk>
-              \<Longrightarrow> merge (as1@as2) (bs1@bs2) (cconcat as1 as) (cconcat bs1 bs)"
+              \<Longrightarrow> merge (as1@as2) (bs1@bs2) (concat as1 # as) (concat bs1 # bs)"
 
 inductive_simps Null1 [simp]: "merge [] bs us vs"
 inductive_simps Null2 [simp]: "merge as [] us vs"
@@ -2875,7 +2875,7 @@ proof induction
     using App by (metis concat_append strict_sorted_append_iff strict_sorted_imp_less_sets)
   then have "less_sets (list.set (concat as1)) (list.set (concat bs))"
     using App \<section> less_sets_trans merge_preserves
-    by (metis List.set_empty append_in_lists_conv le_zero_eq length_concat_ge length_greater_0_conv list.size(3) mem_lists_non_Nil)
+    by (metis List.set_empty append_in_lists_conv le_zero_eq length_concat_ge length_greater_0_conv list.size(3))
   with * App.hyps show ?case
     by (fastforce simp add: less_sets_UN1 less_sets_UN2 less_sets_Un2)
 qed auto
@@ -2974,25 +2974,22 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
       by (simp add: bs1_def less_sets_imp_list_less)
   qed
   obtain cs ds where "merge as2 bs2 cs ds"
-  proof (cases "bs2 = []")
+  proof (cases "as2 = [] \<or> bs2 = []")
     case True
-    show ?thesis
-    proof
-      show "merge as2 bs2 (cconcat as2 []) (cconcat bs2 [])"
-        by (simp add: True)
-    qed
+    then show thesis
+      using that C NullNull Null by metis
   next
     have \<dagger>: "length as2 + length bs2 < length as + length bs"
       by (simp add: A B)
     case False
     moreover have "strict_sorted (concat as2)" "strict_sorted (concat bs2)"
-                  "as2 \<in> lists (- {[]})" "bs2 \<in> lists (- {[]})"
-                  "\<And>a b. \<lbrakk>a \<in> list.set as2; b \<in> list.set bs2\<rbrakk> \<Longrightarrow> a < b \<or> b < a"
+      "as2 \<in> lists (- {[]})" "bs2 \<in> lists (- {[]})"
+      "\<And>a b. \<lbrakk>a \<in> list.set as2; b \<in> list.set bs2\<rbrakk> \<Longrightarrow> a < b \<or> b < a"
       using B less.prems strict_sorted_append_iff by auto
     ultimately show ?thesis
       using C less.hyps [OF \<dagger>] False that by force
   qed
-  then obtain cs where "merge (as1 @ as2) (bs1 @ bs2) (cconcat as1 cs) (cconcat bs1 ds)"
+  then obtain cs where "merge (as1 @ as2) (bs1 @ bs2) (concat as1 # cs) (concat bs1 # ds)"
     using A merge.App by blast
   then show ?case
     using B by blast
