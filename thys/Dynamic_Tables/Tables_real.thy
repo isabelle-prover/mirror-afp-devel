@@ -203,9 +203,9 @@ fun nxt :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*real \<Rightarrow> nat*real" wh
 "nxt Del (n,l) =
  (n-1, if f1*l \<le> real(n-1) then l else if l0 \<le> l/c then l/c else l)"
 
-fun t :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*real \<Rightarrow> real" where
-"t Ins (n,l) = (if n+1 \<le> f2*l then 1 else n+1)" |
-"t Del (n,l) = (if f1*l \<le> real(n-1) then 1 else if l0 \<le> l/c then n else 1)"
+fun T :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*real \<Rightarrow> real" where
+"T Ins (n,l) = (if n+1 \<le> f2*l then 1 else n+1)" |
+"T Del (n,l) = (if f1*l \<le> real(n-1) then 1 else if l0 \<le> l/c then n else 1)"
 
 fun \<Phi> :: "nat * real \<Rightarrow> real" where
 "\<Phi> (n,l) = (if n \<ge> f2'*l then ai*(n - f2'*l) else
@@ -222,7 +222,7 @@ abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<
 interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
-  and t = t and \<Phi> = \<Phi>
+  and T = T and \<Phi> = \<Phi>
   and U = U
 proof (standard, goal_cases)
   case 1 show ?case by (auto simp: field_simps)

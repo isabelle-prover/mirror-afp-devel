@@ -42,18 +42,18 @@ by(simp only: size_tree_def val_simps)
 lemma size_tree: "size_tree t = size t"
 by(induction t rule: size_tree_tm.induct)(auto)
 
-definition t_size_tree :: "'a tree \<Rightarrow> nat" where
-"t_size_tree t = time(size_tree_tm t)"
+definition T_size_tree :: "'a tree \<Rightarrow> nat" where
+"T_size_tree t = time(size_tree_tm t)"
 
-lemma t_size_tree_Leaf: "t_size_tree \<langle>\<rangle> = 1"
-by(simp add: t_size_tree_def tm_simps)
+lemma T_size_tree_Leaf: "T_size_tree \<langle>\<rangle> = 1"
+by(simp add: T_size_tree_def tm_simps)
 
-lemma t_size_tree_Node:
-  "t_size_tree \<langle>l, x, r\<rangle> = t_size_tree l + t_size_tree r + 1"
-by(simp add: t_size_tree_def size_tree_def tm_simps split: tm.split)
+lemma T_size_tree_Node:
+  "T_size_tree \<langle>l, x, r\<rangle> = T_size_tree l + T_size_tree r + 1"
+by(simp add: T_size_tree_def size_tree_def tm_simps split: tm.split)
 
-lemma t_size_tree: "t_size_tree t = 2 * size t + 1"
-by(induction t)(auto simp: t_size_tree_Leaf t_size_tree_Node)
+lemma T_size_tree: "T_size_tree t = 2 * size t + 1"
+by(induction t)(auto simp: T_size_tree_Leaf T_size_tree_Node)
 
 subsubsection \<open>@{const inorder}\<close>
 
@@ -77,18 +77,18 @@ by(simp only: inorder2_def val_simps)
 lemma inorder2: "inorder2 t xs = Tree.inorder2 t xs"
 by(induction t xs rule: inorder2_tm.induct)(auto)
 
-definition t_inorder2 :: "'a tree \<Rightarrow> 'a list \<Rightarrow> nat" where
-"t_inorder2 t xs = time(inorder2_tm t xs)"
+definition T_inorder2 :: "'a tree \<Rightarrow> 'a list \<Rightarrow> nat" where
+"T_inorder2 t xs = time(inorder2_tm t xs)"
 
-lemma t_inorder2_Leaf: "t_inorder2 \<langle>\<rangle> xs = 1"
-by(simp add: t_inorder2_def tm_simps)
+lemma T_inorder2_Leaf: "T_inorder2 \<langle>\<rangle> xs = 1"
+by(simp add: T_inorder2_def tm_simps)
 
-lemma t_inorder2_Node:
-  "t_inorder2 \<langle>l, x, r\<rangle> xs = t_inorder2 r xs + t_inorder2 l (x # inorder2 r xs) + 1"
-by(simp add: t_inorder2_def inorder2_def tm_simps split: tm.split)
+lemma T_inorder2_Node:
+  "T_inorder2 \<langle>l, x, r\<rangle> xs = T_inorder2 r xs + T_inorder2 l (x # inorder2 r xs) + 1"
+by(simp add: T_inorder2_def inorder2_def tm_simps split: tm.split)
 
-lemma t_inorder2: "t_inorder2 t xs = 2*size t + 1"
-by(induction t arbitrary: xs)(auto simp: t_inorder2_Leaf t_inorder2_Node)
+lemma T_inorder2: "T_inorder2 t xs = 2*size t + 1"
+by(induction t arbitrary: xs)(auto simp: T_inorder2_Leaf T_inorder2_Node)
 
 
 subsubsection \<open>@{const split_min}\<close>
@@ -109,13 +109,13 @@ lemma split_min_Node[simp,code]:
 using val_cong[OF split_min_tm.simps(2)]
 by(simp only: split_min_def val_simps)
 
-definition t_split_min :: "'a tree \<Rightarrow> nat" where
-"t_split_min t = time (split_min_tm t)"
+definition T_split_min :: "'a tree \<Rightarrow> nat" where
+"T_split_min t = time (split_min_tm t)"
 
-lemma t_split_min_Node[simp]:
-  "t_split_min (Node l x r) = (if l = Leaf then 1 else t_split_min l + 1)"
+lemma T_split_min_Node[simp]:
+  "T_split_min (Node l x r) = (if l = Leaf then 1 else T_split_min l + 1)"
 using val_cong[OF split_min_tm.simps(2)]
-by(simp add: t_split_min_def tm_simps split: tm.split)
+by(simp add: T_split_min_def tm_simps split: tm.split)
 
 lemma split_minD:
   "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
@@ -176,11 +176,11 @@ apply(simp add: bal_simps Balance.bal_simps split: prod.split)
 done
 
 
-definition t_bal :: "nat \<Rightarrow> 'a list \<Rightarrow> nat" where
-"t_bal n xs = time (bal_tm n xs)"
+definition T_bal :: "nat \<Rightarrow> 'a list \<Rightarrow> nat" where
+"T_bal n xs = time (bal_tm n xs)"
 
-lemma t_bal: "t_bal n xs = 2*n+1"
-unfolding t_bal_def
+lemma T_bal: "T_bal n xs = 2*n+1"
+unfolding T_bal_def
 apply(induction n xs rule: bal_tm.induct)
 apply(case_tac "n=0")
 apply(simp add: bal_tm_simps)
@@ -216,13 +216,13 @@ by(simp only: bal_tree_def bal_list_def inorder2_def val_simps)
 lemma bal_tree: "bal_tree n t = Balance.bal_tree n t"
 by(simp add: bal_tree_def2 Balance.bal_tree_def bal_list inorder2 inorder2_inorder)
 
-definition t_bal_tree :: "nat \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_bal_tree n xs = time (bal_tree_tm n xs)"
+definition T_bal_tree :: "nat \<Rightarrow> 'a tree \<Rightarrow> nat" where
+"T_bal_tree n xs = time (bal_tree_tm n xs)"
 
-lemma t_bal_tree: "n = size xs \<Longrightarrow> t_bal_tree n xs = 4*n+3"
-by(simp add: t_bal_tree_def bal_tree_tm_def tm_simps bal_list_tm_def
-    surj_TM[OF inorder2_def t_inorder2_def] t_inorder2
-    surj_TM[OF bal_def t_bal_def] t_bal size1_size
+lemma T_bal_tree: "n = size xs \<Longrightarrow> T_bal_tree n xs = 4*n+3"
+by(simp add: T_bal_tree_def bal_tree_tm_def tm_simps bal_list_tm_def
+    surj_TM[OF inorder2_def T_inorder2_def] T_inorder2
+    surj_TM[OF bal_def T_bal_def] T_bal size1_size
     split: tm.split prod.split)
 
 
@@ -662,17 +662,17 @@ lemma up3_def2[simp,code]:
 using val_cong[OF up3_tm_def]
 by(simp only: up3_def size_tree_def bal_tree_def val_simps up2.case_distrib[of val])
 
-definition t_up3 :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool \<Rightarrow> 'a up2 \<Rightarrow> nat" where
-"t_up3 x sib twist u = time (up3_tm x sib twist u)"
+definition T_up3 :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool \<Rightarrow> 'a up2 \<Rightarrow> nat" where
+"T_up3 x sib twist u = time (up3_tm x sib twist u)"
 
-lemma t_up3_def2[simp]: "t_up3 x sib twist u =
+lemma T_up3_def2[simp]: "T_up3 x sib twist u =
  (case u of Same2 \<Rightarrow> 1 |
    Bal2 t \<Rightarrow> 1 |
    Unbal2 t n1 h1 \<Rightarrow>
      let n2 = size sib; t' = node twist t x sib; h' = h1 + 1; n' = n1+n2+1
-     in 2 * size sib + 1 + (if bal_i n' h' then 1 else t_bal_tree n' t' + 1))"
-by(simp add: t_up3_def up3_tm_def surj_TM[OF size_tree_def t_size_tree_def]
-    size_tree t_size_tree t_bal_tree_def tm_simps split: tm.split up2.split)
+     in 2 * size sib + 1 + (if bal_i n' h' then 1 else T_bal_tree n' t' + 1))"
+by(simp add: T_up3_def up3_tm_def surj_TM[OF size_tree_def T_size_tree_def]
+    size_tree T_size_tree T_bal_tree_def tm_simps split: tm.split up2.split)
 
 fun ins2 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a up2" where
 "ins2 n d x Leaf =
@@ -714,23 +714,23 @@ lemma ins3_Node[simp,code]:
 using val_cong[OF ins3_tm.simps(2)]
 by(simp only: ins3_def up3_def val_simps cmp_val.case_distrib[of val])
 
-definition t_ins3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_ins3 n d x t = time(ins3_tm n d x t)"
+definition T_ins3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
+"T_ins3 n d x t = time(ins3_tm n d x t)"
 
-lemma t_ins3_Leaf[simp]: "t_ins3 n d x Leaf = 1"
-by(simp add: tm_simps t_ins3_def)
+lemma T_ins3_Leaf[simp]: "T_ins3 n d x Leaf = 1"
+by(simp add: tm_simps T_ins3_def)
 
-lemma t_ins3_Node[simp]: "t_ins3 n d x (Node l y r) =
+lemma T_ins3_Node[simp]: "T_ins3 n d x (Node l y r) =
   (case cmp x y of
-     LT \<Rightarrow> t_ins3 n (d+1) x l + t_up3 y r False (ins3 n (d+1) x l) |
+     LT \<Rightarrow> T_ins3 n (d+1) x l + T_up3 y r False (ins3 n (d+1) x l) |
      EQ \<Rightarrow> 0 |
-     GT \<Rightarrow> t_ins3 n (d+1) x r + t_up3 y l True (ins3 n (d+1) x r)) + 1"
-apply(subst t_ins3_def)
+     GT \<Rightarrow> T_ins3 n (d+1) x r + T_up3 y l True (ins3 n (d+1) x r)) + 1"
+apply(subst T_ins3_def)
 apply(subst ins3_tm.simps)
-apply(auto simp add: tm_simps surj_TM[OF ins3_def t_ins3_def] surj_TM[OF up3_def t_up3_def]
-           simp del: t_up3_def2 split: tm.splits up2.split)
+apply(auto simp add: tm_simps surj_TM[OF ins3_def T_ins3_def] surj_TM[OF up3_def T_up3_def]
+           simp del: T_up3_def2 split: tm.splits up2.split)
 done
-(*FIXME simp del: t_up3_def2 t_ins3_Node[simp] *)
+(*FIXME simp del: T_up3_def2 T_ins3_Node[simp] *)
 
 fun insert2 :: "'a::linorder \<Rightarrow> 'a rbt1 \<Rightarrow> 'a rbt1" where
 "insert2 x (t,n) =
@@ -759,11 +759,11 @@ lemma insert3_def2[simp]: "insert3 x (t,n) =
 using val_cong[OF insert3_tm.simps(1)]
 by(simp only: insert3_def ins3_def val_simps up2.case_distrib[of val])
 
-definition t_insert3 :: "'a::linorder \<Rightarrow> 'a rbt1 \<Rightarrow> nat" where
-"t_insert3 a t = time (insert3_tm a t)"
+definition T_insert3 :: "'a::linorder \<Rightarrow> 'a rbt1 \<Rightarrow> nat" where
+"T_insert3 a t = time (insert3_tm a t)"
 
-lemma t_insert3_def2: "t_insert3 x (t,n) = t_ins3 n 0 x t + 1"
-by(simp add: t_insert3_def ins3_def t_ins3_def tm_simps split: tm.split up2.split)
+lemma T_insert3_def2: "T_insert3 x (t,n) = T_ins3 n 0 x t + 1"
+by(simp add: T_insert3_def ins3_def T_ins3_def tm_simps split: tm.split up2.split)
 
 
 subsubsection "Equivalence Proofs"
@@ -908,16 +908,16 @@ apply(drule ins_size)
 apply(auto simp add: size1_size imbal.simps)
 done
 
-lemma t_ins3_Same:
-  "ins3 n d x t = Same2 \<Longrightarrow> t_ins3 n d x t \<le> 2 * height t + 1"
+lemma T_ins3_Same:
+  "ins3 n d x t = Same2 \<Longrightarrow> T_ins3 n d x t \<le> 2 * height t + 1"
 apply(induction t arbitrary: d)
  apply simp
 apply (force simp: max_def split!: up2.splits if_splits)
 done
 
-lemma t_ins3_Unbal:
+lemma T_ins3_Unbal:
   "\<lbrakk> ins3 n d x t = Unbal2 t' n' h';  bal_i n (height t + d) \<rbrakk> \<Longrightarrow>
-  t_ins3 n d x t \<le> 2 * size t + 1 + height t"
+  T_ins3 n d x t \<le> 2 * size t + 1 + height t"
 apply(induction t arbitrary: d t' n' h')
  apply simp
 apply (auto simp: ins3_ins2 ins2_iff_ins ins_height size_tree size1_size max_def mono_bal_i'
@@ -988,14 +988,14 @@ qed
 
 lemma amor_Unbal:
   "\<lbrakk> ins3 n d x t = Unbal2 t' n' h';  bal_i n (height t + d) \<rbrakk> \<Longrightarrow> 
-  t_ins3 n d x t + \<Phi> t' - \<Phi> t \<le> 2*size1 t + (6*e + 1) * height t"
-apply(frule (1) t_ins3_Unbal)
+  T_ins3 n d x t + \<Phi> t' - \<Phi> t \<le> 2*size1 t + (6*e + 1) * height t"
+apply(frule (1) T_ins3_Unbal)
 apply(drule (1) Phi_diff_Unbal)
 by(simp add: ring_distribs size1_size)
 
-lemma t_ins3_Bal:
+lemma T_ins3_Bal:
   "\<lbrakk> ins3 n d x t = Bal2 t'; bal_i n (height t + d) \<rbrakk>
-  \<Longrightarrow> t_ins3 n d x t + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1)"
+  \<Longrightarrow> T_ins3 n d x t + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1)"
 proof(induction t arbitrary: d t')
   case Leaf
   thus ?case
@@ -1021,13 +1021,13 @@ next
       let ?t = "Node l y r"
       let ?t' = "Node l' y r"
       from Bal2 have t': "t' = ?t'" using Node.prems ls by (simp)
-      have "t_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = t_ins3 n (d+1) x l + 2 + \<Phi> t' - \<Phi> ?t"
+      have "T_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = T_ins3 n (d+1) x l + 2 + \<Phi> t' - \<Phi> ?t"
          using ls Bal2 by simp
       also have "\<dots>
-        = t_ins3 n (d+1) x l + 6*e*imbal ?t' + \<Phi> l' - 6*e*imbal ?t - \<Phi> l + 2"
+        = T_ins3 n (d+1) x l + 6*e*imbal ?t' + \<Phi> l' - 6*e*imbal ?t - \<Phi> l + 2"
         using t' by simp
       also have "\<dots>
-        \<le> t_ins3 n (d+1) x l + \<Phi> l' - \<Phi> l + 6*e*imbal ?t' - 6*e*imbal ?t + 2"
+        \<le> T_ins3 n (d+1) x l + \<Phi> l' - \<Phi> l + 6*e*imbal ?t' - 6*e*imbal ?t + 2"
         by linarith
       also have "\<dots> \<le> (6*e+2) * height l + 6*e*imbal ?t' - 6*e*imbal ?t + 6*e + 4"
         using Node.IH(1)[OF Bal2 *] by(simp add: ring_distribs)
@@ -1056,20 +1056,20 @@ next
       hence t': "t' = balance_tree ?t'" using ls Unbal Bal by (auto)
       have hl': "height r < height l'"
         by(fact height_Unbal_l[OF Unbal Node.prems(2)])
-      have "t_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = t_ins3 n d x ?t - \<Phi> ?t"
+      have "T_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = T_ins3 n d x ?t - \<Phi> ?t"
         by(simp add: t' \<Phi>_wbalanced wbalanced_balance_tree)
-      also have "\<dots> =  t_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> l - \<Phi> r" by simp
-      also have "\<dots> \<le> t_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> l"
+      also have "\<dots> =  T_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> l - \<Phi> r" by simp
+      also have "\<dots> \<le> T_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> l"
         using \<Phi>_nn[of r] by linarith
-      also have "\<dots> \<le> t_ins3 n d x ?t - 6*e * imbal ?t' - \<Phi> l + 6*e"
+      also have "\<dots> \<le> T_ins3 n d x ?t - 6*e * imbal ?t' - \<Phi> l + 6*e"
         using mult_left_mono[OF imbal_ins_Unbal[OF Unbal, of False y r], of "4*e"] e0
         apply (simp only: node.simps if_False ring_distribs)
         by (simp)
-      also have "\<dots> \<le> real(t_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> l + 6*e + 1"
+      also have "\<dots> \<le> real(T_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> l + 6*e + 1"
         using imbal_size[OF bal_t'] hl' bal_l' by(simp add: ring_distribs)
-      also have "\<dots> = real(t_ins3 n (d+1) x l) + 2*size1 l' + 4*size1 r - 4*size1 ?t' - \<Phi> l + 6*e + 6*e + 1"
-        using ls Unbal2 inv bal_t' hl' by (simp add: t_bal_tree max_def size1_size)
-      also have "\<dots> = real(t_ins3 n (d+1) x l) - 2*size1 l' - \<Phi> l + 6*e + 6*e + 1"
+      also have "\<dots> = real(T_ins3 n (d+1) x l) + 2*size1 l' + 4*size1 r - 4*size1 ?t' - \<Phi> l + 6*e + 6*e + 1"
+        using ls Unbal2 inv bal_t' hl' by (simp add: T_bal_tree max_def size1_size)
+      also have "\<dots> = real(T_ins3 n (d+1) x l) - 2*size1 l' - \<Phi> l + 6*e + 6*e + 1"
         by simp
       also have "\<dots> \<le> (6*e + 2) * height l + 6*e + 6*e"
         using amor_Unbal[OF Unbal2 *] ins_size(2)[OF Unbal] \<Phi>_nn[of l']
@@ -1097,13 +1097,13 @@ next
       let ?t = "Node l y r"
       let ?t' = "Node l y r'"
       from Bal2 have t': "t' = ?t'" using Node.prems gr by (simp)
-      have "t_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = t_ins3 n (d+1) x r + 2 + \<Phi> t' - \<Phi> ?t"
+      have "T_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = T_ins3 n (d+1) x r + 2 + \<Phi> t' - \<Phi> ?t"
          using gr Bal2 by simp
       also have "\<dots>
-        = t_ins3 n (d+1) x r + 6*e*imbal ?t' + \<Phi> r' - 6*e*imbal ?t - \<Phi> r + 2"
+        = T_ins3 n (d+1) x r + 6*e*imbal ?t' + \<Phi> r' - 6*e*imbal ?t - \<Phi> r + 2"
         using t' by simp
       also have "\<dots>
-        \<le> t_ins3 n (d+1) x r + \<Phi> r' - \<Phi> r + 6*e*imbal ?t' - 6*e*imbal ?t + 2"
+        \<le> T_ins3 n (d+1) x r + \<Phi> r' - \<Phi> r + 6*e*imbal ?t' - 6*e*imbal ?t + 2"
         by linarith
       also have "\<dots> \<le> (6*e+2) * height r + 6*e*imbal ?t' - 6*e*imbal ?t + 6*e + 4"
         using Node.IH(2)[OF Bal2 *] by(simp add: ring_distribs)
@@ -1132,20 +1132,20 @@ next
       hence t': "t' = balance_tree ?t'" using gr Unbal Bal by (auto)
       have hr': "height l < height r'"
         by(fact height_Unbal_r[OF Unbal Node.prems(2)])
-      have "t_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = t_ins3 n d x ?t - \<Phi> ?t"
+      have "T_ins3 n d x ?t + \<Phi> t' - \<Phi> ?t = T_ins3 n d x ?t - \<Phi> ?t"
         by(simp add: t' \<Phi>_wbalanced wbalanced_balance_tree)
-      also have "\<dots> =  t_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> r - \<Phi> l" by simp
-      also have "\<dots> \<le> t_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> r"
+      also have "\<dots> =  T_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> r - \<Phi> l" by simp
+      also have "\<dots> \<le> T_ins3 n d x ?t - 6*e * imbal ?t - \<Phi> r"
         using \<Phi>_nn[of l] by linarith
-      also have "\<dots> \<le> t_ins3 n d x ?t - 6*e * imbal ?t' - \<Phi> r + 6*e"
+      also have "\<dots> \<le> T_ins3 n d x ?t - 6*e * imbal ?t' - \<Phi> r + 6*e"
         using mult_left_mono[OF imbal_ins_Unbal[OF Unbal, of True y l], of "4*e"] e0
         apply (simp only: node.simps if_True ring_distribs)
         by (simp)
-      also have "\<dots> \<le> real(t_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> r + 6*e + 1"
+      also have "\<dots> \<le> real(T_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> r + 6*e + 1"
         using imbal_size[OF bal_t'] hr' bal_r' by (simp add: ring_distribs)
-      also have "\<dots> = real(t_ins3 n (d+1) x r) + 2*size1 r' + 4*size1 l - 4*size1 ?t' - \<Phi> r + 6*e + 6*e + 1"
-        using gr Unbal2 inv bal_t' hr' by (simp add: t_bal_tree max_def size1_size add_ac)
-      also have "\<dots> = real(t_ins3 n (d+1) x r) - 2*size1 r' - \<Phi> r + 6*e + 6*e + 1"
+      also have "\<dots> = real(T_ins3 n (d+1) x r) + 2*size1 r' + 4*size1 l - 4*size1 ?t' - \<Phi> r + 6*e + 6*e + 1"
+        using gr Unbal2 inv bal_t' hr' by (simp add: T_bal_tree max_def size1_size add_ac)
+      also have "\<dots> = real(T_ins3 n (d+1) x r) - 2*size1 r' - \<Phi> r + 6*e + 6*e + 1"
         by simp
       also have "\<dots> \<le> (6*e + 2) * height r + 6*e + 6*e"
         using amor_Unbal[OF Unbal2 *] ins_size(2)[OF Unbal] \<Phi>_nn[of r']
@@ -1159,18 +1159,18 @@ next
   qed
 qed
 
-lemma t_insert3_amor: assumes "n = size t" "bal_i (size t) (height t)"
+lemma T_insert3_amor: assumes "n = size t" "bal_i (size t) (height t)"
   "insert3 a (t,n) = (t',n')"
-shows "t_insert3 a (t,n) + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1) + 1"
+shows "T_insert3 a (t,n) + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1) + 1"
 proof (cases "ins3 (size t) 0 a t")
   case Same2
   have *: "5*e * real (height t') \<ge> 0" using e0 by simp
-  show ?thesis using Same2 assms(1,3) e0 t_ins3_Same[OF Same2]
-    apply (simp add: ring_distribs t_insert3_def2) using * by linarith
+  show ?thesis using Same2 assms(1,3) e0 T_ins3_Same[OF Same2]
+    apply (simp add: ring_distribs T_insert3_def2) using * by linarith
 next
   case (Bal2 t')
   thus ?thesis
-    using t_ins3_Bal[OF Bal2] assms by(simp add: ins_size t_insert3_def2)
+    using T_ins3_Bal[OF Bal2] assms by(simp add: ins_size T_insert3_def2)
 next
   case Unbal2
   hence False using ins0_neq_Unbal
@@ -1190,13 +1190,13 @@ fun nxt :: "'a \<Rightarrow> 'a rbt1 \<Rightarrow> 'a rbt1" where
 "nxt x tn = insert3 x tn"
 
 fun t\<^sub>s :: "'a \<Rightarrow> 'a rbt1 \<Rightarrow> real" where
-"t\<^sub>s x tn = t_insert3 x tn"
+"t\<^sub>s x tn = T_insert3 x tn"
 
 interpretation I_RBTi2_Amor: Amortized
 where init = "(Leaf,0)"
 and nxt = nxt
 and inv = "\<lambda>(t,n). n = size t \<and> bal_i (size t) (height t)"
-and t = t\<^sub>s and \<Phi> = "\<lambda>(t,n). \<Phi> t"
+and T = t\<^sub>s and \<Phi> = "\<lambda>(t,n). \<Phi> t"
 and U = "\<lambda>x (t,_). (6*e+2) * (height t + 1) + 1"
 proof (standard, goal_cases)
   case 1
@@ -1215,7 +1215,7 @@ next
   show ?case by(simp)
 next
   case (5 s x)
-  thus ?case using t_insert3_amor[of "snd s" "fst s" x]
+  thus ?case using T_insert3_amor[of "snd s" "fst s" x]
     by (auto simp del: insert3_def2 split: prod.splits)
 qed
 
@@ -1291,8 +1291,8 @@ definition up_d :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool \<Rightarrow> 'a
 
 declare up_d_def[simp]
 (* FIXME tdel \<le> height
-fun t_split_min :: "'a tree \<Rightarrow> nat" where
-"t_split_min t = height t"
+fun T_split_min :: "'a tree \<Rightarrow> nat" where
+"T_split_min t = height t"
 *)
 fun del_tm :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree option tm" where
 "del_tm x Leaf =1 return None" |
@@ -1320,18 +1320,18 @@ lemma del_Node[simp]: "del x (Node l y r) =
 using val_cong[OF del_tm.simps(2)]
 by(simp only: del_def split_min_def val_simps cmp_val.case_distrib[of val])
 
-definition t_del :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_del x t = time(del_tm x t)"
+definition T_del :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
+"T_del x t = time(del_tm x t)"
 
-lemma t_del_Leaf[simp]: "t_del x Leaf = 1"
-by(simp add: t_del_def tm_simps)
+lemma T_del_Leaf[simp]: "T_del x Leaf = 1"
+by(simp add: T_del_def tm_simps)
 
-lemma t_del_Node[simp]: "t_del x (Node l y r) =
+lemma T_del_Node[simp]: "T_del x (Node l y r) =
   (case cmp x y of
-     LT \<Rightarrow> t_del x l + 1 |
-     EQ \<Rightarrow> if r = Leaf then 1 else t_split_min r + 1 |
-     GT \<Rightarrow> t_del x r + 1)"
-by(simp add: t_del_def t_split_min_def tm_simps split: tm.split prod.split)
+     LT \<Rightarrow> T_del x l + 1 |
+     EQ \<Rightarrow> if r = Leaf then 1 else T_split_min r + 1 |
+     GT \<Rightarrow> T_del x r + 1)"
+by(simp add: T_del_def T_split_min_def tm_simps split: tm.split prod.split)
 
 fun delete :: "'a::linorder \<Rightarrow> 'a rbt1 \<Rightarrow> 'a rbt1" where
 "delete x (t,dl) =
@@ -1528,12 +1528,12 @@ lemma insert3_d_def2[simp,code]: "insert3_d x (t,n,dl) =
 using val_cong[OF insert3_d_tm.simps(1)]
 by(simp only: insert3_d_def ins3_def val_simps up2.case_distrib[of val])
 
-definition t_insert3_d :: "'a::linorder \<Rightarrow> 'a rbt2 \<Rightarrow> nat" where
-"t_insert3_d x t = time(insert3_d_tm x t)"
+definition T_insert3_d :: "'a::linorder \<Rightarrow> 'a rbt2 \<Rightarrow> nat" where
+"T_insert3_d x t = time(insert3_d_tm x t)"
 
-lemma t_insert3_d_def2[simp]:
-  "t_insert3_d x (t,n,dl) = (t_ins3 (n+dl) 0 x t + 1)"
-by(simp add: t_insert3_d_def t_ins3_def tm_simps split: tm.split up2.split)
+lemma T_insert3_d_def2[simp]:
+  "T_insert3_d x (t,n,dl) = (T_ins3 (n+dl) 0 x t + 1)"
+by(simp add: T_insert3_d_def T_ins3_def tm_simps split: tm.split up2.split)
 
 fun delete2_tm :: "'a::linorder \<Rightarrow> 'a rbt2 \<Rightarrow> 'a rbt2 tm" where
 "delete2_tm x (t,n,dl) =1
@@ -1560,16 +1560,16 @@ lemma delete2_def2:
 using val_cong[OF delete2_tm.simps(1)]
 by(simp only: delete2_def ins3_def del_def bal_tree_def val_simps option.case_distrib[of val])
 
-definition t_delete2 :: "'a::linorder \<Rightarrow> 'a rbt2 \<Rightarrow> nat" where
-"t_delete2 x t = time(delete2_tm x t)"
+definition T_delete2 :: "'a::linorder \<Rightarrow> 'a rbt2 \<Rightarrow> nat" where
+"T_delete2 x t = time(delete2_tm x t)"
 
-lemma t_delete2_def2:
-  "t_delete2 x (t,n,dl) = (t_del x t +
+lemma T_delete2_def2:
+  "T_delete2 x (t,n,dl) = (T_del x t +
   (case del x t of
      None \<Rightarrow> 1 |
      Some t' \<Rightarrow> (let n' = n-1; dl' = dl + 1
-       in if bal_d n' dl' then 1 else t_bal_tree n' t' + 1)))"
-by(auto simp add: t_delete2_def tm_simps t_del_def del_def t_bal_tree_def split: tm.split option.split)
+       in if bal_d n' dl' then 1 else T_bal_tree n' t' + 1)))"
+by(auto simp add: T_delete2_def tm_simps T_del_def del_def T_bal_tree_def split: tm.split option.split)
 
 subsubsection \<open>Equivalence proofs\<close>
 
@@ -1603,11 +1603,11 @@ by(simp add: imbal.simps)
 
 lemma tinsert_d_amor:
 assumes "n = size t" "insert_d a (t,dl) = (t',dl')" "bal_i (size t + dl) (height t)"
-shows "t_insert3_d a (t,n,dl) + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1) + 1"
+shows "T_insert3_d a (t,n,dl) + \<Phi> t' - \<Phi> t \<le> (6*e+2) * (height t + 1) + 1"
 proof (cases "ins (size t + dl) 0 a t")
   case Same
   have *: "5*e * real (height t) \<ge> 0" using e0 by simp
-  show ?thesis using t_ins3_Same[of "size t + dl" 0 a t] Same assms
+  show ?thesis using T_ins3_Same[of "size t + dl" 0 a t] Same assms
     apply (auto simp add: ring_distribs ins3_ins2 ins2_ins)
     using * e0
     apply safe
@@ -1615,7 +1615,7 @@ proof (cases "ins (size t + dl) 0 a t")
 next
   case (Bal t')
   thus ?thesis
-    using t_ins3_Bal[of "size t + dl" 0 a t t'] Bal assms
+    using T_ins3_Bal[of "size t + dl" 0 a t t'] Bal assms
     by(simp add: ins_size ins3_ins2 ins2_ins)
 next
   case Unbal
@@ -1624,13 +1624,13 @@ next
 qed
 
 
-lemma t_split_min_ub:
-  "t \<noteq> Leaf \<Longrightarrow> t_split_min t \<le> height t + 1"
+lemma T_split_min_ub:
+  "t \<noteq> Leaf \<Longrightarrow> T_split_min t \<le> height t + 1"
 by(induction t) auto
 
-lemma t_del_ub:
-  "t_del x t \<le> height t + 1"
-by(induction t) (auto dest: t_split_min_ub)
+lemma T_del_ub:
+  "T_del x t \<le> height t + 1"
+by(induction t) (auto dest: T_split_min_ub)
 
 lemma imbal_split_min:
   "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> real(imbal t') - imbal t \<le> 1"
@@ -1775,23 +1775,23 @@ qed
 
 lemma amor_del_Some:
   "del x t = Some t' \<Longrightarrow>
-  t_del x t + \<Phi> t' - \<Phi> t \<le> (6*e + 1) * height t + 1"
+  T_del x t + \<Phi> t' - \<Phi> t \<le> (6*e + 1) * height t + 1"
 apply(drule Phi_diff_del_Some)
-using t_del_ub[of x t]
+using T_del_ub[of x t]
 by (simp add: ring_distribs)
 
 lemma cd1: "1/cd > 0"
 by(simp add: cd0)
 
-lemma t_delete_amor: assumes "n = size t"
-shows "t_delete2 x (t,n,dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl)
+lemma T_delete_amor: assumes "n = size t"
+shows "T_delete2 x (t,n,dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl)
        \<le> (6*e+1) * height t + 4/cd + 4"
 proof (cases "del x t")
   case None
   have *: "6*e * real (height t) \<ge> 0" using e0 by simp
   show ?thesis using None
-    apply (simp add: delete2_def2 t_delete2_def2 ring_distribs)
-    using * t_del_ub[of x t] cd1 by linarith
+    apply (simp add: delete2_def2 T_delete2_def2 ring_distribs)
+    using * T_del_ub[of x t] cd1 by linarith
 next
   case (Some t')
   show ?thesis
@@ -1799,16 +1799,16 @@ next
     case True
     thus ?thesis
       using assms Some amor_del_Some[OF Some] 
-      by(simp add: size_del delete2_def2 t_delete2_def2 algebra_simps add_divide_distrib)
+      by(simp add: size_del delete2_def2 T_delete2_def2 algebra_simps add_divide_distrib)
   next
     case False
     from Some have [arith]: "size t \<noteq> 0" by(cases t) (auto)
-    have "t_delete2 x (t, n, dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl) =
-      t_delete2 x (t, n, dl) - \<Phi> t - 4*dl/cd"
+    have "T_delete2 x (t, n, dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl) =
+      T_delete2 x (t, n, dl) - \<Phi> t - 4*dl/cd"
       using False Some
-      by(simp add: delete2_def2 t_delete2_def2 \<Phi>_wbalanced bal_tree assms size_del)
-    also have "\<dots> = t_del x t + 4 * size t - \<Phi> t - 4*dl/cd"       
-      using False assms Some by(simp add: t_delete2_def2 t_bal_tree size_del size1_size)
+      by(simp add: delete2_def2 T_delete2_def2 \<Phi>_wbalanced bal_tree assms size_del)
+    also have "\<dots> = T_del x t + 4 * size t - \<Phi> t - 4*dl/cd"       
+      using False assms Some by(simp add: T_delete2_def2 T_bal_tree size_del size1_size)
     also have "\<dots> \<le> (6*e+1)*height t + 4*(size t - dl/cd + 1)"
       using amor_del_Some[OF Some] \<Phi>_nn[of t] \<Phi>_nn[of t']
       by(simp add: ring_distribs)
@@ -1827,15 +1827,15 @@ fun nxt :: "'a ops \<Rightarrow> 'a rbt2 \<Rightarrow> 'a rbt2" where
 "nxt (Delete x) t = delete2 x t"
 
 fun t\<^sub>s :: "'a ops \<Rightarrow> 'a rbt2 \<Rightarrow> real" where
-"t\<^sub>s (Insert x) t = t_insert3_d x t" |
-"t\<^sub>s (Delete x) t = t_delete2 x t"
+"t\<^sub>s (Insert x) t = T_insert3_d x t" |
+"t\<^sub>s (Delete x) t = T_delete2 x t"
 
 interpretation RBTid2_Amor: Amortized
 where init = "(Leaf,0,0)"
 and nxt = nxt
 and inv = "\<lambda>(t,n,dl). n = size t \<and>
   bal_i (size t+dl) (height t) \<and> bal_d (size t) dl"
-and t = t\<^sub>s and \<Phi> = \<Phi>\<^sub>d
+and T = t\<^sub>s and \<Phi> = \<Phi>\<^sub>d
 and U = "\<lambda>f (t,_). case f of
   Insert _ \<Rightarrow> (6*e+2) * (height t + 1) + 1 |
   Delete _ \<Rightarrow> (6*e+1) * height t + 4/cd + 4"
@@ -1882,7 +1882,7 @@ next
   next
     case (Delete x)
     then show ?thesis
-      using 5 delete2_delete[of x t dl] t_delete_amor[of n t x dl]
+      using 5 delete2_delete[of x t dl] T_delete_amor[of n t x dl]
       by (simp)
   qed
 qed

@@ -37,9 +37,9 @@ fun nxt :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" wher
 "nxt Del (n,l) =
  (n-1, if f1*l \<le> real(n-1) then l else if l0 \<le> \<lfloor>l/c\<rfloor> then nat\<lfloor>l/c\<rfloor> else l)"
 
-fun t :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
-"t Ins (n,l) = (if n+1 \<le> f2*l then 1 else n+1)" |
-"t Del (n,l) = (if f1*l \<le> real(n-1) then 1 else if l0 \<le> \<lfloor>l/c\<rfloor> then n else 1)"
+fun T :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
+"T Ins (n,l) = (if n+1 \<le> f2*l then 1 else n+1)" |
+"T Del (n,l) = (if f1*l \<le> real(n-1) then 1 else if l0 \<le> \<lfloor>l/c\<rfloor> then n else 1)"
 
 fun invar :: "nat * nat \<Rightarrow> bool" where
 "invar(n,l) = (l \<ge> l0 \<and> (\<lfloor>l/c\<rfloor> \<ge> l0 \<longrightarrow> f1*l \<le> n) \<and> n \<le> f2*l)"
@@ -170,7 +170,7 @@ abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 + f1'*ad
 interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
-  and t = t and \<Phi> = \<Phi>
+  and T = T and \<Phi> = \<Phi>
   and U = U
 proof (standard, goal_cases)
   case 1 show ?case by (fact invar_init)
@@ -361,7 +361,7 @@ abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<
 interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
-  and t = t and \<Phi> = \<Phi>
+  and T = T and \<Phi> = \<Phi>
   and U = U
 proof (standard, goal_cases)
   case 1 show ?case by (fact invar_init)
