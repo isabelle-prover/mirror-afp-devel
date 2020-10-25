@@ -15,14 +15,14 @@ locale Amortized =
 fixes init :: "'s"
 fixes nxt :: "'o \<Rightarrow> 's \<Rightarrow> 's"
 fixes inv :: "'s \<Rightarrow> bool"
-fixes t :: "'o \<Rightarrow> 's \<Rightarrow> real"
+fixes T :: "'o \<Rightarrow> 's \<Rightarrow> real"
 fixes \<Phi> :: "'s \<Rightarrow> real"
 fixes U :: "'o \<Rightarrow> 's \<Rightarrow> real"
 assumes inv_init: "inv init"
 assumes inv_nxt: "inv s \<Longrightarrow> inv(nxt f s)"
 assumes ppos: "inv s \<Longrightarrow> \<Phi> s \<ge> 0"
 assumes p0: "\<Phi> init = 0"
-assumes U: "inv s \<Longrightarrow> t f s + \<Phi>(nxt f s) - \<Phi> s \<le> U f s"
+assumes U: "inv s \<Longrightarrow> T f s + \<Phi>(nxt f s) - \<Phi> s \<le> U f s"
 begin
 
 fun state :: "(nat \<Rightarrow> 'o) \<Rightarrow> nat \<Rightarrow> 's" where
@@ -32,23 +32,23 @@ fun state :: "(nat \<Rightarrow> 'o) \<Rightarrow> nat \<Rightarrow> 's" where
 lemma inv_state: "inv(state f n)"
 by(induction n)(simp_all add: inv_init inv_nxt)
 
-definition a :: "(nat \<Rightarrow> 'o) \<Rightarrow> nat \<Rightarrow> real" where
-"a f i = t (f i) (state f i) + \<Phi>(state f (i+1)) - \<Phi>(state f i)"
+definition A :: "(nat \<Rightarrow> 'o) \<Rightarrow> nat \<Rightarrow> real" where
+"A f i = T (f i) (state f i) + \<Phi>(state f (i+1)) - \<Phi>(state f i)"
 
-lemma aeq: "(\<Sum>i<n. t (f i) (state f i)) = (\<Sum>i<n. a f i) - \<Phi>(state f n)"
+lemma aeq: "(\<Sum>i<n. T (f i) (state f i)) = (\<Sum>i<n. A f i) - \<Phi>(state f n)"
 apply(induction n)
 apply (simp add: p0)
-apply (simp add: a_def)
+apply (simp add: A_def)
 done
 
-corollary ta: "(\<Sum>i<n. t (f i) (state f i)) \<le> (\<Sum>i<n. a f i)"
+corollary TA: "(\<Sum>i<n. T (f i) (state f i)) \<le> (\<Sum>i<n. A f i)"
 by (metis add.commute aeq diff_add_cancel le_add_same_cancel2 ppos[OF inv_state])
 
-lemma aa1: "a f i \<le> U (f i) (state f i)"
-by(simp add: a_def U inv_state)
+lemma aa1: "A f i \<le> U (f i) (state f i)"
+by(simp add: A_def U inv_state)
 
-lemma ub: "(\<Sum>i<n. t (f i) (state f i)) \<le> (\<Sum>i<n. U (f i) (state f i))"
-by (metis (mono_tags) aa1 order.trans sum_mono ta)
+lemma ub: "(\<Sum>i<n. T (f i) (state f i)) \<le> (\<Sum>i<n. U (f i) (state f i))"
+by (metis (mono_tags) aa1 order.trans sum_mono TA)
 
 end
 
@@ -63,22 +63,22 @@ fun incr where
 "incr (False#bs) = True # bs" |
 "incr (True#bs) = False # incr bs"
 
-fun t_incr :: "bool list \<Rightarrow> real" where
-"t_incr [] = 1" |
-"t_incr (False#bs) = 1" |
-"t_incr (True#bs) = t_incr bs + 1"
+fun T_incr :: "bool list \<Rightarrow> real" where
+"T_incr [] = 1" |
+"T_incr (False#bs) = 1" |
+"T_incr (True#bs) = T_incr bs + 1"
 
 definition p_incr :: "bool list \<Rightarrow> real" ("\<Phi>") where
 "\<Phi> bs = length(filter id bs)"
 
-lemma a_incr: "t_incr bs + \<Phi>(incr bs) - \<Phi> bs = 2"
+lemma A_incr: "T_incr bs + \<Phi>(incr bs) - \<Phi> bs = 2"
 apply(induction bs rule: incr.induct)
 apply (simp_all add: p_incr_def)
 done
 
 interpretation incr: Amortized
 where init = "[]" and nxt = "%_. incr" and inv = "\<lambda>_. True"
-and t = "\<lambda>_. t_incr" and \<Phi> = \<Phi> and U = "\<lambda>_ _. 2"
+and T = "\<lambda>_. T_incr" and \<Phi> = \<Phi> and U = "\<lambda>_ _. 2"
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -88,7 +88,7 @@ next
 next
   case 4 show ?case by(simp add: p_incr_def)
 next
-  case 5 show ?case by(simp add: a_incr)
+  case 5 show ?case by(simp add: A_incr)
 qed
 
 thm incr.ub
@@ -97,14 +97,14 @@ end
 
 subsection "Dynamic tables: insert only"
 
-fun t\<^sub>i\<^sub>n\<^sub>s :: "nat \<times> nat \<Rightarrow> real" where
-"t\<^sub>i\<^sub>n\<^sub>s (n,l) = (if n<l then 1 else n+1)"
+fun T_ins :: "nat \<times> nat \<Rightarrow> real" where
+"T_ins (n,l) = (if n<l then 1 else n+1)"
 
 interpretation ins: Amortized
 where init = "(0::nat,0::nat)"
 and nxt = "\<lambda>_ (n,l). (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
-and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>s" and \<Phi> = "\<lambda>(n,l). 2*n - l" and U = "\<lambda>_ _. 3"
+and T = "\<lambda>_. T_ins" and \<Phi> = "\<lambda>(n,l). 2*n - l" and U = "\<lambda>_ _. 3"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
@@ -147,7 +147,7 @@ fun pins :: "nat * nat => real" where
 interpretation ins: Amortized
 where init = "(0,0)" and nxt = "%_. ins"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> (b/a)*l \<le> n"
-and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>s" and \<Phi> = pins and U = "\<lambda>_ _. a + 1"
+and T = "\<lambda>_. T_ins" and \<Phi> = pins and U = "\<lambda>_ _. a + 1"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
@@ -211,7 +211,7 @@ next
       next
         assume "\<not> n<l"
         hence [simp]: "n=l" using 5 by simp
-        have "t\<^sub>i\<^sub>n\<^sub>s s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
+        have "T_ins s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using \<open>l\<noteq>0\<close>
           by(simp add: algebra_simps less_trans[of "-1::real" 0])
         also have "- b * ceiling(c*l) \<le> - b * (c*l)" by (simp add: ceiling_correct)
@@ -233,18 +233,18 @@ subsection "Stack with multipop"
 
 datatype 'a op\<^sub>s\<^sub>t\<^sub>k = Push 'a | Pop nat
 
-fun nxt\<^sub>s\<^sub>t\<^sub>k :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"nxt\<^sub>s\<^sub>t\<^sub>k (Push x) xs = x # xs" |
-"nxt\<^sub>s\<^sub>t\<^sub>k (Pop n) xs = drop n xs"
+fun nxT_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+"nxT_stk (Push x) xs = x # xs" |
+"nxT_stk (Pop n) xs = drop n xs"
 
-fun t\<^sub>s\<^sub>t\<^sub>k:: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> real" where
-"t\<^sub>s\<^sub>t\<^sub>k (Push x) xs = 1" |
-"t\<^sub>s\<^sub>t\<^sub>k (Pop n) xs = min n (length xs)"
+fun T_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> real" where
+"T_stk (Push x) xs = 1" |
+"T_stk (Pop n) xs = min n (length xs)"
 
 
 interpretation stack: Amortized
-where init = "[]" and nxt = nxt\<^sub>s\<^sub>t\<^sub>k and inv = "\<lambda>_. True"
-and t = t\<^sub>s\<^sub>t\<^sub>k and \<Phi> = "length" and U = "\<lambda>f _. case f of Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
+where init = "[]" and nxt = nxT_stk and inv = "\<lambda>_. True"
+and T = T_stk and \<Phi> = "length" and U = "\<lambda>f _. case f of Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
@@ -266,18 +266,18 @@ datatype 'a op\<^sub>q = Enq 'a | Deq
 
 type_synonym 'a queue = "'a list * 'a list"
 
-fun nxt\<^sub>q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> 'a queue" where
-"nxt\<^sub>q (Enq x) (xs,ys) = (x#xs,ys)" |
-"nxt\<^sub>q Deq (xs,ys) = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
+fun nxT_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> 'a queue" where
+"nxT_q (Enq x) (xs,ys) = (x#xs,ys)" |
+"nxT_q Deq (xs,ys) = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
-fun t\<^sub>q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
-"t\<^sub>q (Enq x) (xs,ys) = 1" |
-"t\<^sub>q Deq (xs,ys) = (if ys = [] then length xs else 0)"
+fun T_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
+"T_q (Enq x) (xs,ys) = 1" |
+"T_q Deq (xs,ys) = (if ys = [] then length xs else 0)"
 
 
 interpretation queue: Amortized
-where init = "([],[])" and nxt = nxt\<^sub>q and inv = "\<lambda>_. True"
-and t = t\<^sub>q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
+where init = "([],[])" and nxt = nxT_q and inv = "\<lambda>_. True"
+and T = T_q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
@@ -301,15 +301,15 @@ fun nxt_q2 :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> 'a queue" wher
 "nxt_q2 (Enq a) (xs,ys) = balance (a#xs,ys)" |
 "nxt_q2 Deq (xs,ys) = balance (xs, tl ys)"
 
-fun t_q2 :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
-"t_q2 (Enq _) (xs,ys) = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
-"t_q2 Deq (xs,ys) = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
+fun T_q2 :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
+"T_q2 (Enq _) (xs,ys) = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
+"T_q2 Deq (xs,ys) = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
 
 
 interpretation queue2: Amortized
 where init = "([],[])" and nxt = nxt_q2
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
-and t = t_q2 and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
+and T = T_q2 and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
 and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by auto
@@ -331,18 +331,18 @@ subsection "Dynamic tables: insert and delete"
 
 datatype op\<^sub>t\<^sub>b = Ins | Del
 
-fun nxt\<^sub>t\<^sub>b :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
-"nxt\<^sub>t\<^sub>b Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
-"nxt\<^sub>t\<^sub>b Del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
+fun nxT_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
+"nxT_tb Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
+"nxT_tb Del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
-fun t\<^sub>t\<^sub>b :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
-"t\<^sub>t\<^sub>b Ins (n,l) = (if n<l then 1 else n+1)" |
-"t\<^sub>t\<^sub>b Del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
+fun T_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
+"T_tb Ins (n,l) = (if n<l then 1 else n+1)" |
+"T_tb Del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
 
 interpretation tb: Amortized
-where init = "(0,0)" and nxt = nxt\<^sub>t\<^sub>b
+where init = "(0,0)" and nxt = nxT_tb
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
-and t = t\<^sub>t\<^sub>b and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
+and T = T_tb and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
 and U = "\<lambda>f _. case f of Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
 proof (standard, goal_cases)
   case 1 show ?case by auto
