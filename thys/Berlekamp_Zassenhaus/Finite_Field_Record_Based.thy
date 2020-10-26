@@ -106,7 +106,11 @@ definition mult_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "mult_p32 x y = (x * y mod p)"
 
 lemma int_of_uint32_shift: "int_of_uint32 (shiftr n k) = (int_of_uint32 n) div (2 ^ k)" 
-  by (transfer, rule shiftr_div_2n) 
+  apply transfer
+  apply transfer
+  apply (simp add: take_bit_drop_bit min_def)
+  apply (simp add: drop_bit_eq_div)
+  done
 
 lemma int_of_uint32_0_iff: "int_of_uint32 n = 0 \<longleftrightarrow> n = 0" 
   by (transfer, rule uint_0_iff)
@@ -179,8 +183,8 @@ definition finite_field_ops32 :: "uint32 arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
-lemma shiftr_uint32_code [code_unfold]: "shiftr x 1 = (uint32_shiftr x 1)"
-  unfolding shiftr_uint32_code using integer_of_nat_1 by auto
+lemma shiftr_uint32_code [code_unfold]: "drop_bit 1 x = (uint32_shiftr x 1)"
+  by (simp add: uint32_shiftr_def shiftr_eq_drop_bit)
 
 (* ******************************************************************************** *)
 subsubsection \<open>Transfer Relation\<close>
@@ -637,7 +641,10 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel32 (shiftr y 1) (int d')" unfolding d' using y unfolding urel32_def using small
       unfolding ppp 
-      by (transfer, auto simp: shiftr_div_2n) 
+      apply transfer
+      apply transfer
+      apply (auto simp add: drop_bit_Suc)
+      done
     note IH = 1(1)[OF False refl dr'[symmetric] urel32_mult[OF x x] div]
     show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p32.simps[of _ _ y] dr' id if_False rem
       using IH urel32_mult[OF IH x] by (auto simp: Let_def)
@@ -799,7 +806,11 @@ definition mult_p64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" where
   "mult_p64 x y = (x * y mod p)"
 
 lemma int_of_uint64_shift: "int_of_uint64 (shiftr n k) = (int_of_uint64 n) div (2 ^ k)" 
-  by (transfer, rule shiftr_div_2n) 
+  apply transfer
+  apply transfer
+  apply (simp add: take_bit_drop_bit min_def)
+  apply (simp add: drop_bit_eq_div)
+  done
 
 lemma int_of_uint64_0_iff: "int_of_uint64 n = 0 \<longleftrightarrow> n = 0" 
   by (transfer, rule uint_0_iff)
@@ -872,8 +883,8 @@ definition finite_field_ops64 :: "uint64 arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
-lemma shiftr_uint64_code [code_unfold]: "shiftr x 1 = (uint64_shiftr x 1)"
-  unfolding shiftr_uint64_code using integer_of_nat_1 by auto
+lemma shiftr_uint64_code [code_unfold]: "drop_bit 1 x = (uint64_shiftr x 1)"
+  by (simp add: uint64_shiftr_def)
 
 text \<open>For soundness of the 64-bit implementation, we mainly prove that this implementation
   implements the int-based implementation of GF(p).\<close>
@@ -1058,8 +1069,11 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel64 (shiftr y 1) (int d')" unfolding d' using y unfolding urel64_def using small
-      unfolding ppp 
-      by (transfer, auto simp: shiftr_div_2n) 
+      unfolding ppp
+      apply transfer
+      apply transfer
+      apply (auto simp add: drop_bit_Suc)
+      done
     note IH = 1(1)[OF False refl dr'[symmetric] urel64_mult[OF x x] div]
     show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p64.simps[of _ _ y] dr' id if_False rem
       using IH urel64_mult[OF IH x] by (auto simp: Let_def)
@@ -1239,7 +1253,7 @@ lemma int_of_integer_mod: "int_of_integer (x mod y) = (int_of_integer x mod int_
 lemma int_of_integer_inv: "int_of_integer (integer_of_int x) = x" by simp
 
 lemma int_of_integer_shift: "int_of_integer (shiftr n k) = (int_of_integer n) div (2 ^ k)" 
-  by (simp add: shiftr_int_def shiftr_integer.rep_eq)
+  by transfer (simp add: int_of_integer_pow shiftr_integer_conv_div_pow2)
 
 
 function power_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
@@ -1290,7 +1304,7 @@ definition finite_field_ops_integer :: "integer arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
-lemma shiftr_integer_code [code_unfold]: "shiftr x 1 = (integer_shiftr x 1)"
+lemma shiftr_integer_code [code_unfold]: "drop_bit 1 x = (integer_shiftr x 1)"
   unfolding shiftr_integer_code using integer_of_nat_1 by auto
 
 text \<open>For soundness of the integer implementation, we mainly prove that this implementation
@@ -1462,7 +1476,9 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel_integer (y AND 1) r'" unfolding r' using y unfolding urel_integer_def 
       unfolding ppp
-      by (smt aux bitAND_int_code int_and_1 mod2_gr_0 of_nat_0_le_iff of_nat_0_less_iff of_nat_1 one_integer.rep_eq p2 ppp) 
+      apply (auto simp add: and_one_eq)
+      apply (simp add: of_nat_mod)
+      done
     from urel_integer_eq[OF this urel_integer_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel_integer (shiftr y 1) (int d')" unfolding d' using y unfolding urel_integer_def

@@ -122,13 +122,24 @@ lemma [code]:
   \<open>mask 0 = (0 :: uint64)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
 
-instantiation uint64:: semiring_bit_syntax
+instance uint64 :: semiring_bit_syntax ..
+
+context
+  includes lifting_syntax
 begin
-lift_definition test_bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
-lift_definition shiftl_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> uint64\<close> is shiftl .
-lift_definition shiftr_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> uint64\<close> is shiftr .
-instance by (standard; transfer)
-  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+
+lemma test_bit_uint64_transfer [transfer_rule]:
+  \<open>(cr_uint64 ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
+
+lemma shiftl_uint64_transfer [transfer_rule]:
+  \<open>(cr_uint64 ===> (=) ===> cr_uint64) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_uint64_transfer [transfer_rule]:
+  \<open>(cr_uint64 ===> (=) ===> cr_uint64) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation uint64 :: lsb
@@ -160,7 +171,7 @@ lift_definition set_bits_uint64 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint6
 instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
-lemmas [code] = test_bit_uint64.rep_eq lsb_uint64.rep_eq msb_uint64.rep_eq
+lemmas [code] = bit_uint64.rep_eq lsb_uint64.rep_eq msb_uint64.rep_eq
 
 instantiation uint64 :: equal begin
 lift_definition equal_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> bool" is "equal_class.equal" .
@@ -176,7 +187,7 @@ end
 
 lemmas [code] = size_uint64.rep_eq
 
-lift_definition sshiftr_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" (infixl ">>>" 55) is sshiftr .
+lift_definition sshiftr_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
 
 lift_definition uint64_of_int :: "int \<Rightarrow> uint64" is "word_of_int" .
 
@@ -539,9 +550,12 @@ where "Uint64_signed i = (if i < -(0x8000000000000000) \<or> i \<ge> 0x800000000
 lemma Uint64_code [code]:
   "Uint64 i = 
   (let i' = i AND 0xFFFFFFFFFFFFFFFF
-   in if i' !! 63 then Uint64_signed (i' - 0x10000000000000000) else Uint64_signed i')"
-including undefined_transfer integer.lifting unfolding Uint64_signed_def
-by transfer(rule word_of_int_via_signed, simp_all add: bin_mask_numeral)
+   in if bit i' 63 then Uint64_signed (i' - 0x10000000000000000) else Uint64_signed i')"
+  including undefined_transfer integer.lifting unfolding Uint64_signed_def
+  apply transfer
+  apply (subst word_of_int_via_signed)
+     apply (auto simp add: shiftl_eq_push_bit push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+  done
 
 lemma Uint64_signed_code [code abstract]:
   "Rep_uint64 (Uint64_signed i) = 
@@ -570,8 +584,8 @@ lemma Rep_uint64'_transfer [transfer_rule]:
   "rel_fun cr_uint64 (=) (\<lambda>x. x) Rep_uint64'"
 unfolding Rep_uint64'_def by(rule uint64.rep_transfer)
 
-lemma Rep_uint64'_code [code]: "Rep_uint64' x = (BITS n. x !! n)"
-by transfer simp
+lemma Rep_uint64'_code [code]: "Rep_uint64' x = (BITS n. bit x n)"
+  by transfer (simp add: set_bits_bit_eq)
 
 lift_definition Abs_uint64' :: "64 word \<Rightarrow> uint64" is "\<lambda>x :: 64 word. x" .
 
@@ -707,11 +721,11 @@ lemma uint64_divmod_code [code]:
   "uint64_divmod x y =
   (if 0x8000000000000000 \<le> y then if x < y then (0, x) else (1, x - y)
    else if y = 0 then (div0_uint64 x, mod0_uint64 x)
-   else let q = (uint64_sdiv (x >> 1) y) << 1;
+   else let q = push_bit 1 (uint64_sdiv (drop_bit 1 x) y);
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
-including undefined_transfer unfolding uint64_divmod_def uint64_sdiv_def div0_uint64_def mod0_uint64_def
-by transfer(simp add: divmod_via_sdivmod)
+  including undefined_transfer unfolding uint64_divmod_def uint64_sdiv_def div0_uint64_def mod0_uint64_def
+  by transfer (simp add: divmod_via_sdivmod shiftr_eq_drop_bit shiftl_eq_push_bit ac_simps)
 
 lemma uint64_sdiv_code [code abstract]:
   "Rep_uint64 (uint64_sdiv x y) =
@@ -740,12 +754,8 @@ code_printing
 definition uint64_test_bit :: "uint64 \<Rightarrow> integer \<Rightarrow> bool"
 where [code del]:
   "uint64_test_bit x n =
-  (if n < 0 \<or> 63 < n then undefined (test_bit :: uint64 \<Rightarrow> _) x n
-   else x !! (nat_of_integer n))"
-
-lemma test_bit_eq_bit_uint64 [code]:
-  \<open>test_bit = (bit :: uint64 \<Rightarrow> _)\<close>
-  by (rule ext)+ (transfer, transfer, simp)
+  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) x n
+   else bit x (nat_of_integer n))"
 
 lemma bit_uint64_code [code]:
   "bit x n \<longleftrightarrow> n < 64 \<and> uint64_test_bit x (integer_of_nat n)"
@@ -754,9 +764,8 @@ lemma bit_uint64_code [code]:
 
 lemma uint64_test_bit_code [code]:
   "uint64_test_bit w n =
-  (if n < 0 \<or> 63 < n then undefined (test_bit :: uint64 \<Rightarrow> _) w n else Rep_uint64 w !! nat_of_integer n)"
-unfolding uint64_test_bit_def
-by(simp add: test_bit_uint64.rep_eq)
+  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) w n else bit (Rep_uint64 w) (nat_of_integer n))"
+  unfolding uint64_test_bit_def by(simp add: bit_uint64.rep_eq)
 
 code_printing constant uint64_test_bit \<rightharpoonup>
   (SML) "Uint64.test'_bit" and
@@ -794,29 +803,32 @@ lift_definition uint64_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint6
 lemma uint64_set_bits_code [code]:
   "uint64_set_bits f w n =
   (if n = 0 then w 
-   else let n' = n - 1 in uint64_set_bits f ((w << 1) OR (if f n' then 1 else 0)) n')"
-by(transfer fixing: n)(cases n, simp_all)
+   else let n' = n - 1 in uint64_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
+  apply (transfer fixing: n)
+  apply (cases n)
+   apply (simp_all add: shiftl_eq_push_bit)
+  done
 
 lemma set_bits_uint64 [code]:
   "(BITS n. f n) = uint64_set_bits f 0 64"
 by transfer(simp add: set_bits_conv_set_bits_aux)
 
 
-lemma lsb_code [code]: fixes x :: uint64 shows "lsb x = x !! 0"
-by transfer(simp add: word_lsb_def word_test_bit_def)
+lemma lsb_code [code]: fixes x :: uint64 shows "lsb x = bit x 0"
+  by transfer (simp add: lsb_word_eq)
 
 
 definition uint64_shiftl :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
 where [code del]:
-  "uint64_shiftl x n = (if n < 0 \<or> 64 \<le> n then undefined (shiftl :: uint64 \<Rightarrow> _) x n else x << (nat_of_integer n))"
+  "uint64_shiftl x n = (if n < 0 \<or> 64 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
 
-lemma shiftl_uint64_code [code]: "x << n = (if n < 64 then uint64_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint64_shiftl_def
-by transfer(simp add: not_less shiftl_zero_size word_size)
+lemma shiftl_uint64_code [code]: "push_bit n x = (if n < 64 then uint64_shiftl x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint64_shiftl_def
+  by transfer simp
 
 lemma uint64_shiftl_code [code abstract]:
   "Rep_uint64 (uint64_shiftl w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (shiftl :: uint64 \<Rightarrow> _) w n) else Rep_uint64 w << (nat_of_integer n))"
+  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (push_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint64 w))"
 including undefined_transfer unfolding uint64_shiftl_def by transfer simp
 
 code_printing constant uint64_shiftl \<rightharpoonup>
@@ -829,16 +841,16 @@ code_printing constant uint64_shiftl \<rightharpoonup>
 
 definition uint64_shiftr :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
 where [code del]:
-  "uint64_shiftr x n = (if n < 0 \<or> 64 \<le> n then undefined (shiftr :: uint64 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
+  "uint64_shiftr x n = (if n < 0 \<or> 64 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
 
-lemma shiftr_uint64_code [code]: "x >> n = (if n < 64 then uint64_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint64_shiftr_def
-by transfer(simp add: not_less shiftr_zero_size word_size)
+lemma shiftr_uint64_code [code]: "drop_bit n x = (if n < 64 then uint64_shiftr x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint64_shiftr_def
+  by transfer simp
 
 lemma uint64_shiftr_code [code abstract]:
   "Rep_uint64 (uint64_shiftr w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (shiftr :: uint64 \<Rightarrow> _) w n) else Rep_uint64 w >> nat_of_integer n)"
-including undefined_transfer unfolding uint64_shiftr_def by transfer simp
+  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (drop_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint64 w))"
+  including undefined_transfer unfolding uint64_shiftr_def by transfer simp
 
 code_printing constant uint64_shiftr \<rightharpoonup>
   (SML) "Uint64.shiftr" and
@@ -853,19 +865,15 @@ where [code del]:
   "uint64_sshiftr x n =
   (if n < 0 \<or> 64 \<le> n then undefined sshiftr_uint64 x n else sshiftr_uint64 x (nat_of_integer n))"
 
-lemma sshiftr_beyond: fixes x :: "'a :: len word" shows
-  "size x \<le> n \<Longrightarrow> x >>> n = (if x !! (size x - 1) then -1 else 0)"
-by(rule word_eqI)(simp add: nth_sshiftr word_size)
-
 lemma sshiftr_uint64_code [code]:
   "x >>> n = 
-  (if n < 64 then uint64_sshiftr x (integer_of_nat n) else if x !! 63 then -1 else 0)"
-including undefined_transfer integer.lifting unfolding uint64_sshiftr_def
-by transfer(simp add: not_less sshiftr_beyond word_size)
+  (if n < 64 then uint64_sshiftr x (integer_of_nat n) else if bit x 63 then - 1 else 0)"
+  including undefined_transfer integer.lifting unfolding uint64_sshiftr_def
+  by transfer (simp add: not_less signed_drop_bit_beyond)
 
 lemma uint64_sshiftr_code [code abstract]:
   "Rep_uint64 (uint64_sshiftr w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined sshiftr_uint64 w n) else Rep_uint64 w >>> (nat_of_integer n))"
+  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined sshiftr_uint64 w n) else signed_drop_bit (nat_of_integer n) (Rep_uint64 w))"
 including undefined_transfer unfolding uint64_sshiftr_def by transfer simp
 
 code_printing constant uint64_sshiftr \<rightharpoonup>
@@ -876,12 +884,11 @@ code_printing constant uint64_sshiftr \<rightharpoonup>
   (Scala) "Uint64.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed x i)"
 
-
-lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint64) !! 63"
-by transfer(simp add: msb_nth)
+lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint64) 63"
+  by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint64_code [code]: "msb x \<longleftrightarrow> uint64_test_bit x 63"
-by(simp add: uint64_test_bit_def uint64_msb_test_bit)
+  by (simp add: uint64_test_bit_def uint64_msb_test_bit)
 
 lemma uint64_of_int_code [code]: "uint64_of_int i = Uint64 (integer_of_int i)"
 including integer.lifting by transfer simp
@@ -896,20 +903,34 @@ unfolding integer_of_uint64_def including integer.lifting by transfer simp
 
 definition integer_of_uint64_signed :: "uint64 \<Rightarrow> integer"
 where
-  "integer_of_uint64_signed n = (if n !! 63 then undefined integer_of_uint64 n else integer_of_uint64 n)"
+  "integer_of_uint64_signed n = (if bit n 63 then undefined integer_of_uint64 n else integer_of_uint64 n)"
 
 lemma integer_of_uint64_signed_code [code]:
   "integer_of_uint64_signed n =
-  (if n !! 63 then undefined integer_of_uint64 n else integer_of_int (uint (Rep_uint64' n)))"
+  (if bit n 63 then undefined integer_of_uint64 n else integer_of_int (uint (Rep_uint64' n)))"
 unfolding integer_of_uint64_signed_def integer_of_uint64_def
 including undefined_transfer by transfer simp
 
 lemma integer_of_uint64_code [code]:
   "integer_of_uint64 n =
-  (if n !! 63 then integer_of_uint64_signed (n AND 0x7FFFFFFFFFFFFFFF) OR 0x8000000000000000 else integer_of_uint64_signed n)"
-unfolding integer_of_uint64_def integer_of_uint64_signed_def o_def
-including undefined_transfer integer.lifting
-by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
+  (if bit n 63 then integer_of_uint64_signed (n AND 0x7FFFFFFFFFFFFFFF) OR 0x8000000000000000 else integer_of_uint64_signed n)"
+proof -
+  have \<open>(0x7FFFFFFFFFFFFFFF :: uint64) = mask 63\<close>
+    by (simp add: mask_eq_exp_minus_1)
+  then have *: \<open>n AND 0x7FFFFFFFFFFFFFFF = take_bit 63 n\<close>
+    by (simp add: take_bit_eq_mask)
+  have **: \<open>(0x8000000000000000 :: int) = 2 ^ 63\<close>
+    by simp
+  show ?thesis
+    unfolding integer_of_uint64_def integer_of_uint64_signed_def o_def *
+    including undefined_transfer integer.lifting
+    apply transfer
+    apply (rule bit_eqI)
+    apply (simp add: test_bit_eq_bit bit_or_iff bit_take_bit_iff bit_uint_iff)
+    apply (simp only: bit_exp_iff bit_or_iff **)
+    apply auto
+    done
+qed
 
 code_printing
   constant "integer_of_uint64" \<rightharpoonup>

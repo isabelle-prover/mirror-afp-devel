@@ -1169,7 +1169,7 @@ lemma nth_ucast:
 lemma ucast_less:
   "LENGTH('b) < LENGTH('a) \<Longrightarrow>
    (ucast (x :: 'b :: len word) :: ('a :: len word)) < 2 ^ LENGTH('b)"
-  by (meson Word.nth_ucast test_bit_conj_lt le_def upper_bits_unset_is_l2p)
+  by transfer simp
 
 lemma ucast_range_less:
   "LENGTH('a :: len) < LENGTH('b :: len) \<Longrightarrow>

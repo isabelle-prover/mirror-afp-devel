@@ -111,13 +111,24 @@ lemma [code]:
   \<open>mask 0 = (0 :: uint32)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
 
-instantiation uint32:: semiring_bit_syntax
+instance uint32 :: semiring_bit_syntax ..
+
+context
+  includes lifting_syntax
 begin
-lift_definition test_bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
-lift_definition shiftl_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> uint32\<close> is shiftl .
-lift_definition shiftr_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> uint32\<close> is shiftr .
-instance by (standard; transfer)
-  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+
+lemma test_bit_uint32_transfer [transfer_rule]:
+  \<open>(cr_uint32 ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
+
+lemma shiftl_uint32_transfer [transfer_rule]:
+  \<open>(cr_uint32 ===> (=) ===> cr_uint32) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_uint32_transfer [transfer_rule]:
+  \<open>(cr_uint32 ===> (=) ===> cr_uint32) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation uint32 :: lsb
@@ -149,7 +160,7 @@ lift_definition set_bits_uint32 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint3
 instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
-lemmas [code] = test_bit_uint32.rep_eq lsb_uint32.rep_eq msb_uint32.rep_eq
+lemmas [code] = bit_uint32.rep_eq lsb_uint32.rep_eq msb_uint32.rep_eq
 
 instantiation uint32 :: equal begin
 lift_definition equal_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> bool" is "equal_class.equal" .
@@ -165,7 +176,7 @@ end
 
 lemmas [code] = size_uint32.rep_eq                                                    
 
-lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" (infixl ">>>" 55) is sshiftr .
+lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
 
 lift_definition uint32_of_int :: "int \<Rightarrow> uint32" is "word_of_int" .
 
@@ -340,9 +351,12 @@ where "Uint32_signed i = (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then und
 lemma Uint32_code [code]:
   "Uint32 i = 
   (let i' = i AND 0xFFFFFFFF
-   in if i' !! 31 then Uint32_signed (i' - 0x100000000) else Uint32_signed i')"
-including undefined_transfer integer.lifting unfolding Uint32_signed_def
-by transfer(rule word_of_int_via_signed, simp_all add: bin_mask_numeral)
+   in if bit i' 31 then Uint32_signed (i' - 0x100000000) else Uint32_signed i')"
+  including undefined_transfer integer.lifting unfolding Uint32_signed_def
+  apply transfer
+  apply (subst word_of_int_via_signed)
+     apply (auto simp add: shiftl_eq_push_bit push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+  done
 
 lemma Uint32_signed_code [code abstract]:
   "Rep_uint32 (Uint32_signed i) = 
@@ -371,8 +385,8 @@ lemma Rep_uint32'_transfer [transfer_rule]:
   "rel_fun cr_uint32 (=) (\<lambda>x. x) Rep_uint32'"
 unfolding Rep_uint32'_def by(rule uint32.rep_transfer)
 
-lemma Rep_uint32'_code [code]: "Rep_uint32' x = (BITS n. x !! n)"
-by transfer simp
+lemma Rep_uint32'_code [code]: "Rep_uint32' x = (BITS n. bit x n)"
+  by transfer (simp add: set_bits_bit_eq) 
 
 lift_definition Abs_uint32' :: "32 word \<Rightarrow> uint32" is "\<lambda>x :: 32 word. x" .
 
@@ -509,11 +523,11 @@ lemma uint32_divmod_code [code]:
   "uint32_divmod x y =
   (if 0x80000000 \<le> y then if x < y then (0, x) else (1, x - y)
    else if y = 0 then (div0_uint32 x, mod0_uint32 x)
-   else let q = (uint32_sdiv (x >> 1) y) << 1;
+   else let q = (uint32_sdiv (drop_bit 1 x) y) << 1;
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
-including undefined_transfer unfolding uint32_divmod_def uint32_sdiv_def div0_uint32_def mod0_uint32_def
-by transfer(simp add: divmod_via_sdivmod)
+  including undefined_transfer unfolding uint32_divmod_def uint32_sdiv_def div0_uint32_def mod0_uint32_def
+  by transfer (simp add: divmod_via_sdivmod shiftr_eq_drop_bit shiftl_eq_push_bit ac_simps)
 
 lemma uint32_sdiv_code [code abstract]:
   "Rep_uint32 (uint32_sdiv x y) =
@@ -542,12 +556,8 @@ code_printing
 definition uint32_test_bit :: "uint32 \<Rightarrow> integer \<Rightarrow> bool"
 where [code del]:
   "uint32_test_bit x n =
-  (if n < 0 \<or> 31 < n then undefined (test_bit :: uint32 \<Rightarrow> _) x n
-   else x !! (nat_of_integer n))"
-
-lemma test_bit_eq_bit_uint32 [code]:
-  \<open>test_bit = (bit :: uint32 \<Rightarrow> _)\<close>
-  by (rule ext)+ (transfer, transfer, simp)
+  (if n < 0 \<or> 31 < n then undefined (bit :: uint32 \<Rightarrow> _) x n
+   else bit x (nat_of_integer n))"
 
 lemma test_bit_uint32_code [code]:
   "bit x n \<longleftrightarrow> n < 32 \<and> uint32_test_bit x (integer_of_nat n)"
@@ -556,9 +566,8 @@ lemma test_bit_uint32_code [code]:
 
 lemma uint32_test_bit_code [code]:
   "uint32_test_bit w n =
-  (if n < 0 \<or> 31 < n then undefined (test_bit :: uint32 \<Rightarrow> _) w n else Rep_uint32 w !! nat_of_integer n)"
-unfolding uint32_test_bit_def
-by(simp add: test_bit_uint32.rep_eq)
+  (if n < 0 \<or> 31 < n then undefined (bit :: uint32 \<Rightarrow> _) w n else bit (Rep_uint32 w) (nat_of_integer n))"
+  unfolding uint32_test_bit_def by(simp add: bit_uint32.rep_eq)
 
 code_printing constant uint32_test_bit \<rightharpoonup>
   (SML) "Uint32.test'_bit" and
@@ -596,30 +605,34 @@ lift_definition uint32_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint3
 lemma uint32_set_bits_code [code]:
   "uint32_set_bits f w n =
   (if n = 0 then w 
-   else let n' = n - 1 in uint32_set_bits f ((w << 1) OR (if f n' then 1 else 0)) n')"
-by(transfer fixing: n)(cases n, simp_all)
+   else let n' = n - 1 in uint32_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
+  apply (transfer fixing: n)
+  apply (cases n)
+   apply (simp_all add: shiftl_eq_push_bit)
+  done
 
 lemma set_bits_uint32 [code]:
   "(BITS n. f n) = uint32_set_bits f 0 32"
 by transfer(simp add: set_bits_conv_set_bits_aux)
 
 
-lemma lsb_code [code]: fixes x :: uint32 shows "lsb x = x !! 0"
-by transfer(simp add: word_lsb_def word_test_bit_def)
+lemma lsb_code [code]: fixes x :: uint32 shows "lsb x \<longleftrightarrow> bit x 0"
+  by transfer (simp add: lsb_word_eq)
 
 
 definition uint32_shiftl :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
-  "uint32_shiftl x n = (if n < 0 \<or> 32 \<le> n then undefined (shiftl :: uint32 \<Rightarrow> _) x n else x << (nat_of_integer n))"
+  "uint32_shiftl x n = (if n < 0 \<or> 32 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
 
-lemma shiftl_uint32_code [code]: "x << n = (if n < 32 then uint32_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint32_shiftl_def
-by transfer(simp add: not_less shiftl_zero_size word_size)
+lemma shiftl_uint32_code [code]: "push_bit n x = (if n < 32 then uint32_shiftl x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint32_shiftl_def
+  by transfer simp
 
 lemma uint32_shiftl_code [code abstract]:
   "Rep_uint32 (uint32_shiftl w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (shiftl :: uint32 \<Rightarrow> _) w n) else Rep_uint32 w << (nat_of_integer n))"
-including undefined_transfer unfolding uint32_shiftl_def by transfer simp
+  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint32 w))"
+  including undefined_transfer unfolding uint32_shiftl_def
+  by transfer (simp add: shiftl_eq_push_bit)
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
@@ -630,16 +643,16 @@ code_printing constant uint32_shiftl \<rightharpoonup>
 
 definition uint32_shiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
-  "uint32_shiftr x n = (if n < 0 \<or> 32 \<le> n then undefined (shiftr :: uint32 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
+  "uint32_shiftr x n = (if n < 0 \<or> 32 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
 
-lemma shiftr_uint32_code [code]: "x >> n = (if n < 32 then uint32_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint32_shiftr_def
-by transfer(simp add: not_less shiftr_zero_size word_size)
+lemma shiftr_uint32_code [code]: "drop_bit n x = (if n < 32 then uint32_shiftr x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint32_shiftr_def
+  by transfer simp
 
 lemma uint32_shiftr_code [code abstract]:
   "Rep_uint32 (uint32_shiftr w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (shiftr :: uint32 \<Rightarrow> _) w n) else Rep_uint32 w >> nat_of_integer n)"
-including undefined_transfer unfolding uint32_shiftr_def by transfer simp
+  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (drop_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint32 w))"
+  including undefined_transfer unfolding uint32_shiftr_def by transfer simp
 
 code_printing constant uint32_shiftr \<rightharpoonup>
   (SML) "Uint32.shiftr" and
@@ -653,19 +666,15 @@ where [code del]:
   "uint32_sshiftr x n =
   (if n < 0 \<or> 32 \<le> n then undefined sshiftr_uint32 x n else sshiftr_uint32 x (nat_of_integer n))"
 
-lemma sshiftr_beyond: fixes x :: "'a :: len word" shows
-  "size x \<le> n \<Longrightarrow> x >>> n = (if x !! (size x - 1) then -1 else 0)"
-by(rule word_eqI)(simp add: nth_sshiftr word_size)
-
 lemma sshiftr_uint32_code [code]:
   "x >>> n = 
-  (if n < 32 then uint32_sshiftr x (integer_of_nat n) else if x !! 31 then -1 else 0)"
-including undefined_transfer integer.lifting unfolding uint32_sshiftr_def
-by transfer(simp add: not_less sshiftr_beyond word_size)
+  (if n < 32 then uint32_sshiftr x (integer_of_nat n) else if bit x 31 then - 1 else 0)"
+  including undefined_transfer integer.lifting unfolding uint32_sshiftr_def
+  by transfer (simp add: not_less signed_drop_bit_beyond)
 
 lemma uint32_sshiftr_code [code abstract]:
   "Rep_uint32 (uint32_sshiftr w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined sshiftr_uint32 w n) else Rep_uint32 w >>> (nat_of_integer n))"
+  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined sshiftr_uint32 w n) else signed_drop_bit (nat_of_integer n) (Rep_uint32 w))"
 including undefined_transfer unfolding uint32_sshiftr_def by transfer simp
 
 code_printing constant uint32_sshiftr \<rightharpoonup>
@@ -676,11 +685,11 @@ code_printing constant uint32_sshiftr \<rightharpoonup>
   (Scala) "Uint32.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr'_signed out of bounds\" else Uint32.shiftr'_signed x i)"
 
-lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint32) !! 31"
-by transfer(simp add: msb_nth)
+lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint32) 31"
+  by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
-by(simp add: uint32_test_bit_def uint32_msb_test_bit)
+  by (simp add: uint32_test_bit_def uint32_msb_test_bit)
 
 lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
 including integer.lifting by transfer simp
@@ -695,20 +704,34 @@ unfolding integer_of_uint32_def including integer.lifting by transfer simp
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where
-  "integer_of_uint32_signed n = (if n !! 31 then undefined integer_of_uint32 n else integer_of_uint32 n)"
+  "integer_of_uint32_signed n = (if bit n 31 then undefined integer_of_uint32 n else integer_of_uint32 n)"
 
 lemma integer_of_uint32_signed_code [code]:
   "integer_of_uint32_signed n =
-  (if n !! 31 then undefined integer_of_uint32 n else integer_of_int (uint (Rep_uint32' n)))"
+  (if bit n 31 then undefined integer_of_uint32 n else integer_of_int (uint (Rep_uint32' n)))"
 unfolding integer_of_uint32_signed_def integer_of_uint32_def
 including undefined_transfer by transfer simp
 
 lemma integer_of_uint32_code [code]:
   "integer_of_uint32 n =
-  (if n !! 31 then integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 else integer_of_uint32_signed n)"
-unfolding integer_of_uint32_def integer_of_uint32_signed_def o_def
-including undefined_transfer integer.lifting
-by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
+  (if bit n 31 then integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 else integer_of_uint32_signed n)"
+proof -
+  have \<open>(0x7FFFFFFF :: uint32) = mask 31\<close>
+    by (simp add: mask_eq_exp_minus_1)
+  then have *: \<open>n AND 0x7FFFFFFF = take_bit 31 n\<close>
+    by (simp add: take_bit_eq_mask)
+  have **: \<open>(0x80000000 :: int) = 2 ^ 31\<close>
+    by simp
+  show ?thesis
+    unfolding integer_of_uint32_def integer_of_uint32_signed_def o_def *
+    including undefined_transfer integer.lifting
+    apply transfer
+    apply (rule bit_eqI)
+    apply (simp add: test_bit_eq_bit bit_or_iff bit_take_bit_iff bit_uint_iff)
+    apply (simp only: bit_exp_iff bit_or_iff **)
+    apply auto
+    done
+qed
 
 code_printing
   constant "integer_of_uint32" \<rightharpoonup>

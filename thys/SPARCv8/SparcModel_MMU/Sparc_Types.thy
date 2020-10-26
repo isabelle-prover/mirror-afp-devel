@@ -10,7 +10,7 @@
 
 section \<open>SPARC V8 architecture CPU model\<close>
 theory Sparc_Types    
-imports Main "../lib/WordDecl" 
+imports Main "../lib/WordDecl" "HOL-Word.Traditional_Syntax"
 begin
 
 text \<open>The following type definitions are taken from David Sanan's 

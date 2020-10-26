@@ -68,17 +68,24 @@ lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer
 
 end
 
-instantiation integer :: semiring_bit_syntax begin
-context includes integer.lifting begin
+instance integer :: semiring_bit_syntax ..
 
-lift_definition test_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
-lift_definition shiftl_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftl .
-lift_definition shiftr_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftr .
+context 
+  includes lifting_syntax integer.lifting
+begin
 
-instance
-  by (standard; transfer) (fact test_bit_eq_bit shiftl_eq_push_bit shiftr_eq_drop_bit)+
+lemma test_bit_integer_transfer [transfer_rule]:
+  \<open>(pcr_integer ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
 
-end
+lemma shiftl_integer_transfer [transfer_rule]:
+  \<open>(pcr_integer ===> (=) ===> pcr_integer) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_integer_transfer [transfer_rule]:
+  \<open>(pcr_integer ===> (=) ===> pcr_integer) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation integer :: lsb begin
@@ -415,11 +422,13 @@ by transfer(rule bitval_bin_last)
 end
 
 definition integer_test_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool"
-  where "integer_test_bit x n = (if n < 0 then undefined x n else x !! nat_of_integer n)"
+  where "integer_test_bit x n = (if n < 0 then undefined x n else bit x (nat_of_integer n))"
 
-lemma test_bit_integer_code [code]:
-  "x !! n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
-by(simp add: integer_test_bit_def)
+declare [[code drop: \<open>bit :: integer \<Rightarrow> nat \<Rightarrow> bool\<close>]]
+
+lemma bit_integer_code [code]:
+  "bit x n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
+  by (simp add: integer_test_bit_def)
 
 lemma integer_test_bit_code [code]:
   "integer_test_bit x (Code_Numeral.Neg n) = undefined x (Code_Numeral.Neg n)"
@@ -441,7 +450,7 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg n) (Code_Numeral.sub n' num.One)"
   "integer_test_bit (Code_Numeral.Neg (num.Bit1 n)) (Code_Numeral.Pos n') =
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
-                apply (simp_all add: integer_test_bit_def test_bit_integer_def )
+                apply (simp_all add: integer_test_bit_def bit_integer_def)
   using bin_nth_numeral_simps(5) apply simp
   done
 
@@ -458,7 +467,7 @@ begin
 
 lemma lsb_integer_code [code]:
   fixes x :: integer shows
-  "lsb x = x !! 0"
+  "lsb x = bit x 0"
 by transfer(simp add: lsb_int_def)
 
 definition integer_set_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> integer"
@@ -471,7 +480,7 @@ by(simp add: integer_set_bit_def)
 lemma set_bit_integer_conv_masks: 
   fixes x :: integer shows
   "set_bit x i b = (if b then x OR (1 << i) else x AND NOT (1 << i))"
-by transfer(simp add: int_set_bit_conv_ops)
+  by transfer (simp add: int_set_bit_False_conv_NAND int_set_bit_True_conv_OR shiftl_eq_push_bit) 
 
 end
 
@@ -488,16 +497,18 @@ text \<open>
 lemma integer_set_bit_code [code]:
   "integer_set_bit x n b =
   (if n < 0 then undefined x n b else
-   if b then x OR (1 << nat_of_integer n)
-   else x AND NOT (1 << nat_of_integer n))"
-by(auto simp add: integer_set_bit_def set_bit_integer_conv_masks)
+   if b then x OR (push_bit (nat_of_integer n) 1)
+   else x AND NOT (push_bit (nat_of_integer n) 1))"
+  by (auto simp add: integer_set_bit_def not_less set_bit_eq set_bit_def unset_bit_def)
 
 definition integer_shiftl :: "integer \<Rightarrow> integer \<Rightarrow> integer"
-where [code del]: "integer_shiftl x n = (if n < 0 then undefined x n else x << nat_of_integer n)"
+where [code del]: "integer_shiftl x n = (if n < 0 then undefined x n else push_bit (nat_of_integer n) x)"
+
+declare [[code drop: \<open>push_bit :: nat \<Rightarrow> integer \<Rightarrow> integer\<close>]]
 
 lemma shiftl_integer_code [code]: 
   fixes x :: integer shows
-  "x << n = integer_shiftl x (integer_of_nat n)"
+  "push_bit n x = integer_shiftl x (integer_of_nat n)"
 by(auto simp add: integer_shiftl_def)
 
 context
@@ -507,15 +518,17 @@ begin
 lemma shiftl_integer_conv_mult_pow2:
   fixes x :: integer shows
   "x << n = x * 2 ^ n"
-by transfer(simp add: shiftl_int_def)
+  by (simp add: push_bit_eq_mult shiftl_eq_push_bit)
 
 lemma integer_shiftl_code [code]:
   "integer_shiftl x (Code_Numeral.Neg n) = undefined x (Code_Numeral.Neg n)"
   "integer_shiftl x 0 = x"
   "integer_shiftl x (Code_Numeral.Pos n) = integer_shiftl (Code_Numeral.dup x) (Code_Numeral.sub n num.One)"
   "integer_shiftl 0 (Code_Numeral.Pos n) = 0"
-  by (simp_all add: integer_shiftl_def shiftl_integer_def shiftl_int_def numeral_eq_Suc)
-    (transfer, simp)
+     apply (simp_all add: integer_shiftl_def numeral_eq_Suc)
+  apply transfer
+  apply (simp add: ac_simps)
+  done
 
 end
 
@@ -527,16 +540,18 @@ code_printing constant integer_shiftl \<rightharpoonup>
   (Scala) "Bits'_Integer.shiftl"
 
 definition integer_shiftr :: "integer \<Rightarrow> integer \<Rightarrow> integer"
-where [code del]: "integer_shiftr x n = (if n < 0 then undefined x n else x >> nat_of_integer n)"
+where [code del]: "integer_shiftr x n = (if n < 0 then undefined x n else drop_bit (nat_of_integer n) x)"
+
+declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> integer \<Rightarrow> integer\<close>]]
 
 lemma shiftr_integer_conv_div_pow2: 
   includes integer.lifting fixes x :: integer shows
   "x >> n = x div 2 ^ n"
-by transfer(simp add: shiftr_int_def)
+  by (simp add: drop_bit_eq_div shiftr_eq_drop_bit)
 
 lemma shiftr_integer_code [code]:
   fixes x :: integer shows
-  "x >> n = integer_shiftr x (integer_of_nat n)"
+  "drop_bit n x = integer_shiftr x (integer_of_nat n)"
 by(auto simp add: integer_shiftr_def)
 
 code_printing constant integer_shiftr \<rightharpoonup>
@@ -547,6 +562,8 @@ code_printing constant integer_shiftr \<rightharpoonup>
   (Scala) "Bits'_Integer.shiftr"
 
 lemma integer_shiftr_code [code]:
+  includes integer.lifting
+  shows
   "integer_shiftr x (Code_Numeral.Neg n) = undefined x (Code_Numeral.Neg n)"
   "integer_shiftr x 0 = x"
   "integer_shiftr 0 (Code_Numeral.Pos n) = 0"
@@ -560,15 +577,19 @@ lemma integer_shiftr_code [code]:
    integer_shiftr (Code_Numeral.Neg n') (Code_Numeral.sub n num.One)"
   "integer_shiftr (Code_Numeral.Neg (num.Bit1 n')) (Code_Numeral.Pos n) = 
    integer_shiftr (Code_Numeral.Neg (Num.inc n')) (Code_Numeral.sub n num.One)"
-  by (simp_all add: integer_shiftr_def shiftr_integer_def int_shiftr_code)
+          apply (simp_all add: integer_shiftr_def numeral_eq_Suc drop_bit_Suc)
+    apply transfer apply simp
+   apply transfer apply simp
+  apply transfer apply (simp add: add_One)
+  done
 
 context
 includes integer.lifting
 begin
 
 lemma Bit_integer_code [code]:
-  "Bit_integer i False = i << 1"
-  "Bit_integer i True = (i << 1) + 1"
+  "Bit_integer i False = push_bit 1 i"
+  "Bit_integer i True = (push_bit 1 i) + 1"
   by (transfer; simp add: shiftl_int_def)+
 
 lemma msb_integer_code [code]:

@@ -127,13 +127,24 @@ lemma [code]:
   \<open>mask 0 = (0 :: uint16)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
 
-instantiation uint16:: semiring_bit_syntax
+instance uint16 :: semiring_bit_syntax ..
+
+context
+  includes lifting_syntax
 begin
-lift_definition test_bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
-lift_definition shiftl_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> uint16\<close> is shiftl .
-lift_definition shiftr_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> uint16\<close> is shiftr .
-instance by (standard; transfer)
-  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+
+lemma test_bit_uint16_transfer [transfer_rule]:
+  \<open>(cr_uint16 ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
+
+lemma shiftl_uint16_transfer [transfer_rule]:
+  \<open>(cr_uint16 ===> (=) ===> cr_uint16) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_uint16_transfer [transfer_rule]:
+  \<open>(cr_uint16 ===> (=) ===> cr_uint16) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation uint16 :: lsb
@@ -165,7 +176,7 @@ lift_definition set_bits_uint16 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint1
 instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
-lemmas [code] = test_bit_uint16.rep_eq lsb_uint16.rep_eq msb_uint16.rep_eq
+lemmas [code] = bit_uint16.rep_eq lsb_uint16.rep_eq msb_uint16.rep_eq
 
 instantiation uint16 :: equal begin
 lift_definition equal_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "equal_class.equal" .
@@ -181,7 +192,7 @@ end
 
 lemmas [code] = size_uint16.rep_eq
 
-lift_definition sshiftr_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16" (infixl ">>>" 55) is sshiftr .
+lift_definition sshiftr_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
 
 lift_definition uint16_of_int :: "int \<Rightarrow> uint16" is "word_of_int" .
 
@@ -312,8 +323,8 @@ lemma Rep_uint16'_transfer [transfer_rule]:
   "rel_fun cr_uint16 (=) (\<lambda>x. x) Rep_uint16'"
 unfolding Rep_uint16'_def by(rule uint16.rep_transfer)
 
-lemma Rep_uint16'_code [code]: "Rep_uint16' x = (BITS n. x !! n)"
-by transfer simp
+lemma Rep_uint16'_code [code]: "Rep_uint16' x = (BITS n. bit x n)"
+  by transfer (simp add: set_bits_bit_eq)
 
 lift_definition Abs_uint16' :: "16 word \<Rightarrow> uint16" is "\<lambda>x :: 16 word. x" .
 
@@ -435,12 +446,8 @@ code_printing constant uint16_div \<rightharpoonup>
 definition uint16_test_bit :: "uint16 \<Rightarrow> integer \<Rightarrow> bool"
 where [code del]:
   "uint16_test_bit x n =
-  (if n < 0 \<or> 15 < n then undefined (test_bit :: uint16 \<Rightarrow> _) x n
-   else x !! (nat_of_integer n))"
-
-lemma test_bit_eq_bit_uint16 [code]:
-  \<open>test_bit = (bit :: uint16 \<Rightarrow> _)\<close>
-  by (rule ext)+ (transfer, transfer, simp)
+  (if n < 0 \<or> 15 < n then undefined (bit :: uint16 \<Rightarrow> _) x n
+   else bit x (nat_of_integer n))"
 
 lemma test_bit_uint16_code [code]:
   "bit x n \<longleftrightarrow> n < 16 \<and> uint16_test_bit x (integer_of_nat n)"
@@ -449,8 +456,8 @@ lemma test_bit_uint16_code [code]:
 
 lemma uint16_test_bit_code [code]:
   "uint16_test_bit w n =
-  (if n < 0 \<or> 15 < n then undefined (test_bit :: uint16 \<Rightarrow> _) w n else Rep_uint16 w !! nat_of_integer n)"
-unfolding uint16_test_bit_def by(simp add: test_bit_uint16.rep_eq)
+  (if n < 0 \<or> 15 < n then undefined (bit :: uint16 \<Rightarrow> _) w n else bit (Rep_uint16 w) (nat_of_integer n))"
+  unfolding uint16_test_bit_def by (simp add: bit_uint16.rep_eq)
 
 code_printing constant uint16_test_bit \<rightharpoonup>
   (SML_word) "Uint16.test'_bit" and
@@ -484,31 +491,34 @@ lift_definition uint16_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint1
 lemma uint16_set_bits_code [code]:
   "uint16_set_bits f w n =
   (if n = 0 then w 
-   else let n' = n - 1 in uint16_set_bits f ((w << 1) OR (if f n' then 1 else 0)) n')"
-by(transfer fixing: n)(cases n, simp_all)
+   else let n' = n - 1 in uint16_set_bits f ((push_bit 1 w) OR (if f n' then 1 else 0)) n')"
+  apply (transfer fixing: n)
+  apply (cases n)
+   apply (simp_all add: shiftl_eq_push_bit)
+  done
 
 lemma set_bits_uint16 [code]:
   "(BITS n. f n) = uint16_set_bits f 0 16"
 by transfer(simp add: set_bits_conv_set_bits_aux)
 
 
-lemma lsb_code [code]: fixes x :: uint16 shows "lsb x = x !! 0"
-by transfer(simp add: word_lsb_def word_test_bit_def)
-
+lemma lsb_code [code]: fixes x :: uint16 shows "lsb x \<longleftrightarrow> bit x 0"
+  by transfer (simp add: lsb_odd)
 
 definition uint16_shiftl :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
 where [code del]:
-  "uint16_shiftl x n = (if n < 0 \<or> 16 \<le> n then undefined (shiftl :: uint16 \<Rightarrow> _) x n else x << (nat_of_integer n))"
+  "uint16_shiftl x n = (if n < 0 \<or> 16 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
 
-lemma shiftl_uint16_code [code]: "x << n = (if n < 16 then uint16_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint16_shiftl_def
-by transfer(simp add: not_less shiftl_zero_size word_size)
+lemma shiftl_uint16_code [code]: "push_bit n x = (if n < 16 then uint16_shiftl x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint16_shiftl_def
+  by transfer simp
 
 lemma uint16_shiftl_code [code abstract]:
   "Rep_uint16 (uint16_shiftl w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (shiftl :: uint16 \<Rightarrow> _) w n)
-   else Rep_uint16 w << nat_of_integer n)"
-including undefined_transfer unfolding uint16_shiftl_def by transfer simp
+  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
+   else push_bit (nat_of_integer n) (Rep_uint16 w))"
+  including undefined_transfer unfolding uint16_shiftl_def
+  by transfer simp
 
 code_printing constant uint16_shiftl \<rightharpoonup>
   (SML_word) "Uint16.shiftl" and
@@ -517,16 +527,16 @@ code_printing constant uint16_shiftl \<rightharpoonup>
 
 definition uint16_shiftr :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
 where [code del]:
-  "uint16_shiftr x n = (if n < 0 \<or> 16 \<le> n then undefined (shiftr :: uint16 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
+  "uint16_shiftr x n = (if n < 0 \<or> 16 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
 
-lemma shiftr_uint16_code [code]: "x >> n = (if n < 16 then uint16_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint16_shiftr_def
-by transfer(simp add: not_less shiftr_zero_size word_size)
+lemma shiftr_uint16_code [code]: "drop_bit n x = (if n < 16 then uint16_shiftr x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint16_shiftr_def
+  by transfer simp
 
 lemma uint16_shiftr_code [code abstract]:
   "Rep_uint16 (uint16_shiftr w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (shiftr :: uint16 \<Rightarrow> _) w n)
-   else Rep_uint16 w >> nat_of_integer n)"
+  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (drop_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
+   else drop_bit (nat_of_integer n) (Rep_uint16 w))"
 including undefined_transfer unfolding uint16_shiftr_def by transfer simp
 
 code_printing constant uint16_shiftr \<rightharpoonup>
@@ -539,20 +549,16 @@ where [code del]:
   "uint16_sshiftr x n =
   (if n < 0 \<or> 16 \<le> n then undefined sshiftr_uint16 x n else sshiftr_uint16 x (nat_of_integer n))"
 
-lemma sshiftr_beyond: fixes x :: "'a :: len word" shows
-  "size x \<le> n \<Longrightarrow> x >>> n = (if x !! (size x - 1) then -1 else 0)"
-by(rule word_eqI)(simp add: nth_sshiftr word_size)
-
 lemma sshiftr_uint16_code [code]:
   "x >>> n = 
-  (if n < 16 then uint16_sshiftr x (integer_of_nat n) else if x !! 15 then -1 else 0)"
+  (if n < 16 then uint16_sshiftr x (integer_of_nat n) else if bit x 15 then -1 else 0)"
 including undefined_transfer integer.lifting unfolding uint16_sshiftr_def
-by transfer (simp add: not_less sshiftr_beyond word_size)
+by transfer (simp add: not_less signed_drop_bit_beyond word_size)
 
 lemma uint16_sshiftr_code [code abstract]:
   "Rep_uint16 (uint16_sshiftr w n) =
   (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined sshiftr_uint16 w n)
-   else Rep_uint16 w >>> nat_of_integer n)"
+   else signed_drop_bit (nat_of_integer n) (Rep_uint16 w))"
 including undefined_transfer unfolding uint16_sshiftr_def by transfer simp
 
 code_printing constant uint16_sshiftr \<rightharpoonup>
@@ -561,11 +567,11 @@ code_printing constant uint16_sshiftr \<rightharpoonup>
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint16.Int16) _)) :: Uint16.Word16)" and
   (Scala) "Uint16.shiftr'_signed"
 
-lemma uint16_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint16) !! 15"
-by transfer(simp add: msb_nth)
+lemma uint16_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint16) 15"
+  by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint16_test_bit x 15"
-by(simp add: uint16_test_bit_def uint16_msb_test_bit)
+  by (simp add: uint16_test_bit_def uint16_msb_test_bit)
 
 lemma uint16_of_int_code [code]: "uint16_of_int i = Uint16 (integer_of_int i)"
 including integer.lifting by transfer simp

@@ -1,4 +1,10 @@
-theory Wasm_Interpreter_Printing_Pure imports "../Wasm_Interpreter_Properties" Wasm_Type_Abs_Printing "HOL-Library.Code_Target_Nat" (* "Native_Word.Code_Target_Bits_Int" *) begin
+theory Wasm_Interpreter_Printing_Pure
+  imports
+    "../Wasm_Interpreter_Properties"
+    Wasm_Type_Abs_Printing
+   "HOL-Library.Code_Target_Nat"
+   "Native_Word.Code_Target_Bits_Int"
+begin
 
 axiomatization where
   mem_grow_impl_is[code]: "mem_grow_impl m n = Some (mem_grow m n)"

@@ -118,13 +118,24 @@ lemma [code]:
   \<open>mask 0 = (0 :: uint8)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
 
-instantiation uint8:: semiring_bit_syntax
+instance uint8 :: semiring_bit_syntax ..
+
+context
+  includes lifting_syntax
 begin
-lift_definition test_bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
-lift_definition shiftl_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> uint8\<close> is shiftl .
-lift_definition shiftr_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> uint8\<close> is shiftr .
-instance by (standard; transfer)
-  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+
+lemma test_bit_uint8_transfer [transfer_rule]:
+  \<open>(cr_uint8 ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
+
+lemma shiftl_uint8_transfer [transfer_rule]:
+  \<open>(cr_uint8 ===> (=) ===> cr_uint8) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_uint8_transfer [transfer_rule]:
+  \<open>(cr_uint8 ===> (=) ===> cr_uint8) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation uint8 :: lsb
@@ -156,7 +167,7 @@ lift_definition set_bits_uint8 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8"
 instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
-lemmas [code] = test_bit_uint8.rep_eq lsb_uint8.rep_eq msb_uint8.rep_eq
+lemmas [code] = bit_uint8.rep_eq lsb_uint8.rep_eq msb_uint8.rep_eq
 
 instantiation uint8 :: equal begin
 lift_definition equal_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "equal_class.equal" .
@@ -172,7 +183,7 @@ end
 
 lemmas [code] = size_uint8.rep_eq
 
-lift_definition sshiftr_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> uint8" (infixl ">>>" 55) is sshiftr .
+lift_definition sshiftr_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> uint8" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
 
 lift_definition uint8_of_int :: "int \<Rightarrow> uint8" is "word_of_int" .
 
@@ -315,8 +326,8 @@ lemma Rep_uint8'_transfer [transfer_rule]:
   "rel_fun cr_uint8 (=) (\<lambda>x. x) Rep_uint8'"
 unfolding Rep_uint8'_def by(rule uint8.rep_transfer)
 
-lemma Rep_uint8'_code [code]: "Rep_uint8' x = (BITS n. x !! n)"
-by transfer simp
+lemma Rep_uint8'_code [code]: "Rep_uint8' x = (BITS n. bit x n)"
+  by transfer (simp add: set_bits_bit_eq)
 
 lift_definition Abs_uint8' :: "8 word \<Rightarrow> uint8" is "\<lambda>x :: 8 word. x" .
 
@@ -439,7 +450,10 @@ lemma uint8_divmod_code [code]:
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
 including undefined_transfer unfolding uint8_divmod_def uint8_sdiv_def div0_uint8_def mod0_uint8_def
-by transfer(simp add: divmod_via_sdivmod)
+  apply transfer
+  apply (simp add: divmod_via_sdivmod)
+  apply (simp add: shiftl_eq_push_bit shiftr_eq_drop_bit)
+  done
 
 lemma uint8_sdiv_code [code abstract]:
   "Rep_uint8 (uint8_sdiv x y) =
@@ -470,19 +484,16 @@ where [code del]:
   (if n < 0 \<or> 7 < n then undefined (test_bit :: uint8 \<Rightarrow> _) x n
    else x !! (nat_of_integer n))"
 
-lemma test_bit_eq_bit_uint8 [code]:
-  \<open>test_bit = (bit :: uint8 \<Rightarrow> _)\<close>
-  by (rule ext)+ (transfer, transfer, simp)
-
-lemma test_bit_uint8_code [code]:
-  "test_bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
+lemma bit_uint8_code [code]:
+  "bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
   including undefined_transfer integer.lifting unfolding uint8_test_bit_def
   by (transfer, simp, transfer, simp)
 
 lemma uint8_test_bit_code [code]:
   "uint8_test_bit w n =
   (if n < 0 \<or> 7 < n then undefined (test_bit :: uint8 \<Rightarrow> _) w n else Rep_uint8 w !! nat_of_integer n)"
-unfolding uint8_test_bit_def by(simp add: test_bit_uint8.rep_eq)
+  unfolding uint8_test_bit_def
+  by (simp add: bit_uint8.rep_eq test_bit_eq_bit)
 
 code_printing constant uint8_test_bit \<rightharpoonup>
   (SML) "Uint8.test'_bit" and
@@ -520,8 +531,11 @@ lift_definition uint8_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8 
 lemma uint8_set_bits_code [code]:
   "uint8_set_bits f w n =
   (if n = 0 then w 
-   else let n' = n - 1 in uint8_set_bits f ((w << 1) OR (if f n' then 1 else 0)) n')"
-by(transfer fixing: n)(cases n, simp_all)
+   else let n' = n - 1 in uint8_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
+  apply (transfer fixing: n)
+  apply (cases n)
+   apply (simp_all add: shiftl_eq_push_bit)
+  done
 
 lemma set_bits_uint8 [code]:
   "(BITS n. f n) = uint8_set_bits f 0 8"
@@ -529,22 +543,24 @@ by transfer(simp add: set_bits_conv_set_bits_aux)
 
 
 lemma lsb_code [code]: fixes x :: uint8 shows "lsb x = x !! 0"
-by transfer(simp add: word_lsb_def word_test_bit_def)
+  by transfer (simp add: lsb_odd)
 
 
 definition uint8_shiftl :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
 where [code del]:
-  "uint8_shiftl x n = (if n < 0 \<or> 8 \<le> n then undefined (shiftl :: uint8 \<Rightarrow> _) x n else x << (nat_of_integer n))"
+  "uint8_shiftl x n = (if n < 0 \<or> 8 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint8 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
 
-lemma shiftl_uint8_code [code]: "x << n = (if n < 8 then uint8_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint8_shiftl_def
-by transfer(simp add: not_less shiftl_zero_size word_size)
+lemma shiftl_uint8_code [code]:
+  "push_bit n x = (if n < 8 then uint8_shiftl x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint8_shiftl_def
+  by transfer simp
 
 lemma uint8_shiftl_code [code abstract]:
   "Rep_uint8 (uint8_shiftl w n) =
-  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (shiftl :: uint8 \<Rightarrow> _) w n)
-   else Rep_uint8 w << nat_of_integer n)"
-including undefined_transfer unfolding uint8_shiftl_def by transfer simp
+  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (push_bit :: nat \<Rightarrow> uint8 \<Rightarrow> _) w n)
+   else push_bit (nat_of_integer n) (Rep_uint8 w))"
+  including undefined_transfer unfolding uint8_shiftl_def
+  by transfer simp
 
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and
@@ -556,14 +572,15 @@ definition uint8_shiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
 where [code del]:
   "uint8_shiftr x n = (if n < 0 \<or> 8 \<le> n then undefined (shiftr :: uint8 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
 
-lemma shiftr_uint8_code [code]: "x >> n = (if n < 8 then uint8_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint8_shiftr_def
-by transfer(simp add: not_less shiftr_zero_size word_size)
+lemma shiftr_uint8_code [code]:
+  "drop_bit n x = (if n < 8 then uint8_shiftr x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint8_shiftr_def
+  by transfer simp
 
 lemma uint8_shiftr_code [code abstract]:
   "Rep_uint8 (uint8_shiftr w n) =
   (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (shiftr :: uint8 \<Rightarrow> _) w n) 
-   else Rep_uint8 w >> nat_of_integer n)"
+   else drop_bit (nat_of_integer n) (Rep_uint8 w))"
 including undefined_transfer unfolding uint8_shiftr_def by transfer simp
 
 code_printing constant uint8_shiftr \<rightharpoonup>
@@ -577,21 +594,18 @@ where [code del]:
   "uint8_sshiftr x n =
   (if n < 0 \<or> 8 \<le> n then undefined sshiftr_uint8 x n else sshiftr_uint8 x (nat_of_integer n))"
 
-lemma sshiftr_beyond: fixes x :: "'a :: len word" shows
-  "size x \<le> n \<Longrightarrow> x >>> n = (if x !! (size x - 1) then -1 else 0)"
-by(rule word_eqI)(simp add: nth_sshiftr word_size)
-
 lemma sshiftr_uint8_code [code]:
   "x >>> n = 
   (if n < 8 then uint8_sshiftr x (integer_of_nat n) else if x !! 7 then -1 else 0)"
-including undefined_transfer integer.lifting unfolding uint8_sshiftr_def
-by transfer (simp add: not_less sshiftr_beyond word_size)
+  including undefined_transfer integer.lifting unfolding uint8_sshiftr_def
+  by transfer (simp add: not_less signed_drop_bit_beyond word_size)
 
 lemma uint8_sshiftr_code [code abstract]:
   "Rep_uint8 (uint8_sshiftr w n) =
   (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined sshiftr_uint8 w n)
-   else Rep_uint8 w >>> nat_of_integer n)"
-including undefined_transfer unfolding uint8_sshiftr_def by transfer simp
+   else signed_drop_bit (nat_of_integer n) (Rep_uint8 w))"
+  including undefined_transfer unfolding uint8_sshiftr_def
+  by transfer simp
 
 code_printing constant uint8_sshiftr \<rightharpoonup>
   (SML) "Uint8.shiftr'_signed" and
@@ -600,12 +614,11 @@ code_printing constant uint8_sshiftr \<rightharpoonup>
   (Scala) "Uint8.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed x i)"
 
-
 lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint8) !! 7"
-by transfer(simp add: msb_nth)
+  by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
-by(simp add: uint8_test_bit_def uint8_msb_test_bit)
+  by (simp add: uint8_test_bit_def uint8_msb_test_bit)
 
 lemma uint8_of_int_code [code]: "uint8_of_int i = Uint8 (integer_of_int i)"
 including integer.lifting by transfer simp
@@ -624,16 +637,31 @@ where
 
 lemma integer_of_uint8_signed_code [code]:
   "integer_of_uint8_signed n =
-  (if n !! 7 then undefined integer_of_uint8 n else integer_of_int (uint (Rep_uint8' n)))"
+  (if bit n 7 then undefined integer_of_uint8 n else integer_of_int (uint (Rep_uint8' n)))"
 unfolding integer_of_uint8_signed_def integer_of_uint8_def
 including undefined_transfer by transfer simp
 
 lemma integer_of_uint8_code [code]:
   "integer_of_uint8 n =
-  (if n !! 7 then integer_of_uint8_signed (n AND 0x7F) OR 0x80 else integer_of_uint8_signed n)"
-unfolding integer_of_uint8_def integer_of_uint8_signed_def o_def
-including undefined_transfer integer.lifting
-by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
+  (if bit n 7 then integer_of_uint8_signed (n AND 0x7F) OR 0x80 else integer_of_uint8_signed n)"
+proof -
+  have \<open>(0x7F :: uint8) = mask 7\<close>
+    by (simp add: mask_eq_exp_minus_1)
+  then have *: \<open>n AND 0x7F = take_bit 7 n\<close>
+    by (simp only: take_bit_eq_mask)
+  have **: \<open>(0x80 :: int) = 2 ^ 7\<close>
+    by simp
+  show ?thesis
+  unfolding integer_of_uint8_def integer_of_uint8_signed_def o_def *
+  including undefined_transfer integer.lifting
+  apply transfer
+  apply (auto simp add: bit_take_bit_iff uint_take_bit_eq)
+  apply (rule bit_eqI)
+  apply (simp add: bit_uint_iff bit_or_iff bit_take_bit_iff)
+  apply (simp only: ** bit_exp_iff)
+  apply auto
+  done
+qed
 
 code_printing
   constant "integer_of_uint8" \<rightharpoonup>

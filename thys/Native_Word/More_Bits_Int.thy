@@ -35,14 +35,6 @@ lemma int_of_integer_symbolic_aux_code [code nbe]:
   "int_of_integer_symbolic (Code_Numeral.Neg n) = Int.Neg n"
   by (simp_all add: int_of_integer_symbolic_def)
 
-code_identifier
-  code_module Bits_Int \<rightharpoonup>
-  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
-| code_module More_Bits_Int \<rightharpoonup>
-  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
-| constant take_bit \<rightharpoonup>
-  (SML) Bit_Operations.take_bit and (OCaml) Bit_Operations.take_bit and (Haskell) Bit_Operations.take_bit and (Scala) Bit_Operations.take_bit
-
 
 section \<open>Symbolic bit operations on numerals and @{typ int}s\<close>
 
@@ -154,5 +146,9 @@ lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
 
 lemma bin_mask_p1_conv_shift: "mask n + 1 = (1 :: int) << n"
   by (simp add: bin_mask_conv_pow2 shiftl_int_def)
+
+code_identifier
+  code_module More_Bits_Int \<rightharpoonup>
+  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
 
 end

@@ -220,6 +220,8 @@ no_notation sshiftr_uint8 (infixl ">>>" 55)
 
 export_code test_uint8 checking SML Haskell? Scala
 
+export_code test_uint8 in SML
+
 notepad begin
 have test_uint8 by eval
 have test_uint8 by code_simp

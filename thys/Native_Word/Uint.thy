@@ -159,13 +159,24 @@ lemma [code]:
   \<open>mask 0 = (0 :: uint)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
 
-instantiation uint:: semiring_bit_syntax
+instance uint :: semiring_bit_syntax ..
+
+context
+  includes lifting_syntax
 begin
-lift_definition test_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
-lift_definition shiftl_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> uint\<close> is shiftl .
-lift_definition shiftr_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> uint\<close> is shiftr .
-instance by (standard; transfer)
-  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+
+lemma test_bit_uint_transfer [transfer_rule]:
+  \<open>(cr_uint ===> (=)) bit (!!)\<close>
+  unfolding test_bit_eq_bit by transfer_prover
+
+lemma shiftl_uint_transfer [transfer_rule]:
+  \<open>(cr_uint ===> (=) ===> cr_uint) (\<lambda>k n. push_bit n k) (<<)\<close>
+  unfolding shiftl_eq_push_bit by transfer_prover
+
+lemma shiftr_uint_transfer [transfer_rule]:
+  \<open>(cr_uint ===> (=) ===> cr_uint) (\<lambda>k n. drop_bit n k) (>>)\<close>
+  unfolding shiftr_eq_drop_bit by transfer_prover
+
 end
 
 instantiation uint :: lsb
@@ -197,7 +208,7 @@ lift_definition set_bits_uint :: "(nat \<Rightarrow> bool) \<Rightarrow> uint" i
 instance by (standard; transfer) (fact set_bits_bit_eq)
 end
 
-lemmas [code] = test_bit_uint.rep_eq lsb_uint.rep_eq msb_uint.rep_eq
+lemmas [code] = bit_uint.rep_eq lsb_uint.rep_eq msb_uint.rep_eq
 
 instantiation uint :: equal begin
 lift_definition equal_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "equal_class.equal" .
@@ -213,7 +224,7 @@ end
 
 lemmas [code] = size_uint.rep_eq
 
-lift_definition sshiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" (infixl ">>>" 55) is sshiftr .
+lift_definition sshiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
 
 lift_definition uint_of_int :: "int \<Rightarrow> uint" is "word_of_int" .
 
@@ -442,13 +453,14 @@ definition Uint_signed :: "integer \<Rightarrow> uint" where
 lemma Uint_code [code]:
   "Uint i = 
   (let i' = i AND wivs_mask_integer in 
-   if i' !! wivs_index then Uint_signed (i' - wivs_shift_integer) else Uint_signed i')"
+   if bit i' wivs_index then Uint_signed (i' - wivs_shift_integer) else Uint_signed i')"
   including undefined_transfer 
   unfolding Uint_signed_def
   apply transfer
-  apply (rule word_of_int_via_signed)
-  by (simp_all add: wivs_mask_def wivs_shift_def wivs_index_def wivs_overflow_def 
-    wivs_least_def bin_mask_conv_pow2 shiftl_int_def)
+  apply (subst word_of_int_via_signed)
+       apply (auto simp add: shiftl_eq_push_bit push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed
+         wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def)
+  done
 
 lemma Uint_signed_code [code abstract]:
   "Rep_uint (Uint_signed i) = 
@@ -472,8 +484,8 @@ text \<open>
 
 definition Rep_uint' where [simp]: "Rep_uint' = Rep_uint"
 
-lemma Rep_uint'_code [code]: "Rep_uint' x = (BITS n. x !! n)"
-unfolding Rep_uint'_def by transfer simp
+lemma Rep_uint'_code [code]: "Rep_uint' x = (BITS n. bit x n)"
+  unfolding Rep_uint'_def by transfer (simp add: set_bits_bit_eq)
 
 lift_definition Abs_uint' :: "dflt_size word \<Rightarrow> uint" is "\<lambda>x :: dflt_size word. x" .
 
@@ -648,21 +660,38 @@ where [code del]: "mod0_uint x = undefined ((mod) :: uint \<Rightarrow> _) x (0 
 declare [[code abort: mod0_uint]]
 
 definition wivs_overflow_uint :: uint 
-  where "wivs_overflow_uint \<equiv> 1 << (dflt_size - 1)"
+  where "wivs_overflow_uint \<equiv> push_bit (dflt_size - 1) 1"
 
 lemma uint_divmod_code [code]:
   "uint_divmod x y =
   (if wivs_overflow_uint \<le> y then if x < y then (0, x) else (1, x - y)
    else if y = 0 then (div0_uint x, mod0_uint x)
-   else let q = (uint_sdiv (x >> 1) y) << 1;
+   else let q = push_bit 1 (uint_sdiv (drop_bit 1 x) y);
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
-  including undefined_transfer 
-  unfolding uint_divmod_def uint_sdiv_def div0_uint_def mod0_uint_def
-    wivs_overflow_uint_def
-  apply transfer
-  apply (simp add: divmod_via_sdivmod)
-  done
+proof (cases \<open>y = 0\<close>)
+  case True
+  moreover have \<open>x \<ge> 0\<close>
+    by transfer simp
+  moreover have \<open>wivs_overflow_uint > 0\<close>
+    apply (simp add: wivs_overflow_uint_def push_bit_of_1)
+    apply transfer
+    apply transfer
+    apply simp
+    done
+  ultimately show ?thesis
+    by (auto simp add: uint_divmod_def div0_uint_def mod0_uint_def not_less)
+next
+  case False
+  then show ?thesis
+    including undefined_transfer 
+    unfolding uint_divmod_def uint_sdiv_def div0_uint_def mod0_uint_def
+      wivs_overflow_uint_def
+    apply (simp only: if_simps)
+    apply transfer
+    apply (simp add: divmod_via_sdivmod push_bit_of_1 shiftl_eq_push_bit shiftr_eq_drop_bit)
+    done
+qed
 
 lemma uint_sdiv_code [code abstract]:
   "Rep_uint (uint_sdiv x y) =
@@ -695,23 +724,18 @@ code_printing
 definition uint_test_bit :: "uint \<Rightarrow> integer \<Rightarrow> bool"
 where [code del]:
   "uint_test_bit x n =
-  (if n < 0 \<or> dflt_size_integer \<le> n then undefined (test_bit :: uint \<Rightarrow> _) x n
-   else x !! (nat_of_integer n))"
-
-lemma test_bit_eq_bit_uint [code]:
-  \<open>test_bit = (bit :: uint \<Rightarrow> _)\<close>
-  by (rule ext)+ (transfer, transfer, simp)
+  (if n < 0 \<or> dflt_size_integer \<le> n then undefined (bit :: uint \<Rightarrow> _) x n
+   else bit x (nat_of_integer n))"
 
 lemma test_bit_uint_code [code]:
-  "test_bit x n \<longleftrightarrow> n < dflt_size \<and> uint_test_bit x (integer_of_nat n)"
+  "bit x n \<longleftrightarrow> n < dflt_size \<and> uint_test_bit x (integer_of_nat n)"
   including undefined_transfer integer.lifting unfolding uint_test_bit_def
   by (transfer, simp, transfer, simp)
 
 lemma uint_test_bit_code [code]:
   "uint_test_bit w n =
-  (if n < 0 \<or> dflt_size_integer \<le> n then undefined (test_bit :: uint \<Rightarrow> _) w n else Rep_uint w !! nat_of_integer n)"
-unfolding uint_test_bit_def
-by(simp add: test_bit_uint.rep_eq)
+  (if n < 0 \<or> dflt_size_integer \<le> n then undefined (bit :: uint \<Rightarrow> _) w n else bit (Rep_uint w) (nat_of_integer n))"
+  unfolding uint_test_bit_def by(simp add: bit_uint.rep_eq)
 
 code_printing constant uint_test_bit \<rightharpoonup>
   (SML) "Uint.test'_bit" and
@@ -751,28 +775,31 @@ lift_definition uint_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint \<
 lemma uint_set_bits_code [code]:
   "uint_set_bits f w n =
   (if n = 0 then w 
-   else let n' = n - 1 in uint_set_bits f ((w << 1) OR (if f n' then 1 else 0)) n')"
-by(transfer fixing: n)(cases n, simp_all)
+   else let n' = n - 1 in uint_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
+  apply (transfer fixing: n)
+  apply (cases n)
+   apply (simp_all add: shiftl_eq_push_bit)
+  done
 
 lemma set_bits_uint [code]:
   "(BITS n. f n) = uint_set_bits f 0 dflt_size"
   by transfer (simp add: set_bits_conv_set_bits_aux)
 
-lemma lsb_code [code]: fixes x :: uint shows "lsb x = x !! 0"
-by transfer(simp add: word_lsb_def word_test_bit_def)
+lemma lsb_code [code]: fixes x :: uint shows "lsb x = bit x 0"
+  by transfer (simp add: lsb_word_eq)
 
 definition uint_shiftl :: "uint \<Rightarrow> integer \<Rightarrow> uint"
 where [code del]:
-  "uint_shiftl x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (shiftl :: uint \<Rightarrow> _) x n else x << (nat_of_integer n))"
+  "uint_shiftl x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
 
-lemma shiftl_uint_code [code]: "x << n = (if n < dflt_size then uint_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint_shiftl_def
-by transfer(simp add: not_less shiftl_zero_size word_size)
+lemma shiftl_uint_code [code]: "push_bit n x = (if n < dflt_size then uint_shiftl x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint_shiftl_def
+  by (transfer fixing: n) simp
 
 lemma uint_shiftl_code [code abstract]:
   "Rep_uint (uint_shiftl w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (shiftl :: uint \<Rightarrow> _) w n) else Rep_uint w << (nat_of_integer n))"
-including undefined_transfer integer.lifting unfolding uint_shiftl_def by transfer simp
+  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint w))"
+  including undefined_transfer integer.lifting unfolding uint_shiftl_def by transfer simp
 
 code_printing constant uint_shiftl \<rightharpoonup>
   (SML) "Uint.shiftl" and
@@ -784,15 +811,15 @@ code_printing constant uint_shiftl \<rightharpoonup>
 
 definition uint_shiftr :: "uint \<Rightarrow> integer \<Rightarrow> uint"
 where [code del]:
-  "uint_shiftr x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (shiftr :: uint \<Rightarrow> _) x n else x >> (nat_of_integer n))"
+  "uint_shiftr x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
 
-lemma shiftr_uint_code [code]: "x >> n = (if n < dflt_size then uint_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer integer.lifting unfolding uint_shiftr_def
-by transfer(simp add: not_less shiftr_zero_size word_size)
-
+lemma shiftr_uint_code [code]: "drop_bit n x = (if n < dflt_size then uint_shiftr x (integer_of_nat n) else 0)"
+  including undefined_transfer integer.lifting unfolding uint_shiftr_def
+  by (transfer fixing: n) simp
+  
 lemma uint_shiftr_code [code abstract]:
   "Rep_uint (uint_shiftr w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (shiftr :: uint \<Rightarrow> _) w n) else Rep_uint w >> nat_of_integer n)"
+  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (drop_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint w))"
 including undefined_transfer unfolding uint_shiftr_def by transfer simp
 
 code_printing constant uint_shiftr \<rightharpoonup>
@@ -808,20 +835,16 @@ where [code del]:
   "uint_sshiftr x n =
   (if n < 0 \<or> dflt_size_integer \<le> n then undefined sshiftr_uint x n else sshiftr_uint x (nat_of_integer n))"
 
-lemma sshiftr_beyond: fixes x :: "'a :: len word" shows
-  "size x \<le> n \<Longrightarrow> x >>> n = (if x !! (size x - 1) then -1 else 0)"
-by(rule word_eqI)(simp add: nth_sshiftr word_size)
-
 lemma sshiftr_uint_code [code]:
   "x >>> n = 
   (if n < dflt_size then uint_sshiftr x (integer_of_nat n) else 
-    if x !! wivs_index then -1 else 0)"
+    if bit x wivs_index then -1 else 0)"
 including undefined_transfer integer.lifting unfolding uint_sshiftr_def
-by transfer(simp add: not_less sshiftr_beyond word_size wivs_index_def)
+by transfer(simp add: not_less signed_drop_bit_beyond word_size wivs_index_def)
 
 lemma uint_sshiftr_code [code abstract]:
   "Rep_uint (uint_sshiftr w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined sshiftr_uint w n) else Rep_uint w >>> (nat_of_integer n))"
+  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined sshiftr_uint w n) else signed_drop_bit (nat_of_integer n) (Rep_uint w))"
 including undefined_transfer unfolding uint_sshiftr_def by transfer simp
 
 code_printing constant uint_sshiftr \<rightharpoonup>
@@ -833,8 +856,8 @@ code_printing constant uint_sshiftr \<rightharpoonup>
   (OCaml) "Uint.shiftr'_signed" and
   (Scala) "Uint.shiftr'_signed"
 
-lemma uint_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint) !! wivs_index"
-by transfer(simp add: msb_nth wivs_index_def)
+lemma uint_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint) wivs_index"
+  by transfer (simp add: msb_word_iff_bit wivs_index_def)
 
 lemma msb_uint_code [code]: "msb x \<longleftrightarrow> uint_test_bit x wivs_index_integer"
   apply(simp add: uint_test_bit_def uint_msb_test_bit 
@@ -842,8 +865,9 @@ lemma msb_uint_code [code]: "msb x \<longleftrightarrow> uint_test_bit x wivs_in
   by (metis (full_types) One_nat_def dflt_size(2) less_iff_diff_less_0 
     nat_of_integer_of_nat of_nat_1 of_nat_diff of_nat_less_0_iff wivs_index_def)
 
-lemma uint_of_int_code [code]: "uint_of_int i = (BITS n. i !! n)"
-by transfer(simp add: word_of_int_conv_set_bits test_bit_int_def[abs_def])
+lemma uint_of_int_code [code]: "uint_of_int i = (BITS n. bit i n)"
+  by transfer (simp add: word_of_int_conv_set_bits)
+
 
 section \<open>Quickcheck setup\<close>
 

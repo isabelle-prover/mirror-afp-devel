@@ -15,23 +15,19 @@ lemma not_minus_numeral_inc_eq:
   \<open>NOT (- numeral (Num.inc n)) = (numeral n :: int)\<close>
   by (simp add: not_int_def sub_inc_One_eq)
 
-lemma [code_abbrev]:
-  \<open>test_bit = (bit :: int \<Rightarrow> nat \<Rightarrow> bool)\<close>
-  by (simp add: fun_eq_iff)
-
 lemma test_bit_int_code [code]:
-  "test_bit (0::int)          n = False"
-  "test_bit (Int.Neg num.One) n = True"
-  "test_bit (Int.Pos num.One)      0 = True"
-  "test_bit (Int.Pos (num.Bit0 m)) 0 = False"
-  "test_bit (Int.Pos (num.Bit1 m)) 0 = True"
-  "test_bit (Int.Neg (num.Bit0 m)) 0 = False"
-  "test_bit (Int.Neg (num.Bit1 m)) 0 = True"
-  "test_bit (Int.Pos num.One)      (Suc n) = False"
-  "test_bit (Int.Pos (num.Bit0 m)) (Suc n) = test_bit (Int.Pos m) n"
-  "test_bit (Int.Pos (num.Bit1 m)) (Suc n) = test_bit (Int.Pos m) n"
-  "test_bit (Int.Neg (num.Bit0 m)) (Suc n) = test_bit (Int.Neg m) n"
-  "test_bit (Int.Neg (num.Bit1 m)) (Suc n) = test_bit (Int.Neg (Num.inc m)) n"
+  "bit (0::int)          n = False"
+  "bit (Int.Neg num.One) n = True"
+  "bit (Int.Pos num.One)      0 = True"
+  "bit (Int.Pos (num.Bit0 m)) 0 = False"
+  "bit (Int.Pos (num.Bit1 m)) 0 = True"
+  "bit (Int.Neg (num.Bit0 m)) 0 = False"
+  "bit (Int.Neg (num.Bit1 m)) 0 = True"
+  "bit (Int.Pos num.One)      (Suc n) = False"
+  "bit (Int.Pos (num.Bit0 m)) (Suc n) = bit (Int.Pos m) n"
+  "bit (Int.Pos (num.Bit1 m)) (Suc n) = bit (Int.Pos m) n"
+  "bit (Int.Neg (num.Bit0 m)) (Suc n) = bit (Int.Neg m) n"
+  "bit (Int.Neg (num.Bit1 m)) (Suc n) = bit (Int.Neg (Num.inc m)) n"
   by (simp_all add: Num.add_One bit_Suc)
 
 lemma int_not_code [code]:
@@ -95,21 +91,25 @@ lemma fixes i :: int
   and int_set_bit_conv_ops: "set_bit i n b = (if b then i OR (1 << n) else i AND NOT (1 << n))"
 by(simp_all add: set_bit_int_def bin_set_conv_OR bin_clr_conv_NAND)
 
-lemma int_shiftr_code [code]: fixes i :: int shows
-  "i >> 0 = i"
-  "0 >> Suc n = (0 :: int)"
-  "Int.Pos num.One >> Suc n = 0"
-  "Int.Pos (num.Bit0 m) >> Suc n = Int.Pos m >> n"
-  "Int.Pos (num.Bit1 m) >> Suc n = Int.Pos m >> n"
-  "Int.Neg num.One >> Suc n = -1"
-  "Int.Neg (num.Bit0 m) >> Suc n = Int.Neg m >> n"
-  "Int.Neg (num.Bit1 m) >> Suc n = Int.Neg (Num.inc m) >> n"
+declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
+
+lemma drop_bit_int_code [code]: fixes i :: int shows
+  "drop_bit 0 i = i"
+  "drop_bit (Suc n) 0 = (0 :: int)"
+  "drop_bit (Suc n) (Int.Pos num.One) = 0"
+  "drop_bit (Suc n) (Int.Pos (num.Bit0 m)) = drop_bit n (Int.Pos m)"
+  "drop_bit (Suc n) (Int.Pos (num.Bit1 m)) = drop_bit n (Int.Pos m)"
+  "drop_bit (Suc n) (Int.Neg num.One) = - 1"
+  "drop_bit (Suc n) (Int.Neg (num.Bit0 m)) = drop_bit n (Int.Neg m)"
+  "drop_bit (Suc n) (Int.Neg (num.Bit1 m)) = drop_bit n (Int.Neg (Num.inc m))"
   by (simp_all add: shiftr_eq_drop_bit drop_bit_Suc add_One)
 
-lemma int_shiftl_code [code]:
-  "i << 0 = i"
-  "i << Suc n = Int.dup i << n"
-  by (simp_all add: shiftl_int_def)
+declare [[code drop: \<open>push_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
+
+lemma push_bit_int_code [code]:
+  "push_bit 0 i = i"
+  "push_bit (Suc n) i = push_bit n (Int.dup i)"
+  by (simp_all add: ac_simps)
 
 lemma int_lsb_code [code]:
   "lsb (0 :: int) = False"

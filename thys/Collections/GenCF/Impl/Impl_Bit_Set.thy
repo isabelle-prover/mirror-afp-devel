@@ -16,7 +16,7 @@ begin
 
   type_synonym bitset = integer
 
-  definition bs_\<alpha> :: "bitset \<Rightarrow> nat set" where "bs_\<alpha> s \<equiv> { n . test_bit s n}"
+  definition bs_\<alpha> :: "bitset \<Rightarrow> nat set" where "bs_\<alpha> s \<equiv> { n . bit s n}"
 
 
 context includes integer.lifting begin
@@ -59,7 +59,7 @@ context includes integer.lifting begin
     by (metis (full_types) bin_nth_sc_gen set_bit_int_def)
   
   definition bs_mem :: "nat \<Rightarrow> bitset \<Rightarrow> bool" where
-    "bs_mem i s \<equiv> test_bit s i"
+    "bs_mem i s \<equiv> bit s i"
 
   lemma bs_mem_correct: "bs_mem i s \<longleftrightarrow> i\<in>bs_\<alpha> s"
     unfolding bs_mem_def bs_\<alpha>_def by transfer auto
@@ -73,7 +73,7 @@ context includes integer.lifting begin
     including integer.lifting
     apply transfer
     apply auto
-    by (metis bin_eqI mem_Collect_eq test_bit_int_def)
+    by (metis bin_eqI mem_Collect_eq)
 
   definition bs_subset_eq :: "bitset \<Rightarrow> bitset \<Rightarrow> bool" where
     "bs_subset_eq s1 s2 \<equiv> s1 AND NOT s2 = 0"
@@ -200,7 +200,7 @@ lemma [autoref_rules]: "(bs_disjoint,op_set_disjoint)\<in>\<langle>nat_rel\<rang
   by (auto simp: bs_set_rel_def br_def)
 
 
-export_code 
+export_code
     bs_empty
     bs_isEmpty
     bs_insert
