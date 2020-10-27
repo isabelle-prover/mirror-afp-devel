@@ -224,16 +224,7 @@ lemma nth_w2p_same:
 
 lemma p2_gt_0:
   "(0 < (2 ^ n :: 'a :: len word)) = (n < LENGTH('a))"
-  apply (simp add : word_gt_0)
-  apply safe
-   apply (erule swap)
-   apply (rule word_eqI)
-   apply (simp add : nth_w2p)
-  apply (drule word_eqD)
-  apply simp
-  apply (erule notE)
-  apply (erule nth_w2p_same [THEN iffD2])
-  done
+  by (simp add : word_gt_0 not_le)
 
 lemmas uint_2p_alt = uint_2p [unfolded p2_gt_0]
 

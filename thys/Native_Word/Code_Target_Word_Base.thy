@@ -10,24 +10,6 @@ theory Code_Target_Word_Base imports
   Bits_Integer
 begin
 
-(* TODO: Move to Word ? *)
-lemma dflt_size_word_pow_ne_zero [simp]:
-  "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) \<noteq> 0"
-  by simp
-
-lemma push_bit_word_beyond [simp]:
-  \<open>push_bit n w = 0\<close> if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
-  using that by (transfer fixing: n) (simp add: take_bit_push_bit)
-
-lemma drop_bit_word_beyond [simp]:
-  \<open>drop_bit n w = 0\<close> if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
-  using that by (transfer fixing: n) (simp add: drop_bit_take_bit)
-
-lemma signed_drop_bit_beyond:
-  \<open>signed_drop_bit n w = (if bit w (LENGTH('a) - Suc 0) then - 1 else 0)\<close>
-  if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
-  by (rule bit_word_eqI) (simp add: bit_signed_drop_bit_iff that)
-
 text \<open>More lemmas\<close>
 
 lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> m \<le> n \<and> n < 2 * m"

@@ -11,10 +11,6 @@ begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>
 
-lemma not_minus_numeral_inc_eq:
-  \<open>NOT (- numeral (Num.inc n)) = (numeral n :: int)\<close>
-  by (simp add: not_int_def sub_inc_One_eq)
-
 lemma test_bit_int_code [code]:
   "bit (0::int)          n = False"
   "bit (Int.Neg num.One) n = True"
