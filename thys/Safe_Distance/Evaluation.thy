@@ -113,23 +113,27 @@ text \<open>The precision of the input data is roughly 12 and yields similar per
 ML \<open>
 val prec = 12
 
-fun check_stream' chk i n y s =
-  case TextIO.inputLine s of
-    NONE   => (TextIO.closeIn s; (y, i))
-  | SOME l =>
-    let
-      val l = String.substring (l, 0, String.size l - 1)
-      val c = check_string chk l
-    in
-      if i < n then check_stream' chk (i + 1) n (if c then y + 1 else y) s
-      else (TextIO.closeIn s; (y, i))
-    end
+local
 
-fun check_stream chk f n = check_stream' chk 0 n 0 (TextIO.openIn f)
+exception Result of int * int;
 
-val check_stream_symbolic            = check_stream (fn _ => @{code checker_symbolic})
-fun check_stream_interval prec uncer = check_stream (fn _ => @{code checker_interval} prec uncer)
-val check_stream_rational            = check_stream (fn _ => @{code checker_rational})
+fun check_line chk n l (y, i) =
+  let
+    val l = String.substring (l, 0, String.size l - 1)
+    val c = check_string chk l
+  in if i < n then (if c then y + 1 else y, i + 1) else raise Result (y, i) end
+
+in
+
+fun check_file chk path n =
+  File.fold_lines (check_line chk n) path (0, 0)
+    handle Result res => res;
+
+end
+
+val check_file_symbolic            = check_file (fn _ => \<^code>\<open>checker_symbolic\<close>)
+fun check_file_interval prec uncer = check_file (fn _ => \<^code>\<open>checker_interval\<close> prec uncer)
+val check_file_rational            = check_file (fn _ => \<^code>\<open>checker_rational\<close>)
 \<close>
 
 text \<open>Number of data points:
@@ -139,35 +143,35 @@ text \<open>Number of data points:
 \<close>
 
 ML \<open>
-  val data01 = "./data/data01.csv"
-  val data02 = "./data/data02.csv"
-  val data03 = "./data/data03.csv"
+  val data01 = Path.append \<^master_dir> \<^path>\<open>data/data01.csv\<close>
+  val data02 = Path.append \<^master_dir> \<^path>\<open>data/data02.csv\<close>
+  val data03 = Path.append \<^master_dir> \<^path>\<open>data/data03.csv\<close>
 \<close>
 
 ML \<open>
     val t_start1 = Timing.start ();
-    val result1 = check_stream_rational data01 100;
+    val result1 = check_file_rational data01 100;
     val t_end1 = Timing.result t_start1;
     \<^assert> (result1 = (96, 100));
 \<close>
 
 ML \<open>
     val t_start2 = Timing.start ();
-    val result2 = check_stream_rational data02 100;
+    val result2 = check_file_rational data02 100;
     val t_end2 = Timing.result t_start2;
     \<^assert> (result2 = (100, 100));
 \<close>
 
 ML \<open>
     val t_start3 = Timing.start ();
-    val result3 = check_stream_rational data03 100;
+    val result3 = check_file_rational data03 100;
     val t_end3 = Timing.result t_start3;
     \<^assert> (result3 = (76, 100));
 \<close>
 
 text \<open>Precision: 12, Uncertainty: 7 digits\<close>
-ML \<open>\<^assert> (check_stream_interval 12 7 data01 100 = (95, 100))\<close>
-ML \<open>\<^assert> (check_stream_rational data01 100 = (96, 100))\<close>
-ML \<open>\<^assert> (check_stream_symbolic data01 100 = (96, 100))\<close>
+ML \<open>\<^assert> (check_file_interval 12 7 data01 100 = (95, 100))\<close>
+ML \<open>\<^assert> (check_file_rational data01 100 = (96, 100))\<close>
+ML \<open>\<^assert> (check_file_symbolic data01 100 = (96, 100))\<close>
 
 end
