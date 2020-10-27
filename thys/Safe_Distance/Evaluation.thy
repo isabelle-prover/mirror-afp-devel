@@ -146,25 +146,28 @@ ML \<open>
 
 ML \<open>
     val t_start1 = Timing.start ();
-    check_stream_rational data01 100;
+    val result1 = check_stream_rational data01 100;
     val t_end1 = Timing.result t_start1;
+    \<^assert> (result1 = (96, 100));
 \<close>
 
 ML \<open>
     val t_start2 = Timing.start ();
-    check_stream_rational data02 100;
+    val result2 = check_stream_rational data02 100;
     val t_end2 = Timing.result t_start2;
+    \<^assert> (result2 = (100, 100));
 \<close>
 
 ML \<open>
     val t_start3 = Timing.start ();
-    check_stream_rational data03 100;
+    val result3 = check_stream_rational data03 100;
     val t_end3 = Timing.result t_start3;
+    \<^assert> (result3 = (76, 100));
 \<close>
 
 text \<open>Precision: 12, Uncertainty: 7 digits\<close>
-ML \<open>check_stream_interval 12 7 data01 100\<close> 
-ML \<open>check_stream_rational data01 100\<close>
-ML \<open>check_stream_symbolic data01 100\<close>
+ML \<open>\<^assert> (check_stream_interval 12 7 data01 100 = (95, 100))\<close>
+ML \<open>\<^assert> (check_stream_rational data01 100 = (96, 100))\<close>
+ML \<open>\<^assert> (check_stream_symbolic data01 100 = (96, 100))\<close>
 
 end
