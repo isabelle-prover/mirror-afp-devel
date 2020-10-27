@@ -15,9 +15,9 @@ setup \<open>fn thy =>
     Code_Runtime.polyml_as_definition
       [(@{binding Tri'}, T), (@{binding Quad'}, T), (@{binding Pent'}, T),
        (@{binding Hex'}, T)]
-      (map (Path.append dir o Path.explode)
-        ["Archives/Tri.ML", "Archives/Quad.ML",
-          "Archives/Pent.ML", "Archives/Hex.ML"])
+      (map (Path.append dir)
+        [\<^path>\<open>Archives/Tri.ML\<close>, \<^path>\<open>Archives/Quad.ML\<close>,
+         \<^path>\<open>Archives/Pent.ML\<close>, \<^path>\<open>Archives/Hex.ML\<close>])
   end
 \<close>
 

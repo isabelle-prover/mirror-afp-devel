@@ -143,9 +143,9 @@ text \<open>Number of data points:
 \<close>
 
 ML \<open>
-  val data01 = Path.append \<^master_dir> \<^path>\<open>data/data01.csv\<close>
-  val data02 = Path.append \<^master_dir> \<^path>\<open>data/data02.csv\<close>
-  val data03 = Path.append \<^master_dir> \<^path>\<open>data/data03.csv\<close>
+  val data01 = \<^master_dir> + \<^path>\<open>data/data01.csv\<close>
+  val data02 = \<^master_dir> + \<^path>\<open>data/data02.csv\<close>
+  val data03 = \<^master_dir> + \<^path>\<open>data/data03.csv\<close>
 \<close>
 
 ML \<open>

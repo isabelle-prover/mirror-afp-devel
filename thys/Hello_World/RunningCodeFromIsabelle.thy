@@ -31,12 +31,7 @@ val cmd =
 
 Isabelle_System.make_directory target;
 
-app (fn ([file], content) =>
-   let
-     val path = Path.append target (Path.basic file)
-   in
-     File.write path content
-   end) files;
+List.app (fn ([file], content) => File.write (target + Path.basic file) content) files;
 
 val exitcode =
   if ghc <> "" then
@@ -59,7 +54,7 @@ val ([(_, content)], _) =
   Code_Target.produce_code @{context} false [@{const_name main}] "SML" "HelloWorld" NONE []
 
 val target = File.tmp_path (Path.basic ("export" ^ serial_string ()))
-val file = Path.append target (Path.basic "main.ML")
+val file = target + Path.basic "main.ML"
 
 val cmd =
   "echo 'Super Goat 2000' | " ^

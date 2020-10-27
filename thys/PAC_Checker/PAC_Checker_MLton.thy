@@ -23,7 +23,7 @@ compile_generated_files _
     \<open>code/pasteque.mlb\<close>
   where \<open>fn dir =>
     let
-      val exec = Generated_Files.execute (Path.append dir (Path.basic "code"));
+      val exec = Generated_Files.execute (dir + Path.basic "code");
       val _ =
         exec \<open>Compilation\<close>
           (File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^ " " ^

@@ -24,9 +24,7 @@ fun test name =
       let
         val name = "cnf/" ^ name
         val timer1 = Timer.startRealTimer ()
-        val formula =
-          SAT_Solver.read_dimacs_cnf_file
-            (Path.append (Resources.master_directory @{theory}) (Path.explode name))
+        val formula = SAT_Solver.read_dimacs_cnf_file (\<^master_dir> + Path.explode name)
         val timer2 = Timer.startRealTimer ()
         val res = SAT_Solver.invoke_solver solver formula
         val code = case res of

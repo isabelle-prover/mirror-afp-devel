@@ -1661,7 +1661,7 @@ structure trac = struct
       in
         Path.implode (if (Path.is_absolute filename)
                       then filename
-                      else Path.append master_dir filename)   
+                      else master_dir + filename)
       end
 
   (* fun exec {trac_path, error_detail}  filename = let 
