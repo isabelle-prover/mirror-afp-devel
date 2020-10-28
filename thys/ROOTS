@@ -145,8 +145,8 @@ Error_Function
 Euler_MacLaurin
 Euler_Partition
 Example-Submission
-Extended_Finite_State_Machines
 Extended_Finite_State_Machine_Inference
+Extended_Finite_State_Machines
 FFT
 FLP
 FOL-Fitting
@@ -379,6 +379,7 @@ Password_Authentication_Protocol
 Pell
 Perfect-Number-Thm
 Perron_Frobenius
+Physical_Quantities
 Pi_Calculus
 Pi_Transcendental
 Planarity_Certificates
@@ -421,7 +422,6 @@ Quaternions
 Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
-Robinson_Arithmetic
 RSAPSS
 Ramsey-Infinite
 Random_BSTs
@@ -448,6 +448,7 @@ Resolution_FOL
 Rewriting_Z
 Ribbon_Proofs
 Robbins-Conjecture
+Robinson_Arithmetic
 Root_Balanced_Tree
 Routing
 Roy_Floyd_Warshall
