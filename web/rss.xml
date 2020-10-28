@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+    <pubDate>20 Oct 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+              <link>https://www.isa-afp.org/entries/Physical_Quantities.html</link>
+       <guid>https://www.isa-afp.org/entries/Physical_Quantities.html</guid>
+       <dc:creator> Simon Foster, Burkhart Wolff       </dc:creator>
+       <pubDate>20 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+The present Isabelle theory builds a formal model for both the
+International System of Quantities (ISQ) and the International System
+of Units (SI), which are both fundamental for physics and engineering.
+Both the ISQ and the SI are deeply integrated into Isabelle&#39;s
+type system. Quantities are parameterised by dimension types, which
+correspond to base vectors, and thus only quantities of the same
+dimension can be equated. Since the underlying &#34;algebra of
+quantities&#34; induces congruences on quantity and SI types,
+specific tactic support is developed to capture these. Our
+construction is validated by a test-set of known equivalences between
+both quantities and SI units. Moreover, the presented theory can be
+used for type-safe conversions between the SI system and others, like
+the British Imperial System (BIS).</description>
+    </item>
     <item>
        <title>Syntax-Independent Logic Infrastructure</title>
               <link>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</link>
@@ -600,32 +621,6 @@ Then we use them to prove that square matrices form a Banach space,
 and in this setting, we show an instance of Picard-Lindelöf’s
 theorem for affine systems of ODEs. Finally, we use this formalisation
 to verify three simple hybrid programs.</description>
-    </item>
-    <item>
-       <title>Authenticated Data Structures As Functors</title>
-              <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
-       <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
-       <dc:creator> Andreas Lochbihler, Ognjen Marić       </dc:creator>
-       <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Authenticated data structures allow several systems to convince each
-other that they are referring to the same data structure, even if each
-of them knows only a part of the data structure. Using inclusion
-proofs, knowledgeable systems can selectively share their knowledge
-with other systems and the latter can verify the authenticity of what
-is being shared.  In this article, we show how to modularly define
-authenticated data structures, their inclusion proofs, and operations
-thereon as datatypes in Isabelle/HOL, using a shallow embedding.
-Modularity allows us to construct complicated trees from reusable
-building blocks, which we call Merkle functors. Merkle functors
-include sums, products, and function spaces and are closed under
-composition and least fixpoints.  As a practical application, we model
-the hierarchical transactions of &lt;a
-href=&#34;https://www.canton.io&#34;&gt;Canton&lt;/a&gt;, a
-practical interoperability protocol for distributed ledgers, as
-authenticated data structures. This is a first step towards
-formalizing the Canton protocol and verifying its integrity and
-security guarantees.</description>
     </item>
   </channel>
 </rss>

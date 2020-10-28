@@ -9781,3 +9781,25 @@ abstract =
   be merged and provide proofs of the various conditions which must hold
   for these abstractions to subsume their ungeneralised counterparts. A
   Code Generator setup to create executable Scala code is also defined.
+  
+[Physical_Quantities]
+title = A Sound Type System for Physical Quantities, Units, and Measurements
+author = Simon Foster <https://www-users.cs.york.ac.uk/~simonf/>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+topic = Mathematics/Physics, Computer science/Programming languages/Type systems
+date = 2020-10-20
+notify = simon.foster@york.ac.uk, wolff@lri.fr
+abstract = 
+  The present Isabelle theory builds a formal model for both the
+  International System of Quantities (ISQ) and the International System
+  of Units (SI), which are both fundamental for physics and engineering.
+  Both the ISQ and the SI are deeply integrated into Isabelle's
+  type system. Quantities are parameterised by dimension types, which
+  correspond to base vectors, and thus only quantities of the same
+  dimension can be equated. Since the underlying "algebra of
+  quantities" induces congruences on quantity and SI types,
+  specific tactic support is developed to capture these. Our
+  construction is validated by a test-set of known equivalences between
+  both quantities and SI units. Moreover, the presented theory can be
+  used for type-safe conversions between the SI system and others, like
+  the British Imperial System (BIS).
+
