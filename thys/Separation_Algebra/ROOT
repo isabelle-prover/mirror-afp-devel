@@ -1,9 +1,10 @@
 chapter AFP
 
-session Separation_Algebra (AFP) = "HOL-Word" +
+session Separation_Algebra (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Hoare"
+    "HOL-Library"
   directories
     "ex"
     "ex/capDL"

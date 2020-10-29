@@ -5,7 +5,7 @@
 section "Word Declarations"
 
 theory WordDecl
-imports Main "HOL-Word.Word"
+imports Main "HOL-Library.Word"
 begin
 
 text \<open>

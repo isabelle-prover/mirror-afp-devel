@@ -52,7 +52,7 @@ text \<open>
   You can still use these theories provided that you also import
   the theory @{theory Native_Word.Code_Target_Bits_Int} (which implements
   @{typ int} by target-language integers), but these words will
-  be implemented via Isabelle's \<open>HOL-Word\<close> library, i.e.,
+  be implemented via Isabelle's \<open>Word\<close> library, i.e.,
   you do not gain anything in terms of efficiency.
 
   \textbf{There is a separate code target \<open>SML_word\<close> for SML.}
@@ -92,7 +92,7 @@ definition sum_squares_int :: "int \<Rightarrow> 16 word" where
 text \<open>
   The generated code for @{term sum_squares} and @{term sum_squares_int} 
   emulates words with unbounded integers and explicit modulus as specified 
-  in the theory @{theory "HOL-Word.Word"}. But for efficiency, we want that the
+  in the theory @{theory "HOL-Library.Word"}. But for efficiency, we want that the
   generated code uses machine words and machine arithmetic. Unfortunately,
   as @{typ "'a word"} is polymorphic in the word length, the code generator
   can only do this if we use another type for machine words. The theory

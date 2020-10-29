@@ -1,9 +1,10 @@
 chapter AFP
 
-session SPARCv8 (AFP) = "HOL-Word" +
+session SPARCv8 (AFP) = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Eisbach"
+    "Word_Lib"
   directories
     "lib"
     "lib/wp"

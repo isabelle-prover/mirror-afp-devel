@@ -6,7 +6,7 @@ section \<open>Binary Operators\<close>
 
 theory BinOp
 imports
-  WellForm "HOL-Word.Traditional_Syntax"
+  WellForm "Word_Lib.Traditional_Syntax"
 begin
 
 datatype bop =  \<comment> \<open>names of binary operations\<close>

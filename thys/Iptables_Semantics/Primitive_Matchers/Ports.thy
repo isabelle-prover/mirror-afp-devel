@@ -1,6 +1,6 @@
 theory Ports
 imports
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   "../Common/WordInterval_Lists"
   L4_Protocol_Flags
 begin

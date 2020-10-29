@@ -80,7 +80,7 @@ text \<open>
     \<^item> (Bounded) conversion from and to a list of bits:
         @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
 
-  Proper word types are introduced in theory \<^theory>\<open>HOL-Word.Word\<close>, with
+  Proper word types are introduced in theory \<^theory>\<open>HOL-Library.Word\<close>, with
   the following specific operations:
 
     \<^item> Standard arithmetic:
@@ -187,12 +187,12 @@ text \<open>
 
     \<^descr>[Operations]
 
-      \<^descr>[\<^theory>\<open>HOL-Word.Misc_lsb\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Misc_lsb\<close>]
     
         The least significant bit as an alias:
         @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
     
-      \<^descr>[\<^theory>\<open>HOL-Word.Misc_msb\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Misc_msb\<close>]
     
         The most significant bit:
     
@@ -204,7 +204,7 @@ text \<open>
     
           \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
 
-      \<^descr>[\<^theory>\<open>HOL-Word.Traditional_Syntax\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Traditional_Syntax\<close>]
     
         Clones of existing operations decorated with
         traditional syntax:
@@ -279,23 +279,23 @@ text \<open>
   be terse in some cases.
 
 
-  \<^descr>[\<^theory>\<open>HOL-Word.Misc_set_bit\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Misc_set_bit\<close>]
 
     Kind of an alias: @{thm set_bit_eq [no_vars]}
 
-  \<^descr>[\<^theory>\<open>HOL-Word.Misc_Typedef\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Misc_Typedef\<close>]
 
     A low-level extension to HOL typedef providing
     conversions along type morphisms.  The @{method transfer} method
     seems to be sufficient for most applications though.
 
-  \<^descr>[\<^theory>\<open>HOL-Word.Bit_Comprehension\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Bit_Comprehension\<close>]
 
     Comprehension syntax for bit values over predicates
     \<^typ>\<open>nat \<Rightarrow> bool\<close>.  For \<^typ>\<open>'a::len word\<close>, straightforward
     alternatives exist; difficult to handle for \<^typ>\<open>int\<close>.
 
-  \<^descr>[\<^theory>\<open>HOL-Word.Reversed_Bit_Lists\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Reversed_Bit_Lists\<close>]
 
     Representation of bit values as explicit list in
     \<^emph>\<open>reversed\<close> order.

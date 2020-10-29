@@ -2,8 +2,6 @@ chapter AFP
 
 session Refine_Monadic (AFP) = Automatic_Refinement +
   options [timeout = 1200]
-  sessions
-    "HOL-Word"
   directories
     "Generic"
     "examples"

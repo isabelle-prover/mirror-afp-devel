@@ -57,8 +57,8 @@ theory "Lem"
 
 imports
          LemExtraDefs
-         "HOL-Word.Word"
-         "HOL-Word.Reversed_Bit_Lists"
+         "HOL-Library.Word"
+         "Word_Lib.Reversed_Bit_Lists"
 begin
 
 type_synonym numeral = nat

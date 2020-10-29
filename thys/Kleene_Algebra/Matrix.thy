@@ -7,7 +7,7 @@
 section \<open>Matrices\<close>
 
 theory Matrix
-imports "HOL-Word.Word" Dioid
+imports "HOL-Library.Word" Dioid
 begin
 
 text \<open>In this section we formalise a perhaps more natural version of

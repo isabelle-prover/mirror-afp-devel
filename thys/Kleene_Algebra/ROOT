@@ -1,7 +1,9 @@
 chapter AFP
 
-session "Kleene_Algebra" (AFP) = "HOL-Word" +
+session "Kleene_Algebra" (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Signatures
     Dioid

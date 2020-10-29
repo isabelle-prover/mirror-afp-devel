@@ -2,7 +2,6 @@
 theory Interval_Word32
 imports
   Complex_Main
-  "HOL-Word.More_Word"
   Word_Lib.Word_Lemmas
   Word_Lib.Word_Lib
   Word_Lib.Word_Syntax

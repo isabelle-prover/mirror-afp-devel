@@ -1,6 +1,6 @@
 theory Benchmark_Set
 imports
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   "HOL-Library.Cardinality"
 begin
 

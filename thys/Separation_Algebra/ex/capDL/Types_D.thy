@@ -6,7 +6,7 @@
 section "A simplified version of the actual capDL specification."
 
 theory Types_D
-imports "HOL-Word.Word"
+imports "HOL-Library.Word"
 begin
 
 (*

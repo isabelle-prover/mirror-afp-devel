@@ -8,7 +8,7 @@ section "Additional Syntax for Word Bit Operations"
 
 theory Word_Syntax
 imports
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   Bitwise
 begin
 

@@ -5,7 +5,6 @@ session ROBDD (AFP) = Sepref_Prereq +
   sessions
     "HOL-Imperative_HOL"
     "HOL-Library"
-    "HOL-Word"
     "HOL-ex"
     Automatic_Refinement
     Collections

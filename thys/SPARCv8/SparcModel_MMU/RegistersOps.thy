@@ -1,6 +1,6 @@
 section\<open>Register Operations\<close>
 theory RegistersOps
-imports Main "../lib/WordDecl" "HOL-Word.Traditional_Syntax"
+imports Main "../lib/WordDecl" "Word_Lib.Traditional_Syntax"
 begin
 
 text\<open>

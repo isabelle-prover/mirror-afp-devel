@@ -4,7 +4,6 @@ session Pre_BZ (AFP) in "Pre_BZ" = "Subresultants" +
   options [timeout = 600]
   sessions
     "HOL-Number_Theory"
-    "HOL-Word"
     "HOL-Types_To_Sets"
     Polynomial_Factorization
     Polynomial_Interpolation

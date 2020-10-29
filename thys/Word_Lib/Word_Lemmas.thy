@@ -9,7 +9,7 @@ section "Lemmas with Generic Word Length"
 theory Word_Lemmas
   imports
     "HOL-Library.Sublist"
-    "HOL-Word.Misc_lsb"
+    Misc_lsb
     Word_EqI
     Word_Enum
     Norm_Words

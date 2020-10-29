@@ -6,7 +6,7 @@ imports
   Main
   "Lem_bool"
   "Lem_basic_classes"
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   "Complex_Main"
 
 begin 
@@ -14,7 +14,7 @@ begin
 
 
 \<comment> \<open>\<open>open import Bool Basic_classes\<close>\<close>
-\<comment> \<open>\<open>open import {isabelle} `HOL-Word.Word` `Complex_Main`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `HOL-Library.Word` `Complex_Main`\<close>\<close>
 \<comment> \<open>\<open>open import {hol} `integerTheory` `intReduce` `wordsTheory` `wordsLib` `ratTheory` `realTheory` `intrealTheory` `transcTheory`\<close>\<close>
 \<comment> \<open>\<open>open import {coq} `Coq.Numbers.BinNums` `Coq.ZArith.BinInt` `Coq.ZArith.Zpower` `Coq.ZArith.Zdiv` `Coq.ZArith.Zmax` `Coq.Numbers.Natural.Peano.NPeano` `Coq.QArith.Qabs` `Coq.QArith.Qminmax` `Coq.QArith.Qround` `Coq.Reals.ROrderedType` `Coq.Reals.Rbase` `Coq.Reals.Rfunctions`\<close>\<close> 
 

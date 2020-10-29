@@ -7,7 +7,7 @@
 section "Normalising Word Numerals"
 
 theory Norm_Words
-imports "Signed_Words" "HOL-Word.More_Word"
+  imports Signed_Words More_Word
 begin
 
 text \<open>

@@ -8,7 +8,7 @@ section "Bitwise tactic for Signed Words"
 
 theory Bitwise_Signed
 imports
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   Bitwise
   Signed_Words
 begin

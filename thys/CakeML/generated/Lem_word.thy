@@ -9,7 +9,7 @@ imports
   "Lem_num"
   "Lem_basic_classes"
   "Lem_list"
-  "HOL-Word.Word"
+  "HOL-Library.Word"
 
 begin 
 
@@ -17,7 +17,7 @@ begin
 
 \<comment> \<open>\<open>open import Bool Maybe Num Basic_classes List\<close>\<close>
 
-\<comment> \<open>\<open>open import {isabelle} `HOL-Word.Word`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `HOL-Library.Word`\<close>\<close>
 \<comment> \<open>\<open>open import {hol} `wordsTheory` `wordsLib`\<close>\<close>
 
 

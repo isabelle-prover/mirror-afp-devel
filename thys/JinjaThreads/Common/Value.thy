@@ -9,7 +9,7 @@ section \<open>Jinja Values\<close>
 theory Value
 imports
   TypeRel
-  "HOL-Word.Word"
+  "HOL-Library.Word"
 begin
 
 no_notation floor ("\<lfloor>_\<rfloor>")

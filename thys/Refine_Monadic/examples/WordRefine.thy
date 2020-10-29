@@ -1,6 +1,6 @@
 section \<open>Machine Words\<close>
 theory WordRefine
-imports "../Refine_Monadic" "HOL-Word.Word"
+imports "../Refine_Monadic" "HOL-Library.Word"
 begin
 
 text \<open>This theory provides a simple example to show refinement of natural

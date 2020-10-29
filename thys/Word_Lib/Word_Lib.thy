@@ -9,7 +9,7 @@ section "Additional Word Operations"
 theory Word_Lib
   imports
   "HOL-Library.Signed_Division"
-  "HOL-Word.Misc_set_bit"
+  Misc_set_bit
   Word_Syntax
   Signed_Words
 begin

@@ -9,8 +9,8 @@ imports
   "Lem_basic_classes"
   "Lem_show"
   "Lem_function"
-  "HOL-Word.Word"
-  "HOL-Word.Misc_msb"
+  "HOL-Library.Word"
+  "Word_Lib.Misc_msb"
 
 begin 
 
@@ -18,7 +18,7 @@ begin
 
 \<comment> \<open>\<open>open import Bool Num Basic_classes Show Function\<close>\<close>
 
-\<comment> \<open>\<open>open import {isabelle} `HOL-Word.Word`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `HOL-Library.Word`\<close>\<close>
 \<comment> \<open>\<open>open import {hol} `wordsTheory` `wordsLib` `bitstringTheory` `integer_wordTheory`\<close>\<close>
 
 \<comment> \<open>\<open>type mword 'a\<close>\<close>

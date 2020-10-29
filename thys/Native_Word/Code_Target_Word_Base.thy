@@ -5,7 +5,7 @@
 chapter \<open>Common base for target language implementations of word types\<close>
 
 theory Code_Target_Word_Base imports
-  "HOL-Word.Word"
+  "HOL-Library.Word"
   "Word_Lib.Word_Lib"
   Bits_Integer
 begin

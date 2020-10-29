@@ -1,7 +1,9 @@
 chapter AFP
 
-session LEM (AFP) in "generated" = "HOL-Word" +
+session LEM (AFP) in "generated" = HOL +
   options [timeout = 300]
+  sessions
+    Word_Lib
   theories
     Lem_pervasives
     Lem_pervasives_extra

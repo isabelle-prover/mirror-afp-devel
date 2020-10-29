@@ -1,9 +1,8 @@
 chapter AFP
 
-session "Native_Word" (AFP) = "HOL-Word" +
+session "Native_Word" (AFP) = Word_Lib +
   options [timeout = 2400]
   sessions
-    "Word_Lib"
     "HOL-Imperative_HOL"
   theories
     Code_Target_Bits_Int

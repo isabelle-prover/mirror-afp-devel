@@ -1,6 +1,6 @@
 chapter AFP
 
-session Word_Lib (AFP) = "HOL-Word" +
+session Word_Lib (AFP) = HOL +
   options [timeout = 300]
   sessions
     "HOL-Eisbach"

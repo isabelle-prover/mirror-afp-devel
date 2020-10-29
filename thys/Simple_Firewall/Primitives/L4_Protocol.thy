@@ -1,5 +1,5 @@
 theory L4_Protocol
-imports "../Common/Lib_Enum_toString" "HOL-Word.Word"
+imports "../Common/Lib_Enum_toString" "HOL-Library.Word"
 begin
 
 section\<open>Transport Layer Protocols\<close>

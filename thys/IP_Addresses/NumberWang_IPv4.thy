@@ -1,6 +1,6 @@
 theory NumberWang_IPv4
 imports Main
-  "HOL-Word.Word"
+  "HOL-Library.Word"
 begin
 
 lemma zdiv_mult_self:
