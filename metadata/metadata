@@ -7519,7 +7519,7 @@ abstract =
 
 [Green]
 title = An Isabelle/HOL formalisation of Green's Theorem
-author = Mohammad Abdulaziz <mailto:mohammad.abdulaziz8@gmail.com>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Analysis
 date = 2018-01-11
 notify = mohammad.abdulaziz8@gmail.com, lp15@cam.ac.uk
@@ -7533,6 +7533,22 @@ abstract =
   explicitly with respect to the outwards-pointing normal vector.
   Instead we appeal to a homological argument about equivalences between
   paths.
+
+[AI_Planning_Languages_Semantics]
+title = AI Planning Languages Semantics
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Peter Lammich <http://www21.in.tum.de/~lammich>
+topic = Computer science/Artificial intelligence
+date = 2020-10-29
+notify = mohammad.abdulaziz8@gmail.com
+abstract =
+  This is an Isabelle/HOL formalisation of the semantics of the
+  multi-valued planning tasks language that is used by the planning
+  system Fast-Downward, the STRIPS fragment of the Planning Domain
+  Definition Language (PDDL), and the STRIPS soundness meta-theory
+  developed by Vladimir Lifschitz. It also contains formally verified
+  checkers for checking the well-formedness of problems specified in
+  either language as well the correctness of potential solutions. The
+  formalisation in this entry was described in an earlier publication.
 
 [Gromov_Hyperbolicity]
 title = Gromov Hyperbolicity
@@ -9781,14 +9797,14 @@ abstract =
   be merged and provide proofs of the various conditions which must hold
   for these abstractions to subsume their ungeneralised counterparts. A
   Code Generator setup to create executable Scala code is also defined.
-  
+
 [Physical_Quantities]
 title = A Sound Type System for Physical Quantities, Units, and Measurements
 author = Simon Foster <https://www-users.cs.york.ac.uk/~simonf/>, Burkhart Wolff <https://www.lri.fr/~wolff/>
 topic = Mathematics/Physics, Computer science/Programming languages/Type systems
 date = 2020-10-20
 notify = simon.foster@york.ac.uk, wolff@lri.fr
-abstract = 
+abstract =
   The present Isabelle theory builds a formal model for both the
   International System of Quantities (ISQ) and the International System
   of Units (SI), which are both fundamental for physics and engineering.

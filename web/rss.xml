@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Oct 2020 00:00:00 +0000</pubDate>
+    <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>AI Planning Languages Semantics</title>
+              <link>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
+       <dc:creator> Mohammad Abdulaziz, Peter Lammich       </dc:creator>
+       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+This is an Isabelle/HOL formalisation of the semantics of the
+multi-valued planning tasks language that is used by the planning
+system Fast-Downward, the STRIPS fragment of the Planning Domain
+Definition Language (PDDL), and the STRIPS soundness meta-theory
+developed by Vladimir Lifschitz. It also contains formally verified
+checkers for checking the well-formedness of problems specified in
+either language as well the correctness of potential solutions. The
+formalisation in this entry was described in an earlier publication.</description>
+    </item>
     <item>
        <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
               <link>https://www.isa-afp.org/entries/Physical_Quantities.html</link>
@@ -605,22 +621,6 @@ formula for primitive Pythagorean triples&lt;/li&gt; &lt;/ol&gt;
 &lt;p&gt;While elementary proofs for both of these are already
 available in the AFP, the theory of Gaussian integers provides more
 concise proofs and a more high-level view.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Matrices for ODEs</title>
-              <link>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</link>
-       <guid>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</guid>
-       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
-       <pubDate>19 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Our theories formalise various matrix properties that serve to
-establish existence, uniqueness and characterisation of the solution
-to affine systems of ordinary differential equations (ODEs). In
-particular, we formalise the operator and maximum norm of matrices.
-Then we use them to prove that square matrices form a Banach space,
-and in this setting, we show an instance of Picard-Lindelöf’s
-theorem for affine systems of ODEs. Finally, we use this formalisation
-to verify three simple hybrid programs.</description>
     </item>
   </channel>
 </rss>
