@@ -524,6 +524,7 @@ fun all_meta aux ret = let open META open META_overload in fn
        |> (   Expression.add_locale_cmd
                 (To_sbinding (META.holThyLocale_name data))
                 Binding.empty
+                []
                 ([], [])
                 (List.concat
                   (map
