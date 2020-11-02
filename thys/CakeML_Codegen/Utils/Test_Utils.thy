@@ -65,8 +65,6 @@ ML\<open>
 export_code huffman checking SML Scala
 
 export_code
-  Leftist_Heap.rank
-  Leftist_Heap.rk
   Leftist_Heap.ltree
   Leftist_Heap.node
   Leftist_Heap.merge

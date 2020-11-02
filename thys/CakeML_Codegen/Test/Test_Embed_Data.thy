@@ -12,8 +12,6 @@ declare List.Ball_set[code_unfold]
 declare Let_def[code_unfold]
 
 declassify valid:
-  Leftist_Heap.rank
-  Leftist_Heap.rk
   Leftist_Heap.ltree
   Leftist_Heap.node
   Leftist_Heap.merge
@@ -29,8 +27,6 @@ derive evaluate
 experiment begin
 
 embed (eval) test1 is
-  Leftist__Heap_rk
-  Leftist__Heap_rank
   Leftist__Heap_ltree
   Leftist__Heap_node
   .
