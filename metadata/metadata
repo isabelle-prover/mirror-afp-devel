@@ -7550,6 +7550,22 @@ abstract =
   either language as well the correctness of potential solutions. The
   formalisation in this entry was described in an earlier publication.
 
+[Verified_SAT_Based_AI_Planning]
+title = Verified SAT-Based AI Planning
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz
+topic = Computer science/Artificial intelligence
+date = 2020-10-29
+notify = mohammad.abdulaziz8@gmail.com
+abstract =
+  We present an executable formally verified SAT encoding of classical
+  AI planning that is based on the encodings by Kautz and Selman and the
+  one by Rintanen et al. The encoding was experimentally tested and
+  shown to be usable for reasonably sized standard AI planning
+  benchmarks. We also use it as a reference to test a state-of-the-art
+  SAT-based planner, showing that it sometimes falsely claims that
+  problems have no solutions of certain lengths. The formalisation in
+  this submission was described in an independent publication.
+
 [Gromov_Hyperbolicity]
 title = Gromov Hyperbolicity
 author = Sebastien Gouezel<>

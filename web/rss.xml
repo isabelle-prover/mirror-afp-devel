@@ -11,6 +11,22 @@
     </description>
     <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
     <item>
+       <title>Verified SAT-Based AI Planning</title>
+              <link>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
+       <guid>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
+       <dc:creator> Mohammad Abdulaziz, Friedrich Kurz       </dc:creator>
+       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+We present an executable formally verified SAT encoding of classical
+AI planning that is based on the encodings by Kautz and Selman and the
+one by Rintanen et al. The encoding was experimentally tested and
+shown to be usable for reasonably sized standard AI planning
+benchmarks. We also use it as a reference to test a state-of-the-art
+SAT-based planner, showing that it sometimes falsely claims that
+problems have no solutions of certain lengths. The formalisation in
+this submission was described in an independent publication.</description>
+    </item>
+    <item>
        <title>AI Planning Languages Semantics</title>
               <link>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
        <guid>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
@@ -599,28 +615,6 @@ inequalities, monotonicity, differentiability, asymptotic expansions,
 and the MacLaurin series of
 &lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
 at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Gaussian Integers</title>
-              <link>https://www.isa-afp.org/entries/Gaussian_Integers.html</link>
-       <guid>https://www.isa-afp.org/entries/Gaussian_Integers.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Gaussian integers are the subring &amp;#8484;[i] of the
-complex numbers, i. e. the ring of all complex numbers with integral
-real and imaginary part. This article provides a definition of this
-ring as well as proofs of various basic properties, such as that they
-form a Euclidean ring and a full classification of their primes. An
-executable (albeit not very efficient) factorisation algorithm is also
-provided.&lt;/p&gt; &lt;p&gt;Lastly, this Gaussian integer
-formalisation is used in two short applications:&lt;/p&gt; &lt;ol&gt;
-&lt;li&gt; The characterisation of all positive integers that can be
-written as sums of two squares&lt;/li&gt; &lt;li&gt; Euclid&#39;s
-formula for primitive Pythagorean triples&lt;/li&gt; &lt;/ol&gt;
-&lt;p&gt;While elementary proofs for both of these are already
-available in the AFP, the theory of Gaussian integers provides more
-concise proofs and a more high-level view.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
