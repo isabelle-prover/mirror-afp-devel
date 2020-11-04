@@ -6,7 +6,7 @@
 
 section "Displaying Phantom Types for Word Operations"
 
-theory Word_Type_Syntax
+theory Type_Syntax
   imports "HOL-Library.Word"
 begin
 

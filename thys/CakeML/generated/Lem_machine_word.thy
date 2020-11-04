@@ -10,7 +10,7 @@ imports
   "Lem_show"
   "Lem_function"
   "HOL-Library.Word"
-  "Word_Lib.Misc_msb"
+  "Word_Lib.Most_significant_bit"
 
 begin 
 

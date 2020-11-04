@@ -1,9 +1,9 @@
 (*<*)
 theory Guide
-  imports Main Word_Lemmas Word_Lemmas_32 Word_Lemmas_64
+  imports Word_Lib_Sumo
 begin
 
-hide_const (open) Misc_set_bit.set_bit
+hide_const (open) Generic_set_bit.set_bit
 
 (*>*)
 section \<open>A short overview over bit operations and word types\<close>
@@ -168,7 +168,7 @@ text \<open>
       \<^descr>[\<^theory>\<open>Word_Lib.Hex_Words\<close>]
         Printing word numerals as hexadecimal numerals.
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Type_Syntax\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Type_Syntax\<close>]
         Pretty type-sensitive syntax for cast operations.
 
       \<^descr>[\<^theory>\<open>Word_Lib.Word_Syntax\<close>]
@@ -187,12 +187,12 @@ text \<open>
 
     \<^descr>[Operations]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Misc_lsb\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Least_significant_bit\<close>]
     
         The least significant bit as an alias:
         @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
     
-      \<^descr>[\<^theory>\<open>Word_Lib.Misc_msb\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Most_significant_bit\<close>]
     
         The most significant bit:
     
@@ -204,7 +204,7 @@ text \<open>
     
           \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Traditional_Syntax\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Traditional_Infix_Syntax\<close>]
     
         Clones of existing operations decorated with
         traditional syntax:
@@ -228,7 +228,7 @@ text \<open>
 
           \<^item> @{thm [mode=iff] is_aligned_iff_udvd [no_vars]}
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Next\<close>] \
+      \<^descr>[\<^theory>\<open>Word_Lib.Next_and_Prev\<close>] \
 
           \<^item> @{thm word_next_unfold [no_vars]}
 
@@ -242,7 +242,7 @@ text \<open>
 
     \<^descr>[Mechanisms]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Enum\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Enumeration_Word\<close>]
 
           More on explicit enumeration of word types.
 
@@ -279,11 +279,11 @@ text \<open>
   be terse in some cases.
 
 
-  \<^descr>[\<^theory>\<open>Word_Lib.Misc_set_bit\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Generic_set_bit\<close>]
 
     Kind of an alias: @{thm set_bit_eq [no_vars]}
 
-  \<^descr>[\<^theory>\<open>Word_Lib.Misc_Typedef\<close>]
+  \<^descr>[\<^theory>\<open>Word_Lib.Typedef_Morphisms\<close>]
 
     A low-level extension to HOL typedef providing
     conversions along type morphisms.  The @{method transfer} method

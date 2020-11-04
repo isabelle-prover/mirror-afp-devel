@@ -190,7 +190,7 @@ qed
      by blast
 
    hence aligned: "is_aligned ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b) << n) m"
-     unfolding is_aligned_def
+     unfolding is_aligned_iff_dvd_nat
      unfolding dvd_def
      unfolding shiftl_t2n
      unfolding Word.unat_word_ariths(2)

@@ -10,7 +10,7 @@
 
 section \<open>SPARC V8 architecture CPU model\<close>
 theory Sparc_Types    
-imports Main "../lib/WordDecl" "Word_Lib.Traditional_Syntax"
+imports Main "../lib/WordDecl" "Word_Lib.Traditional_Infix_Syntax"
 begin
 
 text \<open>The following type definitions are taken from David Sanan's 

@@ -2,7 +2,7 @@
 
 section\<open>Increment and Decrement Machine Words Without Wrap-Around\<close>
 
-theory Word_Next
+theory Next_and_Prev
 imports
   Aligned
 begin
@@ -110,13 +110,6 @@ lemma [code]:
   \<open>Word.the_int (word_prev w :: 'a::len word) =
     (if w = 0 then Word.the_int w else Word.the_int w - 1)\<close>
   by transfer (simp add: take_bit_eq_0_iff take_bit_decr_eq)
-
-text\<open>Examples:\<close>
-
-lemma "word_next (2:: 8 word) = 3" by eval
-lemma "word_next (255:: 8 word) = 255" by eval
-lemma "word_prev (2:: 8 word) = 1" by eval
-lemma "word_prev (0:: 8 word) = 0" by eval
 
 lemma word_adjacent_union:
   "word_next e = s' \<Longrightarrow> s \<le> e \<Longrightarrow> s' \<le> e' \<Longrightarrow> {s..e} \<union> {s'..e'} = {s .. e'}"

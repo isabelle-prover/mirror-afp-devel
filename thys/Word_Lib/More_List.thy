@@ -1,14 +1,11 @@
-(*  Title:      HOL/Word/Misc_Auxiliary.thy
-    Author:     Jeremy Dawson, NICTA
+(*  Author:     Jeremy Dawson, NICTA
 *)
 
-section \<open>Generic auxiliary\<close>
+section \<open>Lemmas on list operations\<close>
 
-theory Misc_Auxiliary
+theory More_List
   imports Main
 begin
-
-subsection \<open>Lemmas on list operations\<close>
 
 lemma butlast_power: "(butlast ^^ n) bl = take (length bl - n) bl"
   by (induct n) (auto simp: butlast_take)

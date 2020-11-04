@@ -3,7 +3,7 @@
 
 section \<open>Operation variant for the least significant bit\<close>
 
-theory Misc_lsb
+theory Least_significant_bit
   imports
     "HOL-Library.Word"
     Reversed_Bit_Lists
@@ -85,5 +85,11 @@ lemma word_lsb_numeral [simp]:
 lemma word_lsb_neg_numeral [simp]:
   "lsb (- numeral bin :: 'a::len word) \<longleftrightarrow> bin_last (- numeral bin)"
   by (simp add: word_lsb_alt)
+
+lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"
+  apply (simp add: word_lsb_def Groebner_Basis.algebra(31))
+  apply transfer
+  apply (simp add: even_nat_iff)
+  done
 
 end

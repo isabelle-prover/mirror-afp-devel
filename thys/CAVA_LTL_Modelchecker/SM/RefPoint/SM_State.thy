@@ -1,6 +1,10 @@
 section \<open>State for SM\<close>
 theory SM_State
-imports SM_Syntax "HOL-Library.Word" "Word_Lib.Misc_Typedef" "HOL-Library.Multiset"
+imports
+  "HOL-Library.Word"
+  "HOL-Library.Multiset"
+  "Word_Lib.Typedef_Morphisms"
+  SM_Syntax
 begin
 
 section \<open>Values\<close>

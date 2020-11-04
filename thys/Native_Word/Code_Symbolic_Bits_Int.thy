@@ -6,7 +6,7 @@ chapter \<open>Symbolic implementation of bit operations on int\<close>
 
 theory Code_Symbolic_Bits_Int
 imports
-  "Word_Lib.Misc_set_bit" "Word_Lib.Misc_lsb" More_Bits_Int
+  "Word_Lib.Generic_set_bit" "Word_Lib.Least_significant_bit" More_Bits_Int
 begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>

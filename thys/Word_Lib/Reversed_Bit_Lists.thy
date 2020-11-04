@@ -1,11 +1,10 @@
-(*  Title:      HOL/Word/Reversed_Bit_Lists.thy
-    Author:     Jeremy Dawson, NICTA
+(*  Author:     Jeremy Dawson, NICTA
 *)
 
 section \<open>Bit values as reversed lists of bools\<close>
 
 theory Reversed_Bit_Lists
-  imports "HOL-Library.Word"Misc_Typedef
+  imports "HOL-Library.Word" Typedef_Morphisms
 begin
 
 context comm_semiring_1

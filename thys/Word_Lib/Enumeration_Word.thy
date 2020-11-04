@@ -8,9 +8,14 @@
 
 section "Enumeration Instances for Words"
 
-theory Word_Enum
-imports Enumeration Word_Lib
+theory Enumeration_Word
+imports "HOL-Library.Word" Enumeration
 begin
+
+declare of_nat_diff [simp]
+
+lemma length_word_enum: "length (enum :: 'a :: len word list) = 2 ^ LENGTH('a)"
+  by (simp add: enum_word_def)
 
 lemma fromEnum_unat[simp]: "fromEnum (x :: 'a::len word) = unat x"
 proof -
@@ -26,13 +31,8 @@ proof -
   show ?thesis by (simp add: fromEnum_def enum_word_def)
 qed
 
-lemma length_word_enum: "length (enum :: 'a :: len word list) = 2 ^ LENGTH('a)"
-  by (simp add: enum_word_def)
-
 lemma toEnum_of_nat[simp]: "n < 2 ^ LENGTH('a) \<Longrightarrow> (toEnum n :: 'a :: len word) = of_nat n"
   by (simp add: toEnum_def length_word_enum enum_word_def)
-
-declare of_nat_diff [simp]
 
 instantiation word :: (len) enumeration_both
 begin
