@@ -15,7 +15,6 @@ theory Poly_Mod
   "HOL-Computational_Algebra.Primes"
   Polynomial_Factorization.Square_Free_Factorization
   Unique_Factorization_Poly
-  "Word_Lib.More_Arithmetic"
 begin
 
 locale poly_mod = fixes m :: "int" 
@@ -1063,7 +1062,8 @@ lemma (in poly_mod_prime) pl_dvdm_imp_p_dvdm:
 proof -
   from l0 have l_gt_0: "l > 0" by auto
   with m1 interpret pl: poly_mod_2 "p^l" by (unfold_locales, auto)
-  have p_rw: "p * p ^ (l - 1) = p ^ l" by (rule power_minus_simp[symmetric, OF l_gt_0])
+  from l_gt_0 have p_rw: "p * p ^ (l - 1) = p ^ l"
+    by (cases l) simp_all 
   obtain q r where b: "b = q * a + smult (p^l) r" using pl.dvdm_imp_div_mod[OF pl_dvdm] by auto
   have "smult (p^l) r = smult p (smult (p ^ (l - 1)) r)" unfolding smult_smult p_rw ..
   hence b2: "b = q * a + smult p (smult (p ^ (l - 1)) r)" using b by auto
@@ -1071,6 +1071,5 @@ proof -
     by (rule div_mod_imp_dvdm, rule exI[of _ q], 
         rule exI[of _ "(smult (p ^ (l - 1)) r)"], auto simp add: b2)
 qed
-
 
 end

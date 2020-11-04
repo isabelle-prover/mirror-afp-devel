@@ -663,7 +663,8 @@ proof -
   obtain g h where eo: "poly_even_odd f = (g,h)" by force
   from poly_even_odd[OF eo] have fgh: "f = g \<circ>\<^sub>p monom 1 2 + monom 1 1 * h \<circ>\<^sub>p monom 1 2 " by auto 
   have m2: "monom (1 :: 'a) 2 = [:0,0,1:]" "monom (1 :: 'a) 1 = [:0,1:]" 
-    unfolding coeffs_eq_iff coeffs_monom by auto
+    unfolding coeffs_eq_iff coeffs_monom
+    by (auto simp add: numeral_2_eq_2)
   show ?thesis unfolding eo split graeffe_one_step_def
   proof (rule arg_cong[of _ _ "smult c"])
     let ?g = "g \<circ>\<^sub>p monom 1 2" 

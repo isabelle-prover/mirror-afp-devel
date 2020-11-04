@@ -1,18 +1,21 @@
-(*
- * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
- *
- * SPDX-License-Identifier: BSD-2-Clause
- *)
 
-section "More Lemmas on Division"
+section \<open>Lemmas on division\<close>
 
 theory More_Divides
-imports Main
+  imports
+    "HOL-Library.Word"
 begin
 
-lemma div_mult_le:
-  \<open>a div b * b \<le> a\<close> for a b :: nat
-  by (fact div_times_less_eq_dividend)
+declare div_eq_dividend_iff [simp]
+
+lemma int_div_same_is_1 [simp]:
+  \<open>a div b = a \<longleftrightarrow> b = 1\<close> if \<open>0 < a\<close> for a b :: int
+  using that by (metis div_by_1 abs_ge_zero abs_of_pos int_div_less_self neq_iff
+            nonneg1_imp_zdiv_pos_iff zabs_less_one_iff)
+
+lemma int_div_minus_is_minus1 [simp]:
+  \<open>a div b = - a \<longleftrightarrow> b = - 1\<close> if \<open>0 > a\<close> for a b :: int
+  using that by (metis div_minus_right equation_minus_iff int_div_same_is_1 neg_0_less_iff_less)
 
 lemma diff_mod_le:
   \<open>a - a mod b \<le> d - b\<close> if \<open>a < d\<close> \<open>b dvd d\<close> for a b d :: nat
@@ -32,7 +35,7 @@ lemma diff_mod_le:
    apply(rule le_less_trans)
     apply simp
     apply(subst mult.commute)
-    apply(rule div_mult_le)
+    apply(rule div_times_less_eq_dividend)
    apply assumption
   apply clarsimp
   apply(subgoal_tac "b * (a div b) \<le> b * (k - 1)")
@@ -41,15 +44,226 @@ lemma diff_mod_le:
   apply simp
   done
 
-lemma int_div_same_is_1 [simp]:
-  \<open>a div b = a \<longleftrightarrow> b = 1\<close> if \<open>0 < a\<close> for a b :: int
-  using that by (metis div_by_1 abs_ge_zero abs_of_pos int_div_less_self neq_iff
-            nonneg1_imp_zdiv_pos_iff zabs_less_one_iff)
+lemma one_mod_exp_eq_one [simp]:
+  "1 mod (2 * 2 ^ n) = (1::int)"
+  using power_gt1 [of 2 n] by (auto intro: mod_pos_pos_trivial)
 
-lemma int_div_minus_is_minus1 [simp]:
-  \<open>a div b = - a \<longleftrightarrow> b = - 1\<close> if \<open>0 > a\<close> for a b :: int
-  using that by (metis div_minus_right equation_minus_iff int_div_same_is_1 neg_0_less_iff_less)
+lemma int_mod_lem: "0 < n \<Longrightarrow> 0 \<le> b \<and> b < n \<longleftrightarrow> b mod n = b"
+  for b n :: int
+  apply safe
+    apply (erule (1) mod_pos_pos_trivial)
+   apply (erule_tac [!] subst)
+   apply auto
+  done
 
-declare div_eq_dividend_iff [simp]
+lemma int_mod_ge': "b < 0 \<Longrightarrow> 0 < n \<Longrightarrow> b + n \<le> b mod n"
+  for b n :: int
+  by (metis add_less_same_cancel2 int_mod_ge mod_add_self2)
+
+lemma int_mod_le': "0 \<le> b - n \<Longrightarrow> b mod n \<le> b - n"
+  for b n :: int
+  by (metis minus_mod_self2 zmod_le_nonneg_dividend)
+
+lemma emep1: "even n \<Longrightarrow> even d \<Longrightarrow> 0 \<le> d \<Longrightarrow> (n + 1) mod d = (n mod d) + 1"
+  for n d :: int
+  by (auto simp add: pos_zmod_mult_2 add.commute dvd_def)
+
+lemma m1mod2k: "- 1 mod 2 ^ n = (2 ^ n - 1 :: int)"
+  by (rule zmod_minus1) simp
+
+lemma sb_inc_lem: "a + 2^k < 0 \<Longrightarrow> a + 2^k + 2^(Suc k) \<le> (a + 2^k) mod 2^(Suc k)"
+  for a :: int
+  using int_mod_ge' [where n = "2 ^ (Suc k)" and b = "a + 2 ^ k"]
+  by simp
+
+lemma sb_inc_lem': "a < - (2^k) \<Longrightarrow> a + 2^k + 2^(Suc k) \<le> (a + 2^k) mod 2^(Suc k)"
+  for a :: int
+  by (rule sb_inc_lem) simp
+
+lemma sb_dec_lem: "0 \<le> - (2 ^ k) + a \<Longrightarrow> (a + 2 ^ k) mod (2 * 2 ^ k) \<le> - (2 ^ k) + a"
+  for a :: int
+  using int_mod_le'[where n = "2 ^ (Suc k)" and b = "a + 2 ^ k"] by simp
+
+lemma sb_dec_lem': "2 ^ k \<le> a \<Longrightarrow> (a + 2 ^ k) mod (2 * 2 ^ k) \<le> - (2 ^ k) + a"
+  for a :: int
+  by (rule sb_dec_lem) simp
+
+lemma mod_2_neq_1_eq_eq_0: "k mod 2 \<noteq> 1 \<longleftrightarrow> k mod 2 = 0"
+  for k :: int
+  by (fact not_mod_2_eq_1_eq_0)
+
+lemma z1pmod2: "(2 * b + 1) mod 2 = (1::int)"
+  for b :: int
+  by arith
+
+lemma p1mod22k': "(1 + 2 * b) mod (2 * 2 ^ n) = 1 + 2 * (b mod 2 ^ n)"
+  for b :: int
+  by (rule pos_zmod_mult_2) simp
+
+lemma p1mod22k: "(2 * b + 1) mod (2 * 2 ^ n) = 2 * (b mod 2 ^ n) + 1"
+  for b :: int
+  by (simp add: p1mod22k' add.commute)
+
+lemma pos_mod_sign2:
+  \<open>0 \<le> a mod 2\<close> for a :: int
+  by simp
+
+lemma pos_mod_bound2:
+  \<open>a mod 2 < 2\<close> for a :: int
+  by simp
+
+lemma nmod2: "n mod 2 = 0 \<or> n mod 2 = 1"
+  for n :: int
+  by arith
+
+lemma eme1p:
+  "even n \<Longrightarrow> even d \<Longrightarrow> 0 \<le> d \<Longrightarrow> (1 + n) mod d = 1 + n mod d" for n d :: int
+  using emep1 [of n d] by (simp add: ac_simps)
+
+lemma m1mod22k:
+  \<open>- 1 mod (2 * 2 ^ n) = 2 * 2 ^ n - (1::int)\<close>
+  by (simp add: zmod_minus1)
+
+lemma z1pdiv2: "(2 * b + 1) div 2 = b"
+  for b :: int
+  by arith
+
+lemma zdiv_le_dividend:
+  \<open>0 \<le> a \<Longrightarrow> 0 < b \<Longrightarrow> a div b \<le> a\<close> for a b :: int
+  by (metis div_by_1 int_one_le_iff_zero_less zdiv_mono2 zero_less_one)
+
+lemma axxmod2: "(1 + x + x) mod 2 = 1 \<and> (0 + x + x) mod 2 = 0"
+  for x :: int
+  by arith
+
+lemma axxdiv2: "(1 + x + x) div 2 = x \<and> (0 + x + x) div 2 = x"
+  for x :: int
+  by arith
+
+lemmas rdmods =
+  mod_minus_eq [symmetric]
+  mod_diff_left_eq [symmetric]
+  mod_diff_right_eq [symmetric]
+  mod_add_left_eq [symmetric]
+  mod_add_right_eq [symmetric]
+  mod_mult_right_eq [symmetric]
+  mod_mult_left_eq [symmetric]
+
+lemma mod_plus_right: "(a + x) mod m = (b + x) mod m \<longleftrightarrow> a mod m = b mod m"
+  for a b m x :: nat
+  by (induct x) (simp_all add: mod_Suc, arith)
+
+lemma nat_minus_mod: "(n - n mod m) mod m = 0"
+  for m n :: nat
+  by (induct n) (simp_all add: mod_Suc)
+
+lemmas nat_minus_mod_plus_right =
+  trans [OF nat_minus_mod mod_0 [symmetric],
+    THEN mod_plus_right [THEN iffD2], simplified]
+
+lemmas push_mods' = mod_add_eq
+  mod_mult_eq mod_diff_eq
+  mod_minus_eq
+
+lemmas push_mods = push_mods' [THEN eq_reflection]
+lemmas pull_mods = push_mods [symmetric] rdmods [THEN eq_reflection]
+
+lemma nat_mod_eq: "b < n \<Longrightarrow> a mod n = b mod n \<Longrightarrow> a mod n = b"
+  for a b n :: nat
+  by (induct a) auto
+
+lemmas nat_mod_eq' = refl [THEN [2] nat_mod_eq]
+
+lemma nat_mod_lem: "0 < n \<Longrightarrow> b < n \<longleftrightarrow> b mod n = b"
+  for b n :: nat
+  apply safe
+   apply (erule nat_mod_eq')
+  apply (erule subst)
+  apply (erule mod_less_divisor)
+  done
+
+lemma mod_nat_add: "x < z \<Longrightarrow> y < z \<Longrightarrow> (x + y) mod z = (if x + y < z then x + y else x + y - z)"
+  for x y z :: nat
+  apply (rule nat_mod_eq)
+   apply auto
+  apply (rule trans)
+   apply (rule le_mod_geq)
+   apply simp
+  apply (rule nat_mod_eq')
+  apply arith
+  done
+
+lemma mod_nat_sub: "x < z \<Longrightarrow> (x - y) mod z = x - y"
+  for x y :: nat
+  by (rule nat_mod_eq') arith
+
+lemma int_mod_eq: "0 \<le> b \<Longrightarrow> b < n \<Longrightarrow> a mod n = b mod n \<Longrightarrow> a mod n = b"
+  for a b n :: int
+  by (metis mod_pos_pos_trivial)
+
+lemma zmde:
+  \<open>b * (a div b) = a - a mod b\<close> for a b :: \<open>'a::{group_add,semiring_modulo}\<close>
+  using mult_div_mod_eq [of b a] by (simp add: eq_diff_eq) 
+
+(* already have this for naturals, div_mult_self1/2, but not for ints *)
+lemma zdiv_mult_self: "m \<noteq> 0 \<Longrightarrow> (a + m * n) div m = a div m + n"
+  for a m n :: int
+  by simp
+
+lemma mod_power_lem: "a > 1 \<Longrightarrow> a ^ n mod a ^ m = (if m \<le> n then 0 else a ^ n)"
+  for a :: int
+  by (simp add: mod_eq_0_iff_dvd le_imp_power_dvd)
+
+lemma nonneg_mod_div: "0 \<le> a \<Longrightarrow> 0 \<le> b \<Longrightarrow> 0 \<le> (a mod b) \<and> 0 \<le> a div b"
+  for a b :: int
+  by (cases "b = 0") (auto intro: pos_imp_zdiv_nonneg_iff [THEN iffD2])
+
+lemma mod_exp_less_eq_exp:
+  \<open>a mod 2 ^ n < 2 ^ n\<close> for a :: int
+  by (rule pos_mod_bound) simp
+
+lemma div_mult_le:
+  \<open>a div b * b \<le> a\<close> for a b :: nat
+  by (fact div_times_less_eq_dividend)
+
+lemma power_sub:
+  fixes a :: nat
+  assumes lt: "n \<le> m"
+  and     av: "0 < a"
+  shows "a ^ (m - n) = a ^ m div a ^ n"
+proof (subst nat_mult_eq_cancel1 [symmetric])
+  show "(0::nat) < a ^ n" using av by simp
+next
+  from lt obtain q where mv: "n + q = m"
+    by (auto simp: le_iff_add)
+
+  have "a ^ n * (a ^ m div a ^ n) = a ^ m"
+  proof (subst mult.commute)
+    have "a ^ m = (a ^ m div a ^ n) * a ^ n + a ^ m mod a ^ n"
+      by (rule  div_mult_mod_eq [symmetric])
+
+    moreover have "a ^ m mod a ^ n = 0"
+      by (subst mod_eq_0_iff_dvd, subst dvd_def, rule exI [where x = "a ^ q"],
+      (subst power_add [symmetric] mv)+, rule refl)
+
+    ultimately show "(a ^ m div a ^ n) * a ^ n = a ^ m" by simp
+  qed
+
+  then show "a ^ n * a ^ (m - n) = a ^ n * (a ^ m div a ^ n)" using lt
+    by (simp add: power_add [symmetric])
+qed
+
+lemma mod_lemma: "[| (0::nat) < c; r < b |] ==> b * (q mod c) + r < b * c"
+  apply (cut_tac m = q and n = c in mod_less_divisor)
+  apply (drule_tac [2] m = "q mod c" in less_imp_Suc_add, auto)
+  apply (erule_tac P = "%x. lhs < rhs x" for lhs rhs in ssubst)
+  apply (simp add: add_mult_distrib2)
+  done
+
+lemmas m2pths = pos_mod_sign mod_exp_less_eq_exp
+
+lemmas int_mod_eq' = mod_pos_pos_trivial (* FIXME delete *)
+
+lemmas int_mod_le = zmod_le_nonneg_dividend (* FIXME: delete *)
 
 end

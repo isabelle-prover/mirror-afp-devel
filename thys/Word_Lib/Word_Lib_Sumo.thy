@@ -18,6 +18,7 @@ imports
   More_Divides
   More_List
   More_Misc
+  Strict_part_mono
   Most_significant_bit
   Next_and_Prev
   Norm_Words

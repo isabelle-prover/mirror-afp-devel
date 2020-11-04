@@ -11,10 +11,10 @@ theory Word_Lemmas
     Type_Syntax
     Next_and_Prev
     Enumeration_Word
-    More_Divides
     Word_EqI
     Rsplit
-    "HOL-Library.Sublist"
+    More_Divides
+    More_List
 begin
 
 lemma nat_mask_eq:
@@ -2080,8 +2080,6 @@ lemma ucast_nat_def:
   "of_nat (unat x) = (ucast :: 'a :: len word \<Rightarrow> 'b :: len word) x"
   by transfer simp
 
-lemmas if_fun_split = if_apply_def2
-
 lemma i_hate_words_helper:
   "i \<le> (j - k :: nat) \<Longrightarrow> i \<le> j"
   by simp
@@ -3391,7 +3389,7 @@ lemma to_bool_0 [simp]: "\<not>to_bool 0" by (simp add: to_bool_def)
 
 lemma from_bool_eq_if:
   "(from_bool Q = (if P then 1 else 0)) = (P = Q)"
-  by (simp add: case_bool_If from_bool_def split: if_split)
+  by (cases Q) (simp_all add: from_bool_def)
 
 lemma to_bool_eq_0:
   "(\<not> to_bool x) = (x = 0)"
@@ -4075,25 +4073,6 @@ lemma mask_exceed:
   "n \<ge> LENGTH('a) \<Longrightarrow> (x::'a::len word) && ~~ (mask n) = 0"
   by (simp add: and_not_mask shiftr_eq_0)
 
-lemma two_power_strict_part_mono:
-  "strict_part_mono {..LENGTH('a) - 1} (\<lambda>x. (2 :: 'a :: len word) ^ x)"
-proof -
-  { fix n
-    have "n < LENGTH('a) \<Longrightarrow> strict_part_mono {..n} (\<lambda>x. (2 :: 'a :: len word) ^ x)"
-    proof (induct n)
-      case 0 then show ?case by simp
-    next
-      case (Suc n)
-      from Suc.prems
-      have "2 ^ n < (2 :: 'a :: len word) ^ Suc n"
-        using power_strict_increasing unat_power_lower word_less_nat_alt by fastforce
-      with Suc
-      show ?case by (subst strict_part_mono_by_steps) simp
-    qed
-  }
-  then show ?thesis by simp
-qed
-
 lemma word_shift_by_2:
   "x * 4 = (x::'a::len word) << 2"
   by (simp add: shiftl_t2n)
@@ -4627,7 +4606,7 @@ lemma unat_add_lem':
 
 lemma from_bool_eq_if':
   "((if P then 1 else 0) = from_bool Q) = (P = Q)"
-  by (simp add: case_bool_If from_bool_def split: if_split)
+  by (cases Q) (simp_all add: from_bool_def)
 
 lemma word_exists_nth:
   "(w::'a::len word) \<noteq> 0 \<Longrightarrow> \<exists>i. w !! i"
@@ -5272,7 +5251,7 @@ lemma word_and_le':
 
 lemma word_and_less':
   "b < c \<Longrightarrow> (a :: 'a :: len word) && b < c"
-  by (metis word_and_le1 xtr7)
+  by transfer simp
 
 lemma shiftr_w2p:
   "x < LENGTH('a) \<Longrightarrow> 2 ^ x = (2 ^ (LENGTH('a) - 1) >> (LENGTH('a) - 1 - x) :: 'a :: len word)"
@@ -5440,8 +5419,7 @@ lemma aligned_mask_range_cases:
        mask_range p n \<supseteq> mask_range p' n'"
   apply (simp add: mask_range_to_bl)
   apply (rule Meson.disj_comm, rule disjCI)
-  apply (erule nonemptyE)
-  apply simp
+  apply auto
   apply (subgoal_tac "(\<exists>n''. LENGTH('a) - n = (LENGTH('a) - n') + n'')
                     \<or> (\<exists>n''. LENGTH('a) - n' = (LENGTH('a) - n) + n'')")
    apply (fastforce simp: take_add)
@@ -6087,78 +6065,5 @@ lemma bl_pad_to_length:
 lemma bl_pad_to_prefix:
   "prefix bl (bl_pad_to bl sz)"
   by (simp add: bl_pad_to_def)
-
-lemma same_length_is_parallel:
-  assumes len: "\<forall>y \<in> set as. length y = x"
-  shows  "\<forall>x \<in> set as. \<forall>y \<in> set as - {x}. x \<parallel> y"
-proof (rule, rule)
-  fix x y
-  assume xi: "x \<in> set as" and yi: "y \<in> set as - {x}"
-  from len obtain q where len': "\<forall>y \<in> set as. length y = q" ..
-
-  show "x \<parallel> y"
-  proof (rule not_equal_is_parallel)
-    from xi yi show "x \<noteq> y" by auto
-    from xi yi len' show "length x = length y" by (auto dest: bspec)
-  qed
-qed
-
-lemma sublist_equal_part:
-  "prefix xs ys \<Longrightarrow> take (length xs) ys = xs"
-  by (clarsimp simp: prefix_def)
-
-lemma prefix_length_less:
-  "strict_prefix xs ys \<Longrightarrow> length xs < length ys"
-  apply (clarsimp simp: strict_prefix_def)
-  apply (frule prefix_length_le)
-  apply (rule ccontr, simp)
-  apply (clarsimp simp: prefix_def)
-  done
-
-lemmas take_less = take_strict_prefix
-
-lemma not_prefix_longer:
-  "\<lbrakk> length xs > length ys \<rbrakk> \<Longrightarrow> \<not> prefix xs ys"
-  by (clarsimp dest!: prefix_length_le)
-
-lemma map_prefixI:
-  "prefix xs ys \<Longrightarrow> prefix (map f xs) (map f ys)"
-  by (clarsimp simp: prefix_def)
-
-lemma list_all2_induct_suffixeq [consumes 1, case_names Nil Cons]:
-  assumes lall: "list_all2 Q as bs"
-  and     nilr: "P [] []"
-  and    consr: "\<And>x xs y ys.
-  \<lbrakk>list_all2 Q xs ys; Q x y; P xs ys; suffix (x # xs) as; suffix (y # ys) bs\<rbrakk>
-  \<Longrightarrow> P (x # xs) (y # ys)"
-  shows  "P as bs"
-proof -
-  define as' where "as' == as"
-  define bs' where "bs' == bs"
-
-  have "suffix as as' \<and> suffix bs bs'" unfolding as'_def bs'_def by simp
-  then show ?thesis using lall
-  proof (induct rule: list_induct2 [OF list_all2_lengthD [OF lall]])
-    case 1 show ?case by fact
-  next
-    case (2 x xs y ys)
-
-    show ?case
-    proof (rule consr)
-      from "2.prems" show "list_all2 Q xs ys" and "Q x y" by simp_all
-      then show "P xs ys" using "2.hyps" "2.prems" by (auto dest: suffix_ConsD)
-      from "2.prems" show "suffix (x # xs) as" and "suffix (y # ys) bs"
-      by (auto simp: as'_def bs'_def)
-    qed
-  qed
-qed
-
-lemma take_prefix:
-  "(take (length xs) ys = xs) = prefix xs ys"
-proof (induct xs arbitrary: ys)
-  case Nil then show ?case by simp
-next
-  case Cons then show ?case by (cases ys) auto
-qed
 
 end

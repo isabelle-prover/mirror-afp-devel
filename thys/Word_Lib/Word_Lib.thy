@@ -13,6 +13,11 @@ theory Word_Lib
   Signed_Words
 begin
 
+lemma unat_power_lower [simp]:
+  assumes nv: "n < LENGTH('a::len)"
+  shows "unat ((2::'a::len word) ^ n) = 2 ^ n"
+  using assms by transfer simp
+
 definition
   ptr_add :: "'a :: len word \<Rightarrow> nat \<Rightarrow> 'a word" where
   "ptr_add ptr n \<equiv> ptr + of_nat n"
@@ -330,7 +335,7 @@ lemmas shiftr_mask = order_refl [THEN shiftr_mask_le, simp]
 
 lemma word_leI:
   "(\<And>n.  \<lbrakk>n < size (u::'a::len word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len word) !! n) \<Longrightarrow> u <= v"
-  apply (rule xtr4)
+  apply (rule xtrans(4))
    apply (rule word_and_le2)
   apply (rule word_eqI)
   apply (simp add: word_ao_nth)
@@ -345,7 +350,7 @@ lemma le_mask_iff:
   for w :: \<open>'a::len word\<close>
   apply safe
    apply (rule word_le_0_iff [THEN iffD1])
-   apply (rule xtr3)
+   apply (rule xtrans(3))
     apply (erule_tac [2] le_shiftr)
    apply simp
   apply (rule word_leI)

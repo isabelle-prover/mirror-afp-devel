@@ -2,7 +2,10 @@
 *)
 
 theory Bitwise
-  imports "HOL-Library.Word" More_Arithmetic Most_significant_bit
+  imports
+    "HOL-Library.Word"
+    Most_significant_bit
+    More_Arithmetic
 begin
 
 text \<open>Helper constants used in defining addition\<close>
@@ -391,6 +394,11 @@ lemma upt_eq_list_intros:
 
 
 subsection \<open>Tactic definition\<close>
+
+lemma if_bool_simps:
+  "If p True y = (p \<or> y) \<and> If p False y = (\<not> p \<and> y) \<and>
+    If p y True = (p \<longrightarrow> y) \<and> If p y False = (p \<and> y)"
+  by auto
 
 ML \<open>
 structure Word_Bitwise_Tac =

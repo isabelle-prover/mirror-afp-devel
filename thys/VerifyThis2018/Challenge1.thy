@@ -295,9 +295,8 @@ subsection \<open>Refinement 1: List with Gap\<close>
     apply refine_vcg    
     using assms
     unfolding gap_\<alpha>_def gap_invar_def can_insert_def
-    apply clarsimp_all
     apply (auto simp: op_list_blit_def)
-    by (simp add: min_def)  
+    done  
   
   definition "insert1 x \<equiv> \<lambda>(l,r,buf). doN {
     (l,r,buf) \<leftarrow> 

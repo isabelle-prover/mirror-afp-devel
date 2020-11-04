@@ -10,7 +10,7 @@ theory Aligned
   imports
   "HOL-Library.Word"
   Word_Lib
-  More_Misc
+  More_Divides
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -167,11 +167,6 @@ lemma is_aligned_to_bl:
   apply clarsimp
   apply arith
   done
-
-lemma unat_power_lower [simp]:
-  assumes nv: "n < LENGTH('a::len)"
-  shows "unat ((2::'a::len word) ^ n) = 2 ^ n"
-  using assms by transfer simp
 
 lemma power_overflow:
   "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
@@ -905,7 +900,7 @@ lemma is_aligned_neg_mask_weaken:
   "\<lbrakk> is_aligned p n; m \<le> n \<rbrakk> \<Longrightarrow> p && ~~(mask m) = p"
    using is_aligned_neg_mask_eq is_aligned_weaken by blast
 
-lemma is_aligned_neg_mask2[simp]:
+lemma is_aligned_neg_mask2 [simp]:
   "is_aligned (a && ~~(mask n)) n"
   by (simp add: and_not_mask is_aligned_shift)
 

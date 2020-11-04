@@ -687,7 +687,6 @@ next
     including undefined_transfer 
     unfolding uint_divmod_def uint_sdiv_def div0_uint_def mod0_uint_def
       wivs_overflow_uint_def
-    apply (simp only: if_simps)
     apply transfer
     apply (simp add: divmod_via_sdivmod push_bit_of_1 shiftl_eq_push_bit shiftr_eq_drop_bit)
     done
