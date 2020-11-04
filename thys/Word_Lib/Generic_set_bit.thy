@@ -3,8 +3,8 @@
 
 section \<open>Operation variant for setting and unsetting bits\<close>
 
-theory Misc_set_bit
-  imports "HOL-Library.Word" Misc_msb
+theory Generic_set_bit
+  imports "HOL-Library.Word" Most_significant_bit
 begin
 
 class set_bit = ring_bit_operations +
@@ -163,5 +163,13 @@ lemma word_set_ge: "w \<le> set_bit w n True"
 lemma set_bit_beyond:
   "size x \<le> n \<Longrightarrow> set_bit x n b = x" for x :: "'a :: len word"
   by (auto intro: word_eqI simp add: test_bit_set_gen word_size)
+
+lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
+  apply (rule word_eqI)
+  apply (auto simp add: test_bit_set_gen nth_shiftl word_size
+              simp del: word_set_bit_0 shiftl_1)
+  done
+
+lemmas one_bit_pow = trans [OF one_bit_shiftl shiftl_1]
 
 end

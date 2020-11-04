@@ -8,21 +8,22 @@ section "Lemmas with Generic Word Length"
 
 theory Word_Lemmas
   imports
-    "HOL-Library.Sublist"
-    Misc_lsb
+    Type_Syntax
+    Next_and_Prev
+    Enumeration_Word
+    More_Divides
     Word_EqI
-    Word_Enum
-    Norm_Words
-    Word_Type_Syntax
-    Bitwise_Signed
-    Hex_Words
+    Rsplit
+    "HOL-Library.Sublist"
 begin
 
-lemmas word_next_def = word_next_unfold
+lemma nat_mask_eq:
+  \<open>nat (mask n) = mask n\<close>
+  by (simp add: nat_eq_iff of_nat_mask_eq)
 
-lemmas word_prev_def = word_prev_unfold
-
-lemmas is_aligned_def = is_aligned_iff_dvd_nat
+lemma unat_mask_eq:
+  \<open>unat (mask n :: 'a::len word) = mask (min LENGTH('a) n)\<close>
+  by transfer (simp add: nat_mask_eq)
 
 lemma word_plus_mono_left:
   fixes x :: "'a :: len word"
@@ -61,35 +62,6 @@ lemma ucast_ucast_eq:
 lemma ucast_0_I:
   "x = 0 \<Longrightarrow> ucast x = 0"
   by simp
-
-text \<open>right-padding a word to a certain length\<close>
-
-definition
-  "bl_pad_to bl sz \<equiv> bl @ (replicate (sz - length bl) False)"
-
-lemma bl_pad_to_length:
-  assumes lbl: "length bl \<le> sz"
-  shows   "length (bl_pad_to bl sz) = sz"
-  using lbl by (simp add: bl_pad_to_def)
-
-lemma bl_pad_to_prefix:
-  "prefix bl (bl_pad_to bl sz)"
-  by (simp add: bl_pad_to_def)
-
-lemma same_length_is_parallel:
-  assumes len: "\<forall>y \<in> set as. length y = x"
-  shows  "\<forall>x \<in> set as. \<forall>y \<in> set as - {x}. x \<parallel> y"
-proof (rule, rule)
-  fix x y
-  assume xi: "x \<in> set as" and yi: "y \<in> set as - {x}"
-  from len obtain q where len': "\<forall>y \<in> set as. length y = q" ..
-
-  show "x \<parallel> y"
-  proof (rule not_equal_is_parallel)
-    from xi yi show "x \<noteq> y" by auto
-    from xi yi len' show "length x = length y" by (auto dest: bspec)
-  qed
-qed
 
 text \<open>Lemmas about words\<close>
 
@@ -457,7 +429,7 @@ proof (cases n)
   then show ?thesis using xin by simp
 next
   case (Suc m)
-  show ?thesis using xin nv by simp
+  show ?thesis using xin nv le_m1_iff_lt p2_gt_0 by auto
 qed
 
 lemma upto_enum_len_less:
@@ -502,7 +474,10 @@ lemma word_add_le_dest:
 
 lemma mask_shift:
   "(x && ~~ (mask y)) >> y = x >> y"
-  by word_eqI
+  apply (rule bit_eqI)
+  apply (simp add: bit_and_iff bit_not_iff bit_shiftr_word_iff bit_mask_iff not_le)
+  using bit_imp_le_length apply auto
+  done
 
 lemma word_add_le_mono1:
   fixes i :: "'a :: len word"
@@ -837,9 +812,9 @@ next
   show ?thesis .
 qed
 
-lemma is_aligned_0'[simp]:
+lemma is_aligned_0':
   "is_aligned 0 n"
-  by (simp add: is_aligned_def)
+  by (fact is_aligned_0)
 
 lemma p_assoc_help:
   fixes p :: "'a::{ring,power,numeral,one}"
@@ -1330,10 +1305,6 @@ lemma power_le_mono:
   apply simp
   done
 
-lemma sublist_equal_part:
-  "prefix xs ys \<Longrightarrow> take (length xs) ys = xs"
-  by (clarsimp simp: prefix_def)
-
 lemma two_power_eq:
   "\<lbrakk>n < LENGTH('a); m < LENGTH('a)\<rbrakk>
    \<Longrightarrow> ((2::'a::len word) ^ n = 2 ^ m) = (n = m)"
@@ -1341,20 +1312,6 @@ lemma two_power_eq:
   apply (rule order_antisym)
    apply (simp add: power_le_mono[where 'a='a])+
   done
-
-lemma prefix_length_less:
-  "strict_prefix xs ys \<Longrightarrow> length xs < length ys"
-  apply (clarsimp simp: strict_prefix_def)
-  apply (frule prefix_length_le)
-  apply (rule ccontr, simp)
-  apply (clarsimp simp: prefix_def)
-  done
-
-lemmas take_less = take_strict_prefix
-
-lemma not_prefix_longer:
-  "\<lbrakk> length xs > length ys \<rbrakk> \<Longrightarrow> \<not> prefix xs ys"
-  by (clarsimp dest!: prefix_length_le)
 
 lemma of_bl_length:
   "length xs < LENGTH('a) \<Longrightarrow> of_bl xs < (2 :: 'a::len word) ^ length xs"
@@ -1402,10 +1359,6 @@ lemma of_nat_inj:
    (of_nat x = (of_nat y :: 'a :: len word)) = (x = y)"
   by (simp add: word_unat.norm_eq_iff [symmetric])
 
-lemma map_prefixI:
-  "prefix xs ys \<Longrightarrow> prefix (map f xs) (map f ys)"
-  by (clarsimp simp: prefix_def)
-
 lemma if_Some_None_eq_None:
   "((if P then Some v else None) = None) = (\<not> P)"
   by simp
@@ -1442,34 +1395,6 @@ next
   proof (rule consr)
     from "2.prems" show "list_all2 Q xs ys" and "Q x y" by simp_all
     then show "P xs ys" by (intro "2.hyps")
-  qed
-qed
-
-lemma list_all2_induct_suffixeq [consumes 1, case_names Nil Cons]:
-  assumes lall: "list_all2 Q as bs"
-  and     nilr: "P [] []"
-  and    consr: "\<And>x xs y ys.
-  \<lbrakk>list_all2 Q xs ys; Q x y; P xs ys; suffix (x # xs) as; suffix (y # ys) bs\<rbrakk>
-  \<Longrightarrow> P (x # xs) (y # ys)"
-  shows  "P as bs"
-proof -
-  define as' where "as' == as"
-  define bs' where "bs' == bs"
-
-  have "suffix as as' \<and> suffix bs bs'" unfolding as'_def bs'_def by simp
-  then show ?thesis using lall
-  proof (induct rule: list_induct2 [OF list_all2_lengthD [OF lall]])
-    case 1 show ?case by fact
-  next
-    case (2 x xs y ys)
-
-    show ?case
-    proof (rule consr)
-      from "2.prems" show "list_all2 Q xs ys" and "Q x y" by simp_all
-      then show "P xs ys" using "2.hyps" "2.prems" by (auto dest: suffix_ConsD)
-      from "2.prems" show "suffix (x # xs) as" and "suffix (y # ys) bs"
-      by (auto simp: as'_def bs'_def)
-    qed
   qed
 qed
 
@@ -1695,14 +1620,6 @@ lemma mask_add_aligned:
   apply (subst mask_inner_mask [symmetric])
   apply simp
   done
-
-lemma take_prefix:
-  "(take (length xs) ys = xs) = prefix xs ys"
-proof (induct xs arbitrary: ys)
-  case Nil then show ?case by simp
-next
-  case Cons then show ?case by (cases ys) auto
-qed
 
 lemma cart_singleton_empty:
   "(S \<times> {e} = {}) = (S = {})"
@@ -3807,17 +3724,8 @@ lemma odd_word_imp_even_next:"odd (unat (x::('a::len) word)) \<Longrightarrow> x
 lemma overflow_imp_lsb:"(x::('a::len) word) + 1 = 0 \<Longrightarrow> x !! 0"
   using even_plus_one_iff [of x] by (simp add: test_bit_word_eq)
 
-lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"
-  apply (simp add: word_lsb_def Groebner_Basis.algebra(31))
-  apply transfer
-  apply (simp add: even_nat_iff)
-  done
-
 lemma odd_iff_lsb:"odd (unat (x::('a::len) word)) = x !! 0"
-  apply (simp add:even_iff_mod_2_eq_zero)
-  apply (subst word_lsb_nat[unfolded One_nat_def, symmetric])
-  apply (rule word_lsb_alt)
-  done
+  by transfer (simp add: even_nat_iff)
 
 lemma of_nat_neq_iff_word:
       "x mod 2 ^ LENGTH('a) \<noteq> y mod 2 ^ LENGTH('a) \<Longrightarrow>
@@ -3832,11 +3740,10 @@ lemma of_nat_neq_iff_word:
   done
 
 lemma shiftr1_irrelevant_lsb:"(x::('a::len) word) !! 0 \<or> x >> 1 = (x + 1) >> 1"
-  using word_overflow_unat [of x]
-  apply (simp only: shiftr1_is_div_2 flip: odd_iff_lsb)
-  apply (cases \<open>2 \<le> LENGTH('a)\<close>)
-   apply (auto simp add: test_bit_def' word_arith_nat_div dest: overflow_imp_lsb)
-  using odd_iff_lsb overflow_imp_lsb by blast
+  apply (cases \<open>LENGTH('a)\<close>; transfer)
+   apply (simp_all add: take_bit_drop_bit)
+  apply (simp add: drop_bit_take_bit drop_bit_Suc)
+  done
 
 lemma shiftr1_0_imp_only_lsb:"((x::('a::len) word) + 1) >> 1 = 0 \<Longrightarrow> x = 0 \<or> x + 1 = 0"
   by (metis One_nat_def shiftr1_0_or_1 word_less_1 word_overflow)
@@ -4284,8 +4191,10 @@ lemma offset_not_aligned:
   "\<lbrakk> is_aligned (p::'a::len word) n; i > 0; i < 2 ^ n; n < LENGTH('a)\<rbrakk> \<Longrightarrow>
    \<not> is_aligned (p + of_nat i) n"
   apply (erule is_aligned_add_not_aligned)
-  unfolding is_aligned_def
-  by (metis le_unat_uoi nat_dvd_not_less order_less_imp_le unat_power_lower)
+  apply transfer
+  apply (auto simp add: is_aligned_iff_udvd)
+  apply (metis bintrunc_bintrunc_ge int_ops(1) nat_int_comparison(1) nat_less_le take_bit_eq_0_iff take_bit_nat_eq_self_iff take_bit_of_nat)
+  done
 
 lemma length_upto_enum_one:
   fixes x :: "'a :: len word"
@@ -5089,12 +4998,12 @@ lemma is_aligned_add_step_le:
    apply (drule (1) is_aligned_over_length)+
    apply (drule mask_over_length)
    apply clarsimp
-  apply (clarsimp simp: word_le_nat_alt not_less)
+  apply (clarsimp simp: word_le_nat_alt not_less not_le)
   apply (subst (asm) unat_plus_simple[THEN iffD1], erule is_aligned_no_overflow_mask)
-  apply (clarsimp simp: is_aligned_def dvd_def word_le_nat_alt)
-  apply (drule le_imp_less_Suc)
-  apply (simp add: Suc_2p_unat_mask)
-  by (metis Groups.mult_ac(2) Suc_leI linorder_not_less mult_le_mono order_refl times_nat.simps(2))
+  apply (subst (asm) unat_add_lem' [symmetric])
+   apply (simp add: is_aligned_mask_offset_unat)
+  apply (metis gap_between_aligned linorder_not_less mask_eq_decr_exp unat_arith_simps(2))
+  done
 
 lemma power_2_mult_step_le:
   "\<lbrakk>n' \<le> n; 2 ^ n' * k' < 2 ^ n * k\<rbrakk> \<Longrightarrow> 2 ^ n' * (k' + 1) \<le> 2 ^ n * (k::nat)"
@@ -5119,7 +5028,7 @@ lemma aligned_mask_step:
   apply (simp add: word_le_nat_alt unat_plus_simple)
   apply (subst unat_plus_simple[THEN iffD1], erule is_aligned_no_overflow_mask)+
   apply (subst (asm) unat_plus_simple[THEN iffD1], erule is_aligned_no_overflow_mask)
-  apply (clarsimp simp: is_aligned_def dvd_def)
+  apply (clarsimp simp: dvd_def is_aligned_iff_dvd_nat)
   apply (rename_tac k k')
   apply (thin_tac "unat p = x" for p x)+
   apply (subst Suc_le_mono[symmetric])
@@ -5340,7 +5249,7 @@ lemma add_right_shift:
   apply (subst if_P)
    apply (erule order_le_less_trans[rotated])
    apply (simp add: add_mono)
-  apply (simp add: shiftr_div_2n' is_aligned_def)
+  apply (simp add: shiftr_div_2n' is_aligned_iff_dvd_nat)
   done
 
 lemma sub_right_shift:
@@ -6164,5 +6073,92 @@ lemma bin_to_bl_of_bl_eq:
   apply (simp add: is_aligned_nth[THEN iffD1, rule_format] test_bit_of_bl rev_nth)
   apply arith
   done
+
+text \<open>right-padding a word to a certain length\<close>
+
+definition
+  "bl_pad_to bl sz \<equiv> bl @ (replicate (sz - length bl) False)"
+
+lemma bl_pad_to_length:
+  assumes lbl: "length bl \<le> sz"
+  shows   "length (bl_pad_to bl sz) = sz"
+  using lbl by (simp add: bl_pad_to_def)
+
+lemma bl_pad_to_prefix:
+  "prefix bl (bl_pad_to bl sz)"
+  by (simp add: bl_pad_to_def)
+
+lemma same_length_is_parallel:
+  assumes len: "\<forall>y \<in> set as. length y = x"
+  shows  "\<forall>x \<in> set as. \<forall>y \<in> set as - {x}. x \<parallel> y"
+proof (rule, rule)
+  fix x y
+  assume xi: "x \<in> set as" and yi: "y \<in> set as - {x}"
+  from len obtain q where len': "\<forall>y \<in> set as. length y = q" ..
+
+  show "x \<parallel> y"
+  proof (rule not_equal_is_parallel)
+    from xi yi show "x \<noteq> y" by auto
+    from xi yi len' show "length x = length y" by (auto dest: bspec)
+  qed
+qed
+
+lemma sublist_equal_part:
+  "prefix xs ys \<Longrightarrow> take (length xs) ys = xs"
+  by (clarsimp simp: prefix_def)
+
+lemma prefix_length_less:
+  "strict_prefix xs ys \<Longrightarrow> length xs < length ys"
+  apply (clarsimp simp: strict_prefix_def)
+  apply (frule prefix_length_le)
+  apply (rule ccontr, simp)
+  apply (clarsimp simp: prefix_def)
+  done
+
+lemmas take_less = take_strict_prefix
+
+lemma not_prefix_longer:
+  "\<lbrakk> length xs > length ys \<rbrakk> \<Longrightarrow> \<not> prefix xs ys"
+  by (clarsimp dest!: prefix_length_le)
+
+lemma map_prefixI:
+  "prefix xs ys \<Longrightarrow> prefix (map f xs) (map f ys)"
+  by (clarsimp simp: prefix_def)
+
+lemma list_all2_induct_suffixeq [consumes 1, case_names Nil Cons]:
+  assumes lall: "list_all2 Q as bs"
+  and     nilr: "P [] []"
+  and    consr: "\<And>x xs y ys.
+  \<lbrakk>list_all2 Q xs ys; Q x y; P xs ys; suffix (x # xs) as; suffix (y # ys) bs\<rbrakk>
+  \<Longrightarrow> P (x # xs) (y # ys)"
+  shows  "P as bs"
+proof -
+  define as' where "as' == as"
+  define bs' where "bs' == bs"
+
+  have "suffix as as' \<and> suffix bs bs'" unfolding as'_def bs'_def by simp
+  then show ?thesis using lall
+  proof (induct rule: list_induct2 [OF list_all2_lengthD [OF lall]])
+    case 1 show ?case by fact
+  next
+    case (2 x xs y ys)
+
+    show ?case
+    proof (rule consr)
+      from "2.prems" show "list_all2 Q xs ys" and "Q x y" by simp_all
+      then show "P xs ys" using "2.hyps" "2.prems" by (auto dest: suffix_ConsD)
+      from "2.prems" show "suffix (x # xs) as" and "suffix (y # ys) bs"
+      by (auto simp: as'_def bs'_def)
+    qed
+  qed
+qed
+
+lemma take_prefix:
+  "(take (length xs) ys = xs) = prefix xs ys"
+proof (induct xs arbitrary: ys)
+  case Nil then show ?case by simp
+next
+  case Cons then show ?case by (cases ys) auto
+qed
 
 end

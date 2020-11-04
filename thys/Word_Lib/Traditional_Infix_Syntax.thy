@@ -3,7 +3,7 @@
 
 section \<open>Operation variants with traditional syntax\<close>
 
-theory Traditional_Syntax
+theory Traditional_Infix_Syntax
   imports "HOL-Library.Word"
 begin
 

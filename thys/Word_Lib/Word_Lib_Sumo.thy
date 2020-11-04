@@ -1,21 +1,40 @@
-(*  Title:      HOL/Word/More_thy
-*)
 
 section \<open>Ancient comprehensive Word Library\<close>
 
-theory More_Word
+theory Word_Lib_Sumo
 imports
   "HOL-Library.Word"
+  Aligned
   Ancient_Numeral
-  Reversed_Bit_Lists
-  Bits_Int
   Bit_Comprehension
-  Misc_Auxiliary
-  Misc_Arithmetic
-  Misc_set_bit
-  Misc_lsb
-  Misc_Typedef
-  Word_rsplit
+  Bits_Int
+  Bitwise_Signed
+  Bitwise
+  Enumeration_Word
+  Generic_set_bit
+  Hex_Words
+  Least_significant_bit
+  More_Arithmetic
+  More_Divides
+  More_List
+  More_Misc
+  Most_significant_bit
+  Next_and_Prev
+  Norm_Words
+  Reversed_Bit_Lists
+  Rsplit
+  Signed_Words
+  Traditional_Infix_Syntax
+  Typedef_Morphisms
+  Type_Syntax
+  Word_EqI
+  Word_Lemmas_32
+  Word_Lemmas_64
+  Word_Lemmas
+  Word_Lib
+  Word_Setup_32
+  Word_Setup_64
+  Word_Syntax
 begin
 
 declare signed_take_bit_Suc [simp]
@@ -49,6 +68,12 @@ lemmas of_nat_word_eq_iff = word_of_nat_eq_iff
 lemmas of_nat_word_eq_0_iff = word_of_nat_eq_0_iff
 lemmas of_int_word_eq_iff = word_of_int_eq_iff
 lemmas of_int_word_eq_0_iff = word_of_int_eq_0_iff
+
+lemmas word_next_def = word_next_unfold
+
+lemmas word_prev_def = word_prev_unfold
+
+lemmas is_aligned_def = is_aligned_iff_dvd_nat
 
 lemma shiftl_transfer [transfer_rule]:
   includes lifting_syntax

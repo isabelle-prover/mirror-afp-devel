@@ -7,7 +7,7 @@
 section "32-Bit Machine Word Setup"
 
 theory Word_Setup_32
-imports Word_Enum
+imports "HOL-Library.Word"
 begin
 
 text \<open>This theory defines standard platform-specific word size and alignment.\<close>

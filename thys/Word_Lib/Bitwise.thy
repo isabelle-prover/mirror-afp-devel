@@ -2,7 +2,7 @@
 *)
 
 theory Bitwise
-  imports "HOL-Library.Word" Misc_Arithmetic Misc_msb
+  imports "HOL-Library.Word" More_Arithmetic Most_significant_bit
 begin
 
 text \<open>Helper constants used in defining addition\<close>

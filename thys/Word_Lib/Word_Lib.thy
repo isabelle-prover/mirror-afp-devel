@@ -9,7 +9,6 @@ section "Additional Word Operations"
 theory Word_Lib
   imports
   "HOL-Library.Signed_Division"
-  Misc_set_bit
   Word_Syntax
   Signed_Words
 begin
@@ -382,14 +381,6 @@ lemmas and_mask_eq_iff_le_mask = trans
 lemma mask_shiftl_decompose:
   "mask m << n = mask (m + n) && ~~ (mask n)"
   by (auto intro!: word_eqI simp: and_not_mask nth_shiftl nth_shiftr word_size)
-
-lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
-  apply (rule word_eqI)
-  apply (auto simp add: test_bit_set_gen nth_shiftl word_size
-              simp del: word_set_bit_0 shiftl_1)
-  done
-
-lemmas one_bit_pow = trans [OF one_bit_shiftl shiftl_1]
 
 lemmas bin_sc_minus_simps =
   bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]

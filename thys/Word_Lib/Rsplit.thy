@@ -1,9 +1,8 @@
-(*  Title:      HOL/Word/Word_rsplit.thy
-    Author:     Jeremy Dawson and Gerwin Klein, NICTA
+(*  Author:     Jeremy Dawson and Gerwin Klein, NICTA
 *)
 
-theory Word_rsplit
-  imports Bits_Int "HOL-Library.Word"
+theory Rsplit
+  imports "HOL-Library.Word" Bits_Int
 begin
 
 definition word_rsplit :: "'a::len word \<Rightarrow> 'b::len word list"

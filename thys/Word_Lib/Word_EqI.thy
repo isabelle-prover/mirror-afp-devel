@@ -8,7 +8,8 @@ section "Solving Word Equalities"
 
 theory Word_EqI
   imports
-    Word_Next
+    Word_Lib
+    Aligned
     "HOL-Eisbach.Eisbach_Tools"
 begin
 
@@ -67,7 +68,7 @@ lemma less_2p_is_upper_bits_unset:
 
 lemma word_le_minus_one_leq:
   "x < y \<Longrightarrow> x \<le> y - 1" for x :: "'a :: len word"
-  by (simp add: plus_one_helper)
+  by transfer (metis le_less_trans less_irrefl take_bit_decr_eq take_bit_nonnegative zle_diff1_eq) 
 
 lemma word_less_sub_le[simp]:
   fixes x :: "'a :: len word"

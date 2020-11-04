@@ -1,5 +1,4 @@
-(*  Title:      HOL/Word/Bit_Comprehension.thy
-    Author:     Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
+(*  Author:     Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
 *)
 
 section \<open>Comprehension syntax for bit expressions\<close>

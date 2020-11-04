@@ -7,7 +7,7 @@
 section "Normalising Word Numerals"
 
 theory Norm_Words
-  imports Signed_Words More_Word
+  imports Bits_Int Signed_Words
 begin
 
 text \<open>

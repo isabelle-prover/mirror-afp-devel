@@ -15,7 +15,7 @@ theory Poly_Mod
   "HOL-Computational_Algebra.Primes"
   Polynomial_Factorization.Square_Free_Factorization
   Unique_Factorization_Poly
-  "Word_Lib.Misc_Arithmetic" 
+  "Word_Lib.More_Arithmetic"
 begin
 
 locale poly_mod = fixes m :: "int" 

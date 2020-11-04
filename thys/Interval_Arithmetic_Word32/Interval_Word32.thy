@@ -2,10 +2,7 @@
 theory Interval_Word32
 imports
   Complex_Main
-  Word_Lib.Word_Lemmas
-  Word_Lib.Word_Lib
-  Word_Lib.Word_Syntax
-  Word_Lib.Bitwise
+  Word_Lib.Word_Lib_Sumo
 begin
 
 abbreviation signed_real_of_word :: \<open>'a::len word \<Rightarrow> real\<close>
@@ -1060,7 +1057,7 @@ next
         \<and> r' = real_of_int (sint w)
         \<and> (real_of_int (sint w)) <  (real_of_int (sint POS_INF)) 
         \<and> less (real_of_int (sint (uminus (minus(2 ^ 31) 1))))  (real_of_int (sint w))))"
-       using  leq anImp geq by auto
+       using leq anImp geq by meson
    qed
    have int_case:"\<not>(((scast POS_INF)::64 Word.word) <=s ?sum) 
               \<Longrightarrow> \<not> (?sum <=s ((scast NEG_INF)::64 Word.word)) 
@@ -1751,7 +1748,8 @@ next
            r' =  (real_of_int (sint w)) \<and>
             (real_of_int (sint w)) <  (real_of_int (sint POS_INF)) 
         \<and> less ( (real_of_int (sint (uminus (minus(2 ^ 31) 1))))) ((real_of_int (sint w)))))"
-    using  leq geq by auto
+    using leq geq
+    by (meson dual_order.strict_trans linorder_not_le order_less_irrefl) 
   qed
   have bigThree:"0x7FFFFFFF <=s ((scast w1)::64 Word.word) + ((scast w2)::64 Word.word) 
     \<Longrightarrow> \<exists>r'\<le>r1 + r2. 2147483647 \<le> r'"

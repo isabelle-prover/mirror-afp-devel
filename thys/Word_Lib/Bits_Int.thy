@@ -1,5 +1,4 @@
-(*  Title:      HOL/Word/Bits_Int.thy
-    Author:     Jeremy Dawson and Gerwin Klein, NICTA
+(*  Author:     Jeremy Dawson and Gerwin Klein, NICTA
 *)
 
 section \<open>Bitwise Operations on integers\<close>
@@ -7,7 +6,7 @@ section \<open>Bitwise Operations on integers\<close>
 theory Bits_Int
   imports
     "HOL-Library.Word"
-    Traditional_Syntax
+    Traditional_Infix_Syntax
 begin
 
 subsection \<open>Implicit bit representation of \<^typ>\<open>int\<close>\<close>

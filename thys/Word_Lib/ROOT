@@ -5,9 +5,7 @@ session Word_Lib (AFP) = HOL +
   sessions
     "HOL-Eisbach"
   theories
-    Word_Lemmas_32
-    Word_Lemmas_64
-    Examples
     Guide
+    Examples
   document_files
     "root.tex"

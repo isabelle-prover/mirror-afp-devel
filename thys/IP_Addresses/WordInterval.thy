@@ -464,7 +464,7 @@ begin
       apply(case_tac [!] "ms = 0")
         apply(case_tac [!] "ms \<le> s")
             apply(case_tac [!] "me = max_word")
-                    apply(simp_all add: word_prev_def word_next_def min_def max_def)
+                    apply(simp_all add: word_next_unfold word_prev_unfold min_def max_def)
             apply(safe)
                                   apply(auto)
                           apply(uint_arith)

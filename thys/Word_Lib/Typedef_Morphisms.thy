@@ -6,7 +6,7 @@
 
 section \<open>Type Definition Theorems\<close>
 
-theory Misc_Typedef
+theory Typedef_Morphisms
   imports Main "HOL-Library.Word" Bit_Comprehension Bits_Int
 begin
 

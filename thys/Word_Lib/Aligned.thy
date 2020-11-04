@@ -7,10 +7,10 @@
 section "Word Alignment"
 
 theory Aligned
-imports
+  imports
+  "HOL-Library.Word"
   Word_Lib
-  HOL_Lemmas
-  More_Divides
+  More_Misc
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -19,7 +19,7 @@ lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow
 
 lemma is_aligned_iff_udvd:
   \<open>is_aligned w n \<longleftrightarrow> 2 ^ n udvd w\<close>
-  by transfer (simp flip: take_bit_eq_0_iff)
+  by transfer (simp flip: take_bit_eq_0_iff add: min_def)
 
 lemma is_aligned_iff_take_bit_eq_0:
   \<open>is_aligned w n \<longleftrightarrow> take_bit n w = 0\<close>
@@ -99,7 +99,7 @@ next
     then have \<open>2 ^ LENGTH('a) \<le> 2 ^ n * q\<close>
       by (simp add: l power_add)
     with unat_w [symmetric] show False
-      by (simp add: le_def)
+      by (metis le_antisym nat_less_le unsigned_less) 
   qed
   ultimately show thesis
     using that by blast
@@ -419,7 +419,7 @@ proof -
   proof (cases "sz = 0")
     case True
     then show ?thesis using off ptrq qv
-      by (simp add: take_bit_nat_less_exp)
+      by simp
   next
     case False
     then have sne: "0 < sz" ..

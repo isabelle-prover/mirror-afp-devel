@@ -6,7 +6,7 @@
 
 section "Generic Lemmas used in the Word Library"
 
-theory HOL_Lemmas
+theory More_Misc
 imports Main
 begin
 

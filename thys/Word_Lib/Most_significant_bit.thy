@@ -1,9 +1,9 @@
 (*  Author:     Jeremy Dawson, NICTA
 *)
 
-section \<open>Operation variant for the most significant bit\<close>
+section \<open>Dedicated operation for the most significant bit\<close>
 
-theory Misc_msb
+theory Most_significant_bit
   imports
     "HOL-Library.Word"
     Reversed_Bit_Lists

@@ -1,8 +1,7 @@
-(*  Title:      HOL/Word/Misc_Arithmetic.thy  *)
 
-section \<open>Miscellaneous lemmas, mostly for arithmetic\<close>
+section \<open>Miscellaneous lemmas (mostly) for arithmetic\<close>
 
-theory Misc_Arithmetic
+theory More_Arithmetic
   imports Main Bits_Int
 begin
 

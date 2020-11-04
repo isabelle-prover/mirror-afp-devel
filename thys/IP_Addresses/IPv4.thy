@@ -7,6 +7,10 @@ imports IP_Address
         (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
+lemma take_bit_word_beyond_length_eq:
+  \<open>take_bit n w = w\<close> if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
+  using that by transfer simp
+
 
 section \<open>IPv4 Adresses\<close>
   text\<open>An IPv4 address is basically a 32 bit unsigned integer.\<close>
@@ -211,7 +215,7 @@ subsection\<open>IP Ranges: Examples\<close>
 
   lemma ipv4set_from_cidr_32: fixes addr :: ipv4addr
     shows "ipset_from_cidr addr 32 = {addr}"
-    by(simp add: ipset_from_cidr_alt mask_eq)
+    by (simp add: ipset_from_cidr_alt take_bit_word_beyond_length_eq flip: take_bit_eq_mask)
 
   lemma  fixes pre :: ipv4addr
     shows "ipset_from_cidr pre len = {(pre AND ((mask len) << (32 - len))) .. pre OR (mask (32 - len))}"
@@ -230,9 +234,9 @@ subsection\<open>IP Ranges: Examples\<close>
     by(simp add: addr_in_ipset_from_cidr_code)
 
   (*small numbers because we didn't load Code_Target_Nat. Should work by eval*)
-  lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,0)) 16)"
-    by(simp add: ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def ipset_from_cidr_def
-                    ipset_from_netmask_def mask_eq)
+lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,0)) 16)"
+  by (simp add: ipv4addr_of_nat_def ipset_from_cidr_def ipv4addr_of_dotdecimal.simps
+    ipset_from_netmask_def mask_eq_exp_minus_1 word_le_def take_bit_minus_one_eq_mask)
 
   definition ipv4range_UNIV :: "32 wordinterval" where "ipv4range_UNIV \<equiv> wordinterval_UNIV"
 
