@@ -186,9 +186,10 @@ begin
     assumes "\<nu> \<star> \<mu> \<noteq> null"
     shows "arr (\<nu> \<star> \<mu>)" and "dom (\<nu> \<star> \<mu>) = dom \<nu> \<star> dom \<mu>" and "cod (\<nu> \<star> \<mu>) = cod \<nu> \<star> cod \<mu>"
       using assms preserves_arr preserves_dom preserves_cod VoV.arr_char VoV.inclusion
+            VoV.dom_simp VoV.cod_simp
       by force+
 
-    lemma ide_hcomp\<^sub>W\<^sub>C [simp]:
+    lemma ide_hcomp\<^sub>W\<^sub>C:
     assumes "ide f" and "ide g" and "g \<star> f \<noteq> null"
     shows "ide (g \<star> f)"
       using assms preserves_ide VoV.ide_char by force
@@ -405,14 +406,14 @@ begin
           hence "arr \<nu> \<and> left g \<nu>"
             using L.hom_char by blast
           thus ?thesis
-            using assms 1 left_def by fastforce
+            using assms 1 left_def L.dom_simp L.cod_simp L.in_hom_char by auto
         qed
         show "H\<^sub>L g (L.comp \<nu> \<mu>) = L.comp (H\<^sub>L g \<nu>) (H\<^sub>L g \<mu>)"
         proof -
           have "H\<^sub>L g (L.comp \<nu> \<mu>) = g \<star> (\<nu> \<cdot> \<mu>)"
-            using \<mu> \<nu> H\<^sub>L_def L.comp_def L.arr_char by fastforce
+            using \<mu> \<nu> H\<^sub>L_def L.comp_def L.arr_char L.dom_simp L.cod_simp by fastforce
           also have "... = (g \<star> \<nu>) \<cdot> (g \<star> \<mu>)"
-            using assms \<mu> \<nu> L.inclusion whisker_left L.arr_char by fastforce
+            using assms \<mu> \<nu> L.inclusion whisker_left L.arr_char L.dom_simp L.cod_simp by fastforce
           also have "... = L.comp (H\<^sub>L g \<nu>) (H\<^sub>L g \<mu>)"
             using assms \<mu>\<nu> \<mu> \<nu> * preserves_arr L.arr_char L.dom_char L.cod_char L.comp_char
                   L.inclusion H\<^sub>L_def left_def
@@ -458,14 +459,15 @@ begin
           hence "arr \<nu> \<and> right f \<nu>"
             using R.hom_char by blast
           thus ?thesis
-            using assms 1 right_def by fastforce
+            using assms 1 right_def R.dom_simp R.cod_simp by fastforce
         qed
         show "H\<^sub>R f (R.comp \<nu> \<mu>) = R.comp (H\<^sub>R f \<nu>) (H\<^sub>R f \<mu>)"
         proof -
           have "H\<^sub>R f (R.comp \<nu> \<mu>) = (\<nu> \<cdot> \<mu>) \<star> f"
-            using \<mu> \<nu> H\<^sub>R_def R.comp_def R.arr_char by fastforce
+            using \<mu> \<nu> H\<^sub>R_def R.comp_def R.arr_char R.dom_simp R.cod_simp by fastforce
           also have "... = (\<nu> \<star> f) \<cdot> (\<mu> \<star> f)"
-            using assms \<mu> \<nu> R.inclusion whisker_right R.arr_char by fastforce
+            using assms \<mu> \<nu> R.inclusion whisker_right R.arr_char R.dom_simp R.cod_simp
+            by fastforce
           also have "... = R.comp (H\<^sub>R f \<nu>) (H\<^sub>R f \<mu>)"
             using assms \<mu>\<nu> \<mu> \<nu> * preserves_arr R.arr_char R.dom_char R.cod_char R.comp_char
                   R.inclusion H\<^sub>R_def right_def
@@ -480,8 +482,8 @@ begin
   locale left_hom =
     weak_composition V H +
     S: subcategory V \<open>left \<omega>\<close>
-  for V :: "'a comp"                  (infixr "\<cdot>" 55)
-  and H :: "'a comp"                  (infixr "\<star>" 53)
+  for V :: "'a comp"        (infixr "\<cdot>" 55)
+  and H :: "'a comp"        (infixr "\<star>" 53)
   and \<omega> :: 'a +
   assumes arr_\<omega>: "arr \<omega>"
   begin
@@ -491,7 +493,7 @@ begin
     notation S.comp         (infixr "\<cdot>\<^sub>S" 55)
     notation S.in_hom       ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
 
-    lemma right_hcomp_closed [simp]:
+    lemma right_hcomp_closed:
     assumes "\<guillemotleft>\<mu> : x \<Rightarrow>\<^sub>S y\<guillemotright>" and "\<guillemotleft>\<nu> : c \<Rightarrow> d\<guillemotright>" and "\<mu> \<star> \<nu> \<noteq> null"
     shows "\<guillemotleft>\<mu> \<star> \<nu> : x \<star> c \<Rightarrow>\<^sub>S y \<star> d\<guillemotright>"
     proof
@@ -499,9 +501,9 @@ begin
         using assms arr_\<omega> S.arr_char left_def match_4
         by (elim S.in_homE, meson)
       show "S.dom (\<mu> \<star> \<nu>) = x \<star> c"
-        using assms 1 by force
+        using assms 1 S.dom_simp by force
       show "S.cod (\<mu> \<star> \<nu>) = y \<star> d"
-        using assms 1 by force
+        using assms 1 S.cod_simp by force
     qed
 
     lemma interchange:
@@ -510,6 +512,7 @@ begin
     proof -
       have 1: "\<nu> \<star> \<tau> \<noteq> null"
         using assms hom_connected(1) [of \<nu> \<sigma>] hom_connected(2) [of \<nu> \<tau>] hom_connected(3-4)
+              S.dom_simp S.cod_simp
         by force
       have "(\<nu> \<cdot>\<^sub>S \<mu>) \<star> (\<tau> \<cdot>\<^sub>S \<sigma>) = (\<nu> \<cdot> \<mu>) \<star> (\<tau> \<cdot> \<sigma>)"
         using assms S.comp_char S.seq_char by metis
@@ -529,7 +532,9 @@ begin
           have "\<guillemotleft>\<sigma> : dom \<sigma> \<Rightarrow> cod \<sigma>\<guillemotright>"
             using assms S.in_hom_char by blast
           thus ?thesis
-            using assms right_hcomp_closed [of \<mu> "dom \<mu>" "cod \<mu>" \<sigma> "dom \<sigma>" "cod \<sigma>"] by fastforce
+            using assms right_hcomp_closed [of \<mu> "dom \<mu>" "cod \<mu>" \<sigma> "dom \<sigma>" "cod \<sigma>"]
+                  S.dom_simp S.cod_simp
+            by fastforce
         qed
         moreover have "seq (\<nu> \<star> \<tau>) (\<mu> \<star> \<sigma>)"
           using assms 1 S.in_hom_char
@@ -586,7 +591,7 @@ begin
     notation S.comp         (infixr "\<cdot>\<^sub>S" 55)
     notation S.in_hom       ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
 
-    lemma left_hcomp_closed [simp]:
+    lemma left_hcomp_closed:
     assumes "\<guillemotleft>\<mu> : x \<Rightarrow>\<^sub>S y\<guillemotright>" and "\<guillemotleft>\<nu> : c \<Rightarrow> d\<guillemotright>" and "\<nu> \<star> \<mu> \<noteq> null"
     shows "\<guillemotleft>\<nu> \<star> \<mu> : c \<star> x \<Rightarrow>\<^sub>S d \<star> y\<guillemotright>"
     proof
@@ -594,9 +599,9 @@ begin
         using assms arr_\<omega> S.arr_char right_def match_3
         by (elim S.in_homE, meson)
       show "S.dom (\<nu> \<star> \<mu>) = c \<star> x"
-        using assms 1 by force
+        using assms 1 S.dom_simp S.cod_simp by force
       show "S.cod (\<nu> \<star> \<mu>) = d \<star> y"
-        using assms 1 by force
+        using assms 1 S.dom_simp S.cod_simp by force
     qed
 
     lemma interchange:
@@ -605,6 +610,7 @@ begin
     proof -
       have 1: "\<nu> \<star> \<tau> \<noteq> null"
         using assms hom_connected(1) [of \<nu> \<sigma>] hom_connected(2) [of \<nu> \<tau>] hom_connected(3-4)
+              S.dom_simp S.cod_simp
         by fastforce
       have "(\<nu> \<cdot>\<^sub>S \<mu>) \<star> (\<tau> \<cdot>\<^sub>S \<sigma>) = (\<nu> \<cdot> \<mu>) \<star> (\<tau> \<cdot> \<sigma>)"
         using assms S.comp_char S.seq_char by metis
@@ -625,7 +631,8 @@ begin
             using assms S.in_hom_char by blast
           thus ?thesis
             using assms left_hcomp_closed [of \<sigma> "dom \<sigma>" "cod \<sigma>" \<mu> "dom \<mu>" "cod \<mu>"]
-            by fastforce
+                  S.dom_simp S.cod_simp
+            by blast
         qed
         moreover have "seq (\<nu> \<star> \<tau>) (\<mu> \<star> \<sigma>)"
           using assms 1 S.in_hom_char
@@ -690,7 +697,7 @@ begin
                          fully_faithful_functor (Left a) (Left a) (H\<^sub>L a) \<and>
                          fully_faithful_functor (Right a) (Right a) (H\<^sub>R a)"
 
-    lemma weak_unit_self_composable [simp]:
+    lemma weak_unit_self_composable:
     assumes "weak_unit a"
     shows "ide a" and "ide (a \<star> a)" and "a \<star> a \<noteq> null"
     proof -
@@ -756,7 +763,7 @@ begin
     lemma sourcesD [dest]:
     assumes "a \<in> sources \<mu>"
     shows "ide a" and "weak_unit a" and "\<mu> \<star> a \<noteq> null"
-      using assms sources_def by auto
+      using assms sources_def weak_unit_self_composable by auto
 
     definition targets
     where "targets \<mu> \<equiv> {b. weak_unit b \<and> b \<star> \<mu> \<noteq> null}"
@@ -769,7 +776,7 @@ begin
     lemma targetsD [dest]:
     assumes "b \<in> targets \<mu>"
     shows "ide b" and "weak_unit b" and "b \<star> \<mu> \<noteq> null"
-      using assms targets_def by auto
+      using assms targets_def weak_unit_self_composable by auto
 
     lemma sources_dom [simp]:
     assumes "arr \<mu>"
@@ -874,11 +881,11 @@ begin
           show ?thesis
           proof -
             have "H\<^sub>R a' (R.comp \<nu> \<mu>) = (\<nu> \<cdot> \<mu>) \<star> a'"
-              using \<mu> \<nu> H\<^sub>R_def R.comp_def by fastforce
+              using \<mu> \<nu> H\<^sub>R_def R.comp_def R.dom_simp R.cod_simp by fastforce
             also have "... = (\<nu> \<star> a') \<cdot> (\<mu> \<star> a')"
             proof -
               have "seq \<nu> \<mu>"
-                using \<mu> \<nu> \<mu>\<nu> by (elim R.seqE, auto)
+                using \<mu> \<nu> \<mu>\<nu> R.dom_simp R.cod_simp by (elim R.seqE, auto)
               thus ?thesis
                 using a' \<nu> whisker_right right_def by blast
             qed
@@ -950,11 +957,11 @@ begin
                   isomorphic_implies_equicomposable
             by auto
           have "H\<^sub>L a' (L.comp \<nu> \<mu>) = a' \<star> (\<nu> \<cdot> \<mu>)"
-            using \<mu> \<nu> H\<^sub>L_def L.comp_def by fastforce
+            using \<mu> \<nu> H\<^sub>L_def L.comp_def L.dom_simp L.cod_simp by fastforce
           also have "... = (a' \<star> \<nu>) \<cdot> (a' \<star> \<mu>)"
           proof -
             have "seq \<nu> \<mu>"
-              using \<mu> \<nu> \<mu>\<nu> by (elim L.seqE, auto)
+              using \<mu> \<nu> \<mu>\<nu> L.dom_simp L.cod_simp by (elim L.seqE, auto)
             thus ?thesis
               using a' \<nu> whisker_left right_def by blast
           qed
@@ -1306,22 +1313,23 @@ begin
           using S.not_arr_null by fastforce
       qed
       have aa: "a \<star> a \<noteq> null"
-        using a S.ideD(1) R.preserves_arr H\<^sub>R_def S.not_arr_null by auto
+        using a S.ideD(1) R.preserves_arr H\<^sub>R_def S.not_arr_null weak_unit_self_composable
+        by auto
       have ia_a: "\<iota> \<star> a \<noteq> null"
         using weak_unit_a hom_connected(3) weak_unit_self_composable \<iota>_in_hom by blast
       have f_ia: "f \<star> \<iota> \<noteq> null"
         using assms S.ide_char right_def S.arr_char hom_connected(4) \<iota>_in_hom by auto
       show assoc_in_hom: "\<guillemotleft>\<a>[f, a, a] : (f \<star> a) \<star> a \<Rightarrow>\<^sub>S f \<star> a \<star> a\<guillemotright>"
         using a f fa hom_connected(1) [of "\<a>[f, a, a]" a] S.arr_char right_def
-              match_3 match_4 S.in_hom_char
+              match_3 match_4 S.in_hom_char weak_unit_self_composable
         by auto
       show 1: "\<guillemotleft>f \<star> \<iota> : f \<star> a \<star> a \<Rightarrow>\<^sub>S f \<star> a\<guillemotright>"
-        using a f fa iso_unit
+        using a f fa iso_unit left_hcomp_closed
         by (simp add: f_ia ide_in_hom)
       moreover have "S.iso (f \<star> \<iota>)"
         using a f fa f_ia 1 VoV.arr_char VxV.inv_simp
               inv_in_hom hom_connected(2) [of f "inv \<iota>"] VoV.arr_char VoV.iso_char
-              preserves_iso iso_char iso_\<iota>
+              preserves_iso iso_char iso_\<iota> S.dom_simp S.cod_simp
         by auto
       ultimately have unit_part: "\<guillemotleft>f \<star> \<iota> : f \<star> a \<star> a \<Rightarrow>\<^sub>S f \<star> a\<guillemotright> \<and> S.iso (f \<star> \<iota>)"
         by blast
@@ -1410,14 +1418,16 @@ begin
           proof -
             have "(\<mu> \<star> a \<star> a) \<cdot>\<^sub>S \<a>[S.dom \<mu>, a, a] = (\<mu> \<star> a \<star> a) \<cdot> \<a>[S.dom \<mu>, a, a]"
               using assms 3 S.ide_dom characteristic_iso(1) S.in_hom_char
-                    S.comp_char [of "\<mu> \<star> a \<star> a" "\<a>[S.dom \<mu>, a, a]"]
+                    S.comp_char [of "\<mu> \<star> a \<star> a" "\<a>[S.dom \<mu>, a, a]"] S.dom_simp
               by fastforce
             also have "... = \<a>[S.cod \<mu>, a, a] \<cdot> ((\<mu> \<star> a) \<star> a)"
             proof -
               have "\<mu> \<star> a \<noteq> null"
                 using assms S.arr_char right_def by simp
               thus ?thesis
-                using assms weak_unit_a assoc_naturality\<^sub>A\<^sub>W\<^sub>C [of \<mu> a a] by fastforce
+                using assms weak_unit_a assoc_naturality\<^sub>A\<^sub>W\<^sub>C [of \<mu> a a] S.dom_simp S.cod_simp
+                      weak_unit_self_composable
+                by fastforce
             qed
             also have "... = \<a>[S.cod \<mu>, a, a] \<cdot>\<^sub>S ((\<mu> \<star> a) \<star> a)"
               using S.in_hom_char S.comp_char
@@ -1588,9 +1598,10 @@ begin
         using b f bf bb hom_connected(2) [of b "inv \<a>[b, b, f]"] left_def
         by (metis S.arrI S.cod_closed S.in_hom_char assoc'_in_hom\<^sub>A\<^sub>W\<^sub>C(3) assoc'_simps\<^sub>A\<^sub>W\<^sub>C(2-3))
       show 1: "\<guillemotleft>\<iota> \<star> f : (b \<star> b) \<star> f \<Rightarrow>\<^sub>S b \<star> f\<guillemotright>"
-        using b f bf by (simp add: ib_f ide_in_hom iso_unit(2))
+        using b f bf right_hcomp_closed
+        by (simp add: ib_f ide_in_hom iso_unit(2))
       moreover have "S.iso (\<iota> \<star> f)"
-        using b f bf ib_f 1 VoV.arr_char VxV.inv_simp
+        using b f bf ib_f 1 VoV.arr_char VxV.inv_simp S.dom_simp S.cod_simp
               inv_in_hom hom_connected(1) [of "inv \<iota>" f] VoV.arr_char VoV.iso_char
               preserves_iso iso_char iso_\<iota>
         by auto
@@ -1600,7 +1611,7 @@ begin
       proof -
         have "S.iso (inv \<a>[b, b, f])"
           using assms b f bf bb hom_connected(2) [of b "inv \<a>[b, b, f]"] left_def
-               iso_assoc\<^sub>A\<^sub>W\<^sub>C iso_inv_iso iso_char S.arr_char left_def
+               iso_assoc\<^sub>A\<^sub>W\<^sub>C iso_char S.arr_char left_def
           by simp 
         thus ?thesis       
           using unit_part assoc_in_hom isos_compose by blast
@@ -1696,7 +1707,9 @@ begin
               have "b \<star> \<mu> \<noteq> null"
                 using assms S.arr_char left_def by simp
               thus ?thesis
-                using assms weak_unit_b assoc'_naturality\<^sub>A\<^sub>W\<^sub>C [of b b \<mu>] by fastforce
+                using assms weak_unit_b assoc'_naturality\<^sub>A\<^sub>W\<^sub>C [of b b \<mu>] S.dom_simp S.cod_simp
+                      weak_unit_self_composable
+                by fastforce
             qed
             also have "... = inv \<a>[b, b, S.cod \<mu>] \<cdot>\<^sub>S (b \<star> b \<star> \<mu>)"
               using assms 2 S.in_hom_char S.comp_char
@@ -1924,12 +1937,12 @@ begin
       interpret Left_a: subcategory V \<open>left a\<close>
         using assms left_hom_is_subcategory by fastforce
       interpret Left_a: left_hom_with_unit V H \<a> \<open>some_unit a\<close> a
-        using assms iso_some_unit
+        using assms iso_some_unit weak_unit_self_composable
         apply unfold_locales by auto
       interpret Right_a: subcategory V "right a"
         using assms right_hom_is_subcategory by fastforce
       interpret Right_a: right_hom_with_unit V H \<a> \<open>some_unit a\<close> a
-        using assms iso_some_unit
+        using assms iso_some_unit weak_unit_self_composable
         apply unfold_locales by auto
       have a': "ide a' \<and> a \<star> a' \<noteq> null \<and> a' \<star> a \<noteq> null \<and> a' \<star> a' \<noteq> null \<and>
                 \<phi> \<star> a' \<noteq> null \<and> Left_a.ide a'"
@@ -1960,19 +1973,21 @@ begin
           moreover have "iso (\<phi> \<star> a') \<and> \<guillemotleft>\<phi> \<star> a' : a \<star> a' \<Rightarrow> a' \<star> a'\<guillemotright>"
           proof -
             have 1: "Right_a'.iso \<phi> \<and> \<phi> \<in> Right_a'.hom (Right_a'.dom \<phi>) (Right_a'.cod \<phi>)"
-              using a' \<phi> Right_a'.iso_char Right_a'.arr_char right_def right_iff_right_inv
-                    Right_a'.arr_iff_in_hom [of \<phi>]
-              by simp
+              using a' \<phi> 1 Right_a'.arr_char Right_a'.cod_char Right_a'.dom_char
+                    Right_a'.in_hom_char Right_a.iso_char right_def
+              by auto
             have "Right_a'.iso (H\<^sub>R a' \<phi>) \<and>
                   Right_a'.in_hom (H\<^sub>R a' \<phi>) (H\<^sub>R a' (Right_a'.dom \<phi>)) (H\<^sub>R a' (Right_a'.cod \<phi>))"
               using \<phi> 1 Ra'.preserves_iso Ra'.preserves_hom Right_a'.iso_char
                     Ra'.preserves_dom Ra'.preserves_cod Right_a'.arr_iff_in_hom [of "H\<^sub>R a' \<phi>"]
               by simp
             thus ?thesis
-              using \<phi> 1 Right_a'.in_hom_char Right_a'.iso_char H\<^sub>R_def by auto
+              using \<phi> 1 Right_a'.in_hom_char Right_a'.iso_char H\<^sub>R_def
+                    Right_a'.dom_simp Right_a'.cod_simp
+              by auto
           qed
           ultimately show ?thesis
-            using isos_compose iso_inv_iso inv_in_hom by blast
+            using isos_compose by blast
         qed
         thus ?thesis using isomorphic_def by auto
       qed
@@ -2085,7 +2100,7 @@ begin
             by auto
           ultimately show ?thesis
             using Left_a.iso_char Left_a.arr_char left_iff_left_inv Left_a.inv_char H\<^sub>L_def
-            by simp
+            by metis
         qed
       qed
       interpret L': equivalence_functor \<open>Left a'\<close> \<open>Left a'\<close> \<open>H\<^sub>L a'\<close>
@@ -2207,7 +2222,7 @@ begin
           ultimately show ?thesis
             using Right_a.iso_char Right_a.arr_char right_iff_right_inv
                   Right_a.inv_char H\<^sub>R_def
-            by simp
+            by metis
         qed
       qed
       interpret R': equivalence_functor \<open>Right a'\<close> \<open>Right a'\<close> \<open>H\<^sub>R a'\<close>
@@ -2313,6 +2328,16 @@ begin
     shows "obj a \<longleftrightarrow> arr a \<and> trg a = a"
       using trg_src src_trg obj_def by metis
 
+    lemma objI_src:
+    assumes "arr a" and "src a = a"
+    shows "obj a"
+      using assms obj_def by simp
+
+    lemma objI_trg:
+    assumes "arr a" and "trg a = a"
+    shows "obj a"
+      using assms obj_def' by simp
+
     lemma objE [elim]:
     assumes "obj a" and "\<lbrakk> ide a; src a = a; trg a = a \<rbrakk> \<Longrightarrow> T"
     shows T
@@ -2323,21 +2348,25 @@ begin
       ultimately show ?thesis using assms by simp
     qed
 
-    (* TODO: Can't add "arr a" or "ide a" due to looping. *)
+    (*
+     * I believe I have sorted out the looping issues that were making these less than
+     * useful, but do not make them default simps because it slows things down too much
+     * and they are not used all that often.
+     *)
     lemma obj_simps (* [simp] *):
     assumes "obj a"
-    shows "src a = a" and "trg a = a"
+    shows "arr a" and "src a = a" and "trg a = a" and "dom a = a" and "cod a = a"
       using assms by auto
 
     lemma obj_src [intro, simp]:
     assumes "arr \<mu>"
     shows "obj (src \<mu>)"
-      using assms obj_def by auto
+      using assms objI_src by auto
 
     lemma obj_trg [intro, simp]:
     assumes "arr \<mu>"
     shows "obj (trg \<mu>)"
-      using assms obj_def by auto
+      using assms objI_trg by auto
 
     definition in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
     where "in_hhom \<mu> a b \<equiv> arr \<mu> \<and> src \<mu> = a \<and> trg \<mu> = b"
@@ -2609,7 +2638,7 @@ begin
             obtain \<psi> where \<psi>: "\<psi> \<in> hom f (rep f) \<and> iso \<psi>"
               using assms isomorphic_ide_rep by blast
             have "inv \<psi> \<in> hom (rep f) f \<and> iso (inv \<psi>)"
-              using \<psi> iso_inv_iso inv_in_hom by simp
+              using \<psi> by simp
             hence "iso (V \<phi> (inv \<psi>)) \<and> V \<phi> (inv \<psi>) \<in> hom (rep f) f'"
               using \<phi> isos_compose by auto
             thus ?thesis using isomorphic_def by auto
@@ -2618,7 +2647,8 @@ begin
           fix f'
           assume f': "rep f \<cong> f'"
           show "f \<cong> f'"
-            using assms f' isomorphic_ide_rep isos_compose isomorphic_def by blast
+            using assms f' isomorphic_ide_rep isos_compose isomorphic_def
+            by (meson isomorphic_transitive)
         qed
         thus ?thesis by auto
       qed
@@ -2961,8 +2991,6 @@ begin
 
   locale horizontal_composition =
     horizontal_homs V src trg +
-    VxV: product_category V V +
-    VV: subcategory VxV.comp \<open>\<lambda>\<mu>\<nu>. hseq\<^sub>H\<^sub>H (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close> +
     H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. H (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
   for V :: "'a comp"          (infixr "\<cdot>" 55)
   and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr "\<star>" 53)
@@ -3023,12 +3051,12 @@ begin
     shows "hseq \<nu> \<mu> \<longleftrightarrow> \<nu> \<star> \<mu> \<noteq> null"
       using VV.arr_char H.preserves_arr H.is_extensional hseq_char [of \<nu> \<mu>] by auto
 
-    lemma hseqI' [simp]:
+    lemma hseqI' [intro, simp]:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
     shows "hseq \<nu> \<mu>"
       using assms hseq_char by simp
 
-    lemma hseqI [intro]:
+    lemma hseqI:
     assumes "\<guillemotleft>\<mu> : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>\<nu> : b \<rightarrow> c\<guillemotright>"
     shows "hseq \<nu> \<mu>"
       using assms hseq_char by auto
@@ -3045,8 +3073,8 @@ begin
     and "dom (\<nu> \<star> \<mu>) = dom \<nu> \<star> dom \<mu>" and "cod (\<nu> \<star> \<mu>) = cod \<nu> \<star> cod \<mu>"
       using assms VV.arr_char src_hcomp apply blast
       using assms VV.arr_char trg_hcomp apply blast
-      using assms VV.arr_char H.preserves_dom apply force
-      using assms VV.arr_char H.preserves_cod by force
+      using assms VV.arr_char H.preserves_dom VV.dom_simp apply force
+      using assms VV.arr_char H.preserves_cod VV.cod_simp by force
 
     lemma ide_hcomp [intro, simp]:
     assumes "ide \<nu>" and "ide \<mu>" and "src \<nu> = trg \<mu>"
@@ -3196,6 +3224,16 @@ begin
     assumes "iso \<mu>" and "iso \<nu>" and "src \<nu> = trg \<mu>"
     shows "iso (\<nu> \<star> \<mu>)"
       using assms inverse_arrows_hcomp by auto
+
+    (*
+     * TODO: Maybe a good idea to change hcomp_in_vhom hypotheses to match this
+     * and iso_hcomp.
+     *)
+    lemma hcomp_iso_in_hom [intro]:
+    assumes "iso_in_hom \<mu> f g" and "iso_in_hom \<nu> h k" and "src \<nu> = trg \<mu>"
+    shows "iso_in_hom (\<nu> \<star> \<mu>) (h \<star> f) (k \<star> g)"
+      unfolding iso_in_hom_def
+      using assms hcomp_in_vhom iso_hcomp iso_in_hom_def vconn_implies_hpar(1-2) by auto
 
     lemma isomorphic_implies_ide:
     assumes "f \<cong> g"

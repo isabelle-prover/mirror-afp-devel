@@ -34,7 +34,7 @@ text \<open>
     text \<open>
       The following provides some useful technology for working with commutative squares.
     \<close>
-    
+
     definition commutative_square
     where "commutative_square f g h k \<equiv> cospan f g \<and> span h k \<and> dom f = cod h \<and> f \<cdot> h = g \<cdot> k"
 

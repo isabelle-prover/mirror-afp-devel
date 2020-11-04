@@ -97,6 +97,11 @@ begin
             B.inverse_arrow_unique
       by blast
 
+    lemma preserves_iso_in_hom [intro]:
+    assumes "A.iso_in_hom f a b"
+    shows "B.iso_in_hom (F f) (F a) (F b)"
+      using assms preserves_hom preserves_iso by blast
+
   end
 
   locale endofunctor =
@@ -148,6 +153,20 @@ begin
         by (metis A.arr_iff_in_hom A.dom_comp A.in_homE A.seqI' B.inverse_arrowsE
             A.cod_comp locally_reflects_ide preserves_comp)
       thus ?thesis by auto
+    qed
+
+    lemma reflects_isomorphic:
+    assumes "A.ide f" and "A.ide f'" and "B.isomorphic (F f) (F f')"
+    shows "A.isomorphic f f'"
+    proof -
+      obtain \<psi> where \<psi>: "B.in_hom \<psi> (F f) (F f') \<and> B.iso \<psi>"
+        using assms B.isomorphic_def by auto
+      obtain \<phi> where \<phi>: "A.in_hom \<phi> f f' \<and> F \<phi> = \<psi>"
+        using assms \<psi> is_full by blast
+      have "A.iso \<phi>"
+        using \<phi> \<psi> reflects_iso by auto
+      thus ?thesis
+        using \<phi> A.isomorphic_def by auto
     qed
 
   end
@@ -272,7 +291,7 @@ begin
 
   end
 
-  sublocale composite_functor \<subseteq> "functor" A C "G o F"
+  sublocale composite_functor \<subseteq> "functor" A C \<open>G o F\<close>
     using functor_comp F.functor_axioms G.functor_axioms by blast
 
   lemma comp_functor_identity [simp]:

@@ -21,11 +21,6 @@ begin
 
   locale bicategory =
     horizontal_composition V H src trg +
-    VxVxV: product_category V VxV.comp +
-    VVV: subcategory VxVxV.comp \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                       src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close> +
-    HoHV: "functor" VVV.comp V HoHV +
-    HoVH: "functor" VVV.comp V HoVH +
     \<alpha>: natural_isomorphism VVV.comp V HoHV HoVH
          \<open>\<lambda>\<mu>\<nu>\<tau>. \<a> (fst \<mu>\<nu>\<tau>) (fst (snd \<mu>\<nu>\<tau>)) (snd (snd \<mu>\<nu>\<tau>))\<close> +
     L: fully_faithful_functor V V L +
@@ -39,7 +34,7 @@ begin
   assumes unit_in_vhom: "obj a \<Longrightarrow> \<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
   and iso_unit: "obj a \<Longrightarrow> iso \<i>[a]"
   and pentagon: "\<lbrakk> ide f; ide g; ide h; ide k; src f = trg g; src g = trg h; src h = trg k \<rbrakk> \<Longrightarrow>
-                   (f \<star> \<a> g h k) \<cdot> \<a> f (g \<star> h) k \<cdot> (\<a> f g h \<star> k) = \<a> f g (h \<star> k) \<cdot> \<a> (f \<star> g) h k"
+                   (f \<star> \<a>[g, h, k]) \<cdot> \<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k) = \<a>[f, g, h \<star> k] \<cdot> \<a>[f \<star> g, h, k]"
   begin
     (*
      * TODO: the mapping \<i> is not currently assumed to be extensional.
@@ -185,8 +180,8 @@ begin
       apply unfold_locales
       using V.null_char ext
            apply fastforce
-      using H.HoHV_def H.HoVH_def H.VVV.arr_char H.VV.arr_char H.VVV.dom_char H.VV.dom_char
-            H.VVV.cod_char H.VV.cod_char H.VVV.ide_char comp_assoc
+      using H.HoHV_def H.HoVH_def H.VVV.arr_char H.VV.arr_char H.VVV.dom_char
+            H.VV.dom_char H.VVV.cod_char H.VV.cod_char H.VVV.ide_char comp_assoc
       by auto
 
     interpretation fully_faithful_functor V V H.R
@@ -297,7 +292,7 @@ begin
 
     lemma obj_char:
     shows "obj a \<longleftrightarrow> a = \<I>"
-      using obj_def \<iota>_in_hom by fastforce
+      using obj_def [of a] \<iota>_in_hom by fastforce
 
     proposition induces_bicategory:
     shows "bicategory C tensor (\<lambda>\<mu> \<nu> \<tau>. \<alpha> (\<mu>, \<nu>, \<tau>)) (\<lambda>_. \<iota>) I.map I.map"
@@ -585,7 +580,7 @@ begin
         also have "... = Left.comp \<mu> (Left.lunit (Left.dom \<mu>))"
           using assms 1 lunit_def by auto
         also have "... = Left.comp (Left.lunit (Left.cod \<mu>)) (Left.L \<mu>)"
-          using 1 Left.lunit_naturality by auto
+          using 1 Left.lunit_naturality Left.cod_simp by auto
         also have "... = Left.comp (lunit (Left.cod \<mu>)) (Left.L \<mu>)"
           using assms 1 lunit_def by auto
         also have "... = \<l>[cod \<mu>] \<cdot> Left.L \<mu>"
@@ -629,7 +624,7 @@ begin
         also have "... = Right.comp \<mu> (Right.runit (Right.dom \<mu>))"
           using assms 1 src_dom trg_dom Right.hom_char runit_def by auto
         also have "... = Right.comp (Right.runit (Right.cod \<mu>)) (Right.R \<mu>)"
-          using 1 Right.runit_naturality by auto
+          using 1 Right.runit_naturality Right.cod_simp by auto
         also have "... = Right.comp (runit (Right.cod \<mu>)) (Right.R \<mu>)"
           using assms 1 runit_def by auto
         also have "... = \<r>[cod \<mu>] \<cdot> Right.R \<mu>"
@@ -982,7 +977,7 @@ begin
     assumes "ide f" and "ide g" and "ide h"
     and "src f = trg g" and "src g = trg h"
     shows "iso \<a>\<^sup>-\<^sup>1[f, g, h]"
-      using assms iso_inv_iso by simp
+      using assms by simp
 
     lemma comp_assoc_assoc' [simp]:
     assumes "ide f" and "ide g" and "ide h"
@@ -1081,7 +1076,7 @@ begin
             moreover have "H\<^sub>L a \<nu> = \<mu>"
               using \<nu> 1 trg_dom H\<^sub>L_def by auto
             ultimately show ?thesis
-              using \<nu> by force
+              using \<nu> Left_a.dom_simp Left_a.cod_simp by blast
           qed
         qed
       qed
@@ -1127,7 +1122,7 @@ begin
             moreover have "H\<^sub>R a \<nu> = \<mu>"
               using \<nu> 1 src_dom H\<^sub>R_def by auto
             ultimately show ?thesis
-              using \<nu> by force
+              using \<nu> Right_a.dom_simp Right_a.cod_simp by blast
           qed
         qed
       qed
@@ -1158,7 +1153,7 @@ begin
       interpret Left_a: subcategory V \<open>left a\<close>
         using 0 left_hom_is_subcategory by simp
       interpret Left_a: left_hom V H a
-        using assms by unfold_locales auto
+        using assms weak_unit_self_composable by unfold_locales auto
       interpret La: fully_faithful_functor \<open>Left a\<close> \<open>Left a\<close> \<open>H\<^sub>L a\<close>
         using assms weak_unit_def by fast
       obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> f \<Rightarrow> a \<star> g\<guillemotright>"
@@ -1179,7 +1174,8 @@ begin
           using \<phi> Left_a.iso_char by auto
       qed
       hence 2: "Left_a.ide (a \<star> f) \<and> Left_a.ide (a \<star> g)"
-        using Left_a.ide_dom [of \<phi>] Left_a.ide_cod [of \<phi>] by auto
+        using Left_a.ide_dom [of \<phi>] Left_a.ide_cod [of \<phi>] Left_a.dom_simp Left_a.cod_simp
+        by auto
       hence 3: "Left_a.ide f \<and> Left_a.ide g"
         by (metis Left_a.ideI Left_a.ide_def Left_a.null_char assms(2) assms(3) left_def)
       obtain \<psi> where \<psi>: "\<psi> \<in> Left_a.hom f g \<and> a \<star> \<psi> = \<phi>"
@@ -1201,7 +1197,7 @@ begin
       interpret Right_a: subcategory V \<open>right a\<close>
         using 0 right_hom_is_subcategory by simp
       interpret Right_a: right_hom V H a
-        using assms by unfold_locales auto
+        using assms weak_unit_self_composable by unfold_locales auto
       interpret R: fully_faithful_functor \<open>Right a\<close> \<open>Right a\<close> \<open>H\<^sub>R a\<close>
         using assms weak_unit_def by fast
       obtain \<phi> where \<phi>: "iso \<phi> \<and> in_hom \<phi> (f \<star> a) (g \<star> a)"
@@ -1222,7 +1218,8 @@ begin
           using \<phi> Right_a.iso_char by auto
       qed
       hence 2: "Right_a.ide (f \<star> a) \<and> Right_a.ide (g \<star> a)"
-        using Right_a.ide_dom [of \<phi>] Right_a.ide_cod [of \<phi>] by auto
+        using Right_a.ide_dom [of \<phi>] Right_a.ide_cod [of \<phi>] Right_a.dom_simp Right_a.cod_simp
+        by auto
       hence 3: "Right_a.ide f \<and> Right_a.ide g"
         using assms Right_a.ide_char Right_a.arr_char right_def Right_a.ide_def Right_a.null_char
         by metis
@@ -1249,6 +1246,7 @@ begin
         using assms weak_unit_def by force
       have 1: "src a = trg a"
         using assms ide_dom sources_def weak_unit_iff_self_target seq_if_composable
+              weak_unit_self_composable
         by simp
       obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> a \<Rightarrow> a\<guillemotright>"
         using assms weak_unit_def by blast
@@ -1298,11 +1296,12 @@ begin
           have "(trg b \<star> b) \<star> b \<cong> trg b \<star> b"
           proof -
             have "iso (trg b \<star> \<phi>) \<and> \<guillemotleft>trg b \<star> \<phi> : trg b \<star> b \<star> b \<Rightarrow> trg b \<star> b\<guillemotright>"
-              using assms 0 1 \<phi> ide_in_hom(2) targetsD(1)
+              using assms 0 1 \<phi> ide_in_hom(2) targetsD(1) weak_unit_self_composable
               apply (intro conjI hcomp_in_vhom) by auto
             moreover have "iso \<a>[trg b, b, b] \<and>
                            \<guillemotleft>\<a>[trg b, b, b] : (trg b \<star> b) \<star> b \<Rightarrow> trg b \<star> b \<star> b\<guillemotright>"
-              using assms(2) 0 1 seq_if_composable targetsD(1-2) by auto
+              using assms(2) 0 1 seq_if_composable targetsD(1-2) weak_unit_self_composable
+              by auto
             ultimately show ?thesis
               using isos_compose isomorphic_def by auto
           qed
@@ -1553,7 +1552,7 @@ begin
     shows "H.ide a"
     proof -
       have "a \<star> a \<noteq> H.null"
-        using assms by simp
+        using assms weak_unit_self_composable by simp
       moreover have "\<And>f. f \<star> a \<noteq> H.null \<Longrightarrow> f \<star> a = f"
       proof -
         fix f
@@ -1853,12 +1852,12 @@ begin
     lemma iso_lunit' [simp]:
     assumes "ide f"
     shows "iso \<l>\<^sup>-\<^sup>1[f]"
-      using assms iso_lunit iso_inv_iso by blast
+      using assms iso_lunit by blast
 
     lemma iso_runit' [simp]:
     assumes "ide f"
     shows "iso \<r>\<^sup>-\<^sup>1[f]"
-      using assms iso_runit iso_inv_iso by blast
+      using assms iso_runit by blast
 
     lemma lunit'_in_hom [intro]:
     assumes "ide f"
@@ -1978,6 +1977,16 @@ begin
       using assms iso_runit runit_naturality invert_opposite_sides_of_square R.preserves_arr
             R.preserves_cod arr_cod ide_cod ide_dom runit_simps(1) runit_simps(4) seqI
       by presburger
+
+    lemma isomorphic_unit_right:
+    assumes "ide f"
+    shows "f \<star> src f \<cong> f"
+      using assms runit'_in_hom iso_runit' isomorphic_def isomorphic_symmetric by blast
+
+    lemma isomorphic_unit_left:
+    assumes "ide f"
+    shows "trg f \<star> f \<cong> f"
+      using assms lunit'_in_hom iso_lunit' isomorphic_def isomorphic_symmetric by blast
 
   end
 
@@ -2176,7 +2185,7 @@ begin
         have "\<l>\<^sup>-\<^sup>1[f \<star> g] = inv ((\<l>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[trg f, f, g])"
           using 2 by simp
         also have "... = \<a>[trg f, f, g] \<cdot> inv (\<l>[f] \<star> g)"
-          using assms inv_comp iso_inv_iso by simp
+          using assms inv_comp by simp
         also have "... = \<a>[trg f, f, g] \<cdot> (\<l>\<^sup>-\<^sup>1[f] \<star> g)"
           using assms by simp
         finally show ?thesis by simp
@@ -2234,7 +2243,7 @@ begin
       show "\<a>[f, g, src g] \<cdot> \<r>\<^sup>-\<^sup>1[f \<star> g] = f \<star> \<r>\<^sup>-\<^sup>1[g]"
       proof -
         have "\<a>[f, g, src g] \<cdot> \<r>\<^sup>-\<^sup>1[f \<star> g] = inv (\<r>[f \<star> g] \<cdot> \<a>\<^sup>-\<^sup>1[f, g, src g])"
-          using assms inv_comp iso_inv_iso by simp
+          using assms inv_comp by simp
         also have "... = inv (f \<star> \<r>[g])"
           using 2 by simp
         also have "... = f \<star> \<r>\<^sup>-\<^sup>1[g]"
@@ -2285,6 +2294,11 @@ begin
               assoc'_eq_inv_assoc
         by (metis hseqI' iso_assoc objE obj_def' unit_simps(1) unit_simps(2))
     qed
+
+    lemma hcomp_assoc_isomorphic:
+    assumes "ide f" and "ide g" and "ide h" and "src f = trg g" and "src g = trg h"
+    shows "(f \<star> g) \<star> h \<cong> f \<star> g \<star> h"
+      using assms assoc_in_hom [of f g h] iso_assoc isomorphic_def by auto
 
     lemma hcomp_arr_obj:
     assumes "arr \<mu>" and "obj a" and "src \<mu> = a"

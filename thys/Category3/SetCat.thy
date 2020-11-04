@@ -382,14 +382,11 @@ begin
           using x y in_hom_char by (metis (mono_tags, lifting) CollectD)
         show "Map x = Map y"
         proof -
-          have "Map x = (\<lambda>z \<in> {U}. Map x z) \<and> Map y = (\<lambda>z \<in> {U}. Map y z)"
-            using x y \<open>arr x\<close> \<open>arr y\<close> Dom_terminal terminal_unity MkArr_expansion
-            by (metis (mono_tags, lifting) CollectD Map.simps(1) in_hom_char)
-          moreover have "Map x U = Map y U"
-            using x y eq IMG_point(2) o_apply DOWN_UP
-            by (metis (mono_tags, lifting) CollectD IMG_point(2) o_apply)
-          ultimately show ?thesis
-            by (metis (mono_tags, lifting) restrict_ext singletonD)
+          have "\<And>a. y \<in> hom unity a \<Longrightarrow> MkArr {U} (Dom a) (\<lambda>e\<in>{U}. DOWN (IMG x)) = y"
+            using MkElem_IMG eq by presburger
+          hence "y = x"
+            using MkElem_IMG x y by blast
+          thus ?thesis by meson
         qed
       qed
     qed
@@ -693,8 +690,7 @@ begin
                   also have "... = (\<lambda>x. Map (F (MkElem (UP x) a)) U) (DOWN (IMG x))"
                   proof -
                     have "DOWN (IMG x) \<in> Dom a"
-                      using x y a 5 arr_char in_homE restrict_apply
-                      by (metis (mono_tags, lifting) IntD2 PiE)
+                      using x y a 5 arr_char in_homE restrict_apply by force
                     thus ?thesis
                       using restrict_apply by simp
                   qed

@@ -110,7 +110,7 @@ begin
         obtain \<psi>' where \<psi>': "\<guillemotleft>\<psi>' : \<I>\<^sub>D \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright> \<and> D.iso \<psi>'"
           using preserves_unity by auto
         have "\<guillemotleft>D.inv \<psi>' : F \<I>\<^sub>C \<rightarrow>\<^sub>D \<I>\<^sub>D\<guillemotright> \<and> D.iso (D.inv \<psi>')"
-          using \<psi>' D.iso_inv_iso by simp
+          using \<psi>' by simp
         thus ?thesis by auto
       qed
       obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : F \<I>\<^sub>C \<rightarrow>\<^sub>D \<I>\<^sub>D\<guillemotright> \<and> D.iso \<psi>"
@@ -141,7 +141,7 @@ begin
         interpret R: "functor" D D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close>
           using D.T.fixing_ide_gives_functor_2 by simp
         interpret R: endofunctor D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close> ..
-        interpret x\<psi>: natural_transformation D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close>  
+        interpret x\<psi>: natural_transformation D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close>
                         \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
           using \<psi> D.T.fixing_arr_gives_natural_transformation_2 [of \<psi>] by auto
         interpret x\<psi>: natural_isomorphism D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
@@ -419,7 +419,7 @@ $$\xymatrix{
                    = D.inv (D.inv (\<phi> (\<I>\<^sub>C, a)) \<cdot>\<^sub>D F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a]) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a))"
             using assms \<phi>.naturality [of "(\<I>\<^sub>C, \<l>\<^sub>C[a])"] D.invert_side_of_triangle(1) by simp
           also have "... = D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)"
-            using assms D.inv_comp D.iso_inv_iso D.inv_is_inverse D.isos_compose D.comp_assoc
+            using assms D.inv_comp D.inv_is_inverse D.isos_compose D.comp_assoc
             by simp
           finally have "D.inv (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a])
                           = D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)"
@@ -461,7 +461,7 @@ $$\xymatrix{
       finally have "\<l>\<^sub>D[F a] \<cdot>\<^sub>D D.inv (\<psi> \<otimes>\<^sub>D F a) = F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)"
         by blast
       hence "\<l>\<^sub>D[F a] = (F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)) \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)"
-        using assms \<psi>_char(2) D.iso_inv_iso \<phi>_in_hom
+        using assms \<psi>_char(2) \<phi>_in_hom
               D.invert_side_of_triangle(2) [of "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)" "\<l>\<^sub>D[F a]" "D.inv (\<psi> \<otimes>\<^sub>D F a)"]
         by simp
       thus ?thesis

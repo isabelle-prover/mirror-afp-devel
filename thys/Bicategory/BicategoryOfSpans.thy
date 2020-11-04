@@ -6,7 +6,8 @@
 section "Bicategories of Spans"
 
 theory BicategoryOfSpans
-imports CanonicalIsos SpanBicategory Category3.ConcreteCategory IsomorphismClass Tabulation
+imports Category3.ConcreteCategory IsomorphismClass CanonicalIsos EquivalenceOfBicategories
+        SpanBicategory Tabulation
 begin
 
 text \<open>
@@ -66,9 +67,19 @@ text \<open>
     interpret F: equivalence_pseudofunctor
                    V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>
       using F by simp
-    interpret G: converse_equivalence_pseudofunctor
-                   V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>
+    interpret E: equivalence_of_bicategories
+                   V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C  (* 17 sec *)
+                F \<Phi> F.right_map F.right_cmp F.unit\<^sub>0 F.unit\<^sub>1 F.counit\<^sub>0 F.counit\<^sub>1
+      using F.extends_to_equivalence_of_bicategories by simp
+    interpret E': converse_equivalence_of_bicategories
+                    V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
+                    F \<Phi> F.right_map F.right_cmp F.unit\<^sub>0 F.unit\<^sub>1 F.counit\<^sub>0 F.counit\<^sub>1
       ..
+    interpret G: equivalence_pseudofunctor
+                   V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
+                   F.right_map F.right_cmp
+      using E'.equivalence_pseudofunctor_left by simp
+
     write V\<^sub>C          (infixr "\<cdot>\<^sub>C" 55)
     write V\<^sub>D          (infixr "\<cdot>\<^sub>D" 55)
     write H\<^sub>C          (infixr "\<star>\<^sub>C" 53)
@@ -91,136 +102,167 @@ text \<open>
       proof -
         fix r'
         assume r': "D.ide r'"
-        obtain f g where fg: "C.is_left_adjoint f \<and> C.is_left_adjoint g \<and> G.G r' \<cong>\<^sub>C g \<star>\<^sub>C f\<^sup>*\<^sup>C"
-          using r' C.BS1 G.FG\<^sub>1_iso(1) G.G_ide by presburger
-        have trg_g: "trg\<^sub>C g = G.G\<^sub>0 (trg\<^sub>D r')"
-          using fg r' C.isomorphic_def C.hcomp_simps(2)
-          by (metis C.ideD(1) C.isomorphic_implies_hpar(4) C.isomorphic_implies_ide(2)
-              C.trg_hcomp G.FG\<^sub>1_iso(2) G.G_ide C.in_hhomE)
-        have trg_f: "trg\<^sub>C f = G.G\<^sub>0 (src\<^sub>D r')"
-          using fg r' C.isomorphic_def C.hcomp_simps(1)
-          by (metis C.ideD(1) C.isomorphic_implies_hpar(2-3) C.src_hcomp
-              G.FG\<^sub>1_iso(2) G.G_ide C.right_adjoint_simps(2) C.in_hhomE)
-        interpret e_src: equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                           \<open>G.e (src\<^sub>D r')\<close> \<open>G.d (src\<^sub>D r')\<close> \<open>G.\<eta> (src\<^sub>D r')\<close> \<open>G.\<epsilon> (src\<^sub>D r')\<close>
-          using r' by (simp add: G.equivalence_ed\<eta>\<epsilon>)
-        interpret e_trg: equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                           \<open>G.e (trg\<^sub>D r')\<close> \<open>G.d (trg\<^sub>D r')\<close> \<open>G.\<eta> (trg\<^sub>D r')\<close> \<open>G.\<epsilon> (trg\<^sub>D r')\<close>
-          using r' by (simp add: G.equivalence_ed\<eta>\<epsilon>)
-        interpret e: two_equivalences_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                           \<open>G.e (src\<^sub>D r')\<close> \<open>G.d (src\<^sub>D r')\<close> \<open>G.\<eta> (src\<^sub>D r')\<close> \<open>G.\<epsilon> (src\<^sub>D r')\<close>
-                           \<open>G.e (trg\<^sub>D r')\<close> \<open>G.d (trg\<^sub>D r')\<close> \<open>G.\<eta> (trg\<^sub>D r')\<close> \<open>G.\<epsilon> (trg\<^sub>D r')\<close>
+        obtain f g
+          where fg: "C.is_left_adjoint f \<and> C.is_left_adjoint g \<and> F.right_map r' \<cong>\<^sub>C g \<star>\<^sub>C f\<^sup>*\<^sup>C"
+          using r' C.BS1 [of "F.right_map r'"] by auto
+
+        have trg_g: "trg\<^sub>C g = E.G.map\<^sub>0 (trg\<^sub>D r')"
+        proof -
+          have "trg\<^sub>C g = trg\<^sub>C (g \<star>\<^sub>C f\<^sup>*\<^sup>C)"
+            using fg C.isomorphic_implies_ide by auto
+          also have "... = trg\<^sub>C (F.right_map r')"
+            using fg C.isomorphic_implies_hpar by auto
+          also have "... = E.G.map\<^sub>0 (trg\<^sub>D r')"
+            using r' by simp
+          finally show ?thesis by simp
+        qed
+        have trg_f: "trg\<^sub>C f = E.G.map\<^sub>0 (src\<^sub>D r')"
+        proof -
+          have "trg\<^sub>C f = src\<^sub>C f\<^sup>*\<^sup>C"
+            using fg by simp
+          also have "... = src\<^sub>C (g \<star>\<^sub>C f\<^sup>*\<^sup>C)"
+            using fg C.isomorphic_implies_ide by force
+          also have "... = src\<^sub>C (F.right_map r')"
+            using fg C.isomorphic_implies_hpar by auto
+          also have "... = E.G.map\<^sub>0 (src\<^sub>D r')"
+            using r' by simp
+          finally show ?thesis by simp
+        qed
+
+        define d_src where "d_src \<equiv> F.counit\<^sub>0 (src\<^sub>D r')"
+        define e_src where "e_src \<equiv> (F.counit\<^sub>0 (src\<^sub>D r'))\<^sup>~\<^sup>D"
+        have d_src: "\<guillemotleft>d_src : F.map\<^sub>0 (E.G.map\<^sub>0 (src\<^sub>D r')) \<rightarrow>\<^sub>D src\<^sub>D r'\<guillemotright> \<and>
+                     D.equivalence_map d_src"
+          using d_src_def r' E.\<epsilon>.map\<^sub>0_in_hhom E.\<epsilon>.components_are_equivalences by simp
+        have e_src: "\<guillemotleft>e_src : src\<^sub>D r' \<rightarrow>\<^sub>D F.map\<^sub>0 (E.G.map\<^sub>0 (src\<^sub>D r'))\<guillemotright> \<and>
+                     D.equivalence_map e_src"
+          using e_src_def r' E.\<epsilon>.map\<^sub>0_in_hhom E.\<epsilon>.components_are_equivalences by simp
+        obtain \<eta>_src \<epsilon>_src
+        where eq_src: "equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D d_src e_src \<eta>_src \<epsilon>_src"
+          using d_src_def e_src_def d_src e_src D.quasi_inverses_some_quasi_inverse
+                D.quasi_inverses_def
+          by blast
+        interpret eq_src: equivalence_in_bicategory
+                            V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D d_src e_src \<eta>_src \<epsilon>_src
+          using eq_src by simp
+
+        define d_trg where "d_trg \<equiv> F.counit\<^sub>0 (trg\<^sub>D r')"
+        define e_trg where "e_trg \<equiv> (F.counit\<^sub>0 (trg\<^sub>D r'))\<^sup>~\<^sup>D"
+        have d_trg: "\<guillemotleft>d_trg : F.map\<^sub>0 (E.G.map\<^sub>0 (trg\<^sub>D r')) \<rightarrow>\<^sub>D trg\<^sub>D r'\<guillemotright> \<and>
+                     D.equivalence_map d_trg"
+          using d_trg_def r' E.\<epsilon>.map\<^sub>0_in_hhom E.\<epsilon>.components_are_equivalences by simp
+        have e_trg: "\<guillemotleft>e_trg : trg\<^sub>D r' \<rightarrow>\<^sub>D F.map\<^sub>0 (E.G.map\<^sub>0 (trg\<^sub>D r'))\<guillemotright> \<and>
+                     D.equivalence_map e_trg"
+          using e_trg_def r' E.\<epsilon>.map\<^sub>0_in_hhom E.\<epsilon>.components_are_equivalences by simp
+        obtain \<eta>_trg \<epsilon>_trg
+        where eq_trg: "equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D d_trg e_trg \<eta>_trg \<epsilon>_trg"
+          using d_trg_def e_trg_def d_trg e_trg D.quasi_inverses_some_quasi_inverse
+                D.quasi_inverses_def
+          by blast
+        interpret eq_trg: equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D d_trg e_trg \<eta>_trg \<epsilon>_trg
+          using eq_trg by simp
+
+        interpret eqs: two_equivalences_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
+                            d_src e_src \<eta>_src \<epsilon>_src d_trg e_trg \<eta>_trg \<epsilon>_trg
           ..
-        interpret hom: subcategory V\<^sub>D
-                         \<open>\<lambda>\<mu>. \<guillemotleft>\<mu> : src\<^sub>D (G.e (src\<^sub>D r')) \<rightarrow>\<^sub>D src\<^sub>D (G.e (trg\<^sub>D r'))\<guillemotright>\<close>
+         
+        interpret hom: subcategory V\<^sub>D \<open>\<lambda>\<mu>. \<guillemotleft>\<mu> : trg\<^sub>D d_src \<rightarrow>\<^sub>D trg\<^sub>D d_trg\<guillemotright>\<close>
           using D.hhom_is_subcategory by simp
-        interpret hom': subcategory V\<^sub>D
-                          \<open>\<lambda>\<mu>. \<guillemotleft>\<mu> : trg\<^sub>D (G.e (src\<^sub>D r')) \<rightarrow>\<^sub>D trg\<^sub>D (G.e (trg\<^sub>D r'))\<guillemotright>\<close>
+        interpret hom': subcategory V\<^sub>D \<open>\<lambda>\<mu>. \<guillemotleft>\<mu> : src\<^sub>D d_src \<rightarrow>\<^sub>D src\<^sub>D d_trg\<guillemotright>\<close>
           using D.hhom_is_subcategory by simp
-        interpret e: equivalence_of_categories hom'.comp hom.comp e.F e.G e.\<phi> e.\<psi>
-          using e.induces_equivalence_of_hom_categories by simp
+        interpret e: equivalence_of_categories hom.comp hom'.comp eqs.F eqs.G eqs.\<phi> eqs.\<psi>
+          using eqs.induces_equivalence_of_hom_categories by simp
+
+        have r'_in_hhom: "D.in_hhom r' (src\<^sub>D e_src) (src\<^sub>D e_trg)"
+          using r' e_src e_trg by (simp add: D.in_hhom_def)
 
         define g'
-        where "g' = G.d (trg\<^sub>D r') \<star>\<^sub>D F g"
+        where "g' = d_trg \<star>\<^sub>D F g"
         have g': "D.is_left_adjoint g'"
         proof -
-          have "D.equivalence_map (G.d (trg\<^sub>D r'))"
-            using D.equivalence_map_def e_trg.dual_equivalence by blast
-          hence "D.is_left_adjoint (G.d (trg\<^sub>D r'))"
-            using r' D.equivalence_is_adjoint by simp
-          moreover have "src\<^sub>D (G.d (trg\<^sub>D r')) = trg\<^sub>D (F g)"
-            using fg r' G.FG\<^sub>1_iso(2) trg_g
-            by (simp add: C.left_adjoint_is_ide)
+          have "D.is_left_adjoint d_trg"
+            using r' d_trg D.equivalence_is_adjoint by simp
+          moreover have "src\<^sub>D d_trg = trg\<^sub>D (F g)"
+            using fg d_trg trg_g C.left_adjoint_is_ide by auto
           ultimately show ?thesis
             unfolding g'_def
             using fg r' D.left_adjoints_compose F.preserves_left_adjoint by blast
         qed
-        have 1: "D.is_right_adjoint (F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r'))"
+        have 1: "D.is_right_adjoint (F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src)"
         proof -
-          have "D.equivalence_map (G.e (src\<^sub>D r'))"
-            using D.equivalence_map_def e_src.equivalence_in_bicategory_axioms by blast
-          hence "D.is_right_adjoint (G.e (src\<^sub>D r'))"
-            using r' D.equivalence_is_adjoint by simp
+          have "D.is_right_adjoint e_src"
+            using r' e_src D.equivalence_is_adjoint by simp
           moreover have "D.is_right_adjoint (F f\<^sup>*\<^sup>C)"
             using fg C.left_adjoint_extends_to_adjoint_pair F.preserves_adjoint_pair by blast
-          moreover have "src\<^sub>D (F f\<^sup>*\<^sup>C) = trg\<^sub>D (G.e (src\<^sub>D r'))"
-            using fg r' G.FG\<^sub>1_iso(2) trg_f
-            by (simp add: C.right_adjoint_is_ide)
+          moreover have "src\<^sub>D (F f\<^sup>*\<^sup>C) = trg\<^sub>D e_src"
+            using fg r' trg_f C.right_adjoint_is_ide e_src by auto
           ultimately show ?thesis
             using fg r' D.right_adjoints_compose F.preserves_right_adjoint by blast
         qed
-        obtain f' where f': "D.adjoint_pair f' (F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r'))"
+        obtain f' where f': "D.adjoint_pair f' (F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src)"
           using 1 by auto
-        have f': "D.is_left_adjoint f' \<and> F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r') \<cong>\<^sub>D (f')\<^sup>*\<^sup>D"
+        have f': "D.is_left_adjoint f' \<and> F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src \<cong>\<^sub>D (f')\<^sup>*\<^sup>D"
           using f' D.left_adjoint_determines_right_up_to_iso D.left_adjoint_extends_to_adjoint_pair
           by blast
 
-        have "r' \<cong>\<^sub>D G.d (trg\<^sub>D r') \<star>\<^sub>D (G.e (trg\<^sub>D r') \<star>\<^sub>D r' \<star>\<^sub>D G.d (src\<^sub>D r')) \<star>\<^sub>D G.e (src\<^sub>D r')"
-          using r' e.\<eta>.components_are_iso e.\<phi>_in_hom [of r'] D.isomorphic_def
-                hom.ide_char hom.arr_char hom.iso_char
-          by auto
-        also have 1: "... \<cong>\<^sub>D (G.d (trg\<^sub>D r') \<star>\<^sub>D F (G.G r') \<star>\<^sub>D G.e (src\<^sub>D r'))"
+        have "r' \<cong>\<^sub>D d_trg \<star>\<^sub>D (e_trg \<star>\<^sub>D r' \<star>\<^sub>D d_src) \<star>\<^sub>D e_src"
+          using r' r'_in_hhom D.isomorphic_def eqs.\<psi>_in_hom eqs.\<psi>_components_are_iso
+                D.isomorphic_symmetric D.ide_char eq_src.antipar(2) eq_trg.antipar(2)
+          by metis
+        also have 1: "... \<cong>\<^sub>D d_trg \<star>\<^sub>D F (F.right_map r') \<star>\<^sub>D e_src"
         proof -
-          have "G.e (trg\<^sub>D r') \<star>\<^sub>D r' \<star>\<^sub>D G.d (src\<^sub>D r') \<cong>\<^sub>D F (G.G r')"
-            by (simp add: D.isomorphic_symmetric G.FG\<^sub>1_iso(3) G.G_ide r')
-          thus ?thesis
-            using r' D.hcomp_isomorphic_ide D.hcomp_ide_isomorphic by simp
-        qed
-        also have 2: "... \<cong>\<^sub>D G.d (trg\<^sub>D r') \<star>\<^sub>D (F g \<star>\<^sub>D F f\<^sup>*\<^sup>C) \<star>\<^sub>D G.e (src\<^sub>D r')"
-        proof -
-          have "F (G.G r') \<cong>\<^sub>D F (g \<star>\<^sub>C f\<^sup>*\<^sup>C)"
-            using fg F.preserves_iso C.isomorphic_def D.isomorphic_def by auto
-          also have "F (g \<star>\<^sub>C f\<^sup>*\<^sup>C) \<cong>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C"
-            using fg
-            by (meson C.adjoint_pair_antipar(1) C.hseqE C.ideD(1) C.isomorphic_implies_hpar(2)
-                C.right_adjoint_simps(1) D.isomorphic_symmetric F.weakly_preserves_hcomp)
-          finally have "D.isomorphic (F (G.G r')) (F g \<star>\<^sub>D F f\<^sup>*\<^sup>C)"
-            by simp
-          moreover have "\<And>f g. D.ide (H\<^sub>D f g) \<Longrightarrow> src\<^sub>D f = trg\<^sub>D g"
-            by (metis (no_types) D.hseqE D.ideD(1))
-          ultimately show ?thesis
-              by (meson 1 D.hcomp_ide_isomorphic D.hcomp_isomorphic_ide D.hseqE D.ideD(1)
-                  D.isomorphic_implies_hpar(2)
-                  e_src.ide_left e_trg.ide_right)
-        qed
-        also have 3: "... \<cong>\<^sub>D (G.d (trg\<^sub>D r') \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')"
-        proof -
-          let ?a = "\<a>\<^sub>D\<^sup>-\<^sup>1[G.d (trg\<^sub>D r'), F g, F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')] \<cdot>\<^sub>D
-                     (G.d (trg\<^sub>D r') \<star>\<^sub>D \<a>\<^sub>D[F g, F f\<^sup>*\<^sup>C, G.e (src\<^sub>D r')])"
-          have "\<guillemotleft>?a : G.d (trg\<^sub>D r') \<star>\<^sub>D (F g \<star>\<^sub>D F f\<^sup>*\<^sup>C) \<star>\<^sub>D G.e (src\<^sub>D r')
-                         \<Rightarrow>\<^sub>D (G.d (trg\<^sub>D r') \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')\<guillemotright>"
-          proof (intro D.comp_in_homI)
-            show "\<guillemotleft>G.d (trg\<^sub>D r') \<star>\<^sub>D \<a>\<^sub>D[F g, F f\<^sup>*\<^sup>C, G.e (src\<^sub>D r')] :
-                     G.d (trg\<^sub>D r') \<star>\<^sub>D (F g \<star>\<^sub>D F f\<^sup>*\<^sup>C) \<star>\<^sub>D G.e (src\<^sub>D r')
-                       \<Rightarrow>\<^sub>D G.d (trg\<^sub>D r') \<star>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')\<guillemotright>"
-              using fg r' 2 C.left_adjoint_is_ide D.hseqE D.ideD(1) D.isomorphic_implies_ide(2)
-                    D.src_hcomp D.assoc_in_hom [of "F g" "F f\<^sup>*\<^sup>C" "G.e (src\<^sub>D r')"]
-              apply auto
-              by (metis C.hseqE C.ideD(1) C.isomorphic_implies_hpar(2) C.right_adjoint_simps(3)
-                  D.hcomp_in_vhom D.ideD(1) D.ide_in_hom(2) e_trg.ide_right trg_f)
-            show "\<guillemotleft>\<a>\<^sub>D\<^sup>-\<^sup>1[G.d (trg\<^sub>D r'), F g, F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')] :
-                     G.d (trg\<^sub>D r') \<star>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')
-                        \<Rightarrow>\<^sub>D (G.d (trg\<^sub>D r') \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r')\<guillemotright>"
-            proof -
-              have "D.ide (F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r'))"
-                using f' D.isomorphic_implies_ide by auto
-              moreover have "src\<^sub>D (F g) = trg\<^sub>D (F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r'))"
-                using fg r' f' 2 D.hseqE D.ideD(1) D.isomorphic_implies_ide D.trg_hcomp
-                by metis
-              ultimately show ?thesis
-                using fg r' trg_g C.left_adjoint_is_ide D.assoc'_in_hom(2) by simp
-            qed
+          have "e_trg \<star>\<^sub>D r' \<star>\<^sub>D d_src \<cong>\<^sub>D F (F.right_map r')"
+          proof -
+            have "D.in_hom (F.counit\<^sub>1 r')
+                    (r' \<star>\<^sub>D d_src) (F.counit\<^sub>0 (trg\<^sub>D r') \<star>\<^sub>D F (F.right_map r'))"
+              unfolding d_src_def
+              using r' E.\<epsilon>.map\<^sub>1_in_hom(2) [of r'] by simp
+            hence "r' \<star>\<^sub>D d_src \<cong>\<^sub>D F.counit\<^sub>0 (trg\<^sub>D r') \<star>\<^sub>D F (F.right_map r')"
+              using r' D.isomorphic_def E.\<epsilon>.iso_map\<^sub>1_ide by auto
+            thus ?thesis
+              using r' e_trg_def E.\<epsilon>.components_are_equivalences D.isomorphic_symmetric
+                    D.quasi_inverse_transpose(2)
+                      [of "F.counit\<^sub>0 (trg\<^sub>D r')" "F (F.right_map r')" "r' \<star>\<^sub>D d_src"]
+              by (metis D.ide_hcomp D.in_hhomE E.G.preserves_ide F.preserves_ide d_trg_def
+                  eq_src.antipar(2) eq_src.ide_left eq_trg.ide_left r'_in_hhom)
           qed
-          moreover have "D.iso ?a"
-            using fg r' D.isos_compose
-            by (metis 2 C.left_adjoint_is_ide C.right_adjoint_simps(1) D.arrI D.assoc_simps(3)
-                D.iso_hcomp D.hseqE D.ideD(1) D.ide_is_iso D.iso_assoc D.iso_assoc'
-                D.isomorphic_implies_ide(1) D.isomorphic_implies_ide(2) D.trg_hcomp
-                F.preserves_ide calculation e_src.ide_left e_trg.ide_right f')
-          ultimately show ?thesis
-            using D.isomorphic_def by auto
+          thus ?thesis
+            using r' d_src e_trg D.hcomp_isomorphic_ide D.hcomp_ide_isomorphic
+            by (metis D.hseqI' D.ideD(1) D.in_hhomE D.src_hcomp D.trg_hcomp eq_src.antipar(1)
+                eq_src.ide_right eq_trg.antipar(1) eq_trg.ide_left)
         qed
-        also have "(G.d (trg\<^sub>D r') \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D G.e (src\<^sub>D r') \<cong>\<^sub>D g' \<star>\<^sub>D f'\<^sup>*\<^sup>D"
+        also have 2: "... \<cong>\<^sub>D d_trg \<star>\<^sub>D (F g \<star>\<^sub>D F f\<^sup>*\<^sup>C) \<star>\<^sub>D e_src"
+        proof -
+          have "F (F.right_map r') \<cong>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C"
+          proof -
+            have "F (F.right_map r') \<cong>\<^sub>D F (g \<star>\<^sub>C f\<^sup>*\<^sup>C)"
+              using fg F.preserves_iso C.isomorphic_def D.isomorphic_def by auto
+            also have "F (g \<star>\<^sub>C f\<^sup>*\<^sup>C) \<cong>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C"
+              using fg F.weakly_preserves_hcomp [of g "f\<^sup>*\<^sup>C"] D.isomorphic_symmetric
+                    C.left_adjoint_is_ide C.right_adjoint_is_ide
+              by (meson C.hseq_char C.ideD(1) C.isomorphic_implies_ide(2) C.right_adjoint_simps(1))
+            finally show ?thesis by simp
+          qed
+          thus ?thesis
+            using D.hcomp_ide_isomorphic D.hcomp_isomorphic_ide
+            by (metis 1 D.hseqE D.ideD(1) D.isomorphic_implies_hpar(2)
+                eq_src.ide_right eq_trg.ide_left)
+        qed
+        also have 3: "... \<cong>\<^sub>D (d_trg \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src"
+        proof -
+          have 4: "... \<cong>\<^sub>D d_trg \<star>\<^sub>D F g \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src"
+            using fg C.left_adjoint_is_ide C.right_adjoint_is_ide D.hcomp_assoc_isomorphic
+                  D.hcomp_ide_isomorphic [of "d_trg"]
+            by (metis 2 C.right_adjoint_simps(1) D.hseqE D.ideD(1) D.isomorphic_implies_hpar(2)
+                D.src_hcomp F.preserves_ide eq_src.ide_right eq_trg.ide_left)
+          also have "... \<cong>\<^sub>D (d_trg \<star>\<^sub>D F g) \<star>\<^sub>D F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src"
+            using fg C.left_adjoint_is_ide C.right_adjoint_is_ide D.isomorphic_symmetric
+                  D.hcomp_assoc_isomorphic [of "d_trg" "F g" "F f\<^sup>*\<^sup>C \<star>\<^sub>D e_src"]
+            by (metis 4 D.adjoint_pair_antipar(1) D.hseqE D.ideD(1) D.isomorphic_implies_hpar(1)
+                F.preserves_ide eq_trg.ide_left f' g' g'_def)
+          finally show ?thesis by blast
+        qed
+        also have "... \<cong>\<^sub>D g' \<star>\<^sub>D f'\<^sup>*\<^sup>D"
           using g'_def f'
           by (metis 3 D.adjoint_pair_antipar(1) D.hcomp_ide_isomorphic D.hseq_char D.ideD(1)
               D.isomorphic_implies_ide(2) g')
@@ -237,11 +279,13 @@ text \<open>
         and f': "D.is_left_adjoint f'"
         and \<mu>: "\<guillemotleft>\<mu> : f \<Rightarrow>\<^sub>D f'\<guillemotright>"
         and \<mu>': "\<guillemotleft>\<mu>' : f \<Rightarrow>\<^sub>D f'\<guillemotright>"
-        have "C.is_left_adjoint (G.G f) \<and> C.is_left_adjoint (G.G f')"
-          using f f' G.preserves_left_adjoint by simp
-        moreover have "\<guillemotleft>G.G \<mu> : G.G f \<Rightarrow>\<^sub>C G.G f'\<guillemotright> \<and> \<guillemotleft>G.G \<mu>' : G.G f \<Rightarrow>\<^sub>C G.G f'\<guillemotright>"
-          using \<mu> \<mu>' G.preserves_hom by simp
-        ultimately have "C.iso (G.G \<mu>) \<and> C.iso (G.G \<mu>') \<and> G.G \<mu> = G.G \<mu>'"
+        have "C.is_left_adjoint (F.right_map f) \<and> C.is_left_adjoint (F.right_map f')"
+          using f f' E.G.preserves_left_adjoint by blast
+        moreover have "\<guillemotleft>F.right_map \<mu> : F.right_map f \<Rightarrow>\<^sub>C F.right_map f'\<guillemotright> \<and>
+                       \<guillemotleft>F.right_map \<mu>' : F.right_map f \<Rightarrow>\<^sub>C F.right_map f'\<guillemotright>"
+          using \<mu> \<mu>' E.G.preserves_hom by simp
+        ultimately have "C.iso (F.right_map \<mu>) \<and> C.iso (F.right_map \<mu>') \<and>
+                         F.right_map \<mu> = F.right_map \<mu>'"
           using C.BS3 by blast
         thus "D.iso \<mu> \<and> D.iso \<mu>' \<and> \<mu> = \<mu>'"
           using \<mu> \<mu>' G.reflects_iso G.is_faithful by blast
@@ -253,30 +297,32 @@ text \<open>
         assume f: "D.is_left_adjoint f"
         assume g: "D.is_left_adjoint g"
         assume fg: "src\<^sub>D f = src\<^sub>D g"
-        have "C.is_left_adjoint (G.G f)"
-          using f G.preserves_left_adjoint by blast
-        moreover have "C.is_left_adjoint (G.G g)"
-          using g G.preserves_left_adjoint by blast
-        moreover have "src\<^sub>C (G.G f) = src\<^sub>C (G.G g)"
+        have "C.is_left_adjoint (F.right_map f)"
+          using f E.G.preserves_left_adjoint by blast
+        moreover have "C.is_left_adjoint (F.right_map g)"
+          using g E.G.preserves_left_adjoint by blast
+        moreover have "src\<^sub>C (F.right_map f) = src\<^sub>C (F.right_map g)"
           using f g D.left_adjoint_is_ide fg by simp
-        ultimately have 1: "\<exists>r \<rho>. tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> (G.G f) (G.G g)"
+        ultimately have
+            1: "\<exists>r \<rho>. tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> (F.right_map f) (F.right_map g)"
           using C.BS2 by simp
-        obtain r \<rho> where \<rho>: "tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> (G.G f) (G.G g)"
+        obtain r \<rho> where
+            \<rho>: "tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> (F.right_map f) (F.right_map g)"
           using 1 by auto
-        interpret \<rho>: tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> \<open>G.G f\<close> \<open>G.G g\<close>
+        interpret \<rho>: tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> \<open>F.right_map f\<close> \<open>F.right_map g\<close>
           using \<rho> by simp
         obtain r' where
-          r': "D.ide r' \<and> D.in_hhom r' (trg\<^sub>D f) (trg\<^sub>D g) \<and> C.isomorphic (G.G r') r"
+          r': "D.ide r' \<and> D.in_hhom r' (trg\<^sub>D f) (trg\<^sub>D g) \<and> C.isomorphic (F.right_map r') r"
           using f g \<rho>.ide_base \<rho>.tab_in_hom G.locally_essentially_surjective
-          by (metis D.obj_trg G.preserves_reflects_arr G.preserves_trg \<rho>.leg0_simps(2-3)
+          by (metis D.obj_trg E.G.preserves_reflects_arr E.G.preserves_trg \<rho>.leg0_simps(2-3)
               \<rho>.leg1_simps(2,4) \<rho>.base_in_hom(1))
-        obtain \<phi> where \<phi>: "\<guillemotleft>\<phi> : r \<Rightarrow>\<^sub>C G.G r'\<guillemotright> \<and> C.iso \<phi>"
+        obtain \<phi> where \<phi>: "\<guillemotleft>\<phi> : r \<Rightarrow>\<^sub>C F.right_map r'\<guillemotright> \<and> C.iso \<phi>"
           using r' C.isomorphic_symmetric by blast
         have \<sigma>: "tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
-                   (G.G r') (V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>) (G.G f) (G.G g)"
+                   (F.right_map r') ((\<phi> \<star>\<^sub>C F.right_map f) \<cdot>\<^sub>C \<rho>) (F.right_map f) (F.right_map g)"
           using \<phi> \<rho>.is_preserved_by_base_iso by simp
         have 1: "\<exists>\<rho>'. \<guillemotleft>\<rho>' : g \<Rightarrow>\<^sub>D H\<^sub>D r' f\<guillemotright> \<and>
-                      G.G \<rho>' = V\<^sub>C (G.\<Phi> (r', f)) (V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>)"
+                      F.right_map \<rho>' = V\<^sub>C (F.right_cmp (r', f)) (V\<^sub>C (H\<^sub>C \<phi> (F.right_map f)) \<rho>)"
         proof -
           have "D.ide g"
             by (simp add: D.left_adjoint_is_ide g)
@@ -286,23 +332,25 @@ text \<open>
             using fg by (simp add: calculation(2))
           moreover have "trg\<^sub>D g = trg\<^sub>D (H\<^sub>D r' f)"
             using calculation(2) r' by auto
-          moreover have
-            "\<guillemotleft>V\<^sub>C (G.\<Phi> (r', f)) (V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>) : G.G g \<Rightarrow>\<^sub>C G.G (H\<^sub>D r' f)\<guillemotright>"
-            using f g r' \<phi> G.\<Phi>_in_hom [of r' f] D.left_adjoint_is_ide \<rho>.ide_base
+          moreover have "\<guillemotleft>F.right_cmp (r', f) \<cdot>\<^sub>C (\<phi> \<star>\<^sub>C F.right_map f) \<cdot>\<^sub>C \<rho> :
+                            F.right_map g \<Rightarrow>\<^sub>C F.right_map (r' \<star>\<^sub>D f)\<guillemotright>"
+            using f g r' \<phi> D.left_adjoint_is_ide \<rho>.ide_base
             by (intro C.comp_in_homI, auto)
           ultimately show ?thesis
             using G.locally_full by simp
         qed
         obtain \<rho>' where \<rho>': "\<guillemotleft>\<rho>' : g \<Rightarrow>\<^sub>D H\<^sub>D r' f\<guillemotright> \<and>
-                             G.G \<rho>' = V\<^sub>C (G.\<Phi> (r', f)) (V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>)"
+                             F.right_map \<rho>' = F.right_cmp (r', f) \<cdot>\<^sub>C (\<phi> \<star>\<^sub>C F.right_map f) \<cdot>\<^sub>C \<rho>"
           using 1 by auto
         have "tabulation V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D r' \<rho>' f g"
         proof -
-          have "V\<^sub>C (C.inv (G.\<Phi> (r', f))) (G.G \<rho>') = V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>"
-            using r' f \<rho>' C.comp_assoc C.comp_cod_arr G.\<Phi>_components_are_iso
+          have "V\<^sub>C (C.inv (F.right_cmp (r', f))) (F.right_map \<rho>') =
+                V\<^sub>C (H\<^sub>C \<phi> (F.right_map f)) \<rho>"
+            using r' f \<rho>' C.comp_assoc C.comp_cod_arr
                   C.invert_side_of_triangle(1)
-                    [of "G.G \<rho>'" "G.\<Phi> (r', f)" "V\<^sub>C (H\<^sub>C \<phi> (G.G f)) \<rho>"]
-            by (metis (no_types, lifting) D.arrI D.in_hhom_def D.left_adjoint_is_ide G.preserves_arr)
+                    [of "F.right_map \<rho>'" "F.right_cmp (r', f)" "V\<^sub>C (H\<^sub>C \<phi> (F.right_map f)) \<rho>"]
+            by (metis D.adjoint_pair_antipar(1) D.arrI D.in_hhomE E.G.cmp_components_are_iso
+                E.G.preserves_arr)
           thus ?thesis
             using \<sigma> \<rho>' G.reflects_tabulation
             by (simp add: D.left_adjoint_is_ide f r')
@@ -321,7 +369,7 @@ text \<open>
     the ``output leg'' can also be taken to be a map, which the proof shows already).
   \<close>
 
-  locale identity_arrow_in_span_bicategory =
+  locale identity_arrow_in_span_bicategory =  (* 20 sec *)
     span_bicategory C prj0 prj1 +
     r: identity_arrow_of_spans C r
     for C :: "'a comp"   (infixr "\<cdot>" 55)
@@ -953,7 +1001,7 @@ $$
               interpret Cod_\<theta>: span_in_category C \<open>Cod \<theta>\<close>
                 using \<theta> u.cod.span_in_category_axioms cod_char by auto
               interpret \<theta>: arrow_of_spans C \<theta>
-                using arr_char by auto
+                using arr_char T.uw\<theta>.\<theta>_simps(1) by auto
               interpret r\<theta>: two_composable_arrows_of_spans C prj0 prj1 r \<theta>
                 using r\<theta> by unfold_locales auto
 
@@ -965,7 +1013,7 @@ $$
               interpret Cod_\<theta>': span_in_category C \<open>Cod \<theta>'\<close>
                 using \<theta>' u.cod.span_in_category_axioms cod_char by auto
               interpret \<theta>': arrow_of_spans C \<theta>'
-                using arr_char by auto
+                using arr_char T.uw'\<theta>'.\<theta>_simps(1) by auto
               interpret r\<theta>': two_composable_arrows_of_spans C prj0 prj1 r \<theta>'
                 using r\<theta>' by unfold_locales auto
 
@@ -2000,7 +2048,7 @@ $$
           qed
           have \<phi>: "\<guillemotleft>?\<phi> : ?f' \<Rightarrow> f\<guillemotright> \<and> iso ?\<phi>"
             using f is_left_adjoint_char iso_char arr_char dom_char cod_char
-                  \<phi>.arrow_of_spans_axioms C.iso_inv_iso f'.dom.apex_def f.dom.apex_def
+                  \<phi>.arrow_of_spans_axioms f'.dom.apex_def f.dom.apex_def
             by auto
 
           text \<open>
@@ -2041,10 +2089,10 @@ $$
           qed
           have \<psi>: "\<guillemotleft>?\<psi> : g \<Rightarrow> ?g'\<guillemotright> \<and> iso ?\<psi>"
             using g is_left_adjoint_char iso_char arr_char dom_char cod_char
-                  \<psi>.arrow_of_spans_axioms C.iso_inv_iso g.dom.apex_def g'.dom.apex_def
+                  \<psi>.arrow_of_spans_axioms g.dom.apex_def g'.dom.apex_def
             by auto
           have \<rho>\<psi>: "tabulation (\<bullet>) (\<star>) assoc unit src trg ?r (r.\<rho> \<bullet> ?\<psi>) r.f g"
-            using \<psi> `r.g = ?g'` iso_inv_iso r.has_tabulation \<rho>.preserved_by_output_iso by simp
+            using \<psi> `r.g = ?g'` r.has_tabulation \<rho>.preserved_by_output_iso by simp
           interpret \<tau>\<psi>: tabulation vcomp hcomp assoc unit src trg ?r \<open>r.\<rho> \<bullet> ?\<psi>\<close> r.f g
             using \<rho>\<psi> by auto
           have "tabulation (\<bullet>) (\<star>) assoc unit src trg ?r ((?r \<star> ?\<phi>) \<bullet> r.\<rho> \<bullet> ?\<psi>) f g"
@@ -2084,9 +2132,7 @@ $$
           using \<mu>' 1 dom_char cod_char \<mu>'.leg0_commutes C.invert_side_of_triangle by auto
         ultimately have 3: "\<mu>.chine = \<mu>'.chine" by simp
         have "iso \<mu>"
-          using 1 2 C.isos_compose C.iso_inv_iso \<mu> dom_char cod_char
-                iso_char arr_char \<mu>.arrow_of_spans_axioms
-          by auto
+          using 1 2 \<mu> C.isos_compose dom_char cod_char iso_char arr_char by auto
         hence "iso \<mu>'"
           using 3 iso_char arr_char \<mu>'.arrow_of_spans_axioms by simp
         moreover have "\<mu> = \<mu>'"
@@ -2146,7 +2192,7 @@ $$
       have \<psi>: "\<guillemotleft>?\<psi> : g \<star> f\<^sup>* \<Rightarrow> r'\<guillemotright> \<and> iso ?\<psi>"
         using \<rho>'.yields_isomorphic_representation by blast
       have "\<guillemotleft>\<phi> \<cdot> inv ?\<psi> : r' \<Rightarrow> r\<guillemotright> \<and> iso (\<phi> \<cdot> inv ?\<psi>)"
-        using \<phi> \<psi> iso_inv_iso isos_compose inv_in_hom by blast
+        using \<phi> \<psi> isos_compose by blast
       hence 3: "tabulation V H \<a> \<i> src trg r ((\<phi> \<cdot> inv ?\<psi> \<star> f) \<cdot> \<rho>') f g"
         using \<rho>'.is_preserved_by_base_iso by blast
       hence "\<exists>\<rho>. tabulation V H \<a> \<i> src trg r \<rho> f g"
@@ -2224,7 +2270,8 @@ $$
         hence "trg n = trg w"
           using mn by (metis assms(2) ideD(1) trg.preserves_reflects_arr trg_hcomp)
         hence "hseq g n"
-          using assms mn left_adjoint_is_ide ideD(1) by blast
+          using assms mn left_adjoint_is_ide ideD(1)
+          by (metis hseq_char)
         have "hseq g w"
           using assms left_adjoint_is_ide by simp
         have "src m = src n"
@@ -3861,7 +3908,7 @@ $$
             have "\<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w] =
                    ((\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r, r\<^sub>0 \<star> p\<^sub>1, w] \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w])) \<cdot>
                      \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w]"
-              using \<rho>.T0.antipar(1) iso_inv_iso iso_assoc inv_inv
+              using \<rho>.T0.antipar(1) iso_assoc
                     invert_side_of_triangle(2)
                       [of "(\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r, r\<^sub>0 \<star> p\<^sub>1, w] \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w])"
                           "\<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w]" "\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1 \<star> w]"]
@@ -3871,9 +3918,9 @@ $$
                      \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w]"
               using comp_assoc by presburger
             moreover have "seq (inv (\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w)) \<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w]"
-              using \<rho>.T0.antipar(1) iso_inv_iso 1 by fastforce
+              using \<rho>.T0.antipar(1) 1 by fastforce
             ultimately show ?thesis
-              using \<rho>.T0.antipar(1) iso_inv_iso iso_assoc inv_inv inv_hcomp
+              using \<rho>.T0.antipar(1) iso_assoc
                     invert_side_of_triangle(1)
                       [of "\<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w]" "\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w"
                           "\<a>\<^sup>-\<^sup>1[r, r\<^sub>0 \<star> p\<^sub>1, w] \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]) \<cdot> \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w]"]
@@ -4138,8 +4185,8 @@ $$
             using w\<theta>\<^sub>t\<nu>\<^sub>t assoc_in_hom by (simp add: \<rho>.T0.antipar(1))
         qed
         have iso_\<nu>: "iso \<nu>"
-          using \<nu> w\<theta>\<^sub>t\<nu>\<^sub>t w\<^sub>r\<theta>\<^sub>r\<nu>\<^sub>r \<rho>.T0.antipar(1) iso_inv_iso
-          apply (unfold \<nu>_def, intro isos_compose) by auto
+          using \<nu> w\<theta>\<^sub>t\<nu>\<^sub>t w\<^sub>r\<theta>\<^sub>r\<nu>\<^sub>r \<rho>.T0.antipar(1)
+          by (unfold \<nu>_def, intro isos_compose) auto
         have *: "arr ((s \<star> \<theta>\<^sub>s) \<cdot> \<a>[s, s\<^sub>0, w\<^sub>s] \<cdot> (\<sigma> \<star> w\<^sub>s) \<cdot> (s\<^sub>1 \<star> \<theta>\<^sub>t) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
                        (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w] \<cdot> (r\<^sub>0 \<star> \<nu>\<^sub>t))"
           using w\<^sub>s\<theta>\<^sub>s\<nu>\<^sub>s w\<theta>\<^sub>t\<nu>\<^sub>t \<theta>\<^sub>r_in_hom comp_assoc by auto
@@ -5665,7 +5712,7 @@ $$
                apply (intro in_CompI, auto)
              proof -
                show "B.is_iso_class (Map G)"
-                 using G iso_is_arr iso_inv_iso Map_in_Hom [of G] in_HomD(2) [of "Map G"] by blast
+                 using G iso_is_arr Map_in_Hom [of G] in_HomD(2) [of "Map G"] by blast
              qed
              thus ?thesis
                using F G f g comp_char [of G F] by auto
@@ -5697,7 +5744,7 @@ $$
                apply (intro in_CompI, auto)
              proof -
                show "B.is_iso_class (Map G)"
-                 using G iso_is_arr iso_inv_iso Map_in_Hom [of G] in_HomD(2) [of "Map G"] by blast
+                 using G iso_is_arr Map_in_Hom [of G] in_HomD(2) [of "Map G"] by blast
              qed
              thus ?thesis
                using F G f g comp_char [of F G] by auto
@@ -5715,7 +5762,7 @@ $$
              by (metis f g B.is_iso_classI B.in_hhomE B.src.preserves_ide)
          qed
          ultimately show "B.equivalence_map f"
-           using f g B.equivalence_mapI by fastforce
+           using f g B.equivalence_mapI B.quasi_inversesI [of f g] by fastforce
        qed
        thus "arr F \<and> (\<forall>f. f \<in> Map F \<longrightarrow> B.equivalence_map f)"
          using F by blast
@@ -5741,8 +5788,8 @@ $$
            using \<epsilon> by simp
          have g_in_hhom: "\<guillemotleft>g : Cod F \<rightarrow>\<^sub>B Dom F\<guillemotright>"
            using \<epsilon>.ide_right \<epsilon>.antipar f_in_hhom by auto
-         have fg: "B.equivalence_pair f g"
-           using B.equivalence_pair_def \<epsilon>.equivalence_in_bicategory_axioms by auto
+         have fg: "B.quasi_inverses f g"
+           using B.quasi_inverses_def \<epsilon>.equivalence_in_bicategory_axioms by auto
          have g: "\<guillemotleft>g : Cod F \<rightarrow>\<^sub>B Dom F\<guillemotright> \<and> B.is_left_adjoint g \<and> \<lbrakk>g\<rbrakk>\<^sub>B = \<lbrakk>g\<rbrakk>\<^sub>B"
            using \<epsilon>'.dual_equivalence B.equivalence_is_left_adjoint B.equivalence_map_def
                  g_in_hhom
@@ -6522,25 +6569,25 @@ $$
     shows "is_left_adjoint r \<longleftrightarrow> equivalence_map (tab\<^sub>0 r)"
     proof
       assume 1: "equivalence_map (tab\<^sub>0 r)"
-      have 2: "equivalence_pair (tab\<^sub>0 r) (tab\<^sub>0 r)\<^sup>*"
+      have 2: "quasi_inverses (tab\<^sub>0 r) (tab\<^sub>0 r)\<^sup>*"
       proof -
         obtain g' \<eta>' \<epsilon>' where \<eta>'\<epsilon>': "equivalence_in_bicategory V H \<a> \<i> src trg (tab\<^sub>0 r) g' \<eta>' \<epsilon>'"
           using 1 equivalence_map_def by auto
         have "adjoint_pair (tab\<^sub>0 r) g'"
-          using \<eta>'\<epsilon>' equivalence_pair_def equivalence_pair_is_adjoint_pair by blast
+          using \<eta>'\<epsilon>' quasi_inverses_def quasi_inverses_are_adjoint_pair by blast
         moreover have "adjoint_pair (tab\<^sub>0 r) (tab\<^sub>0 r)\<^sup>*"
           using T0.adjunction_in_bicategory_axioms adjoint_pair_def by auto
         ultimately have "g' \<cong> (tab\<^sub>0 r)\<^sup>*"
           using left_adjoint_determines_right_up_to_iso by simp
         thus ?thesis
-          using \<eta>'\<epsilon>' equivalence_pair_def equivalence_pair_isomorphic_right by blast
+          using \<eta>'\<epsilon>' quasi_inverses_def quasi_inverses_isomorphic_right by blast
       qed
       obtain \<eta>' \<epsilon>' where \<eta>'\<epsilon>': "equivalence_in_bicategory V H \<a> \<i> src trg (tab\<^sub>0 r) (tab\<^sub>0 r)\<^sup>* \<eta>' \<epsilon>'"
-        using 2 equivalence_pair_def by auto
+        using 2 quasi_inverses_def by auto
       interpret \<eta>'\<epsilon>': equivalence_in_bicategory V H \<a> \<i> src trg \<open>tab\<^sub>0 r\<close> \<open>(tab\<^sub>0 r)\<^sup>*\<close> \<eta>' \<epsilon>'
         using \<eta>'\<epsilon>' by auto
       have "is_left_adjoint (tab\<^sub>0 r)\<^sup>*"
-        using 2 equivalence_pair_is_adjoint_pair equivalence_pair_symmetric by blast
+        using 2 quasi_inverses_are_adjoint_pair quasi_inverses_symmetric by blast
       hence "is_left_adjoint (tab\<^sub>1 r \<star> (tab\<^sub>0 r)\<^sup>*)"
         using left_adjoints_compose by simp
       thus "is_left_adjoint r"
@@ -7542,7 +7589,7 @@ $$
               have "seq \<a>[t, t\<^sub>0, \<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1] \<a>[t \<star> t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]"
                 by (simp add: \<rho>.T0.antipar(1))
               moreover have "inv (t \<star> \<a>[t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]) = t \<star> \<a>\<^sup>-\<^sup>1[t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]"
-                using \<rho>.T0.antipar(1) inv_hcomp [of t "\<a>[t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]"] by simp
+                using \<rho>.T0.antipar(1) by simp
               ultimately show ?thesis
                 using pentagon \<rho>.T0.antipar(1) iso_hcomp
                       invert_side_of_triangle(1)
@@ -7954,13 +8001,12 @@ $$
         @{term \<gamma>\<^sub>\<tau>} directly, using a few more applications of \<open>T2\<close>.
       \<close>
       have iso_\<beta>\<^sub>\<tau>: "iso ?\<beta>\<^sub>\<tau>"
-        using uw\<theta> \<beta>\<^sub>\<tau> the_\<nu>_props \<omega>.the_\<nu>_props iso_inv_iso hseqI'
-              iso_assoc' \<omega>.hseq_leg\<^sub>0 iso_inv_iso iso_hcomp
+        using uw\<theta> \<beta>\<^sub>\<tau> the_\<nu>_props \<omega>.the_\<nu>_props hseqI' iso_assoc' \<omega>.hseq_leg\<^sub>0
         apply (intro isos_compose)
               apply (metis \<omega>.is_ide \<rho>\<sigma>.leg1_simps(2) \<tau>.ide_leg1 \<tau>.leg1_simps(2)
                            \<tau>.leg1_simps(3) hseqE r\<^sub>0s\<^sub>1.ide_leg1 hcomp_simps(1) vconn_implies_hpar(3))
-             apply (metis \<rho>\<sigma>.leg1_simps(2) hseqE ide_is_iso r\<^sub>0s\<^sub>1.ide_leg1 src_inv
-                          vconn_implies_hpar(1))
+             apply (metis \<rho>\<sigma>.leg1_simps(2) hseqE ide_is_iso r\<^sub>0s\<^sub>1.ide_leg1 src_inv iso_inv_iso
+                          iso_hcomp vconn_implies_hpar(1))
             apply blast
            apply blast
           apply blast
@@ -8033,8 +8079,7 @@ $$
           also have "... = ?\<theta>\<^sub>\<tau>' \<cdot> (t\<^sub>0 \<star> \<gamma>\<^sub>\<tau>) \<cdot> (t\<^sub>0 \<star> \<gamma>\<^sub>\<tau>')"
             using \<gamma>\<^sub>\<tau> comp_assoc by simp
           also have "... = ?\<theta>\<^sub>\<tau>' \<cdot> (t\<^sub>0 \<star> \<gamma>\<^sub>\<tau> \<cdot> \<gamma>\<^sub>\<tau>')"
-            using \<gamma>\<^sub>\<tau> \<gamma>\<^sub>\<tau>' whisker_left
-            by (metis (full_types) \<tau>.ide_leg0 seqI')
+            using \<gamma>\<^sub>\<tau> \<gamma>\<^sub>\<tau>' whisker_left \<tau>.ide_leg0 by fastforce
           finally show ?thesis by simp
         qed
         moreover have "\<And>\<gamma>. \<guillemotleft>\<gamma> : ?w\<^sub>\<tau>' \<Rightarrow> ?w\<^sub>\<tau>'\<guillemotright> \<and> t\<^sub>1 \<star> \<gamma> = t\<^sub>1 \<star> ?w\<^sub>\<tau>' \<and> ?\<theta>\<^sub>\<tau>' = ?\<theta>\<^sub>\<tau>' \<cdot> (t\<^sub>0 \<star> \<gamma>)
@@ -8099,7 +8144,8 @@ $$
           show "\<guillemotleft>\<a>\<^sup>-\<^sup>1[u\<^sub>1, \<tau>\<mu>.p\<^sub>0, chine] : u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0 \<star> chine \<Rightarrow> (u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine\<guillemotright>"
             by auto
           show "\<guillemotleft>inv t\<^sub>0u\<^sub>1.\<phi> \<star> chine : (u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine \<Rightarrow> (t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1) \<star> chine\<guillemotright>"
-            using t\<^sub>0u\<^sub>1.\<phi>_in_hom(2) t\<^sub>0u\<^sub>1.\<phi>_uniqueness(2) by auto
+            using t\<^sub>0u\<^sub>1.\<phi>_uniqueness(2)
+            by (simp add: t\<^sub>0u\<^sub>1.\<phi>_in_hom(2) w_in_hom(2))
           show "\<guillemotleft>\<a>[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine] : (t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1) \<star> chine \<Rightarrow> t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1 \<star> chine\<guillemotright>"
             using \<tau>.T0.antipar(1) by auto
           show "\<guillemotleft>t\<^sub>0 \<star> inv \<gamma>\<^sub>\<tau> : t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1 \<star> chine \<Rightarrow> t\<^sub>0 \<star> \<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<guillemotright>"
@@ -8289,7 +8335,7 @@ $$
                              \<a>\<^sup>-\<^sup>1[u \<star> u\<^sub>0, \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (\<mu> \<star> ?w\<^sub>\<mu>)"
             using assoc'_naturality [of \<mu> \<tau>\<mu>.p\<^sub>0 chine] comp_assoc by auto
           also have "... = ((u \<star> the_\<theta>) \<cdot> (u \<star> \<a>\<^sup>-\<^sup>1[u\<^sub>0, \<tau>\<mu>.p\<^sub>0, chine])) \<cdot> \<a>[u, u\<^sub>0, ?w\<^sub>\<mu>] \<cdot> (\<mu> \<star> ?w\<^sub>\<mu>)"
-            using uw\<theta> pentagon comp_assoc inv_hcomp
+            using uw\<theta> pentagon comp_assoc
                   invert_opposite_sides_of_square
                     [of "u \<star> \<a>[u\<^sub>0, \<tau>\<mu>.p\<^sub>0, chine]"
                         "\<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine] \<cdot> (\<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine)" "\<a>[u, u\<^sub>0, ?w\<^sub>\<mu>]"
@@ -8846,7 +8892,8 @@ $$
             have "Maps.seq (Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>)
                            (Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)"
             proof
-              show "Maps.in_hom (Maps.MkArr (src (tab\<^sub>0 (local.dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)
+              show "Maps.in_hom (Maps.MkArr (src (tab\<^sub>0 (local.dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>)))
+                                            \<lbrakk>spn \<mu>\<rbrakk>)
                                 (Maps.MkIde (src (tab\<^sub>0 (dom \<mu>))))
                                 (Maps.MkIde (src (tab\<^sub>0 (cod \<mu>))))"
               proof -
@@ -9317,7 +9364,7 @@ $$
 
     text \<open>
       Now we have to use the above properties of the underlying bicategory to
-      exhibit the composition isomoprhisms as actual arrows in \<open>Span(Maps(B))\<close>
+      exhibit the composition isomorphisms as actual arrows in \<open>Span(Maps(B))\<close>
       and to prove the required naturality and coherence conditions.
     \<close>
 
@@ -9666,7 +9713,7 @@ $$
       have rs: "VV.ide (r, s)"
         using assms VV.ide_char VV.arr_char by simp
       interpret rs: two_composable_identities_in_bicategory_of_spans V H \<a> \<i> src trg r s
-        using rs VV.ide_char VV.arr_char apply unfold_locales by auto
+        using rs VV.ide_char VV.arr_char by unfold_locales auto
       interpret cmp: arrow_of_tabulations_in_maps V H \<a> \<i> src trg
                      \<open>r \<star> s\<close> rs.\<rho>\<sigma>.tab \<open>tab\<^sub>0 s \<star> rs.\<rho>\<sigma>.p\<^sub>0\<close> \<open>tab\<^sub>1 r \<star> rs.\<rho>\<sigma>.p\<^sub>1\<close>
                      \<open>r \<star> s\<close> rs.tab \<open>tab\<^sub>0 (r \<star> s)\<close> \<open>tab\<^sub>1 (r \<star> s)\<close>
@@ -9913,11 +9960,11 @@ $$
             using \<mu>\<nu> by blast
           show "Span.in_hom (CMP (fst (VV.cod \<mu>\<nu>)) (snd (VV.cod \<mu>\<nu>)))
                             (HoSPN_SPN.map (VV.cod \<mu>\<nu>)) (SPNoH.map (VV.cod \<mu>\<nu>))"
-            using \<mu>\<nu> by (auto simp add: VV.arr_char)
+            using \<mu>\<nu> VV.cod_simp by (auto simp add: VV.arr_char)
         qed
         have RHS:
           "Span.in_hom ?RHS (HoSPN_SPN.map (VV.dom \<mu>\<nu>)) (SPNoH.map (VV.cod \<mu>\<nu>))"
-          using \<mu>\<nu> by (auto simp add: VV.arr_char)
+          using \<mu>\<nu> VV.dom_simp VV.cod_simp by (auto simp add: VV.arr_char)
         show "?LHS = ?RHS"
         proof (intro Span.arr_eqI)
           show "Span.par ?LHS ?RHS"
@@ -9983,7 +10030,8 @@ $$
               finally show ?thesis by blast
             qed
             have Chn_RHS_eq:
-               "Chn ?RHS = Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>))) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+               "Chn ?RHS = Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
+                                      (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
                                       \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<odot>
                            Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
                                       \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
@@ -9992,6 +10040,7 @@ $$
                                Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
                                           \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
                 using \<mu>\<nu> RHS Span.vcomp_def VV.arr_char CMP_def Span.arr_char Span.not_arr_Null
+                      VV.dom_simp
                 by auto
               moreover have "Chn (SPN (?\<mu> \<star> ?\<nu>)) =
                              Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
@@ -10270,7 +10319,7 @@ $$
                       thus ?thesis
                         using cod_\<mu>_\<nu>.cmp_props equivalence_is_left_adjoint left_adjoint_is_ide
                               ide_in_iso_class [of cod_\<mu>_\<nu>.cmp]
-                        by blast
+                        by (metis (mono_tags, lifting) mem_Collect_eq)
                     qed
                     moreover have
                       "cod_\<mu>_\<nu>.cmp \<star> \<mu>_\<nu>.chine \<in> Maps.Comp \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk> \<lbrakk>\<mu>_\<nu>.chine\<rbrakk>"
@@ -10779,7 +10828,8 @@ $$
             using fg isomorphic_reflexive
                   Maps.comp_CLS [of "tab\<^sub>0 g" "Tfg.\<rho>\<sigma>.p\<^sub>0" "tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0"]
             by simp
-          moreover have "span_in_category.apex Maps.comp \<lparr>Leg0 = \<lbrakk>\<lbrakk>tab\<^sub>0 h\<rbrakk>\<rbrakk>, Leg1 = \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>\<rparr> =
+          moreover have "span_in_category.apex Maps.comp
+                           \<lparr>Leg0 = \<lbrakk>\<lbrakk>tab\<^sub>0 h\<rbrakk>\<rbrakk>, Leg1 = \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>\<rparr> =
                          \<lbrakk>\<lbrakk>spn h\<rbrakk>\<rbrakk>"
           proof -
             interpret h: span_in_category Maps.comp \<open>\<lparr>Leg0 = \<lbrakk>\<lbrakk>tab\<^sub>0 h\<rbrakk>\<rbrakk>, Leg1 = \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>\<rparr>\<close>
@@ -11341,6 +11391,19 @@ $$
             \<open>src_tab_eq\<close> can be applied to eliminate \<open>\<theta>\<^sub>f\<close> in favor of \<open>\<theta>\<^sub>f'\<close>.
           \<close>
           have "f.composite_cell w\<^sub>f \<theta>\<^sub>f =
+                  ((f \<star> g \<star> \<a>[h, tab\<^sub>0 h, fg\<^sub>0h\<^sub>1.p\<^sub>0]) \<cdot>
+                    (f \<star> g \<star> h.tab \<star> fg\<^sub>0h\<^sub>1.p\<^sub>0) \<cdot>
+                    (f \<star> g \<star> fg\<^sub>0h\<^sub>1.\<phi>) \<cdot>
+                    (f \<star> \<a>[g, tab\<^sub>0 g \<star> f\<^sub>0g\<^sub>1.p\<^sub>0, fg\<^sub>0h\<^sub>1.p\<^sub>1]) \<cdot>
+                    (f \<star> \<a>[g, tab\<^sub>0 g, f\<^sub>0g\<^sub>1.p\<^sub>0] \<star> fg\<^sub>0h\<^sub>1.p\<^sub>1) \<cdot>
+                    (f \<star> (g.tab \<star> f\<^sub>0g\<^sub>1.p\<^sub>0) \<star> fg\<^sub>0h\<^sub>1.p\<^sub>1) \<cdot>
+                    (f \<star> f\<^sub>0g\<^sub>1.\<phi> \<star> fg\<^sub>0h\<^sub>1.p\<^sub>1) \<cdot>
+                    (f \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, f\<^sub>0g\<^sub>1.p\<^sub>1, fg\<^sub>0h\<^sub>1.p\<^sub>1])) \<cdot>
+                    \<a>[f, tab\<^sub>0 f, f\<^sub>0g\<^sub>1.p\<^sub>1 \<star> fg\<^sub>0h\<^sub>1.p\<^sub>1] \<cdot>
+                    (f.tab \<star> f\<^sub>0g\<^sub>1.p\<^sub>1 \<star> fg\<^sub>0h\<^sub>1.p\<^sub>1)"
+            unfolding w\<^sub>f_def \<theta>\<^sub>f_def
+            using fg\<^sub>0h\<^sub>1.p\<^sub>1_simps Tgh.composable whisker_left by simp  (* 12 sec, 30 sec cpu *)
+          also have "... =
                   (f \<star> g \<star> \<a>[h, tab\<^sub>0 h, TTfgh.p\<^sub>0]) \<cdot>
                     (f \<star> g \<star> h.tab \<star> TTfgh.p\<^sub>0) \<cdot>
                     (f \<star> g \<star> fg\<^sub>0h\<^sub>1.\<phi>) \<cdot>
@@ -11351,9 +11414,7 @@ $$
                     (f \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]) \<cdot>
                     \<a>[f, tab\<^sub>0 f, Tfg.p\<^sub>1 \<star> TTfgh.p\<^sub>1] \<cdot>
                     (f.tab \<star> Tfg.p\<^sub>1 \<star> TTfgh.p\<^sub>1)"
-            unfolding w\<^sub>f_def \<theta>\<^sub>f_def
-            using fg\<^sub>0h\<^sub>1.p\<^sub>1_simps Tgh.composable whisker_left comp_assoc
-            by simp (* 20 sec *)
+            using comp_assoc by simp
           also have "... =
                        (\<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
                          \<a>\<^sup>-\<^sup>1[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11849,6 +11910,7 @@ $$
                     ((f \<star> f\<^sub>0gh\<^sub>1.\<phi>) \<star> TTfgh_TfTgh.chine) \<cdot>
                     (\<a>[f, tab\<^sub>0 f, TfTgh.p\<^sub>1] \<star> TTfgh_TfTgh.chine) \<cdot>
                     ((f.tab \<star> TfTgh.p\<^sub>1) \<star> TTfgh_TfTgh.chine)"
+              (* using fg gh whisker_right [of TTfgh_TfTgh.chine] by auto (* 2 min *) *)
             proof -
               have "arr (\<a>\<^sup>-\<^sup>1[f, g \<star> h, (tab\<^sub>0 h \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0] \<cdot>
                       (f \<star> \<a>[g \<star> h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0]) \<cdot>
@@ -11863,10 +11925,6 @@ $$
                       (f.tab \<star> TfTgh.p\<^sub>1))"
                 using fg gh
                 by (intro seqI' comp_in_homI) auto
-              (*
-               * TODO: Find a way to generate the following consequences automatically
-               * without having to list them.
-               *)
               moreover
               have "arr ((f \<star> \<a>[g \<star> h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0]) \<cdot>
                       (f \<star> \<a>\<^sup>-\<^sup>1[g, h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0] \<star> TfTgh.p\<^sub>0) \<cdot>
@@ -11940,7 +11998,7 @@ $$
                       (f.tab \<star> TfTgh.p\<^sub>1))"
                 using calculation by blast
               ultimately show ?thesis
-                using whisker_right by auto
+                using whisker_right [of TTfgh_TfTgh.chine] TTfgh_TfTgh.is_ide by presburger
             qed
             thus ?thesis
               using comp_assoc by presburger
@@ -12386,40 +12444,7 @@ $$
                            (((g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
                            (f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-            proof -
-              have "arr ((((g \<star> h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (((g \<star> g\<^sub>0h\<^sub>1.\<phi>) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            ((\<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1] \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (((g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
-                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-                using fg gh
-                apply (intro seqI) by auto
-              moreover
-              have "arr ((((g \<star> g\<^sub>0h\<^sub>1.\<phi>) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            ((\<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1] \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (((g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
-                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-                using calculation by blast
-              moreover
-              have "arr (((\<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1] \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (((g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
-                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-                using calculation by blast
-              moreover
-              have "arr ((((g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
-                            (f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
-                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-                using calculation by blast
-              moreover
-              have "arr ((f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine) \<cdot>
-                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
-                using calculation by blast
-              ultimately show ?thesis
-                using whisker_left f.ide_base by presburger
-            qed
+              using fg gh whisker_left by simp  (* 15 sec elapsed, 30 sec cpu *)
             thus ?thesis
               using comp_assoc by presburger
           qed
@@ -12696,13 +12721,10 @@ $$
         unfolding w\<^sub>g'_def
         using TTfgh_TfTgh.is_map left_adjoints_compose by simp
       have \<theta>\<^sub>g: "\<guillemotleft>\<theta>\<^sub>g : tab\<^sub>0 g \<star> w\<^sub>g \<Rightarrow> u\<^sub>g\<guillemotright>"
-        unfolding w\<^sub>g_def u\<^sub>g_def \<theta>\<^sub>g_def
-        using fg\<^sub>0h\<^sub>1.p\<^sub>1_simps fg\<^sub>0h\<^sub>1.\<phi>_in_hom
-        apply (intro comp_in_homI) by auto
+        using w\<^sub>g_def u\<^sub>g_def \<theta>\<^sub>g_def fg\<^sub>0h\<^sub>1.p\<^sub>1_simps fg\<^sub>0h\<^sub>1.\<phi>_in_hom by auto
       have \<theta>\<^sub>g': "\<guillemotleft>\<theta>\<^sub>g' : tab\<^sub>0 g \<star> w\<^sub>g' \<Rightarrow> u\<^sub>g\<guillemotright>"
-          unfolding w\<^sub>g'_def u\<^sub>g_def \<theta>\<^sub>g'_def
-          using fg\<^sub>0h\<^sub>1.p\<^sub>0_simps
-          apply (intro comp_in_homI) by auto
+        unfolding w\<^sub>g'_def u\<^sub>g_def \<theta>\<^sub>g'_def
+        by (intro comp_in_homI) auto
       have w\<^sub>g_in_hhom: "in_hhom w\<^sub>g (src u\<^sub>g) (src (tab\<^sub>0 g))"
         unfolding w\<^sub>g_def u\<^sub>g_def by auto
       have w\<^sub>g'_in_hhom: "in_hhom w\<^sub>g' (src u\<^sub>g) (src (tab\<^sub>0 g))"
@@ -12794,8 +12816,7 @@ $$
                      (\<a>[g, tab\<^sub>0 g, Tfg.p\<^sub>0] \<star> TTfgh.p\<^sub>1) \<cdot>
                      (\<a>\<^sup>-\<^sup>1[g \<star> tab\<^sub>0 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1] \<cdot>
                      (g.tab \<star> Tfg.p\<^sub>0 \<star> TTfgh.p\<^sub>1))"
-          using fg gh f\<^sub>0g\<^sub>1.p\<^sub>0_simps fg\<^sub>0h\<^sub>1.p\<^sub>0_simps fg\<^sub>0h\<^sub>1.p\<^sub>1_simps comp_assoc
-                fg\<^sub>0h\<^sub>1.p\<^sub>1_simps pentagon' iso_inv_iso
+          using fg gh f\<^sub>0g\<^sub>1.p\<^sub>0_simps fg\<^sub>0h\<^sub>1.p\<^sub>0_simps fg\<^sub>0h\<^sub>1.p\<^sub>1_simps fg\<^sub>0h\<^sub>1.p\<^sub>1_simps comp_assoc pentagon'
                 invert_opposite_sides_of_square
                   [of "\<a>\<^sup>-\<^sup>1[g, tab\<^sub>0 g, Tfg.p\<^sub>0] \<star> TTfgh.p\<^sub>1"
                       "(\<a>\<^sup>-\<^sup>1[g, tab\<^sub>0 g \<star> Tfg.p\<^sub>0, TTfgh.p\<^sub>1]) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1])"
@@ -12915,7 +12936,7 @@ $$
                 f\<^sub>0gh\<^sub>1.\<phi> \<star> TTfgh_TfTgh.chine"
             using f\<^sub>0gh\<^sub>1.p\<^sub>0_simps comp_cod_arr comp_arr_dom comp_assoc_assoc' by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by fastforce
         qed
         also have "... = (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
@@ -13257,52 +13278,11 @@ $$
                            \<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1 \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine] \<cdot>
                            (g.tab \<star> Tgh.p\<^sub>1 \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
                            \<beta>\<^sub>g"
-        proof -
-          have "arr ((h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
-                       (can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
-                            (((\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)) \<cdot>
-                       ((h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       (g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine])"
-            using gh f\<^sub>0gh\<^sub>1.p\<^sub>0_simps
-            apply (intro seqI) by auto
-          moreover
-          have "arr ((can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
-                          (((\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)) \<cdot>
-                       ((h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       (g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine])"
-            using calculation by blast
-          moreover
-          have "arr (((h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       (g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine])"
-            using calculation by blast
-          moreover
-          have "arr ((g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                       \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine])"
-            using calculation by blast
-          ultimately
-          have "(g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
-                   (g \<star> can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
-                            (((\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)) \<cdot>
-                   (g \<star> (h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                   (g \<star> g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                   (g \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine]) =
-                 g \<star>
-                   (h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
-                     (can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
-                          (((\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)) \<cdot>
-                     ((h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                     (g\<^sub>0h\<^sub>1.\<phi> \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
-                     \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine]"
-            using whisker_left by simp (* 20 sec *)
-          thus ?thesis by simp
-        qed
+          using gh whisker_left by auto (* 11 sec *)
         also have "... = g.composite_cell w\<^sub>g' \<theta>\<^sub>g' \<cdot> \<beta>\<^sub>g"
           unfolding w\<^sub>g'_def \<theta>\<^sub>g'_def
           using comp_assoc by presburger
-        finally show ?thesis by simp
+        finally show ?thesis by blast
       qed
       have 6: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : w\<^sub>g \<Rightarrow> w\<^sub>g'\<guillemotright> \<and> \<beta>\<^sub>g = tab\<^sub>1 g \<star> \<gamma> \<and> \<theta>\<^sub>g = \<theta>\<^sub>g' \<cdot> (tab\<^sub>0 g \<star> \<gamma>)"
         using w\<^sub>g w\<^sub>g' \<theta>\<^sub>g \<theta>\<^sub>g' \<beta>\<^sub>g eq\<^sub>g g.T2 [of w\<^sub>g w\<^sub>g' \<theta>\<^sub>g u\<^sub>g \<theta>\<^sub>g' \<beta>\<^sub>g] by blast
@@ -13739,8 +13719,9 @@ $$
                           [of TfTgh.p\<^sub>1 TTfgh_TfTgh.chine "TfTgh.p\<^sub>1 \<star> TTfgh_TfTgh.chine"]
                   by simp
               qed
-              finally show ?thesis
+              also have "... = SPN_fgh.Prj\<^sub>1 \<odot> Maps.CLS TTfgh_TfTgh.chine"
                 using prj_char by simp
+              finally show ?thesis by blast
             qed
             show
               "Maps.PRJ\<^sub>0 SPN_fgh.\<mu>.leg0 (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1) \<odot> tuple_ABC =
@@ -14173,7 +14154,7 @@ $$
               moreover have "Span.arr (SPN (Maps.Dom (Chn a')))"
                 using a a' SPN_in_hom by auto
               ultimately show ?thesis
-                using a a' SPN_def Span.src_def Maps.cod_char obj_simps by simp
+                using a a' SPN_def Span.src_def Maps.cod_char obj_simps(2) by simp
             qed
             also have "... = Chn a'"
               using a' Maps.MkIde_Dom Span.obj_char Span.ide_char by simp
@@ -14218,9 +14199,13 @@ $$
             using Maps.REP_in_Map [of g.leg0]
             by unfold_locales auto
           have 0: "\<guillemotleft>Maps.REP g.leg0 : src (Maps.REP g.apex) \<rightarrow> Maps.Cod g.leg0\<guillemotright>"
-            using g.dom.leg_in_hom Maps.REP_in_hhom by force
+            using g.dom.leg_in_hom Maps.REP_in_hhom
+            by (metis (no_types, lifting) Maps.Dom_cod Maps.REP_simps(2) Maps.arr_cod
+                g.dom.leg_simps(1))
           have 1: "\<guillemotleft>Maps.REP g.leg1 : src (Maps.REP g.apex) \<rightarrow> Maps.Cod g.leg1\<guillemotright>"
-            using g.dom.leg_in_hom Maps.REP_in_hhom by force
+            using g.dom.leg_in_hom Maps.REP_in_hhom
+            by (metis (no_types, lifting) Maps.Dom_cod Maps.REP_simps(2) Maps.arr_cod
+                g.dom.leg_simps(3))
           let ?f = "Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*"
           have f_in_hhom: "\<guillemotleft>?f : a \<rightarrow> b\<guillemotright>"
           proof
@@ -14333,7 +14318,7 @@ $$
             hence w\<theta>\<nu>: "equivalence_map w \<and> \<guillemotleft>w : src (tab\<^sub>0 ?f) \<rightarrow> src (Maps.REP g.leg0)\<guillemotright> \<and>
                         \<guillemotleft>\<theta> : Maps.REP g.leg0 \<star> w \<Rightarrow> tab\<^sub>0 ?f\<guillemotright> \<and>
                         \<guillemotleft>\<nu> : tab\<^sub>1 ?f \<Rightarrow> Maps.REP g.leg1 \<star> w\<guillemotright> \<and> iso \<nu>"
-              using equivalence_map_def equivalence_pair_def equivalence_pair_symmetric
+              using equivalence_map_def quasi_inverses_def quasi_inverses_symmetric
               by meson
             let ?W = "\<lparr>Chn = \<lbrakk>\<lbrakk>w\<rbrakk>\<rbrakk>, Dom = Dom (SPN ?f), Cod = Dom g\<rparr>"
             have W_in_hom: "Span.in_hom ?W (SPN ?f) g"
@@ -14590,9 +14575,13 @@ $$
             have "Maps.REP \<tau>.cod.leg0 \<cong> tab\<^sub>0 s"
               using \<tau>_cod_leg0_eq Maps.CLS_REP Maps.CLS_eqI Maps.REP_CLS s.satisfies_T0
               by presburger
-            thus ?thesis
-              using hcomp_isomorphic_ide [of "Maps.REP \<tau>.cod.leg0" "tab\<^sub>0 s" "Maps.REP \<tau>.chine"]
-                    isomorphic_symmetric Maps.seq_char
+            moreover have "src (tab\<^sub>0 s) = trg (Maps.REP \<tau>.chine)"
+              using Maps.seq_char [of "\<lbrakk>\<lbrakk>tab\<^sub>0 s\<rbrakk>\<rbrakk>" \<tau>.chine] \<tau>.cod.leg_simps(1)
+                    \<tau>.leg0_commutes \<tau>_cod_leg0_eq
+              by auto
+            ultimately show ?thesis
+              using hcomp_isomorphic_ide [of "tab\<^sub>0 s" "Maps.REP \<tau>.cod.leg0" "Maps.REP \<tau>.chine"]
+                    isomorphic_symmetric
               by fastforce
           qed
           also have "... \<cong> Maps.REP \<tau>.dom.leg0"
@@ -14626,9 +14615,11 @@ $$
             have "Maps.REP \<tau>.cod.leg1 \<cong> tab\<^sub>1 s"
               using \<tau>_cod_leg1_eq Maps.CLS_REP Maps.CLS_eqI Maps.REP_CLS s.leg1_is_map
               by presburger
-            thus ?thesis
+            moreover have "src (Maps.REP \<tau>.cod.leg1) = trg (Maps.REP \<tau>.chine)"
+              using Maps.seq_char by auto
+            ultimately show ?thesis
               using hcomp_isomorphic_ide [of "Maps.REP \<tau>.cod.leg1" "tab\<^sub>1 s" "Maps.REP \<tau>.chine"]
-                    isomorphic_symmetric Maps.seq_char
+                    isomorphic_symmetric
               by fastforce
           qed
           also have "... \<cong> Maps.REP \<tau>.dom.leg1"

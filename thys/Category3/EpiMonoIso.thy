@@ -275,6 +275,16 @@ begin
       thus ?thesis using iso_def by auto
     qed
 
+    lemma iso_cancel_left:
+    assumes "iso f" and "f \<cdot> g = f \<cdot> g'" and "seq f g"
+    shows "g = g'"
+      using assms iso_is_section section_is_mono monoE by metis
+
+    lemma iso_cancel_right:
+    assumes "iso g" and "f \<cdot> g = f' \<cdot> g" and "seq f g" and "iso g"
+    shows "f = f'"
+      using assms iso_is_retraction retraction_is_epi epiE by metis
+
     definition isomorphic
     where "isomorphic a a' = (\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f)"
 
@@ -288,6 +298,35 @@ begin
     obtains f where "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f"
       using assms isomorphic_def by meson
 
+    definition iso_in_hom  ("\<guillemotleft>_ : _ \<cong> _\<guillemotright>")
+    where "iso_in_hom f a b \<equiv> \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> iso f"
+
+    lemma iso_in_homI [intro]:
+    assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "iso f"
+    shows "\<guillemotleft>f : a \<cong> b\<guillemotright>"
+      using assms iso_in_hom_def by simp
+
+    lemma iso_in_homE [elim]:
+    assumes "\<guillemotleft>f : a \<cong> b\<guillemotright>"
+    and "\<lbrakk>\<guillemotleft>f : a \<rightarrow> b\<guillemotright>; iso f\<rbrakk> \<Longrightarrow> T"
+    shows T
+      using assms iso_in_hom_def by simp
+
+    lemma isomorphicI':
+    assumes "\<guillemotleft>f : a \<cong> b\<guillemotright>"
+    shows "isomorphic a b"
+      using assms iso_in_hom_def isomorphic_def by auto
+
+    lemma ide_iso_in_hom:
+    assumes "ide a"
+    shows "\<guillemotleft>a : a \<cong> a\<guillemotright>"
+      using assms by fastforce
+
+    lemma comp_iso_in_hom [intro]:
+    assumes "\<guillemotleft>f : a \<cong> b\<guillemotright>" and "\<guillemotleft>g : b \<cong> c\<guillemotright>"
+    shows "\<guillemotleft>g \<cdot> f : a \<cong> c\<guillemotright>"
+      using assms iso_in_hom_def by auto
+
     definition inv
     where "inv f = (SOME g. inverse_arrows f g)"
 
@@ -296,7 +335,7 @@ begin
     shows "inverse_arrows f (inv f)"
       using assms inv_def someI [of "inverse_arrows f"] by auto
 
-    lemma iso_inv_iso:
+    lemma iso_inv_iso [intro, simp]:
     assumes "iso f"
     shows "iso (inv f)"
       using assms inv_is_inverse inverse_arrows_sym by blast
@@ -372,7 +411,7 @@ begin
     lemma isomorphic_symmetric:
     assumes "isomorphic f g"
     shows "isomorphic g f"
-      using assms iso_inv_iso inv_in_hom by blast
+      using assms inv_in_hom by blast
 
     lemma isomorphic_transitive [trans]:
     assumes "isomorphic f g" and "isomorphic g h"
@@ -422,6 +461,62 @@ begin
     assumes "seq f g" and "f \<cdot> g = h \<cdot> k"
     shows "\<lbrakk> iso f; iso k \<rbrakk> \<Longrightarrow> seq g (inv k) \<and> seq (inv f) h \<and> g \<cdot> inv k = inv f \<cdot> h"
       by (metis assms invert_side_of_triangle comp_assoc)
+
+    text \<open>
+      The following versions of \<open>inv_comp\<close> provide information needed for repeated
+      application to a composition of more than two arrows and seem often to be more
+      useful.
+\<close>
+
+    lemma inv_comp_left:
+    assumes "iso (g \<cdot> f)" and "iso g"
+    shows "inv (g \<cdot> f) = inv f \<cdot> inv g" and "iso f"
+    proof -
+      have 1: "inv f = inv (g \<cdot> f) \<cdot> g"
+      proof -
+        have "inv (g \<cdot> f) \<cdot> g = inv (g \<cdot> f) \<cdot> inv (inv g)"
+         using assms by simp
+        also have "... = inv (inv g \<cdot> g \<cdot> f)"
+          using assms inv_comp iso_is_arr by simp
+        also have "... = inv ((inv g \<cdot> g) \<cdot> f)"
+          using comp_assoc by simp
+        also have "... = inv f"
+          using assms comp_ide_arr invert_side_of_triangle(1) iso_is_arr comp_assoc
+          by metis
+        finally show ?thesis by simp
+      qed
+      show "inv (g \<cdot> f) = inv f \<cdot> inv g"
+        using assms 1 comp_arr_dom comp_assoc
+        by (metis arr_inv cod_comp dom_inv invert_side_of_triangle(2) iso_is_arr seqI)
+      show "iso f"
+        using assms 1 comp_assoc inv_is_inverse
+        by (metis arr_inv invert_side_of_triangle(1) inv_inv iso_inv_iso isos_compose)
+    qed
+
+    lemma inv_comp_right:
+    assumes "iso (g \<cdot> f)" and "iso f"
+    shows "inv (g \<cdot> f) = inv f \<cdot> inv g" and "iso g"
+    proof -
+      have 1: "inv g = f \<cdot> inv (g \<cdot> f)"
+      proof -
+        have "f \<cdot> inv (g \<cdot> f) = inv (inv f) \<cdot> inv (g \<cdot> f)"
+          using assms by simp
+        also have "... = inv ((g \<cdot> f) \<cdot> inv f)"
+          using assms inv_comp iso_is_arr by simp
+        also have "... = inv (g \<cdot> f \<cdot> inv f)"
+          using comp_assoc by simp
+        also have "... = inv g"
+          using assms comp_arr_dom invert_side_of_triangle(2) iso_is_arr comp_assoc
+          by metis
+        finally show ?thesis by simp
+      qed
+      show "inv (g \<cdot> f) = inv f \<cdot> inv g"
+        using assms 1 comp_cod_arr comp_assoc
+        by (metis arr_inv cod_inv dom_comp seqI invert_side_of_triangle(1) iso_is_arr)
+      show "iso g"
+        using assms 1 comp_assoc inv_is_inverse
+        by (metis arr_inv invert_side_of_triangle(2) inv_inv iso_inv_iso isos_compose)
+    qed
 
   end
 

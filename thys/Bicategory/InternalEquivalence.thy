@@ -164,47 +164,101 @@ begin
 
     lemma dual_equivalence:
     shows "equivalence_in_bicategory V H \<a> \<i> src trg g f (inv \<epsilon>) (inv \<eta>)"
-      using iso_inv_iso antipar
-      apply unfold_locales by auto
+      using antipar by unfold_locales auto
 
   end
 
-  subsection "Equivalence Maps"
+  abbreviation (in bicategory) internal_equivalence
+    where "internal_equivalence f g \<phi> \<psi> \<equiv> equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>"
+
+  subsection "Quasi-Inverses and Equivalence Maps"
 
   text \<open>
-    We will use the term \emph{equivalence pair} to refer to 1-cells \<open>f\<close> and \<open>g\<close> that are
-    part of an internal equivalence, and the term \emph{equivalence map} to refer to a 1-cell
-    that is part of an equivalence pair.
+    Antiparallel 1-cells \<open>f\<close> and \<open>g\<close> are \emph{quasi-inverses} if they can be extended to
+    an internal equivalence.  We will use the term \emph{equivalence map} to refer to a 1-cell
+    that has a quasi-inverse.
   \<close>
 
   context bicategory
   begin
 
-    definition equivalence_pair
-    where "equivalence_pair f g \<equiv> \<exists>\<phi> \<psi>. equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>"
+    definition quasi_inverses
+    where "quasi_inverses f g \<equiv> \<exists>\<phi> \<psi>. internal_equivalence f g \<phi> \<psi>"
 
-    lemma equivalence_pair_symmetric:
-    assumes "equivalence_pair f g"
-    shows "equivalence_pair g f"
-      using assms equivalence_in_bicategory.dual_equivalence equivalence_pair_def by fastforce
+    lemma quasi_inversesI:
+    assumes "ide f" and "ide g"
+    and "src f \<cong> g \<star> f" and "f \<star> g \<cong> trg f"
+    shows "quasi_inverses f g"
+    proof (unfold quasi_inverses_def)
+      have 1: "src g = trg f"
+        using assms ideD(1) isomorphic_implies_ide(2) by blast
+      obtain \<phi> where \<phi>: "\<guillemotleft>\<phi> : src f \<Rightarrow> g \<star> f\<guillemotright> \<and> iso \<phi>"
+        using assms isomorphic_def by auto
+      obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : f \<star> g \<Rightarrow> trg f\<guillemotright> \<and> iso \<psi>"
+        using assms isomorphic_def by auto
+     have "equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>"
+        using assms 1 \<phi> \<psi> by unfold_locales auto
+      thus "\<exists>\<phi> \<psi>. internal_equivalence f g \<phi> \<psi>" by auto
+    qed
+
+    lemma quasi_inversesE:
+    assumes "quasi_inverses f g"
+    and "\<lbrakk>ide f; ide g; src f \<cong> g \<star> f; f \<star> g \<cong> trg f\<rbrakk> \<Longrightarrow> T"
+    shows T
+    proof -
+      obtain \<phi> \<psi> where \<phi>\<psi>: "internal_equivalence f g \<phi> \<psi>"
+        using assms quasi_inverses_def by auto
+      interpret \<phi>\<psi>: equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>
+        using \<phi>\<psi> by simp
+      have "ide f \<and> ide g"
+        by simp
+      moreover have "src f \<cong> g \<star> f"
+        using isomorphic_def \<phi>\<psi>.unit_in_hom by auto
+      moreover have "f \<star> g \<cong> trg f"
+        using isomorphic_def \<phi>\<psi>.counit_in_hom by auto
+      ultimately show T
+        using assms by blast
+    qed
+
+    lemma quasi_inverse_unique:
+    assumes "quasi_inverses f g" and "quasi_inverses f g'"
+    shows "isomorphic g g'"
+    proof -
+      obtain \<phi> \<psi> where \<phi>\<psi>: "internal_equivalence f g \<phi> \<psi>"
+        using assms quasi_inverses_def by auto
+      interpret \<phi>\<psi>: equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>
+        using \<phi>\<psi> by simp
+      obtain \<phi>' \<psi>' where \<phi>'\<psi>': "internal_equivalence f g' \<phi>' \<psi>'"
+        using assms quasi_inverses_def by auto
+      interpret \<phi>'\<psi>': equivalence_in_bicategory V H \<a> \<i> src trg f g' \<phi>' \<psi>'
+        using \<phi>'\<psi>' by simp
+      have "\<guillemotleft>\<r>[g'] \<cdot> (g' \<star> \<psi>) \<cdot> \<a>[g', f, g] \<cdot> (\<phi>' \<star> g) \<cdot> \<l>\<^sup>-\<^sup>1[g] : g \<Rightarrow> g'\<guillemotright>"
+        using \<phi>\<psi>.unit_in_hom \<phi>\<psi>.unit_is_iso \<phi>\<psi>.antipar \<phi>'\<psi>'.antipar
+        by (intro comp_in_homI' hseqI') auto
+      moreover have "iso (\<r>[g'] \<cdot> (g' \<star> \<psi>) \<cdot> \<a>[g', f, g] \<cdot> (\<phi>' \<star> g) \<cdot> \<l>\<^sup>-\<^sup>1[g])"
+        using \<phi>\<psi>.unit_in_hom \<phi>\<psi>.unit_is_iso \<phi>\<psi>.antipar \<phi>'\<psi>'.antipar
+        by (intro isos_compose) auto
+      ultimately show ?thesis
+        using isomorphic_def by auto
+    qed
+
+    lemma quasi_inverses_symmetric:
+    assumes "quasi_inverses f g"
+    shows "quasi_inverses g f"
+      using assms quasi_inverses_def equivalence_in_bicategory.dual_equivalence by metis
 
     definition equivalence_map
     where "equivalence_map f \<equiv> \<exists>g \<eta> \<epsilon>. equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
 
     lemma equivalence_mapI:
-    assumes "ide f" and "ide g" and "src g = trg f" and "trg g = src f"
-    and "isomorphic (src f) (g \<star> f)" and "isomorphic (f \<star> g) (trg f)"
+    assumes "quasi_inverses f g"
     shows "equivalence_map f"
-    proof -
-      obtain \<eta> where \<eta>: "\<guillemotleft>\<eta> : src f \<Rightarrow> g \<star> f\<guillemotright> \<and> iso \<eta>"
-        using assms isomorphic_def by auto
-      obtain \<epsilon> where \<epsilon>: "\<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> trg f\<guillemotright> \<and> iso \<epsilon>"
-        using assms isomorphic_def by auto
-      have "equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
-        using assms \<eta> \<epsilon> by (unfold_locales, auto)
-      thus ?thesis
-        using equivalence_map_def by auto
-    qed
+      using assms quasi_inverses_def equivalence_map_def by auto
+
+    lemma equivalence_mapE:
+    assumes "equivalence_map f"
+    obtains g where "quasi_inverses f g"
+      using assms equivalence_map_def quasi_inverses_def by auto
 
     lemma equivalence_map_is_ide:
     assumes "equivalence_map f"
@@ -217,13 +271,12 @@ begin
     assumes "obj a"
     shows "equivalence_map a"
       using assms
-      by (metis equivalence_mapI isomorphic_symmetric objE obj_self_composable(2))
+      by (metis equivalence_mapI isomorphic_symmetric objE obj_self_composable(2) quasi_inversesI)
 
     lemma equivalence_respects_iso:
     assumes "equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
     and "\<guillemotleft>\<phi> : f \<Rightarrow> f'\<guillemotright>" and "iso \<phi>" and "\<guillemotleft>\<psi> : g \<Rightarrow> g'\<guillemotright>" and "iso \<psi>"
-    shows "equivalence_in_bicategory V H \<a> \<i> src trg f' g'
-              ((g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta>) (\<epsilon> \<cdot> (inv \<phi> \<star> g) \<cdot> (f' \<star> inv \<psi>))"
+    shows "internal_equivalence f' g' ((g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta>) (\<epsilon> \<cdot> (inv \<phi> \<star> g) \<cdot> (f' \<star> inv \<psi>))"
     proof -
       interpret E: equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
         using assms by auto
@@ -284,7 +337,7 @@ begin
       show "iso ((\<phi> \<star> f) \<cdot> \<eta>)"
         using assms E.antipar isos_compose by auto
       show "iso (\<epsilon> \<cdot> (f \<star> inv \<phi>))"
-        using assms E.antipar isos_compose iso_inv_iso by auto
+        using assms E.antipar isos_compose by auto
     qed
 
     lemma equivalence_preserved_by_iso_left:
@@ -305,7 +358,134 @@ begin
       show "iso ((g \<star> \<phi>) \<cdot> \<eta>)"
         using assms E.antipar isos_compose by auto
       show "iso (\<epsilon> \<cdot> (inv \<phi> \<star> g))"
-        using assms E.antipar isos_compose iso_inv_iso by auto
+        using assms E.antipar isos_compose by auto
+    qed
+
+    definition some_quasi_inverse
+    where "some_quasi_inverse f = (SOME g. quasi_inverses f g)"
+
+    notation some_quasi_inverse  ("_\<^sup>~" [1000] 1000)
+
+    lemma quasi_inverses_some_quasi_inverse:
+    assumes "equivalence_map f"
+    shows "quasi_inverses f f\<^sup>~"
+    and "quasi_inverses f\<^sup>~ f"
+      using assms some_quasi_inverse_def quasi_inverses_def equivalence_map_def
+            someI_ex [of "\<lambda>g. quasi_inverses f g"] quasi_inverses_symmetric
+      by auto
+
+    lemma quasi_inverse_antipar:
+    assumes "equivalence_map f"
+    shows "src f\<^sup>~ = trg f" and "trg f\<^sup>~ = src f"
+    proof -
+      obtain \<phi> \<psi> where \<phi>\<psi>: "equivalence_in_bicategory V H \<a> \<i> src trg f f\<^sup>~ \<phi> \<psi>"
+        using assms equivalence_map_def quasi_inverses_some_quasi_inverse quasi_inverses_def
+        by blast
+      interpret \<phi>\<psi>: equivalence_in_bicategory V H \<a> \<i> src trg f \<open>f\<^sup>~\<close> \<phi> \<psi>
+        using \<phi>\<psi> by simp
+      show "src f\<^sup>~ = trg f"
+        using \<phi>\<psi>.antipar by simp
+      show "trg f\<^sup>~ = src f"
+        using \<phi>\<psi>.antipar by simp
+    qed
+
+    lemma quasi_inverse_in_hom [intro]:
+    assumes "equivalence_map f"
+    shows "\<guillemotleft>f\<^sup>~ : trg f \<rightarrow> src f\<guillemotright>"
+    and "\<guillemotleft>f\<^sup>~ : f\<^sup>~ \<Rightarrow> f\<^sup>~\<guillemotright>"
+      using assms equivalence_mapE
+      apply (intro in_homI in_hhomI)
+         apply (metis equivalence_map_is_ide ideD(1) not_arr_null quasi_inverse_antipar(2)
+                      src.preserves_ide trg.is_extensional)
+        apply (simp_all add: quasi_inverse_antipar)
+      using assms quasi_inversesE quasi_inverses_some_quasi_inverse(2) by blast
+
+    lemma quasi_inverse_simps [simp]:
+    assumes "equivalence_map f"
+    shows "equivalence_map f\<^sup>~" and "ide f\<^sup>~"
+    and "src f\<^sup>~ = trg f" and "trg f\<^sup>~ = src f"
+    and "dom f\<^sup>~ = f\<^sup>~" and "cod f\<^sup>~ = f\<^sup>~"
+      using assms equivalence_mapE quasi_inverse_in_hom quasi_inverses_some_quasi_inverse equivalence_map_is_ide
+           apply auto
+      by (meson equivalence_mapI)
+
+    lemma quasi_inverse_quasi_inverse:
+    assumes "equivalence_map f"
+    shows "(f\<^sup>~)\<^sup>~ \<cong> f"
+    proof -
+      have "quasi_inverses f\<^sup>~ (f\<^sup>~)\<^sup>~"
+        using assms quasi_inverses_some_quasi_inverse by simp
+      moreover have "quasi_inverses f\<^sup>~ f"
+        using assms quasi_inverses_some_quasi_inverse quasi_inverses_symmetric by simp
+      ultimately show ?thesis
+        using quasi_inverse_unique by simp
+    qed
+
+    lemma comp_quasi_inverse:
+    assumes "equivalence_map f"
+    shows "f\<^sup>~ \<star> f \<cong> src f" and "f \<star> f\<^sup>~ \<cong> trg f"
+    proof -
+      obtain \<phi> \<psi> where \<phi>\<psi>: "equivalence_in_bicategory V H \<a> \<i> src trg f f\<^sup>~ \<phi> \<psi>"
+        using assms equivalence_map_def quasi_inverses_some_quasi_inverse
+              quasi_inverses_def
+        by blast
+      interpret \<phi>\<psi>: equivalence_in_bicategory V H \<a> \<i> src trg f \<open>f\<^sup>~\<close> \<phi> \<psi>
+        using \<phi>\<psi> by simp
+      show "f\<^sup>~ \<star> f \<cong> src f"
+        using quasi_inverses_some_quasi_inverse quasi_inverses_def
+              \<phi>\<psi>.unit_in_hom \<phi>\<psi>.unit_is_iso isomorphic_def
+        by blast
+      show "f \<star> f\<^sup>~ \<cong> trg f"
+        using quasi_inverses_some_quasi_inverse quasi_inverses_def
+              \<phi>\<psi>.counit_in_hom \<phi>\<psi>.counit_is_iso isomorphic_def
+        by blast
+    qed
+
+    lemma quasi_inverse_transpose:
+    assumes "ide f" and "ide g" and "ide h" and "f \<star> g \<cong> h"
+    shows "equivalence_map g \<Longrightarrow> f \<cong> h \<star> g\<^sup>~"
+    and "equivalence_map f \<Longrightarrow> g \<cong> f\<^sup>~ \<star> h"
+    proof -
+      have 1: "src f = trg g"
+        using assms equivalence_map_is_ide by fastforce
+      show "equivalence_map g \<Longrightarrow> f \<cong> h \<star> g\<^sup>~"
+      proof -
+        assume g: "equivalence_map g"
+        have 2: "ide g\<^sup>~"
+          using g by simp
+        have "f \<cong> f \<star> src f"
+          using assms isomorphic_unit_right isomorphic_symmetric by blast
+        also have "... \<cong> f \<star> trg g"
+          using assms 1 isomorphic_reflexive by auto
+        also have "... \<cong> f \<star> g \<star> g\<^sup>~"
+          using assms g 1 comp_quasi_inverse(2) isomorphic_symmetric hcomp_ide_isomorphic
+          by simp
+        also have "... \<cong> (f \<star> g) \<star> g\<^sup>~"
+          using assms g 1 2 assoc'_in_hom [of f g "g\<^sup>~"] iso_assoc' isomorphic_def by auto
+        also have "... \<cong> h \<star> g\<^sup>~"
+          using assms g 1 2
+          by (simp add: hcomp_isomorphic_ide)
+        finally show ?thesis by blast
+      qed
+      show "equivalence_map f \<Longrightarrow> g \<cong> f\<^sup>~ \<star> h"
+      proof -
+        assume f: "equivalence_map f"
+        have 2: "ide f\<^sup>~"
+          using f by simp
+        have "g \<cong> src f \<star> g"
+          using assms 1 isomorphic_unit_left isomorphic_symmetric by metis
+        also have "... \<cong> (f\<^sup>~ \<star> f) \<star> g"
+          using assms f 1 comp_quasi_inverse(1) [of f] isomorphic_symmetric
+                hcomp_isomorphic_ide
+          by simp
+        also have "... \<cong> f\<^sup>~ \<star> f \<star> g"
+          using assms f 1 assoc_in_hom [of "f\<^sup>~" f g] iso_assoc isomorphic_def by auto
+        also have "... \<cong> f\<^sup>~ \<star> h"
+          using assms f 1 equivalence_map_is_ide quasi_inverses_some_quasi_inverse
+                hcomp_ide_isomorphic
+          by simp
+        finally show ?thesis by blast
+      qed
     qed
 
   end
@@ -355,11 +535,11 @@ begin
     proof
       show "iso \<eta>"
         using fg.antipar hk.antipar composable fg.unit_is_iso hk.unit_is_iso iso_hcomp
-              iso_lunit' hseq_char iso_inv_iso
+              iso_lunit' hseq_char
         by (intro isos_compose, auto)
       show "iso \<epsilon>"
         using fg.antipar hk.antipar composable fg.counit_is_iso hk.counit_is_iso iso_hcomp
-              iso_lunit hseq_char iso_inv_iso
+              iso_lunit hseq_char
         by (intro isos_compose, auto)
     qed
 
@@ -367,11 +547,10 @@ begin
     shows "equivalence_in_bicategory V H \<a> \<i> src trg (h \<star> f) (g \<star> k) \<eta> \<epsilon>"
       ..
 
-  end
+    sublocale equivalence_in_bicategory V H \<a> \<i> src trg \<open>h \<star> f\<close> \<open>g \<star> k\<close> \<eta> \<epsilon>
+      using is_equivalence by simp
 
-  sublocale composite_equivalence_in_bicategory \<subseteq>
-              equivalence_in_bicategory V H \<a> \<i> src trg \<open>h \<star> f\<close> \<open>g \<star> k\<close> \<eta> \<epsilon>
-    using is_equivalence by simp
+  end
 
   context bicategory
   begin
@@ -394,6 +573,75 @@ begin
         using equivalence_map_def equivalence_in_bicategory_axioms by auto
     qed
 
+    lemma quasi_inverse_hcomp':
+    assumes "equivalence_map f" and "equivalence_map f'" and "equivalence_map (f \<star> f')"
+    and "quasi_inverses f g" and "quasi_inverses f' g'"
+    shows "quasi_inverses (f \<star> f') (g' \<star> g)"
+    proof -
+      obtain \<phi> \<psi> where g: "internal_equivalence f g \<phi> \<psi>"
+        using assms quasi_inverses_def by auto
+      interpret g: equivalence_in_bicategory V H \<a> \<i> src trg f g \<phi> \<psi>
+        using g by simp
+      obtain \<phi>' \<psi>' where g': "internal_equivalence f' g' \<phi>' \<psi>'"
+        using assms quasi_inverses_def by auto
+      interpret g': equivalence_in_bicategory V H \<a> \<i> src trg f' g' \<phi>' \<psi>'
+        using g' by simp
+      interpret gg': composite_equivalence_in_bicategory V H \<a> \<i> src trg f' g' \<phi>' \<psi>' f g \<phi> \<psi>
+        using assms equivalence_map_is_ide [of "f \<star> f'"]
+        apply unfold_locales
+        using ideD(1) by fastforce
+      show ?thesis
+        unfolding quasi_inverses_def
+        using gg'.equivalence_in_bicategory_axioms by auto
+    qed
+
+    lemma quasi_inverse_hcomp:
+    assumes "equivalence_map f" and "equivalence_map f'" and "equivalence_map (f \<star> f')"
+    shows "(f \<star> f')\<^sup>~ \<cong> f'\<^sup>~ \<star> f\<^sup>~"
+      using assms quasi_inverses_some_quasi_inverse quasi_inverse_hcomp' quasi_inverse_unique
+      by metis
+
+    lemma quasi_inverse_respects_isomorphic:
+    assumes "equivalence_map f" and "equivalence_map f'" and "f \<cong> f'"
+    shows "f\<^sup>~ \<cong> f'\<^sup>~"
+    proof -
+      have hpar: "src f = src f' \<and> trg f = trg f'"
+        using assms isomorphic_implies_hpar by simp
+      have "f\<^sup>~ \<cong> f\<^sup>~ \<star> trg f"
+        using isomorphic_unit_right
+        by (metis assms(1) isomorphic_symmetric quasi_inverse_simps(2-3))
+      also have "... \<cong> f\<^sup>~ \<star> f' \<star> f'\<^sup>~"
+      proof -
+        have "trg f \<cong> f' \<star> f'\<^sup>~"
+          using assms quasi_inverse_hcomp
+          by (simp add: comp_quasi_inverse(2) hpar isomorphic_symmetric)
+        thus ?thesis
+          using assms hpar hcomp_ide_isomorphic isomorphic_implies_hpar(2) by auto
+      qed
+      also have "... \<cong> (f\<^sup>~ \<star> f') \<star> f'\<^sup>~"
+        using assms hcomp_assoc_isomorphic hpar isomorphic_implies_ide(2) isomorphic_symmetric
+        by auto
+      also have "... \<cong> (f\<^sup>~ \<star> f) \<star> f'\<^sup>~"
+      proof -
+        have "f\<^sup>~ \<star> f' \<cong> f\<^sup>~ \<star> f"
+          using assms isomorphic_symmetric hcomp_ide_isomorphic isomorphic_implies_hpar(1)
+          by auto
+        thus ?thesis
+          using assms hcomp_isomorphic_ide isomorphic_implies_hpar(1) by auto
+      qed
+      also have "... \<cong> src f \<star> f'\<^sup>~"
+      proof -
+        have "f\<^sup>~ \<star> f \<cong> src f"
+          using assms comp_quasi_inverse by simp
+        thus ?thesis
+          using assms hcomp_isomorphic_ide isomorphic_implies_hpar by simp
+      qed
+      also have "... \<cong> f'\<^sup>~"
+        using assms isomorphic_unit_left
+        by (metis hpar quasi_inverse_simps(2,4))
+      finally show ?thesis by blast
+    qed
+
   end
 
   subsection "Equivalent Objects"
@@ -413,21 +661,8 @@ begin
     lemma equivalent_objects_symmetric:
     assumes "equivalent_objects a b"
     shows "equivalent_objects b a"
-    proof -
-      obtain f where f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> equivalence_map f"
-        using assms equivalent_objects_def by auto
-      obtain g \<eta> \<epsilon> where E: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
-        using f equivalence_map_def by blast
-      interpret E: equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
-        using E by auto
-      have E': "equivalence_in_bicategory V H \<a> \<i> src trg g f (inv \<epsilon>) (inv \<eta>)"
-        using E.unit_in_hom E.unit_is_iso E.counit_in_hom E.counit_is_iso iso_inv_iso E.antipar
-        by (unfold_locales, auto)
-      moreover have "\<guillemotleft>g : b \<rightarrow> a\<guillemotright>"
-        using E E.antipar by auto
-      ultimately show ?thesis
-        using assms E' equivalent_objects_def equivalence_map_def by auto
-    qed
+      using assms
+      by (metis equivalent_objects_def in_hhomE quasi_inverse_in_hom(1) quasi_inverse_simps(1))
 
     lemma equivalent_objects_transitive [trans]:
     assumes "equivalent_objects a b" and "equivalent_objects b c"
@@ -435,20 +670,12 @@ begin
     proof -
       obtain f where f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> equivalence_map f"
         using assms equivalent_objects_def by auto
-      obtain g \<eta> \<epsilon> where E: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
-        using f equivalence_map_def by blast
-      interpret E: equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
-        using E by auto
-      obtain h where h: "\<guillemotleft>h : b \<rightarrow> c\<guillemotright> \<and> equivalence_map h"
+      obtain g where g: "\<guillemotleft>g : b \<rightarrow> c\<guillemotright> \<and> equivalence_map g"
         using assms equivalent_objects_def by auto
-      obtain k \<mu> \<nu> where E': "\<guillemotleft>h : b \<rightarrow> c\<guillemotright> \<and> equivalence_in_bicategory V H \<a> \<i> src trg h k \<mu> \<nu>"
-        using h equivalence_map_def by blast
-      interpret E': equivalence_in_bicategory V H \<a> \<i> src trg h k \<mu> \<nu>
-        using E' by auto
-      interpret EE': composite_equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon> h k \<mu> \<nu>
-        using E E' by (unfold_locales, blast)
-      show ?thesis
-        using E E' EE'.is_equivalence equivalent_objects_def equivalence_map_def by auto
+      have "\<guillemotleft>g \<star> f : a \<rightarrow> c\<guillemotright> \<and> equivalence_map (g \<star> f)"
+        using f g equivalence_maps_compose by auto
+      thus ?thesis
+        using equivalent_objects_def by auto
     qed
 
   end
@@ -520,7 +747,7 @@ begin
 
     abbreviation (input) G
     where "G \<equiv> \<lambda>\<mu>'. d\<^sub>1 \<star> \<mu>' \<star> e\<^sub>0"
-    
+
     interpretation G: "functor" hom'.comp hom.comp G
     proof
       show 1: "\<And>f. hom'.arr f \<Longrightarrow> hom.arr (d\<^sub>1 \<star> f \<star> e\<^sub>0)"
@@ -567,9 +794,7 @@ begin
     assumes "\<guillemotleft>f : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright>" and "ide f"
     shows "iso (\<phi>\<^sub>0 f)"
       using assms iso_lunit' iso_runit' e\<^sub>0.antipar e\<^sub>1.antipar
-      apply (intro isos_compose)
-                apply auto
-      by fastforce+
+      by (intro isos_compose) auto
 
     interpretation \<phi>: transformation_by_components hom.comp hom.comp hom.map \<open>G o F\<close> \<phi>\<^sub>0
     proof
@@ -677,13 +902,13 @@ begin
                            \<a>[d\<^sub>1, e\<^sub>1, (dom \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0]) \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
           using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar
-                assoc_naturality [of d\<^sub>1 e\<^sub>1 "(\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0"]
+                assoc_naturality [of d\<^sub>1 e\<^sub>1 "(\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0"] hseqI
           by auto
         also have "... = ((d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0]) \<cdot> (d\<^sub>1 \<star> e\<^sub>1 \<star> (\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0)) \<cdot>
                            \<a>[d\<^sub>1, e\<^sub>1, (dom \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0] \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
           using comp_assoc by simp
-        also have "... = ((d\<^sub>1 \<star> (e\<^sub>1 \<star> \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0) \<cdot> (d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, dom \<mu> \<star> d\<^sub>0, e\<^sub>0])) \<cdot> 
+        also have "... = ((d\<^sub>1 \<star> (e\<^sub>1 \<star> \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0) \<cdot> (d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, dom \<mu> \<star> d\<^sub>0, e\<^sub>0])) \<cdot>
                            \<a>[d\<^sub>1, e\<^sub>1, (dom \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0] \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
           using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar
@@ -712,7 +937,7 @@ begin
               by (auto simp add: e\<^sub>0.antipar e\<^sub>1.antipar in_hhom_def)
           qed
           ultimately show ?thesis
-            using \<mu> hom.comp_char comp_assoc by auto
+            using \<mu> hom.comp_char comp_assoc hom.dom_simp by auto
         qed
         finally show ?thesis by blast
       qed
@@ -724,7 +949,7 @@ begin
 
     interpretation \<phi>: natural_isomorphism hom.comp hom.comp hom.map \<open>G o F\<close> \<phi>.map
     proof
-      fix f 
+      fix f
       assume "hom.ide f"
       hence f: "ide f \<and> \<guillemotleft>f : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright>"
         using hom.ide_char hom.arr_char by simp
@@ -768,7 +993,7 @@ begin
       moreover have "\<guillemotleft>\<mu> : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright> \<Longrightarrow> \<phi>.map \<mu> = \<phi>\<^sub>0 (cod \<mu>) \<cdot> \<mu>"
         unfolding \<phi>.map_def
         apply auto
-        using hom.comp_char hom.arr_char
+        using hom.comp_char hom.arr_char hom.dom_simp hom.cod_simp
         apply simp
         by (metis (no_types, lifting) \<phi>\<^sub>0_in_hom(1) hom.cod_closed hom.inclusion ide_cod local.ext)
       ultimately show "\<phi> \<mu> = (if \<guillemotleft>\<mu> : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright> then \<phi>\<^sub>0 (cod \<mu>) \<cdot> \<mu> else null)"
@@ -899,7 +1124,7 @@ begin
         have "inv \<r>\<^sup>-\<^sup>1[f'] = \<r>[f']"
           using assms inv_inv iso_runit by blast
         moreover have "inv \<l>\<^sup>-\<^sup>1[f' \<star> trg e\<^sub>0] = \<l>[f' \<star> trg e\<^sub>0]"
-          using assms inv_inv iso_lunit by auto
+          using assms iso_lunit by auto
         moreover have "inv (inv \<epsilon>\<^sub>1 \<star> f' \<star> inv \<epsilon>\<^sub>0) = \<epsilon>\<^sub>1 \<star> f' \<star> \<epsilon>\<^sub>0"
         proof -
           have "src (inv \<epsilon>\<^sub>1) = trg f'"
@@ -910,7 +1135,7 @@ begin
             using assms(2) e\<^sub>0.counit_is_iso e\<^sub>1.counit_is_iso by simp
         qed
         ultimately show ?thesis
-          using assms e\<^sub>0.antipar e\<^sub>1.antipar iso_inv_iso by auto
+          using assms e\<^sub>0.antipar e\<^sub>1.antipar by auto
       qed
       finally show ?thesis
         using \<psi>_def by simp
@@ -943,14 +1168,14 @@ begin
         moreover have "seq \<mu>' (\<psi>.map (dom \<mu>'))"
         proof -
           have "hom'.seq \<mu>' (\<psi>.map (dom \<mu>'))"
-            using \<mu>' \<psi>.preserves_cod hom'.arrI
+            using \<mu>' \<psi>.preserves_cod hom'.arrI hom'.dom_simp hom'.cod_simp
             apply (intro hom'.seqI) by auto
           thus ?thesis
             using hom'.seq_char by blast
         qed
         ultimately show ?thesis
           using \<mu>' \<psi>.is_natural_1 [of \<mu>'] hom'.comp_char hom'.arr_char hom'.dom_closed
-                \<psi>_ide_simp [of "dom \<mu>'"]
+                \<psi>_ide_simp [of "dom \<mu>'"] hom'.dom_simp hom'.cod_simp
           apply auto
           by (metis \<psi>_def hom'.inclusion ide_dom)
       qed
@@ -993,7 +1218,7 @@ begin
         show "cod (\<psi> \<mu>') = cod \<mu>'"
         proof -
           have "hom'.cod (\<psi> \<mu>') = cod \<mu>'"
-            using assms 0 \<psi>.preserves_cod hom'.arr_char by auto
+            using assms 0 \<psi>.preserves_cod hom'.arr_char hom'.cod_simp by auto
           thus ?thesis
             using assms 0 1 hom'.arr_char hom'.cod_char G.preserves_arr hom'.cod_closed by auto
         qed
@@ -1058,8 +1283,8 @@ begin
         using d\<eta>\<epsilon> by simp
       interpret i: equivalence_in_bicategory V H \<a> \<i> src trg
                      \<open>src \<mu>\<close> \<open>src \<mu>\<close> \<open>inv \<i>[src \<mu>]\<close> \<open>\<i>[src \<mu>]\<close>
-        using assms iso_inv_iso iso_unit obj_src
-        apply unfold_locales by simp_all
+        using assms iso_unit obj_src
+        by unfold_locales simp_all
       interpret two_equivalences_in_bicategory V H \<a> \<i> src trg
                      \<open>src \<mu>\<close> \<open>src \<mu>\<close> \<open>inv \<i>[src \<mu>]\<close> \<open>\<i>[src \<mu>]\<close> e d \<eta> \<epsilon>
         ..
@@ -1079,7 +1304,7 @@ begin
       ultimately show "\<mu> = \<mu>'"
         using F.is_faithful by blast
     qed
-      
+
     lemma equivalence_cancel_right:
     assumes "equivalence_map e"
     and "par \<mu> \<mu>'" and "src \<mu> = trg e" and "\<mu> \<star> e = \<mu>' \<star> e"
@@ -1091,8 +1316,8 @@ begin
         using d\<eta>\<epsilon> by simp
       interpret i: equivalence_in_bicategory V H \<a> \<i> src trg
                      \<open>trg \<mu>\<close> \<open>trg \<mu>\<close> \<open>inv \<i>[trg \<mu>]\<close> \<open>\<i>[trg \<mu>]\<close>
-        using assms iso_inv_iso iso_unit obj_src
-        apply unfold_locales by simp_all
+        using assms iso_unit obj_src
+        by unfold_locales simp_all
       interpret two_equivalences_in_bicategory V H \<a> \<i> src trg
                       e d \<eta> \<epsilon> \<open>trg \<mu>\<close> \<open>trg \<mu>\<close> \<open>inv \<i>[trg \<mu>]\<close> \<open>\<i>[trg \<mu>]\<close>
         ..
@@ -1109,6 +1334,108 @@ begin
         by (metis (no_types, lifting) in_hhomI src_dom trg_dom trg_trg)
       ultimately show "\<mu> = \<mu>'"
         using G.is_faithful by blast
+    qed
+
+    lemma equivalence_isomorphic_cancel_left:
+    assumes "equivalence_map e" and "ide f" and "ide f'"
+    and "src f = src f'" and "src e = trg f" and "e \<star> f \<cong> e \<star> f'"
+    shows "f \<cong> f'"
+    proof -
+      have ef': "src e = trg f'"
+        using assms R.components_are_iso iso_is_arr isomorphic_implies_hpar(2) by blast
+      obtain d \<eta> \<epsilon> where e: "equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>"
+        using assms equivalence_map_def by auto
+      interpret e: equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>
+        using e by simp
+      interpret i: equivalence_in_bicategory V H \<a> \<i> src trg
+                     \<open>src f\<close> \<open>src f\<close> \<open>inv \<i>[src f]\<close> \<open>\<i>[src f]\<close>
+        using assms iso_unit obj_src
+        by unfold_locales auto
+      interpret two_equivalences_in_bicategory V H \<a> \<i> src trg
+                     \<open>src f\<close> \<open>src f\<close> \<open>inv \<i>[src f]\<close> \<open>\<i>[src f]\<close> e d \<eta> \<epsilon>
+        ..
+      interpret hom: subcategory V \<open>\<lambda>\<mu>'. in_hhom \<mu>' (src (src f)) (src e)\<close>
+        using hhom_is_subcategory by blast
+      interpret hom': subcategory V \<open>\<lambda>\<mu>'. in_hhom \<mu>' (trg (src f)) (trg e)\<close>
+        using hhom_is_subcategory by blast
+      interpret F: equivalence_functor hom.comp hom'.comp \<open>\<lambda>\<mu>'. e \<star> \<mu>' \<star> src f\<close>
+        using equivalence_functor_F by simp
+      have 1: "F f \<cong> F f'"
+      proof -
+        have "F f \<cong> (e \<star> f) \<star> src f"
+          using assms hcomp_assoc_isomorphic equivalence_map_is_ide isomorphic_symmetric
+          by auto
+        also have "... \<cong> (e \<star> f') \<star> src f'"
+          using assms ef' by (simp add: hcomp_isomorphic_ide)
+        also have "... \<cong> F f'"
+          using assms ef' hcomp_assoc_isomorphic equivalence_map_is_ide by auto
+        finally show ?thesis by blast
+      qed
+      show "f \<cong> f'"
+      proof -
+        obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : F f \<Rightarrow> F f'\<guillemotright> \<and> iso \<psi>"
+          using 1 isomorphic_def by auto
+        have 2: "hom'.iso \<psi>"
+          using assms \<psi> hom'.iso_char hom'.arr_char vconn_implies_hpar(1,2)
+          by auto
+        have 3: "hom'.in_hom \<psi> (F f) (F f')"
+          using assms 2 \<psi> ef' hom'.in_hom_char hom'.arr_char
+          by (metis F.preserves_reflects_arr hom'.iso_is_arr hom.arr_char i.antipar(1)
+              ideD(1) ide_in_hom(1) trg_src)
+        obtain \<phi> where \<phi>: "hom.in_hom \<phi> f f' \<and> F \<phi> = \<psi>"
+          using assms 3 \<psi> F.is_full F.preserves_reflects_arr hom'.in_hom_char hom.ide_char
+          by fastforce
+        have "hom.iso \<phi>"
+          using 2 \<phi> F.reflects_iso by auto
+        thus ?thesis
+          using \<phi> isomorphic_def hom.in_hom_char hom.arr_char hom.iso_char by auto
+      qed
+    qed
+
+    lemma equivalence_isomorphic_cancel_right:
+    assumes "equivalence_map e" and "ide f" and "ide f'"
+    and "trg f = trg f'" and "src f = trg e" and "f \<star> e \<cong> f' \<star> e"
+    shows "f \<cong> f'"
+    proof -
+      have f'e: "src f' = trg e"
+        using assms R.components_are_iso iso_is_arr isomorphic_implies_hpar(2) by blast
+      obtain d \<eta> \<epsilon> where d\<eta>\<epsilon>: "equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>"
+        using assms equivalence_map_def by auto
+      interpret e: equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>
+        using d\<eta>\<epsilon> by simp
+      interpret i: equivalence_in_bicategory V H \<a> \<i> src trg
+                     \<open>trg f\<close> \<open>trg f\<close> \<open>inv \<i>[trg f]\<close> \<open>\<i>[trg f]\<close>
+        using assms iso_unit obj_src
+        by unfold_locales auto
+      interpret two_equivalences_in_bicategory V H \<a> \<i> src trg
+                      e d \<eta> \<epsilon> \<open>trg f\<close> \<open>trg f\<close> \<open>inv \<i>[trg f]\<close> \<open>\<i>[trg f]\<close>
+        ..
+      interpret hom: subcategory V \<open>\<lambda>\<mu>'. in_hhom \<mu>' (trg e) (trg (trg f))\<close>
+        using hhom_is_subcategory by blast
+      interpret hom': subcategory V \<open>\<lambda>\<mu>'. in_hhom \<mu>' (src e) (src (trg f))\<close>
+        using hhom_is_subcategory by blast
+      interpret G: equivalence_functor hom.comp hom'.comp \<open>\<lambda>\<mu>'. trg f \<star> \<mu>' \<star> e\<close>
+        using equivalence_functor_G by simp
+      have 1: "G f \<cong> G f'"
+        using assms hcomp_isomorphic_ide hcomp_ide_isomorphic by simp
+      show "f \<cong> f'"
+      proof -
+        obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : G f \<Rightarrow> G f'\<guillemotright> \<and> iso \<psi>"
+          using 1 isomorphic_def by auto
+        have 2: "hom'.iso \<psi>"
+          using assms \<psi> hom'.iso_char hom'.arr_char vconn_implies_hpar(1-2) by auto
+        have 3: "hom'.in_hom \<psi> (G f) (G f')"
+          using assms 2 \<psi> f'e hom'.in_hom_char hom'.arr_char
+          by (metis G.preserves_arr hom'.iso_is_arr hom.ideI hom.ide_char ideD(1)
+              ide_in_hom(1) trg_trg)
+        obtain \<phi> where \<phi>: "hom.in_hom \<phi> f f' \<and> G \<phi> = \<psi>"
+          using assms 3 \<psi> G.is_full G.preserves_reflects_arr hom'.in_hom_char hom.ide_char
+          by fastforce
+        have "hom.iso \<phi>"
+          using 2 \<phi> G.reflects_iso by auto
+        thus ?thesis
+          using \<phi> isomorphic_def hom.in_hom_char hom.arr_char hom.iso_char by auto
+      qed
     qed
 
   end

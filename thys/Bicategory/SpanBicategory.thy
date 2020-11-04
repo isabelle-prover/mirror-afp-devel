@@ -3249,6 +3249,7 @@ $$\xymatrix{
               using \<mu>\<nu>\<pi> hcomp_def dom_legs ide_dom dom_char
                 apply simp
               using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def dom_char C.comp_assoc
+                    VVV.dom_simp VV.dom_simp
               by auto
         qed
         have Cod: "Cod (fst (VVV.dom \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.dom \<mu>\<nu>\<pi>)) \<star>
@@ -3261,6 +3262,7 @@ $$\xymatrix{
               using \<mu>\<nu>\<pi> hcomp_def dom_legs ide_dom dom_char
                 apply simp
               using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def dom_char C.comp_assoc
+                    VVV.dom_simp VV.dom_simp
               by auto
         qed
         have Dom': "Dom ((fst (VVV.cod \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.cod \<mu>\<nu>\<pi>))) \<star>
@@ -3274,7 +3276,7 @@ $$\xymatrix{
             moreover have "\<nu>.dsrc = \<pi>.dtrg"
               using \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def cod_char by simp
             ultimately show ?thesis
-              using \<mu>\<nu>\<pi> hcomp_def cod_legs ide_cod cod_char
+              using \<mu>\<nu>\<pi> hcomp_def cod_legs ide_cod cod_char VVV.cod_simp VV.cod_simp
                 apply simp
               using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def cod_char C.comp_assoc
               by simp
@@ -3288,7 +3290,7 @@ $$\xymatrix{
             moreover have "\<mu>.dsrc = \<nu>.dtrg"
               using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable src_def trg_def cod_char by simp
             ultimately show ?thesis
-              using \<mu>\<nu>\<pi> hcomp_def cod_legs ide_cod cod_char
+              using \<mu>\<nu>\<pi> hcomp_def cod_legs ide_cod cod_char VVV.cod_simp VV.cod_simp
                 apply simp
               using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def cod_char C.comp_assoc
               by auto
@@ -3397,7 +3399,8 @@ $$\xymatrix{
         qed
         moreover
         have "cod_\<mu>\<nu>\<pi>.chine_assoc \<cdot> HoHV_\<mu>\<nu>\<pi>.chine = HoVH_\<mu>\<nu>\<pi>.chine \<cdot> dom_\<mu>\<nu>\<pi>.chine_assoc"
-          using \<mu>\<nu>\<pi> HoHV_def HoVH_def \<mu>\<nu>\<pi>.chine_assoc_naturality by simp
+          using \<mu>\<nu>\<pi> HoHV_def HoVH_def \<mu>\<nu>\<pi>.chine_assoc_naturality
+                VVV.dom_simp VV.dom_simp VVV.cod_simp VV.cod_simp by simp
         ultimately show "assoc\<^sub>S\<^sub>B (fst (VVV.cod \<mu>\<nu>\<pi>)) (fst (snd (VVV.cod \<mu>\<nu>\<pi>)))
                                  (snd (snd (VVV.cod \<mu>\<nu>\<pi>))) \<bullet>
                            HoHV \<mu>\<nu>\<pi> =

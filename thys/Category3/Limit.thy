@@ -3633,19 +3633,10 @@ begin
             using j e_in_hom \<pi>o_in_hom [of "J.dom j"] by auto
         qed
         interpret \<mu>: cone J C D \<open>dom e\<close> ?\<mu>
-          apply unfold_locales
-              apply simp
-        proof -
-          fix j
-          assume j: "J.arr j"
-          show "dom (?\<mu> j) = domE.map (J.dom j)" using j \<mu> domE.map_simp by force
-          show "cod (?\<mu> j) = D (J.cod j)" using j \<mu> D.preserves_cod by blast
-          show "D j \<cdot> ?\<mu> (J.dom j) = ?\<mu> j"
-            using j \<mu> [of "J.dom j"] comp_cod_arr apply simp
-            by (elim in_homE, auto)
-          show "?\<mu> (J.cod j) \<cdot> domE.map j = ?\<mu> j"
-            using j e_map E' by (simp add: e_in_hom)
-        qed
+          using \<mu> comp_cod_arr e_in_hom e_map E'
+            apply unfold_locales
+               apply auto
+          by (metis D.is_natural_1 comp_assoc)
         text\<open>
           If @{term \<tau>} is any cone over @{term D} then @{term \<tau>} restricts to a cone over
           @{term \<Delta>o} for which the induced arrow to @{term \<Pi>o} equalizes @{term f} and @{term g}.
@@ -3665,12 +3656,7 @@ begin
             by (unfold_locales, auto)
           let ?e = "\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>)"
           have mkCone_\<tau>: "\<Delta>o.mkCone \<tau> \<in> \<Delta>o.cones a"
-          proof -
-            have "\<And>j. Obj.arr j \<Longrightarrow> \<guillemotleft>\<tau> j : a \<rightarrow> \<Delta>o.map j\<guillemotright>"
-              using Obj.arr_char \<tau>.A.map_def \<Delta>o.map_def by force
-            thus ?thesis
-              using \<tau>.ide_apex \<Delta>o.cone_mkCone by simp
-          qed
+            using \<tau>o.cone_axioms by auto
           have e: "\<guillemotleft>?e : a \<rightarrow> \<Pi>o\<guillemotright>"
             using mkCone_\<tau> \<pi>o.induced_arrowI by simp
           have ee: "\<And>j. J.ide j \<Longrightarrow> \<pi>o j \<cdot> ?e = \<tau> j"
@@ -3721,11 +3707,11 @@ begin
           assume cone_\<tau>: "cone J C D a \<tau>"
           interpret \<tau>: cone J C D a \<tau> using cone_\<tau> by auto
           interpret A: constant_functor Obj.comp C a
-            apply unfold_locales using \<tau>.ide_apex by auto
+            using \<tau>.ide_apex by unfold_locales auto
           have cone_\<tau>o: "cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>)"
             using A.value_is_ide \<Delta>o.map_def D.preserves_ide comp_cod_arr comp_arr_dom
                   \<tau>.preserves_hom
-            by (unfold_locales, auto)
+            by unfold_locales auto
           show "\<exists>!h. \<guillemotleft>h : a \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h ?\<mu> = \<tau>"
           proof
             let ?e' = "\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>)"
@@ -3764,10 +3750,9 @@ begin
                     have "(\<pi>o (J.dom j) \<cdot> e) \<cdot> ?h = \<pi>o (J.dom j) \<cdot> e \<cdot> ?h"
                       using j 1 e_in_hom h_in_hom \<pi>o arrI comp_assoc by auto
                     also have "... = \<pi>o (J.dom j) \<cdot> ?e'"
-                      using equ e'_in_hom EQU.induced_arrowI' [of ?e']
-                      by (elim in_homE, auto)
+                      using equ e'_in_hom EQU.induced_arrowI' [of ?e'] by auto
                     also have "... = \<Delta>o.cones_map ?e' \<pi>o (J.dom j)"
-                      using j e'_in_hom \<pi>o.cone_axioms by (elim in_homE, auto)
+                      using j e'_in_hom \<pi>o.cone_axioms by auto
                     also have "... = \<tau> (J.dom j)"
                       using j e'_map by simp
                     finally show ?thesis by auto
@@ -3834,7 +3819,7 @@ begin
                 ultimately show "h' = ?h"
                   using 1 h'_in_hom h'_map EQU.is_universal' [of "e \<cdot> h'"]
                         EQU.induced_arrowI' [of ?e'] equ
-                  by (elim in_homE, auto)
+                  by (elim in_homE) auto
               qed
             qed
           qed
@@ -3937,12 +3922,11 @@ begin
           fix b f j
           assume f: "\<guillemotleft>f : S.dom f \<rightarrow> a\<guillemotright>" and j: "J.arr j"
           interpret B: constant_functor J S \<open>S.dom f\<close>
-            using f by (unfold_locales, auto)
+            using f by (unfold_locales) auto
           have "(\<lambda>y. \<phi> (f \<cdot> y) j) \<in> S.hom S.unity (S.dom f) \<rightarrow> S.hom S.unity (S.cod (D j))"
             using f j X Pi_I' by simp
           hence "\<exists>!\<chi>j. ?P f j \<chi>j"
-            using f j S.fun_complete' [of "S.dom f" "S.cod (D j)" "\<lambda>y. \<phi> (f \<cdot> y) j"]
-            by (elim S.in_homE, auto)
+            using f j S.fun_complete' by (elim S.in_homE) auto
           thus "?P f j (?\<chi> f j)" using j theI' [of "?P f j"] by simp
         qed
         text\<open>
@@ -3954,7 +3938,7 @@ begin
           fix f
           assume f: "\<guillemotleft>f : S.dom f \<rightarrow> a\<guillemotright>"
           interpret B: constant_functor J S \<open>S.dom f\<close>
-            using f by (unfold_locales, auto)
+            using f by unfold_locales auto
           show "cone (S.dom f) (?\<chi> f)"
           proof
             show "\<And>j. \<not>J.arr j \<Longrightarrow> ?\<chi> f j = S.null" by simp
@@ -4042,7 +4026,7 @@ begin
                 assume "x \<in> S.hom S.unity a'"
                 hence "\<guillemotleft>x : S.unity \<rightarrow> a'\<guillemotright>" by simp
                 hence "cones_map x \<in> cones a' \<rightarrow> cones S.unity"
-                  using cones_map_mapsto [of x] by (elim S.in_homE, auto)
+                  using cones_map_mapsto [of x] by (elim S.in_homE) auto
                 hence "cones_map x \<chi>' \<in> cones S.unity"
                   using cone_\<chi>' by blast
                 thus "?\<psi> (cones_map x \<chi>') \<in> S.hom S.unity a"
@@ -4059,7 +4043,7 @@ begin
               have 1: "cone a' (cones_map ?f (?\<chi> a))"
               proof -
                 have "cones_map ?f \<in> cones a \<rightarrow> cones a'"
-                  using f_in_hom cones_map_mapsto [of ?f] by (elim S.in_homE, auto)
+                  using f_in_hom cones_map_mapsto [of ?f] by (elim S.in_homE) auto
                 hence "cones_map ?f (?\<chi> a) \<in> cones a'"
                   using \<chi>a.cone_axioms by blast
                 thus ?thesis by simp

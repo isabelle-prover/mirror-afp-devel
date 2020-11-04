@@ -425,6 +425,13 @@ begin
   assumes components_are_iso [simp]: "A.ide a \<Longrightarrow> B.iso (\<tau> a)"
   begin
 
+    lemma inv_naturality:
+    assumes "A.arr f"
+    shows "F f \<cdot>\<^sub>B B.inv (\<tau> (A.dom f)) = B.inv (\<tau> (A.cod f)) \<cdot>\<^sub>B G f"
+      using assms is_natural_1 is_natural_2 components_are_iso B.invert_side_of_triangle
+            B.comp_assoc A.ide_cod A.ide_dom preserves_reflects_arr
+      by fastforce
+
     text \<open>
       Natural isomorphisms preserve isomorphisms, in the sense that the sides of
       of the naturality square determined by an isomorphism are all isomorphisms,
@@ -571,7 +578,7 @@ begin
     using is_natural_transformation by auto
 
   sublocale inverse_transformation \<subseteq> natural_isomorphism A B G F map
-    by (simp add: B.iso_inv_iso natural_isomorphism.intro natural_isomorphism_axioms.intro
+    by (simp add: natural_isomorphism.intro natural_isomorphism_axioms.intro
         natural_transformation_axioms)
 
   lemma inverse_inverse_transformation [simp]:

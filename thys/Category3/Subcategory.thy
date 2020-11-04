@@ -154,7 +154,7 @@ begin
 
     notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
-    lemma dom_simp [simp]:
+    lemma dom_simp:
     assumes "arr f"
     shows "dom f = C.dom f"
     proof -
@@ -172,7 +172,7 @@ begin
     shows "dom f = (if arr f then C.dom f else C.null)"
       using dom_simp dom_def arr_def arr_char by auto
 
-    lemma cod_simp [simp]:
+    lemma cod_simp:
     assumes "arr f"
     shows "cod f = C.cod f"
     proof -
@@ -206,7 +206,7 @@ begin
         using arr_char dom_char cod_char by (intro seqI, auto)
       show "seq g f \<Longrightarrow> arr f \<and> arr g \<and> C.seq g f"
         apply (elim seqE, auto)
-        using inclusion arr_char by auto
+        using inclusion arr_char dom_simp cod_simp by auto
     qed
 
     lemma hom_char:
@@ -244,7 +244,7 @@ begin
         have 2: "C.inverse_arrows f (inv f)"
           using 1 inclusion_preserves_inverse by blast
         moreover have "arr (inv f)"
-          using 1 iso_is_arr iso_inv_iso by blast
+          using 1 iso_is_arr by blast
         moreover have "inv f = C.inv f"
           using 1 2 C.inv_is_inverse C.inverse_arrow_unique by blast
         ultimately show ?thesis using f 2 iso_is_arr by auto
@@ -260,7 +260,7 @@ begin
           have 2: "C.inv f \<cdot> f = C.inv f \<cdot>\<^sub>C f \<and> f \<cdot> C.inv f = f \<cdot>\<^sub>C C.inv f"
             using f 1 comp_char by fastforce
           have 3: "antipar f (C.inv f)"
-            using f C.seqE seqI by simp
+            using f C.seqE seqI dom_simp cod_simp by simp
           show "ide (C.inv f \<cdot> f)"
             using 1 2 3 ide_char apply (elim C.inverse_arrowsE) by simp
           show "ide (f \<cdot> C.inv f)"

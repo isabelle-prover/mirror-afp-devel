@@ -6,7 +6,7 @@ session "Category3" (AFP) = "HOL-Library" +
     "HOL-Cardinals"
     "HereditarilyFinite"
   theories
-    Limit Subcategory EquivalenceOfCategories CategoryWithFiniteLimits HFSetCat
+    Limit Subcategory EquivalenceOfCategories HFSetCat
   document_files
     "root.bib"
     "root.tex"

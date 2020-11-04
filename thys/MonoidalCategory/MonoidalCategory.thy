@@ -1121,7 +1121,7 @@ $$\xymatrix{
       show "\<guillemotleft>i : \<I> \<rightarrow> \<I>\<^sub>1\<guillemotright>"
         using C\<^sub>1.iso_runit inv_in_hom i_def by auto
       show "iso i"
-        using iso_lunit C\<^sub>1.iso_runit iso_inv_iso isos_compose i_def by simp
+        using iso_lunit C\<^sub>1.iso_runit isos_compose i_def by simp
     qed
 
     text\<open>
@@ -1277,7 +1277,7 @@ $$\xymatrix{
       show 1: "\<guillemotleft>inv i \<cdot> f : \<I> \<rightarrow> \<I>\<guillemotright>"
         using assms iso_i inv_in_hom by blast
       show "iso (inv i \<cdot> f)"
-        using assms 1 iso_i inv_in_hom iso_inv_iso
+        using assms 1 iso_i inv_in_hom
         by (intro isos_compose, auto)
       show "(inv i \<cdot> f) \<cdot> \<iota> = \<iota> \<cdot> (inv i \<cdot> f \<otimes> inv i \<cdot> f)"
       proof -
@@ -1306,10 +1306,10 @@ $$\xymatrix{
         have "inv i \<cdot> f = \<I>"
           using f inv_i_iso_\<iota> iso_commuting_with_\<iota>_equals_\<I> by blast
         hence "ide (C (inv i) f)"
-          using iso_i iso_inv_iso inv_in_hom by simp
+          using iso_i by simp
         thus "f = i"
           using section_retraction_of_iso(2) [of "inv i" f] inverse_arrow_unique inv_is_inverse
-                inv_inv iso_inv_iso iso_i
+                iso_i
           by blast
       qed
     qed
@@ -1761,7 +1761,7 @@ $$\xymatrix{
     interpret \<alpha>: natural_transformation C.CCC.comp C T.ToTC T.ToCT \<alpha>
       using C.\<alpha>'.is_extensional C.CCC.dom_char C.CCC.cod_char T.ToTC_def T.ToCT_def
             C.\<alpha>'_simp C.\<alpha>'.naturality
-      by (unfold_locales, auto)
+      by (unfold_locales) auto
     interpret \<alpha>: natural_isomorphism C.CCC.comp C T.ToTC T.ToCT \<alpha>
       using C.\<alpha>'.components_are_iso by (unfold_locales, simp)
     interpret L: equivalence_functor C C \<open>\<lambda>f. T (C.cod \<iota>, f)\<close>
@@ -1770,7 +1770,7 @@ $$\xymatrix{
       using C.L.equivalence_functor_axioms by simp
     show "monoidal_category C T \<alpha> \<iota>"
       using C.\<iota>_in_hom C.\<iota>_is_iso C.unity_def C.pentagon' C.comp_assoc
-      by (unfold_locales, auto)
+      by (unfold_locales) auto
   qed
 
   context opposite_monoidal_category
@@ -3418,7 +3418,7 @@ $$\xymatrix{
     shows "Can t \<Longrightarrow> iso \<lbrace>t\<rbrace>"
       using Can_implies_Arr iso_is_arr \<ll>'.preserves_iso \<rho>'.preserves_iso
             \<alpha>.preserves_iso \<alpha>'.preserves_iso Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-      by (induct t, auto)
+      by (induct t) auto
 
     lemma eval_Inv_Can:
     shows "Can t \<Longrightarrow> \<lbrace>Inv t\<rbrace> = inv \<lbrace>t\<rbrace>"
@@ -3445,7 +3445,7 @@ $$\xymatrix{
         also have "... = inv (\<l>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>] \<cdot> \<lbrace>t\<rbrace>)"
           using 1 \<ll>'.is_natural_2 [of "\<lbrace>t\<rbrace>"] \<ll>'_ide_simp iso_is_arr by auto
         also have "... = \<lbrace>Inv \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
-          using t I 1 iso_inv_iso iso_is_arr inv_comp by auto
+          using t I 1 iso_is_arr inv_comp by auto
         finally show ?thesis by simp
       qed
       show "Can \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> \<lbrace>Inv \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace> = inv \<lbrace>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
@@ -3457,7 +3457,7 @@ $$\xymatrix{
         also have "... = inv (\<r>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>] \<cdot> \<lbrace>t\<rbrace>)"
           using 1 \<rho>'.is_natural_2 [of "\<lbrace>t\<rbrace>"] \<rho>'_ide_simp iso_is_arr by auto
         also have "... = \<lbrace>Inv \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
-          using t I 1 iso_inv_iso iso_is_arr inv_comp by auto
+          using t I 1 iso_is_arr inv_comp by auto
         finally show ?thesis by simp
       qed
       next
@@ -3474,7 +3474,7 @@ $$\xymatrix{
         have "\<lbrace>Inv \<^bold>\<a>\<^bold>[t, u, v\<^bold>]\<rbrace> = \<alpha>' (inv \<lbrace>t\<rbrace>, inv \<lbrace>u\<rbrace>, inv \<lbrace>v\<rbrace>)"
           using tuv I1 I2 I3 by simp
         also have "... = inv (\<a>[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>] \<cdot> ((\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>) \<otimes> \<lbrace>v\<rbrace>))"
-          using t u v \<alpha>'_simp iso_is_arr iso_inv_iso inv_comp inv_inv by auto
+          using t u v \<alpha>'_simp iso_is_arr inv_comp by auto
         also have "... = inv ((\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace> \<otimes> \<lbrace>v\<rbrace>) \<cdot> \<a>[dom \<lbrace>t\<rbrace>, dom \<lbrace>u\<rbrace>, dom \<lbrace>v\<rbrace>])"
           using t u v iso_is_arr assoc_naturality by simp
         also have "... = inv \<lbrace>\<^bold>\<a>\<^bold>[t, u, v\<^bold>]\<rbrace>"
@@ -3492,7 +3492,7 @@ $$\xymatrix{
         also have "... = (inv \<lbrace>t\<rbrace> \<otimes> inv \<lbrace>u\<rbrace> \<otimes> inv \<lbrace>v\<rbrace>) \<cdot> \<a>[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>]"
           using t u v iso_is_arr \<alpha>_simp [of "inv \<lbrace>t\<rbrace>" "inv \<lbrace>u\<rbrace>" "inv \<lbrace>v\<rbrace>"] by simp
         also have "... = inv (\<a>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>] \<cdot> (\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace> \<otimes> \<lbrace>v\<rbrace>))"
-          using t u v iso_is_arr iso_inv_iso inv_inv inv_comp by auto
+          using t u v iso_is_arr inv_comp by auto
         also have "... = inv (((\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>) \<otimes> \<lbrace>v\<rbrace>) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<lbrace>t\<rbrace>, dom \<lbrace>u\<rbrace>, dom \<lbrace>v\<rbrace>])"
           using t u v iso_is_arr assoc'_naturality by simp
         also have "... = inv \<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]\<rbrace>"
@@ -4113,7 +4113,7 @@ $$\xymatrix{
             moreover have "Cod v = \<^bold>\<langle>C.cod ?f\<^bold>\<rangle>"
               using v by (cases v, simp_all)
             ultimately show ?thesis
-              using u v w by (cases "Cod w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Cod u", simp_all)
+              using u v w by (cases "Cod w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Cod u") simp_all
           qed
           have "\<lbrace>(Cod v \<^bold>\<otimes> Cod w) \<^bold>\<Down> Cod u\<rbrace> \<cdot> ((\<lbrace>v\<rbrace> \<otimes> \<lbrace>w\<rbrace>) \<otimes> \<lbrace>u\<rbrace>)
                   = (\<lbrace>Cod v \<^bold>\<Down> (Cod w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Cod u)\<rbrace> \<cdot> (\<lbrace>Cod v\<rbrace> \<otimes> \<lbrace>Cod w \<^bold>\<Down> Cod u\<rbrace>) \<cdot>

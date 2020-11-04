@@ -2494,7 +2494,7 @@ begin
                 show "par (?g \<cdot> f) (?g' \<cdot> f)"
                   using f g g' arr_mkArr by auto
                 show "Fun (?g \<cdot> f) = Fun (?g' \<cdot> f)"
-                  using f g g' Fun_comp comp_mkArr by force
+                  using f g g' Fun_comp comp_mkArr by fastforce
               qed
               hence gg': "?g = ?g'"
                 using epi f g g' epiE [of f ?g ?g'] by fastforce

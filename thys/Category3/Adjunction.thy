@@ -784,7 +784,8 @@ begin
       using assms \<eta>o_def \<phi>_in_hom [of y "F y" "F y"]
             D.comp_cod_arr [of "D (\<phi> y (F y)) g" "G (F y)"]
             \<phi>_naturality [of "F y" "F y" "F y" g y' y "F y"]
-      by fastforce
+      by (metis D.arr_cod D.cod_cod D.comp_in_homI' D.ide_char' D.ide_in_hom D.in_homE
+          F.is_natural_2 F.preserves_hom)
 
     interpretation \<eta>: transformation_by_components D D D.map GF.map \<eta>o
     proof
@@ -2185,7 +2186,7 @@ begin
       also have "... = S.mkArr (HomC.set (F y, x)) (HomD.set (y, G x))
                                (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x))"
       proof (intro S.mkArr_eqI')
-        show "S.arr (S.mkArr (HomC.set (F y, x)) (HomD.set (y, G x)) (\<Phi>.FUN (y, x)))"
+        show 2: "S.arr (S.mkArr (HomC.set (F y, x)) (HomD.set (y, G x)) (\<Phi>.FUN (y, x)))"
           using 1 calculation by argo
         show "\<And>h. h \<in> HomC.set (F y, x) \<Longrightarrow>
                     \<Phi>.FUN (y, x) h = (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)) h"
@@ -2202,7 +2203,7 @@ begin
           also have "... = \<Phi>.FUN (y, x) h"
             using assms h \<Phi>_Fun_mapsto [of y "\<psi>C (F y, x) h"] HomC.\<psi>_mapsto
                   HomD.\<phi>_\<psi> [of y "G x"] C.ide_in_hom D.ide_in_hom
-            by blast
+            by (meson 2 G.preserves_ide S.arr_mkArr funcset_mem)
           finally show "\<Phi>.FUN (y, x) h = (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)) h" by auto
         qed
       qed
@@ -2319,7 +2320,7 @@ begin
                      = S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x))
                                ((\<phi>C (F y, x) o \<psi> x o \<psi>D (y, G x))
                                   o (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)))"
-              using 1 2 S.ide_in_hom S.comp_mkArr by force
+              using 1 2 S.ide_in_hom S.comp_mkArr by fastforce
             also have "... = S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x))
                                      (\<phi>C (F y, x) o (\<psi> x o \<phi> y) o \<psi>C (F y, x))"
             proof (intro S.mkArr_eqI')

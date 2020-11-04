@@ -55,6 +55,11 @@ the bicategories of spans in a category with pullbacks.
 The formalization effort necessitated the filling-in of many details
 that were not evident from the brief presentation in the original paper,
 as well as identifying a few minor corrections along the way.
+
+Revisions made subsequent to the first version of this article added additional
+material on pseudofunctors, pseudonatural transformations, modifications, and equivalence
+of bicategories; the main thrust being to give a proof that a pseudofunctor is
+a biequivalence) if and only if it can be extended to an equivalence of bicategories.
 \end{abstract}
 
 \tableofcontents
@@ -316,12 +321,22 @@ automatically.
 \medskip\par\noindent
 {\bf Revision Notes}
 
-The original version of this document dates from January, 2020.
-The current version of this document incorporates revisions made in early to mid-2020.
-A number of the changes consisted of minor improvements and speedups.
-Aside from these main change was that theory ``category with pullbacks'' was moved to
-\cite{Category3-AFP}, where it more logically belongs.
-
+The original version of this article dates from January, 2020.
+The current version of this article incorporates revisions made throughout 2020.
+A number of the changes made in early to mid-2020 consisted of minor improvements
+and speedups.  A more major change made in this period was that the theory
+``category with pullbacks'' was moved to \cite{Category3-AFP}, where it more
+logically belongs.
+In late 2020 additional material was added relating to pseudofunctors,
+pseudonatural transformations, and equivalence of bicategories.
+The main result shown was that a pseudofunctor is a biequivalence if and only
+if it can be extended to an equivalence of bicategories.
+This important result was sidestepped in the original version of this article,
+but the author felt that it was a glaring omission that should be corrected.
+Unfortunately, to formalize these results required some rather lengthy calculations
+in order to establish coherence conditions.  These calculations added significantly
+to the line count of this article, as well as the time and memory required to
+validate the proofs.
 
 \phantomsection
 \addcontentsline{toc}{chapter}{Preliminaries}
@@ -340,6 +355,9 @@ Aside from these main change was that theory ``category with pullbacks'' was mov
 \input{Pseudofunctor.tex}
 \input{Strictness.tex}
 \input{InternalAdjunction.tex}
+\input{PseudonaturalTransformation.tex}
+\input{Modification.tex}
+\input{EquivalenceOfBicategories.tex}
 
 \chapter{Bicategories of Spans}
 
