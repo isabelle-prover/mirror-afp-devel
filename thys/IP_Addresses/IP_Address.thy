@@ -2,9 +2,11 @@
     Authors:    Cornelius Diekmann
 *)
 theory IP_Address
-imports "Word_Lib.Word_Lemmas"
-        Hs_Compat
-        WordInterval
+  imports
+    "Word_Lib.Word_Lemmas"
+    "Word_Lib.Word_Syntax"
+    Hs_Compat
+    WordInterval
 begin
 
 section \<open>Modelling IP Adresses\<close>

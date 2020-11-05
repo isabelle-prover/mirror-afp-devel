@@ -10,6 +10,7 @@ theory Word_Lemmas_32
 imports
   Word_Lemmas
   Word_Setup_32
+  Word_Syntax
 begin
 
 lemma ucast_8_32_inj:

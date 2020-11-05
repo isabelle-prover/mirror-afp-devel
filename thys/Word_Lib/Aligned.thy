@@ -106,7 +106,7 @@ next
 qed
 
 lemma is_aligned_mask:
-  \<open>is_aligned w n \<longleftrightarrow> w && mask n = 0\<close>
+  \<open>is_aligned w n \<longleftrightarrow> w AND mask n = 0\<close>
   by (simp add: is_aligned_iff_take_bit_eq_0 take_bit_eq_mask)
 
 lemma is_aligned_weaken:
@@ -535,7 +535,7 @@ lemma drop_minus:
 
 lemma xor_2p_to_bl:
   fixes x::"'a::len word"
-  shows "to_bl (x xor 2^n) =
+  shows "to_bl (x XOR 2^n) =
   (if n < LENGTH('a)
    then take (LENGTH('a)-Suc n) (to_bl x) @ (\<not>rev (to_bl x)!n) # drop (LENGTH('a)-n) (to_bl x)
    else to_bl x)"
@@ -558,7 +558,7 @@ qed
 
 lemma aligned_add_xor:
   assumes al: "is_aligned (x::'a::len word) n'" and le: "n < n'"
-  shows "(x + 2^n) xor 2^n = x"
+  shows "(x + 2^n) XOR 2^n = x"
 proof cases
   assume "n' < LENGTH('a)"
   with assms show ?thesis
@@ -798,7 +798,7 @@ proof -
 qed
 
 lemma is_aligned_neg_mask:
-  "m \<le> n \<Longrightarrow> is_aligned (x && ~~ (mask n)) m"
+  "m \<le> n \<Longrightarrow> is_aligned (x AND NOT (mask n)) m"
   by (metis and_not_mask is_aligned_shift is_aligned_weaken)
 
 lemma unat_minus:
@@ -819,7 +819,7 @@ lemma is_aligned_minus:
 
 lemma add_mask_lower_bits:
   "\<lbrakk>is_aligned (x :: 'a :: len word) n;
-    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n'\<rbrakk> \<Longrightarrow> x + p && ~~ (mask n) = x"
+    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n'\<rbrakk> \<Longrightarrow> x + p AND NOT (mask n) = x"
   apply (subst word_plus_and_or_coroll)
    apply (rule word_eqI)
    apply (clarsimp simp: word_size is_aligned_nth)
@@ -831,11 +831,11 @@ lemma add_mask_lower_bits:
   done
 
 lemma is_aligned_andI1:
-  "is_aligned x n \<Longrightarrow> is_aligned (x && y) n"
+  "is_aligned x n \<Longrightarrow> is_aligned (x AND y) n"
   by (simp add: is_aligned_nth)
 
 lemma is_aligned_andI2:
-  "is_aligned y n \<Longrightarrow> is_aligned (x && y) n"
+  "is_aligned y n \<Longrightarrow> is_aligned (x AND y) n"
   by (simp add: is_aligned_nth)
 
 lemma is_aligned_shiftl:
@@ -851,7 +851,7 @@ lemma is_aligned_shiftl_self:
   by (rule is_aligned_shift)
 
 lemma is_aligned_neg_mask_eq:
-  "is_aligned p n \<Longrightarrow> p && ~~ (mask n) = p"
+  "is_aligned p n \<Longrightarrow> p AND NOT (mask n) = p"
   by (metis add.left_neutral is_aligned_mask word_plus_and_or_coroll2)
 
 lemma is_aligned_shiftr_shiftl:
@@ -859,7 +859,7 @@ lemma is_aligned_shiftr_shiftl:
   by (metis and_not_mask is_aligned_neg_mask_eq)
 
 lemma aligned_shiftr_mask_shiftl:
-  "is_aligned x n \<Longrightarrow> ((x >> n) && mask v) << n = x && mask (v + n)"
+  "is_aligned x n \<Longrightarrow> ((x >> n) AND mask v) << n = x AND mask (v + n)"
   apply (rule word_eqI)
   apply (simp add: word_size nth_shiftl nth_shiftr)
   apply (subgoal_tac "\<forall>m. x !! m \<longrightarrow> m \<ge> n")
@@ -871,12 +871,12 @@ lemma aligned_shiftr_mask_shiftl:
   done
 
 lemma mask_zero:
-  "is_aligned x a \<Longrightarrow> x && mask a = 0"
+  "is_aligned x a \<Longrightarrow> x AND mask a = 0"
   by (metis is_aligned_mask)
 
 lemma is_aligned_neg_mask_eq_concrete:
-  "\<lbrakk> is_aligned p n; msk && ~~(mask n) = ~~(mask n) \<rbrakk>
-   \<Longrightarrow> p && msk = p"
+  "\<lbrakk> is_aligned p n; msk AND NOT (mask n) = NOT (mask n) \<rbrakk>
+   \<Longrightarrow> p AND msk = p"
   by (metis word_bw_assocs(1) word_bw_comms(1) is_aligned_neg_mask_eq)
 
 lemma is_aligned_and_not_zero:
@@ -884,7 +884,7 @@ lemma is_aligned_and_not_zero:
   using is_aligned_less_sz leI by blast
 
 lemma is_aligned_and_2_to_k:
-  "(n && 2 ^ k - 1) = 0 \<Longrightarrow> is_aligned (n :: 'a :: len word) k"
+  "(n AND 2 ^ k - 1) = 0 \<Longrightarrow> is_aligned (n :: 'a :: len word) k"
   by (simp add: is_aligned_mask mask_eq_decr_exp)
 
 lemma is_aligned_power2:
@@ -897,11 +897,11 @@ lemma aligned_sub_aligned':
   by (simp add: aligned_sub_aligned)
 
 lemma is_aligned_neg_mask_weaken:
-  "\<lbrakk> is_aligned p n; m \<le> n \<rbrakk> \<Longrightarrow> p && ~~(mask m) = p"
+  "\<lbrakk> is_aligned p n; m \<le> n \<rbrakk> \<Longrightarrow> p AND NOT (mask m) = p"
    using is_aligned_neg_mask_eq is_aligned_weaken by blast
 
 lemma is_aligned_neg_mask2 [simp]:
-  "is_aligned (a && ~~(mask n)) n"
+  "is_aligned (a AND NOT (mask n)) n"
   by (simp add: and_not_mask is_aligned_shift)
 
 end

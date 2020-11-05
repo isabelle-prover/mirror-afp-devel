@@ -44,17 +44,4 @@ abbreviation
 where
   "a xor b == a XOR b"
 
-(* testing for presence of word_bitwise *)
-lemma "((x :: word32) >> 3) AND 7 = (x AND 56) >> 3"
-  by word_bitwise
-
-(* FIXME: move to Word distribution *)
-lemma bin_nth_minus_Bit0[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit0 w)) n = bin_nth (numeral w) (n - 1)"
-  by (cases n; simp)
-
-lemma bin_nth_minus_Bit1[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
-  by (cases n; simp)
-
 end

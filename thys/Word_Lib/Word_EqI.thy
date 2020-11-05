@@ -20,7 +20,8 @@ text \<open>
 \<close>
 
 lemma word_or_zero:
-  "(a || b = 0) = (a = 0 \<and> b = 0)"
+  "(a OR b = 0) = (a = 0 \<and> b = 0)"
+  for a b :: \<open>'a::len word\<close>
   by (safe; rule word_eqI, drule_tac x=n in word_eqD, simp)
 
 lemma test_bit_over:
@@ -28,7 +29,7 @@ lemma test_bit_over:
   by (simp add: test_bit_bl word_size)
 
 lemma neg_mask_test_bit:
-  "(~~(mask n) :: 'a :: len word) !! m = (n \<le> m \<and> m < LENGTH('a))"
+  "(NOT(mask n) :: 'a :: len word) !! m = (n \<le> m \<and> m < LENGTH('a))"
   by (metis not_le nth_mask test_bit_bin word_ops_nth_size word_size)
 
 lemma word_2p_mult_inc:
@@ -81,25 +82,25 @@ lemma not_greatest_aligned:
   by (metis NOT_mask add_diff_cancel_right' diff_0 is_aligned_neg_mask_eq not_le word_and_le1)
 
 lemma neg_mask_mono_le:
-  "x \<le> y \<Longrightarrow> x && ~~(mask n) \<le> y && ~~(mask n)" for x :: "'a :: len word"
+  "x \<le> y \<Longrightarrow> x AND NOT(mask n) \<le> y AND NOT(mask n)" for x :: "'a :: len word"
 proof (rule ccontr, simp add: linorder_not_le, cases "n < LENGTH('a)")
   case False
-  then show "y && ~~(mask n) < x && ~~(mask n) \<Longrightarrow> False"
+  then show "y AND NOT(mask n) < x AND NOT(mask n) \<Longrightarrow> False"
     by (simp add: mask_eq_decr_exp linorder_not_less power_overflow)
 next
   case True
-  assume a: "x \<le> y" and b: "y && ~~(mask n) < x && ~~(mask n)"
+  assume a: "x \<le> y" and b: "y AND NOT(mask n) < x AND NOT(mask n)"
   have word_bits: "n < LENGTH('a)" by fact
-  have "y \<le> (y && ~~(mask n)) + (y && mask n)"
+  have "y \<le> (y AND NOT(mask n)) + (y AND mask n)"
     by (simp add: word_plus_and_or_coroll2 add.commute)
-  also have "\<dots> \<le> (y && ~~(mask n)) + 2 ^ n"
+  also have "\<dots> \<le> (y AND NOT(mask n)) + 2 ^ n"
     apply (rule word_plus_mono_right)
      apply (rule order_less_imp_le, rule and_mask_less_size)
      apply (simp add: word_size word_bits)
     apply (rule is_aligned_no_overflow'', simp add: is_aligned_neg_mask word_bits)
     apply (rule not_greatest_aligned, rule b; simp add: is_aligned_neg_mask)
     done
-  also have "\<dots> \<le> x && ~~(mask n)"
+  also have "\<dots> \<le> x AND NOT(mask n)"
     using b
     apply (subst add.commute)
     apply (rule le_plus)
@@ -114,7 +115,8 @@ next
 qed
 
 lemma and_neg_mask_eq_iff_not_mask_le:
-  "w && ~~(mask n) = ~~(mask n) \<longleftrightarrow> ~~(mask n) \<le> w"
+  "w AND NOT(mask n) = NOT(mask n) \<longleftrightarrow> NOT(mask n) \<le> w"
+  for w :: \<open>'a::len word\<close>
   by (metis eq_iff neg_mask_mono_le word_and_le1 word_and_le2 word_bw_same(1))
 
 lemma le_mask_high_bits:
@@ -123,7 +125,8 @@ lemma le_mask_high_bits:
   by (auto simp: word_size and_mask_eq_iff_le_mask[symmetric] word_eq_iff)
 
 lemma neg_mask_le_high_bits:
-  "~~(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
+  "NOT(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
+  for w :: \<open>'a::len word\<close>
   by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric] word_eq_iff neg_mask_test_bit)
 
 lemma test_bit_conj_lt:
@@ -131,7 +134,7 @@ lemma test_bit_conj_lt:
   using test_bit_bin by blast
 
 lemma neg_test_bit:
-  "(~~ x) !! n = (\<not> x !! n \<and> n < LENGTH('a))" for x :: "'a::len word"
+  "(NOT x) !! n = (\<not> x !! n \<and> n < LENGTH('a))" for x :: "'a::len word"
   by (cases "n < LENGTH('a)") (auto simp add: test_bit_over word_ops_nth_size word_size)
 
 named_theorems word_eqI_simps

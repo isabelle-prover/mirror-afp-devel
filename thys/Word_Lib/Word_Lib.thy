@@ -9,8 +9,8 @@ section "Additional Word Operations"
 theory Word_Lib
   imports
   "HOL-Library.Signed_Division"
-  Word_Syntax
-  Signed_Words
+  Bitwise_Signed
+  Traditional_Infix_Syntax
 begin
 
 lemma unat_power_lower [simp]:
@@ -24,11 +24,11 @@ definition
 
 definition
   complement :: "'a :: len word \<Rightarrow> 'a word"  where
- "complement x \<equiv> ~~ x"
+ "complement x \<equiv> NOT x"
 
 definition
   alignUp :: "'a::len word \<Rightarrow> nat \<Rightarrow> 'a word" where
- "alignUp x n \<equiv> x + 2 ^ n - 1 && complement (2 ^ n - 1)"
+ "alignUp x n \<equiv> x + 2 ^ n - 1 AND complement (2 ^ n - 1)"
 
 (* standard notation for blocks of 2^n-1 words, usually aligned;
    abbreviation so it simplifies directly *)
@@ -76,28 +76,6 @@ lemma sdiv_smod_id:
   for a b :: \<open>'a::len word\<close>
   by (cases \<open>sint a < 0\<close>; cases \<open>sint b < 0\<close>) (simp_all add: signed_modulo_int_def sdiv_word_def smod_word_def)
 
-(* Tests *)
-lemma
-  "( 4 :: word32) sdiv  4 =  1"
-  "(-4 :: word32) sdiv  4 = -1"
-  "(-3 :: word32) sdiv  4 =  0"
-  "( 3 :: word32) sdiv -4 =  0"
-  "(-3 :: word32) sdiv -4 =  0"
-  "(-5 :: word32) sdiv -4 =  1"
-  "( 5 :: word32) sdiv -4 = -1"
-  by (simp_all add: sdiv_word_def signed_divide_int_def)
-
-lemma
-  "( 4 :: word32) smod  4 =   0"
-  "( 3 :: word32) smod  4 =   3"
-  "(-3 :: word32) smod  4 =  -3"
-  "( 3 :: word32) smod -4 =   3"
-  "(-3 :: word32) smod -4 =  -3"
-  "(-5 :: word32) smod -4 =  -1"
-  "( 5 :: word32) smod -4 =   1"
-  by (simp_all add: smod_word_def signed_modulo_int_def signed_divide_int_def)
-
-
 (* Count leading zeros  *)
 definition
   word_clz :: "'a::len word \<Rightarrow> nat"
@@ -128,7 +106,7 @@ where
 definition
   sign_extend :: "nat \<Rightarrow> 'a::len word \<Rightarrow> 'a word"
 where
-  "sign_extend n w \<equiv> if w !! n then w || ~~ (mask n) else w && mask n"
+  "sign_extend n w \<equiv> if w !! n then w OR NOT (mask n) else w AND mask n"
 
 lemma sign_extend_eq_signed_take_bit:
   \<open>sign_extend = signed_take_bit\<close>
@@ -185,10 +163,11 @@ lemma bin_to_bl_or:
   by simp
 
 lemma word_ops_nth [simp]:
+  fixes x y :: \<open>'a::len word\<close>
   shows
-  word_or_nth:  "(x || y) !! n = (x !! n \<or> y !! n)" and
-  word_and_nth: "(x && y) !! n = (x !! n \<and> y !! n)" and
-  word_xor_nth: "(x xor y) !! n = (x !! n \<noteq> y !! n)"
+  word_or_nth:  "(x OR y) !! n = (x !! n \<or> y !! n)" and
+  word_and_nth: "(x AND y) !! n = (x !! n \<and> y !! n)" and
+  word_xor_nth: "(x XOR y) !! n = (x !! n \<noteq> y !! n)"
   by ((cases "n < size x",
       auto dest: test_bit_size simp: word_ops_nth_size word_size)[1])+
 
@@ -215,11 +194,12 @@ lemma and_mask:
   by auto
 
 lemma AND_twice [simp]:
-  "(w && m) && m = w && m"
+  "(w AND m) AND m = w AND m"
   by (fact and.right_idem)
 
 lemma word_combine_masks:
-  "w && m = z \<Longrightarrow> w && m' = z' \<Longrightarrow> w && (m || m') = (z || z')"
+  "w AND m = z \<Longrightarrow> w AND m' = z' \<Longrightarrow> w AND (m OR m') = (z OR z')"
+  for w m m' z z' :: \<open>'a::len word\<close>
   by (auto simp: word_eq_iff)
 
 lemma nth_w2p_same:
@@ -285,11 +265,13 @@ lemma add_mask_fold:
   for x :: \<open>'a::len word\<close>
   by (simp add: mask_eq_decr_exp)
 
-lemma word_and_mask_le_2pm1: "w && mask n \<le> 2 ^ n - 1"
+lemma word_and_mask_le_2pm1: "w AND mask n \<le> 2 ^ n - 1"
+  for w :: \<open>'a::len word\<close>
   by (simp add: mask_2pm1[symmetric] word_and_le1)
 
 lemma is_aligned_AND_less_0:
-  "u && mask n = 0 \<Longrightarrow> v < 2^n \<Longrightarrow> u && v = 0"
+  "u AND mask n = 0 \<Longrightarrow> v < 2^n \<Longrightarrow> u AND v = 0"
+  for u v :: \<open>'a::len word\<close>
   apply (drule less_mask_eq)
   apply (simp add: mask_2pm1)
   apply (rule word_eqI)
@@ -384,7 +366,7 @@ lemmas and_mask_eq_iff_le_mask = trans
   [OF and_mask_eq_iff_shiftr_0 le_mask_iff [THEN sym]]
 
 lemma mask_shiftl_decompose:
-  "mask m << n = mask (m + n) && ~~ (mask n)"
+  "mask m << n = mask (m + n) AND NOT (mask n :: 'a::len word)"
   by (auto intro!: word_eqI simp: and_not_mask nth_shiftl nth_shiftr word_size)
 
 lemmas bin_sc_minus_simps =
@@ -534,33 +516,33 @@ lemma word_and_max_word:
   by simp
 
 lemma word_and_full_mask_simp:
-  \<open>x && Bit_Operations.mask LENGTH('a) = x\<close> for x :: \<open>'a::len word\<close>
+  \<open>x AND Bit_Operations.mask LENGTH('a) = x\<close> for x :: \<open>'a::len word\<close>
 proof (rule bit_eqI)
   fix n
   assume \<open>2 ^ n \<noteq> (0 :: 'a word)\<close>
   then have \<open>n < LENGTH('a)\<close>
     by simp
-  then show \<open>bit (x && Bit_Operations.mask LENGTH('a)) n \<longleftrightarrow> bit x n\<close>
+  then show \<open>bit (x AND Bit_Operations.mask LENGTH('a)) n \<longleftrightarrow> bit x n\<close>
     by (simp add: bit_and_iff bit_mask_iff)
 qed
 	
 lemma word8_and_max_simp:
-  \<open>x && 0xFF = x\<close> for x :: \<open>8 word\<close>
+  \<open>x AND 0xFF = x\<close> for x :: \<open>8 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
 	
 lemma word16_and_max_simp:
-  \<open>x && 0xFFFF = x\<close> for x :: \<open>16 word\<close>
+  \<open>x AND 0xFFFF = x\<close> for x :: \<open>16 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
 	
 lemma word32_and_max_simp:
-  \<open>x && 0xFFFFFFFF = x\<close> for x :: \<open>32 word\<close>
+  \<open>x AND 0xFFFFFFFF = x\<close> for x :: \<open>32 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
 	
 lemma word64_and_max_simp:
-  \<open>x && 0xFFFFFFFFFFFFFFFF = x\<close> for x :: \<open>64 word\<close>
+  \<open>x AND 0xFFFFFFFFFFFFFFFF = x\<close> for x :: \<open>64 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
 	
@@ -638,7 +620,7 @@ lemma scast_ucast_norm [simp]:
   by (metis scast_ucast_id ucast_scast_id)+
 
 lemma of_bl_drop:
-  "of_bl (drop n xs) = (of_bl xs && mask (length xs - n))"
+  "of_bl (drop n xs) = (of_bl xs AND mask (length xs - n))"
   apply (clarsimp simp: bang_eq test_bit_of_bl rev_nth cong: rev_conj_cong)
   apply (safe; simp add: word_size to_bl_nth)
   done
@@ -655,12 +637,14 @@ lemma shiftr_mask2:
   done
 
 corollary word_plus_and_or_coroll:
-  "x && y = 0 \<Longrightarrow> x + y = x || y"
+  "x AND y = 0 \<Longrightarrow> x + y = x OR y"
+  for x y :: \<open>'a::len word\<close>
   using word_plus_and_or[where x=x and y=y]
   by simp
 
 corollary word_plus_and_or_coroll2:
-  "(x && w) + (x && ~~ w) = x"
+  "(x AND w) + (x AND NOT w) = x"
+  for x w :: \<open>'a::len word\<close>
   apply (subst word_plus_and_or_coroll)
    apply (rule word_eqI, simp add: word_size word_ops_nth_size)
   apply (rule word_eqI, simp add: word_size word_ops_nth_size)
