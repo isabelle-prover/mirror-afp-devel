@@ -190,28 +190,28 @@ lemma shiftr_overflow: "32 \<le> a \<Longrightarrow> b >> a = 0"
   done
 
 (* testing for presence of word_bitwise *)
-lemma "((x :: word32) >> 3) AND 7 = (x AND 56) >> 3"
+lemma "((x :: 32 word) >> 3) AND 7 = (x AND 56) >> 3"
   by word_bitwise
 
 (* Tests *)
 lemma
-  "( 4 :: word32) sdiv  4 =  1"
-  "(-4 :: word32) sdiv  4 = -1"
-  "(-3 :: word32) sdiv  4 =  0"
-  "( 3 :: word32) sdiv -4 =  0"
-  "(-3 :: word32) sdiv -4 =  0"
-  "(-5 :: word32) sdiv -4 =  1"
-  "( 5 :: word32) sdiv -4 = -1"
+  "( 4 :: 32 word) sdiv  4 =  1"
+  "(-4 :: 32 word) sdiv  4 = -1"
+  "(-3 :: 32 word) sdiv  4 =  0"
+  "( 3 :: 32 word) sdiv -4 =  0"
+  "(-3 :: 32 word) sdiv -4 =  0"
+  "(-5 :: 32 word) sdiv -4 =  1"
+  "( 5 :: 32 word) sdiv -4 = -1"
   by (simp_all add: sdiv_word_def signed_divide_int_def)
 
 lemma
-  "( 4 :: word32) smod  4 =   0"
-  "( 3 :: word32) smod  4 =   3"
-  "(-3 :: word32) smod  4 =  -3"
-  "( 3 :: word32) smod -4 =   3"
-  "(-3 :: word32) smod -4 =  -3"
-  "(-5 :: word32) smod -4 =  -1"
-  "( 5 :: word32) smod -4 =   1"
+  "( 4 :: 32 word) smod  4 =   0"
+  "( 3 :: 32 word) smod  4 =   3"
+  "(-3 :: 32 word) smod  4 =  -3"
+  "( 3 :: 32 word) smod -4 =   3"
+  "(-3 :: 32 word) smod -4 =  -3"
+  "(-5 :: 32 word) smod -4 =  -1"
+  "( 5 :: 32 word) smod -4 =   1"
   by (simp_all add: smod_word_def signed_modulo_int_def signed_divide_int_def)
 
 end

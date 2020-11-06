@@ -4,14 +4,46 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-section "Lemmas for Word Length 64"
+section "Words of Length 64"
 
-theory Word_Lemmas_64
-imports
-  Word_Lemmas
-  Word_Setup_64
-  Word_Syntax
+theory Word_64
+  imports
+    Word_Lemmas
+    Word_8
+    Word_16
+    Word_Syntax
 begin
+
+type_synonym word64 = "64 word"
+lemma len64: "len_of (x :: 64 itself) = 64" by simp
+
+type_synonym machine_word_len = 64
+type_synonym machine_word = "machine_word_len word"
+
+definition word_bits :: nat
+where
+  "word_bits = LENGTH(machine_word_len)"
+
+text \<open>The following two are numerals so they can be used as nats and words.\<close>
+definition word_size_bits :: "'a :: numeral"
+where
+  "word_size_bits = 3"
+
+definition word_size :: "'a :: numeral"
+where
+  "word_size = 8"
+
+lemma word_bits_conv[code]:
+  "word_bits = 64"
+  unfolding word_bits_def by simp
+
+lemma word_size_word_size_bits:
+  "(word_size::nat) = 2 ^ word_size_bits"
+  unfolding word_size_def word_size_bits_def by simp
+
+lemma word_bits_word_size_conv:
+  "word_bits = word_size * 8"
+  unfolding word_bits_def word_size_def by simp
 
 lemma ucast_8_64_inj:
   "inj (ucast ::  8 word \<Rightarrow> 64 word)"

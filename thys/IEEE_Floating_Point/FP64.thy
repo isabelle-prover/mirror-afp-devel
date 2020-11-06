@@ -1,7 +1,7 @@
 theory FP64
 imports
   IEEE
-  Word_Lib.Word_Lemmas_64
+  Word_Lib.Word_64
 begin
 
 section \<open>Concrete encodings\<close>

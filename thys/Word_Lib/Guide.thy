@@ -252,9 +252,17 @@ text \<open>
 
       \<^descr>[\<^theory>\<open>Word_Lib.Word_Lemmas\<close>] generic.
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Lemmas_32\<close>] for 32-bit words.
+    \<^descr>[Lemmas]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Lemmas_64\<close>] for 64-bit words.
+      Words of fixed length:
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_8\<close>] for 8-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_16\<close>] for 16-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_32\<close>] for 32-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>] for 64-bit words.
 \<close>
 
 
@@ -305,6 +313,13 @@ text \<open>
     are needed, existing operations can be used:
 
     @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
+
+  \<^descr>[\<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>]
+
+    An entry point importing any theory in that session.  Intended
+    for backward compatibility: start importing this theory when
+    migrating applications to Isabelle2021, and later sort out
+    what you really need.
 \<close>
 
 (*<*)

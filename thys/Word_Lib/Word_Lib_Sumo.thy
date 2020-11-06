@@ -29,12 +29,12 @@ imports
   Typedef_Morphisms
   Type_Syntax
   Word_EqI
-  Word_Lemmas_32
-  Word_Lemmas_64
-  Word_Lemmas
   Word_Lib
-  Word_Setup_32
-  Word_Setup_64
+  Word_Lemmas
+  Word_8
+  Word_16
+  Word_32
+  Word_64
   Word_Syntax
 begin
 
