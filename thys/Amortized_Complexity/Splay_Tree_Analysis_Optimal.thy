@@ -40,7 +40,7 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + \<phi> l r"
 
 definition A :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
-"A a t = t_splay a t + \<Phi>(splay a t) - \<Phi> t"
+"A a t = T_splay a t + \<Phi>(splay a t) - \<Phi> t"
 
 lemma A_simps[simp]: "A a (Node l a r) = 1"
  "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> lr r - \<phi> lr ll + 1"
@@ -161,7 +161,7 @@ proof cases
 next
   assume "t \<noteq> Leaf"
   from ex_in_set_tree[OF this assms] obtain a' where
-    a': "a' \<in> set_tree t"  "splay a' t = splay a t"  "t_splay a' t = t_splay a t"
+    a': "a' \<in> set_tree t"  "splay a' t = splay a t"  "T_splay a' t = T_splay a t"
     by blast
   have [arith]: "log \<alpha> 2 > 0" by simp
   show ?thesis using A_ub2[OF assms a'(1)] by(simp add: A_def a' log_divide)
@@ -169,7 +169,7 @@ qed
 
 
 definition Am :: "'a::linorder tree \<Rightarrow> real" where
-"Am t = t_splay_max t + \<Phi>(splay_max t) - \<Phi> t"
+"Am t = T_splay_max t + \<Phi>(splay_max t) - \<Phi> t"
 
 lemma Am_simp3': "\<lbrakk> c<b; bst rr; rr \<noteq> Leaf\<rbrakk> \<Longrightarrow>
   Am (Node l c (Node rl b rr)) =
@@ -382,7 +382,7 @@ next
       assume "t \<noteq> Leaf"
       then obtain l e r where [simp]: "splay a t = Node l e r"
         by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a t)"
+      let ?t = "real(T_splay a t)"
       let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> t"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
       have opt: "?t + S34.\<Phi> (splay a t) - ?Ps  \<le> 3/2 * log 2 (real (size1 t)) + 1"
@@ -437,12 +437,12 @@ next
     show ?thesis
     proof (cases t)
       case Leaf thus ?thesis
-        by(simp add: Splay_Tree.delete_def t_delete_def S34.\<phi>_def log4_log2)
+        by(simp add: Splay_Tree.delete_def T_delete_def S34.\<phi>_def log4_log2)
     next
       case [simp]: (Node ls x rs)
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
         by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a t)"
+      let ?t = "real(T_splay a t)"
       let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> t"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
       let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
@@ -453,7 +453,7 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis using opt
-          apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+          apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
           using \<open>?lslr \<ge> 0\<close> by arith
       next
         case [simp]: True
@@ -462,7 +462,7 @@ next
           case Leaf
           have "S34.\<phi> Leaf r \<ge> 0" by(simp add: S34.\<phi>_def)
           thus ?thesis using Leaf opt
-            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+            apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
             using \<open>?lslr \<ge> 0\<close> by arith
         next
           case (Node ll y lr)
@@ -471,7 +471,7 @@ next
             using splay_max_Leaf_iff tree.exhaust by blast
           have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
           have "S34.\<Phi> r' \<ge> 0" apply (induction r') by (auto simp add: S34.\<phi>_def)
-          have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
+          have optm: "real(T_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
             \<le> 3/2 * log 2 (real (size1 l)) + 1"
             using S34.Am_ub3[OF \<open>bst l\<close>, simplified S34.Am_def]
             by (simp add: log4_log2 field_simps Node)
@@ -484,7 +484,7 @@ next
           have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+            apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
             using 4 \<open>S34.\<Phi> r' \<ge> 0\<close> by arith
         qed
       qed
