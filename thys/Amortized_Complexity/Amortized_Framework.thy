@@ -53,7 +53,7 @@ by (metis add.commute t_sum_a_sum diff_add_cancel le_add_same_cancel2 ppos[OF in
 lemma a_le_U: "\<lbrakk> \<forall>s \<in> set ss. inv s; length ss = arity f \<rbrakk> \<Longrightarrow> acost f ss \<le> U f ss"
 by(simp add: acost_def U)
 
-lemma u_sum_le_U_sum: "wf ot \<Longrightarrow> acost_sum ot \<le> U_sum ot"
+lemma a_sum_le_U_sum: "wf ot \<Longrightarrow> acost_sum ot \<le> U_sum ot"
 proof(induction ot)
   case (T f ts)
   with a_le_U[of "map state ts" f] sum_list_mono show ?case
@@ -61,7 +61,7 @@ proof(induction ot)
 qed
 
 corollary t_sum_le_U_sum: "wf ot \<Longrightarrow> cost_sum ot \<le> U_sum ot"
-by (blast intro: t_sum_le_a_sum u_sum_le_U_sum order.trans)
+by (blast intro: t_sum_le_a_sum a_sum_le_U_sum order.trans)
 
 end
 
