@@ -51,9 +51,6 @@ lemma takeWhile_replicate_id:
   "f x \<Longrightarrow> takeWhile f (replicate len x) = replicate len x"
   by (simp add: takeWhile_replicate)
 
-lemma butlast_power: "(butlast ^^ n) bl = take (length bl - n) bl"
-  by (induct n) (auto simp: butlast_take)
-
 lemma nth_rev: "n < length xs \<Longrightarrow> rev xs ! n = xs ! (length xs - 1 - n)"
   using rev_nth by simp
 
