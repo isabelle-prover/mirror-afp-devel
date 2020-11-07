@@ -13,6 +13,26 @@ begin
 no_notation
   trancl ("(_\<^sup>+)" [1000] 999)
 
+context kleene_algebra
+begin
+
+lemma star_sup_2:
+  assumes "x * x \<le> x"
+    and "x * y \<le> x"
+  shows "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x \<squnion> 1)"
+proof -
+  have "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x * y\<^sup>\<star>)\<^sup>\<star>"
+    by (simp add: star.circ_decompose_6 star_sup_1)
+  also have "... = y\<^sup>\<star> * x\<^sup>\<star>"
+    using assms(2) dual_order.antisym star.circ_back_loop_prefixpoint star_right_induct_mult by fastforce
+  also have "... = y\<^sup>\<star> * (x \<squnion> 1)"
+    by (simp add: assms(1) sup_commute transitive_star)
+  finally show ?thesis
+    .
+qed
+
+end
+
 context stone_relation_algebra
 begin
 
@@ -237,6 +257,18 @@ proof -
     .
 qed
 
+lemma update_inf:
+  "u \<le> y \<Longrightarrow> (x[y\<longmapsto>z]) \<sqinter> u = z\<^sup>T \<sqinter> u"
+  by (smt comp_inf.mult_right_dist_sup comp_inf.semiring.mult_zero_right inf.left_commute inf.sup_monoid.add_assoc inf_absorb2 p_inf sup_bot_right inf.sup_monoid.add_commute)
+
+lemma update_inf_same:
+  "(x[y\<longmapsto>z]) \<sqinter> y = z\<^sup>T \<sqinter> y"
+  by (simp add: update_inf)
+
+lemma update_inf_different:
+  "u \<le> -y \<Longrightarrow> (x[y\<longmapsto>z]) \<sqinter> u = x \<sqinter> u"
+  by (smt inf.right_idem inf.sup_monoid.add_commute inf.sup_relative_same_increasing inf_import_p maddux_3_13 sup.cobounded2 update_inf_same)
+
 end
 
 section \<open>Relation-Algebraic Semantics of Disjoint-Set Forests\<close>
@@ -274,6 +306,10 @@ next
   show "(x \<sqinter> -1)\<^sup>\<star> \<le> x\<^sup>\<star>"
     by (simp add: star_isotone)
 qed
+
+lemma plus_reachable_without_loops:
+  "x\<^sup>+ = (x \<sqinter> -1)\<^sup>+ \<squnion> (x \<sqinter> 1)"
+  by (metis comp_associative maddux_3_11_pp regular_one_closed star.circ_back_loop_fixpoint star.circ_loop_fixpoint sup_assoc reachable_without_loops)
 
 lemma star_plus_loops:
   "x\<^sup>\<star> \<squnion> 1 = x\<^sup>+ \<squnion> 1"
@@ -450,20 +486,32 @@ lemma fc_wcc:
   "univalent x \<Longrightarrow> wcc x = fc x"
   by (simp add: fc_star star_decompose_1)
 
+lemma fc_via_root:
+  assumes "total (p\<^sup>\<star> * (p \<sqinter> 1))"
+  shows "fc p = p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
+proof (rule antisym)
+  have "1 \<le> p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
+    by (smt assms comp_associative conv_dist_comp conv_star_commute coreflexive_idempotent coreflexive_symmetric inf.cobounded2 total_var)
+  hence "fc p \<le> p\<^sup>\<star> * p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> * p\<^sup>T\<^sup>\<star>"
+    by (metis comp_right_one mult_left_isotone mult_right_isotone mult_assoc)
+  thus "fc p \<le> p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
+    by (simp add: star.circ_transitive_equal mult_assoc)
+  show "p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<le> fc p"
+    by (metis comp_isotone inf.cobounded2 mult_1_right order.refl)
+qed
+
 text \<open>Theorem 4.1\<close>
 
 lemma update_acyclic_1:
   assumes "acyclic (p \<sqinter> -1)"
     and "point y"
-    and "point w"
-    and "y \<le> p\<^sup>T\<^sup>\<star> * w"
+    and "vector w"
+    and "w \<le> p\<^sup>\<star> * y"
   shows "acyclic ((p[w\<longmapsto>y]) \<sqinter> -1)"
 proof -
   let ?p = "p[w\<longmapsto>y]"
-  have "w \<le> p\<^sup>\<star> * y"
-    using assms(2-4) by (metis (no_types, lifting) bijective_reverse conv_star_commute)
-  hence "w * y\<^sup>T \<le> p\<^sup>\<star>"
-    using assms(2) shunt_bijective by blast
+  have "w * y\<^sup>T \<le> p\<^sup>\<star>"
+    using assms(2,4) shunt_bijective by blast
   hence "w * y\<^sup>T \<le> (p \<sqinter> -1)\<^sup>\<star>"
     using reachable_without_loops by auto
   hence "w * y\<^sup>T \<sqinter> -1 \<le> (p \<sqinter> -1)\<^sup>\<star> \<sqinter> -1"
@@ -487,6 +535,33 @@ proof -
   finally show ?thesis
     by simp
 qed
+
+lemma update_acyclic_2:
+  assumes "acyclic (p \<sqinter> -1)"
+    and "point y"
+    and "point x"
+    and "y \<le> p\<^sup>T\<^sup>\<star> * x"
+    and "univalent p"
+    and "p\<^sup>T * y \<le> y"
+  shows "acyclic ((p[p\<^sup>T\<^sup>\<star>*x\<longmapsto>y]) \<sqinter> -1)"
+proof -
+  have "p\<^sup>T * p\<^sup>\<star> * y = p\<^sup>T * p * p\<^sup>\<star> * y \<squnion> p\<^sup>T * y"
+    by (metis comp_associative mult_left_dist_sup star.circ_loop_fixpoint)
+  also have "... \<le> p\<^sup>\<star> * y"
+    by (metis assms(5,6) comp_right_one le_supI le_supI2 mult_left_isotone star.circ_loop_fixpoint star.circ_transitive_equal)
+  finally have "p\<^sup>T\<^sup>\<star> * x \<le> p\<^sup>\<star> * y"
+    by (simp add: assms(2-4) bijective_reverse conv_star_commute comp_associative star_left_induct)
+  thus ?thesis
+    by (simp add: assms(1-3) vector_mult_closed update_acyclic_1)
+qed
+
+lemma update_acyclic_3:
+  assumes "acyclic (p \<sqinter> -1)"
+    and "point y"
+    and "point w"
+    and "y \<le> p\<^sup>T\<^sup>\<star> * w"
+  shows "acyclic ((p[w\<longmapsto>y]) \<sqinter> -1)"
+  by (simp add: assms bijective_reverse conv_star_commute update_acyclic_1)
 
 lemma rectangle_star_rectangle:
   "rectangle a \<Longrightarrow> a * x\<^sup>\<star> * a \<le> a"
@@ -545,7 +620,7 @@ lemma plus_arc_decompose:
 
 text \<open>Theorem 6.2\<close>
 
-lemma update_acyclic_2:
+lemma update_acyclic_4:
   assumes "acyclic (p \<sqinter> -1)"
     and "point y"
     and "point w"
@@ -579,7 +654,7 @@ lemma acyclic_down_closed:
 
 text \<open>Theorem 6.3\<close>
 
-lemma update_acyclic_3:
+lemma update_acyclic_5:
   assumes "acyclic (p \<sqinter> -1)"
     and "point w"
   shows "acyclic ((p[w\<longmapsto>w]) \<sqinter> -1)"
@@ -704,6 +779,93 @@ lemma same_root:
   shows "root p x = root q x"
   by (metis assms mult_assoc root_var univalent_root_successors)
 
+lemma loop_root:
+  assumes "injective x"
+    and "x = p[[x]]"
+  shows "x = root p x"
+proof (rule antisym)
+  have "x \<le> p * x"
+    by (metis assms comp_associative comp_right_one conv_order equivalence_one_closed ex231c inf.orderE inf.sup_monoid.add_commute mult_left_isotone mult_right_isotone one_inf_conv)
+  hence "x = (p \<sqinter> 1) * x"
+    by (simp add: assms(1) inf_absorb2 injective_comp_right_dist_inf)
+  thus "x \<le> root p x"
+    by (metis assms(2) coreflexive_comp_top_inf inf.boundedI inf.cobounded1 inf.cobounded2 mult_isotone star.circ_increasing)
+next
+  show "root p x \<le> x"
+    using assms(2) le_infI1 star_left_induct_mult by auto
+qed
+
+lemma test_comp_test_inf:
+  "(x \<sqinter> 1) * y * (z \<sqinter> 1) = (x \<sqinter> 1) * y \<sqinter> y * (z \<sqinter> 1)"
+  by (smt comp_right_one comp_right_subdist_inf coreflexive_comp_top_inf inf.left_commute inf.orderE inf_le2 mult_assoc)
+
+lemma test_comp_test_top:
+  "y \<sqinter> (x \<sqinter> 1) * top * (z \<sqinter> 1) = (x \<sqinter> 1) * y * (z \<sqinter> 1)"
+proof -
+  have "\<forall>u v . (v \<sqinter> u\<^sup>T)\<^sup>T = v\<^sup>T \<sqinter> u"
+    using conv_dist_inf by auto
+  thus ?thesis
+    by (smt conv_dist_comp conv_involutive coreflexive_comp_top_inf inf.cobounded2 inf.left_commute inf.sup_monoid.add_commute symmetric_one_closed mult_assoc symmetric_top_closed)
+qed
+
+lemma one_loop:
+  assumes "acyclic (p \<sqinter> -1)"
+    and "univalent p"
+  shows "(p \<sqinter> 1) * (p\<^sup>T \<sqinter> -1)\<^sup>+ * (p \<sqinter> 1) = bot"
+proof -
+  have "p\<^sup>T\<^sup>+ \<sqinter> (p \<sqinter> 1) * top * (p \<sqinter> 1) = (p \<sqinter> 1) * p\<^sup>T\<^sup>+ * (p \<sqinter> 1)"
+    by (simp add: test_comp_test_top)
+  also have "... \<le> p\<^sup>T\<^sup>\<star> * (p \<sqinter> 1)"
+    by (simp add: inf.coboundedI2 mult_left_isotone star.circ_mult_upper_bound star.circ_reflexive star.left_plus_below_circ)
+  also have "... = p \<sqinter> 1"
+    by (metis assms(2) conv_dist_comp conv_dist_inf conv_star_commute inf_commute one_inf_conv symmetric_one_closed univalent_root_successors)
+  also have "... \<le> 1"
+    by simp
+  finally have "(p \<sqinter> 1) * top * (p \<sqinter> 1) \<le> -(p\<^sup>T\<^sup>+ \<sqinter> -1)"
+    using p_antitone p_antitone_iff p_shunting_swap by blast
+  hence "(p \<sqinter> 1)\<^sup>T * (p\<^sup>T\<^sup>+ \<sqinter> -1) * (p \<sqinter> 1)\<^sup>T \<le> bot"
+    using triple_schroeder_p p_top by blast
+  hence "(p \<sqinter> 1) * (p\<^sup>T\<^sup>+ \<sqinter> -1) * (p \<sqinter> 1) = bot"
+    by (simp add: coreflexive_symmetric le_bot)
+  thus ?thesis
+    by (smt assms(1) conv_complement conv_dist_comp conv_dist_inf conv_star_commute inf_absorb1 star.circ_plus_same symmetric_one_closed reachable_without_loops star_plus_without_loops)
+qed
+
+lemma root_root:
+  "root p x = root p (root p x)"
+  by (smt comp_associative comp_inf.mult_right_sub_dist_sup_right dual_order.eq_iff inf.cobounded1 inf.cobounded2 inf.orderE mult_right_isotone star.circ_loop_fixpoint star.circ_transitive_equal root_var)
+
+lemma loop_root_2:
+  assumes "acyclic (p \<sqinter> -1)"
+    and "univalent p"
+    and "injective x"
+    and "x \<le> p\<^sup>T\<^sup>+ * x"
+  shows "x = root p x"
+proof (rule antisym)
+  have 1: "x = x \<sqinter> -(-1 * x)"
+    by (metis assms(3) comp_injective_below_complement inf.orderE mult_1_left regular_one_closed)
+  have "x \<le> (p\<^sup>T \<sqinter> -1)\<^sup>+ * x \<squnion> (p \<sqinter> 1) * x"
+    by (metis assms(4) inf_commute mult_right_dist_sup one_inf_conv plus_reachable_without_loops)
+  also have "... \<le> -1 * x \<squnion> (p \<sqinter> 1) * x"
+    by (metis assms(1) conv_complement conv_dist_inf conv_isotone conv_plus_commute mult_left_isotone semiring.add_right_mono symmetric_one_closed)
+  also have "... \<le> -1 * x \<squnion> root p x"
+    using comp_isotone inf.coboundedI2 star.circ_reflexive sup_right_isotone by auto
+  finally have "x \<le> (-1 * x \<squnion> root p x) \<sqinter> -(-1 * x)"
+    using 1 inf.boundedI inf.order_iff by blast
+  also have "... \<le> root p x"
+    using inf.sup_left_divisibility by auto
+  finally show 2: "x \<le> root p x"
+    .
+  have "root p x = (p \<sqinter> 1) * x \<squnion> (p \<sqinter> 1) * (p\<^sup>T \<sqinter> -1)\<^sup>+ * x"
+    by (metis comp_associative mult_left_dist_sup star.circ_loop_fixpoint sup_commute reachable_without_loops root_var)
+  also have "... \<le> x \<squnion> (p \<sqinter> 1) * (p\<^sup>T \<sqinter> -1)\<^sup>+ * root p x"
+    using 2 by (metis coreflexive_comp_top_inf inf.cobounded2 mult_right_isotone semiring.add_mono)
+  also have "... = x"
+    by (metis assms(1,2) one_loop root_var mult_assoc semiring.mult_not_zero sup_bot_right)
+  finally show "root p x \<le> x"
+    .
+qed
+
 end
 
 context stone_relation_algebra_tarski
@@ -753,6 +915,14 @@ next
     using assms point_in_vector_partition by fastforce
 qed
 
+lemma point_in_vector_partition_2:
+  assumes "point x"
+    and "vector y"
+    and "regular y"
+    and "\<not> y \<le> -x"
+  shows "x \<le> y"
+  using assms point_in_vector_partition p_antitone_iff by fastforce
+
 text \<open>Theorem 4.3\<close>
 
 lemma distinct_points:
@@ -764,35 +934,44 @@ lemma distinct_points:
 
 text \<open>Back and von Wright's array independence requirements \cite{BackWright1998}\<close>
 
-lemma put_get_different:
-  assumes "point y" "point w" "w \<noteq> y"
+lemma put_get_different_vector:
+  assumes "vector y" "vector w" "w \<le> -y"
   shows "(x[y\<longmapsto>z])[[w]] = x[[w]]"
 proof -
   have "(x[y\<longmapsto>z])[[w]] = (y\<^sup>T \<sqinter> z) * w \<squnion> (-y\<^sup>T \<sqinter> x\<^sup>T) * w"
     by (simp add: conv_complement conv_dist_inf conv_dist_sup mult_right_dist_sup)
   also have "... = z * (w \<sqinter> y) \<squnion> x\<^sup>T * (w \<sqinter> -y)"
     by (metis assms(1) conv_complement covector_inf_comp_3 inf_commute vector_complement_closed)
+  also have "... = z * (w \<sqinter> y) \<squnion> x\<^sup>T * w"
+    by (simp add: assms(3) inf.absorb1)
+  also have "... = z * bot \<squnion> x\<^sup>T * w"
+    by (metis assms(3) comp_inf.semiring.mult_zero_right inf.absorb1 inf.sup_monoid.add_assoc p_inf)
   also have "... = x\<^sup>T * w"
-  proof -
-    have 1: "w \<sqinter> y = bot"
-      using assms distinct_points by simp
-    hence "w \<le> -y"
-      using pseudo_complement by simp
-    thus ?thesis
-      using 1 by (simp add: inf.absorb1)
-  qed
+    by simp
   finally show ?thesis
     .
 qed
 
-lemma put_put_different:
-  assumes "point y" "point v" "v \<noteq> y"
+lemma put_get_different:
+  assumes "point y" "point w" "w \<noteq> y"
+  shows "(x[y\<longmapsto>z])[[w]] = x[[w]]"
+proof -
+  have "w \<sqinter> y = bot"
+    using assms distinct_points by simp
+  hence "w \<le> -y"
+    using pseudo_complement by simp
+  thus ?thesis
+    by (simp add: assms(1) assms(2) put_get_different_vector)
+qed
+
+lemma put_put_different_vector:
+  assumes "vector y" "vector v" "v \<sqinter> y = bot"
   shows "(x[y\<longmapsto>z])[v\<longmapsto>w] = (x[v\<longmapsto>w])[y\<longmapsto>z]"
 proof -
   have "(x[y\<longmapsto>z])[v\<longmapsto>w] = (v \<sqinter> w\<^sup>T) \<squnion> (-v \<sqinter> y \<sqinter> z\<^sup>T) \<squnion> (-v \<sqinter> -y \<sqinter> x)"
     by (simp add: comp_inf.semiring.distrib_left inf_assoc sup_assoc)
   also have "... = (v \<sqinter> w\<^sup>T) \<squnion> (y \<sqinter> z\<^sup>T) \<squnion> (-v \<sqinter> -y \<sqinter> x)"
-    using assms distinct_points pseudo_complement inf.absorb2 by simp
+    by (metis assms(3) inf_commute inf_import_p p_inf selection_closed_id)
   also have "... = (y \<sqinter> z\<^sup>T) \<squnion> (v \<sqinter> w\<^sup>T) \<squnion> (-y \<sqinter> -v \<sqinter> x)"
     by (simp add: inf_commute sup_commute)
   also have "... = (y \<sqinter> z\<^sup>T) \<squnion> (-y \<sqinter> v \<sqinter> w\<^sup>T) \<squnion> (-y \<sqinter> -v \<sqinter> x)"
@@ -802,6 +981,11 @@ proof -
   finally show ?thesis
     .
 qed
+
+lemma put_put_different:
+  assumes "point y" "point v" "v \<noteq> y"
+  shows "(x[y\<longmapsto>z])[v\<longmapsto>w] = (x[v\<longmapsto>w])[y\<longmapsto>z]"
+  using assms distinct_points put_put_different_vector by blast
 
 end
 
@@ -1076,19 +1260,179 @@ modifying the tree on the way out from recursive calls. Here we implement it usi
 which iterates over the same path to the root and changes edges to point to the root of the component, 
 which is known after the while-loop in find-set completes. We prove that path compression preserves 
 the equivalence-relational semantics of the disjoint-set forest and also preserves the roots of the 
-component trees.
+component trees. Additionally we prove the exact effect of path compression.
 \<close>
 
 definition "path_compression_precondition p x y \<equiv> disjoint_set_forest p \<and> point x \<and> point y \<and> y = root p x"
 definition "path_compression_invariant p x y p0 w \<equiv> 
   path_compression_precondition p x y \<and> point w \<and> y \<le> p\<^sup>T\<^sup>\<star> * w \<and> 
-  (w \<noteq> x \<longrightarrow> p[[x]] = y \<and> y \<noteq> x \<and> p\<^sup>T\<^sup>+ * w \<le> -x) \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0"
+  (w \<noteq> x \<longrightarrow> p[[x]] = y \<and> y \<noteq> x \<and> p\<^sup>T\<^sup>+ * w \<le> -x) \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
+  root p w = y \<and> (w \<noteq> y \<longrightarrow> p[[w]] \<noteq> w \<and> p\<^sup>T\<^sup>+ * w \<le> -w) \<and> p[[w]] = p0[[w]] \<and> p0[p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)\<longmapsto>y] = p \<and>
+  disjoint_set_forest p0 \<and> y = root p0 x \<and> w \<le> p0\<^sup>T\<^sup>\<star> * x"
 definition "path_compression_postcondition p x y p0 \<equiv> 
-  path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0"
+  path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
+  p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y] = p"
+
+text \<open>
+We first consider a variant that achieves the effect as a single update.
+The parents of all nodes reachable from x are simultaneously updated to the root of the component of x.
+\<close>
+
+lemma path_compression_exact:
+  assumes "path_compression_precondition p0 x y"
+    and "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y] = p"
+  shows "p \<sqinter> 1 = p0 \<sqinter> 1" "fc p = fc p0"
+proof -
+  have a1: "disjoint_set_forest p0" and a2: "point x" and a3: "point y" and a4: "y = root p0 x"
+    using path_compression_precondition_def assms(1) by auto
+  have 1: "regular (p0\<^sup>T\<^sup>\<star> * x)"
+    using a1 a2 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
+  have "p \<sqinter> 1 = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1) \<squnion> (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0 \<sqinter> 1)"
+    using assms(2) inf_sup_distrib2 by auto
+  also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1) \<squnion> (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0 \<sqinter> 1)"
+  proof -
+    have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 = p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1"
+    proof (rule antisym)
+      have "(p0 \<sqinter> 1) * p0\<^sup>T\<^sup>\<star> * x \<sqinter> 1 \<le> p0"
+        by (smt coreflexive_comp_top_inf_one inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc root_var)
+      hence "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 \<le> p0"
+        by (metis inf_le1 a4 conv_dist_inf coreflexive_symmetric inf.absorb2 inf.cobounded2 inf.sup_monoid.add_assoc root_var symmetric_one_closed)
+      thus "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1"
+        by (meson inf.le_sup_iff order.refl)
+      have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1 \<le> y"
+        by (metis a4 coreflexive_comp_top_inf_one inf.cobounded1 inf_assoc inf_le2)
+      thus "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1 \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1"
+        by (smt conv_dist_inf coreflexive_symmetric inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc)
+    qed
+    thus ?thesis
+      by simp
+  qed
+  also have "... = p0 \<sqinter> 1"
+    using 1 by (metis inf.sup_monoid.add_commute inf_sup_distrib1 maddux_3_11_pp)
+  finally show "p \<sqinter> 1 = p0 \<sqinter> 1"
+    .
+  show  "fc p = fc p0"
+  proof (rule antisym)
+    have 2: "univalent (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])"
+      by (simp add: a1 a2 a3 update_univalent mult_assoc)
+    have 3: "-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0 \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      using fc_increasing inf.order_trans sup.cobounded2 by blast
+    have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<le> (p0\<^sup>T\<^sup>\<star> \<sqinter> p0 * x\<^sup>T) * (x \<sqinter> p0\<^sup>\<star> * p0)"
+      by (metis conv_involutive conv_star_commute dedekind)
+    also have "... \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 * x\<^sup>T * p0\<^sup>\<star> * p0"
+      by (metis comp_associative inf.boundedI inf.cobounded2 inf_le1 mult_isotone)
+    also have "... \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> top * x\<^sup>T * p0\<^sup>\<star>"
+      using comp_associative comp_inf.mult_right_isotone mult_isotone star.right_plus_below_circ by auto
+    also have "... = p0\<^sup>T\<^sup>\<star> * x * x\<^sup>T * p0\<^sup>\<star>"
+      by (metis a2 symmetric_top_closed vector_covector vector_inf_comp vector_mult_closed)
+    also have "... \<le> (p0\<^sup>T\<^sup>\<star> * x * y\<^sup>T) * (y * x\<^sup>T * p0\<^sup>\<star>)"
+      by (metis a3 antisym comp_inf.top_right_mult_increasing conv_involutive dedekind_1 inf.sup_left_divisibility inf.sup_monoid.add_commute mult_right_isotone surjective_conv_total mult_assoc)
+    also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) * (y \<sqinter> x\<^sup>T * p0\<^sup>\<star>)"
+      by (metis a2 a3 vector_covector vector_inf_comp vector_mult_closed)
+    also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) * (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T)\<^sup>T"
+      by (simp add: conv_dist_comp conv_dist_inf conv_star_commute inf_commute)
+    also have "... \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      by (meson conv_isotone dual_order.trans mult_isotone star.circ_increasing sup.cobounded1)
+    finally have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      .
+    hence "(p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0) \<squnion> (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0) \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      using 3 le_supI by blast
+    hence "p0 \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      using 1 by (metis inf_commute maddux_3_11_pp)
+    hence "fc p0 \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
+      using 2 fc_idempotent fc_isotone by fastforce
+    thus "fc p0 \<le> fc p"
+      by (simp add: assms(2))
+    have "((p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) \<squnion> (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0))\<^sup>\<star> = (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0)\<^sup>\<star> * ((p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) \<squnion> 1)"
+    proof (rule star_sup_2)
+      have 4: "transitive (p0\<^sup>T\<^sup>\<star> * x)"
+        using a2 comp_associative mult_right_isotone rectangle_star_rectangle by auto
+      have "transitive (y\<^sup>T)"
+        by (metis a3 conv_dist_comp inf.eq_refl mult_assoc)
+      thus "transitive (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T)"
+        using 4 transitive_inf_closed by auto
+      have 5: "p0\<^sup>T\<^sup>\<star> * x * (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0) \<le> p0\<^sup>T\<^sup>\<star> * x"
+        by (metis a2 mult_right_isotone top_greatest mult_assoc)
+      have "(-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0)\<^sup>T * y \<le> p0\<^sup>T * y"
+        by (simp add: conv_dist_inf mult_left_isotone)
+      also have "... \<le> y"
+        using a1 a4 root_successor_loop by auto
+      finally have "y\<^sup>T * (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0) \<le> y\<^sup>T"
+        using conv_dist_comp conv_isotone by fastforce
+      thus "(p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) * (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0) \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T"
+        using 5 comp_left_subdist_inf inf_mono order_trans by blast
+    qed
+    hence "p\<^sup>\<star> = (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0)\<^sup>\<star> * ((p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) \<squnion> 1)"
+      by (simp add: assms(2))
+    also have "... \<le> p0\<^sup>\<star> * ((p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) \<squnion> 1)"
+      by (simp add: mult_left_isotone star_isotone)
+    also have "... = p0\<^sup>\<star> * (p0\<^sup>T\<^sup>\<star> * x * y\<^sup>T \<squnion> 1)"
+      by (simp add: a2 a3 vector_covector vector_mult_closed)
+    also have "... = p0\<^sup>\<star> * (p0\<^sup>T\<^sup>\<star> * (x * x\<^sup>T) * p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
+      by (metis a4 coreflexive_symmetric inf.cobounded2 root_var comp_associative conv_dist_comp conv_involutive conv_star_commute)
+    also have "... \<le> p0\<^sup>\<star> * (p0\<^sup>T\<^sup>\<star> * 1 * p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
+      by (metis a2 mult_left_isotone mult_right_isotone semiring.add_left_mono sup_commute)
+    also have "... = p0\<^sup>\<star> * (p0\<^sup>T\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
+      by (simp add: a1 cancel_separate_eq mult_right_dist_sup)
+    also have "... = p0\<^sup>\<star> * ((p0 \<sqinter> 1) \<squnion> p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
+      by (smt univalent_root_successors a1 conv_dist_comp conv_dist_inf coreflexive_idempotent coreflexive_symmetric inf.cobounded2 injective_codomain loop_root root_transitive_successor_loop symmetric_one_closed)
+    also have "... = p0\<^sup>\<star> * (p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
+      by (metis inf.sup_left_divisibility inf_commute sup.left_idem sup_commute sup_relative_same_increasing)
+    also have "... \<le> p0\<^sup>\<star> * p0\<^sup>\<star>"
+      by (metis inf.cobounded2 inf_commute order.refl order_lesseq_imp star.circ_mult_upper_bound star.circ_reflexive star.circ_transitive_equal sup.boundedI sup_monoid.add_commute)
+    also have "... = p0\<^sup>\<star>"
+      by (simp add: star.circ_transitive_equal)
+    finally show "fc p \<le> fc p0"
+      by (metis conv_order conv_star_commute mult_isotone)
+  qed
+qed
+
+lemma update_acyclic_6:
+  assumes "disjoint_set_forest p"
+    and "point x"
+  shows "acyclic ((p[p\<^sup>T\<^sup>\<star>*x\<longmapsto>root p x]) \<sqinter> -1)"
+  using assms root_point root_successor_loop update_acyclic_2 by auto
+
+theorem path_compression_assign:
+  "VARS p t w
+  [ path_compression_precondition p x y \<and> p0 = p ]
+  p[p\<^sup>T\<^sup>\<star> * x] := y
+  [ path_compression_postcondition p x y p0 ]"
+  apply vcg_tc_simp
+  apply (unfold path_compression_precondition_def path_compression_postcondition_def)
+  apply (intro conjI)
+  subgoal using update_univalent mult_assoc by auto
+  subgoal using bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed update_mapping mult_assoc by auto
+  subgoal using update_acyclic_6 by blast
+  subgoal by blast
+  subgoal by blast
+  subgoal by blast
+  subgoal by blast
+  subgoal by blast
+  subgoal by blast
+  subgoal by (smt same_root path_compression_exact path_compression_precondition_def update_univalent vector_mult_closed)
+  subgoal using path_compression_exact(1) path_compression_precondition_def by blast
+  subgoal using path_compression_exact(2) path_compression_precondition_def by blast
+  by blast
+
+text \<open>
+We next look at implementing these updates using a loop.
+\<close>
+
+lemma path_compression_1a:
+  assumes "point x"
+    and "disjoint_set_forest p"
+    and "x \<noteq> root p x"
+  shows "p\<^sup>T\<^sup>+ * x \<le> - x"
+  by (meson assms bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed vector_mult_closed point_in_vector_partition_2 loop_root_2)
+
+lemma path_compression_1b:
+  "x \<le> p\<^sup>T\<^sup>\<star> * x"
+  using mult_left_isotone star.circ_reflexive by fastforce
 
 lemma path_compression_1:
   "path_compression_precondition p x y \<Longrightarrow> path_compression_invariant p x y p x"
-  using path_compression_invariant_def path_compression_precondition_def by auto
+  using path_compression_invariant_def path_compression_precondition_def loop_root path_compression_1a path_compression_1b by auto
 
 lemma path_compression_2:
   "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<Longrightarrow> path_compression_invariant (p[w\<longmapsto>y]) x y p0 (p[[w]]) \<and> card { z . regular z \<and> z \<le> (p[w\<longmapsto>y])\<^sup>T\<^sup>\<star> * (p[[w]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
@@ -1097,37 +1441,45 @@ proof -
   let ?s = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
   let ?t = "{ z . regular z \<and> z \<le> ?p\<^sup>T\<^sup>\<star> * (p[[w]]) }"
   assume 1: "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]]"
-  hence 2: "point (p[[w]])"
-    by (simp add: path_compression_invariant_def path_compression_precondition_def read_point)
+  have i1: "disjoint_set_forest p" and i2: "point x" and i3: "point y" and i4: "y = root p x"
+    using 1 path_compression_invariant_def path_compression_precondition_def by meson+
+  have i5: "point w" and i6: "y \<le> p\<^sup>T\<^sup>\<star> * w"
+    and i7: "w \<noteq> x \<longrightarrow> p[[x]] = y \<and> y \<noteq> x \<and> p\<^sup>T\<^sup>+ * w \<le> -x" and i8: "p \<sqinter> 1 = p0 \<sqinter> 1" and i9: "fc p = fc p0"
+    and i10: "root p w = y" and i11: "w \<noteq> y \<longrightarrow> p[[w]] \<noteq> w" and i12: "p[[w]] = p0[[w]]" and i13: "p0[p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)\<longmapsto>y] = p"
+    using 1 path_compression_invariant_def by blast+
+  have i14: "disjoint_set_forest p0" and i15: "y = root p0 x" and i16: "w \<le> p0\<^sup>T\<^sup>\<star> * x"
+    using 1 path_compression_invariant_def by auto
+  have 2: "point (p[[w]])"
+    using i1 i5 read_point by blast
   show "path_compression_invariant ?p x y p0 (p[[w]]) \<and> card ?t < card ?s"
   proof (unfold path_compression_invariant_def, intro conjI)
     have 3: "mapping ?p"
-      using 1 by (meson path_compression_invariant_def path_compression_precondition_def update_mapping bijective_regular)
+      by (simp add: i1 i3 i5 bijective_regular update_total update_univalent)
     have 4: "w \<noteq> y"
-      using 1 by (metis (no_types, hide_lams) path_compression_invariant_def path_compression_precondition_def root_successor_loop)
+      using 1 i1 i4 root_successor_loop by blast
     hence 5: "w \<sqinter> y = bot"
-      using 1 distinct_points path_compression_invariant_def path_compression_precondition_def by auto
+      by (simp add: i3 i5 distinct_points)
     hence "y * w\<^sup>T \<le> -1"
       using pseudo_complement schroeder_4_p by auto
     hence "y * w\<^sup>T \<le> p\<^sup>T\<^sup>\<star> \<sqinter> -1"
-      using 1 shunt_bijective path_compression_invariant_def by auto
+      using i5 i6 shunt_bijective by auto
     also have "... \<le> p\<^sup>T\<^sup>+"
       by (simp add: star_plus_without_loops)
     finally have 6: "y \<le> p\<^sup>T\<^sup>+ * w"
-      using 1 shunt_bijective path_compression_invariant_def by blast
+      using i5 shunt_bijective by auto
     have 7: "w * w\<^sup>T \<le> -p\<^sup>T\<^sup>+"
     proof (rule ccontr)
       assume "\<not> w * w\<^sup>T \<le> -p\<^sup>T\<^sup>+"
       hence "w * w\<^sup>T \<le> --p\<^sup>T\<^sup>+"
-        using 1 path_compression_invariant_def point_arc arc_in_partition by blast
+        using i5 point_arc arc_in_partition by blast
       hence "w * w\<^sup>T \<le> p\<^sup>T\<^sup>+ \<sqinter> 1"
-        using 1 path_compression_invariant_def path_compression_precondition_def mapping_regular regular_conv_closed regular_closed_star regular_mult_closed by simp
+        using i1 i5 mapping_regular regular_conv_closed regular_closed_star regular_mult_closed by simp
       also have "... = ((p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1) \<squnion> ((p\<^sup>T \<sqinter> -1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1)"
         by (metis comp_inf.mult_right_dist_sup maddux_3_11_pp mult_right_dist_sup regular_one_closed)
       also have "... = ((p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1) \<squnion> ((p \<sqinter> -1)\<^sup>+ \<sqinter> 1)\<^sup>T"
         by (metis conv_complement conv_dist_inf conv_plus_commute equivalence_one_closed reachable_without_loops)
       also have "... \<le> ((p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1) \<squnion> (-1 \<sqinter> 1)\<^sup>T"
-        using 1 by (metis (no_types, hide_lams) path_compression_invariant_def path_compression_precondition_def sup_right_isotone inf.sup_left_isotone conv_isotone)
+        by (metis (no_types, hide_lams) i1 sup_right_isotone inf.sup_left_isotone conv_isotone)
       also have "... = (p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1"
         by simp
       also have "... \<le> (p\<^sup>T \<sqinter> 1) * top \<sqinter> 1"
@@ -1137,13 +1489,11 @@ proof -
       finally have "w * w\<^sup>T \<le> p\<^sup>T"
         by simp
       hence "w \<le> p[[w]]"
-        using 1 path_compression_invariant_def shunt_bijective by blast
+        using i5 shunt_bijective by blast
       hence "w = p[[w]]"
-        using 1 2 path_compression_invariant_def epm_3 by fastforce
-      hence "w = p\<^sup>T\<^sup>+ * w"
-        using 2 by (metis comp_associative star.circ_top star_simulation_right_equal)
+        using 2 by (metis i5 epm_3 mult_semi_associative)
       thus False
-        using 1 4 6 epm_3 path_compression_invariant_def path_compression_precondition_def by fastforce
+        using 4 i11 by auto
     qed
     hence 8: "w \<sqinter> p\<^sup>T\<^sup>+ * w = bot"
       using p_antitone_iff pseudo_complement schroeder_4_p by blast
@@ -1156,7 +1506,7 @@ proof -
       also have "... = w\<^sup>T * p\<^sup>T\<^sup>+ * w"
         by (simp add: star_plus mult_assoc)
       also have "... = bot"
-        using 1 8 by (metis (no_types, hide_lams) path_compression_invariant_def covector_inf_comp_3 mult_assoc conv_dist_comp conv_star_commute covector_bot_closed equivalence_top_closed inf.le_iff_sup mult_left_isotone)
+        using 8 by (smt i5 covector_inf_comp_3 mult_assoc conv_dist_comp conv_star_commute covector_bot_closed equivalence_top_closed inf.le_iff_sup mult_left_isotone)
       finally have "((w \<sqinter> y\<^sup>T)\<^sup>T \<squnion> (-w \<sqinter> p)\<^sup>T) * (-w \<sqinter> p)\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<le> (-w \<sqinter> p)\<^sup>T * (-w \<sqinter> p)\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
         by (simp add: bot_unique mult_right_dist_sup)
       also have "... \<le> (-w \<sqinter> p)\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
@@ -1172,9 +1522,9 @@ proof -
       also have "... = bot"
         using 8 by (simp add: star_plus)
       finally have 9: "w\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w = bot"
-        using 1 by (metis (no_types, hide_lams) path_compression_invariant_def covector_inf_comp_3 mult_assoc conv_dist_comp covector_bot_closed equivalence_top_closed inf.le_iff_sup mult_left_isotone bot_least inf.absorb1)
+        by (smt i5 covector_inf_comp_3 mult_assoc conv_dist_comp covector_bot_closed equivalence_top_closed inf.le_iff_sup mult_left_isotone bot_least inf.absorb1)
       have "p\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w = ((w \<sqinter> p)\<^sup>T \<squnion> (-w \<sqinter> p)\<^sup>T) * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
-        using 1 by (metis (no_types, lifting) bijective_regular conv_dist_sup inf_commute maddux_3_11_pp path_compression_invariant_def)
+        by (metis i5 bijective_regular conv_dist_sup inf.sup_monoid.add_commute maddux_3_11_pp)
       also have "... = (w \<sqinter> p)\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<squnion> (-w \<sqinter> p)\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
         by (simp add: mult_right_dist_sup)
       also have "... \<le> w\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<squnion> (-w \<sqinter> p)\<^sup>T * ?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
@@ -1191,11 +1541,11 @@ proof -
         using 6 by (simp add: star_simulation_right_equal mult_assoc)
     qed
     have 10: "acyclic (?p \<sqinter> -1)"
-      using 1 update_acyclic_1 path_compression_invariant_def path_compression_precondition_def by auto
+      using i1 i10 i3 i5 inf_le1 update_acyclic_3 by blast
     have "?p[[p\<^sup>T\<^sup>+ * w]] \<le> p\<^sup>T\<^sup>+ * w"
     proof -
       have "(w\<^sup>T \<sqinter> y) * p\<^sup>T\<^sup>+ * w = y \<sqinter> w\<^sup>T * p\<^sup>T\<^sup>+ * w"
-        using 1 by (metis (no_types, hide_lams) path_compression_invariant_def path_compression_precondition_def inf_commute vector_inf_comp)
+        by (metis i3 inf_vector_comp vector_inf_comp)
       hence "?p[[p\<^sup>T\<^sup>+ * w]] = (y \<sqinter> w\<^sup>T * p\<^sup>T\<^sup>+ * w) \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * p\<^sup>T\<^sup>+ * w"
         by (simp add: comp_associative conv_complement conv_dist_inf conv_dist_sup mult_right_dist_sup)
       also have "... \<le> y \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * p\<^sup>T\<^sup>+ * w"
@@ -1219,13 +1569,13 @@ proof -
       hence "?p[[x]] = (w\<^sup>T \<sqinter> y) * w \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * w"
         by (simp add: conv_complement conv_dist_inf conv_dist_sup mult_right_dist_sup)
       also have "... = (w\<^sup>T \<sqinter> y) * w \<squnion> p\<^sup>T * (-w \<sqinter> w)"
-        using 1 by (metis (no_types, lifting) conv_complement inf.sup_monoid.add_commute path_compression_invariant_def covector_inf_comp_3 vector_complement_closed)
+        by (metis i5 conv_complement covector_inf_comp_3 inf.sup_monoid.add_commute vector_complement_closed)
       also have "... = (w\<^sup>T \<sqinter> y) * w"
         by simp
       also have "... = y * w"
-        using 1 inf.sup_monoid.add_commute path_compression_invariant_def covector_inf_comp_3 by simp
+        by (simp add: i5 covector_inf_comp_3 inf.sup_monoid.add_commute)
       also have "... = y"
-        using 1 by (metis comp_associative path_compression_precondition_def path_compression_invariant_def)
+        by (metis i3 i5 comp_associative)
       finally show ?thesis
         using 4 8 12 True pseudo_complement inf.sup_monoid.add_commute order.trans by blast
     next
@@ -1233,13 +1583,13 @@ proof -
       have "?p[[x]] = (w\<^sup>T \<sqinter> y) * x \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * x"
         by (simp add: conv_complement conv_dist_inf conv_dist_sup mult_right_dist_sup)
       also have "... = y * (w \<sqinter> x) \<squnion> p\<^sup>T * (-w \<sqinter> x)"
-        using 1 by (metis (no_types, lifting) conv_complement inf.sup_monoid.add_commute path_compression_invariant_def covector_inf_comp_3 vector_complement_closed)
+        by (metis i5 conv_complement covector_inf_comp_3 inf_commute vector_complement_closed)
       also have "... = p\<^sup>T * (-w \<sqinter> x)"
-        using 1 False path_compression_invariant_def path_compression_precondition_def distinct_points by auto
+        using i2 i5 False distinct_points by auto
       also have "... = y"
-        using 1 False path_compression_invariant_def path_compression_precondition_def distinct_points inf.absorb2 pseudo_complement by auto
+        using i2 i5 i7 False distinct_points inf.absorb2 pseudo_complement by auto
       finally show ?thesis
-        using 1 12 False path_compression_invariant_def by auto
+        using 12 False i7 dual_order.trans by blast
     qed
     thus "p[[w]] \<noteq> x \<longrightarrow> ?p[[x]] = y \<and> y \<noteq> x \<and> ?p\<^sup>T\<^sup>+ * (p[[w]]) \<le> -x"
       by simp
@@ -1252,11 +1602,11 @@ proof -
       also have "... \<le> y \<squnion> (w\<^sup>T \<sqinter> y) * y \<squnion> p\<^sup>T * y"
         using mult_left_isotone sup_right_isotone by auto
       also have "... = y \<squnion> (w\<^sup>T \<sqinter> y) * y"
-        using 1 by (smt sup.cobounded1 sup_absorb1 path_compression_invariant_def path_compression_precondition_def root_successor_loop)
+        using i1 i10 root_successor_loop sup_commute by auto
       also have "... \<le> y \<squnion> y * y"
         using mult_left_isotone sup_right_isotone by auto
       also have "... = y"
-        using 1 by (metis mult_semi_associative sup_absorb1 path_compression_invariant_def path_compression_precondition_def)
+        by (metis i3 comp_associative sup.idem)
       also have "... \<le> x \<squnion> y"
         by simp
       finally show "?p\<^sup>T\<^sup>\<star> * x \<le> x \<squnion> y"
@@ -1268,13 +1618,13 @@ proof -
     have 15: "y = root ?p x"
     proof -
       have "(p \<sqinter> 1) * y = (p \<sqinter> 1) * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> * x"
-        using 1 path_compression_invariant_def path_compression_precondition_def root_var mult_assoc by auto
+        by (simp add: i4 comp_associative root_var)
       also have "... = (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> * x"
         using coreflexive_idempotent by auto
       finally have 16: "(p \<sqinter> 1) * y = y"
-        using 1 path_compression_invariant_def path_compression_precondition_def root_var by auto
+        by (simp add: i4 root_var)
       have 17: "(p \<sqinter> 1) * x \<le> y"
-        using 1 by (metis (no_types, lifting) comp_right_one mult_left_isotone mult_right_isotone star.circ_reflexive path_compression_invariant_def path_compression_precondition_def root_var)
+        by (metis (no_types, lifting) i4 comp_right_one mult_left_isotone mult_right_isotone star.circ_reflexive root_var)
       have "root ?p x = (?p \<sqinter> 1) * (x \<squnion> y)"
         using 14 by (metis mult_assoc root_var)
       also have "... = (w \<sqinter> y\<^sup>T \<sqinter> 1) * (x \<squnion> y) \<squnion> (-w \<sqinter> p \<sqinter> 1) * (x \<squnion> y)"
@@ -1282,22 +1632,22 @@ proof -
       also have "... = (w \<sqinter> 1 \<sqinter> y\<^sup>T) * (x \<squnion> y) \<squnion> (-w \<sqinter> p \<sqinter> 1) * (x \<squnion> y)"
         by (simp add: inf.left_commute inf.sup_monoid.add_commute)
       also have "... = (w \<sqinter> 1) * (y \<sqinter> (x \<squnion> y)) \<squnion> (-w \<sqinter> p \<sqinter> 1) * (x \<squnion> y)"
-        using 1 by (metis (no_types, lifting) path_compression_invariant_def path_compression_precondition_def covector_inf_comp_3)
+        by (simp add: i3 covector_inf_comp_3)
       also have "... = (w \<sqinter> 1) * y \<squnion> (-w \<sqinter> p \<sqinter> 1) * (x \<squnion> y)"
         by (simp add: inf.absorb1)
       also have "... = (w \<sqinter> 1 * y) \<squnion> (-w \<sqinter> (p \<sqinter> 1) * (x \<squnion> y))"
-        using 1 by (metis (no_types, lifting) inf_assoc vector_complement_closed path_compression_invariant_def vector_inf_comp)
+        by (simp add: i5 inf_assoc vector_complement_closed vector_inf_comp)
       also have "... = (w \<sqinter> y) \<squnion> (-w \<sqinter> ((p \<sqinter> 1) * x \<squnion> y))"
         using 16 by (simp add: mult_left_dist_sup)
       also have "... = (w \<sqinter> y) \<squnion> (-w \<sqinter> y)"
         using 17 by (simp add: sup.absorb2)
       also have "... = y"
-        using 1 by (metis id_apply bijective_regular comp_inf.mult_right_dist_sup comp_inf.vector_conv_covector inf_top.right_neutral regular_complement_top path_compression_invariant_def)
+        using 5 inf.sup_monoid.add_commute le_iff_inf pseudo_complement sup_monoid.add_0_left by fastforce
       finally show ?thesis
         by simp
     qed
     show "path_compression_precondition ?p x y"
-      using 1 3 10 15 path_compression_invariant_def path_compression_precondition_def by auto
+      using 3 10 15 i2 i3 path_compression_precondition_def by blast
     show "vector (p[[w]])"
       using 2 by simp
     show "injective (p[[w]])"
@@ -1307,7 +1657,7 @@ proof -
     have "w \<sqinter> p \<sqinter> 1 \<le> w \<sqinter> w\<^sup>T \<sqinter> p"
       by (metis inf.boundedE inf.boundedI inf.cobounded1 inf.cobounded2 one_inf_conv)
     also have "... = w * w\<^sup>T \<sqinter> p"
-      using 1 vector_covector path_compression_invariant_def by auto
+      by (simp add: i5 vector_covector)
     also have "... \<le> -p\<^sup>T\<^sup>+ \<sqinter> p"
       using 7 by (simp add: inf.coboundedI2 inf.sup_monoid.add_commute)
     finally have "w \<sqinter> p \<sqinter> 1 = bot"
@@ -1316,84 +1666,194 @@ proof -
       using 5 antisymmetric_bot_closed asymmetric_bot_closed comp_inf.schroeder_2 inf.absorb1 one_inf_conv by fastforce
     finally have "w \<sqinter> p \<sqinter> 1 = w \<sqinter> y\<^sup>T \<sqinter> 1"
       by simp
-    thus "?p \<sqinter> 1 = p0 \<sqinter> 1"
-      using 1 by (metis bijective_regular comp_inf.semiring.distrib_left inf.sup_monoid.add_commute maddux_3_11_pp path_compression_invariant_def)
-    show "fc ?p = fc p0"
+    thus 18: "?p \<sqinter> 1 = p0 \<sqinter> 1"
+      by (metis i5 i8 bijective_regular inf.sup_monoid.add_commute inf_sup_distrib2 maddux_3_11_pp)
+    show 19: "fc ?p = fc p0"
     proof -
       have "p[[w]] = p\<^sup>T * (w \<sqinter> p\<^sup>\<star> * y)"
-        using 1 by (metis (no_types, lifting) bijective_reverse conv_star_commute inf.absorb1 path_compression_invariant_def path_compression_precondition_def)
+        by (metis i3 i5 i6 bijective_reverse conv_star_commute inf.absorb1)
       also have "... = p\<^sup>T * (w \<sqinter> p\<^sup>\<star>) * y"
-        using 1 vector_inf_comp path_compression_invariant_def mult_assoc by auto
+        by (simp add: i5 vector_inf_comp mult_assoc)
       also have "... = p\<^sup>T * ((w \<sqinter> 1) \<squnion> (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star>) * y"
-        using 1 omit_redundant_points path_compression_invariant_def by auto
+        by (simp add: i5 omit_redundant_points)
       also have "... = p\<^sup>T * (w \<sqinter> 1) * y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
         by (simp add: comp_associative mult_left_dist_sup mult_right_dist_sup)
       also have "... \<le> p\<^sup>T * y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
         by (metis semiring.add_right_mono comp_isotone eq_iff inf.cobounded1 inf.sup_monoid.add_commute mult_1_right)
       also have "... = y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 1 path_compression_invariant_def path_compression_precondition_def root_successor_loop by fastforce
+        using i1 i4 root_successor_loop by auto
       also have "... \<le> y \<squnion> p\<^sup>T * p * (-w \<sqinter> p)\<^sup>\<star> * y"
         using comp_isotone sup_right_isotone by auto
       also have "... \<le> y \<squnion> (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 1 by (metis (no_types, lifting) mult_left_isotone star.circ_circ_mult star_involutive star_one sup_right_isotone path_compression_invariant_def path_compression_precondition_def)
+        by (metis i1 comp_associative eq_refl shunt_mapping sup_right_isotone)
       also have "... = (-w \<sqinter> p)\<^sup>\<star> * y"
         by (metis star.circ_loop_fixpoint sup.left_idem sup_commute)
-      finally have 18: "p[[w]] \<le> (-w \<sqinter> p)\<^sup>\<star> * y"
+      finally have 20: "p[[w]] \<le> (-w \<sqinter> p)\<^sup>\<star> * y"
         by simp
       have "p\<^sup>T * (-w \<sqinter> p)\<^sup>\<star> * y = p\<^sup>T * y \<squnion> p\<^sup>T * (-w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
         by (metis comp_associative mult_left_dist_sup star.circ_loop_fixpoint sup_commute)
       also have "... = y \<squnion> p\<^sup>T * (-w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 1 path_compression_invariant_def path_compression_precondition_def root_successor_loop by fastforce
+        using i1 i4 root_successor_loop by auto
       also have "... \<le> y \<squnion> p\<^sup>T * p * (-w \<sqinter> p)\<^sup>\<star> * y"
         using comp_isotone sup_right_isotone by auto
       also have "... \<le> y \<squnion> (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 1 by (metis (no_types, lifting) mult_left_isotone star.circ_circ_mult star_involutive star_one sup_right_isotone path_compression_invariant_def path_compression_precondition_def)
+        by (metis i1 comp_associative eq_refl shunt_mapping sup_right_isotone)
       also have "... = (-w \<sqinter> p)\<^sup>\<star> * y"
         by (metis star.circ_loop_fixpoint sup.left_idem sup_commute)
-      finally have 19: "p\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<le> (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 18 by (simp add: comp_associative star_left_induct)
+      finally have 21: "p\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<le> (-w \<sqinter> p)\<^sup>\<star> * y"
+        using 20 by (simp add: comp_associative star_left_induct)
       have "w\<^sup>T \<sqinter> p\<^sup>T = p\<^sup>T * (w\<^sup>T \<sqinter> 1)"
-        using 1 by (metis conv_dist_comp conv_dist_inf equivalence_one_closed vector_inf_one_comp path_compression_invariant_def)
+        by (metis i5 comp_right_one covector_inf_comp_3 inf.sup_monoid.add_commute one_inf_conv)
       also have "... \<le> p[[w]]"
         by (metis comp_right_subdist_inf inf.boundedE inf.sup_monoid.add_commute one_inf_conv)
       also have "... \<le> p\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
         by (simp add: mult_left_isotone star.circ_mult_increasing_2)
       also have "... \<le> (-w \<sqinter> p)\<^sup>\<star> * y"
-        using 19 by simp
+        using 21 by simp
       finally have "w \<sqinter> p \<le> y\<^sup>T * (-w \<sqinter> p)\<^sup>T\<^sup>\<star>"
         by (metis conv_dist_comp conv_dist_inf conv_involutive conv_isotone conv_star_commute)
       hence "w \<sqinter> p \<le> (w \<sqinter> y\<^sup>T) * (-w \<sqinter> p)\<^sup>T\<^sup>\<star>"
-        using 1 by (metis inf.absorb1 inf.left_commute inf.left_idem inf.orderI vector_inf_comp path_compression_invariant_def)
+        by (simp add: i5 vector_inf_comp)
       also have "... \<le> (w \<sqinter> y\<^sup>T) * ?p\<^sup>T\<^sup>\<star>"
         by (simp add: conv_isotone mult_right_isotone star_isotone)
       also have "... \<le> ?p * ?p\<^sup>T\<^sup>\<star>"
         by (simp add: mult_left_isotone)
       also have "... \<le> fc ?p"
         by (simp add: mult_left_isotone star.circ_increasing)
-      finally have 20: "w \<sqinter> p \<le> fc ?p"
+      finally have 22: "w \<sqinter> p \<le> fc ?p"
         by simp
       have "-w \<sqinter> p \<le> ?p"
         by simp
       also have "... \<le> fc ?p"
         by (simp add: fc_increasing)
       finally have "(w \<squnion> -w) \<sqinter> p \<le> fc ?p"
-        using 20 by (simp add: comp_inf.semiring.distrib_left inf.sup_monoid.add_commute)
+        using 22 by (simp add: comp_inf.semiring.distrib_left inf.sup_monoid.add_commute)
       hence "p \<le> fc ?p"
-        using 1 by (metis (no_types, hide_lams) bijective_regular comp_inf.semiring.distrib_left inf.sup_monoid.add_commute maddux_3_11_pp path_compression_invariant_def)
-      hence 21: "fc p \<le> fc ?p"
+        by (metis i5 bijective_regular inf.sup_monoid.add_commute inf_sup_distrib1 maddux_3_11_pp)
+      hence 23: "fc p \<le> fc ?p"
         using 3 fc_idempotent fc_isotone by fastforce
       have "?p \<le> (w \<sqinter> y\<^sup>T) \<squnion> p"
         using sup_right_isotone by auto
       also have "... = w * y\<^sup>T \<squnion> p"
-        using 1 path_compression_invariant_def path_compression_precondition_def vector_covector by auto
+        by (simp add: i3 i5 vector_covector)
       also have "... \<le> p\<^sup>\<star> \<squnion> p"
-        using 1 by (metis (no_types, lifting) conv_dist_comp conv_involutive conv_isotone conv_star_commute le_supI shunt_bijective star.circ_increasing sup_absorb1 path_compression_invariant_def)
+        by (smt i5 i6 conv_dist_comp conv_involutive conv_isotone conv_star_commute le_supI shunt_bijective star.circ_increasing sup_absorb1)
       also have "... \<le> fc p"
         using fc_increasing star.circ_back_loop_prefixpoint by auto
       finally have "fc ?p \<le> fc p"
-        using 1 by (metis (no_types, lifting) path_compression_invariant_def path_compression_precondition_def fc_idempotent fc_isotone)
+        using i1 fc_idempotent fc_isotone by fastforce
       thus ?thesis
-        using 1 21 path_compression_invariant_def by simp
+        using 23 i9 by auto
+    qed
+    show "?p[[p[[w]]]] = p0[[p[[w]]]]"
+    proof -
+      have "?p[[p[[w]]]] = p[[p[[w]]]]"
+        using 2 4 i5 i11 by (simp add: put_get_different)
+      also have "... = p[[p0[[w]]]]"
+        by (simp add: i12)
+      also have "... = (p0[p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)\<longmapsto>y])[[p0[[w]]]]"
+        using i13 by auto
+      also have "... = p0[[p0[[w]]]]"
+      proof -
+        have "p0[[w]] \<le> -(p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w))"
+          by (meson inf.coboundedI2 mult_left_isotone p_antitone p_antitone_iff star.circ_increasing)
+        thus ?thesis
+          by (meson i2 i5 put_get_different_vector vector_complement_closed vector_inf_closed vector_mult_closed)
+      qed
+      also have "... = p0[[p[[w]]]]"
+        by (simp add: i12)
+      finally show ?thesis
+        .
+    qed
+    have 24: "root ?p (p[[w]]) = root p0 (p[[w]])"
+      using 3 18 19 i14 same_root by blast
+    also have "... = root p0 (p0[[w]])"
+      by (simp add: i12)
+    also have 25: "... = root p0 w"
+      by (metis i5 i14 conv_involutive forest_components_increasing mult_left_isotone shunt_bijective injective_mult_closed read_surjective same_component_same_root)
+    finally show 26: "root ?p (p[[w]]) = y"
+      by (metis i1 i10 i14 i8 i9 same_root)
+    show "p[[w]] \<noteq> y \<longrightarrow> ?p[[p[[w]]]] \<noteq> p[[w]] \<and> ?p\<^sup>T\<^sup>+ * (p[[w]]) \<le> -(p[[w]])"
+    proof
+      assume 27: "p[[w]] \<noteq> y"
+      show "?p[[p[[w]]]] \<noteq> p[[w]] \<and> ?p\<^sup>T\<^sup>+ * (p[[w]]) \<le> -(p[[w]])"
+      proof
+        show "?p[[p[[w]]]] \<noteq> p[[w]]"
+          using 2 26 27 loop_root by auto
+        show "?p\<^sup>T\<^sup>+ * (p[[w]]) \<le> -(p[[w]])"
+          using 2 3 10 26 27 by (simp add: path_compression_1a)
+      qed
+    qed
+    show "univalent p0" "total p0" "acyclic (p0 \<sqinter> -1)"
+      by (simp_all add: i14)
+    show "y = root p0 x"
+      by (simp add: i15)
+    show "p[[w]] \<le> p0\<^sup>T\<^sup>\<star> * x"
+      by (metis i12 i16 mult_isotone star.circ_increasing star.circ_transitive_equal mult_assoc)
+    let ?q = "p0[p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * (p[[w]]))\<longmapsto>y]"
+    show "?q = ?p"
+    proof -
+      have 28: "w \<squnion> p0\<^sup>T\<^sup>+ * w = p0\<^sup>T\<^sup>\<star> * w"
+        using comp_associative star.circ_loop_fixpoint sup_commute by auto
+      hence 29: "p0\<^sup>T\<^sup>+ * w = p0\<^sup>T\<^sup>\<star> * w \<sqinter> -w"
+        using 4 24 25 26 by (metis i12 i14 i5 inf.orderE maddux_3_13 path_compression_1a)
+      hence "p0\<^sup>T\<^sup>\<star> * (p[[w]]) \<le> -w"
+        by (metis i12 inf_le2 star_plus mult.assoc)
+      hence "w \<le> -(p0\<^sup>T\<^sup>\<star> * (p[[w]]))"
+        by (simp add: p_antitone_iff)
+      hence "w \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * (p[[w]]))"
+        by (simp add: i16)
+      hence 30: "?q \<sqinter> w = ?p \<sqinter> w"
+        by (metis update_inf update_inf_same)
+      have 31: "?q \<sqinter> p0\<^sup>T\<^sup>+ * w = ?p \<sqinter> p0\<^sup>T\<^sup>+ * w"
+      proof -
+        have "?q \<sqinter> p0\<^sup>T\<^sup>+ * w = p0 \<sqinter> p0\<^sup>T\<^sup>+ * w"
+          by (metis i12 comp_associative inf.cobounded2 p_antitone_iff star.circ_plus_same update_inf_different)
+        also have "... = p \<sqinter> p0\<^sup>T\<^sup>+ * w"
+          using 29 by (metis i13 inf.cobounded2 inf.sup_monoid.add_assoc p_antitone_iff update_inf_different)
+        also have "... = ?p \<sqinter> p0\<^sup>T\<^sup>+ * w"
+          using 29 by (simp add: update_inf_different)
+        finally show ?thesis
+          .
+      qed
+      have 32: "?q \<sqinter> p0\<^sup>T\<^sup>\<star> * w = ?p \<sqinter> p0\<^sup>T\<^sup>\<star> * w"
+        using 28 30 31 by (metis inf_sup_distrib1)
+      have 33: "?q \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)) = ?p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w))"
+      proof -
+        have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w) \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * (p[[w]]))"
+          using 29 by (metis i12 inf.sup_right_isotone mult.semigroup_axioms p_antitone_inf star_plus semigroup.assoc)
+        hence "?q \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)) = y\<^sup>T \<sqinter> p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)"
+          by (metis inf_assoc update_inf)
+        also have "... = p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w))"
+          by (metis i13 inf_assoc update_inf_same)
+        also have "... = ?p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w))"
+          by (simp add: inf.coboundedI2 p_antitone path_compression_1b inf_assoc update_inf_different)
+        finally show ?thesis
+          .
+      qed
+      have "p0\<^sup>T\<^sup>\<star> * w \<squnion> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)) = p0\<^sup>T\<^sup>\<star> * x"
+      proof -
+        have 34: "regular (p0\<^sup>T\<^sup>\<star> * w)"
+          using i14 i5 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
+        have "p0\<^sup>T\<^sup>\<star> * w \<le> p0\<^sup>T\<^sup>\<star> * x"
+          by (metis i16 comp_associative mult_right_isotone star.circ_transitive_equal)
+        hence "p0\<^sup>T\<^sup>\<star> * w \<squnion> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)) = p0\<^sup>T\<^sup>\<star> * x \<sqinter> (p0\<^sup>T\<^sup>\<star> * w \<squnion> -(p0\<^sup>T\<^sup>\<star> * w))"
+          by (simp add: comp_inf.semiring.distrib_left inf.absorb2)
+        also have "... = p0\<^sup>T\<^sup>\<star> * x"
+          using 34 by (metis inf_sup_distrib1 maddux_3_11_pp)
+        finally show ?thesis
+          .
+      qed
+      hence 35: "?q \<sqinter> p0\<^sup>T\<^sup>\<star> * x = ?p \<sqinter> p0\<^sup>T\<^sup>\<star> * x"
+        using 32 33 by (metis inf_sup_distrib1)
+      have 36: "regular (p0\<^sup>T\<^sup>\<star> * x)"
+        using i14 i2 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
+      have "-(p0\<^sup>T\<^sup>\<star> * x) \<le> -w"
+        by (simp add: i16 p_antitone)
+      hence "?q \<sqinter> -(p0\<^sup>T\<^sup>\<star> * x) = ?p \<sqinter> -(p0\<^sup>T\<^sup>\<star> * x)"
+        by (metis i13 p_antitone_inf update_inf_different)
+      thus ?thesis
+        using 35 36 by (metis maddux_3_11_pp)
     qed
     show "card ?t < card ?s"
     proof -
@@ -1408,29 +1868,29 @@ proof -
       also have "... \<le> y * top \<squnion> p\<^sup>T\<^sup>\<star> * w"
         by (simp add: comp_associative le_supI1 mult_right_isotone)
       also have "... = p\<^sup>T\<^sup>\<star> * w"
-        using 1 path_compression_invariant_def path_compression_precondition_def sup_absorb2 by auto
+        by (simp add: i3 i6 sup_absorb2)
       finally have "?p\<^sup>T\<^sup>\<star> * p\<^sup>T * w \<le> p\<^sup>T\<^sup>\<star> * w"
         using 11 by (metis dual_order.trans star.circ_loop_fixpoint sup_commute sup_ge2 mult_assoc)
-      hence 22: "?t \<subseteq> ?s"
+      hence 37: "?t \<subseteq> ?s"
         using order_lesseq_imp mult_assoc by auto
-      have 23: "w \<in> ?s"
-        using 1 bijective_regular path_compression_invariant_def eq_iff star.circ_loop_fixpoint by auto
-      have 24: "\<not> w \<in> ?t"
+      have 38: "w \<in> ?s"
+        by (simp add: i5 bijective_regular path_compression_1b)
+      have 39: "\<not> w \<in> ?t"
       proof
         assume "w \<in> ?t"
-        hence 25: "w \<le> (?p\<^sup>T \<sqinter> -1)\<^sup>\<star> * (p[[w]])"
+        hence 40: "w \<le> (?p\<^sup>T \<sqinter> -1)\<^sup>\<star> * (p[[w]])"
           using reachable_without_loops by auto
         hence "p[[w]] \<le> (?p \<sqinter> -1)\<^sup>\<star> * w"
-          using 1 2 by (metis (no_types, hide_lams) bijective_reverse conv_star_commute reachable_without_loops path_compression_invariant_def)
+          using 2 by (smt i5 bijective_reverse conv_star_commute reachable_without_loops)
         also have "... \<le> p\<^sup>\<star> * w"
         proof -
           have "p\<^sup>T\<^sup>\<star> * y = y"
-            using 1 path_compression_invariant_def path_compression_precondition_def root_transitive_successor_loop by fastforce
+            using i1 i4 root_transitive_successor_loop by auto
           hence "y\<^sup>T * p\<^sup>\<star> * w = y\<^sup>T * w"
             by (metis conv_dist_comp conv_involutive conv_star_commute)
           also have "... = bot"
-            using 1 5 by (metis (no_types, hide_lams) conv_dist_comp conv_dist_inf equivalence_top_closed inf_top.right_neutral schroeder_2 symmetric_bot_closed path_compression_invariant_def)
-          finally have 26: "y\<^sup>T * p\<^sup>\<star> * w = bot"
+            using 5 by (metis i5 inf.idem inf.sup_monoid.add_commute mult_left_zero schroeder_1 vector_inf_comp)
+          finally have 41: "y\<^sup>T * p\<^sup>\<star> * w = bot"
             by simp
           have "(?p \<sqinter> -1) * p\<^sup>\<star> * w = (w \<sqinter> y\<^sup>T \<sqinter> -1) * p\<^sup>\<star> * w \<squnion> (-w \<sqinter> p \<sqinter> -1) * p\<^sup>\<star> * w"
             by (simp add: comp_inf.mult_right_dist_sup mult_right_dist_sup)
@@ -1441,27 +1901,68 @@ proof -
           also have "... \<le> y\<^sup>T * p\<^sup>\<star> * w \<squnion> p\<^sup>\<star> * w"
             by (meson inf_le1 inf_le2 mult_left_isotone order_trans sup_left_isotone)
           also have "... = p\<^sup>\<star> * w"
-            using 26 by simp
+            using 41 by simp
           finally show ?thesis
             by (metis comp_associative le_supI star.circ_loop_fixpoint sup_ge2 star_left_induct)
         qed
         finally have "w \<le> p\<^sup>T\<^sup>\<star> * p\<^sup>T * w"
-          using 11 25 reachable_without_loops star_plus by auto
+          using 11 40 reachable_without_loops star_plus by auto
         thus False
-          using 1 7 by (metis inf.le_iff_sup le_bot pseudo_complement schroeder_4_p semiring.mult_zero_right star.circ_plus_same path_compression_invariant_def)
+          using 4 i1 i10 i5 loop_root_2 star.circ_plus_same by auto
       qed
       show "card ?t < card ?s"
         apply (rule psubset_card_mono)
         subgoal using finite_regular by simp
-        subgoal using 22 23 24 by auto
+        subgoal using 37 38 39 by auto
         done
     qed
   qed
 qed
 
+lemma path_compression_3a:
+  assumes "path_compression_invariant p x (p[[w]]) p0 w"
+  shows "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>p[[w]]] = p"
+proof -
+  let ?y = "p[[w]]"
+  let ?p = "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>?y]"
+  have i1: "disjoint_set_forest p" and i2: "point x" and i3: "point ?y" and i4: "?y = root p x"
+    using assms path_compression_invariant_def path_compression_precondition_def by meson+
+  have i5: "point w" and i6: "?y \<le> p\<^sup>T\<^sup>\<star> * w"
+    and i7: "w \<noteq> x \<longrightarrow> p[[x]] = ?y \<and> ?y \<noteq> x \<and> p\<^sup>T\<^sup>+ * w \<le> -x" and i8: "p \<sqinter> 1 = p0 \<sqinter> 1" and i9: "fc p = fc p0"
+    and i10: "root p w = ?y" and i11: "w \<noteq> ?y \<longrightarrow> p[[w]] \<noteq> w" and i12: "p[[w]] = p0[[w]]" and i13: "p0[p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)\<longmapsto>?y] = p"
+    and i14: "disjoint_set_forest p0" and i15: "?y = root p0 x" and i16: "w \<le> p0\<^sup>T\<^sup>\<star> * x"
+    using assms path_compression_invariant_def by blast+
+  have 1: "?p \<sqinter> ?y = p \<sqinter> ?y"
+    by (metis i1 i15 i3 i4 get_put inf_le1 root_successor_loop update_inf update_inf_same)
+  have 2: "?p \<sqinter> w = p \<sqinter> w"
+    by (metis i5 i12 i16 get_put update_inf update_inf_same)
+  have "?y = root p0 w"
+    by (metis i1 i10 i14 i8 i9 same_root)
+  hence "p0\<^sup>T\<^sup>\<star> * w = w \<squnion> ?y"
+    by (metis i12 i14 root_transitive_successor_loop star.circ_loop_fixpoint star_plus sup_monoid.add_commute mult_assoc)
+  hence 3: "?p \<sqinter> p0\<^sup>T\<^sup>\<star> * w = p \<sqinter> p0\<^sup>T\<^sup>\<star> * w"
+    using 1 2 by (simp add: inf_sup_distrib1)
+  have "p0\<^sup>T\<^sup>\<star> * w \<le> p0\<^sup>T\<^sup>\<star> * x"
+    by (metis i16 comp_associative mult_right_isotone star.circ_transitive_equal)
+  hence 4: "?p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0\<^sup>T\<^sup>\<star> * w) = p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0\<^sup>T\<^sup>\<star> * w)"
+    using 3 by (simp add: inf.absorb2)
+  have 5: "?p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w)) = p \<sqinter> (p0\<^sup>T\<^sup>\<star> * x \<sqinter> -(p0\<^sup>T\<^sup>\<star> * w))"
+    by (metis i13 inf_le1 update_inf update_inf_same)
+  have "regular (p0\<^sup>T\<^sup>\<star> * w)"
+    using i14 i5 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
+  hence 6: "?p \<sqinter> p0\<^sup>T\<^sup>\<star> * x = p \<sqinter> p0\<^sup>T\<^sup>\<star> * x"
+    using 4 5 by (smt inf_sup_distrib1 maddux_3_11_pp)
+  have 7: "?p \<sqinter> -(p0\<^sup>T\<^sup>\<star> * x) = p \<sqinter> -(p0\<^sup>T\<^sup>\<star> * x)"
+    by (smt i13 inf.sup_monoid.add_commute inf_import_p inf_sup_absorb le_iff_inf p_dist_inf update_inf_different inf.idem p_antitone_inf)
+  have "regular (p0\<^sup>T\<^sup>\<star> * x)"
+    using i14 i2 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
+  thus "?p = p"
+    using 6 7 by (smt inf_sup_distrib1 maddux_3_11_pp)
+qed
+
 lemma path_compression_3:
   "path_compression_invariant p x (p[[w]]) p0 w \<Longrightarrow> path_compression_postcondition p x (p[[w]]) p0"
-  using path_compression_invariant_def path_compression_postcondition_def path_compression_precondition_def by auto
+  using path_compression_invariant_def path_compression_postcondition_def path_compression_precondition_def path_compression_3a by blast
 
 theorem path_compression:
   "VARS p t w
@@ -1563,7 +2064,7 @@ theorem find_set_path_compression_3:
   apply vcg_tc_simp
       apply (simp add: find_set_1)
      apply (fact find_set_2)
-    using find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_invariant_def path_compression_precondition_def apply blast
+    using find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_1 path_compression_precondition_def apply blast
    apply (fact path_compression_2)
   by (fact path_compression_3)
 
@@ -1610,8 +2111,7 @@ proof -
 qed
 
 text \<open>
-Proving equality of \<open>path_compression p x (find_set p x)\<close> and \<open>fst (find_set_path_compression p x)\<close> would need a stronger postcondition of path compression describing the precise effect of how links change.
-However we can prove that the two forests have the same semantics; that is, they describe the same disjoint sets and have the same roots.
+A weaker postcondition suffices to prove that the two forests have the same semantics; that is, they describe the same disjoint sets and have the same roots.
 \<close>
 
 lemma find_set_path_compression_path_compression_semantics:
@@ -1630,6 +2130,28 @@ proof -
   show "fc ?q = fc ?p"
     using 1 2 by (simp add: path_compression_postcondition_def)
   show "?q \<sqinter> 1 = ?p \<sqinter> 1"
+    using 1 2 by (simp add: path_compression_postcondition_def)
+qed
+
+text \<open>
+With the current, stronger postcondition of path compression describing the precise effect of how links change, we can prove that the two forests are actually equal.
+\<close>
+
+lemma find_set_path_compression_find_set_pathcompression:
+  assumes "find_set_precondition p x"
+  shows "path_compression p x (find_set p x) = fst (find_set_path_compression p x)"
+proof -
+  let ?r = "find_set p x"
+  let ?q = "path_compression p x ?r"
+  let ?p = "fst (find_set_path_compression p x)"
+  let ?y = "snd (find_set_path_compression p x)"
+  have 1: "path_compression_postcondition (path_compression p x ?r) x ?r p"
+    using assms find_set_function find_set_postcondition_def find_set_precondition_def path_compression_function path_compression_precondition_def by auto
+  have 2: "path_compression_postcondition ?p x ?y p"
+    using assms find_set_path_compression_function prod.collapse by blast
+  have "?r = ?y"
+    by (simp add: assms find_set_path_compression_find_set)
+  thus "?q = ?p"
     using 1 2 by (simp add: path_compression_postcondition_def)
 qed
 
@@ -1667,7 +2189,7 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
   proof (cases "r = s")
     case True
     thus ?thesis
-      using 2 update_acyclic_3 by fastforce
+      using 2 update_acyclic_5 by fastforce
   next
     case False
     hence "bot = r \<sqinter> s"
@@ -1677,7 +2199,7 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
     finally have "s \<sqinter> p2\<^sup>\<star> * r = bot"
       using schroeder_1 conv_star_commute inf.sup_monoid.add_commute by fastforce
     thus ?thesis
-      using 1 2 update_acyclic_2 by blast
+      using 1 2 update_acyclic_4 by blast
   qed
   show "vector x"
     using assms(1) by (simp add: union_sets_precondition_def)
