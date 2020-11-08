@@ -164,19 +164,19 @@ fun exec :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> 'a heap"
 "exec (Insert x) [h] = Pairing_Heap_List2.insert x h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a hp list \<Rightarrow> nat" where
-  "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [] = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [_] = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (_ # _ # hs) = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs"
+fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a hp list \<Rightarrow> nat" where
+  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [] = 1"
+| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [_] = 1"
+| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (_ # _ # hs) = 1 + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs"
 
-fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a hp list \<Rightarrow> nat" where
- "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 [] = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (_ # hs) = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 hs"
+fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a hp list \<Rightarrow> nat" where
+"T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 [] = 1" |
+"T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (_ # hs) = 1 + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 hs"
 
 fun cost :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Del_min [None] = 1" |
-"cost Del_min [Some(Hp x hs)] = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
+"cost Del_min [Some(Hp x hs)] = 1 + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
 "cost (Insert a) _ = 1" |
 "cost Merge _ = 1"
 
@@ -207,7 +207,7 @@ next
         show ?thesis
         proof (cases h)
         case [simp]: (Hp x hs)
-        have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs \<le> 2 + length hs"
+        have "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs \<le> 2 + length hs"
           by (induct hs rule: pass\<^sub>1.induct) simp_all
         hence  "cost f ss \<le> 1 + \<dots>" by simp
         moreover have  "\<Phi> (del_min ho) - \<Phi> ho \<le> 3*log 2 (size_heap ho + 1) - length hs + 2"

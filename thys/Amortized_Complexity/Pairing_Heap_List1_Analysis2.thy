@@ -17,8 +17,8 @@ abbreviation "insert' == Pairing_Heap_List1.insert"
 abbreviation "merge' == Pairing_Heap_List1.merge"
 abbreviation "pass\<^sub>1' == Pairing_Heap_List1.pass\<^sub>1"
 abbreviation "pass\<^sub>2' == Pairing_Heap_List1.pass\<^sub>2"
-abbreviation "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' == Pairing_Heap_List1_Analysis.t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1"
-abbreviation "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2' == Pairing_Heap_List1_Analysis.t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2"
+abbreviation "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' == Pairing_Heap_List1_Analysis.T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1"
+abbreviation "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2' == Pairing_Heap_List1_Analysis.T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2"
 
 fun homs :: "'a heap list \<Rightarrow> 'a tree" where
 "homs [] = Leaf" |
@@ -65,7 +65,7 @@ apply(cases h2)
  apply(auto)
 done
 
-lemma t_pass1': "no_Emptys hs \<Longrightarrow> t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' hs = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1(homs hs)"
+lemma T_pass1': "no_Emptys hs \<Longrightarrow> T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' hs = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1(homs hs)"
 apply(induction hs rule: Pairing_Heap_List1.pass\<^sub>1.induct)
   apply simp
  subgoal for h
@@ -80,7 +80,7 @@ apply(case_tac h2)
 done
 done
 
-lemma t_pass2': "no_Emptys hs \<Longrightarrow> t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2' hs = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2(homs hs)"
+lemma T_pass2': "no_Emptys hs \<Longrightarrow> T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2' hs = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2(homs hs)"
 by(induction hs rule: homs.induct) (auto simp: hom_merge' is_root_pass2)
 
 lemma size_hp: "is_root' h \<Longrightarrow> size_hp h = size (hom h)"
@@ -121,7 +121,7 @@ next
     case [simp]: Del_min
     then obtain h where [simp]: "ts = [h]" using 4 by auto
     show ?thesis using 4
-      by (cases h)(auto simp: t_pass1' t_pass2' no_Emptys_pass1 homs_pass1')
+      by (cases h)(auto simp: T_pass1' T_pass2' no_Emptys_pass1 homs_pass1')
   qed (insert 4, auto)
 next
   case (5 _ f) thus ?case by(cases f) (auto simp: size_hp numeral_eq_Suc)

@@ -185,19 +185,19 @@ fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree"
 "exec (Insert x) [h] = insert x h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a tree \<Rightarrow> nat" where
-  "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 Leaf = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ Leaf) = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ (Node _ _ ry)) = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 ry + 1"
+fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a tree \<Rightarrow> nat" where
+  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 Leaf = 1"
+| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ Leaf) = 1"
+| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ (Node _ _ ry)) = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 ry + 1"
 
-fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" where
-  "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 Leaf = 1"
-| "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (Node _ _ rx) = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 rx + 1"
+fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" where
+  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 Leaf = 1"
+| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (Node _ _ rx) = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 rx + 1"
 
 fun cost :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
   "cost Empty [] = 1"
 | "cost Del_min [Leaf] = 1"
-| "cost Del_min [Node lx _  _] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
+| "cost Del_min [Node lx _  _] = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
 | "cost (Insert a) _ = 1"
 | "cost Merge _ = 1"
 
@@ -229,7 +229,7 @@ next
     show ?thesis
     proof (cases h)
       case [simp]: (Node lx x rx)
-      have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
+      have "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
       hence "cost f ss \<le> \<dots>" by simp 
       moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size h + 1) - len lx + 2"
