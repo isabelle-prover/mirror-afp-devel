@@ -98,8 +98,8 @@ lemma size_heap_of_A:
 lemma t_heap_of_A_log_bound:
   "t_heap_of_A xs \<le> length xs * (nlog2 (length xs + 1) + 1)"
   using t_heap_of_A_bound[of xs]
-    balanced_if_braun[OF braun_heap_of_A, of xs]
-  by (simp add: height_balanced size1_size size_heap_of_A)
+    acomplete_if_braun[OF braun_heap_of_A, of xs]
+  by (simp add: height_acomplete size1_size size_heap_of_A)
 
 text \<open>Algorithm B mimics heap sort more closely by building heaps bottom up in a balanced way:\<close>
 
@@ -226,13 +226,13 @@ lemma sift_down_height:
 
 lemma braun_height_r_le:
   "braun (Node l x r) \<Longrightarrow> height r \<le> height l"
-  by (rule balanced_optimal, auto intro: balanced_if_braun)
+  by (rule acomplete_optimal, auto intro: acomplete_if_braun)
 
 lemma braun_height_l_le:
   assumes b: "braun (Node l x r)"
   shows "height l \<le> Suc (height r)"
-  using b balanced_if_braun[OF b] min_height_le_height[of r]
-  by (simp add: balanced_def)
+  using b acomplete_if_braun[OF b] min_height_le_height[of r]
+  by (simp add: acomplete_def)
 
 lemma braun_height_node_eq:
   assumes b: "braun (Node l x r)"
@@ -402,7 +402,7 @@ lemma t_list_of_A_bound:
 lemma t_list_of_A_log_bound:
   "braun t \<Longrightarrow> t_list_of_A t \<le> 2 * nlog2 (size t + 1) * size t"
   using t_list_of_A_bound[of t]
-  by (simp add: height_balanced balanced_if_braun size1_size)
+  by (simp add: height_acomplete acomplete_if_braun size1_size)
 
 value "t_list_of_A (heap_of_A shuffle100)"
 
@@ -548,7 +548,7 @@ lemma t_list_of_B_bound:
 lemma t_list_of_B_log_bound:
   "braun t \<Longrightarrow> t_list_of_B t \<le> 3 * (nlog2 (size t + 1) + 1) * size t"
   apply (frule t_list_of_B_bound)
-  apply (simp add: height_balanced balanced_if_braun size1_size)
+  apply (simp add: height_acomplete acomplete_if_braun size1_size)
   done
 
 definition
