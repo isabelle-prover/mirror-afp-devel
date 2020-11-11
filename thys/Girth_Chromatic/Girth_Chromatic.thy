@@ -590,7 +590,7 @@ proof -
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"
         apply (rule sum_mono)
-        by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans real_mult_le_cancel_iff1 zero_less_power)
+        by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans mult_le_cancel_iff1 zero_less_power)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
         using \<open>1 \<le> n\<close> \<open>0 < \<epsilon>\<close> A
         by (intro sum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr

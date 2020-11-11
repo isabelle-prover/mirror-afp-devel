@@ -215,7 +215,7 @@ proof-
       by (simp add: assms(2) sum_norm_le)
     hence \<open>(1 - c) * \<parallel>sum (\<lambda>k. y (Suc k) - y k) {Suc n .. N}\<parallel>
                    \<le> (1 - c) * (sum (power c) {Suc n .. N})\<close>
-      using \<open>0 < 1 - c\<close> real_mult_le_cancel_iff2 by blast      
+      using \<open>0 < 1 - c\<close> mult_le_cancel_iff2 by blast      
     also have \<open>\<dots> = c^(Suc n) - c^(Suc N)\<close>
       using Set_Interval.sum_gp_multiplied \<open>Suc n \<le> N\<close> by blast
     also have \<open>\<dots> \<le> c^(Suc n)\<close>

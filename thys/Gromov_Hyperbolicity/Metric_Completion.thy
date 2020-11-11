@@ -211,13 +211,13 @@ proof
         unfolding u_def using N[of m p] p(1) by auto
       also have "... < e/4"
         using \<open>m \<ge> max K L\<close> \<open>K > 4/e\<close> \<open>e > 0\<close> apply (auto simp add: divide_simps algebra_simps)
-        by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff real_mult_le_cancel_iff2)
+        by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff mult_le_cancel_iff2)
       finally have Im: "dist (u m) (rep_metric_completion (X m) p) < e/4" by simp
       have "dist (u n) (rep_metric_completion (X n) p) < 1 / real (Suc n)"
         unfolding u_def using N[of n p] p(1) by auto
       also have "... < e/4"
         using \<open>n \<ge> max K L\<close> \<open>K > 4/e\<close> \<open>e > 0\<close> apply (auto simp add: divide_simps algebra_simps)
-        by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff real_mult_le_cancel_iff2)
+        by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff mult_le_cancel_iff2)
       finally have In: "dist (u n) (rep_metric_completion (X n) p) < e/4" by simp
 
       have "dist (u m) (u n) \<le> dist (u m) (rep_metric_completion (X m) p)
@@ -244,7 +244,7 @@ proof
           unfolding u_def using N p by simp
         also have "... < e/4"
           using \<open>n \<ge> max K L\<close> \<open>K > 4/e\<close> \<open>e > 0\<close> apply (auto simp add: divide_simps algebra_simps)
-          by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff real_mult_le_cancel_iff2)
+          by (metis leD le_less_trans less_add_same_cancel2 linear of_nat_le_iff mult_le_cancel_iff2)
         finally have *: "dist (u n) (rep_metric_completion (X n) p) < e/4"
           by fastforce
 

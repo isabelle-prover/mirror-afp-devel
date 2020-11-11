@@ -134,7 +134,7 @@ proof -
   also have "(b \<noteq> 0 \<longrightarrow> quadroot_in m M a b c) \<longleftrightarrow> (b = 0 \<or> (let x = -c / b in m \<le> x \<and> x \<le> M))"
     apply (auto simp: quadroot_in_def Let_def root_in_def assms field_split_simps
         intro!: bexI[where x="-c / b"])
-    by (metis mult.commute mult_le_cancel_left_neg add_eq_0_iff real_mult_le_cancel_iff2)+
+    by (metis mult.commute mult_le_cancel_left_neg add_eq_0_iff mult_le_cancel_iff2)+
   finally show ?thesis
     by (simp add: Let_def not_less not_le)
 qed 

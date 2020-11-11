@@ -1221,7 +1221,7 @@ proof -
     case True
     then show ?thesis
       using Main[OF less_imp_le[OF \<open>n > N\<close>] less_imp_le[OF that]] Bpos[of n]
-      by (meson max.cobounded1 order_trans real_mult_le_cancel_iff1)
+      by (meson max.cobounded1 order_trans mult_le_cancel_iff1)
   next
     case False
     then have "n \<le> N" by simp
@@ -1230,7 +1230,7 @@ proof -
     then have "B (Suc n) \<le> C1 * B n"
       using Bpos[of n] by (simp add: divide_simps)
     then show ?thesis
-      using Bpos[of n] by (meson max.cobounded2 order_trans real_mult_le_cancel_iff1)
+      using Bpos[of n] by (meson max.cobounded2 order_trans mult_le_cancel_iff1)
   qed
   show ?thesis
     apply (rule exI[of _ "max ((2 * C0/a)) C1"], rule exI[of _ "2 * Cf/a"])
@@ -1327,7 +1327,7 @@ proof -
     case True
     then show ?thesis
       using Main[OF less_imp_le[OF \<open>n > N\<close>]] Bpos[of n]
-      by (meson max.cobounded1 order_trans real_mult_le_cancel_iff1)
+      by (meson max.cobounded1 order_trans mult_le_cancel_iff1)
   next
     case False
     then have "n \<le> N" by simp
@@ -1336,7 +1336,7 @@ proof -
     then have "B (2*n) \<le> C1 * B n"
       using Bpos[of n] by (simp add: divide_simps)
     then show ?thesis
-      using Bpos[of n] by (meson max.cobounded2 order_trans real_mult_le_cancel_iff1)
+      using Bpos[of n] by (meson max.cobounded2 order_trans mult_le_cancel_iff1)
   qed
   show ?thesis
     apply (rule exI[of _ "max ((2 * C0/a)) C1"])

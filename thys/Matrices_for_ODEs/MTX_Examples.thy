@@ -120,7 +120,7 @@ proof(subst diff_divide_distrib[symmetric], simp)
     unfolding exp_le_cancel_iff 
     using assms(4) by (case_tac "t=0", simp_all)
   hence "?c2 * exp ?t2 \<le> ?c2 * exp ?t1"
-    using f1 f2 real_mult_le_cancel_iff2[of "-?c2" "exp ?t1" "exp ?t2"] by linarith 
+    using f1 f2 mult_le_cancel_iff2[of "-?c2" "exp ?t1" "exp ?t2"] by linarith 
   also have "... < ?c1 * exp ?t1"
     using f1 by auto
   also have"... \<le> ?c1 * exp ?t1"

@@ -90,7 +90,7 @@ proof (rule allI, rule impI, rule allI)
   proof (subst ordinal_utility_def, rule conjI, goal_cases)
     case 1
     then show ?case
-      by (metis * add.commute add_le_cancel_left not_le real_mult_less_iff1 util_def_conf)
+      by (metis * add.commute add_le_cancel_left not_le mult_less_iff1 util_def_conf)
   next
     case 2
     then show ?case 

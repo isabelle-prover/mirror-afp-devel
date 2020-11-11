@@ -160,7 +160,7 @@ next
   next
     assume "(\<Sum>z\<in>outcomes. pmf q z * (c * u z)) \<le> (\<Sum>z\<in>outcomes. pmf p z * (c * u z))"
     then have "(\<Sum>z\<in>outcomes. pmf q z * (u z)) \<le> (\<Sum>z\<in>outcomes. pmf p z * (u z))"
-      using "2"(1) real_mult_le_cancel_iff2 assms by (simp add: dist_c dist_c')
+      using "2"(1) mult_le_cancel_iff2 assms by (simp add: dist_c dist_c')
     then show "p \<succeq> q"
       using "2"(2) assms "2"(1) by (simp add: * sum_equals_pmf_expectation)
   qed

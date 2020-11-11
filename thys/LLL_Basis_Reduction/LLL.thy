@@ -1266,7 +1266,7 @@ proof -
     from reduction have "real_of_rat reduction > 0" by auto
     hence gediv:"1/real_of_rat reduction > 0" by auto
     have "(1/of_rat reduction) * ?new \<le> ((1/of_rat reduction) * of_rat reduction) * ?old"
-      unfolding mult.assoc real_mult_le_cancel_iff2[OF gediv] using D by simp
+      unfolding mult.assoc mult_le_cancel_iff2[OF gediv] using D by simp
     also have "(1/of_rat reduction) * of_rat reduction = 1" using reduction by auto
     finally have "(1/of_rat reduction) * ?new \<le> ?old" by auto
     hence "?log ((1/of_rat reduction) * ?new) \<le> ?log ?old"

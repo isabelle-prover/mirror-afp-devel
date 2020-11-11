@@ -855,8 +855,7 @@ lemma mulfact:
   fixes c:: real and a:: complex and b:: complex
   assumes "c\<ge>0" "a \<le> b"
   shows "c * a \<le> c * b"
-  using assms Im_complex_of_real Re_complex_of_real less_eq_complex_def mult_eq_0_iff real_mult_le_cancel_iff2 times_complex.simps
-  using eq_iff by fastforce 
+  using assms mult_le_cancel_iff2 by force
 
 lemma denote_while_n_scale:
   fixes c:: real

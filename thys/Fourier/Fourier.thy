@@ -1099,7 +1099,7 @@ proof
             using N1 \<open>N1 \<le> n\<close> by auto
           ultimately show ?thesis
             unfolding abs_mult
-            by (meson abs_ge_zero le_less_trans mult_left_mono real_mult_less_iff1 zero_less_one)
+            by (meson abs_ge_zero le_less_trans mult_left_mono mult_less_iff1 zero_less_one)
         qed
         ultimately show ?thesis
           apply (subst 2)
