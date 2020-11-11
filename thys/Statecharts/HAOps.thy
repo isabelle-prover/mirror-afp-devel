@@ -674,19 +674,10 @@ lemma AddSA_CompFun_ran_not_mem:
     States SA1 \<inter> HAStates A = {};
     S \<in> HAStates A \<rbrakk> \<Longrightarrow> 
    {SA2} \<notin> ran (CompFun A [f+] (S, SA1))"
-apply (cut_tac HA="A [++] (S,SA1)" and Sas="{SA2}" in ran_CompFun_is_not_SA)
-apply (simp add: AddSA_HAStates AddSA_CompFun)
-apply (simp add: AddSA_HAStates AddSA_SAs)
-apply auto
-apply (simp add: Int_def)
-apply (cut_tac SA=SA2 in EX_State_SA)
-apply (erule exE)
-apply (frule HAStates_SA_mem)
-apply fast
-apply (simp only: HAStates_def)
-apply fast
-apply (simp add: AddSA_HAStates AddSA_CompFun)
-done
+  apply (cut_tac HA="A [++] (S,SA1)" and Sas="{SA2}" in ran_CompFun_is_not_SA)
+  apply (metis AddSA_HAStates SA_States_disjunct2 SAs_States_HAStates insert_subset)
+   apply (simp add: AddSA_HAStates AddSA_CompFun)
+  done
 
 lemma AddSA_CompFun_ran3:
  "\<lbrakk> (States SA1 \<inter> HAStates A) = {};
@@ -696,98 +687,50 @@ lemma AddSA_CompFun_ran3:
      T \<in> States SA1 \<rbrakk> \<Longrightarrow> 
     ran (CompFun ((A [++] (S,SA1)) [++] (T,SA2) [++] (T,SA3))) = 
        insert {} (insert {SA3,SA2} (ran (CompFun (A  [++] (S,SA1)))))"
-apply (simp add: AddSA_HAStates AddSA_CompFun)
-apply (subst FAddSA_ran)
-apply (rule ballI)
-apply (rule impI)
-apply (subst AddSA_CompFun [THEN sym])
-apply simp
-apply simp
-apply (subst AddSA_CompFun [THEN sym])
-apply (simp add: AddSA_HAStates)
-apply (simp add: AddSA_HAStates)
-apply (subst AddSA_CompFun [THEN sym])
-apply simp
-apply simp
-apply (subst AddSA_CompFun [THEN sym])
-apply (simp add: AddSA_HAStates)
-apply (simp add: AddSA_HAStates)
-apply (rule CompFun_Int_disjoint)
-apply simp
-apply (simp add: AddSA_HAStates)
-apply (simp add: AddSA_HAStates)
-apply (simp only: dom_CompFun [THEN sym])
-apply (cut_tac F="CompFun A [f+] (S, SA1)" and S=T and SA="SA2" in FAddSA_dom_dom_States)
-apply (cut_tac F="CompFun A" and S=S and SA="SA1" in FAddSA_dom_dom_States)
-apply fast
-apply fast
-apply simp
-apply fast
-apply simp
-apply (cut_tac F="CompFun A" and S=S and SA="SA1" in FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply (subst FAddSA_dom_dom_States)
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply fast
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply (subst FAddSA_dom_dom_States)
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply fast
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply (subst AddSA_CompFun [THEN sym])
-back
-apply simp
-apply simp
-apply (subst AddSA_CompFun [THEN sym])
-back
-apply (simp add: AddSA_HAStates)
-apply (simp add: AddSA_HAStates)
-apply (subst AddSA_CompFun_ran2)
-apply fast
-apply fast
-apply fast
-apply fast
-apply (simp add: AddSA_CompFun)
-apply (subst  FAddSA_dom_insert)
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply fast
-apply (subst FAddSA_dom_emptyset)
-apply simp
-apply fast
-apply simp
-apply simp
-apply (subst  FAddSA_dom_insert)
-apply (subst FAddSA_dom_dom_States)
-apply simp
-apply fast
-apply simp
-apply fast
-apply (subst FAddSA_dom_emptyset)
-apply simp
-apply fast
-apply simp
-apply simp
-apply (case_tac "{SA2} \<notin> ran (CompFun A [f+] (S,SA1))")
-apply fast
-apply (simp add:AddSA_CompFun_ran_not_mem) 
-done
+  apply (simp add: AddSA_HAStates AddSA_CompFun)
+  apply (subst FAddSA_ran)
+  apply (metis AddSA_CompFun AddSA_HAStates CompFun_Int_disjoint UnCI dom_CompFun)
+  apply (metis AddSA_CompFun AddSA_HAStates UnCI dom_CompFun)
+  apply (metis AddSA_CompFun AddSA_HAStates UnCI dom_CompFun)
+
+  apply (subst AddSA_CompFun [THEN sym])
+    back
+    apply simp
+   apply simp
+
+  apply (subst AddSA_CompFun [THEN sym])
+    back
+    apply (simp add: AddSA_HAStates)
+   apply (simp add: AddSA_HAStates)
+  apply (subst AddSA_CompFun_ran2)
+      apply fast
+     apply fast
+    apply fast
+   apply fast
+  apply (simp add: AddSA_CompFun)
+  apply (subst  FAddSA_dom_insert)
+    apply (subst FAddSA_dom_dom_States)
+      apply simp
+     apply fast
+    apply simp
+   apply fast
+  apply (subst FAddSA_dom_emptyset)
+     apply simp
+    apply fast
+   apply simp
+  apply simp
+  apply (subst  FAddSA_dom_insert)
+    apply (subst FAddSA_dom_dom_States)
+      apply simp
+     apply fast
+    apply simp
+   apply fast
+  apply (subst FAddSA_dom_emptyset)
+     apply simp
+    apply fast
+   apply simp
+  apply simp
+  by (simp add: AddSA_CompFun_ran_not_mem insert_Diff_if insert_commute)
 
 lemma AddSA_CompFun_PseudoHA_ran:
   "\<lbrakk> S \<in> States RootSA;

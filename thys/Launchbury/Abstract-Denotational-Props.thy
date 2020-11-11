@@ -37,7 +37,6 @@ next
   have "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>as\<rbrace>\<rho>\<^esub> = \<lbrakk>e\<rbrakk>\<^bsub>(\<lbrace>as\<rbrace>\<rho>) f|` (fv as \<union> fv e)\<^esub>"
     apply (subst (1 2) Let(2))
     apply simp
-    apply (metis inf_sup_absorb sup_commute)
     done
   also
   have "fv as \<subseteq> fv as \<union> fv e" by (rule inf_sup_ord(3))

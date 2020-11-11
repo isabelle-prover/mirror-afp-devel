@@ -374,212 +374,185 @@ apply (rule gen_subst_commutes [symmetric, THEN subst])
  apply (drule_tac [2] x = "m" in spec)
  apply (drule_tac [2] x = "m1" in spec)
  apply (frule_tac [2] new_tv_W)
-  prefer 2 apply (assumption)
- apply (drule_tac [2] conjunct1)
- apply (frule_tac [2] new_tv_subst_scheme_list)
-  apply (rule_tac [2] new_scheme_list_le)
-   apply (rule_tac [2] W_var_ge)
-   prefer 2 apply (assumption)
-  prefer 2 apply (assumption)
- apply (erule_tac [2] impE)
-  apply (rule_tac [2] A = "$ S1 A" in new_tv_only_depends_on_free_tv_scheme_list)
-   prefer 2 apply simp
-   apply (fast)
-  prefer 2 apply (assumption)
- prefer 2 apply simp
+    prefer 2 apply (assumption)
+  prefer 2
+  apply (metis new_tv_Cons new_tv_compatible_W new_tv_compatible_gen new_tv_subst_scheme_list)
 apply (rule weaken_A_Int_B_eq_empty)
 apply (rule allI)
 apply (intro strip)
 apply (rule weaken_not_elem_A_minus_B)
-apply (case_tac "x < m1")
- apply (rule disjI2)
- apply (rule free_tv_gen_cons [THEN subst])
- apply (rule free_tv_W)
-   apply assumption
-  apply simp
- apply assumption
-apply (rule disjI1)
-apply (drule new_tv_W)
-apply assumption
-apply (drule conjunct2)
-apply (rule new_tv_not_free_tv)
-apply (rule new_tv_le)
- prefer 2 apply (assumption)
-apply (simp add: linorder_not_less)
-done
+  by (metis free_tv_W free_tv_gen_cons free_tv_le_new_tv new_tv_W)
 
 \<comment> \<open>Completeness of W w.r.t. @{text has_type}\<close>
 lemma W_complete_lemma [rule_format (no_asm)]: 
   "\<forall>S' A t' n. $S' A |- e :: t' \<longrightarrow> new_tv n A \<longrightarrow>
                (\<exists>S t. (\<exists>m. W e A n = Some (S,t,m)) \<and>
                        (\<exists>R. $S' A = $R ($S A) \<and> t' = $R t))"
-apply (induct e)
-   (* case Var n *)
+  apply (induct e)
+    (* case Var n *)
+     apply (intro strip)
+     apply (simp (no_asm) cong add: conj_cong)
+     apply (erule has_type_casesE)
+     apply (simp add: is_bound_typ_instance)
+     apply (erule exE)
+     apply (hypsubst)
+     apply (rename_tac "S")
+     apply (rule_tac x = "\<lambda>x. (if x < n then S' x else S (x - n))" in exI)
+     apply (rule conjI)
+      apply (simp (no_asm_simp))
+     apply (simp (no_asm_simp) add: bound_typ_inst_composed_subst [symmetric] new_tv_nth_nat_A o_def nth_subst 
+      del: bound_typ_inst_composed_subst)
+
+(* case Abs e *)
+    apply (intro strip)
+    apply (erule has_type_casesE)
+    apply (erule_tac x = "\<lambda>x. if x=n then t1 else (S' x) " in allE)
+    apply (erule_tac x = " (FVar n) #A" in allE)
+    apply (erule_tac x = "t2" in allE)
+    apply (erule_tac x = "Suc n" in allE)
+    apply (bestsimp dest!: mk_scheme_injective cong: conj_cong split: split_option_bind)
+
+(* case App e1 e2 *)
    apply (intro strip)
-   apply (simp (no_asm) cong add: conj_cong)
    apply (erule has_type_casesE)
-   apply (simp add: is_bound_typ_instance)
+   apply (erule_tac x = "S'" in allE)
+   apply (erule_tac x = "A" in allE)
+   apply (erule_tac x = "t2 -> t'" in allE)
+   apply (erule_tac x = "n" in allE)
+   apply safe
+   apply (erule_tac x = "R" in allE)
+   apply (erule_tac x = "$ S A" in allE)
+   apply (erule_tac x = "t2" in allE)
+   apply (erule_tac x = "m" in allE)
+   apply simp
+   apply safe
+    apply (blast intro: sym [THEN W_var_geD] new_tv_W [THEN conjunct1] new_scheme_list_le new_tv_subst_scheme_list)
+
+(** LEVEL 33 **)
+   apply (subgoal_tac "$ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) = $ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) (ta -> (TVar ma))")
+    apply (rule_tac [2] t = "$ (\<lambda>x. if x = ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) " and s = " ($ Ra ta) -> t'" in ssubst)
+     prefer 2 apply (simp (no_asm_simp) add: subst_comp_te) prefer 2
+     apply (rule_tac [2] eq_free_eq_subst_te)
+     prefer 2 apply (intro strip) prefer 2
+     apply (subgoal_tac [2] "na \<noteq>ma")
+      prefer 3 apply (best dest: new_tv_W sym [THEN W_var_geD] new_tv_not_free_tv new_tv_le)
+     apply (case_tac [2] "na:free_tv Sa")
+    (* n1 \<notin> free_tv S1 *)
+      apply (frule_tac [3] not_free_impl_id)
+      prefer 3 apply (simp)
+    (* na : free_tv Sa *)
+     apply (drule_tac [2] A1 = "$ S A" in trans [OF _ subst_comp_scheme_list])
+     apply (drule_tac [2] eq_subst_scheme_list_eq_free)
+      prefer 2 apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
+     prefer 2 apply (simp (no_asm_simp)) prefer 2
+     apply (case_tac [2] "na:dom Sa")
+    (* na \<notin> dom Sa *)
+      prefer 3 apply (simp add: dom_def)
+    (* na : dom Sa *)
+     apply (rule_tac [2] eq_free_eq_subst_te)
+     prefer 2 apply (intro strip) prefer 2
+     apply (subgoal_tac [2] "nb \<noteq> ma")
+      apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
+      apply (erule_tac [3] conjE)
+      apply (drule_tac [3] new_tv_subst_scheme_list)
+       prefer 3 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
+      prefer 3 apply (fastforce dest: new_tv_W new_tv_not_free_tv simp add: cod_def free_tv_subst)
+     prefer 2 apply (fastforce simp add: cod_def free_tv_subst)
+    prefer 2 apply (simp (no_asm)) prefer 2
+    apply (rule_tac [2] eq_free_eq_subst_te)
+    prefer 2 apply (intro strip) prefer 2
+    apply (subgoal_tac [2] "na \<noteq> ma")
+     apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
+     apply (erule_tac [3] conjE)
+     apply (drule_tac [3] sym [THEN W_var_geD])
+     prefer 3 apply (fast dest: new_scheme_list_le new_tv_subst_scheme_list new_tv_W new_tv_not_free_tv)
+    apply (case_tac [2] "na: free_tv t - free_tv Sa")
+    (* case na \<notin> free_tv t - free_tv Sa *)
+     prefer 3 
+     apply simp
+     apply fast
+    (* case na : free_tv t - free_tv Sa *)
+    prefer 2 apply simp prefer 2
+    apply (drule_tac [2] A1 = "$ S A" and r = "$ R ($ S A)" in trans [OF _ subst_comp_scheme_list])
+    apply (drule_tac [2] eq_subst_scheme_list_eq_free)
+     prefer 2 
+     apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
+    (** LEVEL 73 **)
+    prefer 2 apply (simp add: free_tv_subst dom_def)
+   apply (simp (no_asm_simp) split: split_option_bind)
+   apply safe
+    apply (drule mgu_Some)
+    apply fastforce  
+    (** LEVEL 78 *)
+   apply (drule mgu_mg, assumption)
    apply (erule exE)
-   apply (hypsubst)
-   apply (rename_tac "S")
-   apply (rule_tac x = "\<lambda>x. (if x < n then S' x else S (x - n))" in exI)
+   apply (rule_tac x = "Rb" in exI)
    apply (rule conjI)
-   apply (simp (no_asm_simp))
-   apply (simp (no_asm_simp) add: bound_typ_inst_composed_subst [symmetric] new_tv_nth_nat_A o_def nth_subst 
-                             del: bound_typ_inst_composed_subst)
-
-  (* case Abs e *)
-  apply (intro strip)
-  apply (erule has_type_casesE)
-  apply (erule_tac x = "\<lambda>x. if x=n then t1 else (S' x) " in allE)
-  apply (erule_tac x = " (FVar n) #A" in allE)
-  apply (erule_tac x = "t2" in allE)
-  apply (erule_tac x = "Suc n" in allE)
-  apply (bestsimp dest!: mk_scheme_injective cong: conj_cong split: split_option_bind)
-
- (* case App e1 e2 *)
- apply (intro strip)
- apply (erule has_type_casesE)
- apply (erule_tac x = "S'" in allE)
- apply (erule_tac x = "A" in allE)
- apply (erule_tac x = "t2 -> t'" in allE)
- apply (erule_tac x = "n" in allE)
- apply safe
- apply (erule_tac x = "R" in allE)
- apply (erule_tac x = "$ S A" in allE)
- apply (erule_tac x = "t2" in allE)
- apply (erule_tac x = "m" in allE)
- apply simp
- apply safe
-  apply (blast intro: sym [THEN W_var_geD] new_tv_W [THEN conjunct1] new_scheme_list_le new_tv_subst_scheme_list)
- 
- (** LEVEL 33 **)
-apply (subgoal_tac "$ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) = $ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) (ta -> (TVar ma))")
-apply (rule_tac [2] t = "$ (\<lambda>x. if x = ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) " and s = " ($ Ra ta) -> t'" in ssubst)
-prefer 2 apply (simp (no_asm_simp) add: subst_comp_te) prefer 2
-apply (rule_tac [2] eq_free_eq_subst_te)
-prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "na \<noteq>ma")
- prefer 3 apply (best dest: new_tv_W sym [THEN W_var_geD] new_tv_not_free_tv new_tv_le)
-apply (case_tac [2] "na:free_tv Sa")
-(* n1 \<notin> free_tv S1 *)
-apply (frule_tac [3] not_free_impl_id)
- prefer 3 apply (simp)
-(* na : free_tv Sa *)
-apply (drule_tac [2] A1 = "$ S A" in trans [OF _ subst_comp_scheme_list])
-apply (drule_tac [2] eq_subst_scheme_list_eq_free)
- prefer 2 apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
-prefer 2 apply (simp (no_asm_simp)) prefer 2
-apply (case_tac [2] "na:dom Sa")
-(* na \<notin> dom Sa *)
- prefer 3 apply (simp add: dom_def)
-(* na : dom Sa *)
-apply (rule_tac [2] eq_free_eq_subst_te)
-prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "nb \<noteq> ma")
-apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
-apply (erule_tac [3] conjE)
-apply (drule_tac [3] new_tv_subst_scheme_list)
-   prefer 3 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
-  prefer 3 apply (fastforce dest: new_tv_W new_tv_not_free_tv simp add: cod_def free_tv_subst)
- prefer 2 apply (fastforce simp add: cod_def free_tv_subst)
-prefer 2 apply (simp (no_asm)) prefer 2
-apply (rule_tac [2] eq_free_eq_subst_te)
-prefer 2 apply (intro strip) prefer 2
-apply (subgoal_tac [2] "na \<noteq> ma")
-apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
-apply (erule_tac [3] conjE)
-apply (drule_tac [3] sym [THEN W_var_geD])
- prefer 3 apply (fast dest: new_scheme_list_le new_tv_subst_scheme_list new_tv_W new_tv_not_free_tv)
-apply (case_tac [2] "na: free_tv t - free_tv Sa")
-(* case na \<notin> free_tv t - free_tv Sa *)
- prefer 3 
- apply simp
- apply fast
-(* case na : free_tv t - free_tv Sa *)
-prefer 2 apply simp prefer 2
-apply (drule_tac [2] A1 = "$ S A" and r = "$ R ($ S A)" in trans [OF _ subst_comp_scheme_list])
-apply (drule_tac [2] eq_subst_scheme_list_eq_free)
- prefer 2 
- apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
-(** LEVEL 73 **)
- prefer 2 apply (simp add: free_tv_subst dom_def)
-apply (simp (no_asm_simp) split: split_option_bind)
-apply safe
-apply (drule mgu_Some)
- apply fastforce  
-(** LEVEL 78 *)
-apply (drule mgu_mg, assumption)
-apply (erule exE)
-apply (rule_tac x = "Rb" in exI)
-apply (rule conjI)
-apply (drule_tac [2] x = "ma" in fun_cong)
- prefer 2 apply (simp add: eq_sym_conv)
-apply (simp (no_asm) add: subst_comp_scheme_list)
-apply (simp (no_asm) add: subst_comp_scheme_list [symmetric])
-apply (rule_tac A1 = "($ Sa ($ S A))" in trans [OF _ subst_comp_scheme_list [symmetric]])
-apply (simp add: o_def eq_sym_conv)
-apply (drule_tac s = "Some _" in sym)
-apply (rule eq_free_eq_subst_scheme_list)
-apply safe
-apply (subgoal_tac "ma \<noteq> na")
-apply (frule_tac [2] new_tv_W) prefer 2 apply assumption
-apply (erule_tac [2] conjE)
-apply (drule_tac [2] new_tv_subst_scheme_list)
- prefer 2 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
-apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
-apply (erule_tac [2] conjE)
-apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
- apply (tactic \<open>
+    apply (drule_tac [2] x = "ma" in fun_cong)
+    prefer 2 apply (simp add: eq_sym_conv)
+   apply (simp (no_asm) add: subst_comp_scheme_list)
+   apply (simp (no_asm) add: subst_comp_scheme_list [symmetric])
+   apply (rule_tac A1 = "($ Sa ($ S A))" in trans [OF _ subst_comp_scheme_list [symmetric]])
+   apply (simp add: o_def eq_sym_conv)
+   apply (drule_tac s = "Some _" in sym)
+   apply (rule eq_free_eq_subst_scheme_list)
+   apply safe
+   apply (subgoal_tac "ma \<noteq> na")
+    apply (frule_tac [2] new_tv_W) prefer 2 apply assumption
+    apply (erule_tac [2] conjE)
+    apply (drule_tac [2] new_tv_subst_scheme_list)
+     prefer 2 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
+    apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
+    apply (erule_tac [2] conjE)
+    apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
+    apply (tactic \<open>
     (fast_tac (put_claset (claset_of @{theory_context Fun}) @{context}
       addDs [sym RS @{thm W_var_geD}, @{thm new_scheme_list_le}, @{thm codD},
         @{thm new_tv_not_free_tv}]) 2)\<close>)
-apply (case_tac "na: free_tv t - free_tv Sa")
-(* case na \<notin> free_tv t - free_tv Sa *)
- prefer 2 apply simp apply blast
-(* case na : free_tv t - free_tv Sa *)
-apply simp
-apply (drule free_tv_app_subst_scheme_list [THEN subsetD])
- apply (fastforce dest: codD trans [OF _ subst_comp_scheme_list]
-                       eq_subst_scheme_list_eq_free 
-             simp add: free_tv_subst dom_def)
-(* case Let e1 e2 *)
-apply (erule has_type_casesE)
-apply (erule_tac x = "S'" in allE)
-apply (erule_tac x = "A" in allE)
-apply (erule_tac x = "t1" in allE)
-apply (erule_tac x = "n" in allE)
-apply (erule (1) notE impE)
-apply (erule (1) notE impE)
-apply safe  
-apply (simp (no_asm_simp))
-apply (erule_tac x = "R" in allE)
-apply (erule_tac x = "gen ($ S A) t # $ S A" in allE)
-apply (erule_tac x = "t'" in allE)
-apply (erule_tac x = "m" in allE)
-apply simp
-apply (drule mp)
-apply (rule has_type_le_env)
-apply assumption
-apply (simp (no_asm))
-apply (rule gen_bound_typ_instance)
-apply (drule mp)
-apply (frule new_tv_compatible_W)
-apply (rule sym)
-apply assumption
-apply (fast dest: new_tv_compatible_gen new_tv_subst_scheme_list new_tv_W)
-apply safe
-apply simp
-apply (rule_tac x = "Ra" in exI)
-apply (simp (no_asm) add: o_def subst_comp_scheme_list [symmetric])
-done
+   apply (case_tac "na: free_tv t - free_tv Sa")
+    (* case na \<notin> free_tv t - free_tv Sa *)
+    prefer 2 apply simp apply blast
+    (* case na : free_tv t - free_tv Sa *)
+   apply simp
+   apply (drule free_tv_app_subst_scheme_list [THEN subsetD])
+   apply (fastforce dest: codD trans [OF _ subst_comp_scheme_list]
+      eq_subst_scheme_list_eq_free 
+      simp add: free_tv_subst dom_def)
+    (* case Let e1 e2 *)
+  apply (erule has_type_casesE)
+  apply (erule_tac x = "S'" in allE)
+  apply (erule_tac x = "A" in allE)
+  apply (erule_tac x = "t1" in allE)
+  apply (erule_tac x = "n" in allE)
+  apply (erule (1) notE impE)
+  apply (erule (1) notE impE)
+  apply safe  
+  apply (simp (no_asm_simp))
+  apply (erule_tac x = "R" in allE)
+  apply (erule_tac x = "gen ($ S A) t # $ S A" in allE)
+  apply (erule_tac x = "t'" in allE)
+  apply (erule_tac x = "m" in allE)
+  apply simp
+  apply (drule mp)
+   apply (rule has_type_le_env)
+    apply assumption
+   apply (simp (no_asm))
+   apply (rule gen_bound_typ_instance)
+  apply (drule mp)
+   apply (frule new_tv_compatible_W)
+    apply (rule sym)
+    apply assumption
+   apply (fast dest: new_tv_compatible_gen new_tv_subst_scheme_list new_tv_W)
+  apply safe
+  apply simp
+  apply (rule_tac x = "Ra" in exI)
+  apply (simp (no_asm) add: o_def subst_comp_scheme_list [symmetric])
+  done
 
 
-lemma W_complete: 
+theorem W_complete: 
   "[] |- e :: t' \<Longrightarrow> (\<exists>S t. (\<exists>m. W e [] n = Some(S,t,m)) \<and>
                      (\<exists>R. t' = $ R t))"
-apply (cut_tac A = "[]" and S' = "id_subst" and e = "e" and t' = "t'" in W_complete_lemma)
-apply simp_all
-done
+  by (metis W_complete_lemma app_subst_Nil new_tv_Nil)
 
 end
