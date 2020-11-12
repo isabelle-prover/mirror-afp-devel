@@ -61,28 +61,27 @@ proof -
 qed
 
 fun ub_pass\<^sub>1 :: "'a tree \<Rightarrow> real" where
-  "ub_pass\<^sub>1 Leaf = 0"
-| "ub_pass\<^sub>1 (Node _ _ Leaf) = 0"
+  "ub_pass\<^sub>1 (Node _ _ Leaf) = 0"
 | "ub_pass\<^sub>1 (Node hs1 _ (Node hs2 _ Leaf)) = 2*log 2 (size hs1 + size hs2 + 2)" 
 | "ub_pass\<^sub>1 (Node hs1 _ (Node hs2 _ hs)) = 2*log 2 (size hs1 + size hs2 + size hs + 2) 
     - 2*log 2 (size hs) - 2 + ub_pass\<^sub>1 hs"
 
-lemma \<Delta>\<Phi>_pass1_ub_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> ub_pass\<^sub>1 hs"
+lemma \<Delta>\<Phi>_pass1_ub_pass1: "hs \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> ub_pass\<^sub>1 hs"
 proof (induction hs rule: ub_pass\<^sub>1.induct)
-  case (3 lx x ly y)
+  case (2 lx x ly y)
   have "log 2  (size lx + size ly + 1) - log 2  (size ly + 1) 
     \<le> log 2 (size lx + size ly + 1)" by simp
   also have "\<dots> \<le> log 2 (size lx + size ly + 2)" by simp
   also have "\<dots> \<le> 2*\<dots>" by simp
   finally show ?case by (simp add: algebra_simps)
 next
-  case (4 lx x ly y lz z rz)
+  case (3 lx x ly y lz z rz)
   let ?ry = "Node lz z rz"
   let ?rx = "Node ly y ?ry"
   let ?h = "Node lx x ?rx"
   let ?t ="log 2 (size lx + size ly + 1) - log 2 (size ly + size ?ry + 1)"
   have "\<Phi> (pass\<^sub>1 ?h) - \<Phi> ?h \<le> ?t + ub_pass\<^sub>1 ?ry" 
-    using "4.IH" by (simp add: size_pass\<^sub>1 algebra_simps)
+    using "3.IH" by (simp add: size_pass\<^sub>1 algebra_simps)
   moreover have "log 2 (size lx + size ly + 1) + 2 * log 2 (size ?ry) + 2
     \<le> 2 * log 2 (size ?h) + log 2 (size ly + size ?ry + 1)" (is "?l \<le> ?r")
   proof -
@@ -101,7 +100,7 @@ lemma \<Delta>\<Phi>_pass1: assumes "hs \<noteq> Leaf"
 proof -
   from assms have "ub_pass\<^sub>1 hs \<le> 2*log 2 (size hs) - len hs + 2" 
     by (induct hs rule: ub_pass\<^sub>1.induct) (simp_all add: algebra_simps)
-  thus ?thesis using \<Delta>\<Phi>_pass1_ub_pass1 [of "hs"] order_trans by blast
+  thus ?thesis using \<Delta>\<Phi>_pass1_ub_pass1 [OF assms] order_trans by blast
 qed
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (size hs)"

@@ -15,7 +15,6 @@ declassify valid:
   Pairing_Heap_Tree.link
   Pairing_Heap_Tree.pass\<^sub>1
   Pairing_Heap_Tree.pass\<^sub>2
-  Pairing_Heap_Tree.merge_pairs
   Pairing_Heap_Tree.is_root
   Pairing_Heap_Tree.pheap
 
@@ -35,7 +34,6 @@ embed (eval) test1 is
   Pairing__Heap__Tree_link
   Pairing__Heap__Tree_pass\<^sub>1
   Pairing__Heap__Tree_pass\<^sub>2
-  Pairing__Heap__Tree_merge__pairs
   Pairing__Heap__Tree_pheap
   .
 

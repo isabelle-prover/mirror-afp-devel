@@ -76,7 +76,6 @@ export_code
   Pairing_Heap_Tree.link
   Pairing_Heap_Tree.pass\<^sub>1
   Pairing_Heap_Tree.pass\<^sub>2
-  Pairing_Heap_Tree.merge_pairs
   Pairing_Heap_Tree.is_root
   Pairing_Heap_Tree.pheap
   checking SML Scala
