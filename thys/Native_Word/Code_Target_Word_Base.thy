@@ -338,7 +338,9 @@ qed
 
 text \<open>Quickcheck conversion functions\<close>
 
-notation scomp (infixl "\<circ>\<rightarrow>" 60)
+context
+  includes state_combinator_syntax
+begin
 
 definition qc_random_cnv ::
   "(natural \<Rightarrow> 'a::term_of) \<Rightarrow> natural \<Rightarrow> Random.seed
@@ -347,7 +349,7 @@ definition qc_random_cnv ::
        let n = a_of_natural k
        in (n, \<lambda>_. Code_Evaluation.term_of n)))"
 
-no_notation scomp (infixl "\<circ>\<rightarrow>" 60)
+end
 
 definition qc_exhaustive_cnv :: "(natural \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> (bool \<times> term list) option)
   \<Rightarrow> natural \<Rightarrow> (bool \<times> term list) option"

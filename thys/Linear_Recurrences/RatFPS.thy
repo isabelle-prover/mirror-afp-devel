@@ -892,10 +892,11 @@ definition (in term_syntax)
       (Code_Evaluation.valtermify ratfps_of_poly {\<cdot>} l)"
 
 
-notation fcomp (infixl "\<circ>>" 60)
-notation scomp (infixl "\<circ>\<rightarrow>" 60)
-
 instantiation ratfps :: ("{field_gcd,random}") random
+begin
+
+context
+  includes state_combinator_syntax
 begin
 
 definition
@@ -909,8 +910,7 @@ instance ..
 
 end
 
-no_notation fcomp (infixl "\<circ>>" 60)
-no_notation scomp (infixl "\<circ>\<rightarrow>" 60)
+end
 
 instantiation ratfps :: ("{field,factorial_ring_gcd,exhaustive}") exhaustive
 begin
