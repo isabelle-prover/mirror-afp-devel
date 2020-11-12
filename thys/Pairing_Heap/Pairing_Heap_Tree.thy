@@ -17,57 +17,49 @@ fun get_min  :: "'a :: linorder tree \<Rightarrow> 'a" where
 "get_min (Node _ x _) = x"
 
 fun link :: "('a::linorder) tree \<Rightarrow> 'a tree" where
-  "link Leaf = Leaf"
-| "link (Node lx x Leaf) = Node lx x Leaf"
-| "link (Node lx x (Node ly y ry)) = 
-    (if x < y then Node (Node ly y lx) x ry else Node (Node lx x ly) y ry)"
+"link (Node hsx x (Node hsy y hs)) = 
+   (if x < y then Node (Node hsy y hsx) x hs else Node (Node hsx x hsy) y hs)" |
+"link t = t"
 
 fun pass\<^sub>1 :: "('a::linorder) tree \<Rightarrow> 'a tree" where
-  "pass\<^sub>1 Leaf = Leaf"
-| "pass\<^sub>1 (Node lx x Leaf) = Node lx x Leaf" 
-| "pass\<^sub>1 (Node lx x (Node ly y ry)) = link (Node lx x (Node ly y (pass\<^sub>1 ry)))"
+"pass\<^sub>1 (Node hsx x (Node hsy y hs)) = link (Node hsx x (Node hsy y (pass\<^sub>1 hs)))" |
+"pass\<^sub>1 hs = hs"
 
 fun pass\<^sub>2 :: "('a::linorder) tree \<Rightarrow> 'a tree" where
-  "pass\<^sub>2 Leaf = Leaf"
-| "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
-
-fun merge_pairs :: "('a::linorder) tree \<Rightarrow> 'a tree" where
-  "merge_pairs Leaf = Leaf"
-| "merge_pairs (Node lx x Leaf) = Node lx x Leaf" 
-| "merge_pairs (Node lx x (Node ly y ry)) =
-   link (link (Node lx x (Node ly y (merge_pairs ry))))"
+"pass\<^sub>2 (Node hsx x hs) = link(Node hsx x (pass\<^sub>2 hs))" |
+"pass\<^sub>2 Leaf = Leaf"
 
 fun del_min :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
-| "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
+| "del_min (Node hs _ Leaf) = pass\<^sub>2 (pass\<^sub>1 hs)"
 
 fun merge :: "('a::linorder) tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "merge Leaf h = h"
-| "merge h Leaf = h"
-| "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
+  "merge Leaf hp = hp"
+| "merge hp Leaf = hp"
+| "merge (Node hsx x Leaf) (Node hsy y Leaf) = link (Node hsx x (Node hsy y Leaf))"
 
 fun insert :: "('a::linorder) \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "insert x h = merge (Node Leaf x Leaf) h"
+"insert x hp = merge (Node Leaf x Leaf) hp"
 
 text \<open>The invariant is the conjunction of \<open>is_root\<close> and \<open>pheap\<close>:\<close>
 
 fun is_root :: "'a tree \<Rightarrow> bool" where
-  "is_root h = (case h of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
+  "is_root hp = (case hp of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
 
 fun pheap :: "('a :: linorder) tree \<Rightarrow> bool" where
 "pheap Leaf = True" |
-"pheap (Node l x r) = (pheap l \<and> pheap r \<and> (\<forall>y \<in> set_tree l. x \<le> y))"
+"pheap (Node l x r) = ((\<forall>y \<in> set_tree l. x \<le> y) \<and> pheap l \<and> pheap r)"
 
 
 subsection \<open>Correctness Proofs\<close>
-
+(*
 text \<open>An optimization:\<close>
 
 lemma pass12_merge_pairs: "pass\<^sub>2 (pass\<^sub>1 hs) = merge_pairs hs"
 by (induction hs rule: merge_pairs.induct) auto
 
 declare pass12_merge_pairs[code_unfold]
-
+*)
 
 subsubsection \<open>Invariants\<close>
 
@@ -78,8 +70,7 @@ lemma pass\<^sub>1_struct: "\<exists>la a ra. pass\<^sub>1 (Node lx x rx) = Node
   by (cases rx) simp_all
 
 lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la a Leaf" 
-by(induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
-  (simp, metis pass\<^sub>2.simps(2) link_struct)
+by(induction rx arbitrary: x lx rule: pass\<^sub>2.induct) (auto, metis link_struct)
 
 lemma is_root_merge:
   "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
@@ -111,7 +102,7 @@ by (auto split: tree.splits)
 lemma pheap_insert: "is_root h \<Longrightarrow> pheap h \<Longrightarrow> pheap (insert x h)"
 by (auto split: tree.splits)
 
-lemma pheap_link: "pheap t \<Longrightarrow> pheap (link t)"
+lemma pheap_link: "t \<noteq> Leaf \<Longrightarrow> pheap t \<Longrightarrow> pheap (link t)"
 by(induction t rule: link.induct)(auto)
 
 lemma pheap_pass1: "pheap h \<Longrightarrow> pheap (pass\<^sub>1 h)"
@@ -135,18 +126,24 @@ by(auto split: tree.splits)
 
 
 lemma mset_link: "mset_tree (link t) = mset_tree t"
-by(induction t rule: link.induct)(auto simp: add_ac)
+by(cases t rule: link.cases)(auto simp: add_ac)
+
+lemma mset_pass\<^sub>1: "mset_tree (pass\<^sub>1 h) = mset_tree h"
+by (induction h rule: pass\<^sub>1.induct) auto
+
+lemma mset_pass\<^sub>2: "mset_tree (pass\<^sub>2 h) = mset_tree h"
+by (induction h rule: pass\<^sub>2.induct) (auto simp: mset_link)
 
 lemma mset_merge: "\<lbrakk> is_root h1; is_root h2 \<rbrakk>
  \<Longrightarrow>  mset_tree (merge h1 h2) = mset_tree h1 + mset_tree h2"
 by (induction h1 h2 rule: merge.induct) (auto simp add: ac_simps)
-
+(*
 lemma mset_merge_pairs: "mset_tree (merge_pairs h) = mset_tree h"
 by(induction h rule: merge_pairs.induct)(auto simp: mset_link add_ac)
-
+*)
 lemma mset_del_min: "\<lbrakk> is_root h; t \<noteq> Leaf \<rbrakk> \<Longrightarrow>
   mset_tree (del_min h) = mset_tree h - {#get_min h#}"
-by(induction h rule: del_min.induct)(auto simp: pass12_merge_pairs mset_merge_pairs)
+by(induction h rule: del_min.induct)(auto simp: mset_pass\<^sub>1 mset_pass\<^sub>2)
 
 text \<open>Last step: prove all axioms of the priority queue specification:\<close>
 

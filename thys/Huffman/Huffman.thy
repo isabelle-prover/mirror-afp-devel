@@ -343,12 +343,12 @@ and appears as an assumption in many of our lemmas.
 primrec consistent :: "'a tree \<Rightarrow> bool" where
 "consistent (Leaf w a) = True" |
 "consistent (Node w t\<^sub>1 t\<^sub>2) =
- (consistent t\<^sub>1 \<and> consistent t\<^sub>2 \<and> alphabet t\<^sub>1 \<inter> alphabet t\<^sub>2 = {})"
+ (alphabet t\<^sub>1 \<inter> alphabet t\<^sub>2 = {} \<and> consistent t\<^sub>1 \<and> consistent t\<^sub>2)"
 
 primrec consistent\<^sub>F :: "'a forest \<Rightarrow> bool" where
 "consistent\<^sub>F [] = True" |
 "consistent\<^sub>F (t # ts) =
- (consistent t \<and> consistent\<^sub>F ts \<and> alphabet t \<inter> alphabet\<^sub>F ts = {})"
+ (alphabet t \<inter> alphabet\<^sub>F ts = {} \<and> consistent t \<and> consistent\<^sub>F ts)"
 
 text \<open>
 Several of our proofs are by structural induction on consistent trees $t$ and

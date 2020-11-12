@@ -80,17 +80,20 @@ fun pheap :: "('a :: linorder) heap \<Rightarrow> bool" where
 lemma pheap_merge: "pheap h1 \<Longrightarrow> pheap h2 \<Longrightarrow> pheap (merge h1 h2)"
 by (induction h1 h2 rule: merge.induct) fastforce+
 
+lemma pheap_merge_pairs: "\<forall>h \<in> set hs. pheap h \<Longrightarrow> pheap (merge_pairs hs)"
+by (induction hs rule: merge_pairs.induct)(auto simp: pheap_merge)
+
 lemma pheap_insert: "pheap h \<Longrightarrow> pheap (insert x h)"
 by (auto simp: pheap_merge)
-
+(*
 lemma pheap_pass1: "\<forall>h \<in> set hs. pheap h \<Longrightarrow> \<forall>h \<in> set (pass\<^sub>1 hs). pheap h"
 by(induction hs rule: pass\<^sub>1.induct) (auto simp: pheap_merge)
 
 lemma pheap_pass2: "\<forall>h \<in> set hs. pheap h \<Longrightarrow> pheap (pass\<^sub>2 hs)"
 by (induction hs)(auto simp: pheap_merge)
-
+*)
 lemma pheap_del_min: "pheap h \<Longrightarrow> pheap (del_min h)"
-by(induction h rule: del_min.induct) (auto intro!: pheap_pass1 pheap_pass2)
+by(cases h) (auto simp: pass12_merge_pairs pheap_merge_pairs)
 
 
 subsubsection \<open>Functional Correctness\<close>
@@ -118,7 +121,7 @@ by(induction hs rule: merge_pairs.induct)(auto simp: mset_merge)
 
 lemma mset_del_min: "h \<noteq> Empty \<Longrightarrow>
   mset_heap (del_min h) = mset_heap h - {#get_min h#}"
-by(induction h rule: del_min.induct) (auto simp: pass12_merge_pairs mset_merge_pairs)
+by(cases h) (auto simp: pass12_merge_pairs mset_merge_pairs)
 
 
 text \<open>Last step: prove all axioms of the priority queue specification:\<close>
