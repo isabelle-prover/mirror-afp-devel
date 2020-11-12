@@ -30,8 +30,8 @@ begin
 fun merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge h Empty = h" |
 "merge Empty h = h" |
-"merge (Hp x lx =: hx) (Hp y ly =: hy) = 
-    (if x < y then Hp x (hy # lx) else Hp y (hx # ly))"
+"merge (Hp x hsx =: hx) (Hp y hsy =: hy) = 
+    (if x < y then Hp x (hy # hsx) else Hp y (hx # hsy))"
 
 end
 
