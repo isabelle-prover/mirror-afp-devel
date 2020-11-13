@@ -1591,7 +1591,7 @@ proof -
     by argo
 qed
 
-\<comment> \<open> A technical lemma used in \isanam{cnf_of_encode_goal_state_set}. \<close>
+\<comment> \<open> A technical lemma used in \isaname{cnf_of_encode_goal_state_set}. \<close>
 private lemma cnf_of_encode_goal_state_set_i:
     "cnf ((\<Phi>\<^sub>G \<Pi>) t ) = \<Union>({ cnf (encode_state_variable t
       (index (strips_problem.variables_of \<Pi>) v) (((\<Pi>)\<^sub>G) v))

@@ -2,7 +2,7 @@ chapter AFP
 
 session Verified_SAT_Based_AI_Planning (AFP) = HOL +
   description {* Verified SAT-Based AI Planning *}
-  options [timeout = 600, document_variants = "document=-theory,/proof,/ML"]
+  options [timeout = 600]
   sessions
     "HOL-Data_Structures"
     "AI_Planning_Languages_Semantics"
