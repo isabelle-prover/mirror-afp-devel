@@ -3338,7 +3338,7 @@ abstract = Research in information-flow security aims at developing methods to
 	an approach for compositionally reasoning about non-interference in
 	concurrent programs via rely-guarantee-style reasoning.  We present an
 	Isabelle/HOL formalization of the concepts and proofs of this approach.
-notify = grewe@cs.tu-darmstadt.de
+notify =
 
 [Dependent_SIFUM_Type_Systems]
 title = A Dependent Security Type System for Concurrent Imperative Programs
@@ -3432,7 +3432,7 @@ abstract = Research in information-flow security aims at developing methods to
 	approximations for these side conditions. The soundness proof of
 	such an instantiation boils down to showing that these syntactic
 	approximations imply the semantic side conditions.
-notify = grewe@cs.tu-darmstadt.de
+notify =
 
 [WHATandWHERE_Security]
 title = A Formalization of Declassification with WHAT-and-WHERE-Security
@@ -3466,7 +3466,7 @@ abstract = Research in information-flow security aims at developing methods to
 	<p>
 	This Isabelle/HOL formalization uses theories from the entry
 	Strong Security.
-notify = grewe@cs.tu-darmstadt.de
+notify =
 
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
@@ -9776,7 +9776,7 @@ author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <m
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
 notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we provide a formalisation of extended finite state
   machines (EFSMs) where models are represented as finite sets of
   transitions between states. EFSMs execute traces to produce observable
@@ -9792,7 +9792,7 @@ author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <m
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
 notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we provide a formal implementation of a
   state-merging technique to infer extended finite state machines
   (EFSMs), complete with output and update functions, from black-box
