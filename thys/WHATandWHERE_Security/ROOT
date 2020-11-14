@@ -21,6 +21,10 @@ session WHATandWHERE_Security (AFP) = HOL +
     Type_System 
     Type_System_example 
     Up_To_Technique
+  document_theories
+    Strong_Security.Types
+    Strong_Security.Expr
+    Strong_Security.Domain_example
   document_files
     "root.bib"
     "root.tex"
