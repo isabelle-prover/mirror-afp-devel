@@ -7,17 +7,6 @@ theory Reversed_Bit_Lists
   imports "HOL-Library.Word" Typedef_Morphisms
 begin
 
-context comm_semiring_1
-begin
-
-lemma horner_sum_append:
-  \<open>horner_sum f a (xs @ ys) = horner_sum f a xs + a ^ length xs * horner_sum f a ys\<close>
-  using sum.atLeastLessThan_shift_bounds [of _ 0 \<open>length xs\<close> \<open>length ys\<close>]
-    atLeastLessThan_add_Un [of 0 \<open>length xs\<close> \<open>length ys\<close>]
-  by (simp add: horner_sum_eq_sum sum_distrib_left sum.union_disjoint ac_simps nth_append power_add)
-
-end
-
 lemma horner_sum_of_bool_2_concat:
   \<open>horner_sum of_bool 2 (concat (map (\<lambda>x. map (bit x) [0..<LENGTH('a)]) ws)) = horner_sum uint (2 ^ LENGTH('a)) ws\<close>
   for ws :: \<open>'a::len word list\<close>
