@@ -4,6 +4,8 @@ theory SPMF_Applicative imports
   "HOL-Probability.SPMF"
 begin
 
+declare eq_on_def [simp del]
+
 subsection \<open>Applicative instance for @{typ "'a spmf"}\<close>
 
 abbreviation (input) pure_spmf :: "'a \<Rightarrow> 'a spmf"

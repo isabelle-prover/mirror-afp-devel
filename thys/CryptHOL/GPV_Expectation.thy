@@ -4,7 +4,7 @@
 subsection \<open>Expectation transformer semantics\<close>
 
 theory GPV_Expectation imports
-  Generative_Probabilistic_Value
+  Computational_Model
 begin
 
 lemma le_enn2realI: "\<lbrakk> ennreal x \<le> y; y = \<top> \<Longrightarrow> x \<le> 0 \<rbrakk> \<Longrightarrow> x \<le> enn2real y"
@@ -369,7 +369,7 @@ proof(rule antisym)
       apply(rule nn_integral_mono)
       apply(clarsimp split!: generat.split)
        apply(rewrite expectation_gpv.simps)
-       apply(simp cong del: if_weak_cong)
+       apply(simp cong del: if_weak_cong add: generat.map_comp id_def[symmetric] generat.map_id)
       apply(simp add: measure_spmf_return_spmf nn_integral_return)
       apply(rule INF_mono)
       apply(erule rev_bexI)
@@ -405,7 +405,7 @@ proof(rule antisym)
     show ?case unfolding expectation_gpv1_def
       apply(rewrite in "_ \<le> \<hole>" expectation_gpv.simps)
       apply(rewrite in "\<hole> \<le> _" expectation_gpv.simps)
-      apply(simp add: pmf_map_spmf_None nn_integral_try_spmf o_def generat.map_comp case_map_generat distrib_left ennreal_mult mult_ac cong del: generat.case_cong_weak)
+      apply(simp add: pmf_map_spmf_None nn_integral_try_spmf o_def generat.map_comp case_map_generat distrib_left ennreal_mult mult_ac id_def[symmetric] generat.map_id cong del: generat.case_cong_weak)
       apply(rule disjI2 nn_integral_mono)+
       apply(clarsimp split: generat.split intro!: INF_mono step(2) elim!: rev_bexI)
       done
@@ -933,5 +933,378 @@ proof -
   from this[THEN plossless_gpv_lossless_spmfD] show ?thesis
     unfolding exec_gpv_conv_inline1 by(simp add: inline_sel)
 qed
+
+lemma expectation_gpv_\<I>_mono:
+  defines "expectation_gpv' \<equiv> expectation_gpv"
+  assumes le: "\<I> \<le> \<I>'"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+  shows "expectation_gpv fail \<I> f gpv \<le> expectation_gpv' fail \<I>' f gpv"
+  using WT
+proof(induction arbitrary: gpv rule: expectation_gpv_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case step [unfolded expectation_gpv'_def]: (step expectation_gpv')
+  show ?case unfolding expectation_gpv'_def
+    by(subst expectation_gpv.simps)
+      (clarsimp intro!: add_mono nn_integral_mono_AE INF_mono split: generat.split
+        , auto intro!: bexI step add_mono nn_integral_mono_AE INF_mono split: generat.split dest: WT_gpvD[OF step.prems] intro!: step dest: responses_\<I>_mono[OF le])
+qed
+
+lemma pgen_lossless_gpv_mono:
+  assumes *: "pgen_lossless_gpv fail \<I> gpv"
+    and le: "\<I> \<le> \<I>'"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and fail: "fail \<le> 1"
+  shows "pgen_lossless_gpv fail \<I>' gpv"
+  unfolding pgen_lossless_gpv_def
+proof(rule antisym)
+  from WT le have "\<I>' \<turnstile>g gpv \<surd>" by(rule WT_gpv_\<I>_mono)
+  from expectation_gpv_const_le[OF this, of fail 1] fail
+  show "expectation_gpv fail \<I>' (\<lambda>_. 1) gpv \<le> 1" by(simp add: max_def split: if_split_asm)
+  from expectation_gpv_\<I>_mono[OF le WT, of fail "\<lambda>_. 1"] *
+  show "expectation_gpv fail \<I>' (\<lambda>_. 1) gpv \<ge> 1" by(simp add: pgen_lossless_gpv_def)
+qed
+
+lemma plossless_gpv_mono:
+  "\<lbrakk> plossless_gpv \<I> gpv; \<I> \<le> \<I>'; \<I> \<turnstile>g gpv \<surd> \<rbrakk> \<Longrightarrow> plossless_gpv \<I>' gpv"
+  by(erule pgen_lossless_gpv_mono; simp)
+
+lemma pfinite_gpv_mono:
+  "\<lbrakk> pfinite_gpv \<I> gpv; \<I> \<le> \<I>'; \<I> \<turnstile>g gpv \<surd> \<rbrakk> \<Longrightarrow> pfinite_gpv \<I>' gpv"
+  by(erule pgen_lossless_gpv_mono; simp)
+
+lemma pgen_lossless_gpv_parametric': includes lifting_syntax shows
+  "((=) ===> rel_\<I> C R ===> rel_gpv'' A C R ===> (=)) pgen_lossless_gpv pgen_lossless_gpv"
+  unfolding pgen_lossless_gpv_def supply expectation_gpv_parametric'[transfer_rule] by transfer_prover
+
+lemma pgen_lossless_gpv_parametric: includes lifting_syntax shows
+  "((=) ===> rel_\<I> C (=) ===> rel_gpv A C ===> (=)) pgen_lossless_gpv pgen_lossless_gpv"
+  using pgen_lossless_gpv_parametric'[of C "(=)" A] by(simp add: rel_gpv_conv_rel_gpv'')
+
+lemma pgen_lossless_gpv_map_gpv_id [simp]:
+  "pgen_lossless_gpv fail \<I> (map_gpv f id gpv) = pgen_lossless_gpv fail \<I> gpv"
+  using pgen_lossless_gpv_parametric[of "BNF_Def.Grp UNIV id" "BNF_Def.Grp UNIV f"]
+  unfolding gpv.rel_Grp
+  by(auto simp add: eq_alt[symmetric] rel_\<I>_eq rel_fun_def Grp_iff)
+
+context raw_converter_invariant begin
+
+lemma expectation_gpv_le_inline:
+  defines "expectation_gpv2 \<equiv> expectation_gpv 0 \<I>'"
+  assumes callee: "\<And>s x. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> plossless_gpv \<I>' (callee s x)"
+    and WT_gpv: "\<I> \<turnstile>g gpv \<surd>"
+    and I: "I s"
+  shows "expectation_gpv 0 \<I> f gpv \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee gpv s)"
+  using WT_gpv I
+proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step expectation_gpv')
+  { fix out c
+    assume IO: "IO out c \<in> set_spmf (the_gpv gpv)"
+    with step.prems (1) have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpv_OutD)
+    have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) = \<integral>\<^sup>+ generat. (INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv (callee s out))"
+      using WT_callee[OF out, of s] callee[OF out, of s] \<open>I s\<close>
+      by(clarsimp simp add: measure_spmf.emeasure_eq_measure plossless_iff_colossless_pfinite colossless_gpv_lossless_spmfD lossless_weight_spmfD)
+    also have "\<dots> \<le> \<integral>\<^sup>+ generat. (case generat of Pure (x, s') \<Rightarrow>
+            \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+            \<partial>measure_spmf (inline1 callee (c x) s')
+         | IO out' rpv \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))
+       \<partial>measure_spmf (the_gpv (callee s out))"
+    proof(rule nn_integral_mono_AE; simp split!: generat.split)
+      fix x s'
+      assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
+      hence "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
+      with results_callee[OF out, of s] \<open>I s\<close> have x: "x \<in> responses_\<I> \<I> out" and "I s'" by blast+
+      from x have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x)" by(rule INF_lower)
+      also have "\<dots> \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c x) s')"
+        by(rule step.IH)(rule WT_gpv_ContD[OF step.prems(1) IO x] step.prems \<open>I s'\<close>|assumption)+
+      also have "\<dots> = \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+            \<partial>measure_spmf (inline1 callee (c x) s')"
+        unfolding expectation_gpv2_def
+        by(subst expectation_gpv.simps)(auto simp add: inline_sel split_def o_def intro!: nn_integral_cong split: generat.split sum.split)
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+    next
+      fix out' rpv
+      assume IO': "IO out' rpv \<in> set_spmf (the_gpv (callee s out))"
+      have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> (INF (r, s')\<in>(\<Union>r'\<in>responses_\<I> \<I>' out'. results_gpv \<I>' (rpv r')). expectation_gpv' (c r))"
+        using IO' results_callee[OF out, of s] \<open>I s\<close> by(intro INF_mono)(auto intro: results_gpv.IO)
+      also have "\<dots> = (INF r'\<in>responses_\<I> \<I>' out'. INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r))"
+        by(simp add: INF_UNION)
+      also have "\<dots> \<le> (INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))"
+      proof(rule INF_mono, rule bexI)
+        fix r'
+        assume r': "r' \<in> responses_\<I> \<I>' out'"
+        have "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> (INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c r) s'))"
+          using IO IO' step.prems out results_callee[OF out, of s] r'
+          by(auto intro!: INF_mono rev_bexI step.IH dest: WT_gpv_ContD intro: results_gpv.IO)
+        also have "\<dots> \<le>  expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r')"
+          unfolding expectation_gpv2_def using plossless_gpv_ContD[OF callee, OF out \<open>I s\<close> IO' r'] WT_callee[OF out \<open>I s\<close>] IO' r'
+          by(intro plossless_INF_le_expectation_gpv)(auto intro: WT_gpv_ContD)
+        finally show "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> \<dots>" .
+      qed
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+    qed
+    also note calculation }
+  then show ?case unfolding expectation_gpv2_def
+    apply(rewrite expectation_gpv.simps)
+    apply(rewrite inline_sel)
+    apply(simp add: o_def pmf_map_spmf_None)
+    apply(rewrite sum.case_distrib[where h="case_generat _ _"])
+    apply(simp cong del: sum.case_cong_weak)
+    apply(simp add: split_beta o_def cong del: sum.case_cong_weak)
+    apply(rewrite inline1.simps)
+    apply(rewrite measure_spmf_bind)
+    apply(rewrite nn_integral_bind[where B="measure_spmf _"])
+      apply simp
+     apply(simp add: space_subprob_algebra)
+    apply(rule nn_integral_mono_AE)
+    apply(clarsimp split!: generat.split)
+     apply(simp add: measure_spmf_return_spmf nn_integral_return)
+    apply(rewrite measure_spmf_bind)
+    apply(simp add: nn_integral_bind[where B="measure_spmf _"] space_subprob_algebra)
+    apply(subst generat.case_distrib[where h="measure_spmf"])
+    apply(subst generat.case_distrib[where h="\<lambda>x. nn_integral x _"])
+    apply(simp add: measure_spmf_return_spmf nn_integral_return split_def)
+    done
+qed
+
+lemma plossless_inline:
+  assumes lossless: "plossless_gpv \<I> gpv"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and callee: "\<And>s x. \<lbrakk> I s; x \<in> outs_\<I> \<I> \<rbrakk> \<Longrightarrow> plossless_gpv \<I>' (callee s x)"
+    and I: "I s"
+  shows "plossless_gpv \<I>' (inline callee gpv s)"
+  unfolding pgen_lossless_gpv_def
+proof(rule antisym)
+  have WT': "\<I>' \<turnstile>g inline callee gpv s \<surd>" using WT I by(rule WT_gpv_inline_invar)
+  from expectation_gpv_const_le[OF WT', of 0 1]
+  show "expectation_gpv 0 \<I>' (\<lambda>_. 1) (inline callee gpv s) \<le> 1" by(simp add: max_def)
+
+  have "1 = expectation_gpv 0 \<I> (\<lambda>_. 1) gpv" using lossless by(simp add: pgen_lossless_gpv_def)
+  also have "\<dots> \<le> expectation_gpv 0 \<I>' (\<lambda>_. 1) (inline callee gpv s)"
+    by(rule expectation_gpv_le_inline[unfolded split_def]; rule callee I WT)
+  finally show "1 \<le> \<dots>" .
+qed
+
+end
+
+lemma expectation_left_gpv [simp]:
+  "expectation_gpv fail (\<I> \<oplus>\<^sub>\<I> \<I>') f (left_gpv gpv) = expectation_gpv fail \<I> f gpv"
+proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattice_partial_function_definitions complete_lattice_partial_function_definitions expectation_gpv.mono expectation_gpv.mono expectation_gpv_def expectation_gpv_def, case_names adm bottom step])
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step expectation_gpv' expectation_gpv'')
+  show ?case
+    by (auto simp add: pmf_map_spmf_None o_def case_map_generat image_comp
+      split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
+qed
+
+lemma expectation_right_gpv [simp]:
+  "expectation_gpv fail (\<I> \<oplus>\<^sub>\<I> \<I>') f (right_gpv gpv) = expectation_gpv fail \<I>' f gpv"
+proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattice_partial_function_definitions complete_lattice_partial_function_definitions expectation_gpv.mono expectation_gpv.mono expectation_gpv_def expectation_gpv_def, case_names adm bottom step])
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step expectation_gpv' expectation_gpv'')
+  show ?case
+    by (auto simp add: pmf_map_spmf_None o_def case_map_generat image_comp
+      split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
+qed
+
+lemma pgen_lossless_left_gpv [simp]: "pgen_lossless_gpv fail (\<I> \<oplus>\<^sub>\<I> \<I>') (left_gpv gpv) = pgen_lossless_gpv fail \<I> gpv"
+  by(simp add: pgen_lossless_gpv_def)
+
+lemma pgen_lossless_right_gpv [simp]: "pgen_lossless_gpv fail (\<I> \<oplus>\<^sub>\<I> \<I>') (right_gpv gpv) = pgen_lossless_gpv fail \<I>' gpv"
+  by(simp add: pgen_lossless_gpv_def)
+
+lemma (in raw_converter_invariant) expectation_gpv_le_inline_invariant:
+  defines "expectation_gpv2 \<equiv> expectation_gpv 0 \<I>'"
+  assumes callee: "\<And>s x. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> plossless_gpv \<I>' (callee s x)"
+    and WT_gpv: "\<I> \<turnstile>g gpv \<surd>"
+    and I: "I s"
+  shows "expectation_gpv 0 \<I> f gpv \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee gpv s)"
+  using WT_gpv I
+proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step expectation_gpv')
+  { fix out c
+    assume IO: "IO out c \<in> set_spmf (the_gpv gpv)"
+    with step.prems(1) have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpv_OutD)
+    have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) = \<integral>\<^sup>+ generat. (INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv (callee s out))"
+      using WT_callee[OF out, of s] callee[OF out, of s] step.prems(2)
+      by(clarsimp simp add: measure_spmf.emeasure_eq_measure plossless_iff_colossless_pfinite colossless_gpv_lossless_spmfD lossless_weight_spmfD)
+    also have "\<dots> \<le> \<integral>\<^sup>+ generat. (case generat of Pure (x, s') \<Rightarrow>
+            \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+            \<partial>measure_spmf (inline1 callee (c x) s')
+         | IO out' rpv \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))
+       \<partial>measure_spmf (the_gpv (callee s out))"
+    proof(rule nn_integral_mono_AE; simp split!: generat.split)
+      fix x s'
+      assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
+      hence "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
+      with results_callee[OF out step.prems(2)] have x: "x \<in> responses_\<I> \<I> out" and s': "I s'" by blast+
+      from this(1) have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x)" by(rule INF_lower)
+      also have "\<dots> \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c x) s')"
+        by(rule step.IH)(rule WT_gpv_ContD[OF step.prems(1) IO x] step.prems s'|assumption)+
+      also have "\<dots> = \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+            \<partial>measure_spmf (inline1 callee (c x) s')"
+        unfolding expectation_gpv2_def
+        by(subst expectation_gpv.simps)(auto simp add: inline_sel split_def o_def intro!: nn_integral_cong split: generat.split sum.split)
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+    next
+      fix out' rpv
+      assume IO': "IO out' rpv \<in> set_spmf (the_gpv (callee s out))"
+      have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> (INF (r, s')\<in>(\<Union>r'\<in>responses_\<I> \<I>' out'. results_gpv \<I>' (rpv r')). expectation_gpv' (c r))"
+        using IO' results_callee[OF out step.prems(2)] by(intro INF_mono)(auto intro: results_gpv.IO)
+      also have "\<dots> = (INF r'\<in>responses_\<I> \<I>' out'. INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r))"
+        by(simp add: INF_UNION)
+      also have "\<dots> \<le> (INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))"
+      proof(rule INF_mono, rule bexI)
+        fix r'
+        assume r': "r' \<in> responses_\<I> \<I>' out'"
+        have "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> (INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c r) s'))"
+          using IO IO' step.prems out results_callee[OF out, of s] r'
+          by(auto intro!: INF_mono rev_bexI step.IH dest: WT_gpv_ContD intro: results_gpv.IO)
+        also have "\<dots> \<le>  expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r')"
+          unfolding expectation_gpv2_def using plossless_gpv_ContD[OF callee, OF out step.prems(2) IO' r'] WT_callee[OF out step.prems(2)] IO' r'
+          by(intro plossless_INF_le_expectation_gpv)(auto intro: WT_gpv_ContD)
+        finally show "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> \<dots>" .
+      qed
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+    qed
+    also note calculation }
+  then show ?case unfolding expectation_gpv2_def
+    apply(rewrite expectation_gpv.simps)
+    apply(rewrite inline_sel)
+    apply(simp add: o_def pmf_map_spmf_None)
+    apply(rewrite sum.case_distrib[where h="case_generat _ _"])
+    apply(simp cong del: sum.case_cong_weak)
+    apply(simp add: split_beta o_def cong del: sum.case_cong_weak)
+    apply(rewrite inline1.simps)
+    apply(rewrite measure_spmf_bind)
+    apply(rewrite nn_integral_bind[where B="measure_spmf _"])
+      apply simp
+     apply(simp add: space_subprob_algebra)
+    apply(rule nn_integral_mono_AE)
+    apply(clarsimp split!: generat.split)
+     apply(simp add: measure_spmf_return_spmf nn_integral_return)
+    apply(rewrite measure_spmf_bind)
+    apply(simp add: nn_integral_bind[where B="measure_spmf _"] space_subprob_algebra)
+    apply(subst generat.case_distrib[where h="measure_spmf"])
+    apply(subst generat.case_distrib[where h="\<lambda>x. nn_integral x _"])
+    apply(simp add: measure_spmf_return_spmf nn_integral_return split_def)
+    done
+qed
+
+lemma (in raw_converter_invariant) plossless_inline_invariant:
+  assumes lossless: "plossless_gpv \<I> gpv"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and callee: "\<And>s x. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> plossless_gpv \<I>' (callee s x)"
+    and I: "I s"
+  shows "plossless_gpv \<I>' (inline callee gpv s)"
+  unfolding pgen_lossless_gpv_def
+proof(rule antisym)
+  have WT': "\<I>' \<turnstile>g inline callee gpv s \<surd>" using WT I by(rule WT_gpv_inline_invar)
+  from expectation_gpv_const_le[OF WT', of 0 1]
+  show "expectation_gpv 0 \<I>' (\<lambda>_. 1) (inline callee gpv s) \<le> 1" by(simp add: max_def)
+
+  have "1 = expectation_gpv 0 \<I> (\<lambda>_. 1) gpv" using lossless by(simp add: pgen_lossless_gpv_def)
+  also have "\<dots> \<le> expectation_gpv 0 \<I>' (\<lambda>_. 1) (inline callee gpv s)"
+    by(rule expectation_gpv_le_inline[unfolded split_def]; rule callee WT WT_callee I)
+  finally show "1 \<le> \<dots>" .
+qed
+
+context callee_invariant_on begin
+
+lemma raw_converter_invariant: "raw_converter_invariant \<I> \<I>' (\<lambda>s x. lift_spmf (callee s x)) I"
+  by(unfold_locales)(auto dest: callee_invariant WT_callee WT_calleeD)
+
+lemma (in callee_invariant_on) plossless_exec_gpv:
+  assumes lossless: "plossless_gpv \<I> gpv"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and callee: "\<And>s x. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> lossless_spmf (callee s x)"
+    and I: "I s"
+  shows "lossless_spmf (exec_gpv callee gpv s)"
+proof -
+  interpret raw_converter_invariant \<I> \<I>' "\<lambda>s x. lift_spmf (callee s x)" I for \<I>'
+    by(rule raw_converter_invariant)
+  have "plossless_gpv \<I>_full (inline (\<lambda>s x. lift_spmf (callee s x)) gpv s)"
+    using lossless WT by(rule plossless_inline)(simp_all add: callee I)
+  from this[THEN plossless_gpv_lossless_spmfD] show ?thesis
+    unfolding exec_gpv_conv_inline1 by(simp add: inline_sel)
+qed
+
+end
+
+lemma expectation_gpv_mk_lossless_gpv:
+  fixes \<I> y
+  defines "rhs \<equiv> expectation_gpv 0 \<I> (\<lambda>_. y)"
+  assumes WT: "\<I>' \<turnstile>g gpv \<surd>"
+    and outs: "outs_\<I> \<I> = outs_\<I> \<I>'"
+  shows "expectation_gpv 0 \<I>' (\<lambda>_. y) gpv \<le> rhs (mk_lossless_gpv (responses_\<I> \<I>') x gpv)"
+  using WT
+proof(induction arbitrary: gpv rule: expectation_gpv_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case step [unfolded rhs_def]: (step expectation_gpv')
+  show ?case using step.prems outs unfolding rhs_def
+    apply(subst expectation_gpv.simps)
+    apply(clarsimp intro!: nn_integral_mono_AE INF_mono split!: generat.split if_split)
+    subgoal
+      by(frule (1) WT_gpv_OutD)(auto simp add: in_outs_\<I>_iff_responses_\<I> intro!: bexI step.IH[unfolded rhs_def] dest: WT_gpv_ContD)
+    apply(frule (1) WT_gpv_OutD; clarsimp simp add: in_outs_\<I>_iff_responses_\<I> ex_in_conv[symmetric])
+    subgoal for out c input input'
+      using step.hyps[of "c input'"] expectation_gpv_const_le[of \<I>' "c input'" 0 y]
+      by- (drule (2) WT_gpv_ContD, fastforce intro: rev_bexI simp add: max_def)
+    done
+qed
+
+lemma plossless_gpv_mk_lossless_gpv:
+  assumes "plossless_gpv \<I> gpv"
+    and "\<I> \<turnstile>g gpv \<surd>"
+    and "outs_\<I> \<I> = outs_\<I> \<I>'"
+  shows "plossless_gpv \<I>' (mk_lossless_gpv (responses_\<I> \<I>) x gpv)"
+  using assms expectation_gpv_mk_lossless_gpv[OF assms(2), of \<I>' 1 x]
+  unfolding pgen_lossless_gpv_def
+  by -(rule antisym[OF expectation_gpv_const_le[THEN order_trans]]; simp add: WT_gpv_mk_lossless_gpv)
+
+lemma (in callee_invariant_on) exec_gpv_mk_lossless_gpv:
+  assumes "\<I> \<turnstile>g gpv \<surd>"
+    and "I s"
+  shows "exec_gpv callee (mk_lossless_gpv (responses_\<I> \<I>) x gpv) s = exec_gpv callee gpv s"
+  using assms
+proof(induction arbitrary: gpv s rule: exec_gpv_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step exec_gpv')
+  show ?case using step.prems WT_gpv_OutD[OF step.prems(1)]
+    by(clarsimp simp add: bind_map_spmf intro!: bind_spmf_cong[OF refl] split!: generat.split if_split)
+      (force intro!: step.IH dest: WT_callee[THEN WT_calleeD] WT_gpv_OutD callee_invariant WT_gpv_ContD)+
+qed
+
+
+lemma expectation_gpv_map_gpv' [simp]:
+  "expectation_gpv fail \<I> f (map_gpv' g h k gpv) =
+   expectation_gpv fail (map_\<I> h k \<I>) (f \<circ> g) gpv"
+proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattice_partial_function_definitions complete_lattice_partial_function_definitions expectation_gpv.mono expectation_gpv.mono expectation_gpv_def expectation_gpv_def, case_names adm bottom step])
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step exp1 exp2)
+  have "pmf (the_gpv (map_gpv' g h k gpv)) None = pmf (the_gpv gpv) None"
+    by(simp add: pmf_map_spmf_None)
+  then show ?case 
+    by simp
+      (auto simp add: nn_integral_measure_spmf step.IH image_comp
+        split: generat.split intro!: nn_integral_cong)
+qed
+
+lemma plossless_gpv_map_gpv' [simp]:
+  "pgen_lossless_gpv b \<I> (map_gpv' f g h gpv) \<longleftrightarrow> pgen_lossless_gpv b (map_\<I> g h \<I>) gpv"
+  unfolding pgen_lossless_gpv_def by(simp add: o_def)
 
 end

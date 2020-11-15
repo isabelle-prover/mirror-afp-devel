@@ -194,4 +194,33 @@ by(simp add: generat_lub_def o_def)
 abbreviation generat_lub' :: "('cont set \<Rightarrow> 'cont') \<Rightarrow> ('a, 'out, 'cont) generat set \<Rightarrow> ('a, 'out, 'cont') generat"
 where "generat_lub' \<equiv> generat_lub (\<lambda>A. THE x. x \<in> A) (\<lambda>A. THE x. x \<in> A)"
 
+fun rel_witness_generat :: "('a, 'c, 'e) generat \<times> ('b, 'd, 'f) generat \<Rightarrow> ('a \<times> 'b, 'c \<times> 'd, 'e \<times> 'f) generat" where
+  "rel_witness_generat (Pure x, Pure y) = Pure (x, y)"
+| "rel_witness_generat (IO out c, IO out' c') = IO (out, out') (c, c')"
+
+lemma rel_witness_generat: 
+  assumes "rel_generat A C R x y"
+  shows pures_rel_witness_generat: "generat_pures (rel_witness_generat (x, y)) \<subseteq> {(a, b). A a b}"
+    and outs_rel_witness_generat: "generat_outs (rel_witness_generat (x, y)) \<subseteq> {(c, d). C c d}"
+    and conts_rel_witness_generat: "generat_conts (rel_witness_generat (x, y)) \<subseteq> {(e, f). R e f}"
+    and map1_rel_witness_generat: "map_generat fst fst fst (rel_witness_generat (x, y)) = x"
+    and map2_rel_witness_generat: "map_generat snd snd snd (rel_witness_generat (x, y)) = y"
+  using assms by(cases; simp; fail)+
+
+lemmas set_rel_witness_generat = pures_rel_witness_generat outs_rel_witness_generat conts_rel_witness_generat
+
+lemma rel_witness_generat1:
+  assumes "rel_generat A C R x y"
+  shows "rel_generat (\<lambda>a (a', b). a = a' \<and> A a' b) (\<lambda>c (c', d). c = c' \<and> C c' d) (\<lambda>r (r', s). r = r' \<and> R r' s) x (rel_witness_generat (x, y))"
+  using map1_rel_witness_generat[OF assms, symmetric]
+  unfolding generat.rel_eq[symmetric] generat.rel_map
+  by(rule generat.rel_mono_strong)(auto dest: set_rel_witness_generat[OF assms, THEN subsetD])
+
+lemma rel_witness_generat2:
+  assumes "rel_generat A C R x y"
+  shows "rel_generat (\<lambda>(a, b') b. b = b' \<and> A a b') (\<lambda>(c, d') d. d = d' \<and> C c d') (\<lambda>(r, s') s. s = s' \<and> R r s') (rel_witness_generat (x, y)) y"
+  using map2_rel_witness_generat[OF assms]
+  unfolding generat.rel_eq[symmetric] generat.rel_map
+  by(rule generat.rel_mono_strong)(auto dest: set_rel_witness_generat[OF assms, THEN subsetD])
+
 end

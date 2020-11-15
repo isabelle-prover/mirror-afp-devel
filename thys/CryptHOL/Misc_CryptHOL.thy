@@ -12,9 +12,12 @@ theory Misc_CryptHOL imports
   Coinductive.TLList
   Monad_Normalisation.Monad_Normalisation
   Monomorphic_Monad.Monomorphic_Monad
+  Applicative_Lifting.Applicative
 begin
 
 hide_const (open) Henstock_Kurzweil_Integration.negligible
+
+declare eq_on_def [simp del]
 
 subsection \<open>HOL\<close>
 
@@ -50,6 +53,9 @@ proof -
   moreover have "Q (Least Q)" using \<open>Q x\<close> by(rule LeastI)
   ultimately show ?thesis by (metis (full_types) le_cases le_less less_le_trans not_less_Least)
 qed
+
+lemma is_empty_image [simp]: "Set.is_empty (f ` A) = Set.is_empty A"
+  by(auto simp add: Set.is_empty_def)
 
 subsection \<open>Relations\<close>
 
@@ -166,6 +172,21 @@ lemma restrict_rel_prod2:
   "rel_prod R (S \<upharpoonleft> I1 \<otimes> I2) = rel_prod R S \<upharpoonleft> pred_prod (\<lambda>_. True) I1 \<otimes> pred_prod (\<lambda>_. True) I2"
 by(simp add: restrict_rel_prod[symmetric] restrict_relp_True)
 
+consts relcompp_witness :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'c \<Rightarrow> 'b"
+specification (relcompp_witness)
+  relcompp_witness1: "(A OO B) (fst xy) (snd xy) \<Longrightarrow> A (fst xy) (relcompp_witness A B xy)"
+  relcompp_witness2: "(A OO B) (fst xy) (snd xy) \<Longrightarrow> B (relcompp_witness A B xy) (snd xy)"
+  apply(fold all_conj_distrib)
+  apply(rule choice allI)+
+  by(auto intro: choice allI)
+
+lemmas relcompp_witness[of _ _ "(x, y)" for x y, simplified] = relcompp_witness1 relcompp_witness2
+
+hide_fact (open) relcompp_witness1 relcompp_witness2
+
+lemma relcompp_witness_eq [simp]: "relcompp_witness (=) (=) (x, x) = x"
+  using relcompp_witness(1)[of "(=)" "(=)" x x] by(simp add: eq_OO)
+
 subsection \<open>Pairs\<close>
 
 lemma split_apfst [simp]: "case_prod h (apfst f xy) = case_prod (h \<circ> f) xy"
@@ -194,6 +215,41 @@ by(simp add: corec_prod_apply)
 lemma split_corec_prod [simp]: "case_prod h (corec_prod f g s) = h (f s) (g s)"
 by(simp add: corec_prod_apply)
 
+lemma Pair_fst_Unity: "(fst x, ()) = x"
+  by(cases x) simp
+
+definition rprodl :: "('a \<times> 'b) \<times> 'c \<Rightarrow> 'a \<times> ('b \<times> 'c)" where "rprodl = (\<lambda>((a, b), c). (a, (b, c)))"
+
+lemma rprodl_simps [simp]: "rprodl ((a, b), c) = (a, (b, c))"
+  by(simp add: rprodl_def)
+
+lemma rprodl_parametric [transfer_rule]: includes lifting_syntax shows
+  "(rel_prod (rel_prod A B) C ===> rel_prod A (rel_prod B C)) rprodl rprodl"
+  unfolding rprodl_def by transfer_prover
+
+definition lprodr :: "'a \<times> ('b \<times> 'c) \<Rightarrow> ('a \<times> 'b) \<times> 'c" where "lprodr = (\<lambda>(a, b, c). ((a, b), c))"
+
+lemma lprodr_simps [simp]: "lprodr (a, b, c) = ((a, b), c)"
+  by(simp add: lprodr_def)
+
+lemma lprodr_parametric [transfer_rule]: includes lifting_syntax shows
+  "(rel_prod A (rel_prod B C) ===> rel_prod (rel_prod A B) C) lprodr lprodr"
+  unfolding lprodr_def by transfer_prover
+
+lemma lprodr_inverse [simp]: "rprodl (lprodr x) = x"
+  by(cases x) auto
+
+lemma rprodl_inverse [simp]: "lprodr (rprodl x) = x"
+  by(cases x) auto
+
+lemma pred_prod_mono' [mono]:
+  "pred_prod A B xy \<longrightarrow> pred_prod A' B' xy"
+  if "\<And>x. A x \<longrightarrow> A' x" "\<And>y. B y \<longrightarrow> B' y"
+  using that by(cases xy) auto
+
+fun rel_witness_prod :: "('a \<times> 'b) \<times> ('c \<times> 'd) \<Rightarrow> (('a \<times> 'c) \<times> ('b \<times> 'd))" where
+  "rel_witness_prod ((a, b), (c, d)) = ((a, c), (b, d))"
+
 subsection \<open>Sums\<close>
 
 lemma islE:
@@ -212,6 +268,34 @@ by(cases y) auto
 
 lemma Inr_eq_map_sum_iff: "Inr x = map_sum f g y \<longleftrightarrow> (\<exists>z. y = Inr z \<and> x = g z)"
 by(cases y) auto
+
+lemma inj_on_map_sum [simp]:
+  "\<lbrakk> inj_on f A; inj_on g B \<rbrakk> \<Longrightarrow> inj_on (map_sum f g) (A <+> B)"
+proof(rule inj_onI, goal_cases)
+  case (1 x y)
+  then show ?case by(cases x; cases y; auto simp add: inj_on_def)
+qed
+
+lemma inv_into_map_sum:
+  "inv_into (A <+> B) (map_sum f g) x = map_sum (inv_into A f) (inv_into B g) x"
+  if "x \<in> f ` A <+> g ` B" "inj_on f A" "inj_on g B"
+  using that by(cases rule: PlusE[consumes 1])(auto simp add: inv_into_f_eq f_inv_into_f)
+
+fun rsuml :: "('a + 'b) + 'c \<Rightarrow> 'a + ('b + 'c)" where
+  "rsuml (Inl (Inl a)) = Inl a"
+| "rsuml (Inl (Inr b)) = Inr (Inl b)"
+| "rsuml (Inr c) = Inr (Inr c)"
+
+fun lsumr :: "'a + ('b + 'c) \<Rightarrow> ('a + 'b) + 'c" where
+  "lsumr (Inl a) = Inl (Inl a)"
+| "lsumr (Inr (Inl b)) = Inl (Inr b)"
+| "lsumr (Inr (Inr c)) = Inr c"
+
+lemma rsuml_lsumr [simp]: "rsuml (lsumr x) = x"
+  by(cases x rule: lsumr.cases) simp_all
+
+lemma lsumr_rsuml [simp]: "lsumr (rsuml x) = x"
+  by(cases x rule: rsuml.cases) simp_all
 
 subsection \<open>Option\<close>
 
@@ -272,6 +356,31 @@ lemma option_rel_map_restrict_relp:
   and option_rel_map_restrict_relp2:
   "rel_option (R \<upharpoonleft> P \<otimes> Q) x (map_option g y) = rel_option ((\<lambda>x. R x \<circ> g) \<upharpoonleft> P \<otimes> Q \<circ> g) x y"
 by(simp_all add: option.rel_map restrict_relp_def fun_eq_iff)
+
+fun rel_witness_option :: "'a option \<times> 'b option \<Rightarrow> ('a \<times> 'b) option" where
+  "rel_witness_option (Some x, Some y) = Some (x, y)"
+| "rel_witness_option (None, None) = None"
+| "rel_witness_option _ = None" \<comment> \<open>Just to make the definition complete\<close>
+
+lemma rel_witness_option:
+  shows set_rel_witness_option: "\<lbrakk> rel_option A x y; (a, b) \<in> set_option (rel_witness_option (x, y)) \<rbrakk> \<Longrightarrow> A a b"
+    and map1_rel_witness_option: "rel_option A x y \<Longrightarrow> map_option fst (rel_witness_option (x, y)) = x"
+    and map2_rel_witness_option: "rel_option A x y \<Longrightarrow> map_option snd (rel_witness_option (x, y)) = y"
+  by(cases "(x, y)" rule: rel_witness_option.cases; simp; fail)+
+
+lemma rel_witness_option1:
+  assumes "rel_option A x y"
+  shows "rel_option (\<lambda>a (a', b). a = a' \<and> A a' b) x (rel_witness_option (x, y))"
+  using map1_rel_witness_option[OF assms, symmetric]
+  unfolding option.rel_eq[symmetric] option.rel_map
+  by(rule option.rel_mono_strong)(auto intro: set_rel_witness_option[OF assms])
+
+lemma rel_witness_option2:
+  assumes "rel_option A x y"
+  shows "rel_option (\<lambda>(a, b') b. b = b' \<and> A a b') (rel_witness_option (x, y)) y"
+  using map2_rel_witness_option[OF assms]
+  unfolding option.rel_eq[symmetric] option.rel_map
+  by(rule option.rel_mono_strong)(auto intro: set_rel_witness_option[OF assms])
 
 subsubsection \<open>Orders on option\<close>
 
@@ -438,6 +547,53 @@ lemmas sup_option_ai = sup_option_assoc sup_option_left_idem
 
 lemma sup_option_None [simp]: "sup_option None y = y"
 by(cases y) simp_all
+
+subsubsection \<open>Restriction on @{typ "'a option"}\<close>
+
+primrec (transfer) enforce_option :: "('a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option" where
+  "enforce_option P (Some x) = (if P x then Some x else None)"
+| "enforce_option P None = None"
+
+lemma set_enforce_option [simp]: "set_option (enforce_option P x) = {a \<in> set_option x. P a}"
+  by(cases x) auto
+
+lemma enforce_map_option: "enforce_option P (map_option f x) = map_option f (enforce_option (P \<circ> f) x)"
+  by(cases x) auto
+
+lemma enforce_bind_option [simp]:
+  "enforce_option P (Option.bind x f) = Option.bind x (enforce_option P \<circ> f)"
+  by(cases x) auto
+
+lemma enforce_option_alt_def:
+  "enforce_option P x = Option.bind x (\<lambda>a. Option.bind (assert_option (P a)) (\<lambda>_ :: unit. Some a))"
+  by(cases x) simp_all
+
+lemma enforce_option_eq_None_iff [simp]:
+  "enforce_option P x = None \<longleftrightarrow> (\<forall>a. x = Some a \<longrightarrow> \<not> P a)"
+  by(cases x) auto
+
+lemma enforce_option_eq_Some_iff [simp]:
+  "enforce_option P x = Some y \<longleftrightarrow> x = Some y \<and> P y"
+  by(cases x) auto
+
+lemma Some_eq_enforce_option_iff [simp]:
+  "Some y = enforce_option P x \<longleftrightarrow> x = Some y \<and> P y"
+  by(cases x) auto
+
+lemma enforce_option_top [simp]: "enforce_option \<top> = id"
+  by(rule ext; rename_tac x; case_tac x; simp)
+
+lemma enforce_option_K_True [simp]: "enforce_option (\<lambda>_. True) x = x"
+  by(cases x) simp_all
+
+lemma enforce_option_bot [simp]: "enforce_option \<bottom> = (\<lambda>_. None)"
+  by(simp add: fun_eq_iff)
+
+lemma enforce_option_K_False [simp]: "enforce_option (\<lambda>_. False) x = None"
+  by simp
+
+lemma enforce_pred_id_option: "pred_option P x \<Longrightarrow> enforce_option P x = x"
+  by(cases x) auto
 
 subsubsection \<open>Maps\<close>
 
@@ -696,6 +852,31 @@ by(auto simp add: vimage2p_def fun_eq_iff inj_on_def)
 lemma vimage2p_conversep: "BNF_Def.vimage2p f g R^--1 = (BNF_Def.vimage2p g f R)^--1"
 by(simp add: vimage2p_def fun_eq_iff)
 
+lemma rel_fun_refl: "\<lbrakk> A \<le> (=); (=) \<le> B \<rbrakk> \<Longrightarrow> (=) \<le> rel_fun A B"
+  by(subst fun.rel_eq[symmetric])(rule fun_mono)
+
+lemma rel_fun_mono_strong:
+  "\<lbrakk> rel_fun A B f g; A' \<le> A; \<And>x y. \<lbrakk> x \<in> f ` {x. Domainp A' x}; y \<in> g ` {x. Rangep A' x}; B x y \<rbrakk> \<Longrightarrow> B' x y \<rbrakk> \<Longrightarrow> rel_fun A' B' f g"
+  by(auto simp add: rel_fun_def) fastforce
+
+lemma rel_fun_refl_strong: 
+  assumes "A \<le> (=)" "\<And>x. x \<in> f ` {x. Domainp A x} \<Longrightarrow> B x x"
+  shows "rel_fun A B f f"
+proof -
+  have "rel_fun (=) (=) f f" by(simp add: rel_fun_eq)
+  then show ?thesis using assms(1)
+    by(rule rel_fun_mono_strong) (auto intro: assms(2))
+qed
+
+lemma Grp_iff: "BNF_Def.Grp B g x y \<longleftrightarrow> y = g x \<and> x \<in> B" by(simp add: Grp_def)
+
+lemma Rangep_Grp: "Rangep (BNF_Def.Grp A f) = (\<lambda>x. x \<in> f ` A)"
+  by(auto simp add: fun_eq_iff Grp_iff)
+
+lemma rel_fun_Grp:
+  "rel_fun (BNF_Def.Grp UNIV h)\<inverse>\<inverse> (BNF_Def.Grp A g) = BNF_Def.Grp {f. f ` range h \<subseteq> A} (map_fun h g)"
+  by(auto simp add: rel_fun_def fun_eq_iff Grp_iff)
+
 subsection \<open>Transfer and lifting material\<close>
 
 context includes lifting_syntax begin
@@ -766,6 +947,50 @@ by(simp add: bi_unique_def eq_onp_def)
 lemma rel_fun_eq_conversep: includes lifting_syntax shows "(A\<inverse>\<inverse> ===> (=)) = (A ===> (=))\<inverse>\<inverse>"
 by(auto simp add: fun_eq_iff rel_fun_def)
 
+lemma rel_fun_comp:
+  "\<And>f g h. rel_fun A B (f \<circ> g) h = rel_fun A (\<lambda>x. B (f x)) g h"
+  "\<And>f g h. rel_fun A B f (g \<circ> h) = rel_fun A (\<lambda>x y. B x (g y)) f h"
+  by(auto simp add: rel_fun_def)
+
+lemma rel_fun_map_fun1: "rel_fun (BNF_Def.Grp UNIV h)\<inverse>\<inverse> A f g \<Longrightarrow> rel_fun (=) A (map_fun h id f) g"
+  by(auto simp add: rel_fun_def Grp_def)
+
+lemma map_fun2_id: "map_fun f g x = g \<circ> map_fun f id x"
+  by(simp add: map_fun_def o_assoc)
+
+lemma map_fun_id2_in: "map_fun g h f = map_fun g id (h \<circ> f)"
+  by(simp add: map_fun_def)
+
+lemma Domainp_rel_fun_le: "Domainp (rel_fun A B) \<le> pred_fun (Domainp A) (Domainp B)"
+  by(auto dest: rel_funD)
+
+definition rel_witness_fun :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'd) \<times> ('c \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> 'd \<times> 'e)" where
+  "rel_witness_fun A A' = (\<lambda>(f, g) b. (f (THE a. A a b), g (THE c. A' b c)))"
+
+lemma
+  assumes fg: "rel_fun (A OO A') B f g"
+    and A: "left_unique A" "right_total A"
+    and A': "right_unique A'" "left_total A'"
+  shows rel_witness_fun1: "rel_fun A (\<lambda>x (x', y). x = x' \<and> B x' y) f (rel_witness_fun A A' (f, g))"
+    and rel_witness_fun2: "rel_fun A' (\<lambda>(x, y') y. y = y' \<and> B x y') (rel_witness_fun A A' (f, g)) g"
+proof (goal_cases)
+  case 1
+  have "A x y \<Longrightarrow> f x = f (THE a. A a y) \<and> B (f (THE a. A a y)) (g (The (A' y)))" for x y 
+    by(rule left_totalE[OF A'(2)]; erule meta_allE[of _ y]; erule exE; frule (1) fg[THEN rel_funD, OF relcomppI])
+      (auto intro!: arg_cong[where f=f] arg_cong[where f=g] rel_funI the_equality the_equality[symmetric] dest: left_uniqueD[OF A(1)] right_uniqueD[OF A'(1)] elim!: arg_cong2[where f=B, THEN iffD2, rotated -1])
+
+  with 1 show ?case by(clarsimp simp add: rel_fun_def rel_witness_fun_def)
+next
+  case 2
+  have "A' x y \<Longrightarrow> g y = g (The (A' x)) \<and> B (f (THE a. A a x)) (g (The (A' x)))" for x y
+    by(rule right_totalE[OF A(2), of x]; frule (1) fg[THEN rel_funD, OF relcomppI])
+      (auto intro!: arg_cong[where f=f] arg_cong[where f=g] rel_funI the_equality the_equality[symmetric] dest: left_uniqueD[OF A(1)] right_uniqueD[OF A'(1)] elim!: arg_cong2[where f=B, THEN iffD2, rotated -1])
+
+  with 2 show ?case by(clarsimp simp add: rel_fun_def rel_witness_fun_def)    
+qed
+
+lemma rel_witness_fun_eq [simp]: "rel_witness_fun (=) (=) (f, g) = (\<lambda>x. (f x, g x))"
+  by(simp add: rel_witness_fun_def)
 
 subsection \<open>Arithmetic\<close>
 
@@ -1159,6 +1384,17 @@ lemma disjointpD':
   "\<lbrakk> disjointp xs; P x; Q x; xs ! n = P; xs ! m = Q; n < length xs; m < length xs \<rbrakk> \<Longrightarrow> n = m"
 by(auto 4 3 simp add: disjointp_def disjoint_family_on_def)
 
+lemma wf_strict_prefix: "wfP strict_prefix"
+proof -
+  from wf have "wf (inv_image {(x, y). x < y} length)" by(rule wf_inv_image)
+  moreover have "{(x, y). strict_prefix x y} \<subseteq> inv_image {(x, y). x < y} length" by(auto intro: prefix_length_less)
+  ultimately show ?thesis unfolding wfP_def by(rule wf_subset)
+qed
+
+lemma strict_prefix_setD:
+  "strict_prefix xs ys \<Longrightarrow> set xs \<subseteq> set ys"
+  by(auto simp add: strict_prefix_def prefix_def)
+
 subsubsection \<open>List of a given length\<close>
 
 inductive_set nlists :: "'a set \<Rightarrow> nat \<Rightarrow> 'a list set" for A n
@@ -1339,6 +1575,19 @@ lemma measurable_snd_count_space [measurable]:
   "A \<subseteq> B \<Longrightarrow> snd \<in> measurable (M1 \<Otimes>\<^sub>M count_space A) (count_space B)"
 by(auto simp add: measurable_def space_pair_measure snd_vimage_eq_Times Times_Int_Times)
 
+lemma integrable_scale_measure [simp]:
+  "\<lbrakk> integrable M f; r < \<top> \<rbrakk> \<Longrightarrow> integrable (scale_measure r M) f" 
+  for f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
+  by(auto simp add: integrable_iff_bounded nn_integral_scale_measure ennreal_mult_less_top)
+
+lemma integral_scale_measure:
+  assumes "integrable M f" "r < \<top>"
+  shows "integral\<^sup>L (scale_measure r M) f = enn2real r * integral\<^sup>L M f"
+  using assms
+  apply(subst (1 2) real_lebesgue_integral_def)
+    apply(simp_all add: nn_integral_scale_measure ennreal_enn2real_if)
+  by(auto simp add: ennreal_mult_less_top ennreal_less_top_iff ennreal_mult_eq_top_iff enn2real_mult right_diff_distrib elim!: integrableE)
+
 subsection \<open>Sequence space\<close>
 
 lemma (in sequence_space) nn_integral_split:
@@ -1506,6 +1755,75 @@ apply(erule meta_impE)
  apply(erule order_trans)
 apply(auto simp add: card_gt_0_iff intro: card_mono)
 done
+
+consts rel_witness_pmf :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a pmf \<times> 'b pmf \<Rightarrow> ('a \<times> 'b) pmf"
+specification (rel_witness_pmf)
+  set_rel_witness_pmf': "rel_pmf A (fst xy) (snd xy) \<Longrightarrow> set_pmf (rel_witness_pmf A xy) \<subseteq> {(a, b). A a b}"
+  map1_rel_witness_pmf': "rel_pmf A (fst xy) (snd xy) \<Longrightarrow> map_pmf fst (rel_witness_pmf A xy) = fst xy"
+  map2_rel_witness_pmf': "rel_pmf A (fst xy) (snd xy) \<Longrightarrow> map_pmf snd (rel_witness_pmf A xy) = snd xy"
+  apply(fold all_conj_distrib imp_conjR)
+  apply(rule choice allI)+
+  apply(unfold pmf.in_rel)
+  by blast
+
+lemmas set_rel_witness_pmf = set_rel_witness_pmf'[of _ "(x, y)" for x y, simplified]
+lemmas map1_rel_witness_pmf = map1_rel_witness_pmf'[of _ "(x, y)" for x y, simplified]
+lemmas map2_rel_witness_pmf = map2_rel_witness_pmf'[of _ "(x, y)" for x y, simplified]
+lemmas rel_witness_pmf = set_rel_witness_pmf map1_rel_witness_pmf map2_rel_witness_pmf
+
+lemma rel_witness_pmf1:
+  assumes "rel_pmf A p q" 
+  shows "rel_pmf (\<lambda>a (a', b). a = a' \<and> A a' b) p (rel_witness_pmf A (p, q))"
+  using map1_rel_witness_pmf[OF assms, symmetric]
+  unfolding pmf.rel_eq[symmetric] pmf.rel_map
+  by(rule pmf.rel_mono_strong)(auto dest: set_rel_witness_pmf[OF assms, THEN subsetD])
+
+lemma rel_witness_pmf2:
+  assumes "rel_pmf A p q" 
+  shows "rel_pmf (\<lambda>(a, b') b. b = b' \<and> A a b') (rel_witness_pmf A (p, q)) q"
+  using map2_rel_witness_pmf[OF assms]
+  unfolding pmf.rel_eq[symmetric] pmf.rel_map
+  by(rule pmf.rel_mono_strong)(auto dest: set_rel_witness_pmf[OF assms, THEN subsetD])
+
+lemma cond_pmf_of_set:
+  assumes fin: "finite A" and nonempty: "A \<inter> B \<noteq> {}"
+  shows "cond_pmf (pmf_of_set A) B = pmf_of_set (A \<inter> B)" (is "?lhs = ?rhs")
+proof(rule pmf_eqI)
+  from nonempty have A: "A \<noteq> {}" by auto
+  show "pmf ?lhs x = pmf ?rhs x" for x
+    by(subst pmf_cond; clarsimp simp add: fin A nonempty measure_pmf_of_set split: split_indicator)
+qed
+
+lemma pair_pmf_of_set:
+  assumes A: "finite A" "A \<noteq> {}"
+    and B: "finite B" "B \<noteq> {}"
+  shows "pair_pmf (pmf_of_set A) (pmf_of_set B) = pmf_of_set (A \<times> B)"
+  by(rule pmf_eqI)(clarsimp simp add: pmf_pair assms split: split_indicator)
+
+lemma emeasure_cond_pmf:
+  fixes p A
+  defines "q \<equiv> cond_pmf p A"
+  assumes "set_pmf p \<inter> A \<noteq> {}"
+  shows "emeasure (measure_pmf q) B = emeasure (measure_pmf p) (A \<inter> B) / emeasure (measure_pmf p) A"
+proof -
+  note [transfer_rule] = cond_pmf.transfer[OF assms(2), folded q_def]
+  interpret pmf_as_measure .
+  show ?thesis by transfer simp
+qed
+
+lemma measure_cond_pmf:
+  "measure (measure_pmf (cond_pmf p A)) B = measure (measure_pmf p) (A \<inter> B) / measure (measure_pmf p) A"
+  if "set_pmf p \<inter> A \<noteq> {}"
+  using emeasure_cond_pmf[OF that, of B] that 
+  by(auto simp add: measure_pmf.emeasure_eq_measure measure_pmf_posI divide_ennreal)
+
+lemma emeasure_measure_pmf_zero_iff: "emeasure (measure_pmf p) s = 0 \<longleftrightarrow> set_pmf p \<inter> s = {}" (is "?lhs = ?rhs")
+proof -
+  have "?lhs \<longleftrightarrow> (AE x in measure_pmf p. x \<notin> s)"
+    by(subst AE_iff_measurable)(auto)
+  also have "\<dots> = ?rhs" by(auto simp add: AE_measure_pmf_iff)
+  finally show ?thesis .
+qed
 
 subsection \<open>Subprobability mass functions\<close>
 
@@ -1749,7 +2067,6 @@ by(simp_all add: spmf_rel_map restrict_relp_def)
 lemma pred_spmf_conj: "pred_spmf (\<lambda>x. P x \<and> Q x) = (\<lambda>x. pred_spmf P x \<and> pred_spmf Q x)"
 by simp
 
-
 lemma spmf_of_pmf_parametric [transfer_rule]: 
   includes lifting_syntax shows
   "(rel_pmf A ===> rel_spmf A) spmf_of_pmf spmf_of_pmf"
@@ -1784,6 +2101,290 @@ apply(rule rel_spmf_bindI[where R="\<lambda>x y. A x y \<and> x \<in> set_spmf p
 apply simp
 done
 
+definition rel_witness_spmf :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a spmf \<times> 'b spmf \<Rightarrow> ('a \<times> 'b) spmf" where
+  "rel_witness_spmf A = map_pmf rel_witness_option \<circ> rel_witness_pmf (rel_option A)"
+
+lemma assumes "rel_spmf A p q"
+  shows rel_witness_spmf1: "rel_spmf (\<lambda>a (a', b). a = a' \<and> A a' b) p (rel_witness_spmf A (p, q))"
+    and rel_witness_spmf2: "rel_spmf (\<lambda>(a, b') b. b = b' \<and> A a b') (rel_witness_spmf A (p, q)) q"
+  by(auto simp add: pmf.rel_map rel_witness_spmf_def intro: pmf.rel_mono_strong[OF rel_witness_pmf1[OF assms]] rel_witness_option1 pmf.rel_mono_strong[OF rel_witness_pmf2[OF assms]] rel_witness_option2)
+
+lemma weight_assert_spmf [simp]: "weight_spmf (assert_spmf b) = indicator {True} b"
+  by(simp split: split_indicator)
+
+definition enforce_spmf :: "('a \<Rightarrow> bool) \<Rightarrow> 'a spmf \<Rightarrow> 'a spmf" where
+  "enforce_spmf P = map_pmf (enforce_option P)"
+
+lemma enforce_spmf_parametric [transfer_rule]: includes lifting_syntax shows
+  "((A ===> (=)) ===> rel_spmf A ===> rel_spmf A) enforce_spmf enforce_spmf"
+  unfolding enforce_spmf_def by transfer_prover
+
+lemma enforce_return_spmf [simp]:
+  "enforce_spmf P (return_spmf x) = (if P x then return_spmf x else return_pmf None)"
+  by(simp add: enforce_spmf_def)
+
+lemma enforce_return_pmf_None [simp]:
+  "enforce_spmf P (return_pmf None) = return_pmf None"
+  by(simp add: enforce_spmf_def)
+
+lemma enforce_map_spmf:
+  "enforce_spmf P (map_spmf f p) = map_spmf f (enforce_spmf (P \<circ> f) p)"
+  by(simp add: enforce_spmf_def pmf.map_comp o_def enforce_map_option)
+
+lemma enforce_bind_spmf [simp]:
+  "enforce_spmf P (bind_spmf p f) = bind_spmf p (enforce_spmf P \<circ> f)"
+  by(auto simp add: enforce_spmf_def bind_spmf_def map_bind_pmf intro!: bind_pmf_cong split: option.split)
+
+lemma set_enforce_spmf [simp]: "set_spmf (enforce_spmf P p) = {a \<in> set_spmf p. P a}"
+  by(auto simp add: enforce_spmf_def in_set_spmf)
+
+lemma enforce_spmf_alt_def:
+  "enforce_spmf P p = bind_spmf p (\<lambda>a. bind_spmf (assert_spmf (P a)) (\<lambda>_ :: unit. return_spmf a))"
+  by(auto simp add: enforce_spmf_def assert_spmf_def map_pmf_def bind_spmf_def bind_return_pmf intro!: bind_pmf_cong split: option.split)
+
+lemma bind_enforce_spmf [simp]:
+  "bind_spmf (enforce_spmf P p) f = bind_spmf p (\<lambda>x. if P x then f x else return_pmf None)"
+  by(auto simp add: enforce_spmf_alt_def assert_spmf_def intro!: bind_spmf_cong)
+
+lemma weight_enforce_spmf:
+  "weight_spmf (enforce_spmf P p) = weight_spmf p - measure (measure_spmf p) {x. \<not> P x}" (is "?lhs = ?rhs")
+proof -
+  have "?lhs = LINT x|measure_spmf p. indicator {x. P x} x"
+    by(auto simp add: enforce_spmf_alt_def weight_bind_spmf o_def simp del: Bochner_Integration.integral_indicator intro!: Bochner_Integration.integral_cong split: split_indicator)
+  also have "\<dots> = ?rhs"
+    by(subst measure_spmf.finite_measure_Diff[symmetric])(auto simp add: space_measure_spmf intro!: arg_cong2[where f=measure])
+  finally show ?thesis .
+qed
+
+lemma lossless_enforce_spmf [simp]:
+  "lossless_spmf (enforce_spmf P p) \<longleftrightarrow> lossless_spmf p \<and> set_spmf p \<subseteq> {x. P x}"
+  by(auto simp add: enforce_spmf_alt_def)
+
+lemma enforce_spmf_top [simp]: "enforce_spmf \<top> = id"
+  by(simp add: enforce_spmf_def)
+
+lemma enforce_spmf_K_True [simp]: "enforce_spmf (\<lambda>_. True) p = p"
+  using enforce_spmf_top[THEN fun_cong, of p] by(simp add: top_fun_def)
+
+lemma enforce_spmf_bot [simp]: "enforce_spmf \<bottom> = (\<lambda>_. return_pmf None)"
+  by(simp add: enforce_spmf_def fun_eq_iff)
+
+lemma enforce_spmf_K_False [simp]: "enforce_spmf (\<lambda>_. False) p = return_pmf None"
+  using enforce_spmf_bot[THEN fun_cong, of p] by(simp add: bot_fun_def)
+
+lemma enforce_pred_id_spmf: "enforce_spmf P p = p" if "pred_spmf P p"
+proof -
+  have "enforce_spmf P p = map_pmf id p" using that
+    by(auto simp add: enforce_spmf_def enforce_pred_id_option simp del: map_pmf_id intro!: pmf.map_cong_pred[OF refl] elim!: pmf_pred_mono_strong)
+  then show ?thesis by simp
+qed
+
+lemma map_the_spmf_of_pmf [simp]: "map_pmf the (spmf_of_pmf p) = p"
+  by(simp add: spmf_of_pmf_def pmf.map_comp o_def)
+
+lemma bind_bind_conv_pair_spmf:
+  "bind_spmf p (\<lambda>x. bind_spmf q (f x)) = bind_spmf (pair_spmf p q) (\<lambda>(x, y). f x y)"
+  by(simp add: pair_spmf_alt_def)
+
+lemma cond_spmf_spmf_of_set:
+  "cond_spmf (spmf_of_set A) B = spmf_of_set (A \<inter> B)" if "finite A"
+  by(rule spmf_eqI)(auto simp add: spmf_of_set measure_spmf_of_set that split: split_indicator)
+
+lemma pair_spmf_of_set:
+  "pair_spmf (spmf_of_set A) (spmf_of_set B) = spmf_of_set (A \<times> B)"
+  by(rule spmf_eqI)(clarsimp simp add: spmf_of_set card_cartesian_product split: split_indicator)
+
+lemma emeasure_cond_spmf:
+  "emeasure (measure_spmf (cond_spmf p A)) B = emeasure (measure_spmf p) (A \<inter> B) / emeasure (measure_spmf p) A"
+  apply(clarsimp simp add: cond_spmf_def emeasure_measure_spmf_conv_measure_pmf emeasure_measure_pmf_zero_iff set_pmf_Int_Some split!: if_split)
+   apply blast
+  apply(subst (asm) emeasure_cond_pmf)
+  by(auto simp add: set_pmf_Int_Some image_Int)
+
+lemma measure_cond_spmf:
+  "measure (measure_spmf (cond_spmf p A)) B = measure (measure_spmf p) (A \<inter> B) / measure (measure_spmf p) A"
+  apply(clarsimp simp add: cond_spmf_def measure_measure_spmf_conv_measure_pmf measure_pmf_zero_iff set_pmf_Int_Some split!: if_split)
+  apply(subst (asm) measure_cond_pmf)
+  by(auto simp add: image_Int set_pmf_Int_Some)
+
+
+lemma lossless_cond_spmf [simp]: "lossless_spmf (cond_spmf p A) \<longleftrightarrow> set_spmf p \<inter> A \<noteq> {}"
+  by(clarsimp simp add: cond_spmf_def lossless_iff_set_pmf_None set_pmf_Int_Some)
+
+lemma measure_spmf_eq_density: "measure_spmf p = density (count_space UNIV) (spmf p)"
+  by(rule measure_eqI)(simp_all add: emeasure_density nn_integral_spmf[symmetric] nn_integral_count_space_indicator)
+
+lemma integral_measure_spmf:
+  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
+  assumes A: "finite A"
+  shows "(\<And>a. a \<in> set_spmf M \<Longrightarrow> f a \<noteq> 0 \<Longrightarrow> a \<in> A) \<Longrightarrow> (LINT x|measure_spmf M. f x) = (\<Sum>a\<in>A. spmf M a *\<^sub>R f a)"
+  unfolding measure_spmf_eq_density
+  apply (simp add: integral_density)
+  apply (subst lebesgue_integral_count_space_finite_support)
+  by (auto intro!: finite_subset[OF _ \<open>finite A\<close>] sum.mono_neutral_left simp: spmf_eq_0_set_spmf)
+
+
+lemma image_set_spmf_eq:
+  "f ` set_spmf p = g ` set_spmf q" if "ASSUMPTION (map_spmf f p = map_spmf g q)"
+  using that[unfolded ASSUMPTION_def, THEN arg_cong[where f=set_spmf]] by simp
+
+lemma map_spmf_const: "map_spmf (\<lambda>_. x) p = scale_spmf (weight_spmf p) (return_spmf x)"
+  by(simp add: map_spmf_conv_bind_spmf bind_spmf_const)
+
+lemma cond_return_pmf [simp]: "cond_pmf (return_pmf x) A = return_pmf x" if "x \<in> A"
+  using that by(intro pmf_eqI)(auto simp add: pmf_cond split: split_indicator)
+
+lemma cond_return_spmf [simp]: "cond_spmf (return_spmf x) A = (if x \<in> A then return_spmf x else return_pmf None)"
+  by(simp add: cond_spmf_def)
+
+lemma measure_range_Some_eq_weight:
+  "measure (measure_pmf p) (range Some) = weight_spmf p"
+  by (simp add: measure_measure_spmf_conv_measure_pmf space_measure_spmf)
+
+lemma restrict_spmf_eq_return_pmf_None [simp]:
+  "restrict_spmf p A = return_pmf None \<longleftrightarrow> set_spmf p \<inter> A = {}"
+  by(auto 4 3 simp add: restrict_spmf_def map_pmf_eq_return_pmf_iff bind_UNION in_set_spmf bind_eq_None_conv option.the_def dest: bspec split: if_split_asm option.split_asm)
+
+definition mk_lossless :: "'a spmf \<Rightarrow> 'a spmf" where
+  "mk_lossless p = scale_spmf (inverse (weight_spmf p)) p"
+
+lemma mk_lossless_idem [simp]: "mk_lossless (mk_lossless p) = mk_lossless p"
+  by(simp add: mk_lossless_def weight_scale_spmf min_def max_def inverse_eq_divide) 
+
+lemma mk_lossless_return [simp]: "mk_lossless (return_pmf x) = return_pmf x"
+  by(cases x)(simp_all add: mk_lossless_def)
+
+lemma mk_lossless_map [simp]: "mk_lossless (map_spmf f p) = map_spmf f (mk_lossless p)"
+  by(simp add: mk_lossless_def map_scale_spmf)
+
+lemma spmf_mk_lossless [simp]: "spmf (mk_lossless p) x = spmf p x / weight_spmf p"
+  by(simp add: mk_lossless_def spmf_scale_spmf inverse_eq_divide max_def)
+
+lemma set_spmf_mk_lossless [simp]: "set_spmf (mk_lossless p) = set_spmf p"
+  by(simp add: mk_lossless_def set_scale_spmf measure_spmf_zero_iff zero_less_measure_iff)
+
+lemma mk_lossless_lossless [simp]: "lossless_spmf p \<Longrightarrow> mk_lossless p = p"
+  by(simp add: mk_lossless_def lossless_weight_spmfD)
+
+lemma mk_lossless_eq_return_pmf_None [simp]: "mk_lossless p = return_pmf None \<longleftrightarrow> p = return_pmf None"
+proof -
+  have aux: "weight_spmf p = 0 \<Longrightarrow> spmf p i = 0" for i
+    by(rule antisym, rule order_trans[OF spmf_le_weight]) (auto intro!: order_trans[OF spmf_le_weight])
+
+  have[simp]: " spmf (scale_spmf (inverse (weight_spmf p)) p) = spmf (return_pmf None) \<Longrightarrow> spmf p i = 0" for i
+    by(drule fun_cong[where x=i]) (auto simp add: aux spmf_scale_spmf max_def)
+
+  show ?thesis by(auto simp add: mk_lossless_def intro: spmf_eqI)
+qed
+
+lemma return_pmf_None_eq_mk_lossless [simp]: "return_pmf None = mk_lossless p \<longleftrightarrow> p = return_pmf None"
+  by(metis mk_lossless_eq_return_pmf_None)
+
+lemma mk_lossless_spmf_of_set [simp]: "mk_lossless (spmf_of_set A) = spmf_of_set A"
+  by(simp add: spmf_of_set_def del: spmf_of_pmf_pmf_of_set)
+
+lemma weight_mk_lossless: "weight_spmf (mk_lossless p) = (if p = return_pmf None then 0 else 1)"
+  by(simp add: mk_lossless_def weight_scale_spmf min_def max_def inverse_eq_divide weight_spmf_eq_0)
+
+lemma mk_lossless_parametric [transfer_rule]: includes lifting_syntax shows
+  "(rel_spmf A ===> rel_spmf A) mk_lossless mk_lossless"
+  by(simp add: mk_lossless_def rel_fun_def rel_spmf_weightD rel_spmf_scaleI)
+
+lemma rel_spmf_mk_losslessI:
+  "rel_spmf A p q \<Longrightarrow> rel_spmf A (mk_lossless p) (mk_lossless q)"
+  by(rule mk_lossless_parametric[THEN rel_funD])
+
+lemma rel_spmf_restrict_spmfI:
+  "rel_spmf (\<lambda>x y. (x \<in> A \<and> y \<in> B \<and> R x y) \<or> x \<notin> A \<and> y \<notin> B) p q
+   \<Longrightarrow> rel_spmf R (restrict_spmf p A) (restrict_spmf q B)"
+  by(auto simp add: restrict_spmf_def pmf.rel_map elim!: option.rel_cases pmf.rel_mono_strong)
+
+lemma cond_spmf_alt: "cond_spmf p A = mk_lossless (restrict_spmf p A)"
+proof(cases "set_spmf p \<inter> A = {}")
+  case True
+  then show ?thesis by(simp add: cond_spmf_def measure_spmf_zero_iff)
+next
+  case False
+  show ?thesis
+    by(rule spmf_eqI)(simp add: False cond_spmf_def pmf_cond set_pmf_Int_Some image_iff measure_measure_spmf_conv_measure_pmf[symmetric] spmf_scale_spmf max_def inverse_eq_divide)
+qed
+
+lemma cond_spmf_bind:
+  "cond_spmf (bind_spmf p f) A = mk_lossless (p \<bind> (\<lambda>x. f x \<upharpoonleft> A))"
+  by(simp add: cond_spmf_alt restrict_bind_spmf scale_bind_spmf)
+
+lemma cond_spmf_UNIV [simp]: "cond_spmf p UNIV = mk_lossless p"
+  by(clarsimp simp add: cond_spmf_alt)
+
+lemma cond_pmf_singleton:
+  "cond_pmf p A = return_pmf x" if "set_pmf p \<inter> A = {x}"
+proof -
+  have[simp]: "set_pmf p \<inter> A = {x} \<Longrightarrow> x \<in> A \<Longrightarrow> measure_pmf.prob p A = pmf p x"
+    by(auto simp add: measure_pmf_single[symmetric] AE_measure_pmf_iff intro!: measure_pmf.finite_measure_eq_AE)
+
+  have "pmf (cond_pmf p A) i = pmf (return_pmf x) i" for i
+    using that by(auto simp add: pmf_cond measure_pmf_zero_iff pmf_eq_0_set_pmf split: split_indicator)
+
+  then show ?thesis by(rule pmf_eqI)
+qed
+
+
+definition cond_spmf_fst :: "('a \<times> 'b) spmf \<Rightarrow> 'a \<Rightarrow> 'b spmf" where
+  "cond_spmf_fst p a = map_spmf snd (cond_spmf p ({a} \<times> UNIV))"
+
+lemma cond_spmf_fst_return_spmf [simp]:
+  "cond_spmf_fst (return_spmf (x, y)) x = return_spmf y"
+  by(simp add: cond_spmf_fst_def)
+
+lemma cond_spmf_fst_map_Pair [simp]: "cond_spmf_fst (map_spmf (Pair x) p) x = mk_lossless p"
+  by(clarsimp simp add: cond_spmf_fst_def spmf.map_comp o_def)
+
+lemma cond_spmf_fst_map_Pair' [simp]: "cond_spmf_fst (map_spmf (\<lambda>y. (x, f y)) p) x = map_spmf f (mk_lossless p)"
+  by(subst spmf.map_comp[where f="Pair x", symmetric, unfolded o_def]) simp
+
+lemma cond_spmf_fst_eq_return_None [simp]: "cond_spmf_fst p x = return_pmf None \<longleftrightarrow> x \<notin> fst ` set_spmf p"
+  by(auto 4 4 simp add: cond_spmf_fst_def map_pmf_eq_return_pmf_iff in_set_spmf[symmetric] dest: bspec[where x="Some _"] intro: ccontr rev_image_eqI)
+
+lemma cond_spmf_fst_map_Pair1:
+  "cond_spmf_fst (map_spmf (\<lambda>x. (f x, g x)) p) (f x) = return_spmf (g (inv_into (set_spmf p) f (f x)))"
+  if "x \<in> set_spmf p" "inj_on f (set_spmf p)"
+proof -
+  let ?foo="\<lambda>y. map_option (\<lambda>x. (f x, g x)) -` Some ` ({f y} \<times> UNIV)"
+  have[simp]: "y \<in> set_spmf p \<Longrightarrow> f x = f y \<Longrightarrow> set_pmf p \<inter> (?foo y) \<noteq> {}" for y
+    by(auto simp add: vimage_def image_def in_set_spmf)
+
+  have[simp]: "y \<in> set_spmf p \<Longrightarrow> f x = f y \<Longrightarrow>  map_spmf snd (map_spmf (\<lambda>x. (f x, g x)) (cond_pmf p (?foo y))) = return_spmf (g x)" for y
+    using that by(subst cond_pmf_singleton[where x="Some x"]) (auto simp add: in_set_spmf elim: inj_onD)
+
+  show ?thesis
+    using that
+    by(auto simp add: cond_spmf_fst_def cond_spmf_def)
+      (erule notE, subst cond_map_pmf, simp_all)
+qed
+
+lemma lossless_cond_spmf_fst [simp]: "lossless_spmf (cond_spmf_fst p x) \<longleftrightarrow> x \<in> fst ` set_spmf p"
+  by(auto simp add: cond_spmf_fst_def intro: rev_image_eqI)
+
+lemma cond_spmf_fst_inverse:
+  "bind_spmf (map_spmf fst p) (\<lambda>x. map_spmf (Pair x) (cond_spmf_fst p x)) = p"
+  (is "?lhs = ?rhs")
+proof(rule spmf_eqI)
+  fix i :: "'a \<times> 'b"
+  have *: "({x} \<times> UNIV \<inter> (Pair x \<circ> snd) -` {i}) = (if x = fst i then {i} else {})" for x by(cases i)auto
+  have "spmf ?lhs i = LINT x|measure_spmf (map_spmf fst p). spmf (map_spmf (Pair x \<circ> snd) (cond_spmf p ({x} \<times> UNIV))) i"
+    by(auto simp add: spmf_bind spmf.map_comp[symmetric] cond_spmf_fst_def intro!: integral_cong_AE)
+  also have "\<dots> = LINT x|measure_spmf (map_spmf fst p). measure (measure_spmf (cond_spmf p ({x} \<times> UNIV))) ((Pair x \<circ> snd) -` {i})"
+    by(rule integral_cong_AE)(auto simp add: spmf_map)
+  also have "\<dots> = LINT x|measure_spmf (map_spmf fst p). measure (measure_spmf p) ({x} \<times> UNIV \<inter> (Pair x \<circ> snd) -` {i}) /
+       measure (measure_spmf p) ({x} \<times> UNIV)"
+    by(rule integral_cong_AE; clarsimp simp add: measure_cond_spmf)
+  also have "\<dots> = spmf (map_spmf fst p) (fst i) * spmf p i / measure (measure_spmf p) ({fst i} \<times> UNIV)"
+    by(simp add: * if_distrib[where f="measure (measure_spmf _)"] cong: if_cong)
+      (subst integral_measure_spmf[where A="{fst i}"]; auto split: if_split_asm simp add: spmf_conv_measure_spmf)
+  also have "\<dots> = spmf p i"
+    by(clarsimp simp add: spmf_map vimage_fst)(metis (no_types, lifting) Int_insert_left_if1 in_set_spmf_iff_spmf insertI1 insert_UNIV insert_absorb insert_not_empty measure_spmf_zero_iff mem_Sigma_iff prod.collapse)
+  finally show "spmf ?lhs i = spmf ?rhs i" .
+qed
 
 subsubsection \<open>Embedding of @{typ "'a option"} into @{typ "'a spmf"}\<close>
 
