@@ -164,12 +164,12 @@ proof -
     by (simp add: shiftr_eq_drop_bit)
 qed
 
-lemma bit_shiftl_word_iff:
+lemma bit_shiftl_word_iff [bit_simps]:
   \<open>bit (w << m) n \<longleftrightarrow> m \<le> n \<and> n < LENGTH('a) \<and> bit w (n - m)\<close>
   for w :: \<open>'a::len word\<close>
   by (simp add: shiftl_word_eq bit_push_bit_iff exp_eq_zero_iff not_le)
 
-lemma bit_shiftr_word_iff:
+lemma bit_shiftr_word_iff [bit_simps]:
   \<open>bit (w >> m) n \<longleftrightarrow> bit w (m + n)\<close>
   for w :: \<open>'a::len word\<close>
   by (simp add: shiftr_word_eq bit_drop_bit_eq)
@@ -205,7 +205,7 @@ lemma sshiftr_0 [simp]: "0 >>> n = 0"
 lemma sshiftr_n1 [simp]: "-1 >>> n = -1"
   by transfer simp
 
-lemma bit_sshiftr_word_iff:
+lemma bit_sshiftr_word_iff [bit_simps]:
   \<open>bit (w >>> m) n \<longleftrightarrow> bit w (if LENGTH('a) - m \<le> n \<and> n < LENGTH('a) then LENGTH('a) - 1 else (m + n))\<close>
   for w :: \<open>'a::len word\<close>
   apply transfer

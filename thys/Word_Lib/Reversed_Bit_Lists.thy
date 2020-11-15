@@ -1003,7 +1003,7 @@ lemma to_bl_eq:
   for w :: \<open>'a::len word\<close>
   by transfer simp
 
-lemma bit_of_bl_iff:
+lemma bit_of_bl_iff [bit_simps]:
   \<open>bit (of_bl bs :: 'a word) n \<longleftrightarrow> rev bs ! n \<and> n < LENGTH('a::len) \<and> n < length bs\<close>
   by transfer (simp add: bin_nth_of_bl ac_simps)
 
