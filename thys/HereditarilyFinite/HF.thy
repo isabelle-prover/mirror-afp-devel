@@ -746,7 +746,7 @@ lemma hbexE [elim!]: "\<exists>x\<^bold>\<in>A. P x \<Longrightarrow> (\<And>x. 
   by (unfold HBex_def) blast
 
 lemma hball_triv [simp]: "(\<forall>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<longrightarrow> P)"
-  \<comment> \<open>Trival rewrite rule.\<close>
+  \<comment> \<open>trivial rewrite rule.\<close>
   by (simp add: HBall_def)
 
 lemma hbex_triv [simp]: "(\<exists>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<and> P)"

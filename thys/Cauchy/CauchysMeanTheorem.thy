@@ -318,7 +318,7 @@ definition
 
 subsubsection \<open>Properties\<close>
 
-text \<open>Here we present some trival properties of {\em mean} and {\em gmean}.\<close>
+text \<open>Here we present some trivial properties of {\em mean} and {\em gmean}.\<close>
 
 lemma list_sum_mean:
   fixes xs::"real list"

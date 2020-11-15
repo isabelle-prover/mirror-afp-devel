@@ -176,7 +176,7 @@ proof -
   thus ?thesis  
     using assms unfolding cong_def
     using int_mod_pos_eq large_mod_0 zless_imp_add1_zle 
-      by (metis abs_of_nonneg le_less not_less zabs_less_one_iff zmod_trival_iff)
+      by (metis abs_of_nonneg le_less not_less zabs_less_one_iff zmod_trivial_iff)
 qed
 
 (* an intro version of sum_list_0 *)
