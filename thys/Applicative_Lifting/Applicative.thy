@@ -15,6 +15,17 @@ where [simp]: "eq_on A = (\<lambda>x y. x \<in> A \<and> x = y)"
 lemma rel_fun_eq_onI: "(\<And>x. x \<in> A \<Longrightarrow> R (f x) (g x)) \<Longrightarrow> rel_fun (eq_on A) R f g"
 by auto
 
+lemma rel_fun_map_fun2: "rel_fun (eq_on (range h)) A f g \<Longrightarrow> rel_fun (BNF_Def.Grp UNIV h)\<inverse>\<inverse> A f (map_fun h id g)"
+  by(auto simp add: rel_fun_def Grp_def eq_onp_def)
+
+lemma rel_fun_refl_eq_onp:
+  "(\<And>z. z \<in> f ` X \<Longrightarrow> A z z) \<Longrightarrow> rel_fun (eq_on X) A f f"
+  by(auto simp add: rel_fun_def eq_onp_def)
+
+lemma eq_onE: "\<lbrakk> eq_on X a b; \<lbrakk> b \<in> X; a = b \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis" by auto
+
+lemma Domainp_eq_on [simp]: "Domainp (eq_on X) = (\<lambda>x. x \<in> X)"
+  by auto
 
 subsection \<open>Proof automation\<close>
 

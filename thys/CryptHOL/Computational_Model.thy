@@ -68,6 +68,23 @@ by(auto simp add: \<I>_trivial_def)
 
 end
 
+lemma map_\<I>_plus_\<I> [simp]: 
+  "map_\<I> (map_sum f1 f2) (map_sum g1 g2) (\<I>1 \<oplus>\<^sub>\<I> \<I>2) = map_\<I> f1 g1 \<I>1 \<oplus>\<^sub>\<I> map_\<I> f2 g2 \<I>2"
+proof(rule \<I>_eqI[OF Set.set_eqI], goal_cases)
+  case (1 x)
+  then show ?case by(cases x) auto
+qed (auto simp add: image_image)
+
+lemma le_plus_\<I>_iff [simp]:
+  "\<I>1 \<oplus>\<^sub>\<I> \<I>2 \<le> \<I>1' \<oplus>\<^sub>\<I> \<I>2' \<longleftrightarrow> \<I>1 \<le> \<I>1' \<and> \<I>2 \<le> \<I>2'"
+  by(auto 4 4 simp add: le_\<I>_def dest: bspec[where x="Inl _"] bspec[where x="Inr _"])
+
+lemma \<I>_full_le_plus_\<I>: "\<I>_full \<le> plus_\<I> \<I>1 \<I>2" if "\<I>_full \<le> \<I>1" "\<I>_full \<le> \<I>2"
+  using that by(auto simp add: le_\<I>_def top_unique)
+
+lemma plus_\<I>_mono: "plus_\<I> \<I>1 \<I>2 \<le> plus_\<I> \<I>1' \<I>2'" if "\<I>1 \<le> \<I>1'" "\<I>2 \<le> \<I>2'" 
+  using that by(fastforce simp add: le_\<I>_def)
+
 context
   fixes left :: "('s, 'a, 'b) oracle'"
   and right :: "('s,'c, 'd) oracle'"
@@ -384,6 +401,130 @@ done
 
 end
 
+definition extend_state_oracle2 :: "('call, 'ret, 's) callee \<Rightarrow> ('call, 'ret, 's \<times> 's') callee" ("_\<dagger>" [1000] 1000)
+  where "extend_state_oracle2 callee = (\<lambda>(s, s') x. map_spmf (\<lambda>(y, s). (y, (s, s'))) (callee s x))"
+
+lemma extend_state_oracle2_simps [simp]:
+  "extend_state_oracle2 callee (s, s') x = map_spmf (\<lambda>(y, s). (y, (s, s'))) (callee s x)"
+  by(simp add: extend_state_oracle2_def)
+
+lemma extend_state_oracle2_parametric [transfer_rule]: includes lifting_syntax shows
+  "((S ===> C ===> rel_spmf (rel_prod R S)) ===> rel_prod S S' ===> C ===> rel_spmf (rel_prod R (rel_prod S S')))
+  extend_state_oracle2 extend_state_oracle2"
+  unfolding extend_state_oracle2_def[abs_def] by transfer_prover
+
+lemma callee_invariant_extend_state_oracle2_const [simp]:
+  "callee_invariant oracle\<dagger> (\<lambda>(s, s'). I s')"
+  by unfold_locales auto
+
+lemma callee_invariant_extend_state_oracle2_const':
+  "callee_invariant oracle\<dagger> (\<lambda>s. I (snd s))"
+  by unfold_locales auto
+
+lemma extend_state_oracle2_plus_oracle: 
+  "extend_state_oracle2 (plus_oracle oracle1 oracle2) = plus_oracle (extend_state_oracle2 oracle1) (extend_state_oracle2 oracle2)"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case by (cases s; cases q) (simp_all add: apfst_def spmf.map_comp o_def split_def)
+qed
+
+lemma parallel_oracle_conv_plus_oracle:
+  "parallel_oracle oracle1 oracle2 = plus_oracle (oracle1\<dagger>) (\<dagger>oracle2)"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case by (cases s; cases q) (auto simp add: spmf.map_comp apfst_def o_def split_def map_prod_def)
+qed
+
+lemma map_sum_parallel_oracle: includes lifting_syntax shows
+  "(id ---> map_sum f g ---> map_spmf (map_prod (map_sum h k) id)) (parallel_oracle oracle1 oracle2)
+  = parallel_oracle ((id ---> f ---> map_spmf (map_prod h id)) oracle1) ((id ---> g ---> map_spmf (map_prod k id)) oracle2)"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case by (cases s; cases q) (simp_all add: spmf.map_comp o_def apfst_def prod.map_comp)
+qed
+
+lemma map_sum_plus_oracle: includes lifting_syntax shows
+  "(id ---> map_sum f g ---> map_spmf (map_prod (map_sum h k) id)) (plus_oracle oracle1 oracle2)
+  = plus_oracle ((id ---> f ---> map_spmf (map_prod h id)) oracle1) ((id ---> g ---> map_spmf (map_prod k id)) oracle2)"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case by (cases q) (simp_all add: spmf.map_comp o_def apfst_def prod.map_comp)
+qed
+
+lemma map_rsuml_plus_oracle: includes lifting_syntax shows
+  "(id ---> rsuml ---> (map_spmf (map_prod lsumr id))) (oracle1 \<oplus>\<^sub>O (oracle2 \<oplus>\<^sub>O oracle3)) =
+   ((oracle1 \<oplus>\<^sub>O oracle2) \<oplus>\<^sub>O oracle3)"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case 
+  proof(cases q)
+    case (Inl ql)
+    then show ?thesis by(cases ql)(simp_all add: spmf.map_comp o_def apfst_def prod.map_comp)
+  qed (simp add: spmf.map_comp o_def apfst_def prod.map_comp id_def)
+qed
+
+lemma map_lsumr_plus_oracle: includes lifting_syntax shows
+  "(id ---> lsumr ---> (map_spmf (map_prod rsuml id))) ((oracle1 \<oplus>\<^sub>O oracle2) \<oplus>\<^sub>O oracle3) =
+   (oracle1 \<oplus>\<^sub>O (oracle2 \<oplus>\<^sub>O oracle3))"
+proof((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case 
+  proof(cases q)
+    case (Inr qr)
+    then show ?thesis by(cases qr)(simp_all add: spmf.map_comp o_def apfst_def prod.map_comp)
+  qed (simp add: spmf.map_comp o_def apfst_def prod.map_comp id_def)
+qed
+
+context includes lifting_syntax begin
+
+definition lift_state_oracle
+  :: "(('s \<Rightarrow> 'a \<Rightarrow> (('b \<times> 't) \<times> 's) spmf) \<Rightarrow> ('s' \<Rightarrow> 'a \<Rightarrow> (('b \<times> 't) \<times> 's') spmf)) 
+  \<Rightarrow> ('t \<times> 's \<Rightarrow> 'a \<Rightarrow> ('b \<times> 't \<times> 's) spmf) \<Rightarrow> ('t \<times> 's' \<Rightarrow> 'a \<Rightarrow> ('b \<times> 't \<times> 's') spmf)" where
+  "lift_state_oracle F oracle = 
+   (\<lambda>(t, s') a. map_spmf rprodl (F ((Pair t ---> id ---> map_spmf lprodr) oracle) s' a))"
+
+lemma lift_state_oracle_simps [simp]:
+  "lift_state_oracle F oracle (t, s') a = map_spmf rprodl (F ((Pair t ---> id ---> map_spmf lprodr) oracle) s' a)"
+  by(simp add: lift_state_oracle_def)
+
+lemma lift_state_oracle_parametric [transfer_rule]: includes lifting_syntax shows
+  "(((S ===> A ===> rel_spmf (rel_prod (rel_prod B T) S)) ===> S' ===> A ===> rel_spmf (rel_prod (rel_prod B T) S'))
+  ===> (rel_prod T S ===> A ===> rel_spmf (rel_prod B (rel_prod T S)))
+  ===> rel_prod T S' ===> A ===> rel_spmf (rel_prod B (rel_prod T S')))
+  lift_state_oracle lift_state_oracle"
+  unfolding lift_state_oracle_def map_fun_def o_def by transfer_prover
+
+lemma lift_state_oracle_extend_state_oracle:
+  includes lifting_syntax
+  assumes "\<And>B. Transfer.Rel (((=) ===> (=) ===> rel_spmf (rel_prod B (=))) ===> (=) ===> (=) ===> rel_spmf (rel_prod B (=))) G F"
+    (* TODO: implement simproc to discharge parametricity assumptions like this one *)
+  shows "lift_state_oracle F (extend_state_oracle oracle) = extend_state_oracle (G oracle)"
+  unfolding lift_state_oracle_def extend_state_oracle_def
+  apply(clarsimp simp add: fun_eq_iff map_fun_def o_def spmf.map_comp split_def rprodl_def)
+  subgoal for t s a
+    apply(rule sym)
+    apply(fold spmf_rel_eq)
+    apply(simp add: spmf_rel_map)
+    apply(rule rel_spmf_mono)
+     apply(rule assms[unfolded Rel_def, where B="\<lambda>x (y, z). x = y \<and> z = t", THEN rel_funD, THEN rel_funD, THEN rel_funD])
+       apply(auto simp add: rel_fun_def spmf_rel_map intro!: rel_spmf_reflI)
+    done
+  done
+
+lemma lift_state_oracle_compose: 
+  "lift_state_oracle F (lift_state_oracle G oracle) = lift_state_oracle (F \<circ> G) oracle"
+  by(simp add: lift_state_oracle_def map_fun_def o_def split_def spmf.map_comp)
+
+lemma lift_state_oracle_id [simp]: "lift_state_oracle id = id"
+  by(simp add: fun_eq_iff spmf.map_comp o_def)
+
+lemma rprodl_extend_state_oracle: includes lifting_syntax shows
+  "(rprodl ---> id ---> map_spmf (map_prod id lprodr)) (extend_state_oracle (extend_state_oracle oracle)) = 
+  extend_state_oracle oracle"
+  by(simp add: fun_eq_iff spmf.map_comp o_def split_def)
+
+end
+
 section \<open>Combining GPVs\<close>
 
 subsection \<open>Shared state without interrupts\<close>
@@ -436,5 +577,242 @@ lemma plus_intercept_stop_parametric [transfer_rule]:
   ===> S ===> rel_sum X1 X2 ===> rel_gpv (rel_prod (rel_option (rel_sum Y1 Y2)) S) C)
   plus_intercept_stop plus_intercept_stop"
 unfolding plus_intercept_stop_def by transfer_prover
+
+subsection \<open>One-sided shifts\<close>
+
+primcorec (transfer) left_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out + 'out', 'in + 'in') gpv" where
+  "the_gpv (left_gpv gpv) = 
+   map_spmf (map_generat id Inl (\<lambda>rpv input. case input of Inl input' \<Rightarrow> left_gpv (rpv input') | _ \<Rightarrow> Fail)) (the_gpv gpv)"
+
+abbreviation left_rpv :: "('a, 'out, 'in) rpv \<Rightarrow> ('a, 'out + 'out', 'in + 'in') rpv" where
+  "left_rpv rpv \<equiv> \<lambda>input. case input of Inl input' \<Rightarrow> left_gpv (rpv input') | _ \<Rightarrow> Fail"
+
+primcorec (transfer) right_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out' + 'out, 'in' + 'in) gpv" where
+  "the_gpv (right_gpv gpv) =
+   map_spmf (map_generat id Inr (\<lambda>rpv input. case input of Inr input' \<Rightarrow> right_gpv (rpv input') | _ \<Rightarrow> Fail)) (the_gpv gpv)"
+
+abbreviation right_rpv :: "('a, 'out, 'in) rpv \<Rightarrow> ('a, 'out' + 'out, 'in' + 'in) rpv" where
+  "right_rpv rpv \<equiv> \<lambda>input. case input of Inr input' \<Rightarrow> right_gpv (rpv input') | _ \<Rightarrow> Fail"
+
+context 
+  includes lifting_syntax
+  notes [transfer_rule] = corec_gpv_parametric' Fail_parametric' the_gpv_parametric'
+begin
+
+lemmas left_gpv_parametric = left_gpv.transfer
+
+lemma left_gpv_parametric':
+  "(rel_gpv'' A C R ===> rel_gpv'' A (rel_sum C C') (rel_sum R R')) left_gpv left_gpv"
+  unfolding left_gpv_def by transfer_prover
+
+lemmas right_gpv_parametric = right_gpv.transfer
+
+lemma right_gpv_parametric':
+  "(rel_gpv'' A C' R' ===> rel_gpv'' A (rel_sum C C') (rel_sum R R')) right_gpv right_gpv"
+  unfolding right_gpv_def by transfer_prover
+
+end
+
+lemma left_gpv_Done [simp]: "left_gpv (Done x) = Done x"
+  by(rule gpv.expand) simp
+
+lemma right_gpv_Done [simp]: "right_gpv (Done x) = Done x"
+  by(rule gpv.expand) simp
+
+lemma left_gpv_Pause [simp]:
+  "left_gpv (Pause x rpv) = Pause (Inl x) (\<lambda>input. case input of Inl input' \<Rightarrow> left_gpv (rpv input') | _ \<Rightarrow> Fail)"
+  by(rule gpv.expand) simp
+
+lemma right_gpv_Pause [simp]:
+  "right_gpv (Pause x rpv) = Pause (Inr x) (\<lambda>input. case input of Inr input' \<Rightarrow> right_gpv (rpv input') | _ \<Rightarrow> Fail)"
+  by(rule gpv.expand) simp
+
+lemma left_gpv_map: "left_gpv (map_gpv f g gpv) = map_gpv f (map_sum g h) (left_gpv gpv)"
+  using left_gpv.transfer[of "BNF_Def.Grp UNIV f" "BNF_Def.Grp UNIV g" "BNF_Def.Grp UNIV h"]
+  unfolding sum.rel_Grp gpv.rel_Grp
+  by(auto simp add: rel_fun_def Grp_def)
+
+lemma right_gpv_map: "right_gpv (map_gpv f g gpv) = map_gpv f (map_sum h g) (right_gpv gpv)"
+  using right_gpv.transfer[of "BNF_Def.Grp UNIV f" "BNF_Def.Grp UNIV g" "BNF_Def.Grp UNIV h"]
+  unfolding sum.rel_Grp gpv.rel_Grp
+  by(auto simp add: rel_fun_def Grp_def)
+
+lemma results'_gpv_left_gpv [simp]: 
+  "results'_gpv (left_gpv gpv :: ('a, 'out + 'out', 'in + 'in') gpv) = results'_gpv gpv" (is "?lhs = ?rhs")
+proof(rule Set.set_eqI iffI)+
+  show "x \<in> ?rhs" if "x \<in> ?lhs" for x using that
+    by(induction gpv'\<equiv>"left_gpv gpv :: ('a, 'out + 'out', 'in + 'in') gpv" arbitrary: gpv)
+      (fastforce simp add: elim!: generat.set_cases intro: results'_gpvI split: sum.splits)+
+  show "x \<in> ?lhs" if "x \<in> ?rhs" for x using that
+    by(induction)
+      (auto 4 3 elim!: generat.set_cases intro: results'_gpv_Pure rev_image_eqI results'_gpv_Cont[where input="Inl _"])
+qed
+
+lemma results'_gpv_right_gpv [simp]: 
+  "results'_gpv (right_gpv gpv :: ('a, 'out' + 'out, 'in' + 'in) gpv) = results'_gpv gpv" (is "?lhs = ?rhs")
+proof(rule Set.set_eqI iffI)+
+  show "x \<in> ?rhs" if "x \<in> ?lhs" for x using that
+    by(induction gpv'\<equiv>"right_gpv gpv :: ('a, 'out' + 'out, 'in' + 'in) gpv" arbitrary: gpv)
+      (fastforce simp add: elim!: generat.set_cases intro: results'_gpvI split: sum.splits)+
+  show "x \<in> ?lhs" if "x \<in> ?rhs" for x using that
+    by(induction)
+      (auto 4 3 elim!: generat.set_cases intro: results'_gpv_Pure rev_image_eqI results'_gpv_Cont[where input="Inr _"])
+qed
+
+lemma left_gpv_Inl_transfer: "rel_gpv'' (=) (\<lambda>l r. l = Inl r) (\<lambda>l r. l = Inl r) (left_gpv gpv) gpv"
+  by(coinduction arbitrary: gpv)
+    (auto simp add: spmf_rel_map generat.rel_map del: rel_funI intro!: rel_spmf_reflI generat.rel_refl_strong rel_funI)
+
+lemma right_gpv_Inr_transfer: "rel_gpv'' (=) (\<lambda>l r. l = Inr r) (\<lambda>l r. l = Inr r) (right_gpv gpv) gpv"
+  by(coinduction arbitrary: gpv)
+    (auto simp add: spmf_rel_map generat.rel_map del: rel_funI intro!: rel_spmf_reflI generat.rel_refl_strong rel_funI)
+
+lemma exec_gpv_plus_oracle_left: "exec_gpv (plus_oracle oracle1 oracle2) (left_gpv gpv) s = exec_gpv oracle1 gpv s"
+  unfolding spmf_rel_eq[symmetric] prod.rel_eq[symmetric]
+  by(rule exec_gpv_parametric'[where A="(=)" and S="(=)" and CALL="\<lambda>l r. l = Inl r" and R="\<lambda>l r. l = Inl r", THEN rel_funD, THEN rel_funD, THEN rel_funD])
+    (auto intro!: rel_funI simp add: spmf_rel_map apfst_def map_prod_def rel_prod_conv intro: rel_spmf_reflI left_gpv_Inl_transfer)
+
+lemma exec_gpv_plus_oracle_right: "exec_gpv (plus_oracle oracle1 oracle2) (right_gpv gpv) s = exec_gpv oracle2 gpv s"
+  unfolding spmf_rel_eq[symmetric] prod.rel_eq[symmetric]
+  by(rule exec_gpv_parametric'[where A="(=)" and S="(=)" and CALL="\<lambda>l r. l = Inr r" and R="\<lambda>l r. l = Inr r", THEN rel_funD, THEN rel_funD, THEN rel_funD])
+    (auto intro!: rel_funI simp add: spmf_rel_map apfst_def map_prod_def rel_prod_conv intro: rel_spmf_reflI right_gpv_Inr_transfer)
+
+lemma left_gpv_bind_gpv: "left_gpv (bind_gpv gpv f) = bind_gpv (left_gpv gpv) (left_gpv \<circ> f)"
+  by(coinduction arbitrary:gpv f rule: gpv.coinduct_strong)
+    (auto 4 4 simp add: bind_map_spmf spmf_rel_map intro!: rel_spmf_reflI rel_spmf_bindI[of "(=)"] generat.rel_refl rel_funI split: sum.splits)
+
+lemma inline1_left_gpv:
+  "inline1 (\<lambda>s q. left_gpv (callee s q)) gpv s = 
+   map_spmf (map_sum id (map_prod Inl (map_prod left_rpv id))) (inline1 callee gpv s)"
+proof(induction arbitrary: gpv s rule: parallel_fixp_induct_2_2[OF partial_function_definitions_spmf partial_function_definitions_spmf inline1.mono inline1.mono inline1_def inline1_def, unfolded lub_spmf_empty, case_names adm bottom step])
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step inline1' inline1'')
+  then show ?case
+    by(auto simp add: map_spmf_bind_spmf o_def bind_map_spmf intro!: ext bind_spmf_cong split: generat.split)
+qed
+
+lemma left_gpv_inline: "left_gpv (inline callee gpv s) = inline (\<lambda>s q. left_gpv (callee s q)) gpv s"
+  by(coinduction arbitrary: callee gpv s rule: gpv_coinduct_bind)
+    (fastforce simp add: inline_sel spmf_rel_map inline1_left_gpv left_gpv_bind_gpv o_def split_def intro!: rel_spmf_reflI split: sum.split intro!: rel_funI gpv.rel_refl_strong)
+
+lemma right_gpv_bind_gpv: "right_gpv (bind_gpv gpv f) = bind_gpv (right_gpv gpv) (right_gpv \<circ> f)"
+  by(coinduction arbitrary:gpv f rule: gpv.coinduct_strong)
+    (auto 4 4 simp add: bind_map_spmf spmf_rel_map intro!: rel_spmf_reflI rel_spmf_bindI[of "(=)"] generat.rel_refl rel_funI split: sum.splits)
+
+lemma inline1_right_gpv:
+  "inline1 (\<lambda>s q. right_gpv (callee s q)) gpv s = 
+   map_spmf (map_sum id (map_prod Inr (map_prod right_rpv id))) (inline1 callee gpv s)"
+proof(induction arbitrary: gpv s rule: parallel_fixp_induct_2_2[OF partial_function_definitions_spmf partial_function_definitions_spmf inline1.mono inline1.mono inline1_def inline1_def, unfolded lub_spmf_empty, case_names adm bottom step])
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step inline1' inline1'')
+  then show ?case
+    by(auto simp add: map_spmf_bind_spmf o_def bind_map_spmf intro!: ext bind_spmf_cong split: generat.split)
+qed
+
+lemma right_gpv_inline: "right_gpv (inline callee gpv s) = inline (\<lambda>s q. right_gpv (callee s q)) gpv s"
+  by(coinduction arbitrary: callee gpv s rule: gpv_coinduct_bind)
+    (fastforce simp add: inline_sel spmf_rel_map inline1_right_gpv right_gpv_bind_gpv o_def split_def intro!: rel_spmf_reflI split: sum.split intro!: rel_funI gpv.rel_refl_strong)
+
+lemma WT_gpv_left_gpv: "\<I>1 \<turnstile>g gpv \<surd> \<Longrightarrow> \<I>1 \<oplus>\<^sub>\<I> \<I>2 \<turnstile>g left_gpv gpv \<surd>"
+  by(coinduction arbitrary: gpv)(auto 4 4 dest: WT_gpvD)
+
+lemma WT_gpv_right_gpv: "\<I>2 \<turnstile>g gpv \<surd> \<Longrightarrow> \<I>1 \<oplus>\<^sub>\<I> \<I>2 \<turnstile>g right_gpv gpv \<surd>"
+  by(coinduction arbitrary: gpv)(auto 4 4 dest: WT_gpvD)
+
+lemma results_gpv_left_gpv [simp]: "results_gpv (\<I>1 \<oplus>\<^sub>\<I> \<I>2) (left_gpv gpv) = results_gpv \<I>1 gpv"
+  (is "?lhs = ?rhs")
+proof(rule Set.set_eqI iffI)+
+  show "x \<in> ?rhs" if "x \<in> ?lhs" for x using that
+    by(induction gpv'\<equiv>"left_gpv gpv :: ('a, 'b + 'c, 'd + 'e) gpv" arbitrary: gpv rule: results_gpv.induct)
+      (fastforce intro: results_gpv.intros)+
+  show "x \<in> ?lhs" if "x \<in> ?rhs" for x using that
+    by(induction)(fastforce intro: results_gpv.intros)+
+qed
+
+lemma results_gpv_right_gpv [simp]: "results_gpv (\<I>1 \<oplus>\<^sub>\<I> \<I>2) (right_gpv gpv) = results_gpv \<I>2 gpv"
+  (is "?lhs = ?rhs")
+proof(rule Set.set_eqI iffI)+
+  show "x \<in> ?rhs" if "x \<in> ?lhs" for x using that
+    by(induction gpv'\<equiv>"right_gpv gpv :: ('a, 'b + 'c, 'd + 'e) gpv" arbitrary: gpv rule: results_gpv.induct)
+      (fastforce intro: results_gpv.intros)+
+  show "x \<in> ?lhs" if "x \<in> ?rhs" for x using that
+    by(induction)(fastforce intro: results_gpv.intros)+
+qed
+
+lemma left_gpv_Fail [simp]: "left_gpv Fail = Fail"
+  by(rule gpv.expand) auto
+
+lemma right_gpv_Fail [simp]: "right_gpv Fail = Fail"
+  by(rule gpv.expand) auto
+
+lemma rsuml_lsumr_left_gpv_left_gpv:"map_gpv' id rsuml lsumr (left_gpv (left_gpv gpv)) = left_gpv gpv"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split elim!: lsumr.elims intro: exI[where x=Fail])
+
+lemma rsuml_lsumr_left_gpv_right_gpv: "map_gpv' id rsuml lsumr (left_gpv (right_gpv gpv)) = right_gpv (left_gpv gpv)"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split elim!: lsumr.elims intro: exI[where x=Fail])
+
+lemma rsuml_lsumr_right_gpv: "map_gpv' id rsuml lsumr (right_gpv gpv) = right_gpv (right_gpv gpv)"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split elim!: lsumr.elims intro: exI[where x=Fail])
+
+lemma map_gpv'_map_gpv_swap:
+  "map_gpv' f g h (map_gpv f' id gpv) = map_gpv (f \<circ> f') id (map_gpv' id g h gpv)"
+  by(simp add: map_gpv_conv_map_gpv' map_gpv'_comp)
+
+lemma lsumr_rsuml_left_gpv: "map_gpv' id lsumr rsuml (left_gpv gpv) = left_gpv (left_gpv gpv)"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split intro: exI[where x=Fail])
+
+lemma lsumr_rsuml_right_gpv_left_gpv:
+  "map_gpv' id lsumr rsuml (right_gpv (left_gpv gpv)) = left_gpv (right_gpv gpv)"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split intro: exI[where x=Fail])
+
+lemma lsumr_rsuml_right_gpv_right_gpv:
+  "map_gpv' id lsumr rsuml (right_gpv (right_gpv gpv)) = right_gpv gpv"
+  by(coinduction arbitrary: gpv)
+    (auto 4 3 simp add: spmf_rel_map generat.rel_map intro!: rel_spmf_reflI rel_generat_reflI rel_funI split!: sum.split elim!: rsuml.elims intro: exI[where x=Fail])
+
+
+lemma in_set_spmf_extend_state_oracle [simp]:
+  "x \<in> set_spmf (extend_state_oracle oracle s y) \<longleftrightarrow>
+   fst (snd x) = fst s \<and> (fst x, snd (snd x)) \<in> set_spmf (oracle (snd s) y)"
+  by(auto 4 4 simp add: extend_state_oracle_def split_beta intro: rev_image_eqI prod.expand)
+
+lemma extend_state_oracle_plus_oracle: 
+  "extend_state_oracle (plus_oracle oracle1 oracle2) = plus_oracle (extend_state_oracle oracle1) (extend_state_oracle oracle2)"
+proof ((rule ext)+; goal_cases)
+  case (1 s q)
+  then show ?case by (cases s; cases q) (simp_all add: apfst_def spmf.map_comp o_def split_def)
+qed
+
+
+definition stateless_callee :: "('a \<Rightarrow> ('b, 'out, 'in) gpv) \<Rightarrow> ('s \<Rightarrow> 'a \<Rightarrow> ('b \<times> 's, 'out, 'in) gpv)" where
+  "stateless_callee callee s = map_gpv (\<lambda>b. (b, s)) id \<circ> callee"
+
+lemma stateless_callee_parametric': 
+  includes lifting_syntax notes [transfer_rule] = map_gpv_parametric' shows
+    "((A ===> rel_gpv'' B C R) ===> S ===> A ===> (rel_gpv'' (rel_prod B S) C R))
+   stateless_callee stateless_callee"
+  unfolding stateless_callee_def by transfer_prover
+
+lemma id_oralce_alt_def: "id_oracle = stateless_callee (\<lambda>x. Pause x Done)"
+  by(simp add: id_oracle_def fun_eq_iff stateless_callee_def)
+
+context
+  fixes left :: "'s1 \<Rightarrow> 'x1 \<Rightarrow> ('y1 \<times> 's1, 'call1, 'ret1) gpv"
+    and right :: "'s2 \<Rightarrow> 'x2 \<Rightarrow> ('y2 \<times> 's2, 'call2, 'ret2) gpv"
+begin
+
+fun parallel_intercept :: "'s1 \<times> 's2 \<Rightarrow> 'x1 + 'x2 \<Rightarrow> (('y1 + 'y2) \<times> ('s1 \<times> 's2), 'call1 + 'call2, 'ret1 + 'ret2) gpv"
+  where
+    "parallel_intercept (s1, s2) (Inl a) = left_gpv (map_gpv (map_prod Inl (\<lambda>s1'. (s1', s2))) id (left s1 a))"
+  | "parallel_intercept (s1, s2) (Inr b) = right_gpv (map_gpv (map_prod Inr (Pair s1)) id (right s2 b))"
+
+end
 
 end

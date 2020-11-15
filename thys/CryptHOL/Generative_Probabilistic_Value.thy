@@ -330,143 +330,106 @@ lemma bi_unique_rel_gpv'' [transfer_rule]:
   "\<lbrakk> bi_unique A; bi_unique C; bi_total R \<rbrakk> \<Longrightarrow> bi_unique (rel_gpv'' A C R)"
 unfolding bi_unique_alt_def bi_total_alt_def by(blast intro: left_unique_rel_gpv'' right_unique_rel_gpv'')
 
+lemma rel_gpv''_map_gpv1:
+  "rel_gpv'' A C R (map_gpv f g gpv) gpv' = rel_gpv'' (\<lambda>a. A (f a)) (\<lambda>c. C (g c)) R gpv gpv'" (is "?lhs = ?rhs")
+proof
+  show ?rhs if ?lhs using that
+    apply(coinduction arbitrary: gpv gpv')
+    apply(drule rel_gpv''D)
+    apply(simp add: gpv.map_sel spmf_rel_map)
+    apply(erule rel_spmf_mono)
+    by(auto simp add: generat.rel_map rel_fun_comp elim!: generat.rel_mono_strong rel_fun_mono)
+  show ?lhs if ?rhs using that
+    apply(coinduction arbitrary: gpv gpv')
+    apply(drule rel_gpv''D)
+    apply(simp add: gpv.map_sel spmf_rel_map)
+    apply(erule rel_spmf_mono)
+    by(auto simp add: generat.rel_map rel_fun_comp elim!: generat.rel_mono_strong rel_fun_mono)
+qed
+
+lemma rel_gpv''_map_gpv2:
+  "rel_gpv'' A C R gpv (map_gpv f g gpv') = rel_gpv'' (\<lambda>a b. A a (f b)) (\<lambda>c d. C c (g d)) R gpv gpv'"
+  using rel_gpv''_map_gpv1[of "conversep A" "conversep C" "conversep R" f g gpv' gpv]
+  apply(rewrite in "\<hole> = _" conversep_iff[symmetric])
+  apply(rewrite in "_ = \<hole>" conversep_iff[symmetric])
+  apply(simp only: rel_gpv''_conversep)
+  apply(simp only: rel_gpv''_conversep[symmetric])
+  apply(simp only: conversep_iff[abs_def])
+  done
+
+lemmas rel_gpv''_map_gpv = rel_gpv''_map_gpv1[abs_def] rel_gpv''_map_gpv2
+
+lemma rel_gpv''_map_gpv' [simp]:
+  shows "\<And>f g h gpv. NO_MATCH id f \<or> NO_MATCH id g 
+    \<Longrightarrow> rel_gpv'' A C R (map_gpv' f g h gpv) = rel_gpv'' (\<lambda>a. A (f a)) (\<lambda>c. C (g c)) R (map_gpv' id id h gpv)"
+    and "\<And>f g h gpv gpv'. NO_MATCH id f \<or> NO_MATCH id g 
+    \<Longrightarrow> rel_gpv'' A C R gpv (map_gpv' f g h gpv') = rel_gpv'' (\<lambda>a b. A a (f b)) (\<lambda>c d. C c (g d)) R gpv (map_gpv' id id h gpv')"
+proof (goal_cases)
+  case (1 f g h gpv)
+  then show ?case using map_gpv'_comp[of f g id id id h gpv, symmetric] by(simp add: rel_gpv''_map_gpv[unfolded map_gpv_conv_map_gpv'])
+next
+  case (2 f g h gpv gpv')
+  then show ?case using map_gpv'_comp[of f g id id id h gpv', symmetric] by(simp add: rel_gpv''_map_gpv[unfolded map_gpv_conv_map_gpv'])
+qed
+
+lemmas rel_gpv_map_gpv' = rel_gpv''_map_gpv'[where R="(=)", folded rel_gpv_conv_rel_gpv'']
+
+definition rel_witness_gpv :: "('a \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'e \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'g \<Rightarrow> bool) \<Rightarrow> ('g \<Rightarrow> 'f \<Rightarrow> bool) \<Rightarrow> ('a, 'b, 'c) gpv \<times> ('d, 'e, 'f) gpv \<Rightarrow> ('a \<times> 'd, 'b \<times> 'e, 'g) gpv" where
+  "rel_witness_gpv A C R R' = corec_gpv (
+     map_spmf (map_generat id id (\<lambda>(rpv, rpv'). (Inr \<circ> rel_witness_fun R R' (rpv, rpv'))) \<circ> rel_witness_generat) \<circ>
+     rel_witness_spmf (rel_generat A C (rel_fun (R OO R') (rel_gpv'' A C (R OO R')))) \<circ> map_prod the_gpv the_gpv)"
+
+lemma rel_witness_gpv_sel [simp]:
+  "the_gpv (rel_witness_gpv A C R R' (gpv, gpv')) = 
+    map_spmf (map_generat id id (\<lambda>(rpv, rpv'). (rel_witness_gpv A C R R' \<circ> rel_witness_fun R R' (rpv, rpv'))) \<circ> rel_witness_generat)
+     (rel_witness_spmf (rel_generat A C (rel_fun (R OO R') (rel_gpv'' A C (R OO R')))) (the_gpv gpv, the_gpv gpv'))"
+  unfolding rel_witness_gpv_def
+  by(auto simp add: spmf.map_comp generat.map_comp o_def intro!: map_spmf_cong generat.map_cong)
+
+lemma assumes "rel_gpv'' A C (R OO R') gpv gpv'"
+  and R: "left_unique R" "right_total R"
+  and R': "right_unique R'" "left_total R'"
+shows rel_witness_gpv1: "rel_gpv'' (\<lambda>a (a', b). a = a' \<and> A a' b) (\<lambda>c (c', d). c = c' \<and> C c' d) R gpv (rel_witness_gpv A C R R' (gpv, gpv'))" (is "?thesis1")
+  and rel_witness_gpv2: "rel_gpv'' (\<lambda>(a, b') b. b = b' \<and> A a b') (\<lambda>(c, d') d. d = d' \<and> C c d') R' (rel_witness_gpv A C R R' (gpv, gpv')) gpv'" (is "?thesis2")
+proof -
+  show ?thesis1 using assms(1)
+  proof(coinduction arbitrary: gpv gpv')
+    case rel_gpv''
+    from this[THEN rel_gpv''D] show ?case
+      by(auto simp add: spmf_rel_map generat.rel_map rel_fun_comp elim!: rel_fun_mono[OF rel_witness_fun1[OF _ R R']]
+          rel_spmf_mono[OF rel_witness_spmf1] generat.rel_mono[THEN predicate2D, rotated -1, OF rel_witness_generat1])
+  qed
+  show ?thesis2 using assms(1)
+  proof(coinduction arbitrary: gpv gpv')
+    case rel_gpv''
+    from this[THEN rel_gpv''D] show ?case
+      by(simp add: spmf_rel_map) 
+        (erule rel_spmf_mono[OF rel_witness_spmf2]
+          , auto simp add: generat.rel_map rel_fun_comp elim!: rel_fun_mono[OF rel_witness_fun2[OF _ R R']]
+          generat.rel_mono[THEN predicate2D, rotated -1, OF rel_witness_generat2])
+  qed
+qed
+
 lemma rel_gpv''_neg_distr:
   assumes R: "left_unique R" "right_total R"
-  and R': "right_unique R'" "left_total R'"
+    and R': "right_unique R'" "left_total R'"
   shows "rel_gpv'' (A OO A') (C OO C') (R OO R') \<le> rel_gpv'' A C R OO rel_gpv'' A' C' R'"
 proof(rule predicate2I relcomppI)+
   fix gpv gpv''
   assume *: "rel_gpv'' (A OO A') (C OO C') (R OO R') gpv gpv''"
-  let ?P_spmf = "\<lambda>gpv gpv'' pq. 
-    (\<forall>(generat, generat'') \<in> set_spmf pq. rel_generat (A OO A') (C OO C') (R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) generat generat'') \<and>
-    map_spmf fst pq = the_gpv gpv \<and>
-    map_spmf snd pq = the_gpv gpv''"
-  define pq where "pq gpv gpv'' = Eps (?P_spmf gpv gpv'')" for gpv gpv''
-  let ?P_generat = "\<lambda>generat generat'' gg'. 
-    (\<forall>(a, a'') \<in> generat_pures gg'. (A OO A') a a'') \<and> (\<forall>(out, out'') \<in> generat_outs gg'. (C OO C') out out'') \<and> (\<forall>(c, c'')\<in>generat_conts gg'. (R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) c c'') \<and>
-    map_generat fst fst fst gg' = generat \<and> 
-    map_generat snd snd snd gg' = generat''"
-  define gg' where "gg' generat generat'' = Eps (?P_generat generat generat'')" for generat generat''
-  define middle where "middle \<equiv> corec_gpv (\<lambda>(gpv, gpv''). 
-     map_spmf (\<lambda>(generat, generat''). 
-       map_generat (\<lambda>(a, a''). SOME a'. A a a' \<and> A' a' a'') (\<lambda>(out, out''). SOME out'. C out out' \<and> C' out' out'')
-            (\<lambda>(rpv, rpv'') input. Inr (rpv (THE x. R x input), rpv'' (THE z. R' input z))) (gg' generat generat'')
-     ) (pq gpv gpv''))"
-  have sel_middle:
-    "the_gpv (middle (gpv, gpv'')) = map_spmf (\<lambda>(generat, generat''). map_generat
-           (\<lambda>(a, a''). SOME a'. A a a' \<and> A' a' a'')
-           (\<lambda>(out, out''). SOME out'. C out out' \<and> C' out' out'')
-           (\<lambda>(rpv, rpv'') xa. middle (rpv (THE x. R x xa), rpv'' (THE x''. R' xa x'')))
-           (gg' generat generat''))
-       (pq gpv gpv'')"
-    for gpv gpv'' unfolding middle_def by(simp add: spmf.map_comp split_def o_def generat.map_comp)
-  from * show "rel_gpv'' A C R gpv (middle (gpv, gpv''))"
-  proof(coinduction arbitrary: gpv gpv'')
-    case (rel_gpv'' gpv gpv'')
-    let ?X = "\<lambda>gpv gpv'. (\<exists>gpv''. gpv' = middle (gpv, gpv'') \<and> rel_gpv'' (A OO A') (C OO C') (R OO R') gpv gpv'') \<or> rel_gpv'' A C R gpv gpv'"
-    from rel_gpv''D[OF rel_gpv''] have "Ex (?P_spmf gpv gpv'')" by(auto simp add: rel_spmf_simps)
-    hence pq: "?P_spmf gpv gpv'' (pq gpv gpv'')" unfolding pq_def by(rule someI_ex)
-    hence "rel_spmf (\<lambda>generat (generat', generat''). generat = generat')\<inverse>\<inverse> (pq gpv gpv'') (the_gpv gpv)"
-      by(fold spmf_rel_eq)(auto simp add: spmf_rel_map split_def elim: rel_spmf_mono)
-    then show ?case
-    proof(clarsimp simp add: sel_middle spmf_rel_conversep spmf_rel_map generat.rel_map prod.case_distrib[where h="A _"] prod.case_distrib[where h="C _"] prod.case_distrib[where h="rel_fun _ _ _"] elim!: rel_spmf_mono_strong)
-      fix generat generat''
-      assume "(generat, generat'') \<in> set_spmf (pq gpv gpv'')"
-      with pq have "rel_generat (A OO A') (C OO C') (R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) generat generat''"
-        by blast
-      hence "Ex (?P_generat generat generat'')" by(auto simp add: Grp_def generat.rel_compp_Grp)
-      hence gg': "?P_generat generat generat'' (gg' generat generat'')" unfolding gg'_def by(rule someI_ex)
-      hence "rel_generat (\<lambda>a aa''. a = fst aa'')\<inverse>\<inverse> (\<lambda>out outout''. out = fst outout'')\<inverse>\<inverse> (\<lambda>rpv rpvrpv''. rpv = fst rpvrpv'')\<inverse>\<inverse> (gg' generat generat'') generat"
-        by(fold generat.rel_eq)(auto simp add: generat.rel_map elim!: generat.rel_mono_strong)
-      then show "rel_generat (\<lambda>a (aa, a''). A a (SOME a'. A aa a' \<and> A' a' a''))
-                 (\<lambda>out (outt, out''). C out (SOME out'. C outt out' \<and> C' out' out''))
-                 (\<lambda>rpv (rpvv, rpv''). (R ===> ?X) rpv (\<lambda>y. middle (rpvv (THE x. R x y), rpv'' (THE z. R' y z))))
-                 generat (gg' generat generat'')"
-        unfolding generat.rel_conversep conversep_iff apply(rule generat.rel_mono_strong)
-      proof(safe, simp_all)
-        fix a a''
-        assume "(a, a'') \<in> generat_pures (gg' generat generat'')"
-        with gg' have "\<exists>a'. A a a' \<and> A' a' a''" by blast
-        from someI_ex[OF this] show "A a (SOME a'. A a a' \<and> A' a' a'')" ..
-      next
-        fix out out''
-        assume "(out, out'') \<in> generat_outs (gg' generat generat'')"
-        with gg' have "\<exists>out'. C out out' \<and> C' out' out''" by blast
-        from someI_ex[OF this] show "C out (SOME out'. C out out' \<and> C' out' out'')" ..
-      next
-        fix rpv rpv''
-        assume "(rpv, rpv'') \<in> generat_conts (gg' generat generat'')"
-        with gg' have *: "(R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) rpv rpv''" by blast
-        show "(R ===> ?X) rpv (\<lambda>y. middle (rpv (THE x. R x y), rpv'' (THE z. R' y z)))"
-        proof(rule rel_funI)
-          fix x y
-          assume xy: "R x y"
-          from R' obtain z where yz: "R' y z" by(blast elim: left_totalE)
-          with xy have "(R OO R') x z" by blast
-          with * have "rel_gpv'' (A OO A') (C OO C') (R OO R') (rpv x) (rpv'' z)" by(rule rel_funD)
-          moreover have "(THE x. R x y) = x" using xy
-            by(rule the_equality)(blast dest: left_uniqueD[OF R(1) xy])
-          moreover have "(THE z. R' y z) = z" using yz
-            by(rule the_equality)(blast dest: right_uniqueD[OF R'(1) yz])
-          ultimately show "?X (rpv x) (middle (rpv (THE x. R x y), rpv'' (THE z. R' y z)))" by blast
-        qed
-      qed
-    qed
-  qed
-  from * show "rel_gpv'' A' C' R' (middle (gpv, gpv'')) gpv''"
-  proof(coinduction arbitrary: gpv gpv'')
-    case (rel_gpv'' gpv gpv'')
-    let ?X = "\<lambda>gpv' gpv''. (\<exists>gpv. gpv' = middle (gpv, gpv'') \<and> rel_gpv'' (A OO A') (C OO C') (R OO R') gpv gpv'') \<or> rel_gpv'' A' C' R' gpv' gpv''"
-    from rel_gpv''D[OF rel_gpv''] have "Ex (?P_spmf gpv gpv'')" by(auto simp add: rel_spmf_simps)
-    hence pq: "?P_spmf gpv gpv'' (pq gpv gpv'')" unfolding pq_def by(rule someI_ex)
-    hence "rel_spmf (\<lambda>(generat', generat'') generat. generat = generat'') (pq gpv gpv'') (the_gpv gpv'')"
-      by(fold spmf_rel_eq)(auto simp add: spmf_rel_map split_def elim: rel_spmf_mono)
-    then show ?case
-    proof(clarsimp simp add: sel_middle spmf_rel_conversep spmf_rel_map generat.rel_map prod.case_distrib[where h="A'"] prod.case_distrib[where h="C'"] prod.case_distrib[where h="rel_fun _ _"] elim!: rel_spmf_mono_strong)
-      fix generat generat''
-      assume "(generat, generat'') \<in> set_spmf (pq gpv gpv'')"
-      with pq have "rel_generat (A OO A') (C OO C') (R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) generat generat''"
-        by blast
-      hence "Ex (?P_generat generat generat'')" by(auto simp add: Grp_def generat.rel_compp_Grp)
-      hence gg': "?P_generat generat generat'' (gg' generat generat'')" unfolding gg'_def by(rule someI_ex)
-      hence "rel_generat (\<lambda>aa'' a. a = snd aa'') (\<lambda>outout'' out. out = snd outout'') (\<lambda>rpvrpv'' rpv. rpv = snd rpvrpv'') (gg' generat generat'') generat''"
-        by(fold generat.rel_eq)(auto simp add: generat.rel_map elim!: generat.rel_mono_strong)
-      then show "rel_generat (\<lambda>(a, aa'') a''. A' (SOME a'. A a a' \<and> A' a' aa'') a'')
-                 (\<lambda>(out, outt'') out''. C' (SOME out'. C out out' \<and> C' out' outt'') out'')
-                 (\<lambda>(rpv, rpvv'') rpv''. (R' ===> ?X) (\<lambda>y. middle (rpv (THE x. R x y), rpvv'' (THE z. R' y z))) rpv'')
-                 (gg' generat generat'') generat''"
-        apply(rule generat.rel_mono_strong)
-      proof(safe, simp_all)
-        fix a a''
-        assume "(a, a'') \<in> generat_pures (gg' generat generat'')"
-        with gg' have "\<exists>a'. A a a' \<and> A' a' a''" by blast
-        from someI_ex[OF this] show "A' (SOME a'. A a a' \<and> A' a' a'') a''" ..
-      next
-        fix out out''
-        assume "(out, out'') \<in> generat_outs (gg' generat generat'')"
-        with gg' have "\<exists>out'. C out out' \<and> C' out' out''" by blast
-        from someI_ex[OF this] show "C' (SOME out'. C out out' \<and> C' out' out'') out''" ..
-      next
-        fix rpv rpv''
-        assume "(rpv, rpv'') \<in> generat_conts (gg' generat generat'')"
-        with gg' have *: "(R OO R' ===> rel_gpv'' (A OO A') (C OO C') (R OO R')) rpv rpv''" by blast
-        show "(R' ===> ?X) (\<lambda>y. middle (rpv (THE x. R x y), rpv'' (THE z. R' y z))) rpv''"
-        proof(rule rel_funI)
-          fix y z
-          assume yz: "R' y z"
-          from R obtain x where xy: "R x y" by(blast elim: right_totalE)
-          with yz have "(R OO R') x z" by blast
-          with * have "rel_gpv'' (A OO A') (C OO C') (R OO R') (rpv x) (rpv'' z)" by(rule rel_funD)
-          moreover have "(THE x. R x y) = x" using xy
-            by(rule the_equality)(blast dest: left_uniqueD[OF R(1) xy])
-          moreover have "(THE z. R' y z) = z" using yz
-            by(rule the_equality)(blast dest: right_uniqueD[OF R'(1) yz])
-          ultimately show "?X (middle (rpv (THE x. R x y), rpv'' (THE z. R' y z))) (rpv'' z)" by blast
-        qed
-      qed
-    qed
-  qed
+  let ?gpv' = "map_gpv (relcompp_witness A A') (relcompp_witness C C') (rel_witness_gpv (A OO A') (C OO C') R R' (gpv, gpv''))"
+  show "rel_gpv'' A C R gpv ?gpv'" using rel_witness_gpv1[OF * R R'] unfolding rel_gpv''_map_gpv
+    by(rule rel_gpv''_mono[THEN predicate2D, rotated -1]; clarify del: relcomppE elim!: relcompp_witness)
+  show "rel_gpv'' A' C' R' ?gpv' gpv''" using rel_witness_gpv2[OF * R R'] unfolding rel_gpv''_map_gpv
+    by(rule rel_gpv''_mono[THEN predicate2D, rotated -1]; clarify del: relcomppE elim!: relcompp_witness)
 qed
+
+lemma rel_gpv''_mono' [mono]:
+  assumes "\<And>x y. A x y \<longrightarrow> A' x y"
+    and "\<And>x y. C x y \<longrightarrow> C' x y"
+    and "\<And>x y. R' x y \<longrightarrow> R x y"
+  shows "rel_gpv'' A C R gpv gpv' \<longrightarrow> rel_gpv'' A' C' R' gpv gpv'"
+  using rel_gpv''_mono[of A A' C C' R' R] assms by(blast)
 
 lemma left_total_rel_gpv':
   "\<lbrakk> left_total A; left_total C; left_unique R; right_total R \<rbrakk> \<Longrightarrow> left_total (rel_gpv'' A C R)"
@@ -535,45 +498,13 @@ proof(intro conjI strip iffI; (elim conjE exE)?)
   show "?R gpv gpv'" if "?T gpv (?abs gpv')" "?T gpv' (?abs gpv)" for gpv gpv'
   proof -
     from that[THEN abs] have "?abs gpv' = ?abs gpv" by simp
-    with that have "(?T OO ?T\<inverse>\<inverse>) gpv gpv'" by auto
+    with that have "(?T OO ?T\<inverse>\<inverse>) gpv gpv'" by(auto simp del: rel_gpv''_map_gpv')
     hence "rel_gpv'' (T1 OO T1\<inverse>\<inverse>) (T2 OO T2\<inverse>\<inverse>) (T3 OO T3\<inverse>\<inverse>) gpv gpv'"
       unfolding rel_gpv''_conversep[symmetric]
       by(rule rel_gpv''_pos_distr[THEN predicate2D])
     thus ?thesis by(simp add: r1 r2 r3)
   qed
 qed
-
-lemma rel_gpv''_Grp: (* does not hold! *)
-  "rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse> = 
-   BNF_Def.Grp {x. results'_gpv x \<subseteq> A \<and> outs'_gpv x \<subseteq> B} (map_gpv' f g h)"
-   (is "?lhs = ?rhs")
-proof(intro ext GrpI iffI CollectI conjI subsetI)
-  fix gpv gpv'
-  assume *: "?lhs gpv gpv'"
-  then show "map_gpv' f g h gpv = gpv'"
-    apply(coinduction arbitrary: gpv gpv')
-    apply(drule rel_gpv''D)
-    apply(auto 4 5 simp add: spmf_rel_map generat.rel_map elim!: rel_spmf_mono generat.rel_mono_strong GrpE intro!: GrpI dest: rel_funD)
-    done
-  show "x \<in> A" if "x \<in> results'_gpv gpv" for x using that *
-  proof(induction arbitrary: gpv')
-    case (Pure generat gpv)
-    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
-      using Pure.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] by(rule DomainPI)
-    with Pure.hyps show ?case by(simp add: generat.Domainp_rel pred_spmf_def pred_generat_def Domainp_Grp)
-  next
-    case (Cont generat gpv c input)
-    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
-      using Cont.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] by(rule DomainPI)
-    with Cont.hyps show ?case apply(clarsimp simp add: generat.Domainp_rel pred_spmf_def pred_generat_def)
-      apply(drule (1) bspec)+
-      apply clarsimp
-      apply(drule rel_funD)
-      prefer 2
-      apply(erule Cont.IH)
-      apply(simp add: Grp_def)
-      oops
-
 
 lemma the_gpv_parametric':
   "(rel_gpv'' A C R ===> rel_spmf (rel_generat A C (R ===> rel_gpv'' A C R))) the_gpv the_gpv"
@@ -1742,6 +1673,19 @@ by(subst (1 2) interaction_bound.simps)(simp add: bind_UNION SUP_UNION)
 
 end
 
+lemma interaction_bound_map_gpv':
+  assumes "surj h"
+  shows "interaction_bound consider (map_gpv' f g h gpv) = interaction_bound (consider \<circ> g) gpv"
+proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF lattice_partial_function_definition lattice_partial_function_definition interaction_bound.mono interaction_bound.mono interaction_bound_def interaction_bound_def, case_names adm bottom step])
+  case (step interaction_bound' interaction_bound'' gpv)
+  have *: "IO out c \<in> set_spmf (the_gpv gpv) \<Longrightarrow>  x \<in> UNIV \<Longrightarrow> interaction_bound'' (c x) \<le> (\<Squnion>x. interaction_bound'' (c (h x)))" for out c x
+    using assms[THEN surjD, of x] by (clarsimp intro!: SUP_upper)
+
+  show ?case 
+    by (auto simp add: * step.IH image_comp split: generat.split
+      intro!: SUP_cong [OF refl] antisym SUP_upper SUP_least)
+qed simp_all
+
 abbreviation interaction_any_bound :: "('a, 'out, 'in) gpv \<Rightarrow> enat"
 where "interaction_any_bound \<equiv> interaction_bound (\<lambda>_. True)"
 
@@ -1956,6 +1900,12 @@ unfolding id_def map_gpv_conv_bind by interaction_bound simp
 abbreviation interaction_any_bounded_by :: "('a, 'out, 'in) gpv \<Rightarrow> enat \<Rightarrow> bool"
 where "interaction_any_bounded_by \<equiv> interaction_bounded_by (\<lambda>_. True)"
 
+lemma interaction_any_bounded_by_map_gpv':
+  assumes "interaction_any_bounded_by gpv n"
+    and "surj h"
+  shows "interaction_any_bounded_by (map_gpv' f g h gpv) n"
+  using assms by(simp add: interaction_bounded_by.simps interaction_bound_map_gpv' o_def)
+
 subsection \<open>Typing\<close>
 
 subsubsection \<open>Interface between gpvs and rpvs / callees\<close>
@@ -2041,6 +1991,100 @@ by(simp add: \<I>_trivial_def)
 
 lifting_update \<I>.lifting
 lifting_forget \<I>.lifting
+
+context includes \<I>.lifting begin
+
+lift_definition \<I>_uniform :: "'out set \<Rightarrow> 'in set \<Rightarrow> ('out, 'in) \<I>" is "\<lambda>A B x. if x \<in> A then B else {}" .
+
+lemma outs_\<I>_uniform [simp]: "outs_\<I> (\<I>_uniform A B) = (if B = {} then {} else A)"
+  by transfer simp
+
+lemma responses_\<I>_uniform [simp]: "responses_\<I> (\<I>_uniform A B) x = (if x \<in> A then B else {})"
+  by transfer simp
+
+lemma \<I>_uniform_UNIV [simp]: "\<I>_uniform UNIV UNIV = \<I>_full" (* TODO: make \<I>_full an abbreviation *)
+  by transfer simp
+
+lift_definition map_\<I> :: "('out' \<Rightarrow> 'out) \<Rightarrow> ('in \<Rightarrow> 'in') \<Rightarrow> ('out, 'in) \<I> \<Rightarrow> ('out', 'in') \<I>"
+  is "\<lambda>f g resp x. g ` resp (f x)" .
+
+lemma outs_\<I>_map_\<I> [simp]:
+  "outs_\<I> (map_\<I> f g \<I>) = f -` outs_\<I> \<I>"
+  by transfer simp
+
+lemma responses_\<I>_map_\<I> [simp]:
+  "responses_\<I> (map_\<I> f g \<I>) x = g ` responses_\<I> \<I> (f x)"
+  by transfer simp
+
+lemma map_\<I>_\<I>_uniform [simp]:
+  "map_\<I> f g (\<I>_uniform A B) = \<I>_uniform (f -` A) (g ` B)"
+  by transfer(auto simp add: fun_eq_iff)
+
+lemma map_\<I>_id [simp]: "map_\<I> id id \<I> = \<I>"
+  by transfer simp
+
+lemma map_\<I>_id0: "map_\<I> id id = id"
+  by(simp add: fun_eq_iff)
+
+lemma map_\<I>_comp [simp]: "map_\<I> f g (map_\<I> f' g' \<I>) = map_\<I> (f' \<circ> f) (g \<circ> g') \<I>"
+  by transfer auto
+
+lemma map_\<I>_cong: "map_\<I> f g \<I> = map_\<I> f' g' \<I>'"
+  if "\<I> = \<I>'" and f: "f = f'" and "\<And>x y. \<lbrakk> x \<in> outs_\<I> \<I>'; y \<in> responses_\<I> \<I>' x \<rbrakk> \<Longrightarrow> g y = g' y"
+  unfolding that(1,2) using that(3-)
+  by transfer(auto simp add: fun_eq_iff intro!: image_cong)
+
+lifting_update \<I>.lifting
+lifting_forget \<I>.lifting
+end
+
+functor map_\<I> by(simp_all add: fun_eq_iff)
+
+lemma \<I>_eqI: "\<lbrakk> outs_\<I> \<I> = outs_\<I> \<I>'; \<And>x. x \<in> outs_\<I> \<I>' \<Longrightarrow> responses_\<I> \<I> x = responses_\<I> \<I>' x \<rbrakk> \<Longrightarrow> \<I> = \<I>'"
+  including \<I>.lifting by transfer auto
+
+instantiation \<I> :: (type, type) order begin
+
+definition less_eq_\<I> :: "('a, 'b) \<I> \<Rightarrow> ('a, 'b) \<I> \<Rightarrow> bool"
+  where le_\<I>_def: "less_eq_\<I> \<I> \<I>' \<longleftrightarrow> outs_\<I> \<I> \<subseteq> outs_\<I> \<I>' \<and> (\<forall>x\<in>outs_\<I> \<I>. responses_\<I> \<I>' x \<subseteq> responses_\<I> \<I> x)"
+
+definition less_\<I> :: "('a, 'b) \<I> \<Rightarrow> ('a, 'b) \<I> \<Rightarrow> bool"
+  where "less_\<I> = mk_less (\<le>)"
+
+instance
+proof
+  show "\<I> < \<I>' \<longleftrightarrow> \<I> \<le> \<I>' \<and> \<not> \<I>' \<le> \<I>" for \<I> \<I>' :: "('a, 'b) \<I>" by(simp add: less_\<I>_def mk_less_def)
+  show "\<I> \<le> \<I>" for \<I> :: "('a, 'b) \<I>" by(simp add: le_\<I>_def)
+  show "\<I> \<le> \<I>''" if "\<I> \<le> \<I>'" "\<I>' \<le> \<I>''" for \<I> \<I>' \<I>'' :: "('a, 'b) \<I>" using that
+    by(fastforce simp add: le_\<I>_def)
+  show "\<I> = \<I>'" if "\<I> \<le> \<I>'" "\<I>' \<le> \<I>" for \<I> \<I>' :: "('a, 'b) \<I>" using that
+    by(auto simp add: le_\<I>_def intro!: \<I>_eqI)
+qed
+end
+
+instantiation \<I> :: (type, type) order_bot begin
+definition bot_\<I> :: "('a, 'b) \<I>" where "bot_\<I> = \<I>_uniform {} UNIV"
+instance by standard(auto simp add: bot_\<I>_def le_\<I>_def)
+end
+
+lemma outs_\<I>_bot [simp]: "outs_\<I> bot = {}"
+  by(simp add: bot_\<I>_def)
+
+lemma respones_\<I>_bot [simp]: "responses_\<I> bot x = {}"
+  by(simp add: bot_\<I>_def)
+
+lemma outs_\<I>_mono: "\<I> \<le> \<I>' \<Longrightarrow> outs_\<I> \<I> \<subseteq> outs_\<I> \<I>'"
+  by(simp add: le_\<I>_def)
+
+lemma responses_\<I>_mono: "\<lbrakk> \<I> \<le> \<I>'; x \<in> outs_\<I> \<I> \<rbrakk> \<Longrightarrow> responses_\<I> \<I>' x \<subseteq> responses_\<I> \<I> x"
+  by(simp add: le_\<I>_def)
+
+lemma \<I>_uniform_empty [simp]: "\<I>_uniform {} A = bot" 
+  unfolding bot_\<I>_def including \<I>.lifting by transfer simp
+
+lemma \<I>_uniform_mono:
+  "\<I>_uniform A B \<le> \<I>_uniform C D" if "A \<subseteq> C" "D \<subseteq> B" "D = {} \<longrightarrow> B = {}"
+  unfolding le_\<I>_def using that by auto
 
 
 context begin
@@ -2161,9 +2205,380 @@ lemma results'_gpv_bind_option [simp]:
   "results'_gpv (monad.bind_option Fail x f) = (\<Union>y\<in>set_option x. results'_gpv (f y))"
 by(cases x) simp_all
 
+lemma results'_gpv_map_gpv':
+  assumes "surj h"
+  shows "results'_gpv (map_gpv' f g h gpv) = f ` results'_gpv gpv" (is "?lhs = ?rhs")
+proof -
+  have *:"IO z c \<in> set_spmf (the_gpv gpv) \<Longrightarrow> x \<in> results'_gpv (c input) \<Longrightarrow>
+     f x \<in> results'_gpv (map_gpv' f g h (c input)) \<Longrightarrow> f x \<in> results'_gpv (map_gpv' f g h gpv)" for x z gpv c input
+    using surjD[OF assms, of input] by(fastforce intro: results'_gpvI elim!: generat.set_cases intro: rev_image_eqI simp add: map_fun_def o_def)
+
+  show ?thesis 
+  proof(intro Set.set_eqI iffI; (elim imageE; hypsubst)?)
+    show "x \<in> ?rhs" if "x \<in> ?lhs" for x using that
+      by(induction gpv'\<equiv>"map_gpv' f g h gpv" arbitrary: gpv)(fastforce elim!: generat.set_cases intro: results'_gpvI)+
+    show "f x \<in> ?lhs" if "x \<in> results'_gpv gpv" for x using that
+      by induction (fastforce intro: results'_gpvI elim!: generat.set_cases intro: rev_image_eqI simp add: map_fun_def o_def
+          , clarsimp simp add: *  elim!: generat.set_cases)
+  qed
+qed
+
 lemma bind_gpv_bind_option_assoc:
   "bind_gpv (monad.bind_option Fail x f) g = monad.bind_option Fail x (\<lambda>x. bind_gpv (f x) g)"
 by(cases x) simp_all
+
+context begin
+qualified inductive outsp_gpv :: "('out, 'in) \<I> \<Rightarrow> 'out \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool"
+  for \<I> x where
+    IO: "IO x c \<in> set_spmf (the_gpv gpv) \<Longrightarrow> outsp_gpv \<I> x gpv"
+  | Cont: "\<lbrakk> IO out rpv \<in> set_spmf (the_gpv gpv); input \<in> responses_\<I> \<I> out; outsp_gpv \<I> x (rpv input) \<rbrakk>
+  \<Longrightarrow> outsp_gpv \<I> x gpv"
+
+definition outs_gpv :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> 'out set"
+  where "outs_gpv \<I> gpv \<equiv> {x. outsp_gpv \<I> x gpv}"
+
+lemma outsp_gpv_outs_gpv_eq [pred_set_conv]: "outsp_gpv \<I> x = (\<lambda>gpv. x \<in> outs_gpv \<I> gpv)"
+  by(simp add: outs_gpv_def)
+
+context begin
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "outs_gpv")\<close>
+
+lemmas intros [intro?] = outsp_gpv.intros[to_set]
+  and IO = IO[to_set]
+  and Cont = Cont[to_set]
+  and induct [consumes 1, case_names IO Cont, induct set: outs_gpv] = outsp_gpv.induct[to_set]
+  and cases [consumes 1, case_names IO Cont, cases set: outs_gpv] = outsp_gpv.cases[to_set]
+  and simps = outsp_gpv.simps[to_set]
+end
+
+inductive_simps outs_gpv_GPV [to_set, simp]: "outsp_gpv \<I> x (GPV gpv)"
+
+end
+
+lemma outs_gpv_Done [iff]: "outs_gpv \<I> (Done x) = {}"
+  by(auto simp add: Done.ctr)
+
+lemma outs_gpv_Fail [iff]: "outs_gpv \<I> Fail = {}"
+  by(auto simp add: Fail_def)
+
+lemma outs_gpv_Pause [simp]:
+  "outs_gpv \<I> (Pause out c) = insert out (\<Union>input\<in>responses_\<I> \<I> out. outs_gpv \<I> (c input))"
+  by(auto simp add: Pause.ctr)
+
+lemma outs_gpv_lift_spmf [iff]: "outs_gpv \<I> (lift_spmf p) = {}"
+  by(auto simp add: lift_spmf.ctr)
+
+lemma outs_gpv_assert_gpv [simp]: "outs_gpv \<I> (assert_gpv b) = {}"
+  by(cases b)auto
+
+lemma outs_gpv_bind_gpv [simp]:
+  "outs_gpv \<I> (gpv \<bind> f) = outs_gpv \<I> gpv \<union> (\<Union>x\<in>results_gpv \<I> gpv. outs_gpv \<I> (f x))"
+  (is "?lhs = ?rhs")
+proof(intro Set.set_eqI iffI)
+  fix x
+  assume "x \<in> ?lhs"
+  then show "x \<in> ?rhs"
+  proof(induction gpv'\<equiv>"gpv \<bind> f" arbitrary: gpv)
+    case IO thus ?case
+    proof(clarsimp split: if_split_asm elim!: is_PureE not_is_PureE, goal_cases)
+      case (1 generat)
+      then show ?case by(cases generat)(auto intro: results_gpv.Pure outs_gpv.intros)
+    qed
+  next
+    case (Cont out rpv input)
+    thus ?case
+    proof(clarsimp split: if_split_asm, goal_cases)
+      case (1 generat)
+      then show ?case by(cases generat)(auto 4 3 split: if_split_asm intro: results_gpv.intros outs_gpv.intros)
+    qed
+  qed
+next
+  fix x
+  assume "x \<in> ?rhs"
+  then consider (out) "x \<in> outs_gpv \<I> gpv" | (result) y where "y \<in> results_gpv \<I> gpv" "x \<in> outs_gpv \<I> (f y)" by auto
+  then show "x \<in> ?lhs"
+  proof cases
+    case out then show ?thesis
+      by(induction) (auto 4 4 intro: outs_gpv.IO  outs_gpv.Cont rev_bexI) 
+  next
+    case result then show ?thesis
+      by induction ((erule outs_gpv.cases | rule outs_gpv.Cont), 
+          auto 4 4 intro: outs_gpv.intros rev_bexI elim: outs_gpv.cases)+
+  qed
+qed
+
+lemma outs_gpv_\<I>_full: "outs_gpv \<I>_full = outs'_gpv"
+proof(intro ext Set.set_eqI iffI)
+  show "x \<in> outs'_gpv gpv" if "x \<in> outs_gpv \<I>_full gpv" for x gpv
+    using that by induction(auto intro: outs'_gpvI)
+  show "x \<in> outs_gpv \<I>_full gpv" if "x \<in> outs'_gpv gpv" for x gpv
+    using that by induction(auto intro: outs_gpv.intros elim!: generat.set_cases)
+qed
+
+lemma outs'_bind_gpv [simp]:
+  "outs'_gpv (bind_gpv gpv f) = outs'_gpv gpv \<union> (\<Union>x\<in>results'_gpv gpv. outs'_gpv (f x))"
+  unfolding outs_gpv_\<I>_full[symmetric] results_gpv_\<I>_full[symmetric] by simp
+
+lemma outs_gpv_map_gpv_id [simp]: "outs_gpv \<I> (map_gpv f id gpv) = outs_gpv \<I> gpv"
+  by(auto simp add: map_gpv_conv_bind id_def)
+
+lemma outs_gpv_map_gpv_id' [simp]: "outs_gpv \<I> (map_gpv f (\<lambda>x. x) gpv) = outs_gpv \<I> gpv"
+  by(auto simp add: map_gpv_conv_bind id_def)
+
+lemma outs'_gpv_bind_option [simp]:
+  "outs'_gpv (monad.bind_option Fail x f) = (\<Union>y\<in>set_option x. outs'_gpv (f y))"
+  by(cases x) simp_all
+
+lemma rel_gpv''_Grp: includes lifting_syntax shows
+  "rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse> = 
+   BNF_Def.Grp {x. results_gpv (\<I>_uniform UNIV (range h)) x \<subseteq> A \<and> outs_gpv (\<I>_uniform UNIV (range h)) x \<subseteq> B} (map_gpv' f g h)"
+  (is "?lhs = ?rhs")
+proof(intro ext GrpI iffI CollectI conjI subsetI)
+  let ?\<I> = "\<I>_uniform UNIV (range h)"
+  fix gpv gpv'
+  assume *: "?lhs gpv gpv'"
+  then show "map_gpv' f g h gpv = gpv'"
+    by(coinduction arbitrary: gpv gpv')
+      (drule rel_gpv''D
+        , auto 4 5 simp add: spmf_rel_map generat.rel_map elim!: rel_spmf_mono generat.rel_mono_strong GrpE intro!: GrpI dest: rel_funD)
+  show "x \<in> A" if "x \<in> results_gpv ?\<I> gpv" for x using that *
+  proof(induction arbitrary: gpv')
+    case (Pure gpv)
+    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
+      using Pure.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] ..
+    with Pure.hyps show ?case by(simp add: generat.Domainp_rel pred_spmf_def pred_generat_def Domainp_Grp)
+  next
+    case (IO out c gpv input)
+    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
+      using IO.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] by(rule DomainPI)
+    with IO.hyps show ?case 
+      by(auto simp add: generat.Domainp_rel pred_spmf_def pred_generat_def Grp_iff dest: rel_funD intro: IO.IH dest!: bspec)
+  qed
+  show "x \<in> B" if "x \<in> outs_gpv ?\<I> gpv" for x using that *
+  proof(induction arbitrary: gpv')
+    case (IO c gpv)
+    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
+      using IO.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] by(rule DomainPI)
+    with IO.hyps show ?case by(simp add: generat.Domainp_rel pred_spmf_def pred_generat_def Domainp_Grp)
+  next
+    case (Cont out rpv gpv input)
+    have "pred_spmf (Domainp (rel_generat (BNF_Def.Grp A f) (BNF_Def.Grp B g) ((BNF_Def.Grp UNIV h)\<inverse>\<inverse> ===> rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse>))) (the_gpv gpv)"
+      using Cont.prems[THEN rel_gpv''D] unfolding spmf_Domainp_rel[symmetric] by(rule DomainPI)
+    with Cont.hyps show ?case 
+      by(auto simp add: generat.Domainp_rel pred_spmf_def pred_generat_def Grp_iff dest: rel_funD intro: Cont.IH dest!: bspec)
+  qed
+next
+  fix gpv gpv'
+  assume "?rhs gpv gpv'"
+  then have gpv': "gpv' = map_gpv' f g h gpv"
+    and *: "results_gpv (\<I>_uniform UNIV (range h)) gpv \<subseteq> A" "outs_gpv (\<I>_uniform UNIV (range h)) gpv \<subseteq> B" by(auto simp add: Grp_iff)
+  show "?lhs gpv gpv'" using * unfolding gpv'
+    by(coinduction arbitrary: gpv)
+      (fastforce simp add: spmf_rel_map generat.rel_map Grp_iff intro!: rel_spmf_reflI generat.rel_refl_strong rel_funI elim!: generat.set_cases intro: results_gpv.intros outs_gpv.intros)
+qed
+
+inductive pred_gpv' :: "('a \<Rightarrow> bool) \<Rightarrow> ('out \<Rightarrow> bool) \<Rightarrow> 'in set \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool" for P Q X gpv where
+  "pred_gpv' P Q X gpv" 
+if "\<And>x. x \<in> results_gpv (\<I>_uniform UNIV X) gpv \<Longrightarrow> P x" "\<And>out. out \<in> outs_gpv (\<I>_uniform UNIV X) gpv \<Longrightarrow> Q out"
+
+lemma pred_gpv_conv_pred_gpv': "pred_gpv P Q = pred_gpv' P Q UNIV"
+  by(auto simp add: fun_eq_iff pred_gpv_def pred_gpv'.simps results_gpv_\<I>_full outs_gpv_\<I>_full)
+
+lemma rel_gpv''_map_gpv'1:
+  "rel_gpv'' A C (BNF_Def.Grp UNIV h)\<inverse>\<inverse> gpv gpv' \<Longrightarrow> rel_gpv'' A C (=) (map_gpv' id id h gpv) gpv'"
+  apply(coinduction arbitrary: gpv gpv')
+  apply(drule rel_gpv''D)
+  apply(simp add: spmf_rel_map)
+  apply(erule rel_spmf_mono)
+  apply(simp add: generat.rel_map)
+  apply(erule generat.rel_mono_strong; simp?)
+  apply(subst map_fun2_id)
+  by(auto simp add: rel_fun_comp intro!: rel_fun_map_fun1 elim: rel_fun_mono)
+
+lemma rel_gpv''_map_gpv'2:
+  "rel_gpv'' A C (eq_on (range h)) gpv gpv' \<Longrightarrow> rel_gpv'' A C (BNF_Def.Grp UNIV h)\<inverse>\<inverse> gpv (map_gpv' id id h gpv')"
+  apply(coinduction arbitrary: gpv gpv')
+  apply(drule rel_gpv''D)
+  apply(simp add: spmf_rel_map)
+  apply(erule rel_spmf_mono_strong)
+  apply(simp add: generat.rel_map)
+  apply(erule generat.rel_mono_strong; simp?)
+  apply(subst map_fun_id2_in)
+  apply(rule rel_fun_map_fun2)
+  by (auto simp add: rel_fun_comp  elim: rel_fun_mono)
+
+context
+  fixes A :: "'a \<Rightarrow> 'd \<Rightarrow> bool"
+    and C :: "'c \<Rightarrow> 'g \<Rightarrow> bool"
+    and R :: "'b \<Rightarrow> 'e \<Rightarrow> bool"
+begin
+
+private lemma f11:" Pure x \<in> set_spmf (the_gpv gpv) \<Longrightarrow>
+   Domainp (rel_generat A C (rel_fun R (rel_gpv'' A C R))) (Pure x) \<Longrightarrow> Domainp A x"
+  by (auto simp add: pred_generat_def elim:bspec dest: generat.Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI])
+
+private lemma f21: "IO out c \<in> set_spmf (the_gpv gpv) \<Longrightarrow> 
+  rel_generat A C (rel_fun R (rel_gpv'' A C R)) (IO out c) ba \<Longrightarrow> Domainp C out"
+  by (auto simp add: pred_generat_def elim:bspec dest: generat.Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI])
+
+private lemma f12:
+  assumes "IO out c \<in> set_spmf (the_gpv gpv)"
+    and "input \<in> responses_\<I> (\<I>_uniform UNIV {x. Domainp R x}) out"
+    and "x \<in> results_gpv (\<I>_uniform UNIV {x. Domainp R x}) (c input)"
+    and "Domainp (rel_gpv'' A C R) gpv"
+  shows "Domainp (rel_gpv'' A C R) (c input)"
+proof -
+  obtain b1 where o1:"rel_gpv'' A C R gpv b1" using assms(4) by clarsimp
+  obtain b2 where o2:"rel_generat A C (rel_fun R (rel_gpv'' A C R)) (IO out c) b2"
+    using assms(1) o1[THEN rel_gpv''D, THEN spmf_Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI]]
+    unfolding pred_spmf_def by - (drule (1) bspec, auto)
+
+  have "Ball (generat_conts (IO out c)) (Domainp (rel_fun R (rel_gpv'' A C R)))"
+    using o2[THEN generat.Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI]]
+    unfolding pred_generat_def by simp
+
+  with assms(2) show ?thesis 
+    apply -
+    apply(drule bspec)
+     apply simp
+    apply clarify
+    apply(drule Domainp_rel_fun_le[THEN predicate1D, OF Domainp_iff[THEN iffD2], OF exI])
+    by simp  
+qed
+
+private lemma f22:
+  assumes "IO out' rpv \<in> set_spmf (the_gpv gpv)"
+    and "input \<in> responses_\<I> (\<I>_uniform UNIV {x. Domainp R x}) out'"
+    and "out \<in> outs_gpv (\<I>_uniform UNIV {x. Domainp R x}) (rpv input)"
+    and "Domainp (rel_gpv'' A C R) gpv"
+  shows "Domainp (rel_gpv'' A C R) (rpv input)"
+proof -
+  obtain b1 where o1:"rel_gpv'' A C R gpv b1" using assms(4) by auto
+  obtain b2 where o2:"rel_generat A C (rel_fun R (rel_gpv'' A C R)) (IO out' rpv) b2"
+    using assms(1) o1[THEN rel_gpv''D, THEN spmf_Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI]]
+    unfolding pred_spmf_def by - (drule (1) bspec, auto)
+
+  have "Ball (generat_conts (IO out' rpv)) (Domainp (rel_fun R (rel_gpv'' A C R)))"
+    using o2[THEN generat.Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI]]
+    unfolding pred_generat_def by simp
+
+  with assms(2) show ?thesis 
+    apply -
+    apply(drule bspec)
+     apply simp
+    apply clarify
+    apply(drule Domainp_rel_fun_le[THEN predicate1D, OF Domainp_iff[THEN iffD2], OF exI])
+    by simp 
+qed
+
+lemma Domainp_rel_gpv''_le:
+  "Domainp (rel_gpv'' A C R) \<le> pred_gpv' (Domainp A) (Domainp C) {x. Domainp R x}"
+proof(rule predicate1I pred_gpv'.intros)+
+  show "Domainp A x" if "x \<in> results_gpv (\<I>_uniform UNIV {x. Domainp R x}) gpv" "Domainp (rel_gpv'' A C R) gpv" for x gpv using that
+  proof(induction)
+    case (Pure gpv)
+    then show ?case 
+      by (clarify) (drule rel_gpv''D
+          , auto simp add: f11 pred_spmf_def dest: spmf_Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI])
+  qed (simp add: f12) 
+  show "Domainp C out" if "out \<in> outs_gpv (\<I>_uniform UNIV {x. Domainp R x}) gpv" "Domainp (rel_gpv'' A C R) gpv" for out gpv using that
+  proof( induction)
+    case (IO c gpv)
+    then show ?case
+      by (clarify) (drule rel_gpv''D
+          , auto simp add: f21 pred_spmf_def dest!: bspec spmf_Domainp_rel[THEN fun_cong, THEN iffD1, OF Domainp_iff[THEN iffD2], OF exI])
+  qed (simp add: f22)
+qed
+
+end
+
+lemma map_gpv'_id12: "map_gpv' f g h gpv = map_gpv' id id h (map_gpv f g gpv)"
+  unfolding map_gpv_conv_map_gpv' map_gpv'_comp by simp
+
+lemma rel_gpv''_refl: "\<lbrakk> (=) \<le> A; (=) \<le> C; R \<le> (=) \<rbrakk> \<Longrightarrow> (=) \<le> rel_gpv'' A C R"
+  by(subst rel_gpv''_eq[symmetric])(rule rel_gpv''_mono)
+
+
+context
+  fixes A A' :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+    and C C' :: "'c \<Rightarrow> 'd \<Rightarrow> bool"
+    and R R' :: "'e \<Rightarrow> 'f \<Rightarrow> bool"
+   
+begin
+
+private abbreviation foo where 
+  "foo \<equiv> (\<lambda> fx fy gpvx gpvy g1 g2. 
+            \<forall>x y. x \<in> fx (\<I>_uniform UNIV (Collect (Domainp R'))) gpvx \<longrightarrow>
+                  y \<in> fy (\<I>_uniform UNIV (Collect (Rangep R'))) gpvy \<longrightarrow> g1 x y \<longrightarrow> g2 x y)"
+
+private lemma f1: "foo results_gpv results_gpv gpv gpv' A A' \<Longrightarrow>
+       x \<in> set_spmf (the_gpv gpv) \<Longrightarrow> y \<in> set_spmf (the_gpv gpv') \<Longrightarrow>
+       a \<in> generat_conts x \<Longrightarrow> b \<in> generat_conts y \<Longrightarrow>  R' a' \<alpha> \<Longrightarrow> R' \<beta> b' \<Longrightarrow> 
+    foo results_gpv results_gpv (a a') (b b') A A'"
+  by (fastforce elim: generat.set_cases intro: results_gpv.IO)
+
+private lemma f2: "foo outs_gpv outs_gpv gpv gpv' C C' \<Longrightarrow>
+       x \<in> set_spmf (the_gpv gpv) \<Longrightarrow> y \<in> set_spmf (the_gpv gpv') \<Longrightarrow>
+       a \<in> generat_conts x \<Longrightarrow> b \<in> generat_conts y \<Longrightarrow> R' a' \<alpha> \<Longrightarrow> R' \<beta> b' \<Longrightarrow> 
+    foo outs_gpv outs_gpv (a a') (b b') C C'"
+  by (fastforce elim: generat.set_cases intro: outs_gpv.Cont)
+
+lemma rel_gpv''_mono_strong:
+  "\<lbrakk> rel_gpv'' A C R gpv gpv'; 
+     \<And>x y. \<lbrakk> x \<in> results_gpv (\<I>_uniform UNIV {x. Domainp R' x}) gpv; y \<in> results_gpv (\<I>_uniform UNIV {x. Rangep R' x}) gpv'; A x y \<rbrakk> \<Longrightarrow> A' x y;
+     \<And>x y. \<lbrakk> x \<in> outs_gpv (\<I>_uniform UNIV {x. Domainp R' x}) gpv; y \<in> outs_gpv (\<I>_uniform UNIV {x. Rangep R' x}) gpv'; C x y \<rbrakk> \<Longrightarrow> C' x y;
+     R' \<le> R \<rbrakk>
+  \<Longrightarrow> rel_gpv'' A' C' R' gpv gpv'"
+  apply(coinduction arbitrary: gpv gpv')
+  apply(drule rel_gpv''D)
+  apply(erule rel_spmf_mono_strong)
+  apply(erule generat.rel_mono_strong)
+    apply(erule generat.set_cases)+
+    apply(erule allE, rotate_tac -1)
+    apply(erule allE)
+    apply(erule impE)
+     apply(rule results_gpv.Pure)
+     apply simp
+    apply(erule impE)
+     apply(rule results_gpv.Pure)
+     apply simp
+    apply simp
+   apply(erule generat.set_cases)+
+   apply(rotate_tac 1)
+   apply(erule allE, rotate_tac -1)
+   apply(erule allE)
+   apply(erule impE)
+    apply(rule outs_gpv.IO)
+    apply simp
+   apply(erule impE)
+    apply(rule outs_gpv.IO)
+    apply simp
+   apply simp
+  apply(erule (1) rel_fun_mono_strong)
+  by (fastforce simp add: f1[simplified] f2[simplified])
+
+end
+
+lemma rel_gpv''_refl_strong:
+  assumes "\<And>x. x \<in> results_gpv (\<I>_uniform UNIV {x. Domainp R x}) gpv \<Longrightarrow> A x x"
+    and "\<And>x. x \<in> outs_gpv (\<I>_uniform UNIV {x. Domainp R x}) gpv \<Longrightarrow> C x x"
+    and "R \<le> (=)"
+  shows "rel_gpv'' A C R gpv gpv"
+proof -
+  have "rel_gpv'' (=) (=) (=) gpv gpv" unfolding rel_gpv''_eq by simp
+  then show ?thesis using _ _ assms(3) by(rule rel_gpv''_mono_strong)(auto intro: assms(1-2))
+qed
+
+lemma rel_gpv''_refl_eq_on:
+  "\<lbrakk> \<And>x. x \<in> results_gpv (\<I>_uniform UNIV X) gpv \<Longrightarrow> A x x; \<And>out. out \<in> outs_gpv (\<I>_uniform UNIV X) gpv \<Longrightarrow> B out out \<rbrakk>
+  \<Longrightarrow> rel_gpv'' A B (eq_on X) gpv gpv"
+  by(rule rel_gpv''_refl_strong) (auto elim: eq_onE)
+
+lemma pred_gpv'_mono' [mono]:
+  "pred_gpv' A C R gpv \<longrightarrow> pred_gpv' A' C' R gpv"
+  if "\<And>x. A x \<longrightarrow> A' x" "\<And>x. C x \<longrightarrow> C' x"
+  using that unfolding pred_gpv'.simps
+  by auto
 
 subsubsection \<open>Type judgements\<close>
 
@@ -2356,6 +2771,90 @@ proof
   have "\<I> \<turnstile>g Pause x (\<lambda>_. Fail :: ('a, 'out, 'in) gpv) \<surd>" by(rule assms)
   thus "x \<in> outs_\<I> \<I>" by(simp)
 qed
+
+lemma WT_gpv_\<I>_mono: "\<lbrakk> \<I> \<turnstile>g gpv \<surd>; \<I> \<le> \<I>' \<rbrakk> \<Longrightarrow> \<I>' \<turnstile>g gpv \<surd>"
+  by(erule WT_gpv_mono; rule outs_\<I>_mono responses_\<I>_mono)
+
+lemma results_gpv_mono:
+  assumes le: "\<I>' \<le> \<I>" and WT: "\<I>' \<turnstile>g gpv \<surd>"
+  shows "results_gpv \<I> gpv \<subseteq> results_gpv \<I>' gpv"
+proof(rule subsetI, goal_cases)
+  case (1 x)
+  show ?case using 1 WT by(induction)(auto 4 3 intro: results_gpv.intros responses_\<I>_mono[OF le, THEN subsetD] intro: WT_gpvD)
+qed
+
+lemma WT_gpv_outs_gpv:
+  assumes "\<I> \<turnstile>g gpv \<surd>"
+  shows "outs_gpv \<I> gpv \<subseteq> outs_\<I> \<I>"
+proof
+  show "x \<in> outs_\<I> \<I>" if "x \<in> outs_gpv \<I> gpv" for x using that assms
+    by(induction)(blast intro: WT_gpv_OutD WT_gpv_ContD)+
+qed
+
+lemma WT_gpv_map_gpv': "\<I> \<turnstile>g map_gpv' f g h gpv \<surd>" if "map_\<I> g h \<I> \<turnstile>g gpv \<surd>"
+  using that by(coinduction arbitrary: gpv)(auto 4 4 dest: WT_gpvD)
+
+lemma WT_gpv_map_gpv: "\<I> \<turnstile>g map_gpv f g gpv \<surd>" if "map_\<I> g id \<I> \<turnstile>g gpv \<surd>"
+  unfolding map_gpv_conv_map_gpv' using that by(rule WT_gpv_map_gpv')
+
+lemma results_gpv_map_gpv' [simp]:
+  "results_gpv \<I> (map_gpv' f g h gpv) = f ` (results_gpv (map_\<I> g h \<I>) gpv)"
+proof(intro Set.set_eqI iffI; (elim imageE; hypsubst)?)
+  show "x \<in> f ` results_gpv (map_\<I> g h \<I>) gpv" if "x \<in> results_gpv \<I> (map_gpv' f g h gpv)" for x using that
+    by(induction gpv'\<equiv>"map_gpv' f g h gpv" arbitrary: gpv)(fastforce intro: results_gpv.intros rev_image_eqI)+
+  show "f x \<in> results_gpv \<I> (map_gpv' f g h gpv)" if "x \<in> results_gpv (map_\<I> g h \<I>) gpv" for x using that
+    by(induction)(fastforce intro: results_gpv.intros)+
+qed
+
+lemma WT_gpv_parametric': includes lifting_syntax shows
+  "bi_unique C \<Longrightarrow> (rel_\<I> C R ===> rel_gpv'' A C R ===> (=)) WT_gpv WT_gpv"
+proof(rule rel_funI iffI)+
+  note [transfer_rule] = the_gpv_parametric'
+  show *: "\<I> \<turnstile>g gpv \<surd>" if [transfer_rule]: "rel_\<I> C R \<I> \<I>'" "bi_unique C" 
+    and *: "\<I>' \<turnstile>g gpv' \<surd>" "rel_gpv'' A C R gpv gpv'" for \<I> \<I>' gpv gpv' A C R
+    using *
+  proof(coinduction arbitrary: gpv gpv')
+    case (WT_gpv out c gpv gpv')
+    note [transfer_rule] = WT_gpv(2)
+    have "rel_set (rel_generat A C (R ===> rel_gpv'' A C R)) (set_spmf (the_gpv gpv)) (set_spmf (the_gpv gpv'))" 
+      by transfer_prover
+    from rel_setD1[OF this WT_gpv(3)] obtain out' c'
+      where [transfer_rule]: "C out out'" "(R ===> rel_gpv'' A C R) c c'"
+        and out': "IO out' c' \<in> set_spmf (the_gpv gpv')"
+      by(auto elim: generat.rel_cases)
+    have "out \<in> outs_\<I> \<I> \<longleftrightarrow> out' \<in> outs_\<I> \<I>'" by transfer_prover
+    with WT_gpvD(1)[OF WT_gpv(1) out'] have ?out by simp
+    moreover have ?cont
+    proof(standard; goal_cases cont)
+      case (cont input)
+      have "rel_set R (responses_\<I> \<I> out) (responses_\<I> \<I>' out')" by transfer_prover
+      from rel_setD1[OF this cont] obtain input' where [transfer_rule]: "R input input'"
+        and input': "input' \<in> responses_\<I> \<I>' out'" by blast
+      have "rel_gpv'' A C R (c input) (c' input')" by transfer_prover
+      with WT_gpvD(2)[OF WT_gpv(1) out' input'] show ?case by auto
+    qed
+    ultimately show ?case ..
+  qed
+
+  show "\<I>' \<turnstile>g gpv' \<surd>" if "rel_\<I> C R \<I> \<I>'" "bi_unique C" "\<I> \<turnstile>g gpv \<surd>" "rel_gpv'' A C R gpv gpv'" 
+    for \<I> \<I>' gpv gpv'
+    using *[of "conversep C" "conversep R" \<I>' \<I> gpv "conversep A" gpv'] that
+    by(simp add: rel_gpv''_conversep)
+qed
+
+lemma WT_gpv_map_gpv_id [simp]: "\<I> \<turnstile>g map_gpv f id gpv \<surd> \<longleftrightarrow> \<I> \<turnstile>g gpv \<surd>"
+  using WT_gpv_parametric'[of "BNF_Def.Grp UNIV id" "(=)" "BNF_Def.Grp UNIV f", folded rel_gpv_conv_rel_gpv'']
+  unfolding gpv.rel_Grp unfolding eq_alt[symmetric] relator_eq
+  by(auto simp add: rel_fun_def Grp_def bi_unique_eq)
+
+lemma WT_gpv_outs_gpvI:
+  assumes "outs_gpv \<I> gpv \<subseteq> outs_\<I> \<I>"
+  shows "\<I> \<turnstile>g gpv \<surd>"
+  using assms by(coinduction arbitrary: gpv)(auto intro: outs_gpv.intros)
+
+lemma WT_gpv_iff_outs_gpv:
+  "\<I> \<turnstile>g gpv \<surd> \<longleftrightarrow> outs_gpv \<I> gpv \<subseteq> outs_\<I> \<I>"
+  by(blast intro: WT_gpv_outs_gpvI dest: WT_gpv_outs_gpv)
 
 subsection \<open>Sub-gpvs\<close>
 
@@ -3018,6 +3517,23 @@ apply(rule rel_spmf_try_spmf)
  apply(simp add: spmf_rel_map generat.map_comp o_def generat.rel_map rel_fun_def)
  apply(subst map_try_spmf[symmetric])
  *)
+
+context fixes B :: "'b \<Rightarrow> 'c set" and x :: 'a begin
+
+primcorec mk_lossless_gpv :: "('a, 'b, 'c) gpv \<Rightarrow> ('a, 'b, 'c) gpv" where
+  "the_gpv (mk_lossless_gpv gpv) =
+   map_spmf (\<lambda>generat. case generat of Pure x \<Rightarrow> Pure x 
+      | IO out c \<Rightarrow> IO out (\<lambda>input. if input \<in> B out then mk_lossless_gpv (c input) else Done x))
+    (the_gpv gpv)"
+
+end
+
+lemma WT_gpv_mk_lossless_gpv:
+  assumes "\<I> \<turnstile>g gpv \<surd>"
+    and outs: "outs_\<I> \<I>' = outs_\<I> \<I>"
+  shows "\<I>' \<turnstile>g mk_lossless_gpv (responses_\<I> \<I>) x gpv \<surd>"
+  using assms(1)
+  by(coinduction arbitrary: gpv)(auto 4 3 split: generat.split_asm simp add: outs dest: WT_gpvD)
 
 subsection \<open>Sequencing with failure handling included\<close>
 
@@ -4089,6 +4605,271 @@ by(subst inline1.simps)(auto simp add: id_oracle_def map_spmf_conv_bind_spmf int
 lemma inline_id_oracle [simp]: "inline id_oracle gpv s = map_gpv (\<lambda>x. (x, s)) id gpv"
 by(coinduction arbitrary: gpv s)(auto 4 3 simp add: inline_sel inline1_id_oracle spmf_rel_map gpv.map_sel o_def generat.rel_map intro!: rel_spmf_reflI rel_funI split: generat.split)
 
+locale raw_converter_invariant =
+  fixes \<I> :: "('call, 'ret) \<I>"
+    and \<I>' :: "('call', 'ret') \<I>"
+    and callee :: "'s \<Rightarrow> 'call \<Rightarrow> ('ret \<times> 's, 'call', 'ret') gpv"
+    and I :: "'s \<Rightarrow> bool"
+  assumes results_callee: "\<And>s x. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> results_gpv \<I>' (callee s x) \<subseteq> responses_\<I> \<I> x \<times> {s. I s}"
+    and WT_callee: "\<And>x s. \<lbrakk> x \<in> outs_\<I> \<I>; I s \<rbrakk> \<Longrightarrow> \<I>' \<turnstile>g callee s x \<surd>"
+begin
+
+context begin
+private lemma aux:
+  "set_spmf (inline1 callee gpv s) \<subseteq> {Inr (out, callee', rpv') | out callee' rpv'.
+    \<exists>call\<in>outs_\<I> \<I>. \<exists>s. I s \<and> (\<forall>x \<in> responses_\<I> \<I>' out. callee' x \<in> sub_gpvs \<I>' (callee s call))} \<union>
+     {Inl (x, s') | x s'. x \<in> results_gpv \<I> gpv \<and> I s'}"
+  (is "?concl (inline1 callee) gpv s" is "_ \<subseteq> ?rhs1 \<union> ?rhs2 gpv")
+  if "\<I> \<turnstile>g gpv \<surd>" "I s"
+  using that
+proof(induction arbitrary: gpv s rule: inline1_fixp_induct)
+  case adm show ?case by simp
+  case bottom show ?case by simp
+  case (step inline1')
+  { fix out c
+    assume IO: "IO out c \<in> set_spmf (the_gpv gpv)" 
+    from step.prems(1) IO have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpvD)
+    { fix x s'
+      assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
+      then have "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
+      with out step.prems(2) have "x \<in> responses_\<I> \<I> out" "I s'" by(auto dest: results_callee)
+      from step.prems(1) IO this(1) have "\<I> \<turnstile>g c x \<surd>" by(rule WT_gpvD)
+      hence "?concl inline1' (c x) s'" using \<open>I s'\<close> by(rule step.IH)
+      also have "\<dots> \<subseteq> ?rhs1 \<union> ?rhs2 gpv" using \<open>x \<in> _\<close> IO by(auto intro: results_gpv.intros)
+      also note calculation
+    } moreover {
+      fix out' c'
+      assume "IO out' c' \<in> set_spmf (the_gpv (callee s out))"
+      hence "\<forall>x\<in>responses_\<I> \<I>' out'. c' x \<in> sub_gpvs \<I>' (callee s out)"
+        by(auto intro: sub_gpvs.base)
+      then have "\<exists>call\<in>outs_\<I> \<I>. \<exists>s. I s \<and> (\<forall>x\<in>responses_\<I> \<I>' out'. c' x \<in> sub_gpvs \<I>' (callee s call))"
+        using out step.prems(2) by blast
+    } moreover note calculation }
+    then show ?case using step.prems
+      by(auto 4 3 del: subsetI simp add: bind_UNION intro!: UN_least split: generat.split intro: results_gpv.intros)
+  qed
+
+lemma inline1_in_sub_gpvs_callee:
+  assumes "Inr (out, callee', rpv') \<in> set_spmf (inline1 callee gpv s)"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and s: "I s"
+  shows "\<exists>call\<in>outs_\<I> \<I>. \<exists>s. I s \<and> (\<forall>x \<in> responses_\<I> \<I>' out. callee' x \<in> sub_gpvs \<I>' (callee s call))"
+  using aux[OF WT s] assms(1) by fastforce
+
+lemma inline1_Inl_results_gpv:
+  assumes "Inl (x, s') \<in> set_spmf (inline1 callee gpv s)"
+    and WT: "\<I> \<turnstile>g gpv \<surd>"
+    and s: "I s"
+  shows "x \<in> results_gpv \<I> gpv \<and> I s'"
+  using aux[OF WT s] assms(1) by fastforce
+end
+
+lemma inline1_in_sub_gpvs:
+  assumes "Inr (out, callee', rpv') \<in> set_spmf (inline1 callee gpv s)"
+    and "(x, s') \<in> results_gpv \<I>' (callee' input)"
+    and "input \<in> responses_\<I> \<I>' out"
+    and "\<I> \<turnstile>g gpv \<surd>"
+    and "I s"
+  shows "rpv' x \<in> sub_gpvs \<I> gpv \<and> I s'"
+proof -
+  from \<open>\<I> \<turnstile>g gpv \<surd>\<close> \<open>I s\<close>
+  have "set_spmf (inline1 callee gpv s) \<subseteq> {Inr (out, callee', rpv') | out callee' rpv'.
+    \<forall>input \<in> responses_\<I> \<I>' out. \<forall>(x, s')\<in>results_gpv \<I>' (callee' input). I s' \<and> rpv' x \<in> sub_gpvs \<I> gpv}
+    \<union> {Inl (x, s') | x s'. I s'}" (is "?concl (inline1 callee) gpv s" is "_ \<subseteq> ?rhs gpv s")
+  proof(induction arbitrary: gpv s rule: inline1_fixp_induct)
+    case adm show ?case by(intro cont_intro ccpo_class.admissible_leI)
+    case bottom show ?case by simp
+    case (step inline1')
+    { fix out c
+      assume IO: "IO out c \<in> set_spmf (the_gpv gpv)" 
+      from step.prems(1) IO have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpvD)
+      { fix x s'
+        assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
+        then have "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
+        with out step.prems(2) have "x \<in> responses_\<I> \<I> out" "I s'" by(auto dest: results_callee)
+        from step.prems(1) IO this(1) have "\<I> \<turnstile>g c x \<surd>" by(rule WT_gpvD)
+        hence "?concl inline1' (c x) s'" using \<open>I s'\<close> by(rule step.IH)
+        also have "\<dots> \<subseteq> ?rhs gpv s'" using IO Pure \<open>I s\<close>
+          by(fastforce intro: sub_gpvs.cont dest: WT_gpv_OutD[OF step.prems(1)] results_callee[THEN subsetD, OF _ _ results_gpv.Pure])
+        finally have "set_spmf (inline1' (c x) s') \<subseteq> \<dots>" .
+      } moreover {
+        fix out' c' input x s'
+        assume "IO out' c' \<in> set_spmf (the_gpv (callee s out))"
+          and "input \<in> responses_\<I> \<I>' out'" and "(x, s') \<in> results_gpv \<I>' (c' input)"
+        then have "c x \<in> sub_gpvs \<I> gpv" "I s'" using IO \<open>I s\<close>
+          by(auto intro!: sub_gpvs.base dest: WT_gpv_OutD[OF step.prems(1)] results_callee[THEN subsetD, OF _ _ results_gpv.IO])
+      } moreover note calculation }
+      then show ?case using step.prems(2)
+        by(auto simp add: bind_UNION intro!: UN_least split: generat.split del: subsetI)
+    qed
+    with assms show ?thesis by fastforce
+  qed
+
+lemma WT_gpv_inline1:
+  assumes "Inr (out, rpv, rpv') \<in> set_spmf (inline1 callee gpv s)"
+    and "\<I> \<turnstile>g gpv \<surd>"
+    and "I s"
+  shows "out \<in> outs_\<I> \<I>'" (is "?thesis1")
+    and "input \<in> responses_\<I> \<I>' out \<Longrightarrow> \<I>' \<turnstile>g rpv input \<surd>" (is "PROP ?thesis2")
+    and "\<lbrakk> input \<in> responses_\<I> \<I>' out; (x, s') \<in> results_gpv \<I>' (rpv input) \<rbrakk> \<Longrightarrow> \<I> \<turnstile>g rpv' x \<surd> \<and> I s'" (is "PROP ?thesis3")
+proof -
+  from \<open>\<I> \<turnstile>g gpv \<surd>\<close> \<open>I s\<close>
+  have "set_spmf (inline1 callee gpv s) \<subseteq> {Inr (out, rpv, rpv') | out rpv rpv'. out \<in> outs_\<I> \<I>'} \<union> {Inl (x, s')| x s'. I s'}"
+  proof(induction arbitrary: gpv s rule: inline1_fixp_induct)
+    { case adm show ?case by(intro cont_intro ccpo_class.admissible_leI) }
+    { case bottom show ?case by simp }
+    case (step inline1')
+    { fix out c
+      assume IO: "IO out c \<in> set_spmf (the_gpv gpv)" 
+      from step.prems(1) IO have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpvD)
+      { fix x s'
+        assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
+        then have *: "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
+        with out step.prems(2) have "x \<in> responses_\<I> \<I> out" "I s'" by(auto dest: results_callee)
+        from step.prems(1) IO this(1) have "\<I> \<turnstile>g c x \<surd>" by(rule WT_gpvD)
+        note this \<open>I s'\<close>
+      } moreover {
+        fix out' c'
+        from out step.prems(2) have "\<I>' \<turnstile>g callee s out \<surd>" by(rule WT_callee)
+        moreover assume "IO out' c' \<in> set_spmf (the_gpv (callee s out))"
+        ultimately have "out' \<in> outs_\<I> \<I>'" by(rule WT_gpvD) 
+      } moreover note calculation }
+      then show ?case using step.prems(2)
+        by(auto del: subsetI simp add: bind_UNION intro!: UN_least split: generat.split intro!: step.IH[THEN order_trans])
+    qed
+    then show ?thesis1 using assms by auto
+
+    assume "input \<in> responses_\<I> \<I>' out"
+    with inline1_in_sub_gpvs_callee[OF \<open>Inr _ \<in> _\<close> \<open>\<I> \<turnstile>g gpv \<surd>\<close> \<open>I s\<close>]
+    obtain out' s where "out' \<in> outs_\<I> \<I>" 
+      and *: "rpv input \<in> sub_gpvs \<I>' (callee s out')" and "I s" by blast
+    from \<open>out' \<in> _\<close> \<open>I s\<close> have "\<I>' \<turnstile>g callee s out' \<surd>" by(rule WT_callee)
+    then show "\<I>' \<turnstile>g rpv input \<surd>" using * by(rule WT_sub_gpvsD)
+
+    assume "(x, s') \<in> results_gpv \<I>' (rpv input)"
+    with \<open>Inr _ \<in> _\<close> have "rpv' x \<in> sub_gpvs \<I> gpv \<and> I s'"
+      using \<open>input \<in> _\<close> \<open>\<I> \<turnstile>g gpv \<surd>\<close> assms(3) \<open>I s\<close> by-(rule inline1_in_sub_gpvs)
+    with \<open>\<I> \<turnstile>g gpv \<surd>\<close> show "\<I> \<turnstile>g rpv' x \<surd> \<and> I s'" by(blast intro: WT_sub_gpvsD)
+  qed
+
+lemma WT_gpv_inline_invar:
+  assumes "\<I> \<turnstile>g gpv \<surd>"
+    and "I s"
+  shows "\<I>' \<turnstile>g inline callee gpv s \<surd>"
+  using assms
+proof(coinduction arbitrary: gpv s rule: WT_gpv_coinduct_bind)
+  case (WT_gpv out c gpv)
+  from \<open>IO out c \<in> _\<close> obtain callee' rpv'
+    where Inr: "Inr (out, callee', rpv') \<in> set_spmf (inline1 callee gpv s)"
+      and c: "c = (\<lambda>input. callee' input \<bind> (\<lambda>(x, s). inline callee (rpv' x) s))"
+    by(clarsimp simp add: inline_sel split: sum.split_asm)
+  from Inr \<open>\<I> \<turnstile>g gpv \<surd>\<close> \<open>I s\<close> have ?out by(rule WT_gpv_inline1)
+  moreover have "?cont TYPE('ret \<times> 's)" (is "\<forall>input\<in>_. _ \<or> _ \<or> ?case' input")
+  proof(rule ballI disjI2)+
+    fix input
+    assume "input \<in> responses_\<I> \<I>' out"
+    with Inr \<open>\<I> \<turnstile>g gpv \<surd> \<close> \<open>I s\<close> have "\<I>' \<turnstile>g callee' input \<surd>"
+      and "\<And>x s'. (x, s') \<in> results_gpv \<I>' (callee' input) \<Longrightarrow> \<I> \<turnstile>g rpv' x \<surd> \<and> I s'"
+      by(blast dest: WT_gpv_inline1)+
+    then show "?case' input" by(subst c)(auto 4 5)
+  qed
+  ultimately show "?case TYPE('ret \<times> 's)" ..
+qed
+
+end
+
+lemma WT_gpv_inline':
+  assumes "\<And>s x. x \<in> outs_\<I> \<I> \<Longrightarrow> results_gpv \<I>' (callee s x) \<subseteq> responses_\<I> \<I> x \<times> UNIV"
+    and "\<And>x s. x \<in> outs_\<I> \<I> \<Longrightarrow> \<I>' \<turnstile>g callee s x \<surd>"
+    and "\<I> \<turnstile>g gpv \<surd>"
+  shows "\<I>' \<turnstile>g inline callee gpv s \<surd>"
+proof -
+  interpret raw_converter_invariant \<I> \<I>' callee "\<lambda>_. True" 
+    using assms by(unfold_locales)auto
+  show ?thesis by(rule WT_gpv_inline_invar)(use assms in auto)
+qed
+
+lemma results_gpv_sub_gvps: "gpv' \<in> sub_gpvs \<I> gpv \<Longrightarrow> results_gpv \<I> gpv' \<subseteq> results_gpv \<I> gpv"
+  by(induction rule: sub_gpvs.induct)(auto intro: results_gpv.IO)
+
+lemma in_results_gpv_sub_gvps: "\<lbrakk> x \<in> results_gpv \<I> gpv'; gpv' \<in> sub_gpvs \<I> gpv \<rbrakk> \<Longrightarrow> x \<in> results_gpv \<I> gpv"
+  using results_gpv_sub_gvps[of gpv' \<I> gpv] by blast
+
+context raw_converter_invariant begin
+lemma results_gpv_inline_aux:
+  assumes "(x, s') \<in> results_gpv \<I>' (inline_aux callee y)"
+  shows "\<lbrakk> y = Inl (gpv, s); \<I> \<turnstile>g gpv \<surd>; I s \<rbrakk> \<Longrightarrow> x \<in> results_gpv \<I> gpv \<and> I s'"
+    and "\<lbrakk> y = Inr (rpv, callee'); \<forall>(z, s') \<in> results_gpv \<I>' callee'. \<I> \<turnstile>g rpv z \<surd> \<and> I s' \<rbrakk>
+    \<Longrightarrow> \<exists>(z, s'') \<in> results_gpv \<I>' callee'. x \<in> results_gpv \<I> (rpv z) \<and> I s'' \<and> I s'"
+  using assms
+proof(induction gvp'\<equiv>"inline_aux callee y" arbitrary: y gpv s rpv callee')
+  case Pure case 1
+  with Pure show ?case
+    by(auto simp add: inline_aux.sel split: sum.split_asm dest: inline1_Inl_results_gpv)
+next
+  case Pure case 2
+  with Pure show ?case
+    by(clarsimp simp add: inline_aux.sel split: sum.split_asm)
+      (fastforce split: generat.split_asm dest: inline1_Inl_results_gpv intro: results_gpv.Pure)+
+next
+  case (IO out c input) case 1
+  with IO(1) obtain rpv rpv' where inline1: "Inr (out, rpv, rpv') \<in> set_spmf (inline1 callee gpv s)"
+    and c: "c = (\<lambda>input. inline_aux callee (Inr (rpv', rpv input)))"
+    by(auto simp add: inline_aux.sel split: sum.split_asm)
+  from inline1[THEN inline1_in_sub_gpvs, OF _ \<open>input \<in> responses_\<I> \<I>' out\<close> _ \<open>I s\<close>] \<open>\<I> \<turnstile>g gpv \<surd>\<close>
+  have "\<forall>(z, s')\<in>results_gpv \<I>' (rpv input). \<I> \<turnstile>g rpv' z \<surd> \<and> I s'"
+    by(auto intro: WT_sub_gpvsD)
+  from IO(5)[unfolded c, OF refl refl this] obtain input' s'' 
+    where input': "(input', s'') \<in> results_gpv \<I>' (rpv input)" 
+      and x: "x \<in> results_gpv \<I> (rpv' input')" and s'': "I s''" "I s'"
+    by auto
+  from inline1[THEN inline1_in_sub_gpvs, OF input' \<open>input \<in> responses_\<I> \<I>' out\<close> \<open>\<I> \<turnstile>g gpv \<surd>\<close> \<open>I s\<close>] s'' x
+  show ?case by(auto intro: in_results_gpv_sub_gvps)
+next
+  case (IO out c input) case 2
+  from IO(1) "2"(1) consider (Pure) input' s'' rpv' rpv''
+    where "Pure (input', s'') \<in> set_spmf (the_gpv callee')" "Inr (out, rpv', rpv'') \<in> set_spmf (inline1 callee (rpv input') s'')"
+      "c = (\<lambda>input. inline_aux callee (Inr (rpv'', rpv' input)))"
+    | (Cont) rpv' where "IO out rpv' \<in> set_spmf (the_gpv callee')" "c = (\<lambda>input. inline_aux callee (Inr (rpv, rpv' input)))"
+    by(auto simp add: inline_aux.sel split: sum.split_asm; rename_tac generat; case_tac generat; clarsimp)
+  then show ?case
+  proof cases
+    case Pure
+    have res: "(input', s'') \<in> results_gpv \<I>' callee'" using Pure(1) by(rule results_gpv.Pure)
+    with 2 have WT: "\<I> \<turnstile>g rpv input' \<surd>" "I s''" by auto
+    have "\<forall>(z, s')\<in>results_gpv \<I>' (rpv' input). \<I> \<turnstile>g rpv'' z \<surd> \<and> I s'"
+      using inline1_in_sub_gpvs[OF Pure(2) _ \<open>input \<in> _\<close> WT] WT by(auto intro: WT_sub_gpvsD)
+    from IO(5)[unfolded Pure(3), OF refl refl this] obtain z s'''
+      where z: "(z, s''') \<in> results_gpv \<I>' (rpv' input)"
+        and x: "x \<in> results_gpv \<I> (rpv'' z)" and s': "I s'''" "I s'" by auto
+    have "x \<in> results_gpv \<I> (rpv input')" using x inline1_in_sub_gpvs[OF Pure(2) z \<open>input \<in> _\<close> WT]
+      by(auto intro: in_results_gpv_sub_gvps)
+    then show ?thesis using res WT s' by auto
+  next
+    case Cont
+    have "\<forall>(z, s')\<in>results_gpv \<I>' (rpv' input). \<I> \<turnstile>g rpv z \<surd> \<and> I s'" 
+      using Cont 2 \<open>input \<in> responses_\<I> \<I>' out\<close> by(auto intro: results_gpv.IO)
+    from IO(5)[unfolded Cont, OF refl refl this] obtain z s'' 
+      where "(z, s'') \<in> results_gpv \<I>' (rpv' input)" "x \<in> results_gpv \<I> (rpv z)" "I s''" "I s'" by auto
+    then show ?thesis using Cont(1) \<open>input \<in> _\<close> by(auto intro: results_gpv.IO)
+  qed
+qed
+
+lemma results_gpv_inline: 
+  "\<lbrakk>(x, s') \<in> results_gpv \<I>' (inline callee gpv s); \<I> \<turnstile>g gpv \<surd>; I s\<rbrakk> \<Longrightarrow> x \<in> results_gpv \<I> gpv \<and> I s'"
+  unfolding inline_def by(rule results_gpv_inline_aux(1)[OF _ refl])
+
+end
+
+lemma inline_map_gpv:
+  "inline callee (map_gpv f g gpv) s = map_gpv (apfst f) id (inline (\<lambda>s x. callee s (g x)) gpv s)"
+  unfolding apfst_def
+  by(rule inline_parametric
+      [where S="BNF_Def.Grp UNIV id" and C="BNF_Def.Grp UNIV g" and C'="BNF_Def.Grp UNIV id" and A="BNF_Def.Grp UNIV f",
+        THEN rel_funD, THEN rel_funD, THEN rel_funD,
+        unfolded gpv.rel_Grp prod.rel_Grp, simplified, folded eq_alt, unfolded Grp_def, simplified])
+    (auto simp add: rel_fun_def relator_eq)
+
 subsection \<open>Running GPVs\<close>
 
 type_synonym ('call, 'ret, 's) callee = "'s \<Rightarrow> 'call \<Rightarrow> ('ret \<times> 's) spmf"
@@ -4726,6 +5507,64 @@ proof(induction arbitrary: gpv s rule: exec_gpv_fixp_induct)
   case (step exec_gpv') show ?case using step.prems(2)
     by(auto 4 3 simp add: bind_spmf_def bind_map_pmf in_set_spmf[symmetric] WT_gpv_OutD[OF step.prems(1)] WT_calleeD[OF WT_callee[OF step.prems(2)]] intro!: bind_pmf_cong[OF refl] step.IH split!: option.split generat.split intro: WT_gpv_ContD[OF step.prems(1)] callee_invariant)
 qed
+
+lemma in_results_gpv_restrict_gpvD:
+  assumes "x \<in> results_gpv \<I> (restrict_gpv \<I>' gpv)"
+  shows "x \<in> results_gpv \<I> gpv"
+  using assms
+  apply(induction gpv'\<equiv>"restrict_gpv \<I>' gpv" arbitrary: gpv)
+   apply(clarsimp split: option.split_asm simp add: in_set_spmf[symmetric])
+  subgoal for \<dots> y by(cases y)(auto intro: results_gpv.intros split: if_split_asm)
+  apply(clarsimp split: option.split_asm simp add: in_set_spmf[symmetric])
+  subgoal for \<dots> y by(cases y)(auto intro: results_gpv.intros split: if_split_asm)
+  done
+
+lemma results_gpv_restrict_gpv:
+  "results_gpv \<I> (restrict_gpv \<I>' gpv) \<subseteq> results_gpv \<I> gpv"
+  by(blast intro: in_results_gpv_restrict_gpvD)
+
+lemma in_results'_gpv_restrict_gpvD:
+  "x \<in> results'_gpv (restrict_gpv \<I>' gpv) \<Longrightarrow> x \<in> results'_gpv gpv"
+  by(rule in_results_gpv_restrict_gpvD[where \<I> = "\<I>_full", unfolded results_gpv_\<I>_full])
+
+primcorec enforce_\<I>_gpv :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out, 'in) gpv" where
+  "enforce_\<I>_gpv \<I> gpv = GPV 
+    (map_spmf (map_generat id id ((\<circ>) (enforce_\<I>_gpv \<I>))) 
+     (map_spmf (\<lambda>generat. case generat of Pure x \<Rightarrow> Pure x | IO out rpv \<Rightarrow> IO out (\<lambda>input. if input \<in> responses_\<I> \<I> out then rpv input else Fail))
+        (enforce_spmf (pred_generat \<top> (\<lambda>x. x \<in> outs_\<I> \<I>) \<top>) (the_gpv gpv))))"
+
+lemma enforce_\<I>_gpv_Done [simp]: "enforce_\<I>_gpv \<I> (Done x) = Done x"
+  by(rule gpv.expand) simp
+
+lemma enforce_\<I>_gpv_Fail [simp]: "enforce_\<I>_gpv \<I> Fail = Fail"
+  by(rule gpv.expand) simp
+
+lemma enforce_\<I>_gpv_Pause [simp]:
+  "enforce_\<I>_gpv \<I> (Pause out rpv) =
+   (if out \<in> outs_\<I> \<I> then Pause out (\<lambda>input. if input \<in> responses_\<I> \<I> out then enforce_\<I>_gpv \<I> (rpv input) else Fail) else Fail)"
+  by(rule gpv.expand)(simp add: fun_eq_iff)
+
+lemma enforce_\<I>_gpv_lift_spmf [simp]: "enforce_\<I>_gpv \<I> (lift_spmf p) = lift_spmf p"
+  by(rule gpv.expand)(simp add: enforce_map_spmf spmf.map_comp o_def)
+
+lemma enforce_\<I>_gpv_bind_gpv [simp]:
+  "enforce_\<I>_gpv \<I> (bind_gpv gpv f) = bind_gpv (enforce_\<I>_gpv \<I> gpv) (enforce_\<I>_gpv \<I> \<circ> f)"
+  by(coinduction arbitrary: gpv rule: gpv.coinduct_strong)
+    (auto 4 3 simp add: bind_gpv.sel spmf_rel_map bind_map_spmf o_def pred_generat_def elim!: generat.set_cases intro!: generat.rel_refl_strong rel_spmf_bind_reflI rel_spmf_reflI rel_funI split!: if_splits generat.split_asm)
+
+lemma enforce_\<I>_gpv_parametric':
+  includes lifting_syntax 
+  notes [transfer_rule] = corec_gpv_parametric' the_gpv_parametric' Fail_parametric'
+  assumes [transfer_rule]: "bi_unique C" "bi_unique R"
+  shows "(rel_\<I> C R ===> rel_gpv'' A C R ===> rel_gpv'' A C R) enforce_\<I>_gpv enforce_\<I>_gpv"
+  unfolding enforce_\<I>_gpv_def top_fun_def by(transfer_prover)
+
+lemma enforce_\<I>_gpv_parametric [transfer_rule]: includes lifting_syntax shows
+  "bi_unique C \<Longrightarrow> (rel_\<I> C (=) ===> rel_gpv A C ===> rel_gpv A C) enforce_\<I>_gpv enforce_\<I>_gpv"
+  unfolding rel_gpv_conv_rel_gpv'' by(rule enforce_\<I>_gpv_parametric'[OF _ bi_unique_eq])
+
+lemma WT_enforce_\<I>_gpv [simp]: "\<I> \<turnstile>g enforce_\<I>_gpv \<I> gpv \<surd>"
+  by(coinduction arbitrary: gpv)(auto split: generat.split_asm)
 
 context fixes \<I> :: "('out, 'in) \<I>" begin
 

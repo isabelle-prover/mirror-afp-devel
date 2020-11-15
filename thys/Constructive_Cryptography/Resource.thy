@@ -1,5 +1,5 @@
 theory Resource imports
-  More_CryptHOL
+  CryptHOL.CryptHOL
 begin
 
 section \<open>Resources\<close>
