@@ -880,9 +880,11 @@ lemmas fps_of_poly_code_post [code_post] =
   fps_const_neg [symmetric] fps_const_divide [symmetric]
   fps_dehorner Suc_numeral arith_simps fps_divide_1
 
+context
+  includes term_syntax
+begin
 
-
-definition (in term_syntax)
+definition
   valterm_ratfps :: 
     "'a ::{field_gcd, typerep} poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 
      'a poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a ratfps \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
@@ -891,12 +893,13 @@ definition (in term_syntax)
       (Code_Evaluation.valtermify ratfps_of_poly {\<cdot>} k) {\<cdot>} 
       (Code_Evaluation.valtermify ratfps_of_poly {\<cdot>} l)"
 
+end
 
 instantiation ratfps :: ("{field_gcd,random}") random
 begin
 
 context
-  includes state_combinator_syntax
+  includes state_combinator_syntax term_syntax
 begin
 
 definition
