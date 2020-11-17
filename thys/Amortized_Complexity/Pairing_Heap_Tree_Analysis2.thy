@@ -61,49 +61,32 @@ proof -
   finally show ?thesis .
 qed
 
-fun ub_pass\<^sub>1 :: "'a tree \<Rightarrow> real" where
- "ub_pass\<^sub>1 (Node hs1 _ (Node hs2 _ hs)) =
-    2 * log 2 (size hs1 + size hs2 + size hs + 2) - 2 * log 2 (size hs + 1) - 2 + ub_pass\<^sub>1 hs"
-| "ub_pass\<^sub>1 t = 0"
-
-lemma \<Delta>\<Phi>_pass1_ub_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> ub_pass\<^sub>1 hs"
-proof (induction hs rule: ub_pass\<^sub>1.induct)
+lemma \<Delta>\<Phi>_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> 2 * log 2 (size hs + 1) - len hs + 2"
+proof (induction hs rule: pass\<^sub>1.induct)
   case (1 hs1 x hs2 y hs)
-    let ?rx = "Node hs2 y hs"
-    let ?h = "Node hs1 x ?rx"
-    let ?t ="log 2 (size hs1 + size hs2 + 1) - log 2 (size hs2 + size hs + 1)"
-    have "\<Phi> (pass\<^sub>1 ?h) - \<Phi> ?h \<le> ?t + ub_pass\<^sub>1 hs" 
-      using "1.IH" by (simp add: size_pass\<^sub>1 algebra_simps)
-    moreover have "log 2 (size hs1 + size hs2 + 1) + 2 * log 2 (size hs + 1) + 2
-      \<le> 2 * log 2 (size ?h) + log 2 (size hs2 + size hs + 1)" (is "?l \<le> ?r")
-    proof -
-      have "?l \<le> 2 * log 2 (size hs1 + size hs2 + size hs + 2) + log 2 (size hs + 1)"
-        using ld_sum_inequality [of "size hs1 + size hs2 + 1" "size hs + 1"] by(simp add: algebra_simps)
-      also have "\<dots> \<le> ?r" by simp
-      finally show ?thesis .
-    qed
-    ultimately show ?case by(simp)
+  let ?h = "Node hs1 x (Node hs2 y hs)"
+  let ?n1 = "size hs1"
+  let ?n2 = "size hs2" let ?m = "size hs"
+  have "\<Phi> (pass\<^sub>1 ?h) - \<Phi> ?h = \<Phi> (pass\<^sub>1 hs) + log 2 (?n1+?n2+1) - \<Phi> hs - log 2 (?n2+?m+1)" 
+    by (simp add: size_pass\<^sub>1 algebra_simps)
+  also have "\<dots> \<le> log 2 (?n1+?n2+1) - log 2 (?n2+?m+1) + 2 * log 2 (?m + 1) - len hs + 2" 
+    using "1.IH" by (simp)
+  also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - log 2 (?n2+?m+1) + log 2 (?m + 1) - len hs" 
+        using ld_sum_inequality [of "?n1+?n2+1" "?m + 1"] by(simp)
+  also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - len hs" by simp
+  also have "\<dots> = 2 * log 2 (size ?h) - len ?h + 2" by simp
+  also have "\<dots> \<le> 2 * log 2 (size ?h + 1) - len ?h + 2" by simp
+  finally show ?case .
 qed simp_all
-
-lemma \<Delta>\<Phi>_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs \<le> 2 * log 2 (size hs + 1) - len hs + 2"
-proof -
-  have "ub_pass\<^sub>1 hs \<le> 2 * log 2 (size hs + 1) - len hs + 2" 
-  proof (induction hs rule: ub_pass\<^sub>1.induct)
-    case (1 hs1 x hs2 y hs)
-    have "log 2 (size \<langle>hs1, x, \<langle>hs2, y, hs\<rangle>\<rangle>) \<le> log 2 (size \<langle>hs1, x, \<langle>hs2, y, hs\<rangle>\<rangle> + 1)" by(simp)
-    thus ?case using 1 by(simp_all del: log_le_cancel_iff)
-  qed simp_all
-  thus ?thesis using \<Delta>\<Phi>_pass1_ub_pass1 order_trans by blast
-qed
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (size hs)"
 proof (induction hs)
   case (Node hs1 x hs)
   thus ?case 
   proof (cases hs)
-    case 1: (Node hs2 y hs')
+    case 1: (Node hs2 y r)
     let ?h = "Node hs1 x hs"
-    obtain hs' a where 2: "pass\<^sub>2 hs = Node hs' a Leaf" 
+    obtain hs3 a where 2: "pass\<^sub>2 hs = Node hs3 a Leaf" 
       using pass\<^sub>2_struct 1 by force
     hence 3: "size hs = size \<dots>" using size_pass\<^sub>2 by metis
     have link: "\<Phi>(link(Node hs1 x (pass\<^sub>2 hs))) - \<Phi> hs1 - \<Phi> (pass\<^sub>2 hs) =
@@ -132,18 +115,14 @@ qed
 
 lemma \<Delta>\<Phi>_del_min:
   "\<Phi> (del_min (Node hs x Leaf)) - \<Phi> (Node hs x Leaf) 
-  \<le> 3 * log 2 (size hs + 1) - len hs + 2"
+  \<le> 2 * log 2 (size hs + 1) - len hs + 2"
 proof -
-  let ?h = "Node hs x Leaf"
-  let ?\<Delta>\<Phi>\<^sub>1 = "\<Phi> hs - \<Phi> ?h" 
-  let ?\<Delta>\<Phi>\<^sub>2 = "\<Phi>(pass\<^sub>2(pass\<^sub>1 hs)) - \<Phi> hs"
-  let ?\<Delta>\<Phi> = "\<Phi> (del_min ?h) - \<Phi> ?h"
-  have "\<Phi>(pass\<^sub>2(pass\<^sub>1 hs)) - \<Phi> (pass\<^sub>1 hs) \<le> log 2 (size hs + 1)" 
+  have "\<Phi> (del_min (Node hs x Leaf)) - \<Phi> (Node hs x Leaf) =
+        \<Phi> (pass\<^sub>2 (pass\<^sub>1 hs)) - (log 2 (1 + real (size hs)) + \<Phi> hs)" by simp
+  also have "\<dots> \<le> \<Phi> (pass\<^sub>1 hs) - \<Phi> hs"
     using \<Delta>\<Phi>_pass2' [of "pass\<^sub>1 hs"] by(simp add: size_pass\<^sub>1)
-  moreover have "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs \<le> 2 * log 2 (size hs + 1) - len hs + 2" 
-    by(rule \<Delta>\<Phi>_pass1)
-  moreover have "?\<Delta>\<Phi> \<le> ?\<Delta>\<Phi>\<^sub>2" by simp
-  ultimately show ?thesis by linarith
+  also have "\<dots> \<le> 2 * log 2 (size hs + 1) - len hs + 2" by(rule \<Delta>\<Phi>_pass1)
+  finally show ?thesis .
 qed
 
 lemma is_root_merge:
@@ -197,16 +176,16 @@ fun T_merge :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "T_merge h1 h2 = 1"
 
 lemma A_del_min: assumes "is_root h"
-shows "T_del_min h + \<Phi>(del_min h) - \<Phi> h \<le> 3 * log 2 (size h + 1) + 5"
+shows "T_del_min h + \<Phi>(del_min h) - \<Phi> h \<le> 2 * log 2 (size h + 1) + 5"
 proof (cases h)
   case [simp]: (Node hs1 x hs)
   have "T_pass\<^sub>2 (pass\<^sub>1 hs1) + real(T_pass\<^sub>1 hs1) \<le> real(len hs1) + 2"
     by (induct hs1 rule: pass\<^sub>1.induct) simp_all
-  moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 3 * log 2 (size h + 1) - len hs1 + 2"
+  moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 2 * log 2 (size h + 1) - len hs1 + 2"
   proof -
-    have "\<Phi> (del_min h) - \<Phi> h \<le> 3 * log 2 (size hs1 + 1) - len hs1 + 2"
+    have "\<Phi> (del_min h) - \<Phi> h \<le> 2 * log 2 (size hs1 + 1) - len hs1 + 2"
       using  \<Delta>\<Phi>_del_min[of "hs1" "x"] assms by simp
-    also have "\<dots> \<le> 3 * log 2 (size h + 1) - len hs1 + 2" by fastforce
+    also have "\<dots> \<le> 2 * log 2 (size h + 1) - len hs1 + 2" by fastforce
     finally show ?thesis .
   qed
   ultimately show ?thesis by(simp)
@@ -242,7 +221,7 @@ fun cost :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" whe
 fun U :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> real" where
   "U Empty [] = 1"
 | "U (Insert a) [h] = log 2 (size h + 1) + 1"
-| "U Del_min [h] = 3 * log 2 (size h + 1) + 5"
+| "U Del_min [h] = 2 * log 2 (size h + 1) + 5"
 | "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
 
 interpretation Amortized
