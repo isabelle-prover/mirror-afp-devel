@@ -182,13 +182,10 @@ next
       case False
       hence *: "((order \<G>)*w*c - w*c) > 0" 
         using assms mult_strict_mono w_gt_0 prime_gt_1_nat prime_order by auto 
-      then have " g' [^] ((order \<G>)*w*c - w*c) =  g' [^] int ((order \<G>)*w*c - w*c)"
-        by (simp add: int_pow_int) 
-      also have "... = g' [^] int ((order \<G>)*w*c) \<otimes> inv (g' [^] (w*c))" 
-        using int_pow_diff[of "g'" "order \<G> * w* c" "w * c"] g'_carrier 
-        by (metis * chaum_ped_\<Sigma>_axioms chaum_ped_\<Sigma>_def cyclic_group_def group.int_pow_neg_int int_ops(6) int_pow_neg less_not_refl2 of_nat_eq_0_iff)
+      then have " g' [^] ((order \<G>)*w*c - w*c) = g' [^] (int (order \<G> * w * c) - int (w * c))"
+        by (metis int_ops(6) int_pow_int of_nat_0_less_iff order.irrefl)
       also have "... = g' [^] ((order \<G>)*w*c) \<otimes> inv (g' [^] (w*c))" 
-        by (metis int_pow_int) 
+        by (metis g'_carrier int_pow_diff int_pow_int) 
       also have "... = g' [^] ((order \<G>)*w*c) \<otimes> inv (h' [^] c)"
         by(simp add: nat_pow_pow assms)
       also have "... = \<one> \<otimes> inv (h' [^] c)" 
