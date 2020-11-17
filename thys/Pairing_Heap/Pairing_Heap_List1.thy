@@ -39,9 +39,8 @@ fun insert :: "('a::linorder) \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "insert x h = merge (Hp x []) h"
 
 fun pass\<^sub>1 :: "('a::linorder) heap list \<Rightarrow> 'a heap list" where
-  "pass\<^sub>1 [] = []"
-| "pass\<^sub>1 [h] = [h]" 
-| "pass\<^sub>1 (h1#h2#hs) = merge h1 h2 # pass\<^sub>1 hs"
+"pass\<^sub>1 (h1#h2#hs) = merge h1 h2 # pass\<^sub>1 hs" |
+"pass\<^sub>1 hs = hs"
 
 fun pass\<^sub>2 :: "('a::linorder) heap list \<Rightarrow> 'a heap" where
   "pass\<^sub>2 [] = Empty"
