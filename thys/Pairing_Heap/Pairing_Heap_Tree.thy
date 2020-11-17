@@ -52,25 +52,17 @@ fun pheap :: "('a :: linorder) tree \<Rightarrow> bool" where
 
 
 subsection \<open>Correctness Proofs\<close>
-(*
-text \<open>An optimization:\<close>
-
-lemma pass12_merge_pairs: "pass\<^sub>2 (pass\<^sub>1 hs) = merge_pairs hs"
-by (induction hs rule: merge_pairs.induct) auto
-
-declare pass12_merge_pairs[code_unfold]
-*)
 
 subsubsection \<open>Invariants\<close>
 
-lemma link_struct: "\<exists>la a. link (Node lx x (Node ly y ry)) = Node la a ry" 
-  by simp
+lemma link_struct: "\<exists>l a. link (Node hsx x (Node hsy y hs)) = Node l a hs" 
+by simp
 
-lemma pass\<^sub>1_struct: "\<exists>la a ra. pass\<^sub>1 (Node lx x rx) = Node la a ra" 
-  by (cases rx) simp_all
+lemma pass\<^sub>1_struct: "\<exists>l a r. pass\<^sub>1 (Node hs1 x hs) = Node l a r" 
+by (cases hs) simp_all
 
-lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la a Leaf" 
-by(induction rx arbitrary: x lx rule: pass\<^sub>2.induct) (auto, metis link_struct)
+lemma pass\<^sub>2_struct: "\<exists>l a. pass\<^sub>2 (Node hs1 x hs) = Node l a Leaf" 
+by(induction hs arbitrary: hs1 x rule: pass\<^sub>2.induct) (auto, metis link_struct)
 
 lemma is_root_merge:
   "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
