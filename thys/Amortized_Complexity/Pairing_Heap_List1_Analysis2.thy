@@ -30,15 +30,15 @@ fun hom :: "'a heap \<Rightarrow> 'a tree" where
 
 lemma homs_pass1': "no_Emptys hs \<Longrightarrow> homs(pass\<^sub>1' hs) = pass\<^sub>1 (homs hs)"
 apply(induction hs rule: Pairing_Heap_List1.pass\<^sub>1.induct)
-  apply simp
- subgoal for h
- apply(case_tac h)
-  apply (auto)
- done
-subgoal for h1 h2
-apply(case_tac h1)
+  subgoal for h1 h2
+  apply(case_tac h1)
+   apply simp
+  apply(case_tac h2)
+   apply (auto)
+  done
  apply simp
-apply(case_tac h2)
+subgoal for h
+apply(case_tac h)
  apply (auto)
 done
 done
@@ -67,15 +67,15 @@ done
 
 lemma T_pass1': "no_Emptys hs \<Longrightarrow> T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' hs = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1(homs hs)"
 apply(induction hs rule: Pairing_Heap_List1.pass\<^sub>1.induct)
-  apply simp
- subgoal for h
- apply(case_tac h)
-  apply (auto)
- done
-subgoal for h1 h2
-apply(case_tac h1)
+  subgoal for h1 h2
+  apply(case_tac h1)
+   apply simp
+  apply(case_tac h2)
+   apply (auto)
+  done
  apply simp
-apply(case_tac h2)
+subgoal for h
+apply(case_tac h)
  apply (auto)
 done
 done
