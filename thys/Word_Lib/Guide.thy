@@ -47,6 +47,9 @@ text \<open>
 
       \<^item> Induction rule: @{thm [display, mode=iff] bits_induct [where ?'a = int, no_vars]}
 
+    \<^item> Characteristic properties \<^prop>\<open>bit (f x) n \<longleftrightarrow> P x n\<close>
+      are available in fact collection \<^text>\<open>bit_simps\<close>.
+
   On top of this, the following generic operations are provided
   after import of theory \<^theory>\<open>HOL-Library.Bit_Operations\<close>:
 
@@ -150,7 +153,8 @@ text \<open>
 
   For proofs about words the following default strategies are applicable:
 
-    \<^item> Using bit extensionality (facts \<^text>\<open>bit_eq_iff\<close>, \<^text>\<open>bit_eqI\<close>).
+    \<^item> Using bit extensionality (facts \<^text>\<open>bit_eq_iff\<close>, \<^text>\<open>bit_eqI\<close>; fact
+      collection \<^text>\<open>bit_simps\<close>).
 
     \<^item> Using the @{method transfer} method.
 \<close>
