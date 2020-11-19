@@ -201,9 +201,9 @@ qed
 subsubsection "Analysis of insert"
 
 lemma amor_insert: assumes "bst t"
-shows "T_splay x t + \<Phi>(Splay_Tree.insert x t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 2" (is "?l \<le> ?r")
+shows "T_insert x t + \<Phi>(Splay_Tree.insert x t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 3" (is "?l \<le> ?r")
 proof cases
-  assume "t = Leaf" thus ?thesis by(simp)
+  assume "t = Leaf" thus ?thesis by(simp add: T_insert_def)
 next
   assume "t \<noteq> Leaf"
   then obtain l e r where [simp]: "splay x t = Node l e r"
@@ -219,12 +219,12 @@ next
     assume "e=x"
     have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
     thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=x\<close>
-      apply(simp add: algebra_simps) using nneg by arith
+      apply(simp add: T_insert_def algebra_simps) using nneg by arith
   next
     let ?L = "log 2 (real(size1 l) + 1)"
     assume "e < x" hence "e \<noteq> x" by simp
-    hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
-      using  \<open>t \<noteq> Leaf\<close> \<open>e<x\<close> by(simp)
+    hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR + 1"
+      using  \<open>t \<noteq> Leaf\<close> \<open>e<x\<close> by(simp add: T_insert_def)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
     also have "?L \<le> log 2 ?slr" by(simp)
@@ -239,8 +239,8 @@ next
   next
     let ?R = "log 2 (2 + real(size r))"
     assume "x < e" hence "e \<noteq> x" by simp
-    hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
-      using \<open>t \<noteq> Leaf\<close> \<open>x < e\<close> by(simp)
+    hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR + 1"
+      using \<open>t \<noteq> Leaf\<close> \<open>x < e\<close> by(simp add: T_insert_def)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
     also have "?R \<le> log 2 ?slr" by(simp)
@@ -309,7 +309,7 @@ next
 qed
 
 lemma amor_delete: assumes "bst t"
-shows "T_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 2"
+shows "T_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 3"
 proof (cases t)
   case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def T_delete_def)
 next
@@ -366,8 +366,8 @@ subsubsection "Overall analysis"
 fun U where
 "U Empty [] = 1" |
 "U (Splay _) [t] = 3 * log 2 (size1 t) + 1" |
-"U (Insert _) [t] = 4 * log 2 (size1 t) + 2" |
-"U (Delete _) [t] = 6 * log 2 (size1 t) + 2"
+"U (Insert _) [t] = 4 * log 2 (size1 t) + 3" |
+"U (Delete _) [t] = 6 * log 2 (size1 t) + 3"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = bst

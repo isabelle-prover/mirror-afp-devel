@@ -335,8 +335,8 @@ subsubsection "Overall analysis"
 fun U where
 "U Empty [] = 1" |
 "U (Splay _) [t] = (3/2) * log 2 (size1 t) + 1" |
-"U (Insert _) [t] = 2 * log 2 (size1 t) + 3/2" |
-"U (Delete _) [t] = 3 * log 2 (size1 t) + 2"
+"U (Insert _) [t] = 2 * log 2 (size1 t) + 5/2" |
+"U (Delete _) [t] = 3 * log 2 (size1 t) + 3"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = bst
@@ -377,7 +377,7 @@ next
     obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     show ?thesis
     proof cases
-      assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
+      assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
     next
       assume "t \<noteq> Leaf"
       then obtain l e r where [simp]: "splay a t = Node l e r"
@@ -394,12 +394,12 @@ next
         assume "e=a"
         have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
         thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=a\<close>
-          apply(simp add: field_simps) using nneg by arith
+          apply(simp add: field_simps T_insert_def) using nneg by arith
       next
         let ?L = "log 2 (real(size1 l) + 1)"
         assume "e<a" hence "e \<noteq> a" by simp
-        hence "?l = (?t + ?Plr - ?Ps) + ?L / 2 + ?LR / 2"
-          using \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp add: S34.\<phi>_def log4_log2)
+        hence "?l = (?t + ?Plr - ?Ps) + ?L / 2 + ?LR / 2 + 1"
+          using \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
@@ -415,8 +415,8 @@ next
       next
         let ?R = "log 2 (2 + real(size r))"
         assume "a<e" hence "e \<noteq> a" by simp
-        hence "?l = (?t + ?Plr - ?Ps) + ?R / 2 + ?LR / 2"
-          using  \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp add: S34.\<phi>_def log4_log2)
+        hence "?l = (?t + ?Plr - ?Ps) + ?R / 2 + ?LR / 2 + 1"
+          using  \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)

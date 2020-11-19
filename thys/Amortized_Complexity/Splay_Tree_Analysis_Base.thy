@@ -52,6 +52,9 @@ by auto
 
 declare T_splay.simps(2)[simp del]
 
+definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
+"T_insert x t = 1 + (if t = Leaf then 0 else T_splay x t)"
+
 fun T_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 "T_splay_max Leaf = 1" |
 "T_splay_max (Node A a Leaf) = 1" |
@@ -59,10 +62,10 @@ fun T_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 
 definition T_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "T_delete x t =
-  (if t = Leaf then 0
+  1 + (if t = Leaf then 0
    else T_splay x t +
      (case splay x t of
-        Node l a r \<Rightarrow> if x=a then case l of Leaf \<Rightarrow> 0 | _ \<Rightarrow> T_splay_max l else 0))"
+        Node l a r \<Rightarrow> if x \<noteq> a then 0 else if l = Leaf then 0 else T_splay_max l))"
 
 lemma ex_in_set_tree: "t \<noteq> Leaf \<Longrightarrow> bst t \<Longrightarrow>
   \<exists>x' \<in> set_tree t. splay x' t = splay x t \<and> T_splay x' t = T_splay x t"
@@ -130,7 +133,7 @@ fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" w
 fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
 "cost (Splay x) [t] = T_splay x t" |
-"cost (Insert x) [t] = T_splay x t" |
+"cost (Insert x) [t] = T_insert x t" |
 "cost (Delete x) [t] = T_delete x t"
 
 end
