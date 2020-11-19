@@ -17,6 +17,13 @@ lemma int_div_minus_is_minus1 [simp]:
   \<open>a div b = - a \<longleftrightarrow> b = - 1\<close> if \<open>0 > a\<close> for a b :: int
   using that by (metis div_minus_right equation_minus_iff int_div_same_is_1 neg_0_less_iff_less)
 
+lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> m \<le> n \<and> n < 2 * m"
+  apply auto
+  using div_greater_zero_iff apply fastforce
+   apply (metis One_nat_def div_greater_zero_iff dividend_less_div_times mult.right_neutral mult_Suc mult_numeral_1 numeral_2_eq_2 zero_less_numeral)
+  apply (simp add: div_nat_eqI)
+  done
+
 lemma diff_mod_le:
   \<open>a - a mod b \<le> d - b\<close> if \<open>a < d\<close> \<open>b dvd d\<close> for a b d :: nat
   using that

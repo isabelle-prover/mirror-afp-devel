@@ -7,21 +7,12 @@ chapter \<open>Common base for target language implementations of word types\<cl
 theory Code_Target_Word_Base imports
   "HOL-Library.Word"
   "Word_Lib.More_Arithmetic"
+  "Word_Lib.More_Word"
   "Word_Lib.Word_Lib"
   Bits_Integer
 begin
 
 text \<open>More lemmas\<close>
-
-lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> m \<le> n \<and> n < 2 * m"
-  apply auto
-  using div_greater_zero_iff apply fastforce
-   apply (metis One_nat_def div_greater_zero_iff dividend_less_div_times mult.right_neutral mult_Suc mult_numeral_1 numeral_2_eq_2 zero_less_numeral)
-  apply (simp add: div_nat_eqI)
-  done
-
-lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ LENGTH('a :: len)"
-  by (metis One_nat_def len_gt_0 lessI numeral_2_eq_2 one_less_power)
 
 lemma div_half_nat:
   fixes x y :: nat
@@ -54,26 +45,6 @@ proof -
     ultimately show ?thesis using False by(simp add: Let_def)
   qed
 qed
-
-lemma unat_p2: "n < LENGTH('a :: len) \<Longrightarrow> unat (2 ^ n :: 'a word) = 2 ^ n"
-proof(induct n)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  then obtain n' where "LENGTH('a) = Suc n'" by(cases "LENGTH('a)") simp_all
-  with Suc show ?case by (simp add: unat_word_ariths bintrunc_mod2p)
-qed
-
-lemma word_div_lt_eq_0:
-  "x < y \<Longrightarrow> x div y = 0" for x :: "'a :: len word"
-  by (simp add: word_eq_iff word_less_def word_test_bit_def uint_div)
-
-lemma word_div_eq_1_iff: "n div m = 1 \<longleftrightarrow> n \<ge> m \<and> unat n < 2 * unat (m :: 'a :: len word)"
-apply(simp only: word_arith_nat_defs word_le_nat_alt nat_div_eq_Suc_0_iff[symmetric])
-apply(rule word_unat.Abs_inject)
- apply(simp only: unat_div[symmetric] word_unat.Rep)
-apply(simp add: unats_def Suc_0_lt_2p_len_of)
-done
 
 lemma div_half_word:
   fixes x y :: "'a :: len word"

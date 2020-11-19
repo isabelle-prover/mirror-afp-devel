@@ -120,33 +120,6 @@ lemma int_not_and_bitANDN_num:
   "NOT (numeral m) AND numeral n = (case bitANDN_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
 by(simp add: int_and_not_bitANDN_num[symmetric] int_and_comm)
 
-
-section \<open>Bit masks of type \<^typ>\<open>int\<close>\<close>
-
-lemma bin_mask_conv_pow2:
-  "mask n = 2 ^ n - (1 :: int)"
-  by (fact mask_eq_exp_minus_1)
-  
-lemma bin_mask_ge0: "mask n \<ge> (0 :: int)"
-  by (fact mask_nonnegative_int)
-
-lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
-  for x :: int
-  by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
-
-lemma bin_mask_numeral: 
-  "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"
-  by (fact mask_numeral)
-
-lemma bin_nth_mask [simp]: "bit (mask n :: int) i \<longleftrightarrow> i < n"
-  by (simp add: bit_mask_iff)
-
-lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
-  by (simp add: bin_sign_def bin_mask_conv_pow2)
-
-lemma bin_mask_p1_conv_shift: "mask n + 1 = (1 :: int) << n"
-  by (simp add: bin_mask_conv_pow2 shiftl_int_def)
-
 code_identifier
   code_module More_Bits_Int \<rightharpoonup>
   (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
