@@ -286,4 +286,76 @@ lemmas int_mod_eq' = mod_pos_pos_trivial (* FIXME delete *)
 
 lemmas int_mod_le = zmod_le_nonneg_dividend (* FIXME: delete *)
 
+lemma power_mod_div:
+  fixes x :: "nat"
+  shows "x mod 2 ^ n div 2 ^ m = x div 2 ^ m mod 2 ^ (n - m)" (is "?LHS = ?RHS")
+proof (cases "n \<le> m")
+  case True
+  then have "?LHS = 0"
+    apply -
+    apply (rule div_less)
+    apply (rule order_less_le_trans [OF mod_less_divisor]; simp)
+    done
+  also have "\<dots> = ?RHS" using True
+    by simp
+  finally show ?thesis .
+next
+  case False
+  then have lt: "m < n" by simp
+  then obtain q where nv: "n = m + q" and "0 < q"
+    by (auto dest: less_imp_Suc_add)
+
+  then have "x mod 2 ^ n = 2 ^ m * (x div 2 ^ m mod 2 ^ q) + x mod 2 ^ m"
+    by (simp add: power_add mod_mult2_eq)
+
+  then have "?LHS = x div 2 ^ m mod 2 ^ q"
+    by (simp add: div_add1_eq)
+
+  also have "\<dots> = ?RHS" using nv
+    by simp
+
+  finally show ?thesis .
+qed
+
+lemma mod_mod_power:
+  fixes k :: nat
+  shows "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ (min m n)"
+proof (cases "m \<le> n")
+  case True
+
+  then have "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ m"
+    apply -
+    apply (subst mod_less [where n = "2 ^ n"])
+    apply (rule order_less_le_trans [OF mod_less_divisor])
+    apply simp+
+    done
+  also have "\<dots> = k mod  2 ^ (min m n)" using True by simp
+  finally show ?thesis .
+next
+  case False
+  then have "n < m" by simp
+  then obtain d where md: "m = n + d"
+    by (auto dest: less_imp_add_positive)
+  then have "k mod 2 ^ m = 2 ^ n * (k div 2 ^ n mod 2 ^ d) + k mod 2 ^ n"
+    by (simp add: mod_mult2_eq power_add)
+  then have "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ n"
+    by (simp add: mod_add_left_eq)
+  then show ?thesis using False
+    by simp
+qed
+
+lemma take_bit_eq_mask_iff:
+  \<open>take_bit n k = mask n \<longleftrightarrow> take_bit n (k + 1) = 0\<close>
+  for k :: int
+  apply auto
+   apply (subst take_bit_add [symmetric])
+   apply (simp add: mask_eq_exp_minus_1)
+  apply (metis add.left_commute diff_0 diff_add_cancel group_cancel.rule0 take_bit_add take_bit_minus take_bit_minus_one_eq_mask)
+  done
+
+lemma take_bit_eq_mask_iff_exp_dvd:
+  \<open>take_bit n k = mask n \<longleftrightarrow> 2 ^ n dvd k + 1\<close>
+  for k :: int
+  by (simp add: take_bit_eq_mask_iff flip: take_bit_eq_0_iff)
+
 end

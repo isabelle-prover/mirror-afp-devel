@@ -10,6 +10,7 @@ theory Word_EqI
   imports
     Word_Lib
     Aligned
+    More_Word_Operations
     "HOL-Eisbach.Eisbach_Tools"
 begin
 
@@ -22,15 +23,11 @@ text \<open>
 lemma word_or_zero:
   "(a OR b = 0) = (a = 0 \<and> b = 0)"
   for a b :: \<open>'a::len word\<close>
-  by (safe; rule word_eqI, drule_tac x=n in word_eqD, simp)
+  by (fact or_eq_0_iff)
 
 lemma test_bit_over:
   "n \<ge> size (x::'a::len word) \<Longrightarrow> (x !! n) = False"
-  by (simp add: test_bit_bl word_size)
-
-lemma neg_mask_test_bit:
-  "(NOT(mask n) :: 'a :: len word) !! m = (n \<le> m \<and> m < LENGTH('a))"
-  by (metis not_le nth_mask test_bit_bin word_ops_nth_size word_size)
+  by transfer auto
 
 lemma word_2p_mult_inc:
   assumes x: "2 * 2 ^ n < (2::'a::len word) * 2 ^ m"
@@ -38,44 +35,6 @@ lemma word_2p_mult_inc:
   shows "2^n < (2::'a::len word)^m"
   by (smt suc_n le_less_trans lessI nat_less_le nat_mult_less_cancel_disj p2_gt_0
           power_Suc power_Suc unat_power_lower word_less_nat_alt x)
-
-lemma word_power_increasing:
-  assumes x: "2 ^ x < (2 ^ y::'a::len word)" "x < LENGTH('a::len)" "y < LENGTH('a::len)"
-  shows "x < y" using x
-  apply (induct x arbitrary: y)
-   apply (case_tac y; simp)
-  apply (case_tac y; clarsimp simp: word_2p_mult_inc)
-  apply (subst (asm) power_Suc [symmetric])
-  apply (subst (asm) p2_eq_0)
-  apply simp
-  done
-
-lemma upper_bits_unset_is_l2p:
-  "n < LENGTH('a) \<Longrightarrow>
-   (\<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n') = (p < 2 ^ n)" for p :: "'a :: len word"
-  apply (cases "Suc 0 < LENGTH('a)")
-   prefer 2
-   apply (subgoal_tac "LENGTH('a) = 1", auto simp: word_eq_iff)[1]
-  apply (rule iffI)
-   apply (subst mask_eq_iff_w2p [symmetric])
-    apply (clarsimp simp: word_size)
-   apply (rule word_eqI, rename_tac n')
-   apply (case_tac "n' < n"; simp add: word_size)
-  by (meson bang_is_le le_less_trans not_le word_power_increasing)
-
-lemma less_2p_is_upper_bits_unset:
-  "p < 2 ^ n \<longleftrightarrow> n < LENGTH('a) \<and> (\<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n')" for p :: "'a :: len word"
-  by (meson le_less_trans le_mask_iff_lt_2n upper_bits_unset_is_l2p word_zero_le)
-
-lemma word_le_minus_one_leq:
-  "x < y \<Longrightarrow> x \<le> y - 1" for x :: "'a :: len word"
-  by transfer (metis le_less_trans less_irrefl take_bit_decr_eq take_bit_nonnegative zle_diff1_eq) 
-
-lemma word_less_sub_le[simp]:
-  fixes x :: "'a :: len word"
-  assumes nv: "n < LENGTH('a)"
-  shows "(x \<le> 2 ^ n - 1) = (x < 2 ^ n)"
-  using le_less_trans word_le_minus_one_leq nv power_2_ge_iff by blast
 
 lemma not_greatest_aligned:
   "\<lbrakk> x < y; is_aligned x n; is_aligned y n \<rbrakk> \<Longrightarrow> x + 2 ^ n \<noteq> 0"
@@ -155,6 +114,8 @@ lemmas [word_eqI_simps] =
   neg_test_bit
   is_up
   is_down
+
+lemmas sign_extend_bitwise_if'[word_eqI_simps] = sign_extend_bitwise_if[simplified word_size]
 
 lemmas word_eqI_rule = word_eqI[rule_format]
 

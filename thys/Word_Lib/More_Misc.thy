@@ -209,4 +209,13 @@ lemma int_not_emptyD:
   "A \<inter> B \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<in> B"
   by (erule contrapos_np, clarsimp simp: disjoint_iff_not_equal)
 
+definition
+  sum_map :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a + 'c \<Rightarrow> 'b + 'd" where
+ "sum_map f g x \<equiv> case x of Inl v \<Rightarrow> Inl (f v) | Inr v' \<Rightarrow> Inr (g v')"
+
+lemma sum_map_simps[simp]:
+  "sum_map f g (Inl v) = Inl (f v)"
+  "sum_map f g (Inr w) = Inr (g w)"
+  by (simp add: sum_map_def)+
+
 end

@@ -191,6 +191,18 @@ text \<open>
 
     \<^descr>[Operations]
 
+      \<^descr>[\<^theory>\<open>Word_Lib.Signed_Division_Word\<close>]
+
+        Signed division on word:
+
+          \<^item> @{term [source] \<open>(sdiv) :: 'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>}
+
+          \<^item> @{term [source] \<open>(smod) :: 'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>}
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Aligned\<close>] \
+
+          \<^item> @{thm [mode=iff] is_aligned_iff_udvd [no_vars]}
+
       \<^descr>[\<^theory>\<open>Word_Lib.Least_significant_bit\<close>]
     
         The least significant bit as an alias:
@@ -221,22 +233,15 @@ text \<open>
 
           \<^item> @{thm sshiftr_eq [no_vars]}
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Lib\<close>]
-        Various operations on word, particularly:
-
-          \<^item> @{term [source] \<open>(sdiv) :: 'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>}
-
-          \<^item> @{term [source] \<open>(smod) :: 'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word\<close>}
-
-      \<^descr>[\<^theory>\<open>Word_Lib.Aligned\<close>] \
-
-          \<^item> @{thm [mode=iff] is_aligned_iff_udvd [no_vars]}
-
       \<^descr>[\<^theory>\<open>Word_Lib.Next_and_Prev\<close>] \
 
           \<^item> @{thm word_next_unfold [no_vars]}
 
           \<^item> @{thm word_prev_unfold [no_vars]}
+
+      \<^descr>[\<^theory>\<open>Word_Lib.More_Word_Operations\<close>]
+
+        Even more operations on word.
 
     \<^descr>[Types]
 
@@ -290,6 +295,12 @@ text \<open>
   from those theories.  However theorem coverage may still
   be terse in some cases.
 
+  \<^descr>[\<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>]
+
+    An entry point importing any relevant theory in that session.  Intended
+    for backward compatibility: start importing this theory when
+    migrating applications to Isabelle2021, and later sort out
+    what you really need.
 
   \<^descr>[\<^theory>\<open>Word_Lib.Generic_set_bit\<close>]
 
@@ -317,13 +328,6 @@ text \<open>
     are needed, existing operations can be used:
 
     @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
-
-  \<^descr>[\<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>]
-
-    An entry point importing any theory in that session.  Intended
-    for backward compatibility: start importing this theory when
-    migrating applications to Isabelle2021, and later sort out
-    what you really need.
 \<close>
 
 (*<*)

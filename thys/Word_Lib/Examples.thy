@@ -1,5 +1,5 @@
 theory Examples
-  imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax 
+  imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax Signed_Division_Word
 begin
 
 text "modulus"

@@ -803,4 +803,53 @@ lemma word_shift_nonzero:
   apply simp
   done
 
+lemma word_shiftr_lt:
+  fixes w :: "'a::len word"
+  shows "unat (w >> n) < (2 ^ (LENGTH('a) - n))"
+  apply (subst shiftr_div_2n')
+  apply transfer
+  apply (simp flip: drop_bit_eq_div add: drop_bit_nat_eq drop_bit_take_bit)
+  done
+
+lemma neg_mask_test_bit:
+  "(NOT(mask n) :: 'a :: len word) !! m = (n \<le> m \<and> m < LENGTH('a))"
+  by (metis not_le nth_mask test_bit_bin word_ops_nth_size word_size)
+
+lemma upper_bits_unset_is_l2p:
+  \<open>(\<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n') \<longleftrightarrow> (p < 2 ^ n)\<close> (is \<open>?P \<longleftrightarrow> ?Q\<close>)
+    if \<open>n < LENGTH('a)\<close>
+    for p :: "'a :: len word"
+proof
+  assume ?Q
+  then show ?P
+    by (meson bang_is_le le_less_trans not_le word_power_increasing)
+next
+  assume ?P
+  have \<open>take_bit n p = p\<close>
+  proof (rule bit_word_eqI)
+    fix q
+    assume \<open>q < LENGTH('a)\<close>
+    show \<open>bit (take_bit n p) q \<longleftrightarrow> bit p q\<close>
+    proof (cases \<open>q < n\<close>)
+      case True
+      then show ?thesis 
+        by (auto simp add: bit_simps)
+    next
+      case False
+      then have \<open>n \<le> q\<close>
+        by simp
+      with \<open>?P\<close> \<open>q < LENGTH('a)\<close> have \<open>\<not> bit p q\<close>
+        by (simp add: test_bit_eq_bit)
+      then show ?thesis
+        by (simp add: bit_simps)
+    qed
+  qed
+  with that show ?Q
+    using take_bit_word_eq_self_iff [of n p] by auto
+qed
+
+lemma less_2p_is_upper_bits_unset:
+  "p < 2 ^ n \<longleftrightarrow> n < LENGTH('a) \<and> (\<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n')" for p :: "'a :: len word"
+  by (meson le_less_trans le_mask_iff_lt_2n upper_bits_unset_is_l2p word_zero_le)
+
 end

@@ -6,9 +6,7 @@ chapter \<open>Common base for target language implementations of word types\<cl
 
 theory Code_Target_Word_Base imports
   "HOL-Library.Word"
-  "Word_Lib.More_Arithmetic"
-  "Word_Lib.More_Word"
-  "Word_Lib.Word_Lib"
+  "Word_Lib.Signed_Division_Word"
   Bits_Integer
 begin
 

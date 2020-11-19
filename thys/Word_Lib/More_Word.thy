@@ -129,6 +129,11 @@ lemma and_mask_eq_iff_le_mask:
   apply (metis min_def nat_less_le take_bit_int_eq_self_iff take_bit_take_bit)
   done
 
+lemma less_eq_mask_iff_take_bit_eq_self:
+  \<open>w \<le> mask n \<longleftrightarrow> take_bit n w = w\<close>
+  for w :: \<open>'a::len word\<close>
+  by (simp add: and_mask_eq_iff_le_mask take_bit_eq_mask)
+
 lemma NOT_eq:
   "NOT (x :: 'a :: len word) = - x - 1"
   apply (cut_tac x = "x" in word_add_not)
@@ -653,5 +658,165 @@ lemma word_plus_mcs_4:
 lemma word_plus_mcs_3:
   "\<lbrakk>v \<le> w; x \<le> w + x\<rbrakk> \<Longrightarrow> v + x \<le> w + (x::'a::len word)"
   by unat_arith
+
+lemma word_le_minus_one_leq:
+  "x < y \<Longrightarrow> x \<le> y - 1" for x :: "'a :: len word"
+  by transfer (metis le_less_trans less_irrefl take_bit_decr_eq take_bit_nonnegative zle_diff1_eq) 
+
+lemma word_less_sub_le[simp]:
+  fixes x :: "'a :: len word"
+  assumes nv: "n < LENGTH('a)"
+  shows "(x \<le> 2 ^ n - 1) = (x < 2 ^ n)"
+  using le_less_trans word_le_minus_one_leq nv power_2_ge_iff by blast
+
+lemma unat_of_nat_len:
+  "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x :: 'a::len word) = x"
+  by (simp add: take_bit_nat_eq_self_iff)
+
+lemma unat_of_nat_eq:
+  "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x ::'a::len word) = x"
+  by (rule unat_of_nat_len)
+
+lemma unat_eq_of_nat:
+  "n < 2 ^ LENGTH('a) \<Longrightarrow> (unat (x :: 'a::len word) = n) = (x = of_nat n)"
+  by transfer
+    (auto simp add: take_bit_of_nat nat_eq_iff take_bit_nat_eq_self_iff intro: sym)
+
+lemma alignUp_div_helper:
+  fixes a :: "'a::len word"
+  assumes kv: "k < 2 ^ (LENGTH('a) - n)"
+  and     xk: "x = 2 ^ n * of_nat k"
+  and    le: "a \<le> x"
+  and    sz: "n < LENGTH('a)"
+  and   anz: "a mod 2 ^ n \<noteq> 0"
+  shows "a div 2 ^ n < of_nat k"
+proof -
+  have kn: "unat (of_nat k :: 'a word) * unat ((2::'a word) ^ n) < 2 ^ LENGTH('a)"
+    using xk kv sz
+    apply (subst unat_of_nat_eq)
+     apply (erule order_less_le_trans)
+     apply simp
+    apply (subst unat_power_lower, simp)
+    apply (subst mult.commute)
+    apply (rule nat_less_power_trans)
+     apply simp
+    apply simp
+    done
+
+  have "unat a div 2 ^ n * 2 ^ n \<noteq> unat a"
+  proof -
+    have "unat a = unat a div 2 ^ n * 2 ^ n + unat a mod 2 ^ n"
+      by (simp add: div_mult_mod_eq)
+    also have "\<dots> \<noteq> unat a div 2 ^ n * 2 ^ n" using sz anz
+      by (simp add: unat_arith_simps)
+    finally show ?thesis ..
+  qed
+
+  then have "a div 2 ^ n * 2 ^ n < a" using sz anz
+    apply (subst word_less_nat_alt)
+    apply (subst unat_word_ariths)
+    apply (subst unat_div)
+    apply simp
+    apply (rule order_le_less_trans [OF mod_less_eq_dividend])
+    apply (erule order_le_neq_trans [OF div_mult_le])
+    done
+
+  also from xk le have "\<dots> \<le> of_nat k * 2 ^ n" by (simp add: field_simps)
+  finally show ?thesis using sz kv
+    apply -
+    apply (erule word_mult_less_dest [OF _ _ kn])
+    apply (simp add: unat_div)
+    apply (rule order_le_less_trans [OF div_mult_le])
+    apply (rule unat_lt2p)
+    done
+qed
+
+lemma mask_out_sub_mask:
+  "(x AND NOT (mask n)) = x - (x AND (mask n))"
+  for x :: \<open>'a::len word\<close>
+  by (simp add: field_simps word_plus_and_or_coroll2)
+
+lemma subtract_mask:
+  "p - (p AND mask n) = (p AND NOT (mask n))"
+  "p - (p AND NOT (mask n)) = (p AND mask n)"
+  for p :: \<open>'a::len word\<close>
+  by (simp add: field_simps word_plus_and_or_coroll2)+
+
+lemma take_bit_word_eq_self_iff:
+  \<open>take_bit n w = w \<longleftrightarrow> n \<ge> LENGTH('a) \<or> w < 2 ^ n\<close>
+  for w :: \<open>'a::len word\<close>
+  using take_bit_int_eq_self_iff [of n \<open>take_bit LENGTH('a) (uint w)\<close>]
+  by (transfer fixing: n) auto
+
+lemma word_power_increasing:
+  assumes x: "2 ^ x < (2 ^ y::'a::len word)" "x < LENGTH('a::len)" "y < LENGTH('a::len)"
+  shows "x < y" using x
+  using assms by transfer simp
+
+lemma mask_twice:
+  "(x AND mask n) AND mask m = x AND mask (min m n)"
+  for x :: \<open>'a::len word\<close>
+  by (simp flip: take_bit_eq_mask)
+
+lemma plus_one_helper[elim!]:
+  "x < n + (1 :: 'a :: len word) \<Longrightarrow> x \<le> n"
+  apply (simp add: word_less_nat_alt word_le_nat_alt field_simps)
+  apply (case_tac "1 + n = 0")
+   apply simp_all
+  apply (subst(asm) unatSuc, assumption)
+  apply arith
+  done
+
+lemma plus_one_helper2:
+  "\<lbrakk> x \<le> n; n + 1 \<noteq> 0 \<rbrakk> \<Longrightarrow> x < n + (1 :: 'a :: len word)"
+  by (simp add: word_less_nat_alt word_le_nat_alt field_simps
+                unatSuc)
+
+lemma less_x_plus_1:
+  fixes x :: "'a :: len word" shows
+  "x \<noteq> max_word \<Longrightarrow> (y < (x + 1)) = (y < x \<or> y = x)"
+  apply (rule iffI)
+   apply (rule disjCI)
+   apply (drule plus_one_helper)
+   apply simp
+  apply (subgoal_tac "x < x + 1")
+   apply (erule disjE, simp_all)
+  apply (rule plus_one_helper2 [OF order_refl])
+  apply (rule notI, drule max_word_wrap)
+  apply simp
+  done
+
+lemma word_Suc_leq:
+  fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrightarrow> x < k + 1 \<longleftrightarrow> x \<le> k"
+  using less_x_plus_1 word_le_less_eq by auto
+
+lemma word_Suc_le:
+   fixes k::"'a::len word" shows "x \<noteq> max_word \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
+  by (meson not_less word_Suc_leq)
+
+lemma word_lessThan_Suc_atMost:
+  \<open>{..< k + 1} = {..k}\<close> if \<open>k \<noteq> - 1\<close> for k :: \<open>'a::len word\<close>
+  using that by (simp add: lessThan_def atMost_def word_Suc_leq)
+
+lemma word_atLeastLessThan_Suc_atLeastAtMost:
+  \<open>{l ..< u + 1} = {l..u}\<close> if \<open>u \<noteq> - 1\<close> for l :: \<open>'a::len word\<close>
+  using that by (simp add: atLeastAtMost_def atLeastLessThan_def word_lessThan_Suc_atMost)
+
+lemma word_atLeastAtMost_Suc_greaterThanAtMost:
+  \<open>{m<..u} = {m + 1..u}\<close> if \<open>m \<noteq> - 1\<close> for m :: \<open>'a::len word\<close>
+  using that by (simp add: greaterThanAtMost_def greaterThan_def atLeastAtMost_def atLeast_def word_Suc_le)
+
+lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
+  fixes l::"'a::len word"
+  assumes "m \<noteq> max_word" and "l \<le> m" and "m \<le> u"
+  shows "{l..m} \<union> {m+1..u} = {l..u}"
+  proof -
+  from ivl_disj_un_two(8)[OF assms(2) assms(3)] have "{l..u} = {l..m} \<union> {m<..u}" by blast
+  with assms show ?thesis by(simp add: word_atLeastAtMost_Suc_greaterThanAtMost)
+  qed
+
+lemma max_word_less_eq_iff [simp]:
+  \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len word\<close>
+  by (fact word_order.extremum_unique)
 
 end

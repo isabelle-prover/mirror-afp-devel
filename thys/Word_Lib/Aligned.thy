@@ -593,10 +593,6 @@ lemma is_aligned_add_multI:
   apply (auto intro: is_alignedI [where k="x"])
   done
 
-lemma unat_of_nat_len:
-  "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x :: 'a::len word) = x"
-  by (simp add: take_bit_nat_eq_self_iff)
-
 lemma is_aligned_no_wrap''':
   fixes ptr :: "'a::len word"
   shows"\<lbrakk> is_aligned ptr sz; sz < LENGTH('a); off < 2 ^ sz \<rbrakk>
@@ -999,5 +995,45 @@ next
   have False by (simp add: is_aligned_mask mask_eq_decr_exp power_overflow)
   then show ?thesis ..
 qed
+
+lemma is_aligned_add_helper:
+  "\<lbrakk> is_aligned p n; d < 2 ^ n \<rbrakk>
+     \<Longrightarrow> (p + d AND mask n = d) \<and> (p + d AND (NOT (mask n)) = p)"
+  apply (subst (asm) is_aligned_mask)
+  apply (drule less_mask_eq)
+  apply (rule context_conjI)
+   apply (subst word_plus_and_or_coroll)
+    apply (simp_all flip: take_bit_eq_mask)
+   apply (metis take_bit_eq_mask word_bw_lcs(1) word_log_esimps(1))
+  apply (metis add.commute add_left_imp_eq take_bit_eq_mask word_plus_and_or_coroll2)
+  done
+
+lemmas mask_inner_mask = mask_eqs(1)
+
+lemma mask_add_aligned:
+  "is_aligned p n \<Longrightarrow> (p + q) AND mask n = q AND mask n"
+  apply (simp add: is_aligned_mask)
+  apply (subst mask_inner_mask [symmetric])
+  apply simp
+  done
+
+lemma mask_out_add_aligned:
+  assumes al: "is_aligned p n"
+  shows "p + (q AND NOT (mask n)) = (p + q) AND NOT (mask n)"
+  using mask_add_aligned [OF al]
+  by (simp add: mask_out_sub_mask)
+
+lemma is_aligned_add_or:
+  "\<lbrakk>is_aligned p n; d < 2 ^ n\<rbrakk> \<Longrightarrow> p + d = p OR d"
+  apply (subst disjunctive_add)
+   apply (simp_all add: is_aligned_iff_take_bit_eq_0)
+  apply (simp add: bit_eq_iff)
+  apply (auto simp add: bit_simps)
+  subgoal for m
+    apply (cases \<open>m < n\<close>)
+     apply (auto simp add: not_less)
+    apply (metis bit_take_bit_iff less_mask_eq take_bit_eq_mask)
+    done
+  done
 
 end

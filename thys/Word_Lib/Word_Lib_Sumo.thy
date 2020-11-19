@@ -38,6 +38,8 @@ imports
   Word_32
   Word_64
   Word_Syntax
+  Signed_Division_Word
+  More_Word_Operations
 begin
 
 declare signed_take_bit_Suc [simp]
