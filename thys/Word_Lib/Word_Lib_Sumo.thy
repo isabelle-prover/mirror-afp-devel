@@ -16,9 +16,11 @@ imports
   Least_significant_bit
   More_Arithmetic
   More_Divides
-  More_List
+  More_Sublist
+  Even_More_List
   More_Misc
   Strict_part_mono
+  Legacy_Aliasses
   Most_significant_bit
   Next_and_Prev
   Norm_Words
@@ -80,5 +82,15 @@ lemma shiftl_transfer [transfer_rule]:
   includes lifting_syntax
   shows "(pcr_word ===> (=) ===> pcr_word) (<<) (<<)"
   by (unfold shiftl_eq_push_bit) transfer_prover
+
+lemmas word_and_max_simps =
+  word8_and_max_simp
+  word16_and_max_simp
+  word32_and_max_simp
+  word64_and_max_simp
+
+lemma distinct_lemma: "f x \<noteq> f y \<Longrightarrow> x \<noteq> y" by auto
+
+lemmas and_bang = word_and_nth
 
 end

@@ -1,6 +1,6 @@
 
 theory Strict_part_mono
-  imports "HOL-Library.Word" Word_Lib
+  imports "HOL-Library.Word" More_Word
 begin
 
 definition

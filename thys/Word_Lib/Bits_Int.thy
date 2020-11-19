@@ -22,14 +22,14 @@ abbreviation (input) bin_rest :: "int \<Rightarrow> int"
   where "bin_rest w \<equiv> w div 2"
 
 lemma bin_last_numeral_simps [simp]:
-  "\<not> bin_last 0"
-  "bin_last 1"
-  "bin_last (- 1)"
-  "bin_last Numeral1"
-  "\<not> bin_last (numeral (Num.Bit0 w))"
-  "bin_last (numeral (Num.Bit1 w))"
-  "\<not> bin_last (- numeral (Num.Bit0 w))"
-  "bin_last (- numeral (Num.Bit1 w))"
+  "\<not> odd (0 :: int)"
+  "odd (1 :: int)"
+  "odd (- 1 :: int)"
+  "odd (Numeral1 :: int)"
+  "\<not> odd (numeral (Num.Bit0 w) :: int)"
+  "odd (numeral (Num.Bit1 w) :: int)"
+  "\<not> odd (- numeral (Num.Bit0 w) :: int)"
+  "odd (- numeral (Num.Bit1 w) :: int)"
   by simp_all
 
 lemma bin_rest_numeral_simps [simp]:
@@ -43,7 +43,7 @@ lemma bin_rest_numeral_simps [simp]:
   "bin_rest (- numeral (Num.Bit1 w)) = - numeral (w + Num.One)"
   by simp_all
 
-lemma bin_rl_eqI: "\<lbrakk>bin_rest x = bin_rest y; bin_last x = bin_last y\<rbrakk> \<Longrightarrow> x = y"
+lemma bin_rl_eqI: "\<lbrakk>bin_rest x = bin_rest y; odd x = odd y\<rbrakk> \<Longrightarrow> x = y"
   by (auto elim: oddE)
 
 lemma [simp]: 
@@ -893,6 +893,9 @@ lemma bin_sc_numeral [simp]:
   "bin_sc (numeral k) b w =
     of_bool (odd w) + 2 * bin_sc (pred_numeral k) b (w div 2)"
   by (simp add: numeral_eq_Suc)
+
+lemmas bin_sc_minus_simps =
+  bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]
 
 instance int :: semiring_bit_syntax ..
 

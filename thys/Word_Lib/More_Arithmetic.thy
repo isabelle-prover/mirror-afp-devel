@@ -249,4 +249,42 @@ lemma nat_power_minus_less:
   "a < 2 ^ (x - n) \<Longrightarrow> (a :: nat) < 2 ^ x"
   by (erule order_less_le_trans) simp
 
+lemma less_le_mult_nat':
+  "w * c < b * c ==> 0 \<le> c ==> Suc w * c \<le> b * (c::nat)"
+  apply (rule mult_right_mono)
+   apply (rule Suc_leI)
+   apply (erule (1) mult_right_less_imp_less)
+  apply assumption
+  done
+
+lemma less_le_mult_nat:
+  \<open>0 < c \<and> w < b \<Longrightarrow> c + w * c \<le> b * c\<close> for b c w :: nat
+  using less_le_mult_nat' [of w c b] by simp
+
+lemma diff_diff_less:
+  "(i < m - (m - (n :: nat))) = (i < m \<and> i < n)"
+  by auto
+
+lemma nat_add_offset_less:
+  fixes x :: nat
+  assumes yv: "y < 2 ^ n"
+  and     xv: "x < 2 ^ m"
+  and     mn: "sz = m + n"
+  shows   "x * 2 ^ n + y < 2 ^ sz"
+proof (subst mn)
+  from yv obtain qy where "y + qy = 2 ^ n" and "0 < qy"
+    by (auto dest: less_imp_add_positive)
+
+  have "x * 2 ^ n + y < x * 2 ^ n + 2 ^ n" by simp fact+
+  also have "\<dots> = (x + 1) * 2 ^ n" by simp
+  also have "\<dots> \<le> 2 ^ (m + n)" using xv
+    by (subst power_add) (rule mult_le_mono1, simp)
+  finally show "x * 2 ^ n + y < 2 ^ (m + n)" .
+qed
+
+lemma p_assoc_help:
+  fixes p :: "'a::{ring,power,numeral,one}"
+  shows "p + 2^sz - 1 = p + (2^sz - 1)"
+  by simp
+
 end

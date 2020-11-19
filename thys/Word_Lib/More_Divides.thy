@@ -267,6 +267,19 @@ lemma mod_lemma: "[| (0::nat) < c; r < b |] ==> b * (q mod c) + r < b * c"
   apply (simp add: add_mult_distrib2)
   done
 
+lemma less_two_pow_divD:
+  "\<lbrakk> (x :: nat) < 2 ^ n div 2 ^ m \<rbrakk>
+    \<Longrightarrow> n \<ge> m \<and> (x < 2 ^ (n - m))"
+  apply (rule context_conjI)
+   apply (rule ccontr)
+   apply (simp add: power_strict_increasing)
+  apply (simp add: power_sub)
+  done
+
+lemma less_two_pow_divI:
+  "\<lbrakk> (x :: nat) < 2 ^ (n - m); m \<le> n \<rbrakk> \<Longrightarrow> x < 2 ^ n div 2 ^ m"
+  by (simp add: power_sub)
+
 lemmas m2pths = pos_mod_sign mod_exp_less_eq_exp
 
 lemmas int_mod_eq' = mod_pos_pos_trivial (* FIXME delete *)

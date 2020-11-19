@@ -270,7 +270,7 @@ lemma le_step_down_word_3:
 
 lemma shiftr_1:
   "(x::word64) >> 1 = 0 \<Longrightarrow> x < 2"
-  by word_bitwise clarsimp
+  by transfer (simp add: take_bit_drop_bit drop_bit_Suc)
 
 lemma mask_step_down_64:
   \<open>\<exists>x. mask x = b\<close> if \<open>b && 1 = 1\<close>
@@ -323,5 +323,10 @@ lemma cast_down_s64: "(scast::64 sword \<Rightarrow> 32 word) = (ucast::64 sword
   apply (subst down_cast_same[symmetric])
    apply (simp add:is_down)+
   done
+
+lemma word64_and_max_simp:
+  \<open>x AND 0xFFFFFFFFFFFFFFFF = x\<close> for x :: \<open>64 word\<close>
+  using word_and_full_mask_simp [of x]
+  by (simp add: numeral_eq_Suc mask_Suc_exp)
 
 end

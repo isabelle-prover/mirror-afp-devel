@@ -749,7 +749,7 @@ begin
      apply(simp)
      apply(subst(asm) Word.word_less_nat_alt)
      apply simp
-    apply(subst Word_Lemmas.upto_enum_set_conv2[symmetric])
+    apply(subst upto_enum_set_conv2[symmetric])
     apply(subst List.card_set)
     apply(simp add: remdups_enum_upto)
     done

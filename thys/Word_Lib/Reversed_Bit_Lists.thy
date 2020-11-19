@@ -4,7 +4,10 @@
 section \<open>Bit values as reversed lists of bools\<close>
 
 theory Reversed_Bit_Lists
-  imports "HOL-Library.Word" Typedef_Morphisms
+  imports
+    "HOL-Library.Word"
+    Typedef_Morphisms
+    Even_More_List
 begin
 
 lemma horner_sum_of_bool_2_concat:
@@ -1564,7 +1567,6 @@ lemma bl_and_mask':
   apply (rule nth_equalityI)
    apply simp
   apply (clarsimp simp add: to_bl_nth word_size)
-  apply (simp add: word_size word_ops_nth_size)
   apply (auto simp add: word_size test_bit_bl nth_append rev_nth)
   done
 
@@ -1854,5 +1856,77 @@ lemma drop_rev_takefill:
   by (simp add: takefill_alt rev_take)
 
 declare bin_to_bl_def [simp]
+
+lemmas of_bl_reasoning = to_bl_use_of_bl of_bl_append
+
+lemma uint_of_bl_is_bl_to_bin_drop:
+  "length (dropWhile Not l) \<le> LENGTH('a) \<Longrightarrow> uint (of_bl l :: 'a::len word) = bl_to_bin l"
+  apply transfer
+  apply (simp add: take_bit_eq_mod)
+  apply (rule Divides.mod_less)
+   apply (rule bl_to_bin_ge0)
+  using bl_to_bin_lt2p_drop apply (rule order.strict_trans2)
+  apply simp
+  done
+
+corollary uint_of_bl_is_bl_to_bin:
+  "length l\<le>LENGTH('a) \<Longrightarrow> uint ((of_bl::bool list\<Rightarrow> ('a :: len) word) l) = bl_to_bin l"
+  apply(rule uint_of_bl_is_bl_to_bin_drop)
+  using le_trans length_dropWhile_le by blast
+
+lemma bin_to_bl_or:
+  "bin_to_bl n (a OR b) = map2 (\<or>) (bin_to_bl n a) (bin_to_bl n b)"
+  using bl_or_aux_bin[where n=n and v=a and w=b and bs="[]" and cs="[]"]
+  by simp
+
+lemma word_and_1_bl:
+  fixes x::"'a::len word"
+  shows "(x AND 1) = of_bl [x !! 0]"
+  by (simp add: mod_2_eq_odd test_bit_word_eq and_one_eq)
+
+lemma word_1_and_bl:
+  fixes x::"'a::len word"
+  shows "(1 AND x) = of_bl [x !! 0]"
+  by (simp add: mod_2_eq_odd test_bit_word_eq one_and_eq)
+
+lemma of_bl_drop:
+  "of_bl (drop n xs) = (of_bl xs AND mask (length xs - n))"
+  apply (clarsimp simp: bang_eq test_bit_of_bl rev_nth cong: rev_conj_cong)
+  apply (safe; simp add: word_size to_bl_nth)
+  done
+
+lemma to_bl_1:
+  "to_bl (1::'a::len word) = replicate (LENGTH('a) - 1) False @ [True]"
+  by (rule nth_equalityI) (auto simp add: to_bl_unfold nth_append rev_nth bit_1_iff not_less not_le)
+
+lemma eq_zero_set_bl:
+  "(w = 0) = (True \<notin> set (to_bl w))"
+  using list_of_false word_bl.Rep_inject by fastforce
+
+lemma of_drop_to_bl:
+  "of_bl (drop n (to_bl x)) = (x AND mask (size x - n))"
+  by (simp add: of_bl_drop word_size_bl)
+
+lemma unat_of_bl_length:
+  "unat (of_bl xs :: 'a::len word) < 2 ^ (length xs)"
+proof (cases "length xs < LENGTH('a)")
+  case True
+  then have "(of_bl xs::'a::len word) < 2 ^ length xs"
+    by (simp add: of_bl_length_less)
+  with True
+  show ?thesis
+    by (simp add: word_less_nat_alt word_unat_power unat_of_nat del: of_nat_power)
+next
+  case False
+  have "unat (of_bl xs::'a::len word) < 2 ^ LENGTH('a)"
+    by (simp split: unat_split)
+  also
+  from False
+  have "LENGTH('a) \<le> length xs" by simp
+  then have "2 ^ LENGTH('a) \<le> (2::nat) ^ length xs"
+    by (rule power_increasing) simp
+  finally
+  show ?thesis .
+qed
 
 end

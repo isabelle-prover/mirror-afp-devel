@@ -5,6 +5,68 @@ theory More_Misc
 imports Main
 begin
 
+lemma map_idem_upt_eq:
+  \<open>map f [m..<n] = [m..<n]\<close> if \<open>\<And>q. m \<le> q \<Longrightarrow> q < n \<Longrightarrow> f q = q\<close>
+proof (cases \<open>n \<ge> m\<close>)
+  case False
+  then show ?thesis
+    by simp
+next
+  case True
+  moreover define r where \<open>r = n - m\<close>
+  ultimately have \<open>n = m + r\<close>
+    by simp
+  with that have \<open>\<And>q. m \<le> q \<Longrightarrow> q < m + r \<Longrightarrow> f q = q\<close>
+    by simp
+  then have \<open>map f [m..<m + r] = [m..<m + r]\<close>
+    by (induction r) simp_all
+  with \<open>n = m + r\<close> show ?thesis
+    by simp
+qed
+
+lemma upt_zero_numeral_unfold:
+  \<open>[0..<numeral n] = [0..<pred_numeral n] @ [pred_numeral n]\<close>
+  by (simp add: numeral_eq_Suc)
+
+lemma MinI:
+  assumes fa: "finite A"
+  and     ne: "A \<noteq> {}"
+  and     xv: "m \<in> A"
+  and    min: "\<forall>y \<in> A. m \<le> y"
+  shows "Min A = m" using fa ne xv min
+proof (induct A arbitrary: m rule: finite_ne_induct)
+  case singleton then show ?case by simp
+next
+  case (insert y F)
+
+  from insert.prems have yx: "m \<le> y" and fx: "\<forall>y \<in> F. m \<le> y" by auto
+  have "m \<in> insert y F" by fact
+  then show ?case
+  proof
+    assume mv: "m = y"
+
+    have mlt: "m \<le> Min F"
+      by (rule iffD2 [OF Min_ge_iff [OF insert.hyps(1) insert.hyps(2)] fx])
+
+    show ?case
+      apply (subst Min_insert [OF insert.hyps(1) insert.hyps(2)])
+      apply (subst mv [symmetric])
+      apply (auto simp: min_def mlt)
+      done
+  next
+    assume "m \<in> F"
+    then have mf: "Min F = m"
+      by (rule insert.hyps(4) [OF _ fx])
+
+    show ?case
+      apply (subst Min_insert [OF insert.hyps(1) insert.hyps(2)])
+      apply (subst mf)
+      apply (rule iffD2 [OF _ yx])
+      apply (auto simp: min_def)
+      done
+  qed
+qed
+
 lemma power_numeral: "a ^ numeral k = a * a ^ (pred_numeral k)"
   by (simp add: numeral_eq_Suc)
 
@@ -83,5 +145,68 @@ lemmas xtr7 = xtrans(7)
 lemmas xtr8 = xtrans(8)
 
 lemmas if_fun_split = if_apply_def2
+
+lemma not_empty_eq:
+  "(S \<noteq> {}) = (\<exists>x. x \<in> S)"
+  by auto
+
+lemma range_subset_lower:
+  fixes c :: "'a ::linorder"
+  shows "\<lbrakk> {a..b} \<subseteq> {c..d}; x \<in> {a..b} \<rbrakk> \<Longrightarrow> c \<le> a"
+  apply (frule (1) subsetD)
+  apply (rule classical)
+  apply clarsimp
+  done
+
+lemma range_subset_upper:
+  fixes c :: "'a ::linorder"
+  shows "\<lbrakk> {a..b} \<subseteq> {c..d}; x \<in> {a..b} \<rbrakk> \<Longrightarrow> b \<le> d"
+  apply (frule (1) subsetD)
+  apply (rule classical)
+  apply clarsimp
+  done
+
+lemma range_subset_eq:
+  fixes a::"'a::linorder"
+  assumes non_empty: "a \<le> b"
+  shows "({a..b} \<subseteq> {c..d}) = (c \<le> a \<and> b \<le> d)"
+  apply (insert non_empty)
+  apply (rule iffI)
+   apply (frule range_subset_lower [where x=a], simp)
+   apply (drule range_subset_upper [where x=a], simp)
+   apply simp
+  apply auto
+  done
+
+lemma range_eq:
+  fixes a::"'a::linorder"
+  assumes non_empty: "a \<le> b"
+  shows "({a..b} = {c..d}) = (a = c \<and> b = d)"
+  by (metis atLeastatMost_subset_iff eq_iff non_empty)
+
+lemma range_strict_subset_eq:
+  fixes a::"'a::linorder"
+  assumes non_empty: "a \<le> b"
+  shows "({a..b} \<subset> {c..d}) = (c \<le> a \<and> b \<le> d \<and> (a = c \<longrightarrow> b \<noteq> d))"
+  apply (insert non_empty)
+  apply (subst psubset_eq)
+  apply (subst range_subset_eq, assumption+)
+  apply (subst range_eq, assumption+)
+  apply simp
+  done
+
+lemma range_subsetI:
+  fixes x :: "'a :: order"
+  assumes xX: "X \<le> x"
+  and     yY: "y \<le> Y"
+  shows   "{x .. y} \<subseteq> {X .. Y}"
+  using xX yY by auto
+
+lemma set_False [simp]:
+  "(set bs \<subseteq> {False}) = (True \<notin> set bs)" by auto
+
+lemma int_not_emptyD:
+  "A \<inter> B \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<in> B"
+  by (erule contrapos_np, clarsimp simp: disjoint_iff_not_equal)
 
 end

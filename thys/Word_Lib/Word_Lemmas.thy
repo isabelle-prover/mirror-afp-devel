@@ -14,872 +14,13 @@ theory Word_Lemmas
     Word_EqI
     Rsplit
     More_Divides
-    More_List
+    Even_More_List
+    More_Misc
+    Most_significant_bit
+    "HOL-Library.Sublist"
 begin
 
-lemma nat_mask_eq:
-  \<open>nat (mask n) = mask n\<close>
-  by (simp add: nat_eq_iff of_nat_mask_eq)
-
-lemma unat_mask_eq:
-  \<open>unat (mask n :: 'a::len word) = mask (min LENGTH('a) n)\<close>
-  by transfer (simp add: nat_mask_eq)
-
-(* FIXME: move to Word distribution *)
-lemma bin_nth_minus_Bit0[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit0 w)) n = bin_nth (numeral w) (n - 1)"
-  by (cases n; simp)
-
-lemma bin_nth_minus_Bit1[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
-  by (cases n; simp)
-
-lemma word_plus_mono_left:
-  fixes x :: "'a :: len word"
-  shows "\<lbrakk>y \<le> z; x \<le> x + z\<rbrakk> \<Longrightarrow> y + x \<le> z + x"
-  by unat_arith
-
-lemma word_shiftl_add_distrib:
-  fixes x :: "'a :: len word"
-  shows "(x + y) << n = (x << n) + (y << n)"
-  by (simp add: shiftl_t2n ring_distribs)
-
-lemma less_Suc_unat_less_bound:
-  "n < Suc (unat (x :: 'a :: len word)) \<Longrightarrow> n < 2 ^ LENGTH('a)"
-  by (auto elim!: order_less_le_trans intro: Suc_leI)
-
-lemma up_ucast_inj:
-  "\<lbrakk> ucast x = (ucast y::'b::len word); LENGTH('a) \<le> len_of TYPE ('b) \<rbrakk> \<Longrightarrow> x = (y::'a::len word)"
-  by (subst (asm) bang_eq) (fastforce simp: nth_ucast word_size intro: word_eqI)
-
-lemmas ucast_up_inj = up_ucast_inj
-
-lemma up_ucast_inj_eq:
-  "LENGTH('a) \<le> len_of TYPE ('b) \<Longrightarrow> (ucast x = (ucast y::'b::len word)) = (x = (y::'a::len word))"
-  by (fastforce dest: up_ucast_inj)
-
-lemma no_plus_overflow_neg:
-  "(x :: 'a :: len word) < -y \<Longrightarrow> x \<le> x + y"
-  by (metis diff_minus_eq_add less_imp_le sub_wrap_lt)
-
-lemma ucast_ucast_eq:
-  "\<lbrakk> ucast x = (ucast (ucast y::'a word)::'c::len word); LENGTH('a) \<le> LENGTH('b);
-     LENGTH('b) \<le> LENGTH('c) \<rbrakk> \<Longrightarrow>
-   x = ucast y" for x :: "'a::len word" and y :: "'b::len word"
-  by (fastforce intro: word_eqI simp: bang_eq nth_ucast word_size)
-
-lemma ucast_0_I:
-  "x = 0 \<Longrightarrow> ucast x = 0"
-  by simp
-
 text \<open>Lemmas about words\<close>
-
-lemmas and_bang = word_and_nth
-
-lemma of_drop_to_bl:
-  "of_bl (drop n (to_bl x)) = (x AND mask (size x - n))"
-  by (simp add: of_bl_drop word_size_bl)
-
-lemma word_add_offset_less:
-  fixes x :: "'a :: len word"
-  assumes yv: "y < 2 ^ n"
-  and     xv: "x < 2 ^ m"
-  and     mnv: "sz < LENGTH('a :: len)"
-  and    xv': "x < 2 ^ (LENGTH('a :: len) - n)"
-  and     mn: "sz = m + n"
-  shows   "x * 2 ^ n + y < 2 ^ sz"
-proof (subst mn)
-  from mnv mn have nv: "n < LENGTH('a)" and mv: "m < LENGTH('a)"  by auto
-
-  have uy: "unat y < 2 ^ n"
-    by (rule order_less_le_trans [OF unat_mono [OF yv] order_eq_refl],
-        rule unat_power_lower[OF nv])
-
-  have ux: "unat x < 2 ^ m"
-    by (rule order_less_le_trans [OF unat_mono [OF xv] order_eq_refl],
-        rule unat_power_lower[OF mv])
-
-  then show "x * 2 ^ n + y < 2 ^ (m + n)" using ux uy nv mnv xv'
-    apply (subst word_less_nat_alt)
-    apply (subst unat_word_ariths)+
-    apply (subst mod_less)
-     apply simp
-     apply (subst mult.commute)
-     apply (rule nat_less_power_trans [OF _ order_less_imp_le [OF nv]])
-     apply (rule order_less_le_trans [OF unat_mono [OF xv']])
-     apply (cases "n = 0"; simp)
-    apply (subst unat_power_lower[OF nv])
-    apply (subst mod_less)
-     apply (erule order_less_le_trans [OF nat_add_offset_less], assumption)
-      apply (rule mn)
-     apply simp
-    apply (simp add: mn mnv)
-    apply (erule nat_add_offset_less; simp)
-    done
-qed
-
-lemma word_less_power_trans:
-  fixes n :: "'a :: len word"
-  assumes nv: "n < 2 ^ (m - k)"
-  and     kv: "k \<le> m"
-  and     mv: "m < len_of TYPE ('a)"
-  shows "2 ^ k * n < 2 ^ m"
-  using nv kv mv
-  apply -
-  apply (subst word_less_nat_alt)
-  apply (subst unat_word_ariths)
-  apply (subst mod_less)
-   apply simp
-   apply (rule nat_less_power_trans)
-    apply (erule order_less_trans [OF unat_mono])
-    apply simp
-   apply simp
-  apply simp
-  apply (rule nat_less_power_trans)
-   apply (subst unat_power_lower[where 'a = 'a, symmetric])
-    apply simp
-   apply (erule unat_mono)
-  apply simp
-  done
-
-lemma Suc_unat_diff_1:
-  fixes x :: "'a :: len word"
-  assumes lt: "1 \<le> x"
-  shows "Suc (unat (x - 1)) = unat x"
-proof -
-  have "0 < unat x"
-    by (rule order_less_le_trans [where y = 1], simp, subst unat_1 [symmetric],
-        rule iffD1 [OF word_le_nat_alt lt])
-
-  then show ?thesis
-    by ((subst unat_sub [OF lt])+, simp only:  unat_1)
-qed
-
-lemma word_div_sub:
-  fixes x :: "'a :: len word"
-  assumes yx: "y \<le> x"
-  and     y0: "0 < y"
-  shows "(x - y) div y = x div y - 1"
-  apply (rule word_unat.Rep_eqD)
-  apply (subst unat_div)
-  apply (subst unat_sub [OF yx])
-  apply (subst unat_sub)
-   apply (subst word_le_nat_alt)
-   apply (subst unat_div)
-   apply (subst le_div_geq)
-     apply (rule order_le_less_trans [OF _ unat_mono [OF y0]])
-     apply simp
-    apply (subst word_le_nat_alt [symmetric], rule yx)
-   apply simp
-  apply (subst unat_div)
-  apply (subst le_div_geq [OF _ iffD1 [OF word_le_nat_alt yx]])
-   apply (rule order_le_less_trans [OF _ unat_mono [OF y0]])
-   apply simp
-  apply simp
-  done
-
-lemma word_mult_less_mono1:
-  fixes i :: "'a :: len word"
-  assumes ij: "i < j"
-  and    knz: "0 < k"
-  and    ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i * k < j * k"
-proof -
-  from ij ujk knz have jk: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-    by (auto intro: order_less_subst2 simp: word_less_nat_alt elim: mult_less_mono1)
-
-  then show ?thesis using ujk knz ij
-    by (auto simp: word_less_nat_alt iffD1 [OF unat_mult_lem])
-qed
-
-lemma word_mult_less_dest:
-  fixes i :: "'a :: len word"
-  assumes ij: "i * k < j * k"
-  and    uik: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-  and    ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i < j"
-  using uik ujk ij
-  by (auto simp: word_less_nat_alt iffD1 [OF unat_mult_lem] elim: mult_less_mono1)
-
-lemma word_mult_less_cancel:
-  fixes k :: "'a :: len word"
-  assumes knz: "0 < k"
-  and    uik: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-  and    ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows "(i * k < j * k) = (i < j)"
-  by (rule iffI [OF word_mult_less_dest [OF _ uik ujk] word_mult_less_mono1 [OF _ knz ujk]])
-
-lemma Suc_div_unat_helper:
-  assumes szv: "sz < LENGTH('a :: len)"
-  and   usszv: "us \<le> sz"
-  shows "2 ^ (sz - us) = Suc (unat (((2::'a :: len word) ^ sz - 1) div 2 ^ us))"
-proof -
-  note usv = order_le_less_trans [OF usszv szv]
-
-  from usszv obtain q where qv: "sz = us + q" by (auto simp: le_iff_add)
-
-  have "Suc (unat (((2:: 'a word) ^ sz - 1) div 2 ^ us)) =
-    (2 ^ us + unat ((2:: 'a word) ^ sz - 1)) div 2 ^ us"
-    apply (subst unat_div unat_power_lower[OF usv])+
-    apply (subst div_add_self1, simp+)
-    done
-
-  also have "\<dots> = ((2 ^ us - 1) + 2 ^ sz) div 2 ^ us" using szv
-    by (simp add: unat_minus_one)
-
-  also have "\<dots> = 2 ^ q + ((2 ^ us - 1) div 2 ^ us)"
-    apply (subst qv)
-    apply (subst power_add)
-    apply (subst div_mult_self2; simp)
-    done
-
-  also have "\<dots> = 2 ^ (sz - us)" using qv by simp
-
-  finally show ?thesis ..
-qed
-
-
-lemma set_enum_word8_def:
-  "(set enum :: 8 word set) = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-                            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-                            54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
-                            71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
-                            88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
-                            104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
-                            118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-                            132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145,
-                            146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
-                            160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
-                            174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187,
-                            188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201,
-                            202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215,
-                            216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229,
-                            230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243,
-                            244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255}"
-  by eval
-
-lemma set_strip_insert: "\<lbrakk> x \<in> insert a S; x \<noteq> a \<rbrakk> \<Longrightarrow> x \<in> S"
-  by simp
-
-lemma word8_exhaust:
-  fixes x :: \<open>8 word\<close>
-  shows "\<lbrakk>x \<noteq> 0; x \<noteq> 1; x \<noteq> 2; x \<noteq> 3; x \<noteq> 4; x \<noteq> 5; x \<noteq> 6; x \<noteq> 7; x \<noteq> 8; x \<noteq> 9; x \<noteq> 10; x \<noteq> 11; x \<noteq>
-          12; x \<noteq> 13; x \<noteq> 14; x \<noteq> 15; x \<noteq> 16; x \<noteq> 17; x \<noteq> 18; x \<noteq> 19; x \<noteq> 20; x \<noteq> 21; x \<noteq> 22; x \<noteq>
-          23; x \<noteq> 24; x \<noteq> 25; x \<noteq> 26; x \<noteq> 27; x \<noteq> 28; x \<noteq> 29; x \<noteq> 30; x \<noteq> 31; x \<noteq> 32; x \<noteq> 33; x \<noteq>
-          34; x \<noteq> 35; x \<noteq> 36; x \<noteq> 37; x \<noteq> 38; x \<noteq> 39; x \<noteq> 40; x \<noteq> 41; x \<noteq> 42; x \<noteq> 43; x \<noteq> 44; x \<noteq>
-          45; x \<noteq> 46; x \<noteq> 47; x \<noteq> 48; x \<noteq> 49; x \<noteq> 50; x \<noteq> 51; x \<noteq> 52; x \<noteq> 53; x \<noteq> 54; x \<noteq> 55; x \<noteq>
-          56; x \<noteq> 57; x \<noteq> 58; x \<noteq> 59; x \<noteq> 60; x \<noteq> 61; x \<noteq> 62; x \<noteq> 63; x \<noteq> 64; x \<noteq> 65; x \<noteq> 66; x \<noteq>
-          67; x \<noteq> 68; x \<noteq> 69; x \<noteq> 70; x \<noteq> 71; x \<noteq> 72; x \<noteq> 73; x \<noteq> 74; x \<noteq> 75; x \<noteq> 76; x \<noteq> 77; x \<noteq>
-          78; x \<noteq> 79; x \<noteq> 80; x \<noteq> 81; x \<noteq> 82; x \<noteq> 83; x \<noteq> 84; x \<noteq> 85; x \<noteq> 86; x \<noteq> 87; x \<noteq> 88; x \<noteq>
-          89; x \<noteq> 90; x \<noteq> 91; x \<noteq> 92; x \<noteq> 93; x \<noteq> 94; x \<noteq> 95; x \<noteq> 96; x \<noteq> 97; x \<noteq> 98; x \<noteq> 99; x \<noteq>
-          100; x \<noteq> 101; x \<noteq> 102; x \<noteq> 103; x \<noteq> 104; x \<noteq> 105; x \<noteq> 106; x \<noteq> 107; x \<noteq> 108; x \<noteq> 109; x \<noteq>
-          110; x \<noteq> 111; x \<noteq> 112; x \<noteq> 113; x \<noteq> 114; x \<noteq> 115; x \<noteq> 116; x \<noteq> 117; x \<noteq> 118; x \<noteq> 119; x \<noteq>
-          120; x \<noteq> 121; x \<noteq> 122; x \<noteq> 123; x \<noteq> 124; x \<noteq> 125; x \<noteq> 126; x \<noteq> 127; x \<noteq> 128; x \<noteq> 129; x \<noteq>
-          130; x \<noteq> 131; x \<noteq> 132; x \<noteq> 133; x \<noteq> 134; x \<noteq> 135; x \<noteq> 136; x \<noteq> 137; x \<noteq> 138; x \<noteq> 139; x \<noteq>
-          140; x \<noteq> 141; x \<noteq> 142; x \<noteq> 143; x \<noteq> 144; x \<noteq> 145; x \<noteq> 146; x \<noteq> 147; x \<noteq> 148; x \<noteq> 149; x \<noteq>
-          150; x \<noteq> 151; x \<noteq> 152; x \<noteq> 153; x \<noteq> 154; x \<noteq> 155; x \<noteq> 156; x \<noteq> 157; x \<noteq> 158; x \<noteq> 159; x \<noteq>
-          160; x \<noteq> 161; x \<noteq> 162; x \<noteq> 163; x \<noteq> 164; x \<noteq> 165; x \<noteq> 166; x \<noteq> 167; x \<noteq> 168; x \<noteq> 169; x \<noteq>
-          170; x \<noteq> 171; x \<noteq> 172; x \<noteq> 173; x \<noteq> 174; x \<noteq> 175; x \<noteq> 176; x \<noteq> 177; x \<noteq> 178; x \<noteq> 179; x \<noteq>
-          180; x \<noteq> 181; x \<noteq> 182; x \<noteq> 183; x \<noteq> 184; x \<noteq> 185; x \<noteq> 186; x \<noteq> 187; x \<noteq> 188; x \<noteq> 189; x \<noteq>
-          190; x \<noteq> 191; x \<noteq> 192; x \<noteq> 193; x \<noteq> 194; x \<noteq> 195; x \<noteq> 196; x \<noteq> 197; x \<noteq> 198; x \<noteq> 199; x \<noteq>
-          200; x \<noteq> 201; x \<noteq> 202; x \<noteq> 203; x \<noteq> 204; x \<noteq> 205; x \<noteq> 206; x \<noteq> 207; x \<noteq> 208; x \<noteq> 209; x \<noteq>
-          210; x \<noteq> 211; x \<noteq> 212; x \<noteq> 213; x \<noteq> 214; x \<noteq> 215; x \<noteq> 216; x \<noteq> 217; x \<noteq> 218; x \<noteq> 219; x \<noteq>
-          220; x \<noteq> 221; x \<noteq> 222; x \<noteq> 223; x \<noteq> 224; x \<noteq> 225; x \<noteq> 226; x \<noteq> 227; x \<noteq> 228; x \<noteq> 229; x \<noteq>
-          230; x \<noteq> 231; x \<noteq> 232; x \<noteq> 233; x \<noteq> 234; x \<noteq> 235; x \<noteq> 236; x \<noteq> 237; x \<noteq> 238; x \<noteq> 239; x \<noteq>
-          240; x \<noteq> 241; x \<noteq> 242; x \<noteq> 243; x \<noteq> 244; x \<noteq> 245; x \<noteq> 246; x \<noteq> 247; x \<noteq> 248; x \<noteq> 249; x \<noteq>
-          250; x \<noteq> 251; x \<noteq> 252; x \<noteq> 253; x \<noteq> 254; x \<noteq> 255\<rbrakk> \<Longrightarrow> P"
-  apply (subgoal_tac "x \<in> set enum", subst (asm) set_enum_word8_def)
-    apply (drule set_strip_insert, assumption)+
-   apply (erule emptyE)
-  apply (subst enum_UNIV, rule UNIV_I)
-  done
-
-lemma upto_enum_red':
-  assumes lt: "1 \<le> X"
-  shows "[(0::'a :: len word) .e. X - 1] =  map of_nat [0 ..< unat X]"
-proof -
-  have lt': "unat X < 2 ^ LENGTH('a)"
-    by (rule unat_lt2p)
-
-  show ?thesis
-    apply (subst upto_enum_red)
-    apply (simp del: upt.simps)
-    apply (subst Suc_unat_diff_1 [OF lt])
-    apply (rule map_cong [OF refl])
-    apply (rule toEnum_of_nat)
-    apply simp
-    apply (erule order_less_trans [OF _ lt'])
-    done
-qed
-
-lemma upto_enum_red2:
-  assumes szv: "sz < LENGTH('a :: len)"
-  shows "[(0:: 'a :: len word) .e. 2 ^ sz - 1] =
-  map of_nat [0 ..< 2 ^ sz]" using szv
-  apply (subst unat_power_lower[OF szv, symmetric])
-  apply (rule upto_enum_red')
-  apply (subst word_le_nat_alt, simp)
-  done
-
-lemma upto_enum_step_red:
-  assumes szv: "sz < LENGTH('a)"
-  and   usszv: "us \<le> sz"
-  shows "[0 :: 'a :: len word , 2 ^ us .e. 2 ^ sz - 1] =
-  map (\<lambda>x. of_nat x * 2 ^ us) [0 ..< 2 ^ (sz - us)]" using szv
-  unfolding upto_enum_step_def
-  apply (subst if_not_P)
-   apply (rule leD)
-   apply (subst word_le_nat_alt)
-   apply (subst unat_minus_one)
-    apply simp
-   apply simp
-  apply simp
-  apply (subst upto_enum_red)
-  apply (simp del: upt.simps)
-  apply (subst Suc_div_unat_helper [where 'a = 'a, OF szv usszv, symmetric])
-  apply clarsimp
-  apply (subst toEnum_of_nat)
-   apply (erule order_less_trans)
-   using szv
-   apply simp
-  apply simp
-  done
-
-lemma upto_enum_word:
-  "[x .e. y] = map of_nat [unat x ..< Suc (unat y)]"
-  apply (subst upto_enum_red)
-  apply clarsimp
-  apply (subst toEnum_of_nat)
-   prefer 2
-   apply (rule refl)
-  apply (erule disjE, simp)
-  apply clarsimp
-  apply (erule order_less_trans)
-  apply simp
-  done
-
-lemma word_upto_Cons_eq:
-  "x < y \<Longrightarrow> [x::'a::len word .e. y] = x # [x + 1 .e. y]"
-  apply (subst upto_enum_red)
-  apply (subst upt_conv_Cons)
-  apply simp_all
-   apply unat_arith
-  apply (simp only: list.map list.inject upto_enum_red to_from_enum simp_thms)
-  apply simp_all
-  apply unat_arith
-  done
-
-lemma distinct_enum_upto:
-  "distinct [(0 :: 'a::len word) .e. b]"
-proof -
-  have "\<And>(b::'a word). [0 .e. b] = nths enum {..< Suc (fromEnum b)}"
-    apply (subst upto_enum_red)
-    apply (subst nths_upt_eq_take)
-    apply (subst enum_word_def)
-    apply (subst take_map)
-    apply (subst take_upt)
-     apply (simp only: add_0 fromEnum_unat)
-     apply (rule order_trans [OF _ order_eq_refl])
-      apply (rule Suc_leI [OF unat_lt2p])
-     apply simp
-    apply clarsimp
-    apply (rule toEnum_of_nat)
-    apply (erule order_less_trans [OF _ unat_lt2p])
-    done
-
-  then show ?thesis
-    by (rule ssubst) (rule distinct_nthsI, simp)
-qed
-
-lemma upto_enum_set_conv [simp]:
-  fixes a :: "'a :: len word"
-  shows "set [a .e. b] = {x. a \<le> x \<and> x \<le> b}"
-  apply (subst upto_enum_red)
-  apply (subst set_map)
-  apply safe
-    apply simp
-    apply clarsimp
-    apply (erule disjE)
-     apply simp
-     apply (erule iffD2 [OF word_le_nat_alt])
-    apply clarsimp
-    apply (erule word_unat.Rep_cases [OF unat_le [OF order_less_imp_le]])
-    apply simp
-    apply (erule iffD2 [OF word_le_nat_alt])
-   apply simp
-
-   apply clarsimp
-   apply (erule disjE)
-    apply simp
-   apply clarsimp
-   apply (rule word_unat.Rep_cases [OF unat_le  [OF order_less_imp_le]])
-    apply assumption
-   apply simp
-   apply (erule order_less_imp_le [OF iffD2 [OF word_less_nat_alt]])
-  apply clarsimp
-  apply (rule_tac x="fromEnum x" in image_eqI)
-   apply clarsimp
-  apply clarsimp
-  apply (rule conjI)
-   apply (subst word_le_nat_alt [symmetric])
-   apply simp
-  apply safe
-   apply (simp add: word_le_nat_alt [symmetric])
-  apply (simp add: word_less_nat_alt [symmetric])
-  done
-
-lemma upto_enum_less:
-  assumes xin: "x \<in> set [(a::'a::len word).e.2 ^ n - 1]"
-  and     nv:  "n < LENGTH('a::len)"
-  shows   "x < 2 ^ n"
-proof (cases n)
-  case 0
-  then show ?thesis using xin by simp
-next
-  case (Suc m)
-  show ?thesis using xin nv le_m1_iff_lt p2_gt_0 by auto
-qed
-
-lemma upto_enum_len_less:
-  "\<lbrakk> n \<le> length [a, b .e. c]; n \<noteq> 0 \<rbrakk> \<Longrightarrow> a \<le> c"
-  unfolding upto_enum_step_def
-  by (simp split: if_split_asm)
-
-lemma length_upto_enum_step:
-  fixes x :: "'a :: len word"
-  shows "x \<le> z \<Longrightarrow> length [x , y .e. z] = (unat ((z - x) div (y - x))) + 1"
-  unfolding upto_enum_step_def
-  by (simp add: upto_enum_red)
-
-lemma map_length_unfold_one:
-  fixes x :: "'a::len word"
-  assumes xv: "Suc (unat x) < 2 ^ LENGTH('a)"
-  and     ax: "a < x"
-  shows   "map f [a .e. x] = f a # map f [a + 1 .e. x]"
-  by (subst word_upto_Cons_eq, auto, fact+)
-
-lemma upto_enum_set_conv2:
-  fixes a :: "'a::len word"
-  shows "set [a .e. b] = {a .. b}"
-  by auto
-
-lemma of_nat_unat [simp]:
-  "of_nat \<circ> unat = id"
-  by (rule ext, simp)
-
-lemma Suc_unat_minus_one [simp]:
-  "x \<noteq> 0 \<Longrightarrow> Suc (unat (x - 1)) = unat x"
-  by (metis Suc_diff_1 unat_gt_0 unat_minus_one)
-
-lemma word_add_le_dest:
-  fixes i :: "'a :: len word"
-  assumes le: "i + k \<le> j + k"
-  and    uik: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-  and    ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i \<le> j"
-  using uik ujk le
-  by (auto simp: word_le_nat_alt iffD1 [OF unat_add_lem] elim: add_le_mono1)
-
-lemma mask_shift:
-  "(x AND NOT (mask y)) >> y = x >> y"
-  for x :: \<open>'a::len word\<close>
-  apply (rule bit_eqI)
-  apply (simp add: bit_and_iff bit_not_iff bit_shiftr_word_iff bit_mask_iff not_le)
-  using bit_imp_le_length apply auto
-  done
-
-lemma word_add_le_mono1:
-  fixes i :: "'a :: len word"
-  assumes ij: "i \<le> j"
-  and    ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i + k \<le> j + k"
-proof -
-  from ij ujk have jk: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-    by (auto elim: order_le_less_subst2 simp: word_le_nat_alt elim: add_le_mono1)
-
-  then show ?thesis using ujk ij
-    by (auto simp: word_le_nat_alt iffD1 [OF unat_add_lem])
-qed
-
-lemma word_add_le_mono2:
-  fixes i :: "'a :: len word"
-  shows "\<lbrakk>i \<le> j; unat j + unat k < 2 ^ LENGTH('a)\<rbrakk> \<Longrightarrow> k + i \<le> k + j"
-  by (subst field_simps, subst field_simps, erule (1) word_add_le_mono1)
-
-lemma word_add_le_iff:
-  fixes i :: "'a :: len word"
-  assumes uik: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-  and     ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "(i + k \<le> j + k) = (i \<le> j)"
-proof
-  assume "i \<le> j"
-  show "i + k \<le> j + k" by (rule word_add_le_mono1) fact+
-next
-  assume "i + k \<le> j + k"
-  show "i \<le> j" by (rule word_add_le_dest) fact+
-qed
-
-lemma word_add_less_mono1:
-  fixes i :: "'a :: len word"
-  assumes ij: "i < j"
-  and    ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i + k < j + k"
-proof -
-  from ij ujk have jk: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-    by (auto elim: order_le_less_subst2 simp: word_less_nat_alt elim: add_less_mono1)
-
-  then show ?thesis using ujk ij
-    by (auto simp: word_less_nat_alt iffD1 [OF unat_add_lem])
-qed
-
-lemma word_add_less_dest:
-  fixes i :: "'a :: len word"
-  assumes le: "i + k < j + k"
-  and    uik: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-  and    ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i < j"
-  using uik ujk le
-  by (auto simp: word_less_nat_alt iffD1 [OF unat_add_lem] elim: add_less_mono1)
-
-lemma word_add_less_iff:
-  fixes i :: "'a :: len word"
-  assumes uik: "unat i + unat k < 2 ^ len_of TYPE ('a)"
-  and     ujk: "unat j + unat k < 2 ^ len_of TYPE ('a)"
-  shows  "(i + k < j + k) = (i < j)"
-proof
-  assume "i < j"
-  show "i + k < j + k" by (rule word_add_less_mono1) fact+
-next
-  assume "i + k < j + k"
-  show "i < j" by (rule word_add_less_dest) fact+
-qed
-
-lemma shiftr_div_2n':
-  "unat (w >> n) = unat w div 2 ^ n"
-  apply (unfold unat_eq_nat_uint)
-  apply (subst shiftr_div_2n)
-  apply (subst nat_div_distrib)
-   apply simp
-  apply (simp add: nat_power_eq)
-  done
-
-lemma shiftl_shiftr_id:
-  assumes nv: "n < LENGTH('a)"
-  and     xv: "x < 2 ^ (LENGTH('a) - n)"
-  shows "x << n >> n = (x::'a::len word)"
-  apply (simp add: shiftl_t2n)
-  apply (rule word_unat.Rep_eqD)
-  apply (subst shiftr_div_2n')
-  apply (cases n)
-   apply simp
-  apply (subst iffD1 [OF unat_mult_lem])+
-   apply (subst unat_power_lower[OF nv])
-   apply (rule nat_less_power_trans [OF _ order_less_imp_le [OF nv]])
-   apply (rule order_less_le_trans [OF unat_mono [OF xv] order_eq_refl])
-   apply (rule unat_power_lower)
-   apply simp
-  apply (subst unat_power_lower[OF nv])
-  apply simp
-  done
-
-lemma ucast_shiftl_eq_0:
-  fixes w :: "'a :: len word"
-  shows "\<lbrakk> n \<ge> LENGTH('b) \<rbrakk> \<Longrightarrow> ucast (w << n) = (0 :: 'b :: len word)"
-  by (case_tac "size w \<le> n", clarsimp simp: shiftl_zero_size)
-     (clarsimp simp: not_le ucast_bl bl_shiftl bang_eq test_bit_of_bl rev_nth nth_append)
-
-lemma word_mult_less_iff:
-  fixes i :: "'a :: len word"
-  assumes knz: "0 < k"
-  and     uik: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-  and     ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows  "(i * k < j * k) = (i < j)"
-  using assms by (rule word_mult_less_cancel)
-
-lemma word_le_imp_diff_le:
-  fixes n :: "'a::len word"
-  shows "\<lbrakk>k \<le> n; n \<le> m\<rbrakk> \<Longrightarrow> n - k \<le> m"
-  by (auto simp: unat_sub word_le_nat_alt)
-
-lemma word_less_imp_diff_less:
-  fixes n :: "'a::len word"
-  shows "\<lbrakk>k \<le> n; n < m\<rbrakk> \<Longrightarrow> n - k < m"
-  by (clarsimp simp: unat_sub word_less_nat_alt
-             intro!: less_imp_diff_less)
-
-lemma word_mult_le_mono1:
-  fixes i :: "'a :: len word"
-  assumes ij: "i \<le> j"
-  and    knz: "0 < k"
-  and    ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows  "i * k \<le> j * k"
-proof -
-  from ij ujk knz have jk: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-    by (auto elim: order_le_less_subst2 simp: word_le_nat_alt elim: mult_le_mono1)
-
-  then show ?thesis using ujk knz ij
-    by (auto simp: word_le_nat_alt iffD1 [OF unat_mult_lem])
-qed
-
-lemma word_mult_le_iff:
-  fixes i :: "'a :: len word"
-  assumes knz: "0 < k"
-  and     uik: "unat i * unat k < 2 ^ len_of TYPE ('a)"
-  and     ujk: "unat j * unat k < 2 ^ len_of TYPE ('a)"
-  shows  "(i * k \<le> j * k) = (i \<le> j)"
-proof
-  assume "i \<le> j"
-  show "i * k \<le> j * k" by (rule word_mult_le_mono1) fact+
-next
-  assume p: "i * k \<le> j * k"
-
-  have "0 < unat k" using knz by (simp add: word_less_nat_alt)
-  then show "i \<le> j" using p
-    by (clarsimp simp: word_le_nat_alt iffD1 [OF unat_mult_lem uik]
-      iffD1 [OF unat_mult_lem ujk])
-qed
-
-lemma word_diff_less:
-  fixes n :: "'a :: len word"
-  shows "\<lbrakk>0 < n; 0 < m; n \<le> m\<rbrakk> \<Longrightarrow> m - n < m"
-  apply (subst word_less_nat_alt)
-  apply (subst unat_sub)
-   apply assumption
-  apply (rule diff_less)
-   apply (simp_all add: word_less_nat_alt)
-   done
-
-lemma MinI:
-  assumes fa: "finite A"
-  and     ne: "A \<noteq> {}"
-  and     xv: "m \<in> A"
-  and    min: "\<forall>y \<in> A. m \<le> y"
-  shows "Min A = m" using fa ne xv min
-proof (induct A arbitrary: m rule: finite_ne_induct)
-  case singleton then show ?case by simp
-next
-  case (insert y F)
-
-  from insert.prems have yx: "m \<le> y" and fx: "\<forall>y \<in> F. m \<le> y" by auto
-  have "m \<in> insert y F" by fact
-  then show ?case
-  proof
-    assume mv: "m = y"
-
-    have mlt: "m \<le> Min F"
-      by (rule iffD2 [OF Min_ge_iff [OF insert.hyps(1) insert.hyps(2)] fx])
-
-    show ?case
-      apply (subst Min_insert [OF insert.hyps(1) insert.hyps(2)])
-      apply (subst mv [symmetric])
-      apply (auto simp: min_def mlt)
-      done
-  next
-    assume "m \<in> F"
-    then have mf: "Min F = m"
-      by (rule insert.hyps(4) [OF _ fx])
-
-    show ?case
-      apply (subst Min_insert [OF insert.hyps(1) insert.hyps(2)])
-      apply (subst mf)
-      apply (rule iffD2 [OF _ yx])
-      apply (auto simp: min_def)
-      done
-  qed
-qed
-
-lemma length_upto_enum [simp]:
-  fixes a :: "'a :: len word"
-  shows "length [a .e. b] = Suc (unat b) - unat a"
-  apply (simp add: word_le_nat_alt upto_enum_red)
-  apply (clarsimp simp: Suc_diff_le)
-  done
-
-lemma length_upto_enum_cases:
-  fixes a :: "'a::len word"
-  shows "length [a .e. b] = (if a \<le> b then Suc (unat b) - unat a else 0)"
-  apply (case_tac "a \<le> b")
-   apply (clarsimp)
-  apply (clarsimp simp: upto_enum_def)
-  apply unat_arith
-  done
-
-lemma length_upto_enum_less_one:
-  "\<lbrakk>a \<le> b; b \<noteq> 0\<rbrakk>
-  \<Longrightarrow> length [a .e. b - 1] = unat (b - a)"
-  apply clarsimp
-  apply (subst unat_sub[symmetric], assumption)
-  apply clarsimp
-  done
-
-lemma drop_upto_enum:
-  "drop (unat n) [0 .e. m] = [n .e. m]"
-  apply (clarsimp simp: upto_enum_def)
-  apply (induct m, simp)
-  by (metis drop_map drop_upt plus_nat.add_0)
-
-lemma distinct_enum_upto' [simp]:
-  "distinct [a::'a::len word .e. b]"
-  apply (subst drop_upto_enum [symmetric])
-  apply (rule distinct_drop)
-  apply (rule distinct_enum_upto)
-  done
-
-lemma length_interval:
-  "\<lbrakk>set xs = {x. (a::'a::len word) \<le> x \<and> x \<le> b}; distinct xs\<rbrakk>
-  \<Longrightarrow> length xs = Suc (unat b) - unat a"
-  apply (frule distinct_card)
-  apply (subgoal_tac "set xs = set [a .e. b]")
-   apply (cut_tac distinct_card [where xs="[a .e. b]"])
-    apply (subst (asm) length_upto_enum)
-    apply clarsimp
-   apply (rule distinct_enum_upto')
-  apply simp
-  done
-
-lemma not_empty_eq:
-  "(S \<noteq> {}) = (\<exists>x. x \<in> S)"
-  by auto
-
-lemma range_subset_lower:
-  fixes c :: "'a ::linorder"
-  shows "\<lbrakk> {a..b} \<subseteq> {c..d}; x \<in> {a..b} \<rbrakk> \<Longrightarrow> c \<le> a"
-  apply (frule (1) subsetD)
-  apply (rule classical)
-  apply clarsimp
-  done
-
-lemma range_subset_upper:
-  fixes c :: "'a ::linorder"
-  shows "\<lbrakk> {a..b} \<subseteq> {c..d}; x \<in> {a..b} \<rbrakk> \<Longrightarrow> b \<le> d"
-  apply (frule (1) subsetD)
-  apply (rule classical)
-  apply clarsimp
-  done
-
-lemma range_subset_eq:
-  fixes a::"'a::linorder"
-  assumes non_empty: "a \<le> b"
-  shows "({a..b} \<subseteq> {c..d}) = (c \<le> a \<and> b \<le> d)"
-  apply (insert non_empty)
-  apply (rule iffI)
-   apply (frule range_subset_lower [where x=a], simp)
-   apply (drule range_subset_upper [where x=a], simp)
-   apply simp
-  apply auto
-  done
-
-lemma range_eq:
-  fixes a::"'a::linorder"
-  assumes non_empty: "a \<le> b"
-  shows "({a..b} = {c..d}) = (a = c \<and> b = d)"
-  by (metis atLeastatMost_subset_iff eq_iff non_empty)
-
-lemma range_strict_subset_eq:
-  fixes a::"'a::linorder"
-  assumes non_empty: "a \<le> b"
-  shows "({a..b} \<subset> {c..d}) = (c \<le> a \<and> b \<le> d \<and> (a = c \<longrightarrow> b \<noteq> d))"
-  apply (insert non_empty)
-  apply (subst psubset_eq)
-  apply (subst range_subset_eq, assumption+)
-  apply (subst range_eq, assumption+)
-  apply simp
-  done
-
-lemma range_subsetI:
-  fixes x :: "'a :: order"
-  assumes xX: "X \<le> x"
-  and     yY: "y \<le> Y"
-  shows   "{x .. y} \<subseteq> {X .. Y}"
-  using xX yY by auto
-
-lemma set_False [simp]:
-  "(set bs \<subseteq> {False}) = (True \<notin> set bs)" by auto
-
-declare of_nat_power [simp del]
-
-(* TODO: move to word *)
-lemma unat_of_bl_length:
-  "unat (of_bl xs :: 'a::len word) < 2 ^ (length xs)"
-proof (cases "length xs < LENGTH('a)")
-  case True
-  then have "(of_bl xs::'a::len word) < 2 ^ length xs"
-    by (simp add: of_bl_length_less)
-  with True
-  show ?thesis
-    by (simp add: word_less_nat_alt word_unat_power unat_of_nat)
-next
-  case False
-  have "unat (of_bl xs::'a::len word) < 2 ^ LENGTH('a)"
-    by (simp split: unat_split)
-  also
-  from False
-  have "LENGTH('a) \<le> length xs" by simp
-  then have "2 ^ LENGTH('a) \<le> (2::nat) ^ length xs"
-    by (rule power_increasing) simp
-  finally
-  show ?thesis .
-qed
-
-lemma is_aligned_0':
-  "is_aligned 0 n"
-  by (fact is_aligned_0)
-
-lemma p_assoc_help:
-  fixes p :: "'a::{ring,power,numeral,one}"
-  shows "p + 2^sz - 1 = p + (2^sz - 1)"
-  by simp
-
-lemma word_add_increasing:
-  fixes x :: "'a :: len word"
-  shows "\<lbrakk> p + w \<le> x; p \<le> p + w \<rbrakk> \<Longrightarrow> p \<le> x"
-  by unat_arith
-
-lemma word_random:
-  fixes x :: "'a :: len word"
-  shows "\<lbrakk> p \<le> p + x'; x \<le> x' \<rbrakk> \<Longrightarrow> p \<le> p + x"
-  by unat_arith
-
-lemma word_sub_mono:
-  "\<lbrakk> a \<le> c; d \<le> b; a - b \<le> a; c - d \<le> c \<rbrakk>
-    \<Longrightarrow> (a - b) \<le> (c - d :: 'a :: len word)"
-  by unat_arith
-
-lemma power_not_zero:
-  "n < LENGTH('a::len) \<Longrightarrow> (2 :: 'a word) ^ n \<noteq> 0"
-  by (metis p2_gt_0 word_neq_0_conv)
-
-lemma word_gt_a_gt_0:
-  "a < n \<Longrightarrow> (0 :: 'a::len word) < n"
-  apply (case_tac "n = 0")
-   apply clarsimp
-  apply (clarsimp simp: word_neq_0_conv)
-  done
-
-lemma word_shift_nonzero:
-  "\<lbrakk> (x::'a::len word) \<le> 2 ^ m; m + n < LENGTH('a::len); x \<noteq> 0\<rbrakk>
-   \<Longrightarrow> x << n \<noteq> 0"
-  apply (simp only: word_neq_0_conv word_less_nat_alt
-                    shiftl_t2n mod_0 unat_word_ariths
-                    unat_power_lower word_le_nat_alt)
-  apply (subst mod_less)
-   apply (rule order_le_less_trans)
-    apply (erule mult_le_mono2)
-   apply (subst power_add[symmetric])
-   apply (rule power_strict_increasing)
-    apply simp
-   apply simp
-  apply simp
-  done
-
-lemma word_power_less_1 [simp]:
-  "sz < LENGTH('a::len) \<Longrightarrow> (2::'a word) ^ sz - 1 < 2 ^ sz"
-  apply (simp add: word_less_nat_alt)
-  apply (subst unat_minus_one)
-  apply (simp add: word_unat.Rep_inject [symmetric])
-  apply simp
-  done
 
 lemma nasty_split_lt:
   "\<lbrakk> (x :: 'a:: len word) < 2 ^ (m - n); n \<le> m; m < LENGTH('a::len) \<rbrakk>
@@ -930,169 +71,6 @@ lemma nasty_split_less:
     apply (erule order_le_less_trans, simp)
    apply simp+
   done
-
-lemma int_not_emptyD:
-  "A \<inter> B \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<in> B"
-  by (erule contrapos_np, clarsimp simp: disjoint_iff_not_equal)
-
-lemma unat_less_power:
-  fixes k :: "'a::len word"
-  assumes szv: "sz < LENGTH('a)"
-  and     kv:  "k < 2 ^ sz"
-  shows   "unat k < 2 ^ sz"
-  using szv unat_mono [OF kv] by simp
-
-lemma unat_mult_power_lem:
-  assumes kv: "k < 2 ^ (LENGTH('a::len) - sz)"
-  shows "unat (2 ^ sz * of_nat k :: (('a::len) word)) = 2 ^ sz * k"
-proof (cases \<open>sz < LENGTH('a)\<close>)
-  case True
-  with assms show ?thesis
-    by (simp add: unat_word_ariths take_bit_eq_mod mod_simps)
-      (simp add: take_bit_nat_eq_self_iff nat_less_power_trans flip: take_bit_eq_mod)
-next
-  case False
-  with assms show ?thesis
-    by simp
-qed
-
-lemma aligned_add_offset_no_wrap:
-  fixes off :: "('a::len) word"
-  and     x :: "'a word"
-  assumes al: "is_aligned x sz"
-  and   offv: "off < 2 ^ sz"
-  shows  "unat x + unat off < 2 ^ LENGTH('a)"
-proof cases
-  assume szv: "sz < LENGTH('a)"
-  from al obtain k where xv: "x = 2 ^ sz * (of_nat k)"
-    and kl: "k < 2 ^ (LENGTH('a) - sz)"
-    by (auto elim: is_alignedE)
-
-  show ?thesis using szv
-    apply (subst xv)
-    apply (subst unat_mult_power_lem[OF kl])
-    apply (subst mult.commute, rule nat_add_offset_less)
-      apply (rule less_le_trans[OF unat_mono[OF offv, simplified]])
-      apply (erule eq_imp_le[OF unat_power_lower])
-     apply (rule kl)
-    apply simp
-   done
-next
-  assume "\<not> sz < LENGTH('a)"
-  with offv show ?thesis by (simp add: not_less power_overflow )
-qed
-
-lemma aligned_add_offset_mod:
-  fixes x :: "('a::len) word"
-  assumes al: "is_aligned x sz"
-  and     kv: "k < 2 ^ sz"
-  shows   "(x + k) mod 2 ^ sz = k"
-proof cases
-  assume szv: "sz < LENGTH('a)"
-
-  have ux: "unat x + unat k < 2 ^ LENGTH('a)"
-    by (rule aligned_add_offset_no_wrap) fact+
-
-  show ?thesis using al szv
-    apply -
-    apply (erule is_alignedE)
-    apply (subst word_unat.Rep_inject [symmetric])
-    apply (subst unat_mod)
-    apply (subst iffD1 [OF unat_add_lem], rule ux)
-    apply simp
-    apply (subst unat_mult_power_lem, assumption+)
-    apply (simp)
-    apply (rule mod_less[OF less_le_trans[OF unat_mono], OF kv])
-    apply (erule eq_imp_le[OF unat_power_lower])
-    done
-next
-  assume "\<not> sz < LENGTH('a)"
-  with al show ?thesis
-    by (simp add: not_less power_overflow is_aligned_mask mask_eq_decr_exp
-                  word_mod_by_0)
-qed
-
-lemma word_plus_mcs_4:
-  "\<lbrakk>v + x \<le> w + x; x \<le> v + x\<rbrakk> \<Longrightarrow> v \<le> (w::'a::len word)"
-  by uint_arith
-
-lemma word_plus_mcs_3:
-  "\<lbrakk>v \<le> w; x \<le> w + x\<rbrakk> \<Longrightarrow> v + x \<le> w + (x::'a::len word)"
-  by unat_arith
-
-lemma aligned_neq_into_no_overlap:
-  fixes x :: "'a::len word"
-  assumes neq: "x \<noteq> y"
-  and     alx: "is_aligned x sz"
-  and     aly: "is_aligned y sz"
-  shows  "{x .. x + (2 ^ sz - 1)} \<inter> {y .. y + (2 ^ sz - 1)} = {}"
-proof cases
-  assume szv: "sz < LENGTH('a)"
-  show ?thesis
-  proof (rule equals0I, clarsimp)
-    fix z
-    assume xb: "x \<le> z" and xt: "z \<le> x + (2 ^ sz - 1)"
-      and yb: "y \<le> z" and yt: "z \<le> y + (2 ^ sz - 1)"
-
-    have rl: "\<And>(p::'a word) k w. \<lbrakk>uint p + uint k < 2 ^ LENGTH('a); w = p + k; w \<le> p + (2 ^ sz - 1) \<rbrakk>
-      \<Longrightarrow> k < 2 ^ sz"
-      apply -
-      apply simp
-      apply (subst (asm) add.commute, subst (asm) add.commute, drule word_plus_mcs_4)
-      apply (subst add.commute, subst no_plus_overflow_uint_size)
-      apply (simp add: word_size_bl)
-      apply (erule iffD1 [OF word_less_sub_le[OF szv]])
-      done
-
-    from xb obtain kx where
-      kx: "z = x + kx" and
-      kxl: "uint x + uint kx < 2 ^ LENGTH('a)"
-      by (clarsimp dest!: word_le_exists')
-
-    from yb obtain ky where
-      ky: "z = y + ky" and
-      kyl: "uint y + uint ky < 2 ^ LENGTH('a)"
-      by (clarsimp dest!: word_le_exists')
-
-    have "x = y"
-    proof -
-      have "kx = z mod 2 ^ sz"
-      proof (subst kx, rule sym, rule aligned_add_offset_mod)
-        show "kx < 2 ^ sz" by (rule rl) fact+
-      qed fact+
-
-      also have "\<dots> = ky"
-      proof (subst ky, rule aligned_add_offset_mod)
-        show "ky < 2 ^ sz"
-          using kyl ky yt by (rule rl)
-      qed fact+
-
-      finally have kxky: "kx = ky" .
-      moreover have "x + kx = y + ky" by (simp add: kx [symmetric] ky [symmetric])
-      ultimately show ?thesis by simp
-    qed
-
-    then show False using neq by simp
-  qed
-next
-  assume "\<not> sz < LENGTH('a)"
-  with neq alx aly
-  have False by (simp add: is_aligned_mask mask_eq_decr_exp power_overflow)
-  then show ?thesis ..
-qed
-
-lemma less_two_pow_divD:
-  "\<lbrakk> (x :: nat) < 2 ^ n div 2 ^ m \<rbrakk>
-    \<Longrightarrow> n \<ge> m \<and> (x < 2 ^ (n - m))"
-  apply (rule context_conjI)
-   apply (rule ccontr)
-   apply (simp add: power_strict_increasing)
-  apply (simp add: power_sub)
-  done
-
-lemma less_two_pow_divI:
-  "\<lbrakk> (x :: nat) < 2 ^ (n - m); m \<le> n \<rbrakk> \<Longrightarrow> x < 2 ^ n div 2 ^ m"
-  by (simp add: power_sub)
 
 lemma word_less_two_pow_divI:
   "\<lbrakk> (x :: 'a::len word) < 2 ^ (n - m); m \<le> n; n < LENGTH('a) \<rbrakk> \<Longrightarrow> x < 2 ^ n div 2 ^ m"
@@ -1236,7 +214,7 @@ proof -
   also have "\<dots> = 2 ^ s1 * of_nat mq - 2 ^ s1 * 2 ^ sq * of_nat nq" using sq by (simp add: power_add)
   also have "\<dots> = 2 ^ s1 * (of_nat mq - 2 ^ sq * of_nat nq)" by (simp add: field_simps)
   also have "\<dots> = 2 ^ s1 * of_nat (mq - 2 ^ sq * nq)" using s1wb s2wb us1 us2 nqmq
-    by (simp add:  word_unat_power)
+    by (simp add: word_unat_power del: of_nat_power)
   finally have mn: "m - n = of_nat (mq - 2 ^ sq * nq) * 2 ^ s1" by simp
   moreover
   from nm have "m - n \<le> 2 ^ s2 - 1"
@@ -1482,12 +460,7 @@ lemma shiftr_eq_0:
 
 lemma shiftr_not_mask_0:
   "n+m \<ge> LENGTH('a :: len) \<Longrightarrow> ((w::'a::len word) >> n) AND NOT (mask m) = 0"
-  apply (simp add: and_not_mask shiftr_less_t2n shiftr_shiftr)
-  apply (subgoal_tac "w >> n + m = 0", simp)
-  apply (simp add: le_mask_iff[symmetric] mask_eq_decr_exp le_def)
-  apply (subst (asm) p2_gt_0[symmetric])
-  apply (simp add: power_add not_less)
-  done
+  by (rule bit_word_eqI) (auto simp add: bit_simps dest: bit_imp_le_length)
 
 lemma shiftl_less_t2n:
   fixes x :: "'a :: len word"
@@ -2302,7 +1275,7 @@ lemma of_nat_power:
     apply (erule power_strict_increasing)
     apply simp
    apply assumption
-  apply (simp add: word_unat_power)
+  apply (simp add: word_unat_power del: of_nat_power)
   done
 
 lemma of_nat_n_less_equal_power_2:
@@ -2571,14 +1544,13 @@ lemma nat_less_mult_monoish: "\<lbrakk> a < b; c < (d :: nat) \<rbrakk> \<Longri
   apply simp
   done
 
-lemma word_0_sle_from_less[unfolded word_size]:
-  "\<lbrakk> x < 2 ^ (size x - 1) \<rbrakk>  \<Longrightarrow> 0 <=s x"
-  apply (clarsimp simp: word_sle_msb_le)
-  apply (simp add: word_msb_nth)
-  apply (subst (asm) word_test_bit_def [symmetric])
-  apply (drule less_mask_eq)
-  apply (drule_tac x="size x - 1" in word_eqD)
-  apply (simp add: word_size)
+lemma word_0_sle_from_less:
+  \<open>0 \<le>s x\<close> if \<open>x < 2 ^ (LENGTH('a) - 1)\<close> for x :: \<open>'a::len word\<close>
+  using that
+  apply transfer
+  apply (cases \<open>LENGTH('a)\<close>)
+   apply simp_all
+  apply (metis bit_take_bit_iff min_def nat_less_le not_less_eq take_bit_int_eq_self_iff take_bit_take_bit)
   done
 
 lemma not_msb_from_less:
@@ -2588,9 +1560,6 @@ lemma not_msb_from_less:
   apply (drule word_eqD, drule(1) iffD2)
   apply simp
   done
-
-lemma distinct_lemma: "f x \<noteq> f y \<Longrightarrow> x \<noteq> y" by auto
-
 
 lemma ucast_sub_ucast:
   fixes x :: "'a::len word"
@@ -3046,13 +2015,7 @@ lemma of_int_sint:
 lemma nth_w2p_scast [simp]:
   "((scast ((2::'a::len signed word) ^ n) :: 'a word) !! m)
          \<longleftrightarrow> ((((2::'a::len  word) ^ n) :: 'a word) !! m)"
-  apply (subst nth_w2p)
-  apply (case_tac "n \<ge> LENGTH('a)")
-   apply (subst power_overflow, simp)
-   apply clarsimp
-  apply (metis nth_w2p scast_eq test_bit_conj_lt
-               len_signed nth_word_of_int word_sint.Rep_inverse)
-  done
+  by transfer (auto simp add: bit_simps)
 
 lemma scast_2_power [simp]: "scast ((2 :: 'a::len signed word) ^ x) = ((2 :: 'a word) ^ x)"
   by (clarsimp simp: word_eq_iff)
@@ -3314,10 +2277,7 @@ lemma ucast_mono_le':
 lemma zero_sle_ucast_up:
   "\<not> is_down (ucast :: 'a word \<Rightarrow> 'b signed word) \<Longrightarrow>
           (0 <=s ((ucast (b::('a::len) word)) :: ('b::len) signed word))"
-  apply (subgoal_tac "\<not> msb (ucast b :: 'b signed word)")
-   apply (clarsimp simp: word_sle_msb_le)
-  apply (clarsimp simp: is_down not_le msb_nth nth_ucast)
-  done
+  by transfer (simp add: bit_simps)
 
 lemma word_le_ucast_sless:
   "\<lbrakk> x \<le> y; y \<noteq> -1; LENGTH('a) < LENGTH('b) \<rbrakk> \<Longrightarrow>
@@ -3351,11 +2311,10 @@ lemma msb_big:
 lemma zero_sle_ucast:
   "(0 <=s ((ucast (b::('a::len) word)) :: ('a::len) signed word))
                 = (uint b < 2 ^ (LENGTH('a) - 1))"
-  apply (case_tac "msb b")
-   apply (clarsimp simp: word_sle_msb_le not_less msb_ucast_eq del: notI)
-   apply (clarsimp simp: msb_big word_le_def uint_2p_alt)
-  apply (clarsimp simp: word_sle_msb_le not_less msb_ucast_eq del: notI)
-  apply (clarsimp simp: msb_big word_le_def uint_2p_alt)
+  apply transfer
+  apply (cases \<open>LENGTH('a)\<close>)
+   apply (simp_all add: take_bit_Suc_from_most bit_simps)
+  apply (simp_all add: bit_simps disjunctive_add)
   done
 
 
@@ -3902,7 +2861,8 @@ proof -
       (metis \<open>1 \<le> 2 ^ LENGTH('b)\<close> \<open>uint x \<le> uint (2 ^ LENGTH('b) - 1)\<close> linorder_not_less lt2p_lem uint_1 uint_minus_simple_alt uint_power_lower word_le_def zle_diff1_eq)
   then show ?thesis
     apply (simp add: word_ubin.eq_norm bintrunc_mod2p unsigned_ucast_eq)
-    by (metis \<open>x \<le> 2 ^ LENGTH('b) - 1\<close> le_def take_bit_word_eq_self ucast_ucast_len unsigned_take_bit_eq word_less_sub_le word_ubin.norm_Rep word_uint_eqI)
+    apply (metis \<open>x \<le> 2 ^ LENGTH('b) - 1\<close> and_mask_eq_iff_le_mask mask_eq_decr_exp take_bit_eq_mask)
+    done
 qed
 
 lemma remdups_enum_upto:
@@ -4238,22 +3198,18 @@ lemmas mask_len_max = max_word_mask[symmetric]
 
 lemma is_aligned_alignUp[simp]:
   "is_aligned (alignUp p n) n"
-  by (simp add: alignUp_def complement_def is_aligned_mask mask_eq_decr_exp word_bw_assocs)
+  by (simp add: alignUp_def is_aligned_mask mask_eq_decr_exp word_bw_assocs)
 
 lemma alignUp_le[simp]:
   "alignUp p n \<le> p + 2 ^ n - 1"
   unfolding alignUp_def by (rule word_and_le2)
-
-lemma complement_mask:
-  "complement (2 ^ n - 1) = NOT (mask n)"
-  unfolding complement_def mask_eq_decr_exp by simp
 
 lemma alignUp_idem:
   fixes a :: "'a::len word"
   assumes "is_aligned a n" "n < LENGTH('a)"
   shows "alignUp a n = a"
   using assms unfolding alignUp_def
-  by (metis complement_mask is_aligned_add_helper p_assoc_help power_2_ge_iff)
+  by (metis mask_eq_decr_exp is_aligned_add_helper p_assoc_help power_2_ge_iff)
 
 lemma alignUp_not_aligned_eq:
   fixes a :: "'a :: len word"
@@ -4274,7 +3230,7 @@ proof -
     by (simp add: field_simps)
   finally show "alignUp a n = (a div 2 ^ n + 1) * 2 ^ n" using sz
     unfolding alignUp_def
-    apply (subst complement_mask)
+    apply (subst mask_eq_decr_exp [symmetric])
     apply (erule ssubst)
     apply (subst neg_mask_is_div)
     apply (simp add: word_arith_nat_div)
@@ -4480,8 +3436,7 @@ qed
 
 lemma alignUp_def2:
   "alignUp a sz = a + 2 ^ sz - 1 AND NOT (mask sz)"
-  unfolding alignUp_def[unfolded complement_def]
-  by (simp add:mask_eq_decr_exp[symmetric,unfolded shiftl_t2n,simplified])
+  by (simp add: alignUp_def flip: mask_eq_decr_exp)
 
 lemma mask_out_first_mask_some:
   "\<lbrakk> x AND NOT (mask n) = y; n \<le> m \<rbrakk> \<Longrightarrow> x AND NOT (mask m) = y AND NOT (mask m)"
@@ -6119,5 +5074,28 @@ lemma bl_pad_to_length:
 lemma bl_pad_to_prefix:
   "prefix bl (bl_pad_to bl sz)"
   by (simp add: bl_pad_to_def)
+
+(* FIXME: move to Word distribution *)
+lemma bin_nth_minus_Bit0[simp]:
+  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit0 w)) n = bin_nth (numeral w) (n - 1)"
+  by (cases n; simp)
+
+lemma bin_nth_minus_Bit1[simp]:
+  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
+  by (cases n; simp)
+
+declare of_nat_power [simp del]
+
+lemma length_interval:
+  "\<lbrakk>set xs = {x. (a::'a::len word) \<le> x \<and> x \<le> b}; distinct xs\<rbrakk>
+  \<Longrightarrow> length xs = Suc (unat b) - unat a"
+  apply (frule distinct_card)
+  apply (subgoal_tac "set xs = set [a .e. b]")
+   apply (cut_tac distinct_card [where xs="[a .e. b]"])
+    apply (subst (asm) length_upto_enum)
+    apply clarsimp
+   apply (rule distinct_enum_upto')
+  apply simp
+  done
 
 end

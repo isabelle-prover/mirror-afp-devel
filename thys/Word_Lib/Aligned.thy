@@ -10,7 +10,9 @@ theory Aligned
   imports
   "HOL-Library.Word"
   Word_Lib
+  More_Arithmetic
   More_Divides
+  More_Word
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -335,7 +337,7 @@ proof cases
 
     have "unat (k << m) = unat (2 ^ m * k)" by (simp add: shiftl_t2n)
     also have "\<dots> = (2 ^ m * unat k) mod (2 ^ LENGTH('a))" using mv
-      by (subst unat_word_ariths(2))+ simp
+      by (simp add: unat_word_ariths(2))
     also have "\<dots> = 2 ^ m * (unat k mod 2 ^ q)"
       by (subst mq [symmetric], subst power_add, subst mod_mult2_eq) simp
     finally show "unat (k << m) = 2 ^ m * (unat k mod 2 ^ q)" .
@@ -379,23 +381,6 @@ lemma is_aligned_mult_triv2: "is_aligned (x * 2 ^ n ::'a::len word) n"
 lemma word_power_less_0_is_0:
   fixes x :: "'a::len word"
   shows "x < a ^ 0 \<Longrightarrow> x = 0" by simp
-
-lemma nat_add_offset_less:
-  fixes x :: nat
-  assumes yv: "y < 2 ^ n"
-  and     xv: "x < 2 ^ m"
-  and     mn: "sz = m + n"
-  shows   "x * 2 ^ n + y < 2 ^ sz"
-proof (subst mn)
-  from yv obtain qy where "y + qy = 2 ^ n" and "0 < qy"
-    by (auto dest: less_imp_add_positive)
-
-  have "x * 2 ^ n + y < x * 2 ^ n + 2 ^ n" by simp fact+
-  also have "\<dots> = (x + 1) * 2 ^ n" by simp
-  also have "\<dots> \<le> 2 ^ (m + n)" using xv
-    by (subst power_add) (rule mult_le_mono1, simp)
-  finally show "x * 2 ^ n + y < 2 ^ (m + n)" .
-qed
 
 lemma is_aligned_no_wrap:
   fixes off :: "'a::len word"
@@ -674,16 +659,6 @@ lemma aligned_at_least_t2n_diff:
   apply simp
   done
 
-lemma word_sub_1_le:
-  "x \<noteq> 0 \<Longrightarrow> x - 1 \<le> (x :: ('a :: len) word)"
-  apply (subst no_ulen_sub)
-  apply simp
-  apply (cases "uint x = 0")
-   apply (simp add: uint_0_iff)
-  apply (insert uint_ge_0[where x=x])
-  apply arith
-  done
-
 lemma is_aligned_no_overflow'':
   "\<lbrakk>is_aligned x n; x + 2 ^ n \<noteq> 0\<rbrakk> \<Longrightarrow> x \<le> x + 2 ^ n"
   apply (frule is_aligned_no_overflow')
@@ -825,9 +800,9 @@ lemma add_mask_lower_bits:
    apply (clarsimp simp: word_size is_aligned_nth)
    apply (erule_tac x=na in allE)+
    apply simp
-  apply (rule word_eqI)
-  apply (clarsimp simp: word_size is_aligned_nth word_ops_nth_size le_def)
-  apply blast
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps not_less test_bit_eq_bit)
+  apply (metis is_aligned_nth not_le test_bit_eq_bit)
   done
 
 lemma is_aligned_andI1:
@@ -903,5 +878,126 @@ lemma is_aligned_neg_mask_weaken:
 lemma is_aligned_neg_mask2 [simp]:
   "is_aligned (a AND NOT (mask n)) n"
   by (simp add: and_not_mask is_aligned_shift)
+
+lemma is_aligned_0':
+  "is_aligned 0 n"
+  by (fact is_aligned_0)
+
+lemma aligned_add_offset_no_wrap:
+  fixes off :: "('a::len) word"
+  and     x :: "'a word"
+  assumes al: "is_aligned x sz"
+  and   offv: "off < 2 ^ sz"
+  shows  "unat x + unat off < 2 ^ LENGTH('a)"
+proof cases
+  assume szv: "sz < LENGTH('a)"
+  from al obtain k where xv: "x = 2 ^ sz * (of_nat k)"
+    and kl: "k < 2 ^ (LENGTH('a) - sz)"
+    by (auto elim: is_alignedE)
+
+  show ?thesis using szv
+    apply (subst xv)
+    apply (subst unat_mult_power_lem[OF kl])
+    apply (subst mult.commute, rule nat_add_offset_less)
+      apply (rule less_le_trans[OF unat_mono[OF offv, simplified]])
+      apply (erule eq_imp_le[OF unat_power_lower])
+     apply (rule kl)
+    apply simp
+   done
+next
+  assume "\<not> sz < LENGTH('a)"
+  with offv show ?thesis by (simp add: not_less power_overflow )
+qed
+
+lemma aligned_add_offset_mod:
+  fixes x :: "('a::len) word"
+  assumes al: "is_aligned x sz"
+  and     kv: "k < 2 ^ sz"
+  shows   "(x + k) mod 2 ^ sz = k"
+proof cases
+  assume szv: "sz < LENGTH('a)"
+
+  have ux: "unat x + unat k < 2 ^ LENGTH('a)"
+    by (rule aligned_add_offset_no_wrap) fact+
+
+  show ?thesis using al szv
+    apply -
+    apply (erule is_alignedE)
+    apply (subst word_unat.Rep_inject [symmetric])
+    apply (subst unat_mod)
+    apply (subst iffD1 [OF unat_add_lem], rule ux)
+    apply simp
+    apply (subst unat_mult_power_lem, assumption+)
+    apply (simp)
+    apply (rule mod_less[OF less_le_trans[OF unat_mono], OF kv])
+    apply (erule eq_imp_le[OF unat_power_lower])
+    done
+next
+  assume "\<not> sz < LENGTH('a)"
+  with al show ?thesis
+    by (simp add: not_less power_overflow is_aligned_mask mask_eq_decr_exp
+                  word_mod_by_0)
+qed
+
+lemma aligned_neq_into_no_overlap:
+  fixes x :: "'a::len word"
+  assumes neq: "x \<noteq> y"
+  and     alx: "is_aligned x sz"
+  and     aly: "is_aligned y sz"
+  shows  "{x .. x + (2 ^ sz - 1)} \<inter> {y .. y + (2 ^ sz - 1)} = {}"
+proof cases
+  assume szv: "sz < LENGTH('a)"
+  show ?thesis
+  proof (rule equals0I, clarsimp)
+    fix z
+    assume xb: "x \<le> z" and xt: "z \<le> x + (2 ^ sz - 1)"
+      and yb: "y \<le> z" and yt: "z \<le> y + (2 ^ sz - 1)"
+
+    have rl: "\<And>(p::'a word) k w. \<lbrakk>uint p + uint k < 2 ^ LENGTH('a); w = p + k; w \<le> p + (2 ^ sz - 1) \<rbrakk>
+      \<Longrightarrow> k < 2 ^ sz"
+      apply -
+      apply simp
+      apply (subst (asm) add.commute, subst (asm) add.commute, drule word_plus_mcs_4)
+      apply (subst add.commute, subst no_plus_overflow_uint_size)
+       apply (simp add: word_size_bl)
+      apply (auto simp add: le_less power_2_ge_iff szv)
+      apply (metis le_less_trans mask_eq_decr_exp mask_lt_2pn order_less_imp_le szv)
+      done
+
+    from xb obtain kx where
+      kx: "z = x + kx" and
+      kxl: "uint x + uint kx < 2 ^ LENGTH('a)"
+      by (clarsimp dest!: word_le_exists')
+
+    from yb obtain ky where
+      ky: "z = y + ky" and
+      kyl: "uint y + uint ky < 2 ^ LENGTH('a)"
+      by (clarsimp dest!: word_le_exists')
+
+    have "x = y"
+    proof -
+      have "kx = z mod 2 ^ sz"
+      proof (subst kx, rule sym, rule aligned_add_offset_mod)
+        show "kx < 2 ^ sz" by (rule rl) fact+
+      qed fact+
+
+      also have "\<dots> = ky"
+      proof (subst ky, rule aligned_add_offset_mod)
+        show "ky < 2 ^ sz"
+          using kyl ky yt by (rule rl)
+      qed fact+
+
+      finally have kxky: "kx = ky" .
+      moreover have "x + kx = y + ky" by (simp add: kx [symmetric] ky [symmetric])
+      ultimately show ?thesis by simp
+    qed
+    then show False using neq by simp
+  qed
+next
+  assume "\<not> sz < LENGTH('a)"
+  with neq alx aly
+  have False by (simp add: is_aligned_mask mask_eq_decr_exp power_overflow)
+  then show ?thesis ..
+qed
 
 end

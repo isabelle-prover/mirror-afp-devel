@@ -146,7 +146,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     "(ipv4addr_of_dotdecimal (dotdecimal_of_ipv4addr ip)) = ip"
   proof -
     have ip_and_mask8_bl_drop24: "(ip::ipv4addr) AND mask 8 = of_bl (drop 24 (to_bl ip))"
-      by(simp add: Word_Lemmas.of_drop_to_bl size_ipv4addr)
+      by(simp add: of_drop_to_bl size_ipv4addr)
     have List_rev_drop_geqn: "length x \<ge> n \<Longrightarrow> (take n (rev x)) = rev (drop (length x - n) x)"
       for x :: "'a list" and n by(simp add: List.rev_drop)
     have and_mask_bl_take: "length x \<ge> n \<Longrightarrow> ((of_bl x) AND mask n) = (of_bl (rev (take n (rev (x)))))"

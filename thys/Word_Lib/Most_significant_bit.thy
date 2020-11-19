@@ -7,6 +7,7 @@ theory Most_significant_bit
   imports
     "HOL-Library.Word"
     Reversed_Bit_Lists
+    More_Arithmetic
 begin
 
 class msb =
@@ -126,12 +127,44 @@ lemma msb_nth: "msb w = w !! (LENGTH('a) - 1)"
   by (simp add: word_msb_nth word_test_bit_def)
 
 lemma word_msb_n1 [simp]: "msb (-1::'a::len word)"
-  by (simp add: msb_word_eq exp_eq_zero_iff not_le)
+  by (simp add: msb_word_eq not_le)
 
 lemma msb_shift: "msb w \<longleftrightarrow> w >> (LENGTH('a) - 1) \<noteq> 0"
   for w :: "'a::len word"
   by (simp add: msb_word_eq shiftr_word_eq bit_iff_odd_drop_bit drop_bit_eq_zero_iff_not_bit_last)
 
 lemmas word_ops_msb = msb1 [unfolded msb_nth [symmetric, unfolded One_nat_def]]
+
+lemma word_sint_msb_eq: "sint x = uint x - (if msb x then 2 ^ size x else 0)"
+  apply (cases "msb x")
+   apply (rule word_sint.Abs_eqD[where 'a='a], simp_all)
+    apply (simp add: word_size wi_hom_syms word_of_int_2p_len)
+   apply (simp add: sints_num word_size)
+   apply (rule conjI)
+    apply (simp add: le_diff_eq')
+    apply (rule order_trans[where y="2 ^ (LENGTH('a) - 1)"])
+     apply (simp add: power_Suc[symmetric])
+    apply (simp add: linorder_not_less[symmetric] mask_eq_iff[symmetric])
+    apply (rule notI, drule word_eqD[where x="size x - 1"])
+    apply (simp add: msb_nth word_ops_nth_size word_size)
+   apply (simp add: order_less_le_trans[where y=0])
+  apply (rule word_uint.Abs_eqD[where 'a='a], simp_all)
+  apply (simp add: linorder_not_less uints_num word_msb_sint)
+  apply (rule order_less_le_trans[OF sint_lt])
+  apply simp
+  done
+
+lemma word_sle_msb_le: "x <=s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x \<le> y)"
+  apply (simp add: word_sle_eq word_sint_msb_eq word_size word_le_def)
+  apply safe
+   apply (rule order_trans[OF _ uint_ge_0])
+   apply (simp add: order_less_imp_le)
+  apply (erule notE[OF leD])
+  apply (rule order_less_le_trans[OF _ uint_ge_0])
+  apply simp
+  done
+
+lemma word_sless_msb_less: "x <s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x < y)"
+  by (auto simp add: word_sless_eq word_sle_msb_le)
 
 end

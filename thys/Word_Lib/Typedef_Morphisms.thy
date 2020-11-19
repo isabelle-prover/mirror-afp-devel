@@ -282,8 +282,6 @@ interpretation word_unat:
 
 lemmas td_unat = word_unat.td_thm
 
-lemmas unat_lt2p [iff] = word_unat.Rep [unfolded unats_def mem_Collect_eq]
-
 lemma unat_le: "y \<le> unat z \<Longrightarrow> y \<in> unats (LENGTH('a))"
   for z :: "'a::len word"
   apply (unfold unats_def)

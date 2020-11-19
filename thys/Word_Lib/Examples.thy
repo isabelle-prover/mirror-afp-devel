@@ -1,5 +1,5 @@
 theory Examples
-  imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax
+  imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax 
 begin
 
 text "modulus"
@@ -213,5 +213,8 @@ lemma
   "(-5 :: 32 word) smod -4 =  -1"
   "( 5 :: 32 word) smod -4 =   1"
   by (simp_all add: smod_word_def signed_modulo_int_def signed_divide_int_def)
+
+lemma "1 < (1024::32 word) \<and> 1 \<le> (1024::32 word)"
+  by simp
 
 end

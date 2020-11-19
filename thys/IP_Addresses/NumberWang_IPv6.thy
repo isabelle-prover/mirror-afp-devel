@@ -40,22 +40,22 @@ qed
 
 lemma length_drop_mask_outer: fixes ip::"'a::len word"
   shows "LENGTH('a) - n' = len \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> len"
-  apply(subst Word_Lemmas.word_and_mask_shiftl)
-  apply(subst Word_Lib.shiftl_shiftr1)
+  apply(subst word_and_mask_shiftl)
+  apply(subst shiftl_shiftr1)
    apply(simp; fail)
   apply(simp)
-  apply(subst Word_Lib.and_mask)
+  apply(subst and_mask)
   apply(simp add: word_size)
   apply(simp add: length_drop_mask)
   done
 lemma length_drop_mask_inner: fixes ip::"'a::len word"
   shows "n \<le> LENGTH('a) - n' \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> n"
-  apply(subst Word_Lemmas.word_and_mask_shiftl)
-  apply(subst Word_Lemmas.shiftl_shiftr3)
+  apply(subst word_and_mask_shiftl)
+  apply(subst shiftl_shiftr3)
    apply(simp; fail)
   apply(simp)
   apply(simp add: word_size)
-  apply(simp add: Word_Lemmas.mask_twice)
+  apply(simp add: mask_twice)
   apply(simp add: length_drop_mask)
   done
 
@@ -104,7 +104,7 @@ proof -
   have mnhelper3: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) * 2 ^ n < 2 ^ m"
     apply(rule Word.div_lt_mult)
      apply(rule Word_Lemmas.word_less_two_pow_divI)
-       using assms by(simp_all add: mnhelper2 Word_Lib.p2_gt_0)
+       using assms by(simp_all add: mnhelper2 p2_gt_0)
 
   from assms show ?thesis
     apply(subst ucast_bl)+

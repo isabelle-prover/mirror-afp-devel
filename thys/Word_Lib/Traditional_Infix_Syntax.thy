@@ -4,7 +4,7 @@
 section \<open>Operation variants with traditional syntax\<close>
 
 theory Traditional_Infix_Syntax
-  imports "HOL-Library.Word"
+  imports "HOL-Library.Word" More_Word
 begin
 
 class semiring_bit_syntax = semiring_bit_shifts
@@ -40,6 +40,7 @@ lemma shiftr_word_transfer [transfer_rule]:
   by (unfold shiftr_eq_drop_bit) transfer_prover
 
 end
+
 
 lemma test_bit_word_eq:
   \<open>test_bit = (bit :: 'a::len word \<Rightarrow> _)\<close>
@@ -121,7 +122,7 @@ lemma test_bit_neg_numeral [simp]:
     n < LENGTH('a) \<and> bit (- numeral w :: int) n"
   by transfer (rule refl)
 
-lemma test_bit_1 [simp]: "(1 :: 'a::len word) !! n \<longleftrightarrow> n = 0"
+lemma test_bit_1 [iff]: "(1 :: 'a::len word) !! n \<longleftrightarrow> n = 0"
   by transfer (auto simp add: bit_1_iff) 
 
 lemma nth_0 [simp]: "\<not> (0 :: 'a::len word) !! n"
@@ -230,6 +231,14 @@ lemma sshiftr_numeral [simp]:
   apply (cases \<open>LENGTH('a)\<close>)
    apply (simp_all add: word_size bit_drop_bit_eq nth_sshiftr bit_signed_take_bit_iff min_def not_le not_less less_Suc_eq_le ac_simps)
   done
+
+setup \<open>
+  Context.theory_map (fold SMT_Word.add_word_shift' [
+    (\<^term>\<open>shiftl :: 'a::len word \<Rightarrow> _\<close>, "bvshl"),
+    (\<^term>\<open>shiftr :: 'a::len word \<Rightarrow> _\<close>, "bvlshr"),
+    (\<^term>\<open>sshiftr :: 'a::len word \<Rightarrow> _\<close>, "bvashr")
+  ])
+\<close>
 
 lemma revcast_down_us [OF refl]:
   "rc = revcast \<Longrightarrow> source_size rc = target_size rc + n \<Longrightarrow> rc w = ucast (w >>> n)"
@@ -523,12 +532,275 @@ lemma shiftl0:
   "x << 0 = (x :: 'a :: len word)"
   by (fact shiftl_x_0)
 
-setup \<open>
-  Context.theory_map (fold SMT_Word.add_word_shift' [
-    (\<^term>\<open>shiftl :: 'a::len word \<Rightarrow> _\<close>, "bvshl"),
-    (\<^term>\<open>shiftr :: 'a::len word \<Rightarrow> _\<close>, "bvlshr"),
-    (\<^term>\<open>sshiftr :: 'a::len word \<Rightarrow> _\<close>, "bvashr")
-  ])
-\<close>
+lemma word_ops_nth [simp]:
+  fixes x y :: \<open>'a::len word\<close>
+  shows
+  word_or_nth:  "(x OR y) !! n = (x !! n \<or> y !! n)" and
+  word_and_nth: "(x AND y) !! n = (x !! n \<and> y !! n)" and
+  word_xor_nth: "(x XOR y) !! n = (x !! n \<noteq> y !! n)"
+  by ((cases "n < size x",
+      auto dest: test_bit_size simp: word_ops_nth_size word_size)[1])+
+
+lemma and_not_mask:
+  "w AND NOT (mask n) = (w >> n) << n"
+  for w :: \<open>'a::len word\<close>
+  apply (rule word_eqI)
+  apply (simp add : word_ops_nth_size word_size)
+  apply (simp add : nth_shiftr nth_shiftl)
+  by auto
+
+lemma and_mask:
+  "w AND mask n = (w << (size w - n)) >> (size w - n)"
+  for w :: \<open>'a::len word\<close>
+  apply (rule word_eqI)
+  apply (simp add : word_ops_nth_size word_size)
+  apply (simp add : nth_shiftr nth_shiftl)
+  by auto
+
+lemma nth_w2p_same:
+  "(2^n :: 'a :: len word) !! n = (n < LENGTH('a))"
+  by (simp add : nth_w2p)
+
+lemma shiftr_div_2n_w: "n < size w \<Longrightarrow> w >> n = w div (2^n :: 'a :: len word)"
+  apply (unfold word_div_def)
+  apply (simp add: uint_2p_alt word_size)
+  apply (metis uint_shiftr_eq word_of_int_uint)
+  done
+
+lemma le_shiftr:
+  "u \<le> v \<Longrightarrow> u >> (n :: nat) \<le> (v :: 'a :: len word) >> n"
+  apply (unfold shiftr_def)
+  apply (induct_tac "n")
+   apply auto
+  apply (erule le_shiftr1)
+  done
+
+lemma shiftr_mask_le:
+  "n <= m \<Longrightarrow> mask n >> m = (0 :: 'a::len word)"
+  apply (rule word_eqI)
+  apply (simp add: word_size nth_shiftr)
+  done
+
+lemma shiftr_mask [simp]:
+  \<open>mask m >> m = (0::'a::len word)\<close>
+  by (rule shiftr_mask_le) simp
+  
+lemma word_leI:
+  "(\<And>n.  \<lbrakk>n < size (u::'a::len word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len word) !! n) \<Longrightarrow> u <= v"
+  apply (rule xtrans(4))
+   apply (rule word_and_le2)
+  apply (rule word_eqI)
+  apply (simp add: word_ao_nth)
+  apply safe
+    apply assumption
+   apply (erule_tac [2] asm_rl)
+  apply (unfold word_size)
+  by auto
+
+lemma le_mask_iff:
+  "(w \<le> mask n) = (w >> n = 0)"
+  for w :: \<open>'a::len word\<close>
+  apply safe
+   apply (rule word_le_0_iff [THEN iffD1])
+   apply (rule xtrans(3))
+    apply (erule_tac [2] le_shiftr)
+   apply simp
+  apply (rule word_leI)
+  apply (rename_tac n')
+  apply (drule_tac x = "n' - n" in word_eqD)
+  apply (simp add : nth_shiftr word_size)
+  apply (case_tac "n <= n'")
+  by auto
+
+lemma and_mask_eq_iff_shiftr_0:
+  "(w AND mask n = w) = (w >> n = 0)"
+  for w :: \<open>'a::len word\<close>
+  apply (unfold test_bit_eq_iff [THEN sym])
+  apply (rule iffI)
+   apply (rule ext)
+   apply (rule_tac [2] ext)
+   apply (auto simp add : word_ao_nth nth_shiftr)
+    apply (drule arg_cong)
+    apply (drule iffD2)
+     apply assumption
+    apply (simp add : word_ao_nth)
+   prefer 2
+   apply (simp add : word_size test_bit_bin)
+  apply transfer
+  apply (auto simp add: fun_eq_iff bit_simps)
+  apply (metis add_diff_inverse_nat)
+  done
+
+lemma mask_shiftl_decompose:
+  "mask m << n = mask (m + n) AND NOT (mask n :: 'a::len word)"
+  by (auto intro!: word_eqI simp: and_not_mask nth_shiftl nth_shiftr word_size)
+
+lemma bang_eq:
+  fixes x :: "'a::len word"
+  shows "(x = y) = (\<forall>n. x !! n = y !! n)"
+  by (subst test_bit_eq_iff[symmetric]) fastforce
+
+lemma shiftl_over_and_dist:
+  fixes a::"'a::len word"
+  shows "(a AND b) << c = (a << c) AND (b << c)"
+  apply(rule word_eqI)
+  apply(simp add: word_ao_nth nth_shiftl, safe)
+  done
+
+lemma shiftr_over_and_dist:
+  fixes a::"'a::len word"
+  shows "a AND b >> c = (a >> c) AND (b >> c)"
+  apply(rule word_eqI)
+  apply(simp add:nth_shiftr word_ao_nth)
+  done
+
+lemma sshiftr_over_and_dist:
+  fixes a::"'a::len word"
+  shows "a AND b >>> c = (a >>> c) AND (b >>> c)"
+  apply(rule word_eqI)
+  apply(simp add:nth_sshiftr word_ao_nth word_size)
+  done
+
+lemma shiftl_over_or_dist:
+  fixes a::"'a::len word"
+  shows "a OR b << c = (a << c) OR (b << c)"
+  apply(rule word_eqI)
+  apply(simp add:nth_shiftl word_ao_nth, safe)
+  done
+
+lemma shiftr_over_or_dist:
+  fixes a::"'a::len word"
+  shows "a OR b >> c = (a >> c) OR (b >> c)"
+  apply(rule word_eqI)
+  apply(simp add:nth_shiftr word_ao_nth)
+  done
+
+lemma sshiftr_over_or_dist:
+  fixes a::"'a::len word"
+  shows "a OR b >>> c = (a >>> c) OR (b >>> c)"
+  apply(rule word_eqI)
+  apply(simp add:nth_sshiftr word_ao_nth word_size)
+  done
+
+lemmas shift_over_ao_dists =
+  shiftl_over_or_dist shiftr_over_or_dist
+  sshiftr_over_or_dist shiftl_over_and_dist
+  shiftr_over_and_dist sshiftr_over_and_dist
+
+lemma shiftl_shiftl:
+  fixes a::"'a::len word"
+  shows "a << b << c = a << (b + c)"
+  apply(rule word_eqI)
+  apply(auto simp:word_size nth_shiftl add.commute add.left_commute)
+  done
+
+lemma shiftr_shiftr:
+  fixes a::"'a::len word"
+  shows "a >> b >> c = a >> (b + c)"
+  apply(rule word_eqI)
+  apply(simp add:word_size nth_shiftr add.left_commute add.commute)
+  done
+
+lemma shiftl_shiftr1:
+  fixes a::"'a::len word"
+  shows "c \<le> b \<Longrightarrow> a << b >> c = a AND (mask (size a - b)) << (b - c)"
+  apply(rule word_eqI)
+  apply(auto simp:nth_shiftr nth_shiftl word_size word_ao_nth)
+  done
+
+lemma shiftl_shiftr2:
+  fixes a::"'a::len word"
+  shows "b < c \<Longrightarrow> a << b >> c = (a >> (c - b)) AND (mask (size a - c))"
+  apply(rule word_eqI)
+  apply(auto simp:nth_shiftr nth_shiftl word_size word_ao_nth)
+  done
+
+lemma shiftr_shiftl1:
+  fixes a::"'a::len word"
+  shows "c \<le> b \<Longrightarrow> a >> b << c = (a >> (b - c)) AND (NOT (mask c))"
+  apply(rule word_eqI)
+  apply(auto simp:nth_shiftr nth_shiftl word_size word_ops_nth_size)
+  done
+
+lemma shiftr_shiftl2:
+  fixes a::"'a::len word"
+  shows "b < c \<Longrightarrow> a >> b << c = (a << (c - b)) AND (NOT (mask c))"
+  apply(rule word_eqI)
+  apply(auto simp:nth_shiftr nth_shiftl word_size word_ops_nth_size)
+  done
+
+lemmas multi_shift_simps =
+  shiftl_shiftl shiftr_shiftr
+  shiftl_shiftr1 shiftl_shiftr2
+  shiftr_shiftl1 shiftr_shiftl2
+
+lemma shiftr_mask2:
+  "n \<le> LENGTH('a) \<Longrightarrow> (mask n >> m :: ('a :: len) word) = mask (n - m)"
+  apply (rule word_eqI)
+  apply (simp add: nth_shiftr word_size)
+  apply arith
+  done
+
+lemma word_shiftl_add_distrib:
+  fixes x :: "'a :: len word"
+  shows "(x + y) << n = (x << n) + (y << n)"
+  by (simp add: shiftl_t2n ring_distribs)
+
+lemma mask_shift:
+  "(x AND NOT (mask y)) >> y = x >> y"
+  for x :: \<open>'a::len word\<close>
+  apply (rule bit_eqI)
+  apply (simp add: bit_and_iff bit_not_iff bit_shiftr_word_iff bit_mask_iff not_le)
+  using bit_imp_le_length apply auto
+  done
+
+lemma shiftr_div_2n':
+  "unat (w >> n) = unat w div 2 ^ n"
+  apply (unfold unat_eq_nat_uint)
+  apply (subst shiftr_div_2n)
+  apply (subst nat_div_distrib)
+   apply simp
+  apply (simp add: nat_power_eq)
+  done
+
+lemma shiftl_shiftr_id:
+  assumes nv: "n < LENGTH('a)"
+  and     xv: "x < 2 ^ (LENGTH('a) - n)"
+  shows "x << n >> n = (x::'a::len word)"
+  apply (simp add: shiftl_t2n)
+  apply (rule word_eq_unatI)
+  apply (subst shiftr_div_2n')
+  apply (cases n)
+   apply simp
+  apply (subst iffD1 [OF unat_mult_lem])+
+   apply (subst unat_power_lower[OF nv])
+   apply (rule nat_less_power_trans [OF _ order_less_imp_le [OF nv]])
+   apply (rule order_less_le_trans [OF unat_mono [OF xv] order_eq_refl])
+   apply (rule unat_power_lower)
+   apply simp
+  apply (subst unat_power_lower[OF nv])
+  apply simp
+  done
+
+lemma ucast_shiftl_eq_0:
+  fixes w :: "'a :: len word"
+  shows "\<lbrakk> n \<ge> LENGTH('b) \<rbrakk> \<Longrightarrow> ucast (w << n) = (0 :: 'b :: len word)"
+  by transfer (simp add: take_bit_push_bit)
+
+lemma word_shift_nonzero:
+  "\<lbrakk> (x::'a::len word) \<le> 2 ^ m; m + n < LENGTH('a::len); x \<noteq> 0\<rbrakk>
+   \<Longrightarrow> x << n \<noteq> 0"
+  apply (simp only: word_neq_0_conv word_less_nat_alt
+                    shiftl_t2n mod_0 unat_word_ariths
+                    unat_power_lower word_le_nat_alt)
+  apply (subst mod_less)
+   apply (rule order_le_less_trans)
+    apply (erule mult_le_mono2)
+   apply (subst power_add[symmetric])
+   apply (rule power_strict_increasing)
+    apply simp
+   apply simp
+  apply simp
+  done
 
 end
