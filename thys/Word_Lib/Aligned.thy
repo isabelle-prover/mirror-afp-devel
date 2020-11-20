@@ -9,10 +9,10 @@ section "Word Alignment"
 theory Aligned
   imports
   "HOL-Library.Word"
-  Word_Lib
   More_Arithmetic
   More_Divides
   More_Word
+  Reversed_Bit_Lists
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -169,10 +169,6 @@ lemma is_aligned_to_bl:
   apply clarsimp
   apply arith
   done
-
-lemma power_overflow:
-  "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
-  by simp
 
 lemma is_aligned_replicate:
   fixes w::"'a::len word"
@@ -1035,5 +1031,52 @@ lemma is_aligned_add_or:
     apply (metis bit_take_bit_iff less_mask_eq take_bit_eq_mask)
     done
   done
+
+lemma not_greatest_aligned:
+  "\<lbrakk> x < y; is_aligned x n; is_aligned y n \<rbrakk> \<Longrightarrow> x + 2 ^ n \<noteq> 0"
+  by (metis NOT_mask add_diff_cancel_right' diff_0 is_aligned_neg_mask_eq not_le word_and_le1)
+
+lemma neg_mask_mono_le:
+  "x \<le> y \<Longrightarrow> x AND NOT(mask n) \<le> y AND NOT(mask n)" for x :: "'a :: len word"
+proof (rule ccontr, simp add: linorder_not_le, cases "n < LENGTH('a)")
+  case False
+  then show "y AND NOT(mask n) < x AND NOT(mask n) \<Longrightarrow> False"
+    by (simp add: mask_eq_decr_exp linorder_not_less power_overflow)
+next
+  case True
+  assume a: "x \<le> y" and b: "y AND NOT(mask n) < x AND NOT(mask n)"
+  have word_bits: "n < LENGTH('a)" by fact
+  have "y \<le> (y AND NOT(mask n)) + (y AND mask n)"
+    by (simp add: word_plus_and_or_coroll2 add.commute)
+  also have "\<dots> \<le> (y AND NOT(mask n)) + 2 ^ n"
+    apply (rule word_plus_mono_right)
+     apply (rule order_less_imp_le, rule and_mask_less_size)
+     apply (simp add: word_size word_bits)
+    apply (rule is_aligned_no_overflow'', simp add: is_aligned_neg_mask word_bits)
+    apply (rule not_greatest_aligned, rule b; simp add: is_aligned_neg_mask)
+    done
+  also have "\<dots> \<le> x AND NOT(mask n)"
+    using b
+    apply (subst add.commute)
+    apply (rule le_plus)
+     apply (rule aligned_at_least_t2n_diff; simp add: is_aligned_neg_mask)
+    apply (rule ccontr, simp add: linorder_not_le)
+    apply (drule aligned_small_is_0[rotated]; simp add: is_aligned_neg_mask)
+    done
+  also have "\<dots> \<le> x" by (rule word_and_le2)
+  also have "x \<le> y" by fact
+  finally
+  show "False" using b by simp
+qed
+
+lemma and_neg_mask_eq_iff_not_mask_le:
+  "w AND NOT(mask n) = NOT(mask n) \<longleftrightarrow> NOT(mask n) \<le> w"
+  for w :: \<open>'a::len word\<close>
+  by (metis eq_iff neg_mask_mono_le word_and_le1 word_and_le2 word_bw_same(1))
+
+lemma neg_mask_le_high_bits:
+  "NOT(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
+  for w :: \<open>'a::len word\<close>
+  by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric] word_eq_iff neg_mask_test_bit)
 
 end

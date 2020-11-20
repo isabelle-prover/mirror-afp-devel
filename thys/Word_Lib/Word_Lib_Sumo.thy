@@ -31,7 +31,6 @@ imports
   Typedef_Morphisms
   Type_Syntax
   Word_EqI
-  Word_Lib
   Word_Lemmas
   Word_8
   Word_16
@@ -94,5 +93,22 @@ lemmas word_and_max_simps =
 lemma distinct_lemma: "f x \<noteq> f y \<Longrightarrow> x \<noteq> y" by auto
 
 lemmas and_bang = word_and_nth
+
+lemmas sdiv_int_def = signed_divide_int_def
+lemmas smod_int_def = signed_modulo_int_def
+
+(* shortcut for some specific lengths *)
+lemma word_fixed_sint_1[simp]:
+  "sint (1::8 word) = 1"
+  "sint (1::16 word) = 1"
+  "sint (1::32 word) = 1"
+  "sint (1::64 word) = 1"
+  by (auto simp: sint_word_ariths)
+
+declare of_nat_diff [simp]
+
+(* Haskellish names/syntax *)
+notation (input)
+  test_bit ("testBit")
 
 end

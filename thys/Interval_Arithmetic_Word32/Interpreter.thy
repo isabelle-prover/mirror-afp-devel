@@ -13,9 +13,6 @@ imports
   Complex_Main
   Finite_String
   Interval_Word32
-  Word_Lib.Word_Lemmas
-  Word_Lib.Word_Lib
-  Word_Lib.Word_Syntax
 begin
 
 section\<open>Syntax\<close>

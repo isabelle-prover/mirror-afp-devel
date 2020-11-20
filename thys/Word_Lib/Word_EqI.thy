@@ -8,8 +8,6 @@ section "Solving Word Equalities"
 
 theory Word_EqI
   imports
-    Word_Lib
-    Aligned
     More_Word_Operations
     "HOL-Eisbach.Eisbach_Tools"
 begin
@@ -19,82 +17,6 @@ text \<open>
   @{prop "n < LENGTH('a::len)"}, which is different to running @{text word_bitwise}
   and expanding into an explicit list of bits.
 \<close>
-
-lemma word_or_zero:
-  "(a OR b = 0) = (a = 0 \<and> b = 0)"
-  for a b :: \<open>'a::len word\<close>
-  by (fact or_eq_0_iff)
-
-lemma test_bit_over:
-  "n \<ge> size (x::'a::len word) \<Longrightarrow> (x !! n) = False"
-  by transfer auto
-
-lemma word_2p_mult_inc:
-  assumes x: "2 * 2 ^ n < (2::'a::len word) * 2 ^ m"
-  assumes suc_n: "Suc n < LENGTH('a::len)"
-  shows "2^n < (2::'a::len word)^m"
-  by (smt suc_n le_less_trans lessI nat_less_le nat_mult_less_cancel_disj p2_gt_0
-          power_Suc power_Suc unat_power_lower word_less_nat_alt x)
-
-lemma not_greatest_aligned:
-  "\<lbrakk> x < y; is_aligned x n; is_aligned y n \<rbrakk> \<Longrightarrow> x + 2 ^ n \<noteq> 0"
-  by (metis NOT_mask add_diff_cancel_right' diff_0 is_aligned_neg_mask_eq not_le word_and_le1)
-
-lemma neg_mask_mono_le:
-  "x \<le> y \<Longrightarrow> x AND NOT(mask n) \<le> y AND NOT(mask n)" for x :: "'a :: len word"
-proof (rule ccontr, simp add: linorder_not_le, cases "n < LENGTH('a)")
-  case False
-  then show "y AND NOT(mask n) < x AND NOT(mask n) \<Longrightarrow> False"
-    by (simp add: mask_eq_decr_exp linorder_not_less power_overflow)
-next
-  case True
-  assume a: "x \<le> y" and b: "y AND NOT(mask n) < x AND NOT(mask n)"
-  have word_bits: "n < LENGTH('a)" by fact
-  have "y \<le> (y AND NOT(mask n)) + (y AND mask n)"
-    by (simp add: word_plus_and_or_coroll2 add.commute)
-  also have "\<dots> \<le> (y AND NOT(mask n)) + 2 ^ n"
-    apply (rule word_plus_mono_right)
-     apply (rule order_less_imp_le, rule and_mask_less_size)
-     apply (simp add: word_size word_bits)
-    apply (rule is_aligned_no_overflow'', simp add: is_aligned_neg_mask word_bits)
-    apply (rule not_greatest_aligned, rule b; simp add: is_aligned_neg_mask)
-    done
-  also have "\<dots> \<le> x AND NOT(mask n)"
-    using b
-    apply (subst add.commute)
-    apply (rule le_plus)
-     apply (rule aligned_at_least_t2n_diff; simp add: is_aligned_neg_mask)
-    apply (rule ccontr, simp add: linorder_not_le)
-    apply (drule aligned_small_is_0[rotated]; simp add: is_aligned_neg_mask)
-    done
-  also have "\<dots> \<le> x" by (rule word_and_le2)
-  also have "x \<le> y" by fact
-  finally
-  show "False" using b by simp
-qed
-
-lemma and_neg_mask_eq_iff_not_mask_le:
-  "w AND NOT(mask n) = NOT(mask n) \<longleftrightarrow> NOT(mask n) \<le> w"
-  for w :: \<open>'a::len word\<close>
-  by (metis eq_iff neg_mask_mono_le word_and_le1 word_and_le2 word_bw_same(1))
-
-lemma le_mask_high_bits:
-  "w \<le> mask n \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. \<not> w !! i)"
-  for w :: \<open>'a::len word\<close>
-  by (auto simp: word_size and_mask_eq_iff_le_mask[symmetric] word_eq_iff)
-
-lemma neg_mask_le_high_bits:
-  "NOT(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
-  for w :: \<open>'a::len word\<close>
-  by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric] word_eq_iff neg_mask_test_bit)
-
-lemma test_bit_conj_lt:
-  "(x !! m \<and> m < LENGTH('a)) = x !! m" for x :: "'a :: len word"
-  using test_bit_bin by blast
-
-lemma neg_test_bit:
-  "(NOT x) !! n = (\<not> x !! n \<and> n < LENGTH('a))" for x :: "'a::len word"
-  by (cases "n < LENGTH('a)") (auto simp add: test_bit_over word_ops_nth_size word_size)
 
 named_theorems word_eqI_simps
 
@@ -114,10 +36,9 @@ lemmas [word_eqI_simps] =
   neg_test_bit
   is_up
   is_down
+  sign_extend_bitwise_if'
 
-lemmas sign_extend_bitwise_if'[word_eqI_simps] = sign_extend_bitwise_if[simplified word_size]
-
-lemmas word_eqI_rule = word_eqI[rule_format]
+lemmas word_eqI_rule = word_eqI [rule_format]
 
 lemma test_bit_lenD:
   "x !! n \<Longrightarrow> n < LENGTH('a) \<and> x !! n" for x :: "'a :: len word"

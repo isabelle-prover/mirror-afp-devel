@@ -145,4 +145,16 @@ lemma word_rsplit_rcat_size [OF refl]:
     apply simp_all
   done
 
+lemma word_rsplit_upt:
+  "\<lbrakk> size x = LENGTH('a :: len) * n; n \<noteq> 0 \<rbrakk>
+    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (x >> i * len_of TYPE ('a)) :: 'a word) (rev [0 ..< n])"
+  apply (subgoal_tac "length (word_rsplit x :: 'a word list) = n")
+   apply (rule nth_equalityI, simp)
+   apply (intro allI word_eqI impI)
+   apply (simp add: test_bit_rsplit_alt word_size)
+   apply (simp add: nth_ucast nth_shiftr rev_nth field_simps)
+  apply (simp add: length_word_rsplit_exp_size)
+  apply (metis mult.commute given_quot_alt word_size word_size_gt_0)
+  done
+
 end

@@ -310,7 +310,7 @@ lemma float_le_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_
   by auto
 
 lemma zero_le_topfloat[simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
-  by (auto simp: float_defs field_simps power_gt1_lemma)
+  by (auto simp: float_defs field_simps power_gt1_lemma of_nat_diff)
 
 lemma LENGTH_contr:
   "Suc 0 < LENGTH('e) \<Longrightarrow> 2 ^ LENGTH('e::len) \<le> Suc (Suc 0) \<Longrightarrow> False"
@@ -320,7 +320,7 @@ lemma LENGTH_contr:
 lemma valof_topfloat: "valof (topfloat::('e, 'f)float) = largest TYPE(('e, 'f)float)"
   if "LENGTH('e) > 1"
   using that LENGTH_contr
-  by (auto simp add: emax_eq largest_def divide_simps float_defs )
+  by (auto simp add: emax_eq largest_def divide_simps float_defs of_nat_diff)
 
 lemma float_frac_le: "fraction a \<le> 2^LENGTH('f) - 1"
   for a::"('e, 'f)float"
@@ -463,7 +463,7 @@ lemma normal_exponent_bounds_int:
   using that
   unfolding normal_exponent_def is_normal_def emax_eq bias_def
   by (auto simp del: zless_nat_conj intro!: less_int_natI
-      simp: nat_add_distrib nat_mult_distrib nat_power_eq
+      simp: of_nat_diff nat_add_distrib nat_mult_distrib nat_power_eq
       power_Suc[symmetric])
 
 lemmas of_int_leI = of_int_le_iff[THEN iffD2]
@@ -575,13 +575,13 @@ proof -
     2 powr (real (2 ^ LENGTH('e) - 2) + 1 - real (2 ^ (LENGTH('e) - 1)) - LENGTH('f))"
     unfolding largest_def emax_eq bias_def
     by (auto simp: largest_def powr_realpow[symmetric]
-        powr_minus divide_simps algebra_simps powr_diff powr_add)
+        powr_minus divide_simps algebra_simps powr_diff powr_add of_nat_diff)
   also
   have "2 ^ LENGTH('e) \<ge> (2::nat)"
     by (simp add: self_le_power)
   then have "(real (2 ^ LENGTH('e) - 2) + 1 - real (2 ^ (LENGTH('e) - 1)) - LENGTH('f)) =
     (real (2 ^ LENGTH('e)) - 2 ^ (LENGTH('e) - 1) - LENGTH('f)) - 1"
-    by auto
+    by (auto simp add: of_nat_diff)
   also have "real (2 ^ LENGTH('e)) = 2 ^ LENGTH('e)" by auto
   also have "(2 ^ LENGTH('e) - 2 ^ (LENGTH('e) - 1) - real LENGTH('f) - 1) =
     real_of_int ((2 ^ (LENGTH('e) - 1) - int (LENGTH('f)) - 1))"
@@ -640,7 +640,7 @@ next
     using bitlen_denormal_mantissa[of x]
     by (auto intro!: mult_mono real_of_int_le_2_powr_bitlenI
         simp: bitlen_normal_mantissa powr_realpow[symmetric] ge_one_powr_ge_zero
-        denormal_exponent_def bias_def powr_mult_base)
+        denormal_exponent_def bias_def powr_mult_base of_nat_diff)
   also have "\<dots> \<le> largest TYPE(('e, 'f) IEEE.float)"
     unfolding largest_eq
     by (rule mult_mono)

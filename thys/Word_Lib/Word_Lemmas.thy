@@ -9,15 +9,16 @@ section "Lemmas with Generic Word Length"
 theory Word_Lemmas
   imports
     Type_Syntax
-    Next_and_Prev
     Signed_Division_Word
-    Enumeration_Word
-    Word_EqI
-    Rsplit
+    Signed_Words
     More_Divides
+    More_Word
     Even_More_List
     More_Misc
     Most_significant_bit
+    Enumeration_Word
+    Aligned
+    Word_EqI
 begin
 
 text \<open>Lemmas about words\<close>
@@ -141,7 +142,10 @@ lemma ucast_range_less:
    apply (erule ucast_less)
   apply (simp add: image_def)
   apply (rule_tac x="ucast x" in exI)
-  by word_eqI_solve
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps)
+  apply (metis bit_take_bit_iff less_mask_eq not_less take_bit_eq_mask)
+  done
 
 lemma word_power_less_diff:
   "\<lbrakk>2 ^ n * q < (2::'a::len word) ^ m; q < 2 ^ (LENGTH('a) - n)\<rbrakk> \<Longrightarrow> q < 2 ^ (m - n)"
@@ -214,7 +218,7 @@ proof -
   also have "\<dots> = 2 ^ s1 * of_nat mq - 2 ^ s1 * 2 ^ sq * of_nat nq" using sq by (simp add: power_add)
   also have "\<dots> = 2 ^ s1 * (of_nat mq - 2 ^ sq * of_nat nq)" by (simp add: field_simps)
   also have "\<dots> = 2 ^ s1 * of_nat (mq - 2 ^ sq * nq)" using s1wb s2wb us1 us2 nqmq
-    by (simp add: word_unat_power del: of_nat_power)
+    by (simp add: word_unat_power of_nat_diff del: of_nat_power)
   finally have mn: "m - n = of_nat (mq - 2 ^ sq * nq) * 2 ^ s1" by simp
   moreover
   from nm have "m - n \<le> 2 ^ s2 - 1"
@@ -425,10 +429,9 @@ lemma upto_enum_step_subset:
 
 lemma shiftr_less_t2n':
   "\<lbrakk> x AND mask (n + m) = x; m < LENGTH('a) \<rbrakk> \<Longrightarrow> x >> n < 2 ^ m" for x :: "'a :: len word"
-  apply (simp add: word_size mask_eq_iff_w2p[symmetric])
-  apply word_eqI
-  apply (erule_tac x="na + n" in allE)
-  apply fastforce
+  apply (simp add: word_size mask_eq_iff_w2p [symmetric] flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_drop_bit ac_simps)
   done
 
 lemma shiftr_less_t2n:
@@ -456,10 +459,9 @@ lemma shiftr_not_mask_0:
 lemma shiftl_less_t2n:
   fixes x :: "'a :: len word"
   shows "\<lbrakk> x < (2 ^ (m - n)); m < LENGTH('a) \<rbrakk> \<Longrightarrow> (x << n) < 2 ^ m"
-  apply (simp add: word_size mask_eq_iff_w2p[symmetric])
-  apply word_eqI
-  apply (erule_tac x="na - n" in allE)
-  apply auto
+  apply (simp add: word_size mask_eq_iff_w2p [symmetric] flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_push_bit)
   done
 
 lemma shiftl_less_t2n':
@@ -468,7 +470,10 @@ lemma shiftl_less_t2n':
 
 lemma ucast_ucast_mask:
   "(ucast :: 'a :: len word \<Rightarrow> 'b :: len word) (ucast x) = x AND mask (len_of TYPE ('a))"
-  by word_eqI
+  apply (simp flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: ac_simps)
+  done
 
 lemma ucast_ucast_len:
   "\<lbrakk> x < 2 ^ LENGTH('b) \<rbrakk> \<Longrightarrow> ucast (ucast x::'b::len word) = (x::'a::len word)"
@@ -718,7 +723,7 @@ lemma eq_eqI:
 
 lemma mask_and_mask:
   "mask a AND mask b = (mask (min a b) :: 'a::len word)"
-  by word_eqI
+  by (simp flip: take_bit_eq_mask ac_simps)
 
 lemma mask_eq_0_eq_x:
   "(x AND w = 0) = (x AND NOT w = x)"
@@ -738,7 +743,10 @@ lemma compl_of_1: "NOT 1 = (-2 :: 'a :: len word)"
 lemma split_word_eq_on_mask:
   "(x = y) = (x AND m = y AND m \<and> x AND NOT m = y AND NOT m)"
   for x y m :: \<open>'a::len word\<close>
-  by safe word_eqI_solve
+  apply transfer
+  apply (simp add: bit_eq_iff)
+  apply (auto simp add: bit_simps ac_simps)
+  done
 
 lemma map2_Cons_2_3:
   "(map2 f xs (y # ys) = (z # zs)) = (\<exists>x xs'. xs = x # xs' \<and> f x y = z \<and> map2 f xs' ys = zs)"
@@ -752,7 +760,9 @@ lemma map2_xor_replicate_False:
 
 lemma word_and_1_shiftl:
   "x AND (1 << n) = (if x !! n then (1 << n) else 0)" for x :: "'a :: len word"
-  by word_eqI_solve
+  apply (rule bit_word_eqI; transfer)
+  apply (auto simp add: bit_simps not_le ac_simps)
+  done
 
 lemmas word_and_1_shiftls'
     = word_and_1_shiftl[where n=0]
@@ -764,7 +774,9 @@ lemmas word_and_1_shiftls = word_and_1_shiftls' [simplified]
 lemma word_and_mask_shiftl:
   "x AND (mask n << m) = ((x >> m) AND mask n) << m"
   for x :: \<open>'a::len word\<close>
-  by word_eqI_solve
+  apply (rule bit_word_eqI; transfer)
+  apply (auto simp add: bit_simps not_le ac_simps)
+  done
 
 lemma plus_Collect_helper:
   "(+) x ` {xa. P (xa :: 'a :: len word)} = {xa. P (xa - x)}"
@@ -1127,7 +1139,10 @@ lemma of_nat_mono_maybe':
 
 lemma shiftr_mask_eq:
   "(x >> n) AND mask (size x - n) = x >> n" for x :: "'a :: len word"
-  by word_eqI_solve
+  apply (simp flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_drop_bit)
+  done
 
 lemma shiftr_mask_eq':
   "m = (size x - n) \<Longrightarrow> (x >> n) AND mask m = x >> n" for x :: "'a :: len word"
@@ -1545,7 +1560,7 @@ lemma int_sdiv_simps [simp]:
     "(a :: int) sdiv 1 = a"
     "(a :: int) sdiv 0 = 0"
     "(a :: int) sdiv -1 = -a"
-  apply (auto simp: sdiv_int_def sgn_if)
+  apply (auto simp: signed_divide_int_def sgn_if)
   done
 
 lemma sgn_div_eq_sgn_mult:
@@ -1556,12 +1571,12 @@ lemma sgn_div_eq_sgn_mult:
 
 lemma sgn_sdiv_eq_sgn_mult:
   "a sdiv b \<noteq> 0 \<Longrightarrow> sgn ((a :: int) sdiv b) = sgn (a * b)"
-  by (auto simp: sdiv_int_def sgn_div_eq_sgn_mult sgn_mult)
+  by (auto simp: signed_divide_int_def sgn_div_eq_sgn_mult sgn_mult)
 
 lemma int_sdiv_same_is_1 [simp]:
     "a \<noteq> 0 \<Longrightarrow> ((a :: int) sdiv b = a) = (b = 1)"
   apply (rule iffI)
-   apply (clarsimp simp: sdiv_int_def)
+   apply (clarsimp simp: signed_divide_int_def)
    apply (subgoal_tac "b > 0")
     apply (case_tac "a > 0")
      apply (clarsimp simp: sgn_if)
@@ -1576,12 +1591,12 @@ lemma int_sdiv_same_is_1 [simp]:
    apply (rule classical)
    apply (clarsimp simp: algebra_split_simps sgn_mult not_less sgn_if split: if_splits)
    apply (metis antisym less_le neg_imp_zdiv_nonneg_iff)
-  apply (clarsimp simp: sdiv_int_def sgn_if)
+  apply (clarsimp simp: signed_divide_int_def sgn_if)
   done
 
 lemma int_sdiv_negated_is_minus1 [simp]:
     "a \<noteq> 0 \<Longrightarrow> ((a :: int) sdiv b = - a) = (b = -1)"
-  apply (clarsimp simp: sdiv_int_def)
+  apply (clarsimp simp: signed_divide_int_def)
   apply (rule iffI)
    apply (subgoal_tac "b < 0")
     apply (case_tac "a > 0")
@@ -1602,7 +1617,7 @@ lemma int_sdiv_negated_is_minus1 [simp]:
 
 lemma sdiv_int_range:
     "(a :: int) sdiv b \<in> { - (abs a) .. (abs a) }"
-  apply (unfold sdiv_int_def)
+  apply (unfold signed_divide_int_def)
   apply (subgoal_tac "(abs a) div (abs b) \<le> (abs a)")
    apply (auto simp add: sgn_if not_less)
       apply (metis le_less le_less_trans neg_equal_0_iff_equal neg_less_iff_less not_le pos_imp_zdiv_neg_iff)
@@ -1615,27 +1630,27 @@ lemma sdiv_int_range:
 lemma word_sdiv_div1 [simp]:
     "(a :: ('a::len) word) sdiv 1 = a"
   apply (rule sint_1_cases [where a=a])
-    apply (clarsimp simp: sdiv_word_def sdiv_int_def)
-   apply (clarsimp simp: sdiv_word_def sdiv_int_def simp del: sint_minus1)
+    apply (clarsimp simp: sdiv_word_def signed_divide_int_def)
+   apply (clarsimp simp: sdiv_word_def signed_divide_int_def simp del: sint_minus1)
   apply (clarsimp simp: sdiv_word_def)
   done
 
 lemma sdiv_int_div_0 [simp]:
   "(x :: int) sdiv 0 = 0"
-  by (clarsimp simp: sdiv_int_def)
+  by (clarsimp simp: signed_divide_int_def)
 
 lemma sdiv_int_0_div [simp]:
   "0 sdiv (x :: int) = 0"
-  by (clarsimp simp: sdiv_int_def)
+  by (clarsimp simp: signed_divide_int_def)
 
 lemma word_sdiv_div0 [simp]:
     "(a :: ('a::len) word) sdiv 0 = 0"
-  apply (auto simp: sdiv_word_def sdiv_int_def sgn_if)
+  apply (auto simp: sdiv_word_def signed_divide_int_def sgn_if)
   done
 
 lemma word_sdiv_div_minus1 [simp]:
     "(a :: ('a::len) word) sdiv -1 = -a"
-  apply (auto simp: sdiv_word_def sdiv_int_def sgn_if)
+  apply (auto simp: sdiv_word_def signed_divide_int_def sgn_if)
   done
 
 lemmas word_sdiv_0 = word_sdiv_div0
@@ -1670,7 +1685,7 @@ proof (rule classical)
 
   have result_range_overflow: "(sint a sdiv sint b = 2 ^ (size a - 1)) = (?a_int_min \<and> ?b_minus1)"
     apply (rule iffI [rotated])
-     apply (clarsimp simp: sdiv_int_def sgn_if word_size sint_int_min)
+     apply (clarsimp simp: signed_divide_int_def sgn_if word_size sint_int_min)
     apply (rule classical)
     apply (case_tac "?a_int_min")
      apply (clarsimp simp: word_size sint_int_min)
@@ -1715,7 +1730,7 @@ lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where w="numeral y" for y]
 
 lemma smod_int_alt_def:
      "(a::int) smod b = sgn (a) * (abs a mod abs b)"
-  apply (clarsimp simp: smod_int_def sdiv_int_def)
+  apply (clarsimp simp: signed_modulo_int_def signed_divide_int_def)
   apply (clarsimp simp: minus_div_mult_eq_mod [symmetric] abs_sgn sgn_mult sgn_if algebra_split_simps)
   done
 
@@ -1750,7 +1765,7 @@ lemma smod_int_compares:
 
 lemma smod_int_mod_0 [simp]:
   "x smod (0 :: int) = x"
-  by (clarsimp simp: smod_int_def)
+  by (clarsimp simp: signed_modulo_int_def)
 
 lemma smod_int_0_mod [simp]:
   "0 smod (x :: int) = 0"
@@ -1787,9 +1802,9 @@ lemma smod_word_min:
 lemma smod_word_alt_def:
   "(a :: ('a::len) word) smod b = a - (a sdiv b) * b"
   apply (cases \<open>a \<noteq> - (2 ^ (LENGTH('a) - 1)) \<or> b \<noteq> - 1\<close>)
-   apply (clarsimp simp: smod_word_def sdiv_word_def smod_int_def
+   apply (clarsimp simp: smod_word_def sdiv_word_def signed_modulo_int_def
      simp flip: wi_hom_sub wi_hom_mult)
-  apply (clarsimp simp: smod_word_def smod_int_def)
+  apply (clarsimp simp: smod_word_def signed_modulo_int_def)
   done
 
 lemmas word_smod_numerals_lhs = smod_word_def[where v="numeral x" for x]
@@ -2109,18 +2124,6 @@ lemma zero_sle_ucast:
   apply (cases \<open>LENGTH('a)\<close>)
    apply (simp_all add: take_bit_Suc_from_most bit_simps)
   apply (simp_all add: bit_simps disjunctive_add)
-  done
-
-lemma word_rsplit_upt:
-  "\<lbrakk> size x = LENGTH('a :: len) * n; n \<noteq> 0 \<rbrakk>
-    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (x >> i * len_of TYPE ('a)) :: 'a word) (rev [0 ..< n])"
-  apply (subgoal_tac "length (word_rsplit x :: 'a word list) = n")
-   apply (rule nth_equalityI, simp)
-   apply (intro allI word_eqI impI)
-   apply (simp add: test_bit_rsplit_alt word_size)
-   apply (simp add: nth_ucast nth_shiftr rev_nth field_simps)
-  apply (simp add: length_word_rsplit_exp_size)
-  apply (metis mult.commute given_quot_alt word_size word_size_gt_0)
   done
 
 lemma aligned_shift:
@@ -3439,7 +3442,7 @@ lemma add_mult_aligned_neg_mask:
 
 lemma unat_of_nat_minus_1:
   "\<lbrakk> n < 2 ^ LENGTH('a); n \<noteq> 0 \<rbrakk> \<Longrightarrow> unat ((of_nat n:: 'a :: len word) - 1) = n - 1"
-  by (simp add: unat_eq_of_nat)
+  by (simp add: of_nat_diff unat_eq_of_nat)
 
 lemma word_eq_zeroI:
   "a \<le> a - 1 \<Longrightarrow> a = 0" for a :: "'a :: len word"
@@ -4339,8 +4342,6 @@ lemma bin_nth_minus_Bit0[simp]:
 lemma bin_nth_minus_Bit1[simp]:
   "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
   by (cases n; simp)
-
-declare of_nat_power [simp del]
 
 lemma length_interval:
   "\<lbrakk>set xs = {x. (a::'a::len word) \<le> x \<and> x \<le> b}; distinct xs\<rbrakk>

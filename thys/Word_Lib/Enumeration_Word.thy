@@ -15,8 +15,6 @@ theory Enumeration_Word
     Enumeration
 begin
 
-declare of_nat_diff [simp]
-
 lemma length_word_enum: "length (enum :: 'a :: len word list) = 2 ^ LENGTH('a)"
   by (simp add: enum_word_def)
 
@@ -57,7 +55,7 @@ where
 
 lemma maxBound_word:
   "(maxBound::'a::len word) = -1"
-  by (simp add: maxBound_def enum_word_def last_map)
+  by (simp add: maxBound_def enum_word_def last_map of_nat_diff)
 
 lemma minBound_word:
   "(minBound::'a::len word) = 0"

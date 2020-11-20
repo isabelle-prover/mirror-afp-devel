@@ -2,8 +2,10 @@
     Authors:    Julius Michaelis, Cornelius Diekmann
 *)
 theory WordInterval
-imports Main
+  imports
+  Main
   "Word_Lib.Word_Lemmas"
+  "Word_Lib.Next_and_Prev"
 begin
 
 section\<open>WordInterval: Executable datatype for Machine Word Sets\<close>

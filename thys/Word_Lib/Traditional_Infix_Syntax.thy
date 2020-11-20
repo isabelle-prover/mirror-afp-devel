@@ -852,4 +852,21 @@ lemma less_2p_is_upper_bits_unset:
   "p < 2 ^ n \<longleftrightarrow> n < LENGTH('a) \<and> (\<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n')" for p :: "'a :: len word"
   by (meson le_less_trans le_mask_iff_lt_2n upper_bits_unset_is_l2p word_zero_le)
 
+lemma test_bit_over:
+  "n \<ge> size (x::'a::len word) \<Longrightarrow> (x !! n) = False"
+  by transfer auto
+
+lemma le_mask_high_bits:
+  "w \<le> mask n \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. \<not> w !! i)"
+  for w :: \<open>'a::len word\<close>
+  by (auto simp: word_size and_mask_eq_iff_le_mask[symmetric] word_eq_iff)
+
+lemma test_bit_conj_lt:
+  "(x !! m \<and> m < LENGTH('a)) = x !! m" for x :: "'a :: len word"
+  using test_bit_bin by blast
+
+lemma neg_test_bit:
+  "(NOT x) !! n = (\<not> x !! n \<and> n < LENGTH('a))" for x :: "'a::len word"
+  by (cases "n < LENGTH('a)") (auto simp add: test_bit_over word_ops_nth_size word_size)
+
 end

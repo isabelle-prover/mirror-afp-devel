@@ -12,11 +12,14 @@ theory Word_32
     Word_8
     Word_16
     Word_Syntax
+    Rsplit
     Bitwise
 begin
 
 type_synonym word32 = "32 word"
 lemma len32: "len_of (x :: 32 itself) = 32" by simp
+
+type_synonym sword32 = "32 sword"
 
 type_synonym machine_word_len = 32
 type_synonym machine_word = "machine_word_len word"

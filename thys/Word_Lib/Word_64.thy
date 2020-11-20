@@ -12,10 +12,13 @@ theory Word_64
     Word_8
     Word_16
     Word_Syntax
+    Rsplit
 begin
 
 type_synonym word64 = "64 word"
 lemma len64: "len_of (x :: 64 itself) = 64" by simp
+
+type_synonym sword64 = "64 sword"
 
 type_synonym machine_word_len = 64
 type_synonym machine_word = "machine_word_len word"

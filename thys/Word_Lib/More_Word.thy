@@ -819,4 +819,53 @@ lemma max_word_less_eq_iff [simp]:
   \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len word\<close>
   by (fact word_order.extremum_unique)
 
+lemma word_or_zero:
+  "(a OR b = 0) = (a = 0 \<and> b = 0)"
+  for a b :: \<open>'a::len word\<close>
+  by (fact or_eq_0_iff)
+
+lemma word_2p_mult_inc:
+  assumes x: "2 * 2 ^ n < (2::'a::len word) * 2 ^ m"
+  assumes suc_n: "Suc n < LENGTH('a::len)"
+  shows "2^n < (2::'a::len word)^m"
+  by (smt suc_n le_less_trans lessI nat_less_le nat_mult_less_cancel_disj p2_gt_0
+          power_Suc power_Suc unat_power_lower word_less_nat_alt x)
+
+lemma power_overflow:
+  "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
+  by simp
+
+lemmas extra_sle_sless_unfolds [simp] =
+    word_sle_eq[where a=0 and b=1]
+    word_sle_eq[where a=0 and b="numeral n"]
+    word_sle_eq[where a=1 and b=0]
+    word_sle_eq[where a=1 and b="numeral n"]
+    word_sle_eq[where a="numeral n" and b=0]
+    word_sle_eq[where a="numeral n" and b=1]
+    word_sless_alt[where a=0 and b=1]
+    word_sless_alt[where a=0 and b="numeral n"]
+    word_sless_alt[where a=1 and b=0]
+    word_sless_alt[where a=1 and b="numeral n"]
+    word_sless_alt[where a="numeral n" and b=0]
+    word_sless_alt[where a="numeral n" and b=1]
+  for n
+
+lemma word_sint_1:
+  "sint (1::'a::len word) = (if LENGTH('a) = 1 then -1 else 1)"
+  by (fact signed_1)
+
+lemma ucast_of_nat:
+  "is_down (ucast :: 'a :: len word \<Rightarrow> 'b :: len word)
+    \<Longrightarrow> ucast (of_nat n :: 'a word) = (of_nat n :: 'b word)"
+  by transfer simp
+
+lemma scast_1':
+  "(scast (1::'a::len word) :: 'b::len word) =
+   (word_of_int (signed_take_bit (LENGTH('a::len) - Suc 0) (1::int)))"
+  by transfer simp
+
+lemma scast_1:
+  "(scast (1::'a::len word) :: 'b::len word) = (if LENGTH('a) = 1 then -1 else 1)"
+  by (fact signed_1)
+
 end

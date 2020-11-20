@@ -435,6 +435,11 @@ lemma sign_extend_bitwise_if:
   "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)"
   by (simp add: sign_extend_def neg_mask_test_bit word_size)
 
+lemma sign_extend_bitwise_if':
+  \<open>i < LENGTH('a) \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)\<close>
+  for w :: \<open>'a::len word\<close>
+  using sign_extend_bitwise_if [of i w e] by (simp add: word_size)
+
 lemma sign_extend_bitwise_disj:
   "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> i \<le> e \<and> w !! i \<or> e \<le> i \<and> w !! e"
   by (auto simp: sign_extend_bitwise_if)
