@@ -2320,6 +2320,9 @@ extra-history =
   [2018-09-19]:
   Theory Efficient_Mergesort replaces theory Efficient_Sort but keeping the old
   name Efficient_Sort.
+  [2020-11-20]:
+  Additional theory Natural_Mergesort that developes an efficient mergesort
+  algorithm without key-functions for educational purposes.
 notify = c.sternagel@gmail.com
 
 [SATSolverVerification]
