@@ -868,4 +868,11 @@ lemma scast_1:
   "(scast (1::'a::len word) :: 'b::len word) = (if LENGTH('a) = 1 then -1 else 1)"
   by (fact signed_1)
 
+lemma unat_minus_one_word:
+  "unat (-1 :: 'a :: len word) = 2 ^ LENGTH('a) - 1"
+  apply (simp only: flip: mask_eq_exp_minus_1)
+  apply transfer
+  apply (simp add: take_bit_minus_one_eq_mask nat_mask_eq)
+  done
+
 end

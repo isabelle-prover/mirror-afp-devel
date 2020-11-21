@@ -8,7 +8,8 @@ section "Solving Word Equalities"
 
 theory Word_EqI
   imports
-    More_Word_Operations
+    More_Word
+    Traditional_Infix_Syntax
     "HOL-Eisbach.Eisbach_Tools"
 begin
 
@@ -26,17 +27,14 @@ lemmas [word_eqI_simps] =
   word_or_zero
   neg_mask_test_bit
   nth_ucast
-  is_aligned_nth
   nth_w2p nth_shiftl
   nth_shiftr
   less_2p_is_upper_bits_unset
   le_mask_high_bits
-  neg_mask_le_high_bits
   bang_eq
   neg_test_bit
   is_up
   is_down
-  sign_extend_bitwise_if'
 
 lemmas word_eqI_rule = word_eqI [rule_format]
 

@@ -13,6 +13,7 @@ theory Aligned
   More_Divides
   More_Word
   Reversed_Bit_Lists
+  Word_EqI
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -659,7 +660,7 @@ lemma is_aligned_no_overflow'':
   apply (erule word_sub_1_le)
   done
 
-lemma is_aligned_nth:
+lemma is_aligned_nth [word_eqI_simps]:
   "is_aligned p m = (\<forall>n < m. \<not>p !! n)"
   apply (clarsimp simp: is_aligned_mask bang_eq word_size)
   apply (rule iffI)
@@ -1074,7 +1075,7 @@ lemma and_neg_mask_eq_iff_not_mask_le:
   for w :: \<open>'a::len word\<close>
   by (metis eq_iff neg_mask_mono_le word_and_le1 word_and_le2 word_bw_same(1))
 
-lemma neg_mask_le_high_bits:
+lemma neg_mask_le_high_bits [word_eqI_simps]:
   "NOT(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
   for w :: \<open>'a::len word\<close>
   by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric] word_eq_iff neg_mask_test_bit)

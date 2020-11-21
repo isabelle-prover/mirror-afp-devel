@@ -9,6 +9,7 @@ theory More_Word_Operations
     More_Divides
     More_Misc
     "HOL-Library.Sublist"
+    Word_EqI
 begin
 
 definition
@@ -39,6 +40,27 @@ definition
   word_ctz :: "'a::len word \<Rightarrow> nat"
 where
   "word_ctz w \<equiv> length (takeWhile Not (rev (to_bl w)))"
+
+lemma word_ctz_le:
+  "word_ctz (w :: ('a::len word)) \<le> LENGTH('a)"
+  apply (clarsimp simp: word_ctz_def)
+  apply (rule nat_le_Suc_less_imp[where y="LENGTH('a) + 1" , simplified])
+  apply (rule order_le_less_trans[OF List.length_takeWhile_le])
+  apply simp
+  done
+
+lemma word_ctz_less:
+  "w \<noteq> 0 \<Longrightarrow> word_ctz (w :: ('a::len word)) < LENGTH('a)"
+  apply (clarsimp simp: word_ctz_def eq_zero_set_bl)
+  apply (rule order_less_le_trans[OF length_takeWhile_less])
+   apply fastforce+
+  done
+
+lemma word_ctz_not_minus_1:
+  "1 < LENGTH('a) \<Longrightarrow> of_nat (word_ctz (w :: 'a :: len word)) \<noteq> (- 1 :: 'a::len word)"
+  by (metis (mono_tags) One_nat_def add.right_neutral add_Suc_right le_diff_conv le_less_trans
+                        n_less_equal_power_2 not_le suc_le_pow_2 unat_minus_one_word unat_of_nat_len
+                        word_ctz_le)
 
 definition
   word_log2 :: "'a::len word \<Rightarrow> nat"
@@ -435,7 +457,7 @@ lemma sign_extend_bitwise_if:
   "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)"
   by (simp add: sign_extend_def neg_mask_test_bit word_size)
 
-lemma sign_extend_bitwise_if':
+lemma sign_extend_bitwise_if'  [word_eqI_simps]:
   \<open>i < LENGTH('a) \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)\<close>
   for w :: \<open>'a::len word\<close>
   using sign_extend_bitwise_if [of i w e] by (simp add: word_size)
@@ -571,6 +593,10 @@ lemma from_bool_0:
   "(from_bool x = 0) = (\<not> x)"
   by (simp add: from_bool_def split: bool.split)
 
+lemma from_bool_eq_if':
+  "((if P then 1 else 0) = from_bool Q) = (P = Q)"
+  by (cases Q) (simp_all add: from_bool_def)
+
 definition
   to_bool :: "'a::len word \<Rightarrow> bool" where
   "to_bool \<equiv> (\<noteq>) 0"
@@ -624,6 +650,10 @@ lemma from_bool_all_helper:
   "(\<forall>bool. from_bool bool = val \<longrightarrow> P bool)
       = ((\<exists>bool. from_bool bool = val) \<longrightarrow> P (val \<noteq> 0))"
   by (auto simp: from_bool_0)
+
+lemma fold_eq_0_to_bool:
+  "(v = 0) = (\<not> to_bool v)"
+  by (simp add: to_bool_def)
 
 lemma from_bool_to_bool_iff:
   "w = from_bool b \<longleftrightarrow> to_bool w = b \<and> (w = 0 \<or> w = 1)"
