@@ -5,6 +5,7 @@ theory More_Word_Operations
   imports
     "HOL-Library.Word"
     Aligned
+    Reversed_Bit_Lists
     More_Misc
 begin
 

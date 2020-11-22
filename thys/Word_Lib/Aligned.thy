@@ -8,10 +8,10 @@ section "Word Alignment"
 
 theory Aligned
   imports
-  "HOL-Library.Word"
-  Reversed_Bit_Lists
-  More_Word
-  Word_EqI
+    "HOL-Library.Word"
+    More_Word
+    Word_EqI
+    Typedef_Morphisms
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -64,7 +64,7 @@ proof (unfold is_aligned_iff_udvd)
     using dvd_triv_left exp_dvd_iff_exp_udvd by blast
 qed
 
-lemma is_alignedE [elim?]:
+lemma is_alignedE:
   fixes w :: \<open>'a::len word\<close>
   assumes \<open>is_aligned w n\<close>
   obtains q where \<open>w = 2 ^ n * word_of_nat q\<close> \<open>q < 2 ^ (LENGTH('a) - n)\<close>
@@ -106,122 +106,46 @@ next
     using that by blast
 qed
 
+lemma is_alignedE' [elim?]:
+  fixes w :: \<open>'a::len word\<close>
+  assumes \<open>is_aligned w n\<close>
+  obtains q where \<open>w = push_bit n (word_of_nat q)\<close> \<open>q < 2 ^ (LENGTH('a) - n)\<close>
+proof -
+  from assms
+  obtain q where \<open>w = 2 ^ n * word_of_nat q\<close> \<open>q < 2 ^ (LENGTH('a) - n)\<close>
+    by (rule is_alignedE)
+  then have \<open>w = push_bit n (word_of_nat q)\<close>
+    by (simp add: push_bit_eq_mult)
+  with that show thesis
+    using \<open>q < 2 ^ (LENGTH('a) - n)\<close> .
+qed
+
 lemma is_aligned_mask:
   \<open>is_aligned w n \<longleftrightarrow> w AND mask n = 0\<close>
   by (simp add: is_aligned_iff_take_bit_eq_0 take_bit_eq_mask)
+
+lemma is_aligned_imp_not_bit:
+  \<open>\<not> bit w m\<close> if \<open>is_aligned w n\<close> and \<open>m < n\<close>
+  for w :: \<open>'a::len word\<close>
+proof -
+  from \<open>is_aligned w n\<close>
+  obtain q where \<open>w = push_bit n (word_of_nat q)\<close> \<open>q < 2 ^ (LENGTH('a) - n)\<close> ..
+  moreover have \<open>\<not> bit (push_bit n (word_of_nat q :: 'a word)) m\<close>
+    using \<open>m < n\<close> by (simp add: bit_simps)
+  ultimately show ?thesis
+    by simp
+qed
 
 lemma is_aligned_weaken:
   "\<lbrakk> is_aligned w x; x \<ge> y \<rbrakk> \<Longrightarrow> is_aligned w y"
   unfolding is_aligned_iff_dvd_nat
   by (erule dvd_trans [rotated]) (simp add: le_imp_power_dvd)
 
-lemma nat_power_less_diff:
-  assumes lt: "(2::nat) ^ n * q < 2 ^ m"
-  shows "q < 2 ^ (m - n)"
-  using lt
-proof (induct n arbitrary: m)
-  case 0
-  then show ?case by simp
-next
-  case (Suc n)
-
-  have ih: "\<And>m. 2 ^ n * q < 2 ^ m \<Longrightarrow> q < 2 ^ (m - n)"
-    and prem: "2 ^ Suc n * q < 2 ^ m" by fact+
-
-  show ?case
-  proof (cases m)
-    case 0
-    then show ?thesis using Suc by simp
-  next
-    case (Suc m')
-    then show ?thesis using prem
-      by (simp add: ac_simps ih)
-  qed
-qed
-
 lemma is_alignedE_pre:
   fixes w::"'a::len word"
   assumes aligned: "is_aligned w n"
   shows        rl: "\<exists>q. w = 2 ^ n * (of_nat q) \<and> q < 2 ^ (LENGTH('a) - n)"
   using aligned is_alignedE by blast
-
-lemma is_aligned_to_bl:
-  "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
-  apply (simp add: is_aligned_mask eq_zero_set_bl)
-  apply (clarsimp simp: in_set_conv_nth word_size)
-  apply (simp add: to_bl_nth word_size cong: conj_cong)
-  apply (simp add: diff_diff_less)
-  apply safe
-   apply (case_tac "n \<le> LENGTH('a)")
-    prefer 2
-    apply (rule_tac x=i in exI)
-    apply clarsimp
-   apply (subgoal_tac "\<exists>j < LENGTH('a). j < n \<and> LENGTH('a) - n + j = i")
-    apply (erule exE)
-    apply (rule_tac x=j in exI)
-    apply clarsimp
-   apply (thin_tac "w !! t" for t)
-   apply (rule_tac x="i + n - LENGTH('a)" in exI)
-   apply clarsimp
-   apply arith
-  apply (rule_tac x="LENGTH('a) - n + i" in exI)
-  apply clarsimp
-  apply arith
-  done
-
-lemma is_aligned_replicate:
-  fixes w::"'a::len word"
-  assumes aligned: "is_aligned w n"
-  and          nv: "n \<le> LENGTH('a)"
-  shows   "to_bl w = (take (LENGTH('a) - n) (to_bl w)) @ replicate n False"
-proof -
-  from nv have rl: "\<And>q. q < 2 ^ (LENGTH('a) - n) \<Longrightarrow>
-      to_bl (2 ^ n * (of_nat q :: 'a word)) =
-      drop n (to_bl (of_nat q :: 'a word)) @ replicate n False"
-    by (metis bl_shiftl le_antisym min_def shiftl_t2n wsst_TYs(3))
-  show ?thesis using aligned
-    by (auto simp: rl elim: is_alignedE)
-qed
-
-lemma is_aligned_drop:
-  fixes w::"'a::len word"
-  assumes "is_aligned w n" "n \<le> LENGTH('a)"
-  shows "drop (LENGTH('a) - n) (to_bl w) = replicate n False"
-proof -
-  have "to_bl w = take (LENGTH('a) - n) (to_bl w) @ replicate n False"
-    by (rule is_aligned_replicate) fact+
-  then have "drop (LENGTH('a) - n) (to_bl w) = drop (LENGTH('a) - n) \<dots>" by simp
-  also have "\<dots> = replicate n False" by simp
-  finally show ?thesis .
-qed
-
-lemma less_is_drop_replicate:
-  fixes x::"'a::len word"
-  assumes lt: "x < 2 ^ n"
-  shows   "to_bl x = replicate (LENGTH('a) - n) False @ drop (LENGTH('a) - n) (to_bl x)"
-  by (metis assms bl_and_mask' less_mask_eq)
-
-lemma is_aligned_add_conv:
-  fixes off::"'a::len word"
-  assumes aligned: "is_aligned w n"
-  and        offv: "off < 2 ^ n"
-  shows    "to_bl (w + off) =
-   (take (LENGTH('a) - n) (to_bl w)) @ (drop (LENGTH('a) - n) (to_bl off))"
-proof cases
-  assume nv: "n \<le> LENGTH('a)"
-  show ?thesis
-  proof (subst aligned_bl_add_size, simp_all only: word_size)
-    show "drop (LENGTH('a) - n) (to_bl w) = replicate n False"
-      by (subst is_aligned_replicate [OF aligned nv]) (simp add: word_size)
-
-    from offv show "take (LENGTH('a) - n) (to_bl off) =
-                    replicate (LENGTH('a) - n) False"
-      by (subst less_is_drop_replicate, assumption) simp
-  qed fact
-next
-  assume "\<not> n \<le> LENGTH('a)"
-  with offv show ?thesis by (simp add: power_overflow)
-qed
 
 lemma aligned_add_aligned:
   fixes x::"'a::len word"
@@ -463,24 +387,6 @@ lemma replicate_not_True:
   "\<And>n. xs = replicate n False \<Longrightarrow> True \<notin> set xs"
   by (induct xs) auto
 
-lemma is_aligned_replicateI:
-  "to_bl p = addr @ replicate n False \<Longrightarrow> is_aligned (p::'a::len word) n"
-  apply (simp add: is_aligned_to_bl word_size)
-  apply (subgoal_tac "length addr = LENGTH('a) - n")
-   apply (simp add: replicate_not_True)
-  apply (drule arg_cong [where f=length])
-  apply simp
-  done
-
-lemma to_bl_2p:
-  "n < LENGTH('a) \<Longrightarrow>
-   to_bl ((2::'a::len word) ^ n) =
-   replicate (LENGTH('a) - Suc n) False @ True # replicate n False"
-  apply (subst shiftl_1 [symmetric])
-  apply (subst bl_shiftl)
-  apply (simp add: to_bl_1 min_def word_size)
-  done
-
 lemma map_zip_replicate_False_xor:
   "n = length xs \<Longrightarrow> map (\<lambda>(x, y). x = (\<not> y)) (zip xs (replicate n False)) = xs"
   by (induct xs arbitrary: n, auto)
@@ -513,66 +419,19 @@ lemma drop_minus:
   apply (simp add: Suc_diff_le)
   done
 
-lemma xor_2p_to_bl:
-  fixes x::"'a::len word"
-  shows "to_bl (x XOR 2^n) =
-  (if n < LENGTH('a)
-   then take (LENGTH('a)-Suc n) (to_bl x) @ (\<not>rev (to_bl x)!n) # drop (LENGTH('a)-n) (to_bl x)
-   else to_bl x)"
-proof -
-  have x: "to_bl x = take (LENGTH('a)-Suc n) (to_bl x) @ drop (LENGTH('a)-Suc n) (to_bl x)"
-    by simp
-
-  show ?thesis
-  apply simp
-  apply (rule conjI)
-   apply (clarsimp simp: word_size)
-   apply (simp add: bl_word_xor to_bl_2p)
-   apply (subst x)
-   apply (subst zip_append)
-    apply simp
-   apply (simp add: map_zip_replicate_False_xor drop_minus)
-  apply (auto simp add: word_size nth_w2p intro!: word_eqI)
-  done
-qed
-
 lemma aligned_add_xor:
-  assumes al: "is_aligned (x::'a::len word) n'" and le: "n < n'"
-  shows "(x + 2^n) XOR 2^n = x"
-proof cases
-  assume "n' < LENGTH('a)"
-  with assms show ?thesis
-  apply -
-  apply (rule word_bl.Rep_eqD)
-  apply (subst xor_2p_to_bl)
-  apply simp
-  apply (subst is_aligned_add_conv, simp, simp add: word_less_nat_alt)+
-  apply (simp add: to_bl_2p nth_append)
-  apply (cases "n' = Suc n")
-   apply simp
-   apply (subst is_aligned_replicate [where n="Suc n", simplified, symmetric]; simp)
-  apply (subgoal_tac "\<not> LENGTH('a) - Suc n \<le> LENGTH('a) - n'")
-   prefer 2
-   apply arith
-  apply (subst replicate_Suc [symmetric])
-  apply (subst replicate_add [symmetric])
-  apply (simp add: is_aligned_replicate [simplified, symmetric])
-  done
-next
-  assume "\<not> n' < LENGTH('a)"
-  show ?thesis
-    using al apply (rule is_alignedE)
-    using \<open>\<not> n' < LENGTH('a)\<close> by auto
+  \<open>(x + 2 ^ n) XOR 2 ^ n = x\<close>
+  if al: \<open>is_aligned (x::'a::len word) n'\<close> and le: \<open>n < n'\<close>
+proof -
+  have \<open>\<not> bit x n\<close>
+    using that by (rule is_aligned_imp_not_bit)
+  then have \<open>x + 2 ^ n = x OR 2 ^ n\<close>
+    by (subst disjunctive_add) (auto simp add: bit_simps disjunctive_add)
+  moreover have \<open>(x OR 2 ^ n) XOR 2 ^ n = x\<close>
+    by (rule bit_word_eqI) (auto simp add: bit_simps \<open>\<not> bit x n\<close>)
+  ultimately show ?thesis
+    by simp
 qed
-
-lemma is_aligned_replicateD:
-  "\<lbrakk> is_aligned (w::'a::len word) n; n \<le> LENGTH('a) \<rbrakk>
-     \<Longrightarrow> \<exists>xs. to_bl w = xs @ replicate n False
-               \<and> length xs = size w - n"
-  apply (subst is_aligned_replicate, assumption+)
-  apply (rule exI, rule conjI, rule refl)
-  apply (simp add: word_size)
-  done
 
 lemma is_aligned_add_mult_multI:
   fixes p :: "'a::len word"
@@ -618,19 +477,7 @@ lemma is_aligned_get_word_bits:
 
 lemma aligned_small_is_0:
   "\<lbrakk> is_aligned x n; x < 2 ^ n \<rbrakk> \<Longrightarrow> x = 0"
-  apply (erule is_aligned_get_word_bits)
-   apply (frule is_aligned_add_conv [rotated, where w=0])
-    apply (simp add: is_aligned_iff_dvd_nat)
-   apply simp
-   apply (drule is_aligned_replicateD)
-    apply simp
-   apply (clarsimp simp: word_size)
-   apply (subst (asm) replicate_add [symmetric])
-   apply (drule arg_cong[where f="of_bl :: bool list \<Rightarrow> 'a::len word"])
-   apply simp
-  apply (simp only: replicate.simps[symmetric, where x=False]
-                    drop_replicate)
-  done
+  by (simp add: is_aligned_mask less_mask_eq)
 
 corollary is_aligned_less_sz:
   "\<lbrakk>is_aligned a sz; a \<noteq> 0\<rbrakk> \<Longrightarrow> \<not> a < 2 ^ sz"
@@ -949,8 +796,9 @@ proof cases
       apply -
       apply simp
       apply (subst (asm) add.commute, subst (asm) add.commute, drule word_plus_mcs_4)
-      apply (subst add.commute, subst no_plus_overflow_uint_size)
-       apply (simp add: word_size_bl)
+       apply (subst add.commute, subst no_plus_overflow_uint_size)
+       apply transfer
+      apply simp
       apply (auto simp add: le_less power_2_ge_iff szv)
       apply (metis le_less_trans mask_eq_decr_exp mask_lt_2pn order_less_imp_le szv)
       done

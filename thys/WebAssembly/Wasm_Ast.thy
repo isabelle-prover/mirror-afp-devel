@@ -1,6 +1,11 @@
 section \<open>WebAssembly Core AST\<close>
 
-theory Wasm_Ast imports Main "Native_Word.Uint8" begin
+theory Wasm_Ast
+  imports
+    Main
+    "Native_Word.Uint8"
+    "Word_Lib.Reversed_Bit_Lists"
+begin
 
 type_synonym \<comment> \<open>immediate\<close>
   i = nat

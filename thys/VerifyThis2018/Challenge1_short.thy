@@ -78,11 +78,10 @@ subsection \<open>Refinement 1: List with Gap\<close>
     apply refine_vcg
     unfolding gap_\<alpha>_def gap_invar_def
     apply (auto simp: in_br_conv split: prod.split)
-    (* sledgehammer *)
-    by (metis Cons_eq_appendI Cons_nth_drop_Suc append_eq_append_conv2 
-      atd_lem drop_0 dual_order.strict_trans2 take_eq_Nil take_update_last)
-    (* Manual: by (simp add: hd_drop_conv_nth take_update_last Cons_nth_drop_Suc) *)
-        
+    apply (rule nth_equalityI)
+     apply (simp_all add: Cons_nth_drop_Suc take_update_last)
+    done
+
   subsubsection \<open>Insert and Grow\<close>
      
   definition "can_insert \<equiv> \<lambda>(l,r,buf). l<r"

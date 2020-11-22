@@ -596,7 +596,7 @@ proof -
   let ?x' = "int_of_uint32 x'" 
   from assms int_of_uint32_ge_0 have id: "y = ?x" "y' = ?x'" 
     unfolding urel32_def by auto
-  show ?thesis unfolding id by (transfer, auto)
+  show ?thesis unfolding id by (transfer, transfer) rule
 qed
 
 lemma urel32_normalize: 
@@ -1025,7 +1025,7 @@ proof -
   let ?x' = "int_of_uint64 x'" 
   from assms int_of_uint64_ge_0 have id: "y = ?x" "y' = ?x'" 
     unfolding urel64_def by auto
-  show ?thesis unfolding id by (transfer, auto)
+  show ?thesis unfolding id by (transfer, transfer) rule
 qed
 
 lemma urel64_normalize: 

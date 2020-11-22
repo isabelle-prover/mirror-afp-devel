@@ -11,6 +11,7 @@ theory Reversed_Bit_Lists
     Most_significant_bit
     Even_More_List
     "HOL-Library.Sublist"
+    Aligned
 begin
 
 lemma horner_sum_of_bool_2_concat:
@@ -1947,6 +1948,134 @@ lemma word_lsb_last:
   for w :: \<open>'a::len word\<close>
   using nth_to_bl [of \<open>LENGTH('a) - Suc 0\<close> w]
   by (simp add: lsb_odd last_conv_nth)
+
+lemma is_aligned_to_bl:
+  "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
+  apply (simp add: is_aligned_mask eq_zero_set_bl)
+  apply (clarsimp simp: in_set_conv_nth word_size)
+  apply (simp add: to_bl_nth word_size cong: conj_cong)
+  apply (simp add: diff_diff_less)
+  apply safe
+   apply (case_tac "n \<le> LENGTH('a)")
+    prefer 2
+    apply (rule_tac x=i in exI)
+    apply clarsimp
+   apply (subgoal_tac "\<exists>j < LENGTH('a). j < n \<and> LENGTH('a) - n + j = i")
+    apply (erule exE)
+    apply (rule_tac x=j in exI)
+    apply clarsimp
+   apply (thin_tac "w !! t" for t)
+   apply (rule_tac x="i + n - LENGTH('a)" in exI)
+   apply clarsimp
+   apply arith
+  apply (rule_tac x="LENGTH('a) - n + i" in exI)
+  apply clarsimp
+  apply arith
+  done
+
+lemma is_aligned_replicate:
+  fixes w::"'a::len word"
+  assumes aligned: "is_aligned w n"
+  and          nv: "n \<le> LENGTH('a)"
+  shows   "to_bl w = (take (LENGTH('a) - n) (to_bl w)) @ replicate n False"
+proof -
+  from nv have rl: "\<And>q. q < 2 ^ (LENGTH('a) - n) \<Longrightarrow>
+      to_bl (2 ^ n * (of_nat q :: 'a word)) =
+      drop n (to_bl (of_nat q :: 'a word)) @ replicate n False"
+    by (metis bl_shiftl le_antisym min_def shiftl_t2n wsst_TYs(3))
+  show ?thesis using aligned
+    by (auto simp: rl elim: is_alignedE)
+qed
+
+lemma is_aligned_drop:
+  fixes w::"'a::len word"
+  assumes "is_aligned w n" "n \<le> LENGTH('a)"
+  shows "drop (LENGTH('a) - n) (to_bl w) = replicate n False"
+proof -
+  have "to_bl w = take (LENGTH('a) - n) (to_bl w) @ replicate n False"
+    by (rule is_aligned_replicate) fact+
+  then have "drop (LENGTH('a) - n) (to_bl w) = drop (LENGTH('a) - n) \<dots>" by simp
+  also have "\<dots> = replicate n False" by simp
+  finally show ?thesis .
+qed
+
+lemma less_is_drop_replicate:
+  fixes x::"'a::len word"
+  assumes lt: "x < 2 ^ n"
+  shows   "to_bl x = replicate (LENGTH('a) - n) False @ drop (LENGTH('a) - n) (to_bl x)"
+  by (metis assms bl_and_mask' less_mask_eq)
+
+lemma is_aligned_add_conv:
+  fixes off::"'a::len word"
+  assumes aligned: "is_aligned w n"
+  and        offv: "off < 2 ^ n"
+  shows    "to_bl (w + off) =
+   (take (LENGTH('a) - n) (to_bl w)) @ (drop (LENGTH('a) - n) (to_bl off))"
+proof cases
+  assume nv: "n \<le> LENGTH('a)"
+  show ?thesis
+  proof (subst aligned_bl_add_size, simp_all only: word_size)
+    show "drop (LENGTH('a) - n) (to_bl w) = replicate n False"
+      by (subst is_aligned_replicate [OF aligned nv]) (simp add: word_size)
+
+    from offv show "take (LENGTH('a) - n) (to_bl off) =
+                    replicate (LENGTH('a) - n) False"
+      by (subst less_is_drop_replicate, assumption) simp
+  qed fact
+next
+  assume "\<not> n \<le> LENGTH('a)"
+  with offv show ?thesis by (simp add: power_overflow)
+qed
+
+lemma is_aligned_replicateI:
+  "to_bl p = addr @ replicate n False \<Longrightarrow> is_aligned (p::'a::len word) n"
+  apply (simp add: is_aligned_to_bl word_size)
+  apply (subgoal_tac "length addr = LENGTH('a) - n")
+   apply (simp add: replicate_not_True)
+  apply (drule arg_cong [where f=length])
+  apply simp
+  done
+
+lemma to_bl_2p:
+  "n < LENGTH('a) \<Longrightarrow>
+   to_bl ((2::'a::len word) ^ n) =
+   replicate (LENGTH('a) - Suc n) False @ True # replicate n False"
+  apply (subst shiftl_1 [symmetric])
+  apply (subst bl_shiftl)
+  apply (simp add: to_bl_1 min_def word_size)
+  done
+
+lemma xor_2p_to_bl:
+  fixes x::"'a::len word"
+  shows "to_bl (x XOR 2^n) =
+  (if n < LENGTH('a)
+   then take (LENGTH('a)-Suc n) (to_bl x) @ (\<not>rev (to_bl x)!n) # drop (LENGTH('a)-n) (to_bl x)
+   else to_bl x)"
+proof -
+  have x: "to_bl x = take (LENGTH('a)-Suc n) (to_bl x) @ drop (LENGTH('a)-Suc n) (to_bl x)"
+    by simp
+
+  show ?thesis
+  apply simp
+  apply (rule conjI)
+   apply (clarsimp simp: word_size)
+   apply (simp add: bl_word_xor to_bl_2p)
+   apply (subst x)
+   apply (subst zip_append)
+    apply simp
+   apply (simp add: map_zip_replicate_False_xor drop_minus)
+  apply (auto simp add: word_size nth_w2p intro!: word_eqI)
+  done
+qed
+
+lemma is_aligned_replicateD:
+  "\<lbrakk> is_aligned (w::'a::len word) n; n \<le> LENGTH('a) \<rbrakk>
+     \<Longrightarrow> \<exists>xs. to_bl w = xs @ replicate n False
+               \<and> length xs = size w - n"
+  apply (subst is_aligned_replicate, assumption+)
+  apply (rule exI, rule conjI, rule refl)
+  apply (simp add: word_size)
+  done
 
 text \<open>right-padding a word to a certain length\<close>
 

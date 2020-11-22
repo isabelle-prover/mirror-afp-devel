@@ -287,4 +287,28 @@ lemma p_assoc_help:
   shows "p + 2^sz - 1 = p + (2^sz - 1)"
   by simp
 
+lemma nat_power_less_diff:
+  assumes lt: "(2::nat) ^ n * q < 2 ^ m"
+  shows "q < 2 ^ (m - n)"
+  using lt
+proof (induct n arbitrary: m)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+
+  have ih: "\<And>m. 2 ^ n * q < 2 ^ m \<Longrightarrow> q < 2 ^ (m - n)"
+    and prem: "2 ^ Suc n * q < 2 ^ m" by fact+
+
+  show ?case
+  proof (cases m)
+    case 0
+    then show ?thesis using Suc by simp
+  next
+    case (Suc m')
+    then show ?thesis using prem
+      by (simp add: ac_simps ih)
+  qed
+qed
+
 end

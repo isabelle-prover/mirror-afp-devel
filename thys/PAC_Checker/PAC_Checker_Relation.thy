@@ -41,7 +41,7 @@ instance
 end
 
 lemma word_nat_of_uint64_Rep_inject[simp]: \<open>nat_of_uint64 ai = nat_of_uint64 bi \<longleftrightarrow> ai = bi\<close>
-  by transfer simp
+  by transfer (simp add: word_unat_eq_iff)
 
 instance uint64 :: heap
   by standard (auto simp: inj_def exI[of _ nat_of_uint64])

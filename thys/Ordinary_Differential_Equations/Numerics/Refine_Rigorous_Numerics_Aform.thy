@@ -1568,20 +1568,17 @@ lemma type_impl_card_n_enum:
   obtains enum enum_all enum_ex
   where "class.enum (enum::'a list) enum_all enum_ex \<and> n = CARD('a)"
 proof -
-  from assms obtain rep :: "'a \<Rightarrow> nat" and abs :: "nat \<Rightarrow> 'a" where t: "type_definition rep abs {0 ..< n}" by auto
-  have "card (UNIV :: 'a set) = card {0 ..< n}" using t by (rule type_definition.card)
+  from assms obtain rep :: "'a \<Rightarrow> nat" and abs :: "nat \<Rightarrow> 'a"
+    where t: "type_definition rep abs {0 ..<n}" by auto
+  then interpret type_definition rep abs \<open>{0 ..<n}\<close> .
+  have "card (UNIV :: 'a set) = card {0 ..< n}"
+    by (rule card)
   also have "\<dots> = n" by auto
   finally have bn: "CARD ('a) = n" .
 
   let ?enum = "(map abs [0..<n])"
   have "class.enum ?enum (Ball (set ?enum)) (Bex (set ?enum))"
-    apply standard
-    using t
-    apply (auto simp: distinct_map type_definition_def)
-    using t type_definition.univ apply fastforce
-    using t type_definition.Abs_inj_on apply blast
-    apply (meson t type_definition.Abs_induct)
-    by (metis t tdD1)
+    by standard (auto simp: distinct_map univ Abs_inject intro: inj_onI)
   with bn have "class.enum ?enum (Ball (set ?enum)) (Bex (set ?enum)) \<and> n = CARD('a)"
     by simp
   then show ?thesis ..
