@@ -6,7 +6,8 @@ section \<open>Dedicated operation for the most significant bit\<close>
 theory Most_significant_bit
   imports
     "HOL-Library.Word"
-    Reversed_Bit_Lists
+    Bits_Int
+    Traditional_Infix_Syntax
     More_Arithmetic
 begin
 
@@ -25,8 +26,9 @@ end
 lemma msb_conv_bin_sign: "msb x \<longleftrightarrow> bin_sign x = -1"
 by(simp add: bin_sign_def not_le msb_int_def)
 
-lemma msb_bin_rest [simp]: "msb (bin_rest x) = msb x"
-by(simp add: msb_int_def)
+lemma msb_bin_rest [simp]: "msb (x div 2) = msb x"
+  for x :: int
+  by (simp add: msb_int_def)
 
 lemma int_msb_and [simp]: "msb ((x :: int) AND y) \<longleftrightarrow> msb x \<and> msb y"
 by(simp add: msb_int_def)
@@ -91,7 +93,7 @@ lemma msb_word_iff_sless_0:
   by (simp add: word_msb_sint word_sless_alt)
 
 lemma msb_word_of_int: "msb (word_of_int x::'a::len word) = bin_nth x (LENGTH('a) - 1)"
-  by (simp add: word_msb_def word_sbin.eq_norm bin_sign_lem)
+  by (simp add: word_msb_def bin_sign_lem)
 
 lemma word_msb_numeral [simp]:
   "msb (numeral w::'a::len word) = bin_nth (numeral w) (LENGTH('a) - 1)"
@@ -112,16 +114,6 @@ lemma word_msb_nth: "msb w = bin_nth (uint w) (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (simp add: word_msb_def sint_uint bin_sign_lem)
 
-lemma word_msb_alt: "msb w \<longleftrightarrow> hd (to_bl w)"
-  for w :: "'a::len word"
-  apply (simp add: msb_word_eq)
-  apply (subst hd_conv_nth)
-   apply simp
-  apply (subst nth_to_bl)
-   apply simp
-  apply simp
-  done
-
 lemma msb_nth: "msb w = w !! (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (simp add: word_msb_nth word_test_bit_def)
@@ -136,22 +128,12 @@ lemma msb_shift: "msb w \<longleftrightarrow> w >> (LENGTH('a) - 1) \<noteq> 0"
 lemmas word_ops_msb = msb1 [unfolded msb_nth [symmetric, unfolded One_nat_def]]
 
 lemma word_sint_msb_eq: "sint x = uint x - (if msb x then 2 ^ size x else 0)"
-  apply (cases "msb x")
-   apply (rule word_sint.Abs_eqD[where 'a='a], simp_all)
-    apply (simp add: word_size wi_hom_syms word_of_int_2p_len)
-   apply (simp add: sints_num word_size)
-   apply (rule conjI)
-    apply (simp add: le_diff_eq')
-    apply (rule order_trans[where y="2 ^ (LENGTH('a) - 1)"])
-     apply (simp add: power_Suc[symmetric])
-    apply (simp add: linorder_not_less[symmetric] mask_eq_iff[symmetric])
-    apply (rule notI, drule word_eqD[where x="size x - 1"])
-    apply (simp add: msb_nth word_ops_nth_size word_size)
-   apply (simp add: order_less_le_trans[where y=0])
-  apply (rule word_uint.Abs_eqD[where 'a='a], simp_all)
-  apply (simp add: linorder_not_less uints_num word_msb_sint)
-  apply (rule order_less_le_trans[OF sint_lt])
-  apply simp
+  apply (cases \<open>LENGTH('a)\<close>)
+   apply (simp_all add: msb_word_def bin_sign_def bit_simps word_size)
+  apply transfer
+  apply (auto simp add: take_bit_Suc_from_most signed_take_bit_eq_if_positive signed_take_bit_eq_if_negative minus_exp_eq_not_mask ac_simps)
+  apply (subst disjunctive_add)
+   apply (simp_all add: bit_simps)
   done
 
 lemma word_sle_msb_le: "x <=s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x \<le> y)"

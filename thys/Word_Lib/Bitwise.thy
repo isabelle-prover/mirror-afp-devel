@@ -4,8 +4,8 @@
 theory Bitwise
   imports
     "HOL-Library.Word"
-    Most_significant_bit
     More_Arithmetic
+    Reversed_Bit_Lists
 begin
 
 text \<open>Helper constants used in defining addition\<close>

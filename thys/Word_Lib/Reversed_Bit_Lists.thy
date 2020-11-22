@@ -7,7 +7,10 @@ theory Reversed_Bit_Lists
   imports
     "HOL-Library.Word"
     Typedef_Morphisms
+    Least_significant_bit
+    Most_significant_bit
     Even_More_List
+    "HOL-Library.Sublist"
 begin
 
 lemma horner_sum_of_bool_2_concat:
@@ -1928,5 +1931,35 @@ next
   finally
   show ?thesis .
 qed
+
+lemma word_msb_alt: "msb w \<longleftrightarrow> hd (to_bl w)"
+  for w :: "'a::len word"
+  apply (simp add: msb_word_eq)
+  apply (subst hd_conv_nth)
+   apply simp
+  apply (subst nth_to_bl)
+   apply simp
+  apply simp
+  done
+
+lemma word_lsb_last:
+  \<open>lsb w \<longleftrightarrow> last (to_bl w)\<close>
+  for w :: \<open>'a::len word\<close>
+  using nth_to_bl [of \<open>LENGTH('a) - Suc 0\<close> w]
+  by (simp add: lsb_odd last_conv_nth)
+
+text \<open>right-padding a word to a certain length\<close>
+
+definition
+  "bl_pad_to bl sz \<equiv> bl @ (replicate (sz - length bl) False)"
+
+lemma bl_pad_to_length:
+  assumes lbl: "length bl \<le> sz"
+  shows   "length (bl_pad_to bl sz) = sz"
+  using lbl by (simp add: bl_pad_to_def)
+
+lemma bl_pad_to_prefix:
+  "prefix bl (bl_pad_to bl sz)"
+  by (simp add: bl_pad_to_def)
 
 end

@@ -9,10 +9,8 @@ section "Word Alignment"
 theory Aligned
   imports
   "HOL-Library.Word"
-  More_Arithmetic
-  More_Divides
-  More_Word
   Reversed_Bit_Lists
+  More_Word
   Word_EqI
 begin
 

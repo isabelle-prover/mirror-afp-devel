@@ -4,12 +4,8 @@ section \<open>Misc word operations\<close>
 theory More_Word_Operations
   imports
     "HOL-Library.Word"
-    Reversed_Bit_Lists
     Aligned
-    More_Divides
     More_Misc
-    "HOL-Library.Sublist"
-    Word_EqI
 begin
 
 definition
@@ -663,19 +659,5 @@ lemma from_bool_eqI:
   "from_bool x = from_bool y \<Longrightarrow> x = y"
   unfolding from_bool_def
   by (auto split: bool.splits)
-
-text \<open>right-padding a word to a certain length\<close>
-
-definition
-  "bl_pad_to bl sz \<equiv> bl @ (replicate (sz - length bl) False)"
-
-lemma bl_pad_to_length:
-  assumes lbl: "length bl \<le> sz"
-  shows   "length (bl_pad_to bl sz) = sz"
-  using lbl by (simp add: bl_pad_to_def)
-
-lemma bl_pad_to_prefix:
-  "prefix bl (bl_pad_to bl sz)"
-  by (simp add: bl_pad_to_def)
 
 end

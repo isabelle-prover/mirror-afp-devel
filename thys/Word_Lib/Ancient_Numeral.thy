@@ -1,5 +1,5 @@
 theory Ancient_Numeral
-  imports Main Bits_Int Least_significant_bit Most_significant_bit
+  imports Main Reversed_Bit_Lists
 begin
 
 definition Bit :: "int \<Rightarrow> bool \<Rightarrow> int"  (infixl "BIT" 90)

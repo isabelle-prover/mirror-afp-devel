@@ -4,7 +4,10 @@
 section \<open>Operation variant for setting and unsetting bits\<close>
 
 theory Generic_set_bit
-  imports "HOL-Library.Word" Most_significant_bit
+  imports
+    "HOL-Library.Word"
+    Bits_Int
+    Most_significant_bit
 begin
 
 class set_bit = ring_bit_operations +
@@ -89,13 +92,13 @@ lemma word_set_nth [simp]: "set_bit w n (test_bit w n) = w"
 
 lemma test_bit_set: "(set_bit w n x) !! n \<longleftrightarrow> n < size w \<and> x"
   for w :: "'a::len word"
-  by (auto simp: word_size word_test_bit_def word_set_bit_def word_ubin.eq_norm nth_bintr)
+  by (auto simp: word_size word_test_bit_def word_set_bit_def nth_bintr)
 
 lemma test_bit_set_gen:
   "test_bit (set_bit w n x) m = (if m = n then n < size w \<and> x else test_bit w m)"
   for w :: "'a::len word"
   apply (unfold word_size word_test_bit_def word_set_bit_def)
-  apply (clarsimp simp add: word_ubin.eq_norm nth_bintr bin_nth_sc_gen)
+  apply (clarsimp simp add: nth_bintr bin_nth_sc_gen)
   apply (auto elim!: test_bit_size [unfolded word_size]
       simp add: word_test_bit_def [symmetric])
   done
@@ -112,7 +115,7 @@ lemma word_set_set_diff:
 
 lemma set_bit_word_of_int: "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
   unfolding word_set_bit_def
-  by (rule word_eqI)(simp add: word_size bin_nth_sc_gen word_ubin.eq_norm nth_bintr)
+  by (rule word_eqI)(simp add: word_size bin_nth_sc_gen nth_bintr)
 
 lemma word_set_numeral [simp]:
   "set_bit (numeral bin::'a::len word) n b =
@@ -147,7 +150,8 @@ lemma word_set_nth_iff: "set_bit w n b = w \<longleftrightarrow> w !! n = b \<or
 
 lemma word_clr_le: "w \<ge> set_bit w n False"
   for w :: "'a::len word"
-  apply (unfold word_set_bit_def word_le_def word_ubin.eq_norm)
+  apply (simp add: word_set_bit_def word_le_def)
+  apply transfer
   apply (rule order_trans)
    apply (rule bintr_bin_clr_le)
   apply simp
@@ -155,7 +159,8 @@ lemma word_clr_le: "w \<ge> set_bit w n False"
 
 lemma word_set_ge: "w \<le> set_bit w n True"
   for w :: "'a::len word"
-  apply (unfold word_set_bit_def word_le_def word_ubin.eq_norm)
+  apply (simp add: word_set_bit_def word_le_def)
+  apply transfer
   apply (rule order_trans [OF _ bintr_bin_set_ge])
   apply simp
   done

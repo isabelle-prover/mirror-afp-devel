@@ -89,7 +89,7 @@ lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftri
   by (simp add: test_bit_eq_bit bit_set_bits_word_iff)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
-  by (rule word_eqI) (auto simp add: word_test_bit_set_bits test_bit.eq_norm)
+  by (rule word_eqI) (auto simp add: word_test_bit_set_bits)
 
 lemma word_and_mask_or_conv_and_mask:
   "n !! index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
@@ -163,7 +163,7 @@ proof(cases "1 << (LENGTH('a) - 1) \<le> y")
   proof(cases "x < y")
     case True
     then have "x mod y = x"
-      by (cases x, cases y) (simp add: word_less_def word_mod_def)
+      by transfer simp
     thus ?thesis using True y by(simp add: word_div_lt_eq_0)
   next
     case False
@@ -283,7 +283,7 @@ proof -
       by(cases "LENGTH('a)")(auto simp add: not_le elim: less_le_trans)
     moreover
     have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using \<open>i' < shift\<close>
-      by (simp add: i'_def shift_def mask_def shiftl_eq_push_bit push_bit_of_1 flip: take_bit_eq_mask)
+      by (simp add: i'_def shift_def mask_def shiftl_eq_push_bit push_bit_of_1 word_of_int_eq_iff flip: take_bit_eq_mask)
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False

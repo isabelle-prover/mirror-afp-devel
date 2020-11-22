@@ -6,7 +6,7 @@ section \<open>Operation variant for the least significant bit\<close>
 theory Least_significant_bit
   imports
     "HOL-Library.Word"
-    Reversed_Bit_Lists
+    Bits_Int
 begin
 
 class lsb = semiring_bits +
@@ -63,12 +63,6 @@ lemma word_lsb_alt: "lsb w = test_bit w 0"
 
 lemma word_lsb_1_0 [simp]: "lsb (1::'a::len word) \<and> \<not> lsb (0::'b::len word)"
   unfolding word_lsb_def by simp
-
-lemma word_lsb_last:
-  \<open>lsb w \<longleftrightarrow> last (to_bl w)\<close>
-  for w :: \<open>'a::len word\<close>
-  using nth_to_bl [of \<open>LENGTH('a) - Suc 0\<close> w]
-  by (simp add: lsb_odd last_conv_nth)
 
 lemma word_lsb_int: "lsb w \<longleftrightarrow> uint w mod 2 = 1"
   apply (simp add: lsb_odd flip: odd_iff_mod_2_eq_one)
