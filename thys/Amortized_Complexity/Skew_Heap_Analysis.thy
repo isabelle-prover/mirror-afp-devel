@@ -109,7 +109,7 @@ proof -
   also have "rlh t1 \<le> log 2 (size1 t1)" by(rule Dlog)
   also have "rlh t2 \<le> log 2 (size1 t2)" by(rule Dlog)
   also have "lrh (merge t1 t2) \<le> log 2 (size1(merge t1 t2))" by(rule Glog)
-  also have "size1(merge t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_size)
+  also have "size1(merge t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_size size_merge)
   also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_size)
   also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
     by(rule plus_log_le_2log_plus) (auto simp: size1_size)
@@ -119,14 +119,14 @@ qed
 definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> int" where
 "T_insert a t = T_merge (Node Leaf a Leaf) t + 1"
 
-lemma a_insert: "T_insert a t + \<Phi>(Skew_Heap.insert a t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+lemma a_insert: "T_insert a t + \<Phi>(skew_heap.insert a t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
 using a_merge[of "Node Leaf a Leaf" "t"]
-by (simp add: numeral_eq_Suc T_insert_def Skew_Heap.insert_def rh_def)
+by (simp add: numeral_eq_Suc T_insert_def rh_def)
 
 definition T_del_min :: "('a::linorder) tree \<Rightarrow> int" where
 "T_del_min t = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> T_merge t1 t2 + 1)"
 
-lemma a_del_min: "T_del_min t + \<Phi>(del_min t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+lemma a_del_min: "T_del_min t + \<Phi>(skew_heap.del_min t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
 proof (cases t)
   case Leaf thus ?thesis by (simp add: T_del_min_def)
 next
@@ -145,20 +145,20 @@ by(induction t1 t2 rule: T_merge.induct) auto
 
 fun exec :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
-"exec (Insert a) [t] = Skew_Heap.insert a t" |
-"exec Del_min [t] = del_min t" |
+"exec (Insert a) [t] = skew_heap.insert a t" |
+"exec Del_min [t] = skew_heap.del_min t" |
 "exec Merge [t1,t2] = merge t1 t2"
 
 fun cost :: "'a::linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Insert a) [t] = T_merge (Node Leaf a Leaf) t" |
-"cost Del_min [t] = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> T_merge t1 t2)" |
+"cost (Insert a) [t] = T_merge (Node Leaf a Leaf) t + 1" |
+"cost Del_min [t] = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> T_merge t1 t2 + 1)" |
 "cost Merge [t1,t2] = T_merge t1 t2"
 
 fun U where
 "U Empty [] = 1" |
-"U (Insert _) [t] = 3 * log 2 (size1 t + 2) + 1" |
-"U Del_min [t] = 3 * log 2 (size1 t + 2) + 3" |
+"U (Insert _) [t] = 3 * log 2 (size1 t + 2) + 2" |
+"U Del_min [t] = 3 * log 2 (size1 t + 2) + 2" |
 "U Merge [t1,t2] = 3 * log 2 (size1 t1 + size1 t2) + 1"
 
 interpretation Amortized
