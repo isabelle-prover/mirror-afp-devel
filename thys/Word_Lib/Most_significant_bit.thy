@@ -149,4 +149,20 @@ lemma word_sle_msb_le: "x <=s y \<longleftrightarrow> (msb y \<longrightarrow> m
 lemma word_sless_msb_less: "x <s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x < y)"
   by (auto simp add: word_sless_eq word_sle_msb_le)
 
+lemma not_msb_from_less:
+  "(v :: 'a word) < 2 ^ (LENGTH('a :: len) - 1) \<Longrightarrow> \<not> msb v"
+  apply (clarsimp simp add: msb_nth)
+  apply (drule less_mask_eq)
+  apply (drule word_eqD, drule(1) iffD2)
+  apply simp
+  done
+
+lemma sint_eq_uint:
+  "\<not> msb x \<Longrightarrow> sint x = uint x"
+  apply (simp add: msb_word_eq)
+  apply transfer
+  apply auto
+  apply (smt One_nat_def bintrunc_bintrunc_l bintrunc_sbintrunc' diff_le_self len_gt_0 signed_take_bit_eq_if_positive)
+  done
+
 end

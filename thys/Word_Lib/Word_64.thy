@@ -13,6 +13,7 @@ theory Word_64
     Word_16
     Word_Syntax
     Rsplit
+    More_Word_Operations
 begin
 
 type_synonym word64 = "64 word"

@@ -260,4 +260,16 @@ lemma distinct_enum_upto' [simp]:
   apply (rule distinct_enum_upto)
   done
 
+lemma length_interval:
+  "\<lbrakk>set xs = {x. (a::'a::len word) \<le> x \<and> x \<le> b}; distinct xs\<rbrakk>
+  \<Longrightarrow> length xs = Suc (unat b) - unat a"
+  apply (frule distinct_card)
+  apply (subgoal_tac "set xs = set [a .e. b]")
+   apply (cut_tac distinct_card [where xs="[a .e. b]"])
+    apply (subst (asm) length_upto_enum)
+    apply clarsimp
+   apply (rule distinct_enum_upto')
+  apply simp
+  done
+
 end

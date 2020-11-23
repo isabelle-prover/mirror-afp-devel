@@ -869,4 +869,45 @@ lemma neg_test_bit:
   "(NOT x) !! n = (\<not> x !! n \<and> n < LENGTH('a))" for x :: "'a::len word"
   by (cases "n < LENGTH('a)") (auto simp add: test_bit_over word_ops_nth_size word_size)
 
+lemma shiftr_less_t2n':
+  "\<lbrakk> x AND mask (n + m) = x; m < LENGTH('a) \<rbrakk> \<Longrightarrow> x >> n < 2 ^ m" for x :: "'a :: len word"
+  apply (simp add: word_size mask_eq_iff_w2p [symmetric] flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_drop_bit ac_simps)
+  done
+
+lemma shiftr_less_t2n:
+  "x < 2 ^ (n + m) \<Longrightarrow> x >> n < 2 ^ m" for x :: "'a :: len word"
+  apply (rule shiftr_less_t2n')
+   apply (erule less_mask_eq)
+  apply (rule ccontr)
+  apply (simp add: not_less)
+  apply (subst (asm) p2_eq_0[symmetric])
+  apply (simp add: power_add)
+  done
+
+lemma shiftr_eq_0:
+  "n \<ge> LENGTH('a) \<Longrightarrow> ((w::'a::len word) >> n) = 0"
+  apply (cut_tac shiftr_less_t2n'[of w n 0], simp)
+   apply (simp add: mask_eq_iff)
+  apply (simp add: lt2p_lem)
+  apply simp
+  done
+
+lemma shiftr_not_mask_0:
+  "n+m \<ge> LENGTH('a :: len) \<Longrightarrow> ((w::'a::len word) >> n) AND NOT (mask m) = 0"
+  by (rule bit_word_eqI) (auto simp add: bit_simps dest: bit_imp_le_length)
+
+lemma shiftl_less_t2n:
+  fixes x :: "'a :: len word"
+  shows "\<lbrakk> x < (2 ^ (m - n)); m < LENGTH('a) \<rbrakk> \<Longrightarrow> (x << n) < 2 ^ m"
+  apply (simp add: word_size mask_eq_iff_w2p [symmetric] flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_push_bit)
+  done
+
+lemma shiftl_less_t2n':
+  "(x::'a::len word) < 2 ^ m \<Longrightarrow> m+n < LENGTH('a) \<Longrightarrow> x << n < 2 ^ (m + n)"
+  by (rule shiftl_less_t2n) simp_all
+
 end

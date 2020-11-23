@@ -13,6 +13,7 @@ theory Word_32
     Word_16
     Word_Syntax
     Rsplit
+    More_Word_Operations
     Bitwise
 begin
 

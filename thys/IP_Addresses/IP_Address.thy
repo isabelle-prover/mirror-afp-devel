@@ -3,8 +3,9 @@
 *)
 theory IP_Address
   imports
-    "Word_Lib.Word_Lemmas"
-    "Word_Lib.Word_Syntax"
+    Word_Lib.Word_Lemmas
+    Word_Lib.Word_Syntax
+    Word_Lib.Reversed_Bit_Lists
     Hs_Compat
     WordInterval
 begin

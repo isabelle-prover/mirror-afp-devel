@@ -319,6 +319,11 @@ lemma word_less_power_trans:
   apply simp
   done
 
+lemma  word_less_power_trans2:
+  fixes n :: "'a::len word"
+  shows "\<lbrakk>n < 2 ^ (m - k); k \<le> m; m < LENGTH('a)\<rbrakk> \<Longrightarrow> n * 2 ^ k < 2 ^ m"
+  by (subst field_simps, rule word_less_power_trans)
+
 lemma Suc_unat_diff_1:
   fixes x :: "'a :: len word"
   assumes lt: "1 \<le> x"
@@ -874,5 +879,111 @@ lemma unat_minus_one_word:
   apply transfer
   apply (simp add: take_bit_minus_one_eq_mask nat_mask_eq)
   done
+
+lemmas word_diff_ls'' = word_diff_ls [where xa=x and x=x for x]
+lemmas word_diff_ls' = word_diff_ls'' [simplified]
+
+lemmas word_l_diffs' = word_l_diffs [where xa=x and x=x for x]
+lemmas word_l_diffs = word_l_diffs' [simplified]
+
+lemma two_power_increasing:
+  "\<lbrakk> n \<le> m; m < LENGTH('a) \<rbrakk> \<Longrightarrow> (2 :: 'a :: len word) ^ n \<le> 2 ^ m"
+  by (simp add: word_le_nat_alt)
+
+lemma word_leq_le_minus_one:
+  "\<lbrakk> x \<le> y; x \<noteq> 0 \<rbrakk> \<Longrightarrow> x - 1 < (y :: 'a :: len word)"
+  apply (simp add: word_less_nat_alt word_le_nat_alt)
+  apply (subst unat_minus_one)
+   apply assumption
+  apply (cases "unat x")
+   apply (simp add: unat_eq_zero)
+  apply arith
+  done
+
+lemma neg_mask_combine:
+  "NOT(mask a) AND NOT(mask b) = NOT(mask (max a b) :: 'a::len word)"
+  by (rule bit_word_eqI) (auto simp add: bit_simps)
+
+lemma neg_mask_twice:
+  "x AND NOT(mask n) AND NOT(mask m) = x AND NOT(mask (max n m))"
+  for x :: \<open>'a::len word\<close>
+  by (rule bit_word_eqI) (auto simp add: bit_simps)
+
+lemma multiple_mask_trivia:
+  "n \<ge> m \<Longrightarrow> (x AND NOT(mask n)) + (x AND mask n AND NOT(mask m)) = x AND NOT(mask m)"
+  for x :: \<open>'a::len word\<close>
+  apply (rule trans[rotated], rule_tac w="mask n" in word_plus_and_or_coroll2)
+  apply (simp add: word_bw_assocs word_bw_comms word_bw_lcs neg_mask_twice
+                   max_absorb2)
+  done
+
+lemma word_of_nat_less:
+  "\<lbrakk> n < unat x \<rbrakk> \<Longrightarrow> of_nat n < x"
+  apply (simp add: word_less_nat_alt)
+  apply (erule order_le_less_trans[rotated])
+  apply (simp add: take_bit_eq_mod)
+  done
+
+lemma unat_mask:
+  "unat (mask n :: 'a :: len word) = 2 ^ (min n (LENGTH('a))) - 1"
+  apply (subst min.commute)
+  apply (simp add: mask_eq_decr_exp not_less min_def  split: if_split_asm)
+  apply (intro conjI impI)
+   apply (simp add: unat_sub_if_size)
+   apply (simp add: power_overflow word_size)
+  apply (simp add: unat_sub_if_size)
+  done
+
+lemma mask_over_length:
+  "LENGTH('a) \<le> n \<Longrightarrow> mask n = (-1::'a::len word)"
+  by (simp add: mask_eq_decr_exp)
+
+lemma Suc_2p_unat_mask:
+  "n < LENGTH('a) \<Longrightarrow> Suc (2 ^ n * k + unat (mask n :: 'a::len word)) = 2 ^ n * (k+1)"
+  by (simp add: unat_mask)
+
+lemma sint_of_nat_ge_zero:
+  "x < 2 ^ (LENGTH('a) - 1) \<Longrightarrow> sint (of_nat x :: 'a :: len word) \<ge> 0"
+  by (simp add: bit_iff_odd)
+
+lemma int_eq_sint:
+  "x < 2 ^ (LENGTH('a) - 1) \<Longrightarrow> sint (of_nat x :: 'a :: len word) = int x"
+  apply transfer
+  apply (rule signed_take_bit_int_eq_self)
+   apply simp_all
+  apply (metis negative_zle numeral_power_eq_of_nat_cancel_iff)
+  done
+
+lemma sint_of_nat_le:
+  "\<lbrakk> b < 2 ^ (LENGTH('a) - 1); a \<le> b \<rbrakk>
+   \<Longrightarrow> sint (of_nat a :: 'a :: len word) \<le> sint (of_nat b :: 'a :: len word)"
+  apply (cases \<open>LENGTH('a)\<close>)
+  apply simp_all
+  apply transfer
+  apply (subst signed_take_bit_eq_if_positive)
+   apply (simp add: bit_simps)
+  apply (metis bit_take_bit_iff nat_less_le order_less_le_trans take_bit_nat_eq_self_iff)
+  apply (subst signed_take_bit_eq_if_positive)
+    apply (simp add: bit_simps)
+  apply (metis bit_take_bit_iff nat_less_le take_bit_nat_eq_self_iff)
+    apply (simp flip: of_nat_take_bit add: take_bit_nat_eq_self)
+  done
+
+lemma word_le_not_less:
+  "((b::'a::len word) \<le> a) = (\<not>(a < b))"
+  by fastforce
+
+lemma less_is_non_zero_p1:
+  fixes a :: "'a :: len word"
+  shows "a < k \<Longrightarrow> a + 1 \<noteq> 0"
+  apply (erule contrapos_pn)
+  apply (drule max_word_wrap)
+  apply (simp add: not_less)
+  done
+
+lemma unat_add_lem':
+  "(unat x + unat y < 2 ^ LENGTH('a)) \<Longrightarrow>
+    (unat (x + y :: 'a :: len word) = unat x + unat y)"
+  by (subst unat_add_lem[symmetric], assumption)
 
 end

@@ -1346,7 +1346,7 @@ lemma of_bl_rep_False: "of_bl (replicate n False @ bs) = of_bl bs"
   by (auto simp: of_bl_def bl_to_bin_rep_F)
 
 lemma [code abstract]:
-  \<open>uint (of_bl bs :: 'a word) = horner_sum of_bool 2 (take LENGTH('a::len) (rev bs))\<close>
+  \<open>Word.the_int (of_bl bs :: 'a word) = horner_sum of_bool 2 (take LENGTH('a::len) (rev bs))\<close>
   apply (simp add: of_bl_eq flip: take_bit_horner_sum_bit_eq)
   apply transfer
   apply simp
@@ -1355,7 +1355,7 @@ lemma [code abstract]:
 lemma [code]:
   \<open>to_bl w = map (bit w) (rev [0..<LENGTH('a::len)])\<close>
   for w :: \<open>'a::len word\<close>
-  by (simp add: to_bl_unfold rev_map)
+  by (fact to_bl_eq_rev)
 
 lemma word_reverse_eq_of_bl_rev_to_bl:
   \<open>word_reverse w = of_bl (rev (to_bl w))\<close>
@@ -2090,5 +2090,99 @@ lemma bl_pad_to_length:
 lemma bl_pad_to_prefix:
   "prefix bl (bl_pad_to bl sz)"
   by (simp add: bl_pad_to_def)
+
+
+lemma of_bl_length:
+  "length xs < LENGTH('a) \<Longrightarrow> of_bl xs < (2 :: 'a::len word) ^ length xs"
+  by (simp add: of_bl_length_less)
+
+lemma of_bl_mult_and_not_mask_eq:
+  "\<lbrakk>is_aligned (a :: 'a::len word) n; length b + m \<le> n\<rbrakk>
+   \<Longrightarrow> a + of_bl b * (2^m) AND NOT(mask n) = a"
+  apply (simp flip: push_bit_eq_mult subtract_mask(1) take_bit_eq_mask)
+  apply (subst disjunctive_add)
+   apply (auto simp add: bit_simps not_le not_less)
+   apply (meson is_aligned_imp_not_bit is_aligned_weaken less_diff_conv2)
+  apply (erule is_alignedE')
+  apply (simp add: take_bit_push_bit)
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps)
+  done
+
+lemma bin_to_bl_of_bl_eq:
+  "\<lbrakk>is_aligned (a::'a::len word) n; length b + c \<le> n; length b + c < LENGTH('a)\<rbrakk>
+  \<Longrightarrow> bin_to_bl (length b) (uint ((a + of_bl b * 2^c) >> c)) = b"
+  apply (simp flip: push_bit_eq_mult take_bit_eq_mask add: shiftr_eq_drop_bit)
+  apply (subst disjunctive_add)
+   apply (auto simp add: bit_simps not_le not_less unsigned_or_eq unsigned_drop_bit_eq
+     unsigned_push_bit_eq bin_to_bl_or simp flip: bin_to_bl_def)
+   apply (meson is_aligned_imp_not_bit is_aligned_weaken less_diff_conv2)
+  apply (erule is_alignedE')
+  apply (rule nth_equalityI)
+   apply (auto simp add: nth_bin_to_bl bit_simps simp flip: bin_to_bl_def dest: nth_rev_alt)
+  done
+
+(* FIXME: move to Word distribution *)
+lemma bin_nth_minus_Bit0[simp]:
+  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit0 w)) n = bin_nth (numeral w) (n - 1)"
+  by (cases n; simp)
+
+lemma bin_nth_minus_Bit1[simp]:
+  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
+  by (cases n; simp)
+
+(* casting a long word to a shorter word and casting back to the long word
+   is equal to the original long word -- if the word is small enough.
+  'l is the longer word.
+  's is the shorter word.
+*)
+lemma bl_cast_long_short_long_ingoreLeadingZero_generic:
+  "\<lbrakk> length (dropWhile Not (to_bl w)) \<le> LENGTH('s); LENGTH('s) \<le> LENGTH('l) \<rbrakk> \<Longrightarrow>
+   (of_bl :: _ \<Rightarrow> 'l::len word) (to_bl ((of_bl::_ \<Rightarrow> 's::len word) (to_bl w))) = w"
+  by (rule word_uint_eqI) (simp add: uint_of_bl_is_bl_to_bin uint_of_bl_is_bl_to_bin_drop)
+
+(*
+ Casting between longer and shorter word.
+  'l is the longer word.
+  's is the shorter word.
+ For example: 'l::len word is 128 word (full ipv6 address)
+              's::len word is 16 word (address piece of ipv6 address in colon-text-representation)
+*)
+corollary ucast_short_ucast_long_ingoreLeadingZero:
+  "\<lbrakk> length (dropWhile Not (to_bl w)) \<le> LENGTH('s); LENGTH('s) \<le> LENGTH('l) \<rbrakk> \<Longrightarrow>
+   (ucast:: 's::len word \<Rightarrow> 'l::len word) ((ucast:: 'l::len word \<Rightarrow> 's::len word) w) = w"
+  apply (subst ucast_bl)+
+  apply (rule bl_cast_long_short_long_ingoreLeadingZero_generic; simp)
+  done
+
+lemma length_drop_mask:
+  fixes w::"'a::len word"
+  shows "length (dropWhile Not (to_bl (w AND mask n))) \<le> n"
+proof -
+  have "length (takeWhile Not (replicate n False @ ls)) = n + length (takeWhile Not ls)"
+    for ls n by(subst takeWhile_append2) simp+
+  then show ?thesis
+    unfolding bl_and_mask by (simp add: dropWhile_eq_drop)
+qed
+
+lemma map_bits_rev_to_bl:
+  "map ((!!) x) [0..<size x] = rev (to_bl x)"
+  by (auto simp: list_eq_iff_nth_eq test_bit_bl word_size)
+
+lemma of_bl_length2:
+  "length xs + c < LENGTH('a) \<Longrightarrow> of_bl xs * 2^c < (2::'a::len word) ^ (length xs + c)"
+  by (simp add: of_bl_length word_less_power_trans2)
+
+lemma of_bl_max:
+  "(of_bl xs :: 'a::len word) \<le> mask (length xs)"
+proof -
+  define ys where \<open>ys = rev xs\<close>
+  have \<open>take_bit (length ys) (horner_sum of_bool 2 ys :: 'a word) = horner_sum of_bool 2 ys\<close>
+    by transfer (simp add: take_bit_horner_sum_bit_eq min_def)
+  then have \<open>(of_bl (rev ys) :: 'a word) \<le> mask (length ys)\<close>
+    by (simp only: of_bl_rev_eq less_eq_mask_iff_take_bit_eq_self)
+  with ys_def show ?thesis
+    by simp
+qed
 
 end

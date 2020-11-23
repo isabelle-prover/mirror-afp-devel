@@ -2,6 +2,7 @@ theory NumberWang_IPv6
 imports 
   Word_Lib.Word_Lemmas
   Word_Lib.Word_Syntax
+  Word_Lib.Reversed_Bit_Lists
 begin
 
 section\<open>Helper Lemmas for Low-Level Operations on Machine Words\<close>

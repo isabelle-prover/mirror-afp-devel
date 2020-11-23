@@ -111,4 +111,6 @@ declare of_nat_diff [simp]
 notation (input)
   test_bit ("testBit")
 
+lemmas cast_simps = cast_simps ucast_down_bl
+
 end

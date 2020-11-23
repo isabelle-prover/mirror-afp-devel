@@ -311,4 +311,24 @@ next
   qed
 qed
 
+lemma pow_mono_leq_imp_lt:
+  "x \<le> y \<Longrightarrow> x < 2 ^ y"
+  by (simp add: le_less_trans)
+
+lemma small_powers_of_2:
+  "x \<ge> 3 \<Longrightarrow> x < 2 ^ (x - 1)"
+  by (induct x; simp add: suc_le_pow_2)
+
+lemma power_2_mult_step_le:
+  "\<lbrakk>n' \<le> n; 2 ^ n' * k' < 2 ^ n * k\<rbrakk> \<Longrightarrow> 2 ^ n' * (k' + 1) \<le> 2 ^ n * (k::nat)"
+  apply (cases "n'=n", simp)
+   apply (metis Suc_leI le_refl mult_Suc_right mult_le_mono semiring_normalization_rules(7))
+  apply (drule (1) le_neq_trans)
+  apply clarsimp
+  apply (subgoal_tac "\<exists>m. n = n' + m")
+   prefer 2
+   apply (simp add: le_Suc_ex)
+  apply (clarsimp simp: power_add)
+  by (metis Suc_leI mult.assoc mult_Suc_right nat_mult_le_cancel_disj)
+
 end
