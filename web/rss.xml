@@ -64,6 +64,31 @@ used for type-safe conversions between the SI system and others, like
 the British Imperial System (BIS).</description>
     </item>
     <item>
+       <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
+              <link>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</link>
+       <guid>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we extend our formalization of the safely
+composable DOM with Shadow Roots. This is a proposal for Shadow Roots
+with stricter safety guarantess than the standard compliant
+formalization (see &#34;Shadow DOM&#34;). Shadow Roots are a recent
+proposal of the web community to support a component-based development
+approach for client-side web applications.  Shadow roots are a
+significant extension to the DOM standard and, as web standards are
+condemned to be backward compatible, such extensions often result in
+complex specification that may contain unwanted subtleties that can be
+detected by a formalization.  Our Isabelle/HOL formalization is, in
+the sense of object-orientation, an extension of our formalization of
+the core DOM and enjoys the same basic properties, i.e., it is
+extensible, i.e., can be extended without the need of re-proving
+already proven properties and executable, i.e., we can generate
+executable code from our specification. We exploit the executability
+to show that our formalization complies to the official standard of
+the W3C, respectively, the WHATWG.</description>
+    </item>
+    <item>
        <title>The Safely Composable DOM</title>
               <link>https://www.isa-afp.org/entries/Core_SC_DOM.html</link>
        <guid>https://www.isa-afp.org/entries/Core_SC_DOM.html</guid>
@@ -564,53 +589,6 @@ correctness and completeness result proved in Isabelle establishes a
 connection between the notion of Attack Tree validity and CTL. The
 application is illustrated on the example of a healthcare IoT system
 and GDPR compliance verification.</description>
-    </item>
-    <item>
-       <title>Power Sum Polynomials</title>
-              <link>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</link>
-       <guid>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of the symmetric
-multivariate polynomials known as &lt;em&gt;power sum
-polynomials&lt;/em&gt;. These are of the form
-p&lt;sub&gt;n&lt;/sub&gt;(&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,
-&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;) =
-&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;
-+ &amp;hellip; +
-X&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;.
-A formal proof of the Girard–Newton Theorem is also given. This
-theorem relates the power sum polynomials to the elementary symmetric
-polynomials s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; in the form
-of a recurrence relation
-(-1)&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;
-&lt;em&gt;k&lt;/em&gt; s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;
-=
-&amp;sum;&lt;sub&gt;i&amp;isinv;[0,&lt;em&gt;k&lt;/em&gt;)&lt;/sub&gt;
-(-1)&lt;sup&gt;i&lt;/sup&gt; s&lt;sub&gt;i&lt;/sub&gt;
-p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;-&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;&amp;thinsp;.&lt;/p&gt;
-&lt;p&gt;As an application, this is then used to solve a generalised
-form of a puzzle given as an exercise in Dummit and Foote&#39;s
-&lt;em&gt;Abstract Algebra&lt;/em&gt;: For &lt;em&gt;k&lt;/em&gt;
-complex unknowns &lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,
-&amp;hellip;,
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;,
-define p&lt;sub&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sub&gt; :=
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;
-+ &amp;hellip; +
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;.
-Then for each vector &lt;em&gt;a&lt;/em&gt; &amp;isinv;
-&amp;#x2102;&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;, show that
-there is exactly one solution to the system p&lt;sub&gt;1&lt;/sub&gt;
-= a&lt;sub&gt;1&lt;/sub&gt;, &amp;hellip;,
-p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; =
-a&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; up to permutation of
-the
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;
-and determine the value of
-p&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt; for
-i&amp;gt;k.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
