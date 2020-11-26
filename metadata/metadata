@@ -8384,6 +8384,30 @@ abstract =
   to show that our formalization complies to the official standard of
   the W3C, respectively, the WHATWG.
 
+[SC_DOM_Components]
+title = A Formalization of Safely Composable Web Components
+author = Achim D. Brucker <https://www.brucker.ch>, Michael Herzberg <http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg>
+topic = Computer science/Data structures
+date = 2020-09-28
+notify = adbrucker@0x5f.org, mail@michael-herzberg.de
+abstract =
+  While the (safely composable) DOM with shadow trees provide the
+  technical basis for defining web components, it does neither defines
+  the concept of web components nor specifies the safety properties that
+  web components should guarantee. Consequently, the standard also does
+  not discuss how or even if the methods for modifying the DOM respect
+  component boundaries. In AFP entry, we present a formally verified
+  model of safely composable web components and define safety properties
+  which ensure that different web components can only interact with each
+  other using well-defined interfaces. Moreover, our verification of the
+  application programming interface (API) of the DOM revealed numerous
+  invariants that implementations of the DOM API need to preserve to
+  ensure the integrity of components.  In comparison to the strict
+  standard compliance formalization of Web Components in the AFP entry
+  "DOM_Components", the notion of components in this entry
+  (based on "SC_DOM" and "Shadow_SC_DOM") provides
+  much stronger safety guarantees.
+
 [Store_Buffer_Reduction]
 title = A Reduction Theorem for Store Buffers
 author = Ernie Cohen <mailto:ecohen@amazon.com>, Norbert Schirmer <mailto:norbert.schirmer@web.de>
