@@ -8337,6 +8337,28 @@ abstract =
   2) executable, i.e., we can generate executable code from our
   specification.
 
+[Core_SC_DOM]
+title = The Safely Composable DOM
+author = Achim D. Brucker <https://www.brucker.ch>, Michael Herzberg <http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg>
+topic = Computer science/Data structures
+date = 2020-09-28
+notify = adbrucker@0x5f.org, mail@michael-herzberg.de
+abstract =
+  In this AFP entry, we formalize the core of the Safely Composable
+  Document Object Model (SC DOM). The SC DOM improve the standard DOM
+  (as formalized in the AFP entry "Core DOM") by strengthening
+  the tree boundaries set by shadow roots: in the SC DOM, the shadow
+  root is a sub-class of the document class (instead of a base class).
+  This modifications also results in changes to some API methods (e.g.,
+  getOwnerDocument) to return the nearest shadow root rather than the
+  document root. As a result, many API methods that, when called on a
+  node inside a shadow tree, would previously ``break out''
+  and return or modify nodes that are possibly outside the shadow tree,
+  now stay within its boundaries. This change in behavior makes programs
+  that operate on shadow trees more predictable for the developer and
+  allows them to make more assumptions about other code accessing the
+  DOM.
+
 [Store_Buffer_Reduction]
 title = A Reduction Theorem for Store Buffers
 author = Ernie Cohen <mailto:ecohen@amazon.com>, Norbert Schirmer <mailto:norbert.schirmer@web.de>

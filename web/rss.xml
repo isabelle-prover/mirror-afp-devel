@@ -64,6 +64,28 @@ used for type-safe conversions between the SI system and others, like
 the British Imperial System (BIS).</description>
     </item>
     <item>
+       <title>The Safely Composable DOM</title>
+              <link>https://www.isa-afp.org/entries/Core_SC_DOM.html</link>
+       <guid>https://www.isa-afp.org/entries/Core_SC_DOM.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we formalize the core of the Safely Composable
+Document Object Model (SC DOM). The SC DOM improve the standard DOM
+(as formalized in the AFP entry &#34;Core DOM&#34;) by strengthening
+the tree boundaries set by shadow roots: in the SC DOM, the shadow
+root is a sub-class of the document class (instead of a base class).
+This modifications also results in changes to some API methods (e.g.,
+getOwnerDocument) to return the nearest shadow root rather than the
+document root. As a result, many API methods that, when called on a
+node inside a shadow tree, would previously ``break out&#39;&#39;
+and return or modify nodes that are possibly outside the shadow tree,
+now stay within its boundaries. This change in behavior makes programs
+that operate on shadow trees more predictable for the developer and
+allows them to make more assumptions about other code accessing the
+DOM.</description>
+    </item>
+    <item>
        <title>Syntax-Independent Logic Infrastructure</title>
               <link>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</link>
        <guid>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</guid>
@@ -589,32 +611,6 @@ the
 and determine the value of
 p&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt; for
 i&amp;gt;k.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Lambert W Function on the Reals</title>
-              <link>https://www.isa-afp.org/entries/Lambert_W.html</link>
-       <guid>https://www.isa-afp.org/entries/Lambert_W.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Lambert &lt;em&gt;W&lt;/em&gt; function is a multi-valued
-function defined as the inverse function of &lt;em&gt;x&lt;/em&gt;
-&amp;#x21A6; &lt;em&gt;x&lt;/em&gt;
-e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt;. Besides numerous
-applications in combinatorics, physics, and engineering, it also
-frequently occurs when solving equations containing both
-e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt; and
-&lt;em&gt;x&lt;/em&gt;, or both &lt;em&gt;x&lt;/em&gt; and log
-&lt;em&gt;x&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This article provides a
-definition of the two real-valued branches
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-and
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;-1&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-and proves various properties such as basic identities and
-inequalities, monotonicity, differentiability, asymptotic expansions,
-and the MacLaurin series of
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
