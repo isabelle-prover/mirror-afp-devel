@@ -30,7 +30,7 @@ type_synonym 'grp' ck = "'grp'"
 type_synonym 'grp' vk = "'grp'"
 type_synonym plain = "nat"
 type_synonym 'grp' commit = "'grp'"
-type_synonym opening = "nat"
+type_synonym "opening" = "nat"
 
 definition key_gen :: "('grp ck \<times> 'grp vk) spmf"
 where 

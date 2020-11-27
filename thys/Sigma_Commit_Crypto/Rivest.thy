@@ -29,7 +29,7 @@ type_synonym ck = "nat \<times> nat"
 type_synonym vk = "nat \<times> nat"
 type_synonym plain = "nat"
 type_synonym commit = "nat"
-type_synonym opening = "nat \<times> nat"
+type_synonym "opening" = "nat \<times> nat"
 
 definition key_gen :: "(ck \<times> vk) spmf"
   where 

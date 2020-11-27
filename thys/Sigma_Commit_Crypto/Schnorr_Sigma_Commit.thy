@@ -81,7 +81,7 @@ type_synonym 'grp' ck = "'grp'"
 type_synonym 'grp' vk = "'grp' \<times> nat"
 type_synonym plain = "nat"
 type_synonym 'grp' commit = "'grp'"
-type_synonym opening = "nat" 
+type_synonym "opening" = "nat" 
 
 text\<open>The adversary we use in the discrete log game to reduce the binding property to the discrete log assumption.\<close>
 
