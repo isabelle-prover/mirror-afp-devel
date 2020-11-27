@@ -9906,3 +9906,14 @@ abstract =
   used for type-safe conversions between the SI system and others, like
   the British Imperial System (BIS).
 
+[Finite-Map-Extras]
+title = Finite Map Extras
+author = Javier Díaz <mailto:javier.diaz.manzi@gmail.com>
+topic = Computer science/Data structures
+date = 2020-10-12
+notify = javier.diaz.manzi@gmail.com
+abstract =
+  This entry includes useful syntactic sugar, new operators and functions, and
+  their associated lemmas for finite maps which currently are not
+  present in the standard Finite_Map theory.
+
