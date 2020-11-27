@@ -1,4 +1,5 @@
 ADS_Functor
+AI_Planning_Languages_Semantics
 AODV
 AVL-Trees
 AWN
@@ -103,6 +104,7 @@ Constructor_Funs
 Containers
 CoreC++
 Core_DOM
+Core_SC_DOM
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
@@ -145,8 +147,8 @@ Error_Function
 Euler_MacLaurin
 Euler_Partition
 Example-Submission
-Extended_Finite_State_Machines
 Extended_Finite_State_Machine_Inference
+Extended_Finite_State_Machines
 FFT
 FLP
 FOL-Fitting
@@ -380,6 +382,7 @@ Password_Authentication_Protocol
 Pell
 Perfect-Number-Thm
 Perron_Frobenius
+Physical_Quantities
 Pi_Calculus
 Pi_Transcendental
 Planarity_Certificates
@@ -422,7 +425,6 @@ Quaternions
 Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
-Robinson_Arithmetic
 RSAPSS
 Ramsey-Infinite
 Random_BSTs
@@ -449,10 +451,12 @@ Resolution_FOL
 Rewriting_Z
 Ribbon_Proofs
 Robbins-Conjecture
+Robinson_Arithmetic
 Root_Balanced_Tree
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
+SC_DOM_Components
 SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
@@ -469,6 +473,7 @@ Separata
 Separation_Algebra
 Separation_Logic_Imperative_HOL
 SequentInvertibility
+Shadow_SC_DOM
 Shivers-CFA
 ShortestPath
 Show
@@ -544,6 +549,7 @@ Valuation
 VectorSpace
 VeriComp
 Verified-Prover
+Verified_SAT_Based_AI_Planning
 VerifyThis2018
 VerifyThis2019
 Vickrey_Clarke_Groves

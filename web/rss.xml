@@ -9,7 +9,131 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
+    <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Verified SAT-Based AI Planning</title>
+              <link>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
+       <guid>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
+       <dc:creator> Mohammad Abdulaziz, Friedrich Kurz       </dc:creator>
+       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+We present an executable formally verified SAT encoding of classical
+AI planning that is based on the encodings by Kautz and Selman and the
+one by Rintanen et al. The encoding was experimentally tested and
+shown to be usable for reasonably sized standard AI planning
+benchmarks. We also use it as a reference to test a state-of-the-art
+SAT-based planner, showing that it sometimes falsely claims that
+problems have no solutions of certain lengths. The formalisation in
+this submission was described in an independent publication.</description>
+    </item>
+    <item>
+       <title>AI Planning Languages Semantics</title>
+              <link>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
+       <dc:creator> Mohammad Abdulaziz, Peter Lammich       </dc:creator>
+       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+This is an Isabelle/HOL formalisation of the semantics of the
+multi-valued planning tasks language that is used by the planning
+system Fast-Downward, the STRIPS fragment of the Planning Domain
+Definition Language (PDDL), and the STRIPS soundness meta-theory
+developed by Vladimir Lifschitz. It also contains formally verified
+checkers for checking the well-formedness of problems specified in
+either language as well the correctness of potential solutions. The
+formalisation in this entry was described in an earlier publication.</description>
+    </item>
+    <item>
+       <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+              <link>https://www.isa-afp.org/entries/Physical_Quantities.html</link>
+       <guid>https://www.isa-afp.org/entries/Physical_Quantities.html</guid>
+       <dc:creator> Simon Foster, Burkhart Wolff       </dc:creator>
+       <pubDate>20 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+The present Isabelle theory builds a formal model for both the
+International System of Quantities (ISQ) and the International System
+of Units (SI), which are both fundamental for physics and engineering.
+Both the ISQ and the SI are deeply integrated into Isabelle&#39;s
+type system. Quantities are parameterised by dimension types, which
+correspond to base vectors, and thus only quantities of the same
+dimension can be equated. Since the underlying &#34;algebra of
+quantities&#34; induces congruences on quantity and SI types,
+specific tactic support is developed to capture these. Our
+construction is validated by a test-set of known equivalences between
+both quantities and SI units. Moreover, the presented theory can be
+used for type-safe conversions between the SI system and others, like
+the British Imperial System (BIS).</description>
+    </item>
+    <item>
+       <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
+              <link>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</link>
+       <guid>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we extend our formalization of the safely
+composable DOM with Shadow Roots. This is a proposal for Shadow Roots
+with stricter safety guarantess than the standard compliant
+formalization (see &#34;Shadow DOM&#34;). Shadow Roots are a recent
+proposal of the web community to support a component-based development
+approach for client-side web applications.  Shadow roots are a
+significant extension to the DOM standard and, as web standards are
+condemned to be backward compatible, such extensions often result in
+complex specification that may contain unwanted subtleties that can be
+detected by a formalization.  Our Isabelle/HOL formalization is, in
+the sense of object-orientation, an extension of our formalization of
+the core DOM and enjoys the same basic properties, i.e., it is
+extensible, i.e., can be extended without the need of re-proving
+already proven properties and executable, i.e., we can generate
+executable code from our specification. We exploit the executability
+to show that our formalization complies to the official standard of
+the W3C, respectively, the WHATWG.</description>
+    </item>
+    <item>
+       <title>A Formalization of Safely Composable Web Components</title>
+              <link>https://www.isa-afp.org/entries/SC_DOM_Components.html</link>
+       <guid>https://www.isa-afp.org/entries/SC_DOM_Components.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+While the (safely composable) DOM with shadow trees provide the
+technical basis for defining web components, it does neither defines
+the concept of web components nor specifies the safety properties that
+web components should guarantee. Consequently, the standard also does
+not discuss how or even if the methods for modifying the DOM respect
+component boundaries. In AFP entry, we present a formally verified
+model of safely composable web components and define safety properties
+which ensure that different web components can only interact with each
+other using well-defined interfaces. Moreover, our verification of the
+application programming interface (API) of the DOM revealed numerous
+invariants that implementations of the DOM API need to preserve to
+ensure the integrity of components.  In comparison to the strict
+standard compliance formalization of Web Components in the AFP entry
+&#34;DOM_Components&#34;, the notion of components in this entry
+(based on &#34;SC_DOM&#34; and &#34;Shadow_SC_DOM&#34;) provides
+much stronger safety guarantees.</description>
+    </item>
+    <item>
+       <title>The Safely Composable DOM</title>
+              <link>https://www.isa-afp.org/entries/Core_SC_DOM.html</link>
+       <guid>https://www.isa-afp.org/entries/Core_SC_DOM.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we formalize the core of the Safely Composable
+Document Object Model (SC DOM). The SC DOM improve the standard DOM
+(as formalized in the AFP entry &#34;Core DOM&#34;) by strengthening
+the tree boundaries set by shadow roots: in the SC DOM, the shadow
+root is a sub-class of the document class (instead of a base class).
+This modifications also results in changes to some API methods (e.g.,
+getOwnerDocument) to return the nearest shadow root rather than the
+document root. As a result, many API methods that, when called on a
+node inside a shadow tree, would previously ``break out&#39;&#39;
+and return or modify nodes that are possibly outside the shadow tree,
+now stay within its boundaries. This change in behavior makes programs
+that operate on shadow trees more predictable for the developer and
+allows them to make more assumptions about other code accessing the
+DOM.</description>
+    </item>
     <item>
        <title>Syntax-Independent Logic Infrastructure</title>
               <link>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</link>
@@ -474,153 +598,6 @@ We formalize the theory of forcing in the set theory framework of
 Isabelle/ZF. Under the assumption of the existence of a countable
 transitive model of ZFC, we construct a proper generic extension and
 show that the latter also satisfies ZFC.</description>
-    </item>
-    <item>
-       <title>Banach-Steinhaus Theorem</title>
-              <link>https://www.isa-afp.org/entries/Banach_Steinhaus.html</link>
-       <guid>https://www.isa-afp.org/entries/Banach_Steinhaus.html</guid>
-       <dc:creator> Dominique Unruh, Jose Manuel Rodriguez Caballero       </dc:creator>
-       <pubDate>02 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize in Isabelle/HOL a result
-due to S. Banach and H. Steinhaus known as
-the Banach-Steinhaus theorem or Uniform boundedness principle: a
-pointwise-bounded family of continuous linear operators from a Banach
-space to a normed space is uniformly bounded. Our approach is an
-adaptation to Isabelle/HOL of a proof due to A. Sokal.</description>
-    </item>
-    <item>
-       <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
-              <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Attack_Trees.html</guid>
-       <dc:creator> Florian Kammueller       </dc:creator>
-       <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-In this article, we present a proof theory for Attack Trees. Attack
-Trees are a well established and useful model for the construction of
-attacks on systems since they allow a stepwise exploration of high
-level attacks in application scenarios. Using the expressiveness of
-Higher Order Logic in Isabelle, we develop a generic
-theory of Attack Trees with a state-based semantics based on Kripke
-structures and CTL. The resulting framework
-allows mechanically supported logic analysis of the meta-theory of the
-proof calculus of Attack Trees and at the same time the developed
-proof theory enables application to case studies. A central
-correctness and completeness result proved in Isabelle establishes a
-connection between the notion of Attack Tree validity and CTL. The
-application is illustrated on the example of a healthcare IoT system
-and GDPR compliance verification.</description>
-    </item>
-    <item>
-       <title>Power Sum Polynomials</title>
-              <link>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</link>
-       <guid>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of the symmetric
-multivariate polynomials known as &lt;em&gt;power sum
-polynomials&lt;/em&gt;. These are of the form
-p&lt;sub&gt;n&lt;/sub&gt;(&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,
-&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;) =
-&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;
-+ &amp;hellip; +
-X&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;.
-A formal proof of the Girard–Newton Theorem is also given. This
-theorem relates the power sum polynomials to the elementary symmetric
-polynomials s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; in the form
-of a recurrence relation
-(-1)&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;
-&lt;em&gt;k&lt;/em&gt; s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;
-=
-&amp;sum;&lt;sub&gt;i&amp;isinv;[0,&lt;em&gt;k&lt;/em&gt;)&lt;/sub&gt;
-(-1)&lt;sup&gt;i&lt;/sup&gt; s&lt;sub&gt;i&lt;/sub&gt;
-p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;-&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;&amp;thinsp;.&lt;/p&gt;
-&lt;p&gt;As an application, this is then used to solve a generalised
-form of a puzzle given as an exercise in Dummit and Foote&#39;s
-&lt;em&gt;Abstract Algebra&lt;/em&gt;: For &lt;em&gt;k&lt;/em&gt;
-complex unknowns &lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,
-&amp;hellip;,
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;,
-define p&lt;sub&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sub&gt; :=
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;
-+ &amp;hellip; +
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;.
-Then for each vector &lt;em&gt;a&lt;/em&gt; &amp;isinv;
-&amp;#x2102;&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;, show that
-there is exactly one solution to the system p&lt;sub&gt;1&lt;/sub&gt;
-= a&lt;sub&gt;1&lt;/sub&gt;, &amp;hellip;,
-p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; =
-a&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; up to permutation of
-the
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;
-and determine the value of
-p&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt; for
-i&amp;gt;k.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Lambert W Function on the Reals</title>
-              <link>https://www.isa-afp.org/entries/Lambert_W.html</link>
-       <guid>https://www.isa-afp.org/entries/Lambert_W.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Lambert &lt;em&gt;W&lt;/em&gt; function is a multi-valued
-function defined as the inverse function of &lt;em&gt;x&lt;/em&gt;
-&amp;#x21A6; &lt;em&gt;x&lt;/em&gt;
-e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt;. Besides numerous
-applications in combinatorics, physics, and engineering, it also
-frequently occurs when solving equations containing both
-e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt; and
-&lt;em&gt;x&lt;/em&gt;, or both &lt;em&gt;x&lt;/em&gt; and log
-&lt;em&gt;x&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This article provides a
-definition of the two real-valued branches
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-and
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;-1&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-and proves various properties such as basic identities and
-inequalities, monotonicity, differentiability, asymptotic expansions,
-and the MacLaurin series of
-&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
-at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Gaussian Integers</title>
-              <link>https://www.isa-afp.org/entries/Gaussian_Integers.html</link>
-       <guid>https://www.isa-afp.org/entries/Gaussian_Integers.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Gaussian integers are the subring &amp;#8484;[i] of the
-complex numbers, i. e. the ring of all complex numbers with integral
-real and imaginary part. This article provides a definition of this
-ring as well as proofs of various basic properties, such as that they
-form a Euclidean ring and a full classification of their primes. An
-executable (albeit not very efficient) factorisation algorithm is also
-provided.&lt;/p&gt; &lt;p&gt;Lastly, this Gaussian integer
-formalisation is used in two short applications:&lt;/p&gt; &lt;ol&gt;
-&lt;li&gt; The characterisation of all positive integers that can be
-written as sums of two squares&lt;/li&gt; &lt;li&gt; Euclid&#39;s
-formula for primitive Pythagorean triples&lt;/li&gt; &lt;/ol&gt;
-&lt;p&gt;While elementary proofs for both of these are already
-available in the AFP, the theory of Gaussian integers provides more
-concise proofs and a more high-level view.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Matrices for ODEs</title>
-              <link>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</link>
-       <guid>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</guid>
-       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
-       <pubDate>19 Apr 2020 00:00:00 +0000</pubDate>
-       <description>
-Our theories formalise various matrix properties that serve to
-establish existence, uniqueness and characterisation of the solution
-to affine systems of ordinary differential equations (ODEs). In
-particular, we formalise the operator and maximum norm of matrices.
-Then we use them to prove that square matrices form a Banach space,
-and in this setting, we show an instance of Picard-Lindelöf’s
-theorem for affine systems of ODEs. Finally, we use this formalisation
-to verify three simple hybrid programs.</description>
     </item>
   </channel>
 </rss>
