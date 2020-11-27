@@ -7552,7 +7552,7 @@ abstract =
 
 [Verified_SAT_Based_AI_Planning]
 title = Verified SAT-Based AI Planning
-author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz <>
 topic = Computer science/Artificial intelligence
 date = 2020-10-29
 notify = mohammad.abdulaziz8@gmail.com
