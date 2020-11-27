@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Automated Stateful Protocol Verification - Archive of Formal Proofs
+<title>A Formalization of Web Components - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,13 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>utomated
+  <h1>          <font class="first">A</font>
   
-          <font class="first">S</font>tateful
+          <font class="first">F</font>ormalization
   
-          <font class="first">P</font>rotocol
+          of
   
-          <font class="first">V</font>erification
+          <font class="first">W</font>eb
+  
+          <font class="first">C</font>omponents
   
 </h1>
   <p>&nbsp;</p>
@@ -89,7 +91,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Automated Stateful Protocol Verification</td>
+  <td class="data" width="80%">A Formalization of Web Components</td>
 </tr>
 
 <tr>
@@ -97,10 +99,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      Andreas V. Hess (avhe /at/ dtu /dot/ dk),
-                  <a href="https://people.compute.dtu.dk/samo/">Sebastian Mödersheim</a>,
-                <a href="https://www.brucker.ch">Achim D. Brucker</a> and
-          <a href="https://people.compute.dtu.dk/andschl/">Anders Schlichtkrull</a>
+                    <a href="https://www.brucker.ch">Achim D. Brucker</a> and
+          <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">Michael Herzberg</a>
       </td>
 </tr>
 
@@ -108,33 +108,37 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-04-08</td>
+  <td class="data">2020-09-28</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-In protocol verification we observe a wide spectrum from fully
-automated methods to interactive theorem proving with proof assistants
-like Isabelle/HOL. In this AFP entry, we present a fully-automated
-approach for verifying stateful security protocols, i.e., protocols
-with mutable state that may span several sessions. The approach
-supports reachability goals like secrecy and authentication. We also
-include a simple user-friendly transaction-based protocol
-specification language that is embedded into Isabelle.</td>
+While the DOM with shadow trees provide the technical basis for
+defining web components, the DOM standard neither defines the concept
+of web components nor specifies the safety properties that web
+components should guarantee. Consequently, the standard also does not
+discuss how or even if the methods for modifying the DOM respect
+component boundaries.  In AFP entry, we present a formally verified
+model of web components and define safety properties which ensure that
+different web components can only interact with each other using
+well-defined interfaces. Moreover, our verification of the application
+programming interface (API) of the DOM revealed numerous invariants
+that implementations of the DOM API need to preserve to ensure the
+integrity of components.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Automated_Stateful_Protocol_Verification-AFP,
-  author  = {Andreas V. Hess and Sebastian Mödersheim and Achim D. Brucker and Anders Schlichtkrull},
-  title   = {Automated Stateful Protocol Verification},
+        <pre>@article{DOM_Components-AFP,
+  author  = {Achim D. Brucker and Michael Herzberg},
+  title   = {A Formalization of Web Components},
   journal = {Archive of Formal Proofs},
-  month   = apr,
+  month   = sep,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html},
+  note    = {\url{http://isa-afp.org/entries/DOM_Components.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -146,7 +150,7 @@ specification language that is embedded into Isabelle.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stateful_Protocol_Composition_and_Typing.html">Stateful_Protocol_Composition_and_Typing</a>      </td></tr>
+          <td class="data"><a href="Shadow_DOM.html">Shadow_DOM</a>      </td></tr>
           
                     
 
@@ -160,17 +164,17 @@ specification language that is embedded into Isabelle.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/DOM_Components/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/DOM_Components/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/DOM_Components/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Automated_Stateful_Protocol_Verification-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-DOM_Components-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

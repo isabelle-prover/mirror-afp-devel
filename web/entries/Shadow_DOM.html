@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Automated Stateful Protocol Verification - Archive of Formal Proofs
+<title>A Formal Model of the Document Object Model with Shadow Roots - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,13 +74,27 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>utomated
+  <h1>          <font class="first">A</font>
   
-          <font class="first">S</font>tateful
+          <font class="first">F</font>ormal
   
-          <font class="first">P</font>rotocol
+          <font class="first">M</font>odel
   
-          <font class="first">V</font>erification
+          of
+  
+          the
+  
+          <font class="first">D</font>ocument
+  
+          <font class="first">O</font>bject
+  
+          <font class="first">M</font>odel
+  
+          with
+  
+          <font class="first">S</font>hadow
+  
+          <font class="first">R</font>oots
   
 </h1>
   <p>&nbsp;</p>
@@ -89,7 +103,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Automated Stateful Protocol Verification</td>
+  <td class="data" width="80%">A Formal Model of the Document Object Model with Shadow Roots</td>
 </tr>
 
 <tr>
@@ -97,10 +111,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      Andreas V. Hess (avhe /at/ dtu /dot/ dk),
-                  <a href="https://people.compute.dtu.dk/samo/">Sebastian Mödersheim</a>,
-                <a href="https://www.brucker.ch">Achim D. Brucker</a> and
-          <a href="https://people.compute.dtu.dk/andschl/">Anders Schlichtkrull</a>
+                    <a href="https://www.brucker.ch">Achim D. Brucker</a> and
+          <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">Michael Herzberg</a>
       </td>
 </tr>
 
@@ -108,33 +120,40 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-04-08</td>
+  <td class="data">2020-09-28</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-In protocol verification we observe a wide spectrum from fully
-automated methods to interactive theorem proving with proof assistants
-like Isabelle/HOL. In this AFP entry, we present a fully-automated
-approach for verifying stateful security protocols, i.e., protocols
-with mutable state that may span several sessions. The approach
-supports reachability goals like secrecy and authentication. We also
-include a simple user-friendly transaction-based protocol
-specification language that is embedded into Isabelle.</td>
+In this AFP entry, we extend our formalization of the core DOM with
+Shadow Roots. Shadow roots are a recent proposal of the web community
+to support a component-based development approach for client-side web
+applications.  Shadow roots are a significant extension to the DOM
+standard and, as web standards are condemned to be backward
+compatible, such extensions often result in complex specification that
+may contain unwanted subtleties that can be detected by a
+formalization.  Our Isabelle/HOL formalization is, in the sense of
+object-orientation, an extension of our formalization of the core DOM
+and enjoys the same basic properties, i.e., it is extensible, i.e.,
+can be extended without the need of re-proving already proven
+properties and executable, i.e., we can generate executable code from
+our specification. We exploit the executability to show that our
+formalization complies to the official standard of the W3C,
+respectively, the WHATWG.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Automated_Stateful_Protocol_Verification-AFP,
-  author  = {Andreas V. Hess and Sebastian Mödersheim and Achim D. Brucker and Anders Schlichtkrull},
-  title   = {Automated Stateful Protocol Verification},
+        <pre>@article{Shadow_DOM-AFP,
+  author  = {Achim D. Brucker and Michael Herzberg},
+  title   = {A Formal Model of the Document Object Model with Shadow Roots},
   journal = {Archive of Formal Proofs},
-  month   = apr,
+  month   = sep,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html},
+  note    = {\url{http://isa-afp.org/entries/Shadow_DOM.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -146,9 +165,11 @@ specification language that is embedded into Isabelle.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stateful_Protocol_Composition_and_Typing.html">Stateful_Protocol_Composition_and_Typing</a>      </td></tr>
+          <td class="data"><a href="Core_DOM.html">Core_DOM</a>      </td></tr>
           
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="DOM_Components.html">DOM_Components</a>      </td></tr>
+          
 
         
   </tbody>
@@ -160,17 +181,17 @@ specification language that is embedded into Isabelle.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Shadow_DOM/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Shadow_DOM/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Automated_Stateful_Protocol_Verification/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Shadow_DOM/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Automated_Stateful_Protocol_Verification-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Shadow_DOM-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

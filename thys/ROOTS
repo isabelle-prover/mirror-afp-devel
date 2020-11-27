@@ -133,6 +133,7 @@ Dirichlet_Series
 DiscretePricing
 Discrete_Summation
 DiskPaxos
+DOM_Components
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -465,6 +466,7 @@ Safe_Distance
 Safe_OCL
 Saturation_Framework
 Saturation_Framework_Extensions
+Shadow_DOM
 Secondary_Sylow
 Security_Protocol_Refinement
 Selection_Heap_Sort
