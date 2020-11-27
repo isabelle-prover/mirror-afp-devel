@@ -1074,4 +1074,81 @@ lemma aligned_add_mask_less_eq:
   for y::"'a::len word"
   using aligned_add_mask_lessD is_aligned_add_step_le word_le_not_less by blast
 
+lemma is_aligned_diff:
+  fixes m :: "'a::len word"
+  assumes alm: "is_aligned m s1"
+  and     aln: "is_aligned n s2"
+  and    s2wb: "s2 < LENGTH('a)"
+  and      nm: "m \<in> {n .. n + (2 ^ s2 - 1)}"
+  and    s1s2: "s1 \<le> s2"
+  and     s10: "0 < s1" (* Probably can be folded into the proof \<dots> *)
+shows  "\<exists>q. m - n = of_nat q * 2 ^ s1 \<and> q < 2 ^ (s2 - s1)"
+proof -
+  have rl: "\<And>m s. \<lbrakk> m < 2 ^ (LENGTH('a) - s); s < LENGTH('a) \<rbrakk> \<Longrightarrow> unat ((2::'a word) ^ s * of_nat m) = 2 ^ s * m"
+  proof -
+    fix m :: nat and  s
+    assume m: "m < 2 ^ (LENGTH('a) - s)" and s: "s < LENGTH('a)"
+    then have "unat ((of_nat m) :: 'a word) = m"
+      apply (subst unat_of_nat)
+      apply (subst mod_less)
+       apply (erule order_less_le_trans)
+       apply (rule power_increasing)
+        apply simp_all
+      done
+
+    then show "?thesis m s" using s m
+      apply (subst iffD1 [OF unat_mult_lem])
+      apply (simp add: nat_less_power_trans)+
+      done
+  qed
+  have s1wb: "s1 < LENGTH('a)" using s2wb s1s2 by simp
+  from alm obtain mq where mmq: "m = 2 ^ s1 * of_nat mq" and mq: "mq < 2 ^ (LENGTH('a) - s1)"
+    by (auto elim: is_alignedE simp: field_simps)
+  from aln obtain nq where nnq: "n = 2 ^ s2 * of_nat nq" and nq: "nq < 2 ^ (LENGTH('a) - s2)"
+    by (auto elim: is_alignedE simp: field_simps)
+  from s1s2 obtain sq where sq: "s2 = s1 + sq" by (auto simp: le_iff_add)
+
+  note us1 = rl [OF mq s1wb]
+  note us2 = rl [OF nq s2wb]
+
+  from nm have "n \<le> m" by clarsimp
+  then have "(2::'a word) ^ s2 * of_nat nq \<le> 2 ^ s1 * of_nat mq" using nnq mmq by simp
+  then have "2 ^ s2 * nq \<le> 2 ^ s1 * mq" using s1wb s2wb
+    by (simp add: word_le_nat_alt us1 us2)
+  then have nqmq: "2 ^ sq * nq \<le> mq" using sq by (simp add: power_add)
+
+  have "m - n = 2 ^ s1 * of_nat mq - 2 ^ s2 * of_nat nq" using mmq nnq by simp
+  also have "\<dots> = 2 ^ s1 * of_nat mq - 2 ^ s1 * 2 ^ sq * of_nat nq" using sq by (simp add: power_add)
+  also have "\<dots> = 2 ^ s1 * (of_nat mq - 2 ^ sq * of_nat nq)" by (simp add: field_simps)
+  also have "\<dots> = 2 ^ s1 * of_nat (mq - 2 ^ sq * nq)" using s1wb s2wb us1 us2 nqmq
+    by (simp add: word_unat_power of_nat_diff del: of_nat_power)
+  finally have mn: "m - n = of_nat (mq - 2 ^ sq * nq) * 2 ^ s1" by simp
+  moreover
+  from nm have "m - n \<le> 2 ^ s2 - 1"
+    by - (rule word_diff_ls', (simp add: field_simps)+)
+  then have "(2::'a word) ^ s1 * of_nat (mq - 2 ^ sq * nq) < 2 ^ s2" using mn s2wb by (simp add: field_simps)
+  then have "of_nat (mq - 2 ^ sq * nq) < (2::'a word) ^ (s2 - s1)"
+  proof (rule word_power_less_diff)
+    have mm: "mq - 2 ^ sq * nq < 2 ^ (LENGTH('a) - s1)" using mq by simp
+    moreover from s10 have "LENGTH('a) - s1 < LENGTH('a)"
+      by (rule diff_less, simp)
+    ultimately show "of_nat (mq - 2 ^ sq * nq) < (2::'a word) ^ (LENGTH('a) - s1)"
+      using take_bit_nat_less_self_iff [of \<open>LENGTH('a)\<close> \<open>mq - 2 ^ sq * nq\<close>]
+      apply (auto simp add: word_less_nat_alt not_le not_less)
+      apply (metis take_bit_nat_eq_self_iff)
+      done
+  qed
+  then have "mq - 2 ^ sq * nq < 2 ^ (s2 - s1)" using mq s2wb
+    apply (simp add: word_less_nat_alt take_bit_eq_mod)
+    apply (subst (asm) mod_less)
+    apply auto
+     apply (rule order_le_less_trans)
+      apply (rule diff_le_self)
+     apply (erule order_less_le_trans)
+    apply simp
+    done
+  ultimately show ?thesis
+    by auto
+qed
+
 end

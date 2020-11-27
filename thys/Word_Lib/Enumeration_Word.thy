@@ -13,6 +13,7 @@ theory Enumeration_Word
     "HOL-Library.Word"
     More_Word
     Enumeration
+    Even_More_List
 begin
 
 lemma length_word_enum: "length (enum :: 'a :: len word list) = 2 ^ LENGTH('a)"
@@ -269,6 +270,28 @@ lemma length_interval:
     apply (subst (asm) length_upto_enum)
     apply clarsimp
    apply (rule distinct_enum_upto')
+  apply simp
+  done
+
+lemma enum_word_div:
+  fixes v :: "'a :: len word" shows
+  "\<exists>xs ys. enum = xs @ [v] @ ys
+             \<and> (\<forall>x \<in> set xs. x < v)
+             \<and> (\<forall>y \<in> set ys. v < y)"
+  apply (simp only: enum_word_def)
+  apply (subst upt_add_eq_append'[where j="unat v"])
+    apply simp
+   apply (rule order_less_imp_le, simp)
+  apply (simp add: upt_conv_Cons)
+  apply (intro exI conjI)
+    apply fastforce
+   apply clarsimp
+   apply (drule of_nat_mono_maybe[rotated, where 'a='a])
+    apply simp
+   apply simp
+  apply (clarsimp simp: Suc_le_eq)
+  apply (drule of_nat_mono_maybe[rotated, where 'a='a])
+   apply simp
   apply simp
   done
 

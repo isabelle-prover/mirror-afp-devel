@@ -5,28 +5,9 @@ theory More_Misc
 imports Main
 begin
 
-lemma map_idem_upt_eq:
-  \<open>map f [m..<n] = [m..<n]\<close> if \<open>\<And>q. m \<le> q \<Longrightarrow> q < n \<Longrightarrow> f q = q\<close>
-proof (cases \<open>n \<ge> m\<close>)
-  case False
-  then show ?thesis
-    by simp
-next
-  case True
-  moreover define r where \<open>r = n - m\<close>
-  ultimately have \<open>n = m + r\<close>
-    by simp
-  with that have \<open>\<And>q. m \<le> q \<Longrightarrow> q < m + r \<Longrightarrow> f q = q\<close>
-    by simp
-  then have \<open>map f [m..<m + r] = [m..<m + r]\<close>
-    by (induction r) simp_all
-  with \<open>n = m + r\<close> show ?thesis
-    by simp
-qed
-
-lemma upt_zero_numeral_unfold:
-  \<open>[0..<numeral n] = [0..<pred_numeral n] @ [pred_numeral n]\<close>
-  by (simp add: numeral_eq_Suc)
+lemma cart_singleton_empty:
+  "(S \<times> {e} = {}) = (S = {})"
+  by blast
 
 lemma MinI:
   assumes fa: "finite A"
@@ -217,5 +198,26 @@ lemma sum_map_simps[simp]:
   "sum_map f g (Inl v) = Inl (f v)"
   "sum_map f g (Inr w) = Inr (g w)"
   by (simp add: sum_map_def)+
+
+lemma if_Some_None_eq_None:
+  "((if P then Some v else None) = None) = (\<not> P)"
+  by simp
+
+lemma CollectPairFalse [iff]:
+  "{(a,b). False} = {}"
+  by (simp add: split_def)
+
+lemma if_conj_dist:
+  "((if b then w else x) \<and> (if b then y else z) \<and> X) =
+  ((if b then w \<and> y else x \<and> z) \<and> X)"
+  by simp
+
+lemma if_P_True1:
+  "Q \<Longrightarrow> (if P then True else Q)"
+  by simp
+
+lemma if_P_True2:
+  "Q \<Longrightarrow> (if P then Q else True)"
+  by simp
 
 end

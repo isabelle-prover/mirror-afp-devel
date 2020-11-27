@@ -8,8 +8,11 @@ section "Words of Length 8"
 
 theory Word_8
 imports
+  More_Word
+  Enumeration_Word
+  Even_More_List
+  Signed_Words
   Word_Lemmas
-  Word_Syntax
 begin
 
 type_synonym word8 = "8 word"

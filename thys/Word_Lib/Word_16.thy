@@ -8,8 +8,8 @@ section "Words of Length 16"
 
 theory Word_16
 imports
-  Word_Lemmas
-  Word_Syntax
+  More_Word
+  Signed_Words
 begin
 
 type_synonym word16 = "16 word"

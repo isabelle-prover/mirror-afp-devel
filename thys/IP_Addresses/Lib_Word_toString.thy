@@ -125,7 +125,7 @@ lemma string_of_word_base_ten_zeropad:
     apply(subst unat_ten)
     by simp
   have n_less_ten_unat: "n < 0xA \<Longrightarrow> (unat n < 10)"
-    apply(rule Word_Lemmas.unat_less_helper)
+    apply(rule unat_less_helper)
     by(simp)
   have "0xA \<le> n \<Longrightarrow> 10 \<le> unat n" 
     apply(subst(asm) Word.word_le_nat_alt)

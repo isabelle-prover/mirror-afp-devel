@@ -1068,7 +1068,7 @@ lemma build_ip_partition_disjoint:
       "V1 \<in> set (build_ip_partition c rs) \<Longrightarrow> V2 \<in> set (build_ip_partition c rs) \<Longrightarrow>
        V1 \<noteq> V2 \<Longrightarrow>
         wordinterval_to_set V1 \<inter> wordinterval_to_set V2 = {}"
-  by (meson build_ip_partition_same_fw_min int_not_emptyD same_fw_behaviour_one_equi(1))
+  by (metis build_ip_partition_same_fw build_ip_partition_same_fw_min disjoint_iff)
 
 
 lemma map_wordinterval_to_set_distinct:

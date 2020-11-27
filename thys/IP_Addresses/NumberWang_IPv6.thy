@@ -103,8 +103,8 @@ proof -
      apply(simp; fail)
     by(rule of_bl_length_less) simp+
   have mnhelper3: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) * 2 ^ n < 2 ^ m"
-    apply(rule Word.div_lt_mult)
-     apply(rule Word_Lemmas.word_less_two_pow_divI)
+    apply(rule div_lt_mult)
+     apply(rule word_less_two_pow_divI)
        using assms by(simp_all add: mnhelper2 p2_gt_0)
 
   from assms show ?thesis

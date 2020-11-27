@@ -287,7 +287,8 @@ lemma mask_eq:
   \<open>mask n = (1 << n) - (1 :: 'a::len word)\<close>
   by transfer (simp add: mask_eq_exp_minus_1 push_bit_of_1) 
 
-lemma nth_ucast: "(ucast w::'a::len word) !! n = (w !! n \<and> n < LENGTH('a))"
+lemma nth_ucast:
+  "(ucast w::'a::len word) !! n = (w !! n \<and> n < LENGTH('a))"
   by transfer (simp add: bit_take_bit_iff ac_simps)
 
 lemma shiftl_0 [simp]: "(0::'a::len word) << n = 0"

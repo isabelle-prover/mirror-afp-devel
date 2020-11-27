@@ -107,4 +107,45 @@ lemma list_of_false:
   "True \<notin> set xs \<Longrightarrow> xs = replicate (length xs) False"
   by (induct xs, simp_all)
 
+lemma map_idem_upt_eq:
+  \<open>map f [m..<n] = [m..<n]\<close> if \<open>\<And>q. m \<le> q \<Longrightarrow> q < n \<Longrightarrow> f q = q\<close>
+proof (cases \<open>n \<ge> m\<close>)
+  case False
+  then show ?thesis
+    by simp
+next
+  case True
+  moreover define r where \<open>r = n - m\<close>
+  ultimately have \<open>n = m + r\<close>
+    by simp
+  with that have \<open>\<And>q. m \<le> q \<Longrightarrow> q < m + r \<Longrightarrow> f q = q\<close>
+    by simp
+  then have \<open>map f [m..<m + r] = [m..<m + r]\<close>
+    by (induction r) simp_all
+  with \<open>n = m + r\<close> show ?thesis
+    by simp
+qed
+
+lemma upt_zero_numeral_unfold:
+  \<open>[0..<numeral n] = [0..<pred_numeral n] @ [pred_numeral n]\<close>
+  by (simp add: numeral_eq_Suc)
+
+lemma list_all2_induct [consumes 1, case_names Nil Cons]:
+  assumes lall: "list_all2 Q xs ys"
+  and     nilr: "P [] []"
+  and    consr: "\<And>x xs y ys. \<lbrakk>list_all2 Q xs ys; Q x y; P xs ys\<rbrakk> \<Longrightarrow> P (x # xs) (y # ys)"
+  shows  "P xs ys"
+  using lall
+proof (induct rule: list_induct2 [OF list_all2_lengthD [OF lall]])
+  case 1 then show ?case by auto fact+
+next
+  case (2 x xs y ys)
+
+  show ?case
+  proof (rule consr)
+    from "2.prems" show "list_all2 Q xs ys" and "Q x y" by simp_all
+    then show "P xs ys" by (intro "2.hyps")
+  qed
+qed
+
 end

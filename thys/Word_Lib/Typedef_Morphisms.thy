@@ -351,4 +351,15 @@ interpretation test_bit:
 
 lemmas td_nth = test_bit.td_thm
 
+lemma sints_subset:
+  "m \<le> n \<Longrightarrow> sints m \<subseteq> sints n"
+  apply (simp add: sints_num)
+  apply clarsimp
+  apply (rule conjI)
+   apply (erule order_trans[rotated])
+   apply simp
+  apply (erule order_less_le_trans)
+  apply simp
+  done
+
 end

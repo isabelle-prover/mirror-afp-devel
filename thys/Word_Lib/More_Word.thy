@@ -986,4 +986,264 @@ lemma unat_add_lem':
     (unat (x + y :: 'a :: len word) = unat x + unat y)"
   by (subst unat_add_lem[symmetric], assumption)
 
+lemma word_less_two_pow_divI:
+  "\<lbrakk> (x :: 'a::len word) < 2 ^ (n - m); m \<le> n; n < LENGTH('a) \<rbrakk> \<Longrightarrow> x < 2 ^ n div 2 ^ m"
+  apply (simp add: word_less_nat_alt)
+  apply (subst unat_word_ariths)
+  apply (subst mod_less)
+   apply (rule order_le_less_trans [OF div_le_dividend])
+   apply (rule unat_lt2p)
+  apply (simp add: power_sub)
+  done
+
+lemma word_less_two_pow_divD:
+  "\<lbrakk> (x :: 'a::len word) < 2 ^ n div 2 ^ m \<rbrakk>
+     \<Longrightarrow> n \<ge> m \<and> (x < 2 ^ (n - m))"
+  apply (cases "n < LENGTH('a)")
+   apply (cases "m < LENGTH('a)")
+    apply (simp add: word_less_nat_alt)
+    apply (subst(asm) unat_word_ariths)
+    apply (subst(asm) mod_less)
+     apply (rule order_le_less_trans [OF div_le_dividend])
+     apply (rule unat_lt2p)
+    apply (clarsimp dest!: less_two_pow_divD)
+   apply (simp add: power_overflow)
+   apply (simp add: word_div_def)
+  apply (simp add: power_overflow word_div_def)
+  done
+
+lemma of_nat_less_two_pow_div_set:
+  "\<lbrakk> n < LENGTH('a) \<rbrakk> \<Longrightarrow>
+   {x. x < (2 ^ n div 2 ^ m :: 'a::len word)}
+      = of_nat ` {k. k < 2 ^ n div 2 ^ m}"
+  apply (simp add: image_def)
+  apply (safe dest!: word_less_two_pow_divD less_two_pow_divD
+             intro!: word_less_two_pow_divI)
+   apply (rule_tac x="unat x" in exI)
+   apply (simp add: power_sub[symmetric])
+   apply (subst unat_power_lower[symmetric, where 'a='a])
+    apply simp
+   apply (erule unat_mono)
+  apply (subst word_unat_power)
+  apply (rule of_nat_mono_maybe)
+   apply (rule power_strict_increasing)
+    apply simp
+   apply simp
+  apply assumption
+  done
+
+lemma ucast_less:
+  "LENGTH('b) < LENGTH('a) \<Longrightarrow>
+   (ucast (x :: 'b :: len word) :: ('a :: len word)) < 2 ^ LENGTH('b)"
+  by transfer simp
+
+lemma ucast_range_less:
+  "LENGTH('a :: len) < LENGTH('b :: len) \<Longrightarrow>
+   range (ucast :: 'a word \<Rightarrow> 'b word) = {x. x < 2 ^ len_of TYPE ('a)}"
+  apply safe
+   apply (erule ucast_less)
+  apply (simp add: image_def)
+  apply (rule_tac x="ucast x" in exI)
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps)
+  apply (metis bit_take_bit_iff less_mask_eq not_less take_bit_eq_mask)
+  done
+
+lemma word_power_less_diff:
+  "\<lbrakk>2 ^ n * q < (2::'a::len word) ^ m; q < 2 ^ (LENGTH('a) - n)\<rbrakk> \<Longrightarrow> q < 2 ^ (m - n)"
+  apply (case_tac "m \<ge> LENGTH('a)")
+   apply (simp add: power_overflow)
+  apply (case_tac "n \<ge> LENGTH('a)")
+   apply (simp add: power_overflow)
+  apply (cases "n = 0")
+   apply simp
+  apply (subst word_less_nat_alt)
+  apply (subst unat_power_lower)
+   apply simp
+  apply (rule nat_power_less_diff)
+  apply (simp add: word_less_nat_alt)
+  apply (subst (asm) iffD1 [OF unat_mult_lem])
+   apply (simp add:nat_less_power_trans)
+  apply simp
+  done
+
+lemma word_less_sub_1:
+  "x < (y :: 'a :: len word) \<Longrightarrow> x \<le> y - 1"
+  by (fact word_le_minus_one_leq)
+
+lemma word_sub_mono2:
+  "\<lbrakk> a + b \<le> c + d; c \<le> a; b \<le> a + b; d \<le> c + d \<rbrakk>
+    \<Longrightarrow> b \<le> (d :: 'a :: len word)"
+  apply (drule(1) word_sub_mono)
+    apply simp
+   apply simp
+  apply simp
+  done
+
+lemma word_not_le:
+  "(\<not> x \<le> (y :: 'a :: len word)) = (y < x)"
+  by fastforce
+
+lemma word_subset_less:
+  "\<lbrakk> {x .. x + r - 1} \<subseteq> {y .. y + s - 1};
+     x \<le> x + r - 1; y \<le> y + (s :: 'a :: len word) - 1;
+     s \<noteq> 0 \<rbrakk>
+     \<Longrightarrow> r \<le> s"
+  apply (frule subsetD[where c=x])
+   apply simp
+  apply (drule subsetD[where c="x + r - 1"])
+   apply simp
+  apply (clarsimp simp: add_diff_eq[symmetric])
+  apply (drule(1) word_sub_mono2)
+    apply (simp_all add: olen_add_eqv[symmetric])
+  apply (erule word_le_minus_cancel)
+  apply (rule ccontr)
+  apply (simp add: word_not_le)
+  done
+
+lemma uint_power_lower:
+  "n < LENGTH('a) \<Longrightarrow> uint (2 ^ n :: 'a :: len word) = (2 ^ n :: int)"
+  by (rule uint_2p_alt)
+
+lemma power_le_mono:
+  "\<lbrakk>2 ^ n \<le> (2::'a::len word) ^ m; n < LENGTH('a); m < LENGTH('a)\<rbrakk>
+   \<Longrightarrow> n \<le> m"
+  apply (clarsimp simp add: le_less)
+  apply safe
+  apply (simp add: word_less_nat_alt)
+  apply (simp only: uint_arith_simps(3))
+  apply (drule uint_power_lower)+
+  apply simp
+  done
+
+lemma two_power_eq:
+  "\<lbrakk>n < LENGTH('a); m < LENGTH('a)\<rbrakk>
+   \<Longrightarrow> ((2::'a::len word) ^ n = 2 ^ m) = (n = m)"
+  apply safe
+  apply (rule order_antisym)
+   apply (simp add: power_le_mono[where 'a='a])+
+  done
+
+lemma unat_less_helper:
+  "x < of_nat n \<Longrightarrow> unat x < n"
+  apply (simp add: word_less_nat_alt)
+  apply (erule order_less_le_trans)
+  apply (simp add: take_bit_eq_mod)
+  done
+
+lemma nat_uint_less_helper:
+  "nat (uint y) = z \<Longrightarrow> x < y \<Longrightarrow> nat (uint x) < z"
+  apply (erule subst)
+  apply (subst unat_eq_nat_uint [symmetric])
+  apply (subst unat_eq_nat_uint [symmetric])
+  by (simp add: unat_mono)
+
+lemma of_nat_0:
+  "\<lbrakk>of_nat n = (0::'a::len word); n < 2 ^ LENGTH('a)\<rbrakk> \<Longrightarrow> n = 0"
+  by transfer (simp add: take_bit_eq_mod)
+
+lemma of_nat_inj:
+  "\<lbrakk>x < 2 ^ LENGTH('a); y < 2 ^ LENGTH('a)\<rbrakk> \<Longrightarrow>
+   (of_nat x = (of_nat y :: 'a :: len word)) = (x = y)"
+  by (metis unat_of_nat_len)
+
+lemma div_to_mult_word_lt:
+  "\<lbrakk> (x :: 'a :: len word) \<le> y div z \<rbrakk> \<Longrightarrow> x * z \<le> y"
+  apply (cases "z = 0")
+   apply simp
+  apply (simp add: word_neq_0_conv)
+  apply (rule order_trans)
+   apply (erule(1) word_mult_le_mono1)
+   apply (simp add: unat_div)
+   apply (rule order_le_less_trans [OF div_mult_le])
+   apply simp
+  apply (rule word_div_mult_le)
+  done
+
+lemma ucast_ucast_mask:
+  "(ucast :: 'a :: len word \<Rightarrow> 'b :: len word) (ucast x) = x AND mask (len_of TYPE ('a))"
+  apply (simp flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: ac_simps)
+  done
+
+lemma ucast_ucast_len:
+  "\<lbrakk> x < 2 ^ LENGTH('b) \<rbrakk> \<Longrightarrow> ucast (ucast x::'b::len word) = (x::'a::len word)"
+  apply (subst ucast_ucast_mask)
+  apply (erule less_mask_eq)
+  done
+
+lemma ucast_ucast_id:
+  "LENGTH('a) < LENGTH('b) \<Longrightarrow> ucast (ucast (x::'a::len word)::'b::len word) = x"
+  by (auto intro: ucast_up_ucast_id simp: is_up_def source_size_def target_size_def word_size)
+
+lemma unat_ucast:
+  "unat (ucast x :: ('a :: len) word) = unat x mod 2 ^ (LENGTH('a))"
+proof -
+  have \<open>2 ^ LENGTH('a) = nat (2 ^ LENGTH('a))\<close>
+    by simp
+  moreover have \<open>unat (ucast x :: 'a word) = unat x mod nat (2 ^ LENGTH('a))\<close>
+    by transfer (simp flip: nat_mod_distrib take_bit_eq_mod)
+  ultimately show ?thesis
+    by (simp only:)
+qed
+
+lemma ucast_less_ucast:
+  "LENGTH('a) \<le> LENGTH('b) \<Longrightarrow>
+   (ucast x < ((ucast (y :: 'a::len word)) :: 'b::len word)) = (x < y)"
+  apply (simp add: word_less_nat_alt unat_ucast)
+  apply (subst mod_less)
+   apply(rule less_le_trans[OF unat_lt2p], simp)
+  apply (subst mod_less)
+   apply(rule less_le_trans[OF unat_lt2p], simp)
+  apply simp
+  done
+
+\<comment> \<open>This weaker version was previously called @{text ucast_less_ucast}. We retain it to
+    support existing proofs.\<close>
+lemmas ucast_less_ucast_weak = ucast_less_ucast[OF order.strict_implies_order]
+
+lemma unat_Suc2:
+  fixes n :: "'a :: len word"
+  shows
+  "n \<noteq> -1 \<Longrightarrow> unat (n + 1) = Suc (unat n)"
+  apply (subst add.commute, rule unatSuc)
+  apply (subst eq_diff_eq[symmetric], simp add: minus_equation_iff)
+  done
+
+lemma word_div_1:
+  "(n :: 'a :: len word) div 1 = n"
+  by (fact bits_div_by_1)
+
+lemma word_minus_one_le:
+  "-1 \<le> (x :: 'a :: len word) = (x = -1)"
+  by (fact word_order.extremum_unique)
+
+lemma up_scast_inj:
+      "\<lbrakk> scast x = (scast y :: 'b :: len word); size x \<le> LENGTH('b) \<rbrakk>
+         \<Longrightarrow> x = y"
+  apply transfer
+  apply (cases \<open>LENGTH('a)\<close>)
+  apply simp_all
+  apply (metis order_refl take_bit_signed_take_bit take_bit_tightened)
+  done
+
+lemma up_scast_inj_eq:
+  "LENGTH('a) \<le> len_of TYPE ('b) \<Longrightarrow>
+  (scast x = (scast y::'b::len word)) = (x = (y::'a::len word))"
+  by (fastforce dest: up_scast_inj simp: word_size)
+
+lemma word_le_add:
+  fixes x :: "'a :: len word"
+  shows "x \<le> y \<Longrightarrow> \<exists>n. y = x + of_nat n"
+  by (rule exI [where x = "unat (y - x)"]) simp
+
+lemma word_plus_mcs_4':
+  fixes x :: "'a :: len word"
+  shows "\<lbrakk>x + v \<le> x + w; x \<le> x + v\<rbrakk> \<Longrightarrow> v \<le> w"
+  apply (rule word_plus_mcs_4)
+   apply (simp add: add.commute)
+  apply (simp add: add.commute)
+  done
+
 end
