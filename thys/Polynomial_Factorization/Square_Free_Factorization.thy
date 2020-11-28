@@ -1023,7 +1023,7 @@ proof -
   }
   hence ndvd: "\<not> q ^ Suc (Suc i) dvd ?prod" by blast
   with dvd have "order x ?prod = Suc i" unfolding q_def
-    by (rule order_unique_lemma[symmetric])
+    by (metis order_unique_lemma)
   thus ?thesis unfolding ord .
 qed
 
