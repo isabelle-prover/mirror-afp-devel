@@ -165,4 +165,34 @@ lemma sint_eq_uint:
   apply (smt One_nat_def bintrunc_bintrunc_l bintrunc_sbintrunc' diff_le_self len_gt_0 signed_take_bit_eq_if_positive)
   done
 
+lemma scast_eq_ucast:
+  "\<not> msb x \<Longrightarrow> scast x = ucast x"
+  apply (cases \<open>LENGTH('a)\<close>)
+  apply simp
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_signed_iff bit_unsigned_iff min_def msb_word_eq)
+  apply (erule notE)
+  apply (metis le_less_Suc_eq test_bit_bin test_bit_word_eq)
+  done
+
+lemma msb_ucast_eq:
+    "LENGTH('a) = LENGTH('b) \<Longrightarrow>
+         msb (ucast x :: ('a::len) word) = msb (x :: ('b::len) word)"
+  by (simp add: msb_word_eq bit_simps)
+
+lemma msb_big:
+     "msb (a :: ('a::len) word) = (a \<ge> 2 ^ (LENGTH('a)  - Suc 0))"
+  apply (rule iffI)
+   apply (clarsimp simp: msb_nth)
+   apply (drule bang_is_le)
+   apply simp
+  apply (rule ccontr)
+  apply (subgoal_tac "a = a AND mask (LENGTH('a) - Suc 0)")
+   apply (cut_tac and_mask_less' [where w=a and n="LENGTH('a) - Suc 0"])
+    apply (clarsimp simp: word_not_le [symmetric])
+   apply clarsimp
+  apply (rule sym, subst and_mask_eq_iff_shiftr_0)
+  apply (clarsimp simp: msb_shift)
+  done
+
 end

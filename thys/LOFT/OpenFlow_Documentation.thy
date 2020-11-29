@@ -376,7 +376,7 @@ lemma "generalized_fw_join l1 l2 \<equiv> [(u,a,b). (m1,a) \<leftarrow> l1, (m2,
 by(fact generalized_fw_join_def[unfolded option2list_def])+
 text\<open>This definition validates the following lemma:\<close>
 lemma "generalized_sfw (generalized_fw_join fw\<^sub>1 fw\<^sub>2) p = Some (u, d\<^sub>1,d\<^sub>2) \<longleftrightarrow> (\<exists>r\<^sub>1 r\<^sub>2. generalized_sfw fw\<^sub>1 p = Some (r\<^sub>1,d\<^sub>1) \<and> generalized_sfw fw\<^sub>2 p = Some (r\<^sub>2,d\<^sub>2) \<and> Some u = simple_match_and r\<^sub>1 r\<^sub>2)"
-  by(force dest: generalized_fw_joinD generalized_fw_joinI intro: Some_to_the[symmetric])
+  by (auto dest: generalized_fw_joinD sym simp add: generalized_fw_joinI)
 text\<open>Thus, @{const generalized_fw_join} has a number of applications.
 For example, it could be used to compute a firewall ruleset that represents two firewalls that are executed in sequence.
 \<close>

@@ -358,4 +358,64 @@ lemma take_bit_eq_mask_iff_exp_dvd:
   for k :: int
   by (simp add: take_bit_eq_mask_iff flip: take_bit_eq_0_iff)
 
+lemma mod_div_equality_div_eq:
+  "a div b * b = (a - (a mod b) :: int)"
+  by (simp add: field_simps)
+
+lemma zmod_helper:
+  "n mod m = k \<Longrightarrow> ((n :: int) + a) mod m = (k + a) mod m"
+  by (metis add.commute mod_add_right_eq)
+
+lemma int_div_sub_1:
+  "\<lbrakk> m \<ge> 1 \<rbrakk> \<Longrightarrow> (n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)"
+  apply (subgoal_tac "m = 0 \<or> (n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)")
+   apply fastforce
+  apply (subst mult_cancel_right[symmetric])
+  apply (simp only: left_diff_distrib split: if_split)
+  apply (simp only: mod_div_equality_div_eq)
+  apply (clarsimp simp: field_simps)
+  apply (clarsimp simp: dvd_eq_mod_eq_0)
+  apply (cases "m = 1")
+   apply simp
+  apply (subst mod_diff_eq[symmetric], simp add: zmod_minus1)
+  apply clarsimp
+  apply (subst diff_add_cancel[where b=1, symmetric])
+  apply (subst mod_add_eq[symmetric])
+  apply (simp add: field_simps)
+  apply (rule mod_pos_pos_trivial)
+   apply (subst add_0_right[where a=0, symmetric])
+   apply (rule add_mono)
+    apply simp
+   apply simp
+  apply (cases "(n - 1) mod m = m - 1")
+   apply (drule zmod_helper[where a=1])
+   apply simp
+  apply (subgoal_tac "1 + (n - 1) mod m \<le> m")
+   apply simp
+  apply (subst field_simps, rule zless_imp_add1_zle)
+  apply simp
+  done
+
+lemma power_minus_is_div:
+  "b \<le> a \<Longrightarrow> (2 :: nat) ^ (a - b) = 2 ^ a div 2 ^ b"
+  apply (induct a arbitrary: b)
+   apply simp
+  apply (erule le_SucE)
+   apply (clarsimp simp:Suc_diff_le le_iff_add power_add)
+  apply simp
+  done
+
+lemma two_pow_div_gt_le:
+  "v < 2 ^ n div (2 ^ m :: nat) \<Longrightarrow> m \<le> n"
+  by (clarsimp dest!: less_two_pow_divD)
+
+lemma nat_mult_power_less_eq:
+  "b > 0 \<Longrightarrow> (a * b ^ n < (b :: nat) ^ m) = (a < b ^ (m - n))"
+  using mult_less_cancel2[where m = a and k = "b ^ n" and n="b ^ (m - n)"]
+        mult_less_cancel2[where m="a * b ^ (n - m)" and k="b ^ m" and n=1]
+  apply (simp only: power_add[symmetric] nat_minus_add_max)
+  apply (simp only: power_add[symmetric] nat_minus_add_max ac_simps)
+  apply (simp add: max_def split: if_split_asm)
+  done
+
 end

@@ -1121,7 +1121,7 @@ proof -
   also have "\<dots> = 2 ^ s1 * of_nat mq - 2 ^ s1 * 2 ^ sq * of_nat nq" using sq by (simp add: power_add)
   also have "\<dots> = 2 ^ s1 * (of_nat mq - 2 ^ sq * of_nat nq)" by (simp add: field_simps)
   also have "\<dots> = 2 ^ s1 * of_nat (mq - 2 ^ sq * nq)" using s1wb s2wb us1 us2 nqmq
-    by (simp add: word_unat_power of_nat_diff del: of_nat_power)
+    by (simp add: of_nat_diff)
   finally have mn: "m - n = of_nat (mq - 2 ^ sq * nq) * 2 ^ s1" by simp
   moreover
   from nm have "m - n \<le> 2 ^ s2 - 1"
@@ -1150,5 +1150,96 @@ proof -
   ultimately show ?thesis
     by auto
 qed
+
+lemma is_aligned_addD1:
+  assumes al1: "is_aligned (x + y) n"
+  and     al2: "is_aligned (x::'a::len word) n"
+  shows "is_aligned y n"
+  using al2
+proof (rule is_aligned_get_word_bits)
+  assume "x = 0" then show ?thesis using al1 by simp
+next
+  assume nv: "n < LENGTH('a)"
+  from al1 obtain q1
+    where xy: "x + y = 2 ^ n * of_nat q1" and "q1 < 2 ^ (LENGTH('a) - n)"
+    by (rule is_alignedE)
+  moreover from al2 obtain q2
+    where x: "x = 2 ^ n * of_nat q2" and "q2 < 2 ^ (LENGTH('a) - n)"
+    by (rule is_alignedE)
+  ultimately have "y = 2 ^ n * (of_nat q1 - of_nat q2)"
+    by (simp add: field_simps)
+  then show ?thesis using nv by (simp add: is_aligned_mult_triv1)
+qed
+
+lemmas is_aligned_addD2 =
+       is_aligned_addD1[OF subst[OF add.commute,
+                                 of "%x. is_aligned x n" for n]]
+
+lemma is_aligned_add:
+  "\<lbrakk>is_aligned p n; is_aligned q n\<rbrakk> \<Longrightarrow> is_aligned (p + q) n"
+  by (simp add: is_aligned_mask mask_add_aligned)
+
+lemma aligned_shift:
+  "\<lbrakk>x < 2 ^ n; is_aligned (y :: 'a :: len word) n;n \<le> LENGTH('a)\<rbrakk>
+   \<Longrightarrow> x + y >> n = y >> n"
+  apply (subst word_plus_and_or_coroll; rule bit_word_eqI)
+   apply (auto simp add: bit_simps is_aligned_nth test_bit_eq_bit)
+   apply (metis less_2p_is_upper_bits_unset not_le test_bit_word_eq)
+  apply (metis le_add1 less_2p_is_upper_bits_unset test_bit_bin test_bit_word_eq)
+  done
+
+lemma aligned_shift':
+  "\<lbrakk>x < 2 ^ n; is_aligned (y :: 'a :: len word) n;n \<le> LENGTH('a)\<rbrakk>
+   \<Longrightarrow> y + x >> n = y >> n"
+  apply (subst word_plus_and_or_coroll; rule bit_word_eqI)
+   apply (auto simp add: bit_simps is_aligned_nth test_bit_eq_bit)
+   apply (metis less_2p_is_upper_bits_unset not_le test_bit_eq_bit)
+  apply (metis bit_imp_le_length le_add1 less_2p_is_upper_bits_unset test_bit_eq_bit)
+  done
+
+lemma and_neg_mask_plus_mask_mono: "(p AND NOT (mask n)) + mask n \<ge> p"
+  for p :: \<open>'a::len word\<close>
+  apply (rule word_le_minus_cancel[where x = "p AND NOT (mask n)"])
+   apply (clarsimp simp: subtract_mask)
+   using word_and_le1[where a = "mask n" and y = p]
+    apply (clarsimp simp: mask_eq_decr_exp word_le_less_eq)
+  apply (rule is_aligned_no_overflow'[folded mask_2pm1])
+  apply (clarsimp simp: is_aligned_neg_mask)
+  done
+
+lemma word_neg_and_le:
+  "ptr \<le> (ptr AND NOT (mask n)) + (2 ^ n - 1)"
+  for ptr :: \<open>'a::len word\<close>
+  by (simp add: and_neg_mask_plus_mask_mono mask_2pm1[symmetric])
+
+lemma is_aligned_sub_helper:
+  "\<lbrakk> is_aligned (p - d) n; d < 2 ^ n \<rbrakk>
+     \<Longrightarrow> (p AND mask n = d) \<and> (p AND (NOT (mask n)) = p - d)"
+  by (drule(1) is_aligned_add_helper, simp)
+
+lemma is_aligned_after_mask:
+  "\<lbrakk>is_aligned k m;m\<le> n\<rbrakk> \<Longrightarrow> is_aligned (k AND mask n) m"
+  by (rule is_aligned_andI1)
+
+lemma and_mask_plus:
+  "\<lbrakk>is_aligned ptr m; m \<le> n; a < 2 ^ m\<rbrakk>
+   \<Longrightarrow> ptr + a AND mask n = (ptr AND mask n) + a"
+  apply (rule mask_eqI[where n = m])
+   apply (simp add:mask_twice min_def)
+    apply (simp add:is_aligned_add_helper)
+    apply (subst is_aligned_add_helper[THEN conjunct1])
+      apply (erule is_aligned_after_mask)
+     apply simp
+    apply simp
+   apply simp
+  apply (subgoal_tac "(ptr + a AND mask n) AND NOT (mask m)
+     = (ptr + a AND NOT (mask m) ) AND mask n")
+   apply (simp add:is_aligned_add_helper)
+   apply (subst is_aligned_add_helper[THEN conjunct2])
+     apply (simp add:is_aligned_after_mask)
+    apply simp
+   apply simp
+  apply (simp add:word_bw_comms word_bw_lcs)
+  done
 
 end

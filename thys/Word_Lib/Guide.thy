@@ -239,6 +239,10 @@ text \<open>
 
           \<^item> @{thm word_prev_unfold [no_vars]}
 
+      \<^descr>[\<^theory>\<open>Word_Lib.Enumeration_Word\<close>]
+
+        More on explicit enumeration of word types.
+
       \<^descr>[\<^theory>\<open>Word_Lib.More_Word_Operations\<close>]
 
         Even more operations on word.
@@ -249,29 +253,33 @@ text \<open>
 
           Formal tagging of word types with a \<^text>\<open>signed\<close> marker.
 
-    \<^descr>[Mechanisms]
-
-      \<^descr>[\<^theory>\<open>Word_Lib.Enumeration_Word\<close>]
-
-          More on explicit enumeration of word types.
-
     \<^descr>[Lemmas]
 
-      Collections of lemmas:
+      \<^descr>[\<^theory>\<open>Word_Lib.More_Word\<close>]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_Lemmas\<close>] generic.
+          More lemmas on words.
 
-    \<^descr>[Lemmas]
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_Lemmas\<close>]
 
-      Words of fixed length:
+          More lemmas on words, covering many other theories mentioned here.
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_8\<close>] for 8-bit words.
+    \<^descr>[Words of fixed length]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_16\<close>] for 16-bit words.
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_8\<close>]
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_32\<close>] for 32-bit words.
+          for 8-bit words.
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>] for 64-bit words.
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_16\<close>]
+
+          for 16-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_32\<close>]
+
+          for 32-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>]
+
+          for 64-bit words.
 \<close>
 
 
@@ -328,6 +336,11 @@ text \<open>
     are needed, existing operations can be used:
 
     @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
+
+  \<^descr>[\<^theory>\<open>Word_Lib.Many_More\<close>]
+
+    Collection of operations and theorems which are kept for backward
+    compatibility and not used in other theories in session \<^text>\<open>Word_Lib\<close>.
 \<close>
 
 (*<*)

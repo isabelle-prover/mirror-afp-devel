@@ -4,7 +4,7 @@
 section \<open>Operation variants with traditional syntax\<close>
 
 theory Traditional_Infix_Syntax
-  imports "HOL-Library.Word" More_Word
+  imports "HOL-Library.Word" More_Word Signed_Words
 begin
 
 class semiring_bit_syntax = semiring_bit_shifts
@@ -910,5 +910,151 @@ lemma shiftl_less_t2n:
 lemma shiftl_less_t2n':
   "(x::'a::len word) < 2 ^ m \<Longrightarrow> m+n < LENGTH('a) \<Longrightarrow> x << n < 2 ^ (m + n)"
   by (rule shiftl_less_t2n) simp_all
+
+lemma nth_w2p_scast [simp]:
+  "((scast ((2::'a::len signed word) ^ n) :: 'a word) !! m)
+         \<longleftrightarrow> ((((2::'a::len  word) ^ n) :: 'a word) !! m)"
+  by transfer (auto simp add: bit_simps)
+
+lemma scast_bit_test [simp]:
+    "scast ((1 :: 'a::len signed word) << n) = (1 :: 'a word) << n"
+  by (clarsimp simp: word_eq_iff)
+
+lemma signed_shift_guard_to_word:
+  "\<lbrakk> n < len_of TYPE ('a); n > 0 \<rbrakk>
+    \<Longrightarrow> (unat (x :: 'a :: len word) * 2 ^ y < 2 ^ n)
+    = (x = 0 \<or> x < (1 << n >> y))"
+  apply (simp only: nat_mult_power_less_eq)
+  apply (cases "y \<le> n")
+   apply (simp only: shiftl_shiftr1)
+   apply (subst less_mask_eq)
+    apply (simp add: word_less_nat_alt word_size)
+    apply (rule order_less_le_trans[rotated], rule power_increasing[where n=1])
+      apply simp
+     apply simp
+    apply simp
+   apply (simp add: nat_mult_power_less_eq word_less_nat_alt word_size)
+   apply auto[1]
+  apply (simp only: shiftl_shiftr2, simp add: unat_eq_0)
+  done
+
+lemma nth_bounded:
+  "\<lbrakk>(x :: 'a :: len word) !! n; x < 2 ^ m; m \<le> len_of TYPE ('a)\<rbrakk> \<Longrightarrow> n < m"
+  apply (rule ccontr)
+  apply (auto simp add: not_less test_bit_word_eq)
+  apply (meson bit_imp_le_length bit_uint_iff less_2p_is_upper_bits_unset test_bit_bin)
+  done
+
+lemma shiftl_mask_is_0[simp]:
+  "(x << n) AND mask n = 0"
+  for x :: \<open>'a::len word\<close>
+  by (simp flip: take_bit_eq_mask add: shiftl_eq_push_bit take_bit_push_bit)
+
+lemma rshift_sub_mask_eq:
+  "(a >> (size a - b)) AND mask b = a >> (size a - b)"
+  for a :: \<open>'a::len word\<close>
+  using shiftl_shiftr2[where a=a and b=0 and c="size a - b"]
+  apply (cases "b < size a")
+   apply simp
+  apply (simp add: linorder_not_less mask_eq_decr_exp word_size
+                   p2_eq_0[THEN iffD2])
+  done
+
+lemma shiftl_shiftr3:
+  "b \<le> c \<Longrightarrow> a << b >> c = (a >> c - b) AND mask (size a - c)"
+  for a :: \<open>'a::len word\<close>
+  apply (cases "b = c")
+   apply (simp add: shiftl_shiftr1)
+  apply (simp add: shiftl_shiftr2)
+  done
+
+lemma and_mask_shiftr_comm:
+  "m \<le> size w \<Longrightarrow> (w AND mask m) >> n = (w >> n) AND mask (m-n)"
+  for w :: \<open>'a::len word\<close>
+  by (simp add: and_mask shiftr_shiftr) (simp add: word_size shiftl_shiftr3)
+
+lemma and_mask_shiftl_comm:
+  "m+n \<le> size w \<Longrightarrow> (w AND mask m) << n = (w << n) AND mask (m+n)"
+  for w :: \<open>'a::len word\<close>
+  by (simp add: and_mask word_size shiftl_shiftl) (simp add: shiftl_shiftr1)
+
+lemma le_mask_shiftl_le_mask: "s = m + n \<Longrightarrow> x \<le> mask n \<Longrightarrow> x << m \<le> mask s"
+  for x :: \<open>'a::len word\<close>
+  by (simp add: le_mask_iff shiftl_shiftr3)
+
+lemma word_and_1_shiftl:
+  "x AND (1 << n) = (if x !! n then (1 << n) else 0)" for x :: "'a :: len word"
+  apply (rule bit_word_eqI; transfer)
+  apply (auto simp add: bit_simps not_le ac_simps)
+  done
+
+lemmas word_and_1_shiftls'
+    = word_and_1_shiftl[where n=0]
+      word_and_1_shiftl[where n=1]
+      word_and_1_shiftl[where n=2]
+
+lemmas word_and_1_shiftls = word_and_1_shiftls' [simplified]
+
+lemma word_and_mask_shiftl:
+  "x AND (mask n << m) = ((x >> m) AND mask n) << m"
+  for x :: \<open>'a::len word\<close>
+  apply (rule bit_word_eqI; transfer)
+  apply (auto simp add: bit_simps not_le ac_simps)
+  done
+
+lemma shift_times_fold:
+  "(x :: 'a :: len word) * (2 ^ n) << m = x << (m + n)"
+  by (simp add: shiftl_t2n ac_simps power_add)
+
+lemma of_bool_nth:
+  "of_bool (x !! v) = (x >> v) AND 1"
+  for x :: \<open>'a::len word\<close>
+  by (simp add: test_bit_word_eq shiftr_word_eq bit_eq_iff)
+    (auto simp add: bit_1_iff bit_and_iff bit_drop_bit_eq intro: ccontr)
+
+lemma shiftr_mask_eq:
+  "(x >> n) AND mask (size x - n) = x >> n" for x :: "'a :: len word"
+  apply (simp flip: take_bit_eq_mask)
+  apply transfer
+  apply (simp add: take_bit_drop_bit)
+  done
+
+lemma shiftr_mask_eq':
+  "m = (size x - n) \<Longrightarrow> (x >> n) AND mask m = x >> n" for x :: "'a :: len word"
+  by (simp add: shiftr_mask_eq)
+
+lemma and_eq_0_is_nth:
+  fixes x :: "'a :: len word"
+  shows "y = 1 << n \<Longrightarrow> ((x AND y) = 0) = (\<not> (x !! n))"
+  apply safe
+   apply (drule_tac u="(x AND (1 << n))" and x=n in word_eqD)
+   apply (simp add: nth_w2p)
+   apply (simp add: test_bit_bin)
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps test_bit_eq_bit)
+  done
+
+lemma and_neq_0_is_nth:
+  \<open>x AND y \<noteq> 0 \<longleftrightarrow> x !! n\<close> if \<open>y = 2 ^ n\<close> for x y :: \<open>'a::len word\<close>
+  apply (simp add: bit_eq_iff bit_simps)
+  using that apply (simp add: bit_simps not_le)
+  apply transfer
+  apply auto
+  done
+
+lemma nth_is_and_neq_0:
+  "(x::'a::len word) !! n = (x AND 2 ^ n \<noteq> 0)"
+  by (subst and_neq_0_is_nth; rule refl)
+
+lemma word_shift_zero:
+  "\<lbrakk> x << n = 0; x \<le> 2^m; m + n < LENGTH('a)\<rbrakk> \<Longrightarrow> (x::'a::len word) = 0"
+  apply (rule ccontr)
+  apply (drule (2) word_shift_nonzero)
+  apply simp
+  done
+
+lemma mask_shift_and_negate[simp]:"(w AND mask n << m) AND NOT (mask n << m) = 0"
+  for w :: \<open>'a::len word\<close>
+  by (clarsimp simp add: mask_eq_decr_exp Parity.bit_eq_iff bit_and_iff bit_not_iff shiftl_word_eq bit_push_bit_iff)
 
 end

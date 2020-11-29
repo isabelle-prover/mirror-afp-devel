@@ -2,7 +2,7 @@
 section \<open>Arithmetic lemmas\<close>
 
 theory More_Arithmetic
-  imports Main
+  imports Main "HOL-Library.Type_Length"
 begin
 
 declare iszero_0 [intro]
@@ -330,5 +330,20 @@ lemma power_2_mult_step_le:
    apply (simp add: le_Suc_ex)
   apply (clarsimp simp: power_add)
   by (metis Suc_leI mult.assoc mult_Suc_right nat_mult_le_cancel_disj)
+
+lemma nat_less_power_trans2:
+  fixes n :: nat
+  shows "\<lbrakk>n < 2 ^ (m - k); k \<le> m\<rbrakk> \<Longrightarrow> n * 2 ^ k  < 2 ^ m"
+  by (subst mult.commute, erule (1) nat_less_power_trans)
+
+lemma nat_move_sub_le: "(a::nat) + b \<le> c \<Longrightarrow> a \<le> c - b"
+  by arith
+
+lemma plus_minus_one_rewrite:
+  "v + (- 1 :: ('a :: {ring, one, uminus})) \<equiv> v - 1"
+  by (simp add: field_simps)
+
+lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ LENGTH('a :: len)"
+  by (metis One_nat_def len_gt_0 lessI numeral_2_eq_2 one_less_power)
 
 end

@@ -716,6 +716,10 @@ OF_match_linear OF_match_fields_safe (map (\<lambda>x. split3 OFEntry (x1, x, ca
       apply(simp;fail)+
   using simple_match_to_of_match_generates_prereqs by blast
 
+lemma aux:
+  \<open>v = Some x \<Longrightarrow> the v = x\<close>
+  by simp
+
 lemma s3_correct:
 	assumes vsfwm: "list_all simple_match_valid (map (fst \<circ> snd) ard)"
 	assumes ippkt: "p_l2type p = 0x800"
@@ -742,7 +746,7 @@ using vsfwm oiifs
          oms = "simple_match_to_of_match ac ifs" and 
          act = "case ba of simple_action.Accept \<Rightarrow> [Forward ad] | simple_action.Drop \<Rightarrow> []"])
      apply(unfold OF_match_fields_safe_def comp_def)
-     apply(erule Some_to_the[symmetric];fail)
+     apply(erule aux)
     apply(clarsimp)
     apply(intro iffI)
     subgoal

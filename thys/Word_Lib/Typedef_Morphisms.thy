@@ -330,9 +330,6 @@ lemmas td_sint = word_sint.td
 lemma uints_mod: "uints n = range (\<lambda>w. w mod 2 ^ n)"
   by (fact uints_def [unfolded no_bintr_alt1])
 
-lemmas uint_range' = word_uint.Rep [unfolded uints_num mem_Collect_eq]
-lemmas sint_range' = word_sint.Rep [unfolded One_nat_def sints_num mem_Collect_eq]
-
 lemmas bintr_num =
   word_ubin.norm_eq_iff [of "numeral a" "numeral b", symmetric, folded word_numeral_alt] for a b
 lemmas sbintr_num =

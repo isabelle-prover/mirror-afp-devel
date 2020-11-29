@@ -95,7 +95,8 @@ proof
     proof(goal_cases)
      case (1 a b)
      from 1(2-3) have "b \<noteq> 0" by force
-     from 1(2,3) have "a \<le> b - 1" by (metis \<open>b \<noteq> 0\<close> eq_iff le_step_down_nat unat_arith_simps(1) unat_minus_one)
+     from 1(2,3) have "a \<le> b - 1"
+       by (simp add: word_le_minus_one_leq)
      from 1(1)[OF this 1(4)] show ?case by (metis dual_order.trans 1(2,3) less_imp_le measure_unat word_le_0_iff word_le_nat_alt)
     qed
 next

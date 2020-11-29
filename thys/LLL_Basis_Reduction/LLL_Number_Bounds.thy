@@ -1093,7 +1093,7 @@ proof -
     have "\<bar>num\<bar> = \<bar>fs ! i $ j\<bar>" using quot[unfolded xfs] by auto
     also have "\<dots> \<le> int (N ^ m * 2 ^ (m - 1) * m)" using LLL_f_bound[OF i j] by auto
     also have "\<dots> \<le> ?bnd" unfolding of_nat_mult of_nat_power
-      by (intro mult_mono pow_mono_exp, insert N, auto)
+      using N by (auto intro!: mult_mono pow_mono_exp)
     finally show ?thesis using denom by auto
   qed
   from number consider (num) "number = num" | (denom) "number = denom" by auto

@@ -1919,7 +1919,7 @@ proof (cases "length xs < LENGTH('a)")
     by (simp add: of_bl_length_less)
   with True
   show ?thesis
-    by (simp add: word_less_nat_alt word_unat_power unat_of_nat del: of_nat_power)
+    by (simp add: word_less_nat_alt unat_of_nat)
 next
   case False
   have "unat (of_bl xs::'a::len word) < 2 ^ LENGTH('a)"

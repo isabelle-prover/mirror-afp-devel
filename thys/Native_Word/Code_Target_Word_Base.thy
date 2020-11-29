@@ -139,7 +139,7 @@ proof -
   have *: \<open>k mod l = k - k div l * l\<close> for k l :: int
     by (simp add: minus_div_mult_eq_mod)
   show ?thesis
-    by (simp add: smod_word_def signed_modulo_int_def signed_divide_int_def * sgn_if) (simp add: signed_eq_0_iff)
+    by (simp add: smod_word_def signed_modulo_int_def signed_divide_int_def * sgn_if Let_def)
 qed
 
 text \<open>
@@ -187,9 +187,8 @@ next
   obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)"
     by (rule that [of \<open>unat x\<close>]) simp_all
   hence "int n div 2 + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
-    by (cases "LENGTH('a)")
-      (simp_all, simp only: of_nat_numeral [where ?'a = int, symmetric]
-      zdiv_int [symmetric] of_nat_power [symmetric])
+    by (cases \<open>LENGTH('a)\<close>)
+      (auto dest: less_imp_of_nat_less [where ?'a = int])
   with y n have "sint (x >> 1) = uint (x >> 1)"
     by (simp add: sint_uint sbintrunc_mod2p shiftr_div_2n take_bit_nat_eq_self)
   moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"

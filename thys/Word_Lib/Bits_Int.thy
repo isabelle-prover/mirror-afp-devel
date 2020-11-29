@@ -1423,6 +1423,66 @@ lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
 lemma bin_mask_p1_conv_shift: "mask n + 1 = (1 :: int) << n"
   by (simp add: bin_mask_conv_pow2 shiftl_int_def)
 
+lemma sbintrunc_eq_in_range:
+  "(sbintrunc n x = x) = (x \<in> range (sbintrunc n))"
+  "(x = sbintrunc n x) = (x \<in> range (sbintrunc n))"
+  apply (simp_all add: image_def)
+  apply (metis sbintrunc_sbintrunc)+
+  done
+
+lemma sbintrunc_If:
+  "- 3 * (2 ^ n) \<le> x \<and> x < 3 * (2 ^ n)
+    \<Longrightarrow> sbintrunc n x = (if x < - (2 ^ n) then x + 2 * (2 ^ n)
+        else if x \<ge> 2 ^ n then x - 2 * (2 ^ n) else x)"
+  apply (simp add: no_sbintr_alt2, safe)
+   apply (simp add: mod_pos_geq)
+  apply (subst mod_add_self1[symmetric], simp)
+  done
+
+lemma sint_range':
+  \<open>- (2 ^ (LENGTH('a) - Suc 0)) \<le> sint x \<and> sint x < 2 ^ (LENGTH('a) - Suc 0)\<close>
+  for x :: \<open>'a::len word\<close>
+  apply transfer
+  using sbintr_ge sbintr_lt apply auto
+  done
+
+lemma signed_arith_eq_checks_to_ord:
+  "(sint a + sint b = sint (a + b ))
+    = ((a <=s a + b) = (0 <=s b))"
+  "(sint a - sint b = sint (a - b ))
+    = ((0 <=s a - b) = (b <=s a))"
+  "(- sint a = sint (- a)) = (0 <=s (- a) = (a <=s 0))"
+  using sint_range'[where x=a] sint_range'[where x=b]
+  by (simp_all add: sint_word_ariths word_sle_eq word_sless_alt sbintrunc_If)
+
+lemma signed_mult_eq_checks_double_size:
+  assumes mult_le: "(2 ^ (len_of TYPE ('a) - 1) + 1) ^ 2 \<le> (2 :: int) ^ (len_of TYPE ('b) - 1)"
+           and le: "2 ^ (LENGTH('a) - 1) \<le> (2 :: int) ^ (len_of TYPE ('b) - 1)"
+  shows "(sint (a :: 'a :: len word) * sint b = sint (a * b))
+       = (scast a * scast b = (scast (a * b) :: 'b :: len word))"
+proof -
+  have P: "sbintrunc (size a - 1) (sint a * sint b) \<in> range (sbintrunc (size a - 1))"
+    by simp
+
+  have abs: "!! x :: 'a word. abs (sint x) < 2 ^ (size a - 1) + 1"
+    apply (cut_tac x=x in sint_range')
+    apply (simp add: abs_le_iff word_size)
+    done
+  have abs_ab: "abs (sint a * sint b) < 2 ^ (LENGTH('b) - 1)"
+    using abs_mult_less[OF abs[where x=a] abs[where x=b]] mult_le
+    by (simp add: abs_mult power2_eq_square word_size)
+  define r s where \<open>r = LENGTH('a) - 1\<close> \<open>s = LENGTH('b) - 1\<close>
+  then have \<open>LENGTH('a) = Suc r\<close> \<open>LENGTH('b) = Suc s\<close>
+    \<open>size a = Suc r\<close> \<open>size b = Suc r\<close>
+    by (simp_all add: word_size)
+  then show ?thesis
+    using P[unfolded range_sbintrunc] abs_ab le
+    apply clarsimp
+    apply (transfer fixing: r s)
+    apply (auto simp add: signed_take_bit_int_eq_self simp flip: signed_take_bit_eq_iff_take_bit_eq)
+    done
+qed
+
 code_identifier
   code_module Bits_Int \<rightharpoonup>
   (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations

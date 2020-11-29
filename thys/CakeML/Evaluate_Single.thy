@@ -163,14 +163,23 @@ private lemma evaluate_list_clock_monotone: "clock (fst (evaluate_list eval s es
   apply (metis state.record_simps(1))+
   done
 
+lemma i_hate_words_helper:
+  "i \<le> (j - k :: nat) \<Longrightarrow> i \<le> j"
+  by simp
+
+thm i_hate_words_helper [THEN le_trans, no_vars]
+
 private lemma evaluate_clock_monotone:
-  assumes "evaluate_dom (env, s, e)"
-  shows "clock (fst (evaluate env s e)) \<le> clock s"
-using assms
-by induction
-   (fastforce simp add:evaluate.psimps do_con_check_build_conv evaluate_list_clock_monotone
-              split:prod.splits result.splits option.splits exp_or_val.splits error_result.splits
-              dest:fstI intro:i_hate_words_helper[THEN le_trans])+
+  \<open>clock (fst (evaluate env s e)) \<le> clock s\<close>
+  if \<open>evaluate_dom (env, s, e)\<close>
+proof -
+  have *: \<open>i \<le> j - k \<Longrightarrow> j \<le> r \<Longrightarrow> i \<le> r\<close> for i j k r :: nat
+    by arith
+  from that show ?thesis
+    by induction (fastforce simp add: evaluate.psimps do_con_check_build_conv evaluate_list_clock_monotone
+      split: prod.splits result.splits option.splits exp_or_val.splits error_result.splits
+      dest: fstI intro: *)+
+qed
 
 private definition fun_evaluate_single_relation where
 "fun_evaluate_single_relation = inv_image (less_than <*lex*> less_than) (\<lambda>x.

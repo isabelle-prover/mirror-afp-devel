@@ -3729,8 +3729,8 @@ lemma msb_succ:
       using neq2 by auto
     then have neqneg2:"w \<noteq> (2^31)-1" by auto
     show ?thesis using neq1 neq2  unfolding msb_big
-    using Word_Lemmas.word_le_make_less[of "w + 1" "0x80000000"] 
-          Word_Lemmas.word_le_make_less[of "w " "0x80000000"]
+    using word_le_make_less[of "w + 1" "0x80000000"] 
+          word_le_make_less[of "w " "0x80000000"]
           neqneg1 neqneg2
       by auto
   qed
@@ -3823,7 +3823,7 @@ lemma msb_pos:
           proof -
             assume geq:"w \<ge> 0x80000000"
             then have "msb w"
-              using Word_Lemmas.msb_big[of w] by auto
+              using msb_big [of w] by auto
             then show False using msb2 by auto
           qed
         have mylem:"\<And>w1 w2::word. uint w1 \<ge> uint w2 \<Longrightarrow> w1 \<ge> w2" 
@@ -3881,7 +3881,7 @@ lemma msb_neg:
       proof -
         assume geq:"w \<le> 0x80000000"
         then have "(msb (-w))"
-          using Word_Lemmas.msb_big[of "-w"] Word_Lemmas.msb_big[of "w"] 
+          using msb_big [of "- w"] msb_big [of "w"] 
           by (simp add: msb2) 
         then show False using msb1 by auto
       qed

@@ -61,6 +61,38 @@ lemma scast_ucast_norm [simp]:
   "((b :: 'a signed word) = ucast (a :: 'a::len word)) = (a = scast b)"
   by (metis scast_ucast_id ucast_scast_id)+
 
+lemma scast_2_power [simp]: "scast ((2 :: 'a::len signed word) ^ x) = ((2 :: 'a word) ^ x)"
+  by (rule bit_word_eqI) (auto simp add: bit_simps)
+
+lemma ucast_nat_def':
+  "of_nat (unat x) = (ucast :: 'a :: len word \<Rightarrow> ('b :: len) signed word) x"
+  by (fact of_nat_unat)
+
+lemma zero_sle_ucast_up:
+  "\<not> is_down (ucast :: 'a word \<Rightarrow> 'b signed word) \<Longrightarrow>
+          (0 <=s ((ucast (b::('a::len) word)) :: ('b::len) signed word))"
+  by transfer (simp add: bit_simps)
+
+lemma word_le_ucast_sless:
+  "\<lbrakk> x \<le> y; y \<noteq> -1; LENGTH('a) < LENGTH('b) \<rbrakk> \<Longrightarrow>
+    (ucast x :: ('b :: len) signed word) <s ucast (y + 1)"
+  for x y :: \<open>'a::len word\<close>
+  apply (cases \<open>LENGTH('b)\<close>)
+  apply simp_all
+  apply transfer
+  apply (simp add: signed_take_bit_take_bit)
+  apply (metis add.commute mask_eq_exp_minus_1 mask_eq_take_bit_minus_one take_bit_incr_eq zle_add1_eq_le)
+  done
+
+lemma zero_sle_ucast:
+  "(0 <=s ((ucast (b::('a::len) word)) :: ('a::len) signed word))
+                = (uint b < 2 ^ (LENGTH('a) - 1))"
+  apply transfer
+  apply (cases \<open>LENGTH('a)\<close>)
+   apply (simp_all add: take_bit_Suc_from_most bit_simps)
+  apply (simp_all add: bit_simps disjunctive_add)
+  done
+
 type_synonym 'a sword = "'a signed word"
 
 end

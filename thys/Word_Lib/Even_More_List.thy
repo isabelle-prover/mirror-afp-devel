@@ -148,4 +148,8 @@ next
   qed
 qed
 
+lemma replicate_minus:
+  "k < n \<Longrightarrow> replicate n False = replicate (n - k) False @ replicate k False"
+  by (subst replicate_add [symmetric]) simp
+
 end
