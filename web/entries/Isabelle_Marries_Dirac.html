@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Tensor Product of Matrices - Archive of Formal Proofs
+<title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,13 +74,27 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>ensor
+  <h1>          <font class="first">I</font>sabelle
   
-          <font class="first">P</font>roduct
+          <font class="first">M</font>arries
   
-          of
+          <font class="first">D</font>irac:
   
-          <font class="first">M</font>atrices
+          a
+  
+          <font class="first">L</font>ibrary
+  
+          for
+  
+          <font class="first">Q</font>uantum
+  
+          <font class="first">C</font>omputation
+  
+          and
+  
+          <font class="first">Q</font>uantum
+  
+          <font class="first">I</font>nformation
   
 </h1>
   <p>&nbsp;</p>
@@ -89,15 +103,17 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Tensor Product of Matrices</td>
+  <td class="data" width="80%">Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              T.V.H. Prathamesh (prathamesh /at/ imsc /dot/ res /dot/ in)
+                      Anthony Bordg (apdb3 /at/ cam /dot/ ac /dot/ uk),
+                Hanna Lachnitt (lachnitt /at/ stanford /dot/ edu) and
+          Yijun He (yh403 /at/ cam /dot/ ac /dot/ uk)
       </td>
 </tr>
 
@@ -105,29 +121,34 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-01-18</td>
+  <td class="data">2020-11-22</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-In this work, the Kronecker tensor product of matrices and the proofs of
-some of its properties are formalized. Properties which have been formalized
-include associativity of the tensor product and the mixed-product
-property.</td>
+This work is an effort to formalise some quantum algorithms and
+results in quantum information theory. Formal methods being critical
+for the safety and security of algorithms and protocols, we foresee
+their widespread use for quantum computing in the future. We have
+developed a large library for quantum computing in Isabelle based on a
+matrix representation for quantum circuits, successfully formalising
+the no-cloning theorem, quantum teleportation, Deutsch's
+algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner's
+Dilemma.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Matrix_Tensor-AFP,
-  author  = {T.V.H. Prathamesh},
-  title   = {Tensor Product of Matrices},
+        <pre>@article{Isabelle_Marries_Dirac-AFP,
+  author  = {Anthony Bordg and Hanna Lachnitt and Yijun He},
+  title   = {Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information},
   journal = {Archive of Formal Proofs},
-  month   = jan,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Matrix_Tensor.html},
+  month   = nov,
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/Isabelle_Marries_Dirac.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -139,11 +160,9 @@ property.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Matrix.html">Matrix</a>      </td></tr>
+          <td class="data"><a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a>, <a href="Matrix_Tensor.html">Matrix_Tensor</a>, <a href="VectorSpace.html">VectorSpace</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Isabelle_Marries_Dirac.html">Isabelle_Marries_Dirac</a>, <a href="Knot_Theory.html">Knot_Theory</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -155,59 +174,23 @@ property.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Matrix_Tensor/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Matrix_Tensor/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Isabelle_Marries_Dirac/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Isabelle_Marries_Dirac/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Matrix_Tensor/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Isabelle_Marries_Dirac/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Matrix_Tensor-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Isabelle_Marries_Dirac-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-Matrix_Tensor-2019-06-11.tar.gz">
-              afp-Matrix_Tensor-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Matrix_Tensor-2018-08-16.tar.gz">
-              afp-Matrix_Tensor-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Matrix_Tensor-2017-10-10.tar.gz">
-              afp-Matrix_Tensor-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Matrix_Tensor-2016-12-17.tar.gz">
-              afp-Matrix_Tensor-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Matrix_Tensor-2016-02-22.tar.gz">
-              afp-Matrix_Tensor-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Matrix_Tensor-2016-01-19.tar.gz">
-              afp-Matrix_Tensor-2016-01-19.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2015:
-            <a href="../release/afp-Matrix_Tensor-2016-01-18.tar.gz">
-              afp-Matrix_Tensor-2016-01-18.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

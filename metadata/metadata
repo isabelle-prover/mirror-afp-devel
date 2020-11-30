@@ -9906,3 +9906,20 @@ abstract =
   used for type-safe conversions between the SI system and others, like
   the British Imperial System (BIS).
 
+[Isabelle_Marries_Dirac]
+title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information
+author = Anthony Bordg <mailto:apdb3@cam.ac.uk>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
+topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
+date = 2020-11-22
+notify = apdb3@cam.ac.uk, lachnitt@stanford.edu
+abstract = 
+  This work is an effort to formalise some quantum algorithms and
+  results in quantum information theory. Formal methods being critical
+  for the safety and security of algorithms and protocols, we foresee
+  their widespread use for quantum computing in the future. We have
+  developed a large library for quantum computing in Isabelle based on a
+  matrix representation for quantum circuits, successfully formalising
+  the no-cloning theorem, quantum teleportation, Deutsch's
+  algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner's
+  Dilemma.
+

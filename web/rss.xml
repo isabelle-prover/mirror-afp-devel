@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
+    <pubDate>22 Nov 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+              <link>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
+       <guid>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</guid>
+       <dc:creator> Anthony Bordg, Hanna Lachnitt, Yijun He       </dc:creator>
+       <pubDate>22 Nov 2020 00:00:00 +0000</pubDate>
+       <description>
+This work is an effort to formalise some quantum algorithms and
+results in quantum information theory. Formal methods being critical
+for the safety and security of algorithms and protocols, we foresee
+their widespread use for quantum computing in the future. We have
+developed a large library for quantum computing in Isabelle based on a
+matrix representation for quantum circuits, successfully formalising
+the no-cloning theorem, quantum teleportation, Deutsch&#39;s
+algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
+Dilemma.</description>
+    </item>
     <item>
        <title>Verified SAT-Based AI Planning</title>
               <link>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
@@ -577,20 +594,6 @@ We formalize the theory of forcing in the set theory framework of
 Isabelle/ZF. Under the assumption of the existence of a countable
 transitive model of ZFC, we construct a proper generic extension and
 show that the latter also satisfies ZFC.</description>
-    </item>
-    <item>
-       <title>Banach-Steinhaus Theorem</title>
-              <link>https://www.isa-afp.org/entries/Banach_Steinhaus.html</link>
-       <guid>https://www.isa-afp.org/entries/Banach_Steinhaus.html</guid>
-       <dc:creator> Dominique Unruh, Jose Manuel Rodriguez Caballero       </dc:creator>
-       <pubDate>02 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize in Isabelle/HOL a result
-due to S. Banach and H. Steinhaus known as
-the Banach-Steinhaus theorem or Uniform boundedness principle: a
-pointwise-bounded family of continuous linear operators from a Banach
-space to a normed space is uniformly bounded. Our approach is an
-adaptation to Isabelle/HOL of a proof due to A. Sokal.</description>
     </item>
   </channel>
 </rss>
