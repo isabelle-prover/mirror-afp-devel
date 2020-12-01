@@ -15,6 +15,6 @@ session "Core_SC_DOM" (AFP) = "HOL-Library" +
   theories
     Core_DOM
     Core_DOM_Tests
-  document_files (in "document")
+  document_files
     "root.tex"
     "root.bib"

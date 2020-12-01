@@ -15,7 +15,7 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
     Presburger_Formula
     WS1S_Presburger_Equivalence
     WS1S_Nameful
-  document_files (in "document")
+  document_files
     "root.tex"
 
 session "Formula_Derivatives-Examples" (AFP) in "Examples" = "Formula_Derivatives" +
