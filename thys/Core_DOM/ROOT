@@ -1,7 +1,7 @@
 chapter AFP
 
-session "Core_DOM" (AFP) = "HOL-Library" + 
-  options [timeout = 1200]
+session "Core_DOM" (AFP) = "HOL-Library" +
+  options [timeout = 1500]
   directories
     "common"
     "common/classes"
@@ -9,9 +9,9 @@ session "Core_DOM" (AFP) = "HOL-Library" +
     "common/pointers"
     "common/preliminaries"
     "common/tests"
-    "standard" 
-    "standard/classes" 
-    "standard/pointers" 
+    "standard"
+    "standard/classes"
+    "standard/pointers"
   theories
     Core_DOM
     Core_DOM_Tests
