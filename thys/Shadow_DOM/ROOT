@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Shadow_DOM" (AFP) = "Core_DOM" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   directories
     classes
     monads
