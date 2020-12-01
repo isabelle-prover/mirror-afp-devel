@@ -81,6 +81,17 @@ used for type-safe conversions between the SI system and others, like
 the British Imperial System (BIS).</description>
     </item>
     <item>
+       <title>Finite Map Extras</title>
+              <link>https://www.isa-afp.org/entries/Finite-Map-Extras.html</link>
+       <guid>https://www.isa-afp.org/entries/Finite-Map-Extras.html</guid>
+       <dc:creator> Javier Díaz       </dc:creator>
+       <pubDate>12 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+This entry includes useful syntactic sugar, new operators and functions, and
+their associated lemmas for finite maps which currently are not
+present in the standard Finite_Map theory.</description>
+    </item>
+    <item>
        <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
               <link>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</link>
        <guid>https://www.isa-afp.org/entries/Shadow_SC_DOM.html</guid>
@@ -582,18 +593,6 @@ points. We present an executable formalisation of a direct and purely
 syntactic normalisation procedure for LTL yielding a normal form,
 comparable to the one by Chang, Manna, and Pnueli, that has only a
 single exponential blow-up.</description>
-    </item>
-    <item>
-       <title>Formalization of Forcing in Isabelle/ZF</title>
-              <link>https://www.isa-afp.org/entries/Forcing.html</link>
-       <guid>https://www.isa-afp.org/entries/Forcing.html</guid>
-       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf       </dc:creator>
-       <pubDate>06 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize the theory of forcing in the set theory framework of
-Isabelle/ZF. Under the assumption of the existence of a countable
-transitive model of ZFC, we construct a proper generic extension and
-show that the latter also satisfies ZFC.</description>
     </item>
   </channel>
 </rss>

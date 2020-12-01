@@ -7552,7 +7552,7 @@ abstract =
 
 [Verified_SAT_Based_AI_Planning]
 title = Verified SAT-Based AI Planning
-author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz <>
 topic = Computer science/Artificial intelligence
 date = 2020-10-29
 notify = mohammad.abdulaziz8@gmail.com
@@ -9912,7 +9912,7 @@ author = Anthony Bordg <mailto:apdb3@cam.ac.uk>, Hanna Lachnitt<mailto:lachnitt@
 topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
 date = 2020-11-22
 notify = apdb3@cam.ac.uk, lachnitt@stanford.edu
-abstract = 
+abstract =
   This work is an effort to formalise some quantum algorithms and
   results in quantum information theory. Formal methods being critical
   for the safety and security of algorithms and protocols, we foresee
@@ -9923,3 +9923,13 @@ abstract =
   algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner's
   Dilemma.
 
+[Finite-Map-Extras]
+title = Finite Map Extras
+author = Javier Díaz <mailto:javier.diaz.manzi@gmail.com>
+topic = Computer science/Data structures
+date = 2020-10-12
+notify = javier.diaz.manzi@gmail.com
+abstract =
+  This entry includes useful syntactic sugar, new operators and functions, and
+  their associated lemmas for finite maps which currently are not
+  present in the standard Finite_Map theory.
