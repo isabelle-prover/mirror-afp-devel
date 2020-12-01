@@ -1,7 +1,7 @@
 chapter AFP
 
 session "DOM_Components" (AFP) = "Shadow_DOM" +
-  options [timeout = 1200]
+  options [timeout = 3600]
   directories
     counterexample
   theories
