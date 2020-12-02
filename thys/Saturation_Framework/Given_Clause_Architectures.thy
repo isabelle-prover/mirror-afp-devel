@@ -167,8 +167,8 @@ proof -
   have "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_I_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_I_L_q q) (\<lambda>g Cl Cl'. False)"
     using ord_fam_lifted_q[OF q_in] .
-  then have "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q)
-    (Red_F_q q) (\<G>_F_L_q q) (\<G>_I_L_q q)"
+  then have "standard_lifting Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q)
+    (Red_F_q q) Bot_FL (\<G>_F_L_q q) (\<G>_I_L_q q)"
     using lifted_q[OF q_in] by blast
   then show "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_I_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_I_L_q q) (\<lambda>g. Prec_FL)"

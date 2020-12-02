@@ -15,7 +15,7 @@ lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
 
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
-locale labeled_tiebreaking_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
+locale labeled_tiebreaker_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
   Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F
   for
     Bot_F :: "'f set" and
@@ -49,7 +49,7 @@ abbreviation \<G>_I_L :: \<open>('f \<times> 'l) inference \<Rightarrow> 'g infe
   \<open>\<G>_I_L \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_I (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 (* lem:labeled-grounding-function *)
-sublocale standard_lifting Bot_FL Inf_FL Bot_G Inf_G "(\<Turnstile>G)" Red_I_G Red_F_G \<G>_F_L \<G>_I_L
+sublocale standard_lifting Inf_FL Bot_G Inf_G "(\<Turnstile>G)" Red_I_G Red_F_G Bot_FL \<G>_F_L \<G>_I_L
 proof
   show "Bot_FL \<noteq> {}"
     using no_labels.Bot_F_not_empty by simp
@@ -194,17 +194,17 @@ abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righta
 
 lemma lifting_q:
   assumes "q \<in> Q"
-  shows "labeled_tiebreaking_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
+  shows "labeled_tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
     (Red_F_q q) (\<G>_F_q q) (\<G>_I_q q) (\<lambda>g Cl Cl'. False) Inf_FL"
   using assms no_labels.standard_lifting_family Inf_F_to_Inf_FL Inf_FL_to_Inf_F
-  by (simp add: labeled_tiebreaking_lifting_axioms_def labeled_tiebreaking_lifting_def)
+  by (simp add: labeled_tiebreaker_lifting_axioms_def labeled_tiebreaker_lifting_def)
 
 lemma lifted_q:
   assumes q_in: "q \<in> Q"
-  shows "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q) (Red_F_q q)
-    (\<G>_F_L_q q) (\<G>_I_L_q q)"
+  shows "standard_lifting Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q) (Red_F_q q)
+    Bot_FL (\<G>_F_L_q q) (\<G>_I_L_q q)"
 proof -
-  interpret q_lifting: labeled_tiebreaking_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
+  interpret q_lifting: labeled_tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
     "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q" "\<lambda>g Cl Cl'. False" Inf_FL
     using lifting_q[OF q_in] .
   have "\<G>_I_L_q q = q_lifting.\<G>_I_L"
@@ -218,8 +218,8 @@ lemma ord_fam_lifted_q:
   shows "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_I_L_q q) (\<lambda>g Cl Cl'. False)"
 proof -
-  interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
-    "Red_I_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_I_L_q q"
+  interpret standard_q_lifting: standard_lifting Inf_FL Bot_G "Inf_G_q q" "entails_q q"
+    "Red_I_q q" "Red_F_q q" Bot_FL "\<G>_F_L_q q" "\<G>_I_L_q q"
     using lifted_q[OF q_in] .
   have "minimal_element (\<lambda>Cl Cl'. False) UNIV"
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
