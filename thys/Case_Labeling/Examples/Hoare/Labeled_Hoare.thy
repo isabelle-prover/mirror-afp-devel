@@ -40,7 +40,7 @@ context begin
     assumes "V\<langle>(''precondition'', IC, []),(''while'', IC, []) # CT: p \<subseteq> i\<rangle>"
       and "C\<langle>Suc IC,(''invariant'', Suc IC, []) # (''while'', IC, []) # CT,OC: Valid (i \<inter> b) c i\<rangle>"
       and "V\<langle>(''postcondition'', IC, []),(''while'', IC, []) # CT: i \<inter> - b \<subseteq> q\<rangle>"
-    shows "C\<langle>IC,CT,OC: Valid p (While b i c) q\<rangle>"
+    shows "C\<langle>IC,CT,OC: Valid p (While b i v c) q\<rangle>"
     using assms(2-) unfolding LABEL_simps  by (rule WhileRule)
 
   lemma LABELs_to_prems:
