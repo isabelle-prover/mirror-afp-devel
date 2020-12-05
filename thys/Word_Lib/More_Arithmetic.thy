@@ -11,7 +11,7 @@ declare min.absorb1 [simp] min.absorb2 [simp]
 
 lemma n_less_equal_power_2 [simp]:
   "n < 2 ^ n"
-  by (induction n) simp_all
+  by (fact less_exp)
 
 lemma min_pm [simp]: "min a b + (a - b) = a"
   for a b :: nat
@@ -120,36 +120,6 @@ lemma nat_mult_power_less_eq:
 lemma diff_diff_less:
   "(i < m - (m - (n :: nat))) = (i < m \<and> i < n)"
   by auto
-
-lemma Suc_mask_eq_exp:
-  \<open>Suc (mask n) = 2 ^ n\<close>
-  by (simp add: mask_eq_exp_minus_1)
-
-lemma (in unique_euclidean_semiring_with_bit_shifts) less_eq_mask:
-  \<open>a \<le> mask a\<close>
-  apply (simp add: mask_eq_exp_minus_1)
-  apply (metis (mono_tags, lifting) Suc_pred leD n_less_equal_power_2 nat_zero_less_power_iff not_less_eq_eq numeral_2_eq_2 zero_less_Suc)
-  done
-
-lemma less_mask:
-  \<open>n < mask n\<close> if \<open>Suc 0 < n\<close>
-proof -
-  define m where \<open>m = n - 2\<close>
-  with that have *: \<open>n = m + 2\<close>
-    by simp
-  have \<open>Suc (Suc (Suc m)) < 4 * 2 ^ m\<close>
-    by (induction m) simp_all
-  then have \<open>Suc (m + 2) < Suc (mask (m + 2))\<close>
-    by (simp add: Suc_mask_eq_exp)
-  then have \<open>m + 2 < mask (m + 2)\<close>
-    by (simp add: less_le)
-  with * show ?thesis
-    by simp
-qed
-
-lemma (in semiring_bit_operations) take_bit_mask [simp]:
-  \<open>take_bit m (mask n) = mask (min m n)\<close>
-  by (rule bit_eqI) (simp add: bit_simps)
 
 lemma small_powers_of_2:
   \<open>x < 2 ^ (x - 1)\<close> if \<open>x \<ge> 3\<close> for x :: nat

@@ -6,6 +6,38 @@ theory Even_More_List
     Main
 begin
 
+lemma upt_add_eq_append':
+  assumes "i \<le> j" and "j \<le> k"
+  shows "[i..<k] = [i..<j] @ [j..<k]"
+  using assms le_Suc_ex upt_add_eq_append by blast
+
+lemma map_idem_upt_eq:
+  \<open>map f [m..<n] = [m..<n]\<close> if \<open>\<And>q. m \<le> q \<Longrightarrow> q < n \<Longrightarrow> f q = q\<close>
+proof (cases \<open>n \<ge> m\<close>)
+  case False
+  then show ?thesis
+    by simp
+next
+  case True
+  moreover define r where \<open>r = n - m\<close>
+  ultimately have \<open>n = m + r\<close>
+    by simp
+  with that have \<open>\<And>q. m \<le> q \<Longrightarrow> q < m + r \<Longrightarrow> f q = q\<close>
+    by simp
+  then have \<open>map f [m..<m + r] = [m..<m + r]\<close>
+    by (induction r) simp_all
+  with \<open>n = m + r\<close> show ?thesis
+    by simp
+qed
+
+lemma upt_zero_numeral_unfold:
+  \<open>[0..<numeral n] = [0..<pred_numeral n] @ [pred_numeral n]\<close>
+  by (simp add: numeral_eq_Suc)
+
+lemma length_takeWhile_less:
+  "\<exists>x\<in>set xs. \<not> P x \<Longrightarrow> length (takeWhile P xs) < length xs"
+  by (induct xs) (auto split: if_splits)
+
 lemma Min_eq_length_takeWhile:
   \<open>Min {m. P m} = length (takeWhile (Not \<circ> P) ([0..<n]))\<close>
   if *: \<open>\<And>m. P m \<Longrightarrow> m < n\<close> and \<open>\<exists>m. P m\<close>
@@ -72,37 +104,5 @@ next
       by (auto intro: Max_eqI simp add: less_Suc_eq_le)
   qed
 qed
-
-lemma upt_add_eq_append':
-  assumes "i \<le> j" and "j \<le> k"
-  shows "[i..<k] = [i..<j] @ [j..<k]"
-  using assms le_Suc_ex upt_add_eq_append by blast
-
-lemma map_idem_upt_eq:
-  \<open>map f [m..<n] = [m..<n]\<close> if \<open>\<And>q. m \<le> q \<Longrightarrow> q < n \<Longrightarrow> f q = q\<close>
-proof (cases \<open>n \<ge> m\<close>)
-  case False
-  then show ?thesis
-    by simp
-next
-  case True
-  moreover define r where \<open>r = n - m\<close>
-  ultimately have \<open>n = m + r\<close>
-    by simp
-  with that have \<open>\<And>q. m \<le> q \<Longrightarrow> q < m + r \<Longrightarrow> f q = q\<close>
-    by simp
-  then have \<open>map f [m..<m + r] = [m..<m + r]\<close>
-    by (induction r) simp_all
-  with \<open>n = m + r\<close> show ?thesis
-    by simp
-qed
-
-lemma upt_zero_numeral_unfold:
-  \<open>[0..<numeral n] = [0..<pred_numeral n] @ [pred_numeral n]\<close>
-  by (simp add: numeral_eq_Suc)
-
-lemma length_takeWhile_less:
-  "\<exists>x\<in>set xs. \<not> P x \<Longrightarrow> length (takeWhile P xs) < length xs"
-  by (induct xs) (auto split: if_splits)
 
 end

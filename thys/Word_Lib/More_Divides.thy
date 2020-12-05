@@ -344,20 +344,6 @@ next
     by simp
 qed
 
-lemma take_bit_eq_mask_iff:
-  \<open>take_bit n k = mask n \<longleftrightarrow> take_bit n (k + 1) = 0\<close>
-  for k :: int
-  apply auto
-   apply (subst take_bit_add [symmetric])
-   apply (simp add: mask_eq_exp_minus_1)
-  apply (metis add.left_commute diff_0 diff_add_cancel group_cancel.rule0 take_bit_add take_bit_minus take_bit_minus_one_eq_mask)
-  done
-
-lemma take_bit_eq_mask_iff_exp_dvd:
-  \<open>take_bit n k = mask n \<longleftrightarrow> 2 ^ n dvd k + 1\<close>
-  for k :: int
-  by (simp add: take_bit_eq_mask_iff flip: take_bit_eq_0_iff)
-
 lemma mod_div_equality_div_eq:
   "a div b * b = (a - (a mod b) :: int)"
   by (simp add: field_simps)

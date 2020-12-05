@@ -8,18 +8,6 @@ theory More_Word
     More_Divides
 begin
 
-lemma finite_bit_word [simp]:
-  \<open>finite {n. bit w n}\<close>
-  for w :: \<open>'a::len word\<close>
-proof -
-  have \<open>{n. bit w n} \<subseteq> {0..LENGTH('a)}\<close>
-    by (auto dest: bit_imp_le_length)
-  moreover have \<open>finite {0..LENGTH('a)}\<close>
-    by simp
-  ultimately show ?thesis
-    by (rule finite_subset)
-qed
-
 lemma unat_power_lower [simp]:
   "unat ((2::'a::len word) ^ n) = 2 ^ n" if "n < LENGTH('a::len)"
   using that by transfer simp
