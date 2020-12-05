@@ -5,7 +5,7 @@ session Relational_Paths (AFP) = Relation_Algebra +
   options [timeout = 600]
 
   sessions
-    Aggregation_Algebras
+    "HOL-Hoare"
 
   theories
     More_Relation_Algebra

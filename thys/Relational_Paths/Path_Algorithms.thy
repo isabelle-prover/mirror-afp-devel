@@ -15,7 +15,7 @@ The total-correctness proofs use a library developed in \cite{Guttmann2018c}.
 
 theory Path_Algorithms
 
-imports Aggregation_Algebras.Hoare_Logic Rooted_Paths
+imports "HOL-Hoare.Hoare_Logic" Rooted_Paths
 
 begin
 
