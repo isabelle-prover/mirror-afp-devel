@@ -2,9 +2,10 @@
     Authors:    Cornelius Diekmann
 *)
 theory IPv6
-imports IP_Address
-        NumberWang_IPv6
-        (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
+  imports
+    IP_Address
+    NumberWang_IPv6
+    (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
 
@@ -629,7 +630,7 @@ definition ipv6_unparsed_compressed_to_preferred :: "((16 word) option) list \<R
   lemma ipv6_unparsed_compressed_to_preferred_identity1:
    "ipv6_unparsed_compressed_to_preferred (ipv6addr_syntax_compressed_to_list ipv6compressed) = Some ipv6prferred
     \<longleftrightarrow> ipv6addr_c2p ipv6compressed = ipv6prferred"
-  by(cases ipv6compressed) (simp_all add: ipv6_unparsed_compressed_to_preferred_def) (*1s*)
+    by (cases ipv6compressed) (simp_all add: ipv6_unparsed_compressed_to_preferred_def numeral_eq_Suc) (*1s*)
  
   lemma ipv6_unparsed_compressed_to_preferred_identity2: 
     "ipv6_unparsed_compressed_to_preferred ls = Some ipv6prferred

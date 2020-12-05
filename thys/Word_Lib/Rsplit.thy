@@ -154,7 +154,8 @@ lemma word_rsplit_upt:
    apply (simp add: test_bit_rsplit_alt word_size)
    apply (simp add: nth_ucast nth_shiftr rev_nth field_simps)
   apply (simp add: length_word_rsplit_exp_size)
-  apply (metis mult.commute given_quot_alt word_size word_size_gt_0)
+  apply transfer
+  apply (metis (no_types, lifting) Nat.add_diff_assoc Suc_leI add_0_left diff_Suc_less div_less len_gt_0 msrevs(1) mult.commute)
   done
 
 end

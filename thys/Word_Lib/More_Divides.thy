@@ -409,13 +409,16 @@ lemma two_pow_div_gt_le:
   "v < 2 ^ n div (2 ^ m :: nat) \<Longrightarrow> m \<le> n"
   by (clarsimp dest!: less_two_pow_divD)
 
-lemma nat_mult_power_less_eq:
-  "b > 0 \<Longrightarrow> (a * b ^ n < (b :: nat) ^ m) = (a < b ^ (m - n))"
-  using mult_less_cancel2[where m = a and k = "b ^ n" and n="b ^ (m - n)"]
-        mult_less_cancel2[where m="a * b ^ (n - m)" and k="b ^ m" and n=1]
-  apply (simp only: power_add[symmetric] nat_minus_add_max)
-  apply (simp only: power_add[symmetric] nat_minus_add_max ac_simps)
-  apply (simp add: max_def split: if_split_asm)
+lemma td_gal_lt:
+  \<open>0 < c \<Longrightarrow> a < b * c \<longleftrightarrow> a div c < b\<close>
+  for a b c :: nat
+  apply (auto dest: less_mult_imp_div_less)
+  apply (metis div_le_mono div_mult_self_is_m leD leI)
   done
+
+lemma td_gal:
+  \<open>0 < c \<Longrightarrow> b * c \<le> a  \<longleftrightarrow> b \<le> a div c\<close>
+  for a b c :: nat
+  by (meson not_le td_gal_lt)
 
 end

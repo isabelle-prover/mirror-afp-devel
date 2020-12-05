@@ -346,7 +346,7 @@ lemma word_unat_mask_lt:
 lemma unat_shiftr_less_t2n:
   fixes x :: "'a :: len word"
   shows "unat x < 2 ^ (n + m) \<Longrightarrow> unat (x >> n) < 2 ^ m"
-  by (simp add: shiftr_div_2n' power_add mult.commute td_gal_lt)
+  by (simp add: shiftr_div_2n' power_add mult.commute less_mult_imp_div_less)
 
 lemma le_or_mask:
   "w \<le> w' \<Longrightarrow> w OR mask x \<le> w' OR mask x"
@@ -481,9 +481,8 @@ lemma div_power_helper:
    apply (rule power_increasing; simp)
   apply (subst int_div_sub_1; simp add: uint_2p_alt)
   apply (subst power_0[symmetric])
-  apply (simp add: uint_2p_alt le_imp_power_dvd power_sub_int)
+  apply (simp add: uint_2p_alt le_imp_power_dvd power_diff_power_eq)
   done
-
 
 lemma word_add_power_off:
   fixes a :: "'a :: len word"
@@ -519,9 +518,7 @@ next
     apply (erule word_mult_le_mono1)
     apply (simp add: p2_gt_0)
     apply (simp add: word_less_nat_alt)
-    apply (rule nat_less_power_trans2[simplified])
-    apply (simp add: word_less_nat_alt)
-    apply simp
+    apply (meson nat_mult_power_less_eq zero_less_numeral)
     done
   finally show ?thesis .
 qed
@@ -730,7 +727,8 @@ lemma word_of_nat_inj:
 lemma uints_mono_iff: "uints l \<subseteq> uints m \<longleftrightarrow> l \<le> m"
   using power_increasing_iff[of "2::int" l m]
   apply (auto simp: uints_num subset_iff simp del: power_increasing_iff)
-  by (meson less_irrefl not_less zle2p)
+  apply (meson less_irrefl not_le zero_le_numeral zero_le_power)
+  done
 
 lemmas uints_monoI = uints_mono_iff[THEN iffD2]
 

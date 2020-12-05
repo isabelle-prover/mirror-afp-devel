@@ -503,7 +503,7 @@ proof -
 	assume "x \<le> 16 \<and> y \<le> 16"
 	hence "x \<in> ?ns" "y \<in> ?ns" by(simp; presburger)+
 	moreover assume "replicate (16 - x) False @ replicate x True = replicate (16 - y) False @ replicate y True"
-	ultimately show "x = y" by simp (elim disjE; simp_all) (* that's only 289 subgoals after the elim *)
+	ultimately show "x = y" by simp (elim disjE; simp_all add: numeral_eq_Suc) (* that's only 289 subgoals after the elim *)
 qed
 
 lemma mask_inj_hlp1: "inj_on (mask :: nat \<Rightarrow> 16 word) {0..16}"

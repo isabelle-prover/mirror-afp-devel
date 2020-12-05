@@ -68,7 +68,7 @@ proof -
   have "2 * (n div 2 div m) * m < 2 ^ LENGTH('a)" using n unfolding div_mult2_eq[symmetric]
     by(subst (2) mult.commute)(simp add: minus_mod_eq_div_mult [symmetric] diff_mult_distrib minus_mod_eq_mult_div [symmetric] div_mult2_eq)
   moreover have "2 * (n div 2 div m) * m \<le> n"
-    by (metis div_mult2_eq dtle mult.assoc mult.left_commute)
+    by (simp flip: div_mult2_eq ac_simps)
   ultimately
   have r: "x - ?q * y = of_nat (n - ?q' * m)"
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)"

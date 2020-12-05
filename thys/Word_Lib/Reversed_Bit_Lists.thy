@@ -1905,7 +1905,10 @@ lemma to_bl_1:
 
 lemma eq_zero_set_bl:
   "(w = 0) = (True \<notin> set (to_bl w))"
-  using list_of_false word_bl.Rep_inject by fastforce
+  apply (auto simp add: to_bl_unfold)
+  apply (rule bit_word_eqI)
+  apply auto
+  done
 
 lemma of_drop_to_bl:
   "of_bl (drop n (to_bl x)) = (x AND mask (size x - n))"
@@ -2119,7 +2122,7 @@ lemma bin_to_bl_of_bl_eq:
    apply (meson is_aligned_imp_not_bit is_aligned_weaken less_diff_conv2)
   apply (erule is_alignedE')
   apply (rule nth_equalityI)
-   apply (auto simp add: nth_bin_to_bl bit_simps simp flip: bin_to_bl_def dest: nth_rev_alt)
+   apply (auto simp add: nth_bin_to_bl bit_simps rev_nth simp flip: bin_to_bl_def)
   done
 
 (* FIXME: move to Word distribution *)
