@@ -39,6 +39,6 @@ end
 
 
 (*strips.sml*)
-generated/decode_DIMACS_model.sml
+generated/decode_DIMACS_model.ML
 sas_plus.sml
 decode_model.sml

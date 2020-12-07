@@ -63,5 +63,7 @@ thys/Tree-Automata/code/haskell/generated/Data_Bits.hs
 thys/Tree-Automata/code/haskell/generated/Natural.hs
 thys/Tree-Automata/code/haskell/generated/Uint32.hs
 
+thys/Verified_SAT_Based_AI_Planning/code/generated
+
 admin/py-bootstrap
 admin/venv

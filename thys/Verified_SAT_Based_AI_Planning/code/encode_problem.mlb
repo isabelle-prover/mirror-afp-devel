@@ -39,6 +39,6 @@ end
 
 
 (*strips.sml*)
-generated/SASP_to_DIMACS.sml
+generated/SASP_to_DIMACS.ML
 sas_plus.sml
 encode_problem.sml

@@ -852,11 +852,11 @@ definition max_var :: "int list \<Rightarrow> int" where
        "max_var xs \<equiv> fold (\<lambda>(x::int) (y::int). if abs x \<ge> abs y then (abs x) else y) xs (0::int)"
 
 export_code encode nat_of_integer integer_of_nat nat_opt_of_integer Inl Inr String.explode
-            String.implode max_var concat char_of_nat Int.nat integer_of_int length int_of_integer
-            in SML module_name exported file "code/generated/SASP_to_DIMACS.sml"
+    String.implode max_var concat char_of_nat Int.nat integer_of_int length int_of_integer
+  in SML module_name exported file_prefix SASP_to_DIMACS
 
 export_code decode nat_of_integer integer_of_nat nat_opt_of_integer Inl Inr String.explode
-            String.implode max_var concat char_of_nat Int.nat integer_of_int length int_of_integer
-  in SML module_name exported file "code/generated/decode_DIMACS_model.sml"
+    String.implode max_var concat char_of_nat Int.nat integer_of_int length int_of_integer
+  in SML module_name exported file_prefix decode_DIMACS_model
 
 end
