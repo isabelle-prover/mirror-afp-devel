@@ -1231,6 +1231,26 @@ abstract =
 	</p>
 notify =
 
+[Relational_Method]
+title = The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer science/Security
+date = 2020-12-05
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  This paper introduces a new method for the formal verification of
+  cryptographic protocols, the relational method, derived from
+  Paulson's inductive method by means of some enhancements aimed at
+  streamlining formal definitions and proofs, specially for protocols
+  using public key cryptography. Moreover, this paper proposes a method
+  to formalize a further security property, message anonymity, in
+  addition to message confidentiality and authenticity.  The relational
+  method, including message anonymity, is then applied to the
+  verification of a sample authentication protocol, comprising Password
+  Authenticated Connection Establishment (PACE) with Chip Authentication
+  Mapping followed by the explicit verification of an additional
+  password over the PACE secure channel.
+
 [List_Interleaving]
 title = Reasoning about Lists via List Interleaving
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>

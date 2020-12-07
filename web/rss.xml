@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Nov 2020 00:00:00 +0000</pubDate>
+    <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
+              <link>https://www.isa-afp.org/entries/Relational_Method.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Method.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+This paper introduces a new method for the formal verification of
+cryptographic protocols, the relational method, derived from
+Paulson&#39;s inductive method by means of some enhancements aimed at
+streamlining formal definitions and proofs, specially for protocols
+using public key cryptography. Moreover, this paper proposes a method
+to formalize a further security property, message anonymity, in
+addition to message confidentiality and authenticity.  The relational
+method, including message anonymity, is then applied to the
+verification of a sample authentication protocol, comprising Password
+Authenticated Connection Establishment (PACE) with Chip Authentication
+Mapping followed by the explicit verification of an additional
+password over the PACE secure channel.</description>
+    </item>
     <item>
        <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
               <link>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
@@ -571,28 +591,6 @@ Set Theory&lt;/i&gt;, by Karel Hrbacek and Thomas Jech. This
 implementation may be used as the basis for a model of Peano arithmetic in
 ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
 is much easier to follow.</description>
-    </item>
-    <item>
-       <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
-              <link>https://www.isa-afp.org/entries/LTL_Normal_Form.html</link>
-       <guid>https://www.isa-afp.org/entries/LTL_Normal_Form.html</guid>
-       <dc:creator> Salomon Sickert       </dc:creator>
-       <pubDate>08 May 2020 00:00:00 +0000</pubDate>
-       <description>
-In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
-theorem stating that every formula of Past LTL (the extension of LTL
-with past operators) is equivalent to a formula of the form
-$\bigwedge_{i=1}^n \mathbf{G}\mathbf{F} \varphi_i \vee
-\mathbf{F}\mathbf{G} \psi_i$,  where $\varphi_i$ and $\psi_i$ contain
-only past operators. Some years later, Chang, Manna, and Pnueli built
-on this result to derive a similar normal form for LTL. Both
-normalisation procedures have a non-elementary worst-case blow-up, and
-follow an involved path from formulas to counter-free automata to
-star-free regular expressions and back to formulas. We improve on both
-points. We present an executable formalisation of a direct and purely
-syntactic normalisation procedure for LTL yielding a normal form,
-comparable to the one by Chang, Manna, and Pnueli, that has only a
-single exponential blow-up.</description>
     </item>
   </channel>
 </rss>
