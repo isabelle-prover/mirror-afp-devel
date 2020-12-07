@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Generic Framework for Verified Compilers - Archive of Formal Proofs
+<title>Inline Caching and Unboxing Optimization for Interpreters - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,19 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
+  <h1>          <font class="first">I</font>nline
   
-          <font class="first">G</font>eneric
+          <font class="first">C</font>aching
   
-          <font class="first">F</font>ramework
+          and
+  
+          <font class="first">U</font>nboxing
+  
+          <font class="first">O</font>ptimization
   
           for
   
-          <font class="first">V</font>erified
-  
-          <font class="first">C</font>ompilers
+          <font class="first">I</font>nterpreters
   
 </h1>
   <p>&nbsp;</p>
@@ -93,7 +95,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Generic Framework for Verified Compilers</td>
+  <td class="data" width="80%">Inline Caching and Unboxing Optimization for Interpreters</td>
 </tr>
 
 <tr>
@@ -109,32 +111,37 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-02-10</td>
+  <td class="data">2020-12-07</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This is a generic framework for formalizing compiler transformations.
-It leverages Isabelle/HOL’s locales to abstract over concrete
-languages and transformations. It states common definitions for
-language semantics, program behaviours, forward and backward
-simulations, and compilers. We provide generic operations, such as
-simulation and compiler composition, and prove general (partial)
-correctness theorems, resulting in reusable proof components.</td>
+This Isabelle/HOL formalization builds on the
+<em>VeriComp</em> entry of the <em>Archive of Formal
+Proofs</em> to provide the following contributions:  <ul>
+<li>an operational semantics for a realistic virtual machine
+(Std) for dynamically typed programming languages;</li>
+<li>the formalization of an inline caching optimization (Inca),
+a proof of bisimulation with (Std), and a compilation
+function;</li> <li>the formalization of an unboxing
+optimization (Ubx), a proof of bisimulation with (Inca), and a simple
+compilation function.</li> </ul>  This formalization was
+described in the CPP 2021 paper <em>Towards Efficient and
+Verified Virtual Machines for Dynamic Languages</em></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{VeriComp-AFP,
+        <pre>@article{Interpreter_Optimizations-AFP,
   author  = {Martin Desharnais},
-  title   = {A Generic Framework for Verified Compilers},
+  title   = {Inline Caching and Unboxing Optimization for Interpreters},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = dec,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/VeriComp.html},
+  note    = {\url{http://isa-afp.org/entries/Interpreter_Optimizations.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -145,10 +152,10 @@ correctness theorems, resulting in reusable proof components.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Interpreter_Optimizations.html">Interpreter_Optimizations</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="VeriComp.html">VeriComp</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -160,29 +167,23 @@ correctness theorems, resulting in reusable proof components.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/VeriComp/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/VeriComp/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Interpreter_Optimizations/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Interpreter_Optimizations/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/VeriComp/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Interpreter_Optimizations/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-VeriComp-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Interpreter_Optimizations-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-VeriComp-2020-02-25.tar.gz">
-              afp-VeriComp-2020-02-25.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

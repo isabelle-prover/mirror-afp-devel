@@ -7582,7 +7582,7 @@ abstract =
 
 [Verified_SAT_Based_AI_Planning]
 title = Verified SAT-Based AI Planning
-author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz<>
 topic = Computer science/Artificial intelligence
 date = 2020-10-29
 notify = mohammad.abdulaziz8@gmail.com
@@ -10017,3 +10017,24 @@ abstract =
   programming interface (API) of the DOM revealed numerous invariants
   that implementations of the DOM API need to preserve to ensure the
   integrity of components.
+
+[Interpreter_Optimizations]
+title = Inline Caching and Unboxing Optimization for Interpreters
+author = Martin Desharnais <https://martin.desharnais.me>
+topic = Computer science/Programming languages/Misc
+date = 2020-12-07
+notify = martin.desharnais@unibw.de
+abstract = 
+  This Isabelle/HOL formalization builds on the
+  <em>VeriComp</em> entry of the <em>Archive of Formal
+  Proofs</em> to provide the following contributions:  <ul>
+  <li>an operational semantics for a realistic virtual machine
+  (Std) for dynamically typed programming languages;</li>
+  <li>the formalization of an inline caching optimization (Inca),
+  a proof of bisimulation with (Std), and a compilation
+  function;</li> <li>the formalization of an unboxing
+  optimization (Ubx), a proof of bisimulation with (Inca), and a simple
+  compilation function.</li> </ul>  This formalization was
+  described in the CPP 2021 paper <em>Towards Efficient and
+  Verified Virtual Machines for Dynamic Languages</em>
+
