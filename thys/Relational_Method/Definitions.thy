@@ -185,38 +185,34 @@ Any such protocol relation either augments a state in which the spy knows @{text
 i.e. containing event @{text "(Spy, \<langle>n, C X\<^sub>1 \<dots> X\<^sub>m\<rangle>)"}, with event @{text "(Spy, \<langle>n, X\<^sub>i\<rangle>)"}, where
 $1 \leq i \leq m$ and @{text C} is some constructor of datatype @{text msg}, or conversely augments
 a state containing event @{text "(Spy, \<langle>n, X\<^sub>i\<rangle>)"} with @{text "(Spy, \<langle>n, C X\<^sub>1 \<dots> X\<^sub>m\<rangle>)"}. However, the
-latter spy's inference is justified only if @{text "C X\<^sub>1 \<dots> X\<^sub>m"} is part of a message generated or
-accepted by some legitimate agent in accordance with the protocol rules. Otherwise, namely in case
-@{text "C X\<^sub>1 \<dots> X\<^sub>m"} were just a message generated at random by the spy, her inference would be as
-sound as those of most politicians and all advertisements: even if the conclusion happened to be
+latter spy's inference is justified only if the compound message @{text "C X\<^sub>1 \<dots> X\<^sub>m"} is part of a
+message generated or accepted by some legitimate agent according to the protocol rules. Otherwise,
+that is, if @{text "C X\<^sub>1 \<dots> X\<^sub>m"} were just a message generated at random by the spy, her inference
+would be as sound as those of most politicians and all advertisements: even if the conclusion were
 true, it would be so by pure chance.
 
-This problem is solved as follows.
+This problem can be solved as follows.
 
   \<^item> A further constructor @{text Log}, taking a message as input, is added to datatype @{text msg},
-and every protocol relation modeling the generation or acceptance of message @{text X} by some
+and every protocol relation modeling the generation or acceptance of a message @{text X} by some
 legitimate agent must augment the current state with event @{term "(Spy, Log X)"}.
-\\In this way, the set of all the messages having been exchanged by some legitimate agent in state
-@{text s} can be expressed as @{term "Log -` spied s"}.
+\\In this way, the set of all the messages that have been generated or accepted by some legitimate
+agent in state @{text s} matches @{term "Log -` spied s"}.
 
   \<^item> A function @{text crypts} is defined inductively. It takes a message set @{text H} as input, and
 returns the least message set @{text H'} such that @{term "H \<subseteq> H'"} and for any (even empty) list
 of keys @{text KS}, if the encryption of @{text "\<lbrace>X, Y\<rbrace>"}, @{text "\<lbrace>Y, X\<rbrace>"}, or @{text "Hash X"}
-with @{text KS} is included in @{text H'}, then the encryption of @{text X} with @{text KS} is
-included in @{text H'} as well. 
-\\In this way, the set of all the messages exploitable in state @{text s} to map messages containing
-them as components to agents can be expressed as @{term "crypts (Log -` spied s)"}. For instance, if
-the encryption of @{text "Hash \<lbrace>X, Y\<rbrace>"} with key @{text K} lies within this set, then the encryption
-of @{text X} with @{text K} also does, so that the spy can infer @{text "\<langle>n, Hash \<lbrace>X, Y\<rbrace>\<rangle>"} from
-@{text "\<langle>n, X\<rangle>"} -- provided that she knows @{text Y} and @{text K}'s inverse key as well.
+with @{text KS} is contained in @{text H'}, then the encryption of @{text X} with @{text KS} is
+contained in @{text H'} as well. 
+\\In this way, the set of all the messages that are part of messages exchanged by legitimate agents,
+viz. that may be mapped to agents, in state @{text s} matches @{term "crypts (Log -` spied s)"}.
 
   \<^item> Another function @{text key_sets} is defined, too. It takes two inputs, a message @{text X} and
 a message set @{text H}, and returns the set of the sets of @{text KS}' inverse keys for any list of
 keys @{text KS} such that the encryption of @{text X} with @{text KS} is included in @{text H}.
-\\In this way, the fact that in state @{text s} a message @{text X} can be exploited by the spy to
-map a given message containing it as a component to an agent, provided that she knows all the keys
-in set @{text U}, can be expressed via conditions @{term "U \<in> key_sets X (crypts (Log -` spied s))"}
-and @{term "U \<subseteq> spied s"}.
+\\In this way, the fact that in state @{text s} the spy can map a compound message @{text X} to some
+agent, provided that she knows all the keys in set @{text U}, can be expressed through conditions
+@{term "U \<in> key_sets X (crypts (Log -` spied s))"} and @{term "U \<subseteq> spied s"}.
 \\The choice to define @{text key_sets} so as to collect the inverse keys of encryption keys, viz.
 decryption ones, depends on the fact that the sample protocol verified in this paper uses symmetric
 keys alone -- which match their own inverse keys -- for encryption, whereas asymmetric key pairs are
@@ -359,12 +355,33 @@ in the relational method: @{text "Asset n"} may use @{text "PriKey B"} in this c
 event @{text "(Asset n, PubKey B)"} is not yet contained in the current state @{text s}, and then
 @{text s} is augmented with that event. Namely, events can also be used to model garbage collection!
 
+  \<^item> The sets of the legitimate agents whose authentication data have been identified in advance (or
+equivalently, by means other than attacking the protocol, e.g. by social engineering) by the spy are
+defined consistently with the constraint that known data alone can be mapped to agents, as well as
+with the definition of initial state @{text s\<^sub>0}. For instance, the set @{text bad_id_prikey} of the
+agents whose Chip Authentication private keys have been identified is defined as a subset of the set
+@{text bad_prikey} of the agents whose Chip Authentication private keys have been stolen. Moreover,
+all the signatures included in assets' authentication tokens are assumed to be already known to the
+spy in state @{text s\<^sub>0}, so that @{text bad_id_prikey} includes also any agent whose identification
+data or Chip Authentication public key have been identified in advance.
+
   \<^item> The protocol rules augmenting the spy's knowledge with some message of the form @{text "\<langle>n, X\<rangle>"}
 generally require the spy to already know some other message of the same form. There is just one
 exception: the spy can infer @{text "\<langle>n, Agent n\<rangle>"} from @{text "Agent n"}. This expresses the fact
-that the detection of identification data within a message generated or accepted by a legitimate
-agent is itself sufficient to map any known component of that message to that agent, regardless of
-whether any data were already mapped to that agent in advance.
+that the detection of identification data within a message generated or accepted by some legitimate
+agent is in itself sufficient to map any known component of that message to the identified agent,
+regardless of whether any data were already mapped to that agent in advance.
+
+  \<^item> As opposed to what happens for constructors @{text "(\<otimes>)"} and @{text "MPair"}, there do not
+exist two protocol rules enabling the spy to infer @{text "\<langle>n, Crypt K X\<rangle>"} from @{text "\<langle>n, X\<rangle>"} or
+@{text "\<langle>n, Key K\<rangle>"} and vice versa. A single protocol rule is rather defined, which enables the spy
+to infer @{text "\<langle>n, X\<rangle>"} from @{text "\<langle>n, Key K\<rangle>"} or vice versa, provided that @{text "Crypt K X"}
+has been exchanged by some legitimate agent. In fact, the protocol provides for just one compound
+message made up of cryptograms, i.e. the asset's authentication token, and all these cryptograms are
+generated using the same encryption key @{text "Key (SesK SK)"}. Thus, if two such cryptograms have
+plaintexts @{text X\<^sub>1}, @{text X\<^sub>2} and the spy knows @{text "\<langle>n, X\<^sub>1\<rangle>"}, she can infer @{text "\<langle>n, X\<^sub>2\<rangle>"}
+by inferring @{text "\<langle>n, Key (SesK SK)\<rangle>"}, viz. she need not know @{text "\<langle>n, Crypt (SesK SK) X\<^sub>1\<rangle>"}
+to do that.
 
 The formal content is split into the following sections.
 
