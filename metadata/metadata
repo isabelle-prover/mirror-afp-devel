@@ -9953,3 +9953,14 @@ abstract =
   This entry includes useful syntactic sugar, new operators and functions, and
   their associated lemmas for finite maps which currently are not
   present in the standard Finite_Map theory.
+
+[Relational_Minimum_Spanning_Trees]
+title = Relational Minimum Spanning Tree Algorithms
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Nicolas Robinson-O'Brien<>
+topic = Computer science/Algorithms/Graph
+date = 2020-12-08
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We verify the correctness of Prim's, Kruskal's and
+  Borůvka's minimum spanning tree algorithms based on algebras for
+  aggregation and minimisation.

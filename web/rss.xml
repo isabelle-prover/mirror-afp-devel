@@ -9,7 +9,18 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Minimum Spanning Tree Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</guid>
+       <dc:creator> Walter Guttmann, Nicolas Robinson-O'Brien       </dc:creator>
+       <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We verify the correctness of Prim&#39;s, Kruskal&#39;s and
+Borůvka&#39;s minimum spanning tree algorithms based on algebras for
+aggregation and minimisation.</description>
+    </item>
     <item>
        <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
               <link>https://www.isa-afp.org/entries/Relational_Method.html</link>
@@ -577,20 +588,6 @@ with $a_n &gt;1$ for all large n. The results are due to P. Erdős and E. G. Str
 &lt;a href=&#34;https://projecteuclid.org/euclid.pjm/1102911140&#34;&gt;[1]&lt;/a&gt;.
 In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
 The latter is an application of Theorem 2.1 involving the prime numbers.</description>
-    </item>
-    <item>
-       <title>Recursion Theorem in ZF</title>
-              <link>https://www.isa-afp.org/entries/Recursion-Addition.html</link>
-       <guid>https://www.isa-afp.org/entries/Recursion-Addition.html</guid>
-       <dc:creator> Georgy Dunaev       </dc:creator>
-       <pubDate>11 May 2020 00:00:00 +0000</pubDate>
-       <description>
-This document contains a proof of the recursion theorem. This is a
-mechanization of the proof of the recursion theorem from the text &lt;i&gt;Introduction to
-Set Theory&lt;/i&gt;, by Karel Hrbacek and Thomas Jech. This
-implementation may be used as the basis for a model of Peano arithmetic in
-ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
-is much easier to follow.</description>
     </item>
   </channel>
 </rss>
