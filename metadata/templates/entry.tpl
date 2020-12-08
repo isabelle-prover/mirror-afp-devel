@@ -128,7 +128,7 @@
   journal = {Archive of Formal Proofs},
   month   = {{ entry.publish_date.month|short_month }},
   year    = {{ entry.publish_date.year }},
-  note    = {\url{http://isa-afp.org/entries/{{ entry.name }}.html},
+  note    = {\url{https://isa-afp.org/entries/{{ entry.name }}.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
