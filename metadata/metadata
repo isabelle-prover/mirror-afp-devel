@@ -1258,6 +1258,26 @@ abstract =
 	</p>
 notify =
 
+[Relational_Method]
+title = The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer science/Security
+date = 2020-12-05
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  This paper introduces a new method for the formal verification of
+  cryptographic protocols, the relational method, derived from
+  Paulson's inductive method by means of some enhancements aimed at
+  streamlining formal definitions and proofs, specially for protocols
+  using public key cryptography. Moreover, this paper proposes a method
+  to formalize a further security property, message anonymity, in
+  addition to message confidentiality and authenticity.  The relational
+  method, including message anonymity, is then applied to the
+  verification of a sample authentication protocol, comprising Password
+  Authenticated Connection Establishment (PACE) with Chip Authentication
+  Mapping followed by the explicit verification of an additional
+  password over the PACE secure channel.
+
 [List_Interleaving]
 title = Reasoning about Lists via List Interleaving
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
@@ -7582,7 +7602,7 @@ abstract =
 
 [Verified_SAT_Based_AI_Planning]
 title = Verified SAT-Based AI Planning
-author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz<>
+author = Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>, Friedrich Kurz <>
 topic = Computer science/Artificial intelligence
 date = 2020-10-29
 notify = mohammad.abdulaziz8@gmail.com
@@ -10024,7 +10044,7 @@ author = Martin Desharnais <https://martin.desharnais.me>
 topic = Computer science/Programming languages/Misc
 date = 2020-12-07
 notify = martin.desharnais@unibw.de
-abstract = 
+abstract =
   This Isabelle/HOL formalization builds on the
   <em>VeriComp</em> entry of the <em>Archive of Formal
   Proofs</em> to provide the following contributions:  <ul>
@@ -10038,3 +10058,41 @@ abstract =
   described in the CPP 2021 paper <em>Towards Efficient and
   Verified Virtual Machines for Dynamic Languages</em>
 
+[Isabelle_Marries_Dirac]
+title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information
+author = Anthony Bordg <mailto:apdb3@cam.ac.uk>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
+topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
+date = 2020-11-22
+notify = apdb3@cam.ac.uk, lachnitt@stanford.edu
+abstract =
+  This work is an effort to formalise some quantum algorithms and
+  results in quantum information theory. Formal methods being critical
+  for the safety and security of algorithms and protocols, we foresee
+  their widespread use for quantum computing in the future. We have
+  developed a large library for quantum computing in Isabelle based on a
+  matrix representation for quantum circuits, successfully formalising
+  the no-cloning theorem, quantum teleportation, Deutsch's
+  algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner's
+  Dilemma.
+
+[Finite-Map-Extras]
+title = Finite Map Extras
+author = Javier Díaz <mailto:javier.diaz.manzi@gmail.com>
+topic = Computer science/Data structures
+date = 2020-10-12
+notify = javier.diaz.manzi@gmail.com
+abstract =
+  This entry includes useful syntactic sugar, new operators and functions, and
+  their associated lemmas for finite maps which currently are not
+  present in the standard Finite_Map theory.
+
+[Relational_Minimum_Spanning_Trees]
+title = Relational Minimum Spanning Tree Algorithms
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Nicolas Robinson-O'Brien<>
+topic = Computer science/Algorithms/Graph
+date = 2020-12-08
+notify = walter.guttmann@canterbury.ac.nz
+abstract =
+  We verify the correctness of Prim's, Kruskal's and
+  Borůvka's minimum spanning tree algorithms based on algebras for
+  aggregation and minimisation.

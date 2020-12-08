@@ -165,6 +165,7 @@ FileRefinement
 FinFun
 Finger-Trees
 Finite_Automata_HF
+Finite-Map-Extras
 First_Order_Terms
 First_Welfare_Theorem
 Fishburn_Impossibility
@@ -249,6 +250,7 @@ Iptables_Semantics
 Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
 Isabelle_C
+Isabelle_Marries_Dirac
 Isabelle_Meta_Model
 Jacobson_Basic_Algebra
 Jinja
@@ -446,6 +448,8 @@ Regular_Algebras
 Relation_Algebra
 Relational-Incorrectness-Logic
 Relational_Disjoint_Set_Forests
+Relational_Method
+Relational_Minimum_Spanning_Trees
 Relational_Paths
 Rep_Fin_Groups
 Residuated_Lattices

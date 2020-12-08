@@ -9,7 +9,18 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Minimum Spanning Tree Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</guid>
+       <dc:creator> Walter Guttmann, Nicolas Robinson-O'Brien       </dc:creator>
+       <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We verify the correctness of Prim&#39;s, Kruskal&#39;s and
+Borůvka&#39;s minimum spanning tree algorithms based on algebras for
+aggregation and minimisation.</description>
+    </item>
     <item>
        <title>Inline Caching and Unboxing Optimization for Interpreters</title>
               <link>https://www.isa-afp.org/entries/Interpreter_Optimizations.html</link>
@@ -29,6 +40,43 @@ optimization (Ubx), a proof of bisimulation with (Inca), and a simple
 compilation function.&lt;/li&gt; &lt;/ul&gt;  This formalization was
 described in the CPP 2021 paper &lt;em&gt;Towards Efficient and
 Verified Virtual Machines for Dynamic Languages&lt;/em&gt;</description>
+    </item>
+    <item>
+       <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
+              <link>https://www.isa-afp.org/entries/Relational_Method.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Method.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+This paper introduces a new method for the formal verification of
+cryptographic protocols, the relational method, derived from
+Paulson&#39;s inductive method by means of some enhancements aimed at
+streamlining formal definitions and proofs, specially for protocols
+using public key cryptography. Moreover, this paper proposes a method
+to formalize a further security property, message anonymity, in
+addition to message confidentiality and authenticity.  The relational
+method, including message anonymity, is then applied to the
+verification of a sample authentication protocol, comprising Password
+Authenticated Connection Establishment (PACE) with Chip Authentication
+Mapping followed by the explicit verification of an additional
+password over the PACE secure channel.</description>
+    </item>
+    <item>
+       <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+              <link>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
+       <guid>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</guid>
+       <dc:creator> Anthony Bordg, Hanna Lachnitt, Yijun He       </dc:creator>
+       <pubDate>22 Nov 2020 00:00:00 +0000</pubDate>
+       <description>
+This work is an effort to formalise some quantum algorithms and
+results in quantum information theory. Formal methods being critical
+for the safety and security of algorithms and protocols, we foresee
+their widespread use for quantum computing in the future. We have
+developed a large library for quantum computing in Isabelle based on a
+matrix representation for quantum circuits, successfully formalising
+the no-cloning theorem, quantum teleportation, Deutsch&#39;s
+algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
+Dilemma.</description>
     </item>
     <item>
        <title>Verified SAT-Based AI Planning</title>
@@ -82,6 +130,17 @@ construction is validated by a test-set of known equivalences between
 both quantities and SI units. Moreover, the presented theory can be
 used for type-safe conversions between the SI system and others, like
 the British Imperial System (BIS).</description>
+    </item>
+    <item>
+       <title>Finite Map Extras</title>
+              <link>https://www.isa-afp.org/entries/Finite-Map-Extras.html</link>
+       <guid>https://www.isa-afp.org/entries/Finite-Map-Extras.html</guid>
+       <dc:creator> Javier Díaz       </dc:creator>
+       <pubDate>12 Oct 2020 00:00:00 +0000</pubDate>
+       <description>
+This entry includes useful syntactic sugar, new operators and functions, and
+their associated lemmas for finite maps which currently are not
+present in the standard Finite_Map theory.</description>
     </item>
     <item>
        <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
@@ -550,69 +609,6 @@ can decide whether an autonomous vehicle is obeying the safe distance
 rule. Not only does our work apply to the domain of law, but it also
 serves as a specification for autonomous vehicle manufacturers and for
 online verification of path planners.</description>
-    </item>
-    <item>
-       <title>A verified algorithm for computing the Smith normal form of a matrix</title>
-              <link>https://www.isa-afp.org/entries/Smith_Normal_Form.html</link>
-       <guid>https://www.isa-afp.org/entries/Smith_Normal_Form.html</guid>
-       <dc:creator> Jose Divasón       </dc:creator>
-       <pubDate>23 May 2020 00:00:00 +0000</pubDate>
-       <description>
-This work presents a formal proof in Isabelle/HOL of an algorithm to
-transform a matrix into its Smith normal form, a canonical matrix
-form, in a general setting: the algorithm is parameterized by
-operations to prove its existence over elementary divisor rings, while
-execution is guaranteed over Euclidean domains. We also provide a
-formal proof on some results about the generality of this algorithm as
-well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
-does not feature dependent types, the development is carried out
-switching conveniently between two different existing libraries: the
-Hermite normal form (based on HOL Analysis) and the Jordan normal form
-AFP entries. This permits to reuse results from both developments and
-it is done by means of the lifting and transfer package together with
-the use of local type definitions.</description>
-    </item>
-    <item>
-       <title>The Nash-Williams Partition Theorem</title>
-              <link>https://www.isa-afp.org/entries/Nash_Williams.html</link>
-       <guid>https://www.isa-afp.org/entries/Nash_Williams.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>16 May 2020 00:00:00 +0000</pubDate>
-       <description>
-In 1965, Nash-Williams discovered a generalisation of the infinite
-form of Ramsey&#39;s theorem. Where the latter concerns infinite sets
-of n-element sets for some fixed n, the Nash-Williams theorem concerns
-infinite sets of finite sets (or lists) subject to a “no initial
-segment” condition. The present formalisation follows a
-monograph on Ramsey Spaces by Todorčević.</description>
-    </item>
-    <item>
-       <title>A Formalization of Knuth–Bendix Orders</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</guid>
-       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
-       <pubDate>13 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We define a generalized version of Knuth&amp;ndash;Bendix orders,
-including subterm coefficient functions. For these orders we formalize
-several properties such as strong normalization, the subterm property,
-closure properties under substitutions and contexts, as well as ground
-totality.</description>
-    </item>
-    <item>
-       <title>Irrationality Criteria for Series by Erdős and Straus</title>
-              <link>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
-       <guid>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>12 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalise certain irrationality criteria for infinite series of the form:
-\[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
-where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
-with $a_n &gt;1$ for all large n. The results are due to P. Erdős and E. G. Straus
-&lt;a href=&#34;https://projecteuclid.org/euclid.pjm/1102911140&#34;&gt;[1]&lt;/a&gt;.
-In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
-The latter is an application of Theorem 2.1 involving the prime numbers.</description>
     </item>
   </channel>
 </rss>
