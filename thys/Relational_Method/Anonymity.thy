@@ -93,7 +93,7 @@ by (erule crypts.induct, blast, (simp only: comp_apply
 
 lemma crypts_crypt_1:
  "crypts {Crypt K X} \<subseteq> Crypt K ` crypts {X}"
-by (rule subsetI, erule crypts.induct, simp, rotate_tac [!], erule_tac [!] rev_mp,
+by (rule subsetI, erule crypts.induct, fastforce, rotate_tac [!], erule_tac [!] rev_mp,
  rule_tac [!] list.induct, auto)
 
 lemma crypts_crypt_2:
