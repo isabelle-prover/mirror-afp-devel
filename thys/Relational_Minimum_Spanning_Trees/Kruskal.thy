@@ -16,7 +16,7 @@ This is necessary to establish the invariant for the actual correctness proof, w
 
 theory Kruskal
 
-imports Aggregation_Algebras.Hoare_Logic Aggregation_Algebras.Aggregation_Algebras
+imports "HOL-Hoare.Hoare_Logic" Aggregation_Algebras.Aggregation_Algebras
 
 begin
 

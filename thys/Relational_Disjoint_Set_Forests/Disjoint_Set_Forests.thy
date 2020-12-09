@@ -6,7 +6,7 @@
 theory Disjoint_Set_Forests
 
 imports
-  Aggregation_Algebras.Hoare_Logic 
+  "HOL-Hoare.Hoare_Logic"
   Stone_Kleene_Relation_Algebras.Kleene_Relation_Algebras
 begin
 

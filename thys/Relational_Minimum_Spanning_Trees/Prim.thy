@@ -13,7 +13,7 @@ The partial-correctness proof of Prim's algorithm is discussed in \cite{Guttmann
 
 theory Prim
 
-imports Aggregation_Algebras.Hoare_Logic Aggregation_Algebras.Aggregation_Algebras
+imports "HOL-Hoare.Hoare_Logic" Aggregation_Algebras.Aggregation_Algebras
 
 begin
 
