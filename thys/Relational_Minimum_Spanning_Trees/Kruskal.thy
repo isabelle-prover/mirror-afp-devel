@@ -271,19 +271,19 @@ proof vcg_tc_simp
   thus "kruskal_invariant bot g g"
     using kruskal_vc_1 kruskal_exists_minimal_spanning kruskal_invariant_def by simp
 next
-  fix f h n
+  fix f h
   let ?e = "minarc h"
   let ?f = "(f \<sqinter> -(top * ?e * f\<^sup>T\<^sup>\<star>)) \<squnion> (f \<sqinter> top * ?e * f\<^sup>T\<^sup>\<star>)\<^sup>T \<squnion> ?e"
   let ?h = "h \<sqinter> -?e \<sqinter> -?e\<^sup>T"
   let ?F = "forest_components f"
   let ?n1 = "card { x . regular x \<and> x \<le> --h }"
   let ?n2 = "card { x . regular x \<and> x \<le> --h \<and> x \<le> -?e \<and> x \<le> -?e\<^sup>T }"
-  assume 1: "kruskal_invariant f g h \<and> h \<noteq> bot \<and> ?n1 = n"
+  assume 1: "kruskal_invariant f g h \<and> h \<noteq> bot"
   from 1 obtain w where 2: "minimum_spanning_forest w g \<and> f \<le> w \<squnion> w\<^sup>T"
     using kruskal_invariant_def by auto
   hence 3: "regular f \<and> regular w \<and> regular ?e"
     using 1 by (metis kruskal_invariant_def kruskal_spanning_invariant_def minimum_spanning_forest_def spanning_forest_def minarc_regular)
-  have "(?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < ?n1) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < ?n1)"
+  show "(?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < ?n1) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < ?n1)"
   proof (rule conjI)
     show "?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < ?n1"
     proof
@@ -551,11 +551,9 @@ next
     show "\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < ?n1"
       using 1 kruskal_vc_2 kruskal_invariant_def by auto
   qed
-  thus "(?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < n) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < n)"
-    using 1 by blast
 next
-  fix f h
-  assume 28: "kruskal_invariant f g h \<and> h = bot"
+  fix f
+  assume 28: "kruskal_invariant f g bot"
   hence 29: "spanning_forest f g"
     using kruskal_invariant_def kruskal_spanning_invariant_def by auto
   from 28 obtain w where 30: "minimum_spanning_forest w g \<and> f \<le> w \<squnion> w\<^sup>T"

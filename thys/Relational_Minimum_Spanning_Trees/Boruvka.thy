@@ -3528,8 +3528,8 @@ next
     qed
   qed
 next
-  fix f h d j
-  assume "boruvka_inner_invariant j f h g d \<and> j = bot"
+  fix f h d
+  assume "boruvka_inner_invariant bot f h g d"
   thus "boruvka_outer_invariant f g"
     by (meson boruvka_inner_invariant_def)
 next

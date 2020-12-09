@@ -301,7 +301,7 @@ proof vcg_tc_simp
   thus "prim_invariant bot r g r"
     using prim_invariant_def prim_vc_1 by simp
 next
-  fix t v n
+  fix t v
   let ?vcv = "v * -v\<^sup>T \<sqinter> g"
   let ?vv = "v * v\<^sup>T \<sqinter> g"
   let ?e = "minarc ?vcv"
@@ -311,7 +311,7 @@ next
   let ?g = "--g"
   let ?n1 = "card { x . regular x \<and> x \<le> ?c \<and> x \<le> -v\<^sup>T }"
   let ?n2 = "card { x . regular x \<and> x \<le> ?c \<and> x \<le> -?v\<^sup>T }"
-  assume 1: "prim_invariant t v g r \<and> ?vcv \<noteq> bot \<and> ?n1 = n"
+  assume 1: "prim_invariant t v g r \<and> ?vcv \<noteq> bot"
   hence 2: "regular v \<and> regular (v * v\<^sup>T)"
     by (metis (no_types, hide_lams) prim_invariant_def prim_spanning_invariant_def spanning_tree_def prim_precondition_def regular_conv_closed regular_closed_star regular_mult_closed conv_involutive)
   have 3: "t \<le> v * v\<^sup>T \<sqinter> ?g"
@@ -338,7 +338,7 @@ next
     using 1 prim_invariant_def prim_spanning_invariant_def prim_precondition_def by simp
   hence 14: "?g\<^sup>T = ?g"
     using conv_complement by simp
-  have "prim_invariant ?t ?v g r \<and> ?n2 < ?n1"
+  show "prim_invariant ?t ?v g r \<and> ?n2 < ?n1"
   proof (unfold prim_invariant_def, intro conjI)
     show "prim_spanning_invariant ?t ?v g r"
       using 1 prim_invariant_def prim_vc_2 by blast
@@ -449,8 +449,6 @@ next
     show "?n2 < ?n1"
       using 1 prim_invariant_def prim_vc_2 by auto
   qed
-  thus "prim_invariant ?t ?v g r \<and> ?n2 < n"
-    using 1 by blast
 next
   fix t v
   let ?g = "--g"
