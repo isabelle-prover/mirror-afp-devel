@@ -71,7 +71,7 @@ lemma take_lt:
   "n < length al \<Longrightarrow> take n al < al"
   unfolding list_less_iff_prefix
   using prefix_order.le_less[of "take n al" al]
-  by (simp add: take_is_prefix) (metis length_take min_absorb2 nat_le_linear not_less)
+  by (simp add: take_is_prefix)
 
 lemma le_take:
 assumes "n1 \<le> n2"
