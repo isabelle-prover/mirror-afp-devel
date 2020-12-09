@@ -84,6 +84,8 @@ lemma conv_plus_commute:
   "x\<^sup>+\<^sup>T = x\<^sup>T\<^sup>+"
   by (simp add: conv_dist_comp conv_star_commute star_plus)
 
+text \<open>Lemma \<open>reflexive_inf_star\<close> was contributed by Nicolas Robinson-O'Brien.\<close>
+
 lemma reflexive_inf_star:
   assumes "reflexive y"
     shows "y \<sqinter> x\<^sup>\<star> = 1 \<squnion> (y \<sqinter> x\<^sup>+)"
@@ -198,6 +200,14 @@ lemma vector_star_2:
 lemma vector_vector_star:
   "vector v \<Longrightarrow> (v * v\<^sup>T)\<^sup>\<star> = 1 \<squnion> v * v\<^sup>T"
   by (simp add: transitive_star vv_transitive)
+
+lemma equivalence_star_closed:
+  "equivalence x \<Longrightarrow> equivalence (x\<^sup>\<star>)"
+  by (simp add: conv_star_commute star.circ_reflexive star.circ_transitive_equal)
+
+lemma equivalence_plus_closed:
+  "equivalence x \<Longrightarrow> equivalence (x\<^sup>+)"
+  by (simp add: conv_star_commute star.circ_reflexive star.circ_sup_one_left_unfold star.circ_transitive_equal)
 
 text \<open>
 The following equivalence relation characterises the component trees of a forest.
@@ -368,6 +378,14 @@ abbreviation forest :: "'a \<Rightarrow> bool" where "forest x \<equiv> injectiv
 lemma forest_bot:
   "forest bot"
   by simp
+
+lemma acyclic_down_closed:
+  "x \<le> y \<Longrightarrow> acyclic y \<Longrightarrow> acyclic x"
+  using comp_isotone star_isotone by fastforce
+
+lemma forest_down_closed:
+  "x \<le> y \<Longrightarrow> forest y \<Longrightarrow> forest x"
+  using conv_isotone mult_isotone star_isotone by fastforce
 
 lemma acyclic_star_below_complement:
   "acyclic w \<longleftrightarrow> w\<^sup>T\<^sup>\<star> \<le> -w"
@@ -1353,6 +1371,8 @@ lemma mst_extends_new_tree:
   "t \<le> w \<Longrightarrow> t \<le> v * v\<^sup>T \<Longrightarrow> vector v \<Longrightarrow> t \<squnion> e \<le> prim_W w v e"
   using mst_extends_old_tree by auto
 
+text \<open>Lemmas \<open>forests_bot_1\<close>, \<open>forests_bot_2\<close>, \<open>forests_bot_3\<close> and \<open>fc_comp_eq_fc\<close> were contributed by Nicolas Robinson-O'Brien.\<close>
+
 lemma forests_bot_1:
   assumes "equivalence e"
       and "forest f"
@@ -1409,6 +1429,28 @@ The only additional axiom we need in the generalisation to Stone-Kleene relation
 class stone_kleene_relation_algebra = stone_relation_algebra + pd_kleene_allegory +
   assumes pp_dist_star: "--(x\<^sup>\<star>) = (--x)\<^sup>\<star>"
 begin
+
+lemma reachable_without_loops:
+  "x\<^sup>\<star> = (x \<sqinter> -1)\<^sup>\<star>"
+proof (rule antisym)
+  have "x * (x \<sqinter> -1)\<^sup>\<star> = (x \<sqinter> 1) * (x \<sqinter> -1)\<^sup>\<star> \<squnion> (x \<sqinter> -1) * (x \<sqinter> -1)\<^sup>\<star>"
+    by (metis maddux_3_11_pp mult_right_dist_sup regular_one_closed)
+  also have "... \<le> (x \<sqinter> -1)\<^sup>\<star>"
+    by (metis inf.cobounded2 le_supI mult_left_isotone star.circ_circ_mult star.left_plus_below_circ star_involutive star_one)
+  finally show "x\<^sup>\<star> \<le> (x \<sqinter> -1)\<^sup>\<star>"
+    by (metis inf.cobounded2 maddux_3_11_pp regular_one_closed star.circ_circ_mult star.circ_sup_2 star_involutive star_sub_one)
+next
+  show "(x \<sqinter> -1)\<^sup>\<star> \<le> x\<^sup>\<star>"
+    by (simp add: star_isotone)
+qed
+
+lemma plus_reachable_without_loops:
+  "x\<^sup>+ = (x \<sqinter> -1)\<^sup>+ \<squnion> (x \<sqinter> 1)"
+  by (metis comp_associative maddux_3_11_pp regular_one_closed star.circ_back_loop_fixpoint star.circ_loop_fixpoint sup_assoc reachable_without_loops)
+
+lemma star_plus_without_loops:
+  "x\<^sup>\<star> \<sqinter> -1 = x\<^sup>+ \<sqinter> -1"
+  by (metis maddux_3_13 star_left_unfold_equal)
 
 lemma regular_closed_star:
   "regular x \<Longrightarrow> regular (x\<^sup>\<star>)"

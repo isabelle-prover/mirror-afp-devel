@@ -586,6 +586,19 @@ proof -
     .
 qed
 
+lemma test_comp_test_inf:
+  "(x \<sqinter> 1) * y * (z \<sqinter> 1) = (x \<sqinter> 1) * y \<sqinter> y * (z \<sqinter> 1)"
+  by (smt comp_right_one comp_right_subdist_inf coreflexive_comp_top_inf inf.left_commute inf.orderE inf_le2 mult_assoc)
+
+lemma test_comp_test_top:
+  "y \<sqinter> (x \<sqinter> 1) * top * (z \<sqinter> 1) = (x \<sqinter> 1) * y * (z \<sqinter> 1)"
+proof -
+  have "\<forall>u v . (v \<sqinter> u\<^sup>T)\<^sup>T = v\<^sup>T \<sqinter> u"
+    using conv_dist_inf by auto
+  thus ?thesis
+    by (smt conv_dist_comp conv_involutive coreflexive_comp_top_inf inf.cobounded2 inf.left_commute inf.sup_monoid.add_commute symmetric_one_closed mult_assoc symmetric_top_closed)
+qed
+
 lemma coreflexive_idempotent:
   "coreflexive x \<Longrightarrow> idempotent x"
   by (simp add: coreflexive_comp_inf)
@@ -678,6 +691,17 @@ lemma arc_conv_closed:
 lemma arc_univalent:
   "arc x \<Longrightarrow> univalent x"
   using arc_conv_closed arc_injective univalent_conv_injective by blast
+
+lemma injective_codomain:
+  assumes "injective x"
+  shows "x * (x \<sqinter> 1) = x \<sqinter> 1"
+proof (rule antisym)
+  show "x * (x \<sqinter> 1) \<le> x \<sqinter> 1"
+    by (metis assms comp_right_one dual_order.trans inf.boundedI inf.cobounded1 inf.sup_monoid.add_commute mult_right_isotone one_inf_conv)
+next
+  show "x \<sqinter> 1 \<le> x * (x \<sqinter> 1)"
+    by (metis coreflexive_idempotent inf.cobounded1 inf.cobounded2 mult_left_isotone)
+qed
 
 text \<open>
 The following result generalises \cite[Exercise 2]{Oliveira2009}.
@@ -837,6 +861,8 @@ proof -
     by (metis comp_inf_vector_1 conv_dist_comp conv_involutive conv_top inf.absorb1 top_right_mult_increasing)
 qed
 
+text \<open>Lemmas \<open>arc_eq_1\<close> and \<open>arc_eq_2\<close> were contributed by Nicolas Robinson-O'Brien.\<close>
+
 lemma arc_eq_1:
   assumes "arc x"
     shows "x = x * x\<^sup>T * x"
@@ -855,6 +881,14 @@ lemma arc_eq_2:
   assumes "arc x"
     shows "x\<^sup>T = x\<^sup>T * x * x\<^sup>T"
   using arc_eq_1 assms conv_involutive by fastforce
+
+lemma points_arc:
+  "point x \<Longrightarrow> point y \<Longrightarrow> arc (x * y\<^sup>T)"
+  by (metis comp_associative conv_dist_comp conv_involutive equivalence_top_closed)
+
+lemma point_arc:
+  "point x \<Longrightarrow> arc (x * x\<^sup>T)"
+  by (simp add: points_arc)
 
 end
 
@@ -1814,6 +1848,13 @@ proof (rule disjCI)
     by (metis assms(1) epm_3 inf.absorb_iff1 inf.cobounded1 inf_top.right_neutral)
 qed
 
+lemma distinct_points:
+  assumes "point x"
+    and "point y"
+    and "x \<noteq> y"
+  shows "x \<sqinter> y = bot"
+  by (metis assms antisym comp_bijective_complement inf.sup_monoid.add_commute mult_left_one pseudo_complement regular_one_closed point_in_vector_or_pseudo_complement)
+
 lemma point_in_vector_or_complement:
   assumes "point p"
       and "vector v"
@@ -1828,6 +1869,32 @@ lemma point_in_vector_sup:
       and "p \<le> v \<squnion> w"
     shows "p \<le> v \<or> p \<le> w"
   by (metis assms inf.absorb1 shunting_var_p sup_commute point_in_vector_or_complement)
+
+lemma point_atomic_vector:
+  assumes "point x"
+    and "vector y"
+    and "regular y"
+    and "y \<le> x"
+  shows "y = x \<or> y = bot"
+proof (cases "x \<le> -y")
+  case True
+  thus ?thesis
+    using assms(4) inf.absorb2 pseudo_complement by force
+next
+  case False
+  thus ?thesis
+    using assms point_in_vector_or_pseudo_complement by fastforce
+qed
+
+lemma point_in_vector_or_complement_2:
+  assumes "point x"
+    and "vector y"
+    and "regular y"
+    and "\<not> y \<le> -x"
+  shows "x \<le> y"
+  using assms point_in_vector_or_pseudo_complement p_antitone_iff by fastforce
+
+text \<open>The next three lemmas \<open>arc_in_arc_or_complement\<close>, \<open>arc_in_sup_arc\<close> and \<open>different_arc_in_sup_arc\<close> were contributed by Nicolas Robinson-O'Brien.\<close>
 
 lemma arc_in_arc_or_complement:
   assumes "arc x"

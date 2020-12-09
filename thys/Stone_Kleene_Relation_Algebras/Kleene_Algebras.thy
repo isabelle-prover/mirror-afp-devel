@@ -124,6 +124,10 @@ lemma star_sup_one:
   "(1 \<squnion> x)\<^sup>\<star> = x\<^sup>\<star>"
   using star.circ_circ_sup star_involutive by auto
 
+lemma star_plus_loops:
+  "x\<^sup>\<star> \<squnion> 1 = x\<^sup>+ \<squnion> 1"
+  using star.circ_plus_one star_left_unfold_equal sup_commute by auto
+
 lemma star_left_induct_equal:
   "z \<squnion> x * y = y \<Longrightarrow> x\<^sup>\<star> * z \<le> y"
   by (simp add: star_left_induct)
@@ -366,6 +370,21 @@ lemma transitive_star:
   "x * x \<le> x \<Longrightarrow> x\<^sup>\<star> = 1 \<squnion> x"
   by (metis order.antisym star.circ_mult_increasing_2 star.circ_plus_same star_left_induct_mult star_left_unfold_equal)
 
+lemma star_sup_2:
+  assumes "x * x \<le> x"
+    and "x * y \<le> x"
+  shows "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x \<squnion> 1)"
+proof -
+  have "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x * y\<^sup>\<star>)\<^sup>\<star>"
+    by (simp add: star.circ_decompose_6 star_sup_1)
+  also have "... = y\<^sup>\<star> * x\<^sup>\<star>"
+    using assms(2) dual_order.antisym star.circ_back_loop_prefixpoint star_right_induct_mult by fastforce
+  also have "... = y\<^sup>\<star> * (x \<squnion> 1)"
+    by (simp add: assms(1) sup_commute transitive_star)
+  finally show ?thesis
+    .
+qed
+
 (*
 lemma star_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<star> \<squnion> w \<longrightarrow> x\<^sup>\<star> * z \<le> (z \<squnion> x\<^sup>\<star> * w) * y\<^sup>\<star>" nitpick [expect=genuine,card=7] oops
 *)
@@ -583,6 +602,8 @@ lemma cancel_separate_1_sup:
       and "y * x \<le> 1"
   shows "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
   by (simp add: assms cancel_separate_1 cancel_separate_eq sup_commute)
+
+text \<open>Lemma \<open>star_separate_3\<close> was contributed by Nicolas Robinson-O'Brien.\<close>
 
 lemma star_separate_3:
   assumes "y * x\<^sup>\<star> * y \<le> y"

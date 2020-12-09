@@ -13,58 +13,22 @@ begin
 no_notation
   trancl ("(_\<^sup>+)" [1000] 999)
 
-context kleene_algebra
-begin
-
-lemma star_sup_2:
-  assumes "x * x \<le> x"
-    and "x * y \<le> x"
-  shows "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x \<squnion> 1)"
-proof -
-  have "(x \<squnion> y)\<^sup>\<star> = y\<^sup>\<star> * (x * y\<^sup>\<star>)\<^sup>\<star>"
-    by (simp add: star.circ_decompose_6 star_sup_1)
-  also have "... = y\<^sup>\<star> * x\<^sup>\<star>"
-    using assms(2) dual_order.antisym star.circ_back_loop_prefixpoint star_right_induct_mult by fastforce
-  also have "... = y\<^sup>\<star> * (x \<squnion> 1)"
-    by (simp add: assms(1) sup_commute transitive_star)
-  finally show ?thesis
-    .
-qed
-
-end
-
-context stone_relation_algebra
-begin
-
 text \<open>
-We start with a few basic properties of arcs, points and rectangles.
-
 An arc in a Stone relation algebra corresponds to an atom in a relation algebra and represents a single edge in a graph.
 A point represents a set of nodes.
 A rectangle represents the Cartesian product of two sets of nodes \cite{BerghammerStruth2010}.
 \<close>
 
-lemma points_arc:
-  "point x \<Longrightarrow> point y \<Longrightarrow> arc (x * y\<^sup>T)"
-  by (metis comp_associative conv_dist_comp conv_involutive equivalence_top_closed)
-
-lemma point_arc:
-  "point x \<Longrightarrow> arc (x * x\<^sup>T)"
-  by (simp add: points_arc)
-
-lemma injective_codomain:
-  assumes "injective x"
-  shows "x * (x \<sqinter> 1) = x \<sqinter> 1"
-proof (rule antisym)
-  show "x * (x \<sqinter> 1) \<le> x \<sqinter> 1"
-    by (metis assms comp_right_one dual_order.trans inf.boundedI inf.cobounded1 inf.sup_monoid.add_commute mult_right_isotone one_inf_conv)
-next
-  show "x \<sqinter> 1 \<le> x * (x \<sqinter> 1)"
-    by (metis coreflexive_idempotent inf.cobounded1 inf.cobounded2 mult_left_isotone)
-qed
+context times_top
+begin
 
 abbreviation rectangle :: "'a \<Rightarrow> bool"
   where "rectangle x \<equiv> x * top * x = x"
+
+end
+
+context stone_relation_algebra
+begin
 
 lemma arc_rectangle:
   "arc x \<Longrightarrow> rectangle x"
@@ -284,40 +248,6 @@ This section defines these operations and derives their properties.
 
 context stone_kleene_relation_algebra
 begin
-
-lemma equivalence_star_closed:
-  "equivalence x \<Longrightarrow> equivalence (x\<^sup>\<star>)"
-  by (simp add: conv_star_commute star.circ_reflexive star.circ_transitive_equal)
-
-lemma equivalence_plus_closed:
-  "equivalence x \<Longrightarrow> equivalence (x\<^sup>+)"
-  by (simp add: conv_star_commute star.circ_reflexive star.circ_sup_one_left_unfold star.circ_transitive_equal)
-
-lemma reachable_without_loops:
-  "x\<^sup>\<star> = (x \<sqinter> -1)\<^sup>\<star>"
-proof (rule antisym)
-  have "x * (x \<sqinter> -1)\<^sup>\<star> = (x \<sqinter> 1) * (x \<sqinter> -1)\<^sup>\<star> \<squnion> (x \<sqinter> -1) * (x \<sqinter> -1)\<^sup>\<star>"
-    by (metis maddux_3_11_pp mult_right_dist_sup regular_one_closed)
-  also have "... \<le> (x \<sqinter> -1)\<^sup>\<star>"
-    by (metis inf.cobounded2 le_supI mult_left_isotone star.circ_circ_mult star.left_plus_below_circ star_involutive star_one)
-  finally show "x\<^sup>\<star> \<le> (x \<sqinter> -1)\<^sup>\<star>"
-    by (metis inf.cobounded2 maddux_3_11_pp regular_one_closed star.circ_circ_mult star.circ_sup_2 star_involutive star_sub_one)
-next
-  show "(x \<sqinter> -1)\<^sup>\<star> \<le> x\<^sup>\<star>"
-    by (simp add: star_isotone)
-qed
-
-lemma plus_reachable_without_loops:
-  "x\<^sup>+ = (x \<sqinter> -1)\<^sup>+ \<squnion> (x \<sqinter> 1)"
-  by (metis comp_associative maddux_3_11_pp regular_one_closed star.circ_back_loop_fixpoint star.circ_loop_fixpoint sup_assoc reachable_without_loops)
-
-lemma star_plus_loops:
-  "x\<^sup>\<star> \<squnion> 1 = x\<^sup>+ \<squnion> 1"
-  using star.circ_plus_one star_left_unfold_equal sup_commute by auto
-
-lemma star_plus_without_loops:
-  "x\<^sup>\<star> \<sqinter> -1 = x\<^sup>+ \<sqinter> -1"
-  by (metis maddux_3_13 star_left_unfold_equal)
 
 text \<open>Theorem 4.2\<close>
 
@@ -648,10 +578,6 @@ proof -
     by simp
 qed
 
-lemma acyclic_down_closed:
-  "x \<le> y \<Longrightarrow> acyclic y \<Longrightarrow> acyclic x"
-  using comp_isotone star_isotone by fastforce
-
 text \<open>Theorem 6.3\<close>
 
 lemma update_acyclic_5:
@@ -795,19 +721,6 @@ next
     using assms(2) le_infI1 star_left_induct_mult by auto
 qed
 
-lemma test_comp_test_inf:
-  "(x \<sqinter> 1) * y * (z \<sqinter> 1) = (x \<sqinter> 1) * y \<sqinter> y * (z \<sqinter> 1)"
-  by (smt comp_right_one comp_right_subdist_inf coreflexive_comp_top_inf inf.left_commute inf.orderE inf_le2 mult_assoc)
-
-lemma test_comp_test_top:
-  "y \<sqinter> (x \<sqinter> 1) * top * (z \<sqinter> 1) = (x \<sqinter> 1) * y * (z \<sqinter> 1)"
-proof -
-  have "\<forall>u v . (v \<sqinter> u\<^sup>T)\<^sup>T = v\<^sup>T \<sqinter> u"
-    using conv_dist_inf by auto
-  thus ?thesis
-    by (smt conv_dist_comp conv_involutive coreflexive_comp_top_inf inf.cobounded2 inf.left_commute inf.sup_monoid.add_commute symmetric_one_closed mult_assoc symmetric_top_closed)
-qed
-
 lemma one_loop:
   assumes "acyclic (p \<sqinter> -1)"
     and "univalent p"
@@ -871,66 +784,7 @@ end
 context stone_relation_algebra_tarski
 begin
 
-text \<open>Two basic results about points using the Tarski rule of relation algebras\<close>
-
-lemma point_in_vector_partition:
-  assumes "point x"
-    and "vector y"
-  shows "x \<le> -y \<or> x \<le> --y"
-proof (cases "x * x\<^sup>T \<le> -y")
-  case True
-  have "x \<le> x * x\<^sup>T * x"
-    by (simp add: ex231c)
-  also have "... \<le> -y * x"
-    by (simp add: True mult_left_isotone)
-  also have "... \<le> -y"
-    by (metis assms(2) mult_right_isotone top.extremum vector_complement_closed)
-  finally show ?thesis
-    by simp
-next
-  case False
-  have "x \<le> x * x\<^sup>T * x"
-    by (simp add: ex231c)
-  also have "... \<le> --y * x"
-    using False assms(1) arc_in_partition mult_left_isotone point_arc by blast
-  also have "... \<le> --y"
-    by (metis assms(2) mult_right_isotone top.extremum vector_complement_closed)
-  finally show ?thesis
-    by simp
-qed
-
-lemma point_atomic_vector:
-  assumes "point x"
-    and "vector y"
-    and "regular y"
-    and "y \<le> x"
-  shows "y = x \<or> y = bot"
-proof (cases "x \<le> -y")
-  case True
-  thus ?thesis
-    using assms(4) inf.absorb2 pseudo_complement by force
-next
-  case False
-  thus ?thesis
-    using assms point_in_vector_partition by fastforce
-qed
-
-lemma point_in_vector_partition_2:
-  assumes "point x"
-    and "vector y"
-    and "regular y"
-    and "\<not> y \<le> -x"
-  shows "x \<le> y"
-  using assms point_in_vector_partition p_antitone_iff by fastforce
-
-text \<open>Theorem 4.3\<close>
-
-lemma distinct_points:
-  assumes "point x"
-    and "point y"
-    and "x \<noteq> y"
-  shows "x \<sqinter> y = bot"
-  by (metis assms antisym comp_bijective_complement inf.sup_monoid.add_commute mult_left_one pseudo_complement regular_one_closed point_in_vector_partition)
+text \<open>Theorem 4.3 \<open>distinct_points\<close> has been moved to theory \<open>Relation_Algebras\<close> in entry \<open>Stone_Relation_Algebras\<close>\<close>
 
 text \<open>Back and von Wright's array independence requirements \cite{BackWright1998}\<close>
 
@@ -1424,7 +1278,7 @@ lemma path_compression_1a:
     and "disjoint_set_forest p"
     and "x \<noteq> root p x"
   shows "p\<^sup>T\<^sup>+ * x \<le> - x"
-  by (meson assms bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed vector_mult_closed point_in_vector_partition_2 loop_root_2)
+  by (meson assms bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed vector_mult_closed point_in_vector_or_complement_2 loop_root_2)
 
 lemma path_compression_1b:
   "x \<le> p\<^sup>T\<^sup>\<star> * x"
