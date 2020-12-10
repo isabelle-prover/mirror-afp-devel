@@ -243,8 +243,9 @@ fun parse_files cmd =
           val keywords = C_Thy_Header.get_keywords thy;
           val master_dir = Resources.master_directory thy;
           val pos = C_Token.pos_of tok;
+          val delimited = Input.is_delimited (C_Token.input_of tok);
           val src_paths = C_Keyword.command_files keywords cmd (Path.explode name);
-        in map (Command.read_file master_dir pos) src_paths end
+        in map (Command.read_file master_dir pos delimited) src_paths end
     | files => map Exn.release files));
 
 end;

@@ -813,7 +813,7 @@ fun ml_text name ml =
       let val file_content =
             Token.file_source
               (Command.read_file (Resources.master_directory (Proof_Context.theory_of ctxt))
-                                 Position.none
+                                 Position.none false
                                  (Path.explode (#1 (Input.source_content text))))
           val _ = (*TODO: avoid multiple file scanning*)
             ML_Context.eval_in (SOME ctxt) ML_Compiler.flags Position.none (* \<leftarrow> (optionally)
