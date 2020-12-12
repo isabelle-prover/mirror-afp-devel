@@ -6,8 +6,8 @@ begin
 
 section \<open>Unboxed caching\<close>
 
-datatype ('dyn, 'var, 'fun, 'op, 'opinl, 'opubx) instr =
-  IPush 'dyn | IPushNumUbx nat | IPushBoolUbx bool |
+datatype ('dyn, 'var, 'fun, 'op, 'opinl, 'opubx, 'num, 'bool) instr =
+  IPush 'dyn | IPushUbx1 'num | IPushUbx2 'bool |
   IPop |
   ILoad 'var | ILoadUbx type 'var |
   IStore 'var | IStoreUbx type 'var |
@@ -23,12 +23,12 @@ locale ubx =
   nary_operations_ubx
     \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy>
     \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll>
-    is_true is_false box_num unbox_num box_bool unbox_bool
+    is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
     \<UU>\<bb>\<xx>\<OO>\<pp> \<UU>\<bb>\<xx> \<BB>\<oo>\<xx> \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
   for
     \<comment> \<open>Functions environment\<close>
     F_empty and
-    F_get :: "'fenv \<Rightarrow> 'fun \<Rightarrow> ('dyn, 'var, 'fun, 'op, 'opinl, 'opubx) instr fundef option" and
+    F_get :: "'fenv \<Rightarrow> 'fun \<Rightarrow> ('dyn, 'var, 'fun, 'op, 'opinl, 'opubx, 'num, 'bool) instr fundef option" and
     F_add and F_to_list and
 
     \<comment> \<open>Memory heap\<close>
@@ -38,21 +38,21 @@ locale ubx =
 
     \<comment> \<open>Unboxed values\<close>
     is_true :: "'dyn \<Rightarrow> bool" and is_false and
-    box_num and unbox_num and
-    box_bool and unbox_bool and
+    box_ubx1 and unbox_ubx1 and
+    box_ubx2 and unbox_ubx2 and
 
     \<comment> \<open>n-ary operations\<close>
     \<OO>\<pp> :: "'op \<Rightarrow> 'dyn list \<Rightarrow> 'dyn" and \<AA>\<rr>\<ii>\<tt>\<yy> and
     \<II>\<nn>\<ll>\<OO>\<pp> and \<II>\<nn>\<ll> and \<II>\<ss>\<II>\<nn>\<ll> and \<DD>\<ee>\<II>\<nn>\<ll> :: "'opinl \<Rightarrow> 'op" and
-    \<UU>\<bb>\<xx>\<OO>\<pp> :: "'opubx \<Rightarrow> 'dyn unboxed list \<Rightarrow> 'dyn unboxed option" and
+    \<UU>\<bb>\<xx>\<OO>\<pp> :: "'opubx \<Rightarrow> ('dyn, 'num, 'bool) unboxed list \<Rightarrow> ('dyn, 'num, 'bool) unboxed option" and
     \<UU>\<bb>\<xx> :: "'opinl \<Rightarrow> type option list \<Rightarrow> 'opubx option" and
     \<BB>\<oo>\<xx> :: "'opubx \<Rightarrow> 'opinl" and
     \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
 begin
 
 fun generalize_instr where
-  "generalize_instr (IPushNumUbx n) = IPush (box_num n)" |
-  "generalize_instr (IPushBoolUbx b) = IPush (box_bool b)" |
+  "generalize_instr (IPushUbx1 n) = IPush (box_ubx1 n)" |
+  "generalize_instr (IPushUbx2 b) = IPush (box_ubx2 b)" |
   "generalize_instr (ILoadUbx _ x) = ILoad x" |
   "generalize_instr (IStoreUbx _ x) = IStore x" |
   "generalize_instr (IOpUbx opubx) = IOpInl (\<BB>\<oo>\<xx> opubx)" |
@@ -78,7 +78,7 @@ lemma body_generalize_fundef[simp]: "body (generalize_fundef fd) = map generaliz
 lemma arity_generalize_fundef[simp]: "arity (generalize_fundef fd2) = arity fd2"
   by (cases fd2) simp
 
-inductive final :: "('fenv, 'henv, ('fun, 'dyn unboxed) frame) state \<Rightarrow> bool" where
+inductive final where
   "F_get F f = Some fd \<Longrightarrow> pc = length (body fd) \<Longrightarrow> final (State F H [Frame f pc \<Sigma>])"
 
 
@@ -89,13 +89,13 @@ inductive step (infix "\<rightarrow>" 55) where
     "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPush d \<Longrightarrow>
     State F H (Frame f pc \<Sigma> # st) \<rightarrow> State F H (Frame f (Suc pc) (OpDyn d # \<Sigma>) # st)" |
 
-  step_push_num:
-    "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPushNumUbx n \<Longrightarrow>
-    State F H (Frame f pc \<Sigma> # st) \<rightarrow> State F H (Frame f (Suc pc) (OpNum n # \<Sigma>) # st)" |
+  step_push_ubx1:
+    "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPushUbx1 n \<Longrightarrow>
+    State F H (Frame f pc \<Sigma> # st) \<rightarrow> State F H (Frame f (Suc pc) (OpUbx1 n # \<Sigma>) # st)" |
 
-  step_push_bool:
-    "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPushBoolUbx b \<Longrightarrow>
-    State F H (Frame f pc \<Sigma> # st) \<rightarrow> State F H (Frame f (Suc pc) (OpBool b # \<Sigma>) # st)" |
+  step_push_ubx2:
+    "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPushUbx2 b \<Longrightarrow>
+    State F H (Frame f pc \<Sigma> # st) \<rightarrow> State F H (Frame f (Suc pc) (OpUbx2 b # \<Sigma>) # st)" |
 
   step_pop:
     "F_get F f = Some fd \<Longrightarrow> pc < length (body fd) \<Longrightarrow> body fd ! pc = IPop \<Longrightarrow>

@@ -155,7 +155,7 @@ datatype opubx =
   OpAddNumUbx
 
 fun ubx :: "opinl \<Rightarrow> type option list \<Rightarrow> opubx option" where
-  "ubx OpAddNum [Some Num, Some Num] = Some OpAddNumUbx" |
+  "ubx OpAddNum [Some Ubx1, Some Ubx1] = Some OpAddNumUbx" |
   "ubx _ _ = None"
 
 fun deubx :: "opubx \<Rightarrow> opinl" where
@@ -164,11 +164,11 @@ fun deubx :: "opubx \<Rightarrow> opinl" where
 lemma ubx_invertible: "ubx opinl xs = Some opubx \<Longrightarrow> deubx opubx = opinl"
   by (induction opinl xs rule: ubx.induct; simp)
 
-fun eval_AddNumUbx :: "dynamic unboxed list \<Rightarrow> dynamic unboxed option" where
-  "eval_AddNumUbx [OpNum x, OpNum y] = Some (OpNum (x + y))" |
+fun eval_AddNumUbx :: "(dynamic, nat, bool) unboxed list \<Rightarrow> (dynamic, nat, bool) unboxed option" where
+  "eval_AddNumUbx [OpUbx1 x, OpUbx1 y] = Some (OpUbx1 (x + y))" |
   "eval_AddNumUbx _ = None"
 
-fun eval_ubx :: "opubx \<Rightarrow> dynamic unboxed list \<Rightarrow> dynamic unboxed option" where
+fun eval_ubx :: "opubx \<Rightarrow> (dynamic, nat, bool) unboxed list \<Rightarrow> (dynamic, nat, bool) unboxed option" where
   "eval_ubx OpAddNumUbx = eval_AddNumUbx"
 
 lemma eval_ubx_correct:
@@ -195,7 +195,7 @@ qed
 subsection \<open>Abstract interpretation\<close>
 
 fun typeof_opubx :: "opubx \<Rightarrow> type option list \<times> type option" where
-  "typeof_opubx OpAddNumUbx = ([Some Num, Some Num], Some Num)"
+  "typeof_opubx OpAddNumUbx = ([Some Ubx1, Some Ubx1], Some Ubx1)"
 
 lemma ubx_imp_typeof_opubx:
   "ubx opinl ts = Some opubx \<Longrightarrow> fst (typeof_opubx opubx) = ts"
@@ -206,7 +206,7 @@ lemma typeof_opubx_correct:
     \<exists>y. eval_ubx opubx xs = Some y \<and> typeof y = codomain"
 proof (induction opubx)
   case OpAddNumUbx
-  obtain n1 n2 where xs_def: "xs = [OpNum n1, OpNum n2]" and "codomain = Some Num"
+  obtain n1 n2 where xs_def: "xs = [OpUbx1 n1, OpUbx1 n2]" and "codomain = Some Ubx1"
     using OpAddNumUbx[symmetric]
     by (auto dest!: typeof_unboxed_inversion)
   then show ?case by simp

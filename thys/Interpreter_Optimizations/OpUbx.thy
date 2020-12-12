@@ -7,13 +7,15 @@ section \<open>n-ary operations\<close>
 
 locale nary_operations_ubx =
   nary_operations_inl \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy> \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll> +
-  unboxedval is_true is_false box_num unbox_num box_bool unbox_bool
+  unboxedval is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
   for
     \<OO>\<pp> :: "'op \<Rightarrow> 'dyn list \<Rightarrow> 'dyn" and \<AA>\<rr>\<ii>\<tt>\<yy> and
     \<II>\<nn>\<ll>\<OO>\<pp> and \<II>\<nn>\<ll> and \<II>\<ss>\<II>\<nn>\<ll> and \<DD>\<ee>\<II>\<nn>\<ll> :: "'opinl \<Rightarrow> 'op" and
-    is_true :: "'dyn \<Rightarrow> bool" and is_false and box_num and unbox_num and box_bool and unbox_bool +
+    is_true :: "'dyn \<Rightarrow> bool" and is_false and
+    box_ubx1 :: "'ubx1 \<Rightarrow> 'dyn" and unbox_ubx1 and
+    box_ubx2 :: "'ubx2 \<Rightarrow> 'dyn" and unbox_ubx2 +
   fixes
-    \<UU>\<bb>\<xx>\<OO>\<pp> :: "'opubx \<Rightarrow> 'dyn unboxed list \<Rightarrow> 'dyn unboxed option" and
+    \<UU>\<bb>\<xx>\<OO>\<pp> :: "'opubx \<Rightarrow> ('dyn, 'ubx1, 'ubx2) unboxed list \<Rightarrow> ('dyn, 'ubx1, 'ubx2) unboxed option" and
     \<UU>\<bb>\<xx> :: "'opinl \<Rightarrow> type option list \<Rightarrow> 'opubx option" and
     \<BB>\<oo>\<xx> :: "'opubx \<Rightarrow> 'opinl" and
     \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> :: "'opubx \<Rightarrow> type option list \<times> type option"

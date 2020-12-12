@@ -115,12 +115,12 @@ definition try_unbox where
 
 fun optim_instr where
   "optim_instr _ (IPush d) \<Sigma> =
-    try_unbox Num d \<Sigma> unbox_num IPushNumUbx <|>
-    try_unbox Bool d \<Sigma> unbox_bool IPushBoolUbx <|>
+    try_unbox Ubx1 d \<Sigma> unbox_ubx1 IPushUbx1 <|>
+    try_unbox Ubx2 d \<Sigma> unbox_ubx2 IPushUbx2 <|>
     Ok (IPush d, None # \<Sigma>)
   " |
-  "optim_instr _ (IPushNumUbx n) \<Sigma> = Ok (IPushNumUbx n, Some Num # \<Sigma>)" |
-  "optim_instr _ (IPushBoolUbx b) \<Sigma> = Ok (IPushBoolUbx b, Some Bool # \<Sigma>)" |
+  "optim_instr _ (IPushUbx1 n) \<Sigma> = Ok (IPushUbx1 n, Some Ubx1 # \<Sigma>)" |
+  "optim_instr _ (IPushUbx2 b) \<Sigma> = Ok (IPushUbx2 b, Some Ubx2 # \<Sigma>)" |
   "optim_instr _ IPop (_ # \<Sigma>) = Ok (IPop, \<Sigma>)" |
   "optim_instr n (ILoad x) (None # \<Sigma>) = (
     case load_oracle n of
@@ -156,7 +156,7 @@ proof (induction n x \<Sigma>1 rule: optim_instr.induct)
   fix d \<Sigma>1 n
   assume "optim_instr n (Ubx.IPush d) \<Sigma>1 = Ok (x', \<Sigma>2)"
   thus "norm_instr x' = norm_instr (Ubx.instr.IPush d)"
-    using Subx.box_unbox_inverse_num Subx.box_unbox_inverse_bool
+    using Subx.box_unbox_inverse
     by (auto elim!: result_alternative.elims simp: try_unbox_def option.case_eq_if)
 next
   fix x \<Sigma>1 n

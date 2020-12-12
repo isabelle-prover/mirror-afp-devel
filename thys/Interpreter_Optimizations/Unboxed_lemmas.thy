@@ -7,7 +7,7 @@ lemma typeof_bind_OpDyn[simp]: "typeof \<circ> OpDyn = (\<lambda>_. None)"
 
 lemma is_dyn_operand_eq_typeof: "is_dyn_operand = (\<lambda>x. typeof x = None)"
 proof (intro ext)
-  fix x :: "'dyn unboxed"
+  fix x
   show "is_dyn_operand x = (typeof x = None)"
     by (cases x; simp)
 qed
@@ -16,19 +16,19 @@ lemma is_dyn_operand_eq_typeof_Dyn[simp]: "is_dyn_operand x \<longleftrightarrow
   by (cases x; simp)
 
 lemma typeof_unboxed_eq_const:
-  fixes x :: "'dyn unboxed"
+  fixes x
   shows
-    "typeof x = None \<longleftrightarrow> (\<exists>d :: 'dyn. x = OpDyn d)"
-    "typeof x = Some Num \<longleftrightarrow> (\<exists>n :: nat. x = OpNum n)"
-    "typeof x = Some Bool \<longleftrightarrow> (\<exists>b :: bool. x = OpBool b)"
+    "typeof x = None \<longleftrightarrow> (\<exists>d. x = OpDyn d)"
+    "typeof x = Some Ubx1 \<longleftrightarrow> (\<exists>n. x = OpUbx1 n)"
+    "typeof x = Some Ubx2 \<longleftrightarrow> (\<exists>b. x = OpUbx2 b)"
   by (cases x; simp)+
 
 lemmas typeof_unboxed_inversion = typeof_unboxed_eq_const[THEN iffD1]
 
 lemma cast_inversions:
   "cast_Dyn x = Some d \<Longrightarrow> x = OpDyn d"
-  "cast_Num x = Some n \<Longrightarrow> x = OpNum n"
-  "cast_Bool x = Some b \<Longrightarrow> x = OpBool b"
+  "cast_Ubx1 x = Some n \<Longrightarrow> x = OpUbx1 n"
+  "cast_Ubx2 x = Some b \<Longrightarrow> x = OpUbx2 b"
   by (cases x; simp)+
 
 lemma traverse_cast_Dyn_replicate:
@@ -50,15 +50,16 @@ lemma unbox_typeof[simp]: "unbox \<tau> d = Some blob \<Longrightarrow> typeof b
   by (cases \<tau>; auto)
 
 lemma cast_and_box_imp_typeof[simp]: "cast_and_box \<tau> blob = Some d \<Longrightarrow> typeof blob = Some \<tau>"
+  using cast_inversions[of blob]
   by (induction \<tau>; auto dest: cast_inversions[of blob])
 
 lemma norm_unbox_inverse[simp]: "unbox \<tau> d = Some blob \<Longrightarrow> norm_unboxed blob = d"
-  using box_unbox_inverse_num box_unbox_inverse_bool
+  using box_unbox_inverse
   by (cases \<tau>; auto)
 
 lemma norm_cast_and_box_inverse[simp]:
   "cast_and_box \<tau> blob = Some d \<Longrightarrow> norm_unboxed blob = d"
-  by (induction \<tau>; auto elim: cast_Dyn.elims cast_Num.elims cast_Bool.elims)
+  by (induction \<tau>; auto elim: cast_Dyn.elims cast_Ubx1.elims cast_Ubx2.elims)
 
 lemma typeof_and_norm_unboxed_imp_cast_and_box:
   assumes "typeof x' = Some \<tau>" "norm_unboxed x' = x"

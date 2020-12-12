@@ -9,7 +9,7 @@ locale ubx_sp =
   ubx
     F_empty F_get F_add F_to_list
     heap_empty heap_get heap_add heap_to_list
-    is_true is_false box_num unbox_num box_bool unbox_bool
+    is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
     \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy> \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll> \<UU>\<bb>\<xx>\<OO>\<pp> \<UU>\<bb>\<xx> \<BB>\<oo>\<xx> \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
   for
     \<comment> \<open>Functions environment\<close>
@@ -20,8 +20,8 @@ locale ubx_sp =
 
     \<comment> \<open>Unboxed values\<close>
     is_true and is_false and
-    box_num and unbox_num and
-    box_bool and unbox_bool and
+    box_ubx1 and unbox_ubx1 and
+    box_ubx2 and unbox_ubx2 and
 
     \<comment> \<open>n-ary operations\<close>
     \<OO>\<pp> and \<AA>\<rr>\<ii>\<tt>\<yy> and \<II>\<nn>\<ll>\<OO>\<pp> and \<II>\<nn>\<ll> and \<II>\<ss>\<II>\<nn>\<ll> and \<DD>\<ee>\<II>\<nn>\<ll> and \<UU>\<bb>\<xx>\<OO>\<pp> and \<UU>\<bb>\<xx> and \<BB>\<oo>\<xx> and \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
@@ -41,8 +41,8 @@ fun sp_gen_pop_push where
 
 fun sp_instr :: "('fun \<Rightarrow> _ fundef option) \<Rightarrow> _ \<Rightarrow> type option list \<Rightarrow> (unit, type option list) result" where
   "sp_instr _ (IPush _) \<Sigma> = Ok (None # \<Sigma>)" |
-  "sp_instr _ (IPushNumUbx _) \<Sigma> = Ok (Some Num # \<Sigma>)" |
-  "sp_instr _ (IPushBoolUbx _) \<Sigma> = Ok (Some Bool # \<Sigma>)" |
+  "sp_instr _ (IPushUbx1 _) \<Sigma> = Ok (Some Ubx1 # \<Sigma>)" |
+  "sp_instr _ (IPushUbx2 _) \<Sigma> = Ok (Some Ubx2 # \<Sigma>)" |
   "sp_instr _ IPop (_ # \<Sigma>) = Ok \<Sigma>" |
   "sp_instr _ (ILoad _) (None # \<Sigma>) = Ok (None # \<Sigma>)" |
   "sp_instr _ (ILoadUbx \<tau> _) (None # \<Sigma>) = Ok (Some \<tau> # \<Sigma>)" |
