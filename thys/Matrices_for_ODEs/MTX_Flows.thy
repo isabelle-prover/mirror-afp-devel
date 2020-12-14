@@ -170,7 +170,7 @@ lemma vderiv_on_mtx_vec_multI[poly_derivatives]:
     shows "D (\<lambda>t. A t *\<^sub>V u t) = g on T"
   using assms unfolding has_vderiv_on_def has_vector_derivative_def apply clarsimp
   apply(erule_tac x=x in ballE, simp_all)+
-  apply(rule derivative_eq_intros(142))
+  apply(rule derivative_eq_intros)
   by (auto simp: fun_eq_iff mtx_vec_scaleR_commute pth_6 scaleR_mtx_vec_assoc)
 
 lemmas has_vderiv_on_ivl_integral = ivl_integral_has_vderiv_on[OF vderiv_on_continuous_on]
