@@ -6,7 +6,7 @@
 chapter "Category with Finite Limits"
 
 theory CategoryWithFiniteLimits
-imports Category3.CartesianCategory Category3.CategoryWithPullbacks
+imports CartesianCategory CategoryWithPullbacks
 begin
 
   text\<open>

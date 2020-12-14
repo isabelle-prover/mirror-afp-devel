@@ -6,7 +6,7 @@
 chapter "Category with Pullbacks"
 
 theory CategoryWithPullbacks
-imports Category3.Limit
+imports Limit
 begin
 
 text \<open>

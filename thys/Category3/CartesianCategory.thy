@@ -18,7 +18,7 @@ text\<open>
 \<close>
 
 theory CartesianCategory
-imports Category3.Limit Category3.SetCat
+imports Limit SetCat
 begin
 
   section "Category with Binary Products"

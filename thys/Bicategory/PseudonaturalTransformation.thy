@@ -6,7 +6,7 @@
 section "Pseudonatural Transformations"
 
 theory PseudonaturalTransformation
-imports Bicategory.InternalEquivalence Bicategory.InternalAdjunction Bicategory.Pseudofunctor
+imports InternalEquivalence InternalAdjunction Pseudofunctor
 begin
 
   subsection "Definition of Pseudonatural Transformation"

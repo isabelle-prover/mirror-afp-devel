@@ -6,7 +6,7 @@
 chapter "Cartesian Monoidal Category"
 
 theory CartesianMonoidalCategory
-imports MonoidalCategory.MonoidalCategory Category3.CartesianCategory
+imports MonoidalCategory Category3.CartesianCategory
 begin
 
   locale symmetric_monoidal_category =
