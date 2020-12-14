@@ -1,6 +1,6 @@
 (*  Title:       Mathematical Preliminaries
     Author:      Jonathan Julián Huerta y Munive, 2020
-    Maintainer:  Jonathan Julián Huerta y Munive <jjhuertaymunive1@sheffield.ac.uk>
+    Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
 section \<open> Mathematical Preliminaries \<close>
@@ -8,7 +8,7 @@ section \<open> Mathematical Preliminaries \<close>
 text \<open>This section adds useful syntax, abbreviations and theorems to the Isabelle distribution. \<close>
 
 theory MTX_Preliminaries
-  imports "Hybrid_Systems_VCs.HS_Preliminaries"
+  imports Hybrid_Systems_VCs.HS_Preliminaries
 
 begin
 

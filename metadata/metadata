@@ -9094,6 +9094,9 @@ abstract =
   for the latter. Laws of modal Kleene algebra or categorical predicate
   transformers implement the verification condition generation. Examples
   show the approach at work.
+extra-history =
+	Change history:
+	[2020-12-13]: added components based on Kleene algebras with tests. These implement differential Hoare logic (dH) and a Morgan-style differential refinement calculus (dR) for verification of hybrid programs.
 
 [Generic_Join]
 title = Formalization of Multiway-Join Algorithms

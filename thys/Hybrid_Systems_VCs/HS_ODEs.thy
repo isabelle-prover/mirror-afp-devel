@@ -1,6 +1,6 @@
 (*  Title:       ODEs and Dynamical Systems for HS verification
-    Author:      Jonathan Julián Huerta y Munive, 2019
-    Maintainer:  Jonathan Julián Huerta y Munive <jjhuertaymunive1@sheffield.ac.uk>
+    Author:      Jonathan Julián Huerta y Munive, 2020
+    Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
 section \<open> Ordinary Differential Equations \<close>
@@ -26,185 +26,203 @@ notation image ("\<P>")
 lemma image_le_pred[simp]: "(\<P> f A \<subseteq> {s. G s}) = (\<forall>x\<in>A. G (f x))"
   unfolding image_def by force
 
-definition ivp_sols :: "(real \<Rightarrow> 'a \<Rightarrow> ('a::real_normed_vector)) \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> 
+definition ivp_sols :: "(real \<Rightarrow> 'a \<Rightarrow> ('a::real_normed_vector)) \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
   real \<Rightarrow> 'a \<Rightarrow> (real \<Rightarrow> 'a) set" ("Sols")
-  where "Sols f T S t\<^sub>0 s = {X |X. (D X = (\<lambda>t. f t (X t)) on T) \<and> X t\<^sub>0 = s \<and> X \<in> T \<rightarrow> S}"
+  where "Sols f U S t\<^sub>0 s = {X \<in> U s \<rightarrow> S. (D X = (\<lambda>t. f t (X t)) on U s) \<and> X t\<^sub>0 = s \<and> t\<^sub>0 \<in> U s}"
 
 lemma ivp_solsI: 
-  assumes "D X = (\<lambda>t. f t (X t)) on T" "X t\<^sub>0 = s" "X \<in> T \<rightarrow> S"
-  shows "X \<in> Sols f T S t\<^sub>0 s"
+  assumes "D X = (\<lambda>t. f t (X t)) on U s" and "X t\<^sub>0 = s" 
+      and "X \<in> U s \<rightarrow> S" and "t\<^sub>0 \<in> U s"
+    shows "X \<in> Sols f U S t\<^sub>0 s"
   using assms unfolding ivp_sols_def by blast
 
 lemma ivp_solsD:
-  assumes "X \<in> Sols f T S t\<^sub>0 s"
-  shows "D X = (\<lambda>t. f t (X t)) on T"
-    and "X t\<^sub>0 = s" and "X \<in> T \<rightarrow> S"
+  assumes "X \<in> Sols f U S t\<^sub>0 s"
+  shows "D X = (\<lambda>t. f t (X t)) on U s" and "X t\<^sub>0 = s" 
+    and "X \<in> U s \<rightarrow> S" and "t\<^sub>0 \<in> U s"
   using assms unfolding ivp_sols_def by auto
 
-abbreviation "down T t \<equiv> {\<tau>\<in>T. \<tau>\<le> t}"
+lemma in_ivp_sols_subset:
+  "t\<^sub>0 \<in> (U s) \<Longrightarrow> (U s) \<subseteq> (T s) \<Longrightarrow> X \<in> Sols f T S t\<^sub>0 s \<Longrightarrow> X \<in> Sols f U S t\<^sub>0 s "
+  apply(rule ivp_solsI)
+  using ivp_solsD(1,2) has_vderiv_on_subset 
+     apply blast+
+  by (drule ivp_solsD(3)) auto
+
+abbreviation "down U t \<equiv> {\<tau> \<in> U. \<tau> \<le> t}"
 
 definition g_orbit :: "(('a::ord) \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'b set" ("\<gamma>")
-  where "\<gamma> X G T = \<Union>{\<P> X (down T t) |t. \<P> X (down T t) \<subseteq> {s. G s}}"
+  where "\<gamma> X G U = \<Union>{\<P> X (down U t) |t. \<P> X (down U t) \<subseteq> {s. G s}}"
 
 lemma g_orbit_eq: 
   fixes X::"('a::preorder) \<Rightarrow> 'b"
-  shows "\<gamma> X G T = {X t |t. t \<in> T \<and> (\<forall>\<tau>\<in>down T t. G (X \<tau>))}"
-  unfolding g_orbit_def apply safe
-  using le_left_mono by blast auto
+  shows "\<gamma> X G U = {X t |t. t \<in> U \<and> (\<forall>\<tau>\<in>down U t. G (X \<tau>))}"
+  unfolding g_orbit_def using order_trans by auto blast
 
-definition g_orbital :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> real \<Rightarrow> 
+definition g_orbital :: "(real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> real \<Rightarrow> 
   ('a::real_normed_vector) \<Rightarrow> 'a set" 
-  where "g_orbital f G T S t\<^sub>0 s = \<Union>{\<gamma> X G T |X. X \<in> ivp_sols (\<lambda>t. f) T S t\<^sub>0 s}"
+  where "g_orbital f G U S t\<^sub>0 s = \<Union>{\<gamma> X G (U s) |X. X \<in> ivp_sols f U S t\<^sub>0 s}"
 
-lemma g_orbital_eq: "g_orbital f G T S t\<^sub>0 s = 
-  {X t |t X. t \<in> T \<and> \<P> X (down T t) \<subseteq> {s. G s} \<and> X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s }" 
-  unfolding g_orbital_def ivp_sols_def g_orbit_eq image_le_pred by auto
+lemma g_orbital_eq: "g_orbital f G U S t\<^sub>0 s = 
+  {X t |t X. t \<in> U s \<and> \<P> X (down (U s) t) \<subseteq> {s. G s} \<and> X \<in> Sols f U S t\<^sub>0 s }" 
+  unfolding g_orbital_def ivp_sols_def g_orbit_eq by auto
 
 lemma g_orbitalI:
-  assumes "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s"
-    and "t \<in> T" and "(\<P> X (down T t) \<subseteq> {s. G s})"
-  shows "X t \<in> g_orbital f G T S t\<^sub>0 s"
+  assumes "X \<in> Sols f U S t\<^sub>0 s"
+    and "t \<in> U s" and "(\<P> X (down (U s) t) \<subseteq> {s. G s})"
+  shows "X t \<in> g_orbital f G U S t\<^sub>0 s"
   using assms unfolding g_orbital_eq(1) by auto
 
 lemma g_orbitalD:
-  assumes "s' \<in> g_orbital f G T S t\<^sub>0 s"
-  obtains X and t where "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s"
-  and "X t = s'" and "t \<in> T" and "(\<P> X (down T t) \<subseteq> {s. G s})"
+  assumes "s' \<in> g_orbital f G U S t\<^sub>0 s"
+  obtains X and t where "X \<in> Sols f U S t\<^sub>0 s"
+  and "X t = s'" and "t \<in> U s" and "(\<P> X (down (U s) t) \<subseteq> {s. G s})"
   using assms unfolding g_orbital_def g_orbit_eq by auto
+
+lemma "g_orbital f G U S t\<^sub>0 s = {X t |t X. X t \<in> \<gamma> X G (U s) \<and> X \<in> Sols f U S t\<^sub>0 s}"
+  unfolding g_orbital_eq g_orbit_eq by auto
+
+lemma "X \<in> Sols f U S t\<^sub>0 s \<Longrightarrow> \<gamma> X G (U s) \<subseteq> g_orbital f G U S t\<^sub>0 s"
+  unfolding g_orbital_eq g_orbit_eq by auto
+
+lemma "g_orbital f G U S t\<^sub>0 s \<subseteq> g_orbital f (\<lambda>s. True) U S t\<^sub>0 s"
+  unfolding g_orbital_eq by auto
 
 no_notation g_orbit ("\<gamma>")
 
 
 subsection \<open> Differential Invariants \<close>
 
-definition diff_invariant :: "('a \<Rightarrow> bool) \<Rightarrow> (('a::real_normed_vector) \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> 
-  'a set \<Rightarrow> real \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" 
-  where "diff_invariant I f T S t\<^sub>0 G \<equiv> (\<Union> \<circ> (\<P> (g_orbital f G T S t\<^sub>0))) {s. I s} \<subseteq> {s. I s}"
+definition diff_invariant :: "('a \<Rightarrow> bool) \<Rightarrow> (real \<Rightarrow> ('a::real_normed_vector) \<Rightarrow> 'a) \<Rightarrow> 
+  ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> real \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" 
+  where "diff_invariant I f U S t\<^sub>0 G \<equiv> (\<Union> \<circ> (\<P> (g_orbital f G U S t\<^sub>0))) {s. I s} \<subseteq> {s. I s}"
 
-lemma diff_invariant_eq: "diff_invariant I f T S t\<^sub>0 G = 
-  (\<forall>s. I s \<longrightarrow> (\<forall>X\<in>Sols (\<lambda>t. f) T S t\<^sub>0 s. (\<forall>t\<in>T.(\<forall>\<tau>\<in>(down T t). G (X \<tau>)) \<longrightarrow> I (X t))))"
+lemma diff_invariant_eq: "diff_invariant I f U S t\<^sub>0 G = 
+  (\<forall>s. I s \<longrightarrow> (\<forall>X\<in>Sols f U S t\<^sub>0 s. (\<forall>t\<in>U s.(\<forall>\<tau>\<in>(down (U s) t). G (X \<tau>)) \<longrightarrow> I (X t))))"
   unfolding diff_invariant_def g_orbital_eq image_le_pred by auto
 
 lemma diff_inv_eq_inv_set:
-  "diff_invariant I f T S t\<^sub>0 G = (\<forall>s. I s \<longrightarrow> (g_orbital f G T S t\<^sub>0 s) \<subseteq> {s. I s})"
+  "diff_invariant I f U S t\<^sub>0 G = (\<forall>s. I s \<longrightarrow> (g_orbital f G U S t\<^sub>0 s) \<subseteq> {s. I s})"
   unfolding diff_invariant_eq g_orbital_eq image_le_pred by auto
+
+lemma "diff_invariant I f U S t\<^sub>0 (\<lambda>s. True) \<Longrightarrow> diff_invariant I f U S t\<^sub>0 G"
+  unfolding diff_invariant_eq by auto
 
 named_theorems diff_invariant_rules "rules for certifying differential invariants."
 
 lemma diff_invariant_eq_rule [diff_invariant_rules]:
-  assumes Thyp: "is_interval T" "t\<^sub>0 \<in> T"
-    and "\<forall>X. (D X = (\<lambda>\<tau>. f (X \<tau>)) on T) \<longrightarrow> (D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = ((*\<^sub>R) 0) on T)"
-  shows "diff_invariant (\<lambda>s. \<mu> s = \<nu> s) f T S t\<^sub>0 G"
+  assumes Uhyp: "\<And>s. s \<in> S \<Longrightarrow> is_interval (U s)"
+    and dX: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> (D (\<lambda>\<tau>. \<mu>(X \<tau>)-\<nu>(X \<tau>)) = ((*\<^sub>R) 0) on U(X t\<^sub>0))"
+  shows "diff_invariant (\<lambda>s. \<mu> s = \<nu> s) f U S t\<^sub>0 G"
 proof(simp add: diff_invariant_eq ivp_sols_def, clarsimp)
-  fix X \<tau> assume tHyp:"\<tau> \<in> T" and x_ivp:"D X = (\<lambda>\<tau>. f (X \<tau>)) on T" "\<mu> (X t\<^sub>0) = \<nu> (X t\<^sub>0)" 
-  hence obs1: "\<forall>t\<in>T. D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) \<mapsto> (\<lambda>\<tau>. \<tau> *\<^sub>R 0) at t within T"
-    using assms by (auto simp: has_vderiv_on_def has_vector_derivative_def)
-  have obs2: "{t\<^sub>0--\<tau>} \<subseteq> T"
-    using closed_segment_subset_interval tHyp Thyp by blast
-  hence "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<tau> *\<^sub>R 0) on {t\<^sub>0--\<tau>}"
-    using obs1 x_ivp by (auto intro!: has_derivative_subset[OF _ obs2]
-        simp: has_vderiv_on_def has_vector_derivative_def)
-  then obtain t where "t \<in> {t\<^sub>0--\<tau>}" and "\<mu> (X \<tau>) - \<nu> (X \<tau>) - (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) = (\<tau> - t\<^sub>0) * t *\<^sub>R 0"
+  fix X t 
+  assume xivp:"D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U (X t\<^sub>0)" "\<mu> (X t\<^sub>0) = \<nu> (X t\<^sub>0)" "X \<in> U (X t\<^sub>0) \<rightarrow> S"
+    and tHyp:"t \<in> U (X t\<^sub>0)" and t0Hyp: "t\<^sub>0 \<in> U (X t\<^sub>0)" 
+  hence "{t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)"
+    using closed_segment_subset_interval[OF Uhyp t0Hyp tHyp] by blast
+  hence "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<tau> *\<^sub>R 0) on {t\<^sub>0--t}"
+    using has_vderiv_on_subset[OF dX[OF xivp(1)]] by auto
+  then obtain \<tau> where "\<mu> (X t) - \<nu> (X t) - (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) = (t - t\<^sub>0) * \<tau> *\<^sub>R 0"
     using mvt_very_simple_closed_segmentE by blast
-  thus "\<mu> (X \<tau>) = \<nu> (X \<tau>)" 
-    by (simp add: x_ivp(2))
+  thus "\<mu> (X t) = \<nu> (X t)" 
+    by (simp add: xivp(2))
 qed
 
 lemma diff_invariant_leq_rule [diff_invariant_rules]:
   fixes \<mu>::"'a::banach \<Rightarrow> real"
-  assumes Thyp: "is_interval T" "t\<^sub>0 \<in> T"
-    and "\<forall>X. (D X = (\<lambda>\<tau>. f (X \<tau>)) on T) \<longrightarrow> (\<forall>\<tau>\<in>T. (\<tau> > t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)) \<and> 
-  (\<tau> < t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>))) \<and> (D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on T)"
-  shows "diff_invariant (\<lambda>s. \<nu> s \<le> \<mu> s) f T S t\<^sub>0 G"
-proof(simp add: diff_invariant_eq ivp_sols_def, clarsimp)
-  fix X \<tau> assume "\<tau> \<in> T" and x_ivp:"D X = (\<lambda>\<tau>. f (X \<tau>)) on T" "\<nu> (X t\<^sub>0) \<le> \<mu> (X t\<^sub>0)"
-  {assume "\<tau> \<noteq> t\<^sub>0"
-  hence primed: "\<And>\<tau>. \<tau> \<in> T \<Longrightarrow> \<tau> > t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)" 
-    "\<And>\<tau>. \<tau> \<in> T \<Longrightarrow> \<tau> < t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>)"
-    using x_ivp assms by auto
-  have obs1: "\<forall>t\<in>T. D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) \<mapsto> (\<lambda>\<tau>. \<tau> *\<^sub>R (\<mu>' (X t) - \<nu>' (X t))) at t within T"
-    using assms x_ivp by (auto simp: has_vderiv_on_def has_vector_derivative_def)
-  have obs2: "{t\<^sub>0<--<\<tau>} \<subseteq> T" "{t\<^sub>0--\<tau>} \<subseteq> T"
-    using \<open>\<tau> \<in> T\<close> Thyp \<open>\<tau> \<noteq> t\<^sub>0\<close> by (auto simp: convex_contains_open_segment 
-        is_interval_convex_1 closed_segment_subset_interval)
-  hence "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on {t\<^sub>0--\<tau>}"
-    using obs1 x_ivp by (auto intro!: has_derivative_subset[OF _ obs2(2)]
-        simp: has_vderiv_on_def has_vector_derivative_def)
-  then obtain t where "t \<in> {t\<^sub>0<--<\<tau>}" and
-    "(\<mu> (X \<tau>) - \<nu> (X \<tau>)) - (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) = (\<lambda>\<tau>. \<tau> * (\<mu>' (X t) -  \<nu>' (X t))) (\<tau> - t\<^sub>0)"
-    using mvt_simple_closed_segmentE \<open>\<tau> \<noteq> t\<^sub>0\<close> by blast
-  hence mvt: "\<mu> (X \<tau>) - \<nu> (X \<tau>) = (\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) + (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0))" 
-    by force
-  have  "\<tau> > t\<^sub>0 \<Longrightarrow> t > t\<^sub>0" "\<not> t\<^sub>0 \<le> \<tau> \<Longrightarrow> t < t\<^sub>0" "t \<in> T"
-    using \<open>t \<in> {t\<^sub>0<--<\<tau>}\<close> obs2 unfolding open_segment_eq_real_ivl by auto
-  moreover have "t > t\<^sub>0 \<Longrightarrow> (\<mu>' (X t) -  \<nu>' (X t)) \<ge> 0" "t < t\<^sub>0 \<Longrightarrow> (\<mu>' (X t) -  \<nu>' (X t)) \<le> 0"
-    using primed(1,2)[OF \<open>t \<in> T\<close>] by auto
-  ultimately have "(\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) \<ge> 0"
-    apply(case_tac "\<tau> \<ge> t\<^sub>0") 
-    by (force, auto simp: split_mult_pos_le)
-  hence "(\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) + (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) \<ge> 0" 
-    using  x_ivp(2) by auto
-  hence "\<nu> (X \<tau>) \<le> \<mu> (X \<tau>)" 
-    using mvt by simp}
-  thus "\<nu> (X \<tau>) \<le> \<mu> (X \<tau>)"
-    using x_ivp by blast
+  assumes Uhyp: "\<And>s. s \<in> S \<Longrightarrow> is_interval (U s)"
+    and Gg: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> (\<forall>\<tau>\<in>U(X t\<^sub>0). \<tau> > t\<^sub>0 \<longrightarrow> G (X \<tau>) \<longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>))"
+    and Gl: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> (\<forall>\<tau>\<in>U(X t\<^sub>0). \<tau> < t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>))"
+    and dX: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> D (\<lambda>\<tau>. \<mu>(X \<tau>)-\<nu>(X \<tau>)) = (\<lambda>\<tau>. \<mu>'(X \<tau>)-\<nu>'(X \<tau>)) on U(X t\<^sub>0)"
+  shows "diff_invariant (\<lambda>s. \<nu> s \<le> \<mu> s) f U S t\<^sub>0 G"
+proof(simp_all add: diff_invariant_eq ivp_sols_def, safe)
+  fix X t assume Ghyp: "\<forall>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
+  assume xivp: "D X = (\<lambda>x. f x (X x)) on U (X t\<^sub>0)" "\<nu> (X t\<^sub>0) \<le> \<mu> (X t\<^sub>0)" "X \<in> U (X t\<^sub>0) \<rightarrow> S"
+  assume tHyp: "t \<in> U (X t\<^sub>0)" and t0Hyp: "t\<^sub>0 \<in> U (X t\<^sub>0)" 
+  hence obs1: "{t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)" "{t\<^sub>0<--<t} \<subseteq> U (X t\<^sub>0)"
+    using closed_segment_subset_interval[OF Uhyp t0Hyp tHyp] xivp(3) segment_open_subset_closed
+    by (force, metis PiE \<open>X t\<^sub>0 \<in> S \<Longrightarrow> {t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)\<close> dual_order.trans)
+  hence obs2: "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on {t\<^sub>0--t}"
+    using has_vderiv_on_subset[OF dX[OF xivp(1)]] by auto
+  {assume "t \<noteq> t\<^sub>0"
+    then obtain r where rHyp: "r \<in> {t\<^sub>0<--<t}" 
+      and "(\<mu>(X t)-\<nu>(X t)) - (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0)) = (\<lambda>\<tau>. \<tau>*(\<mu>'(X r)-\<nu>'(X r))) (t - t\<^sub>0)"
+      using mvt_simple_closed_segmentE obs2 by blast
+    hence mvt: "\<mu>(X t)-\<nu>(X t) = (t - t\<^sub>0)*(\<mu>'(X r)-\<nu>'(X r)) + (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0))"
+      by force
+    have primed: "\<And>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<Longrightarrow> \<tau> > t\<^sub>0 \<Longrightarrow> G (X \<tau>) \<Longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)" 
+      "\<And>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<Longrightarrow> \<tau> < t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>)"
+      using Gg[OF xivp(1)] Gl[OF xivp(1)] by auto
+    have "t > t\<^sub>0 \<Longrightarrow> r > t\<^sub>0 \<and> G (X r)" "\<not> t\<^sub>0 \<le> t \<Longrightarrow> r < t\<^sub>0" "r \<in> U (X t\<^sub>0)"
+      using \<open>r \<in> {t\<^sub>0<--<t}\<close> obs1 Ghyp
+      unfolding open_segment_eq_real_ivl closed_segment_eq_real_ivl by auto
+    moreover have "r > t\<^sub>0 \<Longrightarrow> G (X r) \<Longrightarrow> (\<mu>'(X r)- \<nu>'(X r)) \<ge> 0" "r < t\<^sub>0 \<Longrightarrow> (\<mu>'(X r)-\<nu>'(X r)) \<le> 0"
+      using primed(1,2)[OF \<open>r \<in> U (X t\<^sub>0)\<close>] by auto
+    ultimately have "(t - t\<^sub>0) * (\<mu>'(X r)-\<nu>'(X r)) \<ge> 0"
+      by (case_tac "t \<ge> t\<^sub>0", force, auto simp: split_mult_pos_le)
+    hence "(t - t\<^sub>0) * (\<mu>'(X r)-\<nu>'(X r)) + (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0)) \<ge> 0"
+      using xivp(2) by auto
+    hence "\<nu> (X t) \<le> \<mu> (X t)"
+      using mvt by simp}
+  thus "\<nu> (X t) \<le> \<mu> (X t)"
+    using xivp by blast
 qed
 
 lemma diff_invariant_less_rule [diff_invariant_rules]:
   fixes \<mu>::"'a::banach \<Rightarrow> real"
-  assumes Thyp: "is_interval T" "t\<^sub>0 \<in> T"
-    and "\<forall> X. (D X = (\<lambda>\<tau>. f (X \<tau>)) on T) \<longrightarrow> (\<forall>\<tau>\<in>T. (\<tau> > t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)) \<and> 
-  (\<tau> < t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>))) \<and> (D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on T)"
-  shows "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f T S t\<^sub>0 G"
-proof(simp add: diff_invariant_eq ivp_sols_def, clarsimp)
-  fix X \<tau> assume "\<tau> \<in> T" and x_ivp:"D X = (\<lambda>\<tau>. f (X \<tau>)) on T" "\<nu> (X t\<^sub>0) < \<mu> (X t\<^sub>0)"
-  {assume "\<tau> \<noteq> t\<^sub>0"
-  hence primed: "\<And>\<tau>. \<tau> \<in> T \<Longrightarrow> \<tau> > t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)" 
-    "\<And>\<tau>. \<tau> \<in> T \<Longrightarrow> \<tau> < t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>)"
-    using x_ivp assms by auto
-  have obs1: "\<forall>t\<in>T. D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) \<mapsto> (\<lambda>\<tau>. \<tau> *\<^sub>R (\<mu>' (X t) - \<nu>' (X t))) at t within T"
-    using assms x_ivp by (auto simp: has_vderiv_on_def has_vector_derivative_def)
-  have obs2: "{t\<^sub>0<--<\<tau>} \<subseteq> T" "{t\<^sub>0--\<tau>} \<subseteq> T"
-    using \<open>\<tau> \<in> T\<close> Thyp \<open>\<tau> \<noteq> t\<^sub>0\<close> by (auto simp: convex_contains_open_segment 
-        is_interval_convex_1 closed_segment_subset_interval)
-  hence "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on {t\<^sub>0--\<tau>}"
-    using obs1 x_ivp by (auto intro!: has_derivative_subset[OF _ obs2(2)]
-        simp: has_vderiv_on_def has_vector_derivative_def)
-  then obtain t where "t \<in> {t\<^sub>0<--<\<tau>}" and
-    "(\<mu> (X \<tau>) - \<nu> (X \<tau>)) - (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) = (\<lambda>\<tau>. \<tau> * (\<mu>' (X t) -  \<nu>' (X t))) (\<tau> - t\<^sub>0)"
-    using mvt_simple_closed_segmentE \<open>\<tau> \<noteq> t\<^sub>0\<close> by blast
-  hence mvt: "\<mu> (X \<tau>) - \<nu> (X \<tau>) = (\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) + (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0))" 
-    by force
-  have  "\<tau> > t\<^sub>0 \<Longrightarrow> t > t\<^sub>0" "\<not> t\<^sub>0 \<le> \<tau> \<Longrightarrow> t < t\<^sub>0" "t \<in> T"
-    using \<open>t \<in> {t\<^sub>0<--<\<tau>}\<close> obs2 unfolding open_segment_eq_real_ivl by auto
-  moreover have "t > t\<^sub>0 \<Longrightarrow> (\<mu>' (X t) -  \<nu>' (X t)) \<ge> 0" "t < t\<^sub>0 \<Longrightarrow> (\<mu>' (X t) -  \<nu>' (X t)) \<le> 0"
-    using primed(1,2)[OF \<open>t \<in> T\<close>] by auto
-  ultimately have "(\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) \<ge> 0"
-    apply(case_tac "\<tau> \<ge> t\<^sub>0") 
-    by (force, auto simp: split_mult_pos_le)
-  hence "(\<tau> - t\<^sub>0) * (\<mu>' (X t) -  \<nu>' (X t)) + (\<mu> (X t\<^sub>0) - \<nu> (X t\<^sub>0)) > 0" 
-    using x_ivp(2) by auto
-  hence "\<nu> (X \<tau>) < \<mu> (X \<tau>)" 
-    using mvt by simp}
-  thus "\<nu> (X \<tau>) < \<mu> (X \<tau>)"
-    using x_ivp by blast
+  assumes Uhyp: "\<And>s. s \<in> S \<Longrightarrow> is_interval (U s)"
+    and Gg: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> (\<forall>\<tau>\<in>U(X t\<^sub>0). \<tau> > t\<^sub>0 \<longrightarrow> G (X \<tau>) \<longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>))"
+    and Gl: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> (\<forall>\<tau>\<in>U(X t\<^sub>0). \<tau> < t\<^sub>0 \<longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>))"
+    and dX: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> D (\<lambda>\<tau>. \<mu>(X \<tau>)-\<nu>(X \<tau>)) = (\<lambda>\<tau>. \<mu>'(X \<tau>)-\<nu>'(X \<tau>)) on U(X t\<^sub>0)"
+  shows "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f U S t\<^sub>0 G"
+proof(simp_all add: diff_invariant_eq ivp_sols_def, safe)
+  fix X t assume Ghyp: "\<forall>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
+  assume xivp: "D X = (\<lambda>x. f x (X x)) on U (X t\<^sub>0)" "\<nu> (X t\<^sub>0) < \<mu> (X t\<^sub>0)" "X \<in> U (X t\<^sub>0) \<rightarrow> S"
+  assume tHyp: "t \<in> U (X t\<^sub>0)" and t0Hyp: "t\<^sub>0 \<in> U (X t\<^sub>0)" 
+  hence obs1: "{t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)" "{t\<^sub>0<--<t} \<subseteq> U (X t\<^sub>0)"
+    using closed_segment_subset_interval[OF Uhyp t0Hyp tHyp] xivp(3) segment_open_subset_closed
+    by (force, metis PiE \<open>X t\<^sub>0 \<in> S \<Longrightarrow> {t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)\<close> dual_order.trans)
+  hence obs2: "D (\<lambda>\<tau>. \<mu> (X \<tau>) - \<nu> (X \<tau>)) = (\<lambda>\<tau>. \<mu>' (X \<tau>) - \<nu>' (X \<tau>)) on {t\<^sub>0--t}"
+    using has_vderiv_on_subset[OF dX[OF xivp(1)]] by auto
+  {assume "t \<noteq> t\<^sub>0"
+    then obtain r where rHyp: "r \<in> {t\<^sub>0<--<t}" 
+      and "(\<mu>(X t)-\<nu>(X t)) - (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0)) = (\<lambda>\<tau>. \<tau>*(\<mu>'(X r)-\<nu>'(X r))) (t - t\<^sub>0)"
+      using mvt_simple_closed_segmentE obs2 by blast
+    hence mvt: "\<mu>(X t)-\<nu>(X t) = (t - t\<^sub>0)*(\<mu>'(X r)-\<nu>'(X r)) + (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0))"
+      by force
+    have primed: "\<And>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<Longrightarrow> \<tau> > t\<^sub>0 \<Longrightarrow> G (X \<tau>) \<Longrightarrow> \<mu>' (X \<tau>) \<ge> \<nu>' (X \<tau>)" 
+      "\<And>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<Longrightarrow> \<tau> < t\<^sub>0 \<Longrightarrow> \<mu>' (X \<tau>) \<le> \<nu>' (X \<tau>)"
+      using Gg[OF xivp(1)] Gl[OF xivp(1)] by auto
+    have "t > t\<^sub>0 \<Longrightarrow> r > t\<^sub>0 \<and> G (X r)" "\<not> t\<^sub>0 \<le> t \<Longrightarrow> r < t\<^sub>0" "r \<in> U (X t\<^sub>0)"
+      using \<open>r \<in> {t\<^sub>0<--<t}\<close> obs1 Ghyp
+      unfolding open_segment_eq_real_ivl closed_segment_eq_real_ivl by auto
+    moreover have "r > t\<^sub>0 \<Longrightarrow> G (X r) \<Longrightarrow> (\<mu>'(X r)- \<nu>'(X r)) \<ge> 0" "r < t\<^sub>0 \<Longrightarrow> (\<mu>'(X r)-\<nu>'(X r)) \<le> 0"
+      using primed(1,2)[OF \<open>r \<in> U (X t\<^sub>0)\<close>] by auto
+    ultimately have "(t - t\<^sub>0) * (\<mu>'(X r)-\<nu>'(X r)) \<ge> 0"
+      by (case_tac "t \<ge> t\<^sub>0", force, auto simp: split_mult_pos_le)
+    hence "(t - t\<^sub>0) * (\<mu>'(X r)-\<nu>'(X r)) + (\<mu>(X t\<^sub>0)-\<nu>(X t\<^sub>0)) > 0"
+      using xivp(2) by auto
+    hence "\<nu> (X t) < \<mu> (X t)"
+      using mvt by simp}
+  thus "\<nu> (X t) < \<mu> (X t)"
+    using xivp by blast
 qed
 
 lemma diff_invariant_nleq_rule:
   fixes \<mu>::"'a::banach \<Rightarrow> real"
-  shows "diff_invariant (\<lambda>s. \<not> \<nu> s \<le> \<mu> s) f T S t\<^sub>0 G \<longleftrightarrow> diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f T S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. \<not> \<nu> s \<le> \<mu> s) f U S t\<^sub>0 G \<longleftrightarrow> diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f U S t\<^sub>0 G"
   unfolding diff_invariant_eq apply safe
   by (clarsimp, erule_tac x=s in allE, simp, erule_tac x=X in ballE, force, force)+
 
 lemma diff_invariant_neq_rule [diff_invariant_rules]:
   fixes \<mu>::"'a::banach \<Rightarrow> real"
-  assumes "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f T S t\<^sub>0 G"
-    and "diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f T S t\<^sub>0 G"
-  shows "diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f T S t\<^sub>0 G"
+  assumes "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f U S t\<^sub>0 G"
+    and "diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f U S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f U S t\<^sub>0 G"
 proof(unfold diff_invariant_eq, clarsimp)
   fix s::'a and X::"real \<Rightarrow> 'a" and t::real
-  assume "\<nu> s \<noteq> \<mu> s" and Xhyp: "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s" 
-     and thyp: "t \<in> T" and Ghyp: "\<forall>\<tau>. \<tau> \<in> T \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
+  assume "\<nu> s \<noteq> \<mu> s" and Xhyp: "X \<in> Sols f U S t\<^sub>0 s" 
+     and thyp: "t \<in> U s" and Ghyp: "\<forall>\<tau>. \<tau> \<in> U s \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
   hence "\<nu> s < \<mu> s \<or> \<nu> s > \<mu> s"
     by linarith
   moreover have "\<nu> s < \<mu> s \<Longrightarrow> \<nu> (X t) < \<mu> (X t)"
@@ -217,37 +235,36 @@ qed
 
 lemma diff_invariant_neq_rule_converse:
   fixes \<mu>::"'a::banach \<Rightarrow> real"
-  assumes Thyp: "is_interval T" "t\<^sub>0 \<in> T" "\<forall>t\<in>T. t\<^sub>0 \<le> t"
-      and conts: "\<forall>X. (D X = (\<lambda>\<tau>. f (X \<tau>)) on T) \<longrightarrow> 
-  continuous_on (\<P> X T) \<nu> \<and> continuous_on (\<P> X T) \<mu>"
-      and dIhyp:"diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f T S t\<^sub>0 G"
-    shows "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f T S t\<^sub>0 G"
-proof(unfold diff_invariant_eq, clarsimp)
-  fix s::'a and X::"real \<Rightarrow> 'a" and t::real
-  assume ineq0: "\<nu> s < \<mu> s" and Xhyp: "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s"
-    and Ghyp: "\<forall>\<tau>. \<tau> \<in> T \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)" and thyp: "t\<in>T"
-  hence ineq1: "\<nu> (X t\<^sub>0) < \<mu> (X t\<^sub>0)"
-    by (auto simp: ivp_solsD)
-  have "t\<^sub>0 \<le> t" and "\<mu> (X t) \<noteq> \<nu> (X t)"
-    using \<open>t \<in> T\<close> Thyp dIhyp thyp Xhyp Ghyp ineq0 
-    unfolding diff_invariant_eq by force+
+  assumes Uhyp: "\<And>s. s \<in> S \<Longrightarrow> is_interval (U s)" "\<And>s t. s \<in> S \<Longrightarrow> t \<in> U s \<Longrightarrow> t\<^sub>0 \<le> t"
+    and conts: "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> continuous_on (\<P> X (U (X t\<^sub>0))) \<nu>"
+      "\<And>X. (D X = (\<lambda>\<tau>. f \<tau> (X \<tau>)) on U(X t\<^sub>0)) \<Longrightarrow> continuous_on (\<P> X (U (X t\<^sub>0))) \<mu>"
+    and dI:"diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f U S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f U S t\<^sub>0 G"
+proof(unfold diff_invariant_eq ivp_sols_def, clarsimp)
+  fix X t assume Ghyp: "\<forall>\<tau>. \<tau> \<in> U (X t\<^sub>0) \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
+  assume xivp: "D X = (\<lambda>x. f x (X x)) on U (X t\<^sub>0)" "\<nu> (X t\<^sub>0) < \<mu> (X t\<^sub>0)" "X \<in> U (X t\<^sub>0) \<rightarrow> S"
+  assume tHyp: "t \<in> U (X t\<^sub>0)" and t0Hyp: "t\<^sub>0 \<in> U (X t\<^sub>0)"
+  hence "t\<^sub>0 \<le> t" and "\<mu> (X t) \<noteq> \<nu> (X t)"
+    using xivp(3) Uhyp(2) apply force
+    using dI tHyp xivp(2) Ghyp ivp_solsI[of X f U "X t\<^sub>0", OF xivp(1) _ xivp(3) t0Hyp]
+    unfolding diff_invariant_eq by force
   moreover
   {assume ineq2:"\<nu> (X t) > \<mu> (X t)"
-    note continuous_on_compose[OF vderiv_on_continuous_on[OF ivp_solsD(1)[OF Xhyp]]]
-    hence "continuous_on T (\<nu> \<circ> X)" and "continuous_on T (\<mu> \<circ> X)"
-      using ivp_solsD(1)[OF Xhyp] conts by auto
-    also have "{t\<^sub>0--t} \<subseteq> T"
-      using Thyp thyp by (simp add: closed_segment_subset_interval)
+    note continuous_on_compose[OF vderiv_on_continuous_on[OF xivp(1)]]
+    hence "continuous_on (U (X t\<^sub>0)) (\<nu> \<circ> X)" and "continuous_on (U (X t\<^sub>0)) (\<mu> \<circ> X)"
+      using xivp(1) conts by blast+
+    also have "{t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)"
+      using closed_segment_subset_interval[OF Uhyp(1) t0Hyp tHyp] xivp(3) t0Hyp by auto
     ultimately have "continuous_on {t\<^sub>0--t} (\<lambda>\<tau>. \<nu> (X \<tau>))" 
       and "continuous_on {t\<^sub>0--t} (\<lambda>\<tau>. \<mu> (X \<tau>))"
       using continuous_on_subset by auto
     then obtain \<tau> where "\<tau> \<in> {t\<^sub>0--t}" "\<mu> (X \<tau>) = \<nu> (X \<tau>)"
-      using IVT_two_functions_real_ivl[OF _ _ ineq1 ineq2] by force
-    hence "\<forall>r\<in>down T \<tau>. G (X r)" and "\<tau> \<in> T"
-      using Ghyp \<open>\<tau> \<in> {t\<^sub>0--t}\<close> \<open>t\<^sub>0 \<le> t\<close> \<open>{t\<^sub>0--t} \<subseteq> T\<close> 
+      using IVT_two_functions_real_ivl[OF _ _ xivp(2) ineq2] by force
+    hence "\<forall>r\<in>down (U (X t\<^sub>0)) \<tau>. G (X r)" and "\<tau> \<in> U (X t\<^sub>0)"
+      using Ghyp \<open>\<tau> \<in> {t\<^sub>0--t}\<close> \<open>t\<^sub>0 \<le> t\<close> \<open>{t\<^sub>0--t} \<subseteq> U (X t\<^sub>0)\<close> 
       by (auto simp: closed_segment_eq_real_ivl)
     hence "\<mu> (X \<tau>) \<noteq> \<nu> (X \<tau>)"
-      using dIhyp Xhyp \<open>\<nu> s < \<mu> s\<close> 
+      using dI tHyp xivp(2) ivp_solsI[of X f U "X t\<^sub>0", OF xivp(1) _ xivp(3) t0Hyp]
       unfolding diff_invariant_eq by force
     hence "False"
       using \<open>\<mu> (X \<tau>) = \<nu> (X \<tau>)\<close> by blast}
@@ -256,21 +273,20 @@ proof(unfold diff_invariant_eq, clarsimp)
 qed
 
 lemma diff_invariant_conj_rule [diff_invariant_rules]:
-assumes "diff_invariant I\<^sub>1 f T S t\<^sub>0 G" 
-    and "diff_invariant I\<^sub>2 f T S t\<^sub>0 G"
-shows "diff_invariant (\<lambda>s. I\<^sub>1 s \<and> I\<^sub>2 s) f T S t\<^sub>0 G"
+  assumes "diff_invariant I\<^sub>1 f U S t\<^sub>0 G"
+    and "diff_invariant I\<^sub>2 f U S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. I\<^sub>1 s \<and> I\<^sub>2 s) f U S t\<^sub>0 G"
   using assms unfolding diff_invariant_def by auto
 
 lemma diff_invariant_disj_rule [diff_invariant_rules]:
-assumes "diff_invariant I\<^sub>1 f T S t\<^sub>0 G" 
-    and "diff_invariant I\<^sub>2 f T S t\<^sub>0 G"
-shows "diff_invariant (\<lambda>s. I\<^sub>1 s \<or> I\<^sub>2 s) f T S t\<^sub>0 G"
+  assumes "diff_invariant I\<^sub>1 f U S t\<^sub>0 G"
+    and "diff_invariant I\<^sub>2 f U S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. I\<^sub>1 s \<or> I\<^sub>2 s) f U S t\<^sub>0 G"
   using assms unfolding diff_invariant_def by auto
-
 
 subsection \<open> Picard-Lindeloef \<close>
 
-text\<open> A locale with the assumptions of Picard-Lindeloef theorem. It extends 
+text\<open> A locale with the assumptions of Picard-Lindeloef's theorem. It extends 
 @{term "ll_on_open_it"} by providing an initial time @{term "t\<^sub>0 \<in> T"}.\<close>
 
 locale picard_lindeloef =
@@ -285,48 +301,137 @@ begin
 sublocale ll_on_open_it T f S t\<^sub>0
   by (unfold_locales) (auto simp: cont_vec_field lipschitz_vec_field interval_time open_domain) 
 
+lemma ll_on_open: "ll_on_open T f S"
+  using local.general.ll_on_open_axioms .
+
 lemmas subintervalI = closed_segment_subset_domain
-
-lemma csols_eq: "csols t\<^sub>0 s = {(X, t). t \<in> T \<and>  X \<in> Sols f {t\<^sub>0--t} S t\<^sub>0 s}"
-  unfolding ivp_sols_def csols_def solves_ode_def using subintervalI[OF init_time] by auto
-
+   and init_time_ex_ivl = existence_ivl_initial_time[OF init_time]
+   and flow_at_init[simp] = general.flow_initial_time[OF init_time]
+                               
 abbreviation "ex_ivl s \<equiv> existence_ivl t\<^sub>0 s"
 
-lemma unique_solution:
+lemma flow_has_vderiv_on_ex_ivl:
+  assumes "s \<in> S"
+  shows "D flow t\<^sub>0 s = (\<lambda>t. f t (flow t\<^sub>0 s t)) on ex_ivl s"
+  using flow_usolves_ode[OF init_time \<open>s \<in> S\<close>] 
+  unfolding usolves_ode_from_def solves_ode_def by blast
+
+lemma flow_funcset_ex_ivl:
+  assumes "s \<in> S"
+  shows "flow t\<^sub>0 s \<in> ex_ivl s \<rightarrow> S"
+  using flow_usolves_ode[OF init_time \<open>s \<in> S\<close>] 
+  unfolding usolves_ode_from_def solves_ode_def by blast
+
+lemma flow_in_ivp_sols_ex_ivl:
+  assumes "s \<in> S"
+  shows "flow t\<^sub>0 s \<in> Sols f (\<lambda>s. ex_ivl s) S t\<^sub>0 s"
+  using flow_has_vderiv_on_ex_ivl[OF assms] apply(rule ivp_solsI)
+    apply(simp_all add: init_time assms)
+  by (rule flow_funcset_ex_ivl[OF assms])
+
+lemma csols_eq: "csols t\<^sub>0 s = {(x, t). t \<in> T \<and>  x \<in> Sols f (\<lambda>s. {t\<^sub>0--t}) S t\<^sub>0 s}"
+  unfolding ivp_sols_def csols_def solves_ode_def 
+  using closed_segment_subset_domain init_time by auto
+
+lemma subset_ex_ivlI:
+  "Y\<^sub>1 \<in> Sols f (\<lambda>s. T) S t\<^sub>0 s \<Longrightarrow> {t\<^sub>0--t} \<subseteq> T \<Longrightarrow> A \<subseteq> {t\<^sub>0--t} \<Longrightarrow> A \<subseteq> ex_ivl s"
+  apply(clarsimp simp: existence_ivl_def)
+  apply(subgoal_tac "t\<^sub>0 \<in> T", clarsimp simp: csols_eq)
+   apply(rule_tac x=Y\<^sub>1 in exI, rule_tac x=t in exI, safe, force)
+  by (rule in_ivp_sols_subset[where T="\<lambda>s. T"], auto)
+
+lemma unique_solution: \<comment> \<open> proved for a subset of T for general applications \<close>
+  assumes "s \<in> S" and "t\<^sub>0 \<in> U" and "t \<in> U" 
+    and "is_interval U" and "U \<subseteq> ex_ivl s" 
+    and xivp: "D Y\<^sub>1 = (\<lambda>t. f t (Y\<^sub>1 t)) on U" "Y\<^sub>1 t\<^sub>0 = s" "Y\<^sub>1 \<in> U \<rightarrow> S"
+    and yivp: "D Y\<^sub>2 = (\<lambda>t. f t (Y\<^sub>2 t)) on U" "Y\<^sub>2 t\<^sub>0 = s" "Y\<^sub>2 \<in> U \<rightarrow> S"
+  shows "Y\<^sub>1 t = Y\<^sub>2 t"
+proof-
+  have "t\<^sub>0 \<in> T"
+    using assms existence_ivl_subset by auto
+  have key: "(flow t\<^sub>0 s usolves_ode f from t\<^sub>0) (ex_ivl s) S"
+    using flow_usolves_ode[OF \<open>t\<^sub>0 \<in> T\<close> \<open>s \<in> S\<close>] .
+  hence "\<forall>t\<in>U. Y\<^sub>1 t = flow t\<^sub>0 s t"
+    unfolding usolves_ode_from_def solves_ode_def apply safe
+    by (erule_tac x=Y\<^sub>1 in allE, erule_tac x=U in allE, auto simp: assms)
+  also have "\<forall>t\<in>U. Y\<^sub>2 t = flow t\<^sub>0 s t"
+    using key unfolding usolves_ode_from_def solves_ode_def apply safe
+    by (erule_tac x=Y\<^sub>2 in allE, erule_tac x=U in allE, auto simp: assms)
+  ultimately show "Y\<^sub>1 t = Y\<^sub>2 t"
+    using assms by auto
+qed
+
+text \<open>Applications of lemma @{text "unique_solution"}: \<close>
+
+lemma unique_solution_closed_ivl:
   assumes xivp: "D X = (\<lambda>t. f t (X t)) on {t\<^sub>0--t}" "X t\<^sub>0 = s" "X \<in> {t\<^sub>0--t} \<rightarrow> S" and "t \<in> T"
     and yivp: "D Y = (\<lambda>t. f t (Y t)) on {t\<^sub>0--t}" "Y t\<^sub>0 = s" "Y \<in> {t\<^sub>0--t} \<rightarrow> S" and "s \<in> S" 
   shows "X t = Y t"
-proof-
-  have "(X, t) \<in> csols t\<^sub>0 s"
-    using xivp \<open>t \<in> T\<close> unfolding csols_eq ivp_sols_def by auto
-  hence ivl_fact: "{t\<^sub>0--t} \<subseteq> ex_ivl s"
-    unfolding existence_ivl_def by auto
-  have obs: "\<And>z T'. t\<^sub>0 \<in> T' \<and> is_interval T' \<and> T' \<subseteq> ex_ivl s \<and> (z solves_ode f) T' S \<Longrightarrow> 
-  z t\<^sub>0 = flow t\<^sub>0 s t\<^sub>0 \<Longrightarrow> (\<forall>t\<in>T'. z t = flow t\<^sub>0 s t)"
-    using flow_usolves_ode[OF init_time \<open>s \<in> S\<close>] unfolding usolves_ode_from_def by blast
-  have "\<forall>\<tau>\<in>{t\<^sub>0--t}. X \<tau> = flow t\<^sub>0 s \<tau>"
-    using obs[of "{t\<^sub>0--t}" X] xivp ivl_fact flow_initial_time[OF init_time  \<open>s \<in> S\<close>] 
-    unfolding solves_ode_def by simp
-  also have "\<forall>\<tau>\<in>{t\<^sub>0--t}. Y \<tau> = flow t\<^sub>0 s \<tau>"
-    using obs[of "{t\<^sub>0--t}" Y] yivp ivl_fact flow_initial_time[OF init_time  \<open>s \<in> S\<close>] 
-    unfolding solves_ode_def by simp
-  ultimately show "X t = Y t"
-    by auto
-qed
+  apply(rule unique_solution[OF \<open>s \<in> S\<close>, of "{t\<^sub>0--t}"], simp_all add: assms)
+  apply(unfold existence_ivl_def csols_eq ivp_sols_def, clarsimp)
+  using xivp \<open>t \<in> T\<close> by blast
 
 lemma solution_eq_flow:
   assumes xivp: "D X = (\<lambda>t. f t (X t)) on ex_ivl s" "X t\<^sub>0 = s" "X \<in> ex_ivl s \<rightarrow> S" 
     and "t \<in> ex_ivl s" and "s \<in> S" 
   shows "X t = flow t\<^sub>0 s t"
+  apply(rule unique_solution[OF \<open>s \<in> S\<close> init_time_ex_ivl \<open>t \<in> ex_ivl s\<close>])
+  using flow_has_vderiv_on_ex_ivl flow_funcset_ex_ivl \<open>s \<in> S\<close> by (auto simp: assms)
+
+lemma ivp_unique_solution:
+  assumes "s \<in> S" and ivl: "is_interval (U s)" and "U s \<subseteq> T" and "t \<in> U s" 
+    and ivp1: "Y\<^sub>1 \<in> Sols f U S t\<^sub>0 s" and ivp2: "Y\<^sub>2 \<in> Sols f U S t\<^sub>0 s"
+  shows "Y\<^sub>1 t = Y\<^sub>2 t"
+proof(rule unique_solution[OF \<open>s \<in> S\<close>, of "{t\<^sub>0--t}"], simp_all)
+  have "t\<^sub>0 \<in> U s"
+    using ivp_solsD[OF ivp1] by auto
+  hence obs0: "{t\<^sub>0--t} \<subseteq> U s"
+    using closed_segment_subset_interval[OF ivl] \<open>t \<in> U s\<close> by blast
+  moreover have obs1: "Y\<^sub>1 \<in> Sols f (\<lambda>s. {t\<^sub>0--t}) S t\<^sub>0 s"
+    by (rule in_ivp_sols_subset[OF _ calculation(1) ivp1], simp)
+  moreover have obs2: "Y\<^sub>2 \<in> Sols f (\<lambda>s. {t\<^sub>0--t}) S t\<^sub>0 s"
+    by (rule in_ivp_sols_subset[OF _ calculation(1) ivp2], simp)
+  ultimately show "{t\<^sub>0--t} \<subseteq> ex_ivl s"
+    apply(unfold existence_ivl_def csols_eq, clarsimp)
+    apply(rule_tac x=Y\<^sub>1 in exI, rule_tac x=t in exI)
+    using \<open>t \<in> U s\<close> and \<open>U s \<subseteq> T\<close> by force
+  show "D Y\<^sub>1 = (\<lambda>t. f t (Y\<^sub>1 t)) on {t\<^sub>0--t}"
+    by (rule ivp_solsD[OF in_ivp_sols_subset[OF _ _ ivp1]], simp_all add: obs0)
+  show "D Y\<^sub>2 = (\<lambda>t. f t (Y\<^sub>2 t)) on {t\<^sub>0--t}"
+    by (rule ivp_solsD[OF in_ivp_sols_subset[OF _ _ ivp2]], simp_all add: obs0)
+  show "Y\<^sub>1 t\<^sub>0 = s" and "Y\<^sub>2 t\<^sub>0 = s"
+    using ivp_solsD[OF ivp1] ivp_solsD[OF ivp2] by auto
+  show "Y\<^sub>1 \<in> {t\<^sub>0--t} \<rightarrow> S" and "Y\<^sub>2 \<in> {t\<^sub>0--t} \<rightarrow> S"
+    using ivp_solsD[OF obs1] ivp_solsD[OF obs2] by auto
+qed
+
+lemma g_orbital_orbit:
+  assumes "s \<in> S" and ivl: "is_interval (U s)" and "U s \<subseteq> T"
+    and ivp: "Y \<in> Sols f U S t\<^sub>0 s"
+  shows "g_orbital f G U S t\<^sub>0 s = g_orbit Y G (U s)"
 proof-
-  have obs: "\<And>z T'. t\<^sub>0 \<in> T' \<and> is_interval T' \<and> T' \<subseteq> ex_ivl s \<and> (z solves_ode f) T' S \<Longrightarrow> 
-  z t\<^sub>0 = flow t\<^sub>0 s t\<^sub>0 \<Longrightarrow> (\<forall>t\<in>T'. z t = flow t\<^sub>0 s t)"
-    using flow_usolves_ode[OF init_time \<open>s \<in> S\<close>] unfolding usolves_ode_from_def by blast
-  have "\<forall>\<tau>\<in>ex_ivl s. X \<tau> = flow t\<^sub>0 s \<tau>"
-    using obs[of "ex_ivl s" X] existence_ivl_initial_time[OF init_time \<open>s \<in> S\<close>]
-      xivp flow_initial_time[OF init_time \<open>s \<in> S\<close>] unfolding solves_ode_def by simp
-  thus "X t = flow t\<^sub>0 s t"
-    by (auto simp: \<open>t \<in> ex_ivl s\<close>)
+  have eq1: "\<forall>Z \<in> Sols f U S t\<^sub>0 s. \<forall>t\<in>U s. Z t = Y t"
+    by (clarsimp, rule ivp_unique_solution[OF assms(1,2,3) _ _ ivp], auto)
+  have "g_orbital f G U S t\<^sub>0 s \<subseteq> g_orbit (\<lambda>t. Y t) G (U s)"
+  proof
+    fix x assume "x \<in> g_orbital f G U S t\<^sub>0 s"
+    then obtain Z and t 
+      where z_def: "x = Z t \<and> t \<in> U s \<and> (\<forall>\<tau>\<in>down (U s) t. G (Z \<tau>)) \<and> Z \<in> Sols f U S t\<^sub>0 s"
+      unfolding g_orbital_eq by auto
+    hence "{t\<^sub>0--t} \<subseteq> U s"
+      using closed_segment_subset_interval[OF ivl ivp_solsD(4)[OF ivp]] by blast
+    hence "\<forall>\<tau>\<in>{t\<^sub>0--t}. Z \<tau> = Y \<tau>"
+      using z_def apply clarsimp
+      by (rule ivp_unique_solution[OF assms(1,2,3) _ _ ivp], auto)
+    thus "x \<in> g_orbit Y G (U s)"
+      using z_def eq1 unfolding g_orbit_eq by simp metis
+  qed
+  moreover have "g_orbit Y G (U s) \<subseteq> g_orbital f G U S t\<^sub>0 s"
+    apply(unfold g_orbital_eq g_orbit_eq ivp_sols_def, clarsimp)
+    apply(rule_tac x=t in exI, rule_tac x=Y in exI)
+    using ivp_solsD[OF ivp] by auto
+  ultimately show ?thesis
+    by blast
 qed
 
 end
@@ -383,7 +488,7 @@ begin
 
 lemma in_ivp_sols_ivl: 
   assumes "t \<in> T" "s \<in> S"
-  shows "(\<lambda>t. \<phi> t s) \<in> Sols (\<lambda>t. f) {0--t} S 0 s"
+  shows "(\<lambda>t. \<phi> t s) \<in> Sols (\<lambda>t. f) (\<lambda>s. {0--t}) S 0 s"
   apply(rule ivp_solsI)
   using ivp assms by auto
 
@@ -391,14 +496,14 @@ lemma eq_solution_ivl:
   assumes xivp: "D X = (\<lambda>t. f (X t)) on {0--t}" "X 0 = s" "X \<in> {0--t} \<rightarrow> S" 
     and indom: "t \<in> T" "s \<in> S"
   shows "X t = \<phi> t s"
-  apply(rule unique_solution[OF xivp \<open>t \<in> T\<close>])
+  apply(rule unique_solution_closed_ivl[OF xivp \<open>t \<in> T\<close>])
   using \<open>s \<in> S\<close> ivp indom by auto
 
 lemma ex_ivl_eq:
   assumes "s \<in> S"
   shows "ex_ivl s = T"
   using existence_ivl_subset[of s] apply safe
-  unfolding existence_ivl_def csols_eq 
+  unfolding existence_ivl_def csols_eq
   using in_ivp_sols_ivl[OF _ assms] by blast
 
 lemma has_derivative_on_open1: 
@@ -517,8 +622,7 @@ lemma has_derivative_on_open:
 lemma in_domain:
   assumes "s \<in> S"
   shows "(\<lambda>t. \<phi> t s) \<in> T \<rightarrow> S"
-  unfolding ex_ivl_eq[symmetric] existence_ivl_def
-  using local.mem_existence_ivl_subset ivp(3)[OF _ assms] by blast
+  using ivp(3)[OF _ assms] by blast
 
 lemma has_vderiv_on_domain:
   assumes "s \<in> S"
@@ -535,40 +639,32 @@ proof(unfold has_vderiv_on_def has_vector_derivative_def, clarsimp)
 qed
 
 lemma in_ivp_sols: 
-  assumes "s \<in> S"
-  shows "(\<lambda>t. \<phi> t s) \<in> Sols (\<lambda>t. f) T S 0 s"
-  using has_vderiv_on_domain ivp(2) in_domain apply(rule ivp_solsI)
-  using assms by auto
+  assumes "s \<in> S" and "0 \<in> U s" and "U s \<subseteq> T"
+  shows "(\<lambda>t. \<phi> t s) \<in> Sols (\<lambda>t. f) U S 0 s"
+  apply(rule in_ivp_sols_subset[OF _ _ ivp_solsI, of _ _ _ "\<lambda>s. T"])
+  using  ivp(2)[OF \<open>s \<in> S\<close>] has_vderiv_on_domain[OF \<open>s \<in> S\<close>] 
+    in_domain[OF \<open>s \<in> S\<close>] assms by auto
 
 lemma eq_solution:
-  assumes "X \<in> Sols (\<lambda>t. f) T S 0 s" and "t \<in> T" and "s \<in> S"
+  assumes "s \<in> S" and "is_interval (U s)" and "U s \<subseteq> T" and "t \<in> U s"
+    and xivp: "X \<in> Sols (\<lambda>t. f) U S 0 s"
   shows "X t = \<phi> t s"
-proof-
-  have "D X = (\<lambda>t. f (X t)) on (ex_ivl s)" and "X 0 = s" and "X \<in> (ex_ivl s) \<rightarrow> S"
-    using ivp_solsD[OF assms(1)] unfolding ex_ivl_eq[OF \<open>s \<in> S\<close>] by auto
-  note solution_eq_flow[OF this]
-  hence "X t = flow 0 s t"
-    unfolding ex_ivl_eq[OF \<open>s \<in> S\<close>] using assms by blast
-  also have "\<phi> t s = flow 0 s t"
-    apply(rule solution_eq_flow ivp)
-        apply(simp_all add: assms(2,3) ivp(2)[OF \<open>s \<in> S\<close>])
-    unfolding ex_ivl_eq[OF \<open>s \<in> S\<close>] by (auto simp: has_vderiv_on_domain assms in_domain)
-  ultimately show "X t = \<phi> t s"
-    by simp
-qed
+  apply(rule ivp_unique_solution[OF assms], rule in_ivp_sols)
+  by (simp_all add: ivp_solsD(4)[OF xivp] assms)
 
 lemma ivp_sols_collapse: 
   assumes "T = UNIV" and "s \<in> S"
-  shows "Sols (\<lambda>t. f) T S 0 s = {(\<lambda>t. \<phi> t s)}"
-  using in_ivp_sols eq_solution assms by auto
+  shows "Sols (\<lambda>t. f) (\<lambda>s. T) S 0 s = {(\<lambda>t. \<phi> t s)}"
+  apply (safe, simp_all add: fun_eq_iff, clarsimp)
+   apply(rule eq_solution[of _ "\<lambda>s. T"]; simp add: assms)
+  by (rule in_ivp_sols; simp add: assms)
 
 lemma additive_in_ivp_sols:
   assumes "s \<in> S" and "\<P> (\<lambda>\<tau>. \<tau> + t) T \<subseteq> T"
-  shows "(\<lambda>\<tau>. \<phi> (\<tau> + t) s) \<in> Sols (\<lambda>t. f) T S 0 (\<phi> (0 + t) s)"
-  apply(rule ivp_solsI, rule vderiv_on_compose_add)
-  using has_vderiv_on_domain has_vderiv_on_subset assms 
-    apply blast
-  using in_domain assms by auto
+  shows "(\<lambda>\<tau>. \<phi> (\<tau> + t) s) \<in> Sols (\<lambda>t. f) (\<lambda>s. T) S 0 (\<phi> (0 + t) s)"
+  apply(rule ivp_solsI[OF vderiv_on_composeI])
+       apply(rule has_vderiv_on_subset[OF has_vderiv_on_domain])
+  using in_domain assms init_time by (auto intro!: poly_derivatives)
 
 lemma is_monoid_action:
   assumes "s \<in> S" and "T = UNIV"
@@ -578,50 +674,31 @@ proof-
     using ivp assms by simp
   have "\<phi> (0 + t\<^sub>2) s = \<phi> t\<^sub>2 s" 
     by simp
-  also have "\<phi> t\<^sub>2 s \<in> S"
+  also have "\<phi> (0 + t\<^sub>2) s \<in> S"
     using in_domain assms by auto
-  finally show "\<phi> (t\<^sub>1 + t\<^sub>2) s = \<phi> t\<^sub>1 (\<phi> t\<^sub>2 s)"
-    using eq_solution[OF additive_in_ivp_sols] assms by auto
+  ultimately show "\<phi> (t\<^sub>1 + t\<^sub>2) s = \<phi> t\<^sub>1 (\<phi> t\<^sub>2 s)"
+    using eq_solution[OF _ _ _ _ additive_in_ivp_sols] assms by auto
 qed
-
-definition orbit :: "'a \<Rightarrow> 'a set" ("\<gamma>\<^sup>\<phi>")
-  where "\<gamma>\<^sup>\<phi> s = g_orbital f (\<lambda>s. True) T S 0 s"
-
-lemma orbit_eq[simp]: 
-  assumes "s \<in> S"
-  shows "\<gamma>\<^sup>\<phi> s = {\<phi> t s| t. t \<in> T}"
-  using eq_solution assms unfolding orbit_def g_orbital_eq ivp_sols_def
-  by(auto intro!: has_vderiv_on_domain ivp(2) in_domain)
 
 lemma g_orbital_collapses: 
+  assumes "s \<in> S" and "is_interval (U s)" and "U s \<subseteq> T" and "0 \<in> U s"
+  shows "g_orbital (\<lambda>t. f) G U S 0 s = {\<phi> t s| t. t \<in> U s \<and> (\<forall>\<tau>\<in>down (U s) t. G (\<phi> \<tau> s))}"
+  apply (subst g_orbital_orbit[of _ _ "\<lambda>t. \<phi> t s"], simp_all add: assms g_orbit_eq)
+  by (rule in_ivp_sols, simp_all add: assms)
+
+definition orbit :: "'a \<Rightarrow> 'a set" ("\<gamma>\<^sup>\<phi>")
+  where "\<gamma>\<^sup>\<phi> s = g_orbital (\<lambda>t. f) (\<lambda>s. True) (\<lambda>s. T) S 0 s"
+
+lemma orbit_eq: 
   assumes "s \<in> S"
-  shows "g_orbital f G T S 0 s = {\<phi> t s| t. t \<in> T \<and> (\<forall>\<tau>\<in>down T t. G (\<phi> \<tau> s))}"
-proof(rule subset_antisym, simp_all only: subset_eq)
-  let ?gorbit = "{\<phi> t s |t. t \<in> T \<and> (\<forall>\<tau>\<in>down T t. G (\<phi> \<tau> s))}"
-  {fix s' assume "s' \<in> g_orbital f G T S 0 s"
-    then obtain X and t where x_ivp:"X \<in> Sols (\<lambda>t. f) T S 0 s" 
-      and "X t = s'" and "t \<in> T" and guard:"(\<P> X (down T t) \<subseteq> {s. G s})"
-      unfolding g_orbital_def g_orbit_eq by auto
-    have obs:"\<forall>\<tau>\<in>(down T t). X \<tau> = \<phi> \<tau> s"
-      using eq_solution[OF x_ivp _ assms] by blast
-    hence "\<P> (\<lambda>t. \<phi> t s) (down T t) \<subseteq> {s. G s}"
-      using guard by auto 
-    also have "\<phi> t s = X t"
-      using eq_solution[OF x_ivp \<open>t \<in> T\<close> assms] by simp
-    ultimately have "s' \<in> ?gorbit"
-      using \<open>X t = s'\<close> \<open>t \<in> T\<close> by auto}
-  thus "\<forall>s'\<in> g_orbital f G T S 0 s. s' \<in> ?gorbit"
-    by blast
-next
-  let ?gorbit = "{\<phi> t s |t. t \<in> T \<and> (\<forall>\<tau>\<in>down T t. G (\<phi> \<tau> s))}"
-  {fix s' assume "s' \<in> ?gorbit"
-    then obtain t where "\<P> (\<lambda>t. \<phi> t s) (down T t) \<subseteq> {s. G s}" and "t \<in> T" and "\<phi> t s = s'"
-      by blast
-    hence "s' \<in> g_orbital f G T S 0 s"
-      using assms by(auto intro!: g_orbitalI in_ivp_sols)}
-  thus "\<forall>s'\<in>?gorbit. s' \<in> g_orbital f G T S 0 s"
-    by blast
-qed
+  shows "\<gamma>\<^sup>\<phi> s = {\<phi> t s| t. t \<in> T}"
+  apply(unfold orbit_def, subst g_orbital_collapses)
+  by (simp_all add: assms init_time interval_time)
+
+lemma true_g_orbit_eq:
+  assumes "s \<in> S"
+  shows "g_orbit (\<lambda>t. \<phi> t s) (\<lambda>s. True) T = \<gamma>\<^sup>\<phi> s"
+  unfolding g_orbit_eq orbit_eq[OF assms] by simp
 
 end
 

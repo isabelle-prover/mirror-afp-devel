@@ -1,13 +1,13 @@
 (*  Title:       Square Matrices
     Author:      Jonathan Julián Huerta y Munive, 2020
-    Maintainer:  Jonathan Julián Huerta y Munive <jjhuertaymunive1@sheffield.ac.uk>
+    Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
 section \<open> Square Matrices \<close>
 
-text\<open> The general solution for affine systems of ODEs involves the exponential function. 
+text \<open> The general solution for affine systems of ODEs involves the exponential function. 
 Unfortunately, this operation is only available in Isabelle for the type class ``banach''. 
-Hence, we define a type of square matrices and prove that it is an instance of this class.\<close>
+Hence, we define a type of square matrices and prove that it is an instance of this class. \<close>
 
 theory SQ_MTX
   imports MTX_Norms

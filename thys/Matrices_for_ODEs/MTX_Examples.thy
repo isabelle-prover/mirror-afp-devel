@@ -1,13 +1,15 @@
 (*  Title:       Verification Examples
     Author:      Jonathan Julián Huerta y Munive, 2020
-    Maintainer:  Jonathan Julián Huerta y Munive <jjhuertaymunive1@sheffield.ac.uk>
+    Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
 section \<open> Verification examples \<close>
 
 
 theory MTX_Examples
-  imports MTX_Flows "Hybrid_Systems_VCs.HS_VC_Spartan"
+  imports 
+    MTX_Flows 
+    Hybrid_Systems_VCs.HS_VC_Spartan
 
 begin
 
@@ -29,7 +31,7 @@ abbreviation mtx_circ_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (
   where "\<phi> t s \<equiv> (\<chi> i. if i = 1 then s$1 * cos t + s$2 * sin t else - s$1 * sin t + s$2 * cos t)"
 
 lemma mtx_circ_flow_eq: "exp (t *\<^sub>R A) *\<^sub>V s = \<phi> t s"
-  apply(rule local_flow.eq_solution[OF local_flow_sq_mtx_linear, symmetric])
+  apply(rule local_flow.eq_solution[OF local_flow_sq_mtx_linear, symmetric, of _ "\<lambda>s. UNIV"], simp_all)
     apply(rule ivp_solsI, simp_all add: sq_mtx_vec_mult_eq vec_eq_iff)
   unfolding UNIV_2 using exhaust_2
   by (force intro!: poly_derivatives simp: matrix_vector_mult_def)+
@@ -38,7 +40,7 @@ lemma mtx_circ:
   "PRE(\<lambda>s. r\<^sup>2 = (s $ 1)\<^sup>2 + (s $ 2)\<^sup>2) 
   HP x\<acute>=(*\<^sub>V) A & G 
   POST (\<lambda>s. r\<^sup>2 = (s $ 1)\<^sup>2 + (s $ 2)\<^sup>2)"
-  apply(subst local_flow.fbox_g_ode[OF local_flow_sq_mtx_linear])
+  apply(subst local_flow.fbox_g_ode_subset[OF local_flow_sq_mtx_linear])
   unfolding mtx_circ_flow_eq by auto
 
 no_notation mtx_circ ("A")
@@ -120,7 +122,7 @@ proof(subst diff_divide_distrib[symmetric], simp)
     unfolding exp_le_cancel_iff 
     using assms(4) by (case_tac "t=0", simp_all)
   hence "?c2 * exp ?t2 \<le> ?c2 * exp ?t1"
-    using f1 f2 mult_le_cancel_iff2[of "-?c2" "exp ?t1" "exp ?t2"] by linarith 
+    using f1 f2 real_mult_le_cancel_iff2[of "-?c2" "exp ?t1" "exp ?t2"] by linarith 
   also have "... < ?c1 * exp ?t1"
     using f1 by auto
   also have"... \<le> ?c1 * exp ?t1"
@@ -129,16 +131,15 @@ proof(subst diff_divide_distrib[symmetric], simp)
     using f0 f1 assms(5) by auto
 qed
 
+abbreviation "open_door s \<equiv> {s. s$1 > 0 \<and> s$2 = 0}"
+
 lemma overdamped_door:
-  assumes "b\<^sup>2 + a * 4 > 0" and "a < 0" and "b \<le> 0" and "0 \<le> t"
+  assumes "b\<^sup>2 + a * 4 > 0" and "a < 0" and "b \<le> 0"
   shows "PRE (\<lambda>s. s$1 = 0)
-  HP (LOOP 
-      (\<lambda>s. {s. s$1 > 0 \<and> s$2 = 0});
-      (x\<acute>=(*\<^sub>V) (A a b) & G on {0..t} UNIV @ 0) 
-     INV (\<lambda>s. 0 \<le> s$1))
+  HP (LOOP open_door; (x\<acute>=((*\<^sub>V) (A a b)) & G) INV (\<lambda>s. 0 \<le> s$1))
   POST (\<lambda>s. 0 \<le> s $ 1)"
   apply(rule fbox_loopI, simp_all add: le_fun_def)
-  apply(subst local_flow.fbox_g_ode_ivl[OF local_flow_mtx_hOsc[OF assms(1)]])
+  apply(subst local_flow.fbox_g_ode_subset[OF local_flow_mtx_hOsc[OF assms(1)]])
   using assms apply(simp_all add: le_fun_def fbox_def)
   unfolding sq_mtx_scaleR_eq UNIV_2 sq_mtx_vec_mult_eq
   by (clarsimp simp: overdamped_door_arith)
@@ -181,9 +182,9 @@ lemma exp_mtx_cnst_acc_simps:
 
 lemma exp_mtx_cnst_acc_vec_mult_eq: "exp (t *\<^sub>R K) *\<^sub>V s = 
   vector [s$3 * t^2/2 + s$2 * t + s$1, s$3 * t + s$2, s$3]"
+  apply(subst exp_mtx_cnst_acc, subst pow2_scaleR_mtx_cnst_acc)
   apply(simp add: sq_mtx_vec_mult_eq vector_def)
-  unfolding UNIV_3 apply (simp add: exp_mtx_cnst_acc_simps fun_eq_iff)
-  using exhaust_3 exp_mtx_cnst_acc_simps(7,8,9) by fastforce
+  unfolding UNIV_3 by (simp add: fun_eq_iff)
 
 lemma local_flow_mtx_cnst_acc:
   "local_flow ((*\<^sub>V) K) UNIV UNIV (\<lambda>t s. ((t *\<^sub>R K)\<^sup>2/\<^sub>R 2 + (t *\<^sub>R K) + 1) *\<^sub>V s)"
@@ -229,7 +230,7 @@ lemma docking_station:
   shows "PRE (\<lambda>s. s$1 = x\<^sub>0 \<and> s$2 = v\<^sub>0)
   HP ((3 ::= (\<lambda>s. -(v\<^sub>0^2/(2*(d-x\<^sub>0))))); x\<acute>=(*\<^sub>V) K & G)
   POST (\<lambda>s. s$2 = 0 \<longleftrightarrow> s$1 = d)"
-  apply(clarsimp simp: le_fun_def local_flow.fbox_g_ode[OF local_flow_sq_mtx_linear[of K]])
+  apply(clarsimp simp: le_fun_def local_flow.fbox_g_ode_subset[OF local_flow_sq_mtx_linear[of K]])
   unfolding exp_mtx_cnst_acc_vec_mult_eq using assms by (simp add: docking_station_arith)
 
 no_notation mtx_cnst_acc ("K")

@@ -1,6 +1,6 @@
 (*  Title:       Matrix norms
     Author:      Jonathan Julián Huerta y Munive, 2020
-    Maintainer:  Jonathan Julián Huerta y Munive <jjhuertaymunive1@sheffield.ac.uk>
+    Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
 section \<open> Matrix norms \<close>
