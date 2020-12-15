@@ -129,6 +129,7 @@ fun optim_instr where
   )" |
   "optim_instr _ (ILoadUbx \<tau> x) (None # \<Sigma>) = Ok (ILoadUbx \<tau> x, Some \<tau> # \<Sigma>)" |
   "optim_instr _ (IStore x) (None # None # \<Sigma>) = Ok (IStore x, \<Sigma>)" |
+  "optim_instr _ (IStore x) (None # Some \<tau> # \<Sigma>) = Ok (IStoreUbx \<tau> x, \<Sigma>)" |
   "optim_instr _ (IStoreUbx \<tau>\<^sub>1 x) (None # Some \<tau>\<^sub>2 # \<Sigma>) = (if \<tau>\<^sub>1 = \<tau>\<^sub>2 then Ok (IStoreUbx \<tau>\<^sub>1 x, \<Sigma>) else Error ())" |
   "optim_instr _ (IOp op) \<Sigma> = gen_pop_push (IOp op) (replicate (\<AA>\<rr>\<ii>\<tt>\<yy> op) None, None) \<Sigma>" |
   "optim_instr _ (IOpInl opinl) \<Sigma> = (
@@ -149,6 +150,15 @@ fun optim_instr where
 
 definition optim where
   "optim \<equiv> rewrite_prog optim_instr"
+
+lemma
+  assumes
+    "optim 0 [IPush d\<^sub>1, IPush d\<^sub>2, IStore y] [] = Ok (xs, ys)"
+    "unbox_ubx1 d\<^sub>1 = Some x"
+    "unbox_ubx1 d\<^sub>2 = None" "unbox_ubx2 d\<^sub>2 = None"
+  shows "xs = [IPushUbx1 x, IPush d\<^sub>2, IStoreUbx Ubx1 y] \<and> ys = []"
+  using assms(1)
+  by (simp add: assms optim_def try_unbox_def)
 
 lemma norm_optim_instr: "optim_instr n x \<Sigma>1 = Ok (x', \<Sigma>2) \<Longrightarrow> norm_instr x' = norm_instr x"
     for x \<Sigma>1 n x' \<Sigma>2
