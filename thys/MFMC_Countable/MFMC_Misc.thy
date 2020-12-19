@@ -37,8 +37,6 @@ by(simp add: Chains_def chain_def)
 lemma chain_dual: "Complete_Partial_Order.chain (\<ge>) = Complete_Partial_Order.chain (\<le>)"
 by(auto simp add: fun_eq_iff chain_def)
 
-subsection \<open>@{typ ereal} legacy theorems\<close>
-
 lemma Cauchy_real_Suc_diff:
   fixes X :: "nat \<Rightarrow> real" and x :: real
   assumes bounded: "\<And>n. \<bar>f (Suc n) - f n\<bar> \<le> (c / x ^ n)"
