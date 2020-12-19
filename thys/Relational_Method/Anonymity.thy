@@ -301,10 +301,18 @@ by (erule rtrancl_induct, simp, blast, rule impI, rule idinfo_msg_1)
 
 proposition parts_agent:
  "\<lbrakk>s\<^sub>0 \<Turnstile> s; n \<notin> bad_agent\<rbrakk> \<Longrightarrow> Agent n \<notin> parts (used s)"
-by (erule rtrancl_induct, subst parts_init, simp add: Range_iff image_def, simp
- add: rel_def, ((erule disjE)?, (erule exE)+, simp add: parts_insert image_iff,
+  apply (erule rtrancl_induct)
+  subgoal
+    apply (subst parts_init)
+    apply (simp add: Range_iff image_def)
+    done
+  subgoal
+    apply (simp add: rel_def)
+    apply ((erule disjE)?, (erule exE)+, simp add: parts_insert image_iff,
  (rule ccontr, (drule parts_dec | drule parts_enc | drule parts_sep |
- drule parts_con), simp+)?)+)
+ drule parts_con), simp+)?)+
+    done
+  done
 
 lemma idinfo_init_1 [rule_format]:
   assumes A: "s\<^sub>0 \<Turnstile> s"
