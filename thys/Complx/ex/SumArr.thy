@@ -280,23 +280,35 @@ lemma local_sum_MAXSUM:
  done
 
 lemma local_sum_MAXSUM':
-  "k < length arr \<Longrightarrow>
-  MAXSUM \<le> local_sum (take k arr) + arr ! k \<Longrightarrow>
-  local_sum (take k arr) \<le> MAXSUM \<Longrightarrow> arr ! k \<le> MAXSUM \<Longrightarrow>
-  local_sum arr = MAXSUM"
-  apply (clarsimp simp: local_sum_def array_nat_sum_def)
-  apply (rule word_unat.Rep_inverse')
-  apply (rule min_absorb1[symmetric])
-  apply (subst (asm) word_le_nat_alt)
-  apply (subst (asm) unat_plus_simple[THEN iffD1])
-   apply (rule word_add_le_mono2[where i=0, simplified])
-   apply (clarsimp simp: MAXSUM_def)
-   apply unat_arith
-  apply (rule le_trans, assumption)
-  apply (subst unat_of_nat_eq)
-   apply (clarsimp simp: MAXSUM_def min.strict_coboundedI1)
-  by (subst id_take_nth_drop[where i=k], simp,
-         clarsimp simp: trans_le_add1)
+  \<open>local_sum arr = MAXSUM\<close>
+  if \<open>k < length arr\<close>
+    \<open>MAXSUM \<le> local_sum (take k arr) + arr ! k\<close>
+    \<open>local_sum (take k arr) \<le> MAXSUM\<close>
+    \<open>arr ! k \<le> MAXSUM\<close>
+proof -
+  define vs u ws where \<open>vs = take k arr\<close> \<open>u = arr ! k\<close> \<open>ws = drop (Suc k) arr\<close>
+  with \<open>k < length arr\<close> have *: \<open>arr = vs @ u # ws\<close>
+    and **: \<open>take k arr = vs\<close> \<open>arr ! k = u\<close>
+    by (simp_all add: id_take_nth_drop)
+  from that show ?thesis
+    apply (simp add: **)
+    apply (simp add: *)
+    apply (simp add: local_sum_def array_nat_sum_def ac_simps)
+    find_theorems \<open>min _ (_ + _)\<close>
+    apply (rule word_unat.Rep_inverse')
+    apply (rule min_absorb1[symmetric])
+    apply (subst (asm) word_le_nat_alt)
+    apply (subst (asm) unat_plus_simple[THEN iffD1])
+     apply (rule word_add_le_mono2[where i=0, simplified])
+     apply (clarsimp simp: MAXSUM_def)
+     apply unat_arith
+    apply simp_all
+    apply (rule le_trans, assumption)
+    apply (rule add_mono)
+     apply simp_all
+    apply (meson min.bounded_iff take_bit_nat_less_eq_self trans_le_add1)
+    done
+qed
 
 lemma word_min_0[simp]:
  "min (x::'a::len word) 0 = 0"
