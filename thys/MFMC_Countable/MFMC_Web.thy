@@ -1440,12 +1440,6 @@ by(simp add: fun_eq_iff)
 lemma support_flow_plus_current: "support_flow (plus_current f g) \<subseteq> support_flow f \<union> support_flow g"
 by(clarsimp simp add: support_flow.simps)
 
-lemma SINK_plus_current: "SINK (plus_current f g) = SINK f \<inter> SINK g"
-by(auto simp add: SINK.simps set_eq_iff d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 add_eq_0_iff_both_eq_0)
-
-abbreviation plus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current" ("_ \<frown>\<index> _" [66, 66] 65)
-where "plus_web \<Gamma> f g \<equiv> plus_current f (g \<upharpoonleft> \<Gamma> / f)"
-
 context
   fixes \<Gamma> :: "('v, 'more) web_scheme" (structure) and f g
   assumes f: "current \<Gamma> f"
@@ -1494,6 +1488,33 @@ proof -
   finally show ?thesis .
 qed
 
+lemma in_TER_plus_current:
+  assumes RF: "x \<notin> RF\<^sup>\<circ> (TER f)"
+  and x: "x \<in> TER\<^bsub>quotient_web \<Gamma> f\<^esub> g" (is "_ \<in> ?TER _")
+  shows "x \<in> TER (plus_current f g)"  (is "_ \<in> TER ?g")
+proof(cases "x \<in> \<E> (TER f) - (B \<Gamma> - A \<Gamma>)")
+  case True
+  with x show ?thesis using currentD_IN[OF g, of x]
+    by(fastforce intro: roofed_greaterI SAT.intros simp add: SINK.simps OUT_plus_current IN_plus_current elim!: SAT.cases)
+next
+  case *: False
+  have "x \<in> SAT \<Gamma> ?g"
+  proof(cases "x \<in> B \<Gamma> - A \<Gamma>")
+    case False
+    with x RF * have "weight \<Gamma> x \<le> d_IN g x"
+      by(auto elim!: SAT.cases split: if_split_asm simp add: essential_BI)
+    also have "\<dots> \<le> d_IN ?g x" unfolding plus_current_def by(intro d_IN_mono) simp
+    finally show ?thesis ..
+  next
+    case True
+    with * x have "weight \<Gamma> x \<le> d_IN ?g x" using currentD_OUT[OF f, of x]
+      by(auto simp add: IN_plus_current RF_in_B SINK.simps roofed_circ_def elim!: SAT.cases split: if_split_asm)
+    thus ?thesis ..
+  qed
+  moreover have "x \<in> SINK ?g" using x by(simp add: SINK.simps OUT_plus_current RF)
+  ultimately show ?thesis by simp
+qed
+
 lemma current_plus_current: "current \<Gamma> (plus_current f g)" (is "current _ ?g")
 proof
   show "d_OUT ?g x \<le> weight \<Gamma> x" for x
@@ -1522,33 +1543,6 @@ proof
     by(auto simp add: OUT_plus_current SINK.simps roofed_circ_def intro: roofed_greaterI)
   show "?g e = 0" if "e \<notin> \<^bold>E" for e using currentD_outside'[OF f, of e] currentD_outside'[OF g, of e] that
     by(cases e) auto
-qed
-
-lemma in_TER_plus_current:
-  assumes RF: "x \<notin> RF\<^sup>\<circ> (TER f)"
-  and x: "x \<in> TER\<^bsub>quotient_web \<Gamma> f\<^esub> g" (is "_ \<in> ?TER _")
-  shows "x \<in> TER (plus_current f g)"  (is "_ \<in> TER ?g")
-proof(cases "x \<in> \<E> (TER f) - (B \<Gamma> - A \<Gamma>)")
-  case True
-  with x show ?thesis using currentD_IN[OF g, of x]
-    by(fastforce intro: roofed_greaterI SAT.intros simp add: SINK.simps OUT_plus_current IN_plus_current elim!: SAT.cases)
-next
-  case *: False
-  have "x \<in> SAT \<Gamma> ?g"
-  proof(cases "x \<in> B \<Gamma> - A \<Gamma>")
-    case False
-    with x RF * have "weight \<Gamma> x \<le> d_IN g x"
-      by(auto elim!: SAT.cases split: if_split_asm simp add: essential_BI)
-    also have "\<dots> \<le> d_IN ?g x" unfolding plus_current_def by(intro d_IN_mono) simp
-    finally show ?thesis ..
-  next
-    case True
-    with * x have "weight \<Gamma> x \<le> d_IN ?g x" using currentD_OUT[OF f, of x]
-      by(auto simp add: IN_plus_current RF_in_B SINK.simps roofed_circ_def elim!: SAT.cases split: if_split_asm)
-    thus ?thesis ..
-  qed
-  moreover have "x \<in> SINK ?g" using x by(simp add: SINK.simps OUT_plus_current RF)
-  ultimately show ?thesis by simp
 qed
 
 context
@@ -1639,263 +1633,6 @@ qed
 end
 
 end
-
-lemma d_OUT_plus_web:
-  fixes \<Gamma> (structure)
-  shows "d_OUT (f \<frown> g) x = d_OUT f x + d_OUT (g \<upharpoonleft> \<Gamma> / f) x" (is "?lhs = ?rhs")
-proof -
-  have "?lhs = d_OUT f x + (\<Sum>\<^sup>+ y. (if x \<in> RF\<^sup>\<circ> (TER f) then 0 else g (x, y) * indicator (- RF (TER f)) y))"
-    unfolding d_OUT_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = ?rhs" by(auto simp add: d_OUT_def intro!: arg_cong2[where f="(+)"] nn_integral_cong)
-  finally show "?thesis" .
-qed
-
-lemma d_IN_plus_web:
-  fixes \<Gamma> (structure)
-  shows "d_IN (f \<frown> g) y = d_IN f y + d_IN (g \<upharpoonleft> \<Gamma> / f) y" (is "?lhs = ?rhs")
-proof -
-  have "?lhs = d_IN f y + (\<Sum>\<^sup>+ x. (if y \<in> RF (TER f) then 0 else g (x, y) * indicator (- RF\<^sup>\<circ> (TER f)) x))"
-    unfolding d_IN_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = ?rhs" by(auto simp add: d_IN_def intro!: arg_cong2[where f="(+)"] nn_integral_cong)
-  finally show ?thesis .
-qed
-
-lemma plus_web_greater: "f e \<le> (f \<frown>\<^bsub>\<Gamma>\<^esub> g) e"
-by(cases e)(auto split: split_indicator)
-
-lemma current_plus_web:
-  fixes \<Gamma> (structure)
-  shows "\<lbrakk> current \<Gamma> f; wave \<Gamma> f; current \<Gamma> g \<rbrakk> \<Longrightarrow> current \<Gamma> (f \<frown> g)"
-by(blast intro: current_plus_current current_restrict_current)
-
-context
-  fixes \<Gamma> :: "('v, 'more) web_scheme" (structure)
-  and f g :: "'v current"
-  assumes f: "current \<Gamma> f"
-  and w: "wave \<Gamma> f"
-  and g: "current \<Gamma> g"
-begin
-
-context
-  fixes x :: "'v"
-  assumes x: "x \<in> \<E> (TER f \<union> TER g)"
-begin
-
-qualified lemma RF_f: "x \<notin> RF\<^sup>\<circ> (TER f)"
-proof
-  assume *: "x \<in> RF\<^sup>\<circ> (TER f)"
-
-  from x obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    and bypass: "\<And>z. \<lbrakk>x \<noteq> y; z \<in> set p\<rbrakk> \<Longrightarrow> z = x \<or> z \<notin> TER f \<union> TER g" by(rule \<E>_E) blast
-  from rtrancl_path_distinct[OF p] obtain p'
-    where p: "path \<Gamma> x p' y" and p': "set p' \<subseteq> set p" and distinct: "distinct (x # p')" .
-
-  from * have x': "x \<in> RF (TER f)" and \<E>: "x \<notin> \<E> (TER f)" by(auto simp add: roofed_circ_def)
-  hence "x \<notin> TER f" using not_essentialD[OF _ p y] p' bypass by blast
-  with roofedD[OF x' p y] obtain z where z: "z \<in> set p'" "z \<in> TER f" by auto
-  with p have "y \<in> set p'" by(auto dest!: rtrancl_path_last intro: last_in_set)
-  with distinct have "x \<noteq> y" by auto
-  with bypass z p' distinct show False by auto
-qed
-
-private lemma RF_g: "x \<notin> RF\<^sup>\<circ> (TER g)"
-proof
-  assume *: "x \<in> RF\<^sup>\<circ> (TER g)"
-
-  from x obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    and bypass: "\<And>z. \<lbrakk>x \<noteq> y; z \<in> set p\<rbrakk> \<Longrightarrow> z = x \<or> z \<notin> TER f \<union> TER g" by(rule \<E>_E) blast
-  from rtrancl_path_distinct[OF p] obtain p'
-    where p: "path \<Gamma> x p' y" and p': "set p' \<subseteq> set p" and distinct: "distinct (x # p')" .
-
-  from * have x': "x \<in> RF (TER g)" and \<E>: "x \<notin> \<E> (TER g)" by(auto simp add: roofed_circ_def)
-  hence "x \<notin> TER g" using not_essentialD[OF _ p y] p' bypass by blast
-  with roofedD[OF x' p y] obtain z where z: "z \<in> set p'" "z \<in> TER g" by auto
-  with p have "y \<in> set p'" by(auto dest!: rtrancl_path_last intro: last_in_set)
-  with distinct have "x \<noteq> y" by auto
-  with bypass z p' distinct show False by auto
-qed
-
-lemma TER_plus_web_aux:
-  assumes SINK: "x \<in> SINK (g \<upharpoonleft> \<Gamma> / f)" (is "_ \<in> SINK ?g")
-  shows "x \<in> TER (f \<frown> g)"
-proof
-  from x obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    and bypass: "\<And>z. \<lbrakk>x \<noteq> y; z \<in> set p\<rbrakk> \<Longrightarrow> z = x \<or> z \<notin> TER f \<union> TER g" by(rule \<E>_E) blast
-  from rtrancl_path_distinct[OF p] obtain p'
-    where p: "path \<Gamma> x p' y" and p': "set p' \<subseteq> set p" and distinct: "distinct (x # p')" .
-
-  from RF_f have "x \<in> SINK f"
-    by(auto simp add: roofed_circ_def SINK.simps dest: waveD_OUT[OF w])
-  thus "x \<in> SINK (f \<frown> g)" using SINK
-    by(simp add: SINK.simps d_OUT_plus_web)
-  show "x \<in> SAT \<Gamma> (f \<frown> g)"
-  proof(cases "x \<in> TER f")
-    case True
-    hence "x \<in> SAT \<Gamma> f" by simp
-    moreover have "\<dots> \<subseteq> SAT \<Gamma> (f \<frown> g)" by(rule SAT_mono plus_web_greater)+
-    ultimately show ?thesis by blast
-  next
-    case False
-    with x have "x \<in> TER g" by auto
-    from False RF_f have "x \<notin> RF (TER f)" by(auto simp add: roofed_circ_def)
-    moreover { fix z
-      assume z: "z \<in> RF\<^sup>\<circ> (TER f)"
-      have "(z, x) \<notin> \<^bold>E"
-      proof
-        assume "(z, x) \<in> \<^bold>E"
-        hence path': "path \<Gamma> z (x # p') y" using p by(simp add: rtrancl_path.step)
-        from z have "z \<in> RF (TER f)" by(simp add: roofed_circ_def)
-        from roofedD[OF this path' y] False
-        consider (path) z' where  "z' \<in> set p'" "z' \<in> TER f" | (TER) "z \<in> TER f" by auto
-        then show False
-        proof cases
-          { case (path z')
-            with p distinct have "x \<noteq> y"
-              by(auto 4 3 intro: last_in_set elim: rtrancl_path.cases dest: rtrancl_path_last[symmetric])
-            from bypass[OF this, of z'] path False p' show False by auto }
-          note that = this
-          case TER
-          with z have "\<not> essential \<Gamma> (B \<Gamma>) (TER f) z" by(simp add: roofed_circ_def)
-          from not_essentialD[OF this path' y] False obtain z' where "z' \<in> set p'" "z' \<in> TER f" by auto
-          thus False by(rule that)
-        qed
-      qed }
-    ultimately have "d_IN ?g x = d_IN g x" unfolding d_IN_def
-      by(intro nn_integral_cong)(clarsimp split: split_indicator simp add: currentD_outside[OF g])
-    hence "d_IN (f \<frown> g) x \<ge> d_IN g x"
-      by(simp add: d_IN_plus_web)
-    with \<open>x \<in> TER g\<close> show ?thesis by(auto elim!: SAT.cases intro: SAT.intros)
-  qed
-qed
-
-qualified lemma SINK_TER_in'':
-  assumes "\<And>x. x \<notin> RF (TER g) \<Longrightarrow> d_OUT g x = 0"
-  shows "x \<in> SINK g"
-using RF_g by(auto simp add: roofed_circ_def SINK.simps assms)
-
-end
-
-lemma wave_plus: "wave (quotient_web \<Gamma> f) (g \<upharpoonleft> \<Gamma> / f) \<Longrightarrow> wave \<Gamma> (f \<frown> g)"
-using f w by(rule wave_plus_current)(rule current_restrict_current[OF w g])
-
-lemma TER_plus_web'':
-  assumes "\<And>x. x \<notin> RF (TER g) \<Longrightarrow> d_OUT g x = 0"
-  shows "\<E> (TER f \<union> TER g) \<subseteq> TER (f \<frown> g)"
-proof
-  fix x
-  assume *: "x \<in> \<E> (TER f \<union> TER g)"
-  moreover have "x \<in> SINK (g \<upharpoonleft> \<Gamma> / f)"
-    by(rule in_SINK_restrict_current)(rule MFMC_Web.SINK_TER_in''[OF f w g * assms])
-  ultimately show "x \<in> TER (f \<frown> g)" by(rule TER_plus_web_aux)
-qed
-
-lemma TER_plus_web': "wave \<Gamma> g \<Longrightarrow> \<E> (TER f \<union> TER g) \<subseteq> TER (f \<frown> g)"
-by(rule TER_plus_web'')(rule waveD_OUT)
-
-lemma wave_plus': "wave \<Gamma> g \<Longrightarrow> wave \<Gamma> (f \<frown> g)"
-by(rule wave_plus)(rule wave_restrict_current[OF f w g])
-
-end
-
-lemma RF_TER_plus_web:
-  fixes \<Gamma> (structure)
-  assumes f: "current \<Gamma> f"
-  and w: "wave \<Gamma> f"
-  and g: "current \<Gamma> g"
-  and w': "wave \<Gamma> g"
-  shows "RF (TER (f \<frown> g)) = RF (TER f \<union> TER g)"
-proof
-  have "RF (\<E> (TER f \<union> TER g)) \<subseteq> RF (TER (f \<frown> g))"
-    by(rule roofed_mono)(rule TER_plus_web'[OF f w g w'])
-  also have "RF (\<E> (TER f \<union> TER g)) = RF (TER f \<union> TER g)" by(rule RF_essential)
-  finally show "\<dots> \<subseteq> RF (TER (f \<frown> g))" .
-next
-  have fg: "current \<Gamma> (f \<frown> g)" using f w g by(rule current_plus_web)
-  show "RF (TER (f \<frown> g)) \<subseteq> RF (TER f \<union> TER g)"
-  proof(intro subsetI roofedI)
-    fix x p y
-    assume RF: "x \<in> RF (TER (f \<frown> g))" and p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    from roofedD[OF RF p y] obtain z where z: "z \<in> set (x # p)" and TER: "z \<in> TER (f \<frown> g)" by auto
-    from TER have SINK: "z \<in> SINK f"
-      by(auto simp add: SINK.simps d_OUT_plus_web add_eq_0_iff_both_eq_0)
-    from TER have "z \<in> SAT \<Gamma> (f \<frown> g)" by simp
-    hence SAT: "z \<in> SAT \<Gamma> f \<union> SAT \<Gamma> g"
-      by(cases "z \<in> RF (TER f)")(auto simp add: currentD_SAT[OF f] currentD_SAT[OF g] currentD_SAT[OF fg] d_IN_plus_web d_IN_restrict_current_outside restrict_current_IN_not_RF[OF g] wave_not_RF_IN_zero[OF f w])
-
-    show "(\<exists>z\<in>set p. z \<in> TER f \<union> TER g) \<or> x \<in> TER f \<union> TER g"
-    proof(cases "z \<in> RF (TER g)")
-      case False
-      hence "z \<in> SINK g" by(simp add: SINK.simps waveD_OUT[OF w'])
-      with SINK SAT have "z \<in> TER f \<union> TER g" by auto
-      thus ?thesis using z by auto
-    next
-      case True
-      from split_list[OF z] obtain ys zs where split: "x # p = ys @ z # zs" by blast
-      with p have "path \<Gamma> z zs y" by(auto elim: rtrancl_path_appendE simp add: Cons_eq_append_conv)
-      from roofedD[OF True this y] split show ?thesis by(auto simp add: Cons_eq_append_conv)
-    qed
-  qed
-qed
-
-lemma RF_TER_Sup:
-  fixes \<Gamma> (structure)
-  assumes f: "\<And>f. f \<in> Y \<Longrightarrow> current \<Gamma> f"
-  and w: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f"
-  and Y: "Complete_Partial_Order.chain (\<le>) Y" "Y \<noteq> {}" "countable (support_flow (Sup Y))"
-  shows "RF (TER (Sup Y)) = RF (\<Union>f\<in>Y. TER f)"
-proof(rule set_eqI iffI)+
-  fix x
-  assume x: "x \<in> RF (TER (Sup Y))"
-  have "x \<in> RF (RF (\<Union>f\<in>Y. TER f))"
-  proof
-    fix p y
-    assume p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    from roofedD[OF x p y] obtain z where z: "z \<in> set (x # p)" and TER: "z \<in> TER (Sup Y)" by auto
-    from TER have SINK: "z \<in> SINK f" if "f \<in> Y" for f using that by(auto simp add: SINK_Sup[OF Y])
-
-    from Y(2) obtain f where y: "f \<in> Y" by blast
-
-    show "(\<exists>z\<in>set p. z \<in> RF (\<Union>f\<in>Y. TER f)) \<or> x \<in> RF (\<Union>f\<in>Y. TER f)"
-    proof(cases "\<exists>f\<in>Y. z \<in> RF (TER f)")
-      case True
-      then obtain f where fY: "f \<in> Y" and zf: "z \<in> RF (TER f)" by blast
-      from zf have "z \<in> RF (\<Union>f\<in>Y. TER f)" by(rule in_roofed_mono)(auto intro: fY)
-      with z show ?thesis by auto
-    next
-      case False
-      hence *: "d_IN f z = 0" if "f \<in> Y" for f using that by(auto intro: wave_not_RF_IN_zero[OF f w])
-      hence "d_IN (Sup Y) z = 0" using Y(2) by(simp add: d_IN_Sup[OF Y])
-      with TER have "z \<in> SAT \<Gamma> f" using *[OF y]
-        by(simp add: SAT.simps)
-      with SINK[OF y] have "z \<in> TER f" by simp
-      with z y show ?thesis by(auto intro: roofed_greaterI)
-    qed
-  qed
-  then show "x \<in> RF (\<Union>f\<in>Y. TER f)" unfolding roofed_idem .
-next
-  fix x
-  assume x: "x \<in> RF (\<Union>f\<in>Y. TER f)"
-  have "x \<in> RF (RF (TER (\<Squnion>Y)))"
-  proof(rule roofedI)
-    fix p y
-    assume p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
-    from roofedD[OF x p y] obtain z f where *: "z \<in> set (x # p)"
-      and **: "f \<in> Y" and TER: "z \<in> TER f" by auto
-    have "z \<in> RF (TER (Sup Y))"
-    proof(rule ccontr)
-      assume z: "z \<notin> RF (TER (Sup Y))"
-      have "wave \<Gamma> (Sup Y)" using Y(1-2) w Y(3) by(rule wave_lub)
-      hence "d_OUT (Sup Y) z = 0" using z by(rule waveD_OUT)
-      hence "z \<in> SINK (Sup Y)" by(simp add: SINK.simps)
-      moreover have "z \<in> SAT \<Gamma> (Sup Y)" using TER SAT_Sup_upper[OF **, of \<Gamma>] by blast
-      ultimately have "z \<in> TER (Sup Y)" by simp
-      hence "z \<in> RF (TER (Sup Y))" by(rule roofed_greaterI)
-      with z show False by contradiction
-    qed
-    thus "(\<exists>z\<in>set p. z \<in> RF (TER (Sup Y))) \<or> x \<in> RF (TER (Sup Y))" using * by auto
-  qed
-  then show "x \<in> RF (TER (\<Squnion>Y))" unfolding roofed_idem .
-qed
 
 lemma loose_quotient_web:
   fixes \<Gamma> :: "('v, 'more) web_scheme" (structure)
