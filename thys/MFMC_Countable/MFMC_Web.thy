@@ -1845,8 +1845,7 @@ end
 locale countable_web = web \<Gamma>
   for \<Gamma> :: "('v, 'more) web_scheme" (structure)
   +
-  assumes edge_antiparallel: "edge \<Gamma> x y \<Longrightarrow> \<not> edge \<Gamma> y x"
-  and countable [simp]: "countable \<^bold>E"
+  assumes countable [simp]: "countable \<^bold>E"
 begin
 
 lemma countable_V [simp]: "countable \<^bold>V"
@@ -1859,7 +1858,7 @@ proof -
   proof
     have "\<^bold>E\<^bsub>?\<Gamma>\<^esub> \<subseteq> \<^bold>E" by auto
     then show "countable \<^bold>E\<^bsub>?\<Gamma>\<^esub>" by(rule countable_subset) simp
-  qed(simp add: edge_antiparallel)
+  qed
 qed
 
 end
@@ -1926,7 +1925,7 @@ lemma B_out: "x \<in> B \<Gamma> \<Longrightarrow> \<not> edge \<Gamma> x y"
 using disjoint by(auto dest: bipartite_E)
 
 sublocale countable_web using disjoint
-by(unfold_locales)(auto simp add: A_in B_out A_vertex no_loop weight_outside  edge_antiparallel)
+by(unfold_locales)(auto simp add: A_in B_out A_vertex no_loop weight_outside)
 
 lemma currentD_OUT':
   assumes f: "current \<Gamma> f"

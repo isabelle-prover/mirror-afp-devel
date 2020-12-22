@@ -1279,7 +1279,6 @@ lemma countable_web_web_of_network:
   and undead: "\<And>x y. edge \<Delta> x y \<Longrightarrow> (\<exists>z. edge \<Delta> y z) \<or> (\<exists>z. edge \<Delta> z x)"
   and source_sink: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
-  and edge_antiparallel: "\<And>x y. edge \<Delta> x y \<Longrightarrow> \<not> edge \<Delta> y x"
   shows "countable_web (web_of_network \<Delta>)" (is "countable_web ?\<Gamma>")
 proof
   show "\<not> edge ?\<Gamma> y x" if "x \<in> A ?\<Gamma>" for x y using that by(clarsimp simp add: source_in)
@@ -1290,7 +1289,6 @@ proof
   show "weight ?\<Gamma> x = 0" if "x \<notin> \<^bold>V\<^bsub>?\<Gamma>\<^esub>" for x using that undead
     by(cases x)(auto intro!: capacity_outside)
   show "weight ?\<Gamma> x \<noteq> \<top>" for x using capacity_finite[of x] by(cases x) simp
-  show "\<not> edge ?\<Gamma> y x" if "edge ?\<Gamma> x y" for x y using that by(auto simp add: edge_antiparallel)
   have "\<^bold>E\<^bsub>?\<Gamma>\<^esub> \<subseteq> \<^bold>E \<times> \<^bold>E" by auto
   thus "countable \<^bold>E\<^bsub>?\<Gamma>\<^esub>" by(rule countable_subset)(simp)
 qed
@@ -1303,7 +1301,6 @@ lemma max_flow_min_cut':
   and undead: "\<And>x y. edge \<Delta> x y \<Longrightarrow> (\<exists>z. edge \<Delta> y z) \<or> (\<exists>z. edge \<Delta> z x)"
   and source_sink: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
-  and edge_antiparallel: "\<And>x y. edge \<Delta> x y \<Longrightarrow> \<not> edge \<Delta> y x"
   and capacity_pos: "\<And>e. e \<in> \<^bold>E \<Longrightarrow> capacity \<Delta> e > 0"
   shows "\<exists>f S. flow \<Delta> f \<and> cut \<Delta> S \<and> orthogonal \<Delta> f S"
 proof -

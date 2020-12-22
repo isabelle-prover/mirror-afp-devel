@@ -13,16 +13,6 @@ subsection \<open>More about waves\<close>
 lemma SINK_plus_current: "SINK (plus_current f g) = SINK f \<inter> SINK g"
 by(auto simp add: SINK.simps set_eq_iff d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 add_eq_0_iff_both_eq_0)
 
-context
-  fixes \<Gamma> :: "('v, 'more) web_scheme" (structure) and f g
-  assumes f: "current \<Gamma> f"
-  and w: "wave \<Gamma> f"
-  and g: "current (quotient_web \<Gamma> f) g"
-begin
-
-
-end
-
 abbreviation plus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current" ("_ \<frown>\<index> _" [66, 66] 65)
 where "plus_web \<Gamma> f g \<equiv> plus_current f (g \<upharpoonleft> \<Gamma> / f)"
 
@@ -3422,7 +3412,6 @@ qualified lemma max_flow_min_cut':
   and undead: "\<And>x y. edge \<Delta> x y \<Longrightarrow> (\<exists>z. edge \<Delta> y z) \<or> (\<exists>z. edge \<Delta> z x)"
   and source_sink: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
-  and edge_antiparallel: "\<And>x y. edge \<Delta> x y \<Longrightarrow> \<not> edge \<Delta> y x"
   and capacity_pos: "\<And>e. e \<in> \<^bold>E \<Longrightarrow> capacity \<Delta> e > 0"
   shows "\<exists>f S. flow \<Delta> f \<and> cut \<Delta> S \<and> orthogonal \<Delta> f S"
   by(rule max_flow_min_cut')(rule countable_web.ex_orthogonal_current[OF countable_web_web_of_network], fact+)

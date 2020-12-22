@@ -555,7 +555,6 @@ lemma bounded_countable_web_web_of_network:
   and undead: "\<And>x y. edge \<Delta> x y \<Longrightarrow> (\<exists>z. edge \<Delta> y z) \<or> (\<exists>z. edge \<Delta> z x)"
   and source_sink: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
-  and edge_antiparallel: "\<And>x y. edge \<Delta> x y \<Longrightarrow> \<not> edge \<Delta> y x"
   shows "bounded_countable_web (web_of_network \<Delta>)" (is "bounded_countable_web ?\<Gamma>")
 proof -
   interpret web: countable_web ?\<Gamma> by(rule countable_web_web_of_network) fact+
@@ -585,7 +584,6 @@ qualified lemma max_flow_min_cut'_bounded:
   and undead: "\<And>x y. edge \<Delta> x y \<Longrightarrow> (\<exists>z. edge \<Delta> y z) \<or> (\<exists>z. edge \<Delta> z x)"
   and source_sink: "\<not> edge \<Delta> (source \<Delta>) (sink \<Delta>)"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
-  and edge_antiparallel: "\<And>x y. edge \<Delta> x y \<Longrightarrow> \<not> edge \<Delta> y x"
   and capacity_pos: "\<And>e. e \<in> \<^bold>E \<Longrightarrow> capacity \<Delta> e > 0"
   shows "\<exists>f S. flow \<Delta> f \<and> cut \<Delta> S \<and> orthogonal \<Delta> f S"
   by(rule max_flow_min_cut')(rule bounded_countable_web.ex_orthogonal_current[OF bounded_countable_web_web_of_network], fact+)
