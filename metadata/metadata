@@ -9964,3 +9964,21 @@ abstract =
   We verify the correctness of Prim's, Kruskal's and
   Borůvka's minimum spanning tree algorithms based on algebras for
   aggregation and minimisation.
+
+[Topological_Semantics]
+title = Topological semantics for paraconsistent and paracomplete logics
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>
+topic = Logic/General logic
+date = 2020-12-17
+notify = davfuenmayor@gmail.com
+abstract = 
+  We introduce a generalized topological semantics for paraconsistent
+  and paracomplete logics by drawing upon early works on topological
+  Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &
+  Tarski, etc.). In particular, this work exemplarily illustrates the
+  shallow semantical embeddings approach (<a
+  href="http://dx.doi.org/10.1007/s11787-012-0052-y">SSE</a>)
+  employing the proof assistant Isabelle/HOL. By means of the SSE
+  technique we can effectively harness theorem provers, model finders
+  and 'hammers' for reasoning with quantified non-classical
+  logics.

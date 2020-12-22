@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>17 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Topological semantics for paraconsistent and paracomplete logics</title>
+              <link>https://www.isa-afp.org/entries/Topological_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/Topological_Semantics.html</guid>
+       <dc:creator> David Fuenmayor       </dc:creator>
+       <pubDate>17 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We introduce a generalized topological semantics for paraconsistent
+and paracomplete logics by drawing upon early works on topological
+Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &amp;
+Tarski, etc.). In particular, this work exemplarily illustrates the
+shallow semantical embeddings approach (&lt;a
+href=&#34;http://dx.doi.org/10.1007/s11787-012-0052-y&#34;&gt;SSE&lt;/a&gt;)
+employing the proof assistant Isabelle/HOL. By means of the SSE
+technique we can effectively harness theorem provers, model finders
+and &#39;hammers&#39; for reasoning with quantified non-classical
+logics.</description>
+    </item>
     <item>
        <title>Relational Minimum Spanning Tree Algorithms</title>
               <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
@@ -573,21 +591,6 @@ including subterm coefficient functions. For these orders we formalize
 several properties such as strong normalization, the subterm property,
 closure properties under substitutions and contexts, as well as ground
 totality.</description>
-    </item>
-    <item>
-       <title>Irrationality Criteria for Series by Erdős and Straus</title>
-              <link>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
-       <guid>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>12 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalise certain irrationality criteria for infinite series of the form:
-\[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
-where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
-with $a_n &gt;1$ for all large n. The results are due to P. Erdős and E. G. Straus
-&lt;a href=&#34;https://projecteuclid.org/euclid.pjm/1102911140&#34;&gt;[1]&lt;/a&gt;.
-In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
-The latter is an application of Theorem 2.1 involving the prime numbers.</description>
     </item>
   </channel>
 </rss>
