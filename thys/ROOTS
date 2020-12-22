@@ -163,8 +163,8 @@ Fermat3_4
 FileRefinement
 FinFun
 Finger-Trees
-Finite_Automata_HF
 Finite-Map-Extras
+Finite_Automata_HF
 First_Order_Terms
 First_Welfare_Theorem
 Fishburn_Impossibility
@@ -527,6 +527,7 @@ Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
 Timed_Automata
+Topological_Semantics
 Topology
 TortoiseHare
 Transcendence_Series_Hancl_Rucki
