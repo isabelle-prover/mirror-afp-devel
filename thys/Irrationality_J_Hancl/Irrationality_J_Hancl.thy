@@ -279,25 +279,26 @@ lemma show8:
     and assu2: "\<forall>n \<ge> s. ( A/ (of_int (a n)) powr(1/of_int (2^n)))> prodinf (\<lambda>j. d(n +j))"
   shows "\<forall>n\<ge>s. prodinf (\<lambda>j. d(j+n)) < A/(Max ((\<lambda>(j::nat). 
                   (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n}))"
-proof(rule,rule)
+proof (intro strip)
   fix n assume "s \<le> n"
   define sp where "sp = (\<lambda>n. prodinf (\<lambda>j. d(j+n)))"
   define ff where "ff = (\<lambda>(j::nat). (real_of_int (a j)) powr(1 /of_int (2^j)))"
   have "sp i \<ge> sp n" when "i\<le>n" for i
   proof -
     have "(\<Prod>j. d (j + i)) = (\<Prod>ia. d (ia + (n - i) + i)) * (\<Prod>ia<n - i. d (ia + i))"
-      apply (rule prodinf_split_initial_segment) 
-      subgoal using \<open>convergent_prod d\<close> convergent_prod_iff_shift[of d i] by simp
-      subgoal for j using d[rule_format,of "j+i"] by auto
-      done
+    proof (rule prodinf_split_initial_segment) 
+      show "convergent_prod (\<lambda>j. d (j + i))"
+        using \<open>convergent_prod d\<close> convergent_prod_iff_shift[of d i] by simp
+      show "\<And>j. j < n - i \<Longrightarrow> d (j + i) \<noteq> 0"
+        by (metis d not_one_less_zero)
+    qed
     then have "sp i = sp n * (\<Prod>j<n - i. d (i + j))"
       unfolding sp_def using \<open>n\<ge>i\<close> by (auto simp:algebra_simps)
     moreover have "sp i>1" "sp n>1" 
       unfolding sp_def using convergent_prod_iff_shift \<open>convergent_prod d\<close> d 
       by (auto intro!:less_1_prodinf)
-    moreover have "(\<Prod>j<n - i. d (i + j)) \<ge>1" 
-      apply (rule prod_ge_1)
-      using d less_imp_le by auto
+    moreover have "(\<Prod>j<n - i. d (i + j)) \<ge> 1" 
+      using d less_imp_le by (auto intro: prod_ge_1)
     ultimately show ?thesis by auto
   qed
   moreover have "\<forall>j\<ge>s. A / ff j > sp j" 
@@ -341,11 +342,10 @@ proof-
       also have "... = max (Max (ff ` {s..n})) (ff (Suc n))"
         using Suc.prems assms(5) max_def sup_assoc that by auto
       also have "... \<le> max (Max (ff ` {s..n})) (d (n+1) * Max (ff ` {s..n}))"
-        apply (rule max.mono)
-        using ff_asm[of n] \<open> m \<le> Suc n\<close> that \<open>s\<le>m\<close> by auto
+        using \<open>m \<le> n\<close> ff_asm by fastforce
       also have "... \<le> Max (ff ` {s..n}) * max 1 (d (n+1))"
       proof -
-        have "Max (ff ` {s..n}) \<ge>0" 
+        have "Max (ff ` {s..n}) \<ge> 0" 
           by (metis (mono_tags, hide_lams) Max_in \<open>\<And>j. 0 < ff j\<close> \<open>m \<le> n\<close> assms(5) 
               atLeastAtMost_iff empty_iff finite_atLeastAtMost finite_imageI imageE 
               image_is_empty less_eq_real_def)
@@ -385,12 +385,13 @@ proof (rule ccontr)
     by fastforce
   define B where "B=prodinf (\<lambda>j. d(t+1+j))"
   have "B>0" unfolding B_def 
-    apply (rule less_0_prodinf)
-    subgoal using convergent_prod_iff_shift[of d "t+1"] \<open>convergent_prod d\<close> 
-      by (auto simp:algebra_simps)
-    subgoal using d le_less_trans zero_le_one by blast
-    done
-
+  proof (rule less_0_prodinf)
+    show "convergent_prod (\<lambda>j. d (t + 1 + j))"
+      using convergent_prod_iff_shift[of d "t+1"] \<open>convergent_prod d\<close> 
+      by (auto simp: algebra_simps)
+    show "\<And>i. 0 < d (t + 1 + i)"
+      using d le_less_trans zero_le_one by blast
+  qed
   have "A \<le> B * Max ( ff ` {s..t})"
   proof (rule tendsto_le[of sequentially "\<lambda>n. (\<Prod>j=(t+1)..(n+1). d j) * Max ( ff ` {s..t})" _ 
         "\<lambda>n. ff (n+1)"])
@@ -398,9 +399,10 @@ proof (rule ccontr)
       using assu1[folded ff_def] LIMSEQ_ignore_initial_segment by blast
     have "(\<lambda>n. prod d {t + 1..n + 1}) \<longlonglongrightarrow> B"
     proof -
-      have "(\<lambda>n. \<Prod>i\<le>n. d (t + 1 + i)) \<longlonglongrightarrow> B"
-        apply (rule convergent_prod_LIMSEQ[of "(\<lambda>j. d(t+1+j))",folded B_def])
+      have "convergent_prod (\<lambda>j. d (t + 1 + j))"
         using \<open>convergent_prod d\<close> convergent_prod_iff_shift[of d "t+1"] by (simp add:algebra_simps)
+      then have "(\<lambda>n. \<Prod>i\<le>n. d (t + 1 + i)) \<longlonglongrightarrow> B"
+        using B_def convergent_prod_LIMSEQ by blast
       then have "(\<lambda>n. \<Prod>i\<in>{0..n}. d (i+(t + 1))) \<longlonglongrightarrow> B"
         using atLeast0AtMost by (auto simp:algebra_simps)
       then have "(\<lambda>n. prod d {(t + 1)..n + (t + 1)}) \<longlonglongrightarrow> B" 
@@ -465,20 +467,13 @@ proof (rule,rule)
       apply (subst prod.union_disjoint[symmetric])
       by auto
     moreover have "(\<Prod>j=1..s-1. f j) > 0 "
-      apply (rule linordered_semidom_class.prod_pos)
-      using a unfolding f_def by auto
+      by (metis a f_def of_int_0_less_iff prod_pos)
     then have "(\<Prod>j=1..s-1. f j) \<noteq> 0" by argo
     ultimately show ?thesis unfolding f_def by auto 
   qed
-  then have " (((d (n+1))powr(2^(n+1) )) * (\<Prod>j=1..n. of_int( a j)) * ( 1/ (\<Prod>j=1..s-1. (of_int( a j) ))))
-                =(((d (n+1))powr(2^(n+1) )) * (\<Prod>j=s..n. of_int( a j)))" 
-  proof -
-    define f where "f= (\<lambda>j. real_of_int( a j))"
-    define c where "c = (d (n+1))powr(2^(n+1))"
-    show ?thesis using prod
-      apply (fold f_def c_def)
-      by (metis mult.assoc) 
-  qed
+  then have "d (n+1) powr 2 ^ (n+1) * (\<Prod>j = 1..n. of_int (a j)) * (1 / (\<Prod>j = 1..s - 1. of_int (a j))) =
+             d (n+1) powr 2 ^ (n+1) * (\<Prod>j = s..n. of_int (a j))" 
+     by (metis mult.assoc prod)
   also have
     "... \<le> ((d (n+1))powr(2^(n+1) ) * (\<Prod>i=s..n. (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } ))   powr(2^i)) )"
   proof (rule mult_left_mono)
@@ -497,16 +492,11 @@ proof (rule,rule)
       proof (rule powr_mono2)
         show "real_of_int (a i) powr (1 / real_of_int (2 ^ i))
                   \<le> Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n})" 
-          apply (rule Max_ge)
-           apply auto
-          using i by blast
+          using i by force
       qed simp_all
       finally have "real_of_int (a i) \<le> Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n}) powr 2 ^ i" .
       then show "0 \<le> real_of_int (a i) \<and>
-         real_of_int (a i)
-         \<le> Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) `
-                 {s..n}) powr
-            2 ^ i"
+                 real_of_int (a i) \<le> (MAX j\<in>{s..n}. of_int (a j) powr (1 / of_int (2 ^ j))) powr 2 ^ i"
         using a i
         by (metis \<open>real_of_int (a i) = (real_of_int (a i) powr (1 / real_of_int (2 ^ i))) powr 2 ^ i\<close> 
             powr_ge_pzero)
@@ -518,19 +508,15 @@ proof (rule,rule)
     have  "((d (n+1))powr(2^(n+1) ))\<ge>1  "
       by (metis Transcendental.log_one  d le_powr_iff zero_le_numeral zero_le_power zero_less_one)
     moreover have "(\<Prod>i=s..n. (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } ) )   powr(2^i))     = (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /of_int (2^j)) )) ` {s..n  } )) powr (\<Sum>i=s..n. 2^i )  "
-    proof -
-      define ff where "ff = Max (( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } )"
-      show ?thesis apply (fold ff_def)
-        using \<open>s\<le>n\<close>  powrfinitesum by auto
-    qed 
+      using \<open>s\<le>n\<close>  powrfinitesum by auto
     ultimately show ?thesis by auto
   qed
   also have "... \<le>   ((d (n+1))powr(2^(n+1) )) * 
                 (Max(( \<lambda> (j::nat).( of_int( a j) powr(1 /of_int (2^j)) )) ` {s..n  })) powr(2^(n+1))   "
 
   proof -
-    define ff where "ff = Max (( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } )"
-    have " sum ((^) 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close>  by auto
+    define ff where "ff \<equiv> (MAX j\<in>{s..n}. real_of_int (a j) powr (1 / real_of_int (2 ^ j)))"
+    have " sum ((^) 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close> by auto
     moreover have "1 \<le> ff" 
     proof -
       define S where "S=(\<lambda>(j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  }"
@@ -538,13 +524,13 @@ proof (rule,rule)
       moreover have "S\<noteq>{}" unfolding S_def using \<open>s\<le>n\<close>  by auto
       moreover have "\<exists>x\<in>S. x\<ge>1"
       proof-
-        have " ( of_int( a s) powr(1 /real_of_int (2^s)) ) \<ge> 1  "  
-          apply (rule ge_one_powr_ge_zero)
-           apply auto
-          by (simp add: a int_one_le_iff_zero_less)
-        moreover have " ( of_int( a s) powr(1 /real_of_int (2^s)) ) \<in> S" 
+        have "a s powr (1 / (2^s)) \<ge> 1"  
+        proof (rule ge_one_powr_ge_zero)
+          show "1 \<le> real_of_int (a s)"
+            by (simp add: a int_one_le_iff_zero_less)
+        qed auto
+        moreover have "of_int( a s) powr(1 /real_of_int (2^s)) \<in> S" 
           unfolding S_def
-          apply (rule rev_image_eqI[where x=s])
           using \<open>s\<le>n\<close> by auto
         ultimately show ?thesis by auto
       qed
@@ -553,10 +539,7 @@ proof (rule,rule)
     qed
     moreover have "0 \<le> (d (n + 1)) powr 2 ^ (n + 1)" by auto
     ultimately show ?thesis
-      apply(fold ff_def)
-      apply (rule mult_left_mono)
-       apply (rule powr_mono)
-      by auto
+      by (simp add: mult_left_mono powr_mono ff_def)
   qed
 
   also have "... =  ((d (n+1)) * 
@@ -568,13 +551,12 @@ proof (rule,rule)
     proof -
       have "(a s) powr (1 /  (2 ^ s)) \<ge> 0" by auto
       moreover have "(a s) powr (1 /  (2 ^ s)) \<in> ss" unfolding ss_def 
-        apply (rule_tac x=s in rev_image_eqI)
         using \<open>s\<le>n\<close> by auto
       moreover have "finite ss" "ss \<noteq> {}" unfolding ss_def using \<open>s\<le>n\<close> by auto
       ultimately show ?thesis using Max_ge_iff[of ss 0] by blast
     qed
     ultimately show ?thesis 
-      apply (fold ss_def)
+      unfolding ss_def
       using powr_mult by auto
   qed
   also have "... \<le> (real_of_int (a (n + 1)) powr (1 / real_of_int (2 ^ (n + 1)))) powr 2 ^ (n + 1)"
@@ -588,7 +570,6 @@ proof (rule,rule)
       proof -
         have "(a s) powr (1 /  (2 ^ s)) \<ge> 0" by auto
         moreover have "(a s) powr (1 /  (2 ^ s)) \<in> ss" unfolding ss_def 
-          apply (rule_tac x=s in rev_image_eqI)
           using \<open>s\<le>n\<close> by auto
         moreover have "finite ss" "ss \<noteq> {}" unfolding ss_def using \<open>s\<le>n\<close> by auto
         ultimately show ?thesis using Max_ge_iff[of ss 0] by blast
@@ -605,8 +586,7 @@ proof (rule,rule)
   finally show "\<exists>n\<ge>m. d (n + 1) powr 2 ^ (n + 1) * (\<Prod>j = 1..n. real_of_int (a j)) *
                 (1 / (\<Prod>j = 1..s - 1. real_of_int (a j)))
                 \<le> real_of_int (a (n + 1))" using \<open>n\<ge>m\<close> \<open>m\<ge>s\<close> 
-    apply (rule_tac x=n in exI)
-    by auto
+    by force
 qed
 
 lemma lasttoshow:
@@ -791,8 +771,7 @@ proof-
     using a b by (force simp add:divide_simps abs_of_pos intro: Lim_transform_eventually)
   from summable_ratio_test_tendsto[OF _ _ this] a b 
   show "summable c" unfolding c_def
-    apply auto 
-    by (metis less_irrefl)
+    by (metis c_def c_pos less_irrefl zero_less_one)
   have "\<forall>\<^sub>F n in sequentially. (\<Sum>j. c (n + j)) \<le> 2 * c n"
   proof -
     obtain N where N_ratio:"\<forall>n\<ge>N. c (n + 1) / c n < 1 / 2" 
@@ -941,21 +920,21 @@ proof-
       qed (simp add:c_def)
 
       have "(\<Sum>j. ln (d (n + j))) \<le> (\<Sum>j. (2 / 3) ^ (n + j + 1))"
-        apply (rule suminf_le)
-        subgoal unfolding d_def 
-          apply (intro allI ln_add_one_self_le_self2 )
-          apply (rule order.strict_trans[of _ 0])
-          by auto
-        subgoal using summable_ignore_initial_segment[OF d_sum,of n] 
+      proof (rule suminf_le)
+        show "\<And>j. ln (d (n + j)) \<le> (2 / 3) ^ (n + j + 1)"
+          unfolding d_def
+          by (metis divide_pos_pos less_eq_real_def ln_add_one_self_le_self zero_less_numeral zero_less_power)
+        show "summable (\<lambda>j. ln (d (n + j)))"
+          using summable_ignore_initial_segment[OF d_sum] 
+          by (force simp add: algebra_simps)
+        show "summable (\<lambda>j. (2 / 3::real) ^ (n + j + 1))"
+          using summable_geometric[THEN summable_ignore_initial_segment,of "2/3" "n+1"]
           by (auto simp add:algebra_simps)
-        subgoal using summable_geometric[THEN summable_ignore_initial_segment,of "2/3" "n+1"]
-          by (auto simp add:algebra_simps)
-        done
+      qed
       also have "... = (\<Sum>j. (2 / 3)^(n+1)*(2 / 3) ^ j)"
         by (auto simp add:algebra_simps power_add)
       also have "... = (2 / 3)^(n+1) * (\<Sum>j. (2 / 3) ^ j)"
-        apply (rule suminf_mult)
-        by (auto intro:summable_geometric)
+        by (force intro!: summable_geometric suminf_mult)
       also have "... = 2 * c"
         unfolding c_def
         apply (subst suminf_geometric)
