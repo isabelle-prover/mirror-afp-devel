@@ -241,12 +241,8 @@ proof(rule classical)
   assume \<open>\<not>(bounded (range f))\<close>
   have sum_1: \<open>\<exists>K. \<forall>n. sum (\<lambda>k. inverse (real_of_nat 3^k)) {0..n} \<le> K\<close>
   proof-
-    have \<open>summable (\<lambda>n. (inverse (real_of_nat 3))^n)\<close>
-      using Series.summable_geometric_iff [where c = "inverse (real_of_nat 3)"] by auto
-    moreover have \<open>(inverse (real_of_nat 3))^n = inverse (real_of_nat 3^n)\<close> for n::nat
-      using power_inverse by blast        
-    ultimately have \<open>summable (\<lambda>n. inverse (real_of_nat 3^n))\<close>
-      by auto
+    have \<open>summable (\<lambda>n. inverse ((3::real) ^ n))\<close>
+      by (simp flip: power_inverse)
     hence \<open>bounded (range (\<lambda>n. sum (\<lambda> k. inverse (real 3 ^ k)) {0..<n}))\<close>
       using summable_imp_sums_bounded[where f = "(\<lambda>n. inverse (real_of_nat 3^n))"]
         lessThan_atLeast0 by auto

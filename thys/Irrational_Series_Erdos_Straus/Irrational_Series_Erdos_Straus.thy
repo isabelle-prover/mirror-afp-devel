@@ -391,14 +391,13 @@ proof -
     define g where "g = (\<lambda>n. B*b (n+M+1) / prod a {M..n+M+1})"
     have g_abs_summable:"summable (\<lambda>n. \<bar>g n\<bar>)"
     proof -
-      have "summable (\<lambda>n.(1::real)/2^n)" 
-        using summable_geometric[of "(1::real)/2",simplified] 
-        by (auto elim!: back_subst[of "summable"] simp:field_simps)
+      have "summable (\<lambda>n. (1/2::real) ^ n)" 
+        by simp
       moreover have "\<bar>g n\<bar> < 1/2^n" for n
         using N_geometric[rule_format,OF that] unfolding g_def by simp
       ultimately show ?thesis 
         apply (elim summable_comparison_test')
-        using less_eq_real_def by auto
+        by (simp add: less_eq_real_def power_one_over)
     qed
     show "\<bar>R M\<bar> \<le> 1 / 4" using R_N_bound[rule_format,OF that] .
     have "R M = (\<Sum>n. g n)" unfolding R_def g_def by simp
@@ -1207,8 +1206,7 @@ proof
     have "\<forall>\<^sub>F n in sequentially. B * nth_prime n - c n * a n + c (n + 1) = 0"
       using Bc_large by (auto elim!:eventually_mono)
     then have "\<forall>\<^sub>F n in sequentially. (B * nth_prime n - c n * a n + c (n+1)) / a n = 0 "
-      apply eventually_elim
-      by auto
+      by eventually_elim auto
     then have "\<forall>\<^sub>F n in sequentially. B * nth_prime n / a n - c n  + c (n + 1) / a n = 0"
       apply eventually_elim
       using a_pos by (auto simp:divide_simps) (metis less_irrefl)
@@ -1257,8 +1255,7 @@ proof
       apply (elim eventually_mono)
       using \<open>B>0\<close> by auto
     then show ?thesis 
-      apply (elim eventually_mono)
-      by auto
+      by (auto elim: eventually_mono)
   qed
 
   have bc_epsilon:"\<forall>\<^sub>F n in sequentially. nth_prime (n+1) 
@@ -1289,11 +1286,9 @@ proof
         using a_pos elim \<open>mono a\<close>
         by (auto simp add: \<epsilon>\<^sub>0_def \<epsilon>\<^sub>1_def abs_of_pos)
       have "(\<epsilon> - \<epsilon>\<^sub>1) * c n > 0"
-        apply (rule mult_pos_pos)
         using \<open>\<epsilon>\<^sub>1 > 0\<close> \<open>\<epsilon>\<^sub>1 < \<epsilon>/2\<close> \<open>\<epsilon>>0\<close> elim by auto
       moreover have "\<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0"
-        apply (rule mult_pos_pos[OF \<open>\<epsilon>\<^sub>0 > 0\<close>])
-        using elim(4) that(2) by linarith
+        using \<open>\<epsilon>\<^sub>0 > 0\<close> elim(4) that(2) by force
       ultimately have "(\<epsilon> - \<epsilon>\<^sub>1) * c n + \<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0" by auto
       moreover have "c n - \<epsilon>\<^sub>0 > 0" using \<open>\<epsilon>\<^sub>0 < \<epsilon> / 2\<close> elim(4) that(2) by linarith
       moreover have "c n > 0" by (simp add: elim(4))
@@ -1351,8 +1346,7 @@ proof
     moreover have "\<forall>\<^sub>F x in sequentially. c x \<le> ub"
       using \<open>\<forall>n. c n \<le> ub\<close> by simp
     ultimately have "\<exists>\<^sub>F x in sequentially. B*pa x - c x > 1"
-      apply (elim frequently_rev_mp eventually_mono)
-      by linarith
+      by (elim frequently_rev_mp eventually_mono) linarith
     moreover have "(\<lambda>n. B * pa n - c n) \<longlonglongrightarrow>0" 
       unfolding pa_def using bac_close by auto
     from tendstoD[OF this,of 1] 
@@ -1618,8 +1612,7 @@ proof
         apply (rule sum_mono2)
         unfolding S_def using g_geq_0 by auto
       also have "... \<le> sum (\<lambda>n. f n/sqrt (nth_prime N)) {N..<2*N}"
-        apply (rule sum_mono)
-        unfolding f_def g_def by (auto intro!:divide_left_mono)
+        unfolding f_def g_def by (auto intro!:sum_mono divide_left_mono)
       also have "... = sum f {N..<2*N} / sqrt (nth_prime N)"
         unfolding sum_divide_distrib[symmetric] by auto
       also have "... = (nth_prime (2*N) - nth_prime N) / sqrt (nth_prime N)"
@@ -1961,8 +1954,7 @@ proof
       apply (rule eventuallyI)
       using \<open>mono a\<close> by (simp add: incseqD)
     ultimately show "\<forall>\<^sub>F N in sequentially. f N < (a (2 * N + 1))"
-      apply eventually_elim
-      by auto
+      by eventually_elim auto
   qed
 
   have a_nth_prime_gt:"\<forall>\<^sub>F n in sequentially. a n / nth_prime n > 1"
@@ -1971,10 +1963,9 @@ proof
     have "\<forall>\<^sub>F x in sequentially. real (nth_prime x) / (real x * ln (real x)) < 2"
       using nth_prime_asymptotics[unfolded asymp_equiv_def,THEN order_tendstoD(2),of 2]
       by simp
-    from this[] eventually_gt_at_top[of 1]
+    from this eventually_gt_at_top[of 1]
     have "\<forall>\<^sub>F n in sequentially. real (nth_prime n)   < 2*(real n * ln n)"
-      apply eventually_elim
-      by (auto simp:field_simps)
+      by eventually_elim (auto simp:field_simps)
     moreover have *:"\<forall>\<^sub>F N in sequentially. f N >0 "
       unfolding f_def
       by real_asymp
