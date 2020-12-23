@@ -2,11 +2,10 @@ chapter AFP
 
 session GewirthPGCProof (AFP) = HOL +
   options [timeout = 300, kodkod_scala = false]
-
   theories
     CJDDLplus
-	ExtendedDDL
-	GewirthArgument
+    ExtendedDDL
+    GewirthArgument
   document_files
     "root.tex"
     "root.bib"
