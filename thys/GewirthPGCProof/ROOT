@@ -1,7 +1,7 @@
 chapter AFP
 
 session GewirthPGCProof (AFP) = HOL +
-  options [timeout = 300, kodkod_scala = false]
+  options [timeout = 300]
   theories
     CJDDLplus
     ExtendedDDL
