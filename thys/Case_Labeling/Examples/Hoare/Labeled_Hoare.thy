@@ -12,7 +12,7 @@ context begin
   lemma LSeqRule:
     assumes "C\<langle>IC,CT,OC1: Valid P c1 Q\<rangle>"
       and "C\<langle>Suc OC1,CT,OC: Valid Q c2 R\<rangle>"
-    shows "C\<langle>IC,CT,OC: Valid P (c1; c2) R\<rangle>"
+    shows "C\<langle>IC,CT,OC: Valid P (Seq c1 c2) R\<rangle>"
     using assms unfolding LABEL_simps by (rule SeqRule)
 
   lemma LSkipRule:
@@ -32,7 +32,7 @@ context begin
     assumes "V\<langle>(''vc'', IC, []),(''cond'', IC, []) # CT: p \<subseteq> {s. (s \<in> b \<longrightarrow> s \<in> w) \<and> (s \<notin> b \<longrightarrow> s \<in> w')}\<rangle>"
       and "C\<langle>Suc IC,(''then'', IC, []) # (''cond'', IC, []) # CT,OC1: Valid w c1 q\<rangle>"
       and "C\<langle>Suc OC1,(''else'', Suc OC1, []) # (''cond'', IC, []) # CT,OC: Valid w' c2 q\<rangle>"
-    shows "C\<langle>IC,CT,OC: Valid p (IF b THEN c1  ELSE c2 FI) q\<rangle>"
+    shows "C\<langle>IC,CT,OC: Valid p (Cond b c1 c2) q\<rangle>"
     using assms(2-) unfolding LABEL_simps by (rule CondRule)
 
   lemma LWhileRule:
