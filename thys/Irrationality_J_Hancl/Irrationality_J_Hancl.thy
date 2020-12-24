@@ -823,42 +823,46 @@ qed
 
 theorem Hancl3:
   fixes d ::"nat\<Rightarrow>real " and  a b ::"nat\<Rightarrow>int "
-  assumes "A > 1" and d:"\<forall>n. d n> 1" and a: "\<forall>n. a n>0" and b:"\<forall>n. b n>0" and "s>0"
-    and assu1: "(( \<lambda> n. (of_int (a n)) powr(1 /of_int (2^n)))\<longlongrightarrow> A) sequentially "
-    and assu2: "\<forall>n \<ge> s. (A/ (of_int (a n)) powr(1 /of_int (2^n)))> prodinf (\<lambda>j. d(n +j))"
-    and assu3: "filterlim (\<lambda> n. (d n)^(2^n)/ b n) at_top sequentially"
+  assumes "A > 1" and d: "\<forall>n. d n > 1" and a: "\<forall>n. a n>0" and b: "\<forall>n. b n > 0" and "s>0"
+    and assu1: "(\<lambda>n. (a n) powr(1 / of_int(2^n))) \<longlonglongrightarrow> A"
+    and assu2: "\<forall>n \<ge> s. A / (a n) powr (1 / of_int(2^n)) > (\<Prod>j. d (n + j))"
+    and assu3: "LIM n sequentially. d n ^ 2 ^ n / b n :> at_top"
     and "convergent_prod d" 
-  shows "suminf(\<lambda> n. b n / a n ) \<notin> Rats"
-proof(rule ccontr)
+  shows "(\<Sum>n. b n / a n) \<notin> Rats"
+proof (rule ccontr)
   assume asm:"\<not> (suminf(\<lambda> n. b n / a n ) \<notin> Rats)"
-  have ab_sum:"summable (\<lambda>j. b j / a j)"
+  have ab_sum: "summable (\<lambda>j. b j / a j)"
     using issummable[OF \<open>A>1\<close> d a b assu1 assu3 \<open>convergent_prod d\<close>] .
   obtain p q ::int where "q>0" and pq_def:"(\<lambda> n. b (n+1) / a (n+1) ) sums (p/q)"
   proof -
-    from asm have "suminf(\<lambda> n. b n / a n ) \<in> Rats" by auto
-    then have "suminf(\<lambda> n. b (n+1) / a (n+1)) \<in> Rats" 
+    from asm have "(\<Sum>n. b n / a n) \<in> \<rat>" by auto
+    then have "(\<Sum>n. b (n+1) / a (n+1)) \<in> \<rat>" 
       apply (subst suminf_minus_initial_segment[OF ab_sum,of 1])
       by auto   
-    then obtain p' q' ::int where "q'\<noteq>0" and pq_def:"(\<lambda> n. b (n+1) / a (n+1) ) sums (p'/q')"
+    then obtain p' q' ::int where "q'\<noteq>0" and pq_def: "(\<lambda> n. b (n+1) / a (n+1) ) sums (p'/q')"
       unfolding Rats_eq_int_div_int
       using summable_ignore_initial_segment[OF ab_sum,of 1,THEN summable_sums]
       by force
-    define p q where "p=(if q'<0 then - p' else p')" and "q=(if q'<0 then - q' else q')"
-    have "p'/q'=p/q" "q>0" using \<open>q'\<noteq>0\<close> unfolding p_def q_def by auto
+    define p q where "p \<equiv> (if q'<0 then -p' else p')" and "q \<equiv> (if q'<0 then -q' else q')"
+    have "p'/q' = p/q" "q>0" 
+      using \<open>q'\<noteq>0\<close> unfolding p_def q_def by auto
     then show ?thesis using that[of q p] pq_def by auto
   qed
 
   define ALPHA where 
-    "ALPHA = (\<lambda>n. (of_int q)*((\<Prod>j=1..n. of_int(a j)))*(suminf (\<lambda> (j::nat). 
+    "ALPHA = (\<lambda>n. (of_int q) * ((\<Prod>j=1..n. of_int(a j)))*(suminf (\<lambda> (j::nat). 
                       (b (j+n+1)/a (j+n+1)))))"
   have "ALPHA n \<ge> 1" for n 
   proof -
-    have "suminf(\<lambda> n. b (n+1) / a (n+1)) > 0"
-      apply (rule suminf_pos)
-      subgoal using summable_ignore_initial_segment[OF ab_sum,of 1] by auto
-      subgoal using a b by simp
-      done
-    then have "p/q > 0" using sums_unique[OF pq_def,symmetric] by auto
+    have "(\<Sum>n. b (n+1) / a (n+1)) > 0"
+    proof (rule suminf_pos)
+      show "summable (\<lambda>n. b (n + 1) / real_of_int (a (n + 1)))"
+        using summable_ignore_initial_segment[OF ab_sum,of 1] by auto
+      show "\<And>n. 0 < b (n + 1) / a (n + 1)"
+        using a b by simp
+    qed
+    then have "p/q > 0"
+      using pq_def sums_unique by force
     then have "q\<ge>1" "p\<ge>1" using \<open>q>0\<close> by (auto simp add:divide_simps)
     moreover have "\<forall>n. 1 \<le> a n" "\<forall>n. 1 \<le> b n" using a b 
       by (auto simp add: int_one_le_iff_zero_less)
@@ -1046,14 +1050,7 @@ proof-
     moreover have "\<forall>\<^sub>F n in sequentially. d n ^ 2 ^ n / 2 powr((4/3)^(n-1)) 
         \<le> d n ^ 2 ^ n / real_of_int (b n)"
       apply (rule eventually_sequentiallyI[of 6])
-      apply (rule divide_left_mono)
-      subgoal for x
-        using asscor2[rule_format,of x] by auto
-      subgoal for x
-        using \<open>\<forall>n. 1 < d n\<close>[rule_format, of x] by auto
-      subgoal for x
-        using b by auto
-      done
+      by (smt (verit, best) asscor2 b dgt1 frac_le of_int_0_less_iff zero_le_power)
     ultimately show ?thesis by (auto elim: filterlim_at_top_mono)
   qed
   ultimately show ?thesis using Hancl3[OF \<open>A>1\<close> _ a b _ assu1,of d 6] by force
