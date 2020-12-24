@@ -893,17 +893,13 @@ proof-
     unfolding d_def
     apply (rule abs_convergent_prod_imp_convergent_prod)
     apply (rule summable_imp_abs_convergent_prod)
-    using summable_ignore_initial_segment[OF complete_algebra_summable_geometric
-          [of "2/3::real",simplified],of 1] by simp
+    by simp
   moreover have "\<forall>n\<ge>6. (\<Prod>j. d (n + j)) 
                     < A / real_of_int (a n) powr (1 / real_of_int (2 ^ n))"
-  proof rule+
+  proof (intro strip)
     fix n::nat assume "6 \<le> n"
     have d_sum:"summable (\<lambda>j. ln (d j))" unfolding d_def
-      apply (rule summable_ln_plus)
-      apply (rule summable_ignore_initial_segment[OF complete_algebra_summable_geometric
-          [of "2/3::real",simplified],of 1])
-      by simp 
+      by (auto intro: summable_ln_plus)
 
     have "(\<Sum>j. ln (d (n + j))) < ln (1+4 * (2 / 3) ^ n)"
     proof -

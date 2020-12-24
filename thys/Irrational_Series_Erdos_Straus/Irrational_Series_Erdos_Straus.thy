@@ -300,21 +300,16 @@ proof -
       define g where "g = (\<lambda>n. B*b (n+M+1) / prod a {M..n+M+1})"
       have g_lt:"\<bar>g n\<bar> < e/4 * 1/2^n" for n
         using elim unfolding g_def by auto
-      have g_abs_summable:"summable (\<lambda>n. \<bar>g n\<bar>)"
-      proof -
-        have "summable (\<lambda>n. e/4 * 1/2^n)" 
-          using summable_geometric[of "1/2",THEN summable_mult,of "e/4",simplified]
-          by (auto simp add:algebra_simps power_divide)
-        then show ?thesis 
-          apply (elim summable_comparison_test')
-          using g_lt less_eq_real_def by auto
-      qed
+      have \<section>: "summable (\<lambda>n. (e/4) * (1/2)^n)"
+        by simp 
+      then have g_abs_summable:"summable (\<lambda>n. \<bar>g n\<bar>)"
+        apply (elim summable_comparison_test')
+        by (metis abs_idempotent g_lt less_eq_real_def power_one_over real_norm_def times_divide_eq_right)
       have "\<bar>\<Sum>n. g n\<bar> \<le> (\<Sum>n. \<bar>g n\<bar>)" by (rule summable_rabs[OF g_abs_summable])
       also have "... \<le>(\<Sum>n. e/4 * 1/2^n)"
       proof (rule suminf_comparison)
         show "summable (\<lambda>n. e/4 * 1/2^n)" 
-          using summable_geometric[of "1/2",THEN summable_mult,of "e/4",simplified]
-          by (auto simp add:algebra_simps power_divide)
+          using \<section> unfolding power_divide by simp
         show "\<And>n. norm \<bar>g n\<bar> \<le> e / 4 * 1 / 2 ^ n" using g_lt less_eq_real_def by auto
       qed
       also have "... = (e/4) * (\<Sum>n. (1/2)^n)"
