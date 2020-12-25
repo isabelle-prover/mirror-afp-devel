@@ -34,41 +34,49 @@ subsection \<open>Misc\<close>
 lemma filterlim_sequentially_iff:
   "filterlim f F1 sequentially \<longleftrightarrow> filterlim (\<lambda>x. f (x+k)) F1 sequentially"
   unfolding filterlim_iff
-  apply (subst eventually_sequentially_seg)
-  by auto
+  by (metis eventually_at_top_linorder eventually_sequentially_seg)
 
 lemma filterlim_realpow_sequentially_at_top:
-  "(x::real) > 1 \<Longrightarrow> filterlim ((^) x) at_top sequentially"
+  "(x::real) > 1 \<Longrightarrow> filterlim (power x) at_top sequentially"
   apply (rule LIMSEQ_divide_realpow_zero[THEN filterlim_inverse_at_top,of _ 1,simplified])
   by auto
 
 lemma filterlim_at_top_powr_real:
   fixes g::"'b \<Rightarrow> real"
   assumes "filterlim f at_top F" "(g \<longlongrightarrow> g') F" "g'>1"
-  shows "filterlim (\<lambda>x. g x powr f x) at_top F"
+  shows "LIM x F. g x powr f x :> at_top"
 proof -
-  have "filterlim (\<lambda>x. ((g'+1)/2) powr f x) at_top F" 
+  have "LIM x F. ((g' + 1) / 2) powr f x :> at_top" 
   proof (subst filterlim_at_top_gt[of _ _ 1],rule+)
     fix Z assume "Z>(1::real)"
-    have "\<forall>\<^sub>F x in F. ln Z \<le> ln (((g' + 1) / 2) powr f x)"
-      using assms(1)[unfolded filterlim_at_top,rule_format,of "ln Z / ln ((g' + 1) / 2)"]
-      apply (eventually_elim)
-      using \<open>g'>1\<close> by (auto simp:ln_powr divide_simps)
+    have "\<forall>\<^sub>F x in F. ln Z / ln ((g' + 1) / 2) \<le> f x"
+      using assms(1) filterlim_at_top by blast
+    then have "\<forall>\<^sub>F x in F. ln Z \<le> ln (((g' + 1) / 2) powr f x)"
+    proof (eventually_elim)
+      case (elim x)
+      then show ?case
+      using \<open>g'>1\<close> by (auto simp:ln_powr divide_simps)        
+    qed
     then show "\<forall>\<^sub>F x in F. Z \<le> ((g' + 1) / 2) powr f x"
-      apply (eventually_elim)
-      apply (subst (asm) ln_le_cancel_iff)
-      using \<open>Z>1\<close> \<open>g'>1\<close> by auto
+    proof (eventually_elim)
+      case (elim x)
+      then show ?case
+        using \<open>1 < Z\<close> \<open>g'>1\<close> by auto
+    qed
   qed
   moreover have "\<forall>\<^sub>F x in F. ((g'+1)/2) powr f x \<le> g x powr f x" 
   proof -
     have "\<forall>\<^sub>F x in F. g x > (g'+1)/2"
       apply (rule order_tendstoD[OF assms(2)])
       using \<open>g'>1\<close> by auto
-    moreover have "\<forall>\<^sub>F x in F. f x>0" 
-      using assms(1)[unfolded filterlim_at_top_dense,rule_format,of 0] .
+    moreover have "\<forall>\<^sub>F x in F. f x>0"
+      using assms(1) filterlim_at_top_dense by blast 
     ultimately show ?thesis
-      apply eventually_elim
-      using \<open>g'>1\<close> by (auto intro!: powr_mono2)
+    proof eventually_elim
+      case (elim x)
+      then show ?case
+        using \<open>g'>1\<close> by (auto intro!: powr_mono2)
+    qed
   qed
   ultimately show ?thesis using filterlim_at_top_mono by fast
 qed
@@ -88,8 +96,8 @@ next
   proof-
     have "(\<Prod>j = s..Suc n. a powr 2 ^ j) =(a powr 2 ^(Suc n))  " 
       using \<open>s=Suc n\<close> by simp
-    also have "(a powr 2 ^(Suc n) ) =  a powr sum ((^) 2) {s..Suc n}   " using that by auto
-    ultimately show " (\<Prod>j = s..Suc n. a powr 2 ^ j) = a powr sum ((^) 2) {s..Suc n}"
+    also have "a powr 2 ^ Suc n = a powr sum (power 2) {s..Suc n}" using that by auto
+    ultimately show "(\<Prod>j = s..Suc n. a powr 2 ^ j) = a powr sum (power 2) {s..Suc n}"
       using \<open>s\<le>Suc n\<close> by linarith
   qed
   ultimately show ?case using \<open>s\<le>Suc n\<close> by linarith
@@ -227,8 +235,7 @@ proof-
   proof -
     have "aa > 0"
       unfolding aa_def using a
-      apply (induct n,auto)
-      by (simp add: int_one_le_iff_zero_less prod_pos)
+    by (induction n) (simp_all add: int_one_le_iff_zero_less prod_pos)
     moreover have "(\<Sum>j. ff (j + n)) > 0"
     proof (rule suminf_pos)
       have "summable ff" unfolding ff_def using assumerational
@@ -242,8 +249,7 @@ proof-
   proof -
     have "?L = aa *(p -q* ( \<Sum>j=1..n. b j / a j))"
       unfolding aa_def
-      apply (rule showpre7)
-      using assms int_one_le_iff_zero_less by auto
+      using a assms assumerational int_one_le_iff_zero_less showpre7 by force
     also have "... = aa * p - q * (\<Sum>j=1..n. aa * b j / a j)"
       by (auto simp add:algebra_simps sum_distrib_left)
     also have "... = prod a {1..n} * p - q * (\<Sum>j = 1..n. b j * prod a ({1..n} - {j}))"
@@ -251,13 +257,12 @@ proof-
       have "(\<Sum>j=1..n. aa * b j / a j) = (\<Sum>j=1..n. b j * prod a ({1..n} - {j}))"
         unfolding of_int_sum
       proof (rule sum.cong)
-        fix x assume "x \<in> {1..n}"
-        then have "(\<Prod>i = 1..n. real_of_int (a i)) = a x * (\<Prod>i\<in>{1..n} - {x}. real_of_int (a i))"
-          apply (rule_tac prod.remove)
-          by auto
-        then have "aa / real_of_int (a x) = prod a ({1..n} - {x})"
-          unfolding aa_def using a[rule_format,of x] by (auto simp add:field_simps)
-        then show "aa * b x / a x = b x * prod a ({1..n} - {x})"
+        fix j assume "j \<in> {1..n}"
+        then have "(\<Prod>i = 1..n. real_of_int (a i)) = a j * (\<Prod>i\<in>{1..n} - {j}. real_of_int (a i))"
+          by (meson finite_atLeastAtMost prod.remove)
+        then have "aa / real_of_int (a j) = prod a ({1..n} - {j})"
+          unfolding aa_def using a[rule_format,of j] by (auto simp add:field_simps)
+        then show "aa * b j / a j = b j * prod a ({1..n} - {j})"
           by (metis mult.commute of_int_mult times_divide_eq_right)
       qed simp
       moreover have "aa * p = (\<Prod>j = 1..n.  (a j)) *  p"
@@ -276,13 +281,12 @@ lemma show8:
   fixes d ::"nat\<Rightarrow>real " and a :: "nat\<Rightarrow>int" and s k::nat 
   assumes "A > 1" and d: "\<forall>n. d n> 1"  and a:"\<forall>n. a n>0" and "s>0"
     and "convergent_prod d"
-    and assu2: "\<forall>n \<ge> s. ( A/ (of_int (a n)) powr(1/of_int (2^n)))> prodinf (\<lambda>j. d(n +j))"
-  shows "\<forall>n\<ge>s. prodinf (\<lambda>j. d(j+n)) < A/(Max ((\<lambda>(j::nat). 
-                  (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n}))"
+    and assu2: "\<forall>n \<ge> s. A / of_int (a n) powr (1 / of_int (2^n)) > (\<Prod>j. d (n + j))"
+  shows "\<forall>n\<ge>s. (\<Prod>j. d (j+n)) < A / (MAX j\<in>{s..n}. of_int (a j) powr (1 / of_int (2 ^ j)))"
 proof (intro strip)
   fix n assume "s \<le> n"
-  define sp where "sp = (\<lambda>n. prodinf (\<lambda>j. d(j+n)))"
-  define ff where "ff = (\<lambda>(j::nat). (real_of_int (a j)) powr(1 /of_int (2^j)))"
+  define sp where "sp \<equiv> (\<lambda>n. \<Prod>j. d (j+n))"
+  define ff where "ff \<equiv> (\<lambda>(j::nat). (real_of_int (a j)) powr(1 /of_int (2^j)))"
   have "sp i \<ge> sp n" when "i\<le>n" for i
   proof -
     have "(\<Prod>j. d (j + i)) = (\<Prod>ia. d (ia + (n - i) + i)) * (\<Prod>ia<n - i. d (ia + i))"
@@ -317,7 +321,7 @@ lemma auxiliary1_9:
   shows "(of_int (a (n+1))) powr(1 /of_int (2^(n+1))) <
     (\<Prod>j=(m+1)..(n+1). d j) * (Max ((\<lambda> (j::nat). (of_int (a j)) powr(1 /of_int (2^j))) ` {s..m}))"
 proof-
-  define ff where "ff = (\<lambda>(j::nat). (real_of_int (a j)) powr(1 /of_int (2^j)))"
+  define ff where "ff \<equiv> \<lambda>j. real_of_int (a j) powr (1 / of_int (2^j))"
   have [simp]:"ff j > 0" for j
     unfolding ff_def by (metis a less_numeral_extra(3) of_int_0_less_iff powr_gt_zero)
 
@@ -335,7 +339,7 @@ proof-
     moreover have ?case when "m\<noteq>Suc n" 
     proof -
       have "m \<le> n" using that Suc(2) by simp
-      then have IH:"Max (ff ` {s..n}) \<le> prod d {m + 1..n} * Max (ff ` {s..m})"
+      then have IH: "Max (ff ` {s..n}) \<le> prod d {m + 1..n} * Max (ff ` {s..m})"
         using Suc(1) by linarith
       have "Max (ff ` {s..Suc n}) = Max (ff ` {s..n} \<union> {ff (Suc n)})"
         using Suc.prems assms(5) atLeastAtMostSuc_conv by auto
@@ -353,7 +357,7 @@ proof-
           by (simp add: max_mult_distrib_right mult.commute)
       qed
       also have "... = Max (ff ` {s..n}) * d (n+1)"
-        using d[rule_format, of "n+1"] by auto
+        by (metis d max.commute max.strict_order_iff)
       also have "... \<le>  prod d {m + 1..n} * Max (ff ` {s..m}) * d (n+1)"
         using IH d[rule_format, of "n+1"] by auto
       also have "... = prod d {m + 1..n+1} * Max (ff ` {s..m})"
@@ -377,13 +381,13 @@ lemma show9:
   shows "\<forall>m \<ge>s. \<exists>n\<ge>m.  ( (of_int (a (n+1))) powr(1 /of_int (2^(n+1))) \<ge>
           (d (n+1))* (Max ( ( \<lambda> (j::nat). (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n} )))"
 proof (rule ccontr)
-  define ff where "ff = (\<lambda>(j::nat). (real_of_int (a j)) powr(1 /of_int (2^j)))"
-  assume assumptioncontra: " \<not> (\<forall>m \<ge>s. \<exists>n\<ge>m.  ( (ff (n+1)) \<ge> (d (n+1))* (Max ( ff  ` {s..n}))))"
+  define ff where "ff \<equiv> (\<lambda>j. real_of_int (a j) powr (1 / of_int (2^j)))"
+  assume assumptioncontra: " \<not> (\<forall>m \<ge>s. \<exists>n\<ge>m. ff(n+1) \<ge> d(n+1) * Max (ff  ` {s..n}))"
 
-  then obtain  t where "t\<ge>s" and
-    ttt: "  \<forall>n\<ge>t.  ( (ff (n+1)) < (d (n+1))* (Max ( ff ` {s..n} ) ))"               
+  then obtain t where "t\<ge>s" and
+    ttt: "\<forall>n\<ge>t. ff (n+1) < d (n+1) * Max (ff ` {s..n})"               
     by fastforce
-  define B where "B=prodinf (\<lambda>j. d(t+1+j))"
+  define B where "B \<equiv> \<Prod>j. d (t + 1 + j)"
   have "B>0" unfolding B_def 
   proof (rule less_0_prodinf)
     show "convergent_prod (\<lambda>j. d (t + 1 + j))"
@@ -427,8 +431,7 @@ proof (rule ccontr)
   also have "... \<le> B * Max ( ff ` {s..t+1})"
   proof -
     have "Max (ff ` {s..t}) \<le> Max (ff ` {s..t + 1})"
-      apply (rule Max_mono)
-      using \<open>t\<ge>s\<close> by auto
+      using \<open>t\<ge>s\<close> by (auto intro: Max_mono)
     then show ?thesis using \<open>B>0\<close> by auto
   qed
   finally have "A \<le> B * Max (ff ` {s..t + 1})" 
@@ -436,20 +439,20 @@ proof (rule ccontr)
   moreover have "B < A / Max (ff ` {s..t + 1})"
     using 8[rule_format, of "t+1",folded ff_def B_def] \<open>s\<le>t\<close> by auto
   moreover have "Max (ff ` {s..t+1})>0"
-    using \<open>A \<le> B * Max (ff ` {s..t + 1})\<close> \<open>B>0\<close> \<open>A>1\<close>
-      zero_less_mult_pos [of B "Max (ff ` {s..Suc t})"]
-    by simp
+    using \<open>A \<le> B * Max (ff ` {s..t + 1})\<close> \<open>B>0\<close> \<open>A>1\<close> zero_less_mult_pos [of B "Max (ff ` {s..Suc t})"]
+    by fastforce
   ultimately show False by (auto simp add:field_simps)
 qed
 
 lemma show10:
   fixes d ::"nat\<Rightarrow>real " and  a ::"nat\<Rightarrow>int " and s::nat
-  assumes d: "\<forall>n. d n> 1" and a: "\<forall>n. a n>0"  and " s>0"
-    and 9: "\<forall>m \<ge>s. \<exists>n\<ge>m.  ((of_int (a (n+1))) powr(1 /of_int (2^(n+1))) \<ge>
-          (d (n+1))* (Max ((\<lambda>(j::nat). (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n} )))"
-  shows "\<forall>m\<ge>s. \<exists>n\<ge>m. (((d (n+1))powr(2^(n+1))) * (\<Prod>j=1..n. of_int( a j)) * 
-            (1/ (\<Prod>j=1..s-1. (of_int( a j) )))) \<le> (a (n+1)) "
-proof (rule,rule)
+  assumes d [rule_format]: "\<forall>n. d n> 1" 
+    and a [rule_format]: "\<forall>n. a n>0"  and " s>0"
+    and 9: "\<forall>m \<ge>s. \<exists>n\<ge>m. a (n+1) powr(1 / of_int (2^(n+1))) \<ge>
+          d (n+1) * (Max ((\<lambda>j. (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n} ))"
+  shows "\<forall>m\<ge>s. \<exists>n\<ge>m. d (n+1) powr(2^(n+1)) * (\<Prod>j=1..n. of_int( a j)) * 
+            (1 / (\<Prod>j=1..s-1. of_int( a j))) \<le> a (n+1)"
+proof (intro strip)
   fix m assume "s \<le> m" 
   from 9[rule_format,OF this]
   obtain n where "n\<ge>m" and asm_9:"( (of_int (a (n+1))) powr(1 /of_int (2^(n+1))) \<ge>
@@ -457,8 +460,9 @@ proof (rule,rule)
     by auto
   with \<open>s\<le>m\<close> have "s\<le>n" by auto
 
-  have prod:"(\<Prod>j=1..n. real_of_int( a j)) * ( 1/ (\<Prod>j=1..s-1. (of_int( a j) )))
-          = (\<Prod>j=s..n. of_int( a j))"
+  define M where "M \<equiv> \<lambda>s. MAX j\<in>{s..n}. a j powr (1 / real_of_int (2 ^ j))"
+  have prod: "(\<Prod>j=1..n. real_of_int (a j)) * (1 / (\<Prod>j=1..s-1. of_int(a j)))
+            = (\<Prod>j=s..n. of_int( a j))"
   proof -
     define f where "f= (\<lambda>j. real_of_int( a j))"
     have "{Suc 0..n}= {Suc 0..s - Suc 0} \<union> {s..n}" using \<open>n\<ge>s\<close>  \<open>s >0\<close>
@@ -475,49 +479,34 @@ proof (rule,rule)
              d (n+1) powr 2 ^ (n+1) * (\<Prod>j = s..n. of_int (a j))" 
      by (metis mult.assoc prod)
   also have
-    "... \<le> ((d (n+1))powr(2^(n+1) ) * (\<Prod>i=s..n. (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } ))   powr(2^i)) )"
+    "... \<le> ((d (n+1))powr(2^(n+1) ) * (\<Prod>i=s..n. M s powr(2^i)) )"
   proof (rule mult_left_mono)
     show "0 \<le> (d (n + 1)) powr 2 ^ (n + 1)"
       by auto
-    show "(\<Prod>j = s..n. real_of_int (a j))
-    \<le> (\<Prod>i = s..n.
-           Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) `
-                {s..n}) powr
-           2 ^ i)"
-    proof (rule prod_mono)
+    show "(\<Prod>j = s..n. real_of_int (a j)) \<le> (\<Prod>i = s..n. M s powr 2 ^ i)"
+    proof (intro prod_mono conjI)
       fix i assume i: "i \<in> {s..n}"
-      have "real_of_int (a i) = (real_of_int (a i) powr (1 / real_of_int (2 ^ i))) powr 2 ^ i"
+      have "a i = (a i powr (1 / real_of_int (2 ^ i))) powr 2 ^ i"
         unfolding powr_powr by (simp add: a less_eq_real_def)
-      also have  "\<dots> \<le>  (Max(( \<lambda> (j::nat). ( real_of_int( a j) powr(1 /real_of_int (2^j)))) ` {s..n}))powr(2^i)" 
-      proof (rule powr_mono2)
-        show "real_of_int (a i) powr (1 / real_of_int (2 ^ i))
-                  \<le> Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n})" 
-          using i by force
-      qed simp_all
-      finally have "real_of_int (a i) \<le> Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n}) powr 2 ^ i" .
-      then show "0 \<le> real_of_int (a i) \<and>
-                 real_of_int (a i) \<le> (MAX j\<in>{s..n}. of_int (a j) powr (1 / of_int (2 ^ j))) powr 2 ^ i"
-        using a i
-        by (metis \<open>real_of_int (a i) = (real_of_int (a i) powr (1 / real_of_int (2 ^ i))) powr 2 ^ i\<close> 
-            powr_ge_pzero)
+      also have  "\<dots> \<le> M s powr(2^i)" 
+        unfolding M_def using i by (force intro: powr_mono2)
+      finally show "a i \<le> M s powr 2 ^ i" .
+      show "\<And>i. i \<in> {s..n} \<Longrightarrow> 0 \<le> real_of_int (a i)"
+        by (meson a less_imp_le of_int_0_le_iff)
     qed
   qed
-  also have "... = ((d (n+1))powr(2^(n+1) )) * (Max(( \<lambda> (j::nat). ( of_int( a j) powr 
-                      (1 /of_int (2^j)) )) ` {s..n  } )) powr (\<Sum>i=s..n. 2^i ) "
+  also have "... = d(n+1) powr (2^(n+1)) * M s powr (\<Sum>i=s..n. 2^i)"
   proof-
-    have  "((d (n+1))powr(2^(n+1) ))\<ge>1  "
-      by (metis Transcendental.log_one  d le_powr_iff zero_le_numeral zero_le_power zero_less_one)
-    moreover have "(\<Prod>i=s..n. (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } ) )   powr(2^i))     = (Max(( \<lambda> (j::nat). ( of_int( a j) powr(1 /of_int (2^j)) )) ` {s..n  } )) powr (\<Sum>i=s..n. 2^i )  "
-      using \<open>s\<le>n\<close>  powrfinitesum by auto
+    have  "d (n+1) powr (2^(n+1)) \<ge> 1  "
+      by (metis Transcendental.log_one d le_powr_iff zero_le_numeral zero_le_power zero_less_one)
+    moreover have "(\<Prod>i=s..n. M s powr(2^i)) = M s powr (\<Sum>i=s..n. 2^i ) "
+      using \<open>s\<le>n\<close> powrfinitesum by auto
     ultimately show ?thesis by auto
   qed
-  also have "... \<le>   ((d (n+1))powr(2^(n+1) )) * 
-                (Max(( \<lambda> (j::nat).( of_int( a j) powr(1 /of_int (2^j)) )) ` {s..n  })) powr(2^(n+1))   "
-
+  also have "... \<le> d (n + 1) powr 2 ^ (n + 1) * M s powr(2^(n+1))"
   proof -
-    define ff where "ff \<equiv> (MAX j\<in>{s..n}. real_of_int (a j) powr (1 / real_of_int (2 ^ j)))"
-    have " sum ((^) 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close> by auto
-    moreover have "1 \<le> ff" 
+    have "sum (power 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close> by auto
+    moreover have "1 \<le> M s" 
     proof -
       define S where "S=(\<lambda>(j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  }"
       have "finite S" unfolding S_def by auto
@@ -535,52 +524,31 @@ proof (rule,rule)
         ultimately show ?thesis by auto
       qed
       ultimately show ?thesis 
-        using Max_ge_iff[of S 1] unfolding S_def ff_def by blast
+        using Max_ge_iff[of S 1] unfolding S_def M_def by blast
     qed
     moreover have "0 \<le> (d (n + 1)) powr 2 ^ (n + 1)" by auto
     ultimately show ?thesis
-      by (simp add: mult_left_mono powr_mono ff_def)
+      by (simp add: mult_left_mono powr_mono M_def)
   qed
 
-  also have "... =  ((d (n+1)) * 
-                      (Max((\<lambda>j. (of_int( a j) powr(1 /of_int (2^j)))) ` {s..n}))) powr(2^(n+1))"
+  also have "... =  (d (n+1) * M s) powr(2^(n+1))"
   proof -
-    define ss where "ss = (\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n}"
-    have "d (n + 1) \<ge>0" using d[rule_format,of "n+1"] by argo
-    moreover have "Max ss \<ge>0" 
-    proof -
-      have "(a s) powr (1 /  (2 ^ s)) \<ge> 0" by auto
-      moreover have "(a s) powr (1 /  (2 ^ s)) \<in> ss" unfolding ss_def 
-        using \<open>s\<le>n\<close> by auto
-      moreover have "finite ss" "ss \<noteq> {}" unfolding ss_def using \<open>s\<le>n\<close> by auto
-      ultimately show ?thesis using Max_ge_iff[of ss 0] by blast
-    qed
+    have "d (n + 1) \<ge> 0" using d[of "n+1"] by argo
+    moreover have "M s \<ge> 0"
+      using \<open>s\<le>n\<close> by (auto simp: M_def Max_ge_iff)
     ultimately show ?thesis 
-      unfolding ss_def
-      using powr_mult by auto
+      unfolding M_def using powr_mult by auto
   qed
   also have "... \<le> (real_of_int (a (n + 1)) powr (1 / real_of_int (2 ^ (n + 1)))) powr 2 ^ (n + 1)"
-  proof - 
-    define ss where "ss = (\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n}"
-    show ?thesis 
-    proof (fold ss_def,rule powr_mono2)
-      have "Max ss \<ge>0" \<comment> \<open>NOTE: we are repeating the same proof, so it may be a good idea to put 
-                            this conclusion in an outer block so that it can be reused 
-                            (without reproving).\<close>
-      proof -
-        have "(a s) powr (1 /  (2 ^ s)) \<ge> 0" by auto
-        moreover have "(a s) powr (1 /  (2 ^ s)) \<in> ss" unfolding ss_def 
-          using \<open>s\<le>n\<close> by auto
-        moreover have "finite ss" "ss \<noteq> {}" unfolding ss_def using \<open>s\<le>n\<close> by auto
-        ultimately show ?thesis using Max_ge_iff[of ss 0] by blast
-      qed
-      moreover have "d (n + 1) \<ge>0" 
-        using d[rule_format,of "n+1"] by argo
-      ultimately show "0 \<le> (d (n + 1)) * Max ss" by auto
-      show "(d (n + 1)) * Max ss \<le> real_of_int (a (n + 1)) powr (1 / real_of_int (2 ^ (n + 1)))"
-        using asm_9[folded ss_def] .
-    qed simp    
-  qed
+  proof (rule powr_mono2)
+    have "M s \<ge> 0"
+      using \<open>s\<le>n\<close> by (auto simp: M_def Max_ge_iff)
+    moreover have "d (n + 1) \<ge>0" 
+      using d[of "n+1"] by argo
+    ultimately show "0 \<le> (d (n + 1)) * M s" by auto
+    show "(d (n + 1)) * M s \<le> real_of_int (a (n + 1)) powr (1 / real_of_int (2 ^ (n + 1)))"
+      using M_def asm_9 by presburger
+  qed simp    
   also have "... =  (of_int (a (n+1)))" 
     by (simp add: a less_eq_real_def pos_add_strict powr_powr)
   finally show "\<exists>n\<ge>m. d (n + 1) powr 2 ^ (n + 1) * (\<Prod>j = 1..n. real_of_int (a j)) *
@@ -591,7 +559,8 @@ qed
 
 lemma lasttoshow:
   fixes d ::"nat\<Rightarrow>real " and a b ::"nat\<Rightarrow>int " and q::int and s::nat
-  assumes d: "\<forall>n. d n> 1" and a:"\<forall>n. a n>0" and "s>0" and "q>0"  
+  assumes d: "\<forall>n. d n> 1"
+     and a:"\<forall>n. a n>0" and "s>0" and "q>0"  
     and "A > 1" and b:"\<forall>n. b n>0" and 9:
     "\<forall>m\<ge>s. \<exists>n\<ge>m. ((of_int (a (n+1))) powr(1 /of_int (2^(n+1))) \<ge>
           (d (n+1))* (Max ((\<lambda>(j::nat). (of_int (a j)) powr(1 /of_int (2^j))) ` {s..n} )))"
@@ -610,9 +579,8 @@ proof-
       using tendsto_inverse_0_at_top[OF assu3] by auto
     then have "(\<lambda>n. real_of_int (b n) / d n powr 2 ^ n) \<longlonglongrightarrow> 0"
     proof -
-      have "d n ^ 2 ^ n = d n powr (of_nat (2 ^ n))" for n 
-        apply (subst powr_realpow)
-        using d[rule_format, of n] by auto
+      have "d n ^ 2 ^ n = d n powr (of_nat (2 ^ n))" for n
+        by (metis d le_less_trans powr_realpow zero_le_one) 
       then show ?thesis using * by auto
     qed
     from tendsto_mult_right_zero[OF this,of "q * as * 2"] 
@@ -632,8 +600,8 @@ proof-
     with N_def[rule_format, of "n+1"] that[of n]  show ?thesis by auto
   qed
 
-  define pa where "pa = (\<Prod>j = 1..n. real_of_int (a j))"
-  define dn where "dn = d (n + 1) powr 2 ^ (n + 1)"
+  define pa where "pa \<equiv> (\<Prod>j = 1..n. real_of_int (a j))"
+  define dn where "dn \<equiv> d (n + 1) powr 2 ^ (n + 1)"
   have [simp]:"dn >0" "as > 0" 
     subgoal unfolding dn_def by (metis d not_le numeral_One powr_gt_zero zero_le_numeral)
     subgoal unfolding as_def by (simp add: a prod_pos)
@@ -654,10 +622,9 @@ proof-
     then show ?thesis 
       apply (fold pa_def dn_def as_def)
       using \<open>pa>0\<close> \<open>q>0\<close> a[rule_format, of "Suc n"] b[rule_format, of "Suc n"]
-      by (auto simp add:divide_simps algebra_simps)
+      by (auto simp add: field_simps)
   qed
-  also have KKK: "... = (q* ((\<Prod>j=1..(s-1). real_of_int( a j)))*2
-                                * (b (n+1)))/ ((d (n+1))powr(2^(n+1)))"
+  also have KKK: "... = q * (\<Prod>j=1..(s-1). real_of_int(a j)) * 2 * b (n+1) / d (n+1) powr 2^(n+1)"
     apply (fold as_def pa_def dn_def)
     apply simp
     using \<open>0 < pa\<close> by blast
@@ -679,15 +646,15 @@ proof-
     using a b unfolding c_def by simp
   have c_ratio_tendsto:"(\<lambda>n. c (n+1) / c n ) \<longlonglongrightarrow> 0"
   proof -
-    define nn where "nn=(\<lambda>n. (2::int)^ (Suc n))"
-    define ff where "ff=(\<lambda> n. (a n / a (Suc n)) powr(1 /nn n)*(d(Suc n)))"
+    define nn where "nn \<equiv> (\<lambda>n. (2::int) ^ (Suc n))"
+    define ff where "ff \<equiv> (\<lambda>n. (a n / a (Suc n)) powr(1 /nn n)*(d(Suc n)))"
     have nn_pos:"nn n>0" and ff_pos:"ff n>0" for n
       subgoal unfolding nn_def by simp
       subgoal unfolding ff_def
         using d[rule_format, of "Suc n"] a[rule_format, of n] a[rule_format, of "Suc n"]
         by auto
       done
-    have ff_tendsto:"ff \<longlonglongrightarrow> 1/ sqrt A" 
+    have ff_tendsto:"ff \<longlonglongrightarrow> 1 / sqrt A" 
     proof -
       have "(of_int (a n)) powr(1 / (nn n)) = sqrt(of_int (a n) powr(1 /of_int (2^n)))" for n
         unfolding nn_def using a
@@ -822,18 +789,18 @@ qed
 
 
 theorem Hancl3:
-  fixes d ::"nat\<Rightarrow>real " and  a b ::"nat\<Rightarrow>int "
+  fixes d ::"nat\<Rightarrow>real" and  a b :: "nat\<Rightarrow>int"
   assumes "A > 1" and d: "\<forall>n. d n > 1" and a: "\<forall>n. a n>0" and b: "\<forall>n. b n > 0" and "s>0"
     and assu1: "(\<lambda>n. (a n) powr(1 / of_int(2^n))) \<longlonglongrightarrow> A"
-    and assu2: "\<forall>n \<ge> s. A / (a n) powr (1 / of_int(2^n)) > (\<Prod>j. d (n + j))"
+    and assu2: "\<forall>n \<ge> s. A / (a n) powr (1 / of_int(2^n)) > (\<Prod>j. d (n+j))"
     and assu3: "LIM n sequentially. d n ^ 2 ^ n / b n :> at_top"
     and "convergent_prod d" 
-  shows "(\<Sum>n. b n / a n) \<notin> Rats"
+  shows "(\<Sum>n. b n / a n) \<notin> \<rat>"
 proof (rule ccontr)
-  assume asm:"\<not> (suminf(\<lambda> n. b n / a n ) \<notin> Rats)"
+  assume asm: "\<not> ((\<Sum>n. b n / a n) \<notin> \<rat>)"
   have ab_sum: "summable (\<lambda>j. b j / a j)"
     using issummable[OF \<open>A>1\<close> d a b assu1 assu3 \<open>convergent_prod d\<close>] .
-  obtain p q ::int where "q>0" and pq_def:"(\<lambda> n. b (n+1) / a (n+1) ) sums (p/q)"
+  obtain p q ::int where "q>0" and pq_def: "(\<lambda>n. b (n+1) / a (n+1)) sums (p/q)"
   proof -
     from asm have "(\<Sum>n. b n / a n) \<in> \<rat>" by auto
     then have "(\<Sum>n. b (n+1) / a (n+1)) \<in> \<rat>" 
@@ -850,8 +817,7 @@ proof (rule ccontr)
   qed
 
   define ALPHA where 
-    "ALPHA = (\<lambda>n. (of_int q) * ((\<Prod>j=1..n. of_int(a j)))*(suminf (\<lambda> (j::nat). 
-                      (b (j+n+1)/a (j+n+1)))))"
+    "ALPHA = (\<lambda>n. of_int q * (\<Prod>j=1..n. of_int(a j)) * (\<Sum>j. (b (j+n+1)/a (j+n+1))))"
   have "ALPHA n \<ge> 1" for n 
   proof -
     have "(\<Sum>n. b (n+1) / a (n+1)) > 0"
@@ -871,11 +837,10 @@ proof (rule ccontr)
   qed
   moreover have "\<exists>n. ALPHA n < 1" unfolding ALPHA_def
   proof (rule lasttoshow[OF d a \<open>s>0\<close> \<open>q>0\<close> \<open>A>1\<close> b _ assu3])
-    show "\<forall>\<^sub>F n in sequentially. (\<Sum>j. real_of_int (b (n + j)) / real_of_int (a (n + j)))
-                    \<le> real_of_int (2 * b n) / real_of_int (a n)"
+    show "\<forall>\<^sub>F n in sequentially. (\<Sum>j. b (n+j) / a (n+j)) \<le> (2 * b n) / a n"
       using show5[OF \<open>A>1\<close> d a b assu1 assu3 \<open>convergent_prod d\<close>] by simp
-    show "\<forall>m\<ge>s. \<exists>n\<ge>m. d (n + 1) * Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n})
-                 \<le> real_of_int (a (n + 1)) powr (1 / real_of_int (2 ^ (n + 1)))"
+    show "\<forall>m\<ge>s. \<exists>n\<ge>m. d (n+1) * (MAX j\<in>{s..n}. a j powr (1 / of_int (2 ^ j)))
+                    \<le> a (n+1) powr (1 / of_int (2 ^ (n+1)))"
       apply (rule show9[OF \<open>A>1\<close> d a \<open>s>0\<close> assu1 \<open>convergent_prod d\<close>])
       using show8[OF \<open>A>1\<close> d a \<open>s>0\<close> \<open>convergent_prod d\<close> assu2] by (simp add:algebra_simps)
   qed
@@ -883,45 +848,40 @@ proof (rule ccontr)
 qed
 
 corollary Hancl3corollary:
-  fixes A::real and  a b ::"nat\<Rightarrow>int "
-  assumes "A > 1" and a: "\<forall>n. a n>0" and b:"\<forall>n. b n>0"
-    and assu1: "((\<lambda> n. (of_int (a n)) powr(1 /of_int (2^n)))\<longlongrightarrow> A) sequentially "
-    and asscor2: "\<forall>n \<ge>6. (of_int (a n)) powr(1 /of_int (2^n ))*(1+ 4*(2/3)^n) \<le> A
-                    \<and> (b n \<le>2 powr((4/3)^(n-1)) )   "
-  shows "suminf(\<lambda> n. b n / a n ) \<notin> Rats"
+  fixes A::real and  a b :: "nat\<Rightarrow>int"
+  assumes "A > 1" and a: "\<forall>n. a n>0" and b: "\<forall>n. b n>0"
+    and assu1: "(\<lambda>n. (a n) powr(1 / of_int(2^n))) \<longlonglongrightarrow> A"
+    and asscor2: "\<forall>n \<ge> 6. a n powr(1 / of_int (2^n)) * (1 + 4*(2/3)^n) \<le> A
+                        \<and> b n \<le> 2 powr (4/3)^(n-1)"
+  shows "(\<Sum>n. b n / a n) \<notin> \<rat>"
 proof-
   define d::"nat\<Rightarrow>real" where "d= (\<lambda> n. 1+(2/3)^(n+1))" 
-
   have dgt1:"\<forall>n. 1 < d n " unfolding d_def by auto
   moreover have "convergent_prod d"
     unfolding d_def
-    apply (rule abs_convergent_prod_imp_convergent_prod)
-    apply (rule summable_imp_abs_convergent_prod)
-    by simp
-  moreover have "\<forall>n\<ge>6. (\<Prod>j. d (n + j)) 
-                    < A / real_of_int (a n) powr (1 / real_of_int (2 ^ n))"
+    by (simp add: abs_convergent_prod_imp_convergent_prod summable_imp_abs_convergent_prod)
+  moreover have "\<forall>n\<ge>6. (\<Prod>j. d (n+j)) < A / a n powr (1 / of_int (2 ^ n))"
   proof (intro strip)
     fix n::nat assume "6 \<le> n"
     have d_sum:"summable (\<lambda>j. ln (d j))" unfolding d_def
       by (auto intro: summable_ln_plus)
 
-    have "(\<Sum>j. ln (d (n + j))) < ln (1+4 * (2 / 3) ^ n)"
+    have "(\<Sum>j. ln (d (n + j))) < ln (1+4 * (2/3) ^ n)"
     proof -
-      define c::real where "c=(2 / 3) ^ n"
+      define c::real where "c = (2/3) ^ n"
       have "0<c" "c<1/8" 
       proof -
-        have "c=(2 / 3)^6 * (2 / 3)  ^ (n-6)"
+        have "c = (2/3)^6 * (2/3) ^ (n-6)"
           unfolding c_def using \<open>n\<ge>6\<close>
-          apply (subst power_add[symmetric])
-          by auto
-        also have "... \<le> (2 / 3)^6" by (auto intro:power_le_one)
+          by (metis le_add_diff_inverse power_add)
+        also have "... \<le> (2/3)^6" by (auto intro:power_le_one)
         also have "... < 1/8" by (auto simp add:field_simps)
-        finally show "c<1/8" .
+        finally show "c < 1/8" .
       qed (simp add:c_def)
 
-      have "(\<Sum>j. ln (d (n + j))) \<le> (\<Sum>j. (2 / 3) ^ (n + j + 1))"
+      have "(\<Sum>j. ln (d (n + j))) \<le> (\<Sum>j. (2/3) ^ (n + j + 1))"
       proof (rule suminf_le)
-        show "\<And>j. ln (d (n + j)) \<le> (2 / 3) ^ (n + j + 1)"
+        show "\<And>j. ln (d (n + j)) \<le> (2/3) ^ (n + j + 1)"
           unfolding d_def
           by (metis divide_pos_pos less_eq_real_def ln_add_one_self_le_self zero_less_numeral zero_less_power)
         show "summable (\<lambda>j. ln (d (n + j)))"
@@ -931,14 +891,13 @@ proof-
           using summable_geometric[THEN summable_ignore_initial_segment,of "2/3" "n+1"]
           by (auto simp add:algebra_simps)
       qed
-      also have "... = (\<Sum>j. (2 / 3)^(n+1)*(2 / 3) ^ j)"
+      also have "... = (\<Sum>j. (2/3)^(n+1)*(2/3) ^ j)"
         by (auto simp add:algebra_simps power_add)
-      also have "... = (2 / 3)^(n+1) * (\<Sum>j. (2 / 3) ^ j)"
+      also have "... = (2/3)^(n+1) * (\<Sum>j. (2/3) ^ j)"
         by (force intro!: summable_geometric suminf_mult)
       also have "... = 2 * c"
         unfolding c_def
-        apply (subst suminf_geometric)
-        by auto
+        by (simp add: suminf_geometric)
       also have "... <  4 * c - (4 * c)\<^sup>2"
         using \<open>0<c\<close> \<open>c<1/8\<close>
         by (sos "((((A<0 * A<1) * R<1) + ((A<=0 * R<1) * (R<1/16 * [1]^2))))")
@@ -947,30 +906,25 @@ proof-
         using \<open>0<c\<close> \<open>c<1/8\<close> by auto
       finally show ?thesis unfolding c_def by simp
     qed
-    then have "exp (\<Sum>j. ln (d (n + j))) < 1 + 4 * (2 / 3) ^ n"
-      by (metis Groups.mult_ac(2) add.right_neutral add_mono_thms_linordered_field(5) 
-          divide_inverse divide_less_eq_numeral1(1) divide_pos_pos exp_gt_zero less_eq_real_def
-          ln_exp ln_less_cancel_iff mult_zero_left rel_simps(27) rel_simps(76) zero_less_one
-          zero_less_power)
+    then have "exp (\<Sum>j. ln (d (n + j))) < 1 + 4 * (2/3) ^ n"
+      by (smt (z3) divide_pos_pos ln_exp ln_ge_iff zero_less_power)
     moreover have "exp (\<Sum>j. ln (d (n + j))) = (\<Prod>j. d (n + j))"
     proof (subst exp_suminf_prodinf_real [symmetric])
       show "\<And>k. 0 \<le> ln (d (n + k))" 
         using dgt1 by (simp add: less_imp_le)
       show "abs_convergent_prod (\<lambda>na. exp (ln (d (n + na))))"
-        apply (subst exp_ln)
-        subgoal for j using dgt1[rule_format,of "n+j"] by auto
-        subgoal unfolding abs_convergent_prod_def real_norm_def
-          apply (subst abs_of_nonneg)
-          using convergent_prod_iff_shift[of d n] \<open>convergent_prod d\<close> 
-          by (auto simp add: dgt1 less_imp_le algebra_simps)
-        done
-      show "(\<Prod>na. exp (ln (d (n + na)))) = (\<Prod>j. d (n + j))"
-        apply (subst exp_ln)
-        subgoal using dgt1 le_less_trans zero_le_one by blast
-        subgoal by simp
-        done
+      proof (subst exp_ln)
+        show "\<And>j. 0 < d (n + j)"
+          using dgt1 le_less_trans zero_le_one by blast
+        show "abs_convergent_prod (\<lambda>j. d (n + j))"
+          unfolding abs_convergent_prod_def 
+          using \<open>convergent_prod d\<close> 
+          by (simp add: dgt1 convergent_prod_iff_shift less_imp_le algebra_simps)
+      qed
+      show "(\<Prod>j. exp (ln (d (n + j)))) = (\<Prod>j. d (n + j))"
+        by (meson dgt1 exp_ln not_less not_one_less_zero order_trans)
     qed
-    ultimately have "(\<Prod>j. d (n + j))  < 1 + 4 * (2 / 3) ^ n"
+    ultimately have "(\<Prod>j. d (n + j))  < 1 + 4 * (2/3) ^ n"
       by simp
     also have "... \<le> A / (a n) powr (1 / of_int (2 ^ n))" 
     proof -
@@ -985,11 +939,11 @@ proof-
   proof -
     have "LIM n sequentially. d n ^ 2 ^ n / 2 powr((4/3)^(n-1)) :> at_top"
     proof -
-      define n1 where "n1=(\<lambda>n. (2::real)* (3/2)^(n-1))"
-      define n2 where "n2=(\<lambda>n. ((4::real)/3)^(n-1))"
+      define n1 where "n1 \<equiv> (\<lambda>n. (2::real) * (3/2)^(n-1))"
+      define n2 where "n2 \<equiv> (\<lambda>n. ((4::real)/3)^(n-1))"
       have "LIM n sequentially. (((1+(8/9)/(n1 n)) powr (n1 n))/2) powr (n2 n) :> at_top" 
-      proof (rule filterlim_at_top_powr_real[where g'="exp (8/9) / (2::real)"])
-        define e1 where "e1=exp (8/9) / (2::real)"
+      proof (rule filterlim_at_top_powr_real[where g'="exp (8/9) / 2"])
+        define e1 where "e1 = exp (8/9) / (2::real)"
         show "e1>1" unfolding e1_def by (approximation 4)
         show "(\<lambda>n. ((1+(8/9)/(n1 n)) powr (n1 n))/2) \<longlonglongrightarrow> e1"
         proof -
@@ -1009,47 +963,39 @@ proof-
       qed
       moreover have "\<forall>\<^sub>F n in sequentially. (((1+(8/9)/(n1 n)) powr (n1 n))/2) powr (n2 n)
         = d n ^ 2 ^ n / 2 powr((4/3)^(n-1))"
-      proof (rule eventually_sequentiallyI[of 1])
-        fix x assume "x\<ge>(1::nat)"
-        have " ((1 + 8 / 9 / n1 x) powr n1 x / 2) powr n2 x 
-                    = (((1 + 8 / 9 / n1 x) powr n1 x) powr n2 x) / 2 powr (4 / 3) ^ (x - 1)"
-          by (simp add:n1_def n2_def powr_divide)
-        also have "... = (1 + 8 / 9 / n1 x) powr (n1 x * n2 x) / 2 powr (4 / 3) ^ (x - 1)"
+      proof (rule eventually_sequentiallyI)
+        fix k::nat assume "k \<ge> 1"
+        have "((1 + 8 / 9 / n1 k) powr n1 k / 2) powr n2 k 
+            = (((1 + 8 / 9 / n1 k) powr n1 k) powr n2 k) / 2 powr (4 / 3) ^ (k - 1)"
+          by (simp add: n1_def n2_def powr_divide)
+        also have "... = (1 + 8 / 9 / n1 k) powr (n1 k * n2 k) / 2 powr (4 / 3) ^ (k - 1)"
           by (simp add: powr_powr)
-        also have "... = (1 + 8 / 9 / n1 x) powr (2 ^ x) / 2 powr (4 / 3) ^ (x - 1)"
+        also have "... = (1 + 8 / 9 / n1 k) powr (2 ^ k) / 2 powr (4 / 3) ^ (k - 1)"
         proof -
-          have "n1 x * n2 x = 2 ^ x" 
+          have "n1 k * n2 k = 2 ^ k" 
             unfolding n1_def n2_def
-            apply (subst mult.assoc)
-            apply (subst power_mult_distrib[symmetric])
-            using \<open>x\<ge>1\<close> by (auto simp flip:power_Suc)
+            using \<open>k\<ge>1\<close> by (simp add: mult_ac flip:power_mult_distrib power_Suc)
           then show ?thesis by simp
         qed
-        also have "... = (1 + 8 / 9 / n1 x) ^ (2 ^ x) / 2 powr (4 / 3) ^ (x - 1)"
-          apply (subst (3) powr_realpow[symmetric])
-           apply (simp_all add: n1_def)
-          by (smt zero_le_divide_iff zero_le_power)
-        also have "... = d x ^ 2 ^ x / 2 powr (4 / 3) ^ (x - 1)"
+        also have "... = (1 + 8 / 9 / n1 k) ^ (2 ^ k) / 2 powr (4 / 3) ^ (k - 1)"
+          unfolding n1_def
+          by (smt (verit, best) powr_realpow divide_pos_pos numeral_plus_numeral numeral_plus_one of_nat_numeral of_nat_power semiring_norm(2) zero_less_power)
+        also have "... = d k ^ 2 ^ k / 2 powr (4 / 3) ^ (k - 1)"
         proof -
-          define x1 where "x1=x-1"
-          have *:"x=x1+1" unfolding x1_def using \<open>x\<ge>1\<close> by simp
-          have **: "8 / 9 / n1 x = (2 / 3) ^ (x + 1)" 
-            unfolding n1_def using \<open>x\<ge>1\<close>
-            apply (fold x1_def *[symmetric])
-            by (auto simp add:divide_simps)
+          have **: "8 / 9 / n1 k = (2/3) ^ (k+1)" 
+            unfolding n1_def using \<open>k\<ge>1\<close>
+            by (simp add: divide_simps split: nat_diff_split)
           then show ?thesis 
-            unfolding d_def 
-            apply (subst **)
-            by auto
+            unfolding d_def by presburger 
         qed
-        finally show "((1 + 8 / 9 / n1 x) powr n1 x / 2) powr n2 x 
-                        = d x ^ 2 ^ x / 2 powr (4 / 3) ^ (x - 1) " .
+        finally show "((1 + 8 / 9 / n1 k) powr n1 k / 2) powr n2 k 
+                    = d k ^ 2 ^ k / 2 powr (4 / 3) ^ (k - 1)" .
       qed
       ultimately show ?thesis using filterlim_cong by fast
     qed
     moreover have "\<forall>\<^sub>F n in sequentially. d n ^ 2 ^ n / 2 powr((4/3)^(n-1)) 
         \<le> d n ^ 2 ^ n / real_of_int (b n)"
-      apply (rule eventually_sequentiallyI[of 6])
+      using eventually_sequentiallyI[of 6]
       by (smt (verit, best) asscor2 b dgt1 frac_le of_int_0_less_iff zero_le_power)
     ultimately show ?thesis by (auto elim: filterlim_at_top_mono)
   qed

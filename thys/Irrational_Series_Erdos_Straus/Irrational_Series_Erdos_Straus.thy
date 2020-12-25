@@ -35,8 +35,7 @@ proof -
   have "\<forall>\<^sub>F n in sequentially. \<bar>f n - of_int(g n)\<bar> < 1 / 2" 
     using assms(1)[unfolded tendsto_iff,rule_format,of "1/2"] by auto
   then show ?thesis using assms(2)
-    apply eventually_elim
-    by linarith
+    by eventually_elim linarith
 qed
 
 lemma eventually_mono_sequentially:
@@ -62,14 +61,12 @@ lemma eventually_at_top_mono:
   assumes PQ_imp:"\<And>x. x\<ge>z \<Longrightarrow> \<forall>y\<ge>x. P y \<Longrightarrow> Q x"
   shows "eventually Q at_top"
 proof -
-  obtain N where N_P:"\<forall>n\<ge>N. P n"
-    using event_P[unfolded eventually_at_top_linorder] by auto
-  define N' where "N' = max N z"
-  have "Q x" when "x\<ge>N'" for x 
-    apply (rule PQ_imp)
-    using N_P that unfolding N'_def by auto
+  obtain N where "\<forall>n\<ge>N. P n"
+    by (meson event_P eventually_at_top_linorder)
+  then have "Q x" when "x \<ge> max N z" for x
+    using PQ_imp that by auto 
   then show ?thesis unfolding eventually_at_top_linorder
-    by auto
+    by blast
 qed
 
 lemma frequently_at_top_elim:
@@ -83,9 +80,7 @@ lemma frequently_at_top_elim:
 lemma less_Liminf_iff:
   fixes X :: "_ \<Rightarrow> _ :: complete_linorder"
   shows "Liminf F X < C \<longleftrightarrow> (\<exists>y<C. frequently (\<lambda>x. y \<ge> X x) F)"
-  apply (subst Not_eq_iff[symmetric])
-  apply (simp add:not_less not_frequently not_le le_Liminf_iff)
-  by force
+  by (force simp: not_less not_frequently not_le le_Liminf_iff simp flip: Not_eq_iff)
 
 lemma sequentially_even_odd_imp:
   assumes "\<forall>\<^sub>F N in sequentially. P (2*N)" "\<forall>\<^sub>F N in sequentially. P (2*N+1)"
@@ -94,16 +89,14 @@ proof -
   obtain N where N_P:"\<forall>x\<ge>N.  P (2 * x) \<and> P (2 * x + 1)"
     using eventually_conj[OF assms] 
     unfolding eventually_at_top_linorder by auto
-  define N' where "N'=2*N "
-  have "P n" when "n\<ge>2*N" for n
+  have "P n" when "n \<ge> 2*N" for n
   proof -
     define n' where "n'= n div 2"
-    then have "n'\<ge>N" using that by auto
+    then have "n' \<ge> N" using that by auto
     then have "P (2 * n') \<and> P (2 * n' + 1)"
       using N_P by auto
     then show ?thesis unfolding n'_def
-      apply (cases "even n")
-      by auto
+      by (cases "even n") auto
   qed
   then show ?thesis unfolding eventually_at_top_linorder by auto
 qed
@@ -113,19 +106,19 @@ section \<open>Theorem 2.1 and Corollary 2.10\<close>
 
 context
   fixes a b ::"nat\<Rightarrow>int "
-  assumes a_pos:"\<forall> n. a n >0 " and a_large:"\<forall>\<^sub>F n in sequentially. a n > 1" 
-    and ab_tendsto: "(\<lambda>n. \<bar>b n\<bar> / (a (n-1)*a n)) \<longlonglongrightarrow> 0"
+  assumes a_pos: "\<forall> n. a n >0 " and a_large: "\<forall>\<^sub>F n in sequentially. a n > 1" 
+    and ab_tendsto: "(\<lambda>n. \<bar>b n\<bar> / (a (n-1) * a n)) \<longlonglongrightarrow> 0"
 begin
 
 private lemma aux_series_summable: "summable (\<lambda>n. b n / (\<Prod>k\<le>n. a k))" 
 proof -
-  have "\<forall>e>0. \<forall>\<^sub>F x in sequentially. \<bar>b x\<bar> / (a (x-1) * a x) < e"
+  have "\<And>e. e>0 \<Longrightarrow> \<forall>\<^sub>F x in sequentially. \<bar>b x\<bar> / (a (x-1) * a x) < e"
     using ab_tendsto[unfolded tendsto_iff] 
-    apply (simp add:of_int_abs[symmetric] abs_mult del:of_int_abs)
-    by (subst (asm) (2) abs_of_pos,use \<open>\<forall> n. a n > 0\<close> in auto)+                 
-  from this[rule_format,of 1]
+    apply (simp add: abs_mult flip: of_int_abs)
+    by (subst (asm) (2) abs_of_pos,use \<open>\<forall> n. a n > 0\<close> in auto)+              
+  from this[of 1]
   have "\<forall>\<^sub>F x in sequentially. \<bar>real_of_int(b x)\<bar> < (a (x-1) * a x)"
-    using \<open>\<forall> n. a n >0\<close> by auto
+    using \<open>\<forall> n. a n > 0\<close> by auto
   moreover have "\<forall>n. (\<Prod>k\<le>n. real_of_int (a k)) > 0" 
     using a_pos by (auto intro!:linordered_semidom_class.prod_pos)
   ultimately have "\<forall>\<^sub>F n in sequentially. \<bar>b n\<bar> / (\<Prod>k\<le>n. a k) 
@@ -143,9 +136,7 @@ proof -
       using a_large[unfolded eventually_at_top_linorder] by auto
     define cc where "cc= (\<Prod>k<s. a k)"
     have "cc>0" 
-      unfolding cc_def
-      apply (rule linordered_semidom_class.prod_pos)
-      using a_pos by auto
+      unfolding cc_def by (meson a_pos prod_pos)
     have "(\<Prod>k\<le>n+s. a k) \<ge> cc * 2^n" for n
     proof -
       have "prod a {s..<Suc (s + n)} \<ge> 2^n"
@@ -158,15 +149,12 @@ proof -
           using a_gt_1 by (smt le_add1)
         ultimately show ?case 
           apply (subst prod.atLeastLessThan_Suc,simp)
-          using mult_mono'[of 2 "a (Suc (s + n))" " 2 ^ n" "prod a {s..<Suc (s + n)}",simplified] 
+          using mult_mono'[of 2 "a (Suc (s + n))" " 2 ^ n" "prod a {s..<Suc (s + n)}"] 
           by (simp add: mult.commute)
       qed
-      moreover have "prod a {0..(n + s)} =
-            prod a {..<s} * prod a {s..<Suc (s + n)} "
-        using prod.atLeastLessThan_concat[of 0 s "s+n+1" a,simplified]
-        apply (simp add: atLeastLessThanSuc_atLeastAtMost algebra_simps
-            atLeast0LessThan)
-        by (smt a_gt_1 le_add2 lessThan_atLeast0 mult.left_commute prod.last_plus zero_le)
+      moreover have "prod a {0..(n + s)} = prod a {..<s} * prod a {s..<Suc (s + n)} "
+        using prod.atLeastLessThan_concat[of 0 s "s+n+1" a]
+        by (simp add: add.commute lessThan_atLeast0 prod.atLeastLessThan_concat prod.head_if)
       ultimately show ?thesis
         using \<open>cc>0\<close> unfolding cc_def by (simp add: atLeast0AtMost)
     qed
@@ -232,8 +220,8 @@ proof -
       by (rule Rat_cases) auto
     ultimately show ?thesis by (auto intro!: that[of A B] simp:of_rat_rat)
   qed  
-  define f where "f = (\<lambda>n.  b n / real_of_int (prod a {..n}))"
-  define R where "R = (\<lambda>N. (\<Sum>n. B*b (n+N+1) / prod a {N..n+N+1}))"
+  define f where "f \<equiv> (\<lambda>n. b n / real_of_int (prod a {..n}))"
+  define R where "R \<equiv> (\<lambda>N. (\<Sum>n. B*b (n+N+1) / prod a {N..n+N+1}))"
   have all_e_ubound:"\<forall>e>0. \<forall>\<^sub>F M in sequentially. \<forall>n. \<bar>B*b (n+M+1) / prod a {M..n+M+1}\<bar> < e/4 * 1/2^n"
   proof safe
     fix e::real assume "e>0"
@@ -261,7 +249,7 @@ proof -
       qed
       also have "... <  \<bar>e/4 * (1/prod a {M..<n+M})\<bar>"
       proof -
-        have "\<bar>D\<bar> < e/ 4" 
+        have "\<bar>D\<bar> < e/4" 
           unfolding D_def using N_ba[rule_format, of "n+M+1"] \<open>B>0\<close> \<open>M \<ge> N\<close> \<open>e>0\<close> a_pos
           by (auto simp:field_simps abs_mult abs_of_pos)
         from mult_strict_right_mono[OF this,of "1/prod a {M..<n+M}"] a_pos \<open>e>0\<close>
@@ -314,11 +302,7 @@ proof -
       qed
       also have "... = (e/4) * (\<Sum>n. (1/2)^n)"
         apply (subst suminf_mult[symmetric])
-        subgoal 
-          apply (rule complete_algebra_summable_geometric)
-          by simp
-        subgoal by (auto simp:algebra_simps power_divide)
-        done
+         by (auto simp: algebra_simps power_divide)
       also have "... = e/2" by (simp add:suminf_geometric[of "1/2"])
       finally have "\<bar>\<Sum>n. g n\<bar> \<le> e / 2" .
       then show "dist (R M) 0 < e" unfolding R_def g_def using \<open>e>0\<close> by auto
@@ -549,13 +533,13 @@ proof -
   define C where "C=B*prod a {..<N} * (\<Sum>n<N. f n)"
   have "B*prod a {..<N} * S = C + real_of_int (c N)" 
   proof -
-    define h1 where "h1= (\<lambda>n. (c (n+N) * a (n+N)) / prod a {N..n+N})"
-    define h2 where "h2 = (\<lambda>n. c (n+N+1) / prod a {N..n+N})"
-    have f_h12:"B*prod a {..<N}*f (n+N) = h1 n - h2 n" for n 
+    define h1 where "h1 \<equiv> (\<lambda>n. (c (n+N) * a (n+N)) / prod a {N..n+N})"
+    define h2 where "h2 \<equiv> (\<lambda>n. c (n+N+1) / prod a {N..n+N})"
+    have f_h12: "B * prod a {..<N}*f (n+N) = h1 n - h2 n" for n 
     proof -
-      define g1 where "g1 = (\<lambda>n. B * b (n+N))"
-      define g2 where "g2 = (\<lambda>n. prod a {..<N} / prod a {..n + N})"
-      have "B*prod a {..<N}*f (n+N) = (g1 n * g2 n)"
+      define g1 where "g1 \<equiv> (\<lambda>n. B * b (n+N))"
+      define g2 where "g2 \<equiv> (\<lambda>n. prod a {..<N} / prod a {..n + N})"
+      have "B * prod a {..<N}*f (n+N) = (g1 n * g2 n)"
         unfolding f_def g1_def g2_def by (auto simp:algebra_simps)
       moreover have "g1 n = c (n+N) * a (n+N) - c (n+N+1)" 
         using large_n[rule_format,of "n+N"] unfolding g1_def by auto
@@ -584,9 +568,7 @@ proof -
       unfolding C_def by (auto simp:algebra_simps)
     also have "... = C + (\<Sum>n. h1 n - h2 n)"
       apply (subst suminf_mult[symmetric])
-      subgoal using \<open>summable f\<close> by (simp add: summable_iff_shift)
-      subgoal using f_h12 by auto
-      done
+      using \<open>summable f\<close> f_h12 by auto
     also have "... = C + h1 0"
     proof -
       have "(\<lambda>n. \<Sum>i\<le>n. h1 i - h2 i) \<longlonglongrightarrow> (\<Sum>i. h1 i - h2 i)"
@@ -594,7 +576,7 @@ proof -
         have "(\<lambda>i. h1 i - h2 i) = (\<lambda>i.  real_of_int (B * prod a {..<N}) * f (i + N))"
           using f_h12 by auto
         then show "summable (\<lambda>i. h1 i - h2 i)"
-          using \<open>summable f\<close> by (simp add: summable_iff_shift summable_mult)
+          using \<open>summable f\<close> by (simp add: summable_mult)
       qed
       moreover have "(\<Sum>i\<le>n. h1 i - h2 i)  = h1 0 - h2 n" for n
       proof (induct n)
@@ -1966,15 +1948,14 @@ proof
       by real_asymp
     moreover have " \<forall>\<^sub>F n in sequentially. f n < a n"
       using a_n_sqrt unfolding f_def .
-    ultimately have "\<forall>\<^sub>F n in sequentially. a n / nth_prime n 
-                    > f n / (2*(real n * ln n))"
-      apply eventually_elim
-      apply (rule frac_less2)
-      by auto
-    moreover have "\<forall>\<^sub>F n in sequentially.
-        (f n)/ (2*(real n * ln n)) > 1"
-      unfolding f_def 
-      by real_asymp
+    ultimately have "\<forall>\<^sub>F n in sequentially. a n / nth_prime n > f n / (2*(real n * ln n))"
+    proof eventually_elim
+      case (elim n)
+      then show ?case
+        by (auto intro: frac_less2)
+    qed
+    moreover have "\<forall>\<^sub>F n in sequentially. (f n)/ (2*(real n * ln n)) > 1"
+      unfolding f_def by real_asymp
     ultimately show ?thesis 
       by eventually_elim argo
   qed
