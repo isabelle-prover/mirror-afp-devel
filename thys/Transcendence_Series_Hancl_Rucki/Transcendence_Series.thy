@@ -17,8 +17,7 @@ here respectively). Both proofs make use of Roth's celebrated theorem on diophan
 to algebraic numbers from 1955 \cite{roth_1955} which we assume and implement within the locale 
 RothsTheorem.
 
-A small mistake was detected in the original proof of Theorem 2.1, and the authors suggested
-to us a fix for the problem (in communication by email). 
+A small mistake was detected in the original proof of Theorem 2.1, and the authors gave us a fix for the problem (by email). 
 Our formalised proof incorporates this correction (see the Remark in the proof of HanclRucki1).
 \<close>
 
@@ -26,7 +25,7 @@ subsection \<open>Misc\<close>
 
 lemma powr_less_inverse_iff:
   fixes x y z::real
-  assumes "x>0""y>0""z>0"
+  assumes "x>0" "y>0" "z>0"
   shows "x powr y < z \<longleftrightarrow> x < z powr (inverse y)"
 proof
   assume "x powr y < z"
@@ -41,21 +40,21 @@ qed
 
 lemma powr_less_inverse_iff':
   fixes x y z::real
-  assumes "x>0""y>0""z>0"
+  assumes "x>0" "y>0" "z>0"
   shows "z< x powr y \<longleftrightarrow> z powr (inverse y) < x"
   using powr_less_inverse_iff[symmetric,of _ "inverse y"] assms by auto
 
 lemma powr_less_eq_inverse_iff:
   fixes x y z::real
-  assumes "x>0""y>0""z>0"
+  assumes "x>0" "y>0" "z>0"
   shows "x powr y \<le> z \<longleftrightarrow> x \<le> z powr (inverse y)"
-  by (meson assms(1) assms(2) assms(3) not_less powr_less_inverse_iff')
+  by (meson assms not_less powr_less_inverse_iff')
 
 lemma powr_less_eq_inverse_iff':
   fixes x y z::real
-  assumes "x>0""y>0""z>0"
-  shows "z\<le> x powr y \<longleftrightarrow> z powr (inverse y) \<le> x"
-  by (simp add: assms(1) assms(2) assms(3) powr_less_eq_inverse_iff)
+  assumes "x>0" "y>0" "z>0"
+  shows "z \<le> x powr y \<longleftrightarrow> z powr (inverse y) \<le> x"
+  by (simp add: assms powr_less_eq_inverse_iff)
 
 lemma tendsto_PInfty_mono:
   assumes "(ereal o f) \<longlonglongrightarrow> \<infinity>" "\<forall>\<^sub>F x in sequentially. f x \<le> g x"
@@ -105,8 +104,8 @@ lemma incseq_tendsto_limsup:
 
 subsection \<open>Main proofs\<close>
 
-text \<open>Since the proof of Roths theorem has not been formalized yet, we implement it into a locale 
-      and used it as an assumption.\<close>
+text \<open>Since the proof of Roth's theorem has not been formalized yet, we formalize the statement in a locale 
+      and use it as an assumption.\<close>
 locale RothsTheorem = 
   assumes RothsTheorem:"\<forall>\<xi> \<kappa>. algebraic \<xi> \<and> \<xi> \<notin> \<rat> \<and> infinite {(p,q). q>0 \<and> 
             coprime p q \<and> \<bar>\<xi> - of_int p / of_int q\<bar> < 1 / q powr \<kappa>} \<longrightarrow> \<kappa> \<le> 2"
@@ -124,7 +123,6 @@ proof -
     have [simp]:"aa k>0" "bb k>0" for k
       unfolding aa_def bb_def using a_pos b_pos by auto
     show "\<forall>\<^sub>F n in sequentially. 0 < bb n / aa n"
-      apply (rule eventuallyI)
       by auto
     show "1 < liminf (\<lambda>n. ereal (bb n / aa n / (bb (Suc n) / aa (Suc n))))" 
       using liminf_1 by (auto simp:algebra_simps) 
@@ -135,12 +133,11 @@ proof -
     unfolding aa_def bb_def using a_pos b_pos 
     by (auto simp add: int_one_le_iff_zero_less)
 
-  define B where "B=liminf (\<lambda>x. ereal (aa (x + 1) / aa x * bb x / bb (x + 1)))"
-  define M where "M= (case B of ereal m \<Rightarrow> (m+1)/2 | _ \<Rightarrow> 2)"
+  define B where "B \<equiv> liminf (\<lambda>x. ereal (aa (x + 1) / aa x * bb x / bb (x + 1)))"
+  define M where "M \<equiv> (case B of ereal m \<Rightarrow> (m+1)/2 | _ \<Rightarrow> 2)"
   have "M > 1" "M < B"
     using liminf_1 unfolding M_def 
-    apply (fold B_def)
-    by (cases B,auto)+
+    by (auto simp add: M_def B_def split: ereal.split)
 
   text \<open>
 Remark:
@@ -160,8 +157,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
 
   have bb_aa_event:"\<forall>\<^sub>F k in sequentially. (1/M)*(bb k / aa k)> bb(k+1)/ aa (k+1)"
     using less_LiminfD[OF \<open>M < B\<close>[unfolded B_def],simplified] 
-    apply eventually_elim
-    using \<open>M > 1\<close> by (auto simp:divide_simps algebra_simps)
+    by eventually_elim (use \<open>M > 1\<close> in \<open>auto simp: field_simps\<close>)
 
   have bb_aa_p:"\<forall>\<^sub>F k in sequentially. \<forall>p. bb(k+p)/ aa (k+p) \<le> (1/M^p)*(bb k / aa k)" 
   proof -
@@ -187,18 +183,17 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
   define \<xi> where "\<xi> = suminf (\<lambda> k. bb k / aa k)"
   have \<xi>_Inf_many:"\<exists>\<^sub>\<infinity> k. \<bar>\<xi> - (\<Sum>k = 0..k. bb k / aa k)\<bar> <  1 / prod aa {0..k} powr (2 + \<delta>)" 
   proof -
-    have "\<bar>\<xi> - (\<Sum>i = 0..k. bb i / aa i)\<bar> = \<bar>\<Sum>i. bb (i+(k+1)) / aa (i+(k+1))\<bar>"
-      for k
+    have "\<bar>\<xi> - (\<Sum>i = 0..k. bb i / aa i)\<bar> = \<bar>\<Sum>i. bb (i+(k+1)) / aa (i+(k+1))\<bar>" for k
       unfolding \<xi>_def
       apply (subst suminf_minus_initial_segment[of _ "k+1",OF summable])
       using atLeast0AtMost lessThan_Suc_atMost by auto
-    
+
     moreover have "\<exists>\<^sub>\<infinity> k. \<bar>\<Sum>i. bb(i+(k+1))/ aa (i+(k+1))\<bar>
                             <  1 / prod aa {0..k} powr (2 + \<delta>)" 
     proof -
-      define P where "P = (\<lambda> i. \<forall>p. bb (i + 1 + p) / aa (i + 1 + p)
+      define P where "P \<equiv> (\<lambda> i. \<forall>p. bb (i + 1 + p) / aa (i + 1 + p)
                                           \<le> 1 / M ^ p * (bb (i + 1) / aa (i + 1)))"
-      define Q where "Q= (\<lambda> i. ereal (M / (M - 1)) 
+      define Q where "Q \<equiv> (\<lambda> i. ereal (M / (M - 1)) 
                     < ereal (aa (i + 1) / prod aa {0..i} powr (2 + \<delta>) * (1 / bb (i + 1))))"
       have "\<forall>\<^sub>\<infinity> i. P i"
         using bb_aa_p[THEN sequentially_offset, of 1] cofinite_eq_sequentially
@@ -250,8 +245,8 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
     ultimately show ?thesis by auto
   qed
 
-  define pq where "pq = (\<lambda>k. quotient_of (\<Sum>i=0..k. of_int (b i) / of_int (a i)))"
-  define p q where "p = fst \<circ> pq" and "q = snd \<circ> pq"
+  define pq where "pq \<equiv> (\<lambda>k. quotient_of (\<Sum>i=0..k. of_int (b i) / of_int (a i)))"
+  define p q where "p \<equiv> fst \<circ> pq" and "q = snd \<circ> pq"
   have coprime_pq:"coprime (p k) (q k)"
         and q_pos:"q k > 0" and pq_sum:"p k / q k = (\<Sum>i=0..k. b i / a i)" for k
   proof -
@@ -267,8 +262,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
     finally show "p k / q k = (\<Sum>i=0..k. b i / a i)" by (simp add:of_rat_divide)
   qed
 
-  have \<xi>_Inf_many2:"\<exists>\<^sub>\<infinity> k. \<bar>\<xi> - p k / q k\<bar> 
-                        <  1 / q k powr (2 + \<delta>)"
+  have \<xi>_Inf_many2:"\<exists>\<^sub>\<infinity> k. \<bar>\<xi> - p k / q k\<bar> <  1 / q k powr (2 + \<delta>)"
     using \<xi>_Inf_many
   proof (elim INFM_mono)
     fix k assume asm:"\<bar>\<xi> - (\<Sum>k = 0..k. bb k / aa k)\<bar> < 1 / prod aa {0..k} powr (2 + \<delta>)"
@@ -290,7 +284,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
                 not_less zdiv_mono2)  
       next
         case (Suc k)
-        define de where "de=snd \<circ> quotient_of"
+        define de where "de \<equiv>snd \<circ> quotient_of"
         have "real_of_int (q (Suc k)) 
                   = de (\<Sum>i=0..Suc k. of_int (b i) / of_int (a i))"
           unfolding q_def pq_def de_def by simp
@@ -323,19 +317,19 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
     finally show "\<bar>\<xi> - real_of_int (p k) / real_of_int (q k)\<bar> < 1 / real_of_int (q k) powr (2 + \<delta>)" .
   qed
 
-  define pqs where "pqs={(p, q). q>0 \<and> coprime p q 
+  define pqs where "pqs \<equiv>{(p, q). q>0 \<and> coprime p q 
       \<and> \<bar>\<xi> - real_of_int p / real_of_int q\<bar> < 1 / q powr (2 + \<delta>)}"
   have \<xi>_infinite:"infinite pqs"
   proof -
-    define A where "A={k. \<bar>\<xi> -  (p k) /  (q k)\<bar> < 1 / (q k) powr (2 + \<delta>)}" 
+    define A where "A \<equiv> {k. \<bar>\<xi> -  (p k) /  (q k)\<bar> < 1 / (q k) powr (2 + \<delta>)}" 
     have "\<exists>\<^sub>\<infinity> k. \<bar>\<xi> - p k / q k\<bar> <  1 / q k powr (2 + \<delta>)"
       using \<xi>_Inf_many2 .
     then have "infinite A"
       unfolding Inf_many_def A_def by auto
     moreover have "inj_on (\<lambda>k. (p k, q k)) A"
     proof -
-      define g where "g=(\<lambda>i. rat_of_int (b i) / rat_of_int (a i))"
-      define f where "f=(\<lambda>k. \<Sum>i = 0..k. g i)"
+      define g where "g \<equiv> (\<lambda>i. rat_of_int (b i) / rat_of_int (a i))"
+      define f where "f \<equiv> (\<lambda>k. \<Sum>i = 0..k. g i)"
       have g_pos:"g i>0" for i
         unfolding g_def by (simp add: a_pos b_pos)
       have "strict_mono f" unfolding strict_mono_def f_def
@@ -380,7 +374,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
     have "pqs \<subseteq> {(m,n)} \<union> {x. x \<in>pqs \<and> - \<bar>m\<bar> - 1 \<le>fst x \<and> fst x \<le> \<bar>m\<bar> + 1 \<and> 0<snd x \<and> snd x < n }"
     proof (rule subsetI)
       fix x assume "x \<in> pqs"
-      define p q where "p=fst x" and "q=snd x"
+      define p q where "p \<equiv> fst x" and "q=snd x"
       have "q>0" "coprime p q" and pq_less:"\<bar>\<xi> - p / q\<bar> < 1 / q powr (2 + \<delta>)"
         using \<open>x\<in>pqs\<close> unfolding p_def q_def pqs_def by auto
       have q_lt_n:"q<n" when "m\<noteq>p \<or> n\<noteq>q" 
@@ -413,7 +407,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
       qed
       moreover have "- \<bar>m\<bar> - 1 \<le> p \<and> p \<le> \<bar>m\<bar> + 1" when "m\<noteq>p \<or> n\<noteq>q" 
       proof -
-        define qn where "qn=q/n"
+        define qn where "qn \<equiv> q/n"
         have "0<qn" "qn<1" unfolding qn_def using q_lt_n[OF \<open>m\<noteq>p \<or> n\<noteq>q\<close>] \<open>q>0\<close> by auto
 
         have "\<bar>m/n - p / q\<bar> < 1 / q powr (2 + \<delta>)" using pq_less unfolding \<xi>_mn by simp
@@ -557,7 +551,7 @@ proof-
                   powr(2+ \<delta> * \<epsilon> / (1+\<epsilon>))) > (bb (k+1) / aa(k+1)) powr (\<epsilon> / (1+\<epsilon>))"
       when "M > 0" for M
   proof -
-    define tt where "tt= (\<lambda>i. prod aa {0..i} powr (2 + 2 / \<epsilon> + \<delta>))"
+    define tt where "tt \<equiv> (\<lambda>i. prod aa {0..i} powr (2 + 2 / \<epsilon> + \<delta>))"
     have tt_pos:"tt i > 0" for i 
       unfolding tt_def
       apply(subst powr_gt_zero,induct i)
@@ -590,7 +584,7 @@ proof-
     using eventually_ge_at_top[of t]
   proof eventually_elim
     case (elim k)
-    define ff where "ff=(\<lambda>k. (aa k / bb k) powr (1 / (1 + \<epsilon>)))"
+    define ff where "ff \<equiv> (\<lambda>k. (aa k / bb k) powr (1 / (1 + \<epsilon>)))"
     have 11:"ff k+s \<le> ff (k+s)" for s
     proof (induct s)
       case 0
@@ -613,7 +607,7 @@ proof-
       "summable (\<lambda>i. 1/((z+ real i)powr(1+\<epsilon>)))"
     when "z>1" for z
   proof -
-    define f where "f= (\<lambda>r. 1/((z+ r)powr(1+\<epsilon>)))"
+    define f where "f \<equiv> (\<lambda>r. 1/((z+ r)powr(1+\<epsilon>)))"
     have "((\<lambda>x. f (x - 1)) has_integral ((z-1) powr - \<epsilon>) / \<epsilon>) {0..}"
     proof -
        have "((\<lambda>x. (z-1 + x) powr (- 1 - \<epsilon>)) has_integral ((z-1) powr - \<epsilon>) / \<epsilon>) {0<..}"
@@ -643,7 +637,7 @@ proof-
     define ff where "ff\<equiv>(\<lambda>x. ereal (aa x / bb x))"
     have "limsup ff =  \<infinity>" 
     proof -
-      define tt where "tt= (\<lambda>i. prod aa {0..i} powr (2 + 2 / \<epsilon> + \<delta>))"
+      define tt where "tt \<equiv> (\<lambda>i. prod aa {0..i} powr (2 + 2 / \<epsilon> + \<delta>))"
       have "tt i \<ge> 1" for i
         unfolding tt_def
         apply (rule ge_one_powr_ge_zero)
@@ -702,7 +696,7 @@ proof-
                         ,of "(2 powr (1/\<epsilon>) / (2 powr (1/\<epsilon>) - 1)) powr (1+\<epsilon>)" 1]
   proof eventually_elim
     case (elim k)
-    define tt where "tt=(aa (k + 1) / bb (k + 1)) powr (1 / (1 + \<epsilon>))"
+    define tt where "tt \<equiv> (aa (k + 1) / bb (k + 1)) powr (1 / (1 + \<epsilon>))"
     have "tt>1"
     proof -
       have "(aa k / bb k) powr (1 / (1 + \<epsilon>)) > 0"
@@ -725,7 +719,7 @@ proof-
     qed
     also have "... \<le> (\<Sum>i. 1 / (tt + i) powr (1 + \<epsilon>))"
     proof (rule suminf_le)
-      define ff where "ff=(\<lambda>k n. (aa (k+1) / bb (k+1)) powr (1 / (1 + \<epsilon>)) + real n)"
+      define ff where "ff \<equiv> (\<lambda>k n. (aa (k+1) / bb (k+1)) powr (1 / (1 + \<epsilon>)) + real n)"
       have "bb (n + (k + 1)) / aa (n + (k + 1)) \<le> 1 / (ff k n) powr (1 + \<epsilon>)" for n
       proof -
         have "ff k n powr (1 + \<epsilon>) \<le> aa (k + n +1 ) / bb (k + n+1 )"
@@ -770,8 +764,8 @@ proof-
     finally show ?case .
   qed
 
-  define pq where "pq = (\<lambda>k. quotient_of (\<Sum>i=0..k. of_int (b i) / of_int (a i)))"
-  define p q where "p = fst \<circ> pq" and "q = snd \<circ> pq"
+  define pq where "pq \<equiv> (\<lambda>k. quotient_of (\<Sum>i=0..k. of_int (b i) / of_int (a i)))"
+  define p q where "p \<equiv> fst \<circ> pq" and "q = snd \<circ> pq"
   have coprime_pq:"coprime (p k) (q k)"
         and q_pos:"q k > 0" and pq_sum:"p k / q k = (\<Sum>i=0..k. b i / a i)" for k
   proof -
@@ -825,7 +819,7 @@ proof-
                 not_less zdiv_mono2)  
         next
           case (Suc k)
-          define de where "de=snd \<circ> quotient_of"
+          define de where "de \<equiv> snd \<circ> quotient_of"
           have "real_of_int (q (Suc k)) 
                   = de (\<Sum>i=0..Suc k. of_int (b i) / of_int (a i))"
             unfolding q_def pq_def de_def by simp
@@ -862,18 +856,18 @@ proof-
     qed
   qed
 
-  define pqs where "pqs={(p, q). q>0 \<and> coprime p q \<and> \<bar>\<xi> - real_of_int p / real_of_int q\<bar> 
+  define pqs where "pqs \<equiv> {(p, q). q>0 \<and> coprime p q \<and> \<bar>\<xi> - real_of_int p / real_of_int q\<bar> 
                   < 1 / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))}"
   have \<xi>_infinite:"infinite pqs"
   proof -
-    define A where "A={k. \<bar>\<xi> -  (p k) /  (q k)\<bar> < 1 / (q k) powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))}" 
+    define A where "A \<equiv> {k. \<bar>\<xi> -  (p k) /  (q k)\<bar> < 1 / (q k) powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))}" 
     note \<xi>_Inf_many
     then have "infinite A"
       unfolding Inf_many_def A_def by auto
     moreover have "inj_on (\<lambda>k. (p k, q k)) A"
     proof -
-      define g where "g=(\<lambda>i. rat_of_int (b i) / rat_of_int (a i))"
-      define f where "f=(\<lambda>k. \<Sum>i = 0..k. g i)"
+      define g where "g \<equiv> (\<lambda>i. rat_of_int (b i) / rat_of_int (a i))"
+      define f where "f \<equiv> (\<lambda>k. \<Sum>i = 0..k. g i)"
       have g_pos:"g i>0" for i
         unfolding g_def by (simp add: a_pos b_pos)
       have "strict_mono f" unfolding strict_mono_def f_def
@@ -918,7 +912,7 @@ proof-
     have "pqs \<subseteq> {(m,n)} \<union> {x. x \<in>pqs \<and> - \<bar>m\<bar> - 1 \<le>fst x \<and> fst x \<le> \<bar>m\<bar> + 1 \<and> 0<snd x \<and> snd x < n }"
     proof (rule subsetI)
       fix x assume "x \<in> pqs"
-      define p q where "p=fst x" and "q=snd x"
+      define p q where "p \<equiv> fst x" and "q=snd x"
       have "q>0" "coprime p q" and pq_less:"\<bar>\<xi> - p / q\<bar> 
           < 1 / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))"
         using \<open>x\<in>pqs\<close> unfolding p_def q_def pqs_def by auto
@@ -953,7 +947,7 @@ proof-
       qed
       moreover have "- \<bar>m\<bar> - 1 \<le> p \<and> p \<le> \<bar>m\<bar> + 1" when "m\<noteq>p \<or> n\<noteq>q" 
       proof -
-        define qn where "qn=q/n"
+        define qn where "qn \<equiv> q/n"
         have "0<qn" "qn<1" unfolding qn_def using q_lt_n[OF \<open>m\<noteq>p \<or> n\<noteq>q\<close>] \<open>q>0\<close> by auto
 
         have "\<bar>m/n - p / q\<bar> < 1 / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))" 
@@ -968,13 +962,8 @@ proof-
         moreover have "- \<bar>m\<bar> - 1 \<le> qn*m- q / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))"
         proof -
           have "- \<bar>m\<bar> \<le> qn*m" using \<open>0<qn\<close> \<open>qn<1\<close> 
-            apply (cases "m\<ge>0")
-            subgoal 
-              apply simp 
-              by (meson less_eq_real_def mult_nonneg_nonneg neg_le_0_iff_le of_int_0_le_iff 
-                          order_trans)
-            subgoal by simp
-            done
+            apply (simp add: abs_if)
+            by (smt (verit, best) mult_nonneg_nonneg of_int_nonneg)
           moreover have "- 1 \<le> - q / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))" 
           proof -
             have "q = q powr 1" using \<open>0 < q\<close> by auto
@@ -989,10 +978,8 @@ proof-
         moreover have "qn*m + q / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>)) \<le> \<bar>m\<bar> + 1"
         proof -
           have "qn*m \<le> \<bar>m\<bar>" using \<open>0<qn\<close> \<open>qn<1\<close> 
-            apply (cases "m\<ge>0")
-            subgoal by (simp add: mult_left_le_one_le)
-            subgoal by (smt of_int_0_le_iff zero_le_mult_iff)
-            done
+            apply (simp add: abs_if mult_left_le_one_le)
+            by (meson less_eq_real_def mult_pos_neg neg_0_less_iff_less of_int_less_0_iff order_trans)
           moreover have "q / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>)) \<le> 1"
           proof -
             have "q = q powr 1" using \<open>0 < q\<close> by auto
@@ -1017,8 +1004,7 @@ proof-
                 ({- \<bar>m\<bar> - 1..\<bar>m\<bar> +1} \<times> {0<..<n})"
         by auto
       ultimately show ?thesis 
-        apply (elim rev_finite_subset)
-        by blast
+        using finite_subset by blast
     qed
     ultimately show ?thesis using finite_subset by auto
   qed

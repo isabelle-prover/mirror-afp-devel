@@ -10,21 +10,21 @@ theory Irrationality_J_Hancl
   imports "HOL-Analysis.Analysis" "HOL-Decision_Procs.Approximation"
 begin
 
-text \<open>This is the formalisation of a proof by J. Hancl, in particular of the proof of his Theorem 3 in
+text \<open>This is the formalisation of a proof by J. Hančl, in particular of the proof of his Theorem 3 in
 the paper: Irrational Rapidly Convergent Series, Rend. Sem. Mat. Univ. Padova, Vol 107 (2002).
 
 The statement asserts the irrationality of the sum of a series consisting of rational numbers
 defined using sequences that fulfill certain properties. Even though the statement
 is number-theoretic, the proof uses only arguments from introductory Analysis.\<close>
 
-text \<open>We show the central result (theorem Hancl3) by proof by contradiction, by making use of some of 
+text \<open>We prove the central result (theorem Hancl3) by contradiction, by making use of some of 
  the auxiliary lemmas. To this end, assuming that the sum is a rational number, for a quantity 
  $\textrm{ALPHA}(n)$ we show that $\textrm{ALPHA}(n) \geq 1$ for all $n \in \mathbb{N}$. After that we show that we can find an 
   $n \in \mathbb{N}$ for which $\textrm{ALPHA}(n) < 1$ which yields a contradiction and we thus conclude that the 
-  sum of the series is a rational number. We finally give an immediate application of theorem Hancl3
+  sum of the series is rational. We finally give an immediate application of theorem Hancl3
  for a specific series (corollary Hancl3corollary, requiring lemma
  summable\_ln\_plus) which corresponds to Corollary 2 in the original
-paper by J. Hancl. 
+paper by J. Hančl. 
 \<close>
 
 hide_const floatarith.Max
@@ -48,7 +48,7 @@ lemma filterlim_at_top_powr_real:
 proof -
   have "LIM x F. ((g' + 1) / 2) powr f x :> at_top" 
   proof (subst filterlim_at_top_gt[of _ _ 1],rule+)
-    fix Z assume "Z>(1::real)"
+    fix Z::real assume "Z > 1"
     have "\<forall>\<^sub>F x in F. ln Z / ln ((g' + 1) / 2) \<le> f x"
       using assms(1) filterlim_at_top by blast
     then have "\<forall>\<^sub>F x in F. ln Z \<le> ln (((g' + 1) / 2) powr f x)"
