@@ -9593,6 +9593,19 @@ abstract =
   transitive model of ZFC, we construct a proper generic extension and
   show that the latter also satisfies ZFC.
 
+[Delta_System_Lemma]
+title = Cofinality and the Delta System Lemma
+author = Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro/home_en.html>
+topic = Mathematics/Combinatorics, Logic/Set theory
+date = 2020-12-27
+notify = sterraf@famaf.unc.edu.ar
+abstract =
+  We formalize the basic results on cofinality of linearly ordered sets
+  and ordinals and Šanin’s Lemma for uncountable families of finite
+  sets. This last result is used to prove the countable chain condition
+  for Cohen posets. We work in the set theory framework of Isabelle/ZF,
+  using the Axiom of Choice as needed.
+
 [Recursion-Addition]
 title = Recursion Theorem in ZF
 author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
@@ -9960,7 +9973,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Ni
 topic = Computer science/Algorithms/Graph
 date = 2020-12-08
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We verify the correctness of Prim's, Kruskal's and
   Borůvka's minimum spanning tree algorithms based on algebras for
   aggregation and minimisation.
@@ -9971,7 +9984,7 @@ author = David Fuenmayor <mailto:davfuenmayor@gmail.com>
 topic = Logic/General logic
 date = 2020-12-17
 notify = davfuenmayor@gmail.com
-abstract = 
+abstract =
   We introduce a generalized topological semantics for paraconsistent
   and paracomplete logics by drawing upon early works on topological
   Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &

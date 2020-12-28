@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Cofinality and the Delta System Lemma</title>
+              <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
+       <guid>https://www.isa-afp.org/entries/Delta_System_Lemma.html</guid>
+       <dc:creator> Pedro Sánchez Terraf       </dc:creator>
+       <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize the basic results on cofinality of linearly ordered sets
+and ordinals and Šanin’s Lemma for uncountable families of finite
+sets. This last result is used to prove the countable chain condition
+for Cohen posets. We work in the set theory framework of Isabelle/ZF,
+using the Axiom of Choice as needed.</description>
+    </item>
     <item>
        <title>Topological semantics for paraconsistent and paracomplete logics</title>
               <link>https://www.isa-afp.org/entries/Topological_Semantics.html</link>
@@ -578,19 +591,6 @@ of n-element sets for some fixed n, the Nash-Williams theorem concerns
 infinite sets of finite sets (or lists) subject to a “no initial
 segment” condition. The present formalisation follows a
 monograph on Ramsey Spaces by Todorčević.</description>
-    </item>
-    <item>
-       <title>A Formalization of Knuth–Bendix Orders</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</guid>
-       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
-       <pubDate>13 May 2020 00:00:00 +0000</pubDate>
-       <description>
-We define a generalized version of Knuth&amp;ndash;Bendix orders,
-including subterm coefficient functions. For these orders we formalize
-several properties such as strong normalization, the subterm property,
-closure properties under substitutions and contexts, as well as ground
-totality.</description>
     </item>
   </channel>
 </rss>
