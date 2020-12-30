@@ -187,6 +187,8 @@ object profile extends isabelle.CI_Profile
     println(s"AFP id $afp_id")
     if (status_file.exists())
       status_file.delete()
+    if (report_file.exists())
+      report_file.delete()
 
     if (!can_send_mails)
       println(s"Mail configuration not found.")

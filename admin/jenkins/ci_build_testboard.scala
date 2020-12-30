@@ -74,7 +74,11 @@ object profile extends isabelle.CI_Profile
   def select = Nil
 
   def pre_hook(args: List[String]) =
+  {
     println(s"AFP id $afp_id")
+    if (report_file.exists())
+      report_file.delete()
+  }
 
   def post_hook(results: Build.Results) =
   {
