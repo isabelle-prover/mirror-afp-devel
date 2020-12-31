@@ -1,5 +1,5 @@
 chapter AFP
-   
+
 session Isabelle_Meta_Model (AFP) = "HOL-Library" +
   description "Isabelle_Meta_Model containing a Toy Example"
   options [timeout = 600]
@@ -17,6 +17,7 @@ session Isabelle_Meta_Model (AFP) = "HOL-Library" +
     "toy_example/embedding/meta_toy"
     "toy_example/generator"
   theories [document = false]
+    Antiquote_Setup
     "isabelle_home/src/HOL/Isabelle_Main0"
     "isabelle_home/src/HOL/Isabelle_Main1"
     "isabelle_home/src/HOL/Isabelle_Main2"

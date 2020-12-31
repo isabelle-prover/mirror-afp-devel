@@ -44,11 +44,9 @@ text\<open>We present two solutions for obtaining an Isabelle file.\<close>
 section\<open>Static Meta Embedding with Exportation\<close>
 
 theory  Generator_static
-imports Printer
+imports Printer "../../Antiquote_Setup"
 begin
 (*<*)
-ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
-
 declare[[cartouche_type' = "abr_string"]]
 (*>*)
 
@@ -66,9 +64,9 @@ definition "Design =
   , mk (n \<open>Planet\<close> (Some \<open>Galaxy\<close>)) [(\<open>weight\<close>, ToyTy_raw \<open>nat\<close>)]
   , mk (n \<open>Person\<close> (Some \<open>Planet\<close>)) [(\<open>salary\<close>, ToyTy_raw \<open>int\<close>)] ])"
 
-text \<open>Since we are in a Isabelle session, at this time, it becomes possible to inspect with 
-the command @{command value} the result of the translations applied with @{term Design}. 
-A suitable environment should nevertheless be provided, 
+text \<open>Since we are in a Isabelle session, at this time, it becomes possible to inspect with
+the command @{command value} the result of the translations applied with @{term Design}.
+A suitable environment should nevertheless be provided,
 one can typically experiment this by copying-pasting the following environment
 initialized in the above \<open>main\<close>:\<close>
 

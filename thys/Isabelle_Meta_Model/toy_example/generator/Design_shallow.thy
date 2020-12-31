@@ -48,8 +48,8 @@ imports
   "../Toy_Library"
   "../Toy_Library_Static"
   "../embedding/Generator_dynamic_sequential"
+  "../../Antiquote_Setup"
 begin
-ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 
 text\<open>
 In this example, we configure our package to execute tactic SML code
@@ -57,7 +57,7 @@ In this example, we configure our package to execute tactic SML code
 details how to obtain such generated \verb|.thy| file).
 Since SML code are already compiled (or reflected) and bound with the native Isabelle API in
 @{theory Isabelle_Meta_Model.Generator_dynamic_sequential}, nothing is generated in this theory.
-The system only parses arguments given to meta-commands and immediately calls the corresponding 
+The system only parses arguments given to meta-commands and immediately calls the corresponding
 compiled functions.
 
 The execution time is comparatively similar as if tactics were written by hand,
@@ -79,7 +79,7 @@ Class Atom < Molecule
   Attributes size : Integer
 End
 
-       End End End 
+       End End End
 
 Class Molecule < Person
 
@@ -130,7 +130,7 @@ Here in @{keyword "shallow"} mode, the following expression is directly rejected
 \verb|  Post "><"|
 \<close>
 
-Context[shallow] Person :: content () 
+Context[shallow] Person :: content ()
   Post : "a + b = c"
 
 end

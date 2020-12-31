@@ -41,9 +41,8 @@
 
 (*<*)
 theory Rail
-imports "../toy_example/embedding/Generator_dynamic_sequential"
+imports "../toy_example/embedding/Generator_dynamic_sequential" "../Antiquote_Setup"
 begin
-ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 (*>*)
 
 section\<open>Main Setup of Meta Commands\<close>
@@ -91,8 +90,8 @@ text \<open>
 
 text\<open>
 @{command generation_syntax} sets the behavior of all incoming meta-commands.
-By default, without firstly writing @{command generation_syntax}, 
-meta-commands will only print in output what they have parsed, 
+By default, without firstly writing @{command generation_syntax},
+meta-commands will only print in output what they have parsed,
 this is similar as giving to @{command generation_syntax}
 a non-empty list having only @{keyword "syntax_print"} as elements
 (on the other hand, nothing is printed when an empty list is received).
@@ -125,37 +124,37 @@ As a side note, target languages for the @{keyword "deep"} mode currently suppor
  Haskell, OCaml, Scala and SML.
 So in principle, all these targets generate the same Isabelle content and exit correctly.
 However, depending on the intended use, exporting with some targets may be more appropriate
-than other targets: 
+than other targets:
 \begin{itemize}
-\item For efficiency reasons, the meta-compiler has implemented a particular optimization 
-for accelerating the process of evaluating incoming meta-commands. 
-By default in Haskell and OCaml, the meta-compiler (at HOL side) is exported only once, 
-during the @{command generation_syntax} step. 
+\item For efficiency reasons, the meta-compiler has implemented a particular optimization
+for accelerating the process of evaluating incoming meta-commands.
+By default in Haskell and OCaml, the meta-compiler (at HOL side) is exported only once,
+during the @{command generation_syntax} step.
 Then all incoming meta-commands are considered as arguments sent to the exported meta-compiler.
 As a compositionality aspect, these arguments are compiled then linked together
 with the (already compiled) meta-compiler, but
-this implies the use of one call of 
-\<open>unsafeCoerce\<close> in Haskell and one \<open>Obj.magic\<close> statement in OCaml 
+this implies the use of one call of
+\<open>unsafeCoerce\<close> in Haskell and one \<open>Obj.magic\<close> statement in OCaml
 (otherwise another solution would be to extract the meta-compiler as a functor).
 Similar optimizations are not yet implemented for Scala and are only half-implemented for the SML target
 (which basically performs a step of marshalling to string in Isabelle/ML).
-\item For safety reasons, it simply suffices to extract all the meta-compiler together with the respective 
-arguments in front of each incoming meta-commands everytime, then the overall needs to be newly 
-compiled everytime. 
-This is the current implemented behavior for Scala. 
+\item For safety reasons, it simply suffices to extract all the meta-compiler together with the respective
+arguments in front of each incoming meta-commands everytime, then the overall needs to be newly
+compiled everytime.
+This is the current implemented behavior for Scala.
 For Haskell, OCaml and SML, it was also the default behavior in a prototyping version of the compiler,
 as a consequence one can restore that functionality for future versions.
 \end{itemize}
 
 Concerning the semantics of generated contents, if lemmas and proofs are generated,
 @{keyword "SORRY"} allows to explicitly skip the evaluation of all proofs,
-irrespective of the presence of @{command sorry} or not in generated proofs. 
-In any cases, the semantics of @{command sorry} has not been overloaded, e.g., 
+irrespective of the presence of @{command sorry} or not in generated proofs.
+In any cases, the semantics of @{command sorry} has not been overloaded, e.g.,
 red background may appear as usual.
 
 Finally @{keyword "generation_semantics"} is a container for specifying various options
 for varying the semantics of languages being embedded.
-For example, @{keyword "design"} and @{keyword "analysis"} are two options for specifying how 
+For example, @{keyword "design"} and @{keyword "analysis"} are two options for specifying how
 the modelling of objects will be represented in the Toy Language.
 Similarly, this would be a typical place for options like
 \<open>eager\<close> or \<open>lazy\<close> for choosing how the evaluation should happen...
@@ -358,7 +357,7 @@ text \<open>
 \<close>
 
 text\<open>
-@{command lazy_code_printing} has the same semantics as @{command code_printing} 
+@{command lazy_code_printing} has the same semantics as @{command code_printing}
 or @{command ML},
 except that no side effects occur until we give more details about its intended future semantics:
 this will be precised by calling
