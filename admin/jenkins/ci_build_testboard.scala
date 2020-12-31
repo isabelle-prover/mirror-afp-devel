@@ -78,6 +78,8 @@ object profile extends isabelle.CI_Profile
     println(s"AFP id $afp_id")
     if (report_file.exists())
       report_file.delete()
+
+    File.write(report_file, "")
   }
 
   def post_hook(results: Build.Results) =

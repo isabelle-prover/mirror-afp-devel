@@ -190,6 +190,8 @@ object profile extends isabelle.CI_Profile
     if (report_file.exists())
       report_file.delete()
 
+    File.write(report_file, "")
+
     if (!can_send_mails)
       println(s"Mail configuration not found.")
   }
