@@ -1,5 +1,5 @@
 (* Builds the finite mapping. *)
-structure Renaming_ML = struct
+structure Renaming = struct
 open Utils
 
 fun sum_ f g m n p = @{const Renaming.sum} $ f $ g $ m $ n $ p

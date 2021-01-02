@@ -12,16 +12,15 @@ begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
 lemmas nat_succI = nat_succ_iff[THEN iffD2]
-ML_file\<open>Utils.ml\<close>
-ML_file\<open>Renaming_ML.ml\<close>
+ML_file \<open>utils.ML\<close>
+ML_file \<open>renaming.ML\<close>
 ML\<open>
-  open Renaming_ML
-
   fun renaming_def mk_ren name from to ctxt =
     let val to = to |> Syntax.read_term ctxt
         val from = from |> Syntax.read_term ctxt
         val (tc_lemma,action_lemma,fvs,r) = mk_ren from to ctxt
-        val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs ctxt , fix_vars action_lemma fvs ctxt)
+        val (tc_lemma,action_lemma) =
+          (Renaming.fix_vars tc_lemma fvs ctxt, Renaming.fix_vars action_lemma fvs ctxt)
         val ren_fun_name = Binding.name (name ^ "_fn")
         val ren_fun_def =  Binding.name (name ^ "_fn_def")
         val ren_thm = Binding.name (name ^ "_thm")
@@ -39,11 +38,11 @@ local
 
   val _ =
    Outer_Syntax.local_theory \<^command_keyword>\<open>rename\<close> "ML setup for synthetic definitions"
-     (ren_parser >> (fn ((name,(from,to)),_) => renaming_def sum_rename name from to ))
+     (ren_parser >> (fn ((name,(from,to)),_) => renaming_def Renaming.sum_rename name from to ))
 
   val _ =
    Outer_Syntax.local_theory \<^command_keyword>\<open>simple_rename\<close> "ML setup for synthetic definitions"
-     (ren_parser >> (fn ((name,(from,to)),_) => renaming_def ren_thm name from to ))
+     (ren_parser >> (fn ((name,(from,to)),_) => renaming_def Renaming.ren_thm name from to ))
 
 in
 end

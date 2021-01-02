@@ -1,4 +1,4 @@
-signature Utils =
+signature UTILS =
  sig
     val binop : term -> term -> term -> term
     val add_: term -> term -> term
@@ -38,7 +38,7 @@ signature Utils =
     val tp: term -> term
   end
 
-structure Utils : Utils =
+structure Utils : UTILS =
 struct 
 (* Smart constructors for ZF-terms *)
 

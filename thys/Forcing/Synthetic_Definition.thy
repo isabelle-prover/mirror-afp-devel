@@ -7,7 +7,7 @@ theory Synthetic_Definition
     and "from_schematic"
 begin
 
-ML_file\<open>Utils.ml\<close>
+ML_file \<open>utils.ML\<close>
 
 ML\<open>
 val $` = curry ((op $) o swap)
