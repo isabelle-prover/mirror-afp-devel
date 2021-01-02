@@ -3,17 +3,11 @@ theory Renaming_Auto
     Renaming
     ZF.Finite
     ZF.List
-keywords
-  "rename" :: thy_decl % "ML"
-and
-  "simple_rename" :: thy_decl % "ML"
-and
-  "src"
-and
-  "tgt"
-abbrevs
-  "simple_rename" = ""
-
+  keywords "rename" :: thy_decl % "ML"
+    and "simple_rename" :: thy_decl % "ML"
+    and "src"
+    and "tgt"
+  abbrevs "simple_rename" = ""
 begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
