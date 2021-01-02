@@ -1,13 +1,11 @@
 section\<open>Automatic synthesis of formulas\<close>
 
 theory Synthetic_Definition
-  imports "ZF-Constructible.Formula"
+  imports Utils
   keywords "synthesize" :: thy_decl % "ML"
     and "synthesize_notc" :: thy_decl % "ML"
     and "from_schematic"
 begin
-
-ML_file \<open>utils.ML\<close>
 
 ML\<open>
 val $` = curry ((op $) o swap)

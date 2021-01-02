@@ -10,6 +10,8 @@ session Forcing (AFP) =  "ZF-Constructible" +
     and show that the latter also satisfies ZFC.
   "
   options [timeout=300]
+  theories [document = false]
+    Utils
   theories
     "Rasiowa_Sikorski"
     "Forcing_Main"

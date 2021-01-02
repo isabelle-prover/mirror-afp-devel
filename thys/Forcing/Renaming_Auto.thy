@@ -1,6 +1,7 @@
 theory Renaming_Auto
   imports
     Renaming
+    Utils
     ZF.Finite
     ZF.List
   keywords "rename" :: thy_decl % "ML"
@@ -12,7 +13,7 @@ begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
 lemmas nat_succI = nat_succ_iff[THEN iffD2]
-ML_file \<open>utils.ML\<close>
+
 ML_file \<open>renaming.ML\<close>
 ML\<open>
   fun renaming_def mk_ren name from to ctxt =
