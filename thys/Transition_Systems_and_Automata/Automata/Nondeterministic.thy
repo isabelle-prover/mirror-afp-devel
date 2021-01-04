@@ -541,7 +541,7 @@ begin
       define rs where "rs \<equiv> map (\<lambda> k. smap (\<lambda> ps. ps ! k) r) [0 ..< length AA]"
       have "length qs = length AA" if "qs \<in> sset r" for qs using product_run_length assms that by this
       then show "r = stranspose rs"
-        unfolding rs_def by (coinduction arbitrary: r) (auto intro: nth_equalityI simp: comp_def)
+        unfolding rs_def by (coinduction arbitrary: r) (force intro: nth_equalityI simp: comp_def)
       show "length rs = length AA" unfolding rs_def by auto
     qed
 
