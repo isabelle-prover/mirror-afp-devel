@@ -228,13 +228,13 @@ declare weight_fun.weight.simps[code]
 
 lemma mset_replicate_mono:
   assumes "m1 \<subseteq># m2"
-  shows "\<Union># (mset (replicate n m1)) \<subseteq># \<Union># (mset (replicate n m2))"
+  shows "\<Sum>\<^sub># (mset (replicate n m1)) \<subseteq># \<Sum>\<^sub># (mset (replicate n m2))"
 proof (induct n)
   case (Suc n)
-  have "\<Union># (mset (replicate (Suc n) m1)) =
-    \<Union># (mset (replicate n m1)) + m1" by simp
-  also have "\<dots> \<subseteq># \<Union># (mset (replicate n m1)) + m2" using \<open>m1 \<subseteq># m2\<close> by auto
-  also have "\<dots> \<subseteq># \<Union># (mset (replicate n m2)) + m2" using Suc by auto
+  have "\<Sum>\<^sub># (mset (replicate (Suc n) m1)) =
+    \<Sum>\<^sub># (mset (replicate n m1)) + m1" by simp
+  also have "\<dots> \<subseteq># \<Sum>\<^sub># (mset (replicate n m1)) + m2" using \<open>m1 \<subseteq># m2\<close> by auto
+  also have "\<dots> \<subseteq># \<Sum>\<^sub># (mset (replicate n m2)) + m2" using Suc by auto
   finally show ?case by (simp add: union_commute)
 qed simp
 

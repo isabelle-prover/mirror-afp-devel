@@ -78,9 +78,9 @@ lemma ascP_simp [simp]:
   using assms [unfolded ascP_def, THEN spec, THEN spec, of "[]" "[x]"] by simp
 
 lemma
-  shows mset_runs: "\<Union># (image_mset mset (mset (runs xs))) = mset xs"
-    and mset_asc: "ascP f \<Longrightarrow> \<Union># (image_mset mset (mset (asc x f ys))) = {#x#} + mset (f []) + mset ys"
-    and mset_desc: "\<Union># (image_mset mset (mset (desc x xs ys))) = {#x#} + mset xs + mset ys"
+  shows mset_runs: "\<Sum>\<^sub># (image_mset mset (mset (runs xs))) = mset xs"
+    and mset_asc: "ascP f \<Longrightarrow> \<Sum>\<^sub># (image_mset mset (mset (asc x f ys))) = {#x#} + mset (f []) + mset ys"
+    and mset_desc: "\<Sum>\<^sub># (image_mset mset (mset (desc x xs ys))) = {#x#} + mset xs + mset ys"
   by (induct xs and x f ys and x xs ys rule: runs_asc_desc.induct) auto
 
 lemma mset_nmsort:

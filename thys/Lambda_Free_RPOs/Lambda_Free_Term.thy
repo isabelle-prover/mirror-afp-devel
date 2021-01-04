@@ -257,7 +257,7 @@ lemma args_subst[simp]:
 lemma ground_imp_subst_iden: "ground s \<Longrightarrow> subst \<rho> s = s"
   by (induct s) (auto split: hd.split)
 
-lemma vars_mset_subst[simp]: "vars_mset (subst \<rho> s) = (\<Union># {#vars_mset (\<rho> x). x \<in># vars_mset s#})"
+lemma vars_mset_subst[simp]: "vars_mset (subst \<rho> s) = (\<Sum>\<^sub># {#vars_mset (\<rho> x). x \<in># vars_mset s#})"
 proof (induct s)
   case (Hd \<zeta>)
   show ?case

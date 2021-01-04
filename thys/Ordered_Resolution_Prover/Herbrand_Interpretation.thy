@@ -116,7 +116,7 @@ lemma true_cls_mset_singleton[iff]: "I \<Turnstile>m {#C#} \<longleftrightarrow>
 lemma true_cls_mset_union[iff]: "I \<Turnstile>m CC + DD \<longleftrightarrow> I \<Turnstile>m CC \<and> I \<Turnstile>m DD"
   unfolding true_cls_mset_def by auto
 
-lemma true_cls_mset_Union[iff]: "I \<Turnstile>m \<Union># CCC \<longleftrightarrow> (\<forall>CC \<in># CCC. I \<Turnstile>m CC)"
+lemma true_cls_mset_Union[iff]: "I \<Turnstile>m \<Sum>\<^sub># CCC \<longleftrightarrow> (\<forall>CC \<in># CCC. I \<Turnstile>m CC)"
   unfolding true_cls_mset_def by simp
 
 lemma true_cls_mset_add_mset[iff]: "I \<Turnstile>m add_mset C CC \<longleftrightarrow> I \<Turnstile> C \<and> I \<Turnstile>m CC"

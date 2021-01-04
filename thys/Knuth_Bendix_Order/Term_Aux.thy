@@ -18,11 +18,11 @@ text \<open>The variables of a term as multiset.\<close>
 fun vars_term_ms :: "('f, 'v) term \<Rightarrow> 'v multiset"
   where
     "vars_term_ms (Var x) = {#x#}" |
-    "vars_term_ms (Fun f ts) = \<Union># (mset (map vars_term_ms ts))"
+    "vars_term_ms (Fun f ts) = \<Sum>\<^sub># (mset (map vars_term_ms ts))"
 
 lemma vars_term_ms_subst [simp]:
   "vars_term_ms (t \<cdot> \<sigma>) =
-    \<Union># (image_mset (\<lambda> x. vars_term_ms (\<sigma> x)) (vars_term_ms t))" (is "_ = ?V t")
+    \<Sum>\<^sub># (image_mset (\<lambda> x. vars_term_ms (\<sigma> x)) (vars_term_ms t))" (is "_ = ?V t")
 proof (induct t)
   case (Fun f ts)
   have IH: "map (\<lambda> t. vars_term_ms (t \<cdot> \<sigma>)) ts = map (\<lambda> t. ?V t) ts"

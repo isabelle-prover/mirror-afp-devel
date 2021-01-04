@@ -60,7 +60,7 @@ definition remove_powers :: \<open>mset_polynomial \<Rightarrow> mset_polynomial
 
 
 definition all_vars_mset :: \<open>mset_polynomial \<Rightarrow> string multiset\<close> where
-  \<open>all_vars_mset p = \<Union># (fst `# p)\<close>
+  \<open>all_vars_mset p = \<Sum>\<^sub># (fst `# p)\<close>
 
 abbreviation all_vars :: \<open>mset_polynomial \<Rightarrow> string set\<close> where
   \<open>all_vars p \<equiv> set_mset (all_vars_mset p)\<close>
