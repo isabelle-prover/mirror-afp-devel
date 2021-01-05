@@ -2066,7 +2066,7 @@ text \<open>
 \<close>
 function elem_to_mset where
   "elem_to_mset (Element e a q) = {# (e,a) #} 
-  + Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
+  + sum_mset (image_mset elem_to_mset (queue_to_multiset q))"
 by pat_completeness auto
 termination
 proof
@@ -2103,7 +2103,7 @@ proof (induct n\<equiv>"level x" arbitrary: x rule: full_nat_induct)
   obtain e a q where [simp]: "x=Element e a q" by (cases x) auto
 
   from PREMS(2) have "y=(e,a) \<or> 
-    y\<in>#Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
+    y\<in>#sum_mset (image_mset elem_to_mset (queue_to_multiset q))"
     (is "?C1 \<or> ?C2")
     by (auto split: if_split_asm)
   moreover {
