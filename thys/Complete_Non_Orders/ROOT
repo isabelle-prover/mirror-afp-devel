@@ -1,7 +1,7 @@
 chapter AFP
 
 session Complete_Non_Orders (AFP) = HOL +
-  description {* Theory of Complete Non-Orders and their Fixed-Points Theorems *}
+  description "Theory of Complete Non-Orders and their Fixed-Points Theorems"
   options [timeout = 300]
   theories
     Fixed_Points
