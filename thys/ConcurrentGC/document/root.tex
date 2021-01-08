@@ -2,15 +2,11 @@
 \usepackage[a4paper,margin=1cm,footskip=.5cm]{geometry}
 
 \usepackage{isabelle,isabellesym}
-
 \usepackage{amssymb}
 
 \usepackage[english]{babel}
 
-% FIXME lifted composition.
-\newcommand{\isasymbigcirc}{\isamath{\circ}}
-
-% Bibliography
+\usepackage{graphicx}
 \usepackage[authoryear,longnamesfirst,sort]{natbib}
 \bibpunct();A{},
 
@@ -40,10 +36,7 @@
 \maketitle
 
 \begin{abstract}
-  CIMP extends the small imperative language IMP with synchronous
-  message passing.
-
-  We use CIMP to model Schism, a state-of-the-art real-time garbage
+  We model an instance of Schism, a state-of-the-art real-time garbage
   collection scheme for weak memory, and show that it is safe on
   x86-TSO.
 \end{abstract}
@@ -62,24 +55,20 @@ Intel x86 architectures) developed and validated by
 Our development is inspired by the original work on the verification
 of concurrent mark/sweep collectors by
 \citet{DBLP:journals/cacm/DijkstraLMSS78}, and the more realistic
-models and proofs of \citet{DBLP:conf/popl/DoligezG94}. We leave a
-thorough survey of formal garbage collection verification to future
-work.
+models and proofs of \citet{DoligezGonthier:1994}. We leave a thorough
+survey of formal garbage collection verification to future work.
 
-We present our model of the
-garbage collector in \S\ref{sec:gc-model}, the detailed invariants in
-\S\ref{sec:gc-invs}, and the high-level safety results in
-\S\ref{sec:top-level-correctness}. This bottom-up presentation is how
-we developed the proof; we have resisted the urge to hide the bodies
-with a rational reconstruction, partly because we expect the current
-structure to more readily support extensions and revisions.
+We present our model of the garbage collector in \S\ref{sec:gc-model},
+the predicates we use in our assertions in \S\ref{sec:proofs-basis},
+the detailed invariants in \S\ref{sec:global-invariants} and
+\S\ref{sec:local-invariants}, and the high-level safety results in
+\S\ref{sec:top-level-correctness}. A concrete system state that
+satisfies our invariants is exhibited in
+\S\ref{sec:concrete-system-state}. The other sections contain the
+often gnarly proofs and lemmas starring in supporting roles.
 
-This document does not include the formal proofs that the model
-satisfies these invariants; the curious reader is encouraged to peruse
-the Isabelle sources.
-
-For details about the modelling language CIMP used in this development,
-see the separate AFP entry ConcurrentIMP \citep{ConcurrentIMP_AFP}.
+The modelling language CIMP used in this development is described in
+the AFP entry ConcurrentIMP \citep{ConcurrentIMP_AFP}.
 
 
 % generated text of all theories

@@ -23,30 +23,28 @@ intersperse sep xxs =
         [] -> []
         x : xs -> sep : x : prependToAll xs
 
-{-
- - WriteThyFile provides functions that allow to write isabelle
- - files from its input file whose extension is .txt.
- -}
-
 -- the header of the output file.
 -- FIXME in general the type synonyms are a function of the input.
 header :: String -> String
 header inp = unlines
-  [ "theory Concrete_heap"
+  [ "(*<*)
+  , "theory Concrete_heap"
   , "imports"
-  , "  \"~~/src/HOL/Library/Saturated\""
-  , "  \"../Proofs\""
+  , "  \"HOL-Library.Saturated\""
+  , "  \"../Global_Invariants\""
   , "begin"
   , ""
+  , "(*>*)"
   , "type_synonym field = \"3\""
   , "type_synonym mut = \"2\""
+  , "type_synonym payload = \"unit\""
   , "type_synonym ref = \"5\""
   , ""
-  , "type_synonym concrete_local_state = \"(field, mut, ref) local_state\""
-  , "type_synonym clsts = \"(field, mut, ref) lsts\""
+  , "type_synonym concrete_local_state = \"(field, mut, payload, ref) local_state\""
+  , "type_synonym clsts = \"(field, mut, payload, ref) lsts\""
   , ""
   , "abbreviation mut_common_init_state :: concrete_local_state where"
-  , "  \"mut_common_init_state \\<equiv> undefined\\<lparr> ghost_handshake_phase := hp_IdleMarkSweep, ghost_honorary_grey := {}, ghost_honorary_root := {}, roots := {}, W := {} \\<rparr>\""
+  , "  \"mut_common_init_state \\<equiv> undefined\\<lparr> ghost_hs_phase := hp_IdleMarkSweep, ghost_honorary_grey := {}, ghost_honorary_root := {}, roots := {}, W := {} \\<rparr>\""
   , ""
   , "context gc_system"
   , "begin"
@@ -90,15 +88,16 @@ write_obj :: [String] -> String
 write_obj [] = []
 write_obj (o : os) = concat
   [ "   " ++ o ++ " \\<mapsto> \\<lparr> obj_mark = initial_mark,\n"
-  , "           obj_fields = "
-  , if os == [] then "Map.empty"
-                else "[ " ++ write_refs os ++ " ]"
+  , "             obj_fields = "
+  , if os == [] then "Map.empty,\n"
+                else "[ " ++ write_refs os ++ " ],\n"
+  , "             obj_payload = Map.empty"
   , " \\<rparr>"
   ]
 
 write_obj_part :: String -> String
 write_obj_part cs = unlines
-  [ "abbreviation sys_init_heap :: \"ref \\<Rightarrow> (field, ref) object option\" where"
+  [ "abbreviation sys_init_heap :: \"ref \\<Rightarrow> (field, payload, ref) object option\" where"
   , "  \"sys_init_heap \\<equiv>"
   , "  [" ++ concat (intersperse ",\n   " (map (write_obj . words) $ lines $ get_obj_part cs))
   , "  ]\""
@@ -108,8 +107,10 @@ write_obj_part cs = unlines
 footer :: String
 footer = unlines
   [ "end"
+  , "(*<*)"
   , ""
   , "end"
+  , "(*>*)"
   ]
 
 write_thy_file :: String -> String

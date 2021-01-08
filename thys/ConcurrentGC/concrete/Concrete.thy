@@ -14,8 +14,6 @@ imports
   Concrete_heap
 begin
 
-declare subst_all [simp del] [[simproc del: defined_all]]
-
 (*>*)
 text\<open>\<close>
 
@@ -27,15 +25,15 @@ abbreviation sys_init_state :: concrete_local_state where
      undefined\<lparr> fA := initial_mark
               , fM := initial_mark
               , heap := sys_init_heap
-              , handshake_pending := \<langle>False\<rangle>
-              , handshake_type := ht_GetRoots
+              , hs_pending := \<langle>False\<rangle>
+              , hs_type := ht_GetRoots
               , mem_lock := None
-              , mem_write_buffers := \<langle>[]\<rangle>
+              , mem_store_buffers := \<langle>[]\<rangle>
               , phase := ph_Idle
               , W := {}
               , ghost_honorary_grey := {}
-              , ghost_handshake_in_sync := \<langle>True\<rangle>
-              , ghost_handshake_phase := hp_IdleMarkSweep \<rparr>"
+              , ghost_hs_in_sync := \<langle>True\<rangle>
+              , ghost_hs_phase := hp_IdleMarkSweep \<rparr>"
 
 abbreviation gc_init_state :: concrete_local_state where
   "gc_init_state \<equiv>
@@ -61,12 +59,11 @@ abbreviation init_state :: clsts where
 lemma
   "gc_system_init init_state"
 (*<*)
-apply (clarsimp simp: gc_system_init_def
-                      gc_initial_state_def
-                      mut_initial_state_def
-                      sys_initial_state_def)
-apply (auto simp: ran_def)
-apply (auto simp: valid_refs_def)
+unfolding gc_system_init_def gc_initial_state_def mut_initial_state_def sys_initial_state_def
+apply (clarsimp; intro conjI)
+ apply (auto simp: ran_def; fail)
+unfolding valid_refs_def reaches_def
+apply auto
 apply (erule rtranclp.cases; auto simp: ran_def split: if_splits obj_at_splits)+
 done
 (*>*)
