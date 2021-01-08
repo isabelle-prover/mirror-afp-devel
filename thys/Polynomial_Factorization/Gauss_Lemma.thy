@@ -20,6 +20,7 @@ text \<open>We formalized Gauss Lemma, that the content of a product of two poly
 theory Gauss_Lemma
 imports 
   "HOL-Computational_Algebra.Primes"
+  "HOL-Computational_Algebra.Field_as_Ring"
   Polynomial_Interpolation.Ring_Hom_Poly
   Missing_Polynomial_Factorial
 begin
@@ -447,5 +448,63 @@ proof (cases "d = 0 \<or> f = 0")
     qed auto
   qed
 qed auto
+
+lemma gcd_smult_left: assumes "c \<noteq> 0"
+  shows "gcd (smult c f) g = gcd f (g :: 'b :: {field_gcd} poly)"
+proof -
+  from assms have "normalize c = 1"
+    by (meson dvd_field_iff is_unit_normalize)
+  then show ?thesis
+    by (metis (no_types) Polynomial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
+qed
+
+lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field_gcd} poly)"
+  using gcd_smult_left[of c g f] by (simp add: gcd.commute)
+
+lemma gcd_rat_to_gcd_int: "gcd (of_int_poly f :: rat poly) (of_int_poly g) = 
+  smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))" 
+proof (cases "f = 0 \<and> g = 0")
+  case True
+  thus ?thesis by simp
+next
+  case False
+  let ?r = rat_of_int
+  let ?rp = "map_poly ?r" 
+  from False have gcd0: "gcd f g \<noteq> 0" by auto
+  hence lc0: "lead_coeff (gcd f g) \<noteq> 0" by auto
+  hence inv: "inverse (?r (lead_coeff (gcd f g))) \<noteq> 0" by auto
+  show ?thesis
+  proof (rule sym, rule gcdI, goal_cases)
+    case 1
+    have "gcd f g dvd f" by auto
+    then obtain h where f: "f = gcd f g * h" unfolding dvd_def by auto    
+    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF f, of ?rp], simp add: hom_distribs) 
+  next
+    case 2
+    have "gcd f g dvd g" by auto
+    then obtain h where g: "g = gcd f g * h" unfolding dvd_def by auto    
+    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF g, of ?rp], simp add: hom_distribs) 
+  next
+    case (3 h)    
+    show ?case 
+    proof (rule dvd_smult)
+      obtain ch ph where h: "rat_to_normalized_int_poly h = (ch, ph)" by force
+      from 3 obtain ff where f: "?rp f = h * ff" unfolding dvd_def by auto
+      from 3 obtain gg where g: "?rp g = h * gg" unfolding dvd_def by auto
+      from rat_to_int_factor_explicit[OF f h] obtain f' where f: "f = ph * f'" by blast
+      from rat_to_int_factor_explicit[OF g h] obtain g' where g: "g = ph * g'" by blast
+      from f g have "ph dvd gcd f g" by auto
+      then obtain gg where gcd: "gcd f g = ph * gg" unfolding dvd_def by auto
+      note * = rat_to_normalized_int_poly[OF h]
+      show "h dvd ?rp (gcd f g)" unfolding gcd *(1)
+        by (rule smult_dvd, insert *(2), auto)
+    qed
+  next
+    case 4
+    have [simp]: "[:1:] = 1" by simp
+    show ?case unfolding normalize_poly_def 
+      by (rule poly_eqI, simp)
+  qed
+qed
 
 end
