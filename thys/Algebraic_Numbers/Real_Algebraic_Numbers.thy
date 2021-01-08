@@ -3539,8 +3539,15 @@ declare [[code drop:
 
 declare real_alg_code_eqns [code equation]
 
-lemma [code]:
+lemma Ratreal_code[code]:
   "Ratreal = real_of \<circ> of_rat_real_alg"
   by (transfer, transfer) (simp add: fun_eq_iff of_rat_2)
+
+lemma real_of_post[code_post]: "real_of (Real_Alg_Quotient (Real_Alg_Invariant (Rational x))) = of_rat x" 
+proof (transfer)
+  fix x
+  show "real_of_3 (Real_Alg_Invariant (Rational x)) = real_of_rat x" 
+    by (simp add: Real_Alg_Invariant_inverse real_of_3.rep_eq)
+qed
 
 end
