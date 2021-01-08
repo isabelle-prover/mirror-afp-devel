@@ -1,4 +1,4 @@
-section \<open>Getting a Small Representative via Factorization\<close>
+section \<open>Getting Small Representative Polynomials via Factorization\<close>
 
 text \<open>In this theory we import a factorization algorithm for 
   integer polynomials to turn a representing polynomial of some algebraic number into
