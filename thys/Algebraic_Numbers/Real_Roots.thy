@@ -15,6 +15,9 @@ imports
   Real_Algebraic_Numbers
 begin
 
+hide_const (open) UnivPoly.coeff
+hide_const (open) Module.smult
+
 text \<open>Division of integers, rounding to the upper value.\<close>
 definition div_ceiling :: "int \<Rightarrow> int \<Rightarrow> int" where
   "div_ceiling x y = (let q = x div y in if q * y = x then q else q + 1)" 

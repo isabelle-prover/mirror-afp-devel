@@ -9,7 +9,7 @@ text \<open>This theory contains the remaining field operations for algebraic nu
   addition and multiplication.\<close>
 
 theory Algebraic_Numbers
-imports
+  imports
   Algebraic_Numbers_Prelim
   Resultant
   Polynomial_Factorization.Polynomial_Divisibility
@@ -144,10 +144,6 @@ text \<open>
   We first prove that @{const poly_lift} preserves factorization. The result will be essential
   also in the next section for division of algebraic numbers.
 \<close>
-
-interpretation coeff_lift_hom:
-  factor_preserving_hom "coeff_lift :: 'a :: {comm_semiring_1,semiring_no_zero_divisors} \<Rightarrow> _"
-  by (unfold_locales, auto)
 
 interpretation poly_lift_hom:
   unit_preserving_hom "poly_lift :: 'a :: {comm_semiring_1,semiring_no_zero_divisors} poly \<Rightarrow> _"

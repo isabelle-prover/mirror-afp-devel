@@ -10,7 +10,10 @@ theory Sturm_Rat
 imports 
   Sturm_Sequences.Sturm_Theorem
   Algebraic_Numbers_Prelim
+  Berlekamp_Zassenhaus.Square_Free_Int_To_Square_Free_GFp
 begin
+
+hide_const (open) UnivPoly.coeff
 
 (* TODO: Move *)
 lemma root_primitive_part [simp]:

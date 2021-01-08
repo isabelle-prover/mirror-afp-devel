@@ -14,8 +14,8 @@ text \<open>This theory contains
 
 theory Resultant
 imports
-  Polynomial_Factorization.Rational_Factorization
-  Subresultants.Subresultant_Gcd 
+  "HOL-Computational_Algebra.Fundamental_Theorem_Algebra" (* for lmpoly_base_conv *)
+  Subresultants.Resultant_Prelim
   Berlekamp_Zassenhaus.Unique_Factorization_Poly
   Bivariate_Polynomials
 begin
@@ -645,25 +645,25 @@ proof(insert j, induct j)
         unfolding mk_poly_sub.simps
         apply(subst col_addcol)
           apply simp
-          apply simp
+         apply simp
         apply(subst(2) comm_add_vec)
           apply(rule carrier_vecI, simp)
-          apply(rule carrier_vecI, simp)
+         apply(rule carrier_vecI, simp)
         apply(subst assoc_add_vec[symmetric])
-          apply(rule carrier_vecI, rule refl)
+           apply(rule carrier_vecI, rule refl)
           apply(rule carrier_vecI, simp)
-          apply(rule carrier_vecI, simp)
+         apply(rule carrier_vecI, simp)
         unfolding Suc(1)[OF j]
         apply(subst(2) mk_poly2_col.simps)
         apply(subst mk_poly2_row_col)
+           apply simp
           apply simp
-          apply simp
-          using Suc apply simp
+        using Suc apply simp
         apply(subst col_mk_poly_sub)
-          using Suc apply simp
-          using Suc apply simp
+        using Suc apply simp
+        using Suc apply simp
         apply(subst col_map_mat)
-          using dimA apply simp
+        using dimA apply simp
         unfolding foo dimA by simp
   }
 qed
@@ -756,7 +756,7 @@ proof (intro exI conjI)
     unfolding det_mk_poly[symmetric]
     unfolding m_def n_def d_def
     apply(rule laplace_expansion_column[of _ _ "degree p + degree q - 1"])
-    apply(rule carrier_matI) using degp by auto
+     apply(rule carrier_matI) using degp by auto
   also { fix i assume i: "i<d"
     have d2: "d = dim_row (sylvester_mat p q)" unfolding d_def by auto
     have "cofactor (mk_poly (sylvester_mat p q)) i (m+n-1) =
@@ -793,7 +793,7 @@ proof (intro exI conjI)
     by (simp add: dmn)
   also have "sum ?h ... = sum (?h \<circ> (\<lambda>i. i+n)) {0..<m}"
     apply(subst sum.reindex[symmetric])
-    apply (rule inj_onI) by auto
+     apply (rule inj_onI) by auto
   also have "... = q'" unfolding q'_def apply(rule sum.cong) by (auto simp add: add.commute)
   finally show main: "[:resultant p q:] = p' * p + q' * q".
   show "degree p' < n"
@@ -804,10 +804,10 @@ proof (intro exI conjI)
     fix i assume i: "i \<in> {..<n}"
     show "degree (monom 1 (n - Suc i) * c i) < n"
       apply (rule order.strict_trans1)
-      apply (rule degree_mult_le)
+       apply (rule degree_mult_le)
       unfolding add.right_neutral degc
       apply (rule order.strict_trans1)
-      apply (rule degree_monom_le) using i by auto
+       apply (rule degree_monom_le) using i by auto
   qed
   show "degree q' < m"
     unfolding q'_def
@@ -816,11 +816,11 @@ proof (intro exI conjI)
   proof -
     fix i assume i: "i \<in> {..<m}"
     show "degree (monom 1 (m-Suc i) * c (n+i)) < m"
-    apply (rule order.strict_trans1)
-    apply (rule degree_mult_le)
-    unfolding add.right_neutral degc
-    apply (rule order.strict_trans1)
-    apply (rule degree_monom_le) using i by auto
+      apply (rule order.strict_trans1)
+       apply (rule degree_mult_le)
+      unfolding add.right_neutral degc
+      apply (rule order.strict_trans1)
+       apply (rule degree_monom_le) using i by auto
   qed
 qed
 
@@ -1048,10 +1048,10 @@ proof (cases "degree f = 0 \<or> degree g = 0")
   thus ?thesis unfolding h_def using is_unit_iff_degree some_gcd.gcd_dvd_1 by blast
 next
   case True
-  {
-    fix f g :: "'a poly"
-    assume deg_g: "degree g = 0" and res: "resultant f g \<noteq> 0" and nz: "f \<noteq> 0 \<or> g \<noteq> 0"
-    have "coprime f g"
+  thus ?thesis
+  proof
+    assume deg_g: "degree g = 0" 
+    show ?thesis
     proof (cases "g = 0")
       case False
       then show ?thesis using divides_degree[of _ g, unfolded deg_g]
@@ -1059,19 +1059,22 @@ next
     next
       case g: True
       then have "g = [:0:]" by auto
-      from res[unfolded this resultant_const] have "degree f = 0" by auto
-      with nz show ?thesis unfolding g by auto
+      from nz[unfolded this resultant_const] have "degree f = 0" by auto
+      with nz' show ?thesis unfolding g by auto
     qed
-  } note main = this
-  from True
-  show ?thesis
-  proof
-    assume f: "degree f = 0" 
-    from nz[unfolded resultant_swap[of f g]] have "resultant g f \<noteq> 0" by (auto split: if_splits)
-    from main[OF f this] nz' show ?thesis by (auto simp: ac_simps)
   next
-    assume "degree g = 0" 
-    from main[OF this nz nz'] show ?thesis .
+    assume deg_f: "degree f = 0" 
+    show ?thesis
+    proof (cases "f = 0")
+      case False
+      then show ?thesis using divides_degree[of _ f, unfolded deg_f]
+        by (simp add: is_unit_left_imp_coprime) 
+    next
+      case f: True
+      then have "f = [:0:]" by auto
+      from nz[unfolded this resultant_const] have "degree g = 0" by auto
+      with nz' show ?thesis unfolding f by auto
+    qed
   qed
 qed
 

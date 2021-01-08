@@ -26,6 +26,11 @@ imports
 begin
 
 subsection \<open>Complex Roots\<close>
+
+hide_const (open) UnivPoly.coeff
+hide_const (open) Module.smult
+hide_const (open) Coset.order
+
   
 abbreviation complex_of_int_poly :: "int poly \<Rightarrow> complex poly" where
   "complex_of_int_poly \<equiv> map_poly of_int"

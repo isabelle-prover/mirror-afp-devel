@@ -29,7 +29,13 @@ imports
   Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
   Algebraic_Numbers
   Sturm_Rat
+  Factors_of_Int_Poly
 begin
+
+text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
+  preferable to the default implementation of @{const gcd}, which just implements
+  Collin's primitive remainder sequence.\<close>
+declare gcd_int_poly_code[code_unfold del]
 
 (*TODO: move *)
 lemma ex1_imp_Collect_singleton: "(\<exists>!x. P x) \<and> P x \<longleftrightarrow> Collect P = {x}"
