@@ -325,7 +325,7 @@ assumes     "chain S"
 shows       "(Lub S c) = lim_proc (range (\<lambda>x. (S x c)))"
 proof -
   have    "\<And>xa. chain (\<lambda>x. S x xa)"
-                  using `chain S` by(auto intro!: chainI  simp: chain_def fun_belowD )
+                  using \<open>chain S\<close> by(auto intro!: chainI  simp: chain_def fun_belowD )
   then     show ?thesis  by (metis contlub_lambda limproc_is_thelub)
 qed
 

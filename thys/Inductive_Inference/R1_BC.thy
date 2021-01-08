@@ -156,7 +156,7 @@ proof -
       for z
     by simp
   then have f: "eval f [z, b] \<down>= (if the (eval ?r [z, b]) = 1 then 0 else 1)" for z
-    using f_def `recfn 2 f` prim_recfn_total by (auto simp add: Let_def)
+    using f_def \<open>recfn 2 f\<close> prim_recfn_total by (auto simp add: Let_def)
 
   have "\<exists>k. \<phi> (the (s (e_append_zeros b k))) (e_length b + k) \<down>= 0"
     using s_learn_prenum learn_bc_prenum_eventually_zero by auto
@@ -175,7 +175,7 @@ proof -
     (if (\<exists>z. eval f ([z, b]) \<down>= 0)
      then Some (LEAST z. eval f [z, b] \<down>= 0)
      else None)"
-    using eval_Mn_total[of 1 f "[b]"] `total f` `recfn 2 f` by simp
+    using eval_Mn_total[of 1 f "[b]"] \<open>total f\<close> \<open>recfn 2 f\<close> by simp
   ultimately have mn1f: "eval (Mn 1 f) [b] \<down>= (LEAST z. eval f [z, b] \<down>= 0)"
     by auto
   with fzb have "eval f [the (eval (Mn 1 f) [b]), b] \<down>= 0" (is "eval f [?zz, b] \<down>= 0")
@@ -198,7 +198,7 @@ proof -
   then have "eval Mn1f [b] \<down>= ?zz"
     using mn1f by auto
   moreover have "recfn 1 (Cn 1 r_pdec1 [Mn1f])"
-    using `recfn 2 f` Mn1f_def by simp
+    using \<open>recfn 2 f\<close> Mn1f_def by simp
   ultimately have "eval (Cn 1 r_pdec1 [Mn1f]) [b] = eval r_pdec1 [the (eval (Mn1f) [b])]"
     by auto
   then have "eval (Cn 1 r_pdec1 [Mn1f]) [b] = eval r_pdec1 [?zz]"
@@ -206,7 +206,7 @@ proof -
   then have 1: "eval (Cn 1 r_pdec1 [Mn1f]) [b] \<down>= pdec1 ?zz"
     by simp
   moreover have "recfn 1 (Cn 1 S [Cn 1 r_pdec1 [Mn1f]])"
-    using `recfn 2 f` Mn1f_def by simp
+    using \<open>recfn 2 f\<close> Mn1f_def by simp
   ultimately have "eval (Cn 1 S [Cn 1 r_pdec1 [Mn1f]]) [b] =
       eval S [the (eval (Cn 1 r_pdec1 [Mn1f]) [b])]"
     by simp
@@ -251,7 +251,7 @@ lemma r_prefixes_total: "total r_prefixes"
 proof -
   have "recfn 3 r_next" by simp
   then have "total r_next"
-    using `recfn 3 r_next` r_find_k_total Cn_total Mn_free_imp_total by auto
+    using \<open>recfn 3 r_next\<close> r_find_k_total Cn_total Mn_free_imp_total by auto
   then show ?thesis
     by (simp add: Mn_free_imp_total Pr_total r_prefixes_def)
 qed
@@ -266,11 +266,11 @@ lemma r_prefixes_Suc:
 proof -
   have "recfn 3 r_next" by simp
   then have "total r_next"
-    using `recfn 3 r_next` r_find_k_total Cn_total Mn_free_imp_total by auto
+    using \<open>recfn 3 r_next\<close> r_find_k_total Cn_total Mn_free_imp_total by auto
   have eval_next: "eval r_next [t, v, j] \<down>=
       e_snoc (e_append_zeros v (the (eval r_find_k [v]))) 1"
       for t v j
-    using r_find_k_total `recfn 3 r_next` r_append_zeros by simp
+    using r_find_k_total \<open>recfn 3 r_next\<close> r_append_zeros by simp
   then have "eval r_prefixes [Suc n, j] = eval r_next [n, the (eval r_prefixes [n, j]), j]"
     using r_prefixes_total by (simp add: r_prefixes_def)
   then show "eval r_prefixes [Suc n, j] \<down>=
@@ -375,7 +375,7 @@ proof
   then have "eval r [j, x] = \<psi> j x" for j x
     unfolding psi_def by simp
   then show "\<psi> \<in> \<P>\<^sup>2"
-    using `recfn 2 r` by auto
+    using \<open>recfn 2 r\<close> by auto
   show "total2 \<psi>"
     unfolding psi_def by auto
 qed
@@ -448,7 +448,7 @@ proof -
   moreover have "e_nth (prefixes j (Suc t)) ?x = 1"
     using prefixes_Suc prefixes_Suc_last by simp
   ultimately have "?rhs \<down>= 1" by simp
-  with `?lhs \<down>= 0` show ?thesis by simp
+  with \<open>?lhs \<down>= 0\<close> show ?thesis by simp
 qed
 
 corollary hyp_wrong: "\<phi> (the (s (e_butlast (prefixes j (Suc t))))) \<noteq> \<psi> j"
@@ -480,7 +480,7 @@ proof -
     using hyp_wrong by simp
   ultimately have "\<phi> (the (s (\<psi> j \<triangleright> m))) \<noteq> \<psi> j"
     by simp
-  with `m > n` show ?thesis by auto
+  with \<open>m > n\<close> show ?thesis by auto
 qed
 
 lemma U0_V0_not_learn_bc: "\<not> learn_bc \<phi> (U\<^sub>0 \<union> V\<^sub>0) s"

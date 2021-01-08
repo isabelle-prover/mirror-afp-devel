@@ -6,7 +6,7 @@ begin
 
 section "Under-Approximate Relational Judgement"
 
-text {*
+text \<open>
   This is the relational analogue of OHearn's~\cite{OHearn_19} and de Vries \& Koutavas'~\cite{deVries_Koutavas_11}
   judgements.
 
@@ -14,7 +14,7 @@ text {*
   presence of an error can be seen only by the violation of a relation. Unlike O'Hearn, we cannot
   encode it directly into the semantics of our programs, without giving them a relational semantics.
   We use the standard big step semantics of IMP unchanged.
-*}
+\<close>
 
 type_synonym rassn = "state \<Rightarrow> state \<Rightarrow> bool"
 
@@ -204,11 +204,11 @@ lemma ir_valid_If:
    ir_valid (\<lambda>s s'. P s s' \<and> \<not> bval b s) c2 c' (\<lambda>t t'. Q t t' \<and> (\<exists>s s'. P s s' \<and> (c2,s) \<Rightarrow> t \<and> (c',s') \<Rightarrow> t' \<and> \<not> bval b s))"
   by(clarsimp simp: ir_valid_def, blast)
 
-text {*
+text \<open>
   Inspired by the 
   ``@{text "p(n) = {\<sigma> | you can get back from \<sigma> to some state in p by executing C backwards n times}"}''
   part of OHearn~\cite{OHearn_19}.
-*}
+\<close>
 primrec get_back where
   "get_back P b c 0 = (\<lambda>t t'. P t t')" |
   "get_back P b c (Suc n) = (\<lambda>t t'. \<exists>s. (c,s) \<Rightarrow> t \<and> bval b s \<and> get_back P b c n s t')"
@@ -377,10 +377,10 @@ qed
 
 section "A Decomposition Principle: Proofs via Under-Approximate Hoare Logic"
 
-text {*
+text \<open>
   We show the under-approximate analogue holds for Beringer's~\cite{Beringer_11} decomposition
   principle for over-approximate relational logic.
-*}
+\<close>
 
 
 definition
@@ -400,20 +400,20 @@ lemma ir_valid_decomp:
   "ir_valid P c c' Q = (ir_valid P c SKIP (decomp P c c' Q) \<and> ir_valid (decomp P c c' Q) SKIP c' Q)"
   using ir_valid_decomp1 ir_valid_decomp2 by blast
 
-text {*
+text \<open>
   Completeness with soundness means we can prove proof rules about @{term ir_hoare} in terms
   of @{term ir_valid}.
-*}
+\<close>
 
 lemma ir_to_Skip:     
   "ir_hoare P c c' Q = (ir_hoare P c SKIP (decomp P c c' Q) \<and> ir_hoare (decomp P c c' Q) SKIP c' Q)"
   using soundness completeness ir_valid_decomp 
   by meson
 
-text {*
+text \<open>
   O'Hearn's under-approximate Hoare triple, for the ``ok'' case (since that is the only case we have)
   This is also likely the same as from the "Reverse Hoare Logic" paper (SEFM).
-*}
+\<close>
 type_synonym assn = "state \<Rightarrow> bool"
 definition
   ohearn :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool"
@@ -439,12 +439,12 @@ qed
 
 section "Deriving Proof Rules from Completeness"
 
-text {*
+text \<open>
   Note that we can more easily derive proof rules sometimes by appealing to the
    corresponding properties of @{term ir_valid} than from the proof rules directly.
 
   We see more examples of this later on when we consider examples.
-*}
+\<close>
 
 lemma ir_Seq2: 
   "ir_hoare P c SKIP Q \<Longrightarrow> ir_hoare Q d c' R \<Longrightarrow> ir_hoare P (Seq c d) c' R"
@@ -458,10 +458,10 @@ section "Examples"
 
 subsection "Some Derived Proof Rules"
 
-text {* 
+text \<open>
 First derive some proof rules -- here not by appealing to completeness but just using
 the existing rules 
-*}
+\<close>
 
 lemma ir_If_True_False:   
   "ir_hoare (\<lambda>s s'. P s s' \<and> bval b s \<and> \<not> bval b' s') c\<^sub>1 c\<^sub>2' Q \<Longrightarrow> 
@@ -482,34 +482,34 @@ lemma ir_Assign_Assign:
 
 subsection "prog1"
 
-text {*
+text \<open>
   A tiny insecure program. Note that we only need to reason on one path through this program to
   detect that it is insecure. 
-*}
+\<close>
 
 abbreviation low_eq :: rassn where "low_eq s s' \<equiv> s ''low'' = s' ''low''"
 abbreviation low_neq :: rassn where "low_neq s s' \<equiv> \<not> low_eq s s'"
 definition prog1 :: com where
   "prog1 \<equiv> (IF (Less (N 0) (V ''x'')) THEN (Assign ''low'' (N 1)) ELSE (Assign ''low'' (N 0)))"
 
-text {* 
+text \<open>
   We prove that @{term prog1} is definitely insecure. To do that, we need to find some non-empty
   post-relation that implies insecurity. The following property encodes the idea that the 
   post-relation is non-empty, i.e. represents a feasible pair of execution paths.
-*}
+\<close>
 definition
   nontrivial :: "rassn \<Rightarrow> bool"
   where
   "nontrivial Q \<equiv> (\<exists>t t'. Q t t')"
 
-text {*
+text \<open>
   Note the property we prove here explicitly encodes the fact that the postcondition can be anything
   that implies insecurity, i.e. implies @{term low_neq}. In particular we should not necessarily
   expect it to cover the entirely of all states that satisfy @{term low_neq}. 
 
   Also note that we also have to prove that the postcondition is non-trivial. This is necessary to 
   make sure that the violation we find is not an infeasible path.
-*}
+\<close>
 lemma prog1:
   "\<exists>Q. ir_hoare low_eq prog1 prog1 Q \<and> (\<forall>s s'. Q s s' \<longrightarrow> low_neq s s') \<and> nontrivial Q"
   apply(rule exI)
@@ -589,9 +589,9 @@ lemma low_eq_strong_upd[simp]:
   "var \<noteq> ''high'' \<and> var \<noteq> ''low'' \<Longrightarrow> low_eq_strong(s(var := v)) (s'(var := v')) = low_eq_strong s s'"
   by(auto simp: low_eq_strong_def)
 
-text {*
+text \<open>
   A variation on client0 from O'Hearn~\cite{OHearn_19}: how to reason about loops via a single unfolding
-*}
+\<close>
 definition client0 :: com where
   "client0 \<equiv> (Assign ''x'' (N 0);;
               (While (Less (N 0) (V ''n''))
@@ -653,15 +653,15 @@ lemma ir_While_backwards:
 
 subsection "Derive a variant of the backwards variant rule"
 
-text {* Here we appeal to completeness again to derive this rule from the corresponding
-        property about @{term ir_valid}. *}
+text \<open>Here we appeal to completeness again to derive this rule from the corresponding
+        property about @{term ir_valid}.\<close>
 
 subsection "A variant of the frontier rule"
 
-text {*
+text \<open>
   Agin we derive this rule by appealing to completeness and the corresponding property of
   @{term ir_valid}
-*}
+\<close>
 
 lemma While_backwards_frontier_both_ir_valid':
   assumes asm: "\<And>n. \<forall>t t'. P (k + Suc n) t t' \<longrightarrow>
@@ -702,9 +702,9 @@ lemma ir_While_backwards_frontier_both:
    \<Longrightarrow> ir_hoare (P 0) (WHILE b DO c) (WHILE b' DO c') (\<lambda>s s'. Q s s')"
   using soundness completeness While_backwards_frontier_both_ir_valid by auto
 
-text {*
+text \<open>
   The following rule then follows easily as a special case
-*}
+\<close>
 lemma ir_While_backwards_both:
   "(\<And>n. ir_hoare (\<lambda> s s'. P n s s' \<and> bval b s \<and> bval b' s') c c' (P (Suc n))) \<Longrightarrow>
                        ir_hoare (P 0) (WHILE b DO c) (WHILE b' DO c') (\<lambda>s s'. \<exists>n. P n s s' \<and> \<not> bval b s \<and> \<not> bval b' s')"
@@ -716,11 +716,11 @@ lemma ir_While_backwards_both:
 subsection "client1"
 
 
-text {*
+text \<open>
   An example roughly equivalent to cient1 from O'Hearn~\cite{OHearn_19}0 
 
   In particular we use the backwards variant rule to reason about the loop.
-*}
+\<close>
 definition client1 :: com where
   "client1 \<equiv> (Assign ''x'' (N 0);;
               (While (Less (V ''x'') (V ''n''))
@@ -762,14 +762,14 @@ lemma client1:
 
 subsection "client2"
 
-text {*
+text \<open>
   An example akin to client2 from O'Hearn~\cite{OHearn_19}. 
 
   Note that this example is carefully written to show use of the frontier rule first to
   reason up to the broken loop iteration, and then we unfold the loop at that point to
   reason about the broken iteration, and then use the plain backwards variant rule to
   reason over the remainder of the loop.
-*}
+\<close>
 definition client2 :: com where
   "client2 \<equiv> (Assign ''x'' (N 0);;
               (While (Less (V ''x'') (N 4000000))

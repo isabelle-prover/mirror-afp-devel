@@ -333,7 +333,7 @@ next
       (is "_ (?stack1, None)")
     by simp
   also have "reachable ... ((gs ! k, xs, []) # ?stack1, None)"
-    using step_reachable `k < length gs`
+    using step_reachable \<open>k < length gs\<close>
     by (auto simp: min_absorb2)
   also have "reachable ... (?stack1, eval (gs ! k) xs)"
       (is "_ (_, ?rv)")
@@ -569,17 +569,17 @@ proof -
       using assms diverg neq0_conv y_ys valid by fastforce
     define zmax where "zmax = Greatest ?Q"
     then have "?Q zmax"
-      using `?Q 0` GreatestI_nat[of ?Q 0 y] by simp
+      using \<open>?Q 0\<close> GreatestI_nat[of ?Q 0 y] by simp
     have le_zmax: "\<And>z. ?Q z \<Longrightarrow> z \<le> zmax"
       using Greatest_le_nat[of ?Q _ y] zmax_def by simp
     have len: "length (?t zmax) < Suc y"
       by (simp add: \<open>?Q zmax\<close> trace_length)
     have "eval (Pr n f g) (y # ys) \<down>" if "y \<le> zmax" for y
-      using that zmax_def `?Q zmax` assms eval_Pr_converg_le[of n f g ys zmax y] valid y_ys
+      using that zmax_def \<open>?Q zmax\<close> assms eval_Pr_converg_le[of n f g ys zmax y] valid y_ys
       by simp
     then have "reachable (?stack, None) (((Pr n f g), xs, ?t y) # rest, None)"
         if "y \<le> zmax" for y
-      using that `?Q zmax` diverg y_ys assms reachable_Pr by simp
+      using that \<open>?Q zmax\<close> diverg y_ys assms reachable_Pr by simp
     then have "reachable (?stack, None) (((Pr n f g), xs, ?t zmax) # rest, None)"
         (is "reachable _ (?stack1, None)")
       by simp
@@ -668,7 +668,7 @@ proof -
     ultimately have "iterate tmin step cfg = ([], v)"
       by auto
     then have "v = rv"
-      using `?P tmin` by simp
+      using \<open>?P tmin\<close> by simp
     then have "iterate t' step cfg = ([], rv)"
       using v by simp
     moreover have "\<forall>t'<tmin. \<not> ?P t'"
@@ -676,7 +676,7 @@ proof -
     ultimately show False
       using that by simp
   qed
-  then show ?thesis using `?P tmin` by auto
+  then show ?thesis using \<open>?P tmin\<close> by auto
 qed
 
 lemma step_Mn_correct:
@@ -1716,7 +1716,7 @@ proof -
   ultimately have "eval r_leap [t, i, x] \<down>= encode_config (ss, rv)"
     using assms r_leap by simp
   then have "eval (Cn 3 r_pdec1 [r_leap]) [t, i, x] \<down>\<noteq> 0"
-    using `ss \<noteq> []` r_leap_prim encode_config r_leap_total list_encode_0
+    using \<open>ss \<noteq> []\<close> r_leap_prim encode_config r_leap_total list_encode_0
     by (auto, blast)
   then show ?thesis unfolding r_result_def using r_leap_prim by auto
 qed
@@ -2033,7 +2033,7 @@ proof -
   then obtain t where t: "eval ?m [i, x] \<down>= t"
     by auto
   then have f_t: "eval ?f [t, i, x] \<down>= 0" and f_less_t: "\<And>y. y < t \<Longrightarrow> eval ?f [y, i, x] \<down>\<noteq> 0"
-    using eval_Mn_convergE[of 2 ?f "[i, x]" t] `recfn 2 ?m`
+    using eval_Mn_convergE[of 2 ?f "[i, x]" t] \<open>recfn 2 ?m\<close>
     by (metis (no_types, lifting) One_nat_def Suc_1 length_Cons list.size(3))+
   have eval_Cn2: "eval (Cn 2 r_result [?m, Id 2 0, Id 2 1]) [i, x] \<down>"
   proof
@@ -2066,7 +2066,7 @@ proof -
         unfolding r_univ_def using eval_Cn2 by simp
       ultimately have "eval r_univ [i, x] = eval r_dec [w]" by simp
       then have "eval r_univ [i, x] \<down>= w - 1" by simp
-      with assms `w \<noteq> 0` w show ?thesis by simp
+      with assms \<open>w \<noteq> 0\<close> w show ?thesis by simp
     qed
   qed
   then have "\<forall>t'\<ge>t. eval r_result [t', i, x] \<down>= Suc v"
@@ -2077,13 +2077,13 @@ proof -
     then show False
     proof (cases "eval r_result [y, i, x] = None")
       case True
-      then show ?thesis using f_less_t `y < t` by fastforce
+      then show ?thesis using f_less_t \<open>y < t\<close> by fastforce
     next
       case False
       then obtain v where "eval r_result [y, i, x] \<down>= v" "v \<noteq> 0"
         using neq0 by auto
       then have "eval ?f [y, i, x] \<down>= 0" by simp
-      then show ?thesis using f_less_t `y < t` by simp
+      then show ?thesis using f_less_t \<open>y < t\<close> by simp
     qed
   qed
   ultimately show ?thesis by auto
@@ -2240,7 +2240,7 @@ proof -
     moreover have "pdec2 ?z \<ge> t" by simp
     ultimately have "the (eval r_result1 [pdec2 ?z, i, pdec1 ?z]) > 0"
       using t by simp
-    with `y \<le> ?z` r_dovedelay have "eval r_dovedelay [?z, i, y] \<down>= 0"
+    with \<open>y \<le> ?z\<close> r_dovedelay have "eval r_dovedelay [?z, i, y] \<down>= 0"
       by presburger
     then show "eval r_enumdom [i, y] \<down>"
       using r_enumdom by auto
@@ -2395,7 +2395,7 @@ proof -
     then have "eval m [i, j, x] \<up>"
       unfolding m_def using eval_Mn_diverg by simp
     then have "eval (Cn 3 r_both [m, Id 3 0, Id 3 1, Id 3 2]) [i, j, x] \<up>"
-      using `recfn 3 m` by simp
+      using \<open>recfn 3 m\<close> by simp
     then show "eval r_parallel [i, j, x] \<up>"
       using m by simp
   next
@@ -2435,7 +2435,7 @@ proof -
           eval (Cn 3 r_both [m, Id 3 0, Id 3 1, Id 3 2]) [i, j, x]"
         using m by simp
       ultimately have "eval r_parallel [i, j, x] = eval r_both [tf, i, j, x]"
-        using `recfn 3 m` by simp
+        using \<open>recfn 3 m\<close> by simp
       with * have "eval r_parallel [i, j, x] \<down>= prod_encode (0, the (eval f [x]))"
         by simp
       then show ?thesis by simp
@@ -2462,7 +2462,7 @@ proof -
           eval (Cn 3 r_both [m, Id 3 0, Id 3 1, Id 3 2]) [i, j, x]"
         using m by simp
       ultimately have "eval r_parallel [i, j, x] = eval r_both [tg, i, j, x]"
-        using `recfn 3 m` by simp
+        using \<open>recfn 3 m\<close> by simp
       with * have "eval r_parallel [i, j, x] \<down>= prod_encode (1, the (eval g [x]))"
         by simp
       then show ?thesis by simp
@@ -2496,7 +2496,7 @@ proof -
         eval (Cn 3 r_both [m, Id 3 0, Id 3 1, Id 3 2]) [i, j, x]"
       using m by simp
     ultimately have "eval r_parallel [i, j, x] = eval r_both [t\<^sub>0, i, j, x]"
-      using `recfn 3 m` by simp
+      using \<open>recfn 3 m\<close> by simp
     with * show "eval r_parallel [i, j, x] \<down>= prod_encode (1, the (eval g [x]))"
       by simp
   next
@@ -2529,7 +2529,7 @@ proof -
         eval (Cn 3 r_both [m, Id 3 0, Id 3 1, Id 3 2]) [i, j, x]"
       using m by simp
     ultimately have "eval r_parallel [i, j, x] = eval r_both [t\<^sub>0, i, j, x]"
-      using `recfn 3 m` by simp
+      using \<open>recfn 3 m\<close> by simp
     with * show "eval r_parallel [i, j, x] \<down>= prod_encode (0, the (eval f [x]))"
       by simp
   }

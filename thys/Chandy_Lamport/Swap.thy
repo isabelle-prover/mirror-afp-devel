@@ -459,11 +459,11 @@ proof -
   proof (cases "i = i'")
     case True
     then have "cs d i = cs c i" 
-      using assms(1) assms(3) assms(7) no_cs_change_if_no_event `regular_event ev` `~ isRecv ev` by auto
+      using assms(1) assms(3) assms(7) no_cs_change_if_no_event \<open>regular_event ev\<close> \<open>~ isRecv ev\<close> by auto
     then have "cs e i = cs d' i"
       using assms(2) assms(5) assms(6) regular_event same_cs_implies_same_resulting_cs by blast
     then have "cs d' i = cs e' i" 
-      using True assms(3) assms(6) assms(7) no_cs_change_if_no_event `regular_event ev` `~ isRecv ev` by auto
+      using True assms(3) assms(6) assms(7) no_cs_change_if_no_event \<open>regular_event ev\<close> \<open>~ isRecv ev\<close> by auto
     then show ?thesis 
       by (simp add: \<open>cs e i = cs d' i\<close>)
   next
@@ -665,7 +665,7 @@ proof -
   proof -
     have "\<forall>p. has_snapshotted c p = has_snapshotted d' p" 
       using assms(4) assms(5) regular_event_preserves_process_snapshots by auto
-    moreover have "msgs c i = msgs d' i" using `msgs c i = msgs d' i` by auto
+    moreover have "msgs c i = msgs d' i" using \<open>msgs c i = msgs d' i\<close> by auto
     moreover have "c \<turnstile> ev \<mapsto> d" using assms by auto
     moreover have "d' \<turnstile> ev \<mapsto> e'" using assms by auto
     moreover have "~ regular_event ev" using assms by auto
@@ -977,14 +977,14 @@ next
             have "~ has_snapshotted d q'" 
               using assms(1) assms(7) no_snap no_state_change_if_no_event RecvMarker by auto
             moreover have "\<nexists>r. channel i = Some (q', r)" using chan False pqrp by auto
-            moreover have "i \<noteq> i''" using `i = i'` `i' \<noteq> i''` by simp
+            moreover have "i \<noteq> i''" using \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> by simp
             ultimately show ?thesis using RecvMarker assms by simp
           qed
           moreover have "msgs d' i = msgs c i"
           proof -
             have "\<nexists>r. channel i = Some (q', r)" 
               using False chan pqrp by auto
-            moreover have "i \<noteq> i''" using `i = i'` `i' \<noteq> i''` by simp
+            moreover have "i \<noteq> i''" using \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> by simp
             ultimately show ?thesis using RecvMarker assms(5) no_snap by auto
           qed
           moreover have "Msg m # msgs e' i = msgs d' i" 
@@ -1005,7 +1005,7 @@ next
           by (meson assms(2) assms(5) calculation same_messages_2 same_messages_imply_same_resulting_messages)
       qed
       moreover have "msgs e' i = msgs d' i"
-        using assms by (metis Recv \<open>i' \<noteq> i''\<close> `i = i''` next_recv)
+        using assms by (metis Recv \<open>i' \<noteq> i''\<close> \<open>i = i''\<close> next_recv)
       ultimately show ?thesis by simp
     qed
   next
@@ -1067,10 +1067,10 @@ next
     case 1
     then have "msgs e' i = msgs d' i @ [Msg m]" 
       by (metis Send assms(6) next_send)
-    moreover have "Marker # msgs d' i = msgs c i" using `i = i''` RecvMarker assms by simp
+    moreover have "Marker # msgs d' i = msgs c i" using \<open>i = i''\<close> RecvMarker assms by simp
     moreover have "msgs d i = msgs c i @ [Msg m]" 
       by (metis "1"(1) Send assms(1) next_send)
-    moreover have "Marker # msgs e i = msgs d i" using `i = i''` RecvMarker assms by simp
+    moreover have "Marker # msgs e i = msgs d i" using \<open>i = i''\<close> RecvMarker assms by simp
     ultimately show ?thesis 
       by (metis append_self_conv2 list.inject list.sel(3) message.distinct(1) tl_append2)
   next
@@ -1082,13 +1082,13 @@ next
       by (metis "2"(1) Send assms(6) next_send)
     moreover have "msgs d' i = msgs c i"
     proof -
-      have "\<nexists>r. channel i = Some (q', r)" using `p' \<noteq> q'` chan pqpr by simp
-      with RecvMarker `i \<noteq> i''` `i = i'` assms show ?thesis by (cases "has_snapshotted c q'", auto)
+      have "\<nexists>r. channel i = Some (q', r)" using \<open>p' \<noteq> q'\<close> chan pqpr by simp
+      with RecvMarker \<open>i \<noteq> i''\<close> \<open>i = i'\<close> assms show ?thesis by (cases "has_snapshotted c q'", auto)
     qed
     moreover have "msgs e i = msgs d i"
     proof -
-      have "\<nexists>r. channel i = Some (q', r)" using `p' \<noteq> q'` chan pqpr by simp
-      with RecvMarker `i \<noteq> i''` `i = i'` assms show ?thesis by (cases "has_snapshotted d q'", auto)
+      have "\<nexists>r. channel i = Some (q', r)" using \<open>p' \<noteq> q'\<close> chan pqpr by simp
+      with RecvMarker \<open>i \<noteq> i''\<close> \<open>i = i'\<close> assms show ?thesis by (cases "has_snapshotted d q'", auto)
     qed
     ultimately show ?thesis by simp
   next
@@ -1269,7 +1269,7 @@ next
     then show ?thesis
     proof (cases "snd (cs c i) = Recording")
       case True
-      then have "cs d i = (fst (cs c i) @ [m], Recording)" using Recv assms True `i = i'` chan 
+      then have "cs d i = (fst (cs c i) @ [m], Recording)" using Recv assms True \<open>i = i'\<close> chan 
         by (metis next_recv)
       moreover have "cs e i = cs d i"
         by (metis Snapshot assms(2) calculation fst_conv next_snapshot)
@@ -1293,7 +1293,7 @@ next
       proof -
         have "cs d' i = cs c i" 
           by (metis Pair_inject Recv Snapshot True assms(1) assms(5) assms(7) can_occur_Recv distributed_system.happen_implies_can_occur distributed_system.next_snapshot distributed_system_axioms option.inject)
-        then show ?thesis using chan `i = i'` False Recv assms 
+        then show ?thesis using chan \<open>i = i'\<close> False Recv assms 
           by (metis next_recv)
       qed
       ultimately show ?thesis by simp
@@ -1468,7 +1468,7 @@ next
     then show ?thesis
     proof (cases "snd (cs c i)")
       case NotStarted
-      then have "cs d i = cs c i" using assms Recv `i = i'` by simp
+      then have "cs d i = cs c i" using assms Recv \<open>i = i'\<close> by simp
       moreover have "cs d' i = cs e i"
       proof -
         have "\<forall>p. has_snapshotted c p = has_snapshotted d p" 
@@ -1482,15 +1482,15 @@ next
         proof -
           have "\<nexists>r. channel i = Some (r, q')" 
             using Recv RecvMarker assms(7) chan pqrp by auto
-          with RecvMarker assms chan `i = i'` `i' \<noteq> i''` show ?thesis
+          with RecvMarker assms chan \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> show ?thesis
             by (cases "has_snapshotted c q'", auto)
         qed
-        then show ?thesis using assms Recv `i = i'` NotStarted by simp
+        then show ?thesis using assms Recv \<open>i = i'\<close> NotStarted by simp
       qed
       ultimately show ?thesis by simp
     next
       case Done
-      then have "cs d i = cs c i" using assms Recv `i = i'` by simp
+      then have "cs d i = cs c i" using assms Recv \<open>i = i'\<close> by simp
       moreover have "cs d' i = cs e i"
       proof -
         have "\<forall>p. has_snapshotted c p = has_snapshotted d p" 
@@ -1503,10 +1503,10 @@ next
         proof -
           have "\<nexists>r. channel i = Some (r, q')" 
             using Recv RecvMarker assms(7) chan pqrp by auto
-          with RecvMarker assms chan `i = i'` `i' \<noteq> i''` show ?thesis
+          with RecvMarker assms chan \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> show ?thesis
             by (cases "has_snapshotted c q'", auto)
         qed
-        then show ?thesis using assms Recv `i = i'` Done by simp
+        then show ?thesis using assms Recv \<open>i = i'\<close> Done by simp
       qed
       ultimately show ?thesis by simp
     next
@@ -1517,14 +1517,14 @@ next
       proof -
         have "\<nexists>r. channel i = Some (r, q')" 
           using Recv RecvMarker assms(7) chan pqrp by auto
-        with RecvMarker assms chan `i = i'` `i' \<noteq> i''` show ?thesis
+        with RecvMarker assms chan \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> show ?thesis
           by (cases "has_snapshotted d q'", auto)
       qed
       moreover have "cs c i = cs d' i " 
       proof -
         have "\<nexists>r. channel i = Some (r, q')" 
           using Recv RecvMarker assms(7) chan pqrp by auto
-        with RecvMarker assms chan `i = i'` `i' \<noteq> i''` show ?thesis
+        with RecvMarker assms chan \<open>i = i'\<close> \<open>i' \<noteq> i''\<close> show ?thesis
           by (cases "has_snapshotted c q'", auto)
       qed
       moreover have "cs e' i = (fst (cs d' i) @ [m], Recording)" 

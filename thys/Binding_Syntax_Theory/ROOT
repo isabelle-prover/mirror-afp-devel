@@ -1,7 +1,7 @@
 chapter AFP 
 
 session Binding_Syntax_Theory (AFP) = "HOL-Cardinals" +
-  description {* Theory of Syntax with Bindings *}
+  description "Theory of Syntax with Bindings"
   options [timeout = 3600]
   theories [document = false]
     Preliminaries

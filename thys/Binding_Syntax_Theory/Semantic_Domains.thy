@@ -1,17 +1,17 @@
-section {* Interpretation of syntax in semantic domains *}
+section \<open>Interpretation of syntax in semantic domains\<close>
 
 theory Semantic_Domains imports Iteration  
 begin
 
-text {* In this section, we employ our iteration principle
+text \<open>In this section, we employ our iteration principle
 to obtain interpretation of syntax in semantic domains via valuations.
 A bonus from our Horn-theoretic approach is the built-in
 commutation of the interpretation with substitution versus valuation update,
-a property known in the literature as the ``substitution lemma". *}
+a property known in the literature as the ``substitution lemma".\<close>
 
-subsection {* Semantic domains and valuations *}
+subsection \<open>Semantic domains and valuations\<close>
 
-text{*
+text\<open>
 Semantic domains are for binding signatures
 what algebras are for standard algebraic signatures. They fix carrier sets for each sort,
 and interpret each operation symbol as an operation on these sets
@@ -48,9 +48,9 @@ in other words,
 these maps can be viewed as ``generalized items"; we use for them
 term-like notations ``X", ``A", etc.
 (as we did in the theory that dealt with iteration).
-*}
+\<close>
 
-subsubsection {* Definitions: *}
+subsubsection \<open>Definitions:\<close>
 
 datatype ('varSort,'sTerm)sAbs = sAbs 'varSort "'sTerm \<Rightarrow> 'sTerm"
 
@@ -59,7 +59,7 @@ record ('index,'bindex,'varSort,'sort,'opSym,'sTerm)semDom =
   sDummy :: "'sort \<Rightarrow> 'sTerm"
   sOp :: "'opSym \<Rightarrow> ('index,'sTerm)input \<Rightarrow> ('bindex,('varSort,'sTerm)sAbs)input \<Rightarrow>'sTerm"
 
-text{* The type of valuations: *}
+text\<open>The type of valuations:\<close>
 
 type_synonym ('varSort,'var,'sTerm)val = "'varSort \<Rightarrow> 'var \<Rightarrow> 'sTerm"
 
@@ -99,7 +99,7 @@ definition sOpPrSWls where
    sWlsInp SEM delta sinp \<and> sWlsBinp SEM delta sbinp
    \<longrightarrow> sWls SEM (stOf delta) (sOp SEM delta sinp sbinp)"
 
-text{* The notion of a ``well-sorted" (better read as ``well-structured")
+text\<open>The notion of a ``well-sorted" (better read as ``well-structured")
 semantic domain: 
 %
 \footnote{
@@ -107,13 +107,13 @@ As usual in Isabelle, we first define the ``raw" version,
 and then ``fix" it with a well-structuredness predicate.
 }
 %
-*}
+\<close>
 definition wlsSEM where
 "wlsSEM SEM \<equiv>
  sWlsNE SEM \<and> sWlsDisj SEM \<and> sOpPrSWls SEM"
 
-text{* The preperties described  in the next 4 definitions turn out to be
-consequences of the well-structuredness of the semantic domain: *}
+text\<open>The preperties described  in the next 4 definitions turn out to be
+consequences of the well-structuredness of the semantic domain:\<close>
 
 definition sWlsAbsNE where
 "sWlsAbsNE SEM \<equiv>
@@ -125,7 +125,7 @@ definition sWlsAbsDisj where
    isInBar (us,s) \<and> isInBar (us',s') \<and> sWlsAbs SEM (us,s) sA \<and> sWlsAbs SEM (us',s') sA
    \<longrightarrow> us = us' \<and> s = s'"
 
-text{* The notion of two valuations being equal everywhere but on a given variable: *}
+text\<open>The notion of two valuations being equal everywhere but on a given variable:\<close>
 
 definition eqBut where
 "eqBut val val' xs x \<equiv>
@@ -160,7 +160,7 @@ definition sWlsValNE ::
 where
 "sWlsValNE SEM x \<equiv> \<exists> (val :: ('varSort,'var,'sTerm)val). sWlsVal SEM val"
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma sWlsNE_imp_sWlsAbsNE:
 assumes "sWlsNE SEM"
@@ -257,16 +257,16 @@ assumes "eqBut val val' xs x"
 shows "eqBut (val ^[z1 \<and> z2]_zs) (val' ^[z1 \<and> z2]_zs) xs (x @xs[z1 \<and> z2]_zs)"
 using assms unfolding eqBut_def swapVal_def by force
 
-subsection {* Interpretation maps *}
+subsection \<open>Interpretation maps\<close>
 
-text{* An interpretation map, of syntax in a semantic domain,
+text\<open>An interpretation map, of syntax in a semantic domain,
 is the usual one w.r.t. valuations.  Here we state its compostionality conditions
 (including the ``substitution lemma"), and later we prove the existence of a map
-satisfying these conditions.  *}
+satisfying these conditions.\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 
-text {* Below, prefix ``pr" means ``preserves". *}
+text \<open>Below, prefix ``pr" means ``preserves".\<close>
 
 definition prWls where
 "prWls g SEM \<equiv> \<forall> s X val.
@@ -359,7 +359,7 @@ definition compInt where
 "compInt g gA SEM \<equiv> prWlsAll g gA SEM \<and> prCons g gA SEM \<and>
  prFreshAll g gA SEM \<and> prSwapAll g gA SEM \<and> prSubstAll g gA SEM"
 
-subsubsection {* Extension of domain preservation to inputs *}
+subsubsection \<open>Extension of domain preservation to inputs\<close>
 
 lemma prWls_wlsInp:
 assumes "wlsInp delta inp" and "prWls g SEM" and "sWlsVal SEM val"
@@ -376,9 +376,9 @@ by (auto simp add: option.case_eq_if sameDom_def)
 end (* context FixSyn *)
 (***************************************)
 
-subsection {* The iterative model associated to a semantic domain *}
+subsection \<open>The iterative model associated to a semantic domain\<close>
 
-text{*
+text\<open>
 ``asIMOD SEM" stands for ``SEM (regarded) as a model".
 %
 \footnote{
@@ -411,18 +411,18 @@ notion of interpreting syntax in a semantic domains.
 \\- Substitution and freshness are defined having in mind the (again standard) facts of
 the interpretation commuting with substitution versus valuation update and the interpretation
 being oblivious to the valuation of fresh variables.
-*}
+\<close>
 
-subsubsection {* Definition and basic facts  *}
+subsubsection \<open>Definition and basic facts\<close>
 
-text{*
+text\<open>
 The next two types of ``generalized items" are used to build models from semantic domains:
 %
 \footnote{
 Recall that ``generalized items" inhabit models.
 }
 %
-*}
+\<close>
 
 type_synonym ('varSort,'var,'sTerm) gTerm = "('varSort,'var,'sTerm)val \<Rightarrow> 'sTerm"
 
@@ -469,9 +469,9 @@ where
   igSubstAbs = \<lambda>ys Y y A. \<lambda>val. if sWlsVal SEM val then A (val (y := Y val)_ys)
                                                    else undefined\<rparr>"
 
-text{* Next we state, as usual, the direct definitions of the operators and relations
+text\<open>Next we state, as usual, the direct definitions of the operators and relations
 of associated model, freeing ourselves from
-having to go through the ``asIMOD" definition each time we reason about them.  *}
+having to go through the ``asIMOD" definition each time we reason about them.\<close>
 
 lemma asIMOD_igWls:
 "igWls (asIMOD SEM) s X \<longleftrightarrow> 
@@ -610,12 +610,12 @@ lemma asIMOD_igSubstBinp:
  lift (\<lambda>A. A (val (y := Y val)_ys)) binp"
 by (auto simp: igSubstBinp_def asIMOD_igSubstAbs lift_def split: option.splits)
 
-subsubsection {* The associated model is well-structured *}
+subsubsection \<open>The associated model is well-structured\<close>
 
-text{* That is to say: it is a fresh-swap-subst
-and fresh-subst-swap model (hence of course also a fresh-swap and fresh-subst) model. *}
+text\<open>That is to say: it is a fresh-swap-subst
+and fresh-subst-swap model (hence of course also a fresh-swap and fresh-subst) model.\<close>
 
-text{* Domain disjointness: *}
+text\<open>Domain disjointness:\<close>
 
 lemma asIMOD_igWlsDisj:
 "sWlsNE SEM \<Longrightarrow> sWlsDisj SEM \<Longrightarrow> igWlsDisj (asIMOD SEM)"
@@ -631,7 +631,7 @@ lemma asIMOD_igWlsAllDisj:
 "sWlsNE SEM \<Longrightarrow> sWlsDisj SEM \<Longrightarrow> igWlsAllDisj (asIMOD SEM)"
 unfolding igWlsAllDisj_def using asIMOD_igWlsDisj asIMOD_igWlsAbsDisj by auto
 
-text {* Only ``bound arit" abstraction domains are inhabited: *}
+text \<open>Only ``bound arit" abstraction domains are inhabited:\<close>
 
 lemma asIMOD_igWlsAbsIsInBar:
 "sWlsNE SEM \<Longrightarrow> igWlsAbsIsInBar (asIMOD SEM)"
@@ -639,9 +639,9 @@ using sWlsNE_imp_sWlsValNE
 by (auto simp: sWlsValNE_def igWlsAbsIsInBar_def asIMOD_igWlsAbs 
          split: option.splits elim: sWlsAbs.elims(2))  
 
-text{* Domain preservation by the operators *}
+text\<open>Domain preservation by the operators\<close>
 
-text{* The constructs preserve the domains: *}
+text\<open>The constructs preserve the domains:\<close>
 
 lemma asIMOD_igVarIPresIGWls: "igVarIPresIGWls (asIMOD SEM)"
 unfolding igVarIPresIGWls_def asIMOD_igWls asIMOD_igVar sWlsVal_def by simp
@@ -662,7 +662,7 @@ lemma asIMOD_igConsIPresIGWls:
 unfolding igConsIPresIGWls_def wlsSEM_def
 using asIMOD_igVarIPresIGWls asIMOD_igAbsIPresIGWls asIMOD_igOpIPresIGWls by auto
 
-text{* Swap preserves the domains: *}
+text\<open>Swap preserves the domains:\<close>
 
 lemma asIMOD_igSwapIPresIGWls: "igSwapIPresIGWls (asIMOD SEM)"
 unfolding igSwapIPresIGWls_def asIMOD_igSwap asIMOD_igWls by auto
@@ -674,7 +674,7 @@ lemma asIMOD_igSwapAllIPresIGWlsAll: "igSwapAllIPresIGWlsAll (asIMOD SEM)"
 unfolding igSwapAllIPresIGWlsAll_def
 using asIMOD_igSwapIPresIGWls asIMOD_igSwapAbsIPresIGWlsAbs by auto
 
-text {* Subst preserves the domains:  *}
+text \<open>Subst preserves the domains:\<close>
 
 lemma asIMOD_igSubstIPresIGWls: "igSubstIPresIGWls (asIMOD SEM)"
 unfolding igSubstIPresIGWls_def asIMOD_igSubst asIMOD_igWls by simp
@@ -686,7 +686,7 @@ lemma asIMOD_igSubstAllIPresIGWlsAll: "igSubstAllIPresIGWlsAll (asIMOD SEM)"
 unfolding igSubstAllIPresIGWlsAll_def
 using asIMOD_igSubstIPresIGWls asIMOD_igSubstAbsIPresIGWlsAbs by auto
 
-text {* The clauses for fresh hold:  *}
+text \<open>The clauses for fresh hold:\<close>
 
 lemma asIMOD_igFreshIGVar: "igFreshIGVar (asIMOD SEM)"
 unfolding igFreshIGVar_def asIMOD_igFresh asIMOD_igVar eqBut_def by force
@@ -730,7 +730,7 @@ shows "igFreshCls (asIMOD SEM)"
 using assms unfolding igFreshCls_def
 using asIMOD_igFreshIGVar asIMOD_igFreshIGAbs1 asIMOD_igFreshIGAbs2 asIMOD_igFreshIGOp by auto
 
-text {* The clauses for swap hold:  *}
+text \<open>The clauses for swap hold:\<close>
 
 lemma asIMOD_igSwapIGVar: "igSwapIGVar (asIMOD SEM)"
 unfolding igSwapIGVar_def apply clarsimp apply(rule ext)
@@ -746,7 +746,7 @@ by (auto simp: igSwapIGOp_def asIMOD_igSwap asIMOD_igOp asIMOD_igSwapInp asIMOD_
 lemma asIMOD_igSwapCls: "igSwapCls (asIMOD SEM)"
 unfolding igSwapCls_def using asIMOD_igSwapIGVar asIMOD_igSwapIGAbs asIMOD_igSwapIGOp by auto
 
-text{* The clauses for subst hold: *}
+text\<open>The clauses for subst hold:\<close>
 
 lemma asIMOD_igSubstIGVar1: "igSubstIGVar1 (asIMOD SEM)"
 by (auto simp: igSubstIGVar1_def asIMOD_igSubst asIMOD_igVar asIMOD_igWls)
@@ -811,7 +811,7 @@ lemma asIMOD_igSubstCls: "igSubstCls (asIMOD SEM)"
 unfolding igSubstCls_def
 using asIMOD_igSubstIGVar1 asIMOD_igSubstIGVar2 asIMOD_igSubstIGAbs asIMOD_igSubstIGOp by auto
 
-text {* The fresh-swap-based congruence clause holds: *}
+text \<open>The fresh-swap-based congruence clause holds:\<close>
 
 lemma updVal_swapVal_eqBut: "eqBut (val (x := sX)_xs) ((val (y := sX)_xs) ^[y \<and> x]_xs) xs y"
 by (simp add: updVal_def swapVal_def eqBut_def sw_def) 
@@ -823,7 +823,7 @@ by (rule ext) (metis (hide_lams) updVal_swapVal_eqBut swapVal_preserves_sWls upd
 
  
 
-text {* The abstraction-renaming clause holds: *}
+text \<open>The abstraction-renaming clause holds:\<close>
 
 lemma asIMOD_igAbs3:
 assumes "sWlsDisj SEM" and "igWls (asIMOD SEM) s X"
@@ -844,7 +844,7 @@ unfolding igAbsRen_def asIMOD_igFresh asIMOD_igSwap apply safe
 by (simp add: asIMOD_igAbs2 asIMOD_igAbs3)  
    (auto intro!: ext simp: asIMOD_igAbs2 asIMOD_igAbs3 eqBut_def asIMOD_igSubst asIMOD_igVar)
 
-text {* The associated model forms well-structured models of all 4 kinds: *}
+text \<open>The associated model forms well-structured models of all 4 kinds:\<close>
 
 lemma asIMOD_wlsFSw:
 assumes "wlsSEM SEM"
@@ -872,9 +872,9 @@ lemma asIMOD_wlsFSbSw: "wlsSEM SEM \<Longrightarrow> iwlsFSbSw (asIMOD SEM)"
 unfolding iwlsFSbSw_def
 using asIMOD_wlsFSb asIMOD_igSwapAllIPresIGWlsAll asIMOD_igSwapCls by auto
 
-subsection {* The semantic interpretation  *}
+subsection \<open>The semantic interpretation\<close>
 
-text{* The well-definedness of the semantic interpretation, as well
+text\<open>The well-definedness of the semantic interpretation, as well
 as its associated substitution lemma and non-dependence of fresh variables,
 are the end products of this theory.
 
@@ -885,7 +885,7 @@ exhaustive study of the model from previous section had a deigree of redundancy 
 igoal -- we pursued it however in order to better illustrate the rich structure laying under
 the apparent paucity of the notion of a semantic domain.  Next, we choose to employ
 fresh-subst-swap aligebras to establish the required results. (Recall however that either aligebraic route
-we take, the initial morphism turns out to be the same function.)*}
+we take, the initial morphism turns out to be the same function.)\<close>
 
 definition semInt where "semInt SEM \<equiv> iter (asIMOD SEM)"
 

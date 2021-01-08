@@ -1580,7 +1580,7 @@ proof -
     then obtain C const where r: "(\<forall> i \<in> Is. C i \<ge> 0)" 
          and eq: "(\<Sum> i \<in> Is. Leqc ((C i) *R lec_poly (c i)) ((C i) *R lec_const (c i))) = Leqc 0 const" 
          and "const < 0" by auto
-    from finite_distinct_list[OF `finite Is`] 
+    from finite_distinct_list[OF \<open>finite Is\<close>] 
       obtain Isl where isl: "set Isl = Is" and dist: "distinct Isl" by auto
     let ?CC = "filter (\<lambda> rc. fst rc \<noteq> 0) (map (\<lambda> i. (C i, c i)) Isl)" 
     show ?l unfolding Farkas'_Lemma[OF only_non_strict fin]

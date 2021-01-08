@@ -232,7 +232,7 @@ proof-
     case True
     thus ?thesis
       using assms(1-2)
-      using unit_disc_iff_cmod_lt_1[of "to_complex x"] * ** `1 + y' \<noteq> 0`
+      using unit_disc_iff_cmod_lt_1[of "to_complex x"] * ** \<open>1 + y' \<noteq> 0\<close>
       by auto
       
   next

@@ -2947,7 +2947,7 @@ begin
         ultimately show ?thesis by fastforce
       qed
       interpret J: discrete_category "{m :: nat}" \<open>n :: nat\<close>
-         using neq `{m :: nat} \<noteq> UNIV` by unfold_locales auto
+         using neq \<open>{m :: nat} \<noteq> UNIV\<close> by unfold_locales auto
       let ?D = "\<lambda>i. if i = m then a else null"
       interpret D: discrete_diagram J.comp C ?D
         apply unfold_locales

@@ -1190,7 +1190,7 @@ proof-
       then obtain \<phi>2ss1 \<phi>2ss2 where \<phi>2ss: "\<phi>2ss = \<phi>2ss1 @ \<phi>1 # \<phi>2ss2"
         by (meson split_list)
       define \<phi>2s where \<phi>2s: "\<phi>2s \<equiv> \<phi>2ss1 @ \<phi>2ss2"
-      have nin: "\<phi>1 \<notin> set \<phi>2s" using \<phi>2ss `distinct \<phi>2ss` unfolding \<phi>2s by auto
+      have nin: "\<phi>1 \<notin> set \<phi>2s" using \<phi>2ss \<open>distinct \<phi>2ss\<close> unfolding \<phi>2s by auto
       have [intro!]: "set \<phi>2s \<subseteq> fmla" unfolding \<phi>2s using \<phi>2ss Cons by auto
       have 0: "prv (imp (cnj \<phi>1 (lcnj \<phi>2s)) (lcnj \<phi>2ss))"
         unfolding \<phi>2s \<phi>2ss using Cons \<phi>2ss
@@ -1814,7 +1814,7 @@ proof-
       then obtain \<phi>1ss1 \<phi>1ss2 where \<phi>1ss: "\<phi>1ss = \<phi>1ss1 @ \<phi>2 # \<phi>1ss2"
       by (meson split_list)
       define \<phi>1s where \<phi>1s: "\<phi>1s \<equiv> \<phi>1ss1 @ \<phi>1ss2"
-      have nin: "\<phi>2 \<notin> set \<phi>1s" using \<phi>1ss `distinct \<phi>1ss` unfolding \<phi>1s by auto
+      have nin: "\<phi>2 \<notin> set \<phi>1s" using \<phi>1ss \<open>distinct \<phi>1ss\<close> unfolding \<phi>1s by auto
       have [intro!,simp]: "set \<phi>1s \<subseteq> fmla" unfolding \<phi>1s using \<phi>1ss Cons by auto
       have 0: "prv (imp (ldsj \<phi>1ss) (dsj \<phi>2 (ldsj \<phi>1s)))"
         unfolding \<phi>1s \<phi>1ss

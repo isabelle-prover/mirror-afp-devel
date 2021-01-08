@@ -463,12 +463,12 @@ proof
   moreover {
     assume "?Q SK"
     hence "n \<in> bad_shakey \<inter> bad_prikey"
-      by (rule_tac contrapos_pp [OF `?P SK`], rule_tac owner_seskey_secret [OF A])
+      by (rule_tac contrapos_pp [OF \<open>?P SK\<close>], rule_tac owner_seskey_secret [OF A])
   }
   moreover {
     assume "?R SK"
     hence "n \<in> bad_shakey \<inter> (bad_pwd \<union> bad_prikey)"
-      by (rule_tac contrapos_pp [OF `?P SK`], rule_tac asset_seskey_secret [OF A])
+      by (rule_tac contrapos_pp [OF \<open>?P SK\<close>], rule_tac asset_seskey_secret [OF A])
   }
   ultimately show False
     using B and C by blast
@@ -561,13 +561,13 @@ proof
     moreover {
       assume "?Q SK"
       hence "n \<in> bad_shakey \<inter> bad_prikey"
-        by (rule_tac contrapos_pp [OF `?P SK`], rule_tac owner_seskey_secret
+        by (rule_tac contrapos_pp [OF \<open>?P SK\<close>], rule_tac owner_seskey_secret
          [OF A])
     }
     moreover {
       assume "?R SK"
       hence "n \<in> bad_shakey \<inter> (bad_pwd \<union> bad_prikey)"
-        by (rule_tac contrapos_pp [OF `?P SK`], rule_tac asset_seskey_secret
+        by (rule_tac contrapos_pp [OF \<open>?P SK\<close>], rule_tac asset_seskey_secret
          [OF A])
     }
     ultimately show ?thesis by blast

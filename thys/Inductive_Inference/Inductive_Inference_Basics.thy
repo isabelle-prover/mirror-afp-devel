@@ -173,7 +173,7 @@ proof -
   then have "\<And>x. x < length ?vs \<Longrightarrow> f x \<down>= ?vs ! x"
     using assms by auto
   then show ?thesis
-    using prefixI[where ?vs="?vs"] `length ?vs = Suc k` by simp
+    using prefixI[where ?vs="?vs"] \<open>length ?vs = Suc k\<close> by simp
 qed
 
 text \<open>Strategies receive prefixes in the form of encoded lists. The
@@ -326,7 +326,7 @@ proof
       by (simp add: RPred1_def)
     then have "\<forall>x. the (f x) \<le> 1"
       by (metis eq_refl less_Suc_eq_le zero_less_Suc option.sel)
-    with `f \<in> \<R>` show "f \<in> ?S" by simp
+    with \<open>f \<in> \<R>\<close> show "f \<in> ?S" by simp
   qed
   show "?S \<subseteq> \<R>\<^sub>0\<^sub>1"
   proof
@@ -339,7 +339,7 @@ proof
     with total have "\<forall>x. f x \<down>= 0 \<or> f x \<down>= 1"
       by (metis option.collapse)
     then show "f \<in> \<R>\<^sub>0\<^sub>1"
-      using `f \<in> \<R>` RPred1_def by auto
+      using \<open>f \<in> \<R>\<close> RPred1_def by auto
   qed
 qed
 
@@ -529,7 +529,7 @@ proof -
   moreover have "recfn 1 (r_prepend vs r)"
     using r r_prepend_recfn by simp
   moreover have "eval (r_prepend vs r) [x] = (vs \<odot> f) x" for x
-    using r r_prepend `total1 f` total1E by simp
+    using r r_prepend \<open>total1 f\<close> total1E by simp
   ultimately show ?thesis by auto
 qed
 
@@ -621,7 +621,7 @@ proof -
     show "(vs \<odot> 0\<^sup>\<infinity>) x = (?ws \<odot> 0\<^sup>\<infinity>) x"
     proof (cases "x < Suc m")
       case True
-      then show ?thesis using `?P m` by simp
+      then show ?thesis using \<open>?P m\<close> by simp
     next
       case False
       moreover from this have "(?ws \<odot> 0\<^sup>\<infinity>) x \<down>= 0"
@@ -1190,7 +1190,7 @@ proof -
       using rt_def that rc rs by auto
     ultimately have "eval rt [x] = t x" for x
       by (simp add: rs(2) t_def)
-    with `recfn 1 rt` show ?thesis by auto
+    with \<open>recfn 1 rt\<close> show ?thesis by auto
   qed
   have t: "t (f \<triangleright> n) \<down>=
       (if s (f \<triangleright> n) = Some 0 then 0 else Suc (the (c (the (s (f \<triangleright> n)) - 1))))"
@@ -1212,7 +1212,7 @@ proof -
       moreover have "\<forall>n<n\<^sub>0. t (f \<triangleright> n) \<down>= 0"
         using t[OF that] i by simp
       moreover have "t (f \<triangleright> n) \<down>= Suc ?j" if "n \<ge> n\<^sub>0" for n
-        using that i t[OF `f \<in> U`] by simp
+        using that i t[OF \<open>f \<in> U\<close>] by simp
       ultimately show ?thesis by auto
     qed
   qed

@@ -396,7 +396,7 @@ proof-
     by blast
   ultimately
   show ?thesis
-    using x' `x1 \<noteq> x2`
+    using x' \<open>x1 \<noteq> x2\<close>
     using complex.expand
     by (metis cnj.code complex_surj conjugate_of_complex)
 qed

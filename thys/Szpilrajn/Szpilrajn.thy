@@ -91,7 +91,7 @@ lemma Zorns_po_lemma_nonempty:
     and ne: "r \<noteq> {}"
   shows "\<exists>m\<in>Field r. \<forall>a\<in>Field r. (m, a) \<in> r \<longrightarrow> a = m"
 proof -
-  from `r\<noteq>{}` obtain x where "x\<in>Field r"
+  from \<open>r\<noteq>{}\<close> obtain x where "x\<in>Field r"
     using FieldI2 by fastforce
   with assms show ?thesis
     using Zorns_po_lemma by (metis empty_iff)  
@@ -152,7 +152,7 @@ proof -
       and as such it is transitive, irreflexive and extends the base relation.\<close>
 
       have r_se: "strict_ext base_r r" if "r \<in> C" for r
-        using `r \<in> C` C_def by (auto simp add: Chains_def order_of_orders_def)
+        using \<open>r \<in> C\<close> C_def by (auto simp add: Chains_def order_of_orders_def)
 
       hence r_trans: "trans r" 
         and r_irrefl: "irrefl r" 
@@ -223,7 +223,7 @@ proof -
       assume "(x, y) \<notin> max" and "(y, x) \<notin> max"
       let ?max' = "((max \<union> {(x, y)})\<^sup>+)"
 
-      from max_spo `(x, y) \<notin> max` `(y, x) \<notin> max` `x\<noteq>y` 
+      from max_spo \<open>(x, y) \<notin> max\<close> \<open>(y, x) \<notin> max\<close> \<open>x\<noteq>y\<close> 
       have max'_se_max: "strict_ext max ?max'" by (rule can_extend_partial_order)
 
       hence max'_se: "strict_ext base_r ?max'"

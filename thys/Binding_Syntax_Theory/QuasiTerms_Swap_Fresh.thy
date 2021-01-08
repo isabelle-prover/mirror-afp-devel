@@ -1,16 +1,16 @@
-section {* Quasi-Terms with Swapping and Freshness *}
+section \<open>Quasi-Terms with Swapping and Freshness\<close>
 
 theory QuasiTerms_Swap_Fresh imports Preliminaries 
 begin
 
-text{*
+text\<open>
 This section defines and studies the (totally free) datatype of quasi-terms
 and the notions of freshness and
 swapping variables for them.
 ``Quasi" refers to the fact that these items are not (yet) factored to alpha-equivalence.
- We shall later call ``terms" those alpha-equivalence classes.  *}
+ We shall later call ``terms" those alpha-equivalence classes.\<close>
 
-subsection {* The datatype of quasi-terms with bindings *}
+subsection \<open>The datatype of quasi-terms with bindings\<close>
 
 datatype
 ('index,'bindex,'varSort,'var,'opSym)qTerm =
@@ -21,7 +21,7 @@ and
 ('index,'bindex,'varSort,'var,'opSym)qAbs =
   qAbs 'varSort 'var "('index,'bindex,'varSort,'var,'opSym)qTerm"
 
-text{* Above:
+text\<open>Above:
 \begin{itemize}
 \item ``Var" stands for ``variable injection"
 \item ``Op" stands for ``operation"
@@ -35,7 +35,7 @@ to a term-input and an abstraction-input
 (where, for any type $T$, $T$-inputs are partial
 maps from indexes to $T$. A quasi-abstraction is
 essentially a pair (variable,quasi-term).
- *}
+\<close>
 
 type_synonym ('index,'bindex,'varSort,'var,'opSym)qTermItem =
 "('index,'bindex,'varSort,'var,'opSym)qTerm +
@@ -49,7 +49,7 @@ abbreviation absIn ::
 "('index,'bindex,'varSort,'var,'opSym)qAbs \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qTermItem"
 where "absIn A == Inr A"
 
-subsection {* Induction principles *}
+subsection \<open>Induction principles\<close>
 
 definition qTermLess :: "('index,'bindex,'varSort,'var,'opSym)qTermItem rel"
 where
@@ -57,8 +57,8 @@ where
               {(absIn A, termIn(qOp delta inp binp))| A delta inp binp i. binp i = Some A} \<union>
               {(termIn X, absIn (qAbs xs x X))| X xs x. True}"
 
-text{* This induction will be used only temporarily, until we
-   get a better one, involving swapping:  *}
+text\<open>This induction will be used only temporarily, until we
+   get a better one, involving swapping:\<close>
 
 lemma qTerm_rawInduct[case_names Var Op Abs]:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -89,9 +89,9 @@ qed
 lemma qTermLessPlus_wf: "wf (qTermLess ^+)"
 using qTermLess_wf wf_trancl by auto
 
-text{* The skeleton of a quasi-term item -- this is the generalization
+text\<open>The skeleton of a quasi-term item -- this is the generalization
    of the size function from the case of finitary syntax.
-   We use the skeleton later for proving correct various recursive function definitions, notably that of ``alpha". *}
+   We use the skeleton later for proving correct various recursive function definitions, notably that of ``alpha".\<close>
 
 function
 qSkel :: "('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> ('index,'bindex)tree"
@@ -106,8 +106,8 @@ where
 by(pat_completeness, auto)
 termination by(relation qTermLess, simp add: qTermLess_wf, auto simp add: qTermLess_def)
 
-text{* Next is a template for generating induction principles whenever we come up
-  with relation on terms included in the kernel of the skeleton operator.  *}
+text\<open>Next is a template for generating induction principles whenever we come up
+  with relation on terms included in the kernel of the skeleton operator.\<close>
 
 lemma qTerm_templateInduct[case_names Var Op Abs]:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)qTerm"
@@ -136,8 +136,8 @@ proof-
   thus ?thesis by blast
 qed
 
-text{* A modification of the canonical immediate-subterm
-relation on quasi-terms, that takes into account a relation assumed included in the skeleton kernel.  *}
+text\<open>A modification of the canonical immediate-subterm
+relation on quasi-terms, that takes into account a relation assumed included in the skeleton kernel.\<close>
 
 definition qTermLess_modulo ::
 "('index,'bindex,'varSort,'var,'opSym)qTerm rel \<Rightarrow>
@@ -171,7 +171,7 @@ proof(unfold wf_def, auto)
   qed
 qed
 
-subsection {* Swap and substitution on variables  *}
+subsection \<open>Swap and substitution on variables\<close>
 
 definition sw :: "'varSort \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow> 'var \<Rightarrow> 'var"
 where
@@ -294,12 +294,12 @@ by (unfold sb_def) auto
 lemmas sb_otherSimps =
 sb_ident sb_idem sb_preserves_mship
 
-subsection {* The swapping and freshness operators *}
+subsection \<open>The swapping and freshness operators\<close>
 
-text {* For establishing the preliminary results quickly, we use both the notion of
+text \<open>For establishing the preliminary results quickly, we use both the notion of
 binding-sensitive freshness (operator ``qFresh")
        and that of ``absolute" freshness, ignoring bindings (operator ``qAFresh").  Later,
-       for alpha-equivalence classes, ``qAFresh" will not make sense.  *}
+       for alpha-equivalence classes, ``qAFresh" will not make sense.\<close>
 
 definition
 aux_qSwap_ignoreFirst3 ::
@@ -359,12 +359,12 @@ where
 lemma qTermLess_ingoreFirst2_wf: "wf(inv_image qTermLess aux_qFresh_ignoreFirst2)"
 using qTermLess_wf wf_inv_image by auto
 
-text{* The quasi absolutely-fresh predicate:
+text\<open>The quasi absolutely-fresh predicate:
   (note that this is not an oxymoron: ``quasi" refers
    to being an operator on quasi-terms, and not on
 terms, i.e., on alpha-equivalence  classes;
    ``absolutely'' refers to not ignoring bindings in the notion of freshness,
-and thus counting absolutely all the variables. *}
+and thus counting absolutely all the variables.\<close>
 
 function
 qAFresh :: "'varSort \<Rightarrow> 'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> bool"
@@ -385,8 +385,8 @@ by(relation "inv_image qTermLess aux_qFresh_ignoreFirst2",
 
 lemmas qAFreshAll_simps = qAFresh.simps qAFreshAbs.simps
 
-text{* The next is standard freshness -- note that its definition differs from that
-of absolute freshness only at the clause for abstractions.  *}
+text\<open>The next is standard freshness -- note that its definition differs from that
+of absolute freshness only at the clause for abstractions.\<close>
 
 function
 qFresh :: "'varSort \<Rightarrow> 'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> bool"
@@ -407,7 +407,7 @@ by(relation "inv_image qTermLess aux_qFresh_ignoreFirst2",
 
 lemmas qFreshAll_simps = qFresh.simps qFreshAbs.simps
 
-subsection {* Compositional properties of swapping  *}
+subsection \<open>Compositional properties of swapping\<close>
 
 lemma qSwapAll_ident:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -500,7 +500,7 @@ corollary qAFresh_qSwap_compose:
  ((X #[[y \<and> x]]_zs) #[[z \<and> y]]_zs) = (X #[[z \<and> x]]_zs)"
 by(simp add: qAFreshAll_qSwapAll_compose)
 
-subsection {* Induction and well-foundedness modulo swapping  *}
+subsection \<open>Induction and well-foundedness modulo swapping\<close>
 
 lemma qSkel_qSwapAll:
 fixes  X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -517,13 +517,13 @@ qed auto
 corollary qSkel_qSwap: "qSkel(X #[[x \<and> y]]_zs) = qSkel X"
 by(simp add: qSkel_qSwapAll)
 
-text{*
+text\<open>
   For induction modulo swapping, one may wish to swap not just once,
    but several times at the
    induction hypothesis (an example of this will be the proof of compatibility
    of ``qSwap" with alpha) -- for this, we introduce the following relation
   (the suffix ``Raw" signifies the fact that the involved variables are
-  not required to be well-sorted):   *}
+  not required to be well-sorted):\<close>
 
 inductive_set qSwapped :: "('index,'bindex,'varSort,'var,'opSym)qTerm rel"
 where
@@ -542,7 +542,7 @@ lemma qSwapped_qSkel:
 "(X,Y) \<in> qSwapped  \<Longrightarrow> qSkel Y = qSkel X"
 by(erule qSwapped.induct, auto simp add: qSkel_qSwap)
 
-text{* The following is henceforth our main induction principle for quasi-terms.  At the
+text\<open>The following is henceforth our main induction principle for quasi-terms.  At the
  clause for abstractions, the user may choose among the two
  induction hypotheses (IHs):
  \\-(1) IH for all swapped terms
@@ -551,7 +551,7 @@ text{* The following is henceforth our main induction principle for quasi-terms.
 The user may choose only one of the above, and ignore the others, but may of course also
 assume both.  (2) is stronger than (1),
 but we offer both of them for convenience in proofs.
-Most of the times, (1) will be the most convenient. *}
+Most of the times, (1) will be the most convenient.\<close>
 
 lemma qTerm_induct[case_names Var Op Abs]:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)qTerm"
@@ -568,7 +568,7 @@ shows "phi X \<and> phiAbs A"
       auto simp add: qSwapped_qSkel assms)
 
 
-text{* The following relation will be needed for proving alpha-equivalence well-defined: *}
+text\<open>The following relation will be needed for proving alpha-equivalence well-defined:\<close>
 
 definition qTermQSwappedLess :: "('index,'bindex,'varSort,'var,'opSym)qTermItem rel"
 where "qTermQSwappedLess = qTermLess_modulo qSwapped"
@@ -578,7 +578,7 @@ unfolding qTermQSwappedLess_def
 using qSwapped_qSkel qTermLess_modulo_wf[of qSwapped] by blast
 
 
-subsection{* More properties connecting swapping and freshness *}
+subsection\<open>More properties connecting swapping and freshness\<close>
 
 lemma qSwap_3commute:
 assumes *: "qAFresh ys y X" and **: "qAFresh ys y0 X"

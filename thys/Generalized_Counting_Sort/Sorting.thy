@@ -756,7 +756,7 @@ next
       case (Suc j')
       moreover have "i' < length ns' \<longrightarrow> (\<forall>j < offs ns' 0 ! i'.
         \<forall>k \<in> {offs ns' 0 ! i'..<length xs'}. key (xs' ! j) \<le> key (xs' ! k))"
-        using `?R` ..
+        using \<open>?R\<close> ..
       hence "j' < offs ns' 0 ! i' \<longrightarrow>
         (\<forall>k \<in> {offs ns' 0 ! i'..<length xs'}. key (xs' ! j') \<le> key (xs' ! k))"
         using G by simp
@@ -1155,7 +1155,7 @@ next
       hence W: "\<forall>j < offs ns' 0 ! (i - length ms').
         \<forall>k \<in> {offs ns' 0 ! (i - length ms')..<length xs'}.
           key (xs' ! j) \<le> key (xs' ! k)"
-        using `?R` by simp
+        using \<open>?R\<close> by simp
       from D [symmetric] have X: "foldl (+) 0 ms' = Suc (Suc m)"
       proof (simp add: round_suc_suc_def Let_def add_replicate add_suc
        split: if_split_asm, cases "m = 0")

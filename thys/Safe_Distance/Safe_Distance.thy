@@ -343,9 +343,9 @@ proof -
   hence "x + y \<le> - 2 * v / a"
     unfolding t_stop_def by auto
   hence "-1 / 2 * a * (x + y) \<le> v" (is "?lhs0 \<le> ?rhs0")
-    using `a < 0` by (auto simp add: field_simps)
+    using \<open>a < 0\<close> by (auto simp add: field_simps)
   hence "?lhs0 * (x- y) \<ge> ?rhs0 * (x - y)"
-    using `x \<le> y` by sos
+    using \<open>x \<le> y\<close> by sos
   hence "v * x + 1 / 2 * a * x\<^sup>2 \<le> v * y + 1 / 2 * a * y\<^sup>2"
     by (auto simp add: field_simps power_def)
   thus " p x \<le> p y"
@@ -359,9 +359,9 @@ proof -
   hence "- 2 * v / a \<le> x + y"
     unfolding t_stop_def by auto
   hence "v \<le> - 1/ 2 * a * (x + y)"
-    using `a < 0` by (auto simp add: field_simps)
+    using \<open>a < 0\<close> by (auto simp add: field_simps)
   hence "v * (x - y) \<ge> -1/2 * a * (x\<^sup>2 - y\<^sup>2) "
-    using `x \<le> y` by sos
+    using \<open>x \<le> y\<close> by sos
   hence "v * y + 1/2 * a * y\<^sup>2 \<le> v * x + 1/2 * a * x\<^sup>2"
     by (auto simp add: field_simps)
   thus "p y \<le> p x"
@@ -375,9 +375,9 @@ proof -
   hence "x + y < - 2 * v / a"
     unfolding t_stop_def by auto
   hence "-1 / 2 * a * (x + y) < v" (is "?lhs0 < ?rhs0")
-    using `a < 0` by (auto simp add: field_simps)
+    using \<open>a < 0\<close> by (auto simp add: field_simps)
   hence "?lhs0 * (x- y) > ?rhs0 * (x - y)"
-    using `x < y` by sos
+    using \<open>x < y\<close> by sos
   hence "v * x + 1 / 2 * a * x\<^sup>2 < v * y + 1 / 2 * a * y\<^sup>2"
     by (auto simp add: field_simps power_def)
   thus " p x < p y"
@@ -391,9 +391,9 @@ proof -
   hence "- 2 * v / a < x + y"
     unfolding t_stop_def by auto
   hence "v < - 1/ 2 * a * (x + y)"
-    using `a < 0` by (auto simp add: field_simps)
+    using \<open>a < 0\<close> by (auto simp add: field_simps)
   hence "v * (x - y) > -1/2 * a * (x\<^sup>2 - y\<^sup>2) "
-    using `x < y` by sos
+    using \<open>x < y\<close> by sos
   hence "v * y + 1/2 * a * y\<^sup>2 < v * x + 1/2 * a * x\<^sup>2"
     by (auto simp add: field_simps)
   thus "p y < p x"
@@ -861,12 +861,12 @@ proof -
       using hyps assms
       unfolding rewr by simp_all
     show "0 \<le> D2" by fact
-    from add_strict_mono[OF \<open>t < - (v\<^sub>e / a\<^sub>e)\<close> \<open>t < - (v\<^sub>o / a\<^sub>o)\<close>] `0 < t` \<open>a\<^sub>o > a\<^sub>e\<close>
+    from add_strict_mono[OF \<open>t < - (v\<^sub>e / a\<^sub>e)\<close> \<open>t < - (v\<^sub>o / a\<^sub>o)\<close>] \<open>0 < t\<close> \<open>a\<^sub>o > a\<^sub>e\<close>
     have "0 < - (v\<^sub>e / a\<^sub>e) + - (v\<^sub>o / a\<^sub>o)" by (simp add: divide_simps)
     then have "0 > v\<^sub>e * a\<^sub>o + a\<^sub>e * v\<^sub>o" using hyps
       by (simp add: field_split_simps split: if_splits)
     show "v\<^sub>o < v\<^sub>e"
-      using `a\<^sub>e < a\<^sub>o` `movement.p (a\<^sub>o - a\<^sub>e) (v\<^sub>o - v\<^sub>e) (s\<^sub>o - s\<^sub>e) t = 0` in_front  t(2)
+      using \<open>a\<^sub>e < a\<^sub>o\<close> \<open>movement.p (a\<^sub>o - a\<^sub>e) (v\<^sub>o - v\<^sub>e) (s\<^sub>o - s\<^sub>e) t = 0\<close> in_front  t(2)
       apply (auto simp: movement.p_def divide_less_0_iff algebra_simps power2_eq_square)
       by (smt divide_less_0_iff mult_le_cancel_right mult_mono mult_nonneg_nonneg nonneg_vel_ego)
     from disj have "x2 < ?min"

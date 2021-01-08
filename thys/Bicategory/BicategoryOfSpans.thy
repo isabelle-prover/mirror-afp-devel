@@ -2092,11 +2092,11 @@ $$
                   \<psi>.arrow_of_spans_axioms g.dom.apex_def g'.dom.apex_def
             by auto
           have \<rho>\<psi>: "tabulation (\<bullet>) (\<star>) assoc unit src trg ?r (r.\<rho> \<bullet> ?\<psi>) r.f g"
-            using \<psi> `r.g = ?g'` r.has_tabulation \<rho>.preserved_by_output_iso by simp
+            using \<psi> \<open>r.g = ?g'\<close> r.has_tabulation \<rho>.preserved_by_output_iso by simp
           interpret \<tau>\<psi>: tabulation vcomp hcomp assoc unit src trg ?r \<open>r.\<rho> \<bullet> ?\<psi>\<close> r.f g
             using \<rho>\<psi> by auto
           have "tabulation (\<bullet>) (\<star>) assoc unit src trg ?r ((?r \<star> ?\<phi>) \<bullet> r.\<rho> \<bullet> ?\<psi>) f g"
-            using \<phi> `r.f = ?f'` \<tau>\<psi>.preserved_by_input_iso [of ?\<phi> f] by argo
+            using \<phi> \<open>r.f = ?f'\<close> \<tau>\<psi>.preserved_by_input_iso [of ?\<phi> f] by argo
           thus ?thesis by auto
         qed
       qed
@@ -2275,18 +2275,18 @@ $$
         have "hseq g w"
           using assms left_adjoint_is_ide by simp
         have "src m = src n"
-          using mn m\<^sub>a `hseq n m\<^sup>*` adjoint_pair_antipar [of m "m\<^sup>*"] by fastforce
+          using mn m\<^sub>a \<open>hseq n m\<^sup>*\<close> adjoint_pair_antipar [of m "m\<^sup>*"] by fastforce
 
         have "is_left_adjoint (g \<star> n)"
-          using assms mn left_adjoints_compose `hseq g n` by blast
+          using assms mn left_adjoints_compose \<open>hseq g n\<close> by blast
         moreover have "src m = src (g \<star> n)"
-          using assms mn `hseq g n` `src m = src n` by simp
+          using assms mn \<open>hseq g n\<close> \<open>src m = src n\<close> by simp
         moreover have "(g \<star> n) \<star> m\<^sup>* \<cong> g \<star> w"
         proof -
           have 1: "src g = trg (n \<star> m\<^sup>*)"
-            using assms `trg (n \<star> m\<^sup>*) = trg w` `hseq g w` by fastforce
+            using assms \<open>trg (n \<star> m\<^sup>*) = trg w\<close> \<open>hseq g w\<close> by fastforce
           hence "(g \<star> n) \<star> m\<^sup>* \<cong> g \<star> n \<star> m\<^sup>*"
-            using assms mn m\<^sub>a assoc_in_hom iso_assoc `hseq g n` `hseq n m\<^sup>*`
+            using assms mn m\<^sub>a assoc_in_hom iso_assoc \<open>hseq g n\<close> \<open>hseq n m\<^sup>*\<close>
                   isomorphic_def left_adjoint_is_ide right_adjoint_is_ide
             by (metis hseqE ideD(2) ideD(3))
           also have "... \<cong> g \<star> w"
@@ -2370,9 +2370,9 @@ $$
       have "e'e.trnr\<^sub>\<eta> m \<theta> \<in> hom m (src w \<star> e')"
       proof -
         have "src m = trg e"
-          using `hseq m e` by auto
+          using \<open>hseq m e\<close> by auto
         moreover have "src (src w) = trg e'"
-          using `hseq (src w) e'` by auto
+          using \<open>hseq (src w) e'\<close> by auto
         moreover have "ide m"
           using mn left_adjoint_is_ide by simp
         moreover have "ide (src w)"
@@ -2393,7 +2393,7 @@ $$
         moreover have "is_left_adjoint e'"
           using e'e.adjunction_in_bicategory_axioms adjoint_pair_def by auto
         ultimately show ?thesis
-          using left_adjoints_compose `hseq (src w) e'` by auto
+          using left_adjoints_compose \<open>hseq (src w) e'\<close> by auto
       qed
       ultimately have "\<theta>' \<cdot> e'e.trnr\<^sub>\<eta> m \<theta> = m \<and> e'e.trnr\<^sub>\<eta> m \<theta> \<cdot> \<theta>' = src w \<star> e'"
         using mn BS3 [of m m "\<theta>' \<cdot> e'e.trnr\<^sub>\<eta> m \<theta>" m]
@@ -2404,7 +2404,7 @@ $$
       hence 5: "iso \<theta>'"
         by auto
       have "equivalence_map (src w \<star> e')"
-        using assms obj_is_equivalence_map equiv_e' `hseq (src w) e'` equivalence_maps_compose
+        using assms obj_is_equivalence_map equiv_e' \<open>hseq (src w) e'\<close> equivalence_maps_compose
         by auto
       hence "equivalence_map m"
         using * 5 equivalence_map_preserved_by_iso isomorphic_def by auto
@@ -5821,7 +5821,7 @@ $$
                show "Map (?G \<odot> F) = Map (dom F)"
                proof -
                  have "Map (?G \<odot> F) = Comp \<lbrakk>g\<rbrakk>\<^sub>B \<lbrakk>f\<rbrakk>\<^sub>B"
-                   using 1 comp_char [of ?G F] `Map F = B.iso_class f` by simp
+                   using 1 comp_char [of ?G F] \<open>Map F = B.iso_class f\<close> by simp
                  also have "... = \<lbrakk>g \<star> f\<rbrakk>\<^sub>B"
                  proof -
                    have "g \<star> f \<in> Comp \<lbrakk>g\<rbrakk>\<^sub>B \<lbrakk>f\<rbrakk>\<^sub>B"
@@ -5830,7 +5830,7 @@ $$
                          B.isomorphic_reflexive)
                    thus ?thesis
                      using Comp_eq_iso_class_memb F_in_hom G_in_hom arr_char arr_char
-                           `Map F = B.iso_class f`
+                           \<open>Map F = B.iso_class f\<close>
                      by auto
                  qed
                  also have "... = \<lbrakk>src f\<rbrakk>\<^sub>B"
@@ -5864,7 +5864,7 @@ $$
                show "Map (F \<odot> ?G) = Map (cod F)"
                proof -
                  have "Map (F \<odot> ?G) = Comp \<lbrakk>f\<rbrakk>\<^sub>B \<lbrakk>g\<rbrakk>\<^sub>B"
-                   using 1 comp_char [of F ?G] `Map F = \<lbrakk>f\<rbrakk>\<^sub>B` by simp
+                   using 1 comp_char [of F ?G] \<open>Map F = \<lbrakk>f\<rbrakk>\<^sub>B\<close> by simp
                  also have "... = \<lbrakk>f \<star> g\<rbrakk>\<^sub>B"
                  proof -
                    have "f \<star> g \<in> Comp \<lbrakk>f\<rbrakk>\<^sub>B \<lbrakk>g\<rbrakk>\<^sub>B"
@@ -5872,7 +5872,7 @@ $$
                          B.ide_in_iso_class in_CompI B.is_iso_classI B.isomorphic_reflexive)
                    thus ?thesis
                      using Comp_eq_iso_class_memb F_in_hom G_in_hom arr_char arr_char
-                           `Map F = \<lbrakk>f\<rbrakk>\<^sub>B`
+                           \<open>Map F = \<lbrakk>f\<rbrakk>\<^sub>B\<close>
                      by auto
                  qed
                  also have "... = \<lbrakk>trg f\<rbrakk>\<^sub>B"

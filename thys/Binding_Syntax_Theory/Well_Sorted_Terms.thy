@@ -1,17 +1,17 @@
-section {* Binding Signatures and well-sorted terms *}
+section \<open>Binding Signatures and well-sorted terms\<close>
 
 theory Well_Sorted_Terms
 imports Terms
 begin
 
-text {*  This section introduces binding signatures
+text \<open>This section introduces binding signatures
 and well-sorted terms for them.  All the properties we proved for good terms are then
 lifted to well-sorted terms.
-*}
+\<close>
 
-subsection {* Binding signatures *}
+subsection \<open>Binding signatures\<close>
 
-text{* A {\em (binding) signature} consists of:
+text\<open>A {\em (binding) signature} consists of:
 \\- an indication of which sorts of variables can be injected in
 which sorts of terms;
 \\- for any operation symbol, dwelling in a type ``opSym",
@@ -30,7 +30,7 @@ whole type ``opSym", but by the predicate ``wlsOpSym".  This bit of extra flexib
 will be useful when (pre)instantiating the signature to concrete syntaxes.
 (Note that the ``wlsOpSym" condition will be required for well-sorted terms as part of the notion of
 well-sorted (free and bound) input, ``wlsInp" and ``wlsBinp".)
-  *}
+\<close>
 
 record ('index,'bindex,'varSort,'sort,'opSym)signature =
   varSortAsSort :: "'varSort \<Rightarrow> 'sort"
@@ -39,7 +39,7 @@ record ('index,'bindex,'varSort,'sort,'opSym)signature =
   arityOf :: "'opSym \<Rightarrow> ('index, 'sort)input"
   barityOf :: "'opSym \<Rightarrow> ('bindex, 'varSort * 'sort)input"
 
-subsection {* The Binding Syntax locale *}
+subsection \<open>The Binding Syntax locale\<close>
 
 (* From now on, all work on binding syntax shall be developed in this locale
    (or an extension of it): *)
@@ -48,7 +48,7 @@ subsection {* The Binding Syntax locale *}
    Note also that currently locales do not allow datatype defs or records,
    reason for which the type of models has been defined outside. *)
 
-text {* For our signatures, we shall make some assumptions:
+text \<open>For our signatures, we shall make some assumptions:
 \\- For each sort of term, there is at most one sort of variables injectable  
 in terms of that sort (i.e., ``varSortAsSort" is injective");
 \\- The domains of arities (sets of indexes) are smaller than the set of variables
@@ -58,7 +58,7 @@ of each sort.
 
 These are satisfiable assumptions, and in particular they are trivially satisfied by any finitary syntax
 with bindings.
-*}
+\<close>
 
 definition varSortAsSort_inj where
 "varSortAsSort_inj Delta ==
@@ -99,9 +99,9 @@ varSortAsSort_inj arityOf_lt_var barityOf_lt_var
 sort_lt_var
 end
 
-subsection {* Definitions and basic properties of well-sortedness *}
+subsection \<open>Definitions and basic properties of well-sortedness\<close>
 
-subsubsection {* Notations and definitions *}
+subsubsection \<open>Notations and definitions\<close>
 
 (* Sorted parameters (again, for use in proofs): *)
 
@@ -129,7 +129,7 @@ fun envsOfS ::
 "('index,'bindex,'varSort,'var,'opSym,'sort)paramS \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)env set"
 where "envsOfS (ParS _ _ _ rhoL) = set rhoL"
 
-subsubsection {* Sublocale of ``FixVars" *}
+subsubsection \<open>Sublocale of ``FixVars"\<close>
   
 lemma sort_lt_var_imp_varSort_lt_var:
 assumes
@@ -149,7 +149,7 @@ where dummyV = dummyV and dummyVS = "undefined::'varSort"
 using FixSyn_assms 
 by unfold_locales (auto simp add: sort_lt_var_imp_varSort_lt_var)  
 
-subsubsection {* Abbreviations *}
+subsubsection \<open>Abbreviations\<close>
 
 (*********************************************)
 context FixSyn   (* scope all throughout the file *)
@@ -218,7 +218,7 @@ lemmas empInp_simps =
 freshInp_empInp swapInp_empInp psubstInp_empInp substInp_empInp vsubstInp_empInp
 freshBinp_empBinp swapBinp_empBinp psubstBinp_empBinp substBinp_empBinp vsubstBinp_empBinp
 
-subsubsection {* Inner versions of the locale assumptions *}
+subsubsection \<open>Inner versions of the locale assumptions\<close>
 
 lemma varSortAsSort_inj_INNER: "inj asSort"
 using varSortAsSort_inj
@@ -256,16 +256,16 @@ lemma varSort_sort_le_var:
 "|UNIV :: ('varSort * 'sort) set| \<le>o |UNIV :: 'var set|"
 using varSort_sort_lt_var ordLess_imp_ordLeq by auto
 
-subsubsection {* Definitions of well-sorted items *}
+subsubsection \<open>Definitions of well-sorted items\<close>
 
-text {* We shall only be interested in abstractions that pertain to some bound arities: *}
+text \<open>We shall only be interested in abstractions that pertain to some bound arities:\<close>
 
 definition isInBar where
 "isInBar xs_s ==
  \<exists> delta i. wlsOpS delta \<and> barOf delta i = Some xs_s"
 
-text {* Well-sorted terms (according to the signature) are defined as expected (mutually inductively
-together with well-sorted abstractions and inputs): *}
+text \<open>Well-sorted terms (according to the signature) are defined as expected (mutually inductively
+together with well-sorted abstractions and inputs):\<close>
 
 inductive
 wls :: "'sort \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)term \<Rightarrow> bool"
@@ -362,7 +362,7 @@ ParS_preserves_wls
 termsOfS_preserves_wls absOfS_preserves_wls envsOfS_preserves_wls
 not_isInBar_absOfS_empty
 
-subsubsection {* Well-sorted exists *}
+subsubsection \<open>Well-sorted exists\<close>
 
 lemma wlsInp_iff:
 "wlsInp delta inp =
@@ -396,10 +396,10 @@ proof-
   thus ?thesis using assms exists_wls_imp_exists_wlsAbs by auto
 qed
 
-text {* Standard criterion for the non-emptiness of the sets of well-sorted terms for each sort,
+text \<open>Standard criterion for the non-emptiness of the sets of well-sorted terms for each sort,
 by a well-founded relation and a function picking, for sorts not corresponding to varSorts,
 an operation symbol as an ``inductive" witness for non-emptyness.
-``witOpS" stands for ``witness operation symbol". *}
+``witOpS" stands for ``witness operation symbol".\<close>
 
 definition witOpS where
 "witOpS s delta R ==
@@ -459,7 +459,7 @@ shows "\<exists> A. wlsAbs (us,s) A"
 using assms by (auto intro: exists_wls_imp_exists_wlsAbs wf_exists_wls)
 
 
-subsubsection {* Well-sorted implies Good *}
+subsubsection \<open>Well-sorted implies Good\<close>
 
 lemma wlsInp_empAr_empInp[simp]:
 assumes "wlsOpS delta" and "arOf delta = empAr"
@@ -510,7 +510,7 @@ wls_imp_good wlsAbs_imp_goodAbs
 wlsInp_imp_goodInp wlsBinp_imp_goodBinp
 wlsEnv_imp_goodEnv
 
-subsubsection {* Swapping preserves well-sortedness *}
+subsubsection \<open>Swapping preserves well-sortedness\<close>
 
 lemma swapAll_pres_wlsAll:
 "(wls s X \<longrightarrow> wls s (X #[z1 \<and> z2]_zs)) \<and>
@@ -605,7 +605,7 @@ proof-
   thus ?thesis using assms by simp
 qed
 
-subsubsection {* Inversion rules for well-sortedness *}
+subsubsection \<open>Inversion rules for well-sortedness\<close>
 
 lemma wlsAll_inversion:
 "(wls s X \<longrightarrow>
@@ -705,9 +705,9 @@ using assms wlsAbs_Abs_varSort by fastforce
 lemmas Cons_wls_simps =
 wls_Var_simp wls_Op_simp wls_Abs_simp wlsAbs_Abs
 
-subsection {* Induction principles for well-sorted terms *}
+subsection \<open>Induction principles for well-sorted terms\<close>
 
-subsubsection {* Regular induction *}
+subsubsection \<open>Regular induction\<close>
 
 (* See also the subsection on substitution of variables for variables
 from the section on compositional properties
@@ -755,9 +755,9 @@ shows
  (wlsAbs (xs,s') A \<longrightarrow> phiAbs (xs,s') A)"
 by (induct rule: wls_templateInduct[of "\<lambda>s. Id"]) (simp_all add: assms)
 
-subsubsection {* Fresh induction *}
+subsubsection \<open>Fresh induction\<close>
 
-text {* First for an unspecified notion of parameter:  *}
+text \<open>First for an unspecified notion of parameter:\<close>
 
 theorem wls_templateInduct_fresh[case_names Par Rel Var Op Abs]:
 fixes s X xs s' A phi phiAbs rel
@@ -825,8 +825,8 @@ proof-
   thus ?thesis by auto
 qed
 
-text{* A version of the above not employing any relation for
-  the abstraction case: *}
+text\<open>A version of the above not employing any relation for
+  the abstraction case:\<close>
 
 theorem wls_rawInduct_fresh[case_names Par Var Op Abs]:
 fixes s X xs s' A phi phiAbs
@@ -866,7 +866,7 @@ shows
 apply(induct rule: wls_templateInduct_fresh[of vars terms abs envs "\<lambda>s. Id"])
 using assms by auto
 
-text{* Then for our notion of sorted parameter:  *}
+text\<open>Then for our notion of sorted parameter:\<close>
 
 theorem wls_induct_fresh[case_names Par Var Op Abs]:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)term" and s and
@@ -899,7 +899,7 @@ proof(induct rule: wls_rawInduct_fresh
   then show ?case using assms by(cases P) simp
 qed(insert assms, simp_all) 
 
-subsubsection {* The syntactic constructs are almost free (on well-sorted terms) *}
+subsubsection \<open>The syntactic constructs are almost free (on well-sorted terms)\<close>
 
 (* Recall theorem Var_inj. *)
 
@@ -1004,7 +1004,7 @@ using assms abs_nchotomy wlsAbs_imp_goodAbs wls_disjoint by fastforce
 lemmas wls_freeCons =
 Var_inj wls_Op_inj wls_Var_diff_Op wls_Op_diff_Var wls_Abs_swap_fresh
 
-subsection {* The non-construct operators preserve well-sortedness  *}
+subsection \<open>The non-construct operators preserve well-sortedness\<close>
 
 lemma idEnv_preserves_wls[simp]:
 "wlsEnv idEnv" 
@@ -1170,7 +1170,7 @@ vsubstInp_preserves_wls vsubstBinp_preserves_wls vsubstEnv_preserves_wls
 lemmas all_preserve_wls = Cons_preserve_wls swapAll_preserve_wls psubstAll_preserve_wls envOps_preserve_wls
 substAll_preserve_wls vsubstAll_preserve_wls
 
-subsection {* Simplification rules for swapping, substitution, freshness and skeleton *}
+subsection \<open>Simplification rules for swapping, substitution, freshness and skeleton\<close>
 
 (* Recall theorem swap_Var_simp.  *)
 
@@ -1341,7 +1341,7 @@ wls_psubstAll_simps
 wls_substAll_simps
 wls_vsubstAll_simps
 
-subsection {* The ability to pick fresh variables *}
+subsection \<open>The ability to pick fresh variables\<close>
 
 theorem wls_single_non_fresh_ordLess_var:
 "wls s X \<Longrightarrow> |{x. \<not> fresh xs x X}| <o |UNIV :: 'var set|"
@@ -1446,9 +1446,9 @@ shows "phi (xs,s) A P"
 by (metis assms wlsAbs_fresh_nchotomy)
  
 
-subsection {* Compositionality properties of freshness and swapping *}
+subsection \<open>Compositionality properties of freshness and swapping\<close>
 
-subsubsection {* W.r.t. terms *}
+subsubsection \<open>W.r.t. terms\<close>
 
 theorem wls_swap_ident[simp]:
 assumes "wls s X"
@@ -1521,7 +1521,7 @@ assumes "wls s X"
 shows "skel (X #[x1 \<and> x2]_xs) = skel X"
 using assms by (intro skel_swap) auto
 
-subsubsection {* W.r.t. environments *}
+subsubsection \<open>W.r.t. environments\<close>
 
 theorem wls_swapEnv_ident[simp]:
 assumes "wlsEnv rho"
@@ -1589,7 +1589,7 @@ assumes "wlsEnv rho" and "freshEnv xs y rho" and "freshEnv xs z rho"
 shows "((rho &[y \<and> x]_xs) &[z \<and> y]_xs) = (rho &[z \<and> x]_xs)"
 using assms by (intro freshEnv_swapEnv_compose) auto
 
-subsubsection {* W.r.t. abstractions *}
+subsubsection \<open>W.r.t. abstractions\<close>
 
 theorem wls_swapAbs_ident[simp]:
 "wlsAbs (us,s) A \<Longrightarrow> (A $[x \<and> x]_xs) = A"
@@ -1692,9 +1692,9 @@ wls_freshAbs_swapAbs_id
 wls_swapEnv_ident wls_swapEnv_involutive wls_swapEnv_inj wls_swapEnv_involutive2 wls_swapEnv_preserves_freshEnv
 wls_freshEnv_swapEnv_id
 
-subsection {* Compositionality properties for the other operators *}
+subsection \<open>Compositionality properties for the other operators\<close>
 
-subsubsection {* Environment identity, update and ``get" versus other operators *}
+subsubsection \<open>Environment identity, update and ``get" versus other operators\<close>
 
 (* Recall lemmas getEnv_idEnv, getEnv_updEnv_idEnv, getEnv_updEnv1, getEnv_updEnv2,
 subst_psubst_idEnv, vsubst_psubst_idEnv, substEnv_psubstEnv_idEnv, vsubstEnv_psubstEnv_idEnv,
@@ -1728,7 +1728,7 @@ using assms by (simp add: swapEnv_updEnv_fresh)
    getEnv_substEnv1 getEnv_substEnv2 getEnv_substEnv3 getEnv_substEnv4
    getEnv_vsubstEnv1 getEnv_vsubstEnv2 getEnv_vsubstEnv3 getEnv_vsubstEnv4. *)
 
-subsubsection {* Substitution versus other operators  *}
+subsubsection \<open>Substitution versus other operators\<close>
 
 (* Recall definition freshImEnvAt_def. *)
 
@@ -2075,7 +2075,7 @@ shows "((rho &[y1 // y]_ys) &[z1 // z]_zs) =
        ((rho &[z1 // z]_zs) &[(y1 @ys[z1 / z]_zs) // y]_ys)"
 using assms by(simp add: vsubstEnv_compose2)
 
-subsubsection {* Properties specific to variable-for-variable substitution *}
+subsubsection \<open>Properties specific to variable-for-variable substitution\<close>
 
 theorem wls_vsubst_ident[simp]:
 assumes "wls s X"
@@ -2246,7 +2246,7 @@ and "(X #[y // x]_xs) = (X' #[y // x']_xs)"
 shows "Abs xs x X = Abs xs x' X'"
 by (metis assms wls_Abs_vsubst_fresh wls_vsubst_ident)
 
-subsubsection {* Abstraction versions of the properties *}
+subsubsection \<open>Abstraction versions of the properties\<close>
 
 (* Environment identity and update versus other operators *)
 
@@ -2540,15 +2540,15 @@ wls_psubstAll_freshAll_otherSimps
 wls_substAll_freshAll_otherSimps
 wls_vsubstAll_freshAll_otherSimps
 
-subsection {* Operators for down-casting and case-analyzing well-sorted items  *}
+subsection \<open>Operators for down-casting and case-analyzing well-sorted items\<close>
 
-text{* The features developed here may occasionally turn out more convenient than obtaining
+text\<open>The features developed here may occasionally turn out more convenient than obtaining
 the desired effect by hand, via the corresponding nchotomies.
 E.g., when we want to perform the case-analysis uniformly, as part of a
 function definition, the operators defined in the subsection save some tedious
-definitions and proofs pertaining to Hilbert choice.   *}
+definitions and proofs pertaining to Hilbert choice.\<close>
 
-subsubsection {* For terms  *}
+subsubsection \<open>For terms\<close>
 
 (* Definitions: *)
 
@@ -2725,9 +2725,9 @@ sortTermCase_stOf_Op_simp
 lemmas term_cast_simps =
 isOp_simps castOp_simps sortTermCase_simps
 
-subsubsection {* For abstractions *}
+subsubsection \<open>For abstractions\<close>
 
-text {* Here, the situation will be different than that of terms, since:
+text \<open>Here, the situation will be different than that of terms, since:
 \\- an abstraction can only be built using ``Abs", hence we need no ``is" operators;
 \\- the constructor ``Abs" for abstractions is not injective, so need a more subtle condition
 on the case-analysis operator.
@@ -2735,7 +2735,7 @@ on the case-analysis operator.
 Yet another difference is that when casting an abstraction ``A" such that ``wlsAbs (xs,s) A",
 we need to cast only the value ``A", and not the sorting part``xs s", since the latter
 already contains the desired information. Consequently, below, in the arguments for the case-analysis
-operator, the sorts ``xs s" come before the function ``f", and the latter doesnot take sorts into account. *}
+operator, the sorts ``xs s" come before the function ``f", and the latter doesnot take sorts into account.\<close>
 
 (* Definitions: *)
 

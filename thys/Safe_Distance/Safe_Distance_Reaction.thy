@@ -579,7 +579,7 @@ lemma distance0_at_most_sd4r:
 proof -
   from assms have "a\<^sub>o \<ge> a\<^sub>e" by auto
   have "0 \<le> (v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / (2 * a\<^sub>o - 2 * a\<^sub>e)"
-    by (rule divide_nonneg_nonneg) (auto simp add:assms `a\<^sub>e \<le> a\<^sub>o`)
+    by (rule divide_nonneg_nonneg) (auto simp add:assms \<open>a\<^sub>e \<le> a\<^sub>o\<close>)
   thus ?thesis unfolding distance0_def safe_distance_4r_def
     by auto
 qed
@@ -616,7 +616,7 @@ proof -
       by (auto simp add:assms(1))
     hence "v\<^sub>e - a\<^sub>e / a\<^sub>o * v\<^sub>o - a\<^sub>e * \<delta> \<ge> 0" (is "?l0 \<ge> 0") using decelerate_other
       by (auto simp add:field_simps)
-    hence "?l0 / a\<^sub>e \<le> 0" using divide_right_mono_neg[OF `?l0 \<ge> 0`] decelerate_ego by auto
+    hence "?l0 / a\<^sub>e \<le> 0" using divide_right_mono_neg[OF \<open>?l0 \<ge> 0\<close>] decelerate_ego by auto
     hence "0 \<ge> v\<^sub>e / a\<^sub>e - v\<^sub>o / a\<^sub>o - \<delta>" using decelerate_ego by (auto simp add:field_simps)
     hence *: "- v\<^sub>e / a\<^sub>e \<ge> - (v\<^sub>o + a\<^sub>o * \<delta>) / a\<^sub>o" using decelerate_other by (auto simp add:field_simps)
     from assms have **: "v\<^sub>o + a\<^sub>o * \<delta> \<le> v\<^sub>e" unfolding other.s'_def other.p'_def by auto
@@ -626,7 +626,7 @@ proof -
         by (auto simp add:field_simps)
       thus ?thesis by auto
     qed
-    from mult_mono[OF * ** _ `0 \<le> v\<^sub>o + a\<^sub>o * \<delta>`]
+    from mult_mono[OF * ** _ \<open>0 \<le> v\<^sub>o + a\<^sub>o * \<delta>\<close>]
     have "- (v\<^sub>o + a\<^sub>o * \<delta>) / a\<^sub>o * (v\<^sub>o + a\<^sub>o * \<delta>) \<le> - v\<^sub>e / a\<^sub>e * v\<^sub>e" using nonneg_vel_ego decelerate_ego
       by (auto simp add:field_simps)
     hence "- (v\<^sub>o + a\<^sub>o * \<delta>)\<^sup>2 / a\<^sub>o \<le> - v\<^sub>e\<^sup>2 / a\<^sub>e " by (auto simp add: field_simps power_def)
@@ -642,9 +642,9 @@ proof -
         by (auto simp add:field_simps)
       thus ?thesis by auto
     qed
-    with mult_mono[OF `v\<^sub>o + a\<^sub>o * \<delta> \<le> v\<^sub>e` `v\<^sub>o + a\<^sub>o * \<delta> \<le> v\<^sub>e`] have *: "(v\<^sub>o + a\<^sub>o * \<delta>)\<^sup>2 \<le> v\<^sub>e\<^sup>2"
+    with mult_mono[OF \<open>v\<^sub>o + a\<^sub>o * \<delta> \<le> v\<^sub>e\<close> \<open>v\<^sub>o + a\<^sub>o * \<delta> \<le> v\<^sub>e\<close>] have *: "(v\<^sub>o + a\<^sub>o * \<delta>)\<^sup>2 \<le> v\<^sub>e\<^sup>2"
       using nonneg_vel_ego by (auto simp add:power_def)
-    from `a\<^sub>o \<le> a\<^sub>e` have "- 1 /a\<^sub>o \<le> - 1 / a\<^sub>e" using decelerate_ego decelerate_other
+    from \<open>a\<^sub>o \<le> a\<^sub>e\<close> have "- 1 /a\<^sub>o \<le> - 1 / a\<^sub>e" using decelerate_ego decelerate_other
       by (auto simp add:field_simps)
     from mult_mono[OF * this] have "(v\<^sub>o + a\<^sub>o * \<delta>)\<^sup>2 * (- 1 / a\<^sub>o) \<le> v\<^sub>e\<^sup>2 * (- 1 / a\<^sub>e)"
       using nonneg_vel_ego decelerate_other by (auto simp add:field_simps)
@@ -666,7 +666,7 @@ proof -
   also have "... = v\<^sub>e * \<delta> - v\<^sub>o * \<delta> - a\<^sub>o * \<delta>\<^sup>2 / 2 + ?term" (is "_ = ?left + ?term")
     by (auto simp add:field_simps)
   finally have "safe_distance_2r = distance0 + ?term" unfolding distance0_def by auto
-  with `0 \<le> ?term` show "distance0 \<le> safe_distance_2r" by auto
+  with \<open>0 \<le> ?term\<close> show "distance0 \<le> safe_distance_2r" by auto
 qed
 
 theorem dist0_sd2r_1:
@@ -1080,13 +1080,13 @@ proof -
     assume "?lhs1 \<le> ?rhs1"
     have "?lhs1 = ?lhs2" by (auto simp add:field_simps)
     moreover
-    have "?rhs1 = ?rhs2" using `a\<^sub>o - a\<^sub>e \<noteq> 0` by (auto simp add:field_simps)
-    ultimately show ?thesis using `?lhs1 \<le> ?rhs1` by auto
+    have "?rhs1 = ?rhs2" using \<open>a\<^sub>o - a\<^sub>e \<noteq> 0\<close> by (auto simp add:field_simps)
+    ultimately show ?thesis using \<open>?lhs1 \<le> ?rhs1\<close> by auto
   qed
   hence "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o) * 2 * (a\<^sub>o - a\<^sub>e) \<le> ((v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>) * 2 *(a\<^sub>o - a\<^sub>e)"
     by (simp add: algebra_simps)
   hence "v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o \<le> (v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>"
-    using \<open>a\<^sub>o > a\<^sub>e\<close> mult_le_cancel_iff1[OF `0 < 2 * (a\<^sub>o - a\<^sub>e)`, of "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o)"
+    using \<open>a\<^sub>o > a\<^sub>e\<close> mult_le_cancel_iff1[OF \<open>0 < 2 * (a\<^sub>o - a\<^sub>e)\<close>, of "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o)"
     "(v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>"] semiring_normalization_rules(18)
     by (metis (no_types, lifting))
   thus ?thesis using safe_distance_2r_def safe_distance_4r_def by auto
@@ -1114,7 +1114,7 @@ proof -
   thus ?thesis
   proof (cases)
     case 1
-    from cond_3r_2[OF this `u_max < other.s_stop` assms(2)]  show ?thesis
+    from cond_3r_2[OF this \<open>u_max < other.s_stop\<close> assms(2)]  show ?thesis
       using c by auto
   next
     case 2
@@ -1259,7 +1259,7 @@ proof -
         using other.decel other.p'_def other.p'_pos_iff by auto
       hence "0 < v\<^sub>o + 1/2 * a\<^sub>o * (\<delta> + other.t_stop)" by (auto simp add:field_simps other.t_stop_def)
       hence "0 > v\<^sub>o * (\<delta> - other.t_stop) + 1/2 * a\<^sub>o * (\<delta> + other.t_stop) * (\<delta> - other.t_stop)"
-        using `\<delta> < other.t_stop`  mult_less_cancel_left_neg[where c="\<delta> - other.t_stop" and a ="v\<^sub>o + 1 / 2 * a\<^sub>o * (\<delta> + other.t_stop)" and b="0"]
+        using \<open>\<delta> < other.t_stop\<close>  mult_less_cancel_left_neg[where c="\<delta> - other.t_stop" and a ="v\<^sub>o + 1 / 2 * a\<^sub>o * (\<delta> + other.t_stop)" and b="0"]
         by (auto simp add: field_simps)
       hence " (\<delta> + other.t_stop) * (\<delta> - other.t_stop) = (\<delta>\<^sup>2 - other.t_stop\<^sup>2)"
         by (simp add: power2_eq_square square_diff_square_factored)
@@ -1383,7 +1383,7 @@ proof
       sdn.other.s_def sdn.other.t_stop_def sdn.other.p_def abb check_precond_r1_def sdn.distance0_def
       by auto
     from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-      by (unfold_locales) (auto simp add:check_precond_r1_def `sdn.u \<delta> < sdn.other.s \<delta>`)
+      by (unfold_locales) (auto simp add:check_precond_r1_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
     show ?thesis using sdr.sd_3r_correct 2 pre unfolding check_precond_r1_def abb sdn.other.t_stop_def
       by auto
   next
@@ -1402,8 +1402,8 @@ proof
           sdn.other.s_def sdn.other.t_stop_def sdn.other.p_def abb check_precond_r1_def sdn.distance0_def
         by auto
       from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-        by (unfold_locales) (auto simp add:check_precond_r1_def `sdn.u \<delta> < sdn.other.s \<delta>`)
-      from sdr.sd_4r_correct[OF _ `sdn.other.s \<delta> \<le> sdn.u_max`] `distance > safe_dist2`
+        by (unfold_locales) (auto simp add:check_precond_r1_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
+      from sdr.sd_4r_correct[OF _ \<open>sdn.other.s \<delta> \<le> sdn.u_max\<close>] \<open>distance > safe_dist2\<close>
         have ?thesis using pre cond  unfolding check_precond_r1_def sdn.other.t_stop_def abb by auto }
     moreover
     { assume not_cond: "\<not>  (a\<^sub>o > a\<^sub>e \<and> vo_star < v\<^sub>e \<and> t_stop_e < t_stop_o_star)"
@@ -1415,8 +1415,8 @@ proof
           sdn.other.s_def sdn.other.t_stop_def sdn.other.p_def abb check_precond_r1_def sdn.distance0_def
         by auto
       from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-        by (unfold_locales) (auto simp add:check_precond_r1_def `sdn.u \<delta> < sdn.other.s \<delta>`)
-      from sdr.sd_2r_correct_for_3r_2[OF _ `sdn.other.s \<delta> \<le> sdn.u_max`] not_cond `distance > safe_dist1`
+        by (unfold_locales) (auto simp add:check_precond_r1_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
+      from sdr.sd_2r_correct_for_3r_2[OF _ \<open>sdn.other.s \<delta> \<le> sdn.u_max\<close>] not_cond \<open>distance > safe_dist1\<close>
         have ?thesis using pre unfolding abb sdn.other.s'_def check_precond_r1_def sdn.other.t_stop_def sdn.other.p'_def
         by (auto simp add:field_simps) }
     ultimately show ?thesis by auto
@@ -1492,7 +1492,7 @@ next
           sdn.other.s_def sdn.other.t_stop_def sdn.other.p_def abb check_precond_r1_def sdn.distance0_def
           by auto
       from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-        by (unfold_locales) (auto simp add:check_precond_r1_def `sdn.u \<delta> < sdn.other.s \<delta>`)
+        by (unfold_locales) (auto simp add:check_precond_r1_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
       have " s\<^sub>o \<le> sdn.u_max" using if31 unfolding sdn.u_max_eq sdn.ego.q_def abb
         sdn.safe_distance_1r_def by auto
       have "sdn.other.s \<delta> \<le> sdn.u_max" using if32 pre unfolding sdn.other.s_def check_precond_r1_def
@@ -1518,7 +1518,7 @@ next
         { assume "distance > safe_dist1"
           hence "sdn.u_max < sdn.other.s_stop" unfolding sdn.u_max_eq sdn.ego.q_def sdn.other.s_t_stop
               sdn.other.p_max_eq abb sdn.safe_distance_2r_def by (auto simp add:field_simps)
-          from sdr.cond_3r_2[OF `s\<^sub>o \<le> sdn.u_max` this `sdn.other.s \<delta> \<le> sdn.u_max`]
+          from sdr.cond_3r_2[OF \<open>s\<^sub>o \<le> sdn.u_max\<close> this \<open>sdn.other.s \<delta> \<le> sdn.u_max\<close>]
           have "sdn.collision_react {0..}" using cond_f rest_conjunct by auto
           with as2 have "False" by auto }
         moreover
@@ -1604,10 +1604,10 @@ proof
     with 2 pre have "distance > safe_dist1" using asm unfolding checker_r2_def Let_def abb by auto
     with sdn.dist0_sd2r_2 have "distance > distance0_2" using abb \<open>- v\<^sub>o / a\<^sub>o < \<delta>\<close> by auto
     hence "sdn.u \<delta> < sdn.other.s \<delta>" using abb sdn.distance0_2_eq \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def by auto
-    have "sdn.u_max < sdn.other.s \<delta>" using abb sdn.sd2r_eq  \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def `distance > safe_dist1` by auto
+    have "sdn.u_max < sdn.other.s \<delta>" using abb sdn.sd2r_eq  \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def \<open>distance > safe_dist1\<close> by auto
     from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-        by (unfold_locales) (auto simp add:check_precond_r2_def `sdn.u \<delta> < sdn.other.s \<delta>`)
-    from sdr.sd_2r_correct_for_3r_3[OF] `distance > safe_dist1` `sdn.u \<delta> < sdn.other.s \<delta>` `sdn.u_max < sdn.other.s \<delta>`
+        by (unfold_locales) (auto simp add:check_precond_r2_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
+    from sdr.sd_2r_correct_for_3r_3[OF] \<open>distance > safe_dist1\<close> \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close> \<open>sdn.u_max < sdn.other.s \<delta>\<close>
        show ?thesis using pre unfolding abb sdn.other.s'_def check_precond_r2_def sdn.other.t_stop_def sdn.other.p'_def
             by (auto simp add:field_simps)
   qed
@@ -1663,9 +1663,9 @@ next
 
       have "sdn.u \<delta> < sdn.other.s \<delta>" using abb if2 sdn.distance0_2_eq \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def by auto
       from pre interpret sdr: safe_distance_no_collsion_delta a\<^sub>e v\<^sub>e s\<^sub>e a\<^sub>o v\<^sub>o s\<^sub>o \<delta>
-          by (unfold_locales) (auto simp add:check_precond_r2_def `sdn.u \<delta> < sdn.other.s \<delta>`)
-      have "sdn.u_max \<ge> sdn.other.s \<delta>" using abb sdn.sd2r_eq  \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def `distance \<le> safe_dist1` by auto
-      with `\<delta> > - v\<^sub>o / a\<^sub>o` have "sdn.u_max \<ge> sdn.other.s_stop"
+          by (unfold_locales) (auto simp add:check_precond_r2_def \<open>sdn.u \<delta> < sdn.other.s \<delta>\<close>)
+      have "sdn.u_max \<ge> sdn.other.s \<delta>" using abb sdn.sd2r_eq  \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> sdn.other.t_stop_def \<open>distance \<le> safe_dist1\<close> by auto
+      with \<open>\<delta> > - v\<^sub>o / a\<^sub>o\<close> have "sdn.u_max \<ge> sdn.other.s_stop"
         using sdn.other.s_mono sdn.other.t_stop_nonneg sdn.other.p_t_stop sdn.other.p_zero sdn.other.t_stop_def
         apply (auto simp: sdn.other.s_def movement.t_stop_def split: if_splits)
         using sdn.other.p_zero by auto

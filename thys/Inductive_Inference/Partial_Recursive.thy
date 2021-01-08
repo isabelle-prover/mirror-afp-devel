@@ -242,13 +242,13 @@ proof -
     have "(LEAST z. eval_wellf f (z # xs) \<down>= 0) = z"
     proof (rule Least_equality)
       show "eval_wellf f (z # xs) \<down>= 0"
-        using `?P z` by simp
+        using \<open>?P z\<close> by simp
       show "z \<le> y" if "eval_wellf f (y # xs) \<down>= 0" for y
       proof (rule ccontr)
         assume "\<not> z \<le> y"
         then have "y < z" by simp
         moreover from this have "?P y"
-          using that `?P z` by simp
+          using that \<open>?P z\<close> by simp
         ultimately show False
           using that not_less_Least z_def by blast
       qed
@@ -303,7 +303,7 @@ proof -
     by simp
   then show "eval f (z # xs) \<down>= 0" by simp
   show "\<And>y. y < z \<Longrightarrow> eval f (y # xs) \<down>\<noteq> 0"
-    using not_less_Least[of _ ?P] `z = Least ?P` `?P z` less_trans by blast
+    using not_less_Least[of _ ?P] \<open>z = Least ?P\<close> \<open>?P z\<close> less_trans by blast
 qed
 
 lemma eval_Mn_diverg:
@@ -390,7 +390,7 @@ lemma exteq_infinite:
   shows "infinite {g. recfn a g \<and> g \<simeq> f}" (is "infinite ?R")
 proof -
   have "inj (wrap_Id f)"
-    using wrap_Id_injective `recfn a f` by (meson inj_onI)
+    using wrap_Id_injective \<open>recfn a f\<close> by (meson inj_onI)
   then have "infinite (range (wrap_Id f))"
     using finite_imageD by blast
   moreover have "range (wrap_Id f) \<subseteq> ?R"
@@ -840,10 +840,10 @@ proof
     using decidable_def by auto
   define g where "g \<equiv> Cn 1 r_ifeq_else_diverg [f, Z, Z]"
   then have "recfn 1 g"
-    using `recfn 1 f` r_ifeq_else_diverg_recfn by simp
+    using \<open>recfn 1 f\<close> r_ifeq_else_diverg_recfn by simp
   with assms obtain i where i: "code i = g" by auto
   from g_def have "eval g [x] = (if x \<notin> ?K then Some 0 else None)" for x
-    using r_ifeq_else_diverg_recfn `recfn 1 f` f by simp
+    using r_ifeq_else_diverg_recfn \<open>recfn 1 f\<close> f by simp
   then have "eval g [i] \<down> \<longleftrightarrow> i \<notin> ?K" by simp
   also have "... \<longleftrightarrow> eval (code i) [i] \<up>" by simp
   also have "... \<longleftrightarrow> eval g [i] \<up>"
@@ -1233,8 +1233,8 @@ proof -
     with * have "tuple_decode (a - k) (iterate k pdec2 i) = drop k (tuple_decode a i)"
       by simp
     then have "pdec1 (iterate k pdec2 i) = hd (drop k (tuple_decode a i))"
-      using tuple_decode_nonzero `a - k > 0` by (metis list.sel(1))
-    with `a - k > 0` have "pdec1 (iterate k pdec2 i) = (tuple_decode a i) ! k"
+      using tuple_decode_nonzero \<open>a - k > 0\<close> by (metis list.sel(1))
+    with \<open>a - k > 0\<close> have "pdec1 (iterate k pdec2 i) = (tuple_decode a i) ! k"
       by (simp add: hd_drop_conv_nth)
     with False assms show ?thesis by simp
   qed
@@ -1738,7 +1738,7 @@ proof -
   moreover have "eval r_take [m, x] \<down>=
       (if m \<le> e_length x then the (eval ?h [m, x]) else the (eval (Id 2 1) [m, x]))"
       for m
-    unfolding r_take_def using `total ?h` by simp
+    unfolding r_take_def using \<open>total ?h\<close> by simp
   ultimately show ?thesis unfolding r_take_def by fastforce
 qed
 

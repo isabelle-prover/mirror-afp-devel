@@ -203,16 +203,16 @@ proof -
   qed
   let ?hh = "Cn 1 ?h [Cn 1 r_length [Id 1 0], Id 1 0]"
   have "recfn 1 ?hh"
-    using `recfn 2 ?h` by simp
+    using \<open>recfn 2 ?h\<close> by simp
   with h have hh: "eval ?hh [e] \<down>=
       (if \<forall>i<e_length e. e_nth e i = 0 then e_length e else ?G e (e_length e))" for e
     by auto
   then have "eval ?hh [e] = findr e" for e
     unfolding findr_def by auto
   moreover have "total ?hh"
-    using hh totalI1 `recfn 1 ?hh` by simp
+    using hh totalI1 \<open>recfn 1 ?hh\<close> by simp
   ultimately show ?thesis
-    using `recfn 1 ?hh` g_def r_findr_def findr_def by metis
+    using \<open>recfn 1 ?hh\<close> g_def r_findr_def findr_def by metis
 qed
 
 lemma U0_in_CP: "U\<^sub>0 \<in> CP"
@@ -348,7 +348,7 @@ proof -
         then show ?thesis by auto
       qed
       then have "\<phi> (the (\<phi> i (h \<triangleright>  ?m))) = g i"
-        using `?P ?m` by simp
+        using \<open>?P ?m\<close> by simp
       moreover have "g i \<notin> V"
       proof
         assume "g i \<in> V"
@@ -378,7 +378,7 @@ proof -
       qed
       ultimately have "\<phi> (the (\<phi> i (h \<triangleright>  ?m))) \<notin> V" by simp
       then have "\<not> learn_cp \<phi> V (\<phi> i)"
-        using `h \<in> V` learn_cpE(3) by auto
+        using \<open>h \<in> V\<close> learn_cpE(3) by auto
       then show ?thesis by (simp add: i s(2))
     next
       \<comment> \<open>If $\varphi_i$ does not learn $g_i$, then $g_i\in V$.
@@ -479,11 +479,11 @@ proof
     then obtain i where i: "f 0 \<down>= i" by fastforce
     define g where "g = (\<lambda>x. f (x + 1))"
     then have "g \<in> \<R>"
-      using skip_R1[OF `f \<in> \<R>`] by blast
+      using skip_R1[OF \<open>f \<in> \<R>\<close>] by blast
     moreover have "[i] \<odot> g = f"
       using g_def i by auto
     moreover have "\<phi> i = f"
-      using `f \<in> V\<^sub>0` V0_def i by force
+      using \<open>f \<in> V\<^sub>0\<close> V0_def i by force
     ultimately show "f \<in> ?W" by auto
   qed
   show "?W \<subseteq> V\<^sub>0"
@@ -492,7 +492,7 @@ proof
     assume "g \<in> ?W"
     then have "\<phi> (the (g 0)) = g" by auto
     moreover have "g \<in> \<R>"
-      using prepend_in_R1 `g \<in> ?W` by auto
+      using prepend_in_R1 \<open>g \<in> ?W\<close> by auto
     ultimately show "g \<in> V\<^sub>0"
       by (simp add: V0_def)
   qed
@@ -657,7 +657,7 @@ proof-
     have "\<exists>k. learn_cp \<phi> U (\<phi> k)"
     proof -
       have "\<exists>\<psi> s. learn_cp \<psi> U s"
-        using CP_def `U \<in> CP` by auto
+        using CP_def \<open>U \<in> CP\<close> by auto
       then obtain s where s: "learn_cp \<phi> U s"
         using learn_cp_wrt_goedel[OF goedel_numbering_phi] by blast
       then obtain k where "\<phi> k = s"
@@ -762,7 +762,7 @@ proof -
     (if eval r_psi [i, j] \<up> then None
      else if eval r_psi [i, j] \<down>= e_nth e j then Some r else Some 1)"
     for j r i e
-    using `recfn 4 g` g_def assms by auto
+    using \<open>recfn 4 g\<close> g_def assms by auto
   have goal1: "\<forall>k<j. eval r_psi [i, k] \<down> \<Longrightarrow>
     eval (r_consist_upto r_psi) [j, i, e] =
       (if \<forall>k<j. eval r_psi [i, k] \<down>= e_nth e k then Some 0 else Some 1)"
@@ -801,18 +801,18 @@ proof -
     from kmin_def have "\<And>k. k < kmin \<Longrightarrow> \<not> ?P k"
       using kmin_def not_less_Least[of _ ?P] by blast
     then have "\<forall>k < kmin. eval r_psi [i, k] \<down>"
-      using `?P kmin` by simp
+      using \<open>?P kmin\<close> by simp
     then have "eval (r_consist_upto r_psi) [kmin, i, e] =
         (if \<forall>k<kmin. eval r_psi [i, k] \<down>= e_nth e k then Some 0 else Some 1)"
       using goal1 by simp
     moreover have "eval r_psi [i, kmin] \<up>"
-      using `?P kmin` by simp
+      using \<open>?P kmin\<close> by simp
     ultimately have "eval (r_consist_upto r_psi) [Suc kmin, i, e] \<up>"
       using r_consist_upto_def g assms by simp
     moreover have "j \<ge> kmin"
-      using `?P kmin` by simp
+      using \<open>?P kmin\<close> by simp
     ultimately show "eval (r_consist_upto r_psi) [j, i, e] \<up>"
-      using r_consist_upto_def r_consist_upto_recfn `?P kmin` eval_Pr_converg_le assms
+      using r_consist_upto_def r_consist_upto_recfn \<open>?P kmin\<close> eval_Pr_converg_le assms
       by (metis (full_types) Suc_leI length_Cons list.size(3) numeral_2_eq_2 numeral_3_eq_3)
   qed
 qed

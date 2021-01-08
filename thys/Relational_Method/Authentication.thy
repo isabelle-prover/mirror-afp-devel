@@ -596,10 +596,10 @@ proof -
     (Asset n', \<lbrace>Num 2, PubKey B'\<rbrace>) \<in> s \<and>
     (Asset n', \<lbrace>Num 4, PubKey D'\<rbrace>) \<in> s \<and>
     ?U D' \<and> (Asset n', PubKey B') \<in> s"
-    by (rule asset_iv_state [OF A `?R n' B' D s`])
+    by (rule asset_iv_state [OF A \<open>?R n' B' D s\<close>])
   then obtain D' where "snd (snd SK) = {D, D'}" and "?U D'" by blast
   hence "Crypt (SesK SK) (PubKey C) \<in> parts (used s)"
-    using `?P C` and `?U D` by auto
+    using \<open>?P C\<close> and \<open>?U D\<close> by auto
   thus False
     using D by contradiction
 qed
@@ -1083,7 +1083,7 @@ proof (rule rtrancl_induct [OF A], simp add: image_def, rule impI)
     assume "(Asset n, Crypt (ShaK (Auth_ShaK n)) (Key (PriK S))) \<in> s"
     hence "(Asset n, Crypt (Auth_ShaKey n) (PriKey S)) \<in> s" by simp
     thus False
-      by (rule asset_i_asset_ii [OF C _ `?P m`])
+      by (rule asset_i_asset_ii [OF C _ \<open>?P m\<close>])
   next
     fix Y
     assume "(Spy, \<lbrace>Key (PriK S), Y\<rbrace>) \<in> s"
@@ -1253,9 +1253,9 @@ proof
   hence "m \<notin> bad_shakey"
     using B by simp
   hence "PriKey S \<notin> spied s"
-    by (rule asset_i_secret [OF A _ `?R m`])
+    by (rule asset_i_secret [OF A _ \<open>?R m\<close>])
   moreover have "PriKey S \<in> spied s"
-    using D and `?P S` by auto
+    using D and \<open>?P S\<close> by auto
   ultimately show False by contradiction
 qed
 
@@ -1283,7 +1283,7 @@ proof
   then obtain A' where "A' \<in> fst (snd SK)" and "PriKey A' \<in> spied s" (is "?R A'")
     by blast
   hence "{A', A, B} \<subseteq> {A, B'}"
-    using E and `?P A B'` by simp
+    using E and \<open>?P A B'\<close> by simp
   hence "card {A', A, B} \<le> card {A, B'}"
     by (rule_tac card_mono, simp)
   also have "\<dots> \<le> Suc (Suc 0)"
@@ -1293,14 +1293,14 @@ proof
   proof (rule card_insert_disjoint, simp_all, rule conjI, rule_tac [!] notI)
     assume "A' = A"
     hence "?R A"
-      using `?R A'` by simp
+      using \<open>?R A'\<close> by simp
     moreover have "\<not> ?R A"
-      by (rule owner_ii_secret [OF A `?Q A`])
+      by (rule owner_ii_secret [OF A \<open>?Q A\<close>])
     ultimately show False by contradiction
   next
     assume "A' = B"
     hence "?R B"
-      using `?R A'` by simp
+      using \<open>?R A'\<close> by simp
     moreover have "\<not> ?R B"
       by (rule asset_ii_secret [OF A B D])
     ultimately show False by contradiction
@@ -1311,7 +1311,7 @@ proof
     hence "(Asset n, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s"
       using D by simp
     thus False
-      by (rule asset_ii_owner_ii [OF A _ `?Q A`])
+      by (rule asset_ii_owner_ii [OF A _ \<open>?Q A\<close>])
   qed
   ultimately show False by simp
 qed
@@ -1329,13 +1329,13 @@ proof
     by (rule asset_seskey_nonce [OF A C])
   then obtain S where "?P S" and "?Q S" by blast
   have "PriKey S \<notin> spied s"
-    by (rule asset_i_secret [OF A B `?Q S`])
+    by (rule asset_i_secret [OF A B \<open>?Q S\<close>])
   moreover assume "SesKey SK \<in> spied s"
   hence "\<exists>S A C. fst SK = Some S \<and> A \<in> fst (snd SK) \<and> C \<in> snd (snd SK) \<and>
     {PriKey S, PriKey A, PriKey C} \<subseteq> spied s"
     by (rule seskey_spied [OF A])
   hence "PriKey S \<in> spied s"
-    using `?P S` by auto
+    using \<open>?P S\<close> by auto
   ultimately show False by contradiction
 qed
 
@@ -1381,26 +1381,26 @@ proof (rule ccontr)
       (Asset i, \<lbrace>Num 2, PubKey B''\<rbrace>) \<in> s \<and> (Asset i, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s \<and>
       Crypt (SesK SK) (PubKey D) \<in> used s \<and> (Asset i, PubKey B'') \<in> s"
       (is "\<exists>A D. _ \<and> _ \<and> ?X i B'' \<and> _")
-      by (rule asset_iv_state [OF A `?W i B'' C'`])
+      by (rule asset_iv_state [OF A \<open>?W i B'' C'\<close>])
     hence "?X i B''" by blast
     have "B'' \<noteq> A"
     proof
       assume "B'' = A"
       hence "?X i A"
-        using `?X i B''` by simp
+        using \<open>?X i B''\<close> by simp
       thus False
-        by (rule asset_ii_owner_ii [OF A _ `?T m A`])
+        by (rule asset_ii_owner_ii [OF A _ \<open>?T m A\<close>])
     qed
     moreover have "B'' \<noteq> A'"
     proof
       assume "B'' = A'"
       hence "?X i A'"
-        using `?X i B''` by simp
+        using \<open>?X i B''\<close> by simp
       thus False
-        by (rule asset_ii_owner_ii [OF A _ `?T n A'`])
+        by (rule asset_ii_owner_ii [OF A _ \<open>?T n A'\<close>])
     qed
     ultimately show ?thesis
-      using `?V B''` by blast
+      using \<open>?V B''\<close> by blast
   next
     assume "{A'' \<otimes> B'', SesKey SK} \<subseteq> spied s"
     hence "SesKey SK \<in> spied s" by simp
@@ -1413,25 +1413,25 @@ proof (rule ccontr)
     proof
       assume "D = A"
       hence "?X A"
-        using `?X D` by simp
+        using \<open>?X D\<close> by simp
       moreover have "\<not> ?X A"
-        by (rule owner_ii_secret [OF A `?T m A`])
+        by (rule owner_ii_secret [OF A \<open>?T m A\<close>])
       ultimately show False by contradiction
     qed
     moreover have "D \<noteq> A'"
     proof
       assume "D = A'"
       hence "?X A'"
-        using `?X D` by simp
+        using \<open>?X D\<close> by simp
       moreover have "\<not> ?X A'"
-        by (rule owner_ii_secret [OF A `?T n A'`])
+        by (rule owner_ii_secret [OF A \<open>?T n A'\<close>])
       ultimately show False by contradiction
     qed
     ultimately show ?thesis by blast
   qed
   then obtain D where "?V D" and E: "D \<notin> {A, A'}" by blast
   hence "{D, A, A'} \<subseteq> {A, B}"
-    using `?R A B` and `?R A' B'` by blast
+    using \<open>?R A B\<close> and \<open>?R A' B'\<close> by blast
   hence "card {D, A, A'} \<le> card {A, B}"
     by (rule_tac card_mono, simp)
   also have "\<dots> \<le> Suc (Suc 0)"
@@ -1444,9 +1444,9 @@ proof (rule ccontr)
   proof (rule_tac card_insert_disjoint, simp_all, erule_tac contrapos_nn)
     assume "A = A'"
     hence "?T n A"
-      using `?T n A'` by simp
+      using \<open>?T n A'\<close> by simp
     thus "m = n"
-      by (rule owner_ii_unique [OF A `?T m A`])
+      by (rule owner_ii_unique [OF A \<open>?T m A\<close>])
   qed
   ultimately show False by simp
 qed
@@ -1472,11 +1472,11 @@ proof -
     hence "Auth_PriKey n \<notin> spied s"
       by (rule auth_prikey_secret [OF A])
     moreover have "Sign n A \<in> parts (used s)"
-      using `?Q A B C` by blast
+      using \<open>?Q A B C\<close> by blast
     hence "A = Auth_PriK n"
       by (rule parts_sign [OF A])
     hence "?Q (Auth_PriK n) B C"
-      using `?Q A B C` by simp
+      using \<open>?Q A B C\<close> by simp
     hence "Auth_PriK n \<otimes> B \<in> parts (used s)" by blast
     hence "(\<exists>m. Auth_PriK n = Auth_PriK m \<and>
       (Asset m, \<lbrace>Num 2, PubKey B\<rbrace>) \<in> s) \<or>
@@ -1487,12 +1487,12 @@ proof -
     hence "m \<notin> bad_prikey"
       using D by simp
     hence ?thesis
-      by (rule owner_seskey_prikey [OF A _ `?P` `?T m` `?R B`])
+      by (rule owner_seskey_prikey [OF A _ \<open>?P\<close> \<open>?T m\<close> \<open>?R B\<close>])
   }
   moreover {
     assume "n \<notin> bad_shakey"
     hence ?thesis
-      by (rule owner_seskey_shakey [OF A _ `?P`])
+      by (rule owner_seskey_shakey [OF A _ \<open>?P\<close>])
   }
   ultimately show ?thesis ..
 qed
@@ -1570,7 +1570,7 @@ proof -
   ultimately obtain m C'' where "?Q B" and "?W m B C''" by blast
   have "\<exists>A D. ?T A B \<and> ?U C'' D \<and> ?S m B \<and> ?V m D \<and>
     Crypt (SesK SK) (PubKey D) \<in> used s \<and> (Asset m, PubKey B) \<in> s"
-    by (rule asset_iv_state [OF A `?W m B C''`])
+    by (rule asset_iv_state [OF A \<open>?W m B C''\<close>])
   hence "?S m B" by blast
   have "(Owner n, SesKey SK) \<in> s \<and>
     (\<exists>A B C. Token n A B C SK \<in> used s \<and> B \<in> fst (snd SK))"
@@ -1586,7 +1586,7 @@ proof -
   have G: "B' = B"
   proof (rule ccontr)
     have "{A'', B', B} \<subseteq> {A', B'}"
-      using `?T A' B'` and `?Q B` and `?Q A''` by simp
+      using \<open>?T A' B'\<close> and \<open>?Q B\<close> and \<open>?Q A''\<close> by simp
     hence "card {A'', B', B} \<le> card {A', B'}"
       by (rule_tac card_mono, simp)
     also have "\<dots> \<le> Suc (Suc 0)"
@@ -1596,15 +1596,15 @@ proof -
     proof (simp, rule conjI, rule_tac [!] notI)
       assume "A'' = B'"
       hence "?S n A''"
-        using `?S n B'` by simp
+        using \<open>?S n B'\<close> by simp
       thus False
-        by (rule asset_ii_owner_ii [OF A _ `?X A''`])
+        by (rule asset_ii_owner_ii [OF A _ \<open>?X A''\<close>])
     next
       assume "A'' = B"
       hence "?S m A''"
-        using `?S m B` by simp
+        using \<open>?S m B\<close> by simp
       thus False
-        by (rule asset_ii_owner_ii [OF A _ `?X A''`])
+        by (rule asset_ii_owner_ii [OF A _ \<open>?X A''\<close>])
     qed
     hence "card {A'', B', B} = Suc (card {B', B})"
       by (rule_tac card_insert_disjoint, simp)
@@ -1614,7 +1614,7 @@ proof -
     ultimately show False by simp
   qed
   hence "?S n B"
-    using `?S n B'` by simp
+    using \<open>?S n B'\<close> by simp
   have "Crypt (SesK SK) (PubKey C) \<in> parts (used s)"
     using E by blast
   hence "?R C \<and> ((\<exists>n. (Owner n, SesKey SK) \<in> s) \<or> (\<exists>n B. ?W n B C)) \<or>
@@ -1623,20 +1623,20 @@ proof -
   hence "?R C"
     using F by simp
   hence "C \<in> {C', D}"
-    using `?U C' D` by simp
+    using \<open>?U C' D\<close> by simp
   moreover have "C \<noteq> D"
   proof
     assume "C = D"
     hence "?V n C"
-      using `?V n D` by simp
+      using \<open>?V n D\<close> by simp
     thus False
       by (rule asset_iii_owner_iii [OF A _ C])
   qed
   ultimately have "C = C'" by simp
   hence "(Asset n, Token n A B C SK) \<in> s"
-    using G and `?P n A` and `?W n B' C'` by simp
+    using G and \<open>?P n A\<close> and \<open>?W n B' C'\<close> by simp
   thus ?thesis
-    using `?P n A` and `?Q B` and `?R C` and `?S n B` by simp
+    using \<open>?P n A\<close> and \<open>?Q B\<close> and \<open>?R C\<close> and \<open>?S n B\<close> by simp
 qed
 
 
@@ -1665,10 +1665,10 @@ proof (rule rtrancl_induct [OF A], insert B, simp add: image_def)
     have "n \<notin> bad_shakey \<inter> bad_prikey"
       using B by simp
     hence "SesKey SK \<notin> spied s"
-      by (rule owner_seskey_secret [OF C _ `?Q SK`])
+      by (rule owner_seskey_secret [OF C _ \<open>?Q SK\<close>])
     moreover assume "(Spy, Key (InvK K)) \<in> s"
     ultimately show False
-      using `?P SK` by simp
+      using \<open>?P SK\<close> by simp
   next
     fix Y
     assume "(Spy, \<lbrace>Pwd n, Y\<rbrace>) \<in> s"
@@ -1889,14 +1889,14 @@ proof -
   proof
     assume "D = C"
     hence "?Q D"
-      using `?Q C` by simp
+      using \<open>?Q C\<close> by simp
     thus False
       by (rule asset_iii_owner_iii [OF A C])
   qed
   hence "D = D'"
-    using E and `?P C D'` by simp
+    using E and \<open>?P C D'\<close> by simp
   thus ?thesis
-    using `?R D'` by simp
+    using \<open>?R D'\<close> by simp
 qed
 
 

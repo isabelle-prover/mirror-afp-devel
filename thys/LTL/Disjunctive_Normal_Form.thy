@@ -251,7 +251,7 @@ proof (unfold product_def, safe)
   then have "b |\<union>| c \<in> {b |\<union>| c |b c. b \<in> B \<and> c \<in> C}"
     by blast
   then show "\<exists>a' bc. a |\<union>| b |\<union>| c = a' |\<union>| bc \<and> a' \<in> A \<and> bc \<in> {b |\<union>| c |b c. b \<in> B \<and> c \<in> C}"
-    using `a \<in> A` by (metis (no_types) inf_sup_aci(5) sup_left_commute)
+    using \<open>a \<in> A\<close> by (metis (no_types) inf_sup_aci(5) sup_left_commute)
 qed (metis (mono_tags, lifting) mem_Collect_eq sup_assoc)
 
 lemma min_product_assoc[simp]:

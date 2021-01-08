@@ -2427,7 +2427,7 @@ begin
 
       (* TODO: Putting this earlier breaks some steps in the proof. *)
       interpret E: equivalence_in_strict_bicategory V H \<a> \<i> src trg f g \<eta> ?\<epsilon>
-        using ide_g \<eta>_in_hom \<epsilon>_in_hom g_in_hhom `iso \<eta>` `iso ?\<epsilon>`
+        using ide_g \<eta>_in_hom \<epsilon>_in_hom g_in_hhom \<open>iso \<eta>\<close> \<open>iso ?\<epsilon>\<close>
         by (unfold_locales, auto)
 
       text \<open>

@@ -193,7 +193,7 @@ next
       proof -
         have "\<nexists>r. channel cid = Some (p', r)" 
           using Suc.prems(2) \<open>p' \<noteq> p\<close> by auto
-        with `cid \<noteq> cid'` RecvMarker step show ?thesis by (cases "has_snapshotted (S t n) p'", auto) 
+        with \<open>cid \<noteq> cid'\<close> RecvMarker step show ?thesis by (cases "has_snapshotted (S t n) p'", auto) 
       qed
       then show ?thesis by (simp add: IH)
     next
@@ -332,7 +332,7 @@ proof -
     then show ?thesis by simp
   next
     case (RecvMarker cid' r s)
-    have "r = p" using `occurs_on ev = p` 
+    have "r = p" using \<open>occurs_on ev = p\<close> 
       by (simp add: RecvMarker)
     then show ?thesis
     proof (cases "cid = cid'")
@@ -342,9 +342,9 @@ proof -
       then show ?thesis by simp
     next
       case False
-      then have "\<exists>s. channel cid = Some (r, s)" using RecvMarker assms can_occur_def `r = p` by simp
+      then have "\<exists>s. channel cid = Some (r, s)" using RecvMarker assms can_occur_def \<open>r = p\<close> by simp
       then have "msgs (S t (Suc i)) cid = msgs (S t i) cid @ [Marker]"
-        using RecvMarker assms ex_ev `r = p` False by simp
+        using RecvMarker assms ex_ev \<open>r = p\<close> False by simp
       then show ?thesis by simp
     qed
   qed auto
@@ -489,7 +489,7 @@ proof -
       qed
     qed
   qed
-  thus ?thesis using f `?phi \<ge> i` by blast
+  thus ?thesis using f \<open>?phi \<ge> i\<close> by blast
 qed
 
 subsection \<open>Correctness\<close>
@@ -539,7 +539,7 @@ proof -
     have "(S t i') \<noteq> (S t i)" using assms a by force
     then have "i \<le> length t" 
       using \<open>i \<le> i'\<close> assms(1) computation.no_change_if_ge_length_t computation_axioms nat_le_linear by fastforce
-    then show False using `~ i \<le> length t` by simp
+    then show False using \<open>~ i \<le> length t\<close> by simp
   qed
   have marker_in_set: "Marker : set (msgs (S t (Suc j)) cid)" 
     using \<open>\<not> has_snapshotted (S t j) p \<and> has_snapshotted (S t (Suc j)) p\<close> \<open>j \<le> i\<close> assms(1) assms(3) assms(4) snapshot_produces_marker snapshot_stable_ver_3 by blast
@@ -650,7 +650,7 @@ proof -
     have "~ has_snapshotted (S t i) ?q"
     proof (rule ccontr)
       assume sq: "~ ~ has_snapshotted (S t i) ?q"
-      from `i < j` have "i \<le> j" using less_imp_le by blast
+      from \<open>i < j\<close> have "i \<le> j" using less_imp_le by blast
       then obtain tr where ex_trace: "trace (S t i) tr (S t j)"
         using exists_trace_for_any_i_j valid by blast
       then have "has_snapshotted (S t j) ?q" using ex_trace snapshot_stable sq by blast
@@ -700,7 +700,7 @@ proof -
       then show ?thesis
         by (metis (no_types) Suc_eq_plus1 \<open>take (j - (i + 1)) (drop (i + 1) t) ! l = ev\<close> \<open>take (j - (i + 1)) (drop (i + 1) t) ! l = t ! (l + (i + 1))\<close> distributed_system.step_Suc distributed_system_axioms valid)
     qed
-    obtain cid s r where f: "ev = RecvMarker cid s r \<or> ev = Snapshot r" using `~ regular_event ev`
+    obtain cid s r where f: "ev = RecvMarker cid s r \<or> ev = Snapshot r" using \<open>~ regular_event ev\<close>
       by (meson isRecvMarker_def isSnapshot_def nonregular_event)
     from f have "occurs_on ev \<noteq> ?q"
     proof (elim disjE)
@@ -744,7 +744,7 @@ proof -
       qed
     qed
     then show "\<not> regular_event ev \<and> occurs_on ev \<noteq> ?q"
-      using `~ regular_event ev` by simp
+      using \<open>~ regular_event ev\<close> by simp
   qed
 qed
 
@@ -1086,7 +1086,7 @@ proof (induct "j - (i+1)" arbitrary: j t)
     have "i = j - 1" 
       by (simp add: \<open>j = i + 1\<close>)
     show ?thesis
-    proof (subst (1 2 3) `i = j - 1`)
+    proof (subst (1 2 3) \<open>i = j - 1\<close>)
       have "j < length t" using "0.prems" by auto
       then have "take (j - 1) t @ [t ! j, t ! (j - 1)] @ drop (j + 1) t = t[j - 1 := t ! j, j := t ! (j - 1)]"
         by (metis Suc_eq_plus1 \<open>i = j - 1\<close> \<open>j = i + 1\<close> add_Suc_right arith_special(3) swap_neighbors)
@@ -1249,7 +1249,7 @@ proof (induct "j - (i+1)" arbitrary: j t)
       by (metis \<open>j = i + 1\<close> length_list_update nth_list_update_eq swap_neighbors_2)
   qed
   moreover have "\<forall>k. k > i+1 \<and> k < j+1 \<longrightarrow> ~ regular_event ((swap_events i j t) ! k)" using "0" by force
-  ultimately show ?case using `j = i + 1` by force
+  ultimately show ?case using \<open>j = i + 1\<close> by force
 next
   case (Suc n)
   let ?p = "occurs_on (t ! i)"
@@ -1361,9 +1361,9 @@ next
     proof (rule ext)
       fix p
       have "states (S t (j-1)) p = states (S t j) p"
-        using no_state_change_if_nonregular_event`~ regular_event (t ! (j-1))` reg_st_1 by auto
+        using no_state_change_if_nonregular_event\<open>~ regular_event (t ! (j-1))\<close> reg_st_1 by auto
       moreover have "states d p = states e p"
-        using no_state_change_if_nonregular_event`~ regular_event (t ! (j-1))` new_st_2 by auto
+        using no_state_change_if_nonregular_event\<open>~ regular_event (t ! (j-1))\<close> new_st_2 by auto
       moreover have "states d p = states (S t (j+1)) p" 
       proof -
         have "\<forall>a. states (S t (j + 1)) a = states d a"
@@ -1380,7 +1380,7 @@ next
       have "isTrans (t ! j) \<or> isSend (t ! j) \<or> isRecv (t ! j)" 
         using \<open>regular_event (t ! j)\<close> by auto
       moreover have "isSnapshot (t ! (j-1)) \<or> isRecvMarker (t ! (j-1))"
-        using nonregular_event `~ regular_event (t ! (j-1))` by auto
+        using nonregular_event \<open>~ regular_event (t ! (j-1))\<close> by auto
       ultimately show "msgs e cid = msgs (S t (j+1)) cid"
       proof (elim disjE, goal_cases)
         case 1
@@ -1432,7 +1432,7 @@ next
       have "isTrans (t ! j) \<or> isSend (t ! j) \<or> isRecv (t ! j)" 
         using \<open>regular_event (t ! j)\<close> by auto
       moreover have "isSnapshot (t ! (j-1)) \<or> isRecvMarker (t ! (j-1))"
-        using nonregular_event `~ regular_event (t ! (j-1))` by auto
+        using nonregular_event \<open>~ regular_event (t ! (j-1))\<close> by auto
       ultimately show "cs e cid = cs (S t (j+1)) cid"
       proof (elim disjE, goal_cases)
         case 1
@@ -1778,8 +1778,8 @@ next
     qed
     then have "cs (S t i) cid = cs (S t (Suc i)) cid"
     proof -
-      have "\<nexists>s. channel cid = Some (s, r)" using `r \<noteq> p` Suc by simp
-      with RecvMarker t_dec `cid' \<noteq> cid` `r \<noteq> p` Suc.prems(3) show ?thesis
+      have "\<nexists>s. channel cid = Some (s, r)" using \<open>r \<noteq> p\<close> Suc by simp
+      with RecvMarker t_dec \<open>cid' \<noteq> cid\<close> \<open>r \<noteq> p\<close> Suc.prems(3) show ?thesis
         by (cases "has_snapshotted (S t i) r", auto)
     qed
     then show ?thesis using IH by simp
@@ -1841,7 +1841,7 @@ proof -
       using \<open>i < j\<close> assms exists_trace_for_any_i_j by fastforce
     then have "has_snapshotted (S t j) p" 
       using \<open>ps (S t (i + 1)) p \<noteq> None\<close> snapshot_stable by blast
-    then show False using `~ has_snapshotted (S t j) p` by simp
+    then show False using \<open>~ has_snapshotted (S t j) p\<close> by simp
   qed
 qed
 
@@ -2017,7 +2017,7 @@ proof -
   then have "Marker : set (msgs (S t k) cid)"
   proof -
     have "can_occur (t ! k) (S t k)" using happen_implies_can_occur step_k by blast
-    then show ?thesis unfolding can_occur_def `t ! k = RecvMarker cid q p` 
+    then show ?thesis unfolding can_occur_def \<open>t ! k = RecvMarker cid q p\<close> 
       using hd_in_set by fastforce
   qed
   then have "has_snapshotted (S t k) p" 
@@ -2173,11 +2173,11 @@ proof (rule ccontr)
   then have "S t (length t) \<noteq> S t i"
   proof -
     have "msgs (S t i) cid \<noteq> msgs final cid"
-      using \<open>Marker \<notin> set (msgs (S t i) cid)\<close> `~ ?P` by auto
+      using \<open>Marker \<notin> set (msgs (S t i) cid)\<close> \<open>~ ?P\<close> by auto
     then show ?thesis using final_is_s_t_len_t assms by auto
   qed
   moreover have "S t (length t) = S t i"
-    using assms `i > length t` less_imp_le no_change_if_ge_length_t by simp
+    using assms \<open>i > length t\<close> less_imp_le no_change_if_ge_length_t by simp
   ultimately show False by simp
 qed
 
@@ -2211,7 +2211,7 @@ proof (rule ccontr)
     qed
     then show ?thesis using snapshotted_and_not_done_implies_marker_in_channel snap_p assms
     proof -
-      have "i+1 \<le> length t" using `i < length t` by auto
+      have "i+1 \<le> length t" using \<open>i < length t\<close> by auto
       then show ?thesis
         using snapshotted_and_not_done_implies_marker_in_channel snap_p assms n_done by simp
     qed
@@ -2263,12 +2263,12 @@ proof (rule ccontr)
     proof -
       have "j - Suc i = n" using Suc by simp
       moreover have "~ (\<exists>k. (Suc i) \<le> k \<and> k < j \<and> (\<exists>p q u u' m. t ! k = Recv cid q p u u' m) \<and> (snd (cs (S t k) cid) = Recording))"
-        using `~ ?P` Suc.prems(3) Suc_leD by blast
+        using \<open>~ ?P\<close> Suc.prems(3) Suc_leD by blast
       ultimately show ?thesis using Suc by (metis Suc_lessI)
     qed
     finally show ?case by simp
   qed
-  then show False using assms `~ ?P` by blast
+  then show False using assms \<open>~ ?P\<close> by blast
 qed
 
 lemma cs_not_nil_implies_postrecording_event:
@@ -2302,8 +2302,8 @@ proof -
       by (meson Suc_le_eq \<open>j < i\<close> assms(1) assms(3) happen_implies_can_occur le_trans step_Suc)
     then show ?thesis using Recv Recv_given_channel assms(4) by force
   qed
-  ultimately have "postrecording_event t j" unfolding postrecording_event using `j < i` assms(3) by simp
-  then show ?thesis using `j < i` by auto
+  ultimately have "postrecording_event t j" unfolding postrecording_event using \<open>j < i\<close> assms(3) by simp
+  then show ?thesis using \<open>j < i\<close> by auto
 qed
 
 subsubsection \<open>Relating process states\<close>
@@ -2421,7 +2421,7 @@ proof (unfold ps_equal_to_snapshot_def, rule allI)
             using no_state_change_if_only_nonregular_events by auto
           moreover have "states (S t j) p = s" 
             by (metis \<open>\<not> ps (S t j) p \<noteq> None \<and> ps (S t (j + 1)) p \<noteq> None\<close> \<open>ps final p = Some s \<or> ps final p = None\<close> assms(1) final_is_s_t_len_t computation.all_processes_snapshotted_in_final_state computation.snapshot_stable_ver_3 computation_axioms linorder_not_le snapshot_state_must_have_been_reached)
-          ultimately show False using `states (S t i) p \<noteq> s` by simp
+          ultimately show False using \<open>states (S t i) p \<noteq> s\<close> by simp
         qed
 
         then obtain ev where ev: "ev \<in> set ?t \<and> regular_event ev \<and> occurs_on ev = p" by blast
@@ -2532,7 +2532,7 @@ next
         then show ?thesis using RecvMarker step Suc False by auto
       next
         case False
-        with RecvMarker step Suc `cid \<noteq> cid'` show ?thesis by (cases "s = p", auto)
+        with RecvMarker step Suc \<open>cid \<noteq> cid'\<close> show ?thesis by (cases "s = p", auto)
       qed
       moreover have "cs (S t i) cid = cs (S t (i+1)) cid"
       proof (cases "has_snapshotted (S t i) r")
@@ -2543,10 +2543,10 @@ next
         then show ?thesis
         proof (cases "r = q")
           case True
-          then show ?thesis using snap_q no_snap `r = q` by simp
+          then show ?thesis using snap_q no_snap \<open>r = q\<close> by simp
         next
           case False
-          then show ?thesis using RecvMarker step Suc no_snap False `cid \<noteq> cid'` by simp
+          then show ?thesis using RecvMarker step Suc no_snap False \<open>cid \<noteq> cid'\<close> by simp
         qed
       qed
       ultimately show ?thesis using Suc ib by simp
@@ -2675,7 +2675,7 @@ next
         then show ?thesis using RecvMarker step Suc False by auto
       next
         case False
-        with RecvMarker step Suc `cid \<noteq> cid'` show ?thesis by (cases "s = p", auto)
+        with RecvMarker step Suc \<open>cid \<noteq> cid'\<close> show ?thesis by (cases "s = p", auto)
       qed
       moreover have "cs (S t i) cid = cs (S t (i+1)) cid"
       proof (cases "has_snapshotted (S t i) r")
@@ -2686,10 +2686,10 @@ next
         then show ?thesis
         proof (cases "r = q")
           case True
-          then show ?thesis using snap_q no_snap `r = q` by simp
+          then show ?thesis using snap_q no_snap \<open>r = q\<close> by simp
         next
           case False
-          then show ?thesis using RecvMarker step Suc no_snap False `cid \<noteq> cid'` by simp
+          then show ?thesis using RecvMarker step Suc no_snap False \<open>cid \<noteq> cid'\<close> by simp
         qed
       qed
       ultimately show ?thesis using Suc ib by auto
@@ -2708,7 +2708,7 @@ next
       assume "~ cid \<noteq> cid'"
       then have "channel cid = channel cid'" by auto
       then have "(p, q) = (r, s)" using can_occur_def step Send Suc by auto
-      then show False using `r \<noteq> p` by simp
+      then show False using \<open>r \<noteq> p\<close> by simp
     qed
     then have "msgs (S t i) cid = msgs (S t (i+1)) cid" using step Send by simp
     moreover have "cs (S t i) cid = cs (S t (i+1)) cid" using step Send by auto
@@ -2899,7 +2899,7 @@ next
             then show ?thesis
             proof (cases "r = p")
               case True
-              then have "msgs (S t (i+1)) cid = msgs (S t i) cid @ [Marker]" using RecvMarker step Suc.prems no_snap `cid \<noteq> cid'` by simp
+              then have "msgs (S t (i+1)) cid = msgs (S t i) cid @ [Marker]" using RecvMarker step Suc.prems no_snap \<open>cid \<noteq> cid'\<close> by simp
               then show ?thesis
               proof -
                 assume a1: "msgs (S t (i + 1)) cid = msgs (S t i) cid @ [Marker]"
@@ -2913,7 +2913,7 @@ next
               qed
             next
               case False
-              then have "msgs (S t i) cid = msgs (S t (i+1)) cid" using RecvMarker step Suc.prems `cid \<noteq> cid'` no_snap by simp
+              then have "msgs (S t i) cid = msgs (S t (i+1)) cid" using RecvMarker step Suc.prems \<open>cid \<noteq> cid'\<close> no_snap by simp
               then show ?thesis using Suc by simp
             qed
           qed
@@ -3083,7 +3083,7 @@ proof -
         then show ?thesis using RecvMarker step no_snap by simp
       next
         case False
-        with RecvMarker step no_snap `cid \<noteq> cid'` assms show ?thesis by (cases "p = r", auto)
+        with RecvMarker step no_snap \<open>cid \<noteq> cid'\<close> assms show ?thesis by (cases "p = r", auto)
       qed
       then show ?thesis using assms by simp
     qed
@@ -3097,7 +3097,7 @@ proof -
       by (metis (no_types, hide_lams) assms(4) assms(5) local.step next_send)
     moreover have "(p, q) = (r, s)"
     proof -
-      have "channel cid = channel cid'" using `cid = cid'` by simp
+      have "channel cid = channel cid'" using \<open>cid = cid'\<close> by simp
       moreover have "channel cid = Some (p, q)" using assms by simp
       moreover have "channel cid' = Some (r, s)" using Send step can_occur_def by auto
       ultimately show ?thesis by simp
@@ -3220,14 +3220,14 @@ proof (induct "j - (i+1)" arbitrary: i)
     assume "~ Marker = last (msgs (S t (i+1)) cid)"
     then have "\<exists>u u' m. t ! i = Send cid p q u u' m"
     proof -
-      have "msgs (S t (i+1)) cid \<noteq> []" using "0" `j = i+1` by auto
+      have "msgs (S t (i+1)) cid \<noteq> []" using "0" \<open>j = i+1\<close> by auto
       moreover have "msgs (S t i) cid \<noteq> []" using "0" by auto
       ultimately show ?thesis 
         using "0.prems"(1) "0.prems"(4) "0.prems"(8) \<open>Marker \<noteq> last (msgs (S t (i + 1)) cid)\<close> last_changes_implies_send_when_msgs_nonempty by auto
     qed
     then show False using 0 by auto
   qed
-  then show ?case using `j = i+1` by simp
+  then show ?case using \<open>j = i+1\<close> by simp
 next
   case (Suc n)
   then have step: "(S t i) \<turnstile> (t ! i) \<mapsto> (S t (i+1))" 
@@ -3325,7 +3325,7 @@ proof -
       have "(S t (j+1)) \<noteq> (S t i)" 
         using assms(3) marker_last by auto
       then have "j+1 \<noteq> i" by auto
-      moreover have "j+1 \<le> i" using `j < i` by simp
+      moreover have "j+1 \<le> i" using \<open>j < i\<close> by simp
       ultimately show ?thesis by simp
     qed
     moreover have "trace init t final" using assms by simp
@@ -3413,18 +3413,18 @@ proof -
                  = takeWhile ((\<noteq>) Marker) (msgs c' cid)"
     proof (cases "has_snapshotted c p")
       case True
-      then have "msgs c cid = msgs c' cid" using RecvMarker `cid \<noteq> cid'` assms by auto
+      then have "msgs c cid = msgs c' cid" using RecvMarker \<open>cid \<noteq> cid'\<close> assms by auto
       then show ?thesis by simp
     next
       case False
-      then have "msgs c' cid = msgs c cid @ [Marker]" using RecvMarker `cid \<noteq> cid'` assms by auto
+      then have "msgs c' cid = msgs c cid @ [Marker]" using RecvMarker \<open>cid \<noteq> cid'\<close> assms by auto
       then show ?thesis
         by (simp add: takeWhile_tail)
     qed
     moreover have "snd (cs c cid) = snd (cs c' cid)"
     proof (cases "has_snapshotted c p")
       case True
-      then have "cs c cid = cs c' cid" using RecvMarker `cid \<noteq> cid'` assms by simp
+      then have "cs c cid = cs c' cid" using RecvMarker \<open>cid \<noteq> cid'\<close> assms by simp
       then show ?thesis by simp
     next
       case False
@@ -3476,10 +3476,10 @@ proof -
     proof -
       have "\<nexists>r. channel cid = Some (q, r)" 
         using assms(4) no_self_channel by auto
-      with RecvMarker assms `cid \<noteq> cid'` have "msgs c cid = msgs c' cid" by (cases "has_snapshotted c r", auto)
+      with RecvMarker assms \<open>cid \<noteq> cid'\<close> have "msgs c cid = msgs c' cid" by (cases "has_snapshotted c r", auto)
       then show ?thesis by simp
     qed
-    moreover have "snd (cs c' cid) = Recording" using assms RecvMarker `cid \<noteq> cid'` by simp
+    moreover have "snd (cs c' cid) = Recording" using assms RecvMarker \<open>cid \<noteq> cid'\<close> by simp
     ultimately show ?thesis by simp
   qed
 qed
@@ -3559,13 +3559,13 @@ next
     then show ?thesis
     proof (cases "has_snapshotted (S t i) r")
       case True
-      then have "msgs (S t (i+1)) cid = msgs (S t i) cid" using RecvMarker Suc step `cid \<noteq> cid'` by auto
+      then have "msgs (S t (i+1)) cid = msgs (S t i) cid" using RecvMarker Suc step \<open>cid \<noteq> cid'\<close> by auto
       then show ?thesis using Suc by simp
     next
       case False
       have "r \<noteq> p" 
         using False Suc.prems(5) by blast
-      then show ?thesis using RecvMarker Suc step `cid \<noteq> cid'` False by simp
+      then show ?thesis using RecvMarker Suc step \<open>cid \<noteq> cid'\<close> False by simp
     qed
   next
     case (Trans r u u')
@@ -3584,7 +3584,7 @@ next
       assume "~ cid \<noteq> cid'"
       then have "channel cid = channel cid'" by auto
       then have "channel cid' = Some (r, s)" using Send step can_occur_def by simp
-      then show False using Suc `r \<noteq> p` `~ cid \<noteq> cid'` by auto
+      then show False using Suc \<open>r \<noteq> p\<close> \<open>~ cid \<noteq> cid'\<close> by auto
     qed
     then have "msgs (S t i) cid = msgs (S t (i+1)) cid"
       using step Send Suc by simp
@@ -3678,7 +3678,7 @@ next
         case False
         then have "r \<noteq> p" 
           using Suc.prems(6) by blast
-        with RecvMarker False Suc.prems step `cid \<noteq> cid'` show ?thesis by auto
+        with RecvMarker False Suc.prems step \<open>cid \<noteq> cid'\<close> show ?thesis by auto
       qed
     qed
   next
@@ -3698,7 +3698,7 @@ next
       assume "~ cid \<noteq> cid'"
       then have "channel cid = channel cid'" by auto
       then have "channel cid' = Some (r, s)" using Send step can_occur_def by simp
-      then show False using Suc `r \<noteq> p` `~ cid \<noteq> cid'` by auto
+      then show False using Suc \<open>r \<noteq> p\<close> \<open>~ cid \<noteq> cid'\<close> by auto
     qed
     then have "msgs (S t i) cid = msgs (S t (i+1)) cid"
       using step Send by simp
@@ -3837,8 +3837,8 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
             then show ?thesis
             proof (cases "regular_event (t ! l)")
               case True
-              have "l < k" using range `j < k` by simp
-              have "~ has_snapshotted (S t l) p" using snap_p(1) range `j < k` snapshot_stable_ver_3 assms(1) by simp
+              have "l < k" using range \<open>j < k\<close> by simp
+              have "~ has_snapshotted (S t l) p" using snap_p(1) range \<open>j < k\<close> snapshot_stable_ver_3 assms(1) by simp
               then have "prerecording_event t l" using True "1" prerecording_event 
                 using s_def snap_q(1) snap_q(2) by fastforce
               then show False using assms range by blast
@@ -3856,7 +3856,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
             then show ?thesis
             proof (cases "regular_event (t ! l)")
               case True
-              have "~ has_snapshotted (S t l) q" using snap_q(1) range `j < k` snapshot_stable_ver_3 assms(1) by simp
+              have "~ has_snapshotted (S t l) q" using snap_q(1) range \<open>j < k\<close> snapshot_stable_ver_3 assms(1) by simp
               then have "prerecording_event t l" using True "2" prerecording_event 
                 using s_def snap_q(2) by fastforce
               then show False using assms range by blast
@@ -3906,15 +3906,15 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
                 using assms(1) no_change_if_ge_length_t by auto
               then show False using snap_p by auto
             qed
-            then show ?thesis using `a < k` by simp
+            then show ?thesis using \<open>a < k\<close> by simp
           qed
           then show False
           proof (cases "regular_event (t ! a)")
             case True
             have "~ has_snapshotted (S t a) p" 
               by (meson \<open>a < k\<close> assms(1) computation.snapshot_stable_ver_2 computation_axioms less_imp_le_nat snap_p(1))
-            then have "prerecording_event t a" using `a < length t` ocp True prerecording_event by simp
-            then show False using `j+1 \<le> a` `j \<ge> i` assms by auto
+            then have "prerecording_event t a" using \<open>a < length t\<close> ocp True prerecording_event by simp
+            then show False using \<open>j+1 \<le> a\<close> \<open>j \<ge> i\<close> assms by auto
           next
             case False
             then have "(S t a) \<turnstile> (t ! a) \<mapsto> (S t (a+1))" 
@@ -3967,7 +3967,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
         by (metis (no_types, lifting) chan Nil_is_map_conv assms(1) computation.no_initial_channel_snapshot computation_axioms fst_conv no_recording_cs_if_not_snapshotted self_append_conv2 snap_q(1))
     next
       case False
-      then have "k < j" using `j \<noteq> k` False by simp
+      then have "k < j" using \<open>j \<noteq> k\<close> False by simp
       then have "map Msg (fst (cs (S t i) cid)) @ takeWhile ((\<noteq>) Marker) (msgs (S t i) cid)
                = map Msg (fst (cs (S t j) cid)) @ takeWhile ((\<noteq>) Marker) (msgs (S t j) cid)"
       proof (cases "i \<le> k")
@@ -3984,8 +3984,8 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
               then show ?thesis
               proof (cases "regular_event (t ! l)")
                 case True
-                have "l < k" using range `k < j` by simp
-                have "~ has_snapshotted (S t l) p" using snap_p(1) range `k < j` snapshot_stable_ver_3 assms(1) by simp
+                have "l < k" using range \<open>k < j\<close> by simp
+                have "~ has_snapshotted (S t l) p" using snap_p(1) range \<open>k < j\<close> snapshot_stable_ver_3 assms(1) by simp
                 then have "prerecording_event t l" using True "1" prerecording_event 
                   using s_def snap_p by fastforce
                 then show False using assms range by blast
@@ -4003,7 +4003,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
               then show ?thesis
               proof (cases "regular_event (t ! l)")
                 case True
-                have "~ has_snapshotted (S t l) p" using snap_p(1) range `k < j` snapshot_stable_ver_3 assms(1) by simp
+                have "~ has_snapshotted (S t l) p" using snap_p(1) range \<open>k < j\<close> snapshot_stable_ver_3 assms(1) by simp
                 moreover have "l < length t" 
                   using \<open>k < j\<close> local.range(2) s_def snap_q(1) snap_q(2) by force
                 ultimately have "prerecording_event t l" using True "2" prerecording_event 
@@ -4058,15 +4058,15 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
                   using assms(1) no_change_if_ge_length_t by auto
                 then show False using snap_q by auto
               qed
-              then show ?thesis using `a < j` by simp
+              then show ?thesis using \<open>a < j\<close> by simp
             qed
             then show False
             proof (cases "regular_event (t ! a)")
               case True
               have "~ has_snapshotted (S t a) q" 
                 by (meson \<open>a < j\<close> assms(1) computation.snapshot_stable_ver_2 computation_axioms less_imp_le_nat snap_q(1))
-              then have "prerecording_event t a" using `a < length t` ocp True prerecording_event by simp
-              then show False using `k+1 \<le> a` `k \<ge> i` assms by auto
+              then have "prerecording_event t a" using \<open>a < length t\<close> ocp True prerecording_event by simp
+              then show False using \<open>k+1 \<le> a\<close> \<open>k \<ge> i\<close> assms by auto
             next
               case False
               then have "(S t a) \<turnstile> (t ! a) \<mapsto> (S t (a+1))" 
@@ -4114,15 +4114,15 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
                   using assms(1) no_change_if_ge_length_t by auto
                 then show False using snap_q by auto
               qed
-              then show ?thesis using `k < j` by simp
+              then show ?thesis using \<open>k < j\<close> by simp
             qed
             then show False
             proof (cases "regular_event (t ! k)")
               case True
               have "~ has_snapshotted (S t k) q" 
-                by (meson `k < j` assms(1) computation.snapshot_stable_ver_2 computation_axioms less_imp_le_nat snap_q(1))
-              then have "prerecording_event t k" using `k < length t` ocp True prerecording_event by simp
-              then show False using `i \<le> j` `k \<ge> i` assms by auto
+                by (meson \<open>k < j\<close> assms(1) computation.snapshot_stable_ver_2 computation_axioms less_imp_le_nat snap_q(1))
+              then have "prerecording_event t k" using \<open>k < length t\<close> ocp True prerecording_event by simp
+              then show False using \<open>i \<le> j\<close> \<open>k \<ge> i\<close> assms by auto
             next
               case False
               then have "(S t k) \<turnstile> (t ! k) \<mapsto> (S t (k+1))" 
@@ -4193,9 +4193,9 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
               using False RecvMarker \<open>\<not> cid \<noteq> cid'\<close> by blast
           qed
           then have "msgs (S t j) cid = msgs (S t (j+1)) cid"
-            using `cid \<noteq> cid'` step_q snap_q RecvMarker chan `p \<noteq> q` by simp
+            using \<open>cid \<noteq> cid'\<close> step_q snap_q RecvMarker chan \<open>p \<noteq> q\<close> by simp
           moreover have "cs (S t (j+1)) cid = (fst (cs (S t j) cid), Recording)"
-            using \<open>p \<noteq> q\<close> `cid \<noteq> cid'`step_q snap_q RecvMarker chan by auto
+            using \<open>p \<noteq> q\<close> \<open>cid \<noteq> cid'\<close>step_q snap_q RecvMarker chan by auto
           ultimately show ?thesis by simp
         qed
         moreover have "map Msg (fst (cs (S t (j+1)) cid)) @ takeWhile ((\<noteq>) Marker) (msgs (S t (j+1)) cid)
@@ -4238,7 +4238,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
     proof (rule ccontr)
       assume "~ ?P"
       have "snd (cs (S t i) cid) = Recording" using Recording by simp
-      moreover have "fst (cs (S t i) cid) \<noteq> []" using `~ ?P` prod.collapse calculation by metis
+      moreover have "fst (cs (S t i) cid) \<noteq> []" using \<open>~ ?P\<close> prod.collapse calculation by metis
       ultimately have "\<exists>j. j < i \<and> postrecording_event t j" 
         using assms(1) assms(4) chan cs_not_nil_implies_postrecording_event by blast
       then show False using assms by auto
@@ -4273,7 +4273,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
             case True
             then have "prerecording_event t k" 
               by (metis (no_types, hide_lams) \<open>k < j\<close> \<open>occurs_on (t ! k) = p\<close> all_processes_snapshotted_in_final_state assms(1) final_is_s_t_len_t computation.prerecording_event computation_axioms less_trans nat_le_linear not_less snap_p(1) snapshot_stable_ver_2)
-            then show ?thesis using assms `i \<le> k` by auto
+            then show ?thesis using assms \<open>i \<le> k\<close> by auto
           next
             case False
             then have step_k: "(S t k) \<turnstile> (t ! k) \<mapsto> (S t (Suc k))" 
@@ -4282,7 +4282,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
               by (metis False \<open>occurs_on (t ! k) = p\<close> nonregular_event_induces_snapshot snapshot_state_unchanged)
             then have "k \<ge> j" 
               by (metis Suc_leI \<open>k < j\<close> assms(1) snap_p(1) snapshot_stable_ver_3)
-            then show False using `k < j` by simp
+            then show False using \<open>k < j\<close> by simp
           qed
         qed
         moreover have "~ has_snapshotted (S t i) p" 
@@ -4392,7 +4392,7 @@ proof (unfold cs_equal_to_snapshot_def, rule allI, rule impI)
           then show ?thesis by auto
         qed
         moreover have "i \<le> length t" using assms by simp
-        moreover have "j+1 \<le> i" using `j < i` by simp
+        moreover have "j+1 \<le> i" using \<open>j < i\<close> by simp
         moreover have "\<forall>k. j+1 \<le> k \<and> k < i \<and> regular_event (t ! k) \<longrightarrow> ~ occurs_on (t ! k) = p" (is ?R)
         proof (rule ccontr)
           assume "~ ?R"
@@ -4544,7 +4544,7 @@ proof -
   qed
   let ?J = "{j \<in> {?i+1..<length t}. prerecording_event t j}"
   have nonempty_J: "?J \<noteq> empty"
-    using `card {j \<in> {?i+1..<length t}. prerecording_event t j} > 0` exists_prerecording_violation_when_card_greater_0
+    using \<open>card {j \<in> {?i+1..<length t}. prerecording_event t j} > 0\<close> exists_prerecording_violation_when_card_greater_0
     by blast
   have fin_J: "finite ?J" by auto
   let ?j = "Min ?J"
@@ -4893,11 +4893,11 @@ proof -
         let ?C' = "{k \<in> {j+1..<length t}. prerecording_event ?t k}"
         have card_G: "card ?G = card ?A + card ?B + card ?C"
         proof -
-          have "?G = ?A \<union> (?B \<union> ?C)" using assms `l < i` by auto
+          have "?G = ?A \<union> (?B \<union> ?C)" using assms \<open>l < i\<close> by auto
           then have "card ?G = card (?A \<union> (?B \<union> ?C))" by simp
           also have "card (?A \<union> (?B \<union> ?C)) = card ?A + card (?B \<union> ?C)"
           proof -
-            have "?A \<inter> (?B \<union> ?C) = {}" using `l < i` assms by auto
+            have "?A \<inter> (?B \<union> ?C) = {}" using \<open>l < i\<close> assms by auto
             then show ?thesis by (simp add: card_Un_disjoint disjoint_iff_not_equal)
           qed
           also have "card ?A + card (?B \<union> ?C) = card ?A + card ?B + card ?C"
@@ -4909,11 +4909,11 @@ proof -
         qed
         have card_G': "card ?G' = card ?A' + card ?B' + card ?C'"
         proof -
-          have "?G' = ?A' \<union> (?B' \<union> ?C')" using assms `l < i` by auto
+          have "?G' = ?A' \<union> (?B' \<union> ?C')" using assms \<open>l < i\<close> by auto
           then have "card ?G' = card (?A' \<union> (?B' \<union> ?C'))" by simp
           also have "card (?A' \<union> (?B' \<union> ?C')) = card ?A' + card (?B' \<union> ?C')"
           proof -
-            have "?A' \<inter> (?B' \<union> ?C') = {}" using `l < i` assms by auto
+            have "?A' \<inter> (?B' \<union> ?C') = {}" using \<open>l < i\<close> assms by auto
             then show ?thesis by (simp add: card_Un_disjoint disjoint_iff_not_equal)
           qed
           also have "card ?A' + card (?B' \<union> ?C') = card ?A' + card ?B' + card ?C'"
@@ -4940,12 +4940,12 @@ proof -
           qed
           ultimately show ?thesis using card_G card_G' by linarith
         qed
-        moreover have "postrecording_event ?t l" using True same_postrec_prefix `l < i` by blast
+        moreover have "postrecording_event ?t l" using True same_postrec_prefix \<open>l < i\<close> by blast
         moreover have "length ?t = length t" using assms(3) assms(4) by fastforce
         ultimately show ?thesis using True by presburger
       next
         case False
-        then have "~ postrecording_event ?t l" using same_postrec_prefix `l < i` by blast
+        then have "~ postrecording_event ?t l" using same_postrec_prefix \<open>l < i\<close> by blast
         then show ?thesis using False by simp
       qed
     qed
@@ -5074,15 +5074,15 @@ proof -
         have "card ?G = card ?G'"
         proof -
           have "?C = ?C'" using assms same_cardinality_post_swap_3 by auto
-          then have "?G = ?G'" using `l > j` by fastforce
+          then have "?G = ?G'" using \<open>l > j\<close> by fastforce
           then show ?thesis by simp
         qed
-        moreover have "postrecording_event ?t l" using True same_postrec_suffix `l > j` by simp
+        moreover have "postrecording_event ?t l" using True same_postrec_suffix \<open>l > j\<close> by simp
         moreover have "length ?t = length t" using assms(3) assms(4) by fastforce
         ultimately show ?thesis using True by presburger
       next
         case False
-        then have "~ postrecording_event ?t l" using same_postrec_suffix `l > j` by simp
+        then have "~ postrecording_event ?t l" using same_postrec_suffix \<open>l > j\<close> by simp
         then show ?thesis using False by simp
       qed
     qed
@@ -5164,7 +5164,7 @@ using assms proof (induct "count_violations t" arbitrary: t)
           have "(if postrecording_event t j
                    then card {l \<in> {j+1..<length t}. prerecording_event t l}
                    else 0) = card {l \<in> {j+1..<length t}. prerecording_event t l}"
-            using `~ ~ postrecording_event t j` by simp
+            using \<open>~ ~ postrecording_event t j\<close> by simp
           moreover have "card {l \<in> {j+1..<length t}. prerecording_event t l} > 0"
           proof -
             have "j + 1 \<le> ?i \<and> ?i < length t" 

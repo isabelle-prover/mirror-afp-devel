@@ -891,7 +891,7 @@ using assms proof(induction n arbitrary: t)
   show ?case
   by (nprover4 r1: nprv_prvI r2: nprv_impI r3: nprv_ldsjI r4: prv_nprv1I)
 next
-  case (Suc n) note  t[simp] = `t \<in> atrm`
+  case (Suc n) note  t[simp] = \<open>t \<in> atrm\<close>
   define z where "z \<equiv> getFr [xx,yy,zz] [t] []"
   have z_facts[simp]: "z \<in> var" "z \<noteq> xx" "z \<noteq> yy" "z \<noteq> zz" "zz \<noteq> z" "z \<notin> FvarsT t"
   using getFr_FvarsT_Fvars[of "[xx,yy,zz]" "[t]" "[]"] unfolding z_def[symmetric] by auto
@@ -1143,7 +1143,7 @@ using assms proof(induction n arbitrary: t)
   subgoal by (nrule r: nprv_dsjIL)
   subgoal by (nprover3 r1: nprv_dsjIR r2: nprv_negI r3: nprv_zer_suc_2contrE01) .
 next
-  case (Suc n) note  `t \<in> atrm`[simp]
+  case (Suc n) note  \<open>t \<in> atrm\<close>[simp]
   define z where "z \<equiv> getFr [xx,yy,zz] [t] []"
   have z_facts[simp]: "z \<in> var" "z \<noteq> xx" "z \<noteq> yy" "z \<noteq> zz" "zz \<noteq> z" "z \<notin> FvarsT t"
   using getFr_FvarsT_Fvars[of "[xx,yy,zz]" "[t]" "[]"] unfolding z_def[symmetric] by auto

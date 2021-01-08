@@ -48,7 +48,7 @@ proof-
     show ?case proof(cases "v \<in> W")
       case True
       thus ?thesis
-      using insertI.IH[OF `\<phi> \<in> fmla`] insertI.prems
+      using insertI.IH[OF \<open>\<phi> \<in> fmla\<close>] insertI.prems
       by (simp add: insert_absorb)
     next
       case False

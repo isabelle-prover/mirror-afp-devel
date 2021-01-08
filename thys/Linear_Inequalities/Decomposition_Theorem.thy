@@ -99,7 +99,7 @@ lemma convex_hull_next_dim:
     and y: "y $ m = 1"
   shows "(vec_first y m \<in> m.convex_hull {vec_first y m | y. y \<in> X}) = (y \<in> n.cone X)"
 proof -
-  from `finite X` obtain Xs where Xs: "X = set Xs" using finite_list by auto
+  from \<open>finite X\<close> obtain Xs where Xs: "X = set Xs" using finite_list by auto
   let ?Y = "{vec_first y m | y. y \<in> X}"
   let ?Ys = "map (\<lambda> y. vec_first y m) Xs"
   have Ys: "?Y = set ?Ys" using Xs by auto
@@ -107,33 +107,33 @@ proof -
   define x where "x = vec_first y m"
   {
     have "y = vec_first y m @\<^sub>v vec_last y 1"
-      using `n = m + 1` vec_first_last_append y_dim by auto
+      using \<open>n = m + 1\<close> vec_first_last_append y_dim by auto
     also have "vec_last y 1 = vec_of_scal (vec_last y 1 $ 0)"
       using vec_of_scal_dim_1[of "vec_last y 1"] by simp
     also have "vec_last y 1 $ 0 = y $ m"
-      using y_dim `n = m + 1` vec_last_index[of y m 1 0] by auto
+      using y_dim \<open>n = m + 1\<close> vec_last_index[of y m 1 0] by auto
     finally have "y = x @\<^sub>v vec_of_scal 1" unfolding x_def using y by simp
   } note xy = this
   {
     assume "y \<in> n.cone X"
     then obtain c where x: "n.nonneg_lincomb c X y"
-      using n.cone_iff_finite_cone[OF X] `finite X`
+      using n.cone_iff_finite_cone[OF X] \<open>finite X\<close>
       unfolding n.finite_cone_def by auto
 
     have "1 = y $ m" by (simp add: y)
     also have "y = n.lincomb c X"
       using x unfolding n.nonneg_lincomb_def by simp
     also have "\<dots> $ m = (\<Sum>x\<in>X. c x * x $ m)"
-      using n.lincomb_index[OF _ X] `n = m + 1` by simp
+      using n.lincomb_index[OF _ X] \<open>n = m + 1\<close> by simp
     also have "\<dots> = sum c X"
       by (rule n.R.finsum_restrict, auto, rule restrict_ext, simp add: Xm1)
     finally have "y \<in> n.convex_hull X"
       unfolding n.convex_hull_def n.convex_lincomb_def
-      using `finite X` x by auto
+      using \<open>finite X\<close> x by auto
   }
   moreover have "n.convex_hull X \<subseteq> n.cone X"
     unfolding n.convex_hull_def n.convex_lincomb_def n.finite_cone_def n.cone_def
-    using `finite X` by auto
+    using \<open>finite X\<close> by auto
   moreover have "n.convex_hull X = n.convex_hull_list Xs"
     by (rule n.finite_convex_hull_iff_convex_hull_list[OF X Xs])
   moreover {
@@ -143,7 +143,7 @@ proof -
       unfolding n.convex_hull_list_def n.convex_lincomb_list_def
         n.nonneg_lincomb_list_def by fast
     have "m.lincomb_list c ?Ys = vec_first y m"
-      using c vec_first_lincomb_list[of Xs c] X Xs `n = m + 1` by simp
+      using c vec_first_lincomb_list[of Xs c] X Xs \<open>n = m + 1\<close> by simp
     hence "x \<in> m.convex_hull_list ?Ys"
       unfolding m.convex_hull_list_def m.convex_lincomb_list_def
         m.nonneg_lincomb_list_def
@@ -157,23 +157,23 @@ proof -
         m.nonneg_lincomb_list_def by auto
 
     have "n.lincomb_list c Xs $ m = (\<Sum>j = 0..<length Xs. c j * Xs ! j $ m)"
-      using n.lincomb_list_index[of m Xs c] `n = m + 1` Xs X by fastforce
+      using n.lincomb_list_index[of m Xs c] \<open>n = m + 1\<close> Xs X by fastforce
     also have "\<dots> = sum c {0..<length Xs}"
       apply(rule n.R.finsum_restrict, auto, rule restrict_ext)
       by (simp add: Xm1 Xs)
     also have "\<dots> = 1" by (rule c1)
     finally have "vec_last (n.lincomb_list c Xs) 1 $ 0 = 1"
       using vec_of_scal_dim_1 vec_last_index[of "n.lincomb_list c Xs" m 1 0]
-        n.lincomb_list_carrier Xs X `n = m + 1` by simp
+        n.lincomb_list_carrier Xs X \<open>n = m + 1\<close> by simp
     hence "vec_last (n.lincomb_list c Xs) 1 = vec_of_scal 1"
       using vec_of_scal_dim_1 by auto
 
     moreover have "vec_first (n.lincomb_list c Xs) m = x"
-      using vec_first_lincomb_list `n = m + 1` Xs X x by auto
+      using vec_first_lincomb_list \<open>n = m + 1\<close> Xs X x by auto
 
     moreover have "n.lincomb_list c Xs =
                    vec_first (n.lincomb_list c Xs) m @\<^sub>v vec_last (n.lincomb_list c Xs) 1"
-      using vec_first_last_append Xs X n.lincomb_list_carrier `n = m + 1` by auto
+      using vec_first_last_append Xs X n.lincomb_list_carrier \<open>n = m + 1\<close> by auto
 
     ultimately have "n.lincomb_list c Xs = y" using xy by simp
 
@@ -195,7 +195,7 @@ lemma cone_next_dim:
     and y: "y $ m = 0"
   shows "(vec_first y m \<in> m.cone {vec_first y m | y. y \<in> X}) = (y \<in> n.cone X)"
 proof -
-  from `finite X` obtain Xs where Xs: "X = set Xs" using finite_list by auto
+  from \<open>finite X\<close> obtain Xs where Xs: "X = set Xs" using finite_list by auto
   let ?Y = "{vec_first y m | y. y \<in> X}"
   let ?Ys = "map (\<lambda> y. vec_first y m) Xs"
   have Ys: "?Y = set ?Ys" using Xs by auto
@@ -203,16 +203,16 @@ proof -
   define x where "x = vec_first y m"
   {
     have "y = vec_first y m @\<^sub>v vec_last y 1"
-      using `n = m + 1` vec_first_last_append y_dim by auto
+      using \<open>n = m + 1\<close> vec_first_last_append y_dim by auto
     also have "vec_last y 1 = vec_of_scal (vec_last y 1 $ 0)"
       using vec_of_scal_dim_1[of "vec_last y 1"] by simp
     also have "vec_last y 1 $ 0 = y $ m"
-      using y_dim `n = m + 1` vec_last_index[of y m 1 0] by auto
+      using y_dim \<open>n = m + 1\<close> vec_last_index[of y m 1 0] by auto
     finally have "y = x @\<^sub>v vec_of_scal 0" unfolding x_def using y by simp
   } note xy = this
 
   have "n.cone X = n.cone_list Xs"
-    using n.cone_iff_finite_cone[OF X `finite X`] n.finite_cone_iff_cone_list[OF X Xs]
+    using n.cone_iff_finite_cone[OF X \<open>finite X\<close>] n.finite_cone_iff_cone_list[OF X Xs]
     by simp
   moreover {
     assume "y \<in> n.cone_list Xs"
@@ -220,7 +220,7 @@ proof -
       unfolding n.cone_list_def n.nonneg_lincomb_list_def by blast
     from y have "m.lincomb_list c ?Ys = x"
       unfolding x_def
-      using vec_first_lincomb_list Xs X `n = m + 1` by auto
+      using vec_first_lincomb_list Xs X \<open>n = m + 1\<close> by auto
     hence "x \<in> m.cone_list ?Ys" using c
       unfolding m.cone_list_def m.nonneg_lincomb_list_def by auto
   } moreover {
@@ -229,20 +229,20 @@ proof -
       unfolding m.cone_list_def m.nonneg_lincomb_list_def by auto
 
     have "vec_last (n.lincomb_list c Xs) 1 $ 0 = n.lincomb_list c Xs $ m"
-      using `n = m + 1` n.lincomb_list_carrier X Xs vec_last_index[of _ m 1 0]
+      using \<open>n = m + 1\<close> n.lincomb_list_carrier X Xs vec_last_index[of _ m 1 0]
       by auto
     also have "\<dots> = 0"
-      using n.lincomb_list_index[of m Xs c] Xs X `n = m + 1` Xm0 by simp
+      using n.lincomb_list_index[of m Xs c] Xs X \<open>n = m + 1\<close> Xm0 by simp
     also have "\<dots> = vec_last y 1 $ 0"
-      using y y_dim `n = m + 1` vec_last_index[of y m 1 0] by auto
+      using y y_dim \<open>n = m + 1\<close> vec_last_index[of y m 1 0] by auto
     finally have "vec_last (n.lincomb_list c Xs) 1 = vec_last y 1" by fastforce
 
     moreover have "vec_first (n.lincomb_list c Xs) m = x"
-      using vec_first_lincomb_list[of Xs c] x X Xs `n = m + 1`
+      using vec_first_lincomb_list[of Xs c] x X Xs \<open>n = m + 1\<close>
       unfolding x_def by simp
 
     ultimately have "n.lincomb_list c Xs = y" unfolding x_def
-      using vec_first_last_append[of _ m 1] `n = m + 1` y_dim
+      using vec_first_last_append[of _ m 1] \<open>n = m + 1\<close> y_dim
         n.lincomb_list_carrier[of Xs c] Xs X
       by metis
     hence "y \<in> n.cone_list Xs"
@@ -250,7 +250,7 @@ proof -
   }
   moreover have "m.cone_list ?Ys = m.cone ?Y"
     using m.finite_cone_iff_cone_list[OF _ Ys] m.cone_iff_finite_cone[of ?Y]
-      `finite X` by force
+      \<open>finite X\<close> by force
   ultimately show ?thesis unfolding x_def by blast
 qed
 
@@ -358,7 +358,7 @@ proof -
   have Y0_carrier: "Y0 \<subseteq> carrier_vec (n + 1)" and Y1_carrier: "Y1 \<subseteq> carrier_vec (n + 1)"
     unfolding Y0_def Y1_def using Y_carrier by auto
   have "finite Y0" and "finite Y1"
-    unfolding Y0_def Y1_def using `finite Y` by auto
+    unfolding Y0_def Y1_def using \<open>finite Y\<close> by auto
 
   have Y1: "\<And> y. y \<in> Y1 \<Longrightarrow> y $ n = 1"
   proof -
@@ -367,8 +367,8 @@ proof -
     then obtain x where "x \<in> X" and x: "y = ?f x \<cdot>\<^sub>v x" unfolding Y_def by auto
     then have "x $ n \<noteq> 0" using x y Y1_def Y0_def by auto
     then have "y = 1 / (x $ n) \<cdot>\<^sub>v x" using x by auto
-    then have "y $ n = 1 / (x $ n) * x $ n" using X_carrier `x \<in> X` by auto
-    thus "y $ n = 1" using `x $ n \<noteq> 0` by auto
+    then have "y $ n = 1 / (x $ n) * x $ n" using X_carrier \<open>x \<in> X\<close> by auto
+    thus "y $ n = 1" using \<open>x $ n \<noteq> 0\<close> by auto
   qed
 
   let ?Z0 = "{vec_first y n | y. y \<in> Y0}"
@@ -377,8 +377,8 @@ proof -
   proof (intro exI conjI impI)
     show "?Z0 \<subseteq> carrier_vec n" by auto
     show "?Z1 \<subseteq> carrier_vec n" by auto
-    show "finite ?Z0" using `finite Y0` by auto
-    show "finite ?Z1" using `finite Y1` by auto
+    show "finite ?Z0" using \<open>finite Y0\<close> by auto
+    show "finite ?Z1" using \<open>finite Y1\<close> by auto
     show "P = convex_hull ?Z1 + cone ?Z0"
     proof -
       {
@@ -393,9 +393,9 @@ proof -
           using M_cone_car[OF xn] by auto
         hence "x @\<^sub>v vec_of_scal 1 \<in> next_dim.cone Y" using Y by auto
         hence "x @\<^sub>v vec_of_scal 1 \<in> next_dim.finite_cone Y"
-          using next_dim.cone_iff_finite_cone[OF Y_carrier `finite Y`] by auto
+          using next_dim.cone_iff_finite_cone[OF Y_carrier \<open>finite Y\<close>] by auto
         then obtain c where c: "next_dim.nonneg_lincomb c Y (x @\<^sub>v vec_of_scal 1)"
-          unfolding next_dim.finite_cone_def using `finite Y` by auto
+          unfolding next_dim.finite_cone_def using \<open>finite Y\<close> by auto
         let ?y = "next_dim.lincomb c Y1"
         let ?z = "next_dim.lincomb c Y0"
         have y_dim: "?y \<in> carrier_vec (n + 1)" and z_dim: "?z \<in> carrier_vec (n + 1)"
@@ -407,7 +407,7 @@ proof -
         also have "Y = Y1 \<union> Y0" unfolding Y1_def using Y0_def by blast
         also have "next_dim.lincomb c (Y1 \<union> Y0) = ?y + ?z"
           using next_dim.lincomb_union2[of Y1 Y0]
-            `finite Y0` `finite Y` Y0_carrier Y_carrier
+            \<open>finite Y0\<close> \<open>finite Y\<close> Y0_carrier Y_carrier
           unfolding Y1_def by fastforce
         also have "?y + ?z = vec_first (?y + ?z) n @\<^sub>v vec_last (?y + ?z) 1"
           using vec_first_last_append[of "?y + ?z" n 1] add_carrier_vec yz_dim
@@ -432,20 +432,20 @@ proof -
           using c Y1_def
           unfolding next_dim.nonneg_lincomb_def by auto
         hence "?y \<in> next_dim.cone Y1"
-          using next_dim.cone_iff_finite_cone[OF Y1_carrier] `finite Y1`
+          using next_dim.cone_iff_finite_cone[OF Y1_carrier] \<open>finite Y1\<close>
           unfolding next_dim.finite_cone_def by auto
         hence y: "vec_first ?y n \<in> convex_hull ?Z1"
-          using convex_hull_next_dim[OF _ Y1_carrier `finite Y1` _ y_dim] Y1 yn1
+          using convex_hull_next_dim[OF _ Y1_carrier \<open>finite Y1\<close> _ y_dim] Y1 yn1
           by simp
 
         have "next_dim.nonneg_lincomb c Y0 ?z" using c Y0_def
           unfolding next_dim.nonneg_lincomb_def by blast
         hence "?z \<in> next_dim.cone Y0"
-          using `finite Y0` next_dim.cone_iff_finite_cone[OF Y0_carrier `finite Y0`]
+          using \<open>finite Y0\<close> next_dim.cone_iff_finite_cone[OF Y0_carrier \<open>finite Y0\<close>]
           unfolding next_dim.finite_cone_def
           by fastforce
         hence z: "vec_first ?z n \<in> cone ?Z0"
-          using cone_next_dim[OF _ Y0_carrier `finite Y0` _ _ zn0] Y0_def
+          using cone_next_dim[OF _ Y0_carrier \<open>finite Y0\<close> _ _ zn0] Y0_def
             next_dim.lincomb_closed[OF Y0_carrier] by blast
 
         from xyz y z have "x \<in> convex_hull ?Z1 + cone ?Z0" by blast
@@ -456,14 +456,14 @@ proof -
           and z: "z \<in> cone ?Z0" by (auto elim: set_plus_elim)
 
         have yn: "y \<in> carrier_vec n"
-          using y convex_hull_carrier[OF `?Z1 \<subseteq> carrier_vec n`] by blast
+          using y convex_hull_carrier[OF \<open>?Z1 \<subseteq> carrier_vec n\<close>] by blast
         hence "y @\<^sub>v vec_of_scal 1 \<in> carrier_vec (n + 1)"
           using vec_of_scal_dim(2) by fast
         moreover have "vec_first (y @\<^sub>v vec_of_scal 1) n \<in> convex_hull ?Z1"
           using vec_first_append[OF yn] y by auto
         moreover have "(y @\<^sub>v vec_of_scal 1) $ n = 1" using yn by simp
         ultimately have "y @\<^sub>v vec_of_scal 1 \<in> next_dim.cone Y1"
-          using convex_hull_next_dim[OF _ Y1_carrier `finite Y1`] Y1 by blast
+          using convex_hull_next_dim[OF _ Y1_carrier \<open>finite Y1\<close>] Y1 by blast
         hence y_cone: "y @\<^sub>v vec_of_scal 1 \<in> next_dim.cone Y"
           using next_dim.cone_mono[of Y1 Y] Y1_def by blast
 
@@ -474,13 +474,13 @@ proof -
           using vec_first_append[OF zn] z by auto
         moreover have "(z @\<^sub>v vec_of_scal 0) $ n = 0" using zn by simp
         ultimately have "z @\<^sub>v vec_of_scal 0 \<in> next_dim.cone Y0"
-          using cone_next_dim[OF _ Y0_carrier `finite Y0`] Y0_def by blast
+          using cone_next_dim[OF _ Y0_carrier \<open>finite Y0\<close>] Y0_def by blast
         hence z_cone: "z @\<^sub>v vec_of_scal 0 \<in> next_dim.cone Y"
           using Y0_def next_dim.cone_mono[of Y0 Y] by blast
 
-        have xn: "x \<in> carrier_vec n" using `x = y + z` yn zn by blast
+        have xn: "x \<in> carrier_vec n" using \<open>x = y + z\<close> yn zn by blast
         have "x @\<^sub>v vec_of_scal 1 = (y @\<^sub>v vec_of_scal 1) + (z @\<^sub>v vec_of_scal 0)"
-          using `x = y + z` append_vec_add[OF yn zn]
+          using \<open>x = y + z\<close> append_vec_add[OF yn zn]
           unfolding vec_of_scal_def by auto
         hence "x @\<^sub>v vec_of_scal 1 \<in> next_dim.cone Y"
           using next_dim.cone_elem_sum[OF Y_carrier y_cone z_cone] by simp
@@ -649,7 +649,7 @@ proof -
     hence z_cone: "z @\<^sub>v vec_of_scal 0 \<in> next_dim.cone (Y \<union> Z)"
       using next_dim.cone_mono[of Z "Y \<union> Z"] by blast
 
-    from `x = y + z`
+    from \<open>x = y + z\<close>
     have "x @\<^sub>v vec_of_scal 1 = (y @\<^sub>v vec_of_scal 1) + (z @\<^sub>v vec_of_scal 0)"
       using append_vec_add[OF yn zn] vec_of_scal_dim_1
       unfolding vec_of_scal_def by auto

@@ -1,10 +1,10 @@
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 
 
 theory Preliminaries imports "HOL-Cardinals.Cardinals"
 begin
 
-text {* This section discusses preliminaries on families of items (technically,
+text \<open>This section discusses preliminaries on families of items (technically,
 partial functions from a type of {\em indexes})
 that we call {\em inputs} because they will be inputs to the binding operations.
 For inputs, we define some monad-like lifting operators.
@@ -12,13 +12,13 @@ We also define simple infinitely branching trees (with no info attached
 to the nodes and with branching given by partial functions from
 indexes) -- these will be used as ``skeletons'' for terms, giving a size 
 on which we can induct.
- *}
+\<close>
 
 abbreviation regular where "regular \<equiv> stable"
 lemmas regular_UNION = stable_UNION
 
 
-subsection {* Trivia  *}
+subsection \<open>Trivia\<close>
 
 
 type_synonym 'a pair = "'a * 'a"
@@ -106,7 +106,7 @@ using assms apply - by(induct L, auto)
 
 
 
-subsection {* Lexicographic induction *}
+subsection \<open>Lexicographic induction\<close>
 
 definition lt2 where
 "lt2 == less_than <*lex*> less_than"
@@ -169,7 +169,7 @@ proof-
 qed
 
 
-subsection {* Inputs and lifting operators  *}
+subsection \<open>Inputs and lifting operators\<close>
 
 type_synonym ('index,'val)input = "'index \<Rightarrow> 'val option"
 
@@ -433,7 +433,7 @@ unfolding sameDom_def liftAll2_def
 apply (auto simp add: fun_eq_iff option.case_eq_if) 
 using option.sel by fastforce
 
-subsection {* Doubly infinitely-branching trees *}
+subsection \<open>Doubly infinitely-branching trees\<close>
 
 text "These simple infinitary trees shall be used for measuring the sizes
   of possibly infinitary terms."
@@ -469,7 +469,7 @@ lemma treeLess_wf: "wf treeLess"
 unfolding wf_def using treeLess_induct by blast
 
 
-subsection {* Ordering  *}
+subsection \<open>Ordering\<close>
 
 lemma Least_Max:
 assumes phi: "phi (n::nat)" and fin: "finite {n. phi n}"

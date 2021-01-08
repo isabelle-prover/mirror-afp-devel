@@ -123,7 +123,7 @@ proof
     unfolding neg_def[symmetric] by (intro prv_neg_neg_exi) auto
   hence "prv (neg (PP' \<langle>\<phi>R\<rangle>))" unfolding PP'_def P'_def by simp
   hence "prv \<phi>R" using prv_\<phi>R_eqv by (meson PP' \<phi>R enc in_num neg prv_eqv_prv_rev)
-  with `\<not> prv \<phi>R` show False using c unfolding consistent_def3 by auto
+  with \<open>\<not> prv \<phi>R\<close> show False using c unfolding consistent_def3 by auto
 qed
 
 theorem goedel_rosser_first:

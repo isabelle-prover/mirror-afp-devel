@@ -289,24 +289,24 @@ next
     proof (cases "i' = i")
       case True
       then have "Marker # msgs c' i' = msgs c i'" using assms RecvMarker by simp
-      also have "... = Marker # msgs c'' i'" using assms RecvMarker `i' = i` by simp
+      also have "... = Marker # msgs c'' i'" using assms RecvMarker \<open>i' = i\<close> by simp
       finally show ?thesis by simp
     next
       case False
       then show ?thesis
       proof (cases "has_snapshotted c p")
         case True
-        then show ?thesis using assms RecvMarker `i' \<noteq> i` by simp
+        then show ?thesis using assms RecvMarker \<open>i' \<noteq> i\<close> by simp
       next
         case no_snap: False
         then show ?thesis
         proof (cases "channel i' = None")
           case True
-          then show ?thesis using assms RecvMarker `i' \<noteq> i` no_snap by simp
+          then show ?thesis using assms RecvMarker \<open>i' \<noteq> i\<close> no_snap by simp
         next
           case False
           then obtain r s where "channel i' = Some (r, s)" by auto
-          with assms RecvMarker no_snap `i' \<noteq> i` show ?thesis by (cases "r = p"; simp_all)
+          with assms RecvMarker no_snap \<open>i' \<noteq> i\<close> show ?thesis by (cases "r = p"; simp_all)
         qed
       qed
     qed
@@ -320,7 +320,7 @@ next
       then show ?thesis using assms RecvMarker by simp
     next
       case False
-      with assms RecvMarker `~ r \<noteq> p` show ?thesis by (cases "has_snapshotted c r", auto)
+      with assms RecvMarker \<open>~ r \<noteq> p\<close> show ?thesis by (cases "has_snapshotted c r", auto)
     qed
   qed
   moreover have "channel_snapshot c' = channel_snapshot c''"
@@ -335,17 +335,17 @@ next
       then show ?thesis
       proof (cases "has_snapshotted c p")
         case True
-        then show ?thesis using assms RecvMarker `i' \<noteq> i` by simp
+        then show ?thesis using assms RecvMarker \<open>i' \<noteq> i\<close> by simp
       next
         case no_snap: False
         then show ?thesis
         proof (cases "channel i' = None")
           case True
-          then show ?thesis using assms RecvMarker `i' \<noteq> i` no_snap by simp
+          then show ?thesis using assms RecvMarker \<open>i' \<noteq> i\<close> no_snap by simp
         next
           case False
           then obtain r s where "channel i' = Some (r, s)" by auto
-          with assms RecvMarker no_snap `i' \<noteq> i` show ?thesis by (cases "s = p"; simp_all)
+          with assms RecvMarker no_snap \<open>i' \<noteq> i\<close> show ?thesis by (cases "s = p"; simp_all)
         qed
       qed
     qed
@@ -674,17 +674,17 @@ next
       then show ?thesis
       proof (cases "has_snapshotted c p")
         case True
-        with assms `i \<noteq> i'` show ?thesis by auto
+        with assms \<open>i \<noteq> i'\<close> show ?thesis by auto
       next
         case no_snap: False
         then show ?thesis
         proof (cases "p = r")
           case True
-          then have "msgs c' i' = msgs c i' @ [Marker]" using `i \<noteq> i'` assms no_snap chan by auto
+          then have "msgs c' i' = msgs c i' @ [Marker]" using \<open>i \<noteq> i'\<close> assms no_snap chan by auto
           then show ?thesis by auto
         next
           case False
-          then show ?thesis using assms `i \<noteq> i'` chan no_snap by auto
+          then show ?thesis using assms \<open>i \<noteq> i'\<close> chan no_snap by auto
         qed
       qed
     qed
@@ -849,7 +849,7 @@ next
   then have "i' = i" 
     by (metis assms(1) delivered le_0_eq length_greater_0_conv list.size(3) recv_marker_changes_head_only_at_i recv_marker_other_channels_not_shrinking)
   moreover have "Marker = m"
-    using `i' = i` RecvMarker assms(1) can_occur_def delivered by auto
+    using \<open>i' = i\<close> RecvMarker assms(1) can_occur_def delivered by auto
   moreover have "channel i = Some (q, p)" 
     using RecvMarker assms(1) calculation(1) can_occur_def by auto
   ultimately show ?thesis using RecvMarker by simp
@@ -902,16 +902,16 @@ proof -
       show False using assms chan RecvMarker
       proof (cases "has_snapshotted c p'")
         case True
-        then show False using assms chan RecvMarker `~ i' = i` by simp
+        then show False using assms chan RecvMarker \<open>~ i' = i\<close> by simp
       next
         case False
-        then show False using assms chan RecvMarker `~ i' = i` by (cases "p' = p", simp_all)
+        then show False using assms chan RecvMarker \<open>~ i' = i\<close> by (cases "p' = p", simp_all)
       qed
     qed
     moreover have "m = Marker"
     proof -
       have "msgs c i' = Marker # msgs c' i'" using assms chan RecvMarker by auto
-      then show ?thesis using assms `i' = i` by simp
+      then show ?thesis using assms \<open>i' = i\<close> by simp
     qed
     ultimately show ?thesis using RecvMarker by simp
   next
@@ -1168,7 +1168,7 @@ next
     then show ?thesis
     proof (cases "has_snapshotted c p'")
       case True
-      then have "msgs c i = msgs c' i" using `i' \<noteq> i` RecvMarker assms by simp
+      then have "msgs c i = msgs c' i" using \<open>i' \<noteq> i\<close> RecvMarker assms by simp
       then show ?thesis using calculation by simp
     next
       case no_snap: False
@@ -1183,13 +1183,13 @@ next
           by (metis append_self_conv2 calculation(2) hd_append2 list.sel(1) message.simps(3))
       next
         case False
-        then have "msgs c' i = msgs c i" using RecvMarker no_snap False chan assms `i' \<noteq> i` by simp
+        then have "msgs c' i = msgs c i" using RecvMarker no_snap False chan assms \<open>i' \<noteq> i\<close> by simp
         then show ?thesis using calculation by simp
       qed
     qed
   next
     case (Trans p' s'' s''')
-    then show ?thesis using assms(1) `msgs c' i \<noteq> Nil` by auto
+    then show ?thesis using assms(1) \<open>msgs c' i \<noteq> Nil\<close> by auto
   next
     case (Send i' p' q' s'' s''' m'')
     have "p' \<noteq> p"
@@ -1198,10 +1198,10 @@ next
       using Recv Send assms(1) assms(5) calculation(1) by auto
   next
     case (Recv i' p' q' s'' s''' m'')
-    then have "i' \<noteq> i" using assms `ev' = Recv i p q s s' m` 
+    then have "i' \<noteq> i" using assms \<open>ev' = Recv i p q s s' m\<close> 
       by (metis distributed_system.can_occur_Recv distributed_system_axioms event.sel(3) next_recv option.inject prod.inject)
     have "msgs c i = msgs c' i" using msgs_unchanged_for_other_is Recv \<open>i' \<noteq> i\<close> assms(1) by auto
-    then show ?thesis using `msgs c' i \<noteq> Nil` by simp
+    then show ?thesis using \<open>msgs c' i \<noteq> Nil\<close> by simp
   qed
   moreover have "states c p = states c' p" using no_state_change_if_no_event assms Recv by simp
   ultimately show ?thesis
@@ -1246,7 +1246,7 @@ proof -
       by (metis (mono_tags, lifting) "3"(1) assms(4) can_occur_def event.case_eq_if event.distinct_disc(11) event.distinct_disc(16) event.distinct_disc(6))
     then have "~ has_snapshotted c ?q" 
       using assms(1) assms(2) regular_event_preserves_process_snapshots by auto
-    then show ?case unfolding can_occur_def using `ev' = Snapshot ?q` 
+    then show ?case unfolding can_occur_def using \<open>ev' = Snapshot ?q\<close> 
       by (metis (mono_tags, lifting) event.simps(29))
   next
     case 4
@@ -1283,7 +1283,7 @@ proof -
       then show ?thesis 
         using \<open>msgs c' i' = msgs c i' @ [Msg m]\<close> pre by auto
     qed
-    then show ?case unfolding can_occur_def using `ev' = RecvMarker i' ?q r` 
+    then show ?case unfolding can_occur_def using \<open>ev' = RecvMarker i' ?q r\<close> 
       by (metis (mono_tags, lifting) assms(4) can_occur_def event.simps(30))
   next
     case 6
@@ -1423,7 +1423,7 @@ proof (rule ccontr)
   have "set (msgs c' i) \<subseteq> set (msgs c i)" 
   proof (cases ev)
     case (Snapshot r)
-    then have "msgs c' i = msgs c i" using `~ ?P` assms by simp
+    then have "msgs c' i = msgs c i" using \<open>~ ?P\<close> assms by simp
     then show ?thesis by auto
   next
     case (RecvMarker i' r s)
@@ -1451,17 +1451,17 @@ proof (rule ccontr)
         then show ?thesis by (metis set_subset_Cons)
       next
         case False
-        then have "msgs c' i = msgs c i" using `~ ?P` RecvMarker assms no_snap by simp
+        then have "msgs c' i = msgs c i" using \<open>~ ?P\<close> RecvMarker assms no_snap by simp
         then show ?thesis by simp
       qed
     qed
   next
     case (Trans r u u')
-    then show ?thesis using assms `~ ?P` by simp
+    then show ?thesis using assms \<open>~ ?P\<close> by simp
   next
     case (Send i' r s u u' m')
-    then have "i' \<noteq> i" using `~ ?P` can_occur_def assms by auto
-    then have "msgs c i = msgs c' i" using `~ ?P` assms Send by simp
+    then have "i' \<noteq> i" using \<open>~ ?P\<close> can_occur_def assms by auto
+    then have "msgs c i = msgs c' i" using \<open>~ ?P\<close> assms Send by simp
     then show ?thesis by simp
   next
     case (Recv i' r s u u' m')
@@ -1602,10 +1602,10 @@ proof (rule ccontr)
     then have "snd (cs c' cid) \<noteq> Done"
     proof (cases "has_snapshotted c s")
       case True
-      then show ?thesis using RecvMarker assms `cid \<noteq> cid'` by simp
+      then show ?thesis using RecvMarker assms \<open>cid \<noteq> cid'\<close> by simp
     next
       case False
-      with RecvMarker assms `cid \<noteq> cid'` show ?thesis by (cases "s = q", auto)
+      with RecvMarker assms \<open>cid \<noteq> cid'\<close> show ?thesis by (cases "s = q", auto)
     qed
     then show False using assms by auto
   next
@@ -1740,7 +1740,7 @@ qed
   moreover have "snd (cs c cid) = Recording"
   proof (rule ccontr)
     assume "~ snd (cs c cid) = Recording"
-    then have "fst (cs c cid) = fst (cs c' cid)" using Recv step `cid = cid'` by auto
+    then have "fst (cs c cid) = fst (cs c' cid)" using Recv step \<open>cid = cid'\<close> by auto
     then show False using assms by simp
   qed
   ultimately show ?thesis using Recv by simp
@@ -1777,7 +1777,7 @@ next
       using RecvMarker \<open>cid \<noteq> cid'\<close> assms(1) assms(2) msgs_unchanged_if_snapshotted_RecvMarker_for_other_is by blast
   next
     case False
-    with RecvMarker `cid \<noteq> cid'` step assms show ?thesis by (cases "has_snapshotted c r", auto)
+    with RecvMarker \<open>cid \<noteq> cid'\<close> step assms show ?thesis by (cases "has_snapshotted c r", auto)
   qed
   then show ?thesis using assms by simp
 next
@@ -1808,7 +1808,7 @@ next
     by (metis RecvMarker_given_channel assms(1) assms(3) assms(4) RecvMarker event.sel(5,10) happen_implies_can_occur isRecvMarker_def)
   have "\<nexists>a. channel cid = Some (r, q)" 
     using assms(2) assms(4) RecvMarker by auto
-  with RecvMarker assms `cid \<noteq> cid'` show ?thesis by (cases "has_snapshotted c r", auto)
+  with RecvMarker assms \<open>cid \<noteq> cid'\<close> show ?thesis by (cases "has_snapshotted c r", auto)
 next
   case (Trans r u u')
   then show ?thesis using assms by auto

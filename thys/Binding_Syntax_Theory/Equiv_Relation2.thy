@@ -1,10 +1,10 @@
-section {* Some preliminaries on equivalence relations and quotients *}
+section \<open>Some preliminaries on equivalence relations and quotients\<close>
 
 theory Equiv_Relation2 imports Preliminaries Pick
 begin
 
 
-text{* Unary predicates vs. sets: *}
+text\<open>Unary predicates vs. sets:\<close>
 
 definition "S2P A \<equiv> \<lambda> x. x \<in> A"
 
@@ -18,7 +18,7 @@ lemma Collect_S2P[simp]: "Collect (S2P r) = r"
 by (metis Collect_mem_eq S2P_Collect)
 
 
-text{* Binary predicates vs. relatipons: *}
+text\<open>Binary predicates vs. relatipons:\<close>
 definition "P2R \<phi> \<equiv> {(x,y). \<phi> x y}"
 definition "R2P r \<equiv> \<lambda> x y. (x,y) \<in> r"
 

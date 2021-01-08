@@ -134,7 +134,7 @@ lemma Mndet_cont_finite[simp]:
 assumes "finite A"
  and    "\<And>x. cont (f x)"
 shows   "cont (\<lambda>y. \<sqinter> z \<in> A \<rightarrow> f z y)"
-proof(rule Finite_Set.finite_induct[OF `finite A`])
+proof(rule Finite_Set.finite_induct[OF \<open>finite A\<close>])
   show  "cont (\<lambda>y. \<sqinter>z\<in>{} \<rightarrow> f z y)" by auto
 next
   fix A fix a 
@@ -142,7 +142,7 @@ next
   show   "cont (\<lambda>y. \<sqinter>z\<in>insert a A \<rightarrow> f z y)"
   proof(cases "A={}")
     case True
-    then show ?thesis by(simp add: mndet_unit True `\<And>x. cont (f x)`)
+    then show ?thesis by(simp add: mndet_unit True \<open>\<And>x. cont (f x)\<close>)
   next
     case False
     have *  : "A-{a} \<noteq> {}" by (simp add: False \<open>a \<notin> A\<close>)

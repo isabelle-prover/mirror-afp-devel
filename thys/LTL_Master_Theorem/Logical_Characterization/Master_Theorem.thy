@@ -37,11 +37,11 @@ proof -
     case (insert \<psi> S)
 
     note IH = insert(3)
-    note insert_S = `insert \<psi> S = X \<union> Y`
-    note X_\<mu> = `X \<subseteq> subformulas\<^sub>\<mu> \<phi>`
-    note Y_\<nu> = `Y \<subseteq> subformulas\<^sub>\<nu> \<phi>`
-    note X_GF = `\<forall>\<psi> \<in> X. w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>[Y]\<^sub>\<mu>)`
-    note Y_FG = `\<forall>\<psi> \<in> Y. w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>[X]\<^sub>\<nu>)`
+    note insert_S = \<open>insert \<psi> S = X \<union> Y\<close>
+    note X_\<mu> = \<open>X \<subseteq> subformulas\<^sub>\<mu> \<phi>\<close>
+    note Y_\<nu> = \<open>Y \<subseteq> subformulas\<^sub>\<nu> \<phi>\<close>
+    note X_GF = \<open>\<forall>\<psi> \<in> X. w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>[Y]\<^sub>\<mu>)\<close>
+    note Y_FG = \<open>\<forall>\<psi> \<in> Y. w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>[X]\<^sub>\<nu>)\<close>
 
     from X_\<mu> Y_\<nu> have "X \<inter> Y = {}"
       using subformulas\<^sub>\<mu>\<^sub>\<nu>_disjoint by fast
@@ -57,14 +57,14 @@ proof -
         \<comment> \<open>Show @{term "X - {\<psi>} \<subseteq> \<G>\<F> \<phi> w"} and @{term "Y \<subseteq> \<F>\<G> \<phi> w"}\<close>
 
         then have "\<psi> \<notin> Y"
-          using `X \<inter> Y = {}` by auto
+          using \<open>X \<inter> Y = {}\<close> by auto
         then have "S = (X - {\<psi>}) \<union> Y"
-          using insert_S `\<psi> \<notin> S` by fast
+          using insert_S \<open>\<psi> \<notin> S\<close> by fast
 
         moreover
 
         have "\<forall>\<psi>' \<in> Y. \<psi>'[X - {\<psi>}]\<^sub>\<nu> = \<psi>'[X]\<^sub>\<nu>"
-          using GF_advice_minus_size insert(1,2,4) `\<psi> \<notin> Y` by fast
+          using GF_advice_minus_size insert(1,2,4) \<open>\<psi> \<notin> Y\<close> by fast
 
         ultimately have "X - {\<psi>} \<subseteq> \<G>\<F> \<phi> w" and "Y \<subseteq> \<F>\<G> \<phi> w"
           using IH[of "X - {\<psi>}" Y \<phi>] X_\<mu> Y_\<nu> X_GF Y_FG by auto
@@ -76,7 +76,7 @@ proof -
         \<comment> \<open>Show @{term "\<psi> \<in> \<G>\<F> \<phi> w"}\<close>
 
         have "w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>[Y]\<^sub>\<mu>)"
-          using X_GF `\<psi> \<in> X` by simp
+          using X_GF \<open>\<psi> \<in> X\<close> by simp
         then have "\<exists>\<^sub>\<infinity>i. suffix i w \<Turnstile>\<^sub>n \<psi>[Y]\<^sub>\<mu>"
           unfolding GF_Inf_many by simp
 
@@ -86,11 +86,11 @@ proof -
           using subformulas\<^sub>\<nu>_finite finite_subset by auto
 
         have "\<forall>\<phi> \<in> Y. w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<phi>)"
-          using `Y \<subseteq> \<F>\<G> \<phi> w` by (blast dest: \<F>\<G>_elim)
+          using \<open>Y \<subseteq> \<F>\<G> \<phi> w\<close> by (blast dest: \<F>\<G>_elim)
         then have "\<forall>\<phi> \<in> Y. \<forall>\<^sub>\<infinity>i. suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<phi>"
           using FG_suffix_G by blast
         then have "\<forall>\<^sub>\<infinity>i. \<forall>\<phi> \<in> Y. suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<phi>"
-          using `finite Y` eventually_ball_finite by fast
+          using \<open>finite Y\<close> eventually_ball_finite by fast
 
         ultimately
 
@@ -101,7 +101,7 @@ proof -
         then have "w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>)"
           unfolding GF_Inf_many by simp
         then have "\<psi> \<in> \<G>\<F> \<phi> w"
-          unfolding \<G>\<F>_semantics using `\<psi> \<in> X` X_\<mu> by auto
+          unfolding \<G>\<F>_semantics using \<open>\<psi> \<in> X\<close> X_\<mu> by auto
       }
 
       ultimately show ?thesis
@@ -115,14 +115,14 @@ proof -
         \<comment> \<open>Show @{term "X \<subseteq> \<G>\<F> \<phi> w"} and @{term "Y - {\<psi>} \<subseteq> \<F>\<G> \<phi> w"}\<close>
 
         then have "S \<inter> X = X"
-          using insert `\<psi> \<notin> X` by fast
+          using insert \<open>\<psi> \<notin> X\<close> by fast
         then have "S = X \<union> (Y - {\<psi>})"
-          using insert_S `\<psi> \<notin> S` by fast
+          using insert_S \<open>\<psi> \<notin> S\<close> by fast
 
         moreover
 
         have "\<forall>\<psi>' \<in> X. \<psi>'[Y - {\<psi>}]\<^sub>\<mu> = \<psi>'[Y]\<^sub>\<mu>"
-          using FG_advice_minus_size insert(1,2,4) `\<psi> \<notin> X` by fast
+          using FG_advice_minus_size insert(1,2,4) \<open>\<psi> \<notin> X\<close> by fast
 
         ultimately have "X \<subseteq> \<G>\<F> \<phi> w" and "Y - {\<psi>} \<subseteq> \<F>\<G> \<phi> w"
           using IH[of X "Y - {\<psi>}" \<phi>] X_\<mu> Y_\<nu> X_GF Y_FG by auto
@@ -134,14 +134,14 @@ proof -
         \<comment> \<open>Show @{term "\<psi> \<in> \<F>\<G> \<phi> w"}\<close>
 
         have "w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>[X]\<^sub>\<nu>)"
-          using Y_FG `\<psi> \<in> Y` by simp
+          using Y_FG \<open>\<psi> \<in> Y\<close> by simp
         then have "\<forall>\<^sub>\<infinity>i. suffix i w \<Turnstile>\<^sub>n \<psi>[X]\<^sub>\<nu>"
           unfolding FG_Alm_all by simp
 
         moreover
 
         have "\<forall>\<phi> \<in> X. w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>)"
-          using `X \<subseteq> \<G>\<F> \<phi> w` by (blast dest: \<G>\<F>_elim)
+          using \<open>X \<subseteq> \<G>\<F> \<phi> w\<close> by (blast dest: \<G>\<F>_elim)
         then have "\<forall>\<^sub>\<infinity>i. \<forall>\<phi> \<in> X. suffix i w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>)"
           by simp
 
@@ -154,7 +154,7 @@ proof -
         then have "w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>)"
           unfolding FG_Alm_all by simp
         then have "\<psi> \<in> \<F>\<G> \<phi> w"
-          unfolding \<F>\<G>_semantics using `\<psi> \<in> Y` Y_\<nu> by auto
+          unfolding \<F>\<G>_semantics using \<open>\<psi> \<in> Y\<close> Y_\<nu> by auto
       }
 
       ultimately show ?thesis
@@ -182,7 +182,7 @@ proof safe
   moreover
 
   have "\<psi> \<in> subfrmlsn \<phi>"
-    using `\<psi> \<in> \<G>\<F> \<phi> w` \<G>\<F>_subfrmlsn by blast
+    using \<open>\<psi> \<in> \<G>\<F> \<phi> w\<close> \<G>\<F>_subfrmlsn by blast
 
   then have "\<And>i w. \<F>\<G> \<psi> (suffix i w) \<subseteq> \<F>\<G> \<phi> w"
     using \<F>\<G>_suffix \<F>\<G>_subset by blast
@@ -208,7 +208,7 @@ proof safe
 
   {
     have "\<psi> \<in> subfrmlsn \<phi>"
-      using `\<psi> \<in> \<F>\<G> \<phi> w` \<F>\<G>_subfrmlsn by blast
+      using \<open>\<psi> \<in> \<F>\<G> \<phi> w\<close> \<F>\<G>_subfrmlsn by blast
 
     moreover have "\<forall>\<^sub>\<infinity>i. \<G>\<F> \<psi> (suffix i w) = \<F> \<psi> (suffix i w)"
       using suffix_\<mu>_stable unfolding \<mu>_stable_def by blast
@@ -258,7 +258,7 @@ next
   moreover
 
   have "suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)"
-    using af_ltl_continuation `w \<Turnstile>\<^sub>n \<phi>` by fastforce
+    using af_ltl_continuation \<open>w \<Turnstile>\<^sub>n \<phi>\<close> by fastforce
 
   ultimately show "\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)[\<G>\<F> \<phi> w]\<^sub>\<nu>"
     using GF_advice_a1 by blast
@@ -338,7 +338,7 @@ proof safe
     unfolding L\<^sub>1_def L\<^sub>2_def L\<^sub>3_def by simp+
 
   then show "w \<in> \<Union> {L\<^sub>1 \<phi> X \<inter> L\<^sub>2 X Y \<inter> L\<^sub>3 X Y | X Y. X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<and> Y \<subseteq> subformulas\<^sub>\<nu> \<phi>}"
-    using `X \<subseteq> subformulas\<^sub>\<mu> \<phi>` `Y \<subseteq> subformulas\<^sub>\<nu> \<phi>` by blast
+    using \<open>X \<subseteq> subformulas\<^sub>\<mu> \<phi>\<close> \<open>Y \<subseteq> subformulas\<^sub>\<nu> \<phi>\<close> by blast
 next
   fix w X Y
   assume "X \<subseteq> subformulas\<^sub>\<mu> \<phi>" and "Y \<subseteq> subformulas\<^sub>\<nu> \<phi>"
