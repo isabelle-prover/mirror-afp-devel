@@ -254,28 +254,27 @@ proof(cases "p = 0")
   interpret mc: map_poly_comm_monoid_add_hom "pCons 0"..
   interpret mm: map_poly_comm_monoid_add_hom "\<lambda>x. monom x i" for i..
   { case False show ?thesis (* I know this is a worst kind of a proof... *)
-    apply(subst(1) poly_y_x_fixed_deg)
-    apply(unfold degree_pCons_eq[OF False])
-    apply(subst(2) atLeast0AtMost[symmetric])
-    apply(subst atLeastAtMost_insertL[OF le0,symmetric])
-    apply(subst sum.insert,simp,simp)
-    apply(unfold coeff_pCons_0)
-    apply(unfold monom_0)
-    apply(fold coeff_lift_hom.map_poly_hom_monom poly_lift_def)
-    apply(fold poly_lift_hom.hom_sum)
-    apply(subst poly_as_sum_of_monoms')
-    apply(subst Max_ge,simp,simp,force,simp)
-    apply(rule cong[of "\<lambda>x. poly_lift a + x", OF refl])
-    apply(simp only: image_Suc_atLeastAtMost [symmetric])
-    apply(unfold atLeast0AtMost)
-    apply(subst sum.reindex,simp)
-    apply(unfold o_def)
-    apply(unfold coeff_pCons_Suc)
-    apply(unfold monom_Suc)
-    apply (subst poly_y_x_fix_y_deg[of _ "Max {degree (coeff (pCons a p) i) | i. i \<le> Suc (degree p)}"])
-    apply (intro allI impI)
-    apply (rule Max.coboundedI)
-    by (auto simp: hom_distribs intro: exI[of _ "Suc _"])
+      apply(subst(1) poly_y_x_fixed_deg)
+      apply(unfold degree_pCons_eq[OF False])
+      apply(subst(2) atLeast0AtMost[symmetric])
+      apply(subst atLeastAtMost_insertL[OF le0,symmetric])
+      apply(subst sum.insert,simp,simp)
+      apply(unfold coeff_pCons_0)
+      apply(unfold monom_0)
+      apply(fold coeff_lift_hom.map_poly_hom_monom poly_lift_def)
+      apply(fold poly_lift_hom.hom_sum)
+      apply(subst poly_as_sum_of_monoms', subst Max_ge,simp,simp,force,simp)
+      apply(rule cong[of "\<lambda>x. poly_lift a + x", OF refl])
+      apply(simp only: image_Suc_atLeastAtMost [symmetric])
+      apply(unfold atLeast0AtMost)
+      apply(subst sum.reindex,simp)
+      apply(unfold o_def)
+      apply(unfold coeff_pCons_Suc)
+      apply(unfold monom_Suc)
+      apply (subst poly_y_x_fix_y_deg[of _ "Max {degree (coeff (pCons a p) i) | i. i \<le> Suc (degree p)}"])
+       apply (intro allI impI)
+       apply (rule Max.coboundedI)
+      by (auto simp: hom_distribs intro: exI[of _ "Suc _"])
   }
   case True show ?thesis by (simp add: True poly_y_x_const)
 qed
@@ -395,8 +394,7 @@ next
     apply (subst sum.neutral,force)
     apply (subst(14) poly_as_sum_of_monoms[symmetric])
     apply (unfold smult_as_map_poly)
-    apply (auto simp: monom_altdef[unfolded x_as_monom x_pow_n,symmetric] hom_distribs)
-    done
+    by (auto simp: monom_altdef[unfolded x_as_monom x_pow_n,symmetric] hom_distribs)
 qed
 
 lemma poly_y_x_smult:
@@ -420,18 +418,15 @@ proof
   fix p q :: "'a poly poly"
   show "poly_y_x (p * q) = poly_y_x p * poly_y_x q"
   proof (induct p)
-    case 0
-    then show ?case by simp
-  next
-    case p: (pCons a p)
+    case (pCons a p)
     show ?case
       apply (unfold mult_pCons_left)
       apply (unfold hom_distribs)
       apply (unfold poly_y_x_smult)
       apply (unfold poly_y_x_pCons_0)
-      apply (unfold p)
+      apply (unfold pCons)
       by (simp add: poly_y_x_pCons map_poly_pCons_0_as_mult field_simps)
-  qed
+  qed simp
 qed
 
 interpretation poly_y_x_hom: comm_ring_isom "poly_y_x"..
@@ -441,8 +436,6 @@ lemma Max_degree_coeff_pCons:
   "Max { degree (coeff (pCons a p) i) | i. i \<le> degree (pCons a p)} =
    max (degree a) (Max {degree (coeff p x) |x. x \<le> degree p})"
 proof (cases "p = 0")
-  case True show ?thesis unfolding True by simp
-next
   case False show ?thesis
     unfolding degree_pCons_eq[OF False]
     unfolding image_Collect[symmetric]
@@ -454,7 +447,7 @@ next
     unfolding image_Suc_atLeastAtMost [symmetric]
     unfolding image_image
     unfolding atLeast0AtMost by simp
-qed
+qed simp
 
 
 lemma degree_poly_y_x:
