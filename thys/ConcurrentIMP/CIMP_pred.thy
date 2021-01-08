@@ -14,6 +14,21 @@ imports
   Main
 begin
 
+(* Extra HOL *)
+
+lemma triv: "P \<Longrightarrow> P"
+by simp
+
+lemma always_eventually_pigeonhole:
+  "(\<forall>i. \<exists>n\<ge>i. \<exists>m\<le>k. P m n) \<longleftrightarrow> (\<exists>m\<le>k::nat. \<forall>i::nat. \<exists>n\<ge>i. P m n)"
+proof(induct k)
+  case (Suc k) then show ?case
+    apply (auto 8 0)
+    using le_SucI apply blast
+    apply (metis (full_types) le_Suc_eq nat_le_linear order_trans)
+    done
+qed simp
+
 (*>*)
 section\<open> Point-free notation \<close>
 
@@ -32,7 +47,7 @@ abbreviation (input)
   "\<langle>f\<rangle> \<equiv> \<lambda>s. f"
 
 abbreviation (input)
-  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("\<^bold>\<not>") where
+  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("\<^bold>\<not> _" [40] 40) where
   "\<^bold>\<not>a \<equiv> \<lambda>s. \<not>a s"
 
 abbreviation (input)
@@ -46,6 +61,10 @@ abbreviation (input)
 abbreviation (input)
   pred_implies :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "\<^bold>\<longrightarrow>" 25) where
   "a \<^bold>\<longrightarrow> b \<equiv> \<lambda>s. a s \<longrightarrow> b s"
+
+abbreviation (input)
+  pred_iff :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "\<^bold>\<longleftrightarrow>" 25) where
+  "a \<^bold>\<longleftrightarrow> b \<equiv> \<lambda>s. a s \<longleftrightarrow> b s"
 
 abbreviation (input)
   pred_eq :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>=" 40) where
@@ -103,6 +122,10 @@ abbreviation (input)
   pred_union :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" (infixl "\<^bold>\<union>" 65) where
   "a \<^bold>\<union> b \<equiv> \<lambda>s. a s \<union> b s"
 
+abbreviation (input)
+  pred_inter :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" (infixl "\<^bold>\<inter>" 65) where
+  "a \<^bold>\<inter> b \<equiv> \<lambda>s. a s \<inter> b s"
+
 text\<open>
 
 More application specific.
@@ -112,6 +135,10 @@ More application specific.
 abbreviation (input)
   pred_conjoin :: "('a \<Rightarrow> bool) list \<Rightarrow> 'a \<Rightarrow> bool" where
   "pred_conjoin xs \<equiv> foldr (\<^bold>\<and>) xs \<langle>True\<rangle>"
+
+abbreviation (input)
+  pred_disjoin :: "('a \<Rightarrow> bool) list \<Rightarrow> 'a \<Rightarrow> bool" where
+  "pred_disjoin xs \<equiv> foldr (\<^bold>\<or>) xs \<langle>False\<rangle>"
 
 abbreviation (input)
   pred_is_none :: "('a \<Rightarrow> 'b option) \<Rightarrow> 'a \<Rightarrow> bool" ("NULL _" [40] 40) where
@@ -124,6 +151,10 @@ abbreviation (input)
 abbreviation (input)
   pred_list_null :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a \<Rightarrow> bool" ("LIST'_NULL _" [40] 40) where
   "LIST_NULL a \<equiv> \<lambda>s. a s = []"
+
+abbreviation (input)
+  pred_list_append :: "('a \<Rightarrow> 'b list) \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> 'a \<Rightarrow> 'b list" (infixr "\<^bold>@" 65) where
+  "xs \<^bold>@ ys \<equiv> \<lambda>s. xs s @ ys s"
 
 abbreviation (input)
   pred_pair :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'c" (infixr "\<^bold>\<otimes>" 60) where
