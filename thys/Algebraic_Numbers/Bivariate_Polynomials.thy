@@ -77,6 +77,9 @@ lemma coeff_poly_lift[simp]:
   shows "coeff (poly_lift p) i = coeff_lift (coeff p i)"
   unfolding poly_lift_def by simp
 
+lemma pcompose_conv_poly: "pcompose p q = poly (poly_lift p) q"
+  by (induction p) auto
+
 interpretation poly_lift_hom: inj_comm_monoid_add_hom poly_lift
 proof-
   interpret map_poly_inj_comm_monoid_add_hom coeff_lift..

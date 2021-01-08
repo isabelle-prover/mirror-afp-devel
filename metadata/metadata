@@ -5834,6 +5834,7 @@ notify = mail@andreas-lochbihler.de
 title = Algebraic Numbers in Isabelle/HOL
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>, Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>
+contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 date = 2015-12-22
 abstract = Based on existing libraries for matrices, factorization of rational polynomials, and Sturm's theorem, we formalized algebraic numbers in Isabelle/HOL. Our development serves as an implementation for real and complex numbers, and it admits to compute roots and completely factorize real and complex polynomials, provided that all coefficients are rational numbers. Moreover, we provide two implementations to display algebraic numbers, an injective and expensive one, or a faster but approximative version.
 	</p><p>

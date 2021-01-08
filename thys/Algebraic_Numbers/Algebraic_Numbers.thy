@@ -1,7 +1,8 @@
 (*  
-    Author:      René Thiemann 
-                 Akihisa Yamada
-    License:     BSD
+    Author:       René Thiemann 
+                  Akihisa Yamada
+    Contributors: Manuel Eberl (algebraic integers)
+    License:      BSD
 *)
 section \<open>Algebraic Numbers: Addition and Multiplication\<close>
 
@@ -29,6 +30,34 @@ subsection \<open>Addition of Algebraic Numbers\<close>
 definition "x_y \<equiv> [: [: 0, 1 :], -1 :]"
 
 definition "poly_x_minus_y p = poly_lift p \<circ>\<^sub>p x_y"
+
+lemma coeff_xy_power:
+  assumes "k \<le> n"
+  shows  "coeff (x_y ^ n :: 'a :: comm_ring_1 poly poly) k =
+          monom (of_nat (n choose (n - k)) * (- 1) ^ k) (n - k)"
+proof -
+  define X :: "'a poly poly" where "X = monom (monom 1 1) 0"
+  define Y :: "'a poly poly" where "Y = monom (-1) 1"
+
+  have [simp]: "monom 1 b * (-1) ^ k = monom ((-1)^k :: 'a) b" for b k
+    by (auto simp: monom_altdef minus_one_power_iff)
+
+  have "(X + Y) ^ n = (\<Sum>i\<le>n. of_nat (n choose i) * X ^ i * Y ^ (n - i))"
+    by (subst binomial_ring) auto
+  also have "\<dots> = (\<Sum>i\<le>n. of_nat (n choose i) * monom (monom ((-1) ^ (n - i)) i) (n - i))"
+    by (simp add: X_def Y_def monom_power mult_monom mult.assoc) 
+  also have "\<dots> = (\<Sum>i\<le>n. monom (monom (of_nat (n choose i) * (-1) ^ (n - i)) i) (n - i))"
+    by (simp add: of_nat_poly smult_monom)
+  also have "coeff \<dots> k =
+    (\<Sum>i\<le>n. if n - i = k then monom (of_nat (n choose i) * (- 1) ^ (n - i)) i else 0)"
+    by (simp add: of_nat_poly coeff_sum)
+  also have "\<dots> = (\<Sum>i\<in>{n-k}. monom (of_nat (n choose i) * (- 1) ^ (n - i)) i)"
+    using \<open>k \<le> n\<close> by (intro sum.mono_neutral_cong_right) auto
+  also have "X + Y = x_y"
+    by (simp add: X_def Y_def x_y_def monom_altdef)
+  finally show ?thesis
+    using \<open>k \<le> n\<close> by simp
+qed
 
 
 text \<open>The following polynomial represents the sum of two algebraic numbers.\<close>
@@ -366,6 +395,63 @@ proof-
   also have "... = ?r" by (unfold hom_distribs, simp add: smult_as_map_poly[symmetric])
   finally show ?thesis.
 qed
+
+lemma degree_coeff_poly_x_minus_y:
+  fixes p q :: "'a :: {idom, semiring_char_0} poly"
+  shows "degree (coeff (poly_x_minus_y p) i) = degree p - i"
+proof -
+  consider "i = degree p" | "i > degree p" | "i < degree p"
+    by force
+  thus ?thesis
+  proof cases
+    assume "i > degree p"
+    thus ?thesis by (subst coeff_eq_0) auto
+  next
+    assume "i = degree p"
+    thus ?thesis using lead_coeff_poly_x_minus_y[of p]
+      by (simp add: lead_coeff_poly_x_minus_y)
+  next
+    assume "i < degree p"
+    define n where "n = degree p"
+    have "degree (coeff (poly_x_minus_y p) i) =
+            degree (\<Sum>j\<le>n. [:coeff p j:] * coeff (x_y ^ j) i)" (is "_ = degree (sum ?f _)")
+      by (simp add: poly_x_minus_y_def pcompose_conv_poly poly_altdef coeff_sum n_def)
+    also have "{..n} = insert n {..<n}"
+      by auto
+    also have "sum ?f \<dots> = ?f n + sum ?f {..<n}"
+      by (subst sum.insert) auto
+    also have "degree \<dots> = n - i"
+    proof -
+      have "degree (?f n) = n - i"
+        using \<open>i < degree p\<close> by (simp add: n_def coeff_xy_power degree_monom_eq)
+      moreover have "degree (sum ?f {..<n}) < n - i"
+      proof (intro degree_sum_smaller)
+        fix j assume "j \<in> {..<n}"
+        have "degree ([:coeff p j:] * coeff (x_y ^ j) i) \<le> j - i"
+        proof (cases "i \<le> j")
+          case True
+          thus ?thesis
+            by (auto simp: n_def coeff_xy_power degree_monom_eq)
+        next
+          case False
+          hence "coeff (x_y ^ j :: 'a poly poly) i = 0"
+            by (subst coeff_eq_0) (auto simp: degree_power_eq)
+          thus ?thesis by simp
+        qed
+        also have "\<dots> < n - i"
+          using \<open>j \<in> {..<n}\<close> \<open>i < degree p\<close> by (auto simp: n_def)
+        finally show "degree ([:coeff p j:] * coeff (x_y ^ j) i) < n - i" .
+      qed (use \<open>i < degree p\<close> in \<open>auto simp: n_def\<close>)
+      ultimately show ?thesis
+        by (subst degree_add_eq_left) auto
+    qed
+    finally show ?thesis
+      by (simp add: n_def)
+  qed
+qed
+
+lemma coeff_0_poly_x_minus_y [simp]: "coeff (poly_x_minus_y p) 0 = p"
+  by (induction p) (auto simp: poly_x_minus_y_def x_y_def)
 
 lemma (in idom_hom) poly_add_hom:
   assumes p0: "hom (lead_coeff p) \<noteq> 0" and q0: "hom (lead_coeff q) \<noteq> 0"
@@ -737,6 +823,516 @@ qed
 lemma algebraic_nth_root: "n \<noteq> 0 \<Longrightarrow> algebraic x \<Longrightarrow> y^n = x \<Longrightarrow> algebraic y"
   by (auto dest: algebraic_imp_represents_irreducible_cf_pos intro: algebraic_representsI represents_nth_root)
 
-hide_const x_y
+
+subsection \<open>More on algebraic integers\<close>
+
+(* TODO: this is actually equal to @{term "(-1)^(m*n)"}, but we need a bit more theory on
+   permutations to show this with a reasonable amount of effort. *)
+definition poly_add_sign :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: comm_ring_1" where
+  "poly_add_sign m n = signof (\<lambda>i. if i < n then m + i else if i < m + n then i - n else i)"
+
+lemma lead_coeff_poly_add:
+  fixes p q :: "'a :: {idom, semiring_char_0} poly"
+  defines "m \<equiv> degree p" and "n \<equiv> degree q"
+  assumes "lead_coeff p = 1" "lead_coeff q = 1" "m > 0" "n > 0"
+  shows "lead_coeff (poly_add p q :: 'a poly) = poly_add_sign m n"
+proof -
+  from assms have [simp]: "p \<noteq> 0" "q \<noteq> 0"
+    by auto
+  define M where "M = sylvester_mat (poly_x_minus_y p) (poly_lift q)"
+  define \<pi> :: "nat \<Rightarrow> nat" where
+    "\<pi> = (\<lambda>i. if i < n then m + i else if i < m + n then i - n else i)"
+  have \<pi>: "\<pi> permutes {0..<m+n}"
+    by (rule inj_on_nat_permutes) (auto simp: \<pi>_def inj_on_def)
+  have nz: "M $$ (i, \<pi> i) \<noteq> 0" if "i < m + n" for i
+    using that by (auto simp: M_def \<pi>_def sylvester_index_mat m_def n_def)
+
+(*
+  have "{(i,j). i \<in> {..<m+n} \<and> j \<in> {..<m+n} \<and> i < j \<and> \<pi> i > \<pi> j} =
+        {..<n} \<times> {n..<m+n}" (is "?lhs = ?rhs")
+  proof (intro equalityI subsetI)
+    fix ij assume "ij \<in> ?lhs"
+    thus "ij \<in> ?rhs"
+      by (simp add: \<pi>_def split: prod.splits if_splits) auto
+  qed (auto simp: \<pi>_def)
+  hence "inversions_on {..<m+n} \<pi> = n * m"
+    by (simp add: inversions_on_def)
+  hence "signof \<pi> = (-1)^(m*n)"
+    using \<pi> by (simp add: signof_def sign_def evenperm_iff_even_inversions)
+*)
+
+  have indices_eq: "{0..<m+n} = {..<n} \<union> (+) n ` {..<m}"
+    by (auto simp flip: atLeast0LessThan)
+
+  define f where "f = (\<lambda> \<sigma>. signof \<sigma> * (\<Prod>i=0..<m+n. M $$ (i, \<sigma> i)))"
+  have "degree (f \<pi>) = degree (\<Prod>i=0..<m + n. M $$ (i, \<pi> i))"
+    using nz by (auto simp: f_def degree_mult_eq signof_def)
+  also have "\<dots> = (\<Sum>i=0..<m+n. degree (M $$ (i, \<pi> i)))"
+    using nz by (subst degree_prod_eq_sum_degree) auto
+  also have "\<dots> = (\<Sum>i<n. degree (M $$ (i, \<pi> i))) + (\<Sum>i<m. degree (M $$ (n + i, \<pi> (n + i))))"
+    by (subst indices_eq, subst sum.union_disjoint) (auto simp: sum.reindex)
+  also have "(\<Sum>i<n. degree (M $$ (i, \<pi> i))) = (\<Sum>i<n. m)"
+    by (intro sum.cong) (auto simp: M_def sylvester_index_mat \<pi>_def m_def n_def)
+  also have "(\<Sum>i<m. degree (M $$ (n + i, \<pi> (n + i)))) = (\<Sum>i<m. 0)"
+    by (intro sum.cong) (auto simp: M_def sylvester_index_mat \<pi>_def m_def n_def)
+  finally have deg_f1: "degree (f \<pi>) = m * n"
+    by simp
+
+  have deg_f2: "degree (f \<sigma>) < m * n" if "\<sigma> permutes {0..<m+n}" "\<sigma> \<noteq> \<pi>" for \<sigma>
+  proof (cases "\<exists>i\<in>{0..<m+n}. M $$ (i, \<sigma> i) = 0")
+    case True
+    hence *: "(\<Prod>i = 0..<m + n. M $$ (i, \<sigma> i)) = 0"
+      by auto
+    show ?thesis using \<open>m > 0\<close> \<open>n > 0\<close>
+      by (simp add: f_def *)
+  next
+    case False
+    note nz = this
+    from that have \<sigma>_less: "\<sigma> i < m + n" if "i < m + n" for i
+      using permutes_in_image[OF \<open>\<sigma> permutes _\<close>] that by auto
+    have "degree (f \<sigma>) = degree (\<Prod>i=0..<m + n. M $$ (i, \<sigma> i))"
+      using nz by (auto simp: f_def degree_mult_eq signof_def)
+    also have "\<dots> = (\<Sum>i=0..<m+n. degree (M $$ (i, \<sigma> i)))"
+      using nz by (subst degree_prod_eq_sum_degree) auto
+    also have "\<dots> = (\<Sum>i<n. degree (M $$ (i, \<sigma> i))) + (\<Sum>i<m. degree (M $$ (n + i, \<sigma> (n + i))))"
+      by (subst indices_eq, subst sum.union_disjoint) (auto simp: sum.reindex)
+    also have "(\<Sum>i<m. degree (M $$ (n + i, \<sigma> (n + i)))) = (\<Sum>i<m. 0)"
+      using \<sigma>_less by (intro sum.cong) (auto simp: M_def sylvester_index_mat \<pi>_def m_def n_def)
+    also have "(\<Sum>i<n. degree (M $$ (i, \<sigma> i))) < (\<Sum>i<n. m)"
+    proof (rule sum_strict_mono_ex1)
+      show "\<forall>x\<in>{..<n}. degree (M $$ (x, \<sigma> x)) \<le> m" using \<sigma>_less
+        by (auto simp: M_def sylvester_index_mat \<pi>_def m_def n_def degree_coeff_poly_x_minus_y)
+    next
+
+      have "\<exists>i<n. \<sigma> i \<noteq> \<pi> i"
+      proof (rule ccontr)
+        assume nex: "~(\<exists>i<n. \<sigma> i \<noteq> \<pi> i)"
+        have "\<forall>i\<ge>m+n-k. \<sigma> i = \<pi> i" if "k \<le> m" for k
+          using that
+        proof (induction k)
+          case 0
+          thus ?case using \<open>\<pi> permutes _\<close> \<open>\<sigma> permutes _\<close>
+            by (fastforce simp: permutes_def)
+        next
+          case (Suc k)
+          have IH: "\<sigma> i = \<pi> i" if "i \<ge> m+n-k" for i
+            using Suc.prems Suc.IH that by auto
+          from nz have "M $$ (m + n - Suc k, \<sigma> (m + n - Suc k)) \<noteq> 0"
+            using Suc.prems by auto
+          moreover have "m + n - Suc k \<ge> n"
+            using Suc.prems by auto
+          ultimately have "\<sigma> (m+n-Suc k) \<ge> m-Suc k"
+            using assms \<sigma>_less[of "m+n-Suc k"] Suc.prems
+            by (auto simp: M_def sylvester_index_mat m_def n_def split: if_splits)
+          have "\<not>(\<sigma> (m+n-Suc k) > m - Suc k)"
+          proof
+            assume *: "\<sigma> (m+n-Suc k) > m - Suc k"
+            have less: "\<sigma> (m+n-Suc k) < m"
+            proof (rule ccontr)
+              assume *: "\<not>\<sigma> (m + n - Suc k) < m"
+              define j where "j = \<sigma> (m + n - Suc k) - m"
+              have "\<sigma> (m + n - Suc k) = m + j"
+                using * by (simp add: j_def)
+              moreover {
+                have "j < n"
+                  using \<sigma>_less[of "m+n-Suc k"] \<open>m > 0\<close> \<open>n > 0\<close> by (simp add: j_def)
+                hence "\<sigma> j = \<pi> j"
+                  using nex by auto
+                with \<open>j < n\<close> have "\<sigma> j = m + j"
+                  by (auto simp: \<pi>_def)
+              }
+              ultimately have "\<sigma> (m + n - Suc k) = \<sigma> j"
+                by simp
+              hence "m + n - Suc k = j"
+                using permutes_inj[OF \<open>\<sigma> permutes _\<close>] unfolding inj_def by blast
+              thus False using \<open>n \<le> m + n - Suc k\<close> \<sigma>_less[of "m+n-Suc k"] \<open>n > 0\<close> 
+                unfolding j_def by linarith
+            qed
+          
+            define j where "j = \<sigma> (m+n-Suc k) - (m - Suc k)"
+            from * have j: "\<sigma> (m+n-Suc k) = m - Suc k + j" "j > 0"
+              by (auto simp: j_def)
+            have "\<sigma> (m+n-Suc k + j) = \<pi> (m+n - Suc k + j)"
+              using * by (intro IH) (auto simp: j_def)
+            also {
+              have "j < Suc k"
+                using less by (auto simp: j_def algebra_simps)
+              hence "m + n - Suc k + j < m + n"
+                using \<open>m > 0\<close> \<open>n > 0\<close> Suc.prems by linarith
+              hence "\<pi> (m +n - Suc k + j) = m - Suc k + j"
+                unfolding \<pi>_def using Suc.prems by (simp add: \<pi>_def)
+            }
+            finally have "\<sigma> (m + n - Suc k + j) = \<sigma> (m + n - Suc k)"
+              using j by simp
+            hence "m + n - Suc k + j = m + n - Suc k"
+              using permutes_inj[OF \<open>\<sigma> permutes _\<close>] unfolding inj_def by blast
+            thus False using \<open>j > 0\<close> by simp
+          qed
+          with \<open>\<sigma> (m+n-Suc k) \<ge> m-Suc k\<close> have eq: "\<sigma> (m+n-Suc k) = m - Suc k"
+            by linarith
+
+          show ?case
+          proof safe
+            fix i :: nat
+            assume i: "i \<ge> m + n - Suc k"
+            show "\<sigma> i = \<pi> i"
+              using eq Suc.prems \<open>m > 0\<close> IH i
+            proof (cases "i = m + n - Suc k")
+              case True
+              thus ?thesis using eq Suc.prems \<open>m > 0\<close>
+                by (auto simp: \<pi>_def)
+            qed (use IH i in auto)
+          qed
+        qed
+        from this[of m] and nex have "\<sigma> i = \<pi> i" for i
+          by (cases "i \<ge> n") auto
+        hence "\<sigma> = \<pi>" by force
+        thus False using \<open>\<sigma> \<noteq> \<pi>\<close> by contradiction
+      qed
+
+      then obtain i where i: "i < n" "\<sigma> i \<noteq> \<pi> i"
+        by auto
+      have "\<sigma> i < m + n"
+        using i by (intro \<sigma>_less) auto
+      moreover have "\<pi> i = m + i"
+        using i by (auto simp: \<pi>_def)
+      ultimately have "degree (M $$ (i, \<sigma> i)) < m" using i \<open>m > 0\<close>
+        by (auto simp: M_def m_def n_def sylvester_index_mat degree_coeff_poly_x_minus_y)
+      thus "\<exists>i\<in>{..<n}. degree (M $$ (i, \<sigma> i)) < m"
+        using i by blast
+    qed auto
+    finally show "degree (f \<sigma>) < m * n"
+      by (simp add: mult_ac)
+  qed
+
+  have "lead_coeff (f \<pi>) = poly_add_sign m n"
+  proof -
+    have "lead_coeff (f \<pi>) = signof \<pi> * (\<Prod>i=0..<m + n. lead_coeff (M $$ (i, \<pi> i)))"
+      by (simp add: f_def signof_def lead_coeff_prod)
+    also have "(\<Prod>i=0..<m + n. lead_coeff (M $$ (i, \<pi> i))) =
+               (\<Prod>i<n. lead_coeff (M $$ (i, \<pi> i))) * (\<Prod>i<m. lead_coeff (M $$ (n + i, \<pi> (n + i))))"
+      by (subst indices_eq, subst prod.union_disjoint) (auto simp: prod.reindex)
+    also have "(\<Prod>i<n. lead_coeff (M $$ (i, \<pi> i))) = (\<Prod>i<n. lead_coeff p)"
+      by (intro prod.cong) (auto simp: M_def m_def n_def \<pi>_def sylvester_index_mat)
+    also have "(\<Prod>i<m. lead_coeff (M $$ (n + i, \<pi> (n + i)))) = (\<Prod>i<m. lead_coeff q)"
+      by (intro prod.cong) (auto simp: M_def m_def n_def \<pi>_def sylvester_index_mat)
+    also have "signof \<pi> = poly_add_sign m n"
+      by (simp add: \<pi>_def poly_add_sign_def m_def n_def cong: if_cong)
+    finally show ?thesis
+      using assms by simp
+  qed
+
+  have "lead_coeff (poly_add p q) =
+          lead_coeff (det (sylvester_mat (poly_x_minus_y p) (poly_lift q)))"
+    by (simp add: poly_add_def resultant_def)
+  also have "det (sylvester_mat (poly_x_minus_y p) (poly_lift q)) =
+               (\<Sum>\<pi> | \<pi> permutes {0..<m+n}. f \<pi>)"
+    by (simp add: det_def m_def n_def M_def f_def)
+  also have "{\<pi>. \<pi> permutes {0..<m+n}} = insert \<pi> ({\<pi>. \<pi> permutes {0..<m+n}} - {\<pi>})"
+    using \<pi> by auto
+  also have "(\<Sum>\<sigma>\<in>\<dots>. f \<sigma>) = (\<Sum>\<sigma>\<in>{\<sigma>. \<sigma> permutes {0..<m+n}}-{\<pi>}. f \<sigma>) + f \<pi>"
+    by (subst sum.insert) (auto simp: finite_permutations)
+  also have "lead_coeff \<dots> = lead_coeff (f \<pi>)"
+  proof -
+    have "degree (\<Sum>\<sigma>\<in>{\<sigma>. \<sigma> permutes {0..<m+n}}-{\<pi>}. f \<sigma>) < m * n" using assms
+      by (intro degree_sum_smaller deg_f2) (auto simp: m_def n_def finite_permutations)
+    with deg_f1 show ?thesis
+      by (subst lead_coeff_add_le) auto
+  qed
+  finally show ?thesis
+    using \<open>lead_coeff (f \<pi>) = _\<close> by simp
+qed
+
+lemma lead_coeff_poly_mult:
+  fixes p q :: "'a :: {idom, ring_char_0} poly"
+  defines "m \<equiv> degree p" and "n \<equiv> degree q"
+  assumes "lead_coeff p = 1" "lead_coeff q = 1" "m > 0" "n > 0"
+  assumes "coeff q 0 \<noteq> 0"
+  shows "lead_coeff (poly_mult p q :: 'a poly) = 1"
+proof -
+  from assms have [simp]: "p \<noteq> 0" "q \<noteq> 0"
+    by auto
+  have [simp]: "degree (reflect_poly q) = n"
+    using assms by (subst degree_reflect_poly_eq) (auto simp: n_def)
+
+  define M where "M = sylvester_mat (poly_x_mult_y p) (poly_lift (reflect_poly q))"
+  have nz: "M $$ (i, i) \<noteq> 0" if "i < m + n" for i
+    using that by (auto simp: M_def sylvester_index_mat m_def n_def coeff_poly_x_mult_y)
+
+  have indices_eq: "{0..<m+n} = {..<n} \<union> (+) n ` {..<m}"
+    by (auto simp flip: atLeast0LessThan)
+
+  define f where "f = (\<lambda> \<sigma>. signof \<sigma> * (\<Prod>i=0..<m+n. M $$ (i, \<sigma> i)))"
+  have "degree (f id) = degree (\<Prod>i=0..<m + n. M $$ (i, i))"
+    using nz by (auto simp: f_def degree_mult_eq signof_def)
+  also have "\<dots> = (\<Sum>i=0..<m+n. degree (M $$ (i, i)))"
+    using nz by (subst degree_prod_eq_sum_degree) auto
+  also have "\<dots> = (\<Sum>i<n. degree (M $$ (i, i))) + (\<Sum>i<m. degree (M $$ (n + i, n + i)))"
+    by (subst indices_eq, subst sum.union_disjoint) (auto simp: sum.reindex)
+  also have "(\<Sum>i<n. degree (M $$ (i, i))) = (\<Sum>i<n. m)"
+    by (intro sum.cong)
+       (auto simp: M_def sylvester_index_mat m_def n_def coeff_poly_x_mult_y degree_monom_eq)
+  also have "(\<Sum>i<m. degree (M $$ (n + i, n + i))) = (\<Sum>i<m. 0)"
+    by (intro sum.cong) (auto simp: M_def sylvester_index_mat m_def n_def)
+  finally have deg_f1: "degree (f id) = m * n"
+    by (simp add: mult_ac id_def)
+
+  have deg_f2: "degree (f \<sigma>) < m * n" if "\<sigma> permutes {0..<m+n}" "\<sigma> \<noteq> id" for \<sigma>
+  proof (cases "\<exists>i\<in>{0..<m+n}. M $$ (i, \<sigma> i) = 0")
+    case True
+    hence *: "(\<Prod>i = 0..<m + n. M $$ (i, \<sigma> i)) = 0"
+      by auto
+    show ?thesis using \<open>m > 0\<close> \<open>n > 0\<close>
+      by (simp add: f_def *)
+  next
+    case False
+    note nz = this
+    from that have \<sigma>_less: "\<sigma> i < m + n" if "i < m + n" for i
+      using permutes_in_image[OF \<open>\<sigma> permutes _\<close>] that by auto
+    have "degree (f \<sigma>) = degree (\<Prod>i=0..<m + n. M $$ (i, \<sigma> i))"
+      using nz by (auto simp: f_def degree_mult_eq signof_def)
+    also have "\<dots> = (\<Sum>i=0..<m+n. degree (M $$ (i, \<sigma> i)))"
+      using nz by (subst degree_prod_eq_sum_degree) auto
+    also have "\<dots> = (\<Sum>i<n. degree (M $$ (i, \<sigma> i))) + (\<Sum>i<m. degree (M $$ (n + i, \<sigma> (n + i))))"
+      by (subst indices_eq, subst sum.union_disjoint) (auto simp: sum.reindex)
+    also have "(\<Sum>i<m. degree (M $$ (n + i, \<sigma> (n + i)))) = (\<Sum>i<m. 0)"
+      using \<sigma>_less by (intro sum.cong) (auto simp: M_def sylvester_index_mat m_def n_def)
+    also have "(\<Sum>i<n. degree (M $$ (i, \<sigma> i))) < (\<Sum>i<n. m)"
+    proof (rule sum_strict_mono_ex1)
+      show "\<forall>x\<in>{..<n}. degree (M $$ (x, \<sigma> x)) \<le> m" using \<sigma>_less
+        by (auto simp: M_def sylvester_index_mat m_def n_def degree_coeff_poly_x_minus_y coeff_poly_x_mult_y
+                 intro: order.trans[OF degree_monom_le])
+    next
+      have "\<exists>i<n. \<sigma> i \<noteq> i"
+      proof (rule ccontr)
+        assume nex: "\<not>(\<exists>i<n. \<sigma> i \<noteq> i)"
+        have "\<sigma> i = i" for i
+          using that
+        proof (induction i rule: less_induct)
+          case (less i)
+          consider "i < n" | "i \<in> {n..<m+n}" | "i \<ge> m + n"
+            by force
+          thus ?case
+          proof cases
+            assume "i < n"
+            thus ?thesis using nex by auto
+          next
+            assume "i \<ge> m + n"
+            thus ?thesis using \<open>\<sigma> permutes _\<close>
+              by (auto simp: permutes_def)
+          next
+            assume i: "i \<in> {n..<m+n}"
+            have IH: "\<sigma> j = j" if "j < i" for j
+              using that less.prems by (intro less.IH) auto
+
+            from nz have "M $$ (i, \<sigma> i) \<noteq> 0"
+              using i by auto
+            hence "\<sigma> i \<le> i"
+              using i \<sigma>_less[of i] by (auto simp: M_def sylvester_index_mat m_def n_def)
+            moreover have "\<sigma> i \<ge> i"
+            proof (rule ccontr)
+              assume *: "\<not>\<sigma> i \<ge> i"
+              from * have "\<sigma> (\<sigma> i) = \<sigma> i"
+                by (subst IH) auto
+              hence "\<sigma> i = i"
+                using permutes_inj[OF \<open>\<sigma> permutes _\<close>] unfolding inj_def by blast
+              with * show False by simp
+            qed
+            ultimately show ?case by simp
+          qed
+        qed
+        hence "\<sigma> = id"
+          by force
+        with \<open>\<sigma> \<noteq> id\<close> show False
+          by contradiction
+      qed
+
+      then obtain i where i: "i < n" "\<sigma> i \<noteq> i"
+        by auto
+      have "\<sigma> i < m + n"
+        using i by (intro \<sigma>_less) auto
+      hence "degree (M $$ (i, \<sigma> i)) < m" using i \<open>m > 0\<close>
+        by (auto simp: M_def m_def n_def sylvester_index_mat degree_coeff_poly_x_minus_y
+                       coeff_poly_x_mult_y intro: le_less_trans[OF degree_monom_le])
+      thus "\<exists>i\<in>{..<n}. degree (M $$ (i, \<sigma> i)) < m"
+        using i by blast
+    qed auto
+    finally show "degree (f \<sigma>) < m * n"
+      by (simp add: mult_ac)
+  qed
+
+  have "lead_coeff (f id) = 1"
+  proof -
+    have "lead_coeff (f id) = (\<Prod>i=0..<m + n. lead_coeff (M $$ (i, i)))"
+      by (simp add: f_def signof_def lead_coeff_prod sign_id)
+    also have "(\<Prod>i=0..<m + n. lead_coeff (M $$ (i, i))) =
+               (\<Prod>i<n. lead_coeff (M $$ (i, i))) * (\<Prod>i<m. lead_coeff (M $$ (n + i, n + i)))"
+      by (subst indices_eq, subst prod.union_disjoint) (auto simp: prod.reindex)
+    also have "(\<Prod>i<n. lead_coeff (M $$ (i, i))) = (\<Prod>i<n. lead_coeff p)" using assms
+      by (intro prod.cong) (auto simp: M_def m_def n_def sylvester_index_mat
+                                       coeff_poly_x_mult_y degree_monom_eq)
+    also have "(\<Prod>i<m. lead_coeff (M $$ (n + i, n + i))) = (\<Prod>i<m. lead_coeff q)"
+      by (intro prod.cong) (auto simp: M_def m_def n_def sylvester_index_mat)
+    finally show ?thesis
+      using assms by (simp add: id_def)
+  qed
+
+  have "lead_coeff (poly_mult p q) = lead_coeff (det M)"
+    by (simp add: poly_mult_def resultant_def M_def poly_div_def)
+  also have "det M = (\<Sum>\<pi> | \<pi> permutes {0..<m+n}. f \<pi>)"
+    by (simp add: det_def m_def n_def M_def f_def)
+  also have "{\<pi>. \<pi> permutes {0..<m+n}} = insert id ({\<pi>. \<pi> permutes {0..<m+n}} - {id})"
+    by (auto simp: permutes_id)
+  also have "(\<Sum>\<sigma>\<in>\<dots>. f \<sigma>) = (\<Sum>\<sigma>\<in>{\<sigma>. \<sigma> permutes {0..<m+n}}-{id}. f \<sigma>) + f id"
+    by (subst sum.insert) (auto simp: finite_permutations)
+  also have "lead_coeff \<dots> = lead_coeff (f id)"
+  proof -
+    have "degree (\<Sum>\<sigma>\<in>{\<sigma>. \<sigma> permutes {0..<m+n}}-{id}. f \<sigma>) < m * n" using assms
+      by (intro degree_sum_smaller deg_f2) (auto simp: m_def n_def finite_permutations)
+    with deg_f1 show ?thesis
+      by (subst lead_coeff_add_le) auto
+  qed
+  finally show ?thesis
+    using \<open>lead_coeff (f id) = 1\<close> by simp
+qed
+
+lemma algebraic_int_plus [intro]:
+  fixes x y :: "'a :: field_char_0"
+  assumes "algebraic_int x" "algebraic_int y"
+  shows   "algebraic_int (x + y)"
+proof -
+  from assms(1) obtain p where p: "lead_coeff p = 1" "ipoly p x = 0"
+    by (auto simp: algebraic_int_altdef_ipoly)
+  from assms(2) obtain q where q: "lead_coeff q = 1" "ipoly q y = 0"
+    by (auto simp: algebraic_int_altdef_ipoly)
+  have deg_pos: "degree p > 0" "degree q > 0"
+    using p q by (auto intro!: Nat.gr0I elim!: degree_eq_zeroE)
+  define r where "r = poly_add_sign (degree p) (degree q) * poly_add p q"
+
+  have "lead_coeff r = 1" using p q deg_pos
+    by (simp add: r_def lead_coeff_mult poly_add_sign_def signof_def lead_coeff_poly_add)
+  moreover have "ipoly r (x + y) = 0"
+    using p q by (simp add: ipoly_poly_add r_def of_int_poly_hom.hom_mult)
+  ultimately show ?thesis
+    by (auto simp: algebraic_int_altdef_ipoly)
+qed
+
+lemma algebraic_int_times [intro]:
+  fixes x y :: "'a :: field_char_0"
+  assumes "algebraic_int x" "algebraic_int y"
+  shows   "algebraic_int (x * y)"
+proof (cases "y = 0")
+  case [simp]: False
+  from assms(1) obtain p where p: "lead_coeff p = 1" "ipoly p x = 0"
+    by (auto simp: algebraic_int_altdef_ipoly)
+  from assms(2) obtain q where q: "lead_coeff q = 1" "ipoly q y = 0"
+    by (auto simp: algebraic_int_altdef_ipoly)
+  have deg_pos: "degree p > 0" "degree q > 0"
+    using p q by (auto intro!: Nat.gr0I elim!: degree_eq_zeroE)
+  have [simp]: "q \<noteq> 0"
+    using q by auto
+
+  define n where "n = Polynomial.order 0 q"
+  have "monom 1 n dvd q"
+    by (simp add: n_def monom_1_dvd_iff)
+  then obtain q' where q_split: "q = q' * monom 1 n"
+    by auto
+  have "Polynomial.order 0 q = Polynomial.order 0 q' + n"
+    using \<open>q \<noteq> 0\<close> unfolding q_split by (subst order_mult) auto
+  hence "poly q' 0 \<noteq> 0"
+    unfolding n_def using \<open>q \<noteq> 0\<close> by (simp add: q_split order_root)    
+
+  have q': "ipoly q' y = 0" "lead_coeff q' = 1" using q_split q
+    by (auto simp: of_int_poly_hom.hom_mult poly_monom lead_coeff_mult degree_monom_eq)
+  from this have deg_pos': "degree q' > 0"
+    by (intro Nat.gr0I) (auto elim!: degree_eq_zeroE)
+  from \<open>poly q' 0 \<noteq> 0\<close> have [simp]: "coeff q' 0 \<noteq> 0"
+    by (auto simp: monom_1_dvd_iff' poly_0_coeff_0)
+
+  have "p represents x" "q' represents y"
+    using p q' by (auto simp: represents_def)
+  hence "poly_mult p q' represents x * y"
+    by (rule represents_mult) (simp add: poly_0_coeff_0)
+  moreover have "lead_coeff (poly_mult p q') = 1" using p deg_pos q' deg_pos'
+    by (simp add: lead_coeff_mult lead_coeff_poly_mult)
+  ultimately show ?thesis
+    by (auto simp: algebraic_int_altdef_ipoly represents_def)
+qed auto
+
+lemma algebraic_int_power [intro]:
+  "algebraic_int (x :: 'a :: field_char_0) \<Longrightarrow> algebraic_int (x ^ n)"
+  by (induction n) auto
+
+lemma algebraic_int_diff [intro]:
+  fixes x y :: "'a :: field_char_0"
+  assumes "algebraic_int x" "algebraic_int y"
+  shows   "algebraic_int (x - y)"
+  using algebraic_int_plus[OF assms(1) algebraic_int_minus[OF assms(2)]] by simp
+
+lemma algebraic_int_sum [intro]:
+  "(\<And>x. x \<in> A \<Longrightarrow> algebraic_int (f x :: 'a :: field_char_0))
+    \<Longrightarrow> algebraic_int (sum f A)"
+  by (induction A rule: infinite_finite_induct) auto
+
+lemma algebraic_int_prod [intro]:
+  "(\<And>x. x \<in> A \<Longrightarrow> algebraic_int (f x :: 'a :: field_char_0))
+    \<Longrightarrow> algebraic_int (prod f A)"
+  by (induction A rule: infinite_finite_induct) auto
+
+lemma algebraic_int_nth_root_real_iff:
+  "algebraic_int (root n x) \<longleftrightarrow> n = 0 \<or> algebraic_int x"
+proof -
+  have "algebraic_int x" if "algebraic_int (root n x)" "n \<noteq> 0"
+  proof -
+    from that(1) have "algebraic_int (root n x ^ n)"
+      by auto
+    also have "root n x ^ n = (if even n then \<bar>x\<bar> else x)"
+      using sgn_power_root[of n x] that(2) by (auto simp: sgn_if split: if_splits)
+    finally show ?thesis
+      by (auto split: if_splits)
+  qed
+  thus ?thesis by auto
+qed
+
+lemma algebraic_int_power_iff:
+  "algebraic_int (x ^ n :: 'a :: field_char_0) \<longleftrightarrow> n = 0 \<or> algebraic_int x"
+proof -
+  have "algebraic_int x" if "algebraic_int (x ^ n)" "n > 0"
+  proof (rule algebraic_int_root)
+    show "poly (monom 1 n) x = x ^ n"
+      by (auto simp: poly_monom)
+  qed (use that in \<open>auto simp: degree_monom_eq\<close>)
+  thus ?thesis by auto
+qed
+
+lemma algebraic_int_power_iff' [simp]:
+  "n > 0 \<Longrightarrow> algebraic_int (x ^ n :: 'a :: field_char_0) \<longleftrightarrow> algebraic_int x"
+  by (subst algebraic_int_power_iff) auto
+
+lemma algebraic_int_sqrt_iff [simp]: "algebraic_int (sqrt x) \<longleftrightarrow> algebraic_int x"
+  by (simp add: sqrt_def algebraic_int_nth_root_real_iff)
+
+lemma algebraic_int_csqrt_iff [simp]: "algebraic_int (csqrt x) \<longleftrightarrow> algebraic_int x"
+proof
+  assume "algebraic_int (csqrt x)"
+  hence "algebraic_int (csqrt x ^ 2)"
+    by (rule algebraic_int_power)
+  thus "algebraic_int x"
+    by simp
+qed auto
+
+lemma algebraic_int_norm_complex [intro]:
+  assumes "algebraic_int (z :: complex)"
+  shows   "algebraic_int (norm z)"
+proof -
+  from assms have "algebraic_int (z * cnj z)"
+    by auto
+  also have "z * cnj z = of_real (norm z ^ 2)"
+    by (rule complex_norm_square [symmetric])
+  finally show ?thesis
+    by simp
+qed
+
+hide_const (open) x_y
 
 end

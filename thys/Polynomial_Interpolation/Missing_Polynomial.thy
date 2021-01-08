@@ -1148,28 +1148,6 @@ lemma leading_coeff_code [code]:
 lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
   by (metis nth_default_coeffs_eq nth_default_def)
 
-lemma degree_prod_eq_sum_degree:
-fixes A :: "'a set"
-and f :: "'a \<Rightarrow> 'b::field poly"
-assumes f0: "\<forall>i\<in>A. f i \<noteq> 0"
-shows "degree (\<Prod>i\<in>A. (f i)) = (\<Sum>i\<in>A. degree (f i))"
-using f0
-proof (induct A rule: infinite_finite_induct)
-  case (insert x A)
-  have "(\<Sum>i\<in>insert x A. degree (f i)) = degree (f x) + (\<Sum>i\<in>A. degree (f i))"
-    by (simp add: insert.hyps(1) insert.hyps(2))
-  also have "... = degree (f x) + degree (\<Prod>i\<in>A. (f i))"
-    by (simp add: insert.hyps insert.prems)
-  also have "... = degree (f x * (\<Prod>i\<in>A. (f i)))"
-  proof (rule degree_mult_eq[symmetric])
-    show "f x \<noteq> 0" using insert.prems by auto
-    show "prod f A \<noteq> 0" by (simp add: insert.hyps(1) insert.prems)
-  qed
-  also have "... = degree (\<Prod>i\<in>insert x A. (f i))"
-    by (simp add: insert.hyps)
-  finally show ?case ..
-qed auto
-
 definition monom_mult :: "nat \<Rightarrow> 'a :: comm_semiring_1 poly \<Rightarrow> 'a poly"
   where "monom_mult n f = monom 1 n * f" 
 
