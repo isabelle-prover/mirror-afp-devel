@@ -1,4 +1,9 @@
 @STRING{cacm="Communications of the ACM"}
+@STRING{csur="{ACM} Computing Surveys"}
+@STRING{fac="Formal Aspects of Computing"}
+@STRING{ipl="Information Processing Letters"}
+@STRING{lncs="LNCS"}
+@STRING{tcs="Theoretical Computer Science"}
 
 @article{AptFrancezDeRoever:1980,
   author =       {K. R. Apt and Francez, N. and de Roever, W. P.},
@@ -14,8 +19,7 @@
 
 @TechReport{LynchTuttle:1989,
   author =       "Lynch, N. A and Tuttle, M. R.",
-  title =        "An introduction to
- input/output automata",
+  title =        "An introduction to input/output automata",
   institution =  "CWI",
   year =         1989,
   month =     sep,
@@ -26,7 +30,7 @@
 @book{Lynch:1996,
  author = {N. A. Lynch},
  title = {Distributed Algorithms},
- year = {1996},
+ year = 1996,
  publisher = {Morgan Kaufmann Publishers Inc.},
 }
 
@@ -36,27 +40,35 @@
                 with {Owicki/Gries} in {Isabelle/HOL}},
   booktitle = {Mathematical Foundations of Computer Science (MFCS 2000)},
   editor =    {M. Nielsen and B. Rovan},
-  publisher = {Springer-Verlag},
-  series =    {LNCS},
+  publisher = {Springer},
+  series =    lncs,
   volume =    1893,
   pages =     {619--628},
   year =      2000
 }
 
-@PhdThesis{Prensa-PhD,author={Prensa Nieto, L.},
-title={Verification of Parallel Programs with the Owicki-Gries and
-Rely-Guarantee Methods in Isabelle/HOL},
-school={Technische Universit{\"a}t M{\"u}nchen},year=2002}
+@PhdThesis{Prensa-PhD,
+  author={Prensa Nieto, L.},
+  title={Verification of Parallel Programs with the Owicki-Gries and Rely-Guarantee Methods in Isabelle/HOL},
+  school={Technische Universit{\"a}t M{\"u}nchen},
+  year=2002
+}
 
-@inproceedings{Prensa-ESOP03,author={Prensa Nieto, L.},
-title={The {Rely-Guarantee} Method in {Isabelle/HOL}},
-booktitle={European Symposium on Programming (ESOP'03)},editor={P. Degano},
-publisher=Springer,series=LNCS,volume=2618,pages={348--362},year=2003}
+@inproceedings{Prensa-ESOP03,
+  author={Prensa Nieto, L.},
+  title={The {Rely-Guarantee} Method in {Isabelle/HOL}},
+  booktitle={ESOP'2003},
+  editor={P. Degano},
+  publisher="Springer",
+  series=lncs,volume=2618,
+  pages={348--362},
+  year=2003
+}
 
 @book{Winskel:1993,
  author = {Winskel, G.},
  title = {The Formal Semantics of Programming Languages},
- year = {1993},
+ year = 1993,
  publisher = {MIT Press},
  address = "Cambridge, MA"
 }
@@ -69,9 +81,9 @@ publisher=Springer,series=LNCS,volume=2618,pages={348--362},year=2003}
                E. F. M. Steffens},
   title     = {On-the-Fly Garbage Collection: An Exercise in Cooperation},
   journal   = cacm,
-  volume    = {21},
-  number    = {11},
-  year      = {1978},
+  volume    = 21,
+  number    = 11,
+  year      = 1978,
   pages     = {966-975},
   ee        = {http://doi.acm.org/10.1145/359642.359655},
   bibsource = {DBLP, http://dblp.uni-trier.de}
@@ -82,7 +94,7 @@ publisher=Springer,series=LNCS,volume=2618,pages={348--362},year=2003}
   title     = {A Verification Environment for Sequential Imperative Programs
                in Isabelle/HOL},
   booktitle = {LPAR},
-  year      = {2004},
+  year      = 2004,
   pages     = {398-414},
   ee        = {https://doi.org/10.1007/978-3-540-32275-7_26},
   crossref  = {DBLP:conf/lpar/2004},
@@ -152,7 +164,7 @@ publisher=Springer,series=LNCS,volume=2618,pages={348--362},year=2003}
 }
 
 %  isbn      = {0-521-80608-9},
-@book{DBLP:books/cu/RoeverBH2001,
+@book{deRoeverEtAl:2001,
   author    = {de Roever, W. P. and
                de Boer, F. S. and
                U. Hannemann and
@@ -164,9 +176,8 @@ publisher=Springer,series=LNCS,volume=2618,pages={348--362},year=2003}
                and Noncompositional Methods},
   publisher = {Cambridge University Press},
   series    = {Cambridge Tracts in Theoretical Computer Science},
-  volume    = {54},
-  year      = {2001},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  volume    = 54,
+  year      = 2001,
 }
 
 @InProceedings{Pizlo+2010PLDI,
@@ -190,8 +201,7 @@ year =	 {201x}
 }
 
 @article{DBLP:journals/toplas/LamportS84,
-  author    = {L. Lamport and
-               F. B. Schneider},
+  author    = {L. Lamport and F. B. Schneider},
   title     = {The ``{Hoare Logic}'' of {CSP}, and All That},
   journal   = toplas,
   volume    = {6},
@@ -232,7 +242,7 @@ year =	 {201x}
   title =	 {Operational Semantics and Program Equivalence},
   booktitle =	 {Applied Semantics, Advanced Lectures},
   pages =	 {378--412},
-  publisher =	 {Springer-Verlag},
+  publisher =	 {Springer},
   year =	 2002,
   editor =	 {G. Barthe and P. Dybjer and J. Saraiva},
   volume =	 2395,
@@ -241,13 +251,36 @@ year =	 {201x}
                   Portugal, September 9--15, 2000},
 }
 
+@InCollection{MannaPnueli:1991,
+  author =       "Z. Manna and A. Pnueli",
+  title =        "Tools and rules for the practicing verifier",
+  booktitle =    "CMU Computer Science: A 25th Anniversary Commemorative",
+  pages =     "121–-156",
+  publisher = "ACM Press and Addison-Wesley",
+  year =      1991,
+  editor =    "R. F. Rashid",
+  note = "Also Technical Report STAN-CS-90-1321"
+}
+
 %  isbn      = {978-0-387-94459-3},
 @book{MannaPnueli:1995,
   author    = {Z. Manna and A. Pnueli},
-  title     = {Temporal verification of reactive systems - safety},
+  title     = {Temporal verification of reactive systems - {Safety}},
   publisher = {Springer},
   year      = 1995,
   pages     = {I-XV, 1-512},
+}
+
+@inproceedings{MannaPnueli:2010,
+  author    = {Z. Manna and A. Pnueli},
+  title     = {Temporal Verification of Reactive Systems: Response},
+  booktitle = {Time for Verification, Essays in Memory of Amir Pnueli},
+  series    = lncs,
+  volume    = 6200,
+  publisher = {Springer},
+  pages     = {279--361},
+  year      = 2010,
+  doi       = {10.1007/978-3-642-13754-9\_13},
 }
 
 @article{DBLP:journals/acta/LevinG81,
@@ -275,24 +308,13 @@ year =	 {201x}
   ee        = {https://doi.org/10.1007/3-540-10003-2_65},
 }
 
-@InCollection{MannaPnueli:1991,
-  author =       "Z. Manna and A. Pnueli",
-  title =        "Tools and rules for the practicing verifier",
-  booktitle =    "CMU Computer Science: A 25th Anniversary Commemorative",
-  pages =     "121–-156",
-  publisher = "ACM Press and Addison-Wesley",
-  year =      1991,
-  editor =    "R. F. Rashid"
-}
-
 %  isbn      = {0-3211-4306-X},
-@book{DBLP:books/aw/Lamport2002,
+@book{Lamport:2002,
   author    = {L. Lamport},
   title     = {Specifying Systems, The TLA+ Language and Tools for Hardware
                and Software Engineers},
   publisher = {Addison-Wesley},
-  year      = {2002},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  year      = 2002
 }
 
 @article{TLA-AFP,
@@ -373,34 +395,6 @@ year =	 {201x}
    year =    1989,
 }
 
-@inproceedings{DBLP:conf/popl/DoligezG94,
-  author    = {D. Doligez and
-               G. Gonthier},
-  title     = {Portable, Unobtrusive Garbage Collection for Multiprocessor
-               Systems},
-  booktitle = {POPL},
-  year      = {1994},
-  pages     = {70-83},
-  ee        = {http://doi.acm.org/10.1145/174675.174673},
-  crossref  = {DBLP:conf/popl/1994},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-%  isbn      = {0-89791-636-0},
-@proceedings{DBLP:conf/popl/1994,
-  editor    = {Boehm, H.-J. and
-               B. Lang and
-               D. M. Yellin},
-  title     = {Conference Record of POPL'94: 21st ACM SIGPLAN-SIGACT Symposium
-               on Principles of Programming Languages, Portland, Oregon,
-               USA, January 17-21, 1994},
-  booktitle = popl,
-  publisher = {ACM Press},
-  year      = {1994},
-  ee        = {http://dl.acm.org/citation.cfm?id=174675},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
 @article{DBLP:journals/jlp/Plotkin04,
   author    = {G. D. Plotkin},
   title     = {The origins of structural operational semantics},
@@ -413,9 +407,9 @@ year =	 {201x}
 }
 
 @Book{ConcreteSemantics:2014,
-  author =    "T. Nipkow and G. Klein",
+  author =       "T. Nipkow and G. Klein",
   title =        "Concrete Semantics: A Proof Assistant Approach",
-  publisher =    Springer,
+  publisher =    "Springer",
   year =         2014,
   url = "http://www.in.tum.de/~nipkow/Concrete-Semantics/"
 }
@@ -424,15 +418,15 @@ year =	 {201x}
   author       = {C.A.R. Hoare},
   title        = "{Communicating Sequential Processes}",
   publisher    = {Prentice-Hall},
-  year 	       = 1985,
+  year         = 1985,
   series       = {International Series In Computer Science},
   url = "http://www.usingcsp.com/"
 }
 
 @Book{Milner:1980,
-  author =    "R. Milner",
+  author =       "R. Milner",
   title =        "A Calculus of Communicating Systems",
-  publisher =    Springer,
+  publisher =    "Springer",
   year =         1980
 }
 
@@ -444,70 +438,41 @@ year =	 {201x}
  address = "Englewood Cliffs, NJ",
 }
 
-@article{DBLP:journals/tcs/FelleisenH92,
+@article{FelleisenHieb:1992,
   author    = {M. Felleisen and
                R. Hieb},
   title     = {The Revised Report on the Syntactic Theories of Sequential
                Control and State},
-  journal   = {Theor. Comput. Sci.},
-  volume    = {103},
-  number    = {2},
-  year      = {1992},
+  journal   = tcs,
+  volume    = 103,
+  number    = 2,
+  year      = 1992,
   pages     = {235-271},
-  ee        = {https://doi.org/10.1016/0304-3975(92)90014-7},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  doi       = {10.1016/0304-3975(92)90014-7},
 }
 
-@inproceedings{DBLP:conf/tphol/Jackson98,
-  author    = {Paul B. Jackson},
+@inproceedings{Jackson:1998,
+  author    = {P. B. Jackson},
   title     = {Verifying a Garbage Collection Algorithm},
   booktitle = {TPHOLs},
-  year      = {1998},
-  pages     = {225-244},
-  ee        = {https://doi.org/10.1007/BFb0055139},
-  crossref  = {DBLP:conf/tphol/1998},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@proceedings{DBLP:conf/tphol/1998,
-  editor    = {Jim Grundy and
-               Malcolm C. Newey},
-  title     = {Theorem Proving in Higher Order Logics, 11th International
-               Conference, TPHOLs'98, Canberra, Australia, September 27
-               - October 1, 1998, Proceedings},
-  booktitle = {TPHOLs},
   publisher = {Springer},
-  series    = {Lecture Notes in Computer Science},
+  series    = lncs,
   volume    = {1479},
-  year      = {1998},
-  isbn      = {3-540-64987-5},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  year      = 1998,
+  pages     = {225-244},
+  doi       = {10.1007/BFb0055139},
 }
 
-@article{DBLP:journals/logcom/Coupet-GrimalN03,
-  author    = {Coupet-Grimal, S. and
-               Nouvet, C.},
-  title     = {Formal Verification of an Incremental Garbage Collector},
-  journal   = {J. Log. Comput.},
-  volume    = {13},
-  number    = {6},
-  year      = {2003},
-  pages     = {815-833},
-  ee        = {https://doi.org/10.1093/logcom/13.6.815},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@article{DBLP:journals/logcom/Coupet-Grimal03,
+@article{CoupetGrimal:2003,
   author    = {Coupet-Grimal, S.},
-  title     = {An Axiomatization of Linear Temporal Logic in the Calculus
-               of Inductive Constructions},
-  journal   = {J. Log. Comput.},
-  volume    = {13},
-  number    = {6},
-  year      = {2003},
+  title     = {An Axiomatization of {Linear Temporal Logic} in the {Calculus
+               of Inductive Constructions}},
+  journal   = {Journal of Logic and Computation},
+  volume    = 13,
+  number    = 6,
+  year      = 2003,
   pages     = {801-813},
-  ee        = {https://doi.org/10.1093/logcom/13.6.801},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  doi       = {10.1093/logcom/13.6.801},
 }
 
 @article{DBLP:journals/entcs/SchirmerW09,
@@ -530,4 +495,162 @@ year =	 {201x}
   publisher = {{ACM}},
   year      = 2009,
   doi       = {10.1145/1480881.1480934},
+}
+
+@book{ChandyMisra:1989,
+  author    = {Chandy, K. M. and Misra, J.},
+  title     = {Parallel program design - a foundation},
+  publisher = {Addison-Wesley},
+  year      = 1989,
+  isbn      = {978-0-201-05866-6},
+}
+
+% 2019-06 FIXME not yet published?
+@Article{vanGlabbeekHofner:2019,
+  author =       {van Glabbeek, R. J. and H\"{o}fner, P.},
+  title =        {Progress, Justness and Fairness},
+  journal =      csur,
+  year =         2019,
+  url = {http://arxiv.org/abs/1810.07414v1}
+}
+
+@article{AptDelporteGallet:1986,
+  author    = {Krzysztof R. Apt and
+               Carole Delporte{-}Gallet},
+  title     = {Syntax Directed Analysis of Liveness Properties},
+  journal   = {Information and Control},
+  volume    = 68,
+  number    = {1-3},
+  pages     = {223--253},
+  year      = 1986,
+  doi       = {10.1016/S0019-9958(86)80037-7},
+}
+
+@inproceedings{MisraChandySmith:1982,
+  author    = {J. Misra and
+               K. M. Chandy and
+               T. Smith},
+  title     = {Proving Safety and Liveness of Communicating Processes with Examples},
+  booktitle = {PODC'1982},
+  publisher = {{ACM}},
+  pages     = {201--208},
+  year      = 1982,
+  doi       = {10.1145/800220.806698},
+}
+
+@article{AlpernSchneider:1985,
+  author    = {B. Alpern and
+               F. B. Schneider},
+  title     = {Defining Liveness},
+  journal   = ipl,
+  volume    = 21,
+  number    = 4,
+  pages     = {181--185},
+  year      = 1985,
+  doi       = {10.1016/0020-0190(85)90056-0},
+}
+
+@TechReport{Schneider:1987,
+  author =       {F. B. Schneider},
+  title =        {Decomposing Properties into Safety and Liveness using Predicate Logic},
+  institution =  {Department of Computer Science, Cornell University},
+  year =         1987,
+  number =    {87-874},
+  month =     oct
+}
+
+% FIXME guesswork on some of the biblio data
+@article{Kindler:1994,
+  author =       {E. Kindler},
+  title =        {Safety and liveness properties: A survey},
+  journal =      {Bulletin of the European Association for Theoretical Computer Science},
+  year =         1994,
+  volume =    53,
+  number =    30,
+  pages =     {268--272},
+  month =     6,
+  url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.43.8206&rep=rep1&type=pdf",
+}
+
+@article{Sistla:1994,
+  author    = {Sistla, A. P.},
+  title     = {Safety, Liveness and Fairness in Temporal Logic},
+  journal   = fac,
+  volume    = 6,
+  number    = 5,
+  pages     = {495--512},
+  year      = 1994,
+  doi       = {10.1007/BF01211865},
+}
+
+@article{OwickiLamport:1982,
+  author    = {S. S. Owicki and
+               L. Lamport},
+  title     = {Proving Liveness Properties of Concurrent Programs},
+  journal   = toplas,
+  volume    = 4,
+  number    = 3,
+  pages     = {455--495},
+  year      = 1982,
+  doi       = {10.1145/357172.357178},
+}
+
+@inproceedings{ChangMannaPnueli:1992,
+  author    = {E. Y. Chang and
+               Z. Manna and
+               A. Pnueli},
+  title     = {Characterization of Temporal Property Classes},
+  booktitle = {ICALP'1992},
+  pages     = {474--486},
+  year      = 1992,
+  series    = lncs,
+  volume    = 623,
+  publisher = {Springer},
+  doi       = {10.1007/3-540-55719-9\_97},
+}
+
+@inproceedings{MannaPnueli:1988,
+  author    = {Z. Manna and
+               A. Pnueli},
+  title     = {The anchored version of the temporal framework},
+  booktitle = {Linear Time, Branching Time and Partial Order in Logics and Models
+               for Concurrency, School/Workshop, Noordwijkerhout, The Netherlands,
+               May 30 - June 3, 1988, Proceedings},
+  editor    = {de Bakker, J. W. and
+               de Roever, W. P. and
+               Rozenberg, G.},
+  pages     = {201--284},
+  year      = 1988,
+  doi       = {10.1007/BFb0013024},
+  volume    = 354,
+  publisher = {Springer},
+  series    = lncs,
+}
+
+@inproceedings{PnueliArons:2003,
+  author="Pnueli, A. and Arons, T.",
+  title="{TLPVS}: A {PVS}-Based {LTL} Verification System",
+  bookTitle="Verification: Theory and Practice: Essays Dedicated to Zohar Manna on the Occasion of His 64th Birthday",
+  year=2003,
+  publisher="Springer",
+  series=lncs,
+  volume=2772,
+  address="Berlin, Heidelberg",
+  pages="598--625",
+  abstract="In this paper we present our pvs implementation of a linear temporal logic verification system. The system includes a set of theories defining a temporal logic, a number of proof rules for proving soundness and response properties, and strategies which aid in conducting the proofs. In addition to implementing a framework for existing rules, we have also derived new methods which are particularly useful in a deductive ltl system. A distributed rank rule for the verification of response properties in parameterized systems is presented, and a methodology is detailed for reducing compassion requirements to justice requirements (strong fairness to weak fairness). Special attention has been paid to the verification of unbounded systems --- systems in which the number of processes is unbounded --- and our verification rules are appropriate to such systems.",
+  isbn="978-3-540-39910-0",
+  doi="10.1007/978-3-540-39910-0_26",
+}
+
+@article{AbadiPlotkin:1993,
+  author    = {Mart{\'{\i}}n Abadi and
+               Gordon D. Plotkin},
+  title     = {A Logical View of Composition},
+  journal   = tcs,
+  volume    = 114,
+  number    = 1,
+  pages     = {3--30},
+  year      = 1993,
+  doi       = {10.1016/0304-3975(93)90151-I},
+  note = {Journal version of FIXME Abadi, Plotkin (POPL, 1991)}
 }
