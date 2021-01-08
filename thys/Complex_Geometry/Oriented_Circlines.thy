@@ -467,13 +467,13 @@ proof-
       proof (cases "B = 0")
         case True
         thus ?thesis
-          using assms * ** H1 `\<not> Re A > 0` mult_neg_pos
+          using assms * ** H1 \<open>\<not> Re A > 0\<close> mult_neg_pos
           by fastforce
       next
         case False
         thus ?thesis
           using arg_uminus_opposite_sign[of B] arg_mult_real_negative
-          using assms * ** H1 `\<not> Re A > 0` mult_neg_pos
+          using assms * ** H1 \<open>\<not> Re A > 0\<close> mult_neg_pos
           by fastforce
       qed
     qed
@@ -491,12 +491,12 @@ proof-
       proof (cases "B = 0")
         case True
         thus ?thesis 
-          using assms * ** H2 `\<not> Re A > 0`
+          using assms * ** H2 \<open>\<not> Re A > 0\<close>
           by simp (smt arg_0_iff arg_complex_of_real_negative arg_complex_of_real_positive arg_mult_eq complex_of_real_Re mult.right_neutral mult_eq_0_iff of_real_0 of_real_1 zero_complex.simps(1))
       next
         case False
         thus ?thesis
-          using assms `\<not> Re A > 0` H2 * **
+          using assms \<open>\<not> Re A > 0\<close> H2 * **
           using arg_uminus_opposite_sign[of B]
           by (cases "Re A = 0", auto simp add: mult_neg_neg)
       qed

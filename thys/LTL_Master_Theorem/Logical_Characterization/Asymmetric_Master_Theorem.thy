@@ -43,7 +43,7 @@ proof -
   moreover
 
   have "S \<inter> subformulas\<^sub>\<nu> \<psi> \<subseteq> \<G> \<psi> (suffix i w)"
-    using `S \<subseteq> \<G> \<phi> (suffix i w)` unfolding \<G>_semantics' by blast
+    using \<open>S \<subseteq> \<G> \<phi> (suffix i w)\<close> unfolding \<G>_semantics' by blast
   then have "S \<inter> subformulas\<^sub>\<nu> \<psi> \<subseteq> \<G> \<psi> (suffix j w)"
     using \<G>_suffix \<open>i \<le> j\<close> inf.absorb_iff2 le_Suc_ex by fastforce
 
@@ -76,7 +76,7 @@ proof -
     proof (cases "\<psi> \<notin> S")
       assume "\<psi> \<notin> S"
 
-      note FG_advice_insert = FG_advice_insert[OF `\<psi> \<notin> S`]
+      note FG_advice_insert = FG_advice_insert[OF \<open>\<psi> \<notin> S\<close>]
 
       {
         \<comment> \<open>Show @{term "S \<subseteq> \<G> \<phi> (suffix i w)"}\<close>
@@ -89,7 +89,7 @@ proof -
             using insert(5) by blast
 
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<psi>\<^sub>2[S]\<^sub>\<mu>"
-            using `\<psi>\<^sub>1 R\<^sub>n \<psi>\<^sub>2 \<in> S` FG_advice_insert insert.hyps(2)
+            using \<open>\<psi>\<^sub>1 R\<^sub>n \<psi>\<^sub>2 \<in> S\<close> FG_advice_insert insert.hyps(2)
             by fastforce
         }
 
@@ -103,7 +103,7 @@ proof -
             using insert(6) by blast
 
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n (\<psi>\<^sub>1[S]\<^sub>\<mu> or\<^sub>n \<psi>\<^sub>2[S]\<^sub>\<mu>)"
-            using `\<psi>\<^sub>1 W\<^sub>n \<psi>\<^sub>2 \<in> S` FG_advice_insert insert.hyps(2)
+            using \<open>\<psi>\<^sub>1 W\<^sub>n \<psi>\<^sub>2 \<in> S\<close> FG_advice_insert insert.hyps(2)
             by fastforce
         }
 
@@ -130,7 +130,7 @@ proof -
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<psi>\<^sub>2[S]\<^sub>\<mu>"
             using Release_ltln FG_advice_insert by simp
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<psi>\<^sub>2"
-            using FG_advice_b2_helper[OF `S \<subseteq> \<G> \<phi> (suffix i w)`] by auto
+            using FG_advice_b2_helper[OF \<open>S \<subseteq> \<G> \<phi> (suffix i w)\<close>] by auto
           then show ?thesis
             using Release_ltln globally_release
             by blast
@@ -142,7 +142,7 @@ proof -
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n (\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2)[S]\<^sub>\<mu>"
             using WeakUntil_ltln FG_advice_insert by simp
           then have "suffix i w \<Turnstile>\<^sub>n G\<^sub>n (\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2)"
-            using FG_advice_b2_helper[OF `S \<subseteq> \<G> \<phi> (suffix i w)`, of _ "\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2"]
+            using FG_advice_b2_helper[OF \<open>S \<subseteq> \<G> \<phi> (suffix i w)\<close>, of _ "\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2"]
             by force
           then show ?thesis
             unfolding WeakUntil_ltln semantics_ltln.simps
@@ -150,7 +150,7 @@ proof -
         qed fast+
 
         then have "\<psi> \<in> \<G> \<phi> (suffix i w)"
-          unfolding \<G>_semantics using `\<psi> \<in> subformulas\<^sub>\<nu> \<phi>`
+          unfolding \<G>_semantics using \<open>\<psi> \<in> subformulas\<^sub>\<nu> \<phi>\<close>
           by simp
       }
 
@@ -213,7 +213,7 @@ next
     moreover
 
     have "\<psi>\<^sub>2 \<in> subfrmlsn \<phi>"
-      using \<F>\<G>_subfrmlsn `\<psi>\<^sub>1 R\<^sub>n \<psi>\<^sub>2 \<in> ?Y` subfrmlsn_subset by force
+      using \<F>\<G>_subfrmlsn \<open>\<psi>\<^sub>1 R\<^sub>n \<psi>\<^sub>2 \<in> ?Y\<close> subfrmlsn_subset by force
 
     ultimately show "suffix ?i w \<Turnstile>\<^sub>n G\<^sub>n (\<psi>\<^sub>2 [?Y]\<^sub>\<mu>)"
       using FG_advice_b1_helper by fastforce
@@ -241,7 +241,7 @@ next
     moreover
 
     have "\<psi>\<^sub>1 \<in> subfrmlsn \<phi>" and "\<psi>\<^sub>2 \<in> subfrmlsn \<phi>"
-      using \<F>\<G>_subfrmlsn `\<psi>\<^sub>1 W\<^sub>n \<psi>\<^sub>2 \<in> ?Y` subfrmlsn_subset by force+
+      using \<F>\<G>_subfrmlsn \<open>\<psi>\<^sub>1 W\<^sub>n \<psi>\<^sub>2 \<in> ?Y\<close> subfrmlsn_subset by force+
 
     ultimately show "suffix ?i w \<Turnstile>\<^sub>n G\<^sub>n (\<psi>\<^sub>1[?Y]\<^sub>\<mu> or\<^sub>n \<psi>\<^sub>2[?Y]\<^sub>\<mu>)"
       using FG_advice_b1_helper by fastforce

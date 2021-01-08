@@ -2700,21 +2700,21 @@ begin
         show "\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>"
           using assms(4) by simp
         have 0: "src\<^sub>C f = trg\<^sub>C g \<and> src\<^sub>C g = trg\<^sub>C f"
-          using `\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>`
+          using \<open>\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>\<close>
           by (metis C.hseqE C.ideD(1) C.ide_cod C.ide_dom C.in_homE assms(4))
         show "C.iso \<eta>"
         proof -
           have "D.iso (F \<eta>)"
           proof -
             have 1:  "\<guillemotleft>D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D unit (src\<^sub>C f) : map\<^sub>0 (src\<^sub>C f) \<Rightarrow>\<^sub>D F g \<star>\<^sub>D F f\<guillemotright>"
-              using `C.ide f` `C.ide g` `\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>`
+              using \<open>C.ide f\<close> \<open>C.ide g\<close> \<open>\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>\<close>
                     unit_char cmp_in_hom cmp_components_are_iso
               by (metis (mono_tags, lifting) C.ideD(1) E'.unit_in_vhom preserves_src)
             have 2: "D.iso (\<Phi> (g, f)) \<and> \<guillemotleft>\<Phi> (g, f) : F g \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F (g \<star>\<^sub>C f)\<guillemotright>"
-              using 0 `C.ide f` `C.ide g` cmp_in_hom by simp
+              using 0 \<open>C.ide f\<close> \<open>C.ide g\<close> cmp_in_hom by simp
             have 3: "D.iso (D.inv (unit (src\<^sub>C f))) \<and>
                      \<guillemotleft>D.inv (unit (src\<^sub>C f)) : F (src\<^sub>C f) \<Rightarrow>\<^sub>D map\<^sub>0 (src\<^sub>C f)\<guillemotright>"
-               using `C.ide f` unit_char by simp
+               using \<open>C.ide f\<close> unit_char by simp
             have "D.iso (\<Phi> (g, f) \<cdot>\<^sub>D (D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D unit (src\<^sub>C f)) \<cdot>\<^sub>D
                     D.inv (unit (src\<^sub>C f)))"
               using 1 2 3 E'.unit_is_iso D.isos_compose by blast
@@ -2732,7 +2732,7 @@ begin
                 by (metis C.ideD(1) C.obj_src D.comp_assoc D.dom_inv D.in_homE unit_char(2)
                           assms(1))
               also have "... = F \<eta>"
-                using `\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>` D.comp_arr_dom D.comp_cod_arr by auto
+                using \<open>\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright>\<close> D.comp_arr_dom D.comp_cod_arr by auto
               finally show ?thesis by simp
             qed
             ultimately show ?thesis by simp
@@ -2745,15 +2745,15 @@ begin
           have "D.iso (F \<epsilon>)"
           proof -
             have 1:  "\<guillemotleft>D.inv (unit (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g) : F f \<star>\<^sub>D F g \<Rightarrow>\<^sub>D map\<^sub>0 (src\<^sub>C g)\<guillemotright>"
-              using `C.ide f` `C.ide g` `\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>`
+              using \<open>C.ide f\<close> \<open>C.ide g\<close> \<open>\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>\<close>
                     unit_char cmp_in_hom cmp_components_are_iso
               by (metis (mono_tags, lifting) C.ideD(1) E'.counit_in_vhom preserves_src)
             have 2: "D.iso (D.inv (\<Phi> (f, g))) \<and>
                      \<guillemotleft>D.inv (\<Phi> (f, g)) : F (f \<star>\<^sub>C g) \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F g\<guillemotright>"
-              using 0 `C.ide f` `C.ide g` `\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>` cmp_in_hom(2) D.inv_in_hom
+              using 0 \<open>C.ide f\<close> \<open>C.ide g\<close> \<open>\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>\<close> cmp_in_hom(2) D.inv_in_hom
               by simp
             have 3: "D.iso (unit (trg\<^sub>C f)) \<and> \<guillemotleft>unit (trg\<^sub>C f) : map\<^sub>0 (trg\<^sub>C f) \<Rightarrow>\<^sub>D F (trg\<^sub>C f)\<guillemotright>"
-               using `C.ide f` unit_char by simp
+               using \<open>C.ide f\<close> unit_char by simp
             have "D.iso (unit (trg\<^sub>C f) \<cdot>\<^sub>D (D.inv (unit (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g)) \<cdot>\<^sub>D
                   D.inv (\<Phi> (f, g)))"
               using 0 1 2 3 E'.counit_is_iso D.isos_compose
@@ -2770,7 +2770,7 @@ begin
                 using 0 3 D.comp_arr_inv' D.comp_inv_arr'
                 by (simp add: C.VV.arr_char C.VV.ide_char assms(1-2))
               also have "... = F \<epsilon>"
-                using 0 `\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>` D.comp_arr_dom D.comp_cod_arr by auto
+                using 0 \<open>\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>\<close> D.comp_arr_dom D.comp_cod_arr by auto
               finally show ?thesis by simp
             qed
             ultimately show ?thesis by simp

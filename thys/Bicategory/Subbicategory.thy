@@ -826,9 +826,9 @@ begin
       show "trg\<^sub>B w = a"
         using obj_a w \<phi> B.src_cod by force
       show "src w = a"
-        using `src\<^sub>B w = a` w ide_w src_def by simp
+        using \<open>src\<^sub>B w = a\<close> w ide_w src_def by simp
       show "trg w = a"
-        using `src\<^sub>B w = a` w ide_w trg_def
+        using \<open>src\<^sub>B w = a\<close> w ide_w trg_def
         by (simp add: \<open>trg\<^sub>B w = a\<close>)
       show "dom w = w"
         using w by simp

@@ -180,35 +180,35 @@ proof
       have "distributed_system.can_occur chan trans send recv t2 s2"
         using \<open>distributed_system chan\<close> distributed_system.can_occur_def by fastforce
       moreover have "\<forall>r. r \<noteq> P \<longrightarrow> r = Q" using PType.exhaust by auto
-      ultimately show ?thesis by (simp add: `distributed_system chan` distributed_system.next_send)
+      ultimately show ?thesis by (simp add: \<open>distributed_system chan\<close> distributed_system.next_send)
     qed
     moreover have "distributed_system.next chan trans send recv s3 t3 s4"
     proof -
       have "distributed_system.can_occur chan trans send recv t3 s3"
         using \<open>distributed_system chan\<close> distributed_system.can_occur_def by fastforce
       moreover have "\<forall>p'. p' \<noteq> P \<longrightarrow> p' = Q" using PType.exhaust by auto
-      ultimately show ?thesis by (simp add: `distributed_system chan` distributed_system.next_snapshot)
+      ultimately show ?thesis by (simp add: \<open>distributed_system chan\<close> distributed_system.next_snapshot)
     qed
     moreover have "distributed_system.next chan trans send recv s4 t4 s5"
     proof -
       have "distributed_system.can_occur chan trans send recv t4 s4"
         using \<open>distributed_system chan\<close> distributed_system.can_occur_def by fastforce
       then show ?thesis
-        by (simp add: `distributed_system chan` distributed_system.next_def)
+        by (simp add: \<open>distributed_system chan\<close> distributed_system.next_def)
     qed
     moreover have "distributed_system.next chan trans send recv s5 t5 s6"
     proof -
       have "distributed_system.can_occur chan trans send recv t5 s5"
         using \<open>distributed_system chan\<close> distributed_system.can_occur_def by fastforce
       then show ?thesis
-        by (simp add: `distributed_system chan` distributed_system.next_def)
+        by (simp add: \<open>distributed_system chan\<close> distributed_system.next_def)
     qed
     moreover have "distributed_system.next chan trans send recv s6 t6 s7"
     proof -
       have "distributed_system.can_occur chan trans send recv t6 s6"
         using \<open>distributed_system chan\<close> distributed_system.can_occur_def by fastforce
       then show ?thesis
-        by (simp add: `distributed_system chan` distributed_system.next_def)
+        by (simp add: \<open>distributed_system chan\<close> distributed_system.next_def)
     qed
     ultimately have "distributed_system.trace chan trans send recv init ?t s7" 
       by (meson \<open>distributed_system chan\<close> distributed_system.trace.simps)

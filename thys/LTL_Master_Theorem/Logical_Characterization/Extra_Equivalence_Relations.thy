@@ -197,7 +197,7 @@ proof -
       by (metis (no_types, hide_lams) \<open>x \<in> X\<close> assms(1) Y_def image_iff)
   }
   then have "g ` X = g ` Y"
-    using assms `Y \<subseteq> X` by blast
+    using assms \<open>Y \<subseteq> X\<close> by blast
   ultimately
   show "finite (g ` X)"
     by simp

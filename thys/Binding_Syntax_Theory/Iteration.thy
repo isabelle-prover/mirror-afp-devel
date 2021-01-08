@@ -1,9 +1,9 @@
-section {* Iteration *}
+section \<open>Iteration\<close>
 
 theory Iteration imports Well_Sorted_Terms
 begin
 
-text{* In this section, we introduce first-order models (models, for short).
+text\<open>In this section, we introduce first-order models (models, for short).
 These are structures having operators that
 match those for terms (including variable-injection, binding operations, freshness,
 swapping and substitution) and satisfy some clauses,
@@ -15,11 +15,11 @@ The actual full prefix will be ``ig" (where ``i" stands for ``iteration"), symbo
 the models from this section support iteration, and not general recursion.
 The latter is dealt with by the models introduced in the next section, for which we
 use the simple prefix ``g".
-*}
+\<close>
 
-subsection {* Models *}
+subsection \<open>Models\<close>
 
-text{* We have two basic kinds of models:
+text\<open>We have two basic kinds of models:
 \\- fresh-swap (FSw) models, featuring operations corresponding to
 the concrete syntactic constructs (``Var", ``Op", ``Abs"),
 henceforth referred to simply as {\em the constructs}, and to fresh and swap;
@@ -42,9 +42,9 @@ we refer to the generalized items using the same notations as for
 Indeed, a model can be regarded as implementing
 a generalization/axiomatization of the term structure, where now the objects are
 not terms, but do have term-like properties.
-*}
+\<close>
 
-subsubsection {* Raw models  *}
+subsubsection \<open>Raw models\<close>
 
 record ('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model =
   igWls :: "'sort \<Rightarrow> 'gTerm \<Rightarrow> bool"
@@ -63,9 +63,9 @@ record ('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model =
   igSubst :: "'varSort \<Rightarrow> 'gTerm \<Rightarrow> 'var \<Rightarrow> 'gTerm \<Rightarrow> 'gTerm"
   igSubstAbs :: "'varSort \<Rightarrow> 'gTerm \<Rightarrow> 'var \<Rightarrow> 'gAbs \<Rightarrow> 'gAbs"
 
-text{* \
+text\<open>\
 \\- ``igSwap MOD zs z1 z2 X" swaps in X z1 and z2 (assumed of sorts zs).
-\\- ``igSubst MOD ys Y x X" substitutes, in X, Y with y (assumed of sort ys). *}
+\\- ``igSubst MOD ys Y x X" substitutes, in X, Y with y (assumed of sort ys).\<close>
 
 definition igFreshInp where
 "igFreshInp MOD ys y inp == liftAll (igFresh MOD ys y) inp"
@@ -92,9 +92,9 @@ begin
 (*  In this theory, new type variables are introduced into the context,
 corresponding to 'gTerm and 'gAbs (making the locale polymorphic).  *)
 
-subsubsection {* Well-sorted models of various kinds*}
+subsubsection \<open>Well-sorted models of various kinds\<close>
 
-text{* We define the following kinds of well-sorted models
+text\<open>We define the following kinds of well-sorted models
 \\- fresh-swap models (predicate ``iwlsFSw");
 \\- fresh-subst models (``iwlsFSb");
 \\- fresh-swap-subst models (``iwlsFSwSb");
@@ -151,7 +151,7 @@ Note that for the models operations and relations we do not actually write ``fre
 As usual, we shall have not only term versions, but also abstraction versions of the above
 operations.
 
- *}
+\<close>
 
 definition igWlsInp where
 "igWlsInp MOD delta inp ==
@@ -165,7 +165,7 @@ definition igWlsBinp where
 
 lemmas igWlsBinp_defs = igWlsBinp_def sameDom_def liftAll2_def
 
-text{* Domain disjointness: *}
+text\<open>Domain disjointness:\<close>
 
 definition igWlsDisj where
 "igWlsDisj MOD == \<forall> s s' X. igWls MOD s X \<and> igWls MOD s' X \<longrightarrow> s = s'"
@@ -185,16 +185,16 @@ lemmas igWlsAllDisj_defs =
 igWlsAllDisj_def
 igWlsDisj_def igWlsAbsDisj_def
 
-text {* Abstration domains inhabited only within bound arities: *}
+text \<open>Abstration domains inhabited only within bound arities:\<close>
 
 definition igWlsAbsIsInBar where
 "igWlsAbsIsInBar MOD ==
  \<forall> us s A. igWlsAbs MOD (us,s) A \<longrightarrow> isInBar (us,s)"
 
-text{* Domain preservation by the operators: weak (``if") versions and strong (``iff") versions
-(for the latter, we use the suffix ``STR"): *}
+text\<open>Domain preservation by the operators: weak (``if") versions and strong (``iff") versions
+(for the latter, we use the suffix ``STR"):\<close>
 
-text{* The constructs preserve the domains: *}
+text\<open>The constructs preserve the domains:\<close>
 
 definition igVarIPresIGWls where
 "igVarIPresIGWls MOD ==
@@ -264,7 +264,7 @@ by auto
 (* The notion of ``fresh" preserving well-sorted-ness does not make sense, since
 ``fresh" is a relation. *)
 
-text{* ``swap" preserves the domains: *}
+text\<open>``swap" preserves the domains:\<close>
 
 definition igSwapIPresIGWls where
 "igSwapIPresIGWls MOD ==
@@ -318,7 +318,7 @@ igSwapIPresIGWlsSTR_imp_igSwapIPresIGWls
 igSwapAbsIPresIGWlsAbsSTR_imp_igSwapAbsIPresIGWlsAbs
 by auto
 
-text{* ``subst" preserves the domains: *}
+text\<open>``subst" preserves the domains:\<close>
 
 definition igSubstIPresIGWls where
 "igSubstIPresIGWls MOD ==
@@ -373,8 +373,8 @@ igSubstIPresIGWlsSTR_imp_igSubstIPresIGWls
 igSubstAbsIPresIGWlsAbsSTR_imp_igSubstAbsIPresIGWlsAbs
 by auto
 
-text{* Clauses for fresh: fully conditional versions and less conditional,
-stronger versions (the latter having suffix ``STR"). *}
+text\<open>Clauses for fresh: fully conditional versions and less conditional,
+stronger versions (the latter having suffix ``STR").\<close>
 
 definition igFreshIGVar where
 "igFreshIGVar MOD ==
@@ -717,7 +717,7 @@ lemma igAbsRenSTR_imp_igAbsCongUSTR:
 unfolding igAbsCongUSTR_def igAbsRenSTR_def by metis
   
 
-text {* Well-sorted fresh-swap models: *}
+text \<open>Well-sorted fresh-swap models:\<close>
 
 definition iwlsFSw where
 "iwlsFSw MOD ==
@@ -762,7 +762,7 @@ igSwapClsSTR_imp_igSwapCls
 igAbsCongSSTR_imp_igAbsCongS
 by auto
 
-text {* Well-sorted fresh-subst models: *}
+text \<open>Well-sorted fresh-subst models:\<close>
 
 definition iwlsFSb where
 "iwlsFSb MOD ==
@@ -807,7 +807,7 @@ igSubstClsSTR_imp_igSubstCls
 igAbsRenSTR_imp_igAbsRen
 by auto
 
-text {* Well-sorted fresh-swap-subst-models *}
+text \<open>Well-sorted fresh-swap-subst-models\<close>
 
 (* "strong" versions not required for this kind of models *)
 
@@ -821,7 +821,7 @@ iwlsFSw_def igSubstAllIPresIGWlsAll_def igSubstCls_def
 lemmas iwlsFSwSb_defs = iwlsFSwSb_def
 iwlsFSw_def igSubstAllIPresIGWlsAll_defs igSubstCls_defs
 
-text {* Well-sorted fresh-subst-swap-models *}
+text \<open>Well-sorted fresh-subst-swap-models\<close>
 
 (* "strong" versions not required for this kind of models *)
 
@@ -835,9 +835,9 @@ iwlsFSw_def igSwapAllIPresIGWlsAll_def igSwapCls_def
 lemmas iwlsFSbSw_defs = iwlsFSbSw_def
 iwlsFSw_def igSwapAllIPresIGWlsAll_defs igSwapCls_defs
 
-text{* Extension of domain preservation (by swap and subst) to inputs: *}
+text\<open>Extension of domain preservation (by swap and subst) to inputs:\<close>
 
-text {* First for free inputs: *}
+text \<open>First for free inputs:\<close>
 
 definition igSwapInpIPresIGWlsInp where
 "igSwapInpIPresIGWlsInp MOD ==
@@ -892,7 +892,7 @@ igSubstInpIPresIGWlsInpSTR_def igSubstIPresIGWlsSTR_def igSubstInp_def
 igWlsInp_def liftAll2_def lift_def sameDom_def 
 split: option.splits) (smt option.distinct(1) option.exhaust) 
 
-text {* Then for bound inputs:  *}
+text \<open>Then for bound inputs:\<close>
 
 definition igSwapBinpIPresIGWlsBinp where
 "igSwapBinpIPresIGWlsBinp MOD ==
@@ -947,16 +947,16 @@ igSubstAbsIPresIGWlsAbsSTR_def igSubstBinpIPresIGWlsBinpSTR_def igSubstBinp_def
 igWlsBinp_def liftAll2_def lift_def sameDom_def 
 split: option.splits) (smt option.distinct(1) option.exhaust surj_pair) 
 
-subsection {* Morphisms of models *}
+subsection \<open>Morphisms of models\<close>
 
-text{*
+text\<open>
 The morphisms between models shall be the usual first-order-logic morphisms, i.e,, functions
 commuting with the operations and preserving the (freshness) relations.  Because they involve the
 same signature, the morphisms for fresh-swap-subst models (called fresh-swap-subst morphisms)
 will be the same as those for fresh-subst-swap-models.
-*}
+\<close>
 
-subsubsection {* Preservation of the domains *}
+subsubsection \<open>Preservation of the domains\<close>
 
 definition ipresIGWls where
 "ipresIGWls h MOD MOD' ==
@@ -973,7 +973,7 @@ definition ipresIGWlsAll where
 lemmas ipresIGWlsAll_defs = ipresIGWlsAll_def
 ipresIGWls_def ipresIGWlsAbs_def
 
-subsubsection {* Preservation of the constructs *}
+subsubsection \<open>Preservation of the constructs\<close>
 
 definition ipresIGVar where
 "ipresIGVar h MOD MOD' ==
@@ -1002,7 +1002,7 @@ ipresIGVar_def
 ipresIGAbs_def
 ipresIGOp_def
 
-subsubsection {* Preservation of freshness *}
+subsubsection \<open>Preservation of freshness\<close>
 
 definition ipresIGFresh where
 "ipresIGFresh h MOD MOD' ==
@@ -1023,7 +1023,7 @@ definition ipresIGFreshAll where
 lemmas ipresIGFreshAll_defs = ipresIGFreshAll_def
 ipresIGFresh_def ipresIGFreshAbs_def
 
-subsubsection {* Preservation of swapping *}
+subsubsection \<open>Preservation of swapping\<close>
 
 definition ipresIGSwap where
 "ipresIGSwap h MOD MOD' ==
@@ -1044,7 +1044,7 @@ definition ipresIGSwapAll where
 lemmas ipresIGSwapAll_defs = ipresIGSwapAll_def
 ipresIGSwap_def ipresIGSwapAbs_def
 
-subsubsection {* Preservation of subst *}
+subsubsection \<open>Preservation of subst\<close>
 
 definition ipresIGSubst where
 "ipresIGSubst h MOD MOD' ==
@@ -1066,7 +1066,7 @@ definition ipresIGSubstAll where
 lemmas ipresIGSubstAll_defs = ipresIGSubstAll_def
 ipresIGSubst_def ipresIGSubstAbs_def
 
-subsubsection {* Fresh-swap morphisms *}
+subsubsection \<open>Fresh-swap morphisms\<close>
 
 definition FSwImorph where
 "FSwImorph h hA MOD MOD' ==
@@ -1081,7 +1081,7 @@ lemmas FSwImorph_defs = FSwImorph_def
 ipresIGWlsAll_defs ipresIGCons_defs
 ipresIGFreshAll_defs ipresIGSwapAll_defs
 
-subsubsection {* Fresh-subst morphisms *}
+subsubsection \<open>Fresh-subst morphisms\<close>
 
 definition FSbImorph where
 "FSbImorph h hA MOD MOD' ==
@@ -1096,7 +1096,7 @@ lemmas FSbImorph_defs = FSbImorph_def
 ipresIGWlsAll_defs ipresIGCons_defs
 ipresIGFreshAll_defs ipresIGSubstAll_defs
 
-subsubsection {* Fresh-swap-subst morphisms *}
+subsubsection \<open>Fresh-swap-subst morphisms\<close>
 
 (* Note that FSwSb-morphisms are also igood for FSbSw-models. *)
 
@@ -1110,16 +1110,16 @@ FSwImorph_def ipresIGSubstAll_def
 lemmas FSwSbImorph_defs = FSwSbImorph_def
 FSwImorph_defs ipresIGSubstAll_defs
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
-text {* FSwSb morphisms are the same as FSbSw morphisms: *}
+text \<open>FSwSb morphisms are the same as FSbSw morphisms:\<close>
 
 lemma FSwSbImorph_iff:
 "FSwSbImorph h hA MOD MOD' =
  (FSbImorph h hA MOD MOD' \<and> ipresIGSwapAll h hA MOD MOD')"
 unfolding FSwSbImorph_def FSbImorph_def FSwImorph_def by auto
 
-text {* Some facts for free inpus:  *}
+text \<open>Some facts for free inpus:\<close>
 
 lemma igSwapInp_None[simp]:
 "(igSwapInp MOD zs z1 z2 inp i = None) = (inp i = None)"
@@ -1152,7 +1152,7 @@ assumes "igWlsInp MOD delta inp" and "FSwSbImorph h hA MOD MOD'"
 shows "igWlsInp MOD' delta (lift h inp)"
 using assms unfolding FSwSbImorph_def using FSwImorph_igWlsInp by auto
 
-text {* Similar facts for bound inpus:  *}
+text \<open>Similar facts for bound inpus:\<close>
 
 lemma igSwapBinp_None[simp]:
 "(igSwapBinp MOD zs z1 z2 binp i = None) = (binp i = None)"
@@ -1190,7 +1190,7 @@ lemmas input_igSwap_igSubst_None =
 igSwapInp_None igSubstInp_None
 igSwapBinp_None igSubstBinp_None
 
-subsubsection {* Identity and composition  *}
+subsubsection \<open>Identity and composition\<close>
 
 lemma id_FSwImorph: "FSwImorph id id MOD MOD"
 unfolding FSwImorph_defs by auto
@@ -1327,11 +1327,11 @@ shows "FSwSbImorph (h' o h) (hA' o hA) MOD MOD''"
 using assms unfolding FSwSbImorph_def  
 using comp_FSwImorph FSwImorph_def comp_ipresIGSubstAll FixSyn_axioms by blast
 
-subsection {* The term model *}
+subsection \<open>The term model\<close>
 
-text {* We show that terms form fresh-swap-subst and fresh-subst-swap models. *}
+text \<open>We show that terms form fresh-swap-subst and fresh-subst-swap models.\<close>
 
-subsubsection {* Definitions and simplification rules *}
+subsubsection \<open>Definitions and simplification rules\<close>
 
 definition termMOD where
 "termMOD ==
@@ -1427,9 +1427,9 @@ igFreshAll_termMOD_simps
 igSwapAll_termMOD_simps
 igSubstAll_termMOD_simps
 
-subsubsection {*  Well-sortedness of the term model *}
+subsubsection \<open>Well-sortedness of the term model\<close>
 
-text{* Domains are disjoint: *}
+text\<open>Domains are disjoint:\<close>
 
 lemma termMOD_igWlsDisj: "igWlsDisj termMOD"
 unfolding igWlsDisj_def using wls_disjoint by auto
@@ -1441,12 +1441,12 @@ lemma termMOD_igWlsAllDisj: "igWlsAllDisj termMOD"
 unfolding igWlsAllDisj_def
 using termMOD_igWlsDisj termMOD_igWlsAbsDisj by simp
 
-text {* Abstraction domains inhabited only within bound arities: *}
+text \<open>Abstraction domains inhabited only within bound arities:\<close>
 
 lemma termMOD_igWlsAbsIsInBar: "igWlsAbsIsInBar termMOD"
 unfolding igWlsAbsIsInBar_def using wlsAbs_nchotomy by simp
 
-text{* The syntactic constructs preserve the domains: *}
+text\<open>The syntactic constructs preserve the domains:\<close>
 
 lemma termMOD_igVarIPresIGWls: "igVarIPresIGWls termMOD"
 unfolding igVarIPresIGWls_def by simp
@@ -1462,7 +1462,7 @@ unfolding igConsIPresIGWls_def
 using termMOD_igVarIPresIGWls termMOD_igAbsIPresIGWls termMOD_igOpIPresIGWls
 by auto
 
-text{* Swap preserves the domains: *}
+text\<open>Swap preserves the domains:\<close>
 
 lemma termMOD_igSwapIPresIGWls: "igSwapIPresIGWls termMOD"
 unfolding igSwapIPresIGWls_def by simp
@@ -1474,7 +1474,7 @@ lemma termMOD_igSwapAllIPresIGWlsAll: "igSwapAllIPresIGWlsAll termMOD"
 unfolding igSwapAllIPresIGWlsAll_def
 using termMOD_igSwapIPresIGWls termMOD_igSwapAbsIPresIGWlsAbs by auto
 
-text{* ``Subst" preserves the domains: *}
+text\<open>``Subst" preserves the domains:\<close>
 
 lemma termMOD_igSubstIPresIGWls: "igSubstIPresIGWls termMOD"
 unfolding igSubstIPresIGWls_def by simp
@@ -1486,7 +1486,7 @@ lemma termMOD_igSubstAllIPresIGWlsAll: "igSubstAllIPresIGWlsAll termMOD"
 unfolding igSubstAllIPresIGWlsAll_def
 using termMOD_igSubstIPresIGWls termMOD_igSubstAbsIPresIGWlsAbs by auto
 
-text{* The ``fresh" clauses hold: *}
+text\<open>The ``fresh" clauses hold:\<close>
 
 lemma termMOD_igFreshIGVar: "igFreshIGVar termMOD"
 unfolding igFreshIGVar_def by simp
@@ -1505,7 +1505,7 @@ unfolding igFreshCls_def
 using termMOD_igFreshIGVar termMOD_igFreshIGAbs1 termMOD_igFreshIGAbs2 termMOD_igFreshIGOp
 by simp
 
-text{* The ``swap" clauses hold: *}
+text\<open>The ``swap" clauses hold:\<close>
 
 lemma termMOD_igSwapIGVar: "igSwapIGVar termMOD"
 unfolding igSwapIGVar_def by simp
@@ -1520,7 +1520,7 @@ lemma termMOD_igSwapCls: "igSwapCls termMOD"
 unfolding igSwapCls_def
 using termMOD_igSwapIGVar termMOD_igSwapIGAbs termMOD_igSwapIGOp by simp
 
-text{* The ``subst" clauses hold: *}
+text\<open>The ``subst" clauses hold:\<close>
 
 lemma termMOD_igSubstIGVar1: "igSubstIGVar1 termMOD"
 unfolding igSubstIGVar1_def by auto
@@ -1539,14 +1539,14 @@ unfolding igSubstCls_def
 using termMOD_igSubstIGVar1 termMOD_igSubstIGVar2
 termMOD_igSubstIGAbs termMOD_igSubstIGOp by simp
 
-text{* The swap-congruence clause for abstractions holds: *}
+text\<open>The swap-congruence clause for abstractions holds:\<close>
 
 lemma termMOD_igAbsCongS: "igAbsCongS termMOD" 
 unfolding igAbsCongS_def using wls_Abs_swap_cong 
 by (metis igAbs_termMOD igFresh_termMOD igSwap_termMOD igWls_termMOD) 
  
 
-text{* The subst-renaming clause for abstractions holds: *}
+text\<open>The subst-renaming clause for abstractions holds:\<close>
 
 lemma termMOD_igAbsRen: "igAbsRen termMOD"
 unfolding igAbsRen_def by auto
@@ -1577,7 +1577,7 @@ unfolding iwlsFSbSw_def
 using termMOD_iwlsFSb termMOD_igSwapAllIPresIGWlsAll termMOD_igSwapCls
 by simp
 
-subsubsection {* Direct description of morphisms from the term models  *}
+subsubsection \<open>Direct description of morphisms from the term models\<close>
 
 (* We merely employ predicates referring directly to terms rather than
 mediating through the model structure of terms. *)
@@ -1804,7 +1804,7 @@ termFSwImorph_def ipresSubstAll_def
 lemmas termFSwSbImorph_defs = termFSwSbImorph_def
 termFSwImorph_defs ipresSubstAll_defs
 
-text {* Term FSwSb morphisms are the same as FSbSw morphisms: *}
+text \<open>Term FSwSb morphisms are the same as FSbSw morphisms:\<close>
 
 lemma termFSwSbImorph_iff:
 "termFSwSbImorph h hA MOD =
@@ -1884,11 +1884,11 @@ lemmas termMOD_simps =
 structure_termMOD_simps mapFrom_termMOD_simps
 
 subsubsection
-{* Sufficient criteria for being a morphism
-   to a well-sorted model (of various kinds) *}
+\<open>Sufficient criteria for being a morphism
+   to a well-sorted model (of various kinds)\<close>
 
-text{* In a nutshell: in these cases, we only need to check preservation of the
-  syntactic constructs, ``ipresCons".  *}
+text\<open>In a nutshell: in these cases, we only need to check preservation of the
+  syntactic constructs, ``ipresCons".\<close>
 
 lemma ipresCons_imp_ipresWlsAll:
 assumes *: "ipresCons h hA MOD" and **: "igConsIPresIGWls MOD"
@@ -2214,9 +2214,9 @@ unfolding iwlsFSb_def using ipresCons_imp_ipresSwapAll by auto
 
 end (* context FixSyn *)
 
-subsection{* The ``error" model of associated to a model  *}
+subsection\<open>The ``error" model of associated to a model\<close>
 
-text{* The error model will have the operators act like the original ones
+text\<open>The error model will have the operators act like the original ones
 on well-formed terms, except that will return ``ERR" (error) or ``True" (in the case of fresh)
 whenever one of the inputs (variables, terms or abstractions) is ``ERR" or
 is not well-formed.
@@ -2228,9 +2228,9 @@ includes the alpha-equivalence relation. The latter property (of including
 the alpha-equivalence would not be achievable with the original model as tariget, since
 alpha is defined unsortedly and the model clauses hold sortedly.
 
-We shall only need error models associated to fresh-swap and to fresh-subst models. *}
+We shall only need error models associated to fresh-swap and to fresh-subst models.\<close>
 
-subsubsection {* Preliminaries *}
+subsubsection \<open>Preliminaries\<close>
 
 (* I prefer defining a new type to using the option type, since
 I already use options for inputs: *)
@@ -2283,7 +2283,7 @@ unfolding inj_on_def by auto
 lemmas OK_OKI_simps =
 check_OK OK_check checkI_OKI OKI_checkI OKI_inj
 
-subsubsection {* Definitions and notations *}
+subsubsection \<open>Definitions and notations\<close>
 
 definition errMOD ::
 "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model \<Rightarrow>
@@ -2351,7 +2351,7 @@ abbreviation eSubstAbs where "eSubstAbs MOD == igSubstAbs (errMOD MOD)"
 abbreviation eSubstInp where "eSubstInp MOD == igSubstInp (errMOD MOD)"
 abbreviation eSubstBinp where "eSubstBinp MOD == igSubstBinp (errMOD MOD)"
 
-subsubsection {*  Simplification rules *}
+subsubsection \<open>Simplification rules\<close>
 
 lemma eWls_simp1[simp]:
 "eWls MOD s (OK X) = igWls MOD s X"
@@ -2650,7 +2650,7 @@ eFreshAll_simps
 eSwapAll_simps
 eSubstAll_simps
 
-subsubsection {* Nchotomies *}
+subsubsection \<open>Nchotomies\<close>
 
 lemma eWls_nchotomy:
 "(\<exists> X. eX = OK X \<and> igWls MOD s X) \<or> \<not> eWls MOD s eX"
@@ -2705,7 +2705,7 @@ lemma eSubstAbs_nchotomy:
 unfolding errMOD_def apply simp using OK_check by fastforce
 
 
-subsubsection {* Inversion rules *}
+subsubsection \<open>Inversion rules\<close>
 
 lemma eWls_invert:
 assumes "eWls MOD s eX"
@@ -2856,12 +2856,12 @@ proof-
   thus ?thesis using assms * by auto
 qed
 
-subsubsection {* The error model is strongly well-sorted
-as a fresh-swap-subst and as a fresh-subst-swap model *}
+subsubsection \<open>The error model is strongly well-sorted
+as a fresh-swap-subst and as a fresh-subst-swap model\<close>
 
-text{* That is, provided the original model is a well-sorted fresh-swap model. *}
+text\<open>That is, provided the original model is a well-sorted fresh-swap model.\<close>
 
-text{* The domains are disjoint: *}
+text\<open>The domains are disjoint:\<close>
 
 lemma errMOD_igWlsDisj:
 assumes "igWlsDisj MOD"
@@ -2881,7 +2881,7 @@ shows "igWlsAllDisj (errMOD MOD)"
 using assms unfolding igWlsAllDisj_def
 using errMOD_igWlsDisj errMOD_igWlsAbsDisj by auto
 
-text{* Only ``bound arity" abstraction domains are inhabited:  *}
+text\<open>Only ``bound arity" abstraction domains are inhabited:\<close>
 
 lemma errMOD_igWlsAbsIsInBar:
 assumes "igWlsAbsIsInBar MOD"
@@ -2889,7 +2889,7 @@ shows "igWlsAbsIsInBar (errMOD MOD)"
 using assms eWlsAbs_invert unfolding igWlsAbsIsInBar_def by blast
  
 
-text{* The operators preserve the domains strongly: *}
+text\<open>The operators preserve the domains strongly:\<close>
 
 lemma errMOD_igVarIPresIGWlsSTR:
 assumes "igVarIPresIGWls MOD"
@@ -2925,7 +2925,7 @@ by auto
 lemma errMOD_igSwapIPresIGWlsSTR:
 assumes "igSwapIPresIGWls MOD" and "igWlsDisj MOD"
 shows "igSwapIPresIGWlsSTR (errMOD MOD)"
-using `igSwapIPresIGWls MOD` 
+using \<open>igSwapIPresIGWls MOD\<close> 
 using assms by (fastforce simp: errMOD_def igSwapIPresIGWls_def igSwapIPresIGWlsSTR_def 
 igWlsDisj_def split: withERR.splits) 
 
@@ -2949,7 +2949,7 @@ by auto
 lemma errMOD_igSubstIPresIGWlsSTR:
 assumes "igSubstIPresIGWls MOD" and "igWlsDisj MOD"
 shows "igSubstIPresIGWlsSTR (errMOD MOD)"
-using `igSubstIPresIGWls MOD`
+using \<open>igSubstIPresIGWls MOD\<close>
 using assms by (fastforce simp: errMOD_def igSubstIPresIGWls_def igSubstIPresIGWlsSTR_def 
 igWlsDisj_def split: withERR.splits)
  
@@ -2970,7 +2970,7 @@ using errMOD_igSubstIPresIGWlsSTR[of MOD] errMOD_igSubstIPresIGWlsSTR[of MOD]
 errMOD_igSubstAbsIPresIGWlsAbsSTR[of MOD]
 by auto
 
-text{* The strong ``fresh" clauses are satisfied: *}
+text\<open>The strong ``fresh" clauses are satisfied:\<close>
 
 lemma errMOD_igFreshIGVarSTR:
 assumes "igVarIPresIGWls MOD" and "igFreshIGVar MOD"
@@ -3035,7 +3035,7 @@ errMOD_igFreshIGAbs1STR errMOD_igFreshIGAbs2STR
 errMOD_igFreshIGOpSTR
 by auto
 
-text{* The strong ``swap" clauses are satisfied: *}
+text\<open>The strong ``swap" clauses are satisfied:\<close>
 
 lemma errMOD_igSwapIGVarSTR:
 fixes MOD :: "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model"
@@ -3069,7 +3069,7 @@ and "igSwapIGOp MOD"
 shows "igSwapIGOpSTR (errMOD MOD)"
 unfolding igSwapIGOpSTR_def proof(clarify)
   have 0: "igSwapInpIPresIGWlsInp MOD \<and> igSwapBinpIPresIGWlsBinp MOD"
-  using `igSwapIPresIGWls MOD`  `igSwapAbsIPresIGWlsAbs MOD`
+  using \<open>igSwapIPresIGWls MOD\<close>  \<open>igSwapAbsIPresIGWlsAbs MOD\<close>
   imp_igSwapInpIPresIGWlsInp imp_igSwapBinpIPresIGWlsBinp by auto
   have "igSwapIPresIGWlsSTR (errMOD MOD) \<and>
         igSwapAbsIPresIGWlsAbsSTR (errMOD MOD)"
@@ -3108,16 +3108,16 @@ unfolding igSwapIGOpSTR_def proof(clarify)
        using eOp_invert[of MOD delta ?einpsw ?ebinpsw X] by auto
        hence False using 2 by auto
       } 
-      with `?Left = ERR` show ?thesis by (cases ?Right) auto
+      with \<open>?Left = ERR\<close> show ?thesis by (cases ?Right) auto
     next
       case True  
       moreover have "igWls MOD (stOf delta) (igOp MOD delta inp binp)"
-      using True `igOpIPresIGWls MOD` unfolding igOpIPresIGWls_def by simp
+      using True \<open>igOpIPresIGWls MOD\<close> unfolding igOpIPresIGWls_def by simp
       moreover have "igWlsInp MOD delta (igSwapInp MOD zs z1 z2 inp) \<and>
                      igWlsBinp MOD delta (igSwapBinp MOD zs z1 z2 binp)"
       using 0 unfolding igSwapInpIPresIGWlsInp_def igSwapBinpIPresIGWlsBinp_def
       using True by simp
-      ultimately show ?thesis using `igSwapIGOp MOD` unfolding einp igSwapIGOp_def by auto
+      ultimately show ?thesis using \<open>igSwapIGOp MOD\<close> unfolding einp igSwapIGOp_def by auto
     qed
   qed auto
 qed
@@ -3136,7 +3136,7 @@ errMOD_igSwapIGAbsSTR[of MOD]
 errMOD_igSwapIGOpSTR[of MOD]
 by simp
 
-text{* The strong ``subst" clauses are satisfied: *}
+text\<open>The strong ``subst" clauses are satisfied:\<close>
 
 lemma errMOD_igSubstIGVar1STR:
 assumes "igVarIPresIGWls MOD" and "igSubstIGVar1 MOD"
@@ -3211,7 +3211,7 @@ and "igSubstIGOp MOD"
 shows "igSubstIGOpSTR (errMOD MOD)"
 proof-
   have 0: "igSubstInpIPresIGWlsInp MOD \<and> igSubstBinpIPresIGWlsBinp MOD"
-  using `igSubstIPresIGWls MOD` `igSubstAbsIPresIGWlsAbs MOD`
+  using \<open>igSubstIPresIGWls MOD\<close> \<open>igSubstAbsIPresIGWlsAbs MOD\<close>
   imp_igSubstInpIPresIGWlsInp imp_igSubstBinpIPresIGWlsBinp by auto
   have "igSubstIPresIGWlsSTR (errMOD MOD) \<and> igSubstAbsIPresIGWlsAbsSTR (errMOD MOD)"
   using assms errMOD_igSubstIPresIGWlsSTR errMOD_igSubstAbsIPresIGWlsAbsSTR by auto
@@ -3232,7 +3232,7 @@ proof-
       "inp = checkI einp" and "binp = checkI ebinp" by blast
       ultimately have einp: "einp = OKI inp"  "ebinp = OKI binp"  by auto
       have igWls_y1: "igWls MOD (asSort ys) (igVar MOD ys y1)"
-      using `igVarIPresIGWls MOD` unfolding igVarIPresIGWls_def by simp
+      using \<open>igVarIPresIGWls MOD\<close> unfolding igVarIPresIGWls_def by simp
       show ?thesis
       proof(cases "igWlsInp MOD delta inp \<and> igWlsBinp MOD delta binp")
         case False
@@ -3251,18 +3251,18 @@ proof-
          hence False using 2 by auto
         }
         hence "?Right = ERR" by (cases ?Right, auto)
-        with `?Left = ERR` show ?thesis by simp
+        with \<open>?Left = ERR\<close> show ?thesis by simp
       next
         case True
         moreover have "igWls MOD (stOf delta) (igOp MOD delta inp binp)"
-        using True `igOpIPresIGWls MOD` unfolding igOpIPresIGWls_def by simp
+        using True \<open>igOpIPresIGWls MOD\<close> unfolding igOpIPresIGWls_def by simp
         moreover
         have "igWlsInp MOD delta (igSubstInp MOD ys (igVar MOD ys y1) y inp) \<and>
               igWlsBinp MOD delta (igSubstBinp MOD ys (igVar MOD ys y1) y binp)"
         using 0 unfolding igSubstInpIPresIGWlsInp_def igSubstBinpIPresIGWlsBinp_def
         using True igWls_y1 by simp
         ultimately show ?thesis
-        using `igSubstIGOp MOD` igWls_y1 unfolding einp igSubstIGOp_def by auto
+        using \<open>igSubstIGOp MOD\<close> igWls_y1 unfolding einp igSubstIGOp_def by auto
       qed
     qed auto
   next
@@ -3298,18 +3298,18 @@ proof-
          hence False using 2 by auto
         }
         hence "?Right = ERR" by (cases ?Right, auto)
-        with `?Left = ERR` show ?thesis by simp
+        with \<open>?Left = ERR\<close> show ?thesis by simp
       next
         case True
         moreover have "igWls MOD (stOf delta) (igOp MOD delta inp binp)"
-        using True `igOpIPresIGWls MOD` unfolding igOpIPresIGWls_def by simp
+        using True \<open>igOpIPresIGWls MOD\<close> unfolding igOpIPresIGWls_def by simp
         moreover
         have "igWlsInp MOD delta (igSubstInp MOD ys Y y inp) \<and>
               igWlsBinp MOD delta (igSubstBinp MOD ys Y y binp)"
         using 0 unfolding igSubstInpIPresIGWlsInp_def igSubstBinpIPresIGWlsBinp_def
         using True Y by simp
         ultimately show ?thesis unfolding einp eY_def 
-        using `igSubstIGOp MOD` Y unfolding igSubstIGOp_def by auto
+        using \<open>igSubstIGOp MOD\<close> Y unfolding igSubstIGOp_def by auto
       qed
     qed auto
   qed
@@ -3329,7 +3329,7 @@ errMOD_igSubstIGAbsSTR[of MOD]
 errMOD_igSubstIGOpSTR[of MOD]
 by simp
 
-text{* Strong swap-based congruence for abstractions holds: *}
+text\<open>Strong swap-based congruence for abstractions holds:\<close>
 
 lemma errMOD_igAbsCongSSTR:
 assumes "igSwapIPresIGWls MOD" and "igWlsDisj MOD" and "igAbsCongS MOD"
@@ -3343,13 +3343,13 @@ unfolding igAbsCongSSTR_def proof(clarify)
   proof
     assume "?phi eX"
     {fix X' s' assume "eX' = OK X' \<and> (\<exists> s. igWls MOD s X')"
-     hence "ERR = OK (igSwap MOD xs y x' X')" using `?phi eX` *** by auto
+     hence "ERR = OK (igSwap MOD xs y x' X')" using \<open>?phi eX\<close> *** by auto
     }
     thus "?phi eX'" by(cases eX', auto)
   next
     assume "?phi eX'"
     {fix X assume "eX = OK X \<and> (\<exists> s. igWls MOD s X)"
-     hence "ERR = OK (igSwap MOD xs y x X)" using `?phi eX'` *** by auto
+     hence "ERR = OK (igSwap MOD xs y x X)" using \<open>?phi eX'\<close> *** by auto
     }
     thus "?phi eX" by(cases eX, auto)
   qed
@@ -3361,14 +3361,14 @@ unfolding igAbsCongSSTR_def proof(clarify)
     case False
     then obtain s X where eX: "eX = OK X" and X_wls: "igWls MOD s X" by(cases eX, auto)
     obtain s' X' where eX': "eX' = OK X'" and X'_wls: "igWls MOD s' X'"
-    using `\<not> ?phi eX` 1 by(cases eX') auto
+    using \<open>\<not> ?phi eX\<close> 1 by(cases eX') auto
     hence "igSwap MOD xs y x X = igSwap MOD xs y x' X'"
     using eX X_wls *** by auto
     moreover have "igWls MOD s (igSwap MOD xs y x X)"
-    using X_wls `igSwapIPresIGWls MOD` unfolding igSwapIPresIGWls_def by simp
+    using X_wls \<open>igSwapIPresIGWls MOD\<close> unfolding igSwapIPresIGWls_def by simp
     moreover have "igWls MOD s' (igSwap MOD xs y x' X')"
-    using X'_wls `igSwapIPresIGWls MOD` unfolding igSwapIPresIGWls_def by simp
-    ultimately have "s' = s" using `igWlsDisj MOD` unfolding igWlsDisj_def by auto
+    using X'_wls \<open>igSwapIPresIGWls MOD\<close> unfolding igSwapIPresIGWls_def by simp
+    ultimately have "s' = s" using \<open>igWlsDisj MOD\<close> unfolding igWlsDisj_def by auto
     show ?thesis
     proof (cases "isInBar (xs,s)")
       case True
@@ -3378,27 +3378,27 @@ unfolding igAbsCongSSTR_def proof(clarify)
       using *** X_wls X'_wls unfolding eX eX' by simp
       ultimately show ?thesis  
       unfolding eX eX' 
-      using X_wls X'_wls unfolding `s' = s`
-      using `igAbsCongS MOD` True unfolding igAbsCongS_def 
+      using X_wls X'_wls unfolding \<open>s' = s\<close>
+      using \<open>igAbsCongS MOD\<close> True unfolding igAbsCongS_def 
       by (metis FixSyn.eCons_simps(2) FixSyn_axioms)
     next
       case False
       {fix s'' assume xs_s'': "isInBar (xs,s'')" and "igWls MOD s'' X"
-       hence "s = s''" using X_wls `igWlsDisj MOD` unfolding igWlsDisj_def by auto
+       hence "s = s''" using X_wls \<open>igWlsDisj MOD\<close> unfolding igWlsDisj_def by auto
        hence False using False xs_s'' by simp
       }
       moreover
       {fix s'' assume xs_s'': "isInBar (xs,s'')" and "igWls MOD s'' X'"
-       hence "s = s''" using X'_wls `igWlsDisj MOD` unfolding igWlsDisj_def `s' = s` by auto
+       hence "s = s''" using X'_wls \<open>igWlsDisj MOD\<close> unfolding igWlsDisj_def \<open>s' = s\<close> by auto
        hence False using False xs_s'' by simp
       }
       ultimately show ?thesis 
-      using eX eX' X_wls X'_wls unfolding `s' = s` by fastforce
+      using eX eX' X_wls X'_wls unfolding \<open>s' = s\<close> by fastforce
     qed
   qed
 qed
 
-text{* The renaming clause for abstractions holds: *}
+text\<open>The renaming clause for abstractions holds:\<close>
 
 lemma errMOD_igAbsRenSTR:
 assumes "igVarIPresIGWls MOD" and "igSubstIPresIGWls MOD"
@@ -3414,7 +3414,7 @@ apply(cases eX)
    subgoal using assms by (simp add: igVarIPresIGWls_def igSubstIPresIGWls_def igAbsRen_def igWlsDisj_def)   
      (metis eAbs_simp2 eAbs_simp3  eSubst_simp1 eSubst_simp3) . . .
 
-text{* Strong subst-based congruence for abstractions holds: *}
+text\<open>Strong subst-based congruence for abstractions holds:\<close>
 
 corollary errMOD_igAbsCongUSTR:
 assumes "igVarIPresIGWls MOD" and "igSubstIPresIGWls MOD"
@@ -3422,7 +3422,7 @@ and "igWlsDisj MOD" and "igAbsRen MOD"
 shows "igAbsCongUSTR (errMOD MOD)"
 using assms errMOD_igAbsRenSTR igAbsRenSTR_imp_igAbsCongUSTR by auto
 
-text{* The error model is a strongly well-sorted fresh-swap model: *}
+text\<open>The error model is a strongly well-sorted fresh-swap model:\<close>
 
 lemma errMOD_iwlsFSwSTR:
 fixes MOD :: "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs) model"
@@ -3438,7 +3438,7 @@ errMOD_igAbsCongSSTR[of MOD]
 apply simp
 unfolding igSwapAllIPresIGWlsAll_def igWlsAllDisj_defs by simp
 
-text{* The error model is a strongly well-sorted fresh-subst model: *}
+text\<open>The error model is a strongly well-sorted fresh-subst model:\<close>
 
 lemma errMOD_iwlsFSbSwTR:
 fixes MOD :: "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs) model"
@@ -3453,11 +3453,11 @@ errMOD_igFreshClsSTR[of MOD] errMOD_igSubstClsSTR[of MOD]
 errMOD_igAbsRenSTR[of MOD]
 by (simp add: igConsIPresIGWls_def igSubstAllIPresIGWlsAll_def igWlsAllDisj_defs) 
 
-subsubsection {* The natural morhpism from an error model to its original model  *}
+subsubsection \<open>The natural morhpism from an error model to its original model\<close>
 
-text{* This morphism is igiven by the ``check" functions.  *}
+text\<open>This morphism is igiven by the ``check" functions.\<close>
 
-text{* Preservation of the domains: *}
+text\<open>Preservation of the domains:\<close>
 
 lemma check_ipresIGWls:
 "ipresIGWls check (errMOD MOD) MOD"
@@ -3474,7 +3474,7 @@ lemma check_ipresIGWlsAll:
 unfolding ipresIGWlsAll_def
 using check_ipresIGWls check_ipresIGWlsAbs by auto
 
-text{* Preservation of the operations: *}
+text\<open>Preservation of the operations:\<close>
 
 lemma check_ipresIGVar:
 "ipresIGVar check (errMOD MOD) MOD"
@@ -3555,7 +3555,7 @@ lemma check_ipresIGSubstAll:
 unfolding ipresIGSubstAll_def
 using check_ipresIGSubst check_ipresIGSubstAbs by auto
 
-text{* ``check" is a fresh-swap morphism: *}
+text\<open>``check" is a fresh-swap morphism:\<close>
 
 lemma check_FSwImorph:
 "FSwImorph check check (errMOD MOD) MOD"
@@ -3563,7 +3563,7 @@ unfolding FSwImorph_def
 using check_ipresIGWlsAll check_ipresIGCons
 check_ipresIGFreshAll check_ipresIGSwapAll by auto
 
-text{* ``check" is a fresh-subst morphism: *}
+text\<open>``check" is a fresh-subst morphism:\<close>
 
 lemma check_FSbImorph:
 "FSbImorph check check (errMOD MOD) MOD"
@@ -3571,14 +3571,14 @@ unfolding FSbImorph_def
 using check_ipresIGWlsAll check_ipresIGCons
 check_ipresIGFreshAll check_ipresIGSubstAll by auto
 
-subsection {* Initiality of the models of terms *}
+subsection \<open>Initiality of the models of terms\<close>
 
-text {* We show that terms form initial models in all the considered kinds.
+text \<open>We show that terms form initial models in all the considered kinds.
 The desired initial morphism will be the composition of ``check" with the
 factorization of the standard (absolute-initial) function from quasi-terms, ``qInit",
 to alpha-equivalence.
 ``qInit" preserving alpha-equivalence (in an unsorted fashion)
-was the main reason for introducing error models. *}
+was the main reason for introducing error models.\<close>
 
 (* Here we need to switch back for a while to the quasi-term ``implementation" of terms: *)
 
@@ -3586,7 +3586,7 @@ declare qItem_simps[simp]
 declare qItem_versus_item_simps[simp]
 declare good_item_simps[simp]
 
-subsubsection {* The initial map from quasi-terms to a strong model *}
+subsubsection \<open>The initial map from quasi-terms to a strong model\<close>
 
 (* The next is needed in the termination arigument for ``qInit": *)
 
@@ -3923,9 +3923,9 @@ shows "(qInitAbs MOD) respectsP alphaAbsGood"
 unfolding congruentP_def alphaAbsGood_def
 using assms iwlsFSbSwTR_alphaAll_qInitAll by auto
 
-subsubsection {* The initial morphism (iteration map) from the term model to any strong model *}
+subsubsection \<open>The initial morphism (iteration map) from the term model to any strong model\<close>
 
-text {* This morphism has the same definition for fresh-swap and fresh-subst strong models *}
+text \<open>This morphism has the same definition for fresh-swap and fresh-subst strong models\<close>
 
 definition iterSTR where
 "iterSTR MOD == univ (qInit MOD)"
@@ -4078,14 +4078,14 @@ declare qItem_simps[simp del]
 declare qItem_versus_item_simps[simp del]
 declare good_item_simps[simp del]
 
-subsubsection {* The initial morhpism (iteration map) from the term model to any model *}
+subsubsection \<open>The initial morhpism (iteration map) from the term model to any model\<close>
 
-text {* Again, this morphism has the same definition for fresh-swap and fresh-subst models,
+text \<open>Again, this morphism has the same definition for fresh-swap and fresh-subst models,
 as well as (of course) for fresh-swap-subst and fresh-subst-swap models. (Remember that
 there is no such thing as ``fresh-subst-swap" morhpism -- we use the notion of
-``fresh-swap-subst" morphism.) *}
+``fresh-swap-subst" morphism.)\<close>
 
-text {* Existence of the morphism: *}
+text \<open>Existence of the morphism:\<close>
 
 definition iter where
 "iter MOD == check o (iterSTR (errMOD MOD))"
@@ -4114,9 +4114,9 @@ using iwlsFSb_iterAll_termFSbImorph
 by (auto simp: iwlsFSbSw_termFSwSbImorph_iff iwlsFSbSw_def  termFSbImorph_def)
 
 
-text {* Uniqueness of the morphism *}
+text \<open>Uniqueness of the morphism\<close>
 
-text {* In fact, already a presumptive construct-preserving map has to be unique:  *}
+text \<open>In fact, already a presumptive construct-preserving map has to be unique:\<close>
 
 lemma ipresCons_unique:
 assumes "ipresCons f fA MOD" and "ipresCons ig igA MOD"

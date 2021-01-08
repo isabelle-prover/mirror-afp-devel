@@ -40,7 +40,7 @@ proof -
   have "learn_fin \<phi> {f} s"
   proof (intro learn_finI)
     show "environment \<phi> {f} s"
-      using `s \<in> \<R>` `f \<in> \<R>` by (simp add: phi_in_P2)
+      using \<open>s \<in> \<R>\<close> \<open>f \<in> \<R>\<close> by (simp add: phi_in_P2)
     show "\<exists>i n\<^sub>0. \<phi> i = g \<and> (\<forall>n<n\<^sub>0. s (g \<triangleright> n) \<down>= 0) \<and> (\<forall>n\<ge>n\<^sub>0. s (g \<triangleright> n) \<down>= Suc i)"
       if "g \<in> {f}" for g
     proof -
@@ -89,12 +89,12 @@ proof -
     then have "f = psi n"
       using psi_def by simp
     then show "f \<in> \<R>"
-      using `psi \<in> \<R>\<^sup>2` by simp
+      using \<open>psi \<in> \<R>\<^sup>2\<close> by simp
   qed
   have "learn_fin psi U_single s"
   proof (rule learn_finI)
     show "environment psi U_single s"
-      using `psi \<in> \<R>\<^sup>2` `s \<in> \<R>` `U_single \<subseteq> \<R>` by simp
+      using \<open>psi \<in> \<R>\<^sup>2\<close> \<open>s \<in> \<R>\<close> \<open>U_single \<subseteq> \<R>\<close> by simp
     show "\<exists>i n\<^sub>0. psi i = f \<and> (\<forall>n<n\<^sub>0. s (f \<triangleright> n) \<down>= 0) \<and> (\<forall>n\<ge>n\<^sub>0. s (f \<triangleright> n) \<down>= Suc i)"
       if "f \<in> U_single" for f
     proof -
@@ -110,7 +110,7 @@ proof -
         assume "n \<ge> i"
         let ?e = "init f n"
         have "\<exists>i<e_length ?e. e_nth ?e i \<noteq> 0"
-          using `n \<ge> i` i by simp
+          using \<open>n \<ge> i\<close> i by simp
         then have less: "the (findr ?e) < e_length ?e"
           and nth_e: "e_nth ?e (the (findr ?e)) \<noteq> 0"
           using findr_ex by blast+
@@ -169,7 +169,7 @@ proof
     then have "i = j"
       using i j eq by simp
     then have "psi i = psi j" by simp
-    then show False using `?f \<noteq> 0\<^sup>\<infinity>` i j by simp
+    then show False using \<open>?f \<noteq> 0\<^sup>\<infinity>\<close> i j by simp
   next
     case gr
     have "0\<^sup>\<infinity> \<triangleright> n\<^sub>0 = ?f \<triangleright> n\<^sub>0"
@@ -257,7 +257,7 @@ proof -
       moreover have "psi x y \<down>" for x y
         using psi_def psi_u(1) psi_v(1) by simp
       ultimately show "total ?r_psi"
-        using `recfn 2 ?r_psi` totalI2 by simp
+        using \<open>recfn 2 ?r_psi\<close> totalI2 by simp
     qed
     show "\<exists>i. psi i = f" if "f \<in> U \<union> V" for f
     proof (cases "f \<in> U")

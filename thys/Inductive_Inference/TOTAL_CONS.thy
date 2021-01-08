@@ -105,7 +105,7 @@ proof
         r_auxhyp_prim s_eq_aux[OF _ that, of n] totalE
       by fastforce
     then show "environment \<phi> U (\<lambda>e. eval s [e])"
-      using t' `recfn 1 s` learn_totalE(1) by blast
+      using t' \<open>recfn 1 s\<close> learn_totalE(1) by blast
     show "\<exists>i. \<phi> i = f \<and> (\<forall>\<^sup>\<infinity>n. eval s [f \<triangleright> n] \<down>= i)" if "f \<in> U" for f
     proof -
       from that t' t learn_totalE obtain i n\<^sub>0 where
@@ -230,7 +230,7 @@ proof (rule learn_consI)
           using f_at_gr0 by fastforce
       qed
       then have "rmge2 (f \<triangleright> n) = f 0"
-        using f_at_0 rmge2_init_total[of f n, OF `total1 f`] by auto
+        using f_at_0 rmge2_init_total[of f n, OF \<open>total1 f\<close>] by auto
       then show "rmge2 (f \<triangleright> n) \<down>= j"
         by (simp add: \<open>f 0 \<down>= j\<close>)
     qed
@@ -579,7 +579,7 @@ proof -
     using phi_def by simp
   then show "\<phi> i (the (search b)) \<down>"
     and "(the (search b)) \<ge> e_length b"
-    using y assms search_nonempty_eq0[OF assms(1) `\<phi> i y \<down>`] by simp_all
+    using y assms search_nonempty_eq0[OF assms(1) \<open>\<phi> i y \<down>\<close>] by simp_all
 qed
 
 text \<open>Likewise, if the search diverges, there is no appropriate $y$.\<close>
@@ -625,7 +625,7 @@ next
   let ?g = "Cn 3 r_cons [r_constn 2 0, Id 3 1]"
   have "recfn 3 ?g" by simp
   have "eval r_badblock [(Suc n), v] = eval ?g [n, the (eval r_badblock [n , v]), v]"
-    using `recfn 3 ?g` Suc by (simp add: r_badblock_def)
+    using \<open>recfn 3 ?g\<close> Suc by (simp add: r_badblock_def)
   also have "... = eval ?g [n, list_encode (replicate n 0 @ [1 - v]), v]"
     using Suc by simp
   also have "... = eval r_cons [0, list_encode (replicate n 0 @ [1 - v])]"
@@ -840,7 +840,7 @@ next
   with Suc have "nxt b' \<down>= b" by simp
   then have "e_length b' < e_length b"
     using nxt_monotone by simp
-  then show ?case using `e_length b' > t` by simp
+  then show ?case using \<open>e_length b' > t\<close> by simp
 qed
 
 lemma prefixes_monotone:
@@ -965,7 +965,7 @@ proof -
   proof (rule ccontr)
     assume "\<not> 0 < t\<^sub>0"
     then have "t\<^sub>0 = 0" by simp
-    with `?P t\<^sub>0` prefixes_at_0 show False by simp
+    with \<open>?P t\<^sub>0\<close> prefixes_at_0 show False by simp
   qed
   let ?t = "t\<^sub>0 - 1"
   have "\<forall>t'\<le>?t. prefixes t' j \<down>"
@@ -1017,12 +1017,12 @@ proof -
   proof -
     have "eval (Cn 3 r_prefixes [Id 3 0, Id 3 1]) [t\<^sub>0, j, x] \<down>= b\<^sub>0"
       using b0 by simp
-    then show ?thesis using `?P t\<^sub>0` by simp
+    then show ?thesis using \<open>?P t\<^sub>0\<close> by simp
   qed
   moreover have "eval ?f [t, j, x] \<down>\<noteq> 0" if "t < t\<^sub>0" for t
   proof -
     obtain bt where bt: "prefixes t j \<down>= bt"
-      using prefixes_converg_le[of t\<^sub>0 j t] b0 `t < t\<^sub>0` by auto
+      using prefixes_converg_le[of t\<^sub>0 j t] b0 \<open>t < t\<^sub>0\<close> by auto
     moreover have "\<not> ?P t"
       using that not_P by simp
     ultimately have "e_length bt \<le> x" by simp
@@ -1035,7 +1035,7 @@ proof -
   then have "\<psi> j x \<down>= e_nth b\<^sub>0 x"
     unfolding r_psi_def using b0 by simp
   then show ?thesis
-    using `t\<^sub>0 \<le> t` assms(1) prefixes_stable[of t\<^sub>0 j b\<^sub>0 "t - t\<^sub>0" b] b0 `?P t\<^sub>0`
+    using \<open>t\<^sub>0 \<le> t\<close> assms(1) prefixes_stable[of t\<^sub>0 j b\<^sub>0 "t - t\<^sub>0" b] b0 \<open>?P t\<^sub>0\<close>
     by simp
 qed
 
@@ -1163,7 +1163,7 @@ proof -
           then show ?thesis using psi_at_0 by simp
         next
           case False
-          then show ?thesis using y(1) `x < y` by auto
+          then show ?thesis using y(1) \<open>x < y\<close> by auto
         qed
       qed
       show "\<forall>x\<ge>y. \<psi> j x \<up>" using y(2) by simp
@@ -1173,12 +1173,12 @@ proof -
       case True
       moreover assume "z \<noteq> y"
       ultimately show False
-        using that `?P y` by auto
+        using that \<open>?P y\<close> by auto
     next
       case False
       moreover assume "z \<noteq> y"
       then show False
-        using that `?P y` y(2) by (meson linorder_cases order_refl)
+        using that \<open>?P y\<close> y(2) by (meson linorder_cases order_refl)
     qed
   qed
   then have "(\<forall>x<(THE z. ?P z). \<psi> j x \<down>) \<and> (\<forall>x\<ge>(THE z. ?P z). \<psi> j x \<up>)"
@@ -1364,10 +1364,10 @@ proof -
     using longest_prefix_gr_0[OF assms(1)] by simp
   define vs where "vs = prefix (\<psi> j) (z - 1)"
   then have "vs ! 0 = j"
-    using psi_at_0 `z > 0` by simp
+    using psi_at_0 \<open>z > 0\<close> by simp
   define a where "a = tl vs"
   then have vs: "vs = j # a"
-    using vs_def `vs ! 0 = j`
+    using vs_def \<open>vs ! 0 = j\<close>
     by (metis length_Suc_conv length_prefix list.sel(3) nth_Cons_0)
   obtain k where k: "k \<ge> 2" and phi_k: "\<phi> k = j # a @ [k] \<odot> 0\<^sup>\<infinity>"
     using goedel_after_prefixes[of 2 "j # a"] by auto
@@ -1390,9 +1390,9 @@ proof -
     show "\<phi> k = j # a @ [k] \<odot> 0\<^sup>\<infinity>"
       using phi_k .
     show "2 \<le> j"
-      using `2 \<le> j` .
+      using \<open>2 \<le> j\<close> .
     show "2 \<le> k"
-      using `2 \<le> k` .
+      using \<open>2 \<le> k\<close> .
     show "\<forall>i<length a. a ! i \<le> 1"
     proof (rule allI, rule impI)
       fix i assume i: "i < length a"
@@ -1405,7 +1405,7 @@ proof -
         using vs_def vs i length_Cons length_prefix prefix_nth
         by (metis Suc_mono)
       finally show "a ! i \<le> 1"
-        using case_two_psi_longest_prefix `Suc i < z` z_def
+        using case_two_psi_longest_prefix \<open>Suc i < z\<close> z_def
         by (metis assms(1) less_or_eq_imp_le not_le_imp_less not_one_less_zero
           option.sel zero_less_Suc)
     qed

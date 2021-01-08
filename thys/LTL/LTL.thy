@@ -836,7 +836,7 @@ next
   proof (cases "\<xi> \<Turnstile>\<^sub>n \<psi>")
     case False
     then have "\<xi> \<Turnstile>\<^sub>n \<phi>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)"
-      using `?rhs` by auto
+      using \<open>?rhs\<close> by auto
     thus ?lhs
       using less_Suc_eq_0_disj suffix_singleton_suffix by force
   qed force
@@ -856,7 +856,7 @@ next
     fix i
     assume "\<not> suffix i \<xi> \<Turnstile>\<^sub>n \<psi>"
     then have "\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
-      using `?rhs` by (cases i) force+
+      using \<open>?rhs\<close> by (cases i) force+
   }
 
   thus ?lhs
@@ -877,7 +877,7 @@ next
     fix i
     assume "\<not> suffix i \<xi> \<Turnstile>\<^sub>n \<phi>"
     then have "\<exists>j\<le>i. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>"
-      using `?rhs` by (cases i) force+
+      using \<open>?rhs\<close> by (cases i) force+
   }
 
   thus ?lhs
@@ -900,11 +900,11 @@ next
   proof (cases "\<xi> \<Turnstile>\<^sub>n \<phi>")
     case True
     thus ?lhs
-      using `?rhs` ltln_expand_WeakUntil by fastforce
+      using \<open>?rhs\<close> ltln_expand_WeakUntil by fastforce
   next
     case False
     thus ?lhs
-      by (metis `?rhs` ltln_expand_WeakUntil not\<^sub>n.simps(5,6,7,11) not\<^sub>n_semantics)
+      by (metis \<open>?rhs\<close> ltln_expand_WeakUntil not\<^sub>n.simps(5,6,7,11) not\<^sub>n_semantics)
   qed
 qed
 

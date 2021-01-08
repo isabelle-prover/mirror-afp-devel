@@ -91,7 +91,7 @@ proof -
   moreover
 
   have "subformulas\<^sub>\<nu> \<psi> \<union> subformulas\<^sub>\<mu> \<psi> \<subseteq>  restricted_subformulas_inner \<chi>"
-    using `\<psi> \<in> restricted_subformulas_inner \<chi>`
+    using \<open>\<psi> \<in> restricted_subformulas_inner \<chi>\<close>
   proof (induction \<chi>)
     case (Until_ltln \<chi>1 \<chi>2)
     then show ?case
@@ -450,7 +450,7 @@ proof
   let ?Y' = "\<F>\<G> \<phi> w \<inter> restricted_subformulas \<phi>"
 
   have 1: "suffix i w \<Turnstile>\<^sub>n ?\<phi>'"
-    using `?lhs` af_ltl_continuation by force
+    using \<open>?lhs\<close> af_ltl_continuation by force
 
   have 2: "\<And>j. af (af \<phi> (prefix i w)) (prefix j (suffix i w)) = af \<phi> (prefix (i + j) w)"
     by (simp add: subsequence_append)

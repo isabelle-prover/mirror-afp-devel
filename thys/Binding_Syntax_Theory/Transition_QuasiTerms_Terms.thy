@@ -1,10 +1,10 @@
-section {* Transition from Quasi-Terms to Terms*}
+section \<open>Transition from Quasi-Terms to Terms\<close>
 
 theory Transition_QuasiTerms_Terms
 imports QuasiTerms_Environments_Substitution Equiv_Relation2
 begin
 
-text{* This section transits from quasi-terms to terms: defines terms as alpha-equivalence
+text\<open>This section transits from quasi-terms to terms: defines terms as alpha-equivalence
 classes of quasi-terms
 (and also abstractions as alpha-equivalence classes of  quasi-abstractions),
 then defines operators on terms corresponding to those on quasi-terms:
@@ -17,15 +17,15 @@ is proved for terms.
 As a matter of notation:
 Starting from this section, we change the notations for quasi-item meta-variables, prefixing
 their names with a "q" -- e.g., qX, qA, qinp, qenv, etc. The old names are now assigned
-to the ``real" items: terms, abstractions, inputs, environments. *}
+to the ``real" items: terms, abstractions, inputs, environments.\<close>
 
-subsection {* Preparation: Integrating quasi-inputs as first-class citizens *}
+subsection \<open>Preparation: Integrating quasi-inputs as first-class citizens\<close>
 
 context FixVars
 begin
 
-text{* From now on it will be convenient to
-   also define fresh, swap, good and alpha-equivalence for quasi-inpus. *}
+text\<open>From now on it will be convenient to
+   also define fresh, swap, good and alpha-equivalence for quasi-inpus.\<close>
 
 definition qSwapInp where
 "qSwapInp xs x y qinp == lift (qSwap xs x y) qinp"
@@ -369,7 +369,7 @@ qSwap_qAFresh_otherSimps qAFresh.simps qGoodItem.simps
 
 end (* context FixVars *)
 
-subsection {* Definitions of terms and their operators *}
+subsection \<open>Definitions of terms and their operators\<close>
 
 type_synonym ('index,'bindex,'varSort,'var,'opSym)"term" =
       "('index,'bindex,'varSort,'var,'opSym)qTerm set"
@@ -380,9 +380,9 @@ type_synonym ('index,'bindex,'varSort,'var,'opSym)abs =
 type_synonym ('index,'bindex,'varSort,'var,'opSym)env =
       "'varSort \<Rightarrow> 'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)term option"
 
-text{* A ``parameter" will be something for which
+text\<open>A ``parameter" will be something for which
 freshness makes sense.  Here is the most typical case of a parameter in proofs, putting
-together (as lists) finite collections of variables, terms, abstractions and environments:  *}
+together (as lists) finite collections of variables, terms, abstractions and environments:\<close>
 
 datatype ('index,'bindex,'varSort,'var,'opSym)param =
   Par "'var list"
@@ -594,7 +594,7 @@ definition updEnv ::
 ("_ [_ \<leftarrow> _]'__" 200) where
 "(rho [x \<leftarrow> X]_xs) \<equiv> \<lambda> ys y. (if ys = xs \<and> y = x then Some X else rho ys y)"
 
-text{* (Unary) substitution: *}
+text\<open>(Unary) substitution:\<close>
 
 definition subst where
 "subst xs X x \<equiv> psubst (idEnv [x \<leftarrow> X]_xs)"
@@ -642,7 +642,7 @@ theorem substEnv_def2:
 unfolding substEnv_def psubstEnv_def subst_def idEnv_def updEnv_def
 apply(rule ext)+ by(case_tac "rho xs x", simp_all)
 
-text{* Variable-for-variable substitution: *}
+text\<open>Variable-for-variable substitution:\<close>
 
 definition vsubst where
 "vsubst ys y1 y2 \<equiv> subst ys (Var ys y1) y2"
@@ -723,15 +723,15 @@ termsOf.simps absOf.simps envsOf.simps
 Par_preserves_good
 termsOf_preserves_good absOf_preserves_good envsOf_preserves_good
 
-subsection {* Items versus quasi-items modulo alpha  *}
+subsection \<open>Items versus quasi-items modulo alpha\<close>
 
-text{* Here we ``close the accounts" (for a while) with quasi-items  --
+text\<open>Here we ``close the accounts" (for a while) with quasi-items  --
  beyond this subsection, there will not be any theorem that mentions
  quasi-items, except much later when we deal with iteration principles
  (and need to briefly switch back to quasi-terms in order to define the needed
- iterative map by the universality of the alpha-quotient).  *}
+ iterative map by the universality of the alpha-quotient).\<close>
 
-subsubsection {* For terms *}
+subsubsection \<open>For terms\<close>
 
 lemma alphaGood_equivP: "equivP qGood alphaGood"
 unfolding equivP_def reflP_def symP_def transP_def alphaGood_def
@@ -840,7 +840,7 @@ shows "fresh xs x (X #[y1 \<and> y2]_ys) = qFresh xs x ((pick X) #[[y1 \<and> y2
 by (simp add: assms 
     fresh_asTerm_qFresh good_imp_qGood_pick local.swap_def qSwap_preserves_qGood)
 
-subsubsection {* For abstractions *}
+subsubsection \<open>For abstractions\<close>
 
 lemma alphaAbsGood_equivP: "equivP qGoodAbs alphaAbsGood"
 unfolding equivP_def reflP_def symP_def transP_def alphaAbsGood_def
@@ -933,9 +933,9 @@ assumes "qGoodAbs qA"
 shows "skelAbs (asAbs qA) = qSkelAbs qA"
 by (simp add: alphaAll_qSkelAll assms pick_asAbs skelAbs_def)
 
-subsubsection {* For inputs  *}
+subsubsection \<open>For inputs\<close>
 
-text {* For unbound inputs: *}
+text \<open>For unbound inputs:\<close>
 
 lemma pickInp_inj_on_goodInp: "inj_on pickInp (Collect goodInp)"
 unfolding pickInp_def[abs_def] inj_on_def  
@@ -1113,7 +1113,7 @@ lemma freshInp_def2:
 unfolding freshInp_def qFreshInp_def pickInp_def lift_def fresh_def liftAll_def
 apply(rule iff_allI) subgoal for i by (cases "inp i") auto . 
 
-text {* For bound inputs: *}
+text \<open>For bound inputs:\<close>
 
 lemma pickBinp_inj_on_goodBinp: "inj_on pickBinp (Collect goodBinp)"
 unfolding pickBinp_def[abs_def] inj_on_def 
@@ -1279,7 +1279,7 @@ apply (rule iff_allI) subgoal for i by (cases "binp i") simp_all .
 (* Note that psubstInp and psubstBinp are discussed in the next subsubsection,
 about environments.  *)
 
-subsubsection {* For environments *}
+subsubsection \<open>For environments\<close>
 
 (* Remember we do not have any "quasi-swap" for environments --
    we plan to prove most of the things concerning parallel substitution
@@ -1387,7 +1387,7 @@ by (simp add: lift_None)
    (smt comp_apply goodBinp_def liftAll_def lift_def map_option_case map_option_eq_Some 
         option.sel pick_psubstAbs_qPsubstAbs)
 
-subsubsection{* The structural alpha-equivPalence maps commute with the syntactic constructs *}
+subsubsection\<open>The structural alpha-equivPalence maps commute with the syntactic constructs\<close>
 
 lemma pick_Var_qVar:
 "pick (Var xs x) #= qVar xs x"
@@ -1421,7 +1421,7 @@ univ_asTerm_alphaGood univ_asAbs_alphaAbsGood
 univ_asTerm_alpha univ_asAbs_alphaAbs
 pick_injective_good pick_injective_goodAbs
 
-subsection {* All operators preserve the ``good'' predicate *}
+subsection \<open>All operators preserve the ``good'' predicate\<close>
 
 (* Note: some facts here simply do not hold as ``iff"s.  *)
 
@@ -1676,9 +1676,9 @@ envOps_preserve_good
 substAll_preserve_good
 vsubstAll_preserve_good
 
-subsubsection {* The syntactic operators are almost constructors *}
+subsubsection \<open>The syntactic operators are almost constructors\<close>
 
-text{* The only one that does not act precisely like a constructor is ``Abs". *}
+text\<open>The only one that does not act precisely like a constructor is ``Abs".\<close>
 
 theorem Var_inj[simp]:
 "(((Var xs x)::('index,'bindex,'varSort,'var,'opSym)term) = Var ys y) =
@@ -1695,11 +1695,11 @@ using assms pickInp_alphaInp_iff_equal pickBinp_alphaBinp_iff_equal
 goodInp_imp_qGoodInp_pickInp goodBinp_imp_qGoodBinp_pickBinp 
 unfolding Op_def by (fastforce simp: asTerm_equal_iff_alpha) 
 
-text{* ``Abs" is almost injective (``ainj"), with almost injectivity expressed
+text\<open>``Abs" is almost injective (``ainj"), with almost injectivity expressed
    in two ways:
    \\- maximally, using "forall" -- this is suitable for elimination of ``Abs" equalities;
    \\- minimally, using "exists" -- this is suitable for introduction of ``Abs" equalities.
- *}
+\<close>
 
 lemma Abs_ainj_all:
 assumes good: "good X" and good': "good X'"
@@ -1857,9 +1857,9 @@ by (metis Abs_asTerm_asAbs_qAbs asAbs_pick assms
 lemmas good_freeCons =
 Op_inj Var_diff_Op Op_diff_Var
 
-subsection {* Properties lifted from quasi-terms to terms *}
+subsection \<open>Properties lifted from quasi-terms to terms\<close>
 
-subsubsection {* Simplification rules *}
+subsubsection \<open>Simplification rules\<close>
 
 theorem swap_Var_simp[simp]:
 "((Var xs x) #[y1 \<and> y2]_ys) = Var xs (x @xs[y1 \<and> y2]_ys)"
@@ -2173,7 +2173,7 @@ good_psubstAll_simps
 good_substAll_simps
 good_vsubstAll_simps
 
-subsubsection {* The ability to pick fresh variables *}
+subsubsection \<open>The ability to pick fresh variables\<close>
 
 lemma single_non_fresh_ordLess_var:
 "good X \<Longrightarrow> |{x. \<not> fresh xs x X}| <o |UNIV :: 'var set|"
@@ -2257,13 +2257,13 @@ proof-
    assume "A : AS"
    hence "fresh xs z Y" unfolding Y_def using XSYS by simp
    moreover obtain ys y where Y: "good Y" and A: "A = Abs ys y Y"
-   unfolding Y_def using `A : AS` 1 by auto
+   unfolding Y_def using \<open>A : AS\<close> 1 by auto
    ultimately have "freshAbs xs z A" unfolding A using z by auto
   }
   ultimately show ?thesis by auto
 qed
 
-subsubsection {* Compositionality *}
+subsubsection \<open>Compositionality\<close>
 
 lemma swap_ident[simp]:
 assumes "good X"
@@ -2345,7 +2345,7 @@ assumes "good X"
 shows "skel (X #[x1 \<and> x2]_xs) = skel X"
 using assms by (metis alpha_qSkel pick_swap_qSwap qSkel_qSwap skel_def)
 
-subsubsection {* Compositionality for environments *}
+subsubsection \<open>Compositionality for environments\<close>
 
 lemma swapEnv_ident[simp]:
 assumes "goodEnv rho"
@@ -2382,7 +2382,7 @@ proof(rule ext)+
     hence "good X" using good unfolding goodEnv_def liftAll_def by simp
     have "?rhosw11 us u = Some(?Sw11 X)" using Some unfolding swapEnv_defs lift_def by simp
     also have "?Sw11 X = ?Sw22 X"
-    using `good X` by(rule swap_compose)
+    using \<open>good X\<close> by(rule swap_compose)
     also have "Some(?Sw22 X) = ?rhosw22 us u"
     using Some unfolding * swapEnv_defs lift_def by simp
     finally show ?thesis .
@@ -2505,7 +2505,7 @@ swap_ident swap_involutive swap_involutive2 swap_preserves_fresh fresh_swap_id
 freshAbs_swapAbs_id
 swapEnv_ident swapEnv_involutive swapEnv_involutive2 swapEnv_preserves_freshEnv freshEnv_swapEnv_id
 
-subsubsection {* Properties of the relation of being swapped *}
+subsubsection \<open>Properties of the relation of being swapped\<close>
 
 theorem swap_swapped: "(X, X #[x \<and> y]_zs) \<in> swapped"
 by(auto simp add: swapped.Refl swapped.Swap)
@@ -2526,9 +2526,9 @@ assumes GOOD: "good X" and FRESH: "fresh xs x' X"
 shows "\<exists> X'. (X,X') \<in> swapped \<and> good X' \<and> Abs xs x X = Abs xs x' X'"
 using Abs_swap_fresh FRESH GOOD swap_preserves_good swap_swapped by blast
 
-subsection {* Induction  *}
+subsection \<open>Induction\<close>
 
-subsubsection {* Induction lifted from quasi-terms  *}
+subsubsection \<open>Induction lifted from quasi-terms\<close>
 
 lemma term_templateInduct[case_names rel Var Op Abs]:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)term" and
@@ -2589,17 +2589,17 @@ proof-
     using op[of ?inp ?binp delta] good_inp unfolding 1 liftAll_def by simp
   next
     case (Abs xs x qX) 
-    have "good (asTerm qX)" using `qGood qX` qGood_iff_good_asTerm by auto
+    have "good (asTerm qX)" using \<open>qGood qX\<close> qGood_iff_good_asTerm by auto
     moreover
     {fix Y   assume *: "(asTerm qX, Y) \<in> rel"
      obtain qY where qY: "qY = pick Y" by blast
-     have "good (asTerm qX)" using `qGood qX` qGood_iff_good_asTerm by auto
+     have "good (asTerm qX)" using \<open>qGood qX\<close> qGood_iff_good_asTerm by auto
      hence "good Y" using * rel by auto 
      hence Y: "Y = asTerm qY" unfolding qY using asTerm_pick by auto
      have "phi Y" using * Abs.IH unfolding Y by simp
     }
     ultimately have "phiAbs (Abs xs x (asTerm qX))" using abs by simp
-    thus ?case using `qGood qX` Abs_asTerm_asAbs_qAbs by fastforce
+    thus ?case using \<open>qGood qX\<close> Abs_asTerm_asAbs_qAbs by fastforce
   qed
   (*  *)
   ultimately show ?thesis by blast
@@ -2631,9 +2631,9 @@ shows "(good X \<longrightarrow> phi X) \<and> (goodAbs A \<longrightarrow> phiA
 apply(induct rule: term_templateInduct[of "swapped \<union> {(X,Y). good Y \<and> skel Y = skel X}"])
 by(auto simp: assms swapped_skel swapped_preserves_good) 
 
-subsubsection {* Fresh induction *}
+subsubsection \<open>Fresh induction\<close>
 
-text{* First a general situation, where parameters are of an unspecified type (that should be given by the user):  *}
+text\<open>First a general situation, where parameters are of an unspecified type (that should be given by the user):\<close>
  
 lemma term_fresh_forall_induct[case_names PAR Var Op Abs]:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)term" and A::"('index,'bindex,'varSort,'var,'opSym)abs" 
@@ -2652,10 +2652,10 @@ proof(induction rule: term_templateInduct[of swapped])
   show ?case proof safe 
     fix p 
     obtain x' where x'_freshP: "x' \<notin> varsOf p xs" and x'_fresh_X: "fresh xs x' X"
-    using `good X` PAR obtain_fresh[of "varsOf p xs" "{X}" "{}" "{}" xs] by auto
+    using \<open>good X\<close> PAR obtain_fresh[of "varsOf p xs" "{X}" "{}" "{}" xs] by auto
     then obtain X' where XX': "(X, X') \<in> swapped" and good_X': "good X'" and
     Abs_eq: "Abs xs x X = Abs xs x' X'"
-    using `good X` x'_freshP x'_fresh_X using obtain_rep[of X xs x' x] by auto
+    using \<open>good X\<close> x'_freshP x'_fresh_X using obtain_rep[of X xs x' x] by auto
     thus "phiAbs (Abs xs x X) p"
     unfolding Abs_eq using x'_freshP good_X' abs Abs.IH by simp
   qed
@@ -2698,7 +2698,7 @@ shows
 "(good X \<longrightarrow> phi X) \<and>
  (goodAbs A \<longrightarrow> phiAbs A)"
 proof(induction rule: term_templateInduct[of "swapped O rel"])
-  case (Abs xs x X) note good_X = `good X`  
+  case (Abs xs x X) note good_X = \<open>good X\<close>  
   have "|{X} \<union> terms| <o |UNIV :: 'var set| \<or> finite ({X} \<union> terms)"
   apply(cases "finite terms", auto simp add: PAR)
   using PAR var_infinite_INNER card_of_Un_singl_ordLess_infinite by force
@@ -2718,7 +2718,7 @@ proof(induction rule: term_templateInduct[of "swapped O rel"])
 qed(insert Op rel, unfold relcomp_unfold liftAll_def, simp_all add: Var, 
      metis rel swapped_preserves_good swapped_skel) 
 
-text{* A version of the above not employing any relation for the bound-argument case: *}
+text\<open>A version of the above not employing any relation for the bound-argument case:\<close>
 
 lemma term_rawInduct_fresh[case_names Par Var Op Obs]:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)term" and
@@ -2760,10 +2760,10 @@ using assms by auto
  Therefore we do not prove a swapped-and-skel version of fresh induction, although such a version
  could be easily inferred from ``term-templateInduct". *)
 
-text{* The typical raw induction with freshness is one dealing with
+text\<open>The typical raw induction with freshness is one dealing with
    finitely many variables, terms, abstractions and environments as parameters --
    we have all these condensed in the notion of a parameter (type
-   constructor ``param"): *}
+   constructor ``param"):\<close>
 
 lemma term_induct_fresh[case_names Par Var Op Abs]:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)term" and

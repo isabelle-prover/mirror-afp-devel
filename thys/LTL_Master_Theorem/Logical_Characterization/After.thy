@@ -680,7 +680,7 @@ proof -
   have "w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>) \<longleftrightarrow> (\<forall>i. suffix i w \<Turnstile>\<^sub>n F\<^sub>n \<phi>)"
     by simp
   also have "\<dots> \<longleftrightarrow> (\<forall>i. \<exists>j. af (F\<^sub>n \<phi>) (prefix j (suffix i w)) \<sim> true\<^sub>n)"
-    using af_\<mu>LTL[OF `F\<^sub>n \<phi> \<in> \<mu>LTL`] by blast
+    using af_\<mu>LTL[OF \<open>F\<^sub>n \<phi> \<in> \<mu>LTL\<close>] by blast
   also have "\<dots> \<longleftrightarrow> (\<forall>i. \<exists>j. af (F\<^sub>n \<phi>) (prefix (j - i) (suffix i w)) \<sim> true\<^sub>n)"
     by (metis diff_add_inverse)
   also have "\<dots> \<longleftrightarrow> (\<forall>i. \<exists>j. af (F\<^sub>n \<phi>) (w[i \<rightarrow> j]) \<sim> true\<^sub>n)"
@@ -700,7 +700,7 @@ proof -
   have "w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<phi>) \<longleftrightarrow> (\<exists>i. suffix i w \<Turnstile>\<^sub>n G\<^sub>n \<phi>)"
     by force
   also have "\<dots> \<longleftrightarrow> (\<exists>i. \<forall>j. \<not> (af (G\<^sub>n \<phi>) (prefix j (suffix i w)) \<sim> false\<^sub>n))"
-    using af_\<nu>LTL[OF `G\<^sub>n \<phi> \<in> \<nu>LTL`] by blast
+    using af_\<nu>LTL[OF \<open>G\<^sub>n \<phi> \<in> \<nu>LTL\<close>] by blast
   also have "\<dots> \<longleftrightarrow> (\<exists>i. \<forall>j. \<not> (af (G\<^sub>n \<phi>) (prefix (j - i) (suffix i w)) \<sim> false\<^sub>n))"
     by (metis diff_add_inverse)
   also have "\<dots> \<longleftrightarrow> (\<exists>i. \<forall>j. \<not> (af (G\<^sub>n \<phi>) (w[i \<rightarrow> j]) \<sim> false\<^sub>n))"

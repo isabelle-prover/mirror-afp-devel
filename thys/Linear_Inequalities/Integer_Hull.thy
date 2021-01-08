@@ -69,7 +69,7 @@ proof
     hence "sum (\<lambda> y. l y + ?f y) (D \<union> {0\<^sub>v n}) = L_sup"
       using l L_def by auto
     moreover have "(\<lambda> y. l y + ?f y) ` (D \<union> {0\<^sub>v n}) \<subseteq> {t. t \<ge> 0}"
-      using `L \<le> L_sup` l by force
+      using \<open>L \<le> L_sup\<close> l by force
     ultimately obtain l' where x: "lincomb l' (D \<union> {0\<^sub>v n}) = x"
                           and l': "l' ` (D \<union> {0\<^sub>v n}) \<subseteq> {t. t \<ge> 0}"
                           and sum_l': "sum l' (D \<union> {0\<^sub>v n}) = L_sup"
@@ -82,38 +82,38 @@ proof
       using finite_distinct_list[of "D \<union> {0\<^sub>v n}"] finD by auto
     let ?lD' = "map ((\<cdot>\<^sub>v) L_sup) lD"
     have dist': "distinct ?lD'"
-      using distinct_smult_nonneg[OF _ dist] `L_sup > 0` by fastforce
+      using distinct_smult_nonneg[OF _ dist] \<open>L_sup > 0\<close> by fastforce
 
     have x': "lincomb l'' ?D' = x" unfolding x[symmetric] l''_def
       unfolding lincomb_def Did 
     proof (subst finsum_reindex)
-      from `L_sup > 0` smult_vec_nonneg_eq[of L_sup] show "inj_on ((\<cdot>\<^sub>v) L_sup) (D \<union> {0\<^sub>v n})" 
+      from \<open>L_sup > 0\<close> smult_vec_nonneg_eq[of L_sup] show "inj_on ((\<cdot>\<^sub>v) L_sup) (D \<union> {0\<^sub>v n})" 
         by (auto simp: inj_on_def)
       show "(\<lambda>v. l' (1 / L_sup \<cdot>\<^sub>v v) / L_sup \<cdot>\<^sub>v v) \<in> (\<cdot>\<^sub>v) L_sup ` (D \<union> {0\<^sub>v n}) \<rightarrow> carrier_vec n" 
         using D by auto
-      from `L_sup > 0` have "L_sup \<noteq> 0" by auto
+      from \<open>L_sup > 0\<close> have "L_sup \<noteq> 0" by auto
       then show "(\<Oplus>\<^bsub>V\<^esub>x\<in>D \<union> {0\<^sub>v n}. l' (1 / L_sup \<cdot>\<^sub>v (L_sup \<cdot>\<^sub>v x)) / L_sup \<cdot>\<^sub>v (L_sup \<cdot>\<^sub>v x)) =
         (\<Oplus>\<^bsub>V\<^esub>v\<in>D \<union> {0\<^sub>v n}. l' v \<cdot>\<^sub>v v)" 
         by (intro finsum_cong, insert D, auto simp: smult_smult_assoc)
     qed
     have "D \<union> {0\<^sub>v n} \<subseteq> cone C" using set_in_cone[OF C] DC zero_in_cone by blast
-    hence D': "?D' \<subseteq> cone C" using cone_smult[of L_sup, OF _ C] `L_sup > 0` by auto
+    hence D': "?D' \<subseteq> cone C" using cone_smult[of L_sup, OF _ C] \<open>L_sup > 0\<close> by auto
     have "D \<union> {0\<^sub>v n} \<subseteq> \<int>\<^sub>v" unfolding zero_vec_def using DI Ints_vec_def by auto
     moreover have "L_sup \<in> \<int>" unfolding L_sup_def by auto
     ultimately have D'I: "?D' \<subseteq> \<int>\<^sub>v" unfolding Ints_vec_def by force
 
-    have "1 = sum l' (D \<union> {0\<^sub>v n}) * (1 / L_sup)" using sum_l' `L_sup > 0` by auto
+    have "1 = sum l' (D \<union> {0\<^sub>v n}) * (1 / L_sup)" using sum_l' \<open>L_sup > 0\<close> by auto
     also have "sum l' (D \<union> {0\<^sub>v n}) = sum_list (map l' lD)"
       using sum.distinct_set_conv_list[OF dist] lD by auto
     also have "map l' lD = map (l' \<circ> ((\<cdot>\<^sub>v) (1 / L_sup))) ?lD'"
-      using smult_smult_assoc[of "1 / L_sup" L_sup] `L_sup > 0`
+      using smult_smult_assoc[of "1 / L_sup" L_sup] \<open>L_sup > 0\<close>
       by (simp add: comp_assoc)
     also have "l' \<circ> ((\<cdot>\<^sub>v) (1 / L_sup)) = (\<lambda> x. l' ((1 / L_sup) \<cdot>\<^sub>v x))" by (rule comp_def)
     also have "sum_list (map \<dots> ?lD') * (1 / L_sup) =
                sum_list (map (\<lambda>y. l' (1 / L_sup \<cdot>\<^sub>v y) * (1 / L_sup)) ?lD')"
       using sum_list_mult_const[of _ "1 / L_sup" ?lD'] by presburger
     also have "\<dots> = sum_list (map l'' ?lD')"
-      unfolding l''_def using `L_sup > 0` by simp
+      unfolding l''_def using \<open>L_sup > 0\<close> by simp
     also have "\<dots> = sum l'' (set ?lD')" using sum.distinct_set_conv_list[OF dist'] by metis
     also have "set ?lD' = ?D'" using lD by auto
     finally have sum_l': "sum l'' ?D' = 1" by auto
@@ -124,9 +124,9 @@ proof
       assume "y \<in> l'' ` ?D'"
       then obtain x where y: "y = l'' x" and "x \<in> ?D'" by blast
       then obtain v where "v \<in> D \<union> {0\<^sub>v n}" and x: "x = L_sup \<cdot>\<^sub>v v" by blast
-      hence "0 \<le> l' v / L_sup" using l' `L_sup > 0` by fastforce
+      hence "0 \<le> l' v / L_sup" using l' \<open>L_sup > 0\<close> by fastforce
       also have "\<dots> = l'' x" unfolding x l''_def
-        using smult_smult_assoc[of "1 / L_sup" "L_sup" v] `L_sup > 0` by simp
+        using smult_smult_assoc[of "1 / L_sup" "L_sup" v] \<open>L_sup > 0\<close> by simp
       finally show "y \<in> {t. t \<ge> 0}" using y by blast
       qed
     moreover have "finite ?D'" using finD by simp

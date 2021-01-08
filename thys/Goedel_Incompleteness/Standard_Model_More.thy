@@ -244,7 +244,7 @@ proof
   assume ?L thus ?R by (intro B.sound_isTrue) auto
 next
   assume ?R
-  obtain n where n[simp]: "n \<in> num" and i: "isTrue (PPf n \<langle>\<phi>\<rangle>)" using B.isTrue_exi[OF _ _ _ `?R`] by auto
+  obtain n where n[simp]: "n \<in> num" and i: "isTrue (PPf n \<langle>\<phi>\<rangle>)" using B.isTrue_exi[OF _ _ _ \<open>?R\<close>] by auto
   hence "bprv (PPf n \<langle>\<phi>\<rangle>)" by (auto simp: isTrue_iff_bprv_PPf)
   thus ?L by (intro B.prv_exiI[of _ _ n]) auto
 qed
@@ -253,7 +253,7 @@ lemma isTrue_exi_iff:
 assumes [simp]: "\<phi> \<in> fmla" "Fvars \<phi> = {}"
 shows "isTrue (exi yy (PPf (Var yy) \<langle>\<phi>\<rangle>)) \<longleftrightarrow> (\<exists>n\<in>num. isTrue (PPf n \<langle>\<phi>\<rangle>))" (is "?L \<longleftrightarrow> ?R")
 proof
-  assume ?L thus ?R using B.isTrue_exi[OF _ _ _ `?L`] by auto
+  assume ?L thus ?R using B.isTrue_exi[OF _ _ _ \<open>?L\<close>] by auto
 next
   assume ?R
   then obtain n where n[simp]: "n \<in> num" and i: "isTrue (PPf n \<langle>\<phi>\<rangle>)" by auto

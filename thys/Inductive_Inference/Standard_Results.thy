@@ -175,7 +175,7 @@ proof -
     using normal_form[OF assms(1)] by auto
   define g where "g \<equiv> Cn n r_normal_form [r_constn (n - 1) i, r_list_encode (n - 1)]"
   then have "recfn n g"
-    using r_normal_form_recfn `n > 0` by simp
+    using r_normal_form_recfn \<open>n > 0\<close> by simp
   then have "g \<simeq> f"
     using g_def r_list_encode i assms by (intro exteqI) simp_all
   moreover have "count_Mn g = 1"
@@ -466,7 +466,7 @@ proof -
     using len_cs len_xs assms by auto
   then have "eval ?f xs =
       eval (r_universal (n + length cs)) (map (\<lambda>g. the (eval g xs)) ?gs)"
-    using len_cs len_xs assms `recfn n ?f` by simp
+    using len_cs len_xs assms \<open>recfn n ?f\<close> by simp
   then have "eval ?f xs = eval (r_universal (m + n)) (map (\<lambda>g. the (eval g xs)) ?gs)"
     by (simp add: len_cs add.commute)
   then have "eval (r_universal n) ((the (eval ?s (p # cs))) # xs) =
@@ -655,7 +655,7 @@ proof -
 
   let ?fh = "Cn 1 f [h]"
   have "recfn 1 ?fh"
-    using `prim_recfn 1 h` assms by simp
+    using \<open>prim_recfn 1 h\<close> assms by simp
   then have "infinite {r. recfn 1 r \<and> r \<simeq> ?fh}"
     using exteq_infinite[of ?fh 1] by simp
   then have "infinite (encode ` {r. recfn 1 r \<and> r \<simeq> ?fh})" (is "infinite ?E")
@@ -673,9 +673,9 @@ proof -
   then have eval_r: "eval r [encode r] = eval ?fh [encode r]"
     by (simp add: exteq_def)
   then have eval_r': "eval r [encode r] = eval f [the (eval h [encode r])]"
-    using assms `total h` `prim_recfn 1 h` by simp
+    using assms \<open>total h\<close> \<open>prim_recfn 1 h\<close> by simp
   then have "eval r [encode r] \<down>"
-    using  `prim_recfn 1 h` assms(1,2) by simp
+    using  \<open>prim_recfn 1 h\<close> assms(1,2) by simp
   then have "eval r_phi [encode r, encode r] \<down>"
     by (simp add: \<open>recfn 1 r\<close> r_phi)
   then have "eval r_phi [the (eval h [encode r]), y] =
@@ -695,7 +695,7 @@ proof -
     using eval_r eval_r' \<open>n = the (eval h [encode r])\<close> by auto 
   ultimately have "eval r_phi [n, y] = eval r_phi [the (eval f [n]), y]" for y
     by simp
-  with `n \<ge> k` show ?thesis by auto
+  with \<open>n \<ge> k\<close> show ?thesis by auto
 qed
 
 
@@ -720,7 +720,7 @@ proof -
     using rogers_fixed_point_theorem by blast
   with c(3) have "\<forall>x. eval r_phi [n, x] = eval psi [n, x]"
     by simp
-  with `n \<ge> k` show ?thesis by auto
+  with \<open>n \<ge> k\<close> show ?thesis by auto
 qed
 
 text \<open>Kleene's fixed-point theorem can be generalized to arbitrary
@@ -795,7 +795,7 @@ proof -
   have "recfn 1 ?n"
     using assms by simp
   moreover have "total ?n"
-    using `total h` totalI1[of ?n] by simp
+    using \<open>total h\<close> totalI1[of ?n] by simp
   moreover {
     fix x y
     have "eval r_phi [(the (eval ?n [x])), y] = eval r_phi [(the (eval h [?e, x])), y]"
@@ -806,11 +806,11 @@ proof -
     also have "... = eval r_phi [the (eval f [the (eval h [?e, x]), x]), y]"
     proof -
       have "eval (r_universal 2) [?e, ?e, x] \<down>"
-        using totalE[OF `total ?fh`] `recfn 2 ?fh` r_universal
+        using totalE[OF \<open>total ?fh\<close>] \<open>recfn 2 ?fh\<close> r_universal
         by (metis length_Cons list.size(3) numeral_2_eq_2)
       moreover have "eval (r_universal 2) [?e, ?e, x] = eval ?fh [?e, x]"
         by (metis \<open>recfn 2 ?fh\<close> length_Cons list.size(3) numeral_2_eq_2 r_universal)
-      then show ?thesis using assms `total h` by simp
+      then show ?thesis using assms \<open>total h\<close> by simp
     qed
     also have "... =  eval r_phi [(the (eval f [the (eval ?n [x]), x])), y]"
       by simp
@@ -837,19 +837,19 @@ proof -
     using kleene_fixed_point_theorem_2[of g] assms(1,2) by auto
   define k where "k = Cn 1 h [m, Id 1 0]"
   then have "recfn 1 k"
-    using `recfn 1 m` assms(3) by simp
+    using \<open>recfn 1 m\<close> assms(3) by simp
   have "total (Id 1 0)"
     by (simp add: Mn_free_imp_total)
   then have "total k"
-    using `total m` assms(4) Cn_total k_def `recfn 1 k` by simp
+    using \<open>total m\<close> assms(4) Cn_total k_def \<open>recfn 1 k\<close> by simp
   obtain n where n: "\<forall>x. eval r_phi [n, x] = eval r_phi [the (eval k [n]), x]"
-    using rogers_fixed_point_theorem[of k] `recfn 1 k` `total k` by blast
+    using rogers_fixed_point_theorem[of k] \<open>recfn 1 k\<close> \<open>total k\<close> by blast
   obtain mm where mm: "eval m [n] \<down>= mm"
-    using `total m` `recfn 1 m` by fastforce
+    using \<open>total m\<close> \<open>recfn 1 m\<close> by fastforce
   then have "\<forall>x. eval r_phi [mm, x] = eval r_phi [the (eval g [mm, n]), x]"
     by (metis m option.sel)
   moreover have "\<forall>x. eval r_phi [n, x] = eval r_phi [the (eval h [mm, n]), x]"
-    using k_def assms(3) `total m` `recfn 1 m` mm n by simp
+    using k_def assms(3) \<open>total m\<close> \<open>recfn 1 m\<close> mm n by simp
   ultimately show ?thesis by blast
 qed
 
@@ -870,11 +870,11 @@ proof
     using decidable_def by auto
   define g where "g \<equiv> Cn 1 r_ifeq_else_diverg [f, Z, Z]"
   then have "recfn 1 g"
-    using `recfn 1 f` r_ifeq_else_diverg_recfn by simp
+    using \<open>recfn 1 f\<close> r_ifeq_else_diverg_recfn by simp
   then obtain i where i: "eval r_phi [i, x] = eval g [x]" for x
     using r_phi' by auto
   from g_def have "eval g [x] = (if x \<notin> ?K then Some 0 else None)" for x
-    using r_ifeq_else_diverg_recfn `recfn 1 f` f by simp
+    using r_ifeq_else_diverg_recfn \<open>recfn 1 f\<close> f by simp
   then have "eval g [i] \<down> \<longleftrightarrow> i \<notin> ?K" by simp
   also have "... \<longleftrightarrow> eval r_phi [i, i] \<up>" by simp
   also have "... \<longleftrightarrow> eval g [i] \<up>"
@@ -969,7 +969,7 @@ proof -
   then have "\<And>x. x \<in> X \<Longrightarrow> eval g [x] \<down>= 1" and "\<And>x. x \<notin> X \<Longrightarrow> eval g [x] \<up>"
     by simp_all
   then show ?thesis
-    using `recfn 1 g` semidecidable_def by auto
+    using \<open>recfn 1 g\<close> semidecidable_def by auto
 qed
 
 text \<open>A set is recursively enumerable if it is empty or the image of a
@@ -998,7 +998,7 @@ proof
       using f(1) by simp
     from h_def have h: "eval h [x, y] \<down>= 0 \<longleftrightarrow> the (eval f [x]) = y" for x y
       using f(1,2) by simp
-    from h_def `recfn 2 h` totalI2 f(2) have "total h" by simp
+    from h_def \<open>recfn 2 h\<close> totalI2 f(2) have "total h" by simp
     define g where "g = Mn 1 h"
     then have "recfn 1 g"
       using h_def f(1) by simp
@@ -1006,19 +1006,19 @@ proof
       (if (\<exists>x. eval h [x, y] \<down>= 0 \<and> (\<forall>x'<x. eval h [x', y] \<down>))
        then Some (LEAST x. eval h [x, y] \<down>= 0)
        else None)" for y
-      using g_def `total h` f(2) by simp
+      using g_def \<open>total h\<close> f(2) by simp
     then have "eval g [y] =
       (if \<exists>x. eval h [x, y] \<down>= 0
        then Some (LEAST x. eval h [x, y] \<down>= 0)
        else None)" for y
-      using `total h` `recfn 2 h` by simp
+      using \<open>total h\<close> \<open>recfn 2 h\<close> by simp
     then have "eval g [y] \<down> \<longleftrightarrow> (\<exists>x. eval h [x, y] \<down>= 0)" for y
       by simp
     with h have "eval g [y] \<down> \<longleftrightarrow> (\<exists>x. the (eval f [x]) = y)" for y
       by simp
     with f(3) have "eval g [y] \<down> \<longleftrightarrow> y \<in> X" for y
       by auto
-    with `recfn 1 g` semidecidable_iff_domain show ?thesis by auto
+    with \<open>recfn 1 g\<close> semidecidable_iff_domain show ?thesis by auto
   qed
 
   show "recursively_enumerable X" if "semidecidable X" for X
@@ -1033,7 +1033,7 @@ proof
     let ?i = "encode f"
     have i: "\<And>x. eval f [x] = eval r_phi [?i, x]"
       using r_phi' f(1) by simp
-    with `x\<^sub>0 \<in> X` f(2) have "eval r_phi [?i, x\<^sub>0] \<down>" by simp
+    with \<open>x\<^sub>0 \<in> X\<close> f(2) have "eval r_phi [?i, x\<^sub>0] \<down>" by simp
     then obtain g where g: "recfn 1 g" "total g" "\<forall>x. eval r_phi [?i, x] \<down> = (\<exists>y. eval g [y] \<down>= x)"
       using f(1) nonempty_domain_enumerable by blast
     with f(2) i have "\<forall>x. x \<in> X = (\<exists>y. eval g [y] \<down>= x)"
@@ -1087,7 +1087,7 @@ proof -
     with d_def show ?thesis by simp
   qed
   ultimately show ?thesis
-    using decidable_def `recfn 1 d` by auto
+    using decidable_def \<open>recfn 1 d\<close> by auto
 qed
 
 theorem decidable_iff_semidecidable_complement:
@@ -1135,22 +1135,22 @@ proof
   have not_in_I: "eval psi [x, y] = eval r_phi [j\<^sub>2, y]" if "x \<notin> I" for x y
     by (simp add: psi that)
   obtain n where n: "\<forall>x. eval r_phi [n, x] = eval psi [n, x]"
-    using kleene_fixed_point_theorem[OF `recfn 2 psi`] by auto
+    using kleene_fixed_point_theorem[OF \<open>recfn 2 psi\<close>] by auto
   show False
   proof cases
     assume "n \<in> I"
     then have "\<forall>x. eval r_phi [n, x] = eval r_phi [j\<^sub>1, x]"
       using n in_I by simp
     then have "n \<notin> I"
-      using `j\<^sub>1 \<notin> I` index_set_closed_not_in[OF assms(1)] by simp
-    with `n \<in> I` show False by simp
+      using \<open>j\<^sub>1 \<notin> I\<close> index_set_closed_not_in[OF assms(1)] by simp
+    with \<open>n \<in> I\<close> show False by simp
   next
     assume "n \<notin> I"
     then have "\<forall>x. eval r_phi [n, x] = eval r_phi [j\<^sub>2, x]"
       using n not_in_I by simp
     then have "n \<in> I"
-      using `j\<^sub>2 \<in> I` index_set_closed_in[OF assms(1)] by simp
-    with `n \<notin> I` show False by simp
+      using \<open>j\<^sub>2 \<in> I\<close> index_set_closed_in[OF assms(1)] by simp
+    with \<open>n \<notin> I\<close> show False by simp
   qed
 qed
 
@@ -1415,7 +1415,7 @@ proof (cases z)
     by auto
   then have "(\<lambda>u. eval r' [u]) = f(x:=None)"
     by auto
-  with None `recfn 1 r'` show ?thesis by auto
+  with None \<open>recfn 1 r'\<close> show ?thesis by auto
 next
   case (Some y)
   from assms obtain r where r: "recfn 1 r" "(\<lambda>u. eval r [u]) = f"
@@ -1432,7 +1432,7 @@ next
     by auto
   then have "(\<lambda>u. eval r' [u]) = f(x:=Some y)"
     by auto
-  with Some `recfn 1 r'` show ?thesis by auto
+  with Some \<open>recfn 1 r'\<close> show ?thesis by auto
 qed
 
 lemma swap_P2:
@@ -1467,7 +1467,7 @@ proof -
     using r by simp
   with r have "eval ?s [x] = f (x + n)" for x
     by simp
-  with `recfn 1 ?s` show ?thesis by blast
+  with \<open>recfn 1 ?s\<close> show ?thesis by blast
 qed
 
 lemma skip_R1:

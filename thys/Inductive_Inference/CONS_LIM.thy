@@ -126,7 +126,7 @@ proof -
 
   let ?hh = "Cn 1 ?h [Cn 1 r_length [Id 1 0], Id 1 0]"
   have "recfn 1 ?hh"
-    using `recfn 2 ?h` by simp
+    using \<open>recfn 2 ?h\<close> by simp
   with h have hh: "eval ?hh [e] \<down>=
     (if \<forall>i<e_length e. e_nth e i < 2 then 0
      else e_nth e (GREATEST i. i < e_length e \<and> e_nth e i \<ge> 2))" for e
@@ -134,8 +134,8 @@ proof -
   then have "eval ?hh [e] = rmge2 e" for e
     unfolding rmge2_def by auto
   moreover have "total ?hh"
-    using hh totalI1 `recfn 1 ?hh` by simp
-  ultimately show ?thesis using `recfn 1 ?hh` by blast
+    using hh totalI1 \<open>recfn 1 ?hh\<close> by simp
+  ultimately show ?thesis using \<open>recfn 1 ?hh\<close> by blast
 qed
 
 text \<open>The first part of the main result is that @{term "U\<^bsub>LIM-CONS\<^esub> \<in> LIM"}.\<close>
@@ -158,7 +158,7 @@ proof -
         unfolding U_LIMCONS_def by auto
       then have "\<phi> j = f" by simp
       from that have "total1 f"
-        using `U\<^bsub>LIM-CONS\<^esub> \<subseteq> \<R>` R1_imp_total1 total1_def by auto
+        using \<open>U\<^bsub>LIM-CONS\<^esub> \<subseteq> \<R>\<close> R1_imp_total1 total1_def by auto
       define n\<^sub>0 where "n\<^sub>0 = length vs"
       have f_gr_n0: "f n \<down>= 0 \<or> f n \<down>= 1" if "n > n\<^sub>0" for n
       proof -
@@ -187,10 +187,10 @@ proof -
         then have "\<not> (\<forall>i<Suc n. the (f i) < 2)"
           using j that less_Suc_eq_le by auto
         then have "rmge2 (f \<triangleright> n) = f (GREATEST i. i < Suc n \<and> the (f i) \<ge> 2)"
-          using rmge2_init_total `total1 f` by auto
-        with n0_greatest `f n\<^sub>0 \<down>= j` show ?thesis by simp
+          using rmge2_init_total \<open>total1 f\<close> by auto
+        with n0_greatest \<open>f n\<^sub>0 \<down>= j\<close> show ?thesis by simp
       qed
-      with `\<phi> j = f` show ?thesis by auto
+      with \<open>\<phi> j = f\<close> show ?thesis by auto
     qed
   qed
   then show ?thesis using Lim_def by auto
@@ -303,8 +303,8 @@ proof -
   have "s (f \<triangleright> n) = t (f \<triangleright> n)" if "f \<in> U" for f n
     unfolding t_def by (simp add: init_neq_zero)
   then have "learn_cons \<psi> U t"
-    using `t \<in> \<P>` assms(2) learn_consE[of \<psi> U s] learn_consI[of \<psi> U t] by simp
-  with `total1 t` show ?thesis by auto
+    using \<open>t \<in> \<P>\<close> assms(2) learn_consE[of \<psi> U s] learn_consI[of \<psi> U t] by simp
+  with \<open>total1 t\<close> show ?thesis by auto
 qed
 
 text \<open>The proof of @{prop "U\<^bsub>LIM-CONS\<^esub> \<notin> CONS"} is by contradiction.
@@ -411,7 +411,7 @@ proof
   then have "eval r_psi [i, n] \<down>= last (prefixes i n)" for n i
     unfolding r_psi_def using r_prefixes r_prefixes_recfn prefixes_neq_nil by simp
   then have "(\<lambda>i x. Some (last (prefixes i x))) \<in> \<P>\<^sup>2"
-    using `recfn 2 r_psi` P2I[of "r_psi"] by simp
+    using \<open>recfn 2 r_psi\<close> P2I[of "r_psi"] by simp
   with psi_def show "\<psi> \<in> \<P>\<^sup>2" by presburger
   moreover show "total2 psi"
     unfolding psi_def by auto
@@ -449,7 +449,7 @@ proof -
   define p where "p = (\<lambda>x. \<psi> j (x + 1))"
   have "p \<in> \<R>\<^sub>0\<^sub>1"
   proof -
-    from p_def `\<psi> j \<in> \<P>` skip_P1 have "p \<in> \<P>" by blast
+    from p_def \<open>\<psi> j \<in> \<P>\<close> skip_P1 have "p \<in> \<P>" by blast
     from psi_in_R2 have "total1 (\<psi> j)" by simp
     with p_def have "total1 p"
       by (simp add: total1_def)

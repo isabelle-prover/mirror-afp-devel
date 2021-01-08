@@ -1,9 +1,9 @@
-section {* More on Terms *}
+section \<open>More on Terms\<close>
 
 theory Terms imports Transition_QuasiTerms_Terms
 begin
 
-text{* In this section, we continue the study of terms, with stating and proving
+text\<open>In this section, we continue the study of terms, with stating and proving
 properties specific to terms (while in the previous section we dealt with
 lifting properties from quasi-terms).
 Consequently, in this theory, not only the theorems, but neither the proofs
@@ -11,7 +11,7 @@ should mention quasi-items at all.
 Among the properties specific to terms will
 be the compositionality properties of substitution (while, by contrast, similar properties
 of swapping also held for quasi-tems).
- *}
+\<close>
 
 context FixVars (* scope all throughout the file *)
 begin
@@ -19,7 +19,7 @@ begin
 declare qItem_simps[simp del]
 declare qItem_versus_item_simps[simp del]
 
-subsection {* Identity environment versus other operators *}
+subsection \<open>Identity environment versus other operators\<close>
 
 (* Recall theorem getEnv_idEnv. *)
 
@@ -81,7 +81,7 @@ shows "(rho &[idEnv]) = rho"
 using assms unfolding psubstEnv_def lift_def goodEnv_def liftAll_def  
 apply(intro ext) subgoal for xs x by(cases "rho xs x") auto .
 
-subsection {* Environment update versus other operators *}
+subsection \<open>Environment update versus other operators\<close>
 
 (* Recall theorem getEnv_updEnv. *)
 
@@ -153,13 +153,13 @@ theorem vsubstEnv_updEnv:
 "((rho [x \<leftarrow> X]_xs) &[y1 // y]_ys) = ((rho &[y1 // y]_ys) [x \<leftarrow> (X #[y1 // y]_ys)]_xs)"
 unfolding vsubstEnv_def vsubst_def using substEnv_updEnv .
 
-subsection {* Environment ``get" versus other operators *}
+subsection \<open>Environment ``get" versus other operators\<close>
 
-text{* Currently, ``get" is just function application.  While the next
+text\<open>Currently, ``get" is just function application.  While the next
 properties are immediate consequences of the definitions, it is worth stating
 them because of their abstract character (since later, concrete terms
 inferred from abstract terms by a presumptive package, ``get" will no longer
-be function application). *}
+be function application).\<close>
 
 theorem getEnv_ext:
 assumes "\<And> xs x. rho xs x = rho' xs x"
@@ -236,7 +236,7 @@ theorem getEnv_vsubstEnv4[simp]:
 "freshEnv ys y rho \<Longrightarrow> (rho &[z // y]_ys) ys y = Some (Var ys z)"
 unfolding vsubstEnv_psubstEnv_idEnv by simp
 
-subsection {* Substitution versus other operators  *}
+subsection \<open>Substitution versus other operators\<close>
 
 definition freshImEnvAt ::
 "'varSort \<Rightarrow> 'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)env \<Rightarrow> 'varSort \<Rightarrow> 'var \<Rightarrow> bool"
@@ -728,7 +728,7 @@ assumes "good X" and "good Y1" and "good Y2"
 shows "((X #[Y1 / y]_ys) #[Y2 / y]_ys) = (X #[(Y1 #[Y2 / y]_ys) / y]_ys)"
 proof-
   have "goodEnv (idEnv [y \<leftarrow> Y1]_ys) \<and> goodEnv (idEnv [y \<leftarrow> Y2]_ys)" using assms by simp
-  thus ?thesis using `good X` unfolding subst_def substEnv_def
+  thus ?thesis using \<open>good X\<close> unfolding subst_def substEnv_def
   by(simp add: psubst_compose psubstEnv_updEnv)
 qed
 
@@ -824,7 +824,7 @@ shows "((rho &[y1 // y]_ys) &[z1 // z]_zs) =
 by (metis Var_preserves_good assms 
 vsubstEnv_def vsubstEnv_substEnv_compose2 vsubst_Var_simp)
 
-subsection {* Properties specific to variable-for-variable substitution *}
+subsection \<open>Properties specific to variable-for-variable substitution\<close>
 
 (* Note: The results in this section cannot be lifted to environments, and therefore
 we don't have ``environment versions" of these.  *)
@@ -953,15 +953,15 @@ proof-
   by (auto simp: vsubst_eq_swap intro!: swap_commute)
 qed
 
-subsection {* Abstraction versions of the properties *}
+subsection \<open>Abstraction versions of the properties\<close>
 
-text{* Environment identity and update versus other operators: *}
+text\<open>Environment identity and update versus other operators:\<close>
 
 lemma psubstAbs_idEnv[simp]:
 "goodAbs A \<Longrightarrow> (A $[idEnv]) = A"
 by(simp add: psubstAll_idEnv)
 
-text{* Substitution versus other operators:  *}
+text\<open>Substitution versus other operators:\<close>
 
 corollary freshAbs_psubstAbs:
 assumes "goodAbs A" and "goodEnv rho"
@@ -1206,7 +1206,7 @@ unfolding vsubstAbs_def
 by (smt Var_preserves_good assms fresh_Var_simp insertCI 
    substAbs_compose2 vsubst_Var_simp vsubst_def) 
 
-text{* Properties specific to variable-for-variable substitution: *}
+text\<open>Properties specific to variable-for-variable substitution:\<close>
 
 corollary vsubstAbs_ident[simp]:
 assumes "goodAbs A"

@@ -509,11 +509,11 @@ proof (cases "x = 0 \<or> y = 0 \<or> z = 0")
     next
       case False
       have "y = 0"
-        using `x \<noteq> 0` `z \<noteq> 0` `x = 0 \<or> y = 0 \<or> z = 0`
+        using \<open>x \<noteq> 0\<close> \<open>z \<noteq> 0\<close> \<open>x = 0 \<or> y = 0 \<or> z = 0\<close>
         by simp
 
       have "poincare_between (of_complex x) 0\<^sub>h (of_complex z) = (is_real z \<and> x * z < 0)"
-        using `x \<noteq> 0` `z \<noteq> 0` poincare_between_x_axis_u0v 
+        using \<open>x \<noteq> 0\<close> \<open>z \<noteq> 0\<close> poincare_between_x_axis_u0v 
         by auto
       moreover
       have "x * z < 0 \<longleftrightarrow> ?rhs"
@@ -521,7 +521,7 @@ proof (cases "x = 0 \<or> y = 0 \<or> z = 0")
         by (smt zero_le_mult_iff)
       ultimately
       show ?thesis
-        using `y = 0`
+        using \<open>y = 0\<close>
         by auto
     qed
   qed

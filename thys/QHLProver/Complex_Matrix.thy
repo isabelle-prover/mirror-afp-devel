@@ -355,7 +355,7 @@ lemma uminus_mat:
   by auto
 
 ML_file "mat_alg.ML"
-method_setup mat_assoc = {* mat_assoc_method *}
+method_setup mat_assoc = \<open>mat_assoc_method\<close>
   "Normalization of expressions on matrices"
 
 lemma mat_assoc_test:
@@ -905,7 +905,7 @@ next
     by (auto simp: len_b)
   then have ws: "set ws \<subseteq> carrier_vec n" "corthogonal ws" "length ws = n" unfolding ws_def
     using normalize_keep_corthogonal by auto
-  have ws0ne: "ws0 \<noteq> []" using `length ws0 = n` n by auto
+  have ws0ne: "ws0 \<noteq> []" using \<open>length ws0 = n\<close> n by auto
   from gram_schmidt_hd[OF v, of vs, folded bv] have hdws0: "hd ws0 = (vec_normalize v')" unfolding ws0_def v_def .
   have "hd ws = vec_normalize (hd ws0)" unfolding ws_def using hd_map[OF ws0ne]  by auto
   then have hdws: "hd ws = v" unfolding v_def using normalize_normalize[of v'] hdws0 by auto

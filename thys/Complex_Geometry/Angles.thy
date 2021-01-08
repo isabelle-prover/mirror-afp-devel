@@ -486,21 +486,21 @@ proof-
     proof (cases "\<angle>c z1 z2 < pi / 2")
       case True
       thus ?thesis
-        using `0 \<le> \<angle>c z1 z2`
+        using \<open>0 \<le> \<angle>c z1 z2\<close>
         using cos_gt_zero_pi[of "\<angle>c z1 z2"]
         unfolding ang_vec_a_def
         by simp
     next
       case False
       hence "\<angle>c z1 z2 > pi/2"
-        using `\<angle>c z1 z2 \<noteq> pi/2`
+        using \<open>\<angle>c z1 z2 \<noteq> pi/2\<close>
         by simp
       hence "cos (\<angle>c z1 z2) < 0"
-        using `\<angle>c z1 z2 \<le> pi`
+        using \<open>\<angle>c z1 z2 \<le> pi\<close>
         using cos_lt_zero_on_pi2_pi[of "\<angle>c z1 z2"] 
         by simp
       thus ?thesis
-        using `\<angle>c z1 z2 > pi/2`
+        using \<open>\<angle>c z1 z2 > pi/2\<close>
         unfolding ang_vec_a_def
         by simp
     qed

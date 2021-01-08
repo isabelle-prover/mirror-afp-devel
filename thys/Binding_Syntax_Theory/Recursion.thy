@@ -1,9 +1,9 @@
-section {* General Recursion *}
+section \<open>General Recursion\<close>
 
 theory Recursion imports Iteration 
 begin
 
-text{* The initiality theorems from the previous section support iteration principles.
+text\<open>The initiality theorems from the previous section support iteration principles.
 Next we extend the results to general recursion.  The difference between
 general recursion and iteration is that the former also considers
 the (source) ``items" (terms and abstractions), and not only the
@@ -32,9 +32,9 @@ As a matter of notation: remember we are using for generalized items
 the same meta-variables as for ``items" (terms and abstractions).
 But now the model operators will take both items and generalized items.
 We shall prime the meta-variables for items (as in X', A', etc).
- *}
+\<close>
 
-subsection {* Raw models  *}
+subsection \<open>Raw models\<close>
 
 record ('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model =
   gWls :: "'sort \<Rightarrow> 'gTerm \<Rightarrow> bool"
@@ -78,9 +78,9 @@ record ('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model =
    ('index,'bindex,'varSort,'var,'opSym)abs \<Rightarrow> 'gAbs \<Rightarrow>
    'gAbs"
 
-subsection {* Well-sorted models of various kinds *}
+subsection \<open>Well-sorted models of various kinds\<close>
 
-text{*  Lifting the model operations to inputs *}
+text\<open>Lifting the model operations to inputs\<close>
 
 definition gFreshInp where
 "gFreshInp MOD ys y inp' inp \<equiv> liftAll2 (gFresh MOD ys y) inp' inp"
@@ -116,9 +116,9 @@ definition gWlsBinp where
 
 lemmas gWlsBinp_defs = gWlsBinp_def sameDom_def liftAll2_def
 
-text{* Basic properties of the lifted model operations *}
+text\<open>Basic properties of the lifted model operations\<close>
 
-text{* . for free inputs: *}
+text\<open>. for free inputs:\<close>
 
 lemma sameDom_swapInp_gSwapInp[simp]:
 assumes "wlsInp delta inp'" and "gWlsInp MOD delta inp"
@@ -132,7 +132,7 @@ shows "sameDom (substInp ys Y' y inp') (gSubstInp MOD ys Y' Y y inp' inp)"
 using assms by(simp add: wlsInp_iff gWlsInp_def substInp_def2 gSubstInp_def
 liftAll2_def lift_def lift2_def sameDom_def split: option.splits)
 
-text{* . for bound inputs: *}
+text\<open>. for bound inputs:\<close>
 
 lemma sameDom_swapBinp_gSwapBinp[simp]:
 assumes "wlsBinp delta binp'" and "gWlsBinp MOD delta binp"
@@ -150,7 +150,7 @@ lemmas sameDom_gInput_simps =
 sameDom_swapInp_gSwapInp sameDom_substInp_gSubstInp
 sameDom_swapBinp_gSwapBinp sameDom_substBinp_gSubstBinp
 
-text{* Domain disjointness: *}
+text\<open>Domain disjointness:\<close>
 
 definition gWlsDisj where
 "gWlsDisj MOD \<equiv> \<forall> s s' X. gWls MOD s X \<and> gWls MOD s' X \<longrightarrow> s = s'"
@@ -167,14 +167,14 @@ definition gWlsAllDisj where
 lemmas gWlsAllDisj_defs =
 gWlsAllDisj_def gWlsDisj_def gWlsAbsDisj_def
 
-text {* Abstraction domains inhabited only within bound arities: *}
+text \<open>Abstraction domains inhabited only within bound arities:\<close>
 
 definition gWlsAbsIsInBar where
 "gWlsAbsIsInBar MOD \<equiv> \<forall> us s A. gWlsAbs MOD (us,s) A \<longrightarrow> isInBar (us,s)"
 
-text{* Domain preservation by the operators *}
+text\<open>Domain preservation by the operators\<close>
 
-text{* The constructs preserve the domains: *}
+text\<open>The constructs preserve the domains:\<close>
 
 definition gVarPresGWls where
 "gVarPresGWls MOD \<equiv> \<forall> xs x. gWls MOD (asSort xs) (gVar MOD xs x)"
@@ -195,7 +195,7 @@ definition gConsPresGWls where
 lemmas gConsPresGWls_defs = gConsPresGWls_def
 gVarPresGWls_def gAbsPresGWls_def gOpPresGWls_def
 
-text{* ``swap" preserves the domains: *}
+text\<open>``swap" preserves the domains:\<close>
 
 definition gSwapPresGWls where
 "gSwapPresGWls MOD \<equiv> \<forall> zs z1 z2 s X' X.
@@ -213,7 +213,7 @@ definition gSwapAllPresGWlsAll where
 lemmas gSwapAllPresGWlsAll_defs = 
 gSwapAllPresGWlsAll_def gSwapPresGWls_def gSwapAbsPresGWlsAbs_def
 
-text{* ``subst" preserves the domains: *}
+text\<open>``subst" preserves the domains:\<close>
 
 definition gSubstPresGWls where
 "gSubstPresGWls MOD \<equiv> \<forall> ys Y' Y y s X' X.
@@ -232,7 +232,7 @@ definition gSubstAllPresGWlsAll where
 lemmas gSubstAllPresGWlsAll_defs = 
 gSubstAllPresGWlsAll_def gSubstPresGWls_def gSubstAbsPresGWlsAbs_def
 
-text{* Clauses for fresh: *}
+text\<open>Clauses for fresh:\<close>
 
 definition gFreshGVar where
 "gFreshGVar MOD \<equiv> \<forall> ys y xs x.
@@ -357,7 +357,7 @@ definition gAbsRen where
     gAbs MOD xs y (X' #[y // x]_xs) (gSubst MOD xs (Var xs y) (gVar MOD xs y) x X' X) =
     gAbs MOD xs x X' X"
 
-text {* Well-sorted fresh-swap models: *}
+text \<open>Well-sorted fresh-swap models:\<close>
 
 definition wlsFSw where
 "wlsFSw MOD \<equiv> gWlsAllDisj MOD \<and> gWlsAbsIsInBar MOD \<and>
@@ -374,7 +374,7 @@ gWlsAllDisj_defs gWlsAbsIsInBar_def
 gConsPresGWls_defs gSwapAllPresGWlsAll_defs
 gFreshCls_defs gSwapCls_defs gAbsCongS_def
 
-text {* Well-sorted fresh-subst models: *}
+text \<open>Well-sorted fresh-subst models:\<close>
 
 definition wlsFSb where
 "wlsFSb MOD \<equiv> gWlsAllDisj MOD \<and> gWlsAbsIsInBar MOD \<and>
@@ -391,7 +391,7 @@ gWlsAllDisj_defs gWlsAbsIsInBar_def
 gConsPresGWls_defs gSubstAllPresGWlsAll_defs
 gFreshCls_defs gSubstCls_defs gAbsRen_def
 
-text {* Well-sorted fresh-swap-subst-models *}
+text \<open>Well-sorted fresh-swap-subst-models\<close>
 
 definition wlsFSwSb where
 "wlsFSwSb MOD \<equiv> wlsFSw MOD \<and> gSubstAllPresGWlsAll MOD \<and> gSubstCls MOD"
@@ -402,7 +402,7 @@ wlsFSw_def gSubstAllPresGWlsAll_def gSubstCls_def
 lemmas wlsFSwSb_defs = wlsFSwSb_def
 wlsFSw_def gSubstAllPresGWlsAll_defs gSubstCls_defs
 
-text {* Well-sorted fresh-subst-swap-models *}
+text \<open>Well-sorted fresh-subst-swap-models\<close>
 
 definition wlsFSbSw where
 "wlsFSbSw MOD \<equiv> wlsFSb MOD \<and> gSwapAllPresGWlsAll MOD \<and> gSwapCls MOD"
@@ -413,9 +413,9 @@ wlsFSw_def gSwapAllPresGWlsAll_def gSwapCls_def
 lemmas wlsFSbSw_defs = wlsFSbSw_def
 wlsFSw_def gSwapAllPresGWlsAll_defs gSwapCls_defs
 
-text{* Extension of domain preservation (by swap and subst) to inputs: *}
+text\<open>Extension of domain preservation (by swap and subst) to inputs:\<close>
 
-text {* First for free inputs: *}
+text \<open>First for free inputs:\<close>
 
 definition gSwapInpPresGWlsInp where
 "gSwapInpPresGWlsInp MOD \<equiv> \<forall> zs z1 z2 delta inp' inp.
@@ -440,7 +440,7 @@ by (auto simp: lift2_def liftAll2_def sameDom_def wlsInp_iff gWlsInp_def
 gSubstPresGWls_def gSubstInpPresGWlsInp_def gSubstInp_def 
 split: option.splits)
 
-text {* Then for bound inputs: *}
+text \<open>Then for bound inputs:\<close>
 
 definition gSwapBinpPresGWlsBinp where
 "gSwapBinpPresGWlsBinp MOD \<equiv> \<forall> zs z1 z2 delta binp' binp.
@@ -465,7 +465,7 @@ by (auto simp: lift2_def liftAll2_def sameDom_def wlsBinp_iff gWlsBinp_def
 gSubstAbsPresGWlsAbs_def gSubstBinpPresGWlsBinp_def gSubstBinp_def 
 split: option.splits)
  
-subsection{* Model morphisms from the term model  *}
+subsection\<open>Model morphisms from the term model\<close>
 
 definition presWls where
 "presWls h MOD \<equiv> \<forall> s X. wls s X \<longrightarrow> gWls MOD s (h X)"
@@ -575,9 +575,9 @@ termFSwMorph_def presSubstAll_def
 lemmas termFSwSbMorph_defs = termFSwSbMorph_def
 termFSwMorph_defs presSubstAll_defs
 
-text{* Extension of domain preservation (by the morphisms) to inputs *}
+text\<open>Extension of domain preservation (by the morphisms) to inputs\<close>
 
-text{* . for free inputs: *}
+text\<open>. for free inputs:\<close>
 
 lemma presWls_wlsInp:
 "wlsInp delta inp \<Longrightarrow> presWls h MOD \<Longrightarrow> gWlsInp MOD delta (lift h inp)"
@@ -585,16 +585,16 @@ by(auto simp: wlsInp_iff gWlsInp_def lift_def liftAll2_def sameDom_def
 presWls_def split: option.splits)
  
 
-text{* . for bound inputs: *}
+text\<open>. for bound inputs:\<close>
 
 lemma presWls_wlsBinp:
 "wlsBinp delta binp \<Longrightarrow> presWlsAbs hA MOD \<Longrightarrow> gWlsBinp MOD delta (lift hA binp)"
 by(auto simp: wlsBinp_iff gWlsBinp_def lift_def liftAll2_def sameDom_def 
 presWlsAbs_def split: option.splits) 
 
-subsection {* From models to iterative models *}
+subsection \<open>From models to iterative models\<close>
 
-text {* The transition map: *}
+text \<open>The transition map:\<close>
 
 definition fromMOD ::
 "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs) model
@@ -637,7 +637,7 @@ where
      gSubstAbs MOD ys (fst Y'Y) (snd Y'Y) y (fst A'A) (snd A'A))
  \<rparr>"
 
-text{* Basic simplification rules: *}
+text\<open>Basic simplification rules:\<close>
 
 lemma fromMOD_basic_simps[simp]:
 "igWls (fromMOD MOD) s X'X =
@@ -677,9 +677,9 @@ lemma fromMOD_basic_simps[simp]:
   gSubstAbs MOD ys (fst Y'Y) (snd Y'Y) y (fst A'A) (snd A'A))"
 unfolding fromMOD_def by auto
 
-text{* Simps for inputs *}
+text\<open>Simps for inputs\<close>
 
-text{* . for free inputs: *}
+text\<open>. for free inputs:\<close>
 
 lemma igWlsInp_fromMOD[simp]:
 "igWlsInp (fromMOD MOD) delta iinp \<longleftrightarrow>
@@ -718,7 +718,7 @@ split: option.splits)
 lemmas input_fromMOD_simps =
 igWlsInp_fromMOD igFreshInp_fromMOD igSwapInp_fromMOD igSubstInp_fromMOD
 
-text{* . for bound inputs: *}
+text\<open>. for bound inputs:\<close>
 
 lemma igWlsBinp_fromMOD[simp]:
 "igWlsBinp (fromMOD MOD) delta biinp \<longleftrightarrow> 
@@ -758,7 +758,7 @@ split: option.splits)
 lemmas binput_fromMOD_simps =
 igWlsBinp_fromMOD igFreshBinp_fromMOD igSwapBinp_fromMOD igSubstBinp_fromMOD
 
-text{* Domain disjointness: *}
+text\<open>Domain disjointness:\<close>
 
 lemma igWlsDisj_fromMOD[simp]:
 "gWlsDisj MOD \<Longrightarrow> igWlsDisj (fromMOD MOD)"
@@ -775,13 +775,13 @@ unfolding igWlsAllDisj_def gWlsAllDisj_def by fastforce
 lemmas igWlsAllDisj_fromMOD_simps =
 igWlsDisj_fromMOD igWlsAbsDisj_fromMOD igWlsAllDisj_fromMOD
 
-text{* Abstractions only within IsInBar: *}
+text\<open>Abstractions only within IsInBar:\<close>
 
 lemma igWlsAbsIsInBar_fromMOD[simp]:
 "gWlsAbsIsInBar MOD \<Longrightarrow> igWlsAbsIsInBar (fromMOD MOD)"
 unfolding gWlsAbsIsInBar_def igWlsAbsIsInBar_def by simp
 
-text{* The constructs preserve the domains: *}
+text\<open>The constructs preserve the domains:\<close>
 
 lemma igVarIPresIGWls_fromMOD[simp]:
 "gVarPresGWls MOD \<Longrightarrow> igVarIPresIGWls (fromMOD MOD)"
@@ -803,7 +803,7 @@ lemmas igConsIPresIGWls_fromMOD_simps =
 igVarIPresIGWls_fromMOD igAbsIPresIGWls_fromMOD
 igOpIPresIGWls_fromMOD igConsIPresIGWls_fromMOD
 
-text{* Swap preserves the domains: *}
+text\<open>Swap preserves the domains:\<close>
 
 lemma igSwapIPresIGWls_fromMOD[simp]:
 "gSwapPresGWls MOD \<Longrightarrow> igSwapIPresIGWls (fromMOD MOD)"
@@ -820,7 +820,7 @@ unfolding igSwapAllIPresIGWlsAll_def gSwapAllPresGWlsAll_def by simp
 lemmas igSwapAllIPresIGWlsAll_fromMOD_simps =
 igSwapIPresIGWls_fromMOD igSwapAbsIPresIGWlsAbs_fromMOD igSwapAllIPresIGWlsAll_fromMOD
 
-text{* Subst preserves the domains: *}
+text\<open>Subst preserves the domains:\<close>
 
 lemma igSubstIPresIGWls_fromMOD[simp]:
 "gSubstPresGWls MOD \<Longrightarrow> igSubstIPresIGWls (fromMOD MOD)"
@@ -837,7 +837,7 @@ unfolding igSubstAllIPresIGWlsAll_def gSubstAllPresGWlsAll_def by simp
 lemmas igSubstAllIPresIGWlsAll_fromMOD_simps =
 igSubstIPresIGWls_fromMOD igSubstAbsIPresIGWlsAbs_fromMOD igSubstAllIPresIGWlsAll_fromMOD
 
-text{* The fresh clauses: *}
+text\<open>The fresh clauses:\<close>
 
 lemma igFreshIGVar_fromMOD[simp]:
 "gFreshGVar MOD \<Longrightarrow> igFreshIGVar (fromMOD MOD)"
@@ -863,7 +863,7 @@ lemmas igFreshCls_fromMOD_simps =
 igFreshIGVar_fromMOD igFreshIGAbs1_fromMOD igFreshIGAbs2_fromMOD
 igFreshIGOp_fromMOD igFreshCls_fromMOD
 
-text{* The swap clauses *}
+text\<open>The swap clauses\<close>
 
 lemma igSwapIGVar_fromMOD[simp]:
 "gSwapGVar MOD \<Longrightarrow> igSwapIGVar (fromMOD MOD)"
@@ -885,7 +885,7 @@ lemmas igSwapCls_fromMOD_simps =
 igSwapIGVar_fromMOD igSwapIGAbs_fromMOD
 igSwapIGOp_fromMOD igSwapCls_fromMOD
 
-text{* The subst clauses *}
+text\<open>The subst clauses\<close>
 
 lemma igSubstIGVar1_fromMOD[simp]:
 "gSubstGVar1 MOD \<Longrightarrow> igSubstIGVar1 (fromMOD MOD)"
@@ -911,7 +911,7 @@ lemmas igSubstCls_fromMOD_simps =
 igSubstIGVar1_fromMOD igSubstIGVar2_fromMOD igSubstIGAbs_fromMOD
 igSubstIGOp_fromMOD igSubstCls_fromMOD
 
-text{* Abstraction swapping congruence: *}
+text\<open>Abstraction swapping congruence:\<close>
 
 lemma igAbsCongS_fromMOD[simp]:
 assumes "gAbsCongS MOD"
@@ -922,13 +922,13 @@ apply simp
 apply clarify
 by (intro conjI, erule wls_Abs_swap_cong) blast+
 
-text{* Abstraction renaming: *}
+text\<open>Abstraction renaming:\<close>
 
 lemma igAbsRen_fromMOD[simp]:
 "gAbsRen MOD \<Longrightarrow> igAbsRen (fromMOD MOD)"
 unfolding igAbsRen_def gAbsRen_def vsubst_def by auto
 
-text{* Models: *}
+text\<open>Models:\<close>
 
 lemma iwlsFSw_fromMOD[simp]:
 "wlsFSw MOD \<Longrightarrow> iwlsFSw (fromMOD MOD)"
@@ -969,11 +969,11 @@ input_fromMOD_simps
 binput_fromMOD_simps
 fromMOD_predicate_simps
 
-subsection {* The recursion-iteration ``identity trick"  *}
+subsection \<open>The recursion-iteration ``identity trick"\<close>
 
-text {* Here we show that any construct-preserving map from terms to ``fromMOD MOD"
+text \<open>Here we show that any construct-preserving map from terms to ``fromMOD MOD"
 is the identity on its first projection -- this is the main trick when
-reducing recursion to iteration.  *}
+reducing recursion to iteration.\<close>
 
 lemma ipresCons_fromMOD_fst:
 assumes "ipresCons h hA (fromMOD MOD)"
@@ -1011,9 +1011,9 @@ wlsBinp_iff sameDom_def split: option.splits)
 lemmas ipresCons_fromMOD_fst_all_simps =
 ipresCons_fromMOD_fst_simps ipresCons_fromMOD_fst_inp ipresCons_fromMOD_fst_binp
 
-subsection {* From iteration morphisms to morphisms *}
+subsection \<open>From iteration morphisms to morphisms\<close>
 
-text{* The transition map: *}
+text\<open>The transition map:\<close>
 
 definition fromIMor ::
 "(('index,'bindex,'varSort,'var,'opSym)term \<Rightarrow>
@@ -1029,7 +1029,7 @@ definition fromIMorAbs ::
  (('index,'bindex,'varSort,'var,'opSym)abs \<Rightarrow> 'gAbs)"
 where "fromIMorAbs hA \<equiv> snd o hA"
 
-text{* Basic simplification rules: *}
+text\<open>Basic simplification rules:\<close>
 
 lemma fromIMor[simp]: "fromIMor h X' = snd (h X')"
 unfolding fromIMor_def by simp
@@ -1048,9 +1048,9 @@ by (auto simp: lift_def split: option.splits)
 lemmas fromIMor_basic_simps =
 fromIMor fromIMorAbs fromIMor_snd_inp fromIMorAbs_snd_binp
 
-text{* Predicate simplification rules *}
+text\<open>Predicate simplification rules\<close>
 
-text{* Domain preservation *}
+text\<open>Domain preservation\<close>
 
 lemma presWls_fromIMor[simp]:
 "ipresWls h (fromMOD MOD) \<Longrightarrow> presWls (fromIMor h) MOD"
@@ -1067,7 +1067,7 @@ unfolding ipresWlsAll_def presWlsAll_def by simp
 lemmas presWlsAll_fromIMorAll_simps =
 presWls_fromIMor presWlsAbs_fromIMorAbs presWlsAll_fromIMorAll
 
-text{* Preservation of the constructs *}
+text\<open>Preservation of the constructs\<close>
 
 lemma presVar_fromIMor[simp]:
 "ipresCons h hA (fromMOD MOD) \<Longrightarrow> presVar (fromIMor h) MOD"
@@ -1093,7 +1093,7 @@ unfolding ipresCons_def presCons_def using assms by simp
 lemmas presCons_fromIMor_simps =
 presVar_fromIMor presAbs_fromIMor presOp_fromIMor presCons_fromIMor
 
-text{* Preservation of freshness *}
+text\<open>Preservation of freshness\<close>
 
 lemma presFresh_fromIMor[simp]:
 "ipresCons h hA (fromMOD MOD) \<Longrightarrow> ipresFresh h (fromMOD MOD)
@@ -1114,7 +1114,7 @@ unfolding ipresFreshAll_def presFreshAll_def by simp
 lemmas presFreshAll_fromIMor_simps =
 presFresh_fromIMor presFreshAbs_fromIMor presFreshAll_fromIMor
 
-text{* Preservation of swap *}
+text\<open>Preservation of swap\<close>
 
 lemma presSwap_fromIMor[simp]:
 "ipresCons h hA (fromMOD MOD) \<Longrightarrow> ipresSwap h (fromMOD MOD) 
@@ -1134,7 +1134,7 @@ unfolding ipresSwapAll_def presSwapAll_def by simp
 lemmas presSwapAll_fromIMor_simps =
 presSwap_fromIMor presSwapAbs_fromIMor presSwapAll_fromIMor
 
-text{* Preservation of subst *}
+text\<open>Preservation of subst\<close>
 
 lemma presSubst_fromIMor[simp]:
 "ipresCons h hA (fromMOD MOD) \<Longrightarrow> ipresSubst h (fromMOD MOD)
@@ -1154,7 +1154,7 @@ unfolding ipresSubstAll_def presSubstAll_def by simp
 lemmas presSubstAll_fromIMor_simps =
 presSubst_fromIMor presSubstAbs_fromIMor presSubstAll_fromIMor
 
-text{* Morphisms *}
+text\<open>Morphisms\<close>
 
 lemma fromIMor_termFSwMorph[simp]:
 "termFSwImorph h hA (fromMOD MOD) \<Longrightarrow> termFSwMorph (fromIMor h) (fromIMorAbs hA) MOD"
@@ -1184,15 +1184,15 @@ mor_fromIMor_simps
 lemmas fromIMor_simps =
 fromIMor_basic_simps fromIMor_predicate_simps
 
-subsection {* The recursion theorem *}
+subsection \<open>The recursion theorem\<close>
 
-text{* The recursion maps: *}
+text\<open>The recursion maps:\<close>
 
 definition rec where "rec MOD \<equiv> fromIMor (iter (fromMOD MOD))"
 
 definition recAbs where "recAbs MOD \<equiv> fromIMorAbs (iterAbs (fromMOD MOD))"
 
-text{* Existence: *}
+text\<open>Existence:\<close>
 
 theorem wlsFSw_recAll_termFSwMorph:
 "wlsFSw MOD \<Longrightarrow> termFSwMorph (rec MOD) (recAbs MOD) MOD"
@@ -1211,7 +1211,7 @@ theorem wlsFSbSw_recAll_termFSwSbMorph:
 by (simp add: rec_def recAbs_def iwlsFSbSw_iterAll_termFSwSbImorph) 
 
 
-text{* Uniqueness: *}
+text\<open>Uniqueness:\<close>
 
 lemma presCons_unique:
 assumes "presCons f fA MOD" and "presCons g gA MOD"
@@ -1250,20 +1250,20 @@ shows "(wls s X \<longrightarrow> h X = rec MOD X) \<and>
       (wlsAbs (us,s') A \<longrightarrow> hA A = recAbs MOD A)"
 using assms wlsFSb_recAll_unique_presCons unfolding wlsFSbSw_def by blast
 
-subsection{* Models that are even ``closer" to the term model *}
+subsection\<open>Models that are even ``closer" to the term model\<close>
 
-text{* We describe various conditions (later referred to as ``extra clauses"
+text\<open>We describe various conditions (later referred to as ``extra clauses"
 or ``extra conditions")
 that, when satisfied by models,
 yield the recursive maps
 (1) freshness-preserving and/or (2) injective and/or (3) surjective, thus bringing the
 considered models ``closer" to (being isomorphic to) the term model.
 The extreme case, when all of (1)-(3) above are ensured, means indeed isomorphism to
-the term model -- this is in fact an abstract characterization of the term model.  *}
+the term model -- this is in fact an abstract characterization of the term model.\<close>
 
-subsubsection {* Relevant predicates on models *}
+subsubsection \<open>Relevant predicates on models\<close>
 
-text{* The fresh clauses reversed *}
+text\<open>The fresh clauses reversed\<close>
 
 definition gFreshGVarRev where
 "gFreshGVarRev MOD \<equiv> \<forall> xs y x.
@@ -1287,7 +1287,7 @@ definition gFreshClsRev where
 lemmas gFreshClsRev_defs = gFreshClsRev_def
 gFreshGVarRev_def gFreshGAbsRev_def gFreshGOpRev_def
 
-text{* Injectiveness of the construct operators *}
+text\<open>Injectiveness of the construct operators\<close>
 
 definition gVarInj where
 "gVarInj MOD \<equiv> \<forall> xs x y. gVar MOD xs x = gVar MOD xs y \<longrightarrow> x = y"
@@ -1321,7 +1321,7 @@ definition gConsInj where
 lemmas gConsInj_defs = gConsInj_def
 gVarInj_def gAbsInj_def gOpInj_def gVarGOpInj_def
 
-text{* Abstraction renaming for swapping *}
+text\<open>Abstraction renaming for swapping\<close>
 
 definition gAbsRenS where
 "gAbsRenS MOD \<equiv> \<forall> xs y x s X' X.
@@ -1330,14 +1330,14 @@ definition gAbsRenS where
     gAbs MOD xs y (X' #[y \<and> x]_xs) (gSwap MOD xs y x X' X) =
     gAbs MOD xs x X' X"
 
-text{* Indifference to the general-recursive argument *}
+text\<open>Indifference to the general-recursive argument\<close>
 
-text{* . This ``indifference" property says that the construct operators
+text\<open>. This ``indifference" property says that the construct operators
 from the model only depend on
 the generalized item (i.e., generalized term or abstraction) argument,
 and {\em not} on the ``item" (i.e., concrete term or abstraction) argument.
 In other words, the model constructs correspond to {\em iterative clauses},
-and not to the more general notion of ``general-recursive" clause.  *}
+and not to the more general notion of ``general-recursive" clause.\<close>
 
 definition gAbsIndif where
 "gAbsIndif MOD \<equiv> \<forall> xs s x X1' X2' X.
@@ -1356,11 +1356,11 @@ definition gConsIndif where
 
 lemmas gConsIndif_defs = gConsIndif_def gAbsIndif_def gOpIndif_def
 
-text{* Inductiveness *}
+text\<open>Inductiveness\<close>
 
-text{* . Inductiveness of a model means the satisfaction of a minimal inductive
+text\<open>. Inductiveness of a model means the satisfaction of a minimal inductive
 principle (``minimal" in the sense that no fancy swapping or freshness
-induction-friendly conditions are involved).     *}
+induction-friendly conditions are involved).\<close>
 
 definition gInduct where
 "gInduct MOD \<equiv> \<forall> phi phiAbs s X us s' A.
@@ -1401,9 +1401,9 @@ apply(elim allE[of _ phi] allE[of _ phiAbs] allE[of _ s] allE[of _ X])
 apply(elim allE[of _ us] allE[of _ s'] allE[of _ A])
 by blast
 
-subsubsection {* Relevant predicates on maps from the term model *}
+subsubsection \<open>Relevant predicates on maps from the term model\<close>
 
-text{* Reflection of freshness *}
+text\<open>Reflection of freshness\<close>
 
 definition reflFresh where
 "reflFresh h MOD \<equiv> \<forall> ys y s X.
@@ -1421,7 +1421,7 @@ definition reflFreshAll where
 lemmas reflFreshAll_defs = reflFreshAll_def
 reflFresh_def reflFreshAbs_def
 
-text{* Injectiveness *}
+text\<open>Injectiveness\<close>
 
 definition isInj where
 "isInj h \<equiv> \<forall> s X Y.
@@ -1439,7 +1439,7 @@ definition isInjAll where
 lemmas isInjAll_defs = isInjAll_def
 isInj_def isInjAbs_def
 
-text{* Surjectiveness *}
+text\<open>Surjectiveness\<close>
 
 definition isSurj where
 "isSurj h MOD \<equiv> \<forall> s X.
@@ -1457,9 +1457,9 @@ definition isSurjAll where
 lemmas isSurjAll_defs = isSurjAll_def
 isSurj_def isSurjAbs_def
 
-subsubsection{* Criterion for the reflection of freshness *}
+subsubsection\<open>Criterion for the reflection of freshness\<close>
 
-text{* First an auxiliary fact, independent of the type of model:  *}
+text\<open>First an auxiliary fact, independent of the type of model:\<close>
 
 lemma gFreshClsRev_recAll_reflFreshAll:
 assumes pWls: "presWlsAll (rec MOD) (recAbs MOD) MOD"
@@ -1514,14 +1514,14 @@ proof-
   thus ?thesis unfolding reflFreshAll_defs by blast
 qed
  
-text{* For fresh-swap models *}
+text\<open>For fresh-swap models\<close>
 
 theorem wlsFSw_recAll_reflFreshAll:
 "wlsFSw MOD \<Longrightarrow> gFreshClsRev MOD \<Longrightarrow> reflFreshAll (rec MOD) (recAbs MOD) MOD"
 using wlsFSw_recAll_termFSwMorph 
 by (auto simp: termFSwMorph_def intro: gFreshClsRev_recAll_reflFreshAll)
 
-text{* For fresh-subst models *}
+text\<open>For fresh-subst models\<close>
 
 theorem wlsFSb_recAll_reflFreshAll:
 "wlsFSb MOD \<Longrightarrow> gFreshClsRev MOD \<Longrightarrow> reflFreshAll (rec MOD) (recAbs MOD) MOD"
@@ -1532,9 +1532,9 @@ by (auto simp: termFSbMorph_def intro: gFreshClsRev_recAll_reflFreshAll)
 (* Note: Here and below: No need for corresponding results for FSwSb and FSbSw models, as they
 would follow at once from the above. *)
 
-subsubsection{* Criterion for the injectiveness of the recursive map *}
+subsubsection\<open>Criterion for the injectiveness of the recursive map\<close>
 
-text{* For fresh-swap models *}
+text\<open>For fresh-swap models\<close>
 
 theorem wlsFSw_recAll_isInjAll:
 assumes *: "wlsFSw MOD"  "gAbsRenS MOD" and **: "gConsInj MOD"
@@ -1715,7 +1715,7 @@ proof-
 qed
 
 
-text{* For fresh-subst models *}
+text\<open>For fresh-subst models\<close>
 
 theorem wlsFSb_recAll_isInjAll:
 assumes *: "wlsFSb MOD" and **: "gConsInj MOD"
@@ -1901,9 +1901,9 @@ proof-
   thus ?thesis unfolding isInjAll_defs by blast
 qed
 
-subsubsection{* Criterion for the surjectiveness of the recursive map *}
+subsubsection\<open>Criterion for the surjectiveness of the recursive map\<close>
 
-text{* First an auxiliary fact, independent of the type of model:  *}
+text\<open>First an auxiliary fact, independent of the type of model:\<close>
 
 lemma gInduct_gConsIndif_recAll_isSurjAll:
 assumes pWls: "presWlsAll (rec MOD) (recAbs MOD) MOD"
@@ -2082,7 +2082,7 @@ proof-
   thus ?thesis unfolding isSurjAll_defs by blast
 qed
 
-text{* For fresh-swap models *}
+text\<open>For fresh-swap models\<close>
 
 theorem wlsFSw_recAll_isSurjAll:
 "wlsFSw MOD \<Longrightarrow> gConsIndif MOD \<Longrightarrow> gInduct MOD
@@ -2090,7 +2090,7 @@ theorem wlsFSw_recAll_isSurjAll:
 using wlsFSw_recAll_termFSwMorph 
 by (auto simp: termFSwMorph_def intro: gInduct_gConsIndif_recAll_isSurjAll)
 
-text{* For fresh-subst models *}
+text\<open>For fresh-subst models\<close>
 
 theorem wlsFSb_recAll_isSurjAll:
 "wlsFSb MOD \<Longrightarrow> gConsIndif MOD \<Longrightarrow> gInduct MOD

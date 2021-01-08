@@ -233,7 +233,7 @@ lemma exists_trace_for_any_i_j:
     "trace (s c t i) (take (j - i) (drop i t)) (s c t j)"
 proof -
   have "trace c (take j t) (s c t j)" using exists_trace_for_any_i assms by simp
-  from `j \<ge> i` have "take j t = take i t @ (take (j - i) (drop i t))"
+  from \<open>j \<ge> i\<close> have "take j t = take i t @ (take (j - i) (drop i t))"
     by (metis le_add_diff_inverse take_add)
   then have "trace c (take i t) (s c t i) \<and> trace (s c t i) (take (j - i) (drop i t)) (s c t j)"
     by (metis (no_types, lifting) assms(1) exists_trace_for_any_i split_trace trace_and_start_determines_end)
@@ -346,7 +346,7 @@ proof (rule ccontr)
       qed
     qed
   qed
-  then have "m : set (msgs c' i)" using assms `?P` by auto
+  then have "m : set (msgs c' i)" using assms \<open>?P\<close> by auto
   then show False using assms by simp
 qed
 

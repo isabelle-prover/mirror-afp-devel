@@ -468,11 +468,11 @@ next
     case False
 
     have "on_circline unit_circle u" "on_circline unit_circle v"
-      using `\<not> u \<noteq> inversion u` `\<not> v \<noteq> inversion v`
+      using \<open>\<not> u \<noteq> inversion u\<close> \<open>\<not> v \<noteq> inversion v\<close>
       using inversion_id_iff_on_unit_circle
       by fastforce+
     thus ?thesis
-      using pl on_l `u \<noteq> v`
+      using pl on_l \<open>u \<noteq> v\<close>
       unfolding circline_set_def
       apply simp
     proof (transfer, transfer, safe)
@@ -486,8 +486,8 @@ next
         "on_circline_cmat_cvec ?H2 ?u" "on_circline_cmat_cvec ?H2 ?v"
         "\<not> (u1, u2) \<approx>\<^sub>v (v1, v2)"
       have **: "A1 = D1" "A2 = D2" "C1 = cnj B1" "C2 = cnj B2" "is_real A1" "is_real A2"
-        using `is_poincare_line_cmat ?H1` `is_poincare_line_cmat ?H2`
-        using `hermitean ?H1` `?H1 \<noteq> mat_zero` `hermitean ?H2` `?H2 \<noteq> mat_zero`
+        using \<open>is_poincare_line_cmat ?H1\<close> \<open>is_poincare_line_cmat ?H2\<close>
+        using \<open>hermitean ?H1\<close> \<open>?H1 \<noteq> mat_zero\<close> \<open>hermitean ?H2\<close> \<open>?H2 \<noteq> mat_zero\<close>
         using hermitean_elems
         by auto
 
@@ -496,14 +496,14 @@ next
         by (auto simp add: vec_cnj_def)
 
       have u: "cor ((Re (u1/u2))\<^sup>2) + cor ((Im (u1/u2))\<^sup>2) = 1"
-        using `on_circline_cmat_cvec unit_circle_cmat ?u` uv
+        using \<open>on_circline_cmat_cvec unit_circle_cmat ?u\<close> uv
         apply (subst cor_add[symmetric])
         apply (subst complex_mult_cnj[symmetric])
         apply (simp add: vec_cnj_def mult.commute)
         done
 
       have v: "cor ((Re (v1/v2))\<^sup>2) + cor ((Im (v1/v2))\<^sup>2) = 1"
-        using `on_circline_cmat_cvec unit_circle_cmat ?v` uv
+        using \<open>on_circline_cmat_cvec unit_circle_cmat ?v\<close> uv
         apply (subst cor_add[symmetric])
         apply (subst complex_mult_cnj[symmetric])
         apply (simp add: vec_cnj_def mult.commute)
@@ -518,8 +518,8 @@ next
         using circline_equation_quadratic_equation[of A2 "u1/u2" B2 D2 "Re (u1/u2)" "Im (u1 / u2)" "Re B2" "Im B2"]
         using circline_equation_quadratic_equation[of A1 "v1/v2" B1 D1 "Re (v1/v2)" "Im (v1 / v2)" "Re B1" "Im B1"]
         using circline_equation_quadratic_equation[of A2 "v1/v2" B2 D2 "Re (v1/v2)" "Im (v1 / v2)" "Re B2" "Im B2"]
-        using `on_circline_cmat_cvec ?H1 ?u` `on_circline_cmat_cvec ?H2 ?u` 
-        using `on_circline_cmat_cvec ?H1 ?v` `on_circline_cmat_cvec ?H2 ?v` 
+        using \<open>on_circline_cmat_cvec ?H1 ?u\<close> \<open>on_circline_cmat_cvec ?H2 ?u\<close> 
+        using \<open>on_circline_cmat_cvec ?H1 ?v\<close> \<open>on_circline_cmat_cvec ?H2 ?v\<close> 
         using ** uv
         by (simp_all add: vec_cnj_def field_simps)
 
@@ -536,7 +536,7 @@ next
         "cor (Re A2 + Re B2 * Re (u1/u2) + Im B2 * Im (u1/u2)) = 0"
         "cor (Re A1 + Re B1 * Re (v1/v2) + Im B1 * Im (v1/v2)) = 0"
         "cor (Re A2 + Re B2 * Re (v1/v2) + Im B2 * Im (v1/v2)) = 0"
-        using `is_real A1` `is_real A2`
+        using \<open>is_real A1\<close> \<open>is_real A2\<close>
         by simp_all
 
       hence 
@@ -555,7 +555,7 @@ next
         hence "u1/u2 = v1/v2"
           using complex_eqI by blast
         thus False
-          using uv `\<not> (u1, u2) \<approx>\<^sub>v (v1, v2)`
+          using uv \<open>\<not> (u1, u2) \<approx>\<^sub>v (v1, v2)\<close>
           using "*"(1) "*"(2) complex_cvec_eq_mix[OF *(1) *(2)]
           by (auto simp add: field_simps)
       qed
@@ -563,7 +563,7 @@ next
       moreover
 
       have "Re A1 \<noteq> 0 \<or> Re B1 \<noteq> 0 \<or> Im B1 \<noteq> 0"
-        using `?H1 \<noteq> mat_zero` **
+        using \<open>?H1 \<noteq> mat_zero\<close> **
         by (metis complex_cnj_zero complex_of_real_Re mat_zero_def of_real_0)
 
       ultimately
@@ -576,14 +576,14 @@ next
         by (auto simp add: field_simps)
 
       have "Re A2 \<noteq> 0 \<or> Re B2 \<noteq> 0 \<or> Im B2 \<noteq> 0"
-        using `?H2 \<noteq> mat_zero` **
+        using \<open>?H2 \<noteq> mat_zero\<close> **
         by (metis complex_cnj_zero complex_of_real_Re mat_zero_def of_real_0)
       hence "k \<noteq> 0"
         using k
         by auto
 
       show "circline_eq_cmat ?H1 ?H2"
-        using ** k `k \<noteq> 0`
+        using ** k \<open>k \<noteq> 0\<close>
         by (auto simp add: vec_cnj_def) (rule_tac x="k" in exI, auto simp add: complex.expand)
     qed
   qed
@@ -1061,7 +1061,7 @@ proof (transfer, transfer, safe)
     by auto
   ultimately
   have *: "u1 * cnj v1 \<noteq> u2 * cnj v2" "u1 * v2 \<noteq> u2 * v1" 
-    using uv(5) uv(1) uv(2) `u2 \<noteq> 0` `v2 \<noteq> 0`
+    using uv(5) uv(1) uv(2) \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close>
     using complex_cvec_eq_mix 
     by blast+
 
@@ -1101,21 +1101,21 @@ proof (transfer, transfer, safe)
           by blast
         ultimately
         show ?thesis
-          using `cor (Re ?k) = ?k`
+          using \<open>cor (Re ?k) = ?k\<close>
           by (simp add: field_simps)
       qed
       
       moreover
       have "\<i> * ?nom = Re ?k  * ?B"
-        using `cor (Re ?k) = ?k` `u2 \<noteq>  0` `v2 \<noteq> 0` complex_mult_cnj_cmod[symmetric]
+        using \<open>cor (Re ?k) = ?k\<close> \<open>u2 \<noteq>  0\<close> \<open>v2 \<noteq> 0\<close> complex_mult_cnj_cmod[symmetric]
         by (auto simp add: field_simps)
       
       moreover
       have "?k \<noteq> 0"
-        using `u2 \<noteq> 0` `v2 \<noteq> 0`
+        using \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close>
         by simp
       hence "Re ?k \<noteq> 0"
-        using `is_real ?k`
+        using \<open>is_real ?k\<close>
         by (metis \<open>cor (Re ?k) = ?k\<close> of_real_0)
 
       ultimately
@@ -1126,7 +1126,7 @@ proof (transfer, transfer, safe)
     moreover
 
     have "poincare_line_cvec_cmat (u1, u2) (v1, v2) = ?H'"
-      using `?den \<noteq> 0`
+      using \<open>?den \<noteq> 0\<close>
       unfolding poincare_line_cvec_cmat_def
       by (simp add: Let_def)
 
@@ -1136,7 +1136,7 @@ proof (transfer, transfer, safe)
       by (metis mk_poincare_line_cmat_hermitean poincare_line_cvec_cmat_nonzero uv(1) uv(2))
 
     hence "hermitean ?H \<and> ?H \<noteq> mat_zero"
-      using `circline_eq_cmat ?H ?H'`
+      using \<open>circline_eq_cmat ?H ?H'\<close>
       using circline_eq_cmat_hermitean_nonzero[of ?H' ?H] symp_circline_eq_cmat
       unfolding symp_def
       by metis
@@ -1166,17 +1166,17 @@ proof (transfer, transfer, safe)
     let ?d2 = "u1 / u2 - v1 / v2"
 
     have **: "?d = ?d1 * ?d2"
-      using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` 
+      using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> 
       by(simp add: field_simps)
 
     hence "?d \<noteq> 0"
-      using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` *
+      using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> *
       by auto (simp add: field_simps)+
 
     have "is_real ?d1"
     proof-
       have "cnj ?d1 = ?d1"
-        using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` *
+        using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> *
         by (simp add: field_simps)
       thus ?thesis
         using eq_cnj_iff_real
@@ -1201,13 +1201,13 @@ proof (transfer, transfer, safe)
             let ?rhs = "(u2 * cnj u2) / (1 - (v1*u2)/(u1*v2))"
 
             have 1: "(u1 * cnj u2) / ?d2 = ?rhs"
-              using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` * `u1 * cnj u2 \<noteq> 0`
+              using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> * \<open>u1 * cnj u2 \<noteq> 0\<close>
               by (simp add: field_simps)
             moreover
             have "cnj ?rhs = ?rhs"
             proof-
               have "cnj (1 - v1 * u2 / (u1 * v2)) = 1 - v1 * u2 / (u1 * v2)"
-                using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` * `u1 * cnj u2 \<noteq> 0`
+                using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> * \<open>u1 * cnj u2 \<noteq> 0\<close>
                 by (simp add: field_simps)
               moreover
               have "cnj (u2 * cnj u2) = u2 * cnj u2"
@@ -1225,24 +1225,24 @@ proof (transfer, transfer, safe)
           qed
 
           thus ?thesis
-            using ** `is_real ?d1`
+            using ** \<open>is_real ?d1\<close>
             by (metis complex_cnj_divide divide_divide_eq_left' eq_cnj_iff_real)
         qed
 
         have "?k \<noteq> 0"
-          using `?d \<noteq> 0` `u1 * cnj u2 \<noteq> 0`
+          using \<open>?d \<noteq> 0\<close> \<open>u1 * cnj u2 \<noteq> 0\<close>
           by simp
 
         have "cnj ?k = ?k"
-          using `is_real ?k`
+          using \<open>is_real ?k\<close>
           using eq_cnj_iff_real by blast
 
         have "Re ?k \<noteq> 0"
-          using `?k \<noteq> 0` `is_real ?k` 
+          using \<open>?k \<noteq> 0\<close> \<open>is_real ?k\<close> 
           by (metis complex.expand zero_complex.simps(1) zero_complex.simps(2))
 
         have "u1 * cnj u2 = ?k * ?d"
-          using `?d \<noteq> 0`
+          using \<open>?d \<noteq> 0\<close>
           by simp
 
         moreover
@@ -1250,13 +1250,13 @@ proof (transfer, transfer, safe)
         hence "cnj u1 * u2 = cnj ?k * cnj ?d"
           by (metis complex_cnj_cnj complex_cnj_mult)
         hence "cnj u1 * u2 = ?k * ?cd"
-          using `cnj ?k = ?k` `cnj ?d = ?cd`
+          using \<open>cnj ?k = ?k\<close> \<open>cnj ?d = ?cd\<close>
           by metis
 
         ultimately
 
         show ?thesis
-          using `~ ?den \<noteq> 0` `u1 * cnj u2 \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` `Re ?k \<noteq> 0` `is_real ?k` `?d \<noteq> 0`
+          using \<open>~ ?den \<noteq> 0\<close> \<open>u1 * cnj u2 \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> \<open>Re ?k \<noteq> 0\<close> \<open>is_real ?k\<close> \<open>?d \<noteq> 0\<close>
           using complex_mult_cnj_cmod[symmetric, of u1]
           using complex_mult_cnj_cmod[symmetric, of v1]
           using complex_mult_cnj_cmod[symmetric, of u2]
@@ -1271,7 +1271,7 @@ proof (transfer, transfer, safe)
       moreover
 
       have "poincare_line_cvec_cmat (u1, u2) (v1, v2) = ?H'"
-        using `\<not> ?den \<noteq> 0` `u1 * cnj u2 \<noteq> 0`
+        using \<open>\<not> ?den \<noteq> 0\<close> \<open>u1 * cnj u2 \<noteq> 0\<close>
         unfolding poincare_line_cvec_cmat_def
         by (simp add: Let_def)
 
@@ -1281,7 +1281,7 @@ proof (transfer, transfer, safe)
         by (metis mk_poincare_line_cmat_hermitean poincare_line_cvec_cmat_nonzero uv(1) uv(2))
 
       hence "hermitean ?H \<and> ?H \<noteq> mat_zero"
-        using `circline_eq_cmat ?H ?H'`
+        using \<open>circline_eq_cmat ?H ?H'\<close>
         using circline_eq_cmat_hermitean_nonzero[of ?H' ?H] symp_circline_eq_cmat
         unfolding symp_def
         by metis
@@ -1317,13 +1317,13 @@ proof (transfer, transfer, safe)
             let ?rhs = "(v2 * cnj v2) / ((u1*v2)/(u2*v1) - 1)"
 
             have 1: "(v1 * cnj v2) / ?d2 = ?rhs"
-              using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` * `v1 * cnj v2 \<noteq> 0`
+              using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> * \<open>v1 * cnj v2 \<noteq> 0\<close>
               by (simp add: field_simps)
             moreover
             have "cnj ?rhs = ?rhs"
             proof-
               have "cnj (u1 * v2 / (u2 * v1) - 1) = u1 * v2 / (u2 * v1) - 1"
-                using `\<not> ?den \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` * `v1 * cnj v2 \<noteq> 0`
+                using \<open>\<not> ?den \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> * \<open>v1 * cnj v2 \<noteq> 0\<close>
                 by (simp add: field_simps)
               moreover                            
               have "cnj (v2 * cnj v2) = v2 * cnj v2"
@@ -1341,24 +1341,24 @@ proof (transfer, transfer, safe)
           qed
 
           thus ?thesis
-            using ** `is_real ?d1`
+            using ** \<open>is_real ?d1\<close>
             by (metis complex_cnj_divide divide_divide_eq_left' eq_cnj_iff_real)
         qed
 
         have "?k \<noteq> 0"
-          using `?d \<noteq> 0` `v1 * cnj v2 \<noteq> 0`
+          using \<open>?d \<noteq> 0\<close> \<open>v1 * cnj v2 \<noteq> 0\<close>
           by simp
 
         have "cnj ?k = ?k"
-          using `is_real ?k`
+          using \<open>is_real ?k\<close>
           using eq_cnj_iff_real by blast
 
         have "Re ?k \<noteq> 0"
-          using `?k \<noteq> 0` `is_real ?k` 
+          using \<open>?k \<noteq> 0\<close> \<open>is_real ?k\<close> 
           by (metis complex.expand zero_complex.simps(1) zero_complex.simps(2))
 
         have "v1 * cnj v2 = ?k * ?d"
-          using `?d \<noteq> 0`
+          using \<open>?d \<noteq> 0\<close>
           by simp
 
         moreover
@@ -1366,13 +1366,13 @@ proof (transfer, transfer, safe)
         hence "cnj v1 * v2 = cnj ?k * cnj ?d"
           by (metis complex_cnj_cnj complex_cnj_mult)
         hence "cnj v1 * v2 = ?k * ?cd"
-          using `cnj ?k = ?k` `cnj ?d = ?cd`
+          using \<open>cnj ?k = ?k\<close> \<open>cnj ?d = ?cd\<close>
           by metis
 
         ultimately
 
         show ?thesis
-          using `~ ?den \<noteq> 0` `v1 * cnj v2 \<noteq> 0` `u2 \<noteq> 0` `v2 \<noteq> 0` `Re ?k \<noteq> 0` `is_real ?k` `?d \<noteq> 0`
+          using \<open>~ ?den \<noteq> 0\<close> \<open>v1 * cnj v2 \<noteq> 0\<close> \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close> \<open>Re ?k \<noteq> 0\<close> \<open>is_real ?k\<close> \<open>?d \<noteq> 0\<close>
           using complex_mult_cnj_cmod[symmetric, of u1]
           using complex_mult_cnj_cmod[symmetric, of v1]
           using complex_mult_cnj_cmod[symmetric, of u2]
@@ -1387,7 +1387,7 @@ proof (transfer, transfer, safe)
         moreover
 
         have "poincare_line_cvec_cmat (u1, u2) (v1, v2) = ?H'"
-          using `\<not> ?den \<noteq> 0` `\<not> u1 * cnj u2 \<noteq> 0` `v1 * cnj v2 \<noteq> 0`
+          using \<open>\<not> ?den \<noteq> 0\<close> \<open>\<not> u1 * cnj u2 \<noteq> 0\<close> \<open>v1 * cnj v2 \<noteq> 0\<close>
           unfolding poincare_line_cvec_cmat_def
           by (simp add: Let_def)
 
@@ -1397,7 +1397,7 @@ proof (transfer, transfer, safe)
           by (metis mk_poincare_line_cmat_hermitean poincare_line_cvec_cmat_nonzero uv(1) uv(2))
 
         hence "hermitean ?H \<and> ?H \<noteq> mat_zero"
-          using `circline_eq_cmat ?H ?H'`
+          using \<open>circline_eq_cmat ?H ?H'\<close>
           using circline_eq_cmat_hermitean_nonzero[of ?H' ?H] symp_circline_eq_cmat
           unfolding symp_def
           by metis
@@ -1417,7 +1417,7 @@ proof (transfer, transfer, safe)
       next
         case False
         hence False
-          using `\<not> ?den \<noteq> 0` `\<not> u1 * cnj u2 \<noteq> 0` uv
+          using \<open>\<not> ?den \<noteq> 0\<close> \<open>\<not> u1 * cnj u2 \<noteq> 0\<close> uv
           by (simp add: \<open>u2 \<noteq> 0\<close> \<open>v2 \<noteq> 0\<close>)
         thus ?thesis
           by simp
@@ -1529,7 +1529,7 @@ lemma poincare_line_inversion_full:
   assumes "on_circline (poincare_line u v) x"
   shows "on_circline (poincare_line u v) (inversion x)"
   using is_poincare_line_inverse_point[of "poincare_line u v" x]
-  using is_poincare_line_poincare_line[OF `u \<noteq> v`] assms
+  using is_poincare_line_poincare_line[OF \<open>u \<noteq> v\<close>] assms
   unfolding circline_set_def
   by simp
 

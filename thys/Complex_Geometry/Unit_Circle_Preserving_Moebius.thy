@@ -712,7 +712,7 @@ next
     qed
     moreover
     have "0 < (1 - (Re a)\<^sup>2) * Im z' / (cmod (1 - a * z'))\<^sup>2 \<Longrightarrow> Im z' > 0"
-      using `is_real a` `0 < Re (1 - a\<^sup>2)` 
+      using \<open>is_real a\<close> \<open>0 < Re (1 - a\<^sup>2)\<close> 
       by (smt Re_power_real divide_le_0_iff minus_complex.simps(1) not_sum_power2_lt_zero one_complex.simps(1) zero_less_mult_pos)
     ultimately
     show ?thesis

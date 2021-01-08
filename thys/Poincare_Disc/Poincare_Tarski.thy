@@ -2093,11 +2093,11 @@ proof (rule ccontr)
     by auto
 
   have "poincare_collinear {0\<^sub>h, a, x}"
-    using `poincare_on_ray x 0\<^sub>h a` `x \<in> unit_disc` `a \<in> unit_disc`
+    using \<open>poincare_on_ray x 0\<^sub>h a\<close> \<open>x \<in> unit_disc\<close> \<open>a \<in> unit_disc\<close>
     by (meson poincare_between_poincare_collinear poincare_between_rev poincare_on_ray_def poincare_on_ray_poincare_collinear zero_in_unit_disc)
 
   have "x \<noteq> 0\<^sub>h"
-    using `\<not> poincare_collinear {0\<^sub>h, x1, x2}` `poincare_collinear {x, x1, x2}`
+    using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close> \<open>poincare_collinear {x, x1, x2}\<close>
     unfolding poincare_collinear_def
     by (auto simp add: assms(2) assms(3) poincare_between_rev)
 
@@ -2105,11 +2105,11 @@ proof (rule ccontr)
   let ?l2 = "poincare_line x1 x2"
 
   have "i \<in> circline_set unit_circle"
-    using `i \<in> ideal_points (poincare_line x1 x2)`
+    using \<open>i \<in> ideal_points (poincare_line x1 x2)\<close>
     using assms(3) ideal_points_on_unit_circle is_poincare_line_poincare_line by blast
 
   have "i \<in> circline_set ?l1"
-    using `poincare_collinear {0\<^sub>h, a, i}`
+    using \<open>poincare_collinear {0\<^sub>h, a, i}\<close>
     unfolding poincare_collinear_def
     using \<open>a \<in> unit_disc\<close> \<open>a \<noteq> 0\<^sub>h\<close>
     by (metis insert_subset unique_poincare_line zero_in_unit_disc)
@@ -2117,26 +2117,26 @@ proof (rule ccontr)
   moreover
 
   have "x \<in> circline_set ?l1"
-    using `a \<in> unit_disc` `a \<noteq> 0\<^sub>h` `poincare_collinear {0\<^sub>h, a, x}` `x \<in> unit_disc`
+    using \<open>a \<in> unit_disc\<close> \<open>a \<noteq> 0\<^sub>h\<close> \<open>poincare_collinear {0\<^sub>h, a, x}\<close> \<open>x \<in> unit_disc\<close>
     by (metis poincare_collinear3_between poincare_between_poincare_line_uvz poincare_between_poincare_line_uzv poincare_line_sym zero_in_unit_disc)
 
   moreover
 
   have "inversion x \<in> circline_set ?l1"
-    using `poincare_collinear {0\<^sub>h, a, x}`
-    using poincare_line_inversion_full[of "0\<^sub>h" a x] `a \<in> unit_disc` `a \<noteq> 0\<^sub>h` `x \<in> unit_disc`
+    using \<open>poincare_collinear {0\<^sub>h, a, x}\<close>
+    using poincare_line_inversion_full[of "0\<^sub>h" a x] \<open>a \<in> unit_disc\<close> \<open>a \<noteq> 0\<^sub>h\<close> \<open>x \<in> unit_disc\<close>
     by (metis poincare_collinear3_between is_poincare_line_inverse_point is_poincare_line_poincare_line poincare_between_poincare_line_uvz poincare_between_poincare_line_uzv poincare_line_sym zero_in_unit_disc)
 
   moreover
 
   have "x \<in> circline_set ?l2"
-    using `poincare_collinear {x, x1, x2}` `x1 \<noteq> x2` `x1 \<in> unit_disc` `x2 \<in> unit_disc` `x \<in> unit_disc`
+    using \<open>poincare_collinear {x, x1, x2}\<close> \<open>x1 \<noteq> x2\<close> \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>x \<in> unit_disc\<close>
     by (metis insert_commute inversion_noteq_unit_disc poincare_between_poincare_line_uvz poincare_between_poincare_line_uzv poincare_collinear3_iff poincare_line_sym_general)
 
   moreover
 
   hence "inversion x \<in> circline_set ?l2"
-    using  `x1 \<noteq> x2` `x1 \<in> unit_disc` `x2 \<in> unit_disc` `x \<in> unit_disc`
+    using  \<open>x1 \<noteq> x2\<close> \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>x \<in> unit_disc\<close>
     using poincare_line_inversion_full[of x1 x2 x]
     unfolding circline_set_def
     by auto
@@ -2144,20 +2144,20 @@ proof (rule ccontr)
   moreover
 
   have "i \<in> circline_set ?l2"
-    using `x1 \<noteq> x2` `x1 \<in> unit_disc` `x2 \<in> unit_disc`
-    using `i \<in> ideal_points ?l2`
+    using \<open>x1 \<noteq> x2\<close> \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close>
+    using \<open>i \<in> ideal_points ?l2\<close>
     by (simp add: ideal_points_on_circline)
 
   moreover
 
   have "x \<noteq> inversion x"
-    using `x \<in> unit_disc`
+    using \<open>x \<in> unit_disc\<close>
     using inversion_noteq_unit_disc by fastforce
 
   moreover
 
   have "x \<noteq> i"
-    using `x \<in> unit_disc`
+    using \<open>x \<in> unit_disc\<close>
     using \<open>i \<in> circline_set unit_circle\<close> circline_set_def inversion_noteq_unit_disc 
     by fastforce+
 
@@ -2177,9 +2177,9 @@ proof (rule ccontr)
     by (metis \<open>a \<noteq> 0\<^sub>h\<close> poincare_line_circline_set(1))
 
   thus False
-    using `\<not> poincare_collinear {0\<^sub>h, x1, x2}`
+    using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close>
     unfolding poincare_collinear_def
-    using \<open>poincare_collinear {x, x1, x2}\<close> \<open>x1 \<noteq> x2\<close> `x1 \<in> unit_disc` `x2 \<in> unit_disc` poincare_collinear_def unique_poincare_line
+    using \<open>poincare_collinear {x, x1, x2}\<close> \<open>x1 \<noteq> x2\<close> \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> poincare_collinear_def unique_poincare_line
     by auto
 qed 
 
@@ -2191,12 +2191,12 @@ lemma limiting_parallels:
           (\<forall>a'\<in>unit_disc. poincare_in_angle a' a1 a a2 \<longrightarrow> poincare_ray_meets_line a a' x1 x2)" (is "?P a x1 x2")
 proof-
   have "\<not> poincare_collinear {a, x1, x2}"
-    using `\<not> poincare_on_line a x1 x2`
+    using \<open>\<not> poincare_on_line a x1 x2\<close>
     unfolding poincare_on_line_def
     by simp
 
   have "\<forall> x1 x2. x1 \<in> unit_disc \<and> x2 \<in> unit_disc \<and> \<not> poincare_collinear {a, x1, x2} \<longrightarrow> ?P a x1 x2" (is "?Q a")
-  proof (rule wlog_zero[OF `a \<in> unit_disc`])
+  proof (rule wlog_zero[OF \<open>a \<in> unit_disc\<close>])
     fix a u
     assume *: "u \<in> unit_disc" "cmod a < 1"
     hence uf: "unit_disc_fix (blaschke a)"
@@ -2235,7 +2235,7 @@ proof-
           by auto
           
         thus ?thesis
-          using `a1 \<in> unit_disc` `a2 \<in> unit_disc`
+          using \<open>a1 \<in> unit_disc\<close> \<open>a2 \<in> unit_disc\<close>
           by blast
       qed
     qed
@@ -2250,12 +2250,12 @@ proof-
         let ?lx = "poincare_line x1 x2"
 
         have "x1 \<noteq> x2"
-          using `x1 \<in> unit_disc` `x2 \<in> unit_disc``\<not> poincare_collinear  {0\<^sub>h, x1, x2}`
+          using \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close>\<open>\<not> poincare_collinear  {0\<^sub>h, x1, x2}\<close>
           using poincare_collinear3_between                  
           by auto
 
         have lx: "is_poincare_line ?lx"
-          using is_poincare_line_poincare_line[OF `x1 \<noteq> x2`]
+          using is_poincare_line_poincare_line[OF \<open>x1 \<noteq> x2\<close>]
           by simp
 
         obtain i1 i2 where "ideal_points ?lx = {i1, i2}"
@@ -2279,22 +2279,22 @@ proof-
         let ?la = "poincare_line ?a1 ?a2"
 
         have "?a1 \<in> unit_disc" "?a2 \<in> unit_disc"
-          using `i1 \<in> unit_circle_set` `i2 \<in> unit_circle_set`
+          using \<open>i1 \<in> unit_circle_set\<close> \<open>i2 \<in> unit_circle_set\<close>
           unfolding unit_circle_set_def unit_disc_def disc_def circline_set_def
           by auto (transfer, transfer, case_tac i1, case_tac i2, simp add: vec_cnj_def)+
 
         have "?a1 \<noteq> 0\<^sub>h" "?a2 \<noteq> 0\<^sub>h" 
-          using `i1 \<in> unit_circle_set` `i2 \<in> unit_circle_set`
+          using \<open>i1 \<in> unit_circle_set\<close> \<open>i2 \<in> unit_circle_set\<close>
           unfolding unit_circle_set_def
           by auto
 
         have "?a1 \<noteq> ?a2"
-          using `i1 \<noteq> i2`
+          using \<open>i1 \<noteq> i2\<close>
           by (metis \<open>i1 \<in> unit_circle_set\<close> \<open>i2 \<in> unit_circle_set\<close> circline_set_def divide_cancel_right inversion_infty inversion_unit_circle mem_Collect_eq of_complex_to_complex of_complex_zero to_complex_of_complex unit_circle_set_def zero_neq_numeral)
 
         have "poincare_collinear {0\<^sub>h, ?a1, i1}"
           unfolding poincare_collinear_def
-          using `?a1 \<noteq> 0\<^sub>h`[symmetric] is_poincare_line_poincare_line[of "0\<^sub>h" ?a1]
+          using \<open>?a1 \<noteq> 0\<^sub>h\<close>[symmetric] is_poincare_line_poincare_line[of "0\<^sub>h" ?a1]
           unfolding circline_set_def
           apply (rule_tac x="poincare_line 0\<^sub>h ?a1" in exI, auto)
           apply (transfer, transfer, auto simp add: vec_cnj_def)
@@ -2302,7 +2302,7 @@ proof-
 
         have "poincare_collinear {0\<^sub>h, ?a2, i2}"
           unfolding poincare_collinear_def
-          using `?a2 \<noteq> 0\<^sub>h`[symmetric] is_poincare_line_poincare_line[of "0\<^sub>h" ?a2]
+          using \<open>?a2 \<noteq> 0\<^sub>h\<close>[symmetric] is_poincare_line_poincare_line[of "0\<^sub>h" ?a2]
           unfolding circline_set_def
           apply (rule_tac x="poincare_line 0\<^sub>h ?a2" in exI, auto)
           apply (transfer, transfer, auto simp add: vec_cnj_def)
@@ -2310,16 +2310,16 @@ proof-
 
         have "\<not> poincare_ray_meets_line 0\<^sub>h ?a1 x1 x2"
           using tangent_not_meet[of x1 x2 i1 ?a1]
-          using `x1 \<in> unit_disc` `x2 \<in> unit_disc` `?a1 \<in> unit_disc` `x1 \<noteq> x2` `\<not> poincare_collinear {0\<^sub>h, x1, x2}`
-          using `ideal_points ?lx = {i1, i2}` `?a1 \<noteq> 0\<^sub>h` `poincare_collinear {0\<^sub>h, ?a1, i1}`
+          using \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>?a1 \<in> unit_disc\<close> \<open>x1 \<noteq> x2\<close> \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close>
+          using \<open>ideal_points ?lx = {i1, i2}\<close> \<open>?a1 \<noteq> 0\<^sub>h\<close> \<open>poincare_collinear {0\<^sub>h, ?a1, i1}\<close>
           by simp
 
         moreover
 
         have "\<not> poincare_ray_meets_line 0\<^sub>h ?a2 x1 x2"
           using tangent_not_meet[of x1 x2 i2 ?a2]
-          using `x1 \<in> unit_disc` `x2 \<in> unit_disc` `?a2 \<in> unit_disc` `x1 \<noteq> x2` `\<not> poincare_collinear {0\<^sub>h, x1, x2}`
-          using `ideal_points ?lx = {i1, i2}` `?a2 \<noteq> 0\<^sub>h` `poincare_collinear {0\<^sub>h, ?a2, i2}`
+          using \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> \<open>x1 \<noteq> x2\<close> \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close>
+          using \<open>ideal_points ?lx = {i1, i2}\<close> \<open>?a2 \<noteq> 0\<^sub>h\<close> \<open>poincare_collinear {0\<^sub>h, ?a2, i2}\<close>
           by simp
 
         moreover
@@ -2340,7 +2340,7 @@ proof-
                   a1 \<in> unit_disc \<and> a2 \<in> unit_disc \<and> i1 \<in> unit_circle_set \<and> i2 \<in> unit_circle_set \<and>
                   poincare_on_ray a' 0\<^sub>h a \<and> a' \<noteq> 0\<^sub>h \<and> poincare_between a1 a a2 \<and> a \<noteq> a1 \<and> a \<noteq> a2 \<longrightarrow>
                   poincare_ray_meets_line 0\<^sub>h a' x1 x2" (is "\<forall> a' a1 a2 x1 x2 i1 i2. ?R 0\<^sub>h a' a1 a2 x1 x2 i1 i2 a")
-            proof (rule wlog_rotation_to_positive_x_axis[OF `a \<in> unit_disc`])
+            proof (rule wlog_rotation_to_positive_x_axis[OF \<open>a \<in> unit_disc\<close>])
               let ?R' = "\<lambda> a zero. \<forall> a' a1 a2 x1 x2 i1 i2. ?R zero a' a1 a2 x1 x2 i1 i2 a"
               fix xa
               assume xa: "is_real xa" "0 < Re xa" "Re xa < 1"
@@ -2365,7 +2365,7 @@ proof-
                     by auto
 
                   have lx: "is_poincare_line ?lx"
-                    using is_poincare_line_poincare_line[OF `x1 \<noteq> x2`]
+                    using is_poincare_line_poincare_line[OF \<open>x1 \<noteq> x2\<close>]
                     by simp
 
                   have "x1 \<in> circline_set ?lx" "x2 \<in> circline_set ?lx"
@@ -2373,12 +2373,12 @@ proof-
                     by auto
 
                   have "?lx \<noteq> x_axis"
-                    using `\<not> poincare_collinear {0\<^sub>h, x1, x2}` `x1 \<in> circline_set ?lx` `x2 \<in> circline_set ?lx` lx
+                    using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close> \<open>x1 \<in> circline_set ?lx\<close> \<open>x2 \<in> circline_set ?lx\<close> lx
                     unfolding poincare_collinear_def 
                     by auto
 
                   have "0\<^sub>h \<notin> circline_set ?lx"
-                    using `\<not> poincare_collinear {0\<^sub>h, x1, x2}` lx `x1 \<in> circline_set ?lx` `x2 \<in> circline_set ?lx`
+                    using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close> lx \<open>x1 \<in> circline_set ?lx\<close> \<open>x2 \<in> circline_set ?lx\<close>
                     unfolding poincare_collinear_def
                     by auto
 
@@ -2398,7 +2398,7 @@ proof-
                     by (auto simp add: cmod_eq_Re)
 
                   have "?a \<in> circline_set ?la"
-                    using `poincare_between ?a1 ?a ?a2`
+                    using \<open>poincare_between ?a1 ?a ?a2\<close>
                     using \<open>?a1 \<noteq> ?a2\<close> \<open>?a \<in> unit_disc\<close> \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> poincare_between_poincare_line_uzv 
                     by blast
                                                 
@@ -2406,11 +2406,11 @@ proof-
                     by (auto simp add: \<open>?a1 \<noteq> ?a2\<close>)
 
                   have la: "is_poincare_line ?la"
-                    using is_poincare_line_poincare_line[OF `?a1 \<noteq> ?a2`]
+                    using is_poincare_line_poincare_line[OF \<open>?a1 \<noteq> ?a2\<close>]
                     by  simp
 
                   have inv: "inversion i1 = i1" "inversion i2 = i2"
-                    using `i1 \<in> unit_circle_set` `i2 \<in> unit_circle_set`
+                    using \<open>i1 \<in> unit_circle_set\<close> \<open>i2 \<in> unit_circle_set\<close>
                     by (auto simp add: circline_set_def unit_circle_set_def)
 
                   have  "i1 \<noteq> \<infinity>\<^sub>h" "i2 \<noteq> \<infinity>\<^sub>h"
@@ -2426,31 +2426,31 @@ proof-
                     proof
                       assume "?a1 \<in> circline_set x_axis"
                       hence "{?a, ?a1} \<subseteq> circline_set ?la \<inter> circline_set x_axis"
-                        using `?a \<in> circline_set ?la` `?a1 \<in> circline_set ?la``?a \<in> positive_x_axis`
+                        using \<open>?a \<in> circline_set ?la\<close> \<open>?a1 \<in> circline_set ?la\<close>\<open>?a \<in> positive_x_axis\<close>
                         using circline_set_x_axis_I xa(1) 
                         by blast
                       thus "?la = x_axis"
                         using unique_is_poincare_line[of ?a ?a1 ?la x_axis]
-                        using `?a1 \<in> unit_disc` `?a \<in> unit_disc` la `?a \<noteq> ?a1`
+                        using \<open>?a1 \<in> unit_disc\<close> \<open>?a \<in> unit_disc\<close> la \<open>?a \<noteq> ?a1\<close>
                         by auto
                     next
                       assume "?a2 \<in> circline_set x_axis"
                       hence "{?a, ?a2} \<subseteq> circline_set ?la \<inter> circline_set x_axis"
-                        using `?a \<in> circline_set ?la` `?a2 \<in> circline_set ?la` `?a \<in> positive_x_axis`
+                        using \<open>?a \<in> circline_set ?la\<close> \<open>?a2 \<in> circline_set ?la\<close> \<open>?a \<in> positive_x_axis\<close>
                         using circline_set_x_axis_I xa(1) 
                         by blast
                       thus "?la = x_axis"
                         using unique_is_poincare_line[of ?a ?a2 ?la x_axis]
-                        using `?a2 \<in> unit_disc` `?a \<in> unit_disc` la `?a \<noteq> ?a2`
+                        using \<open>?a2 \<in> unit_disc\<close> \<open>?a \<in> unit_disc\<close> la \<open>?a \<noteq> ?a2\<close>
                         by auto
                     qed
 
                     hence "i1 \<in> circline_set x_axis \<and> i2 \<in> circline_set x_axis"
-                      using `?a1 \<in> circline_set ?la` `?a2 \<in> circline_set ?la`
+                      using \<open>?a1 \<in> circline_set ?la\<close> \<open>?a2 \<in> circline_set ?la\<close>
                       by (metis \<open>i1 \<noteq> \<infinity>\<^sub>h\<close> \<open>i2 \<noteq> \<infinity>\<^sub>h\<close> \<open>of_complex (to_complex i1 / 2) \<in> unit_disc\<close> \<open>of_complex (to_complex i2 / 2) \<in> unit_disc\<close> \<open>poincare_collinear {0\<^sub>h, of_complex (to_complex i1 / 2), i1}\<close> \<open>poincare_collinear {0\<^sub>h, of_complex (to_complex i2 / 2), i2}\<close> divide_eq_0_iff inf_not_of_complex inv(1) inv(2) inversion_noteq_unit_disc of_complex_to_complex of_complex_zero_iff poincare_collinear3_poincare_lines_equal_general poincare_line_0_real_is_x_axis poincare_line_circline_set(2) zero_in_unit_disc zero_neq_numeral)
 
                     thus False
-                      using `?lx \<noteq> x_axis` unique_is_poincare_line_general[of i1 i2 ?li x_axis] `i1 \<noteq> i2` inv `?lx = ?li`
+                      using \<open>?lx \<noteq> x_axis\<close> unique_is_poincare_line_general[of i1 i2 ?li x_axis] \<open>i1 \<noteq> i2\<close> inv \<open>?lx = ?li\<close>
                       by auto
                   qed
 
@@ -2459,17 +2459,17 @@ proof-
                     by fastforce
 
                   have "intersects_x_axis_positive ?la"
-                    using intersects_x_axis_positive_iff[of ?la] `?la \<noteq> x_axis` `?a \<in> circline_set ?la` la
-                    using `?a \<in> unit_disc` `?a \<in> positive_x_axis`
+                    using intersects_x_axis_positive_iff[of ?la] \<open>?la \<noteq> x_axis\<close> \<open>?a \<in> circline_set ?la\<close> la
+                    using \<open>?a \<in> unit_disc\<close> \<open>?a \<in> positive_x_axis\<close>
                     by auto
 
                   have "intersects_x_axis ?lx"
                   proof-
                     have "arg (to_complex ?a1) * arg (to_complex ?a2) < 0"
-                      using `poincare_between ?a1 ?a ?a2` `?a1 \<in> unit_disc` `?a2 \<in> unit_disc`
+                      using \<open>poincare_between ?a1 ?a ?a2\<close> \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close>
                       using poincare_between_x_axis_intersection[of ?a1 ?a2 "of_complex xa"]
-                      using `?a1 \<noteq> ?a2` `?a \<in> unit_disc` `?a1 \<notin> circline_set x_axis \<and> ?a2 \<notin> circline_set x_axis` `?a \<in> positive_x_axis`
-                      using `?a \<in> circline_set ?la`                                                                                         
+                      using \<open>?a1 \<noteq> ?a2\<close> \<open>?a \<in> unit_disc\<close> \<open>?a1 \<notin> circline_set x_axis \<and> ?a2 \<notin> circline_set x_axis\<close> \<open>?a \<in> positive_x_axis\<close>
+                      using \<open>?a \<in> circline_set ?la\<close>                                                                                         
                       unfolding positive_x_axis_def
                       by simp
 
@@ -2482,13 +2482,13 @@ proof-
 
                     have "Im (to_complex ?a1) * Im (to_complex ?a2) < 0"
                       using arg_Im_sgn[of "to_complex ?a1"] arg_Im_sgn[of "to_complex ?a2"]
-                      using `?a1 \<in> unit_disc` `?a2 \<in> unit_disc` `?a1 \<notin> circline_set x_axis \<and> ?a2 \<notin> circline_set x_axis` 
+                      using \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> \<open>?a1 \<notin> circline_set x_axis \<and> ?a2 \<notin> circline_set x_axis\<close> 
                       using inf_or_of_complex[of ?a1] inf_or_of_complex[of ?a2] circline_set_x_axis
                       by (metis circline_set_x_axis_I to_complex_of_complex)
 
                     thus ?thesis
                       using ideal_points_intersects_x_axis[of ?lx i1 i2]
-                      using `ideal_points ?lx = {i1, i2}` lx `?lx \<noteq> x_axis`
+                      using \<open>ideal_points ?lx = {i1, i2}\<close> lx \<open>?lx \<noteq> x_axis\<close>
                       by simp
                   qed
 
@@ -2504,7 +2504,7 @@ proof-
                         ?Ba1 = "\<i> * (?a2' * cor ((cmod ?a1')\<^sup>2 + 1) - ?a1' * cor ((cmod ?a2')\<^sup>2 + 1))"
 
                     have "?Aa1 \<noteq> 0 \<or> ?Ba1 \<noteq> 0"
-                      using `cmod (to_complex i1) = 1`  `cmod (to_complex i2) = 1` `?a1 \<noteq> ?a2`              
+                      using \<open>cmod (to_complex i1) = 1\<close>  \<open>cmod (to_complex i2) = 1\<close> \<open>?a1 \<noteq> ?a2\<close>              
                       by (auto simp add: power_divide complex_mult_cnj_cmod)
 
                     have "is_real ?Aa1"
@@ -2514,8 +2514,8 @@ proof-
                       using \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> inversion_noteq_unit_disc by fastforce
 
                     hence "Re ?Ba1 / Re ?Aa1 < -1"
-                      using `intersects_x_axis_positive ?la` `?a1 \<noteq> ?a2`
-                      using intersects_x_axis_positive_mk_circline[of ?Aa1 ?Ba1] `?Aa1 \<noteq> 0 \<or> ?Ba1 \<noteq> 0` `is_real ?Aa1`
+                      using \<open>intersects_x_axis_positive ?la\<close> \<open>?a1 \<noteq> ?a2\<close>
+                      using intersects_x_axis_positive_mk_circline[of ?Aa1 ?Ba1] \<open>?Aa1 \<noteq> 0 \<or> ?Ba1 \<noteq> 0\<close> \<open>is_real ?Aa1\<close>
                       using poincare_line_non_homogenous[of ?a1 ?a2]
                       by (simp add: Let_def)
 
@@ -2526,7 +2526,7 @@ proof-
                         ?Bi1 = "\<i> * (?i2' * cor ((cmod ?i1')\<^sup>2 + 1) - ?i1' * cor ((cmod ?i2')\<^sup>2 + 1))"
 
                     have "?Ai1 \<noteq> 0 \<or> ?Bi1 \<noteq> 0"
-                      using `cmod (to_complex i1) = 1`  `cmod (to_complex i2) = 1` `?a1 \<noteq> ?a2`              
+                      using \<open>cmod (to_complex i1) = 1\<close>  \<open>cmod (to_complex i2) = 1\<close> \<open>?a1 \<noteq> ?a2\<close>              
                       by (auto simp add: power_divide complex_mult_cnj_cmod)
 
                     have "is_real ?Ai1"
@@ -2536,7 +2536,7 @@ proof-
                     proof-
                       have "Re ?Bi1 / Re ?Ai1 = (Im ?i1 * 2 - Im ?i2 * 2) /
                                                 (Im ?i2 * (Re ?i1 * 2) - Im ?i1 * (Re ?i2 * 2))"
-                        using `cmod ?i1 = 1`  `cmod ?i2 = 1`
+                        using \<open>cmod ?i1 = 1\<close>  \<open>cmod ?i2 = 1\<close>
                         by (auto simp add: complex_mult_cnj_cmod field_simps)
                       also have "... =  (Im ?i1 - Im ?i2) /
                                         (Im ?i2 * (Re ?i1) - Im ?i1 * (Re ?i2))" (is "... = ?expr")
@@ -2550,7 +2550,7 @@ proof-
                 
                       have "Re ?Ba1 / Re ?Aa1 = (Im ?i1 * 20 - Im ?i2 * 20) /
                                                 (Im ?i2 * (Re ?i1 * 16) - Im ?i1 * (Re ?i2 * 16))"
-                        using `cmod (to_complex i1) = 1`  `cmod (to_complex i2) = 1`
+                        using \<open>cmod (to_complex i1) = 1\<close>  \<open>cmod (to_complex i2) = 1\<close>
                         by (auto simp add: complex_mult_cnj_cmod field_simps)
                       also have "... = (20 / 16) * ((Im ?i1 - Im ?i2) /
                                        (Im ?i2 * (Re ?i1) - Im ?i1 * (Re ?i2)))"
@@ -2562,7 +2562,7 @@ proof-
                         by simp
 
                       have "?expr \<noteq> 0"
-                        using `Re ?Ba1 / Re ?Aa1 < -1`
+                        using \<open>Re ?Ba1 / Re ?Aa1 < -1\<close>
                         apply  (subst (asm) 2)
                         by linarith
                       thus ?thesis
@@ -2580,10 +2580,10 @@ proof-
                     have "(Re ?Bi1 / Re ?Ai1)\<^sup>2 > 1"
                     proof-
                       have "?Ai1 = 0 \<or> (Re ?Bi1)\<^sup>2 > (Re ?Ai1)\<^sup>2"
-                        using `intersects_x_axis ?lx`
-                        using `i1 \<noteq> i2` `i1 \<noteq> \<infinity>\<^sub>h` `i2 \<noteq> \<infinity>\<^sub>h` `i1 \<noteq> inversion i2`
-                        using intersects_x_axis_mk_circline[of ?Ai1 ?Bi1] `?Ai1 \<noteq> 0 \<or> ?Bi1 \<noteq> 0` `is_real ?Ai1`
-                        using poincare_line_non_homogenous[of i1 i2] `?lx = ?li`
+                        using \<open>intersects_x_axis ?lx\<close>
+                        using \<open>i1 \<noteq> i2\<close> \<open>i1 \<noteq> \<infinity>\<^sub>h\<close> \<open>i2 \<noteq> \<infinity>\<^sub>h\<close> \<open>i1 \<noteq> inversion i2\<close>
+                        using intersects_x_axis_mk_circline[of ?Ai1 ?Bi1] \<open>?Ai1 \<noteq> 0 \<or> ?Bi1 \<noteq> 0\<close> \<open>is_real ?Ai1\<close>
+                        using poincare_line_non_homogenous[of i1 i2] \<open>?lx = ?li\<close>
                         by metis
                                                   
                       moreover
@@ -2596,7 +2596,7 @@ proof-
                           apply (transfer, transfer, case_tac i1, case_tac i2)
                           by (auto simp add: vec_cnj_def field_simps)
                         thus False
-                          using `0\<^sub>h \<notin> circline_set ?lx` `?lx = ?li`
+                          using \<open>0\<^sub>h \<notin> circline_set ?lx\<close> \<open>?lx = ?li\<close>
                           by simp
                       qed
 
@@ -2608,7 +2608,7 @@ proof-
                       moreover
 
                       have "Re ?Ai1 \<noteq> 0"
-                        using `is_real ?Ai1` `?Ai1 \<noteq> 0`
+                        using \<open>is_real ?Ai1\<close> \<open>?Ai1 \<noteq> 0\<close>
                         by (simp add: complex_eq_iff)
 
                       ultimately
@@ -2632,20 +2632,20 @@ proof-
                       by metis
 
                     thus ?thesis
-                      using `i1 \<noteq> i2` `i1 \<noteq> \<infinity>\<^sub>h` `i2 \<noteq> \<infinity>\<^sub>h` `i1 \<noteq> inversion i2`
-                      using intersects_x_axis_positive_mk_circline[of ?Ai1 ?Bi1] `?Ai1 \<noteq> 0 \<or> ?Bi1 \<noteq> 0` `is_real ?Ai1`
-                      using poincare_line_non_homogenous[of i1 i2] `?lx = ?li`
+                      using \<open>i1 \<noteq> i2\<close> \<open>i1 \<noteq> \<infinity>\<^sub>h\<close> \<open>i2 \<noteq> \<infinity>\<^sub>h\<close> \<open>i1 \<noteq> inversion i2\<close>
+                      using intersects_x_axis_positive_mk_circline[of ?Ai1 ?Bi1] \<open>?Ai1 \<noteq> 0 \<or> ?Bi1 \<noteq> 0\<close> \<open>is_real ?Ai1\<close>
+                      using poincare_line_non_homogenous[of i1 i2] \<open>?lx = ?li\<close>
                       by (simp add: Let_def)
                   qed
 
                   then obtain x where x: "x \<in> unit_disc" "x \<in> circline_set ?lx \<inter> positive_x_axis"
-                    using intersects_x_axis_positive_iff[OF lx `?lx \<noteq> x_axis`]
+                    using intersects_x_axis_positive_iff[OF lx \<open>?lx \<noteq> x_axis\<close>]
                     by auto
 
                   have "poincare_on_ray x 0\<^sub>h a' \<and> poincare_collinear {x1, x2, x}"
                   proof
                     show "poincare_collinear {x1, x2, x}"
-                      using x lx `x1 \<in> circline_set ?lx` `x2 \<in> circline_set ?lx`
+                      using x lx \<open>x1 \<in> circline_set ?lx\<close> \<open>x2 \<in> circline_set ?lx\<close>
                       unfolding poincare_collinear_def
                       by auto
                   next
@@ -2653,7 +2653,7 @@ proof-
                       unfolding poincare_on_ray_def
                     proof-
                       have  "a' \<in> circline_set x_axis"
-                        using `poincare_on_ray a' 0\<^sub>h ?a` xa `0\<^sub>h \<noteq> ?a` `xa \<noteq> 0` `a' \<in> unit_disc`
+                        using \<open>poincare_on_ray a' 0\<^sub>h ?a\<close> xa \<open>0\<^sub>h \<noteq> ?a\<close> \<open>xa \<noteq> 0\<close> \<open>a' \<in> unit_disc\<close>
                         unfolding poincare_on_ray_def 
                         using poincare_line_0_real_is_x_axis[of "of_complex xa"]
                         using poincare_between_poincare_line_uvz[of "0\<^sub>h" "of_complex xa" a']
@@ -2661,16 +2661,16 @@ proof-
                         by (auto simp  add: cmod_eq_Re)
 
                       then obtain xa' where xa': "a' = of_complex xa'" "is_real xa'"
-                        using `a' \<in> unit_disc`
+                        using \<open>a' \<in> unit_disc\<close>
                         using circline_set_def on_circline_x_axis 
                         by auto
 
                       hence "-1 < Re xa'" "Re xa' < 1" "xa' \<noteq> 0"
-                        using `a' \<in> unit_disc` `a' \<noteq> 0\<^sub>h`
+                        using \<open>a' \<in> unit_disc\<close> \<open>a' \<noteq> 0\<^sub>h\<close>
                         by (auto simp add: cmod_eq_Re)
 
                       hence "Re xa' > 0" "Re xa' < 1" "is_real xa'"
-                        using `poincare_on_ray a' 0\<^sub>h (of_complex xa)`
+                        using \<open>poincare_on_ray a' 0\<^sub>h (of_complex xa)\<close>
                         using poincare_between_x_axis_0uv[of "Re xa'" "Re xa"]
                         using poincare_between_x_axis_0uv[of "Re xa" "Re xa'"]
                         using circline_set_positive_x_axis_I[of "Re xa'"]
@@ -2689,14 +2689,14 @@ proof-
                       ultimately
 
                       show "poincare_between 0\<^sub>h x a' \<or> poincare_between 0\<^sub>h a' x"
-                        using `a' = of_complex xa'`
+                        using \<open>a' = of_complex xa'\<close>
                         by (smt \<open>a' \<in> unit_disc\<close> arg_0_iff poincare_between_0uv poincare_between_def to_complex_of_complex x(1))
                     qed
 
                   qed
 
                   thus ?thesis               
-                    using `x \<in> unit_disc`
+                    using \<open>x \<in> unit_disc\<close>
                     unfolding poincare_ray_meets_line_def poincare_on_line_def
                     by (metis insert_commute)
                 qed
@@ -2706,18 +2706,18 @@ proof-
               proof (rule ccontr)
                 assume "\<not> ?thesis"
                 then obtain k where "k<0" "to_complex ?a1 = cor k * to_complex ?a2"
-                  using poincare_between_u0v[OF `?a1 \<in> unit_disc` `?a2 \<in> unit_disc` `?a1 \<noteq> 0\<^sub>h` `?a2 \<noteq> 0\<^sub>h`]
-                  using `poincare_between ?a1 a ?a2`
+                  using poincare_between_u0v[OF \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> \<open>?a1 \<noteq> 0\<^sub>h\<close> \<open>?a2 \<noteq> 0\<^sub>h\<close>]
+                  using \<open>poincare_between ?a1 a ?a2\<close>
                   by auto
                 hence "to_complex i1 = cor k * to_complex i2" "k < 0"
                   by auto
                 hence "0\<^sub>h \<in> circline_set (poincare_line x1 x2)"
-                  using ideal_points_proportional[of "poincare_line x1 x2" i1 i2 k] `ideal_points (poincare_line x1 x2) = {i1, i2}`
-                  using is_poincare_line_poincare_line[OF `x1 \<noteq> x2`]
+                  using ideal_points_proportional[of "poincare_line x1 x2" i1 i2 k] \<open>ideal_points (poincare_line x1 x2) = {i1, i2}\<close>
+                  using is_poincare_line_poincare_line[OF \<open>x1 \<noteq> x2\<close>]
                   by simp
                 thus False
-                  using `\<not> poincare_collinear {0\<^sub>h, x1, x2}`
-                  using is_poincare_line_poincare_line[OF `x1 \<noteq> x2`]
+                  using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close>
+                  using is_poincare_line_poincare_line[OF \<open>x1 \<noteq> x2\<close>]
                   unfolding poincare_collinear_def
                   by (meson \<open>x1 \<noteq> x2\<close> empty_subsetI insert_subset poincare_line_circline_set(1) poincare_line_circline_set(2))
               qed
@@ -2750,11 +2750,11 @@ proof-
               qed
             qed
             thus ?thesis                                                                  
-              using `a' \<in> unit_disc` `x1 \<in> unit_disc` `x2 \<in> unit_disc` `x1 \<noteq> x2` 
-              using `\<not> poincare_collinear {0\<^sub>h, x1, x2}` `ideal_points ?lx = {i1, i2}` `i1 \<noteq> i2`
-              using `?a1 \<noteq> ?a2` `poincare_collinear {0\<^sub>h, ?a1, i1}` `poincare_collinear {0\<^sub>h, ?a2, i2}`
-              using `?a1 \<in> unit_disc` `?a2 \<in> unit_disc` `i1 \<in> unit_circle_set` `i2 \<in> unit_circle_set`
-              using `poincare_on_ray a' 0\<^sub>h a` `a' \<noteq> 0\<^sub>h` `poincare_between ?a1 a ?a2` `a \<noteq> ?a1` `a \<noteq> ?a2`
+              using \<open>a' \<in> unit_disc\<close> \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>x1 \<noteq> x2\<close> 
+              using \<open>\<not> poincare_collinear {0\<^sub>h, x1, x2}\<close> \<open>ideal_points ?lx = {i1, i2}\<close> \<open>i1 \<noteq> i2\<close>
+              using \<open>?a1 \<noteq> ?a2\<close> \<open>poincare_collinear {0\<^sub>h, ?a1, i1}\<close> \<open>poincare_collinear {0\<^sub>h, ?a2, i2}\<close>
+              using \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close> \<open>i1 \<in> unit_circle_set\<close> \<open>i2 \<in> unit_circle_set\<close>
+              using \<open>poincare_on_ray a' 0\<^sub>h a\<close> \<open>a' \<noteq> 0\<^sub>h\<close> \<open>poincare_between ?a1 a ?a2\<close> \<open>a \<noteq> ?a1\<close> \<open>a \<noteq> ?a2\<close>
               by blast
           qed
         qed
@@ -2773,15 +2773,15 @@ proof-
             by (metis inversion_noteq_unit_disc zero_in_unit_disc)
 
           have "i1 \<in> circline_set (poincare_line 0\<^sub>h ?a1)"
-            using `poincare_collinear {0\<^sub>h, ?a1, i1}`
+            using \<open>poincare_collinear {0\<^sub>h, ?a1, i1}\<close>
             using poincare_collinear3_poincare_line_general[of i1 "0\<^sub>h" ?a1]
-            using \<open>?a1 \<in> unit_disc\<close> `?a1 \<noteq> 0\<^sub>h`
+            using \<open>?a1 \<in> unit_disc\<close> \<open>?a1 \<noteq> 0\<^sub>h\<close>
             by (metis insert_commute inversion_noteq_unit_disc zero_in_unit_disc)
           moreover
           have "i2 \<in> circline_set (poincare_line 0\<^sub>h ?a1)"
-            using `poincare_collinear {0\<^sub>h, ?a2, i2}`
+            using \<open>poincare_collinear {0\<^sub>h, ?a2, i2}\<close>
             using poincare_collinear3_poincare_line_general[of i2 "0\<^sub>h" ?a2]
-            using \<open>?a2 \<in> unit_disc\<close> `?a2 \<noteq> 0\<^sub>h` \<open>poincare_line 0\<^sub>h ?a1 = poincare_line 0\<^sub>h ?a2\<close>
+            using \<open>?a2 \<in> unit_disc\<close> \<open>?a2 \<noteq> 0\<^sub>h\<close> \<open>poincare_line 0\<^sub>h ?a1 = poincare_line 0\<^sub>h ?a2\<close>
             by (metis insert_commute inversion_noteq_unit_disc zero_in_unit_disc)
 
           ultimately
@@ -2811,13 +2811,13 @@ proof-
         ultimately
 
         show ?thesis
-          using `?a1 \<in> unit_disc` `?a2 \<in> unit_disc`
+          using \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close>
           by blast
       qed
     qed
   qed
   thus ?thesis
-    using `x1 \<in> unit_disc` `x2 \<in> unit_disc` `\<not> poincare_collinear {a, x1, x2}`
+    using \<open>x1 \<in> unit_disc\<close> \<open>x2 \<in> unit_disc\<close> \<open>\<not> poincare_collinear {a, x1, x2}\<close>
     by blast
 qed                                                                        
 
@@ -2952,7 +2952,7 @@ next
                     (poincare_between x x1 x2 \<or>
                      poincare_between x1 x x2 \<or>
                      poincare_between x1 x2 x))"
-      using `\<not> poincare_ray_meets_line a a1 x1 x2`
+      using \<open>\<not> poincare_ray_meets_line a a1 x1 x2\<close>
       unfolding poincare_on_line_def poincare_ray_meets_line_def poincare_on_ray_def
       using poincare_collinear3_iff[of _ x1 x2] poincare_between_rev *(2, 3)
       by auto
@@ -2963,13 +2963,13 @@ next
                     (poincare_between x x1 x2 \<or>
                      poincare_between x1 x x2 \<or>
                      poincare_between x1 x2 x))"
-      using `\<not> poincare_ray_meets_line a a2 x1 x2`
+      using \<open>\<not> poincare_ray_meets_line a a2 x1 x2\<close>
       unfolding poincare_on_line_def poincare_ray_meets_line_def poincare_on_ray_def
       using poincare_collinear3_iff[of _ x1 x2] poincare_between_rev *(2, 3)
       by auto
     moreover
     have "\<not> (poincare_between a a1 a2 \<or> poincare_between a1 a a2 \<or> poincare_between a1 a2 a)"
-      using `\<not> poincare_on_line a a1 a2` poincare_collinear3_iff[of a a1 a2]
+      using \<open>\<not> poincare_on_line a a1 a2\<close> poincare_collinear3_iff[of a a1 a2]
       using *(1) **(1-2)
       unfolding poincare_on_line_def
       by simp

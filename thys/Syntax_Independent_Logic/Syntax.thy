@@ -459,7 +459,7 @@ lemma Fvars_rawpsubst:
   case (Cons a txs \<phi>)
   then obtain t x where a: "a = (t,x)" by force
   have t: "t \<in> trm" and x: "x \<in> var" using Cons.prems unfolding a by auto
-  have x_txs: "\<And>ta xa. (ta, xa) \<in> set txs \<Longrightarrow> x \<noteq> xa" using `distinct (map snd (a # txs))`
+  have x_txs: "\<And>ta xa. (ta, xa) \<in> set txs \<Longrightarrow> x \<noteq> xa" using \<open>distinct (map snd (a # txs))\<close>
    unfolding a by (auto simp: rev_image_eqI)
   have xt: "x \<notin> FvarsT t \<and> snd ` set txs \<inter> FvarsT t = {}" using Cons.prems unfolding a by auto
   hence 0: "Fvars \<phi> - {x} \<union> FvarsT t - snd ` set txs =
@@ -587,7 +587,7 @@ proof-
       have yx: "(y, x) \<in> set (zip us (map snd txs))"
       using yvar us_facts by (intro inj_on_set_zip_map[OF inj_on_Var yx]) auto
       have "(tt, x) \<in> set txs" apply(rule set_zip_map_fst_snd[OF yx ty])
-        using  `distinct (map snd txs)` us_facts by auto
+        using  \<open>distinct (map snd txs)\<close> us_facts by auto
       thus ?thesis using xx x\<phi> by auto
     qed(insert xx, auto)
   next
@@ -798,7 +798,7 @@ lemma rawpsubst_compose_freshVar2_aux:
   obtain t ts u us v vs where tts[simp]: "tts = t # ts" and lts[simp]: "length ts = length xs"
     and uus[simp]: "uus = u # us" and lus[simp]: "length us = length xs"
     and vvs[simp]: "vvs = v # vs" and lvs[simp]: "length vs = length xs"
-    using `length uus = length (x # xs)` `length vvs = length (x # xs)` `length tts = length (x # xs)`
+    using \<open>length uus = length (x # xs)\<close> \<open>length vvs = length (x # xs)\<close> \<open>length tts = length (x # xs)\<close>
     apply(cases tts)
     subgoal by auto
     subgoal apply(cases uus)

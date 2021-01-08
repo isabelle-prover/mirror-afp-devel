@@ -190,7 +190,7 @@ proof
   fix a and b and c
   assume "(a, b) \<in> E" and "c \<in> Class a"
   then have "(c, a) \<in> E" by auto
-  also note `(a, b) \<in> E`
+  also note \<open>(a, b) \<in> E\<close>
   finally have "(c, b) \<in> E" by simp
   then show "c \<in> Class b" by auto
 qed
@@ -207,8 +207,8 @@ proof
   fix a and b
   assume "a \<in> S" "b \<in> S" "Class a = Class b"
   then have "a \<in> Class a" by auto
-  also note `Class a = Class b`
-  finally show "(a, b) \<in> E" by (fast intro: `b \<in> S`)
+  also note \<open>Class a = Class b\<close>
+  finally show "(a, b) \<in> E" by (fast intro: \<open>b \<in> S\<close>)
 qed (rule Class_eq)
 
 text \<open>p 12, ll 5--7\<close>
@@ -328,7 +328,7 @@ text \<open>p 12, ll 12--14\<close>
 theorem Class_is_Block:
   assumes "a \<in> S" shows "Class a = Block a"
 proof -
-  from `a \<in> S` and block_exists obtain A where block: "a \<in> A \<and> A \<in> P" by blast
+  from \<open>a \<in> S\<close> and block_exists obtain A where block: "a \<in> A \<and> A \<in> P" by blast
   show ?thesis
     apply (simp add: Block_def Class_def)
     apply (rule theI2)

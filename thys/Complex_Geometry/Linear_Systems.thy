@@ -164,7 +164,7 @@ proof-
     by (simp add: field_simps)
 
   show ?thesis
-    using `?Dz \<noteq> 0 \<or> ?Dy \<noteq> 0 \<or> ?Dx \<noteq> 0`
+    using \<open>?Dz \<noteq> 0 \<or> ?Dy \<noteq> 0 \<or> ?Dx \<noteq> 0\<close>
   proof safe
     assume "?Dz \<noteq> 0"
     
@@ -175,11 +175,11 @@ proof-
       by (simp_all add: field_simps)     
 
     hence "z2 \<noteq> 0"
-      using `x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0`
+      using \<open>x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0\<close>
       by auto
 
     thus ?thesis
-      using * `?Dz \<noteq> 0`
+      using * \<open>?Dz \<noteq> 0\<close>
       by (rule_tac x="z1/z2" in exI) auto
   next
     assume "?Dy \<noteq> 0"
@@ -190,11 +190,11 @@ proof-
       by (simp_all add: field_simps)     
 
     hence "y2 \<noteq> 0"
-      using `x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0`
+      using \<open>x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0\<close>
       by auto
 
     thus ?thesis
-      using * `?Dy \<noteq> 0`
+      using * \<open>?Dy \<noteq> 0\<close>
       by (rule_tac x="y1/y2" in exI) auto
   next
     assume "?Dx \<noteq> 0"
@@ -205,11 +205,11 @@ proof-
       by (simp_all add: field_simps)     
 
     hence "x2 \<noteq> 0"
-      using `x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0`
+      using \<open>x2 \<noteq> 0 \<or> y2 \<noteq> 0 \<or> z2 \<noteq> 0\<close>
       by auto
 
     thus ?thesis
-      using * `?Dx \<noteq> 0`
+      using * \<open>?Dx \<noteq> 0\<close>
       by (rule_tac x="x1/x2" in exI) auto
   qed
 qed

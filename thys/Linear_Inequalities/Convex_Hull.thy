@@ -231,7 +231,7 @@ next
     have "sum ?c' {0..<length Vs} = 1 / (1 - c 0) * sum (c \<circ> Suc) {0..<length Vs}"
       using c1 P sum_distrib_left by metis
     hence "sum ?c' {0..<length Vs} = 1" using P c1 by simp
-    moreover have "\<forall> i < length Vs. ?c' i \<ge> 0" using c0 `c 0 < 1` by simp
+    moreover have "\<forall> i < length Vs. ?c' i \<ge> 0" using c0 \<open>c 0 < 1\<close> by simp
     ultimately have c': "lincomb_list ?c' Vs \<in> convex_hull_list Ws"
       using Cons.IH[OF Vs]
         convex_hull_list_def convex_lincomb_list_def nonneg_lincomb_list_def
@@ -242,7 +242,7 @@ next
       using P by auto
     hence "x = c 0 \<cdot>\<^sub>v v + (1 - c 0) \<cdot>\<^sub>v lincomb_list ?c' Vs" using x by auto
     thus "x \<in> convex_hull_list Ws"
-      using convex_hull_list_combination[OF assms v1 c'] c0 `c 0 < 1`
+      using convex_hull_list_combination[OF assms v1 c'] c0 \<open>c 0 < 1\<close>
       by simp
   qed
 qed

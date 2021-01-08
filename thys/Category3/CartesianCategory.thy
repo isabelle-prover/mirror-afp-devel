@@ -1926,7 +1926,7 @@ begin
             have 0: "\<And>i. i \<in> Collect J0.arr \<Longrightarrow> \<chi>' i \<in> hom a' (D0 i)"
               using J.arr_char by auto
             have 1: "\<And>i. i \<in> Collect J1.arr \<Longrightarrow> \<chi>' i \<in> hom a' (D1 i)"
-              using J.arr_char `Collect J0.arr \<inter> Collect J1.arr = {}` by force
+              using J.arr_char \<open>Collect J0.arr \<inter> Collect J1.arr = {}\<close> by force
             interpret A0': constant_functor J0 C a'
               apply unfold_locales using \<chi>'.ide_apex by auto
             interpret A1': constant_functor J1 C a'

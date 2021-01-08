@@ -519,18 +519,18 @@ lemma ideal_points_proportional:
   shows "0\<^sub>h \<in> circline_set H"
 proof-
   have "i1 \<noteq> i2"
-    using `ideal_points H = {i1, i2}`
-    using `is_poincare_line H` ex_poincare_line_points ideal_points_different(1) by blast
+    using \<open>ideal_points H = {i1, i2}\<close>
+    using \<open>is_poincare_line H\<close> ex_poincare_line_points ideal_points_different(1) by blast
 
   have "i1 \<in> circline_set unit_circle" "i2 \<in> circline_set unit_circle"
     using assms calc_ideal_points_on_unit_circle ideal_points_unique 
     by blast+
 
   hence "cmod (cor k) = 1"
-    using `to_complex i1 = cor k * to_complex i2`
+    using \<open>to_complex i1 = cor k * to_complex i2\<close>
     by (metis (mono_tags, lifting) circline_set_unit_circle imageE mem_Collect_eq mult.right_neutral norm_mult to_complex_of_complex unit_circle_set_def)
   hence "k = -1"
-    using `to_complex i1 = cor k * to_complex i2` `i1 \<noteq> i2`
+    using \<open>to_complex i1 = cor k * to_complex i2\<close> \<open>i1 \<noteq> i2\<close>
     using \<open>i1 \<in> circline_set unit_circle\<close> \<open>i2 \<in> circline_set unit_circle\<close> 
     by (metis (no_types, lifting) circline_set_unit_circle complex_cnj_complex_of_real complex_mult_cnj_cmod cor_neg_one imageE mult_cancel_right2 norm_one of_real_eq_iff square_eq_1_iff to_complex_of_complex)
 
@@ -557,7 +557,7 @@ proof-
       using i1 i2 H line
       by (auto split: if_split_asm)
     hence i: "i11 = ?i1 \<and> i21 = ?i2 \<or> i11 = ?i2 \<and> i21 = ?i1"
-      using `\<not> (i11, i12) \<approx>\<^sub>v (i21, i22)`
+      using \<open>\<not> (i11, i12) \<approx>\<^sub>v (i21, i22)\<close>
       by auto
 
     have "?den \<noteq> 0"
@@ -565,7 +565,7 @@ proof-
       by auto
 
     hence "i11 = - i21"
-      using opposite `i12 = ?den` `i22 = ?den`
+      using opposite \<open>i12 = ?den\<close> \<open>i22 = ?den\<close>
       by (simp add: nonzero_neg_divide_eq_eq2)
 
     hence "?i1 = - ?i2"
@@ -573,7 +573,7 @@ proof-
       by (metis add.inverse_inverse)
 
     hence "D = 0"
-      using `?den \<noteq> 0`
+      using \<open>?den \<noteq> 0\<close>
       by (simp add: field_simps)
 
     thus "on_circline_cmat_cvec (A, B, C, D) 0\<^sub>v"
@@ -581,7 +581,7 @@ proof-
   qed
 
   thus ?thesis
-    using assms `k = -1`
+    using assms \<open>k = -1\<close>
     using calc_ideal_points_different ideal_points_unique
     by fastforce
 qed

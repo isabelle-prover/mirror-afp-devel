@@ -1,11 +1,11 @@
-section {* Availability of Fresh Variables and Alpha-Equivalence *}
+section \<open>Availability of Fresh Variables and Alpha-Equivalence\<close>
 
 theory QuasiTerms_PickFresh_Alpha
 imports QuasiTerms_Swap_Fresh 
 
 begin
 
-text{* Here we define good quasi-terms and alpha-equivalence on quasi-terms,
+text\<open>Here we define good quasi-terms and alpha-equivalence on quasi-terms,
 and prove relevant properties
 such as the ability to pick fresh variables for good
 quasi-terms and the fact that alpha is indeed an equivalence
@@ -16,9 +16,9 @@ unsortedly, for raw quasi-terms.  (And we do it in such a way that
 it then applies immediately to sorted quasi-terms.)
 We do need sortedness of variables (as well as a cardinality
 assumption), however, for alpha-equivalence to have the desired properties.
-Therefore we work in a locale.   *}
+Therefore we work in a locale.\<close>
 
-subsection {* The FixVars locale *}
+subsection \<open>The FixVars locale\<close>
 
 definition var_infinite where
 "var_infinite (_ :: 'var) ==
@@ -70,9 +70,9 @@ theorem finite_ordLess_var:
 "( |S| <o |UNIV :: 'var set| \<or> finite S) = ( |S| <o |UNIV :: 'var set| )"
 by (auto simp add: var_infinite_INNER finite_ordLess_infinite2)
 
-subsection {* Good quasi-terms  *}
+subsection \<open>Good quasi-terms\<close>
 
-text {* Essentially, good quasi-term items
+text \<open>Essentially, good quasi-term items
    will be those with meaningful binders and
    not too many variables.  Good quasi-terms are a concept intermediate
    between (raw) quasi-terms and sorted quasi-terms.  This concept was chosen to be strong
@@ -80,7 +80,7 @@ text {* Essentially, good quasi-term items
    {\em for most of the hard part of the work},
    the overhead of sortedness.  Since we later prove that quasi-terms
    are good,
-   all the results are then immediately transported to a sorted setting.    *}
+   all the results are then immediately transported to a sorted setting.\<close>
 
 function
 qGood :: "('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> bool"
@@ -257,7 +257,7 @@ shows
 apply(induct rule: qGood_qTerm_induct[of _ _ X A])
 by(auto simp add: assms liftAll_and)
 
-subsection {* The ability to pick fresh variables *}
+subsection \<open>The ability to pick fresh variables\<close>
 
 lemma single_non_qAFreshAll_ordLess_var:
 fixes X :: "('index,'bindex,'varSort,'var,'opSym)qTerm"
@@ -447,9 +447,9 @@ using assms by(auto simp add: obtain_qFresh)
 end (* context FixVars *)
 (*****************************************)
 
-subsection {* Alpha-equivalence *}
+subsection \<open>Alpha-equivalence\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 definition aux_alpha_ignoreSecond ::
 "('index,'bindex,'varSort,'var,'opSym)qTerm * ('index,'bindex,'varSort,'var,'opSym)qTerm +
@@ -498,7 +498,7 @@ abbreviation alphaAbs_abbrev (infix "$=" 50) where "A $= B \<equiv> alphaAbs A B
 context FixVars
 begin
 
-subsubsection {* Simplification and elimination rules *}
+subsubsection \<open>Simplification and elimination rules\<close>
 
 lemma alpha_inp_None:
 "qOp delta inp binp #= qOp delta' inp' binp' \<Longrightarrow>
@@ -547,11 +547,11 @@ lemma alphaAbs_qAbs_iff:
             (X #[[y \<and> x]]_xs') #= (X' #[[y \<and> x']]_xs'))"
 by(cases A) auto
 
-subsubsection {* Basic properties *}
+subsubsection \<open>Basic properties\<close>
 
-text{*  In a nutshell: ``alpha" is included in the kernel of ``qSkel", is
+text\<open>In a nutshell: ``alpha" is included in the kernel of ``qSkel", is
 an equivalence on good quasi-terms, preserves goodness,
-and all operators and relations (except ``qAFresh") preserve alpha. *}
+and all operators and relations (except ``qAFresh") preserve alpha.\<close>
 
 lemma alphaAll_qSkelAll:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -597,8 +597,8 @@ fixes X X' :: "('index,'bindex,'varSort,'var,'opSym)qTerm"
 shows "X #= X' \<Longrightarrow> qSkel X = qSkel X'"
 by(simp add: alphaAll_qSkelAll)
 
-text{* Symmetry of alpha is a property that holds for arbitrary 
-(not necessarily good) quasi-terms. *}
+text\<open>Symmetry of alpha is a property that holds for arbitrary 
+(not necessarily good) quasi-terms.\<close>
 
 lemma alphaAll_sym:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -646,9 +646,9 @@ fixes A A' ::"('index,'bindex,'varSort,'var,'opSym)qAbs"
 shows "A $= A' \<Longrightarrow> A' $= A"
 by(simp add: alphaAll_sym)
 
-text{* Reflexivity does not hold for arbitrary quasi-terms, but onl;y for good 
+text\<open>Reflexivity does not hold for arbitrary quasi-terms, but onl;y for good 
 ones. Indeed, the proof requires picking a fresh variable,
-   guaranteed to be possible only if the quasi-term is good. *}
+   guaranteed to be possible only if the quasi-term is good.\<close>
 
 lemma alphaAll_refl:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -837,11 +837,11 @@ next
     y_not: "y \<notin> {x, x'}" and y_fresh: "qAFresh xs y X \<and> qAFresh xs y X'" and
     alpha: "(X #[[y \<and> x]]_xs) #= (X' #[[y \<and> x']]_xs)"
     unfolding qAbs_alphaAbs_iff by auto
-    hence goodX': "qGood X'" using `qGood X` alpha_qSwap_preserves_qGood by fastforce
+    hence goodX': "qGood X'" using \<open>qGood X\<close> alpha_qSwap_preserves_qGood by fastforce
     (* *)
     obtain u where u_notin: "u \<notin> {x,x',z1,z2,y}" and
                    u_freshXX': "qAFresh xs u X \<and> qAFresh xs u X'"
-    using  `qGood X` goodX' obtain_qFresh[of "{x,x',z1,z2,y}" "{X,X'}"] by auto
+    using  \<open>qGood X\<close> goodX' obtain_qFresh[of "{x,x',z1,z2,y}" "{X,X'}"] by auto
     hence u_not: "u \<noteq> (x @xs[z1 \<and> z2]_zs) \<and> u \<noteq> (x' @xs[z1 \<and> z2]_zs)"
     unfolding sw_def using u_notin by auto
     have u_fresh: "qAFresh xs u (X #[[z1 \<and> z2]]_zs) \<and> qAFresh xs u (X' #[[z1 \<and> z2]]_zs)"
@@ -946,15 +946,15 @@ next
     alpha': "(X' #[[z \<and> x']]_xs) #= (X'' #[[z \<and> x'']]_xs)"
     using * unfolding A' qAbs_alphaAbs_iff by auto
     have goodX': "qGood X'"
-    using alpha `qGood X` alpha_qSwap_preserves_qGood by fastforce
+    using alpha \<open>qGood X\<close> alpha_qSwap_preserves_qGood by fastforce
     hence goodX'': "qGood X''"
     using alpha' alpha_qSwap_preserves_qGood by fastforce
     have good: "qGood((X #[[y \<and> x]]_xs)) \<and> qGood((X' #[[z \<and> x']]_xs))"
-    using `qGood X` goodX' qSwap_preserves_qGood by auto
+    using \<open>qGood X\<close> goodX' qSwap_preserves_qGood by auto
     (* *)   
     obtain u where u_not: "u \<notin> {x,x',x'',y,z}" and
              u_fresh: "qAFresh xs u X \<and> qAFresh xs u X' \<and> qAFresh xs u X''"
-    using `qGood X` goodX' goodX''  
+    using \<open>qGood X\<close> goodX' goodX''  
     using obtain_qFresh[of "{x,x',x'',y,z}" "{X, X', X''}"] by auto
     (*  *)
     {have "(X #[[u \<and> x]]_xs) = ((X #[[y \<and> x]]_xs) #[[u \<and> y]]_xs)"
@@ -1023,7 +1023,7 @@ assumes ALPHA: "X #= X'" and GOOD: "qGoodAbs(qAbs xs x X) \<or> qGoodAbs (qAbs x
 shows "qAbs xs x X $= qAbs xs x X'"
 using assms by (intro qAbs_preserves_alpha) auto
 
-subsubsection {* Picking fresh representatives *}
+subsubsection \<open>Picking fresh representatives\<close>
 
 lemma qAbs_alphaAbs_qSwap_qAFresh:
 assumes GOOD: "qGood X" and FRESH: "qAFresh ys x' X"
@@ -1054,7 +1054,7 @@ proof-
   using assms 1 qAbs_alphaAbs_qSwap_qAFresh by fastforce
 qed
 
-subsection {* Properties of swapping and freshness modulo alpha  *}
+subsection \<open>Properties of swapping and freshness modulo alpha\<close>
 
 lemma qFreshAll_imp_ex_qAFreshAll:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -1098,11 +1098,11 @@ next
     assume *: "\<forall>z\<in>V. \<forall>zs\<in>fZs z. qFreshAbs zs z (qAbs xs x X)"
     obtain y where y_not_x: "y \<noteq> x" and y_not_V: "y \<notin> V"
     and y_afresh: "qAFresh xs y X"
-    using FIN `qGood X` obtain_qFresh[of "V \<union> {x}" "{X}"] by auto
+    using FIN \<open>qGood X\<close> obtain_qFresh[of "V \<union> {x}" "{X}"] by auto
     hence y_fresh: "qFresh xs y X" using qAFresh_imp_qFresh by fastforce
     obtain Y where Y_def: "Y = (X #[[y \<and> x ]]_xs)" by blast
     have alphaXY: "qAbs xs x X $= qAbs xs y Y"
-    using `qGood X` y_afresh qAbs_alphaAbs_qSwap_qAFresh unfolding Y_def by fastforce
+    using \<open>qGood X\<close> y_afresh qAbs_alphaAbs_qSwap_qAFresh unfolding Y_def by fastforce
     have "\<forall>z\<in>V. \<forall>zs \<in> fZs z. qFresh zs z Y"
     unfolding Y_def 
     by (metis * not_equals_and_not_equals_not_in qAFresh_imp_qFresh qAFresh_qSwap_exchange1 
@@ -1110,9 +1110,9 @@ next
     moreover have "(X,Y) \<in> qSwapped" unfolding Y_def by(simp add: qSwap_qSwapped)
     ultimately obtain Y' where "Y #= Y'" and **: "\<forall>z\<in>V. \<forall>zs \<in> fZs z. qAFresh zs z Y'"
     using Abs.IH by blast
-    moreover have "qGood Y" unfolding Y_def using  `qGood X` qSwap_preserves_qGood by auto
+    moreover have "qGood Y" unfolding Y_def using  \<open>qGood X\<close> qSwap_preserves_qGood by auto
     ultimately have "qAbs xs y Y $= qAbs xs y Y'" using qAbs_preserves_alpha by blast
-    moreover have "qGoodAbs(qAbs xs x X)" using  `qGood X` by simp
+    moreover have "qGoodAbs(qAbs xs x X)" using  \<open>qGood X\<close> by simp
     ultimately have "qAbs xs x X $= qAbs xs y Y'" using alphaXY alphaAbs_trans by blast
     moreover have "\<forall>z\<in>V. \<forall>zs \<in> fZs z. qAFreshAbs zs z (qAbs xs y Y')" using ** y_not_V by auto
     ultimately show "\<exists>A'. qAbs xs x X $= A' \<and> (\<forall>z\<in>V. \<forall>zs \<in> fZs z. qAFreshAbs zs z A')"
@@ -1203,11 +1203,11 @@ next
     alpha: "(X #[[y \<and> x]]_xs) #= (X' #[[y \<and> x']]_xs)"
     unfolding qAbs_alphaAbs_iff by auto
     (*  *)
-    have goodXxy: "qGood(X #[[y \<and> x]]_xs)" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXxy: "qGood(X #[[y \<and> x]]_xs)" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     hence goodX'yx': "qGood(X' #[[y \<and> x']]_xs)" using alpha alpha_preserves_qGood by auto
     hence "qGood X'" using qSwap_preserves_qGood by auto
     then obtain u where u_afresh: "qAFresh xs u X \<and> qAFresh xs u X'"
-    and unot: "u \<notin> {x,x',z}" using `qGood X` obtain_qFresh[of "{x,x',z}" "{X,X'}"] by auto
+    and unot: "u \<notin> {x,x',z}" using \<open>qGood X\<close> obtain_qFresh[of "{x,x',z}" "{X,X'}"] by auto
     (* *)
     have "(X #[[u \<and> x]]_xs) = ((X #[[y \<and> x]]_xs) #[[u \<and> y]]_xs) \<and>
           (X' #[[u \<and> x']]_xs) = ((X' #[[y \<and> x']]_xs) #[[u \<and> y]]_xs)"
@@ -1332,13 +1332,13 @@ proof-
   using assms 1 2 qAbs_alphaAbs_qSwap_qFresh by fastforce
 qed
    
-subsection {* Alternative statements of the alpha-clause for bound arguments  *}
+subsection \<open>Alternative statements of the alpha-clause for bound arguments\<close>
 
-text{* These alternatives are essentially variations with forall/exists and and qFresh/qAFresh. *}
+text\<open>These alternatives are essentially variations with forall/exists and and qFresh/qAFresh.\<close>
 
 (* FIXME: In this subsection I may have proved quite a few useless things. *)
 
-subsubsection {* First for ``qAFresh"  *}
+subsubsection \<open>First for ``qAFresh"\<close>
 
 definition alphaAbs_ex_equal_or_qAFresh
 where
@@ -1715,7 +1715,7 @@ proof-
   thus ?thesis unfolding alphaAbs_all_distinct_qAFresh_def .
 qed
 
-subsubsection{* Then for ``qFresh" *}
+subsubsection\<open>Then for ``qFresh"\<close>
 
 definition alphaAbs_ex_equal_or_qFresh
 where

@@ -251,7 +251,7 @@ proof -
     using delay_def by simp
   moreover have "\<And>y. ?P y \<Longrightarrow> y \<le> e_length x" by simp
   ultimately have "?P (Greatest ?P)"
-    using `\<exists>j. ?P j` GreatestI_ex_nat[where ?P="?P"] by blast
+    using \<open>\<exists>j. ?P j\<close> GreatestI_ex_nat[where ?P="?P"] by blast
   then have "the (eval r_result1 [e_length x, i, e_take (Suc (Greatest ?P)) x]) > 0"
     by simp
   then have "the (eval r_result1 [e_length x, i, e_take (the (delay i x)) x]) > 0"
@@ -277,7 +277,7 @@ proof -
     obtain v where v: "?w \<down>= Suc v"
       using t assms(2) r_result1_bivalent_phi by fastforce
     have "eval r_result1 [Suc ?m, i, f \<triangleright> n] = ?w"
-      using v t r_result1_saturating' `Suc ?m \<ge> t` le_Suc_ex by fastforce
+      using v t r_result1_saturating' \<open>Suc ?m \<ge> t\<close> le_Suc_ex by fastforce
     then show ?thesis using t by simp
   qed
   let ?x = "f \<triangleright> ?m"
@@ -290,10 +290,10 @@ proof -
     ultimately have "?P n"
       using m by simp
     have "\<And>y. ?P y \<Longrightarrow> y \<le> e_length ?x" by simp
-    with `?P n` have "n \<le> (Greatest ?P)"
+    with \<open>?P n\<close> have "n \<le> (Greatest ?P)"
       using Greatest_le_nat[of ?P n "e_length ?x"] by simp
     moreover have "the (delay i ?x) = Suc (Greatest ?P)"
-      using delay_def `?P n` by auto
+      using delay_def \<open>?P n\<close> by auto
     ultimately show ?thesis by simp
   qed
   then show ?thesis by auto
@@ -329,7 +329,7 @@ next
   then have d2: "the (delay i ?x2) = Suc (Greatest ?P2)"
     using delay_def by auto
   have "\<And>y. ?P2 y \<Longrightarrow> y \<le> e_length ?x2" by simp
-  with `?P2 ?j` have "?j \<le> (Greatest ?P2)" using Greatest_le_nat[of ?P2] by blast
+  with \<open>?P2 ?j\<close> have "?j \<le> (Greatest ?P2)" using Greatest_le_nat[of ?P2] by blast
   with d1 d2 show ?thesis by simp
 qed
 
@@ -431,14 +431,14 @@ proof (rule learn_limI)
     from assms learn_limE obtain j n\<^sub>0 where
       j: "\<psi> j = f" and
       n0: "\<forall>n\<ge>n\<^sub>0. (\<phi> i) (f \<triangleright> n) \<down>= j"
-      using `f \<in> U` by metis
+      using \<open>f \<in> U\<close> by metis
     obtain m\<^sub>0 where m0: "\<forall>m\<ge>m\<^sub>0. the (delay i (f \<triangleright> m)) > n\<^sub>0"
-      using delay_unbounded_monotone `f \<in> \<R>` \<open>f \<in> U\<close> assms learn_limE(1)
+      using delay_unbounded_monotone \<open>f \<in> \<R>\<close> \<open>f \<in> U\<close> assms learn_limE(1)
       by blast
     then have "\<forall>m\<ge>m\<^sub>0. totalizer d i (f \<triangleright> m) = \<phi> i (e_take (the (delay i (f \<triangleright> m))) (f \<triangleright> m))"
       using totalizer_def by auto
     then have "\<forall>m\<ge>m\<^sub>0. totalizer d i (f \<triangleright> m) = \<phi> i (f \<triangleright> (the (delay i (f \<triangleright> m)) - 1))"
-      using e_take_delay_init m0 `f \<in> \<R>` by auto
+      using e_take_delay_init m0 \<open>f \<in> \<R>\<close> by auto
     with m0 n0 have "\<forall>m\<ge>m\<^sub>0. totalizer d i (f \<triangleright> m) \<down>= j"
       by auto
     with j show ?thesis by auto
@@ -493,7 +493,7 @@ proof -
   then obtain g where "?P g" by auto
   then obtain g' where g': "recfn 1 g'" "total g'" "\<forall>i. eval g' [i] = g i"
     by blast
-  with `?P g` have "?Q g'" by simp
+  with \<open>?P g\<close> have "?Q g'" by simp
   with r_limr_def someI_ex[of ?Q] show
     "recfn 1 r_limr"
     "total r_limr"
@@ -516,14 +516,14 @@ proof (rule learn_bcI)
     have "f \<in> \<R>"
       using assms env that by auto
     obtain n\<^sub>0 where n0: "\<forall>n\<ge>n\<^sub>0. \<psi> (the ((\<phi> i) (f \<triangleright> n))) = f"
-      using assms learn_bcE `f \<in> U` by metis
+      using assms learn_bcE \<open>f \<in> U\<close> by metis
     obtain m\<^sub>0 where m0: "\<forall>m\<ge>m\<^sub>0. the (delay i (f \<triangleright> m)) > n\<^sub>0"
-      using delay_unbounded_monotone `f \<in> \<R>` \<open>f \<in> U\<close> assms learn_bcE(1)
+      using delay_unbounded_monotone \<open>f \<in> \<R>\<close> \<open>f \<in> U\<close> assms learn_bcE(1)
       by blast
     then have "\<forall>m\<ge>m\<^sub>0. totalizer d i (f \<triangleright> m) = \<phi> i (e_take (the (delay i (f \<triangleright> m))) (f \<triangleright> m))"
       using totalizer_def by auto
     then have "\<forall>m\<ge>m\<^sub>0. totalizer d i (f \<triangleright> m) = \<phi> i (f \<triangleright> (the (delay i (f \<triangleright> m)) - 1))"
-      using e_take_delay_init m0 `f \<in> \<R>` by auto
+      using e_take_delay_init m0 \<open>f \<in> \<R>\<close> by auto
     with m0 n0 have "\<forall>m\<ge>m\<^sub>0. \<psi> (the (totalizer d i (f \<triangleright> m))) = f"
       by auto
     then show ?thesis by auto
@@ -556,7 +556,7 @@ proof (rule learn_finI)
     from assms learn_finE[of \<psi> U "\<phi> i"] obtain j where
       j: "\<psi> j = f" and
       ex_n0: "\<exists>n\<^sub>0. (\<forall>n<n\<^sub>0. (\<phi> i) (f \<triangleright> n) \<down>= 0) \<and> (\<forall>n\<ge>n\<^sub>0. (\<phi> i) (f \<triangleright> n) \<down>= Suc j)"
-      using `f \<in> U` by blast
+      using \<open>f \<in> U\<close> by blast
     let ?Q = "\<lambda>n\<^sub>0. (\<forall>n<n\<^sub>0. (\<phi> i) (f \<triangleright> n) \<down>= 0) \<and> (\<forall>n\<ge>n\<^sub>0. (\<phi> i) (f \<triangleright> n) \<down>= Suc j)"
     define n\<^sub>0 where "n\<^sub>0 = Least ?Q"
     with ex_n0 have n0: "?Q n\<^sub>0" "\<forall>n<n\<^sub>0. \<not> ?Q n"
@@ -564,14 +564,14 @@ proof (rule learn_finI)
     define m\<^sub>0 where "m\<^sub>0 = (LEAST m\<^sub>0. \<forall>m\<ge>m\<^sub>0. the (delay i (f \<triangleright> m)) > n\<^sub>0)"
       (is "m\<^sub>0 = Least ?P")
     moreover have "\<exists>m\<^sub>0. \<forall>m\<ge>m\<^sub>0. the (delay i (f \<triangleright> m)) > n\<^sub>0"
-      using delay_unbounded_monotone `f\<in>\<R>` \<open>f \<in> U\<close> assms learn_finE(1)
+      using delay_unbounded_monotone \<open>f\<in>\<R>\<close> \<open>f \<in> U\<close> assms learn_finE(1)
       by simp
     ultimately have m0: "?P m\<^sub>0" "\<forall>m<m\<^sub>0. \<not> ?P m"
       using LeastI_ex[of ?P] not_less_Least[of _ ?P] by blast+
     then have "\<forall>m\<ge>m\<^sub>0. totalizer 0 i (f \<triangleright> m) = \<phi> i (e_take (the (delay i (f \<triangleright> m))) (f \<triangleright> m))"
       using totalizer_def by auto
     then have "\<forall>m\<ge>m\<^sub>0. totalizer 0 i (f \<triangleright> m) = \<phi> i (f \<triangleright> (the (delay i (f \<triangleright> m)) - 1))"
-      using e_take_delay_init m0 `f\<in>\<R>` by auto
+      using e_take_delay_init m0 \<open>f\<in>\<R>\<close> by auto
     with m0 n0 have "\<forall>m\<ge>m\<^sub>0. totalizer 0 i (f \<triangleright> m) \<down>= Suc j"
       by auto
     moreover have "totalizer 0 i (f \<triangleright> m) \<down>= 0" if "m < m\<^sub>0" for m
@@ -581,7 +581,7 @@ proof (rule learn_finI)
     next
       case False
       then have "the (delay i (f \<triangleright> m)) \<le> n\<^sub>0"
-        using m0 that `f \<in> \<R>` delay_monotone by (meson leI order.strict_trans2)
+        using m0 that \<open>f \<in> \<R>\<close> delay_monotone by (meson leI order.strict_trans2)
       then show ?thesis
         using \<open>f \<in> \<R>\<close> n0(1) totalizer_init by (simp add: Suc_le_lessD)
     qed
@@ -613,13 +613,13 @@ proof (cases "\<exists>d. \<psi> d \<in> \<R>")
     show "\<psi> (the (totalizer d i (f \<triangleright> n))) \<in> \<R>" if "f \<in> U" for f n
     proof (cases "the (delay i (f \<triangleright> n)) = 0")
       case True
-      then show ?thesis using totalizer_def `\<psi> d \<in> \<R>` by simp
+      then show ?thesis using totalizer_def \<open>\<psi> d \<in> \<R>\<close> by simp
     next
       case False
       have "f \<in> \<R>"
         using that env by auto
       then show ?thesis
-        using False that `learn_total \<psi> U (\<phi> i)` totalizer_init learn_totalE(3)
+        using False that \<open>learn_total \<psi> U (\<phi> i)\<close> totalizer_init learn_totalE(3)
         by simp
     qed
   qed
@@ -650,9 +650,9 @@ proof (cases "U = {}")
 next
   case False
   then obtain f where "f \<in> U" by auto
-  from `f \<in> U` obtain d where "\<psi> d = f"
+  from \<open>f \<in> U\<close> obtain d where "\<psi> d = f"
     using learn_cpE(2)[OF assms] by auto
-  with `f \<in> U` have "\<psi> d \<in> U" by simp
+  with \<open>f \<in> U\<close> have "\<psi> d \<in> U" by simp
   have "learn_cp \<psi> U (totalizer d i)"
   proof (rule learn_cpI)
     show env: "environment \<psi> U (totalizer d i)"
@@ -662,7 +662,7 @@ next
     show "\<psi> (the (totalizer d i (f \<triangleright> n))) \<in> U" if "f \<in> U" for f n
     proof (cases "the (delay i (f \<triangleright> n)) = 0")
       case True
-      then show ?thesis using totalizer_def `\<psi> d \<in> U` by simp
+      then show ?thesis using totalizer_def \<open>\<psi> d \<in> U\<close> by simp
     next
       case False
       then show ?thesis
@@ -833,22 +833,22 @@ proof -
     (if l = 0 then j
      else if s (e_snoc v 0) \<noteq> s v then 0
      else if s (e_snoc v 1) \<noteq> s v then 1 else z)"
-    using `recfn 4 app` by auto
+    using \<open>recfn 4 app\<close> by auto
   from g_def have "recfn 4 g" "total g"
-    using `recfn 4 app` `total app` Cn_total Mn_free_imp_total by auto
+    using \<open>recfn 4 app\<close> \<open>total app\<close> Cn_total Mn_free_imp_total by auto
 
   define b where "b = Pr 2 f g"
   then have "recfn 3 b"
-    using `recfn 2 f` `recfn 4 g` by simp
+    using \<open>recfn 2 f\<close> \<open>recfn 4 g\<close> by simp
   have b: "eval b [x, i, j] \<down>= list_encode (prefixes z i j x)" for x i j
   proof (induction x)
     case 0
     then show ?case
-      unfolding b_def using f `recfn 2 f` \<open>recfn 4 g\<close> by simp
+      unfolding b_def using f \<open>recfn 2 f\<close> \<open>recfn 4 g\<close> by simp
   next
     case (Suc x)
     then have "eval b [Suc x, i, j] = eval g [x, the (eval b [x, i, j]), i, j]"
-      using b_def `recfn 3 b` by simp
+      using b_def \<open>recfn 3 b\<close> by simp
     also have "... \<down>=
      (let v = list_encode (prefixes z i j x)
       in e_snoc v
@@ -868,20 +868,20 @@ proof -
 
   define b' where "b' = Cn 3 b [Id 3 2, Id 3 0, Id 3 1]"
   then have "recfn 3 b'"
-    using `recfn 3 b` by simp
+    using \<open>recfn 3 b\<close> by simp
   with b have b': "\<And>i j x. eval b' [i, j, x] \<down>= list_encode (prefixes z i j x)"
     using b'_def by simp
 
   define r where "r = Cn 3 r_last [b']"
   then have "recfn 3 r"
-    using `recfn 3 b'` by simp
+    using \<open>recfn 3 b'\<close> by simp
   with b' have "\<And>i j x. eval r [i, j, x] \<down>= last (prefixes z i j x)"
     using r_def prefixes_length by auto
   moreover from this have "total r"
-    using totalI3 `recfn 3 r` by simp
+    using totalI3 \<open>recfn 3 r\<close> by simp
   ultimately have "(\<lambda>i j x. eval r [i, j, x]) = adverse z"
     unfolding adverse_def by simp
-  with `recfn 3 r` `total r` show ?thesis by auto
+  with \<open>recfn 3 r\<close> \<open>total r\<close> show ?thesis by auto
 qed
 
 lemma adverse_in_R1: "adverse z i j \<in> \<R>"
@@ -896,7 +896,7 @@ proof -
     using r(1) by auto
   with r(3) have "\<And>x. eval rij [x] = adverse z i j x"
     by metis
-  with `recfn 1 rij` `total rij` show ?thesis by auto
+  with \<open>recfn 1 rij\<close> \<open>total rij\<close> show ?thesis by auto
 qed
 
 text \<open>Next we show that for every $z$ there are $i$, $j$ such that
@@ -913,7 +913,7 @@ proof -
   then have "recfn 2 rf" and "total rf"
     using Mn_free_imp_total by simp_all
   define f where "f \<equiv> \<lambda>i j. eval rf [i, j]"
-  with `recfn 2 rf` `total rf` have "f \<in> \<R>\<^sup>2" by auto
+  with \<open>recfn 2 rf\<close> \<open>total rf\<close> have "f \<in> \<R>\<^sup>2" by auto
   have rf: "eval rf [i, j] = eval (r_smn 1 2) [?p, i, j]" for i j
     unfolding rf_def by simp
   {
@@ -934,7 +934,7 @@ proof -
       using r(3) by metis
     finally have "\<phi> (the (f i j)) x = adverse z i j x" .
   }
-  with `f \<in> \<R>\<^sup>2` show ?thesis by blast
+  with \<open>f \<in> \<R>\<^sup>2\<close> show ?thesis by blast
 qed
 
 text \<open>The second, and final, step is to apply Smullyan's double
@@ -1567,13 +1567,13 @@ proof -
   have ph: "eval ph [j, v, i, e] = \<phi> i j" for j v
     unfolding ph_def using phi_def by simp
   have "recfn 4 g"
-    unfolding g_def using `recfn 4 nth` `recfn 4 ph` `recfn 4 len` by simp
+    unfolding g_def using \<open>recfn 4 nth\<close> \<open>recfn 4 ph\<close> \<open>recfn 4 len\<close> by simp
   have g_diverg: "eval g [j, v, i, e] \<up>" if "eval ph [j, v, i, e] \<up>" for j v
-    unfolding g_def using that `recfn 4 nth` `recfn 4 ph` `recfn 4 len` by simp
+    unfolding g_def using that \<open>recfn 4 nth\<close> \<open>recfn 4 ph\<close> \<open>recfn 4 len\<close> by simp
   have g_converg: "eval g [j, v, i, e] \<down>=
       (if v < e_length e then v else if \<phi> i j \<down>= e_nth e j then v else j)"
       if "eval ph [j, v, i, e] \<down>" for j v
-    unfolding g_def using that `recfn 4 nth` `recfn 4 ph` `recfn 4 len` len nth ph
+    unfolding g_def using that \<open>recfn 4 nth\<close> \<open>recfn 4 ph\<close> \<open>recfn 4 len\<close> len nth ph
     by auto
   define h where "h \<equiv> Pr 2 f g"
   then have "recfn 3 h"
@@ -1589,7 +1589,7 @@ proof -
     using that
   proof (induction j)
     case 0
-    then show ?case unfolding h_def using `recfn 2 f` f `recfn 4 g` by simp
+    then show ?case unfolding h_def using \<open>recfn 2 f\<close> f \<open>recfn 4 g\<close> by simp
   next
     case (Suc j)
     then have j_less: "j < e_length e" by simp
@@ -1602,7 +1602,7 @@ proof -
       then have "\<exists>x<Suc j. \<phi> i x \<up>"
         using less_SucI by blast
       moreover have h: "eval h [Suc j, i, e] \<up>"
-        using True h_def `recfn 3 h` by simp
+        using True h_def \<open>recfn 3 h\<close> by simp
       ultimately show ?thesis by simp
     next
       case False
@@ -1618,7 +1618,7 @@ proof -
          (is "_ = ?v")
         by auto
       have h_Suc: "eval h [Suc j, i, e] = eval g [j, the (eval h [j, i, e]), i, e]"
-        using False h_def `recfn 4 g` `recfn 2 f` by auto
+        using False h_def \<open>recfn 4 g\<close> \<open>recfn 2 f\<close> by auto
       show ?thesis
       proof (cases "\<phi> i j \<up>")
         case True
@@ -1675,7 +1675,7 @@ proof -
             ultimately show ?thesis by simp
           next case False
             then have "\<phi> i j \<down>\<noteq> e_nth e j"
-              using `\<phi> i j \<down>` by simp
+              using \<open>\<phi> i j \<down>\<close> by simp
             with not_ex have "(LEAST x. x<Suc j \<and> \<phi> i x \<down>\<noteq> e_nth e x) = j"
               using LeastI[of "\<lambda>x. x<Suc j \<and> \<phi> i x \<down>\<noteq> e_nth e x" j] less_Suc_eq
               by blast
@@ -1695,7 +1695,7 @@ proof -
     using inconsist_def by simp
   moreover have "eval (Cn 2 (Pr 2 f g) [Cn 2 r_length [Id 2 1], Id 2 0, Id 2 1]) [i, e] =
       eval h [e_length e, i, e]"
-    using `recfn 4 g` `recfn 2 f` h_def by auto
+    using \<open>recfn 4 g\<close> \<open>recfn 2 f\<close> h_def by auto
   ultimately show ?thesis
     unfolding r_inconsist_def by (simp add: f_def g_def len_def nth_def ph_def)
 qed
@@ -1840,7 +1840,7 @@ proof -
   have "eval (Cn 1 r_eq [r_length, r_const 1]) [f \<triangleright> 0] \<down>= 0"
     by simp
   then have "eval r_sv01 [f \<triangleright> 0] = eval r_auxhyp [f \<triangleright> 0]"
-    unfolding r_sv01_def using `recfn 1 g` c_def g_def m_def p_def r_auxhyp_prim
+    unfolding r_sv01_def using \<open>recfn 1 g\<close> c_def g_def m_def p_def r_auxhyp_prim
     by (auto simp add: Let_def)
   then show "s\<^bsub>01\<^esub> (f \<triangleright> 0) = auxhyp (f \<triangleright> 0)"
     by (simp add: auxhyp_def sv01_def)
@@ -1851,7 +1851,7 @@ proof -
       (is "?r_eq \<down>\<noteq> 0")
       using that by simp
     moreover have "recfn 2 (r_lifz r_auxhyp g)"
-      using `recfn 1 g` r_auxhyp_prim by simp
+      using \<open>recfn 1 g\<close> r_auxhyp_prim by simp
     moreover have "eval r_sv01 [f \<triangleright> n] =
         eval (Cn 1 (r_lifz r_auxhyp g) [Cn 1 r_eq [r_length, r_const 1], Id 1 0]) [f \<triangleright> n]"
       using r_sv01_def by (metis at0_def at1_def c_def g_def m_def p_def)
@@ -1878,35 +1878,35 @@ proof -
     using at0 at1 amalgamate r_amalgamate r_amalgamate_recfn by simp
   then have c: "n \<noteq> 0 \<Longrightarrow> eval c [f \<triangleright> n] = inconsist (amalg01 f) (f \<triangleright> n)"
       (is "_ \<Longrightarrow> _ = ?c")
-    unfolding c_def using r_inconsist_recfn `recfn 1 m` r_inconsist by auto
+    unfolding c_def using r_inconsist_recfn \<open>recfn 1 m\<close> r_inconsist by auto
   then have c_converg: "n \<noteq> 0 \<Longrightarrow> eval c [f \<triangleright> n] \<down>"
     using inconsist_for_V01[OF assms] by simp
   have "recfn 1 c"
-    unfolding c_def using `recfn 1 m` r_inconsist_recfn by simp
+    unfolding c_def using \<open>recfn 1 m\<close> r_inconsist_recfn by simp
 
   have par: "n \<noteq> 0 \<Longrightarrow>
       eval (Cn 1 r_parallel [at0, at1, c]) [f \<triangleright> n] = parallel (the (f 0)) (the (f 1)) (the ?c)"
       (is "_ \<Longrightarrow> _ = ?par")
-    using at0 at1 c c_converg m r_parallel' `recfn 1 at0` `recfn 1 at1` `recfn 1 c`
+    using at0 at1 c c_converg m r_parallel' \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 c\<close>
     by simp
   with parallel_converg_V01[OF assms] have
       par_converg: "n \<noteq> 0 \<Longrightarrow> eval (Cn 1 r_parallel [at0, at1, c]) [f \<triangleright> n] \<down>"
     by simp
   then have p_converg: "n \<noteq> 0 \<Longrightarrow> eval p [f \<triangleright> n] \<down>"
-    unfolding p_def using at0 at1 c_converg `recfn 1 at0` `recfn 1 at1` `recfn 1 c`
+    unfolding p_def using at0 at1 c_converg \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 c\<close>
     by simp
   have p: "n \<noteq> 0 \<Longrightarrow> eval p [f \<triangleright> n] \<down>= pdec1 (the ?par)"
     unfolding p_def
-    using at0 at1 c_converg `recfn 1 at0` `recfn 1 at1` `recfn 1 c` par par_converg
+    using at0 at1 c_converg \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 c\<close> par par_converg
     by simp
   have "recfn 1 p"
-    unfolding p_def using `recfn 1 at0` `recfn 1 at1` `recfn 1 m` `recfn 1 c`
+    unfolding p_def using \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 m\<close> \<open>recfn 1 c\<close>
     by simp
 
   let ?r = "Cn 1 r_ifz [p, at1, at0]"
   have r: "n \<noteq> 0 \<Longrightarrow> eval ?r [f \<triangleright> n] = (if pdec1 (the ?par) = 0 then f 1 else f 0)"
-    using at0 at1 c_converg `recfn 1 at0` `recfn 1 at1` `recfn 1 c`
-      `recfn 1 m` `recfn 1 p` p f_total
+    using at0 at1 c_converg \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 c\<close>
+      \<open>recfn 1 m\<close> \<open>recfn 1 p\<close> p f_total
     by fastforce
 
   have g: "n \<noteq> 0 \<Longrightarrow>
@@ -1914,7 +1914,7 @@ proof -
         (if the ?c = e_length (f \<triangleright> n)
          then ?m else the (eval (Cn 1 r_ifz [p, at1, at0]) [f \<triangleright> n]))"
     unfolding g_def
-    using `recfn 1 p` `recfn 1 at0` `recfn 1 at1` `recfn 1 c` `recfn 1 m`
+    using \<open>recfn 1 p\<close> \<open>recfn 1 at0\<close> \<open>recfn 1 at1\<close> \<open>recfn 1 c\<close> \<open>recfn 1 m\<close>
       p_converg at1 at0 c c_converg m
     by simp
   {
@@ -1922,17 +1922,17 @@ proof -
     moreover have "e_length (f \<triangleright> n) = Suc n" by simp
     ultimately have "eval g [f \<triangleright> n] \<down>= ?m" using g by simp
     then show "s\<^bsub>01\<^esub> (f \<triangleright> n) \<down>= amalg01 f"
-      using sv01[OF `n \<noteq> 0`] by simp
+      using sv01[OF \<open>n \<noteq> 0\<close>] by simp
   next
     assume "n \<noteq> 0" and "the ?c < Suc n" and "pdec1 (the ?par) = 0"
     with g r f_total have "eval g [f \<triangleright> n] = f 1" by simp
     then show "s\<^bsub>01\<^esub> (f \<triangleright> n) = f 1"
-      using sv01[OF `n \<noteq> 0`] by simp
+      using sv01[OF \<open>n \<noteq> 0\<close>] by simp
   next
     assume "n \<noteq> 0" and "the ?c < Suc n" and "pdec1 (the ?par) \<noteq> 0"
     with g r f_total have "eval g [f \<triangleright> n] = f 0" by simp
     then show "s\<^bsub>01\<^esub> (f \<triangleright> n) = f 0"
-      using sv01[OF `n \<noteq> 0`] by simp
+      using sv01[OF \<open>n \<noteq> 0\<close>] by simp
   }
 qed
 
@@ -2062,7 +2062,7 @@ next
     using \<open>f \<in> V\<^sub>0\<^sub>1\<close> sv01_converg_V01 by blast
   then have *: "the (inconsist (amalg01 f) (f \<triangleright> n\<^sub>0)) < Suc n\<^sub>0"
       (is "the (inconsist ?m (f \<triangleright> n\<^sub>0)) < Suc n\<^sub>0")
-    using assms `n\<^sub>0 \<noteq> 0` sv01(2) inconsist_bounded inconsist_for_V01 length_init
+    using assms \<open>n\<^sub>0 \<noteq> 0\<close> sv01(2) inconsist_bounded inconsist_for_V01 length_init
     by (metis (no_types, lifting) le_neq_implies_less option.collapse option.simps(3))
   moreover have "f \<in> \<R>"
     using assms V01_def by auto
@@ -2080,7 +2080,7 @@ next
     for m
     using ** by auto
   moreover have "n\<^sub>0 + m \<noteq> 0" for m
-    using `n\<^sub>0 \<noteq> 0` by simp
+    using \<open>n\<^sub>0 \<noteq> 0\<close> by simp
   ultimately have "s\<^bsub>01\<^esub> (f \<triangleright> (n\<^sub>0 + m)) = s\<^bsub>01\<^esub> (f \<triangleright> n\<^sub>0)" for m
     using assms sv01 * \<open>n\<^sub>0 \<noteq> 0\<close> by (metis add_Suc)
   moreover define i where "i = s\<^bsub>01\<^esub> (f \<triangleright> n\<^sub>0)"

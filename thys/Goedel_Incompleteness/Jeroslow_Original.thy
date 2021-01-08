@@ -327,7 +327,7 @@ proof
   apply(nrule r: nprv_addLemmaE[OF 6])
   apply(nrule r: nprv_addImpLemmaE[OF lem]) .
 
-  from this *** `consistent` show False unfolding consistent_def3 by auto
+  from this *** \<open>consistent\<close> show False unfolding consistent_def3 by auto
 qed
 
 end \<comment> \<open>context @{locale Jeroslow_Godel_Second}\<close>

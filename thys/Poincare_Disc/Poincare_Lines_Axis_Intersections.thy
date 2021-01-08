@@ -175,7 +175,7 @@ lemma intersects_x_axis_mk_circline:
 proof-
   let ?H = "(A, B, (cnj B),  A)"
   have "hermitean ?H"                
-    using `is_real A` 
+    using \<open>is_real A\<close> 
     unfolding hermitean_def mat_adj_def mat_cnj_def
     using eq_cnj_iff_real 
     by auto
@@ -663,7 +663,7 @@ lemma intersects_x_axis_positive_mk_circline:
 proof-
   let ?H = "(A, B, (cnj B),  A)"
   have "hermitean ?H" 
-    using `is_real A` 
+    using \<open>is_real A\<close> 
     unfolding hermitean_def mat_adj_def mat_cnj_def
     using eq_cnj_iff_real 
     by auto
@@ -959,7 +959,7 @@ proof-
   let ?H1 = "(A1, B1, (cnj B1),  A1)"
   let ?H2 = "(A2, B2, (cnj B2),  A2)"
   have "hermitean ?H1" "hermitean ?H2"
-    using `is_real A1` `is_real A2`
+    using \<open>is_real A1\<close> \<open>is_real A2\<close>
     unfolding hermitean_def mat_adj_def mat_cnj_def
     using eq_cnj_iff_real 
     by auto
@@ -1167,17 +1167,17 @@ proof-
       using i1 i2 H line
       by (auto split: if_split_asm)
     hence i: "i11 = ?i1 \<and> i21 = ?i2 \<or> i11 = ?i2 \<and> i21 = ?i1"
-      using `\<not> i1 \<approx>\<^sub>v i2` i1 i2
+      using \<open>\<not> i1 \<approx>\<^sub>v i2\<close> i1 i2
       by auto
 
     have "Im (i11 / i12) * Im (i21 / i22) = Im (?i1 / ?den) * Im (?i2 / ?den)"
-      using i `i12 = ?den` `i22 = ?den`
+      using i \<open>i12 = ?den\<close> \<open>i22 = ?den\<close>
       by auto
     also have "... = Im (?i1) * Im (?i2) / ?den\<^sup>2"
       by simp
     also have "... = (Im B * (Im B * (Re D * Re D)) - Re B * (Re B * ((cmod B)\<^sup>2 - (Re D)\<^sup>2))) / cmod B ^ 4"
-      using `(cmod B)\<^sup>2 > (cmod A)\<^sup>2` `A = D`
-      using `is_real D` cmod_eq_Re[of A]
+      using \<open>(cmod B)\<^sup>2 > (cmod A)\<^sup>2\<close> \<open>A = D\<close>
+      using \<open>is_real D\<close> cmod_eq_Re[of A]
       by (auto simp add: field_simps)
     also have "... = ((Im B)\<^sup>2 * (Re D)\<^sup>2 - (Re B)\<^sup>2 * ((Re B)\<^sup>2 + (Im B)\<^sup>2 - (Re D)\<^sup>2)) / cmod B ^ 4"
     proof-
@@ -1204,7 +1204,7 @@ proof-
         hence "(Re D)\<^sup>2 < (Re B)\<^sup>2"
           by (simp add: mult_less_0_iff not_sum_power2_lt_zero)
         thus ?thesis
-          using H `A = D`  `is_real D`
+          using H \<open>A = D\<close>  \<open>is_real D\<close>
           by auto
       qed
     next
@@ -1213,10 +1213,10 @@ proof-
         using divide_cancel_left by fastforce
       assume "intersects_x_axis_cmat H"
       hence "Re D = 0 \<or> (Re D)\<^sup>2 < (Re B)\<^sup>2"
-        using H `A = D`
+        using H \<open>A = D\<close>
         by auto
       hence "(Re D)\<^sup>2 < (Re B)\<^sup>2" 
-        using `is_real D` line  H `C = cnj B`
+        using \<open>is_real D\<close> line  H \<open>C = cnj B\<close>
         using not_x_axis *
         by (auto simp add: complex_eq_iff)
       hence "((Re D)\<^sup>2 - (Re B)\<^sup>2) * ((Re B)\<^sup>2 + (Im B)\<^sup>2) < 0"
@@ -1228,7 +1228,7 @@ proof-
     qed
   qed
   thus ?thesis
-    using assms `calc_ideal_points H = {i1, i2}` `i1 \<noteq> i2`
+    using assms \<open>calc_ideal_points H = {i1, i2}\<close> \<open>i1 \<noteq> i2\<close>
     by auto
 qed
 

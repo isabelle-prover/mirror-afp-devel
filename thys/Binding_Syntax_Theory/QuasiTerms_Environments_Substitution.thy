@@ -1,13 +1,13 @@
-section {* Environments and Substitution for Quasi-Terms  *}
+section \<open>Environments and Substitution for Quasi-Terms\<close>
 
 theory QuasiTerms_Environments_Substitution
 imports QuasiTerms_PickFresh_Alpha
 begin
 
-text{* Inside this theory, since anyway all the interesting properties hold only
-modulo alpha, we forget completely about qAFresh and use only qFresh. *}
+text\<open>Inside this theory, since anyway all the interesting properties hold only
+modulo alpha, we forget completely about qAFresh and use only qFresh.\<close>
 
-text{* In this section we define, for quasi-terms, parallel substitution according to
+text\<open>In this section we define, for quasi-terms, parallel substitution according to
 {\em environments}.
 This is the most general kind of substitution -- an environment, i.e., a partial
 map from variables
@@ -22,9 +22,9 @@ unlike swapping, substitution does not behave well w.r.t. quasi-terms
 here we prove the minimum amount of properties required for properly lifting
 parallel substitution to terms. Then compositionality properties
 of parallel substitution will be proved directly for terms.
-*}
+\<close>
 
-subsection {* Environments   *}
+subsection \<open>Environments\<close>
 
 type_synonym ('index,'bindex,'varSort,'var,'opSym)qEnv =
       "'varSort \<Rightarrow> 'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qTerm option"
@@ -191,7 +191,7 @@ shows
 apply(rule exI[of _ "pickQFreshEnv xs V XS Rho"])
 using assms by(rule pickQFreshEnv)
 
-subsection {* Parallel substitution *}
+subsection \<open>Parallel substitution\<close>
 
 (* I shall prove only a *minimal* collection of facts for quasi-
 [parallel substitution], just enough
@@ -337,9 +337,9 @@ lemma qPsubstAbs_preserves_qFreshAbs:
  \<Longrightarrow> qFreshAbs zs z (A $[[rho]])"
 by(simp add: qPsubstAll_preserves_qFreshAll)
 
-text{* While in general we try to avoid proving facts in parallel,
+text\<open>While in general we try to avoid proving facts in parallel,
    here we seem to have no choice -- it is the first time we must use mutual 
-induction:  *}
+induction:\<close>
 
 lemma qPsubstAll_preserves_alphaAll_qSwapAll:
 fixes X::"('index,'bindex,'varSort,'var,'opSym)qTerm" and
@@ -417,33 +417,33 @@ next
     fix B
     assume alpha_xXB: "qAbs xs x X $= B"
     then obtain y Y where B: "B = qAbs xs y Y" unfolding qAbs_alphaAbs_iff by auto  
-    have "qGoodAbs B" using `qGood X` alpha_xXB alphaAbs_preserves_qGoodAbs by force
+    have "qGoodAbs B" using \<open>qGood X\<close> alpha_xXB alphaAbs_preserves_qGoodAbs by force
     hence goodY: "qGood Y" unfolding B by simp
     let ?x' = "pickQFreshEnv xs {x} {X} {rho}"
     let ?y' = "pickQFreshEnv xs {y} {Y} {rho}"
     obtain x' and y' where x'y'_def: "x' = ?x'" "y' = ?y'" and
            x'y'_rev: "?x' = x'" "?y' = y'" by blast
     have x'y'_freshXY: "qFresh xs x' X \<and> qFresh xs y' Y"
-    unfolding x'y'_def using `qGood X` goodY goodRho by (auto simp add: pickQFreshEnv)
+    unfolding x'y'_def using \<open>qGood X\<close> goodY goodRho by (auto simp add: pickQFreshEnv)
     have x'y'_fresh_rho: "qFreshEnv xs x' rho \<and> qFreshEnv xs y' rho"
-    unfolding x'y'_def using `qGood X` goodY goodRho by (auto simp add: pickQFreshEnv)
+    unfolding x'y'_def using \<open>qGood X\<close> goodY goodRho by (auto simp add: pickQFreshEnv)
     have x'y'_not_xy: "x' \<noteq> x \<and> y' \<noteq> y"
-    unfolding x'y'_def using `qGood X` goodY goodRho
+    unfolding x'y'_def using \<open>qGood X\<close> goodY goodRho
     using pickQFreshEnv[of "{x}" "{X}"] pickQFreshEnv[of "{y}" "{Y}"] by force
-    have goodXx'x: "qGood (X #[[x' \<and> x]]_xs)" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXx'x: "qGood (X #[[x' \<and> x]]_xs)" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     hence good: "qGood(qPsubst rho (X #[[x' \<and> x]]_xs))"
     using goodRho qPsubst_preserves_qGood by auto
     have goodYy'y: "qGood (Y #[[y' \<and> y]]_xs)" using goodY qSwap_preserves_qGood by auto
     obtain z where z_not: "z \<notin> {x,y,x',y'}" and
     z_fresh_XY: "qFresh xs z X \<and> qFresh xs z Y"
-    and z_fresh_rho: "qFreshEnv xs z rho" using `qGood X` goodY goodRho
+    and z_fresh_rho: "qFreshEnv xs z rho" using \<open>qGood X\<close> goodY goodRho
     using obtain_qFreshEnv[of "{x,y,x',y'}" "{X,Y}" "{rho}"] by auto
     (* Notations: *)
     let ?Xx'x = "X #[[x' \<and> x]]_xs"   let ?Yy'y = "Y #[[y' \<and> y]]_xs"
     let ?Xx'xzx' = "?Xx'x #[[z \<and> x']]_xs" let ?Yy'yzy' = "?Yy'y #[[z \<and> y']]_xs"
     let ?Xzx = "X #[[z \<and> x]]_xs"   let ?Yzy = "Y #[[z \<and> y]]_xs"
     (* Preliminary facts: *)
-    have goodXx'x: "qGood ?Xx'x" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXx'x: "qGood ?Xx'x" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     hence goodXx'xzx': "qGood ?Xx'xzx'" using qSwap_preserves_qGood by auto
     have "qGood (?Xx'x #[[rho]])" using goodXx'x goodRho qPsubst_preserves_qGood by auto
     hence goodXx'x_rho_zx': "qGood ((?Xx'x #[[rho]]) #[[z \<and> x']]_xs)"
@@ -462,9 +462,9 @@ next
           Abs1.IH(2)[of "?Xx'x"] by (auto simp add: alpha_sym)
     moreover
     {have "?Xx'xzx' #= ?Xzx"
-     using `qGood X` x'y'_freshXY z_fresh_XY alpha_qFresh_qSwap_compose by fastforce
+     using \<open>qGood X\<close> x'y'_freshXY z_fresh_XY alpha_qFresh_qSwap_compose by fastforce
      moreover have "?Xzx #= ?Yzy" using alpha_xXB unfolding B
-     using z_fresh_XY `qGood X` goodY
+     using z_fresh_XY \<open>qGood X\<close> goodY
      by (simp only: alphaAbs_qAbs_iff_all_qFresh)
      moreover have "?Yzy #= ?Yy'yzy'" using goodY x'y'_freshXY z_fresh_XY
      by(auto simp add: alpha_qFresh_qSwap_compose alpha_sym)
@@ -498,7 +498,7 @@ next
     let ?xa = "x @xs[z1 \<and> z2]_zs"  let ?xa'' = "x'' @xs[z1 \<and> z2]_zs"
     obtain u where "u \<notin> {x,x',x'',z1,z2}" and
     u_fresh_X: "qFresh xs u X" and u_fresh_rho: "qFreshEnv xs u rho"
-    using `qGood X` goodRho using obtain_qFreshEnv[of "{x,x',x'',z1,z2}" "{X}" "{rho}"] by auto
+    using \<open>qGood X\<close> goodRho using obtain_qFreshEnv[of "{x,x',x'',z1,z2}" "{X}" "{rho}"] by auto
     hence u_not: "u \<notin> {x,x',x'',z1,z2,?xa,?xa''}" unfolding sw_def by auto
     let ?ua = "u @xs [z1 \<and> z2]_zs"
     let ?Xz1z2 = "X #[[z1 \<and> z2]]_zs"  
@@ -525,17 +525,17 @@ next
         let ?Xx''x_rho_z1z2 = "?Xx''x_rho #[[z1 \<and> z2]]_zs"
           let ?Xx''x_rho_z1z2uxa'' = "?Xx''x_rho_z1z2 #[[u \<and> ?xa'']]_xs"
     (* Facts about x', x'', ?xa, ?ua, ?xa'': *)
-    have goodXz1z2: "qGood ?Xz1z2" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXz1z2: "qGood ?Xz1z2" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     have x'x''_fresh_Xz1z2: "qFresh xs x' ?Xz1z2 \<and> qFresh xs x'' X"
-    unfolding x'x''_def using `qGood X` goodXz1z2 goodRho by (auto simp add: pickQFreshEnv)
+    unfolding x'x''_def using \<open>qGood X\<close> goodXz1z2 goodRho by (auto simp add: pickQFreshEnv)
     have x'x''_fresh_rho: "qFreshEnv xs x' rho \<and> qFreshEnv xs x'' rho"
-    unfolding x'x''_def using `qGood X` goodXz1z2 goodRho by (auto simp add: pickQFreshEnv)
+    unfolding x'x''_def using \<open>qGood X\<close> goodXz1z2 goodRho by (auto simp add: pickQFreshEnv)
     have ua_eq_u: "?ua = u" using u_not unfolding sw_def by auto
     (* Good: *)
     have goodXz1z2x'xa: "qGood ?Xz1z2x'xa" using goodXz1z2 qSwap_preserves_qGood by auto
-    have goodXux: "qGood ?Xux" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXux: "qGood ?Xux" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     hence goodXuxz1z2: "qGood ?Xuxz1z2" using qSwap_preserves_qGood by auto
-    have goodXx''x: "qGood ?Xx''x" using `qGood X` qSwap_preserves_qGood by auto
+    have goodXx''x: "qGood ?Xx''x" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
     hence goodXx''xz1z2: "qGood ?Xx''xz1z2" using qSwap_preserves_qGood by auto
     hence "qGood ?Xx''xz1z2_rho" using goodRho qPsubst_preserves_qGood by auto
     hence goodXx''xz1z2_rho: "qGood ?Xx''xz1z2_rho"
@@ -578,7 +578,7 @@ next
      using ua_eq_u qSwap_compose[of zs z1 z2 xs x u X] by(auto simp: qSwap_sym)
      moreover
      {have "?Xux #= ?Xx''xux''"
-      using `qGood X` u_fresh_X x'x''_fresh_Xz1z2
+      using \<open>qGood X\<close> u_fresh_X x'x''_fresh_Xz1z2
       by(auto simp: alpha_qFresh_qSwap_compose alpha_sym)
       hence "?Xuxz1z2 #= ?Xx''xux''z1z2"
       using goodXux by (auto simp add: qSwap_preserves_alpha)
@@ -668,15 +668,15 @@ next
   obtain x' x'' where x'x''_def: "x' = ?x'" "x'' = ?x''" and
           x'x''_rev: "?x' = x'" "?x'' = x''" by blast
   have x'x''_fresh_X: "qFresh xs x' X \<and> qFresh xs x'' X"
-  unfolding x'x''_def using `qGood X` goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
+  unfolding x'x''_def using \<open>qGood X\<close> goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
   have x'_fresh_rho': "qFreshEnv xs x' rho'"
-  unfolding x'x''_def using `qGood X` goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
+  unfolding x'x''_def using \<open>qGood X\<close> goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
   have x''_fresh_rho'': "qFreshEnv xs x'' rho''"
-  unfolding x'x''_def using `qGood X` goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
+  unfolding x'x''_def using \<open>qGood X\<close> goodRho' goodRho'' by (auto simp add: pickQFreshEnv)
   obtain u where u_not: "u \<notin> {x,x',x''}" and
   u_fresh_X: "qFresh xs u X" and
   u_fresh_rho': "qFreshEnv xs u rho'" and u_fresh_rho'': "qFreshEnv xs u rho''"
-  using `qGood X` goodRho' goodRho''
+  using \<open>qGood X\<close> goodRho' goodRho''
   using obtain_qFreshEnv[of "{x,x',x''}" "{X}" "{rho',rho''}"] by auto
   (* Preliminary facts and notations: *)
   let ?Xx'x = "X #[[x' \<and> x]]_xs"
@@ -693,15 +693,15 @@ next
     let ?Xx''x_rho'' = "?Xx''x #[[rho'']]"
       let ?Xx''x_rho''_ux'' = "?Xx''x_rho'' #[[u \<and> x'']]_xs"
   (* Good: *)
-  have goodXx'x: "qGood ?Xx'x" using `qGood X` qSwap_preserves_qGood by auto
-  hence goodXx'x_rho': "qGood ?Xx'x_rho'" using `qGood X` goodRho' qPsubst_preserves_qGood by auto
+  have goodXx'x: "qGood ?Xx'x" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
+  hence goodXx'x_rho': "qGood ?Xx'x_rho'" using \<open>qGood X\<close> goodRho' qPsubst_preserves_qGood by auto
   hence goodXx'x_rho'_ux': "qGood ?Xx'x_rho'_ux'"
-  using `qGood X` qSwap_preserves_qGood by auto
+  using \<open>qGood X\<close> qSwap_preserves_qGood by auto
   have goodXx'xux': "qGood ?Xx'xux'" using goodXx'x qSwap_preserves_qGood by auto
-  have goodXux: "qGood ?Xux" using `qGood X` qSwap_preserves_qGood by auto
-  have goodXx''x: "qGood ?Xx''x" using `qGood X` qSwap_preserves_qGood by auto
+  have goodXux: "qGood ?Xux" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
+  have goodXx''x: "qGood ?Xx''x" using \<open>qGood X\<close> qSwap_preserves_qGood by auto
   hence goodXx''x_rho'': "qGood ?Xx''x_rho''"
-  using `qGood X` goodRho'' qPsubst_preserves_qGood by auto
+  using \<open>qGood X\<close> goodRho'' qPsubst_preserves_qGood by auto
   (* Fresh: *)
   have "qFresh xs u ?Xx'x" using u_not u_fresh_X
   by(auto simp add: qSwap_preserves_qFresh_distinct)
@@ -718,14 +718,14 @@ next
   using goodRho' goodXx'x u_fresh_rho' x'_fresh_rho'
   by(auto simp: alpha_qFreshEnv_qSwap_qPsubst_commute alpha_sym)
   moreover
-  {have "?Xx'xux' #= ?Xux" using `qGood X` u_fresh_X x'x''_fresh_X
+  {have "?Xx'xux' #= ?Xux" using \<open>qGood X\<close> u_fresh_X x'x''_fresh_X
    using alpha_qFresh_qSwap_compose by fastforce
    hence "?Xx'xux'_rho' #= ?Xux_rho'" using goodXx'xux' goodRho'
    using qPsubst_preserves_alpha1 by auto
   }
   moreover have "?Xux_rho' #= ?Xux_rho''" using Xux Abs.IH by auto
   moreover
-  {have "?Xux #= ?Xx''xux''" using `qGood X` u_fresh_X x'x''_fresh_X
+  {have "?Xux #= ?Xx''xux''" using \<open>qGood X\<close> u_fresh_X x'x''_fresh_X
    by(auto simp add: alpha_qFresh_qSwap_compose alpha_sym)
    hence "?Xux_rho'' #= ?Xx''xux''_rho''" using goodXux goodRho''
    using qPsubst_preserves_alpha1 by auto

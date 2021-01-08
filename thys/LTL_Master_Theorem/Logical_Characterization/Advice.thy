@@ -328,7 +328,7 @@ next
   have "w \<Turnstile>\<^sub>n (\<phi>1 U\<^sub>n \<phi>2)[X]\<^sub>\<nu>"
     using Until_ltln.prems by simp
   then have "w \<Turnstile>\<^sub>n (\<phi>1[X]\<^sub>\<nu>) W\<^sub>n (\<phi>2[X]\<^sub>\<nu>)"
-    unfolding GF_advice.simps using `\<phi>1 U\<^sub>n \<phi>2 \<in> X` by simp
+    unfolding GF_advice.simps using \<open>\<phi>1 U\<^sub>n \<phi>2 \<in> X\<close> by simp
   then have "w \<Turnstile>\<^sub>n \<phi>1 W\<^sub>n \<phi>2"
     unfolding GF_advice.simps semantics_ltln.simps(10)
     by (metis GF_suffix Until_ltln.IH Until_ltln.prems(1))
@@ -358,7 +358,7 @@ next
   have "w \<Turnstile>\<^sub>n (\<phi>1 M\<^sub>n \<phi>2)[X]\<^sub>\<nu>"
     using StrongRelease_ltln.prems by simp
   then have "w \<Turnstile>\<^sub>n (\<phi>1[X]\<^sub>\<nu>) R\<^sub>n (\<phi>2[X]\<^sub>\<nu>)"
-    unfolding GF_advice.simps using `\<phi>1 M\<^sub>n \<phi>2 \<in> X` by simp
+    unfolding GF_advice.simps using \<open>\<phi>1 M\<^sub>n \<phi>2 \<in> X\<close> by simp
   then have "w \<Turnstile>\<^sub>n \<phi>1 R\<^sub>n \<phi>2"
     unfolding GF_advice.simps semantics_ltln.simps(9)
     by (metis GF_suffix StrongRelease_ltln.IH StrongRelease_ltln.prems(1))

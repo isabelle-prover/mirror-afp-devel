@@ -381,7 +381,7 @@ next
     from on_1 have "block i (Suc t) = e_snoc (e_update ?b ?k 1) 0"
       by (simp add: block_Suc(2))
     then show ?thesis
-      using e_hd_0 e_hd_snoc Suc length_block `?k > 0` *
+      using e_hd_0 e_hd_snoc Suc length_block \<open>?k > 0\<close> *
       by (metis e_length_update gap_Suc(2) gap_gr0 on_1)
   next
     case neither
@@ -556,7 +556,7 @@ proof -
     assume "determined i x"
     with f have "\<exists>t. eval f [t, i, x] \<down>= 0" by simp
     then have "dettime i x \<down>= (LEAST t. eval f [t, i, x] \<down>= 0)"
-      using `total f` `r_dettime = Mn 2 f` r_dettime_recfn `recfn 3 f`
+      using \<open>total f\<close> \<open>r_dettime = Mn 2 f\<close> r_dettime_recfn \<open>recfn 3 f\<close>
         eval_Mn_total[of 2 f "[i, x]"]
       by simp
     then show "dettime i x \<down>= (LEAST t. x < e_length (block i t) \<and> x \<noteq> gap i t)"
@@ -565,7 +565,7 @@ proof -
     assume "\<not> determined i x"
     with f have "\<not> (\<exists>t. eval f [t, i, x] \<down>= 0)" by simp
     then have "dettime i x \<up>"
-      using `total f` `r_dettime = Mn 2 f` r_dettime_recfn `recfn 3 f`
+      using \<open>total f\<close> \<open>r_dettime = Mn 2 f\<close> r_dettime_recfn \<open>recfn 3 f\<close>
         eval_Mn_total[of 2 f "[i, x]"]
       by simp
     with f show "dettime i x \<up>" by simp
@@ -745,7 +745,7 @@ next
           next
             case False
             then have "?k - 1 \<le> T" and "T \<le> t"
-              using `T < Suc t` by simp_all
+              using \<open>T < Suc t\<close> by simp_all
             with state_unchanged have "gap i t = gap i T" by blast
             then show False
               using j_eq_k that by simp
@@ -886,12 +886,12 @@ proof -
   show "\<tau> i x \<down>"
   proof (cases "x < t + 2")
     case True
-    with `x \<noteq> ?k` tau_eq_state' show ?thesis by simp
+    with \<open>x \<noteq> ?k\<close> tau_eq_state' show ?thesis by simp
   next
     case False
     then have "gap i x = ?k"
       using assms by (simp add: dual_order.antisym gap_monotone)
-    with `x \<noteq> ?k` have "x \<noteq> gap i x" by simp
+    with \<open>x \<noteq> ?k\<close> have "x \<noteq> gap i x" by simp
     then show ?thesis using tau_eq_state'[of x x] by simp
   qed
 qed
@@ -1113,7 +1113,7 @@ proof -
     proof -
       have "gap i T - 1 \<le> T"
         using gap_in_block length_block by (simp add: le_diff_conv less_Suc_eq_le)
-      then show ?thesis using `gap i T - 1 > n` by simp
+      then show ?thesis using \<open>gap i T - 1 > n\<close> by simp
     qed
     ultimately show ?thesis by auto
   qed
@@ -1290,7 +1290,7 @@ proof (rule learn_bcI)
           then have "\<psi>\<^sup>\<tau> (f \<triangleright> n) x = \<tau> (the (f 0)) x"
             using psitau_init by simp
           then have "\<psi>\<^sup>\<tau> (f \<triangleright> n) x = \<tau> i x"
-            using `f 0 \<down>= i` by simp
+            using \<open>f 0 \<down>= i\<close> by simp
           moreover have "f x = \<tau> i x"
             using False V_bclim i that by auto
           ultimately show ?thesis by simp
