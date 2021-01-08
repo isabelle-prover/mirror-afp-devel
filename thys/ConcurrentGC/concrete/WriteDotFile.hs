@@ -12,11 +12,6 @@ module WriteDotFile ( write_dot_file ) where
 
 import WriteFileBasis
 
-{-
- - WriteDotFile provides functions that allow to write .dot files
- - from its input file whose extension is .txt.
- -}
-
 -- the header of the output file.
 header :: String
 header =

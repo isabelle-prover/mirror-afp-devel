@@ -104,7 +104,7 @@ by(induction h rule: del_min.induct)
 subsubsection \<open>Functional Correctness\<close>
 
 fun mset_hp :: "'a hp \<Rightarrow>'a multiset" where
-"mset_hp (Hp x hs) = {#x#} + Union_mset(mset(map mset_hp hs))"
+"mset_hp (Hp x hs) = {#x#} + sum_mset(mset(map mset_hp hs))"
 
 definition mset_heap :: "'a heap \<Rightarrow>'a multiset" where
 "mset_heap ho = (case ho of None \<Rightarrow> {#} | Some h \<Rightarrow> mset_hp h)"
@@ -139,7 +139,7 @@ by (induction h1 h2 rule: merge.induct)
 lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"
 by(cases h) (auto simp add: mset_link mset_heap_def insert_def)
 
-lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = Union_mset(image_mset mset_hp (mset hs))"
+lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = sum_mset(image_mset mset_hp (mset hs))"
 by(induction hs rule: merge_pairs.induct)
   (auto simp: mset_merge mset_link mset_heap_def Let_def split: option.split)
 

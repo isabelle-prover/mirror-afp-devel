@@ -70,7 +70,7 @@ subsubsection \<open>Invariants\<close>
 
 fun mset_heap :: "'a heap \<Rightarrow>'a multiset" where
 "mset_heap Empty = {#}" |
-"mset_heap (Hp x hs) = {#x#} + Union_mset(mset(map mset_heap hs))"
+"mset_heap (Hp x hs) = {#x#} + sum_mset(mset(map mset_heap hs))"
 
 fun pheap :: "('a :: linorder) heap \<Rightarrow> bool" where
 "pheap Empty = True" |
@@ -115,7 +115,7 @@ by(induction h1 h2 rule: merge.induct)(auto simp: add_ac)
 lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"
 by(cases h) (auto simp add: mset_merge insert_def add_ac)
 
-lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = Union_mset(image_mset mset_heap(mset hs))"
+lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = sum_mset(image_mset mset_heap(mset hs))"
 by(induction hs rule: merge_pairs.induct)(auto simp: mset_merge)
 
 lemma mset_del_min: "h \<noteq> Empty \<Longrightarrow>

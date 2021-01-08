@@ -559,7 +559,7 @@ text \<open>Definition of the cartesian products over multisets. The constructio
   and Times). See file @{file \<open>~~/src/HOL/Product_Type.thy\<close>}\<close>
 
 definition Sigma_mset :: "'a multiset \<Rightarrow> ('a \<Rightarrow> 'b multiset) \<Rightarrow> ('a \<times> 'b) multiset" where
-  "Sigma_mset A B \<equiv> \<Union># {#{#(a, b). b \<in># B a#}. a \<in># A #}"
+  "Sigma_mset A B \<equiv> \<Sum>\<^sub># {#{#(a, b). b \<in># B a#}. a \<in># A #}"
 
 abbreviation Times_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" (infixr "\<times>#" 80) where
   "Times_mset A B \<equiv> Sigma_mset A (\<lambda>_. B)"
@@ -600,7 +600,7 @@ lemma Sigma_mset_cong:
   "\<lbrakk>A = B; \<And>x. x \<in># B \<Longrightarrow> C x = D x\<rbrakk> \<Longrightarrow> (SIGMAMSET x \<in># A. C x) = (SIGMAMSET x \<in># B. D x)"
   by (metis (mono_tags, lifting) Sigma_mset_def image_mset_cong)
 
-lemma count_sum_mset: "count (\<Union># M) b = (\<Sum>P \<in># M. count P b)"
+lemma count_sum_mset: "count (\<Sum>\<^sub># M) b = (\<Sum>P \<in># M. count P b)"
   by (induction M) auto
 
 lemma Sigma_mset_plus_distrib1[simp]: "Sigma_mset (A + B) C = Sigma_mset A C + Sigma_mset B C"
@@ -676,8 +676,8 @@ lemma iterate_op_plus: "(((+) k) ^^ m) 0 = k * m"
   by (induction m) auto
 
 lemma untion_image_mset_Pair_distribute:
-  "\<Union>#{#image_mset (Pair x) (C x). x \<in># J - I#} =
-   \<Union># {#image_mset (Pair x) (C x). x \<in># J#} - \<Union>#{#image_mset (Pair x) (C x). x \<in># I#}"
+  "\<Sum>\<^sub>#{#image_mset (Pair x) (C x). x \<in># J - I#} =
+   \<Sum>\<^sub># {#image_mset (Pair x) (C x). x \<in># J#} - \<Sum>\<^sub>#{#image_mset (Pair x) (C x). x \<in># I#}"
   by (auto simp: multiset_eq_iff count_sum_mset count_image_mset_Pair sum_mset_if_eq_constant
     iterate_op_plus diff_mult_distrib2)
 
@@ -704,7 +704,7 @@ lemma Sigma_mset_Diff_distrib2: "(SIGMAMSET i\<in>#I. A i - B i) = Sigma_mset I 
   by (auto simp: multiset_eq_iff count_sum_mset count_image_mset_Pair sum_mset_if_eq_constant
     Sigma_mset_def iterate_op_plus min_def not_in_iff diff_mult_distrib)
 
-lemma Sigma_mset_Union: "Sigma_mset (\<Union>#X) B = (\<Union># (image_mset (\<lambda>A. Sigma_mset A B) X))"
+lemma Sigma_mset_Union: "Sigma_mset (\<Sum>\<^sub>#X) B = (\<Sum>\<^sub># (image_mset (\<lambda>A. Sigma_mset A B) X))"
   by (auto simp: multiset_eq_iff count_sum_mset count_image_mset_Pair sum_mset_if_eq_constant
     Sigma_mset_def iterate_op_plus min_def not_in_iff sum_mset_distrib_left)
 
@@ -916,7 +916,7 @@ lemma subseteq_list_Union_mset:
   assumes "length Ci = n"
   assumes "length CAi = n"
   assumes "\<forall>i<n.  Ci ! i \<subseteq># CAi ! i "
-  shows "\<Union># (mset Ci) \<subseteq># \<Union># (mset CAi)"
+  shows "\<Sum>\<^sub># (mset Ci) \<subseteq># \<Sum>\<^sub># (mset CAi)"
   using assms proof (induction n arbitrary: Ci CAi)
   case 0
   then show ?case by auto
@@ -924,12 +924,12 @@ next
   case (Suc n)
   from Suc have "\<forall>i<n. tl Ci ! i \<subseteq># tl CAi ! i"
     by (simp add: nth_tl)
-  hence "\<Union>#(mset (tl Ci)) \<subseteq># \<Union>#(mset (tl CAi))" using Suc by auto
+  hence "\<Sum>\<^sub>#(mset (tl Ci)) \<subseteq># \<Sum>\<^sub>#(mset (tl CAi))" using Suc by auto
   moreover
   have "hd Ci \<subseteq># hd CAi" using Suc
     by (metis hd_conv_nth length_greater_0_conv zero_less_Suc)
   ultimately
-  show "\<Union>#(mset Ci) \<subseteq># \<Union>#(mset CAi)"
+  show "\<Sum>\<^sub>#(mset Ci) \<subseteq># \<Sum>\<^sub>#(mset CAi)"
     using Suc by (cases Ci; cases CAi) (auto intro: subset_mset.add_mono)
 qed
 
@@ -983,7 +983,7 @@ lemma all_the_same: "\<forall>x \<in># X. x = y \<Longrightarrow> card (set_mset
 
 lemma Melem_subseteq_Union_mset[simp]:
   assumes "x \<in># T"
-  shows "x \<subseteq># \<Union>#T"
+  shows "x \<subseteq># \<Sum>\<^sub>#T"
   using assms sum_mset.remove by force
 
 lemma Melem_subset_eq_sum_list[simp]:
@@ -993,7 +993,7 @@ lemma Melem_subset_eq_sum_list[simp]:
 
 lemma less_subset_eq_Union_mset[simp]:
   assumes "i < length CAi"
-  shows "CAi ! i \<subseteq># \<Union>#(mset CAi)"
+  shows "CAi ! i \<subseteq># \<Sum>\<^sub>#(mset CAi)"
 proof -
   from assms have "CAi ! i \<in># mset CAi"
     by auto
