@@ -322,8 +322,8 @@ proof -
   let ?k = "degree f - J"
   let ?n = "degree g - J"
   have nk: "?n + ?k = ?k + ?n" by simp
-  have change: "j < degree f - J + (degree g - J) \<Longrightarrow> ((if j < degree f - J then j + (degree g - J) else j - (degree f - J)) < degree g - J)
-    = (\<not> (j < degree f - J))" for j by auto
+  have change: "j < ?k + ?n \<Longrightarrow> ((if j < ?k then j + ?n else j - ?k) < ?n)
+    = (\<not> (j < ?k))" for j by auto
   have "subresultant J f g = det ?A" unfolding subresultant_def by simp
   also have "\<dots> = (-1)^(?k * ?n) * det (mat (?k + ?n) (?k + ?n) (\<lambda> (i,j).
     ?A $$ (i,(if j < ?k then j + ?n else j - ?k))))" (is "_ = _ * det ?B")
