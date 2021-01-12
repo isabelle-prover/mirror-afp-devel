@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>HOL-CSP Version 2.0 - Archive of Formal Proofs
+<title>The HOL-CSP Refinement Toolkit - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,13 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">H</font>OL-CSP
+  <h1>          <font class="first">T</font>he
   
-          <font class="first">V</font>ersion
+          <font class="first">H</font>OL-CSP
   
-          <font class="first">2</font>.0
+          <font class="first">R</font>efinement
+  
+          <font class="first">T</font>oolkit
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +89,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">HOL-CSP Version 2.0</td>
+  <td class="data" width="80%">The HOL-CSP Refinement Toolkit</td>
 </tr>
 
 <tr>
@@ -96,8 +98,8 @@ MathJax = {
       </td>
   <td class="data">
                       Safouan Taha (safouan /dot/ taha /at/ lri /dot/ fr),
-                Lina Ye (lina /dot/ ye /at/ lri /dot/ fr) and
-          <a href="https://www.lri.fr/~wolff/">Burkhart Wolff</a>
+                <a href="https://www.lri.fr/~wolff/">Burkhart Wolff</a> and
+          Lina Ye (lina /dot/ ye /at/ lri /dot/ fr)
       </td>
 </tr>
 
@@ -105,38 +107,41 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-04-26</td>
+  <td class="data">2020-11-19</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This is a complete formalization of the work of Hoare and Roscoe on
-the denotational semantics of the Failure/Divergence Model of CSP. It
-follows essentially the presentation of CSP in Roscoe’s Book ”Theory
-and Practice of Concurrency” [8] and the semantic details in a joint
-Paper of Roscoe and Brooks ”An improved failures model for
-communicating processes".  The present work is based on a prior
-formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
-B. Wolff with the Isabelle proof technology available at that time.
-This work revealed minor, but omnipresent foundational errors in key
-concepts like the process invariant. The present version HOL-CSP
-profits from substantially improved libraries (notably HOLCF),
-improved automated proof techniques, and structured proof techniques
-in Isar and is substantially shorter but more complete.</td>
+We use a formal development for CSP, called HOL-CSP2.0, to analyse a
+family of refinement notions, comprising classic and new ones. This
+analysis enables to derive a number of properties that allow to deepen
+the understanding of these notions, in particular with respect to
+specification decomposition principles for the case of infinite sets
+of events. The established relations between the refinement relations
+help to clarify some obscure points in the CSP literature, but also
+provide a weapon for shorter refinement proofs. Furthermore, we
+provide a framework for state-normalisation allowing to formally
+reason on parameterised process architectures. As a result, we have a
+modern environment for formal proofs of concurrent systems that allow
+for the combination of general infinite processes with locally finite
+ones in a logically safe way. We demonstrate these
+verification-techniques for classical, generalised examples: The
+CopyBuffer for arbitrary data and the Dijkstra's Dining
+Philosopher Problem of arbitrary size.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{HOL-CSP-AFP,
-  author  = {Safouan Taha and Lina Ye and Burkhart Wolff},
-  title   = {HOL-CSP Version 2.0},
+        <pre>@article{CSP_RefTK-AFP,
+  author  = {Safouan Taha and Burkhart Wolff and Lina Ye},
+  title   = {The HOL-CSP Refinement Toolkit},
   journal = {Archive of Formal Proofs},
-  month   = apr,
-  year    = 2019,
-  note    = {\url{https://isa-afp.org/entries/HOL-CSP.html},
+  month   = nov,
+  year    = 2020,
+  note    = {\url{https://isa-afp.org/entries/CSP_RefTK.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -147,10 +152,10 @@ in Isar and is substantially shorter but more complete.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CSP_RefTK.html">CSP_RefTK</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="HOL-CSP.html">HOL-CSP</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -162,34 +167,23 @@ in Isar and is substantially shorter but more complete.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/HOL-CSP/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/HOL-CSP/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/CSP_RefTK/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/CSP_RefTK/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/HOL-CSP/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/CSP_RefTK/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-HOL-CSP-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-CSP_RefTK-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-HOL-CSP-2019-06-11.tar.gz">
-              afp-HOL-CSP-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-HOL-CSP-2019-04-29.tar.gz">
-              afp-HOL-CSP-2019-04-29.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

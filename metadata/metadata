@@ -9995,3 +9995,28 @@ abstract =
   technique we can effectively harness theorem provers, model finders
   and 'hammers' for reasoning with quantified non-classical
   logics.
+  
+[CSP_RefTK]
+title = The HOL-CSP Refinement Toolkit
+author = Safouan Taha <mailto:safouan.taha@lri.fr>, Burkhart Wolff <https://www.lri.fr/~wolff/>, Lina Ye <mailto:lina.ye@lri.fr>
+topic = Computer science/Concurrency/Process calculi, Computer science/Semantics
+date = 2020-11-19
+notify = wolff@lri.fr
+abstract = 
+  We use a formal development for CSP, called HOL-CSP2.0, to analyse a
+  family of refinement notions, comprising classic and new ones. This
+  analysis enables to derive a number of properties that allow to deepen
+  the understanding of these notions, in particular with respect to
+  specification decomposition principles for the case of infinite sets
+  of events. The established relations between the refinement relations
+  help to clarify some obscure points in the CSP literature, but also
+  provide a weapon for shorter refinement proofs. Furthermore, we
+  provide a framework for state-normalisation allowing to formally
+  reason on parameterised process architectures. As a result, we have a
+  modern environment for formal proofs of concurrent systems that allow
+  for the combination of general infinite processes with locally finite
+  ones in a logically safe way. We demonstrate these
+  verification-techniques for classical, generalised examples: The
+  CopyBuffer for arbitrary data and the Dijkstra's Dining
+  Philosopher Problem of arbitrary size.
+

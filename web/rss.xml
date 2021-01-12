@@ -90,6 +90,30 @@ algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
 Dilemma.</description>
     </item>
     <item>
+       <title>The HOL-CSP Refinement Toolkit</title>
+              <link>https://www.isa-afp.org/entries/CSP_RefTK.html</link>
+       <guid>https://www.isa-afp.org/entries/CSP_RefTK.html</guid>
+       <dc:creator> Safouan Taha, Burkhart Wolff, Lina Ye       </dc:creator>
+       <pubDate>19 Nov 2020 00:00:00 +0000</pubDate>
+       <description>
+We use a formal development for CSP, called HOL-CSP2.0, to analyse a
+family of refinement notions, comprising classic and new ones. This
+analysis enables to derive a number of properties that allow to deepen
+the understanding of these notions, in particular with respect to
+specification decomposition principles for the case of infinite sets
+of events. The established relations between the refinement relations
+help to clarify some obscure points in the CSP literature, but also
+provide a weapon for shorter refinement proofs. Furthermore, we
+provide a framework for state-normalisation allowing to formally
+reason on parameterised process architectures. As a result, we have a
+modern environment for formal proofs of concurrent systems that allow
+for the combination of general infinite processes with locally finite
+ones in a logically safe way. We demonstrate these
+verification-techniques for classical, generalised examples: The
+CopyBuffer for arbitrary data and the Dijkstra&#39;s Dining
+Philosopher Problem of arbitrary size.</description>
+    </item>
+    <item>
        <title>Verified SAT-Based AI Planning</title>
               <link>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
        <guid>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
@@ -577,20 +601,6 @@ Hermite normal form (based on HOL Analysis) and the Jordan normal form
 AFP entries. This permits to reuse results from both developments and
 it is done by means of the lifting and transfer package together with
 the use of local type definitions.</description>
-    </item>
-    <item>
-       <title>The Nash-Williams Partition Theorem</title>
-              <link>https://www.isa-afp.org/entries/Nash_Williams.html</link>
-       <guid>https://www.isa-afp.org/entries/Nash_Williams.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>16 May 2020 00:00:00 +0000</pubDate>
-       <description>
-In 1965, Nash-Williams discovered a generalisation of the infinite
-form of Ramsey&#39;s theorem. Where the latter concerns infinite sets
-of n-element sets for some fixed n, the Nash-Williams theorem concerns
-infinite sets of finite sets (or lists) subject to a “no initial
-segment” condition. The present formalisation follows a
-monograph on Ramsey Spaces by Todorčević.</description>
     </item>
   </channel>
 </rss>
