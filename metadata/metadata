@@ -9668,6 +9668,19 @@ abstract =
   transitive model of ZFC, we construct a proper generic extension and
   show that the latter also satisfies ZFC.
 
+[Delta_System_Lemma]
+title = Cofinality and the Delta System Lemma
+author = Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro/home_en.html>
+topic = Mathematics/Combinatorics, Logic/Set theory
+date = 2020-12-27
+notify = sterraf@famaf.unc.edu.ar
+abstract =
+  We formalize the basic results on cofinality of linearly ordered sets
+  and ordinals and Šanin’s Lemma for uncountable families of finite
+  sets. This last result is used to prove the countable chain condition
+  for Cohen posets. We work in the set theory framework of Isabelle/ZF,
+  using the Axiom of Choice as needed.
+
 [Recursion-Addition]
 title = Recursion Theorem in ZF
 author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
@@ -10102,3 +10115,46 @@ abstract =
   We verify the correctness of Prim's, Kruskal's and
   Borůvka's minimum spanning tree algorithms based on algebras for
   aggregation and minimisation.
+
+[Topological_Semantics]
+title = Topological semantics for paraconsistent and paracomplete logics
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>
+topic = Logic/General logic
+date = 2020-12-17
+notify = davfuenmayor@gmail.com
+abstract =
+  We introduce a generalized topological semantics for paraconsistent
+  and paracomplete logics by drawing upon early works on topological
+  Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &
+  Tarski, etc.). In particular, this work exemplarily illustrates the
+  shallow semantical embeddings approach (<a
+  href="http://dx.doi.org/10.1007/s11787-012-0052-y">SSE</a>)
+  employing the proof assistant Isabelle/HOL. By means of the SSE
+  technique we can effectively harness theorem provers, model finders
+  and 'hammers' for reasoning with quantified non-classical
+  logics.
+  
+[CSP_RefTK]
+title = The HOL-CSP Refinement Toolkit
+author = Safouan Taha <mailto:safouan.taha@lri.fr>, Burkhart Wolff <https://www.lri.fr/~wolff/>, Lina Ye <mailto:lina.ye@lri.fr>
+topic = Computer science/Concurrency/Process calculi, Computer science/Semantics
+date = 2020-11-19
+notify = wolff@lri.fr
+abstract = 
+  We use a formal development for CSP, called HOL-CSP2.0, to analyse a
+  family of refinement notions, comprising classic and new ones. This
+  analysis enables to derive a number of properties that allow to deepen
+  the understanding of these notions, in particular with respect to
+  specification decomposition principles for the case of infinite sets
+  of events. The established relations between the refinement relations
+  help to clarify some obscure points in the CSP literature, but also
+  provide a weapon for shorter refinement proofs. Furthermore, we
+  provide a framework for state-normalisation allowing to formally
+  reason on parameterised process architectures. As a result, we have a
+  modern environment for formal proofs of concurrent systems that allow
+  for the combination of general infinite processes with locally finite
+  ones in a logically safe way. We demonstrate these
+  verification-techniques for classical, generalised examples: The
+  CopyBuffer for arbitrary data and the Dijkstra's Dining
+  Philosopher Problem of arbitrary size.
+

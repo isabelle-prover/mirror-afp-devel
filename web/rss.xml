@@ -9,7 +9,38 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Cofinality and the Delta System Lemma</title>
+              <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
+       <guid>https://www.isa-afp.org/entries/Delta_System_Lemma.html</guid>
+       <dc:creator> Pedro Sánchez Terraf       </dc:creator>
+       <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize the basic results on cofinality of linearly ordered sets
+and ordinals and Šanin’s Lemma for uncountable families of finite
+sets. This last result is used to prove the countable chain condition
+for Cohen posets. We work in the set theory framework of Isabelle/ZF,
+using the Axiom of Choice as needed.</description>
+    </item>
+    <item>
+       <title>Topological semantics for paraconsistent and paracomplete logics</title>
+              <link>https://www.isa-afp.org/entries/Topological_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/Topological_Semantics.html</guid>
+       <dc:creator> David Fuenmayor       </dc:creator>
+       <pubDate>17 Dec 2020 00:00:00 +0000</pubDate>
+       <description>
+We introduce a generalized topological semantics for paraconsistent
+and paracomplete logics by drawing upon early works on topological
+Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &amp;
+Tarski, etc.). In particular, this work exemplarily illustrates the
+shallow semantical embeddings approach (&lt;a
+href=&#34;http://dx.doi.org/10.1007/s11787-012-0052-y&#34;&gt;SSE&lt;/a&gt;)
+employing the proof assistant Isabelle/HOL. By means of the SSE
+technique we can effectively harness theorem provers, model finders
+and &#39;hammers&#39; for reasoning with quantified non-classical
+logics.</description>
+    </item>
     <item>
        <title>Relational Minimum Spanning Tree Algorithms</title>
               <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
@@ -77,6 +108,30 @@ matrix representation for quantum circuits, successfully formalising
 the no-cloning theorem, quantum teleportation, Deutsch&#39;s
 algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
 Dilemma.</description>
+    </item>
+    <item>
+       <title>The HOL-CSP Refinement Toolkit</title>
+              <link>https://www.isa-afp.org/entries/CSP_RefTK.html</link>
+       <guid>https://www.isa-afp.org/entries/CSP_RefTK.html</guid>
+       <dc:creator> Safouan Taha, Burkhart Wolff, Lina Ye       </dc:creator>
+       <pubDate>19 Nov 2020 00:00:00 +0000</pubDate>
+       <description>
+We use a formal development for CSP, called HOL-CSP2.0, to analyse a
+family of refinement notions, comprising classic and new ones. This
+analysis enables to derive a number of properties that allow to deepen
+the understanding of these notions, in particular with respect to
+specification decomposition principles for the case of infinite sets
+of events. The established relations between the refinement relations
+help to clarify some obscure points in the CSP literature, but also
+provide a weapon for shorter refinement proofs. Furthermore, we
+provide a framework for state-normalisation allowing to formally
+reason on parameterised process architectures. As a result, we have a
+modern environment for formal proofs of concurrent systems that allow
+for the combination of general infinite processes with locally finite
+ones in a logically safe way. We demonstrate these
+verification-techniques for classical, generalised examples: The
+CopyBuffer for arbitrary data and the Dijkstra&#39;s Dining
+Philosopher Problem of arbitrary size.</description>
     </item>
     <item>
        <title>Verified SAT-Based AI Planning</title>
@@ -558,57 +613,6 @@ of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
 of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
 proved is a necessary result by Erdős and Milner:
 $\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.</description>
-    </item>
-    <item>
-       <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Chandy_Lamport.html</link>
-       <guid>https://www.isa-afp.org/entries/Chandy_Lamport.html</guid>
-       <dc:creator> Ben Fiedler, Dmitriy Traytel       </dc:creator>
-       <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
-       <description>
-We provide a suitable distributed system model and implementation of the
-Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
-Computer Systems, 3, 63-75, 1985]. Our main result is a formal
-termination and correctness proof of the Chandy--Lamport algorithm and
-its use in stable property detection.</description>
-    </item>
-    <item>
-       <title>Relational Characterisations of Paths</title>
-              <link>https://www.isa-afp.org/entries/Relational_Paths.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Paths.html</guid>
-       <dc:creator> Walter Guttmann, Peter Höfner       </dc:creator>
-       <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
-       <description>
-Binary relations are one of the standard ways to encode, characterise
-and reason about graphs. Relation algebras provide equational axioms
-for a large fragment of the calculus of binary relations. Although
-relations are standard tools in many areas of mathematics and
-computing, researchers usually fall back to point-wise reasoning when
-it comes to arguments about paths in a graph. We present a purely
-algebraic way to specify different kinds of paths in Kleene relation
-algebras, which are relation algebras equipped with an operation for
-reflexive transitive closure. We study the relationship between paths
-with a designated root vertex and paths without such a vertex. Since
-we stay in first-order logic this development helps with mechanising
-proofs. To demonstrate the applicability of the algebraic framework we
-verify the correctness of three basic graph algorithms.</description>
-    </item>
-    <item>
-       <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
-              <link>https://www.isa-afp.org/entries/Safe_Distance.html</link>
-       <guid>https://www.isa-afp.org/entries/Safe_Distance.html</guid>
-       <dc:creator> Albert Rizaldi, Fabian Immler       </dc:creator>
-       <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
-       <description>
-The Vienna Convention on Road Traffic defines the safe distance
-traffic rules informally. This could make autonomous vehicle liable
-for safe-distance-related accidents because there is no clear
-definition of how large a safe distance is. We provide a formally
-proven prescriptive definition of a safe distance, and checkers which
-can decide whether an autonomous vehicle is obeying the safe distance
-rule. Not only does our work apply to the domain of law, but it also
-serves as a specification for autonomous vehicle manufacturers and for
-online verification of path planners.</description>
     </item>
   </channel>
 </rss>

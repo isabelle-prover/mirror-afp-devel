@@ -108,6 +108,7 @@ Core_SC_DOM
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
+CSP_RefTK
 DFS_Framework
 DPT-SAT-Solver
 DataRefinementIBP
@@ -116,6 +117,7 @@ Decl_Sem_Fun_PL
 Decreasing-Diagrams
 Decreasing-Diagrams-II
 Deep_Learning
+Delta_System_Lemma
 Density_Compiler
 Dependent_SIFUM_Refinement
 Dependent_SIFUM_Type_Systems
@@ -164,8 +166,8 @@ Fermat3_4
 FileRefinement
 FinFun
 Finger-Trees
-Finite_Automata_HF
 Finite-Map-Extras
+Finite_Automata_HF
 First_Order_Terms
 First_Welfare_Theorem
 Fishburn_Impossibility
@@ -532,6 +534,7 @@ Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
 Timed_Automata
+Topological_Semantics
 Topology
 TortoiseHare
 Transcendence_Series_Hancl_Rucki
