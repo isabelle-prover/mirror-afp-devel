@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>11 Jan 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
+              <link>https://www.isa-afp.org/entries/JinjaDCI.html</link>
+       <guid>https://www.isa-afp.org/entries/JinjaDCI.html</guid>
+       <dc:creator> Susannah Mansky       </dc:creator>
+       <pubDate>11 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+We extend Jinja to include static fields, methods, and instructions,
+and dynamic class initialization, based on the Java SE 8
+specification. This includes extension of definitions and proofs. This
+work is partially described in Mansky and Gunter&#39;s paper at CPP
+2019 and Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
+    </item>
     <item>
        <title>Cofinality and the Delta System Lemma</title>
               <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
@@ -580,27 +593,6 @@ can decide whether an autonomous vehicle is obeying the safe distance
 rule. Not only does our work apply to the domain of law, but it also
 serves as a specification for autonomous vehicle manufacturers and for
 online verification of path planners.</description>
-    </item>
-    <item>
-       <title>A verified algorithm for computing the Smith normal form of a matrix</title>
-              <link>https://www.isa-afp.org/entries/Smith_Normal_Form.html</link>
-       <guid>https://www.isa-afp.org/entries/Smith_Normal_Form.html</guid>
-       <dc:creator> Jose Divasón       </dc:creator>
-       <pubDate>23 May 2020 00:00:00 +0000</pubDate>
-       <description>
-This work presents a formal proof in Isabelle/HOL of an algorithm to
-transform a matrix into its Smith normal form, a canonical matrix
-form, in a general setting: the algorithm is parameterized by
-operations to prove its existence over elementary divisor rings, while
-execution is guaranteed over Euclidean domains. We also provide a
-formal proof on some results about the generality of this algorithm as
-well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
-does not feature dependent types, the development is carried out
-switching conveniently between two different existing libraries: the
-Hermite normal form (based on HOL Analysis) and the Jordan normal form
-AFP entries. This permits to reuse results from both developments and
-it is done by means of the lifting and transfer package together with
-the use of local type definitions.</description>
     </item>
   </channel>
 </rss>

@@ -10020,3 +10020,16 @@ abstract =
   CopyBuffer for arbitrary data and the Dijkstra's Dining
   Philosopher Problem of arbitrary size.
 
+[JinjaDCI]
+title = JinjaDCI: a Java semantics with dynamic class initialization
+author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
+topic = Computer science/Programming languages/Language definitions
+date = 2021-01-11
+notify = sjohnsn2@illinois.edu, susannahej@gmail.com
+abstract = 
+  We extend Jinja to include static fields, methods, and instructions,
+  and dynamic class initialization, based on the Java SE 8
+  specification. This includes extension of definitions and proofs. This
+  work is partially described in Mansky and Gunter's paper at CPP
+  2019 and Mansky's doctoral thesis (UIUC, 2020).
+
