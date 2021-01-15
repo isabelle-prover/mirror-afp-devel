@@ -1,8 +1,8 @@
 
 
-section \<open>Legacy aliasses\<close>
+section \<open>Legacy aliases\<close>
 
-theory Legacy_Aliasses
+theory Legacy_Aliases
   imports "HOL-Library.Word"
 begin
 

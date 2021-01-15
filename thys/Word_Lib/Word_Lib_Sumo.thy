@@ -20,7 +20,7 @@ imports
   Even_More_List
   More_Misc
   Strict_part_mono
-  Legacy_Aliasses
+  Legacy_Aliases
   Most_significant_bit
   Next_and_Prev
   Norm_Words
