@@ -41,7 +41,7 @@ lemma map_closed [intro, simp]:
 using graph by fast
   
 text \<open>p 5, ll 21--25\<close>
-lemma map_undefined [intro, simp]:
+lemma map_undefined [intro]:
   "a \<notin> S \<Longrightarrow> \<alpha> a = undefined"
 using graph by fast
 
@@ -471,7 +471,7 @@ theorem factorization_lemma:
 
 text \<open>p 13, ll 16--19\<close>
 theorem factorization [simp]: "compose S induced Class = \<alpha>"
-  by (rule ext) (simp add: compose_def)
+  by (rule ext) (simp add: compose_def map_undefined)
 
 text \<open>p 14, ll 2--4\<close>
 theorem uniqueness:

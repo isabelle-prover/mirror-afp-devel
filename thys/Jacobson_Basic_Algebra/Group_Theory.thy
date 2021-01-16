@@ -1562,7 +1562,7 @@ theorem factorization_lemma: "a \<in> G \<Longrightarrow> compose G induced cont
 
 text \<open>p 62, ll 29--30\<close>
 theorem factorization [simp]: "compose G induced contained.Class = \<eta>"
-  by rule (simp add: compose_def contained.Class_is_Left_Coset)
+  by rule (simp add: compose_def contained.Class_is_Left_Coset map_undefined)
 
 text \<open>
   Jacobson does not state the uniqueness of @{term induced} explicitly but he uses it later,
