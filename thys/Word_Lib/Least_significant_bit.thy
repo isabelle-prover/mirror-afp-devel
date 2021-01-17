@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson, NICTA *)
 
 section \<open>Operation variant for the least significant bit\<close>
 
@@ -52,7 +57,7 @@ instance
   done
 
 end
-  
+
 lemma lsb_word_eq:
   \<open>lsb = (odd :: 'a word \<Rightarrow> bool)\<close> for w :: \<open>'a::len word\<close>
   by (fact lsb_odd)

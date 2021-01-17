@@ -1,5 +1,11 @@
 (*
-  Author:     Jeremy Dawson and Gerwin Klein, NICTA
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(*
+  Author: Jeremy Dawson and Gerwin Klein, NICTA
 
   Consequences of type definition theorems, and of extended type definition.
 *)

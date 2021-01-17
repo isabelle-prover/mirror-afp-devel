@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson, NICTA *)
 
 section \<open>Dedicated operation for the most significant bit\<close>
 

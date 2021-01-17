@@ -1,5 +1,8 @@
-(*  Author:     Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
-*)
+(*
+ * Copyright Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Comprehension syntax for bit expressions\<close>
 
@@ -30,7 +33,7 @@ definition
 
 instance proof
   fix k :: int
-  from int_bit_bound [of k] 
+  from int_bit_bound [of k]
   obtain n where *: \<open>\<And>m. n \<le> m \<Longrightarrow> bit k m \<longleftrightarrow> bit k n\<close>
     and **: \<open>n > 0 \<Longrightarrow> bit k (n - 1) \<noteq> bit k n\<close>
     by blast
@@ -91,7 +94,7 @@ proof (cases \<open>\<exists>n. \<forall>m\<ge>n. f m \<longleftrightarrow> f n\
   then obtain q where q: \<open>\<forall>m\<ge>q. f m \<longleftrightarrow> f q\<close>
     by blast
   define n where \<open>n = (LEAST n. \<forall>m\<ge>n. f m \<longleftrightarrow> f n)\<close>
-  have \<open>\<forall>m\<ge>n. f m \<longleftrightarrow> f n\<close> 
+  have \<open>\<forall>m\<ge>n. f m \<longleftrightarrow> f n\<close>
     unfolding n_def
     using q by (rule LeastI [of _ q])
   then have n: \<open>\<And>m. n \<le> m \<Longrightarrow> f m \<longleftrightarrow> f n\<close>
@@ -101,7 +104,7 @@ proof (cases \<open>\<exists>n. \<forall>m\<ge>n. f m \<longleftrightarrow> f n\
   show ?thesis
   proof (cases \<open>f n\<close>)
     case False
-    with n have *: \<open>\<exists>n. \<forall>n'\<ge>n. \<not> f n'\<close> 
+    with n have *: \<open>\<exists>n. \<forall>n'\<ge>n. \<not> f n'\<close>
       by blast
     have **: \<open>(LEAST n. \<forall>n'\<ge>n. \<not> f n') = n\<close>
       using False n_eq by simp
@@ -118,7 +121,7 @@ proof (cases \<open>\<exists>n. \<forall>m\<ge>n. f m \<longleftrightarrow> f n\
       by blast
     have ***: \<open>\<not> (\<exists>n. \<forall>n'\<ge>n. \<not> f n')\<close>
       apply (rule ccontr)
-      using * nat_le_linear by auto 
+      using * nat_le_linear by auto
     have **: \<open>(LEAST n. \<forall>n'\<ge>n. f n') = n\<close>
       using True n_eq by simp
     from * *** True show ?thesis
@@ -135,7 +138,7 @@ next
     by (auto simp add: set_bits_int_def)
 qed
 
-inductive wf_set_bits_int :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" 
+inductive wf_set_bits_int :: "(nat \<Rightarrow> bool) \<Rightarrow> bool"
   for f :: "nat \<Rightarrow> bool"
 where
   zeros: "\<forall>n' \<ge> n. \<not> f n' \<Longrightarrow> wf_set_bits_int f"
@@ -147,7 +150,7 @@ by(auto simp add: wf_set_bits_int.simps)
 lemma wf_set_bits_int_const [simp]: "wf_set_bits_int (\<lambda>_. b)"
 by(cases b)(auto intro: wf_set_bits_int.intros)
 
-lemma wf_set_bits_int_fun_upd [simp]: 
+lemma wf_set_bits_int_fun_upd [simp]:
   "wf_set_bits_int (f(n := b)) \<longleftrightarrow> wf_set_bits_int f" (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
@@ -233,7 +236,7 @@ lemma bin_rest_set_bits [simp]:
 lemma bin_nth_set_bits [simp]:
   "bit (set_bits f :: int) m \<longleftrightarrow> f m"
 using wff proof (induction m arbitrary: f)
-  case 0 
+  case 0
   then show ?case
     by (simp add: Bit_Comprehension.bin_last_set_bits)
 next

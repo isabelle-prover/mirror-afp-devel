@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson and Gerwin Klein, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson and Gerwin Klein, NICTA *)
 
 theory Rsplit
   imports "HOL-Library.Word" Bits_Int

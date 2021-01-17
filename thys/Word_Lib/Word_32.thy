@@ -8,7 +8,6 @@ section "Words of Length 32"
 
 theory Word_32
   imports
-    Word_Lemmas
     Word_8
     Word_16
     Word_Syntax
@@ -298,7 +297,7 @@ proof -
   then have \<open>mask x = b div 2\<close>
     using shiftr1_is_div_2 [of b] by simp
   with \<open>b mod 2 = 1\<close> have \<open>2 * mask x + 1 = 2 * (b div 2) + b mod 2\<close>
-    by (simp only:) 
+    by (simp only:)
   also have \<open>\<dots> = b\<close>
     by (simp add: mult_div_mod_eq)
   finally have \<open>2 * mask x + 1 = b\<close> .

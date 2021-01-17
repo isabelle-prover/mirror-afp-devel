@@ -1,4 +1,7 @@
-(* SPDX-License-Identifier: BSD-3-Clause *)
+(*
+ * Copyright Julius Michaelis, Cornelius Diekmann
+ * SPDX-License-Identifier: BSD-3-Clause
+ *)
 
 section\<open>Increment and Decrement Machine Words Without Wrap-Around\<close>
 
@@ -29,7 +32,7 @@ lemma [code]:
   \<open>Word.the_int (word_next w :: 'a::len word) =
     (if w = - 1 then Word.the_int w else Word.the_int w + 1)\<close>
   by transfer
-    (simp add: take_bit_minus_one_eq_mask mask_eq_exp_minus_1 take_bit_incr_eq flip: take_bit_eq_mask_iff_exp_dvd) 
+    (simp add: take_bit_minus_one_eq_mask mask_eq_exp_minus_1 take_bit_incr_eq flip: take_bit_eq_mask_iff_exp_dvd)
 
 lemma [code]:
   \<open>Word.the_int (word_prev w :: 'a::len word) =

@@ -1,3 +1,8 @@
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Lemmas on words\<close>
 
@@ -46,7 +51,7 @@ lemma p2_gt_0:
 
 lemma uint_2p_alt:
   \<open>n < LENGTH('a::len) \<Longrightarrow> uint ((2::'a::len word) ^ n) = 2 ^ n\<close>
-  using p2_gt_0 [of n, where ?'a = 'a] by (simp add: uint_2p) 
+  using p2_gt_0 [of n, where ?'a = 'a] by (simp add: uint_2p)
 
 lemma p2_eq_0:
   \<open>(2::'a::len word) ^ n = 0 \<longleftrightarrow> LENGTH('a::len) \<le> n\<close>
@@ -77,7 +82,7 @@ lemma and_mask_arith':
   "0 < n \<Longrightarrow> w AND mask n = (w * 2^(size w - n)) div 2^(size w - n)"
   for w :: \<open>'a::len word\<close>
   by (rule and_mask_arith)
-  
+
 lemma mask_2pm1: "mask n = 2 ^ n - (1 :: 'a::len word)"
   by (fact mask_eq_decr_exp)
 
@@ -663,7 +668,7 @@ lemma word_plus_mcs_3:
 
 lemma word_le_minus_one_leq:
   "x < y \<Longrightarrow> x \<le> y - 1" for x :: "'a :: len word"
-  by transfer (metis le_less_trans less_irrefl take_bit_decr_eq take_bit_nonnegative zle_diff1_eq) 
+  by transfer (metis le_less_trans less_irrefl take_bit_decr_eq take_bit_nonnegative zle_diff1_eq)
 
 lemma word_less_sub_le[simp]:
   fixes x :: "'a :: len word"
@@ -1461,7 +1466,7 @@ lemma x_less_2_0_1':
   apply simp_all
   apply transfer
   apply auto
-  apply (metis add.commute add.right_neutral even_two_times_div_two mod_div_trivial mod_pos_pos_trivial mult.commute mult_zero_left not_less not_take_bit_negative odd_two_times_div_two_succ) 
+  apply (metis add.commute add.right_neutral even_two_times_div_two mod_div_trivial mod_pos_pos_trivial mult.commute mult_zero_left not_less not_take_bit_negative odd_two_times_div_two_succ)
   done
 
 lemmas word_add_le_iff2 = word_add_le_iff [folded no_olen_add_nat]

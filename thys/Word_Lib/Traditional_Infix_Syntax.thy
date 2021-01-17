@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson, NICTA *)
 
 section \<open>Operation variants with traditional syntax\<close>
 
@@ -79,7 +84,7 @@ lemma test_bit_bin': "w !! n \<longleftrightarrow> n < size w \<and> bit (uint w
 
 lemmas test_bit_bin = test_bit_bin' [unfolded word_size]
 
-lemma word_test_bit_def: 
+lemma word_test_bit_def:
   \<open>test_bit a = bit (uint a)\<close>
   by transfer (simp add: fun_eq_iff bit_take_bit_iff)
 
@@ -123,7 +128,7 @@ lemma test_bit_neg_numeral [simp]:
   by transfer (rule refl)
 
 lemma test_bit_1 [iff]: "(1 :: 'a::len word) !! n \<longleftrightarrow> n = 0"
-  by transfer (auto simp add: bit_1_iff) 
+  by transfer (auto simp add: bit_1_iff)
 
 lemma nth_0 [simp]: "\<not> (0 :: 'a::len word) !! n"
   by transfer simp
@@ -258,7 +263,7 @@ lemma revcast_down_ss [OF refl]:
 
 lemma sshiftr_div_2n: "sint (w >>> n) = sint w div 2 ^ n"
   using sint_signed_drop_bit_eq [of n w]
-  by (simp add: drop_bit_eq_div sshiftr_eq) 
+  by (simp add: drop_bit_eq_div sshiftr_eq)
 
 lemmas lsb0 = len_gt_0 [THEN word_ops_nth_size [unfolded word_size]]
 
@@ -285,7 +290,7 @@ lemma bang_is_le: "x !! m \<Longrightarrow> 2 ^ m \<le> x"
 
 lemma mask_eq:
   \<open>mask n = (1 << n) - (1 :: 'a::len word)\<close>
-  by transfer (simp add: mask_eq_exp_minus_1 push_bit_of_1) 
+  by transfer (simp add: mask_eq_exp_minus_1 push_bit_of_1)
 
 lemma nth_ucast:
   "(ucast w::'a::len word) !! n = (w !! n \<and> n < LENGTH('a))"
@@ -585,7 +590,7 @@ lemma shiftr_mask_le:
 lemma shiftr_mask [simp]:
   \<open>mask m >> m = (0::'a::len word)\<close>
   by (rule shiftr_mask_le) simp
-  
+
 lemma word_leI:
   "(\<And>n.  \<lbrakk>n < size (u::'a::len word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len word) !! n) \<Longrightarrow> u <= v"
   apply (rule xtrans(4))
@@ -833,7 +838,7 @@ next
     show \<open>bit (take_bit n p) q \<longleftrightarrow> bit p q\<close>
     proof (cases \<open>q < n\<close>)
       case True
-      then show ?thesis 
+      then show ?thesis
         by (auto simp add: bit_simps)
     next
       case False

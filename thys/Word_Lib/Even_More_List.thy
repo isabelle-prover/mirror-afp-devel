@@ -1,9 +1,13 @@
+(*
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Lemmas on list operations\<close>
 
 theory Even_More_List
-  imports
-    Main
+  imports Main
 begin
 
 lemma upt_add_eq_append':
@@ -63,7 +67,7 @@ proof -
     next
       case True
       have \<open>{a. P a} \<subseteq> {0..n}\<close>
-        using step.prems by (auto simp add: less_imp_le_nat)  
+        using step.prems by (auto simp add: less_imp_le_nat)
       moreover have \<open>finite {0..n}\<close>
         by simp
       ultimately have \<open>finite {a. P a}\<close>
@@ -95,7 +99,7 @@ next
   next
     case True
     have \<open>{a. P a} \<subseteq> {0..n}\<close>
-      using Suc.prems by (auto simp add: less_Suc_eq_le) 
+      using Suc.prems by (auto simp add: less_Suc_eq_le)
     moreover have \<open>finite {0..n}\<close>
       by simp
     ultimately have \<open>finite {a. P a}\<close>

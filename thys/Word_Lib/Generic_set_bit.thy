@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson, NICTA *)
 
 section \<open>Operation variant for setting and unsetting bits\<close>
 
@@ -37,7 +42,7 @@ lemma bin_last_set_bit:
   "bin_last (set_bit x n b) = (if n > 0 then bin_last x else b)"
   by (cases n) (simp_all add: int_set_bit_Suc)
 
-lemma bin_rest_set_bit: 
+lemma bin_rest_set_bit:
   "bin_rest (set_bit x n b) = (if n > 0 then set_bit (x div 2) (n - 1) b else x div 2)"
   by (cases n) (simp_all add: int_set_bit_Suc)
 
@@ -46,7 +51,7 @@ lemma int_set_bit_numeral: fixes x :: int shows
   by (simp add: set_bit_int_def)
 
 lemmas int_set_bit_numerals [simp] =
-  int_set_bit_numeral[where x="numeral w'"] 
+  int_set_bit_numeral[where x="numeral w'"]
   int_set_bit_numeral[where x="- numeral w'"]
   int_set_bit_numeral[where x="Numeral1"]
   int_set_bit_numeral[where x="1"]

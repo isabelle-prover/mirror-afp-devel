@@ -1,3 +1,9 @@
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
 theory Examples
   imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax Signed_Division_Word
 begin

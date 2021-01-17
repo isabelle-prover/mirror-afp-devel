@@ -1,5 +1,8 @@
-(*  Authors:    Thomas Sewell, NICTA and Sascha Boehme, TU Muenchen
-*)
+(*
+ * Copyright Thomas Sewell, NICTA and Sascha Boehme, TU Muenchen
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 theory Bitwise
   imports

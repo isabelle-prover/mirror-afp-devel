@@ -1,3 +1,8 @@
+(*
+ * Copyright Florian Haftmann
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Ancient comprehensive Word Library\<close>
 

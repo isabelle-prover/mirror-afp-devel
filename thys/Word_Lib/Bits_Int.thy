@@ -1,5 +1,8 @@
-(*  Author:     Jeremy Dawson and Gerwin Klein, NICTA
-*)
+(*
+ * Copyright Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Bitwise Operations on integers\<close>
 
@@ -46,7 +49,7 @@ lemma bin_rest_numeral_simps [simp]:
 lemma bin_rl_eqI: "\<lbrakk>bin_rest x = bin_rest y; odd x = odd y\<rbrakk> \<Longrightarrow> x = y"
   by (auto elim: oddE)
 
-lemma [simp]: 
+lemma [simp]:
   shows bin_rest_lt0: "bin_rest i < 0 \<longleftrightarrow> i < 0"
   and  bin_rest_ge_0: "bin_rest i \<ge> 0 \<longleftrightarrow> i \<ge> 0"
   by auto
@@ -95,7 +98,7 @@ lemmas bin_nth_simps =
 
 lemma nth_2p_bin: "bin_nth (2 ^ n) m = (m = n)" \<comment> \<open>for use when simplifying with \<open>bin_nth_Bit\<close>\<close>
   by (auto simp add: bit_exp_iff)
-  
+
 lemma nth_rest_power_bin: "bin_nth ((bin_rest ^^ k) w) n = bin_nth w (n + k)"
   apply (induct k arbitrary: n)
    apply clarsimp
@@ -139,7 +142,7 @@ abbreviation (input) norm_sint :: \<open>nat \<Rightarrow> int \<Rightarrow> int
 
 lemma sbintrunc_mod2p: "sbintrunc n w = (w + 2 ^ n) mod 2 ^ Suc n - 2 ^ n"
   by (simp add: bintrunc_mod2p signed_take_bit_eq_take_bit_shift)
-  
+
 lemma sbintrunc_eq_take_bit:
   \<open>sbintrunc n k = take_bit (Suc n) (k + 2 ^ n) - 2 ^ n\<close>
   by (fact signed_take_bit_eq_take_bit_shift)
@@ -361,11 +364,11 @@ proof -
     apply presburger
     done
 qed
-  
+
 lemma sbintrunc_inc:
   \<open>k + 2 ^ Suc n \<le> sbintrunc n k\<close> if \<open>k < - (2 ^ n)\<close>
   using that by (fact signed_take_bit_int_greater_eq)
-  
+
 lemma sbintrunc_dec:
   \<open>sbintrunc n k \<le> k - 2 ^ (Suc n)\<close> if \<open>k \<ge> 2 ^ n\<close>
   using that by (fact signed_take_bit_int_less_eq)
@@ -378,7 +381,7 @@ lemma bintr_lt2p: "bintrunc n w < 2 ^ n"
 
 lemma bintr_Min: "bintrunc n (- 1) = 2 ^ n - 1"
   by (simp add: stable_imp_take_bit_eq)
-  
+
 lemma sbintr_ge: "- (2 ^ n) \<le> sbintrunc n w"
   by (simp add: sbintrunc_mod2p)
 
@@ -450,7 +453,7 @@ abbreviation (input) bin_cat :: \<open>int \<Rightarrow> nat \<Rightarrow> int \
 lemma bin_cat_eq_push_bit_add_take_bit:
   \<open>bin_cat k n l = push_bit n k + take_bit n l\<close>
   by (simp add: concat_bit_eq)
-  
+
 lemma bin_sign_cat: "bin_sign (bin_cat x n y) = bin_sign x"
 proof -
   have \<open>0 \<le> x\<close> if \<open>0 \<le> x * 2 ^ n + y mod 2 ^ n\<close>
@@ -545,7 +548,7 @@ lemma bintr_cat1: "bintrunc (k + n) (bin_cat a n b) = bin_cat (bintrunc k a) n b
 
 lemma bintr_cat: "bintrunc m (bin_cat a n b) =
     bin_cat (bintrunc (m - n) a) n (bintrunc (min m n) b)"
-  
+
   by (rule bin_eqI) (auto simp: bin_nth_cat nth_bintr)
 
 lemma bintr_cat_same [simp]: "bintrunc n (bin_cat a n b) = bintrunc n b"
@@ -796,7 +799,7 @@ proof (induct n nw w cs arbitrary: v bs rule: bin_rsplit_aux.induct)
     have hyp: "\<And>v bs. length bs = Suc (length cs) \<Longrightarrow>
       length (bin_rsplit_aux n (m - n) v bs) =
       length (bin_rsplit_aux n (m - n) (drop_bit n w) (take_bit n w # cs))"
-      using bin_rsplit_aux_len by fastforce 
+      using bin_rsplit_aux_len by fastforce
     from \<open>length bs = length cs\<close> \<open>n \<noteq> 0\<close> show ?thesis
       by (auto simp add: bin_rsplit_aux_simp_alt Let_def bin_rsplit_len split: prod.split)
   qed
@@ -1170,24 +1173,24 @@ lemma int_and_lt0 [simp]:
   \<open>x AND y < 0 \<longleftrightarrow> x < 0 \<and> y < 0\<close> for x y :: int
   by (fact and_negative_int_iff)
 
-lemma int_and_ge0 [simp]: 
+lemma int_and_ge0 [simp]:
   \<open>x AND y \<ge> 0 \<longleftrightarrow> x \<ge> 0 \<or> y \<ge> 0\<close> for x y :: int
   by (fact and_nonnegative_int_iff)
-  
+
 lemma int_and_1: fixes x :: int shows "x AND 1 = x mod 2"
   by (fact and_one_eq)
 
 lemma int_1_and: fixes x :: int shows "1 AND x = x mod 2"
   by (fact one_and_eq)
 
-lemma int_or_lt0 [simp]: 
+lemma int_or_lt0 [simp]:
   \<open>x OR y < 0 \<longleftrightarrow> x < 0 \<or> y < 0\<close> for x y :: int
   by (fact or_negative_int_iff)
 
 lemma int_or_ge0 [simp]:
   \<open>x OR y \<ge> 0 \<longleftrightarrow> x \<ge> 0 \<and> y \<ge> 0\<close> for x y :: int
   by (fact or_nonnegative_int_iff)
-  
+
 lemma int_xor_lt0 [simp]:
   \<open>x XOR y < 0 \<longleftrightarrow> (x < 0) \<noteq> (y < 0)\<close> for x y :: int
   by (fact xor_negative_int_iff)
@@ -1195,7 +1198,7 @@ lemma int_xor_lt0 [simp]:
 lemma int_xor_ge0 [simp]:
   \<open>x XOR y \<ge> 0 \<longleftrightarrow> (x \<ge> 0 \<longleftrightarrow> y \<ge> 0)\<close> for x y :: int
   by (fact xor_nonnegative_int_iff)
-  
+
 lemma even_conv_AND:
   \<open>even i \<longleftrightarrow> i AND 1 = 0\<close> for i :: int
   by (simp add: and_one_eq mod2_eq_if)
@@ -1248,12 +1251,12 @@ lemma bin_nth_shiftr [simp]: "bin_nth (x >> n) m = bin_nth x (n + m)"
   by (simp add: shiftr_eq_drop_bit bit_drop_bit_eq)
 
 lemma bin_nth_conv_AND:
-  fixes x :: int shows 
+  fixes x :: int shows
   "bin_nth x n \<longleftrightarrow> x AND (1 << n) \<noteq> 0"
   by (simp add: bit_eq_iff)
     (auto simp add: shiftl_eq_push_bit bit_and_iff bit_push_bit_iff bit_exp_iff)
 
-lemma int_shiftl_numeral [simp]: 
+lemma int_shiftl_numeral [simp]:
   "(numeral w :: int) << numeral w' = numeral (num.Bit0 w) << pred_numeral w'"
   "(- numeral w :: int) << numeral w' = - numeral (num.Bit0 w) << pred_numeral w'"
 by(simp_all add: numeral_eq_Suc shiftl_int_def)
@@ -1369,7 +1372,7 @@ lemmas word_log_binary_defs =
 
 lemma setBit_no [simp]: "setBit (numeral bin) n = word_of_int (bin_sc n True (numeral bin))"
   by transfer (simp add: bin_sc_eq)
- 
+
 lemma clearBit_no [simp]:
   "clearBit (numeral bin) n = word_of_int (bin_sc n False (numeral bin))"
   by transfer (simp add: bin_sc_eq)
@@ -1402,7 +1405,7 @@ lemma uint_shiftl:
 lemma bin_mask_conv_pow2:
   "mask n = 2 ^ n - (1 :: int)"
   by (fact mask_eq_exp_minus_1)
-  
+
 lemma bin_mask_ge0: "mask n \<ge> (0 :: int)"
   by (fact mask_nonnegative_int)
 
@@ -1410,7 +1413,7 @@ lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
   for x :: int
   by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
 
-lemma bin_mask_numeral: 
+lemma bin_mask_numeral:
   "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"
   by (fact mask_numeral)
 

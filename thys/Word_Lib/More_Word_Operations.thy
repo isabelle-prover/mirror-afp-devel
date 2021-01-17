@@ -1,3 +1,8 @@
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Misc word operations\<close>
 
@@ -196,7 +201,7 @@ proof -
     using \<open>bit w r\<close> by (subst Max_in) auto
   finally show ?thesis
     by simp
-qed    
+qed
 
 lemma word_log2_maximum:
   \<open>n \<le> word_log2 w\<close> if \<open>bit w n\<close>

@@ -1,5 +1,10 @@
-(*  Author:     Jeremy Dawson, NICTA
-*)
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+(* Author: Jeremy Dawson, NICTA *)
 
 section \<open>Bit values as reversed lists of bools\<close>
 
@@ -841,7 +846,7 @@ next
   obtain b k where \<open>bin = of_bool b + 2 * k\<close>
     using bin_exhaust by blast
   moreover have \<open>(2 * k - 1) div 2 = k - 1\<close>
-    using even_succ_div_2 [of \<open>2 * (k - 1)\<close>] 
+    using even_succ_div_2 [of \<open>2 * (k - 1)\<close>]
     by simp
   ultimately show ?case
     using Suc [of \<open>bin div 2\<close>]
@@ -1164,7 +1169,7 @@ lemma ucast_down_bl:
   using that by transfer simp
 
 lemma of_bl_append_same: "of_bl (X @ to_bl w) = w"
-  by transfer (simp add: bl_to_bin_app_cat) 
+  by transfer (simp add: bl_to_bin_app_cat)
 
 lemma ucast_of_bl_up:
   \<open>ucast (of_bl bl :: 'a::len word) = of_bl bl\<close>
@@ -1431,7 +1436,7 @@ proof (rule bit_word_eqI)
     with \<open>n < LENGTH('a)\<close>
     have \<open>n < LENGTH('a) - 1\<close>
       by simp
-    with \<open>n < LENGTH('a)\<close> show ?thesis 
+    with \<open>n < LENGTH('a)\<close> show ?thesis
       by (simp add: bit_shiftr1_iff bit_of_bl_iff rev_nth nth_butlast
         word_size test_bit_word_eq to_bl_nth)
   qed

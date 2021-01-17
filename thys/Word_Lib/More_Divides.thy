@@ -1,3 +1,8 @@
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 section \<open>Lemmas on division\<close>
 
@@ -210,7 +215,7 @@ lemma int_mod_eq: "0 \<le> b \<Longrightarrow> b < n \<Longrightarrow> a mod n =
 
 lemma zmde:
   \<open>b * (a div b) = a - a mod b\<close> for a b :: \<open>'a::{group_add,semiring_modulo}\<close>
-  using mult_div_mod_eq [of b a] by (simp add: eq_diff_eq) 
+  using mult_div_mod_eq [of b a] by (simp add: eq_diff_eq)
 
 (* already have this for naturals, div_mult_self1/2, but not for ints *)
 lemma zdiv_mult_self: "m \<noteq> 0 \<Longrightarrow> (a + m * n) div m = a div m + n"

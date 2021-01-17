@@ -1,3 +1,9 @@
+(*
+ * Copyright Florian Haftmann
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
 (*<*)
 theory Guide
   imports Word_Lib_Sumo
@@ -204,31 +210,31 @@ text \<open>
           \<^item> @{thm [mode=iff] is_aligned_iff_udvd [no_vars]}
 
       \<^descr>[\<^theory>\<open>Word_Lib.Least_significant_bit\<close>]
-    
+
         The least significant bit as an alias:
         @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
-    
+
       \<^descr>[\<^theory>\<open>Word_Lib.Most_significant_bit\<close>]
-    
+
         The most significant bit:
-    
+
           \<^item> @{thm [mode=iff] msb_int_def [of k]}
-    
+
           \<^item> @{thm [mode=iff] word_msb_sint [no_vars]}
-    
+
           \<^item> @{thm [mode=iff] msb_word_iff_sless_0 [no_vars]}
-    
+
           \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
 
       \<^descr>[\<^theory>\<open>Word_Lib.Traditional_Infix_Syntax\<close>]
-    
+
         Clones of existing operations decorated with
         traditional syntax:
-    
+
           \<^item> @{thm test_bit_eq_bit [no_vars]}
-    
+
           \<^item> @{thm shiftl_eq_push_bit [no_vars]}
-    
+
           \<^item> @{thm shiftr_eq_drop_bit [no_vars]}
 
           \<^item> @{thm sshiftr_eq [no_vars]}

@@ -1,7 +1,12 @@
+(*
+ * Copyright Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
 
 theory Many_More
   imports
-    Main 
+    Main
     "HOL-Library.Word"
     More_Word
     Even_More_List
