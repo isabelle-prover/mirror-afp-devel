@@ -92,12 +92,20 @@ next
     using splay_not_Leaf[OF \<open>A \<noteq> Leaf\<close>] by blast
   let ?X = "Node l x r" let ?AB = "Node A a B"  let ?ABC = "Node ?AB b C"
   let ?A' = "Node A1 a' A2"
-  let ?BC = "Node B b C"  let ?A2BC = "Node A2 a ?BC"
-  have "A_splay x ?ABC = A_splay x A + \<phi> ?A2BC + \<phi> ?BC - \<phi> ?AB - \<phi> ?A' + 1"
-    using "6.hyps" sp
-    by(auto simp: A_splay_def size_if_splay algebra_simps split: tree.split)
+  let ?BC = "Node B b C"  let ?A2BC = "Node A2 a ?BC" let ?A1A2BC = "Node A1 a' ?A2BC"
+  have 0: "\<phi> ?A1A2BC = \<phi> ?ABC" using sp by(simp add: size_if_splay)
+  have 1: "\<Phi> ?A1A2BC - \<Phi> ?ABC = \<Phi> A1 + \<Phi> A2 + \<phi> ?A2BC + \<phi> ?BC - \<Phi> A - \<phi> ?AB"
+    using 0 by (simp)
+  have "A_splay x ?ABC = T_splay x A + 1 + \<Phi> ?A1A2BC - \<Phi> ?ABC"
+    using "6.hyps" sp by(simp add: A_splay_def)
+  also have "\<dots> = T_splay x A + 1 + \<Phi> A1 + \<Phi> A2 + \<phi> ?A2BC + \<phi> ?BC - \<Phi> A - \<phi> ?AB"
+    using 1 by simp
+  also have "\<dots> = T_splay x A + \<Phi> ?A' - \<phi> ?A' - \<Phi> A + \<phi> ?A2BC + \<phi> ?BC - \<phi> ?AB + 1"
+    by(simp)
+  also have "\<dots> = A_splay x A + \<phi> ?A2BC + \<phi> ?BC - \<phi> ?AB - \<phi> ?A' + 1"
+    using sp by(simp add: A_splay_def)
   also have "\<dots> \<le> 3 * \<phi> A + \<phi> ?A2BC + \<phi> ?BC - \<phi> ?AB - \<phi> ?A' - 3 * \<phi> ?X + 2"
-    using "6.IH" "6.prems"(1) * by(auto simp: algebra_simps)
+    using "6.IH" "6.prems"(1) * by(simp)
   also have "\<dots> = 2 * \<phi> A + \<phi> ?A2BC + \<phi> ?BC - \<phi> ?AB - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> < \<phi> A + \<phi> ?A2BC + \<phi> ?BC - 3 * \<phi> ?X + 2" by(simp)
@@ -114,12 +122,20 @@ next
      using splay_not_Leaf[OF \<open>B \<noteq> Leaf\<close>] by blast
   let ?X = "Node l x r" let ?AB = "Node A a B"  let ?ABC = "Node ?AB b C"
   let ?B' = "Node B1 b' B2"
-  let ?AB1 = "Node A a B1"  let ?B2C = "Node B2 b C"
-  have "A_splay x ?ABC = A_splay x B + \<phi> ?AB1 + \<phi> ?B2C - \<phi> ?AB - \<phi> ?B' + 1"
-    using "8.hyps" sp
-    by(auto simp: A_splay_def size_if_splay algebra_simps split: tree.split)
+  let ?AB1 = "Node A a B1"  let ?B2C = "Node B2 b C" let ?AB1B2C = "Node ?AB1 b' ?B2C"
+  have 0: "\<phi> ?AB1B2C = \<phi> ?ABC" using sp by(simp add: size_if_splay)
+  have 1: "\<Phi> ?AB1B2C - \<Phi> ?ABC = \<Phi> B1 + \<Phi> B2 + \<phi> ?AB1 + \<phi> ?B2C - \<Phi> B - \<phi> ?AB"
+    using 0 by (simp)
+  have "A_splay x ?ABC = T_splay x B + 1 + \<Phi> ?AB1B2C - \<Phi> ?ABC"
+    using "8.hyps" sp by(simp add: A_splay_def)
+  also have "\<dots> = T_splay x B + 1 + \<Phi> B1 + \<Phi> B2 + \<phi> ?AB1 + \<phi> ?B2C - \<Phi> B - \<phi> ?AB"
+    using 1 by simp
+  also have "\<dots> = T_splay x B + \<Phi> ?B' - \<phi> ?B' - \<Phi> B + \<phi> ?AB1 + \<phi> ?B2C - \<phi> ?AB + 1"
+    by simp
+  also have "\<dots> = A_splay x B + \<phi> ?AB1 + \<phi> ?B2C - \<phi> ?AB - \<phi> ?B' + 1"
+    using sp by (simp add: A_splay_def)
   also have "\<dots> \<le> 3 * \<phi> B + \<phi> ?AB1 + \<phi> ?B2C - \<phi> ?AB - \<phi> ?B' - 3 * \<phi> ?X + 2"
-    using "8.IH" "8.prems"(1) * by(auto simp: algebra_simps)
+    using "8.IH" "8.prems"(1) * by(simp)
   also have "\<dots> = 2 * \<phi> B + \<phi> ?AB1 + \<phi> ?B2C - \<phi> ?AB - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> < \<phi> B + \<phi> ?AB1 + \<phi> ?B2C - 3 * \<phi> ?X + 2" by(simp)
