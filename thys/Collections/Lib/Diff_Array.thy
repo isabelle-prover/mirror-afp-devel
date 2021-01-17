@@ -806,19 +806,19 @@ object DiffArray {
   import scala.collection.mutable.ArraySeq
 
   protected abstract sealed class DiffArray_D[A]
-  final case class Current[A] (a:ArraySeq[A]) extends DiffArray_D[A]
+  final case class Current[A] (a:ArraySeq[AnyRef]) extends DiffArray_D[A]
   final case class Upd[A] (i:Int, v:A, n:DiffArray_D[A]) extends DiffArray_D[A]
 
   object DiffArray_Realizer {
-    def realize[A](a:DiffArray_D[A]) : ArraySeq[A] = a match {
+    def realize[A](a:DiffArray_D[A]) : ArraySeq[AnyRef] = a match {
       case Current(a) => ArraySeq.empty ++ a
-      case Upd(j,v,n) => {val a = realize(n); a.update(j, v); a}
+      case Upd(j,v,n) => {val a = realize(n); a.update(j, v.asInstanceOf[AnyRef]); a}
     }
   }
 
   class T[A] (var d:DiffArray_D[A]) {
 
-    def realize () = { val a=DiffArray_Realizer.realize(d); d = Current(a); a }
+    def realize (): ArraySeq[AnyRef] = { val a=DiffArray_Realizer.realize(d); d = Current(a); a }
     override def toString() = realize().toSeq.toString
 
     override def equals(obj:Any) =
@@ -828,10 +828,10 @@ object DiffArray {
   }
 
 
-  def array_of_list[A](l : List[A]) : T[A] = new T(Current(ArraySeq.empty ++ l))
-    def new_array[A](v:A, sz : BigInt) = new T[A](Current[A](ArraySeq.fill[A](sz.intValue)(v)))
+  def array_of_list[A](l : List[A]) : T[A] = new T(Current(ArraySeq.empty ++ l.asInstanceOf[List[AnyRef]]))
+  def new_array[A](v:A, sz : BigInt) = new T[A](Current[A](ArraySeq.fill[AnyRef](sz.intValue)(v.asInstanceOf[AnyRef])))
 
-    private def length[A](a:DiffArray_D[A]) : BigInt = a match {
+  private def length[A](a:DiffArray_D[A]) : BigInt = a match {
     case Current(a) => a.length
     case Upd(_,_,n) => length(n)
   }
@@ -839,20 +839,20 @@ object DiffArray {
   def length[A](a : T[A]) : BigInt = length(a.d)
 
   private def sub[A](a:DiffArray_D[A], i:Int) : A = a match {
-    case Current(a) => a (i)
+    case Current(a) => a(i).asInstanceOf[A]
     case Upd(j,v,n) => if (i==j) v else sub(n,i)
   }
 
   def get[A](a:T[A], i:BigInt) : A = sub(a.d,i.intValue)
 
-  private def realize[A](a:DiffArray_D[A]) = DiffArray_Realizer.realize[A](a)
+  private def realize[A](a:DiffArray_D[A]): ArraySeq[AnyRef] = DiffArray_Realizer.realize[A](a)
 
   def set[A](a:T[A], i:BigInt,v:A) : T[A] = a.d match {
     case Current(ad) => {
       val ii = i.intValue;
-      a.d = Upd(ii,ad(ii),a.d);
+      a.d = Upd(ii,ad(ii).asInstanceOf[A],a.d);
       //ad.update(ii,v);
-      ad(ii)=v
+      ad(ii)=v.asInstanceOf[AnyRef]
       new T[A](Current(ad))
     }
     case Upd(_,_,_) => set(new T[A](Current(realize(a.d))), i.intValue,v)
@@ -860,12 +860,12 @@ object DiffArray {
 
   def grow[A](a:T[A], sz:BigInt, v:A) : T[A] = a.d match {
     case Current(ad) => {
-      val adt = ArraySeq.fill[A](sz.intValue)(v)
+      val adt = ArraySeq.fill[AnyRef](sz.intValue)(v.asInstanceOf[AnyRef])
       System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
       new T[A](Current[A](adt))
     }
     case Upd (_,_,_) =>  {
-      val adt = ArraySeq.fill[A](sz.intValue)(v)
+      val adt = ArraySeq.fill[AnyRef](sz.intValue)(v.asInstanceOf[AnyRef])
       val ad = realize(a.d)
       System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
       new T[A](Current[A](adt))
@@ -878,17 +878,17 @@ object DiffArray {
     } else {
       a.d match {
         case Current(ad) => {
-            val v=ad(0);
-            val szz=sz.intValue
-          val adt = ArraySeq.fill[A](szz)(v);
+          val v=ad(0);
+          val szz=sz.intValue
+          val adt = ArraySeq.fill[AnyRef](szz)(v);
           System.arraycopy(ad.array, 0, adt.array, 0, szz);
           new T[A](Current[A](adt))
         }
         case Upd (_,_,_) =>  {
           val ad = realize(a.d);
-            val szz=sz.intValue
-            val v=ad(0);
-          val adt = ArraySeq.fill[A](szz)(v);
+          val szz=sz.intValue
+          val v=ad(0);
+          val adt = ArraySeq.fill[AnyRef](szz)(v);
           System.arraycopy(ad.array, 0, adt.array, 0, szz);
           new T[A](Current[A](adt))
         }
@@ -900,7 +900,7 @@ object DiffArray {
   }
 
   def set_oo[A](d: Unit => T[A], a:T[A], i:BigInt, v:A) : T[A] = try set(a,i,v) catch {
-    case _:scala.IndexOutOfBoundsException => d ()
+    case _:scala.IndexOutOfBoundsException => d(())
   }
 
 }
