@@ -71,7 +71,7 @@ lemma cexp_left_mono:
   shows "\<kappa>1\<^bsup>\<up>\<nu>\<^esup> \<le> \<kappa>2\<^bsup>\<up>\<nu>\<^esup>"
     (* \<comment> \<open>short, unreadable proof: \<close>
   unfolding cexp_def
-  using subset_imp_lepoll[THEN lepoll_imp_Card_le]
+  using subset_imp_lepoll[THEN lepoll_imp_cardinal_le]
     assms le_subset_iff[THEN iffD1, OF assms]
     Pi_weaken_type[of _ _ "\<lambda>_. \<kappa>1" "\<lambda>_. \<kappa>2"] by auto *)
 proof -
@@ -83,7 +83,7 @@ proof -
     using Pi_weaken_type by auto
   then
   show ?thesis unfolding cexp_def
-    using lepoll_imp_Card_le subset_imp_lepoll by simp
+    using lepoll_imp_cardinal_le subset_imp_lepoll by simp
 qed
 
 lemma cantor_cexp':
@@ -113,7 +113,7 @@ proof -
 qed
 
 lemma subset_imp_le_cardinal: "A \<subseteq> B \<Longrightarrow> |A| \<le> |B|"
-  using subset_imp_lepoll[THEN lepoll_imp_Card_le] .
+  using subset_imp_lepoll[THEN lepoll_imp_cardinal_le] .
 
 lemma lt_cardinal_imp_not_subset: "|A| < |B| \<Longrightarrow> \<not> B \<subseteq> A"
   using subset_imp_le_cardinal le_imp_not_lt by blast
@@ -211,7 +211,7 @@ proof -
   note assms
   moreover from this
   have "|sum(A,B)| \<le> \<kappa> \<oplus> \<kappa>"
-    using sum_lepoll_mono[of A \<kappa> B \<kappa>] lepoll_imp_Card_le
+    using sum_lepoll_mono[of A \<kappa> B \<kappa>] lepoll_imp_cardinal_le
     unfolding cadd_def by auto
   ultimately
   show ?thesis
@@ -650,7 +650,7 @@ proof -
     note assms
     moreover from calculation
     have "y \<in> Y \<Longrightarrow> |{x\<in>X . F`x = y}| \<le> |Y|" for y
-      using Infinite_imp_nats_lepoll[THEN lepoll_imp_Card_le, of Y
+      using Infinite_imp_nats_lepoll[THEN lepoll_imp_cardinal_le, of Y
           "|{x\<in>X . F`x = y}|"] cardinal_idem by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>X . F`x = y}| \<le> |Y|"

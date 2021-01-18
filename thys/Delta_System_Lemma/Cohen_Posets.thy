@@ -73,7 +73,7 @@ qed
 
 text\<open>We finally arrive to our application of DSL.\<close>
 
-lemma ccc_Fn_nat: "ccc(Fn(I,2), (\<supseteq>))"
+lemma ccc_Fn_2: "ccc(Fn(I,2), (\<supseteq>))"
 proof -
   {
     fix A

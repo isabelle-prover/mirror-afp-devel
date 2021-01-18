@@ -10158,3 +10158,16 @@ abstract =
   CopyBuffer for arbitrary data and the Dijkstra's Dining
   Philosopher Problem of arbitrary size.
 
+[Hood_Melville_Queue]
+title = Hood-Melville Queue
+author = Alejandro Gómez-Londoño<mailto:alejandro.gomez@chalmers.se>
+topic = Computer science/Data structures
+date = 2021-01-18
+notify = nipkow@in.tum.de
+abstract = 
+  This is a verified implementation of a constant time queue. The
+  original design is due to <a
+  href="https://doi.org/10.1016/0020-0190(81)90030-2">Hood
+  and Melville</a>. This formalization follows the presentation in
+  <em>Purely Functional Data Structures</em>by Okasaki.
+

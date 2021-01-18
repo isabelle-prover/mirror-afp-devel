@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
+    <pubDate>18 Jan 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hood-Melville Queue</title>
+              <link>https://www.isa-afp.org/entries/Hood_Melville_Queue.html</link>
+       <guid>https://www.isa-afp.org/entries/Hood_Melville_Queue.html</guid>
+       <dc:creator> Alejandro Gómez-Londoño       </dc:creator>
+       <pubDate>18 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+This is a verified implementation of a constant time queue. The
+original design is due to &lt;a
+href=&#34;https://doi.org/10.1016/0020-0190(81)90030-2&#34;&gt;Hood
+and Melville&lt;/a&gt;. This formalization follows the presentation in
+&lt;em&gt;Purely Functional Data Structures&lt;/em&gt;by Okasaki.</description>
+    </item>
     <item>
        <title>Cofinality and the Delta System Lemma</title>
               <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
@@ -589,30 +602,6 @@ material including Euler&#39;s sigma function, some relevant
 definitions, results and examples as well as rules such as
 Th&amp;#257;bit ibn Qurra&#39;s Rule, Euler&#39;s Rule, te
 Riele&#39;s Rule and Borho&#39;s Rule with breeders.</description>
-    </item>
-    <item>
-       <title>Ordinal Partitions</title>
-              <link>https://www.isa-afp.org/entries/Ordinal_Partitions.html</link>
-       <guid>https://www.isa-afp.org/entries/Ordinal_Partitions.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>03 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-The theory of partition relations concerns generalisations of
-Ramsey&#39;s theorem. For any ordinal $\alpha$, write $\alpha \to
-(\alpha, m)^2$ if for each function $f$ from unordered pairs of
-elements of $\alpha$ into $\{0,1\}$, either there is a subset
-$X\subseteq \alpha$ order-isomorphic to $\alpha$ such that
-$f\{x,y\}=0$ for all $\{x,y\}\subseteq X$, or there is an $m$ element
-set $Y\subseteq \alpha$ such that $f\{x,y\}=1$ for all
-$\{x,y\}\subseteq Y$. (In both cases, with $\{x,y\}$ we require
-$x\not=y$.) In particular, the infinite Ramsey theorem can be written
-in this notation as $\omega \to (\omega, \omega)^2$, or if we
-restrict $m$ to the positive integers as above, then $\omega \to
-(\omega, m)^2$ for all $m$.  This entry formalises Larson&#39;s proof
-of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
-of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
-proved is a necessary result by Erdős and Milner:
-$\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.</description>
     </item>
   </channel>
 </rss>
