@@ -41,7 +41,7 @@ proof (rule ccontr)
   with \<open>cf(z\<^sup>+) < z\<^sup>+\<close> \<open>\<forall>\<beta>\<in>cf(z\<^sup>+). |G`\<beta>| \<le> _\<close> \<open>InfCard(z)\<close>
   have "|\<Union>\<beta>\<in>cf(z\<^sup>+). G`\<beta>| \<le> z"
     using InfCard_csucc[of z]
-      subset_imp_lepoll[THEN lepoll_imp_Card_le, of "\<Union>\<beta>\<in>cf(z\<^sup>+). G`\<beta>" "z"]
+      subset_imp_lepoll[THEN lepoll_imp_cardinal_le, of "\<Union>\<beta>\<in>cf(z\<^sup>+). G`\<beta>" "z"]
     by (rule_tac leqpoll_imp_cardinal_UN_le) auto
   moreover
   note \<open>Ord(z)\<close>
