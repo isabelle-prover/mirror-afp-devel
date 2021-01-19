@@ -133,7 +133,7 @@ object profile extends isabelle.CI_Profile
     def group_by_entry(results: Build.Results): Map[Option[String], List[String]] =
       results.sessions.toList.map { name =>
         entry_of_session(results.info(name)) -> name
-      }.groupBy(_._1).mapValues(_.map(_._2))
+      }.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
 
     def status_as_json(status: Map[Option[String], Status]): String =
     {
@@ -217,9 +217,9 @@ object profile extends isabelle.CI_Profile
     }
 
     val status =
-      metadata.group_by_entry(results).mapValues { sessions =>
+      metadata.group_by_entry(results).view.mapValues { sessions =>
         Status.merge(sessions.map(Status.from_results(results, _)))
-      }
+      }.toMap
 
     print_section("REPORT")
     println("Writing report file ...")
