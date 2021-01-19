@@ -224,7 +224,7 @@ proof -
 qed
 
 text \<open>p 12, ll 7--8\<close>
-definition "Partition = {Class a | a. a \<in> S}"
+definition "Partition = Class ` S"
 
 text \<open>p 12, ll 7--8\<close>
 lemma Class_in_Partition [intro, simp]:
@@ -349,7 +349,7 @@ qed
 text \<open>p 12, l 14\<close>
 theorem partition_of_equivalence:
   "Partition = P"
-  by (auto simp add: Partition_def Class_equals_Block) (metis Block_self element_exists)
+  by (auto simp add: Partition_def Class_equals_Block image_iff) (metis Block_self element_exists)
 
 end (* partition *)
 
@@ -459,10 +459,11 @@ qed (simp add: induced_def)
 
 text \<open>p 13, ll 12--13\<close>
 sublocale induced: injective_map induced "S / E(\<alpha>)" T
-  apply unfold_locales
-  apply (rule inj_onI)
-  apply (metis Fiber_equality Block_self element_exists induced_Fiber_simp)
-  done
+proof
+  show "inj_on induced Partition"
+    unfolding inj_on_def
+    by (metis Fiber_equality Block_self element_exists induced_Fiber_simp)
+qed
 
 text \<open>p 13, ll 16--19\<close>
 theorem factorization_lemma:
