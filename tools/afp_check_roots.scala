@@ -39,7 +39,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
           Some((entry, name))
         else
           None
-      }.groupBy(_._1).mapValues(_.map(_._2)).toList
+      }.groupBy(_._1).view.mapValues(_.map(_._2)).toList
     },
     failure_msg = "The following entries contain sessions without timeouts or with timeouts not divisible by 300:",
     failure_format = { case (entry, sessions) => s"""$entry ${sessions.mkString("(", ", ", ")")}""" }
