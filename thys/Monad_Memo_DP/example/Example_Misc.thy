@@ -3,7 +3,10 @@ section \<open>Examples\<close>
 subsection \<open>Misc\<close>
 
 theory Example_Misc
-imports Main
+  imports
+    Main
+    "HOL-Library.Extended"
+    "../state_monad/State_Main"
 begin
 
 paragraph \<open>Lists\<close>
@@ -26,6 +29,22 @@ by induction_schema (pat_completeness, lexicographic_order)
 
 lemma min_list_Min: "xs \<noteq> [] \<Longrightarrow> min_list xs = Min (set xs)"
 by (induction xs rule: induct_list012)(auto)
+
+paragraph \<open>Extended Data Type\<close>
+
+(* TODO: Move to distribution! *)
+lemma Pinf_add_right[simp]:
+  "\<infinity> + x = \<infinity>"
+  by (cases x; simp)
+
+paragraph \<open>Syntax\<close>
+
+bundle app_syntax begin
+
+notation App (infixl "$" 999)
+notation Wrap ("\<llangle>_\<rrangle>")
+
+end
 
 (*
 paragraph \<open>Code Setup\<close>

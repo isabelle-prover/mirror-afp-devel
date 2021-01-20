@@ -2,12 +2,10 @@ subsection \<open>The Bellman-Ford Algorithm\<close>
 
 theory Bellman_Ford
   imports
-    "HOL-Library.Extended"
     "HOL-Library.IArray"
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Product_Lexorder"
     "HOL-Library.RBT_Mapping"
-    "../state_monad/State_Main"
     "../heap_monad/Heap_Main"
     Example_Misc
     "../util/Tracing"
@@ -21,13 +19,6 @@ lemma nat_le_cases:
   assumes "i \<le> n"
   obtains "i < n" | "i = n"
   using assms by (cases "i = n") auto
-
-bundle app_syntax begin
-
-notation App (infixl "$" 999)
-notation Wrap ("\<llangle>_\<rrangle>")
-
-end
 
 context dp_consistency_iterator
 begin
@@ -283,10 +274,6 @@ lemma OPT_0:
   "OPT 0 v = (if t = v then 0 else \<infinity>)"
   unfolding OPT_def by simp
 
-(* TODO: Move to distribution! *)
-lemma Pinf_add_right[simp]:
-  "\<infinity> + x = \<infinity>"
-  by (cases x; simp)
 
 subsubsection \<open>Functional Correctness\<close>
 
