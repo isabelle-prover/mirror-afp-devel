@@ -1,5 +1,12 @@
 subsection \<open>Optimal Binary Search Trees\<close>
 
+text \<open>
+The material presented in this section just contains a simple and non-optimal version
+(cubic instead of quadratic in the number of keys).
+It can now be viewed to be superseded by the AFP entry \<open>Optimal_BST\<close>.
+It is kept here as a more easily understandable example and for archival purposes.
+\<close>
+
 theory OptBST
 imports
   "HOL-Library.Tree"
@@ -10,6 +17,25 @@ imports
   "HOL-Library.Product_Lexorder"
   "HOL-Library.RBT_Mapping"
 begin
+
+subsubsection \<open>Function \<open>argmin\<close>\<close>
+
+text \<open>Function \<open>argmin\<close> iterates over a list and returns the rightmost element
+that minimizes a given function:\<close>
+
+fun argmin :: "('a \<Rightarrow> ('b::linorder)) \<Rightarrow> 'a list \<Rightarrow> 'a" where
+"argmin f (x#xs) =
+  (if xs = [] then x else
+   let m = argmin f xs in if f x < f m then x else m)"
+
+text \<open>Note that @{term arg_min_list} is similar but returns the leftmost element.\<close>
+
+lemma argmin_forall: "xs \<noteq> [] \<Longrightarrow> (\<And>x. x\<in>set xs \<Longrightarrow> P x) \<Longrightarrow> P (argmin f xs)"
+by(induction xs) (auto simp: Let_def)
+
+lemma argmin_Min: "xs \<noteq> [] \<Longrightarrow> f (argmin f xs) = Min (f ` set xs)"
+by(induction xs) (auto simp: min_def intro!: antisym)
+
 
 subsubsection \<open>Misc\<close>
 
@@ -36,7 +62,7 @@ declare min_wpl.simps[simp del]
 
 function opt_bst :: "int * int \<Rightarrow> int tree" where
 "opt_bst (i,j) =
-  (if i > j then Leaf else arg_min_list (wpl i j) [\<langle>opt_bst (i,k-1), k, opt_bst (k+1,j)\<rangle>. k \<leftarrow> [i..j]])"
+  (if i > j then Leaf else argmin (wpl i j) [\<langle>opt_bst (i,k-1), k, opt_bst (k+1,j)\<rangle>. k \<leftarrow> [i..j]])"
   by auto
 termination by (relation "measure (\<lambda>(i,j) . nat(j-i+1))") auto
 declare opt_bst.simps[simp del]
@@ -149,12 +175,9 @@ next
   qed
 qed
 
-lemma P_arg_min_list: "(\<And>x. x \<in> set xs \<Longrightarrow> P x) \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> P(arg_min_list f xs)"
-  by (induction f xs rule: arg_min_list.induct) (auto simp: Let_def)
-
 lemma opt_bst_correct: "inorder (opt_bst (i,j)) = [i..j]"
- by (induction "(i,j)" arbitrary: i j rule: opt_bst.induct)
-    (force simp: opt_bst.simps upto_join intro: P_arg_min_list)
+  by (induction "(i,j)" arbitrary: i j rule: opt_bst.induct)
+     (clarsimp simp: opt_bst.simps upto_join | rule argmin_forall)+
 
 lemma wpl_opt_bst: "wpl i j (opt_bst (i,j)) = min_wpl i j"
 proof(induction i j rule: min_wpl.induct)
@@ -167,8 +190,8 @@ proof(induction i j rule: min_wpl.induct)
     let ?ts = "[\<langle>opt_bst (i,k-1), k, opt_bst (k+1,j)\<rangle>. k <- [i..j]]"
     let ?M = "((\<lambda>k. min_wpl i (k-1) + min_wpl (k+1) j + W i j) ` {i..j})"
     have "?ts \<noteq> []" by (auto simp add: upto.simps)
-    have "wpl i j (opt_bst (i,j)) = wpl i j (arg_min_list (wpl i j) ?ts)" by (simp add: opt_bst.simps)
-    also have "\<dots> = Min (wpl i j ` (set ?ts))" by(rule f_arg_min_list_f[OF \<open>?ts \<noteq> []\<close>])
+    have "wpl i j (opt_bst (i,j)) = wpl i j (argmin (wpl i j) ?ts)" by (simp add: opt_bst.simps)
+    also have "\<dots> = Min (wpl i j ` (set ?ts))" by (rule argmin_Min[OF \<open>?ts \<noteq> []\<close>])
     also have "\<dots> = Min ?M"
     proof (rule arg_cong[where f=Min])
       show "wpl i j ` (set ?ts) = ?M"

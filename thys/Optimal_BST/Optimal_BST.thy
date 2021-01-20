@@ -3,18 +3,16 @@
 section \<open>Optimal BSTs: The `Cubic' Algorithm\label{sec:cubic}\<close>
 
 theory Optimal_BST
-imports Weighted_Path_Length
+imports Weighted_Path_Length Monad_Memo_DP.OptBST
 begin
 
 subsection \<open>Function \<open>argmin\<close>\<close>
 
-text \<open>Function \<open>argmin\<close> iterates over a list and returns the rightmost element
-that minimizes a given function:\<close>
+text \<open>Function \<open>argmin\<close> was moved to \<open>Monad_Memo_DP.argmin\<close>.
+It iterates over a list and returns the rightmost element that minimizes a given function:
 
-fun argmin :: "('a \<Rightarrow> ('b::linorder)) \<Rightarrow> 'a list \<Rightarrow> 'a" where
-"argmin f (x#xs) =
-  (if xs = [] then x else
-   let m = argmin f xs in if f x < f m then x else m)"
+@{thm [display] argmin.simps}
+\<close>
 
 text \<open>An optimized version that avoids repeated computation of \<open>f x\<close>:\<close>
 
@@ -34,14 +32,9 @@ apply (meson argmin.elims list.distinct(1))
 done
 
 
-lemma argmin_forall: "xs \<noteq> [] \<Longrightarrow> (\<And>x. x\<in>set xs \<Longrightarrow> P x) \<Longrightarrow> P (argmin f xs)"
-by(induction xs) (auto simp: Let_def)
 
 lemma argmin_in: "xs \<noteq> [] \<Longrightarrow> argmin f xs \<in> set xs"
 using argmin_forall[of xs "\<lambda>x. x\<in>set xs"] by blast
-
-lemma argmin_Min: "xs \<noteq> [] \<Longrightarrow> f (argmin f xs) = Min (f ` set xs)"
-by(induction xs) (auto simp: min_def intro!: antisym)
 
 lemma argmin_pairs: "xs \<noteq> [] \<Longrightarrow>
   (argmin f xs,f (argmin f xs)) = argmin snd (map (\<lambda>x. (x,f x)) xs)"
