@@ -1,10 +1,10 @@
 chapter AFP
 
 session Complete_Non_Orders (AFP) = HOL +
-  description "Theory of Complete Non-Orders and their Fixed-Points Theorems"
+  description "Fixed-Point Theorems for Non-Transitive Relations"
   options [timeout = 300]
   theories
-    Fixed_Points
+    Fixed_Points Kleene_Fixed_Point
   document_files
     "root.tex"
     "root.bib"
