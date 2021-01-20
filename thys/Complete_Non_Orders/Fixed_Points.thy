@@ -262,14 +262,14 @@ In order to formalize such a theorem in Isabelle,
 we followed Grall's~\cite{grall10} elementary proof for Bourbaki--Witt and Markowsky's theorems.
 His idea is to consider well-founded derivation trees over $A$,
 where from a set $C \subseteq A$ of premises
-one can derive $f\:(\SUP C)$ if $C$ is a chain.
+one can derive $f\:(\bigsqcup C)$ if $C$ is a chain.
 The main observation is as follows:
 Let $D$ be the set of all the derivable elements; that is,
 for each $d \in D$ there exists a well-founded derivation
 whose root is $d$.
 It is shown that $D$ is a chain,
-and hence one can build a derivation yielding $f\:(\SUP D)$,
-and $f\:(\SUP D)$ is shown to be a fixed point.\<close>
+and hence one can build a derivation yielding $f\:(\bigsqcup D)$,
+and $f\:(\bigsqcup D)$ is shown to be a fixed point.\<close>
 
 lemma bound_monotone_on:
   assumes mono: "monotone_on A r s f" and XA: "X \<subseteq> A" and aA: "a \<in> A" and rXa: "bound X r a"
@@ -648,7 +648,7 @@ proof (rule well_ordered_set.intro)
     apply unfold_locales by (auto dest: derivable_A antisym)
   show "well_related_set {x. derivable x} (\<sqsubseteq>)"
   apply (fold UN_derivations_eq_derivable)
-  apply (rule lower_UN_well_related)
+  apply (rule closed_UN_well_related)
   by (auto dest: derivation_well_ordered derivations_cross_compare well_ordered_set.axioms)
 qed
 

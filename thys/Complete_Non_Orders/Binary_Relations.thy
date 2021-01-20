@@ -1111,7 +1111,7 @@ proof -
   with XA show ?thesis by auto
 qed
 
-lemma nonempty_imp_ex_minimal:
+lemma nonempty_imp_ex_extremal:
   assumes QA: "Q \<subseteq> A" and Q: "Q \<noteq> {}"
   shows "\<exists>z \<in> Q. \<forall>y \<in> Q. \<not> y \<sqsubset> z"
   using Q prefixed_Imagep_imp_empty[of Q] QA by (auto simp: Imagep_def)
@@ -1180,7 +1180,7 @@ proof
   show "P a" by auto
 qed
 
-lemma well_foundedI_min:
+lemma well_foundedI_extremal:
   assumes a: "\<And>X. X \<subseteq> A \<Longrightarrow> X \<noteq> {} \<Longrightarrow> \<exists>x \<in> X. \<forall>y \<in> X. \<not> y \<sqsubset> x"
   shows "well_founded A (\<sqsubset>)"
 proof (rule well_foundedI_pf)
@@ -1188,9 +1188,9 @@ proof (rule well_foundedI_pf)
   from a[OF XA] pf show "X = {}" by (auto simp: Imagep_def)
 qed
 
-lemma well_founded_iff_ex_minimal:
+lemma well_founded_iff_ex_extremal:
   "well_founded A (\<sqsubset>) \<longleftrightarrow> (\<forall>X \<subseteq> A. X \<noteq> {} \<longrightarrow> (\<exists>x \<in> X. \<forall>z \<in> X. \<not> z \<sqsubset> x))"
-  using well_founded.nonempty_imp_ex_minimal well_foundedI_min by blast
+  using well_founded.nonempty_imp_ex_extremal well_foundedI_extremal by blast
 
 end
 
@@ -1202,7 +1202,7 @@ lemma well_founded_cong:
 proof (intro iffI)
   assume wf: "well_founded A r"
   show "well_founded A' r'"
-  proof (intro well_foundedI_min)
+  proof (intro well_foundedI_extremal)
     fix X
     assume X: "X \<subseteq> A'" and X0: "X \<noteq> {}"
     show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r' y x"
@@ -1214,7 +1214,7 @@ proof (intro iffI)
       with xX show ?thesis by auto
     next
       case False
-      from well_founded.nonempty_imp_ex_minimal[OF wf _ this]
+      from well_founded.nonempty_imp_ex_extremal[OF wf _ this]
       obtain x where x: "x \<in> X \<inter> A" and Ar: "\<And>y. y \<in> X \<Longrightarrow> y \<in> A \<Longrightarrow> \<not> r y x" by auto
       have "\<forall>y \<in> X. \<not> r' y x"
       proof (intro ballI notI)
@@ -1233,7 +1233,7 @@ proof (intro iffI)
 next
   assume wf: "well_founded A' r'"
   show "well_founded A r"
-  proof (intro well_foundedI_min)
+  proof (intro well_foundedI_extremal)
     fix X
     assume X: "X \<subseteq> A" and X0: "X \<noteq> {}"
     show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r y x"
@@ -1245,7 +1245,7 @@ next
       with xX show ?thesis by auto
     next
       case False
-      from well_founded.nonempty_imp_ex_minimal[OF wf _ this]
+      from well_founded.nonempty_imp_ex_extremal[OF wf _ this]
       obtain x where x: "x \<in> X \<inter> A'" and Ar: "\<And>y. y \<in> X \<Longrightarrow> y \<in> A' \<Longrightarrow> \<not> r' y x" by auto
       have "\<forall>y \<in> X. \<not> r y x"
       proof (intro ballI notI)
@@ -1268,13 +1268,13 @@ lemma wfP_iff_well_founded_UNIV: "wfP r \<longleftrightarrow> well_founded UNIV 
 
 lemma well_founded_singleton:
   assumes "\<not>r x x" shows "well_founded {x} r"
-  using assms by (auto simp: well_founded_iff_ex_minimal)
+  using assms by (auto simp: well_founded_iff_ex_extremal)
 
 lemma well_founded_Restrp[simp]: "well_founded A (r\<restriction>B) \<longleftrightarrow> well_founded (A\<inter>B) r" (is "?l \<longleftrightarrow> ?r")
-proof (intro iffI well_foundedI_min)
+proof (intro iffI well_foundedI_extremal)
   assume l: ?l
   fix X assume XAB: "X \<subseteq> A \<inter> B" and X0: "X \<noteq> {}"
-  with l[THEN well_founded.nonempty_imp_ex_minimal]
+  with l[THEN well_founded.nonempty_imp_ex_extremal]
   have "\<exists>x\<in>X. \<forall>z\<in>X. \<not> (r \<restriction> B) z x" by auto
   with XAB show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r y x" by (auto simp: Restrp_def)
 next
@@ -1283,7 +1283,7 @@ next
   show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> (r \<restriction> B) y x"
   proof (cases "X \<subseteq> B")
     case True
-    with r[THEN well_founded.nonempty_imp_ex_minimal, of X] XA X0
+    with r[THEN well_founded.nonempty_imp_ex_extremal, of X] XA X0
     have "\<exists>z\<in>X. \<forall>y\<in>X. \<not> r y z" by auto
     then show ?thesis by auto
   next
@@ -1296,7 +1296,7 @@ qed
 
 lemma (in well_founded) well_founded_subset:
   assumes "B \<subseteq> A" shows "well_founded B (\<sqsubset>)"
-  using assms well_founded_axioms by (auto simp: well_founded_iff_ex_minimal)
+  using assms well_founded_axioms by (auto simp: well_founded_iff_ex_extremal)
 
 lemma well_founded_extend:
   fixes less (infix "\<sqsubset>" 50)
@@ -1304,7 +1304,7 @@ lemma well_founded_extend:
   assumes B: "well_founded B (\<sqsubset>)"
   assumes AB: "\<forall>a \<in> A. \<forall>b \<in> B. \<not>b \<sqsubset> a"
   shows "well_founded (A \<union> B) (\<sqsubset>)"
-proof (intro well_foundedI_min)
+proof (intro well_foundedI_extremal)
   interpret A: well_founded A "(\<sqsubset>)" using A.
   interpret B: well_founded B "(\<sqsubset>)" using B.
   fix X assume XAB: "X \<subseteq> A \<union> B" and X0: "X \<noteq> {}"
@@ -1312,10 +1312,10 @@ proof (intro well_foundedI_min)
   proof (cases "X \<inter> A = {}")
     case True
     with XAB have XB: "X \<subseteq> B" by auto
-    from B.nonempty_imp_ex_minimal[OF XB X0] show ?thesis.
+    from B.nonempty_imp_ex_extremal[OF XB X0] show ?thesis.
   next
     case False
-    with A.nonempty_imp_ex_minimal[OF _ this]
+    with A.nonempty_imp_ex_extremal[OF _ this]
     obtain e where XAe: "e \<in> X \<inter> A" "\<forall>y\<in>X \<inter> A. \<not> y \<sqsubset> e" by auto
     then have eX: "e \<in> X" and eA: "e \<in> A" by auto
     { fix x assume xX: "x \<in> X"
@@ -1332,11 +1332,11 @@ proof (intro well_foundedI_min)
   qed
 qed
 
-lemma lower_UN_well_founded:
+lemma closed_UN_well_founded:
   fixes r (infix "\<sqsubset>" 50)
   assumes XX: "\<forall>X\<in>XX. well_founded X (\<sqsubset>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. y \<sqsubset> x \<longrightarrow> y \<in> X)"
   shows "well_founded (\<Union>XX) (\<sqsubset>)"
-proof (intro well_foundedI_min)
+proof (intro well_foundedI_extremal)
   have *: "X \<in> XX \<Longrightarrow> x\<in>X \<Longrightarrow> y \<in> \<Union>XX \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> y \<in> X" for X x y using XX by blast
   fix S
   assume S: "S \<subseteq> \<Union>XX" and S0: "S \<noteq> {}"
@@ -1344,7 +1344,7 @@ proof (intro well_foundedI_min)
   with S obtain X where X: "X \<in> XX" and xX: "x \<in> X" by auto
   from xS xX have Sx0: "S \<inter> X \<noteq> {}" by auto
   from X XX interpret well_founded X "(\<sqsubset>)" by auto
-  from nonempty_imp_ex_minimal[OF _ Sx0]
+  from nonempty_imp_ex_extremal[OF _ Sx0]
   obtain z where zS: "z \<in> S" and zX: "z \<in> X" and min: "\<forall>y \<in> S \<inter> X. \<not> y \<sqsubset> z" by auto
   show "\<exists>x\<in>S. \<forall>y\<in>S. \<not> y \<sqsubset> x"
   proof (intro bexI[OF _ zS] ballI notI)
@@ -1359,9 +1359,9 @@ qed
 lemma well_founded_cmono:
   assumes r': "r' \<le> r" and wf: "well_founded A r"
   shows "well_founded A r'"
-proof (intro well_foundedI_min)
+proof (intro well_foundedI_extremal)
   fix X assume "X \<subseteq> A" and "X \<noteq> {}"
-  from well_founded.nonempty_imp_ex_minimal[OF wf this]
+  from well_founded.nonempty_imp_ex_extremal[OF wf this]
   show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r' y x" using r' by auto
 qed
 
@@ -1399,7 +1399,7 @@ lemmas connex_axioms = connex_axioms
 interpretation less_eq_notations.
 
 sublocale asym: well_founded A "(\<sqsubset>)"
-proof (unfold well_founded_iff_ex_minimal, intro allI impI)
+proof (unfold well_founded_iff_ex_extremal, intro allI impI)
   fix X
   assume XA: "X \<subseteq> A" and X0: "X \<noteq> {}"
   from nonempty_imp_ex_extreme[OF XA X0] obtain e where "extreme X (\<sqsubseteq>)\<^sup>- e" by auto
@@ -1417,18 +1417,18 @@ begin
 
 lemma well_related_iff_neg_well_founded:
   "well_related_set A (\<sqsubseteq>) \<longleftrightarrow> well_founded A (\<lambda>x y. \<not> y \<sqsubseteq> x)"
-  by (simp add: well_related_set_def well_founded_iff_ex_minimal extreme_def Bex_def)
+  by (simp add: well_related_set_def well_founded_iff_ex_extremal extreme_def Bex_def)
 
 lemma well_related_singleton_refl: 
   assumes "x \<sqsubseteq> x" shows "well_related_set {x} (\<sqsubseteq>)"
   by (intro well_related_set.intro exI[of _ x], auto simp: subset_singleton_iff assms)
 
-lemma lower_UN_well_related:
+lemma closed_UN_well_related:
   assumes XX: "\<forall>X\<in>XX. well_related_set X (\<sqsubseteq>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. \<not>x \<sqsubseteq> y \<longrightarrow> y \<in> X)"
   shows "well_related_set (\<Union>XX) (\<sqsubseteq>)"
   using XX
   apply (unfold well_related_iff_neg_well_founded)
-  using lower_UN_well_founded[of _ "\<lambda>x y. \<not> y \<sqsubseteq> x"].
+  using closed_UN_well_founded[of _ "\<lambda>x y. \<not> y \<sqsubseteq> x"].
 
 end
 
@@ -1625,11 +1625,11 @@ lemmas singleton_antisymmetric[intro!] = singleton.antisymmetric_axioms
 lemma singleton_well_ordered[intro!]: "a \<sqsubseteq> a \<Longrightarrow> well_ordered_set {a} (\<sqsubseteq>)"
   apply unfold_locales by auto
 
-lemma lower_UN_well_ordered:
+lemma closed_UN_well_ordered:
   assumes anti: "antisymmetric (\<Union> XX) (\<sqsubseteq>)"
     and XX: "\<forall>X\<in>XX. well_ordered_set X (\<sqsubseteq>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. \<not> x \<sqsubseteq> y \<longrightarrow> y \<in> X)"
   shows "well_ordered_set (\<Union>XX) (\<sqsubseteq>)"
-  apply (intro well_ordered_set.intro lower_UN_well_related anti)
+  apply (intro well_ordered_set.intro closed_UN_well_related anti)
   using XX well_ordered_set.axioms by fast
 
 end
