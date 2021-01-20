@@ -68,12 +68,12 @@ qed
 
 definition "scott_continuous f \<equiv>
   f ` A \<subseteq> A \<and>
-  (\<forall>X s. X \<subseteq> A \<longrightarrow> directed X (\<sqsubseteq>) \<longrightarrow> extreme_bound A (\<sqsubseteq>) X s \<longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` X) (f s))"
+  (\<forall>X s. X \<subseteq> A \<longrightarrow> directed X (\<sqsubseteq>) \<longrightarrow> X \<noteq> {} \<longrightarrow> extreme_bound A (\<sqsubseteq>) X s \<longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` X) (f s))"
 
 lemmas scott_continuousI[intro?] =
   scott_continuous_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp, rule_format]
 
-lemmas scott_continuousE[elim] =
+lemmas scott_continuousE =
   scott_continuous_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp, rule_format]
 
 lemma scott_continuous_imp_mono_refl:
@@ -82,22 +82,22 @@ lemma scott_continuous_imp_mono_refl:
   shows "f x \<sqsubseteq> f y"
 proof-
   define D where "D \<equiv> {x,y}"
-  from x y xy yy have dir_D: "D \<subseteq> A" "directed D (\<sqsubseteq>)"
+  from x y xy yy have dir_D: "D \<subseteq> A" "directed D (\<sqsubseteq>)" "D \<noteq> {}"
     by (auto simp: D_def intro!: bexI[of _ y] directedI)
   have "extreme_bound A (\<sqsubseteq>) D y" using xy yy x y by (auto simp: D_def)
-  then have fboy: "extreme_bound A (\<sqsubseteq>) (f ` D) (f y)" using dir_D scott by auto
+  then have fboy: "extreme_bound A (\<sqsubseteq>) (f ` D) (f y)" using dir_D scott by (auto elim!: scott_continuousE)
   then show "f x \<sqsubseteq> f y" by (auto simp: D_def)
 qed
 
 lemma scott_continuous_imp_omega_continuous:
   assumes scott: "scott_continuous f" shows "omega_continuous f"
 proof
-  from scott show "f ` A \<subseteq> A" by auto
+  from scott show "f ` A \<subseteq> A" by (auto elim!: scott_continuousE)
   fix c :: "nat \<Rightarrow> 'a"
   assume mono: "monotone (\<le>) (\<sqsubseteq>) c" and c: "range c \<subseteq> A"
   from monotone_directed_image[OF mono[folded monotone_on_UNIV] order.directed] scott c
   show "extreme_bound A (\<sqsubseteq>) (range c) b \<Longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` range c) (f b)" for b
-    by auto
+    by (auto elim!: scott_continuousE)
 qed
 
 end
