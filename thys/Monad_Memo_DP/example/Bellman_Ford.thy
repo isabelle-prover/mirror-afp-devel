@@ -175,12 +175,6 @@ lemma Inf_int_in:
   using assms unfolding Inf_int_def by (smt Sup_int_in bdd_above_uminus image_iff image_is_empty)
 
 
-lemma fold_acc_preserv:
-  assumes "\<And> x acc. P acc \<Longrightarrow> P (f x acc)" "P acc"
-  shows "P (fold f xs acc)"
-  using assms(2) by (induction xs arbitrary: acc) (auto intro: assms(1))
-
-
 lemma finite_setcompr_eq_image: "finite {f x |x. P x} \<longleftrightarrow> finite (f ` {x. P x})"
   by (simp add: setcompr_eq_image)
 
@@ -284,21 +278,6 @@ lemma weight_alt_def:
 lemma weight_append:
   "weight (xs @ a # ys) = weight (xs @ [a]) + weight (a # ys)"
   by (induction xs rule: weight.induct; simp add: add.assoc)
-
-
-
-(* XXX Generalize to the right type class *)
-lemma Min_add_right:
-  "Min S + x = Min ((\<lambda>y. y + x) ` S)" (is "?A = ?B")
-  if "finite S" "S \<noteq> {}" for x :: "('a :: linordered_ab_semigroup_add) extended"
-proof -
-  have "?A \<le> ?B"
-    using that by (force intro: Min.boundedI add_right_mono)
-  moreover have "?B \<le> ?A"
-    using that by (force intro: Min.boundedI)
-  ultimately show ?thesis
-    by simp
-qed
 
 lemma OPT_0:
   "OPT 0 v = (if t = v then 0 else \<infinity>)"
@@ -470,6 +449,10 @@ lemma iter_bf_unfold[code]:
 lemmas bf_memoized = bf\<^sub>m.memoized[OF bf\<^sub>m.crel]
 lemmas bf_bottom_up = bottom_up.memoized[OF bf\<^sub>m.crel, folded iter_bf_def]
 
+text \<open>
+This will be our final implementation, which includes detection of negative cycles.
+See the corresponding section below for the correctness proof.
+\<close>
 definition
   "bellman_ford \<equiv>
     do {
@@ -758,13 +741,13 @@ proof -
     with cycle have "weight (x # bs @ [a]) < \<infinity>"
       using weight_append[of "a # as" x "bs @ [a]"]
       by simp (metis Pinf_add_right Pinf_le add.commute less_eq_extended.simps(2) not_less)
-    with \<open>reaches a\<close> show ?thesis
+
+    moreover from \<open>reaches a\<close> obtain cs where "local.weight (a # cs @ [t]) < \<infinity>" "set cs \<subseteq> {0..n}"
+      unfolding reaches_def is_path_def by auto
+    ultimately show ?thesis
       unfolding reaches_def is_path_def
-      apply clarsimp
-      subgoal for cs
-        using weight_append[of "x # bs" a "cs @ [t]"] cycle(2) \<open>xs = _\<close>
-        by - (rule exI[where x = "bs @ [a] @ cs"], auto intro: add_lt_infI)
-      done
+      using \<open>a \<le> n\<close> weight_append[of "x # bs" a "cs @ [t]"] cycle(2) \<open>xs = _\<close>
+      by - (rule exI[where x = "bs @ [a] @ cs"], auto intro: add_lt_infI)
   qed
   let ?S = "sum_list (map (OPT n) (a # xs @ [a]))"
   obtain u v where "u \<le> n" "v \<le> n" "OPT n v + W u v < OPT n u"
@@ -909,7 +892,8 @@ proof (atomize_elim, induction "length xs" arbitrary: xs rule: less_induct)
       qed
     next
       case (Cons_Cons as' cs')
-      with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ a # cs' @ [t]) + weight (a # bs @ [a])"
+      with ys have *:
+        "weight (v # ys @ [t]) = weight (v # as' @ a # cs' @ [t]) + weight (a # bs @ [a])"
         using
           weight_append[of "v # as'" a "bs @ a # cs' @ [t]"]
           weight_append[of "a # bs" a "cs' @ [t]"]
@@ -1021,59 +1005,27 @@ proof -
   note crel_bf\<^sub>m' = bf\<^sub>m.crel[unfolded bf\<^sub>m.consistentDP_def, THEN rel_funD,
       of "(m, x)" "(m, y)" for m x y, unfolded prod.case]
   have "?l = ?r"
-    unfolding Wrap_def App_def Let_def
     supply [simp del] = bf_simps
-    apply (simp; safe)
-    using bf_detects_cycle apply (auto elim: nat_le_cases; fail)
-       apply (simp add: bellman_ford_shortest_paths; fail)+
-     apply (simp add: bf_fix[rule_format, symmetric])+
-    done
+    supply [simp add] =
+      bf_fix[rule_format, symmetric] bellman_ford_shortest_paths[rule_format, symmetric]
+    unfolding Wrap_def App_def using bf_detects_cycle by (fastforce elim: nat_le_cases)
+  \<comment> \<open>Slightly transform the goal, then apply parametric reasoning like usual.\<close>
   show ?thesis
-    unfolding bellman_ford_alt_def \<open>?l = ?r\<close>
-    apply (rule bf\<^sub>m.crel_vs_bind_ignore[rotated])
+    \<comment> \<open>Roughly \<close>
+    unfolding bellman_ford_alt_def \<open>?l = ?r\<close> \<comment> \<open>Obtain parametric form.\<close>
+    apply (rule bf\<^sub>m.crel_vs_bind_ignore[rotated]) \<comment> \<open>Drop bind.\<close>
      apply (rule bottom_up.consistent_crel_vs_iterate_state[OF bf\<^sub>m.crel, folded iter_bf_def])
-    apply (subst Transfer.Rel_def[symmetric])
-    apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
-     defer
-     apply (rule bf\<^sub>m.crel_vs_return_ext)
-     apply (rule bf\<^sub>m.rel_fun2)
-      defer
-      apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
-       defer
-       apply (rule bf\<^sub>m.crel_vs_return_ext)
-       apply (rule bf\<^sub>m.rel_fun2)
-        defer
-        apply (rule bf\<^sub>m.crel_vs_return_ext)
-        apply (rule transfer_raw)
-        apply (rule is_equality_eq)
-       apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
-        apply (rule bf\<^sub>m.crel_vs_return)
-        defer
-        apply (rule bf\<^sub>m.crel_vs_fun_app)
-         prefer 2
-         apply (subst Transfer.Rel_def)
-         apply (rule bf\<^sub>m.map\<^sub>T_transfer)
-        prefer 3
-
-        apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
-         apply (rule bf\<^sub>m.crel_vs_return)
-         defer
-         apply (rule bf\<^sub>m.crel_vs_fun_app)
-          prefer 2
-          apply (subst Transfer.Rel_def)
-          apply (rule bf\<^sub>m.map\<^sub>T_transfer)
-
-    subgoal
-      by (intro bf\<^sub>m.crel_vs_return Rel_abs; (unfold Transfer.Rel_def)?; rule crel_bf\<^sub>m')+ simp
-
-    subgoal
-      apply (rule bf\<^sub>m.crel_vs_return)
-      apply (rule Rel_abs)
-      unfolding Transfer.Rel_def
-      apply (rule crel_bf\<^sub>m')
-      apply simp
-      done
-    unfolding Rel_def list.rel_eq by (rule is_equality_eq HOL.refl)+
+    apply (subst Transfer.Rel_def[symmetric]) \<comment> \<open>Setup typical goal for automated reasoner.\<close>
+    \<comment> \<open>We need to reason manually because we are not in the context where \<open>bf\<^sub>m\<close> was defined.\<close>
+    \<comment> \<open>This is roughly what @{method "memoize_prover_match_step"}/\<open>Transform_Tactic.step_tac\<close> does.\<close>
+    ML_prf \<open>val ctxt = @{context}\<close>
+    apply (tactic \<open>Transform_Tactic.solve_relator_tac ctxt 1\<close>
+          | rule HOL.refl
+          | rule bf\<^sub>m.dp_match_rule
+          | rule bf\<^sub>m.crel_vs_return_ext
+          | (subst Rel_def, rule crel_bf\<^sub>m')
+          | tactic \<open>Transform_Tactic.transfer_raw_tac ctxt 1\<close>)+
+    done
 qed
 
 theorem bellman_ford_correct:
@@ -1152,6 +1104,9 @@ definition
   "G\<^sub>3_list = [[(1 :: nat,-1 :: int), (2,2)], [(2,5), (3,4)], [(3,2), (4,3)], [(2,-2), (4,2)], []]"
 
 definition
+  "G\<^sub>4_list = [[(1 :: nat,-1 :: int), (2,2)], [(2,5), (3,4)], [(3,2), (4,3)], [(2,-3), (4,2)], []]"
+
+definition
   "graph_of a i j = case_option \<infinity> (Fin o snd) (List.find (\<lambda> p. fst p = j) (a !! i))"
 
 definition "test_bf = bf_impl 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
@@ -1175,14 +1130,22 @@ definition
       Mapping.empty)
   )"
 
-value "fst (run_state (bf\<^sub>m' 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0) Mapping.empty)"
+\<comment> \<open>Component tests.\<close>
+lemma
+  "fst (run_state (bf\<^sub>m' 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0) Mapping.empty) = 4"
+  "bf 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0 = 4"
+  by eval+
 
-value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>1_list)) 3) Mapping.empty)"
+\<comment> \<open>Regular test cases.\<close>
+lemma
+  "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>1_list)) 3) Mapping.empty) = Some [4, 10, 2, 0]"
+  "fst (run_state (bellman_ford 4 (graph_of (IArray G\<^sub>3_list)) 4) Mapping.empty) = Some [4, 5, 3, 1, 0]"
+  by eval+
 
-value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>2_list)) 3) Mapping.empty)"
-
-value "fst (run_state (bellman_ford 4 (graph_of (IArray G\<^sub>3_list)) 4) Mapping.empty)"
-
-value "bf 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
+\<comment> \<open>Test detection of negative cycles.\<close>
+lemma
+  "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>2_list)) 3) Mapping.empty) = None"
+  "fst (run_state (bellman_ford 4 (graph_of (IArray G\<^sub>4_list)) 4) Mapping.empty) = None"
+  by eval+
 
 end (* Theory *)
