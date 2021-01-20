@@ -205,28 +205,7 @@ qed
 text \<open>Now termination follows easily:\<close>
 
 lemma opt_bst2_dom: "\<forall>args. opt_bst2_dom args"
-proof (relation "measure (\<lambda>(i,j). nat (j-i+1))")
-  let ?R = "measure (\<lambda>(i,j). nat (j-i+1))"
-  show "wf ?R" ..
-
-  fix i j::int 
-  assume [arith]: "\<not>j < i" "i \<noteq> j"
-  thus "((i, j - 1), (i, j)) \<in> ?R" by auto
-
-  fix left
-  assume left: "left = root (opt_bst2 i (j - 1))" "opt_bst2_dom (i, j - 1)" 
-  thus "((i + 1, j), (i, j)) \<in> ?R" by(auto)
-
-  fix right k
-  assume right: "right = root (opt_bst2 (i + 1) j)" "k \<in> set[left..right]"
-    "opt_bst2_dom (i+1, j)"
-    
-  thus "((i, k - 1), (i, j)) \<in> ?R"
-    using root_opt_bst2_bound[of "i+1" j] by(auto)
-
-  show "((k + 1, j), (i, j)) \<in> ?R"
-    using left right root_opt_bst2_bound[of i "j-1"] by(auto)
-qed
+by (relation "measure (\<lambda>(i,j). nat (j-i+1))") (auto dest: root_opt_bst2_bound)
 
 termination by(rule opt_bst2_dom)
 
@@ -376,28 +355,7 @@ qed
 text \<open>Now termination follows easily:\<close>
 
 lemma opt_bst_wpl2_dom: "\<forall>args. opt_bst_wpl2_dom args"
-proof (relation "measure (\<lambda>(i,j). nat (j-i+1))")
-  let ?R = "measure (\<lambda>(i,j). nat (j-i+1))"
-  show "wf ?R" ..
-
-  fix i j::int 
-  assume [arith]: "\<not>j < i" "i \<noteq> j"
-  thus "((i, j - 1), (i, j)) \<in> ?R" by auto
-
-  fix left
-  assume left: "left = root (fst(opt_bst_wpl2 i (j-1)))" "opt_bst_wpl2_dom (i, j-1)" 
-  thus "((i+1, j), (i, j)) \<in> ?R" by(auto)
-
-  fix right k
-  assume right: "right = root (fst(opt_bst_wpl2 (i+1) j))" "k \<in> set[left..right]"
-    "opt_bst_wpl2_dom (i+1, j)"
-    
-  thus "((i, k-1), (i, j)) \<in> ?R"
-    using root_opt_bst_wpl2_bound[of "i+1" j] by(auto)
-
-  show "((k+1, j), (i, j)) \<in> ?R"
-    using left right root_opt_bst_wpl2_bound[of i "j-1"] by(auto)
-qed
+by (relation "measure (\<lambda>(i,j). nat (j-i+1))") (auto dest: root_opt_bst_wpl2_bound)
 
 termination by(rule opt_bst_wpl2_dom)
 
