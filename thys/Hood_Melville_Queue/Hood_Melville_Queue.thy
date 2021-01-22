@@ -89,7 +89,7 @@ fun list :: "'a queue \<Rightarrow> 'a list" where
 
 (* Query operation (irrelevant) *)
 fun first where
- "first q = hd (front_list q)"
+ "first q = hd (front q)"
 
 (* How many applications of exec are needed to reach Idle or Done status *)
 fun rem_steps :: "'a status \<Rightarrow> nat" where
@@ -221,10 +221,11 @@ definition invar where
               lenr q = length (rear_list q)  \<and>
               lenr q \<le> lenf q \<and>
               (case status q of
-                 Rev ok f f' r r' \<Rightarrow> 2*lenr q  \<le> length f' \<and> ok \<noteq> 0
+                 Rev ok f f' r r' \<Rightarrow> 2*lenr q  \<le> length f' \<and> ok \<noteq> 0 
                | App ok f r       \<Rightarrow> 2*lenr q  \<le> length r
                | _ \<Rightarrow> True) \<and>
               rem_steps (status q) \<le> 2*length (front q) \<and>
+              (\<exists>rest. front_list q = front q @ rest) \<and>
               (\<forall>x. status q \<noteq> Done x) \<and>
               st_inv (status q))"
 
@@ -232,25 +233,51 @@ definition invar where
 lemma invar_empty: "invar empty"
   by(simp add: invar_def empty_def make_def rear_list_def)
 
+(* List lemmas *)
+
+lemma tl_rev_take: "\<lbrakk>0 < ok; ok \<le> length f\<rbrakk> \<Longrightarrow> rev (take ok (x # f)) = tl (rev (take ok f)) @ [x]"
+by(simp add: rev_take Suc_diff_le drop_Suc tl_drop)
+
+lemma tl_rev_take_Suc:
+  "n + 1 \<le> length l \<Longrightarrow> rev (take n l) = tl (rev (take (Suc n) l))"
+by(simp add: rev_take tl_drop Suc_diff_Suc flip: drop_Suc)
+
 (* Dequeue operations preserve the invariants *)
 lemma invar_deq:
   assumes inv: "invar q"
   shows "invar (deq q)"
 proof (cases q)
   case (fields lenf front status rear lenr)
+  have pre_inv: "\<exists>rest. front @ rest = front_list q" using inv unfolding fields
+    by(simp add: invar_def check_def; cases status; auto simp add: invar_def Let_def rear_list_def)
+  have tl_app: "status \<noteq> Idle \<Longrightarrow> \<forall>l. tl front @ l = tl (front @ l)" using inv unfolding fields
+    by (simp add: invar_def check_def; cases status; cases front;auto simp add: invar_def Let_def rear_list_def)
   then show ?thesis
   proof (cases status rule: exec.cases)
     case st: (1 ok x f f' y r r')
     then show ?thesis
     proof (cases f)
       case Nil
-      then show ?thesis using inv unfolding fields st Nil
-        by (simp add: invar_def check_def rear_list_def; cases r; auto simp add: min_absorb2 invar_def rear_list_def Let_def)
+      have pre: "\<exists>rest. front_list (deq q) = tl front @ rest" using inv pre_inv unfolding fields st Nil
+        apply (simp add: invar_def check_def; cases r; simp add: invar_def Let_def rear_list_def)
+        apply (erule exE)
+        apply (rule_tac x=rest in exI)
+        apply (simp add: tl_app st tl_rev_take)
+        apply (cases f'; auto)
+        done
+     then show ?thesis using inv unfolding fields st Nil
+       by (simp add: invar_def check_def rear_list_def; cases r; auto simp add: min_absorb2 invar_def rear_list_def Let_def)
     next
       case (Cons a list)
-      then show ?thesis using inv check_def rear_list_def
-        unfolding fields st Nil invar_def check_def rear_list_def
-        by (simp; cases r; auto simp add: min_absorb2 check_def)
+      then show ?thesis using pre_inv inv
+        unfolding fields st Nil 
+        apply (simp add: invar_def check_def inv ; cases r; simp add: invar_def inv min_absorb2 rear_list_def)
+        apply (erule exE)
+        apply (rule conjI, force)
+        apply (rule_tac x=rest in exI)
+        apply (simp add: tl_app st tl_rev_take)
+        apply (cases f'; auto)
+        done
     qed
   next
     case st: (2 ok f y r)
@@ -271,8 +298,13 @@ proof (cases q)
         unfolding fields st Suc invar_def
         by (metis list.exhaust list.size(3) select_convs(3) st_inv.simps(1))
       hence r_x: "r = rx # rs" by simp
-      then show ?thesis using inv unfolding fields st Suc invar_def rear_list_def r_x f_x
-        by (simp add: check_def; cases ok'; simp add: check_def min_absorb2; linarith)
+      then show ?thesis using pre_inv inv unfolding fields st Suc invar_def rear_list_def r_x f_x
+        apply (simp add: check_def; cases ok'; simp add: check_def min_absorb2)       
+        apply (erule exE)
+        apply (rule conjI, arith)
+        apply (rule_tac x=rest in exI)
+        apply (simp add: tl_app st tl_rev_take_Suc)
+        by (metis Suc_le_length_iff length_take list.sel(3) min_absorb2 n_not_Suc_n rev_is_Nil_conv take_tl tl_Nil tl_append2)        
     qed
   next
     case st: (3 f r)
@@ -287,8 +319,13 @@ proof (cases q)
         by (simp add: check_def)
     next
       case (Suc ok')
-      then show ?thesis using inv unfolding fields st invar_def rear_list_def Suc
-        by (cases f; cases ok'; auto simp add: invar_def rear_list_def check_def min_absorb2)
+      then show ?thesis using pre_inv inv unfolding fields st invar_def rear_list_def Suc
+        apply (cases f; cases ok'; simp add: invar_def rear_list_def check_def min_absorb2)
+        apply (erule exE)
+        apply (rule conjI, arith)
+        apply (rule_tac x=rest in exI)
+        apply (simp add: tl_app st tl_rev_take_Suc)
+        by (metis length_take list.size(3) min.absorb2 nat.distinct(1) rev.simps(1) rev_rev_ident tl_append2)                
     qed
   next
     case st: "5_1"
@@ -459,15 +496,6 @@ proof (cases q)
       by (simp add: invar_def)
   qed
 qed
-
-(* List lemmas *)
-
-lemma tl_rev_take: "\<lbrakk>0 < ok; ok \<le> length f\<rbrakk> \<Longrightarrow> rev (take ok (x # f)) = tl (rev (take ok f)) @ [x]"
-by(simp add: rev_take Suc_diff_le drop_Suc tl_drop)
-
-lemma tl_rev_take_Suc:
-  "n + 1 \<le> length l \<Longrightarrow> rev (take n l) = tl (rev (take (Suc n) l))"
-by(simp add: rev_take tl_drop Suc_diff_Suc flip: drop_Suc)
 
 (* Correctness proof of the dequeue operation *)
 lemma queue_correct_deq :
@@ -708,14 +736,23 @@ fun rev_steps :: "('a list \<times> 'a list) \<Rightarrow> ('a list \<times> 'a 
 lemma first_correct :
   assumes inv:      "invar q"
   assumes not_nil : "list q \<noteq> []"
-  shows             "first q = hd(list q)"
-proof (cases "front_list q")
+  shows             "first q = hd (list q)"
+proof (cases "front q")
+  obtain rest where front_l: "front_list q = front q @ rest"
+    using inv
+    by (auto simp add: invar_def simp del: front_list.simps)
   case front_nil: Nil
-  have rear_Nil: "rear_list q = []" using invar_def front_nil inv by force
-  then show ?thesis by simp
+  have rear_nil: "rear_list q = []" using inv unfolding invar_def rear_list_def front_nil
+    by (simp; cases "status q"; simp add: front_nil)
+  have front_nil: "front_list q = []" using inv unfolding invar_def rear_list_def front_nil
+    by (simp; cases "status q"; simp add: front_nil)
+  show ?thesis using not_nil unfolding  list.simps rear_nil front_nil
+    by simp
 next
-  case (Cons a list)
-  then show ?thesis by simp
+  case front_cons: (Cons x xs)
+  show ?thesis using inv unfolding list.simps first.simps front_cons front_list.simps    
+    apply (simp add: invar_def rear_list_def)
+    by (metis append_Cons front_cons list.sel(1))
 qed
 
 fun is_empty :: "'a queue \<Rightarrow> bool" where
