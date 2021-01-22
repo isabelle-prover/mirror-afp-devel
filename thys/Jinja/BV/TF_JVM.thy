@@ -81,78 +81,77 @@ declare set_drop_subset [simp]
 theorem (in start_context) exec_pres_type:
   "pres_type step (size is) A"
 (*<*)
-  apply (insert wf)
-  apply simp
-  apply (unfold JVM_states_unfold)
-  apply (rule pres_type_lift)
-  apply clarify
-  apply (rename_tac s pc pc' s')
-  apply (case_tac s)
-   apply simp
-   apply (drule effNone)
-   apply simp  
-  apply (simp add: Effect.app_def xcpt_app_def Effect.eff_def  
-                   xcpt_eff_def norm_eff_def relevant_entries_def)
-  apply (case_tac "is!pc")
-
-  \<comment> \<open>Load\<close>
-  apply clarsimp
-  apply (frule listE_nth_in, assumption)
-  apply fastforce
-
-  \<comment> \<open>Store\<close>
-  apply fastforce
-
-  \<comment> \<open>Push\<close>
-  apply (fastforce simp add: typeof_lit_is_type)
-
-  \<comment> \<open>New\<close>
-  apply fastforce
-
-  \<comment> \<open>Getfield\<close>
-  apply (fastforce dest: sees_field_is_type)
-
-  \<comment> \<open>Putfield\<close>
-  apply fastforce
-
-  \<comment> \<open>Checkcast\<close>
-  apply fastforce
-
-  defer 
-  
-  \<comment> \<open>Return\<close>
-  apply fastforce
-
-  \<comment> \<open>Pop\<close>
-  apply fastforce
-
-  \<comment> \<open>IAdd\<close>
-  apply fastforce
-  
-  \<comment> \<open>Goto\<close>
-  apply fastforce
-
-  \<comment> \<open>CmpEq\<close>
-  apply fastforce
-
-  \<comment> \<open>IfFalse\<close>
-  apply fastforce
-
-  \<comment> \<open>Throw\<close>
-  apply fastforce
-
-  \<comment> \<open>Invoke\<close>
-  apply (clarsimp split!: if_splits)
-   apply fastforce
-  apply (erule disjE)
-   prefer 2
-   apply fastforce
-  apply clarsimp
-  apply (rule conjI)
-   apply (drule (1) sees_wf_mdecl)
-   apply (clarsimp simp add: wf_mdecl_def)
-  apply arith
-  done
+proof -
+  let ?n = "size is" and ?app = app and ?step = eff
+  let ?mxl = "1 + length Ts + mxl\<^sub>0"
+  let ?A = "opt((Union {list n (types P) |n. n <= mxs}) \<times>
+                                 list ?mxl (err(types P)))"
+  have "pres_type (err_step ?n ?app ?step) ?n (err ?A)"
+  proof(rule pres_type_lift)
+    have "\<And>s pc pc' s'. s\<in>?A \<Longrightarrow> pc < ?n \<Longrightarrow> ?app pc s
+             \<Longrightarrow> (pc', s')\<in>set (?step pc s) \<Longrightarrow> s' \<in> ?A"
+    proof -
+      fix s pc pc' s'
+      assume asms: "s\<in>?A" "pc < ?n" "?app pc s" "(pc', s')\<in>set (?step pc s)"
+      show "s' \<in> ?A"
+      proof(cases s)
+        case None
+        then show ?thesis using asms by (fastforce dest: effNone)
+      next
+        case (Some ab)
+        then show ?thesis using asms proof(cases "is!pc")
+          case Load
+          then show ?thesis using asms
+            by (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def  
+                                xcpt_eff_def norm_eff_def
+                          dest: listE_nth_in)
+        next
+          case Push
+          then show ?thesis using asms Some
+            by (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def
+                                xcpt_eff_def norm_eff_def typeof_lit_is_type)
+        next
+          case Getfield
+          then show ?thesis using asms wf
+            by (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def
+                                xcpt_eff_def norm_eff_def
+                          dest: sees_field_is_type)
+        next
+          case (Invoke M n)
+          obtain a b where [simp]: "s = \<lfloor>(a,b)\<rfloor>" using Some asms(1) by blast
+          show ?thesis
+          proof(cases "a!n = NT")
+            case True
+            then show ?thesis using Invoke asms wf
+              by (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def  
+                                  xcpt_eff_def norm_eff_def)
+          next
+            case False
+            have "(pc', s') \<in> set (norm_eff (Invoke M n) P pc (a, b)) \<or>
+              (pc', s') \<in> set (xcpt_eff (Invoke M n) P pc (a, b) xt)"
+              using Invoke asms(4) by (simp add: Effect.eff_def)
+            then show ?thesis proof(rule disjE)
+              assume "(pc', s') \<in> set (xcpt_eff (Invoke M n) P pc (a, b) xt)"
+              then show ?thesis using Invoke asms(1-3)
+                by (fastforce simp: Effect.app_def xcpt_app_def xcpt_eff_def)
+            next
+              assume norm: "(pc', s') \<in> set (norm_eff (Invoke M n) P pc (a, b))"
+              also have "Suc (length a - Suc n) \<le> mxs" using Invoke asms(1,3)
+                by (simp add: Effect.app_def xcpt_app_def) arith
+              ultimately show ?thesis using False Invoke asms(1-3) wf
+                by (auto simp: Effect.app_def xcpt_app_def norm_eff_def wf_mdecl_def
+                         dest!: sees_wf_mdecl)
+            qed
+          qed
+        qed (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def  
+                             xcpt_eff_def norm_eff_def)+
+      qed
+    qed
+    then show "\<forall>s\<in>?A. \<forall>p. p < ?n \<longrightarrow> ?app p s \<longrightarrow> (\<forall>(q, s')\<in>set (?step p s). s' \<in> ?A)"
+      by clarsimp
+  qed
+  then show ?thesis by (simp add: JVM_states_unfold)
+qed
 (*>*)
 
 declare is_relevant_entry_def [simp del]
@@ -161,21 +160,23 @@ declare set_drop_subset [simp del]
 lemma lesubstep_type_simple:
   "xs [\<sqsubseteq>\<^bsub>Product.le (=) r\<^esub>] ys \<Longrightarrow> set xs {\<sqsubseteq>\<^bsub>r\<^esub>} set ys"
 (*<*)
-  apply (unfold lesubstep_type_def)
-  apply clarify
-  apply (simp add: set_conv_nth)
-  apply clarify
-  apply (drule le_listD, assumption)
-  apply (clarsimp simp add: lesub_def Product.le_def)
-  apply (rule exI)
-  apply (rule conjI)
-   apply (rule exI)
-   apply (rule conjI)
-    apply (rule sym)
-    apply assumption
-   apply assumption
-  apply assumption
-  done
+proof -
+  assume assm: "xs [\<sqsubseteq>\<^bsub>Product.le (=) r\<^esub>] ys"
+  have "\<And>a b i y. (a, b) = xs ! i \<Longrightarrow> i < length xs
+     \<Longrightarrow> \<exists>\<tau>'. (\<exists>i. (a, \<tau>') = ys ! i \<and> i < length xs) \<and> b \<sqsubseteq>\<^bsub>r\<^esub> \<tau>'"
+  proof -
+    fix a b i assume ith: "(a, b) = xs ! i" and len: "i < length xs"
+    obtain \<tau> where "ys ! i = (a, \<tau>) \<and> r b \<tau>"
+      using le_listD[OF assm len] ith
+      by (clarsimp simp: lesub_def Product.le_def)
+    then have "(a, \<tau>) = ys ! i \<and> b \<sqsubseteq>\<^bsub>r\<^esub> \<tau>"
+      by (clarsimp simp: lesub_def)
+    with len show "\<exists>\<tau>'. (\<exists>i. (a, \<tau>') = ys ! i \<and> i < length xs) \<and> b \<sqsubseteq>\<^bsub>r\<^esub> \<tau>'"
+      by fastforce
+  qed
+  then show "set xs {\<sqsubseteq>\<^bsub>r\<^esub>} set ys" using assm
+    by (clarsimp simp: lesubstep_type_def set_conv_nth)
+qed
 (*>*)
 
 declare is_relevant_entry_def [simp del]
@@ -184,73 +185,90 @@ declare is_relevant_entry_def [simp del]
 lemma conjI2: "\<lbrakk> A; A \<Longrightarrow> B \<rbrakk> \<Longrightarrow> A \<and> B" by blast
   
 lemma (in JVM_sl) eff_mono:
-  "\<lbrakk>wf_prog p P; pc < length is; s \<sqsubseteq>\<^bsub>sup_state_opt P\<^esub> t; app pc t\<rbrakk>
-  \<Longrightarrow> set (eff pc s) {\<sqsubseteq>\<^bsub>sup_state_opt P\<^esub>} set (eff pc t)"
+assumes wf: "wf_prog p P" and "pc < length is" and
+  lesub: "s \<sqsubseteq>\<^bsub>sup_state_opt P\<^esub> t" and app: "app pc t"
+shows "set (eff pc s) {\<sqsubseteq>\<^bsub>sup_state_opt P\<^esub>} set (eff pc t)"
 (*<*)
-  apply simp
-  apply (unfold Effect.eff_def)  
-  apply (cases t)
-   apply (simp add: lesub_def)
-  apply (rename_tac a)
-  apply (cases s)
-   apply simp
-  apply (rename_tac b)
-  apply simp
-  apply (rule lesubstep_union)
-   prefer 2
-   apply (rule lesubstep_type_simple)
-   apply (simp add: xcpt_eff_def)
-   apply (rule le_listI)
-    apply (simp add: split_beta)
-   apply (simp add: split_beta)
-   apply (simp add: lesub_def fun_of_def)
-   apply (case_tac a)
-   apply (case_tac b)
-   apply simp   
-   apply (subgoal_tac "size ab = size aa")
-     prefer 2
-     apply (clarsimp simp add: list_all2_lengthD)
-   apply simp
-  apply (clarsimp simp add: norm_eff_def lesubstep_type_def lesub_def iff del: sup_state_conv)
-  apply (rule exI)
-  apply (rule conjI2)
-   apply (rule imageI)
-   apply (clarsimp simp add: Effect.app_def iff del: sup_state_conv)
-   apply (drule (2) succs_mono)
-   apply blast
-  apply simp
-  apply (erule eff\<^sub>i_mono)
-     apply simp
-    apply assumption   
-   apply clarsimp
-  apply clarsimp  
-  done
+proof(cases t)
+  case None then show ?thesis using lesub
+   by (simp add: Effect.eff_def lesub_def)
+next
+  case tSome: (Some a)
+  show ?thesis proof(cases s)
+    case None then show ?thesis using lesub
+     by (simp add: Effect.eff_def lesub_def)
+  next
+    case (Some b)
+    let ?norm = "\<lambda>x. norm_eff (is ! pc) P pc x"
+    let ?xcpt = "\<lambda>x. xcpt_eff (is ! pc) P pc x xt"
+    let ?r = "Product.le (=) (sup_state_opt P)"
+    let ?\<tau>' = "\<lfloor>eff\<^sub>i (is ! pc, P, a)\<rfloor>"
+    {
+      fix x assume xb: "x \<in> set (succs (is ! pc) b pc)"
+      then have appi: "app\<^sub>i (is ! pc, P, pc, mxs, T\<^sub>r, a)" and
+                bia: "P \<turnstile> b \<le>\<^sub>i a" and appa: "app pc \<lfloor>a\<rfloor>"
+        using lesub app tSome Some by (auto simp add: lesub_def Effect.app_def)
+      have xa: "x \<in> set (succs (is ! pc) a pc)"
+        using xb succs_mono[OF wf appi bia] by auto
+      then have "(x, ?\<tau>') \<in> (\<lambda>pc'. (pc', ?\<tau>')) ` set (succs (is ! pc) a pc)"
+        by (rule imageI)
+      moreover have "P \<turnstile> \<lfloor>eff\<^sub>i (is ! pc, P, b)\<rfloor> \<le>' ?\<tau>'"
+        using xb xa eff\<^sub>i_mono[OF wf bia] appa by fastforce
+      ultimately have "\<exists>\<tau>'. (x, \<tau>') \<in> (\<lambda>pc'. (pc', \<lfloor>eff\<^sub>i (is ! pc, P, a)\<rfloor>)) ` set (succs (is ! pc) a pc) \<and>
+              P \<turnstile> \<lfloor>eff\<^sub>i (is ! pc, P, b)\<rfloor> \<le>' \<tau>'" by blast
+    }
+    then have norm: "set (?norm b) {\<sqsubseteq>\<^bsub>sup_state_opt P\<^esub>} set (?norm a)"
+      using tSome Some by (clarsimp simp: norm_eff_def lesubstep_type_def lesub_def)
+    obtain a1 b1 a2 b2 where a: "a = (a1, b1)" and b: "b = (a2, b2)"
+      using tSome Some by fastforce
+    then have a12: "size a2 = size a1" using lesub tSome Some
+      by (clarsimp simp: lesub_def list_all2_lengthD)
+    have "length (?xcpt b) = length (?xcpt a)"
+      by (simp add: xcpt_eff_def split_beta)
+    moreover have "\<And>n. n < length (?xcpt b) \<Longrightarrow> (?xcpt b) ! n \<sqsubseteq>\<^bsub>?r\<^esub> (?xcpt a) ! n"
+      using lesub tSome Some a b a12
+      by (simp add: xcpt_eff_def split_beta fun_of_def) (simp add: lesub_def)
+    ultimately have "?xcpt b [\<sqsubseteq>\<^bsub>?r\<^esub>] ?xcpt a"
+      by(rule le_listI)
+    then have "set (?xcpt b) {\<sqsubseteq>\<^bsub>sup_state_opt P\<^esub>} set (?xcpt a)"
+      by (rule lesubstep_type_simple)
+    moreover note norm
+    ultimately have
+     "set (?norm b) \<union> set (?xcpt b) {\<sqsubseteq>\<^bsub>sup_state_opt P\<^esub>} set (?norm a) \<union> set (?xcpt a)"
+      by(intro lesubstep_union)
+    then show ?thesis using tSome Some by(simp add: Effect.eff_def)
+  qed
+qed
 (*>*)
 
 lemma (in JVM_sl) bounded_step: "bounded step (size is)"
 (*<*)
-  apply simp
-  apply (unfold bounded_def err_step_def Effect.app_def Effect.eff_def)
-  apply (auto simp add: error_def map_snd_def split: err.splits option.splits)
-  done
+  by (auto simp: bounded_def err_step_def Effect.app_def Effect.eff_def
+                 error_def map_snd_def
+          split: err.splits option.splits)
 (*>*)
 
 theorem (in JVM_sl) step_mono:
   "wf_prog wf_mb P \<Longrightarrow> mono r step (size is) A"
 (*<*)
-  apply (simp add: JVM_le_Err_conv)  
-  apply (insert bounded_step)
-  apply (unfold JVM_states_unfold)
-  apply (rule mono_lift)
-     apply blast
-    apply (unfold app_mono_def lesub_def)
-    apply clarsimp
-    apply (erule (2) app_mono)
-   apply simp
-  apply clarify
-  apply (drule eff_mono)
-  apply (auto simp add: lesub_def)
-  done
+proof -
+  assume wf: "wf_prog wf_mb P"
+  let ?r = "sup_state_opt P" and ?n = "length is" and ?app = app and ?step = eff
+  let ?A = "opt (\<Union> {list n (types P) |n. n \<le> mxs} \<times>
+                list (1 + length Ts + mxl\<^sub>0) (err (types P)))"
+  have "order ?r" using wf by simp
+  moreover have "app_mono ?r ?app ?n ?A" using app_mono[OF wf]
+    by (clarsimp simp: app_mono_def lesub_def)
+  moreover have "bounded (err_step ?n ?app ?step) ?n" using bounded_step
+    by simp
+  moreover have "\<forall>s p t. s \<in> ?A \<and> p < ?n \<and> s \<sqsubseteq>\<^bsub>?r\<^esub> t \<longrightarrow>
+   ?app p t \<longrightarrow> set (?step p s) {\<sqsubseteq>\<^bsub>?r\<^esub>} set (?step p t)"
+     using eff_mono[OF wf] by simp
+  ultimately have "mono (Err.le ?r) (err_step ?n ?app ?step) ?n (err ?A)"
+    by(rule mono_lift)
+  then show "mono r step (size is) A" using bounded_step
+    by (simp add: JVM_le_Err_conv JVM_states_unfold)
+qed
 (*>*)
 
 
@@ -266,9 +284,8 @@ lemma (in JVM_sl) wt_method_def2:
    wt_start P C' Ts mxl\<^sub>0 \<tau>s \<and> 
    wt_app_eff (sup_state_opt P) app eff \<tau>s)"
 (*<*)
-  apply (unfold wt_method_def wt_app_eff_def wt_instr_def lesub_def check_types_def)
-  apply auto
-  done
+  by (unfold wt_method_def wt_app_eff_def wt_instr_def lesub_def
+             check_types_def) auto
 (*>*)
 
 

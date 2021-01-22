@@ -55,19 +55,13 @@ subsection\<open>Well-formedness lemmas\<close>
 
 lemma class_wf: 
   "\<lbrakk>class P C = Some c; wf_prog wf_md P\<rbrakk> \<Longrightarrow> wf_cdecl wf_md P (C,c)"
-(*<*)
-apply (unfold wf_prog_def class_def)
-apply (fast dest: map_of_SomeD)
-done
-(*>*)
+(*<*)by (unfold wf_prog_def class_def) (fast dest: map_of_SomeD)(*>*)
 
 
 lemma class_Object [simp]: 
   "wf_prog wf_md P \<Longrightarrow> \<exists>C fs ms. class P Object = Some (C,fs,ms)"
-(*<*)
-apply (unfold wf_prog_def wf_syscls_def class_def)
-apply (auto simp: map_of_SomeI)
-done
+(*<*)by (unfold wf_prog_def wf_syscls_def class_def)
+        (auto simp: map_of_SomeI)
 (*>*)
 
 
@@ -78,11 +72,12 @@ lemma is_class_Object [simp]:
 lemma is_class_supclass:
 assumes wf: "wf_prog wf_md P" and sub: "P \<turnstile> C \<preceq>\<^sup>* D"
 shows "is_class P C \<Longrightarrow> is_class P D"
-using sub apply(induct)
- apply assumption
-apply(fastforce simp:wf_cdecl_def subcls1_def is_class_def
-               dest:class_wf[OF _ wf])
-done
+(*<*)
+using sub proof(induct)
+  case step then show ?case
+    by(auto simp:wf_cdecl_def is_class_def dest!:class_wf[OF _ wf] subcls1D)
+qed simp
+(*>*)
 
 This is NOT true because P \<turnstile> NT \<le> Class C for any Class C
 lemma is_type_suptype: "\<lbrakk> wf_prog p P; is_type P T; P \<turnstile> T \<le> T' \<rbrakk>
@@ -92,22 +87,22 @@ lemma is_type_suptype: "\<lbrakk> wf_prog p P; is_type P T; P \<turnstile> T \<l
 lemma is_class_xcpt:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_class P C"
 (*<*)
-  apply (simp add: wf_prog_def wf_syscls_def is_class_def class_def)
-  apply (fastforce intro!: map_of_SomeI)
-  done
+by (fastforce intro!: map_of_SomeI
+              simp add: wf_prog_def wf_syscls_def is_class_def class_def)
 (*>*)
 
 
 lemma subcls1_wfD:
-  "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> (D,C) \<notin> (subcls1 P)\<^sup>+"
+assumes sub1: "P \<turnstile> C \<prec>\<^sup>1 D" and wf: "wf_prog wf_md P"
+shows "D \<noteq> C \<and> (D,C) \<notin> (subcls1 P)\<^sup>+"
 (*<*)
-apply( frule r_into_trancl)
-apply( drule subcls1D)
-apply(clarify)
-apply( drule (1) class_wf)
-apply( unfold wf_cdecl_def)
-apply(force simp add: reflcl_trancl [THEN sym] simp del: reflcl_trancl)
-done
+proof -
+  obtain fs ms where "C \<noteq> Object" and cls: "class P C = \<lfloor>(D, fs, ms)\<rfloor>"
+    using subcls1D[OF sub1] by clarify
+  then show ?thesis using wf class_wf[OF cls wf] r_into_trancl[OF sub1]
+    by(force simp add: wf_cdecl_def reflcl_trancl [THEN sym]
+             simp del: reflcl_trancl)
+qed
 (*>*)
 
 
@@ -118,41 +113,32 @@ lemma wf_cdecl_supD:
 
 lemma subcls_asym:
   "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
-(*<*)
-apply(erule tranclE)
-apply(fast dest!: subcls1_wfD )
-apply(fast dest!: subcls1_wfD intro: trancl_trans)
-done
-(*>*)
+(*<*)by(erule tranclE; fast dest!: subcls1_wfD intro: trancl_trans)(*>*)
 
 
 lemma subcls_irrefl:
   "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> C \<noteq> D"
-(*<*)
-apply (erule trancl_trans_induct)
-apply  (auto dest: subcls1_wfD subcls_asym)
-done
-(*>*)
+(*<*)by (erule trancl_trans_induct) (auto dest: subcls1_wfD subcls_asym)(*>*)
 
 
 lemma acyclic_subcls1:
   "wf_prog wf_md P \<Longrightarrow> acyclic (subcls1 P)"
-(*<*)
-apply (unfold acyclic_def)
-apply (fast dest: subcls_irrefl)
-done
-(*>*)
+(*<*)by (unfold acyclic_def) (fast dest: subcls_irrefl)(*>*)
 
 
 lemma wf_subcls1:
   "wf_prog wf_md P \<Longrightarrow> wf ((subcls1 P)\<inverse>)"
 (*<*)
-apply (rule finite_acyclic_wf)
-apply ( subst finite_converse)
-apply ( rule finite_subcls1)
-apply (subst acyclic_converse)
-apply (erule acyclic_subcls1)
-done
+proof -
+  assume wf: "wf_prog wf_md P"
+  have "finite (subcls1 P)" by(rule finite_subcls1)
+  then have fin': "finite ((subcls1 P)\<inverse>)" by(subst finite_converse)
+
+  from wf have "acyclic (subcls1 P)" by(rule acyclic_subcls1)
+  then have acyc': "acyclic ((subcls1 P)\<inverse>)" by (subst acyclic_converse)
+
+  from fin' acyc' show ?thesis by (rule finite_acyclic_wf)
+qed
 (*>*)
 
 
@@ -169,51 +155,46 @@ lemma subcls_induct:
   (is "?A \<Longrightarrow> PROP ?P \<Longrightarrow> _")
 proof -
   assume p: "PROP ?P"
-  assume ?A thus ?thesis apply -
-apply(drule wf_subcls1)
-apply(drule wf_trancl)
-apply(simp only: trancl_converse)
-apply(erule_tac a = C in wf_induct)
-apply(rule p)
-apply(auto)
-done
+  assume ?A then have wf: "wf_prog wf_md P" by assumption
+  have wf':"wf (((subcls1 P)\<^sup>+)\<inverse>)" using wf_trancl[OF wf_subcls1[OF wf]]
+    by(simp only: trancl_converse)
+  show ?thesis using wf_induct[where a = C and P = Q, OF wf' p] by simp
 qed
 (*>*)
 
 
 lemma subcls1_induct_aux:
-  "\<lbrakk> is_class P C; wf_prog wf_md P; Q Object;
-    \<And>C D fs ms.
+assumes "is_class P C" and wf: "wf_prog wf_md P" and QObj: "Q Object"
+shows
+ "\<lbrakk> \<And>C D fs ms.
     \<lbrakk> C \<noteq> Object; is_class P C; class P C = Some (D,fs,ms) \<and>
       wf_cdecl wf_md P (C,D,fs,ms) \<and> P \<turnstile> C \<prec>\<^sup>1 D \<and> is_class P D \<and> Q D\<rbrakk> \<Longrightarrow> Q C \<rbrakk>
   \<Longrightarrow> Q C"
 (*<*)
-  (is "?A \<Longrightarrow> ?B \<Longrightarrow> ?C \<Longrightarrow> PROP ?P \<Longrightarrow> _")
+  (is "PROP ?P \<Longrightarrow> _")
 proof -
   assume p: "PROP ?P"
-  assume ?A ?B ?C thus ?thesis apply -
-apply(unfold is_class_def)
-apply( rule impE)
-prefer 2
-apply(   assumption)
-prefer 2
-apply(  assumption)
-apply( erule thin_rl)
-apply( rule subcls_induct)
-apply(  assumption)
-apply( rule impI)
-apply( case_tac "C = Object")
-apply(  fast)
-apply safe
-apply( frule (1) class_wf)
-apply( frule (1) wf_cdecl_supD)
-
-apply( subgoal_tac "P \<turnstile> C \<prec>\<^sup>1 a")
-apply( erule_tac [2] subcls1I)
-apply(  rule p)
-apply (unfold is_class_def)
-apply auto
-done
+  have "class P C \<noteq> None \<longrightarrow> Q C"
+  proof(induct rule: subcls_induct[OF wf])
+    case (1 C)
+    have "class P C \<noteq> None \<Longrightarrow> Q C"
+    proof(cases "C = Object")
+      case True
+      then show ?thesis using QObj by fast
+    next
+      case False
+      assume nNone: "class P C \<noteq> None"
+      then have is_cls: "is_class P C" by(simp add: is_class_def)
+      obtain D fs ms where cls: "class P C = \<lfloor>(D, fs, ms)\<rfloor>" using nNone by safe
+      also have wfC: "wf_cdecl wf_md P (C, D, fs, ms)" by(rule class_wf[OF cls wf])
+      moreover have D: "is_class P D" by(rule wf_cdecl_supD[OF wfC False])
+      moreover have "P \<turnstile> C \<prec>\<^sup>1 D" by(rule subcls1I[OF cls False])
+      moreover have "class P D \<noteq> None" using D by(simp add: is_class_def)
+      ultimately show ?thesis using 1 by (auto intro: p[OF False is_cls])
+    qed
+  then show "class P C \<noteq> None \<longrightarrow> Q C" by simp
+  qed
+  thus ?thesis using assms by(unfold is_class_def) simp
 qed
 (*>*)
 
@@ -222,20 +203,18 @@ lemma subcls1_induct [consumes 2, case_names Object Subcls]:
   "\<lbrakk> wf_prog wf_md P; is_class P C; Q Object;
     \<And>C D. \<lbrakk>C \<noteq> Object; P \<turnstile> C \<prec>\<^sup>1 D; is_class P D; Q D\<rbrakk> \<Longrightarrow> Q C \<rbrakk>
   \<Longrightarrow> Q C"
-(*<*)
-  apply (erule subcls1_induct_aux, assumption, assumption)
-  apply blast
-  done
-(*>*)
+(*<*)by (erule (2) subcls1_induct_aux) blast(*>*)
 
 
 lemma subcls_C_Object:
-  "\<lbrakk> is_class P C; wf_prog wf_md P \<rbrakk> \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* Object"
+assumes "class": "is_class P C" and wf: "wf_prog wf_md P"
+shows "P \<turnstile> C \<preceq>\<^sup>* Object"
 (*<*)
-apply(erule (1) subcls1_induct)
- apply( fast)
-apply(erule (1) converse_rtrancl_into_rtrancl)
-done
+using wf "class"
+proof(induct rule: subcls1_induct)
+  case Subcls
+  then show ?case by(simp add: converse_rtrancl_into_rtrancl)
+qed fast
 (*>*)
 
 
@@ -257,52 +236,68 @@ qed
 subsection\<open>Well-formedness and method lookup\<close>
 
 lemma sees_wf_mdecl:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<rbrakk> \<Longrightarrow> wf_mdecl wf_md P D (M,Ts,T,m)"
+assumes wf: "wf_prog wf_md P" and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
+shows "wf_mdecl wf_md P D (M,Ts,T,m)"
 (*<*)
-apply(drule visible_method_exists)
-apply(fastforce simp:wf_cdecl_def dest!:class_wf dest:map_of_SomeD)
-done
+using wf visible_method_exists[OF sees]
+by(fastforce simp:wf_cdecl_def dest!:class_wf dest:map_of_SomeD)
 (*>*)
 
 
 lemma sees_method_mono [rule_format (no_asm)]: 
-  "\<lbrakk> P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk> \<Longrightarrow>
-  \<forall>D Ts T m. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<longrightarrow>
+assumes sub: "P \<turnstile> C' \<preceq>\<^sup>* C" and wf: "wf_prog wf_md P"
+shows "\<forall>D Ts T m. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<longrightarrow>
      (\<exists>D' Ts' T' m'. P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T)"
 (*<*)
-apply( drule rtranclD)
-apply( erule disjE)
-apply(  fastforce)
-apply( erule conjE)
-apply( erule trancl_trans_induct)
-prefer 2
-apply(  clarify)
-apply(  drule spec, drule spec, drule spec, drule spec, erule (1) impE)
-apply clarify
-apply(  fast elim: widen_trans widens_trans)
-apply( clarify)
-apply( drule subcls1D)
-apply( clarify)
-apply(clarsimp simp:Method_def)
-apply(frule (2) sees_methods_rec)
-apply(rule refl)
-apply(case_tac "map_of ms M")
-apply(rule_tac x = D in exI)
-apply(rule_tac x = Ts in exI)
-apply(rule_tac x = T in exI)
-apply simp
-apply(rule_tac x = m in exI)
-apply(fastforce simp add:map_add_def split:option.split)
-apply clarsimp
-apply(rename_tac Ts' T' m')
-apply( drule (1) class_wf)
-apply( unfold wf_cdecl_def Method_def)
-apply( frule map_of_SomeD)
-apply auto
-apply(drule (1) bspec, simp)
-apply(erule_tac x=D in allE, erule_tac x=Ts in allE, erule_tac x=T in allE)
-apply(fastforce simp:map_add_def split:option.split)
-done
+  (is "\<forall>D Ts T m. ?P C D Ts T m \<longrightarrow> ?Q C' D Ts T m")
+proof(rule disjE[OF rtranclD[OF sub]])
+  assume "C' = C"
+  then show ?thesis using assms by fastforce
+next
+  assume "C' \<noteq> C \<and> (C', C) \<in> (subcls1 P)\<^sup>+"
+  then have neq: "C' \<noteq> C" and subcls1: "(C', C) \<in> (subcls1 P)\<^sup>+" by simp+
+  show ?thesis proof(induct rule: trancl_trans_induct[OF subcls1])
+    case (2 x y z)
+    then have zy: "\<And>D Ts T m. ?P z D Ts T m \<Longrightarrow> ?Q y D Ts T m" by blast
+    have "\<And>D Ts T m. ?P z D Ts T m \<Longrightarrow> ?Q x D Ts T m"
+    proof -
+      fix D Ts T m assume P: "?P z D Ts T m"
+      then show "?Q x D Ts T m" using zy[OF P] 2(2)
+        by(fast elim: widen_trans widens_trans)
+    qed
+    then show ?case by blast
+  next
+    case (1 x y)
+    have "\<And>D Ts T m. ?P y D Ts T m \<Longrightarrow> ?Q x D Ts T m"
+    proof -
+      fix D Ts T m assume P: "?P y D Ts T m"
+      then obtain Mm where sees: "P \<turnstile> y sees_methods Mm" and
+                           M: "Mm M = \<lfloor>((Ts, T, m), D)\<rfloor>"
+        by(clarsimp simp:Method_def)
+      obtain fs ms where nObj: "x \<noteq> Object" and
+                         cls: "class P x = \<lfloor>(y, fs, ms)\<rfloor>"
+        using subcls1D[OF 1] by clarsimp
+      have x_meth: "P \<turnstile> x sees_methods Mm ++ (map_option (\<lambda>m. (m, x)) \<circ> map_of ms)"
+        using sees_methods_rec[OF cls nObj sees] by simp
+      show "?Q x D Ts T m" proof(cases "map_of ms M")
+        case None
+        then have "\<exists>m'. P \<turnstile> x sees M :  Ts\<rightarrow>T = m' in D" using M x_meth
+          by(fastforce simp add:Method_def map_add_def split:option.split)
+        then show ?thesis by auto
+      next
+        case (Some a)
+        then obtain Ts' T' m' where a: "a = (Ts',T',m')" by(cases a)
+        then have "(\<exists>m' Mm. P \<turnstile> y sees_methods Mm \<and> Mm M = \<lfloor>((Ts, T, m'), D)\<rfloor>)
+              \<longrightarrow> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T"
+          using nObj class_wf[OF cls wf] map_of_SomeD[OF Some]
+          by(clarsimp simp: wf_cdecl_def Method_def) fast
+        then show ?thesis using Some a sees M x_meth
+          by(fastforce simp:Method_def map_add_def split:option.split)
+      qed
+    qed
+    then show ?case by simp
+  qed
+qed
 (*>*)
 
 
@@ -350,15 +345,14 @@ qed
 
 
 lemma Call_lemma:
-  "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk>
-  \<Longrightarrow> \<exists>D' Ts' T' m'.
+assumes sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D" and sub: "P \<turnstile> C' \<preceq>\<^sup>* C" and wf: "wf_prog wf_md P"
+shows "\<exists>D' Ts' T' m'.
        P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T \<and> P \<turnstile> C' \<preceq>\<^sup>* D'
        \<and> is_type P T' \<and> (\<forall>T\<in>set Ts'. is_type P T) \<and> wf_md P D' (M,Ts',T',m')"
 (*<*)
-apply(frule (2) sees_method_mono)
-apply(fastforce intro:sees_method_decl_above dest:sees_wf_mdecl
-               simp: wf_mdecl_def)
-done
+using assms sees_method_mono[OF sub wf sees]
+by(fastforce intro:sees_method_decl_above dest:sees_wf_mdecl
+             simp: wf_mdecl_def)
 (*>*)
 
 
@@ -375,19 +369,14 @@ lemma wf_prog_lift:
   shows "wf_prog (\<lambda>P C bd. B P C bd) P"
 (*<*)
 proof -
-  from wf show ?thesis
-    apply (unfold wf_prog_def wf_cdecl_def)
-    apply clarsimp
-    apply (drule bspec, assumption)
-    apply (unfold wf_mdecl_def)
-    apply clarsimp
-    apply (drule bspec, assumption)
-    apply clarsimp
-    apply (frule mdecl_visible [OF wf], assumption+)
-    apply (frule is_type_pTs [OF wf], assumption+)
-    apply (drule rule [OF wf], assumption+)
-    apply auto
-    done
+  have "\<And>c. c\<in>set P \<Longrightarrow> wf_cdecl A P c \<Longrightarrow> wf_cdecl B P c"
+  proof -
+    fix c assume "c\<in>set P" and "wf_cdecl A P c"
+    then show "wf_cdecl B P c"
+     using rule[OF wf mdecl_visible[OF wf] is_type_pTs[OF wf]]
+     by (auto simp: wf_cdecl_def wf_mdecl_def)
+  qed
+  then show ?thesis using wf by (clarsimp simp: wf_prog_def)
 qed
 (*>*)
 
@@ -395,23 +384,25 @@ qed
 subsection\<open>Well-formedness and field lookup\<close>
 
 lemma wf_Fields_Ex:
-  "\<lbrakk> wf_prog wf_md P; is_class P C \<rbrakk> \<Longrightarrow> \<exists>FDTs. P \<turnstile> C has_fields FDTs"
+assumes wf: "wf_prog wf_md P" and "is_class P C"
+shows "\<exists>FDTs. P \<turnstile> C has_fields FDTs"
 (*<*)
-apply(frule class_Object)
-apply(erule (1) subcls1_induct)
- apply(blast intro:has_fields_Object)
-apply(blast intro:has_fields_rec dest:subcls1D)
-done
+using assms proof(induct rule:subcls1_induct)
+  case Object
+  then show ?case using class_Object[OF wf]
+    by(blast intro:has_fields_Object)
+next
+  case Subcls
+  then show ?case by(blast intro:has_fields_rec dest:subcls1D)
+qed
 (*>*)
 
 
 lemma has_fields_types:
   "\<lbrakk> P \<turnstile> C has_fields FDTs; (FD,T) \<in> set FDTs; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
 (*<*)
-apply(induct rule:Fields.induct)
- apply(fastforce dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
-apply(fastforce dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
-done
+proof(induct rule:Fields.induct)
+qed(fastforce dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)+
 (*>*)
 
 
@@ -425,10 +416,8 @@ by(fastforce simp: sees_field_def
 lemma wf_syscls:
   "set SystemClasses \<subseteq> set P \<Longrightarrow> wf_syscls P"
 (*<*)
-apply (simp add: image_def SystemClasses_def wf_syscls_def sys_xcpts_def
+by (force simp add: image_def SystemClasses_def wf_syscls_def sys_xcpts_def
                  ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def)
- apply force
-done
 (*>*)
 
 end

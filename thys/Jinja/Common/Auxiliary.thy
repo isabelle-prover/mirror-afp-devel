@@ -39,17 +39,13 @@ where
 lemma distinct_fst_Nil [simp]:
   "distinct_fst []"
  (*<*)
-apply (unfold distinct_fst_def)
-apply (simp (no_asm))
-done
+by (unfold distinct_fst_def) (simp (no_asm))
 (*>*)
 
 lemma distinct_fst_Cons [simp]:
   "distinct_fst ((k,x)#kxs) = (distinct_fst kxs \<and> (\<forall>y. (k,y) \<notin> set kxs))"
 (*<*)
-apply (unfold distinct_fst_def)
-apply (auto simp:image_def)
-done
+by (unfold distinct_fst_def) (auto simp:image_def)
 (*>*)
 (*
 lemma distinct_fst_append:

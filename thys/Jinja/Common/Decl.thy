@@ -39,10 +39,11 @@ where
 lemma finite_is_class: "finite {C. is_class P C}"
 
 (*<*)
-apply (unfold is_class_def class_def)
-apply (fold dom_def)
-apply (rule finite_dom_map_of)
-done
+proof -
+  have "{C. is_class P C} = dom (map_of P)"
+   by (simp add: is_class_def class_def dom_def)
+  thus ?thesis by (simp add: finite_dom_map_of)
+qed
 (*>*)
 
 definition is_type :: "'m prog \<Rightarrow> ty \<Rightarrow> bool"

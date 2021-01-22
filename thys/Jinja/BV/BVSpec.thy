@@ -69,25 +69,34 @@ lemma wt_jvm_progD:
 (*<*) by (unfold wf_jvm_prog_phi_def, blast) (*>*)
 
 lemma wt_jvm_prog_impl_wt_instr:
-  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; 
-      P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^sub>0,ins,xt) in C; pc < size ins \<rbrakk> 
-  \<Longrightarrow> P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
+assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and
+      sees: "P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^sub>0,ins,xt) in C" and
+        pc: "pc < size ins"
+shows "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
 (*<*)
-  apply (unfold wf_jvm_prog_phi_def)
-  apply (drule (1) sees_wf_mdecl)
-  apply (simp add: wf_mdecl_def wt_method_def)
-  done
+proof -
+  have wfm: "wf_prog
+     (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt).
+         wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M)) P" using wf
+    by (unfold wf_jvm_prog_phi_def)
+  show ?thesis using sees_wf_mdecl[OF wfm sees] pc
+    by (simp add: wf_mdecl_def wt_method_def)
+qed
 (*>*)
 
 lemma wt_jvm_prog_impl_wt_start:
-  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; 
-     P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^sub>0,ins,xt) in C \<rbrakk> \<Longrightarrow> 
-  0 < size ins \<and> wt_start P C Ts mxl\<^sub>0 (\<Phi> C M)"
+assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and
+      sees: "P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^sub>0,ins,xt) in C"
+shows "0 < size ins \<and> wt_start P C Ts mxl\<^sub>0 (\<Phi> C M)"
 (*<*)
-  apply (unfold wf_jvm_prog_phi_def)
-  apply (drule (1) sees_wf_mdecl)
-  apply (simp add: wf_mdecl_def wt_method_def)
-  done
+proof -
+  have wfm: "wf_prog
+     (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt).
+         wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M)) P" using wf
+    by (unfold wf_jvm_prog_phi_def)
+  show ?thesis using sees_wf_mdecl[OF wfm sees]
+    by (simp add: wf_mdecl_def wt_method_def)
+qed
 (*>*)
 
 end

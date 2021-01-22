@@ -97,56 +97,29 @@ lemma typeof_lit_is_type:
 subsection \<open>Heap extension \<open>\<unlhd>\<close>\<close>
 
 lemma hextI: "\<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs')) \<Longrightarrow> h \<unlhd> h'"
-(*<*)
-apply (unfold hext_def)
-apply auto
-done
-(*>*)
+(*<*)by(auto simp: hext_def)(*>*)
 
 lemma hext_objD: "\<lbrakk> h \<unlhd> h'; h a = Some(C,fs) \<rbrakk> \<Longrightarrow> \<exists>fs'. h' a = Some(C,fs')"
-(*<*)
-apply (unfold hext_def)
-apply (force)
-done
-(*>*)
+(*<*)by(auto simp: hext_def)(*>*)
 
 lemma hext_refl [iff]: "h \<unlhd> h"
-(*<*)
-apply (rule hextI)
-apply (fast)
-done
-(*>*)
+(*<*)by (rule hextI) fast(*>*)
 
 lemma hext_new [simp]: "h a = None \<Longrightarrow> h \<unlhd> h(a\<mapsto>x)"
-(*<*)
-apply (rule hextI)
-apply (auto simp:fun_upd_apply)
-done
-(*>*)
+(*<*)by (rule hextI) (auto simp:fun_upd_apply)(*>*)
 
 lemma hext_trans: "\<lbrakk> h \<unlhd> h'; h' \<unlhd> h'' \<rbrakk> \<Longrightarrow> h \<unlhd> h''"
-(*<*)
-apply (rule hextI)
-apply (fast dest: hext_objD)
-done
-(*>*)
+(*<*)by (rule hextI) (fast dest: hext_objD)(*>*)
 
 lemma hext_upd_obj: "h a = Some (C,fs) \<Longrightarrow> h \<unlhd> h(a\<mapsto>(C,fs'))"
-(*<*)
-apply (rule hextI)
-apply (auto simp:fun_upd_apply)
-done
-(*>*)
+(*<*)by (rule hextI) (auto simp:fun_upd_apply)(*>*)
 
 lemma hext_typeof_mono: "\<lbrakk> h \<unlhd> h'; typeof\<^bsub>h\<^esub> v = Some T \<rbrakk> \<Longrightarrow> typeof\<^bsub>h'\<^esub> v = Some T"
 (*<*)
-apply(cases v)
-    apply simp
-   apply simp
-  apply simp
- apply simp
-apply(fastforce simp:hext_def)
-done
+proof(cases v)
+  case Addr assume "h \<unlhd> h'" and "typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>"
+  then show ?thesis using Addr by(fastforce simp:hext_def)
+qed simp_all
 (*>*)
 
 text \<open>Code generator setup for @{term "new_Addr"}\<close>

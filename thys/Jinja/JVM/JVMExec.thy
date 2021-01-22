@@ -81,19 +81,22 @@ lemma exec_all_conf:
 
 lemma exec_all_finalD: "P \<turnstile> (x, h, []) -jvm\<rightarrow> \<sigma> \<Longrightarrow> \<sigma> = (x, h, [])"
 (*<*)
-apply(simp only: exec_all_def)
-apply(erule converse_rtranclE)
- apply simp
-apply simp
-done
+proof -
+  assume "P \<turnstile> (x, h, []) -jvm\<rightarrow> \<sigma>"
+  then have "((x, h, []), \<sigma>) \<in> {(\<sigma>, \<sigma>'). exec (P, \<sigma>) = \<lfloor>\<sigma>'\<rfloor>}\<^sup>*"
+    by(simp only: exec_all_def)
+  then show ?thesis proof(rule converse_rtranclE) qed simp+
+qed
 (*>*)
 
 lemma exec_all_deterministic:
   "\<lbrakk> P \<turnstile> \<sigma> -jvm\<rightarrow> (x,h,[]); P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma>' -jvm\<rightarrow> (x,h,[])"
 (*<*)
-apply(drule (1) exec_all_conf)
-apply(blast dest!: exec_all_finalD)
-done
+proof -
+  assume assms: "P \<turnstile> \<sigma> -jvm\<rightarrow> (x,h,[])" "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
+  show ?thesis using exec_all_conf[OF assms]
+    by(blast dest!: exec_all_finalD)
+qed
 (*>*)
 
 
