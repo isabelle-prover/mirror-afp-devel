@@ -173,7 +173,7 @@ qed
 lemma bit_shiftl_word_iff [bit_simps]:
   \<open>bit (w << m) n \<longleftrightarrow> m \<le> n \<and> n < LENGTH('a) \<and> bit w (n - m)\<close>
   for w :: \<open>'a::len word\<close>
-  by (simp add: shiftl_word_eq bit_push_bit_iff exp_eq_zero_iff not_le)
+  by (simp add: shiftl_word_eq bit_push_bit_iff not_le)
 
 lemma bit_shiftr_word_iff [bit_simps]:
   \<open>bit (w >> m) n \<longleftrightarrow> bit w (m + n)\<close>
@@ -361,6 +361,15 @@ lemma shiftr_numeral [simp]:
   \<open>(numeral k >> numeral n :: 'a::len word) = drop_bit (numeral n) (numeral k)\<close>
   by (fact shiftr_word_eq)
 
+lemma shiftr_numeral_Suc [simp]:
+  \<open>(numeral k >> Suc 0 :: 'a::len word) = drop_bit (Suc 0) (numeral k)\<close>
+  by (fact shiftr_word_eq)
+
+lemma drop_bit_numeral_bit0_1 [simp]:
+  \<open>drop_bit (Suc 0) (numeral k) =
+    (word_of_int (drop_bit (Suc 0) (take_bit LENGTH('a) (numeral k))) :: 'a::len word)\<close>
+  by (metis Word_eq_word_of_int drop_bit_word.abs_eq of_int_numeral)
+
 lemma nth_mask [simp]:
   \<open>(mask n :: 'a::len word) !! i \<longleftrightarrow> i < n \<and> i < size (mask n :: 'a word)\<close>
   by (auto simp add: test_bit_word_eq word_size Word.bit_mask_iff)
@@ -473,9 +482,8 @@ lemma test_bit_split':
     (\<forall>n m.
       b !! n = (n < size b \<and> c !! n) \<and>
       a !! m = (m < size a \<and> c !! (m + size b)))"
-  by (auto simp add: word_split_bin' test_bit_bin bit_unsigned_iff word_size
-    bit_drop_bit_eq ac_simps exp_eq_zero_iff
-    dest: bit_imp_le_length)
+  by (auto simp add: word_split_bin' test_bit_bin bit_unsigned_iff word_size bit_drop_bit_eq ac_simps
+           dest: bit_imp_le_length)
 
 lemma test_bit_split:
   "word_split c = (a, b) \<Longrightarrow>

@@ -40,19 +40,29 @@ imports
   Word_8
   Word_16
   Word_32
-  Word_64
   Word_Syntax
   Signed_Division_Word
   More_Word_Operations
   Many_More
 begin
 
+declare word_induct2[induct type]
+declare word_nat_cases[cases type]
+
 declare signed_take_bit_Suc [simp]
+
+(* these generate take_bit terms, which we often don't want for concrete lengths *)
+lemmas of_int_and_nat = unsigned_of_nat unsigned_of_int signed_of_int signed_of_nat
+
+bundle no_take_bit
+begin
+  declare of_int_and_nat[simp del]
+end
 
 lemmas bshiftr1_def = bshiftr1_eq
 lemmas is_down_def = is_down_eq
 lemmas is_up_def = is_up_eq
-lemmas mask_def = mask_eq_decr_exp
+lemmas mask_def = mask_eq
 lemmas scast_def = scast_eq
 lemmas shiftl1_def = shiftl1_eq
 lemmas shiftr1_def = shiftr1_eq
@@ -94,7 +104,6 @@ lemmas word_and_max_simps =
   word8_and_max_simp
   word16_and_max_simp
   word32_and_max_simp
-  word64_and_max_simp
 
 lemma distinct_lemma: "f x \<noteq> f y \<Longrightarrow> x \<noteq> y" by auto
 
