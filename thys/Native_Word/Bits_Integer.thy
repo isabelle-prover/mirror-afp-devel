@@ -116,9 +116,8 @@ lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool
 
 instance
   apply standard
-  apply (simp add: Bit_Operations.set_bit_def unset_bit_def)
   apply transfer
-  apply (simp add: set_bit_eq Bit_Operations.set_bit_def unset_bit_def)
+  apply (simp add: bit_simps)
   done
 
 end

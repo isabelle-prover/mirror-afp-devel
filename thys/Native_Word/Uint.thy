@@ -197,9 +197,8 @@ begin
 lift_definition set_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint\<close> is set_bit .
 instance
   apply standard
-  apply (unfold Bit_Operations.set_bit_def unset_bit_def)
   apply transfer
-  apply (simp add: set_bit_eq Bit_Operations.set_bit_def unset_bit_def)
+  apply (simp add: bit_simps)
   done
 end
 
