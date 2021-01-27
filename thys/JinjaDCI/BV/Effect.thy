@@ -396,11 +396,13 @@ lemma appIfFalse [simp]:
 "app\<^sub>i (IfFalse b,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>ST LT. s = (Boolean#ST,LT) \<and> 0 \<le> int pc + b)"
 (*<*)
-  apply (rule length_cases2)
-   apply simp
-  apply (case_tac l) 
-      apply auto
-  done
+ (is "?P s")
+proof(rule length_cases2)
+  fix LT show "?P ([],LT)" by simp
+next
+  fix l ST LT show "?P (l#ST,LT)"
+    by (case_tac l) auto
+qed
 (*>*)
 
 lemma appCmpEq[simp]:

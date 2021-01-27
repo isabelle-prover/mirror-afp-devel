@@ -41,20 +41,21 @@ where
 theorem (in start_context) is_bcv_kiljvm:
   "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
 (*<*)
-  apply (insert wf)
-  apply (unfold kiljvm_def)
-  apply (fold r_def f_def step_def_exec)
-  apply (rule is_bcv_kildall)
-       apply simp apply (rule Semilat.intro)
-       apply (fold sl_def2)
-       apply (erule semilat_JVM)
-      apply simp
-      apply blast
-     apply (simp add: JVM_le_unfold)
-    apply (rule exec_pres_type)
-   apply (rule bounded_step)
-  apply (erule step_mono)
-  done
+proof -
+  let ?n = "length is"
+  have "Semilat A r f" using semilat_JVM[OF wf]
+    by (simp add: Semilat.intro sl_def2)
+  moreover have "acc r" using wf by simp blast
+  moreover have "top r Err" by (simp add: JVM_le_unfold)
+  moreover have "pres_type step ?n A" by (rule exec_pres_type)
+  moreover have "bounded step ?n" by (rule bounded_step)
+  moreover have "mono r step ?n A" using step_mono[OF wf] by simp
+  ultimately have "is_bcv r Err step ?n A (kildall r f step)"
+    by(rule is_bcv_kildall)
+  moreover have kileq: "kiljvm P mxs mxl T\<^sub>r is xt = kildall r f step"
+    using f_def kiljvm_def r_def step_def_exec by blast
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 (* FIXME: move? *)
@@ -76,9 +77,9 @@ lemma (in start_context) start_in_A [intro?]:
   "0 < size is \<Longrightarrow> start \<in> list (size is) A"
   using Ts C
 (*<*)
-  apply (simp add: JVM_states_unfold)
-  apply (cases b; force intro!: listI list_appendI dest!: in_set_replicate)
-  done
+proof(cases b)
+qed (force simp: JVM_states_unfold intro!: listI list_appendI
+           dest!: in_set_replicate)+
 (*>*)
 
 
@@ -208,30 +209,44 @@ qed
 theorem jvm_kildall_correct:
   "wf_jvm_prog\<^sub>k P = wf_jvm_prog P"
 (*<*)
-proof 
+proof -
   let ?\<Phi> = "\<lambda>C M. let (C,b,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)) = method P C M in 
               SOME \<tau>s. wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
+  let ?A = "\<lambda>P C' (M, b, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_kildall P C' b Ts T\<^sub>r mxs mxl\<^sub>0 is xt"
+  let ?B\<^sub>\<Phi> = "\<lambda>\<Phi>. (\<lambda>P C (M,b,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)). 
+                wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M))"
 
-  \<comment> \<open>soundness\<close>
-  assume wt: "wf_jvm_prog\<^sub>k P"
-  hence "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P"
-    apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)    
-    apply (erule wf_prog_lift)
-    apply (auto dest!: start_context.wt_kil_correct [OF start_context.intro] 
-                intro: someI)
-    apply (erule sees_method_is_class)
-    done
-  thus "wf_jvm_prog P" by (unfold wf_jvm_prog_def) fast
-next
-  \<comment> \<open>completeness\<close>
-  assume wt: "wf_jvm_prog P"
-  thus "wf_jvm_prog\<^sub>k P"
-    apply (unfold wf_jvm_prog_def wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)
-    apply (clarify)
-    apply (erule wf_prog_lift)
-    apply (auto intro!: start_context.wt_kil_complete start_context.intro)
-    apply (erule sees_method_is_class)
-    done
+  show ?thesis proof(rule iffI)
+    \<comment> \<open>soundness\<close>
+    assume wt: "wf_jvm_prog\<^sub>k P"
+    then have "wf_prog ?A P" by(simp add: wf_jvm_prog\<^sub>k_def)
+    moreover {
+      fix wf_md C M b Ts Ca T m bd
+      assume "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
+             "set Ts \<subseteq> types P" and "bd = (M, b, Ts, T, m)" and
+             "?A P Ca bd"
+      then have "(?B\<^sub>\<Phi> ?\<Phi>) P Ca bd" using sees_method_is_class[OF sees]
+        by (auto dest!: start_context.wt_kil_correct [OF start_context.intro] 
+                 intro: someI)
+    }
+    ultimately have "wf_prog (?B\<^sub>\<Phi> ?\<Phi>) P" by(rule wf_prog_lift)
+    then have "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P" by (simp add: wf_jvm_prog_phi_def)
+    thus "wf_jvm_prog P" by (unfold wf_jvm_prog_def) fast
+  next  
+    \<comment> \<open>completeness\<close>
+    assume wt: "wf_jvm_prog P"
+    then obtain \<Phi> where "wf_prog (?B\<^sub>\<Phi> \<Phi>) P" by(clarsimp simp: wf_jvm_prog_def wf_jvm_prog_phi_def)
+    moreover {
+      fix wf_md C M b Ts Ca T m bd
+      assume "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
+             "set Ts \<subseteq> types P" and "bd = (M, b, Ts, T, m)" and
+             "(?B\<^sub>\<Phi> \<Phi>) P Ca bd"
+      then have "?A P Ca bd" using sees_method_is_class[OF sees]
+        by (auto intro!: start_context.wt_kil_complete start_context.intro)
+    }
+    ultimately have "wf_prog ?A P" by(rule wf_prog_lift)
+    thus "wf_jvm_prog\<^sub>k P" by (simp add: wf_jvm_prog\<^sub>k_def)
+  qed
 qed
 (*>*)
 

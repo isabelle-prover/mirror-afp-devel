@@ -152,14 +152,17 @@ subsection \<open> Stack and Registers \<close>
 lemmas confTs_Cons1 [iff] = list_all2_Cons1 [of "confT P h"] for P h
 
 lemma confTs_confT_sup:
-  "\<lbrakk> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT; n < size LT; LT!n = OK T; P \<turnstile> T \<le> T' \<rbrakk> 
-  \<Longrightarrow> P,h \<turnstile> (loc!n) :\<le> T'"
+assumes confTs: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and n: "n < size LT" and
+      LTn: "LT!n = OK T" and subtype: "P \<turnstile> T \<le> T'"
+shows "P,h \<turnstile> (loc!n) :\<le> T'"
 (*<*)
-  apply (frule list_all2_lengthD)
-  apply (drule list_all2_nthD, simp)
-  apply simp
-  apply (erule conf_widen, assumption+)
-  done
+proof -
+  have len: "n < length loc" using list_all2_lengthD[OF confTs] n
+    by simp
+  show ?thesis
+   using list_all2_nthD[OF confTs len] conf_widen[OF _ subtype] LTn
+    by simp
+qed
 (*>*)
 
 lemma confTs_hext [intro?]:
@@ -220,16 +223,15 @@ lemma conf_fs_hext:
   "\<And>C M n T\<^sub>r. 
   \<lbrakk> conf_fs P h sh \<Phi> C M n T\<^sub>r frs; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_fs P h' sh \<Phi> C M n T\<^sub>r frs"
 (*<*)
-apply (induct frs)
- apply simp
-apply clarify
-apply (simp (no_asm_use))
-apply clarify
-apply (unfold conf_f_def)
-apply (simp (no_asm_use))
-apply clarify
-apply (fastforce elim!: confs_hext confTs_hext)
-done
+proof(induct frs)
+  case (Cons fr frs)
+  obtain stk ls C M pc ics where fr: "fr = (stk, ls, C, M, pc, ics)" by(cases fr) simp
+  moreover obtain ST LT where \<Phi>: "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>" and
+     ST: "P,h \<turnstile> stk [:\<le>] ST" and LT: "P,h \<turnstile> ls [:\<le>\<^sub>\<top>] LT"
+    using Cons.prems(1) fr by(auto simp: conf_f_def)
+  ultimately show ?case using Cons confs_hext[OF ST Cons(3)] confTs_hext[OF LT Cons(3)]
+    by (fastforce simp: conf_f_def)
+qed simp
 (*>*)
 
 
