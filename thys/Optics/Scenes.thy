@@ -17,7 +17,7 @@ text \<open> Overriding functions provide an abstract way of replacing a region 
   with the corresponding region of another source. \<close>
 
 locale overrider =
-  fixes F :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<triangleright>" 65)
+  fixes F  :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<triangleright>" 65)
   assumes 
     ovr_overshadow_left: "x \<triangleright> y \<triangleright> z = x \<triangleright> z" and
     ovr_overshadow_right: "x \<triangleright> (y \<triangleright> z) = x \<triangleright> z"
@@ -80,6 +80,9 @@ lemma state_eq_iff: "idem_scene S \<Longrightarrow> x = y \<longleftrightarrow> 
 lift_definition scene_override :: "'a \<Rightarrow> 'a \<Rightarrow> ('a scene) \<Rightarrow> 'a" ("_ \<oplus>\<^sub>S _ on _" [95,0,96] 95)
 is "\<lambda> s\<^sub>1 s\<^sub>2 F. F s\<^sub>1 s\<^sub>2" .
 
+abbreviation (input) scene_copy :: "'a scene \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a)" ("cp\<^bsub>_\<^esub>") where
+"cp\<^bsub>A\<^esub> s \<equiv> (\<lambda> s'. s' \<oplus>\<^sub>S s on A)"
+
 lemma scene_override_idem [simp]: "idem_scene X \<Longrightarrow> s \<oplus>\<^sub>S s on X = s"
   by (transfer, simp)
 
@@ -105,6 +108,10 @@ lemma scene_indep_override:
   "X \<bowtie>\<^sub>S Y = (\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>S s\<^sub>2 on X \<oplus>\<^sub>S s\<^sub>3 on Y = s\<^sub>1 \<oplus>\<^sub>S s\<^sub>3 on Y \<oplus>\<^sub>S s\<^sub>2 on X)"
   by (transfer, auto)
 
+lemma scene_indep_copy:
+  "X \<bowtie>\<^sub>S Y = (\<forall> s\<^sub>1  s\<^sub>2. cp\<^bsub>X\<^esub> s\<^sub>1 \<circ> cp\<^bsub>Y\<^esub> s\<^sub>2 = cp\<^bsub>Y\<^esub> s\<^sub>2 \<circ> cp\<^bsub>X\<^esub> s\<^sub>1)"
+  by (auto simp add: scene_indep_override comp_def fun_eq_iff)
+
 lemma scene_indep_sym:
   "X \<bowtie>\<^sub>S Y \<Longrightarrow> Y \<bowtie>\<^sub>S X"
   by (transfer, auto)
@@ -114,6 +121,10 @@ text \<open> Compatibility is a weaker notion than independence; the scenes can 
 
 lift_definition scene_compat :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix "##\<^sub>S" 50)
 is "\<lambda> F G. (\<forall> s\<^sub>1 s\<^sub>2. G (F s\<^sub>1 s\<^sub>2) s\<^sub>2 = F (G s\<^sub>1 s\<^sub>2) s\<^sub>2)" .
+
+lemma scene_compat_copy:
+  "X ##\<^sub>S Y = (\<forall> s. cp\<^bsub>X\<^esub> s \<circ> cp\<^bsub>Y\<^esub> s = cp\<^bsub>Y\<^esub> s \<circ> cp\<^bsub>X\<^esub> s)"
+  by (transfer, auto simp add: fun_eq_iff)
 
 lemma scene_indep_compat [simp]: "X \<bowtie>\<^sub>S Y \<Longrightarrow> X ##\<^sub>S Y"
   by (transfer, auto)
@@ -179,6 +190,13 @@ lemma scene_override_union: "X ##\<^sub>S Y \<Longrightarrow> S\<^sub>1 \<oplus>
 lemma scene_union_unit: "X \<squnion>\<^sub>S \<bottom>\<^sub>S = X"
   by (transfer, simp)
 
+lemma idem_scene_union [simp]: "\<lbrakk> idem_scene A; idem_scene B \<rbrakk> \<Longrightarrow> idem_scene (A \<squnion>\<^sub>S B)"
+  apply (transfer, auto)
+  apply (unfold_locales, auto)
+  apply (metis overrider.ovr_overshadow_left)
+  apply (metis overrider.ovr_overshadow_right)
+  done
+
 lemma scene_union_annhil: "idem_scene X \<Longrightarrow> X \<squnion>\<^sub>S \<top>\<^sub>S = \<top>\<^sub>S"
   by (transfer, simp)
 
@@ -186,6 +204,9 @@ lemma scene_union_pres_compat: "\<lbrakk> A ##\<^sub>S B; A ##\<^sub>S C \<rbrak
   by (transfer, auto)
 
 lemma scene_indep_self_compl: "A \<bowtie>\<^sub>S -A"
+  by (transfer, simp)
+
+lemma scene_compat_self_compl: "A ##\<^sub>S -A"
   by (transfer, simp)
 
 lemma scene_union_assoc: 
@@ -254,6 +275,12 @@ lemma subscene_antisym: "\<lbrakk> idem_scene Y; X \<subseteq>\<^sub>S Y; Y \<su
   apply (metis (full_types) idem_overrider.ovr_idem overrider.ovr_overshadow_left)
   done
 
+lemma subscene_copy_def:
+  assumes "idem_scene X" "idem_scene Y"
+  shows "X \<subseteq>\<^sub>S Y = (\<forall> s\<^sub>1 s\<^sub>2. cp\<^bsub>X\<^esub> s\<^sub>1 \<circ> cp\<^bsub>Y\<^esub> s\<^sub>2 = cp\<^bsub>Y\<^esub> (cp\<^bsub>X\<^esub> s\<^sub>1 s\<^sub>2))"
+  using assms
+  by (simp add: less_eq_scene_def fun_eq_iff, transfer, auto)
+
 lemma subscene_eliminate:
   "\<lbrakk> idem_scene Y; X \<le> Y \<rbrakk> \<Longrightarrow> s\<^sub>1 \<oplus>\<^sub>S s\<^sub>2 on X \<oplus>\<^sub>S s\<^sub>3 on Y = s\<^sub>1 \<oplus>\<^sub>S s\<^sub>3 on Y"
   by (metis less_eq_scene_def scene_override_overshadow_left scene_override_idem)
@@ -274,6 +301,19 @@ lemma scene_le_then_compat: "\<lbrakk> idem_scene X; idem_scene Y; X \<le> Y \<r
 
 lemma indep_then_compl_in: "A \<bowtie>\<^sub>S B \<Longrightarrow> A \<le> -B"
   unfolding less_eq_scene_def by (transfer, simp)
+
+lift_definition scene_comp :: "'a scene \<Rightarrow> ('a \<Longrightarrow> 'b) \<Rightarrow> 'b scene" (infixl ";\<^sub>S" 80)
+is "\<lambda> S X a b. if (vwb_lens X) then put\<^bsub>X\<^esub> a (S (get\<^bsub>X\<^esub> a) (get\<^bsub>X\<^esub> b)) else a"
+  by (unfold_locales, auto)
+
+lemma scene_comp_idem [simp]: "idem_scene S \<Longrightarrow> idem_scene (S ;\<^sub>S X)"
+  by (transfer, unfold_locales, simp_all)
+
+lemma scene_comp_lens_indep [simp]: "X \<bowtie> Y \<Longrightarrow> (A ;\<^sub>S X) \<bowtie>\<^sub>S (A ;\<^sub>S Y)"
+  by (transfer, auto simp add: lens_indep.lens_put_comm lens_indep.lens_put_irr2)
+
+lemma scene_comp_indep [simp]: "A \<bowtie>\<^sub>S B \<Longrightarrow> (A ;\<^sub>S X) \<bowtie>\<^sub>S (B ;\<^sub>S X)"
+  by (transfer, auto)
 
 subsection \<open> Linking Scenes and Lenses \<close>
 
@@ -349,6 +389,16 @@ next
     by (simp add: assms b lens_equiv_def sublens_iff_subscene subscene_refl)
 qed
 
+definition lens_insert :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b scene \<Rightarrow> 'b scene" ("insert\<^sub>S") where
+"lens_insert x A = (if (\<lbrakk>x\<rbrakk>\<^sub>\<sim> \<le> A) then \<lbrakk>x\<rbrakk>\<^sub>\<sim> \<squnion>\<^sub>S A else A)"
+
+lemma lens_insert_idem: "insert\<^sub>S x (insert\<^sub>S x A) = insert\<^sub>S x A"
+  apply (auto simp add: lens_insert_def less_eq_scene_def)
+  apply (transfer)
+  apply (auto simp add: lens_override_overshadow_left)
+  apply (metis lens_override_overshadow_left)
+  done
+
 text \<open> Membership operations. These have slightly hacky definitions at the moment in order to
   cater for @{term mwb_lens}. See if they can be generalised? \<close>
 
@@ -356,6 +406,14 @@ definition lens_member :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b scene \<Ri
 [lens_defs]:
 "lens_member x A = ((\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>S s\<^sub>2 on A \<oplus>\<^sub>L s\<^sub>3 on x = s\<^sub>1 \<oplus>\<^sub>S (s\<^sub>2 \<oplus>\<^sub>L s\<^sub>3 on x) on A) \<and>
                       (\<forall> b b'. get\<^bsub>x\<^esub> (b \<oplus>\<^sub>S b' on A) = get\<^bsub>x\<^esub> b'))"
+
+lemma lens_member_override: "x \<in>\<^sub>S A \<Longrightarrow> s\<^sub>1 \<oplus>\<^sub>S s\<^sub>2 on A \<oplus>\<^sub>L s\<^sub>3 on x = s\<^sub>1 \<oplus>\<^sub>S (s\<^sub>2 \<oplus>\<^sub>L s\<^sub>3 on x) on A"
+  using lens_member_def by force
+
+lemma lens_member_put:
+  assumes "vwb_lens x" "idem_scene a" "x \<in>\<^sub>S a"
+  shows "put\<^bsub>x\<^esub> s v \<oplus>\<^sub>S s on a = s"
+  by (metis (full_types) assms lens_member_override lens_override_def scene_override_idem vwb_lens.put_eq)
 
 lemma lens_member_top: "x \<in>\<^sub>S \<top>\<^sub>S"
   by (auto simp add: lens_member_def)
@@ -371,7 +429,7 @@ lemma lens_not_member_get_override [simp]: "x \<notin>\<^sub>S a \<Longrightarro
 
 subsection \<open> Function Domain Scene \<close>
 
-lift_definition fun_dom_scene :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b) scene" ("fds") is
+lift_definition fun_dom_scene :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::two) scene" ("fds") is
 "\<lambda> A f g. override_on f g A" by (unfold_locales, simp_all add: override_on_def fun_eq_iff)
 
 lemma fun_dom_scene_empty: "fds({}) = \<bottom>\<^sub>S"
@@ -389,8 +447,16 @@ lemma fun_dom_scene_inter: "fds(A \<inter> B) = fds(A) \<sqinter>\<^sub>S fds(B)
 lemma fun_dom_scene_UNIV: "fds(UNIV) = \<top>\<^sub>S"
   by (transfer, auto simp add: fun_eq_iff override_on_def)
 
+lemma fun_dom_scene_indep [simp]:   
+  "fds(A) \<bowtie>\<^sub>S fds(B) \<longleftrightarrow> A \<inter> B = {}"
+  by (transfer, auto simp add: override_on_def fun_eq_iff, meson two_diff)
+
 lemma fun_dom_scene_always_compat [simp]: "fds(A) ##\<^sub>S fds(B)"
   by (transfer, simp add: override_on_def fun_eq_iff)
+
+lemma fun_dom_scene_le [simp]: "fds(A) \<subseteq>\<^sub>S fds(B) \<longleftrightarrow> A \<subseteq> B"
+  unfolding less_eq_scene_def
+  by (transfer, auto simp add: override_on_def fun_eq_iff, meson two_diff)
 
 text \<open> Hide implementation details for scenes \<close>  
 

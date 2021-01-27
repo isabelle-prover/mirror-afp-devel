@@ -28,7 +28,7 @@ lemma sublens_pres_vwb:
 
 text \<open>Sublens is a preorder as the following two theorems show.\<close>
     
-lemma sublens_refl:
+lemma sublens_refl [simp]:
   "X \<subseteq>\<^sub>L X"
   using id_vwb_lens sublens_def by fastforce
 
@@ -103,7 +103,7 @@ lemma lens_equivI [intro]:
 
 lemma lens_equiv_refl:
   "X \<approx>\<^sub>L X"
-  by (simp add: lens_equiv_def sublens_refl)
+  by (simp add: lens_equiv_def)
 
 lemma lens_equiv_sym:
   "X \<approx>\<^sub>L Y \<Longrightarrow> Y \<approx>\<^sub>L X"
@@ -142,6 +142,16 @@ lemma lens_quotient_plus:
   apply (rule ext)
   apply (simp add: prod.case_eq_if)
 done
+
+text \<open>Laws for for lens plus on the denominator. These laws allow us to extract compositions
+  of @{term "fst\<^sub>L"} and @{term "snd\<^sub>L"} terms. \<close>
+
+lemma lens_quotient_plus_den1: 
+  "\<lbrakk> weak_lens x; weak_lens y; x \<bowtie> y \<rbrakk> \<Longrightarrow> x /\<^sub>L (x +\<^sub>L y) = fst\<^sub>L"
+  by (auto simp add: lens_defs prod.case_eq_if fun_eq_iff, metis (lifting) lens_indep_def weak_lens.put_get)
+
+lemma lens_quotient_plus_den2: "\<lbrakk> weak_lens x; weak_lens z; x \<bowtie> z; y \<subseteq>\<^sub>L z \<rbrakk> \<Longrightarrow> y /\<^sub>L (x +\<^sub>L z) = (y /\<^sub>L z) ;\<^sub>L snd\<^sub>L "
+  by (auto simp add: lens_defs prod.case_eq_if fun_eq_iff lens_indep.lens_put_irr2)
 
 text \<open>There follows a number of laws relating sublens and summation. Firstly, sublens is preserved
   by summation. \<close>
@@ -206,7 +216,7 @@ lemma lens_plus_sub_comm: "X \<bowtie> Y \<Longrightarrow> X +\<^sub>L Y \<subse
   apply (simp add: sublens_def)
   apply (rule_tac x="snd\<^sub>L +\<^sub>L fst\<^sub>L" in exI)
   apply (auto)
-   apply (simp add: fst_vwb_lens lens_indep_sym plus_vwb_lens snd_vwb_lens)
+   apply (simp add: fst_vwb_lens lens_indep_sym snd_vwb_lens)
   apply (simp add: lens_indep_sym lens_plus_swap)
 done
 
@@ -218,7 +228,7 @@ lemma lens_plus_comm: "X \<bowtie> Y \<Longrightarrow> X +\<^sub>L Y \<approx>\<
 text \<open>Any composite lens is larger than an element of the lens, as demonstrated by the following
   four laws.\<close>
     
-lemma lens_plus_ub: "wb_lens Y \<Longrightarrow> X \<subseteq>\<^sub>L X +\<^sub>L Y"
+lemma lens_plus_ub [simp]: "wb_lens Y \<Longrightarrow> X \<subseteq>\<^sub>L X +\<^sub>L Y"
   by (metis fst_lens_plus fst_vwb_lens sublens_def)
 
 lemma lens_plus_right_sublens:

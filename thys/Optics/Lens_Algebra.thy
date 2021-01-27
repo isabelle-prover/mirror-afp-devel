@@ -397,7 +397,7 @@ lemma lens_comp_quotient:
   "weak_lens Y \<Longrightarrow> (X ;\<^sub>L Y) /\<^sub>L Y = X"
   by (simp add: lens_quotient_def lens_comp_def)
     
-lemma lens_quotient_id: "weak_lens X \<Longrightarrow> (X /\<^sub>L X) = 1\<^sub>L"
+lemma lens_quotient_id [simp]: "weak_lens X \<Longrightarrow> (X /\<^sub>L X) = 1\<^sub>L"
   by (force simp add: lens_quotient_def id_lens_def)
 
 lemma lens_quotient_id_denom: "X /\<^sub>L 1\<^sub>L = X"
