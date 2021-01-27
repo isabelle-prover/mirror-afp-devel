@@ -24,6 +24,19 @@ and Melville&lt;/a&gt;. This formalization follows the presentation in
 &lt;em&gt;Purely Functional Data Structures&lt;/em&gt;by Okasaki.</description>
     </item>
     <item>
+       <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
+              <link>https://www.isa-afp.org/entries/JinjaDCI.html</link>
+       <guid>https://www.isa-afp.org/entries/JinjaDCI.html</guid>
+       <dc:creator> Susannah Mansky       </dc:creator>
+       <pubDate>11 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+We extend Jinja to include static fields, methods, and instructions,
+and dynamic class initialization, based on the Java SE 8
+specification. This includes extension of definitions and proofs. This
+work is partially described in Mansky and Gunter&#39;s paper at CPP
+2019 and Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
+    </item>
+    <item>
        <title>Cofinality and the Delta System Lemma</title>
               <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
        <guid>https://www.isa-afp.org/entries/Delta_System_Lemma.html</guid>
@@ -589,19 +602,6 @@ intricate cyclic program that implements the Morris-Pratt string
 matching algorithm. Here we provide a proof of total correctness for
 Bird&#39;s derivation and complete it by adding Knuth&#39;s
 optimisation.</description>
-    </item>
-    <item>
-       <title>Amicable Numbers</title>
-              <link>https://www.isa-afp.org/entries/Amicable_Numbers.html</link>
-       <guid>https://www.isa-afp.org/entries/Amicable_Numbers.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
-       <pubDate>04 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-This is a formalisation of Amicable Numbers, involving some relevant
-material including Euler&#39;s sigma function, some relevant
-definitions, results and examples as well as rules such as
-Th&amp;#257;bit ibn Qurra&#39;s Rule, Euler&#39;s Rule, te
-Riele&#39;s Rule and Borho&#39;s Rule with breeders.</description>
     </item>
   </channel>
 </rss>

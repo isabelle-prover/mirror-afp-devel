@@ -10164,10 +10164,23 @@ author = Alejandro Gómez-Londoño<mailto:alejandro.gomez@chalmers.se>
 topic = Computer science/Data structures
 date = 2021-01-18
 notify = nipkow@in.tum.de
-abstract = 
+abstract =
   This is a verified implementation of a constant time queue. The
   original design is due to <a
   href="https://doi.org/10.1016/0020-0190(81)90030-2">Hood
   and Melville</a>. This formalization follows the presentation in
   <em>Purely Functional Data Structures</em>by Okasaki.
+
+[JinjaDCI]
+title = JinjaDCI: a Java semantics with dynamic class initialization
+author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
+topic = Computer science/Programming languages/Language definitions
+date = 2021-01-11
+notify = sjohnsn2@illinois.edu, susannahej@gmail.com
+abstract =
+  We extend Jinja to include static fields, methods, and instructions,
+  and dynamic class initialization, based on the Java SE 8
+  specification. This includes extension of definitions and proofs. This
+  work is partially described in Mansky and Gunter's paper at CPP
+  2019 and Mansky's doctoral thesis (UIUC, 2020).
 
