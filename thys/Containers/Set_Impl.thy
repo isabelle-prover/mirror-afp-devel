@@ -732,8 +732,13 @@ lemma Set_uminus_cenum:
   and "- (Complement B) = B"
 by(auto split: option.split dest: ID_cEnum)
 
-lemma Set_minus_code [code]: "A - B = A \<inter> (- B)"
-by(rule Diff_eq)
+lemma Set_minus_code [code]:
+  fixes rbt1 rbt2 :: "'a :: ccompare set_rbt"
+  shows "A - B = A \<inter> (- B)"
+    "RBT_set rbt1 - RBT_set rbt2 =
+    (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''minus RBT_set RBT_set: ccompare = None'') (\<lambda>_. RBT_set rbt1 - RBT_set rbt2)
+    | Some _ \<Rightarrow> RBT_set (RBT_Set2.minus rbt1 rbt2))"
+  by (auto simp: Set_member_code(3) split: option.splits)
 
 lemma Set_union_code [code]:
   fixes rbt1 rbt2 :: "'a :: ccompare set_rbt"

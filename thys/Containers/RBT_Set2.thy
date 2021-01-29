@@ -89,24 +89,6 @@ lemma fold_rev_simps [simp, code]:
   "fold_rev f (Branch c l k v r) = fold_rev f l o f k v o fold_rev f r"
 by(simp_all add: fold_rev_def fun_eq_iff)
 
-definition (in ord) rbt_minus :: "('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt"
-where
-  "rbt_minus t1 t2 =
-  (let h1 = bheight t1; h2 = bheight t2
-   in if 2 * h1 \<le> h2 then rbtreeify (fold_rev (\<lambda>k v kvs. if rbt_lookup t2 k = None then (k, v) # kvs else kvs) t1 [])
-      else RBT_Impl.fold (\<lambda>k v. rbt_delete k) t2 t1)"
-
-definition rbt_comp_minus :: "'a comparator \<Rightarrow> ('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt"
-where
-  "rbt_comp_minus c t1 t2 =
-  (let h1 = bheight t1; h2 = bheight t2
-   in if 2 * h1 \<le> h2 then rbtreeify (fold_rev (\<lambda>k v kvs. if rbt_comp_lookup c t2 k = None then (k, v) # kvs else kvs) t1 [])
-      else RBT_Impl.fold (\<lambda>k v. rbt_comp_delete c k) t2 t1)"
-
-lemma rbt_comp_minus: assumes c: "comparator c"
-  shows "rbt_comp_minus c = ord.rbt_minus (lt_of_comp c)"
-  by (intro ext, unfold rbt_comp_minus_def ord.rbt_minus_def, auto simp: rbt_comp_simps[OF c])
-  
 context linorder begin
 
 lemma sorted_fst_foldr_Cons:
@@ -115,17 +97,6 @@ proof(induct as)
   case (Cons a as)
   with set_foldr_Cons[of P as] show ?case by(auto)
 qed simp
-
-lemma is_rbt_rbt_minus:
-  "\<lbrakk> is_rbt t1; is_rbt t2 \<rbrakk> \<Longrightarrow> is_rbt (rbt_minus t1 t2)"
-by(auto simp add: rbt_minus_def Let_def RBT_Impl.fold_def fold_rev_def is_rbt_fold_rbt_delete[where xs="map fst (RBT_Impl.entries t2)", simplified fold_map o_def] split_def is_rbt_rbtreeify sorted_fst_foldr_Cons rbt_sorted_entries distinct_fst_foldr_Cons distinct_entries cong: if_cong)
-
-lemma rbt_lookup_rbt_minus:
-  "\<lbrakk> is_rbt t1; is_rbt t2 \<rbrakk> 
-  \<Longrightarrow> rbt_lookup (rbt_minus t1 t2) = rbt_lookup t1 |` (- dom (rbt_lookup t2))"
-apply(clarsimp simp add: rbt_minus_def Let_def domIff[symmetric] rbt_lookup_keys rbt_lookup_rbtreeify RBT_Impl.keys_def trans[OF RBT_Impl.fold_def fold_split_conv_map_fst] split_def sorted_fst_foldr_Cons rbt_sorted_entries distinct_fst_foldr_Cons distinct_entries fold_rev_def simp del: set_map cong: if_cong)
-apply(auto simp add: map_of_entries[symmetric] filter_conv_foldr[symmetric] map_of_filter[where P="\<lambda>k. map_of (RBT_Impl.entries t2) k = None"] intro!: arg_cong[where f="\<lambda>x. map_of (RBT_Impl.entries t1) |` x"] dest: map_of_eq_None_iff[THEN iffD1] intro: map_of_eq_None_iff[THEN iffD2])
-done
 
 end
 
@@ -172,7 +143,7 @@ by(auto 4 3 intro: ID_ccompare linorder.is_rbt_fold_rbt_insert ord.Empty_is_rbt 
 
 lift_definition minus :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" is 
   "rbt_comp_minus ccomp"
-by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_ccompare simp: rbt_comp_minus[OF ID_ccompare'])
+by(auto 4 3 intro: linorder.rbt_minus_is_rbt ID_ccompare simp: rbt_comp_minus[OF ID_ccompare'])
 
 abbreviation filter :: "('a :: ccompare \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "filter P \<equiv> RBT_Mapping2.filter (P \<circ> fst)"

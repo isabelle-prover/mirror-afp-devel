@@ -462,14 +462,176 @@ subsection \<open>Standard Setup\<close>
     unfolding compare_height_alt[abs_def]
     by parametricity
 
+lemma rbt_rel_bheight: "(t, t') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow> bheight t = bheight t'"
+  by (induction t arbitrary: t') (auto elim!: rbt_rel_elims color_rel.cases)
+
+lemma param_rbt_baliL[param]: "(rbt_baliL,rbt_baliL) \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+proof (intro fun_relI, goal_cases)
+  case (1 l l' a a' b b' r r')
+  thus ?case
+    apply (induct l a b r arbitrary: l' a' b' r' rule: rbt_baliL.induct)
+    apply (elim_all rbt_rel_elims color_rel_elims)
+    apply (simp_all only: rbt_baliL.simps)
+    apply parametricity+
+    done
+qed
+
+lemma param_rbt_baliR[param]: "(rbt_baliR,rbt_baliR) \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+proof (intro fun_relI, goal_cases)
+  case (1 l l' a a' b b' r r')
+  thus ?case
+    apply (induction l a b r arbitrary: l' a' b' r' rule: rbt_baliR.induct)
+    apply (elim_all rbt_rel_elims color_rel_elims)
+    apply (simp_all only: rbt_baliR.simps)
+    apply parametricity+
+    done
+qed
+
+lemma param_rbt_joinL[param]: "(rbt_joinL,rbt_joinL) \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+proof (intro fun_relI, goal_cases)
+  case (1 l l' a a' b b' r r')
+  thus ?case
+  proof (induction l a b r arbitrary: l' a' b' r' rule: rbt_joinL.induct)
+    case (1 l a b r)
+    have "bheight l < bheight r \<Longrightarrow> r = MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+       (k, k') \<in> Ra \<Longrightarrow> (v, v') \<in> Rb \<Longrightarrow> (rr, rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+       (rbt_baliL (rbt_joinL l a b ll) k v rr, rbt_baliL (rbt_joinL l' a' b' ll') k' v' rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+      for ll ll' k k' v v' rr rr'
+      by parametricity (auto intro: 1)
+    then show ?case
+      using 1
+      by (auto simp: rbt_joinL.simps[of l a b r] rbt_joinL.simps[of l' a' b' r'] rbt_rel_bheight
+          intro: rbt_rel_intros color_rel.intros elim!: rbt_rel_elims color_rel_elims
+          split: rbt.splits color.splits)
+  qed
+qed
+
+lemma param_rbt_joinR[param]:
+  "(rbt_joinR,rbt_joinR) \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+proof (intro fun_relI, goal_cases)
+  case (1 l l' a a' b b' r r')
+  thus ?case
+  proof (induction l a b r arbitrary: l' a' b' r' rule: rbt_joinR.induct)
+    case (1 l a b r)
+    have "bheight r < bheight l \<Longrightarrow> l = MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+       (k, k') \<in> Ra \<Longrightarrow> (v, v') \<in> Rb \<Longrightarrow> (rr, rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+       (rbt_baliR ll k v (rbt_joinR rr a b r), rbt_baliR ll' k' v' (rbt_joinR rr' a' b' r')) \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+      for ll ll' k k' v v' rr rr'
+      by parametricity (auto intro: 1)
+    then show ?case
+      using 1
+      by (auto simp: rbt_joinR.simps[of l] rbt_joinR.simps[of l'] rbt_rel_bheight[symmetric]
+          intro: rbt_rel_intros color_rel.intros elim!: rbt_rel_elims color_rel_elims
+          split: rbt.splits color.splits)
+  qed
+qed
+
+lemma param_rbt_join[param]: "(rbt_join,rbt_join) \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+  by (auto simp: rbt_join_def Let_def rbt_rel_bheight) parametricity+
+
+lemma param_split[param]:
+  fixes less
+  assumes [param]: "(less,less') \<in> Ra \<rightarrow> Ra \<rightarrow> Id"
+  shows "(ord.rbt_split less, ord.rbt_split less') \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> Ra \<rightarrow> \<langle>\<langle>Ra,Rb\<rangle>rbt_rel,\<langle>\<langle>Rb\<rangle>option_rel,\<langle>Ra,Rb\<rangle>rbt_rel\<rangle>prod_rel\<rangle>prod_rel"
+proof (intro fun_relI)
+  fix t t' a a'
+  assume "(t, t') \<in> \<langle>Ra, Rb\<rangle>rbt_rel" "(a, a') \<in> Ra"
+  then show "(ord.rbt_split less t a, ord.rbt_split less' t' a') \<in> \<langle>\<langle>Ra,Rb\<rangle>rbt_rel,\<langle>\<langle>Rb\<rangle>option_rel,\<langle>Ra,Rb\<rangle>rbt_rel\<rangle>prod_rel\<rangle>prod_rel"
+  proof (induction t a arbitrary: t' rule: ord.rbt_split.induct[where ?less=less])
+    case (2 c l k b r a)
+    obtain c' l' k' b' r' where t'_def: "t' = Branch c' l' k' b' r'"
+      using 2(3)
+      by (auto elim: rbt_rel_elims)
+    have sub_rel: "(l, l') \<in> \<langle>Ra, Rb\<rangle>rbt_rel" "(k, k') \<in> Ra" "(b, b') \<in> Rb" "(r, r') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+      using 2(3)
+      by (auto simp: t'_def elim: rbt_rel_elims)
+    have less_iff: "less a k \<longleftrightarrow> less' a' k'" "less k a \<longleftrightarrow> less' k' a'"
+      using assms 2(4) sub_rel(2)
+      by (auto dest: fun_relD)
+    show ?case
+      using 2(1)[OF _ sub_rel(1) 2(4)] 2(2)[OF _ _ sub_rel(4) 2(4)] sub_rel
+      unfolding t'_def less_iff ord.rbt_split.simps(2)[of less c] ord.rbt_split.simps(2)[of less' c']
+      by (auto split: prod.splits) parametricity+
+  qed (auto simp: ord.rbt_split.simps elim!: rbt_rel_elims intro: rbt_rel_intros)
+qed
+
+lemma param_rbt_union_swap_rec[param]:
+  fixes less
+  assumes [param]: "(less,less') \<in> Ra \<rightarrow> Ra \<rightarrow> Id"
+  shows "(ord.rbt_union_swap_rec less, ord.rbt_union_swap_rec less') \<in>
+    (Ra \<rightarrow> Rb \<rightarrow> Rb \<rightarrow> Rb) \<rightarrow> Id \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
+proof (intro fun_relI)
+  fix f f' b b' t1 t1' t2 t2'
+  assume "(f, f') \<in> Ra \<rightarrow> Rb \<rightarrow> Rb \<rightarrow> Rb" "(b, b') \<in> bool_rel" "(t1, t1') \<in> \<langle>Ra, Rb\<rangle>rbt_rel" "(t2, t2') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+  then show "(ord.rbt_union_swap_rec less f b t1 t2, ord.rbt_union_swap_rec less' f' b' t1' t2') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+  proof (induction f b t1 t2 arbitrary: b' t1' t2' rule: ord.rbt_union_swap_rec.induct[where ?less=less])
+    case (1 f b t1 t2)
+    obtain \<gamma> s1 s2 where flip1: "(\<gamma>, s2, s1) =
+      (if flip_rbt t2 t1 then (\<not>b, t1, t2) else (b, t2, t1))"
+      by fastforce
+    obtain \<gamma>' s1' s2' where flip2: "(\<gamma>', s2', s1') =
+      (if flip_rbt t2' t1' then (\<not>b', t1', t2') else (b', t2', t1'))"
+      by fastforce
+    define g where "g = (if \<gamma> then \<lambda>k v v'. f k v' v else f)"
+    define g' where "g' = (if \<gamma>' then \<lambda>k v v'. f' k v' v else f')"
+    note bheight_cong = rbt_rel_bheight[OF 1(5)] rbt_rel_bheight[OF 1(6)]
+    have flip_cong: "flip_rbt t2 t1 \<longleftrightarrow> flip_rbt t2' t1'"
+      by (auto simp: flip_rbt_def bheight_cong)
+    have gamma_cong: "\<gamma> = \<gamma>'"
+      using flip1 flip2 1(4)
+      by (auto simp: flip_cong split: if_splits)
+    have small_rbt_cong: "small_rbt s2 \<longleftrightarrow> small_rbt s2'"
+      using flip1 flip2
+      by (auto simp: small_rbt_def flip_cong bheight_cong split: if_splits)
+    have rbt_rel_s: "(s1, s1') \<in> \<langle>Ra, Rb\<rangle>rbt_rel" "(s2, s2') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+      using flip1 flip2 1(5,6)
+      by (auto simp: flip_cong split: if_splits)
+    have fun_rel_g: "(g, g') \<in> Ra \<rightarrow> Rb \<rightarrow> Rb \<rightarrow> Rb"
+      using flip1 flip2 1(3,4)
+      by (auto simp: flip_cong g_def g'_def intro: fun_relD[OF fun_relD[OF fun_relD]] split: if_splits)
+    have rbt_rel_fold: "(RBT_Impl.fold (ord.rbt_insert_with_key less g) s2 s1, RBT_Impl.fold (ord.rbt_insert_with_key less' g') s2' s1') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+      unfolding RBT_Impl.fold_def RBT_Impl.entries_def ord.rbt_insert_with_key_def
+      using rbt_rel_s fun_rel_g
+      by parametricity
+    {
+      fix c l k v r c' l' k' v' r' ll \<beta> rr ll' \<beta>' rr'
+      assume defs: "s1 = Branch c l k v r" "s1' = Branch c' l' k' v' r'"
+        "ord.rbt_split less s2 k = (ll, \<beta>, rr)" "ord.rbt_split less' s2' k' = (ll', \<beta>', rr')"
+        "\<not>small_rbt s2"
+      have split_rel: "(ord.rbt_split less s2 k, ord.rbt_split less' s2' k') \<in> \<langle>\<langle>Ra,Rb\<rangle>rbt_rel,\<langle>\<langle>Rb\<rangle>option_rel,\<langle>Ra,Rb\<rangle>rbt_rel\<rangle>prod_rel\<rangle>prod_rel"
+        using defs(1,2) param_split[OF assms, of Rb] rbt_rel_s
+        by (auto elim: rbt_rel_elims dest: fun_relD)
+      have IH1: "(ord.rbt_union_swap_rec less f \<gamma> l ll, ord.rbt_union_swap_rec less' f' \<gamma>' l' ll') \<in> \<langle>Ra,Rb\<rangle>rbt_rel"
+        apply (rule 1(1)[OF refl flip1 refl refl _ _ _ refl])
+        using 1(3) split_rel rbt_rel_s(1) defs
+        by (auto simp: gamma_cong elim: rbt_rel_elims)
+      have IH2: "(ord.rbt_union_swap_rec less f \<gamma> r rr, ord.rbt_union_swap_rec less' f' \<gamma>' r' rr') \<in> \<langle>Ra,Rb\<rangle>rbt_rel"
+        apply (rule 1(2)[OF refl flip1 refl refl _ _ _ refl])
+        using 1(3) split_rel rbt_rel_s(1) defs
+        by (auto simp: gamma_cong elim: rbt_rel_elims)
+      have fun_rel_g_app: "(g k v, g' k' v') \<in> Rb \<rightarrow> Rb"
+        using fun_rel_g rbt_rel_s
+        by (auto simp: defs elim: rbt_rel_elims dest: fun_relD)
+      have "(rbt_join (ord.rbt_union_swap_rec less f \<gamma> l ll) k (case \<beta> of None \<Rightarrow> v | Some x \<Rightarrow> g k v x) (ord.rbt_union_swap_rec less f \<gamma> r rr),
+      rbt_join (ord.rbt_union_swap_rec less' f' \<gamma>' l' ll') k' (case \<beta>' of None \<Rightarrow> v' | Some x \<Rightarrow> g' k' v' x) (ord.rbt_union_swap_rec less' f' \<gamma>' r' rr')) \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
+        apply parametricity
+        using IH1 IH2 rbt_rel_s fun_rel_g_app split_rel
+        by (auto simp: defs elim!: rbt_rel_elims)
+    }
+    then show ?case
+      unfolding ord.rbt_union_swap_rec.simps[of _ _ _ t1] ord.rbt_union_swap_rec.simps[of _ _ _ t1']
+      using rbt_rel_fold rbt_rel_s
+      by (auto simp: flip1[symmetric] flip2[symmetric] g_def[symmetric] g'_def[symmetric] small_rbt_cong
+          split: rbt.splits prod.splits elim: rbt_rel_elims)
+  qed
+qed
+
   lemma param_rbt_union[param]:
     fixes less
     assumes param_less[param]: "(less,less') \<in> Ra \<rightarrow> Ra \<rightarrow> Id"
     shows "(ord.rbt_union less, ord.rbt_union less') 
       \<in> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel \<rightarrow> \<langle>Ra,Rb\<rangle>rbt_rel"
     unfolding ord.rbt_union_def[abs_def] ord.rbt_union_with_key_def[abs_def]
-      ord.rbt_insert_with_key_def[abs_def]
-    unfolding RBT_Impl.fold_def RBT_Impl.entries_def
     by parametricity
 
 term rm_iterateoi

@@ -18,7 +18,8 @@ compare_code ("'a") rbt_del
 compare_code ("'a") rbt_map_entry
 compare_code ("'a") sunion_with
 compare_code ("'a") sinter_with
+compare_code ("'a") rbt_split
 
-export_code rbt_ins rbt_lookup rbt_del rbt_map_entry rbt_union_with_key rbt_inter_with_key in Haskell
+export_code rbt_ins rbt_lookup rbt_del rbt_map_entry rbt_union_with_key rbt_inter_with_key rbt_minus in Haskell
 
 end
