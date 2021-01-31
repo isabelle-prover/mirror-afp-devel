@@ -493,7 +493,7 @@ proof (intro fun_relI, goal_cases)
   thus ?case
   proof (induction l a b r arbitrary: l' a' b' r' rule: rbt_joinL.induct)
     case (1 l a b r)
-    have "bheight l < bheight r \<Longrightarrow> r = MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+    have "bheight l < bheight r \<Longrightarrow> r = RBT_Impl.MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
        (k, k') \<in> Ra \<Longrightarrow> (v, v') \<in> Rb \<Longrightarrow> (rr, rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
        (rbt_baliL (rbt_joinL l a b ll) k v rr, rbt_baliL (rbt_joinL l' a' b' ll') k' v' rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
       for ll ll' k k' v v' rr rr'
@@ -513,7 +513,7 @@ proof (intro fun_relI, goal_cases)
   thus ?case
   proof (induction l a b r arbitrary: l' a' b' r' rule: rbt_joinR.induct)
     case (1 l a b r)
-    have "bheight r < bheight l \<Longrightarrow> l = MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
+    have "bheight r < bheight l \<Longrightarrow> l = RBT_Impl.MB ll k v rr \<Longrightarrow> (ll, ll') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
        (k, k') \<in> Ra \<Longrightarrow> (v, v') \<in> Rb \<Longrightarrow> (rr, rr') \<in> \<langle>Ra, Rb\<rangle>rbt_rel \<Longrightarrow>
        (rbt_baliR ll k v (rbt_joinR rr a b r), rbt_baliR ll' k' v' (rbt_joinR rr' a' b' r')) \<in> \<langle>Ra, Rb\<rangle>rbt_rel"
       for ll ll' k k' v v' rr rr'
