@@ -2023,6 +2023,61 @@ abstract =
 	more interesting proofs.
 notify = tjm1983@gmail.com
 
+[IsaGeoCoq]
+title = Tarski's postulate of parallels implies the 5th postulate of Euclid, the postulate of Playfair and the original postulate of Euclid.
+author = Roland Coghetto <mailto:roland_coghetto@hotmail.com>
+topic = Mathematics/Geometry
+license = LGPL
+date = 2021-01-31
+notify = roland_coghetto@hotmail.com
+abstract =
+  The GeoCoq library (Main autors: Michael Beeson, Pierre Boutry,
+  Gabriel Braun, Charly Gries, Julien Narboux) contains a formalization
+  of geometry using the Coq proof assistant. It contains both proofs
+  about the foundations of geometry and high-level proofs in the same
+  style as in high-school.  Some theorems also inspired by W.
+  Schwabhaüser, W. Szmielew and A. Tarski are also formalized with
+  others ITP (Metamath, Mizar) or ATP.  We port a part of the GeoCoq
+  2.4.0 library within the Isabelle/Hol proof assistant: more precisely,
+  the files Chap02.v to Chap13_3.v, suma.v as well as the associated
+  definitions and some useful files for the demonstration of certain
+  parallel postulates.  While the demonstrations in Coq are written in
+  procedural language, the transcript is done in declarative language
+  Isar.  The synthetic approach of the demonstrations are directly
+  inspired by those contained in GeoCoq. Some demonstrations are
+  credited to G.E Martin(<<lemma bet_le__lt:>> in
+  Ch11_angles.thy, proved by Martin as Theorem 18.17) or Gupta H.N
+  (Krippen Lemma, proved by Gupta in its PhD in 1965 as Theorem 3.45).
+  In this work, the proofs are not contructive. The sledeghammer tool
+  being used to find some demonstrations.  The names of the lemmas and
+  theorems used are kept as far as possible as well as the definitions.
+  A different translation has been proposed when the name was already
+  used in Isabel/Hol ("Len" is translated as
+  "TarskiLen") or that characters were not allowed in
+  Isabel/Hol ("anga'" in Ch13_angles.v is translated as
+  "angaP"). For some definitions the highlighting of a
+  variable has changed the order or the position of the variables
+  (Midpoint, Out, Inter,...).  All the lemmas are valid in
+  absolute/neutral space defined with Tarski's axioms.  It should
+  be noted that T.J.M. Makarios \cite{afp-Tarskis_Geometry} has begun
+  some demonstrations of certain proposals mainly those corresponding to
+  SST chapters 2 and 3. It uses a definition that does not quite
+  coincide with the definition used in Geocoq and here. As an example,
+  Makarios introduces the axiom A11 (Axiom of continuity) in the
+  definition of the locale "Tarski_absolute_space".
+  Furthermore, the definition of the locale "TarskiAbsolute"
+  \cite{afp-Poincare_Disc} is not not identical to the one defined in
+  the "Tarski_neutral_dimensionless" class of GeoCoq. Indeed
+  this one does not contain the axiom "upper_dimension". In
+  some cases particular, it is nevertheless to use the axiom
+  "upper_dimension". The addition of the word "_2D"
+  in the file indicates its presence.  In the last part, it is
+  formalized that, in the neutral/absolute space, the axiom of the
+  parallels of the system of Tarski implies the Playfair axiom, the 5th
+  postulate of euclide and the postulate original from Euclid. These
+  proofs, which are not constructive, are directly inspired by Pierre
+  Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+
 [General-Triangle]
 title = The General Triangle Is Unique
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
@@ -9995,14 +10050,14 @@ abstract =
   technique we can effectively harness theorem provers, model finders
   and 'hammers' for reasoning with quantified non-classical
   logics.
-  
+
 [CSP_RefTK]
 title = The HOL-CSP Refinement Toolkit
 author = Safouan Taha <mailto:safouan.taha@lri.fr>, Burkhart Wolff <https://www.lri.fr/~wolff/>, Lina Ye <mailto:lina.ye@lri.fr>
 topic = Computer science/Concurrency/Process calculi, Computer science/Semantics
 date = 2020-11-19
 notify = wolff@lri.fr
-abstract = 
+abstract =
   We use a formal development for CSP, called HOL-CSP2.0, to analyse a
   family of refinement notions, comprising classic and new ones. This
   analysis enables to derive a number of properties that allow to deepen
@@ -10026,7 +10081,7 @@ author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
 topic = Computer science/Programming languages/Language definitions
 date = 2021-01-11
 notify = sjohnsn2@illinois.edu, susannahej@gmail.com
-abstract = 
+abstract =
   We extend Jinja to include static fields, methods, and instructions,
   and dynamic class initialization, based on the Java SE 8
   specification. This includes extension of definitions and proofs. This
