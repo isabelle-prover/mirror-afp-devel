@@ -43,6 +43,20 @@ Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
 &lt;/p&gt;</description>
     </item>
     <item>
+       <title>Solution to the xkcd Blue Eyes puzzle</title>
+              <link>https://www.isa-afp.org/entries/Blue_Eyes.html</link>
+       <guid>https://www.isa-afp.org/entries/Blue_Eyes.html</guid>
+       <dc:creator> Jakub Kądziołka       </dc:creator>
+       <pubDate>30 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+In a &lt;a href=&#34;https://xkcd.com/blue_eyes.html&#34;&gt;puzzle published by
+Randall Munroe&lt;/a&gt;, perfect logicians forbidden
+from communicating are stranded on an island, and may only leave once
+they have figured out their own eye color. We present a method of
+modeling the behavior of perfect logicians and formalize a solution of
+the puzzle.</description>
+    </item>
+    <item>
        <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
               <link>https://www.isa-afp.org/entries/JinjaDCI.html</link>
        <guid>https://www.isa-afp.org/entries/JinjaDCI.html</guid>
@@ -587,27 +601,6 @@ Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
 Computer Systems, 3, 63-75, 1985]. Our main result is a formal
 termination and correctness proof of the Chandy--Lamport algorithm and
 its use in stable property detection.</description>
-    </item>
-    <item>
-       <title>Relational Characterisations of Paths</title>
-              <link>https://www.isa-afp.org/entries/Relational_Paths.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Paths.html</guid>
-       <dc:creator> Walter Guttmann, Peter Höfner       </dc:creator>
-       <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
-       <description>
-Binary relations are one of the standard ways to encode, characterise
-and reason about graphs. Relation algebras provide equational axioms
-for a large fragment of the calculus of binary relations. Although
-relations are standard tools in many areas of mathematics and
-computing, researchers usually fall back to point-wise reasoning when
-it comes to arguments about paths in a graph. We present a purely
-algebraic way to specify different kinds of paths in Kleene relation
-algebras, which are relation algebras equipped with an operation for
-reflexive transitive closure. We study the relationship between paths
-with a designated root vertex and paths without such a vertex. Since
-we stay in first-order logic this development helps with mechanising
-proofs. To demonstrate the applicability of the algebraic framework we
-verify the correctness of three basic graph algorithms.</description>
     </item>
   </channel>
 </rss>

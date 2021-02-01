@@ -10066,3 +10066,17 @@ abstract =
   work is partially described in Mansky and Gunter's paper at CPP
   2019 and Mansky's doctoral thesis (UIUC, 2020).
 
+[Blue_Eyes]
+title = Solution to the xkcd Blue Eyes puzzle
+author = Jakub Kądziołka <mailto:kuba@kadziolka.net>
+topic = Mathematics/Misc
+date = 2021-01-30
+notify = kuba@kadziolka.net
+abstract = 
+  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by 
+  Randall Munroe</a>, perfect logicians forbidden
+  from communicating are stranded on an island, and may only leave once
+  they have figured out their own eye color. We present a method of
+  modeling the behavior of perfect logicians and formalize a solution of
+  the puzzle.
+
