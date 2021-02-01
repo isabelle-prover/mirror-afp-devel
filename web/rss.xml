@@ -11,56 +11,32 @@
     </description>
     <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
     <item>
-       <title>Tarski's postulate of parallels implies the 5th postulate of Euclid, the postulate of Playfair and the original postulate of Euclid.</title>
+       <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
               <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
        <guid>https://www.isa-afp.org/entries/IsaGeoCoq.html</guid>
        <dc:creator> Roland Coghetto       </dc:creator>
        <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
        <description>
-The GeoCoq library (Main autors: Michael Beeson, Pierre Boutry,
-Gabriel Braun, Charly Gries, Julien Narboux) contains a formalization
+The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
 of geometry using the Coq proof assistant. It contains both proofs
 about the foundations of geometry and high-level proofs in the same
-style as in high-school.  Some theorems also inspired by W.
-Schwabhaüser, W. Szmielew and A. Tarski are also formalized with
-others ITP (Metamath, Mizar) or ATP.  We port a part of the GeoCoq
-2.4.0 library within the Isabelle/Hol proof assistant: more precisely,
+style as in high school.  We port a part of the GeoCoq
+2.4.0 library to Isabelle/HOL: more precisely,
 the files Chap02.v to Chap13_3.v, suma.v as well as the associated
 definitions and some useful files for the demonstration of certain
-parallel postulates.  While the demonstrations in Coq are written in
-procedural language, the transcript is done in declarative language
-Isar.  The synthetic approach of the demonstrations are directly
-inspired by those contained in GeoCoq. Some demonstrations are
-credited to G.E Martin(&lt;&lt;lemma bet_le__lt:&gt;&gt; in
-Ch11_angles.thy, proved by Martin as Theorem 18.17) or Gupta H.N
-(Krippen Lemma, proved by Gupta in its PhD in 1965 as Theorem 3.45).
-In this work, the proofs are not contructive. The sledeghammer tool
-being used to find some demonstrations.  The names of the lemmas and
+parallel postulates. The synthetic approach of the demonstrations is directly
+inspired by those contained in GeoCoq. The names of the lemmas and
 theorems used are kept as far as possible as well as the definitions.
-A different translation has been proposed when the name was already
-used in Isabel/Hol (&#34;Len&#34; is translated as
-&#34;TarskiLen&#34;) or that characters were not allowed in
-Isabel/Hol (&#34;anga&#39;&#34; in Ch13_angles.v is translated as
-&#34;angaP&#34;). For some definitions the highlighting of a
-variable has changed the order or the position of the variables
-(Midpoint, Out, Inter,...).  All the lemmas are valid in
-absolute/neutral space defined with Tarski&#39;s axioms.  It should
-be noted that T.J.M. Makarios \cite{afp-Tarskis_Geometry} has begun
-some demonstrations of certain proposals mainly those corresponding to
-SST chapters 2 and 3. It uses a definition that does not quite
-coincide with the definition used in Geocoq and here. As an example,
-Makarios introduces the axiom A11 (Axiom of continuity) in the
-definition of the locale &#34;Tarski_absolute_space&#34;.
-Furthermore, the definition of the locale &#34;TarskiAbsolute&#34;
-\cite{afp-Poincare_Disc} is not not identical to the one defined in
-the &#34;Tarski_neutral_dimensionless&#34; class of GeoCoq. Indeed
-this one does not contain the axiom &#34;upper_dimension&#34;. In
-some cases particular, it is nevertheless to use the axiom
-&#34;upper_dimension&#34;. The addition of the word &#34;_2D&#34;
-in the file indicates its presence.  In the last part, it is
+It should be noted that T.J.M. Makarios has done
+&lt;a href=&#34;https://www.isa-afp.org/entries/Tarskis_Geometry.html&#34;&gt;some proofs in Tarski&#39;s Geometry&lt;/a&gt;. It uses a definition that does not quite
+coincide with the definition used in Geocoq and here.
+Furthermore, corresponding definitions in the &lt;a href=&#34;https://www.isa-afp.org/entries/Poincare_Disc.html&#34;&gt;Poincaré Disc Model
+development&lt;/a&gt;
+are not not identical to those defined in GeoCoq.
+In the last part, it is
 formalized that, in the neutral/absolute space, the axiom of the
-parallels of the system of Tarski implies the Playfair axiom, the 5th
-postulate of euclide and the postulate original from Euclid. These
+parallels of Tarski&#39;s system implies the Playfair axiom, the 5th
+postulate of Euclid and Euclid&#39;s original parallel postulate. These
 proofs, which are not constructive, are directly inspired by Pierre
 Boutry, Charly Gries, Julien Narboux and Pascal Schreck.</description>
     </item>
