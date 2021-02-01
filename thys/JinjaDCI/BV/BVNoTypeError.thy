@@ -31,49 +31,50 @@ lemma [iff]: "is_Ref Null" by (simp add: is_Ref_def2)
 
 lemma is_RefI [intro, simp]: "P,h \<turnstile> v :\<le> T \<Longrightarrow> is_refT T \<Longrightarrow> is_Ref v"
 (*<*)
-  apply (cases T)
-  apply (auto simp add: is_refT_def is_Ref_def dest: conf_ClassD)
-  done
+proof(cases T)
+qed (auto simp add: is_refT_def is_Ref_def dest: conf_ClassD)
 (*>*)
 
 lemma is_IntgI [intro, simp]: "P,h \<turnstile> v :\<le> Integer \<Longrightarrow> is_Intg v"
-(*<*)
-  apply (unfold conf_def)
-  apply auto
-  done
-(*>*)
+(*<*)by (unfold conf_def) auto(*>*)
 
 lemma is_BoolI [intro, simp]: "P,h \<turnstile> v :\<le> Boolean \<Longrightarrow> is_Bool v"
-(*<*)
-  apply (unfold conf_def)
-  apply auto
-  done
-(*>*)
+(*<*)by (unfold conf_def) auto(*>*)
 
 declare defs1 [simp del]
 
 lemma wt_jvm_prog_states_NonStatic:
-  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> C sees M,NonStatic: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C; 
-     \<Phi> C M ! pc = \<tau>; pc < size ins \<rbrakk>
-  \<Longrightarrow> OK \<tau> \<in> states P mxs (1+size Ts+mxl)"
+assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
+  and mC: "P \<turnstile> C sees M,NonStatic: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C"
+  and \<Phi>: "\<Phi> C M ! pc = \<tau>" and pc: "pc < size ins"
+shows "OK \<tau> \<in> states P mxs (1+size Ts+mxl)"
 (*<*)
-  apply (unfold wf_jvm_prog_phi_def)
-  apply (drule (1) sees_wf_mdecl)
-  apply (simp add: wf_mdecl_def wt_method_def check_types_def)
-  apply (blast intro: nth_in)
-  done
+proof -
+  let ?wf_md = "(\<lambda>P C (M, b, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt).
+                       wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M))"
+  have wfmd: "wf_prog ?wf_md P" using wf
+    by (unfold wf_jvm_prog_phi_def) assumption
+  show ?thesis using sees_wf_mdecl[OF wfmd mC] \<Phi> pc
+    by (simp add: wf_mdecl_def wt_method_def check_types_def)
+       (blast intro: nth_in)
+qed
 (*>*)
 
 lemma wt_jvm_prog_states_Static:
-  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> C sees M,Static: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C; 
-     \<Phi> C M ! pc = \<tau>; pc < size ins \<rbrakk>
-  \<Longrightarrow> OK \<tau> \<in> states P mxs (size Ts+mxl)"
+assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
+  and mC: "P \<turnstile> C sees M,Static: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C"
+  and \<Phi>: "\<Phi> C M ! pc = \<tau>" and pc: "pc < size ins"
+shows "OK \<tau> \<in> states P mxs (size Ts+mxl)"
 (*<*)
-  apply (unfold wf_jvm_prog_phi_def)
-  apply (drule (1) sees_wf_mdecl)
-  apply (simp add: wf_mdecl_def wt_method_def check_types_def)
-  apply (blast intro: nth_in)
-  done
+proof -
+  let ?wf_md = "(\<lambda>P C (M, b, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt).
+                       wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M))"
+  have wfmd: "wf_prog ?wf_md P" using wf
+    by (unfold wf_jvm_prog_phi_def) assumption
+  show ?thesis using sees_wf_mdecl[OF wfmd mC] \<Phi> pc
+    by (simp add: wf_mdecl_def wt_method_def check_types_def)
+       (blast intro: nth_in)
+qed
 (*>*)
 
 text \<open>
@@ -151,34 +152,18 @@ proof -
         have "\<exists>D vs. h (the_Addr v) = Some (D,vs) \<and> P \<turnstile> D \<preceq>\<^sup>* C" 
           by (auto dest!: non_npD)
       }
-      ultimately show ?thesis using Getfield field stk hconf
-        apply clarsimp
-        apply (rule conjI, fastforce)
-        apply clarsimp
-        apply (drule has_visible_field)
-        apply (drule (1) has_field_mono)
-        apply (drule (1) hconfD)
-        apply (unfold oconf_def has_field_def)
-        apply clarsimp
-        apply (fastforce dest: has_fields_fun)
-        done                            
+      ultimately show ?thesis using Getfield field stk
+        has_field_mono[OF has_visible_field[OF field]] hconfD[OF hconf]
+        by (unfold oconf_def has_field_def) (fastforce dest: has_fields_fun)
     next
       case (Getstatic C F D) 
       with app stk reg \<Phi> obtain vT where
         field: "P \<turnstile> C sees F,Static:vT in D"
         by auto
 
-        then show ?thesis using Getstatic field stk shconf
-        apply clarsimp
-        apply (rule conjI, fastforce)
-        apply clarsimp
-        apply (drule has_visible_field)
-        apply (drule has_field_idemp)
-        apply (drule (1) shconfD)
-        apply (unfold soconf_def has_field_def)
-        apply clarsimp
-        apply (fastforce dest: has_fields_fun)
-        done                            
+      then show ?thesis using Getstatic stk
+        has_field_idemp[OF has_visible_field[OF field]] shconfD[OF shconf]
+        by (unfold soconf_def has_field_def) (fastforce dest: has_fields_fun)
     next
       case (Putfield F C)
       with app stk reg \<Phi> obtain v ref vT stk' where
@@ -291,18 +276,22 @@ theorem welltyped_aggressive_imp_defensive:
   "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma> \<surd> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'
   \<Longrightarrow> P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>')"
 (*<*)
-  apply (simp only: exec_all_def) 
-  apply (erule rtrancl_induct)
-   apply (simp add: exec_all_d_def1)
-  apply simp
-  apply (simp only: exec_all_def [symmetric])
-  apply (frule BV_correct, assumption+) 
-  apply (drule no_type_error, assumption, drule no_type_error_commutes, simp)
-  apply (simp add: exec_all_d_def1)
-  apply (rule rtrancl_trans, assumption)
-  apply (drule exec_1_d_NormalI)
-  apply auto
-  done
+proof -
+  assume wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and cf: "P,\<Phi> \<turnstile> \<sigma> \<surd>" and exec: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
+  then have "(\<sigma>, \<sigma>') \<in> {(\<sigma>, \<sigma>'). exec (P, \<sigma>) = \<lfloor>\<sigma>'\<rfloor>}\<^sup>*" by(simp only: exec_all_def)
+  then show ?thesis proof(induct rule: rtrancl_induct)
+    case base
+    then show ?case by (simp add: exec_all_d_def1)
+  next
+    case (step y z)
+    then have \<sigma>y: "P \<turnstile> \<sigma> -jvm\<rightarrow> y" by (simp only: exec_all_def [symmetric])
+    have exec_d: "exec_d P y = Normal \<lfloor>z\<rfloor>" using step
+     no_type_error_commutes[OF no_type_error[OF wf BV_correct[OF wf \<sigma>y cf]]]
+      by (simp add: exec_all_d_def1)
+    show ?case using step.hyps(3) exec_1_d_NormalI[OF exec_d]
+      by (simp add: exec_all_d_def1)
+  qed
+qed
 (*>*)
 
 
@@ -315,10 +304,13 @@ corollary welltyped_commutes:
   fixes \<sigma> :: jvm_state
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
-  apply rule
-   apply (erule defensive_imp_aggressive)
-  apply (erule welltyped_aggressive_imp_defensive [OF wf conforms])
-  done
+proof(rule iffI)
+  assume "P \<turnstile> Normal \<sigma> -jvmd\<rightarrow> Normal \<sigma>'" then show "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
+    by (rule defensive_imp_aggressive)
+next
+  assume "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'" then show "P \<turnstile> Normal \<sigma> -jvmd\<rightarrow> Normal \<sigma>'"
+    by (rule welltyped_aggressive_imp_defensive [OF wf conforms])
+qed
 
 corollary welltyped_initial_commutes:
   assumes wf: "wf_jvm_prog P"
@@ -353,16 +345,19 @@ locale cnf =
 
 theorem (in cnf) no_type_errors:
   "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> \<sigma>' \<Longrightarrow> \<sigma>' \<noteq> TypeError"
-  apply (unfold exec_all_d_def1)   
-  apply (erule rtrancl_induct)
-   apply simp
-  apply (fold exec_all_d_def1)
-  apply (insert cnf wf)
-  apply clarsimp
-  apply (drule defensive_imp_aggressive)
-  apply (frule (2) BV_correct)
-  apply (auto simp add: exec_1_d_eq dest: no_type_error)
-  done
+proof -
+  assume "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> \<sigma>'"
+  then have "(Normal \<sigma>, \<sigma>') \<in> (exec_1_d P)\<^sup>*" by (unfold exec_all_d_def1) simp
+  then show ?thesis proof(induct rule: rtrancl_induct)
+    case (step y z)
+    then obtain y\<^sub>n where [simp]: "y = Normal y\<^sub>n" by clarsimp
+    have n\<sigma>y: "P \<turnstile> Normal \<sigma> -jvmd\<rightarrow> Normal y\<^sub>n" using step.hyps(1)
+      by (fold exec_all_d_def1) simp
+    have \<sigma>y: "P \<turnstile> \<sigma> -jvm\<rightarrow> y\<^sub>n" using defensive_imp_aggressive[OF n\<sigma>y] by simp
+    show ?case using step no_type_error[OF wf BV_correct[OF wf \<sigma>y cnf]]
+      by (auto simp add: exec_1_d_eq)
+  qed simp
+qed
 
 locale start =
   fixes P and C and M and \<sigma> and T and b and P\<^sub>0
