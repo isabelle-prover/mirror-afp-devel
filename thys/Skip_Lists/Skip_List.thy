@@ -9,6 +9,7 @@ theory Skip_List
           Pi_pmf
           Misc
           "Monad_Normalisation.Monad_Normalisation"
+"HOL-Library.Numeral_Type"
 begin
 
 subsection \<open>Preliminaries\<close>
@@ -853,6 +854,44 @@ definition R\<^sub>N :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> n
 lemma R\<^sub>N_alt_def: "R\<^sub>N n u l = map_pmf (\<lambda>f. steps {..<n} f 0 u l) (SL\<^sub>N n)"
   unfolding SL\<^sub>N_def R\<^sub>N_def R_def by simp
 
+lemma foo: "n \<le> f x \<Longrightarrow> steps {x} f n u l = l + (f x - n) * u"
+    apply (induction "{x::'a}" f n u l rule: steps.induct; subst steps.simps)
+  apply auto
+  by (metis Suc_diff_Suc mult.commute mult_Suc_right)
+
+lemma 
+  "measure_pmf.variance (R\<^sub>N 1 u l) real = u^2 * (1 - p) / p ^ 2"
+proof (cases "u = 0")
+  case [simp]: True
+  have [simp]: "{..<Suc 0} = {0}"
+    by auto
+  show ?thesis
+    by (simp add: R\<^sub>N_alt_def foo)
+next
+  case False
+  have [simp]: "{..<Suc 0} = {0}"
+    by auto
+  have "R\<^sub>N 1 u l = map_pmf (\<lambda>f. l + f 0 * u) (SL\<^sub>N 1)"
+    by (simp add: R\<^sub>N_alt_def foo)
+  also have "\<dots> = map_pmf (\<lambda>x. l + x * u) (map_pmf (\<lambda>f. f 0) (SL\<^sub>N 1))"
+    by (simp add: pmf.map_comp o_def)
+  also have "map_pmf (\<lambda>f. f 0) (SL\<^sub>N 1) = geometric_pmf p"
+    unfolding SL\<^sub>N_def SL_def by (subst Pi_pmf_component) auto
+  finally have *: "R\<^sub>N 1 u l = map_pmf (\<lambda>x. l + x * u) (geometric_pmf p)" .
+  have "measure_pmf.variance (R\<^sub>N 1 u l) real =
+               measure_pmf.variance (geometric_pmf p) (\<lambda>x. real l + real u * real x)"
+    unfolding * by (simp add: mult_ac)
+  also have "\<dots> = of_nat u ^ 2 * measure_pmf.variance (geometric_pmf p) real"
+    using False
+    apply (subst measure_pmf.variance_affine)
+         apply (auto)
+    sorry
+  also have "measure_pmf.variance (geometric_pmf p) real = (1 - p) / p ^ 2"
+    sorry
+  finally show ?thesis
+    by simp
+qed
+
 context includes monad_normalisation
 begin
 
@@ -1337,10 +1376,13 @@ proof -
     by (auto)
 qed
 
+
+
 end (* context random_skip_list *)
 
 thm random_skip_list.EH\<^sub>N_EL\<^sub>s\<^sub>p[unfolded random_skip_list.q_def]
     random_skip_list.EH\<^sub>N_bounds'[unfolded random_skip_list.q_def]
 
+lemmas [code] = random_skip_list.SL_def
 
 end
