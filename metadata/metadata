@@ -2031,30 +2031,30 @@ license = LGPL
 date = 2021-01-31
 notify = roland_coghetto@hotmail.com
 abstract =
-  The <a href="https://geocoq.github.io/GeoCoq/">GeoCoq library</a>  contains a formalization
-  of geometry using the Coq proof assistant. It contains both proofs
-  about the foundations of geometry and high-level proofs in the same
-  style as in high school.  We port a part of the GeoCoq
-  2.4.0 library to Isabelle/HOL: more precisely,
-  the files Chap02.v to Chap13_3.v, suma.v as well as the associated
-  definitions and some useful files for the demonstration of certain
-  parallel postulates. The synthetic approach of the demonstrations is directly
-  inspired by those contained in GeoCoq. The names of the lemmas and
-  theorems used are kept as far as possible as well as the definitions.
-
-  It should be noted that T.J.M. Makarios has done
-  <a href="https://www.isa-afp.org/entries/Tarskis_Geometry.html">some proofs in Tarski's Geometry</a>. It uses a definition that does not quite
-  coincide with the definition used in Geocoq and here.
-  Furthermore, corresponding definitions in the <a href="https://www.isa-afp.org/entries/Poincare_Disc.html">Poincaré Disc Model
-  development</a>
-  are not not identical to those defined in GeoCoq.
-
-  In the last part, it is
-  formalized that, in the neutral/absolute space, the axiom of the
-  parallels of Tarski's system implies the Playfair axiom, the 5th
-  postulate of Euclid and Euclid's original parallel postulate. These
-  proofs, which are not constructive, are directly inspired by Pierre
-  Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+	<p>The <a href="https://geocoq.github.io/GeoCoq/">GeoCoq library</a>  contains a formalization
+	  of geometry using the Coq proof assistant. It contains both proofs
+	  about the foundations of geometry and high-level proofs in the same
+	  style as in high school.  We port a part of the GeoCoq
+	  2.4.0 library to Isabelle/HOL: more precisely,
+	  the files Chap02.v to Chap13_3.v, suma.v as well as the associated
+	  definitions and some useful files for the demonstration of certain
+	  parallel postulates. The synthetic approach of the demonstrations is directly
+	  inspired by those contained in GeoCoq. The names of the lemmas and
+	  theorems used are kept as far as possible as well as the definitions.
+	</p>
+	<p>It should be noted that T.J.M. Makarios has done
+	  <a href="https://www.isa-afp.org/entries/Tarskis_Geometry.html">some proofs in Tarski's Geometry</a>. It uses a definition that does not quite
+	  coincide with the definition used in Geocoq and here.
+	  Furthermore, corresponding definitions in the <a href="https://www.isa-afp.org/entries/Poincare_Disc.html">Poincaré Disc Model
+	  development</a> are not identical to those defined in GeoCoq.
+	</p>
+	<p>In the last part, it is
+	  formalized that, in the neutral/absolute space, the axiom of the
+	  parallels of Tarski's system implies the Playfair axiom, the 5th
+	  postulate of Euclid and Euclid's original parallel postulate. These
+	  proofs, which are not constructive, are directly inspired by Pierre
+	  Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+	</p>
 
 [General-Triangle]
 title = The General Triangle Is Unique

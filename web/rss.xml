@@ -17,7 +17,7 @@
        <dc:creator> Roland Coghetto       </dc:creator>
        <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
        <description>
-The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
+&lt;p&gt;The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
 of geometry using the Coq proof assistant. It contains both proofs
 about the foundations of geometry and high-level proofs in the same
 style as in high school.  We port a part of the GeoCoq
@@ -27,18 +27,20 @@ definitions and some useful files for the demonstration of certain
 parallel postulates. The synthetic approach of the demonstrations is directly
 inspired by those contained in GeoCoq. The names of the lemmas and
 theorems used are kept as far as possible as well as the definitions.
-It should be noted that T.J.M. Makarios has done
+&lt;/p&gt;
+&lt;p&gt;It should be noted that T.J.M. Makarios has done
 &lt;a href=&#34;https://www.isa-afp.org/entries/Tarskis_Geometry.html&#34;&gt;some proofs in Tarski&#39;s Geometry&lt;/a&gt;. It uses a definition that does not quite
 coincide with the definition used in Geocoq and here.
 Furthermore, corresponding definitions in the &lt;a href=&#34;https://www.isa-afp.org/entries/Poincare_Disc.html&#34;&gt;Poincaré Disc Model
-development&lt;/a&gt;
-are not not identical to those defined in GeoCoq.
-In the last part, it is
+development&lt;/a&gt; are not identical to those defined in GeoCoq.
+&lt;/p&gt;
+&lt;p&gt;In the last part, it is
 formalized that, in the neutral/absolute space, the axiom of the
 parallels of Tarski&#39;s system implies the Playfair axiom, the 5th
 postulate of Euclid and Euclid&#39;s original parallel postulate. These
 proofs, which are not constructive, are directly inspired by Pierre
-Boutry, Charly Gries, Julien Narboux and Pascal Schreck.</description>
+Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+&lt;/p&gt;</description>
     </item>
     <item>
        <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
