@@ -2058,6 +2058,39 @@ abstract =
 	more interesting proofs.
 notify = tjm1983@gmail.com
 
+[IsaGeoCoq]
+title = Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid
+author = Roland Coghetto <mailto:roland_coghetto@hotmail.com>
+topic = Mathematics/Geometry
+license = LGPL
+date = 2021-01-31
+notify = roland_coghetto@hotmail.com
+abstract =
+	<p>The <a href="https://geocoq.github.io/GeoCoq/">GeoCoq library</a>  contains a formalization
+	  of geometry using the Coq proof assistant. It contains both proofs
+	  about the foundations of geometry and high-level proofs in the same
+	  style as in high school.  We port a part of the GeoCoq
+	  2.4.0 library to Isabelle/HOL: more precisely,
+	  the files Chap02.v to Chap13_3.v, suma.v as well as the associated
+	  definitions and some useful files for the demonstration of certain
+	  parallel postulates. The synthetic approach of the demonstrations is directly
+	  inspired by those contained in GeoCoq. The names of the lemmas and
+	  theorems used are kept as far as possible as well as the definitions.
+	</p>
+	<p>It should be noted that T.J.M. Makarios has done
+	  <a href="https://www.isa-afp.org/entries/Tarskis_Geometry.html">some proofs in Tarski's Geometry</a>. It uses a definition that does not quite
+	  coincide with the definition used in Geocoq and here.
+	  Furthermore, corresponding definitions in the <a href="https://www.isa-afp.org/entries/Poincare_Disc.html">Poincaré Disc Model
+	  development</a> are not identical to those defined in GeoCoq.
+	</p>
+	<p>In the last part, it is
+	  formalized that, in the neutral/absolute space, the axiom of the
+	  parallels of Tarski's system implies the Playfair axiom, the 5th
+	  postulate of Euclid and Euclid's original parallel postulate. These
+	  proofs, which are not constructive, are directly inspired by Pierre
+	  Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+	</p>
+
 [General-Triangle]
 title = The General Triangle Is Unique
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
@@ -10139,14 +10172,14 @@ abstract =
   technique we can effectively harness theorem provers, model finders
   and 'hammers' for reasoning with quantified non-classical
   logics.
-  
+
 [CSP_RefTK]
 title = The HOL-CSP Refinement Toolkit
 author = Safouan Taha <mailto:safouan.taha@lri.fr>, Burkhart Wolff <https://www.lri.fr/~wolff/>, Lina Ye <mailto:lina.ye@lri.fr>
 topic = Computer science/Concurrency/Process calculi, Computer science/Semantics
 date = 2020-11-19
 notify = wolff@lri.fr
-abstract = 
+abstract =
   We use a formal development for CSP, called HOL-CSP2.0, to analyse a
   family of refinement notions, comprising classic and new ones. This
   analysis enables to derive a number of properties that allow to deepen
@@ -10189,4 +10222,18 @@ abstract =
   specification. This includes extension of definitions and proofs. This
   work is partially described in Mansky and Gunter's paper at CPP
   2019 and Mansky's doctoral thesis (UIUC, 2020).
+
+[Blue_Eyes]
+title = Solution to the xkcd Blue Eyes puzzle
+author = Jakub Kądziołka <mailto:kuba@kadziolka.net>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-01-30
+notify = kuba@kadziolka.net
+abstract = 
+  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by 
+  Randall Munroe</a>, perfect logicians forbidden
+  from communicating are stranded on an island, and may only leave once
+  they have figured out their own eye color. We present a method of
+  modeling the behavior of perfect logicians and formalize a solution of
+  the puzzle.
 
