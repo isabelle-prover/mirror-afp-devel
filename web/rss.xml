@@ -9,7 +9,53 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Jan 2021 00:00:00 +0000</pubDate>
+    <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
+              <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
+       <guid>https://www.isa-afp.org/entries/IsaGeoCoq.html</guid>
+       <dc:creator> Roland Coghetto       </dc:creator>
+       <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
+of geometry using the Coq proof assistant. It contains both proofs
+about the foundations of geometry and high-level proofs in the same
+style as in high school.  We port a part of the GeoCoq
+2.4.0 library to Isabelle/HOL: more precisely,
+the files Chap02.v to Chap13_3.v, suma.v as well as the associated
+definitions and some useful files for the demonstration of certain
+parallel postulates. The synthetic approach of the demonstrations is directly
+inspired by those contained in GeoCoq. The names of the lemmas and
+theorems used are kept as far as possible as well as the definitions.
+&lt;/p&gt;
+&lt;p&gt;It should be noted that T.J.M. Makarios has done
+&lt;a href=&#34;https://www.isa-afp.org/entries/Tarskis_Geometry.html&#34;&gt;some proofs in Tarski&#39;s Geometry&lt;/a&gt;. It uses a definition that does not quite
+coincide with the definition used in Geocoq and here.
+Furthermore, corresponding definitions in the &lt;a href=&#34;https://www.isa-afp.org/entries/Poincare_Disc.html&#34;&gt;Poincaré Disc Model
+development&lt;/a&gt; are not identical to those defined in GeoCoq.
+&lt;/p&gt;
+&lt;p&gt;In the last part, it is
+formalized that, in the neutral/absolute space, the axiom of the
+parallels of Tarski&#39;s system implies the Playfair axiom, the 5th
+postulate of Euclid and Euclid&#39;s original parallel postulate. These
+proofs, which are not constructive, are directly inspired by Pierre
+Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
+&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Solution to the xkcd Blue Eyes puzzle</title>
+              <link>https://www.isa-afp.org/entries/Blue_Eyes.html</link>
+       <guid>https://www.isa-afp.org/entries/Blue_Eyes.html</guid>
+       <dc:creator> Jakub Kądziołka       </dc:creator>
+       <pubDate>30 Jan 2021 00:00:00 +0000</pubDate>
+       <description>
+In a &lt;a href=&#34;https://xkcd.com/blue_eyes.html&#34;&gt;puzzle published by
+Randall Munroe&lt;/a&gt;, perfect logicians forbidden
+from communicating are stranded on an island, and may only leave once
+they have figured out their own eye color. We present a method of
+modeling the behavior of perfect logicians and formalize a solution of
+the puzzle.</description>
+    </item>
     <item>
        <title>Hood-Melville Queue</title>
               <link>https://www.isa-afp.org/entries/Hood_Melville_Queue.html</link>
@@ -568,40 +614,6 @@ integrate with assignments in the Hoare-logic library. Using relation
 algebras and Kleene algebras we verify the correctness of an
 array-based implementation of disjoint-set forests with a naive union
 operation and a find operation with path compression.</description>
-    </item>
-    <item>
-       <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-              <link>https://www.isa-afp.org/entries/Saturation_Framework_Extensions.html</link>
-       <guid>https://www.isa-afp.org/entries/Saturation_Framework_Extensions.html</guid>
-       <dc:creator> Jasmin Blanchette, Sophie Tourret       </dc:creator>
-       <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization extends the AFP entry
-&lt;em&gt;Saturation_Framework&lt;/em&gt; with the following
-contributions:  &lt;ul&gt; &lt;li&gt;an application of the framework
-to prove Bachmair and Ganzinger&#39;s resolution prover RP
-refutationally complete, which was formalized in a more ad hoc fashion
-by Schlichtkrull et al. in the AFP entry
-&lt;em&gt;Ordered_Resultion_Prover&lt;/em&gt;;&lt;/li&gt;
-&lt;li&gt;generalizations of various basic concepts formalized by
-Schlichtkrull et al., which were needed to verify RP and could be
-useful to formalize other calculi, such as superposition;&lt;/li&gt;
-&lt;li&gt;alternative proofs of fairness (and hence saturation and
-ultimately refutational completeness) for the given clause procedures
-GC and LGC, based on invariance.&lt;/li&gt; &lt;/ul&gt;</description>
-    </item>
-    <item>
-       <title>Putting the `K' into Bird's derivation of Knuth-Morris-Pratt string matching</title>
-              <link>https://www.isa-afp.org/entries/BirdKMP.html</link>
-       <guid>https://www.isa-afp.org/entries/BirdKMP.html</guid>
-       <dc:creator> Peter Gammie       </dc:creator>
-       <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-Richard Bird and collaborators have proposed a derivation of an
-intricate cyclic program that implements the Morris-Pratt string
-matching algorithm. Here we provide a proof of total correctness for
-Bird&#39;s derivation and complete it by adding Knuth&#39;s
-optimisation.</description>
     </item>
   </channel>
 </rss>
