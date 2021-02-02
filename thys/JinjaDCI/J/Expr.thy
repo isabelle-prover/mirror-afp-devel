@@ -54,32 +54,20 @@ fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
 
 lemma [simp]:
   "(binop(Add,v\<^sub>1,v\<^sub>2) = Some v) = (\<exists>i\<^sub>1 i\<^sub>2. v\<^sub>1 = Intg i\<^sub>1 \<and> v\<^sub>2 = Intg i\<^sub>2 \<and> v = Intg(i\<^sub>1+i\<^sub>2))"
-(*<*)
-apply(cases v\<^sub>1)
-apply auto
-apply(cases v\<^sub>2)
-apply auto
-done
-(*>*)
+(*<*)by(cases v\<^sub>1; cases v\<^sub>2) auto(*>*)
 
 
 lemma map_Val_throw_eq:
  "map Val vs @ throw ex # es = map Val vs' @ throw ex' # es' \<Longrightarrow> ex = ex'"
-apply(induct vs arbitrary: vs')
- apply(case_tac vs', auto)+
-done
+(*<*)by(induct vs arbitrary: vs'; case_tac vs') auto(*>*)
 
 lemma map_Val_nthrow_neq:
  "map Val vs = map Val vs' @ throw ex' # es' \<Longrightarrow> False"
-apply(induct vs arbitrary: vs')
- apply(case_tac vs', auto)+
-done
+(*<*)by(induct vs arbitrary: vs'; case_tac vs') auto(*>*)
 
 lemma map_Val_eq:
  "map Val vs = map Val vs' \<Longrightarrow> vs = vs'"
-apply(induct vs arbitrary: vs')
- apply(case_tac vs', auto)+
-done
+(*<*)by(induct vs arbitrary: vs'; case_tac vs') auto(*>*)
 
 
 lemma init_rhs_neq [simp]: "e \<noteq> INIT C (Cs,b) \<leftarrow> e"
@@ -331,9 +319,7 @@ lemma nsub_RI_not_init: "\<not>sub_RI e \<Longrightarrow> not_init C e"
 proof(induct e) qed(auto intro: nsub_RIs_not_inits_aux)
 
 lemma nsub_RIs_not_inits: "\<not>sub_RIs es \<Longrightarrow> not_inits C es"
-apply(rule nsub_RIs_not_inits_aux)
- apply(simp_all add: nsub_RI_not_init)
-done
+by(rule nsub_RIs_not_inits_aux) (simp_all add: nsub_RI_not_init)
 
 subsection\<open>Subexpressions\<close>
 
@@ -514,22 +500,25 @@ lemma [iff]: "finals []"
 
 lemma [iff]: "finals (Val v # es) = finals es"
 (*<*)
-apply(clarsimp simp add: finals_def)
-apply(rule iffI)
- apply(erule disjE)
-  apply simp
- apply(rule disjI2)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastforce
-apply(erule disjE)
- apply clarsimp
-apply(rule disjI2)
-apply clarsimp
-apply(rule_tac x = "v#vs" in exI)
-apply simp
-done
+proof(rule iffI)
+  assume "finals (Val v # es)"
+  moreover {
+    fix vs a es'
+    assume "\<forall>vs a es'. es \<noteq> map Val vs @ Throw a # es'"
+      and "Val v # es = map Val vs @ Throw a # es'"
+    then have "\<exists>vs. es = map Val vs" by(case_tac vs; simp)
+  }
+  ultimately show "finals es" by(clarsimp simp add: finals_def)
+next
+  assume "finals es"
+  moreover {
+    fix vs a es'
+    assume "es = map Val vs @ Throw a # es'"
+    then have "\<exists>vs' a' es''. Val v # map Val vs @ Throw a # es' = map Val vs' @ Throw a' # es''"
+      by(rule_tac x = "v#vs" in exI) simp
+  }
+  ultimately show "finals (Val v # es)" by(clarsimp simp add: finals_def)
+qed
 (*>*)
 
 lemma finals_app_map[iff]: "finals (map Val vs @ es) = finals es"
@@ -540,32 +529,50 @@ lemma [iff]: "finals (map Val vs)"
 
 lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
 (*<*)
-apply(simp add:finals_def)
-apply(rule iffI)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastforce
-apply clarsimp
-apply(rule_tac x = "[]" in exI)
-apply simp
-done
+proof(rule iffI)
+  assume "finals (throw e # es)"
+  moreover {
+    fix vs a es'
+    assume "throw e # es = map Val vs @ Throw a # es'"
+    then have "\<exists>a. e = addr a" by(case_tac vs; simp)
+  }
+  ultimately show "\<exists>a. e = addr a" by(clarsimp simp add: finals_def)
+next
+  assume "\<exists>a. e = addr a"
+  moreover {
+    fix vs a es'
+    assume "e = addr a"
+    then have "\<exists>vs aa es'. Throw a # es = map Val vs @ Throw aa # es'"
+      by(rule_tac x = "[]" in exI) simp
+  }
+  ultimately show "finals (throw e # es)" by(clarsimp simp add: finals_def)
+qed
 (*>*)
 
 lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
- (*<*)
-apply(clarsimp simp add:finals_def final_def)
-apply(case_tac vs)
-apply auto
-done
+(*<*)
+proof -
+  assume "\<not> final e"
+  moreover {
+    fix vs a es'
+    assume "\<forall>v. e \<noteq> Val v" and "\<forall>a. e \<noteq> Throw a"
+    then have "e # es \<noteq> map Val vs @ Throw a # es'" by(case_tac vs; simp)
+  }
+  ultimately show ?thesis by(clarsimp simp add:finals_def final_def)
+qed
 (*>*)
 
 lemma not_finals_ConsI2: "e = Val v \<Longrightarrow> \<not> finals es \<Longrightarrow> \<not> finals(e#es)"
- (*<*)
-apply(clarsimp simp add:finals_def final_def)
-apply(case_tac vs)
-apply auto
-done
+(*<*)
+proof -
+  assume [simp]: "e = Val v" and "\<not> finals es"
+  moreover {
+    fix vs a es'
+    assume "\<forall>vs. es \<noteq> map Val vs" and "\<forall>vs a es'. es \<noteq> map Val vs @ Throw a # es'"
+    then have "e # es \<noteq> map Val vs @ Throw a # es'" by(case_tac vs; simp)
+  }
+  ultimately show ?thesis by(clarsimp simp add:finals_def final_def)
+qed
 (*>*)
 
 

@@ -35,8 +35,6 @@ abbreviation
 
 lemma sees_wwf_nsub_RI:
  "\<lbrakk> wwf_J_prog P; P \<turnstile> C sees M,b : Ts\<rightarrow>T = (pns, body) in D \<rbrakk> \<Longrightarrow> \<not>sub_RI body"
-apply(drule sees_wf_mdecl, simp)
-apply(unfold wwf_J_mdecl_def wf_mdecl_def, simp)
-done
+(*<*)by(auto dest!: sees_wf_mdecl simp: wwf_J_mdecl_def wf_mdecl_def)(*>*)
 
 end

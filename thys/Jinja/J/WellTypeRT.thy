@@ -131,71 +131,48 @@ lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
 subsection\<open>Easy consequences\<close>
 
 lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrts.cases)(*>*)
 
 lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrts.cases)(*>*)
 
 lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
   (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrts.cases)(*>*)
 
 lemma [simp]: "\<forall>Ts. (P,E,h \<turnstile> es\<^sub>1 @ es\<^sub>2 [:] Ts) =
   (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and> P,E,h \<turnstile> es\<^sub>1 [:] Ts\<^sub>1 & P,E,h \<turnstile> es\<^sub>2[:]Ts\<^sub>2)"
 (*<*)
-apply(induct_tac es\<^sub>1)
- apply simp
-apply clarsimp
-apply(erule thin_rl)
-apply (rule iffI)
- apply clarsimp
- apply(rule exI)+
- apply(rule conjI)
-  prefer 2 apply blast
- apply simp
-apply fastforce
-done
+proof(induct es\<^sub>1)
+  case (Cons a list)
+  let ?lhs = "\<lambda>Ts. (\<exists>U Us. Ts = U # Us \<and> P,E,h \<turnstile> a : U \<and>
+        (\<exists>Ts\<^sub>1 Ts\<^sub>2. Us = Ts\<^sub>1 @ Ts\<^sub>2 \<and> P,E,h \<turnstile> list [:] Ts\<^sub>1 \<and> P,E,h \<turnstile> es\<^sub>2 [:] Ts\<^sub>2))"
+  let ?rhs = "\<lambda>Ts. (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and>
+        (\<exists>U Us. Ts\<^sub>1 = U # Us \<and> P,E,h \<turnstile> a : U \<and> P,E,h \<turnstile> list [:] Us) \<and> P,E,h \<turnstile> es\<^sub>2 [:] Ts\<^sub>2)"
+  { fix Ts assume "?lhs Ts"
+    then have "?rhs Ts" by (auto intro: Cons_eq_appendI)
+  }
+  moreover {
+    fix Ts assume "?rhs Ts"
+    then have "?lhs Ts" by fastforce
+  }
+  ultimately have "\<And>Ts. ?lhs Ts = ?rhs Ts" by(rule iffI)
+  then show ?case by (clarsimp simp: Cons)
+qed simp
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Val v : T = (typeof\<^bsub>h\<^esub> v = Some T)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+(*<*)proof(rule iffI) qed (auto elim: WTrt.cases)(*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Var v : T = (E v = Some T)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+(*<*)proof(rule iffI) qed (auto elim: WTrt.cases)(*>*)
 
 lemma [iff]: "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 : T\<^sub>2 = (\<exists>T\<^sub>1. P,E,h \<turnstile> e\<^sub>1:T\<^sub>1 \<and> P,E,h \<turnstile> e\<^sub>2:T\<^sub>2)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+(*<*)proof(rule iffI) qed (auto elim: WTrt.cases)(*>*)
 
 lemma [iff]: "P,E,h \<turnstile> {V:T; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T')"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+(*<*)proof(rule iffI) qed (auto elim: WTrt.cases)(*>*)
+
 (*<*)
 inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> v :=e : T"
@@ -216,12 +193,10 @@ subsection\<open>Some interesting lemmas\<close>
 lemma WTrts_Val[simp]:
  "\<And>Ts. (P,E,h \<turnstile> map Val vs [:] Ts) = (map (typeof\<^bsub>h\<^esub>) vs = map Some Ts)"
 (*<*)
-apply(induct vs)
- apply simp
-apply(case_tac Ts)
- apply simp
-apply simp
-done
+proof(induct vs)
+  case (Cons a vs)
+  then show ?case by(case_tac Ts; simp)
+qed simp
 (*>*)
 
 
@@ -233,84 +208,35 @@ lemma WTrt_env_mono:
   "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)" and
   "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
 (*<*)
-apply(induct rule: WTrt_inducts)
-apply(simp add: WTrtNew)
-apply(fastforce simp: WTrtCast)
-apply(fastforce simp: WTrtVal)
-apply(simp add: WTrtVar map_le_def dom_def)
-apply(fastforce simp add: WTrtBinOpEq)
-apply(fastforce simp add: WTrtBinOpAdd)
-apply(force simp: map_le_def)
-apply(fastforce simp: WTrtFAcc)
-apply(simp add: WTrtFAccNT)
-apply(fastforce simp: WTrtFAss)
-apply(fastforce simp: WTrtFAssNT)
-apply(fastforce simp: WTrtCall)
-apply(fastforce simp: WTrtCallNT)
-apply(simp add: WTrtNil)
-apply(simp add: WTrtCons)
-apply(fastforce simp: map_le_def)
-apply(fastforce)
-apply(fastforce simp: WTrtSeq)
-apply(fastforce simp: WTrtWhile)
-apply(fastforce simp: WTrtThrow)
-apply(auto simp: WTrtTry map_le_def dom_def)
-done
+proof(induct rule: WTrt_inducts)
+  case WTrtVar then show ?case by(simp add: map_le_def dom_def)
+next
+  case WTrtLAss then show ?case by(force simp:map_le_def)
+qed(fastforce intro: WTrt_WTrts.intros)+
 (*>*)
 
 
 lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> e : T"
 and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> es [:] Ts"
 (*<*)
-apply(induct rule: WTrt_inducts)
-apply(simp add: WTrtNew)
-apply(fastforce simp: WTrtCast)
-apply(fastforce simp: WTrtVal dest:hext_typeof_mono)
-apply(simp add: WTrtVar)
-apply(fastforce simp add: WTrtBinOpEq)
-apply(fastforce simp add: WTrtBinOpAdd)
-apply(fastforce simp add: WTrtLAss)
-apply(fast intro: WTrtFAcc)
-apply(simp add: WTrtFAccNT)
-apply(fastforce simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastforce simp: WTrtFAssNT)
-apply(fastforce simp: WTrtCall)
-apply(fastforce simp: WTrtCallNT)
-apply(fastforce)
-apply(fastforce simp add: WTrtSeq)
-apply(fastforce simp add: WTrtCond)
-apply(fastforce simp add: WTrtWhile)
-apply(fastforce simp add: WTrtThrow)
-apply(fastforce simp: WTrtTry)
-apply(simp add: WTrtNil)
-apply(simp add: WTrtCons)
-done
+proof(induct rule: WTrt_inducts)
+  case WTrtVal then show ?case by(simp add: hext_typeof_mono)
+qed(fastforce intro: WTrt_WTrts.intros)+
 (*>*)
 
 
 lemma WT_implies_WTrt: "P,E \<turnstile> e :: T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and WTs_implies_WTrts: "P,E \<turnstile> es [::] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 (*<*)
-apply(induct rule: WT_WTs_inducts)
-apply fast
-apply (fast)
-apply(fastforce dest:typeof_lit_typeof)
-apply(simp)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce simp: WTrtFAcc has_visible_field)
-apply(fastforce simp: WTrtFAss dest: has_visible_field)
-apply(fastforce simp: WTrtCall)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce simp: WTrtCond)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
-apply(simp)
-apply(simp)
-done
+proof(induct rule: WT_WTs_inducts)
+  case WTVal then show ?case by(fastforce dest: typeof_lit_typeof)
+next
+  case WTFAcc
+  then show ?case by(fastforce simp: WTrtFAcc has_visible_field)
+next
+  case WTFAss
+  then show ?case by(fastforce simp: WTrtFAss dest: has_visible_field)
+qed(fastforce intro: WTrt_WTrts.intros)+
 (*>*)
 
 

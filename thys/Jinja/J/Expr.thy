@@ -44,13 +44,7 @@ fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
 
 lemma [simp]:
   "(binop(Add,v\<^sub>1,v\<^sub>2) = Some v) = (\<exists>i\<^sub>1 i\<^sub>2. v\<^sub>1 = Intg i\<^sub>1 \<and> v\<^sub>2 = Intg i\<^sub>2 \<and> v = Intg(i\<^sub>1+i\<^sub>2))"
-(*<*)
-apply(cases v\<^sub>1)
-apply auto
-apply(cases v\<^sub>2)
-apply auto
-done
-(*>*)
+(*<*)by(cases v\<^sub>1; cases v\<^sub>2) auto(*>*)
 
 
 subsection "Syntactic sugar"
