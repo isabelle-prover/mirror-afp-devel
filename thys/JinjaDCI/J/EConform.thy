@@ -23,9 +23,10 @@ fun init_class :: "'m prog \<Rightarrow> 'a exp \<Rightarrow> cname option" wher
 "init_class _ _ = None"
 
 lemma icheck_init_class: "icheck P C e \<Longrightarrow> init_class P e = \<lfloor>C\<rfloor>"
-apply(induct e, auto) apply(rename_tac x1 x2 x3 x4)
-apply(case_tac x4, auto)
-done
+proof(induct e)
+  case (SFAss x1 x2 x3 e')
+  then show ?case by(case_tac e') auto
+qed auto
 
 \<comment> \<open> exp to take next small step (in particular, subexp that may contain initialization) \<close>
 fun ss_exp :: "'a exp \<Rightarrow> 'a exp" and ss_exps :: "'a exp list \<Rightarrow> 'a exp option" where
@@ -76,21 +77,21 @@ qed(auto)
 
 lemma ss_exps_Vals_None[simp]:
  "ss_exps (map Val vs) = None"
- by(induct vs, auto)
+ by(induct vs) (auto)
 
 lemma ss_exps_Vals_NoneI:
  "ss_exps es = None \<Longrightarrow> \<exists>vs. es = map Val vs"
-using val_of_spec by(induct es, auto)
+using val_of_spec by(induct es) (auto)
 
 lemma ss_exps_throw_nVal:
  "\<lbrakk> val_of e = None; ss_exps (map Val vs @ throw e # es') = \<lfloor>e'\<rfloor> \<rbrakk>
    \<Longrightarrow> e' = ss_exp e"
- by(induct vs, auto)
+ by(induct vs) (auto)
 
 lemma ss_exps_throw_Val:
  "\<lbrakk> val_of e = \<lfloor>a\<rfloor>; ss_exps (map Val vs @ throw e # es') = \<lfloor>e'\<rfloor> \<rbrakk>
    \<Longrightarrow> e' = throw e"
- by(induct vs, auto)
+ by(induct vs) (auto)
 
 
 abbreviation curr_init :: "'m prog \<Rightarrow> 'a exp \<Rightarrow> cname option" where
@@ -152,17 +153,17 @@ lemma nsub_RI_iconf_aux':
  by(simp add: nsub_RI_iconf_aux)
 
 lemma nsub_RI_iconf: "\<not>sub_RI e \<Longrightarrow> iconf sh e"
-apply(cut_tac e = e and R = "\<lambda>e. \<not>sub_RI e \<longrightarrow> iconf sh e" in subexp_induct)
-   apply(rename_tac ea) apply(case_tac ea, simp_all)
-apply(clarsimp simp: nsub_RI_iconf_aux)
-done
-
-lemma nsub_RIs_iconfs: "\<not>sub_RIs es \<Longrightarrow> iconfs sh es"
-apply(cut_tac es = es and R = "\<lambda>e. \<not>sub_RI e \<longrightarrow> iconf sh e"
-  and Rs = "\<lambda>es. \<not>sub_RIs es \<longrightarrow> iconfs sh es" in subexps_induct)
-   apply(rename_tac esa) apply(case_tac esa, simp_all)
- apply(clarsimp simp: nsub_RI_iconf_aux)+
-done
+  and nsub_RIs_iconfs: "\<not>sub_RIs es \<Longrightarrow> iconfs sh es"
+proof -
+  let ?R = "\<lambda>e. \<not>sub_RI e \<longrightarrow> iconf sh e"
+  let ?Rs = "\<lambda>es. \<not>sub_RIs es \<longrightarrow> iconfs sh es"
+  have "(\<forall>e'. subexp_of e' e \<longrightarrow> ?R e') \<and> ?R e"
+   and "(\<forall>e'. e' \<in> subexps es \<longrightarrow> ?R e') \<and> ?Rs es"
+    by(rule subexp_induct[where ?Rs = ?Rs]; clarsimp simp: nsub_RI_iconf_aux)
+      (rule subexps_induct; clarsimp simp: nsub_RI_iconf_aux)
+  then show "\<not>sub_RI e \<Longrightarrow> iconf sh e"
+        and "\<not>sub_RIs es \<Longrightarrow> iconfs sh es" by simp+
+qed
 
 lemma lass_val_of_iconf: "lass_val_of e = \<lfloor>a\<rfloor> \<Longrightarrow> iconf sh e"
  by(drule lass_val_of_nsub_RI, erule nsub_RI_iconf)
@@ -199,51 +200,41 @@ where
 
 lemma bconf_nonVal[simp]:
  "P,sh \<turnstile>\<^sub>b (e,True) \<surd> \<Longrightarrow> val_of e = None"
- by(cases e, auto simp: bconf_def)
+ by(cases e) (auto simp: bconf_def)
 
 lemma bconfs_nonVals[simp]:
  "P,sh \<turnstile>\<^sub>b (es,True) \<surd> \<Longrightarrow> map_vals_of es = None"
- by(induct es, auto simp: bconfs_def)
+ by(induct es) (auto simp: bconfs_def)
 
 lemma bconf_Cast[iff]:
  "P,sh \<turnstile>\<^sub>b (Cast C e,b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_BinOp[iff]:
  "P,sh \<turnstile>\<^sub>b (e1 \<guillemotleft>bop\<guillemotright> e2,b) \<surd>
    \<longleftrightarrow> (case val_of e1 of Some v \<Rightarrow> P,sh \<turnstile>\<^sub>b (e2,b) \<surd> | _ \<Rightarrow> P,sh \<turnstile>\<^sub>b (e1,b) \<surd>)"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_LAss[iff]:
  "P,sh \<turnstile>\<^sub>b (LAss V e,b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_FAcc[iff]:
  "P,sh \<turnstile>\<^sub>b (e\<bullet>F{D},b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_FAss[iff]:
  "P,sh \<turnstile>\<^sub>b (FAss e1 F D e2,b) \<surd>
    \<longleftrightarrow> (case val_of e1 of Some v \<Rightarrow> P,sh \<turnstile>\<^sub>b (e2,b) \<surd> | _ \<Rightarrow> P,sh \<turnstile>\<^sub>b (e1,b) \<surd>)"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_SFAss[iff]:
 "val_of e2 = None \<Longrightarrow> P,sh \<turnstile>\<^sub>b (SFAss C F D e2,b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e2,b) \<surd>"
- by(unfold bconf_def, cases b, auto)
+ by(cases b) (auto simp: bconf_def)
 
 lemma bconfs_Vals[iff]:
  "P,sh \<turnstile>\<^sub>b (map Val vs, b) \<surd> \<longleftrightarrow> \<not> b"
- by(unfold bconfs_def, simp)
+ by(unfold bconfs_def) simp
 
 lemma bconf_Call[iff]:
  "P,sh \<turnstile>\<^sub>b (e\<bullet>M(es),b) \<surd>
@@ -258,7 +249,7 @@ proof(cases b)
     then show ?thesis by(auto simp: bconf_def) (simp add: bconfs_def)
   next
     case (Some a)
-    then show ?thesis by(auto simp: bconf_def, auto simp: bconfs_def icheck_init_class)
+    then show ?thesis by(auto simp: bconf_def) (auto simp: bconfs_def icheck_init_class)
   qed
 qed(simp add: bconf_def bconfs_def)
 
@@ -274,7 +265,7 @@ proof(cases b)
       then show ?thesis using mvn finals_def by clarsimp
     next
     case (Some a)
-      then show ?thesis by(auto simp: bconf_def, auto simp: bconfs_def icheck_init_class)
+      then show ?thesis by(auto simp: bconf_def) (auto simp: bconfs_def icheck_init_class)
     qed
 qed(simp add: bconf_def bconfs_def)
 
@@ -296,55 +287,51 @@ qed(simp add: bconf_def bconfs_def)
 
 lemma bconf_InitBlock[iff]:
  "P,sh \<turnstile>\<^sub>b ({V:T; V:=Val v;; e\<^sub>2},b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e\<^sub>2,b) \<surd>"
- by(unfold bconf_def, cases b, auto simp: assigned_def)
+ by(cases b) (auto simp: bconf_def assigned_def)
 
 lemma bconf_Block[iff]:
  "P,sh \<turnstile>\<^sub>b ({V:T; e},b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
- by(unfold bconf_def, cases b, auto)
+ by(cases b) (auto simp: bconf_def)
 
 lemma bconf_Seq[iff]:
  "P,sh \<turnstile>\<^sub>b (e1;;e2,b) \<surd>
    \<longleftrightarrow> (case val_of e1 of Some v \<Rightarrow> P,sh \<turnstile>\<^sub>b (e2,b) \<surd>
                              | _ \<Rightarrow> (case lass_val_of e1 of Some p \<Rightarrow> P,sh \<turnstile>\<^sub>b (e2,b) \<surd>
-                                                          | None \<Rightarrow> P,sh \<turnstile>\<^sub>b (e1,b) \<surd>))" (* \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e1,b) \<surd>"*)
-by(unfold bconf_def, cases b, auto dest: val_of_spec lass_val_of_spec)
+                                                          | None \<Rightarrow> P,sh \<turnstile>\<^sub>b (e1,b) \<surd>))"
+ by(cases b) (auto simp: bconf_def dest: val_of_spec lass_val_of_spec)
 
 lemma bconf_Cond[iff]:
  "P,sh \<turnstile>\<^sub>b (if (b) e\<^sub>1 else e\<^sub>2,b') \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (b,b') \<surd>"
-apply(unfold bconf_def, cases "bool_of b") apply auto[1]
-apply(rename_tac a) apply(case_tac a)
- apply(simp, drule bool_of_specT) apply auto[1]
-apply(simp, drule bool_of_specF) apply auto[1]
-done
+proof(cases "bool_of b")
+  case None
+  then show ?thesis by(auto simp: bconf_def)
+next
+  case (Some a)
+  then show ?thesis by(case_tac a) (auto simp: bconf_def dest: bool_of_specT bool_of_specF)
+qed
 
 lemma bconf_While[iff]:
  "P,sh \<turnstile>\<^sub>b (while (b) e,b') \<surd> \<longleftrightarrow> \<not>b'"
- by(unfold bconf_def, cases b, auto)
+ by(cases b) (auto simp: bconf_def)
 
 lemma bconf_Throw[iff]:
  "P,sh \<turnstile>\<^sub>b (throw e,b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_Try[iff]:
  "P,sh \<turnstile>\<^sub>b (try e\<^sub>1 catch(C V) e\<^sub>2,b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e\<^sub>1,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconf_INIT[iff]:
  "P,sh \<turnstile>\<^sub>b (INIT C (Cs,b') \<leftarrow> e,b) \<surd> \<longleftrightarrow> \<not>b"
- by(unfold bconf_def, cases b, auto)
+ by(cases b) (auto simp: bconf_def)
 
 lemma bconf_RI[iff]:
  "P,sh \<turnstile>\<^sub>b (RI(C,e);Cs \<leftarrow> e',b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
-apply(unfold bconf_def, cases b, auto)
-apply(drule val_of_spec, simp)
-done
+ by(cases b) (auto simp: bconf_def dest: val_of_spec)
 
 lemma bconfs_map_throw[iff]:
  "P,sh \<turnstile>\<^sub>b (map Val vs @ throw e # es',b) \<surd> \<longleftrightarrow> P,sh \<turnstile>\<^sub>b (e,b) \<surd>"
- by(induct vs, auto)
+ by(induct vs) auto
 
 end
