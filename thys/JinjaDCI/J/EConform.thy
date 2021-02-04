@@ -158,11 +158,11 @@ proof -
   let ?R = "\<lambda>e. \<not>sub_RI e \<longrightarrow> iconf sh e"
   let ?Rs = "\<lambda>es. \<not>sub_RIs es \<longrightarrow> iconfs sh es"
   have "(\<forall>e'. subexp_of e' e \<longrightarrow> ?R e') \<and> ?R e"
-   and "(\<forall>e'. e' \<in> subexps es \<longrightarrow> ?R e') \<and> ?Rs es"
     by(rule subexp_induct[where ?Rs = ?Rs]; clarsimp simp: nsub_RI_iconf_aux)
-      (rule subexps_induct; clarsimp simp: nsub_RI_iconf_aux)
-  then show "\<not>sub_RI e \<Longrightarrow> iconf sh e"
-        and "\<not>sub_RIs es \<Longrightarrow> iconfs sh es" by simp+
+  moreover have "(\<forall>e'. e' \<in> subexps es \<longrightarrow> ?R e') \<and> ?Rs es"
+    by(rule subexps_induct; clarsimp simp: nsub_RI_iconf_aux)
+  ultimately show "\<not>sub_RI e \<Longrightarrow> iconf sh e"
+              and "\<not>sub_RIs es \<Longrightarrow> iconfs sh es" by simp+
 qed
 
 lemma lass_val_of_iconf: "lass_val_of e = \<lfloor>a\<rfloor> \<Longrightarrow> iconf sh e"
