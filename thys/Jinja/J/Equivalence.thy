@@ -14,135 +14,110 @@ subsubsection "Cast"
 lemma CastReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>Cast C e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule CastRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) CastRed[OF step(2)]])
+qed
 (*>*)
 
 lemma CastRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(rule RedCastNull)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCastNull])(*>*)
 
 lemma CastRedsAddr:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(erule (1) RedCast)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCast])(*>*)
 
 lemma CastRedsFail:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>THROW ClassCast,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(erule (1) RedCastFail)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCastFail])(*>*)
 
 lemma CastRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(rule red_reds.CastThrow)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ red_reds.CastThrow])(*>*)
 
 subsubsection "LAss"
 
 lemma LAssReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle> V:=e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule LAssRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) LAssRed[OF step(2)]])
+qed
 (*>*)
 
 lemma LAssRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>Val v,(h',l')\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle>unit,(h',l'(V\<mapsto>v))\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule LAssReds)
-apply(rule RedLAss)
-done
-(*>*)
+(*<*)by(rule LAssReds[THEN rtrancl_into_rtrancl, OF _ RedLAss])(*>*)
 
 lemma LAssRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule LAssReds)
-apply(rule red_reds.LAssThrow)
-done
-(*>*)
+(*<*)by(rule LAssReds[THEN rtrancl_into_rtrancl, OF _ red_reds.LAssThrow])(*>*)
 
 subsubsection "BinOp"
 
 lemma BinOp1Reds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^sub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule BinOpRed1)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) BinOpRed1[OF step(2)]])
+qed
 (*>*)
 
 lemma BinOp2Reds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> \<rightarrow>* \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule BinOpRed2)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) BinOpRed2[OF step(2)]])
+qed
 (*>*)
 
 lemma BinOpRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>2,s\<^sub>2\<rangle>; binop(bop,v\<^sub>1,v\<^sub>2) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp2Reds)
-apply(rule RedBinOp)
-apply simp
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>2,s\<^sub>2\<rangle>"
+  and op: "binop(bop,v\<^sub>1,v\<^sub>2) = Some v"
+shows "P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>1)"
+  let ?y' = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> Val v\<^sub>2, s\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule BinOp1Reds[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule BinOp2Reds[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule RedBinOp[OF op])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma BinOpRedsThrow1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp1Reds)
-apply(rule red_reds.BinOpThrow1)
-done
-(*>*)
+(*<*)by(rule BinOp1Reds[THEN rtrancl_into_rtrancl, OF _ red_reds.BinOpThrow1])(*>*)
 
 lemma BinOpRedsThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>\<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp2Reds)
-apply(rule red_reds.BinOpThrow2)
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>1)"
+  let ?y' = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> throw e, s\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule BinOp1Reds[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule BinOp2Reds[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule red_reds.BinOpThrow2)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsubsection "FAcc"
@@ -150,61 +125,49 @@ subsubsection "FAcc"
 lemma FAccReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule FAccRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) FAccRed[OF step(2)]])
+qed
 (*>*)
 
 lemma FAccRedsVal:
   "\<lbrakk>P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(C,fs); fs(F,D) = Some v \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(erule (1) RedFAcc)
-done
-(*>*)
+(*<*)by(rule FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAcc])(*>*)
 
 lemma FAccRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(rule RedFAccNull)
-done
-(*>*)
+(*<*)by(rule FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAccNull])(*>*)
 
 lemma FAccRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(rule red_reds.FAccThrow)
-done
-(*>*)
+(*<*)by(rule FAccReds[THEN rtrancl_into_rtrancl, OF _ red_reds.FAccThrow])(*>*)
 
 subsubsection "FAss"
 
 lemma FAssReds1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}:=e\<^sub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule FAssRed1)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) FAssRed1[OF step(2)]])
+qed
 (*>*)
 
 lemma FAssReds2:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Val v\<bullet>F{D}:=e, s\<rangle> \<rightarrow>* \<langle>Val v\<bullet>F{D}:=e', s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule FAssRed2)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) FAssRed2[OF step(2)]])
+qed
 (*>*)
 
 lemma FAssRedsVal:

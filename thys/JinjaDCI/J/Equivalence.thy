@@ -158,60 +158,40 @@ lemma InitNoneReds:
  "\<lbrakk> sh C = None;
     P \<turnstile> \<langle>INIT C' (C # Cs,False) \<leftarrow> e,(h, l, sh(C \<mapsto> (sblank P C, Prepared))),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: InitNoneRed)
-(*>*)
+(*<*)by(rule InitNoneRed[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma InitDoneReds:
  "\<lbrakk> sh C = Some(sfs,Done); P \<turnstile> \<langle>INIT C' (Cs,True) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: RedInitDone)
-(*>*)
+(*<*)by(rule RedInitDone[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma InitProcessingReds:
  "\<lbrakk> sh C = Some(sfs,Processing); P \<turnstile> \<langle>INIT C' (Cs,True) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: RedInitProcessing)
-(*>*)
+(*<*)by(rule RedInitProcessing[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma InitErrorReds:
  "\<lbrakk> sh C = Some(sfs,Error); P \<turnstile> \<langle>RI (C,THROW NoClassDefFoundError);Cs \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: RedInitError)
-(*>*)
+(*<*)by(rule RedInitError[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma InitObjectReds:
  "\<lbrakk> sh C = Some(sfs,Prepared); C = Object; sh' = sh(C \<mapsto> (sfs,Processing));
     P \<turnstile> \<langle>INIT C' (C#Cs,True) \<leftarrow> e,(h,l,sh'),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: InitObjectRed)
-(*>*)
+(*<*)by(rule InitObjectRed[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma InitNonObjectReds:
  "\<lbrakk> sh C = Some(sfs,Prepared); C \<noteq> Object; class P C = Some (D,r);
     sh' = sh(C \<mapsto> (sfs,Processing));
     P \<turnstile> \<langle>INIT C' (D#C#Cs,False) \<leftarrow> e,(h,l,sh'),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,False) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: InitNonObjectSuperRed)
-(*>*)
+(*<*)by(rule InitNonObjectSuperRed[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemma RedsInitRInit:
  "P \<turnstile> \<langle>RI (C,C\<bullet>\<^sub>sclinit([]));Cs \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>
 \<Longrightarrow> P \<turnstile> \<langle>INIT C' (C#Cs,True) \<leftarrow> e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-(*<*)
-by(auto intro: converse_rtrancl_into_rtrancl RedInitRInit)
-(*>*)
+(*<*)by(rule RedInitRInit[THEN converse_rtrancl_into_rtrancl])(*>*)
 
 lemmas rtrancl_induct3 =
   rtrancl_induct[of "(ax,ay,az)" "(bx,by,bz)", split_format (complete), consumes 1, case_names refl step]
@@ -224,55 +204,36 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] RInitRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) RInitRed[OF step(2)]])
 qed
 (*>*)
 
 lemma RedsRInit:
-assumes e\<^sub>0_steps: "P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>1,l\<^sub>1,sh\<^sub>1),b\<^sub>1\<rangle>"
-  and "sh\<^sub>1 C = Some (sfs, i)" and "sh\<^sub>2 = sh\<^sub>1(C \<mapsto> (sfs,Done))"
-  and "C' = last(C#Cs)"
-  and "P \<turnstile> \<langle>INIT C' (Cs,True) \<leftarrow> e,(h\<^sub>1,l\<^sub>1,sh\<^sub>2),b\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
-shows "P \<turnstile> \<langle>RI (C, e\<^sub>0);Cs \<leftarrow> e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
+ "\<lbrakk> P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>1,l\<^sub>1,sh\<^sub>1),b\<^sub>1\<rangle>;
+    sh\<^sub>1 C = Some (sfs, i); sh\<^sub>2 = sh\<^sub>1(C \<mapsto> (sfs,Done)); C' = last(C#Cs);
+    P \<turnstile> \<langle>INIT C' (Cs,True) \<leftarrow> e,(h\<^sub>1,l\<^sub>1,sh\<^sub>2),b\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>RI (C, e\<^sub>0);Cs \<leftarrow> e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
 (*<*)
-proof -
-  let ?y = "(RI (C,Val v) ; Cs \<leftarrow> e,(h\<^sub>1, l\<^sub>1, sh\<^sub>1),b\<^sub>1)"
-  have "((RI (C,e\<^sub>0) ; Cs \<leftarrow> e, s\<^sub>0, b\<^sub>0), ?y) \<in> (red P)\<^sup>*"
-    by(rule RInitReds[OF e\<^sub>0_steps])
-  also have "(?y, e', s', b') \<in> (red P)\<^sup>*" using assms(2-5)
-    by(auto intro: converse_rtrancl_into_rtrancl
-            elim: RedRInit)
-  ultimately show ?thesis by simp
-qed
+by(rule rtrancl_trans[OF RInitReds
+                         RedRInit[THEN converse_rtrancl_into_rtrancl]])
 (*>*)
 
 
 lemma RInitInitThrowReds:
-assumes e_steps: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>Throw a,(h',l',sh'),b'\<rangle>"
-  and "sh' C = Some (sfs, i)" and "sh'' = sh'(C \<mapsto> (sfs,Error))"
-  and "P \<turnstile> \<langle>RI (D,Throw a);Cs \<leftarrow> e\<^sub>0, (h',l',sh''),b'\<rangle> \<rightarrow>* \<langle>e\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>"
-shows "P \<turnstile> \<langle>RI (C, e);D#Cs \<leftarrow> e\<^sub>0,s,b\<rangle> \<rightarrow>* \<langle>e\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>"
+ "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>Throw a,(h',l',sh'),b'\<rangle>;
+    sh' C = Some (sfs, i); sh'' = sh'(C \<mapsto> (sfs,Error));
+    P \<turnstile> \<langle>RI (D,Throw a);Cs \<leftarrow> e\<^sub>0, (h',l',sh''),b'\<rangle> \<rightarrow>* \<langle>e\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>RI (C, e);D#Cs \<leftarrow> e\<^sub>0,s,b\<rangle> \<rightarrow>* \<langle>e\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>"
 (*<*)
-proof -
-  let ?y = "(RI (C,Throw a) ; D # Cs \<leftarrow> e\<^sub>0,(h',l',sh'),b')"
-  have "((RI (C,e) ; D#Cs \<leftarrow> e\<^sub>0, s, b), ?y) \<in> (red P)\<^sup>*"
-    by(rule RInitReds[OF e_steps])
-  also have "(?y, e\<^sub>1, s\<^sub>1, b\<^sub>1) \<in> (red P)\<^sup>*" using assms(2-4)
-    by(auto intro: converse_rtrancl_into_rtrancl
-            elim: RInitInitThrow)
-  ultimately show ?thesis by simp
-qed
+by(rule rtrancl_trans[OF RInitReds
+                         RInitInitThrow[THEN converse_rtrancl_into_rtrancl]])
 (*>*)
 
 lemma RInitThrowReds:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>Throw a, (h',l',sh'),b'\<rangle>;
      sh' C = Some(sfs, i); sh'' = sh'(C \<mapsto> (sfs, Error)) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>RI (C,e);Nil \<leftarrow> e\<^sub>0,s,b\<rangle> \<rightarrow>* \<langle>Throw a, (h',l',sh''),b'\<rangle>"
-(*<*)
-by(auto intro: rtrancl_into_rtrancl
-        elim: RInitReds RInitThrow)
-(*>*)
+(*<*)by(rule RInitReds[THEN rtrancl_into_rtrancl, OF _ RInitThrow])(*>*)
 
 subsubsection "New"
 
@@ -281,58 +242,74 @@ lemma NewInitDoneReds:
      P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>blank P C) \<rbrakk>
    \<Longrightarrow> P \<turnstile> \<langle>new C,(h,l,sh),False\<rangle> \<rightarrow>* \<langle>addr a,(h',l,sh),False\<rangle>"
 (*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: NewInitDoneRed RedNew[THEN r_into_rtrancl])
+by(rule NewInitDoneRed[THEN converse_rtrancl_into_rtrancl,
+                       OF _ RedNew[THEN r_into_rtrancl]])
 (*>*)
 
 lemma NewInitDoneReds2:
   "\<lbrakk> sh C = Some (sfs, Done); new_Addr h = None; is_class P C \<rbrakk>
    \<Longrightarrow> P \<turnstile> \<langle>new C,(h,l,sh),False\<rangle> \<rightarrow>* \<langle>THROW OutOfMemory, (h,l,sh), False\<rangle>"
 (*<*)
-by(auto intro: converse_rtrancl_into_rtrancl
-        elim: NewInitDoneRed RedNewFail[THEN r_into_rtrancl])
+by(rule NewInitDoneRed[THEN converse_rtrancl_into_rtrancl,
+                       OF _ RedNewFail[THEN r_into_rtrancl]])
 (*>*)
 
 lemma NewInitReds:
- "\<lbrakk> \<nexists>sfs. shp s C = Some (sfs, Done);
-    P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',(h',l',sh'),b'\<rangle>;
-    new_Addr h' = Some a; P \<turnstile> C has_fields FDTs; h'' = h'(a\<mapsto>blank P C); is_class P C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>addr a,(h'',l',sh'),False\<rangle>"
-(*<*)
-apply(rule_tac b = "(INIT C ([C],False) \<leftarrow> new C,s,False)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply (simp add: NewInitRed)
-apply(erule InitSeqReds, simp_all)
-apply(rule r_into_rtrancl, rule RedNew)
-  apply simp+
-done
+assumes nDone: "\<nexists>sfs. shp s C = Some (sfs, Done)"
+  and INIT_steps: "P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',(h',l',sh'),b'\<rangle>"
+  and Addr: "new_Addr h' = Some a" and has: "P \<turnstile> C has_fields FDTs"
+  and h'': "h'' = h'(a\<mapsto>blank P C)" and cls_C: "is_class P C"
+shows "P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>addr a,(h'',l',sh'),False\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(INIT C ([C],False) \<leftarrow> new C,s,False)"
+  let ?b' = "(new C,(h', l', sh'),icheck P C (new C::expr))"
+  have b'c: "(?b', ?c) \<in> (red P)\<^sup>*"
+    using RedNew[OF Addr has h'', THEN r_into_rtrancl] by simp
+  obtain h l sh where [simp]: "s = (h, l, sh)" by(cases s) simp
+  have "(?a, ?b) \<in> (red P)\<^sup>*"
+    using NewInitRed[OF _ cls_C] nDone by fastforce
+  also have "(?b, ?c) \<in> (red P)\<^sup>*"
+    by(rule InitSeqReds[OF INIT_steps b'c]) simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma NewInitOOMReds:
- "\<lbrakk> \<nexists>sfs. shp s C = Some (sfs, Done);
-    P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',(h',l',sh'),b'\<rangle>;
-    new_Addr h' = None; is_class P C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>THROW OutOfMemory,(h',l',sh'),False\<rangle>"
-(*<*)
-apply(rule_tac b = "(INIT C ([C],False) \<leftarrow> new C,s,False)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply (simp add: NewInitRed)
-apply(erule InitSeqReds, simp_all)
-apply(rule r_into_rtrancl, rule RedNewFail)
- apply simp+
-done
+assumes nDone: "\<nexists>sfs. shp s C = Some (sfs, Done)"
+  and INIT_steps: "P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',(h',l',sh'),b'\<rangle>"
+  and Addr: "new_Addr h' = None" and cls_C: "is_class P C"
+shows "P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>THROW OutOfMemory,(h',l',sh'),False\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(INIT C ([C],False) \<leftarrow> new C,s,False)"
+  let ?b' = "(new C,(h', l', sh'),icheck P C (new C::expr))"
+  have b'c: "(?b', ?c) \<in> (red P)\<^sup>*"
+    using RedNewFail[OF Addr cls_C, THEN r_into_rtrancl] by simp
+  obtain h l sh where [simp]: "s = (h, l, sh)" by(cases s) simp
+  have "(?a, ?b) \<in> (red P)\<^sup>*"
+    using NewInitRed[OF _ cls_C] nDone by fastforce
+  also have "(?b, ?c) \<in> (red P)\<^sup>*"
+    by(rule InitSeqReds[OF INIT_steps b'c]) simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma NewInitThrowReds:
- "\<lbrakk> \<nexists>sfs. shp s C = Some (sfs, Done); is_class P C;
-    P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
-(*<*)
-apply(rule_tac b = "(INIT C ([C],False) \<leftarrow> new C,s,False)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply (simp add: NewInitRed)
-apply(erule InitSeqThrowReds)
-done
+assumes nDone: "\<nexists>sfs. shp s C = Some (sfs, Done)"
+  and cls_C: "is_class P C"
+  and INIT_steps: "P \<turnstile> \<langle>INIT C ([C],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
+shows "P \<turnstile> \<langle>new C,s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(INIT C ([C],False) \<leftarrow> new C,s,False)"
+  obtain h l sh where [simp]: "s = (h, l, sh)" by(cases s) simp
+  have "(?a, ?b) \<in> (red P)\<^sup>*"
+    using NewInitRed[OF _ cls_C] nDone by fastforce
+  also have "(?b, ?c) \<in> (red P)\<^sup>*"
+    using InitSeqThrowReds[OF INIT_steps] by simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsubsection "Cast"
@@ -344,50 +321,27 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] CastRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) CastRed[OF step(2)]])
 qed
 (*>*)
 
 lemma CastRedsNull:
   "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>null,s',b'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s,b\<rangle> \<rightarrow>* \<langle>null,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(rule RedCastNull)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCastNull])(*>*)
 
 lemma CastRedsAddr:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>; hp s' a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(cases s',simp)
-apply(erule (1) RedCast)
-done
-(*>*)
+(*<*)by(cases s', simp) (rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCast])(*>*)
 
 lemma CastRedsFail:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>; hp s' a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s,b\<rangle> \<rightarrow>* \<langle>THROW ClassCast,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(cases s',simp)
-apply(erule (1) RedCastFail)
-done
-(*>*)
+(*<*)by(cases s', simp) (rule CastReds[THEN rtrancl_into_rtrancl, OF _ RedCastFail])(*>*)
 
 lemma CastRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CastReds)
-apply(rule red_reds.CastThrow)
-done
-(*>*)
+(*<*)by(rule CastReds[THEN rtrancl_into_rtrancl, OF _ red_reds.CastThrow])(*>*)
 
 subsubsection "LAss"
 
@@ -398,28 +352,17 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] LAssRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) LAssRed[OF step(2)]])
 qed
 (*>*)
 
 lemma LAssRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>Val v,(h',l',sh'),b'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s,b\<rangle> \<rightarrow>* \<langle>unit,(h',l'(V\<mapsto>v),sh'),b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule LAssReds)
-apply(rule RedLAss)
-done
-(*>*)
+(*<*)by(rule LAssReds[THEN rtrancl_into_rtrancl, OF _ RedLAss])(*>*)
 
 lemma LAssRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule LAssReds)
-apply(rule red_reds.LAssThrow)
-done
-(*>*)
+(*<*)by(rule LAssReds[THEN rtrancl_into_rtrancl, OF _ red_reds.LAssThrow])(*>*)
 
 subsubsection "BinOp"
 
@@ -430,8 +373,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] BinOpRed1[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) BinOpRed1[OF step(2)]])
 qed
 (*>*)
 
@@ -442,43 +384,43 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] BinOpRed2[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) BinOpRed2[OF step(2)]])
 qed
 (*>*)
 
 lemma BinOpRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>2,s\<^sub>2,b\<^sub>2\<rangle>; binop(bop,v\<^sub>1,v\<^sub>2) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp2Reds)
-apply(rule RedBinOp)
-apply simp
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>2,s\<^sub>2,b\<^sub>2\<rangle>"
+  and op: "binop(bop,v\<^sub>1,v\<^sub>2) = Some v"
+shows "P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> Val v\<^sub>2, s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule BinOp1Reds[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule BinOp2Reds[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule RedBinOp[OF op])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma BinOpRedsThrow1:
   "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>throw e',s',b'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s,b\<rangle> \<rightarrow>* \<langle>throw e', s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp1Reds)
-apply(rule red_reds.BinOpThrow1)
-done
-(*>*)
+(*<*)by(rule BinOp1Reds[THEN rtrancl_into_rtrancl, OF _ red_reds.BinOpThrow1])(*>*)
 
 lemma BinOpRedsThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2,b\<^sub>2\<rangle>\<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0, b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl)
- apply(erule BinOp2Reds)
-apply(rule red_reds.BinOpThrow2)
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1,b\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2,b\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> throw e, s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule BinOp1Reds[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule BinOp2Reds[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule red_reds.BinOpThrow2)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsubsection "FAcc"
@@ -490,8 +432,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] FAccRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) FAccRed[OF step(2)]])
 qed
 (*>*)
 
@@ -499,57 +440,29 @@ lemma FAccRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>; hp s' a = Some(C,fs); fs(F,D) = Some v;
     P \<turnstile> C has F,NonStatic:t in D \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s,b\<rangle> \<rightarrow>* \<langle>Val v,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(cases s',simp)
-apply(erule (2) RedFAcc)
-done
-(*>*)
+(*<*)by(cases s',simp) (rule FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAcc])(*>*)
 
 lemma FAccRedsNull:
   "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>null,s',b'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s,b\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(rule RedFAccNull)
-done
-(*>*)
+(*<*)by(rule FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAccNull])(*>*)
 
 lemma FAccRedsNone:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>;
      hp s' a = Some(C,fs);
     \<not>(\<exists>b t. P \<turnstile> C has F,b:t in D) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s,b\<rangle> \<rightarrow>* \<langle>THROW NoSuchFieldError,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(cases s',simp)
-apply(erule RedFAccNone, simp)
-done
-(*>*)
+(*<*)by(cases s',simp) (auto intro: FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAccNone])(*>*)
 
 lemma FAccRedsStatic:
   "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s',b'\<rangle>;
      hp s' a = Some(C,fs);
     P \<turnstile> C has F,Static:t in D \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s,b\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(cases s',simp)
-apply(erule (1) RedFAccStatic)
-done
-(*>*)
+(*<*)by(cases s',simp) (rule FAccReds[THEN rtrancl_into_rtrancl, OF _ RedFAccStatic])(*>*)
 
 lemma FAccRedsThrow:
   "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s,b\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAccReds)
-apply(rule red_reds.FAccThrow)
-done
-(*>*)
+(*<*)by(rule FAccReds[THEN rtrancl_into_rtrancl, OF _ red_reds.FAccThrow])(*>*)
 
 subsubsection "SFAcc"
 
@@ -557,69 +470,60 @@ lemma SFAccReds:
   "\<lbrakk> P \<turnstile> C has F,Static:t in D;
      shp s D = Some(sfs,Done); sfs F = Some v \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,True\<rangle> \<rightarrow>* \<langle>Val v,s,False\<rangle>"
-(*<*)
-apply(rule r_into_rtrancl)
-apply(cases s,simp)
-apply(erule (2) RedSFAcc)
-done
-(*>*)
+(*<*)by(cases s,simp) (rule RedSFAcc[THEN r_into_rtrancl])(*>*)
 
 lemma SFAccRedsNone:
   "\<not>(\<exists>b t. P \<turnstile> C has F,b:t in D)
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,b\<rangle> \<rightarrow>* \<langle>THROW NoSuchFieldError,s,False\<rangle>"
-(*<*)
-apply(rule r_into_rtrancl)
-apply(cases s,simp)
-apply(rule RedSFAccNone, simp)
-done
-(*>*)
+(*<*)by(cases s,simp) (auto intro: RedSFAccNone[THEN r_into_rtrancl])(*>*)
 
 lemma SFAccRedsNonStatic:
   "P \<turnstile> C has F,NonStatic:t in D
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,b\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError,s,False\<rangle>"
-(*<*)
-apply(rule r_into_rtrancl)
-apply(cases s,simp)
-apply(erule RedSFAccNonStatic)
-done
-(*>*)
+(*<*)by(cases s,simp) (rule RedSFAccNonStatic[THEN r_into_rtrancl])(*>*)
 
 lemma SFAccInitDoneReds:
-  "\<lbrakk> P \<turnstile> C has F,Static:t in D;
-     shp s D = Some (sfs,Done);
-     sfs F = Some v \<rbrakk>
- \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D}, s,b\<rangle> \<rightarrow>* \<langle>Val v, s,False\<rangle>"
-(*<*)
-apply(cases b)
-\<comment> \<open> case True \<close>
- apply(rule r_into_rtrancl)
- apply(cases s, simp)
- apply(erule (2) RedSFAcc)
-\<comment> \<open> case False \<close>
-apply(rule_tac b = "(C\<bullet>\<^sub>sF{D},s,True)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply(drule (2) SFAccInitDoneRed)
-apply(erule SFAccReds, simp+)
-done
+assumes cF: "P \<turnstile> C has F,Static:t in D"
+  and shp: "shp s D = Some (sfs,Done)" and sfs: "sfs F = Some v"
+shows "P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D}, s,b\<rangle> \<rightarrow>* \<langle>Val v, s,False\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(C\<bullet>\<^sub>sF{D},s,True)"
+  obtain h l sh where [simp]: "s = (h, l, sh)" by(cases s) simp
+  show ?thesis proof(cases b)
+    case True
+    then show ?thesis using assms
+      by simp (rule RedSFAcc[THEN r_into_rtrancl])
+  next
+    case False
+    then have "(?a, ?b) \<in> (red P)\<^sup>*"
+      using SFAccInitDoneRed[where sh="shp s", OF cF shp] by fastforce
+    also have "(?b, ?c) \<in> (red P)\<^sup>*" by(rule SFAccReds[OF assms])
+    ultimately show ?thesis by simp
+  qed
+qed
 (*>*)
 
 lemma SFAccInitReds:
-  "\<lbrakk> P \<turnstile> C has F,Static:t in D;
-     \<nexists>sfs. shp s D = Some (sfs,Done);
-     P \<turnstile> \<langle>INIT D ([D],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',s',b'\<rangle>;
-     shp s' D = Some (sfs,i); sfs F = Some v \<rbrakk>
- \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,False\<rangle> \<rightarrow>* \<langle>Val v,s',False\<rangle>"
-(*<*)
-apply(rule_tac b = "(INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sF{D},s,False)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply(simp add: SFAccInitRed)
-apply(rule InitSeqReds, simp_all)
-apply(subgoal_tac "\<exists>T. P \<turnstile> C has F,Static:T in D")
- prefer 2 apply fast
-apply(rule r_into_rtrancl)
-apply(cases s', simp)
-apply(erule (2) RedSFAcc)
-done
+assumes cF: "P \<turnstile> C has F,Static:t in D"
+  and nDone: "\<nexists>sfs. shp s D = Some (sfs,Done)"
+  and INIT_steps: "P \<turnstile> \<langle>INIT D ([D],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>Val v',s',b'\<rangle>"
+  and shp': "shp s' D = Some (sfs,i)" and sfs: "sfs F = Some v"
+shows "P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,False\<rangle> \<rightarrow>* \<langle>Val v,s',False\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sF{D},s,False)"
+  let ?b' = "(C\<bullet>\<^sub>sF{D},s',icheck P D (C\<bullet>\<^sub>sF{D}::expr))"
+  obtain h l sh where [simp]: "s = (h, l, sh)" by(cases s) simp
+  obtain h' l' sh' where [simp]: "s' = (h', l', sh')" by(cases s') simp
+  have icheck: "icheck P D (C\<bullet>\<^sub>sF{D}) = True" using cF by fastforce
+  then have b'c: "(?b', ?c) \<in> (red P)\<^sup>*"
+    using RedSFAcc[THEN r_into_rtrancl, OF cF] shp' sfs by simp
+  have "(?a, ?b) \<in> (red P)" using SFAccInitRed[OF cF] nDone by simp
+  also have "(?b, ?c) \<in> (red P)\<^sup>*"
+    by(rule InitSeqReds[OF INIT_steps b'c]) simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma SFAccInitThrowReds:
@@ -628,11 +532,8 @@ lemma SFAccInitThrowReds:
      P \<turnstile> \<langle>INIT D ([D],False) \<leftarrow> unit,s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle> \<rbrakk>
  \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sF{D},s,False\<rangle> \<rightarrow>* \<langle>throw a,s',b'\<rangle>"
 (*<*)
-apply(rule_tac b = "(INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sF{D},s,False)" in converse_rtrancl_into_rtrancl)
- apply(cases s, simp)
- apply (simp add: SFAccInitRed)
-apply(erule InitSeqThrowReds)
-done
+by(cases s, simp)
+  (auto elim: converse_rtrancl_into_rtrancl[OF SFAccInitRed InitSeqThrowReds])
 (*>*)
 
 subsubsection "FAss"
@@ -644,8 +545,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] FAssRed1[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) FAssRed1[OF step(2)]])
 qed
 (*>*)
 
@@ -656,8 +556,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] FAssRed2[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) FAssRed2[OF step(2)]])
 qed
 (*>*)
 
@@ -745,8 +644,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] SFAssRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) SFAssRed[OF step(2)]])
 qed
 (*>*)
 
@@ -849,8 +747,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] SeqRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) SeqRed[OF step(2)]])
 qed
 (*>*)
 
@@ -884,8 +781,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] CondRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) CondRed[OF step(2)]])
 qed
 (*>*)
 
@@ -988,8 +884,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] ThrowRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) ThrowRed[OF step(2)]])
 qed
 (*>*)
 
@@ -1129,8 +1024,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] TryRed[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) TryRed[OF step(2)]])
 qed
 (*>*)
 
@@ -1179,8 +1073,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] ListRed1[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) ListRed1[OF step(2)]])
 qed
 (*>*)
 
@@ -1191,8 +1084,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] ListRed2[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) ListRed2[OF step(2)]])
 qed
 (*>*)
 
@@ -1318,8 +1210,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] CallObj[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) CallObj[OF step(2)]])
 qed
 (*>*)
 
@@ -1331,8 +1222,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] CallParams[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) CallParams[OF step(2)]])
 qed
 (*>*)
 
@@ -1449,8 +1339,7 @@ proof(induct rule: rtrancl_induct3)
   case refl show ?case by blast
 next
   case step show ?case
-   using rtrancl_into_rtrancl[OF step(3)] SCallParams[OF step(2)]
-    by simp
+   by(rule rtrancl_into_rtrancl[OF step(3) SCallParams[OF step(2)]])
 qed
 (*>*)
 
