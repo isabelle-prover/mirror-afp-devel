@@ -171,49 +171,53 @@ qed
 (*>*)
 
 lemma FAssRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>2,l\<^sub>2)\<rangle>; Some(C,fs) = h\<^sub>2 a \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>unit, (h\<^sub>2(a\<mapsto>(C,fs((F,D)\<mapsto>v))),l\<^sub>2)\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAssReds2)
-apply(rule RedFAss)
-apply simp
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>2,l\<^sub>2)\<rangle>"
+  and hC: "Some(C,fs) = h\<^sub>2 a"
+shows "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>unit, (h\<^sub>2(a\<mapsto>(C,fs((F,D)\<mapsto>v))),l\<^sub>2)\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(addr a\<bullet>F{D}:=e\<^sub>2, s\<^sub>1)"
+  let ?y' = "(addr a\<bullet>F{D}:=Val v::expr,(h\<^sub>2,l\<^sub>2))"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule FAssReds1[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule FAssReds2[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" using RedFAss hC by simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma FAssRedsNull:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer, s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAssReds2)
-apply(rule RedFAssNull)
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer, s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(null\<bullet>F{D}:=e\<^sub>2, s\<^sub>1)"
+  let ?y' = "(null\<bullet>F{D}:=Val v::expr,s\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule FAssReds1[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule FAssReds2[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule RedFAssNull)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma FAssRedsThrow1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAssReds1)
-apply(rule red_reds.FAssThrow1)
-done
-(*>*)
+(*<*)by(rule FAssReds1[THEN rtrancl_into_rtrancl, OF _ red_reds.FAssThrow1])(*>*)
 
 lemma FAssRedsThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl)
- apply(erule FAssReds2)
-apply(rule red_reds.FAssThrow2)
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1\<rangle>"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<bullet>F{D}:=e\<^sub>2,s\<^sub>1)"
+  let ?y' = "(Val v\<bullet>F{D}:=throw e,s\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule FAssReds1[OF e\<^sub>1_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule FAssReds2[OF e\<^sub>2_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule red_reds.FAssThrow2)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsubsection";;"
@@ -221,11 +225,12 @@ subsubsection";;"
 lemma  SeqReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^sub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule SeqRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) SeqRed[OF step(2)]])
+qed
 (*>*)
 
 lemma SeqRedsThrow:
