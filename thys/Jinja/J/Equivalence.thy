@@ -235,22 +235,20 @@ qed
 
 lemma SeqRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule SeqReds)
-apply(rule red_reds.SeqThrow)
-done
-(*>*)
+(*<*)by(rule SeqReds[THEN rtrancl_into_rtrancl, OF _ red_reds.SeqThrow])(*>*)
 
 lemma SeqReds2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1;;e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule SeqReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedSeq)
-apply assumption
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>"
+  and   e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<^sub>1;;e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<^sub>1;; e\<^sub>2,s\<^sub>1)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule SeqReds[OF e\<^sub>1_steps])
+  also have "(?y, ?z) \<in> (red P)\<^sup>*"
+    by(rule RedSeq[THEN converse_rtrancl_into_rtrancl, OF e\<^sub>2_steps])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 
@@ -259,101 +257,109 @@ subsubsection"If"
 lemma CondReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^sub>1 else e\<^sub>2,s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule CondRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) CondRed[OF step(2)]])
+qed
 (*>*)
 
 lemma CondRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CondReds)
-apply(rule red_reds.CondThrow)
-done
-(*>*)
+(*<*)by(rule CondReds[THEN rtrancl_into_rtrancl, OF _ red_reds.CondThrow])(*>*)
 
 lemma CondReds2T:
-  "\<lbrakk>P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>1, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedCondT)
-apply assumption
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>"
+  and   e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(if (true) e\<^sub>1 else e\<^sub>2,s\<^sub>1)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CondReds[OF e_steps])
+  also have "(?y, ?z) \<in> (red P)\<^sup>*"
+    by(rule RedCondT[THEN converse_rtrancl_into_rtrancl, OF e\<^sub>1_steps])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma CondReds2F:
-  "\<lbrakk>P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>false,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedCondF)
-apply assumption
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>false,s\<^sub>1\<rangle>"
+  and   e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(if (false) e\<^sub>1 else e\<^sub>2,s\<^sub>1)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CondReds[OF e_steps])
+  also have "(?y, ?z) \<in> (red P)\<^sup>*"
+    by(rule RedCondF[THEN converse_rtrancl_into_rtrancl, OF e\<^sub>2_steps])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 
 subsubsection "While"
 
 lemma WhileFReds:
-  "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>false,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>unit,s'\<rangle>"
+assumes b_steps: "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>false,s'\<rangle>"
+shows "P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>unit,s'\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedWhile)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CondReds)
-apply(rule RedCondF)
-done
+by(rule RedWhile[THEN converse_rtrancl_into_rtrancl,
+                 OF CondReds[THEN rtrancl_into_rtrancl,
+                             OF b_steps RedCondF]])
 (*>*)
 
 lemma WhileRedsThrow:
-  "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle>"
+assumes b_steps: "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle>"
+shows "P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedWhile)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CondReds)
-apply(rule red_reds.CondThrow)
-done
+by(rule RedWhile[THEN converse_rtrancl_into_rtrancl,
+                 OF CondReds[THEN rtrancl_into_rtrancl,
+                             OF b_steps red_reds.CondThrow]])
 (*>*)
 
 lemma WhileTReds:
-  "\<lbrakk> P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>; P \<turnstile> \<langle>while (b) c,s\<^sub>2\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle>"
-(*<*)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedWhile)
-apply(rule rtrancl_trans)
- apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedCondT)
-apply(rule rtrancl_trans)
- apply(erule SeqReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedSeq)
-apply assumption
-done
+assumes b_steps: "P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>"
+    and c_steps: "P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>"
+    and while_steps: "P \<turnstile> \<langle>while (b) c,s\<^sub>2\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle>"
+shows "P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(if (b) (c;; while (b) c) else unit,s\<^sub>0)"
+  let ?y = "(if (true) (c;; while (b) c) else unit,s\<^sub>1)"
+  let ?b' = "(c;; while (b) c,s\<^sub>1)"
+  let ?y' = "(Val v\<^sub>1;; while (b) c,s\<^sub>2)"
+  have "(?a, ?b) \<in> (red P)\<^sup>*"
+    using RedWhile[THEN converse_rtrancl_into_rtrancl] by simp
+  also have "(?b, ?y) \<in> (red P)\<^sup>*" by(rule CondReds[OF b_steps])
+  also have "(?y, ?b') \<in> (red P)\<^sup>*"
+    using RedCondT[THEN converse_rtrancl_into_rtrancl] by simp
+  also have "(?b', ?y') \<in> (red P)\<^sup>*" by(rule SeqReds[OF c_steps])
+  also have "(?y', ?c) \<in> (red P)\<^sup>*"
+    by(rule RedSeq[THEN converse_rtrancl_into_rtrancl, OF while_steps])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma WhileTRedsThrow:
-  "\<lbrakk> P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
-(*<*)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedWhile)
-apply(rule rtrancl_trans)
- apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedCondT)
-apply(rule rtrancl_into_rtrancl)
- apply(erule SeqReds)
-apply(rule red_reds.SeqThrow)
-done
+assumes b_steps: "P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>"
+    and c_steps: "P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
+(*<*)(is "(?a, ?c) \<in> (red P)\<^sup>*")
+proof -
+  let ?b = "(if (b) (c;; while (b) c) else unit,s\<^sub>0)"
+  let ?y = "(if (true) (c;; while (b) c) else unit,s\<^sub>1)"
+  let ?b' = "(c;; while (b) c,s\<^sub>1)"
+  let ?y' = "(throw e;; while (b) c,s\<^sub>2)"
+  have "(?a, ?b) \<in> (red P)\<^sup>*"
+    using RedWhile[THEN converse_rtrancl_into_rtrancl] by simp
+  also have "(?b, ?y) \<in> (red P)\<^sup>*" by(rule CondReds[OF b_steps])
+  also have "(?y, ?b') \<in> (red P)\<^sup>*"
+    using RedCondT[THEN converse_rtrancl_into_rtrancl] by simp
+  also have "(?b', ?y') \<in> (red P)\<^sup>*" by(rule SeqReds[OF c_steps])
+  also have "(?y', ?c) \<in> (red P)" by(rule red_reds.SeqThrow)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsubsection"Throw"
@@ -361,30 +367,21 @@ subsubsection"Throw"
 lemma ThrowReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2)
- apply blast
-apply(erule rtrancl_into_rtrancl)
-apply(erule ThrowRed)
-done
+proof(induct rule: rtrancl_induct2)
+  case refl show ?case by blast
+next
+  case step show ?case
+   by(rule rtrancl_into_rtrancl[OF step(3) ThrowRed[OF step(2)]])
+qed
 (*>*)
 
 lemma ThrowRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule ThrowReds)
-apply(rule RedThrowNull)
-done
-(*>*)
+(*<*)by(rule ThrowReds[THEN rtrancl_into_rtrancl, OF _ RedThrowNull])(*>*)
 
 lemma ThrowRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule ThrowReds)
-apply(rule red_reds.ThrowThrow)
-done
-(*>*)
+(*<*)by(rule ThrowReds[THEN rtrancl_into_rtrancl, OF _ red_reds.ThrowThrow])(*>*)
 
 subsubsection "InitBlock"
 
