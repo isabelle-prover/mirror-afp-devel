@@ -613,7 +613,7 @@ qed
 lemma FAssRedsNone:
 assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>"
   and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>2,l\<^sub>2,sh\<^sub>2),b\<^sub>2\<rangle>"
-  and hC: "Some(C,fs) = h\<^sub>2 a" and ncF: "\<not>(\<exists>b t. P \<turnstile> C has F,b:t in D)"
+  and hC: "h\<^sub>2 a = Some(C,fs)" and ncF: "\<not>(\<exists>b t. P \<turnstile> C has F,b:t in D)"
 shows "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0, b\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NoSuchFieldError, (h\<^sub>2,l\<^sub>2,sh\<^sub>2), b\<^sub>2\<rangle>"
 (*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
 proof -
@@ -622,7 +622,7 @@ proof -
   have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule FAssReds1[OF e\<^sub>1_steps])
   also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule FAssReds2[OF e\<^sub>2_steps])
   also have "(?y', ?z) \<in> (red P)"
-    using RedFAssNone[OF _ ncF] hC[THEN sym] by simp
+    using RedFAssNone[OF _ ncF] hC by simp
   ultimately show ?thesis by simp
 qed
 (*>*)
@@ -630,7 +630,7 @@ qed
 lemma FAssRedsStatic:
 assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>"
   and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1,b\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>2,l\<^sub>2,sh\<^sub>2),b\<^sub>2\<rangle>"
-  and hC: "Some(C,fs) = h\<^sub>2 a" and cF_Static: "P \<turnstile> C has F,Static:t in D"
+  and hC: "h\<^sub>2 a = Some(C,fs)" and cF_Static: "P \<turnstile> C has F,Static:t in D"
 shows "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0, b\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError, (h\<^sub>2,l\<^sub>2,sh\<^sub>2), b\<^sub>2\<rangle>"
 (*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
 proof -
@@ -639,7 +639,7 @@ proof -
   have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule FAssReds1[OF e\<^sub>1_steps])
   also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule FAssReds2[OF e\<^sub>2_steps])
   also have "(?y', ?z) \<in> (red P)"
-    using RedFAssStatic[OF _ cF_Static] hC[THEN sym] by simp
+    using RedFAssStatic[OF _ cF_Static] hC by simp
   ultimately show ?thesis by simp
 qed
 (*>*)
@@ -958,10 +958,8 @@ lemma InitBlockRedsFinal:
   "\<lbrakk> P \<turnstile> \<langle>e,(h,l(V\<mapsto>v),sh),b\<rangle> \<rightarrow>* \<langle>e',(h',l',sh'),b'\<rangle>; final e' \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>{V:T := Val v; e},(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',(h', l'(V := l V),sh'),b'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule InitBlockReds)
-apply(fast elim!:finalE intro:RedInitBlock InitBlockThrow)
-done
+by(fast elim!:InitBlockReds[THEN rtrancl_into_rtrancl] finalE
+        intro:RedInitBlock InitBlockThrow)
 (*>*)
 
 
@@ -1043,39 +1041,32 @@ qed
 
 lemma TryRedsVal:
   "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>Val v,s',b'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^sub>2,s,b\<rangle> \<rightarrow>* \<langle>Val v,s',b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule TryReds)
-apply(rule RedTry)
-done
-(*>*)
+(*<*)by(rule TryReds[THEN rtrancl_into_rtrancl, OF _ RedTry])(*>*)
 
 lemma TryCatchRedsFinal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Throw a,(h\<^sub>1,l\<^sub>1,sh\<^sub>1),b\<^sub>1\<rangle>;  h\<^sub>1 a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C;
-     P \<turnstile> \<langle>e\<^sub>2, (h\<^sub>1, l\<^sub>1(V \<mapsto> Addr a),sh\<^sub>1),b\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2,l\<^sub>2,sh\<^sub>2), b\<^sub>2\<rangle>; final e\<^sub>2' \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2, s\<^sub>0, b\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2, l\<^sub>2(V := l\<^sub>1 V),sh\<^sub>2),b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule TryReds)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule RedTryCatch)
-  apply fastforce
- apply assumption
-apply(rule InitBlockRedsFinal)
- apply assumption
-apply(simp)
-done
+assumes e\<^sub>1_steps: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Throw a,(h\<^sub>1,l\<^sub>1,sh\<^sub>1),b\<^sub>1\<rangle>"
+  and h\<^sub>1a: "h\<^sub>1 a = Some(D,fs)" and sub: "P \<turnstile> D \<preceq>\<^sup>* C"
+  and e\<^sub>2_steps: "P \<turnstile> \<langle>e\<^sub>2, (h\<^sub>1, l\<^sub>1(V \<mapsto> Addr a),sh\<^sub>1),b\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2,l\<^sub>2,sh\<^sub>2), b\<^sub>2\<rangle>"
+  and final: "final e\<^sub>2'"
+shows "P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2, s\<^sub>0, b\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2, (l\<^sub>2::locals)(V := l\<^sub>1 V),sh\<^sub>2),b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(try Throw a catch(C V) e\<^sub>2,(h\<^sub>1, l\<^sub>1, sh\<^sub>1),b\<^sub>1)"
+  let ?b = "({V:Class C; V:=addr a;; e\<^sub>2},(h\<^sub>1, l\<^sub>1, sh\<^sub>1),b\<^sub>1)"
+  have bz: "(?b, ?z) \<in> (red P)\<^sup>*"
+    by(rule InitBlockRedsFinal[OF e\<^sub>2_steps final])
+  have hp: "hp (h\<^sub>1, l\<^sub>1, sh\<^sub>1) a = \<lfloor>(D, fs)\<rfloor>" using h\<^sub>1a by simp
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule TryReds[OF e\<^sub>1_steps])
+  also have "(?y, ?z) \<in> (red P)\<^sup>*"
+    by(rule RedTryCatch[THEN converse_rtrancl_into_rtrancl, OF hp sub bz])
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma TryRedsFail:
   "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s,b\<rangle> \<rightarrow>* \<langle>Throw a,(h,l,sh),b'\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s,b\<rangle> \<rightarrow>* \<langle>Throw a,(h,l,sh),b'\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule TryReds)
-apply(fastforce intro!: RedTryFail)
-done
-(*>*)
+(*<*)by(fastforce intro!: TryReds[THEN rtrancl_into_rtrancl, OF _ RedTryFail])(*>*)
 
 subsubsection "List"
 
@@ -1104,12 +1095,7 @@ qed
 lemma ListRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1,b\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>es',s\<^sub>2,b\<^sub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^sub>0,b\<^sub>0\<rangle> [\<rightarrow>]* \<langle>Val v # es',s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule ListReds1)
-apply(erule ListReds2)
-done
-(*>*)
+(*<*)by(rule rtrancl_trans[OF ListReds1 ListReds2])(*>*)
 
 subsubsection"Call"
 
@@ -1151,22 +1137,21 @@ qed auto
 (*>*)
 
 lemma Reds_dom_lcl:
-  "\<lbrakk> wwf_J_prog P; P \<turnstile> \<langle>e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',(h',l',sh'),b'\<rangle> \<rbrakk> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fv e"
+assumes wf: "wwf_J_prog P"
+shows "P \<turnstile> \<langle>e,(h,l,sh),b\<rangle> \<rightarrow>* \<langle>e',(h',l',sh'),b'\<rangle> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fv e"
 (*<*)
-apply(erule converse_rtrancl_induct_red)
- apply blast
-apply(blast dest: Red_fv Red_dom_lcl)
-done
+proof(induct rule: converse_rtrancl_induct_red)
+  case 1 then show ?case by blast
+next
+  case 2 then show ?case using wf by(blast dest: Red_fv Red_dom_lcl)
+qed
 (*>*)
 
 text\<open> Now a few lemmas on the behaviour of blocks during reduction. \<close>
 
 lemma override_on_upd_lemma:
   "(override_on f (g(a\<mapsto>b)) A)(a := g a) = override_on f g (insert a A)"
-(*<*)
-apply(rule ext)
-apply(simp add:override_on_def)
-done
+(*<*)by(rule ext) (simp add:override_on_def)
 
 declare fun_upd_apply[simp del] map_upds_twist[simp del]
 (*>*)
@@ -1278,69 +1263,75 @@ qed
 
 
 lemma CallRedsThrowParams:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1,b\<^sub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^sub>1 @ throw a # es\<^sub>2,s\<^sub>2,b\<^sub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CallRedsParams)
-apply(rule CallThrowParams)
-apply simp
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1,b\<^sub>1\<rangle>"
+  and es_steps: "P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^sub>1 @ throw a # es\<^sub>2,s\<^sub>2,b\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(Val v\<bullet>M(es),s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(Val v\<bullet>M(map Val vs\<^sub>1 @ throw a # es\<^sub>2),s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CallRedsObj[OF e_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule CallRedsParams[OF es_steps])
+  also have "(?y', ?z) \<in> (red P)\<^sup>*" using CallThrowParams by fast
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 
 lemma CallRedsThrowObj:
   "P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>1,b\<^sub>1\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>1,b\<^sub>1\<rangle>"
-(*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CallRedsObj)
-apply(rule CallThrowObj)
-done
-(*>*)
+(*<*)by(rule CallRedsObj[THEN rtrancl_into_rtrancl, OF _ CallThrowObj])(*>*)
 
 
 lemma CallRedsNull:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1,b\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CallRedsParams)
-apply(rule RedCallNull)
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1,b\<^sub>1\<rangle>"
+  and es_steps: "P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle>"
+shows "P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(null\<bullet>M(es),s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(null\<bullet>M(map Val vs),s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CallRedsObj[OF e_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule CallRedsParams[OF es_steps])
+  also have "(?y', ?z) \<in> (red P)" by(rule RedCallNull)
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma CallRedsNone:
-  "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle>;
-     hp s\<^sub>2 a = Some(C,fs);
-    \<not>(\<exists>b Ts T m D. P \<turnstile> C sees M,b:Ts\<rightarrow>T = m in D) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s,b\<rangle> \<rightarrow>* \<langle>THROW NoSuchMethodError,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CallRedsParams)
-apply(cases s\<^sub>2,simp)
-apply(erule RedCallNone, simp)
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>"
+  and es_steps: "P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle>"
+  and hp\<^sub>2a: "hp s\<^sub>2 a = Some(C,fs)"
+  and ncM: "\<not>(\<exists>b Ts T m D. P \<turnstile> C sees M,b:Ts\<rightarrow>T = m in D)"
+shows "P \<turnstile> \<langle>e\<bullet>M(es),s,b\<rangle> \<rightarrow>* \<langle>THROW NoSuchMethodError,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(addr a\<bullet>M(es),s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(addr a\<bullet>M(map Val vs),s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CallRedsObj[OF e_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule CallRedsParams[OF es_steps])
+  also have "(?y', ?z) \<in> (red P)" using RedCallNone[OF _ ncM] hp\<^sub>2a
+    by(cases s\<^sub>2) simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 lemma CallRedsStatic:
-  "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle>;
-     hp s\<^sub>2 a = Some(C,fs);
-     P \<turnstile> C sees M,Static:Ts\<rightarrow>T = m in D \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s,b\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError,s\<^sub>2,b\<^sub>2\<rangle>"
-(*<*)
-apply(rule rtrancl_trans)
- apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl)
- apply(erule CallRedsParams)
-apply(cases s\<^sub>2,simp)
-apply(erule RedCallStatic, simp)
-done
+assumes e_steps: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1,b\<^sub>1\<rangle>"
+  and es_steps: "P \<turnstile> \<langle>es,s\<^sub>1,b\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2,b\<^sub>2\<rangle>"
+  and hp\<^sub>2a: "hp s\<^sub>2 a = Some(C,fs)"
+  and cM_Static: "P \<turnstile> C sees M,Static:Ts\<rightarrow>T = m in D"
+shows "P \<turnstile> \<langle>e\<bullet>M(es),s,b\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError,s\<^sub>2,b\<^sub>2\<rangle>"
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
+proof -
+  let ?y = "(addr a\<bullet>M(es),s\<^sub>1,b\<^sub>1)"
+  let ?y' = "(addr a\<bullet>M(map Val vs),s\<^sub>2,b\<^sub>2)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule CallRedsObj[OF e_steps])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*" by(rule CallRedsParams[OF es_steps])
+  also have "(?y', ?z) \<in> (red P)" using RedCallStatic[OF _ cM_Static] hp\<^sub>2a
+    by(cases s\<^sub>2) simp
+  ultimately show ?thesis by simp
+qed
 (*>*)
 
 subsection\<open>SCall\<close>
@@ -1399,11 +1390,8 @@ lemma SCallRedsThrowParams:
   "\<lbrakk> P \<turnstile> \<langle>es,s\<^sub>0,b\<^sub>0\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^sub>1 @ throw a # es\<^sub>2,s\<^sub>2,b\<^sub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sM(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>2,b\<^sub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule SCallRedsParams)
-apply(rule SCallThrowParams)
-apply simp
-done
+by(erule SCallRedsParams[THEN rtrancl_into_rtrancl, OF _ SCallThrowParams])
+   simp
 (*>*)
 
 lemma SCallRedsNone:
@@ -1411,11 +1399,8 @@ lemma SCallRedsNone:
     \<not>(\<exists>b Ts T m D. P \<turnstile> C sees M,b:Ts\<rightarrow>T = m in D) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sM(es),s,b\<rangle> \<rightarrow>* \<langle>THROW NoSuchMethodError,s\<^sub>2,False\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule SCallRedsParams)
-apply(cases s\<^sub>2,simp)
-apply(rule RedSCallNone, simp)
-done
+by(erule SCallRedsParams[THEN rtrancl_into_rtrancl, OF _ RedSCallNone])
+   simp
 (*>*)
 
 lemma SCallRedsNonStatic:
@@ -1423,11 +1408,8 @@ lemma SCallRedsNonStatic:
      P \<turnstile> C sees M,NonStatic:Ts\<rightarrow>T = m in D \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>C\<bullet>\<^sub>sM(es),s,b\<rangle> \<rightarrow>* \<langle>THROW IncompatibleClassChangeError,s\<^sub>2,False\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl)
- apply(erule SCallRedsParams)
-apply(cases s\<^sub>2,simp)
-apply(rule RedSCallNonStatic, simp)
-done
+by(erule SCallRedsParams[THEN rtrancl_into_rtrancl, OF _ RedSCallNonStatic])
+   simp
 (*>*)
 
 lemma SCallInitThrowReds:
@@ -1438,15 +1420,14 @@ and "P \<turnstile> \<langle>es,s\<^sub>0,b\<^sub>0\<rangle> [\<rightarrow>]* \<
       "M \<noteq> clinit"
 and "P \<turnstile> \<langle>INIT D ([D],False) \<leftarrow> unit,(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False\<rangle> \<rightarrow>* \<langle>throw a,(h\<^sub>2,l\<^sub>2,sh\<^sub>2),b\<^sub>2\<rangle>"
 shows "P \<turnstile> \<langle>C\<bullet>\<^sub>sM(es), s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>throw a,(h\<^sub>2,l\<^sub>2,sh\<^sub>2),b\<^sub>2\<rangle>"
-(*<*)
+(*<*)(is "(?x, ?z) \<in> (red P)\<^sup>*")
 proof -
-  have "P \<turnstile> \<langle>C\<bullet>\<^sub>sM(es),s\<^sub>0,b\<^sub>0\<rangle> \<rightarrow>* \<langle>C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False\<rangle>"
-    by(rule SCallRedsParams)(rule assms(2))
-  also have "P \<turnstile> \<langle>C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False\<rangle> \<rightarrow> \<langle>INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False\<rangle>"
+  let ?y = "(C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False)"
+  let ?y' = "(INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False)"
+  have "(?x, ?y) \<in> (red P)\<^sup>*" by(rule SCallRedsParams[OF assms(2)])
+  also have "(?y, ?y') \<in> (red P)\<^sup>*"
     using SCallInitRed[OF assms(3)] assms(4-5) by auto
-  also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>INIT D ([D],False) \<leftarrow> C\<bullet>\<^sub>sM(map Val vs),(h\<^sub>1,l\<^sub>1,sh\<^sub>1),False\<rangle>
-                 \<rightarrow>* \<langle>throw a,(h\<^sub>2,l\<^sub>2,sh\<^sub>2),b\<^sub>2\<rangle>"
-    by(rule InitSeqThrowReds[OF assms(6)])
+  also have "(?y', ?z) \<in> (red P)\<^sup>*" by(rule InitSeqThrowReds[OF assms(6)])
   finally show ?thesis by simp
 qed
 (*>*)
@@ -3216,16 +3197,14 @@ lemma init_throw_PD: "P \<turnstile> \<langle>INIT C' (Cs,b) \<leftarrow> unit,s
 lemma rinit_Val_PD: "P \<turnstile> \<langle>RI(C,e\<^sub>0);Cs \<leftarrow> unit,s\<rangle> \<Rightarrow> \<langle>Val v,s'\<rangle>
   \<Longrightarrow> iconf (shp s) (RI(C,e\<^sub>0);Cs \<leftarrow> unit) \<Longrightarrow> last(C#Cs) = C'
   \<Longrightarrow> \<exists>sfs i. shp s' C' = \<lfloor>(sfs,i)\<rfloor> \<and> (i = Done \<or> i = Processing)"
-apply(drule_tac C' = C' and v = v in eval_init_return, simp_all)
-apply (metis append_butlast_last_id)
-done
+by(auto dest!: eval_init_return [where C'=C']
+               append_butlast_last_id[THEN sym])
 
 lemma rinit_throw_PD: "P \<turnstile> \<langle>RI(C,e\<^sub>0);Cs \<leftarrow> unit,s\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>
   \<Longrightarrow> iconf (shp s) (RI(C,e\<^sub>0);Cs \<leftarrow> unit) \<Longrightarrow> last(C#Cs) = C'
   \<Longrightarrow> \<exists>sfs i. shp s' C' = \<lfloor>(sfs,Error)\<rfloor>"
-apply(drule_tac C' = C' and a = a in eval_init_return, simp_all)
-apply (metis append_butlast_last_id)
-done
+by(auto dest!: eval_init_return [where C'=C']
+               append_butlast_last_id[THEN sym])
 
 \<comment> \<open> combining the above to get evaluation of @{text INIT} in a sequence \<close>
 
@@ -4094,11 +4073,10 @@ text \<open> Its extension to @{text"\<rightarrow>*"}: \<close>
 
 lemma extend_eval:
 assumes wf: "wwf_J_prog P"
-and reds: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>e'',s'',b''\<rangle>" and eval_rest:  "P \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-and iconf: "iconf (shp s) e" and bconf: "P,shp s \<turnstile>\<^sub>b (e::expr,b) \<surd>"
-shows "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+shows "\<lbrakk> P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>e'',s'',b''\<rangle>; P \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>;
+         iconf (shp s) e; P,shp s \<turnstile>\<^sub>b (e::expr,b) \<surd> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
 (*<*)
-using reds eval_rest iconf bconf
 proof (induct rule: converse_rtrancl_induct3)
   case refl then show ?case by simp
 next
@@ -4113,11 +4091,10 @@ qed
 
 lemma extend_evals:
 assumes wf: "wwf_J_prog P"
-and reds: "P \<turnstile> \<langle>es,s,b\<rangle> [\<rightarrow>]* \<langle>es'',s'',b''\<rangle>" and eval_rest:  "P \<turnstile> \<langle>es'',s''\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>"
-and iconf: "iconfs (shp s) es" and bconf: "P,shp s \<turnstile>\<^sub>b (es::expr list,b) \<surd>"
-shows "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>"
+shows "\<lbrakk> P \<turnstile> \<langle>es,s,b\<rangle> [\<rightarrow>]* \<langle>es'',s'',b''\<rangle>; P \<turnstile> \<langle>es'',s''\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>;
+         iconfs (shp s) es; P,shp s \<turnstile>\<^sub>b (es::expr list,b) \<surd> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>"
 (*<*)
-using reds eval_rest iconf bconf
 proof (induct rule: converse_rtrancl_induct3)
   case refl then show ?case by simp
 next
