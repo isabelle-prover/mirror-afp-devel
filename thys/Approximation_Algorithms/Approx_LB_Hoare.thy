@@ -4,7 +4,7 @@ theory Approx_LB_Hoare
   imports Complex_Main "HOL-Hoare.Hoare_Logic"
 begin
 
-text \<open>This is formalization of the load balancing algorithms and proofs
+text \<open>This is a formalization of the load balancing algorithms and proofs
 in the book by Kleinberg and Tardos \cite{KleinbergT06}.\<close>
 
 hide_const (open) sorted

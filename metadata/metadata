@@ -7419,9 +7419,11 @@ date = 2020-01-16
 notify = nipkow@in.tum.de
 abstract =
   We present the first formal verification of approximation algorithms
-  for NP-complete optimization problems: vertex cover, independent set,
+  for NP-complete optimization problems: vertex cover, set cover, independent set,
   load balancing, and bin packing. The proofs correct incompletenesses
   in existing proofs and improve the approximation ratio in one case.
+  A detailed description of our work has been published in the proceedings of
+  <a href="https://doi.org/10.1007/978-3-030-51054-1_17">IJCAR 2020</a>.
 
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
