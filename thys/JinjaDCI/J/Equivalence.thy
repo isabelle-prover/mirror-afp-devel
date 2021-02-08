@@ -917,27 +917,36 @@ lemma InitBlockReds_aux:
   \<forall>h l sh h' l' sh' v. s = (h,l(V\<mapsto>v),sh) \<longrightarrow> s' = (h',l',sh') \<longrightarrow>
   P \<turnstile> \<langle>{V:T := Val v; e},(h,l,sh),b\<rangle> \<rightarrow>* \<langle>{V:T := Val(the(l' V)); e'},(h',l'(V:=(l V)),sh'),b'\<rangle>"
 (*<*)
-apply(erule converse_rtrancl_induct3)
- apply(fastforce simp: fun_upd_same simp del:fun_upd_apply)
-apply clarify
-apply(rename_tac e0 X Y x3 b0 e1 h1 l1 sh1 b1 h0 l0 sh0 h2 l2 sh2 v0)
-apply(subgoal_tac "V \<in> dom l1")
- prefer 2
- apply(drule red_lcl_incr)
- apply simp
-apply clarsimp
-apply(rename_tac v1)
-apply(rule converse_rtrancl_into_rtrancl)
- apply(rule InitBlockRed)
-  apply assumption
- apply simp
-apply(erule_tac x = "l1(V := l0 V)" in allE)
-apply(erule_tac x = v1 in allE)
-apply(erule impE)
- apply(rule ext)
- apply(simp add:fun_upd_def)
-apply(simp add:fun_upd_def)
-done
+proof(induct rule: converse_rtrancl_induct3)
+  case refl then show ?case
+    by(fastforce simp: fun_upd_same simp del:fun_upd_apply)
+next
+  case (step e0 s0 b0 e1 s1 b1)
+  obtain h1 l1 sh1 where s1[simp]: "s1 = (h1, l1, sh1)" by(cases s1) simp
+  { fix h0 l0 sh0 h2 l2 sh2 v0
+    assume [simp]: "s0 = (h0, l0(V \<mapsto> v0), sh0)" and s'[simp]: "s' = (h2, l2, sh2)"    
+    then have "V \<in> dom l1" using step(1) by(auto dest!: red_lcl_incr)
+    then obtain v1 where l1V[simp]: "l1 V = \<lfloor>v1\<rfloor>" by blast
+
+    let ?a = "({V:T; V:=Val v0;; e0},(h0, l0, sh0),b0)"
+    let ?b = "({V:T; V:=Val v1;; e1},(h1, l1(V := l0 V), sh1),b1)"
+    let ?c = "({V:T; V:=Val (the (l2 V));; e'},(h2, l2(V := l0 V), sh2),b')"
+    let ?l = "l1(V := l0 V)" and ?v = v1
+
+    have e0_steps: "P \<turnstile> \<langle>e0,(h0, l0(V \<mapsto> v0), sh0),b0\<rangle> \<rightarrow> \<langle>e1,(h1, l1, sh1),b1\<rangle>"
+      using step(1) by simp
+
+    have lv: "\<And>l v. l1 = l(V \<mapsto> v) \<longrightarrow>
+             P \<turnstile> \<langle>{V:T; V:=Val v;; e1},(h1, l, sh1),b1\<rangle> \<rightarrow>*
+                  \<langle>{V:T; V:=Val (the (l2 V));; e'},(h2, l2(V := l V), sh2),b'\<rangle>"
+      using step(3) s' s1 by blast
+    moreover have "l1 = ?l(V \<mapsto> ?v)" by(rule ext) (simp add:fun_upd_def)
+    ultimately have "(?b, ?c) \<in> (red P)\<^sup>*" using lv[of ?l ?v] by simp
+    then have "(?a, ?c) \<in> (red P)\<^sup>*"
+      by(rule InitBlockRed[THEN converse_rtrancl_into_rtrancl, OF e0_steps l1V])
+  }
+  then show ?case by blast
+qed
 (*>*)
 
 lemma InitBlockReds:
