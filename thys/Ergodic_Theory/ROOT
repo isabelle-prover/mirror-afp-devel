@@ -4,7 +4,7 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
   options [timeout = 900]
   theories
     SG_Library_Complement
-    Trivial_Measure
+    ME_Library_Complement
     Fekete
     Asymptotic_Density
     Measure_Preserving_Transformations
