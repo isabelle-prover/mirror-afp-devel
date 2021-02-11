@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
+    <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Laws of Large Numbers</title>
+              <link>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
+       <guid>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Law of Large Numbers states that, informally, if one
+performs a random experiment $X$ many times and takes the average of
+the results, that average will be very close to the expected value
+$E[X]$.&lt;/p&gt; &lt;p&gt; More formally, let
+$(X_i)_{i\in\mathbb{N}}$ be a sequence of independently identically
+distributed random variables whose expected value $E[X_1]$ exists.
+Denote the running average of $X_1, \ldots, X_n$ as $\overline{X}_n$.
+Then:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;The Weak Law of Large Numbers
+states that $\overline{X}_{n} \longrightarrow E[X_1]$ in probability
+for $n\to\infty$, i.e. $\mathcal{P}(|\overline{X}_{n} - E[X_1]| &gt;
+\varepsilon) \longrightarrow 0$ as $n\to\infty$ for any $\varepsilon
+&gt; 0$.&lt;/li&gt; &lt;li&gt;The Strong Law of Large Numbers states
+that $\overline{X}_{n} \longrightarrow E[X_1]$ almost surely for
+$n\to\infty$, i.e. $\mathcal{P}(\overline{X}_{n} \longrightarrow
+E[X_1]) = 1$.&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;In this entry, I
+formally prove the strong law and from it the weak law. The approach
+used for the proof of the strong law is a particularly quick and slick
+one based on ergodic theory, which was formalised by Gouëzel in
+another AFP entry.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
               <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
@@ -588,19 +615,6 @@ of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
 of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
 proved is a necessary result by Erdős and Milner:
 $\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.</description>
-    </item>
-    <item>
-       <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Chandy_Lamport.html</link>
-       <guid>https://www.isa-afp.org/entries/Chandy_Lamport.html</guid>
-       <dc:creator> Ben Fiedler, Dmitriy Traytel       </dc:creator>
-       <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
-       <description>
-We provide a suitable distributed system model and implementation of the
-Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
-Computer Systems, 3, 63-75, 1985]. Our main result is a formal
-termination and correctness proof of the Chandy--Lamport algorithm and
-its use in stable property detection.</description>
     </item>
   </channel>
 </rss>
