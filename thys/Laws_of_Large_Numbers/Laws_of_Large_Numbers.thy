@@ -4,12 +4,12 @@
 *)
 section \<open>The Laws of Large Numbers\<close>
 theory Laws_of_Large_Numbers
-  imports Ergodic_Theory.Ergodicity Shift_Operator
+  imports Ergodic_Theory.Shift_Operator
 begin
 
 text \<open>
   We prove the strong law of large numbers in the following form: Let $(X_i)_{i\in\mathbb{N}}$
-  be a sequence of i.i.d. random variables over a probability space \<open>M\<close>. Further assume that 
+  be a sequence of i.i.d. random variables over a probability space \<open>M\<close>. Further assume that
   the expected value $E[X_0]$ of $X_0$ exists. Then the sequence of random variables
   \[\overline{X}_n = \frac{1}{n} \sum_{i=0}^n X_i\]
   of running averages almost surely converges to $E[X_0]$.
