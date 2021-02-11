@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
+    <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Laws of Large Numbers</title>
+              <link>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
+       <guid>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Law of Large Numbers states that, informally, if one
+performs a random experiment $X$ many times and takes the average of
+the results, that average will be very close to the expected value
+$E[X]$.&lt;/p&gt; &lt;p&gt; More formally, let
+$(X_i)_{i\in\mathbb{N}}$ be a sequence of independently identically
+distributed random variables whose expected value $E[X_1]$ exists.
+Denote the running average of $X_1, \ldots, X_n$ as $\overline{X}_n$.
+Then:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;The Weak Law of Large Numbers
+states that $\overline{X}_{n} \longrightarrow E[X_1]$ in probability
+for $n\to\infty$, i.e. $\mathcal{P}(|\overline{X}_{n} - E[X_1]| &gt;
+\varepsilon) \longrightarrow 0$ as $n\to\infty$ for any $\varepsilon
+&gt; 0$.&lt;/li&gt; &lt;li&gt;The Strong Law of Large Numbers states
+that $\overline{X}_{n} \longrightarrow E[X_1]$ almost surely for
+$n\to\infty$, i.e. $\mathcal{P}(\overline{X}_{n} \longrightarrow
+E[X_1]) = 1$.&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;In this entry, I
+formally prove the strong law and from it the weak law. The approach
+used for the proof of the strong law is a particularly quick and slick
+one based on ergodic theory, which was formalised by Gouëzel in
+another AFP entry.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
               <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
@@ -600,20 +627,6 @@ proves some standard results: existence of a Kleene normal form, the
 &lt;em&gt;s-m-n&lt;/em&gt; theorem, Rice&#39;s theorem, and assorted
 fixed-point theorems (recursion theorems) by Kleene, Rogers, and
 Smullyan. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Relational Disjoint-Set Forests</title>
-              <link>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-We give a simple relation-algebraic semantics of read and write
-operations on associative arrays. The array operations seamlessly
-integrate with assignments in the Hoare-logic library. Using relation
-algebras and Kleene algebras we verify the correctness of an
-array-based implementation of disjoint-set forests with a naive union
-operation and a find operation with path compression.</description>
     </item>
   </channel>
 </rss>

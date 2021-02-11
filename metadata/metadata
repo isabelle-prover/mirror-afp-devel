@@ -10239,3 +10239,29 @@ abstract =
   modeling the behavior of perfect logicians and formalize a solution of
   the puzzle.
 
+[Laws_of_Large_Numbers]
+title = The Laws of Large Numbers
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Probability theory
+date = 2021-02-10
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Law of Large Numbers states that, informally, if one
+  performs a random experiment $X$ many times and takes the average of
+  the results, that average will be very close to the expected value
+  $E[X]$.</p> <p> More formally, let
+  $(X_i)_{i\in\mathbb{N}}$ be a sequence of independently identically
+  distributed random variables whose expected value $E[X_1]$ exists.
+  Denote the running average of $X_1, \ldots, X_n$ as $\overline{X}_n$.
+  Then:</p> <ul> <li>The Weak Law of Large Numbers
+  states that $\overline{X}_{n} \longrightarrow E[X_1]$ in probability
+  for $n\to\infty$, i.e. $\mathcal{P}(|\overline{X}_{n} - E[X_1]| >
+  \varepsilon) \longrightarrow 0$ as $n\to\infty$ for any $\varepsilon
+  > 0$.</li> <li>The Strong Law of Large Numbers states
+  that $\overline{X}_{n} \longrightarrow E[X_1]$ almost surely for
+  $n\to\infty$, i.e. $\mathcal{P}(\overline{X}_{n} \longrightarrow
+  E[X_1]) = 1$.</li> </ul> <p>In this entry, I
+  formally prove the strong law and from it the weak law. The approach
+  used for the proof of the strong law is a particularly quick and slick
+  one based on ergodic theory, which was formalised by Gouëzel in
+  another AFP entry.</p>
