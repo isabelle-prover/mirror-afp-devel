@@ -29,7 +29,7 @@ locale monoid =
 text \<open>p 29, ll 27--28\<close>
 locale submonoid = monoid M "(\<cdot>)" \<one>
   for N and M and composition (infixl "\<cdot>" 70) and unit ("\<one>") +
-  assumes subset [intro, simp]: "N \<subseteq> M"
+  assumes subset: "N \<subseteq> M"
     and sub_composition_closed: "\<lbrakk> a \<in> N; b \<in> N \<rbrakk> \<Longrightarrow> a \<cdot> b \<in> N"
     and sub_unit_closed: "\<one> \<in> N"
 begin
