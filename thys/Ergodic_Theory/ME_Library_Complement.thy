@@ -52,9 +52,6 @@ proof
     by induction (use assms in \<open>auto simp: measurable_def\<close>)
 qed
 
-lemma (in sigma_algebra) sigma_algebra_pullback: "sigma_algebra \<Omega>' (pullback_algebra f \<Omega>')"
-  unfolding pullback_algebra_def by (rule sigma_algebra_sigma_sets) auto
-
 lemma (in sigma_algebra) in_pullback_algebra: "A \<in> M \<Longrightarrow> f -` A \<inter> \<Omega>' \<in> pullback_algebra f \<Omega>'"
   unfolding pullback_algebra_def by (rule sigma_sets.Basic) auto
 

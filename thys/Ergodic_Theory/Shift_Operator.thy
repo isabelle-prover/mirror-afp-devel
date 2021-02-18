@@ -96,16 +96,9 @@ sublocale fmpt P T
      (use measure_preserving in \<open>blast intro: measure_preserving_is_quasi_measure_preserving\<close>)+
 
 
-text \<open>
-  Related to the tail algebra, we define the algebra induced by the \<open>i\<close>-th variable (i.e.
-  the algebra that contains only information about the \<open>i\<close>-th variable):
-\<close>
-sublocale X: sigma_algebra "space P" "sets.pullback_algebra M (\<lambda>f. f i) (space P)"
-  by (rule sets.sigma_algebra_pullback)
-
-lemma indep_sets_pullback_algebra:
-  "P.indep_sets (\<lambda>i. sets.pullback_algebra M (\<lambda>f. f i) (space P)) UNIV"
-  using indep_vars unfolding P.indep_vars_def sets.pullback_algebra_def by blast
+lemma indep_sets_vimage_algebra:
+  "P.indep_sets (\<lambda>i. sets (vimage_algebra (space P) (\<lambda>f. f i) M)) UNIV"
+  using indep_vars unfolding P.indep_vars_def sets_vimage_algebra by blast
 
 
 text \<open>
@@ -114,13 +107,13 @@ text \<open>
 \<close>
 lemma tail_algebra_subset:
   "sets (tail_algebra n) \<subseteq>
-     sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+     sigma_sets (space P) (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
 proof -
   have "sets (tail_algebra n) = sigma_sets (space P)
            (prod_algebra UNIV (\<lambda>i. if i < n then trivial_measure (space M) else M))"
     by (simp add: tail_algebra_def sets_PiM PiE_def Pi_def P_def space_PiM)
 
-  also have "\<dots> \<subseteq> sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+  also have "\<dots> \<subseteq> sigma_sets (space P) (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
   proof (intro sigma_sets_mono subsetI)
     fix C assume "C \<in> prod_algebra UNIV (\<lambda>i. if i < n then trivial_measure (space M) else M)"
     then obtain C'
@@ -143,7 +136,7 @@ proof -
     hence "C \<subseteq> space P"
       using sets.sets_into_space by blast
 
-    show "C \<in> sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+    show "C \<in> sigma_sets (space P) (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
     proof (cases "C = {}")
       case False
       have "C = (\<Inter>i\<in>{n..}. (\<lambda>f. f i) -` C' i) \<inter> space P"
@@ -174,7 +167,7 @@ proof -
                  (\<Inter>i\<in>{n..}. (\<lambda>f. f i) -` C' i \<inter> space P)"
         by blast
 
-      also have "\<dots> \<in> sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+      also have "\<dots> \<in> sigma_sets (space P) (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
         (is "_ \<in> ?rhs")
       proof (intro sigma_sets_INTER, goal_cases)
         fix i show "(\<lambda>f. f i) -` C' i \<inter> space P \<in> ?rhs"
@@ -194,17 +187,14 @@ proof -
           qed (auto intro: sigma_sets.Empty)
         next
           case i: True
-          have "(\<lambda>f. f i) -` C' i \<inter> space P \<in> sets.pullback_algebra M (\<lambda>f. f i) (space P)"
-            using C'_2[OF i] by (intro sets.in_pullback_algebra) auto
+          have "(\<lambda>f. f i) -` C' i \<inter> space P \<in> sets (vimage_algebra (space P) (\<lambda>f. f i) M)"
+            using C'_2[OF i] by (blast intro: in_vimage_algebra)
           thus ?thesis using i by blast
         qed
       next
-        have "C \<subseteq> space P" if "C \<in> sets.pullback_algebra M (\<lambda>f. f i) (space P)" for i C
-        proof -
-          show ?thesis
-            by (rule sigma_sets_into_sp) (use that X.space_closed[of i] in auto)
-        qed
-        thus "(\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))\<subseteq> Pow (space P)"
+        have "C \<subseteq> space P" if "C \<in> sets (vimage_algebra (space P) (\<lambda>f. f i) M)" for i C
+          using sets.sets_into_space[OF that] by simp
+        thus "(\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M)) \<subseteq> Pow (space P)"
           by auto
       qed auto
 
@@ -220,12 +210,12 @@ text \<open>
   by the variables:
 \<close>
 lemma Invariants_subset_tail_algebra:
-  "sets Invariants \<subseteq> P.tail_events (\<lambda>i. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+  "sets Invariants \<subseteq> P.tail_events (\<lambda>i. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
 proof
   fix A assume A: "A \<in> sets Invariants"
   have A': "A \<in> P.events"
     using A unfolding Invariants_sets by simp_all
-  show "A \<in> P.tail_events (\<lambda>i. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+  show "A \<in> P.tail_events (\<lambda>i. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
         unfolding P.tail_events_def
   proof safe
     fix n :: nat
@@ -242,9 +232,10 @@ proof
     also have "(T ^^ n) -` A \<inter> space (tail_algebra n) \<in> sets (tail_algebra n)"
       by (rule measurable_sets[OF measurable_funpow_T' A'])
     also have "sets (tail_algebra n) \<subseteq>
-               sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))"
+               sigma_sets (space P) (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))"
       by (rule tail_algebra_subset)
-    finally show "A \<in> sigma_sets (space P) (\<Union>i\<in>{n..}. sets.pullback_algebra M (\<lambda>f. f i) (space P))" .
+    finally show "A \<in> sigma_sets (space P)
+                        (\<Union>i\<in>{n..}. sets (vimage_algebra (space P) (\<lambda>f. f i) M))" .
   qed
 qed
 
@@ -256,8 +247,10 @@ proof
   fix A assume A: "A \<in> sets Invariants"
   have A': "A \<in> P.events"
     using A unfolding Invariants_sets by simp_all
-  have "P.prob A = 0 \<or> P.prob A = 1"
-    using X.sigma_algebra_axioms indep_sets_pullback_algebra
+  have "sigma_algebra (space P) (sets (vimage_algebra (space P) (\<lambda>f. f i) M))" for i
+    by (metis sets.sigma_algebra_axioms space_vimage_algebra)
+  hence "P.prob A = 0 \<or> P.prob A = 1"
+    using indep_sets_vimage_algebra
     by (rule P.kolmogorov_0_1_law) (use A Invariants_subset_tail_algebra in blast)
   thus "A \<in> null_sets P \<or> space P - A \<in> null_sets P"
     by (rule disj_forward) (use A'(1) P.prob_compl[of A] in \<open>auto simp: P.emeasure_eq_measure\<close>)
