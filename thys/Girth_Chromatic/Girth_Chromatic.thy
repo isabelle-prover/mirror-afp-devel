@@ -137,7 +137,7 @@ proof -
   from assms have "(\<integral>\<^sup>+ x. ennreal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
     by (intro nn_integral_eq_integral) auto
   with assms show ?thesis
-    using nn_integral_Markov_inequality[of f P "space P" "1 / c"]
+    using nn_integral_Markov_inequality[of f "space P" P "1 / c"]
     by (simp cong: nn_integral_cong add: emeasure_eq_measure ennreal_mult[symmetric])
 qed
 

@@ -63,7 +63,7 @@ proof -
   have "(\<integral>\<^sup>+ x. ennreal (X x) \<partial>M) = (\<integral>x. X x \<partial>M)"
     using assms by (intro nn_integral_eq_integral) auto
   thus ?thesis
-    using assms nn_integral_Markov_inequality[of X M "space M" "1 / t"]
+    using assms nn_integral_Markov_inequality[of X "space M" M "1 / t"]
     by (auto cong: nn_integral_cong simp: emeasure_eq_measure ennreal_mult[symmetric])
 qed
 
