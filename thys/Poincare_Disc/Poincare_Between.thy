@@ -456,7 +456,7 @@ next
         using unit_disc_fix_moebius_preserve_poincare_between[of ?M "0\<^sub>h" u v]
         using \<open>v \<in> unit_disc\<close> \<open>u \<in> unit_disc\<close> \<open>v \<noteq> 0\<^sub>h\<close> \<open>u \<noteq> 0\<^sub>h\<close>
         using arg_mult_eq[of "cis \<phi>" u' v']
-        by simp (auto simp add: arg_mult)
+        by simp (auto simp add: arg_mult norm_mult)
     qed
   qed
   thus ?thesis
@@ -474,13 +474,8 @@ lemma poincare_between_y_axis_0uv:
   using poincare_between_0uv[of "of_complex (\<i> * x)" "of_complex (\<i> * y)"]
   using arg_pi2_iff[of "\<i> * cor x"] arg_pi2_iff[of "\<i> * cor y"]
   using arg_minus_pi2_iff[of "\<i> * cor x"] arg_minus_pi2_iff[of "\<i> * cor y"]
-  apply simp
-  apply (cases "x > 0")
-  apply (cases "y > 0", simp, simp)
-  apply (cases "y > 0")
-  apply simp
-  using pi_gt_zero apply linarith
-  apply simp
+  apply (simp add: norm_mult)
+  apply (smt (verit, best))
   done
 
 lemma poincare_between_x_axis_uvw:

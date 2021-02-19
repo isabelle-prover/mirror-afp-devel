@@ -95,7 +95,7 @@ proof-
 
       from in_disc * \<open>u' = cor ru * cis \<phi>\<close> \<open>z' = cor rz * cis \<phi>\<close> \<open>y' = cor ry * cis \<theta>\<close>
       have "ru < 1" "rz < 1" "ry < 1"
-        by simp_all
+        by (auto simp: norm_mult)
 
       note polar = this y_polar uz_polar
 
@@ -1091,7 +1091,7 @@ proof (transfer, transfer)
   assume "on_circline_cmat_cvec H (of_complex_cvec (1 / 2 + \<i> / 2))"
   hence "6*A + 4*Re B + 4*Im B = 0"
     using *
-    unfolding cor_mult
+    unfolding of_real_mult
     apply (subst Re_express_cnj[of B])
     apply (subst Im_express_cnj[of B])
     apply (simp add: vec_cnj_def)
@@ -1428,7 +1428,7 @@ proof-
   hence "?a \<noteq> ?c"
     by (metis to_complex_of_complex)
   have "(-\<i>/2) \<noteq> (1/5)"
-    by (metis add.inverse_inverse cmod_divide div_by_1 divide_divide_eq_right inverse_eq_divide minus_divide_left mult.commute norm_ii norm_minus_cancel norm_numeral norm_one numeral_One numeral_eq_iff semiring_norm(88))
+    by (simp add: minus_equation_iff)
   hence "?b \<noteq> ?c"
     by (metis to_complex_of_complex)
 
@@ -1436,7 +1436,6 @@ proof-
     by auto
 
   moreover
-
   have "\<not>(poincare_collinear {?a, ?b, ?c})"
     unfolding poincare_collinear_def
   proof(rule ccontr)

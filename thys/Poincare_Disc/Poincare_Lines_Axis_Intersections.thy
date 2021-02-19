@@ -408,7 +408,6 @@ proof transfer
     apply (simp add: sgn_mult power_mult_distrib)
     apply (subst right_diff_distrib[symmetric])
     apply (subst real_sqrt_mult)
-    apply (subst cor_mult)
     by (simp add: real_sgn_eq right_diff_distrib)
 
   thus "calc_x_axis_intersection_cmat_cvec H1 \<approx>\<^sub>v

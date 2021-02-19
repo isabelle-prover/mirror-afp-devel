@@ -378,12 +378,10 @@ next
       by auto
     hence "cmod (cnj k * u') = 1"
       by auto
-    hence "cmod k * cmod u' = 1"
-      by auto
     thus False
       using \<open>cmod k < 1\<close> \<open>cmod u' < 1\<close>
       using mult_strict_mono[of "cmod k" 1 "cmod u'" 1]
-      by simp
+      by (simp add: norm_mult)
   qed
 
   have "dv \<noteq> 0"
@@ -394,12 +392,10 @@ next
       by auto
     hence "cmod (cnj k * v') = 1"
       by auto
-    hence "cmod k * cmod v' = 1"
-      by auto
     thus False
       using \<open>cmod k < 1\<close> \<open>cmod v' < 1\<close>
       using mult_strict_mono[of "cmod k" 1 "cmod v'" 1]
-      by simp
+      by (simp add: norm_mult)
   qed
 
   have "kk \<noteq> 0" 
@@ -410,12 +406,10 @@ next
       by auto
     hence "cmod (k * cnj k) = 1"
       by auto
-    hence "cmod k * cmod k = 1"
-      by auto
     thus False
       using \<open>cmod k < 1\<close>
       using mult_strict_mono[of "cmod k" 1 "cmod k" 1]
-      by simp
+      using complex_mod_sqrt_Re_mult_cnj by auto
   qed
 
   note nz = \<open>du \<noteq> 0\<close> \<open>dv \<noteq> 0\<close> \<open>kk \<noteq> 0\<close>
@@ -428,18 +422,17 @@ next
     unfolding complex_mod_mult_cnj[symmetric]
     by (subst (asm) d) simp
   also have "... = cmod ((d*cnj d*kk*kk) / (du*cnj du*dv*cnj dv))"
-    by (simp add: field_simps)
-  finally have 1: "?lhs = cmod ((d*cnj d*kk*kk) / (du*cnj du*dv*cnj dv))"
-    .                                                                           
+    by (simp add: field_simps norm_mult norm_divide)
+  finally have 1: "?lhs = cmod ((d*cnj d*kk*kk) / (du*cnj du*dv*cnj dv))" .                                                                           
 
   have "(1 - ((cmod nu) / (cmod du))\<^sup>2)*(1 - ((cmod nv) / (cmod dv))\<^sup>2) =
         (1 - cmod((nu * cnj nu) / (du * cnj du)))*(1 - cmod((nv * cnj nv) / (dv * cnj dv)))" (is "?rhs = _")
-    by (metis cmod_divide complex_mod_mult_cnj power_divide)
+    by (metis norm_divide complex_mod_mult_cnj power_divide)
   also have "... = cmod(((du*cnj du - nu*cnj nu) / (du * cnj du)) * ((dv*cnj dv - nv*cnj nv) / (dv * cnj dv)))"
   proof-
     have "u' \<noteq> 1 / cnj k" "v' \<noteq> 1 / cnj k"
       using \<open>cmod u' < 1\<close> \<open>cmod v' < 1\<close> \<open>cmod k < 1\<close>
-      by (auto simp add: False)
+      by (auto simp add: False norm_divide)
     moreover
     have "cmod k \<noteq> 1"
       using \<open>cmod k < 1\<close>
@@ -472,10 +465,7 @@ next
       by (simp_all add: cmod_def)
     thus ?thesis
       using nz
-      apply simp
-      apply (subst diff_divide_eq_iff, simp, simp)
-      apply (subst diff_divide_eq_iff, simp, simp)
-      done
+      by (simp add: diff_divide_distrib norm_mult)
   qed    
   also have "... = cmod(((ddu * kk) / (du * cnj du)) * ((ddv * kk) / (dv * cnj dv)))"
     by (subst ddu, subst ddv, simp)
@@ -488,8 +478,7 @@ next
        cmod ((d*cnj d*kk*kk) / (du*cnj du*dv*cnj dv)) / cmod((ddu*ddv*kk*kk) / (du*cnj du*dv*cnj dv))"
     by (subst 1, subst 2, simp)
   also have "... = cmod ((d*cnj d)/(ddu*ddv))"
-    using nz
-    by simp
+    using nz by (simp add: norm_mult norm_divide)
   also have "... = (cmod d)\<^sup>2 / ((1 - (cmod u')\<^sup>2)*(1 - (cmod v')\<^sup>2))"
   proof-
     have "(cmod u')\<^sup>2 < 1" "(cmod v')\<^sup>2 < 1"
@@ -499,13 +488,10 @@ next
       by (auto simp add: cmod_eq_Re cmod_power2 power2_eq_square[symmetric])
     thus ?thesis
       using nz
-      apply (subst **)+
-      unfolding complex_mod_mult_cnj[symmetric]      
-      by simp
+      by (simp add: "**"(6) "**"(7) norm_divide norm_mult power2_eq_square)
   qed
   finally
-  have 3: "?lhs / ?rhs = (cmod d)\<^sup>2 / ((1 - (cmod u')\<^sup>2)*(1 - (cmod v')\<^sup>2))"
-    .
+  have 3: "?lhs / ?rhs = (cmod d)\<^sup>2 / ((1 - (cmod u')\<^sup>2)*(1 - (cmod v')\<^sup>2))" .
 
   have "cmod k \<noteq> 1" "u' \<noteq> 1 / cnj k" "v' \<noteq> 1 / cnj k" "u \<noteq> \<infinity>\<^sub>h" "v \<noteq> \<infinity>\<^sub>h"
     using \<open>cmod k < 1\<close> \<open>u \<in> unit_disc\<close> \<open>v \<in> unit_disc\<close> * \<open>k \<noteq> 0\<close> ** \<open>kk \<noteq> 0\<close> nz
@@ -514,7 +500,7 @@ next
     using * ** 3
     using moebius_pt_blaschke[of k u']
     using moebius_pt_blaschke[of k v']
-    by simp
+    by (simp add: norm_divide)
 qed
 
 text \<open>To prove the equivalence between the h-distance definition and the distance formula, we shall
@@ -528,7 +514,7 @@ lemma rotation_preserve_distance_formula [simp]:
          poincare_distance_formula (to_complex u) (to_complex v)"
   using assms
   using inf_or_of_complex[of u] inf_or_of_complex[of v]
-  by auto
+  by (auto simp: norm_mult)
 
 text\<open>Unit disc fixing Möbius preserve @{term poincare_distance_formula}.\<close>
 lemma unit_disc_fix_preserve_distance_formula [simp]:

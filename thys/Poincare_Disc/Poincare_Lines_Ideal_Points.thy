@@ -54,7 +54,7 @@ proof transfer
     case True
     hence "is_poincare_line_cmat H2"
       using k * hermitean_mult_real[of H1 k] hh
-      by (auto simp add: power2_eq_square)
+      by (auto simp add: power2_eq_square norm_mult)
     have **: "sqrt (\<bar>k\<bar> * cmod B1 * (\<bar>k\<bar> * cmod B1) - k * Re D1 * (k * Re D1)) =
          \<bar>k\<bar> * sqrt(cmod B1 * cmod B1 - Re D1 * Re D1)"
     proof-
@@ -69,7 +69,7 @@ proof transfer
       using * k
       apply (simp add: Let_def)
       apply safe
-      apply (simp add: power2_eq_square rel_set_def)
+      apply (simp add: power2_eq_square rel_set_def norm_mult)
       apply safe
          apply (cases "k > 0")
           apply (rule_tac x="(cor k)\<^sup>2" in exI)
@@ -92,11 +92,11 @@ proof transfer
        apply (erule notE, rule_tac x="(cor k)\<^sup>2" in exI)
        apply (subst **)
        apply (simp add: power2_eq_square field_simps)
+      apply (rule_tac x="(cor k)\<^sup>2" in exI)
       apply (cases "k > 0")
        apply (erule notE, rule_tac x="(cor k)\<^sup>2" in exI)
        apply (subst **)
        apply (simp add: power2_eq_square field_simps)
-      apply (rule_tac x="(cor k)\<^sup>2" in exI)
       apply (subst **)
       apply (simp add: power2_eq_square field_simps)
       done
@@ -104,15 +104,13 @@ proof transfer
     case False
     hence "\<not> is_poincare_line_cmat H2"
       using k * hermitean_mult_real[of H1 k] hh
-      by (auto simp add: power2_eq_square)
+      by (auto simp add: power2_eq_square norm_mult)
     have "rel_set (\<approx>\<^sub>v) {(- 1, 1), (1, 1)} {(- 1, 1), (1, 1)}"
       by (simp add: rel_set_def)
     thus ?thesis
       using \<open>\<not> is_poincare_line_cmat H1\<close> \<open>\<not> is_poincare_line_cmat H2\<close>
       using *
-      apply (simp add: Let_def)
-      apply safe
-      done
+      by (auto simp add: Let_def)
   qed
 qed
 
@@ -531,8 +529,8 @@ proof-
     by (metis (mono_tags, lifting) circline_set_unit_circle imageE mem_Collect_eq mult.right_neutral norm_mult to_complex_of_complex unit_circle_set_def)
   hence "k = -1"
     using \<open>to_complex i1 = cor k * to_complex i2\<close> \<open>i1 \<noteq> i2\<close>
-    using \<open>i1 \<in> circline_set unit_circle\<close> \<open>i2 \<in> circline_set unit_circle\<close> 
-    by (metis (no_types, lifting) circline_set_unit_circle complex_cnj_complex_of_real complex_mult_cnj_cmod cor_neg_one imageE mult_cancel_right2 norm_one of_real_eq_iff square_eq_1_iff to_complex_of_complex)
+    using \<open>i1 \<in> circline_set unit_circle\<close> \<open>i2 \<in> circline_set unit_circle\<close>
+    by (smt (verit, best) mult_cancel_right1 norm_of_real not_inf_on_unit_circle'' of_complex_to_complex of_real_1) 
 
   have "\<forall> i1 \<in> calc_ideal_points H. \<forall> i2 \<in> calc_ideal_points H. is_poincare_line H \<and> i1 \<noteq> i2 \<and> to_complex i1 = - to_complex i2 \<longrightarrow> 
            0\<^sub>h \<in> circline_set H"
