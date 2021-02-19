@@ -307,7 +307,7 @@ proof
     unfolding unitary_def
     by (auto simp add: mat_adj_def mat_cnj_def field_simps)
   hence "(cmod k)\<^sup>2 * ((cmod a)\<^sup>2 + (cmod b)\<^sup>2) = 1"
-    by (subst (asm) complex_mult_cnj_cmod, subst (asm) md, subst (asm) cor_mult[symmetric]) (metis of_real_1 of_real_eq_iff)
+    by (metis (mono_tags, lifting) complex_norm_square md of_real_1 of_real_eq_iff of_real_mult)
   thus ?rhs
     using * mat_eye_l
     apply (rule_tac x="a" in exI, rule_tac x="b" in exI, rule_tac x="k" in exI)

@@ -91,7 +91,7 @@ lemma scalsquare_vv_zero:
   shows "(vec_cnj v) *\<^sub>v\<^sub>v v = 0 \<longleftrightarrow> v = vec_zero"
   apply (cases v)
   apply (auto simp add: vec_cnj_def field_simps complex_mult_cnj_cmod power2_eq_square)
-   apply (simp only: cor_add[symmetric] cor_mult[symmetric] of_real_eq_0_iff, simp)+
+  apply (metis (no_types) norm_eq_zero of_real_0 of_real_add of_real_eq_iff of_real_mult sum_squares_eq_zero_iff)+
   done
 
 (* ---------------------------------------------------------------------------- *)

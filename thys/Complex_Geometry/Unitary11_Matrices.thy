@@ -365,7 +365,7 @@ proof
     unfolding unitary11_def
     by (auto simp add: mat_adj_def mat_cnj_def) (simp add: field_simps)
   hence ***: "(cmod k)\<^sup>2 * ((cmod a)\<^sup>2 - (cmod b)\<^sup>2) = 1"
-    by (subst (asm) complex_mult_cnj_cmod, subst (asm) md, subst (asm) cor_mult[symmetric]) (metis of_real_1 of_real_eq_iff)
+    by (metis complex_mult_cnj_cmod md of_real_1 of_real_eq_iff of_real_mult)
   hence "((cmod a)\<^sup>2 - (cmod b)\<^sup>2) = 1 / (cmod k)\<^sup>2"
     by (cases "k=0") (auto simp add: field_simps)
   hence "cmod a ^ 2 = cmod b ^ 2 + 1 / cmod k ^ 2"
