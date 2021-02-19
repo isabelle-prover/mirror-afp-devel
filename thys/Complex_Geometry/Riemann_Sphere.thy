@@ -183,7 +183,7 @@ proof transfer
     case False
     thus ?thesis
       using * ** inv_stereographic_on_sphere[of x "v1 / v2" y z]
-      by simp
+      by (simp add: norm_divide)
   qed
   moreover
   have "inv_stereographic_cvec_r3 v = inv_stereographic_cvec_r3 v'"

@@ -474,7 +474,7 @@ proof transfer
 
   show "euclidean_line_cmat H1 = euclidean_line_cmat H2"
     using HH1 HH2 * \<open>k \<noteq> 0\<close>
-    by (cases "k > 0") (auto simp add: Let_def, simp_all add: sgn_eq 1 2)
+    by (cases "k > 0") (auto simp add: Let_def, simp_all add: norm_mult sgn_eq 1 2)
 qed
 
 lemma classic_line:

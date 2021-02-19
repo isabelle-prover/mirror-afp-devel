@@ -9,7 +9,7 @@ theory More_Complex
 begin
 
 text \<open>Conjugation and @{term cis}\<close>
-
+          
 declare cis_cnj[simp] 
 
 lemma rcis_cnj: 
@@ -24,14 +24,6 @@ formalization we abbreviate it to @{term cor}.\<close>
 abbreviation cor :: "real \<Rightarrow> complex" where
   "cor \<equiv> complex_of_real"
 
-lemma cor_neg_one [simp]:
-  shows "cor (-1) = -1"
-  by simp
-
-lemma neg_cor_neg_one [simp]:
-  shows "- cor (-1) = 1"
-  by simp
-
 lemma cmod_cis [simp]:
   assumes "a \<noteq> 0"
   shows "cor (cmod a) * cis (arg a) = a"
@@ -44,21 +36,13 @@ lemma cis_cmod [simp]:
   using assms cmod_cis[of a]
   by (simp add: field_simps)
 
-lemma cor_add:
-  shows "cor (a + b) = cor a + cor b"
-  by (rule of_real_add)
-
-lemma cor_mult:
-  shows "cor (a * b) = cor a * cor b"
-  by (rule of_real_mult)
-
 lemma cor_squared:
   shows "(cor x)\<^sup>2 = cor (x\<^sup>2)"
   by (simp add: power2_eq_square)
 
 lemma cor_sqrt_mult_cor_sqrt [simp]:
   shows "cor (sqrt A) * cor (sqrt A) = cor \<bar>A\<bar>"
-  by (metis cor_mult real_sqrt_abs2 real_sqrt_mult)
+  by (metis of_real_mult real_sqrt_mult_self)
 
 lemma cor_eq_0: "cor x + \<i> * cor y = 0 \<longleftrightarrow> x = 0 \<and> y = 0"
  by (metis Complex_eq Im_complex_of_real Im_i_times Re_complex_of_real add_cancel_left_left of_real_eq_0_iff plus_complex.sel(2) zero_complex.code)
@@ -128,7 +112,7 @@ lemma cmod_square:
 
 lemma cor_cmod_power_4 [simp]:
   shows "cor (cmod z) ^ 4 = (z * cnj z)\<^sup>2"
-  by (metis complex_norm_square cor_squared numeral_times_numeral power2_eq_square semiring_norm(11) semiring_norm(13) semiring_normalization_rules(36))
+  by (simp add: complex_mult_cnj_cmod)
 
 lemma cnjE:
   assumes "x \<noteq> 0"
@@ -136,21 +120,13 @@ lemma cnjE:
   using complex_mult_cnj_cmod[of x] assms
   by (auto simp add: field_simps)
 
-lemma cmod_mult [simp]:
-  shows "cmod (a * b) = cmod a * cmod b"
-  by (rule norm_mult)
-
-lemma cmod_divide [simp]:
-  shows "cmod (a / b) = cmod a / cmod b"
-  by (rule norm_divide)
-
 lemma cmod_cor_divide [simp]:
   shows "cmod (z / cor k) = cmod z / \<bar>k\<bar>"
-  by auto
+  by (simp add: norm_divide)
 
 lemma cmod_mult_minus_left_distrib [simp]:
   shows "cmod (z*z1 - z*z2) = cmod z * cmod(z1 - z2)"
-  by (metis bounded_bilinear.diff_right bounded_bilinear_mult cmod_mult)
+  by (metis norm_mult right_diff_distrib)
 
 lemma cmod_eqI:
   assumes "z1 * cnj z1 = z2 * cnj z2"
@@ -161,13 +137,7 @@ lemma cmod_eqI:
 lemma cmod_eqE:
   assumes "cmod z1 = cmod z2"
   shows "z1 * cnj z1 = z2 * cnj z2"
-proof-
-  from assms have "cor ((cmod z1)\<^sup>2) = cor ((cmod z2)\<^sup>2)"
-    by auto
-  thus ?thesis
-    using complex_mult_cnj_cmod
-    by auto
-qed
+  by (simp add: assms complex_mult_cnj_cmod)
 
 lemma cmod_eq_one [simp]:
   shows "cmod a = 1 \<longleftrightarrow> a*cnj a = 1"
@@ -250,24 +220,6 @@ lemma Im_divide_real:
   shows "Im (a / b) = (Im a) / (Re b)"
   using assms
   by (simp add: complex_is_Real_iff)
-
-lemma Re_half [simp]:
-  shows "Re (x / 2) = Re x / 2"
-  by (rule Re_divide_numeral)
-
-lemma Re_double [simp]:
-  shows "Re (2 * x) = 2 * Re x"
-  using Re_mult_real[of "2" x]
-  by simp
-
-lemma Im_half [simp]:
-  shows "Im (z / 2) = Im z / 2"
-  by (subst Im_divide_real, auto)
-
-lemma Im_double [simp]:
-  shows "Im (2 * z) = 2 * Im z"
-  using Im_mult_real[of "2" z]
-  by simp
 
 lemma Re_sgn:
   assumes "is_real R"
@@ -381,13 +333,7 @@ lemma cis_opposite_diff_cis [simp]:
 
 lemma cis_add_cis_opposite [simp]: 
   shows "cis \<phi> + cis (-\<phi>) = 2 * cos \<phi>"
-proof-
-  have "2 * cos \<phi> = (cis \<phi> + cnj (cis \<phi>))"
-    using Re_express_cnj[of "cis \<phi>"]
-    by (simp add: field_simps)
-  thus ?thesis
-    by simp
-qed
+  by (metis cis.sel(1) cis_cnj complex_add_cnj)
 
 text \<open>@{term cis} equal to 1 or -1\<close>
 lemma cis_one [simp]:
@@ -419,19 +365,11 @@ lemma is_real_arg2:
   assumes "is_real z"
   shows "arg z = 0 \<or> arg z = pi"
 proof (cases "z = 0")
-  case True
-  thus ?thesis
-    by (auto simp add: arg_zero)
-next
   case False
-  hence "sin (arg z) = 0"
-    using assms rcis_cmod_arg[of z] Im_rcis[of "cmod z" "arg z"]
-    by auto
   thus ?thesis
     using arg_bounded[of z]
-    using sin_0_iff_canon
-    by simp
-qed
+    by (smt (verit, best) Im_sgn assms cis.simps(2) cis_arg div_0 sin_zero_pi_iff)
+qed (auto simp add: arg_zero)
 
 lemma arg_complex_of_real_positive [simp]:
   assumes "k > 0"
@@ -440,7 +378,7 @@ proof-
   have "cos (arg (Complex k 0)) > 0"
     using assms
     using rcis_cmod_arg[of "Complex k 0"] Re_rcis[of "cmod (Complex k 0)" "arg (Complex k 0)"]
-    by (smt complex.sel(1) mult_nonneg_nonpos norm_ge_zero)
+    using cmod_eq_Re by force
   thus ?thesis
     using assms is_real_arg2[of "cor k"]
     unfolding complex_of_real_def
@@ -453,7 +391,7 @@ lemma arg_complex_of_real_negative [simp]:
 proof-
   have "cos (arg (Complex k 0)) < 0"
     using \<open>k < 0\<close> rcis_cmod_arg[of "Complex k 0"] Re_rcis[of "cmod (Complex k 0)" "arg (Complex k 0)"]
-    by (smt complex.sel(1) mult_nonneg_nonneg norm_ge_zero)
+    by (metis complex.sel(1) mult_less_0_iff norm_not_less_zero)
   thus ?thesis
     using assms is_real_arg2[of "cor k"]
     unfolding complex_of_real_def
@@ -481,15 +419,7 @@ lemma is_imag_arg1:
 lemma is_imag_arg2:
   assumes "is_imag z" and "z \<noteq> 0"
   shows "arg z = pi/2 \<or> arg z = -pi/2"
-proof-
-  have "cos (arg z) = 0"
-    using assms
-    by (metis Re_rcis no_zero_divisors norm_eq_zero rcis_cmod_arg)
-  thus ?thesis
-    using arg_bounded[of z]
-    using cos_0_iff_canon[of "arg z"]
-    by simp
-qed
+  using arg_bounded assms cos_0_iff_canon cos_arg_i_mult_zero by presburger
 
 lemma arg_complex_of_real_times_i_positive [simp]:
   assumes "k > 0"
@@ -510,7 +440,7 @@ lemma arg_complex_of_real_times_i_negative [simp]:
 proof-
   have "sin (arg (Complex 0 k)) < 0"
     using \<open>k < 0\<close> rcis_cmod_arg[of "Complex 0 k"] Im_rcis[of "cmod (Complex 0 k)" "arg (Complex 0 k)"]
-    by (smt complex.sel(2) mult_nonneg_nonneg norm_ge_zero)
+    by (metis complex.sel(2) mult_less_0_iff norm_not_less_zero)
   thus ?thesis
     using assms is_imag_arg2[of "cor k * \<i>"]
     using arg_zero complex_of_real_i[of k]
@@ -527,16 +457,7 @@ lemma arg_minus_pi2_iff:
 
 lemma arg_ii [simp]:
   shows "arg \<i> = pi/2"
-proof-
-  have "\<i> = cis (arg \<i>)"
-    using rcis_cmod_arg[of \<i>]
-    by (simp add: rcis_def)
-  hence "cos (arg \<i>) = 0" "sin (arg \<i>) = 1"
-    by (metis cis.simps(1) imaginary_unit.simps(1), metis cis.simps(2) imaginary_unit.simps(2))
-  thus ?thesis
-    using cos_0_iff_canon[of "arg \<i>"] arg_bounded[of \<i>]
-    by auto
-qed
+  by (metis arg_pi2_iff imaginary_unit.sel zero_less_one)
 
 lemma arg_minus_ii [simp]: 
   shows "arg (-\<i>) = -pi/2"
@@ -561,21 +482,7 @@ lemma canon_ang_arg:
 
 lemma arg_cis:
   shows "arg (cis \<phi>) = \<downharpoonright>\<phi>\<downharpoonleft>"
-proof (rule canon_ang_eqI[symmetric])
-  show "- pi < arg (cis \<phi>) \<and> arg (cis \<phi>) \<le> pi"
-    using arg_bounded
-    by simp
-next
-  show "\<exists> k::int. arg (cis \<phi>) - \<phi> = 2*k*pi"
-  proof-
-    have "cis (arg (cis \<phi>)) = cis \<phi>"
-      using cis_arg[of "cis \<phi>"]
-      by auto
-    thus ?thesis
-      using cis_eq
-      by auto
-  qed
-qed
+  using arg_unique canon_ang canon_ang_cos canon_ang_sin cis.ctr sgn_cis by presburger
 
 text \<open>Cosine and sine of @{term arg}\<close>
 
@@ -594,24 +501,7 @@ text \<open>Argument of product\<close>
 lemma cis_arg_mult:
   assumes "z1 * z2 \<noteq> 0"
   shows "cis (arg (z1 * z2)) = cis (arg z1 + arg z2)"
-proof-
-  have "z1 * z2 = cor (cmod z1) * cor (cmod z2) * cis (arg z1) * cis (arg z2)"
-    using rcis_cmod_arg[of z1, symmetric]  rcis_cmod_arg[of z2, symmetric]
-    unfolding rcis_def
-    by algebra
-  hence "z1 * z2 = cor (cmod (z1 * z2)) * cis (arg z1 + arg z2)"
-    using cis_mult[of "arg z1" "arg z2"]
-    by auto
-  hence "cor (cmod (z1 * z2)) * cis (arg z1 + arg z2) =  cor (cmod (z1 * z2)) * cis (arg (z1 * z2))"
-    using assms
-    using rcis_cmod_arg[of "z1*z2"]
-    unfolding rcis_def
-    by auto
-  thus ?thesis
-    using mult_cancel_left[of "cor (cmod (z1 * z2))" "cis (arg z1 + arg z2)" "cis (arg (z1 * z2))"]
-    using assms
-    by auto
-qed
+  by (metis assms cis_arg cis_mult mult_eq_0_iff sgn_mult)
 
 lemma arg_mult_2kpi:
   assumes "z1 * z2 \<noteq> 0"
@@ -644,33 +534,20 @@ lemma arg_mult_real_positive [simp]:
   assumes "k > 0"
   shows "arg (cor k * z) = arg z"
 proof (cases "z = 0")
-  case True
-  thus ?thesis
-    by (auto simp add: arg_zero)
-next
   case False
   thus ?thesis
-    using assms
-    using arg_mult[of "cor k" z]
-    by (auto simp add: canon_ang_arg)
-qed
+    using arg_mult assms canon_ang_arg by force
+qed (auto simp: arg_zero)
 
 lemma arg_mult_real_negative [simp]:
   assumes "k < 0"
   shows "arg (cor k * z) = arg (-z)"
 proof (cases "z = 0")
-  case True
-  thus ?thesis
-    by (auto simp add: arg_zero)
-next
   case False
   thus ?thesis
     using assms
-    using arg_mult[of "cor k" z]
-    using arg_mult[of "-1" z]
-    using arg_complex_of_real_negative[of k] arg_complex_of_real_negative[of "-1"]
-    by auto
-qed
+    by (metis arg_mult_real_positive minus_mult_commute neg_0_less_iff_less of_real_minus minus_minus)
+qed (auto simp: arg_zero)
 
 lemma arg_div_real_positive [simp]:
   assumes "k > 0"
@@ -706,45 +583,14 @@ lemma arg_mult_eq:
   assumes "z * z1 \<noteq> 0" and "z * z2 \<noteq> 0"
   assumes "arg (z * z1) = arg (z * z2)"
   shows "arg z1 = arg z2"
-proof-
-  from assms have "\<downharpoonright>arg z + arg z1\<downharpoonleft> = \<downharpoonright>arg z + arg z2\<downharpoonleft>"
-    by (simp add: arg_mult)
-  then obtain x::int where *: "arg z1 - arg z2 = 2 * x * pi"
-    using canon_ang_eqE[of "arg z + arg z1" "arg z + arg z2"]
-    by auto
-  moreover
-  have "arg z1 - arg z2 < 2*pi" "arg z1 - arg z2 > -2*pi"
-    using arg_bounded[of z1] arg_bounded[of z2]
-    by auto
-  ultimately
-  have "-1 < x" "x < 1"
-    using divide_strict_right_mono[of "-pi" "pi * x" pi]
-    by auto
-  hence "x = 0"
-    by auto
-  thus ?thesis
-    using *
-    by simp
-qed
+  by (metis (no_types, lifting) arg_cis assms canon_ang_arg cis_arg mult_eq_0_iff nonzero_mult_div_cancel_left sgn_divide)
 
 text \<open>Argument of conjugate\<close>
 
 lemma arg_cnj_pi:
   assumes "arg z = pi"
   shows "arg (cnj z) = pi"
-proof-
-  have "cos (arg (cnj z)) = cos (arg z)"
-    using rcis_cmod_arg[of z, symmetric] Re_rcis[of "cmod z" "arg z"]
-    using rcis_cmod_arg[of "cnj z", symmetric] Re_rcis[of "cmod (cnj z)" "arg (cnj z)"]
-    by auto
-  hence "arg (cnj z) = arg z \<or> arg(cnj z) = -arg z"
-    using arg_bounded[of z] arg_bounded[of "cnj z"]
-    by (metis arccos_cos arccos_cos2 less_eq_real_def linorder_le_cases minus_minus)
-  thus ?thesis
-    using assms
-    using arg_bounded[of "cnj z"]
-    by auto
-qed
+  using arg_pi_iff assms by auto
 
 lemma arg_cnj_not_pi:
   assumes "arg z \<noteq> pi"
@@ -755,22 +601,13 @@ proof(cases "arg z = 0")
     using eq_cnj_iff_real[of z] is_real_arg1[of z] by force
 next
   case False
-  have "cos (arg (cnj z)) = cos (arg z)"
-    using rcis_cmod_arg[of z] Re_rcis[of "cmod z" "arg z"]
-    using rcis_cmod_arg[of "cnj z"] Re_rcis[of "cmod (cnj z)" "arg (cnj z)"]
-    by auto
-  hence "arg (cnj z) = arg z \<or> arg(cnj z) = -arg z"
+  have "arg (cnj z) = arg z \<or> arg(cnj z) = -arg z"
     using arg_bounded[of z] arg_bounded[of "cnj z"]
-    by (metis arccos_cos arccos_cos2 less_eq_real_def linorder_le_cases minus_minus)
+    by (smt (verit, best) arccos_cos arccos_cos2 cnj.sel(1) complex_cnj_zero_iff complex_mod_cnj cos_arg)
   moreover
-  have "sin (arg (cnj z)) = -sin (arg z)"
-    using rcis_cmod_arg[of z] Im_rcis[of "cmod z" "arg z"]
-    using rcis_cmod_arg[of "cnj z"] Im_rcis[of "cmod (cnj z)" "arg (cnj z)"]
-    using calculation eq_cnj_iff_real is_real_arg2
-    by force
-  hence "arg (cnj z) \<noteq> arg z"
+  have "arg (cnj z) \<noteq> arg z"
     using sin_0_iff_canon[of "arg (cnj z)"] arg_bounded False assms
-    by auto
+    by (metis complex_mod_cnj eq_cnj_iff_real is_real_arg2 rcis_cmod_arg)
   ultimately
   show ?thesis
     by auto
@@ -814,18 +651,7 @@ lemma arg_inv_2kpi:
 lemma arg_inv:
   assumes "z \<noteq> 0"
   shows "arg (1 / z) = \<downharpoonright>- arg z\<downharpoonleft>"
-proof-
-  obtain k::int where "arg(1 / z) = - arg z + 2*k*pi"
-    using arg_inv_2kpi[of z]
-    using assms
-    by auto
-  hence "\<downharpoonright>arg(1 / z)\<downharpoonleft> = \<downharpoonright>- arg z\<downharpoonleft>"
-    using canon_ang_eq
-    by(simp add:field_simps)
-  thus ?thesis
-    using canon_ang_arg[of "1 / z"]
-    by auto
-qed
+  by (metis arg_inv_not_pi arg_inv_pi assms canon_ang_arg canon_ang_uminus_pi)
 
 text \<open>Argument of quotient\<close>
 
@@ -1033,8 +859,7 @@ next
   thus ?thesis
     using False
     unfolding ccsqrt_def
-    by (simp add: rcis_mult real_sqrt_mult arg_mult)
-       (auto simp add: rcis_def)
+    by (smt (verit, best) arg_mult mult_minus_left mult_minus_right no_zero_divisors norm_mult rcis_def rcis_mult real_sqrt_mult)
 qed
 
 lemma csqrt_real:

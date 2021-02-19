@@ -151,7 +151,7 @@ proof transfer
     apply (subst norm_cvec_scale[OF **(2)])
     apply (subst inprod_cvec_bilinear1[OF *(2)])
     apply (subst inprod_cvec_bilinear2[OF **(2)])
-    by (simp add: power2_eq_square)
+    by (simp add: power2_eq_square norm_mult)
   thus "dist_fs_cvec z1 z2 = dist_fs_cvec z1' z2'"
     using 1 dist_fs_cvec_iff
     by simp
@@ -239,10 +239,10 @@ proof-
   ultimately
   have "cmod(a - b) * (1+(cmod c)\<^sup>2) \<le> cmod (a-c) * cmod (1+cnj c*b) + cmod (c-b) * cmod(1 + cnj c*a)"
     using complex_mod_triangle_ineq2[of "(a-c)*(1+cnj c*b)" "(c-b)*(1 + cnj c*a)"]
-    by simp
+    by (simp add: norm_mult)
   moreover
   have *: "\<And> a b c d b' d'. \<lbrakk>b \<le> b'; d \<le> d'; a \<ge> (0::real); c \<ge> 0\<rbrakk> \<Longrightarrow> a*b + c*d \<le> a*b' + c*d'"
-    by (smt mult_left_mono)
+    by (simp add: add_mono_thms_linordered_semiring(1) mult_left_mono)
   have "cmod (a-c) * cmod (1+cnj c*b) + cmod (c-b) * cmod(1 + cnj c*a) \<le> cmod (a - c) * (sqrt (1+(cmod c)\<^sup>2) * sqrt (1+(cmod b)\<^sup>2)) + cmod (c - b) * (sqrt (1+(cmod c)\<^sup>2) * sqrt (1+(cmod a)\<^sup>2))"
     using *[OF cmod_1_plus_mult_le[of "cnj c" b] cmod_1_plus_mult_le[of "cnj c" a], of "cmod (a-c)" "cmod (c-b)"]
     by (simp add: field_simps real_sqrt_mult[symmetric])
@@ -1228,8 +1228,7 @@ proof-
   have "dsc \<ge> 0"
   proof-
     have "0 \<le> Re ((D - A)\<^sup>2) + 4 * Re ((cor (cmod B))\<^sup>2)"
-      using \<open>is_real A\<close> \<open>is_real D\<close>
-      by (subst cor_squared, subst Re_complex_of_real) (simp add: power2_eq_square)
+      using \<open>is_real A\<close> \<open>is_real D\<close> by simp
     thus ?thesis
       using \<open>dsc = sqrt(Re ((D-A)\<^sup>2 + 4*(B*cnj B)))\<close>
       by (subst (asm) complex_mult_cnj_cmod) simp
@@ -1491,6 +1490,9 @@ next
     by (metis zero_less_divide_iff)
 qed
 
+lemma cor_sqrt_squared: "x \<ge> 0 \<Longrightarrow> (cor (sqrt x))\<^sup>2 = cor x"
+  by (simp add: power2_eq_square)
+
 lemma chordal_circle1:
   assumes "is_real A" and "is_real D" and "Re (A * D) < 0" and "r = sqrt(Re ((4*A)/(A-D)))"
   shows "mk_circline A 0 0 D = chordal_circle \<infinity>\<^sub>h r"
@@ -1523,19 +1525,15 @@ proof (transfer, transfer)
   qed
   moreover
   have "- (cor (sqrt (Re (4 * A / (A - D)))))\<^sup>2 = cor (Re (4 / (D - A))) * A"
-    using \<open>Re ((4*A)/(A-D)) \<ge> 0\<close> \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close>
-    by (subst cor_squared, subst real_sqrt_power[symmetric], simp) (simp add: Re_divide_real Re_mult_real minus_divide_right)
+    using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> \<open>Re ((4*A)/(A-D)) \<ge> 0\<close>
+    by (simp add: cor_sqrt_squared field_simps)
   moreover
-  have "4 * (A - D) - 4 * A  = 4 * -D"
-    by (simp add: field_simps)
-  hence "4 - 4 * A / (A - D) = -4 * D / (A - D)"
-    using \<open>A \<noteq> D\<close>
-    by (smt ab_semigroup_mult_class.mult_ac(1) diff_divide_eq_iff eq_iff_diff_eq_0 mult_minus1 mult_minus1_right mult_numeral_1_right right_diff_distrib_numeral times_divide_eq_right)
-  hence "4 - 4 * A / (A - D) = 4 * D / (D - A)"
-    by (metis (hide_lams, no_types) minus_diff_eq minus_divide_left minus_divide_right minus_mult_left)
+  have "4 - 4 * A / (A - D) = 4 * D / (D - A)"
+    using\<open>A \<noteq> D\<close> 
+    by (simp add: divide_simps split: if_split_asm) (simp add: minus_mult_right)
   hence **: "4 - (cor (sqrt (Re (4 * A / (A - D)))))\<^sup>2 = cor (Re (4 / (D - A))) * D"
     using \<open>Re ((4*A)/(A-D)) \<ge> 0\<close> \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close>
-    by (subst cor_squared, subst real_sqrt_power[symmetric], simp)
+    by (simp add: cor_sqrt_squared field_simps)
   ultimately
   show "circline_eq_cmat (mk_circline_cmat A 0 0 D) (chordal_circle_cvec_cmat \<infinity>\<^sub>v r)"
     using * \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> \<open>r = sqrt(Re ((4*A)/(A-D)))\<close>
@@ -1569,25 +1567,17 @@ proof (transfer, transfer)
       using chordal_circle_det_positive[of "Re D" "Re A"]
       by (simp add: field_simps)
     thus ?thesis
-      using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close>
-      by (subst Re_divide_real, auto)
+      using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> Re_divide_real by force
   qed
-  have "4 * (D - A) - 4 * D  = 4 * -A"
-    by (simp add: field_simps)
-  hence "4 - 4 * D / (D - A) = -4 * A / (D - A)"
-    using \<open>A \<noteq> D\<close>
-    by (smt ab_semigroup_mult_class.mult_ac(1) diff_divide_eq_iff eq_iff_diff_eq_0 mult_minus1 mult_minus1_right mult_numeral_1_right right_diff_distrib_numeral times_divide_eq_right)
-  hence "4 - 4 * D / (D - A) = 4 * A / (A - D)"
-    by (metis (hide_lams, no_types) minus_diff_eq minus_divide_left minus_divide_right minus_mult_left)
+  have  "4 - 4 * D / (D - A) = 4 * A / (A - D)"
+    by (simp add: divide_simps split: if_split_asm) (simp add: \<open>A \<noteq> D\<close> minus_mult_right)
   hence **: "4 - (cor (sqrt (Re ((4*D)/(D-A)))))\<^sup>2 = cor (Re (4 / (A - D))) * A"
     using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> \<open>Re (4 * D / (D - A)) \<ge> 0\<close>
-    by (subst cor_squared, subst real_sqrt_power[symmetric], simp)
-
+    by (simp add: cor_sqrt_squared field_simps)
   moreover
   have "- (cor (sqrt (Re ((4*D)/(D-A)))))\<^sup>2 = cor (Re (4 / (A - D))) * D"
-    using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> \<open>Re ((4*D)/(D-A)) \<ge> 0\<close>
-    by (subst cor_squared, subst real_sqrt_power[symmetric], simp) (simp add: Re_divide_real minus_divide_right)
-
+    using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> D\<close> \<open>Re (4 * D / (D - A)) \<ge> 0\<close>
+    by (simp add: cor_sqrt_squared field_simps)
   ultimately
   show "circline_eq_cmat (mk_circline_cmat A 0 0 D) (chordal_circle_cvec_cmat 0\<^sub>v r)"
     using \<open>is_real A\<close> \<open>is_real D\<close> \<open>A \<noteq> 0 \<or> D \<noteq> 0\<close> \<open>r = sqrt (Re ((4*D)/(D-A)))\<close>
@@ -1655,7 +1645,7 @@ proof (transfer, transfer)
     by (simp, simp add: field_simps)
   moreover
   have "1 + a * cnj a \<noteq> 0"
-    by (subst complex_mult_cnj_cmod) (smt cor_add of_real_0 of_real_1 of_real_eq_iff realpow_square_minus_le)
+    by (simp add: complex_mult_cnj_cmod)
   have "r\<^sup>2 = (4 - Re (?k * A)) / (1 + Re (a * cnj a))"
   proof-
     have "Re (a / B * A) \<ge> -1"
@@ -1680,8 +1670,7 @@ proof (transfer, transfer)
     using \<open>is_real ?k\<close> \<open>is_real A\<close> \<open>1 + a * cnj a \<noteq> 0\<close>
     by (subst Re_divide_real, auto)
   hence "(cor r)\<^sup>2 =  (4 - ?k * A) / (1 + a * cnj a)"
-    using \<open>is_real ?k\<close> \<open>is_real A\<close>
-    using mult_reals[of ?k A]
+    using \<open>is_real ?k\<close> \<open>is_real A\<close> mult_reals[of ?k A] 
     by (simp add: cor_squared)
   hence "4 - (cor r)\<^sup>2 * (a * cnj a + 1) = cor (Re ?k) * A"
     using complex_of_real_Re[OF \<open>is_real (-4*a/B)\<close>]
@@ -1696,8 +1685,7 @@ proof (transfer, transfer)
 
   have "?k\<^sup>2 = cor ((cmod ?k)\<^sup>2)"
     using  cor_cmod_real[OF \<open>is_real ?k\<close>]
-    unfolding power2_eq_square
-    by (subst cor_mult) (metis minus_mult_minus)
+    unfolding power2_eq_square by force
   hence "?k\<^sup>2 = ?k * cnj ?k"
     using complex_mult_cnj_cmod[of ?k]
     by simp

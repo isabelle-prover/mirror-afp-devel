@@ -112,7 +112,7 @@ proof-
       by (simp add: power2_eq_square)
     hence "- (Re a)\<^sup>2 \<ge> 0"
       using zero_le_power2[of "cmod c"]
-      by (metis Re_complex_of_real cor_squared of_real_minus)
+      by (metis Re_complex_of_real of_real_minus of_real_power)
     hence "a = 0"
       using zero_le_power2[of "Re a"]
       using \<open>cnj a = a\<close>  eq_cnj_iff_real[of a]

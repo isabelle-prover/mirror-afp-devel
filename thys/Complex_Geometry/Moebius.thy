@@ -687,7 +687,7 @@ lemma moebius_rotation_preserve_cmod [simp]:
   shows "cmod (to_complex (moebius_pt (moebius_rotation \<phi>) u)) = cmod (to_complex u)"
   using assms
   using inf_or_of_complex[of u]
-  by auto
+  by (auto simp: norm_mult)
 
 (* -------------------------------------------------------------------------- *)
 subsubsection \<open>Dilatation\<close>
