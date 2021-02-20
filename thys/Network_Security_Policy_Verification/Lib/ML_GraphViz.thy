@@ -101,8 +101,8 @@ local
             (Isabelle_System.bash o cat_lines)
              ["set -e",
               "cd " ^ File.bash_path (Path.dir graph_file),
-              "\"$ISABELLE_DOT\" -o " ^ Bash_Syntax.string (File.platform_path pdf_file) ^
-                " -Tpdf " ^ Bash_Syntax.string (File.platform_path graph_file),
+              "\"$ISABELLE_DOT\" -o " ^ Bash.string (File.platform_path pdf_file) ^
+                " -Tpdf " ^ Bash.string (File.platform_path graph_file),
               "\"$PDF_VIEWER\" " ^ File.bash_path pdf_file ^ " &"];
         in () end);
 

@@ -46,7 +46,8 @@ fun compile_ml_file mode source =
 
     val bash_cake = File.bash_path (compiler ())
     val bash_source = File.bash_path source
-    val {out, err, rc, ...} = Bash.process (bash_cake ^ " --sexp=" ^ sexp ^ " < " ^ bash_source)
+    val {out, err, rc, ...} =
+      Isabelle_System.bash_process (bash_cake ^ " --sexp=" ^ sexp ^ " < " ^ bash_source)
     val _ = if err <> "" then warning err else ()
   in
     if rc <> 0 orelse err <> "" then
@@ -70,7 +71,8 @@ fun compile_c_file source =
     val bash_cc = File.bash_path (Path.explode (getenv_strict "ISABELLE_CC"))
     val bash_source = File.bash_path source
     val bash_output = File.bash_path output
-    val {out, err, rc, ...} = Bash.process (bash_cc ^ " -c -o " ^ bash_output ^ " " ^ bash_source)
+    val {out, err, rc, ...} =
+      Isabelle_System.bash_process (bash_cc ^ " -c -o " ^ bash_output ^ " " ^ bash_source)
     val _ = if err <> "" then warning err else ()
     val _ = writeln out
   in
@@ -91,7 +93,8 @@ fun link sources =
     val bash_cc = File.bash_path (Path.explode (getenv_strict "ISABELLE_CC"))
     val bash_sources = Bash.strings (map File.standard_path sources)
     val bash_output = File.bash_path output
-    val {out, err, rc, ...} = Bash.process (bash_cc ^ " -o " ^ bash_output ^ " " ^ bash_sources)
+    val {out, err, rc, ...} =
+      Isabelle_System.bash_process (bash_cc ^ " -o " ^ bash_output ^ " " ^ bash_sources)
     val _ = if err <> "" then warning err else ()
     val _ = writeln out
   in
@@ -106,7 +109,7 @@ fun eval mode source =
     val cake = compile_ml mode source
     val ffi = compile_ffi ()
     val bin = link [cake, ffi]
-    val {out, err, rc, ...} = Bash.process (File.bash_path bin)
+    val {out, err, rc, ...} = Isabelle_System.bash_process (File.bash_path bin)
     val _ = if err <> "" then warning err else ()
   in
     if rc <> 0 orelse err <> "" then
