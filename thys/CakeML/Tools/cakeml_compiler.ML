@@ -53,7 +53,7 @@ fun compile_ml_file mode source =
     if rc <> 0 orelse err <> "" then
       error "CakeML: ML compilation failed"
     else
-      (File.write output out; output)
+      (File.write output (trim_line out); output)
   end
 
 fun compile_ml mode source =
@@ -115,7 +115,7 @@ fun eval mode source =
     if rc <> 0 orelse err <> "" then
       error "CakeML: evaluation failed"
     else
-      out
+      trim_line out
   end
 
 fun eval_source mode =
