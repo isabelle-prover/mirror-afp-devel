@@ -46,14 +46,15 @@ fun compile_ml_file mode source =
 
     val bash_cake = File.bash_path (compiler ())
     val bash_source = File.bash_path source
-    val {out, err, rc, ...} =
-      Isabelle_System.bash_process (bash_cake ^ " --sexp=" ^ sexp ^ " < " ^ bash_source)
+    val res = Isabelle_System.bash_process (bash_cake ^ " --sexp=" ^ sexp ^ " < " ^ bash_source)
+    val err = Process_Result.err res
+    val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
   in
-    if rc <> 0 orelse err <> "" then
+    if not (Process_Result.ok res) orelse err <> "" then
       error "CakeML: ML compilation failed"
     else
-      (File.write output (trim_line out); output)
+      (File.write output out; output)
   end
 
 fun compile_ml mode source =
@@ -71,12 +72,13 @@ fun compile_c_file source =
     val bash_cc = File.bash_path (Path.explode (getenv_strict "ISABELLE_CC"))
     val bash_source = File.bash_path source
     val bash_output = File.bash_path output
-    val {out, err, rc, ...} =
-      Isabelle_System.bash_process (bash_cc ^ " -c -o " ^ bash_output ^ " " ^ bash_source)
+    val res = Isabelle_System.bash_process (bash_cc ^ " -c -o " ^ bash_output ^ " " ^ bash_source)
+    val err = Process_Result.err res
+    val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
     val _ = writeln out
   in
-    if rc <> 0 orelse err <> "" then
+    if not (Process_Result.ok res) orelse err <> "" then
       error "CakeML: C compilation failed"
     else
       output
@@ -93,12 +95,13 @@ fun link sources =
     val bash_cc = File.bash_path (Path.explode (getenv_strict "ISABELLE_CC"))
     val bash_sources = Bash.strings (map File.standard_path sources)
     val bash_output = File.bash_path output
-    val {out, err, rc, ...} =
-      Isabelle_System.bash_process (bash_cc ^ " -o " ^ bash_output ^ " " ^ bash_sources)
+    val res = Isabelle_System.bash_process (bash_cc ^ " -o " ^ bash_output ^ " " ^ bash_sources)
+    val err = Process_Result.err res
+    val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
     val _ = writeln out
   in
-    if rc <> 0 orelse err <> "" then
+    if not (Process_Result.ok res) orelse err <> "" then
       error "CakeML: linking failed"
     else
       output
@@ -109,13 +112,15 @@ fun eval mode source =
     val cake = compile_ml mode source
     val ffi = compile_ffi ()
     val bin = link [cake, ffi]
-    val {out, err, rc, ...} = Isabelle_System.bash_process (File.bash_path bin)
+    val res = Isabelle_System.bash_process (File.bash_path bin)
+    val err = Process_Result.err res
+    val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
   in
-    if rc <> 0 orelse err <> "" then
+    if not (Process_Result.ok res) orelse err <> "" then
       error "CakeML: evaluation failed"
     else
-      trim_line out
+      out
   end
 
 fun eval_source mode =
