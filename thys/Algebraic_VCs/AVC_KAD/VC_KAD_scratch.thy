@@ -50,7 +50,7 @@ lemma add_ub: "x \<le> x + y"
   by (metis add_assoc add_idem less_eq_def)
 
 lemma add_lub: "x + y \<le> z \<longleftrightarrow> x \<le> z \<and> y \<le> z"
-  by (metis add_assoc add_commute less_eq_def order.ordering_axioms ordering.refl)
+  by (metis add_assoc add_ub add.left_commute less_eq_def)
 
 end
 
@@ -282,7 +282,7 @@ proof -
   hence "d p \<le> wp ((d r \<cdot> x)\<^sup>\<star>) p"
     using wp_star_induct_var by blast
   thus ?thesis
-    by (metis order.ordering_axioms ordering.trans while_def wp_weaken)
+    by (simp add: while_def) (use local.dual_order.trans wp_weaken in fastforce)
 qed
 
 lemma wp_while_inv: "d p \<le> d i \<Longrightarrow> d i \<cdot> ad r \<le> d q \<Longrightarrow> d i \<cdot> d r \<le> wp x i \<Longrightarrow> d p \<le> wp (while r inv i do x od) q"
@@ -530,6 +530,3 @@ lemma var_swap_ref_var:
   using var_swap_ref1 var_swap_ref2 var_swap_ref3 rel_rkad.R_skip  by fastforce
 
 end
-
-
-

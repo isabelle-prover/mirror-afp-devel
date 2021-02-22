@@ -979,21 +979,6 @@ text \<open>
   more easily facilitate simultaneously working with both an order and its dual.
 \<close>
 
-subsubsection \<open>Dual ordering\<close>
-
-context ordering
-begin
-
-abbreviation greater_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<succeq>" 50)
-  where "greater_eq a b \<equiv> less_eq b a"
-abbreviation greater  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<succ>" 50)
-  where "greater a b \<equiv> less b a"
-
-lemma dual: "ordering greater_eq greater"
-  using strict_iff_order refl antisym trans by unfold_locales fastforce
-
-end (* context ordering *)
-
 subsubsection \<open>Morphisms of posets\<close>
 
 locale OrderingSetMap =
@@ -1009,26 +994,17 @@ locale OrderingSetMap =
 begin
 
 lemma comp:
-  assumes "OrderingSetMap less_eq' less' less_eq'' less'' Q g" "f`P \<subseteq> Q"
+  assumes "OrderingSetMap less_eq' less' less_eq'' less'' Q g"
+    "f`P \<subseteq> Q"
   shows   "OrderingSetMap less_eq less less_eq'' less'' P (g\<circ>f)"
-proof (
-  intro_locales, rule OrderingSetMap.axioms(2), rule assms(1), unfold_locales
-)
-  from assms(2)
-    show  "\<And>a b. a \<in> P \<Longrightarrow> b \<in> P \<Longrightarrow> a \<^bold>\<le> b \<Longrightarrow> less_eq'' ((g \<circ> f) a) ((g \<circ> f) b)"
-    using ordsetmap OrderingSetMap.ordsetmap[OF assms(1)]
-    by    force
+proof -
+  from assms(1) interpret I: OrderingSetMap less_eq' less' less_eq'' less'' Q g .
+  show ?thesis
+    by standard (use assms(2) in \<open>auto intro: ordsetmap I.ordsetmap\<close>)
 qed
 
 lemma subset: "Q\<subseteq>P \<Longrightarrow> OrderingSetMap (\<^bold>\<le>) (\<^bold><) (\<^bold>\<le>*) (\<^bold><*) Q f"
   using ordsetmap by unfold_locales fast
-
-lemma dual:
-  "OrderingSetMap domain.greater_eq domain.greater
-    codomain.greater_eq codomain.greater P f"
-proof (intro_locales, rule domain.dual, rule codomain.dual, unfold_locales)
-  from ordsetmap show "\<And>a b. a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a\<succeq>b \<Longrightarrow> f b \<^bold>\<le>* f a" by fast
-qed
 
 end (* context OrderingSetMap *)
 
@@ -1113,12 +1089,19 @@ lemma iso_subset:
   by    (blast intro: OrderingSetMap.isoI)
 
 lemma iso_dual:
-  "OrderingSetIso domain.greater_eq domain.greater
-    codomain.greater_eq codomain.greater P f"
-  by  (
-        rule OrderingSetMap.isoI, rule OrderingSetMap.dual, unfold_locales,
-        rule inj, rule rev_ordsetmap
-      )
+  \<open>OrderingSetIso (\<lambda>a b. less_eq b a) (\<lambda>a b. less b a)
+    (\<lambda>a b. less_eq' b a) (\<lambda>a b. less' b a) P f\<close>
+  apply (rule OrderingSetMap.isoI)
+    apply unfold_locales
+  using inj
+            apply (auto simp add: domain.refl codomain.refl
+              domain.irrefl codomain.irrefl
+              domain.order_iff_strict codomain.order_iff_strict
+              ordsetmap_strict rev_ordsetmap_strict inj_onD
+              intro: domain.trans codomain.trans
+              domain.strict_trans codomain.strict_trans
+              domain.antisym codomain.antisym)
+  done
 
 end (* context OrderingSetIso *)
 

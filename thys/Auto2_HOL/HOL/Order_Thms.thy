@@ -16,11 +16,11 @@ setup \<open>Consts.add_const_data ("NUMC", UtilArith.is_numc)\<close>
 
 subsection \<open>Results in class order or preorder\<close>
 
-setup \<open>add_forward_prfstep_cond @{thm Orderings.order_class.order.trans} [with_filt (not_type_filter "a" natT)]\<close>
-setup \<open>add_forward_prfstep_cond @{thm Orderings.order_class.order.strict_trans} [with_filt (not_type_filter "a" natT)]\<close>
-setup \<open>add_forward_prfstep_cond @{thm Orderings.order_le_less_trans} [with_filt (not_type_filter "x" natT)]\<close>
-setup \<open>add_forward_prfstep_cond @{thm Orderings.order_less_le_trans} [with_filt (not_type_filter "x" natT)]\<close>
-setup \<open>add_resolve_prfstep @{thm Orderings.order_class.order.irrefl}\<close>
+setup \<open>add_forward_prfstep_cond @{thm order.trans} [with_filt (not_type_filter "a" natT)]\<close>
+setup \<open>add_forward_prfstep_cond @{thm order.strict_trans} [with_filt (not_type_filter "a" natT)]\<close>
+setup \<open>add_forward_prfstep_cond @{thm order_le_less_trans} [with_filt (not_type_filter "x" natT)]\<close>
+setup \<open>add_forward_prfstep_cond @{thm order_less_le_trans} [with_filt (not_type_filter "x" natT)]\<close>
+setup \<open>add_resolve_prfstep @{thm order.irrefl}\<close>
 setup \<open>add_forward_prfstep_cond @{thm Orderings.le_neq_trans} [with_cond "?a \<noteq> ?b"]\<close>
 setup \<open>add_forward_prfstep_cond @{thm Orderings.order_antisym} [with_filt (order_filter "x" "y"), with_cond "?x \<noteq> ?y"]\<close>
 

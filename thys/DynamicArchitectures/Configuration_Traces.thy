@@ -1031,7 +1031,7 @@ proof -
     moreover have "llength t>0"
     proof -
       from \<open>x < llength (\<pi>\<^bsub>c\<^esub>(t))\<close> have "llength (\<pi>\<^bsub>c\<^esub>(t))>0" by auto
-      thus ?thesis using proj_llength Orderings.order_class.order.strict_trans2 by blast
+      thus ?thesis using proj_llength order.strict_trans2 by blast
     qed
     ultimately show "llength t - 1 < llength t" by (metis One_nat_def \<open>lfinite t\<close> diff_Suc_less
       enat_ord_simps(2) idiff_enat_enat lfinite_conv_llength_enat one_enat_def zero_enat_def)

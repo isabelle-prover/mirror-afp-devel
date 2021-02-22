@@ -51,7 +51,7 @@ lemma add_iso: "x \<le> y \<Longrightarrow> x + z \<le> y + z"
   by (metis (no_types, lifting) abel_semigroup.commute add.abel_semigroup_axioms add.semigroup_axioms add_idem less_eq_def semigroup.assoc)
 
 lemma add_lub: "x + y \<le> z \<longleftrightarrow> x \<le> z \<and> y \<le> z"
-  by (metis add_assoc add_commute less_eq_def order.ordering_axioms ordering.refl)
+  by (metis add_assoc add.left_commute add_idem less_eq_def)
 
 end
 
@@ -363,5 +363,3 @@ lemma var_swap_ref_var:
   using var_swap_ref1 var_swap_ref2 var_swap_ref3 rel_rkat.R_skip  by fastforce
 
 end
-
-

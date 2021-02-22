@@ -1800,8 +1800,8 @@ proof -
   have "finite ?K" by auto
   with not_empty_K have *:
     "\<forall> k' < k. cyc_free_subs n {0..k'} m"
-    unfolding k_def
-    by simp (meson order_class.dual_order.trans preorder_class.less_le_not_le)
+    by (auto simp add: k_def not_le)
+      (meson less_imp_le_nat local.leI order_less_irrefl preorder_class.order_trans)
   from linorder_class.Min_in[OF \<open>finite ?K\<close> \<open>?K \<noteq> {}\<close>] have
     "\<not> cyc_free_subs n {0..k} m" "k \<le> n"
     unfolding k_def by auto

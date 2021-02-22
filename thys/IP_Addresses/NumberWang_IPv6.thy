@@ -92,10 +92,7 @@ proof -
     moreover from mnh2 have "unat x <  unat (65536::128 word)" by(rule Word.unat_mono)
     ultimately have x: "unat x < 65536" by simp
     with mnh3 have "unat x < 2 ^ (m - n)" 
-      apply(rule_tac b=65535 in Orderings.order_class.order.strict_trans1)
-       apply(simp_all)
-      using power_2_16_nat apply blast
-      done
+      using power_2_16_nat [of \<open>m - n\<close>] by simp
     with assms(2) show ?thesis by(subst word_less_nat_alt) simp
   qed
   hence mnhelper2: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2 ^ (m - n)"
