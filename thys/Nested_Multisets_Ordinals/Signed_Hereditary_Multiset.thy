@@ -88,8 +88,8 @@ lemmas zhmsetmset_diff = minus_zhmultiset.rep_eq
 lemma zhmset_of_plus: "zhmset_of (A + B) = zhmset_of A + zhmset_of B"
   by (simp add: hmsetmset_plus ZHMSet_plus zmset_of_plus)
 
-lemma hmsetmset_0[simp]: "hmsetmset 0 = {#}"
-  by (rule hmultiset.inject[THEN iffD1]) (simp add: zero_hmultiset_def)
+lemma hmsetmset_0: "hmsetmset 0 = {#}"
+  by (fact hmsetmset_0)
 
 instance
   by (intro_classes; transfer) (auto intro: mult.assoc add.commute)

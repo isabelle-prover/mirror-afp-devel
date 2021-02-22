@@ -37,7 +37,7 @@ using assms by (auto simp add: sum.remove[where x=k])
 subsection \<open>Additions to Multiset Theory\<close>
 
 lemma set_mset_Abs_multiset:
-  assumes "f \<in> multiset"
+  assumes "finite {x. f x > 0}"
   shows "set_mset (Abs_multiset f) = {x. f x > 0}"
 using assms unfolding set_mset_def by simp
 

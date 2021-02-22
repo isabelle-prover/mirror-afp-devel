@@ -314,11 +314,11 @@ lemma zmset_of_plus: "zmset_of (M + N) = zmset_of M + zmset_of N"
   by (transfer, auto simp: equiv_zmset_def eq_onp_same_args plus_multiset.abs_eq)+
 
 lift_definition mset_pos :: "'a zmultiset \<Rightarrow> 'a multiset" is "\<lambda>(Mp, Mn). count (Mp - Mn)"
-  by (clarsimp simp: equiv_zmset_def intro!: arg_cong[of _ _ count])
+  by (auto simp add: equiv_zmset_def simp flip: set_mset_diff)
     (metis add.commute add_diff_cancel_right)
 
 lift_definition mset_neg :: "'a zmultiset \<Rightarrow> 'a multiset" is "\<lambda>(Mp, Mn). count (Mn - Mp)"
-  by (clarsimp simp: equiv_zmset_def intro!: arg_cong[of _ _ count])
+  by (auto simp add: equiv_zmset_def simp flip: set_mset_diff)
     (metis add.commute add_diff_cancel_right)
 
 lemma

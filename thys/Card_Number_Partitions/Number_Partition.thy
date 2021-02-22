@@ -43,11 +43,6 @@ proof -
     using rev_finite_subset by blast
 qed
 
-lemma partitions_imp_multiset:
-  assumes "p partitions n"
-  shows "p \<in> multiset"
-using assms partitions_imp_finite_elements multiset_def by auto
-
 lemma partitions_bounds:
   assumes "p partitions n"
   shows "p i \<le> n"
@@ -299,7 +294,8 @@ proof -
     also have "... = (\<Sum>i\<in>Suc ` {..m}. p i * (i - 1))"
       by (auto simp add: sum.reindex)
     also have "... = (\<Sum>i\<le>Suc m. p i * (i - 1))"
-      using \<open>p 0 = 0\<close> by (simp add: atMost_Suc_eq_insert_0 zero_notin_Suc_image)
+      using \<open>p 0 = 0\<close>
+      by (simp add: atMost_Suc_eq_insert_0)
     also have "... = (\<Sum>i\<le>m. p i * (i - 1))"
       using p by (auto elim!: partitionsE)
     also have "... = (\<Sum>i\<le>m. p i * i - p i)"
@@ -448,16 +444,15 @@ proof
   from this have bounds: "(\<forall>i. p i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n)"
     and sum: "(\<Sum>i\<le>n. p i * i) = n"
   unfolding partitions_def by auto
-  from \<open>p partitions n\<close> have "p \<in> multiset" by (rule partitions_imp_multiset)
   from \<open>p partitions n\<close> have "finite {x. 0 < p x}"
     by (rule partitions_imp_finite_elements)
-  moreover from \<open>p \<in> multiset\<close> bounds have "\<not> 0 \<in># Abs_multiset p"
+  moreover from \<open>finite {x. 0 < p x}\<close> bounds have "\<not> 0 \<in># Abs_multiset p"
     using count_eq_zero_iff by force
-  moreover from \<open>p \<in> multiset\<close> this sum have "sum_mset (Abs_multiset p) = n"
+  moreover from \<open>finite {x. 0 < p x}\<close> this sum have "sum_mset (Abs_multiset p) = n"
   proof -
     have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = (\<Sum>i\<le>n. p i * i)"
       using bounds by (auto intro: sum.mono_neutral_cong_left)
-    from \<open>p \<in> multiset\<close> this sum show "sum_mset (Abs_multiset p) = n"
+    from \<open>finite {x. 0 < p x}\<close> this sum show "sum_mset (Abs_multiset p) = n"
       by (simp add: sum_mset_sum_count set_mset_Abs_multiset)
   qed
   ultimately show "finite {x. 0 < p x} \<and> number_partition n (Abs_multiset p)"
@@ -466,15 +461,14 @@ next
   assume "finite {x. 0 < p x} \<and> number_partition n (Abs_multiset p)"
   from this have "finite {x. 0 < p x}" "0 \<notin># Abs_multiset p" "sum_mset (Abs_multiset p) = n"
     unfolding number_partition_def by auto
-  from \<open>finite {x. 0 < p x}\<close> have "p \<in> multiset" by (simp add: multiset_def)
-  from \<open>p \<in> multiset\<close> have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = n"
+  from \<open>finite {x. 0 < p x}\<close> have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = n"
     using \<open> sum_mset (Abs_multiset p) = n\<close>
     by (simp add: sum_mset_sum_count set_mset_Abs_multiset)
   have bounds: "\<And>i. p i \<noteq> 0 \<Longrightarrow> 1 \<le> i \<and> i \<le> n"
   proof
     fix i
     assume "p i \<noteq> 0"
-    from \<open>\<not> 0 \<in># Abs_multiset p\<close> \<open>p \<in> multiset\<close> have "p 0 = 0"
+    from \<open>\<not> 0 \<in># Abs_multiset p\<close> \<open>finite {x. 0 < p x}\<close> have "p 0 = 0"
       using count_inI by force
     from this \<open>p i \<noteq> 0\<close> show "1 \<le> i"
       by (metis One_nat_def leI less_Suc0)

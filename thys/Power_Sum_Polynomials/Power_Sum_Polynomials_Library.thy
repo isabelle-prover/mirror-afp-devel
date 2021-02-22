@@ -273,8 +273,8 @@ lift_definition poly_roots :: "'a :: idom poly \<Rightarrow> 'a multiset" is
   "\<lambda>p x. if p = 0 then 0 else order x p"
 proof -
   fix p :: "'a poly"
-  show "(\<lambda>x. if p = 0 then 0 else order x p) \<in> multiset"
-    by (cases "p = 0") (auto simp: multiset_def order_pos_iff poly_roots_finite)
+  show "finite {x. 0 < (if p = 0 then 0 else order x p)}"
+    by (cases "p = 0") (auto simp: order_pos_iff poly_roots_finite)
 qed
 
 lemma poly_roots_0 [simp]: "poly_roots 0 = {#}"

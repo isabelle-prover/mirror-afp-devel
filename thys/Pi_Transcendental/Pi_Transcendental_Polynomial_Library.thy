@@ -197,9 +197,9 @@ lift_definition poly_roots_mset :: "('a :: idom) poly \<Rightarrow> 'a multiset"
   "\<lambda>p x. if p = 0 then 0 else Polynomial.order x p"
 proof -
   fix p :: "'a poly"
-  show "(\<lambda>x. if p = 0 then 0 else order x p) \<in> multiset"
+  show "finite {x. 0 < (if p = 0 then 0 else order x p)}"
     by (cases "p = 0")
-       (auto simp: multiset_def order_pos_iff intro: finite_subset[OF _ poly_roots_finite[of p]])
+       (auto simp: order_pos_iff intro: finite_subset[OF _ poly_roots_finite[of p]])
 qed
 
 lemma poly_roots_mset_0 [simp]: "poly_roots_mset 0 = {#}"

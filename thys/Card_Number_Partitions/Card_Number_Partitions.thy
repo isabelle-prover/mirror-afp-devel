@@ -211,11 +211,11 @@ proof (rule bij_betw_byWitness[where f'="Abs_multiset"])
   show "\<forall>N\<in>{N. number_partition n N \<and> size N = k}. Abs_multiset (count N) = N"
     using count_inverse by blast
   show "\<forall>p\<in>{p. p partitions n \<and> sum p {..n} = k}. count (Abs_multiset p) = p"
-    by (auto simp add: multiset_def partitions_imp_finite_elements)
+    by (auto simp add: partitions_imp_finite_elements)
   show "count ` {N. number_partition n N \<and> size N = k} \<subseteq> {p. p partitions n \<and> sum p {..n} = k}"
     by (auto simp add: count_partitions_iff size_nat_multiset_eq) 
   show "Abs_multiset ` {p. p partitions n \<and> sum p {..n} = k} \<subseteq> {N. number_partition n N \<and> size N = k}"
-    using partitions_iff_Abs_multiset size_nat_multiset_eq partitions_imp_multiset by fastforce
+    using partitions_iff_Abs_multiset size_nat_multiset_eq by fastforce
 qed
 
 lemma bij_betw_multiset_number_partition_with_atmost_size:
@@ -224,11 +224,11 @@ proof (rule bij_betw_byWitness[where f'="Abs_multiset"])
   show "\<forall>N\<in>{N. number_partition n N \<and> size N \<le> k}. Abs_multiset (count N) = N"
     using count_inverse by blast
   show "\<forall>p\<in>{p. p partitions n \<and> sum p {..n} \<le> k}. count (Abs_multiset p) = p"
-    by (auto simp add: multiset_def partitions_imp_finite_elements)
+    by (auto simp add: partitions_imp_finite_elements)
   show "count ` {N. number_partition n N \<and> size N \<le> k} \<subseteq> {p. p partitions n \<and> sum p {..n} \<le> k}"
     by (auto simp add: count_partitions_iff size_nat_multiset_eq)
   show "Abs_multiset ` {p. p partitions n \<and> sum p {..n} \<le> k} \<subseteq> {N. number_partition n N\<and> size N \<le> k}"
-    using partitions_iff_Abs_multiset size_nat_multiset_eq partitions_imp_multiset by fastforce
+    using partitions_iff_Abs_multiset size_nat_multiset_eq by fastforce
 qed
 
 theorem card_number_partitions_with_atmost_k_parts:
