@@ -643,10 +643,11 @@ structure Export_code_env = struct
 end
 
 fun compile l cmd =
-  let val (l, rc) = fold (fn cmd => (fn (l, 0) =>
-                                         let val {out, err, rc, ...} = Isabelle_System.bash_process cmd in
-                                         ((out, err) :: l, rc) end
-                                     | x => x)) l ([], 0)
+  let val (l, rc) = fold (fn cmd =>
+        (fn (l, 0) =>
+             let val res = Isabelle_System.bash_process cmd in
+             ((Process_Result.out res, Process_Result.err res) :: l, Process_Result.rc res) end
+         | x => x)) l ([], 0)
       val l = rev l in
   if rc = 0 then
     (l, Isabelle_System.bash_output cmd)
