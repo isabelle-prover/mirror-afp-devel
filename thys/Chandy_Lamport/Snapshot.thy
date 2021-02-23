@@ -3,7 +3,7 @@ section \<open>The Chandy--Lamport algorithm\<close>
 theory Snapshot
   imports
     "HOL-Library.Sublist"
-    "HOL-Library.Permutation"
+    "HOL-Library.List_Permutation"
     Distributed_System
     Trace
     Util

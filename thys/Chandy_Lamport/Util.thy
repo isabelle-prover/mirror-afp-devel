@@ -4,7 +4,7 @@ theory Util
   imports
     Main
     "HOL-Library.Sublist"
-    "HOL-Library.Permutation"
+    "HOL-Library.List_Permutation"
 
 begin
 

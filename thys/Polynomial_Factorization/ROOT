@@ -34,7 +34,7 @@ session "JNF-AFP-Lib" (AFP) in "Lib" = "HOL-Algebra" +
     "HOL-Library.Monad_Syntax"
     "HOL-Library.More_List"
     "HOL-Library.Multiset"
-    "HOL-Library.Permutation"
+    "HOL-Library.List_Permutation"
     "HOL-Library.Permutations"
     "HOL-Library.IArray"
     "HOL-Library.Phantom_Type"

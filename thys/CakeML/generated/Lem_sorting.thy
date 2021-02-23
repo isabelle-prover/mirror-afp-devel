@@ -10,7 +10,7 @@ imports
   "Lem_list"
   "Lem_num"
   "Lem"
-  "HOL-Library.Permutation"
+  "HOL-Library.List_Permutation"
 
 begin 
 

@@ -6,7 +6,7 @@ imports
   "Formula"
   "Transition_Systems_and_Automata.NBA_Translate"
   "Transition_Systems_and_Automata.NGBA_Algorithms"
-  "HOL-Library.Permutation"
+  "HOL-Library.List_Permutation"
 begin
 
   subsection \<open>Syntax\<close>

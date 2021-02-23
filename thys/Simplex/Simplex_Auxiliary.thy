@@ -2,7 +2,7 @@
 section \<open>Auxiliary Results\<close>
 theory Simplex_Auxiliary
   imports 
-    "HOL-Library.Permutation"
+    "HOL-Library.List_Permutation"
     "HOL-Library.Mapping"
 begin
 

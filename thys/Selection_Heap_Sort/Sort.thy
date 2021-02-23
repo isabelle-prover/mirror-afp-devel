@@ -5,7 +5,7 @@ section \<open>Locale Sort\<close>
 
 theory Sort
 imports Main 
-  "HOL-Library.Permutation"
+  "HOL-Library.List_Permutation"
 begin
 
 text \<open>

@@ -8,7 +8,7 @@ theory Simplex
     Rel_Chain
     Simplex_Algebra
     "HOL-Library.RBT_Mapping"
-    "HOL-Library.Permutation"
+    "HOL-Library.List_Permutation"
     "HOL-Library.Code_Target_Numeral"
 begin
 

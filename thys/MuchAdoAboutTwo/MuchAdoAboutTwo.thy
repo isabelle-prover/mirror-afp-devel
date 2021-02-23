@@ -8,7 +8,7 @@ section \<open>Much Ado about Two\<close>
 
 (*<*)
 theory MuchAdoAboutTwo
-imports "HOL-Library.Permutation"
+imports "HOL-Library.List_Permutation"
 begin
 (*>*)
 
@@ -1436,7 +1436,7 @@ proof -
     using Multiset.set_eq_iff_mset_eq_distinct 
           [where x=js and y="[0..<k + 1]"] by simp
   thus "js <~~> [0..<k + 1]" 
-    using Permutation.mset_eq_perm [where xs=js and ys="[0..<k + 1]"] 
+    using mset_eq_perm [where xs=js and ys="[0..<k + 1]"] 
     by simp
 qed
 
@@ -1517,7 +1517,7 @@ proof (rule ccontr)
   let ?r = "i - j"
 
   from A1 and A3 have "distinct (xs @ ys)" 
-    using Permutation.perm_distinct_iff [where xs="xs @ ys"] by auto
+    using perm_distinct_iff [where xs="xs @ ys"] by auto
   hence xs_ys_inter_empty: "set xs \<inter> set ys = {}" by simp
 
   from A2 and Figure_7_trans have
@@ -1528,7 +1528,7 @@ proof (rule ccontr)
     proof -
       have "i \<in> set js" using A4 and A3 by simp
       hence "i \<in> set [0..<k + 1]" 
-        using A1 and Permutation.perm_set_eq by blast
+        using A1 and perm_set_eq by blast
       hence "i \<le> k" by auto
       thus ?thesis using i_j by simp
     qed
@@ -1560,12 +1560,12 @@ proof -
     by blast
   hence "sorted js" using partitions_sorted by blast
   moreover have "distinct js" 
-    using A1 and Permutation.perm_distinct_iff and List.distinct_upt by blast
+    using A1 and perm_distinct_iff and List.distinct_upt by blast
   moreover have "sorted [0..<k + 1]"
     using List.sorted_upt by blast 
   moreover have "distinct [0..<k + 1]" by simp
   moreover have "set js = set [0..<k + 1]" 
-    using A1 and Permutation.perm_set_eq by blast
+    using A1 and perm_set_eq by blast
   ultimately show "js = [0..<k + 1]" using List.sorted_distinct_set_unique 
     by blast
 qed
