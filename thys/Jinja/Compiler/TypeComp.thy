@@ -29,11 +29,7 @@ definition "after E A ST e = ty\<^sub>i' (ty E e # ST) E (A \<squnion> \<A> e)"
 end
 
 lemma (in TC0) ty_def2 [simp]: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> ty E e = T"
-(*<*)
-apply (unfold ty_def)
-apply(blast intro: the_equality WT\<^sub>1_unique)
-done
-(*>*)
+(*<*)by(unfold ty_def) (blast intro: the_equality WT\<^sub>1_unique)(*>*)
 
 lemma (in TC0) [simp]: "ty\<^sub>i' ST E None = None"
 (*<*)by (simp add: ty\<^sub>i'_def)(*>*)
@@ -143,9 +139,8 @@ lemma (in TC1) compT_sizes[simp]:
 shows "\<And>E A ST. size(compT E A ST e) = size(compE\<^sub>2 e) - 1"
 and "\<And>E A ST. size(compTs E A ST es) = size(compEs\<^sub>2 es)"
 (*<*)
-apply(induct e and es rule: compE\<^sub>2.induct compEs\<^sub>2.induct)
-apply(auto split:bop.splits nat_diff_split)
-done
+by(induct e and es rule: compE\<^sub>2.induct compEs\<^sub>2.induct)
+  (auto split:bop.splits nat_diff_split)
 (*>*)
 
 
@@ -214,15 +209,18 @@ lemma [iff]: "OK None \<in> states P mxs mxl"
 (*<*)by(simp add: JVM_states_unfold)(*>*)
 
 lemma (in TC0) after_in_states:
- "\<lbrakk> wf_prog p P; P,E \<turnstile>\<^sub>1 e :: T; set E \<subseteq> types P; set ST \<subseteq> types P;
-    size ST + max_stack e \<le> mxs \<rbrakk>
- \<Longrightarrow> OK (after E A ST e) \<in> states P mxs mxl"
+assumes wf: "wf_prog p P" and wt: "P,E \<turnstile>\<^sub>1 e :: T"
+  and Etypes: "set E \<subseteq> types P" and STtypes: "set ST \<subseteq> types P"
+  and stack: "size ST + max_stack e \<le> mxs"
+shows "OK (after E A ST e) \<in> states P mxs mxl"
 (*<*)
-apply(subgoal_tac "size ST + 1 \<le> mxs")
- apply(simp add: after_def ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
- apply(blast intro!:listI WT\<^sub>1_is_type)
-using max_stack1[of e] apply simp
-done
+proof -
+  have "size ST + 1 \<le> mxs" using max_stack1[of e] wt stack
+    by fastforce
+  then show ?thesis using assms
+    by(simp add: after_def ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
+      (blast intro!:listI WT\<^sub>1_is_type)
+qed
 (*>*)
 
 
@@ -230,9 +228,8 @@ lemma (in TC0) OK_ty\<^sub>i'_in_statesI[simp]:
   "\<lbrakk> set E \<subseteq> types P; set ST \<subseteq> types P; size ST \<le> mxs \<rbrakk>
   \<Longrightarrow> OK (ty\<^sub>i' ST E A) \<in> states P mxs mxl"
 (*<*)
-apply(simp add:ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
-apply(blast intro!:listI)
-done
+by(simp add:ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
+  (blast intro!:listI)
 (*>*)
 
 
@@ -327,10 +324,15 @@ lemma [simp]: "shift m (shift n xt) = shift (m+n) xt"
 
 lemma [simp]: "pcs (shift n xt) = {pc+n|pc. pc \<in> pcs xt}"
 (*<*)
-apply(auto simp:shift_def pcs_def)
-apply(rule_tac x = "x-n" in exI)
-apply (force split:nat_diff_split)
-done
+proof -
+  { fix x f t C h d
+    assume "(f,t,C,h,d) \<in> set xt" and "f + n \<le> x"
+      and "x < t + n"
+    then have "\<exists>pc. x = pc + n \<and> (\<exists>x\<in>set xt. pc \<in> (case x of (f, t, C, h, d) \<Rightarrow> {f..<t}))"
+      by(rule_tac x = "x-n" in exI) (force split:nat_diff_split)
+  }
+  then show ?thesis by(auto simp:shift_def pcs_def) fast
+qed
 (*>*)
 
 
@@ -338,9 +340,8 @@ lemma shift_compxE\<^sub>2:
 shows "\<And>pc pc' d. shift pc (compxE\<^sub>2 e pc' d) = compxE\<^sub>2 e (pc' + pc) d"
 and  "\<And>pc pc' d. shift pc (compxEs\<^sub>2 es pc' d) = compxEs\<^sub>2 es (pc' + pc) d"
 (*<*)
-apply(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
-apply(auto simp:shift_def ac_simps)
-done
+by(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
+  (auto simp:shift_def ac_simps)
 (*>*)
 
 
@@ -388,11 +389,14 @@ lemma wt_instr_appR:
 lemma relevant_entries_shift [simp]:
   "relevant_entries P i (pc+n) (shift n xt) = shift n (relevant_entries P i pc xt)"
 (*<*)
-  apply (induct xt)
-  apply (unfold relevant_entries_def shift_def)
-   apply simp
-  apply (auto simp add: is_relevant_entry_def)
-  done
+proof(induct xt)
+  case Nil
+  then show ?case by (simp add: relevant_entries_def shift_def)
+next
+  case (Cons a xt)
+  then show ?case 
+    by (auto simp add: relevant_entries_def shift_def is_relevant_entry_def)
+qed
 (*>*)
 
 
@@ -400,10 +404,10 @@ lemma [simp]:
   "xcpt_eff i P (pc+n) \<tau> (shift n xt) =
    map (\<lambda>(pc,\<tau>). (pc + n, \<tau>)) (xcpt_eff i P pc \<tau> xt)"
 (*<*)
-apply(simp add: xcpt_eff_def)
-apply(cases \<tau>)
-apply(auto simp add: shift_def)
-done
+proof -
+  obtain ST LT where "\<tau> = (ST, LT)" by(cases \<tau>) simp
+  then show ?thesis by(simp add: xcpt_eff_def) (auto simp add: shift_def)
+qed
 (*>*)
 
 
@@ -411,11 +415,7 @@ lemma  [simp]:
   "app\<^sub>i (i, P, pc, m, T, \<tau>) \<Longrightarrow>
    eff i P (pc+n) (shift n xt) (Some \<tau>) =
    map (\<lambda>(pc,\<tau>). (pc+n,\<tau>)) (eff i P pc xt (Some \<tau>))"
-(*<*)
-apply(simp add:eff_def norm_eff_def)
-apply(cases "i",auto)
-done
-(*>*)
+(*<*)by(cases "i") (auto simp add:eff_def norm_eff_def)(*>*)
 
 
 lemma [simp]:
@@ -424,40 +424,61 @@ lemma [simp]:
 
 
 lemma wt_instr_appL:
-  "\<lbrakk> P,T,m,mpc,xt \<turnstile> i,pc :: \<tau>s; pc < size \<tau>s; mpc \<le> size \<tau>s \<rbrakk>
-  \<Longrightarrow> P,T,m,mpc + size \<tau>s',shift (size \<tau>s') xt \<turnstile> i,pc+size \<tau>s' :: \<tau>s'@\<tau>s"
+assumes "P,T,m,mpc,xt \<turnstile> i,pc :: \<tau>s" and "pc < size \<tau>s" and "mpc \<le> size \<tau>s"
+shows "P,T,m,mpc + size \<tau>s',shift (size \<tau>s') xt \<turnstile> i,pc+size \<tau>s' :: \<tau>s'@\<tau>s"
 (*<*)
-apply(auto simp:wt_instr_def app_def)
-prefer 2 apply(fast)
-prefer 2 apply(fast)
-apply(cases "i",auto)
-done
+proof -
+  let ?t = "(\<tau>s'@\<tau>s)!(pc+size \<tau>s')"
+  show ?thesis
+  proof(cases ?t)
+    case (Some \<tau>)
+    obtain ST LT where [simp]: "\<tau> = (ST, LT)" by(cases \<tau>) simp
+    have "app\<^sub>i (i, P, pc + length \<tau>s', m, T, \<tau>)"
+      using Some assms by(cases "i") (auto simp:wt_instr_def app_def)
+    moreover {
+      fix pc' \<tau>' assume "(pc',\<tau>') \<in> set (eff i P pc xt ?t)"
+      then have "P \<turnstile> \<tau>' \<le>' \<tau>s!pc'" and "pc' < mpc"
+        using Some assms by(auto simp:wt_instr_def app_def)
+    }
+    ultimately show ?thesis using Some assms
+      by(fastforce simp:wt_instr_def app_def)
+  qed (auto simp:wt_instr_def app_def)
+qed
 (*>*)
 
 
 lemma wt_instr_Cons:
-  "\<lbrakk> P,T,m,mpc - 1,[] \<turnstile> i,pc - 1 :: \<tau>s;
-     0 < pc; 0 < mpc; pc < size \<tau>s + 1; mpc \<le> size \<tau>s + 1 \<rbrakk>
-  \<Longrightarrow> P,T,m,mpc,[] \<turnstile> i,pc :: \<tau>#\<tau>s"
+assumes wti: "P,T,m,mpc - 1,[] \<turnstile> i,pc - 1 :: \<tau>s"
+  and pcl: "0 < pc" and mpcl: "0 < mpc"
+  and pcu: "pc < size \<tau>s + 1" and mpcu: "mpc \<le> size \<tau>s + 1"
+shows "P,T,m,mpc,[] \<turnstile> i,pc :: \<tau>#\<tau>s"
 (*<*)
-apply(drule wt_instr_appL[where \<tau>s' = "[\<tau>]"])
-apply arith
-apply arith
-apply (simp split:nat_diff_split_asm)
-done
+proof -
+  have "pc - 1 < length \<tau>s" using pcl pcu by arith
+  moreover have "mpc - 1 \<le> length \<tau>s" using mpcl mpcu by arith
+  ultimately have
+    "P,T,m,mpc - 1 + length [\<tau>],shift (length [\<tau>]) [] \<turnstile> i,pc - 1 + length [\<tau>] :: [\<tau>] @ \<tau>s"
+    by(rule wt_instr_appL[where \<tau>s' = "[\<tau>]", OF wti])
+  then show ?thesis using pcl mpcl by (simp split:nat_diff_split_asm)
+qed
 (*>*)
 
 
 lemma wt_instr_append:
-  "\<lbrakk> P,T,m,mpc - size \<tau>s',[] \<turnstile> i,pc - size \<tau>s' :: \<tau>s;
-     size \<tau>s' \<le> pc; size \<tau>s' \<le> mpc; pc < size \<tau>s + size \<tau>s'; mpc \<le> size \<tau>s + size \<tau>s' \<rbrakk>
-  \<Longrightarrow> P,T,m,mpc,[] \<turnstile> i,pc :: \<tau>s'@\<tau>s"
+assumes wti: "P,T,m,mpc - size \<tau>s',[] \<turnstile> i,pc - size \<tau>s' :: \<tau>s"
+  and pcl: "size \<tau>s' \<le> pc" and mpcl: "size \<tau>s' \<le> mpc"
+  and pcu: "pc < size \<tau>s + size \<tau>s'" and mpcu: "mpc \<le> size \<tau>s + size \<tau>s'"
+shows "P,T,m,mpc,[] \<turnstile> i,pc :: \<tau>s'@\<tau>s"
 (*<*)
-apply(drule wt_instr_appL[where \<tau>s' = \<tau>s'])
-apply arith
-apply arith
-apply (simp split:nat_diff_split_asm)
-done
+proof -
+  have "pc - length \<tau>s' < length \<tau>s" using pcl pcu by arith
+  moreover have "mpc - length \<tau>s' \<le> length \<tau>s" using mpcl mpcu by arith
+thm wt_instr_appL[where \<tau>s' = "\<tau>s'", OF wti]
+  ultimately have "P,T,m,mpc - length \<tau>s' + length \<tau>s',shift (length \<tau>s') []
+                     \<turnstile> i,pc - length \<tau>s' + length \<tau>s' :: \<tau>s' @ \<tau>s"
+    by(rule wt_instr_appL[where \<tau>s' = "\<tau>s'", OF wti])
+  then show ?thesis using pcl mpcl by (simp split:nat_diff_split_asm)
+qed
 (*>*)
 
 
@@ -500,23 +521,40 @@ lemma (in TC2) wt_instrs_extR:
 
 
 lemma (in TC2) wt_instrs_ext:
-  "\<lbrakk> \<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2; \<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>s\<^sub>2; size \<tau>s\<^sub>1 = size is\<^sub>1 \<rbrakk>
-  \<Longrightarrow> \<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1 @ shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
+assumes wt\<^sub>1: "\<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2" and wt\<^sub>2: "\<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>s\<^sub>2"
+  and \<tau>s_size: "size \<tau>s\<^sub>1 = size is\<^sub>1"
+ shows "\<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1 @ shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
 (*<*)
-apply(clarsimp simp:wt_instrs_def)
-apply(rule conjI, fastforce)
-apply(rule conjI, fastforce)
-apply clarsimp
-apply(rule conjI, fastforce simp:wt_instr_appRx)
-apply clarsimp
-apply(erule_tac x = "pc - size is\<^sub>1" in allE)+
-apply(thin_tac "P \<longrightarrow> Q" for P Q)
-apply(erule impE, arith) 
-apply(drule_tac \<tau>s' = "\<tau>s\<^sub>1" in wt_instr_appL)
-  apply arith
- apply simp
-apply(fastforce simp add:add.commute intro!: wt_instr_appLx)
-done
+proof -
+  let ?is = "is\<^sub>1@is\<^sub>2" and ?xt = "xt\<^sub>1 @ shift (size is\<^sub>1) xt\<^sub>2"
+    and ?\<tau>s = "\<tau>s\<^sub>1@\<tau>s\<^sub>2"
+  have "size ?is < size ?\<tau>s" using wt\<^sub>2 \<tau>s_size by(fastforce simp:wt_instrs_def)
+  moreover have "pcs ?xt \<subseteq> {0..<size ?is}" using wt\<^sub>1 wt\<^sub>2
+    by(fastforce simp:wt_instrs_def)
+  moreover {
+    fix pc assume pc: "pc<size ?is"
+    have "P,T\<^sub>r,mxs,size ?\<tau>s,?xt \<turnstile> ?is!pc,pc :: ?\<tau>s"
+    proof(cases "pc < length is\<^sub>1")
+      case True then show ?thesis using wt\<^sub>1 pc
+        by(fastforce simp: wt_instrs_def wt_instr_appRx)
+    next
+      case False
+      then have "pc - length is\<^sub>1 < length is\<^sub>2" using pc by fastforce
+      then have "P,T\<^sub>r,mxs,length \<tau>s\<^sub>2,xt\<^sub>2 \<turnstile> is\<^sub>2 ! (pc - length is\<^sub>1),pc - length is\<^sub>1 :: \<tau>s\<^sub>2"
+        using wt\<^sub>2 by(clarsimp simp: wt_instrs_def)
+      moreover have "pc - length is\<^sub>1 < length \<tau>s\<^sub>2" using pc wt\<^sub>2
+        by(clarsimp simp: wt_instrs_def) arith
+      moreover have "length \<tau>s\<^sub>2 \<le> length \<tau>s\<^sub>2" by simp
+      moreover have "pc - length is\<^sub>1 + length \<tau>s\<^sub>1 \<notin> pcs xt\<^sub>1" using wt\<^sub>1 \<tau>s_size
+        by(fastforce simp: wt_instrs_def)
+      ultimately have "P,T\<^sub>r,mxs,length \<tau>s\<^sub>2 + length \<tau>s\<^sub>1,xt\<^sub>1 @ shift (length \<tau>s\<^sub>1) xt\<^sub>2
+                         \<turnstile> is\<^sub>2 ! (pc - length is\<^sub>1),pc - length is\<^sub>1 + length \<tau>s\<^sub>1 :: \<tau>s\<^sub>1 @ \<tau>s\<^sub>2"
+        by(rule wt_instr_appLx[OF wt_instr_appL[where \<tau>s' = "\<tau>s\<^sub>1"]])
+      then show ?thesis using False \<tau>s_size by(simp add:add.commute)
+    qed
+  }
+  ultimately show ?thesis by(clarsimp simp:wt_instrs_def)
+qed
 (*>*)
 
 corollary (in TC2) wt_instrs_ext2:
@@ -548,27 +586,33 @@ qed
 
 
 corollary (in TC2) wt_instrs_app_last[trans]:
-  "\<lbrakk> \<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>#\<tau>s\<^sub>2; \<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1;
-     last \<tau>s\<^sub>1 = \<tau>;  size \<tau>s\<^sub>1 = size is\<^sub>1+1 \<rbrakk>
-  \<Longrightarrow> \<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1@shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
+assumes "\<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>#\<tau>s\<^sub>2" "\<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1"
+  "last \<tau>s\<^sub>1 = \<tau>" "size \<tau>s\<^sub>1 = size is\<^sub>1+1"
+shows "\<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1@shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
 (*<*)
-apply(cases \<tau>s\<^sub>1 rule:rev_cases)
- apply simp
-apply(simp add:wt_instrs_app)
-done
+using assms proof(cases \<tau>s\<^sub>1 rule:rev_cases)
+  case (snoc ys y)
+  then show ?thesis using assms by(simp add:wt_instrs_app)
+qed simp
 (*>*)
 
 
 corollary (in TC2) wt_instrs_append_last[trans]:
-  "\<lbrakk> \<turnstile> is,xt [::] \<tau>s; P,T\<^sub>r,mxs,mpc,[] \<turnstile> i,pc :: \<tau>s;
-     pc = size is; mpc = size \<tau>s; size is + 1 < size \<tau>s \<rbrakk>
-  \<Longrightarrow> \<turnstile> is@[i],xt [::] \<tau>s"
+assumes wtis: "\<turnstile> is,xt [::] \<tau>s" and wti: "P,T\<^sub>r,mxs,mpc,[] \<turnstile> i,pc :: \<tau>s"
+  and pc: "pc = size is" and mpc: "mpc = size \<tau>s" and is_\<tau>s: "size is + 1 < size \<tau>s"
+shows "\<turnstile> is@[i],xt [::] \<tau>s"
 (*<*)
-apply(clarsimp simp add:wt_instrs_def)
-apply(rule conjI, fastforce)
-apply(fastforce intro!:wt_instr_appLx[where xt = "[]",simplified]
-               dest!:less_antisym)
-done
+proof -
+  have pc_xt: "pc \<notin> pcs xt" using wtis pc by (fastforce simp:wt_instrs_def)
+  have "pcs xt \<subseteq> {..<Suc (length is)}" using wtis by (fastforce simp:wt_instrs_def)
+  moreover {
+    fix pc' assume pc': "\<not> pc' < length is" "pc' < Suc (length is)"
+    have "P,T\<^sub>r,mxs,length \<tau>s,xt \<turnstile> i,pc' :: \<tau>s"
+      using wt_instr_appLx[where xt = "[]",simplified,OF wti pc_xt]
+            less_antisym[OF pc'] pc mpc by simp
+  }
+  ultimately show ?thesis using wtis is_\<tau>s by(clarsimp simp add:wt_instrs_def)
+qed
 (*>*)
 
 
@@ -609,24 +653,43 @@ qed
 
 
 lemma (in TC2) wt_instrs_last_incr[trans]:
-  "\<lbrakk> \<turnstile> is,xt [::] \<tau>s@[\<tau>]; P \<turnstile> \<tau> \<le>' \<tau>' \<rbrakk> \<Longrightarrow> \<turnstile> is,xt [::] \<tau>s@[\<tau>']"
+assumes wtis: "\<turnstile> is,xt [::] \<tau>s@[\<tau>]" and ss: "P \<turnstile> \<tau> \<le>' \<tau>'"
+shows "\<turnstile> is,xt [::] \<tau>s@[\<tau>']"
 (*<*)
-apply(clarsimp simp add:wt_instrs_def wt_instr_def)
-apply(rule conjI)
-apply(fastforce)
-apply(clarsimp)
-apply(rename_tac pc' tau')
-apply(erule allE, erule (1) impE)
-apply(clarsimp)
-apply(drule (1) bspec)
-apply(clarsimp)
-apply(subgoal_tac "pc' = size \<tau>s")
-prefer 2
-apply(clarsimp simp:app_def)
-apply(drule (1) bspec)
-apply(clarsimp)
-apply(auto elim!:sup_state_opt_trans)
-done
+proof -
+  let ?\<tau>s = "\<tau>s@[\<tau>]" and ?\<tau>s' = "\<tau>s@[\<tau>']"
+  { fix pc assume pc: "pc< size is"
+    let ?i = "is!pc"
+    have app_pc: "app (is ! pc) P mxs T\<^sub>r pc (length ?\<tau>s) xt (\<tau>s ! pc)"
+      using wtis pc by(clarsimp simp add:wt_instrs_def wt_instr_def)
+    then have Apc\<tau>': "\<And>pc' \<tau>'. (pc',\<tau>') \<in> set (eff ?i P pc xt (?\<tau>s!pc))
+     \<Longrightarrow> pc' < length ?\<tau>s"
+      using wtis pc by(fastforce simp add:wt_instrs_def app_def)
+    have Aepc\<tau>': "\<And>pc' \<tau>'. (pc',\<tau>') \<in> set (eff ?i P pc xt (?\<tau>s!pc))
+     \<Longrightarrow> P \<turnstile> \<tau>' \<le>' ?\<tau>s!pc'"
+      using wtis pc by(fastforce simp add:wt_instrs_def wt_instr_def)
+    { fix pc1 \<tau>1 assume pc\<tau>1: "(pc1,\<tau>1) \<in> set (eff ?i P pc xt (?\<tau>s'!pc))"
+      then have epc\<tau>': "(pc1,\<tau>1) \<in> set (eff ?i P pc xt (?\<tau>s!pc))"
+          using wtis pc by(simp add:wt_instrs_def)
+      have "P \<turnstile> \<tau>1 \<le>' ?\<tau>s'!pc1"
+      proof(cases "pc1 < length \<tau>s")
+        case True
+        then show ?thesis using wtis pc pc\<tau>1
+          by(fastforce simp add:wt_instrs_def wt_instr_def)
+      next
+        case False
+        then have "pc1 < length ?\<tau>s" using Apc\<tau>'[OF epc\<tau>'] by simp
+        then have [simp]: "pc1 = size \<tau>s" using False by clarsimp
+        have "P \<turnstile> \<tau>1 \<le>' \<tau>" using Aepc\<tau>'[OF epc\<tau>'] by simp
+        then have "P \<turnstile> \<tau>1 \<le>' \<tau>'" by(rule sup_state_opt_trans[OF _ ss])
+        then show ?thesis by simp
+      qed
+    }
+    then have "P,T\<^sub>r,mxs,size ?\<tau>s',xt \<turnstile> is!pc,pc :: ?\<tau>s'" using wtis pc
+      by(clarsimp simp add:wt_instrs_def wt_instr_def)
+  }
+  then show ?thesis using wtis by(simp add:wt_instrs_def)
+qed
 (*>*)
 
 
@@ -744,41 +807,92 @@ declare [[simproc del: list_to_set_comprehension]]
 (*>*)
 
 lemma (in TC2) wt_instrs_xapp[trans]:
-  "\<lbrakk> \<turnstile> is\<^sub>1 @ is\<^sub>2, xt [::] \<tau>s\<^sub>1 @ ty\<^sub>i' (Class C # ST) E A # \<tau>s\<^sub>2;
-     \<forall>\<tau> \<in> set \<tau>s\<^sub>1. \<forall>ST' LT'. \<tau> = Some(ST',LT') \<longrightarrow> 
-      size ST \<le> size ST' \<and> P \<turnstile> Some (drop (size ST' - size ST) ST',LT') \<le>' ty\<^sub>i' ST E A;
-     size is\<^sub>1 = size \<tau>s\<^sub>1; is_class P C; size ST < mxs  \<rbrakk> \<Longrightarrow>
-  \<turnstile> is\<^sub>1 @ is\<^sub>2, xt @ [(0,size is\<^sub>1 - 1,C,size is\<^sub>1,size ST)] [::] \<tau>s\<^sub>1 @ ty\<^sub>i' (Class C # ST) E A # \<tau>s\<^sub>2"
-(*<*)
-apply(simp add:wt_instrs_def)
-apply(rule conjI)
- apply(clarsimp)
- apply arith
-apply clarsimp
-apply(erule allE, erule (1) impE)
-apply(clarsimp simp add: wt_instr_def app_def eff_def)
-apply(rule conjI)
- apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
- apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
- apply (clarsimp simp add: xcpt_app_def relevant_entries_def)
- apply (simp add: nth_append is_relevant_entry_def split!: if_splits)
-  apply (drule_tac x="\<tau>s\<^sub>1!pc" in bspec)
-   apply (blast intro: nth_mem) 
-  apply fastforce
-apply (rule conjI)
- apply clarsimp
- apply (erule disjE, blast)
- apply (erule disjE, blast)
- apply (clarsimp simp add: xcpt_eff_def relevant_entries_def split: if_split_asm)
-apply clarsimp
-apply (erule disjE, blast)
-apply (erule disjE, blast)
-apply (clarsimp simp add: xcpt_eff_def relevant_entries_def split: if_split_asm)
-apply (simp add: nth_append is_relevant_entry_def split: if_split_asm)
- apply (drule_tac x = "\<tau>s\<^sub>1!pc" in bspec)
-  apply (blast intro: nth_mem) 
- apply (fastforce simp add: ty\<^sub>i'_def)
-done
+assumes wtis: "\<turnstile> is\<^sub>1 @ is\<^sub>2, xt [::] \<tau>s\<^sub>1 @ ty\<^sub>i' (Class C # ST) E A # \<tau>s\<^sub>2"
+  and P_\<tau>s\<^sub>1: "\<forall>\<tau> \<in> set \<tau>s\<^sub>1. \<forall>ST' LT'. \<tau> = Some(ST',LT') \<longrightarrow> 
+    size ST \<le> size ST' \<and> P \<turnstile> Some (drop (size ST' - size ST) ST',LT') \<le>' ty\<^sub>i' ST E A"
+  and is_\<tau>s: "size is\<^sub>1 = size \<tau>s\<^sub>1" and PC: "is_class P C" and ST_mxs: "size ST < mxs"
+shows "\<turnstile> is\<^sub>1 @ is\<^sub>2, xt @ [(0,size is\<^sub>1 - 1,C,size is\<^sub>1,size ST)] [::] \<tau>s\<^sub>1 @ ty\<^sub>i' (Class C # ST) E A # \<tau>s\<^sub>2"
+(*<*)(is "\<turnstile> ?is, xt@[?xte] [::] ?\<tau>s" is "\<turnstile> ?is, ?xt' [::] ?\<tau>s")
+proof -
+  let ?is = "is\<^sub>1 @ is\<^sub>2" and ?\<tau>s = "\<tau>s\<^sub>1 @ ty\<^sub>i' (Class C # ST) E A # \<tau>s\<^sub>2"
+  let ?xte = "(0,size is\<^sub>1 - 1,C,size is\<^sub>1,size ST)"
+  let ?xt' = "xt @ [?xte]"
+  have P_\<tau>s\<^sub>1': "\<And>\<tau>. \<tau> \<in> set \<tau>s\<^sub>1 \<Longrightarrow> (\<forall>ST' LT'. \<tau> = Some(ST',LT') \<longrightarrow>
+     size ST \<le> size ST' \<and> P \<turnstile> Some (drop (size ST' - size ST) ST',LT') \<le>' ty\<^sub>i' ST E A)"
+    using P_\<tau>s\<^sub>1 by fast
+  have "size ?is < size ?\<tau>s" and "pcs ?xt' \<subseteq> {0..<size ?is}"
+    and P_pc: "\<And>pc. pc< size ?is \<Longrightarrow> P,T\<^sub>r,mxs,size ?\<tau>s,xt \<turnstile> ?is!pc,pc :: ?\<tau>s"
+    using wtis by(simp_all add:wt_instrs_def)
+  moreover {
+    fix pc let ?mpc = "size ?\<tau>s" and ?i = "?is!pc" and ?t = "?\<tau>s!pc"
+    assume "pc< size ?is"
+    then have wti: "P,T\<^sub>r,mxs,?mpc,xt \<turnstile> ?i,pc :: ?\<tau>s" by(rule P_pc)
+    then have app: "app ?i P mxs T\<^sub>r pc ?mpc xt ?t"
+       and eff_ss: "\<And>pc' \<tau>'. (pc',\<tau>') \<in> set (eff ?i P pc xt (?\<tau>s!pc))
+                           \<Longrightarrow> P \<turnstile> \<tau>' \<le>' ?\<tau>s!pc'"
+      by(fastforce simp add: wt_instr_def)+
+    have "app ?i P mxs T\<^sub>r pc ?mpc ?xt' ?t
+             \<and> (\<forall>(pc',\<tau>') \<in> set (eff ?i P pc ?xt' ?t). P \<turnstile> \<tau>' \<le>' ?\<tau>s!pc')"
+    proof (cases ?t)
+      case (Some \<tau>)
+      obtain ST' LT' where \<tau>: "\<tau> = (ST', LT')" by(cases \<tau>) simp
+      have app\<^sub>i: "app\<^sub>i (?i,P,pc,mxs,T\<^sub>r,\<tau>)" and xcpt_app: "xcpt_app ?i P pc mxs xt \<tau>"
+         and eff_pc: "\<And>pc' \<tau>'. (pc',\<tau>') \<in> set (eff ?i P pc xt ?t) \<Longrightarrow> pc' < ?mpc"
+        using Some app by(fastforce simp add: app_def)+
+      have "xcpt_app ?i P pc mxs ?xt' \<tau>"
+      proof(cases "pc < length \<tau>s\<^sub>1 - 1")
+        case False then show ?thesis using Some \<tau> is_\<tau>s xcpt_app
+          by (clarsimp simp: xcpt_app_def relevant_entries_def
+                             is_relevant_entry_def)
+      next
+        case True
+        then have True': "pc < length \<tau>s\<^sub>1" by simp
+        then have "\<tau>s\<^sub>1 ! pc = ?t" by(fastforce simp: nth_append)
+        moreover have \<tau>s\<^sub>1_pc: "\<tau>s\<^sub>1 ! pc \<in> set \<tau>s\<^sub>1" by(rule nth_mem[OF True'])
+        ultimately show ?thesis
+         using Some \<tau> PC ST_mxs xcpt_app P_\<tau>s\<^sub>1'[OF \<tau>s\<^sub>1_pc]
+          by (simp add: xcpt_app_def relevant_entries_def)
+      qed
+      moreover {
+        fix pc' \<tau>' assume efft: "(pc',\<tau>') \<in> set (eff ?i P pc ?xt' ?t)"
+        have "pc' < ?mpc \<and> P \<turnstile> \<tau>' \<le>' ?\<tau>s!pc'" (is "?P1 \<and> ?P2")
+        proof(cases "(pc',\<tau>') \<in> set (eff ?i P pc xt ?t)")
+          case True
+          have ?P1 using True by(rule eff_pc)
+          moreover have ?P2 using True by(rule eff_ss)
+          ultimately show ?thesis by simp
+        next
+          case False
+          then have xte: "(pc',\<tau>') \<in> set (xcpt_eff ?i P pc \<tau> [?xte])"
+            using efft Some by(clarsimp simp: eff_def)
+          then have ?P1 using Some \<tau> is_\<tau>s
+            by(clarsimp simp: xcpt_eff_def relevant_entries_def split: if_split_asm)
+          moreover have ?P2
+          proof(cases "pc < length \<tau>s\<^sub>1 - 1")
+            case False': False
+            then show ?thesis using False Some \<tau> xte is_\<tau>s
+              by(simp add: xcpt_eff_def relevant_entries_def is_relevant_entry_def)
+          next
+            case True
+            then have True': "pc < length \<tau>s\<^sub>1" by simp
+            have \<tau>s\<^sub>1_pc: "\<tau>s\<^sub>1 ! pc \<in> set \<tau>s\<^sub>1" by(rule nth_mem[OF True'])
+            have "P \<turnstile> \<lfloor>(Class C # drop (length ST' - length ST) ST', LT')\<rfloor>
+                         \<le>' ty\<^sub>i' (Class C # ST) E A"
+               using True' Some \<tau> P_\<tau>s\<^sub>1'[OF \<tau>s\<^sub>1_pc]
+              by (fastforce simp: nth_append ty\<^sub>i'_def)
+            then show ?thesis using \<tau> xte is_\<tau>s
+              by(simp add: xcpt_eff_def relevant_entries_def split: if_split_asm)
+          qed
+          ultimately show ?thesis by simp
+        qed
+      }
+      ultimately show ?thesis using Some app\<^sub>i by(fastforce simp add: app_def)
+    qed simp
+    then have "P,T\<^sub>r,mxs,size ?\<tau>s,?xt' \<turnstile> ?is!pc,pc :: ?\<tau>s"
+      by(simp add: wt_instr_def)
+  }
+  ultimately show ?thesis by(simp add:wt_instrs_def)
+qed
 
 declare [[simproc add: list_to_set_comprehension]]
 declare nth_append[simp]
@@ -786,21 +900,21 @@ declare nth_append[simp]
 
 lemma drop_Cons_Suc:
   "\<And>xs. drop n xs = y#ys \<Longrightarrow> drop (Suc n) xs = ys"
-  apply (induct n)
-   apply simp
-  apply (simp add: drop_Suc)
-  done
+proof(induct n)
+  case (Suc n) then show ?case by(simp add: drop_Suc)
+qed simp
 
 lemma drop_mess:
-  "\<lbrakk>Suc (length xs\<^sub>0) \<le> length xs; drop (length xs - Suc (length xs\<^sub>0)) xs = x # xs\<^sub>0\<rbrakk> 
-  \<Longrightarrow> drop (length xs - length xs\<^sub>0) xs = xs\<^sub>0"
-apply (cases xs)
- apply simp
-apply (simp add: Suc_diff_le)
-apply (case_tac "length list - length xs\<^sub>0")
- apply simp
-apply (simp add: drop_Cons_Suc)
-done
+assumes "Suc (length xs\<^sub>0) \<le> length xs"
+  and "drop (length xs - Suc (length xs\<^sub>0)) xs = x # xs\<^sub>0"
+shows "drop (length xs - length xs\<^sub>0) xs = xs\<^sub>0"
+using assms proof(cases xs)
+  case (Cons a list) then show ?thesis using assms
+  proof(cases "length list - length xs\<^sub>0")
+    case Suc then show ?thesis using Cons assms
+      by (simp add: Suc_diff_le drop_Cons_Suc)
+  qed simp
+qed simp
 
 (*<*)
 declare (in TC0)
@@ -1172,22 +1286,31 @@ lemma [simp]: "states (compP f P) mxs mxl = states P mxs mxl"
 (*<*)by (simp add: JVM_states_unfold)(*>*)
 
 lemma [simp]: "app\<^sub>i (i, compP f P, pc, mpc, T, \<tau>) = app\<^sub>i (i, P, pc, mpc, T, \<tau>)"
-(*<*)
-  apply (cases \<tau>)  
-  apply (cases i)
-  apply auto
-   apply (fastforce dest!: sees_method_compPD)
-  apply (force dest: sees_method_compP)
-  done
+(*<*)(is "?A = ?B")
+proof -
+  obtain ST LT where \<tau>: "\<tau> = (ST, LT)" by(cases \<tau>) simp
+  then show ?thesis proof(cases i)
+    case Invoke show ?thesis
+    proof(rule iffI)
+      assume ?A then show ?B using Invoke \<tau>
+        by auto (fastforce dest!: sees_method_compPD)
+    next
+      assume ?B then show ?A using Invoke \<tau>
+        by auto (force dest: sees_method_compP)
+    qed
+  qed auto
+qed
 (*>*)
   
 lemma [simp]: "is_relevant_entry (compP f P) i = is_relevant_entry P i"
 (*<*)
-  apply (rule ext)+
-  apply (unfold is_relevant_entry_def)
-  apply (cases i)
-  apply auto
-  done
+proof -
+  { fix pc e
+    have "is_relevant_entry (compP f P) i pc e = is_relevant_entry P i pc e"
+      by(cases i) (auto simp: is_relevant_entry_def)
+  }
+  then show ?thesis by fast
+qed
 (*>*)
 
 lemma [simp]: "relevant_entries (compP f P) i pc xt = relevant_entries P i pc xt"
@@ -1195,25 +1318,21 @@ lemma [simp]: "relevant_entries (compP f P) i pc xt = relevant_entries P i pc xt
 
 lemma [simp]: "app i (compP f P) mpc T pc mxl xt \<tau> = app i P mpc T pc mxl xt \<tau>"
 (*<*)
-  apply (simp add: app_def xcpt_app_def eff_def xcpt_eff_def norm_eff_def)
-  apply (fastforce simp add: image_def)
-  done
+by (simp add: app_def xcpt_app_def eff_def xcpt_eff_def norm_eff_def)
+   (fastforce simp add: image_def)
 (*>*)
 
-lemma [simp]: "app i P mpc T pc mxl xt \<tau> \<Longrightarrow> eff i (compP f P) pc xt \<tau> = eff i P pc xt \<tau>"
+lemma [simp]:
+assumes "app i P mpc T pc mxl xt \<tau>"
+shows "eff i (compP f P) pc xt \<tau> = eff i P pc xt \<tau>"
 (*<*)
-  apply (clarsimp simp add: eff_def norm_eff_def xcpt_eff_def app_def)
-  apply (cases i)
-  apply auto
-  done
+using assms
+proof(clarsimp simp: eff_def norm_eff_def xcpt_eff_def app_def, cases i)
+qed auto
 (*>*)
 
 lemma [simp]: "subtype (compP f P) = subtype P"
-(*<*)
-  apply (rule ext)+
-  apply (simp)
-  done
-(*>*)
+(*<*)by (rule ext)+ simp(*>*)
   
 lemma [simp]: "compP f P \<turnstile> \<tau> \<le>' \<tau>' = P \<turnstile> \<tau> \<le>' \<tau>'"
 (*<*) by (simp add: sup_state_opt_def sup_state_def sup_ty_opt_def)(*>*)
@@ -1234,35 +1353,45 @@ lemma compT_method:
     and [simp]: "mxl\<^sub>0 \<equiv> max_vars e"
   assumes mxs: "max_stack e = mxs"
     and mxl: "Suc (length Ts + max_vars e) = mxl"
-  assumes assm: "wf_prog p P" "P,E \<turnstile>\<^sub>1 e :: T" "\<D> e A" "\<B> e (size E)"
-    "set E \<subseteq> types P" "P \<turnstile> T \<le> T\<^sub>r"
+  assumes wf: "wf_prog p P" and wte: "P,E \<turnstile>\<^sub>1 e :: T" and \<D>: "\<D> e A"
+    and \<B>: "\<B> e (size E)" and E_P: "set E \<subseteq> types P" and wid: "P \<turnstile> T \<le> T\<^sub>r"
   shows "wt_method (compP\<^sub>2 P) C Ts T\<^sub>r mxs mxl\<^sub>0 (compE\<^sub>2 e @ [Return])
     (compxE\<^sub>2 e 0 0) (ty\<^sub>i' [] E A # compT\<^sub>a E A [] e)"
-(*<*)
-using assms apply (simp add: wt_method_def compT\<^sub>a_def after_def mxl)
-apply (rule conjI)
-apply (simp add: check_types_def OK_ty\<^sub>i'_in_statesI)
-apply (rule conjI)
-apply (drule (1) WT\<^sub>1_is_type)
-apply simp
-apply (insert max_stack1 [of e])
-apply (rule OK_ty\<^sub>i'_in_statesI) apply (simp_all add: mxs)[3]
-apply (erule compT_states(1))
-apply assumption
-apply (simp_all add: mxs mxl)[4]
-apply (rule conjI)
-apply (auto simp add: wt_start_def ty\<^sub>i'_def ty\<^sub>l_def list_all2_conv_all_nth
-  nth_Cons mxl split: nat.split dest: less_antisym)[1]
-apply (frule (1) TC2.compT_wt_instrs [of P _ _ _ _ "[]" "max_stack e" "Suc (length Ts + max_vars e)" T\<^sub>r])
-apply simp_all
-apply (clarsimp simp: after_def)
-apply hypsubst_thin
-apply (rule conjI)
-apply (clarsimp simp: wt_instrs_def after_def mxl mxs)
-apply clarsimp
-apply (drule (1) less_antisym)
-apply (clarsimp simp: wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^sub>i'_def)
-done
+(*<*)(is "wt_method ?P C Ts T\<^sub>r mxs mxl\<^sub>0 ?is ?xt ?\<tau>s")
+proof -
+  let ?n = "length E + mxl\<^sub>0"
+  have wt_compE: "P,T\<^sub>r,mxs \<turnstile> compE\<^sub>2 e, compxE\<^sub>2 e 0 (length []) [::]
+        TC0.ty\<^sub>i' ?n [] E A # TC1.compT P ?n E A [] e @[TC0.after P ?n E A [] e]"
+    using mxs TC2.compT_wt_instrs [OF wte \<D> \<B>, of "[]" mxs ?n T\<^sub>r] by simp
+
+  have "OK (ty\<^sub>i' [T] E A') \<in> states P mxs mxl"
+    using mxs WT\<^sub>1_is_type[OF wf wte E_P] max_stack1[of e] OK_ty\<^sub>i'_in_statesI[OF E_P]
+      by simp
+  moreover have "OK ` set (compT E A [] e) \<subseteq> states P mxs mxl"
+    using mxs mxl wid compT_states(1)[OF wf wte E_P] by simp
+  ultimately have "check_types ?P mxs ?n (map OK ?\<tau>s)"
+    using mxl wte E_P by (simp add: compT\<^sub>a_def after_def check_types_def)
+  moreover have "wt_start ?P C Ts mxl\<^sub>0 ?\<tau>s" using mxl
+    by (auto simp: wt_start_def ty\<^sub>i'_def ty\<^sub>l_def list_all2_conv_all_nth nth_Cons
+             split: nat.split)
+  moreover {
+    fix pc assume pc: "pc < size ?is"
+    then have "?P,T\<^sub>r,mxs,size ?is,?xt \<turnstile> ?is!pc,pc :: ?\<tau>s"
+    proof(cases "pc < length (compE\<^sub>2 e)")
+      case True
+      then show ?thesis using mxs wte wt_compE
+        by (clarsimp simp: compT\<^sub>a_def mxl after_def wt_instrs_def)
+    next
+      case False
+      have "length (compE\<^sub>2 e) = pc" using less_antisym[OF False] pc by simp
+      then show ?thesis using mxl wte E_P wid
+        by (clarsimp simp: compT\<^sub>a_def after_def wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^sub>i'_def)
+    qed
+  }
+  moreover have "0 < size ?is" and "size ?\<tau>s = size ?is"
+    using wte by (simp_all add: compT\<^sub>a_def)
+  ultimately show ?thesis by(simp add: wt_method_def)
+qed
 (*>*)
 
 end
@@ -1276,33 +1405,41 @@ definition compTP :: "J\<^sub>1_prog \<Rightarrow> ty\<^sub>P" where
   in  (TC0.ty\<^sub>i' mxl [] E A # TC1.compT\<^sub>a P mxl E A [] e))"
 
 theorem wt_compP\<^sub>2:
-  "wf_J\<^sub>1_prog P \<Longrightarrow> wf_jvm_prog (compP\<^sub>2 P)"
+assumes wf: "wf_J\<^sub>1_prog P" shows "wf_jvm_prog (compP\<^sub>2 P)"
 (*<*)
-  apply (simp add: wf_jvm_prog_def wf_jvm_prog_phi_def)
-  apply(rule_tac x = "compTP P" in exI)
-  apply (rule wf_prog_compPI)
-   prefer 2 apply assumption
-  apply (clarsimp simp add: wf_mdecl_def)
-  apply (simp add: compTP_def)
-  apply (rule TC2.compT_method [simplified])
-       apply (rule refl)
-       apply (rule refl)
-       apply assumption
-       apply assumption
-       apply assumption
-       apply assumption
-    apply (drule (1) sees_wf_mdecl)
-    apply (simp add: wf_mdecl_def)
-   apply (blast intro: sees_method_is_class)
-  apply assumption
-  done
+proof -
+  let ?\<Phi> = "compTP P" and ?f = compMb\<^sub>2
+  let ?wf\<^sub>2 = "\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt).
+              wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (?\<Phi> C M)"
+    and ?P = "compP ?f P"
+  { fix C M Ts T m
+    assume cM: "P \<turnstile> C sees M :  Ts\<rightarrow>T = m in C"
+      and wfm: "wf_mdecl wf_J\<^sub>1_mdecl P C (M,Ts,T,m)"
+    then have Ts_types: "\<forall>T'\<in>set Ts. is_type P T'"
+     and T_type: "is_type P T" and wfm\<^sub>1: "wf_J\<^sub>1_mdecl P C (M,Ts,T,m)"
+      by(simp_all add: wf_mdecl_def)
+    then obtain T' where wte: "P,Class C#Ts \<turnstile>\<^sub>1 m :: T'" and wid: "P \<turnstile> T' \<le> T"
+       and \<D>: "\<D> m \<lfloor>{..size Ts}\<rfloor>" and \<B>: "\<B> m (Suc (size Ts))"
+      by(auto simp: wf_mdecl_def)
+    have CTs_P: "is_class P C \<and> set Ts \<subseteq> types P"
+      using sees_wf_mdecl[OF wf cM] sees_method_is_class[OF cM]
+       by (clarsimp simp: wf_mdecl_def)
+
+    have "?wf\<^sub>2 ?P C (M,Ts,T,?f m)"
+      using cM TC2.compT_method [simplified, OF _ _ wf wte \<D> \<B> CTs_P wid]
+       by(simp add: compTP_def)
+    then have "wf_mdecl ?wf\<^sub>2 ?P C (M, Ts, T, ?f m)"
+      using Ts_types T_type by(simp add: wf_mdecl_def)
+  }
+  then have "wf_prog ?wf\<^sub>2 (compP ?f P)" by(rule wf_prog_compPI[OF _ wf])
+  then show ?thesis by (simp add: wf_jvm_prog_def wf_jvm_prog_phi_def) fast
+qed
 (*>*)
 
 theorem wt_J2JVM:
   "wf_J_prog P \<Longrightarrow> wf_jvm_prog (J2JVM P)"
 (*<*)
-apply(simp only:o_def J2JVM_def)
-apply(blast intro:wt_compP\<^sub>2 compP\<^sub>1_pres_wf)
-done
+by(simp only:o_def J2JVM_def)
+  (blast intro:wt_compP\<^sub>2 compP\<^sub>1_pres_wf)
 
 end
