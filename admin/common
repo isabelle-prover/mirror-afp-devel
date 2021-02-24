@@ -44,7 +44,7 @@ default_isabelle_tool()
       ISABELLE_VERSION="Isabelle$VERSION"
       ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_VERSION/bin/isabelle"
       if [[ "$OSTYPE" == darwin* && ! -x "$ISABELLE_TOOL" ]]; then
-        ISABELLE_TOOL="$ISABELLE_RELEASES/${ISABELLE_VERSION}.app/Isabelle/bin/isabelle"
+        ISABELLE_TOOL="$ISABELLE_RELEASES/${ISABELLE_VERSION}.app/bin/isabelle"
       fi
     fi
   fi
