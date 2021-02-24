@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
+    <pubDate>17 Feb 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formal Puiseux Series</title>
+              <link>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</link>
+       <guid>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>17 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Formal Puiseux series are generalisations of formal power
+series and formal Laurent series that also allow for fractional
+exponents. They have the following general form: \[\sum_{i=N}^\infty
+a_{i/d} X^{i/d}\] where &lt;em&gt;N&lt;/em&gt; is an integer and
+&lt;em&gt;d&lt;/em&gt; is a positive integer.&lt;/p&gt; &lt;p&gt;This
+entry defines these series including their basic algebraic properties.
+Furthermore, it proves the Newton–Puiseux Theorem, namely that the
+Puiseux series over an algebraically closed field of characteristic 0
+are also algebraically closed.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Laws of Large Numbers</title>
               <link>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
@@ -583,50 +600,6 @@ checking is the practical algebraic calculus (PAC). In this
 development, we present the verified checker Pastèque that is obtained
 by synthesis via the Refinement Framework.  This is the formalization
 going with our FMCAD&#39;20 tool presentation.</description>
-    </item>
-    <item>
-       <title>Some classical results in inductive inference of recursive functions</title>
-              <link>https://www.isa-afp.org/entries/Inductive_Inference.html</link>
-       <guid>https://www.isa-afp.org/entries/Inductive_Inference.html</guid>
-       <dc:creator> Frank J. Balbach       </dc:creator>
-       <pubDate>31 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; This entry formalizes some classical concepts and results
-from inductive inference of recursive functions. In the basic setting
-a partial recursive function (&#34;strategy&#34;) must identify
-(&#34;learn&#34;) all functions from a set (&#34;class&#34;) of
-recursive functions. To that end the strategy receives more and more
-values $f(0), f(1), f(2), \ldots$ of some function $f$ from the given
-class and in turn outputs descriptions of partial recursive functions,
-for example, Gödel numbers. The strategy is considered successful if
-the sequence of outputs (&#34;hypotheses&#34;) converges to a
-description of $f$. A class of functions learnable in this sense is
-called &#34;learnable in the limit&#34;. The set of all these
-classes is denoted by LIM. &lt;/p&gt;  &lt;p&gt; Other types of
-inference considered are finite learning (FIN), behaviorally correct
-learning in the limit (BC), and some variants of LIM with restrictions
-on the hypotheses: total learning (TOTAL), consistent learning (CONS),
-and class-preserving learning (CP). The main results formalized are
-the proper inclusions $\mathrm{FIN} \subset \mathrm{CP} \subset
-\mathrm{TOTAL} \subset \mathrm{CONS} \subset \mathrm{LIM} \subset
-\mathrm{BC} \subset 2^{\mathcal{R}}$, where $\mathcal{R}$ is the set
-of all total recursive functions.  Further results show that for all
-these inference types except CONS, strategies can be assumed to be
-total recursive functions; that all inference types but CP are closed
-under the subset relation between classes; and that no inference type
-is closed under the union of classes. &lt;/p&gt;  &lt;p&gt; The above
-is based on a formalization of recursive functions heavily inspired by
-the &lt;a
-href=&#34;https://www.isa-afp.org/entries/Universal_Turing_Machine.html&#34;&gt;Universal
-Turing Machine&lt;/a&gt; entry by Xu et al., but different in that it
-models partial functions with codomain &lt;em&gt;nat
-option&lt;/em&gt;. The formalization contains a construction of a
-universal partial recursive function, without resorting to Turing
-machines, introduces decidability and recursive enumerability, and
-proves some standard results: existence of a Kleene normal form, the
-&lt;em&gt;s-m-n&lt;/em&gt; theorem, Rice&#39;s theorem, and assorted
-fixed-point theorems (recursion theorems) by Kleene, Rogers, and
-Smullyan. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

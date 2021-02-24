@@ -9676,6 +9676,23 @@ abstract =
   p<sub><em>i</em></sub> for
   i&gt;k.</p>
 
+[Formal_Puiseux_Series]
+title = Formal Puiseux Series
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2021-02-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>Formal Puiseux series are generalisations of formal power
+  series and formal Laurent series that also allow for fractional
+  exponents. They have the following general form: \[\sum_{i=N}^\infty
+  a_{i/d} X^{i/d}\] where <em>N</em> is an integer and
+  <em>d</em> is a positive integer.</p> <p>This
+  entry defines these series including their basic algebraic properties.
+  Furthermore, it proves the Newton–Puiseux Theorem, namely that the
+  Puiseux series over an algebraically closed field of characteristic 0
+  are also algebraically closed.</p>
+
 [Gaussian_Integers]
 title = Gaussian Integers
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -10232,8 +10249,8 @@ author = Jakub Kądziołka <mailto:kuba@kadziolka.net>
 topic = Logic/General logic/Logics of knowledge and belief
 date = 2021-01-30
 notify = kuba@kadziolka.net
-abstract = 
-  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by 
+abstract =
+  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by
   Randall Munroe</a>, perfect logicians forbidden
   from communicating are stranded on an island, and may only leave once
   they have figured out their own eye color. We present a method of
