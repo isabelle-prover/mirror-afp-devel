@@ -9676,6 +9676,23 @@ abstract =
   p<sub><em>i</em></sub> for
   i&gt;k.</p>
 
+[Formal_Puiseux_Series]
+title = Formal Puiseux Series
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2021-02-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>Formal Puiseux series are generalisations of formal power
+  series and formal Laurent series that also allow for fractional
+  exponents. They have the following general form: \[\sum_{i=N}^\infty
+  a_{i/d} X^{i/d}\] where <em>N</em> is an integer and
+  <em>d</em> is a positive integer.</p> <p>This
+  entry defines these series including their basic algebraic properties.
+  Furthermore, it proves the Newton–Puiseux Theorem, namely that the
+  Puiseux series over an algebraically closed field of characteristic 0
+  are also algebraically closed.</p>
+
 [Gaussian_Integers]
 title = Gaussian Integers
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -10232,8 +10249,8 @@ author = Jakub Kądziołka <mailto:kuba@kadziolka.net>
 topic = Logic/General logic/Logics of knowledge and belief
 date = 2021-01-30
 notify = kuba@kadziolka.net
-abstract = 
-  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by 
+abstract =
+  In a <a href="https://xkcd.com/blue_eyes.html">puzzle published by
   Randall Munroe</a>, perfect logicians forbidden
   from communicating are stranded on an island, and may only leave once
   they have figured out their own eye color. We present a method of
@@ -10266,3 +10283,29 @@ abstract =
   used for the proof of the strong law is a particularly quick and slick
   one based on ergodic theory, which was formalised by Gouëzel in
   another AFP entry.</p>
+
+[BTree]
+title = A Verified Imperative Implementation of B-Trees
+author = Niels Mündler <mailto:n.muendler@tum.de>
+topic = Computer science/Data structures
+date = 2021-02-24
+notify = n.muendler@tum.de
+abstract =
+  In this work, we use the interactive theorem prover Isabelle/HOL to
+  verify an imperative implementation of the classical B-tree data
+  structure invented by Bayer and McCreight [ACM 1970]. The
+  implementation supports set membership and insertion queries with
+  efficient binary search for intra-node navigation. This is
+  accomplished by first specifying the structure abstractly in the
+  functional modeling language HOL and proving functional correctness.
+  Using manual refinement, we derive an imperative implementation in
+  Imperative/HOL. We show the validity of this refinement using the
+  separation logic utilities from the <a
+  href="https://www.isa-afp.org/entries/Refine_Imperative_HOL.html">
+  Isabelle Refinement Framework </a> . The code can be exported to
+  the programming languages SML and Scala. We examine the runtime of all
+  operations indirectly by reproducing results of the logarithmic
+  relationship between height and the number of nodes.  The results are
+  discussed in greater detail in the corresponding <a
+  href="https://mediatum.ub.tum.de/1596550">Bachelor's
+  Thesis</a>.
