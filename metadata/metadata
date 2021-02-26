@@ -10293,7 +10293,7 @@ notify = n.muendler@tum.de
 abstract =
   In this work, we use the interactive theorem prover Isabelle/HOL to
   verify an imperative implementation of the classical B-tree data
-  structure invented by Bauer and McCreight [ACM 1970]. The
+  structure invented by Bayer and McCreight [ACM 1970]. The
   implementation supports set membership and insertion queries with
   efficient binary search for intra-node navigation. This is
   accomplished by first specifying the structure abstractly in the
