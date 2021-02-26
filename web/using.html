@@ -77,12 +77,24 @@ your own developments. If you would like to make your work available to others
 </p>
 <p>
 If you are using Isabelle2021, and have downloaded your AFP directory to
-<code>/home/myself/afp</code>, you should run the following command
-<a href="#1">[1]</a> to make the AFP session ROOTS available to Isabelle:</p>
+<code>/home/myself/afp</code>, for Linux/Mac you can run the following command to make the AFP session ROOTS available to Isabelle:</p>
 <p>
 <pre class="code">
     echo "/home/myself/afp/thys" >> ~/.isabelle/Isabelle2021/ROOTS
 </pre>
+This adds the path <code>/home/myself/afp/thys/</code> to the ROOTS file, which
+Isabelle will scan by default. You can also manually edit and/or create that
+ROOTS file. There are many other ways to achieve the same outcome, this is just
+one option.
+</p>
+<p>
+For Windows, the idea is the same just the path is slightly different. If the
+AFP is in <code>C:\afp</code>, you should be able to run the following in a
+Cygwin terminal.
+<pre class="code">
+    echo "/cygdrive/c/afp/thys" >> ~/.isabelle/Isabelle2021/ROOTS
+</pre>
+</p>
 
 <p>
 You can now refer to article <code>ABC</code> from the AFP in some theory of
@@ -98,10 +110,6 @@ manner.</p>
 
 <p>&nbsp;</p>
 
-<p>
-<a name="1">[1]:</a> Tested for Linux and Mac installations &dash; it should be the same under cygwin on Windows.
-</p>
-<p>
     </td></tr>
   </tbody>
 </table>
