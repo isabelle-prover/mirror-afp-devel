@@ -9,7 +9,33 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Feb 2021 00:00:00 +0000</pubDate>
+    <pubDate>24 Feb 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Verified Imperative Implementation of B-Trees</title>
+              <link>https://www.isa-afp.org/entries/BTree.html</link>
+       <guid>https://www.isa-afp.org/entries/BTree.html</guid>
+       <dc:creator> Niels Mündler       </dc:creator>
+       <pubDate>24 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+In this work, we use the interactive theorem prover Isabelle/HOL to
+verify an imperative implementation of the classical B-tree data
+structure invented by Bauer and McCreight [ACM 1970]. The
+implementation supports set membership and insertion queries with
+efficient binary search for intra-node navigation. This is
+accomplished by first specifying the structure abstractly in the
+functional modeling language HOL and proving functional correctness.
+Using manual refinement, we derive an imperative implementation in
+Imperative/HOL. We show the validity of this refinement using the
+separation logic utilities from the &lt;a
+href=&#34;https://www.isa-afp.org/entries/Refine_Imperative_HOL.html&#34;&gt;
+Isabelle Refinement Framework &lt;/a&gt; . The code can be exported to
+the programming languages SML and Scala. We examine the runtime of all
+operations indirectly by reproducing results of the logarithmic
+relationship between height and the number of nodes.  The results are
+discussed in greater detail in the corresponding &lt;a
+href=&#34;https://mediatum.ub.tum.de/1596550&#34;&gt;Bachelor&#39;s
+Thesis&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Formal Puiseux Series</title>
               <link>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</link>
@@ -583,23 +609,6 @@ concrete values into registers so that more states and transitions can
 be merged and provide proofs of the various conditions which must hold
 for these abstractions to subsume their ungeneralised counterparts. A
 Code Generator setup to create executable Scala code is also defined.</description>
-    </item>
-    <item>
-       <title>Practical Algebraic Calculus Checker</title>
-              <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
-       <guid>https://www.isa-afp.org/entries/PAC_Checker.html</guid>
-       <dc:creator> Mathias Fleury, Daniela Kaufmann       </dc:creator>
-       <pubDate>31 Aug 2020 00:00:00 +0000</pubDate>
-       <description>
-Generating and checking proof certificates is important to increase
-the trust in automated reasoning tools. In recent years formal
-verification using computer algebra became more important and is
-heavily used in automated circuit verification.  An existing proof
-format which covers algebraic reasoning and allows efficient proof
-checking is the practical algebraic calculus (PAC). In this
-development, we present the verified checker Pastèque that is obtained
-by synthesis via the Refinement Framework.  This is the formalization
-going with our FMCAD&#39;20 tool presentation.</description>
     </item>
   </channel>
 </rss>
