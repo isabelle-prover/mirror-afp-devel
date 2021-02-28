@@ -56,10 +56,12 @@ chapter \<open>Auxiliary Definitions needed by Lem\<close>
 theory "LemExtraDefs"
 
 imports
-   Main
-   "HOL-Library.List_Permutation"
-   "HOL-Library.While_Combinator"
+  Main
+  "HOL-Library.While_Combinator"
+  "HOL-Library.List_Permutation"
 begin
+
+hide_const (open) sign
 
 subsection \<open>General\<close>
 
