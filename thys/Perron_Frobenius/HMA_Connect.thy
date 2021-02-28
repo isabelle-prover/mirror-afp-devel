@@ -406,17 +406,17 @@ proof -
       let ?ft = "\<lambda> p i. ?fn (p (?tn i))"
       have fin: "finite ?zn" by simp
       have "sign p = sign ?q \<and> p permutes ?zn"
-      proof (induct rule: permutes_induct[OF fin _ _ p])    
-        case 1 
+      using p fin proof (induction rule: permutes_induct)
+        case id
         show ?case by (auto simp: sign_id[unfolded id_def] permutes_id[unfolded id_def])
       next
-        case (2 a b p)
+        case (swap a b p)
         let ?sab = "Fun.swap a b id"
         let ?sfab = "Fun.swap (?fn a) (?fn b) id"
         have p_sab: "permutation ?sab" by (rule permutation_swap_id)
         have p_sfab: "permutation ?sfab" by (rule permutation_swap_id)
-        from 2(3) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
-        have sab_perm: "?sab permutes ?zn" using 2(1-2) by (rule permutes_swap_id)
+        from swap(4) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
+        have sab_perm: "?sab permutes ?zn" using swap(1-2) by (rule permutes_swap_id)
         from permutes_compose[OF IH1 this] have perm1: "?sab o p permutes ?zn" .
         from IH1 have p_p1: "p \<in> ?p1" by simp
         hence "?ft p \<in> ?ft ` ?p1" by (rule imageI)
@@ -425,10 +425,10 @@ proof -
         {
           fix a b
           assume a: "a \<in> ?zn" and b: "b \<in> ?zn"
-          hence "(?fn a = ?fn b) = (a = b)" using 2(1-2)
+          hence "(?fn a = ?fn b) = (a = b)" using swap(1-2)
             by (auto simp: from_nat_inj)
         } note inj = this
-        from inj[OF 2(1-2)] have id2: "sign ?sfab = sign ?sab" unfolding sign_swap_id by simp
+        from inj[OF swap(1-2)] have id2: "sign ?sfab = sign ?sab" unfolding sign_swap_id by simp
         have id: "?ft (Fun.swap a b id \<circ> p) = Fun.swap (?fn a) (?fn b) id \<circ> ?ft p"
         proof
           fix c 
@@ -441,12 +441,12 @@ proof -
             hence neq: "p (?tn c) \<noteq> a" "p (?tn c) \<noteq> b" by auto
             have pc: "p (?tn c) \<in> ?zn" unfolding permutes_in_image[OF IH1] 
               by (simp add: to_nat_less_card)
-            from neq[folded inj[OF pc 2(1)] inj[OF pc 2(2)]]
+            from neq[folded inj[OF pc swap(1)] inj[OF pc swap(2)]]
             have "?fn (p (?tn c)) \<noteq> ?fn a" "?fn (p (?tn c)) \<noteq> ?fn b" .
             with neq show ?thesis by (auto simp: o_def swap_def)
           qed
         qed
-        show ?case unfolding IH2 id sign_compose[OF p_sab 2(5)] sign_compose[OF p_sfab p_ftp] id2 
+        show ?case unfolding IH2 id sign_compose[OF p_sab swap(3)] sign_compose[OF p_sfab p_ftp] id2
           by (rule conjI[OF refl perm1])
       qed
       thus "signof p = of_int (sign ?q)" unfolding signof_def sign_def by auto
@@ -745,7 +745,5 @@ proof (transfer, goal_cases)
   case 1
   from degree_monic_char_poly[OF 1] show ?case by auto
 qed
-
-
 
 end
