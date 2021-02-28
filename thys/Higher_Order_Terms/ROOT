@@ -9,7 +9,6 @@ session Higher_Order_Terms (AFP) = HOL +
     "HOL-ex"
   theories [document = false]
     Term_Utils
-    Disjoint_Sets
     Find_First
   theories
     Name
