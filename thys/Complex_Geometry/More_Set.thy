@@ -2,7 +2,7 @@
 subsection \<open>Library Aditions for Set Cardinality\<close>
 (* ---------------------------------------------------------------------------- *)
 
-text \<open>In this sections some additional simple lemmas about set cardinality are proved.\<close>
+text \<open>In this section some additional simple lemmas about set cardinality are proved.\<close>
 
 theory More_Set
 imports Main
@@ -12,93 +12,42 @@ text \<open>Every infinite set has at least two different elements\<close>
 lemma infinite_contains_2_elems:
   assumes "infinite A"
   shows "\<exists> x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
-proof(rule ccontr)
-  assume *: " \<nexists>x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
-  have "\<exists> x. x \<in> A "
-    using assms
-    by (simp add: ex_in_conv infinite_imp_nonempty)
-  hence "card A = 1"
-    using *
-    by (metis assms ex_in_conv finite_insert infinite_imp_nonempty insertCI mk_disjoint_insert)
-  thus False
-    using assms
-    by simp
-qed
+  by (metis assms finite.simps is_singletonI' is_singleton_def)
 
 text \<open>Every infinite set has at least three different elements\<close>
 lemma infinite_contains_3_elems:
   assumes "infinite A"
   shows "\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"
-proof(rule ccontr)
-  assume " \<nexists>x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"
-  hence "card A = 2"
-    by (smt DiffE assms finite_insert infinite_contains_2_elems insert_Diff insert_iff)
-  thus False
-    using assms
-    by simp
-qed
+  by (metis Diff_iff assms infinite_contains_2_elems infinite_remove insertI1)
 
 text \<open>Every set with cardinality greater than 1 has at least two different elements\<close>
 lemma card_geq_2_iff_contains_2_elems:
   shows "card A \<ge> 2 \<longleftrightarrow> finite A \<and> (\<exists> x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A)"
-proof
+proof (intro iffI conjI)
   assume *: "finite A \<and> (\<exists> x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A)"
   thus "card A \<ge> 2"
-  proof -
-    obtain a :: 'a and b :: 'a where
-      f1: "a \<noteq> b \<and> a \<in> A \<and> b \<in> A"
-      using *
-      by blast
-    then have "0 < card (A - {b})"
-      by (metis * card_eq_0_iff ex_in_conv finite_insert insertE insert_Diff neq0_conv)
-    then show ?thesis
-      using f1 by (simp add: *)
-  qed
+    by (metis card_0_eq card_Suc_eq empty_iff leI less_2_cases singletonD)
 next
-  assume *: " 2 \<le> card A"
-  hence "finite A"
-    using card.infinite
-    by force
-  moreover
-  have "\<exists>x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
-  proof(rule ccontr)
-    assume " \<nexists>x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
-    hence "card A \<le> 1"
-      by (metis One_nat_def card.empty card.insert card_mono finite.emptyI finite_insert insertCI le_SucI subsetI)
-    thus False
-      using *
-      by auto
-  qed
-  ultimately
-  show "finite A \<and> (\<exists> x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A)"
-    by simp
+  assume *: "2 \<le> card A"
+  then show "finite A"
+    using card.infinite by force
+  show "\<exists> x y. x \<noteq> y \<and> x \<in> A \<and> y \<in> A"
+    by (meson "*" card_2_iff' in_mono obtain_subset_with_card_n)
 qed
 
 text \<open>Set cardinality is at least 3 if and only if it contains three different elements\<close>
 lemma card_geq_3_iff_contains_3_elems:
   shows "card A \<ge> 3 \<longleftrightarrow> finite A \<and> (\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A)"
-proof
+proof (intro iffI conjI)
   assume *: "card A \<ge> 3"
-  hence "finite A"
-    using card.infinite
-    by force
-  moreover
-  have "\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"
-  proof(rule ccontr)
-    assume "\<nexists>x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"
-    hence "card A \<le> 2"
-      by (smt DiffE Suc_leI card.remove card_geq_2_iff_contains_2_elems insert_iff le_cases not_le)
-    thus False
-      using *
-      by auto
-  qed
-  ultimately
-  show "finite A \<and> (\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A)"
-    by simp
+  then show "finite A"
+    using card.infinite by force
+  show "\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A"
+    by (smt (verit, best) "*" card_2_iff' card_geq_2_iff_contains_2_elems le_cases3 not_less_eq_eq numeral_2_eq_2 numeral_3_eq_3)
 next
   assume *: "finite A \<and> (\<exists> x y z. x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z \<and> x \<in> A \<and> y \<in> A \<and> z \<in> A)"
   thus "card A \<ge> 3"
-    by (smt "*" Suc_eq_numeral Suc_le_mono card.remove card_geq_2_iff_contains_2_elems finite_insert insert_Diff insert_iff pred_numeral_simps(3))
+    by (metis One_nat_def Suc_le_eq card_2_iff' card_le_Suc0_iff_eq leI numeral_3_eq_3 one_add_one order_class.order.eq_iff plus_1_eq_Suc)
 qed
 
 text \<open>Set cardinality of A is equal to 2 if and only if A={x, y} for two different elements x and y\<close>
@@ -110,14 +59,13 @@ lemma card_eq_2_iff_doubleton: "card A = 2 \<longleftrightarrow> (\<exists> x y.
 lemma card_eq_2_doubleton:
   assumes "card A = 2" and "x \<noteq> y" and "x \<in> A" and "y \<in> A"
   shows "A = {x, y}"
-  using assms
-  using card_eq_2_iff_doubleton[of A]
+  using assms card_eq_2_iff_doubleton[of A]
   by auto
 
 text \<open>Bijections map singleton to singleton sets\<close>
 
 lemma bij_image_singleton:
   shows "\<lbrakk>f ` A = {b}; f a = b; bij f\<rbrakk> \<Longrightarrow> A = {a}"
-  by (metis (mono_tags) bij_betw_imp_inj_on image_empty image_insert inj_vimage_image_eq)
+  by (metis bij_betw_def image_empty image_insert inj_image_eq_iff)
 
 end
