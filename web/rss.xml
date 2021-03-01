@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 Feb 2021 00:00:00 +0000</pubDate>
+    <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Sunflower Lemma of Erdős and Rado</title>
+              <link>https://www.isa-afp.org/entries/Sunflowers.html</link>
+       <guid>https://www.isa-afp.org/entries/Sunflowers.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+We formally define sunflowers and provide a formalization of the
+sunflower lemma of Erd&amp;odblac;s and Rado: whenever a set of
+size-&lt;i&gt;k&lt;/i&gt;-sets has a larger cardinality than
+&lt;i&gt;(r - 1)&lt;sup&gt;k&lt;/sup&gt; &amp;middot; k!&lt;/i&gt;,
+then it contains a sunflower of cardinality &lt;i&gt;r&lt;/i&gt;.</description>
+    </item>
     <item>
        <title>A Verified Imperative Implementation of B-Trees</title>
               <link>https://www.isa-afp.org/entries/BTree.html</link>
@@ -585,30 +598,6 @@ EFSMs in terms of traces and prove their strengths in relation to each
 other. Another key contribution is a framework of function definitions
 such that LTL properties can be phrased over EFSMs. Finally, we
 provide a simple example case study in the form of a drinks machine.</description>
-    </item>
-    <item>
-       <title>Inference of Extended Finite State Machines</title>
-              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</link>
-       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</guid>
-       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
-       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we provide a formal implementation of a
-state-merging technique to infer extended finite state machines
-(EFSMs), complete with output and update functions, from black-box
-traces. In particular, we define the subsumption in context relation
-as a means of determining whether one transition is able to account
-for the behaviour of another. Building on this, we define the direct
-subsumption relation, which lifts the subsumption in context relation
-to EFSM level such that we can use it to determine whether it is safe
-to merge a given pair of transitions. Key proofs include the
-conditions necessary for subsumption to occur and that subsumption
-and direct subsumption are preorder relations.  We also provide a
-number of different heuristics which can be used to abstract away
-concrete values into registers so that more states and transitions can
-be merged and provide proofs of the various conditions which must hold
-for these abstractions to subsume their ungeneralised counterparts. A
-Code Generator setup to create executable Scala code is also defined.</description>
     </item>
   </channel>
 </rss>

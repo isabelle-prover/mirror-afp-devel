@@ -10309,3 +10309,17 @@ abstract =
   discussed in greater detail in the corresponding <a
   href="https://mediatum.ub.tum.de/1596550">Bachelor's
   Thesis</a>.
+
+[Sunflowers]
+title = The Sunflower Lemma of Erdős and Rado
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Combinatorics
+date = 2021-02-25
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We formally define sunflowers and provide a formalization of the
+  sunflower lemma of Erd&odblac;s and Rado: whenever a set of
+  size-<i>k</i>-sets has a larger cardinality than
+  <i>(r - 1)<sup>k</sup> &middot; k!</i>,
+  then it contains a sunflower of cardinality <i>r</i>.
+
