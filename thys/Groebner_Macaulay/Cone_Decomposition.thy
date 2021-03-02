@@ -1107,8 +1107,8 @@ lemma cone_decomp_perm:
   shows "cone_decomp T qs"
   using assms(1) unfolding cone_decomp_def
 proof (rule direct_decomp_perm)
-  from assms(2) show "perm (map cone ps) (map cone qs)"
-    by (induct ps qs rule: perm.induct) auto
+  from \<open>perm ps qs\<close> show \<open>perm (map cone ps) (map cone qs)\<close>
+    by (simp add: perm_iff_eq_mset)
 qed
 
 lemma valid_cone_decomp_subset_Polys:
