@@ -103,7 +103,7 @@ lemma del_left_size:
     auto split: prod.splits)
 
 lemma del_left_braun:
-  "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> braun t'"
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> braun t \<Longrightarrow> braun t'"
   by(induction t arbitrary: x t' rule: del_left.induct;
     auto split: prod.splits dest: del_left_size)
 
