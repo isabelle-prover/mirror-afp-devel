@@ -25,11 +25,86 @@ text \<open>
 definition needle :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real set" where
   "needle l x \<phi> = closed_segment (x - l / 2 * sin \<phi>) (x + l / 2 * sin \<phi>)"
 
+text_raw \<open>
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}
+\coordinate (lefttick) at (-3,0);
+\coordinate (righttick) at (3,0);
+
+\draw (lefttick) -- (righttick);
+\draw [thick] (lefttick) ++ (0,0.4) -- ++(0,3);
+\draw [thick] (righttick) ++ (0,0.4) -- ++(0,3);
+
+\coordinate (needle) at (1,2);
+
+\newcommand{\needleangle}{55}
+\newcommand{\needlelength}{{1}}
+\newcommand{\needlethickness}{0.6pt}
+
+\draw ($(lefttick)+(0,4pt)$) -- ($(lefttick)-(0,4pt)$);
+\draw ($(righttick)+(0,4pt)$) -- ($(righttick)-(0,4pt)$);
+\draw (0,4pt) -- (0,-4pt);
+
+\draw [densely dashed, thin] let \p1 = (needle) in (\x1, 0) -- (needle);
+\draw [densely dashed, thin] let \p1 = (needle) in (needle) -- (3, \y1);
+\draw (needle) ++ (15pt,0) arc(0:\needleangle:15pt);
+\path (needle) -- ++(15pt,0) node [above, midway, yshift=-1.9pt, xshift=1.8pt] {$\scriptstyle\varphi$};
+
+\node [below, xshift=-3.5pt] at ($(lefttick)-(0,4pt)$) {$-\nicefrac{d}{2}$};
+\node [below] at ($(righttick)-(0,4pt)$) {$\nicefrac{d}{2}$};
+\node [below,yshift=-1pt] at (0,-4pt) {$0$};
+\node [below,yshift=-2pt] at (needle |- 0,-4pt) {$x$};
+
+\draw[<->] (needle) ++({\needleangle+90}:5pt) ++(\needleangle:{-\needlelength}) -- ++(\needleangle:2) node [midway, above, rotate=\needleangle] {$\scriptstyle l$};
+
+\draw [line width=0.7pt,fill=white] (needle) ++({\needleangle+90}:\needlethickness) -- ++(\needleangle:\needlelength) arc({\needleangle+90}:{\needleangle-90}:\needlethickness) 
+  -- ++(\needleangle:-\needlelength) -- ++(\needleangle:-\needlelength) arc({\needleangle+270}:{\needleangle+90}:\needlethickness) -- ++(\needleangle:\needlelength);
+
+\end{tikzpicture}
+\end{center}
+\caption{A sketch of the situation in Buffon's needle experiment. There is a needle of length $l$
+with its centre at a certain $x$ coordinate, angled at an angle $\varphi$ off the horizontal axis.
+The two vertical lines are a distance of $d$ apart, each being $\nicefrac{d}{2}$ away from the
+origin.}
+\label{fig:buffon}
+\end{figure}
+
+\definecolor{myred}{HTML}{cc2428}
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}
+  \begin{axis}[
+          xmin=0, xmax=7, ymin=0, ymax=1,
+          width=\textwidth, height=0.6\textwidth,
+          xlabel={$l/d$}, ylabel={$\mathcal P$}, tick style={thin,black},
+          ylabel style = {rotate=270,anchor=west},
+  ] 
+  \addplot [color=myred, line width=1pt, mark=none,domain=0:1,samples=200] ({x}, {2/pi*x}); 
+  \addplot [color=myred, line width=1pt, mark=none,domain=1:7,samples=200] ({x}, {2/pi*(x-sqrt(x*x-1)+acos(1/x)/180*pi)}); 
+  \end{axis}
+\end{tikzpicture}
+\caption{The probability $\mathcal P$ of the needle hitting one of the lines, as a function of the quotient $l/d$ (where $l$ is the length of the needle and $d$ the horizontal distance between the lines).}
+\label{fig:buffonplot}
+\end{center}
+\end{figure}
+\<close>
+
 text \<open>
   Buffon's Needle problem is then this: Assuming the needle's $x$ position is chosen uniformly
   at random in a strip of width $d$ centred at the origin, what is the probability that the 
   needle crosses at least one of the left/right boundaries of that strip (located at 
   $x = \pm\frac{1}{2}d$)?
+
+  We will show that, if we let $x := \nicefrac{l}{d}$, the probability of this is
+  \[
+  \mathcal P_{l,d} =
+    \begin{cases}
+      \nicefrac{2}{\pi} \cdot x & \text{if}\ l \leq d\\
+      \nicefrac{2}{\pi}\cdot(x - \sqrt{x^2 - 1} + \arccos (\nicefrac{1}{x})) & \text{if}\ l \geq d
+    \end{cases} 
+  \]
+  A plot of this function can be found in Figure~\ref{fig:buffonplot}.
 \<close>
 
 locale Buffon =
@@ -332,7 +407,7 @@ lemma prob_short_aux:
   unfolding buffon_prob_aux emeasure_buffon_set_short using d l
   by (simp flip: ennreal_mult ennreal_numeral add: divide_ennreal)
 
-theorem prob_short: "\<P>((x,\<phi>) in Buffon. needle l x \<phi> \<inter> {-d/2, d/2} \<noteq> {}) = 2 * l / (d * pi)"
+lemma prob_short: "\<P>((x,\<phi>) in Buffon. needle l x \<phi> \<inter> {-d/2, d/2} \<noteq> {}) = 2 * l / (d * pi)"
   using prob_short_aux unfolding emeasure_eq_measure
   using l d by (subst (asm) ennreal_inj) auto
 
@@ -437,13 +512,23 @@ proof -
                   ennreal (2 / pi * ((l / d) - sqrt ((l / d)\<^sup>2 - 1) + arccos (d / l)))" .
 qed
 
-theorem prob_long:
+lemma prob_long:
   "\<P>((x,\<phi>) in Buffon. needle l x \<phi> \<inter> {-d/2, d/2} \<noteq> {}) =
      2 / pi * ((l / d) - sqrt ((l / d)\<^sup>2 - 1) + arccos (d / l))"
   using prob_long_aux unfolding emeasure_eq_measure
   by (subst (asm) ennreal_inj) simp_all
 
 end
+
+theorem prob_eq:
+  defines "x \<equiv> l / d"
+  shows   "\<P>((x,\<phi>) in Buffon. needle l x \<phi> \<inter> {-d/2, d/2} \<noteq> {}) =
+             (if l \<le> d then
+                2 / pi * x
+              else
+                2 / pi * (x - sqrt (x\<^sup>2 - 1) + arccos (1 / x)))"
+  using prob_short prob_long unfolding x_def by auto
+
 end
 
 end
