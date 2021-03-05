@@ -88,7 +88,7 @@ fun list :: "'a queue \<Rightarrow> 'a list" where
   "list q = front_list q @ rear_list q"
 
 (* Query operation (irrelevant) *)
-fun first where
+fun first :: "'a queue \<Rightarrow> 'a" where
  "first q = hd (front q)"
 
 (* How many applications of exec are needed to reach Idle or Done status *)
@@ -98,42 +98,44 @@ fun rem_steps :: "'a status \<Rightarrow> nat" where
 | "rem_steps _ = 0"
 
 (* Status invariants *)
-fun st_inv :: "'a status \<Rightarrow> bool" where
-  "st_inv (Rev ok f f' r r') = (length f + 1 = length r \<and>
+fun inv_st :: "'a status \<Rightarrow> bool" where
+  "inv_st (Rev ok f f' r r') = (length f + 1 = length r \<and>
                                       length f' = length r'   \<and>
                                       ok \<le> length f')"
-| "st_inv (App ok f' r') = (ok \<le> length f' \<and> length f' < length r')"
-| "st_inv _ = True"
+| "inv_st (App ok f' r') = (ok \<le> length f' \<and> length f' < length r')"
+| "inv_st _ = True"
 
 fun steps :: "nat \<Rightarrow> 'a status \<Rightarrow> 'a status" where
   "steps n st = (exec ^^ n) st"
 
+(* unused *)
 lemma rev_steps_app:
-  assumes inv: "st_inv (Rev ok f f' r r')"
+  assumes inv: "inv_st (Rev ok f f' r r')"
   shows "steps (length f + 1) (Rev ok f f' r r') = App (length f + ok) (rev f @ f') (rev r @ r')"
 proof -
   show ?thesis using inv
   proof (induction f arbitrary: ok f' r r')
     case Nil
     then obtain x where "r = [x]"
-      by (metis One_nat_def Suc_length_conv add.right_neutral add_Suc_right length_0_conv st_inv.simps(1))
+      by (metis One_nat_def Suc_length_conv add.right_neutral add_Suc_right length_0_conv inv_st.simps(1))
     then show ?case using Nil by simp
   next
     case (Cons a f)
     then obtain x and xs where "r = x # xs"
-      by (metis One_nat_def Suc_length_conv add_Suc_right st_inv.simps(1))
+      by (metis One_nat_def Suc_length_conv add_Suc_right inv_st.simps(1))
     hence r_x: "r = x # xs" by simp
     then show ?case using Cons Nat.funpow_add by (simp add: Nat.funpow_swap1)
   qed
 qed
 
-lemma st_inv_steps:
-  assumes inv      : "st_inv s"
+(* unused *)
+lemma inv_st_steps:
+  assumes inv      : "inv_st s"
   assumes not_idle : "s \<noteq> Idle"
   shows              "\<exists>x. steps (rem_steps s) s = Done x" (is "?reach_done s")
 proof -
   let ?steps = "\<lambda>x. steps (rem_steps x)"
-  have app_inv: "st_inv (App ok f r) \<Longrightarrow> ?reach_done (App ok f r)"
+  have app_inv: "inv_st (App ok f r) \<Longrightarrow> ?reach_done (App ok f r)"
     for ok f r
   proof (induct f arbitrary: ok r)
     case (Cons a f') then show ?case
@@ -148,7 +150,7 @@ proof -
     have rep_split: "rem_steps (Rev ok f f' r r') = (length f + ok + 1) + (length f + 1)" by simp
     then have split: "\<And>stp. ?steps (Rev ok f f' r r') stp = (steps (length f + ok + 1)) ((steps (length f + 1)) stp) "
       unfolding rep_split Nat.funpow_add steps.simps by simp
-    also have f: "st_inv (App (length f + ok) (rev f @ f') (rev r @ r'))"
+    also have f: "inv_st (App (length f + ok) (rev f @ f') (rev r @ r'))"
       using Rev inv by simp
     thus ?thesis using inv f[THEN app_inv]
       unfolding Rev split inv[simplified Rev,THEN rev_steps_app] by simp
@@ -156,28 +158,28 @@ proof -
 qed
 
 (* Preservation of the status invariants by exec2 *)
-lemma st_inv_exec:
-  assumes st_inv: "st_inv s"
-  shows "st_inv (exec s)"
+lemma inv_st_exec:
+  assumes inv_st: "inv_st s"
+  shows "inv_st (exec s)"
 proof (cases s)
 next
   case (Rev ok f f' r r')
   show ?thesis
   proof (cases f)
     case Nil
-    then show ?thesis using st_inv unfolding Rev
+    then show ?thesis using inv_st unfolding Rev
       by (simp; cases r;cases ok; cases f'; simp)
   next
     case C_a: (Cons a as)
-    then obtain x xs where "r = x # xs" using st_inv unfolding Rev Cons
-      by (metis One_nat_def length_Suc_conv list.size(4) st_inv.simps(1))
+    then obtain x xs where "r = x # xs" using inv_st unfolding Rev Cons
+      by (metis One_nat_def length_Suc_conv list.size(4) inv_st.simps(1))
     hence r_x: "r = x # xs" by simp
     then show ?thesis
     proof (cases as)
-      case Nil then show ?thesis using st_inv unfolding Rev C_a Nil r_x by (simp; cases xs; simp)
+      case Nil then show ?thesis using inv_st unfolding Rev C_a Nil r_x by (simp; cases xs; simp)
     next
       case (Cons b bs)
-      then show ?thesis using st_inv unfolding Rev C_a r_x by (simp; cases xs; simp)
+      then show ?thesis using inv_st unfolding Rev C_a r_x by (simp; cases xs; simp)
     qed
   qed
 next
@@ -185,33 +187,33 @@ next
   then show ?thesis
   proof (cases ok)
     case (Suc ok')
-    then obtain x xs where "f = x # xs" using st_inv unfolding App Suc
-      by (metis Suc_le_D Zero_not_Suc list.exhaust list.size(3) st_inv.simps(2))
-    then show ?thesis using st_inv unfolding App Suc
+    then obtain x xs where "f = x # xs" using inv_st unfolding App Suc
+      by (metis Suc_le_D Zero_not_Suc list.exhaust list.size(3) inv_st.simps(2))
+    then show ?thesis using inv_st unfolding App Suc
       by (cases ok'; cases xs; simp)
   qed simp
 qed simp+
 
 (* Preservation of the status invariants by exec2 *)
-lemma st_inv_exec2:
-  assumes st_inv: "st_inv s"
-  shows "st_inv (exec (exec s))"
+lemma inv_st_exec2:
+  assumes inv_st: "inv_st s"
+  shows "inv_st (exec (exec s))"
 proof -
-  show ?thesis using st_inv st_inv_exec
+  show ?thesis using inv_st inv_st_exec
   by auto
 qed
 
-lemma st_inv_invalidate:
-  assumes st_inv: "st_inv s"
-  shows "st_inv (invalidate s)"
+lemma inv_st_invalidate:
+  assumes inv_st: "inv_st s"
+  shows "inv_st (invalidate s)"
 proof (cases s)
 next
   case (Rev ok f f' r r')
-  show ?thesis using st_inv unfolding Rev by auto
+  show ?thesis using inv_st unfolding Rev by auto
 next
   case (App ok f r)
   then show ?thesis 
-    using st_inv unfolding App
+    using inv_st unfolding App
     by (cases ok; cases r; simp)
 qed simp+
 
@@ -221,13 +223,12 @@ definition invar where
               lenr q = length (rear_list q)  \<and>
               lenr q \<le> lenf q \<and>
               (case status q of
-                 Rev ok f f' r r' \<Rightarrow> 2*lenr q  \<le> length f' \<and> ok \<noteq> 0 
-               | App ok f r       \<Rightarrow> 2*lenr q  \<le> length r
+                 Rev ok f f' r r' \<Rightarrow> 2*lenr q  \<le> length f' \<and> ok \<noteq> 0 \<and> 2*length f + ok + 2 \<le> 2*length (front q)
+               | App ok f r       \<Rightarrow> 2*lenr q  \<le> length r \<and> ok + 1  \<le> 2*length (front q)
                | _ \<Rightarrow> True) \<and>
-              rem_steps (status q) \<le> 2*length (front q) \<and>
               (\<exists>rest. front_list q = front q @ rest) \<and>
-              (\<forall>x. status q \<noteq> Done x) \<and>
-              st_inv (status q))"
+              (\<not>(\<exists>fr. status q = Done fr)) \<and>
+              inv_st (status q))"
 
 (* The empty list satisfies the invariant *)
 lemma invar_empty: "invar empty"
@@ -291,12 +292,12 @@ proof (cases q)
       obtain fx fs where "f = fx # fs"
         using inv lessI less_le_trans not_less_zero
         unfolding fields st Suc invar_def
-        by (metis list.exhaust list.size(3) select_convs(3) st_inv.simps(1))
+        by (metis list.exhaust list.size(3) select_convs(3) inv_st.simps(1))
       hence f_x: "f = fx # fs" by simp
       obtain rx rs where "r = rx # rs"
         using inv lessI less_le_trans not_less_zero
         unfolding fields st Suc invar_def
-        by (metis list.exhaust list.size(3) select_convs(3) st_inv.simps(1))
+        by (metis list.exhaust list.size(3) select_convs(3) inv_st.simps(1))
       hence r_x: "r = rx # rs" by simp
       then show ?thesis using pre_inv inv unfolding fields st Suc invar_def rear_list_def r_x f_x
         apply (simp add: check_def; cases ok'; simp add: check_def min_absorb2)       
@@ -411,12 +412,12 @@ proof (cases q)
       obtain fx fs where "f = fx # fs"
         using inv lessI less_le_trans not_less_zero
         unfolding fields st Suc invar_def
-        by (metis list.exhaust list.size(3) select_convs(3) st_inv.simps(1))
+        by (metis list.exhaust list.size(3) select_convs(3) inv_st.simps(1))
       hence f_x: "f = fx # fs" by simp
       obtain rx rs where "r = rx # rs"
         using inv lessI less_le_trans not_less_zero
         unfolding fields st Suc invar_def
-        by (metis list.exhaust list.size(3) select_convs(3) st_inv.simps(1))
+        by (metis list.exhaust list.size(3) select_convs(3) inv_st.simps(1))
       hence r_x: "r = rx # rs" by simp
       then show ?thesis using inv unfolding fields st Suc invar_def rear_list_def r_x f_x
         by (simp add: check_def; cases ok'; simp add: check_def min_absorb2)
@@ -728,10 +729,6 @@ lemma qfa_deq_correct: "list (deq (qfa l)) = tl (list (qfa l))"
 
 lemma qfa_enq_correct: "list (enq x (qfa l)) = (list (qfa l)) @ [x]"
   by (meson invar_qfa queue_correct_enq)
-
-fun rev_steps :: "('a list \<times> 'a list) \<Rightarrow> ('a list \<times> 'a list)" where
-  "rev_steps ((x#xs),ys) = (xs,x#ys)"
-| "rev_steps l = l"
 
 lemma first_correct :
   assumes inv:      "invar q"
