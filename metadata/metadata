@@ -10323,3 +10323,13 @@ abstract =
   <i>(r - 1)<sup>k</sup> &middot; k!</i>,
   then it contains a sunflower of cardinality <i>r</i>.
 
+[Mereology]
+title = Mereology
+author = Ben Blumson <https://philpeople.org/profiles/ben-blumson>
+topic = Logic/Philosophical aspects
+date = 2021-03-01
+notify = benblumson@gmail.com
+abstract = 
+  We use Isabelle/HOL to verify elementary theorems and alternative
+  axiomatizations of classical extensional mereology.
+

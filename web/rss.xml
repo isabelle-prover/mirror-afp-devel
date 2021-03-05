@@ -9,7 +9,17 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
+    <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Mereology</title>
+              <link>https://www.isa-afp.org/entries/Mereology.html</link>
+       <guid>https://www.isa-afp.org/entries/Mereology.html</guid>
+       <dc:creator> Ben Blumson       </dc:creator>
+       <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We use Isabelle/HOL to verify elementary theorems and alternative
+axiomatizations of classical extensional mereology.</description>
+    </item>
     <item>
        <title>The Sunflower Lemma of Erdős and Rado</title>
               <link>https://www.isa-afp.org/entries/Sunflowers.html</link>
@@ -582,22 +592,6 @@ concrete results had been previously formalised in an &lt;a
 href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;AFP
 entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
 infrastructure developed in that entry.</description>
-    </item>
-    <item>
-       <title>A Formal Model of Extended Finite State Machines</title>
-              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</link>
-       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</guid>
-       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
-       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we provide a formalisation of extended finite state
-machines (EFSMs) where models are represented as finite sets of
-transitions between states. EFSMs execute traces to produce observable
-outputs. We also define various simulation and equality metrics for
-EFSMs in terms of traces and prove their strengths in relation to each
-other. Another key contribution is a framework of function definitions
-such that LTL properties can be phrased over EFSMs. Finally, we
-provide a simple example case study in the form of a drinks machine.</description>
     </item>
   </channel>
 </rss>
