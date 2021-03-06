@@ -351,7 +351,7 @@ proof -
  from 1 2 3 have "N = (I + (J \<inter># K)) + (J - (J \<inter># K))"
   by (metis diff_union_cancelL subset_mset.inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
  moreover have "M = (I + (J \<inter># K)) + (K - (J \<inter># K))"
-  by (metis diff_subset_eq_self diff_union_cancelL 2 multiset_diff_union_assoc multiset_inter_commute multiset_inter_def union_assoc)
+  by (rule multiset_eqI) (simp add: 2)
  moreover have "set_mset (K-(J\<inter>#K)) \<subseteq> dm r (J-(J\<inter>#K))"
  proof -
   have "set_mset (K-(J\<inter>#K)) \<subseteq> dm r J" using 3
@@ -454,7 +454,7 @@ lemma add_left_one:
   moreover have "\<not> q \<in># (J \<inter># K)" using C by auto
   ultimately show ?thesis by auto
  qed
- hence "\<exists> I2. I = add_mset q I2" by (metis multi_member_split union_commute)
+ hence "\<exists> I2. I = add_mset q I2" by (metis multi_member_split)
  hence "\<exists> I2. add_mset q N = (add_mset q I2) + J \<and> add_mset q M = (add_mset q I2) + K" using A B by auto
  thus ?thesis using D by auto
 qed

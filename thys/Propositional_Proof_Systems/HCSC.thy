@@ -31,7 +31,7 @@ proof(induction rule: HC.induct)
 next
   case (MP F G)
   from MP have IH: "\<Gamma> \<Rightarrow> {#F#}" "\<Gamma> \<Rightarrow> {#F \<^bold>\<rightarrow> G#}" by blast+
-  with ImpR_inv[where \<Delta>=Mempty, simplified] have "F,\<Gamma> \<Rightarrow> {#G#}" by auto
+  with ImpR_inv[where \<Delta>=\<open>{#}\<close>, simplified] have "F,\<Gamma> \<Rightarrow> {#G#}" by auto
   moreover from IH(1) weakenR have "\<Gamma> \<Rightarrow> F, {#G#}" by blast
   ultimately show "\<Gamma> \<Rightarrow> {#G#}" using cut[where F=F] by simp
 qed

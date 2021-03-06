@@ -593,7 +593,7 @@ lemma hmset_of_enat_lt_iff_ne_infinity: "hmset_of_enat x < \<omega> \<longleftri
   by (cases x; simp)
 
 lemma minus_diff_sym_hmset: "m - (m - n) = n - (n - m)" for m n :: hmultiset
-  unfolding minus_hmultiset_def by simp (metis multiset_inter_def subset_mset.inf_aci(1))
+  unfolding minus_hmultiset_def by (simp flip: inter_mset_def ac_simps)
 
 lemma diff_plus_sym_hmset: "(c - b) + b = (b - c) + c" for b c :: hmultiset
 proof -

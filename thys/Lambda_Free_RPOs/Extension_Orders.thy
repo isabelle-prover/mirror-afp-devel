@@ -1131,8 +1131,7 @@ proof (unfold msetext_dersh_def Let_def, intro exI conjI)
   show "?Y \<subseteq># mset ys"
     by auto
   show "mset xs = mset ys - ?Y + ?X"
-    by (metis add.commute diff_intersect_right_idem multiset_inter_def subset_mset.inf.cobounded2
-      subset_mset.le_imp_diff_is_add)
+    by (rule multiset_eqI) simp
   show "\<forall>x. x \<in># ?X \<longrightarrow> (\<exists>y. y \<in># ?Y \<and> gt y x)"
     using huet[unfolded msetext_huet_def Let_def, THEN conjunct2] by (meson in_diff_count)
 qed

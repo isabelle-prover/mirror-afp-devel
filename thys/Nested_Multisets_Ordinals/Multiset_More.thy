@@ -43,7 +43,7 @@ declare
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
 
 lemma subset_mset_imp_subset_add_mset: "A \<subseteq># B \<Longrightarrow> A \<subseteq># add_mset x B"
-  by (metis add_mset_diff_bothsides diff_subset_eq_self multiset_inter_def subset_mset.inf.absorb2)
+  by (auto simp add: subseteq_mset_def le_SucI)
 
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A \<Longrightarrow> A \<subseteq># B\<close>
   by (simp add: subset_mset.le_iff_sup)
@@ -55,13 +55,7 @@ lemma Diff_triv_mset: "M \<inter># N = {#} \<Longrightarrow> M - N = M"
   by (metis diff_intersect_left_idem diff_zero)
 
 lemma diff_intersect_sym_diff: "(A - B) \<inter># (B - A) = {#}"
-  unfolding multiset_inter_def
-proof -
-  have "A - (B - (B - A)) = A - B"
-    by (metis diff_intersect_right_idem multiset_inter_def)
-  then show "A - B - (A - B - (B - A)) = {#}"
-    by (metis diff_add diff_cancel diff_subset_eq_self subset_mset.diff_add)
-qed
+  by (rule multiset_eqI) simp
 
 declare subset_msetE [elim!]
 
@@ -523,8 +517,7 @@ lemma distinct_mset_union_mset[simp]:
 lemma distinct_mset_inter_mset:
   "distinct_mset C \<Longrightarrow> distinct_mset (C \<inter># D)"
   "distinct_mset D \<Longrightarrow> distinct_mset (C \<inter># D)"
-  by (simp_all add: multiset_inter_def,
-    metis distinct_mset_minus multiset_inter_commute multiset_inter_def)
+  by (auto simp add: distinct_mset_def min_def count_eq_zero_iff elim!: le_SucE)
 
 lemma distinct_mset_remove1_All: "distinct_mset C \<Longrightarrow> remove1_mset L C = removeAll_mset L C"
   by (auto simp: multiset_eq_iff distinct_mset_count_less_1)
@@ -682,7 +675,7 @@ lemma untion_image_mset_Pair_distribute:
     iterate_op_plus diff_mult_distrib2)
 
 lemma Sigma_mset_Un_distrib1: "Sigma_mset (I \<union># J) C = Sigma_mset I C \<union># Sigma_mset J C"
-  by (auto simp: Sigma_mset_def sup_subset_mset_def untion_image_mset_Pair_distribute)
+  by (auto simp add: Sigma_mset_def union_mset_def untion_image_mset_Pair_distribute)
 
 lemma Sigma_mset_Un_distrib2: "(SIGMAMSET i\<in>#I. A i \<union># B i) = Sigma_mset I A \<union># Sigma_mset I B"
   by (auto simp: multiset_eq_iff count_sum_mset count_image_mset_Pair sum_mset_if_eq_constant
