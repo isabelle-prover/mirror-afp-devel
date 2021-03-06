@@ -5,7 +5,7 @@ section \<open>Locale Sort\<close>
 
 theory Sort
 imports Main 
-  "HOL-Library.List_Permutation"
+  "HOL-Library.Multiset"
 begin
 
 text \<open>
@@ -30,6 +30,6 @@ basic features any sorting algorithm must satisfy:
 locale Sort =
   fixes sort :: "'a::linorder list \<Rightarrow> 'a list"
   assumes sorted: "sorted (sort l)"
-  assumes permutation: "sort l <~~> l"
+  assumes permutation: "mset (sort l) = mset l"
 
 end

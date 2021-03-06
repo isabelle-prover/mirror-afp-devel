@@ -297,9 +297,9 @@ interpretation computation channel trans send recv init final
   done
 
 definition coperm where
-  "coperm l r = (\<exists>xs ys z. perm xs ys \<and> l = prepend xs z \<and> r = prepend ys z)"
+  "coperm l r = (\<exists>xs ys z. mset xs = mset ys \<and> l = prepend xs z \<and> r = prepend ys z)"
 
-lemma copermIL: "perm ys xs \<Longrightarrow> t = prepend xs z \<Longrightarrow> coperm (prepend ys z) t"
+lemma copermIL: "mset ys = mset xs \<Longrightarrow> t = prepend xs z \<Longrightarrow> coperm (prepend ys z) t"
   unfolding coperm_def by auto
 
 lemma snapshot_algorithm_is_cocorrect:
@@ -315,11 +315,11 @@ proof -
   from cotrace_trace_cos[OF cotrace] have "trace init prefix final"
     unfolding final_def prefix_def by blast
   with snapshot_algorithm_is_correct obtain prefix' i where
-    "trace init prefix' final" "perm prefix' prefix" "state_equal_to_snapshot (S prefix' i) final"
+    "trace init prefix' final" "mset prefix' = mset prefix" "state_equal_to_snapshot (S prefix' i) final"
     "i \<le> length prefix'"
     by blast
-  moreover from \<open>perm prefix' prefix\<close> \<open>i \<le> length prefix'\<close> have "i \<le> final_i"
-    by (auto dest!: perm_length simp: prefix_def split: enat.splits)
+  moreover from \<open>mset prefix' = mset prefix\<close> \<open>i \<le> length prefix'\<close> have "i \<le> final_i"
+    by (auto dest!: mset_eq_length simp: prefix_def split: enat.splits)
   ultimately show ?thesis
     by (intro exI[of _ "prepend prefix' suffix"] exI[of _ i])
       (auto simp: cos_def ltake_prepend s_chop[symmetric] intro!: cotrace_prepend elim!: copermIL)

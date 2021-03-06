@@ -6,7 +6,7 @@ imports
   "Formula"
   "Transition_Systems_and_Automata.NBA_Translate"
   "Transition_Systems_and_Automata.NGBA_Algorithms"
-  "HOL-Library.List_Permutation"
+  "HOL-Library.Multiset"
 begin
 
   subsection \<open>Syntax\<close>
@@ -26,15 +26,14 @@ begin
     assumes "distinct xs" "distinct ys" "set xs = set ys"
     shows "list_hash xs = list_hash ys"
   proof -
-    have "remdups xs <~~> remdups ys" using eq_set_perm_remdups assms(3) by this
-    then have "xs <~~> ys" using assms(1, 2) by (simp add: distinct_remdups_id)
-    then have "fold ((XOR) \<circ> hc) xs a = fold ((XOR) \<circ> hc) ys a" for a
-    proof (induct arbitrary: a)
-      case (swap y x l)
-      have "x XOR y XOR a = y XOR x XOR a" for x y by (transfer) (simp add: word_bw_lcs(3))
-      then show ?case by simp
-    qed simp+
-    then show ?thesis unfolding list_hash_def by this
+    have "mset (remdups xs) = mset (remdups ys)" using assms(3)
+      using set_eq_iff_mset_remdups_eq by blast 
+    then have "mset xs = mset ys" using assms(1, 2) by (simp add: distinct_remdups_id)
+    have "fold ((XOR) \<circ> hc) xs = fold ((XOR) \<circ> hc) ys"
+      apply (rule fold_multiset_equiv)
+       apply (simp_all add: fun_eq_iff ac_simps)
+      using \<open>mset xs = mset ys\<close> .
+    then show ?thesis unfolding list_hash_def by simp
   qed
 
   definition state_hash :: "nat \<Rightarrow> Complementation_Implement.state \<Rightarrow> nat" where

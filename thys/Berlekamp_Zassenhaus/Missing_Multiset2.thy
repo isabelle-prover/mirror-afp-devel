@@ -1,5 +1,5 @@
 theory Missing_Multiset2
-  imports "HOL-Library.Multiset" "HOL-Library.List_Permutation" "HOL-Library.Permutations"
+  imports "HOL-Library.Permutations"
     Containers.Containers_Auxiliary (* only for a lemma *)
 begin
 
@@ -186,15 +186,15 @@ proof -
     by blast
 qed
 
-lemma rel_mset_via_perm: "rel_mset rel (mset xs) (mset ys) \<longleftrightarrow> (\<exists>zs. perm xs zs \<and> list_all2 rel zs ys)"
+lemma rel_mset_via_perm: "rel_mset rel (mset xs) (mset ys) \<longleftrightarrow> (\<exists>zs. mset xs = mset zs \<and> list_all2 rel zs ys)"
 proof (unfold rel_mset_def, intro iffI, goal_cases)
   case 1
   then obtain zs ws where zs: "mset zs = mset xs" and ws: "mset ws = mset ys" and zsws: "list_all2 rel zs ws" by auto
-  note list_all2_reorder_right_invariance[OF zsws ws[symmetric], unfolded zs mset_eq_perm]
-  then show ?case using perm_sym by auto
+  note list_all2_reorder_right_invariance[OF zsws ws[symmetric], unfolded zs]
+  then show ?case by (auto dest: sym)
 next
   case 2
-  from this[folded mset_eq_perm] show ?case by force
+  from this show ?case by force
 qed
 
 lemma rel_mset_free:

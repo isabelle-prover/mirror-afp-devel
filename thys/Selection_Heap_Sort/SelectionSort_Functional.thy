@@ -103,6 +103,4 @@ interpretation SSRemoveMax:
 using remove_max_max
 by (unfold_locales, auto simp add: remove_max_mset)
 
-
-  
 end

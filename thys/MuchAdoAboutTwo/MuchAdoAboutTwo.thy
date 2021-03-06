@@ -8,7 +8,7 @@ section \<open>Much Ado about Two\<close>
 
 (*<*)
 theory MuchAdoAboutTwo
-imports "HOL-Library.List_Permutation"
+imports "HOL-Library.Permutations"
 begin
 (*>*)
 
@@ -1387,7 +1387,7 @@ lemma js_is_a_permutation:
   assumes A1: "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) h. associative f
                 \<Longrightarrow> foldl1 f (map h js) = foldl1 f (map h [0..<k + 1])"
       and A2: "js \<noteq> []"
-  shows "js <~~> [0..<k + 1]"
+  shows "mset js = mset [0..<k + 1]"
 proof -
   from A1 and L9 have L9': 
   "\<And>i. i \<le> k \<Longrightarrow> foldl1 f1 (map (h1 k i) js) = One" by auto
@@ -1432,12 +1432,9 @@ proof -
       thus "set xs \<inter> set ys = {}" using i_xs_ys by auto
     qed
   with all_set_inter_empty_distinct have "distinct js" using A2 by auto
-  with set_eq have "mset js = mset [0..<k + 1]"
+  with set_eq show "mset js = mset [0..<k + 1]"
     using Multiset.set_eq_iff_mset_eq_distinct 
           [where x=js and y="[0..<k + 1]"] by simp
-  thus "js <~~> [0..<k + 1]" 
-    using mset_eq_perm [where xs=js and ys="[0..<k + 1]"] 
-    by simp
 qed
 
 
@@ -1497,7 +1494,7 @@ previous lemma and some further argumentation:
 \<close>
 
 lemma js_partition_order:
-  assumes A1: "js <~~> [0..<k + 1]"
+  assumes A1: "mset js = mset [0..<k + 1]"
       and A2: "\<And>i xs ys. \<lbrakk> i < k ; js = xs @ ys ; xs \<noteq> [] ; i = last xs \<rbrakk>
                          \<Longrightarrow> (i + 1) \<in> set ys"
       and A3: "js = xs @ ys"
@@ -1505,6 +1502,8 @@ lemma js_partition_order:
       and A5: "j \<in> set ys"
   shows "i \<le> j"
 proof (rule ccontr)
+  from A1 have A1': \<open>set js = {..<k + 1}\<close>
+    by (metis atLeast_upt mset_eq_setD)
   assume "\<not>(i \<le> j)"
   hence i_j: "i > j" by simp
 
@@ -1516,8 +1515,9 @@ proof (rule ccontr)
 
   let ?r = "i - j"
 
-  from A1 and A3 have "distinct (xs @ ys)" 
-    using perm_distinct_iff [where xs="xs @ ys"] by auto
+  from A1 and A3 have "distinct (xs @ ys)"
+    using distinct_upt mset_eq_imp_distinct_iff by blast 
+
   hence xs_ys_inter_empty: "set xs \<inter> set ys = {}" by simp
 
   from A2 and Figure_7_trans have
@@ -1527,8 +1527,8 @@ proof (rule ccontr)
   moreover have "j + ?r \<le> k"
     proof -
       have "i \<in> set js" using A4 and A3 by simp
-      hence "i \<in> set [0..<k + 1]" 
-        using A1 and perm_set_eq by blast
+      hence "i \<in> set [0..<k + 1]"
+        using A1' by (auto simp add: less_Suc_eq)
       hence "i \<le> k" by auto
       thus ?thesis using i_j by simp
     qed
@@ -1550,7 +1550,7 @@ eventually followed by \<open>i + 1\<close> in \<open>js\<close>.
 \<close>
 
 lemma js_equals_upt_k:
-  assumes A1: "js <~~> [0..<k + 1]"
+  assumes A1: "mset js = mset [0..<k + 1]"
       and A2: "\<And>i xs ys. \<lbrakk> i < k ; js = xs @ ys ; xs \<noteq> [] ; i = last xs \<rbrakk>
                          \<Longrightarrow> (i + 1) \<in> set ys"
   shows "js = [0..<k + 1]"
@@ -1560,12 +1560,12 @@ proof -
     by blast
   hence "sorted js" using partitions_sorted by blast
   moreover have "distinct js" 
-    using A1 and perm_distinct_iff and List.distinct_upt by blast
+    using A1 distinct_upt mset_eq_imp_distinct_iff by blast 
   moreover have "sorted [0..<k + 1]"
     using List.sorted_upt by blast 
   moreover have "distinct [0..<k + 1]" by simp
   moreover have "set js = set [0..<k + 1]" 
-    using A1 and perm_set_eq by blast
+    using A1 mset_eq_setD by blast 
   ultimately show "js = [0..<k + 1]" using List.sorted_distinct_set_unique 
     by blast
 qed
@@ -1582,7 +1582,7 @@ lemma Lemma_4:
       and "js \<noteq> []"
   shows "js = [0..<k + 1]"
 proof -
-  from assms and js_is_a_permutation have "js <~~> [0..<k + 1]" by auto
+  from assms and js_is_a_permutation have "mset js = mset[0..<k + 1]" by auto
   moreover 
   from assms and L10 and Figure_7
   have "\<And>i xs ys. \<lbrakk> i < k ; js = xs @ ys ; xs \<noteq> [] ; i = last xs \<rbrakk>

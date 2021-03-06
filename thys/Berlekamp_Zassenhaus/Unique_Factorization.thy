@@ -208,7 +208,8 @@ context idom begin
 
   lemma essentially_equal_connect[simp]:
     "essentially_equal mk_monoid fs gs \<longleftrightarrow> rel_mset (ddvd) (mset fs) (mset gs)"
-    by (auto simp: essentially_equal_def rel_mset_via_perm)
+    by (auto simp: essentially_equal_def rel_mset_via_perm perm_iff_eq_mset)
+    
 
   lemma irred_idom_nz:
     assumes x0: "(x::'a) \<noteq> 0"

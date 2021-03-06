@@ -3,7 +3,6 @@ section \<open>The Chandy--Lamport algorithm\<close>
 theory Snapshot
   imports
     "HOL-Library.Sublist"
-    "HOL-Library.List_Permutation"
     Distributed_System
     Trace
     Util
@@ -5110,7 +5109,7 @@ lemma desired_trace_always_exists:
   assumes
     "trace init t final"
   shows
-    "\<exists>t'. perm t' t
+    "\<exists>t'. mset t' = mset t
         \<and> all_prerecording_before_postrecording t'"
 using assms proof (induct "count_violations t" arbitrary: t)
   case 0
@@ -5193,20 +5192,20 @@ next
           \<and> (\<forall>k. k \<ge> j + 1 \<longrightarrow> S (swap_events i j t) k = S t k)
           \<and> (\<forall>k. k \<le> i \<longrightarrow> S (swap_events i j t) k = S t k)"
     using Suc swap_events by presburger
-  moreover have "perm (swap_events i j t) t" using swap_events_perm ind by blast
+  moreover have "mset (swap_events i j t) = mset t" using swap_events_perm ind by blast
   moreover have "count_violations (swap_events i j t) = n"
     using count_violations_swap Suc ind by simp
-  ultimately show ?case using Suc.hyps by blast
+  ultimately show ?case using Suc.hyps by metis 
 qed
 
 theorem snapshot_algorithm_is_correct:
   assumes
     "trace init t final"
   shows
-    "\<exists>t' i. trace init t' final \<and> perm t' t
+    "\<exists>t' i. trace init t' final \<and> mset t' = mset t
           \<and> state_equal_to_snapshot (S t' i) final \<and> i \<le> length t'"
 proof -
-  obtain t' where "perm t' t" and
+  obtain t' where "mset t' = mset t" and
                   "all_prerecording_before_postrecording t'"
     using assms desired_trace_always_exists by blast
   then show ?thesis using snapshot_after_all_prerecording_events
@@ -5231,7 +5230,7 @@ lemma has_snapshot_stable:
 definition some_snapshot_state where
   "some_snapshot_state t \<equiv>
      SOME (t', i). trace init t final
-                 \<and> trace init t' final \<and> perm t' t
+                 \<and> trace init t' final \<and> mset t' = mset t
                  \<and> state_equal_to_snapshot (S t' i) final"
 
 lemma split_S:
@@ -5256,13 +5255,13 @@ theorem Stable_Property_Detection:
     "p final"
 proof -
   have "\<exists>t' i. trace init t final
-             \<and> trace init t' final \<and> perm t' t
+             \<and> trace init t' final \<and> mset t' = mset t
              \<and> state_equal_to_snapshot (S t' i) final"
     using snapshot_algorithm_is_correct assms(2) by blast
   then have "trace init t' final"
     using assms
     unfolding some_snapshot_state_def
-    by (metis (lifting) case_prodD case_prodI someI_ex)
+    by auto (metis (mono_tags, lifting) case_prod_conv tfl_some)
   then show ?thesis
     using assms stable_def split_S by metis
 qed

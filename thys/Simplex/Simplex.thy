@@ -7,8 +7,8 @@ theory Simplex
     QDelta
     Rel_Chain
     Simplex_Algebra
+    "HOL-Library.Multiset"
     "HOL-Library.RBT_Mapping"
-    "HOL-Library.List_Permutation"
     "HOL-Library.Code_Target_Numeral"
 begin
 
@@ -397,7 +397,7 @@ qed
 lemma tableau_perm:
   assumes "lvars t1 = lvars t2" "rvars t1 = rvars t2"
     "\<triangle> t1" "\<triangle> t2" "\<And> v::'a::lrv valuation. v \<Turnstile>\<^sub>t t1 \<longleftrightarrow> v \<Turnstile>\<^sub>t t2"
-  shows "t1 <~~> t2"
+  shows "mset t1 = mset t2"
 proof-
   {
     fix t1 t2
@@ -468,7 +468,7 @@ proof-
     by (auto simp add: distinct_map)
   ultimately
   show ?thesis
-    by (auto simp add: set_eq_iff_mset_eq_distinct mset_eq_perm)
+    by (auto simp add: set_eq_iff_mset_eq_distinct)
 qed
 
 
@@ -4724,20 +4724,20 @@ next
   have "?t \<in> ?Al L"
     using \<open>\<exists> t. t \<in> ?Al L\<close>
     by (rule someI_ex)
-  have "?Al L \<subseteq> {t. t <~~> ?t}"
+  have "?Al L \<subseteq> {t. mset t = mset ?t}"
   proof
     fix x
     assume "x \<in> ?Al L"
-    have "x <~~> ?t"
+    have "mset x = mset ?t"
       apply (rule tableau_perm)
       using \<open>?t \<in> ?Al L\<close> \<open>x \<in> ?Al L\<close>
       by auto
-    then show "x \<in> {t. t <~~> ?t}"
+    then show "x \<in> {t. mset t = mset ?t}"
       by simp
   qed
   moreover
-  have "finite {t. t <~~> ?t}"
-    by (rule perm_finite)
+  have "finite {t. mset t = mset ?t}"
+    by (fact mset_eq_finite)
   ultimately
   show ?thesis
     by (rule finite_subset)
