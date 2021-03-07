@@ -30,6 +30,8 @@ Isabelle. Older versions of archive entries will remain available.</p>
     <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
     <a href="http://www.data61.csiro.au">Data61</a></li>
+<li><a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a>,
+    <a href="https://www.digitalasset.com">Digital Asset</a></li>
 <li><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>,
     <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>,
