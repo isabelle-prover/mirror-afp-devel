@@ -3,7 +3,7 @@
 section \<open>Direct Decompositions and Hilbert Functions\<close>
 
 theory Hilbert_Function
-  imports Dube_Prelims Degree_Section "HOL-Library.List_Permutation"
+  imports Dube_Prelims Degree_Section "HOL-Library.Permutations"
 begin
 
 subsection \<open>Direct Decompositions\<close>
@@ -88,14 +88,17 @@ proof -
 qed
 
 lemma direct_decomp_perm:
-  assumes "direct_decomp A ss1" and "perm ss1 ss2"
+  assumes "direct_decomp A ss1" and "mset ss1 = mset ss2"
   shows "direct_decomp A ss2"
 proof -
-  from assms(2) have len_ss1: "length ss1 = length ss2" by (rule perm_length)
-  from assms(2) have "\<exists>f. bij_betw f {..<length ss1} {..<length ss2} \<and> (\<forall>i<length ss1. ss1 ! i = ss2 ! f i)"
-    by (rule permutation_Ex_bij)
-  then obtain f where f_bij: "bij_betw f {..<length ss2} {..<length ss1}"
-    and f: "\<And>i. i < length ss2 \<Longrightarrow> ss1 ! i = ss2 ! f i" unfolding len_ss1 by blast
+  from assms(2) have len_ss1: "length ss1 = length ss2"
+    using mset_eq_length by blast
+  from assms(2) obtain f where \<open>f permutes {..<length ss2}\<close>
+    \<open>permute_list f ss2 = ss1\<close>
+    by (rule mset_eq_permutation)
+  then have f_bij: "bij_betw f {..<length ss2} {..<length ss1}"
+    and f: "\<And>i. i < length ss2 \<Longrightarrow> ss1 ! i = ss2 ! f i" 
+    by (auto simp add: permutes_imp_bij permute_list_nth)
   define g where "g = inv_into {..<length ss2} f"
   from f_bij have g_bij: "bij_betw g {..<length ss1} {..<length ss2}"
     unfolding g_def len_ss1 by (rule bij_betw_inv_into)
@@ -182,28 +185,8 @@ qed
 lemma direct_decomp_split_map:
   "direct_decomp A (map f ss) \<Longrightarrow> direct_decomp A (map f (filter P ss) @ map f (filter (- P) ss))"
 proof (rule direct_decomp_perm)
-  show "perm (map f ss) (map f (filter P ss) @ map f (filter (- P) ss))"
-  proof (induct ss)
-    case Nil
-    show ?case by simp
-  next
-    case (Cons s ss)
-    show ?case
-    proof (cases "P s")
-      case True
-      with Cons show ?thesis by simp
-    next
-      case False
-      have "map f (s # ss) = f s # map f ss" by simp
-      also from Cons have "perm (f s # map f ss) (f s # map f (filter P ss) @ map f (filter (- P) ss))"
-        by (rule perm.intros)
-      also have "perm \<dots> (map f (filter P ss) @ map f (s # filter (- P) ss))"
-        by (simp add: perm_append_Cons)
-      also(trans) from False have "\<dots> = map f (filter P (s # ss)) @ map f (filter (- P) (s # ss))"
-        by simp
-      finally show ?thesis .
-    qed
-  qed
+  show "mset (map f ss) = mset (map f (filter P ss) @ map f (filter (- P) ss))"
+    by simp (metis image_mset_union multiset_partition) 
 qed
 
 lemmas direct_decomp_split = direct_decomp_split_map[where f=id, simplified]
@@ -334,7 +317,8 @@ proof -
   }
 
   {
-    from assms perm_append_swap have "direct_decomp A (ss2 @ ss1)" by (rule direct_decomp_perm)
+    from assms have "direct_decomp A (ss2 @ ss1)"
+      by (rule direct_decomp_perm) simp
     moreover assume "{} \<notin> set ss1"
     ultimately show ?thesis2 by (rule rl)
   }

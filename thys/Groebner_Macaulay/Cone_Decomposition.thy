@@ -1086,7 +1086,7 @@ next
   ultimately have "cone_decomp T (concat pss @ ps)" by (rule cone_decomp_append)
   hence "direct_decomp T (map cone (concat pss) @ map cone ps)" by (simp add: cone_decomp_def)
   hence "direct_decomp T (map cone ps @ map cone (concat pss))"
-    using perm_append_swap by (rule direct_decomp_perm)
+    by (auto intro: direct_decomp_perm)
   thus ?case by (simp add: cone_decomp_def)
 qed
 
@@ -1103,12 +1103,12 @@ proof (rule cone_decompI)
 qed
 
 lemma cone_decomp_perm:
-  assumes "cone_decomp T ps" and "perm ps qs"
+  assumes "cone_decomp T ps" and "mset ps = mset qs"
   shows "cone_decomp T qs"
   using assms(1) unfolding cone_decomp_def
 proof (rule direct_decomp_perm)
-  from \<open>perm ps qs\<close> show \<open>perm (map cone ps) (map cone qs)\<close>
-    by (simp add: perm_iff_eq_mset)
+  from \<open>mset ps = mset qs\<close> show \<open>mset (map cone ps) = mset (map cone qs)\<close>
+    by simp
 qed
 
 lemma valid_cone_decomp_subset_Polys:
@@ -2390,7 +2390,7 @@ next
     ultimately have "cone_decomp (cone (monomial 1 t, U)) ((ps0 @ qs0) @ (ps1 @ qs1))"
       by (rule cone_decomp_append)
     thus "cone_decomp (cone (monomial 1 t, U)) ((ps0 @ ps1) @ qs0 @ qs1)"
-      by (rule cone_decomp_perm) (metis append.assoc perm_append1 perm_append2 perm_append_swap)
+      by (rule cone_decomp_perm) simp
   next
     fix h0 U0
     assume "(h0, U0) \<in> set (ps0 @ ps1)"
@@ -3029,7 +3029,7 @@ proof -
 
   have "direct_decomp (ideal (insert f F) \<inter> P[X]) [ideal F \<inter> P[X], fst (ideal_decomp_aux F f)]"
     unfolding eq fst_conv S_def L_def J_def using fin_X assms(2, 3) by (rule direct_decomp_ideal_insert)
-  thus ?thesis3 using perm.swap by (rule direct_decomp_perm)
+  thus ?thesis3 by (rule direct_decomp_perm) simp
 
   have std: "standard_decomp 0 (snd (split 0 X L') :: ((_ \<Rightarrow>\<^sub>0 'a) \<times> _) list)"
     and "cone_decomp (normal_form L ` P[X]) (snd (split 0 X L'))"
@@ -3079,7 +3079,7 @@ proof (induct F arbitrary: thesis)
       by (fact direct_decomp_singleton)
     hence "direct_decomp (ideal {f0} \<inter> P[X]) [{0}, ideal {f0} \<inter> P[X]]" by (rule direct_decomp_Cons_zeroI)
     thus "direct_decomp (ideal {f0} \<inter> P[X]) [ideal {f0} \<inter> P[X], {0}]"
-      using perm.swap by (rule direct_decomp_perm)
+      by (rule direct_decomp_perm) simp
   qed (simp add: hom_decomp_def)
 next
   case (insert f F)
@@ -3131,8 +3131,8 @@ next
     next
       from std_ps std_qs show "standard_decomp (poly_deg f0) ?ps" by (rule standard_decomp_append)
     next
-      from dd perm.swap have "direct_decomp (ideal (insert f0 F) \<inter> P[X]) [T, ideal {f0} \<inter> P[X]]"
-        by (rule direct_decomp_perm)
+      from dd have "direct_decomp (ideal (insert f0 F) \<inter> P[X]) [T, ideal {f0} \<inter> P[X]]"
+        by (rule direct_decomp_perm) simp
       hence "T \<subseteq> ideal (insert f0 F) \<inter> P[X]"
         by (rule direct_decomp_Cons_subsetI) (simp add: ideal.span_zero zero_in_Polys)
       hence "T \<inter> fst ?D \<subseteq> ideal (insert f0 F) \<inter> fst ?D" by blast
@@ -3166,7 +3166,7 @@ next
     next
       from dd' have "direct_decomp (ideal (insert f0 (insert f F)) \<inter> P[X])
                       [ideal (insert f0 F) \<inter> P[X], fst ?D]"
-        by (simp add: insert_commute direct_decomp_perm perm.swap)
+        by (simp add: insert_commute direct_decomp_perm)
       hence "direct_decomp (ideal (insert f0 (insert f F)) \<inter> P[X])
                       ([fst ?D] @ [ideal {f0} \<inter> P[X], T])" using dd by (rule direct_decomp_direct_decomp)
       hence "direct_decomp (ideal (insert f0 (insert f F)) \<inter> P[X]) ([ideal {f0} \<inter> P[X]] @ [T, fst ?D])"
@@ -3811,8 +3811,8 @@ proof -
     with \<open>h \<noteq> 0\<close> show False ..
   qed
   hence **: "(h, U) \<notin> set ps2" by (simp add: count_list_eq_0_iff)
-  have "perm ps ((h, U) # ps1 @ ps2)" (is "perm _ ?ps")
-    by (rule perm_sym) (simp only: perm_append_Cons ps)
+  have "mset ps = mset ((h, U) # ps1 @ ps2)" (is "mset _ = mset ?ps")
+    by (simp add: ps)
   with assms(2) have "cone_decomp T ?ps" by (rule cone_decomp_perm)
   hence "direct_decomp T (map cone ?ps)" by (rule cone_decompD)
   hence "direct_decomp T (cone (h, U) # map cone (ps1 @ ps2))" by simp
@@ -3823,17 +3823,12 @@ proof -
               [cone (h, U - {x}), cone (monomial (1::'a) ?x * h, insert x (U - {x}))]"
       by (rule direct_decomp_cone_insert) simp
     with assms(4) show "direct_decomp (cone (h, U)) [cone ?p1, cone ?p2]"
-      by (simp add: insert_absorb times_monomial_left direct_decomp_perm perm.swap)
+      by (simp add: insert_absorb times_monomial_left direct_decomp_perm)
   qed
   hence "direct_decomp T (map cone (ps1 @ ps2 @ [?p1, ?p2]))" by simp
   hence "cone_decomp T (ps1 @ ps2 @ [?p1, ?p2])" by (rule cone_decompI)
-  moreover have "perm (ps1 @ ps2 @ [?p1, ?p2]) (?p1 # ?p2 # (ps1 @ ps2))"
-  proof -
-    have "ps1 @ ps2 @ [?p1, ?p2] = (ps1 @ ps2) @ [?p1, ?p2]" by simp
-    also have "perm \<dots> ([?p1, ?p2] @ (ps1 @ ps2))" by (rule perm_append_swap)
-    also have "\<dots> = ?p1 # ?p2 # (ps1 @ ps2)" by simp
-    finally show ?thesis .
-  qed
+  moreover have "mset (ps1 @ ps2 @ [?p1, ?p2]) = mset (?p1 # ?p2 # (ps1 @ ps2))"
+    by simp
   ultimately have "cone_decomp T (?p1 # ?p2 # (ps1 @ ps2))" by (rule cone_decomp_perm)
   also from * ** have "ps1 @ ps2 = removeAll (h, U) ps" by (simp add: remove1_append ps)
   finally show ?thesis by (simp only: shift_list.simps)

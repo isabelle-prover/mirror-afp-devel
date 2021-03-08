@@ -44,5 +44,4 @@ next
   thus ?lhs by (simp add: refpoint_eq)
 qed
 
-
 end

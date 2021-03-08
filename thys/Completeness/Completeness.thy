@@ -228,8 +228,10 @@ lemma subsJustified':
   --> (\<forall>sigma\<in>subs (ats, (n, f) # list). sequent sigma \<in> deductions CutFreePC) 
   --> sequent (ats, (n, f) # list) \<in> deductions CutFreePC"
   apply (rule_tac A=f in formula_signs_cases, clarify) apply(simp add: ss)
-       apply(rule PermI) apply assumption apply(rule perm_append_Cons) apply (rule rulesInPCs, clarify) apply(simp add: ss)
-      apply(rule PermI) apply assumption apply(rule perm_append_Cons) apply (rule rulesInPCs, clarify) apply(simp add: ss) apply(elim conjE)
+       apply(rule PermI) apply assumption apply simp_all
+       apply (rule rulesInPCs, clarify) apply(simp add: ss)
+      apply(rule PermI) apply assumption apply simp_all
+      apply (rule rulesInPCs, clarify) apply(simp add: ss) apply(elim conjE)
      apply(rule ConjI') apply assumption apply assumption apply(rule rulesInPCs)+
     apply clarify apply(simp add: ss)
     apply(rule DisjI) apply assumption apply(rule rulesInPCs)+

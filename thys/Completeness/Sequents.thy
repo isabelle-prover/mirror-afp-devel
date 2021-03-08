@@ -158,7 +158,7 @@ definition
 definition
   "Cuts    = { z. ? C Delta     Gamma. z = (Gamma @ Delta,{C#Gamma,FNot C#Delta})}"
 definition
-  "Perms   = { z. ? Gamma Gamma'     . z = (Gamma,{Gamma'}) & Gamma <~~> Gamma'}"
+  "Perms   = { z. ? Gamma Gamma'     . z = (Gamma,{Gamma'}) & mset Gamma = mset Gamma'}"
 definition
   "DAxioms = { z. ? p vs.              z = ([FAtom Neg p vs,FAtom Pos p vs],{}) }"
 
@@ -195,7 +195,7 @@ lemma ContrI: "[| A#A#Gamma : deductions R; Contrs <= R |] ==> A#Gamma : deducti
   apply(rule_tac prems="{A#A#Gamma}" in deductions.inferI)
   apply(auto simp add: Contrs_def) done
 
-lemma PermI: "[| Gamma' : deductions R; Gamma <~~> Gamma'; Perms <= R |] ==> Gamma : deductions(R)"
+lemma PermI: "[| Gamma' : deductions R; mset Gamma = mset Gamma'; Perms <= R |] ==> Gamma : deductions(R)"
   apply(rule_tac prems="{Gamma'}" in deductions.inferI)
   apply(auto simp add: Perms_def) done
 
@@ -207,7 +207,8 @@ lemma WeakI1: "[| Gamma : deductions(A); Weaks <= A |] ==> (Delta @ Gamma) : ded
   apply(auto intro: WeakI) done
 
 lemma WeakI2: "[| Gamma : deductions(A); Perms <= A; Weaks <= A |] ==> (Gamma @ Delta) : deductions(A)"
-  apply(blast intro: PermI perm_append_swap WeakI1) done
+  apply (auto intro: PermI [of \<open>Delta @ Gamma\<close>] WeakI1)
+  done
 
 lemma SATAxiomI: "[| Axioms <= A; Weaks <= A; Perms <= A; forms = [FAtom Pos n vs,FAtom Neg n vs] @ Gamma |] ==> forms : deductions(A)"
   apply(simp only:)
@@ -220,7 +221,8 @@ lemma DisjI1: "[| (A1#Gamma) : deductions(A); Disjs <= A; Weaks <= A |] ==> FCon
 
 lemma DisjI2: "!!A. [| (A0#Gamma) : deductions(A); Disjs <= A; Weaks <= A; Perms <= A |] ==> FConj Neg A0 A1#Gamma : deductions(A)"
   apply(rule DisjI)
-  apply(rule PermI[OF _ perm.swap])
+   apply(rule PermI [of \<open>A1 # A0 # Gamma\<close>])
+  apply simp_all
   apply(rule WeakI)
   .
 
@@ -228,7 +230,7 @@ lemma DisjI2: "!!A. [| (A0#Gamma) : deductions(A); Disjs <= A; Weaks <= A; Perms
     \<comment> \<open>we keep proofs as in original, but they are slightly ugly, and do not state what is intuitively happening\<close>
 lemma perm_tmp4: "Perms \<subseteq> R \<Longrightarrow> A @ (a # list) @ (a # list) : deductions R \<Longrightarrow> (a # a # A) @ list @ list : deductions R"
   apply (rule PermI, auto)
-  apply(simp add: perm_count_conv count_append) done
+  done
 
 lemma weaken_append[rule_format]: "Contrs <= R ==> Perms <= R ==> !A. A @ Gamma @ Gamma : deductions(R) -->  A @ Gamma : deductions(R)"
   apply (induct_tac Gamma, simp, rule) apply rule
@@ -285,13 +287,8 @@ definition
   inDed :: "formula list => bool" where
   "inDed xs \<longleftrightarrow> xs : deductions CutFreePC"
 
-lemma perm: "! xs ys. xs <~~> ys --> (inDed xs = inDed ys)"
-  apply(subgoal_tac "! xs ys. xs <~~> ys --> inDed xs --> inDed ys")
-  apply (blast intro: perm_sym, clarify)
-  apply(simp add: inDed_def)
-  apply (rule PermI, assumption)
-  apply(rule perm_sym) apply assumption
-  by(blast intro!: rulesInPCs)
+lemma perm: "! xs ys. mset xs = mset ys --> (inDed xs = inDed ys)"
+  by (metis PermI inDed_def rulesInPCs(16))
 
 lemma contr: "! x xs. inDed (x#x#xs) --> inDed (x#xs)"
   apply(simp add: inDed_def)

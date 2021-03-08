@@ -2,10 +2,10 @@ section "Soundness"
 
 theory Soundness imports Completeness begin
 
-lemma permutation_validS: "fs <~~> gs --> (validS fs = validS gs)"
+lemma permutation_validS: "mset fs = mset gs --> (validS fs = validS gs)"
   apply(simp add: validS_def)
   apply(simp add: evalS_def)
-  apply(simp add: perm_set_eq)
+  using mset_eq_setD apply blast
   done
 
 lemma modelAssigns_vblcase: "phi \<in> modelAssigns M \<Longrightarrow>  x \<in> objects M \<Longrightarrow> vblcase x phi \<in> modelAssigns M"
@@ -72,7 +72,11 @@ lemma soundness: "fs : deductions(PC) ==> (validS fs)"
   apply(simp add: subset_eq)
   apply(simp add: PC_def)
   apply(elim disjE)
-          apply(force simp add: Perms_def permutation_validS)
+          apply (auto simp add: Perms_def)
+          apply (subst permutation_validS)
+           defer
+           apply assumption
+          apply simp_all
          apply(force simp: Axioms_def validS_def evalS_def)
         apply(force simp: Conjs_def validS_def evalS_def)
        apply(force simp: Disjs_def validS_def evalS_def)

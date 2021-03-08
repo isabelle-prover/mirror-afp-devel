@@ -750,8 +750,8 @@ proof -
     by (rule direct_decomp_ideal_normal_form)
   hence "direct_decomp P[X] ([N] @ [ideal {f} \<inter> P[X], P])" using decomp_F
     by (rule direct_decomp_direct_decomp)
-  hence "direct_decomp P[X] ([ideal {f} \<inter> P[X], P] @ [N])" using perm_append_swap
-    by (rule direct_decomp_perm)
+  hence "direct_decomp P[X] ([ideal {f} \<inter> P[X], P] @ [N])"
+    by (rule direct_decomp_perm) simp   
   thus ?thesis by simp
 qed
 
