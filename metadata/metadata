@@ -10153,6 +10153,19 @@ abstract =
   algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner's
   Dilemma.
 
+[Projective_Measurements]
+title = Quantum projective measurements and the CHSH inequality
+author = Mnacho Echenim <https://lig-membres.imag.fr/mechenim/>
+topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
+date = 2021-03-03
+notify = mnacho.echenim@univ-grenoble-alpes.fr
+abstract =
+  This work contains a formalization of quantum projective measurements,
+  also known as von Neumann measurements, which are based on elements of
+  spectral theory. We also formalized the CHSH inequality, an inequality
+  involving expectations in a probability space that is violated by
+  quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.
+
 [Finite-Map-Extras]
 title = Finite Map Extras
 author = Javier Díaz <mailto:javier.diaz.manzi@gmail.com>
@@ -10316,7 +10329,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Mathematics/Combinatorics
 date = 2021-02-25
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formally define sunflowers and provide a formalization of the
   sunflower lemma of Erd&odblac;s and Rado: whenever a set of
   size-<i>k</i>-sets has a larger cardinality than
@@ -10329,7 +10342,7 @@ author = Ben Blumson <https://philpeople.org/profiles/ben-blumson>
 topic = Logic/Philosophical aspects
 date = 2021-03-01
 notify = benblumson@gmail.com
-abstract = 
+abstract =
   We use Isabelle/HOL to verify elementary theorems and alternative
   axiomatizations of classical extensional mereology.
 

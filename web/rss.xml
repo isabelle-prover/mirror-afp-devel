@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
+    <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Quantum projective measurements and the CHSH inequality</title>
+              <link>https://www.isa-afp.org/entries/Projective_Measurements.html</link>
+       <guid>https://www.isa-afp.org/entries/Projective_Measurements.html</guid>
+       <dc:creator> Mnacho Echenim       </dc:creator>
+       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+This work contains a formalization of quantum projective measurements,
+also known as von Neumann measurements, which are based on elements of
+spectral theory. We also formalized the CHSH inequality, an inequality
+involving expectations in a probability space that is violated by
+quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.</description>
+    </item>
     <item>
        <title>Mereology</title>
               <link>https://www.isa-afp.org/entries/Mereology.html</link>
@@ -573,25 +586,6 @@ strengthening was obtained by first replacing some of Paulson’s
 semantic arguments with proofs within his HF calculus, and then
 plugging in some of Paulson&#39;s (modified) lemmas to instantiate
 our soundness-free G&amp;ouml;del&#39;s Second locale.</description>
-    </item>
-    <item>
-       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</title>
-              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We validate an abstract formulation of G&amp;ouml;del&#39;s First and
-Second Incompleteness Theorems from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
-AFP entry&lt;/a&gt; by instantiating them to the case of
-&lt;i&gt;finite sound extensions of the Hereditarily Finite (HF) Set
-theory&lt;/i&gt;, i.e., FOL theories extending the HF Set theory with
-a finite set of axioms that are sound in the standard model. The
-concrete results had been previously formalised in an &lt;a
-href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;AFP
-entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
-infrastructure developed in that entry.</description>
     </item>
   </channel>
 </rss>
