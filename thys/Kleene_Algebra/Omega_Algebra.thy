@@ -63,7 +63,7 @@ oops
 text \<open>Next we strengthen the unfold law to an equation.\<close>
 
 lemma omega_unfold_eq [simp]: "x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x \<cdot> x\<^sup>\<omega> \<le> x \<cdot> x \<cdot> x\<^sup>\<omega>"
     by (simp add: local.mult_isol local.omega_unfold mult_assoc)
   thus "x \<cdot> x\<^sup>\<omega> \<le> x\<^sup>\<omega>"
@@ -101,7 +101,7 @@ lemma zero_omega [simp]: "0\<^sup>\<omega> = 0"
 text \<open>The next lemma is another variant of omega unfold\<close>
 
 lemma star_omega_1 [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x \<cdot> x\<^sup>\<omega> \<le> x\<^sup>\<omega>"
     by simp
   thus "x\<^sup>\<star> \<cdot> x\<^sup>\<omega> \<le> x\<^sup>\<omega>"
@@ -146,7 +146,7 @@ lemma "x\<^sup>\<omega> \<cdot> y = x\<^sup>\<omega>"
 oops
 
 lemma omega_sup_id: "1 \<le> y \<Longrightarrow> x\<^sup>\<omega> \<cdot> y = x\<^sup>\<omega>"
-  using local.eq_iff local.mult_isol omega_1 by fastforce
+  using order.eq_iff local.mult_isol omega_1 by fastforce
 
 lemma omega_top [simp]: "x\<^sup>\<omega> \<cdot> \<top> = x\<^sup>\<omega>"
   by (simp add: max_element omega_sup_id top_def)
@@ -201,7 +201,7 @@ for omega-regular languages~\cite{Wagner77omega}, but in a slightly
 different setting.\<close>
 
 lemma wagner_1 [simp]: "(x \<cdot> x\<^sup>\<star>)\<^sup>\<omega> = x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(x \<cdot> x\<^sup>\<star>)\<^sup>\<omega> = x \<cdot> x\<^sup>\<star> \<cdot> x \<cdot> x\<^sup>\<star> \<cdot> (x \<cdot> x\<^sup>\<star>)\<^sup>\<omega>"
     by (metis mult.assoc omega_unfold_eq)
   also have "... = x \<cdot> x \<cdot> x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> (x \<cdot> x\<^sup>\<star>)\<^sup>\<omega>"
@@ -225,7 +225,7 @@ proof -
 qed
 
 lemma wagner_2 [simp]: "x \<cdot> (y \<cdot> x)\<^sup>\<omega> = (x \<cdot> y)\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x \<cdot> (y \<cdot> x)\<^sup>\<omega> \<le> (x \<cdot> y)\<^sup>\<omega>"
     by (rule wagner_2_var)
   have "(x \<cdot> y)\<^sup>\<omega> = x \<cdot> y \<cdot> (x \<cdot> y)\<^sup>\<omega>"
@@ -241,7 +241,7 @@ This identity is called~(A8) in Wagner's paper.
 lemma wagner_3:
 assumes "x \<cdot> (x + y)\<^sup>\<omega> + z = (x + y)\<^sup>\<omega>"
 shows "(x + y)\<^sup>\<omega> = x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> z"
-proof (rule antisym)
+proof (rule order.antisym)
   show  "(x + y)\<^sup>\<omega> \<le> x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> z"
     using assms local.join.sup_commute omega_coinduct_eq by auto
   have "x\<^sup>\<star> \<cdot> z \<le> (x + y)\<^sup>\<omega>"
@@ -258,7 +258,7 @@ lemma wagner_1_var [simp]: "(x\<^sup>\<star> \<cdot> x)\<^sup>\<omega> = x\<^sup
   by (simp add: local.star_slide_var)
 
 lemma star_omega_4 [simp]: "(x\<^sup>\<omega>)\<^sup>\<star> = 1 + x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(x\<^sup>\<omega>)\<^sup>\<star> = 1 + x\<^sup>\<omega> \<cdot> (x\<^sup>\<omega>)\<^sup>\<star>"
     by simp
   also have "... \<le> 1 + x\<^sup>\<omega> \<cdot> \<top>"
@@ -270,7 +270,7 @@ proof (rule antisym)
 qed
 
 lemma star_omega_5 [simp]: "x\<^sup>\<omega> \<cdot> (x\<^sup>\<omega>)\<^sup>\<star> = x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x\<^sup>\<omega> \<cdot> (x\<^sup>\<omega>)\<^sup>\<star> \<le> x\<^sup>\<omega>"
     by (rule omega_1)
   show "x\<^sup>\<omega> \<le> x\<^sup>\<omega> \<cdot> (x\<^sup>\<omega>)\<^sup>\<star>"
@@ -321,7 +321,7 @@ text \<open>The next lemma is a variant of the denest law for the star at
 the level of omega.\<close>
 
 lemma omega_denest [simp]: "(x + y)\<^sup>\<omega> = (x\<^sup>\<star> \<cdot> y)\<^sup>\<omega> + (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x + y)\<^sup>\<omega> \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<omega> + (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<omega>"
     by (rule omega_sum_unfold_coind)
   have "(x\<^sup>\<star> \<cdot> y)\<^sup>\<omega> \<le>  (x + y)\<^sup>\<omega>"
@@ -340,7 +340,7 @@ separate infinite loops over~@{term x} and~@{term y}.\<close>
 lemma omega_sum_refine:
   assumes "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
   shows "(x + y)\<^sup>\<omega> = x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> y\<^sup>\<omega>"
-proof (rule antisym)
+proof (rule order.antisym)
   have a: "y\<^sup>\<star> \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
     using assms local.quasicomm_var by blast
   have "(x + y)\<^sup>\<omega> = y\<^sup>\<omega> + y\<^sup>\<star> \<cdot> x \<cdot> (x + y)\<^sup>\<omega>"
@@ -403,7 +403,7 @@ lemma ewp_alt1: "(\<forall>z. x\<^sup>\<omega> \<le> x\<^sup>\<star> \<cdot> z) 
   by (metis add_comm less_eq_def omega_coinduct omega_unfold_eq order_prop)
 
 lemma ewp_alt: "x\<^sup>\<omega> = 0 \<longleftrightarrow> (\<forall>y z. y \<le> x \<cdot> y + z \<longrightarrow> y \<le> x\<^sup>\<star> \<cdot> z)"
-  by (metis annir antisym ewp_alt1 join.bot_least)
+  by (metis annir order.antisym ewp_alt1 join.bot_least)
 
 text \<open>So we have obtained a condition for Arden's lemma in omega
 algebra.\<close>
@@ -427,7 +427,7 @@ proof -
   hence "y \<le> x\<^sup>\<star> \<cdot> z"
     by (simp add: assms(1))
   thus "x\<^sup>\<star> \<cdot> z = y"
-    by (simp add: assms(2) local.eq_iff local.star_inductl_eq)
+    by (simp add: assms(2) order.eq_iff local.star_inductl_eq)
 qed
 
 lemma ardens_lemma: "\<not> ewp x \<Longrightarrow> z + x \<cdot> y = y \<Longrightarrow> x\<^sup>\<star> \<cdot> z = y"

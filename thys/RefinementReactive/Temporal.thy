@@ -131,7 +131,7 @@ text\<open>
         by (simp add: eventually_def SUP_sup_distrib)
 
       lemma neg_until_always: "-(p until -p) = \<box> p"
-        proof (rule antisym)
+        proof (rule order.antisym)
           show "- (p until - p) \<le> \<box> p"
            by (simp add: until_def always_def uminus_SUP uminus_INF, rule INF_greatest, cut_tac p = "\<lambda> n . p !! n" in until_always, simp)
         next

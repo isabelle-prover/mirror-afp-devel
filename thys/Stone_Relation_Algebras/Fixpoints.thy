@@ -78,19 +78,19 @@ We start with basic consequences of the above definitions.
 
 lemma least_fixpoint_unique:
   "has_least_fixpoint f \<Longrightarrow> \<exists>!x . is_least_fixpoint f x"
-  using has_least_fixpoint_def is_least_fixpoint_def antisym by auto
+  using has_least_fixpoint_def is_least_fixpoint_def order.antisym by auto
 
 lemma greatest_fixpoint_unique:
   "has_greatest_fixpoint f \<Longrightarrow> \<exists>!x . is_greatest_fixpoint f x"
-  using has_greatest_fixpoint_def is_greatest_fixpoint_def antisym by auto
+  using has_greatest_fixpoint_def is_greatest_fixpoint_def order.antisym by auto
 
 lemma least_prefixpoint_unique:
   "has_least_prefixpoint f \<Longrightarrow> \<exists>!x . is_least_prefixpoint f x"
-  using has_least_prefixpoint_def is_least_prefixpoint_def antisym by auto
+  using has_least_prefixpoint_def is_least_prefixpoint_def order.antisym by auto
 
 lemma greatest_postfixpoint_unique:
   "has_greatest_postfixpoint f \<Longrightarrow> \<exists>!x . is_greatest_postfixpoint f x"
-  using has_greatest_postfixpoint_def is_greatest_postfixpoint_def antisym by auto
+  using has_greatest_postfixpoint_def is_greatest_postfixpoint_def order.antisym by auto
 
 lemma least_fixpoint:
   "has_least_fixpoint f \<Longrightarrow> is_least_fixpoint f (\<mu> f)"
@@ -110,7 +110,7 @@ lemma greatest_postfixpoint:
 
 lemma least_fixpoint_same:
   "is_least_fixpoint f x \<Longrightarrow> x = \<mu> f"
-  by (simp add: is_least_fixpoint_def antisym the_equality the_least_fixpoint_def)
+  by (simp add: is_least_fixpoint_def order.antisym the_equality the_least_fixpoint_def)
 
 lemma greatest_fixpoint_same:
   "is_greatest_fixpoint f x \<Longrightarrow> x = \<nu> f"
@@ -166,7 +166,7 @@ Pre-/postfixpoints of isotone functions are fixpoints.
 
 lemma least_prefixpoint_fixpoint:
   "has_least_prefixpoint f \<Longrightarrow> isotone f \<Longrightarrow> is_least_fixpoint f (p\<mu> f)"
-  using is_least_fixpoint_def is_least_prefixpoint_def least_prefixpoint antisym isotone_def by auto
+  using is_least_fixpoint_def is_least_prefixpoint_def least_prefixpoint order.antisym isotone_def by auto
 
 lemma pmu_mu:
   "has_least_prefixpoint f \<Longrightarrow> isotone f \<Longrightarrow> p\<mu> f = \<mu> f"
@@ -174,7 +174,7 @@ lemma pmu_mu:
 
 lemma greatest_postfixpoint_fixpoint:
   "has_greatest_postfixpoint f \<Longrightarrow> isotone f \<Longrightarrow> is_greatest_fixpoint f (p\<nu> f)"
-  using greatest_postfixpoint is_greatest_fixpoint_def is_greatest_postfixpoint_def antisym isotone_def by auto
+  using greatest_postfixpoint is_greatest_fixpoint_def is_greatest_postfixpoint_def order.antisym isotone_def by auto
 
 lemma pnu_nu:
   "has_greatest_postfixpoint f \<Longrightarrow> isotone f \<Longrightarrow> p\<nu> f = \<nu> f"
@@ -206,11 +206,11 @@ The square rule for fixpoints of a function applied twice.
 
 lemma mu_square:
   "isotone f \<Longrightarrow> has_least_fixpoint f \<Longrightarrow> has_least_fixpoint (f \<circ> f) \<Longrightarrow> \<mu> f = \<mu> (f \<circ> f)"
-  by (metis (no_types, hide_lams) antisym is_least_fixpoint_def isotone_def least_fixpoint_char least_fixpoint_unique o_apply)
+  by (metis (no_types, hide_lams) order.antisym is_least_fixpoint_def isotone_def least_fixpoint_char least_fixpoint_unique o_apply)
 
 lemma nu_square:
   "isotone f \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> has_greatest_fixpoint (f \<circ> f) \<Longrightarrow> \<nu> f = \<nu> (f \<circ> f)"
-  by (metis (no_types, hide_lams) antisym is_greatest_fixpoint_def isotone_def greatest_fixpoint_char greatest_fixpoint_unique o_apply)
+  by (metis (no_types, hide_lams) order.antisym is_greatest_fixpoint_def isotone_def greatest_fixpoint_char greatest_fixpoint_unique o_apply)
 
 text \<open>
 The rolling rule for fixpoints of the composition of two functions.
@@ -221,7 +221,7 @@ lemma mu_roll:
       and "has_least_fixpoint (f \<circ> g)"
       and "has_least_fixpoint (g \<circ> f)"
     shows "\<mu> (g \<circ> f) = g (\<mu> (f \<circ> g))"
-proof (rule antisym)
+proof (rule order.antisym)
   show "\<mu> (g \<circ> f) \<le> g (\<mu> (f \<circ> g))"
     by (metis assms(2-3) comp_apply is_least_fixpoint_def least_fixpoint)
 next
@@ -236,7 +236,7 @@ lemma nu_roll:
       and "has_greatest_fixpoint (f \<circ> g)"
       and "has_greatest_fixpoint (g \<circ> f)"
     shows "\<nu> (g \<circ> f) = g (\<nu> (f \<circ> g))"
-proof (rule antisym)
+proof (rule order.antisym)
   have 1: "is_greatest_fixpoint (f \<circ> g) (\<nu> (f \<circ> g))"
     by (simp add: assms(2) greatest_fixpoint)
   have "is_greatest_fixpoint (g \<circ> f) (\<nu> (g \<circ> f))"
@@ -288,11 +288,11 @@ lemma mu_fusion_2:
 
 lemma mu_fusion_equal_1:
   "galois l u \<Longrightarrow> isotone g \<Longrightarrow> isotone h \<Longrightarrow> has_least_prefixpoint g \<Longrightarrow> has_least_fixpoint h \<Longrightarrow> l (g (u (\<mu> h))) \<le> h(l(u(\<mu> h))) \<Longrightarrow> l (g (p\<mu> g)) = h (l (p\<mu> g)) \<Longrightarrow> \<mu> h = l (p\<mu> g) \<and> \<mu> h = l (\<mu> g)"
-  by (metis antisym least_fixpoint least_prefixpoint_fixpoint is_least_fixpoint_def mu_fusion_1 pmu_mu)
+  by (metis order.antisym least_fixpoint least_prefixpoint_fixpoint is_least_fixpoint_def mu_fusion_1 pmu_mu)
 
 lemma mu_fusion_equal_2:
   "galois l u \<Longrightarrow> isotone h \<Longrightarrow> has_least_prefixpoint g \<Longrightarrow> has_least_prefixpoint h \<Longrightarrow> l (g (u (\<mu> h))) \<le> h (l (u (\<mu> h))) \<and> l (g (p\<mu> g)) = h (l (p\<mu> g)) \<longrightarrow> p\<mu> h = l (p\<mu> g) \<and> \<mu> h = l (p\<mu> g)"
-  by (metis is_least_prefixpoint_def least_fixpoint_char least_prefixpoint least_prefixpoint_fixpoint antisym galois_char isotone_def mu_fusion_1)
+  by (metis is_least_prefixpoint_def least_fixpoint_char least_prefixpoint least_prefixpoint_fixpoint order.antisym galois_char isotone_def mu_fusion_1)
 
 lemma mu_fusion_equal_3:
   assumes "galois l u"
@@ -349,11 +349,11 @@ lemma nu_fusion_2:
 
 lemma nu_fusion_equal_1:
   "galois l u \<Longrightarrow> isotone g \<Longrightarrow> isotone h \<Longrightarrow> has_greatest_postfixpoint g \<Longrightarrow> has_greatest_fixpoint h \<Longrightarrow> h (u (l (\<nu> h))) \<le> u (g (l (\<nu> h))) \<Longrightarrow> h (u (p\<nu> g)) = u (g (p\<nu> g)) \<Longrightarrow> \<nu> h = u (p\<nu> g) \<and> \<nu> h = u (\<nu> g)"
-  by (metis greatest_fixpoint_char greatest_postfixpoint_fixpoint is_greatest_fixpoint_def antisym nu_fusion_1)
+  by (metis greatest_fixpoint_char greatest_postfixpoint_fixpoint is_greatest_fixpoint_def order.antisym nu_fusion_1)
 
 lemma nu_fusion_equal_2:
   "galois l u \<Longrightarrow> isotone h \<Longrightarrow> has_greatest_postfixpoint g \<Longrightarrow> has_greatest_postfixpoint h \<Longrightarrow> h (u (l (\<nu> h))) \<le> u (g (l (\<nu> h))) \<and> h (u (p\<nu> g)) = u (g (p\<nu> g)) \<Longrightarrow> p\<nu> h = u (p\<nu> g) \<and> \<nu> h = u (p\<nu> g)"
-  by (metis greatest_fixpoint_char greatest_postfixpoint greatest_postfixpoint_fixpoint is_greatest_postfixpoint_def antisym galois_char nu_fusion_1 isotone_def)
+  by (metis greatest_fixpoint_char greatest_postfixpoint greatest_postfixpoint_fixpoint is_greatest_postfixpoint_def order.antisym galois_char nu_fusion_1 isotone_def)
 
 lemma nu_fusion_equal_3:
   assumes "galois l u"
@@ -459,9 +459,9 @@ proof -
   have 4: "has_least_fixpoint (h \<circ> l)"
     using assms(1,3,5) least_fixpoint_char least_prefixpoint_fixpoint galois_char isotone_def by auto
   show "\<mu> (h \<circ> l) = \<mu> (h \<circ> k)"
-    using 1 2 3 4 assms antisym galois_char lifted_reflexive mu_exchange_2 by auto
+    using 1 2 3 4 assms order.antisym galois_char lifted_reflexive mu_exchange_2 by auto
   show "\<mu> (l \<circ> h) = \<mu> (k \<circ> h)"
-    using 1 2 3 4 assms antisym galois_char lifted_reflexive mu_exchange_1 by auto
+    using 1 2 3 4 assms order.antisym galois_char lifted_reflexive mu_exchange_1 by auto
 qed
 
 lemma nu_exchange_1:
@@ -529,9 +529,9 @@ proof -
   have 4: "has_greatest_fixpoint (h \<circ> t)"
     using assms(2,3,7) greatest_fixpoint_char greatest_postfixpoint_fixpoint galois_char isotone_def by auto
   show "\<nu> (u \<circ> h) = \<nu> (t \<circ> h)"
-    using 1 2 3 4 assms antisym galois_char lifted_reflexive nu_exchange_1 by auto
+    using 1 2 3 4 assms order.antisym galois_char lifted_reflexive nu_exchange_1 by auto
   show "\<nu> (h \<circ> u) = \<nu> (h \<circ> t)"
-    using 1 2 3 4 assms antisym galois_char lifted_reflexive nu_exchange_2 by auto
+    using 1 2 3 4 assms order.antisym galois_char lifted_reflexive nu_exchange_2 by auto
 qed
 
 text \<open>

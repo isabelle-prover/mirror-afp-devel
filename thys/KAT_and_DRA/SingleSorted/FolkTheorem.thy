@@ -124,7 +124,7 @@ lemma composition_helper:
   assumes "test p" and "test q"
   and "pres x p"
   shows "p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q \<cdot> p = p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q"
-proof (rule antisym)
+proof (rule order.antisym)
   show "p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q \<cdot> p \<le> p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q"
     by (simp add: assms(1) local.test_restrictr)
 next
@@ -133,7 +133,7 @@ next
   hence "p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<le> (q \<cdot> x)\<^sup>\<dagger> \<cdot> p"
     by (simp add: local.dagger_simr mult_assoc)
   thus "p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q \<le> p \<cdot> (q \<cdot> x)\<^sup>\<dagger> \<cdot> !q \<cdot> p"
-    by (metis assms(1) assms(2) local.eq_iff local.test_comp_closed local.test_kat_2 local.test_mult_comm_var mult_assoc)
+    by (metis assms(1) assms(2) order.eq_iff local.test_comp_closed local.test_kat_2 local.test_mult_comm_var mult_assoc)
 qed
 
 theorem composition:

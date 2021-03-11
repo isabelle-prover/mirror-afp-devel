@@ -56,7 +56,7 @@ locale comparator =
   fixes comp :: "'a comparator"
   assumes sym: "invert_order (comp x y) = comp y x"
     and weak_eq: "comp x y = Eq \<Longrightarrow> x = y"
-    and trans: "comp x y = Lt \<Longrightarrow> comp y z = Lt \<Longrightarrow> comp x z = Lt"
+    and comp_trans: "comp x y = Lt \<Longrightarrow> comp y z = Lt \<Longrightarrow> comp x z = Lt"
 begin 
 
 lemma eq: "(comp x y = Eq) = (x = y)"
@@ -72,20 +72,33 @@ lemma comp_same [simp]:
 abbreviation "lt \<equiv> lt_of_comp comp"
 abbreviation "le \<equiv> le_of_comp comp"
 
-lemma linorder: "class.linorder le lt"
+sublocale ordering le lt
 proof
   note [simp] = lt_of_comp_def le_of_comp_def
   fix x y z :: 'a
-  show "lt x y = (le x y \<and> \<not> le y x)"
-    using sym [of x y] by (cases "comp x y") (simp_all)
-  show "le x y \<or> le y x"
-    using sym [of x y] by (cases "comp x y") (simp_all)
   show "le x x" using eq [of x x] by (simp)
-  show "le x y \<Longrightarrow> le y x \<Longrightarrow> x = y"
-    using sym [of x y] by (cases "comp x y") (simp_all add: eq)
   show "le x y \<Longrightarrow> le y z \<Longrightarrow> le x z"
     by (cases "comp x y" "comp y z" rule: order.exhaust [case_product order.exhaust])
-       (auto dest: trans simp: eq)
+       (auto dest: comp_trans simp: eq)
+  show "le x y \<Longrightarrow> le y x \<Longrightarrow> x = y"
+    using sym [of x y] by (cases "comp x y") (simp_all add: eq)
+  show "lt x y \<longleftrightarrow> le x y \<and> x \<noteq> y"
+    using eq [of x y] by (cases "comp x y") (simp_all)
+qed
+
+lemma linorder: "class.linorder le lt"
+proof (rule class.linorder.intro)
+  interpret order le lt
+    using ordering_axioms by (rule ordering_orderI)
+  show \<open>class.order le lt\<close>
+    by (fact order_axioms)
+  show \<open>class.linorder_axioms le\<close>
+  proof
+    note [simp] = lt_of_comp_def le_of_comp_def
+    fix x y :: 'a
+    show "le x y \<or> le y x"
+      using sym [of x y] by (cases "comp x y") (simp_all)
+  qed
 qed
 
 sublocale linorder le lt

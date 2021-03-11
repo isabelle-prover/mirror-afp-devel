@@ -309,13 +309,13 @@ lemma C3_a: "x l\<rightarrow> 0 = -l x"
       apply (cut_tac b = "-l x" and a = 0 in W2c)
       by simp
     show "x l\<rightarrow> 0 = -l x"
-      apply (rule antisym)
+      apply (rule order.antisym)
       apply (simp add: order_r B) 
       by (simp add: order_l A)
     qed
 
 lemma C3_b: "x r\<rightarrow> 0 = -r x"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: order_l)
   apply (cut_tac x = x in C1_b)
   apply (cut_tac a = "-r x l\<rightarrow> 0" and b = x and c = 0 in W3b)
@@ -339,14 +339,14 @@ lemma C4_b [simp]: "-l (-r x) = x"
   by simp
 
 lemma C5_a: "-r x l\<rightarrow> -r y = y r\<rightarrow> x"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: order_l W5b)
   apply (cut_tac a = "-r y" and b = "-r x" in W5a)
   by (simp add: order_l)
   
   
 lemma C5_b: "-l x r\<rightarrow> -l y = y l\<rightarrow> x"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: order_l W5a)
   apply (cut_tac a = "-l y" and b = "-l x" in W5b)
   by (simp add: order_l)
@@ -454,7 +454,7 @@ begin
 lemma inf_a_b: "inf_a = inf_b"
   apply (simp add: fun_eq_iff)
   apply clarify
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 

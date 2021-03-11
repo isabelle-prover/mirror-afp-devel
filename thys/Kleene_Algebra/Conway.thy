@@ -72,7 +72,8 @@ lemma dagger_iso [intro]: "x \<le> y \<Longrightarrow> x\<^sup>\<dagger> \<le> y
   by (metis less_eq_def dagger_subdist)
 
 lemma star_square: "(x \<cdot> x)\<^sup>\<dagger> \<le> x\<^sup>\<dagger>"
-  by (metis dagger_plus_one dagger_subdist dagger_trans_eq dagger_unfoldr_distr local.dagger_denest local.distrib_right' local.eq_iff  local.join.sup_commute local.less_eq_def  local.mult_onel mult_assoc)
+  by (metis dagger_plus_one dagger_subdist dagger_trans_eq dagger_unfoldr_distr dagger_denest
+    distrib_right' order.eq_iff join.sup_commute less_eq_def mult_onel mult_assoc)
 
 lemma dagger_rtc1_eq [simp]: "1 + x + x\<^sup>\<dagger> \<cdot> x\<^sup>\<dagger> = x\<^sup>\<dagger>"
   by (simp add: local.dagger_ext local.dagger_refl local.join.sup_absorb2)
@@ -137,7 +138,7 @@ proof -
 qed
 
 lemma dagger_slide_var1: "x\<^sup>\<dagger> \<cdot> x \<le> x \<cdot> x\<^sup>\<dagger>"
-  by (metis local.dagger_unfoldl_distr local.dagger_unfoldr_eq local.distrib_left local.eq_iff local.mult_1_right mult_assoc)
+  by (metis local.dagger_unfoldl_distr local.dagger_unfoldr_eq local.distrib_left order.eq_iff local.mult_1_right mult_assoc)
 
 lemma dagger_slide_var1_eq: "x\<^sup>\<dagger> \<cdot> x = x \<cdot> x\<^sup>\<dagger>"
   by (metis local.dagger_unfoldl_distr local.dagger_unfoldr_eq local.distrib_left local.mult_1_right mult_assoc)
@@ -226,7 +227,7 @@ begin
 subclass pre_conway_base ..
 
 lemma dagger_slide: "x \<cdot> (y \<cdot> x)\<^sup>\<dagger> = (x \<cdot> y)\<^sup>\<dagger> \<cdot> x"
-  by (metis add.commute dagger_prod_unfold join.sup_least mult_1_right mult.assoc subdistl dagger_slide_var dagger_unfoldl_distr antisym)
+  by (metis add.commute dagger_prod_unfold join.sup_least mult_1_right mult.assoc subdistl dagger_slide_var dagger_unfoldl_distr order.antisym)
 
 lemma dagger_denest2: "(x + y)\<^sup>\<dagger> = x\<^sup>\<dagger> \<cdot> (y \<cdot> x\<^sup>\<dagger>)\<^sup>\<dagger>"
   by (metis dagger_denest dagger_slide)
@@ -235,7 +236,7 @@ lemma preservation2: "y \<cdot> x \<le> y \<Longrightarrow> (x \<cdot> y)\<^sup>
   by (metis dagger_slide local.dagger_iso local.mult_isol)
 
 lemma preservation1_eq: "x \<cdot> y \<le> x \<cdot> y \<cdot> x \<Longrightarrow> y \<cdot> x \<le> y \<Longrightarrow> (x \<cdot> y)\<^sup>\<dagger> \<cdot> x = x \<cdot> y\<^sup>\<dagger>"
-  by (simp add: local.dagger_simr local.eq_iff preservation2)
+  by (simp add: local.dagger_simr order.eq_iff preservation2)
 
 end
 

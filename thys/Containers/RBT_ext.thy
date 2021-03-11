@@ -157,7 +157,7 @@ proof -
     have "linorder.sorted (\<sqsubseteq>) (map fst (map (\<lambda>(c, d). ((a, c), f a b c d)) ys))"
       using ys by(induct ys) auto
     thus ?case using x Cons
-      by(fastforce simp add: set_alist_product a.not_less dest: bspec a.antisym intro: rev_image_eqI)
+      by(fastforce simp add: set_alist_product a.not_less dest: bspec a.order_antisym intro: rev_image_eqI)
   qed
 qed
 

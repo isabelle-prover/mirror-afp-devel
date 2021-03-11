@@ -286,7 +286,7 @@ context order
 begin
 
 lemma downset_inj: "inj \<down>"
-  by (metis injI downset_iso_iff eq_iff)
+  by (metis injI downset_iso_iff order.eq_iff)
 
 end
 
@@ -447,7 +447,7 @@ context complete_lattice
 begin
 
 lemma fSup_unfold: "(f::nat \<Rightarrow> 'a) 0 \<squnion> (\<Squnion>n. f (Suc n)) = (\<Squnion>n. f n)"
-  apply (intro antisym sup_least)
+  apply (intro order.antisym sup_least)
     apply (rule Sup_upper, force)
    apply (rule Sup_mono, force)
   apply (safe intro!: Sup_least)
@@ -455,7 +455,7 @@ lemma fSup_unfold: "(f::nat \<Rightarrow> 'a) 0 \<squnion> (\<Squnion>n. f (Suc 
 
 
 lemma fInf_unfold: "(f::nat \<Rightarrow> 'a) 0 \<sqinter> (\<Sqinter>n. f (Suc n)) = (\<Sqinter>n. f n)"
-  apply (intro antisym inf_greatest)
+  apply (intro order.antisym inf_greatest)
   apply (rule Inf_greatest, safe)
   apply (case_tac n)
    apply simp_all

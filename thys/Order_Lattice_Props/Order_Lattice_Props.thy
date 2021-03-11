@@ -464,7 +464,7 @@ context order
 begin
 
 lemma downset_inj: "inj \<down>"
-  by (metis injI downset_iso_iff eq_iff)
+  by (metis injI downset_iso_iff order.eq_iff)
 
 lemma "(X \<subseteq> Y) = (\<Down>X \<subseteq> \<Down>Y)" (*nitpick*)
   oops
@@ -686,7 +686,7 @@ lemma shunt2: "(x \<sqinter> -y \<le> z) = (x \<le> y \<squnion> z)"
   by (simp add: shunt1)
 
 lemma meet_shunt: "(x \<sqinter> y = \<bottom>) = (x \<le> -y)"
-  by (simp add: eq_iff shunt1)
+  by (simp add: order.eq_iff shunt1)
   
 lemma join_shunt: "(x \<squnion> y = \<top>) = (-x \<le> y)"
   by (metis compl_sup compl_top_eq double_compl meet_shunt)
@@ -727,14 +727,14 @@ text \<open>The next two lemmas are about Sups and Infs of indexed families. The
 iterations and fixpoints.\<close>
 
 lemma fSup_unfold: "(f::nat \<Rightarrow> 'a) 0 \<squnion> (\<Squnion>n. f (Suc n)) = (\<Squnion>n. f n)"
-  apply (intro antisym sup_least)
+  apply (intro order.antisym sup_least)
     apply (rule Sup_upper, force)
    apply (rule Sup_mono, force)
   apply (safe intro!: Sup_least)
  by (case_tac n, simp_all add: Sup_upper le_supI2)
 
 lemma fInf_unfold: "(f::nat \<Rightarrow> 'a) 0 \<sqinter> (\<Sqinter>n. f (Suc n)) = (\<Sqinter>n. f n)"
-  apply (intro antisym inf_greatest)
+  apply (intro order.antisym inf_greatest)
   apply (rule Inf_greatest, safe)
   apply (case_tac n)
    apply simp_all
@@ -1121,12 +1121,12 @@ proof
     finally have "(x \<sqinter> \<Squnion>Y \<le> t) = ((\<Squnion>y\<in>Y. x \<sqinter> y) \<le> t)"
       by (simp add: local.SUP_le_iff)}
   thus "x \<sqinter> \<Squnion>Y = (\<Squnion>y\<in>Y. x \<sqinter> y)"
-    using eq_iff by blast
+    using order.eq_iff by blast
 qed
 
 subclass complete_co_heyting_algebra
   apply unfold_locales
-  apply (rule antisym)
+  apply (rule order.antisym)
    apply (simp add: INF_greatest Inf_lower2)
   by (meson eq_refl le_INF_iff le_Inf_iff shunt2)
 
@@ -1143,7 +1143,7 @@ proof-
     using le_INF_iff by force
   finally have "(y \<le> -(\<Squnion>X)) = (y \<le>(\<Sqinter>x \<in> X. -x))".}
   thus ?thesis
-    using antisym by blast
+    using order.antisym by blast
 qed
 
 lemma de_morgan2: "-(\<Sqinter>X) = (\<Squnion>x \<in> X. -x)"
@@ -1267,7 +1267,3 @@ lemma atom_Sup_iff: "atom x = (x \<noteq> \<bottom> \<and> (\<forall>Y. (\<exist
 end
 
 end
-
-
-
-

@@ -59,7 +59,7 @@ proof (rule order_class.order.antisym)
     by (simp add: complete_lattice_class.INF_lower complete_lattice_class.le_INF_iff)
 next
   have "\<And>k. \<exists>i j. f (i + j) \<le> f k"
-    by (metis add.left_neutral order_class.eq_iff)
+    by (metis Nat.add_0_right order_refl)
   then have "\<And>k. \<exists>i. (\<Sqinter>j. f (i + j)) \<le> f k"
     by (meson UNIV_I complete_lattice_class.INF_lower2)
   then show "(\<Sqinter>i j. f (i + j)) \<le> (\<Sqinter>k. f k)"

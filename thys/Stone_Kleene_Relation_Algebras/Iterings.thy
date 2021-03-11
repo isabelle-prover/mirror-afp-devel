@@ -167,11 +167,11 @@ lemma circ_sup_2:
 
 lemma circ_sup_one_left_unfold:
   "1 \<le> x \<Longrightarrow> x * x\<^sup>\<circ> = x\<^sup>\<circ>"
-  by (metis antisym le_iff_sup mult_1_left mult_right_sub_dist_sup_left left_plus_below_circ)
+  by (metis order.antisym le_iff_sup mult_1_left mult_right_sub_dist_sup_left left_plus_below_circ)
 
 lemma circ_sup_one_right_unfold:
   "1 \<le> x \<Longrightarrow> x\<^sup>\<circ> * x = x\<^sup>\<circ>"
-  by (metis antisym le_iff_sup mult_left_sub_dist_sup_left mult_1_right right_plus_below_circ)
+  by (metis order.antisym le_iff_sup mult_left_sub_dist_sup_left mult_1_right right_plus_below_circ)
 
 lemma circ_decompose_4:
   "(x\<^sup>\<circ> * y\<^sup>\<circ>)\<^sup>\<circ> = x\<^sup>\<circ> * (y\<^sup>\<circ> * x\<^sup>\<circ>)\<^sup>\<circ>"
@@ -179,7 +179,7 @@ lemma circ_decompose_4:
 
 lemma circ_decompose_5:
   "(x\<^sup>\<circ> * y\<^sup>\<circ>)\<^sup>\<circ> = (y\<^sup>\<circ> * x\<^sup>\<circ>)\<^sup>\<circ>"
-  by (metis circ_decompose_4 circ_loop_fixpoint antisym mult_right_sub_dist_sup_right mult_assoc)
+  by (metis circ_decompose_4 circ_loop_fixpoint order.antisym mult_right_sub_dist_sup_right mult_assoc)
 
 lemma circ_decompose_6:
   "x\<^sup>\<circ> * (y * x\<^sup>\<circ>)\<^sup>\<circ> = y\<^sup>\<circ> * (x * y\<^sup>\<circ>)\<^sup>\<circ>"
@@ -191,7 +191,7 @@ lemma circ_decompose_7:
 
 lemma circ_decompose_8:
   "(x \<squnion> y)\<^sup>\<circ> = (x \<squnion> y)\<^sup>\<circ> * x\<^sup>\<circ> * y\<^sup>\<circ>"
-  by (metis antisym eq_refl mult_assoc mult_isotone mult_1_right circ_mult_upper_bound circ_reflexive circ_sub_dist_3)
+  by (metis order.antisym eq_refl mult_assoc mult_isotone mult_1_right circ_mult_upper_bound circ_reflexive circ_sub_dist_3)
 
 lemma circ_decompose_9:
   "(x\<^sup>\<circ> * y\<^sup>\<circ>)\<^sup>\<circ> = x\<^sup>\<circ> * y\<^sup>\<circ> * (x\<^sup>\<circ> * y\<^sup>\<circ>)\<^sup>\<circ>"
@@ -231,7 +231,7 @@ lemma left_plus_circ:
 
 lemma right_plus_circ:
   "(x\<^sup>\<circ> * x)\<^sup>\<circ> = x\<^sup>\<circ>"
-  by (metis sup_commute circ_isotone circ_loop_fixpoint circ_plus_sub circ_sub_dist eq_iff left_plus_circ)
+  by (metis sup_commute circ_isotone circ_loop_fixpoint circ_plus_sub circ_sub_dist order.eq_iff left_plus_circ)
 
 lemma circ_square:
   "(x * x)\<^sup>\<circ> \<le> x\<^sup>\<circ>"
@@ -328,7 +328,7 @@ begin
 
 lemma circ_top:
   "top\<^sup>\<circ> = top"
-  by (simp add: antisym circ_increasing)
+  by (simp add: order.antisym circ_increasing)
 
 lemma circ_right_top:
   "x\<^sup>\<circ> * top = top"
@@ -367,7 +367,7 @@ begin
 
 lemma circ_slide_1:
   "x * (y * x)\<^sup>\<circ> = (x * y)\<^sup>\<circ> * x"
-  by (metis antisym circ_left_slide circ_right_slide)
+  by (metis order.antisym circ_left_slide circ_right_slide)
 
 text \<open>
 This implies the full unfold rules and Conway's productstar.
@@ -425,7 +425,7 @@ begin
 
 lemma circ_circ_mult:
   "1\<^sup>\<circ> * x\<^sup>\<circ> = x\<^sup>\<circ>\<^sup>\<circ>"
-  by (metis antisym circ_circ_sup circ_reflexive circ_simulate circ_sub_dist_3 circ_sup_one_left_unfold circ_transitive_equal mult_1_left order_refl)
+  by (metis order.antisym circ_circ_sup circ_reflexive circ_simulate circ_sub_dist_3 circ_sup_one_left_unfold circ_transitive_equal mult_1_left order_refl)
 
 lemma sub_mult_one_circ:
   "x * 1\<^sup>\<circ> \<le> 1\<^sup>\<circ> * x"
@@ -442,11 +442,11 @@ lemma circ_import:
     shows "p * x\<^sup>\<circ> = p * (p * x)\<^sup>\<circ>"
 proof -
   have "p * x \<le> p * (p * x * p) * p"
-    by (metis assms coreflexive_transitive eq_iff test_preserves_equation mult_assoc)
+    by (metis assms coreflexive_transitive order.eq_iff test_preserves_equation mult_assoc)
   hence "p * x\<^sup>\<circ> \<le> p * (p * x)\<^sup>\<circ>"
     by (metis (no_types) assms circ_simulate circ_slide_1 test_preserves_equation)
   thus ?thesis
-    by (metis assms(2) circ_isotone mult_left_isotone mult_1_left mult_right_isotone antisym)
+    by (metis assms(2) circ_isotone mult_left_isotone mult_1_left mult_right_isotone order.antisym)
 qed
 
 end
@@ -485,7 +485,7 @@ proof -
   finally have "(x \<squnion> y)\<^sup>\<circ> \<le> x\<^sup>\<circ> * y\<^sup>\<circ>"
     by (simp add: circ_decompose_6 circ_sup_1)
   thus ?thesis
-    by (simp add: antisym circ_sub_dist_3)
+    by (simp add: order.antisym circ_sub_dist_3)
 qed
 
 lemma circ_circ_mult_1:
@@ -799,7 +799,7 @@ lemma circ_circ_mult_1:
 
 lemma circ_circ_mult:
   "1\<^sup>\<circ> * x\<^sup>\<circ> = x\<^sup>\<circ>\<^sup>\<circ>"
-  by (metis antisym circ_circ_mult_1 circ_circ_sub_mult sub_mult_one_circ)
+  by (metis order.antisym circ_circ_mult_1 circ_circ_sub_mult sub_mult_one_circ)
 
 lemma circ_circ_split:
   "x\<^sup>\<circ>\<^sup>\<circ> = L \<squnion> x\<^sup>\<circ>"
@@ -817,7 +817,7 @@ begin
 
 lemma one_circ_split:
   "1\<^sup>\<circ> = L \<squnion> 1"
-  by (metis L_def sup_commute antisym circ_sup_upper_bound circ_reflexive circ_simulate_absorb mult_1_right order_refl zero_right_mult_decreasing)
+  by (metis L_def sup_commute order.antisym circ_sup_upper_bound circ_reflexive circ_simulate_absorb mult_1_right order_refl zero_right_mult_decreasing)
 
 lemma one_circ_mult_split:
   "1\<^sup>\<circ> * x = L \<squnion> x"

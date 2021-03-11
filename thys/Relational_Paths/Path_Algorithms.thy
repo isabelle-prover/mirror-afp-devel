@@ -95,7 +95,7 @@ proof -
     by (metis assms inj_distr point_def conv_contrav conv_invol conv_iso meet_isor
               mult_isol_var mult_isor star_conv star_slide_var star_subdist sup.commute sup.orderE)
   also have "... \<le> 0"
-    by (metis acyclic_trans assms conv_zero step_has_target eq_iff galois_aux ss_p18)
+    by (metis acyclic_trans assms conv_zero step_has_target order.eq_iff galois_aux ss_p18)
   finally have a: "?q \<le> -(W\<^sup>T*1)"
     using galois_aux le_bot by blast
 
@@ -116,11 +116,11 @@ proof -
   let ?q = "choose_point (D*q)"
   let ?W = "W + ?q * q\<^sup>T"
   show 1: "?q = start_points ?W"
-  proof (rule antisym)
+  proof (rule order.antisym)
     show" start_points ?W \<le> ?q"
       by (metis assms(1) path_inv_points(2) acyclic_imp_one_step_different_points(2)
                 choose_point_decreasing edge_end edge_start sup.commute
-                path_concatenation_start_points_approx point_is_point eq_iff sup_bot_left)
+                path_concatenation_start_points_approx point_is_point order.eq_iff sup_bot_left)
     show "?q \<le> start_points ?W"
     proof -
       have a: "?q = ?q*q\<^sup>T*1"
@@ -358,7 +358,7 @@ proof (intro conjI,simp_all add:assms)
     using assms by (metis (full_types) annir choose_point_point galois_aux2 is_inj_def is_sur_def
                           is_vector_def one_idem_mult point_def ss_p18 inf_top_left one_compl)
   show "R \<cdot> ?q * ?q\<^sup>T \<le> 0"
-    by (metis choose_point_decreasing conv_invol end_point_char eq_iff inf_bot_left schroeder_2)
+    by (metis choose_point_decreasing conv_invol end_point_char order.eq_iff inf_bot_left schroeder_2)
   show "path 0"
     by (simp add: is_inj_def is_p_fun_def path_def)
   show "R*?q \<le> ?q"

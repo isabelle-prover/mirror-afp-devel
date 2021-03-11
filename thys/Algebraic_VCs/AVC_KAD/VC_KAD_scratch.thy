@@ -103,16 +103,16 @@ lemma a_idem [simp]: "ad x \<cdot> ad x = ad x"
   by (metis a_d_closed d1_a)
 
 lemma meet_ord: "ad x \<le> ad y \<longleftrightarrow> ad x \<cdot> ad y = ad x"
-  by (metis a_d_closed a_subid_aux d1_a antisym mult_1_right mult_isol)
+  by (metis a_d_closed a_subid_aux d1_a order.antisym mult_1_right mult_isol)
 
 lemma d_wloc: "x \<cdot> y = 0 \<longleftrightarrow> x \<cdot> d y = 0"
-  by (metis a_subid_aux d1_a dom_op_def add_ub antisym as1 as2 mult_1_right mult_assoc)
+  by (metis a_subid_aux d1_a dom_op_def add_ub order.antisym as1 as2 mult_1_right mult_assoc)
 
 lemma gla_1: "ad x \<cdot> y = 0 \<Longrightarrow> ad x \<le> ad y"
   by (metis a_subid_aux d_wloc dom_op_def add_zerol as3 distrib_left mult_1_right)
 
 lemma a2_eq [simp]: "ad (x \<cdot> d y) = ad (x \<cdot> y)"
-  by (metis a_mul_d d1_a dom_op_def gla_1 add_ub antisym as1 as2 mult_assoc)
+  by (metis a_mul_d d1_a dom_op_def gla_1 add_ub order.antisym as1 as2 mult_assoc)
 
 lemma a_supdist: "ad (x + y) \<le> ad x"
   by (metis add_commute gla_1 add_ub add_zerol as1 distrib_left less_eq_def)
@@ -130,7 +130,7 @@ proof -
   finally have "ad x \<cdot> ad y \<le> ad y \<cdot> ad x"
     by simp }
   thus ?thesis
-    by (simp add: antisym)
+    by (simp add: order.antisym)
 qed
 
 lemma a_closed [simp]: "d (ad x \<cdot> ad y) = ad x \<cdot> ad y"
@@ -146,7 +146,7 @@ proof -
 qed
 
 lemma a_exp [simp]: "ad (ad x \<cdot> y) = d x + ad y"
-proof (rule antisym)
+proof (rule order.antisym)
   have "ad (ad x \<cdot> y) \<cdot> ad x \<cdot> d y = 0"
     using d_wloc mult_assoc by fastforce
   hence a: "ad (ad x \<cdot> y) \<cdot> d y \<le> d x"
@@ -175,7 +175,7 @@ proof -
 qed
 
 lemma a4: "ad (x + y) = ad x \<cdot> ad y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "ad (x + y) \<le> ad x \<cdot> ad y"
     by (metis a_supdist add_commute mult_isor meet_ord)
   hence "ad x \<cdot> ad y = ad x \<cdot> ad y + ad (x + y)"

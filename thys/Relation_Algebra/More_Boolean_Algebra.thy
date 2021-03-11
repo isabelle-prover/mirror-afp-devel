@@ -137,7 +137,7 @@ lemma is_conjugation_sym: "is_conjugation f g \<longleftrightarrow> is_conjugati
 by (metis inf.commute is_conjugation_def)
 
 lemma is_conjugation_unique: "\<lbrakk>is_conjugation f g; is_conjugation f h\<rbrakk> \<Longrightarrow> g = h"
-by (metis galois_aux inf.commute double_compl eq_iff ext is_conjugation_def)
+by (metis galois_aux inf.commute double_compl order.eq_iff ext is_conjugation_def)
 
 text \<open>Next we show that conjugates give rise to adjoints in a Galois
 connection.\<close>
@@ -173,7 +173,7 @@ qed
 lemma f_additive:
   assumes "is_conjugation f g"
   shows "f (sup x y) = sup (f x) (f y)"
-by (metis assms eq_iff f_pre_additive)
+by (metis assms order.eq_iff f_pre_additive)
 
 lemma g_pre_additive:
   assumes "is_conjugation f g"

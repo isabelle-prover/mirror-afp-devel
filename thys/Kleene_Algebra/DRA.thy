@@ -72,7 +72,7 @@ lemma iteration_unfoldl' [simp]: "z \<cdot> y + z \<cdot> x \<cdot> x\<^sup>\<in
   by (metis iteration_unfoldl_distl local.distrib_right)
 
 lemma iteration_idem [simp]: "x\<^sup>\<infinity> \<cdot> x\<^sup>\<infinity> = x\<^sup>\<infinity>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x\<^sup>\<infinity> \<cdot> x\<^sup>\<infinity> \<le> 1 + x \<cdot> x\<^sup>\<infinity> \<cdot> x\<^sup>\<infinity>"
     by (metis add_assoc iteration_unfoldl_distr local.eq_refl local.iteration_unfoldl local.subdistl_eq mult_assoc)
   thus "x\<^sup>\<infinity> \<cdot> x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>"
@@ -114,10 +114,10 @@ lemma iteration_unfoldr' [simp]: "z \<cdot> y + z \<cdot> x\<^sup>\<infinity> \<
   by (metis distrib_left mult.assoc iteration_unfoldr_distr)
 
 lemma iteration_double [simp]: "(x\<^sup>\<infinity>)\<^sup>\<infinity> = \<top>"
-  by (simp add: iteration_iso iteration_refl local.eq_iff top_ref)
+  by (simp add: iteration_iso iteration_refl order.eq_iff top_ref)
 
 lemma star_iteration [simp]: "(x\<^sup>\<star>)\<^sup>\<infinity> = \<top>"
-  by (simp add: iteration_iso local.eq_iff top_ref)
+  by (simp add: iteration_iso order.eq_iff top_ref)
 
 lemma iteration_star [simp]: "(x\<^sup>\<infinity>)\<^sup>\<star> = x\<^sup>\<infinity>"
   by (metis (no_types) iteration_idem iteration_refl local.star_inductr_var_eq2 local.sup_id_star1)
@@ -144,7 +144,7 @@ lemma iteration_subdenest: "x\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity> \<le
   by (metis add_commute iteration_idem iteration_subdist local.mult_isol_var)
   
 lemma sup_id_top: "1 \<le> y \<Longrightarrow> y \<cdot> \<top> = \<top>"
-  using local.eq_iff local.mult_isol_var top_ref by fastforce
+  using order.eq_iff local.mult_isol_var top_ref by fastforce
 
 lemma iteration_top [simp]: "x\<^sup>\<infinity> \<cdot> \<top> = \<top>"
   by (simp add: iteration_refl sup_id_top)
@@ -174,7 +174,7 @@ lemma iteration_slide_var: "x \<cdot> (y \<cdot> x)\<^sup>\<infinity> \<le> (x \
   by (simp add: iteration_sim mult_assoc)
 
 lemma iteration_prod_unfold [simp]: "1 + y \<cdot> (x \<cdot> y)\<^sup>\<infinity> \<cdot> x = (y \<cdot> x)\<^sup>\<infinity>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "1 + y \<cdot> (x \<cdot> y)\<^sup>\<infinity> \<cdot> x \<le> 1 + (y \<cdot> x)\<^sup>\<infinity> \<cdot> y \<cdot> x"
     using iteration_slide_var local.join.sup_mono local.mult_isor by blast
   thus "1 + y \<cdot> (x \<cdot> y)\<^sup>\<infinity> \<cdot> x \<le>  (y \<cdot> x)\<^sup>\<infinity>"
@@ -238,7 +238,7 @@ proof -
 qed
 
 lemma iteration_denest3: "(y\<^sup>\<star> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity> = (x + y)\<^sup>\<infinity>"
-proof (rule antisym)
+proof (rule order.antisym)
   have  "(y\<^sup>\<star> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity> \<le> (y\<^sup>\<infinity> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>"
     by (simp add: iteration_iso iteration_ref_star local.mult_isor)
   thus  "(y\<^sup>\<star> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity> \<le> (x + y)\<^sup>\<infinity>"
@@ -275,7 +275,7 @@ proof -
   moreover have "(y\<^sup>\<star> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity> \<le> y\<^sup>\<star> \<cdot> (y\<^sup>\<star> \<cdot> x)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>"
     by (metis mult_isor mult_onel star_ref)
   ultimately show ?thesis
-    by (metis antisym iteration_denest3 iteration_subdenest order_trans)
+    by (metis order.antisym iteration_denest3 iteration_subdenest order_trans)
 qed
 
 lemma iteration_sep3: "y \<cdot> x \<le> x \<cdot> (x + y) \<Longrightarrow> (x + y)\<^sup>\<infinity> = x\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>"

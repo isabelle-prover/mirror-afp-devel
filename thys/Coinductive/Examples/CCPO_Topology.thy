@@ -109,7 +109,7 @@ proof (rule ccontr)
   with \<open>chain C\<close> \<open>C \<noteq> {}\<close> have "chain (C - A)" "C - A \<noteq> {}"
     by (auto intro: chain_Diff)
   moreover have "Sup C = Sup (C - A)"
-  proof (safe intro!: antisym ccpo_Sup_least \<open>chain C\<close> chain_Diff)
+  proof (safe intro!: order.antisym ccpo_Sup_least \<open>chain C\<close> chain_Diff)
     fix c assume "c \<in> C"
     with * obtain c' where "c' \<in> C" "c \<le> c'" "c' \<notin> A"
       by auto

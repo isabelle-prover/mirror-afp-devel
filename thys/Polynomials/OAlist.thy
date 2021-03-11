@@ -116,17 +116,17 @@ lemma comparator_converse:
   assumes "comparator cmp"
   shows "comparator (\<lambda>x y. cmp y x)"
 proof -
-  from assms interpret comp: comparator cmp .
-  show ?thesis by (unfold_locales, auto simp: comp.eq comp.sym intro: comp.trans)
+  from assms interpret comp?: comparator cmp .
+  show ?thesis by (unfold_locales, auto simp: comp.eq comp.sym intro: comp_trans)
 qed
 
 lemma comparator_composition:
   assumes "comparator cmp" and "inj f"
   shows "comparator (\<lambda>x y. cmp (f x) (f y))"
 proof -
-  from assms(1) interpret comp: comparator cmp .
+  from assms(1) interpret comp?: comparator cmp .
   from assms(2) have *: "x = y" if "f x = f y" for x y using that by (rule injD)
-  show ?thesis by (unfold_locales, auto simp: comp.sym comp.eq * intro: comp.trans)
+  show ?thesis by (unfold_locales, auto simp: comp.sym comp.eq * intro: comp_trans)
 qed
 
 (*
@@ -1150,7 +1150,8 @@ proof (induct xs rule: map_pair.induct)
 next
   case (2 f kv xs)
   obtain k v where f: "f kv = (k, v)" by fastforce
-  from f[symmetric] refl have *: "set (map_pair f xs) \<subseteq> f ` set xs" by (rule 2)
+  from f[symmetric] HOL.refl have *: "set (map_pair f xs) \<subseteq> f ` set xs"
+    by (rule 2)
   show ?case by (simp add: f Let_def, intro conjI impI subset_insertI2 *)
 qed
 
@@ -1390,20 +1391,20 @@ next
   proof (simp split: order.split, intro conjI impI)
     assume "comp kx ky = Lt"
     hence "fst ` set (map2_val_pair f g h xs ((ky, vy) # ys)) \<subseteq> fst ` set xs \<union> fst ` set ((ky, vy) # ys)"
-      using refl \<open>oalist_inv_raw xs\<close> 3(5, 6, 7) by (rule 3(2))
+      using HOL.refl \<open>oalist_inv_raw xs\<close> 3(5, 6, 7) by (rule 3(2))
     thus "fst ` set (let v = f kx vx 0; aux = map2_val_pair f g h xs ((ky, vy) # ys)
                        in if v = 0 then aux else (kx, v) # aux)
           \<subseteq> insert ky (insert kx (fst ` set xs \<union> fst ` set ys))" by (auto simp: Let_def)
   next
     assume "comp kx ky = Eq"
     hence "fst ` set (map2_val_pair f g h xs ys) \<subseteq> fst ` set xs \<union> fst ` set ys"
-      using refl \<open>oalist_inv_raw xs\<close> \<open>oalist_inv_raw ys\<close> 3(6, 7) by (rule 3(1))
+      using HOL.refl \<open>oalist_inv_raw xs\<close> \<open>oalist_inv_raw ys\<close> 3(6, 7) by (rule 3(1))
     thus "fst ` set (let v = f kx vx vy; aux = map2_val_pair f g h xs ys in if v = 0 then aux else (kx, v) # aux)
           \<subseteq> insert ky (insert kx (fst ` set xs \<union> fst ` set ys))" by (auto simp: Let_def)
   next
     assume "comp kx ky = Gt"
     hence "fst ` set (map2_val_pair f g h ((kx, vx) # xs) ys) \<subseteq> fst ` set ((kx, vx) # xs) \<union> fst ` set ys"
-      using refl 3(4) \<open>oalist_inv_raw ys\<close> 3(6, 7) by (rule 3(3))
+      using HOL.refl 3(4) \<open>oalist_inv_raw ys\<close> 3(6, 7) by (rule 3(3))
     thus "fst ` set (let v = f ky 0 vy; aux = map2_val_pair f g h ((kx, vx) # xs) ys
                         in if v = 0 then aux else (ky, v) # aux)
           \<subseteq> insert ky (insert kx (fst ` set xs \<union> fst ` set ys))" by (auto simp: Let_def)
@@ -2219,7 +2220,7 @@ proof (rule ccontr)
     by (rule Min_le)
   hence "f k' (lookup_pair xs k') (lookup_pair ys k') = Some Eq"
     if "k' \<in> fst ` set xs \<union> fst ` set ys" and "lt k' k0" for k' using that by fastforce
-  with assms(1, 2) neq k0_in refl have "lex_ord_pair f xs ys = f k0 (lookup_pair xs k0) (lookup_pair ys k0)"
+  with assms(1, 2) neq k0_in HOL.refl have "lex_ord_pair f xs ys = f k0 (lookup_pair xs k0) (lookup_pair ys k0)"
     by (rule lex_ord_pair_valI)
   with assms(3) neq show False by simp
 qed
@@ -2253,7 +2254,7 @@ proof -
     by (rule Min_le)
   hence *: "\<And>k'. k' \<in> fst ` set xs \<union> fst ` set ys \<Longrightarrow> lt k' k \<Longrightarrow>
             f k' (lookup_pair xs k') (lookup_pair ys k') = Some Eq" by fastforce
-  with assms(1, 2) neq k_in refl have "lex_ord_pair f xs ys = f k (lookup_pair xs k) (lookup_pair ys k)"
+  with assms(1, 2) neq k_in HOL.refl have "lex_ord_pair f xs ys = f k (lookup_pair xs k) (lookup_pair ys k)"
     by (rule lex_ord_pair_valI)
   hence "aux = f k (lookup_pair xs k) (lookup_pair ys k)" by (simp only: assms(3))
   with k_in show ?thesis using * ..
@@ -2700,7 +2701,7 @@ proof -
     snd (min_list_param (\<lambda>x y. le ko (fst x) (fst y)) xs')" by (auto intro: lookup_pair_eq_valueI)
   moreover have 1: "fst (min_list_param (\<lambda>x y. le ko (fst x) (fst y)) xs') = k"
   proof (rule antisym)
-    from order.trans
+    from order_trans
     have "transp (\<lambda>x y. le ko (fst x) (fst y))" by (rule transpI)
     hence "le ko (fst (min_list_param (\<lambda>x y. le ko (fst x) (fst y)) xs')) (fst (k, v))"
       using linear \<open>(k, v) \<in> set xs'\<close> by (rule min_list_param_minimal)
@@ -2768,7 +2769,9 @@ proof -
   next
     show "le ko (fst (min_list_param (\<lambda>x y. le ko (fst x) (fst y)) xs')) (fst z)"
     proof (rule min_list_param_minimal[of "\<lambda>x y. le ko (fst x) (fst y)"])
-      show "transp (\<lambda>x y. le ko (fst x) (fst y))" by (metis (no_types, lifting) order.trans transpI)
+      thm trans local.trans order.trans local.order_trans
+      print_context
+      show "transp (\<lambda>x y. le ko (fst x) (fst y))" by (metis (no_types, lifting) order_trans transpI)
     qed (auto intro: \<open>z \<in> set xs'\<close>)
   qed
 qed
@@ -2822,7 +2825,7 @@ proof -
   obtain xs' ko where xs: "xs = (xs', ko)" by fastforce
   from assms have "oalist_inv_raw ko xs'" by (simp only: xs oalist_inv_alt)
   show ?thesis unfolding xs update_by_fun_raw.simps lookup_raw.simps update_by_raw.simps
-    by (rule, rule conjI, rule update_by_fun_pair_eq_update_by_pair, fact, fact refl)
+    by (rule, rule conjI, rule update_by_fun_pair_eq_update_by_pair, fact, fact HOL.refl)
 qed
 
 corollary oalist_inv_update_by_fun_raw:
@@ -2842,7 +2845,7 @@ proof -
   obtain xs' ko where xs: "xs = (xs', ko)" by fastforce
   from assms have "oalist_inv_raw ko xs'" by (simp only: xs oalist_inv_alt)
   show ?thesis unfolding xs update_by_fun_raw.simps lookup_raw.simps update_by_fun_gr_raw.simps
-    by (rule, rule conjI, rule update_by_fun_gr_pair_eq_update_by_fun_pair, fact, fact refl)
+    by (rule, rule conjI, rule update_by_fun_gr_pair_eq_update_by_fun_pair, fact, fact HOL.refl)
 qed
 
 corollary oalist_inv_update_by_fun_gr_raw:
@@ -3103,7 +3106,7 @@ proof -
       from inv have eq2: "g (xs', ox) = (xs', ox)" by (rule assms(3))
       show ?thesis
         by (simp add: True eq1 eq2 assms(2) update_by_fun_pair_eq_update_by_pair[OF inv_raw],
-            rule HOL.sym, rule update_by_pair_id, fact inv_raw, fact refl)
+            rule HOL.sym, rule update_by_pair_id, fact inv_raw, fact HOL.refl)
     next
       case False
       hence "oalist_inv_raw ox [(k, v)]" by (simp add: oalist_inv_raw_singleton)
@@ -3689,7 +3692,7 @@ proof (simp add: lookup_def oay.lookup_def, rule lookup_raw_map2_val_raw)
   assume "oalist_inv zs"
   thus "id zs = map_val_raw (\<lambda>k v. f k v 0) zs" by (simp add: assms map_raw_id)
 qed (fact oalist_inv_list_of_oalist, fact oay.oalist_inv_list_of_oalist,
-    fact map2_val_compat'_id, fact map2_val_compat'_map_val_raw, rule refl, simp only: assms)
+    fact map2_val_compat'_id, fact map2_val_compat'_map_val_raw, rule HOL.refl, simp only: assms)
 
 lemma map2_val_rneutr_singleton_eq_update_by_fun:
   assumes "\<And>a x. f a x 0 = x" and "list_of_oalisty ys = ([(k, v)], oy)"

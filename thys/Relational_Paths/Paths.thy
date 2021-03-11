@@ -343,7 +343,7 @@ text \<open>Equivalences and implications for \<open>many_strongly_connected\<cl
 lemma many_strongly_connected_iff_1:
   "many_strongly_connected x \<longleftrightarrow> x\<^sup>T \<le> x\<^sup>\<star>"
  apply (rule iffI,simp)
-by (metis conv_invol conv_iso eq_iff star_conv star_invol star_iso)
+by (metis conv_invol conv_iso order.eq_iff star_conv star_invol star_iso)
 
 lemma many_strongly_connected_iff_2:
   "many_strongly_connected x \<longleftrightarrow> x\<^sup>T \<le> x\<^sup>+"
@@ -354,7 +354,7 @@ proof
   also have "... \<le> (x\<^sup>\<star> \<cdot> -(1')) + (x\<^sup>\<star> \<cdot> x)"
     by (simp add: inf_sup_distrib1)
   also have "... \<le> x\<^sup>+"
-    by (metis as eq_iff mult_1_right mult_isol star_ref sup.absorb1 conv_invol eq_refl galois_1
+    by (metis as order.eq_iff mult_1_right mult_isol star_ref sup.absorb1 conv_invol eq_refl galois_1
               inf.absorb_iff1 inf.commute star_unfoldl_eq sup_mono many_strongly_connected_iff_1)
   finally show "x\<^sup>T \<le> x\<^sup>+" .
 next
@@ -382,7 +382,7 @@ by (metis dual_order.trans star_1l star_conv star_inductl_star star_invol star_s
 
 lemma many_strongly_connected_iff_7:
   "many_strongly_connected x \<longleftrightarrow> x\<^sup>T\<^sup>+ = x\<^sup>+"
-by (metis antisym conv_invol star_slide_var star_unfoldl_eq many_strongly_connected_iff_5)
+by (metis order.antisym conv_invol star_slide_var star_unfoldl_eq many_strongly_connected_iff_5)
 
 lemma many_strongly_connected_iff_5_eq:
   "many_strongly_connected x \<longleftrightarrow> x\<^sup>\<star>;x\<^sup>T = x\<^sup>+"
@@ -416,7 +416,7 @@ by (simp add: assms comp_assoc mult_isol)
 lemma many_strongly_connected_implies_10_eq:
   assumes "many_strongly_connected x"
     shows "x;x\<^sup>T;x\<^sup>\<star> = x\<^sup>+"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x;x\<^sup>T;x\<^sup>\<star> \<le> x\<^sup>+"
     by (simp add: assms comp_assoc mult_isol)
 next
@@ -550,7 +550,7 @@ lemma one_strongly_connected_iff_1_eq:
   "one_strongly_connected x \<longleftrightarrow> x\<^sup>T;1;x\<^sup>T = x\<^sup>+"
   apply (rule iffI, simp_all)
 by (metis comp_assoc conv_contrav conv_invol mult_double_iso plus_conv star_slide_var top_greatest
-          top_plus many_strongly_connected_implies_10_eq one_strongly_connected_iff eq_iff
+          top_plus many_strongly_connected_implies_10_eq one_strongly_connected_iff order.eq_iff
           one_strongly_connected_iff_1)
 
 lemma one_strongly_connected_iff_2:
@@ -740,15 +740,15 @@ lemma predecessor_point':
       and "point e"
       and "e;s\<^sup>T \<le> x"
     shows "x;s = e"
-proof (rule antisym)
+proof (rule order.antisym)
   show 1: "e \<le> x ; s"
     using assms(2,4) point_def ss423bij by blast
   show "x ; s \<le> e"
   proof -
     have "e\<^sup>T ; (x ; s) = 1"
-      using 1 by (metis assms(3) eq_iff is_vector_def point_def ss423conv top_greatest)
+      using 1 by (metis assms(3) order.eq_iff is_vector_def point_def ss423conv top_greatest)
     thus ?thesis
-      by (metis assms(1-3) comp_assoc conv_contrav conv_invol eq_iff inj_compose is_vector_def
+      by (metis assms(1-3) comp_assoc conv_contrav conv_invol order.eq_iff inj_compose is_vector_def
                 mult_isol path_def point_def ss423conv sur_def_var1 top_greatest)
   qed
 qed
@@ -990,14 +990,14 @@ lemma start_point_iff2:
     shows "is_point (start_points x) \<longleftrightarrow> has_start_points x"
 proof -
   have "has_start_points x \<longleftrightarrow> 1 \<le> -(1;x);x;1"
-    by (simp add: eq_iff)
+    by (simp add: order.eq_iff)
   also have "... \<longleftrightarrow> 1 \<le> 1;x\<^sup>T;-(x\<^sup>T;1)"
     by (metis comp_assoc conv_compl conv_contrav conv_iso conv_one)
   also have "... \<longleftrightarrow> 1 \<le> 1;(x;1 \<cdot> -(x\<^sup>T;1))"
     by (metis (no_types) conv_contrav conv_one inf.commute is_vector_def one_idem_mult ra_2 vector_1
               vector_meet_comp_x)
   also have "... \<longleftrightarrow> 1 = 1;(x;1 \<cdot> -(x\<^sup>T;1))"
-    by (simp add: eq_iff)
+    by (simp add: order.eq_iff)
   also have "... \<longleftrightarrow> x;1 \<cdot> -(x\<^sup>T;1) \<noteq> 0"
     by (metis tarski comp_assoc one_compl ra_1 ss_p18)
   also have "... \<longleftrightarrow> is_point (start_points x)"
@@ -1702,7 +1702,7 @@ text \<open>Path restriction (path from a given point)\<close>
 lemma reachable_points_iff:
   assumes "point p"
     shows "(x\<^sup>T\<^sup>\<star>;p \<cdot> x) = (x\<^sup>T\<^sup>\<star>;p \<cdot> 1');x"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x\<^sup>T\<^sup>\<star>;p \<cdot> 1');x \<le> x\<^sup>T\<^sup>\<star>;p \<cdot> x"
   proof (rule le_infI)
     show "(x\<^sup>T\<^sup>\<star>;p \<cdot> 1');x \<le> x\<^sup>T\<^sup>\<star>;p"
@@ -1710,7 +1710,7 @@ proof (rule antisym)
       have "(x\<^sup>T\<^sup>\<star>;p \<cdot> 1');x \<le> x\<^sup>T\<^sup>\<star>;p;1"
         by (simp add: mult_isol_var)
       also have "... \<le> x\<^sup>T\<^sup>\<star>;p"
-        using assms by (simp add: comp_assoc eq_iff point_equations(1) point_is_point)
+        using assms by (simp add: comp_assoc order.eq_iff point_equations(1) point_is_point)
       finally show ?thesis .
     qed
     show "(x\<^sup>T\<^sup>\<star>;p \<cdot> 1');x \<le> x"
@@ -1860,7 +1860,7 @@ proof -
     using assms path_from_given_point(1) by blast
 next
   show "start_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x) = p"
-  proof (simp only: eq_iff; rule conjI)
+  proof (simp only: order.eq_iff; rule conjI)
     show "start_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x) \<le> p"
       using assms path_from_given_point(2) by blast
     show "p \<le> start_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x)"
@@ -1899,7 +1899,7 @@ next
   qed
 next
   show "end_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x) = end_points(x)"
-  proof (simp only: eq_iff; rule conjI)
+  proof (simp only: order.eq_iff; rule conjI)
     show "end_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x) \<le> end_points(x)"
       using assms path_from_given_point(3) by blast
     show "end_points(x) \<le> end_points(x\<^sup>T\<^sup>\<star>;p \<cdot> x)"
@@ -2188,7 +2188,7 @@ proof -
     using assms(1,2,3,5) cycle_remove_edge(1) by blast
 next
   show "s = start_points (x \<cdot> - (e ; s\<^sup>T))"
-  proof (simp only: eq_iff; rule conjI)
+  proof (simp only: order.eq_iff; rule conjI)
     show "s \<le> start_points (x \<cdot> - (e ; s\<^sup>T))"
     proof -
       have a: "s \<le> (x \<cdot> - (e ; s\<^sup>T));1"
@@ -2245,7 +2245,7 @@ next
   qed
 next
   show "e = end_points (x \<cdot> - (e ; s\<^sup>T))"
-  proof (simp only: eq_iff; rule conjI)
+  proof (simp only: order.eq_iff; rule conjI)
     show "e \<le> end_points (x \<cdot> - (e ; s\<^sup>T))"
       (* just copied and adapted the proof of the previous case (start_point) *)
     proof -

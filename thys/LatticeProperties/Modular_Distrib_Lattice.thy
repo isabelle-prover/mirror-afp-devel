@@ -43,14 +43,10 @@ definition
   "e_aux a b c = (a \<squnion> b) \<sqinter> (b \<squnion> c) \<sqinter> (c \<squnion> a)"
 
 lemma e_b_c_a: "e_aux b c a = e_aux a b c"
-  apply (simp add: e_aux_def)
-  apply (rule antisym)
-  by (simp_all add: sup_commute)
+  by (simp add: e_aux_def ac_simps)
 
 lemma e_c_a_b: "e_aux c a b = e_aux a b c"
-  apply (simp add: e_aux_def)
-  apply (rule antisym)
-  by (simp_all add: sup_commute)
+  by (simp add: e_aux_def ac_simps)
 
 definition
   "a_aux a b c = (a \<sqinter> (e_aux a b c)) \<squnion> (d_aux a b c)"
@@ -97,12 +93,7 @@ lemma [simp]: "d_aux a b c \<le> c_aux a b c"
   by simp
 
 lemma a_meet_e: "a \<sqinter> (e_aux a b c) = a \<sqinter> (b \<squnion> c)"
-  apply (simp add: e_aux_def)
-  apply (rule antisym)
-  apply simp_all
-  apply (rule_tac y = "(a \<squnion> b) \<sqinter> (b \<squnion> c) \<sqinter> (c \<squnion> a)" in order_trans)
-  apply (rule inf_le2)
-  by simp
+  by (rule order.antisym) (simp_all add: e_aux_def le_infI2)
   
 lemma b_meet_e: "b \<sqinter> (e_aux a b c) = b \<sqinter> (c \<squnion> a)"
   by (simp add: a_meet_e [THEN sym] e_b_c_a)
@@ -111,11 +102,7 @@ lemma c_meet_e: "c \<sqinter> (e_aux a b c) = c \<sqinter> (a \<squnion> b)"
   by (simp add: a_meet_e [THEN sym] e_c_a_b)
 
 lemma a_join_d: "a \<squnion> d_aux a b c = a \<squnion> (b \<sqinter> c)"
-  apply (simp add: d_aux_def)
-  apply (rule antisym)
-  apply simp_all
-  apply (rule_tac y = "a \<sqinter> b \<squnion> b \<sqinter> c \<squnion> c \<sqinter> a" in order_trans)
-  by simp_all
+  by (rule order.antisym) (simp_all add: d_aux_def le_supI2)
 
 lemma b_join_d: "b \<squnion> d_aux a b c = b \<squnion> (c \<sqinter> a)"
   by (simp add: a_join_d [THEN sym] d_b_c_a)
@@ -154,7 +141,7 @@ lemma a_meet_d: "a \<sqinter> (d_aux a b c) = (a \<sqinter> b) \<squnion> (c \<s
     have "a \<sqinter> (d_aux a b c) = a \<sqinter> ((a \<sqinter> b) \<squnion> (b \<sqinter> c) \<squnion> (c \<sqinter> a))" by (simp add: d_aux_def)
     also have "... = a \<sqinter> (a \<sqinter> b \<squnion> c \<sqinter> a \<squnion> b \<sqinter> c)" by (simp add: sup_assoc, simp add: sup_commute)
     also have "... = (a \<sqinter> b \<squnion> c \<sqinter> a) \<squnion> (a \<sqinter> (b \<sqinter> c))" by (simp add: modular)
-    also have "... = (a \<sqinter> b) \<squnion> (c \<sqinter> a)" by (rule antisym, simp_all, rule_tac y = "a \<sqinter> b" in order_trans, simp_all)
+    also have "... = (a \<sqinter> b) \<squnion> (c \<sqinter> a)" by (rule order.antisym, simp_all, rule_tac y = "a \<sqinter> b" in order_trans, simp_all)
     finally show ?thesis by simp
   qed
   
@@ -194,7 +181,7 @@ lemma a_meet_b_eq_d: " d_aux a b c \<le> e_aux a b c \<Longrightarrow> a_aux a b
     also have "\<dots> = d_aux a b c \<squnion> (a \<sqinter> ((c \<sqinter> a) \<squnion> b))" by (simp add: sup_commute inf_commute)
     also have "\<dots> = d_aux a b c \<squnion> ((c \<sqinter> a) \<squnion> (a \<sqinter> b))" by (simp add: modular)
     also have "\<dots> = d_aux a b c"
-      by (rule antisym, simp_all add: d_aux_def)
+      by (rule order.antisym, simp_all add: d_aux_def)
     finally show ?thesis by (simp add: a_aux_def b_aux_def)
   qed
 
@@ -249,7 +236,7 @@ lemma a_join_b_eq_e: "d_aux a b c \<le> e_aux a b c \<Longrightarrow> a_aux a b 
     also have "\<dots> = e_aux a b c \<sqinter> (a \<squnion> ((c \<squnion> a) \<sqinter> b))" by (simp add: sup_commute inf_commute)
     also have "\<dots> = e_aux a b c \<sqinter> ((c \<squnion> a) \<sqinter> (a \<squnion> b))" by (simp add: modular)
     also have "\<dots> = e_aux a b c"
-      by (rule antisym, simp_all, simp_all add: e_aux_def)
+      by (rule order.antisym, simp_all, simp_all add: e_aux_def)
     finally show ?thesis by (cut_tac d_less_e, simp add: a_def_equiv b_def_equiv)
   qed
 
@@ -268,22 +255,10 @@ lemma c_join_a_eq_e: "d_aux a b c <= e_aux a b c \<Longrightarrow> c_aux a b c \
   by (simp_all add: a_aux_def b_aux_def d_b_c_a e_b_c_a)
 
 lemma "no_distrib a b c \<Longrightarrow> incomp a b"
-  apply (simp add: no_distrib_def incomp_def)
-  apply safe
-  apply (simp add: inf_absorb1) 
-  apply (subgoal_tac "a \<squnion> c \<sqinter> a = a \<and> a \<sqinter> (b \<squnion> c) = a")
-  apply simp
-  apply safe
-  apply (rule antisym)
-  apply simp
-  apply simp
-  apply (rule antisym)
-  apply simp_all
-  apply (rule_tac y = b in order_trans)
-  apply simp_all
-  apply (simp add: inf_absorb2) 
-  apply (unfold modular [THEN sym])
-  by (simp add: inf_commute)
+  apply (simp add: no_distrib_def incomp_def ac_simps)
+  using order.strict_iff_not inf.absorb_iff2 inf.commute modular
+  apply fastforce
+  done
 
 lemma M5_modular: "no_distrib a b c \<Longrightarrow> M5_lattice (a_aux a b c) (b_aux a b c) (c_aux a b c)"
   apply (frule d_less_e)
@@ -308,13 +283,13 @@ lemma not_modular_N5: "(\<not> class.modular_lattice inf ((\<le>)::'a \<Rightarr
   apply (rule_tac x = "y \<sqinter> (x \<squnion> z)" in exI)
   apply (rule_tac x = z in exI)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (rule_tac y = "x \<squnion> y \<sqinter> z" in order_trans)
   apply simp_all
   apply (rule_tac y = "y \<sqinter> z" in order_trans)
   apply simp_all
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (rule_tac y = "y \<sqinter> (x \<squnion> z)" in order_trans)
   apply simp_all

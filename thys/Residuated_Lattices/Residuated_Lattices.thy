@@ -104,7 +104,7 @@ lemma res_c2: "residuated f \<Longrightarrow> x \<le> y \<Longrightarrow> residu
   by (metis local.order.refl local.order_trans residual_galois)
   
 lemma res_c3: "residuated f \<Longrightarrow> residual f (f (residual f (f x))) = residual f (f x)"
-  by (metis local.eq_iff local.order_trans res_c1 residual_galois)
+  by (metis order.eq_iff local.order_trans res_c1 residual_galois)
 
 lemma res_closure: "residuated f \<Longrightarrow> closure (residual f o f)"
   by (auto simp: closure_def intro: res_c1 res_c2 res_c3)
@@ -144,7 +144,7 @@ proof -
   { 
     fix x
     have "(f o residual f o f) x = f x"
-      by (metis resf comp_apply local.eq_iff res_c1 res_i1 res_iso)
+      by (metis resf comp_apply order.eq_iff res_c1 res_i1 res_iso)
   }
   thus ?thesis
     by (metis ext)
@@ -156,7 +156,7 @@ proof -
   { 
     fix x
     have "(residual f o f o residual f) x = residual f x"
-      by (metis resf comp_apply local.eq_iff res_c1 res_i1 res_residual_iso)
+      by (metis resf comp_apply order.eq_iff res_c1 res_i1 res_residual_iso)
   }
   thus ?thesis
     by (metis ext)
@@ -172,7 +172,7 @@ text \<open>
 \<close>
 
 lemma (in semilattice_sup) residuated_sup: "residuated f \<Longrightarrow> f (x \<squnion> y) = f x \<squnion> f y"
-proof (rule antisym)
+proof (rule order.antisym)
   assume assm: "residuated f"
   thus "f (x \<squnion> y) \<le> f x \<squnion> f y"
     by (metis local.residual_galoisI1 local.residual_galoisI2 local.sup.bounded_iff local.sup_ge1 local.sup_ge2)
@@ -181,7 +181,7 @@ proof (rule antisym)
 qed
 
 lemma (in semilattice_inf) residuated_inf: "residuated f \<Longrightarrow> residual f (x \<sqinter> y) = residual f x \<sqinter> residual f y"
-proof (rule antisym)
+proof (rule order.antisym)
   assume assm: "residuated f"
   thus "residual f (x \<sqinter> y) \<le> residual f x \<sqinter> residual f y"
     by (metis local.inf.boundedI local.inf.cobounded1 local.inf.cobounded2 local.res_residual_iso)
@@ -209,7 +209,7 @@ text \<open>
 \<close>
 
 lemma residual_eq1: "residuated f \<Longrightarrow> residual f y = \<Squnion> {x. f x \<le> y}"
-proof (rule antisym)
+proof (rule order.antisym)
   assume assm: "residuated f"
   thus "residual f y \<le> \<Squnion>{x. f x \<le> y}"
     by (auto simp: res_i1 intro!: Sup_upper)
@@ -218,7 +218,7 @@ proof (rule antisym)
 qed
 
 lemma residual_eq2: "residuated f \<Longrightarrow> f x = \<Sqinter> {y. x \<le> residual f y}"
-proof (rule antisym)
+proof (rule order.antisym)
   assume assm: "residuated f"
   thus "f x \<le> \<Sqinter>{y. x \<le> residual f y}"
     by (auto intro: Inf_greatest residual_galoisI2)
@@ -227,7 +227,7 @@ proof (rule antisym)
 qed
 
 lemma residuated_Sup: "residuated f \<Longrightarrow> f(\<Squnion> X) = \<Squnion>{f x | x. x \<in> X}"
-proof (rule antisym)
+proof (rule order.antisym)
   assume assm: "residuated f"
   obtain y where y_def: "y = \<Squnion>{f x |x. x \<in> X}" 
     by auto
@@ -242,7 +242,7 @@ proof (rule antisym)
 qed (clarsimp intro!: Sup_least res_iso Sup_upper)
 
 lemma residuated_Inf: "residuated f \<Longrightarrow> residual f(\<Sqinter> X) = \<Sqinter>{residual f x | x. x \<in> X}"
-proof (rule antisym, clarsimp intro!: Inf_greatest res_residual_iso Inf_lower)
+proof (rule order.antisym, clarsimp intro!: Inf_greatest res_residual_iso Inf_lower)
   assume assm: "residuated f"
   obtain y where y_def: "y = \<Sqinter>{residual f x |x. x \<in> X}" 
     by auto
@@ -429,16 +429,16 @@ lemma resr_iso: "x \<le> y \<Longrightarrow> z \<rightarrow> x \<le> z \<rightar
   by (metis res_residual_iso resr_eq residuated_multr)
 
 lemma resl_comp1 [simp]: "(x \<cdot> y \<leftarrow> y) \<cdot> y = x \<cdot> y"
-  by (metis local.antisym local.mult_isor res_lc1 res_li1)
+  by (metis order.antisym local.mult_isor res_lc1 res_li1)
   
 lemma resl_comp2 [simp]: "(x \<leftarrow> y) \<cdot> y \<leftarrow> y = x \<leftarrow> y"
-  by (metis local.eq_iff res_lc1 res_li1 resl_iso)
+  by (metis order.eq_iff res_lc1 res_li1 resl_iso)
   
 lemma resr_comp1 [simp]: "y \<cdot> (y \<rightarrow> y \<cdot> x) = y \<cdot> x"
-  by (metis local.antisym local.mult_isol res_rc1 res_ri1)
+  by (metis order.antisym local.mult_isol res_rc1 res_ri1)
   
 lemma resr_comp2 [simp]: "y \<rightarrow> y \<cdot> (y \<rightarrow> x) = y \<rightarrow> x"
-  by (metis local.eq_iff res_rc1 res_ri1 resr_iso)
+  by (metis order.eq_iff res_rc1 res_ri1 resr_iso)
   
 lemma resl_antitoner: "x \<le> y \<longrightarrow> z \<leftarrow> y \<le> z \<leftarrow> x"
   by (metis local.dual_order.trans local.mult_isol res_li1 reslI)
@@ -455,10 +455,10 @@ lemma jipsen1r: "x \<le> (y \<leftarrow> x) \<rightarrow> y"
   by (metis res_li1 resrI)
   
 lemma jipsen2l: "(y \<leftarrow> (x \<rightarrow> y)) \<rightarrow> y = x \<rightarrow> y"
-  by (metis jipsen1l jipsen1r local.eq_iff local.resr_antitonel)
+  by (metis jipsen1l jipsen1r order.eq_iff local.resr_antitonel)
   
 lemma jipsen2r: "y \<leftarrow> ((y \<leftarrow> x) \<rightarrow> y) = y \<leftarrow> x"
-  by (metis jipsen1l jipsen1r local.eq_iff local.resl_antitoner)
+  by (metis jipsen1l jipsen1r order.eq_iff local.resl_antitoner)
   
 end (* residuated_pogroupoid *)
 
@@ -482,7 +482,7 @@ lemma resr2: "x \<rightarrow> y \<le> z \<cdot> x \<rightarrow> z \<cdot> y"
   by (metis local.mult_isol local.res_ri1 local.resrI mult_assoc)
   
 lemma resr3: "x \<cdot> y \<rightarrow> z = y \<rightarrow> (x \<rightarrow> z)"
-  by (metis local.eq_iff local.resr_galois mult_assoc)
+  by (metis order.eq_iff local.resr_galois mult_assoc)
   
 lemma resl1: "z \<cdot> (x \<leftarrow> y) \<le> (z \<cdot> x \<leftarrow> y)"
   by (metis local.mult_isol local.res_li1 local.reslI mult_assoc)
@@ -491,10 +491,10 @@ lemma resl2: "x \<leftarrow> y \<le> x \<cdot> z \<leftarrow> y \<cdot> z"
   by (metis local.mult_isor local.res_li1 local.reslI mult_assoc)
 
 lemma resl3: "x \<leftarrow> y \<cdot> z = (x \<leftarrow> z) \<leftarrow> y"
-  by (metis local.eq_iff local.resl_galois mult_assoc)
+  by (metis order.eq_iff local.resl_galois mult_assoc)
   
 lemma residual_assoc: "x \<rightarrow> (y \<leftarrow> z) = (x \<rightarrow> y) \<leftarrow> z"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x \<rightarrow> (y \<leftarrow> z) \<le> (x \<rightarrow> y) \<leftarrow> z"
     by (metis local.res_ri1 local.resl_galois local.resr_galois mult_assoc)
   show "(x \<rightarrow> y) \<leftarrow> z \<le> x \<rightarrow> (y \<leftarrow> z)"
@@ -642,7 +642,7 @@ begin
 subclass residuated_sup_lgroupoid ..
 
 lemma resl_distr: "z \<leftarrow> (x \<squnion> y) = (z \<leftarrow> x) \<sqinter> (z \<leftarrow> y)"
-proof (rule antisym)
+proof (rule order.antisym)
   show "z \<leftarrow> x \<squnion> y \<le> (z \<leftarrow> x) \<sqinter> (z \<leftarrow> y)"
     by (metis local.inf.bounded_iff local.resl_superdist_var local.sup_commute)
   show "(z \<leftarrow> x) \<sqinter> (z \<leftarrow> y) \<le> z \<leftarrow> x \<squnion> y"
@@ -650,7 +650,7 @@ proof (rule antisym)
 qed
 
 lemma resr_distl: "(x \<squnion> y) \<rightarrow> z = (x \<rightarrow> z) \<sqinter> (y \<rightarrow> z)"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x \<squnion> y \<rightarrow> z \<le> (x \<rightarrow> z) \<sqinter> (y \<rightarrow> z)"
     by (metis local.inf.bounded_iff local.resr_antitonel local.resr_superdist_var local.sup_ge2)
   show "(x \<rightarrow> z) \<sqinter> (y \<rightarrow> z) \<le> x \<squnion> y \<rightarrow> z"

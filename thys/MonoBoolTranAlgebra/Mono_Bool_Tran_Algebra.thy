@@ -153,15 +153,15 @@ end
 context mbt_algebra begin
 
 lemma dual_top [simp]: "\<top> ^ o = \<bottom>"
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   by (subst dual_le, simp)
 
 lemma dual_bot [simp]: "\<bottom> ^ o = \<top>"
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   by (subst dual_le, simp)
 
 lemma dual_inf: "(x \<sqinter> y) ^ o = (x ^ o) \<squnion> (y ^ o)"
-  apply (rule antisym, simp_all, safe)
+  apply (rule order.antisym, simp_all, safe)
   apply (subst dual_le, simp, safe)
   apply (subst dual_le, simp)
   apply (subst dual_le, simp)
@@ -169,7 +169,7 @@ lemma dual_inf: "(x \<sqinter> y) ^ o = (x ^ o) \<squnion> (y ^ o)"
   by (subst dual_le, simp)
 
 lemma dual_sup: "(x \<squnion> y) ^ o = (x ^ o) \<sqinter> (y ^ o)"
-  apply (rule antisym, simp_all, safe)
+  apply (rule order.antisym, simp_all, safe)
   apply (subst dual_le, simp)
   apply (subst dual_le, simp)
   apply (subst dual_le, simp, safe)
@@ -229,7 +229,7 @@ lemma gt_one_comp: "1 \<le> x \<Longrightarrow> y \<le> x * y"
     by (simp add: dual_inf dual_comp)
 
   lemma omega_one [simp]: "1 ^ \<omega> = \<bottom>"
-    apply (rule antisym, simp_all)
+    apply (rule order.antisym, simp_all)
     by (cut_tac x = "1::'a" and y = 1 and z = \<bottom> in omega_least, simp_all)
 
   lemma omega_mono: "x \<le> y \<Longrightarrow> x ^ \<omega> \<le> y ^ \<omega>"
@@ -267,7 +267,7 @@ lemma comp_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive
 
 lemma start_pres_conj: "x \<in> conjunctive \<Longrightarrow> (x ^ *) \<in> conjunctive"
   apply (subst conjunctive_def, safe)
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   apply (metis inf_le1 inf_le2 le_comp)
   apply (rule star_greatest)
   apply (subst conjunctiveD, simp)
@@ -296,7 +296,7 @@ definition
 lemma assertion_prop: "x \<in> assertion \<Longrightarrow> (x * \<top>) \<sqinter> 1 = x"
   apply (simp add: assertion_def)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   proof -
     assume [simp]: "x \<le> 1"
@@ -397,7 +397,7 @@ lemma assertion_conjunctive: "x \<in> assertion \<Longrightarrow> x \<in> conjun
     have "x * (y \<sqinter> z) = (x * \<top> \<sqinter> 1) * (y \<sqinter> z)" by (cut_tac  A, simp)
     also have "\<dots> = (x * \<top>) \<sqinter> (y \<sqinter> z)" by (simp add: inf_comp)
     also have "\<dots> = ((x * \<top>) \<sqinter> y) \<sqinter> ((x * \<top>) \<sqinter> z)"
-      apply (rule antisym, simp_all, safe)
+      apply (rule order.antisym, simp_all, safe)
       apply (rule_tac y = "y \<sqinter> z" in order_trans)
       apply (rule inf_le2)
       apply simp
@@ -475,7 +475,7 @@ lemma [simp]: "x \<in> assertion \<Longrightarrow> y \<in> assertion \<Longright
   by (subst dual_le, simp add: assertion_def)
 
 lemma assertion_inf_comp_eq: "x \<in> assertion \<Longrightarrow> y \<in> assertion \<Longrightarrow> x \<sqinter> y = x * y"
-  by (rule antisym, simp_all)
+  by (rule order.antisym, simp_all)
 
 lemma one_right_assertion [simp]: "x \<in> assertion \<Longrightarrow> x * 1 = x"
   apply (drule assertion_prop)
@@ -488,16 +488,16 @@ lemma one_right_assertion [simp]: "x \<in> assertion \<Longrightarrow> x * 1 = x
   qed
 
 lemma [simp]: "x \<in> assertion \<Longrightarrow> x \<squnion> 1 = 1"
-  by (rule antisym, simp_all add: assertion_def)
+  by (rule order.antisym, simp_all add: assertion_def)
   
 lemma [simp]: "x \<in> assertion \<Longrightarrow> 1 \<squnion> x = 1"
-  by (rule antisym, simp_all add: assertion_def)
+  by (rule order.antisym, simp_all add: assertion_def)
   
 lemma [simp]: "x \<in> assertion \<Longrightarrow> x \<sqinter> 1 = x"
-  by (rule antisym, simp_all add: assertion_def)
+  by (rule order.antisym, simp_all add: assertion_def)
   
 lemma [simp]: "x \<in> assertion \<Longrightarrow> 1 \<sqinter> x = x"
-  by (rule antisym, simp_all add: assertion_def)
+  by (rule order.antisym, simp_all add: assertion_def)
 
 lemma [simp]:  "x \<in> assertion \<Longrightarrow> x \<le> x * \<top>"
   by (cut_tac x = 1 and y = \<top> and z = x in le_comp, simp_all)
@@ -512,7 +512,7 @@ definition
 lemma sup_uminus[simp]: "x \<in> assertion \<Longrightarrow> x \<squnion> neg_assert x = 1"
   apply (simp add: neg_assert_def)
   apply (simp add: sup_inf_distrib)
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   apply (unfold assertion_def)
   apply safe
   apply (subst dual_le)
@@ -522,7 +522,7 @@ lemma sup_uminus[simp]: "x \<in> assertion \<Longrightarrow> x \<squnion> neg_as
 
 lemma inf_uminus[simp]: "x \<in> assertion \<Longrightarrow> x \<sqinter> neg_assert x = \<bottom>"
   apply (simp add: neg_assert_def)
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   apply (rule_tac y = "x \<sqinter> (x ^ o * \<bottom>)" in order_trans)
   apply simp
   apply (rule_tac y = "x ^ o * \<bottom> \<sqinter> 1" in order_trans)
@@ -548,13 +548,13 @@ lemma uminus_uminus [simp]: "x \<in> assertion \<Longrightarrow> neg_assert (neg
 
 lemma dual_comp_neg [simp]: "x ^ o * y \<squnion> (neg_assert x) * \<top> = x ^ o * y"
   apply (simp add: neg_assert_def inf_comp)
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   by (rule le_comp, simp)
 
 
 lemma [simp]: "(neg_assert x) ^ o * y \<squnion> x * \<top> = (neg_assert x) ^ o * y"
   apply (simp add: neg_assert_def inf_comp dual_inf dual_comp sup_comp)
-  by (rule antisym, simp_all)
+  by (rule order.antisym, simp_all)
 
 lemma [simp]: " x * \<top> \<squnion> (neg_assert x) ^ o * y= (neg_assert x) ^ o * y"
   by (simp add: neg_assert_def inf_comp dual_inf dual_comp sup_comp)
@@ -601,14 +601,14 @@ lemma sup_assertion [simp]: "x \<in> assertion \<Longrightarrow> y \<in> asserti
     also have "\<dots> = (x ^ o) \<sqinter> ((y * \<top>) \<sqinter> (y ^ o))" by (simp add: inf_assoc)
     also have "\<dots> = (x ^ o) \<sqinter> y" by (simp add: B)
     also have "\<dots> = y"
-      apply (rule antisym, simp_all)
+      apply (rule order.antisym, simp_all)
       apply (rule_tac y = 1 in order_trans)
       apply simp
       by (subst dual_le, simp)
     finally have [simp]: "(y * \<top>) \<sqinter> (x ^ o) \<sqinter> (y ^ o) = y" .
     have "x * \<top> \<sqinter> (x ^ o) \<sqinter> (y ^ o) = x \<sqinter> (y ^ o)"  by (simp add: A)
     also have "\<dots> = x"
-      apply (rule antisym, simp_all)
+      apply (rule order.antisym, simp_all)
       apply (rule_tac y = 1 in order_trans)
       apply simp
       by (subst dual_le, simp)
@@ -656,12 +656,12 @@ lemma wpt_is_assertion [simp]: "wpt x \<in> assertion"
   apply (unfold wpt_def assertion_def, safe)
   apply simp
   apply (simp add: inf_comp dual_inf dual_comp inf_sup_distrib)
-  apply (rule antisym)
+  apply (rule order.antisym)
   by (simp_all add: dual_neg)
 
 lemma wpt_comp: "(wpt x) * x = x"
   apply (simp add: wpt_def inf_comp)
-  apply (rule antisym, simp_all)
+  apply (rule order.antisym, simp_all)
   by (cut_tac x = 1 and y = \<top> and z = x in le_comp, simp_all)
 
 lemma wpt_comp_2: "wpt (x * y) = wpt (x * (wpt y))"
@@ -724,7 +724,7 @@ lemma le_comp_left_right: "x \<le> y \<Longrightarrow> u \<le> v \<Longrightarro
 
 lemma wpt_dual_assertion: "x \<in> assertion \<Longrightarrow> wpt (x ^ o) = 1"
   apply (simp add: wpt_def)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (cut_tac x = 1 and y = "x ^ o" and u = 1 and v = \<top> in le_comp_left_right)
   apply simp_all
@@ -822,7 +822,7 @@ instance MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
 
 context complete_mbt_algebra begin
 lemma dual_Inf: "(Inf X) ^ o = (SUP x\<in> X . x ^ o)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (subst dual_le, simp)
   apply (rule Inf_greatest)
   apply (subst dual_le, simp)
@@ -832,7 +832,7 @@ lemma dual_Inf: "(Inf X) ^ o = (SUP x\<in> X . x ^ o)"
   by (rule Inf_lower, simp)
 
 lemma dual_Sup: "(Sup X) ^ o = (INF x\<in> X . x ^ o)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule INF_greatest)
   apply (subst dual_le, simp)
   apply (rule Sup_upper, simp)
@@ -882,12 +882,12 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
       assume C: "x \<in> X"
       have "x * \<top> \<sqinter> \<Sqinter>(dual ` X) = x * \<top> \<sqinter> (x ^ o \<sqinter> \<Sqinter>(dual ` X))"
         apply (subgoal_tac "\<Sqinter>(dual ` X) = (x ^ o \<sqinter> \<Sqinter>(dual ` X))", simp)
-        apply (rule antisym, simp_all)
+        apply (rule order.antisym, simp_all)
         apply (rule Inf_lower, cut_tac C, simp)
         done
       also have "\<dots> = x \<sqinter> \<Sqinter>(dual ` X)" by (unfold  inf_assoc [THEN sym], cut_tac A, cut_tac C, auto)
       also have "\<dots> = x"
-        apply (rule antisym, simp_all)
+        apply (rule order.antisym, simp_all)
         apply (rule INF_greatest)
         apply (cut_tac A C)
         apply (rule_tac y = 1 in order_trans)
@@ -908,7 +908,7 @@ lemma Sup_less_assertion [simp]: "(!!w . p w \<in> assertion) \<Longrightarrow> 
 
 theorem omega_lfp: 
   "x ^ \<omega> * y = lfp (\<lambda> z . (x * z) \<sqinter> y)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule lfp_greatest)
   apply (drule omega_least, simp)
   apply (rule lfp_lowerbound)
@@ -940,7 +940,7 @@ begin
 
 lemma omega_star: "x \<in> conjunctive \<Longrightarrow> x ^ \<omega> = wpt (x ^ \<omega>) * (x ^ *)"
   apply (simp add: wpt_def inf_comp)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (cut_tac x = x and y = 1 and z = "x ^ \<omega> * \<top> \<sqinter> x ^ *" in omega_least)
   apply (simp_all add: conjunctiveD,safe)
   apply  (subst (2) omega_fix)

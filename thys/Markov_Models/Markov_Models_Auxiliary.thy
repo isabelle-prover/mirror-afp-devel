@@ -56,7 +56,7 @@ lemma maximalD2: "x \<in> maximal f S \<Longrightarrow> y \<in> S \<Longrightarr
   by (simp add: maximal_def)
 
 lemma maximal_inject: "x \<in> maximal f S \<Longrightarrow> y \<in> maximal f S \<Longrightarrow> f x = f y"
-  unfolding maximal_def by (blast intro: antisym)
+  by (rule order.antisym) (simp_all add: maximal_def)
 
 lemma maximal_empty[simp]: "maximal f {} = {}"
   by (simp add: maximal_def)

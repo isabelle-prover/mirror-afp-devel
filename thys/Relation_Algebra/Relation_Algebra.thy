@@ -234,7 +234,7 @@ Maddux and Schmidt and Str\"ohlein. Most of them do not carry any meaningful
 names.\<close>
 
 lemma ra_1: "(x \<cdot> y ; 1) ; z = x ; z \<cdot> y ; 1"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x ; z \<cdot> y ; 1 \<le> (x \<cdot> y ; 1) ; z"
     by (metis modular_2_var comp_assoc order_trans eq_refl inf_mono inf_top_left mult_isor mult_subdistl)
   show "(x \<cdot> y ; 1) ; z \<le> x ; z \<cdot> y ; 1"
@@ -242,7 +242,7 @@ proof (rule antisym)
 qed
 
 lemma ra_2: "x ; (z \<cdot> y ; 1) = (x \<cdot> (y ; 1)\<^sup>\<smile>) ; z"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(x \<cdot> 1 ; (z \<cdot> y ; 1)\<^sup>\<smile>) ; z \<le> (x \<cdot> (y ; 1)\<^sup>\<smile>) ; z"
     by (metis conv_contrav conv_invol conv_one conv_times inf.idem inf.left_commute le_iff_inf meet_assoc mult_isor ra_1)
   thus "x ; (z \<cdot> y ; 1) \<le> (x \<cdot> (y ; 1)\<^sup>\<smile>) ; z"
@@ -277,7 +277,7 @@ lemma maddux_21: "x \<le> 1 ; x"
 by (metis mult_isor mult_onel top_greatest)
 
 lemma maddux_23: "x ; y \<cdot> -(x ; z) = x ; (y \<cdot> -z) \<cdot> -(x ; z)"
-apply (rule antisym)
+apply (rule order.antisym)
 apply (metis local.aux6 local.aux6_var local.aux9 local.compl_inf_bot local.compl_sup_top local.compl_unique local.distrib_left local.galois_2 local.sup_ge2)
 using local.meet_iso local.mult_subdistl by blast
 
@@ -285,7 +285,7 @@ lemma maddux_24: "-(x ; y) + x ; z = -(x ; (y \<cdot> -z)) + x ; z"
 by (metis de_morgan_3 double_compl maddux_23)
 
 lemma one_compl: "-(x ; 1) ; 1 = -(x ; 1)"
-by (metis antisym conv_one maddux_12 mult.assoc one_idem_mult maddux_20)
+by (metis order.antisym conv_one maddux_12 mult.assoc one_idem_mult maddux_20)
 
 lemma ss_p18: "x ; 1 = 0 \<longleftrightarrow> x = 0"
 by (metis annil le_bot maddux_20)

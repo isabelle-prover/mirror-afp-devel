@@ -173,7 +173,7 @@ lemma gt_iff_wt_unary_diff_same: "t >\<^sub>t s \<longleftrightarrow> gt_wt t s 
   by (subst gt.simps) (auto simp: gt_wt.simps gt_unary.simps gt_diff.simps gt_same.simps)
 
 lemma gt_imp_vars_mset: "t >\<^sub>t s \<Longrightarrow> vars_mset t \<supseteq># vars_mset s"
-  by (induct rule: gt.induct) (auto intro: subset_mset.order.trans)
+  by (induct rule: gt.induct) (auto intro: subset_mset.trans)
 
 lemma gt_imp_vars: "t >\<^sub>t s \<Longrightarrow> vars t \<supseteq> vars s"
   using set_mset_mono[OF gt_imp_vars_mset] by simp

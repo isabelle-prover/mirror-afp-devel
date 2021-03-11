@@ -704,7 +704,8 @@ proof -
         fix x y
         assume "ko.le (key_order_of_nat_term_order_inv cmp_term) (term_of_pair (x, the_min)) (term_of_pair (y, the_min))"
           and "ko.le (key_order_of_nat_term_order_inv cmp_term) (term_of_pair (y, the_min)) (term_of_pair (x, the_min))"
-        hence "term_of_pair (x, the_min) = term_of_pair (y, the_min)" by (rule ko.antisym)
+        hence "term_of_pair (x, the_min) = term_of_pair (y, the_min)"
+          by (rule ko.antisym)
         hence "(x, the_min) = (y, the_min::'k)" by (rule tp.term_of_pair_injective)
         thus "x = y" by simp
       qed

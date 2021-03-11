@@ -46,7 +46,7 @@ proof -
       from d2 show ?thesis
       proof
         assume "c1 (f y) (f z) = Lt"
-        with 1 have "c1 (f x) (f z) = Lt" by (rule c1.trans)
+        with 1 have "c1 (f x) (f z) = Lt" by (rule c1.comp_trans)
         thus ?thesis by simp
       next
         assume "c1 (f y) (f z) = Eq \<and> c2 (g y) (g z) = Lt"
@@ -63,7 +63,7 @@ proof -
       next
         assume "c1 (f y) (f z) = Eq \<and> c2 (g y) (g z) = Lt"
         hence 3: "f y = f z" and "c2 (g y) (g z) = Lt" by (simp_all add: c1.eq)
-        from 2 this(2) have "c2 (g x) (g z) = Lt" by (rule c2.trans)
+        from 2 this(2) have "c2 (g x) (g z) = Lt" by (rule c2.comp_trans)
         thus ?thesis by (simp add: 1 3)
       qed
     qed
@@ -200,7 +200,7 @@ next
   from False assms(5) have *: "snd (rep_nat_term u) < snd (rep_nat_term v)" by simp
   have "cmp u w = Lt" by (rule nat_term_compD2, fact assms(2), simp_all add: * w)
   moreover from assms(1, 2) 1 assms(4) 2 assms(6) have "cmp w v = cmp a b" by (rule nat_term_compD4')
-  ultimately show ?thesis using assms(7) by (metis cmp.nGt_le_conv cmp.nLt_le_conv cmp.trans)
+  ultimately show ?thesis using assms(7) by (metis cmp.nGt_le_conv cmp.nLt_le_conv cmp.comp_trans)
 qed
 
 lemma comparator_lex_comp_aux: "comparator (lex_comp_aux::'a::nat_term comparator)"

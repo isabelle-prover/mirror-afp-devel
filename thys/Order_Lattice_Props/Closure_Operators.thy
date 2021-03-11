@@ -352,7 +352,7 @@ lemma clop_idem [simp]: "cl_op \<circ> cl_op = cl_op"
   using clop_ext clop_wtrans order.antisym by auto
 
 lemma clop_idem_var [simp]: "cl_op (cl_op x) = cl_op x"
-  by (simp add: antisym clop_ext clop_wtrans)
+  by (simp add: order.antisym clop_ext clop_wtrans)
 
 lemma clop_range_Fix: "range cl_op = Fix cl_op"
   by (simp add: retraction_prop_fix)

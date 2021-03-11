@@ -60,7 +60,7 @@ proof -
   next
     fix x y z :: "('a, 'b) pp"
     assume "nat_term_compare cmp (x, 0) (y, 0) = Lt" and "nat_term_compare cmp (y, 0) (z, 0) = Lt"
-    thus "nat_term_compare cmp (x, 0) (z, 0) = Lt" by (rule cmp.trans)
+    thus "nat_term_compare cmp (x, 0) (z, 0) = Lt" by (rule cmp.comp_trans)
   qed
 qed
 

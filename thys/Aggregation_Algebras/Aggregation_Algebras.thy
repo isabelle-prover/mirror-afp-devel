@@ -121,7 +121,7 @@ proof unfold_locales
   also have "... \<le> top * --x * top"
     by (simp add: minarc_below mult_isotone)
   finally show "top * x * top = top"
-    using 1 antisym by simp
+    using 1 order.antisym by simp
 qed
 
 lemma minarc_bot:

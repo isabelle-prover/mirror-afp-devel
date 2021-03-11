@@ -77,7 +77,8 @@ proof
   proof (rule adds_univariate_linear)
     assume "t adds s"
     hence "t \<preceq> s" by (rule ord_adds)
-    with \<open>s \<preceq> t\<close> have "s = t" by (rule ordered_powerprod_lin.antisym)
+    with \<open>s \<preceq> t\<close> have "s = t"
+      by simp
     thus ?thesis by simp
   qed
 qed (rule ord_adds)
@@ -239,7 +240,8 @@ proof (rule homogeneousI)
     from \<open>lpp q \<in> keys g\<close> have "lpp q \<preceq> lpp g" by (rule punit.lt_max_keys)
     moreover from adds have "lpp g \<preceq> lpp q"
       unfolding \<open>g' = g\<close> by (rule punit.ord_adds_term[simplified])
-    ultimately have eq: "lpp q = lpp g" by (rule ordered_powerprod_lin.antisym)
+    ultimately have eq: "lpp q = lpp g"
+      by simp
     from q have "homogeneous q" by (rule hom_components_homogeneous)
     hence "deg_pm u = deg_pm (lpp q)"
       using \<open>u \<in> keys q\<close> \<open>lpp q \<in> keys q\<close> by (rule homogeneousD)

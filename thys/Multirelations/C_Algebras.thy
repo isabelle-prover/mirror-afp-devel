@@ -334,7 +334,7 @@ lemma d_zero_ax [simp]: "d 0 = 0"
 text\<open>We verify the algebraic conditions in Proposition 5.3.\<close>
 
 lemma d_absorb1 [simp]: "d x + (d x \<cdot> d y) = d x"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d x + (d x \<cdot> d y) \<le> d x + (d x \<cdot> 1\<^sub>\<sigma>)"
     by (metis d_sub_id_ax c2_d d_def join.sup.bounded_iff join.sup.semilattice_axioms join.sup_ge1 s_prod_isol semilattice.idem)
   thus "d x + (d x \<cdot> d y) \<le> d x"
@@ -574,7 +574,7 @@ subclass c_trioid
   show x: "x \<cdot> 1\<^sub>\<pi> \<le> 1\<^sub>\<pi>"
     by (metis local.absorp1 local.cl2 local.cl5 local.inf_le1 local.s_prod_idl)
   show "x \<cdot> 1\<^sub>\<pi> \<parallel> x = x"
-    by (metis x local.eq_iff local.cl3 local.mult_1_right local.mult_commute local.mult_isol local.s_prod_idr)
+    by (metis x order.eq_iff local.cl3 local.mult_1_right local.mult_commute local.mult_isol local.s_prod_idr)
 qed
 
 text \<open>First we verify the complementation conditions after the definition of c-lattices.\<close>
@@ -728,10 +728,10 @@ lemma c_x_prop [simp]: "1\<^sub>\<pi> \<cdot> x = 1\<^sub>\<pi>"
   using c_def local.cl6 by blast
 
 lemma U_idem_s_prod [simp]: "U \<cdot> U = U"
-  by (metis local.U_def local.eq_iff local.s_prod_idl local.s_prod_isor)
+  by (metis local.U_def order.eq_iff local.s_prod_idl local.s_prod_isor)
  
 lemma U_idem_p_prod [simp]: "U \<parallel> U = U"
-  using local.U_def local.eq_iff subidem_par by presburger
+  using local.U_def order.eq_iff subidem_par by presburger
 
 lemma U_c [simp]: "U \<cdot> 1\<^sub>\<pi> = 1\<^sub>\<pi>" 
   by (metis U_idem_s_prod local.c_def zero_assoc3)
@@ -740,7 +740,7 @@ lemma s_le_nc: "1\<^sub>\<sigma> \<le> nc"
   by (metis local.meet_idem sub_id_le_nc)
 
 lemma nc_c [simp]: "nc \<cdot> 1\<^sub>\<pi> = 1\<^sub>\<pi>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "nc \<cdot> 1\<^sub>\<pi> = nc \<cdot> 1\<^sub>\<pi> \<cdot> 0"
     by (simp add: zero_assoc3)
   also have "... = nc \<cdot> 1\<^sub>\<pi> \<sqinter> 1\<^sub>\<pi>"
@@ -978,7 +978,7 @@ proof -
   have "\<forall>x y. d (x \<parallel> y) = x \<cdot> 1\<^sub>\<pi> \<parallel> d y"
     using local.c2_d local.d_conc6 local.d_conc_s_prod_ax by presburger
   hence "d x \<le> d (y \<cdot> 1\<^sub>\<pi>)"
-    using a1 by (metis (no_types) local.c2_d local.c6 local.c_prod_comm local.eq_iff local.mult_isol local.mult_oner)
+    using a1 by (metis (no_types) local.c2_d local.c6 local.c_prod_comm order.eq_iff local.mult_isol local.mult_oner)
   thus ?thesis
     by simp
 qed
@@ -1012,7 +1012,7 @@ lemma d_meet_closed [simp]: "d (d x \<sqinter> d y) = d x \<sqinter> d y"
   using d_s_subid local.d_sub_id_ax local.inf_le1 local.order_trans by blast
 
 lemma d_s_prod_eq_meet: "d x \<cdot> d y = d x \<sqinter> d y" 
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (metis local.d_lb1 local.d_lb2 local.meet_glb)
   by (metis d_meet_closed local.inf_le1 local.inf_le2 local.d_glb)
 
@@ -1214,7 +1214,7 @@ lemma iso6_sharp [simp]: "(((x \<sqinter> nc) \<cdot> nc) \<cdot> 1\<^sub>\<pi>)
 text\<open>We verify Lemma 15.2 at this point, because it is helpful for the following proofs.\<close>
 
 lemma uc_par_meet: "x \<parallel> U \<sqinter> y \<parallel> U = x \<parallel> U \<parallel> y \<parallel> U"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (metis local.c_prod_assoc meet_le_par)
   by (metis U_idem_p_prod local.U_def local.c_prod_assoc local.meet_prop local.mult.left_commute local.mult_double_iso)
 
@@ -1292,7 +1292,7 @@ qed
 text \<open>Proposition 10.4.\<close>
   
 lemma nsv_hom_meet: "(d x \<sqinter> d y) \<cdot> nc = (d x) \<cdot> nc \<sqinter> (d y) \<cdot> nc"
-proof  (rule antisym)
+proof  (rule order.antisym)
   have   "(d x \<sqinter> d y) \<cdot> nc \<le> (d x) \<cdot> nc"
     by (simp add: local.s_prod_isor)
   hence   "(d x \<sqinter> d y) \<cdot> nc \<le> (d x) \<cdot> nc" 
@@ -1658,7 +1658,7 @@ lemma tcg_alt: "tcg x y = (\<tau> x = \<tau> y)"
   using tcg_def by auto
 
 lemma ncg_alt: "ncg x y = (\<nu> x = \<nu> y)"
-  by (simp add: local.eq_iff ncg_def)
+  by (simp add: order.eq_iff ncg_def)
 
 lemma tcg_add: "\<tau> x = \<tau> y \<Longrightarrow> \<tau> (x + z) = \<tau> (y + z)"
   by simp
@@ -1679,7 +1679,7 @@ lemma ncg_meet: "\<nu> x = \<nu> y \<Longrightarrow> \<nu> (x \<sqinter> z) = \<
   by simp
 
 lemma ncg_seqr: "\<nu> x = \<nu> y \<Longrightarrow> \<nu> (x \<cdot> z) = \<nu> (y \<cdot> z)"
-  by (simp add: local.eq_iff nu_seq_precongr)
+  by (simp add: order.eq_iff nu_seq_precongr)
 
 end
 
@@ -1790,7 +1790,7 @@ proof -
 qed
 
 lemma star_unfold_eq [simp]: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show a: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> \<le>  x\<^sup>\<star>"
     using local.star_unfold by blast
   have "1\<^sub>\<sigma> + x \<cdot> (1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star>) \<le> 1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star>"
@@ -1941,7 +1941,7 @@ begin
 text \<open>Lemma 13.4.\<close>
 
 lemma om_unfold_eq [simp]: "x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
-  apply (rule antisym)
+  apply (rule order.antisym)
   using local.om_coinduct local.om_unfold local.s_prod_isol by auto
 
 lemma om_iso: "x \<le> y \<Longrightarrow> x\<^sup>\<omega> \<le> y\<^sup>\<omega>"
@@ -1953,16 +1953,16 @@ lemma zero_om [simp]: "0\<^sup>\<omega> = 0"
   by (metis local.s_prod_annil om_unfold_eq)
 
 lemma s_id_om [simp]: "1\<^sub>\<sigma>\<^sup>\<omega> = U"
-  by (simp add: local.U_def local.eq_iff local.om_coinduct)
+  by (simp add: local.U_def order.eq_iff local.om_coinduct)
 
 lemma p_id_om [simp]: "1\<^sub>\<pi>\<^sup>\<omega> = 1\<^sub>\<pi>"
   by (metis local.c_x_prop om_unfold_eq)
 
 lemma nc_om [simp]: "nc\<^sup>\<omega> = U"
-  using local.U_def local.eq_iff local.s_le_nc om_iso s_id_om by blast
+  using local.U_def order.eq_iff local.s_le_nc om_iso s_id_om by blast
 
 lemma U_om [simp]: "U\<^sup>\<omega> = U"
-  by (simp add: local.U_def local.eq_iff local.om_coinduct)
+  by (simp add: local.U_def order.eq_iff local.om_coinduct)
 
 text \<open>Lemma 13.6.\<close>
 
@@ -2007,7 +2007,7 @@ class c_nabla_algebra = c_omega_algebra +
 begin
 
 lemma nabla_unfold_eq [simp]: "\<nabla> x = d (x \<cdot> \<nabla> x)"
-proof (rule antisym)
+proof (rule order.antisym)
   show "\<nabla> x \<le> d (x \<cdot> \<nabla> x)"
     using local.nabla_unfold by blast
   have "d (x \<cdot> \<nabla> x) \<le> d (x \<cdot> d (x \<cdot> \<nabla> x))"
@@ -2030,7 +2030,7 @@ text \<open>Proposition 13.9.\<close>
 lemma nabla_omega_U: 
 assumes "\<And>x y z. x \<cdot> (d y \<cdot> z) = (x \<cdot> d y ) \<cdot> z"
 shows "(\<nu> x)\<^sup>\<omega> = \<nabla> (\<nu> x) \<cdot> U"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d ((\<nu> x)\<^sup>\<omega>) \<le> \<nabla> (\<nu> x)"
     using local.nabla_coinduct local.om_unfold_eq local.order_refl by presburger
   hence "(\<nu> x)\<^sup>\<omega> \<le> \<nabla> (\<nu> x) \<cdot> (\<nu> x)\<^sup>\<omega>"

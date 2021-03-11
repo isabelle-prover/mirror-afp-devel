@@ -188,7 +188,7 @@ lemma coreflexive_transitive:
 
 lemma preorder_idempotent:
   "preorder x \<Longrightarrow> idempotent x"
-  using antisym mult_isotone by fastforce
+  using order.antisym mult_isotone by fastforce
 
 text \<open>
 We study the following three ways of defining reflexive-transitive closures.
@@ -386,7 +386,7 @@ proof -
   hence "sstar y \<le> rstar y"
     using assms(2) is_least_prefixpoint_def least_prefixpoint by auto
   thus ?thesis
-    by (simp add: assms antisym rstar_below_sstar)
+    by (simp add: assms order.antisym rstar_below_sstar)
 qed
 
 end
@@ -423,7 +423,7 @@ proof
   also have "... \<le> p * x * p"
     using 1 by (simp add: mult_right_isotone mult_assoc)
   finally show "p * x = p * x * p"
-    using assms(2) antisym mult_right_isotone by fastforce
+    using assms(2) order.antisym mult_right_isotone by fastforce
 next
   assume "p * x = p * x * p"
   thus "p * x \<le> x * p"
@@ -536,7 +536,7 @@ lemma top_right_mult_increasing:
 
 lemma top_mult_top [simp]:
   "top * top = top"
-  by (simp add: antisym top_left_mult_increasing)
+  by (simp add: order.antisym top_left_mult_increasing)
 
 text \<open>
 Closure of the above properties under the semiring operations is considered next.
@@ -572,7 +572,7 @@ lemma total_sup_closed:
 
 lemma surjective_one_closed:
   "surjective 1"
-  by (simp add: antisym mult_sub_right_one)
+  by (simp add: order.antisym mult_sub_right_one)
 
 lemma surjective_top_closed:
   "surjective top"
@@ -613,11 +613,11 @@ begin
 
 lemma vector_mult_closed:
   "vector y \<Longrightarrow> vector (x * y)"
-  by (metis antisym mult_semi_associative top_right_mult_increasing)
+  by (metis order.antisym mult_semi_associative top_right_mult_increasing)
 
 lemma surjective_mult_closed:
   "surjective x \<Longrightarrow> surjective y \<Longrightarrow> surjective (x * y)"
-  by (metis antisym mult_semi_associative top_greatest)
+  by (metis order.antisym mult_semi_associative top_greatest)
 
 end
 
@@ -634,11 +634,11 @@ lemma lres_top_decreasing:
 
 lemma top_lres_absorb [simp]:
   "top / x = top"
-  using antisym lres_galois top_greatest by blast
+  using order.antisym lres_galois top_greatest by blast
 
 lemma covector_lres_closed:
   "covector x \<Longrightarrow> covector (x / y)"
-  by (metis antisym mult_lres_sub_assoc top_left_mult_increasing)
+  by (metis order.antisym mult_lres_sub_assoc top_left_mult_increasing)
 
 end
 

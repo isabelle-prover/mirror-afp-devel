@@ -78,7 +78,7 @@ lemma assertion_iso: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> x\<cdot
 lemma total_correctness: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>x\<cdot>!q = 0 \<longleftrightarrow> x\<cdot>!q \<le> !p\<cdot>\<top>"
   apply standard
   apply (metis local.test_eq4 local.top_elim mult_assoc)
-  by (metis annil antisym test_comp_mult2 join.bot_least mult_assoc mult_isol)
+  by (metis annil order.antisym test_comp_mult2 join.bot_least mult_assoc mult_isol)
 
 lemma test_iteration_sim: "\<lbrakk>test p; p\<cdot>x \<le> x\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>\<cdot>p"
   by (metis iteration_sim)
@@ -100,7 +100,7 @@ proof -
   also have "... = (p\<cdot>q)\<cdot>(p\<cdot>x)\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p + !(p\<cdot>q)\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p"
     by (metis assms less_eq_def test_preserve2 join.bot_least)
   finally have "(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p \<le> p\<cdot>q\<cdot>x\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p + !(p\<cdot>q)\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p"
-    by (metis assms(1) assms(2) local.eq_iff local.test_mult_comm_var local.test_preserve mult_assoc)
+    by (metis assms(1) assms(2) order.eq_iff local.test_mult_comm_var local.test_preserve mult_assoc)
   thus ?thesis
     by (metis coinduction add.commute mult.assoc)
 qed

@@ -24,7 +24,7 @@ class left_complemented_monoid = left_residuated_pordered_monoid + left_inf +
   assumes right_divisibility: "(a \<le> b) = (\<exists> c . a = c * b)"
 begin
 lemma lcm_D: "a l\<rightarrow> a = 1"
-  apply (rule antisym, simp)
+  apply (rule order.antisym, simp)
   by (unfold left_residual [THEN sym], simp)
 
 subclass semilattice_inf
@@ -34,7 +34,7 @@ subclass semilattice_inf
     by (metis inf_l_def left_residual mult_right_mono right_divisibility)
 
   lemma left_one_inf [simp]: "1 \<sqinter> a = a" 
-    by (rule antisym, simp_all)
+    by (rule order.antisym, simp_all)
 
   lemma left_one_impl [simp]: "1 l\<rightarrow> a = a"
     (*by (metis inf_l_def left_one_inf mult.right_neutral)*)
@@ -49,7 +49,7 @@ subclass semilattice_inf
     by (simp add: inf_commute)
 
   lemma lcm_B: "((a * b) l\<rightarrow> c) = (a l\<rightarrow> (b l\<rightarrow> c))" 
-    apply (rule antisym)
+    apply (rule order.antisym)
     apply (simp add: left_residual [THEN sym] mult.assoc)
     apply (simp add: left_residual)
 
@@ -64,7 +64,7 @@ subclass semilattice_inf
     proof -
       have "(a \<le> b) = (1 * a \<le> b)" by simp
       also have "\<dots> = (1 \<le> a l\<rightarrow> b)" by (unfold left_residual, simp)
-      also have "\<dots> = (a l\<rightarrow> b = 1)" apply safe by(rule antisym, simp_all)
+      also have "\<dots> = (a l\<rightarrow> b = 1)" apply safe by(rule order.antisym, simp_all)
       finally show ?thesis .
     qed
 
@@ -144,7 +144,7 @@ begin
 
   lemma associativity: "(a * b) * c = a * (b * c)"
     (*by (metis F left_impl_one left_impl_times one_left)*)
-    apply (rule antisym)
+    apply (rule order.antisym)
     apply (unfold left_lesseq)
     apply (simp add: F)
     by (simp add: F [THEN sym])

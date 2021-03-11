@@ -175,7 +175,7 @@ lemma filter_mset_empty_conv: \<open>(filter_mset P M = {#}) = (\<forall>L\<in>#
   by (induction M) auto
 
 lemma multiset_filter_mono2: \<open>filter_mset P A \<subseteq># filter_mset Q A \<longleftrightarrow> (\<forall>a\<in>#A. P a \<longrightarrow> Q a)\<close>
-  by (induction A) (auto intro: subset_mset.order.trans)
+  by (induction A) (auto intro: subset_mset.trans)
 
 lemma image_filter_cong:
   assumes \<open>\<And>C. C \<in># M \<Longrightarrow> P C \<Longrightarrow> f C = g C\<close>

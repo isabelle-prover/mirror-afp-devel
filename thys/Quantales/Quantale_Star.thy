@@ -71,7 +71,7 @@ lemma Sup_iter_unfold_var: "1 \<squnion> (\<Squnion>n. x \<cdot> x ^ n) = (\<Squ
   by (simp only: Sup_iter_unfold[symmetric]) auto
 
 lemma power_inductr: "z \<squnion> y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x ^ i \<le> y"
-  by (induct i, simp_all, metis power_commutes eq_iff mult_isor order.trans mult_assoc power.power.power_Suc)
+  by (induct i, simp_all, metis power_commutes order.eq_iff mult_isor order.trans mult_assoc power.power.power_Suc)
     
 end
 

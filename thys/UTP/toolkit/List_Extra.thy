@@ -351,11 +351,11 @@ lemma strict_prefix_map_inj:
   "\<lbrakk> inj_on f (set xs \<union> set ys); strict_prefix (map f xs) (map f ys) \<rbrakk> \<Longrightarrow>
    strict_prefix xs ys"
   apply (induct xs arbitrary:ys)
-   apply (auto)
-  using prefix_bot.bot.not_eq_extremum apply fastforce
+  apply auto
+   apply (simp flip: prefix_bot.bot_less)
   apply (erule strict_prefix_Cons_elim)
   apply (auto)
-  apply (metis (hide_lams, full_types) image_insert insertI1 insert_Diff_if singletonE)
+  apply (metis image_eqI insert_Diff_single insert_iff)
   done
 
 lemma strict_prefix_map_inj_eq [simp]:

@@ -152,7 +152,7 @@ lemma update_postcondition:
   apply (rule iffI)
   subgoal by (metis assms comp_associative conv_dist_comp conv_involutive covector_inf_comp_3 equivalence_top_closed vector_covector)
   subgoal
-    apply (rule antisym)
+    apply (rule order.antisym)
     subgoal by (metis assms conv_dist_comp conv_involutive inf.boundedI inf.cobounded1 vector_covector vector_restrict_comp_conv)
     subgoal by (smt assms comp_associative conv_dist_comp conv_involutive covector_restrict_comp_conv dense_conv_closed equivalence_top_closed inf.boundedI shunt_mapping vector_covector preorder_idempotent)
     done
@@ -193,7 +193,7 @@ proof -
   also have "... = (y \<sqinter> x) \<squnion> (-y \<sqinter> x)"
   proof -
     have "y \<sqinter> y\<^sup>T * x = y \<sqinter> x"
-    proof (rule antisym)
+    proof (rule order.antisym)
       have "y \<sqinter> y\<^sup>T * x = (y \<sqinter> y\<^sup>T) * x"
         by (simp add: assms vector_inf_comp)
       also have "(y \<sqinter> y\<^sup>T) * x = y * y\<^sup>T * x"
@@ -254,7 +254,7 @@ text \<open>Theorem 4.2\<close>
 lemma omit_redundant_points:
   assumes "point p"
   shows "p \<sqinter> x\<^sup>\<star> = (p \<sqinter> 1) \<squnion> (p \<sqinter> x) * (-p \<sqinter> x)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   let ?p = "p \<sqinter> 1"
   have "?p * x * (-p \<sqinter> x)\<^sup>\<star> * ?p \<le> ?p * top * ?p"
     by (metis comp_associative mult_left_isotone mult_right_isotone top.extremum)
@@ -362,7 +362,7 @@ lemma fc_equivalence:
   "univalent x \<Longrightarrow> equivalence (fc x)"
   apply (intro conjI)
   subgoal by (simp add: reflexive_mult_closed star.circ_reflexive)
-  subgoal by (metis cancel_separate_1 eq_iff star.circ_transitive_equal)
+  subgoal by (metis cancel_separate_1 order.eq_iff star.circ_transitive_equal)
   subgoal by (simp add: conv_dist_comp conv_star_commute)
   done
 
@@ -419,7 +419,7 @@ lemma fc_wcc:
 lemma fc_via_root:
   assumes "total (p\<^sup>\<star> * (p \<sqinter> 1))"
   shows "fc p = p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "1 \<le> p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
     by (smt assms comp_associative conv_dist_comp conv_star_commute coreflexive_idempotent coreflexive_symmetric inf.cobounded2 total_var)
   hence "fc p \<le> p\<^sup>\<star> * p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> * p\<^sup>T\<^sup>\<star>"
@@ -504,7 +504,7 @@ lemma arc_star_arc:
 lemma star_rectangle_decompose:
   assumes "rectangle a"
   shows "(a \<squnion> x)\<^sup>\<star> = x\<^sup>\<star> \<squnion> x\<^sup>\<star> * a * x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have 1: "1 \<le> x\<^sup>\<star> \<squnion> x\<^sup>\<star> * a * x\<^sup>\<star>"
     by (simp add: star.circ_reflexive sup.coboundedI1)
   have "(a \<squnion> x) * (x\<^sup>\<star> \<squnion> x\<^sup>\<star> * a * x\<^sup>\<star>) = a * x\<^sup>\<star> \<squnion> a * x\<^sup>\<star> * a * x\<^sup>\<star> \<squnion> x\<^sup>+ \<squnion> x\<^sup>+ * a * x\<^sup>\<star>"
@@ -635,7 +635,7 @@ lemma root_same_component_vector:
 lemma univalent_root_successors:
   assumes "univalent p"
   shows "(p \<sqinter> 1) * p\<^sup>\<star> = p \<sqinter> 1"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(p \<sqinter> 1) * p \<le> p \<sqinter> 1"
     by (smt assms(1) comp_inf.mult_semi_associative conv_dist_comp conv_dist_inf conv_order equivalence_one_closed inf.absorb1 inf.sup_monoid.add_assoc injective_codomain)
   thus "(p \<sqinter> 1) * p\<^sup>\<star> \<le> p \<sqinter> 1"
@@ -651,7 +651,7 @@ lemma same_component_same_root_sub:
   shows "root p x \<le> root p y"
 proof -
   have "root p x * y\<^sup>T \<le> (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
-    by (smt assms(1,3) mult_isotone mult_assoc root_var fc_plus fc_star eq_iff univalent_root_successors)
+    by (smt assms(1,3) mult_isotone mult_assoc root_var fc_plus fc_star order.eq_iff univalent_root_successors)
   thus ?thesis
     by (simp add: assms(2) shunt_bijective root_var)
 qed
@@ -662,7 +662,7 @@ lemma same_component_same_root:
     and "bijective y"
     and "x * y\<^sup>T \<le> fc p"
   shows "root p x = root p y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "root p x \<le> root p y"
     using assms(1,3,4) same_component_same_root_sub by blast
   have "y * x\<^sup>T \<le> fc p"
@@ -709,7 +709,7 @@ lemma loop_root:
   assumes "injective x"
     and "x = p[[x]]"
   shows "x = root p x"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x \<le> p * x"
     by (metis assms comp_associative comp_right_one conv_order equivalence_one_closed ex231c inf.orderE inf.sup_monoid.add_commute mult_left_isotone mult_right_isotone one_inf_conv)
   hence "x = (p \<sqinter> 1) * x"
@@ -754,7 +754,7 @@ lemma loop_root_2:
     and "injective x"
     and "x \<le> p\<^sup>T\<^sup>+ * x"
   shows "x = root p x"
-proof (rule antisym)
+proof (rule order.antisym)
   have 1: "x = x \<sqinter> -(-1 * x)"
     by (metis assms(3) comp_injective_below_complement inf.orderE mult_1_left regular_one_closed)
   have "x \<le> (p\<^sup>T \<sqinter> -1)\<^sup>+ * x \<squnion> (p \<sqinter> 1) * x"
@@ -1017,7 +1017,7 @@ proof -
     show "point y"
       using 1 find_set_invariant_def by simp
     show "y = root p x"
-    proof (rule antisym)
+    proof (rule order.antisym)
       have "y * y\<^sup>T \<le> p"
         using 1 by (metis find_set_invariant_def find_set_precondition_def shunt_bijective shunt_mapping top_right_mult_increasing)
       hence "y * y\<^sup>T \<le> p \<sqinter> 1"
@@ -1146,7 +1146,7 @@ proof -
   also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1) \<squnion> (-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0 \<sqinter> 1)"
   proof -
     have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 = p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1"
-    proof (rule antisym)
+    proof (rule order.antisym)
       have "(p0 \<sqinter> 1) * p0\<^sup>T\<^sup>\<star> * x \<sqinter> 1 \<le> p0"
         by (smt coreflexive_comp_top_inf_one inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc root_var)
       hence "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 \<le> p0"
@@ -1166,7 +1166,7 @@ proof -
   finally show "p \<sqinter> 1 = p0 \<sqinter> 1"
     .
   show  "fc p = fc p0"
-  proof (rule antisym)
+  proof (rule order.antisym)
     have 2: "univalent (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])"
       by (simp add: a1 a2 a3 update_univalent mult_assoc)
     have 3: "-(p0\<^sup>T\<^sup>\<star> * x) \<sqinter> p0 \<le> (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>\<star> * (p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y])\<^sup>T\<^sup>\<star>"
@@ -1180,7 +1180,7 @@ proof -
     also have "... = p0\<^sup>T\<^sup>\<star> * x * x\<^sup>T * p0\<^sup>\<star>"
       by (metis a2 symmetric_top_closed vector_covector vector_inf_comp vector_mult_closed)
     also have "... \<le> (p0\<^sup>T\<^sup>\<star> * x * y\<^sup>T) * (y * x\<^sup>T * p0\<^sup>\<star>)"
-      by (metis a3 antisym comp_inf.top_right_mult_increasing conv_involutive dedekind_1 inf.sup_left_divisibility inf.sup_monoid.add_commute mult_right_isotone surjective_conv_total mult_assoc)
+      by (metis a3 order.antisym comp_inf.top_right_mult_increasing conv_involutive dedekind_1 inf.sup_left_divisibility inf.sup_monoid.add_commute mult_right_isotone surjective_conv_total mult_assoc)
     also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) * (y \<sqinter> x\<^sup>T * p0\<^sup>\<star>)"
       by (metis a2 a3 vector_covector vector_inf_comp vector_mult_closed)
     also have "... = (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T) * (p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T)\<^sup>T"
@@ -1448,7 +1448,7 @@ proof -
     thus "p[[w]] \<noteq> x \<longrightarrow> ?p[[x]] = y \<and> y \<noteq> x \<and> ?p\<^sup>T\<^sup>+ * (p[[w]]) \<le> -x"
       by simp
     have 14: "?p\<^sup>T\<^sup>\<star> * x = x \<squnion> y"
-    proof (rule antisym)
+    proof (rule order.antisym)
       have "?p\<^sup>T * (x \<squnion> y) = y \<squnion> ?p\<^sup>T * y"
         using 13 by (simp add: mult_left_dist_sup)
       also have "... = y \<squnion> (w\<^sup>T \<sqinter> y) * y \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * y"
@@ -1533,7 +1533,7 @@ proof -
       also have "... = p\<^sup>T * (w \<sqinter> 1) * y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
         by (simp add: comp_associative mult_left_dist_sup mult_right_dist_sup)
       also have "... \<le> p\<^sup>T * y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
-        by (metis semiring.add_right_mono comp_isotone eq_iff inf.cobounded1 inf.sup_monoid.add_commute mult_1_right)
+        by (metis semiring.add_right_mono comp_isotone order.eq_iff inf.cobounded1 inf.sup_monoid.add_commute mult_1_right)
       also have "... = y \<squnion> p\<^sup>T * (w \<sqinter> p) * (-w \<sqinter> p)\<^sup>\<star> * y"
         using i1 i4 root_successor_loop by auto
       also have "... \<le> y \<squnion> p\<^sup>T * p * (-w \<sqinter> p)\<^sup>\<star> * y"
@@ -2068,7 +2068,7 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
   show "surjective y"
     using assms(1) by (simp add: union_sets_precondition_def)
   show "fc ?p = wcc (p0 \<squnion> x * y\<^sup>T)"
-  proof (rule antisym)
+  proof (rule order.antisym)
     have "r = p1[[r]]"
       using 1 by (metis root_successor_loop)
     hence "r * r\<^sup>T \<le> p1\<^sup>T"

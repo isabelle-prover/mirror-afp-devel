@@ -68,7 +68,7 @@ lemma "x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 text \<open>Next we show that starred elements are transitive.\<close>
 
 lemma star_trans_eq [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym) \<comment> \<open>this splits an equation into two inequalities\<close>
+proof (rule order.antisym) \<comment> \<open>this splits an equation into two inequalities\<close>
   have "x\<^sup>\<star> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
     by auto
   thus "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -99,7 +99,7 @@ proof
 next
   assume "x\<^sup>\<star> \<cdot> y \<le> y"
   hence  "x\<^sup>\<star> \<cdot> y = y"
-    by (metis eq_iff mult_1_left mult_isor star_ref)
+    by (metis order.eq_iff mult_1_left mult_isor star_ref)
   moreover hence "x \<cdot> y = x \<cdot> x\<^sup>\<star> \<cdot> y"
     by (simp add: mult.assoc)
   moreover have "... \<le> x\<^sup>\<star> \<cdot> y"
@@ -109,7 +109,7 @@ next
 qed
 
 lemma star_inductl_var_eq:  "x \<cdot> y = y \<Longrightarrow> x\<^sup>\<star> \<cdot> y \<le> y"
-  by (metis eq_iff star_inductl_var)
+  by (metis order.eq_iff star_inductl_var)
 
 lemma star_inductl_var_eq2: "y = x \<cdot> y \<Longrightarrow> y = x\<^sup>\<star> \<cdot> y"
 proof -
@@ -117,7 +117,7 @@ proof -
   hence "y \<le> x\<^sup>\<star> \<cdot> y"
     using mult_isor star_ref by fastforce
   thus "y = x\<^sup>\<star> \<cdot> y"
-    using hyp eq_iff by auto
+    using hyp order.eq_iff by auto
 qed
 
 lemma "y = x \<cdot> y \<longleftrightarrow> y = x\<^sup>\<star> \<cdot> y"
@@ -175,7 +175,7 @@ lemma star_iso [intro]: "x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y\<^s
 text \<open>We now prove some more simple properties.\<close>
 
 lemma star_invol [simp]: "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
     by (fact star_trans_eq)
   thus "(x\<^sup>\<star>)\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -189,7 +189,7 @@ proof (rule antisym)
 qed
 
 lemma star2 [simp]: "(1 + x)\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x\<^sup>\<star> \<le> (1 + x)\<^sup>\<star>"
     by auto
   have "x\<^sup>\<star> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -328,7 +328,7 @@ lemma star_slide_var1: "x\<^sup>\<star> \<cdot> x \<le> x \<cdot> x\<^sup>\<star
 text \<open>We now show that the (left) star unfold axiom can be strengthened to an equality.\<close>
 
 lemma star_unfoldl_eq [simp]: "1 + x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
     by (fact star_unfoldl)
   have "1 + x \<cdot> (1 + x \<cdot> x\<^sup>\<star>) \<le> 1 + x \<cdot> x\<^sup>\<star>"
@@ -354,7 +354,7 @@ lemma star_rtc2: "1 + x \<cdot> x \<le> x \<longleftrightarrow> x = x\<^sup>\<st
 proof
   assume "1 + x \<cdot> x \<le> x"
   thus "x = x\<^sup>\<star>"
-    by (simp add: local.eq_iff local.star_inductl_one)
+    by (simp add: order.eq_iff local.star_inductl_one)
 next
   assume "x = x\<^sup>\<star>"
   thus "1 + x \<cdot> x \<le> x"
@@ -395,7 +395,7 @@ text \<open>We now prove variants of sum-elimination laws under a star.
 These are also known a denesting laws or as sum-star laws.\<close>
 
 lemma star_denest [simp]: "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x + y \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
     by (metis join.sup.bounded_iff mult_1_right mult_isol_var mult_onel star_ref star_ext)
   thus "(x + y)\<^sup>\<star> \<le> (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
@@ -410,7 +410,7 @@ lemma star_sum_var [simp]: "(x\<^sup>\<star> + y\<^sup>\<star>)\<^sup>\<star> = 
   by simp
 
 lemma star_denest_var [simp]: "x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star> = (x + y)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "1 \<le> x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
     by (metis mult_isol_var mult_oner star_ref)
   moreover have "x \<cdot> x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
@@ -452,7 +452,7 @@ lemma star_denest_var_6 [simp]: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot>
   using mult_assoc by simp
 
 lemma star_denest_var_7 [simp]: "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> = (x + y)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
     by (simp add: mult_assoc)
   thus "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
@@ -490,7 +490,7 @@ next
 qed
 
 lemma church_rosser [intro]: "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<Longrightarrow> (x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   assume "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
   hence "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y\<^sup>\<star>) \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> y\<^sup>\<star>"
     by (metis mult_isol mult_isor mult.assoc)
@@ -512,10 +512,10 @@ lemma church_rosser_var: "y \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot
   by fastforce
 
 lemma church_rosser_to_confluence: "(x + y)\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<Longrightarrow> y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
-  by (metis add_comm eq_iff star_subdist_var_3)
+  by (metis add_comm order.eq_iff star_subdist_var_3)
 
 lemma church_rosser_equiv: "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<longleftrightarrow> (x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
-  using church_rosser_to_confluence eq_iff by blast
+  using church_rosser_to_confluence order.eq_iff by blast
 
 lemma confluence_to_local_confluence: "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<Longrightarrow> y \<cdot> x \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
   by (meson mult_isol_var order_trans star_ext)
@@ -544,7 +544,7 @@ proof -
   hence " x\<^sup>\<star> \<le> x \<cdot> x\<^sup>\<star>"
     using mult_isor by fastforce
   thus "x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-    by (simp add: eq_iff)
+    by (simp add: order.eq_iff)
 qed
 
 lemma sup_id_star2: "1 \<le> x \<Longrightarrow> x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
@@ -579,7 +579,7 @@ has been given by Kozen~\cite{kozen90kleene}.\<close>
 text \<open>We now show that the right unfold law becomes an equality.\<close>
 
 lemma star_unfoldr_eq [simp]: "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "1 + x\<^sup>\<star> \<cdot> x \<le> x\<^sup>\<star>"
     by (fact star_unfoldr)
   have "1 + x \<cdot> (1 + x\<^sup>\<star> \<cdot> x) = 1 + (1 + x \<cdot> x\<^sup>\<star>) \<cdot> x"
@@ -594,7 +594,7 @@ text \<open>The following more complex unfold law has been used as an
 axiom, called prodstar, by Conway~\cite{conway71regular}.\<close>
 
 lemma star_prod_unfold [simp]: "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y = (x \<cdot> y)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "(x \<cdot> y)\<^sup>\<star> = 1 + (x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> y"
     by (simp add: mult_assoc)
   thus "(x \<cdot> y)\<^sup>\<star> \<le> 1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
@@ -662,7 +662,7 @@ proof -
 qed
 
 lemma meyer_1 [simp]: "(1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x \<cdot>  (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = x \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (simp add: distrib_left)
   also have "... \<le> x \<cdot> (x \<cdot> x)\<^sup>\<star> + (x \<cdot> x)\<^sup>\<star>"
@@ -690,7 +690,7 @@ proof -
   hence "x\<^sup>\<star> \<cdot> x \<le> x"
     by (fact star_inductl)
   thus  "x\<^sup>\<star> \<cdot> x = x"
-    by (metis mult_isol mult_oner star_ref star_slide_var eq_iff)
+    by (metis mult_isol mult_oner star_ref star_slide_var order.eq_iff)
 qed
 
 lemma tc_eq: "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> \<cdot> x = x"
@@ -801,7 +801,7 @@ lemma star_inductr_var_equiv: "y \<cdot> x \<le> y \<longleftrightarrow> y \<cdo
   by (meson order_trans mult_isol star_ext star_inductr_var)
 
 lemma star_sim3: "z \<cdot> x = y \<cdot> z \<Longrightarrow> z \<cdot> x\<^sup>\<star> = y\<^sup>\<star> \<cdot> z"
-  by (simp add: eq_iff star_sim1 star_sim2)
+  by (simp add: order.eq_iff star_sim1 star_sim2)
 
 lemma star_sim4: "x \<cdot> y \<le>  y \<cdot> x \<Longrightarrow> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> y\<^sup>\<star> \<cdot> x\<^sup>\<star>"
   by (auto intro: star_sim1 star_sim2)
@@ -824,7 +824,7 @@ proof -
   moreover have "x\<^sup>\<star> \<cdot> y = y + x\<^sup>\<star> \<cdot> x \<cdot> y"
     by (metis distrib_right mult_onel star_unfoldr_eq)
   ultimately show "x\<^sup>\<star> \<cdot> y = y"
-    by (metis add_0_left add.commute join.sup_ge1 eq_iff star_inductl_eq)
+    by (metis add_0_left add.commute join.sup_ge1 order.eq_iff star_inductl_eq)
 qed
 
 lemma independence2: "x \<cdot> y = 0 \<Longrightarrow> x \<cdot> y\<^sup>\<star> = x"
@@ -851,7 +851,7 @@ next
 qed
 
 lemma arden_var: "(\<forall>y v. y \<le> x \<cdot> y + v \<longrightarrow> y \<le> x\<^sup>\<star> \<cdot> v) \<Longrightarrow> z = x \<cdot> z + w \<Longrightarrow> z = x\<^sup>\<star> \<cdot> w"
-  by (auto simp: add_comm eq_iff star_inductl_eq)
+  by (auto simp: add_comm order.eq_iff star_inductl_eq)
 
 lemma "(\<forall>x y. y \<le> x \<cdot> y \<longrightarrow> y = 0) \<Longrightarrow> y \<le> x \<cdot> y + z \<Longrightarrow> y \<le> x\<^sup>\<star> \<cdot> z"
   by (metis eq_refl mult_onel)
@@ -941,7 +941,7 @@ lemma conway_c2_var: "(x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> y \<cdot> y\
   by (metis mult_isor star_1r mult_assoc)
 
 lemma conway_c2 [simp]: "(x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + y\<^sup>\<star>) = x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + y\<^sup>\<star>) \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
     by (metis cka_1 conway_c3 prod_star_closure star_ext star_sum_var)
   have "x \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + y\<^sup>\<star>) = x \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + 1 + y \<cdot> y\<^sup>\<star>)"

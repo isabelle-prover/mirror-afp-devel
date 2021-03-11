@@ -205,7 +205,7 @@ proof -
     fix x y z
     assume "acomp x y \<noteq> Gt" "acomp y z \<noteq> Gt"
     thus "acomp x z \<noteq> Gt \<and> (acomp x y = Lt \<or> acomp y z = Lt \<longrightarrow> acomp x z = Lt)"
-      using trans [of x y z] and eq [of x y] and eq [of y z]
+      using comp_trans [of x y z] and eq [of x y] and eq [of y z]
       by (cases "acomp x y" "acomp y z" rule: order.exhaust [case_product order.exhaust]) auto
   qed
 qed

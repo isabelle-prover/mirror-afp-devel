@@ -392,7 +392,7 @@ proof -
 qed
 
 lemma a2_eq [simp]: "ad (x \<cdot> d y) = ad (x \<cdot> y)"
-proof (rule antisym)
+proof (rule order.antisym)
   show "ad (x \<cdot> y) \<le> ad (x \<cdot> d y)"
     by (simp add: ans_d_def local.less_eq_def)
 next
@@ -401,7 +401,7 @@ next
 qed
 
 lemma a_export' [simp]: "ad (ad x \<cdot> y) = d x + ad y"
-proof (rule antisym)
+proof (rule order.antisym)
   have "ad (ad x \<cdot> y) \<cdot> ad x \<cdot> d y = 0"
     by (simp add: a_gla2 local.mult.semigroup_axioms semigroup.assoc)
   hence a: "ad (ad x \<cdot> y) \<cdot> d y \<le> ad (ad x)"
@@ -505,7 +505,7 @@ definition apd_d :: "'a \<Rightarrow> 'a" ("d") where
    "d x = ad (ad x)"
 
 lemma a_very_costrict'': "ad x = 1 \<longleftrightarrow> x = 0"
-  by (metis add_commute local.add_zerol local.antisym local.apd1 local.apd3 local.join.bot_least local.mult_1_right local.phl_skip)
+  by (metis add_commute local.add_zerol order.antisym local.apd1 local.apd3 local.join.bot_least local.mult_1_right local.phl_skip)
 
 lemma a_subid': "ad x \<le> 1"
   using local.apd3 local.join.sup_ge2 by fastforce
@@ -530,11 +530,11 @@ proof -
   have "1 = ad (ad x \<cdot> x)"
     using a_very_costrict'' by force
   thus ?thesis
-    by (metis a_subid' a_very_costrict'' apd_d_def local.antisym local.apd2)
+    by (metis a_subid' a_very_costrict'' apd_d_def order.antisym local.apd2)
 qed
 
 lemma a_d_closed [simp]: "d (ad x) = ad x"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d (ad x) = (d x + ad x) \<cdot> d (ad x)"
     by (simp add: apd_d_def)
   also have "... = ad (ad x) \<cdot> ad (d x) + ad x \<cdot> d (ad x)"
@@ -555,14 +555,14 @@ next
 qed
 
 lemma meet_ord_def: "ad x \<le> ad y \<longleftrightarrow> ad x \<cdot> ad y = ad x"
-  by (metis a_d_closed a_subid_aux1' d1_a' eq_iff mult_1_right mult_isol)
+  by (metis a_d_closed a_subid_aux1' d1_a' order.eq_iff mult_1_right mult_isol)
 
 lemma d_weak_loc: "x \<cdot> y = 0 \<longleftrightarrow> x \<cdot> d y = 0"
 proof -
   have "x \<cdot> y = 0 \<longleftrightarrow> ad (x \<cdot> y) = 1"
     by (simp add: a_very_costrict'')
   also have "... \<longleftrightarrow> ad (x \<cdot> d y) = 1"
-    by (metis apd1 apd2 a_subid' apd_d_def d1_a' eq_iff mult_1_left mult_assoc)
+    by (metis apd1 apd2 a_subid' apd_d_def d1_a' order.eq_iff mult_1_left mult_assoc)
   finally show ?thesis
     by (simp add: a_very_costrict'')
 qed
@@ -591,7 +591,7 @@ proof -
 qed
 
 lemma a2_eq' [simp]: "ad (x \<cdot> d y) = ad (x \<cdot> y)"
-proof (rule antisym)
+proof (rule order.antisym)
   show "ad (x \<cdot> y) \<le> ad (x \<cdot> d y)"
     by (simp add: apd_d_def)
 next
@@ -618,7 +618,7 @@ proof -
 qed
 
 lemma a_comm': "ad x \<cdot> ad y = ad y \<cdot> ad x"
-  by (simp add: a_comm_var eq_iff)
+  by (simp add: a_comm_var order.eq_iff)
 
 lemma a_closed [simp]: "d (ad x \<cdot> ad y) = ad x \<cdot> ad y"
 proof -
@@ -633,7 +633,7 @@ proof -
 qed
 
 lemma a_export'' [simp]: "ad (ad x \<cdot> y) = d x + ad y"
-proof (rule antisym)
+proof (rule order.antisym)
   have "ad (ad x \<cdot> y) \<cdot> ad x \<cdot> d y = 0"
     using d_weak_loc mult_assoc by fastforce
   hence a: "ad (ad x \<cdot> y) \<cdot> d y \<le> d x"
@@ -660,7 +660,7 @@ proof -
 qed
 
 lemma a4': "ad (x + y) = ad x \<cdot> ad y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "ad (x + y) \<le> ad x \<cdot> ad y"
     by (metis a_d_closed a_supdist_var add_commute d1_a' local.mult_isol_var)
   hence "ad x \<cdot> ad y = ad x \<cdot> ad y + ad (x + y)"

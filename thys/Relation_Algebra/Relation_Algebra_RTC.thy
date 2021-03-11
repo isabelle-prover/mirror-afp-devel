@@ -32,7 +32,7 @@ text \<open>First, we prove that the obvious interaction between the star and
 converse is captured by the axioms.\<close>
 
 lemma star_conv: "(x\<^sup>\<star>)\<^sup>\<smile> = (x\<^sup>\<smile>)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x\<^sup>\<smile>)\<^sup>\<star> \<le> (x\<^sup>\<star>)\<^sup>\<smile>"
     by (metis local.conv_add local.conv_contrav local.conv_e local.conv_iso local.star_rtc1 local.star_rtc_least)
   show "(x\<^sup>\<star>)\<^sup>\<smile> \<le> (x\<^sup>\<smile>)\<^sup>\<star>"

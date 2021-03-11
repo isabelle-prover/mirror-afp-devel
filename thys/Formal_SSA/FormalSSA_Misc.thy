@@ -55,7 +55,7 @@ lemma strict_prefix_butlast:
 using assms unfolding append_butlast_last_id[symmetric] by (auto simp add:less_le butlast_strict_prefix prefix_order.le_less_trans)
 
 lemma prefix_tl_subset: "prefix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
-  by (metis Nil_tl prefix_bot.bot.extremum prefix_def set_mono_prefix tl_append2)
+  by (metis Nil_tl prefix_bot.extremum prefix_def set_mono_prefix tl_append2)
 
 lemma suffix_tl_subset: "suffix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
   by (metis append_Nil suffix_def set_mono_suffix suffix_tl suffix_order.order_trans tl_append2)

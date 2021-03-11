@@ -36,7 +36,7 @@ qed
 lemma add_nonneg_eq_0_iff:
   assumes x: "0 \<le> x" and y: "0 \<le> y"
   shows "x + y = 0 \<longleftrightarrow> x = 0 \<and> y = 0"
-  by (metis add.comm_neutral add.left_neutral add_left_mono antisym x y)
+  by (metis local.add_0_left local.add_0_right local.add_left_mono local.antisym_conv x y)
 
 lemma add_incr: "0\<le>b \<Longrightarrow> a \<le> a+b"
   by (metis add.comm_neutral add_left_mono)

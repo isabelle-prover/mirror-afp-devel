@@ -189,7 +189,7 @@ qed
 lemma ldistinct_lmerge: 
   "\<lbrakk> lsorted xs; lsorted ys; ldistinct xs; ldistinct ys \<rbrakk>
   \<Longrightarrow> ldistinct (lmerge xs ys)"
-by(coinduction arbitrary: xs ys)(auto 4 3 simp add: lhd_lmerge ltl_lmerge not_lnull_conv lsorted_LCons not_less dest!: in_lset_lmergeD dest: antisym)
+by(coinduction arbitrary: xs ys)(auto 4 3 simp add: lhd_lmerge ltl_lmerge not_lnull_conv lsorted_LCons not_less dest!: in_lset_lmergeD dest: order.antisym)
 
 end
 

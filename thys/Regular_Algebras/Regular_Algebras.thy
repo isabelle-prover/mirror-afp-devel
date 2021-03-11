@@ -124,7 +124,7 @@ qed
 lemma powsum_ub: "i \<le> n \<Longrightarrow> x\<^bsup>i\<^esup> \<le> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
 proof (induct n)
   case 0 show ?case
-    by (metis (hide_lams, mono_tags) "0.prems" eq_iff le_0_eq power_0 powsum_00)
+    by (metis (hide_lams, mono_tags) "0.prems" order.eq_iff le_0_eq power_0 powsum_00)
 next
   case (Suc n) show ?case
 proof -
@@ -307,13 +307,13 @@ lemma star_trans_eq [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\
   by (metis B22)
 
 lemma star_invol [simp]: "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
-  by (metis B21 B22 B23 antisym star_plus_one)
+  by (metis B21 B22 B23 order.antisym star_plus_one)
  
 lemma star_1l: "x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
   by (metis local.B21 local.join.sup.boundedE local.mult_isor local.star_trans_eq)
 
 lemma star_one [simp]: "1\<^sup>\<star> = 1"
-  by (metis B23 add_idem antisym mult_oner order_refl star_ref)
+  by (metis B23 add_idem order.antisym mult_oner order_refl star_ref)
 
 lemma star_subdist:  "x\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
   by (meson local.B21 local.B23 local.join.sup.bounded_iff local.star_trans_eq)
@@ -345,7 +345,7 @@ proof -
   also have "... = 1 + x \<cdot> x\<^sup>\<star>"
     by (metis add.assoc add.commute distrib_left less_eq_def mult.assoc star_1l star_trans_eq)
   finally show ?thesis
-    by (metis B23 local.join.sup.mono local.join.sup.cobounded1 distrib_left eq_iff mult_1_right star_plus_one star_unfoldl)
+    by (metis B23 local.join.sup.mono local.join.sup.cobounded1 distrib_left order.eq_iff mult_1_right star_plus_one star_unfoldl)
 qed
 
 lemma star_unfoldr_eq [simp]: "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
@@ -357,7 +357,7 @@ proof -
   also have "... = 1 + x\<^sup>\<star> \<cdot>x"
     by (metis add_assoc' distrib_left mult.assoc mult_oner distrib_right' star_trans_eq star_unfoldl_eq)
   finally show ?thesis
-    by (metis B21 B23 add.commute local.join.sup.mono local.join.sup.cobounded1 eq_iff eq_refl mult_1_left distrib_right' star_unfoldl_eq star_unfoldr)
+    by (metis B21 B23 add.commute local.join.sup.mono local.join.sup.cobounded1 order.eq_iff eq_refl mult_1_left distrib_right' star_unfoldl_eq star_unfoldr)
 qed                                          
 
 lemma star_prod_unfold_le: "(x \<cdot> y)\<^sup>\<star> \<le> 1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
@@ -384,7 +384,7 @@ proof -
   finally have "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<le> (x \<cdot> y)\<^sup>\<star>"
     by (metis add.assoc distrib_left mult_1_right mult.assoc star_unfoldl_eq star_unfoldr_eq)
   thus ?thesis
-    by (metis antisym star_prod_unfold_le)
+    by (metis order.antisym star_prod_unfold_le)
 qed
 
 lemma star_slide1: "(x \<cdot> y)\<^sup>\<star> \<cdot> x \<le> x \<cdot> (y \<cdot> x)\<^sup>\<star>"
@@ -403,7 +403,7 @@ lemma star_slide_var1: "x\<^sup>\<star> \<cdot> x \<le> x \<cdot> x\<^sup>\<star
   by (metis mult_onel mult_oner star_slide1)
 
 lemma star_slide: "(x \<cdot> y)\<^sup>\<star> \<cdot> x = x \<cdot> (y \<cdot> x)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x \<cdot> y)\<^sup>\<star> \<cdot> x \<le> x \<cdot> (y \<cdot> x)\<^sup>\<star>"
     by (metis star_slide1)
   have "x \<cdot> (y \<cdot> x)\<^sup>\<star> = x \<cdot> (1 + y \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> x)"
@@ -434,7 +434,7 @@ lemma star_subdist_var_3: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)
 lemma R_lemma: 
   assumes "x \<cdot> x = x" 
   shows "x\<^sup>\<star> = 1 + x"
-proof (rule antisym)
+proof (rule order.antisym)
   show "1 + x \<le> x\<^sup>\<star>"
     by (metis B21)
   have "(1 + x) \<cdot> (1 + x) = 1 + x"
@@ -444,7 +444,7 @@ proof (rule antisym)
 qed
 
 lemma star_denest_var_0: "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have one_below: "1 \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
     by (metis mult_isol_var star_one star_ref star_trans_eq)
   have x_below: "x \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
@@ -509,7 +509,7 @@ proof -
 qed
 
 lemma meyer_1: "x\<^sup>\<star> = (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star>" 
-proof (rule antisym)
+proof (rule order.antisym)
   have "(1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> \<cdot> (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>)"
     by (metis mult.assoc mult_onel distrib_right')
   also have "... = ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> (x \<cdot> x)\<^sup>\<star> + ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
@@ -662,7 +662,7 @@ next
 qed
 
 theorem powerstar: "x\<^sup>\<star> = (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
-proof (rule antisym) 
+proof (rule order.antisym) 
   show "x\<^sup>\<star> \<le> (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
     by (metis conway_powerstar1 conway_powerstar2 mult.assoc B23)
   have "(x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup> \<le> (x\<^sup>\<star>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
@@ -976,7 +976,7 @@ sublocale C3l_algebra \<subseteq> C1l_algebra
 proof 
   fix x y z
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
-    by (metis local.C11_var local.C12 local.C3l local.eq_iff local.eq_refl local.join.sup.absorb2 local.join.sup_ge1 local.mult_onel local.mult_oner)
+    by (metis local.C11_var local.C12 local.C3l order.eq_iff local.eq_refl local.join.sup.absorb2 local.join.sup_ge1 local.mult_onel local.mult_oner)
   show "x \<cdot> y \<le> y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y \<le> y \<cdot> z\<^sup>\<star>"
   proof -
     assume assm: "x \<cdot> y \<le> y \<cdot> z"
@@ -1018,7 +1018,7 @@ sublocale C0_algebra \<subseteq> C2_algebra
   by unfold_locales (metis C12 C13 add_zeror annil mult_oner mult_onel C0)+
 
 sublocale C2_algebra \<subseteq> C0_algebra  
-  by unfold_locales (metis C1l C1r eq_iff)
+  by unfold_locales (metis C1l C1r order.eq_iff)
 
 sublocale C2_algebra \<subseteq> C1_algebra ..
 
@@ -1088,7 +1088,7 @@ proof
   show "1 + x \<le> x\<^sup>\<star>"
     by (metis add_iso_r  local.join.sup.cobounded1 mult_isol mult_oner order_trans Kl)
   show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-    using local.Kl local.eq_iff local.phl_cons1 local.star_inductl by fastforce
+    using local.Kl order.eq_iff local.phl_cons1 local.star_inductl by fastforce
   show "\<lbrakk> 1 + x \<le> y; y \<cdot> y = y \<rbrakk> \<Longrightarrow> x\<^sup>\<star> \<le> y"
     by (metis local.distrib_right' local.join.le_sup_iff local.join.sup.order_iff local.mult_isol local.mult_oner local.star_inductl)
 qed
@@ -1100,7 +1100,7 @@ sublocale K1l_algebra \<subseteq> C2l_algebra
   by (unfold_locales, metis less_eq_def mult_1_left mult.assoc star_inductl star_invol star_one star_plus_one star_trans_eq troeger)
 
 sublocale C2l_algebra \<subseteq> K1l_algebra 
-  by (unfold_locales, metis C12 eq_iff mult_1_left mult_1_right, metis C3l)
+  by (unfold_locales, metis C12 order.eq_iff mult_1_left mult_1_right, metis C3l)
 
 sublocale K1r_algebra \<subseteq> C2r_algebra
     by unfold_locales (metis dual.C2l opp_mult_def)
@@ -1109,7 +1109,7 @@ sublocale C2r_algebra \<subseteq> K1r_algebra
   by (unfold_locales, metis dual.star_unfoldl opp_mult_def, metis C3r)
 
 sublocale K1_algebra \<subseteq> C0_algebra
-  by unfold_locales (metis C1l C1r eq_iff)
+  by unfold_locales (metis C1l C1r order.eq_iff)
 
 sublocale C0_algebra \<subseteq> K1l_algebra ..
 
@@ -1237,7 +1237,7 @@ next
     then obtain x' where assm1: "x = 1 + x'" and assm2: "\<not> ewp x'"
       by (metis EWP) 
     have "y = (z + y) \<cdot> x\<^sup>\<star>"
-      by (metis S11 local.join.le_supE assm1 assm2 assms eq_iff less_eq_def Ar subdistl)
+      by (metis S11 local.join.le_supE assm1 assm2 assms order.eq_iff less_eq_def Ar subdistl)
     thus "z \<cdot> x\<^sup>\<star> \<le> y"
       by (metis local.join.sup.cobounded1 local.mult_isor)
   qed

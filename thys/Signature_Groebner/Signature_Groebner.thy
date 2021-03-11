@@ -807,7 +807,7 @@ qed
 corollary sig_red_single_tail_lt_rep_list:
   assumes "sig_red_single sing_reg (\<prec>) p q f t"
   shows "punit.lt (rep_list q) = punit.lt (rep_list p)"
-proof (rule ordered_powerprod_lin.antisym)
+proof (rule ordered_powerprod_lin.order_antisym)
   from assms show "punit.lt (rep_list q) \<preceq> punit.lt (rep_list p)" by (rule sig_red_single_lt_rep_list)
 next
   from assms have "punit.lt (rep_list p) \<in> keys (rep_list q)" by (rule sig_red_single_tail_lt_in_keys_rep_list)
@@ -4297,7 +4297,8 @@ next
 next
   fix p q
   assume "rw_add p q" and "rw_add q p"
-  thus "fst p = fst q" unfolding rw_add_def by (rule ord_term_lin.antisym)
+  thus "fst p = fst q" unfolding rw_add_def
+    by simp
 next
   fix p q :: "'t \<Rightarrow>\<^sub>0 'b"
   assume "lt p adds\<^sub>t lt q"
@@ -8495,7 +8496,7 @@ proof
       hence "pair_ord p (Inr j)" using \<open>Inr j \<in> set ps\<close> ..
       hence "lt p' \<preceq>\<^sub>t term_of_pair (0, j)" by (simp add: pair_ord_def lt_p' sig_p)
       hence "lp p' \<preceq> 0" using pot by (simp add: is_pot_ord j_def term_simps)
-      hence "lp p' = 0" using zero_min by (rule ordered_powerprod_lin.antisym)
+      hence "lp p' = 0" using zero_min by (rule ordered_powerprod_lin.order_antisym)
       hence "lt p' = term_of_pair (0, j)" by (metis j_def term_of_pair_pair)
       with \<open>lt p' \<noteq> term_of_pair (0, j)\<close> show False ..
     qed

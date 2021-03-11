@@ -50,7 +50,7 @@ lemma (in ccpo) Sup_Un_less:
   assumes chain: "Complete_Partial_Order.chain (\<le>) (A \<union> B)"
   and AB: "\<forall>x\<in>A. \<exists>y\<in>B. x \<le> y"
   shows "Sup (A \<union> B) = Sup B"
-proof(rule antisym)
+proof(rule order.antisym)
   from chain have chain': "Complete_Partial_Order.chain (\<le>) B"
     by(blast intro: chain_subset)
   show "Sup (A \<union> B) \<le> Sup B" using chain

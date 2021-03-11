@@ -1144,7 +1144,7 @@ proof(intro mcontI contI)
   moreover
   have "ord' (lub' (f ` Y)) (f (lub Y))" using chain'
     by(rule ccpo'.ccpo_Sup_least)(blast intro: monotoneD[OF mono] ccpo.ccpo_Sup_upper[OF ccpo chain])
-  ultimately show "f (lub Y) = lub' (f ` Y)" by(rule ccpo'.antisym)
+  ultimately show "f (lub Y) = lub' (f ` Y)" by(rule ccpo'.order.antisym)
 qed(fact mono)  
 
 lemma rel_fun_curry: includes lifting_syntax shows
@@ -1248,7 +1248,7 @@ proof -
   interpret c1: ccpo lub1 leq1 "mk_less leq1" by fact
   interpret c2: ccpo lub2 leq2 "mk_less leq2" by fact
   show ?thesis
-  proof(rule c1.antisym)
+  proof(rule c1.order.antisym)
     have fg: "monotone leq2 leq2 (\<lambda>x. f (g x))" using f g by(rule monotone2monotone) simp_all
     have gf: "monotone leq1 leq1 (\<lambda>x. g (f x))" using g f by(rule monotone2monotone) simp_all
     show "leq1 (c1.fixp (\<lambda>x. g (f x))) (g (c2.fixp (\<lambda>x. f (g x))))" using gf

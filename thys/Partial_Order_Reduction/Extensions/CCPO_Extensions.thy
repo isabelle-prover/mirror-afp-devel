@@ -145,7 +145,7 @@ begin
     next
       case True
       have 1: "esize (\<Squnion> C) = (\<Squnion> x \<in> C. esize x)"
-      proof (intro order_class.antisym SUP_upper SUP_least esize_mono)
+      proof (intro order_class.order.antisym SUP_upper SUP_least esize_mono)
         show "\<Squnion> C \<in> C" using in_chain_finite assms(1) True assms(2) by this
         show "\<And> x. x \<in> C \<Longrightarrow> x \<le> \<Squnion> C" using ccpo_Sup_upper assms(1) by this
       qed

@@ -25,7 +25,7 @@ notation sup (infixl "\<squnion>" 60)
 subsection \<open>Properties of Complete Lattices\<close>
   
 lemma (in complete_lattice) Sup_sup_pred: "x \<squnion> \<Squnion>{y. P y} = \<Squnion>{y. y = x \<or> P y}"
-  apply (rule antisym)
+  apply (rule order.antisym)
    apply (simp add: Collect_mono Sup_subset_mono Sup_upper)
   using Sup_least Sup_upper sup.coboundedI2 by force
 
@@ -296,7 +296,7 @@ lemma cba_bres2: "x \<le> -y \<squnion> z \<longleftrightarrow> x \<le> cba_quan
   using cba_bres1 shunt1 by auto
     
 lemma cba_bres_prop: "cba_quantale.bres x y = -x \<squnion> y"
-  using cba_bres2 eq_iff by blast
+  using cba_bres2 order.eq_iff by blast
   
 end
   

@@ -67,7 +67,9 @@ proof -
   have "ad (ad q) = q"
     using assms(2) local.ads_d_def by fastforce
   then show "\<langle>x| p \<le> ad q"
-    using a1 by (metis (no_types) domrangefix local.a_gla local.ads_d_def local.antisym local.ardual.a_gla2 local.ardual.gla_1 local.ars_r_def local.bdia_def local.eq_refl)
+    using a1
+    by (metis a_closure' a_gla ardual.a_subid_aux1' bdia_def
+      dnsz.dsg4 dpdz.dsg1 dpdz.dsg3 ds.dsr4 order.trans)
 qed
 
 lemma diamond_conjugation:

@@ -72,7 +72,7 @@ proof (intro_classes, unfold_locales; unfold compare_complex_def)
     assume "?c (Re x, Im x) (Re y, Im y) = Lt"
       "?c (Re y, Im y) (Re z, Im z) = Lt"
     thus "?c (Re x, Im x) (Re z, Im z) = Lt"
-      by (rule trans)
+      by (rule comp_trans)
   }
   {
     assume "?c (Re x, Im x) (Re y, Im y) = Eq"

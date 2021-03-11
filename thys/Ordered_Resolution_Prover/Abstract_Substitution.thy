@@ -983,7 +983,8 @@ lemma variants_iff_subsumes: "variants C D \<longleftrightarrow> subsumes C D \<
 proof
   assume "variants C D"
   then show "subsumes C D \<and> subsumes D C"
-    unfolding variants_def generalizes_def subsumes_def by (metis subset_mset.order.refl)
+    unfolding variants_def generalizes_def subsumes_def
+      by (metis subset_mset.refl)
 next
   assume sub: "subsumes C D \<and> subsumes D C"
   then have "size C = size D"
@@ -991,7 +992,7 @@ next
   then show "variants C D"
     using sub unfolding subsumes_def variants_def generalizes_def
     by (metis leD mset_subset_size size_mset_mono size_subst
-        subset_mset.order.not_eq_order_implies_strict)
+        subset_mset.not_eq_order_implies_strict)
 qed
 
 lemma wf_strictly_generalizes: "wfP strictly_generalizes"
@@ -1102,7 +1103,7 @@ lemma subsumes_refl: "subsumes C C"
 
 lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
   unfolding subsumes_def
-  by (metis (no_types) subset_mset.order.trans subst_cls_comp_subst subst_cls_mono_mset)
+  by (metis (no_types) subset_mset.trans subst_cls_comp_subst subst_cls_mono_mset)
 
 lemma strictly_generalizes_irrefl: "\<not> strictly_generalizes C C"
   unfolding strictly_generalizes_def by blast

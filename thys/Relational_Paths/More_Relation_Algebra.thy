@@ -59,12 +59,12 @@ qed
 lemma inj_triple:
   assumes "is_inj x"
     shows "x = x;x\<^sup>T;x"
-by (metis assms eq_iff inf_absorb2 is_inj_def mult_1_left mult_subdistr x_leq_triple_x)
+by (metis assms order.eq_iff inf_absorb2 is_inj_def mult_1_left mult_subdistr x_leq_triple_x)
 
 lemma p_fun_triple:
   assumes "is_p_fun x"
     shows "x = x;x\<^sup>T;x"
-by (metis assms comp_assoc eq_iff is_p_fun_def mult_isol mult_oner x_leq_triple_x)
+by (metis assms comp_assoc order.eq_iff is_p_fun_def mult_isol mult_oner x_leq_triple_x)
 
 lemma loop_backward_forward:
   "x\<^sup>T \<le> -(1') + x"
@@ -131,7 +131,7 @@ proof -
     using assms(1) comp_assoc is_p_fun_def mult_isol mult_1_right
     by fastforce
   finally show ?thesis
-    by (simp add: assms(2) antisym)
+    by (simp add: assms(2) order.antisym)
 qed
 
 text \<open>The following results are variants of \cite[Proposition 4.2.3]{SchmidtStroehlein1993}.\<close>
@@ -149,7 +149,7 @@ by (simp add: assms is_map_def p_fun_inj ss423 total_sur)
 lemma inj_distr:
   assumes "is_inj z"
     shows "(x\<cdot>y);z = (x;z)\<cdot>(y;z)"
-apply (rule antisym)
+apply (rule order.antisym)
  using mult_subdistr_var apply blast
 using assms conv_iso inj_p_fun p_fun_distl by fastforce
 
@@ -215,7 +215,7 @@ proof -
   have "e;v \<le> 0"
     by (metis assms annir mult_isor vector_prop1 comp_assoc)
   thus ?thesis
-    by (metis assms(2) annil antisym bot_least comp_assoc mult_isol)
+    by (metis assms(2) annil order.antisym bot_least comp_assoc mult_isol)
 qed
 
 lemma et:
@@ -607,7 +607,7 @@ text \<open>Some (more) results about points\<close>
 
 lemma point_exists:
   "\<exists>x . point x"
-by (metis (full_types) eq_iff is_inj_def is_sur_def is_vector_def point_axiom point_def)
+by (metis (full_types) order.eq_iff is_inj_def is_sur_def is_vector_def point_axiom point_def)
 
 lemma point_below_vector:
   assumes "is_vector v"
@@ -703,7 +703,7 @@ lemma star_transpose_swap:
   assumes "\<And>x. 1' + x;(rtc x) \<le> rtc x"
       and "\<And>x y z. x+y;z \<le> z \<Longrightarrow> rtc(y);x \<le> z"
     shows "rtc(x\<^sup>T) = (rtc x)\<^sup>T"
-apply(simp only: eq_iff; rule conjI)
+apply(simp only: order.eq_iff; rule conjI)
   apply (metis assms conv_add conv_contrav conv_e conv_iso mult_1_right
              unfoldl_inductl_implies_unfoldr )
 by (metis assms conv_add conv_contrav conv_e conv_invol conv_iso mult_1_right
@@ -757,7 +757,7 @@ qed
 lemma cancel_separate_inj_converse:
   assumes "is_inj x"
     shows "x\<^sup>\<star> ; x\<^sup>T\<^sup>\<star> = x\<^sup>\<star> + x\<^sup>T\<^sup>\<star>"
- apply (rule antisym)
+ apply (rule order.antisym)
   using assms cancel_separate is_inj_def apply blast
 by (metis conway.dagger_unfoldl_distr le_supI mult_1_right mult_isol sup.cobounded1)
 
@@ -880,7 +880,7 @@ lemma acyclic_reachable_points:
 proof
   assume "p=q"
   hence "p \<le> x;q \<cdot> q"
-    by (simp add: assms(3) eq_iff inf.absorb2)
+    by (simp add: assms(3) order.eq_iff inf.absorb2)
   also have "... = (x \<cdot> 1');q"
     using assms(2) inj_distr is_point_def by simp
   also have "... \<le> (-1' \<cdot> 1');q"

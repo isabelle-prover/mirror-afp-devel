@@ -11,13 +11,13 @@ begin
 lemma cancel_left_a: "b l\<rightarrow> (a * b) = a"
   apply (rule_tac a = b in mult_cancel_right)
   apply (subst inf_l_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 lemma cancel_right_a: "b r\<rightarrow> (b * a) = a"
   apply (rule_tac a = b in mult_cancel_left)
   apply (subst inf_r_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 end
@@ -143,13 +143,13 @@ sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algeb
   apply unfold_locales
   apply simp_all
   apply (simp add:  lemma_4_3_i_a [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add:  lemma_4_3_i_a [THEN sym] lemma_4_3_ii_a [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add:  lemma_4_3_i_a [THEN sym] lemma_4_3_ii_a [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (subst left_lesseq [THEN sym])
   apply (simp add: lemma_2_5_16)
@@ -175,7 +175,7 @@ sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algeb
   apply (simp add: left_impl_ded [THEN sym])
   apply (simp add: right_impl_ded [THEN sym])
   apply (simp add:  lemma_4_3_i_a [THEN sym] lemma_4_3_ii_a [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 
@@ -188,21 +188,21 @@ begin
   apply (simp_all add: mult_def order_l strict) 
   apply (simp add: zero_def [THEN sym] C3_a)
   apply (simp add: W6 inf_a_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add: C6 P9 [THEN sym] C5_b)
   apply (simp add: inf_b_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add: inf_b_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add: W6)
   apply (simp add: C6 [THEN sym])
   apply (simp add: P9 C5_a)
   apply (simp add: inf_b_def [THEN sym])
   apply (simp add: W6 inf_a_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
   apply (simp add: W2a)
   by (simp add: W2c)
@@ -218,7 +218,7 @@ lemma lemma_4_5_i: "(a l\<rightarrow> b) \<squnion>1 (b l\<rightarrow> a) = 1"
   apply (subgoal_tac "(a l\<rightarrow> b) l\<rightarrow> (a l\<rightarrow> b) \<squnion>1 (b l\<rightarrow> a) = 1 \<and> ((b l\<rightarrow> a) l\<rightarrow> (a l\<rightarrow> b) \<squnion>1 (b l\<rightarrow> a)) = 1")
   apply (erule conjE)
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply simp
   apply safe
@@ -233,7 +233,7 @@ lemma lemma_4_5_ii: "(a r\<rightarrow> b) \<squnion>2 (b r\<rightarrow> a) = 1"
   apply (subgoal_tac "(a r\<rightarrow> b) r\<rightarrow> (a r\<rightarrow> b) \<squnion>2 (b r\<rightarrow> a) = 1 \<and> ((b r\<rightarrow> a) r\<rightarrow> (a r\<rightarrow> b) \<squnion>2 (b r\<rightarrow> a)) = 1")
   apply (erule conjE)
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply simp
   apply safe
@@ -243,7 +243,7 @@ lemma lemma_4_5_ii: "(a r\<rightarrow> b) \<squnion>2 (b r\<rightarrow> a) = 1"
   by simp
 
 lemma lemma_4_5_iii: "a l\<rightarrow> b = (a \<squnion>1 b) l\<rightarrow> b"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule_tac y = "((a l\<rightarrow> b) r\<rightarrow> b) l\<rightarrow> b" in order_trans)
   apply (rule lemma_2_10_26)
   apply (rule lemma_2_5_13_a)
@@ -253,7 +253,7 @@ lemma lemma_4_5_iii: "a l\<rightarrow> b = (a \<squnion>1 b) l\<rightarrow> b"
 
 
 lemma lemma_4_5_iv: "a r\<rightarrow> b = (a \<squnion>2 b) r\<rightarrow> b"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule_tac y = "((a r\<rightarrow> b) l\<rightarrow> b) r\<rightarrow> b" in order_trans)
   apply (rule lemma_2_10_24)
   apply (rule lemma_2_5_13_b)
@@ -262,7 +262,7 @@ lemma lemma_4_5_iv: "a r\<rightarrow> b = (a \<squnion>2 b) r\<rightarrow> b"
   by simp
 
 lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply safe
   apply (rule lemma_2_5_13_a)
@@ -270,7 +270,7 @@ lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<
   apply (rule lemma_2_5_13_a)
   apply simp
   apply (subst right_lesseq)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (rule_tac y = "(a l\<rightarrow> b) l\<rightarrow> ((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c) r\<rightarrow> a \<squnion>1 b l\<rightarrow> c)" in order_trans)
   apply (subst left_residual [THEN sym])
@@ -285,14 +285,14 @@ lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<
   apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>1 b \<sqinter> b) = b")
   apply simp
-  apply (rule antisym, simp)
+  apply (rule order.antisym, simp)
   apply simp
   apply simp
   apply (rule_tac y = "((b l\<rightarrow> a) l\<rightarrow> ((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c) r\<rightarrow> a \<squnion>1 b l\<rightarrow> c)) l\<rightarrow> ((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c) r\<rightarrow> a \<squnion>1 b l\<rightarrow> c)" in order_trans)
   apply (rule B1)
   apply (subgoal_tac "(b l\<rightarrow> a) l\<rightarrow> ((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c) r\<rightarrow> a \<squnion>1 b l\<rightarrow> c) = 1")
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (subst left_residual [THEN sym])
   apply simp
@@ -307,13 +307,13 @@ lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<
   apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>1 b \<sqinter> a) = a")
   apply simp
-  apply (rule antisym, simp)
+  apply (rule order.antisym, simp)
   apply simp
   by simp
 
 
 lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply safe
   apply (rule lemma_2_5_13_b)
@@ -321,7 +321,7 @@ lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \
   apply (rule lemma_2_5_13_b)
   apply simp
   apply (subst left_lesseq)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (rule_tac y = "(a r\<rightarrow> b) r\<rightarrow> ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c) l\<rightarrow> a \<squnion>2 b r\<rightarrow> c)" in order_trans)
   apply (subst right_residual [THEN sym])
@@ -336,14 +336,14 @@ lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \
   apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>2 b \<sqinter> b) = b")
   apply simp
-  apply (rule antisym, simp)
+  apply (rule order.antisym, simp)
   apply simp
   apply simp
   apply (rule_tac y = "((b r\<rightarrow> a) r\<rightarrow> ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c) l\<rightarrow> a \<squnion>2 b r\<rightarrow> c)) r\<rightarrow> ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c) l\<rightarrow> a \<squnion>2 b r\<rightarrow> c)" in order_trans)
   apply (rule B2)
   apply (subgoal_tac "(b r\<rightarrow> a) r\<rightarrow> ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c) l\<rightarrow> a \<squnion>2 b r\<rightarrow> c) = 1")
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (subst right_residual [THEN sym])
   apply simp
@@ -358,7 +358,7 @@ lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \
   apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>2 b \<sqinter> a) = a")
   apply simp
-  apply (rule antisym, simp)
+  apply (rule order.antisym, simp)
   apply simp
   by simp
 
@@ -373,7 +373,7 @@ lemma lemma_4_5_b: "a \<le> c \<Longrightarrow> b \<le> c \<Longrightarrow> a \<
   by simp
 
 lemma lemma_4_5: "a \<squnion>1 b = a \<squnion>2 b"
-  apply (rule antisym)
+  apply (rule order.antisym)
   by (simp_all add: lemma_4_5_a lemma_4_5_b)
 end
 
@@ -407,7 +407,7 @@ class sup_assoc_pseudo_hoop_algebra_1 = sup_assoc_pseudo_hoop_algebra +
 lemma (in pseudo_hoop_algebra) [simp]: "infimum {a, b} = {a \<sqinter> b}"
   apply (simp add: infimum_def lower_bound_def)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 lemma (in pseudo_hoop_lattice) sup_impl_inf:
@@ -449,7 +449,7 @@ context basic_pseudo_hoop_algebra
 begin
 
 lemma lemma_4_8_i: "a * (b \<sqinter> c) = (a * b) \<sqinter> (a * c)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (subgoal_tac "a * (b \<sqinter> c) = (a * (b * (b r\<rightarrow> c))) \<squnion>1 (a * (c * (c r\<rightarrow> b)))")
   apply simp
@@ -468,12 +468,12 @@ lemma lemma_4_8_i: "a * (b \<sqinter> c) = (a * b) \<sqinter> (a * c)"
   apply (simp add: inf_r_def [THEN sym])
   apply (subgoal_tac "b \<sqinter> c = c \<sqinter> b")
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 
 lemma lemma_4_8_ii: "(b \<sqinter> c) * a = (b * a) \<sqinter> (c * a)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (subgoal_tac "(b \<sqinter> c) * a = (((b l\<rightarrow> c) * b) * a) \<squnion>1 (((c l\<rightarrow> b) * c) * a)")
   apply simp
@@ -490,17 +490,17 @@ lemma lemma_4_8_ii: "(b \<sqinter> c) * a = (b * a) \<sqinter> (c * a)"
   apply (simp add: inf_l_def [THEN sym])
   apply (subgoal_tac "b \<sqinter> c = c \<sqinter> b")
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 lemma lemma_4_8_iii: "(a l\<rightarrow> b) l\<rightarrow> (b l\<rightarrow> a) = b l\<rightarrow> a"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (cut_tac a = a and b = b in lemma_4_5_i)
   apply (unfold sup1_def right_lesseq, simp)
   by (simp add: lemma_2_5_9_a)
 
  lemma lemma_4_8_iv: "(a r\<rightarrow> b) r\<rightarrow> (b r\<rightarrow> a) = b r\<rightarrow> a"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (cut_tac a = a and b = b in lemma_4_5_ii)
   apply (unfold sup2_def left_lesseq, simp)
   by (simp add: lemma_2_5_9_b)
@@ -530,12 +530,9 @@ end
 
 class bounded_basic_pseudo_hoop_algebra = zero_one + basic_pseudo_hoop_algebra +
   assumes zero_smallest [simp]: "0 \<le> a"
-begin 
-end
 
 class inf_a = 
   fixes inf_a :: "'a => 'a => 'a" (infixl "\<sqinter>1" 65)
-
 
 class pseudo_bl_algebra = zero + sup + inf + monoid_mult + ord + left_imp + right_imp +
   assumes  bounded_lattice: "class.bounded_lattice inf (\<le>) (<) sup 0 1"
@@ -545,12 +542,8 @@ class pseudo_bl_algebra = zero + sup + inf + monoid_mult + ord + left_imp + righ
   and inf_r_bl_def: "a \<sqinter> b = a * (a r\<rightarrow> b)"
   and impl_sup_bl: "(a l\<rightarrow> b) \<squnion> (b l\<rightarrow> a) = 1"
   and impr_sup_bl: "(a r\<rightarrow> b) \<squnion> (b r\<rightarrow> a) = 1"
-begin
-end
 
-context pseudo_bl_algebra begin end
-
-sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "(*)" "0"  "(\<sqinter>)" "(\<squnion>1)" "(l\<rightarrow>)" "(r\<rightarrow>)" "(\<le>)" "(<)"
+sublocale bounded_basic_pseudo_hoop_algebra < basic: pseudo_bl_algebra 1 "(*)" "0"  "(\<sqinter>)" "(\<squnion>1)" "(l\<rightarrow>)" "(r\<rightarrow>)" "(\<le>)" "(<)"
   apply unfold_locales 
   apply (rule zero_smallest) 
   apply (rule left_residual) 
@@ -567,19 +560,19 @@ sublocale pseudo_bl_algebra < bounded_lattice: bounded_lattice "inf" "(\<le>)" "
 context pseudo_bl_algebra
 begin
   lemma impl_one_bl [simp]: "a l\<rightarrow> a = 1"
-    apply (rule bounded_lattice.antisym)
+    apply (rule bounded_lattice.order.antisym)
     apply simp_all
     apply (subst left_residual_bl [THEN sym])
     by simp
 
   lemma impr_one_bl [simp]: "a r\<rightarrow> a = 1"
-    apply (rule bounded_lattice.antisym)
+    apply (rule bounded_lattice.order.antisym)
     apply simp_all
     apply (subst right_residual_bl [THEN sym])
     by simp
 
   lemma impl_ded_bl: "((a * b) l\<rightarrow> c) = (a l\<rightarrow> (b l\<rightarrow> c))"
-    apply (rule bounded_lattice.antisym)
+    apply (rule bounded_lattice.order.antisym)
     apply (case_tac "(a * b l\<rightarrow> c \<le> a l\<rightarrow> b l\<rightarrow> c) = ((a * b l\<rightarrow> c) * a \<le> b l\<rightarrow> c)
       \<and> ((a * b l\<rightarrow> c) * a \<le> b l\<rightarrow> c) = (((a * b l\<rightarrow> c) * a) * b \<le> c)
       \<and> (((a * b l\<rightarrow> c) * a) * b \<le> c) = ((a * b l\<rightarrow> c) * (a * b) \<le> c)
@@ -606,7 +599,7 @@ begin
     by simp
 
   lemma impr_ded_bl: "(b * a r\<rightarrow> c) = (a r\<rightarrow> (b r\<rightarrow> c))"
-    apply (rule bounded_lattice.antisym)
+    apply (rule bounded_lattice.order.antisym)
     apply (case_tac "(b * a r\<rightarrow> c \<le> a r\<rightarrow> b r\<rightarrow> c) = (a * (b * a r\<rightarrow> c) \<le> b r\<rightarrow> c)
       \<and> (a * (b * a r\<rightarrow> c) \<le> b r\<rightarrow> c) = (b * (a * (b * a r\<rightarrow> c)) \<le> c)
       \<and> (b * ( a* (b * a r\<rightarrow> c)) \<le> c) = ((b * a) * (b * a r\<rightarrow> c) \<le> c)
@@ -634,7 +627,7 @@ begin
 
   lemma lesseq_impl_bl: "(a \<le> b) = (a l\<rightarrow> b = 1)"
     apply (rule iffI)
-    apply (rule  bounded_lattice.antisym)
+    apply (rule  bounded_lattice.order.antisym)
     apply simp
     apply (simp add: left_residual_bl [THEN sym])
     apply (subgoal_tac "1 \<le> a l\<rightarrow> b")
@@ -666,7 +659,7 @@ subclass pseudo_hoop_lattice
   apply (rule bounded_lattice.sup_commute)
   apply simp
   apply safe
-  apply (rule bounded_lattice.antisym)
+  apply (rule bounded_lattice.order.antisym)
   apply simp_all
   apply (subgoal_tac "a \<le>  a \<squnion> b")
   apply simp
@@ -765,7 +758,7 @@ end
 lemma (in pseudo_hoop_algebra) [simp]: "{1} \<in> filters"
   apply (simp add: filters_def)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 class strong_simple_pseudo_hoop_algebra_a = pseudo_hoop_algebra + proper +
@@ -870,9 +863,9 @@ lemma [simp]: "(a r\<rightarrow> b) l\<rightarrow> b \<le> (b r\<rightarrow> a) 
 
 subclass wajsberg_pseudo_hoop_algebra
   apply unfold_locales
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp_all
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 end

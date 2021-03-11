@@ -141,7 +141,7 @@ lemma up_set_up_set [simp]:
 
 lemma up_injective:
   "\<up>x = \<up>y \<Longrightarrow> x = y"
-  using antisym by auto
+  using order.antisym by auto
 
 lemma up_antitone:
   "x \<le> y \<longleftrightarrow> \<up>y \<subseteq> \<up>x"
@@ -298,7 +298,7 @@ proof -
   from consistent obtain x y :: 'a where "x \<noteq> y"
     by auto
   hence "\<up>x \<noteq> UNIV \<or> \<up>y \<noteq> UNIV"
-    using antisym by blast
+    using order.antisym by blast
   hence "proper_filter (\<up>x) \<or> proper_filter (\<up>y)"
     by simp
   thus ?thesis
@@ -737,7 +737,7 @@ proof -
   hence "y \<le> (t \<sqinter> v) \<squnion> (u \<sqinter> w)"
     using 1 Int_iff by blast
   hence 5: "(t \<sqinter> v) \<squnion> (u \<sqinter> w) = y"
-    using 2 by (simp add: antisym inf.coboundedI1)
+    using 2 by (simp add: order.antisym inf.coboundedI1)
   have "F = \<up>(t \<sqinter> v)"
   proof
     show "F \<subseteq> \<up>(t \<sqinter> v)"

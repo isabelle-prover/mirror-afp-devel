@@ -257,8 +257,8 @@ proof (induction xs rule: length_induct)
       from i have "map_pmf snd (rquicksort R [y\<leftarrow>delete_index i xs. (y, xs ! i) \<notin> R]) = 
                               rqs_cost (length [y\<leftarrow>delete_index i xs. (y, xs ! i) \<notin> R])"
         by (intro IH) 
-           (auto intro!: le_less_trans[OF length_filter_le] simp: mset_filter 
-                 intro: subset_mset.order.trans multiset_filter_subset diff_subset_eq_self)
+           (auto intro!: le_less_trans[OF length_filter_le]
+                 intro: subset_mset.trans multiset_filter_subset diff_subset_eq_self)
       also have "length [y\<leftarrow>delete_index i xs. (y, xs ! i) \<notin> R] = n - 1 - cnt i"
         unfolding n_def cnt_def 
         using sum_length_filter_compl[of "\<lambda>y. (y, xs ! i) \<in> R" "delete_index i xs"] i by simp
@@ -267,8 +267,8 @@ proof (induction xs rule: length_induct)
       moreover have "map_pmf snd (rquicksort R [y\<leftarrow>delete_index i xs. (y, xs ! i) \<in> R]) = 
                        rqs_cost (cnt i)" unfolding cnt_def using i
         by (intro IH) 
-           (auto intro!: le_less_trans[OF length_filter_le] simp: mset_filter 
-                 intro: subset_mset.order.trans multiset_filter_subset diff_subset_eq_self)
+           (auto intro!: le_less_trans[OF length_filter_le]
+                 intro: subset_mset.trans multiset_filter_subset diff_subset_eq_self)
       ultimately show ?case by (simp only: n_def)
     qed
     also have "\<dots> = map_pmf cnt (pmf_of_set {..<n}) \<bind> 

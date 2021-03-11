@@ -226,7 +226,7 @@ proof (cases rule: ord_resolve.cases)
     define BB where "BB \<equiv> AAs ! i"
     have c_cf': "C \<subseteq># \<Sum>\<^sub># (mset CAs)"
       unfolding C_def using a_in_aa cas cas_len
-      by (metis less_subset_eq_Union_mset mset_subset_eq_add_left subset_mset.order.trans)
+      by (metis less_subset_eq_Union_mset mset_subset_eq_add_left subset_mset.trans)
     have c_in_cc: "C + poss BB \<in># mset CAs"
       using C_def BB_def a_in_aa cas_len in_set_conv_nth cas by fastforce
     {

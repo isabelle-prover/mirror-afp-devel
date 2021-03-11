@@ -286,9 +286,8 @@ lemma lt_in_keys:
   by (metis assms in_keys_iff lc_def lc_not_0)
 
 lemma lt_monomial:
-  assumes "c \<noteq> 0"
-  shows "lt (monomial c t) = t"
-  by (metis assms lookup_single_eq lookup_single_not_eq lt_eqI ord_term_lin.eq_iff)
+  "lt (monomial c t) = t" if "c \<noteq> 0"
+  using that by (auto simp add: lt_def dest: monomial_0D)
 
 lemma lc_monomial [simp]: "lc (monomial c t) = c"
 proof (cases "c = 0")

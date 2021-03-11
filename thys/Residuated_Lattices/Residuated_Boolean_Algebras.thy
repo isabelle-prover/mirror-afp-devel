@@ -26,7 +26,7 @@ lemma le_iff_inf_bot: "x \<le> y \<longleftrightarrow> x \<sqinter> -y = \<botto
   by (metis inf_bot_iff_le compl_le_compl_iff inf_commute)
   
 lemma indirect_eq: "(\<And>z. x \<le> z \<longleftrightarrow> y \<le> z) \<Longrightarrow> x = y"
-  by (metis eq_iff)
+  by (metis order.eq_iff)
 
 text \<open>
   Let $B$ be a boolean algebra. The maps $f$ and $g$ on $B$ are
@@ -78,7 +78,7 @@ proof -
     hence "g = h"
       apply (unfold conjugation_pair_def)
       apply (rule ext)
-      apply (rule antisym)
+      apply (rule order.antisym)
       by (metis le_iff_inf_bot inf_commute inf_compl_bot)+
   } 
   moreover assume "residuated f"
@@ -222,7 +222,7 @@ lemma conjugate_eq: "residuated f \<Longrightarrow> conjugate f y = \<Sqinter>{x
 proof -
   assume assm: "residuated f" obtain g where g_def: "g = conjugate f" by auto
   have "g y = \<Sqinter>{x. x \<ge> g y}"
-    by (auto intro!: antisym Inf_lower Inf_greatest)
+    by (auto intro!: order.antisym Inf_lower Inf_greatest)
   also have "... = \<Sqinter>{x. -x \<sqinter> g y = \<bottom>}"
     by (simp add: inf_bot_iff_le)
   also have "... = \<Sqinter>{x. f(-x) \<sqinter> y = \<bottom>}"
@@ -573,7 +573,7 @@ lemma jonsson3a: "(\<forall>x. (x \<rhd> 1) \<rhd> 1 = x) \<longleftrightarrow> 
 proof safe
   fix x assume "\<forall>x. x \<rhd> 1 \<rhd> 1 = x"
   thus "1 \<lhd> (1 \<lhd> x) = x"
-    by (metis compl_le_swap1 compl_le_swap2 conjr2_iff eq_iff)
+    by (metis compl_le_swap1 compl_le_swap2 conjr2_iff order.eq_iff)
 next
   fix x assume "\<forall>x. 1 \<lhd> (1 \<lhd> x) = x"
   thus "x \<rhd> 1 \<rhd> 1 = x"
@@ -581,7 +581,7 @@ next
 qed
 
 lemma jonsson3b: "(\<forall>x. (x \<rhd> 1) \<rhd> 1 = x) \<Longrightarrow> (x \<sqinter> y) \<rhd> 1 = (x \<rhd> 1) \<sqinter> (y \<rhd> 1)"
-proof (rule antisym, auto simp: conjr2_iso)
+proof (rule order.antisym, auto simp: conjr2_iso)
   assume assm: "\<forall>x. (x \<rhd> 1) \<rhd> 1 = x"
   hence "(x \<rhd> 1) \<sqinter> (y \<rhd> 1) \<rhd> 1 = x \<sqinter> (((x \<rhd> 1) \<sqinter> (y \<rhd> 1) \<rhd> 1) \<sqinter> y)"
     by (metis (no_types) conjr2_iso inf.cobounded2 inf.commute inf.orderE)

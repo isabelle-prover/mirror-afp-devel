@@ -264,13 +264,13 @@ definition "d4 a b = d2 b a"
 lemma [simp]: "(a * b = 1) = (a = 1 \<and> b = 1)"
   apply (rule iffI)
   apply (rule conjI)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (rule_tac y = "a*b" in order_trans)
   apply simp
   apply (drule drop_assumption)
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (rule_tac y = "a*b" in order_trans)
   apply simp
@@ -551,7 +551,7 @@ lemma lemma_3_10_i_ii:
   apply simp
   apply (rule_tac x = "a l\<rightarrow> a * y" in bexI)
   apply (simp add: inf_l_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply simp
   apply (rule normalfilter_ii)
@@ -562,7 +562,7 @@ lemma lemma_3_10_i_ii:
   
   apply (rule_tac x = "a r\<rightarrow> xa * a" in bexI)
   apply (simp add: inf_r_def [THEN sym])
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply simp
   apply (rule normalfilter_i)
@@ -1072,9 +1072,9 @@ definition
 lemma lemma_3_16_i: "p x x y = y \<and> p x y y = x"
   apply safe
   apply (simp_all add: p_def)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp_all add: lemma_2_10_24)
-  apply (rule antisym)
+  apply (rule order.antisym)
   by (simp_all add: lemma_2_10_24)
 
 definition "M x y z = ((y l\<rightarrow> x) r\<rightarrow> x) \<sqinter> ((z l\<rightarrow> y) r\<rightarrow> y) \<sqinter> ((x l\<rightarrow> z) r\<rightarrow> z)"
@@ -1082,11 +1082,11 @@ definition "M x y z = ((y l\<rightarrow> x) r\<rightarrow> x) \<sqinter> ((z l\<
 lemma "M x x y = x \<and> M x y x = x \<and> M y x x = x"
   apply (simp add: M_def)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp_all add: lemma_2_10_24 lemma_2_5_9_b) 
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp_all add: lemma_2_10_24 lemma_2_5_9_b) 
-  apply (rule antisym)
+  apply (rule order.antisym)
   by (simp_all add: lemma_2_10_24 lemma_2_5_9_b) 
 end
 

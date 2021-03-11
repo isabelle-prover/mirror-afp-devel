@@ -1060,8 +1060,8 @@ next
   case Cons
   show ?thesis using assms unfolding Cons exhaustive.simps
     apply(subst exhaustive_above_iff)
-    apply(auto simp add: less_le proper_interval_simps not_less)
-    by (metis List.set_simps(2) UNIV_I eq_iff set_ConsD)
+       apply(auto simp add: less_le proper_interval_simps not_less intro: order_antisym)
+    done
 qed
 
 theorem proper_interval_set_aux:

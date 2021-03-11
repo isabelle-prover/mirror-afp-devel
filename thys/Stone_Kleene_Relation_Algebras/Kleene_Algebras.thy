@@ -38,7 +38,7 @@ abbreviation tc ("_\<^sup>+" [100] 100) where "tc x \<equiv> x * x\<^sup>\<star>
 
 lemma star_left_unfold_equal:
   "1 \<squnion> x * x\<^sup>\<star> = x\<^sup>\<star>"
-  by (metis sup_right_isotone antisym mult_right_isotone mult_1_right star_left_induct star_left_unfold)
+  by (metis sup_right_isotone order.antisym mult_right_isotone mult_1_right star_left_induct star_left_unfold)
 
 text \<open>
 This means that for some properties of Kleene algebras, only one inequality can be derived, as exemplified by the following sliding rule.
@@ -54,7 +54,7 @@ lemma star_isotone:
 
 lemma star_sup_1:
   "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "y * x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star> \<le> (y * x\<^sup>\<star>)\<^sup>\<star>"
     using sup_right_divisibility star_left_unfold_equal by auto
   also have "... \<le> x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star>"
@@ -102,7 +102,7 @@ A number of lemmas in this class are taken from Georg Struth's Kleene algebra th
 
 lemma star_sub_one:
   "x \<le> 1 \<Longrightarrow> x\<^sup>\<star> = 1"
-  by (metis sup_right_isotone eq_iff le_iff_sup mult_1_right star.circ_plus_one star_left_induct)
+  by (metis sup_right_isotone order.eq_iff le_iff_sup mult_1_right star.circ_plus_one star_left_induct)
 
 lemma star_one:
   "1\<^sup>\<star> = 1"
@@ -164,7 +164,7 @@ lemma star_rtc_3:
 
 lemma star_decompose_1:
   "(x \<squnion> y)\<^sup>\<star> = (x\<^sup>\<star> * y\<^sup>\<star>)\<^sup>\<star>"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: star.circ_sup_2)
   using star.circ_sub_dist_3 star_isotone star_involutive by fastforce
 
@@ -233,7 +233,7 @@ begin
 
 lemma star_plus:
   "y\<^sup>\<star> * y = y * y\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "y\<^sup>\<star> * y \<le> y * y\<^sup>\<star>"
     by (simp add: star.circ_plus_sub)
 next
@@ -247,7 +247,7 @@ qed
 
 lemma star_slide:
   "(x * y)\<^sup>\<star> * x = x * (y * x)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "(x * y)\<^sup>\<star> * x \<le> x * (y * x)\<^sup>\<star>"
     by (rule star_left_slide)
 next
@@ -291,7 +291,7 @@ lemma star_right_induct_mult_iff:
 
 lemma star_simulation_right_equal:
   "z * x = y * z \<Longrightarrow> z * x\<^sup>\<star> = y\<^sup>\<star> * z"
-  by (metis eq_iff star_simulation_left star_simulation_right)
+  by (metis order.eq_iff star_simulation_left star_simulation_right)
 
 lemma star_simulation_star:
   "x * y \<le> y * x \<Longrightarrow> x\<^sup>\<star> * y\<^sup>\<star> \<le> y\<^sup>\<star> * x\<^sup>\<star>"
@@ -317,7 +317,7 @@ proof (unfold is_least_fixpoint_def, rule conjI)
   hence "z * y\<^sup>\<star> \<le> z * y\<^sup>\<star> * y \<squnion> z"
     by (simp add: star_right_induct)
   thus "z * y\<^sup>\<star> * y \<squnion> z = z * y\<^sup>\<star>"
-    using antisym star.circ_back_loop_prefixpoint by auto
+    using order.antisym star.circ_back_loop_prefixpoint by auto
 next
   show "\<forall>x. x * y \<squnion> z = x \<longrightarrow> z * y\<^sup>\<star> \<le> x"
     by (simp add: star_back_loop_least_fixpoint)
@@ -345,7 +345,7 @@ proof -
   have "(1 \<squnion> x) * (x * x)\<^sup>\<star> = (x * x)\<^sup>\<star> * 1 \<squnion> x * (x * x)\<^sup>\<star>"
     using mult_right_dist_sup by force
   thus ?thesis
-    by (metis (no_types) antisym mult_left_sub_dist_sup star.circ_square_2 star_slide sup_commute star_square)
+    by (metis (no_types) order.antisym mult_left_sub_dist_sup star.circ_square_2 star_slide sup_commute star_square)
 qed
 
 lemma star_circ_simulate_right_plus:
@@ -563,7 +563,7 @@ qed
 
 lemma cancel_separate_eq:
   "x * y \<le> 1 \<Longrightarrow> x\<^sup>\<star> * y\<^sup>\<star> = x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
-  by (metis antisym cancel_separate star.circ_plus_one star.circ_sup_sub_sup_one_1 star_involutive)
+  by (metis order.antisym cancel_separate star.circ_plus_one star.circ_sup_sub_sup_one_1 star_involutive)
 
 lemma cancel_separate_1:
   assumes "x * y \<le> 1"
@@ -586,7 +586,7 @@ proof -
   finally have "(x \<squnion> y)\<^sup>\<star> \<le> y\<^sup>\<star> * x\<^sup>\<star>"
     by (metis star.circ_decompose_7 star_right_induct_mult sup_commute)
   thus ?thesis
-    using antisym star.circ_sub_dist_3 sup_commute by fastforce
+    using order.antisym star.circ_sub_dist_3 sup_commute by fastforce
 qed
 
 lemma plus_sup:
@@ -608,11 +608,11 @@ text \<open>Lemma \<open>star_separate_3\<close> was contributed by Nicolas Robi
 lemma star_separate_3:
   assumes "y * x\<^sup>\<star> * y \<le> y"
     shows "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x\<^sup>\<star> * y * (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star> \<le> x\<^sup>\<star> * y * x\<^sup>\<star>"
     by (metis assms mult_left_isotone mult_right_isotone star_right_induct_mult mult_assoc)
   thus "(x \<squnion> y)\<^sup>\<star> \<le> x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star>"
-    by (metis antisym semiring.add_left_mono star.circ_sup_2 star.circ_sup_sub star.circ_unfold_sum star_decompose_3 star_slide mult_assoc)
+    by (metis order.antisym semiring.add_left_mono star.circ_sup_2 star.circ_sup_sub star.circ_unfold_sum star_decompose_3 star_slide mult_assoc)
 next
   show "x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star> \<le> (x \<squnion> y)\<^sup>\<star>"
     using mult_isotone star.circ_increasing star.circ_sub_dist star.circ_sup_9 by auto
@@ -644,19 +644,19 @@ lemma star_zero_below_circ_mult:
 
 lemma star_mult_circ:
   "x\<^sup>\<star> * x\<^sup>\<circ> = x\<^sup>\<circ>"
-  by (metis sup_right_divisibility antisym circ_left_unfold star_left_induct_mult star.circ_loop_fixpoint)
+  by (metis sup_right_divisibility order.antisym circ_left_unfold star_left_induct_mult star.circ_loop_fixpoint)
 
 lemma circ_mult_star:
   "x\<^sup>\<circ> * x\<^sup>\<star> = x\<^sup>\<circ>"
-  by (metis sup_assoc sup.bounded_iff circ_left_unfold circ_rtc_2 eq_iff left_plus_circ star.circ_sup_sub star.circ_back_loop_prefixpoint star.circ_increasing star_below_circ star_mult_circ star_sup_one)
+  by (metis sup_assoc sup.bounded_iff circ_left_unfold circ_rtc_2 order.eq_iff left_plus_circ star.circ_sup_sub star.circ_back_loop_prefixpoint star.circ_increasing star_below_circ star_mult_circ star_sup_one)
 
 lemma circ_star:
   "x\<^sup>\<circ>\<^sup>\<star> = x\<^sup>\<circ>"
-  by (metis antisym circ_reflexive circ_transitive_equal star.circ_increasing star.circ_sup_one_right_unfold star_left_induct_mult_equal)
+  by (metis order.antisym circ_reflexive circ_transitive_equal star.circ_increasing star.circ_sup_one_right_unfold star_left_induct_mult_equal)
 
 lemma star_circ:
   "x\<^sup>\<star>\<^sup>\<circ> = x\<^sup>\<circ>\<^sup>\<circ>"
-  by (metis antisym circ_circ_sup circ_sub_dist le_iff_sup star.circ_rtc_2 star_below_circ)
+  by (metis order.antisym circ_circ_sup circ_sub_dist le_iff_sup star.circ_rtc_2 star_below_circ)
 
 lemma circ_sup_3:
   "(x\<^sup>\<circ> * y\<^sup>\<circ>)\<^sup>\<star> \<le> (x \<squnion> y)\<^sup>\<circ>"
@@ -671,7 +671,7 @@ subclass left_kleene_conway_semiring ..
 
 lemma circ_isolate:
   "x\<^sup>\<circ> = x\<^sup>\<circ> * bot \<squnion> x\<^sup>\<star>"
-  by (metis sup_commute antisym circ_sup_upper_bound circ_mult_star circ_simulate_absorb star.left_plus_below_circ star_below_circ zero_right_mult_decreasing)
+  by (metis sup_commute order.antisym circ_sup_upper_bound circ_mult_star circ_simulate_absorb star.left_plus_below_circ star_below_circ zero_right_mult_decreasing)
 
 lemma circ_isolate_mult:
   "x\<^sup>\<circ> * y = x\<^sup>\<circ> * bot \<squnion> x\<^sup>\<star> * y"
@@ -694,7 +694,7 @@ qed
 
 lemma circ_sup_4:
   "(x \<squnion> y)\<^sup>\<circ> = (x\<^sup>\<star> * y)\<^sup>\<circ> * x\<^sup>\<circ>"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (metis circ_sup circ_sub_decompose circ_transitive_equal mult_assoc mult_left_isotone)
   by (metis circ_sup circ_isotone mult_left_isotone star_below_circ)
 

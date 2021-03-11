@@ -1065,7 +1065,7 @@ lemma ord_canc:
 proof (rule ordered_powerprod_lin.le_cases[of s t], simp)
   assume "t \<preceq> s"
   from assms plus_monotone[OF this, of u] have "t + u = s + u"
-    using ordered_powerprod_lin.eq_iff by simp
+    using ordered_powerprod_lin.order.eq_iff by simp
   hence "t = s" by simp
   thus "s \<preceq> t" by simp
 qed
@@ -1254,7 +1254,7 @@ proof (rule wfP_chain)
     from seq_decr[OF \<open>i < j\<close>] have "seq j \<preceq> seq i \<and> seq j \<noteq> seq i" by auto
     hence "seq j \<preceq> seq i" and "seq j \<noteq> seq i" by simp_all
     from \<open>seq j \<noteq> seq i\<close> \<open>seq j \<preceq> seq i\<close> ord_adds[OF i_adds_j]
-         ordered_powerprod_lin.eq_iff[of "seq j" "seq i"]
+         ordered_powerprod_lin.order.eq_iff[of "seq j" "seq i"]
       show False by simp
   qed
 qed

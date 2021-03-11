@@ -72,7 +72,7 @@ proof
   show "(x \<le> - (y \<cdot> -' z)) = (y \<le> -' (- z \<cdot> x))"
     by (metis local.gn local.ipg1 local.ipg2)
   show "-' (- (- x) \<cdot> y) = - (x \<cdot> -' (-' y))"
-    by (metis local.dn1 local.dn2 local.eq_iff local.gn local.jipsen1l local.jipsen1r local.resl_galois local.resr_galois)
+    by (metis local.dn1 local.dn2 order.eq_iff local.gn local.jipsen1l local.jipsen1r local.resl_galois local.resr_galois)
 qed
 
 lemma inv_resr_neg [simp]: "inv_resr (-x) (-y) = inv_resl x y"

@@ -22,7 +22,7 @@ subsection \<open>A Reachability Result\<close>
 text \<open>This example is taken from~\cite{desharnaismoellerstruth06kad}.\<close>
 
 lemma opti_iterate_var [simp]: "|(ad y \<cdot> x)\<^sup>\<star>\<rangle> y = |x\<^sup>\<star>\<rangle> y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "|(ad y \<cdot> x)\<^sup>\<star>\<rangle> y \<le> |x\<^sup>\<star>\<rangle> y"
     by (simp add: a_subid_aux1' ds.fd_iso2 star_iso)
   have "d y + |x\<rangle> |(ad y \<cdot> x)\<^sup>\<star>\<rangle> y = d y + ad y \<cdot> |x\<rangle> |(ad y \<cdot> x)\<^sup>\<star>\<rangle> y"
@@ -68,7 +68,7 @@ lemma a_A: "ad (A x (ad y)) = |x] y + ad y"
   using Alpha_def local.a_6 local.a_d_closed local.apd_d_def local.fbox_def by force
 
 lemma fsegerberg [simp]: "d y + |x\<^sup>\<star>\<rangle> A x y = |x\<^sup>\<star>\<rangle> y"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d y + |x\<rangle> (d y + |x\<^sup>\<star>\<rangle> A x y) = d y + |x\<rangle> y + |x\<rangle> |x\<^sup>\<star>\<rangle> ( |x\<rangle> y \<cdot> ad y )"
     by (simp add: A_fdia add_assoc local.ds.fdia_add1)
   also have "... = d y + |x\<rangle> y \<cdot> ad y + |x\<rangle> |x\<^sup>\<star>\<rangle> ( |x\<rangle> y \<cdot> ad y )"
@@ -198,7 +198,7 @@ proof -
     also have "... \<le> |x\<rangle> (\<Omega> x y)"
       using Loebian_def a by auto
     finally have "d y = 0"
-      by (simp add: b local.antisym local.fdia_def)
+      by (simp add: b order.antisym fdia_def)
   }
   thus "Noetherian x"
     by (simp add: Noetherian_def)
@@ -217,7 +217,7 @@ proof -
       using local.dka.fd_def local.order_prop opti_iterate by force
   }
   thus ?thesis
-    using a local.antisym local.dka.fd_def local.dka.fdia_star_induct_var by auto
+    using a order.antisym dka.fd_def dka.fdia_star_induct_var by auto
 qed
 
 lemma d_transitive_var: "(\<forall>y. |x\<rangle> |x\<rangle> y \<le> |x\<rangle> y) \<Longrightarrow> (\<forall>y. |x\<rangle> y = |x\<rangle> |x\<^sup>\<star>\<rangle> y)"
@@ -317,11 +317,11 @@ lemma nabla_preloeb: "\<nabla> x = 0 \<Longrightarrow> PreLoebian x"
   using Noetherian_iff_PreLoebian nabla_noether by auto
 
 lemma star_nabla_1 [simp]: "|x\<^sup>\<star>\<rangle> \<nabla> x = \<nabla> x"
-proof (rule antisym)
+proof (rule order.antisym)
   show "|x\<^sup>\<star>\<rangle> \<nabla> x \<le> \<nabla> x"
-    by (metis local.dka.fdia_star_induct_var local.eq_iff local.nabla_closure nabla_unfold_eq)
+    by (metis dka.fdia_star_induct_var order.eq_iff nabla_closure nabla_unfold_eq)
   show "\<nabla> x \<le> |x\<^sup>\<star>\<rangle> \<nabla> x"
-    by (metis local.ds.fd_iso2 local.star_ext nabla_unfold_eq)
+    by (metis ds.fd_iso2 star_ext nabla_unfold_eq)
 qed
 
 lemma nabla_sum_expand [simp]: "|x\<rangle> \<nabla> (x + y) + |y\<rangle> \<nabla> (x + y) = \<nabla> (x + y)"
@@ -335,7 +335,7 @@ qed
 lemma wagner_3:
   assumes "d z + |x\<rangle> \<nabla> (x + y) = \<nabla> (x + y)"
   shows "\<nabla> (x + y) = \<nabla> x + |x\<^sup>\<star>\<rangle> z"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d \<nabla>(x + y) \<le> d z + |x\<rangle> \<nabla>(x + y)"
     by (simp add: assms)
   thus "\<nabla> (x + y) \<le> \<nabla> x + |x\<^sup>\<star>\<rangle> z"
@@ -357,7 +357,7 @@ proof -
 qed
 
 lemma nabla_separation: "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star> \<Longrightarrow> (\<nabla> (x + y) = \<nabla> x + |x\<^sup>\<star>\<rangle> \<nabla> y)"
-proof (rule antisym)
+proof (rule order.antisym)
   assume quasi_comm: "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
   hence a: "y\<^sup>\<star> \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
     using quasicomm_var by blast
@@ -475,7 +475,7 @@ proof -
   also have "... = ad p + |x](d q \<cdot> |y] d s)"
     using T_def T_p by auto
   also have "... \<le> ad p + |x] |y] d s"
-    by (metis (no_types, lifting) local.dka.dom_subid_aux2 local.dka.dsg3 local.eq_iff local.fbox_iso local.join.sup.mono)
+    by (metis (no_types, lifting) dka.dom_subid_aux2 dka.dsg3 order.eq_iff fbox_iso join.sup.mono)
   finally show ?thesis
     by (simp add: T_def fbox_mult)
 qed
@@ -526,7 +526,7 @@ proof -
       by (metis (no_types) T_d fbox_simp_2 local.dka.dsg3 local.fbox_add1 mult_assoc)
   qed
   also have "... = d p \<cdot> |(x\<cdot>x)\<^sup>\<star>](p\<leadsto>x\<cdot>x\<leadsto>p) \<cdot> |(x\<cdot>x)\<^sup>\<star>]((p\<leadsto>x\<leadsto>q) \<cdot> |x](q\<leadsto>x\<leadsto>p) \<cdot> (q\<leadsto>x\<leadsto>p) \<cdot> |x](p\<leadsto>x\<leadsto>q))" using "1"
-    by (metis fbox_simp_2 local.dka.dns5 local.dka.dsg4 local.join.sup.absorb2 mult_assoc)
+    by (metis fbox_simp_2 dka.dns5 dka.dsg4 join.sup.absorb2 mult_assoc)
   also have "... = |(x\<cdot>x)\<^sup>\<star>](d p \<cdot> (p\<leadsto>x\<leadsto>q) \<cdot> |x](q\<leadsto>x\<leadsto>p) \<cdot> (q\<leadsto>x\<leadsto>p) \<cdot> |x](p\<leadsto>x\<leadsto>q))"
     using T_segerberg local.a_d_closed local.ads_d_def local.apd_d_def local.distrib_left local.fbox_def mult_assoc by auto
   also have "... = |(x\<cdot>x)\<^sup>\<star>](d p \<cdot> |x] d q \<cdot> |x](q\<leadsto>x\<leadsto>p) \<cdot> (q\<leadsto>x\<leadsto>p) \<cdot> |x](p\<leadsto>x\<leadsto>q))"

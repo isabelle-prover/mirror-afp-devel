@@ -30,7 +30,7 @@ using assms inf.commute inf_bot_right schroeder_1 by fastforce
 
 lemma end_point_char:
   "x\<^sup>T;p = 0 \<longleftrightarrow> p \<le> -(x;1)"
-using antisym bot_least compl_bot_eq conv_galois_1 by fastforce
+using order.antisym bot_least compl_bot_eq conv_galois_1 by fastforce
 
 end (* relation_algebra *)
 
@@ -110,7 +110,7 @@ by (simp add: comp_assoc mult_isol)
 lemma connected_root_iff3:
   assumes "point r"
     shows "connected_root r x \<longleftrightarrow> x\<^sup>T;1 = x\<^sup>T\<^sup>+;r"
-using assms antisym connected_root_aux connected_root_iff2 by fastforce
+using assms order.antisym connected_root_aux connected_root_iff2 by fastforce
 
 lemma connected_root_iff4:
   assumes "point r"
@@ -193,7 +193,7 @@ lemma empty_path_root_end:
     shows "e = r \<longleftrightarrow> x = 0"
   apply(standard)
  using assms has_root backward_finite_path_root_def apply blast
-by (metis assms antisym conv_e conv_zero independence1 is_inj_def mult_oner point_swap
+by (metis assms order.antisym conv_e conv_zero independence1 is_inj_def mult_oner point_swap
           backward_finite_path_root_def ss423conv sur_def_var1 x_leq_triple_x)
 
 lemma path_root_acyclic:
@@ -491,7 +491,7 @@ lemma root_equals_start_points:
   assumes "backward_terminating_path_root r x"
       and "x \<noteq> 0"
     shows "r = start_points x"
-using assms antisym point_def backward_finite_path_root_def start_points_in_root root_in_start_points
+using assms order.antisym point_def backward_finite_path_root_def start_points_in_root root_in_start_points
 by fastforce
 
 lemma root_equals_end_points:
@@ -659,7 +659,7 @@ by (metis assms(1,2) inj_sur_semi_swap point_def non_empty_cycle_root_msc
 lemma non_empty_cycle_root_rtc_tc:
   assumes "non_empty_cycle_root r x"
     shows "x\<^sup>\<star>;r = x\<^sup>+;r"
-proof (rule antisym)
+proof (rule order.antisym)
   have "r \<le> x\<^sup>+;r"
     using assms many_strongly_connected_iff_7 non_empty_cycle_root_loop non_empty_cycle_root_msc
     by simp
@@ -754,7 +754,7 @@ by (metis assms conv_contrav conv_invol conv_one inf.boundedI maddux_20 maddux_2
 lemma non_empty_cycle_root_start_end_points_plus:
   assumes "non_empty_cycle_root r x"
     shows "x;1;x \<le> x\<^sup>+"
-using assms eq_iff one_strongly_connected_iff one_strongly_connected_implies_7_eq
+using assms order.eq_iff one_strongly_connected_iff one_strongly_connected_implies_7_eq
       backward_finite_path_connected non_empty_cycle_root_msc by blast
 
 lemma non_empty_cycle_root_converse_plus:
@@ -815,7 +815,7 @@ by fastforce
 lemma non_empty_cycle_root_var_axioms_2:
   "non_empty_cycle_root r x \<longleftrightarrow> x;1 \<le> x\<^sup>+;r \<and> is_inj x \<and> is_p_fun x \<and> point r \<and> r \<le> x;1"
 apply (rule iffI)
- apply (metis eq_iff backward_finite_path_root_def non_empty_cycle_root_no_start_end_points
+ apply (metis order.eq_iff backward_finite_path_root_def non_empty_cycle_root_no_start_end_points
               non_empty_cycle_root_tc_start_points)
 by (metis conv_invol p_fun_inj connected_root_iff2 connected_root_iff3
           non_empty_cycle_root_var_axioms_1 non_empty_cycle_root_msc_plus

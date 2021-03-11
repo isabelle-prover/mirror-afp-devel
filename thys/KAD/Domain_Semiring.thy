@@ -104,17 +104,19 @@ qed
 
 text \<open>This relation is indeed an order.\<close>
 
-sublocale  ds: order "(\<sqsubseteq>)" "\<lambda>x y. (x \<sqsubseteq> y \<and> x \<noteq> y)"
+sublocale ds: ordering \<open>(\<sqsubseteq>)\<close> \<open>\<lambda>x y. x \<sqsubseteq> y \<and> x \<noteq> y\<close>
 proof
-  show "\<And>x y. (x \<sqsubseteq> y \<and> x \<noteq> y) = (x \<sqsubseteq> y \<and> \<not> y \<sqsubseteq> x)"
-    using ds_ord_antisym by blast
-  show "\<And>x. x \<sqsubseteq> x"
+  show \<open>x \<sqsubseteq> y \<and> x \<noteq> y \<longleftrightarrow> x \<sqsubseteq> y \<and> x \<noteq> y\<close> for x y
+    by (rule refl)
+  show "x \<sqsubseteq> x" for x
     by (rule ds_ord_refl)
-  show "\<And>x y z. x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<sqsubseteq> z"
+  show "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<sqsubseteq> z" for x y z
     by (rule ds_ord_trans)
-  show "\<And>x y. x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x \<Longrightarrow> x = y"
+  show "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x \<Longrightarrow> x = y" for x y
     by (rule ds_ord_antisym)
 qed
+
+declare ds.refl [simp]
 
 lemma ds_ord_eq: "x \<sqsubseteq> d x \<longleftrightarrow> x = d x"
   by (simp add: ds_ord_def)
@@ -170,7 +172,7 @@ lemma ds_dom_llp: "x \<sqsubseteq> d y \<cdot> x \<longleftrightarrow> d x \<sqs
 proof
   assume "x \<sqsubseteq> d y \<cdot> x"
   hence "x = d y \<cdot> x"
-    by (simp add: ds_subid_aux ds.order.antisym)
+    by (simp add: ds_subid_aux ds.antisym)
   hence "d x = d (d y \<cdot> x)"
     by presburger
   thus "d x \<sqsubseteq> d y"
@@ -182,6 +184,7 @@ next
 qed
 
 lemma ds_dom_llp_strong: "x = d y \<cdot> x \<longleftrightarrow> d x \<sqsubseteq> d y"
+  using ds.eq_iff
   by (simp add: ds_dom_llp ds.eq_iff ds_subid_aux)
 
 definition refines :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -192,16 +195,19 @@ lemma refines_refl: "refines x x"
 
 lemma refines_trans: "refines x y \<Longrightarrow> refines y z \<Longrightarrow> refines x z"
   unfolding refines_def
-  by (metis domain_invol ds.dual_order.trans dsg1 dsg3 ds_ord_def)
+  by (metis domain_invol ds.trans dsg1 dsg3 ds_ord_def)
 
 lemma refines_antisym: "refines x y \<Longrightarrow> refines y x \<Longrightarrow> x = y"
-  unfolding refines_def
-  using ds_dom_llp ds_ord_antisym by fastforce
+  apply (rule ds.antisym)
+   apply (simp_all add: refines_def)
+   apply (metis ds_dom_llp_strong)
+  apply (metis ds_dom_llp_strong)
+  done
 
-sublocale ref: order "refines" "\<lambda>x y. (refines x y \<and> x \<noteq> y)"
+sublocale ref: ordering "refines" "\<lambda>x y. (refines x y \<and> x \<noteq> y)"
 proof
-  show "\<And>x y. (refines x y \<and> x \<noteq> y) = (refines x y \<and> \<not> refines y x)"
-    using refines_antisym by blast
+  show "\<And>x y. refines x y \<and> x \<noteq> y \<longleftrightarrow> refines x y \<and> x \<noteq> y"
+    ..
   show "\<And>x. refines x x"
     by (rule refines_refl)
   show "\<And>x y z. refines x y \<Longrightarrow> refines y z \<Longrightarrow> refines x z"
@@ -337,7 +343,7 @@ next
 qed
 
 lemma dom_export [simp]: "d (d x \<cdot> y) = d x \<cdot> d y"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d (d x \<cdot> y) = d (d (d x \<cdot> y)) \<cdot> d (d x \<cdot> y)"
     using dns1 by presburger
   also have "... = d (d x \<cdot> d y) \<cdot> d (d x \<cdot> y)"
@@ -484,7 +490,7 @@ begin
 text \<open>We prepare to show that every domain pre-dioid with one is a domain near-dioid with one.\<close>
 
 lemma dns1'' [simp]: "d x \<cdot> x = x"
-proof (rule antisym)
+proof (rule order.antisym)
   show "d x \<cdot> x \<le> x"
     using dpd3  mult_isor by fastforce
   show "x \<le> d x \<cdot> x "
@@ -505,7 +511,7 @@ proof -
 qed
 
 lemma domain_export'' [simp]: "d (d x \<cdot> y) = d x \<cdot> d y"
-proof (rule antisym)
+proof (rule order.antisym)
   have one: "d (d x \<cdot> y) \<le> d x"
     by (metis dpd2 domain_1'' mult_onel)
   have two: "d (d x \<cdot> y) \<le> d y"
@@ -535,7 +541,7 @@ lemma dom_subid_aux2'': "x \<cdot> d y \<le> x"
   using dpd3 mult_isol by fastforce
 
 lemma d_comm: "d x \<cdot> d y = d y \<cdot> d x"
-proof (rule antisym)
+proof (rule order.antisym)
   have "d x \<cdot> d y = (d x \<cdot> d y) \<cdot> (d x \<cdot> d y)"
     by (metis dns1'' domain_export'')
   thus "d x \<cdot> d y \<le> d y \<cdot> d x"
@@ -554,7 +560,7 @@ lemma domain_subid: "x \<le> 1 \<Longrightarrow> x \<le> d x"
   by (metis dns1 mult_isol mult_oner)
 
 lemma d_preserves_equation: "d y \<cdot> x \<le> x \<cdot> d z \<longleftrightarrow> d y \<cdot> x = d y \<cdot> x \<cdot> d z"
-  by (metis dom_subid_aux2'' local.antisym local.dom_el_idem local.dom_subid_aux2 local.order_prop local.subdistl mult_assoc)
+  by (metis dom_subid_aux2'' order.antisym local.dom_el_idem local.dom_subid_aux2 local.order_prop local.subdistl mult_assoc)
 
 lemma d_restrict_iff: "(x \<le> y) \<longleftrightarrow> (x \<le> d x \<cdot> y)"
   by (metis dom_subid_aux2 dsg1 less_eq_def order_trans subdistl)
@@ -606,7 +612,7 @@ subsection \<open>The Algebra of Domain Elements\<close>
 text \<open>We show that the domain elements of a domain semiring form a distributive lattice. Unfortunately we cannot prove this within the type class of domain semirings.\<close>
 
 typedef (overloaded)  'a d_element = "{x :: 'a :: domain_semiring. x = d x}"
-  by (rule_tac x = 1 in exI, simp add: domain_subid order_class.eq_iff)
+  by (rule_tac x = 1 in exI, simp add: domain_subid ds.eq_iff)
 
 setup_lifting type_definition_d_element
 

@@ -42,7 +42,7 @@ lemma right_move_to_right: "a \<le> b + -c \<Longrightarrow> a + c \<le> b"
  
 
 lemma [simp]: "(a \<sqinter> b) + c = (a + c) \<sqinter> (b + c)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply safe
   apply (rule add_order_preserving_right)
@@ -71,7 +71,7 @@ lemma left_move_to_right: "a \<le> - c + b \<Longrightarrow> c + a \<le> b"
   by (simp add: add.assoc [THEN sym])
 
 lemma [simp]: "c + (a \<sqinter> b) = (c + a) \<sqinter> (c + b)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply safe
   apply (rule add_order_preserving_left)
@@ -87,7 +87,7 @@ lemma [simp]: "c + (a \<sqinter> b) = (c + a) \<sqinter> (c + b)"
   by simp
 
 lemma [simp]: "- (a \<sqinter> b) = (- a) \<squnion> (- b)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule minus_order)
   apply simp
   apply safe
@@ -103,7 +103,7 @@ lemma [simp]: "- (a \<sqinter> b) = (- a) \<squnion> (- b)"
   by simp
 
 lemma [simp]: "(a \<squnion> b) + c = (a + c) \<squnion> (b + c)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule right_move_to_right)
   apply simp
   apply safe
@@ -120,7 +120,7 @@ lemma [simp]: "(a \<squnion> b) + c = (a + c) \<squnion> (b + c)"
   by simp
   
 lemma [simp]: "c + (a \<squnion> b) = (c + a) \<squnion> (c + b)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (rule left_move_to_right)
   apply simp
   apply safe
@@ -142,7 +142,7 @@ lemma [simp]: "(a \<squnion> b) - c = (a - c) \<squnion>  (b - c)"
   by (simp add: diff_conv_add_uminus del: add_uminus_conv_diff)
 
 lemma [simp]: "- (a \<squnion> b) = (- a) \<sqinter> (- b)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply safe
   apply (rule minus_order)

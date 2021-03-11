@@ -125,7 +125,7 @@ proof-
       case False
       then show ?thesis
         using \<open>0 \<le> b - a\<close>
-        using eq_iff[of "b - a" 0]
+        using order.eq_iff[of "b - a" 0]
         by auto
     qed
   qed

@@ -106,7 +106,7 @@ proof
   show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<le> x\<^sup>\<star>"
     by (simp add: local.star_ext)
   show "1 + x + y \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y"
-    by (metis B23 local.join.le_sup_iff eq_iff mult_1_right subdistl)
+    by (metis B23 local.join.le_sup_iff order.eq_iff mult_1_right subdistl)
 qed
 
 sublocale Brtc_algebra \<subseteq> B2_algebra
@@ -115,7 +115,7 @@ proof
   show "1 + x \<le> x\<^sup>\<star>"
     by (metis rtc1 join.le_sup_iff)
   show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
-  proof (rule antisym)
+  proof (rule order.antisym)
     show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
       by (metis rtc1 join.le_sup_iff)
     show "x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"

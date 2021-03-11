@@ -28,12 +28,12 @@ lemma test_conv_var: "is_test x \<Longrightarrow> x\<^sup>\<smile> \<le> 1'"
 by (metis test_conv is_test_def)
 
 lemma test_eq_conv [simp]: "is_test x \<Longrightarrow> x\<^sup>\<smile> = x"
-proof (rule antisym)
+proof (rule order.antisym)
   assume hyp: "is_test x"
   hence "x \<le> x ; (1' \<cdot> x\<^sup>\<smile> ; 1')"
     by (metis inf.commute inf_absorb2 inf_le2 modular_1' mult.right_neutral is_test_def)
   thus "x \<le> x\<^sup>\<smile>"
-    by (metis comp_unitr conv_contrav conv_invol eq_iff hyp inf_absorb2 mult_subdistl test_conv_var)
+    by (metis comp_unitr conv_contrav conv_invol order.eq_iff hyp inf_absorb2 mult_subdistl test_conv_var)
   thus "x\<^sup>\<smile> \<le> x"
     by (metis conv_invol conv_times le_iff_inf)
 qed
@@ -51,7 +51,7 @@ lemma test_comp_eq_mult:
   assumes "is_test x"
     and "is_test y"
   shows "x ; y = x \<cdot> y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x ; y \<le> x \<cdot> y"
     by (metis assms comp_unitr inf_absorb2 le_inf_iff mult_onel mult_subdistl mult_subdistr is_test_def)
 next
@@ -65,7 +65,7 @@ lemma test_1 [simp]: "is_test x \<Longrightarrow> x ; 1 \<cdot> y = x ; y"
 by (metis inf.commute inf.idem inf_absorb2 mult.left_neutral one_conv ra_1 test_comp_eq_mult test_eq_conv is_test_def)
 
 lemma maddux_32 [simp]: "is_test x \<Longrightarrow> -(x ; 1) \<cdot> 1' = -x \<cdot> 1'"
-proof (rule antisym)
+proof (rule order.antisym)
   assume "is_test x"
   show "-(x ; 1) \<cdot> 1' \<le> -x \<cdot> 1'"
     by (metis maddux_20 comp_anti inf.commute meet_isor)
@@ -76,7 +76,7 @@ next
   hence two: "x ; 1 \<cdot> (-x \<cdot> 1') \<le> -x"
     by (metis inf.commute inf_le1 le_infE)
   hence "x ; 1 \<cdot> (-x \<cdot> 1') \<le> x"
-    by (metis one inf.commute le_infE meet_iso one_conv \<open>is_test x\<close> eq_iff test_1 test_eq_conv)
+    by (metis one inf.commute le_infE meet_iso one_conv \<open>is_test x\<close> order.eq_iff test_1 test_eq_conv)
   hence "x ; 1 \<cdot> (-x \<cdot> 1') = 0"
     by (metis two galois_aux2 le_iff_inf)
   thus "-x \<cdot> 1' \<le> -(x ; 1) \<cdot> 1'"
@@ -87,7 +87,7 @@ lemma test_distr_1 :
   assumes "is_test x"
     and "is_test y"
   shows "x ; z \<cdot> y ; z = (x \<cdot> y) ; z"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x ; z \<cdot> y ; z \<le> x ; 1 \<cdot> y ; z"
     by (metis inf_top_left meet_iso mult_subdistl)
   also have "\<dots> = x ; y ; z"
@@ -100,12 +100,12 @@ next
 qed
 
 lemma maddux_35: "is_test x \<Longrightarrow> x ; y \<cdot> -z = x ; y \<cdot> -(x ; z)"
-proof (rule antisym)
+proof (rule order.antisym)
   assume "is_test x"
   show "x ; y \<cdot> -z \<le> x ; y \<cdot> -(x ; z)"
     by (metis \<open>is_test x\<close> comp_anti mult_isor mult_onel is_test_def inf.commute inf_le2 le_infI le_infI1)
   have one: "x ; y \<cdot> -(x ; z) \<le> x ; (y \<cdot> -z)"
-    by (metis eq_iff le_infE maddux_23)
+    by (metis order.eq_iff le_infE maddux_23)
   hence two: "x ; y \<cdot> -(x ; z) \<le> x ; y"
     by (metis inf_le1)
   have "x ; y \<cdot> -(x ; z) \<le>  x ; -z"

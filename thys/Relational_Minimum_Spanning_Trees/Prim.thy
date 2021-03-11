@@ -40,7 +40,7 @@ qed
 lemma span_tree_component:
   assumes "spanning_tree t g r"
     shows "component g r = component t r"
-  using assms by (simp add: antisym mult_right_isotone star_isotone spanning_tree_def)
+  using assms by (simp add: order.antisym mult_right_isotone star_isotone spanning_tree_def)
 
 text \<open>
 We first show three verification conditions which are used in both correctness proofs.
@@ -71,7 +71,7 @@ next
     have "component ?ss r \<le> component (r * r\<^sup>T) r"
       by (simp add: mult_right_isotone star_isotone)
     also have "... \<le> r\<^sup>T * 1\<^sup>\<star>"
-      using assms by (metis inf.eq_iff p_antitone regular_one_closed star_sub_one prim_precondition_def)
+      using assms by (metis order.eq_iff p_antitone regular_one_closed star_sub_one prim_precondition_def)
     also have "... = r\<^sup>T * bot\<^sup>\<star>"
       by (simp add: star.circ_zero star_one)
     finally show "component ?ss r \<le> r\<^sup>T * bot\<^sup>\<star>"

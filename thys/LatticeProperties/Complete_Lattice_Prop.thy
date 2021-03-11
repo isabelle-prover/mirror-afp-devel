@@ -18,23 +18,8 @@ fixpoint monotonic.
 context complete_lattice begin
 
 lemma inf_Inf: assumes nonempty: "A \<noteq> {}"
-   shows "inf x (Inf A) = Inf ((inf x) ` A)"
-  apply (rule antisym, simp_all)
-  apply (rule INF_greatest)
-  apply (safe, simp)
-  apply (rule_tac y = "Inf A" in order_trans, simp_all)
-  apply (rule Inf_lower, simp)
-  apply (cut_tac nonempty)
-  apply safe
-  apply (erule notE)
-  apply (rule_tac y = "inf x xa" in order_trans)
-  apply (rule INF_lower, blast)
-  apply simp
-  apply (rule Inf_greatest)
-  apply (rule_tac y = "inf x xa" in order_trans)
-  apply (rule INF_lower)
-  apply (simp add: image_def)
-  by auto
+  shows "inf x (Inf A) = Inf ((inf x) ` A)"
+  using assms by (auto simp add: INF_inf_const1 nonempty) 
 
 end
 

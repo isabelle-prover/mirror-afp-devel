@@ -93,7 +93,7 @@ lemma pp_increasing:
 
 lemma ppp [simp]:
   "---x = -x"
-  by (metis antisym inf.commute order_trans pseudo_complement pp_increasing)
+  by (metis order.antisym inf.commute order_trans pseudo_complement pp_increasing)
 
 lemma pp_idempotent:
   "----x = --x"
@@ -141,7 +141,7 @@ One of De Morgan's laws holds in pseudocomplemented lattices.
 
 lemma p_dist_sup [simp]:
   "-(x \<squnion> y) = -x \<sqinter> -y"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: p_antitone)
   using inf_le1 inf_le2 le_sup_iff p_antitone_iff by blast
 
@@ -192,7 +192,7 @@ lemma pp_inf_below_iff:
 
 lemma p_inf_pp [simp]:
   "-(x \<sqinter> --y) = -(x \<sqinter> y)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: inf.coboundedI2 p_antitone pp_increasing)
   using inf_commute p_antitone_iff pp_inf_below_iff by auto
 
@@ -226,7 +226,7 @@ lemma pp_dist_inf [simp]:
 
 lemma inf_import_p [simp]:
   "x \<sqinter> -(x \<sqinter> y) = x \<sqinter> -y"
-  apply (rule antisym)
+  apply (rule order.antisym)
   using p_shunting_swap apply fastforce
   using inf.sup_right_isotone p_antitone by auto
 
@@ -236,7 +236,7 @@ Pseudocomplements are unique.
 
 lemma p_unique:
   "(\<forall>x . x \<sqinter> y = bot \<longleftrightarrow> x \<le> z) \<Longrightarrow> z = -y"
-  using inf.eq_iff pseudo_complement by auto
+  using inf.order_eq_iff pseudo_complement by auto
 
 lemma maddux_3_5:
   "x \<squnion> x = x \<squnion> -(y \<squnion> -y)"
@@ -326,7 +326,7 @@ proof -
   hence "\<forall>x y . x \<le> -(g y) \<longleftrightarrow> x \<le> -(h y)"
     using inf.commute pseudo_complement by simp
   hence "\<forall>y . -(g y) = -(h y)"
-    using eq_iff by blast
+    using order.eq_iff by blast
   thus ?thesis
     by auto
 qed
@@ -385,7 +385,7 @@ proof -
     hence "-(f x) \<sqinter> -(f y) \<le> -(f (x \<squnion> y))"
       using 1 by (metis inf_le1 inf_le2)
     thus "-(f (x \<squnion> y)) = -(f x) \<sqinter> -(f y)"
-      using 1 antisym by fastforce
+      using 1 order.antisym by fastforce
   qed
   thus ?thesis
     using dual_additive_def by simp
@@ -878,7 +878,7 @@ lemma implies_antitone_inf:
 
 lemma implies_curry:
   "x \<leadsto> (y \<leadsto> z) = (x \<sqinter> y) \<leadsto> z"
-  by (metis implies_galois_decreasing implies_galois inf_assoc antisym)
+  by (metis implies_galois_decreasing implies_galois inf_assoc order.antisym)
 
 lemma implies_curry_flip:
   "x \<leadsto> (y \<leadsto> z) = y \<leadsto> (x \<leadsto> z)"
@@ -886,7 +886,7 @@ lemma implies_curry_flip:
 
 lemma triple_implies [simp]:
   "((x \<leadsto> y) \<leadsto> y) \<leadsto> y = x \<leadsto> y"
-  using implies_antitone implies_galois_swap eq_iff by auto
+  using implies_antitone implies_galois_swap order.eq_iff by auto
 
 lemma implies_mp_eq [simp]:
   "x \<sqinter> (x \<leadsto> y) = x \<sqinter> y"
@@ -908,7 +908,7 @@ proof -
   hence "(x \<leadsto> y) \<sqinter> (x \<leadsto> z) \<le> x \<leadsto> (y \<sqinter> z)"
     using implies_galois by blast
   thus ?thesis
-    by (simp add: implies_isotone eq_iff)
+    by (simp add: implies_isotone order.eq_iff)
 qed
 
 lemma implies_itself_top:
@@ -953,7 +953,7 @@ lemma implies_inf_identity:
 
 lemma implies_itself_same:
   "x \<leadsto> x = y \<leadsto> y"
-  by (simp add: le_implies_top eq_iff)
+  by (simp add: le_implies_top order.eq_iff)
 
 end
 
@@ -1023,7 +1023,7 @@ qed
 
 subclass distrib_lattice
   apply unfold_locales
-  using distrib_sup_le eq_iff sup_distrib_inf_le by auto
+  using distrib_sup_le order.eq_iff sup_distrib_inf_le by auto
 
 lemma implies_isotone_sup:
   "x \<leadsto> y \<le> x \<leadsto> (y \<squnion> z)"
@@ -1046,7 +1046,7 @@ qed
 
 lemma implies_dist_sup:
   "(x \<squnion> y) \<leadsto> z = (x \<leadsto> z) \<sqinter> (y \<leadsto> z)"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: implies_antitone)
   by (simp add: implies_sup implies_galois)
 
@@ -1112,7 +1112,7 @@ lemma boolean_implies_below:
 
 lemma negation_implies:
   "-(x \<leadsto> y) = --x \<sqinter> -y"
-proof (rule antisym)
+proof (rule order.antisym)
   show "-(x \<leadsto> y) \<le> --x \<sqinter> -y"
     using boolean_implies_below p_antitone by auto
 next
@@ -1126,7 +1126,7 @@ qed
 
 lemma double_negation_dist_implies:
   "--(x \<leadsto> y) = --x \<leadsto> --y"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (metis pp_inf_below_iff implies_galois_decreasing implies_galois negation_implies ppp)
   by (simp add: p_antitone_iff negation_implies)
 

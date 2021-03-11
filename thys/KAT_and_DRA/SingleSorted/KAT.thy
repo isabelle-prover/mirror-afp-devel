@@ -30,7 +30,7 @@ lemma star_test_export2: "test p \<Longrightarrow> (p \<cdot> x)\<^sup>\<star> \
   using star_n_export2 by auto
 
 lemma star_n_export_left: "x \<cdot> n y \<le> n y \<cdot> x \<Longrightarrow> x\<^sup>\<star> \<cdot> n y = n y \<cdot> (x \<cdot> n y)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   assume a1: "x \<cdot> n y \<le> n y \<cdot> x"
   hence "x \<cdot> n y = n y \<cdot> x \<cdot> n y"
     by (simp add: local.n_kat_2_opp)

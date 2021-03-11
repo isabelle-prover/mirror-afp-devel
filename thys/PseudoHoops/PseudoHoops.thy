@@ -81,7 +81,7 @@ context pseudo_hoop_algebra begin
 lemma commutative_ps: "(\<forall> a b . a * b = b * a) = ((l\<rightarrow>) = (r\<rightarrow>))"
   apply (simp add: fun_eq_iff)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: right_residual [THEN sym])
   apply (subgoal_tac "x * (x l\<rightarrow> xa) =  (x l\<rightarrow> xa) * x")
   apply (drule drop_assumption)
@@ -90,7 +90,7 @@ lemma commutative_ps: "(\<forall> a b . a * b = b * a) = ((l\<rightarrow>) = (r\
   apply simp
   apply (simp add: left_residual [THEN sym])
   apply (simp add: right_residual)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: left_residual)
   apply (simp add: right_residual [THEN sym])
   apply (simp add: left_residual)
@@ -203,7 +203,7 @@ definition
 lemma infimum_unique: "(infimum A = {x}) = (x \<in> infimum A)"
   apply safe
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   by (simp_all add: infimum_def)
 
 lemma lemma_2_6_20:
@@ -224,7 +224,7 @@ lemma lemma_2_6_21:
 lemma infimum_pair: "a \<in> infimum {x . x = b \<or> x = c} = (a = b \<sqinter> c)"
   apply (simp add: infimum_def lower_bound_def)
   apply safe
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
  
 lemma lemma_2_6_20_a:
@@ -271,7 +271,7 @@ definition
 lemma supremum_unique:
   "a \<in> supremum A \<Longrightarrow> b \<in> supremum A \<Longrightarrow> a = b"
   apply (simp add: supremum_def upper_bound_def)
-  apply (rule antisym)
+  apply (rule order.antisym)
   by auto
 
 lemma lemma_2_8_i:
@@ -289,7 +289,7 @@ context pseudo_hoop_algebra begin
 
 lemma lemma_2_8_i1:
   "a \<in> supremum A \<Longrightarrow> a r\<rightarrow> b \<in> infimum ((\<lambda> x . x r\<rightarrow> b)`A)"
-  by (rule pseudo_hoop_dual.lemma_2_8_i, simp)
+  by (fact pseudo_hoop_dual.lemma_2_8_i)
 
 definition
   times_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"  (infixl "**" 70) where
@@ -471,7 +471,7 @@ lemma lemma_2_10_27:
 
 lemma lemma_2_10_28:
   "b l\<rightarrow> ((a l\<rightarrow> b) r\<rightarrow> a) = b l\<rightarrow> a"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (subst left_residual [THEN sym])
   apply (rule_tac y = "((a l\<rightarrow> b) r\<rightarrow> a) \<sqinter> a" in order_trans)
   apply (subst inf_l_def)
@@ -496,7 +496,7 @@ lemma lemma_2_10_29:
 
 lemma lemma_2_10_30:
   "((b l\<rightarrow> a) r\<rightarrow> a) l\<rightarrow> a = b l\<rightarrow> a"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp_all add: lemma_2_10_26)
   apply (rule lemma_2_5_13_a) 
   by (rule lemma_2_10_24)
@@ -519,7 +519,7 @@ lemma lemma_2_10_32:
       by (simp add: left_impl_ded)
     also have "\<dots> = (((b l\<rightarrow> a) r\<rightarrow> a) \<sqinter> b) l\<rightarrow> a"
       by (simp add: inf_l_def)
-    also have "\<dots> = b l\<rightarrow> a" apply (subgoal_tac "((b l\<rightarrow> a) r\<rightarrow> a) \<sqinter> b = b", simp, rule antisym) 
+    also have "\<dots> = b l\<rightarrow> a" apply (subgoal_tac "((b l\<rightarrow> a) r\<rightarrow> a) \<sqinter> b = b", simp, rule order.antisym) 
       by (simp_all add: lemma_2_10_24)
     finally show ?thesis .
   qed
@@ -560,7 +560,7 @@ begin
 
 lemma sup_comute1: "a \<squnion> b = b \<squnion> a"
   apply (simp add: sup_def)
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 lemma sup_le1 [simp]: "a \<le> a \<squnion> b"
@@ -569,7 +569,7 @@ lemma sup_le1 [simp]: "a \<le> a \<squnion> b"
 lemma le_sup_equiv1: "(a \<le> b) = (a \<squnion> b = b)"
   apply safe
   apply (simp add: left_lesseq)
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: sup_def)
   apply (simp add: sup_def)
   apply (simp_all add: lemma_2_10_24)
@@ -578,7 +578,7 @@ lemma le_sup_equiv1: "(a \<le> b) = (a \<squnion> b = b)"
   apply simp
   apply safe
   apply simp
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply simp
   apply (drule drop_assumption)
   by (simp add: sup_comute1)
@@ -627,7 +627,7 @@ begin
     "a \<le> c \<Longrightarrow> b \<le> c \<Longrightarrow> a \<squnion> b \<le> c"
     apply (subst le_iff_inf)
     apply (subgoal_tac "(a \<squnion> b) \<sqinter> c = (a \<squnion> b) \<sqinter> (a \<squnion> c) \<and> a \<squnion> (b \<sqinter> c) \<le> (a \<squnion> b) \<sqinter> (a \<squnion> c) \<and> a \<squnion> (b \<sqinter> c) = a \<squnion> b")
-    apply (rule antisym)
+    apply (rule order.antisym)
     apply simp
     apply safe
     apply auto[1]
@@ -705,7 +705,7 @@ lemma (in pseudo_hoop_lattice_a) supremum_pair [simp]:
   apply (simp add: supremum_def upper_bound_def)
   apply safe
   apply simp_all
-  apply (rule antisym)
+  apply (rule order.antisym)
   by simp_all
 
 sublocale pseudo_hoop_lattice <  distrib_lattice "(\<sqinter>)" "(\<le>)" "(<)" "(\<squnion>)"
@@ -721,7 +721,7 @@ class bounded_semilattice_inf_top = semilattice_inf + order_top
 begin
 lemma inf_eq_top_iff [simp]:
   "(inf x y = top) = (x = top \<and> y = top)"
-  by (simp add: eq_iff)
+  by (simp add: order.eq_iff)
 end
 
 sublocale pseudo_hoop_algebra < bounded_semilattice_inf_top "(\<sqinter>)" "(\<le>)" "(<)" "1"
@@ -749,7 +749,7 @@ context pseudo_hoop_algebra
 begin
   lemma lemma_2_15_i:
     "1 \<in> supremum {a, b} \<Longrightarrow> a * b = a \<sqinter> b"
-    apply (rule antisym)
+    apply (rule order.antisym)
     apply (rule lemma_2_5_11)
     apply (simp add: inf_l_def)
     apply (subst left_impl_times)
@@ -757,7 +757,7 @@ begin
     apply (subst right_lesseq)
     apply (subgoal_tac "a \<squnion>1 b = 1")
     apply (simp add: sup1_def)
-    apply (rule antisym)
+    apply (rule order.antisym)
     apply simp
     by (simp add: supremum_def upper_bound_def)
 

@@ -372,7 +372,7 @@ lemma (in complete_lattice) is_dual_ccpo: "class.ccpo Inf (\<ge>) (>)"
   apply (rule less_le_not_le)
   apply (rule order_refl)
   apply (erule (1) order_trans)
-  apply (erule (1) antisym)
+  apply (erule (1) order.antisym)
   apply (erule Inf_lower)
   apply (erule Inf_greatest)
   done

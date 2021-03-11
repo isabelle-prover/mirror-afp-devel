@@ -163,7 +163,7 @@ lemma "p \<le> i \<Longrightarrow> i \<le> |x]i \<Longrightarrow> i \<le> q \<Lo
   by (metis local.ads_d_def local.dpdz.dom_iso local.dual_order.trans local.fbox_iso)
 
 lemma "p \<le> d i \<Longrightarrow> d i \<le> |x]i \<Longrightarrow> i \<le> d q \<Longrightarrow> p \<le> |x]q"
-  by (metis local.a_4 local.a_antitone' local.a_subid_aux2 ads_d_def local.antisym fbox_def
+  by (metis local.a_4 local.a_antitone' local.a_subid_aux2 ads_d_def order.antisym fbox_def
       local.dka.dsg1 local.dual.mult_isol_var local.dual_order.trans local.order.refl)
 
 lemma "(i \<le> |x] i) \<or> (j \<le> |x] j) \<Longrightarrow> (i + j) \<le> |x] (i + j)"

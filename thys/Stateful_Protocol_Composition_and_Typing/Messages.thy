@@ -110,7 +110,8 @@ using subterm_of_iff_subtermeq by blast
 
 
 subsection \<open>The subterm relation is a partial order on terms\<close>
-interpretation "term": order "(\<sqsubseteq>)" "(\<sqsubset>)"
+
+interpretation "term": ordering "(\<sqsubseteq>)" "(\<sqsubset>)"
 proof
   show "s \<sqsubseteq> s" for s :: "('a,'b) term"
     by (induct s rule: subterms.induct) auto
@@ -137,10 +138,11 @@ proof
     }
     thus ?case by auto
   qed simp
-  thus "(s \<sqsubset> t) = (s \<sqsubseteq> t \<and> \<not>(t \<sqsubseteq> s))" for s t :: "('a,'b) term"
-    by blast
+  show \<open>s \<sqsubset> t \<longleftrightarrow> s \<sqsubset> t\<close> for s t :: "('a,'b) term" ..
 qed
 
+interpretation "term": order "(\<sqsubseteq>)" "(\<sqsubset>)"
+  by (rule ordering_orderI) (fact term.ordering_axioms)
 
 subsection \<open>Lemmata concerning subterms and free variables\<close>
 lemma fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_append: "fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G) = fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F@fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G"

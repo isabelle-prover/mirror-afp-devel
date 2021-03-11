@@ -1247,7 +1247,7 @@ proof
   let ?e = "enum_class.enum::'a list"
   let ?o = "mone :: ('a,'b) square"
   show "\<ominus>\<ominus>(x\<^sup>\<odot>) = (\<ominus>\<ominus>x)\<^sup>\<odot>"
-  proof (rule matrix_order.antisym)
+  proof (rule matrix_order.order_antisym)
     have "\<forall>g :: ('a,'b) square . distinct ?e \<longrightarrow> \<ominus>\<ominus>(star_matrix' ?e (\<ominus>\<ominus>g)) = star_matrix' ?e (\<ominus>\<ominus>g)"
     proof (induct rule: list.induct)
       case Nil thus ?case

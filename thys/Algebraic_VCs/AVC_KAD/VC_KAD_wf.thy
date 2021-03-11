@@ -115,7 +115,7 @@ proof -
 qed
 
 lemma fdia_arden_eq: "\<nabla>x = 0 \<Longrightarrow> d p = d q + |x\<rangle> p \<Longrightarrow> d p = |x\<^sup>\<star>\<rangle> q"
-  by (simp add: fdia_arden dka.fdia_star_induct_eq eq_iff)
+  by (simp add: fdia_arden dka.fdia_star_induct_eq order.eq_iff)
 
 lemma fdia_arden_iff: "\<nabla>x = 0 \<Longrightarrow> (d p = d q + |x\<rangle> p \<longleftrightarrow> d p = |x\<^sup>\<star>\<rangle> q)"
   by (metis fdia_arden_eq dka.fdia_d_simp dka.fdia_star_unfold_var)
@@ -137,7 +137,7 @@ proof -
 qed
 
 lemma fbox_arden_eq: "\<nabla>x = 0 \<Longrightarrow> d q \<cdot> |x] p = d p \<Longrightarrow> |x\<^sup>\<star>] q = d p"
-  by (simp add: fbox_arden antisym fbox_star_induct_eq)
+  by (simp add: fbox_arden order.antisym fbox_star_induct_eq)
 
 lemma fbox_arden_iff: "\<nabla>x = 0 \<Longrightarrow> (d p = d q \<cdot> |x] p \<longleftrightarrow> d p = |x\<^sup>\<star>] q)"  
   by (metis fbox_arden_eq fbox_simp fbox_star_unfold_var)

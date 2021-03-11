@@ -108,10 +108,11 @@ lemma sgn_int_pow_if [simp]:
   using that by (induct p) simp_all
 
 lemma compare_pow_le_iff: "p > 0 \<Longrightarrow> (x :: 'a) \<ge> 0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> (x ^ p \<le> y ^ p) = (x \<le> y)"
-  by (metis eq_iff linear power_eq_imp_eq_base power_mono)
+  by (rule power_mono_iff)
 
 lemma compare_pow_less_iff: "p > 0 \<Longrightarrow> (x :: 'a) \<ge> 0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> (x ^ p < y ^ p) = (x < y)"
-  by (metis power_less_imp_less_base power_strict_mono)
+  using compare_pow_le_iff [of p x y]
+  using local.dual_order.order_iff_strict local.power_strict_mono by blast
     
 end
 

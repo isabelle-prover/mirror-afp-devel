@@ -281,7 +281,7 @@ proof (induct X Y rule: less_nmultiset_induct)
   then show ?case
     unfolding nmultiset.inject less_nmultiset.simps less_multiset_ext\<^sub>D\<^sub>M_less less_multiset\<^sub>H\<^sub>O
     by (metis add_diff_cancel_left' count_inI diff_add_zero in_diff_count less_imp_not_less
-      mset_subset_eq_multiset_union_diff_commute subset_mset.order.refl)
+      mset_subset_eq_multiset_union_diff_commute subset_mset.refl)
 qed auto
 
 instance

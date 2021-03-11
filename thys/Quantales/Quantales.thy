@@ -117,7 +117,7 @@ lemma fres_sol: "((y \<leftarrow> x) \<cdot> x = y) = (\<exists>z. z \<cdot> x =
   using dual_order.antisym fres_canc1 fres_canc2 mult_isor by fastforce
 
 lemma sol_fres: "((y \<cdot> x) \<leftarrow> x = y) = (\<exists>z. y = z \<leftarrow> x)"
-  by (metis fres_canc1 fres_canc2 fres_sol eq_iff fres_galois)
+  by (metis fres_canc1 fres_canc2 fres_sol order.eq_iff fres_galois)
 
 end
 
@@ -216,10 +216,10 @@ lemma  inf_bres: "x \<cdot> y = \<Sqinter>{z. y \<le> x \<rightarrow> z}"
   using bres_galois fres_galois inf_fres by force
 
 lemma bres_sol: "(x \<cdot> (x \<rightarrow> y) = y) = (\<exists>z. x \<cdot> z = y)"
-  using bres_galois antisym mult_isol by force
+  using bres_galois order.antisym mult_isol by force
 
 lemma sol_bres: "(x \<rightarrow> (x \<cdot> y) = y) = (\<exists>z. y = x \<rightarrow> z)"
-  by (metis bres_canc1 bres_canc2 bres_iso eq_iff)
+  by (metis bres_canc1 bres_canc2 bres_iso order.eq_iff)
 
 end 
 
@@ -248,7 +248,7 @@ context near_quantale
 begin
 
 lemma fres_curry: "(z \<leftarrow> y) \<leftarrow> x = z \<leftarrow> (x \<cdot> y)"
-  by (metis eq_iff fres_canc1 fres_galois mult_assoc)
+  by (metis order.eq_iff fres_canc1 fres_galois mult_assoc)
 
 end
   
@@ -380,7 +380,7 @@ proof-
     by (simp add: fres_galois)
   finally have "(w \<le> x \<rightarrow> (y \<leftarrow> z)) = (w \<le> (x \<rightarrow> y) \<leftarrow> z)".}
   thus ?thesis
-    using eq_iff by blast
+    using order.eq_iff by blast
 qed
 
 end
@@ -441,7 +441,7 @@ lemma cba_bres2: "x \<le> -y \<squnion> z \<longleftrightarrow> x \<le> cba_quan
   using cba_bres1 shunt1 by auto
     
 lemma cba_bres_prop: "cba_quantale.bres x y = -x \<squnion> y"
-  using cba_bres2 eq_iff by blast
+  using cba_bres2 order.eq_iff by blast
   
 end
 

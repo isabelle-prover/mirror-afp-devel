@@ -19,7 +19,7 @@ begin
       apply (simp_all only: mk_less_def fun_ord_def fun_lub_def)
       apply simp
       using ccpo.order_trans apply blast
-      using ccpo.antisym apply blast
+      using ccpo.order.antisym apply blast
       using ccpo.ccpo_Sup_upper apply (blast intro: chain_f_apply)
       using ccpo.ccpo_Sup_least apply (blast intro: chain_f_apply)
       done

@@ -141,7 +141,8 @@ next
       note this(2)
       moreover from 1 have "component_of_term (lt p) \<le> component_of_term v" by simp
       ultimately have "lt p \<preceq>\<^sub>t v" by (rule ord_termI)
-      with \<open>v \<preceq>\<^sub>t lt p\<close> have "v = lt p" by (rule ord_term_lin.antisym)
+      with \<open>v \<preceq>\<^sub>t lt p\<close> have "v = lt p"
+        by simp
       with \<open>lp p \<noteq> pp_of_term v\<close> show False by simp
     qed
   qed

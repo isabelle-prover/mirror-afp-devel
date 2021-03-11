@@ -1525,7 +1525,7 @@ using nat_upto_subs_top_removal' by (cases n; simp)
 
 lemma fw_Suc:
   "i \<le> n \<Longrightarrow> j \<le> n \<Longrightarrow> i' \<le> n \<Longrightarrow> j' \<le> n \<Longrightarrow> fw m n (Suc k) i' j' i j \<le> fw m n k n n i j"
-by (metis Suc_innermost_id1' Suc_innermost_id2 Suc_innermost_mono linorder_class.not_le local.eq_iff
+by (metis Suc_innermost_id1' Suc_innermost_id2 Suc_innermost_mono linorder_class.not_le order.eq_iff
           preorder_class.order_refl single_iteration_inv single_iteration_inv')
 
 lemma negative_len_shortest:

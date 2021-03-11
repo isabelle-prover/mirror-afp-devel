@@ -105,7 +105,7 @@ next
     by fastforce
   ultimately show ?case by(simp add: "4.IH")
 next
-  case 5 thus ?case by(simp add: not_less eq_iff)
+  case 5 thus ?case by(simp add: not_less order_eq_iff)
 qed
 
 lemma sorted_quicksort [simp]: "sorted (quicksort xs)"
@@ -1222,10 +1222,10 @@ context linorder begin
 lemma sorted_list_subset_correct:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk> 
   \<Longrightarrow> sorted_list_subset (=) xs ys \<longleftrightarrow> set xs \<subseteq> set ys"
-apply(induct "(=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
-apply(auto 6 2)
-apply auto
-by (metis eq_iff insert_iff subsetD)
+  apply(induct "(=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
+    apply(auto 6 2)
+   using order_antisym apply auto
+   done
 
 end
 

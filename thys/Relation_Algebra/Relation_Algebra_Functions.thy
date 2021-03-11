@@ -131,7 +131,7 @@ proof -
   hence  "x ; y \<cdot> x ; z \<le> x ; (z \<cdot> y)"
     by (metis inf.commute mult.assoc order_trans modular_1_var)
   thus "x ; (y \<cdot> z) = x ; y \<cdot> x ; z"
-    by (metis eq_iff inf.commute le_infI mult_subdistl)
+    by (metis order.eq_iff inf.commute le_infI mult_subdistl)
 qed
 
 lemma map_distl: "is_map x \<Longrightarrow> x ; (y \<cdot> z) = x ; y \<cdot> x ; z"
@@ -158,7 +158,7 @@ by (metis comp_res_aux compl_bot_eq conv_contrav conv_one inf.commute inf_top_ri
 lemma bij_is_maprop:
   assumes "is_bij x" and "is_map x"
   shows "x\<^sup>\<smile> ; x  = 1' \<and> x ; x\<^sup>\<smile> = 1'"
-by (metis assms is_bij_def eq_iff is_inj_def is_map_def is_p_fun_def is_sur_def is_total_def)
+by (metis assms is_bij_def order.eq_iff is_inj_def is_map_def is_p_fun_def is_sur_def is_total_def)
 
 text\<open>We now provide alternative definitions for functions. These can be found
 in Schmidt and Str\"ohlein's book.\<close>
@@ -182,13 +182,13 @@ lemma inj_def_var1: "is_inj x \<longleftrightarrow> -(1') ; x \<le> -x"
 by (metis conv_galois_2 double_compl galois_aux inf.commute is_inj_def)
 
 lemma is_maprop: "is_map x \<longleftrightarrow> x ; -(1') = -x"
-by (metis eq_iff is_map_def p_fun_def_var total_def_var_2)
+by (metis order.eq_iff is_map_def p_fun_def_var total_def_var_2)
 
 text \<open>Finally we prove miscellaneous properties of functions.\<close>
 
 lemma ss_422iii: "is_p_fun y \<Longrightarrow> (x \<cdot> z ; y\<^sup>\<smile>) ; y = x ; y \<cdot> z"
 (* by (smt antisym comp_assoc inf_commute maddux_17 meet_iso mult_isol mult_oner mult_subdistr_var order_trans is_p_fun_def) *)
-proof (rule antisym)
+proof (rule order.antisym)
   assume "is_p_fun y"
   show "x ; y \<cdot> z \<le> (x \<cdot> z ; y\<^sup>\<smile>) ; y"
     by (metis maddux_17)
@@ -250,7 +250,7 @@ by (metis ss423)
 lemma p_fun_sur_id [simp]:
   assumes "is_p_fun x" and "is_sur x"
   shows "x\<^sup>\<smile> ; x = 1'"
-by (metis assms eq_iff is_p_fun_def is_sur_def)
+by (metis assms order.eq_iff is_p_fun_def is_sur_def)
 
 lemma total_inj_id [simp]:
   assumes "is_total x" and "is_inj x"
@@ -273,7 +273,7 @@ lemma inj_map_monomorph: "\<lbrakk>is_inj x; is_map x\<rbrakk> \<Longrightarrow>
 by (metis is_map_def mult.assoc mult.right_neutral total_inj_id)
 
 lemma sur_map_epimorph: "\<lbrakk>is_sur x; is_map x\<rbrakk> \<Longrightarrow> (\<forall>y z. x ; y = x ; z \<longrightarrow> y = z)"
-by (metis eq_iff mult.assoc mult.left_neutral ss423 is_sur_def)
+by (metis order.eq_iff mult.assoc mult.left_neutral ss423 is_sur_def)
 
 subsection \<open>Points and Rectangles\<close>
 
@@ -287,7 +287,7 @@ definition is_rectangle :: "'a \<Rightarrow> bool"
   where "is_rectangle x \<equiv> x ; 1 ; x \<le> x"
 
 lemma rectangle_eq [simp]: "is_rectangle x \<longleftrightarrow> x ; 1 ; x = x"
-by (metis conv_one dedekind eq_iff inf_top_left mult.assoc one_idem_mult is_rectangle_def)
+by (metis conv_one dedekind order.eq_iff inf_top_left mult.assoc one_idem_mult is_rectangle_def)
 
 subsection \<open>Antidomain\<close>
 

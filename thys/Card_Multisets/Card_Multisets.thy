@@ -22,7 +22,7 @@ next
     from this have "mset_set (set_mset (M + {#x#})) = mset_set (set_mset M)"
       by (simp add: insert_absorb)
     from this add.hyps show ?thesis
-      using subset_mset.order.trans by fastforce
+      using subset_mset.trans by fastforce
   next
     assume "\<not> x \<in># M"
     from this add.hyps have "{#x#} + mset_set (set_mset M) \<subseteq># M + {#x#}"

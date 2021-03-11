@@ -1367,7 +1367,7 @@ proof -
             assume "t \<in> keys b"
             hence "t \<preceq> lpp b" by (rule punit.lt_max_keys)
             with \<open>lpp b \<preceq> t\<close> have "lpp b = lpp b0"
-              unfolding t by (rule ordered_powerprod_lin.antisym)
+              unfolding t by simp
             from inj \<open>B0 \<subseteq> B\<close> have "inj_on lpp B0" by (rule inj_on_subset)
             hence "b = b0" using \<open>lpp b = lpp b0\<close> \<open>b \<in> B0\<close> \<open>b0 \<in> B0\<close> by (rule inj_onD)
             with \<open>b \<noteq> b0\<close> show False ..

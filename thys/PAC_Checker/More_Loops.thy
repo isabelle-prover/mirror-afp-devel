@@ -72,7 +72,7 @@ lemma while_upt_while_direct:
     RETURN \<sigma>
   }"
   using while_upt_while_direct1[of a b] while_upt_while_direct2[of a b]
-  unfolding order_class.eq_iff by fast
+  unfolding order_eq_iff by fast
 
 lemma while_nfoldli:
   "do {

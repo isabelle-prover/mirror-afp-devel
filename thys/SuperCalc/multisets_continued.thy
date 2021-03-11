@@ -359,7 +359,7 @@ next
     from ind have "mset_set (g ` ?E) + {# (g x) #} \<subseteq>#  {# (g x). x \<in># mset_set (?E) #} + {# (g x) #}" 
       using Multiset.subset_mset.add_right_mono by metis
     from this and ii have "mset_set (g ` (?E \<union> { x })) \<subseteq># {# (g x). x \<in># mset_set (?E) #} + {# (g x) #}"
-      using Multiset.subset_mset.order.trans [of "mset_set (g ` (?E \<union> { x }))" ] by metis
+      using subset_mset.trans [of "mset_set (g ` (?E \<union> { x }))" ] by metis
     from this and \<open>E = ?E \<union> { x }\<close> \<open>{# (g x). x \<in># mset_set (?E \<union> { x }) #} = {# (g x). x \<in># mset_set ?E #} + {# (g x) #}\<close> 
      show "mset_set (g ` E) \<subseteq># {# (g x). x \<in># mset_set E #}" 
       by metis

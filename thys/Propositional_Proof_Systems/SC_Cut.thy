@@ -60,7 +60,7 @@ proof -
     then obtain \<Gamma>'' where \<Gamma>[simp]: "\<Gamma> = x,\<Gamma>''" by (meson multi_member_split)
     from add.prems(1) have "x,x,\<Gamma>'' + \<Gamma>' \<Rightarrow> \<Delta>" by simp
     with contractL have "x, \<Gamma>'' + \<Gamma>' \<Rightarrow> \<Delta>" .
-    with add.IH[of \<Gamma>] show ?case using \<Gamma>  add.prems(2) subset_mset.order.trans by force
+    with add.IH[of \<Gamma>] show ?case using \<Gamma>  add.prems(2) subset_mset.trans by force
   qed
   have contract\<Delta>\<Delta>: "\<Gamma> \<Rightarrow> \<Delta>+\<Delta>' \<Longrightarrow> \<Delta>' \<subseteq># \<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> \<Delta>" for \<Gamma> \<Delta> \<Delta>'
   proof(induction "\<Delta>'" arbitrary: \<Delta>)
@@ -71,7 +71,7 @@ proof -
     then obtain \<Delta>'' where \<Delta>[simp]: "\<Delta> = x,\<Delta>''" by (metis multi_member_split)
     from add.prems(1) have "\<Gamma> \<Rightarrow> x,x,\<Delta>'' + \<Delta>'" by simp
     with contractR have "\<Gamma> \<Rightarrow> x, \<Delta>'' + \<Delta>'" .
-    with add.IH[of \<Delta>] show ?case using \<Delta> add.prems(2) subset_mset.order.trans by force
+    with add.IH[of \<Delta>] show ?case using \<Delta> add.prems(2) subset_mset.trans by force
   qed
   show "\<Gamma> \<Rightarrow> A,\<Delta> \<Longrightarrow> A,\<Gamma> \<Rightarrow> \<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> \<Delta>"
     using context_free_Cut[of \<Gamma> A \<Delta> \<Gamma> \<Delta>] contract\<Gamma>\<Gamma> contract\<Delta>\<Delta>

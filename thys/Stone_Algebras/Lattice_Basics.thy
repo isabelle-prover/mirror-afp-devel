@@ -126,7 +126,7 @@ lemma galois_char:
 
 lemma galois_closure:
   "galois l u \<Longrightarrow> l x = l (u (l x)) \<and> u x = u (l (u x))"
-  by (simp add: galois_char isotone_def antisym)
+  by (simp add: galois_char isotone_def order.antisym)
 
 lemma lifted_reflexive:
   "f = g \<Longrightarrow> f \<le>\<le> g"
@@ -138,7 +138,7 @@ lemma lifted_transitive:
 
 lemma lifted_antisymmetric:
   "f \<le>\<le> g \<Longrightarrow> g \<le>\<le> f \<Longrightarrow> f = g"
-  by (metis (full_types) antisym ext lifted_less_eq_def)
+  by (rule ext, rule order.antisym) (simp_all add: lifted_less_eq_def)
 
 text \<open>
 If the image of a finite non-empty set under \<open>f\<close> is a totally ordered, there is an element that minimises the value of \<open>f\<close>.
@@ -214,7 +214,7 @@ begin
 
 lemma inf_same_context:
   "x \<le> y \<sqinter> z \<Longrightarrow> y \<le> x \<sqinter> z \<Longrightarrow> x \<sqinter> z = y \<sqinter> z"
-  using antisym by auto
+  using order.antisym by auto
 
 end
 
@@ -364,8 +364,11 @@ lemma inf_selective:
   using sup_inf_selective by blast
 
 subclass distrib_lattice
-  apply unfold_locales
-  by (metis inf_selective antisym distrib_sup_le inf.commute inf_le2)
+  apply standard
+  apply (rule order.antisym)
+   apply (auto simp add: le_supI2)
+  apply (metis inf_selective inf.coboundedI1 inf.coboundedI2 order.eq_iff)
+  done
 
 lemma sup_less_eq:
   "x \<le> y \<squnion> z \<longleftrightarrow> x \<le> y \<or> x \<le> z"

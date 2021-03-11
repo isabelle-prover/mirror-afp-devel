@@ -41,7 +41,7 @@ lemma test_preserve: "test p \<Longrightarrow>  p \<cdot> x \<le> p \<cdot> x \<
   using local.preservation1_eq local.test_restrictr by auto
 
 lemma test_preserve1: "test p \<Longrightarrow> p \<cdot> x \<le> p \<cdot> x \<cdot> p \<Longrightarrow> p \<cdot> (p \<cdot> x + !p \<cdot> y)\<^sup>\<dagger> = (p \<cdot> x)\<^sup>\<dagger> \<cdot> p"
-proof (rule antisym)
+proof (rule order.antisym)
   assume a: "test p" 
   and b: "p \<cdot> x \<le> p \<cdot> x \<cdot> p"
   hence "p \<cdot> (p \<cdot> x + !p \<cdot> y) \<le> (p \<cdot> x) \<cdot> p"

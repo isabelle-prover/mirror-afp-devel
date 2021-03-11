@@ -72,7 +72,7 @@ It follows that star and converse commute.
 
 lemma conv_star_commute:
   "x\<^sup>\<star>\<^sup>T = x\<^sup>T\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   show "x\<^sup>\<star>\<^sup>T \<le> x\<^sup>T\<^sup>\<star>"
     using conv_star_conv conv_isotone by fastforce
 next
@@ -220,7 +220,7 @@ lemma forest_components_equivalence:
   "injective x \<Longrightarrow> equivalence (forest_components x)"
   apply (intro conjI)
   apply (simp add: reflexive_mult_closed star.circ_reflexive)
-  apply (metis cancel_separate_1 eq_iff star.circ_transitive_equal)
+  apply (metis cancel_separate_1 order.eq_iff star.circ_transitive_equal)
   by (simp add: conv_dist_comp conv_star_commute)
 
 lemma forest_components_increasing:
@@ -272,7 +272,7 @@ proof -
   finally have "r\<^sup>T * g\<^sup>\<star> \<le> r\<^sup>T * ((r\<^sup>T * g\<^sup>\<star>)\<^sup>T * (r\<^sup>T * g\<^sup>\<star>) \<sqinter> g)\<^sup>\<star>"
     using 1 star_right_induct by auto
   thus ?thesis
-    by (simp add: inf.eq_iff mult_right_isotone star_isotone)
+    by (simp add: order.eq_iff mult_right_isotone star_isotone)
 qed
 
 lemma kruskal_acyclic_inv_1:
@@ -404,9 +404,9 @@ proof -
   also have "... = bot"
     by (metis assms conv_star_commute p_antitone_iff pseudo_complement schroeder_4_p semiring.mult_not_zero star.circ_circ_mult star_involutive star_one)
   finally have "w\<^sup>\<star> \<sqinter> w\<^sup>T\<^sup>\<star> \<le> 1"
-    by (metis eq_iff le_bot mult_left_zero star.circ_plus_one star.circ_zero star_left_unfold_equal sup_inf_distrib1)
+    by (metis order.eq_iff le_bot mult_left_zero star.circ_plus_one star.circ_zero star_left_unfold_equal sup_inf_distrib1)
   thus ?thesis
-    by (simp add: inf.antisym star.circ_reflexive)
+    by (simp add: order.antisym star.circ_reflexive)
 qed
 
 lemma acyclic_asymmetric:
@@ -593,7 +593,7 @@ proof -
   also have "... \<le> (v \<squnion> e\<^sup>T * top)\<^sup>T"
     using 5 by (simp add: star_right_induct_mult)
   finally show ?thesis
-    using 3 by (simp add: inf.eq_iff)
+    using 3 by (simp add: order.eq_iff)
 qed
 
 text \<open>
@@ -1027,7 +1027,7 @@ proof -
   also have "... = bot"
     by (simp add: assms covector_vector_comp mult_assoc)
   finally show ?thesis
-    by (simp add: antisym)
+    by (simp add: order.antisym)
 qed
 
 lemma vector_pred_inv:
@@ -1432,7 +1432,7 @@ begin
 
 lemma reachable_without_loops:
   "x\<^sup>\<star> = (x \<sqinter> -1)\<^sup>\<star>"
-proof (rule antisym)
+proof (rule order.antisym)
   have "x * (x \<sqinter> -1)\<^sup>\<star> = (x \<sqinter> 1) * (x \<sqinter> -1)\<^sup>\<star> \<squnion> (x \<sqinter> -1) * (x \<sqinter> -1)\<^sup>\<star>"
     by (metis maddux_3_11_pp mult_right_dist_sup regular_one_closed)
   also have "... \<le> (x \<sqinter> -1)\<^sup>\<star>"
@@ -1647,7 +1647,7 @@ proof -
   also have "... \<le> top * v\<^sup>T"
     by (simp add: mult_left_isotone)
   finally have "top * e * w\<^sup>T\<^sup>+ \<le> top * v\<^sup>T * w\<^sup>T\<^sup>\<star>"
-    by (metis antisym comp_associative comp_isotone dense_top_closed mult_left_isotone transitive_top_closed)
+    by (metis order.antisym comp_associative comp_isotone dense_top_closed mult_left_isotone transitive_top_closed)
   also have "... \<le> top * v\<^sup>T"
     using 1 by (simp add: mult_assoc mult_right_isotone)
   finally show ?thesis
@@ -1717,7 +1717,7 @@ proof -
   also have "... \<le> e"
     by (simp add: "5")
   finally show ?thesis
-    using 4 by (simp add: antisym)
+    using 4 by (simp add: order.antisym)
 qed
 
 lemma epm_7:
@@ -1928,7 +1928,7 @@ proof -
   finally have "e\<^sup>T * top \<le> bot"
     using 4 shunting_1_pp by auto
   hence "e\<^sup>T = bot"
-    using antisym bot_least top_right_mult_increasing by blast
+    using order.antisym bot_least top_right_mult_increasing by blast
   thus ?thesis
     using conv_bot by fastforce
 qed
@@ -2030,7 +2030,7 @@ proof -
   also have "... \<le> w\<^sup>\<star> * w\<^sup>T\<^sup>\<star>"
     using 1 by (metis mult_assoc mult_1_right mult_right_isotone mult_left_isotone)
   also have "... = w\<^sup>\<star> \<squnion> w\<^sup>T\<^sup>\<star>"
-    by (metis assms(3) cancel_separate inf.eq_iff star.circ_sup_sub_sup_one_1 star.circ_plus_one star_involutive)
+    by (metis assms(3) cancel_separate order.eq_iff star.circ_sup_sub_sup_one_1 star.circ_plus_one star_involutive)
   also have "... = w\<^sup>+ \<squnion> w\<^sup>T\<^sup>+ \<squnion> 1"
     by (metis star.circ_plus_one star_left_unfold_equal sup.assoc sup.commute)
   finally have 7: "(prim_E w v e)\<^sup>T * top * prim_E w v e \<le> w\<^sup>+ \<squnion> w\<^sup>T\<^sup>+ \<squnion> 1"
@@ -2170,9 +2170,9 @@ proof -
   hence "r\<^sup>T * g\<^sup>\<star> \<le> r\<^sup>T * ?vv\<^sup>\<star>"
     using star_right_induct by blast
   hence "r\<^sup>T * g\<^sup>\<star> = r\<^sup>T * ?vv\<^sup>\<star>"
-    by (simp add: antisym mult_right_isotone star_isotone)
+    by (simp add: order.antisym mult_right_isotone star_isotone)
   also have "... = r\<^sup>T * t\<^sup>\<star>"
-    using assms(5,6) antisym mult_right_isotone star_isotone by auto
+    using assms(5,6) order.antisym mult_right_isotone star_isotone by auto
   also have "... = v\<^sup>T"
     by (simp add: assms(3))
   finally show ?thesis
@@ -2279,7 +2279,7 @@ proof -
   also have "... \<le> t"
     using assms(4) mult_left_isotone mult_1_left by fastforce
   finally show ?thesis
-    by (simp add: assms(5) antisym)
+    by (simp add: assms(5) order.antisym)
 qed
 
 subsection \<open>Kruskal's Algorithm\<close>
@@ -2458,7 +2458,7 @@ proof -
   also have "... \<le> bot"
     by (metis conv_complement_sub_leq conv_dist_comp conv_involutive conv_star_commute le_bot mult_right_sub_dist_sup_right p_bot regular_closed_bot star.circ_back_loop_fixpoint)
   finally have 7: "e * ?v\<^sup>\<star> * e = bot"
-    by (simp add: antisym)
+    by (simp add: order.antisym)
   hence "?v\<^sup>\<star> * e \<le> -1"
     by (metis bot_least comp_associative comp_commute_below_diversity ex231d order_lesseq_imp semiring.mult_zero_left star.circ_left_top)
   hence 8: "?v\<^sup>\<star> * e * ?v\<^sup>\<star> \<le> -1"
@@ -2507,7 +2507,7 @@ proof -
   also have "... \<le> x * (-z\<^sup>\<star> \<sqinter> 1 * z\<^sup>\<star>)"
     by (metis assms(2) comp_associative comp_inf.mult_right_isotone mult_left_isotone mult_right_isotone)
   finally have 2: "x * -z\<^sup>\<star> \<sqinter> z\<^sup>+ = bot"
-    by (simp add: antisym)
+    by (simp add: order.antisym)
   have "x * -z\<^sup>\<star> \<sqinter> z\<^sup>\<star> = (x * -z\<^sup>\<star> \<sqinter> z\<^sup>+) \<squnion> (x * -z\<^sup>\<star> \<sqinter> 1)"
     by (metis comp_inf.semiring.distrib_left star_left_unfold_equal sup_commute)
   also have "... \<le> x\<^sup>\<star> * (y \<sqinter> z\<^sup>\<star>)"
@@ -2853,7 +2853,7 @@ proof (unfold arc_expanded, intro conjI)
   also have "... \<le> F\<^sup>T\<^sup>\<star>"
     by (simp add: conv_dist_inf star_isotone)
   finally have 1: "w * (F \<sqinter> w\<^sup>T\<^sup>\<star>) * e\<^sup>T * e \<le> F"
-    by (metis assms(1) antisym mult_1_left mult_left_isotone star.circ_plus_same star.circ_reflexive star.left_plus_below_circ star_left_induct_mult_iff)
+    by (metis assms(1) order.antisym mult_1_left mult_left_isotone star.circ_plus_same star.circ_reflexive star.left_plus_below_circ star_left_induct_mult_iff)
   have "F * e\<^sup>T * e \<le> forest_components (F \<sqinter> w) * e\<^sup>T * e"
     by (simp add: assms(5) mult_left_isotone)
   also have "... \<le> forest_components w * e\<^sup>T * e"
@@ -2987,7 +2987,7 @@ proof (unfold arc_expanded, intro conjI)
   also have "... = bot"
     by (metis assms(3) conv_dist_comp conv_involutive conv_top inf_p mult_right_zero univalent_comp_left_dist_inf)
   finally have 11: "w\<^sup>T\<^sup>+ \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * F * e\<^sup>T * e * F * w = bot"
-    by (simp add: antisym)
+    by (simp add: order.antisym)
   hence 12: "w\<^sup>+ \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * F * e\<^sup>T * e * F * w = bot"
     using assms(1) comp_associative conv_bot conv_complement conv_dist_comp conv_dist_inf conv_star_commute star.circ_plus_same by fastforce
   have "(w \<sqinter> ?E \<sqinter> ?F \<sqinter> ?G)\<^sup>T * top * (w \<sqinter> ?E \<sqinter> ?F \<sqinter> ?G) = ((w \<sqinter> ?E \<sqinter> ?G)\<^sup>T \<sqinter> ?F\<^sup>T) * top * (?F \<sqinter> (w \<sqinter> ?E \<sqinter> ?G))"
@@ -3043,7 +3043,7 @@ proof (unfold arc_expanded, intro conjI)
   also have "... = bot"
     using assms(1) bot_unique pp_isotone pseudo_complement_pp by blast
   finally have 13: "(w \<sqinter> -F) * (F \<sqinter> w\<^sup>T) = bot"
-    by (simp add: antisym)
+    by (simp add: order.antisym)
   have "w \<sqinter> ?G \<le> F * (w \<sqinter> ?G)"
     by (metis assms(1) mult_1_left mult_right_dist_sup sup.absorb_iff2)
   also have "... \<le> F * (w \<sqinter> ?G) * w\<^sup>\<star>"

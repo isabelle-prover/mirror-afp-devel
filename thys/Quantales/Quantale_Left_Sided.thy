@@ -153,10 +153,10 @@ begin
 text \<open>Left-sidedness and strict left-sidedness now coincide.\<close>
 
 lemma lsided_eq: "lsd = slsd"
-  unfolding fun_eq_iff by (simp add: eq_iff le_top lsd_def slsd_def)
+  unfolding fun_eq_iff by (simp add: order.eq_iff le_top lsd_def slsd_def)
 
 lemma lsided_eq_var1:  "(x \<le> \<top> \<rightarrow> x) = (x = \<top> \<rightarrow> x)"
-  using bres_galois dual_order.trans eq_iff le_top by blast
+  using bres_galois dual_order.trans order.eq_iff le_top by blast
 
 lemma lsided_eq_var2: "lsd x = (x = \<top> \<rightarrow> x)"
   using bres_galois lsided_eq lsided_eq_var1 lsd_def by simp
@@ -170,7 +170,7 @@ lemma Fix_lsl_lsu: "Fix (\<nu>::'a::unital_quantale \<Rightarrow> 'a) = Fix \<nu
   unfolding Fix_def by (simp add: lsided_def3) 
 
 lemma Fix_lsl_left_slsided: "Fix \<nu> = {(x::'a::unital_quantale). lsd x}"
-  unfolding Fix_def lsl_def lsd_def using eq_iff le_top by blast
+  unfolding Fix_def lsl_def lsd_def using order.eq_iff le_top by blast
 
 lemma Fix_lsl_iff [simp]: "(x \<in> Fix \<nu>) = (\<nu> x = x)"
   by (simp add: Fix_def)

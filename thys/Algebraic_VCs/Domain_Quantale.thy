@@ -112,7 +112,7 @@ lemma a_d_iff: "a x = 1 \<sqinter> -(x \<cdot> \<top>)"
   by (clarsimp simp: a_def dblo.d_def inf_sup_distrib1) 
 
 lemma topr: "-(x \<cdot> \<top>) \<cdot> \<top> = -(x \<cdot> \<top>)" 
-proof (rule antisym)
+proof (rule order.antisym)
   show "-(x \<cdot> \<top>) \<le> -(x \<cdot> \<top>) \<cdot> \<top>"
     by (metis mult_isol_var mult_oner order_refl top_greatest)
   have "-(x \<cdot> \<top>) \<sqinter> (x \<cdot> \<top>) = \<bottom>"
@@ -180,7 +180,7 @@ lemma ar_r_iff: "ar x = 1 \<sqinter> -(\<top> \<cdot> x)"
   by (simp add: ar_def inf_sup_distrib1 r_def)
 
 lemma topl: "\<top>\<cdot>(-(\<top> \<cdot> x)) = -(\<top> \<cdot> x)" 
-proof (rule antisym)
+proof (rule order.antisym)
   show "\<top> \<cdot> - (\<top> \<cdot> x) \<le> - (\<top> \<cdot> x)"
     by (metis bot_annir' compl_inf_bot inf_bot_iff_le ldv')
   show "- (\<top> \<cdot> x) \<le> \<top> \<cdot> - (\<top> \<cdot> x)"
@@ -254,7 +254,7 @@ sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(
   by (standard, simp add: le_iff_sup, auto)
 
 lemma Sup_sup_pred: "x \<squnion> Sup{y. P y} = Sup{y. y = x \<or> P y}"
-  apply (rule antisym)
+  apply (rule order.antisym)
   apply (simp add: Collect_mono Sup_subset_mono Sup_upper) 
   using Sup_least Sup_upper le_supI2 by fastforce
 

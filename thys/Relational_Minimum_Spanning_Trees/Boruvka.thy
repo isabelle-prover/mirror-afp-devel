@@ -697,7 +697,7 @@ proof -
   hence "j \<sqinter> ?H * - ?c \<le> j \<sqinter> - ?c"
     using inf.sup_right_isotone by auto
   thus ?thesis
-    using 2 3 antisym by simp
+    using 2 3 order.antisym by simp
 qed
 
 text \<open>Theorem 5\<close>
@@ -1030,7 +1030,7 @@ proof (unfold big_forest_def, intro conjI)
         using sup_right_isotone by blast
     qed
     also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d"
-      by (smt eq_iff sup.left_commute sup.orderE sup_commute)
+      by (simp add: order.eq_iff ac_simps)
     also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>+"
       using star.circ_plus_same mult_assoc by auto
     also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (1 \<squnion> (?H * d)\<^sup>+)"
@@ -1480,7 +1480,7 @@ proof -
         hence "v * (F \<sqinter> v)\<^sup>T * (F \<sqinter> v)\<^sup>T\<^sup>\<star> * (F \<sqinter> v)\<^sup>\<star> \<le> F"
           by (meson conv_isotone dual_order.trans inf.cobounded2 inf.sup_monoid.add_commute mult_left_isotone mult_right_isotone comp_isotone conv_dist_inf inf.cobounded1 star_isotone)
         hence "-F \<sqinter> v * (F \<sqinter> v)\<^sup>T * (F \<sqinter> v)\<^sup>T\<^sup>\<star> * (F \<sqinter> v)\<^sup>\<star> \<le> bot"
-          using eq_iff p_antitone pseudo_complement by auto
+          using order.eq_iff p_antitone pseudo_complement by auto
         hence "(-F \<sqinter> v * (F \<sqinter> v)\<^sup>T * (F \<sqinter> v)\<^sup>T\<^sup>\<star> * (F \<sqinter> v)\<^sup>\<star>) \<squnion> v * (v \<sqinter> F)\<^sup>\<star> \<le> v * (v \<sqinter> F)\<^sup>\<star>"
           using bot_least le_bot by fastforce
         hence "(-F \<squnion> v * (v \<sqinter> F)\<^sup>\<star>) \<sqinter> (v * (F \<sqinter> v)\<^sup>T * (F \<sqinter> v)\<^sup>T\<^sup>\<star> * (F \<sqinter> v)\<^sup>\<star> \<squnion> v * (v \<sqinter> F)\<^sup>\<star>) \<le> v * (v \<sqinter> F)\<^sup>\<star>"
@@ -1539,7 +1539,7 @@ proof -
       also have "... \<le> (-F \<sqinter> v) * (F \<sqinter> v)\<^sup>T * top \<squnion> (-F \<sqinter> v) * ((F \<sqinter> v)\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
         by (simp add: comp_associative comp_isotone inf.coboundedI2 inf.sup_monoid.add_commute le_supI1)
       also have "... \<le> (-F \<sqinter> v) * (F \<sqinter> v)\<^sup>T * top \<squnion> (-F \<sqinter> v) * (v\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
-        by (smt comp_inf.mult_right_isotone comp_inf.semiring.add_mono eq_iff inf.cobounded2 inf.sup_monoid.add_commute mult_right_isotone star_isotone)
+        by (smt comp_inf.mult_right_isotone comp_inf.semiring.add_mono order.eq_iff inf.cobounded2 inf.sup_monoid.add_commute mult_right_isotone star_isotone)
       also have "... \<le> bot \<squnion> (-F \<sqinter> v) * (v\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
         by (metis assms(1, 2) forests_bot_1 comp_associative comp_inf.semiring.add_right_mono mult_semi_associative vector_bot_closed)
       also have "... \<le> -F \<sqinter> v"
@@ -2392,7 +2392,7 @@ proof -
     have "?i \<le> top * ?e\<^sup>T * (?F \<sqinter> ?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
       using 17 by simp
     also have "... \<le> top * ?e\<^sup>T * (?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
-      using mult_right_isotone conv_isotone star_isotone inf.cobounded2 inf.sup_monoid.add_assoc by (simp add: inf.sup_monoid.add_assoc eq_iff inf.sup_monoid.add_commute)
+      using mult_right_isotone conv_isotone star_isotone inf.cobounded2 inf.sup_monoid.add_assoc by (simp add: inf.sup_monoid.add_assoc order.eq_iff inf.sup_monoid.add_commute)
     also have "... \<le> top * ?e\<^sup>T * ((?v \<sqinter> -?i) \<squnion> ?e)\<^sup>T\<^sup>\<star>"
       using mult_right_isotone conv_isotone star_isotone sup_ge1 by simp
     finally show ?thesis
@@ -2403,7 +2403,7 @@ proof -
     have "?i \<le> top * ?e\<^sup>T * (?F \<sqinter> ?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
       using 17 by simp
     also have "... \<le> top * ?e\<^sup>T * (?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
-      using mult_right_isotone conv_isotone star_isotone inf.cobounded2 inf.sup_monoid.add_assoc by (simp add: inf.sup_monoid.add_assoc eq_iff inf.sup_monoid.add_commute)
+      using mult_right_isotone conv_isotone star_isotone inf.cobounded2 inf.sup_monoid.add_assoc by (simp add: inf.sup_monoid.add_assoc order.eq_iff inf.sup_monoid.add_commute)
     also have "... \<le> top * ?e\<^sup>T * (?v)\<^sup>T\<^sup>\<star>"
       using mult_right_isotone conv_isotone star_isotone by auto
     finally show ?thesis
@@ -2857,7 +2857,7 @@ proof -
         also have "... \<le> top * (f\<^sup>T \<sqinter> (top * ?e * f\<^sup>T\<^sup>\<star>)\<^sup>T) * f\<^sup>\<star> * ?e"
           using top_left_mult_increasing mult_assoc by auto
         also have "... = (top \<sqinter> top * ?e * f\<^sup>T\<^sup>\<star>) * f\<^sup>T * f\<^sup>\<star> * ?e"
-          by (smt covector_comp_inf_1 covector_mult_closed eq_iff inf.sup_monoid.add_commute vector_top_closed)
+          by (smt covector_comp_inf_1 covector_mult_closed order.eq_iff inf.sup_monoid.add_commute vector_top_closed)
         also have "... = top * ?e * f\<^sup>T\<^sup>\<star> * f\<^sup>T * f\<^sup>\<star> * ?e"
           by simp
         also have "... \<le> top * ?e * f\<^sup>T\<^sup>\<star> * f\<^sup>\<star> * ?e"
@@ -3617,4 +3617,3 @@ qed
 end
 
 end
-

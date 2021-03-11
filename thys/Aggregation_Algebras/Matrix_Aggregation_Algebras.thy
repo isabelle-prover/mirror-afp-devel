@@ -387,7 +387,7 @@ proof
       also have "... = (if i = ?h \<and> j = i then h (i,j) + (\<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l)) else h (i,j) + zero)"
         by simp
       also have "... \<le> (if i = ?h \<and> j = i then h (i,j) + (\<Sum>\<^sub>k \<Sum>\<^sub>l g (k,l)) else h (i,j) + zero)"
-        using 4 inf.eq_iff by auto
+        using 4 order.eq_iff by auto
       also have "... = h (i,j) + (if i = ?h \<and> j = i then \<Sum>\<^sub>k \<Sum>\<^sub>l g (k,l) else zero)"
         by simp
       finally show "h (i,j) + (sum\<^sub>M f) (i,j) \<le> h (i,j) + (sum\<^sub>M g) (i,j)"
@@ -715,7 +715,7 @@ lemma regular_bot_top_2:
 
 sublocale heyting: heyting_stone_algebra where implies = "\<lambda>x y . if x \<le> y then top else y"
   apply unfold_locales
-  apply (simp add: antisym)
+  apply (simp add: order.antisym)
   by auto
 
 end
