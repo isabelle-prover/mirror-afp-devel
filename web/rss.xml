@@ -24,6 +24,39 @@ involving expectations in a probability space that is violated by
 quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.</description>
     </item>
     <item>
+       <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+              <link>https://www.isa-afp.org/entries/Hermite_Lindemann.html</link>
+       <guid>https://www.isa-afp.org/entries/Hermite_Lindemann.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of the
+Hermite-Lindemann-Weierstraß Theorem (also known as simply
+Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
+crowning achievements of 19th century number theory.&lt;/p&gt;
+&lt;p&gt;The theorem states that if $\alpha_1, \ldots,
+\alpha_n\in\mathbb{C}$ are algebraic numbers that are linearly
+independent over $\mathbb{Z}$, then $e^{\alpha_1},\ldots,e^{\alpha_n}$
+are algebraically independent over $\mathbb{Q}$.&lt;/p&gt;
+&lt;p&gt;Like the &lt;a
+href=&#34;https://doi.org/10.1007/978-3-319-66107-0_5&#34;&gt;previous
+formalisation in Coq by Bernard&lt;/a&gt;, I proceeded by formalising
+&lt;a
+href=&#34;https://doi.org/10.1017/CBO9780511565977&#34;&gt;Baker&#39;s
+version of the theorem and proof&lt;/a&gt; and then deriving the
+original one from that. Baker&#39;s version states that for any
+algebraic numbers $\beta_1, \ldots, \beta_n\in\mathbb{C}$ and distinct
+algebraic numbers $\alpha_i, \ldots, \alpha_n\in\mathbb{C}$, we have
+$\beta_1 e^{\alpha_1} + \ldots + \beta_n e^{\alpha_n} = 0$ if and only
+if all the $\beta_i$ are zero.&lt;/p&gt; &lt;p&gt;This has a number of
+direct corollaries, e.g.:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;$e$ and $\pi$
+are transcendental&lt;/li&gt; &lt;li&gt;$e^z$, $\sin z$, $\tan z$,
+etc. are transcendental for algebraic
+$z\in\mathbb{C}\setminus\{0\}$&lt;/li&gt; &lt;li&gt;$\ln z$ is
+transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
+1\}$&lt;/li&gt; &lt;/ul&gt;</description>
+    </item>
+    <item>
        <title>Mereology</title>
               <link>https://www.isa-afp.org/entries/Mereology.html</link>
        <guid>https://www.isa-afp.org/entries/Mereology.html</guid>
@@ -561,31 +594,6 @@ entries &lt;a
 href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
 and &lt;a
 href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II</title>
-              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We validate an abstract formulation of G&amp;ouml;del&#39;s Second
-Incompleteness Theorem from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
-AFP entry&lt;/a&gt; by instantiating it to the case of &lt;i&gt;finite
-consistent extensions of the Hereditarily Finite (HF) Set
-theory&lt;/i&gt;, i.e., consistent FOL theories extending the HF Set
-theory with a finite set of axioms.  The instantiation draws heavily
-on infrastructure previously developed by Larry Paulson in his &lt;a
-href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;direct
-formalisation of the concrete result&lt;/a&gt;. It strengthens
-Paulson&#39;s formalization of G&amp;ouml;del&#39;s Second from that
-entry by &lt;i&gt;not&lt;/i&gt; assuming soundness, and in fact not
-relying on any notion of model or semantic interpretation. The
-strengthening was obtained by first replacing some of Paulson’s
-semantic arguments with proofs within his HF calculus, and then
-plugging in some of Paulson&#39;s (modified) lemmas to instantiate
-our soundness-free G&amp;ouml;del&#39;s Second locale.</description>
     </item>
   </channel>
 </rss>

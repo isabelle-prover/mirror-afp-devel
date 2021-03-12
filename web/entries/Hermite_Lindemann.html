@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Power Sum Polynomials - Archive of Formal Proofs
+<title>The Hermite–Lindemann–Weierstraß Transcendence Theorem - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,13 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">P</font>ower
+  <h1>          <font class="first">T</font>he
   
-          <font class="first">S</font>um
+          <font class="first">H</font>ermite–Lindemann–Weierstraß
   
-          <font class="first">P</font>olynomials
+          <font class="first">T</font>ranscendence
+  
+          <font class="first">T</font>heorem
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +89,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Power Sum Polynomials</td>
+  <td class="data" width="80%">The Hermite–Lindemann–Weierstraß Transcendence Theorem</td>
 </tr>
 
 <tr>
@@ -103,64 +105,50 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-04-24</td>
+  <td class="data">2021-03-03</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-<p>This article provides a formalisation of the symmetric
-multivariate polynomials known as <em>power sum
-polynomials</em>. These are of the form
-p<sub>n</sub>(<em>X</em><sub>1</sub>,&hellip;,
-<em>X</em><sub><em>k</em></sub>) =
-<em>X</em><sub>1</sub><sup>n</sup>
-+ &hellip; +
-X<sub><em>k</em></sub><sup>n</sup>.
-A formal proof of the Girard–Newton Theorem is also given. This
-theorem relates the power sum polynomials to the elementary symmetric
-polynomials s<sub><em>k</em></sub> in the form
-of a recurrence relation
-(-1)<sup><em>k</em></sup>
-<em>k</em> s<sub><em>k</em></sub>
-=
-&sum;<sub>i&isinv;[0,<em>k</em>)</sub>
-(-1)<sup>i</sup> s<sub>i</sub>
-p<sub><em>k</em>-<em>i</em></sub>&thinsp;.</p>
-<p>As an application, this is then used to solve a generalised
-form of a puzzle given as an exercise in Dummit and Foote's
-<em>Abstract Algebra</em>: For <em>k</em>
-complex unknowns <em>x</em><sub>1</sub>,
-&hellip;,
-<em>x</em><sub><em>k</em></sub>,
-define p<sub><em>j</em></sub> :=
-<em>x</em><sub>1</sub><sup><em>j</em></sup>
-+ &hellip; +
-<em>x</em><sub><em>k</em></sub><sup><em>j</em></sup>.
-Then for each vector <em>a</em> &isinv;
-&#x2102;<sup><em>k</em></sup>, show that
-there is exactly one solution to the system p<sub>1</sub>
-= a<sub>1</sub>, &hellip;,
-p<sub><em>k</em></sub> =
-a<sub><em>k</em></sub> up to permutation of
-the
-<em>x</em><sub><em>i</em></sub>
-and determine the value of
-p<sub><em>i</em></sub> for
-i&gt;k.</p></td>
+<p>This article provides a formalisation of the
+Hermite-Lindemann-Weierstraß Theorem (also known as simply
+Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
+crowning achievements of 19th century number theory.</p>
+<p>The theorem states that if $\alpha_1, \ldots,
+\alpha_n\in\mathbb{C}$ are algebraic numbers that are linearly
+independent over $\mathbb{Z}$, then $e^{\alpha_1},\ldots,e^{\alpha_n}$
+are algebraically independent over $\mathbb{Q}$.</p>
+<p>Like the <a
+href="https://doi.org/10.1007/978-3-319-66107-0_5">previous
+formalisation in Coq by Bernard</a>, I proceeded by formalising
+<a
+href="https://doi.org/10.1017/CBO9780511565977">Baker's
+version of the theorem and proof</a> and then deriving the
+original one from that. Baker's version states that for any
+algebraic numbers $\beta_1, \ldots, \beta_n\in\mathbb{C}$ and distinct
+algebraic numbers $\alpha_i, \ldots, \alpha_n\in\mathbb{C}$, we have
+$\beta_1 e^{\alpha_1} + \ldots + \beta_n e^{\alpha_n} = 0$ if and only
+if all the $\beta_i$ are zero.</p> <p>This has a number of
+direct corollaries, e.g.:</p> <ul> <li>$e$ and $\pi$
+are transcendental</li> <li>$e^z$, $\sin z$, $\tan z$,
+etc. are transcendental for algebraic
+$z\in\mathbb{C}\setminus\{0\}$</li> <li>$\ln z$ is
+transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
+1\}$</li> </ul></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Power_Sum_Polynomials-AFP,
+        <pre>@article{Hermite_Lindemann-AFP,
   author  = {Manuel Eberl},
-  title   = {Power Sum Polynomials},
+  title   = {The Hermite–Lindemann–Weierstraß Transcendence Theorem},
   journal = {Archive of Formal Proofs},
-  month   = apr,
-  year    = 2020,
-  note    = {\url{https://isa-afp.org/entries/Power_Sum_Polynomials.html},
+  month   = mar,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Hermite_Lindemann.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -172,11 +160,9 @@ i&gt;k.</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Polynomial_Factorization.html">Polynomial_Factorization</a>, <a href="Symmetric_Polynomials.html">Symmetric_Polynomials</a>      </td></tr>
+          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Pi_Transcendental.html">Pi_Transcendental</a>, <a href="Power_Sum_Polynomials.html">Power_Sum_Polynomials</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Hermite_Lindemann.html">Hermite_Lindemann</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -188,29 +174,23 @@ i&gt;k.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Power_Sum_Polynomials/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Power_Sum_Polynomials/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Hermite_Lindemann/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Hermite_Lindemann/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Power_Sum_Polynomials/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Hermite_Lindemann/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Power_Sum_Polynomials-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Hermite_Lindemann-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Power_Sum_Polynomials-2020-04-30.tar.gz">
-              afp-Power_Sum_Polynomials-2020-04-30.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
