@@ -357,7 +357,7 @@ next
       obtain ord [iff]: "Ord \<alpha>" "Ord \<beta>" "Ord (\<alpha>*\<beta>)"
         using Ord_\<omega>1 Ord_in_Ord \<beta> indec indecomposable_imp_Ord Ord_mult by blast
       have *: False
-        if i [rule_format]: "\<forall>H. tp H = ord_of_nat (2*k) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {0}"
+          if i [rule_format]: "\<forall>H. tp H = ord_of_nat (2*k) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {0}"
           and ii [rule_format]: "\<forall>H. tp H = \<gamma> \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {1}"
           and iii [rule_format]: "\<forall>H. tp H = (\<omega>*\<beta>) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {1}"
       proof -
@@ -375,21 +375,13 @@ next
             by (auto simp: \<open>small A\<close> ordermap_mono_less)
           have \<alpha>_sub: "elts \<alpha> \<subseteq> ordermap A VWF ` A"
             by (metis \<open>small A\<close> elts_of_set less_eq_V_def ordertype_def ot replacement)
-          have g_less: "?g x < ?g y" if "x < y" "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" for x y
-          proof -
-            have "?g x \<in> A" "?g y \<in> A"
-              using that by (meson \<alpha>_sub inv_into_into subsetD)+
-            moreover have "x \<in> ordermap A VWF ` A" "y \<in> ordermap A VWF ` A"
-              using \<alpha>_sub that by blast+
-            moreover have "A \<subseteq> ON"
-              using A_\<alpha>\<beta> elts_subset_ON \<open>Ord(\<alpha>*\<beta>)\<close> by blast
-            ultimately show ?thesis
-              by (metis ON_imp_Ord Ord_linear_lt f_inv_into_f less_not_sym om_A_less \<open>x < y\<close>)
-          qed
-          have "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha> * \<beta>)"
+          have g: "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha> * \<beta>)"
             by (meson A_\<alpha>\<beta> Pi_I' \<alpha>_sub inv_into_into subset_eq)
           then have fg: "f \<circ> (\<lambda>X. ?g ` X) \<in> [elts \<alpha>]\<^bsup>2\<^esup> \<rightarrow> {..<2}"
             by (rule nsets_compose_image_funcset [OF f _ inj_g])
+          have g_less: "?g x < ?g y" if "x < y" "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" for x y
+            using Pi_mem [OF g]
+            by (meson A_\<alpha>\<beta> Ord_in_Ord Ord_not_le ord \<open>small A\<close> dual_order.trans elts_subset_ON inv_ordermap_VWF_mono_le ot that vsubsetD)
           obtain i H where "i < 2" "H \<subseteq> elts \<alpha>"
             and ot_eq: "tp H = [k,\<gamma>]!i" "(f \<circ> (\<lambda>X. ?g ` X)) ` (nsets H 2) \<subseteq> {i}"
             using ii partn_lst_E [OF part fg] by (auto simp: eval_nat_numeral)
@@ -411,12 +403,7 @@ next
             have gH: "?g ` H \<subseteq> elts (\<alpha> * \<beta>)"
               by (metis A_\<alpha>\<beta> \<alpha>_sub \<open>H \<subseteq> elts \<alpha>\<close> image_subsetI inv_into_into subset_eq)
             have [simp]: "tp (?g ` H) = tp H"
-            proof (rule ordertype_VWF_inc_eq)
-              show "?g ` H \<subseteq> ON"
-                using elts_subset_ON gH ord(3) by auto
-              show "?g x < inv_into A (ordermap A VWF) y" if "x \<in> H" "y \<in> H" "x < y" for x y
-                using that \<open>H \<subseteq> elts \<alpha>\<close> g_less by blast
-            qed (use \<open>H \<subseteq> elts \<alpha>\<close> elts_subset_ON ord down in auto)
+              by (meson \<open>H \<subseteq> elts \<alpha>\<close> ord down dual_order.trans elts_subset_ON gH g_less ordertype_VWF_inc_eq subsetD)
             show ?thesis
               using ii [of "?g ` H"] ot_eq 1
               apply (auto simp: gH elim!: nset_image_obtains)
