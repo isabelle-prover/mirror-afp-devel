@@ -10379,3 +10379,23 @@ abstract =
   We use Isabelle/HOL to verify elementary theorems and alternative
   axiomatizations of classical extensional mereology.
 
+[Modular_arithmetic_LLL_and_HNF_algorithms]
+title = Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation
+author = Ralph Bottesch, Jose Divason, Rene Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+topic = Computer science/Algorithms/Mathematical
+date = 2021-03-12
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  We verify two algorithms for which modular arithmetic plays an
+  essential role: Storjohann's variant of the LLL lattice basis
+  reduction algorithm and Kopparty's algorithm for computing the
+  Hermite normal form of a matrix. To do this, we also formalize some
+  facts about the modulo operation with symmetric range. Our
+  implementations are based on the original papers, but are otherwise
+  efficient. For basis reduction we formalize two versions: one that
+  includes all of the optimizations/heuristics from Storjohann's
+  paper, and one excluding a heuristic that we observed to often
+  decrease efficiency. We also provide a fast, self-contained certifier
+  for basis reduction, based on the efficient Hermite normal form
+  algorithm.
+
