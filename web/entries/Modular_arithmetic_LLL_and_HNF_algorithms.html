@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Farkas' Lemma and Motzkin's Transposition Theorem - Archive of Formal Proofs
+<title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,33 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>arkas'
+  <h1>          <font class="first">T</font>wo
   
-          <font class="first">L</font>emma
+          algorithms
+  
+          based
+  
+          on
+  
+          modular
+  
+          arithmetic:
+  
+          lattice
+  
+          basis
+  
+          reduction
   
           and
   
-          <font class="first">M</font>otzkin's
+          <font class="first">H</font>ermite
   
-          <font class="first">T</font>ransposition
+          normal
   
-          <font class="first">T</font>heorem
+          form
+  
+          computation
   
 </h1>
   <p>&nbsp;</p>
@@ -93,7 +109,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Farkas' Lemma and Motzkin's Transposition Theorem</td>
+  <td class="data" width="80%">Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</td>
 </tr>
 
 <tr>
@@ -102,8 +118,8 @@ MathJax = {
       </td>
   <td class="data">
                       Ralph Bottesch,
-                <a href="http://cl-informatik.uibk.ac.at/users/mhaslbeck/">Max W. Haslbeck</a> and
-          René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
+                Jose Divason and
+          <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">Rene Thiemann</a>
       </td>
 </tr>
 
@@ -111,33 +127,37 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-01-17</td>
+  <td class="data">2021-03-12</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize a proof of Motzkin's transposition theorem and
-Farkas' lemma in Isabelle/HOL. Our proof is based on the
-formalization of the simplex algorithm which, given a set of linear
-constraints, either returns a satisfying assignment to the problem or
-detects unsatisfiability. By reusing facts about the simplex algorithm
-we show that a set of linear constraints is unsatisfiable if and only
-if there is a linear combination of the constraints which evaluates to
-a trivially unsatisfiable inequality.</td>
+We verify two algorithms for which modular arithmetic plays an
+essential role: Storjohann's variant of the LLL lattice basis
+reduction algorithm and Kopparty's algorithm for computing the
+Hermite normal form of a matrix. To do this, we also formalize some
+facts about the modulo operation with symmetric range. Our
+implementations are based on the original papers, but are otherwise
+efficient. For basis reduction we formalize two versions: one that
+includes all of the optimizations/heuristics from Storjohann's
+paper, and one excluding a heuristic that we observed to often
+decrease efficiency. We also provide a fast, self-contained certifier
+for basis reduction, based on the efficient Hermite normal form
+algorithm.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Farkas-AFP,
-  author  = {Ralph Bottesch and Max W. Haslbeck and René Thiemann},
-  title   = {Farkas' Lemma and Motzkin's Transposition Theorem},
+        <pre>@article{Modular_arithmetic_LLL_and_HNF_algorithms-AFP,
+  author  = {Ralph Bottesch and Jose Divason and Rene Thiemann},
+  title   = {Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation},
   journal = {Archive of Formal Proofs},
-  month   = jan,
-  year    = 2019,
-  note    = {\url{https://isa-afp.org/entries/Farkas.html},
+  month   = mar,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -149,11 +169,9 @@ a trivially unsatisfiable inequality.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a>, <a href="Simplex.html">Simplex</a>      </td></tr>
+          <td class="data"><a href="Hermite.html">Hermite</a>, <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a>, <a href="LLL_Basis_Reduction.html">LLL_Basis_Reduction</a>, <a href="Show.html">Show</a>, <a href="Smith_Normal_Form.html">Smith_Normal_Form</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Linear_Programming.html">Linear_Programming</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -165,39 +183,23 @@ a trivially unsatisfiable inequality.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Farkas/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Farkas/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Modular_arithmetic_LLL_and_HNF_algorithms/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Modular_arithmetic_LLL_and_HNF_algorithms/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Farkas/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Modular_arithmetic_LLL_and_HNF_algorithms/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Farkas-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Modular_arithmetic_LLL_and_HNF_algorithms-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Farkas-2020-04-18.tar.gz">
-              afp-Farkas-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Farkas-2019-06-11.tar.gz">
-              afp-Farkas-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Farkas-2019-01-21.tar.gz">
-              afp-Farkas-2019-01-21.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

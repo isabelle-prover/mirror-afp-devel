@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+    <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+              <link>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+       <guid>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+       <dc:creator> Ralph Bottesch, Jose Divason, Rene Thiemann       </dc:creator>
+       <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We verify two algorithms for which modular arithmetic plays an
+essential role: Storjohann&#39;s variant of the LLL lattice basis
+reduction algorithm and Kopparty&#39;s algorithm for computing the
+Hermite normal form of a matrix. To do this, we also formalize some
+facts about the modulo operation with symmetric range. Our
+implementations are based on the original papers, but are otherwise
+efficient. For basis reduction we formalize two versions: one that
+includes all of the optimizations/heuristics from Storjohann&#39;s
+paper, and one excluding a heuristic that we observed to often
+decrease efficiency. We also provide a fast, self-contained certifier
+for basis reduction, based on the efficient Hermite normal form
+algorithm.</description>
+    </item>
     <item>
        <title>Quantum projective measurements and the CHSH inequality</title>
               <link>https://www.isa-afp.org/entries/Projective_Measurements.html</link>
@@ -569,31 +589,6 @@ adapting &lt;a
 href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;Larry
 Paulson’s formalization of the Hereditarily Finite Set
 theory&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems</title>
-              <link>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We present an abstract formalization of G&amp;ouml;del&#39;s
-incompleteness theorems. We analyze sufficient conditions for the
-theorems&#39; applicability to a partially specified logic. Our
-abstract perspective enables a comparison between alternative
-approaches from the literature. These include Rosser&#39;s variation
-of the first theorem, Jeroslow&#39;s variation of the second theorem,
-and the Swierczkowski&amp;ndash;Paulson semantics-based approach. This
-AFP entry is the main entry point to the results described in our
-CADE-27 paper &lt;a
-href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
-Formally Verified Abstract Account of Gödel&#39;s Incompleteness
-Theorems&lt;/a&gt;.  As part of our abstract formalization&#39;s
-validation, we instantiate our locales twice in the separate AFP
-entries &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
-and &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
