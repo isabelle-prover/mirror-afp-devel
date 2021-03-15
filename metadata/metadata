@@ -10381,7 +10381,7 @@ abstract =
 
 [Modular_arithmetic_LLL_and_HNF_algorithms]
 title = Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation
-author = Ralph Bottesch, Jose Divason, Rene Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+author = Ralph Bottesch <>, Jose Divasón <https://www.unirioja.es/cu/jodivaso/>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Computer science/Algorithms/Mathematical
 date = 2021-03-12
 notify = rene.thiemann@uibk.ac.at

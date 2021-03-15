@@ -14,7 +14,7 @@
        <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
               <link>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
        <guid>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-       <dc:creator> Ralph Bottesch, Jose Divason, Rene Thiemann       </dc:creator>
+       <dc:creator> Ralph Bottesch, Jose Divasón, René Thiemann       </dc:creator>
        <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
        <description>
 We verify two algorithms for which modular arithmetic plays an
