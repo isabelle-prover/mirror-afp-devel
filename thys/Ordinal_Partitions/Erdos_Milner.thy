@@ -225,7 +225,7 @@ qed
 text \<open>The ``remark'' of Erdős and E. C. Milner, Canad. Math. Bull. Vol. 17 (2), 1974\<close>
 
 proposition indecomposable_imp_Ex_less_sets:
-  assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" "Ord \<beta>" and A: "tp A = \<alpha>" "A \<subseteq> elts (\<alpha>*\<beta>)"
+  assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" and A: "tp A = \<alpha>" "small A" "A \<subseteq> ON"
     and "x \<in> A" and A1: "tp A1 = \<alpha>" "A1 \<subseteq> A"
   obtains A2 where "tp A2 = \<alpha>" "A2 \<subseteq> A1" "less_sets {x} A2"
 proof -
@@ -233,8 +233,6 @@ proof -
     using indec indecomposable_imp_Ord by blast
   have "Limit \<alpha>"
     by (simp add: assms indecomposable_imp_Limit)
-  have "small A"
-    by (meson A small_elts smaller_than_small)
   define \<phi> where "\<phi> \<equiv> inv_into A (ordermap A VWF)"
   then have bij_\<phi>: "bij_betw \<phi> (elts \<alpha>) A"
     using A bij_betw_inv_into down ordermap_bij by blast
@@ -245,8 +243,6 @@ proof -
     unfolding \<gamma>_def using A \<open>x \<in> A\<close> down by auto
   then have "Ord \<gamma>"
     using Ord_in_Ord \<open>Ord \<alpha>\<close> by blast
-  have "A \<subseteq> ON"
-    by (meson Ord_mult \<open>Ord \<alpha>\<close> \<open>Ord \<beta>\<close> A dual_order.trans elts_subset_ON)
   define B where "B \<equiv> \<phi> ` (elts (succ \<gamma>))"
   show thesis
   proof
@@ -261,26 +257,17 @@ proof -
       proof (subst ordertype_VWF_inc_eq)
         show "elts (succ  \<gamma>) \<subseteq> ON"
           by (auto simp: \<gamma>_def ordertype_VWF_inc_eq intro: Ord_in_Ord)
-        have "elts (succ  \<gamma>) \<subseteq> elts \<alpha>"
+        have sub: "elts (succ  \<gamma>) \<subseteq> elts \<alpha>"
           using Ord_trans \<gamma> \<open>Ord \<alpha>\<close> by auto
         then show "\<phi> ` elts (succ  \<gamma>) \<subseteq> ON"
           using \<open>A \<subseteq> ON\<close> bij_\<phi> bij_betw_imp_surj_on by blast
-        show "\<phi> u < \<phi> v"
+        have "succ \<gamma> \<in> elts \<alpha>"
+          using \<gamma> Limit_def \<open>Limit \<alpha>\<close> by blast
+        with A sub show "\<phi> u < \<phi> v"
           if "u \<in> elts (succ  \<gamma>)" and "v \<in> elts (succ  \<gamma>)" and "u < v" for u v
-        proof -
-          have "succ \<gamma> \<in> elts \<alpha>"
-            using \<gamma> Limit_def \<open>Limit \<alpha>\<close> by blast
-          then have "u \<in> elts \<alpha>" "v \<in> elts \<alpha>"
-            using Ord_trans \<open>Ord \<alpha>\<close> that by blast+
-          then show ?thesis
-            using that \<open>Limit \<alpha>\<close> \<open>small A\<close> A bij_betwE [OF bij_\<phi>]
-            by (metis ON_imp_Ord Ord_linear2 \<open>A \<subseteq> ON\<close> \<phi>_def inv_ordermap_VWF_mono_le leD)
-        qed
+          by (metis ON_imp_Ord Ord_not_le \<open>A \<subseteq> ON\<close> \<open>small A\<close> \<phi>_def bij_\<phi> bij_betw_apply inv_ordermap_VWF_mono_le leD subsetD that)
         show "\<not> \<alpha> \<le> tp (elts (succ  \<gamma>))"
-        proof (subst ordertype_eq_Ord)
-          show "\<not> \<alpha> \<le> succ \<gamma>"
-            by (meson \<gamma> \<open>Limit \<alpha>\<close> less_eq_V_def mem_not_refl subsetD succ_in_Limit_iff)
-        qed (use \<open>Ord \<gamma>\<close> in blast)
+          by (metis Limit_def Ord_succ \<gamma> \<open>Limit \<alpha>\<close> \<open>Ord \<gamma>\<close> mem_not_refl ordertype_eq_Ord vsubsetD)
       qed auto
       then show ?thesis
         using indecomposable_ordertype_ge [OF indec, of A1 B] \<open>small A1\<close> A1
@@ -312,14 +299,11 @@ qed
 
 text \<open>the main theorem, from which they derive the headline result\<close>
 theorem Erdos_Milner_aux:
-  fixes k::nat and \<gamma>::V
   assumes part: "partn_lst_VWF \<alpha> [ord_of_nat k, \<gamma>] 2"
     and indec: "indecomposable \<alpha>" and "k > 1" "Ord \<gamma>" and \<beta>: "\<beta> \<in> elts \<omega>1"
   shows "partn_lst_VWF (\<alpha>*\<beta>) [ord_of_nat (2*k), min \<gamma> (\<omega>*\<beta>)] 2"
 proof (cases "\<alpha>=1 \<or> \<beta>=0")
   case True
-  have "Ord \<beta>"
-    using Ord_\<omega>1 Ord_in_Ord \<beta> by blast
   show ?thesis
   proof (cases "\<beta>=0")
     case True
@@ -329,8 +313,8 @@ proof (cases "\<alpha>=1 \<or> \<beta>=0")
       by (simp add: partn_lst_triv0 [where i=1])
   next
     case False
-    then have "\<alpha>=1"
-      using True by blast
+    then obtain "\<alpha>=1" "Ord \<beta>"
+      by (meson ON_imp_Ord Ord_\<omega>1 True \<beta> elts_subset_ON)
     then obtain i where "i < Suc (Suc 0)" "[ord_of_nat k, \<gamma>] ! i \<le> \<alpha>"
       using partn_lst_VWF_nontriv [OF part] by auto
     then have "\<gamma> \<le> 1"
@@ -373,7 +357,7 @@ next
       obtain ord [iff]: "Ord \<alpha>" "Ord \<beta>" "Ord (\<alpha>*\<beta>)"
         using Ord_\<omega>1 Ord_in_Ord \<beta> indec indecomposable_imp_Ord Ord_mult by blast
       have *: False
-        if i [rule_format]: "\<forall>H. tp H = ord_of_nat (2*k) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {0}"
+          if i [rule_format]: "\<forall>H. tp H = ord_of_nat (2*k) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {0}"
           and ii [rule_format]: "\<forall>H. tp H = \<gamma> \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {1}"
           and iii [rule_format]: "\<forall>H. tp H = (\<omega>*\<beta>) \<longrightarrow> H \<subseteq> elts (\<alpha>*\<beta>) \<longrightarrow> \<not> f ` [H]\<^bsup>2\<^esup> \<subseteq> {1}"
       proof -
@@ -391,21 +375,13 @@ next
             by (auto simp: \<open>small A\<close> ordermap_mono_less)
           have \<alpha>_sub: "elts \<alpha> \<subseteq> ordermap A VWF ` A"
             by (metis \<open>small A\<close> elts_of_set less_eq_V_def ordertype_def ot replacement)
-          have g_less: "?g x < ?g y" if "x < y" "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" for x y
-          proof -
-            have "?g x \<in> A" "?g y \<in> A"
-              using that by (meson \<alpha>_sub inv_into_into subsetD)+
-            moreover have "x \<in> ordermap A VWF ` A" "y \<in> ordermap A VWF ` A"
-              using \<alpha>_sub that by blast+
-            moreover have "A \<subseteq> ON"
-              using A_\<alpha>\<beta> elts_subset_ON \<open>Ord(\<alpha>*\<beta>)\<close> by blast
-            ultimately show ?thesis
-              by (metis ON_imp_Ord Ord_linear_lt f_inv_into_f less_not_sym om_A_less \<open>x < y\<close>)
-          qed
-          have "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha> * \<beta>)"
+          have g: "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha> * \<beta>)"
             by (meson A_\<alpha>\<beta> Pi_I' \<alpha>_sub inv_into_into subset_eq)
           then have fg: "f \<circ> (\<lambda>X. ?g ` X) \<in> [elts \<alpha>]\<^bsup>2\<^esup> \<rightarrow> {..<2}"
             by (rule nsets_compose_image_funcset [OF f _ inj_g])
+          have g_less: "?g x < ?g y" if "x < y" "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" for x y
+            using Pi_mem [OF g]
+            by (meson A_\<alpha>\<beta> Ord_in_Ord Ord_not_le ord \<open>small A\<close> dual_order.trans elts_subset_ON inv_ordermap_VWF_mono_le ot that vsubsetD)
           obtain i H where "i < 2" "H \<subseteq> elts \<alpha>"
             and ot_eq: "tp H = [k,\<gamma>]!i" "(f \<circ> (\<lambda>X. ?g ` X)) ` (nsets H 2) \<subseteq> {i}"
             using ii partn_lst_E [OF part fg] by (auto simp: eval_nat_numeral)
@@ -427,12 +403,7 @@ next
             have gH: "?g ` H \<subseteq> elts (\<alpha> * \<beta>)"
               by (metis A_\<alpha>\<beta> \<alpha>_sub \<open>H \<subseteq> elts \<alpha>\<close> image_subsetI inv_into_into subset_eq)
             have [simp]: "tp (?g ` H) = tp H"
-            proof (rule ordertype_VWF_inc_eq)
-              show "?g ` H \<subseteq> ON"
-                using elts_subset_ON gH ord(3) by auto
-              show "?g x < inv_into A (ordermap A VWF) y" if "x \<in> H" "y \<in> H" "x < y" for x y
-                using that \<open>H \<subseteq> elts \<alpha>\<close> g_less by blast
-            qed (use \<open>H \<subseteq> elts \<alpha>\<close> elts_subset_ON ord down in auto)
+              by (meson \<open>H \<subseteq> elts \<alpha>\<close> ord down dual_order.trans elts_subset_ON gH g_less ordertype_VWF_inc_eq subsetD)
             show ?thesis
               using ii [of "?g ` H"] ot_eq 1
               apply (auto simp: gH elim!: nset_image_obtains)
@@ -949,9 +920,11 @@ next
           qed (use that g_\<alpha> in auto)
           have tp2: "tp (\<AA> (\<mu> n)) = \<alpha>"
             by (auto simp: \<AA>)
-          obtain A2 where A2: "tp A2 = \<alpha>" "A2 \<subseteq> K 1 xn \<inter> \<AA> (\<mu> n)" "less_sets {xn} A2"
-            using indecomposable_imp_Ex_less_sets [OF indec \<open>\<alpha> > 1\<close> \<open>Ord \<beta>\<close> tp2]
-            by (metis \<AA>sub \<mu>_in_\<beta> atMost_iff image_eqI inf_le2 le_refl xn tp1 g_\<mu>)
+          obtain "small (\<AA> (\<mu> n))" "\<AA> (\<mu> n) \<subseteq> ON"
+            by (meson \<AA>sub ord down elts_subset_ON subset_trans)
+          then obtain A2 where A2: "tp A2 = \<alpha>" "A2 \<subseteq> K 1 xn \<inter> \<AA> (\<mu> n)" "less_sets {xn} A2"
+            using indecomposable_imp_Ex_less_sets [OF indec \<open>\<alpha> > 1\<close> tp2]
+            by (metis \<mu>_in_\<beta> atMost_iff image_eqI inf_le2 le_refl xn tp1 g_\<mu>)
           then have A2_sub: "A2 \<subseteq> \<AA> (\<mu> n)" by simp
           let ?\<AA> = "\<lambda>\<nu>. if \<nu> = \<mu> n then A2 else K 1 xn \<inter> \<AA> (g \<nu>)"
           have [simp]: "({..<Suc n} \<inter> {x. x \<noteq> n}) = ({..<n})"
@@ -1315,7 +1288,7 @@ corollary Theorem_3_2:
 proof (cases "n=0 \<or> k=0")
   case True
   then show ?thesis
-    by (auto intro: partn_lst_triv0 [where i=1] partn_lst_triv1 [where i=0] simp add:)
+    by (auto intro: partn_lst_triv0 [where i=1] partn_lst_triv1 [where i=0])
 next
   case False
   then have "n > 0" "k > 0"
@@ -1332,10 +1305,8 @@ next
     by (metis (mono_tags, lifting) One_nat_def one_V_def ord_of_nat.simps ord_of_nat_add ord_of_nat_mono_iff ord_of_nat_mult)
   then have x: "\<omega> \<up> (1 + ord_of_nat (n - 1) * ord_of_nat (k - 1)) \<le> \<omega>\<up>(n*k)"
     by (simp add: oexp_mono_le)
-  then have "partn_lst_VWF (\<omega>\<up>(n*k)) [ord_of_nat (2 ^ (k-1)), \<omega> \<up> (1 + ord_of_nat (n-1))] 2"
-    using Partitions.partn_lst_greater_resource PV x by blast
   then have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> (1 + ord_of_nat (n-1)), ord_of_nat (2 ^ (k-1))] 2"
-    using partn_lst_two_swap by blast
+    by (metis PV partn_lst_two_swap Partitions.partn_lst_greater_resource less_eq_V_def)
   moreover have "(1 + ord_of_nat (n-1)) = ord_of_nat n"
     using ord_of_minus_1 [OF \<open>n > 0\<close>]
     by (simp add: one_V_def)

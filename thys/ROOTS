@@ -224,6 +224,7 @@ Heard_Of
 Hello_World
 HereditarilyFinite
 Hermite
+Hermite_Lindemann
 Hidden_Markov_Models
 Higher_Order_Terms
 Hoare_Time
@@ -336,12 +337,14 @@ Matroids
 Max-Card-Matching
 Median_Of_Medians_Selection
 Menger
+Mereology
 Mersenne_Primes
 MiniML
 Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
 Modal_Logics_for_NTS
+Modular_arithmetic_LLL_and_HNF_algorithms
 Modular_Assembly_Kit_Security
 Monad_Memo_DP
 Monad_Normalisation
@@ -423,6 +426,7 @@ Probabilistic_Timed_Automata
 Probabilistic_While
 Program-Conflict-Analysis
 Projective_Geometry
+Projective_Measurements
 Promela
 Proof_Strategy_Language
 PropResPI
@@ -530,6 +534,7 @@ Stuttering_Equivalence
 Subresultants
 Subset_Boolean_Algebras
 SumSquares
+Sunflowers
 SuperCalc
 Surprise_Paradox
 Symmetric_Polynomials

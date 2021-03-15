@@ -9,7 +9,96 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 Feb 2021 00:00:00 +0000</pubDate>
+    <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+              <link>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+       <guid>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+       <dc:creator> Ralph Bottesch, Jose Divasón, René Thiemann       </dc:creator>
+       <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We verify two algorithms for which modular arithmetic plays an
+essential role: Storjohann&#39;s variant of the LLL lattice basis
+reduction algorithm and Kopparty&#39;s algorithm for computing the
+Hermite normal form of a matrix. To do this, we also formalize some
+facts about the modulo operation with symmetric range. Our
+implementations are based on the original papers, but are otherwise
+efficient. For basis reduction we formalize two versions: one that
+includes all of the optimizations/heuristics from Storjohann&#39;s
+paper, and one excluding a heuristic that we observed to often
+decrease efficiency. We also provide a fast, self-contained certifier
+for basis reduction, based on the efficient Hermite normal form
+algorithm.</description>
+    </item>
+    <item>
+       <title>Quantum projective measurements and the CHSH inequality</title>
+              <link>https://www.isa-afp.org/entries/Projective_Measurements.html</link>
+       <guid>https://www.isa-afp.org/entries/Projective_Measurements.html</guid>
+       <dc:creator> Mnacho Echenim       </dc:creator>
+       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+This work contains a formalization of quantum projective measurements,
+also known as von Neumann measurements, which are based on elements of
+spectral theory. We also formalized the CHSH inequality, an inequality
+involving expectations in a probability space that is violated by
+quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.</description>
+    </item>
+    <item>
+       <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+              <link>https://www.isa-afp.org/entries/Hermite_Lindemann.html</link>
+       <guid>https://www.isa-afp.org/entries/Hermite_Lindemann.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of the
+Hermite-Lindemann-Weierstraß Theorem (also known as simply
+Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
+crowning achievements of 19th century number theory.&lt;/p&gt;
+&lt;p&gt;The theorem states that if $\alpha_1, \ldots,
+\alpha_n\in\mathbb{C}$ are algebraic numbers that are linearly
+independent over $\mathbb{Z}$, then $e^{\alpha_1},\ldots,e^{\alpha_n}$
+are algebraically independent over $\mathbb{Q}$.&lt;/p&gt;
+&lt;p&gt;Like the &lt;a
+href=&#34;https://doi.org/10.1007/978-3-319-66107-0_5&#34;&gt;previous
+formalisation in Coq by Bernard&lt;/a&gt;, I proceeded by formalising
+&lt;a
+href=&#34;https://doi.org/10.1017/CBO9780511565977&#34;&gt;Baker&#39;s
+version of the theorem and proof&lt;/a&gt; and then deriving the
+original one from that. Baker&#39;s version states that for any
+algebraic numbers $\beta_1, \ldots, \beta_n\in\mathbb{C}$ and distinct
+algebraic numbers $\alpha_i, \ldots, \alpha_n\in\mathbb{C}$, we have
+$\beta_1 e^{\alpha_1} + \ldots + \beta_n e^{\alpha_n} = 0$ if and only
+if all the $\beta_i$ are zero.&lt;/p&gt; &lt;p&gt;This has a number of
+direct corollaries, e.g.:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;$e$ and $\pi$
+are transcendental&lt;/li&gt; &lt;li&gt;$e^z$, $\sin z$, $\tan z$,
+etc. are transcendental for algebraic
+$z\in\mathbb{C}\setminus\{0\}$&lt;/li&gt; &lt;li&gt;$\ln z$ is
+transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
+1\}$&lt;/li&gt; &lt;/ul&gt;</description>
+    </item>
+    <item>
+       <title>Mereology</title>
+              <link>https://www.isa-afp.org/entries/Mereology.html</link>
+       <guid>https://www.isa-afp.org/entries/Mereology.html</guid>
+       <dc:creator> Ben Blumson       </dc:creator>
+       <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We use Isabelle/HOL to verify elementary theorems and alternative
+axiomatizations of classical extensional mereology.</description>
+    </item>
+    <item>
+       <title>The Sunflower Lemma of Erdős and Rado</title>
+              <link>https://www.isa-afp.org/entries/Sunflowers.html</link>
+       <guid>https://www.isa-afp.org/entries/Sunflowers.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
+       <description>
+We formally define sunflowers and provide a formalization of the
+sunflower lemma of Erd&amp;odblac;s and Rado: whenever a set of
+size-&lt;i&gt;k&lt;/i&gt;-sets has a larger cardinality than
+&lt;i&gt;(r - 1)&lt;sup&gt;k&lt;/sup&gt; &amp;middot; k!&lt;/i&gt;,
+then it contains a sunflower of cardinality &lt;i&gt;r&lt;/i&gt;.</description>
+    </item>
     <item>
        <title>A Verified Imperative Implementation of B-Trees</title>
               <link>https://www.isa-afp.org/entries/BTree.html</link>
@@ -500,115 +589,6 @@ adapting &lt;a
 href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;Larry
 Paulson’s formalization of the Hereditarily Finite Set
 theory&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>An Abstract Formalization of G&ouml;del's Incompleteness Theorems</title>
-              <link>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_Incompleteness.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We present an abstract formalization of G&amp;ouml;del&#39;s
-incompleteness theorems. We analyze sufficient conditions for the
-theorems&#39; applicability to a partially specified logic. Our
-abstract perspective enables a comparison between alternative
-approaches from the literature. These include Rosser&#39;s variation
-of the first theorem, Jeroslow&#39;s variation of the second theorem,
-and the Swierczkowski&amp;ndash;Paulson semantics-based approach. This
-AFP entry is the main entry point to the results described in our
-CADE-27 paper &lt;a
-href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
-Formally Verified Abstract Account of Gödel&#39;s Incompleteness
-Theorems&lt;/a&gt;.  As part of our abstract formalization&#39;s
-validation, we instantiate our locales twice in the separate AFP
-entries &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
-and &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part II</title>
-              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We validate an abstract formulation of G&amp;ouml;del&#39;s Second
-Incompleteness Theorem from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
-AFP entry&lt;/a&gt; by instantiating it to the case of &lt;i&gt;finite
-consistent extensions of the Hereditarily Finite (HF) Set
-theory&lt;/i&gt;, i.e., consistent FOL theories extending the HF Set
-theory with a finite set of axioms.  The instantiation draws heavily
-on infrastructure previously developed by Larry Paulson in his &lt;a
-href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;direct
-formalisation of the concrete result&lt;/a&gt;. It strengthens
-Paulson&#39;s formalization of G&amp;ouml;del&#39;s Second from that
-entry by &lt;i&gt;not&lt;/i&gt; assuming soundness, and in fact not
-relying on any notion of model or semantic interpretation. The
-strengthening was obtained by first replacing some of Paulson’s
-semantic arguments with proofs within his HF calculus, and then
-plugging in some of Paulson&#39;s (modified) lemmas to instantiate
-our soundness-free G&amp;ouml;del&#39;s Second locale.</description>
-    </item>
-    <item>
-       <title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</title>
-              <link>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</link>
-       <guid>https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We validate an abstract formulation of G&amp;ouml;del&#39;s First and
-Second Incompleteness Theorems from a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_Incompleteness.html&#34;&gt;separate
-AFP entry&lt;/a&gt; by instantiating them to the case of
-&lt;i&gt;finite sound extensions of the Hereditarily Finite (HF) Set
-theory&lt;/i&gt;, i.e., FOL theories extending the HF Set theory with
-a finite set of axioms that are sound in the standard model. The
-concrete results had been previously formalised in an &lt;a
-href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;AFP
-entry by Larry Paulson&lt;/a&gt;; our instantiation reuses the
-infrastructure developed in that entry.</description>
-    </item>
-    <item>
-       <title>A Formal Model of Extended Finite State Machines</title>
-              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</link>
-       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machines.html</guid>
-       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
-       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we provide a formalisation of extended finite state
-machines (EFSMs) where models are represented as finite sets of
-transitions between states. EFSMs execute traces to produce observable
-outputs. We also define various simulation and equality metrics for
-EFSMs in terms of traces and prove their strengths in relation to each
-other. Another key contribution is a framework of function definitions
-such that LTL properties can be phrased over EFSMs. Finally, we
-provide a simple example case study in the form of a drinks machine.</description>
-    </item>
-    <item>
-       <title>Inference of Extended Finite State Machines</title>
-              <link>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</link>
-       <guid>https://www.isa-afp.org/entries/Extended_Finite_State_Machine_Inference.html</guid>
-       <dc:creator> Michael Foster, Achim D. Brucker, Ramsay G. Taylor, John Derrick       </dc:creator>
-       <pubDate>07 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we provide a formal implementation of a
-state-merging technique to infer extended finite state machines
-(EFSMs), complete with output and update functions, from black-box
-traces. In particular, we define the subsumption in context relation
-as a means of determining whether one transition is able to account
-for the behaviour of another. Building on this, we define the direct
-subsumption relation, which lifts the subsumption in context relation
-to EFSM level such that we can use it to determine whether it is safe
-to merge a given pair of transitions. Key proofs include the
-conditions necessary for subsumption to occur and that subsumption
-and direct subsumption are preorder relations.  We also provide a
-number of different heuristics which can be used to abstract away
-concrete values into registers so that more states and transitions can
-be merged and provide proofs of the various conditions which must hold
-for these abstractions to subsume their ungeneralised counterparts. A
-Code Generator setup to create executable Scala code is also defined.</description>
     </item>
   </channel>
 </rss>
