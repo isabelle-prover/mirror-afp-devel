@@ -4,6 +4,8 @@ theory Simulation
   imports Semantics Inf Well_founded
 begin
 
+subsection \<open>Backward simulation\<close>
+
 locale backward_simulation =
   L1: semantics step1 final1 +
   L2: semantics step2 final2 +
@@ -31,41 +33,6 @@ The @{term match} predicate is also parameterized with an ordering used to avoid
 The only two assumptions of a backward simulation are that a final state in L2 will also be a final in L1,and that a step in L2 will either represent a non-empty sequence of steps in L1 or will result in an equivalent state.
 Stuttering is ruled out by the requirement that the index on the @{term match} predicate decreases with respect to the well-founded @{term order} ordering.
 \<close>
-
-end
-
-
-locale forward_simulation =
-  L1: semantics step1 final1 +
-  L2: semantics step2 final2 +
-  well_founded "(\<sqsubset>)"
-  for
-    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    final1 :: "'state1 \<Rightarrow> bool" and
-    final2 :: "'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70) +
-  fixes
-    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
-  assumes
-    match_final:
-      "match i s1 s2 \<Longrightarrow> final1 s1 \<Longrightarrow> final2 s2" and
-    simulation:
-      "match i1 s1 s2 \<Longrightarrow> step1 s1 s1' \<Longrightarrow>
-        (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1 s2' \<and> i' \<sqsubset> i1)"
-
-locale bisimulation =
-  forward_simulation step1 step2 final1 final2 order match +
-  backward_simulation step1 step2 final1 final2 order match
-  for
-    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    final1 :: "'state1 \<Rightarrow> bool" and
-    final2 :: "'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
-    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
-
-context backward_simulation begin
 
 lemma lift_simulation_plus:
   "step2\<^sup>+\<^sup>+ s2 s2' \<Longrightarrow> match i1 s1 s2 \<Longrightarrow>
@@ -122,7 +89,7 @@ next
   qed
 qed
 
-lemma backward_simulation_inf:
+lemma match_inf:
   assumes
     "match i s1 s2" and
     "inf step2 s2"
@@ -140,7 +107,7 @@ proof -
     by (auto intro: inf_wf_to_inf well_founded_axioms)
 qed
 
-subsection \<open>Preservation of behaviour\<close>
+subsubsection \<open>Preservation of behaviour\<close>
 
 text \<open>
 The main correctness theorem states that, for any two matching programs, any not wrong behaviour of the later is also a behaviour of the former.
@@ -148,15 +115,15 @@ In other words, if the compiled program does not crash, then its behaviour, whet
 \<close>
 
 lemma simulation_behaviour :
-  "L2.sem_behaves s\<^sub>2 b\<^sub>2 \<Longrightarrow> \<not>is_wrong b\<^sub>2 \<Longrightarrow> match i s\<^sub>1 s\<^sub>2 \<Longrightarrow>
-    \<exists>b\<^sub>1 i'. L1.sem_behaves s\<^sub>1 b\<^sub>1 \<and> rel_behaviour (match i') b\<^sub>1 b\<^sub>2"
-proof(induction rule: L2.sem_behaves.cases)
+  "L2.state_behaves s\<^sub>2 b\<^sub>2 \<Longrightarrow> \<not>is_wrong b\<^sub>2 \<Longrightarrow> match i s\<^sub>1 s\<^sub>2 \<Longrightarrow>
+    \<exists>b\<^sub>1 i'. L1.state_behaves s\<^sub>1 b\<^sub>1 \<and> rel_behaviour (match i') b\<^sub>1 b\<^sub>2"
+proof(induction rule: L2.state_behaves.cases)
   case (state_terminates s2 s2')
   then obtain i' s1' where "L1.eval s\<^sub>1 s1'" and "match i' s1' s2'"
     using lift_simulation_eval by blast
   hence "final1 s1'"
     by (auto intro: state_terminates.hyps match_final)
-  hence "L1.sem_behaves s\<^sub>1 (Terminates s1')"
+  hence "L1.state_behaves s\<^sub>1 (Terminates s1')"
     using L1.final_finished
     by (simp add: L1.state_terminates \<open>L1.eval s\<^sub>1 s1'\<close>)
   moreover have "rel_behaviour (match i') (Terminates s1') b\<^sub>2"
@@ -165,13 +132,143 @@ proof(induction rule: L2.sem_behaves.cases)
 next
   case (state_diverges s2)
   then show ?case
-    using backward_simulation_inf L1.state_diverges by fastforce
+    using match_inf L1.state_diverges by fastforce
 next
   case (state_goes_wrong s2 s2')
   then show ?case using \<open>\<not>is_wrong b\<^sub>2\<close> by simp
 qed
 
 end
+
+subsection \<open>Forward simulation\<close>
+
+locale forward_simulation =
+  L1: semantics step1 final1 +
+  L2: semantics step2 final2 +
+  well_founded "(\<sqsubset>)"
+  for
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    final1 :: "'state1 \<Rightarrow> bool" and
+    final2 :: "'state2 \<Rightarrow> bool" and
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70) +
+  fixes
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
+  assumes
+    match_final:
+      "match i s1 s2 \<Longrightarrow> final1 s1 \<Longrightarrow> final2 s2" and
+    simulation:
+      "match i s1 s2 \<Longrightarrow> step1 s1 s1' \<Longrightarrow>
+        (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> i' \<sqsubset> i)"
+begin
+
+lemma lift_simulation_eval:
+  "L1.eval s1 s1' \<Longrightarrow> match i s1 s2 \<Longrightarrow> \<exists>i' s2'. L2.eval s2 s2' \<and> match i' s1' s2'"
+proof(induction s1 arbitrary: i s2 rule: converse_rtranclp_induct)
+  case (base s2)
+  thus ?case by auto
+next
+  case (step s1 s1'')
+  show ?case
+    using simulation[OF \<open>match i s1 s2\<close> \<open>step1 s1 s1''\<close>]
+  proof (elim disjE exE conjE)
+    fix i' s2'
+    assume "step2\<^sup>+\<^sup>+ s2 s2'" and "match i' s1'' s2'"
+    thus ?thesis
+      by (auto intro: rtranclp_trans dest!: tranclp_into_rtranclp step.IH)
+  next
+    fix i'
+    assume "match i' s1'' s2" and "i' \<sqsubset> i"
+    thus ?thesis
+      by (auto intro: step.IH)
+  qed
+qed
+
+lemma match_inf:
+  assumes "match i s1 s2" and "inf step1 s1"
+  shows "inf step2 s2"
+proof -
+  from assms have "inf_wf step2 order i s2"
+  proof (coinduction arbitrary: i s1 s2)
+    case inf_wf
+    obtain s1' where step_s1: "step1 s1 s1'" and inf_s1': "inf step1 s1'"
+      using inf_wf(2) by (auto elim: inf.cases)
+    from simulation[OF \<open>match i s1 s2\<close> step_s1] show ?case
+      using inf_s1' by auto
+  qed
+  thus ?thesis using inf_wf_to_inf
+    by (auto intro: inf_wf_to_inf well_founded_axioms)
+qed
+
+
+subsubsection \<open>Preservation of behaviour\<close>
+
+lemma simulation_behaviour :
+  "L1.state_behaves s1 b1 \<Longrightarrow> \<not> is_wrong b1 \<Longrightarrow> match i s1 s2 \<Longrightarrow>
+    \<exists>b2 i'. L2.state_behaves s2 b2 \<and> rel_behaviour (match i') b1 b2"
+proof(induction rule: L1.state_behaves.cases)
+  case (state_terminates s1 s1')
+  then obtain i' s2' where steps_s2: "L2.eval s2 s2'" and match_s1'_s2': "match i' s1' s2'"
+    using lift_simulation_eval by blast
+  hence "final2 s2'"
+    by (auto intro: state_terminates.hyps match_final)
+  hence "L2.state_behaves s2 (Terminates s2')"
+    using L2.final_finished L2.state_terminates[OF steps_s2]
+    by simp
+  moreover have "rel_behaviour (match i') b1 (Terminates s2')"
+    by (simp add: \<open>match i' s1' s2'\<close> state_terminates.hyps)
+  ultimately show ?case by blast
+next
+  case (state_diverges s2)
+  then show ?case
+    using match_inf[THEN L2.state_diverges] by fastforce
+next
+  case (state_goes_wrong s2 s2')
+  then show ?case using \<open>\<not>is_wrong b1\<close> by simp
+qed
+
+
+subsubsection \<open>Forward to backward\<close>
+
+lemma state_behaves_forward_to_backward:
+  assumes
+    match_s1_s2: "match i s1 s2" and
+    safe_s1: "L1.safe s1" and
+    behaves_s2: "L2.state_behaves s2 b2" and
+    right_unique2: "right_unique step2"
+  shows "\<exists>b1 i. L1.state_behaves s1 b1 \<and> rel_behaviour (match i) b1 b2"
+proof -
+  obtain b1 where behaves_s1: "L1.state_behaves s1 b1"
+    using L1.left_total_state_behaves
+    by (auto elim: left_totalE)
+
+  have not_wrong_b1: "\<not> is_wrong b1"
+    by (rule L1.safe_state_behaves_not_wrong[OF safe_s1 behaves_s1])
+
+  obtain i' where "L2.state_behaves s2 b2" and rel_b1_B2: "rel_behaviour (match i') b1 b2"
+    using simulation_behaviour[OF behaves_s1 not_wrong_b1 match_s1_s2]
+    using L2.right_unique_state_behaves[OF right_unique2, THEN right_uniqueD]
+    using behaves_s2
+    by auto
+
+  show ?thesis
+    using behaves_s1 rel_b1_B2 by auto
+qed
+
+end
+
+subsection \<open>Bisimulation\<close>
+
+locale bisimulation =
+  forward_simulation step1 step2 final1 final2 order match +
+  backward_simulation step1 step2 final1 final2 order match
+  for
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    final1 :: "'state1 \<Rightarrow> bool" and
+    final2 :: "'state2 \<Rightarrow> bool" and
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
 
 subsection \<open>Composition of backward simulations\<close>
 

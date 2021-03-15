@@ -38,22 +38,21 @@ proof (coinduction arbitrary: x n rule: inf.coinduct)
 qed
 
 lemma step_inf:
-  assumes
-    deterministic: "\<And>x y z. r x y \<Longrightarrow> r x z \<Longrightarrow> y = z"
+  assumes "right_unique r"
   shows "r x y \<Longrightarrow> inf r x \<Longrightarrow> inf r y"
-  by (metis deterministic inf.cases)
+  using right_uniqueD[OF \<open>right_unique r\<close>]
+  by (metis inf.cases)
 
 lemma star_inf:
-  assumes
-    deterministic: "\<And>x y z. r x y \<Longrightarrow> r x z \<Longrightarrow> y = z"
+  assumes "right_unique r"
   shows "r\<^sup>*\<^sup>* x y \<Longrightarrow> inf r x \<Longrightarrow> inf r y"
 proof (induction y rule: rtranclp_induct)
   case base
-  then show ?case .
+  then show ?case by assumption
 next
   case (step y z)
   then show ?case
-    using step_inf deterministic by metis
+    using step_inf[OF \<open>right_unique r\<close>] by metis
 qed
 
 end

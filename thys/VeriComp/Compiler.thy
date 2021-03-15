@@ -47,18 +47,18 @@ subsection \<open>Preservation of behaviour\<close>
 corollary behaviour_preservation:
   assumes
     compiles: "compile p1 = Some p2" and
-    behaves: "L2.behaves p2 b2" and
+    behaves: "L2.prog_behaves p2 b2" and
     not_wrong: "\<not> is_wrong b2"
-  shows "\<exists>b1 i.  L1.behaves p1 b1 \<and> rel_behaviour (match i) b1 b2"
+  shows "\<exists>b1 i.  L1.prog_behaves p1 b1 \<and> rel_behaviour (match i) b1 b2"
 proof -
-  obtain s2 where "load2 p2 s2" and "L2.sem_behaves s2 b2"
-    using behaves L2.behaves_def by auto
+  obtain s2 where "load2 p2 s2" and "L2.state_behaves s2 b2"
+    using behaves L2.prog_behaves_def by auto
   obtain i s1 where "load1 p1 s1" "match i s1 s2"
     using compile_load[OF compiles \<open>load2 p2 s2\<close>]
     by auto
   then show ?thesis
-    using simulation_behaviour[OF \<open>L2.sem_behaves s2 b2\<close> not_wrong \<open>match i s1 s2\<close>]
-    by (auto simp: L1.behaves_def)
+    using simulation_behaviour[OF \<open>L2.state_behaves s2 b2\<close> not_wrong \<open>match i s1 s2\<close>]
+    by (auto simp: L1.prog_behaves_def)
 qed
 
 end

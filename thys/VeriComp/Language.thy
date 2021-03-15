@@ -20,28 +20,21 @@ The set of initial states of the transition system is implicitly defined by the 
 \<close>
 
 
-subsection \<open>Behaviour of a dynamic execution\<close>
+subsection \<open>Program behaviour\<close>
 
-definition behaves :: "'prog \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<Down>" 50) where
-  "behaves = load OO sem_behaves"
+definition prog_behaves :: "'prog \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<Down>" 50) where
+  "prog_behaves = load OO state_behaves"
 
 text \<open>If both the @{term load} and @{term step} relations are deterministic, then so is the behaviour of a program.\<close>
 
-lemma behaves_deterministic:
+lemma right_unique_prog_behaves:
   assumes
-    load_deterministic: "\<And>p s s'. load p s \<Longrightarrow> load p s' \<Longrightarrow> s = s'" and
-    step_deterministic: "\<And>x y z. step x y \<Longrightarrow> step x z \<Longrightarrow> y = z" and
-    behaves: "p \<Down> b" "p \<Down> b'"
-  shows "b = b'"
-proof -
-  obtain s where "load p s" and "s \<down> b" and "s \<down> b'"
-    using behaves load_deterministic
-    by (auto simp: behaves_def)
-
-  thus ?thesis
-    using step_deterministic sem_behaves_deterministic[OF _ \<open>s \<down> b\<close> \<open>s \<down> b'\<close>]
-    by simp
-qed
+    right_unique_load: "right_unique load" and
+    right_unique_step: "right_unique step"
+  shows "right_unique prog_behaves"
+  unfolding prog_behaves_def
+  using right_unique_state_behaves[OF right_unique_step] right_unique_load
+  by (auto intro: right_unique_OO)
 
 end
 
