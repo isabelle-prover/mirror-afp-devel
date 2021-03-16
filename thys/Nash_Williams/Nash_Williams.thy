@@ -88,23 +88,20 @@ lemma init_segment_empty [iff]: "init_segment {} S"
 lemma init_segment_insert_iff:
   assumes Sn: "less_sets S {n}" and TS: "\<And>x. x \<in> T-S \<Longrightarrow> n\<le>x"
   shows "init_segment (insert n S) T \<longleftrightarrow> init_segment S T \<and> n \<in> T"
-proof safe
-  assume L: "init_segment (insert n S) T"
+proof 
+  assume "init_segment (insert n S) T"
   then have "init_segment ({n} \<union> S) T"
     by auto
-  then show "init_segment S T"
-    by (metis (no_types) Sn init_segment_Un init_segment_trans sup.commute)
-  show "n \<in> T"
-    using L by (auto simp: init_segment_def)
+  then show "init_segment S T \<and> n \<in> T"
+    by (metis Sn Un_iff init_segment_def init_segment_trans insertI1 sup_commute)
 next
-  assume "init_segment S T" "n \<in> T"
-  then obtain S' where S': "T = S \<union> S'" "less_sets S S'"
+  assume rhs: "init_segment S T \<and> n \<in> T"
+  then obtain R where R: "T = S \<union> R" "less_sets S R"
     by (auto simp: init_segment_def less_sets_def)
-  then have "S \<union> S' = insert n (S \<union> (S' - {n})) \<and>
-               less_sets (insert n S) (S' - {n})"
-    unfolding less_sets_def using \<open>n \<in> T\<close> TS nat_less_le by auto
+  then have "S\<union>R = insert n (S \<union> (R-{n})) \<and> less_sets (insert n S) (R-{n})"
+    unfolding less_sets_def using rhs TS nat_less_le by auto
   then show "init_segment (insert n S) T"
-    using S'(1) init_segment_Un by force
+    using R init_segment_Un by force
 qed
 
 lemma init_segment_insert:
