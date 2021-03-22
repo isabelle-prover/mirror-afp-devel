@@ -9049,15 +9049,19 @@ abstract =
   Mathematical Logic for Computer Science.
 
 [Szpilrajn]
-title = Szpilrajn Extension Theorem
-author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>
+title = Order Extension and Szpilrajn's Extension Theorem
+author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>, Lukas Stevens <https://www21.in.tum.de/team/stevensl>
 topic = Mathematics/Order
 date = 2019-07-27
 notify = p_zeller@cs.uni-kl.de
 abstract =
-  We formalize the Szpilrajn extension theorem, also known as
-  order-extension principal: Every strict partial order can be extended
-  to a strict linear order.
+  This entry is concerned with the principle of order extension, i.e. the extension of an order relation to a total order relation.
+  To this end, we prove a more general version of Szpilrajn's extension theorem employing terminology from the book "Consistency, Choice, and Rationality" by Bossert and Suzumura.
+  We also formalize theorem 2.7 of their book.
+extra-history =
+	Change history:
+	[2021-03-22]:
+  (by Lukas Stevens) generalise Szpilrajn's extension theorem and add material from the book "Consistency, Choice, and Rationality"
 
 [TESL_Language]
 title = A Formal Development of a Polychronous Polytimed Coordination Language
