@@ -411,6 +411,8 @@ proof -
         show ?case by (auto simp: sign_id[unfolded id_def] permutes_id[unfolded id_def])
       next
         case (swap a b p)
+        then have \<open>permutation p\<close>
+          by (auto intro: permutes_imp_permutation)
         let ?sab = "Fun.swap a b id"
         let ?sfab = "Fun.swap (?fn a) (?fn b) id"
         have p_sab: "permutation ?sab" by (rule permutation_swap_id)
@@ -435,7 +437,7 @@ proof -
           show "?ft (Fun.swap a b id \<circ> p) c = (Fun.swap (?fn a) (?fn b) id \<circ> ?ft p) c"
           proof (cases "p (?tn c) = a \<or> p (?tn c) = b")
             case True
-            thus ?thesis by (cases, auto simp add: o_def swap_def)
+            thus ?thesis by (cases, auto simp add: swap_id_eq)
           next
             case False
             hence neq: "p (?tn c) \<noteq> a" "p (?tn c) \<noteq> b" by auto
@@ -443,10 +445,10 @@ proof -
               by (simp add: to_nat_less_card)
             from neq[folded inj[OF pc swap(1)] inj[OF pc swap(2)]]
             have "?fn (p (?tn c)) \<noteq> ?fn a" "?fn (p (?tn c)) \<noteq> ?fn b" .
-            with neq show ?thesis by (auto simp: o_def swap_def)
+            with neq show ?thesis by (auto simp: swap_id_eq)
           qed
         qed
-        show ?case unfolding IH2 id sign_compose[OF p_sab swap(3)] sign_compose[OF p_sfab p_ftp] id2
+        show ?case unfolding IH2 id sign_compose[OF p_sab \<open>permutation p\<close>] sign_compose[OF p_sfab p_ftp] id2
           by (rule conjI[OF refl perm1])
       qed
       thus "signof p = of_int (sign ?q)" unfolding signof_def sign_def by auto

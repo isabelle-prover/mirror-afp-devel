@@ -85,8 +85,11 @@ proof (rule bij_imp_permutes')
       (simp add: assms(1) permutes_in_image permutes_inv)
   from assms have "inj (p(x := x, inv p x := p x))"
     by (intro injI) (auto split: if_split_asm; metis permutes_inverses(2))+
-  from assms this show "bij (p(x := x, inv p x := p x))"
-    by (metis UNIV_I bij_betw_imageI bij_betw_swap_iff permutes_inj permutes_surj surj_f_inv_f swap_def)
+  moreover have "surj (p(x := x, inv p x := p x))"
+    using assms UNIV_I bij_betw_swap_iff permutes_inj permutes_surj surj_f_inv_f
+    by (metis (no_types, hide_lams) Fun.swap_def bij_betw_def)
+  ultimately show "bij (p(x := x, inv p x := p x))"
+    by (rule bijI)
 qed
 
 lemma permutes_drop_cycle_size_two:

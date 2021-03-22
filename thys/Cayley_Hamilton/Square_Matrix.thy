@@ -572,14 +572,14 @@ lemma det_identical_cols:
 proof (transfer fixing: i i')
   fix A :: "'a \<Rightarrow> 'a \<Rightarrow> 'b" assume "(\<chi> j. A j i) = (\<chi> i. A i i')"
   then have [simp]: "\<And>j q. A j (Fun.swap i i' id (q j)) = A j (q j)"
-    by (auto simp: vec_eq_iff swap_def)
+    by (auto simp: vec_eq_iff swap_id_eq)
 
   let ?p = "\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i))"
   let ?s = "\<lambda>q. Fun.swap i i' id \<circ> q"
   let ?E = "{p. p permutes UNIV \<and> evenperm p}"
 
   have [simp]: "inj_on ?s ?E"
-    by (auto simp: inj_on_def fun_eq_iff swap_def)
+    by (auto simp: inj_on_def fun_eq_iff swap_id_eq)
 
   note p = permutes_UNIV_permutation evenperm_comp permutes_swap_id evenperm_swap permutes_compose
     sign_compose sign_swap_id

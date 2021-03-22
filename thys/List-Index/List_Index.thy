@@ -268,7 +268,7 @@ shows "index (xs[i := xs!j, j := xs!i]) x =
 proof-
   have "distinct(xs[i := xs!j, j := xs!i])" using assms by simp
   with assms show ?thesis
-    apply (auto simp: swap_def simp del: distinct_swap)
+    apply (auto simp: simp del: distinct_swap)
     apply (metis index_nth_id list_update_same_conv)
     apply (metis (erased, hide_lams) index_nth_id length_list_update list_update_swap nth_list_update_eq)
     apply (metis index_nth_id length_list_update nth_list_update_eq)

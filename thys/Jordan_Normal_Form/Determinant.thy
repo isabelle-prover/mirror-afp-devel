@@ -239,7 +239,7 @@ qed (insert k, auto)
 
 lemma swap_rows_mat_eq_permute: 
   "k < n \<Longrightarrow> l < n \<Longrightarrow> swaprows_mat n k l = mat n n (\<lambda>(i, j). 1\<^sub>m n $$ (Fun.swap k l id i, j))"
-  by (rule eq_matI, auto simp: swap_def)
+  by (rule eq_matI) (auto simp add: swap_id_eq)
 
 lemma det_swaprows_mat: assumes k: "k < n" and l: "l < n" and kl: "k \<noteq> l"
   shows "det (swaprows_mat n k l) = - 1"
@@ -321,8 +321,8 @@ proof-
       from permutes_compose[OF q p] sign_compose[OF pp[OF p] pp[OF q], unfolded sp sq]
       have "?p o q \<in> ?one" by auto
       hence "?p o (?p o q) \<in> ?pone" by auto
-      also have "?p o (?p o q) = q" unfolding o_def
-        by (intro ext, auto simp: swap_def)
+      also have "?p o (?p o q) = q"
+        by (auto simp: swap_id_eq)
       finally have "q \<in> ?pone" .
     }
     moreover
@@ -1526,8 +1526,8 @@ lemma permutation_insert_row_step:
     (is "?l = ?r")
 proof (rule ext)
   fix x show "?l x = ?r x"
-    apply (cases rule: linorder_cases[of "x" "i"])
-    unfolding permutation_insert_expand swap_def by auto
+    by (cases rule: linorder_cases[of "x" "i"])
+      (auto simp add: swap_id_eq permutation_insert_expand)
 qed
 
 lemma permutation_insert_column_step:

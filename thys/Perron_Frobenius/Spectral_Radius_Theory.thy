@@ -267,5 +267,4 @@ qed
 
 end
 
-thm perron_frobenius_spectral_radius_yun_real_roots
 end

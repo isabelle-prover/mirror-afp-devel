@@ -125,13 +125,13 @@ definition try_swap :: "'person \<Rightarrow> 'color \<Rightarrow> 'color \<Righ
   "try_swap p c\<^sub>1 c\<^sub>2 w x = (if c\<^sub>1 = blue \<or> c\<^sub>2 = blue \<or> x \<noteq> p then w x else Fun.swap c\<^sub>1 c\<^sub>2 id (w x))"
 
 lemma try_swap_valid[simp]: "valid (try_swap p c\<^sub>1 c\<^sub>2 w) = valid w"
-  by (auto simp add: try_swap_def valid_def swap_def)
+  by (auto simp add: try_swap_def valid_def swap_id_eq)
 
 lemma try_swap_eq[simp]: "try_swap p c\<^sub>1 c\<^sub>2 w x = try_swap p c\<^sub>1 c\<^sub>2 w' x \<longleftrightarrow> w x = w' x"
-  by (auto simp add: try_swap_def swap_def)
+  by (auto simp add: try_swap_def swap_id_eq)
 
 lemma try_swap_inv[simp]: "try_swap p c\<^sub>1 c\<^sub>2 (try_swap p c\<^sub>1 c\<^sub>2 w) = w"
-  by (rule ext) (auto simp add: try_swap_def swap_def)
+  by (rule ext) (auto simp add: try_swap_def swap_id_eq)
 
 lemma leaves_try_swap[simp]:
   assumes "valid w"

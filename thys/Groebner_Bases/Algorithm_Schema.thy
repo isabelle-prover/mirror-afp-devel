@@ -44,7 +44,7 @@ lemma in_pair_trans [trans]:
   using assms by (auto simp: in_pair_def)
 
 lemma in_pair_same [simp]: "p \<in>\<^sub>p A \<times> A \<longleftrightarrow> p \<in> A \<times> A"
-  by (auto simp: in_pair_def swap_def)
+  by (auto simp: in_pair_def)
 
 lemma subset_pairsI [intro]:
   assumes "\<And>x. x \<in>\<^sub>p A \<Longrightarrow> x \<in>\<^sub>p B"
@@ -2004,7 +2004,7 @@ next
         case True
         moreover from \<open>a1 \<in> set gs \<union> set bs\<close> \<open>b1 \<in> set gs \<union> set bs\<close> disj1
         have "(a1, b1) \<notin>\<^sub>p set hs \<times> (set gs \<union> set bs \<union> set hs)"
-          by (auto simp: in_pair_def swap_def)
+          by (auto simp: in_pair_def)
         ultimately have "(a1, b1) \<in>\<^sub>p set (ps -- sps) -\<^sub>p set ps'" by auto
         with \<open>fst a1 \<noteq> 0\<close> \<open>fst b1 \<noteq> 0\<close> show ?thesis by (rule a)
       next
