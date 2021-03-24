@@ -90,10 +90,8 @@ lemma init_segment_insert_iff:
   shows "init_segment (insert n S) T \<longleftrightarrow> init_segment S T \<and> n \<in> T"
 proof safe
   assume L: "init_segment (insert n S) T"
-  then have "init_segment ({n} \<union> S) T"
-    by auto
   then show "init_segment S T"
-    by (metis (no_types) Sn init_segment_Un init_segment_trans sup.commute)
+    by (metis Sn init_segment_Un init_segment_trans insert_is_Un sup_commute)
   show "n \<in> T"
     using L by (auto simp: init_segment_def)
 next
@@ -111,10 +109,6 @@ lemma init_segment_insert:
   assumes "init_segment S T" and T: "less_sets T {n}"
   shows "init_segment S (insert n T)"
 proof (cases "T={}")
-  case True
-  then show ?thesis
-    using assms(1) by blast
-next
   case False
   obtain S' where S': "T = S \<union> S'" "less_sets S S'"
     by (meson assms init_segment_def)
@@ -122,7 +116,7 @@ next
     using T False by (auto simp: less_sets_def)
   then show ?thesis
     using init_segment_Un by presburger
-qed
+qed (use assms in auto)
 
 subsection \<open>Definitions and basic properties\<close>
 
@@ -240,10 +234,8 @@ proof -
     assume "T \<subseteq> S"
     then obtain m where "f m = T" "m < card (Pow S)"
       using f by (blast elim: equalityE)
-    then have "decides \<F> T (F m)"
-      using "*" by blast
-    show "decides \<F> T ?N"
-      by (meson INT_lower \<open>decides \<F> T (F m)\<close> \<open>m < card (Pow S)\<close> decides_subset lessThan_iff)
+    then show "decides \<F> T ?N"
+      by (metis "*" INT_lower decides_subset lessThan_iff)
   qed
 qed
 
@@ -587,10 +579,6 @@ proof -
     by (metis Inf_nat_def1 assms(2) finite.emptyI)
   have F: "F n \<noteq> [] \<and> sorted_wrt (\<le>) (F n) \<and> list.set (F n) \<subseteq> Collect infinite \<and> set (F n) \<subseteq> Pow M \<and> Inf ` list.set (F n) \<subseteq> M" for n
   proof (induction n)
-    case 0
-    then show ?case
-      by (auto simp: InfM \<open>infinite M\<close>)
-  next
     case (Suc n)
     have "hd (F n) \<subseteq> M"
       by (meson Pow_iff Suc.IH hd_in_set subsetD)
@@ -605,12 +593,12 @@ proof -
       by (metis 2 3 Inf_nat_def1 finite.simps in_mono)
     with 1 2 3 show ?case
       using Suc by simp
-  qed
+  qed (auto simp: InfM \<open>infinite M\<close>)
   have \<Phi>F: "\<Phi> (F n) (Eps (\<Phi> (F n)))" for n
     by (metis Ball_Collect F Pow_iff Un_subset_iff \<Phi>_Eps hd_in_set subset_code(1))
   then have insert_closed: "insert_closed (F n) (Eps (\<Phi> (F n)))" for n
     using \<Phi>_def by blast
-  have Eps_subset_hd: "Eps (\<Phi> (F n)) \<subseteq> hd (F n) " for n
+  have Eps_subset_hd: "Eps (\<Phi> (F n)) \<subseteq> hd (F n)" for n
     using \<Phi>F \<Phi>_def by blast
   define mmap where "mmap \<equiv> \<lambda>n. Inf (hd (F (Suc n)))"
   have "mmap n < mmap (Suc n)" for n
@@ -626,7 +614,7 @@ proof -
   have hd_Suc_eq_Eps: "hd (F (Suc n)) = Eps (\<Phi> (F n))" for n
     by simp
   have "Inf (hd (F n)) \<in> hd (F n)" for n
-    by (metis Inf_nat_def1 \<Phi>F \<Phi>_def finite.emptyI rev_finite_subset)
+    by (metis Inf_nat_def1 \<Phi>F \<Phi>_def finite.emptyI finite_subset)
   then have Inf_hd_in_Eps: "Inf (hd (F m)) \<in> Eps (\<Phi> (F n))" if "m>n" for m n
     by (metis Eps_\<Phi>_decreasing Nat.lessE hd_Suc_eq_Eps less_imp_le_nat subsetD that)
   then have image_mmap_subset_hd_F: "mmap ` {n..} \<subseteq> hd (F (Suc n))" for n
@@ -687,9 +675,7 @@ proof -
         ultimately show False
           by (meson range_mmap_subset rejects_subset)
       qed
-      show "less_sets S {a}"
-        by (auto simp: Sn)
-    qed
+    qed (auto simp: Sn)
     then show "strongly_accepts \<F> (insert a S) (range mmap)"
       using range_mmap_subset strongly_accepts_subset by auto
   qed
@@ -750,7 +736,7 @@ proof clarify
         have "S \<noteq> {}"
           using Suc.hyps(2) by auto
         have "less_sets (S - {Sup S}) {Sup S}"
-          using Suc.prems(1) finite_Sup_less_iff nat_neq_iff by (auto simp: less_sets_def)
+          by (simp add: Suc.prems(1) Sup_nat_def \<open>S \<noteq> {}\<close> dual_order.strict_iff_order less_sets_def)
         then have "strongly_accepts (?\<F> 0) (insert (Sup S) (S - {Sup S})) P"
           by (metis P Seq Suc.prems finite_Diff insert_subset sacc)
         then show ?case
@@ -775,14 +761,8 @@ proof (induction r)
   show ?case
   proof (cases "r<2")
     case True
-    then consider "Suc r = 1" | "Suc r = 2"
-      by linarith
     then show ?thesis
-    proof cases
-      case 1 with \<F> show ?thesis by (auto simp: Ramsey_def)
-    next
-      case 2 with \<F> show ?thesis by (metis Nash_Williams_2)
-    qed
+      by (metis Nash_Williams_2 One_nat_def Ramsey_def assms(1) less_2_cases less_one numeral_2_eq_2 order_refl)
   next
     case False
     with Suc.IH have Ram: "Ramsey \<F> r"
@@ -808,9 +788,7 @@ proof (induction r)
           apply (clarsimp simp add: disjoint_iff g_def less_Suc_eq)
           by (metis True diff_less less_nat_zero_code nat_neq_iff zero_less_one)
         then show ?thesis
-          apply (rule_tac x=N in exI)
-          apply (rule_tac x=i in exI)
-          by (simp add: \<open>N \<subseteq> M\<close> \<open>i < r\<close> \<open>infinite N\<close> less_SucI)
+          by (metis \<open>N \<subseteq> M\<close> \<open>infinite N\<close> less_Suc_eq)
       next
         case False
         then have "i = r-1"
@@ -822,22 +800,20 @@ proof (induction r)
           using fim i False \<open>i<r\<close> by (force simp: h_def)
         then obtain P j where "P \<subseteq> N" "infinite P" "j<r" and j: "\<forall>k<r. j\<noteq>k \<longrightarrow> h -` {k} \<inter> \<F> \<inter> Pow P = {}"
           by (metis Ramsey_def Ram \<open>infinite N\<close>)
-        show ?thesis
+        have "\<exists>i. \<forall>j<Suc r. j \<noteq> i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow P = {}"
         proof (cases "j=0")
           case True
           then show ?thesis
-            apply (rule_tac x=P in exI)
             apply (rule_tac x=r in exI)
-            using null [of 0] \<open>r \<ge> 2\<close> \<open>P \<subseteq> N\<close> \<open>N \<subseteq> M\<close> j \<open>infinite P\<close>
-            by (force simp: h_def disjoint_iff less_Suc_eq intro: subset_trans)
+            using null [of 0] \<open>r \<ge> 2\<close> \<open>P \<subseteq> N\<close> j by (force simp: h_def disjoint_iff less_Suc_eq)
         next
           case False
           then show ?thesis
-            apply (rule_tac x=P in exI)
             apply (rule_tac x=j in exI)
-            using j \<open>P \<subseteq> N\<close> \<open>N \<subseteq> M\<close> \<open>j < r\<close> \<open>infinite P\<close> False
-            by (auto simp: h_def less_Suc_eq disjoint_iff intro: less_trans)
+            using j \<open>j < r\<close> by (auto simp: h_def less_Suc_eq disjoint_iff intro: less_trans)
         qed
+        then show ?thesis
+          by (metis Suc.prems \<open>N \<subseteq> M\<close> \<open>P \<subseteq> N\<close> \<open>infinite P\<close> subset_trans)
       qed
     qed
   qed
