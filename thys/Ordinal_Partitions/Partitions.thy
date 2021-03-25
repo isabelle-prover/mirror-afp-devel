@@ -18,7 +18,7 @@ abbreviation tp :: "V set \<Rightarrow> V"
 subsection \<open>Ordinal Partitions: Definitions\<close>
 
 definition partn_lst :: "[('a \<times> 'a) set, 'a set, V list, nat] \<Rightarrow> bool"
-  where "partn_lst r B \<alpha> n \<equiv> \<forall>f \<in> nsets B n  \<rightarrow>  {..<length \<alpha>}.
+  where "partn_lst r B \<alpha> n \<equiv> \<forall>f \<in> [B]\<^bsup>n\<^esup>  \<rightarrow>  {..<length \<alpha>}.
               \<exists>i < length \<alpha>. \<exists>H. H \<subseteq> B \<and> ordertype H r = (\<alpha>!i) \<and> f ` (nsets H n) \<subseteq> {i}"
 
 abbreviation partn_lst_VWF :: "V \<Rightarrow> V list \<Rightarrow> nat \<Rightarrow> bool"

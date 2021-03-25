@@ -232,7 +232,7 @@ proof -
 qed
 
 definition Cantor_\<omega>\<omega> :: "V \<Rightarrow> nat list"
-  where "Cantor_\<omega>\<omega> \<equiv> \<lambda>x. @ns. x = omega_sum ns \<and> normal ns"
+  where "Cantor_\<omega>\<omega> \<equiv> \<lambda>x. SOME ns. x = omega_sum ns \<and> normal ns"
 
 lemma
   assumes "\<gamma> \<in> elts (\<omega>\<up>\<omega>)"
@@ -416,24 +416,24 @@ lemma less_Nil [simp]: "xs < []" "[] < xs"
   by (auto simp: less_list_def)
 
 lemma less_sets_imp_list_less:
-  assumes "less_sets (list.set xs) (list.set ys)"
+  assumes "list.set xs \<lless> list.set ys"
   shows "xs < ys"
   by (metis assms last_in_set less_list_def less_sets_def list.set_sel(1))
 
 lemma less_sets_imp_sorted_list_of_set:
-  assumes "less_sets A B" "finite A" "finite B"
+  assumes "A \<lless> B" "finite A" "finite B"
   shows "list_of A < list_of B"
   by (simp add: assms less_sets_imp_list_less)
 
 lemma sorted_list_of_set_imp_less_sets:
   assumes "xs < ys" "sorted xs" "sorted ys"
-  shows "less_sets (list.set xs) (list.set ys)"
+  shows "list.set xs \<lless> list.set ys"
   using assms sorted_hd_le sorted_le_last
   by (force simp: less_list_def less_sets_def intro: order.trans)
 
 lemma less_list_iff_less_sets:
   assumes "sorted xs" "sorted ys"
-  shows "xs < ys \<longleftrightarrow> less_sets (list.set xs) (list.set ys)"
+  shows "xs < ys \<longleftrightarrow> list.set xs \<lless> list.set ys"
   using assms sorted_hd_le sorted_le_last
   by (force simp: less_list_def less_sets_def intro: order.trans)
 
@@ -500,7 +500,8 @@ subsubsection \<open>Thin sets of lists\<close>
 inductive initial_segment :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
   where "initial_segment xs (xs@ys)"
 
-definition thin where "thin A \<equiv> \<not> (\<exists>x y. x \<in> A \<and> y \<in> A \<and> x \<noteq> y \<and> initial_segment x y)"
+definition thin :: "'a list set \<Rightarrow> bool"
+  where "thin A \<equiv> \<not> (\<exists>x y. x \<in> A \<and> y \<in> A \<and> x \<noteq> y \<and> initial_segment x y)"
 
 lemma initial_segment_ne:
   assumes "initial_segment xs ys" "xs \<noteq> []"
@@ -528,7 +529,7 @@ lemma init_segment_iff_initial_segment:
   shows "init_segment (list.set xs) (list.set ys) \<longleftrightarrow> initial_segment xs ys" (is "?lhs = ?rhs")
 proof
   assume ?lhs
-  then obtain S' where S': "list.set ys = list.set xs \<union> S'" "less_sets (list.set xs) S'"
+  then obtain S' where S': "list.set ys = list.set xs \<union> S'" "list.set xs \<lless> S'"
     by (auto simp: init_segment_def)
   then have "finite S'"
     by (metis List.finite_set finite_Un)
@@ -879,9 +880,10 @@ qed
 
 
 definition inter_scheme :: "nat \<Rightarrow> nat list set \<Rightarrow> nat list"
-  where "inter_scheme l U \<equiv> @zs. \<exists>k xs ys. l > 0
-                    \<and> (l = 2*k-1 \<and> U = {xs,ys} \<and> Form_Body k k xs ys zs
-                     \<or> l = 2*k \<and> U = {xs,ys} \<and> Form_Body (Suc k) k xs ys zs)"
+  where "inter_scheme l U \<equiv> 
+           SOME zs. \<exists>k xs ys. l > 0 \<and>
+                         (l = 2*k-1 \<and> U = {xs,ys} \<and> Form_Body k k xs ys zs
+                        \<or> l = 2*k \<and> U = {xs,ys} \<and> Form_Body (Suc k) k xs ys zs)"
 
 
 lemma inter_scheme:
@@ -1313,7 +1315,7 @@ lemma grab_0 [simp]: "grab N 0 = ({}, N)"
   by (fastforce simp add: grab_def enumerate_0 Least_le)
 
 lemma less_sets_grab:
-  "infinite N \<Longrightarrow> less_sets (fst (grab N n)) (snd (grab N n))"
+  "infinite N \<Longrightarrow> fst (grab N n) \<lless> snd (grab N n)"
   by (auto simp: grab_def less_sets_def intro: enumerate_mono less_le_trans)
 
 lemma finite_grab [iff]: "finite (fst (grab N n))"
@@ -1347,10 +1349,10 @@ lemma finite_grab_iff [simp]: "finite (snd (grab N n)) \<longleftrightarrow> fin
 
 lemma grab_eqD:
     "\<lbrakk>grab N n = (A,M); infinite N\<rbrakk>
-    \<Longrightarrow> less_sets A M \<and> finite A \<and> card A = n \<and> infinite M \<and> A \<subseteq> N \<and> M \<subseteq> N"
+    \<Longrightarrow> A \<lless> M \<and> finite A \<and> card A = n \<and> infinite M \<and> A \<subseteq> N \<and> M \<subseteq> N"
   using card_grab grab_def less_sets_grab finite_grab_iff by auto
 
-lemma less_sets_fst_grab: "less_sets A N \<Longrightarrow> less_sets A (fst (grab N n))"
+lemma less_sets_fst_grab: "A \<lless> N \<Longrightarrow> A \<lless> fst (grab N n)"
   by (simp add: fst_grab_subset less_sets_weaken2)
 
 text\<open>Possibly redundant, given @{term grab}\<close>
@@ -1676,7 +1678,7 @@ next
     by (metis Union_image_insert)
   also have "\<dots> = list_of (f (Min I)) @ list_of (\<Union> (f ` (I - {Min I})))"
   proof (rule sorted_list_of_set_Un)
-    show "less_sets (f (Min I)) (\<Union> (f ` (I - {Min I})))"
+    show "f (Min I) \<lless> \<Union> (f ` (I - {Min I}))"
       using Suc.prems \<open>I \<noteq> {}\<close> strict_mono_less_sets_Min by blast
     show "finite (\<Union> (f ` (I - {Min I})))"
       by (simp add: \<open>finite I\<close> fin)
@@ -1756,11 +1758,11 @@ next
   have sm_enum_DF: "strict_mono_on (enum (DF k i)) {..k}" for k i
     by (metis card_DF enum_works_finite finite_DF lessThan_Suc_atMost)
 
-  have DF_Suc: "less_sets (DF k i) (DF k (Suc i))" for i k
+  have DF_Suc: "DF k i \<lless> DF k (Suc i)" for i k
     unfolding less_sets_def
     by (force simp: finite_DF DF_simps
         intro!: greaterThan_less_enum nxt_subset_greaterThan atLeast_le_enum nxt_subset_atLeast infinite_nxtN [OF \<open>infinite N\<close>])
-  have DF_DF: "less_sets (DF k i) (DF k j)" if "i<j" for i j k
+  have DF_DF: "DF k i \<lless> DF k j" if "i<j" for i j k
     by (meson DF_Suc DF_ne UNIV_I less_sets_imp_strict_mono_sets strict_mono_setsD that)
   then have sm_DF: "strict_mono_sets UNIV (DF k)" for k
     by (simp add: strict_mono_sets_def)
@@ -1773,21 +1775,21 @@ next
   have card_AF: "card (AF k i) = \<Sqinter> (DF k i)" for k i
     by (simp add: AF_def \<open>infinite N\<close> card_image inj_enum_nxt)
 
-  have DF_AF: "less_sets (DF k i) (AF k i)" for i k
+  have DF_AF: "DF k i \<lless> AF k i" for i k
     unfolding less_sets_def AF_def
     by (simp add: finite_DF \<open>infinite N\<close> greaterThan_less_enum nxt_subset_greaterThan)
 
-  have AF_DF_Suc: "less_sets (AF k i) (DF k (Suc i))" for i k
+  have AF_DF_Suc: "AF k i \<lless> DF k (Suc i)" for i k
     apply (clarsimp simp: DF_simps less_sets_def AF_def)
     using strict_monoD [OF strict_mono_enum]
     by (metis DF_gt0 Suc_pred assms(1) dual_order.order_iff_strict greaterThan_less_enum
         infinite_nxtN linorder_neqE_nat not_less_eq nxt_subset_greaterThan)
 
-  have AF_DF: "less_sets (AF k p) (DF k q)" if "p<q" for k p q
+  have AF_DF: "AF k p \<lless> DF k q" if "p<q" for k p q
     using AF_DF_Suc
     by (metis DF_ne Suc_lessI UNIV_I less_sets_trans sm_DF strict_mono_sets_def that)
 
-  have AF_Suc: "less_sets (AF k i) (AF k (Suc i))" for i k
+  have AF_Suc: "AF k i \<lless> AF k (Suc i)" for i k
     using AF_DF_Suc DF_AF DF_ne less_sets_trans by blast
   then have sm_AF: "strict_mono_sets UNIV (AF k)" for k
     by (simp add: AF_ne less_sets_imp_strict_mono_sets)
@@ -1834,29 +1836,29 @@ next
     for i j k
     by (simp add: def_wfrec [OF QF_def, of k "(Suc j,Suc i)"])
 
-  have less_QF1: "less_sets (QF k (j, m - Suc 0)) (QF k (Suc j,0))" for j k
+  have less_QF1: "QF k (j, m - Suc 0) \<lless> QF k (Suc j,0)" for j k
     by (auto simp: def_wfrec [OF QF_def, of k "(Suc j,0)"] pair_lessI1 \<open>infinite N\<close> enum_nxt_ge
         intro!: less_sets_weaken2 [OF less_sets_Suc_Max])
 
-  have less_QF2: "less_sets (QF k (j,i)) (QF k (j, Suc i))" for j i k
+  have less_QF2: "QF k (j,i) \<lless> QF k (j, Suc i)" for j i k
     by (auto simp: def_wfrec [OF QF_def, of k "(j, Suc i)"] pair_lessI2 \<open>infinite N\<close> enum_nxt_ge
         intro: less_sets_weaken2 [OF less_sets_Suc_Max] strict_mono_setsD [OF sm_AF])
 
-  have less_QF_same: "less_sets (QF k (j,i')) (QF k (j,i))"
+  have less_QF_same: "QF k (j,i') \<lless> QF k (j,i)"
     if "i' < i" "j \<le> k" for i' i j k
   proof (rule strict_mono_setsD [OF less_sets_imp_strict_mono_sets [of "\<lambda>i. QF k (j,i)"]])
-    show "less_sets (QF k (j, i)) (QF k (j, Suc i))" for i
+    show "QF k (j, i) \<lless> QF k (j, Suc i)" for i
       by (simp add: less_QF2)
     show "QF k (j, i) \<noteq> {}" if "0 < i" for i
       using that by (simp add: \<open>j \<le> k\<close> le_imp_less_Suc)
   qed (use that in auto)
 
-  have less_QF_step: "less_sets (QF k (j - Suc 0, i')) (QF k (j,i))"
+  have less_QF_step: "QF k (j - Suc 0, i') \<lless> QF k (j,i)"
     if "0 < j" "j \<le> k" "i' < m" for j i' i k
   proof -
-    have less_QF1': "less_sets (QF k (j - Suc 0, m - Suc 0)) (QF k (j,0))" if "j > 0" for j
+    have less_QF1': "QF k (j - Suc 0, m - Suc 0) \<lless> QF k (j,0)" if "j > 0" for j
       by (metis less_QF1 that Suc_pred)
-    have \<section>: "less_sets (QF k (j - Suc 0, i')) (QF k (j,0))"
+    have \<section>: "QF k (j - Suc 0, i') \<lless> QF k (j,0)"
     proof (cases "i' = m - Suc 0")
       case True
       then show ?thesis
@@ -1870,7 +1872,7 @@ next
       by (metis QF_ne less_QF_same less_Suc_eq_le less_sets_trans \<open>j \<le> k\<close> zero_less_iff_neq_zero)
   qed
 
-  have less_QF: "less_sets (QF k (j',i')) (QF k (j,i))"
+  have less_QF: "QF k (j',i') \<lless> QF k (j,i)"
     if j: "j' < j" "j \<le> k" and i: "i' < m" "i < m" for j' j i' i k
     using j
   proof (induction "j-j'" arbitrary: j)
@@ -1884,7 +1886,7 @@ next
     show ?case
     proof (cases "j' < j - Suc 0")
       case True
-      then have "less_sets (QF k (j', i')) (QF k (j - Suc 0, i))"
+      then have "QF k (j', i') \<lless> QF k (j - Suc 0, i)"
         using Suc eq by auto
       then show ?thesis
         by (rule less_sets_trans [OF _ less_QF_step QF_ne]) (use Suc i in auto)
@@ -1906,10 +1908,10 @@ next
       using surj_pair [of p] surj_pair [of q] by blast
     with \<open>p < q\<close> have "j' < j \<or> j' = j \<and> i' < i"
       by auto
-    then show "less_sets (QF k p) (QF k q)"
+    then show "QF k p \<lless> QF k q"
     proof (elim conjE disjE)
       assume "j' < j"
-      show "less_sets (QF k p) (QF k q)"
+      show "QF k p \<lless> QF k q"
         by (simp add: \<section> \<open>j' < j\<close> less_QF that)
     qed (use \<section> in \<open>simp add: that less_QF_same\<close>)
   qed
@@ -2087,11 +2089,11 @@ next
     have RF_non_Nil: "list_of (RF j i) \<noteq> []" if "j < Suc k" for i j
       using that by (simp add: RF_def)
 
-    have less_RF_same: "less_sets (RF j i') (RF j i)"
+    have less_RF_same: "RF j i' \<lless> RF j i"
       if "i' < i" "j < k" for i' i j
       using that by (simp add: less_QF_same RF_def)
 
-    have less_RF_same_k: "less_sets (RF k i') (RF k i)" \<comment>\<open>reversed version for @{term k}\<close>
+    have less_RF_same_k: "RF k i' \<lless> RF k i" \<comment>\<open>reversed version for @{term k}\<close>
       if "i < i'" "i' < m" for i' i
       using that by (simp add: less_QF_same RF_def)
 
@@ -2119,13 +2121,13 @@ next
           using AF_non_Nil finite_AF hd_in_set set_sorted_list_of_set by blast
       qed
 
-      have less_RF_RF: "less_sets (RF n p) (RF n q)" if "n < k" for n
+      have less_RF_RF: "RF n p \<lless> RF n q" if "n < k" for n
         using that \<open>p<q\<close> by (simp add: less_RF_same)
-      have less_RF_Suc: "less_sets (RF n q) (RF (Suc n) q)" if "n < k" for n
+      have less_RF_Suc: "RF n q \<lless> RF (Suc n) q" if "n < k" for n
         using \<open>q < m\<close> that by (auto simp: RF_def less_QF)
-      have less_RF_k: "less_sets (RF k q) (RF k p)"
+      have less_RF_k: "RF k q \<lless> RF k p"
         using \<open>q < m\<close> less_RF_same_k \<open>p<q\<close> by blast
-      have less_RF_k_ka: "less_sets (RF (k - Suc 0) p) (RF (ka - Suc 0) q)"
+      have less_RF_k_ka: "RF (k - Suc 0) p \<lless> RF (ka - Suc 0) q"
         using ka_k_or_Suc less_RF_RF
         by (metis One_nat_def RF_def \<open>0 < k\<close> \<open>ka - Suc 0 \<le> k\<close> \<open>p < m\<close> diff_Suc_1 diff_Suc_less less_QF_step)
       have Inf_DF_eq_enum: "\<Sqinter> (DF k i) = enum (DF k i) 0" for k i
@@ -2150,7 +2152,7 @@ next
           proof (intro that exI conjI Form_Body.intros [OF \<open>length x < length y\<close>])
             show "x = concat ([list_of (AF k p)])" "y = concat ([list_of (AF k q)])"
               by (simp_all add: x y 1 lessThan_Suc RF_0)
-            have "less_sets (AF k p) (insert (\<Sqinter> (DF k q)) (AF k q))"
+            have "AF k p \<lless> insert (\<Sqinter> (DF k q)) (AF k q)"
               by (metis AF_DF DF_ne Inf_nat_def1 RF_0 \<open>0 < k\<close> insert_iff less_RF_RF less_sets_def pq(1))
             then have "strict_sorted (list_of (AF k p) @ \<Sqinter> (DF k q) # list_of (AF k q))"
               by (auto simp: strict_sorted_append_iff intro: less_sets_imp_list_less AF_Inf_DF_less)
@@ -2224,7 +2226,7 @@ next
                 by (metis AF_ne DF_AF less_RF_RF less_RF_Suc less_RF_k One_nat_def RF_0 RF_non_Nil Suc_mono True \<open>0 < k\<close> card_DF finite_enumerate_in_set finite_DF less_setsD less_sets_trans sorted_list_of_set_empty)
               have "list_of (AF (Suc 0) p) < list_of {enum (DF (Suc 0) q) (Suc 0)}"
               proof (rule less_sets_imp_sorted_list_of_set)
-                show "less_sets (AF (Suc 0) p) {enum (DF (Suc 0) q) (Suc 0)}"
+                show "AF (Suc 0) p \<lless> {enum (DF (Suc 0) q) (Suc 0)}"
                   by (metis (no_types, lifting) AF_DF DF_ne Inf_nat_def1 \<open>q < m\<close> card_AF enum_DF1_eq less_setsD less_sets_singleton2 pq(1) trans_less_add1)
               qed auto
               then show "list_of (AF (Suc 0) p) < (card (AF (Suc 0) q) + card (RF (Suc 0) q)) # list_of (AF (Suc 0) q) @ list_of (RF (Suc 0) q) @ list_of (RF (Suc 0) p)"
@@ -2236,14 +2238,14 @@ next
                 by (metis AF_ne DF_AF less_RF_Suc less_RF_k One_nat_def RF_0 RF_non_Nil True card_DF finite_enumerate_in_set finite_DF finite_RF lessI less_setsD less_sets_trans sorted_list_of_set_eq_Nil_iff)
               have "list_of (AF (Suc 0) q) < list_of (RF (Suc 0) q)"
               proof (rule less_sets_imp_sorted_list_of_set)
-                show "less_sets (AF (Suc 0) q) (RF (Suc 0) q)"
+                show "AF (Suc 0) q \<lless> RF (Suc 0) q"
                   by (metis less_RF_Suc One_nat_def RF_0 True \<open>0 < k\<close>)
               qed auto
               then show "list_of (AF (Suc 0) q) < list_of (RF (Suc 0) q) @ list_of (RF (Suc 0) p)"
                 using RF_non_Nil by (auto simp: less_list_def)
               show "list_of (RF (Suc 0) q) < list_of (RF (Suc 0) p)"
               proof (rule less_sets_imp_sorted_list_of_set)
-                show "less_sets (RF (Suc 0) q) (RF (Suc 0) p)"
+                show "RF (Suc 0) q \<lless> RF (Suc 0) p"
                   by (metis less_RF_k One_nat_def True)
               qed auto
             qed
@@ -2382,9 +2384,9 @@ next
           fix n
           have V: "\<lbrakk>Suc n < ka - Suc 0\<rbrakk> \<Longrightarrow> list_of (RF (Suc n) q) < list_of (RF (Suc (Suc n)) p)" for n
             by (smt One_nat_def RF_def Suc_leI \<open>ka - Suc 0 \<le> k\<close> \<open>q < m\<close> diff_Suc_1 finite_RF less_QF_step less_le_trans less_sets_imp_sorted_list_of_set nat_neq_iff zero_less_Suc)
-          have "less_sets (RF (k -  Suc 0) q) (RF k p)"
+          have "RF (k -  Suc 0) q \<lless> RF k p"
             by (metis less_RF_Suc less_RF_k RF_non_Nil Suc_pred \<open>0 < k\<close> finite_RF lessI less_sets_trans sorted_list_of_set_eq_Nil_iff)
-          with kka have "less_sets (RF (k - Suc 0) q \<union> RF (ka - Suc 0) q) (RF k p)"
+          with kka have "RF (k - Suc 0) q \<union> RF (ka - Suc 0) q \<lless> RF k p"
             by (metis less_RF_k One_nat_def less_sets_Un1 antisym_conv2 diff_Suc_1 le_less_Suc_eq)
           then have VI: "list_of (RF (k - Suc 0) q \<union> RF (ka - Suc 0) q) < list_of (RF k p)"
             by (rule less_sets_imp_sorted_list_of_set) auto
@@ -2466,7 +2468,7 @@ next
               by (auto simp: less_list_def AF_ne hd_append card_AF_sum LENS_QQ_def)
             show "list_of (AF k q) < ?INT"
             proof -
-              have "less_sets (AF k q) (RF (Suc 0) p)"
+              have "AF k q \<lless> RF (Suc 0) p"
                 using \<open>0 < k\<close> \<open>p < m\<close> \<open>q < m\<close> by (simp add: RF_def less_QF flip: QF_0)
               then have "last (list_of (AF k q)) < hd (list_of (RF (Suc 0) p))"
               proof (rule less_setsD)
@@ -2564,7 +2566,7 @@ lemma USigma_empty [simp]: "USigma {} B = {}"
   by (auto simp: USigma_def)
 
 lemma USigma_iff:
-  assumes "\<And>I j. I \<in> \<I> \<Longrightarrow> less_sets I (J I) \<and> finite I"
+  assumes "\<And>I j. I \<in> \<I> \<Longrightarrow> I \<lless> J I \<and> finite I"
   shows "x \<in> USigma \<I> J \<longleftrightarrow> usplit (\<lambda>I j. I\<in>\<I> \<and> j\<in>J I \<and> x = insert j I) x"
 proof -
   have [simp]: "\<And>I j. \<lbrakk>I \<in> \<I>; j \<in> J I\<rbrakk> \<Longrightarrow> Max (insert j I) = j"
@@ -2587,7 +2589,7 @@ qed
 lemma ordertype_append_image_IJ:
   assumes lenB [simp]: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> length (B j) = c"
     and AB: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> A i < B j"
-    and IJ: "\<And>i. i \<in> \<I> \<Longrightarrow> less_sets i (J i) \<and> finite i"
+    and IJ: "\<And>i. i \<in> \<I> \<Longrightarrow> i \<lless> J i \<and> finite i"
     and \<beta>: "\<And>i. i \<in> \<I> \<Longrightarrow> ordertype (B ` J i) (lenlex less_than) = \<beta>"
     and A: "inj_on A \<I>"
   shows "ordertype (usplit (\<lambda>i j. A i @ B j) ` USigma \<I> J) (lenlex less_than)
@@ -2865,15 +2867,15 @@ lemma length_hd_merge2:
 
 lemma merge_less_sets_hd:
   assumes "merge as bs us vs" "strict_sorted (concat as)" "strict_sorted (concat bs)" "bs \<in> lists (- {[]})"
-  shows "less_sets (list.set (hd us)) (list.set (concat vs))"
+  shows "list.set (hd us) \<lless> list.set (concat vs)"
   using assms
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
-  then have \<section>: "less_sets (list.set (concat bs1)) (list.set (concat bs2))"
+  then have \<section>: "list.set (concat bs1) \<lless> list.set (concat bs2)"
     by (force simp: dest: strict_sorted_imp_less_sets)+
-  have *: "less_sets (list.set (concat as1)) (list.set (concat bs1))"
+  have *: "list.set (concat as1) \<lless> list.set (concat bs1)"
     using App by (metis concat_append strict_sorted_append_iff strict_sorted_imp_less_sets)
-  then have "less_sets (list.set (concat as1)) (list.set (concat bs))"
+  then have "list.set (concat as1) \<lless> list.set (concat bs)"
     using App \<section> less_sets_trans merge_preserves
     by (metis List.set_empty append_in_lists_conv le_zero_eq length_concat_ge length_greater_0_conv list.size(3))
   with * App.hyps show ?case
@@ -2937,7 +2939,7 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
       by (metis as2 bs1_def hd_as2 hd_in_set less.prems(7) less.prems(8) set_dropWhileD takeWhile_eq_Nil_iff)
     show "bs2 = [] \<or> (as2 \<noteq> [] \<and> hd as2 < hd bs2)"
       by (metis as2_def bs2_def hd_bs2 less.prems(8) list.set_sel(1) set_dropWhileD)
-    have AB: "less_sets (list.set A) (list.set B)"
+    have AB: "list.set A \<lless> list.set B"
       if "A \<in> list.set as1" "B \<in> list.set bs" for A B
     proof -
       have "A \<in> list.set as"
@@ -2955,15 +2957,15 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
       by (simp add: as1_def as2_def)
     show "bs = bs1@bs2"
       by (simp add: bs1_def bs2_def)
-    have "less_sets (list.set (concat as1)) (list.set (concat bs1))"
+    have "list.set (concat as1) \<lless> list.set (concat bs1)"
       using AB set_takeWhileD by (fastforce simp add: as1_def bs1_def less_sets_UN1 less_sets_UN2)
     then show "concat as1 < concat bs1"
       by (rule less_sets_imp_list_less)
-    have "less_sets (list.set (concat bs1)) (list.set (concat as2))" if "as2 \<noteq> []"
+    have "list.set (concat bs1) \<lless> list.set (concat as2)" if "as2 \<noteq> []"
     proof (clarsimp simp add: bs1_def less_sets_UN1 less_sets_UN2 set_takeWhile less.prems)
       fix A B
       assume "A \<in> list.set as2" "B \<in> list.set bs" "B < hd as2"
-      with that show "less_sets (list.set B) (list.set A)"
+      with that show "list.set B \<lless> list.set A"
         using hd_as2 less.prems(1,2)
         apply (clarsimp simp add: less_sets_def less_list_def)
         apply (auto simp: as2_def)
@@ -3026,7 +3028,7 @@ proof -
     qed
   qed
 
-  have bf_less_sets: "less_sets (fst (bf M q ij)) (snd (bf M q ij))" if "infinite M" for M q ij
+  have bf_less_sets: "fst (bf M q ij) \<lless> snd (bf M q ij)" if "infinite M" for M q ij
     using wf_pair_less
   proof (induction ij rule: wf_induct_rule)
     case (less u)
@@ -3096,9 +3098,9 @@ proof -
 
   define \<Psi> where
     "\<Psi> \<equiv> \<lambda>(dl, a, b :: nat \<times> nat \<Rightarrow> nat set, M::nat set). \<lambda>l::nat.
-           less_sets (dl l) a \<and> finite a \<and> dl l \<noteq> {} \<and> a \<noteq> {} \<and>
-           (\<forall>j\<le>l. card (dl j) = Suc j) \<and> less_sets a (\<Union>(range b)) \<and> range b \<subseteq> Collect finite \<and>
-           a \<subseteq> N \<and> \<Union>(range b) \<subseteq> N \<and> infinite M \<and> less_sets (b(l,l-1)) M \<and>
+           dl l \<lless> a \<and> finite a \<and> dl l \<noteq> {} \<and> a \<noteq> {} \<and>
+           (\<forall>j\<le>l. card (dl j) = Suc j) \<and> a \<lless> \<Union>(range b) \<and> range b \<subseteq> Collect finite \<and>
+           a \<subseteq> N \<and> \<Union>(range b) \<subseteq> N \<and> infinite M \<and> b(l,l-1) \<lless> M \<and>
            M \<subseteq> N"
   have \<Psi>_DF: "\<Psi> (DF (Suc l)) l" for l
   proof (induction l)
@@ -3171,10 +3173,10 @@ proof -
     and finite_d [simp]: "finite (d j)" and finite_a [simp]: "finite (a j)" for j
     using \<Psi>_DF [of "j"] by (auto simp: \<Psi>_def a_def d_def split: prod.split_asm)
 
-  have da: "less_sets (d k) (a k)" for k
+  have da: "d k \<lless> a k" for k
     using \<Psi>_DF [of "k"] by (simp add: \<Psi>_def a_def d_def split: prod.split_asm)
 
-  have ab_same: "less_sets (a k) (\<Union>(range(b k)))" for k
+  have ab_same: "a k \<lless> \<Union>(range(b k))" for k
     using \<Psi>_DF [of "k"]
     by (simp add: \<Psi>_def a_def b_def M_def split: prod.split_asm)
 
@@ -3206,7 +3208,7 @@ proof -
     qed
   qed
 
-  have less_bf: "less_sets (fst (bf M r (j',i'))) (fst (bf M r (j,i)))"
+  have less_bf: "fst (bf M r (j',i')) \<lless> fst (bf M r (j,i))"
     if ji: "((j',i'), (j,i)) \<in> pair_less" "(j',i') \<in> IJ k" and "infinite M"
     for M r k j i j' i'
   proof -
@@ -3219,26 +3221,26 @@ proof -
         using bf_less_sets bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
     next
       case 2
-      then have "less_sets (fst (bf M r (j',i'))) (snd (bf M r (j'',i'')))"
+      then have "fst (bf M r (j',i')) \<lless> snd (bf M r (j'',i''))"
         by (meson bf_less_sets snd_bf_subset less_sets_weaken2 that)
       with 2 show ?thesis
         using bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
     qed
   qed
 
-  have aM: "less_sets (a k) (M (Suc k))" for k
+  have aM: "a k \<lless> M (Suc k)" for k
     apply (clarsimp simp add: a_def M_def DF_simps F_def Let_def split: prod.split)
     by (meson bf_subset grab_eqD infinite_nxtN less_sets_weaken2 local.inf)
-  then have "less_sets (a k) (a (Suc k))" for k
+  then have "a k \<lless> a (Suc k)" for k
     by (metis IntE card_d card.empty d_eq da fst_grab_subset less_sets_trans less_sets_weaken2 nat.distinct(1) nxt_def subsetI)
-  then have aa: "less_sets (a j) (a k)" if "j<k" for k j
+  then have aa: "a j \<lless> a k" if "j<k" for k j
     by (meson UNIV_I a_ne less_sets_imp_strict_mono_sets strict_mono_sets_def that)
-  then have ab: "less_sets (a k') (b k (j,i))" if "k'\<le>k" for k k' j i
+  then have ab: "a k' \<lless> b k (j,i)" if "k'\<le>k" for k k' j i
     by (metis a_ne ab_same le_less less_sets_UN2 less_sets_trans rangeI that)
-  have db: "less_sets (d j) (b k (j,i))" if "j\<le>k" for k j i
+  have db: "d j \<lless> b k (j,i)" if "j\<le>k" for k j i
     by (meson a_ne ab da less_sets_trans that)
 
-  have bMkk: "less_sets (b k (k,k-1)) (M (Suc k))" for k
+  have bMkk: "b k (k,k-1) \<lless> M (Suc k)" for k
     using \<Psi>_DF [of k]
     by (simp add: \<Psi>_def b_def d_def M_def split: prod.split_asm)
 
@@ -3309,7 +3311,7 @@ proof -
   have card_b_finite [simp]: "finite (b k u)" for k u
     using \<Psi>_DF [of k] by (fastforce simp add: \<Psi>_def b_def)
 
-  have bM: "less_sets (b k (j,i)) (M (Suc k))" if "i<j" "j\<le>k" for i j k
+  have bM: "b k (j,i) \<lless> M (Suc k)" if "i<j" "j\<le>k" for i j k
   proof -
     obtain M' where "M' \<subseteq> M k" "infinite M'"
       and bk: "\<And>j i. i\<le>j \<Longrightarrow> j\<le>k \<Longrightarrow> b k (j,i) = fst (bf M' (ediff d) (j,i))"
@@ -3319,7 +3321,7 @@ proof -
       case False
       show ?thesis
       proof (rule less_sets_trans [OF _ bMkk])
-        show "less_sets (b k (j,i)) (b k (k, k - 1))"
+        show "b k (j,i) \<lless> b k (k, k - 1)"
           using that \<open>infinite M'\<close> False
             by (force simp: bk pair_less_def IJ_def intro: less_bf)
         show "b k (k, k - 1) \<noteq> {}"
@@ -3345,20 +3347,20 @@ proof -
       using Inf_nat_def x le_less_linear not_less_Least by fastforce
   qed
 
-  have b_Inf_M_Suc: "less_sets (b k (j,i)) {Inf(M (Suc k))}" if "i<j" "j\<le>k" for k j i
+  have b_Inf_M_Suc: "b k (j,i) \<lless> {Inf(M (Suc k))}" if "i<j" "j\<le>k" for k j i
     using bMkk [of k] that
     by (metis Inf_nat_def1 bM finite.emptyI infinite_M less_setsD less_sets_singleton2)
 
-  have bb_same: "less_sets (b k (j',i')) (b k (j,i))"
+  have bb_same: "b k (j',i') \<lless> b k (j,i)"
     if "((j',i'), (j,i)) \<in> pair_less" "(j',i') \<in> IJ k" for k j i j' i'
     using that
     unfolding b_def DF_simps F_def Let_def
     by (auto simp: less_bf grab_eqD infinite_nxtN local.inf split: prod.split)
 
-  have bb: "less_sets (b k' (j',i')) (b k (j,i))"
+  have bb: "b k' (j',i') \<lless> b k (j,i)"
     if j: "i' < j'" "j'\<le>k'" and k: "k'<k" for i i' j j' k' k
   proof (rule atLeast_less_sets)
-    show "less_sets (b k' (j', i')) {Inf(M (Suc k'))}"
+    show "b k' (j', i') \<lless> {Inf(M (Suc k'))}"
       using Suc_lessD b_Inf_M_Suc nat_less_le j by blast
     have "b k (j,i) \<subseteq> {\<Sqinter>(M k)..}"
       by (rule order_trans [OF _ b_InfM]) auto
@@ -3419,11 +3421,10 @@ proof -
     if K: "K \<in> \<K> j i" "\<forall>j\<in>K. j < l" and "i \<le> j" "j \<le> l" for j i K l
     unfolding BB_def
   proof (rule less_sets_imp_sorted_list_of_set)
-    have "\<And>i. i < card K \<Longrightarrow> less_sets (b (enum K i) (j,i)) (b l (j, card K))"
+    have "\<And>i. i < card K \<Longrightarrow> b (enum K i) (j,i) \<lless> b l (j, card K)"
       using that by (metis \<K>_card \<K>_enum \<K>_finite bb finite_enumerate_in_set nat_less_le less_le_trans)
-    then show "less_sets (a j \<union> (\<Union>i<i. b (enum K i) (j,i))) (b l (j,i))"
-      using that
-      unfolding \<K>_def nsets_def
+    then show "a j \<union> (\<Union>i<i. b (enum K i) (j,i)) \<lless> b l (j,i)"
+      using that unfolding \<K>_def nsets_def
       by (auto simp: less_sets_Un1 less_sets_UN1 ab finite_enumerate_in_set subset_eq)
   qed auto
   have BB_Suc: "BB j0 (Suc j) K = usplit (\<lambda>L k. BB j0 j L @ list_of (b k (j0, j))) K"
@@ -3450,7 +3451,7 @@ proof -
       by (simp add: BB_def lessThan_Suc Un_ac)
     also have "\<dots> = list_of ((a j0 \<union> (\<Union>i<j. b (enum K i) (j0, i)))) @ list_of (b (enum K j) (j0, j))"
     proof (rule sorted_list_of_set_Un)
-      have "less_sets (b (enum K i) (j0, i)) (b (enum K j) (j0, j))" if "i<j" for i
+      have "b (enum K i) (j0, i) \<lless> b (enum K j) (j0, j)" if "i<j" for i
       proof (rule bb)
         show "i < j0"
           using j that by linarith
@@ -3459,9 +3460,9 @@ proof -
         show "enum K i < enum K j"
           by (simp add: cardK finite_enumerate_mono that)
       qed
-      moreover have "less_sets (a j0) (b (enum K j) (j0, j))"
+      moreover have "a j0 \<lless> b (enum K j) (j0, j)"
         using MaxK \<open>j0 < Max K\<close> ab by auto
-      ultimately show "less_sets (a j0 \<union> (\<Union>x<j. b (enum K x) (j0, x))) (b (enum K j) (j0, j))"
+      ultimately show "a j0 \<union> (\<Union>x<j. b (enum K x) (j0, x)) \<lless> b (enum K j) (j0, j)"
         by (simp add: less_sets_Un1 less_sets_UN1)
     qed (auto simp: finite_UnI)
     also have "\<dots> = BB j0 j (K - {Max K}) @ list_of (b (Max K) (j0, j))"
@@ -3686,7 +3687,7 @@ proof -
     next
       fix L
       assume L: "L \<in> \<K> j0 j"
-      then show "less_sets L {Max (insert j0 L)<..} \<and> finite L"
+      then show "L \<lless> {Max (insert j0 L)<..} \<and> finite L"
         by (metis \<K>_finite atLeast_Suc_greaterThan finite_insert less_sets_Suc_Max less_sets_weaken1 subset_insertI)
       show "ordertype ((\<lambda>i. list_of (b i (j0, j))) ` {Max (insert j0 L)<..}) ?LL = \<omega>"
         using L Suc.prems Suc_le_lessD ot\<omega> by blast
@@ -3726,9 +3727,9 @@ proof -
   have a_subset_M: "a k \<subseteq> M k" for k
     apply (clarsimp simp: a_def M_def DF_simps F_def Let_def split: prod.split_asm)
     by (metis (no_types) fst_conv fst_grab_subset nxt_subset snd_conv snd_grab_subset subsetD)
-  have ba_Suc: "less_sets (b k (j,i)) (a (Suc k))" if "i < j" "j \<le> k" for i j k
+  have ba_Suc: "b k (j,i) \<lless> a (Suc k)" if "i < j" "j \<le> k" for i j k
     by (meson a_subset_M bM less_sets_weaken2 nat_less_le that(1) that(2))
-  have ba: "less_sets (b k (j,i)) (a r)" if "i < j" "j \<le> k" "k < r" for i j k r
+  have ba: "b k (j,i) \<lless> a r" if "i < j" "j \<le> k" "k < r" for i j k r
     by (metis Suc_lessI a_ne aa ba_Suc less_sets_trans that)
 
   have disjnt_ba: "disjnt (b k (j,i)) (a r)" if "i < j" "j \<le> k" for i j k r
@@ -3740,7 +3741,7 @@ proof -
     case False
     then show ?thesis
     proof -
-      have "less_sets (a r) (b k (j,i))"
+      have "a r \<lless> b k (j,i)"
         by (metis False a_ne aa ab_same less_linear less_sets_UN2 less_sets_trans rangeI)
       then show ?thesis
         using disjnt_sym less_sets_imp_disjnt by blast
@@ -3803,9 +3804,9 @@ proof -
       by (simp add: card_UN_b card_Un_disjnt dis_ab card_a cInf_le_finite finite_enumerate_in_set enum_0_eq_Inf_finite)
   qed
 
-  have "less_sets (d k) (d (Suc k))" for k
+  have "d k \<lless> d (Suc k)" for k
     by (metis aM a_ne d_eq da less_sets_fst_grab less_sets_trans less_sets_weaken2 nxt_subset)
-  then have dd: "less_sets (d k') (d k)" if "k' < k" for k' k
+  then have dd: "d k' \<lless> d k" if "k' < k" for k' k
     by (meson UNIV_I d_ne less_sets_imp_strict_mono_sets strict_mono_sets_def that)
 
   show thesis
@@ -3838,7 +3839,7 @@ proof -
       then have "j < r"
         using xy dd
         by (metis card_d finite_enumerate_in_set finite_d lessI less_asym less_setsD linorder_neqE_nat)
-      then have aj_ar: "less_sets (a j) (a r)"
+      then have aj_ar: "a j \<lless> a r"
         using aa by auto
       have Ksub: "K \<subseteq> {j<..}" and "finite K" "card K \<ge> j"
         using K by (auto simp: \<K>_def nsets_def)
@@ -3907,8 +3908,8 @@ proof -
           by (simp add: aj_ar less_sets_imp_list_less seqs_def)
         show "seqs j j K \<noteq> []" "seqs r r L \<noteq> []"
           using seqs_def by blast+
-        have less_bb: "less_sets (b (enum K i) (j,i)) (b (enum L p) (r, p))"
-          if neg: "\<not> less_sets (b (enum L p) (r, p)) (b (enum K i) (j,i))" and "i < j" "p < r"
+        have less_bb: "b (enum K i) (j,i) \<lless> b (enum L p) (r, p)"
+          if neg: "\<not> b (enum L p) (r, p) \<lless> b (enum K i) (j,i)" and "i < j" "p < r"
           for i p
         proof (cases "enum K i" "enum L p" rule: linorder_cases)
           case less
@@ -3975,30 +3976,30 @@ proof -
         have ssq: "strict_sorted qs"
           unfolding qs_def by (meson strict_sorted_acc_lengths vs_ne)
 
-        have "less_sets (d j) (list.set x)"
+        have "d j \<lless> list.set x"
           using da [of j] db [of j]  K \<K>_card \<K>_enum nat_less_le
           by (auto simp: xeq BB_def less_sets_Un2 less_sets_UN2)
         then have ac_x: "acc_lengths 0 (seqs j j K) < x"
           by (meson Ksub \<open>finite K\<close> \<open>j \<le> card K\<close> acc_lengths_subset_d dual_order.refl less_sets_imp_list_less less_sets_weaken1)
         then have "ps < u1"
-          by (metis K Ksub UnI1 \<K>_card \<open>finite K\<close> \<open>j \<le> card K\<close> \<open>less_sets (d j) (list.set x)\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append u_sub xu_eq)
+          by (metis K Ksub UnI1 \<K>_card \<open>finite K\<close> \<open>j \<le> card K\<close> \<open>d j \<lless> list.set x\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append u_sub xu_eq)
 
-        have "less_sets (d r) (list.set y)"
+        have "d r \<lless> list.set y"
           using da [of r] db [of r]  L \<K>_card \<K>_enum nat_less_le
           by (auto simp: yeq BB_def less_sets_Un2 less_sets_UN2)
         then have "acc_lengths 0 (seqs r r L) < y"
           by (meson Lsub \<open>finite L\<close> \<open>r \<le> card L\<close> acc_lengths_subset_d dual_order.refl less_sets_imp_list_less less_sets_weaken1)
         then have "qs < v1"
-          by (metis L Lsub UnI1 \<K>_card \<open>finite L\<close> \<open>r \<le> card L\<close> \<open>less_sets (d r) (list.set y)\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append v_sub yv_eq)
+          by (metis L Lsub UnI1 \<K>_card \<open>finite L\<close> \<open>r \<le> card L\<close> \<open>d r \<lless> list.set y\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append v_sub yv_eq)
 
         have carda_v1: "card (a r) \<le> length v1"
           using length_hd_merge2 [OF merge] unfolding vs [symmetric] by (simp add: seqs_def)
-        have ab_enumK: "\<And>i. i < j \<Longrightarrow> less_sets (a j) (b (enum K i) (j,i))"
+        have ab_enumK: "\<And>i. i < j \<Longrightarrow> a j \<lless> b (enum K i) (j,i)"
           by (meson ab enumK le_trans less_imp_le_nat)
 
-        have ab_enumL: "\<And>q. q < r \<Longrightarrow> less_sets (a j) (b (enum L q) (r,q))"
+        have ab_enumL: "\<And>q. q < r \<Longrightarrow> a j \<lless> b (enum L q) (r,q)"
           by (meson \<open>j < r\<close> ab enumL le_trans less_imp_le_nat)
-        then have ay: "less_sets (a j) (list.set y)"
+        then have ay: "a j \<lless> list.set y"
           by (auto simp: yeq BB_def less_sets_Un2 less_sets_UN2 aj_ar)
 
         have disjnt_hd_last_K_y: "disjnt {hd l..last l} (list.set y)"
@@ -4045,19 +4046,19 @@ proof -
           qed
         qed
 
-        have u1_y: "less_sets (list.set u1) (list.set y)"
+        have u1_y: "list.set u1 \<lless> list.set y"
           using vs yv_eq L \<open>strict_sorted y\<close> merge merge_less_sets_hd merge_preserves seqs_ne ss_concat_jj us by fastforce
         have u1_subset_seqs: "list.set u1 \<subseteq> list.set (concat (seqs j j K))"
           using merge_preserves [OF merge] us by auto
 
-        have "less_sets (b k (j,i)) (d (Suc k))" if "j\<le>k" "i<j" for k j i
+        have "b k (j,i) \<lless> d (Suc k)" if "j\<le>k" "i<j" for k j i
           by (metis bM d_eq less_sets_fst_grab less_sets_weaken2 nxt_subset that)
-        then have bd: "less_sets (b k (j,i)) (d k')" if "j\<le>k" "i<j" "k < k'" for k k' j i
+        then have bd: "b k (j,i) \<lless> d k'" if "j\<le>k" "i<j" "k < k'" for k k' j i
           by (metis Suc_lessI d_ne dd less_sets_trans that)
 
-        have "less_sets (a k) (d (Suc k))" for k
+        have "a k \<lless> d (Suc k)" for k
           by (metis aM d_eq less_sets_fst_grab less_sets_weaken2 nxt_subset)
-        then have ad: "less_sets (a k) (d k')" if "k<k'" for k k'
+        then have ad: "a k \<lless> d k'" if "k<k'" for k k'
           by (metis Suc_lessI d_ne dd less_sets_trans that)
 
         have "u1 < y"
@@ -4123,7 +4124,7 @@ proof -
           using us_ne by (auto simp: xu_eq)
         then have "hd u1 \<in> a j"
           by (simp add: xeq BB_eq_concat_seqs K seqs_def hd_append hd_list_of)
-        then have "less_sets (list.set ps) {hd u1}"
+        then have "list.set ps \<lless> {hd u1}"
           by (metis da ps_subset_d less_sets_def singletonD subset_iff)
         then show ?thesis
           by (metis less_hd_imp_less list.set(2) empty_set less_sets_imp_list_less)
@@ -4136,7 +4137,7 @@ proof -
           using vs_ne by (auto simp: yv_eq)
         then have "hd v1 \<in> a r"
           by (simp add: yeq BB_eq_concat_seqs L seqs_def hd_append hd_list_of)
-        then have "less_sets (list.set qs) {hd v1}"
+        then have "list.set qs \<lless> {hd v1}"
           by (metis da qs_subset_d less_sets_def singletonD subset_iff)
         then show ?thesis
           by (metis less_hd_imp_less list.set(2) empty_set less_sets_imp_list_less)
@@ -4169,7 +4170,7 @@ proof -
         by (simp add: assms less_imp_le_nat)
       also have "\<dots> < Min (d j)"
         by (metis Min_in card_0_eq card_d d_eq finite_d fst_grab_subset greaterThan_iff in_mono le_inf_iff nxt_def old.nat.distinct(2))
-      finally have ls: "less_sets {enum N l} (d j)"
+      finally have ls: "{enum N l} \<lless> d j"
         by simp
       have "l > 0"
         by (metis l False Form_0_cases_raw Set.doubleton_eq_iff Ueq gr0I)
