@@ -4,6 +4,7 @@ session Derangements (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    "HOL-Combinatorics"
   theories
     Derangements
   document_files

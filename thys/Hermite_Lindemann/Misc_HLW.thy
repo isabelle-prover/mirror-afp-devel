@@ -7,11 +7,11 @@ theory Misc_HLW
 imports
   Complex_Main
   "HOL-Library.Multiset"
-  "HOL-Library.Permutations"
   "HOL-Library.FuncSet"
   "HOL-Library.Groups_Big_Fun"
   "HOL-Library.Poly_Mapping"
   "HOL-Library.Landau_Symbols"
+  "HOL-Combinatorics.Permutations"
   "HOL-Computational_Algebra.Computational_Algebra"
 begin
 

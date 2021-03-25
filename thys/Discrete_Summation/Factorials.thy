@@ -4,7 +4,7 @@
 section \<open>Falling factorials\<close>
 
 theory Factorials
-  imports Complex_Main "HOL-Library.Stirling"
+  imports Complex_Main "HOL-Combinatorics.Stirling"
 begin
 
 lemma pochhammer_0 [simp]: \<comment> \<open>TODO move\<close>

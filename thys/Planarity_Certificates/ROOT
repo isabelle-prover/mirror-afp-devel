@@ -3,6 +3,7 @@ chapter AFP
 session Planarity_Certificates (AFP) = Simpl +
   options [timeout = 600]
   sessions
+    "HOL-Combinatorics"
     "HOL-Eisbach"
     "List-Index"
     "Transitive-Closure"

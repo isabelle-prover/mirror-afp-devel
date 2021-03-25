@@ -8,7 +8,7 @@ section \<open>Much Ado about Two\<close>
 
 (*<*)
 theory MuchAdoAboutTwo
-imports "HOL-Library.Permutations"
+imports "HOL-Combinatorics.Permutations"
 begin
 (*>*)
 

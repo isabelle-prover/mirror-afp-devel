@@ -4,6 +4,7 @@ session Discrete_Summation (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    "HOL-Combinatorics"
   theories
     Examples
   document_files

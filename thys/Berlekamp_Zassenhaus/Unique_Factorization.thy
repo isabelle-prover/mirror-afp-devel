@@ -2,7 +2,7 @@ theory Unique_Factorization
   imports
     Polynomial_Interpolation.Ring_Hom_Poly
     Polynomial_Factorization.Polynomial_Divisibility
-    "HOL-Library.Permutations" 
+    "HOL-Combinatorics.Permutations" 
     "HOL-Computational_Algebra.Euclidean_Algorithm"
     Containers.Containers_Auxiliary (* only for a lemma *)
     Missing_Multiset2

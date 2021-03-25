@@ -4,6 +4,7 @@ session Hermite_Lindemann (AFP) = "Pi_Transcendental" +
   options [timeout = 1200]
   sessions
     "HOL-Library"
+    "HOL-Combinatorics"
     Algebraic_Numbers
     Power_Sum_Polynomials
   theories

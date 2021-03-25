@@ -15,6 +15,7 @@ session LEM (AFP) in "generated" = HOL +
 session CakeML (AFP) = LEM +
   options [timeout = 3600]
   sessions
+    "HOL-Combinatorics"
     Coinductive
     IEEE_Floating_Point
     Show

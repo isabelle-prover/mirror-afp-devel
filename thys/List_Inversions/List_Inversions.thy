@@ -7,7 +7,9 @@
 *)
 section \<open>The Inversions of a List\<close>
 theory List_Inversions
-  imports Main "HOL-Library.Permutations"
+imports
+  Main
+  "HOL-Combinatorics.Permutations"
 begin
 
 subsection \<open>Definition of inversions\<close>

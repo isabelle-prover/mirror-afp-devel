@@ -57,8 +57,8 @@ theory "LemExtraDefs"
 
 imports
   Main
+  "HOL-Combinatorics.List_Permutation"
   "HOL-Library.While_Combinator"
-  "HOL-Library.List_Permutation"
 begin
 
 hide_const (open) sign

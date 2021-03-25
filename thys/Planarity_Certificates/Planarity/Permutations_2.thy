@@ -1,6 +1,6 @@
 theory Permutations_2
 imports
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
   Executable_Permutations
   Graph_Theory.Funpow
 begin

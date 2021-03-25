@@ -5,7 +5,7 @@ section \<open>Derangements\<close>
 theory Derangements
 imports
   Complex_Main
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
 begin
 
 subsection \<open>Preliminaries\<close>
@@ -17,7 +17,7 @@ lemma card_product_dependent:
   shows "card {(x, y). x \<in> S \<and> y \<in> T x} = (\<Sum>x \<in> S. card (T x))"
 using card_SigmaI[OF assms, symmetric] by (auto intro!: arg_cong[where f=card] simp add: Sigma_def)
 
-subsubsection \<open>Additions to @{theory "HOL-Library.Permutations"} Theory\<close>
+subsubsection \<open>Additions to @{theory "HOL-Combinatorics.Permutations"} Theory\<close>
 
 lemma permutes_imp_bij':
   assumes "p permutes S"

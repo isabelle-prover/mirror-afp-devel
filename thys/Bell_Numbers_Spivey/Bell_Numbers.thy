@@ -6,7 +6,7 @@ theory Bell_Numbers
 imports
   "HOL-Library.FuncSet"
   "HOL-Library.Monad_Syntax"
-  "HOL-Library.Stirling"
+  "HOL-Combinatorics.Stirling"
   Card_Partitions.Injectivity_Solver
   Card_Partitions.Card_Partitions
 begin

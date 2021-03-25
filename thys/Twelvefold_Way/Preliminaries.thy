@@ -7,7 +7,7 @@ imports
   Main
   "HOL-Library.Multiset"
   "HOL-Library.FuncSet"
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
   "HOL-ex.Birthday_Paradox"
   Card_Partitions.Card_Partitions
   Bell_Numbers_Spivey.Bell_Numbers

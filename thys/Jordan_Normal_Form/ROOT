@@ -3,6 +3,7 @@ chapter AFP
 session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
   options [timeout = 1200]
   sessions
+    "HOL-Combinatorics"
     Polynomial_Factorization
   theories
     Missing_Ring

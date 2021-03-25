@@ -10,11 +10,9 @@ theory Order_Predicates
 imports 
   Main
   "HOL-Library.Disjoint_Sets"
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
   "List-Index.List_Index"
 begin
-
-
 
 subsection \<open>Basic Operations on Relations\<close>
 

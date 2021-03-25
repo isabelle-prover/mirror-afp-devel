@@ -11,7 +11,7 @@ text \<open>This theory provides some definitions and lemmas on permutations whi
 theory Missing_Permutations
 imports
   Missing_Ring
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
 begin
 
 definition signof :: "(nat \<Rightarrow> nat) \<Rightarrow> 'a :: ring_1" where

@@ -4,6 +4,7 @@ session Linear_Recurrences (AFP) = Count_Complex_Roots +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    "HOL-Combinatorics"
     "HOL-Computational_Algebra"
     "HOL-Analysis"
     "HOL-Real_Asymp"

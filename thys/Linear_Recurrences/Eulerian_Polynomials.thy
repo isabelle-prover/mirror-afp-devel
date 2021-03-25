@@ -6,8 +6,8 @@ section \<open>Eulerian polynomials\<close>
 theory Eulerian_Polynomials
 imports 
   Complex_Main 
+  "HOL-Combinatorics.Stirling"
   "HOL-Computational_Algebra.Computational_Algebra"
-  "HOL-Library.Stirling"
 begin
 
 text \<open>

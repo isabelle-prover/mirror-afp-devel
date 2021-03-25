@@ -4,8 +4,8 @@ theory Executable_Permutations
 imports
   Graph_Theory.Funpow
   List_Aux
-  "HOL-Library.Permutations"
   "HOL-Library.Rewrite"
+  "HOL-Combinatorics.Permutations"
 begin
 
 subsection \<open>Cyclic Permutations\<close>

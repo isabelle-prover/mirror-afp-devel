@@ -1,7 +1,7 @@
 theory Graph_Genus
 imports
+  "HOL-Combinatorics.Permutations"
   Graph_Theory.Graph_Theory
-  "HOL-Library.Permutations"
 begin
 
 lemma nat_diff_mod_right:

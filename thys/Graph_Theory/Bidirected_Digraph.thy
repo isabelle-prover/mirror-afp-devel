@@ -1,7 +1,7 @@
 theory Bidirected_Digraph
 imports
   Digraph
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
 begin
 
 section \<open>Bidirected Graphs\<close>

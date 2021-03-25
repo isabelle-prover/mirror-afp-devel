@@ -10,7 +10,7 @@ section \<open>Linear orderings as relations\<close>
 theory Linorder_Relations
   imports 
     Complex_Main 
-    "HOL-Library.Multiset_Permutations"
+    "HOL-Combinatorics.Multiset_Permutations"
     "List-Index.List_Index"
 begin
 

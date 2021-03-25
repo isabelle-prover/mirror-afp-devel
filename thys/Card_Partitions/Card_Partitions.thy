@@ -4,7 +4,7 @@ section \<open>Cardinality of Set Partitions\<close>
 
 theory Card_Partitions
 imports
-  "HOL-Library.Stirling"
+  "HOL-Combinatorics.Stirling"
   Set_Partition
   Injectivity_Solver
 begin

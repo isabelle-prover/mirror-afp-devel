@@ -1,7 +1,7 @@
 theory Funpow
 imports
   "HOL-Library.FuncSet"
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
 begin
 
 section \<open>Auxiliary Lemmas about @{term "(^^)"}\<close>

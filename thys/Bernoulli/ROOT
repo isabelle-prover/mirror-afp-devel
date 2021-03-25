@@ -5,6 +5,7 @@ session Bernoulli (AFP) = "HOL-Complex_Analysis" +
   sessions
     "HOL-Analysis"
     "HOL-Number_Theory"
+    "HOL-Combinatorics"
     "HOL-Computational_Algebra"
   theories
     Bernoulli

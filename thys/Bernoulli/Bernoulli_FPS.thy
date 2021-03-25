@@ -11,8 +11,8 @@ theory Bernoulli_FPS
   imports 
     Bernoulli 
     "HOL-Computational_Algebra.Computational_Algebra"
+    "HOL-Combinatorics.Stirling"
     "HOL-Number_Theory.Number_Theory"
-    "HOL-Library.Stirling"
 begin
 
 subsection \<open>Preliminaries\<close>

@@ -4,6 +4,7 @@ session Affine_Arithmetic (AFP) = "HOL-Analysis" +
   options [timeout = 2400]
   sessions
     "HOL-Decision_Procs"
+    "HOL-Combinatorics"
     "List-Index"
     Deriving
     Show

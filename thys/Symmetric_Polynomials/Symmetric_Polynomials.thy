@@ -10,7 +10,7 @@ theory Symmetric_Polynomials
 imports
   Vieta
   "Polynomials.More_MPoly_Type"
-  "HOL-Library.Permutations"
+  "HOL-Combinatorics.Permutations"
 begin
 
 subsection \<open>Auxiliary facts\<close>

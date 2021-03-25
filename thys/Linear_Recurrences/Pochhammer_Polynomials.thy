@@ -6,7 +6,7 @@ section \<open>Falling factorial as a polynomial\<close>
 theory Pochhammer_Polynomials
 imports
   Complex_Main
-  "HOL-Library.Stirling" 
+  "HOL-Combinatorics.Stirling"
   "HOL-Computational_Algebra.Polynomial" 
 begin
 

@@ -5,6 +5,7 @@ session Twelvefold_Way (AFP) = "HOL-Library" +
   sessions
     "HOL-ex"
     "HOL-Eisbach"
+    "HOL-Combinatorics"
     Bell_Numbers_Spivey
     Card_Multisets
     Card_Number_Partitions
