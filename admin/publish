@@ -27,7 +27,6 @@ fi
 FILES=$LN@$FILES
 
 EXPORT_PRE=afp
-HG=hg
 DATE=`date '+%Y-%m-%d'`
 
 TAR=tar
@@ -88,16 +87,16 @@ EXPORT=$EXPORT_PRE-$DATE
 
 WD="$(pwd)"
 cd "$DIR"
-ROOT="$(hg root)" || fail "could not obtain repo root"
+ROOT="$("${HG:-hg}" root)" || fail "could not obtain repo root"
 cd "$ROOT" || fail "could not cd to repo root"
 
 echo "Checking sync with $SRC"
-$HG outgoing $SRC && fail "Push changes to Heptapod first."
+"${HG:-hg}" outgoing $SRC && fail "Push changes to Heptapod first."
 
 echo "Exporting from working copy $ROOT"
 HG_EXPORT=afp-export-$DATE
 rm -rf $HG_EXPORT
-$HG archive -I thys -I web -I etc -I tools $HG_EXPORT || fail "hg archive failed."
+"${HG:-hg}" archive -I thys -I web -I etc -I tools $HG_EXPORT || fail "hg archive failed."
 cd $HG_EXPORT
 echo -n $DATE > web/release-date.txt
 mkdir $EXPORT
