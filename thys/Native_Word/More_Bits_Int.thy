@@ -12,8 +12,7 @@ begin
 
 text \<open>Preliminaries\<close>
 
-lemma last_rev' [simp]: "last (rev xs) = hd xs" \<comment> \<open>TODO define \<open>last []\<close> as \<open>hd []\<close>?\<close>
-  by (cases xs) (simp add: last_def hd_def, simp)
+declare hd_Nil_eq_last [simp]
 
 lemma nat_LEAST_True: "(LEAST _ :: nat. True) = 0"
   by (rule Least_equality) simp_all

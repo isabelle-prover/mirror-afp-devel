@@ -157,7 +157,7 @@ begin
       proof(induction eth rule: iface_name_is_wildcard.induct)
       qed(simp_all)
     private lemma iface_name_is_wildcard_alt': "iface_name_is_wildcard eth \<longleftrightarrow> eth \<noteq> [] \<and> hd (rev eth) = CHR ''+''"
-      unfolding iface_name_is_wildcard_alt using hd_rev by fastforce
+      unfolding iface_name_is_wildcard_alt by (simp add: hd_rev)
     private lemma iface_name_is_wildcard_fst: "iface_name_is_wildcard (i # is) \<Longrightarrow> is \<noteq> [] \<Longrightarrow> iface_name_is_wildcard is"
       by(simp add: iface_name_is_wildcard_alt)
   
@@ -645,11 +645,6 @@ begin
        apply (blast dest: iface_conjunct_None)
       by (blast dest: iface_conjunct_Some)
   qed
-
-
-
-  declare match_iface.simps[simp del]
-  declare iface_name_is_wildcard.simps[simp del]
 end
 
 end

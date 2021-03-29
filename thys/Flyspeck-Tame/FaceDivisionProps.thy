@@ -2399,9 +2399,7 @@ proof (intro equalityI subsetI)
     apply (case_tac "c \<in> set(rev vs)")
      apply (subgoal_tac "distinct(rev vs)") apply (simp only: in_set_conv_decomp) apply (elim exE) apply simp
       apply (case_tac "zs") apply simp
-       apply (subgoal_tac "ys = as") apply(drule last_rev) apply (simp)
-       apply (rule dist_at1) apply (rule dist_f12) apply (rule sym) apply simp
-       apply simp
+       apply (metis dist_at2 dist_f12 last_rev last_snoc list.inject vertices_face.simps)
       apply (simp add:rev_swap)
       apply (subgoal_tac "ys = as")
        apply (clarsimp simp add: Edges_def is_sublist_def)
@@ -4957,10 +4955,6 @@ lemma pre_subdivFace'_Some1:
   \<Longrightarrow> f21 = fst (snd (splitFace g v u f [countVertices g ..< countVertices g + n]))
   \<Longrightarrow> g' =  snd (snd (splitFace g v u f [countVertices g ..< countVertices g + n]))
   \<Longrightarrow> pre_subdivFace' g' f21 v' u 0 vol"
-  apply (subgoal_tac "pre_splitFace g v u f [countVertices g ..< countVertices g + n]")
-   apply (rule pre_subdivFace'_Some1') apply assumption+
-  apply (simp)
-  apply (rule pre_subdivFace'_preFaceDiv)
-  by auto
+  by (meson pre_subdivFace'_Some1' pre_subdivFace'_preFaceDiv)
 
 end
