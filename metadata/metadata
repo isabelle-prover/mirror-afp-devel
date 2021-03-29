@@ -10403,3 +10403,41 @@ abstract =
   for basis reduction, based on the efficient Hermite normal form
   algorithm.
 
+[Constructive_Cryptography_CM]
+title = Constructive Cryptography in HOL: the Communication Modeling Aspect
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, S. Reza Sefidgar <>
+topic = Computer science/Security/Cryptography, Mathematics/Probability theory
+date = 2021-03-17
+notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
+abstract = 
+  Constructive Cryptography (CC) [<a
+  href="https://conference.iiis.tsinghua.edu.cn/ICS2011/content/papers/14.html">ICS
+  2011</a>, <a
+  href="https://doi.org/10.1007/978-3-642-27375-9_3">TOSCA
+  2011</a>, <a
+  href="https://doi.org/10.1007/978-3-662-53641-4_1">TCC
+  2016</a>] introduces an abstract approach to composable security
+  statements that allows one to focus on a particular aspect of security
+  proofs at a time. Instead of proving the properties of concrete
+  systems, CC studies system classes, i.e., the shared behavior of
+  similar systems, and their transformations.  Modeling of systems
+  communication plays a crucial role in composability and reusability of
+  security statements; yet, this aspect has not been studied in any of
+  the existing CC results. We extend our previous CC formalization
+  [<a href="https://isa-afp.org/entries/Constructive_Cryptography.html">Constructive_Cryptography</a>,
+  <a href="https://doi.org/10.1109/CSF.2019.00018">CSF
+  2019</a>] with a new semantic domain called Fused Resource
+  Templates (FRT) that abstracts over the systems communication patterns
+  in CC proofs. This widens the scope of cryptography proof
+  formalizations in the CryptHOL library [<a
+  href="https://isa-afp.org/entries/CryptHOL.html">CryptHOL</a>,
+  <a
+  href="https://doi.org/10.1007/978-3-662-49498-1_20">ESOP
+  2016</a>, <a
+  href="https://doi.org/10.1007/s00145-019-09341-z">J
+  Cryptol 2020</a>].  This formalization is described in <a
+  href="http://www.andreas-lochbihler.de/pub/basin2021.pdf">Abstract
+  Modeling of Systems Communication in Constructive Cryptography using
+  CryptHOL</a>.
+
+

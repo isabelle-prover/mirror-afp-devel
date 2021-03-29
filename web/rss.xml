@@ -9,7 +9,44 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
+    <pubDate>17 Mar 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+              <link>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
+       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
+       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
+       <pubDate>17 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+Constructive Cryptography (CC) [&lt;a
+href=&#34;https://conference.iiis.tsinghua.edu.cn/ICS2011/content/papers/14.html&#34;&gt;ICS
+2011&lt;/a&gt;, &lt;a
+href=&#34;https://doi.org/10.1007/978-3-642-27375-9_3&#34;&gt;TOSCA
+2011&lt;/a&gt;, &lt;a
+href=&#34;https://doi.org/10.1007/978-3-662-53641-4_1&#34;&gt;TCC
+2016&lt;/a&gt;] introduces an abstract approach to composable security
+statements that allows one to focus on a particular aspect of security
+proofs at a time. Instead of proving the properties of concrete
+systems, CC studies system classes, i.e., the shared behavior of
+similar systems, and their transformations.  Modeling of systems
+communication plays a crucial role in composability and reusability of
+security statements; yet, this aspect has not been studied in any of
+the existing CC results. We extend our previous CC formalization
+[&lt;a href=&#34;https://isa-afp.org/entries/Constructive_Cryptography.html&#34;&gt;Constructive_Cryptography&lt;/a&gt;,
+&lt;a href=&#34;https://doi.org/10.1109/CSF.2019.00018&#34;&gt;CSF
+2019&lt;/a&gt;] with a new semantic domain called Fused Resource
+Templates (FRT) that abstracts over the systems communication patterns
+in CC proofs. This widens the scope of cryptography proof
+formalizations in the CryptHOL library [&lt;a
+href=&#34;https://isa-afp.org/entries/CryptHOL.html&#34;&gt;CryptHOL&lt;/a&gt;,
+&lt;a
+href=&#34;https://doi.org/10.1007/978-3-662-49498-1_20&#34;&gt;ESOP
+2016&lt;/a&gt;, &lt;a
+href=&#34;https://doi.org/10.1007/s00145-019-09341-z&#34;&gt;J
+Cryptol 2020&lt;/a&gt;].  This formalization is described in &lt;a
+href=&#34;http://www.andreas-lochbihler.de/pub/basin2021.pdf&#34;&gt;Abstract
+Modeling of Systems Communication in Constructive Cryptography using
+CryptHOL&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
               <link>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
@@ -572,23 +609,6 @@ Incompleteness Theorems described in our CADE-27 paper &lt;a
 href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
 Formally Verified Abstract Account of Gödel&#39;s Incompleteness
 Theorems&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Robinson Arithmetic</title>
-              <link>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</link>
-       <guid>https://www.isa-afp.org/entries/Robinson_Arithmetic.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We instantiate our syntax-independent logic infrastructure developed
-in &lt;a
-href=&#34;https://www.isa-afp.org/entries/Syntax_Independent_Logic.html&#34;&gt;a
-separate AFP entry&lt;/a&gt; to the FOL theory of Robinson arithmetic
-(also known as Q). The latter was formalised using Nominal Isabelle by
-adapting &lt;a
-href=&#34;https://www.isa-afp.org/entries/Incompleteness.html&#34;&gt;Larry
-Paulson’s formalization of the Hereditarily Finite Set
-theory&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
