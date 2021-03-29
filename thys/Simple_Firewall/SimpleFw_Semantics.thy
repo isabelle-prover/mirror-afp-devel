@@ -97,8 +97,8 @@ begin
           have proto: "match_proto protocol (case protocol of ProtoAny \<Rightarrow> TCP | Proto p \<Rightarrow> p)"
             by(simp split: protocol.split)
           { fix ifce
-            have " match_iface ifce (iface_sel ifce)"
-            by(cases ifce) (simp add: match_iface_refl)
+            have "match_iface ifce (iface_sel ifce)"
+              by (simp add: match_iface_eqI)
           } note ifaces=this
           { fix p::"('i, 'a) simple_packet_scheme"
             from nomatch have "?x p" by blast
