@@ -232,7 +232,7 @@ proof-
 
   let ?zs = "v # xs' @ x # (rev ys')"
   have "last ?zs\<rightarrow>hd ?zs"
-    using undirected walk_first_edge walk_first_edge' ys'(1) ys(1) last_rev by fastforce
+    using undirected walk_first_edge walk_first_edge' ys'(1) ys(1) by (fastforce simp: last_rev)
   moreover have "path ?zs" proof
     have "walk (x # rev ys')" proof(cases)
       assume "ys' = Nil" thus ?thesis using \<open>last ?zs\<rightarrow>hd ?zs\<close> edges_are_in_V(1) by auto
