@@ -731,8 +731,6 @@ text\<open>Examples\<close>
           match_simplematcher_SrcDst_not
           primitive_matcher_generic.Iface_single[OF primitive_matcher_generic_common_matcher]
           primitive_matcher_generic.Iface_single_not[OF primitive_matcher_generic_common_matcher])
-      apply(intro impI, thin_tac _)
-      apply eval
      apply eval
      done
 
@@ -762,8 +760,6 @@ text\<open>Examples\<close>
       apply(simp add: bunch_of_lemmata_about_matches
           primitive_matcher_generic.Iface_single[OF primitive_matcher_generic_common_matcher]
           primitive_matcher_generic.Iface_single_not[OF primitive_matcher_generic_common_matcher])
-      apply(intro impI, thin_tac _)
-      apply eval
      apply eval
      done
   

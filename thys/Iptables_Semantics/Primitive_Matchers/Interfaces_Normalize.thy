@@ -65,14 +65,14 @@ begin
       apply(case_tac [!] "compress_pos_interfaces (getPos ifces)")
          apply(simp_all)
        apply(drule_tac p_i="p_iiface p" in compress_pos_interfaces_Some)
-       apply(simp split:if_split_asm)
-         using iface_is_wildcard_def iface_subset match_iface_case_nowildcard apply fastforce
-        using match_ifaceAny apply blast
+       apply(simp split:if_split_asm add: match_ifaceAny)
+      unfolding iface_is_wildcard_def using iface_subset match_iface_case_nowildcard
+         apply (metis (no_types, lifting) Collect_mono_iff iface.collapse list.distinct(1) list.set_cases list.set_intros(1) set_ConsD)
        apply force
       apply(drule_tac p_i="p_oiface p" in compress_pos_interfaces_Some)
-      apply(simp split:if_split_asm)
-        using iface_is_wildcard_def iface_subset match_iface_case_nowildcard apply fastforce
-       using match_ifaceAny apply blast
+      apply(simp split:if_split_asm add: match_ifaceAny)
+      unfolding iface_is_wildcard_def iface_subset using match_iface_case_nowildcard
+        apply (metis iface.collapse list.distinct(1) list.inject list.set_cases list.set_intros(1) mem_Collect_eq subsetI)
       by force
 
   

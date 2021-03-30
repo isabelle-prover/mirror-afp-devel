@@ -27,7 +27,8 @@ subsection\<open>Sanity checking for an @{typ "'i ipassignment"}.\<close>
        ipassmt (Iface ifce2) = None \<Longrightarrow>
        ipassmt ifce = Some a \<Longrightarrow>
        \<not> match_iface ifce ifce2"
-  unfolding ipassmt_sanity_nowildcards_def using iface_is_wildcard_def match_iface_case_nowildcard by fastforce
+  unfolding ipassmt_sanity_nowildcards_def 
+  by (metis domIff iface.exhaust iface.sel option.distinct(1) iface_is_wildcard_def match_iface_case_nowildcard)
 
 
   (* use this in all exported code*)
