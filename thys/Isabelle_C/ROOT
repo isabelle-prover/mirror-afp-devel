@@ -55,7 +55,7 @@ session Isabelle_C (AFP) = HOL +
   theories (* document *)
     "C11-FrontEnd/C_Appendices"
     "./README"
-  document_files (in "C11-FrontEnd/document/")
+  document_files (in "C11-FrontEnd/document/generated")
     "DOF-COL.sty"
     "DOF-core.sty"
     "DOF-scholarly_paper.sty"
@@ -75,9 +75,10 @@ session Isabelle_C (AFP) = HOL +
     "figures/document-model1.pdf"
     "figures/document-model2.pdf"
     "figures/markup-demo.png"
-    "lstisadof.sty"
     "ontologies.tex"
     "paper.tex"
+  document_files (in "C11-FrontEnd/document")
+    "lstisadof.sty"
     "preamble.tex"
     "root.bib"
     "root.tex"
