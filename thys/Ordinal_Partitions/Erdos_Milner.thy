@@ -227,7 +227,7 @@ text \<open>The ``remark'' of Erdős and E. C. Milner, Canad. Math. Bull. Vol. 1
 proposition indecomposable_imp_Ex_less_sets:
   assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" and A: "tp A = \<alpha>" "small A" "A \<subseteq> ON"
     and "x \<in> A" and A1: "tp A1 = \<alpha>" "A1 \<subseteq> A"
-  obtains A2 where "tp A2 = \<alpha>" "A2 \<subseteq> A1" "less_sets {x} A2"
+  obtains A2 where "tp A2 = \<alpha>" "A2 \<subseteq> A1" "{x} \<lless> A2"
 proof -
   have "Ord \<alpha>"
     using indec indecomposable_imp_Ord by blast
@@ -275,7 +275,7 @@ proof -
     qed
     ultimately show "tp (A1 - B) = \<alpha>"
       using A1 by blast
-    show "less_sets {x} (A1 - B)"
+    show "{x} \<lless> (A1 - B)"
     proof (clarsimp simp: less_sets_def B_def simp del: elts_succ)
       fix y
       assume "y \<in> A1" and y: "y \<notin> \<phi> ` elts (succ \<gamma>)"
@@ -888,7 +888,7 @@ next
                                          \<and> (\<Union>\<nu> \<in> elts \<beta>. \<AA> \<nu>) \<subseteq> KI 1 (x ` {..<n}) \<and> strict_mono_sets (elts \<beta>) \<AA>"
         define \<Psi> where "\<Psi> \<equiv> \<lambda>n::nat. \<lambda>g \<AA> \<AA>' xn. g \<in> elts \<beta> \<rightarrow> elts \<beta> \<and> strict_mono_on g (elts \<beta>) \<and> (\<forall>i\<le>n. g (\<mu> i) = \<mu> i)
                   \<and> (\<forall>\<nu> \<in> elts \<beta>. \<AA>' \<nu> \<subseteq> K 1 xn \<inter> \<AA> (g \<nu>))
-                  \<and> less_sets {xn} (\<AA>' (\<mu> n)) \<and> xn \<in> \<AA> (\<mu> n)"
+                  \<and> {xn} \<lless> (\<AA>' (\<mu> n)) \<and> xn \<in> \<AA> (\<mu> n)"
         let ?\<AA>0 = "\<lambda>\<nu>. plus (\<alpha> * \<nu>) ` elts \<alpha>"
         have base: "\<Phi> 0 ?\<AA>0 x" for x
           by (auto simp: \<Phi>_def add_mult_less add_mult_less_add_mult ordertype_image_plus strict_mono_sets_def less_sets_def)
@@ -922,7 +922,7 @@ next
             by (auto simp: \<AA>)
           obtain "small (\<AA> (\<mu> n))" "\<AA> (\<mu> n) \<subseteq> ON"
             by (meson \<AA>sub ord down elts_subset_ON subset_trans)
-          then obtain A2 where A2: "tp A2 = \<alpha>" "A2 \<subseteq> K 1 xn \<inter> \<AA> (\<mu> n)" "less_sets {xn} A2"
+          then obtain A2 where A2: "tp A2 = \<alpha>" "A2 \<subseteq> K 1 xn \<inter> \<AA> (\<mu> n)" "{xn} \<lless> A2"
             using indecomposable_imp_Ex_less_sets [OF indec \<open>\<alpha> > 1\<close> tp2]
             by (metis \<mu>_in_\<beta> atMost_iff image_eqI inf_le2 le_refl xn tp1 g_\<mu>)
           then have A2_sub: "A2 \<subseteq> \<AA> (\<mu> n)" by simp
@@ -973,7 +973,7 @@ next
           using H_imp_\<Psi> [of n] that by (force simp: \<Psi>_def \<AA>_def x_def g_def)
         then have x14: "\<AA> (Suc n) \<nu> \<subseteq> \<AA> n (g n \<nu>)" if "\<nu> \<in> elts \<beta>" for \<nu> n
           using that by blast
-        have 15: "x n \<in> \<AA> n (\<mu> n)" and 16: "less_sets {x n} (\<AA> (Suc n) (\<mu> n))" for n
+        have 15: "x n \<in> \<AA> n (\<mu> n)" and 16: "{x n} \<lless> (\<AA> (Suc n) (\<mu> n))" for n
           using H_imp_\<Psi> [of n] by (force simp: \<Psi>_def \<AA>_def x_def)+
         have \<AA>_\<alpha>\<beta>: "\<AA> n \<nu> \<subseteq> elts (\<alpha> * \<beta>)" if "\<nu> \<in> elts \<beta>" for \<nu> n
           using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
@@ -1039,17 +1039,17 @@ next
             by (metis (no_types, lifting) "17" \<mu>_in_\<beta> less_V_def order_refl sm_\<gg> strict_mono_on_def)
           have eq: "\<gg> i j (\<mu> j) = \<mu> i \<longleftrightarrow> \<mu> j = \<mu> i" for i j
             by (metis eq_refl le less less_le)
-          have 18: "less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n)) \<longleftrightarrow> \<mu> m < \<mu> n" for m n
+          have 18: "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n) \<longleftrightarrow> \<mu> m < \<mu> n" for m n
           proof (cases n m rule: linorder_cases)
             case less
             show ?thesis
             proof (intro iffI)
-              assume "less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))"
+              assume "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
               moreover
-              have "\<not> less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))" if "\<mu> n = \<mu> m"
+              have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n = \<mu> m"
                 by (metis "*" "15" eq less less_V_def less_sets_def less_sets_weaken2 that)
               moreover
-              have "\<not> less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))" if "\<mu> n < \<mu> m"
+              have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n < \<mu> m"
                 using that 12 15 * [OF less]
                 apply (clarsimp simp: less_sets_def strict_mono_sets_def)
                 by (metis Ord_in_Ord Ord_linear2 \<gg>_in_\<beta> \<mu>_in_\<beta> \<open>Ord \<beta>\<close> le leD less_asym subsetD)
@@ -1057,9 +1057,9 @@ next
                 by (meson Ord_in_Ord Ord_linear_lt \<mu>_in_\<beta> \<open>Ord \<beta>\<close>)
             next
               assume "\<mu> m < \<mu> n"
-              then have "less_sets (\<AA> n (\<gg> n m (\<mu> m))) (\<AA> n (\<mu> n))"
+              then have "\<AA> n (\<gg> n m (\<mu> m)) \<lless> \<AA> n (\<mu> n)"
                 by (metis "12" \<gg>_in_\<beta> \<mu>_in_\<beta> eq le less_V_def strict_mono_sets_def)
-              then show "less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))"
+              then show "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
                 by (meson *[OF less] less_sets_weaken1)
           qed
           next
@@ -1069,12 +1069,12 @@ next
             case greater
             show ?thesis
             proof (intro iffI)
-              assume "less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))"
+              assume "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
               moreover
-              have "\<not> less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))" if "\<mu> n = \<mu> m"
+              have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n = \<mu> m"
                 by (metis "*" "15" disjnt_iff eq greater in_mono less_sets_imp_disjnt that)
               moreover
-              have "\<not> less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))" if "\<mu> n < \<mu> m"
+              have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n < \<mu> m"
                 using that 12 15 * [OF greater]
                 apply (clarsimp simp: less_sets_def strict_mono_sets_def)
                 by (meson \<gg>_in_\<beta> \<mu>_in_\<beta> in_mono less less_asym)
@@ -1082,9 +1082,9 @@ next
                 by (meson Ord_\<mu> Ord_linear_lt)
             next
               assume "\<mu> m < \<mu> n"
-              then have "less_sets (\<AA> m (\<mu> m)) (\<AA> m (\<gg> m n (\<mu> n)))"
+              then have "\<AA> m (\<mu> m) \<lless> (\<AA> m (\<gg> m n (\<mu> n)))"
                 by (meson 12 Ord_in_Ord Ord_linear2 \<gg>_in_\<beta> \<mu>_in_\<beta> le leD ord(2) strict_mono_sets_def)
-              then show "less_sets (\<AA> m (\<mu> m)) (\<AA> n (\<mu> n))"
+              then show "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
                 by (meson "*" greater less_sets_weaken2)
             qed
           qed
@@ -1299,7 +1299,7 @@ next
     by simp
   also have "\<dots> \<le> Suc (k * n)"
     using False by auto
-  finally have "1 + (n - 1) * (k - 1) \<le> (n*k)"
+  finally have "1 + (n - 1) * (k - 1) \<le> n*k"
     using False by (auto simp: algebra_simps)
   then have "(1 + ord_of_nat (n - 1) * ord_of_nat (k - 1)) \<le> ord_of_nat(n*k)"
     by (metis (mono_tags, lifting) One_nat_def one_V_def ord_of_nat.simps ord_of_nat_add ord_of_nat_mono_iff ord_of_nat_mult)
@@ -1307,7 +1307,7 @@ next
     by (simp add: oexp_mono_le)
   then have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> (1 + ord_of_nat (n-1)), ord_of_nat (2 ^ (k-1))] 2"
     by (metis PV partn_lst_two_swap Partitions.partn_lst_greater_resource less_eq_V_def)
-  moreover have "(1 + ord_of_nat (n-1)) = ord_of_nat n"
+  moreover have "(1 + ord_of_nat (n-1)) = n"
     using ord_of_minus_1 [OF \<open>n > 0\<close>]
     by (simp add: one_V_def)
   ultimately have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> n, ord_of_nat (2 ^ (k-1))] 2"
