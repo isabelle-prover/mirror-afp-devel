@@ -153,9 +153,7 @@ lemma aadd_two_negg[simp]:"\<lbrakk>a < (0::ant); b < 0\<rbrakk> \<Longrightarro
 by auto
 
 lemma amin_aminTr:"(z::ant) \<le> z' \<Longrightarrow> amin z w \<le> amin z' w"
-by (simp add:amin_def, simp add:aneg_le,
-      (rule impI)+, frule aless_le_trans[of "w" "z" "z'"],
-      assumption+, simp)
+by (simp add:amin_def)
 
 lemma amin_le1:"(z::ant) \<le> z' \<Longrightarrow> (amin z w) \<le> z'"
 by (simp add:amin_def, simp add:aneg_le,
