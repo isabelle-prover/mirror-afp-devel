@@ -3725,14 +3725,8 @@ lemma Amin_ge1:"\<lbrakk> \<forall>j \<le> (Suc n). f j \<in> Z\<^sub>\<infinity
 apply (simp del:Amin_Suc add:Amin_ge1Tr)
 done
 
-lemma amin_trans1:"\<lbrakk>x \<in> Z\<^sub>\<infinity>; y \<in> Z\<^sub>\<infinity>; z \<in> Z\<^sub>\<infinity>; z \<le> x \<rbrakk> \<Longrightarrow>
-                           amin z y \<le> amin x y"
-apply (case_tac "z \<le> y", simp add:amin_def)
- apply (simp add:amin_def)
- apply (simp only:aneg_le[of "z" "y"], frule aless_imp_le[of "y" "z"],
-        frule ale_trans[of "y" "z" "x"], assumption+, rule impI,
-        frule ale_antisym[of "y" "x"], assumption+)
-done
+lemma amin_trans1:"\<lbrakk>x \<in> Z\<^sub>\<infinity>; y \<in> Z\<^sub>\<infinity>; z \<in> Z\<^sub>\<infinity>; z \<le> x \<rbrakk> \<Longrightarrow> amin z y \<le> amin x y"
+  by (simp add:amin_def)
 
 lemma inf_in_aug_inf:"\<infinity>  \<in> Z\<^sub>\<infinity>"
 apply (simp add:aug_inf_def, simp add:not_sym)
@@ -4595,23 +4589,7 @@ apply (simp add:z_less_i[of "int n"])
 done
 
 lemma an_na_le:"j \<le> an n \<Longrightarrow> na j \<le> n"
-apply (case_tac "j = -\<infinity>", simp add:na_minf)
-apply (simp add:na_def)
-apply (case_tac "j = \<infinity>", simp, rule impI)
-apply (cut_tac not_na_ge_inf[of n], simp)
-
-apply simp
-apply (rule impI, simp add:aneg_less)
-apply (frule an_na[of j], assumption)
-apply (subgoal_tac "nat (tna j) = na j", simp,
-                   thin_tac "nat (tna j) = na j")
-apply (cut_tac ale_trans[of "an (na j)" j "an n"], thin_tac "j \<le> an n",
-       thin_tac "an (na j) = j", simp add:ale_nat_le[of "na j" n],
-       simp add:ale_refl[of j], assumption)
-apply (thin_tac "an (na j) = j", simp add:na_def,
-       rule impI)
-apply (simp add:aneg_le[THEN sym, of j 0])
-done
+  by (metis ale_nat_le an_0 an_na an_nat_pos aneg_le na_def not_na_ge_inf)
 
 lemma aless_neq :"(x::ant) < y \<Longrightarrow> x \<noteq> y"
 by (rule contrapos_pp, simp+)
@@ -7164,15 +7142,7 @@ apply (simp add:minimum_elem_def,
        frule_tac c = x in subsetD[of "X" "carrier D"], assumption+,
        frule_tac a1 = x and b1 = d in not_less_le[THEN sym], assumption+)
 apply simp
-
-apply (rule contrapos_pp, simp+)
 apply (simp add:minimum_elem_def)
-apply (erule bexE)
-apply (frule_tac c = d in subsetD[of "X" "carrier D"], assumption+,
-       frule_tac c = x in subsetD[of "X" "carrier D"], assumption+,
-       simp add:not_le_less)
-apply (simp add:segment_def Iod_carrier,
-       simp add:Iod_less[THEN sym, of "X"])
-done
+  by (metis Iod_Order Iod_Torder Iod_carrier Iod_le Iod_not_less_le Order.segment_inc1 nonempty)
 
 end
