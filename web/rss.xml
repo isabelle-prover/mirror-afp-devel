@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Mar 2021 00:00:00 +0000</pubDate>
+    <pubDate>01 Apr 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Information Flow Control via Dependency Tracking</title>
+              <link>https://www.isa-afp.org/entries/IFC_Tracking.html</link>
+       <guid>https://www.isa-afp.org/entries/IFC_Tracking.html</guid>
+       <dc:creator> Benedikt Nordhoff       </dc:creator>
+       <pubDate>01 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+We provide a characterisation of how information is propagated by
+program executions based on the tracking data and control dependencies
+within executions themselves.  The characterisation might be used for
+deriving approximative safety properties to be targeted by static
+analyses or checked at runtime.  We utilise a simple yet versatile
+control flow graph model as a program representation.  As our model is
+not assumed to be finite it can be instantiated for a broad class of
+programs.  The targeted security property is indistinguishable
+security where executions produce sequences of observations and only
+non-terminating executions are allowed to drop a tail of those.  A
+very crude approximation of our characterisation is slicing based on
+program dependence graphs, which we use as a minimal example and
+derive a corresponding soundness result.  For further details and
+applications refer to the authors upcoming dissertation.</description>
+    </item>
     <item>
        <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
               <link>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
@@ -578,37 +600,6 @@ now stay within its boundaries. This change in behavior makes programs
 that operate on shadow trees more predictable for the developer and
 allows them to make more assumptions about other code accessing the
 DOM.</description>
-    </item>
-    <item>
-       <title>Syntax-Independent Logic Infrastructure</title>
-              <link>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Syntax_Independent_Logic.html</guid>
-       <dc:creator> Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>16 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize a notion of logic whose terms and formulas are kept
-abstract. In particular, logical connectives, substitution, free
-variables, and provability are not defined, but characterized by their
-general properties as locale assumptions. Based on this abstract
-characterization, we develop further reusable reasoning
-infrastructure. For example, we define parallel substitution (along
-with proving its characterizing theorems) from single-point
-substitution. Similarly, we develop a natural deduction style proof
-system starting from the abstract Hilbert-style one. These one-time
-efforts benefit different concrete logics satisfying our locales&#39;
-assumptions.  We instantiate the syntax-independent logic
-infrastructure to Robinson arithmetic (also known as Q) in the AFP
-entry &lt;a
-href=&#34;https://www.isa-afp.org/entries/Robinson_Arithmetic.html&#34;&gt;Robinson_Arithmetic&lt;/a&gt;
-and to hereditarily finite set theory in the AFP entries &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html&#34;&gt;Goedel_HFSet_Semantic&lt;/a&gt;
-and &lt;a
-href=&#34;https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html&#34;&gt;Goedel_HFSet_Semanticless&lt;/a&gt;,
-which are part of our formalization of G&amp;ouml;del&#39;s
-Incompleteness Theorems described in our CADE-27 paper &lt;a
-href=&#34;https://dx.doi.org/10.1007/978-3-030-29436-6_26&#34;&gt;A
-Formally Verified Abstract Account of Gödel&#39;s Incompleteness
-Theorems&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
