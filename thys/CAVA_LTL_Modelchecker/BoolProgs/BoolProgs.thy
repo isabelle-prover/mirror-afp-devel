@@ -290,8 +290,7 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (rule_tac x="TestI bexp int" in bexI, auto simp: array_idx_in_set) []
 
     apply (rename_tac list)
-    apply (clarsimp split: if_split_asm simp add: Let_def)
-    apply (elim disjE conjE, auto) []
+    apply (auto split: if_split_asm)[]
     apply (frule (1) C.IH(3), auto) []
     apply (force)
     apply (force)

@@ -289,23 +289,7 @@ apply (case_tac "ok bb", simp_all)
 apply (case_tac "tr bb \<le> tr c", simp_all)
 apply (case_tac "ok ca", simp_all)
 apply (case_tac "tr ca \<le> tr c", simp_all)
-apply (simp add: prefix_def)
-apply (erule exE)+
-apply (erule_tac x="zs@zsa" in allE, simp)
-apply (rule_tac b=bb in comp_intro, simp_all)
-apply (split cond_splits, simp_all add: true_def)+
-apply (case_tac "ok ca", simp_all)
-apply (case_tac "tr ca \<le> tr c", simp_all)
-apply (simp add: prefix_def)
-apply (erule exE | erule conjE)+
-apply (rule_tac x="zsa@zs" in exI, simp)
-apply (rule_tac b=bb in comp_intro, simp_all)
-apply (split cond_splits, simp_all)+
-apply (case_tac "tr bb \<le> tr c", simp_all)
-apply (simp add: prefix_def)
-apply (erule exE | erule conjE)+
-apply (erule_tac x="zsa@zs" in allE, simp)
-apply (auto simp add: prefix_def)
+apply (auto simp add: prefix_def comp_def true_def split: cond_splits)
 done
 
 

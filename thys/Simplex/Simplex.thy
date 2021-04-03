@@ -2797,7 +2797,7 @@ next
         from dir ind some have *: "LB dir ?s x = Some d" "LI dir ?s x = j" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
         have d_le_vx: "lt dir d (v x) \<or> d = v x" by (intro vL[rule_format, OF *], insert some ind, auto)
         from dir d_le_vx vx_le_c lt
-        have False by auto
+        have False by (auto simp del: Simplex.bounds_lg)
       }
       thus ?case by blast
     next
@@ -3836,7 +3836,7 @@ proof -
     then show "lt dir 0 (\<langle>\<V> s\<rangle> x - v x)"
       using \<open>0 \<noteq> \<langle>\<V> s\<rangle> x - v x\<close> *
       using minus_gt[of "v x" "\<langle>\<V> s\<rangle> x"] minus_lt[of "\<langle>\<V> s\<rangle> x" "v x"]
-      by auto
+      by (auto simp del: Simplex.bounds_lg)
   next
     fix x
     assume x: "x \<in> rvars_eq eq" "0 > coeff (rhs eq) x" "\<langle>\<V> s\<rangle> x - v x \<noteq> 0"
@@ -3861,20 +3861,20 @@ proof -
     then show "lt dir (\<langle>\<V> s\<rangle> x - v x) 0"
       using \<open>\<langle>\<V> s\<rangle> x - v x \<noteq> 0\<close> *
       using minus_lt[of "\<langle>\<V> s\<rangle> x" "v x"] minus_gt[of "v x" "\<langle>\<V> s\<rangle> x"]
-      by auto
+      by (auto simp del: Simplex.bounds_lg)
   qed
   then have "le (lt dir) 0 (rhs eq \<lbrace> \<lambda> x. \<langle>\<V> s\<rangle> x - v x\<rbrace>)"
     using *
     apply auto
     using valuate_nonneg[of "rhs eq" "\<lambda>x. \<langle>\<V> s\<rangle> x - v x"]
-     apply force
+     apply (force simp del: Simplex.bounds_lg)
     using valuate_nonpos[of "rhs eq" "\<lambda>x. \<langle>\<V> s\<rangle> x - v x"]
-    apply force
+    apply (force simp del: Simplex.bounds_lg)
     done
   then show "le (lt dir) rhs eq \<lbrace> v \<rbrace> rhs eq \<lbrace> \<langle>\<V> s\<rangle> \<rbrace>"
     using \<open>dir = Positive \<or> dir = Negative\<close>
     using minus_gt[of "rhs eq \<lbrace> v \<rbrace>" "rhs eq \<lbrace> \<langle>\<V> s\<rangle> \<rbrace>"]
-    by (auto simp add: valuate_diff[THEN sym])
+    by (auto simp add: valuate_diff[THEN sym] simp del: Simplex.bounds_lg)
 qed
 end
 
@@ -5618,7 +5618,7 @@ proof (rule acyclicI, rule allI)
               then show "lt dir2 0 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x)"
                 using \<open>0 \<noteq> \<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x\<close>
                 using minus_gt[of "\<langle>?bl\<rangle> x" "\<langle>?bp\<rangle> x"] minus_lt[of "\<langle>?bp\<rangle> x" "\<langle>?bl\<rangle> x"] dir2
-                by auto
+                by (auto simp del: Simplex.bounds_lg)
             next
               assume "coeff (rhs ?eq) x < 0"  "\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x \<noteq> 0"
               then have "\<unlhd>\<^sub>l\<^sub>b (lt dir2) (\<langle>\<V> (l' ! sp)\<rangle> x) (LB dir2 (l' ! sp) x)"
@@ -5634,7 +5634,7 @@ proof (rule acyclicI, rule allI)
               then show "lt dir2 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x) 0"
                 using \<open>\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x \<noteq> 0\<close>
                 using minus_gt[of "\<langle>?bl\<rangle> x" "\<langle>?bp\<rangle> x"] minus_lt[of "\<langle>?bp\<rangle> x" "\<langle>?bl\<rangle> x"] dir2
-                by auto
+                by (auto simp del: Simplex.bounds_lg)
             qed
           next
             case False
@@ -5680,7 +5680,7 @@ proof (rule acyclicI, rule allI)
               show ?thesis
                 using \<open>x = xr\<close>
                 using minus_lt[of "\<langle>?bp\<rangle> xr" "\<langle>?bl\<rangle> xr"] minus_gt[of "\<langle>?bl\<rangle> xr" "\<langle>?bp\<rangle> xr"]
-                by (auto split: if_splits)
+                by (auto split: if_splits simp del: Simplex.bounds_lg)
             next
               case False
               then have "x > xr"
@@ -5699,25 +5699,25 @@ proof (rule acyclicI, rule allI)
           using dir2
           apply auto
           using valuate_nonneg[of "rhs ?eq" "\<lambda> x. \<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x"]
-           apply force
+           apply (force simp del: Simplex.bounds_lg)
           using valuate_nonpos[of "rhs ?eq" "\<lambda> x. \<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x"]
-          apply force
+          apply (force simp del: Simplex.bounds_lg)
           done
         then have "le (lt dir2) 0 ((rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace> - (rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>)"
           by (subst valuate_diff)+ simp
         then have "le (lt dir2) ((rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>) ((rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>)"
           using minus_lt[of "(rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>" "(rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>"] dir2
-          by auto
+          by (auto simp del: Simplex.bounds_lg)
         then show ?thesis
           using dir2
           using minus_lt[of "(rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>" "(rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>"]
           using minus_gt[of "(rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>" "(rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>"]
-          by auto
+          by (auto simp del: Simplex.bounds_lg)
       qed
       ultimately
       have False
         using diff_satified dir2
-        by (auto split: if_splits)
+        by (auto split: if_splits simp del: Simplex.bounds_lg)
     }
     then show False
       by auto
@@ -6145,7 +6145,8 @@ proof (rule check_induct'')
         with c dist[of x i c y d] dir
         have yx: "y = x" "d = c" by auto
         from y[unfolded yx] have "x \<in> rvars (\<T> s')" using **(1) unfolding rvars_def by force
-        from in_bnds[OF this] le LB not_gt i have "\<langle>\<V> s'\<rangle> x = c" unfolding yx using dir by auto
+        from in_bnds[OF this] le LB not_gt i have "\<langle>\<V> s'\<rangle> x = c" unfolding yx using dir 
+          by (auto simp del: Simplex.bounds_lg)
         note yx(1) this
       }
       moreover
@@ -6159,7 +6160,8 @@ proof (rule check_induct'')
         with c dist[of x i c y d] dir
         have yx: "y = x" "d = c" by auto
         from y[unfolded yx] have "x \<in> rvars (\<T> s')" using **(1) unfolding rvars_def by force
-        from in_bnds[OF this] le UB not_gt i have "\<langle>\<V> s'\<rangle> x = c" unfolding yx using dir by auto
+        from in_bnds[OF this] le UB not_gt i have "\<langle>\<V> s'\<rangle> x = c" unfolding yx using dir 
+          by (auto simp del: Simplex.bounds_lg)
         note yx(1) this
       }
       ultimately have "y = x" "\<langle>\<V> s'\<rangle> x = c" using coeff by blast+
@@ -6221,7 +6223,7 @@ proof (rule check_induct'')
         define diff where "diff = l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i" 
         have "\<langle>\<V> s'\<rangle> x\<^sub>i < l\<^sub>i \<Longrightarrow> 0 < l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i" "l\<^sub>i < \<langle>\<V> s'\<rangle> x\<^sub>i \<Longrightarrow> l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i < 0" 
           using minus_gt by (blast, insert minus_lt, blast)
-        with lt dir have diff: "lt dir 0 diff" by (auto simp: diff_def) 
+        with lt dir have diff: "lt dir 0 diff" by (auto simp: diff_def simp del: Simplex.bounds_lg) 
         define up where "up = inverse (coeff (rhs ?eq) y) *R diff" 
         define v where "v = \<langle>\<V> (rev.update y (\<langle>\<V> s'\<rangle> y + up) s')\<rangle>" 
         show ?thesis unfolding satisfies_state_index'.simps

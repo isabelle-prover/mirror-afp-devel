@@ -680,7 +680,8 @@ proof -
   have mset_eq: "mset xs = mset ls + mset es + mset gs" unfolding ls_def es_def gs_def
     by (induction xs) auto
   have length_eq: "length xs = length ls + length es + length gs" unfolding ls_def es_def gs_def
-    by (induction xs) auto
+    by (induction xs) (auto simp del: filter_True)
+    
   have [simp]: "select i es = x" if "i < length es" for i
   proof -
     have "select i es \<in> set (sort es)" unfolding select_def
@@ -882,7 +883,7 @@ proof induction
     next
       assume *: "\<not>k < nl" "\<not>k < nl + ne"
       have **: "length xs = length ls + length es + length gs"
-        unfolding ls_def es_def gs_def by (induction xs) auto
+        unfolding ls_def es_def gs_def by (induction xs) (auto simp del: filter_True)
       show "fast_select (k - nl - ne) gs = select (k - nl - ne) gs"
         unfolding nl_def ne_def
         by (rule 1; (rule refl tw)?) (insert False * ** \<open>k < length xs\<close>, auto simp: nl_def ne_def)

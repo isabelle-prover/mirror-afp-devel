@@ -170,7 +170,8 @@ begin
     apply (cases a)
     apply (auto 
       simp: la_ex'_def eval_dep_vars eq_on_def 
-      split: option.splits Option.bind_splits if_split_asm)
+      split: option.splits Option.bind_splits)
+    apply (auto split: if_split_asm)
     done    
 
   lemma ex_dep_pres:

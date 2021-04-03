@@ -383,8 +383,7 @@ proof (rule ccontr, auto)
       by (simp add: e)+
       with b show False 
       using piiq[of p i q] 
-      apply auto
-        using  b_rules using disjoint_iff_not_equal by auto
+        using  b_rules by safe fast+
       next
       assume "a = END i"
       with a0 have "END i \<lless> END i" by simp

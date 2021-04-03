@@ -909,8 +909,6 @@ lemma isets_of_iivls[autoref_rules]:
         le[of e _ f _, OF lv_relI lv_relI]
       apply (auto simp: appr_rel_br br_def lvivl_rel_br set_of_ivl_def lv_rel_def)
       using atLeastAtMost_iff apply blast
-      apply (drule order_trans)
-       apply assumption apply simp
       done
     done
   subgoal for a b c d e f g

@@ -2,7 +2,7 @@
 theory GoedelProof_P2
 imports IHOML
 begin
-nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3,  atoms e = a b c d]
+nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3,  atoms e = a b c d, timeout=60]
 sledgehammer_params[verbose=true]
 (*>*)
   

@@ -41,7 +41,7 @@ lemma ccw_scale23: "ccw 0 a b \<Longrightarrow> r > 0 \<Longrightarrow> ccw 0 (r
 lemma psi_notI: "distinct3 p q r \<Longrightarrow> psi p q r \<Longrightarrow> \<not> psi q p r"
   by (auto simp: algebra_simps psi_def lex_def)
 
-lemma not_lex_eq: "\<not> lex a b \<longleftrightarrow> lex b a \<and> a \<noteq> b"
+lemma not_lex_eq: "\<not> lex a b \<longleftrightarrow> lex b a \<and> b \<noteq> a"
   by (auto simp: algebra_simps lex_def prod_eq_iff)
 
 lemma lex_trans: "lex a b \<Longrightarrow> lex b c \<Longrightarrow> lex a c"
@@ -253,30 +253,16 @@ lemma lexs_trans: "lexs x y \<Longrightarrow> lexs y z \<Longrightarrow> lexs x 
   and lexs_imp_neq: "lexs a b \<Longrightarrow> a \<noteq> b"
   by (auto simp: lexs_def lex_def prod_eq_iff)
 
-declare
-  lexs_irrefl[THEN notE, order add less_reflE: linorder "(=) :: point => point => bool" lex lexs]
-declare lex_refl[order add le_refl: linorder "(=) :: point => point => bool" lex lexs]
-declare lexs_imp_lex[order add less_imp_le: linorder "(=) :: point => point => bool" lex lexs]
-declare
-  not_lexs[THEN iffD2, order add not_lessI: linorder "(=) :: point => point => bool" lex lexs]
-declare not_lex[THEN iffD2, order add not_leI: linorder "(=) :: point => point => bool" lex lexs]
-declare
-  not_lexs[THEN iffD1, order add not_lessD: linorder "(=) :: point => point => bool" lex lexs]
-declare not_lex[THEN iffD1, order add not_leD: linorder "(=) :: point => point => bool" lex lexs]
-declare lex_sym_eqI[order add eqI: linorder "(=) :: point => point => bool" lex lexs]
-declare eq_lex_refl[order add eqD1: linorder "(=) :: point => point => bool" lex lexs]
-declare sym[THEN eq_lex_refl, order add eqD2: linorder "(=) :: point => point => bool" lex lexs]
-declare lexs_trans[order add less_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare lexs_lex_trans[order add less_le_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare lex_lexs_trans[order add le_less_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare lex_trans[order add le_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare lex_neq_trans[order add le_neq_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare neq_lex_trans[order add neq_le_trans: linorder "(=) :: point => point => bool" lex lexs]
-declare lexs_imp_neq[order add less_imp_neq: linorder "(=) :: point => point => bool" lex lexs]
-declare
-  eq_neq_eq_imp_neq[order add eq_neq_eq_imp_neq: linorder "(=) :: point => point => bool" lex lexs]
-declare not_sym[order add not_sym: linorder "(=) :: point => point => bool" lex lexs]
-
+local_setup \<open>
+   HOL_Order_Tac.declare_linorder {
+    ops = {eq = @{term \<open>(=) :: point \<Rightarrow> point \<Rightarrow> bool\<close>}, le = @{term \<open>lex\<close>}, lt = @{term \<open>lexs\<close>}},
+    thms = {trans = @{thm lex_trans}, refl = @{thm lex_refl}, eqD1 = @{thm eq_lex_refl},
+            eqD2 = @{thm eq_lex_refl[OF sym]}, antisym = @{thm lex_sym_eqI}, contr = @{thm notE}},
+    conv_thms = {less_le = @{thm eq_reflection[OF lexs_def]},
+                 nless_le = @{thm eq_reflection[OF not_lexs]},
+                 nle_le = @{thm eq_reflection[OF not_lex_eq]}}
+  }
+\<close>
 
 subsection \<open>Contradictions\<close>
 

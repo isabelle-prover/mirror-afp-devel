@@ -2172,10 +2172,6 @@ lemma reduce_ivl[le, refine_vcg]: "reduce_ivl Y b \<le> SPEC (\<lambda>R. Y \<su
   unfolding reduce_ivl_def
   apply refine_vcg
      apply (auto simp add: scaleR2_def image_def vimage_def plane_of_def )
-     prefer 2
-  subgoal using basic_trans_rules(23) by blast
-    prefer 3
-  subgoal using basic_trans_rules(23) by blast
 proof goal_cases
   case (1 i0 i1 s0 s1 y0 y1)
   from 1 have le: "1 \<le> (y1 \<bullet> b) / (i1 \<bullet> b)"

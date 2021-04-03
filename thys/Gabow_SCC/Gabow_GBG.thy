@@ -2047,7 +2047,8 @@ proof -
       by auto
     moreover from INV 1 have "insert v (set p) \<subseteq> set p \<union> set p'"
       unfolding rec_loop_invar_def
-      apply (cases p, simp)
+      apply (cases p)
+      apply blast
       apply (cases p')
       apply (auto simp: path_simps)
       done

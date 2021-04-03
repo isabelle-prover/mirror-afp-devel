@@ -182,14 +182,17 @@ proof
     by blast 
 
   have "length xs1 < length xs2"
-    using \<open>prefix xs1 xs2\<close> \<open>xs1 \<noteq> xs2\<close> prefix_length_prefix by fastforce     
-  have "xs = (xs1 @ (drop (length xs1) xs))"
-    by (metis (no_types) \<open>(vs @ xs2) @ drop (length xs2) xs = vs @ xs\<close> \<open>prefix xs1 xs2\<close> 
-        append_assoc append_eq_conv_conj prefixE)
-  have "length xs1 < length xs"
-    using \<open>prefix xs1 xs2\<close> \<open>prefix xs2 xs'\<close> \<open>xs = xs1 @ drop (length xs1) xs\<close> \<open>xs1 \<noteq> xs2\<close> 
-          assms(6) leI 
-    by fastforce 
+    using \<open>prefix xs1 xs2\<close> \<open>xs1 \<noteq> xs2\<close> prefix_length_prefix by fastforce
+
+  have prefix_drop: "ys = ys1 @ (drop (length ys1)) ys" if "prefix ys1 ys"
+    for ys ys1 :: "('a \<times> 'b) list"
+    using that by (induction ys1) (auto elim: prefixE)
+  then have "xs = (xs1 @ (drop (length xs1) xs))"
+    using \<open>prefix xs1 xs2\<close> \<open>prefix xs2 xs'\<close> \<open>prefix xs' xs\<close> by simp
+  then have "length xs1 < length xs"
+    using prefix_drop[OF \<open>prefix xs2 xs'\<close>] \<open>prefix xs2 xs'\<close> \<open>prefix xs' xs\<close>
+    using \<open>length xs1 < length xs2\<close>
+    by (auto dest!: prefix_length_le)
   have "length (xs1@(drop (length xs2) xs)) < length xs"
     using \<open>length xs1 < length xs2\<close> \<open>length xs1 < length xs\<close> by auto
 

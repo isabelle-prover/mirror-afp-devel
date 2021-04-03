@@ -298,7 +298,7 @@ proof -
           moreover have "?le (\<langle>\<V> s\<rangle> x) c"
             using cmp c dir unfolding bound_compare_defs by auto
           ultimately show ?thesis
-            using c dir by auto
+            using c dir by (auto simp del: Simplex.bounds_lg)
         qed
         then show ?thesis
           using c by simp
@@ -322,7 +322,7 @@ proof -
           moreover have "?le c (\<langle>\<V> s\<rangle> x)"
             using cmp c dir unfolding bound_compare_defs by auto
           ultimately show ?thesis
-            using c dir by auto
+            using c dir by (auto simp del: Simplex.bounds_lg)
         qed
         then show ?thesis
           using c by simp

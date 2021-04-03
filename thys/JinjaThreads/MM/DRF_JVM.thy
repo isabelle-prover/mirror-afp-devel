@@ -749,7 +749,7 @@ proof(cases i)
     by(rule addr_loc_type.intros)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)
   with hrt adal have "heap_read (shr s) ?a (ACell (nat (sint ?i))) v'" using hconf by(rule heap_read_typeableD)
-  with type bounds Null aok exec_i show ?thesis by(fastforce)
+  with type Null aok exec_i show ?thesis apply auto using bounds by fastforce+
 next
   case [simp]: (Getfield F D)
   let ?a = "the_Addr (hd stk)"

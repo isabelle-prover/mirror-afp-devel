@@ -1100,8 +1100,9 @@ proof -
     next
       case False
       with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames
-        wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds] preh
-      show ?thesis by(fastforce split: if_split_asm)
+        wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds]
+      show ?thesis 
+        by (fastforce simp: preh split: if_split_asm simp del: Listn.lesub_list_impl_same_size)
     qed
   qed
 qed
@@ -1222,9 +1223,11 @@ proof -
           by(auto split: if_split_asm simp del: correct_state_def intro: widen_trans)
       next
         case False
-        with stk' idxI ins no_x heap_ok tconf meth a ha Xel Te \<Phi>_pc frame frames si' preh
+        with stk' idxI ins no_x heap_ok tconf meth a ha Xel Te \<Phi>_pc frame frames si'
           wf_preallocatedD[OF wf, of h ArrayStore]
-        show ?thesis by(fastforce split: if_split_asm)
+        show ?thesis
+          by (fastforce split: if_splits list.splits simp: preh
+              simp del: Listn.lesub_list_impl_same_size)
       qed
     next
       case False
