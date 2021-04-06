@@ -1062,9 +1062,10 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       apply transfer apply transfer
       apply (auto simp add: int_eq_iff nat_take_bit_eq nat_mod_distrib zmod_int)
        apply (auto simp add: zmod_int mod_2_eq_odd)
-       apply (metis (full_types) even_take_bit_eq le_less_trans odd_iff_mod_2_eq_one take_bit_nonnegative zero_neq_numeral zmod_le_nonneg_dividend)
       apply (auto simp add: less_le)
-      apply (simp add: le_less)
+        apply (auto simp add: le_less)
+       apply (metis linorder_neqE_linordered_idom mod_pos_pos_trivial not_take_bit_negative power_0 take_bit_0 take_bit_eq_mod take_bit_nonnegative)
+      apply (metis even_take_bit_eq mod_pos_pos_trivial neq0_conv numeral_eq_Suc power_0 take_bit_eq_mod take_bit_nonnegative zero_less_Suc)
       done
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp

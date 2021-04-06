@@ -850,7 +850,7 @@ next
     by simp
   ultimately show ?case
     using Suc [of \<open>bin div 2\<close>]
-    by simp (simp add: bin_to_bl_aux_alt)
+    by simp (auto simp add: bin_to_bl_aux_alt)
 qed
 
 lemma rbl_succ: "rbl_succ (rev (bin_to_bl n bin)) = rev (bin_to_bl n (bin + 1))"
@@ -858,8 +858,7 @@ lemma rbl_succ: "rbl_succ (rev (bin_to_bl n bin)) = rev (bin_to_bl n (bin + 1))"
   apply (induction n arbitrary: bin)
    apply simp_all
   apply (case_tac bin rule: bin_exhaust)
-  apply simp
-  apply (simp add: bin_to_bl_aux_alt ac_simps)
+   apply (simp_all add: bin_to_bl_aux_alt ac_simps)
   done
 
 lemma rbl_add:
@@ -918,13 +917,12 @@ lemma rbl_mult:
   apply clarsimp
   apply (case_tac bina rule: bin_exhaust)
   apply (case_tac binb rule: bin_exhaust)
-  apply simp
-  apply (simp add: bin_to_bl_aux_alt)
-  apply (simp add: rbbl_Cons rbl_mult_Suc rbl_add algebra_simps)
+  apply (simp_all add: bin_to_bl_aux_alt)
+  apply (simp_all add: rbbl_Cons rbl_mult_Suc rbl_add algebra_simps)
   done
 
 lemma sclem: "size (concat (map (bin_to_bl n) xs)) = length xs * n"
-  by (induct xs) auto
+  by (simp add: length_concat comp_def sum_list_triv)
 
 lemma bin_cat_foldl_lem:
   "foldl (\<lambda>u. bin_cat u n) x xs =

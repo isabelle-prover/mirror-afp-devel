@@ -1423,7 +1423,7 @@ proof -
       using AE_lim_wf_times AE_lim_acc
       apply eventually_elim
       using \<omega> assms
-      apply (auto simp add: trace_in_merge_at indicator_def Bex_def)
+      apply (auto simp add: trace_in_merge_at indicator_eq_1_iff)
       done
     done
   also have "\<dots> = (\<integral>\<^sup>+ \<omega>. \<integral>\<^sup>+\<omega>'. \<integral>\<^sup>+z. of_bool (trace_in {z} t x \<omega> \<and> trace_in {y} t' z \<omega>')

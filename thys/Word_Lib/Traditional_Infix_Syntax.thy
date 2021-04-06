@@ -452,12 +452,16 @@ proof -
        apply (unfold sint_word_ariths)
        apply (subst signed_take_bit_int_eq_self)
          prefer 4
-       apply (subst signed_take_bit_int_eq_self)
-         prefer 7
-       apply (subst signed_take_bit_int_eq_self)
-         prefer 10
+         apply (subst signed_take_bit_int_eq_self)
+           prefer 7
+           apply (subst signed_take_bit_int_eq_self)
+             prefer 10
              apply (subst signed_take_bit_int_eq_self)
-       apply (auto simp add: signed_take_bit_int_eq_self signed_take_bit_eq_take_bit_minus take_bit_Suc_from_most n not_less intro!: *)
+               apply (auto simp add: signed_take_bit_int_eq_self signed_take_bit_eq_take_bit_minus take_bit_Suc_from_most n not_less intro!: *)
+       apply (smt (z3) take_bit_nonnegative)
+      apply (smt (z3) take_bit_int_less_exp)
+     apply (smt (z3) take_bit_nonnegative)
+    apply (smt (z3) take_bit_int_less_exp)
     done
   then show ?thesis
     apply (simp only: One_nat_def word_size shiftr_word_eq drop_bit_eq_zero_iff_not_bit_last bit_and_iff bit_xor_iff)

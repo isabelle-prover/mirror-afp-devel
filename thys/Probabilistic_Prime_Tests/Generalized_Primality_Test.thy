@@ -95,8 +95,8 @@ lemma composite_aux:
   assumes "\<not>prime n"
   shows   "measure_pmf.expectation (primality_test P n) of_bool < q"
   unfolding primality_test_def using assms composite_witness_bound q_pos
-  by (auto simp: pmf_expectation_bind[where A = "{2..< n}"] sum_of_bool_eq_card field_simps
-           simp flip: sum_divide_distrib)
+  by (clarsimp simp add: pmf_expectation_bind[where A = "{2..< n}"] sum_of_bool_eq_card field_simps Int_def
+    simp flip: sum_divide_distrib)
 
 theorem composite:
   assumes "\<not>prime n"

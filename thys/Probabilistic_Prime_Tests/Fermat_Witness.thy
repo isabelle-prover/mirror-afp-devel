@@ -333,7 +333,7 @@ proof -
   have "finite ker" by (auto simp: ker_def kernel_def)
   moreover have "1 \<in> ker" using \<open>n > 1\<close> by (auto simp: ker_def kernel_def h_def)
   ultimately have [simp]: "card ker > 0"
-    by (subst card_gt_0_iff) (auto simp: ker_def kernel_def h_def)
+    by (subst card_gt_0_iff) auto
 
   have totatives_eq: "totatives n = {k\<in>{1..<n}. coprime k n}"
     using totatives_less[of _ n] \<open>n > 1\<close> by (force simp: totatives_def)
