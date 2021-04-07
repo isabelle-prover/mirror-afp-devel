@@ -51,8 +51,8 @@ shows "emeasure (lborel_f (Suc n)) A = \<integral>\<^sup>+ y. emeasure (lborel_f
 proof -
   {
     fix x y assume "x\<in>space (lborel_f n)"
-    then have "(indicator A) (x(n := y)) = (indicator {x\<in>space (lborel_f n). x(n := y) \<in> A}) x" using indicator_def
-      by (metis (no_types, lifting) mem_Collect_eq)
+    then have "(indicator A) (x(n := y)) = (indicator {x\<in>space (lborel_f n). x(n := y) \<in> A}) x"
+      by (simp add: indicator_def)
   }
   then show ?thesis
     unfolding nn_integral_indicator[OF assms(1), symmetric] nn_integral_indicator[OF assms(2), symmetric]

@@ -389,7 +389,7 @@ next
   proof -
     let ?w = "\<lambda>y. if (x, y) \<in> \<^bold>E then weight \<Gamma> y else 0"
     have sum_w: "(\<Sum>\<^sup>+ y. if edge \<Gamma> x y then weight \<Gamma> y else 0) = (\<Sum>\<^sup>+ y \<in> \<^bold>E `` {x}. weight \<Gamma> y)"
-      by(simp add: nn_integral_count_space_indicator indicator_def if_distrib cong: if_cong)
+      by(simp add: nn_integral_count_space_indicator indicator_def of_bool_def if_distrib cong: if_cong)
     have "(\<lambda>n. d_OUT (h (k n)) x) \<longlonglongrightarrow> d_OUT H x" unfolding d_OUT_def
       by(rule nn_integral_dominated_convergence[where w="?w"])(use bounded_B x in \<open>simp_all add: AE_count_space H h_outside_E h_le_weight2 sum_w\<close>)
     moreover define n_x where "n_x = to_nat_on (A \<Gamma>) x"

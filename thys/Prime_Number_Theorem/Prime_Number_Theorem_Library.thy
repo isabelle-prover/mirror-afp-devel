@@ -1156,7 +1156,7 @@ proof -
     by (auto dest: completion_ex_borel_measurable_real)
 
   from I have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV"
-    using nonneg by (simp add: indicator_def if_distrib[of "\<lambda>x. x * f y" for y] cong: if_cong)
+    using nonneg by (simp add: indicator_def of_bool_def if_distrib[of "\<lambda>x. x * f y" for y] cong: if_cong)
   also have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV \<longleftrightarrow> ((\<lambda>x. abs (f' x)) has_integral I) UNIV"
     using eq by (intro has_integral_AE) auto
   finally have "integral\<^sup>N lborel (\<lambda>x. abs (f' x)) = I"

@@ -228,7 +228,7 @@ proof -
   have "set_lebesgue_integral M A f = enn2real (set_nn_integral M A f)"
     unfolding set_lebesgue_integral_def using assms(1,4) * eq
     by (subst integral_eq_nn_integral)
-       (auto intro!: nn_integral_cong simp: indicator_def set_integrable_def mult_ac)
+       (auto intro!: nn_integral_cong simp: indicator_def of_bool_def set_integrable_def mult_ac)
   also have "\<dots> = x" using assms by simp
   finally show "set_lebesgue_integral M A f = x" .
 qed

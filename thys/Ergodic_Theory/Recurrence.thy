@@ -1846,7 +1846,7 @@ proof -
   also have "... = (\<integral>\<^sup>+y \<in> V \<union> U. e y \<partial>count_space UNIV)"
     by (rule nn_integral_disjoint_pair_countspace[symmetric], auto simp add: U_def V_def)
   also have "... = (\<integral>\<^sup>+(i, n). e (i, n) * indicator {..n} i \<partial>count_space UNIV)"
-    by (rule nn_integral_cong, auto simp add: indicator_def V_def U_def pos, meson)
+    by (rule nn_integral_cong, auto simp add: indicator_def of_bool_def V_def U_def pos, meson)
   also have "... = (\<integral>\<^sup>+n. (\<integral>\<^sup>+i. e (i, n) * indicator {..n} i \<partial>count_space UNIV)\<partial>count_space UNIV)"
     using nn_integral_snd_count_space[of "\<lambda>(i,n). e(i,n) * indicator {..n} i"] by auto
   also have "... = (\<Sum>n. (\<Sum>i. e (i, n) * indicator {..n} i))"

@@ -142,7 +142,7 @@ next
     using add_scale_img assms by auto
 qed
 
-definition analytically_valid:: "'a::euclidean_space set \<Rightarrow> ('a \<Rightarrow> 'b::{euclidean_space,times,one}) \<Rightarrow> 'a \<Rightarrow> bool" where
+definition analytically_valid:: "'a::euclidean_space set \<Rightarrow> ('a \<Rightarrow> 'b::{euclidean_space,times,zero_neq_one}) \<Rightarrow> 'a \<Rightarrow> bool" where
   "analytically_valid s F i \<equiv>
        (\<forall>a \<in> s. partially_vector_differentiable F i a) \<and>
        continuous_on s F \<and> \<comment> \<open>TODO: should we replace this with saying that \<open>F\<close> is partially diffrerentiable on \<open>Dy\<close>,\<close>
