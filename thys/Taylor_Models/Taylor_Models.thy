@@ -293,7 +293,7 @@ next
 next
   case (Mul p1 p2)
   then show ?case using mem
-    by (simp add: round_interval_mono mult_float_interval_mono)
+    by (simp add: round_interval_mono mult_float_interval_mono')
 next
   case (Neg p)
   then show ?case using mem
@@ -305,7 +305,7 @@ next
 next
   case (CN p1 x2a p2)
   then show ?case using mem
-    by (simp add: round_interval_mono mult_float_interval_mono
+    by (simp add: round_interval_mono mult_float_interval_mono'
         set_of_add_inc set_of_sub_inc)
 qed
 
