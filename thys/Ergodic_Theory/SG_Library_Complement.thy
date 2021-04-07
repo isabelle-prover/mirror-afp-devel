@@ -607,9 +607,6 @@ lemma sum_indicator_eq_card2:
 using sum_mult_indicator [OF assms, of "\<lambda>y. 1::nat" P "\<lambda>y. x"]
 unfolding card_eq_sum by auto
 
-subclass (in zero_less_one) zero_neq_one
-  by standard (use zero_less_one in blast)
-
 lemma disjoint_family_indicator_le_1:
   assumes "disjoint_family_on A I"
   shows "(\<Sum> i\<in> I. indicator (A i) x) \<le> (1::'a:: {comm_monoid_add,zero_less_one})"
