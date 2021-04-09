@@ -185,7 +185,9 @@ function FindPreHNF :: "bool \<Rightarrow> int \<Rightarrow> int mat \<Rightarro
         (A_UL,A_UR,A_DL,A_DR) = split_block (Reduce 0 non_zero_positions D (make_first_column_positive A')) 1 1; 
         sub_PreHNF = FindPreHNF abs_flag D A_DR in       
         four_block_mat A_UL A_UR A_DL sub_PreHNF)"                 
-  by auto termination 
+  by pat_completeness auto 
+
+termination
 proof (relation "Wellfounded.measure (\<lambda>(abs_flag,D,A). dim_col A)")
   show "wf (Wellfounded.measure (\<lambda>(abs_flag,D, A). dim_col A))" by auto
   fix abs_flag D A m n nz A' R xd A'_UL y A'_UR ya A'_DL A'_DR
