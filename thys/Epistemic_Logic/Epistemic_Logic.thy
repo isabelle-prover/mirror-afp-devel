@@ -41,7 +41,7 @@ primrec semantics :: \<open>('i, 's) kripke \<Rightarrow> 's \<Rightarrow> 'i fm
 | \<open>(M, s \<Turnstile> (p \<^bold>\<longrightarrow> q)) = ((M, s \<Turnstile> p) \<longrightarrow> (M, s \<Turnstile> q))\<close>
 | \<open>(M, s \<Turnstile> K i p) = (\<forall>t \<in> \<K> M i s. M, t \<Turnstile> p)\<close>
 
-section \<open>Utility\<close>
+section \<open>S5 Axioms\<close>
 
 abbreviation reflexive :: \<open>('i, 's) kripke \<Rightarrow> bool\<close> where
   \<open>reflexive M \<equiv> \<forall>i s. s \<in> \<K> M i s\<close>
@@ -52,13 +52,11 @@ abbreviation symmetric :: \<open>('i, 's) kripke \<Rightarrow> bool\<close> wher
 abbreviation transitive :: \<open>('i, 's) kripke \<Rightarrow> bool\<close> where
   \<open>transitive M \<equiv> \<forall>i s t u. t \<in> \<K> M i s \<and> u \<in> \<K> M i t \<longrightarrow> u \<in> \<K> M i s\<close>
 
-lemma Imp_intro: \<open>(M, s \<Turnstile> p \<Longrightarrow> M, s \<Turnstile> q) \<Longrightarrow> M, s \<Turnstile> Imp p q\<close>
+lemma Imp_intro [intro]: \<open>(M, s \<Turnstile> p \<Longrightarrow> M, s \<Turnstile> q) \<Longrightarrow> M, s \<Turnstile> Imp p q\<close>
   by simp
 
-section \<open>S5 Axioms\<close>
-
 theorem distribution: \<open>M, s \<Turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q)\<close>
-proof (rule Imp_intro)
+proof
   assume \<open>M, s \<Turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q))\<close>
   then have \<open>M, s \<Turnstile> K i p\<close> \<open>M, s \<Turnstile> K i (p \<^bold>\<longrightarrow> q)\<close>
     by simp_all
@@ -83,7 +81,7 @@ qed
 theorem truth:
   assumes \<open>reflexive M\<close>
   shows \<open>M, s \<Turnstile> (K i p \<^bold>\<longrightarrow> p)\<close>
-proof (rule Imp_intro)
+proof
   assume \<open>M, s \<Turnstile> K i p\<close>
   then have \<open>\<forall>t \<in> \<K> M i s. M, t \<Turnstile> p\<close>
     by simp
@@ -96,7 +94,7 @@ qed
 theorem pos_introspection:
   assumes \<open>transitive M\<close>
   shows \<open>M, s \<Turnstile> (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
-proof (rule Imp_intro)
+proof
   assume \<open>M,s \<Turnstile> K i p\<close>
   then have \<open>\<forall>t \<in> \<K> M i s. M, t \<Turnstile> p\<close>
     by simp
@@ -111,7 +109,7 @@ qed
 theorem neg_introspection:
   assumes \<open>symmetric M\<close> \<open>transitive M\<close>
   shows \<open>M, s \<Turnstile> (\<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p))\<close>
-proof (rule Imp_intro)
+proof
   assume \<open>M,s \<Turnstile> \<^bold>\<not> (K i p)\<close>
   then obtain u where \<open>u \<in> \<K> M i s\<close> \<open>\<not> (M, u \<Turnstile> p)\<close>
     by auto
@@ -146,10 +144,11 @@ section \<open>Soundness\<close>
 lemma eval_semantics: \<open>eval (pi s) (\<lambda>q. Kripke pi r, s \<Turnstile> q) p = (Kripke pi r, s \<Turnstile> p)\<close>
   by (induct p) simp_all
 
-theorem tautology: \<open>tautology p \<Longrightarrow> M, s \<Turnstile> p\<close>
+lemma tautology:
+  assumes \<open>tautology p\<close>
+  shows \<open>M, s \<Turnstile> p\<close>
 proof -
-  assume \<open>tautology p\<close>
-  then have \<open>eval (g s) (\<lambda>q. Kripke g r, s \<Turnstile> q) p\<close> for g r
+  from assms have \<open>eval (g s) (\<lambda>q. Kripke g r, s \<Turnstile> q) p\<close> for g r
     by simp
   then have \<open>Kripke g r, s \<Turnstile> p\<close> for g r
     using eval_semantics by metis
@@ -161,13 +160,6 @@ theorem soundness: \<open>\<turnstile> p \<Longrightarrow> M, s \<Turnstile> p\<
   by (induct p arbitrary: s rule: SystemK.induct) (simp_all add: tautology)
 
 section \<open>Derived rules\<close>
-
-lemma K_FFI: \<open>\<turnstile> (p \<^bold>\<longrightarrow> (\<^bold>\<not> p) \<^bold>\<longrightarrow> \<^bold>\<bottom>)\<close>
-  by (simp add: A1)
-
-primrec conjoin :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> where
-  \<open>conjoin [] q = q\<close>
-| \<open>conjoin (p # ps) q = (p \<^bold>\<and> conjoin ps q)\<close>
 
 primrec imply :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> where
   \<open>imply [] q = q\<close>
@@ -185,31 +177,9 @@ lemma K_imply_Cons:
   assumes \<open>\<turnstile> imply ps q\<close>
   shows \<open>\<turnstile> imply (p # ps) q\<close>
 proof -
-  have \<open>tautology (imply ps q \<^bold>\<longrightarrow> imply (p # ps) q)\<close>
-    by simp
-  then have \<open>\<turnstile> (imply ps q \<^bold>\<longrightarrow> imply (p # ps) q)\<close>
-    using A1 by blast
-  then show ?thesis
-    using assms R1 by blast
-qed
-
-lemma K_imply_member: \<open>p \<in> set ps \<Longrightarrow> \<turnstile> imply ps p\<close>
-proof (induct ps)
-  case Nil
-  then show ?case
-    by simp
-next
-  case (Cons a ps)
-  then show ?case
-  proof (cases \<open>a = p\<close>)
-    case True
-    then show ?thesis
-      using Cons K_imply_head by blast
-  next
-    case False
-    then show ?thesis
-      using Cons K_imply_Cons by simp
-  qed
+  have \<open>\<turnstile> (imply ps q \<^bold>\<longrightarrow> imply (p # ps) q)\<close>
+    by (simp add: A1)
+  with R1 assms show ?thesis .
 qed
 
 lemma K_right_mp:
@@ -218,8 +188,7 @@ lemma K_right_mp:
 proof -
   have \<open>tautology (imply ps p \<^bold>\<longrightarrow> imply ps (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> imply ps q)\<close>
     by (induct ps) simp_all
-  then have \<open>\<turnstile> (imply ps p \<^bold>\<longrightarrow> imply ps (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> imply ps q)\<close>
-    using A1 by blast
+  with A1 have \<open>\<turnstile> (imply ps p \<^bold>\<longrightarrow> imply ps (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> imply ps q)\<close> .
   then show ?thesis
     using assms R1 by blast
 qed
@@ -253,24 +222,12 @@ proof (rule ccontr)
   qed
 qed
 
-lemma tautology_imply: \<open>tautology q \<Longrightarrow> tautology (imply ps q)\<close>
-  by (induct ps) simp_all
-
-theorem K_imply_weaken:
+lemma K_imply_weaken:
   assumes \<open>\<turnstile> imply ps q\<close> \<open>set ps \<subseteq> set ps'\<close>
   shows \<open>\<turnstile> imply ps' q\<close>
 proof -
   have \<open>tautology (imply ps q \<^bold>\<longrightarrow> imply ps' q)\<close>
-    using \<open>set ps \<subseteq> set ps'\<close>
-  proof (induct ps arbitrary: ps')
-    case Nil
-    then show ?case
-      by (induct ps') simp_all
-  next
-    case (Cons a G)
-    then show ?case
-      using tautology_imply_superset by blast
-  qed
+    using \<open>set ps \<subseteq> set ps'\<close> tautology_imply_superset by blast
   then have \<open>\<turnstile> (imply ps q \<^bold>\<longrightarrow> imply ps' q)\<close>
     using A1 by blast
   then show ?thesis
@@ -294,14 +251,12 @@ proof -
     by simp
 qed
 
-lemma cut: \<open>\<turnstile> imply G p \<Longrightarrow> \<turnstile> imply (p # G) q \<Longrightarrow> \<turnstile> imply G q\<close>
-  using K_ImpI K_right_mp by blast
-
-lemma K_Boole: \<open>\<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom> \<Longrightarrow> \<turnstile> imply G p\<close>
+lemma K_Boole:
+  assumes \<open>\<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  shows \<open>\<turnstile> imply G p\<close>
 proof -
-  assume \<open>\<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
-  then have \<open>\<turnstile> imply G (\<^bold>\<not> \<^bold>\<not> p)\<close>
-    using K_ImpI by blast
+  have \<open>\<turnstile> imply G (\<^bold>\<not> \<^bold>\<not> p)\<close>
+    using assms K_ImpI by blast
   moreover have \<open>tautology (imply G (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
     by (induct G) simp_all
   then have \<open>\<turnstile> (imply G (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
@@ -322,16 +277,24 @@ proof -
     using assms R1 by blast
 qed
 
-lemma K_conjoin_imply:
-  assumes \<open>\<turnstile> (\<^bold>\<not> conjoin G (\<^bold>\<not> p))\<close>
-  shows \<open>\<turnstile> imply G p\<close>
+lemma K_mp: \<open>\<turnstile> imply (p # (p \<^bold>\<longrightarrow> q) # V) q\<close>
+  by (meson K_imply_head K_imply_weaken K_right_mp set_subset_Cons)
+
+lemma K_swap:
+  assumes \<open>\<turnstile> imply (p # q # G) r\<close>
+  shows \<open>\<turnstile> imply (q # p # G) r\<close>
+  using assms K_ImpI by (metis imply.simps(1-2))
+
+lemma K_DisL:
+  assumes \<open>\<turnstile> imply (p # ps) q\<close> \<open>\<turnstile> imply (p' # ps) q\<close>
+  shows \<open>\<turnstile> imply ((p \<^bold>\<or> p') # ps) q\<close>
 proof -
-  have \<open>tautology (\<^bold>\<not> conjoin G (\<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
-    by (induct G) simp_all
-  then have \<open>\<turnstile> (\<^bold>\<not> conjoin G (\<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
-    using A1 by blast
-  then show ?thesis
-    using assms R1 by blast
+  have \<open>\<turnstile> imply (p # (p \<^bold>\<or> p') # ps) q\<close> \<open>\<turnstile> imply (p' # (p \<^bold>\<or> p') # ps) q\<close>
+    using assms K_swap K_imply_Cons by blast+
+  moreover have \<open>\<turnstile> imply ((p \<^bold>\<or> p') # ps) (p \<^bold>\<or> p')\<close>
+    using K_imply_head by blast
+  ultimately show ?thesis
+    using K_DisE by blast
 qed
 
 lemma K_distrib_K_imp:
@@ -367,991 +330,251 @@ proof -
     using assms R1 by blast
 qed
 
-section \<open>Consistency\<close>
+section \<open>Completeness\<close>
 
-definition consistency :: \<open>'i fm set set \<Rightarrow> bool\<close> where
-  \<open>consistency C \<equiv> \<forall>S \<in> C.
-    (\<forall>p. \<not> (Pro p \<in> S \<and> (\<^bold>\<not> Pro p) \<in> S)) \<and>
-    \<^bold>\<bottom> \<notin> S \<and>
-    (\<forall>Z. (\<^bold>\<not> (\<^bold>\<not> Z)) \<in> S \<longrightarrow> S \<union> {Z} \<in> C) \<and>
-    (\<forall>A B. (A \<^bold>\<and> B) \<in> S \<longrightarrow> S \<union> {A, B} \<in> C) \<and>
-    (\<forall>A B. (\<^bold>\<not> (A \<^bold>\<or> B)) \<in> S \<longrightarrow> S \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> C) \<and>
-    (\<forall>A B. (A \<^bold>\<or> B) \<in> S \<longrightarrow> S \<union> {A} \<in> C \<or> S \<union> {B} \<in> C) \<and>
-    (\<forall>A B. (\<^bold>\<not> (A \<^bold>\<and> B)) \<in> S \<longrightarrow> S \<union> {\<^bold>\<not> A} \<in> C \<or> S \<union> {\<^bold>\<not> B} \<in> C) \<and>
-    (\<forall>A B. (A \<^bold>\<longrightarrow> B) \<in> S \<longrightarrow> S \<union> {\<^bold>\<not> A} \<in> C \<or> S \<union> {B} \<in> C) \<and>
-    (\<forall>A B. (\<^bold>\<not> (A \<^bold>\<longrightarrow> B)) \<in> S \<longrightarrow> S \<union> {A, \<^bold>\<not> B} \<in> C) \<and>
-    (\<forall>A. tautology A \<longrightarrow> S \<union> {A} \<in> C) \<and>
-    (\<forall>A i. \<not> (K i A \<in> S \<and> (\<^bold>\<not> K i A) \<in> S))\<close>
+subsection \<open>Consistent sets\<close>
 
-subsection \<open>Closure under subsets\<close>
+definition consistent :: \<open>'i fm set \<Rightarrow> bool\<close> where
+  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> \<turnstile> imply S' \<^bold>\<bottom>\<close>
 
-definition close :: \<open>'i fm set set \<Rightarrow> 'i fm set set\<close> where
-  \<open>close C \<equiv> {S. \<exists>S' \<in> C. S \<subseteq> S'}\<close>
-
-definition subset_closed :: \<open>'a set set \<Rightarrow> bool\<close> where
-  \<open>subset_closed C \<equiv> (\<forall>S' \<in> C. \<forall>S. S \<subseteq> S' \<longrightarrow> S \<in> C)\<close>
-
-lemma subset_in_close:
-  assumes \<open>S' \<subseteq> S\<close> \<open>S \<union> x \<in> C\<close>
-  shows \<open>S' \<union> x \<in> close C\<close>
+lemma inconsistent_subset:
+  assumes \<open>consistent V\<close> \<open>\<not> consistent ({p} \<union> V)\<close>
+  obtains S where \<open>set S \<subseteq> V\<close> \<open>\<turnstile> imply (p # S) \<^bold>\<bottom>\<close>
 proof -
-  have \<open>S \<union> x \<in> close C\<close>
-    unfolding close_def using \<open>S \<union> x \<in> C\<close> by blast
+  obtain V' where V': \<open>set V' \<subseteq> ({p} \<union> V)\<close> \<open>p \<in> set V'\<close> \<open>\<turnstile> imply V' \<^bold>\<bottom>\<close>
+    using assms unfolding consistent_def by blast
+  then have *: \<open>\<turnstile> imply (p # V') \<^bold>\<bottom>\<close>
+    using K_imply_Cons by blast
+
+  let ?S = \<open>removeAll p V'\<close>
+  have \<open>set (p # V') \<subseteq> set (p # ?S)\<close>
+    by auto
+  then have \<open>\<turnstile> imply (p # ?S) \<^bold>\<bottom>\<close>
+    using * K_imply_weaken by blast
+  moreover have \<open>set ?S \<subseteq> V\<close>
+    using V'(1) by (metis Diff_subset_conv set_removeAll)
+  ultimately show ?thesis
+    using that by blast
+qed
+
+lemma consistent_consequent:
+  assumes \<open>consistent V\<close> \<open>p \<in> V\<close> \<open>\<turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  shows \<open>consistent ({q} \<union> V)\<close>
+proof -
+  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> \<turnstile> imply (p # V') \<^bold>\<bottom>\<close>
+    using \<open>consistent V\<close> \<open>p \<in> V\<close> unfolding consistent_def
+    by (metis insert_subset list.simps(15))
+  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> \<turnstile> imply (q # V') \<^bold>\<bottom>\<close>
+    using \<open>\<turnstile> (p \<^bold>\<longrightarrow> q)\<close> K_imply_head K_right_mp by (metis imply.simps(1-2))
   then show ?thesis
-    unfolding close_def using \<open>S' \<subseteq> S\<close> by blast
+    using \<open>consistent V\<close> inconsistent_subset by metis
 qed
 
-theorem close_consistency:
-  fixes C :: \<open>'i fm set set\<close>
-  assumes \<open>consistency C\<close>
-  shows \<open>consistency (close C)\<close>
-  unfolding consistency_def
-proof (intro ballI allI impI conjI)
-  fix S' :: \<open>'i fm set\<close>
-  assume \<open>S' \<in> close C\<close>
-  then obtain S where \<open>S \<in> C\<close> \<open>S' \<subseteq> S\<close>
-    unfolding close_def by blast
+lemma consistent_consequent':
+  assumes \<open>consistent V\<close> \<open>p \<in> V\<close> \<open>tautology (p \<^bold>\<longrightarrow> q)\<close>
+  shows \<open>consistent ({q} \<union> V)\<close>
+  using assms consistent_consequent A1 by blast
 
-  { fix p
-    have \<open>\<not> (Pro p \<in> S \<and> (\<^bold>\<not> Pro p) \<in> S)\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>\<not> (Pro p \<in> S' \<and> (\<^bold>\<not> Pro p) \<in> S')\<close>
-      using \<open>S' \<subseteq> S\<close> by blast }
+lemma consistent_disjuncts:
+  assumes \<open>consistent V\<close> \<open>(p \<^bold>\<or> q) \<in> V\<close>
+  shows \<open>consistent ({p} \<union> V) \<or> consistent ({q} \<union> V)\<close>
+proof (rule ccontr)
+  assume \<open>\<not> ?thesis\<close>
+  then have \<open>\<not> consistent ({p} \<union> V)\<close> \<open>\<not> consistent ({q} \<union> V)\<close>
+    by blast+
 
-  { have \<open>\<^bold>\<bottom> \<notin> S\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by blast
-    then show \<open>\<^bold>\<bottom> \<notin> S'\<close>
-      using \<open>S' \<subseteq> S\<close> by blast }
+  then obtain S' T' where
+    S': \<open>set S' \<subseteq> V\<close> \<open>\<turnstile> imply (p # S') \<^bold>\<bottom>\<close> and
+    T': \<open>set T' \<subseteq> V\<close> \<open>\<turnstile> imply (q # T') \<^bold>\<bottom>\<close>
+    using \<open>consistent V\<close> inconsistent_subset by metis
 
-  { fix Z
-    assume \<open>(\<^bold>\<not> (\<^bold>\<not> Z)) \<in> S'\<close>
-    then have \<open>(\<^bold>\<not> (\<^bold>\<not> Z)) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {Z} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {Z} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<and> B) \<in> S'\<close>
-    then have \<open>(A \<^bold>\<and> B) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {A, B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {A, B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<or> B)) \<in> S'\<close>
-    then have \<open>(\<^bold>\<not> (A \<^bold>\<or> B)) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<longrightarrow> B)) \<in> S'\<close>
-    then have \<open>(\<^bold>\<not> (A \<^bold>\<longrightarrow> B)) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {A, \<^bold>\<not> B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by metis
-    then show \<open>S' \<union> {A, \<^bold>\<not> B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<or> B) \<in> S'\<close>
-    then have \<open>(A \<^bold>\<or> B) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {A} \<in> C \<or> S \<union> {B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {A} \<in> close C \<or> S' \<union> {B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<and> B)) \<in> S'\<close>
-    then have \<open>(\<^bold>\<not> (A \<^bold>\<and> B)) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {\<^bold>\<not> A} \<in> C \<or> S \<union> {\<^bold>\<not> B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {\<^bold>\<not> A} \<in> close C \<or> S' \<union> {\<^bold>\<not> B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<longrightarrow> B) \<in> S'\<close>
-    then have \<open>(A \<^bold>\<longrightarrow> B) \<in> S\<close>
-      using \<open>S' \<subseteq> S\<close> by blast
-    then have \<open>S \<union> {\<^bold>\<not> A} \<in> C \<or> S \<union> {B} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {\<^bold>\<not> A} \<in> close C \<or> S' \<union> {B} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A :: \<open>'i fm\<close>
-    assume \<open>tautology A\<close>
-    then have \<open>S \<union> {A} \<in> C\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>S' \<union> {A} \<in> close C\<close>
-      using \<open>S' \<subseteq> S\<close> subset_in_close by blast }
-
-  { fix A i
-    have \<open>\<not> (K i A \<in> S \<and> (\<^bold>\<not> K i A) \<in> S)\<close>
-      using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>\<not> (K i A \<in> S' \<and> (\<^bold>\<not> K i A) \<in> S')\<close>
-      using \<open>S' \<subseteq> S\<close> by blast }
-
+  from S' have p: \<open>\<turnstile> imply (p # S' @ T') \<^bold>\<bottom>\<close>
+    by (metis K_imply_weaken Un_upper1 append_Cons set_append)
+  moreover from T' have q: \<open>\<turnstile> imply (q # S' @ T') \<^bold>\<bottom>\<close>
+    by (metis K_imply_head K_right_mp R1 imply.simps(2) imply_append)
+  ultimately have \<open>\<turnstile> imply ((p \<^bold>\<or> q) # S' @ T') \<^bold>\<bottom>\<close>
+    using K_DisL by blast
+  then have \<open>\<turnstile> imply (S' @ T') \<^bold>\<bottom>\<close>
+    using S'(1) T'(1) p q \<open>consistent V\<close> \<open>(p \<^bold>\<or> q) \<in> V\<close> unfolding consistent_def
+    by (metis Un_subset_iff insert_subset list.simps(15) set_append)
+  moreover have \<open>set (S' @ T') \<subseteq> V\<close>
+    by (simp add: S'(1) T'(1))
+  ultimately show False
+    using \<open>consistent V\<close> unfolding consistent_def by blast
 qed
 
-theorem close_closed: \<open>subset_closed (close C)\<close>
-  unfolding close_def subset_closed_def by blast
-
-theorem close_subset: \<open>C \<subseteq> close C\<close>
-  unfolding close_def by blast
-
-subsection \<open>Finite character\<close>
-
-definition finite_char :: \<open>'a set set \<Rightarrow> bool\<close> where
-  \<open>finite_char C \<equiv> (\<forall>S. S \<in> C = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C))\<close>
-
-definition mk_finite_char :: \<open>'a set set \<Rightarrow> 'a set set\<close> where
-  \<open>mk_finite_char C \<equiv> {S. \<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C}\<close>
-
-theorem finite_char: \<open>finite_char (mk_finite_char C)\<close>
-  unfolding finite_char_def mk_finite_char_def by blast
-
-theorem finite_char_closed: \<open>finite_char C \<Longrightarrow> subset_closed C\<close>
-  unfolding finite_char_def subset_closed_def
-proof (intro ballI allI impI)
-  fix S S'
-  assume *: \<open>\<forall>S. (S \<in> C) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C)\<close>
-    and \<open>S' \<in> C\<close> \<open>S \<subseteq> S'\<close>
-  then have \<open>\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C\<close>
+lemma exists_finite_inconsistent:
+  assumes \<open>\<not> consistent ({\<^bold>\<not> p} \<union> V)\<close>
+  obtains W where \<open>{\<^bold>\<not> p} \<union> W \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>\<not> consistent ({\<^bold>\<not> p} \<union> W)\<close>
+proof -
+  obtain W' where W': \<open>set W' \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>\<turnstile> imply W' \<^bold>\<bottom>\<close>
+    using assms unfolding consistent_def by blast
+  let ?S = \<open>removeAll (\<^bold>\<not> p) W'\<close>
+  have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> set ?S)\<close>
+    unfolding consistent_def using W'(2) by auto
+  moreover have \<open>finite (set ?S)\<close>
     by blast
-  then show \<open>S \<in> C\<close>
-    using * by blast
+  moreover have \<open>{\<^bold>\<not> p} \<union> set ?S \<subseteq> {\<^bold>\<not> p} \<union> V\<close>
+    using W'(1) by auto
+  moreover have \<open>(\<^bold>\<not> p) \<notin> set ?S\<close>
+    by simp
+  ultimately show ?thesis
+    by (meson that)
 qed
 
-theorem finite_char_subset: \<open>subset_closed C \<Longrightarrow> C \<subseteq> mk_finite_char C\<close>
-  unfolding mk_finite_char_def subset_closed_def by blast
+lemma inconsistent_imply:
+  assumes \<open>\<not> consistent ({\<^bold>\<not> p} \<union> set W)\<close>
+  shows \<open>\<turnstile> imply W p\<close>
+  using assms K_Boole K_imply_weaken unfolding consistent_def
+  by (metis insert_is_Un list.simps(15))
 
-theorem finite_consistency:
-  fixes C :: \<open>'i fm set set\<close>
-  assumes \<open>consistency C\<close> \<open>subset_closed C\<close>
-  shows \<open>consistency (mk_finite_char C)\<close>
-  unfolding consistency_def
-proof (intro ballI allI impI conjI)
-  fix S
-  assume \<open>S \<in> mk_finite_char C\<close>
-  then have finc: \<open>\<forall>S' \<subseteq> S. finite S' \<longrightarrow> S' \<in> C\<close>
-    unfolding mk_finite_char_def by blast
+subsection \<open>Maximal consistent sets\<close>
 
-  have \<open>\<forall>S' \<in> C. \<forall>S \<subseteq> S'. S \<in> C\<close>
-    using \<open>subset_closed C\<close> unfolding subset_closed_def by blast
-  then have sc: \<open>\<forall>S' x. S' \<union> x \<in> C \<longrightarrow> (\<forall>S \<subseteq> S' \<union> x. S \<in> C)\<close>
-    by blast
+definition maximal :: \<open>'i fm set \<Rightarrow> bool\<close> where
+  \<open>maximal S \<equiv> \<forall>p. p \<notin> S \<longrightarrow> \<not> consistent ({p} \<union> S)\<close>
 
-  { fix i
-    show \<open>\<not> (Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S)\<close>
-    proof
-      assume \<open>Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S\<close>
-      then have \<open>{Pro i, (\<^bold>\<not> Pro i)} \<in> C\<close>
-        using finc by simp
-      then show False
-        using \<open>consistency C\<close> unfolding consistency_def by fast
-    qed }
+theorem K_deriv_in_maximal:
+  assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>\<turnstile> p\<close>
+  shows \<open>p \<in> V\<close>
+  using assms R1 inconsistent_subset unfolding consistent_def maximal_def
+  by (metis imply.simps(2))
 
-  show \<open>\<^bold>\<bottom> \<notin> S\<close>
-  proof
-    assume \<open>\<^bold>\<bottom> \<in> S\<close>
-    then have \<open>{\<^bold>\<bottom>} \<in> C\<close>
-      using finc by simp
-    then show False
-      using \<open>consistency C\<close> unfolding consistency_def by fast
-  qed
-
-  { fix Z
-    assume *: \<open>(\<^bold>\<not> \<^bold>\<not> Z) \<in> S\<close>
-    show \<open>S \<union> {Z} \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def
-    proof (intro allI impI CollectI)
-      fix S'
-      let ?S' = \<open>S' - {Z} \<union> {\<^bold>\<not> \<^bold>\<not> Z}\<close>
-
-      assume \<open>S' \<subseteq> S \<union> {Z}\<close> \<open>finite S'\<close>
-      then have \<open>?S' \<subseteq> S\<close>
-        using * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite S'\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {Z} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then show \<open>S' \<in> C\<close>
-        using sc by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(A \<^bold>\<and> B) \<in> S\<close>
-    show \<open>S \<union> {A, B} \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def
-    proof (intro allI impI CollectI)
-      fix S'
-      let ?S' = \<open>S' - {A, B} \<union> {A \<^bold>\<and> B}\<close>
-
-      assume \<open>S' \<subseteq> S \<union> {A, B}\<close> \<open>finite S'\<close>
-      then have \<open>?S' \<subseteq> S\<close>
-        using * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite S'\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {A, B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then show \<open>S' \<in> C\<close>
-        using sc by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(\<^bold>\<not> (A \<^bold>\<or> B)) \<in> S\<close>
-    show \<open>S \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def
-    proof (intro allI impI CollectI)
-      fix S'
-      let ?S' = \<open>S' - {\<^bold>\<not> A, \<^bold>\<not> B} \<union> {\<^bold>\<not> (A \<^bold>\<or> B)}\<close>
-
-      assume \<open>S' \<subseteq> S \<union> {\<^bold>\<not> A, \<^bold>\<not> B}\<close> \<open>finite S'\<close>
-      then have \<open>?S' \<subseteq> S\<close>
-        using * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite S'\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then show \<open>S' \<in> C\<close>
-        using sc by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(\<^bold>\<not> (A \<^bold>\<longrightarrow> B)) \<in> S\<close>
-    show \<open>S \<union> {A, \<^bold>\<not> B} \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def
-    proof (intro allI impI CollectI)
-      fix S'
-      let ?S' = \<open>S' - {A, \<^bold>\<not> B} \<union> {\<^bold>\<not> (A \<^bold>\<longrightarrow> B)}\<close>
-
-      assume \<open>S' \<subseteq> S \<union> {A, \<^bold>\<not> B}\<close> \<open>finite S'\<close>
-      then have \<open>?S' \<subseteq> S\<close>
-        using * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite S'\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {A, \<^bold>\<not> B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then show \<open>S' \<in> C\<close>
-        using sc by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(A \<^bold>\<or> B) \<in> S\<close>
-    show \<open>S \<union> {A} \<in> mk_finite_char C \<or> S \<union> {B} \<in> mk_finite_char C\<close>
-    proof (rule ccontr)
-      assume \<open>\<not> ?thesis\<close>
-      then obtain Sa Sb
-        where \<open>Sa \<subseteq> S \<union> {A}\<close> \<open>finite Sa\<close> \<open>Sa \<notin> C\<close>
-          and \<open>Sb \<subseteq> S \<union> {B}\<close> \<open>finite Sb\<close> \<open>Sb \<notin> C\<close>
-        unfolding mk_finite_char_def by blast
-
-      let ?S' = \<open>(Sa - {A}) \<union> (Sb - {B}) \<union> {A \<^bold>\<or> B}\<close>
-
-      have \<open>?S' \<subseteq> S\<close>
-        using \<open>Sa \<subseteq> S \<union> {A}\<close> \<open>Sb \<subseteq> S \<union> {B}\<close> * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite Sa\<close> \<open>finite Sb\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {A} \<in> C \<or> ?S' \<union> {B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then have \<open>Sa \<in> C \<or> Sb \<in> C\<close>
-        using sc by blast
-      then show False
-        using \<open>Sa \<notin> C\<close> \<open>Sb \<notin> C\<close> by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(\<^bold>\<not> (A \<^bold>\<and> B)) \<in> S\<close>
-    show \<open>S \<union> {\<^bold>\<not> A} \<in> mk_finite_char C \<or> S \<union> {\<^bold>\<not> B} \<in> mk_finite_char C\<close>
-    proof (rule ccontr)
-      assume \<open>\<not> ?thesis\<close>
-      then obtain Sa Sb
-        where \<open>Sa \<subseteq> S \<union> {\<^bold>\<not> A}\<close> \<open>finite Sa\<close> \<open>Sa \<notin> C\<close>
-          and \<open>Sb \<subseteq> S \<union> {\<^bold>\<not> B}\<close> \<open>finite Sb\<close> \<open>Sb \<notin> C\<close>
-        unfolding mk_finite_char_def by blast
-
-      let ?S' = \<open>(Sa - {\<^bold>\<not> A}) \<union> (Sb - {\<^bold>\<not> B}) \<union> {\<^bold>\<not> (A \<^bold>\<and> B)}\<close>
-
-      have \<open>?S' \<subseteq> S\<close>
-        using \<open>Sa \<subseteq> S \<union> {\<^bold>\<not> A}\<close> \<open>Sb \<subseteq> S \<union> {\<^bold>\<not> B}\<close> * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite Sa\<close> \<open>finite Sb\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {\<^bold>\<not> A} \<in> C \<or> ?S' \<union> {\<^bold>\<not> B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then have \<open>Sa \<in> C \<or> Sb \<in> C\<close>
-        using sc by blast
-      then show False
-        using \<open>Sa \<notin> C\<close> \<open>Sb \<notin> C\<close> by blast
-    qed }
-
-  { fix A B
-    assume *: \<open>(A \<^bold>\<longrightarrow> B) \<in> S\<close>
-    show \<open>S \<union> {\<^bold>\<not> A} \<in> mk_finite_char C \<or> S \<union> {B} \<in> mk_finite_char C\<close>
-    proof (rule ccontr)
-      assume \<open>\<not> ?thesis\<close>
-      then obtain Sa Sb
-        where \<open>Sa \<subseteq> S \<union> {\<^bold>\<not> A}\<close> \<open>finite Sa\<close> \<open>Sa \<notin> C\<close>
-          and \<open>Sb \<subseteq> S \<union> {B}\<close> \<open>finite Sb\<close> \<open>Sb \<notin> C\<close>
-        unfolding mk_finite_char_def by blast
-
-      let ?S' = \<open>(Sa - {\<^bold>\<not> A}) \<union> (Sb - {B}) \<union> {A \<^bold>\<longrightarrow> B}\<close>
-
-      have \<open>?S' \<subseteq> S\<close>
-        using \<open>Sa \<subseteq> S \<union> {\<^bold>\<not> A}\<close> \<open>Sb \<subseteq> S \<union> {B}\<close> * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite Sa\<close> \<open>finite Sb\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {\<^bold>\<not> A} \<in> C \<or> ?S' \<union> {B} \<in> C\<close>
-        using \<open>consistency C\<close> unfolding consistency_def by simp
-      then have \<open>Sa \<in> C \<or> Sb \<in> C\<close>
-        using sc by blast
-      then show False
-        using \<open>Sa \<notin> C\<close> \<open>Sb \<notin> C\<close> by blast
-    qed }
-
-  { fix A :: \<open>'i fm\<close>
-    assume *: \<open>tautology A\<close>
-    show \<open>S \<union> {A} \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def
-    proof (intro allI impI CollectI)
-      fix S'
-      let ?S' = \<open>S' - {A}\<close>
-
-      assume \<open>S' \<subseteq> S \<union> {A}\<close> \<open>finite S'\<close>
-      then have \<open>?S' \<subseteq> S\<close>
-        using * by blast
-      moreover have \<open>finite ?S'\<close>
-        using \<open>finite S'\<close> by blast
-      ultimately have \<open>?S' \<in> C\<close>
-        using finc by blast
-      then have \<open>?S' \<union> {A} \<in> C\<close>
-        using * \<open>consistency C\<close> unfolding consistency_def by metis
-      then show \<open>S' \<in> C\<close>
-        using sc by blast
-    qed }
-
-  { fix A i
-    assume \<open>S \<in> mk_finite_char C\<close>
-    show \<open>\<not> (K i A \<in> S \<and> (\<^bold>\<not> K i A) \<in> S)\<close>
-    proof
-      assume \<open>K i A \<in> S \<and> (\<^bold>\<not> K i A) \<in> S\<close>
-      then have \<open>{K i A, (\<^bold>\<not> K i A)} \<in> C\<close>
-        using finc by simp
-      then show False
-        using \<open>consistency C\<close> unfolding consistency_def by auto
-    qed }
-
+theorem exactly_one_in_maximal:
+  assumes \<open>consistent V\<close> \<open>maximal V\<close>
+  shows \<open>p \<in> V \<longleftrightarrow> (\<^bold>\<not> p) \<notin> V\<close>
+proof
+  assume \<open>p \<in> V\<close>
+  then show \<open>(\<^bold>\<not> p) \<notin> V\<close>
+    using assms K_mp unfolding consistent_def maximal_def
+    by (metis empty_subsetI insert_subset list.set(1) list.simps(15))
+next
+  assume \<open>(\<^bold>\<not> p) \<notin> V\<close>
+  have \<open>\<turnstile> (p \<^bold>\<or> \<^bold>\<not> p)\<close>
+    by (simp add: A1)
+  then have \<open>(p \<^bold>\<or> \<^bold>\<not> p) \<in> V\<close>
+    using assms K_deriv_in_maximal by blast
+  then have \<open>consistent ({p} \<union> V) \<or> consistent ({\<^bold>\<not> p} \<union> V)\<close>
+    using assms consistent_disjuncts by blast
+  then show \<open>p \<in> V\<close>
+    using \<open>maximal V\<close> \<open>(\<^bold>\<not> p) \<notin> V\<close> unfolding maximal_def by blast
 qed
 
-subsection \<open>Maximal extension\<close>
+theorem consequent_in_maximal:
+  assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>p \<in> V\<close> \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
+  shows \<open>q \<in> V\<close>
+proof -
+  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> \<turnstile> imply (p # (p \<^bold>\<longrightarrow> q) # V') \<^bold>\<bottom>\<close>
+    using \<open>consistent V\<close> \<open>p \<in> V\<close> \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close> unfolding consistent_def
+    by (metis insert_subset list.simps(15))
+  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> \<turnstile> imply (q # V') \<^bold>\<bottom>\<close>
+    by (meson K_mp K_ImpI K_imply_weaken K_right_mp set_subset_Cons)
+  then have \<open>consistent ({q} \<union> V)\<close>
+    using \<open>consistent V\<close> inconsistent_subset by metis
+  then show ?thesis
+    using \<open>maximal V\<close> unfolding maximal_def by fast
+qed
+
+subsection \<open>Lindenbaum extension\<close>
 
 instantiation fm :: (countable) countable begin
 instance by countable_datatype
 end
 
-definition is_chain :: \<open>(nat \<Rightarrow> 'a set) \<Rightarrow> bool\<close> where
-  \<open>is_chain f \<equiv> \<forall>n. f n \<subseteq> f (Suc n)\<close>
+primrec extend :: \<open>'i fm set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> nat \<Rightarrow> 'i fm set\<close> where
+  \<open>extend S f 0 = S\<close> |
+  \<open>extend S f (Suc n) =
+    (if consistent ({f n} \<union> extend S f n)
+     then {f n} \<union> extend S f n
+     else extend S f n)\<close>
 
-lemma is_chainD: \<open>is_chain f \<Longrightarrow> x \<in> f m \<Longrightarrow> x \<in> f (m + n)\<close>
-  by (induct n) (auto simp: is_chain_def)
+definition Extend :: \<open>'i fm set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> 'i fm set\<close> where
+  \<open>Extend S f \<equiv> \<Union>n. extend S f n\<close>
 
-lemma is_chainD':
-  assumes \<open>is_chain f\<close> \<open>x \<in> f m\<close> \<open>m \<le> k\<close>
-  shows \<open>x \<in> f k\<close>
-proof -
-  obtain n where \<open>k = m + n\<close>
-    using \<open>m \<le> k\<close> le_iff_add
-    by metis
-  then show \<open>x \<in> f k\<close>
-    using \<open>is_chain f\<close> \<open>x \<in> f m\<close> is_chainD
-    by metis
-qed
-
-lemma chain_index:
-  assumes \<open>is_chain f\<close> \<open>finite F\<close>
-  shows \<open>F \<subseteq> (\<Union>n. f n) \<Longrightarrow> \<exists>n. F \<subseteq> f n\<close>
-  using \<open>finite F\<close>
-proof (induct F rule: finite_induct)
-  case empty
-  then show ?case
-    by blast
-next
-  case (insert x F)
-  then have \<open>\<exists>n. F \<subseteq> f n\<close> \<open>\<exists>m. x \<in> f m\<close> \<open>F \<subseteq> (\<Union>x. f x)\<close>
-    using \<open>is_chain f\<close> by simp_all
-  then obtain n and m where \<open>F \<subseteq> f n\<close> \<open>x \<in> f m\<close>
-    by blast
-  have \<open>m \<le> max n m\<close> \<open>n \<le> max n m\<close>
-    by simp_all
-  have \<open>x \<in> f (max n m)\<close>
-    using is_chainD' \<open>is_chain f\<close> \<open>x \<in> f m\<close> \<open>m \<le> max n m\<close>
-    by fast
-  moreover have \<open>F \<subseteq> f (max n m)\<close>
-    using is_chainD' \<open>is_chain f\<close> \<open>F \<subseteq> f n\<close> \<open>n \<le> max n m\<close>
-    by fast
-  ultimately show ?case
-    by blast
-qed
-
-lemma chain_union_closed':
-  assumes \<open>is_chain f\<close> \<open>\<forall>n. f n \<in> C\<close> \<open>\<forall>S' \<in> C. \<forall>S \<subseteq> S'. S \<in> C\<close> \<open>finite S'\<close> \<open>S' \<subseteq> (\<Union>n. f n)\<close>
-  shows \<open>S' \<in> C\<close>
-proof -
-  obtain n where \<open>S' \<subseteq> f n\<close>
-    using chain_index \<open>is_chain f\<close> \<open>finite S'\<close> \<open>S' \<subseteq> (\<Union>n. f n)\<close>
-    by blast
-  moreover have \<open>f n \<in> C\<close>
-    using \<open>\<forall>n. f n \<in> C\<close>
-    by blast
-  ultimately show \<open>S' \<in> C\<close>
-    using \<open>\<forall>S' \<in> C. \<forall>S \<subseteq> S'. S \<in> C\<close>
-    by blast
-qed
-
-lemma chain_union_closed:
-  assumes \<open>finite_char C\<close> \<open>is_chain f\<close> \<open>\<forall>n. f n \<in> C\<close>
-  shows \<open>(\<Union>n. f n) \<in> C\<close>
-proof -
-  have \<open>subset_closed C\<close>
-    using finite_char_closed \<open>finite_char C\<close>
-    by blast
-  then have \<open>\<forall>S' \<in> C. \<forall>S \<subseteq> S'. S \<in> C\<close>
-    unfolding subset_closed_def
-    by blast
-  then have \<open>\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> (\<Union>n. f n) \<longrightarrow> S' \<in> C\<close>
-    using chain_union_closed' assms
-    by blast
-  moreover have \<open>((\<Union>n. f n) \<in> C) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> (\<Union>n. f n) \<longrightarrow> S' \<in> C)\<close>
-    using \<open>finite_char C\<close> unfolding finite_char_def
-    by blast
-  ultimately show ?thesis
-    by blast
-qed
-
-primrec extend :: \<open>'i fm set \<Rightarrow> 'i fm set set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> nat \<Rightarrow> 'i fm set\<close> where
-  \<open>extend S C f 0 = S\<close> |
-  \<open>extend S C f (Suc n) =
-    (if extend S C f n \<union> {f n} \<in> C
-     then extend S C f n \<union> {f n}
-     else extend S C f n)\<close>
-
-definition Extend :: \<open>'i fm set \<Rightarrow> 'i fm set set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> 'i fm set\<close> where
-  \<open>Extend S C f \<equiv> \<Union>n. extend S C f n\<close>
-
-lemma is_chain_extend: \<open>is_chain (extend S C f)\<close>
-  by (simp add: is_chain_def) blast
-
-lemma extend_in_C: \<open>consistency C \<Longrightarrow> S \<in> C \<Longrightarrow> extend S C f n \<in> C\<close>
-  by (induct n) simp_all
-
-theorem Extend_in_C: \<open>consistency C \<Longrightarrow> finite_char C \<Longrightarrow> S \<in> C \<Longrightarrow> Extend S C f \<in> C\<close>
-  using chain_union_closed is_chain_extend extend_in_C unfolding Extend_def
-  by blast
-
-theorem Extend_subset: \<open>S \<subseteq> Extend S C f\<close>
+lemma Extend_subset: \<open>S \<subseteq> Extend S f\<close>
   unfolding Extend_def using Union_upper extend.simps(1) range_eqI
   by metis
 
-definition maximal :: \<open>'a set \<Rightarrow> 'a set set \<Rightarrow> bool\<close> where
-  \<open>maximal S C \<equiv> \<forall>S' \<in> C. S \<subseteq> S' \<longrightarrow> S = S'\<close>
+lemma extend_bound: \<open>(\<Union>n \<le> m. extend S f n) = extend S f m\<close>
+  by (induct m) (simp_all add: atMost_Suc)
 
-theorem Extend_maximal:
-  assumes \<open>\<forall>y :: 'i fm. \<exists>n. y = f n\<close> \<open>finite_char C\<close>
-  shows \<open>maximal (Extend S C f) C\<close>
-  unfolding maximal_def Extend_def
-proof (intro ballI impI)
-  fix S'
-  assume \<open>S' \<in> C\<close> \<open>(\<Union>x. extend S C f x) \<subseteq> S'\<close>
-  moreover have \<open>S' \<subseteq> (\<Union>x. extend S C f x)\<close>
-  proof (rule ccontr)
-    assume \<open>\<not> S' \<subseteq> (\<Union>x. extend S C f x)\<close>
-    then obtain z where \<open>z \<in> S'\<close> \<open>z \<notin> (\<Union>x. extend S C f x)\<close>
-      by blast
-    then obtain n where \<open>z = f n\<close>
-      using \<open>\<forall>y. \<exists>n. y = f n\<close>
-      by blast
+lemma consistent_extend: \<open>consistent S \<Longrightarrow> consistent (extend S f n)\<close>
+  by (induct n) simp_all
 
-    have \<open>extend S C f n \<union> {f n} \<subseteq> S'\<close>
-      using \<open>(\<Union>x. extend S C f x) \<subseteq> S'\<close> \<open>z = f n\<close> \<open>z \<in> S'\<close>
-      by blast
-
-    have \<open>subset_closed C\<close>
-      using \<open>finite_char C\<close> finite_char_closed
-      by blast
-    then have \<open>\<forall>S' \<in> C. \<forall>S \<subseteq> S'. S \<in> C\<close>
-      unfolding subset_closed_def
-      by simp
-    then have \<open>\<forall>S \<subseteq> S'. S \<in> C\<close>
-      using \<open>S' \<in> C\<close>
-      by blast
-    then have \<open>extend S C f n \<union> {f n} \<in> C\<close>
-      using \<open>extend S C f n \<union> {f n} \<subseteq> S'\<close>
-      by blast
-    then have \<open>z \<in> extend S C f (Suc n)\<close>
-      using \<open>z \<notin> (\<Union>x. extend S C f x)\<close> \<open>z = f n\<close>
-      by simp
-    then show False
-      using \<open>z \<notin> (\<Union>x. extend S C f x)\<close>
-      by blast
-  qed
-  ultimately show \<open>(\<Union>x. extend S C f x) = S'\<close>
-    by simp
-qed
-
-subsection \<open>K consistency\<close>
-
-theorem K_consistency: \<open>consistency {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>}\<close>
-  unfolding consistency_def
-proof (intro conjI ballI allI impI notI)
-  fix S :: \<open>'i fm set\<close>
-  assume \<open>S \<in> {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>}\<close> (is \<open>S \<in> ?C\<close>)
-  then obtain G where *: \<open>S = set G\<close> and \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close>
-    by blast
-
-  { fix i
-    assume \<open>Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (Pro i)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> Pro i)\<close>
-      using K_imply_member * by blast+
-    then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-      using K_FFI K_right_mp by blast
-    then show False
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-
-  { assume \<open>\<^bold>\<bottom> \<in> S\<close>
-    then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-      using K_imply_member * by blast
-    then show False
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-
-  { fix Z
-    assume \<open>(\<^bold>\<not> \<^bold>\<not> Z) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (\<^bold>\<not> \<^bold>\<not> Z)\<close>
-      using K_imply_member * by simp
-    then have \<open>\<not> \<turnstile> imply (Z # G) \<^bold>\<bottom>\<close>
-      using K_ImpI K_right_mp \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast
-    moreover have \<open>S \<union> {Z} = set (Z # G)\<close>
-      using * by simp
-    ultimately show \<open>S \<union> {Z} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<and> B) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (A \<^bold>\<and> B)\<close>
-      using K_imply_member * by simp
-    moreover have \<open>\<turnstile> ((A \<^bold>\<and> B) \<^bold>\<longrightarrow> A)\<close> \<open>\<turnstile> ((A \<^bold>\<and> B) \<^bold>\<longrightarrow> B)\<close>
-      using A1 by force+
-    ultimately have \<open>\<turnstile> imply G A\<close> \<open>\<turnstile> imply G B\<close>
-      using K_right_mp K_imply_head R1 by (metis imply.simps(2))+
-    then have \<open>\<not> \<turnstile> imply (A # B # G) \<^bold>\<bottom>\<close>
-      using K_imply_Cons \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> cut by metis
-    moreover have \<open>S \<union> {A, B} = set (A # B # G)\<close>
-      using * by simp
-    ultimately show \<open>S \<union> {A, B} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<or> B)) \<in> S\<close>
-    then have \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) (\<^bold>\<not> (A \<^bold>\<or> B))\<close> \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<or> B))\<close>
-      using * K_imply_Cons K_imply_member by blast+
-    moreover have \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) (\<^bold>\<not> (A \<^bold>\<or> B) \<^bold>\<longrightarrow> \<^bold>\<not> A)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<or> B) \<^bold>\<longrightarrow> \<^bold>\<not> B)\<close>
-      by (simp_all add: A1 tautology_imply)
-    ultimately have \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) (\<^bold>\<not> A)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> B)\<close>
-      using K_right_mp by blast+
-
-    then have \<open>\<not> \<turnstile> imply ((\<^bold>\<not> A) # (\<^bold>\<not> B) # G) \<^bold>\<bottom>\<close>
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> cut by blast
-    moreover have \<open>S \<union> {\<^bold>\<not> A, \<^bold>\<not> B} = set ((\<^bold>\<not> A) # (\<^bold>\<not> B) # G)\<close>
-      using * by simp
-    ultimately show \<open>S \<union> {\<^bold>\<not> A, \<^bold>\<not> B} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<longrightarrow> B)) \<in> S\<close>
-    then have \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) (\<^bold>\<not> (A \<^bold>\<longrightarrow> B))\<close> \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<longrightarrow> B))\<close>
-      using * K_imply_member K_imply_Cons by blast+
-    moreover have
-      \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) (\<^bold>\<not> (A \<^bold>\<longrightarrow> B) \<^bold>\<longrightarrow> A)\<close>
-      \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<longrightarrow> B) \<^bold>\<longrightarrow> \<^bold>\<not> B)\<close>
-      by (simp_all add: A1 tautology_imply)
-    ultimately have \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) A\<close> \<open>\<turnstile> imply G (\<^bold>\<not> B)\<close>
-      using K_right_mp by blast+
-
-    then have \<open>\<not> \<turnstile> imply (A # (\<^bold>\<not> B) # G) \<^bold>\<bottom>\<close>
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> cut by blast
-    moreover have \<open>S \<union> {A, \<^bold>\<not> B} = set (A # (\<^bold>\<not> B) # G)\<close>
-      using * by simp
-    ultimately show \<open>S \<union> {A, \<^bold>\<not> B} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<or> B) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (A \<^bold>\<or> B)\<close>
-      using * K_imply_member by simp
-
-    { assume \<open>(\<forall>G'. set G' = S \<union> {A} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-        and \<open>(\<forall>G'. set G' = S \<union> {B} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-      then have \<open>\<turnstile> imply (A # G) \<^bold>\<bottom>\<close> \<open>\<turnstile> imply (B # G) \<^bold>\<bottom>\<close>
-        using * by (metis Un_insert_right list.simps(15) sup_bot.right_neutral)+
-      then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-        using \<open>\<turnstile> imply G (A \<^bold>\<or> B)\<close> K_DisE by blast
-      then have False
-        using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-    then show \<open>S \<union> {A} \<in> ?C \<or> S \<union> {B} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(\<^bold>\<not> (A \<^bold>\<and> B)) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<and> B))\<close>
-      using * K_imply_member by blast
-    moreover have \<open>\<turnstile> imply G (\<^bold>\<not> (A \<^bold>\<and> B) \<^bold>\<longrightarrow> (\<^bold>\<not> A) \<^bold>\<or> (\<^bold>\<not> B))\<close>
-      by (simp add: A1 tautology_imply)
-    ultimately have \<open>\<turnstile> imply G ((\<^bold>\<not> A) \<^bold>\<or> (\<^bold>\<not> B))\<close>
-      using K_right_mp by blast
-
-    { assume \<open>(\<forall>G'. set G' = S \<union> {\<^bold>\<not> A} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-        and \<open>(\<forall>G'. set G' = S \<union> {\<^bold>\<not> B} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-      then have \<open>\<turnstile> imply ((\<^bold>\<not> A) # G) \<^bold>\<bottom>\<close> \<open>\<turnstile> imply ((\<^bold>\<not> B) # G) \<^bold>\<bottom>\<close>
-        using * by (metis Un_insert_right list.simps(15) sup_bot.right_neutral)+
-      then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-        using K_DisE \<open>\<turnstile> imply G ((\<^bold>\<not> A) \<^bold>\<or> (\<^bold>\<not> B))\<close> by blast
-      then have False
-        using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-    then show \<open>S \<union> {\<^bold>\<not> A} \<in> ?C \<or> S \<union> {\<^bold>\<not> B} \<in> ?C\<close>
-      by blast }
-
-  { fix A B
-    assume \<open>(A \<^bold>\<longrightarrow> B) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (A \<^bold>\<longrightarrow> B)\<close>
-      using * K_imply_member by blast
-    moreover have \<open>\<turnstile> imply G ((A \<^bold>\<longrightarrow> B) \<^bold>\<longrightarrow> (\<^bold>\<not> A) \<^bold>\<or> B)\<close>
-      by (simp add: A1 tautology_imply)
-    ultimately have \<open>\<turnstile> imply G ((\<^bold>\<not> A) \<^bold>\<or> B)\<close>
-      using K_right_mp by blast
-
-    { assume \<open>(\<forall>G'. set G' = S \<union> {\<^bold>\<not> A} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-        and \<open>(\<forall>G'. set G' = S \<union> {B} \<longrightarrow> \<turnstile> imply G' \<^bold>\<bottom>)\<close>
-      then have \<open>\<turnstile> imply ((\<^bold>\<not> A) # G) \<^bold>\<bottom>\<close> \<open>\<turnstile> imply (B # G) \<^bold>\<bottom>\<close>
-        using * by (metis Un_insert_right list.simps(15) sup_bot.right_neutral)+
-      then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-        using K_DisE \<open>\<turnstile> imply G ((\<^bold>\<not> A) \<^bold>\<or> B)\<close> by blast
-      then have False
-        using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-    then show \<open>S \<union> {\<^bold>\<not> A} \<in> ?C \<or> S \<union> {B} \<in> ?C\<close>
-      by blast }
-
-  { fix A :: \<open>'i fm\<close>
-    assume \<open>tautology A\<close>
-    then have \<open>\<turnstile> imply G A\<close>
-      using tautology_imply A1 by blast
-    then have \<open>\<turnstile> imply (A # G) \<^bold>\<bottom> \<Longrightarrow> \<turnstile> imply G \<^bold>\<bottom>\<close>
-      using cut by blast
-    moreover have \<open>S \<union> {A} = set (A # G)\<close>
-      using * by simp
-    ultimately show \<open>S \<union> {A} \<in> ?C\<close>
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-
-  { fix A i
-    assume \<open>K i A \<in> S \<and> (\<^bold>\<not> K i A) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (K i A)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> K i A)\<close>
-      using K_imply_member * by blast+
-    then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
-      using K_FFI K_right_mp by blast
-    then show False
-      using \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close> by blast }
-
-qed
-
-theorem K_finite_consistency: \<open>consistency (mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>}))\<close>
-  using K_consistency finite_consistency close_closed close_consistency by blast
-
-theorem K_concrete_finite_consistency:
-  defines \<open>C \<equiv> mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  assumes \<open>set G \<in> C\<close>
-  shows \<open>\<not> \<turnstile> imply G \<^bold>\<bottom>\<close>
-  using assms unfolding C_def mk_finite_char_def close_def
-  using K_imply_weaken by fastforce
-
-section \<open>Model existence\<close>
-
-lemma at_least_one_in_maximal:
-  assumes \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>p \<in> V \<or> (\<^bold>\<not> p) \<in> V\<close>
-proof -
-  have \<open>V \<union> {p} \<in> C \<or> V \<union> {\<^bold>\<not> p} \<in> C\<close>
-  proof (rule ccontr)
-    assume \<open>\<not> (V \<union> {p} \<in> C \<or> V \<union> {\<^bold>\<not> p} \<in> C)\<close>
-    then have \<open>V \<union> {p \<^bold>\<or> \<^bold>\<not> p} \<notin> C\<close>
-      using assms unfolding consistency_def maximal_def
-      by (metis (no_types, hide_lams) insert_iff subset_iff sup.absorb_iff1 sup.cobounded1)
-    then show False
-      using assms unfolding consistency_def maximal_def
-      by simp
-  qed
-  then show ?thesis
-    using \<open>maximal V C\<close> unfolding maximal_def
+lemma UN_finite_bound:
+  assumes \<open>finite A\<close> \<open>A \<subseteq> (\<Union>n. f n)\<close>
+  shows \<open>\<exists>m :: nat. A \<subseteq> (\<Union>n \<le> m. f n)\<close>
+  using assms
+proof (induct rule: finite_induct)
+  case (insert x A)
+  then obtain m where \<open>A \<subseteq> (\<Union>n \<le> m. f n)\<close>
     by fast
-qed
-
-lemma at_most_one_in_maximal:
-  assumes \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>\<not> (p \<in> V \<and> (\<^bold>\<not> p) \<in> V)\<close>
-proof (induct p)
-  case FF
-  then show ?case
-    using assms unfolding consistency_def by blast
-next
-  case (Pro x)
-  then show ?case
-    using assms unfolding consistency_def by simp
-next
-  case (Dis p q)
-  show ?case
-  proof
-    assume \<open>(p \<^bold>\<or> q) \<in> V \<and> (\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V\<close>
-    then have \<open>V \<union> {p} \<in> C \<or> V \<union> {q} \<in> C\<close> \<open>V \<union> {\<^bold>\<not> p, \<^bold>\<not> q} \<in> C\<close>
-      using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp_all
-    then have \<open>p \<in> V \<or> q \<in> V\<close> \<open>(\<^bold>\<not> p) \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal V C\<close> unfolding maximal_def by fast+
-    then show False
-      using Dis by blast
-  qed
-next
-  case (Con p q)
-  show ?case
-  proof
-    assume \<open>(p \<^bold>\<and> q) \<in> V \<and> (\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
-    then have \<open>V \<union> {p, q} \<in> C\<close> \<open>V \<union> {\<^bold>\<not> p} \<in> C \<or> V \<union> {\<^bold>\<not> q} \<in> C\<close>
-      using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp_all
-    then have \<open>p \<in> V\<close> \<open>q \<in> V\<close> \<open>(\<^bold>\<not> p) \<in> V \<or> (\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal V C\<close> unfolding maximal_def by fast+
-    then show False
-      using Con by blast
-  qed
-next
-  case (Imp p q)
-  show ?case
-  proof
-    assume \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<and> (\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V\<close>
-    then have \<open>V \<union> {\<^bold>\<not> p} \<in> C \<or> V \<union> {q} \<in> C\<close> \<open>V \<union> {p, \<^bold>\<not> q} \<in> C\<close>
-      using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp_all
-    then have \<open>(\<^bold>\<not> p) \<in> V \<or> q \<in> V\<close> \<open>p \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal V C\<close> unfolding maximal_def by fast+
-    then show False
-      using Imp by blast
-  qed
-next
-  case (K i p)
-  then show ?case
-    using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def
-    by simp
-qed
-
-theorem exactly_one_in_maximal:
-  assumes \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>(p \<in> V) \<noteq> ((\<^bold>\<not> p) \<in> V)\<close>
-  using assms at_least_one_in_maximal at_most_one_in_maximal by blast
-
-theorem conjuncts_in_maximal:
-  assumes \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>(p \<^bold>\<and> q) \<in> V \<longleftrightarrow> p \<in> V \<and> q \<in> V\<close>
-proof
-  assume \<open>(p \<^bold>\<and> q) \<in> V\<close>
-  have \<open>V \<union> {p, q} \<in> C\<close>
-    using \<open>(p \<^bold>\<and> q) \<in> V\<close> \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def
-    by simp
-  then show \<open>p \<in> V \<and> q \<in> V\<close>
-    using \<open>maximal V C\<close> unfolding maximal_def
-    by fast
-next
-  assume \<open>p \<in> V \<and> q \<in> V\<close>
-  show \<open>(p \<^bold>\<and> q) \<in> V\<close>
-  proof (rule ccontr)
-    assume \<open>(p \<^bold>\<and> q) \<notin> V\<close>
-    then have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
-      using at_least_one_in_maximal assms by blast
-    then have \<open>V \<union> {\<^bold>\<not> p} \<in> C \<or> V \<union> {\<^bold>\<not> q} \<in> C\<close>
-      using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def
-      by simp
-    then have \<open>(\<^bold>\<not> p) \<in> V \<or> (\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal V C\<close> unfolding maximal_def
-      by fast
-    then show False
-      using \<open>p \<in> V \<and> q \<in> V\<close> assms at_most_one_in_maximal
-      by metis
-  qed
-qed
-
-theorem consequent_in_maximal:
-  assumes \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close> \<open>p \<in> V\<close> \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
-  shows \<open>q \<in> V\<close>
-proof -
-  consider (np) \<open>V \<union> {\<^bold>\<not> p} \<in> C\<close> | (q) \<open>V \<union> {q} \<in> C\<close>
-    using \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close> \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def
-    by metis
-  then show ?thesis
-  proof cases
-    case np
-    then have \<open>(\<^bold>\<not> p) \<in> V\<close>
-      using \<open>maximal V C\<close> unfolding maximal_def
-      by fast
-    then show ?thesis
-      using assms at_most_one_in_maximal
-      by blast
-  next
-    case q
-    then show ?thesis
-      using \<open>maximal V C\<close> unfolding maximal_def
-      by fast
-  qed
-qed
-
-lemma K_not_neg_in_consistency: \<open>\<not> \<turnstile> (\<^bold>\<not> p) \<Longrightarrow> {p} \<in> {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>}\<close>
-proof -
-  assume \<open>\<not> \<turnstile> (\<^bold>\<not> p)\<close>
-  moreover have \<open>set [p] = {p}\<close>
-    by simp
-  moreover have \<open>imply [p] \<^bold>\<bottom> = (\<^bold>\<not> p)\<close>
-    by simp
-  ultimately show ?thesis
+  then have \<open>A \<subseteq> (\<Union>n \<le> (m + k). f n)\<close> for k
     by fastforce
-qed
-
-lemma K_inconsistent_neg:
-  defines \<open>C \<equiv> mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  assumes \<open>{p} \<notin> C\<close>
-  shows \<open>\<turnstile> (\<^bold>\<not> p)\<close>
-  using assms unfolding C_def mk_finite_char_def close_def
-  using K_not_neg_in_consistency by fastforce
-
-lemma conjuncts_in_consistency:
-  assumes \<open>consistency C\<close> \<open>subset_closed C\<close> \<open>S \<union> {p \<^bold>\<and> q} \<in> C\<close>
-  shows \<open>S \<union> {p, q} \<in> C\<close>
-proof -
-  let ?S = \<open>S \<union> {p \<^bold>\<and> q}\<close>
-  have \<open>?S \<in> C\<close>
-    using assms by blast
-  moreover have \<open>(p \<^bold>\<and> q) \<in> ?S\<close>
-    by simp
-  ultimately have \<open>?S \<union> {p, q} \<in> C\<close>
-    using assms unfolding consistency_def by simp
-  moreover have \<open>S \<union> {p, q} \<subseteq> ?S \<union> {p, q}\<close>
+  moreover obtain m' where \<open>x \<in> f m'\<close>
+    using insert(4) by blast
+  ultimately have \<open>{x} \<union> A \<subseteq> (\<Union>n \<le> m + m'. f n)\<close>
+    by auto
+  then show ?case
     by blast
-  ultimately show \<open>S \<union> {p, q} \<in> C\<close>
-    using \<open>subset_closed C\<close> unfolding subset_closed_def by simp
-qed
+qed simp
 
-lemma conjoined_in_consistency:
-  assumes \<open>consistency C\<close> \<open>subset_closed C\<close> \<open>S \<union> {conjoin ps q} \<in> C\<close>
-  shows \<open>S \<union> set ps \<union> {q} \<in> C\<close>
-  using \<open>S \<union> {conjoin ps q} \<in> C\<close>
-proof (induct ps arbitrary: S)
-  case Nil
-  then show ?case
-    using \<open>subset_closed C\<close> unfolding subset_closed_def by simp
-next
-  case (Cons p ps)
-  then have \<open>S \<union> {p, conjoin ps q} \<in> C\<close>
-    using assms conjuncts_in_consistency by auto
-  then have \<open>S \<union> {p} \<union> {conjoin ps q} \<in> C\<close>
-    by (metis insert_is_Un sup_assoc)
-  then show ?case
-    using Cons by fastforce
-qed
-
-lemma inconsistent_conjoin:
-  defines \<open>C \<equiv> mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  assumes \<open>set G \<union> {p} \<notin> C\<close>
-  shows \<open>\<turnstile> (\<^bold>\<not> conjoin G p)\<close>
+lemma consistent_Extend:
+  assumes \<open>consistent S\<close>
+  shows \<open>consistent (Extend S f)\<close>
+  unfolding Extend_def
 proof (rule ccontr)
-  have \<open>consistency C\<close>
-    unfolding C_def using K_finite_consistency by auto
-  have \<open>subset_closed C\<close>
-    unfolding C_def by (simp add: finite_char finite_char_closed)
+  assume \<open>\<not> consistent (\<Union>n. extend S f n)\<close>
+  then obtain S' where \<open>\<turnstile> imply S' \<^bold>\<bottom>\<close> \<open>set S' \<subseteq> (\<Union>n. extend S f n)\<close>
+    unfolding consistent_def by blast
+  then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend S f n)\<close>
+    using UN_finite_bound by (metis List.finite_set)
+  then have \<open>set S' \<subseteq> extend S f m\<close>
+    using extend_bound by blast
+  moreover have \<open>consistent (extend S f m)\<close>
+    using assms consistent_extend by blast
+  ultimately show False
+    unfolding consistent_def using \<open>\<turnstile> imply S' \<^bold>\<bottom>\<close> by blast
+qed
 
-  assume \<open>\<not> \<turnstile> (\<^bold>\<not> conjoin G p)\<close>
-  then have \<open>{conjoin G p} \<in> C\<close>
-    unfolding C_def using K_inconsistent_neg by blast
-  then have \<open>set G \<union> {p} \<in> C\<close>
-    using conjoined_in_consistency \<open>consistency C\<close> \<open>subset_closed C\<close> by fastforce
+lemma Extend_maximal:
+  assumes \<open>surj f\<close>
+  shows \<open>maximal (Extend S f)\<close>
+proof (rule ccontr)
+  assume \<open>\<not> maximal (Extend S f)\<close>
+  then obtain p where \<open>p \<notin> Extend S f\<close> \<open>consistent ({p} \<union> Extend S f)\<close>
+    unfolding maximal_def using assms consistent_Extend by blast
+  obtain k where n: \<open>f k = p\<close>
+    using \<open>surj f\<close> unfolding surj_def by metis
+  then have \<open>p \<notin> extend S f (Suc k)\<close>
+    using \<open>p \<notin> Extend S f\<close> unfolding Extend_def by blast
+  then have \<open>\<not> consistent ({p} \<union> extend S f k)\<close>
+    using n by fastforce
+  moreover have \<open>{p} \<union> extend S f k \<subseteq> {p} \<union> Extend S f\<close>
+    unfolding Extend_def by blast
+  ultimately have \<open>\<not> consistent ({p} \<union> Extend S f)\<close>
+    unfolding consistent_def by fastforce
   then show False
-    using assms(2) by blast
+    using \<open>consistent ({p} \<union> Extend S f)\<close> by blast
 qed
 
-theorem K_in_maximal:
-  defines \<open>C \<equiv> mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  assumes \<open>\<turnstile> p\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>p \<in> V\<close>
+lemma maximal_extension:
+  fixes V :: \<open>('i :: countable) fm set\<close>
+  assumes \<open>consistent V\<close>
+  obtains W where \<open>V \<subseteq> W\<close> \<open>consistent W\<close> \<open>maximal W\<close>
 proof -
-  have \<open>consistency C\<close>
-    unfolding C_def using K_finite_consistency by auto
-  have \<open>subset_closed C\<close>
-    unfolding C_def by (simp add: finite_char finite_char_closed)
-
-  have \<open>\<turnstile> (p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p)\<close>
-    by (simp add: A1)
-  then have \<open>\<turnstile> (\<^bold>\<not> \<^bold>\<not> p)\<close>
-    using \<open>\<turnstile> p\<close> R1 by blast
-
-  show ?thesis
-  proof (rule ccontr)
-    assume \<open>p \<notin> V\<close>
-    then have \<open>(\<^bold>\<not> p) \<in> V\<close>
-      using at_least_one_in_maximal \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close> by blast
-    then have \<open>set [\<^bold>\<not> p] \<in> C\<close>
-      using \<open>V \<in> C\<close> \<open>subset_closed C\<close> unfolding subset_closed_def by simp
-    then have \<open>\<not> \<turnstile> (\<^bold>\<not> \<^bold>\<not> p)\<close>
-      using C_def K_concrete_finite_consistency by fastforce
-    then show False
-      using \<open>\<turnstile> (\<^bold>\<not> \<^bold>\<not> p)\<close> by blast
-  qed
-qed
-
-lemma exists_finite_inconsistent:
-  fixes C :: \<open>'i fm set set\<close>
-  assumes \<open>finite_char C\<close> \<open>V \<union> {\<^bold>\<not> p} \<notin> C\<close>
-  shows \<open>\<exists>W. W \<union> {\<^bold>\<not> p} \<subseteq> V \<union> {\<^bold>\<not> p} \<and> (\<^bold>\<not> p) \<notin> W \<and> finite W \<and> W \<union> {\<^bold>\<not> p} \<notin> C\<close>
-  using assms unfolding finite_char_def
-  by (smt Un_insert_right Un_subset_iff finite_insert inf_sup_ord(4)
-      mk_disjoint_insert sup_bot.comm_neutral sup_ge1)
-
-theorem exists_maximal_superset:
-  fixes C :: \<open>('i :: countable) fm set set\<close>
-  assumes \<open>consistency C\<close> \<open>finite_char C\<close> \<open>V \<in> C\<close>
-  obtains W where \<open>V \<subseteq> W\<close> \<open> W \<in> C\<close> \<open>maximal W C\<close>
-proof -
-  let ?W = \<open>Extend V C from_nat\<close>
+  let ?W = \<open>Extend V from_nat\<close>
 
   have \<open>V \<subseteq> ?W\<close>
     using Extend_subset by blast
-  moreover have \<open>?W \<in> C\<close>
-    using assms Extend_in_C by blast
-  moreover have \<open>maximal ?W C\<close>
-    using assms Extend_maximal
-    by (metis from_nat_to_nat)
+  moreover have \<open>consistent ?W\<close>
+    using assms consistent_Extend by blast
+  moreover have \<open>maximal ?W\<close>
+    using assms Extend_maximal surj_from_nat by blast
   ultimately show ?thesis
     using that by blast
 qed
+
+subsection \<open>Model existence\<close>
 
 type_synonym 'i s_max = \<open>'i fm set\<close>
 
@@ -1361,227 +584,173 @@ abbreviation pi :: \<open>'i s_max \<Rightarrow> id \<Rightarrow> bool\<close> w
 abbreviation partition :: \<open>'i fm set \<Rightarrow> 'i \<Rightarrow> 'i fm set\<close> where
   \<open>partition V i \<equiv> {p. K i p \<in> V}\<close>
 
-abbreviation reach :: \<open>'i fm set set \<Rightarrow> 'i \<Rightarrow> 'i s_max \<Rightarrow> 'i s_max set\<close> where
-  \<open>reach C i V \<equiv> {W. partition V i \<subseteq> W \<and> W \<in> C \<and> maximal W C}\<close>
+abbreviation reach :: \<open>'i \<Rightarrow> 'i s_max \<Rightarrow> 'i s_max set\<close> where
+  \<open>reach i V \<equiv> {W. partition V i \<subseteq> W \<and> consistent W \<and> maximal W}\<close>
 
 theorem model_existence:
   fixes p :: \<open>('i :: countable) fm\<close>
-  defines \<open>C \<equiv> mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  assumes \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  shows \<open>(p \<in> V \<longleftrightarrow> Kripke pi (reach C), V \<Turnstile> p) \<and>
-    ((\<^bold>\<not> p) \<in> V \<longleftrightarrow> Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> p)\<close>
-proof -
-  have \<open>consistency C\<close>
-    unfolding C_def using K_finite_consistency by auto
-  have \<open>finite_char C\<close>
-    unfolding C_def by (simp add: finite_char)
-  have \<open>subset_closed C\<close>
-    unfolding C_def by (simp add: finite_char finite_char_closed)
-
-  show ?thesis
-    using \<open>V \<in> C\<close> \<open>maximal V C\<close>
-  proof (induct p arbitrary: V)
-    case FF
-    then show ?case
-    proof (intro conjI impI iffI)
-      assume \<open>\<^bold>\<bottom> \<in> V\<close>
-      then have False
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by blast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<bottom>\<close> ..
-    next
-      assume \<open>(\<^bold>\<not> \<^bold>\<bottom>) \<in> V\<close>
-      show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
-        by simp
-    next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<bottom>\<close>
-      then show \<open>\<^bold>\<bottom> \<in> V\<close>
-        by simp
-    next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
-      have \<open>\<^bold>\<bottom> \<notin> V\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def
-        by blast
-      then show \<open>(\<^bold>\<not> \<^bold>\<bottom>) \<in> V\<close>
-        using at_least_one_in_maximal FF \<open>consistency C\<close>
-        by blast
-    qed
+  assumes \<open>consistent V\<close> \<open>maximal V\<close>
+  shows \<open>(p \<in> V \<longleftrightarrow> Kripke pi reach, V \<Turnstile> p) \<and> ((\<^bold>\<not> p) \<in> V \<longleftrightarrow> Kripke pi reach, V \<Turnstile> \<^bold>\<not> p)\<close>
+  using assms
+proof (induct p arbitrary: V)
+  case FF
+  then show ?case
+  proof (intro conjI impI iffI)
+    assume \<open>\<^bold>\<bottom> \<in> V\<close>
+    then have False
+      using \<open>consistent V\<close> K_imply_head unfolding consistent_def
+      by (metis bot.extremum insert_subset list.set(1) list.simps(15))
+    then show \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<bottom>\<close> ..
   next
-    case (Pro i)
-    then show ?case
-    proof (intro conjI impI iffI)
-      assume \<open>Pro i \<in> V\<close>
-      then have \<open>pi V i\<close>
-        using \<open>maximal V C\<close> by blast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> Pro i\<close>
-        by simp
-    next
-      assume \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
-      then have \<open>Pro i \<notin> V\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by fast
-      then have \<open>\<not> (pi V i)\<close>
-        using \<open>maximal V C\<close> by blast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pro i\<close>
-        by simp
-    next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> Pro i\<close>
-      then show \<open>Pro i \<in> V\<close>
-        by simp
-    next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pro i\<close>
-      then have \<open>Pro i \<notin> V\<close>
-        by simp
-      then show \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
-        using at_least_one_in_maximal Pro \<open>consistency C\<close>
-        by blast
-    qed
+    assume \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
+    then show \<open>(\<^bold>\<not> \<^bold>\<bottom>) \<in> V\<close>
+      using \<open>consistent V\<close> \<open>maximal V\<close> unfolding maximal_def
+      by (meson K_Boole inconsistent_subset consistent_def)
+  qed simp_all
+next
+  case (Pro i)
+  then show ?case
+  proof (intro conjI impI iffI)
+    assume \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
+    then show \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> Pro i\<close>
+      using \<open>consistent V\<close> \<open>maximal V\<close> exactly_one_in_maximal by auto
   next
-    case (Dis p q)
-    have \<open>(p \<^bold>\<or> q) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<or> q)\<close>
-    proof
-      assume \<open>(p \<^bold>\<or> q) \<in> V\<close>
-      then have \<open>V \<union> {p} \<in> C \<or> V \<union> {q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then consider \<open>p \<in> V\<close> | \<open>q \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<or> q)\<close>
-        using Dis by cases simp_all
-    qed
-    moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
-    proof
-      assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V\<close>
-      then have \<open>V \<union> {\<^bold>\<not> p, \<^bold>\<not> q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then have \<open>(\<^bold>\<not> p) \<in> V \<and> (\<^bold>\<not> q) \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
-        using Dis by simp
-    qed
-    ultimately show ?case
-      using at_least_one_in_maximal Dis \<open>consistency C\<close>
-      by auto
-  next
-    case (Con p q)
-    have \<open>(p \<^bold>\<and> q) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<and> q)\<close>
-    proof
-      assume \<open>(p \<^bold>\<and> q) \<in> V\<close>
-      then have \<open>V \<union> {p, q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then have \<open>p \<in> V\<close> \<open>q \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast+
-      then show \<open>Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<and> q)\<close>
-        using Con by simp
-    qed
-    moreover have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
-    proof
-      assume \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
-      then have \<open>V \<union> {\<^bold>\<not> p} \<in> C \<or> V \<union> {\<^bold>\<not> q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then consider \<open>(\<^bold>\<not> p) \<in> V\<close> | \<open>(\<^bold>\<not> q) \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
-        using Con by cases simp_all
-    qed
-    ultimately show ?case
-      using at_least_one_in_maximal Con \<open>consistency C\<close>
-      by auto
-  next
-    case (Imp p q)
-    have \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
-    proof
-      assume \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
-      then have \<open>V \<union> {\<^bold>\<not> p} \<in> C \<or> V \<union> {q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then consider \<open>(\<^bold>\<not> p) \<in> V\<close> | \<open>q \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
-        using Imp by cases simp_all
-    qed
-    moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
-    proof
-      assume \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V\<close>
-      then have \<open>V \<union> {p, \<^bold>\<not> q} \<in> C\<close>
-        using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by simp
-      then have \<open>p \<in> V \<and> (\<^bold>\<not> q) \<in> V\<close>
-        using \<open>maximal V C\<close> unfolding maximal_def by fast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
-        using Imp by simp
-    qed
-    ultimately show ?case
-      using at_least_one_in_maximal Imp \<open>consistency C\<close>
-      by auto
-  next
-    case (K i p)
-    have \<open>K i p \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> K i p\<close>
-    proof
-      assume \<open>K i p \<in> V\<close>
-      then have \<open>\<forall>W \<in> reach C i V. p \<in> W \<and> W \<in> C \<and> maximal W C\<close>
-        using \<open>consistency C\<close> by blast
-      then have \<open>\<forall>W \<in> reach C i V. Kripke pi (reach C), W \<Turnstile> p\<close>
-        using K by simp
-      then show \<open>Kripke pi (reach C), V \<Turnstile> K i p\<close>
-        by simp
-    qed
-    moreover have \<open>(Kripke pi (reach C), V \<Turnstile> K i p) \<longrightarrow> K i p \<in> V\<close>
-    proof (intro allI impI)
-      assume \<open>Kripke pi (reach C), V \<Turnstile> K i p\<close>
-
-      have \<open>partition V i \<union> {\<^bold>\<not> p} \<notin> C\<close>
-      proof
-        assume \<open>partition V i \<union> {\<^bold>\<not> p} \<in> C\<close>
-        then obtain W where \<open>partition V i \<union> {\<^bold>\<not> p} \<subseteq> W\<close> \<open>W \<in> C\<close> \<open>maximal W C\<close>
-          using \<open>consistency C\<close> \<open>finite_char C\<close> exists_maximal_superset by blast
-        then have \<open>Kripke pi (reach C), W \<Turnstile> \<^bold>\<not> p\<close>
-          using K \<open>consistency C\<close> \<open>finite_char C\<close> by blast
-        moreover have \<open>W \<in> reach C i V\<close>
-          using \<open>partition V i \<union> {\<^bold>\<not> p} \<subseteq> W\<close> \<open>W \<in> C\<close> \<open>maximal W C\<close>
-          by simp
-        ultimately have \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> K i p\<close>
-          by auto
-        then show False
-          using \<open>Kripke pi (reach C), V \<Turnstile> K i p\<close>
-          by auto
-      qed
-
-      then obtain W where
-        \<open>W \<union> {\<^bold>\<not> p} \<subseteq> partition V i \<union> {\<^bold>\<not> p}\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>W \<union> {\<^bold>\<not> p} \<notin> C\<close>
-        using \<open>finite_char C\<close> exists_finite_inconsistent by force
-
-      obtain L where \<open>set L = W\<close>
-        using \<open>finite W\<close> finite_list by blast
-
-      then have \<open>\<turnstile> (\<^bold>\<not> conjoin L (\<^bold>\<not> p))\<close>
-        using inconsistent_conjoin \<open>W \<union> {\<^bold>\<not> p} \<notin> C\<close> C_def by blast
-      then have \<open>\<turnstile> imply L p\<close>
-        using K_conjoin_imply by blast
-      then have \<open>\<turnstile> K i (imply L p)\<close>
-        using R2 by fast
-      then have \<open>\<turnstile> imply (map (K i) L) (K i p)\<close>
-        using K_distrib_K_imp by fast
-      then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
-        using K_in_maximal K.prems(1, 2) unfolding C_def by blast
-      then show \<open>K i p \<in> V\<close>
-        using \<open>set L = W\<close> \<open>W \<union> {\<^bold>\<not> p} \<subseteq> partition V i \<union> {\<^bold>\<not> p}\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close>
-      proof (induct L arbitrary: W)
-        case Nil
-        then show ?case
-          by simp
-      next
-        case (Cons a L)
-        then have \<open>K i a \<in> V\<close>
-          by auto
-        then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
-          using Cons(2) \<open>consistency C\<close> \<open>V \<in> C\<close> \<open>maximal V C\<close> consequent_in_maximal by auto
-        then show ?case
-          using Cons by auto
-      qed
-    qed
-    moreover have \<open>(Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> K i p) \<longrightarrow> (\<^bold>\<not> K i p) \<in> V\<close>
-      using K.prems(1) \<open>consistency C\<close> \<open>maximal V C\<close> at_least_one_in_maximal calculation(1) by auto
-    moreover have \<open>(\<^bold>\<not> K i p) \<in> V \<longrightarrow> Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> K i p\<close>
-      using K.prems(1) \<open>consistency C\<close> \<open>maximal V C\<close> calculation(2) exactly_one_in_maximal by auto
-    ultimately show ?case
-      by blast
+    assume \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> Pro i\<close>
+    then show \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
+      using \<open>consistent V\<close> \<open>maximal V\<close> exactly_one_in_maximal by auto
+  qed (simp_all add: \<open>maximal V\<close> maximal_def)
+next
+  case (Dis p q)
+  have \<open>(p \<^bold>\<or> q) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> (p \<^bold>\<or> q)\<close>
+  proof
+    assume \<open>(p \<^bold>\<or> q) \<in> V\<close>
+    then have \<open>consistent ({p} \<union> V) \<or> consistent ({q} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_disjuncts by blast
+    then have \<open>p \<in> V \<or> q \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast
+    then show \<open>Kripke pi reach, V \<Turnstile> (p \<^bold>\<or> q)\<close>
+      using Dis by simp
   qed
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
+  proof
+    assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V\<close>
+    then have \<open>consistent ({\<^bold>\<not> q} \<union> V)\<close> \<open>consistent ({\<^bold>\<not> p} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_consequent' by fastforce+
+    then have \<open>(\<^bold>\<not> p) \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast+
+    then show \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
+      using Dis by simp
+  qed
+  ultimately show ?case
+    using exactly_one_in_maximal Dis by auto
+next
+  case (Con p q)
+  have \<open>(p \<^bold>\<and> q) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> (p \<^bold>\<and> q)\<close>
+  proof
+    assume \<open>(p \<^bold>\<and> q) \<in> V\<close>
+    then have \<open>consistent ({p} \<union> V)\<close> \<open>consistent ({q} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_consequent' by fastforce+
+    then have \<open>p \<in> V\<close> \<open>q \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast+
+    then show \<open>Kripke pi reach, V \<Turnstile> (p \<^bold>\<and> q)\<close>
+      using Con by simp
+  qed
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
+  proof
+    assume \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
+    then have \<open>consistent ({\<^bold>\<not> p \<^bold>\<or> \<^bold>\<not> q} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_consequent' by fastforce
+    then have \<open>consistent ({\<^bold>\<not> p} \<union> V) \<or> consistent ({\<^bold>\<not> q} \<union> V)\<close>
+      using \<open>consistent V\<close> \<open>maximal V\<close> consistent_disjuncts unfolding maximal_def by blast
+    then have \<open>(\<^bold>\<not> p) \<in> V \<or> (\<^bold>\<not> q) \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast
+    then show \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
+      using Con by simp
+  qed
+  ultimately show ?case
+    using exactly_one_in_maximal Con by auto
+next
+  case (Imp p q)
+  have \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  proof
+    assume \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
+    then have \<open>consistent ({\<^bold>\<not> p \<^bold>\<or> q} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_consequent' by fastforce
+    then have \<open>consistent ({\<^bold>\<not> p} \<union> V) \<or> consistent ({q} \<union> V)\<close>
+      using \<open>consistent V\<close> \<open>maximal V\<close> consistent_disjuncts unfolding maximal_def by blast
+    then have \<open>(\<^bold>\<not> p) \<in> V \<or> q \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast
+    then show \<open>Kripke pi reach, V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+      using Imp by simp
+  qed
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
+  proof
+    assume \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V\<close>
+    then have \<open>consistent ({p} \<union> V)\<close> \<open>consistent ({\<^bold>\<not> q} \<union> V)\<close>
+      using \<open>consistent V\<close> consistent_consequent' by fastforce+
+    then have \<open>p \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
+      using \<open>maximal V\<close> unfolding maximal_def by fast+
+    then show \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
+      using Imp by simp
+  qed
+  ultimately show ?case
+    using exactly_one_in_maximal Imp \<open>consistent V\<close> by auto
+next
+  case (K i p)
+  then have \<open>K i p \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> K i p\<close>
+    by auto
+  moreover have \<open>(Kripke pi reach, V \<Turnstile> K i p) \<longrightarrow> K i p \<in> V\<close>
+  proof (intro allI impI)
+    assume \<open>Kripke pi reach, V \<Turnstile> K i p\<close>
+
+    have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> partition V i)\<close>
+    proof
+      assume \<open>consistent ({\<^bold>\<not> p} \<union> partition V i)\<close>
+      then obtain W where W: \<open>{\<^bold>\<not> p} \<union> partition V i \<subseteq> W\<close> \<open>consistent W\<close> \<open>maximal W\<close>
+        using \<open>consistent V\<close> maximal_extension by blast
+      then have \<open>Kripke pi reach, W \<Turnstile> \<^bold>\<not> p\<close>
+        using K \<open>consistent V\<close> by blast
+      moreover have \<open>W \<in> reach i V\<close>
+        using W by simp
+      ultimately have \<open>Kripke pi reach, V \<Turnstile> \<^bold>\<not> K i p\<close>
+        by auto
+      then show False
+        using \<open>Kripke pi reach, V \<Turnstile> K i p\<close> by auto
+    qed
+
+    then obtain W where W:
+      \<open>{\<^bold>\<not> p} \<union> W \<subseteq> {\<^bold>\<not> p} \<union> partition V i\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>\<not> consistent ({\<^bold>\<not> p} \<union> W)\<close>
+      using exists_finite_inconsistent by metis
+
+    obtain L where L: \<open>set L = W\<close>
+      using \<open>finite W\<close> finite_list by blast
+
+    then have \<open>\<turnstile> imply L p\<close>
+      using W(4) inconsistent_imply by blast
+    then have \<open>\<turnstile> K i (imply L p)\<close>
+      using R2 by fast
+    then have \<open>\<turnstile> imply (map (K i) L) (K i p)\<close>
+      using K_distrib_K_imp by fast
+    then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
+      using K_deriv_in_maximal K.prems(1, 2) by blast
+    then show \<open>K i p \<in> V\<close>
+      using L W(1-2)
+    proof (induct L arbitrary: W)
+      case (Cons a L)
+      then have \<open>K i a \<in> V\<close>
+        by auto
+      then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
+        using Cons(2) \<open>consistent V\<close> \<open>maximal V\<close> consequent_in_maximal by auto
+      then show ?case
+        using Cons by auto
+    qed simp
+  qed
+  moreover have \<open>(Kripke pi reach, V \<Turnstile> \<^bold>\<not> K i p) \<longrightarrow> (\<^bold>\<not> K i p) \<in> V\<close>
+    using \<open>consistent V\<close> \<open>maximal V\<close> exactly_one_in_maximal calculation(1) by auto
+  moreover have \<open>(\<^bold>\<not> K i p) \<in> V \<longrightarrow> Kripke pi reach, V \<Turnstile> \<^bold>\<not> K i p\<close>
+    using \<open>consistent V\<close> \<open>maximal V\<close> calculation(2) exactly_one_in_maximal by auto
+  ultimately show ?case
+    by blast
 qed
 
 subsection \<open>Completeness\<close>
@@ -1594,34 +763,23 @@ proof (rule K_Boole, rule ccontr)
   assume \<open>\<not> \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
 
   let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
-  let ?C = \<open>mk_finite_char (close {set G | G. \<not> \<turnstile> imply G \<^bold>\<bottom>})\<close>
-  let ?V = \<open>Extend ?S ?C from_nat\<close>
-  let ?M = \<open>Kripke pi (reach ?C)\<close>
+  let ?V = \<open>Extend ?S from_nat\<close>
+  let ?M = \<open>Kripke pi reach\<close>
 
-  have \<open>consistency ?C\<close>
-    by (simp add: K_finite_consistency)
-  have \<open>subset_closed ?C\<close>
-    using finite_char finite_char_closed by blast
-  have \<open>finite_char ?C\<close>
-    using finite_char by blast
+  have \<open>consistent ?S\<close>
+    unfolding consistent_def using \<open>\<not> \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
+  then have \<open>consistent ?V\<close>
+    using consistent_Extend by blast
 
-  have \<open>?S \<in> ?C\<close>
-    using \<open>\<not> \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> close_closed close_subset finite_char_subset
-    by fast
-  then have \<open>?V \<in> ?C\<close>
-    using Extend_in_C K_finite_consistency \<open>finite_char ?C\<close> by blast
-
-  have \<open>\<forall>y :: 'i fm. \<exists>n. y = from_nat n\<close>
-    by (metis from_nat_to_nat)
-  then have \<open>maximal ?V ?C\<close>
-    using Extend_maximal \<open>finite_char ?C\<close> by blast
+  have \<open>maximal ?V\<close>
+    using Extend_maximal surj_from_nat by blast
 
   { fix x
     assume \<open>x \<in> ?S\<close>
     then have \<open>x \<in> ?V\<close>
       using Extend_subset by blast
     then have \<open>?M, ?V \<Turnstile> x\<close>
-      using model_existence \<open>?V \<in> ?C\<close> \<open>maximal ?V ?C\<close> by blast }
+      using model_existence \<open>consistent ?V\<close> \<open>maximal ?V\<close> by blast }
   then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close>
     unfolding list_all_def by fastforce+
   then have \<open>?M, ?V \<Turnstile> p\<close>
@@ -1661,8 +819,7 @@ qed
 section \<open>Acknowledgements\<close>
 
 text \<open>
-The definition of a consistency property, subset closure, finite character and maximally consistent
-sets is based on work by Berghofer, but has been adapted from first-order logic to epistemic logic.
+The formalization is inspired by work by Berghofer, which also formalizes Henkin-style completeness.
 
   \<^item> Stefan Berghofer:
   First-Order Logic According to Fitting.
