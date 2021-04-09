@@ -4355,7 +4355,7 @@ notify = eberlm@in.tum.de
 
 [Sturm_Tarski]
 title = The Sturm-Tarski Theorem
-author = Wenda Li <mailto:wl302@cam.ac.uk>
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 date = 2014-09-19
 topic = Mathematics/Analysis
 abstract = We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem), which generalizes Sturm's theorem. Sturm's theorem is usually used as a way to count distinct real roots, while the Sturm-Tarksi theorem forms the basis for Tarski's classic quantifier elimination for real closed field.
@@ -4950,7 +4950,7 @@ notify =
 
 [Koenigsberg_Friendship]
 title = The Königsberg Bridge Problem and the Friendship Theorem
-author = Wenda Li <mailto:wl302@cam.ac.uk>
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 date = 2013-07-19
 topic = Mathematics/Graph theory
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
@@ -10171,7 +10171,7 @@ abstract =
 
 [Isabelle_Marries_Dirac]
 title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information
-author = Anthony Bordg <mailto:apdb3@cam.ac.uk>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
 topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
 date = 2020-11-22
 notify = apdb3@cam.ac.uk, lachnitt@stanford.edu
@@ -10458,4 +10458,16 @@ abstract =
   derive a corresponding soundness result.  For further details and
   applications refer to the authors upcoming dissertation.
 
+[Grothendieck_Schemes]
+title = Grothendieck's Schemes in Algebraic Geometry
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>, Lawrence Paulson <https://www.cl.cam.ac.uk/~lp15/>,  Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+date = 2021-03-29
+notify = apdb3@cam.ac.uk, lp15@cam.ac.uk
+abstract = 
+  We formalize mainstream structures in algebraic geometry culminating
+  in Grothendieck's schemes: presheaves of rings, sheaves of rings,
+  ringed spaces, locally ringed spaces, affine schemes and schemes. We
+  prove that the spectrum of a ring is a locally ringed space, hence an
+  affine scheme. Finally, we prove that any affine scheme is a scheme.
 

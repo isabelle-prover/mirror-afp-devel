@@ -33,6 +33,19 @@ derive a corresponding soundness result.  For further details and
 applications refer to the authors upcoming dissertation.</description>
     </item>
     <item>
+       <title>Grothendieck's Schemes in Algebraic Geometry</title>
+              <link>https://www.isa-afp.org/entries/Grothendieck_Schemes.html</link>
+       <guid>https://www.isa-afp.org/entries/Grothendieck_Schemes.html</guid>
+       <dc:creator> Anthony Bordg, Lawrence Paulson, Wenda Li       </dc:creator>
+       <pubDate>29 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalize mainstream structures in algebraic geometry culminating
+in Grothendieck&#39;s schemes: presheaves of rings, sheaves of rings,
+ringed spaces, locally ringed spaces, affine schemes and schemes. We
+prove that the spectrum of a ring is a locally ringed space, hence an
+affine scheme. Finally, we prove that any affine scheme is a scheme.</description>
+    </item>
+    <item>
        <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
               <link>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
        <guid>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
@@ -578,28 +591,6 @@ well-defined interfaces. Moreover, our verification of the application
 programming interface (API) of the DOM revealed numerous invariants
 that implementations of the DOM API need to preserve to ensure the
 integrity of components.</description>
-    </item>
-    <item>
-       <title>The Safely Composable DOM</title>
-              <link>https://www.isa-afp.org/entries/Core_SC_DOM.html</link>
-       <guid>https://www.isa-afp.org/entries/Core_SC_DOM.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we formalize the core of the Safely Composable
-Document Object Model (SC DOM). The SC DOM improve the standard DOM
-(as formalized in the AFP entry &#34;Core DOM&#34;) by strengthening
-the tree boundaries set by shadow roots: in the SC DOM, the shadow
-root is a sub-class of the document class (instead of a base class).
-This modifications also results in changes to some API methods (e.g.,
-getOwnerDocument) to return the nearest shadow root rather than the
-document root. As a result, many API methods that, when called on a
-node inside a shadow tree, would previously ``break out&#39;&#39;
-and return or modify nodes that are possibly outside the shadow tree,
-now stay within its boundaries. This change in behavior makes programs
-that operate on shadow trees more predictable for the developer and
-allows them to make more assumptions about other code accessing the
-DOM.</description>
     </item>
   </channel>
 </rss>
