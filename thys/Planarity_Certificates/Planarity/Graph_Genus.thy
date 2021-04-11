@@ -526,8 +526,8 @@ proof -
         have "\<And>x. x \<in> orbit (edge_succ M) a0 \<Longrightarrow> x \<in> arcs G"
           using \<open>out_arcs G v0 = _\<close> by auto
         then show ?thesis using \<open>out_arcs G v0 = _\<close>
-          unfolding \<open>a = _\<close> assms using \<open>a0 \<in> out_arcs G v0\<close>
-          by (intro orbit_FOO) (insert assms, auto simp: map_iso_def)
+          unfolding \<open>a = _\<close> using \<open>a0 \<in> out_arcs G v0\<close> assms
+          by (intro orbit_inverse) (auto simp: map_iso_def)
       qed
       finally show "out_arcs (app_iso hom G) v = orbit (edge_succ (map_iso hom)) a" .
     qed

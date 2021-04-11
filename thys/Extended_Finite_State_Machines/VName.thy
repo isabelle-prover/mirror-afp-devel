@@ -27,18 +27,12 @@ declare less_eq_vname_def [simp]
 
 instance
   apply standard
-      apply (metis (full_types) dual_order.asym less_eq_vname_def less_vname.simps(2) less_vname.simps(3) less_vname.simps(4) vname.exhaust)
-     apply simp
+      apply (auto elim: less_vname.elims)
   subgoal for x y z
-    apply (induct x y rule: less_vname.induct)
-       apply (metis less_eq_vname_def less_vname.elims(2) less_vname.elims(3) vname.simps(4))
-      apply simp
-     apply (metis less_eq_vname_def less_trans less_vname.elims(3) less_vname.simps(3) vname.simps(4))
-    by (metis le_less_trans less_eq_vname_def less_imp_le_nat less_vname.elims(2) less_vname.simps(4) vname.simps(4))
-   apply (metis dual_order.asym less_eq_vname_def less_vname.elims(2) less_vname.simps(3) less_vname.simps(4))
-   subgoal for x y
-     by (induct x y rule: less_vname.induct, auto)
-   done
+    apply (cases x; cases y; cases z)
+           apply simp_all
+    done
+  done
 end
 
 end

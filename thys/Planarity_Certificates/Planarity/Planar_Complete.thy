@@ -84,7 +84,7 @@ proof -
     using face_cycle_set_def by (auto simp: in_face_cycle_setD)
   show ?thesis
     using assms unfolding pre_digraph_map.face_cycle_set_def
-    by (subst orbit_FOO[where g'="pre_digraph_map.face_cycle_succ (map_iso hom)"])
+    by (subst orbit_inverse [where g'="pre_digraph_map.face_cycle_succ (map_iso hom)"])
        (auto simp: * face_cycle_succ_iso)
 qed
 
