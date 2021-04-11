@@ -354,7 +354,7 @@ lemma additive_strength_inv:
   shows "additive_strength (inv f) xi = - additive_strength f xi"
 proof -
   have *: "(inv f ^^ n) ((f ^^ n) x) = x" for n x
-    by (metis assms(1) comp_apply funpow_code_def inv_fn_o_fn_is_id isometry_inverse(2))
+    by (metis assms(1) comp_apply inv_fn_o_fn_is_id isometry_inverse(2))
   have A: "abs(real n * additive_strength f xi + real n * additive_strength (inv f) xi) \<le> 6 * deltaG (TYPE('a))" for n::nat and x::'a
     using Busemann_function_quasi_morphism[of xi x "(f^^n) x" x] Busemann_function_eq_additive_strength[OF assms, of n x] Busemann_function_eq_additive_strength[OF isometry_inverse(1)[OF assms(1)]
     Gromov_extension_inv_fixed_point[OF assms], of n "(f^^n) x"] unfolding * by auto
@@ -1088,7 +1088,7 @@ lemma loxodromic_attracting_fixed_point_attracts:
 proof -
   have "(\<lambda>n. extended_Gromov_product_at basepoint (((Gromov_extension f)^^n) xi) (attracting_fixed_point f)) \<longlonglongrightarrow> \<infinity>"
     unfolding Lim_PInfty using loxodromic_attracting_fixed_point_attracts_uniformly[OF assms(1)]
-    by (metis Gromov_boundary_extended_product_PInf assms(2) ereal_top funpow_code_def infinity_ereal_def linear)
+    by auto (metis Gromov_boundary_extended_product_PInf assms(2) dual_order.refl real_le_ereal_iff real_of_ereal_le_0 zero_ereal_def)
   then show ?thesis
     unfolding Gromov_completion_boundary_limit[OF loxodromic_attracting_fixed_point(1)[OF assms(1)]] by simp
 qed

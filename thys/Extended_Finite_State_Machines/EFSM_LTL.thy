@@ -228,7 +228,7 @@ lemma once_none_nxt_always_none: "alw (nxt (state_eq None)) (make_full_observati
   by (simp add: alw_iff_sdrop del: sdrop.simps)
 
 lemma snth_sconst: "(\<forall>i. s !! i = h) = (s = sconst h)"
-  by (metis funpow_code_def id_funpow sdrop_simps(1) sdrop_siterate siterate.simps(1) smap_alt smap_sconst snth.simps(1) stream.map_id)
+  by (auto simp add: sconst_alt sset_range)
 
 lemma alw_sconst: "(alw (\<lambda>xs. shd xs = h) t) = (t = sconst h)"
   by (simp add: snth_sconst[symmetric] alw_iff_sdrop)

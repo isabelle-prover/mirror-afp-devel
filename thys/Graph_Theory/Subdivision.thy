@@ -4,7 +4,7 @@ imports
   Digraph_Component
   Pair_Digraph
   Bidirected_Digraph
-  Funpow
+  Auxiliary
 begin
 
 section \<open>Subdivision on Digraphs\<close>

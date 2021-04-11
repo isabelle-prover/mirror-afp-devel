@@ -1,8 +1,8 @@
 theory Permutations_2
 imports
   "HOL-Combinatorics.Permutations"
+  Graph_Theory.Auxiliary
   Executable_Permutations
-  Graph_Theory.Funpow
 begin
 
 section \<open>Modifying Permutations\<close>
@@ -118,7 +118,7 @@ section \<open>Cyclic Permutations\<close>
 
 lemma cyclic_on_perm_swap:
   assumes "cyclic_on f S" shows "cyclic_on (perm_swap x y f) ((x \<rightleftharpoons>\<^sub>F y) ` S)"
-  using assms by (rule cyclic_on_FOO) (auto simp: perm_swap_def swap_swap_id)
+  using assms by (rule cyclic_on_image) (auto simp: perm_swap_def)
 
 lemma orbit_perm_rem:
   assumes "bij f" "x \<noteq> y" shows "orbit (perm_rem y f) x = orbit f x - {y}" (is "?L = ?R")
