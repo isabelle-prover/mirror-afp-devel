@@ -362,7 +362,7 @@ lemma closed_subsets_R [simp]:
   using ideal_implies_subset
   by (auto simp: closed_subsets_def pr_ideal_axioms_def pr_ideal_def)
 
-lemma closed_subsets_empty [simp]:
+lemma closed_subsets_zero [simp]:
   shows "\<V> {\<zero>} = Spec"
   unfolding closed_subsets_def spectrum_def pr_ideal_def pr_ideal_axioms_def
   by (auto dest: ideal_zero)
@@ -1914,7 +1914,7 @@ lemma is_regular_one_sheaf_spec:
 proof -
   have "one_sheaf_spec U \<pp> \<in> R \<^bsub>\<pp> (+) (\<cdot>) \<zero>\<^esub>" if "\<pp> \<in> U" for \<pp>
     unfolding one_sheaf_spec_def
-    by (smt assms closed_subsets_empty comm_ring.closed_subsets_def
+    by (smt assms closed_subsets_zero comm_ring.closed_subsets_def
         quotient_ring.carrier_quotient_ring_iff quotient_ring.valid_frac_one
         quotient_ring_def local.comm_ring_axioms mem_Collect_eq
         pr_ideal.carrier_local_ring_at_def pr_ideal.submonoid_pr_ideal
