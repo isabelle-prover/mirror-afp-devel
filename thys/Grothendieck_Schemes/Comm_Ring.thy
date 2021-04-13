@@ -363,8 +363,9 @@ lemma closed_subsets_R [simp]:
   by (auto simp: closed_subsets_def pr_ideal_axioms_def pr_ideal_def)
 
 lemma closed_subsets_empty [simp]:
-  shows "\<V> {} = Spec"
-  using closed_subsets_def spectrum_def by force
+  shows "\<V> {\<zero>} = Spec"
+  unfolding closed_subsets_def spectrum_def pr_ideal_def pr_ideal_axioms_def
+  by (auto dest: ideal_zero)
 
 lemma closed_subsets_ideal_aux:
   assumes \<aa>: "ideal \<aa> R (+) (\<cdot>) \<zero> \<one>" and \<bb>: "ideal \<bb> R (+) (\<cdot>) \<zero> \<one>"
@@ -1403,8 +1404,7 @@ proof
 qed auto
 
 interpretation local:quotient_ring "(R \<setminus> I)" R "(+)" "(\<cdot>)" \<zero> \<one>
-  apply intro_locales
-  by (meson submonoid_def submonoid_pr_ideal)
+  by intro_locales (meson submonoid_def submonoid_pr_ideal)
 
 (* definition 0.28 *)
 definition carrier_local_ring_at:: "('a \<times> 'a) set set"
@@ -1451,7 +1451,7 @@ lemma eq_from_eq_frac:
 end (* pr_ideal *)
 
 abbreviation carrier_of_local_ring_at::
-"'a set \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) set set" ("_ \<^bsub>_ _ _ _\<^esub>")
+"'a set \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) set set" ("_ \<^bsub>_ _ _ _\<^esub>" [1000]1000)
 where "R \<^bsub>I add mult zero\<^esub> \<equiv> pr_ideal.carrier_local_ring_at R I add mult zero"
 
 
@@ -1853,10 +1853,9 @@ lemma is_regular_zero_sheaf_spec:
 proof -
   have "zero_sheaf_spec U \<pp> \<in> R \<^bsub>\<pp> (+) (\<cdot>) \<zero>\<^esub>" if "\<pp> \<in> U" for \<pp>
     unfolding zero_sheaf_spec_def
-    using assms closed_subsets_def closed_subsets_empty quotient_ring.carrier_quotient_ring_iff
-      quotient_ring.valid_frac_zero quotient_ring_def local.comm_ring_axioms
-      pr_ideal.carrier_local_ring_at_def pr_ideal.submonoid_pr_ideal subsetD that zariski_open_is_subset
-    by fastforce
+    using assms comm_ring.frac_in_carrier_local local.comm_ring_axioms pr_ideal.not_1 
+          quotient_ring.zero_rel_def spectrum_imp_cxt_quotient_ring spectrum_imp_pr subsetD that 
+          zariski_top_space.open_imp_subset by fastforce
   moreover have "(\<exists>V\<subseteq>U. is_zariski_open V \<and> \<pp> \<in> V \<and> is_locally_frac (zero_sheaf_spec U) V)"
     if "\<pp> \<in> U" for \<pp>
   proof -
