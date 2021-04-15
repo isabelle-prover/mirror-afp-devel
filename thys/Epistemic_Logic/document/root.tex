@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{isabelle,isabellesym}
 
 \usepackage{amssymb}
@@ -16,15 +16,18 @@
 
 \begin{document}
 
-\title{Epistemic Logic}
+\title{Epistemic Logic: Completeness of Modal Logics}
 \author{Asta Halkjær From}
 \maketitle
 
 \begin{abstract}
   This work is a formalization of epistemic logic with countably many agents.
   It includes proofs of soundness and completeness for the axiom system K.
-  The completeness proof is based on the textbook ``Reasoning About Knowledge''
+  The completeness proof is based on the textbook "Reasoning About Knowledge"
   by Fagin, Halpern, Moses and Vardi (MIT Press 1995)~\cite{fagin1995}.
+  The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs
+  are based on the textbook "Modal Logic" by Blackburn, de Rijke and Venema
+  (Cambridge University Press 2001)~\cite{blackburn2001}.
 \end{abstract}
 
 \tableofcontents
