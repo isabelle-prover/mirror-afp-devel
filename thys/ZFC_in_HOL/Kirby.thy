@@ -1623,7 +1623,7 @@ proof (subst ordertype_eq_iff)
       assume "f p < f q"
       with \<section> assms have "(u, x) \<in> r \<or> u=x \<and> (v, y) \<in> s"
         apply (simp add: f_def)
-        by (metis Ord_add Ord_add_mult_iff Ord_mem_iff_lt Ord_mult Ord_ordermap converse_ordermap_mono 
+        by (metis Ord_add Ord_add_mult_iff Ord_mem_iff_lt Ord_mult wf_Ord_ordermap converse_ordermap_mono 
             ordermap_eq_iff ordermap_in_ordertype wf_Ord_ordertype)
       then show "(p,q) \<in> (r <*lex*> s)"
         by (simp add: \<section>)
@@ -1642,7 +1642,7 @@ proof (subst ordertype_eq_iff)
           assume "p = (a, b)" and "q = (a', b')"
           then have "?\<beta> * ordermap A r a + ordermap B s b < ?\<beta> * ordermap A r a'"
             using ux assms \<section>
-            by (metis Ord_mult Ord_ordermap OrdmemD Pair_inject add_mult_less ordermap_in_ordertype ordermap_mono wf_Ord_ordertype)
+            by (metis Ord_mult wf_Ord_ordermap OrdmemD Pair_inject add_mult_less ordermap_in_ordertype ordermap_mono wf_Ord_ordertype)
           also have "\<dots> \<le> ?\<beta> * ordermap A r a' + ordermap B s b'"
             by simp
           finally show "?\<beta> * ordermap A r a + ordermap B s b < ?\<beta> * ordermap A r a' + ordermap B s b'" .

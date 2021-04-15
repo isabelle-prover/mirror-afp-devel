@@ -26,8 +26,7 @@ proof -
   have "small D" "D \<subseteq> ON"
     using assms down elts_subset_ON [of \<beta>] by auto
   then have \<phi>_less_iff: "\<And>\<gamma> \<delta>. \<lbrakk>\<gamma> \<in> elts (tp D); \<delta> \<in> elts (tp D)\<rbrakk> \<Longrightarrow> \<phi> \<gamma> < \<phi> \<delta> \<longleftrightarrow> \<gamma> < \<delta>"
-    using ordermap_mono_less [of _ _ VWF D] bij_betw_apply [OF bij_\<phi>] VWF_iff_Ord_less \<phi>_cancel_right trans_VWF wf_VWF
-    by (metis ON_imp_Ord Ord_linear2 less_V_def order.asym)
+    by (metis ON_imp_Ord Ord_linear2 \<phi>_def inv_into_ordermap inv_ordermap_VWF_mono_le leD less_V_def)
   obtain \<alpha>s where "List.set \<alpha>s \<subseteq> ON" and "\<omega>_dec \<alpha>s" and tpD_eq: "tp D = \<omega>_sum \<alpha>s"
     using Ord_ordertype \<omega>_nf_exists by blast                \<comment> \<open>Cantor normal form of the ordertype\<close>
   have ord [simp]: "Ord (\<alpha>s ! k)" "Ord (\<omega>_sum (take k \<alpha>s))" if "k < length \<alpha>s" for k
@@ -225,7 +224,8 @@ qed
 text \<open>The ``remark'' of Erdős and E. C. Milner, Canad. Math. Bull. Vol. 17 (2), 1974\<close>
 
 proposition indecomposable_imp_Ex_less_sets:
-  assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" and A: "tp A = \<alpha>" "small A" "A \<subseteq> ON"
+  assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" 
+    and A: "tp A = \<alpha>" "small A" "A \<subseteq> ON"
     and "x \<in> A" and A1: "tp A1 = \<alpha>" "A1 \<subseteq> A"
   obtains A2 where "tp A2 = \<alpha>" "A2 \<subseteq> A1" "{x} \<lless> A2"
 proof -
@@ -244,12 +244,15 @@ proof -
   then have "Ord \<gamma>"
     using Ord_in_Ord \<open>Ord \<alpha>\<close> by blast
   define B where "B \<equiv> \<phi> ` (elts (succ \<gamma>))"
+  have B: "{y \<in> A. ordermap A VWF y \<le> ordermap A VWF x} \<subseteq> B"
+    apply (clarsimp simp add: B_def \<gamma>_def image_iff \<phi>_def)
+    by (metis Ord_linear Ord_ordermap OrdmemD bij_betw_inv_into_left bij_om leD)
   show thesis
   proof
     have "small A1"
       by (meson \<open>small A\<close> A1 smaller_than_small)
     then have "tp (A1 - B) \<le> tp A1"
-      unfolding B_def by (auto intro!: ordertype_VWF_mono del: vsubsetI)
+      by (simp add: ordertype_VWF_mono)
     moreover have "tp (A1 - B) \<ge> \<alpha>"
     proof -
       have "\<not> (\<alpha> \<le> tp B)"
@@ -265,34 +268,20 @@ proof -
           using \<gamma> Limit_def \<open>Limit \<alpha>\<close> by blast
         with A sub show "\<phi> u < \<phi> v"
           if "u \<in> elts (succ  \<gamma>)" and "v \<in> elts (succ  \<gamma>)" and "u < v" for u v
-          by (metis ON_imp_Ord Ord_not_le \<open>A \<subseteq> ON\<close> \<open>small A\<close> \<phi>_def bij_\<phi> bij_betw_apply inv_ordermap_VWF_mono_le leD subsetD that)
+          by (metis ON_imp_Ord Ord_linear2 \<phi>_def inv_into_ordermap inv_ordermap_VWF_mono_le leD subset_iff that)
         show "\<not> \<alpha> \<le> tp (elts (succ  \<gamma>))"
           by (metis Limit_def Ord_succ \<gamma> \<open>Limit \<alpha>\<close> \<open>Ord \<gamma>\<close> mem_not_refl ordertype_eq_Ord vsubsetD)
       qed auto
       then show ?thesis
-        using indecomposable_ordertype_ge [OF indec, of A1 B] \<open>small A1\<close> A1
-        by (auto simp: B_def)
+        using indecomposable_ordertype_ge [OF indec, of A1 B] \<open>small A1\<close> A1 by (auto simp: B_def)
     qed
     ultimately show "tp (A1 - B) = \<alpha>"
       using A1 by blast
-    show "{x} \<lless> (A1 - B)"
-    proof (clarsimp simp: less_sets_def B_def simp del: elts_succ)
-      fix y
-      assume "y \<in> A1" and y: "y \<notin> \<phi> ` elts (succ \<gamma>)"
-      obtain "Ord x" "Ord y"
-        using \<open>A \<subseteq> ON\<close> \<open>x \<in> A\<close> \<open>y \<in> A1\<close> A1 by auto
-      have "y \<in> \<phi> ` elts (succ \<gamma>)" if "y \<in> elts (succ x)"
-      proof -
-        have "ordermap A VWF y \<in> elts (ZFC_in_HOL.succ (ordermap A VWF x))"
-          using A1
-          by (metis insert_iff ordermap_mono subset_iff that wf_VWF OrdmemD VWF_iff_Ord_less \<open>Ord x\<close> \<open>Ord y\<close> \<open>small A\<close> \<open>y \<in> A1\<close> elts_succ)
-        then show ?thesis
-          using that A1 unfolding \<gamma>_def
-          by (metis \<open>y \<in> A1\<close> \<phi>_def bij_betw_inv_into_left bij_om imageI subsetD)
-      qed
-      then show "x < y"
-        by (meson Ord_linear2 Ord_mem_iff_lt Ord_succ \<open>Ord x\<close> \<open>Ord y\<close> y succ_le_iff)
-    qed
+    have "{x} \<lless> (A - B)"
+      using assms B 
+      apply (clarsimp simp: less_sets_def  \<phi>_def subset_iff)
+      by (metis Ord_not_le VWF_iff_Ord_less less_V_def order_refl ordermap_mono_less trans_VWF wf_VWF)
+    with \<open>A1 \<subseteq> A\<close> show "{x} \<lless> (A1 - B)" by auto
   qed auto
 qed
 
@@ -1242,7 +1231,7 @@ qed
 
 theorem Erdos_Milner:
   assumes \<nu>: "\<nu> \<in> elts \<omega>1"
-  shows "partn_lst_VWF (\<omega>\<up>(1 + \<nu> * ord_of_nat n)) [ord_of_nat (2^n), \<omega>\<up>(1+\<nu>)] 2"
+  shows "partn_lst_VWF (\<omega>\<up>(1 + \<nu> * n)) [ord_of_nat (2^n), \<omega>\<up>(1+\<nu>)] 2"
 proof (induction n)
   case 0
   then show ?case
