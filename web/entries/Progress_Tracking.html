@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Syntax-Independent Logic Infrastructure - Archive of Formal Proofs
+<title>Formalization of Timely Dataflow's Progress Tracking Protocol - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,19 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>yntax-Independent
+  <h1>          <font class="first">F</font>ormalization
   
-          <font class="first">L</font>ogic
+          of
   
-          <font class="first">I</font>nfrastructure
+          <font class="first">T</font>imely
+  
+          <font class="first">D</font>ataflow's
+  
+          <font class="first">P</font>rogress
+  
+          <font class="first">T</font>racking
+  
+          <font class="first">P</font>rotocol
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +95,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Syntax-Independent Logic Infrastructure</td>
+  <td class="data" width="80%">Formalization of Timely Dataflow's Progress Tracking Protocol</td>
 </tr>
 
 <tr>
@@ -95,7 +103,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    <a href="https://www.andreipopescu.uk">Andrei Popescu</a> and
+                      Matthias Brun,
+                  Sára Decova,
+                <a href="https://andrea.lattuada.me">Andrea Lattuada</a> and
           <a href="https://traytel.bitbucket.io/">Dmitriy Traytel</a>
       </td>
 </tr>
@@ -104,48 +114,36 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-09-16</td>
+  <td class="data">2021-04-13</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize a notion of logic whose terms and formulas are kept
-abstract. In particular, logical connectives, substitution, free
-variables, and provability are not defined, but characterized by their
-general properties as locale assumptions. Based on this abstract
-characterization, we develop further reusable reasoning
-infrastructure. For example, we define parallel substitution (along
-with proving its characterizing theorems) from single-point
-substitution. Similarly, we develop a natural deduction style proof
-system starting from the abstract Hilbert-style one. These one-time
-efforts benefit different concrete logics satisfying our locales'
-assumptions.  We instantiate the syntax-independent logic
-infrastructure to Robinson arithmetic (also known as Q) in the AFP
-entry <a
-href="https://www.isa-afp.org/entries/Robinson_Arithmetic.html">Robinson_Arithmetic</a>
-and to hereditarily finite set theory in the AFP entries <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semantic.html">Goedel_HFSet_Semantic</a>
-and <a
-href="https://www.isa-afp.org/entries/Goedel_HFSet_Semanticless.html">Goedel_HFSet_Semanticless</a>,
-which are part of our formalization of G&ouml;del's
-Incompleteness Theorems described in our CADE-27 paper <a
-href="https://dx.doi.org/10.1007/978-3-030-29436-6_26">A
-Formally Verified Abstract Account of Gödel's Incompleteness
-Theorems</a>.</td>
+Large-scale stream processing systems often follow the dataflow
+paradigm, which enforces a program structure that exposes a high
+degree of parallelism. The Timely Dataflow distributed system supports
+expressive cyclic dataflows for which it offers low-latency data- and
+pipeline-parallel stream processing. To achieve high expressiveness
+and performance, Timely Dataflow uses an intricate distributed
+protocol for tracking the computation’s progress. We formalize this
+progress tracking protocol and verify its safety. Our formalization is
+described in detail in our forthcoming <a
+href="https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf">ITP'21
+paper</a>.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Syntax_Independent_Logic-AFP,
-  author  = {Andrei Popescu and Dmitriy Traytel},
-  title   = {Syntax-Independent Logic Infrastructure},
+        <pre>@article{Progress_Tracking-AFP,
+  author  = {Matthias Brun and Sára Decova and Andrea Lattuada and Dmitriy Traytel},
+  title   = {Formalization of Timely Dataflow's Progress Tracking Protocol},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2020,
-  note    = {\url{https://isa-afp.org/entries/Syntax_Independent_Logic.html},
+  month   = apr,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Progress_Tracking.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -156,10 +154,10 @@ Theorems</a>.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Goedel_Incompleteness.html">Goedel_Incompleteness</a>, <a href="Robinson_Arithmetic.html">Robinson_Arithmetic</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -171,29 +169,23 @@ Theorems</a>.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Progress_Tracking/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Progress_Tracking/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Syntax_Independent_Logic/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Progress_Tracking/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Syntax_Independent_Logic-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Progress_Tracking-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Syntax_Independent_Logic-2020-09-18.tar.gz">
-              afp-Syntax_Independent_Logic-2020-09-18.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

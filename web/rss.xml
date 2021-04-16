@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Apr 2021 00:00:00 +0000</pubDate>
+    <pubDate>13 Apr 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Timely Dataflow's Progress Tracking Protocol</title>
+              <link>https://www.isa-afp.org/entries/Progress_Tracking.html</link>
+       <guid>https://www.isa-afp.org/entries/Progress_Tracking.html</guid>
+       <dc:creator> Matthias Brun, Sára Decova, Andrea Lattuada, Dmitriy Traytel       </dc:creator>
+       <pubDate>13 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+Large-scale stream processing systems often follow the dataflow
+paradigm, which enforces a program structure that exposes a high
+degree of parallelism. The Timely Dataflow distributed system supports
+expressive cyclic dataflows for which it offers low-latency data- and
+pipeline-parallel stream processing. To achieve high expressiveness
+and performance, Timely Dataflow uses an intricate distributed
+protocol for tracking the computation’s progress. We formalize this
+progress tracking protocol and verify its safety. Our formalization is
+described in detail in our forthcoming &lt;a
+href=&#34;https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf&#34;&gt;ITP&#39;21
+paper&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Information Flow Control via Dependency Tracking</title>
               <link>https://www.isa-afp.org/entries/IFC_Tracking.html</link>
@@ -571,26 +590,6 @@ standard compliance formalization of Web Components in the AFP entry
 &#34;DOM_Components&#34;, the notion of components in this entry
 (based on &#34;SC_DOM&#34; and &#34;Shadow_SC_DOM&#34;) provides
 much stronger safety guarantees.</description>
-    </item>
-    <item>
-       <title>A Formalization of Web Components</title>
-              <link>https://www.isa-afp.org/entries/DOM_Components.html</link>
-       <guid>https://www.isa-afp.org/entries/DOM_Components.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-While the DOM with shadow trees provide the technical basis for
-defining web components, the DOM standard neither defines the concept
-of web components nor specifies the safety properties that web
-components should guarantee. Consequently, the standard also does not
-discuss how or even if the methods for modifying the DOM respect
-component boundaries.  In AFP entry, we present a formally verified
-model of web components and define safety properties which ensure that
-different web components can only interact with each other using
-well-defined interfaces. Moreover, our verification of the application
-programming interface (API) of the DOM revealed numerous invariants
-that implementations of the DOM API need to preserve to ensure the
-integrity of components.</description>
     </item>
   </channel>
 </rss>
