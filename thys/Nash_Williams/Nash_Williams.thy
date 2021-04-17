@@ -121,7 +121,17 @@ subsection \<open>Definitions and basic properties\<close>
 definition Ramsey :: "[nat set set, nat] \<Rightarrow> bool"
   where "Ramsey \<F> r \<equiv> \<forall>f \<in> \<F> \<rightarrow> {..<r}.
                        \<forall>M. infinite M \<longrightarrow>
-                           (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and> (\<forall>j<r. j\<noteq>i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {}))"
+                           (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and>
+                                  (\<forall>j<r. j\<noteq>i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {}))"
+
+text \<open>Alternative definition suggested by a referee. Despite its simplicity, it doesn't simplify proofs.\<close>
+lemma Ramsey_eq: 
+  "Ramsey \<F> r \<longleftrightarrow> (\<forall>f \<in> \<F> \<rightarrow> {..<r}.
+                       \<forall>M. infinite M \<longrightarrow>
+                           (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and> \<F> \<inter> Pow N \<subseteq> f -` {i}))"
+  unfolding Ramsey_def 
+  by (intro ball_cong all_cong ex_cong1 conj_cong refl) blast
+
 
 definition thin_set :: "nat set set \<Rightarrow> bool"
   where "thin_set \<F> \<equiv> \<F> \<subseteq> Collect finite \<and> (\<forall>S\<in>\<F>. \<forall>T\<in>\<F>. init_segment S T \<longrightarrow> S=T)"

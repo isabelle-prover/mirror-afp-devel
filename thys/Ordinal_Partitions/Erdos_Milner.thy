@@ -364,7 +364,7 @@ next
           by (meson A_\<alpha>\<beta> Ord_in_Ord VWF_iff_Ord_less \<open>small A\<close> in_mono ordermap_mono_less trans_VWF wf_VWF)
         have \<alpha>_sub: "elts \<alpha> \<subseteq> ordermap A VWF ` A"
           by (metis \<open>small A\<close> elts_of_set less_eq_V_def ordertype_def ot replacement)
-        have g: "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha> * \<beta>)"
+        have g: "?g \<in> elts \<alpha> \<rightarrow> elts (\<alpha>*\<beta>)"
           by (meson A_\<alpha>\<beta> Pi_I' \<alpha>_sub inv_into_into subset_eq)
         then have fg: "f \<circ> (\<lambda>X. ?g ` X) \<in> [elts \<alpha>]\<^bsup>2\<^esup> \<rightarrow> {..<2}"
           by (rule nsets_compose_image_funcset [OF f _ inj_g])
@@ -386,7 +386,7 @@ next
             by blast
         next
           case 1
-          have gH: "?g ` H \<subseteq> elts (\<alpha> * \<beta>)"
+          have gH: "?g ` H \<subseteq> elts (\<alpha>*\<beta>)"
             by (metis A_\<alpha>\<beta> \<alpha>_sub \<open>H \<subseteq> elts \<alpha>\<close> image_subsetI inv_into_into subset_eq)
           have g_less: "?g x < ?g y" if "x < y" "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" for x y
             using Pi_mem [OF g] ord that
@@ -421,7 +421,7 @@ next
           using that \<AA> by (auto simp: Pi_iff subset_iff_less_eq_V)
         assume not_\<alpha>_le: "\<not> \<alpha> \<le> tp {x \<in> A. tp (M D \<AA> x) \<ge> tp D}"
         moreover
-        obtain "small A" "small A'" "A' \<subseteq> A" and A'_sub: "A' \<subseteq> elts (\<alpha> * \<beta>)"
+        obtain "small A" "small A'" "A' \<subseteq> A" and A'_sub: "A' \<subseteq> elts (\<alpha>*\<beta>)"
           using A'_def A down by auto
         moreover have "A' = A - ?AD"
           by (force simp: A'_def)
@@ -470,7 +470,7 @@ next
           using \<open>\<nu> \<in> D\<close> small_\<AA> by (fastforce simp: \<A>_def intro: smaller_than_small sm_K1)
         ultimately have K0\<AA>_ge: "tp (KI 0 X \<inter> \<AA> \<nu>) \<ge> \<alpha>"
           using indecomposable_ordertype_finite_ge [OF indec \<AA>\<nu>_\<A>] by (auto simp: \<A>_def)
-        have \<AA>\<nu>: "\<AA> \<nu> \<subseteq> elts (\<alpha> * \<beta>)" "tp (\<AA> \<nu>) = \<alpha>"
+        have \<AA>\<nu>: "\<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>)" "tp (\<AA> \<nu>) = \<alpha>"
           using \<open>\<nu> \<in> D\<close> \<AA> by blast+
         then obtain Y where Ysub: "Y \<subseteq> KI 0 X \<inter> \<AA> \<nu>" and "finite Y" "card Y = k" and fY0: "f ` [Y]\<^bsup>2\<^esup> \<subseteq> {0}"
           using Ak0 [OF _ K0\<AA>_ge] by (auto simp: nsets_def [of _ k])
@@ -478,7 +478,7 @@ next
           using Ysub KI_disj_self by blast
         then have "card (X \<union> Y) = 2*k"
           by (simp add: \<open>card X = k\<close> \<open>card Y = k\<close> \<open>finite X\<close> \<open>finite Y\<close> card_Un_disjoint)
-        moreover have "X \<union> Y \<subseteq> elts (\<alpha> * \<beta>)"
+        moreover have "X \<union> Y \<subseteq> elts (\<alpha>*\<beta>)"
           using A'_sub \<open>X \<subseteq> A'\<close> \<AA>\<nu>(1) \<open>Y \<subseteq> KI 0 X \<inter> \<AA> \<nu>\<close> by auto
         moreover have "f ` [X \<union> Y]\<^bsup>2\<^esup> \<subseteq> {0}"
           using fX0 fY0 Ysub by (auto simp: \<dagger> nsets_disjoint_2 image_Un image_UN KI_def K_def)
@@ -526,27 +526,24 @@ next
           by (rule ordertype_mono) (use A'' A down in auto)
         finally show ?thesis .
       qed
-      have [simp]: "tp {0} = 1"
-        using ordertype_eq_Ord by fastforce
       have IX': "tp {x \<in> A'. tp (K 1 x \<inter> A) \<ge> \<alpha>} \<ge> \<alpha>"
         if A: "A \<subseteq> elts (\<alpha>*\<beta>)" "tp A = \<alpha>" and A': "A' \<subseteq> elts (\<alpha>*\<beta>)" "tp A' = \<alpha>" for A A'
       proof -
-        have \<ddagger>: "\<alpha> \<le> tp (K 1 t \<inter> A)" if "t \<in> A'" "1 \<le> tp {\<nu>. \<nu> = 0 \<and> \<alpha> \<le> tp (K 1 t \<inter> A)}" for t
+        have \<ddagger>: "\<alpha> \<le> tp (K 1 t \<inter> A)" if "1 \<le> tp {\<nu>. \<nu> = 0 \<and> \<alpha> \<le> tp (K 1 t \<inter> A)}" for t
           using that
           by (metis Collect_empty_eq less_eq_V_0_iff ordertype_empty zero_neq_one)
         have "tp {x \<in> A'. 1 \<le> tp {\<nu>. \<nu> = 0 \<and> \<alpha> \<le> tp (K 1 x \<inter> A)}}
-                  \<le> tp {x \<in> A'. \<alpha> \<le> tp (K 1 x \<inter> A)}"
+            \<le> tp {x \<in> A'. \<alpha> \<le> tp (K 1 x \<inter> A)}"
           by (rule ordertype_mono) (use "\<ddagger>" A' in \<open>auto simp: down\<close>)
         then show ?thesis
-          using IX [of "{0}" A' "\<lambda>x. A"] that \<open>0 \<in> elts \<beta>\<close>
-          by (simp add: M_def cong: conj_cong)
+          using IX [of "{0}" A' "\<lambda>x. A"] that \<open>0 \<in> elts \<beta>\<close> by (force simp: M_def)
       qed
 
       have 10: "\<exists>x0 \<in> A. \<exists>g \<in> elts \<beta> \<rightarrow> elts \<beta>. strict_mono_on g (elts \<beta>) \<and> (\<forall>\<nu> \<in> F. g \<nu> = \<nu>)
                                       \<and> (\<forall>\<nu> \<in> elts \<beta>. tp (K 1 x0 \<inter> \<AA> (g \<nu>)) \<ge> \<alpha>)"
         if F: "finite F" "F \<subseteq> elts \<beta>"
           and A: "A \<subseteq> elts (\<alpha>*\<beta>)" "tp A = \<alpha>"
-          and \<AA>: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha> * \<beta>) \<and> tp X = \<alpha>}"
+          and \<AA>: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
         for F A \<AA>
       proof -
         define p where "p \<equiv> card F"
@@ -587,10 +584,8 @@ next
         proof -
           obtain k where k: "k \<le> p" "\<xi> = \<iota> k"
             by (metis \<open>\<xi> \<in> F\<close> atMost_iff bij\<iota> bij_betw_def imageE insert_iff)
-          then have "k \<noteq> p"
-            using that F by auto
-          with k show ?thesis
-            using le_neq_implies_less by blast
+          then show ?thesis
+            using \<open>\<beta> \<notin> F\<close> \<open>\<iota> p = \<beta>\<close> le_imp_less_or_eq that by blast
         qed
         have F_imp_ge: "\<xi> \<ge> \<iota> 0" if "\<xi> \<in> F" for \<xi>
           using F_imp_Ex [OF that] by (metis dual_order.order_iff_strict le0 less_\<iota>_I)
@@ -602,18 +597,16 @@ next
         have M_Int_D: "M (elts \<beta>) \<AA> x \<inter> D k = M (D k) \<AA> x" if "k \<le> p" for x k
           using D\<beta> by (auto simp: M_def)
         have \<iota>_le_if_D: "\<iota> k \<le> \<mu>" if "\<mu> \<in> D (Suc k)" for \<mu> k
-          using that
-          by (simp add: D_def order.order_iff_strict split: if_split_asm)
-        have "disjnt (D i) (D j)" if "i < j" "j \<le> p" for i j
+          using that by (simp add: D_def order.order_iff_strict)
+        have mono_D: "D i \<lless> D j" if "i < j" "j \<le> p" for i j
         proof (cases j)
           case (Suc j')
-          then show ?thesis
-            using that
-            apply (auto simp: disjnt_def D_def)
-            using not_less_eq by (blast intro: less_\<iota>_D less_trans Suc_leD)+
+          with that show ?thesis
+            apply (simp add: less_sets_def D_def Ball_def)
+            by (metis One_nat_def diff_Suc_1 le_\<iota> less_le_trans less_trans)
         qed (use that in auto)
         then have disjnt_DD: "disjnt (D i) (D j)" if "i \<noteq> j" "i \<le> p" "j \<le> p" for i j
-          using disjnt_sym nat_neq_iff that by auto
+          by (meson disjnt_sym less_linear less_sets_imp_disjnt that)
         have UN_D_eq: "(\<Union>l \<le> k. D l) = {..<\<iota> k} \<inter> (elts \<beta> - F)" if "k \<le> p" for k
           using that
         proof (induction k)
@@ -750,9 +743,7 @@ next
                 qed
                 then show ?thesis
                   using that h_in_D [OF \<mu>]
-                  apply (simp add: D_def split: if_split_asm)
-                   apply (metis (no_types) dual_order.order_iff_strict le0 less_\<iota>_I less_trans)
-                  by (metis (no_types) dual_order.order_iff_strict less_\<iota>_I less_trans)
+                  by (smt (verit, best) Int_lower1 UN_D_eq UN_I atMost_iff lessThan_iff less_imp_le subset_eq)
               qed
               moreover have "h (\<beta>idx \<mu>) \<mu> < h (\<beta>idx \<nu>) \<nu>"
                 if \<mu>: "\<mu> \<notin> F" "\<mu> \<in> elts \<beta>" and \<nu>: "\<nu> \<notin> F" "\<nu> \<in> elts \<beta>" and "\<mu> < \<nu>" for \<mu> \<nu>
@@ -804,7 +795,7 @@ next
           then obtain l where lp: "\<And>x. x \<in> A'\<Longrightarrow> l x \<le> p"
             and lless: "\<And>x. x \<in> A'\<Longrightarrow> tp (M (elts \<beta>) \<AA> x \<inter> D (l x)) < tp (D (l x))"
             by metis
-          obtain A'' L where "A'' \<subseteq> A'" and A'': "A'' \<subseteq> elts (\<alpha> * \<beta>)" "tp A'' = \<alpha>" and lL: "\<And>x. x \<in> A'' \<Longrightarrow> l x = L"
+          obtain A'' L where "A'' \<subseteq> A'" and A'': "A'' \<subseteq> elts (\<alpha>*\<beta>)" "tp A'' = \<alpha>" and lL: "\<And>x. x \<in> A'' \<Longrightarrow> l x = L"
           proof -
             have eq: "A' = (\<Union>i\<le>p. {x \<in> A'. l x = i})"
               using lp by auto
@@ -825,13 +816,13 @@ next
                 by (meson A' A down order_trans ordertype_VWF_mono)
               with \<open>\<alpha> \<le> tp A''\<close> have "tp A'' = \<alpha>"
                 using A'(2) by auto
-              moreover have "A'' \<subseteq> elts (\<alpha> * \<beta>)"
+              moreover have "A'' \<subseteq> elts (\<alpha>*\<beta>)"
                 using A' A \<open>A'' \<subseteq> A'\<close> by auto
               ultimately show thesis
                 using L that [OF \<open>A'' \<subseteq> A'\<close>] by blast
             qed
           qed
-          have \<AA>D: "\<AA> \<in> D L \<rightarrow> {X. X \<subseteq> elts (\<alpha> * \<beta>) \<and> tp X = \<alpha>}"
+          have \<AA>D: "\<AA> \<in> D L \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
             using \<AA> D\<beta> by blast
           have "M (elts \<beta>) \<AA> x \<inter> D L = M (D L) \<AA> x" for x
             using D\<beta> by (auto simp: M_def)
@@ -881,14 +872,14 @@ next
         by (auto simp: \<Phi>_def add_mult_less add_mult_less_add_mult ordertype_image_plus strict_mono_sets_def less_sets_def)
       have step: "Ex (\<lambda>(g,\<AA>',xn). \<Psi> n g \<AA> \<AA>' xn \<and> \<Phi> (Suc n) \<AA>' (x(n:=xn)))" if "\<Phi> n \<AA> x" for n \<AA> x
       proof -
-        have \<AA>: "\<And>\<nu>. \<nu> \<in> elts \<beta> \<Longrightarrow> \<AA> \<nu> \<subseteq> elts (\<alpha> * \<beta>) \<and> tp (\<AA> \<nu>) = \<alpha>"
-          and x: "x ` {..<n} \<subseteq> elts (\<alpha> * \<beta>)"
+        have \<AA>: "\<And>\<nu>. \<nu> \<in> elts \<beta> \<Longrightarrow> \<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>) \<and> tp (\<AA> \<nu>) = \<alpha>"
+          and x: "x ` {..<n} \<subseteq> elts (\<alpha>*\<beta>)"
           and sub: "\<Union> (\<AA> ` elts \<beta>) \<subseteq> KI (Suc 0) (x ` {..<n})"
           and sm: "strict_mono_sets (elts \<beta>) \<AA>"
           using that by (auto simp: \<Phi>_def)
-        have \<mu>\<beta>: "\<mu> ` {..n} \<subseteq> elts \<beta>" and \<AA>sub: "\<AA> (\<mu> n) \<subseteq> elts (\<alpha> * \<beta>)"
+        have \<mu>\<beta>: "\<mu> ` {..n} \<subseteq> elts \<beta>" and \<AA>sub: "\<AA> (\<mu> n) \<subseteq> elts (\<alpha>*\<beta>)"
           by (auto simp: \<AA>)
-        have \<AA>fun: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha> * \<beta>) \<and> tp X = \<alpha>}"
+        have \<AA>fun: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
           by (simp add: \<AA>)
         then obtain xn g where xn: "xn \<in> \<AA> (\<mu> n)" and g: "g \<in> elts \<beta> \<rightarrow> elts \<beta>"
           and sm_g: "strict_mono_on g (elts \<beta>)" and g_\<mu>: "\<forall>\<nu> \<in> \<mu>`{..n}. g \<nu> = \<nu>"
@@ -918,9 +909,9 @@ next
           by auto
         have "K (Suc 0) xn \<inter> (\<Union>x\<in>elts \<beta> \<inter> {\<nu>. \<nu> \<noteq> \<mu> n}. \<AA> (g x)) \<subseteq> KI (Suc 0) (x ` {..<n})"
           using sub g by (auto simp: KI_def)
-        moreover have "A2 \<subseteq> KI (Suc 0) (x ` {..<n})" "A2 \<subseteq> elts (\<alpha> * \<beta>)"
+        moreover have "A2 \<subseteq> KI (Suc 0) (x ` {..<n})" "A2 \<subseteq> elts (\<alpha>*\<beta>)"
           using \<AA>sub sub A2 by fastforce+
-        moreover have "xn \<in> elts (\<alpha> * \<beta>)"
+        moreover have "xn \<in> elts (\<alpha>*\<beta>)"
           using \<AA>sub xn by blast
         moreover have "strict_mono_sets (elts \<beta>) ?\<AA>"
           using sm sm_g g g_\<mu> A2_sub
@@ -962,7 +953,7 @@ next
         using that by blast
       have 15: "x n \<in> \<AA> n (\<mu> n)" and 16: "{x n} \<lless> (\<AA> (Suc n) (\<mu> n))" for n
         using H_imp_\<Psi> [of n] by (force simp: \<Psi>_def \<AA>_def x_def)+
-      have \<AA>_\<alpha>\<beta>: "\<AA> n \<nu> \<subseteq> elts (\<alpha> * \<beta>)" if "\<nu> \<in> elts \<beta>" for \<nu> n
+      have \<AA>_\<alpha>\<beta>: "\<AA> n \<nu> \<subseteq> elts (\<alpha>*\<beta>)" if "\<nu> \<in> elts \<beta>" for \<nu> n
         using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
       have 12: "strict_mono_sets (elts \<beta>) (\<AA> n)" for n
         using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
@@ -985,7 +976,7 @@ next
         using that by (auto simp: K_def)
       then have Z_K1: "f ` [?Z]\<^bsup>2\<^esup> \<subseteq> {1}"
         by (clarsimp simp: nsets_2_eq) (metis insert_commute less_linear)
-      moreover have Z_sub: "?Z \<subseteq> elts (\<alpha> * \<beta>)"
+      moreover have Z_sub: "?Z \<subseteq> elts (\<alpha>*\<beta>)"
         using "15" \<AA>_\<alpha>\<beta> \<mu>_in_\<beta> by blast
       moreover have "tp ?Z \<ge> \<omega> * \<beta>"
       proof -
