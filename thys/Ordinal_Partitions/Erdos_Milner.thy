@@ -1284,11 +1284,8 @@ next
     by (simp add: oexp_mono_le)
   then have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> (1 + ord_of_nat (n-1)), ord_of_nat (2 ^ (k-1))] 2"
     by (metis PV partn_lst_two_swap Partitions.partn_lst_greater_resource less_eq_V_def)
-  moreover have "(1 + ord_of_nat (n-1)) = n"
-    using ord_of_minus_1 [OF \<open>n > 0\<close>]
-    by (simp add: one_V_def)
-  ultimately have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> n, ord_of_nat (2 ^ (k-1))] 2"
-    by simp
+  then have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> n, ord_of_nat (2 ^ (k-1))] 2"
+    using ord_of_minus_1 [OF \<open>n > 0\<close>] by (simp add: one_V_def)
   then show ?thesis
     using power_gt_expt [of 2 "k-1"]
     by (force simp: less_Suc_eq intro: partn_lst_less)
