@@ -288,7 +288,7 @@ qed
 
 text \<open>the main theorem, from which they derive the headline result\<close>
 theorem Erdos_Milner_aux:
-  assumes part: "partn_lst_VWF \<alpha> [ord_of_nat k, \<gamma>] 2"
+  assumes part: "partn_lst_VWF \<alpha> [k, \<gamma>] 2"
     and indec: "indecomposable \<alpha>" and "k > 1" "Ord \<gamma>" and \<beta>: "\<beta> \<in> elts \<omega>1"
   shows "partn_lst_VWF (\<alpha>*\<beta>) [ord_of_nat (2*k), min \<gamma> (\<omega>*\<beta>)] 2"
 proof (cases "\<alpha>\<le>1 \<or> \<beta>=0")
