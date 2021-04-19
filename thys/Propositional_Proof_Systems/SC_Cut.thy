@@ -18,7 +18,7 @@ proof(induction F arbitrary: \<Gamma> \<Delta>)
   ultimately show ?case by blast
 next
   case Bot
-  have "\<bottom>, \<bottom>, \<Gamma> \<Rightarrow> \<Delta> \<Longrightarrow> \<bottom>, \<Gamma> \<Rightarrow> \<Delta>" by(induction "\<bottom>, \<bottom>, \<Gamma>" \<Delta> rule: SCp.induct; blast)
+  have "\<bottom>, \<bottom>, \<Gamma> \<Rightarrow> \<Delta> \<Longrightarrow> \<bottom>, \<Gamma> \<Rightarrow> \<Delta>" by(blast)
   moreover have "(\<Gamma> \<Rightarrow> \<bottom>, \<bottom>, \<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> \<bottom>, \<Delta>)"    
     using Bot_delR by fastforce
   ultimately show ?case by blast
