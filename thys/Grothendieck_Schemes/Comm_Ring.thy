@@ -700,7 +700,8 @@ definition ind_one_str:: "'a set \<Rightarrow> 'b"
 lemma ind_is_open_imp_ring:
   "\<And>U. it.ind_is_open U
    \<Longrightarrow> ring (ind_sheaf U) (ind_add_str U) (ind_mult_str U) (ind_zero_str U) (ind_one_str U)"
-    using ind_add_str_def it.ind_is_open_def ind_mult_str_def ind_one_str_def ind_sheaf_def ind_zero_str_def is_open_subset is_ring_from_is_homomorphism it.is_subset open_inter by force
+  unfolding ind_add_str_def it.ind_is_open_def ind_mult_str_def ind_one_str_def ind_sheaf_def ind_zero_str_def 
+  using is_open_subset is_ring_from_is_homomorphism it.is_subset open_inter by force
 
 lemma ind_sheaf_is_presheaf:
   shows "presheaf_of_rings U (it.ind_is_open) ind_sheaf ind_ring_morphisms b
@@ -713,12 +714,15 @@ proof -
     if "it.ind_is_open W" "it.ind_is_open V" "V \<subseteq> W" for W V
   proof (intro ring_homomorphism.intro ind_is_open_imp_ring)
     show "Set_Theory.map (ind_ring_morphisms W V) (ind_sheaf W) (ind_sheaf V)"
-      by (metis that it.ind_is_open_def ind_ring_morphisms_def ind_sheaf_def inf.left_idem is_open_subset is_ring_morphism open_inter ring_homomorphism_def)
+      unfolding ind_ring_morphisms_def ind_sheaf_def
+      by (metis that it.ind_is_open_def inf.left_idem is_open_subset is_ring_morphism 
+          open_inter ring_homomorphism_def)
     from that
     obtain o: "is_open (U \<inter> V)" "is_open (U \<inter> W)" "U \<inter> V \<subseteq> U \<inter> W"
       by (metis (no_types) it.ind_is_open_def inf.absorb_iff2 is_open_subset open_inter)
     then show "group_homomorphism (ind_ring_morphisms W V) (ind_sheaf W) (ind_add_str W) (ind_zero_str W) (ind_sheaf V) (ind_add_str V) (ind_zero_str V)"
-      by (metis ind_sheaf.ind_add_str_def ind_sheaf_axioms ind_ring_morphisms_def ind_sheaf_def ind_zero_str_def is_ring_morphism ring_homomorphism.axioms(4))
+      unfolding ind_ring_morphisms_def ind_sheaf_def ind_zero_str_def
+      by (metis ind_sheaf.ind_add_str_def ind_sheaf_axioms is_ring_morphism ring_homomorphism.axioms(4))
     show "monoid_homomorphism (ind_ring_morphisms W V) (ind_sheaf W) (ind_mult_str W) (ind_one_str W) (ind_sheaf V) (ind_mult_str V) (ind_one_str V)"
       using o by (metis ind_mult_str_def ind_one_str_def ind_ring_morphisms_def ind_sheaf_def is_ring_morphism ring_homomorphism_def)
   qed (use that in auto)
