@@ -757,7 +757,7 @@ fun expression struct_open range name constraint body ants context = context |>
     in fn () =>
       ML_Context.eval (ML_Compiler.verbose verbose ML_Compiler.flags) (#1 range)
        (ML_Lex.read ("Context.put_generic_context (SOME (let open " ^ struct_open ^ " val ") @
-                                                                 ML_Lex.read_set_range range name @
+                                                                 ML_Lex.read_range range name @
         ML_Lex.read (": " ^ constraint ^ " =") @ ants @
         ML_Lex.read ("in " ^ body ^ " end (Context.the_generic_context ())));"))
     end;
