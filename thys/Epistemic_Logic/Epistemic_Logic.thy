@@ -31,8 +31,7 @@ abbreviation TT ("\<^bold>\<top>") where
 abbreviation Neg ("\<^bold>\<not> _" [40] 40) where
   \<open>Neg p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
-abbreviation L where
-  \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
+abbreviation \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
 
 section \<open>Semantics\<close>
 
@@ -141,7 +140,7 @@ proof (intro exI conjI)
     unfolding transitive_def by simp
 qed
 
-section \<open>Axiom System K\<close>
+section \<open>Normal Modal Logic\<close>
 
 primrec eval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> where
   \<open>eval _ _ \<^bold>\<bottom> = False\<close>
