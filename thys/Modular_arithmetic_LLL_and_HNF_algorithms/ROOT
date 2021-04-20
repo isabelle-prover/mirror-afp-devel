@@ -1,7 +1,7 @@
 chapter AFP
   
 session Modular_arithmetic_LLL_and_HNF_algorithms (AFP) = Smith_Normal_Form +
-  options [timeout = 1800]
+  options [timeout = 7200]
   sessions
     LLL_Basis_Reduction 
     Show
