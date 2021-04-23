@@ -74,6 +74,16 @@ proof (induct xs arbitrary: ys)
   qed simp
 qed simp
 
+lemma finite_mset_set_inter:
+  \<open>finite A \<Longrightarrow> finite B \<Longrightarrow> mset_set (A \<inter> B) = mset_set A \<inter># mset_set B\<close>
+  apply (induction A rule: finite_induct)
+  subgoal by auto
+  subgoal for a A
+    by (cases \<open>a \<in> B\<close>; cases \<open>a \<in># mset_set B\<close>)
+      (use multi_member_split[of a \<open>mset_set B\<close>] in
+        \<open>auto simp: mset_set.insert_remove\<close>)
+  done
+
 
 subsection \<open>Lemmas about Filter and Image\<close>
 
@@ -337,6 +347,37 @@ proof -
     by (metis add_less_cancel_right add_mset_add_single diff_single_trivial insert_DiffM2 xM_lt_N)
 qed
 
+lemma remove_diff_multiset[simp]: \<open>x13 \<notin># A \<Longrightarrow> A - add_mset x13 B = A - B\<close>
+  by (metis diff_intersect_left_idem inter_add_right1)
+
+lemma removeAll_notin: \<open>a \<notin># A \<Longrightarrow> removeAll_mset a A = A\<close>
+  using count_inI by force
+
+lemma mset_drop_upto: \<open>mset (drop a N) = {#N!i. i \<in># mset_set {a..<length N}#}\<close>
+proof (induction N arbitrary: a)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons c N)
+  have upt: \<open>{0..<Suc (length N)} = insert 0 {1..<Suc (length N)}\<close>
+    by auto
+  then have H: \<open>mset_set {0..<Suc (length N)} = add_mset 0 (mset_set {1..<Suc (length N)})\<close>
+    unfolding upt by auto
+  have mset_case_Suc: \<open>{#case x of 0 \<Rightarrow> c | Suc x \<Rightarrow> N ! x . x \<in># mset_set {Suc a..<Suc b}#} =
+    {#N ! (x-1) . x \<in># mset_set {Suc a..<Suc b}#}\<close> for a b
+    by (rule image_mset_cong) (auto split: nat.splits)
+  have Suc_Suc: \<open>{Suc a..<Suc b} = Suc ` {a..<b}\<close> for a b
+    by auto
+  then have mset_set_Suc_Suc: \<open>mset_set {Suc a..<Suc b} = {#Suc n. n \<in># mset_set {a..<b}#}\<close> for a b
+    unfolding Suc_Suc by (subst image_mset_mset_set[symmetric]) auto
+  have *: \<open>{#N ! (x-Suc 0) . x \<in># mset_set {Suc a..<Suc b}#} = {#N ! x . x \<in># mset_set {a..<b}#}\<close>
+    for a b
+    by (auto simp add: mset_set_Suc_Suc)
+  show ?case
+    apply (cases a)
+    using Cons[of 0] Cons by (auto simp: nth_Cons drop_Cons H mset_case_Suc *)
+qed
+
 
 subsection \<open>Lemmas about Replicate\<close>
 
@@ -437,103 +478,12 @@ lemma mset_remdups_remdups_mset[simp]: "mset (remdups D) = remdups_mset (mset D)
 
 declare mset_remdups_remdups_mset[symmetric, code]
 
-definition distinct_mset :: "'a multiset \<Rightarrow> bool" where
-  "distinct_mset S \<longleftrightarrow> (\<forall>a. a \<in># S \<longrightarrow> count S a = 1)"
-
-lemma distinct_mset_count_less_1: "distinct_mset S \<longleftrightarrow> (\<forall>a. count S a \<le> 1)"
-  using eq_iff nat_le_linear unfolding distinct_mset_def by fastforce
-
-lemma distinct_mset_empty[simp]: "distinct_mset {#}"
-  unfolding distinct_mset_def by auto
-
-lemma distinct_mset_singleton: "distinct_mset {#a#}"
-  unfolding distinct_mset_def by auto
-
-lemma distinct_mset_union:
-  assumes dist: "distinct_mset (A + B)"
-  shows "distinct_mset A"
-  unfolding distinct_mset_count_less_1
-proof (rule allI)
-  fix a
-  have \<open>count A a \<le> count (A + B) a\<close> by auto
-  moreover have \<open>count (A + B) a \<le> 1\<close>
-    using dist unfolding distinct_mset_count_less_1 by auto
-  ultimately show \<open>count A a \<le> 1\<close>
-    by simp
-qed
-
-lemma distinct_mset_minus[simp]: "distinct_mset A \<Longrightarrow> distinct_mset (A - B)"
-  by (metis diff_subset_eq_self mset_subset_eq_exists_conv distinct_mset_union)
-
 lemma count_remdups_mset_If: \<open>count (remdups_mset A) a = (if a \<in># A then 1 else 0)\<close>
   unfolding remdups_mset_def by auto
 
-lemma distinct_mset_rempdups_union_mset:
-  assumes "distinct_mset A" and "distinct_mset B"
-  shows "A \<union># B = remdups_mset (A + B)"
-  using assms nat_le_linear unfolding remdups_mset_def
-  by (force simp add: multiset_eq_iff max_def count_mset_set_if distinct_mset_def not_in_iff)
-
-lemma distinct_mset_add_mset[simp]: "distinct_mset (add_mset a L) \<longleftrightarrow> a \<notin># L \<and> distinct_mset L"
-  unfolding distinct_mset_def
-  apply (rule iffI)
-   apply (auto split: if_split_asm; fail)[]
-  by (auto simp: not_in_iff; fail)
-
-lemma distinct_mset_size_eq_card: "distinct_mset C \<Longrightarrow> size C = card (set_mset C)"
-  by (induction C) auto
-
-lemma distinct_mset_add:
-  "distinct_mset (L + L') \<longleftrightarrow> distinct_mset L \<and> distinct_mset L' \<and> L \<inter># L' = {#}"
-  by (induction L arbitrary: L') auto
-
-lemma distinct_mset_set_mset_ident[simp]: "distinct_mset M \<Longrightarrow> mset_set (set_mset M) = M"
-  by (induction M) auto
-
-lemma distinct_finite_set_mset_subseteq_iff[iff]:
-  assumes "distinct_mset M" "finite N"
-  shows "set_mset M \<subseteq> N \<longleftrightarrow> M \<subseteq># mset_set N"
-  by (metis assms distinct_mset_set_mset_ident finite_set_mset msubset_mset_set_iff)
-
-lemma distinct_mem_diff_mset:
-  assumes dist: "distinct_mset M" and mem: "x \<in> set_mset (M - N)"
-  shows "x \<notin> set_mset N"
-proof -
-  have "count M x = 1"
-    using dist mem by (meson distinct_mset_def in_diffD)
-  then show ?thesis
-    using mem by (metis count_greater_eq_one_iff in_diff_count not_less)
-qed
-
-lemma distinct_set_mset_eq:
-  assumes "distinct_mset M" "distinct_mset N" "set_mset M = set_mset N"
-  shows "M = N"
-  using assms distinct_mset_set_mset_ident by fastforce
-
-lemma distinct_mset_union_mset[simp]:
-  \<open>distinct_mset (D \<union># C) \<longleftrightarrow> distinct_mset D \<and> distinct_mset C\<close>
-  unfolding distinct_mset_count_less_1 by force
-
-lemma distinct_mset_inter_mset:
-  "distinct_mset C \<Longrightarrow> distinct_mset (C \<inter># D)"
-  "distinct_mset D \<Longrightarrow> distinct_mset (C \<inter># D)"
-  by (auto simp add: distinct_mset_def min_def count_eq_zero_iff elim!: le_SucE)
-
-lemma distinct_mset_remove1_All: "distinct_mset C \<Longrightarrow> remove1_mset L C = removeAll_mset L C"
-  by (auto simp: multiset_eq_iff distinct_mset_count_less_1)
-
-lemma distinct_mset_size_2: "distinct_mset {#a, b#} \<longleftrightarrow> a \<noteq> b"
+lemma notin_add_mset_remdups_mset:
+  \<open>a \<notin># A \<Longrightarrow> add_mset a (remdups_mset A) = remdups_mset (add_mset a A)\<close>
   by auto
-
-lemma distinct_mset_filter: "distinct_mset M \<Longrightarrow> distinct_mset {# L \<in># M. P L#}"
-  by (simp add: distinct_mset_def)
-
-lemma distinct_mset_mset_distinct[simp]: \<open>distinct_mset (mset xs) = distinct xs\<close>
-  by (induction xs) auto
-
-lemma distinct_image_mset_inj:
-  \<open>inj_on f (set_mset M) \<Longrightarrow> distinct_mset (image_mset f M) \<longleftrightarrow> distinct_mset M\<close>
-  by (induction M) (auto simp: inj_on_def)
 
 
 subsection \<open>Repeat Operation\<close>
@@ -925,6 +875,10 @@ next
   show "\<Sum>\<^sub>#(mset Ci) \<subseteq># \<Sum>\<^sub>#(mset CAi)"
     using Suc by (cases Ci; cases CAi) (auto intro: subset_mset.add_mono)
 qed
+
+lemma same_mset_distinct_iff:
+  \<open>mset M = mset M' \<Longrightarrow> distinct M \<longleftrightarrow> distinct M'\<close>
+  by (fact mset_eq_imp_distinct_iff)
 
 
 subsubsection \<open>More on Multisets and Functions\<close>

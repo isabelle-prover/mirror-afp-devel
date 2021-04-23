@@ -12,7 +12,7 @@ theory Poly_Mod_Finite_Field
   Finite_Field
   Polynomial_Interpolation.Ring_Hom_Poly
   "HOL-Types_To_Sets.Types_To_Sets"
-  Missing_Multiset2
+  More_Missing_Multiset
   Poly_Mod
 begin
 

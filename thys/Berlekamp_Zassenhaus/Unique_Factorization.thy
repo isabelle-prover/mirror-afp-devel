@@ -5,7 +5,7 @@ theory Unique_Factorization
     "HOL-Combinatorics.Permutations" 
     "HOL-Computational_Algebra.Euclidean_Algorithm"
     Containers.Containers_Auxiliary (* only for a lemma *)
-    Missing_Multiset2
+    More_Missing_Multiset
     "HOL-Algebra.Divisibility"
 begin
 

@@ -138,7 +138,7 @@ proof
     using cc_subs by auto
   then have "set_mset CC \<subseteq>
     N - {C. \<exists>DD. set_mset DD \<subseteq> N \<and> (\<forall>I. I \<Turnstile>m DD \<longrightarrow> I \<Turnstile> C) \<and> (\<forall>D. D \<in># DD \<longrightarrow> D < C)}"
-    using cc_nr by auto
+    using cc_nr by blast
   then show "C \<in> Rf (N - Rf N)"
     using cc_imp_c cc_lt_c unfolding Rf_def by auto
 qed
