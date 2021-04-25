@@ -8951,6 +8951,25 @@ abstract =
   replacements.  The formalization is based on prior non-mechanized
   soundness proofs for dGL.
 
+[BenOr_Kozen_Reif]
+title = The BKR Decision Procedure for Univariate Real Arithmetic
+author = Katherine Cordwell <https://www.cs.cmu.edu/~kcordwel/>, Yong Kiam Tan <https://www.cs.cmu.edu/~yongkiat/>, André Platzer <https://www.cs.cmu.edu/~aplatzer/>
+topic = Computer science/Algorithms/Mathematical
+date = 2021-04-24
+notify = kcordwel@cs.cmu.edu, yongkiat@cs.cmu.edu, aplatzer@cs.cmu.edu
+abstract =
+  We formalize the univariate case of Ben-Or, Kozen, and Reif's
+  decision procedure for first-order real arithmetic (the BKR
+  algorithm). We also formalize the univariate case of Renegar's
+  variation of the BKR algorithm. The two formalizations differ
+  mathematically in minor ways (that have significant impact on the
+  multivariate case), but are quite similar in proof structure.  Both
+  rely on sign-determination (finding the set of consistent sign
+  assignments for a set of polynomials).  The method used for
+  sign-determination is similar to Tarski's original quantifier
+  elimination algorithm (it stores key information in a matrix
+  equation), but with a reduction step to keep complexity low.
+
 [Complete_Non_Orders]
 title = Complete Non-Orders and Fixed Points
 author = Akihisa Yamada <http://group-mmm.org/~ayamada/>, Jérémy Dubut <http://group-mmm.org/~dubut/>
@@ -10405,7 +10424,7 @@ author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, S. Reza Sefidgar
 topic = Computer science/Security/Cryptography, Mathematics/Probability theory
 date = 2021-03-17
 notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
-abstract = 
+abstract =
   Constructive Cryptography (CC) [<a
   href="https://conference.iiis.tsinghua.edu.cn/ICS2011/content/papers/14.html">ICS
   2011</a>, <a
@@ -10442,7 +10461,7 @@ author = Benedikt Nordhoff <mailto:b.n@wwu.de>
 topic = Computer science/Security
 date = 2021-04-01
 notify = b.n@wwu.de
-abstract = 
+abstract =
   We provide a characterisation of how information is propagated by
   program executions based on the tracking data and control dependencies
   within executions themselves.  The characterisation might be used for
@@ -10464,7 +10483,7 @@ author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>, Lawrence P
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2021-03-29
 notify = apdb3@cam.ac.uk, lp15@cam.ac.uk
-abstract = 
+abstract =
   We formalize mainstream structures in algebraic geometry culminating
   in Grothendieck's schemes: presheaves of rings, sheaves of rings,
   ringed spaces, locally ringed spaces, affine schemes and schemes. We
@@ -10477,7 +10496,7 @@ author = Matthias Brun<>, Sára Decova<>, Andrea Lattuada<https://andrea.lattuad
 topic = Computer science/Algorithms/Distributed
 date = 2021-04-13
 notify = matthias.brun@inf.ethz.ch, traytel@di.ku.dk
-abstract = 
+abstract =
   Large-scale stream processing systems often follow the dataflow
   paradigm, which enforces a program structure that exposes a high
   degree of parallelism. The Timely Dataflow distributed system supports

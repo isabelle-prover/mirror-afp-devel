@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Apr 2021 00:00:00 +0000</pubDate>
+    <pubDate>24 Apr 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+              <link>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</link>
+       <guid>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</guid>
+       <dc:creator> Katherine Cordwell, Yong Kiam Tan, André Platzer       </dc:creator>
+       <pubDate>24 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalize the univariate case of Ben-Or, Kozen, and Reif&#39;s
+decision procedure for first-order real arithmetic (the BKR
+algorithm). We also formalize the univariate case of Renegar&#39;s
+variation of the BKR algorithm. The two formalizations differ
+mathematically in minor ways (that have significant impact on the
+multivariate case), but are quite similar in proof structure.  Both
+rely on sign-determination (finding the set of consistent sign
+assignments for a set of polynomials).  The method used for
+sign-determination is similar to Tarski&#39;s original quantifier
+elimination algorithm (it stores key information in a matrix
+equation), but with a reduction step to keep complexity low.</description>
+    </item>
     <item>
        <title>Formalization of Timely Dataflow's Progress Tracking Protocol</title>
               <link>https://www.isa-afp.org/entries/Progress_Tracking.html</link>
@@ -566,30 +585,6 @@ properties and executable, i.e., we can generate executable code from
 our specification. We exploit the executability to show that our
 formalization complies to the official standard of the W3C,
 respectively, the WHATWG.</description>
-    </item>
-    <item>
-       <title>A Formalization of Safely Composable Web Components</title>
-              <link>https://www.isa-afp.org/entries/SC_DOM_Components.html</link>
-       <guid>https://www.isa-afp.org/entries/SC_DOM_Components.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-While the (safely composable) DOM with shadow trees provide the
-technical basis for defining web components, it does neither defines
-the concept of web components nor specifies the safety properties that
-web components should guarantee. Consequently, the standard also does
-not discuss how or even if the methods for modifying the DOM respect
-component boundaries. In AFP entry, we present a formally verified
-model of safely composable web components and define safety properties
-which ensure that different web components can only interact with each
-other using well-defined interfaces. Moreover, our verification of the
-application programming interface (API) of the DOM revealed numerous
-invariants that implementations of the DOM API need to preserve to
-ensure the integrity of components.  In comparison to the strict
-standard compliance formalization of Web Components in the AFP entry
-&#34;DOM_Components&#34;, the notion of components in this entry
-(based on &#34;SC_DOM&#34; and &#34;Shadow_SC_DOM&#34;) provides
-much stronger safety guarantees.</description>
     </item>
   </channel>
 </rss>
