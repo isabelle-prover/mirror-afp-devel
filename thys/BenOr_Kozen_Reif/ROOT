@@ -9,3 +9,4 @@ session BenOr_Kozen_Reif (AFP) = Algebraic_Numbers +
     Renegar_Decision
   document_files
     "root.tex"
+    "root.bib"
