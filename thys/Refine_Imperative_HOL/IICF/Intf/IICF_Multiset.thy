@@ -96,9 +96,7 @@ lemma mset_rel_empty[simp]:
 
 
 lemma param_mset_empty[param]: "({#},{#}) \<in> \<langle>A\<rangle>mset_rel"
-  unfolding mset_rel_def
-  apply (simp add: p2rel_def)
-  by (rule rel_mset_Zero)
+  by simp
 
 lemma param_mset_Plus[param]: "((+),(+))\<in>\<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"  
   apply (rule rel2pD)

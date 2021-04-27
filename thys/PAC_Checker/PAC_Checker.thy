@@ -9,6 +9,7 @@ theory PAC_Checker
     PAC_Map_Rel
     Show.Show
     Show.Show_Instances
+    PAC_Misc
 begin
 
 section \<open>Executable Checker\<close>
@@ -811,7 +812,7 @@ proof -
          sorted_wrt term_order (map fst (remove1 ([a], 1) r))\<close>
     by (induction r) auto
   have [intro]: \<open>distinct (map fst r) \<Longrightarrow> distinct (map fst (remove1 x r))\<close> for x
-    by (induction r) (auto dest: in_set_remove1D)
+    by (induction r) (auto dest: notin_set_remove1)
   have [simp]: \<open>(r, ya) \<in> \<langle>term_poly_list_rel \<times>\<^sub>r int_rel\<rangle>list_rel \<Longrightarrow>
          polynomial_of_mset (mset ya) -  Var (\<phi> a) =
          polynomial_of_mset (remove1_mset ({#a#}, 1) (mset ya))\<close> for ya

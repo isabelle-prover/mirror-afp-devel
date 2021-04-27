@@ -4,7 +4,9 @@
   Maintainer:   Mathias Fleury, JKU
 *)
 theory Finite_Map_Multiset
-imports "HOL-Library.Finite_Map" Duplicate_Free_Multiset
+imports
+  "HOL-Library.Finite_Map"
+  Nested_Multisets_Ordinals.Duplicate_Free_Multiset
 begin
 
 notation image_mset (infixr "`#" 90)

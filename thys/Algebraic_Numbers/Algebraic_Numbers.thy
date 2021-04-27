@@ -226,18 +226,29 @@ lemma poly_x_minus_y_as_comp: "poly_x_minus_y = (\<lambda>p. p \<circ>\<^sub>p x
 context idom_isom begin
   sublocale comm_semiring_isom..
 end
+
 interpretation poly_x_minus_y_hom:
   factor_preserving_hom "poly_x_minus_y :: 'a :: idom poly \<Rightarrow> 'a poly poly"
-proof-
-  interpret x_y_hom: bijective "\<lambda>p :: 'a poly poly. p \<circ>\<^sub>p x_y"
-  proof (unfold bijective_eq_bij, rule id_imp_bij)
-    fix p :: "'a poly poly" show "p \<circ>\<^sub>p x_y \<circ>\<^sub>p x_y = p"
-      apply (induct p,simp)
-      apply(unfold x_y_def hom_distribs pcompose_pCons) by (simp)
+proof -
+  have \<open>p \<circ>\<^sub>p x_y \<circ>\<^sub>p x_y = p\<close> for p :: \<open>'a poly poly\<close>
+  proof (induction p)
+    case 0
+    show ?case
+      by simp
+  next
+    case (pCons a p)
+    then show ?case
+      by (unfold x_y_def hom_distribs pcompose_pCons) simp
   qed
-  interpret x_y_hom: idom_isom "\<lambda>p :: 'a poly poly. p \<circ>\<^sub>p x_y" by (unfold_locales, auto)
-  show "factor_preserving_hom (poly_x_minus_y :: 'a poly \<Rightarrow> _)"
-    by (unfold poly_x_minus_y_as_comp, rule factor_preserving_hom_comp, unfold_locales)
+  then interpret x_y_hom: bijective "\<lambda>p :: 'a poly poly. p \<circ>\<^sub>p x_y"
+    by (unfold bijective_eq_bij) (rule involuntory_imp_bij)
+  interpret x_y_hom: idom_isom "\<lambda>p :: 'a poly poly. p \<circ>\<^sub>p x_y"
+    by standard simp_all
+  have \<open>factor_preserving_hom (\<lambda>p :: 'a poly poly. p \<circ>\<^sub>p x_y)\<close>
+    and \<open>factor_preserving_hom (poly_lift :: 'a poly \<Rightarrow> 'a poly poly)\<close>
+    ..
+  then show "factor_preserving_hom (poly_x_minus_y :: 'a poly \<Rightarrow> _)"
+    by (unfold poly_x_minus_y_as_comp) (rule factor_preserving_hom_comp)
 qed
 
 text \<open>

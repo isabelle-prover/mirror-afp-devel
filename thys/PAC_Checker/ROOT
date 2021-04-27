@@ -11,7 +11,6 @@ session PAC_Checker (AFP) = "Sepref_IICF" +
     Nested_Multisets_Ordinals
   theories
     PAC_More_Poly
-    Duplicate_Free_Multiset
     Finite_Map_Multiset
     WB_Sort
     More_Loops

@@ -470,13 +470,9 @@ declare l_set_child_nodes\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>
 
 lemma set_child_nodes_is_l_set_child_nodes [instances]: "l_set_child_nodes type_wf set_child_nodes
     set_child_nodes_locs"
-  using instances
-  apply(auto simp add: l_set_child_nodes_def)[1]
-  using  set_child_nodes_writes apply fast
-  using set_child_nodes_pointers_preserved apply(fast, fast)
-  using set_child_nodes_types_preserved apply(fast, fast)
-  done
-
+  using instances Shadow_DOM.i_set_child_nodes.set_child_nodes_pointers_preserved Shadow_DOM.i_set_child_nodes.set_child_nodes_writes i_set_child_nodes.set_child_nodes_types_preserved
+  unfolding l_set_child_nodes_def
+  by blast
 
 
 paragraph \<open>get\_child\_nodes\<close>
@@ -752,11 +748,8 @@ locale l_get_shadow_root = l_type_wf + l_get_shadow_root_defs +
 lemma get_shadow_root_is_l_get_shadow_root [instances]:
   "l_get_shadow_root type_wf get_shadow_root get_shadow_root_locs"
   using instances
-  apply(auto simp add: l_get_shadow_root_def)[1]
-  using get_shadow_root_reads apply blast
-  using get_shadow_root_ok apply blast
-  using get_shadow_root_ptr_in_heap apply blast
-  done
+  unfolding l_get_shadow_root_def
+  by (metis (no_types, lifting) ElementClass.l_type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_axioms get_shadow_root_ok get_shadow_root_pure get_shadow_root_reads l_get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_lemmas.get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ptr_in_heap l_get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_lemmas.intro l_get_shadow_root\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_shadow_root_def)
 
 
 paragraph \<open>set\_disconnected\_nodes\<close>

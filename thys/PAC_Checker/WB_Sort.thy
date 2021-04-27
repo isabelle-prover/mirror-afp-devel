@@ -6,11 +6,13 @@
 
 Correctness proof contributed by Maximilian Wuttke *)
 theory WB_Sort
-  imports Refine_Imperative_HOL.IICF "HOL-Library.Rewrite" Duplicate_Free_Multiset
+  imports
+    Refine_Imperative_HOL.IICF
+    "HOL-Library.Rewrite"
+    Nested_Multisets_Ordinals.Duplicate_Free_Multiset
 begin
 
 text \<open>This a complete copy-paste of the IsaFoL version because sharing is too hard.\<close>
-
 
 text \<open>Every element between \<^term>\<open>lo\<close> and \<^term>\<open>hi\<close> can be chosen as pivot element.\<close>
 definition choose_pivot :: \<open>('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat nres\<close> where
@@ -101,9 +103,7 @@ lemma sublist_map: \<open>sublist (map f xs) i j = map f (sublist xs i j)\<close
 
 
 lemma take_set: \<open>j \<le> length xs \<Longrightarrow> x \<in> set (take j xs) \<equiv> (\<exists> k. k < j \<and> xs!k = x)\<close>
-  apply (induction xs)
-   apply simp
-  by (meson in_set_conv_iff less_le_trans)
+  by (rule eq_reflection) (auto simp add: take_set)
 
 lemma drop_set: \<open>j \<le> length xs \<Longrightarrow> x \<in> set (drop j xs) \<equiv> (\<exists>k. j\<le>k\<and>k<length xs \<and> xs!k=x)\<close>
   by (smt Misc.in_set_drop_conv_nth) (* lemma found by sledgehammer *)
