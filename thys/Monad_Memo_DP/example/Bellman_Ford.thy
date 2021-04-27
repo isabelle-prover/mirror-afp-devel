@@ -247,8 +247,8 @@ text \<open>
 \<close>
 
 fun weight :: "nat list \<Rightarrow> int extended" where
-  "weight [s] = 0"
-| "weight (i # j # xs) = W i j + weight (j # xs)"
+  "weight [v] = 0"
+| "weight (v # w # xs) = W v w + weight (w # xs)"
 
 definition
   "OPT i v = (
@@ -356,7 +356,7 @@ proof -
   next
     case sink
     then have "OPT i v \<le> OPT (Suc i) v"
-      unfolding OPT_def by auto
+      unfolding OPT_def by simp
     then show ?thesis
       by (rule min.coboundedI1)
   qed
@@ -366,9 +366,9 @@ proof -
 qed
 
 fun bf :: "nat \<Rightarrow> nat \<Rightarrow> int extended" where
-  "bf 0 j = (if t = j then 0 else \<infinity>)"
-| "bf (Suc k) j = min_list
-      (bf k j # [W j i + bf k i . i \<leftarrow> [0 ..< Suc n]])"
+  "bf 0 v = (if t = v then 0 else \<infinity>)"
+| "bf (Suc i) v = min_list
+      (bf i v # [W v w + bf i w . w \<leftarrow> [0 ..< Suc n]])"
 
 lemmas [simp del] = bf.simps
 lemmas bf_simps[simp] = bf.simps[unfolded min_list_fold]

@@ -68,9 +68,9 @@ function min_wpl :: "int \<Rightarrow> int \<Rightarrow> nat" where
 termination by (relation "measure (\<lambda>(i,j) . nat(j-i+1))") auto
 declare min_wpl.simps[simp del]
 
-function opt_bst :: "int * int \<Rightarrow> int tree" where
-"opt_bst (i,j) =
-  (if i > j then Leaf else argmin (wpl i j) [\<langle>opt_bst (i,k-1), k, opt_bst (k+1,j)\<rangle>. k \<leftarrow> [i..j]])"
+function opt_bst :: "int \<Rightarrow> int \<Rightarrow> int tree" where
+"opt_bst i j =
+  (if i > j then Leaf else argmin (wpl i j) [\<langle>opt_bst i (k-1), k, opt_bst (k+1) j\<rangle>. k \<leftarrow> [i..j]])"
   by auto
 termination by (relation "measure (\<lambda>(i,j) . nat(j-i+1))") auto
 declare opt_bst.simps[simp del]
@@ -183,11 +183,11 @@ next
   qed
 qed
 
-lemma opt_bst_correct: "inorder (opt_bst (i,j)) = [i..j]"
-  by (induction "(i,j)" arbitrary: i j rule: opt_bst.induct)
+lemma opt_bst_correct: "inorder (opt_bst i j) = [i..j]"
+  by (induction i j rule: opt_bst.induct)
      (clarsimp simp: opt_bst.simps upto_join | rule argmin_forall)+
 
-lemma wpl_opt_bst: "wpl i j (opt_bst (i,j)) = min_wpl i j"
+lemma wpl_opt_bst: "wpl i j (opt_bst i j) = min_wpl i j"
 proof(induction i j rule: min_wpl.induct)
   case (1 i j)
   show ?case
@@ -195,10 +195,10 @@ proof(induction i j rule: min_wpl.induct)
     assume "i > j" thus ?thesis by(simp add: min_wpl.simps opt_bst.simps)
   next
     assume *[arith]: "\<not> i > j"
-    let ?ts = "[\<langle>opt_bst (i,k-1), k, opt_bst (k+1,j)\<rangle>. k <- [i..j]]"
+    let ?ts = "[\<langle>opt_bst i (k-1), k, opt_bst (k+1) j\<rangle>. k <- [i..j]]"
     let ?M = "((\<lambda>k. min_wpl i (k-1) + min_wpl (k+1) j + W i j) ` {i..j})"
     have "?ts \<noteq> []" by (auto simp add: upto.simps)
-    have "wpl i j (opt_bst (i,j)) = wpl i j (argmin (wpl i j) ?ts)" by (simp add: opt_bst.simps)
+    have "wpl i j (opt_bst i j) = wpl i j (argmin (wpl i j) ?ts)" by (simp add: opt_bst.simps)
     also have "\<dots> = Min (wpl i j ` (set ?ts))" by (rule argmin_Min[OF \<open>?ts \<noteq> []\<close>])
     also have "\<dots> = Min ?M"
     proof (rule arg_cong[where f=Min])
@@ -211,7 +211,7 @@ proof(induction i j rule: min_wpl.induct)
 qed
 
 lemma opt_bst_is_optimal:
-  "inorder t = [i..j] \<Longrightarrow> wpl i j (opt_bst (i,j)) \<le> wpl i j t"
+  "inorder t = [i..j] \<Longrightarrow> wpl i j (opt_bst i j) \<le> wpl i j t"
   by (simp add: min_wpl_minimal wpl_opt_bst)
 
 end (* Weight function *)
@@ -264,7 +264,7 @@ qed
 
 text \<open>The optimal binary search tree has minimal cost among all binary search trees.\<close>
 lemma opt_bst_has_optimal_cost:
-  "inorder t = [i..j] \<Longrightarrow> cost (opt_bst W (i,j)) \<le> cost t"
+  "inorder t = [i..j] \<Longrightarrow> cost (opt_bst W i j) \<le> cost t"
   using inorder_wpl_correct opt_bst_is_optimal opt_bst_correct by metis
 
 text \<open>
@@ -277,7 +277,7 @@ lemma min_wpl_minimal_cost:
   using inorder_wpl_correct min_wpl_minimal by metis
 
 lemma min_wpl_tree:
-  "cost (opt_bst W (i,j)) = min_wpl W i j"
+  "cost (opt_bst W i j) = min_wpl W i j"
   using wpl_opt_bst opt_bst_correct inorder_wpl_correct by metis
 
 
@@ -426,10 +426,10 @@ definition
   let
     M = compute_W j;
     W = (\<lambda>i j. case Mapping.lookup M (i, j) of None \<Rightarrow> W i j | Some x \<Rightarrow> x)
-  in opt_bst W (i, j)"
+  in opt_bst W i j"
 
 lemma opt_bst'_correct:
-  "opt_bst' i j = opt_bst W (i, j)"
+  "opt_bst' i j = opt_bst W i j"
   using W_compute unfolding opt_bst'_def by simp
 
 end (* fixed p *)
@@ -442,7 +442,7 @@ text \<open>Functional Implementations\<close>
 lemma "min_wpl (\<lambda>i j. nat(i+j)) 0 4 = 10"
   by eval
 
-lemma "opt_bst (\<lambda>i j. nat(i+j)) (0, 4) = \<langle>\<langle>\<langle>\<langle>\<langle>\<langle>\<rangle>, 0, \<langle>\<rangle>\<rangle>, 1, \<langle>\<rangle>\<rangle>, 2, \<langle>\<rangle>\<rangle>, 3, \<langle>\<rangle>\<rangle>, 4, \<langle>\<rangle>\<rangle>"
+lemma "opt_bst (\<lambda>i j. nat(i+j)) 0 4 = \<langle>\<langle>\<langle>\<langle>\<langle>\<langle>\<rangle>, 0, \<langle>\<rangle>\<rangle>, 1, \<langle>\<rangle>\<rangle>, 2, \<langle>\<rangle>\<rangle>, 3, \<langle>\<rangle>\<rangle>, 4, \<langle>\<rangle>\<rangle>"
   by eval
 
 text \<open>Using Frequencies\<close>
