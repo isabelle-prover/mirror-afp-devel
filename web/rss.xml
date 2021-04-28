@@ -30,6 +30,25 @@ elimination algorithm (it stores key information in a matrix
 equation), but with a reduction step to keep complexity low.</description>
     </item>
     <item>
+       <title>Gale-Stewart Games</title>
+              <link>https://www.isa-afp.org/entries/GaleStewart_Games.html</link>
+       <guid>https://www.isa-afp.org/entries/GaleStewart_Games.html</guid>
+       <dc:creator> Sebastiaan Joosten       </dc:creator>
+       <pubDate>23 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+This is a formalisation of the main result of Gale and Stewart from
+1953, showing that closed finite games are determined. This property
+is now known as the Gale Stewart Theorem. While the original paper
+shows some additional theorems as well, we only formalize this main
+result, but do so in a somewhat general way. We formalize games of a
+fixed arbitrary length, including infinite length, using co-inductive
+lists, and show that defensive strategies exist unless the other
+player is winning. For closed games, defensive strategies are winning
+for the closed player, proving that such games are determined. For
+finite games, which are a special case in our formalisation, all games
+are closed.</description>
+    </item>
+    <item>
        <title>Formalization of Timely Dataflow's Progress Tracking Protocol</title>
               <link>https://www.isa-afp.org/entries/Progress_Tracking.html</link>
        <guid>https://www.isa-afp.org/entries/Progress_Tracking.html</guid>
@@ -562,29 +581,6 @@ already proven properties and executable, i.e., we can generate
 executable code from our specification. We exploit the executability
 to show that our formalization complies to the official standard of
 the W3C, respectively, the WHATWG.</description>
-    </item>
-    <item>
-       <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-              <link>https://www.isa-afp.org/entries/Shadow_DOM.html</link>
-       <guid>https://www.isa-afp.org/entries/Shadow_DOM.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>28 Sep 2020 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we extend our formalization of the core DOM with
-Shadow Roots. Shadow roots are a recent proposal of the web community
-to support a component-based development approach for client-side web
-applications.  Shadow roots are a significant extension to the DOM
-standard and, as web standards are condemned to be backward
-compatible, such extensions often result in complex specification that
-may contain unwanted subtleties that can be detected by a
-formalization.  Our Isabelle/HOL formalization is, in the sense of
-object-orientation, an extension of our formalization of the core DOM
-and enjoys the same basic properties, i.e., it is extensible, i.e.,
-can be extended without the need of re-proving already proven
-properties and executable, i.e., we can generate executable code from
-our specification. We exploit the executability to show that our
-formalization complies to the official standard of the W3C,
-respectively, the WHATWG.</description>
     </item>
   </channel>
 </rss>

@@ -2251,7 +2251,7 @@ notify = christian.urban@kcl.ac.uk
 
 [Universal_Turing_Machine]
 title = Universal Turing Machine
-author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
+author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <https://sjcjoosten.nl/>
 topic = Logic/Computability, Computer science/Automata and formal languages
 date = 2019-02-08
 notify = sjcjoosten@gmail.com, christian.urban@kcl.ac.uk
@@ -7768,7 +7768,7 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <https://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -7793,7 +7793,7 @@ extra-history =
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
-author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <https://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
 topic = Mathematics/Algebra
 date = 2018-02-06
 notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -10509,3 +10509,21 @@ abstract =
   href="https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf">ITP'21
   paper</a>.
 
+[GaleStewart_Games]
+title = Gale-Stewart Games
+author = Sebastiaan Joosten <https://sjcjoosten.nl>
+topic = Mathematics/Games and economics
+date = 2021-04-23
+notify = sjcjoosten@gmail.com
+abstract = 
+  This is a formalisation of the main result of Gale and Stewart from
+  1953, showing that closed finite games are determined. This property
+  is now known as the Gale Stewart Theorem. While the original paper
+  shows some additional theorems as well, we only formalize this main
+  result, but do so in a somewhat general way. We formalize games of a
+  fixed arbitrary length, including infinite length, using co-inductive
+  lists, and show that defensive strategies exist unless the other
+  player is winning. For closed games, defensive strategies are winning
+  for the closed player, proving that such games are determined. For
+  finite games, which are a special case in our formalisation, all games
+  are closed.
