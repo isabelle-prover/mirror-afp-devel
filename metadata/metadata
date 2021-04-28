@@ -10527,3 +10527,19 @@ abstract =
   for the closed player, proving that such games are determined. For
   finite games, which are a special case in our formalisation, all games
   are closed.
+
+[Metalogic_ProofChecker]
+title = Isabelle's Metalogic: Formalization and Proof Checker
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Simon Roßkopf <http://www21.in.tum.de/~rosskops>
+topic = Logic/General logic
+date = 2021-04-27
+notify = rosskops@in.tum.de
+abstract = 
+  In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
+  Furthermore, we define a language of proof terms and an executable
+  proof checker and prove its soundness wrt. the metalogic.  The
+  formalization is intentionally kept close to the Isabelle
+  implementation(for example using de Brujin indices) to enable easy
+  integration of generated code with the Isabelle system without a
+  complicated translation layer.  The formalization is described in our
+  <a href="https://arxiv.org/pdf/2104.12224.pdf">CADE 28 paper</a>.
