@@ -992,6 +992,11 @@ next
     by (meson ordermap_mono assms mem_not_sym)
 qed
 
+lemma converse_ordermap_mono_iff:
+  assumes "wf r" "total_on A r" "x \<in> A" "y \<in> A" "small A"
+  shows "ordermap A r y \<in> elts (ordermap A r x) \<longleftrightarrow> (y, x) \<in> r"
+  by (metis assms converse_ordermap_mono ordermap_mono)
+
 lemma ordermap_surj: "elts (ordertype A r) \<subseteq> ordermap A r ` A"
   unfolding ordertype_def by simp
 
@@ -1137,6 +1142,16 @@ proof -
     by (meson \<beta> f_inv_into_f in_mono ordermap_surj)
   finally show ?thesis .
 qed
+
+lemma inv_ordermap_VWF_mono_iff:
+  assumes "M \<subseteq> ON" "small M" and "\<alpha> \<in> elts (ordertype M VWF)" and "\<beta> \<in> elts (ordertype M VWF)"
+  shows "inv_into M (ordermap M VWF) \<alpha> \<le> inv_into M (ordermap M VWF) \<beta> \<longleftrightarrow> \<alpha> \<le> \<beta>"
+  by (metis ON_imp_Ord Ord_linear_le assms dual_order.eq_iff inv_into_ordermap inv_ordermap_VWF_mono_le)
+
+lemma inv_ordermap_VWF_strict_mono_iff:
+  assumes "M \<subseteq> ON" "small M" and "\<alpha> \<in> elts (ordertype M VWF)" and "\<beta> \<in> elts (ordertype M VWF)"
+  shows "inv_into M (ordermap M VWF) \<alpha> < inv_into M (ordermap M VWF) \<beta> \<longleftrightarrow> \<alpha> < \<beta>"
+  by (simp add: assms inv_ordermap_VWF_mono_iff less_le_not_le)
 
 lemma strict_mono_on_ordertype:
   assumes "M \<subseteq> ON" "small M"

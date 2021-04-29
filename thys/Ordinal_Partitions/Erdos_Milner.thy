@@ -20,13 +20,13 @@ proof -
   then have bij_\<phi>: "bij_betw \<phi> (elts (tp D)) D"
     using D bij_betw_inv_into down ordermap_bij by blast
   have \<phi>_cancel_left: "\<And>d. d \<in> D \<Longrightarrow> \<phi> (ordermap D VWF d) = d"
-    by (metis D \<phi>_def bij_betw_inv_into_left down_raw ordermap_bij small_iff_range total_on_VWF wf_VWF)
+    by (metis D \<phi>_def bij_betw_inv_into_left down ordermap_bij total_on_VWF wf_VWF)
   have \<phi>_cancel_right: "\<And>\<gamma>. \<gamma> \<in> elts (tp D) \<Longrightarrow> ordermap D VWF (\<phi> \<gamma>) = \<gamma>"
     by (metis \<phi>_def f_inv_into_f ordermap_surj subsetD)
   have "small D" "D \<subseteq> ON"
     using assms down elts_subset_ON [of \<beta>] by auto
   then have \<phi>_less_iff: "\<And>\<gamma> \<delta>. \<lbrakk>\<gamma> \<in> elts (tp D); \<delta> \<in> elts (tp D)\<rbrakk> \<Longrightarrow> \<phi> \<gamma> < \<phi> \<delta> \<longleftrightarrow> \<gamma> < \<delta>"
-    by (metis ON_imp_Ord Ord_linear2 \<phi>_def inv_into_ordermap inv_ordermap_VWF_mono_le leD less_V_def)
+    by (metis \<phi>_def inv_ordermap_VWF_mono_iff inv_ordermap_mono_eq less_V_def)
   obtain \<alpha>s where "List.set \<alpha>s \<subseteq> ON" and "\<omega>_dec \<alpha>s" and tpD_eq: "tp D = \<omega>_sum \<alpha>s"
     using Ord_ordertype \<omega>_nf_exists by blast                \<comment> \<open>Cantor normal form of the ordertype\<close>
   have ord [simp]: "Ord (\<alpha>s ! k)" "Ord (\<omega>_sum (take k \<alpha>s))" if "k < length \<alpha>s" for k
@@ -36,9 +36,8 @@ proof -
   define L where "L \<equiv> map (\<lambda>k. \<phi> ` (elts (E k))) [0..<length \<alpha>s]"
   have [simp]: "length L = length \<alpha>s"
     by (simp add: L_def)
-  have in_elts_E_less: "x' < x"
-    if "x' \<in> elts (E k')" "x \<in> elts (E k)" "k'<k" "k < length \<alpha>s" for k k' x' x
-                                      \<comment> \<open>The ordinals have been partitioned into disjoint intervals\<close>
+  have in_elts_E_less: "elts (E k') \<lless> elts (E k)" if "k'<k" "k < length \<alpha>s" for k k'
+    \<comment> \<open>The ordinals have been partitioned into disjoint intervals\<close>
   proof -
     have ord\<omega>: "Ord (\<omega> \<up> \<alpha>s ! k')"
       using that by auto
@@ -46,7 +45,8 @@ proof -
     obtain l where "take k \<alpha>s = take k' \<alpha>s @ (\<alpha>s!k') # l"
       by (simp add: min_def)
     then show ?thesis
-      using that  by (auto simp: E_def lift_def add.assoc dest!: OrdmemD [OF ord\<omega>] intro: less_le_trans)
+      using that unfolding E_def lift_def less_sets_def
+      by (auto dest!: OrdmemD [OF ord\<omega>] intro: less_le_trans)
   qed
   have elts_E: "elts (E k) \<subseteq> elts (\<omega>_sum \<alpha>s)"
     if "k < length \<alpha>s" for k
@@ -77,10 +77,8 @@ proof -
     by (auto simp: \<pi>_def E_def lift_def \<omega>_sum_in_tpD \<phi>_cancel_right Ord_\<phi> \<phi>_less_iff)
   have tp_E_eq [simp]: "tp (\<phi> ` elts (E k)) = \<omega>\<up>(\<alpha>s!k)"
     if k: "k < length \<alpha>s" for k
-    using ordertype_eq_iff \<pi>_iff bij_\<pi> that
-    by (meson Ord_\<omega> Ord_oexp ord(1) ordertype_VWF_eq_iff replacement small_elts)
-  have tp_L_eq [simp]: "tp (L!k) = \<omega>\<up>(\<alpha>s!k)"
-    if "k < length \<alpha>s" for k
+    by (metis Ord_\<omega> Ord_oexp \<pi>_iff bij_\<pi> ord(1) ordertype_VWF_eq_iff replacement small_elts that)
+  have tp_L_eq [simp]: "tp (L!k) = \<omega>\<up>(\<alpha>s!k)" if "k < length \<alpha>s" for k
     by (simp add: L_def that)
   have UL_eq_D: "\<Union> (list.set L) = D"
   proof (rule antisym)
@@ -112,17 +110,13 @@ proof -
                               \<comment> \<open>The bijection from an @{term \<omega>}-power into the appropriate segment of @{term M}\<close>
       have bij_\<sigma>: "bij_betw (\<sigma> X) (elts (tp (M \<inter> X))) (M \<inter> X)" for X
         unfolding \<sigma>_def
-        by (metis (no_types) \<open>M \<subseteq> D\<close> \<open>small D\<close> bij_betw_inv_into inf_le1 ordermap_bij subset_iff_less_eq_V total_on_VWF wf_VWF)
+        by (meson \<open>M \<subseteq> D\<close> \<open>small D\<close> bij_betw_inv_into inf_le1 ordermap_bij smaller_than_small total_on_VWF wf_VWF)
       have Ord_\<sigma>: "Ord (\<sigma> X \<alpha>)" if "\<alpha> \<in> elts (tp (M \<inter> X))" for \<alpha> X
         using \<open>D \<subseteq> ON\<close> \<open>M \<subseteq> D\<close> bij_betw_apply [OF bij_\<sigma>] that by blast
       have \<sigma>_cancel_right: "\<And>\<gamma> X. \<gamma> \<in> elts (tp (M \<inter> X)) \<Longrightarrow> ordermap (M \<inter> X) VWF (\<sigma> X \<gamma>) = \<gamma>"
         by (metis \<sigma>_def f_inv_into_f ordermap_surj subsetD)
       have smM: "small (M \<inter> X)" for X
         by (meson \<open>M \<subseteq> D\<close> \<open>small D\<close> inf_le1 subset_iff_less_eq_V)
-      then have \<sigma>_less: "\<And>X \<gamma> \<delta>. \<lbrakk>\<gamma> < \<delta>; \<gamma> \<in> elts (tp (M \<inter> X)); \<delta> \<in> elts (tp (M \<inter> X))\<rbrakk>
-                          \<Longrightarrow> \<sigma> X \<gamma> < \<sigma> X \<delta>"
-        using ordermap_mono_less bij_betw_apply [OF bij_\<sigma>] VWF_iff_Ord_less \<sigma>_cancel_right trans_VWF wf_VWF
-        by (metis Ord_\<sigma> Ord_linear_lt less_imp_not_less ordermap_mono_less)
       have "\<exists>k < length \<alpha>s. \<gamma> \<in> elts (E k)" if \<gamma>: "\<gamma> \<in> elts (tp D)" for \<gamma>
       proof -
         obtain X where "X \<in> set L" and X: "\<phi> \<gamma> \<in> X"
@@ -155,9 +149,9 @@ proof -
         have Ord_\<sigma>L: "Ord (\<sigma> (L!k) (\<pi> k d))" if "d \<in> \<phi> ` elts (E k)" "k < length \<alpha>s" for k d
           by (metis "**" Ord_\<sigma> \<open>length L = length \<alpha>s\<close> bij_\<pi> bij_betw_imp_surj_on imageI nth_mem that tp_L_eq)
         have "\<gamma>' < \<gamma>"
-          by (metis \<gamma>'_def \<gamma>_def \<open>d' < d\<close> \<open>small D\<close> \<phi>_cancel_left \<phi>_less_iff ordermap_in_ordertype xy)
+          by (simp add: \<gamma>'_def \<gamma>_def \<open>(d', d) \<in> VWF\<close> \<open>small D\<close> ordermap_mono_less xy)
         then have "K \<gamma>' \<le> K \<gamma>"
-          using elts' elts by (meson in_elts_E_less leI len' less_asym)
+          using elts' elts in_elts_E_less by (meson leI len' less_asym less_sets_def)
         then consider (less) "K \<gamma>' < K \<gamma>" | (equal) "K \<gamma>' = K \<gamma>"
           by linarith
         then have "\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d') < \<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d)"
@@ -171,24 +165,22 @@ proof -
             using len' len elts_E tpD_eq
             by (fastforce simp: L_def \<gamma>'_def \<gamma>_def \<phi>_cancel_right)+
           then have "ordermap D VWF (\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d')) < ordermap D VWF (\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d))"
-            using in_elts_E_less len less by blast
+            using in_elts_E_less len less by (meson less_sets_def)
           moreover have "\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d') \<in> D" "\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d) \<in> D"
             using \<open>M \<subseteq> D\<close> \<dagger> by auto
           ultimately show ?thesis
             by (metis \<open>small D\<close> \<phi>_cancel_left \<phi>_less_iff ordermap_in_ordertype)
         next
           case equal
-          show ?thesis
+          have \<sigma>_less: "\<And>X \<gamma> \<delta>. \<lbrakk>\<gamma> < \<delta>; \<gamma> \<in> elts (tp (M \<inter> X)); \<delta> \<in> elts (tp (M \<inter> X))\<rbrakk>
+                          \<Longrightarrow> \<sigma> X \<gamma> < \<sigma> X \<delta>"
+            by (metis \<open>D \<subseteq> ON\<close> \<open>M \<subseteq> D\<close> \<sigma>_def dual_order.trans inv_ordermap_VWF_strict_mono_iff le_infI1 smM)
+          have "\<pi> (K \<gamma>) d' < \<pi> (K \<gamma>) d"
+            by (metis equal \<gamma>'_def \<gamma>_def \<open>(d', d) \<in> VWF\<close> \<phi>_cancel_left \<pi>_iff elts elts' imageI len xy)
+          then show ?thesis
             unfolding equal
-          proof (rule \<sigma>_less)
-            show "\<pi> (K \<gamma>) d' < \<pi> (K \<gamma>) d"
-              by (metis equal \<gamma>'_def \<gamma>_def \<open>(d', d) \<in> VWF\<close> \<phi>_cancel_left \<pi>_iff elts elts' imageI len xy)
-            have "\<pi> (K \<gamma>) d' \<in> elts (tp (L ! K \<gamma>))" "\<pi> (K \<gamma>) d \<in> elts (tp (L ! K \<gamma>))"
-              using equal \<phi>_cancel_left \<gamma>'_def elts' len' \<gamma>_def elts len xy
-              by (force intro: bij_betw_apply [OF bij_\<pi>])+
-            then show "\<pi> (K \<gamma>) d' \<in> elts (tp (M \<inter> L ! K \<gamma>))" "\<pi> (K \<gamma>) d \<in> elts (tp (M \<inter> L ! K \<gamma>))"
-              by (simp_all add: "**" len)
-          qed
+            by (metis "**" \<gamma>'_def \<gamma>_def \<open>length L = length \<alpha>s\<close> \<phi>_cancel_left \<sigma>_less bij_\<pi> 
+                 bij_betw_imp_surj_on elts elts' image_eqI len local.equal nth_mem tp_L_eq xy)
         qed
         moreover have "Ord (\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d'))"
           using Ord_\<sigma>L \<gamma>'_def \<phi>_cancel_left elts' len' xy(1) by fastforce
@@ -206,14 +198,10 @@ proof -
             using K \<open>d \<in> D\<close> by (auto simp: \<gamma>_def \<open>small D\<close> ordermap_in_ordertype)
           have "\<pi> (K \<gamma>) d \<in> elts (tp (L! (K \<gamma>)))"
             using bij_\<pi> [OF len] \<open>d \<in> D\<close>
-            apply (simp add: L_def len)
-            by (metis \<gamma>_def \<phi>_cancel_left bij_betw_imp_surj_on elts imageI)
-          then have "\<sigma> (L! (K \<gamma>)) (\<pi> (K \<gamma>) d) \<in> M \<inter> (L! (K \<gamma>))"
-            using smM bij_betw_imp_surj_on [OF ordermap_bij] \<open>length L = length \<alpha>s\<close>
-            unfolding \<sigma>_def
-            by (metis (no_types) "*" inv_into_into len nth_mem vsubsetD total_on_VWF wf_VWF)
+            by (metis \<gamma>_def \<phi>_cancel_left bij_betw_apply elts imageI len tp_L_eq)
           then show "\<sigma> (L ! K (ordermap D VWF d)) (\<pi> (K (ordermap D VWF d)) d) \<in> M"
-            using \<gamma>_def by blast
+            using \<gamma>_def \<open>length L = length \<alpha>s\<close>
+            by (metis "*" Int_iff bij_\<sigma> bij_betw_apply len nth_mem vsubsetD) 
         qed
       qed auto
     qed

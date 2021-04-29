@@ -11,7 +11,7 @@ text \<open>Source: Schlöder, Julian.  Ordinal Arithmetic; available online at
 definition oexp :: "[V,V] \<Rightarrow> V" (infixr "\<up>" 80)
   where "oexp a b \<equiv> transrec (\<lambda>f x. if x=0 then 1
                                     else if Limit x then if a=0 then 0 else SUP \<xi> \<in> elts x. f \<xi>
-                                    else f (\<Squnion>(elts x)) * a) b"
+                                    else f (\<Squnion>(elts x)) * a)  b"
 
 text \<open>@{term "0\<up>\<omega> = 1"} if we don't make a special case for Limit ordinals and zero\<close>
 
