@@ -221,13 +221,36 @@ proof -
   finally show ?thesis using A by auto
 qed
 
-definition "c = (\<Prod>ia = 0..<m-1. (of_nat m :: real) - 1 - of_nat ia)" 
-lemma c_gt_0: "c > 0" unfolding c_def by (rule prod_pos, auto)
+definition p :: "nat \<Rightarrow> real poly" where
+  "p s = (\<Prod>i = 0..<s. [: - of_nat i / of_nat (s - i), 1 / of_nat (s - i) :])" 
+
+lemma p_binom: assumes sk: "s \<le> k" 
+  shows "of_nat (k choose s) = poly (p s) (of_nat k)" 
+  unfolding binomial_altdef_of_nat[OF assms] p_def poly_prod
+proof (rule prod.cong[OF refl], clarsimp, goal_cases)
+  case (1 i)
+  with sk have "of_nat (k - i) = (of_nat k - of_nat i :: real)" by auto
+  thus ?case using 1 by (auto simp: field_simps)
+qed
+
+lemma p_binom_complex: assumes sk: "s \<le> k" 
+  shows "of_nat (k choose s) = complex_of_real (poly (p s) (of_nat k))" 
+  unfolding p_binom[OF sk, symmetric] by simp
+
+lemma deg_p: "degree (p s) = s" unfolding p_def
+  by (subst degree_prod_eq_sum_degree, auto)
+
+lemma lead_coeff_p: "lead_coeff (p s) = (\<Prod>i = 0..<s. 1 / (of_nat s - of_nat i))" 
+  unfolding p_def lead_coeff_prod
+  by (rule prod.cong[OF refl], auto)
+
+lemma lead_coeff_p_gt_0: "lead_coeff (p s) > 0" unfolding lead_coeff_p
+  by (rule prod_pos, auto)
+
+definition "c = lead_coeff (p (m - 1))" 
+
+lemma c_gt_0: "c > 0" unfolding c_def by (rule lead_coeff_p_gt_0)
 lemma c0: "c \<noteq> 0" using c_gt_0 by auto
-lemma c_int_def: "c = (\<Prod>ia = 0..<m-1. (of_nat m :: int) - 1 - of_nat ia)" 
-  using c_def by auto
-lemma c_int: "c \<in> \<int>" using c_int_def Ints_of_int by metis
-lemma c_ge_1: "c \<ge> 1" using c_gt_0 unfolding c_int_def by presburger
 
 definition PP where "PP = (SOME PP. similar_mat_wit cA J (fst PP) (snd PP))" 
 definition P where "P = fst PP" 
@@ -302,7 +325,7 @@ definition f where "f off k = D * k + (m-1) + off"
 lemma mono_f: "strict_mono (f off)" unfolding strict_mono_def f_def
   using D0 by auto
 
-definition C where "C off k = (c / real (f off k) ^ (m - 1))" 
+definition C where "C off k = inverse (c * real (f off k) ^ (m - 1))" 
 
 lemma limit_jordan_block: assumes kla: "(k, la) \<in> set n_as"
   and ij: "i < k" "j < k" 
@@ -326,14 +349,16 @@ proof -
   obtain ks small where decomp: "decompose_prod_root_unity (char_poly A) = (ks, small)" by force
   note pf = perron_frobenius_for_complexity_jnf[OF A n0 nonneg sr1 decomp]
   define ji where "ji = j - i" 
-  let ?f = "\<lambda> N. (c / (?r N)^(m-1))" 
+  have ji: "j - i = ji" unfolding ji_def by auto
+  let ?f = "\<lambda> N. c * (?r N)^(m-1)" 
   let ?jb = "\<lambda> N. (jordan_block k la ^\<^sub>m N) $$ (i,j)" 
-  let ?jbc = "\<lambda> N. (jordan_block k la ^\<^sub>m N) $$ (i,j) * ?f N" 
+  let ?jbc = "\<lambda> N. (jordan_block k la ^\<^sub>m N) $$ (i,j) / ?f N" 
   define e where "e = (if i = 0 \<and> j = k - 1 \<and> cmod la = 1 \<and> k = m then la^off else 0)"  
-  let ?e1 = "\<lambda> N :: nat. (\<Prod>ia = 0..<ji. (?c N - ?c ia) / ?c (ji - ia)) * la ^ (N - ji)" 
-  let ?e2 = "\<lambda> N. (\<Prod>ia = 0..<ji. (?c N - ?c ia) / ?c (ji - ia)) * la ^ (N - ji) * (c / ((?c N^(m-1))))" 
+  let ?e1 = "\<lambda> N :: nat. ?cr (poly (p (j - i)) (?r N)) * la ^ (N + i - j)" 
+  let ?e2 = "\<lambda> N. ?cr (poly (p ji) (?r N) / ?f N) * la ^ (N + i - j)" 
   define e2 where "e2 = ?e2" 
-  let ?e3 = "\<lambda> N. (((\<Prod>ia = 0..<ji. (?c N - ?c ia) / ?c (ji - ia))) * la ^ (N - ji)) * ?f N" 
+  let ?e3 = "\<lambda> N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1)) * cmod la ^ (N + i - j)" 
+  define e3 where "e3 = ?e3" 
   {
     assume ij': "i \<le> j" and la0: "la \<noteq> 0" 
     {
@@ -342,18 +367,28 @@ proof -
       with ij ij' have ji: "j - i \<le> N" and id: "N + i - j = N - ji" unfolding ji_def by auto
       have "?jb N = (?c (N choose (j - i)) * la ^ (N + i - j))" 
         unfolding jordan_block_pow using ij ij' by auto
-      also have "\<dots> = ?e1 N" unfolding ji_def
-        unfolding binomial_altdef_of_nat[OF ji] id ji_def
-      proof (rule arg_cong[of _ _ "\<lambda> x. x * _"], rule prod.cong[OF refl], goal_cases) 
-      case (1 x)
-        hence "x \<le> N" using \<open>N \<ge> k\<close> ij by auto
-        thus ?case by (simp add: of_nat_diff)
-      qed
+      also have "\<dots> = ?e1 N" by (subst p_binom_complex[OF ji], auto)
       finally have id: "?jb N = ?e1 N" .
       have "?jbc N = e2 N" 
-        unfolding id e2_def using c_gt_0 by (simp add: norm_mult norm_divide norm_power) 
+        unfolding id e2_def ji_def using c_gt_0 by (simp add: norm_mult norm_divide norm_power) 
     } note jbc = this
-    have e23: "?e2 N = ?e3 N" for N using c_gt_0 by auto
+    {
+      fix n
+      assume n: "n \<ge> ji" 
+      have "cmod (e2 n) = \<bar>poly (p ji) (?r n) / (c * ?r n ^ (m - 1))\<bar> * cmod la ^ (n + i - j)"
+        unfolding e2_def norm_mult norm_power norm_of_real by simp
+      also have "\<bar>poly (p ji) (?r n) / (c * ?r n ^ (m - 1))\<bar> = poly (p ji) (?r n) / (c * real n ^ (m - 1))" 
+        by (intro abs_of_nonneg divide_nonneg_nonneg mult_nonneg_nonneg, insert c_gt_0, auto simp: p_binom[OF n, symmetric])
+      finally have "cmod (e2 n) = e3 n" unfolding e3_def by auto
+    } note cmod_e2 = this
+    {
+      assume e3: "e3 \<longlonglongrightarrow> 0" 
+      have e2_e3: "\<forall>\<^sub>F x in sequentially. cmod (e2 x) = e3 x" 
+        by (rule eventually_sequentiallyI[of "Suc ji"], insert cmod_e2, auto)
+      have "e2 \<longlonglongrightarrow> 0" 
+        by (subst tendsto_norm_zero_iff[symmetric], subst tendsto_cong[OF e2_e3], rule e3)
+    } note e2_via_e3 = this
+
     have "(e2 o f off) \<longlonglongrightarrow> e" 
     proof (cases "cmod la = 1 \<and> k = m \<and> i = 0 \<and> j = k - 1")
       case False
@@ -364,68 +399,36 @@ proof -
       proof cases
         case 0
         hence e0: "e = 0" unfolding e_def by auto
-        show ?thesis unfolding e0 0 LIMSEQ_iff e2_def
-        proof (intro exI[of _ "Suc ji"] impI allI, goal_cases)
-          case (1 r n) thus ?case by (cases "n - ji", auto)
+        show ?thesis unfolding e0 0 LIMSEQ_iff e2_def ji
+        proof (intro exI[of _ "Suc j"] impI allI, goal_cases)
+          case (1 r n) thus ?case by (cases "n + i - j", auto)
         qed
       next
         case small
-        have e0: "e = 0 * (of_real (if m - 1 = 0 then c else 0))" using small unfolding e_def by auto
-        show ?thesis unfolding e0 unfolding e23 e2_def
-        proof (rule tendsto_mult[OF _ tendsto_of_real])
-          show "(\<lambda>x. c / real x ^ (m - 1)) \<longlonglongrightarrow> (if m - 1 = 0 then c else 0)"
-            by (cases "m - 1"; real_asymp)
-          let ?laji = "inverse (la^ji)" 
-          let ?f = "(\<lambda>x. (\<Prod>ia = 0..<ji. (?c x - ?c ia) / ?c (ji - ia)) * la ^ (x - ji))" 
-          let ?g = "\<lambda>x. (\<Prod>ia = 0..<ji. (1 - ?c ia * inverse (?c x)) / ?c (ji - ia)) * (((?c x)^ji * la ^ x) * ?laji)" 
-          have fg: "\<forall>\<^sub>F x in sequentially. ?f x = ?g x" 
-            apply (rule eventually_sequentiallyI[of "Suc ji"])
-            unfolding prod_pow[symmetric] prod.distrib[symmetric] mult.assoc[symmetric]
-            unfolding prod_pow mult.assoc
-            by (rule arg_cong2[of _ _ _ _ "(*)"], rule prod.cong, auto simp: ring_distribs, 
-              insert small, subst power_diff, auto simp: divide_inverse)
-          have 0: "0 = (\<Prod>ia = 0..<ji. (1 - of_nat ia * 0) / of_nat (ji - ia)) * (0 * ?laji)" by simp
-          show "?f \<longlonglongrightarrow> 0" unfolding tendsto_cong[OF fg]
-          proof (subst 0, rule tendsto_mult[OF tendsto_prod tendsto_mult[OF _ tendsto_const]], 
-              intro tendsto_intros inverse_of_nat_tendsto_zero)
-            show "(\<lambda>x. of_nat x ^ ji * la ^ x) \<longlonglongrightarrow> 0"        
-              by (rule poly_times_exp_tendsto_zero, insert small, auto)
-          qed auto
+        define d where "d = cmod la" 
+        from small have d: "0 < d" "d < 1" unfolding d_def by auto
+        have e0: "e = 0" using small unfolding e_def by auto
+        show ?thesis unfolding e0
+        proof (intro e2_via_e3, unfold e3_def d_def[symmetric])
+          show "(\<lambda>N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1)) * d ^ (N + i - j)) \<longlonglongrightarrow> 0" 
+            unfolding poly_altdef sum_divide_distrib sum_distrib_right
+            by (intro tendsto_null_sum, insert d c0, real_asymp)
         qed
       next
         case medium
-        with max_block[OF kla] have "k \<le> m" and 1: "\<And> x. cmod la ^ x = 1" by auto
-        with ij medium have "ji < m - 1" unfolding ji_def by linarith
-        then obtain d where m1: "m - 1 = Suc d + ji" using less_iff_Suc_add by auto
+        with max_block[OF kla] have "k \<le> m" by auto
+        with ij medium have ji: "ji < m - 1" unfolding ji_def by linarith
         have e0: "e = 0" using medium unfolding e_def by auto
-        have 0: "0 = (\<Prod>ia = 0..<ji. (1 - ?c ia * 0) / ?c (ji - ia)) * (of_real c) * 0" by simp       
-        let ?e = "\<lambda> ia N. if N = 0 then 0 else (1 - ?c ia / ?c N) / ?c (ji - ia)" 
-        let ?f = "\<lambda> ia N. (1 - ?c ia * (1 / ?c N)) / ?c (ji - ia)"
-        {
-          fix N          
-          have "e2 N = ((\<Prod>ia = 0..<ji. (?c N - ?c ia) / ?c (ji - ia)) / ?c N ^ ji) * la ^ (N - ji) * (of_real c / ?c N ^ Suc d)" 
-            unfolding medium m1 power_add e2_def by simp
-          also have "(\<Prod>ia = 0..<ji. (?c N - ?c ia) / ?c (ji - ia)) / ?c N ^ ji 
-            = (\<Prod>ia = 0..<ji. ?e ia N)" unfolding prod_pow[symmetric] prod_dividef[symmetric]
-            by (cases "?c N = 0", auto simp add: field_simps)
-          finally have "e2 N = (\<Prod>ia = 0..<ji. ?e ia N) * of_real c * inverse (?c N ^ Suc d) * la ^ (N - ji)"  
-            by (simp add: divide_inverse)
-          also have "cmod \<dots> = cmod ((\<Prod>ia = 0..<ji. ?e ia N) * of_real c * (inverse (?c N ^ Suc d)))" 
-            unfolding norm_mult norm_power 1 by simp
-          finally have "cmod (e2 N) = cmod ((\<Prod>ia = 0..<ji. ?e ia N) * of_real c * (inverse (?c N ^ Suc d)))" by simp
-        } note e2 = this
         show ?thesis unfolding e0
-          apply (rule tendsto_norm_zero_cancel, unfold e2, rule tendsto_norm_zero)
-          apply (subst (2) 0)
-          apply (rule tendsto_mult[OF tendsto_mult[OF tendsto_prod tendsto_const] inverse_power_tendsto_zero], goal_cases)
-        proof -
-          case (1 i)
-          let ?g = "\<lambda> x. (1 - ?c i * (1 / of_nat x)) / of_nat (ji - i)" 
-          have eq: "\<forall>\<^sub>F x in sequentially. ?e i x = ?g x" 
-            by (rule eventually_sequentiallyI[of 1], auto) 
-          show "?e i \<longlonglongrightarrow> (1 - ?c i * 0) / ?c (ji - i)" 
-            unfolding tendsto_cong[OF eq] using 1
-            by (intro tendsto_intros lim_1_over_n, auto) 
+        proof (intro e2_via_e3, unfold e3_def medium power_one mult_1_right)
+          show "(\<lambda>N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1))) \<longlonglongrightarrow> 0"
+            unfolding poly_altdef sum_divide_distrib
+          proof (intro tendsto_null_sum, goal_cases)
+            case (1 deg)
+            from deg_p ji have "degree (p ji) < m - 1" by auto
+            with 1 have "deg < m - 1" by auto
+            thus ?case using c0 by real_asymp
+          qed
         qed
       qed
       show "(e2 o f off) \<longlonglongrightarrow> e"
@@ -433,47 +436,55 @@ proof -
     next
       case True
       hence large: "cmod la = 1" "k = m" "i = 0" "j = k - 1" by auto
-      hence e: "e = la^off" unfolding e_def by auto
+      hence e: "e = la^off" and ji: "ji = m - 1" unfolding e_def ji_def by auto
       from large k0 have m0: "m \<ge> 1" by auto
       define m1 where "m1 = m - 1" 
       have id: "(real (m - 1) - real ia) = ?r m - 1 - ?r ia" for ia using m0 unfolding m1_def by auto
-      let ?e4 = "\<lambda> x. (\<Prod>ia = 0..<m1. 1 - ?cr (?r ia / x))" 
+      define q where "q = p m1 - monom c m1" 
+      hence pji: "p ji = q + monom c m1" unfolding q_def ji m1_def by simp
+      let ?e4a = "\<lambda> x. (complex_of_real (poly q (real x) / (c * real x ^ m1))) * la ^ (x + i - j)" 
+      let ?e4b = "\<lambda> x. la ^ (x + i - j)" 
       {
         fix x :: nat
         assume x: "x \<noteq> 0" 
-        have "?e2 x = ((\<Prod>ia = 0..<m1. (?c x - ?c ia) / ?c (m1 - ia)) *
-            (\<Prod>ia = 0..<m1. ?cr (real m1 - real ia))) /
-            (\<Prod>i = 0..<m1. ?c x) * la ^ (x - (m-1))" (is "_ = ?A / ?B * ?C") 
-          unfolding m1_def ji_def large c_def prod_pow[symmetric] id by simp
-        also have "?A = (\<Prod>ia = 0..<m1. (?cr x - ?c ia))" (is "_ = ?A")
-          unfolding prod.distrib[symmetric] by (rule prod.cong[OF refl], subst of_nat_diff, auto) 
-        also have "?A / ?B = (\<Prod>ia = 0..<m1. 1 - ?cr (?r ia / x))" 
-          unfolding prod_dividef[symmetric] by (rule prod.cong[OF refl], insert x, auto simp: field_simps)
-        finally have "?e2 x = ?e4 x * ?C" .
-      } note main = this
-      from d[OF kla large(1)] have 1: "la ^ d la = 1" by auto
-      from split_list[OF kla] obtain as bs where n_as: "n_as = as @ (k,la) # bs" by auto
-      obtain C where D: "D = d la * C" unfolding D_def unfolding n_as using large by auto
-      have "(\<lambda> x. ?e4 x * e) \<longlonglongrightarrow> (\<Prod>ia = 0..<m1. 1 - ?cr 0) * e" 
-        by (intro tendsto_intros real_tendsto_divide_at_top, auto simp: filterlim_real_sequentially)
-      also have "(\<Prod>ia = 0..<m1. 1 - ?cr 0) = 1" unfolding e by simp
-      finally have "(\<lambda> x. ?e4 x * e)  \<longlonglongrightarrow> e" by auto
-      from LIMSEQ_subseq_LIMSEQ[OF this mono_f] 
-      have e4: "(\<lambda> k. (?e4 o f off) k * e) \<longlonglongrightarrow> e" (is "?A \<longlonglongrightarrow> e")
-        by (auto simp: o_def)
-      {
-        fix k :: nat
-        assume k: "k \<noteq> 0" 
-        hence 0: "f off k \<noteq> 0" unfolding f_def using D0 by auto
-        have "?e2 (f off k) = ?e4 (f off k) * la^(f off k - (m-1))" unfolding main[OF 0] ..
-        also have "f off k - (m-1) = D * k + off" unfolding f_def by simp
-        also have "la ^ \<dots> = e" unfolding e power_add D power_mult 1 by auto
-        finally have "e2 (f off k) = (?e4 o f off) k * e" unfolding o_def e2_def .
-      } note main = this
-      have id: "(?A \<longlonglongrightarrow> e) = ((e2 o f off) \<longlonglongrightarrow> e)" 
-        by (rule tendsto_cong, unfold eventually_at_top_linorder, 
-            rule exI[of _ 1], insert main, auto)
-      from e4[unfolded id] show ?thesis .
+        have "e2 x = ?e4a x + ?e4b x" 
+          unfolding e2_def pji poly_add poly_monom m1_def[symmetric] using c0 x by (simp add: field_simps)
+      } note e2_e4 = this
+      have e2_e4: "\<forall>\<^sub>F x in sequentially. (e2 o f off) x = (?e4a o f off) x + (?e4b o f off) x"  unfolding o_def
+        by (intro eventually_sequentiallyI[of "Suc 0"], rule e2_e4, insert D0, auto simp: f_def)
+      have "(e2 o f off) \<longlonglongrightarrow> 0 + e" 
+        unfolding tendsto_cong[OF e2_e4]
+      proof (rule tendsto_add, rule LIMSEQ_subseq_LIMSEQ[OF _ mono_f])
+        show "?e4a \<longlonglongrightarrow> 0" 
+        proof (subst tendsto_norm_zero_iff[symmetric],
+            unfold norm_mult norm_power large power_one mult_1_right norm_divide norm_of_real
+            tendsto_rabs_zero_iff)
+          have deg_q: "degree q \<le> m1" unfolding q_def using deg_p[of m1] 
+            by (intro degree_diff_le degree_monom_le, auto)
+          have coeff_q_m1: "coeff q m1 = 0" unfolding q_def c_def m1_def[symmetric] using deg_p[of m1] by simp
+          from deg_q coeff_q_m1 have "degree q < m1 \<or> q = 0" by fastforce
+          thus "(\<lambda>n. poly q (?r n) / (c * ?r n ^ m1)) \<longlonglongrightarrow> 0" 
+          proof
+            assume "degree q < m1" 
+            thus ?thesis unfolding poly_altdef sum_divide_distrib 
+            proof (intro tendsto_null_sum, goal_cases)
+              case (1 i)
+              hence "i < m1" by auto
+              thus ?case using c0 by real_asymp
+            qed
+          qed auto
+        qed
+      next  
+        have id: "D * x + (m - 1) + off + i - j = D * x + off" for x
+          unfolding ji[symmetric] ji_def using ij' by auto
+        from d[OF kla large(1)] have 1: "la ^ d la = 1" by auto
+        from split_list[OF kla] obtain as bs where n_as: "n_as = as @ (k,la) # bs" by auto
+        obtain C where D: "D = d la * C" unfolding D_def unfolding n_as using large by auto
+        show "(?e4b o f off) \<longlonglongrightarrow> e" 
+          unfolding e f_def o_def id
+          unfolding power_add power_mult D 1 by auto
+      qed
+      thus ?thesis by simp
     qed
     also have "((e2 o f off) \<longlonglongrightarrow> e) = ((?jbc o f off)  \<longlonglongrightarrow> e)"
     proof (rule tendsto_cong, unfold eventually_at_top_linorder, rule exI[of _ k], 
@@ -493,7 +504,7 @@ proof -
     have "(?jbc o f off) \<longlonglongrightarrow> e" .
   } note part2 = this
   from part1 part2 have "(?jbc o f off) \<longlonglongrightarrow> e" by linarith
-  thus ?thesis unfolding e_def o_def C_def .
+  thus ?thesis unfolding e_def o_def C_def by (simp add: field_simps)
 qed
 
 definition lambda where "lambda i = snd (n_as ! fst (j_to_jb_index n_as i))" 
