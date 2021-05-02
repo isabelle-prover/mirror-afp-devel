@@ -1,6 +1,6 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
 \usepackage{isabelle,isabellesym}
+\usepackage[T1]{fontenc}
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
@@ -26,7 +26,7 @@
 \begin{abstract}
 In this work, we use the interactive theorem prover Isabelle/HOL
 to verify an imperative implementation of the classical B-tree data structure \cite{DBLP:journals/acta/BayerM72}.
-The implementation supports set membership and insertion queries
+The implementation supports set membership, insertion and deletion queries
 with efficient binary search for intra-node navigation.
 This is accomplished by first specifying the structure abstractly 
 in the functional modeling language HOL and proving functional correctness.
@@ -35,7 +35,7 @@ in Imperative/HOL.
 We show the validity of this refinement using
 the separation logic utilities from the
 Isabelle Refinement Framework \cite{Refine_Imperative_HOL-AFP}. 
-The code can be exported to the programming languages SML and Scala.
+The code can be exported to the programming languages SML, Scala and OCaml.
 We examine the runtime of all operations indirectly by reproducing results
 of the logarithmic relationship between height and the number of nodes.
 The results are discussed in greater detail in the related Bachelor's Thesis

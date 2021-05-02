@@ -146,10 +146,10 @@ definition pfa_shrink :: "nat \<Rightarrow> 'a::heap pfarray \<Rightarrow> 'a pf
 
 
 lemma pfa_shrink_rule[sep_heap_rules]: "
-   k \<le> length l \<Longrightarrow>
-    < is_pfa c l (a,n) > 
+   k \<le> length xs \<Longrightarrow>
+    < is_pfa c xs (a,n) > 
       pfa_shrink k (a,n)
-    <\<lambda>(a',n'). is_pfa c (take k l) (a',n') * \<up>(n' = k \<and> a'=a) >"  
+    <\<lambda>(a',n'). is_pfa c (take k xs) (a',n') * \<up>(n' = k \<and> a'=a) >"  
   by (sep_auto 
       simp: pfa_shrink_def is_pfa_def min.absorb1
       split: prod.splits nat.split)
@@ -354,7 +354,7 @@ definition pfa_insert_grow ::  "'a::{heap,default} pfarray \<Rightarrow> nat \<R
   return a''
 }"
 
-lemma pfa_insert_grow_rule: 
+lemma pfa_insert_grow_rule[sep_heap_rules]: 
   "i \<le> n \<Longrightarrow>
   <is_pfa c l (a,n)>
   pfa_insert_grow (a,n) i x 
@@ -369,7 +369,7 @@ definition pfa_extend where
   return (a,n+m)
 }"
 
-lemma pfa_extend_rule: 
+lemma pfa_extend_rule[sep_heap_rules]: 
   "n+m \<le> c \<Longrightarrow>
   <is_pfa c l1 (a,n) * is_pfa d l2 (b,m)>
   pfa_extend (a,n) (b,m) 
@@ -385,7 +385,7 @@ definition pfa_extend_grow where
   return (a',n+m)
 }"
 
-lemma pfa_extend_grow_rule: 
+lemma pfa_extend_grow_rule[sep_heap_rules]: 
   "<is_pfa c l1 (a,n) * is_pfa d l2 (b,m)>
   pfa_extend_grow (a,n) (b,m) 
   <\<lambda>(a',n'). is_pfa (max c (n+m)) (l1@l2) (a',n') * \<up>(n'=n+m \<and> c \<ge> n) * is_pfa d l2 (b,m)>\<^sub>t"
@@ -400,7 +400,7 @@ definition pfa_append_extend_grow where
   return (a'',n+m+1)
 }"
 
-lemma pfa_append_extend_grow_rule: 
+lemma pfa_append_extend_grow_rule[sep_heap_rules]: 
   "<is_pfa c l1 (a,n) * is_pfa d l2 (b,m)>
   pfa_append_extend_grow (a,n) x (b,m) 
   <\<lambda>(a',n'). is_pfa (max c (n+m+1)) (l1@x#l2) (a',n') * \<up>(n'=n+m+1 \<and> c \<ge> n) * is_pfa d l2 (b,m)>\<^sub>t"

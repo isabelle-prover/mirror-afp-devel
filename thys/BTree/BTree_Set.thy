@@ -106,18 +106,23 @@ fun node\<^sub>i:: "nat \<Rightarrow> ('a btree \<times> 'a) list \<Rightarrow> 
     )
   )"
 
+lemma nodei_ti_simp: "node\<^sub>i k ts t = T\<^sub>i x \<Longrightarrow> x = Node ts t"
+  apply (cases "length ts \<le> 2*k")
+  apply (auto split!: list.splits)
+  done
+
 
 fun ins:: "nat \<Rightarrow> 'a \<Rightarrow> 'a btree \<Rightarrow> 'a up\<^sub>i" where
   "ins k x Leaf = (Up\<^sub>i Leaf x Leaf)" |
   "ins k x (Node ts t) = (
   case split ts x of
-    (ls,(sub,sep)#rs) \<Rightarrow>
+    (ls,(sub,sep)#rs) \<Rightarrow> 
       (if sep = x then
         T\<^sub>i (Node ts t)
       else
-        (case ins k x sub of
+        (case ins k x sub of 
           Up\<^sub>i l a r \<Rightarrow>
-             node\<^sub>i k (ls @ (l,a)#(r,sep)#rs) t |
+             node\<^sub>i k (ls @ (l,a)#(r,sep)#rs) t | 
           T\<^sub>i a \<Rightarrow>
             T\<^sub>i (Node (ls @ (a,sep) # rs) t))) |
     (ls, []) \<Rightarrow>
@@ -140,7 +145,7 @@ fun insert::"nat \<Rightarrow> 'a \<Rightarrow> 'a btree \<Rightarrow> 'a btree"
 
 subsection "Deletion"
 
-text "The following deletion method is inspired by Bayer (70) and Fielding (??).
+text "The following deletion method is inspired by Bauer (70) and Fielding (??).
 Rather than stealing only a single node from the neighbour,
 the neighbour is fully merged with the potentially underflowing node.
 If the resulting node is still larger than allowed, the merged node is split
@@ -152,7 +157,7 @@ fun rebalance_middle_tree where
   Node (ls@(Leaf,sep)#rs) Leaf
 )" |
   "rebalance_middle_tree k ls (Node mts mt) sep rs (Node tts tt) = (
-  if length mts \<ge> k \<and> length tts \<ge> k then
+  if length mts \<ge> k \<and> length tts \<ge> k then 
     Node (ls@(Node mts mt,sep)#rs) (Node tts tt)
   else (
     case rs of [] \<Rightarrow> (
@@ -193,10 +198,10 @@ it resides in the same pair as the separating element to be removed."
 
 fun split_max where
   "split_max k (Node ts t) = (case t of Leaf \<Rightarrow> (
-  let (sub,sep) = last ts in
+  let (sub,sep) = last ts in 
     (Node (butlast ts) sub, sep)
 )|
-_ \<Rightarrow>
+_ \<Rightarrow> 
 case split_max k t of (sub, sep) \<Rightarrow>
   (rebalance_last_tree k ts sub, sep)
 )"
@@ -204,11 +209,11 @@ case split_max k t of (sub, sep) \<Rightarrow>
 fun del where
   "del k x Leaf = Leaf" |
   "del k x (Node ts t) = (
-  case split ts x of
-    (ls,[]) \<Rightarrow>
+  case split ts x of 
+    (ls,[]) \<Rightarrow> 
      rebalance_last_tree k ls (del k x t)
   | (ls,(sub,sep)#rs) \<Rightarrow> (
-      if sep \<noteq> x then
+      if sep \<noteq> x then 
         rebalance_middle_tree k ls (del k x sub) sep rs t
       else if sub = Leaf then
         Node (ls@rs) t
@@ -252,7 +257,7 @@ fun nonempty_lasttreebal where
 
 subsection "Proofs of functional correctness"
 
-lemma split_set:
+lemma split_set: 
   assumes "split ts z = (ls,(a,b)#rs)"
   shows "(a,b) \<in> set ts"
     and "(x,y) \<in> set ls \<Longrightarrow> (x,y) \<in> set ts"
@@ -340,7 +345,7 @@ proof(induction t x rule: isin.induct)
   case (2 ts t x)
   then obtain ls rs where list_split: "split ts x = (ls, rs)"
     by (meson surj_pair)
-  then have list_conc: "ts = ls @ rs"
+  then have list_conc: "ts = ls @ rs" 
     using split_conc by auto
   show ?case
   proof (cases rs)
@@ -414,9 +419,9 @@ proof (cases "length ts \<le> 2*k")
     by (simp add: node\<^sub>i.simps)
 next
   case False
-  then obtain ls sub sep rs where split_half_ts:
+  then obtain ls sub sep rs where split_half_ts: 
     "take (length ts div 2) ts = ls"
-    "drop (length ts div 2) ts = (sub,sep)#rs"
+    "drop (length ts div 2) ts = (sub,sep)#rs" 
     using split_half_not_empty[of ts]
     by auto
   then have length_rs: "length rs = length ts - (length ts div 2) - 1"
@@ -428,7 +433,7 @@ next
     by auto
   finally have "length rs \<le> 2*k"
     by simp
-  moreover have "length rs \<ge> k"
+  moreover have "length rs \<ge> k" 
     using False length_rs by simp
   moreover have "set ((sub,sep)#rs) \<subseteq> set ts"
     by (metis split_half_ts(2) set_drop_subset)
@@ -460,8 +465,8 @@ proof (cases "length ts \<le> 2*k")
     by (simp add: node\<^sub>i.simps)
 next
   case False
-  then obtain sub sep rs where
-    "drop (length ts div 2) ts = (sub,sep)#rs"
+  then obtain sub sep rs where 
+    "drop (length ts div 2) ts = (sub,sep)#rs" 
     using split_half_not_empty[of ts]
     by auto
   then show ?thesis
@@ -483,7 +488,7 @@ lemma node\<^sub>i_order:
   done
 
 (* explicit proof *)
-lemma ins_order:
+lemma ins_order: 
   "order k t \<Longrightarrow> order_up\<^sub>i k (ins k x t)"
 proof(induction k x t rule: ins.induct)
   case (2 k x ts t)
@@ -525,7 +530,7 @@ qed simp
 
 
 (* notice this is almost a duplicate of ins_order *)
-lemma ins_root_order:
+lemma ins_root_order: 
   assumes "root_order k t"
   shows "root_order_up\<^sub>i k (ins k x t)"
 proof(cases t)
@@ -662,7 +667,7 @@ proof(induction k x t rule: ins.induct)
           using height_sub by auto
         then have "height (Node (ls@(sub,sep)#rs) t) = height (Node (ls@(a,sep)#rs) t)"
           by auto
-        then show ?thesis
+        then show ?thesis 
           using T\<^sub>i height_sub False Cons 2 split_list a_split split_append
           by (auto simp add: image_Un max.commute finite_set_ins_swap)
       next
@@ -692,17 +697,17 @@ proof(induction k x t rule: ins.induct)
   show ?case
   proof (cases rs)
     case Nil
-    then show ?thesis
+    then show ?thesis 
     proof (cases "ins k x t")
       case (T\<^sub>i a)
       then have "bal (Node ls a)" unfolding bal.simps
         by (metis "2.IH"(1) "2.prems" append_Nil2 bal.simps(2) bal_up\<^sub>i.simps(1) height_up\<^sub>i.simps(1) ins_height local.Nil split_app split_res)
-      then show ?thesis
+      then show ?thesis 
         using Nil T\<^sub>i 2 split_res
         by simp
     next
       case (Up\<^sub>i l a r)
-      then have
+      then have 
         "(\<forall>x\<in>set (subtrees (ls@[(l,a)])). bal x)"
         "(\<forall>x\<in>set (subtrees ls). height r = height x)"
         using 2 Up\<^sub>i Nil split_res split_app
@@ -845,7 +850,7 @@ lemma ins_list_contains_idem: "\<lbrakk>sorted_less xs; x \<in> set xs\<rbrakk> 
 
 
 declare node\<^sub>i.simps [simp del]
-declare node\<^sub>i_inorder [simp add]
+declare node\<^sub>i_inorder [simp add]  
 
 lemma ins_inorder: "sorted_less (inorder t) \<Longrightarrow> (inorder_up\<^sub>i (ins k x t)) = ins_list x (inorder t)"
 proof(induction k x t rule: ins.induct)
@@ -1041,7 +1046,7 @@ next
         case (T\<^sub>i u)
         then have "height u = max (height rsub) (height sub)"
           using height_max by simp
-        then show ?thesis
+        then show ?thesis 
           using T\<^sub>i False Cons r_node a_split sub_node t_node by auto
       next
         case (Up\<^sub>i l a r)
@@ -1119,7 +1124,7 @@ proof(induction k x t rule: del.induct)
       by (metis append_Nil2 nonempty_lasttreebal.simps(2) order_bal_nonempty_lasttreebal)
     moreover have "Node ls t = Node ts t" using split_conc Nil list_split by auto
     ultimately show ?thesis
-      using rebalance_last_tree_height 2 list_split Nil split_conc
+      using rebalance_last_tree_height 2 list_split Nil split_conc 
       by (auto simp add: max.assoc sup_nat_def max_def)
   next
     case (Cons a rs)
@@ -1127,7 +1132,7 @@ proof(induction k x t rule: del.induct)
       using "2.prems"(3) bal_sub_height list_split split_conc by blast
     from Cons obtain sub sep where a_split: "a = (sub,sep)" by (cases a)
     consider (sep_n_x) "sep \<noteq> x" |
-      (sep_x_Leaf) "sep = x \<and> sub = Leaf" |
+      (sep_x_Leaf) "sep = x \<and> sub = Leaf" | 
       (sep_x_Node) "sep = x \<and> (\<exists>ts t. sub = Node ts t)"
       using btree.exhaust by blast
     then show ?thesis
@@ -1182,7 +1187,7 @@ lemma rebalance_middle_tree_inorder:
     and "case rs of (rsub,rsep) # list \<Rightarrow> height rsub = height t | [] \<Rightarrow> True"
   shows "inorder (rebalance_middle_tree k ls sub sep rs t) = inorder (Node (ls@(sub,sep)#rs) t)"
   apply(cases sub; cases t)
-  using assms
+  using assms 
      apply (auto
       split!: btree.splits up\<^sub>i.splits list.splits
       simp del: node\<^sub>i.simps
@@ -1203,7 +1208,7 @@ lemma split_max_inorder:
   assumes "nonempty_lasttreebal t"
     and "t \<noteq> Leaf"
   shows "inorder_pair (split_max k t) = inorder t"
-  using assms
+  using assms 
 proof (induction k t rule: split_max.induct)
   case (1 k ts t)
   then show ?case
@@ -1214,7 +1219,7 @@ proof (induction k t rule: split_max.induct)
     moreover obtain sub sep where "last ts = (sub,sep)"
       by fastforce
     ultimately show ?thesis
-      using Leaf
+      using Leaf 
       apply (auto split!: prod.splits btree.splits)
       by (simp add: butlast_inorder_app_id)
   next
@@ -1241,7 +1246,7 @@ lemma height_bal_subtrees_merge: "\<lbrakk>height (Node as a) = height (Node bs 
  \<Longrightarrow> \<forall>x \<in> set (subtrees as) \<union> {a}. height x = height b"
   by (metis Suc_inject Un_iff bal.simps(2) height_bal_tree singletonD)
 
-lemma bal_list_merge:
+lemma bal_list_merge: 
   assumes "bal_up\<^sub>i (Up\<^sub>i (Node as a) x (Node bs b))"
   shows "bal (Node (as@(a,x)#bs) b)"
 proof -
@@ -1257,7 +1262,7 @@ proof -
     by auto
 qed
 
-lemma node\<^sub>i_bal_up\<^sub>i:
+lemma node\<^sub>i_bal_up\<^sub>i: 
   assumes "bal_up\<^sub>i (node\<^sub>i k ts t)"
   shows "bal (Node ts t)"
   using assms
@@ -1349,14 +1354,14 @@ qed (simp add: height_Leaf)
 
 lemma rebalance_last_tree_bal: "\<lbrakk>bal (Node ts t); ts \<noteq> []\<rbrakk> \<Longrightarrow> bal (rebalance_last_tree k ts t)"
   using rebalance_middle_tree_bal append_butlast_last_id[of ts]
-  apply(cases "last ts")
+  apply(cases "last ts") 
   apply(auto simp del: bal.simps rebalance_middle_tree.simps)
   done
 
 
-lemma split_max_bal:
+lemma split_max_bal: 
   assumes "bal t"
-    and "t \<noteq> Leaf"
+    and "t \<noteq> Leaf" 
     and "nonempty_lasttreebal t"
   shows "bal (fst (split_max k t))"
   using assms
@@ -1385,7 +1390,7 @@ proof(induction k t rule: split_max.induct)
   qed
 qed simp
 
-lemma del_bal:
+lemma del_bal: 
   assumes "k > 0"
     and "root_order k t"
     and "bal t"
@@ -1406,7 +1411,7 @@ proof(induction k x t rule: del.induct)
     ultimately have "bal (rebalance_last_tree k ts (del k x t))"
       using 2 Nil order_bal_nonempty_lasttreebal rebalance_last_tree_bal
       by simp
-    then have "bal (rebalance_last_tree k ls (del k x t))"
+    then have "bal (rebalance_last_tree k ls (del k x t))" 
       using list_split split_conc Nil by fastforce
     then show ?thesis
       using 2 list_split Nil
@@ -1417,7 +1422,7 @@ proof(induction k x t rule: del.induct)
     then have sub_height: "height sub = height t" "bal sub"
       using 2 Cons list_split split_set(1) by fastforce+
     consider (sep_n_x) "sep \<noteq> x" |
-      (sep_x_Leaf) "sep = x \<and> sub = Leaf" |
+      (sep_x_Leaf) "sep = x \<and> sub = Leaf" | 
       (sep_x_Node) "sep = x \<and> (\<exists>ts t. sub = Node ts t)"
       using btree.exhaust by blast
     then show ?thesis
@@ -1511,7 +1516,7 @@ next
       have "order_up\<^sub>i k (node\<^sub>i k (mts@(mt,sep)#rts) rt)"
         using node\<^sub>i_order[of k "mts@(mt,sep)#rts" rt] assms(1,2) t_node sub_node r_node r_split Cons
         by (auto simp del: order_up\<^sub>i.simps node\<^sub>i.simps)
-      then show ?thesis
+      then show ?thesis        
         apply(cases "node\<^sub>i k (mts@(mt,sep)#rts) rt")
         using assms t_node sub_node False Cons r_split r_node apply (auto simp del: node\<^sub>i.simps)
         done
@@ -1562,7 +1567,7 @@ lemma rebalance_last_tree_order:
   shows "almost_order k (rebalance_last_tree k ts t)"
   using rebalance_middle_tree_last_order assms by auto
 
-lemma split_max_order:
+lemma split_max_order: 
   assumes "order k t"
     and "t \<noteq> Leaf"
     and "nonempty_lasttreebal t"
@@ -1592,7 +1597,7 @@ proof(induction k t rule: split_max.induct)
 qed simp
 
 
-lemma del_order:
+lemma del_order: 
   assumes "k > 0"
     and "root_order k t"
     and "bal t"
@@ -1618,7 +1623,7 @@ proof (induction k x t rule: del.induct)
       using rebalance_last_tree_order[of ls lls lsub lsep k "del k x t"]
       by (metis "2.prems"(2) "2.prems"(3) Un_iff append_Nil2 bal.simps(2) list_split Nil root_order.simps(2) singletonI split_conc subtrees_split)
     then show ?thesis
-      using 2 list_split Nil by auto
+      using 2 list_split Nil by auto 
   next
     case (Cons r rs)
 
@@ -1633,10 +1638,10 @@ proof (induction k x t rule: del.induct)
       by (auto dest: split_conc split!: list.splits)
 
     consider (sep_n_x) "sep \<noteq> x" |
-      (sep_x_Leaf) "sep = x \<and> sub = Leaf" |
+      (sep_x_Leaf) "sep = x \<and> sub = Leaf" | 
       (sep_x_Node) "sep = x \<and> (\<exists>ts t. sub = Node ts t)"
       using btree.exhaust by blast
-    then show ?thesis
+    then show ?thesis 
     proof cases
       case sep_n_x
       then have "almost_order k (del k x sub)" using 2 list_split Cons r_split order_impl_root_order
@@ -1717,7 +1722,7 @@ proof -
       by fastforce
   qed
   moreover have "sorted_less (inorder sub @ sep # inorder_list rs @ inorder t)"
-    using assms sorted_wrt_append[where xs="inorder_list ls"]
+    using assms sorted_wrt_append[where xs="inorder_list ls"] 
     by (auto dest!: split_conc)
   ultimately show ?thesis
     using del_list_sorted[of "inorder sub" "sep"]
@@ -1768,7 +1773,7 @@ proof (induction k x t rule: del.induct)
     case (Cons h rs)
     then obtain sub sep where h_split: "h = (sub,sep)"
       by (cases h)
-    then have node_sorted_split:
+    then have node_sorted_split: 
       "sorted_less (inorder (Node (ls@(sub,sep)#rs) t))"
       "root_order k (Node (ls@(sub,sep)#rs) t)"
       "bal (Node (ls@(sub,sep)#rs) t)"
@@ -1894,7 +1899,7 @@ subsection "Set specification by inorder"
 
 interpretation S_ordered: Set_by_Ordered where
   empty = empty_btree and
-  insert = "insert (Suc k)" and
+  insert = "insert (Suc k)" and 
   delete = "delete (Suc k)" and
   isin = "isin" and
   inorder = "inorder"   and

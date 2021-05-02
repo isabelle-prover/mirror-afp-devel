@@ -403,17 +403,22 @@ global_interpretation btree_imp_binary_split: imp_split_smeq bin_split
   defines btree_isin = btree_imp_binary_split.isin
     and btree_ins = btree_imp_binary_split.ins
     and btree_insert = btree_imp_binary_split.insert
+    and btree_del = btree_imp_binary_split.del
+    and btree_split_max = btree_imp_binary_split.split_max
+    and btree_delete = btree_imp_binary_split.delete
     and btree_empty = btree_imp_binary_split.empty
   apply unfold_locales
   apply(sep_auto heap: bin_split_rule)
   done
 
-thm btree_imp_binary_split.ins.simps
-declare btree_imp_binary_split.ins.simps[code] btree_imp_binary_split.isin.simps[code]
+declare btree_imp_binary_split.ins.simps[code]
+declare btree_imp_binary_split.isin.simps[code]
+declare btree_imp_binary_split.del.simps[code] btree_imp_binary_split.split_max.simps[code]
 
-export_code btree_empty btree_isin btree_insert checking SML Scala
-export_code btree_empty btree_isin btree_insert in SML module_name BTreeInsert
-export_code btree_empty btree_isin btree_insert in Scala module_name BTreeInsert
+export_code btree_empty btree_isin btree_insert btree_delete checking OCaml SML Scala
+export_code btree_empty btree_isin btree_insert btree_delete in OCaml module_name BTree
+export_code btree_empty btree_isin btree_insert btree_delete in SML module_name BTree
+export_code btree_empty btree_isin btree_insert btree_delete in Scala module_name BTree
 
 end
 

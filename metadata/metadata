@@ -10349,7 +10349,7 @@ abstract =
   In this work, we use the interactive theorem prover Isabelle/HOL to
   verify an imperative implementation of the classical B-tree data
   structure invented by Bayer and McCreight [ACM 1970]. The
-  implementation supports set membership and insertion queries with
+  implementation supports set membership, insertion and deletion queries with
   efficient binary search for intra-node navigation. This is
   accomplished by first specifying the structure abstractly in the
   functional modeling language HOL and proving functional correctness.
@@ -10358,12 +10358,18 @@ abstract =
   separation logic utilities from the <a
   href="https://www.isa-afp.org/entries/Refine_Imperative_HOL.html">
   Isabelle Refinement Framework </a> . The code can be exported to
-  the programming languages SML and Scala. We examine the runtime of all
+  the programming languages SML, OCaml and Scala. We examine the runtime of all
   operations indirectly by reproducing results of the logarithmic
   relationship between height and the number of nodes.  The results are
   discussed in greater detail in the corresponding <a
   href="https://mediatum.ub.tum.de/1596550">Bachelor's
   Thesis</a>.
+extra-history =
+	Change history:
+	[2021-05-02]:
+	Add implementation and proof of correctness of imperative deletion operations.
+	Further add the option to export code to OCaml.
+	<br>
 
 [Sunflowers]
 title = The Sunflower Lemma of Erdős and Rado
