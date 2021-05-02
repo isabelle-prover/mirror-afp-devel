@@ -31,7 +31,7 @@ lemma list_assn_append_Cons_left: "list_assn A (xs@x#ys) zs = (\<exists>\<^sub>A
   by (sep_auto simp add: list_assn_aux_cons_conv list_assn_aux_append_conv1 intro!: ent_iffI)
 
 
-lemma list_assn_aux_append_Cons: 
+lemma list_assn_aux_append_Cons:
   shows "length xs = length zsl \<Longrightarrow> list_assn A (xs@x#ys) (zsl@z#zsr) = (list_assn A xs zsl * A x z * list_assn A ys zsr) "
   by (sep_auto simp add: mult.assoc)
 
@@ -42,8 +42,8 @@ subsection \<open>Prod-Assn\<close>
 
 
 lemma prod_assn_cong[fundef_cong]:
-  "\<lbrakk> p=p'; pi=pi'; A (fst p) (fst pi) = A' (fst p) (fst pi); B (snd p) (snd pi) = B' (snd p) (snd pi) \<rbrakk> 
-    \<Longrightarrow> (A\<times>\<^sub>aB) p pi = (A'\<times>\<^sub>aB') p' pi'" 
+  "\<lbrakk> p=p'; pi=pi'; A (fst p) (fst pi) = A' (fst p) (fst pi); B (snd p) (snd pi) = B' (snd p) (snd pi) \<rbrakk>
+    \<Longrightarrow> (A\<times>\<^sub>aB) p pi = (A'\<times>\<^sub>aB') p' pi'"
   apply (cases p; cases pi)
   by auto
 

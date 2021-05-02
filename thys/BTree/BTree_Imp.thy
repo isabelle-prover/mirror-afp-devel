@@ -39,7 +39,7 @@ text "The refinement relationship to abstract B-trees."
 
 fun btree_assn :: "nat \<Rightarrow> 'a::heap btree \<Rightarrow> 'a btnode ref option \<Rightarrow> assn" where
   "btree_assn k Leaf None = emp" |
-  "btree_assn k (Node ts t) (Some a) = 
+  "btree_assn k (Node ts t) (Some a) =
  (\<exists>\<^sub>A tsi ti tsi'.
       a \<mapsto>\<^sub>r Btnode tsi ti
     * btree_assn k t ti
@@ -53,7 +53,7 @@ also need to directly reason on nodes and not only on references
 to them."
 
 fun btnode_assn :: "nat \<Rightarrow> 'a::heap btree \<Rightarrow> 'a btnode \<Rightarrow> assn" where
-  "btnode_assn k (Node ts t) (Btnode tsi ti) = 
+  "btnode_assn k (Node ts t) (Btnode tsi ti) =
  (\<exists>\<^sub>A tsi'.
       btree_assn k t ti
     * is_pfa (2*k) tsi' tsi

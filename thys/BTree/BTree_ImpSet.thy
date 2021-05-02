@@ -11,7 +11,7 @@ subsection "Auxiliary operations"
 definition "split_relation xs \<equiv>
    \<lambda>(as,bs) i. i \<le> length xs \<and> as = take i xs \<and> bs = drop i xs"
 
-lemma split_relation_alt: 
+lemma split_relation_alt:
   "split_relation as (ls,rs) i = (as = ls@rs \<and> i = length ls)"
   by (auto simp add: split_relation_def)
 
@@ -70,9 +70,9 @@ definition split_half :: "('a::heap \<times> 'b::{heap}) pfarray \<Rightarrow> n
 
 lemma split_half_rule[sep_heap_rules]: "<
     is_pfa c tsi a
-  * list_assn R ts tsi> 
+  * list_assn R ts tsi>
     split_half a
-  <\<lambda>i. 
+  <\<lambda>i.
       is_pfa c tsi a
     * list_assn R ts tsi
     * \<up>(i = length ts div 2 \<and>  split_relation ts (BTree_Set.split_half ts) i)>"
@@ -95,9 +95,9 @@ locale imp_split = abs_split: BTree_Set.split split
   fixes imp_split:: "('a btnode ref option \<times> 'a::{heap,default,linorder}) pfarray \<Rightarrow> 'a \<Rightarrow> nat Heap"
   assumes imp_split_rule [sep_heap_rules]:"sorted_less (separators ts) \<Longrightarrow>
    <is_pfa c tsi (a,n)
-  * blist_assn k ts tsi> 
-    imp_split (a,n) p 
-  <\<lambda>i. 
+  * blist_assn k ts tsi>
+    imp_split (a,n) p
+  <\<lambda>i.
     is_pfa c tsi (a,n)
     * blist_assn k ts tsi
     * \<up>(split_relation ts (split ts p) i)>\<^sub>t"
@@ -107,7 +107,7 @@ subsection "Membership"
 
 partial_function (heap) isin :: "'a btnode ref option \<Rightarrow> 'a \<Rightarrow>  bool Heap"
   where
-    "isin p x = 
+    "isin p x =
   (case p of
      None \<Rightarrow> return False |
      (Some a) \<Rightarrow> do {
@@ -129,7 +129,7 @@ partial_function (heap) isin :: "'a btnode ref option \<Rightarrow> 'a \<Rightar
 subsection "Insertion"
 
 
-datatype 'b btupi = 
+datatype 'b btupi =
   T\<^sub>i "'b btnode ref option" |
   Up\<^sub>i "'b btnode ref option" "'b" "'b btnode ref option"
 
@@ -169,7 +169,7 @@ definition node\<^sub>i :: "nat \<Rightarrow> ('a btnode ref option \<times> 'a)
 partial_function (heap) ins :: "nat \<Rightarrow> 'a \<Rightarrow> 'a btnode ref option \<Rightarrow> 'a btupi Heap"
   where
     "ins k x apo = (case apo of
-  None \<Rightarrow> 
+  None \<Rightarrow>
     return (Up\<^sub>i None x None) |
   (Some ap) \<Rightarrow> do {
     a \<leftarrow> !ap;
@@ -182,7 +182,7 @@ partial_function (heap) ins :: "nat \<Rightarrow> 'a \<Rightarrow> 'a btnode ref
         return (T\<^sub>i apo)
       else do {
         r \<leftarrow> ins k x sub;
-        case r of 
+        case r of
           (T\<^sub>i lp) \<Rightarrow> do {
             pfa_set (kvs a) i (lp,sep);
             return (T\<^sub>i apo)
@@ -202,12 +202,12 @@ partial_function (heap) ins :: "nat \<Rightarrow> 'a \<Rightarrow> 'a btnode ref
       }
     else do {
       r \<leftarrow> ins k x (last a);
-      case r of 
+      case r of
         (T\<^sub>i lp) \<Rightarrow> do {
           ap := (Btnode (kvs a) lp);
           return (T\<^sub>i apo)
         } |
-        (Up\<^sub>i lp x' rp) \<Rightarrow> 
+        (Up\<^sub>i lp x' rp) \<Rightarrow>
           if tsl < 2*k then do {
             kvs' \<leftarrow> pfa_append (kvs a) (lp,x');
             ap := (Btnode kvs' rp);
@@ -223,7 +223,7 @@ partial_function (heap) ins :: "nat \<Rightarrow> 'a \<Rightarrow> 'a btnode ref
 
 (*fun tree\<^sub>i::"'a up\<^sub>i \<Rightarrow> 'a btree" where
   "tree\<^sub>i (T\<^sub>i sub) = sub" |
-  "tree\<^sub>i (Up\<^sub>i l a r) = (Node [(l,a)] r)" 
+  "tree\<^sub>i (Up\<^sub>i l a r) = (Node [(l,a)] r)"
 
 fun insert::"nat \<Rightarrow> 'a \<Rightarrow> 'a btree \<Rightarrow> 'a btree" where
   "insert k x t = tree\<^sub>i (ins k x t)"
@@ -288,7 +288,7 @@ definition rebalance_middle_tree:: "nat \<Rightarrow> (('a::{default,heap,linord
             res_node\<^sub>i \<leftarrow> node\<^sub>i k mts' (last rsub);
             case res_node\<^sub>i of
              T\<^sub>i u \<Rightarrow> do {
-              tsi' \<leftarrow> pfa_set tsi i (u,rsep);              
+              tsi' \<leftarrow> pfa_set tsi i (u,rsep);
               tsi'' \<leftarrow> pfa_delete tsi' (i+1);
               return (Btnode tsi'' r_ti)
             } |
@@ -375,7 +375,7 @@ next
         apply safe
         using False apply simp
         apply(subst isin.simps)
-        using "2.prems" sorted_inorder_separators 
+        using "2.prems" sorted_inorder_separators
         apply(sep_auto)
           (*eliminate vacuous case*)
           apply(auto simp add: split_relation_alt list_assn_append_Cons_left dest!:  mod_starD list_assn_len)[]
@@ -569,13 +569,13 @@ next
         apply(sep_auto)
         subgoal for p tsil tsin tti
           using Nil list_split
-          by (simp add: list_assn_aux_ineq_len split_relation_alt)                 
+          by (simp add: list_assn_aux_ineq_len split_relation_alt)
         subgoal for p tsil tsin tti tsi' i tsin' _ sub sep
-          using Nil list_split 
+          using Nil list_split
           by (simp add: list_assn_aux_ineq_len split_relation_alt)
         subgoal for p tsil tsin tti tsi' i tsin'
           thm "2.IH"(1)[of ls rrs tti]
-          using Nil list_split Up\<^sub>i apply(sep_auto split!: list.splits 
+          using Nil list_split Up\<^sub>i apply(sep_auto split!: list.splits
               simp add: split_relation_alt
               heap add: "2.IH"(1)[of ls rrs tti])
           subgoal for ai
@@ -798,7 +798,7 @@ lemma insert_rule':
   shows "<btree_assn (Suc k) t ti * \<up>(abs_split.invar_inorder (Suc k) t \<and> sorted_less (inorder t))>
   insert (Suc k) x ti
   <\<lambda>ri.\<exists>\<^sub>Ar. btree_assn (Suc k) r ri * \<up>(abs_split.invar_inorder (Suc k) r \<and> sorted_less (inorder r) \<and> inorder r = (ins_list x (inorder t)))>\<^sub>t"
-  using abs_split.insert_bal abs_split.insert_order abs_split.insert_inorder 
+  using abs_split.insert_bal abs_split.insert_order abs_split.insert_inorder
   by (sep_auto heap: insert_rule simp add: sorted_ins_list)
 
 lemma list_update_length2 [simp]:
@@ -839,7 +839,7 @@ lemma second_last_access:"(xs@a#b#ys) ! Suc(length xs) = b"
 lemma pfa_assn_len:"h \<Turnstile> is_pfa k ls (a,n) \<Longrightarrow> n \<le> k \<and> length ls = n"
   by (auto simp add: is_pfa_def)
 
-(*declare "impCE"[rule del]*) 
+(*declare "impCE"[rule del]*)
 lemma rebalance_middle_tree_rule:
   assumes "height t = height sub"
     and "case rs of (rsub,rsep) # list \<Rightarrow> height rsub = height t | [] \<Rightarrow> True"
@@ -851,10 +851,10 @@ lemma rebalance_middle_tree_rule:
   apply(rule norm_pre_ex_rule)+
 proof(goal_cases)
   case (1 lsi z rsi)
-  then show ?case 
+  then show ?case
   proof(cases z)
     case z_split: (Pair subi sepi)
-    then show ?thesis 
+    then show ?thesis
     proof(cases sub)
       case sub_leaf[simp]: Leaf
       then have t_leaf[simp]: "t = Leaf" using assms
@@ -873,7 +873,7 @@ proof(goal_cases)
       case sub_node[simp]: (Node mts mt)
       then obtain tts tt where t_node[simp]: "t = Node tts tt" using assms
         by (cases t) auto
-      then show ?thesis 
+      then show ?thesis
       proof(cases "length mts \<ge> k \<and> length tts \<ge> k")
         case True
         then show ?thesis
@@ -885,7 +885,7 @@ proof(goal_cases)
           using assms apply(sep_auto  split!: prod.splits)
           using assms apply (auto simp del: height_btree.simps dest!: mod_starD list_assn_len)[]
           using z_split apply(auto)[]
-          subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi sepi subp  
+          subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi sepi subp
             apply(auto dest!: mod_starD list_assn_len simp: prod_assn_def)[]
             apply(vcg)
              apply(auto)[]
@@ -900,7 +900,7 @@ proof(goal_cases)
           done
       next
         case False
-        then show ?thesis  
+        then show ?thesis
         proof(cases rs)
           case Nil
           then show ?thesis
@@ -912,7 +912,7 @@ proof(goal_cases)
              apply(sep_auto  split!: prod.splits)
             using assms apply (auto simp del: height_btree.simps dest!: mod_starD list_assn_len)[]
             using z_split apply(auto)[]
-            subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi  
+            subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi
               apply(auto dest!: mod_starD list_assn_len simp: prod_assn_def)[]
               apply(vcg)
               using False apply(auto dest!: mod_starD list_assn_len)
@@ -973,7 +973,7 @@ proof(goal_cases)
              apply(sep_auto  split!: prod.splits)
             using assms apply (auto simp del: height_btree.simps dest!: mod_starD list_assn_len)[]
              apply(auto)[]
-            subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi  
+            subgoal for _ _ _ _ _ _ _ _ tp tsia' tsin' _ _  _ _ _ _ _ _ _ _ tsia tsin tti ttsi
               apply(auto dest!: mod_starD list_assn_len simp: prod_assn_def)[]
               apply(vcg)
               using False apply(auto dest!: mod_starD list_assn_len)
@@ -1073,7 +1073,7 @@ proof(goal_cases)
                            apply (drule btupi_assn_T mod_starD | erule conjE exE)+
                            apply vcg
                            apply simp
-                          subgoal for rsubtsi ai tsian 
+                          subgoal for rsubtsi ai tsian
                             apply(cases tsian)
                             apply simp
                             apply(rule P_imp_Q_implies_P)
@@ -1132,8 +1132,8 @@ lemma rebalance_last_tree_rule:
    prefer 2
    apply(auto dest!: list_assn_len)[]
   using assms apply(sep_auto)
-  supply R = rebalance_middle_tree_rule[where 
-      ls="list" and 
+  supply R = rebalance_middle_tree_rule[where
+      ls="list" and
       rs="[]" and
       i="length tsi - 1", simplified]
   apply(cases tsia)
@@ -1263,7 +1263,7 @@ tt \<noteq> Leaf \<Longrightarrow>
           apply (simp add: prod_assn_def)
           apply vcg
           apply(subst abs_split.split_max.simps)
-          using "1.prems" apply(auto dest!: mod_starD split!: prod.splits btree.splits) 
+          using "1.prems" apply(auto dest!: mod_starD split!: prod.splits btree.splits)
           subgoal for _ _ _ _ _ _ _ _ _ _ tp'
             apply(cases "abs_split.rebalance_last_tree k (butlasttsi' @ [(lasttssubi, lasttssepi)]) ttsub"; cases tp')
              apply auto
@@ -1354,14 +1354,14 @@ next
   obtain ls rs where split_ts[simp]: "split ts x = (ls, rs)"
     by (cases "split ts x")
   obtain tss lastts_sub lastts_sep where last_ts: "ts = tss@[(lastts_sub, lastts_sep)]"
-    using "2.prems"  apply auto 
+    using "2.prems"  apply auto
     by (metis abs_split.isin.cases neq_Nil_rev_conv)
   show ?case
   proof(cases "rs")
     case Nil
     then show ?thesis
       apply(subst del.simps)
-      apply sep_auto 
+      apply sep_auto
       using "2.prems"(2) sorted_inorder_separators apply blast
       apply(rule hoare_triple_preI)
       apply (sep_auto)
@@ -1385,7 +1385,7 @@ next
         apply (sep_auto)
         apply(cases "abs_split.rebalance_last_tree k ts (abs_split.del k x tt)")
          apply(auto simp add: split_relation_alt dest!: mod_starD list_assn_len)
-        subgoal for tnode 
+        subgoal for tnode
           apply (cases tnode; sep_auto)
           done
         done
@@ -1395,7 +1395,7 @@ next
     then obtain sub sep where [simp]: "rrs = (sub, sep)"
       by (cases rrs)
     consider (sep_n_x) "sep \<noteq> x" |
-      (sep_x_Leaf) "sep = x \<and> sub = Leaf" | 
+      (sep_x_Leaf) "sep = x \<and> sub = Leaf" |
       (sep_x_Node) "sep = x \<and> (\<exists>ts t. sub = Node ts t)"
       using btree.exhaust by blast
     then show ?thesis
@@ -1403,7 +1403,7 @@ next
       case sep_n_x
       then show ?thesis
         apply(subst del.simps)
-        apply sep_auto 
+        apply sep_auto
         using "2.prems"(2) sorted_inorder_separators apply blast
         apply(vcg (ss))
         apply(vcg (ss))
@@ -1448,7 +1448,7 @@ next
             apply(vcg (ss); simp)
             apply(cases tsi; simp)
             subgoal for subi' _ tsia' tsin'
-              supply R = rebalance_middle_tree_update_rule 
+              supply R = rebalance_middle_tree_update_rule
               thm R
                 (* TODO create a new heap rule, in the node_i style *)
               apply(auto dest!: list_assn_len)[]
@@ -1487,7 +1487,7 @@ next
             apply(vcg (ss); simp)
             apply(cases tsi; simp)
             subgoal for x' xab a n
-              supply R = rebalance_middle_tree_update_rule 
+              supply R = rebalance_middle_tree_update_rule
               thm R
                 (* TODO create a new heap rule, in the node_i style *)
               apply(auto dest!: list_assn_len)[]
@@ -1512,7 +1512,7 @@ next
       case sep_x_Leaf
       then show ?thesis
         apply(subst del.simps)
-        apply sep_auto 
+        apply sep_auto
         using "2.prems"(2) sorted_inorder_separators apply blast
         apply(vcg (ss))
         apply(vcg (ss))
@@ -1562,7 +1562,7 @@ next
       case sep_x_Node
       then show ?thesis
         apply(subst del.simps)
-        apply sep_auto 
+        apply sep_auto
         using "2.prems"(2) sorted_inorder_separators apply blast
         apply(vcg (ss))
         apply(vcg (ss))
@@ -1621,7 +1621,7 @@ next
               apply(cases split_res; simp)
               subgoal for split_subi split_sepi
                 supply R = rebalance_middle_tree_update_rule[
-                    of tt split_sub rss "length lsi" ls k lsi split_subi split_sep rsi tsi ti 
+                    of tt split_sub rss "length lsi" ls k lsi split_subi split_sep rsi tsi ti
                     ]
                 thm R
                   (* id_assn split_sepi doesnt match yet... *)

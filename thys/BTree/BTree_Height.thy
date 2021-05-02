@@ -40,7 +40,7 @@ lemma sum_list_replicate: "sum_list (replicate n c) = n*c"
 
 abbreviation "bound k h \<equiv> ((k+1)^h - 1)"
 
-lemma nodes_height_upper_bound: 
+lemma nodes_height_upper_bound:
   "\<lbrakk>order k t; bal t\<rbrakk> \<Longrightarrow> nodes t * (2*k) \<le> bound (2*k) (height t)"
 proof(induction t rule: nodes.induct)
   case (2 ts t)
@@ -64,7 +64,7 @@ proof(induction t rule: nodes.induct)
     by simp
   moreover have "(nodes t)*(2*k) \<le> ?sub_height"
     using 2 by simp
-  ultimately have "(nodes (Node ts t))*(2*k) \<le> 
+  ultimately have "(nodes (Node ts t))*(2*k) \<le>
          2*k
         + ?sub_height * (2*k)
         + ?sub_height"
@@ -130,7 +130,7 @@ lemma upper_bound_sharp_node:
 subsection "Maximum height for a given number of nodes"
 
 
-lemma nodes_height_lower_bound: 
+lemma nodes_height_lower_bound:
   "\<lbrakk>order k t; bal t\<rbrakk> \<Longrightarrow> bound k (height t) \<le> nodes t * k"
 proof(induction t rule: nodes.induct)
   case (2 ts t)
@@ -144,7 +144,7 @@ proof(induction t rule: nodes.induct)
     using map_replicate_const[of ?sub_height "subtrees ts"] length_map
     by simp
   also have "\<dots> \<le> sum_list (map (\<lambda>t. nodes t * k) (subtrees ts))"
-    using 2 
+    using 2
     using sum_list_mono[of "subtrees ts" "\<lambda>x. bound k (height t)" "\<lambda>t. nodes t * k"]
     by (metis bal.simps(2) order.simps(2))
   also have "\<dots> = sum_list (map nodes (subtrees ts)) * k"
@@ -153,14 +153,14 @@ proof(induction t rule: nodes.induct)
     by simp
   moreover have "(nodes t)*k \<ge> ?sub_height"
     using 2 by simp
-  ultimately have "(nodes (Node ts t))*k \<ge> 
+  ultimately have "(nodes (Node ts t))*k \<ge>
         k
         + ?sub_height * k
         + ?sub_height"
     unfolding nodes.simps add_mult_distrib
     by linarith
   also have
-    "k + ?sub_height * k + ?sub_height = 
+    "k + ?sub_height * k + ?sub_height =
      k + k*((k + 1) ^ height t) - k + (k + 1) ^ height t - 1"
     by (simp add: diff_mult_distrib2 mult.assoc mult.commute)
   also have "\<dots> = k*((k + 1) ^ height t) + (k + 1) ^ height t - 1"
@@ -238,7 +238,7 @@ proof (cases t)
   moreover have "(nodes t)*k \<ge> ?sub_height"
     using Node assms nodes_height_lower_bound
     by auto
-  ultimately have "(nodes (Node ts t))*k \<ge> 
+  ultimately have "(nodes (Node ts t))*k \<ge>
         ?sub_height
         + ?sub_height + k"
     unfolding nodes.simps add_mult_distrib
@@ -247,7 +247,7 @@ proof (cases t)
     using Node assms(2) height_bal_tree by fastforce
 qed simp
 
-lemma nodes_root_height_upper_bound: 
+lemma nodes_root_height_upper_bound:
   assumes "root_order k t"
     and "bal t"
   shows "nodes t * (2*k) \<le> (2*k+1)^(height t) - 1"
@@ -275,7 +275,7 @@ proof(cases t)
   moreover have "(nodes t)*(2*k) \<le> ?sub_height"
     using Node assms nodes_height_upper_bound
     by auto
-  ultimately have "(nodes (Node ts t))*(2*k) \<le> 
+  ultimately have "(nodes (Node ts t))*(2*k) \<le>
          2*k
         + ?sub_height * (2*k)
         + ?sub_height"
@@ -301,7 +301,7 @@ lemma nodes_root_height_lower_bound_simp:
   shows "(2*((k+1)^(height t - 1) - 1)) div k + (of_bool (t \<noteq> Leaf)) \<le> nodes t"
 proof (cases t)
   case Node
-  have "(2*((k+1)^(height t - 1) - 1)) div k + (of_bool (t \<noteq> Leaf)) = 
+  have "(2*((k+1)^(height t - 1) - 1)) div k + (of_bool (t \<noteq> Leaf)) =
 (2*((k+1)^(height t - 1) - 1) + (of_bool (t \<noteq> Leaf))*k) div k"
     using Node assms
     using div_plus_div_distrib_dvd_left[of k k "(2 * Suc k ^ (height t - Suc 0) - Suc (Suc 0))"]

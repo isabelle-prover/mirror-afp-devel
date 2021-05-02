@@ -1,4 +1,4 @@
-theory BTree                 
+theory BTree
   imports Main "HOL-Data_Structures.Sorted_Less" "HOL-Data_Structures.Cmp"
 begin
 
@@ -135,11 +135,11 @@ lemma height_btree_order:
   "height (Node (ls@[a]) t) = height (Node (a#ls) t)"
   by simp
 
-lemma height_btree_sub: 
+lemma height_btree_sub:
   "height (Node ((sub,x)#ls) t) = max (height (Node ls t)) (Suc (height sub))"
   by simp
 
-lemma height_btree_last: 
+lemma height_btree_last:
   "height (Node ((sub,x)#ts) t) = max (height (Node ts sub)) (Suc (height t))"
   by (induction ts) auto
 
@@ -155,11 +155,11 @@ lemma child_subset: "p \<in> set t \<Longrightarrow> set_btree (fst p) \<subsete
   apply(auto)
   done
 
-lemma some_child_sub: 
+lemma some_child_sub:
   assumes "(sub,sep) \<in> set t"
   shows "sub \<in> set (subtrees t)"
     and "sep \<in> set (separators t)"
-  using assms by force+ 
+  using assms by force+
 
 (* balancedness lemmas *)
 
@@ -178,14 +178,14 @@ lemma height_bal_tree: "bal (Node ts t) \<Longrightarrow> height (Node ts t) = S
 
 
 
-lemma bal_split_last: 
+lemma bal_split_last:
   assumes "bal (Node (ls@(sub,sep)#rs) t)"
   shows "bal (Node (ls@rs) t)"
     and "height (Node (ls@(sub,sep)#rs) t) = height (Node (ls@rs) t)"
   using assms by auto
 
 
-lemma bal_split_right: 
+lemma bal_split_right:
   assumes "bal (Node (ls@rs) t)"
   shows "bal (Node rs t)"
     and "height (Node rs t) = height (Node (ls@rs) t)"

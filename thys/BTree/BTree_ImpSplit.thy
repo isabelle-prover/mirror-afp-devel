@@ -22,15 +22,15 @@ text "The linear split is the most simple split function for binary trees.
 definition lin_split :: "('a::heap \<times> 'b::{heap,linorder}) pfarray \<Rightarrow> 'b \<Rightarrow> nat Heap"
   where
     "lin_split \<equiv> \<lambda> (a,n) p. do {
-  
-  i \<leftarrow> heap_WHILET 
+
+  i \<leftarrow> heap_WHILET
     (\<lambda>i. if i<n then do {
       (_,s) \<leftarrow> Array.nth a i;
       return (s<p)
-    } else return False) 
-    (\<lambda>i. return (i+1)) 
+    } else return False)
+    (\<lambda>i. return (i+1))
     0;
-       
+
   return i
 }"
 
@@ -41,7 +41,7 @@ lemma lin_split_rule: "
  <\<lambda>i. is_pfa c xs (a,n) * \<up>(i\<le>n \<and> (\<forall>j<i. snd (xs!j) < p) \<and> (i<n \<longrightarrow> snd (xs!i)\<ge>p))>\<^sub>t"
   unfolding lin_split_def
 
-  supply R = heap_WHILET_rule''[where 
+  supply R = heap_WHILET_rule''[where
       R = "measure (\<lambda>i. n - i)"
       and I = "\<lambda>i. is_pfa c xs (a,n) * \<up>(i\<le>n \<and> (\<forall>j<i. snd (xs!j) < p))"
       and b = "\<lambda>i. i<n \<and> snd (xs!i) < p"
@@ -53,10 +53,10 @@ lemma lin_split_rule: "
        apply (metis nth_take snd_eqD)
       apply (metis nth_take snd_eqD)
      apply (sep_auto simp: is_pfa_def less_Suc_eq)+
-      apply (metis nth_take)
+     apply (metis nth_take)
     apply(sep_auto simp: is_pfa_def)
-  apply (metis le_simps(3) less_Suc_eq less_le_trans nth_take)
-  apply(sep_auto simp: is_pfa_def)+
+     apply (metis le_simps(3) less_Suc_eq less_le_trans nth_take)
+    apply(sep_auto simp: is_pfa_def)+
   done
 
 subsection "Binary split"
@@ -69,8 +69,8 @@ and the resulting proof, we first implement the split on singleton arrays."
 definition bin'_split :: "'b::{heap,linorder} array_list \<Rightarrow> 'b \<Rightarrow> nat Heap"
   where
     "bin'_split \<equiv> \<lambda>(a,n) p. do {
-  (low',high') \<leftarrow> heap_WHILET 
-    (\<lambda>(low,high). return (low < high)) 
+  (low',high') \<leftarrow> heap_WHILET
+    (\<lambda>(low,high). return (low < high))
     (\<lambda>(low,high). let mid = ((low  + high) div 2) in
      do {
       s \<leftarrow> Array.nth a mid;
@@ -79,7 +79,7 @@ definition bin'_split :: "'b::{heap,linorder} array_list \<Rightarrow> 'b \<Righ
       else if p > s then
          return (mid+1, high)
       else return (mid,mid)
-     }) 
+     })
     (0::nat,n);
   return low'
 }"
@@ -95,7 +95,7 @@ sorted_less xs \<Longrightarrow>
  <\<lambda>l. is_pfa c xs (a,n) * \<up>(l \<le> n \<and> (\<forall>j<l. xs!j < p) \<and> (l<n \<longrightarrow> xs!l\<ge>p)) >\<^sub>t"
   unfolding bin'_split_def
 
-  supply R = heap_WHILET_rule''[where 
+  supply R = heap_WHILET_rule''[where
       R = "measure (\<lambda>(l,h). h-l)"
       and I = "\<lambda>(l,h). is_pfa c xs (a,n) * \<up>(l\<le>h \<and> h \<le> n \<and> (\<forall>j<l. xs!j < p) \<and> (h<n \<longrightarrow> xs!h\<ge>p))"
       and b = "\<lambda>(l,h). l<h"
@@ -184,8 +184,8 @@ is derived in a straightforward manner."
 definition bin_split :: "('a::heap \<times> 'b::{heap,linorder}) pfarray \<Rightarrow> 'b \<Rightarrow> nat Heap"
   where
     "bin_split \<equiv> \<lambda>(a,n) p. do {
-  (low',high') \<leftarrow> heap_WHILET 
-    (\<lambda>(low,high). return (low < high)) 
+  (low',high') \<leftarrow> heap_WHILET
+    (\<lambda>(low,high). return (low < high))
     (\<lambda>(low,high). let mid = ((low  + high) div 2) in
      do {
       (_,s) \<leftarrow> Array.nth a mid;
@@ -194,7 +194,7 @@ definition bin_split :: "('a::heap \<times> 'b::{heap,linorder}) pfarray \<Right
       else if p > s then
          return (mid+1, high)
       else return (mid,mid)
-     }) 
+     })
     (0::nat,n);
   return low'
 }"
@@ -221,7 +221,7 @@ sorted_less (map snd xs) \<Longrightarrow>
   (* this works in principle, as demonstrated above *)
   unfolding bin_split_def
 
-  supply R = heap_WHILET_rule''[where 
+  supply R = heap_WHILET_rule''[where
       R = "measure (\<lambda>(l,h). h-l)"
       and I = "\<lambda>(l,h). is_pfa c xs (a,n) * \<up>(l\<le>h \<and> h \<le> n \<and> (\<forall>j<l. snd (xs!j) < p) \<and> (h<n \<longrightarrow> snd (xs!h)\<ge>p))"
       and b = "\<lambda>(l,h). l<h"
@@ -235,21 +235,21 @@ sorted_less (map snd xs) \<Longrightarrow>
      apply(auto dest!: sndI nth_take_eq[of n _ _ "(_ + _) div 2"])[]
     apply (sep_auto dest!: sndI )
   subgoal for ls i ls' _ _ j
-    using map_snd_sorted_lesseq[of "take n ls'" j "(i + n) div 2"] 
+    using map_snd_sorted_lesseq[of "take n ls'" j "(i + n) div 2"]
       less_mult_imp_div_less apply(auto)[]
     done
   subgoal for ls i j ls' _ _ j'
-    using map_snd_sorted_lesseq[of "take n ls'" j' "(i + j) div 2"] 
+    using map_snd_sorted_lesseq[of "take n ls'" j' "(i + j) div 2"]
       less_mult_imp_div_less apply(auto)[]
     done
     apply sep_auto
   subgoal for ls i ls' _ _ j
-    using map_snd_sorted_less[of "take n ls'" j "(i + n) div 2"] 
+    using map_snd_sorted_less[of "take n ls'" j "(i + n) div 2"]
       less_mult_imp_div_less
     apply(auto)[]
     done
   subgoal for ls i j ls' _ _ j'
-    using map_snd_sorted_less[of "take n ls'" j' "(i + j) div 2"] 
+    using map_snd_sorted_less[of "take n ls'" j' "(i + j) div 2"]
       less_mult_imp_div_less
     apply(auto)[]
     done
@@ -276,7 +276,7 @@ refines this abstract split.\<close>
 
 locale imp_split_smeq =
   fixes split_fun :: "('a::{heap,default,linorder} btnode ref option \<times> 'a) array \<times> nat \<Rightarrow> 'a \<Rightarrow> nat Heap"
-  assumes split_rule: "sorted_less (separators xs) \<Longrightarrow> 
+  assumes split_rule: "sorted_less (separators xs) \<Longrightarrow>
  <is_pfa c xs (a, n)>
    split_fun (a, n) (p::'a)
   <\<lambda>r. is_pfa c xs (a, n) *
@@ -291,7 +291,7 @@ lemma abs_split_full: "\<forall>(_,s) \<in> set xs. s < p \<Longrightarrow> abs_
 
 
 lemma abs_split_split:
-  assumes "n < length xs" 
+  assumes "n < length xs"
     and "(\<forall>(_,s) \<in> set (take n xs). s < p)"
     and " (case (xs!n) of (_,s) \<Rightarrow> \<not>(s < p))"
   shows "abs_split xs p = (take n xs, drop n xs)"
@@ -300,13 +300,13 @@ lemma abs_split_split:
   by (metis (no_types, lifting) Cons_nth_drop_Suc case_prod_conv dropWhile.simps(2) dropWhile_append2 id_take_nth_drop)
 
 
-lemma split_rule_abs_split: 
+lemma split_rule_abs_split:
   shows
     "sorted_less (separators ts) \<Longrightarrow> <
     is_pfa c tsi (a,n)
-  * list_assn (A \<times>\<^sub>a id_assn) ts tsi> 
-    split_fun (a,n) p 
-  <\<lambda>i. 
+  * list_assn (A \<times>\<^sub>a id_assn) ts tsi>
+    split_fun (a,n) p
+  <\<lambda>i.
     is_pfa c tsi (a,n)
     * list_assn (A \<times>\<^sub>a id_assn) ts tsi
     * \<up>(split_relation ts (abs_split ts p) i)>\<^sub>t"
@@ -370,7 +370,7 @@ proof -
       using x_sm_len_ts abs_split_split[of x ts p] heap_init
       by (metis length_map length_take min.absorb2)
     then show "split_relation ts (abs_split ts p) x"
-      using x_sm_len_ts 
+      using x_sm_len_ts
       by (metis append_take_drop_id heap_init(2) heap_init(3) length_map length_take less_imp_le_nat min.absorb2 split_relation_alt)
   qed
 qed

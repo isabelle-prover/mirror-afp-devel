@@ -32,7 +32,7 @@ qed
 
 global_interpretation btree_linear_search: split linear_split
   (* the below definitions are required to be set here for evaluating example code... *)
-  defines btree_ls_isin = btree_linear_search.isin 
+  defines btree_ls_isin = btree_linear_search.isin
     and btree_ls_ins = btree_linear_search.ins
     and btree_ls_insert = btree_linear_search.insert
     and btree_ls_del = btree_linear_search.del
@@ -94,7 +94,7 @@ value "linear_split [((Leaf::nat btree), 2)] (1::nat)"
 
 (* TODO still has format for older proof *)
 lemma linear_split_gr:
-  "\<lbrakk>linear_split_help xs p ys = (ls,rs); sorted_less (separators (ys@xs)); \<forall>(sub,sep) \<in> set ys. p > sep\<rbrakk> \<Longrightarrow> 
+  "\<lbrakk>linear_split_help xs p ys = (ls,rs); sorted_less (separators (ys@xs)); \<forall>(sub,sep) \<in> set ys. p > sep\<rbrakk> \<Longrightarrow>
 (case rs of [] \<Rightarrow> True | (_,sep)#_ \<Rightarrow> p \<le> sep)"
   apply(cases rs)
   by (auto simp add: some_child_sm)
