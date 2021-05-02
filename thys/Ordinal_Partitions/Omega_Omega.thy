@@ -40,10 +40,6 @@ lemma Ord_omega_sum: "Ord (omega_sum ms)"
 
 lemma omega_sum_less_\<omega>\<omega> [intro]: "omega_sum ms < \<omega>\<up>\<omega>"
 proof (induction ms)
-  case Nil
-  then show ?case
-    by (auto simp: zero_less_Limit)
-next
   case (Cons m ms)
   have "\<omega> \<up> (length ms) * ord_of_nat m \<in> elts (\<omega> \<up> Suc (length ms))"
     using Ord_mem_iff_lt by auto
@@ -51,7 +47,7 @@ next
     using Ord_ord_of_nat oexp_mono_le omega_nonzero ord_of_nat_le_omega by blast
   with Cons show ?case
     by (auto simp: mult_succ OrdmemD oexp_less indecomposableD indecomposable_\<omega>_power)
-qed
+qed (auto simp: zero_less_Limit)
 
 lemma omega_sum_aux_less: "omega_sum_aux k ms < \<omega> \<up> k"
 proof (induction rule: omega_sum_aux.induct)
@@ -73,10 +69,6 @@ lemma omega_sum_length_less:
   assumes "length ms < length ns" "normal ns"
   shows "omega_sum ms < omega_sum ns"
 proof (cases ns)
-  case Nil
-  then show ?thesis
-    using assms by auto
-next
   case (Cons n ns')
   have "\<omega> \<up> length ms \<le> \<omega> \<up> length ns'"
     using assms local.Cons by (simp add: oexp_mono_le)
@@ -84,7 +76,7 @@ next
     using omega_sum_ge [of n ns'] omega_sum_less [of ms] \<open>normal ns\<close> local.Cons by auto
   then show ?thesis
     by (metis Ord_linear2 Ord_omega_sum local.Cons)
-qed
+qed (use assms in auto)
 
 lemma omega_sum_length_leD:
   assumes "omega_sum ms \<le> omega_sum ns" "normal ms"
@@ -101,15 +93,9 @@ proof
   assume L: ?lhs
   have "\<not> Suc n < Suc m"
     using omega_sum_less [of ms] omega_sum_less [of ns] L assms mult_nat_less_add_less by fastforce
-  then have "m\<le>n"
-    by auto
   with L assms show ?rhs
     by auto
-next
-  assume ?rhs
-  then show ?lhs
-    by (auto simp: mult_nat_less_add_less omega_sum_aux_less assms)
-qed
+qed (auto simp: mult_nat_less_add_less omega_sum_aux_less assms)
 
 lemma omega_sum_lex_less_iff_cases:
    "((length ms, omega_sum (m#ms)), (length ns, omega_sum (n#ns))) \<in> less_than <*lex*> VWF
@@ -147,19 +133,14 @@ lemma omega_sum_less_iff:
   "((length ms, omega_sum ms), (length ns, omega_sum ns)) \<in> less_than <*lex*> VWF
    \<longleftrightarrow> (ms,ns) \<in> lenlex less_than"
 proof (induction ms arbitrary: ns)
-  case Nil
-  then show ?case
-    by auto
-next
   case (Cons m ms)
   then show ?case
   proof (induction ns)
     case (Cons n ns')
     show ?case
-      using omega_sum_lex_less_iff_cases [of ms m ns' n] Cons.prems
-      by (simp add: Cons_lenlex_iff lenlex_length order.not_eq_order_implies_strict nat_less_le)
+      using Cons.prems Cons_lenlex_iff omega_sum_less_eqlen_iff_cases by fastforce
   qed auto
-qed
+qed auto
 
 lemma eq_omega_sum_less_iff:
   assumes "length ms = length ns"
@@ -627,7 +608,7 @@ lemma set_acc_lengths:
   assumes "ls \<in> lists (- {[]})" shows "list.set (acc_lengths acc ls) \<subseteq> {acc<..}"
   using assms by (induction ls rule: acc_lengths.induct) fastforce+
 
-text \<open>Useful because @{text acc_lengths.simps} will later be deleted from the simpset.\<close>
+text \<open>Useful because @{text acc_lengths.simps} will sometimes be deleted from the simpset.\<close>
 lemma hd_acc_lengths [simp]: "hd (acc_lengths acc (l#ls)) = acc + length l"
   by simp
 
@@ -655,7 +636,7 @@ lemma strict_sorted_acc_lengths:
 proof (induction ls rule: acc_lengths.induct)
   case (2 acc l ls)
   then have "strict_sorted (acc_lengths (acc + length l) ls)"
-    using "2" by auto
+    by auto
   then show ?case
     using set_acc_lengths "2.prems" by auto
 qed auto
@@ -666,7 +647,6 @@ lemma acc_lengths_append:
 by (induction acc xs rule: acc_lengths.induct) (auto simp: add.assoc)
 
 
-declare acc_lengths.simps [simp del]
 
 lemma length_concat_ge:
   assumes "as \<in> lists (- {[]})"
@@ -694,7 +674,7 @@ lemma (in monoid_add) length_interact:
 lemma length_interact_ge:
   assumes "xs \<in> lists (- {[]})" "ys \<in> lists (- {[]})"
   shows "length (interact xs ys) \<ge> length xs + length ys"
-  by (metis mem_lists_non_Nil add_mono assms length_concat length_concat_ge length_interact)
+  by (metis add_mono assms length_concat length_concat_ge length_interact)
 
 lemma set_interact [simp]:
   shows "list.set (interact xs ys) = list.set (concat xs) \<union> list.set (concat ys)"
@@ -709,7 +689,7 @@ lemma interact_sing [simp]: "interact [x] ys = x @ concat ys"
   by (metis (no_types) concat.simps(2) interact.simps neq_Nil_conv)
 
 lemma hd_interact: "\<lbrakk>xs \<noteq> []; hd xs \<noteq> []\<rbrakk> \<Longrightarrow> hd (interact xs ys) = hd (hd xs)"
-  by (metis concat.simps(2) hd_append2 interact.simps(2) interact.simps(3) list.exhaust list.sel(1))
+  by (smt (verit, best) hd_append2 hd_concat interact.elims list.sel(1))
 
 lemma acc_lengths_concat_injective:
   assumes "concat as' = concat as" "acc_lengths n as' = acc_lengths n as"
@@ -724,7 +704,7 @@ next
   then obtain a' bs where "as' = a'#bs"
     by (metis Suc_length_conv length_acc_lengths)
   with Cons show ?case
-    by (simp add: acc_lengths.simps)
+    by simp
 qed
 
 lemma acc_lengths_interact_injective:
@@ -732,21 +712,18 @@ lemma acc_lengths_interact_injective:
   shows "as' = as \<and> bs' = bs"
   using assms
 proof (induction as bs arbitrary: a b as' bs' rule: interact.induct)
-  case (1 cs)
-  then have "as' = []"
-    by (metis acc_lengths_eq_Nil_iff)
-  with 1 show ?case
-    using acc_lengths_concat_injective by auto
+  case (1 cs) then show ?case
+    by (metis acc_lengths_concat_injective acc_lengths_eq_Nil_iff interact.simps(1))
 next
   case (2 c cs)
   then show ?case
     by (metis acc_lengths_concat_injective acc_lengths_eq_Nil_iff interact.simps(2) list.exhaust)
 next
-  case (3 x xs y ys)
+  case (3 x xs y ys) 
   then obtain a' us b' vs where "as' = a'#us" "bs' = b'#vs"
     by (metis length_Suc_conv length_acc_lengths)
   with 3 show ?case
-    by (auto simp: acc_lengths.simps)
+    by auto
 qed
 
 
@@ -762,7 +739,7 @@ lemma strict_sorted_interact_I:
 proof (induction rule: interact.induct)
   case (3 x xs y ys)
   then have "x < y"
-    by force+
+    by force
   moreover have "strict_sorted (interact xs ys)"
     using 3 by simp (metis Suc_less_eq nth_Cons_Suc)
   moreover have "y < interact xs ys"
@@ -852,28 +829,16 @@ next
     show ?thesis
       using Form.cases [OF \<open>Form l U\<close>]
     proof cases
-      case (2 k xs' ys' zs')
-      then have "xs' = xs \<and> ys' = ys"
-        by (metis Form_Body_length Set.doubleton_eq_iff leD xys(2) xys(3))
-      moreover have "k = ka"
-        using 2 True nz by presburger
-      ultimately show ?thesis
-        using 2 True nz(1) nz(4) that xys(1) by blast
+      case (2 k xs' ys' zs') then show ?thesis
+        by (metis le_Suc_eq le_refl mult_2 that)
     qed (use True nz in \<open>presburger+\<close>)
   next
     case False
     show ?thesis
       using Form.cases [OF \<open>Form l U\<close>]
     proof cases
-      case (3 k xs' ys' zs')
-      then have "xs' = xs \<and> ys' = ys"
-        by (metis Form_Body_length Set.doubleton_eq_iff leD xys(2) xys(3))
-      moreover have "k = kb"
-        using 3 False nz
-        by linarith 
-      ultimately show ?thesis
-        using 3 False nz \<open>xs \<noteq> ys\<close>
-        by (metis le_SucE le_antisym that)
+      case (3 k xs' ys' zs') then show ?thesis
+        by (metis add_Suc_right add_Suc_shift diff_Suc_1 le_Suc_eq mult_2 order_refl that)
     qed (use False nz in \<open>presburger+\<close>)
   qed
 qed
@@ -881,9 +846,8 @@ qed
 
 definition inter_scheme :: "nat \<Rightarrow> nat list set \<Rightarrow> nat list"
   where "inter_scheme l U \<equiv> 
-           SOME zs. \<exists>k xs ys. l > 0 \<and>
-                         (l = 2*k-1 \<and> U = {xs,ys} \<and> Form_Body k k xs ys zs
-                        \<or> l = 2*k \<and> U = {xs,ys} \<and> Form_Body (Suc k) k xs ys zs)"
+          SOME zs. \<exists>k xs ys. U = {xs,ys} \<and> 
+            (l = 2*k-1 \<and> Form_Body k k xs ys zs \<or> l = 2*k \<and> Form_Body (Suc k) k xs ys zs)"
 
 
 lemma inter_scheme:
@@ -891,23 +855,19 @@ lemma inter_scheme:
   obtains ka kb xs ys where "l = ka+kb - 1" "U = {xs,ys}" "Form_Body ka kb xs ys (inter_scheme l U)" "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
   using interact [OF \<open>Form l U\<close>]
 proof cases
-  case 1
-  with \<open>l > 0\<close> show ?case
-    by auto
-next
   case (2 ka kb xs ys zs)
   then have \<section>: "\<And>ka kb zs. \<not> Form_Body ka kb ys xs zs"
     using Form_Body_length less_asym' by blast
   have "Form_Body ka kb xs ys (inter_scheme l U)"
   proof (cases "ka = kb")
-    case True
+    case True 
     with 2 have l: "\<forall>k. l \<noteq> k * 2"
       by presburger
     have [simp]: "\<And>k. kb + kb - Suc 0 = k * 2 - Suc 0 \<longleftrightarrow> k=kb"
       by auto
     show ?thesis
       unfolding inter_scheme_def using 2 l True
-      by (auto simp add: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
+      by (auto simp: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
   next
     case False
     with 2 have l: "\<forall>k. l \<noteq> k * 2 - Suc 0" and [simp]: "ka = Suc kb"
@@ -916,11 +876,11 @@ next
       by auto
     show ?thesis
       unfolding inter_scheme_def using 2 l False
-      by (auto simp add: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
+      by (auto simp: \<section> \<open>l > 0\<close> Set.doubleton_eq_iff conj_disj_distribR ex_disj_distrib algebra_simps some_eq_ex)
   qed
   then show ?thesis
     by (simp add: 2 that)
-qed
+qed (use \<open>l > 0\<close> in auto)
 
 
 lemma inter_scheme_simple:
@@ -941,7 +901,8 @@ proposition inter_scheme_injective:
 proof -
   obtain ka kb xs ys 
     where l: "l = ka+kb - 1" and U: "U = {xs,ys}" 
-      and FB: "Form_Body ka kb xs ys (inter_scheme l U)" and "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
+      and FB: "Form_Body ka kb xs ys (inter_scheme l U)" 
+      and kb: "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
     using assms inter_scheme by blast
   then obtain a as b bs c d
     where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
@@ -952,7 +913,8 @@ proof -
     by (auto simp: Form_Body.simps)
   obtain ka' kb' xs' ys' 
     where l': "l = ka'+kb' - 1" and U': "U' = {xs',ys'}" 
-      and FB': "Form_Body ka' kb' xs' ys' (inter_scheme l U')" and "0 < kb'" "kb' \<le> ka'" "ka' \<le> Suc kb'"
+      and FB': "Form_Body ka' kb' xs' ys' (inter_scheme l U')" 
+      and kb': "0 < kb'" "kb' \<le> ka'" "ka' \<le> Suc kb'"
     using assms inter_scheme by blast
   then obtain a' as' b' bs' c' d'
     where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
@@ -962,7 +924,7 @@ proof -
       and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
     using Form_Body.simps by auto
   have [simp]: "ka' = ka \<and> kb' = kb"
-    using \<open>l > 0\<close> l l' \<open>ka \<le> Suc kb\<close> \<open>ka' \<le> Suc kb'\<close> \<open>kb \<le> ka\<close> \<open>kb' \<le> ka'\<close> le_SucE le_antisym mult_2 by linarith 
+    using \<open>l > 0\<close> l l' kb kb' le_SucE le_antisym mult_2 by linarith 
   have [simp]: "length c = length c'" "length d = length d'"
     using c c' d d' len' len by auto
   have c_off: "c' = c" "a' @ d' @ b' @ interact as' bs' = a @ d @ b @ interact as bs"
@@ -976,9 +938,9 @@ proof -
   with \<section> have "b' = b" "interact as' bs' = interact as bs"
     by auto
   moreover have "acc_lengths 0 as' = acc_lengths 0 as"
-    using \<open>a' = a\<close> \<open>c' = c\<close> by (simp add: c' c acc_lengths.simps acc_lengths_shift)
+    using \<open>a' = a\<close> \<open>c' = c\<close> by (simp add: c' c acc_lengths_shift)
   moreover have "acc_lengths 0 bs' = acc_lengths 0 bs"
-    using \<open>b' = b\<close> \<open>d' = d\<close> by (simp add: d' d acc_lengths.simps acc_lengths_shift)
+    using \<open>b' = b\<close> \<open>d' = d\<close> by (simp add: d' d acc_lengths_shift)
   ultimately have "as' = as \<and> bs' = bs"
     using acc_lengths_interact_injective by blast
   then show ?thesis
@@ -1023,9 +985,8 @@ proof (induction as bs rule: interact.induct)
     next
       case (Cons a' list')
       have "strict_sorted (list' @ concat ys)"
-        apply (simp add: strict_sorted_sorted_wrt)
-        by (metis "3.IH" "\<section>" Un_iff append_Cons local.Cons set_interact sorted_wrt_append strict_sorted.simps(2) strict_sorted_sorted_wrt)
-      moreover have "y < concat ys"
+        using "3.IH" local.Cons "\<section>" by (simp add: strict_sorted_sorted_wrt sorted_wrt_append)
+     moreover have "y < concat ys"
         by (metis "\<section>" Un_iff hd_in_set last_in_set less_list_def set_interact sorted_wrt_append)
       ultimately show ?thesis
         using 3 \<open>list < concat xs\<close>
@@ -1033,7 +994,6 @@ proof (induction as bs rule: interact.induct)
     qed
   qed
 qed auto
-
 
 
 
@@ -1045,12 +1005,12 @@ lemma strict_sorted_interact_hd:
 
 text \<open>the lengths of the two lists can differ by one\<close>
 proposition interaction_scheme_unique_aux:
-  assumes eq: "concat as = concat as'" and ys': "concat bs = concat bs'"
-    and ne: "as \<in> lists (- {[]})" "bs \<in> lists (- {[]})"
-    and ss_zs: "strict_sorted (interact as bs)"
+  assumes "concat as = concat as'" and ys': "concat bs = concat bs'"
+    and "as \<in> lists (- {[]})" "bs \<in> lists (- {[]})"
+    and "strict_sorted (interact as bs)"
     and "length bs \<le> length as" "length as \<le> Suc (length bs)"
-    and ne': "as' \<in> lists (- {[]})" "bs' \<in> lists (- {[]})"
-    and ss_zs': "strict_sorted (interact as' bs')"
+    and "as' \<in> lists (- {[]})" "bs' \<in> lists (- {[]})"
+    and "strict_sorted (interact as' bs')"
     and "length bs' \<le> length as'" "length as' \<le> Suc (length bs')"
     and "length as = length as'" "length bs = length bs'"
   shows "as = as' \<and> bs = bs'"
@@ -1063,10 +1023,8 @@ next
   show ?case
   proof (cases k)
     case 0
-    then have "length as = Suc 0"
-      using Suc.hyps(2) by auto
     then obtain a a' where "as = [a]" "as' = [a']"
-      by (metis \<open>length as = length as'\<close> length_0_conv length_Suc_conv)
+      by (metis Suc.hyps(2) \<open>length as = length as'\<close> Suc_length_conv length_0_conv)
     with 0 show ?thesis
       using Suc.prems
       apply (simp add: le_Suc_eq)
@@ -1077,9 +1035,9 @@ next
       using Suc.prems
       by (metis Suc.hyps(2) le0 list.exhaust list.size(3) not_less_eq_eq)
     have "length as' \<noteq> 0"
-      using Suc.hyps(2) Suc.prems(1) Suc.prems(3) interact_eq_Nil_iff by auto
+      using Suc.hyps(2) \<open>length as = length as'\<close> by force
     then obtain a' cs' b' ds' where eq': "as' = a'#cs'" "bs' = b'#ds'"
-      by (metis Suc.prems(14) eq(2) length_0_conv list.exhaust)
+      by (metis \<open>length bs = length bs'\<close> eq(2) length_0_conv list.exhaust)
     obtain k: "k = length cs" "k \<le> Suc (length ds)"
       using eq \<open>Suc k = length as\<close> \<open>length bs \<le> length as\<close> \<open>length as \<le> Suc (length bs)\<close> by auto
     case (Suc k')
@@ -1098,8 +1056,8 @@ next
       by (metis Un_iff \<open>b \<noteq> []\<close> list.set_sel(1) not_less_iff_gr_or_eq set_interact sorted_wrt_append)
     have "b < concat cs"
       using eq \<open>strict_sorted (interact as bs)\<close>
-      apply (simp add: strict_sorted_append_iff)
-      by (metis Un_iff sw_ab last_in_set less_list_def list.set_sel(1) set_interact sorted_wrt_append)
+      unfolding strict_sorted_append_iff
+      by (metis Un_iff last_in_set less_list_def list.set_sel(1) set_interact sorted_wrt_append sw_ab)
     have "strict_sorted (a @ concat cs)"
       using eq(1) ss_ab(1) by force
     then have b_cs: "strict_sorted (b @ concat cs)"
@@ -1146,17 +1104,18 @@ next
     proof (cases "ds = [] \<or> ds' = []")
       case True
       then show ?thesis
-        using Suc.prems(14) Suc.prems(2) eq'(2) eq(2) by auto
+        using \<open>length bs = length bs'\<close> Suc.prems(2) eq'(2) eq(2) by auto
     next
       case False
       then have "ds \<noteq> []" "ds' \<noteq> []"
         by auto
+      have "sorted (concat ds)" "sorted (concat ds')"
+        using eq(2) ss_ab(2) eq'(2) ss_ab'(2) strict_sorted_append_iff strict_sorted_imp_sorted by auto
       have "strict_sorted b"
         by (metis Suc.prems(2) concat.simps(2) eq(2) ss_ab'(2) strict_sorted_append_iff)
       moreover
       have "cs \<noteq> []"
         using k local.Suc by auto
-
       then obtain "hd cs \<noteq> []" "hd ds \<noteq> []"
         using Suc.prems(3) Suc.prems(4) eq list.set_sel(1)
         by (simp add: \<open>ds \<noteq> []\<close> mem_lists_non_Nil)
@@ -1166,11 +1125,13 @@ next
         using strict_sorted_interact_hd
         by (metis \<open>cs \<noteq> []\<close> \<open>ds \<noteq> []\<close> \<open>hd cs \<noteq> []\<close> \<open>hd ds \<noteq> []\<close> hd_concat strict_sorted_append_iff strict_sorted_sorted_wrt sw_ab)
       then have "list.set b = list.set (concat bs) \<inter> {..< hd (concat cs)}"
-        using ss_ab
+        using ss_ab \<open>b < concat cs\<close>   
         apply (auto simp: strict_sorted_append_iff eq)
-        apply (metis \<open>b < concat cs\<close> \<open>concat cs \<noteq> []\<close> hd_in_set sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
-        by (metis strict_sorted_iff UN_I dual_order.strict_trans2 order.asym set_concat sorted_hd_le)
+        apply (metis \<open>concat cs \<noteq> []\<close> b_cs hd_in_set sorted_wrt_append strict_sorted_sorted_wrt)
+        using \<open>sorted (concat ds)\<close> sorted_hd_le by fastforce
       moreover
+      have "sorted (concat ds')"
+        using eq'(2) ss_ab'(2) strict_sorted_append_iff strict_sorted_imp_sorted by auto
       have "cs' \<noteq> []"
         using k local.Suc \<open>concat cs \<noteq> []\<close> ccat_cs_cs' by auto
       then obtain "hd cs' \<noteq> []" "hd ds' \<noteq> []"
@@ -1181,11 +1142,10 @@ next
         using strict_sorted_interact_hd
         by (metis \<open>cs' \<noteq> []\<close> \<open>ds' \<noteq> []\<close> \<open>hd cs' \<noteq> []\<close> \<open>hd ds' \<noteq> []\<close> hd_concat strict_sorted_append_iff strict_sorted_sorted_wrt sw_ab')
       then have "list.set b' = list.set (concat bs') \<inter> {..< hd (concat cs')}"
-        using ss_ab'
+        using ss_ab' \<open>b' < concat cs'\<close>
         apply (auto simp: strict_sorted_append_iff eq')
-         apply (meson strict_sorted_iff \<open>b' < concat cs'\<close> \<open>b' \<noteq> []\<close> \<open>concat cs' \<noteq> []\<close> dual_order.strict_trans2 less_list_def sorted_le_last)
-        by (metis strict_sorted_iff UN_I dual_order.strict_trans2 order.asym set_concat sorted_hd_le)
-
+         apply (metis \<open>concat cs' \<noteq> []\<close> b_cs' list.set_sel(1) sorted_wrt_append strict_sorted_sorted_wrt)
+        using \<open>sorted (concat ds')\<close> sorted_hd_le by fastforce
       ultimately show "b = b'"
         by (metis Suc.prems(2) ccat_cs_cs' strict_sorted_append_iff strict_sorted_equal strict_sorted_sorted_wrt sw_ab')
     qed
@@ -1235,46 +1195,31 @@ proof -
     using Form_Body.cases [OF assms(2)] by (metis (no_types))
   have [simp]: "length c = length c'" "length d = length d'"
     using c c' d d' len' len by auto
+  note acc_lengths.simps [simp del]
   have "a < b"
-    using ss_zs apply (simp add: Ueq strict_sorted_append_iff)
-    by (metis strict_sorted_iff append.assoc d length_0_conv length_acc_lengths list.distinct(1) strict_sorted_append_iff sorted_trans)
+    using ss_zs by (auto simp: Ueq strict_sorted_append_iff less_list_def c d)
   have "a' < b'"
-    using ss_zs' apply (simp add: Ueq' strict_sorted_append_iff)
-    by (metis strict_sorted_iff append.assoc d' length_0_conv length_acc_lengths list.distinct(1) strict_sorted_append_iff sorted_trans)
+    using ss_zs' by (auto simp: Ueq' strict_sorted_append_iff less_list_def c' d')
   have "a#as = a'#as' \<and> b#bs = b'#bs'"
   proof (rule interaction_scheme_unique_aux)
-    show "concat (a # as) = concat (a' # as')"
-      using xs xs' by blast
-    show "concat (b # bs) = concat (b' # bs')"
-      using ys ys' by blast
-    show "a # as \<in> lists (- {[]})" "b # bs \<in> lists (- {[]})"
-      using ne by auto
     show "strict_sorted (interact (a # as) (b # bs))"
-      using ss_zs \<open>a < b\<close> apply (simp add: Ueq strict_sorted_append_iff)
-      by (metis strict_sorted_iff append.assoc append.left_neutral strict_sorted_append_iff sorted_trans)
+      using ss_zs \<open>a < b\<close> by (auto simp: Ueq strict_sorted_append_iff less_list_def d)
+    show "strict_sorted (interact (a' # as') (b' # bs'))"
+      using ss_zs' \<open>a' < b'\<close> by (auto simp: Ueq' strict_sorted_append_iff less_list_def d')
     show "length (b # bs) \<le> length (a # as)" "length (b' # bs') \<le> length (a' # as')"
       using \<open>kb \<le> ka\<close> len len' by auto
     show "length (a # as) \<le> Suc (length (b # bs))"
       using \<open>ka \<le> Suc kb\<close> len by linarith
     then show "length (a' # as') \<le> Suc (length (b' # bs'))"
       using len len' by fastforce
-    show "a' # as' \<in> lists (- {[]})" "b' # bs' \<in> lists (- {[]})"
-      using ne' by auto
-    show "strict_sorted (interact (a' # as') (b' # bs'))"
-      using ss_zs' \<open>a' < b'\<close> apply (simp add: Ueq' strict_sorted_append_iff)
-      by (metis strict_sorted_iff append.assoc append.left_neutral strict_sorted_append_iff sorted_trans)
-    show "length (a # as) = length (a' # as')"
-      using len'(1) len(1) by blast
-    show "length (b # bs) = length (b' # bs')"
-      using len'(2) len(2) by blast
-  qed
+  qed (use len len' xs xs' ys ys' ne ne' in fastforce)+
   then show ?thesis
     using Ueq Ueq' c c' d d' by blast
 qed
 
 
 lemma Form_Body_imp_inter_scheme:
-  assumes "Form_Body ka kb xs ys zs" and "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
+  assumes FB: "Form_Body ka kb xs ys zs" and "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
   shows "zs = inter_scheme ((ka+kb) - Suc 0) {xs,ys}"
 proof -
   have "length xs < length ys"
@@ -1286,22 +1231,22 @@ proof -
     case True
     show ?thesis
       unfolding inter_scheme_def
-      apply (rule some_equality [symmetric])
-      using assms True mult_2 not_gr0 one_is_add apply fastforce
-      using assms \<open>length xs < length ys\<close>
-      apply (auto simp: True mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length)
-      by presburger
+      apply (rule some_equality [symmetric], metis One_nat_def True FB mult_2)
+      subgoal for zs'
+        using assms \<open>length xs < length ys\<close>
+        by (auto simp: True mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
+      done
   next
     case False
     then have eq: "ka = Suc kb"
       using assms by linarith
     show ?thesis
       unfolding inter_scheme_def
-      apply (rule some_equality [symmetric])
-      using assms False mult_2 one_is_add eq apply fastforce
-      using assms \<open>length xs < length ys\<close>
-       apply (auto simp: eq mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length)
-      by presburger
+      apply (rule some_equality [symmetric], use assms False mult_2 one_is_add eq in fastforce)
+      subgoal for zs'
+        using assms \<open>length xs < length ys\<close>
+        by (auto simp: eq mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
+      done
   qed
 qed
 
@@ -1393,33 +1338,32 @@ proof cases
     using assms by auto
 next
   case (nz ka kb)
+  note acc_lengths.simps [simp del]
   show ?thesis
     unfolding thin_def
   proof clarify
     fix U U'
     assume ne: "inter_scheme l U \<noteq> inter_scheme l U'" and init: "initial_segment (inter_scheme l U) (inter_scheme l U')"
     assume "Form l U"
-    then obtain kp kq xs ys 
-      where "l = kp+kq - 1" "U = {xs,ys}" and U: "Form_Body kp kq xs ys (inter_scheme l U)" and "0 < kq" "kq \<le> kp" "kp \<le> Suc kq"
+    then obtain kp kq xs ys where "l = kp+kq - 1" "U = {xs,ys}" 
+            and U: "Form_Body kp kq xs ys (inter_scheme l U)" and "0 < kq" "kq \<le> kp" "kp \<le> Suc kq"
       using assms inter_scheme by blast
     then have "kp = ka \<and> kq = kb"
       using nz by linarith
     then obtain a as b bs c d
-      where xs: "xs = concat (a#as)" and ys: "ys = concat (b#bs)"
-        and len: "length (a#as) = ka" "length (b#bs) = kb"
+      where len: "length (a#as) = ka" "length (b#bs) = kb"
         and c: "c = acc_lengths 0 (a#as)"
         and d: "d = acc_lengths 0 (b#bs)"
         and Ueq: "inter_scheme l U = concat [c, a, d, b] @ interact as bs"
       using U by (auto simp: Form_Body.simps)
     assume "Form l U'"
-    then obtain kp' kq' xs' ys' 
-      where "l = kp'+kq' - 1" "U' = {xs',ys'}" and U': "Form_Body kp' kq' xs' ys' (inter_scheme l U')" and "0 < kq'" "kq' \<le> kp'" "kp' \<le> Suc kq'"
+    then obtain kp' kq' xs' ys'  where "l = kp'+kq' - 1" "U' = {xs',ys'}" 
+            and U': "Form_Body kp' kq' xs' ys' (inter_scheme l U')" and "0 < kq'" "kq' \<le> kp'" "kp' \<le> Suc kq'"
       using assms inter_scheme by blast
     then have "kp' = ka \<and> kq' = kb"
       using nz by linarith
     then obtain a' as' b' bs' c' d'
-      where xs': "xs' = concat (a'#as')" and ys': "ys' = concat (b'#bs')"
-        and len': "length (a'#as') = ka" "length (b'#bs') = kb"
+      where len': "length (a'#as') = ka" "length (b'#bs') = kb"
         and c': "c' = acc_lengths 0 (a'#as')"
         and d': "d' = acc_lengths 0 (b'#bs')"
         and Ueq': "inter_scheme l U' = concat [c', a', d', b'] @ interact as' bs'"
@@ -1432,14 +1376,14 @@ next
     have u1_eq': "u1 = hd (inter_scheme l U')"
       using \<open>inter_scheme l U \<noteq> []\<close> init u1_def initial_segment_ne by fastforce
     have au1: "u1 = length a"
-      by (simp add: u1_def Ueq c acc_lengths.simps)
+      by (simp add: u1_def Ueq c)
     have au1': "u1 = length a'"
-      by (simp add: u1_eq' Ueq' c' acc_lengths.simps)
+      by (simp add: u1_eq' Ueq' c')
     have len_eqk: "length c' = ka" "length d' = kb" "length c' = ka" "length d' = kb"
       using c d len c' d' len' by auto
     have take: "take (ka + u1 + kb) (c @ a @ d @ l) = c @ a @ d"
                "take (ka + u1 + kb) (c' @ a' @ d' @ l) = c' @ a' @ d'" for l
-      using c d c' d' len by (simp_all add: flip: au1 au1')
+      using c d c' d' len by (simp_all flip: au1 au1')
     have leU: "ka + u1 + kb \<le> length (inter_scheme l U)"
       using c d len by (simp add: au1 Ueq)
     then have "take (ka + u1 + kb) (inter_scheme l U) = take (ka + u1 + kb) (inter_scheme l U')"
@@ -1469,9 +1413,10 @@ proposition lemma_3_6:
     and "\<And>k u. \<lbrakk>k > 0; u \<in> [WW]\<^bsup>2\<^esup>; Form k u; [enum N k] < inter_scheme k u; List.set (inter_scheme k u) \<subseteq> N\<rbrakk> \<Longrightarrow> g u = j k"
 proof -
   define \<Phi> where "\<Phi> \<equiv> \<lambda>m::nat. \<lambda>M. infinite M \<and> m < Inf M"
-  define \<Psi> where "\<Psi> \<equiv> \<lambda>l m n::nat. \<lambda>M N j. n > m \<and> N \<subseteq> M \<and> n \<in> M \<and> (\<forall>U. Form l U \<and> U \<subseteq> WW \<and> [n] < inter_scheme l U \<and> list.set (inter_scheme l U) \<subseteq> N \<longrightarrow> g U = j)"
-  { fix l m::nat and M :: "nat set"
-    assume "l > 0" "\<Phi> m M"
+  define \<Psi> where "\<Psi> \<equiv> \<lambda>l m n::nat. \<lambda>M N j. n > m \<and> N \<subseteq> M \<and> n \<in> M 
+                     \<and> (\<forall>U. Form l U \<and> U \<subseteq> WW \<and> [n] < inter_scheme l U \<and> list.set (inter_scheme l U) \<subseteq> N \<longrightarrow> g U = j)"
+  have *: "\<exists>n N j. \<Phi> n N \<and> \<Psi> l m n M N j" if "l > 0" "\<Phi> m M" for l m::nat and M :: "nat set"
+  proof -
     let ?A = "inter_scheme l ` {U \<in> [WW]\<^bsup>2\<^esup>. Form l U}"
     define h where "h \<equiv> \<lambda>zs. g (inv_into {U \<in> [WW]\<^bsup>2\<^esup>. Form l U} (inter_scheme l) zs)"
     have "thin ?A"
@@ -1495,11 +1440,10 @@ proof -
       obtain xs ys where xys: "xs \<noteq> ys" "U = {xs,ys}"
         using Form_elim_upair \<open>Form l U\<close> by blast
       moreover have "inj_on (inter_scheme l) {U \<in> [WW]\<^bsup>2\<^esup>. Form l U}"
-        by (metis (mono_tags, lifting) inter_scheme_injective \<open>0 < l\<close> inj_onI mem_Collect_eq)
-      moreover have "g (inv_into {U \<in> [WW]\<^bsup>2\<^esup>. Form l U} (inter_scheme l) (inter_scheme l U)) = j"
-        using hj that xys
-        apply (simp add: h_def image_subset_iff image_iff)
-        by (metis (no_types, lifting) Diff_subset doubleton_in_nsets_2 dual_order.trans)
+        using \<open>0 < l\<close> inj_on_def inter_scheme_injective by blast
+      moreover 
+      have "g (inv_into {U \<in> [WW]\<^bsup>2\<^esup>. Form l U} (inter_scheme l) (inter_scheme l U)) = j"
+        using hj that xys subset_Diff_insert by (fastforce simp add: h_def image_iff)
       ultimately show ?thesis
         using that by auto
     qed
@@ -1510,9 +1454,9 @@ proof -
       by (metis Inf_nat_def1 \<open>N \<subseteq> M\<close> \<open>infinite N\<close> finite.emptyI n_def subsetD)
     ultimately have "\<Phi> n (N - {n}) \<and> \<Psi> l m n M (N - {n}) j"
       using \<open>\<Phi> m M\<close> \<open>infinite N\<close> \<open>N \<subseteq> M\<close> \<open>n > m\<close> by (auto simp: \<Phi>_def \<Psi>_def)
-    then have "\<exists>n N j. \<Phi> n N \<and> \<Psi> l m n M N j"
+    then show ?thesis
       by blast
-  } note * = this
+  qed
   have base: "\<Phi> 0 {0<..}"
     unfolding \<Phi>_def by (metis infinite_Ioi Inf_nat_def1 greaterThan_iff greaterThan_non_empty)
   have step: "Ex (\<lambda>(n,N,j). \<Phi> n N \<and> \<Psi> l m n M N j)" if "\<Phi> m M" "l > 0" for m M l
@@ -1527,43 +1471,30 @@ proof -
   have H_simps: "H 0 = (0,{0<..},0)" "\<And>l. H (Suc l) = (case H l of (m,M,j) \<Rightarrow> G l m M)"
     by (simp_all add: H_def)
   have H\<Phi>: "(\<lambda>(n,N,j). \<Phi> n N) (H l)" for l
-  proof (induction l)
-    case 0
-    with base show ?case
-      by (auto simp: H_simps)
-  next
-    case (Suc l)
-    with G\<Phi> show ?case
-      by (force simp: H_simps split: prod.split prod.split_asm)
-  qed
+    by (induction l) (use base G\<Phi> in \<open>auto simp: H_simps split: prod.split_asm\<close>)
   define \<nu> where "\<nu> \<equiv> (\<lambda>l. case H l of (n,M,j) \<Rightarrow> n)"
   have H_inc: "\<nu> l \<ge> l" for l
   proof (induction l)
-    case 0
-    then show ?case
-      by auto
-  next
     case (Suc l)
     then show ?case
-      using H\<Phi> G_increasing [of "\<nu> l"]
-      apply (auto simp: H_simps \<nu>_def split: prod.split prod.split_asm)
-      by (metis (mono_tags, lifting) Suc_leI Suc_le_mono case_prod_conv dual_order.trans)
-  qed
+      using H\<Phi> [of l] G_increasing [of "\<nu> l"]
+      apply (clarsimp simp: H_simps \<nu>_def split: prod.split)
+      by (metis (no_types, lifting) case_prodD leD le_less_trans not_less_eq_eq)
+  qed auto
   let ?N = "range \<nu>"
   define j where "j \<equiv> \<lambda>l. case H l of (n,M,j) \<Rightarrow> j"
   have H_increasing_Suc: "(case H k of (n, N, j') \<Rightarrow> N) \<supseteq> (case H (Suc k) of (n, N, j') \<Rightarrow> insert n N)" for k
     using H\<Phi> [of k]
     by (force simp: H_simps split: prod.split dest: G_increasing [where l=k])
   have H_increasing_superset: "(case H k of (n, N, j') \<Rightarrow> N) \<supseteq> (case H (n+k) of (n, N, j') \<Rightarrow> N)" for k n
-  proof (induction n arbitrary:)
+  proof (induction n)
     case (Suc n)
     then show ?case
       using H_increasing_Suc [of "n+k"] by (auto split: prod.split_asm)
   qed auto
   then have H_increasing_less: "(case H k of (n, N, j') \<Rightarrow> N) \<supseteq> (case H l of (n, N, j') \<Rightarrow> insert n N)"
     if "k<l" for k l
-    by (metis (no_types, lifting) H_increasing_Suc add.commute less_imp_Suc_add order_trans that)
-
+    by (smt (verit, best) H_increasing_Suc add.commute less_imp_Suc_add order_trans that)
   have "\<nu> k < \<nu> (Suc k)" for k
     using H\<Phi> [of k] unfolding \<nu>_def
     by (auto simp: H_simps split: prod.split dest: G_increasing [where l=k])
@@ -1577,8 +1508,7 @@ proof -
     assume "n < \<nu> l"
     then have False if "l \<le> k"
       using that strict_monoD [OF strict_mono_\<nu>, of l k ] H by (force simp: \<nu>_def)
-    then have "k < l"
-      using not_less by blast
+    then have "k < l" using not_less by blast
     then obtain M j where Mj: "H l = (\<nu> l,M,j)"
       unfolding \<nu>_def
       by (metis (mono_tags, lifting) case_prod_conv old.prod.exhaust)
@@ -1630,9 +1560,9 @@ lemma total_order_nsets_2_eq:
      (is "_ = ?rhs")
 proof
   show "nsets A 2 \<subseteq> ?rhs"
-    unfolding numeral_nat
-    apply (clarsimp simp add: nsets_def card_Suc_eq Set.doubleton_eq_iff not_less)
-    by (metis tot total_on_def)
+    using tot
+    unfolding numeral_nat total_on_def nsets_def
+    by (fastforce simp: card_Suc_eq Set.doubleton_eq_iff not_less)
   show "?rhs \<subseteq> nsets A 2"
     using irr unfolding numeral_nat by (force simp: nsets_def card_Suc_eq irrefl_def)
 qed
@@ -1642,19 +1572,15 @@ lemma lenlex_nsets_2_eq: "nsets A 2 = {{x,y} | x y. x \<in> A \<and> y \<in> A \
 
 lemma sum_sorted_list_of_set_map: "finite I \<Longrightarrow> sum_list (map f (list_of I)) = sum f I"
 proof (induction "card I" arbitrary: I)
-  case 0
-  then show ?case
-    by auto
-next
   case (Suc n I)
   then have [simp]: "I \<noteq> {}"
     by auto
-  moreover have "sum_list (map f (list_of (I - {Min I}))) = sum f (I - {Min I})"
+  have "sum_list (map f (list_of (I - {Min I}))) = sum f (I - {Min I})"
     using Suc by auto
-  ultimately show ?case
+  then show ?case
     using Suc.prems sum.remove [of I "Min I" f]
     by (simp add: sorted_list_of_set_nonempty Suc)
-qed
+qed auto
 
 
 lemma sorted_list_of_set_UN_eq_concat:
@@ -1662,16 +1588,12 @@ lemma sorted_list_of_set_UN_eq_concat:
   shows "list_of (\<Union>i \<in> I. f i) = concat (map (list_of \<circ> f) (list_of I))"
   using I
 proof (induction "card I" arbitrary: I)
-  case 0
-  then have "I={}" by auto
-  then show ?case by auto
-next
   case (Suc n I)
   then have "I \<noteq> {}" and Iexp: "I = insert (Min I) (I - {Min I})"
     using Min_in Suc.hyps(2) Suc.prems(2) by fastforce+
   have IH: "list_of (\<Union> (f ` (I - {Min I}))) = concat (map (list_of \<circ> f) (list_of (I - {Min I})))"
-    using Suc
-    by (metis DiffE Min_in \<open>I \<noteq> {}\<close> card_Diff_singleton diff_Suc_1 finite_Diff strict_mono_sets_def)
+    using Suc unfolding strict_mono_sets_def
+    by (metis DiffE Iexp card_Diff_singleton diff_Suc_1 finite_Diff insertI1)
   have "list_of (\<Union> (f ` I)) = list_of (\<Union> (f ` (insert (Min I) (I - {Min I}))))"
     using Iexp by auto
   also have "\<dots> = list_of (f (Min I) \<union> \<Union> (f ` (I - {Min I})))"
@@ -1688,11 +1610,11 @@ next
   also have "\<dots> = concat (map (list_of \<circ> f) (list_of I))"
     by (simp add: Suc.prems(2) \<open>I \<noteq> {}\<close> sorted_list_of_set_nonempty)
   finally show ?case .
-qed
+qed auto
 
 subsubsection \<open>Lemma 3.7 of Jean A. Larson, ibid.\<close>
 
-text \<open>Possibly should be redone using grab\<close>
+text \<open>Possibly should be redone using @{term grab}}\<close>
 proposition lemma_3_7:
   assumes "infinite N" "l > 0"
   obtains M where "M \<in> [WW]\<^bsup>m\<^esup>"
@@ -1728,7 +1650,7 @@ next
   proof (induction i)
     case 0
     have "inj_on (enum N \<circ> Suc) {..<Suc k}"
-      by (simp add: assms(1) comp_inj_on strict_mono_enum strict_mono_imp_inj_on)
+      by (simp add: assms(1) strict_mono_def strict_mono_imp_inj_on)
     with 0 show ?case
       using card_image DF_simps by fastforce
   next
@@ -2162,7 +2084,7 @@ next
               using \<open>p < q\<close> True Inf_DF_less DF_AF DF_ne
               apply (auto simp: zs_def less_sets_def card_AF AF_Inf_DF_less)
               by (meson Inf_nat_def1)
-          qed (auto simp: \<open>k=1\<close> \<open>ka=1\<close> acc_lengths.simps zs_def AF_ne)
+          qed (auto simp: \<open>k=1\<close> \<open>ka=1\<close> zs_def AF_ne)
           have zs_N: "list.set zs \<subseteq> N"
             using AF_subset_N by (auto simp: zs_def card_AF Inf_DF_N \<open>k=1\<close>)
           show ?thesis
@@ -2250,11 +2172,11 @@ next
               qed auto
             qed
             show "[list_of (AF 1 p), list_of (RF 1 p)] \<in> lists (- {[]})"
-              using RF_non_Nil \<open>0 < k\<close> by (auto simp: acc_lengths.simps zs_def AF_ne)
+              using RF_non_Nil \<open>0 < k\<close> by (auto simp: zs_def AF_ne)
             show "[card (AF 1 q) + card (RF 1 q)] = acc_lengths 0 [list_of (RF 1 q \<union> AF 1 q)]"
               using list_of_AF_RF
-              by (auto simp: acc_lengths.simps zs_def AF_ne sup_commute)
-          qed (auto simp: acc_lengths.simps zs_def AF_ne)
+              by (auto simp: zs_def AF_ne sup_commute)
+          qed (auto simp: zs_def AF_ne)
           have zs_N: "list.set zs \<subseteq> N"
             using \<open>p < m\<close> \<open>q < m\<close> DF_in_N  enum_DF1_eq [symmetric]
             by (auto simp: zs_def card_AF AF_subset_N RF_subset_N Inf_DF_N)
@@ -2336,7 +2258,7 @@ next
             using RF_0 \<open>0 < ka\<close> sorted_list_of_set_k by auto
           let ?f = "rec_nat [card (AF k i)] (\<lambda>n r. r @ [(\<Sum>j\<le>Suc n. card (RF j i))])"
           have f: "acc_lengths 0 (map (?R i) (list_of {..v})) = ?f v" for v
-            by (induction v) (auto simp: RF_0 acc_lengths.simps acc_lengths_append sum_sorted_list_of_set_map)
+            by (induction v) (auto simp: RF_0 acc_lengths_append sum_sorted_list_of_set_map)
           have 3: "list.set (?f v) \<subseteq> N" if "v \<le> k" for v
             using that
           proof (induction v)
@@ -2361,7 +2283,7 @@ next
           case True
           with \<open>k \<ge> 2\<close> show ?thesis
             unfolding QQ_def LENS_QQ_def LENS_def
-            by (auto simp: list_of_RF_Un split_list_interval acc_lengths.simps acc_lengths_append)
+            by (auto simp: list_of_RF_Un split_list_interval acc_lengths_append)
         next
           case False
           then have "ka=k"
@@ -2451,7 +2373,8 @@ next
           proof (intro conjI ss_INT)
             show "LENS p < list_of (AF k p) @ LENS_QQ @ list_of (AF k q) @ ?INT"
               using AF_non_Nil [of k p] \<open>k \<le> ka\<close> \<open>ka \<le> Suc k\<close> \<open>p < m\<close> card_AF_sum enum_DF_AF
-              by (simp add: enum_DF_AF less_list_def card_AF_sum LENS_def sum_sorted_list_of_set_map)
+              by (simp add: enum_DF_AF less_list_def card_AF_sum LENS_def sum_sorted_list_of_set_map
+                       del: acc_lengths.simps)
             show "strict_sorted (LENS p)"
               unfolding LENS_def
               by (rule strict_sorted_acc_lengths) (use RF_non_Nil AF_non_Nil kka in \<open>auto simp: in_lists_conv_set\<close>)
@@ -2841,9 +2764,9 @@ lemma acc_lengths_merge1:
 proof (induction arbitrary: k)
   case (App as1 bs1 as2 bs2 as bs)
   then show ?case
-    apply (simp add: acc_lengths_append acc_lengths.simps strict_sorted_append_iff length_concat_acc_lengths)
+    apply (simp add: acc_lengths_append strict_sorted_append_iff length_concat_acc_lengths)
     by (simp add: le_supI2 length_concat)
-qed (auto simp: acc_lengths.simps length_concat_acc_lengths)
+qed (auto simp: length_concat_acc_lengths)
 
 lemma acc_lengths_merge2:
   assumes "merge as bs us vs"
@@ -2852,9 +2775,9 @@ lemma acc_lengths_merge2:
 proof (induction arbitrary: k)
   case (App as1 bs1 as2 bs2 as bs)
   then show ?case
-    apply (simp add: acc_lengths_append acc_lengths.simps strict_sorted_append_iff length_concat_acc_lengths)
+    apply (simp add: acc_lengths_append strict_sorted_append_iff length_concat_acc_lengths)
     by (simp add: le_supI2 length_concat)
-qed (auto simp: acc_lengths.simps length_concat_acc_lengths)
+qed (auto simp: length_concat_acc_lengths)
 
 lemma length_hd_le_concat:
   assumes "as \<noteq> []" shows "length (hd as) \<le> length (concat as)"
@@ -3855,7 +3778,7 @@ proof -
       proof (induction j arbitrary: w)
         case 0
         then show ?case
-          by (simp add: seqs_def acc_lengths.simps Inf_nat_def1 card_a)
+          by (simp add: seqs_def Inf_nat_def1 card_a)
       next
         case (Suc j)
         let ?db = "\<Sqinter> (d j0) + ((\<Sum>i<j. card (b (enum K i) (j0,i))) + card (b (enum K j) (j0,j)))"
@@ -3872,9 +3795,9 @@ proof -
         then have "list.set (acc_lengths (w + \<Sqinter> (d j0))
                              (map (list_of \<circ> (\<lambda>i. b (enum K i) (j0,i))) (list_of {..<j})))
                    \<subseteq> (+) w ` d j0"
-          by (simp add: seqs_def acc_lengths.simps card_a subset_insertI)
+          by (simp add: seqs_def card_a subset_insertI)
         ultimately show ?case
-          by (simp add: seqs_def acc_lengths.simps acc_lengths_append image_iff Inf_nat_def1
+          by (simp add: seqs_def acc_lengths_append image_iff Inf_nat_def1
                         sum_sorted_list_of_set_map card_a)
       qed
       then have acc_lengths_subset_d: "list.set (acc_lengths 0 (seqs j0 j K)) \<subseteq> d j0"
@@ -4101,7 +4024,7 @@ proof -
           using card_a carda_v1 by auto
         finally have "last u1 < length v1" .
         then have "u1 < qs"
-          by (simp add: qs_def acc_lengths.simps less_list_def)
+          by (simp add: qs_def less_list_def)
 
         have "strict_sorted (interact (u1#us) (v1#vs))"
           using L \<open>strict_sorted x\<close> \<open>strict_sorted y\<close> merge merge_interact merge_preserves seqs_ne us vs xu_eq yv_eq by auto

@@ -34,7 +34,7 @@ proof -
     by (auto simp: dual_order.trans set_take_subset elim: ON_imp_Ord)
   define E where "E \<equiv> \<lambda>k. lift (\<omega>_sum (take k \<alpha>s)) (\<omega>\<up>(\<alpha>s!k))"
   define L where "L \<equiv> map (\<lambda>k. \<phi> ` (elts (E k))) [0..<length \<alpha>s]"
-  have [simp]: "length L = length \<alpha>s"
+  have lengthL [simp]: "length L = length \<alpha>s"
     by (simp add: L_def)
   have in_elts_E_less: "elts (E k') \<lless> elts (E k)" if "k'<k" "k < length \<alpha>s" for k k'
     \<comment> \<open>The ordinals have been partitioned into disjoint intervals\<close>
@@ -139,34 +139,31 @@ proof -
         assume xy: "d' \<in> D" "d \<in> D" and "(d',d) \<in> VWF"
         then have "d' < d"
           using ON_imp_Ord \<open>D \<subseteq> ON\<close> by auto
-        define \<gamma>' where "\<gamma>' \<equiv> ordermap D VWF d'"
-        define \<gamma> where "\<gamma> \<equiv> ordermap D VWF d"
-        have len': "K \<gamma>' < length \<alpha>s" and elts': "\<gamma>' \<in> elts (E (K \<gamma>'))"
-            and len: "K \<gamma> < length \<alpha>s" and elts: "\<gamma> \<in> elts (E (K \<gamma>))"
-          using K \<open>d' \<in> D\<close> \<open>d \<in> D\<close> by (auto simp: \<gamma>'_def \<gamma>_def \<open>small D\<close> ordermap_in_ordertype)
-        have **: "\<And>X w. \<lbrakk>X \<in> list.set L; w \<in> elts (tp X)\<rbrakk> \<Longrightarrow> w \<in> elts (tp (M \<inter> X))"
-          using "*" by blast
+        let ?\<gamma>' = "ordermap D VWF d'"
+        let ?\<gamma> = "ordermap D VWF d"
+        have len': "K ?\<gamma>' < length \<alpha>s" and elts': "?\<gamma>' \<in> elts (E (K ?\<gamma>'))"
+          and len: "K ?\<gamma> < length \<alpha>s" and elts: "?\<gamma> \<in> elts (E (K ?\<gamma>))"
+          using K \<open>d' \<in> D\<close> \<open>d \<in> D\<close> by (auto simp: \<open>small D\<close> ordermap_in_ordertype)
         have Ord_\<sigma>L: "Ord (\<sigma> (L!k) (\<pi> k d))" if "d \<in> \<phi> ` elts (E k)" "k < length \<alpha>s" for k d
-          by (metis "**" Ord_\<sigma> \<open>length L = length \<alpha>s\<close> bij_\<pi> bij_betw_imp_surj_on imageI nth_mem that tp_L_eq)
-        have "\<gamma>' < \<gamma>"
-          by (simp add: \<gamma>'_def \<gamma>_def \<open>(d', d) \<in> VWF\<close> \<open>small D\<close> ordermap_mono_less xy)
-        then have "K \<gamma>' \<le> K \<gamma>"
+          by (metis (mono_tags) "*" Ord_\<sigma> bij_\<pi> bij_betw_apply lengthL nth_mem that tp_L_eq vsubsetD)
+        have "?\<gamma>' < ?\<gamma>"
+          by (simp add: \<open>(d', d) \<in> VWF\<close> \<open>small D\<close> ordermap_mono_less xy)
+        then have "K ?\<gamma>' \<le> K ?\<gamma>"
           using elts' elts in_elts_E_less by (meson leI len' less_asym less_sets_def)
-        then consider (less) "K \<gamma>' < K \<gamma>" | (equal) "K \<gamma>' = K \<gamma>"
+        then consider (less) "K ?\<gamma>' < K ?\<gamma>" | (equal) "K ?\<gamma>' = K ?\<gamma>"
           by linarith
-        then have "\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d') < \<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d)"
+        then have "\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d') < \<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d)"
         proof cases
           case less
-          obtain \<dagger>: "\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d') \<in> M \<inter> L ! K \<gamma>'" "\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d) \<in> M \<inter> L ! K \<gamma>"
-            using elts' elts len' len
-            unfolding \<gamma>'_def \<gamma>_def
-            by (metis "**" \<open>length L = length \<alpha>s\<close> \<phi>_cancel_left bij_\<pi> bij_\<sigma> bij_betw_imp_surj_on imageI nth_mem tp_L_eq xy)
-          then have "ordermap D VWF (\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d')) \<in> elts (E (K \<gamma>'))" "ordermap D VWF (\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d)) \<in> elts (E (K \<gamma>))"
+          obtain \<dagger>: "\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d') \<in> M \<inter> L ! K ?\<gamma>'" "\<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d) \<in> M \<inter> L ! K ?\<gamma>"
+            using elts' elts len' len * [THEN vsubsetD]
+            by (metis lengthL \<phi>_cancel_left bij_\<pi> bij_\<sigma> bij_betw_imp_surj_on imageI nth_mem tp_L_eq xy)
+          then have "ordermap D VWF (\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d')) \<in> elts (E (K ?\<gamma>'))" "ordermap D VWF (\<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d)) \<in> elts (E (K ?\<gamma>))"
             using len' len elts_E tpD_eq
-            by (fastforce simp: L_def \<gamma>'_def \<gamma>_def \<phi>_cancel_right)+
-          then have "ordermap D VWF (\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d')) < ordermap D VWF (\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d))"
+            by (fastforce simp: L_def \<phi>_cancel_right)+
+          then have "ordermap D VWF (\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d')) < ordermap D VWF (\<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d))"
             using in_elts_E_less len less by (meson less_sets_def)
-          moreover have "\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d') \<in> D" "\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d) \<in> D"
+          moreover have "\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d') \<in> D" "\<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d) \<in> D"
             using \<open>M \<subseteq> D\<close> \<dagger> by auto
           ultimately show ?thesis
             by (metis \<open>small D\<close> \<phi>_cancel_left \<phi>_less_iff ordermap_in_ordertype)
@@ -175,33 +172,30 @@ proof -
           have \<sigma>_less: "\<And>X \<gamma> \<delta>. \<lbrakk>\<gamma> < \<delta>; \<gamma> \<in> elts (tp (M \<inter> X)); \<delta> \<in> elts (tp (M \<inter> X))\<rbrakk>
                           \<Longrightarrow> \<sigma> X \<gamma> < \<sigma> X \<delta>"
             by (metis \<open>D \<subseteq> ON\<close> \<open>M \<subseteq> D\<close> \<sigma>_def dual_order.trans inv_ordermap_VWF_strict_mono_iff le_infI1 smM)
-          have "\<pi> (K \<gamma>) d' < \<pi> (K \<gamma>) d"
-            by (metis equal \<gamma>'_def \<gamma>_def \<open>(d', d) \<in> VWF\<close> \<phi>_cancel_left \<pi>_iff elts elts' imageI len xy)
+          have "\<pi> (K ?\<gamma>) d' < \<pi> (K ?\<gamma>) d"
+            by (metis equal \<open>(d', d) \<in> VWF\<close> \<phi>_cancel_left \<pi>_iff elts elts' imageI len xy)
           then show ?thesis
             unfolding equal
-            by (metis "**" \<gamma>'_def \<gamma>_def \<open>length L = length \<alpha>s\<close> \<phi>_cancel_left \<sigma>_less bij_\<pi> 
+            by (metis * [THEN vsubsetD] lengthL \<phi>_cancel_left \<sigma>_less bij_\<pi> 
                  bij_betw_imp_surj_on elts elts' image_eqI len local.equal nth_mem tp_L_eq xy)
         qed
-        moreover have "Ord (\<sigma> (L ! K \<gamma>') (\<pi> (K \<gamma>') d'))"
-          using Ord_\<sigma>L \<gamma>'_def \<phi>_cancel_left elts' len' xy(1) by fastforce
-        moreover have "Ord (\<sigma> (L ! K \<gamma>) (\<pi> (K \<gamma>) d))"
-          using Ord_\<sigma>L \<gamma>_def \<phi>_cancel_left elts len xy by fastforce
+        moreover have "Ord (\<sigma> (L ! K ?\<gamma>') (\<pi> (K ?\<gamma>') d'))" "Ord (\<sigma> (L ! K ?\<gamma>) (\<pi> (K ?\<gamma>) d))"
+          using Ord_\<sigma>L \<phi>_cancel_left elts len elts' len' xy by fastforce+
         ultimately show "(\<psi> d', \<psi> d) \<in> VWF"
-          by (simp add: \<psi>_def \<gamma>'_def \<gamma>_def)
+          by (simp add: \<psi>_def)
       next
         show "\<psi> ` D \<subseteq> M"
         proof (clarsimp simp: \<psi>_def)
           fix d
           assume "d \<in> D"
-          define \<gamma> where "\<gamma> \<equiv> ordermap D VWF d"
-          have len: "K \<gamma> < length \<alpha>s" and elts: "\<gamma> \<in> elts (E (K \<gamma>))"
-            using K \<open>d \<in> D\<close> by (auto simp: \<gamma>_def \<open>small D\<close> ordermap_in_ordertype)
-          have "\<pi> (K \<gamma>) d \<in> elts (tp (L! (K \<gamma>)))"
+          let ?\<gamma> = "ordermap D VWF d"
+          have len: "K ?\<gamma> < length \<alpha>s" and elts: "?\<gamma> \<in> elts (E (K ?\<gamma>))"
+            using K \<open>d \<in> D\<close> by (auto simp: \<open>small D\<close> ordermap_in_ordertype)
+          have "\<pi> (K ?\<gamma>) d \<in> elts (tp (L! (K ?\<gamma>)))"
             using bij_\<pi> [OF len] \<open>d \<in> D\<close>
-            by (metis \<gamma>_def \<phi>_cancel_left bij_betw_apply elts imageI len tp_L_eq)
+            by (metis \<phi>_cancel_left bij_betw_apply elts imageI len tp_L_eq)
           then show "\<sigma> (L ! K (ordermap D VWF d)) (\<pi> (K (ordermap D VWF d)) d) \<in> M"
-            using \<gamma>_def \<open>length L = length \<alpha>s\<close>
-            by (metis "*" Int_iff bij_\<sigma> bij_betw_apply len nth_mem vsubsetD) 
+            by (metis "*" lengthL Int_iff bij_\<sigma> bij_betw_apply len nth_mem vsubsetD) 
         qed
       qed auto
     qed
@@ -212,7 +206,7 @@ qed
 text \<open>The ``remark'' of Erdős and E. C. Milner, Canad. Math. Bull. Vol. 17 (2), 1974\<close>
 
 proposition indecomposable_imp_Ex_less_sets:
-  assumes indec: "indecomposable \<alpha>" and "\<alpha> > 1" 
+  assumes indec: "indecomposable \<alpha>" and "\<alpha> \<ge> \<omega>" 
     and A: "tp A = \<alpha>" "small A" "A \<subseteq> ON"
     and "x \<in> A" and A1: "tp A1 = \<alpha>" "A1 \<subseteq> A"
   obtains A2 where "tp A2 = \<alpha>" "A2 \<subseteq> A1" "{x} \<lless> A2"
@@ -220,7 +214,7 @@ proof -
   have "Ord \<alpha>"
     using indec indecomposable_imp_Ord by blast
   have "Limit \<alpha>"
-    by (simp add: assms indecomposable_imp_Limit)
+    by (meson \<omega>_gt1 assms indec indecomposable_imp_Limit less_le_trans)
   define \<phi> where "\<phi> \<equiv> inv_into A (ordermap A VWF)"
   then have bij_\<phi>: "bij_betw \<phi> (elts \<alpha>) A"
     using A bij_betw_inv_into down ordermap_bij by blast
@@ -256,7 +250,7 @@ proof -
           using \<gamma> Limit_def \<open>Limit \<alpha>\<close> by blast
         with A sub show "\<phi> u < \<phi> v"
           if "u \<in> elts (succ  \<gamma>)" and "v \<in> elts (succ  \<gamma>)" and "u < v" for u v
-          by (metis ON_imp_Ord Ord_linear2 \<phi>_def inv_into_ordermap inv_ordermap_VWF_mono_le leD subset_iff that)
+          by (metis \<phi>_def inv_ordermap_VWF_strict_mono_iff subsetD that)
         show "\<not> \<alpha> \<le> tp (elts (succ  \<gamma>))"
           by (metis Limit_def Ord_succ \<gamma> \<open>Limit \<alpha>\<close> \<open>Ord \<gamma>\<close> mem_not_refl ordertype_eq_Ord vsubsetD)
       qed auto
@@ -267,7 +261,7 @@ proof -
       using A1 by blast
     have "{x} \<lless> (A - B)"
       using assms B 
-      apply (clarsimp simp: less_sets_def  \<phi>_def subset_iff)
+      apply (clarsimp simp: less_sets_def \<phi>_def subset_iff)
       by (metis Ord_not_le VWF_iff_Ord_less less_V_def order_refl ordermap_mono_less trans_VWF wf_VWF)
     with \<open>A1 \<subseteq> A\<close> show "{x} \<lless> (A1 - B)" by auto
   qed auto
@@ -285,10 +279,7 @@ proof (cases "\<alpha>\<le>1 \<or> \<beta>=0")
     using indec indecomposable_def by blast
   show ?thesis
   proof (cases "\<beta>=0")
-    case True
-    moreover have "min \<gamma> 0 = 0"
-      by (simp add: min_def)
-    ultimately show ?thesis
+    case True then show ?thesis
       by (simp add: partn_lst_triv0 [where i=1])
   next
     case False
@@ -309,22 +300,16 @@ proof (cases "\<alpha>\<le>1 \<or> \<beta>=0")
         using \<open>\<alpha>=1\<close> \<open>k > 1\<close> by (fastforce simp: less_Suc_eq)
       then have "min \<gamma> (\<omega>*\<beta>) \<le> 1"
         by (metis Ord_1 Ord_\<omega> Ord_linear_le Ord_mult \<open>Ord \<beta>\<close> min_def order_trans)
-      moreover have "elts \<beta> \<noteq> {}"
-        using False by auto
-      ultimately show ?thesis
-        by (auto simp: True \<open>Ord \<beta>\<close> \<open>\<beta>\<noteq>0\<close> \<open>\<alpha>=1\<close> intro!: partn_lst_triv1 [where i=1])
+      then show ?thesis
+        using False by (auto simp: True \<open>Ord \<beta>\<close> \<open>\<beta>\<noteq>0\<close> \<open>\<alpha>=1\<close> intro!: partn_lst_triv1 [where i=1])
     qed
   qed
 next
   case False
-  then have "\<alpha> > 1"
-    by (meson Ord_1 Ord_not_le indec indecomposable_def)
   then have "\<alpha> \<ge> \<omega>"
-    by (simp add: indec indecomposable_imp_Limit omega_le_Limit)
-  have "0 \<in> elts \<beta>"
-    using False Ord_\<omega>1 Ord_in_Ord \<beta> mem_0_Ord by blast
-  then have "\<beta> \<noteq> 0"
-    by force 
+    by (meson Ord_1 Ord_not_less indec indecomposable_def indecomposable_imp_Limit omega_le_Limit)
+  have "0 \<in> elts \<beta>" "\<beta> \<noteq> 0"
+    using False Ord_\<omega>1 Ord_in_Ord \<beta> mem_0_Ord by blast+
   show ?thesis
     unfolding partn_lst_def
   proof clarsimp
@@ -646,24 +631,17 @@ next
           proof (intro exI conjI)
             show "A'' \<subseteq> A"
               using \<open>A' \<subseteq> A\<close> by (auto simp: A''_def)
-            have "tp A'' \<le> \<alpha>"
-              using \<open>A'' \<subseteq> A\<close> down ordertype_VWF_mono A by blast
-            moreover have "\<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>)" "tp (\<AA> \<nu>) = \<alpha>"
-              using \<AA> \<open>\<nu> \<in> elts \<beta>\<close> by auto
-            then have "\<alpha> \<le> tp A''"
-              using IX' [OF _ _ A'] by (simp add: A''_def)
-            ultimately show "tp A'' = \<alpha>"
-              by (rule antisym)
-            have "\<nu> \<in> M (elts \<beta>) \<AA> x" "F \<subseteq> M (elts \<beta>) \<AA> x"
-              if "x \<in> A''" for x
-            proof -
-              show "F \<subseteq> M (elts \<beta>) \<AA> x"
-                using A''_def FN that by blast
-              show "\<nu> \<in> M (elts \<beta>) \<AA> x"
-                using \<open>\<nu> \<in> elts \<beta>\<close> that by (simp add: M_def A''_def)
+            show "tp A'' = \<alpha>"
+            proof (rule antisym)
+              show "tp A'' \<le> \<alpha>"
+                using \<open>A'' \<subseteq> A\<close> down ordertype_VWF_mono A by blast
+              have "\<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>)" "tp (\<AA> \<nu>) = \<alpha>"
+                using \<AA> \<open>\<nu> \<in> elts \<beta>\<close> by auto
+              then show "\<alpha> \<le> tp A''"
+                using IX' [OF _ _ A'] by (simp add: A''_def)
             qed
-            then show "\<forall>x\<in>A''. insert \<nu> F \<subseteq> M (elts \<beta>) \<AA> x"
-              by blast
+            show "\<forall>x\<in>A''. insert \<nu> F \<subseteq> M (elts \<beta>) \<AA> x"
+              using A''_def FN M_def \<open>\<nu> \<in> elts \<beta>\<close> by blast
           qed
         qed (use A in auto)
         then obtain A' where A': "A' \<subseteq> A" "tp A' = \<alpha>" and FN: "\<And>x. x \<in> A' \<Longrightarrow> F \<subseteq> M (elts \<beta>) \<AA> x"
@@ -757,15 +735,12 @@ next
               qed
               ultimately have sm_g: "strict_mono_on g (elts \<beta>)"
                 by (auto simp: g_def strict_mono_on_def dest!: F_imp_Ex)
-              show False
-                using * [OF \<open>x \<in> A\<close> fun_g sm_g]
-              proof safe
-                fix \<nu>
-                assume "\<nu> \<in> elts \<beta>" and \<nu>: "tp (K 1 x \<inter> \<AA> (g \<nu>)) < \<alpha>"
-                have FM: "F \<subseteq> M (elts \<beta>) \<AA> x"
+              have False if "\<nu> \<in> elts \<beta>" and \<nu>: "tp (K 1 x \<inter> \<AA> (g \<nu>)) < \<alpha>" for \<nu>
+              proof -
+                have "F \<subseteq> M (elts \<beta>) \<AA> x"
                   by (meson FN \<open>x \<in> A'\<close>)
-                have False if "tp (K (Suc 0) x \<inter> \<AA> \<nu>) < \<alpha>" "\<nu> \<in> F"
-                  using that FM by (auto simp: M_def)
+                then have False if "tp (K (Suc 0) x \<inter> \<AA> \<nu>) < \<alpha>" "\<nu> \<in> F"
+                  using that by (auto simp: M_def)
                 moreover have False if "tp (K (Suc 0) x \<inter> \<AA> (g \<nu>)) < \<alpha>" "\<nu> \<in> D k" "k \<le> p" "\<nu> \<notin> F" for k
                 proof -
                   have "h (\<beta>idx \<nu>) \<nu> \<in> M (D (\<beta>idx \<nu>)) \<AA> x"
@@ -775,7 +750,9 @@ next
                 qed
                 ultimately show False
                   using \<open>\<nu> \<in> elts \<beta>\<close> \<nu> by (force simp: \<beta>_decomp)
-              qed auto
+              qed
+              then show False
+                using * [OF \<open>x \<in> A\<close> fun_g sm_g] by auto
             qed
             then have "\<exists>l. l \<le> p \<and> tp (M (elts \<beta>) \<AA> x \<inter> D l) < tp (D l)"
               using M_Int_D by auto
@@ -812,16 +789,16 @@ next
           qed
           have \<AA>D: "\<AA> \<in> D L \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
             using \<AA> D\<beta> by blast
+          have \<alpha>: "\<alpha> \<le> tp {x \<in> A''. tp (D L) \<le> tp (M (D L) \<AA> x)}"
+            using IX [OF D\<beta> A'' \<AA>D] by simp
           have "M (elts \<beta>) \<AA> x \<inter> D L = M (D L) \<AA> x" for x
             using D\<beta> by (auto simp: M_def)
           then have "tp (M (D L) \<AA> x) < tp (D L)" if "x \<in> A''" for x
             using lless that \<open>A'' \<subseteq> A'\<close> lL by force
-          then have \<dagger>: "{x \<in> A''. tp (D L) \<le> tp (M (D L) \<AA> x)} = {}"
+          then have [simp]: "{x \<in> A''. tp (D L) \<le> tp (M (D L) \<AA> x)} = {}"
             using leD by blast
-          have "\<alpha> \<le> tp {x \<in> A''. tp (D L) \<le> tp (M (D L) \<AA> x)}"
-            using IX [OF D\<beta> A'' \<AA>D] by simp
-          then show False
-            using "\<dagger>" \<open>1 < \<alpha>\<close> by force
+          show False
+            using \<alpha> \<open>\<alpha> \<ge> \<omega>\<close> by simp
         qed
         then show ?thesis
           by (meson Ord_linear2 Ord_ordertype \<open>Ord \<alpha>\<close>)
@@ -850,9 +827,12 @@ next
         by (auto simp: image_iff) (metis 11)
       have [simp]: "KI i {} = UNIV" "KI i (insert a X) = K i a \<inter> KI i X" for i a X
         by (auto simp: KI_def)
-      define \<Phi> where "\<Phi> \<equiv> \<lambda>n::nat. \<lambda>\<AA> x. (\<forall>\<nu> \<in> elts \<beta>. \<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>) \<and> tp (\<AA> \<nu>) = \<alpha>) \<and> x ` {..<n} \<subseteq> elts (\<alpha>*\<beta>)
-                                         \<and> (\<Union>\<nu> \<in> elts \<beta>. \<AA> \<nu>) \<subseteq> KI 1 (x ` {..<n}) \<and> strict_mono_sets (elts \<beta>) \<AA>"
-      define \<Psi> where "\<Psi> \<equiv> \<lambda>n::nat. \<lambda>g \<AA> \<AA>' xn. g \<in> elts \<beta> \<rightarrow> elts \<beta> \<and> strict_mono_on g (elts \<beta>) \<and> (\<forall>i\<le>n. g (\<mu> i) = \<mu> i)
+      define \<Phi> where "\<Phi> \<equiv> \<lambda>n::nat. \<lambda>\<AA> x. (\<forall>\<nu> \<in> elts \<beta>. \<AA> \<nu> \<subseteq> elts (\<alpha>*\<beta>) \<and> tp (\<AA> \<nu>) = \<alpha>)
+                                        \<and> x ` {..<n} \<subseteq> elts (\<alpha>*\<beta>)
+                                        \<and> (\<Union>\<nu> \<in> elts \<beta>. \<AA> \<nu>) \<subseteq> KI 1 (x ` {..<n}) 
+                                        \<and> strict_mono_sets (elts \<beta>) \<AA>"
+      define \<Psi> where "\<Psi> \<equiv> \<lambda>n::nat. \<lambda>g \<AA> \<AA>' xn. g \<in> elts \<beta> \<rightarrow> elts \<beta> \<and> strict_mono_on g (elts \<beta>)
+                  \<and> (\<forall>i\<le>n. g (\<mu> i) = \<mu> i)
                   \<and> (\<forall>\<nu> \<in> elts \<beta>. \<AA>' \<nu> \<subseteq> K 1 xn \<inter> \<AA> (g \<nu>))
                   \<and> {xn} \<lless> (\<AA>' (\<mu> n)) \<and> xn \<in> \<AA> (\<mu> n)"
       let ?\<AA>0 = "\<lambda>\<nu>. plus (\<alpha> * \<nu>) ` elts \<alpha>"
@@ -864,11 +844,9 @@ next
           and x: "x ` {..<n} \<subseteq> elts (\<alpha>*\<beta>)"
           and sub: "\<Union> (\<AA> ` elts \<beta>) \<subseteq> KI (Suc 0) (x ` {..<n})"
           and sm: "strict_mono_sets (elts \<beta>) \<AA>"
+          and \<mu>\<beta>: "\<mu> ` {..n} \<subseteq> elts \<beta>" and \<AA>sub: "\<AA> (\<mu> n) \<subseteq> elts (\<alpha>*\<beta>)"
+          and \<AA>fun: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
           using that by (auto simp: \<Phi>_def)
-        have \<mu>\<beta>: "\<mu> ` {..n} \<subseteq> elts \<beta>" and \<AA>sub: "\<AA> (\<mu> n) \<subseteq> elts (\<alpha>*\<beta>)"
-          by (auto simp: \<AA>)
-        have \<AA>fun: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
-          by (simp add: \<AA>)
         then obtain xn g where xn: "xn \<in> \<AA> (\<mu> n)" and g: "g \<in> elts \<beta> \<rightarrow> elts \<beta>"
           and sm_g: "strict_mono_on g (elts \<beta>)" and g_\<mu>: "\<forall>\<nu> \<in> \<mu>`{..n}. g \<nu> = \<nu>"
           and g_\<alpha>: "\<forall>\<nu> \<in> elts \<beta>. \<alpha> \<le> tp (K 1 xn \<inter> \<AA> (g \<nu>))"
@@ -876,10 +854,7 @@ next
         have tp1: "tp (K 1 xn \<inter> \<AA> (g \<nu>)) = \<alpha>" if "\<nu> \<in> elts \<beta>" for \<nu>
         proof (rule antisym)
           have "tp (K 1 xn \<inter> \<AA> (g \<nu>)) \<le> tp (\<AA> (g \<nu>))"
-          proof (rule ordertype_VWF_mono)
-            show "small (\<AA> (g \<nu>))"
-              by (metis PiE \<AA> down g that)
-          qed auto
+            by (metis Int_lower2 PiE \<AA> down g ordertype_VWF_mono that)
           also have "\<dots> = \<alpha>"
             using \<AA> g that by force
           finally show "tp (K 1 xn \<inter> \<AA> (g \<nu>)) \<le> \<alpha>" .
@@ -889,7 +864,7 @@ next
         obtain "small (\<AA> (\<mu> n))" "\<AA> (\<mu> n) \<subseteq> ON"
           by (meson \<AA>sub ord down elts_subset_ON subset_trans)
         then obtain A2 where A2: "tp A2 = \<alpha>" "A2 \<subseteq> K 1 xn \<inter> \<AA> (\<mu> n)" "{xn} \<lless> A2"
-          using indecomposable_imp_Ex_less_sets [OF indec \<open>\<alpha> > 1\<close> tp2]
+          using indecomposable_imp_Ex_less_sets [OF indec \<open>\<alpha> \<ge> \<omega>\<close> tp2]
           by (metis \<mu>_in_\<beta> atMost_iff image_eqI inf_le2 le_refl xn tp1 g_\<mu>)
         then have A2_sub: "A2 \<subseteq> \<AA> (\<mu> n)" by simp
         let ?\<AA> = "\<lambda>\<nu>. if \<nu> = \<mu> n then A2 else K 1 xn \<inter> \<AA> (g \<nu>)"
@@ -897,10 +872,8 @@ next
           by auto
         have "K (Suc 0) xn \<inter> (\<Union>x\<in>elts \<beta> \<inter> {\<nu>. \<nu> \<noteq> \<mu> n}. \<AA> (g x)) \<subseteq> KI (Suc 0) (x ` {..<n})"
           using sub g by (auto simp: KI_def)
-        moreover have "A2 \<subseteq> KI (Suc 0) (x ` {..<n})" "A2 \<subseteq> elts (\<alpha>*\<beta>)"
-          using \<AA>sub sub A2 by fastforce+
-        moreover have "xn \<in> elts (\<alpha>*\<beta>)"
-          using \<AA>sub xn by blast
+        moreover have "A2 \<subseteq> KI (Suc 0) (x ` {..<n})" "A2 \<subseteq> elts (\<alpha>*\<beta>)" "xn \<in> elts (\<alpha>*\<beta>)"
+          using \<AA>sub sub A2 xn by fastforce+
         moreover have "strict_mono_sets (elts \<beta>) ?\<AA>"
           using sm sm_g g g_\<mu> A2_sub
           unfolding strict_mono_sets_def strict_mono_on_def less_sets_def Pi_iff subset_iff Ball_def Bex_def image_iff
@@ -915,20 +888,12 @@ next
         and G\<Psi>: "(\<lambda>(g,\<AA>',x'). \<Psi> n g \<AA> \<AA>' (x' n)) (G n \<AA> x)"  if "\<Phi> n \<AA> x" for n \<AA> x
         using step [OF that] by (force simp: G_def dest: some_eq_imp)+
       define H where "H \<equiv> rec_nat (id,?\<AA>0,undefined) (\<lambda>n (g0,\<AA>,x0). G n \<AA> x0)"
-      have H_Suc: "H (Suc n) = (case H n of (g0, xa, xb) \<Rightarrow> G n xa xb)" for n
-        by (simp add: H_def)
       have "(\<lambda>(g,\<AA>,x). \<Phi> n \<AA> x) (H n)" for n
-      proof (induction n)
-        case 0 show ?case
-          by (simp add: H_def base)
-      next
-        case (Suc n) then show ?case
-          using G\<Phi> by (fastforce simp: H_Suc)
-      qed
+        unfolding H_def by (induction n) (use G\<Phi> base in fastforce)+
       then have H_imp_\<Phi>: "\<Phi> n \<AA> x" if "H n = (g,\<AA>,x)" for g \<AA> x n
         by (metis case_prodD that)
       then have H_imp_\<Psi>: "(\<lambda>(g,\<AA>',x'). let (g0,\<AA>,x) = H n in \<Psi> n g \<AA> \<AA>' (x' n)) (H (Suc n))" for n
-        using G\<Psi> by (fastforce simp: H_Suc split: prod.split)
+        using G\<Psi> by (fastforce simp: H_def split: prod.split)
       define g where "g \<equiv> \<lambda>n. (\<lambda>(g,\<AA>,x). g) (H (Suc n))"
       have g: "g n \<in> elts \<beta> \<rightarrow> elts \<beta>" and sm_g: "strict_mono_on (g n) (elts \<beta>)"
         and 13: "\<And>i. i\<le>n \<Longrightarrow> g n (\<mu> i) = \<mu> i" for n
@@ -998,36 +963,43 @@ next
           with less \<gg>_in_\<beta> show ?case
             by (simp add: \<gg> [of i]) (metis 17 Suc_lessI \<mu>_in_\<beta> order_refl order_trans x14)
         qed
-        have le: "\<gg> i j (\<mu> j) \<le> \<mu> i \<longleftrightarrow> \<mu> j \<le> \<mu> i" for i j
+        have le_iff: "\<gg> i j (\<mu> j) \<le> \<mu> i \<longleftrightarrow> \<mu> j \<le> \<mu> i" for i j
           using sm_\<gg> unfolding strict_mono_on_def
           by (metis "17" Ord_in_Ord Ord_linear2 \<mu>_in_\<beta> leD le_refl less_V_def \<open>Ord \<beta>\<close>)
-        then have less: "\<gg> i j (\<mu> j) < \<mu> i \<longleftrightarrow> \<mu> j < \<mu> i" for i j
+        then have less_iff: "\<gg> i j (\<mu> j) < \<mu> i \<longleftrightarrow> \<mu> j < \<mu> i" for i j
           by (metis (no_types, lifting) "17" \<mu>_in_\<beta> less_V_def order_refl sm_\<gg> strict_mono_on_def)
-        have eq: "\<gg> i j (\<mu> j) = \<mu> i \<longleftrightarrow> \<mu> j = \<mu> i" for i j
-          by (metis eq_refl le less less_le)
+        have eq_iff: "\<gg> i j (\<mu> j) = \<mu> i \<longleftrightarrow> \<mu> j = \<mu> i" for i j
+          by (metis eq_refl le_iff less_iff less_le)
+        have \<mu>_if_ne: "\<mu> m < \<mu> n" if mn: "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" "m \<noteq> n" for m n
+        proof -
+          have xmn: "x m < x n"
+            using "15" less_setsD that(1) by blast
+          have Ord\<gg>: "Ord (\<gg> n m (\<mu> m))"
+            using Ord_in_Ord \<gg>_in_\<beta> \<mu>_in_\<beta> ord(2) by presburger
+          have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n = \<mu> m"
+            using  "*" "15" eq_iff that unfolding less_sets_def
+            by (metis in_mono less_irrefl not_less_iff_gr_or_eq)
+          moreover
+          have "\<AA> n (\<mu> n) \<subseteq> \<AA> m (\<gg> m n (\<mu> n)) \<or> \<AA> m (\<mu> m) \<subseteq> \<AA> n (\<gg> n m (\<mu> m))"
+            using * mn
+            by (meson antisym_conv3)
+          then have False if "\<mu> n < \<mu> m"
+            using strict_mono_setsD [OF 12] 15 xmn \<gg>_in_\<beta> \<mu>_in_\<beta> that
+            by (smt (verit, best) Ord\<gg> Ord_\<mu> Ord_linear2 leD le_iff less_asym less_iff less_setsD subset_iff)
+          ultimately show "\<mu> m < \<mu> n"
+            by (meson that(1) Ord_\<mu> Ord_linear_lt)
+        qed
         have 18: "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n) \<longleftrightarrow> \<mu> m < \<mu> n" for m n
         proof (cases n m rule: linorder_cases)
           case less
           show ?thesis
           proof (intro iffI)
-            assume "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
-            moreover
-            have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n = \<mu> m"
-              by (metis "*" "15" eq less less_V_def less_sets_def less_sets_weaken2 that)
-            moreover
-            have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n < \<mu> m"
-              using that 12 15 * [OF less]
-              apply (clarsimp simp: less_sets_def strict_mono_sets_def)
-              by (metis Ord_in_Ord Ord_linear2 \<gg>_in_\<beta> \<mu>_in_\<beta> \<open>Ord \<beta>\<close> le leD less_asym subsetD)
-            ultimately show "\<mu> m < \<mu> n"
-              by (meson Ord_in_Ord Ord_linear_lt \<mu>_in_\<beta> \<open>Ord \<beta>\<close>)
-          next
             assume "\<mu> m < \<mu> n"
             then have "\<AA> n (\<gg> n m (\<mu> m)) \<lless> \<AA> n (\<mu> n)"
-              by (metis "12" \<gg>_in_\<beta> \<mu>_in_\<beta> eq le less_V_def strict_mono_sets_def)
+              by (metis "12" \<gg>_in_\<beta> \<mu>_in_\<beta> eq_iff le_iff less_V_def strict_mono_sets_def)
             then show "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
-              by (meson *[OF less] less_sets_weaken1)
-          qed
+              by (meson "*" less less_sets_weaken1)
+          qed (use \<mu>_if_ne less in blast)
         next
           case equal
           with 15 show ?thesis by auto
@@ -1035,24 +1007,12 @@ next
           case greater
           show ?thesis
           proof (intro iffI)
-            assume "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
-            moreover
-            have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n = \<mu> m"
-              by (metis "*" "15" disjnt_iff eq greater in_mono less_sets_imp_disjnt that)
-            moreover
-            have "\<not> \<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)" if "\<mu> n < \<mu> m"
-              using that 12 15 * [OF greater]
-              apply (clarsimp simp: less_sets_def strict_mono_sets_def)
-              by (meson \<gg>_in_\<beta> \<mu>_in_\<beta> in_mono less less_asym)
-            ultimately show "\<mu> m < \<mu> n"
-              by (meson Ord_\<mu> Ord_linear_lt)
-          next
             assume "\<mu> m < \<mu> n"
             then have "\<AA> m (\<mu> m) \<lless> (\<AA> m (\<gg> m n (\<mu> n)))"
-              by (meson 12 Ord_in_Ord Ord_linear2 \<gg>_in_\<beta> \<mu>_in_\<beta> le leD ord(2) strict_mono_sets_def)
+              by (meson 12 Ord_in_Ord Ord_linear2 \<gg>_in_\<beta> \<mu>_in_\<beta> le_iff leD ord(2) strict_mono_sets_def)
             then show "\<AA> m (\<mu> m) \<lless> \<AA> n (\<mu> n)"
               by (meson "*" greater less_sets_weaken2)
-          qed
+          qed (use \<mu>_if_ne greater in blast)
         qed
         have \<AA>_increasing_\<mu>: "\<AA> n (\<mu> n) \<subseteq> \<AA> m (\<mu> m)" if "m \<le> n" "\<mu> m = \<mu> n" for m n
           by (metis "*" "17" dual_order.order_iff_strict that)
@@ -1077,7 +1037,7 @@ next
           fix n p
           assume "m \<le> n" "\<mu> p = \<mu> n" "\<mu> m = \<mu> n" "n < p"
           with 16 [of n] show "x n < x p"
-            by (simp add: less_sets_def) (metis "*" "15" "17" Suc_lessI le_SucI subsetD)
+            by (metis "*" "15" "17" Suc_lessI insert_absorb insert_subset le_SucI less_sets_singleton1)
         qed
         then have inj_x: "inj_on x (?eqv m)" for m
           using strict_mono_on_imp_inj_on by blast
@@ -1164,8 +1124,7 @@ next
                 by (simp add: \<pi>_def less_sets_def)
             qed
             then show "(\<pi> u, \<pi> v) \<in> VWF"
-              using \<pi>_Pi
-              by (metis Ord_\<pi>_Pi PiE VWF_iff_Ord_less x y mem_Collect_eq)
+              using \<pi>_Pi by (metis Ord_\<pi>_Pi PiE VWF_iff_Ord_less x y mem_Collect_eq)
           qed (use \<dagger> in auto)
           ultimately show ?thesis by simp
         qed
@@ -1260,11 +1219,9 @@ next
     by auto
   have PV: "partn_lst_VWF (\<omega> \<up> (1 + ord_of_nat (n-1) * ord_of_nat (k-1))) [ord_of_nat (2 ^ (k-1)), \<omega> \<up> (1 + ord_of_nat (n-1))] 2"
     using Erdos_Milner [of "ord_of_nat (n-1)" "k-1"] Ord_\<omega>1 Ord_mem_iff_lt less_imp_le by blast
-  have "k+n \<le> Suc (Suc(k-1) * Suc(n-1))"
-    by simp
-  also have "\<dots> \<le> Suc (k * n)"
-    using False by auto
-  finally have "1 + (n - 1) * (k - 1) \<le> n*k"
+  have "k+n \<le> Suc (k * n)"
+    using False not0_implies_Suc by fastforce
+  then have "1 + (n - 1) * (k - 1) \<le> n*k"
     using False by (auto simp: algebra_simps)
   then have "(1 + ord_of_nat (n - 1) * ord_of_nat (k - 1)) \<le> ord_of_nat(n*k)"
     by (metis (mono_tags, lifting) One_nat_def one_V_def ord_of_nat.simps ord_of_nat_add ord_of_nat_mono_iff ord_of_nat_mult)
