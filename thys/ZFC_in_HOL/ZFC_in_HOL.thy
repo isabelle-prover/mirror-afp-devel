@@ -789,6 +789,9 @@ proof -
     using assms by (metis Ord_linear2 Sup_least Sup_upper eq_iff mem_Collect_eq subsetD succ_le_iff)
 qed
 
+lemma in_succ_iff: "Ord i \<Longrightarrow> j \<in> elts (ZFC_in_HOL.succ i) \<longleftrightarrow> Ord j \<and> j \<le> i"
+  by (metis Ord_in_Ord Ord_mem_iff_lt Ord_not_le Ord_succ succ_le_iff)
+
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<in> elts (succ i)"
   using mem_0_Ord by auto
 
