@@ -13,6 +13,29 @@ imports
   "HOL-Real_Asymp.Real_Asymp"
 begin
 
+lemma poly_asymp_equiv: "(\<lambda>x. poly p (real x)) \<sim>[at_top] (\<lambda>x. lead_coeff p * real x ^ (degree p))" 
+proof (cases "degree p = 0")
+  case False
+  hence lc: "lead_coeff p \<noteq> 0" by auto
+  have 1: "1 = (\<Sum>n\<le>degree p. if n = degree p then (1 :: real) else 0)" by simp
+  from False show ?thesis
+  proof (intro asymp_equivI', unfold poly_altdef sum_divide_distrib, 
+      subst 1, intro tendsto_sum, goal_cases)
+    case (1 n)
+    hence "n = degree p \<or> n < degree p" by auto
+    thus ?case 
+    proof
+      assume "n = degree p" 
+      thus ?thesis using False lc
+        by (simp, intro LIMSEQ_I exI[of _ "Suc 0"], auto)
+    qed (insert False lc, real_asymp)
+  qed
+next
+  case True
+  then obtain c where p: "p = [:c:]" by (metis degree_eq_zeroE)
+  show ?thesis unfolding p by simp
+qed
+
 lemma sum_root_unity: fixes x :: "'a :: {comm_ring,division_ring}" 
   assumes "x^n = 1" 
   shows "sum (\<lambda> i. x^i) {..< n} = (if x = 1 then of_nat n else 0)" 
@@ -227,11 +250,7 @@ definition p :: "nat \<Rightarrow> real poly" where
 lemma p_binom: assumes sk: "s \<le> k" 
   shows "of_nat (k choose s) = poly (p s) (of_nat k)" 
   unfolding binomial_altdef_of_nat[OF assms] p_def poly_prod
-proof (rule prod.cong[OF refl], clarsimp, goal_cases)
-  case (1 i)
-  with sk have "of_nat (k - i) = (of_nat k - of_nat i :: real)" by auto
-  thus ?case using 1 by (auto simp: field_simps)
-qed
+  by (rule prod.cong[OF refl], insert sk, auto simp: field_simps)
 
 lemma p_binom_complex: assumes sk: "s \<le> k" 
   shows "of_nat (k choose s) = complex_of_real (poly (p s) (of_nat k))" 
@@ -359,6 +378,7 @@ proof -
   define e2 where "e2 = ?e2" 
   let ?e3 = "\<lambda> N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1)) * cmod la ^ (N + i - j)" 
   define e3 where "e3 = ?e3" 
+  define e3' where "e3' = (\<lambda> N. (lead_coeff (p ji) * (?r N) ^ ji) / (c * ?r N ^ (m - 1)) * cmod la ^ (N + i - j))" 
   {
     assume ij': "i \<le> j" and la0: "la \<noteq> 0" 
     {
@@ -372,21 +392,24 @@ proof -
       have "?jbc N = e2 N" 
         unfolding id e2_def ji_def using c_gt_0 by (simp add: norm_mult norm_divide norm_power) 
     } note jbc = this
-    {
-      fix n
+    have cmod_e2_e3: "(\<lambda> n. cmod (e2 n)) \<sim>[at_top] e3" 
+    proof (intro asymp_equivI LIMSEQ_I exI[of _ ji] allI impI)
+      fix n r
       assume n: "n \<ge> ji" 
       have "cmod (e2 n) = \<bar>poly (p ji) (?r n) / (c * ?r n ^ (m - 1))\<bar> * cmod la ^ (n + i - j)"
         unfolding e2_def norm_mult norm_power norm_of_real by simp
       also have "\<bar>poly (p ji) (?r n) / (c * ?r n ^ (m - 1))\<bar> = poly (p ji) (?r n) / (c * real n ^ (m - 1))" 
         by (intro abs_of_nonneg divide_nonneg_nonneg mult_nonneg_nonneg, insert c_gt_0, auto simp: p_binom[OF n, symmetric])
       finally have "cmod (e2 n) = e3 n" unfolding e3_def by auto
-    } note cmod_e2 = this
+      thus "r > 0 \<Longrightarrow> norm ((if cmod (e2 n) = 0 \<and> e3 n = 0 then 1 else cmod (e2 n) / e3 n) - 1) < r" by simp
+    qed
+    have e3': "e3 \<sim>[at_top] e3'" unfolding e3_def e3'_def
+      by (intro asymp_equiv_intros, insert poly_asymp_equiv[of "p ji"], unfold deg_p)    
     {
-      assume e3: "e3 \<longlonglongrightarrow> 0" 
-      have e2_e3: "\<forall>\<^sub>F x in sequentially. cmod (e2 x) = e3 x" 
-        by (rule eventually_sequentiallyI[of "Suc ji"], insert cmod_e2, auto)
+      assume "e3' \<longlonglongrightarrow> 0" 
+      hence e3: "e3 \<longlonglongrightarrow> 0" using e3' by (meson tendsto_asymp_equiv_cong)
       have "e2 \<longlonglongrightarrow> 0" 
-        by (subst tendsto_norm_zero_iff[symmetric], subst tendsto_cong[OF e2_e3], rule e3)
+        by (subst tendsto_norm_zero_iff[symmetric], subst tendsto_asymp_equiv_cong[OF cmod_e2_e3], rule e3) 
     } note e2_via_e3 = this
 
     have "(e2 o f off) \<longlonglongrightarrow> e" 
@@ -409,27 +432,14 @@ proof -
         from small have d: "0 < d" "d < 1" unfolding d_def by auto
         have e0: "e = 0" using small unfolding e_def by auto
         show ?thesis unfolding e0
-        proof (intro e2_via_e3, unfold e3_def d_def[symmetric])
-          show "(\<lambda>N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1)) * d ^ (N + i - j)) \<longlonglongrightarrow> 0" 
-            unfolding poly_altdef sum_divide_distrib sum_distrib_right
-            by (intro tendsto_null_sum, insert d c0, real_asymp)
-        qed
+          by (intro e2_via_e3, unfold e3'_def d_def[symmetric], insert d c0, real_asymp)
       next
         case medium
         with max_block[OF kla] have "k \<le> m" by auto
         with ij medium have ji: "ji < m - 1" unfolding ji_def by linarith
         have e0: "e = 0" using medium unfolding e_def by auto
         show ?thesis unfolding e0
-        proof (intro e2_via_e3, unfold e3_def medium power_one mult_1_right)
-          show "(\<lambda>N. poly (p ji) (?r N) / (c * ?r N ^ (m - 1))) \<longlonglongrightarrow> 0"
-            unfolding poly_altdef sum_divide_distrib
-          proof (intro tendsto_null_sum, goal_cases)
-            case (1 deg)
-            from deg_p ji have "degree (p ji) < m - 1" by auto
-            with 1 have "deg < m - 1" by auto
-            thus ?case using c0 by real_asymp
-          qed
-        qed
+          by (intro e2_via_e3, unfold e3'_def medium power_one mult_1_right, insert ji c0, real_asymp)
       qed
       show "(e2 o f off) \<longlonglongrightarrow> e"
         by (rule LIMSEQ_subseq_LIMSEQ[OF main mono_f])
@@ -462,17 +472,13 @@ proof -
           have deg_q: "degree q \<le> m1" unfolding q_def using deg_p[of m1] 
             by (intro degree_diff_le degree_monom_le, auto)
           have coeff_q_m1: "coeff q m1 = 0" unfolding q_def c_def m1_def[symmetric] using deg_p[of m1] by simp
-          from deg_q coeff_q_m1 have "degree q < m1 \<or> q = 0" by fastforce
-          thus "(\<lambda>n. poly q (?r n) / (c * ?r n ^ m1)) \<longlonglongrightarrow> 0" 
-          proof
-            assume "degree q < m1" 
-            thus ?thesis unfolding poly_altdef sum_divide_distrib 
-            proof (intro tendsto_null_sum, goal_cases)
-              case (1 i)
-              hence "i < m1" by auto
-              thus ?case using c0 by real_asymp
-            qed
-          qed auto
+          from deg_q coeff_q_m1 have deg: "degree q < m1 \<or> q = 0" by fastforce
+          have eq: "(\<lambda>n. poly q (real n) / (c * real n ^ m1)) \<sim>[at_top] 
+                    (\<lambda>n. lead_coeff q * real n ^ degree q / (c * real n ^ m1))"
+            by (intro asymp_equiv_intros poly_asymp_equiv)
+          show "(\<lambda>n. poly q (?r n) / (c * ?r n ^ m1)) \<longlonglongrightarrow> 0" 
+            unfolding tendsto_asymp_equiv_cong[OF eq] using deg
+            by (standard, insert c0, real_asymp, simp)
         qed
       next  
         have id: "D * x + (m - 1) + off + i - j = D * x + off" for x
