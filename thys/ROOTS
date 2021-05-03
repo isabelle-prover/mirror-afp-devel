@@ -463,6 +463,7 @@ Refine_Imperative_HOL
 Refine_Monadic
 RefinementReactive
 Regex_Equivalence
+Regression_Test_Selection
 Regular-Sets
 Regular_Algebras
 Relation_Algebra

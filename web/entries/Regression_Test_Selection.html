@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>JinjaDCI: a Java semantics with dynamic class initialization - Archive of Formal Proofs
+<title>Regression Test Selection - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,21 +74,11 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">J</font>injaDCI:
+  <h1>          <font class="first">R</font>egression
   
-          a
+          <font class="first">T</font>est
   
-          <font class="first">J</font>ava
-  
-          semantics
-  
-          with
-  
-          dynamic
-  
-          class
-  
-          initialization
+          <font class="first">S</font>election
   
 </h1>
   <p>&nbsp;</p>
@@ -97,7 +87,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">JinjaDCI: a Java semantics with dynamic class initialization</td>
+  <td class="data" width="80%">Regression Test Selection</td>
 </tr>
 
 <tr>
@@ -113,30 +103,37 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-01-11</td>
+  <td class="data">2021-04-30</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We extend Jinja to include static fields, methods, and instructions,
-and dynamic class initialization, based on the Java SE 8
-specification. This includes extension of definitions and proofs. This
-work is partially described in Mansky and Gunter's paper at CPP
-2019 and Mansky's doctoral thesis (UIUC, 2020).</td>
+This development provides a general definition for safe Regression
+Test Selection (RTS) algorithms. RTS algorithms select which tests to
+rerun on revised code, reducing the time required to check for newly
+introduced errors. An RTS algorithm is considered safe if and only if
+all deselected tests would have unchanged results.  This definition is
+instantiated with two class-collection-based RTS algorithms run over
+the JVM as modeled by JinjaDCI. This is achieved with a general
+definition for Collection Semantics, small-step semantics instrumented
+to collect information during execution. As the RTS definition
+mandates safety, these instantiations include proofs of safety.  This
+work is described in Mansky and Gunter's LSFA 2020 paper and
+Mansky's doctoral thesis (UIUC, 2020).</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{JinjaDCI-AFP,
+        <pre>@article{Regression_Test_Selection-AFP,
   author  = {Susannah Mansky},
-  title   = {JinjaDCI: a Java semantics with dynamic class initialization},
+  title   = {Regression Test Selection},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = apr,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/JinjaDCI.html},
+  note    = {\url{https://isa-afp.org/entries/Regression_Test_Selection.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -148,11 +145,9 @@ work is partially described in Mansky and Gunter's paper at CPP
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Jinja.html">Jinja</a>, <a href="List-Index.html">List-Index</a>      </td></tr>
+          <td class="data"><a href="JinjaDCI.html">JinjaDCI</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Regression_Test_Selection.html">Regression_Test_Selection</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -164,29 +159,23 @@ work is partially described in Mansky and Gunter's paper at CPP
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/JinjaDCI/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/JinjaDCI/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Regression_Test_Selection/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Regression_Test_Selection/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/JinjaDCI/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Regression_Test_Selection/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-JinjaDCI-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Regression_Test_Selection-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-JinjaDCI-2021-01-13.tar.gz">
-              afp-JinjaDCI-2021-01-13.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

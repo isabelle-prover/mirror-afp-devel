@@ -10543,3 +10543,24 @@ abstract =
   integration of generated code with the Isabelle system without a
   complicated translation layer.  The formalization is described in our
   <a href="https://arxiv.org/pdf/2104.12224.pdf">CADE 28 paper</a>.
+
+[Regression_Test_Selection]
+title = Regression Test Selection
+author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
+topic = Computer science/Algorithms
+date = 2021-04-30
+notify = sjohnsn2@illinois.edu, susannahej@gmail.com
+abstract = 
+  This development provides a general definition for safe Regression
+  Test Selection (RTS) algorithms. RTS algorithms select which tests to
+  rerun on revised code, reducing the time required to check for newly
+  introduced errors. An RTS algorithm is considered safe if and only if
+  all deselected tests would have unchanged results.  This definition is
+  instantiated with two class-collection-based RTS algorithms run over
+  the JVM as modeled by JinjaDCI. This is achieved with a general
+  definition for Collection Semantics, small-step semantics instrumented
+  to collect information during execution. As the RTS definition
+  mandates safety, these instantiations include proofs of safety.  This
+  work is described in Mansky and Gunter's LSFA 2020 paper and
+  Mansky's doctoral thesis (UIUC, 2020).
+

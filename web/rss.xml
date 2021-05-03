@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Apr 2021 00:00:00 +0000</pubDate>
+    <pubDate>30 Apr 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Regression Test Selection</title>
+              <link>https://www.isa-afp.org/entries/Regression_Test_Selection.html</link>
+       <guid>https://www.isa-afp.org/entries/Regression_Test_Selection.html</guid>
+       <dc:creator> Susannah Mansky       </dc:creator>
+       <pubDate>30 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+This development provides a general definition for safe Regression
+Test Selection (RTS) algorithms. RTS algorithms select which tests to
+rerun on revised code, reducing the time required to check for newly
+introduced errors. An RTS algorithm is considered safe if and only if
+all deselected tests would have unchanged results.  This definition is
+instantiated with two class-collection-based RTS algorithms run over
+the JVM as modeled by JinjaDCI. This is achieved with a general
+definition for Collection Semantics, small-step semantics instrumented
+to collect information during execution. As the RTS definition
+mandates safety, these instantiations include proofs of safety.  This
+work is described in Mansky and Gunter&#39;s LSFA 2020 paper and
+Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
+    </item>
     <item>
        <title>Isabelle's Metalogic: Formalization and Proof Checker</title>
               <link>https://www.isa-afp.org/entries/Metalogic_ProofChecker.html</link>
@@ -561,17 +581,6 @@ construction is validated by a test-set of known equivalences between
 both quantities and SI units. Moreover, the presented theory can be
 used for type-safe conversions between the SI system and others, like
 the British Imperial System (BIS).</description>
-    </item>
-    <item>
-       <title>Finite Map Extras</title>
-              <link>https://www.isa-afp.org/entries/Finite-Map-Extras.html</link>
-       <guid>https://www.isa-afp.org/entries/Finite-Map-Extras.html</guid>
-       <dc:creator> Javier Díaz       </dc:creator>
-       <pubDate>12 Oct 2020 00:00:00 +0000</pubDate>
-       <description>
-This entry includes useful syntactic sugar, new operators and functions, and
-their associated lemmas for finite maps which currently are not
-present in the standard Finite_Map theory.</description>
     </item>
   </channel>
 </rss>
