@@ -1551,18 +1551,6 @@ qed
 
 subsection \<open>Larson's Lemma 3.7\<close>
 
-lemma 1: "\<lbrakk>A \<lless> B; B \<lless> C; B \<noteq> {}\<rbrakk> \<Longrightarrow> A \<lless> B \<union> C"
-  using less_sets_Un2 less_sets_trans by blast
-
-lemma 2: "\<lbrakk>A \<lless> B; B \<lless> C; B \<noteq> {}\<rbrakk> \<Longrightarrow> A \<union> B \<lless> C"
-  using less_sets_Un1 less_sets_trans by blast
-
-lemma 3: "\<lbrakk>A \<lless> {b}; {b} \<lless> B\<rbrakk> \<Longrightarrow> A \<lless> insert b B"
-  using less_sets_def by fastforce
-
-lemma 4: "\<lbrakk>A \<lless> {b}; {b} \<lless> B\<rbrakk> \<Longrightarrow> insert b A \<lless> B"
-  using less_sets_def by fastforce
-
 subsubsection \<open>Preliminaries\<close>
 
 text \<open>Analogous to @{thm [source] ordered_nsets_2_eq}, but without type classes\<close>
@@ -2469,12 +2457,8 @@ lemma pair_less_prev:
   shows "prev j i = Some u \<or> (\<exists>x. (u, x) \<in> pair_less \<and> prev j i = Some x)"
 proof (cases "prev j i")
   case None
-  show ?thesis
-  proof (cases u)
-    case (Pair j' i')
-    then show ?thesis
-    using assms None by (simp add: prev_eq_None_iff pair_less_def IJ_def)
-  qed
+  then show ?thesis
+    using assms by (force simp: prev_eq_None_iff pair_less_def IJ_def split: prod.split)
 next
   case (Some a)
   then show ?thesis
@@ -2482,11 +2466,10 @@ next
 qed
 
 
-
 subsubsection \<open>Special primitives for the ordertype proof\<close>
 
 definition USigma :: "'a set set \<Rightarrow> ('a set \<Rightarrow> 'a set) \<Rightarrow> 'a set set"
-  where "USigma \<A> B \<equiv> \<Union>X\<in>\<A>. \<Union>y\<in>B X. {insert y X}"
+  where "USigma \<A> B \<equiv> \<Union>X\<in>\<A>. \<Union>y \<in> B X. {insert y X}"
 
 definition usplit
   where "usplit f A \<equiv> f (A - {Max A}) (Max A)"
@@ -2496,26 +2479,24 @@ lemma USigma_empty [simp]: "USigma {} B = {}"
 
 lemma USigma_iff:
   assumes "\<And>I j. I \<in> \<I> \<Longrightarrow> I \<lless> J I \<and> finite I"
-  shows "x \<in> USigma \<I> J \<longleftrightarrow> usplit (\<lambda>I j. I\<in>\<I> \<and> j\<in>J I \<and> x = insert j I) x"
+  shows "x \<in> USigma \<I> J \<longleftrightarrow> usplit (\<lambda>I j. I \<in> \<I> \<and> j \<in> J I \<and> x = insert j I) x"
 proof -
   have [simp]: "\<And>I j. \<lbrakk>I \<in> \<I>; j \<in> J I\<rbrakk> \<Longrightarrow> Max (insert j I) = j"
     by (meson Max_insert2 assms less_imp_le less_sets_def)
   show ?thesis
   proof -
-    have "I - {j} \<in> \<I>" if "I \<in> \<I>" "j \<in> J I" for I j
-      using that by (metis Diff_empty Diff_insert0 assms less_irrefl less_sets_def)
-    moreover have "j \<in> J (I - {j})" if "I \<in> \<I>" "j \<in> J I" for I j
-      using that by (metis Diff_empty Diff_insert0 assms less_irrefl less_setsD)
-    moreover have "\<exists>I\<in>\<I>. \<exists>j\<in>J I. x = insert j I"
+    have \<section>: "j \<notin> I" if "I \<in> \<I>" "j \<in> J I" for I j
+      using that by (metis assms less_irrefl less_sets_def)
+    have "\<exists>I\<in>\<I>. \<exists>j\<in>J I. x = insert j I"
       if "x - {Max x} \<in> \<I>" and "Max x \<in> J (x - {Max x})" "x \<noteq> {}"
       using that by (metis Max_in assms infinite_remove insert_Diff)
-    ultimately show ?thesis
-      by (auto simp: USigma_def usplit_def)
+    then show ?thesis
+      by (auto simp: USigma_def usplit_def \<section>)
   qed
 qed
 
 
-lemma ordertype_append_image_IJ:
+proposition ordertype_append_image_IJ:
   assumes lenB [simp]: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> length (B j) = c"
     and AB: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> A i < B j"
     and IJ: "\<And>i. i \<in> \<I> \<Longrightarrow> i \<lless> J i \<and> finite i"
@@ -2525,7 +2506,6 @@ lemma ordertype_append_image_IJ:
        = \<beta> * ordertype (A ` \<I>) (lenlex less_than)"
     (is "ordertype ?AB ?R = _ * ?\<alpha>")
 proof (cases "\<I> = {}")
-next
   case False
   have "Ord \<beta>"
     using \<beta> False wf_Ord_ordertype by fastforce
@@ -2568,7 +2548,7 @@ next
         show "f ` ?AB \<subseteq> elts (\<beta> * ?\<alpha>)"
           using \<open>Ord \<beta>\<close>
           apply (clarsimp simp add: f_def split_def USigma_iff IJ usplit_def)
-          by (metis Ord_mem_iff_less_TC TC_small add_mult_less image_eqI oB ordermap_in_ordertype trans_llt wf_Ord_ordertype wf_llt)
+          by (metis TC_small \<beta> add_mult_less image_eqI ordermap_in_ordertype trans_llt wf_Ord_ordertype wf_llt)
         show "elts (\<beta> * ?\<alpha>) \<subseteq> f ` ?AB"
         proof (clarsimp simp: f_def split_def image_iff USigma_iff IJ usplit_def Bex_def elim!: elts_multE split: prod.split)
           fix \<gamma> \<delta>
@@ -2585,10 +2565,8 @@ next
             by (meson IJ Max_insert2 \<open>i \<in> \<I>\<close> less_imp_le less_sets_def)
           have [simp]: "i - {j} = i"
             using IJ \<open>i \<in> \<I>\<close> \<open>j \<in> J i\<close> less_setsD by fastforce
-          show
-            "\<exists>l. (\<exists>K. K - {Max K} \<in> \<I> \<and> Max K \<in> J (K - {Max K}) \<and>
-                          K = insert (Max K) K \<and>
-                          l = A (K - {Max K}) @ B (Max K)) \<and> \<beta> * \<gamma> + \<delta> =
+          show "\<exists>l. (\<exists>K. K - {Max K} \<in> \<I> \<and> Max K \<in> J (K - {Max K}) \<and> K = insert (Max K) K \<and>
+                         l = A (K - {Max K}) @ B (Max K)) \<and> \<beta> * \<gamma> + \<delta> =
                     \<beta> *
                     ordermap (A ` \<I>) ?R (take (length l - c) l) +
                     ordermap (B ` J (inv_into \<I> A (take (length l - c) l)))
@@ -2625,8 +2603,7 @@ next
         proof cases
           case 1
           then have "(A ?mx, A ?my) \<in> ?R"
-            using x y
-            by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
+            using x y by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
           then show ?thesis
             using x y mx my lenB lenlex_append1 by blast
         next
@@ -2636,8 +2613,7 @@ next
           then have eq: "?mx = ?my"
             by (metis \<open>?my \<in> \<I>\<close> \<open>?mx \<in> \<I>\<close> inv_into_IA)
           then have "(B (Max x), B (Max y)) \<in> ?R"
-            using mx my  2
-            by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
+            using mx my 2 by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
           with 2 show ?thesis
             by (simp add: eq irrefl_less_than)
         qed
@@ -2658,7 +2634,7 @@ next
             using "\<section>" irrefl_less_than that(2) by auto
         qed (use that in blast)
         then have "\<beta> * ordermap (A`\<I>) ?R (A ?mx) + ordermap (B`J ?mx) ?R (B (Max x))
-               < \<beta> * ordermap (A`\<I>) ?R (A ?my) + ordermap (B`J ?my) ?R (B (Max y))"
+                 < \<beta> * ordermap (A`\<I>) ?R (A ?my) + ordermap (B`J ?my) ?R (B (Max y))"
         proof cases
           case 1
           show ?thesis
@@ -2666,7 +2642,7 @@ next
             show "ordermap (A`\<I>) (lenlex less_than) (A ?mx) < ordermap (A`\<I>) (lenlex less_than) (A ?my)"
               by (simp add: "1" \<open>?my \<in> \<I>\<close> \<open>?mx \<in> \<I>\<close> ordermap_mono_less)
             show "Ord (ordertype (A`\<I>) ?R)"
-              using wf_Ord_ordertype by blast+
+              using wf_Ord_ordertype by blast
             show "ordermap (B ` J ?mx) ?R (B (Max x)) \<in> elts \<beta>"
               using Ord_less_TC_mem \<open>Ord \<beta>\<close> \<open>?mx \<in> \<I>\<close> \<open>(Max x) \<in> J ?mx\<close> oB by blast
             show "ordermap (B ` J ?my) ?R (B (Max y)) \<in> elts \<beta>"
@@ -2736,7 +2712,7 @@ lemma merge_length_less2:
 proof induction
 case (App as1 bs1 as2 bs2 as bs)
   then show ?case
-    by simp (metis One_nat_def Suc_eq_plus1 Suc_leI add.commute add_mono length_greater_0_conv)
+    using length_greater_0_conv [of as1] by (simp, presburger)
 qed auto
 
 lemma merge_preserves:
@@ -2751,12 +2727,11 @@ lemma merge_interact:
   using assms
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
-  then have "concat bs1 < concat bs" "concat bs1 < concat as" and xx: "concat bs1 \<noteq> []"
+  then have bs: "concat bs1 < concat bs" "concat bs1 < concat as" and xx: "concat bs1 \<noteq> []"
     using merge_preserves strict_sorted_append_iff by fastforce+
   then have "concat bs1 < interact as bs"
-    using App
-    apply (simp add: less_list_def del: concat_eq_Nil_conv)
-    by (metis (full_types) Un_iff \<open>concat bs1 < concat as\<close> \<open>concat bs1 < concat bs\<close> last_in_set list.set_sel(1) set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_interact_imp_concat strict_sorted_sorted_wrt xx)
+    unfolding less_list_def using App bs
+    by (metis (no_types, lifting) Un_iff concat_append hd_in_set last_in_set merge_preserves set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
   with App show ?case
     apply (simp add: strict_sorted_append_iff del: concat_eq_Nil_conv)
     by (metis hd_append2 less_list_def xx)
@@ -2801,12 +2776,12 @@ lemma merge_less_sets_hd:
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
   then have \<section>: "list.set (concat bs1) \<lless> list.set (concat bs2)"
-    by (force simp: dest: strict_sorted_imp_less_sets)+
+    by (force simp: dest: strict_sorted_imp_less_sets)
   have *: "list.set (concat as1) \<lless> list.set (concat bs1)"
     using App by (metis concat_append strict_sorted_append_iff strict_sorted_imp_less_sets)
   then have "list.set (concat as1) \<lless> list.set (concat bs)"
     using App \<section> less_sets_trans merge_preserves
-    by (metis List.set_empty append_in_lists_conv le_zero_eq length_concat_ge length_greater_0_conv list.size(3))
+    by (metis List.set_empty append_in_lists_conv le_zero_eq length_0_conv length_concat_ge)
   with * App.hyps show ?case
     by (fastforce simp: less_sets_UN1 less_sets_UN2 less_sets_Un2)
 qed auto
@@ -2817,7 +2792,7 @@ lemma set_takeWhile:
   using assms
 proof (induction as)
   case (Cons a as)
-  have *: "a < y"
+  have "a < y"
     if a: "a < concat as" "strict_sorted a" "strict_sorted (concat as)" "x < y" "x \<noteq> []" "x \<in> list.set as"
     for x
   proof -
@@ -2878,9 +2853,9 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
       moreover have "sorted (hd bs)"
         by (metis concat.simps(2) hd_Cons_tl less.prems(2) less.prems(7) strict_sorted_append_iff strict_sorted_imp_sorted)
       ultimately show ?thesis
-        using that
-       apply (clarsimp simp add: as1_def less.prems set_takeWhile less_list_iff_less_sets less_sets_def)
-        by (smt UN_I dual_order.strict_trans2 hd_concat less.prems(2) less.prems(4) less.prems(7) list.set_sel(1) mem_lists_non_Nil not_le set_concat sorted_hd_le strict_sorted_imp_sorted)
+        using that less.prems
+       apply (clarsimp simp add: as1_def set_takeWhile less_list_iff_less_sets less_sets_def)
+        by (metis (full_types) UN_I hd_concat less_le_trans list.set_sel(1) set_concat sorted_hd_le strict_sorted_imp_sorted)
     qed
     show "as = as1@as2"
       by (simp add: as1_def as2_def)
@@ -2899,7 +2874,7 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
         apply (clarsimp simp add: less_sets_def less_list_def)
         apply (auto simp: as2_def)
         apply (simp flip: as2_def)
-        by (metis UN_I \<open>as = as1 @ as2\<close> concat.simps(2) concat_append dual_order.strict_trans2 hd_concat in_set_conv_decomp_last not_le set_concat sorted_hd_le sorted_le_last sorted_sorted_wrt sorted_wrt_append strict_sorted_imp_sorted that)
+        by (smt (verit, ccfv_SIG) UN_I \<open>as = as1 @ as2\<close> concat.simps(2) concat_append hd_concat in_set_conv_decomp_first le_less_trans less_le_trans set_concat sorted_append sorted_hd_le sorted_le_last strict_sorted_imp_sorted that)
     qed
     then show "concat bs1 < concat as2"
       by (simp add: bs1_def less_sets_imp_list_less)
@@ -2945,7 +2920,7 @@ proof -
                   in  grab R (q j i))" for M q j i
     by (subst (1) bf_def) (simp add: Let_def wfrec bf_def cut_apply prev_pair_less cong: conj_cong split: option.split)
 
-  have infinite_bf [simp]: "infinite (snd (bf M q u)) = infinite M" for M q u
+  have "infinite (snd (bf M q u)) = infinite M \<and> fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
     using wf_pair_less
   proof (induction u rule: wf_induct_rule)
     case (less u)
@@ -2953,9 +2928,13 @@ proof -
     proof (cases u)
       case (Pair j i)
       with less.IH prev_pair_less show ?thesis
-        by (auto simp: bf_rec [of M q j i] split: option.split)
+        apply (simp add: bf_rec [of M q j i] split: option.split)
+        using fst_grab_subset snd_grab_subset by blast
     qed
   qed
+  then have infinite_bf [simp]: "infinite (snd (bf M q u)) = infinite M"
+       and  bf_subset: "fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
+    by auto
 
   have bf_less_sets: "fst (bf M q ij) \<lless> snd (bf M q ij)" if "infinite M" for M q ij
     using wf_pair_less
@@ -2966,19 +2945,6 @@ proof -
       case (Pair j i)
       with less_sets_grab show ?thesis
         by (simp add: bf_rec [of M q j i] less.IH prev_pair_less that split: option.split)
-    qed
-  qed
-
-  have bf_subset: "fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
-    using wf_pair_less
-  proof (induction u rule: wf_induct_rule)
-    case (less u)
-    show ?case
-    proof (cases u)
-      case (Pair j i)
-      then show ?thesis
-      apply (simp add: bf_rec [of M q j i] that split: option.split)
-        using fst_grab_subset less.IH prev_pair_less snd_grab_subset by blast
     qed
   qed
 
@@ -2994,7 +2960,7 @@ proof -
     proof (cases u)
       case (Pair j i)
       with less.prems show ?thesis
-      proof (clarsimp simp add: bf_rec [of M _ j i]  split: option.split)
+      proof (clarsimp simp add: bf_rec [of M _ j i] split: option.split)
         fix j' i'
         assume *: "prev j i = Some (j',i')"
         then have **: "((j', i'), u) \<in> pair_less"
@@ -3147,13 +3113,13 @@ proof -
     proof cases
       case 1
       then show ?thesis
-        using bf_less_sets bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
+        using bf_less_sets bf_rec bf_subset less_sets_fst_grab \<open>infinite M\<close> by auto
     next
       case 2
       then have "fst (bf M r (j',i')) \<lless> snd (bf M r (j'',i''))"
         by (meson bf_less_sets snd_bf_subset less_sets_weaken2 that)
       with 2 show ?thesis
-        using bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
+        using bf_rec bf_subset less_sets_fst_grab \<open>infinite M\<close> by auto
     qed
   qed
 
