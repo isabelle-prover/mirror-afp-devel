@@ -654,7 +654,6 @@ proof -
     from j j_n have jR: "j \<in> C" and j: "j < n" by auto
     let ?exp = "\<lambda> k. sum (\<lambda> ii. P $$ (i, ii) * (J ^\<^sub>m k) $$ (ii,j)) {..<n}" 
     define M where "M = (\<lambda> k. cmod (?exp (f off k) * inv_op off k))" 
-    let ?j = "j - (m - 1)"
     define G where "G = (\<lambda> k. (A ^\<^sub>m f off k *\<^sub>v v) $v i * inv_op off k)" 
     {
       fix kk
@@ -754,8 +753,7 @@ proof -
        Re (\<Sum>jj = 0..<n. P $$ (i, jj) *
            (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))" 
       unfolding A_to_u G_def
-      by (rule tendsto_Re[OF tendsto_sum[OF tendsto_mult[OF _ 
-        tendsto_sum[OF tendsto_mult[OF limit_jordan_matrix]]]]], auto)
+      by (intro tendsto_intros limit_jordan_matrix, auto)
     also have "(\<Sum>jj = 0..<n. P $$ (i, jj) *
            (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))
       = (\<Sum>jj = 0..<n. (\<Sum>ia \<in> C. (if ia \<in> C \<and> jj = ia - (m - 1) then P $$ (i, jj) else 0) * ((lambda ia)^off * u $v ia)))" 
