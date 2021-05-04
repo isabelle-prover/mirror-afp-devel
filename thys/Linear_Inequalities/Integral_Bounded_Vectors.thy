@@ -138,7 +138,7 @@ proof -
   also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. abs (signof p * (\<Prod>i = 0..<n. A $$ (i, p i))))"
     by (rule sum_abs)
   also have "\<dots> = (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. abs (A $$ (i, p i))))"
-    by (rule sum.cong[OF refl], auto simp: abs_mult abs_prod signof_def)
+    by (rule sum.cong[OF refl], auto simp: abs_mult abs_prod sign_def simp flip: of_int_abs)
   also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. x))"
     by (intro sum_mono prod_mono conjI Bounded_matD[OF x A], auto)
   also have "\<dots> = fact n * x^n" by (auto simp add: card_permutations)

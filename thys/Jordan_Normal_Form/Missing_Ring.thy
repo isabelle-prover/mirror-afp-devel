@@ -8,9 +8,151 @@ section \<open>Missing Ring\<close>
 text \<open>This theory contains several lemmas which might be of interest to the Isabelle distribution.\<close>
 
 theory Missing_Ring
-imports
+  imports
+  "Missing_Misc"
   "HOL-Algebra.Ring"
 begin
+
+context ordered_cancel_semiring
+begin
+
+subclass ordered_cancel_ab_semigroup_add ..
+
+end
+
+text \<open>partially ordered variant\<close>
+class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
+  assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
+  assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
+begin
+
+subclass semiring_0_cancel ..
+
+subclass ordered_semiring
+proof
+  fix a b c :: 'a
+  assume A: "a \<le> b" "0 \<le> c"
+  from A show "c * a \<le> c * b"
+    unfolding le_less
+    using mult_strict_left_mono by (cases "c = 0") auto
+  from A show "a * c \<le> b * c"
+    unfolding le_less
+    using mult_strict_right_mono by (cases "c = 0") auto
+qed
+
+lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
+using mult_strict_left_mono [of 0 b a] by simp
+
+lemma mult_pos_neg: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> a * b < 0"
+using mult_strict_left_mono [of b 0 a] by simp
+
+lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
+using mult_strict_right_mono [of a 0 b] by simp
+
+text \<open>Legacy - use \<open>mult_neg_pos\<close>\<close>
+lemma mult_pos_neg2: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> b * a < 0" 
+by (drule mult_strict_right_mono [of b 0], auto)
+
+text\<open>Strict monotonicity in both arguments\<close>
+lemma mult_strict_mono:
+  assumes "a < b" and "c < d" and "0 < b" and "0 \<le> c"
+  shows "a * c < b * d"
+  using assms apply (cases "c=0")
+  apply (simp)
+  apply (erule mult_strict_right_mono [THEN less_trans])
+  apply (force simp add: le_less)
+  apply (erule mult_strict_left_mono, assumption)
+  done
+
+text\<open>This weaker variant has more natural premises\<close>
+lemma mult_strict_mono':
+  assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
+  shows "a * c < b * d"
+by (rule mult_strict_mono) (insert assms, auto)
+
+lemma mult_less_le_imp_less:
+  assumes "a < b" and "c \<le> d" and "0 \<le> a" and "0 < c"
+  shows "a * c < b * d"
+  using assms apply (subgoal_tac "a * c < b * c")
+  apply (erule less_le_trans)
+  apply (erule mult_left_mono)
+  apply simp
+  apply (erule mult_strict_right_mono)
+  apply assumption
+  done
+
+lemma mult_le_less_imp_less:
+  assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
+  shows "a * c < b * d"
+  using assms apply (subgoal_tac "a * c \<le> b * c")
+  apply (erule le_less_trans)
+  apply (erule mult_strict_left_mono)
+  apply simp
+  apply (erule mult_right_mono)
+  apply simp
+  done
+
+end
+
+class ordered_idom = idom + ordered_semiring_strict +
+  assumes zero_less_one [simp]: "0 < 1" begin
+
+subclass semiring_1 ..
+subclass comm_ring_1 ..
+subclass ordered_ring ..
+subclass ordered_comm_semiring by(unfold_locales, fact mult_left_mono)
+subclass ordered_ab_semigroup_add ..
+
+lemma of_nat_ge_0[simp]: "of_nat x \<ge> 0"
+proof (induct x)
+  case 0 thus ?case by auto
+  next case (Suc x)
+    hence "0 \<le> of_nat x" by auto
+    also have "of_nat x < of_nat (Suc x)" by auto
+    finally show ?case by auto
+qed
+
+lemma of_nat_eq_0[simp]: "of_nat x = 0 \<longleftrightarrow> x = 0"
+proof(induct x,simp)
+  case (Suc x)
+    have "of_nat (Suc x) > 0" apply(rule le_less_trans[of _ "of_nat x"]) by auto
+    thus ?case by auto
+qed
+
+lemma inj_of_nat: "inj (of_nat :: nat \<Rightarrow> 'a)"
+proof(rule injI)
+  fix x y show "of_nat x = of_nat y \<Longrightarrow> x = y"
+  proof (induct x arbitrary: y)
+    case 0 thus ?case
+      proof (induct y)
+        case 0 thus ?case by auto
+        next case (Suc y)
+          hence "of_nat (Suc y) = 0" by auto
+          hence "Suc y = 0" unfolding of_nat_eq_0 by auto
+          hence False by auto
+          thus ?case by auto
+      qed
+    next case (Suc x)
+      thus ?case
+      proof (induct y)
+        case 0
+          hence "of_nat (Suc x) = 0" by auto
+          hence "Suc x = 0" unfolding of_nat_eq_0 by auto
+          hence False by auto
+          thus ?case by auto
+        next case (Suc y) thus ?case by auto
+      qed
+  qed
+qed
+
+subclass ring_char_0 by(unfold_locales, fact inj_of_nat)
+
+end
+
+(*
+instance linordered_idom \<subseteq> ordered_semiring_strict by (intro_classes,auto)
+instance linordered_idom \<subseteq> ordered_idom by (intro_classes, auto)
+*)
 
 context comm_monoid
 begin
@@ -157,142 +299,92 @@ lemma (in semiring) Units_one_side_I:
   "a \<in> carrier R \<Longrightarrow> p \<in> Units R \<Longrightarrow> a \<otimes> p = \<one> \<Longrightarrow> a \<in> Units R"
   by (metis Units_closed Units_inv_Units Units_l_inv inv_unique)+
 
-context ordered_cancel_semiring begin
-subclass ordered_cancel_ab_semigroup_add ..
+
+lemma permutes_funcset: "p permutes A \<Longrightarrow> (p ` A \<rightarrow> B) = (A \<rightarrow> B)"
+  by (simp add: permutes_image)
+
+context comm_monoid
+begin
+lemma finprod_permute:
+  assumes p: "p permutes S"
+  and f: "f \<in> S \<rightarrow> carrier G"
+  shows "finprod G f S = finprod G (f \<circ> p) S"
+proof -
+  from \<open>p permutes S\<close> have "inj p"
+    by (rule permutes_inj)
+  then have "inj_on p S"
+    by (auto intro: subset_inj_on)
+  from finprod_reindex[OF _ this, unfolded permutes_image[OF p], OF f]
+  show ?thesis unfolding o_def .
+qed
+
+lemma finprod_singleton_set[simp]: assumes "f a \<in> carrier G"
+  shows "finprod G f {a} = f a"
+proof -
+  have "finprod G f {a} = f a \<otimes> finprod G f {}"
+    by (rule finprod_insert, insert assms, auto)
+  also have "\<dots> = f a" using assms by auto
+  finally show ?thesis .
+qed
 end
 
-text \<open>partially ordered variant\<close>
-class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
-  assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
-  assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
+lemmas (in semiring) finsum_permute = add.finprod_permute
+lemmas (in semiring) finsum_singleton_set = add.finprod_singleton_set
+
+context cring
 begin
 
-subclass semiring_0_cancel ..
-
-subclass ordered_semiring
-proof
-  fix a b c :: 'a
-  assume A: "a \<le> b" "0 \<le> c"
-  from A show "c * a \<le> c * b"
-    unfolding le_less
-    using mult_strict_left_mono by (cases "c = 0") auto
-  from A show "a * c \<le> b * c"
-    unfolding le_less
-    using mult_strict_right_mono by (cases "c = 0") auto
-qed
-
-lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
-using mult_strict_left_mono [of 0 b a] by simp
-
-lemma mult_pos_neg: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> a * b < 0"
-using mult_strict_left_mono [of b 0 a] by simp
-
-lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
-using mult_strict_right_mono [of a 0 b] by simp
-
-text \<open>Legacy - use \<open>mult_neg_pos\<close>\<close>
-lemma mult_pos_neg2: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> b * a < 0" 
-by (drule mult_strict_right_mono [of b 0], auto)
-
-text\<open>Strict monotonicity in both arguments\<close>
-lemma mult_strict_mono:
-  assumes "a < b" and "c < d" and "0 < b" and "0 \<le> c"
-  shows "a * c < b * d"
-  using assms apply (cases "c=0")
-  apply (simp)
-  apply (erule mult_strict_right_mono [THEN less_trans])
-  apply (force simp add: le_less)
-  apply (erule mult_strict_left_mono, assumption)
-  done
-
-text\<open>This weaker variant has more natural premises\<close>
-lemma mult_strict_mono':
-  assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
-  shows "a * c < b * d"
-by (rule mult_strict_mono) (insert assms, auto)
-
-lemma mult_less_le_imp_less:
-  assumes "a < b" and "c \<le> d" and "0 \<le> a" and "0 < c"
-  shows "a * c < b * d"
-  using assms apply (subgoal_tac "a * c < b * c")
-  apply (erule less_le_trans)
-  apply (erule mult_left_mono)
-  apply simp
-  apply (erule mult_strict_right_mono)
-  apply assumption
-  done
-
-lemma mult_le_less_imp_less:
-  assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
-  shows "a * c < b * d"
-  using assms apply (subgoal_tac "a * c \<le> b * c")
-  apply (erule le_less_trans)
-  apply (erule mult_strict_left_mono)
-  apply simp
-  apply (erule mult_right_mono)
-  apply simp
-  done
-
-end
-
-class ordered_idom = idom + ordered_semiring_strict +
-  assumes zero_less_one [simp]: "0 < 1" begin
-
-subclass semiring_1 ..
-subclass comm_ring_1 ..
-subclass ordered_ring ..
-subclass ordered_comm_semiring by(unfold_locales, fact mult_left_mono)
-subclass ordered_ab_semigroup_add ..
-
-lemma of_nat_ge_0[simp]: "of_nat x \<ge> 0"
-proof (induct x)
-  case 0 thus ?case by auto
-  next case (Suc x)
-    hence "0 \<le> of_nat x" by auto
-    also have "of_nat x < of_nat (Suc x)" by auto
-    finally show ?case by auto
-qed
-
-lemma of_nat_eq_0[simp]: "of_nat x = 0 \<longleftrightarrow> x = 0"
-proof(induct x,simp)
-  case (Suc x)
-    have "of_nat (Suc x) > 0" apply(rule le_less_trans[of _ "of_nat x"]) by auto
-    thus ?case by auto
-qed
-
-lemma inj_of_nat: "inj (of_nat :: nat \<Rightarrow> 'a)"
-proof(rule injI)
-  fix x y show "of_nat x = of_nat y \<Longrightarrow> x = y"
-  proof (induct x arbitrary: y)
-    case 0 thus ?case
-      proof (induct y)
-        case 0 thus ?case by auto
-        next case (Suc y)
-          hence "of_nat (Suc y) = 0" by auto
-          hence "Suc y = 0" unfolding of_nat_eq_0 by auto
-          hence False by auto
-          thus ?case by auto
-      qed
-    next case (Suc x)
-      thus ?case
-      proof (induct y)
-        case 0
-          hence "of_nat (Suc x) = 0" by auto
-          hence "Suc x = 0" unfolding of_nat_eq_0 by auto
-          hence False by auto
-          thus ?case by auto
-        next case (Suc y) thus ?case by auto
-      qed
+lemma finsum_permutations_inverse: 
+  assumes f: "f \<in> {p. p permutes S} \<rightarrow> carrier R"
+  shows "finsum R f {p. p permutes S} = finsum R (\<lambda>p. f(Hilbert_Choice.inv p)) {p. p permutes S}"
+  (is "?lhs = ?rhs")
+proof -
+  let ?inv = "Hilbert_Choice.inv"
+  let ?S = "{p . p permutes S}"
+  have th0: "inj_on ?inv ?S"
+  proof (auto simp add: inj_on_def)
+    fix q r
+    assume q: "q permutes S"
+      and r: "r permutes S"
+      and qr: "?inv q = ?inv r"
+    then have "?inv (?inv q) = ?inv (?inv r)"
+      by simp
+    with permutes_inv_inv[OF q] permutes_inv_inv[OF r] show "q = r"
+      by metis
   qed
+  have th1: "?inv ` ?S = ?S"
+    using image_inverse_permutations by blast
+  have th2: "?rhs = finsum R (f \<circ> ?inv) ?S"
+    by (simp add: o_def)
+  from finsum_reindex[OF _ th0, of f] show ?thesis unfolding th1 th2 using f .
 qed
 
-subclass ring_char_0 by(unfold_locales, fact inj_of_nat)
+lemma finsum_permutations_compose_right: assumes q: "q permutes S"
+  and *: "f \<in> {p. p permutes S} \<rightarrow> carrier R"
+  shows "finsum R f {p. p permutes S} = finsum R (\<lambda>p. f(p \<circ> q)) {p. p permutes S}"
+  (is "?lhs = ?rhs")
+proof -
+  let ?S = "{p. p permutes S}"
+  let ?inv = "Hilbert_Choice.inv"
+  have th0: "?rhs = finsum R (f \<circ> (\<lambda>p. p \<circ> q)) ?S"
+    by (simp add: o_def)
+  have th1: "inj_on (\<lambda>p. p \<circ> q) ?S"
+  proof (auto simp add: inj_on_def)
+    fix p r
+    assume "p permutes S"
+      and r: "r permutes S"
+      and rp: "p \<circ> q = r \<circ> q"
+    then have "p \<circ> (q \<circ> ?inv q) = r \<circ> (q \<circ> ?inv q)"
+      by (simp add: o_assoc)
+    with permutes_surj[OF q, unfolded surj_iff] show "p = r"
+      by simp
+  qed
+  have th3: "(\<lambda>p. p \<circ> q) ` ?S = ?S"
+    using image_compose_permutations_right[OF q] by auto
+  from finsum_reindex[OF _ th1, of f]
+  show ?thesis unfolding th0 th1 th3 using * .
+qed
 
 end
-
-(*
-instance linordered_idom \<subseteq> ordered_semiring_strict by (intro_classes,auto)
-instance linordered_idom \<subseteq> ordered_idom by (intro_classes, auto)
-*)
 
 end

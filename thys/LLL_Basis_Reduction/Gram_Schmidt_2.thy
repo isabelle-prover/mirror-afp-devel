@@ -2377,7 +2377,7 @@ lemma Ints_det: assumes "\<And> i j. i < dim_row A \<Longrightarrow> j < dim_col
 proof (cases "dim_row A = dim_col A")
   case True
   show ?thesis unfolding Determinant.det_def using True assms
-    by (auto intro!: Ints_sum Ints_mult Ints_prod simp: signof_def)
+    by (auto intro!: Ints_mult Ints_prod)
 next
   case False
   show ?thesis unfolding Determinant.det_def using False by simp
@@ -2479,7 +2479,7 @@ proof -
       by (auto simp: replace_col_def)
     have "det B \<in> \<int>"
       using B Bint assms  det_col[of B l]
-      by (auto intro!: Ints_sum Ints_mult Ints_prod simp: signof_def)
+      by (auto intro!: Ints_sum Ints_mult Ints_prod)
     thus ?thesis unfolding B_def.
   qed
   finally show ?thesis using deteq by (auto simp add: algebra_simps)

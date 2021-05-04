@@ -19,10 +19,10 @@ etc. We connect these operations to HOL-Algebra with its explicit carrier sets.\
 
 theory Matrix
 imports
-  Missing_Ring
-  "HOL-Algebra.Module"
   Polynomial_Interpolation.Ring_Hom
+  Missing_Ring
   Conjugate
+  "HOL-Algebra.Module"
 begin
 
 subsection\<open>Vectors\<close>

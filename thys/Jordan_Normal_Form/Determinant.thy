@@ -15,7 +15,7 @@ is non-empty is available for integral domains, not just for fields.\<close>
 
 theory Determinant
 imports 
-  Missing_Permutations
+  Missing_Misc
   Column_Operations
   "HOL-Computational_Algebra.Polynomial_Factorial" (* Only for to_fract. Probably not the right place. *)
   Polynomial_Interpolation.Ring_Hom
@@ -27,7 +27,7 @@ definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where
      signof p * (\<Prod> i = 0 ..< dim_row A. A $$ (i, p i))) else 0)"
 
 lemma(in ring_hom) hom_signof[simp]: "hom (signof p) = signof p"
-  unfolding signof_def by (auto simp: hom_distribs)
+  by (simp add: hom_uminus sign_def)
 
 lemma(in comm_ring_hom) hom_det[simp]: "det (map_mat hom A) = hom (det A)"
   unfolding det_def by (auto simp: hom_distribs)
@@ -177,8 +177,7 @@ proof -
 qed
 
 lemma det_dim_zero[simp]: "A \<in> carrier_mat 0 0 \<Longrightarrow> det A = 1"
-  unfolding det_def carrier_mat_def signof_def sign_def by auto
- 
+  unfolding det_def carrier_mat_def sign_def by auto
 
 lemma det_lower_triangular:
   assumes ld: "\<And>i j. i < j \<Longrightarrow> j < n \<Longrightarrow> A $$ (i,j) = 0"
@@ -250,7 +249,7 @@ proof -
     by (rule permutes_swap_id, insert k l, auto)
   show ?thesis
     by (rule trans[OF trans[OF _ det_permute_rows[OF one_carrier_mat[of n] p]]],
-    subst swap_rows_mat_eq_permute[OF k l], auto simp: signof_def sign_swap_id kl)
+    subst swap_rows_mat_eq_permute[OF k l], auto simp: sign_swap_id kl)
 qed
   
 lemma det_addrow_mat: 
@@ -283,12 +282,12 @@ lemma det_identical_rows:
 proof-
   let ?p = "Fun.swap i j id"
   let ?n = "{0 ..< n}"
-  have sp: "signof ?p = - 1" "sign ?p = -1" unfolding signof_def using ij
+  have sp: "signof ?p = - 1" "sign ?p = (- 1 :: int)" using ij
     by (auto simp add: sign_swap_id)
   let ?f = "\<lambda> p. signof p * (\<Prod>i\<in>?n. A $$ (p i, i))"
   let ?all = "{p. p permutes ?n}"
-  let ?one = "{p. p permutes ?n \<and> sign p = 1}"
-  let ?none = "{p. p permutes ?n \<and> sign p \<noteq> 1}"
+  let ?one = "{p. p permutes ?n \<and> sign p = (1 :: int)}"
+  let ?none = "{p. p permutes ?n \<and> sign p \<noteq> (1 :: int)}"
   let ?pone = "(\<lambda> p. ?p o p) ` ?one"
   have split: "?one \<union> ?none = ?all" by auto
   have p: "?p permutes ?n" by (rule permutes_swap_id, insert i j, auto)
@@ -317,7 +316,7 @@ proof-
     {
       fix q
       assume "q \<in> ?none"
-      hence q: "q permutes ?n" and sq: "sign q = -1" unfolding sign_def by auto
+      hence q: "q permutes ?n" and sq: "sign q = (- 1 :: int)" unfolding sign_def by auto
       from permutes_compose[OF q p] sign_compose[OF pp[OF p] pp[OF q], unfolded sp sq]
       have "?p o q \<in> ?one" by auto
       hence "?p o (?p o q) \<in> ?pone" by auto
@@ -330,8 +329,9 @@ proof-
       fix pq
       assume "pq \<in> ?pone"
       then obtain q where q: "q \<in> ?one" and pq: "pq = ?p o q" by auto
-      from q have q: "q permutes ?n" and sq: "sign q = 1" by auto
-      from sign_compose[OF pp[OF p] pp[OF q], unfolded sq sp] have spq: "sign pq = -1" unfolding pq by auto
+      from q have q: "q permutes ?n" and sq: "sign q = (1 :: int)" by auto
+      from sign_compose[OF pp[OF p] pp[OF q], unfolded sq sp]
+      have spq: "sign pq = (- 1 :: int)" unfolding pq by auto
       from permutes_compose[OF q p] have pq: "pq permutes ?n" unfolding pq by auto
       from pq spq have "pq \<in> ?none" by auto
     }
@@ -348,7 +348,7 @@ proof-
     by (rule sum.distrib[symmetric])
   also have "\<dots> = 0"
     by (rule sum.neutral, insert A, auto simp: 
-      sp sign_compose[OF pp[OF p] pp] ij signof_def finite_permutations *)
+      sp sign_compose[OF pp[OF p] pp] ij finite_permutations *)
   finally show ?thesis .
 qed
 
@@ -643,7 +643,7 @@ proof -
          ?s p * (\<Prod>i\<in>{0..<n}. A $$ (i, p i)) * (?s (q \<circ> ?inv p) * (\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia))))"
         unfolding sign thp
         unfolding AA_def[symmetric] BB_def[symmetric]
-        by (simp add: ac_simps signof_def)
+        by (simp add: ac_simps flip: of_int_mult)
       thus "?s q * (\<Prod>i = 0..<n. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<cdot>\<^sub>v row B (p i)) $$ (i, q i)) =
          ?s p * (\<Prod>i = 0..<n. A $$ (i, p i)) *
          (?s (q \<circ> ?inv p) * (\<Prod>i = 0..<n. B $$ (i, (q \<circ> ?inv p) i)))" by simp
@@ -1020,7 +1020,7 @@ proof -
   also have "\<dots> = det A1"
     unfolding mat_det_left_def[OF A1] dim by auto
   also have "A4 $$ (0,0) = det A4"
-    using A4 unfolding det_def[of A4] by (auto simp: signof_def sign_def)
+    using A4 unfolding det_def[of A4] by (auto simp: sign_def)
   finally show ?thesis by simp
 qed
 
@@ -2046,7 +2046,7 @@ proof -
         also have "signof ?swap = -1"
           proof-
             have "n - Suc j < n - j" using Sjn by simp
-            thus ?thesis unfolding signof_def sign_swap_id by simp
+            thus ?thesis unfolding sign_swap_id by simp
           qed
         also have "signof ?prev = (-1::'a) ^ (n + (n - j)) * signof p" using Suc(1) j by auto
         also have "(-1) * ... =  (-1) ^ (1 + n + (n - j)) * signof p" by simp
@@ -2081,7 +2081,7 @@ proof -
         also have "signof ?swap = (-1)"
           proof-
             have "n - Suc i < n - i" using Sin by simp
-            thus ?thesis unfolding signof_def sign_swap_id by simp
+            thus ?thesis unfolding sign_swap_id by simp
           qed
         also have "signof ?prev = (-1::'a) ^ (n - i + j) * signof p"
           using Suc(1)[OF i].
@@ -2292,14 +2292,20 @@ proof -
   {
     fix p
     assume p: "p permutes {0..<n}"
-    have "(\<Sum>x = 0..<n. degree (A $$ (x, p x))) \<le> (\<Sum>x = 0..<n. k)"     
+    have "(\<Sum>x = 0..<n. degree (A $$ (x, p x))) \<le> (\<Sum>x = 0..<n. k)"
       by (rule sum_mono[OF assms(1)], insert p, auto)
     also have "\<dots> = k * n" unfolding sum_constant by simp
     also note calculation 
   } note * = this
   show ?thesis unfolding det_def'[OF A]
-    by (rule degree_sum_le, insert *, auto simp: finite_permutations signof_def 
-      intro!: order.trans[OF degree_prod_sum_le])
+    apply (rule degree_sum_le)
+     apply (simp_all add: finite_permutations)
+    apply (drule *)
+    apply (rule order.trans [OF degree_mult_le])
+    apply simp
+    apply (rule order.trans [OF degree_prod_sum_le])
+     apply simp_all
+    done
 qed
 
 lemma upper_triangular_imp_det_eq_0_iff:

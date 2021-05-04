@@ -236,7 +236,8 @@ proof -
     let ?r = "\<Prod>i = 0..<n. A $$ (i, x i)"
     have id: "?l = ?r"
       by (rule prod.cong[OF refl poly], insert x, auto)
-    show "poly (signof x) k * ?l = signof x * ?r" unfolding id signof_def by auto
+    show "poly (signof x) k * ?l = signof x * ?r"
+      by (cases x rule: sign_cases) (simp_all add: id) 
   qed
 qed
 
@@ -362,7 +363,7 @@ proof -
 qed
 
 lemma degree_signof_mult[simp]: "degree (signof p * q) = degree q"
-  by (cases "sign p = 1", auto simp: signof_def)
+  by (cases p rule: sign_cases) simp_all
 
 lemma degree_monic_char_poly: assumes A: "A \<in> carrier_mat n n"
   shows "degree (char_poly A) = n \<and> coeff (char_poly A) n = 1"
@@ -456,7 +457,8 @@ proof -
   {
     fix p
     assume p: "p permutes {0 ..< n}" 
-    have "pderiv (signof p :: 'a poly) = 0" unfolding signof_def by (simp add: pderiv_minus) 
+    have "pderiv (signof p :: 'a poly) = 0"
+      by (cases p rule: sign_cases) (simp_all add: pderiv_minus) 
     hence "pderiv (signof p * ?e p) = signof p * pderiv (\<Prod>i = 0..<n. Sum $$ (i, p i))" 
       unfolding pderiv_mult by auto
     also have "signof p * pderiv (\<Prod>i = 0..<n. Sum $$ (i, p i)) = 

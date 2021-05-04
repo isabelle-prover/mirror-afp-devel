@@ -7,9 +7,9 @@ text \<open>We provide a function to access the coefficients of a polynomial
   for natural number coefficients there is a case-distinction.\<close>
   
 theory Coeff_Int
-imports 
-  Polynomial_Interpolation.Missing_Polynomial 
-  Jordan_Normal_Form.Missing_Permutations
+  imports 
+    "HOL-Combinatorics.Permutations"
+    Polynomial_Interpolation.Missing_Polynomial 
 begin
   
 definition coeff_int :: "'a :: zero poly \<Rightarrow> int \<Rightarrow> 'a" where
@@ -22,8 +22,8 @@ lemma coeff_int_eq_0: "i < 0 \<or> i > int (degree p) \<Longrightarrow> coeff_in
 lemma coeff_int_smult[simp]: "coeff_int (smult c p) i = c * coeff_int p i"
   unfolding coeff_int_def by simp
 
-lemma coeff_int_signof_mult: "coeff_int (signof x * f) i = signof x * (coeff_int f i)"
-  unfolding signof_def by (auto simp: coeff_int_def)
+lemma coeff_int_signof_mult: "coeff_int (of_int (sign x) * f) i = of_int (sign x) * coeff_int f i"
+  by (auto simp: coeff_int_def sign_def) 
 
 lemma coeff_int_sum: "coeff_int (sum p A) i = (\<Sum>x\<in>A. coeff_int (p x) i)"
   using coeff_sum[of p A "nat i"] unfolding coeff_int_def

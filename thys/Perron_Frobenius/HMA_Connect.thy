@@ -451,7 +451,7 @@ proof -
         show ?case unfolding IH2 id sign_compose[OF p_sab \<open>permutation p\<close>] sign_compose[OF p_sfab p_ftp] id2
           by (rule conjI[OF refl perm1])
       qed
-      thus "signof p = of_int (sign ?q)" unfolding signof_def sign_def by auto
+      thus "signof p = of_int (sign ?q)" unfolding sign_def by auto
       show "(\<Prod>i = 0..<CARD('n). a $h ?fn i $h ?fn (p i)) =
            (\<Prod>i\<in>UNIV. a $h i $h ?q i)" unfolding 
            range_to_nat[symmetric] prod.reindex[OF inj_to_nat]
