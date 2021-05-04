@@ -1551,18 +1551,6 @@ qed
 
 subsection \<open>Larson's Lemma 3.7\<close>
 
-lemma 1: "\<lbrakk>A \<lless> B; B \<lless> C; B \<noteq> {}\<rbrakk> \<Longrightarrow> A \<lless> B \<union> C"
-  using less_sets_Un2 less_sets_trans by blast
-
-lemma 2: "\<lbrakk>A \<lless> B; B \<lless> C; B \<noteq> {}\<rbrakk> \<Longrightarrow> A \<union> B \<lless> C"
-  using less_sets_Un1 less_sets_trans by blast
-
-lemma 3: "\<lbrakk>A \<lless> {b}; {b} \<lless> B\<rbrakk> \<Longrightarrow> A \<lless> insert b B"
-  using less_sets_def by fastforce
-
-lemma 4: "\<lbrakk>A \<lless> {b}; {b} \<lless> B\<rbrakk> \<Longrightarrow> insert b A \<lless> B"
-  using less_sets_def by fastforce
-
 subsubsection \<open>Preliminaries\<close>
 
 text \<open>Analogous to @{thm [source] ordered_nsets_2_eq}, but without type classes\<close>
@@ -2051,7 +2039,7 @@ next
         using \<open>q < m\<close> that by (auto simp: RF_def less_QF)
       have less_RF_k: "RF k q \<lless> RF k p"
         using \<open>q < m\<close> less_RF_same_k \<open>p<q\<close> by blast
-      have less_RF_k_ka: "RF (k - 1) p \<lless> RF (ka - 1) q"
+      have less_RF_k_ka: "RF (k-1) p \<lless> RF (ka - 1) q"
         using ka_k_or_Suc less_RF_RF
         by (metis One_nat_def RF_def \<open>0 < k\<close> \<open>ka - 1 \<le> k\<close> \<open>p < m\<close> diff_Suc_1 diff_Suc_less less_QF_step)
       have Inf_DF_eq_enum: "\<Sqinter> (DF k i) = enum (DF k i) 0" for k i
@@ -2206,7 +2194,7 @@ next
         \<comment>\<open>No separate sets A and B as in the text, but instead we treat both cases as once\<close>
         have [simp]: "length PP = ka - 1"
           by (simp add: PP_def)
-        have [simp]: "length QQ = k - 1"
+        have [simp]: "length QQ = k-1"
           using \<open>k \<ge> 2\<close> by (simp add: QQ_def)
 
         have PP_n: "PP ! n = list_of (RF (Suc n) p)"
@@ -2214,12 +2202,12 @@ next
           using that kka by (auto simp: PP_def nth_sorted_list_of_set_greaterThanLessThan)
 
         have QQ_n: "QQ ! n = (if n < k-2 then list_of (RF (Suc n) q)
-                              else list_of (RF (k - 1) q \<union> RF (ka - 1) q))"
+                              else list_of (RF (k-1) q \<union> RF (ka - 1) q))"
           if "n < k-1" for n
           using that kka by (auto simp: QQ_def nth_append nth_sorted_list_of_set_greaterThanLessThan)
 
         have QQ_n_same: "QQ ! n = list_of (RF (Suc n) q)"
-          if "n < k - 1" "k=ka" for n
+          if "n < k-1" "k=ka" for n
           using that kka Suc_diff_Suc
           by (fastforce simp: One_nat_def QQ_def nth_append nth_sorted_list_of_set_greaterThanLessThan)
 
@@ -2233,15 +2221,15 @@ next
             by (auto simp: strict_sorted_append_iff)
         qed (use \<open>n \<ge> 2\<close> in auto)
 
-        have list_of_RF_Un: "list_of (RF (k - 1) q \<union> RF k q) = list_of (RF (k - 1) q) @ list_of (RF k q)"
+        have list_of_RF_Un: "list_of (RF (k-1) q \<union> RF k q) = list_of (RF (k-1) q) @ list_of (RF k q)"
           by (metis Suc_diff_1 \<open>0 < k\<close> finite_RF lessI less_RF_Suc sorted_list_of_set_Un)
 
         have card_AF_sum_QQ: "card (AF k q) + sum_list (map length QQ) = (\<Sum>j<ka. card (RF j q))"
         proof (cases "ka = Suc k")
           case True
-          have "RF (k - 1) q \<inter> RF k q = {}"
-            using less_RF_Suc [of "k - 1"] \<open>k > 0\<close> by (auto simp: less_sets_def)
-          then have "card (RF (k - 1) q \<union> RF k q) = card (RF (k - 1) q) + card (RF k q)"
+          have "RF (k-1) q \<inter> RF k q = {}"
+            using less_RF_Suc [of "k-1"] \<open>k > 0\<close> by (auto simp: less_sets_def)
+          then have "card (RF (k-1) q \<union> RF k q) = card (RF (k-1) q) + card (RF k q)"
             by (simp add: card_Un_disjoint)
           then show ?thesis
             using \<open>k\<ge>2\<close> \<open>q < m\<close>
@@ -2302,7 +2290,7 @@ next
             by simp
           have "n = k - 2" if "\<not> n < k - 2"
             using n that by linarith
-          moreover have "list_of (RF (Suc (k - 2)) p) < list_of (RF (k - 1) q \<union> RF (ka - 1) q)"
+          moreover have "list_of (RF (Suc (k - 2)) p) < list_of (RF (k-1) q \<union> RF (ka - 1) q)"
             by (auto simp: less_sets_imp_sorted_list_of_set less_sets_Un2 less_RF_RF less_RF_k_ka \<open>0 < k\<close>)
           ultimately show "PP ! n < QQ ! n"
             using \<open>k \<le> ka\<close> n by (auto simp: PP_n QQ_n less_sets_imp_sorted_list_of_set less_RF_RF)
@@ -2312,9 +2300,9 @@ next
             by (smt RF_def Suc_leI \<open>ka - 1 \<le> k\<close> \<open>q < m\<close> diff_Suc_1 finite_RF less_QF_step less_le_trans less_sets_imp_sorted_list_of_set nat_neq_iff zero_less_Suc)
           have "RF (k -  1) q \<lless> RF k p"
             by (metis One_nat_def RF_non_Nil Suc_pred \<open>0 < k\<close> finite_RF lessI less_RF_Suc less_RF_k less_sets_trans sorted_list_of_set_eq_Nil_iff)
-          with kka have "RF (k - 1) q \<union> RF (ka - 1) q \<lless> RF k p"
+          with kka have "RF (k-1) q \<union> RF (ka - 1) q \<lless> RF k p"
             by (metis less_RF_k One_nat_def less_sets_Un1 antisym_conv2 diff_Suc_1 le_less_Suc_eq)
-          then have VI: "list_of (RF (k - 1) q \<union> RF (ka - 1) q) < list_of (RF k p)"
+          then have VI: "list_of (RF (k-1) q \<union> RF (ka - 1) q) < list_of (RF k p)"
             by (rule less_sets_imp_sorted_list_of_set) auto
           assume "Suc n < length PP"
           with \<open>ka \<le> Suc k\<close> VI
@@ -2414,7 +2402,7 @@ next
         show ?thesis
         proof (cases "ka = k")
           case True
-          then have "l = 2*k - 1"
+          then have "l = 2*k-1"
             by (simp add: kka(3) mult_2)
           then show ?thesis
             by (metis One_nat_def Form.intros(2) Form_Body_imp_inter_scheme True \<open>0 < k\<close> \<open>U = {x, y}\<close> kka zs zs_N)
@@ -2469,12 +2457,8 @@ lemma pair_less_prev:
   shows "prev j i = Some u \<or> (\<exists>x. (u, x) \<in> pair_less \<and> prev j i = Some x)"
 proof (cases "prev j i")
   case None
-  show ?thesis
-  proof (cases u)
-    case (Pair j' i')
-    then show ?thesis
-    using assms None by (simp add: prev_eq_None_iff pair_less_def IJ_def)
-  qed
+  then show ?thesis
+    using assms by (force simp: prev_eq_None_iff pair_less_def IJ_def split: prod.split)
 next
   case (Some a)
   then show ?thesis
@@ -2482,11 +2466,10 @@ next
 qed
 
 
-
 subsubsection \<open>Special primitives for the ordertype proof\<close>
 
 definition USigma :: "'a set set \<Rightarrow> ('a set \<Rightarrow> 'a set) \<Rightarrow> 'a set set"
-  where "USigma \<A> B \<equiv> \<Union>X\<in>\<A>. \<Union>y\<in>B X. {insert y X}"
+  where "USigma \<A> B \<equiv> \<Union>X\<in>\<A>. \<Union>y \<in> B X. {insert y X}"
 
 definition usplit
   where "usplit f A \<equiv> f (A - {Max A}) (Max A)"
@@ -2496,26 +2479,24 @@ lemma USigma_empty [simp]: "USigma {} B = {}"
 
 lemma USigma_iff:
   assumes "\<And>I j. I \<in> \<I> \<Longrightarrow> I \<lless> J I \<and> finite I"
-  shows "x \<in> USigma \<I> J \<longleftrightarrow> usplit (\<lambda>I j. I\<in>\<I> \<and> j\<in>J I \<and> x = insert j I) x"
+  shows "x \<in> USigma \<I> J \<longleftrightarrow> usplit (\<lambda>I j. I \<in> \<I> \<and> j \<in> J I \<and> x = insert j I) x"
 proof -
   have [simp]: "\<And>I j. \<lbrakk>I \<in> \<I>; j \<in> J I\<rbrakk> \<Longrightarrow> Max (insert j I) = j"
     by (meson Max_insert2 assms less_imp_le less_sets_def)
   show ?thesis
   proof -
-    have "I - {j} \<in> \<I>" if "I \<in> \<I>" "j \<in> J I" for I j
-      using that by (metis Diff_empty Diff_insert0 assms less_irrefl less_sets_def)
-    moreover have "j \<in> J (I - {j})" if "I \<in> \<I>" "j \<in> J I" for I j
-      using that by (metis Diff_empty Diff_insert0 assms less_irrefl less_setsD)
-    moreover have "\<exists>I\<in>\<I>. \<exists>j\<in>J I. x = insert j I"
+    have \<section>: "j \<notin> I" if "I \<in> \<I>" "j \<in> J I" for I j
+      using that by (metis assms less_irrefl less_sets_def)
+    have "\<exists>I\<in>\<I>. \<exists>j\<in>J I. x = insert j I"
       if "x - {Max x} \<in> \<I>" and "Max x \<in> J (x - {Max x})" "x \<noteq> {}"
       using that by (metis Max_in assms infinite_remove insert_Diff)
-    ultimately show ?thesis
-      by (auto simp: USigma_def usplit_def)
+    then show ?thesis
+      by (auto simp: USigma_def usplit_def \<section>)
   qed
 qed
 
 
-lemma ordertype_append_image_IJ:
+proposition ordertype_append_image_IJ:
   assumes lenB [simp]: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> length (B j) = c"
     and AB: "\<And>i j. i \<in> \<I> \<Longrightarrow> j \<in> J i \<Longrightarrow> A i < B j"
     and IJ: "\<And>i. i \<in> \<I> \<Longrightarrow> i \<lless> J i \<and> finite i"
@@ -2525,7 +2506,6 @@ lemma ordertype_append_image_IJ:
        = \<beta> * ordertype (A ` \<I>) (lenlex less_than)"
     (is "ordertype ?AB ?R = _ * ?\<alpha>")
 proof (cases "\<I> = {}")
-next
   case False
   have "Ord \<beta>"
     using \<beta> False wf_Ord_ordertype by fastforce
@@ -2568,7 +2548,7 @@ next
         show "f ` ?AB \<subseteq> elts (\<beta> * ?\<alpha>)"
           using \<open>Ord \<beta>\<close>
           apply (clarsimp simp add: f_def split_def USigma_iff IJ usplit_def)
-          by (metis Ord_mem_iff_less_TC TC_small add_mult_less image_eqI oB ordermap_in_ordertype trans_llt wf_Ord_ordertype wf_llt)
+          by (metis TC_small \<beta> add_mult_less image_eqI ordermap_in_ordertype trans_llt wf_Ord_ordertype wf_llt)
         show "elts (\<beta> * ?\<alpha>) \<subseteq> f ` ?AB"
         proof (clarsimp simp: f_def split_def image_iff USigma_iff IJ usplit_def Bex_def elim!: elts_multE split: prod.split)
           fix \<gamma> \<delta>
@@ -2585,10 +2565,8 @@ next
             by (meson IJ Max_insert2 \<open>i \<in> \<I>\<close> less_imp_le less_sets_def)
           have [simp]: "i - {j} = i"
             using IJ \<open>i \<in> \<I>\<close> \<open>j \<in> J i\<close> less_setsD by fastforce
-          show
-            "\<exists>l. (\<exists>K. K - {Max K} \<in> \<I> \<and> Max K \<in> J (K - {Max K}) \<and>
-                          K = insert (Max K) K \<and>
-                          l = A (K - {Max K}) @ B (Max K)) \<and> \<beta> * \<gamma> + \<delta> =
+          show "\<exists>l. (\<exists>K. K - {Max K} \<in> \<I> \<and> Max K \<in> J (K - {Max K}) \<and> K = insert (Max K) K \<and>
+                         l = A (K - {Max K}) @ B (Max K)) \<and> \<beta> * \<gamma> + \<delta> =
                     \<beta> *
                     ordermap (A ` \<I>) ?R (take (length l - c) l) +
                     ordermap (B ` J (inv_into \<I> A (take (length l - c) l)))
@@ -2625,8 +2603,7 @@ next
         proof cases
           case 1
           then have "(A ?mx, A ?my) \<in> ?R"
-            using x y
-            by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
+            using x y by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
           then show ?thesis
             using x y mx my lenB lenlex_append1 by blast
         next
@@ -2636,8 +2613,7 @@ next
           then have eq: "?mx = ?my"
             by (metis \<open>?my \<in> \<I>\<close> \<open>?mx \<in> \<I>\<close> inv_into_IA)
           then have "(B (Max x), B (Max y)) \<in> ?R"
-            using mx my  2
-            by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
+            using mx my 2 by (force simp: Ord_mem_iff_lt intro: converse_ordermap_mono)
           with 2 show ?thesis
             by (simp add: eq irrefl_less_than)
         qed
@@ -2658,7 +2634,7 @@ next
             using "\<section>" irrefl_less_than that(2) by auto
         qed (use that in blast)
         then have "\<beta> * ordermap (A`\<I>) ?R (A ?mx) + ordermap (B`J ?mx) ?R (B (Max x))
-               < \<beta> * ordermap (A`\<I>) ?R (A ?my) + ordermap (B`J ?my) ?R (B (Max y))"
+                 < \<beta> * ordermap (A`\<I>) ?R (A ?my) + ordermap (B`J ?my) ?R (B (Max y))"
         proof cases
           case 1
           show ?thesis
@@ -2666,7 +2642,7 @@ next
             show "ordermap (A`\<I>) (lenlex less_than) (A ?mx) < ordermap (A`\<I>) (lenlex less_than) (A ?my)"
               by (simp add: "1" \<open>?my \<in> \<I>\<close> \<open>?mx \<in> \<I>\<close> ordermap_mono_less)
             show "Ord (ordertype (A`\<I>) ?R)"
-              using wf_Ord_ordertype by blast+
+              using wf_Ord_ordertype by blast
             show "ordermap (B ` J ?mx) ?R (B (Max x)) \<in> elts \<beta>"
               using Ord_less_TC_mem \<open>Ord \<beta>\<close> \<open>?mx \<in> \<I>\<close> \<open>(Max x) \<in> J ?mx\<close> oB by blast
             show "ordermap (B ` J ?my) ?R (B (Max y)) \<in> elts \<beta>"
@@ -2736,7 +2712,7 @@ lemma merge_length_less2:
 proof induction
 case (App as1 bs1 as2 bs2 as bs)
   then show ?case
-    by simp (metis One_nat_def Suc_eq_plus1 Suc_leI add.commute add_mono length_greater_0_conv)
+    using length_greater_0_conv [of as1] by (simp, presburger)
 qed auto
 
 lemma merge_preserves:
@@ -2751,12 +2727,11 @@ lemma merge_interact:
   using assms
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
-  then have "concat bs1 < concat bs" "concat bs1 < concat as" and xx: "concat bs1 \<noteq> []"
+  then have bs: "concat bs1 < concat bs" "concat bs1 < concat as" and xx: "concat bs1 \<noteq> []"
     using merge_preserves strict_sorted_append_iff by fastforce+
   then have "concat bs1 < interact as bs"
-    using App
-    apply (simp add: less_list_def del: concat_eq_Nil_conv)
-    by (metis (full_types) Un_iff \<open>concat bs1 < concat as\<close> \<open>concat bs1 < concat bs\<close> last_in_set list.set_sel(1) set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_interact_imp_concat strict_sorted_sorted_wrt xx)
+    unfolding less_list_def using App bs
+    by (metis (no_types, lifting) Un_iff concat_append hd_in_set last_in_set merge_preserves set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
   with App show ?case
     apply (simp add: strict_sorted_append_iff del: concat_eq_Nil_conv)
     by (metis hd_append2 less_list_def xx)
@@ -2801,12 +2776,12 @@ lemma merge_less_sets_hd:
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
   then have \<section>: "list.set (concat bs1) \<lless> list.set (concat bs2)"
-    by (force simp: dest: strict_sorted_imp_less_sets)+
+    by (force simp: dest: strict_sorted_imp_less_sets)
   have *: "list.set (concat as1) \<lless> list.set (concat bs1)"
     using App by (metis concat_append strict_sorted_append_iff strict_sorted_imp_less_sets)
   then have "list.set (concat as1) \<lless> list.set (concat bs)"
     using App \<section> less_sets_trans merge_preserves
-    by (metis List.set_empty append_in_lists_conv le_zero_eq length_concat_ge length_greater_0_conv list.size(3))
+    by (metis List.set_empty append_in_lists_conv le_zero_eq length_0_conv length_concat_ge)
   with * App.hyps show ?case
     by (fastforce simp: less_sets_UN1 less_sets_UN2 less_sets_Un2)
 qed auto
@@ -2817,7 +2792,7 @@ lemma set_takeWhile:
   using assms
 proof (induction as)
   case (Cons a as)
-  have *: "a < y"
+  have "a < y"
     if a: "a < concat as" "strict_sorted a" "strict_sorted (concat as)" "x < y" "x \<noteq> []" "x \<in> list.set as"
     for x
   proof -
@@ -2878,9 +2853,9 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
       moreover have "sorted (hd bs)"
         by (metis concat.simps(2) hd_Cons_tl less.prems(2) less.prems(7) strict_sorted_append_iff strict_sorted_imp_sorted)
       ultimately show ?thesis
-        using that
-       apply (clarsimp simp add: as1_def less.prems set_takeWhile less_list_iff_less_sets less_sets_def)
-        by (smt UN_I dual_order.strict_trans2 hd_concat less.prems(2) less.prems(4) less.prems(7) list.set_sel(1) mem_lists_non_Nil not_le set_concat sorted_hd_le strict_sorted_imp_sorted)
+        using that less.prems
+       apply (clarsimp simp add: as1_def set_takeWhile less_list_iff_less_sets less_sets_def)
+        by (metis (full_types) UN_I hd_concat less_le_trans list.set_sel(1) set_concat sorted_hd_le strict_sorted_imp_sorted)
     qed
     show "as = as1@as2"
       by (simp add: as1_def as2_def)
@@ -2899,7 +2874,7 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
         apply (clarsimp simp add: less_sets_def less_list_def)
         apply (auto simp: as2_def)
         apply (simp flip: as2_def)
-        by (metis UN_I \<open>as = as1 @ as2\<close> concat.simps(2) concat_append dual_order.strict_trans2 hd_concat in_set_conv_decomp_last not_le set_concat sorted_hd_le sorted_le_last sorted_sorted_wrt sorted_wrt_append strict_sorted_imp_sorted that)
+        by (smt (verit, ccfv_SIG) UN_I \<open>as = as1 @ as2\<close> concat.simps(2) concat_append hd_concat in_set_conv_decomp_first le_less_trans less_le_trans set_concat sorted_append sorted_hd_le sorted_le_last strict_sorted_imp_sorted that)
     qed
     then show "concat bs1 < concat as2"
       by (simp add: bs1_def less_sets_imp_list_less)
@@ -2926,9 +2901,8 @@ proof (induction "length as + length bs" arbitrary: as bs rule: less_induct)
     using B by blast
 qed
 
-subsubsection \<open>Actual proof of lemma 3.8\<close>
+subsubsection \<open>Actual proof of Larson's Lemma 3.8\<close>
 
-text \<open>Lemma 3.8 of Jean A. Larson, ibid.\<close>
 proposition lemma_3_8:
   assumes "infinite N"
   obtains X where "X \<subseteq> WW" "ordertype X (lenlex less_than) = \<omega>\<up>\<omega>"
@@ -2945,7 +2919,7 @@ proof -
                   in  grab R (q j i))" for M q j i
     by (subst (1) bf_def) (simp add: Let_def wfrec bf_def cut_apply prev_pair_less cong: conj_cong split: option.split)
 
-  have infinite_bf [simp]: "infinite (snd (bf M q u)) = infinite M" for M q u
+  have "infinite (snd (bf M q u)) = infinite M \<and> fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
     using wf_pair_less
   proof (induction u rule: wf_induct_rule)
     case (less u)
@@ -2953,9 +2927,13 @@ proof -
     proof (cases u)
       case (Pair j i)
       with less.IH prev_pair_less show ?thesis
-        by (auto simp: bf_rec [of M q j i] split: option.split)
+        apply (simp add: bf_rec [of M q j i] split: option.split)
+        using fst_grab_subset snd_grab_subset by blast
     qed
   qed
+  then have infinite_bf [simp]: "infinite (snd (bf M q u)) = infinite M"
+       and  bf_subset: "fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
+    by auto
 
   have bf_less_sets: "fst (bf M q ij) \<lless> snd (bf M q ij)" if "infinite M" for M q ij
     using wf_pair_less
@@ -2966,19 +2944,6 @@ proof -
       case (Pair j i)
       with less_sets_grab show ?thesis
         by (simp add: bf_rec [of M q j i] less.IH prev_pair_less that split: option.split)
-    qed
-  qed
-
-  have bf_subset: "fst (bf M q u) \<subseteq> M \<and> snd (bf M q u) \<subseteq> M" for M q u
-    using wf_pair_less
-  proof (induction u rule: wf_induct_rule)
-    case (less u)
-    show ?case
-    proof (cases u)
-      case (Pair j i)
-      then show ?thesis
-      apply (simp add: bf_rec [of M q j i] that split: option.split)
-        using fst_grab_subset less.IH prev_pair_less snd_grab_subset by blast
     qed
   qed
 
@@ -2994,7 +2959,7 @@ proof -
     proof (cases u)
       case (Pair j i)
       with less.prems show ?thesis
-      proof (clarsimp simp add: bf_rec [of M _ j i]  split: option.split)
+      proof (clarsimp simp add: bf_rec [of M _ j i] split: option.split)
         fix j' i'
         assume *: "prev j i = Some (j',i')"
         then have **: "((j', i'), u) \<in> pair_less"
@@ -3026,11 +2991,10 @@ proof -
     by (induction l) (auto simp: DF_simps F_def Let_def grab_eqD infinite_nxtN assms split: prod.split)
 
   define \<Psi> where
-    "\<Psi> \<equiv> \<lambda>(dl, a, b :: nat \<times> nat \<Rightarrow> nat set, M::nat set). \<lambda>l::nat.
-           dl l \<lless> a \<and> finite a \<and> dl l \<noteq> {} \<and> a \<noteq> {} \<and>
+    "\<Psi> \<equiv> \<lambda>(dl, a, b, M). \<lambda>l::nat.
+           dl l \<lless> a \<and> card a > 0 \<and>
            (\<forall>j\<le>l. card (dl j) = Suc j) \<and> a \<lless> \<Union>(range b) \<and> range b \<subseteq> Collect finite \<and>
-           a \<subseteq> N \<and> \<Union>(range b) \<subseteq> N \<and> infinite M \<and> b(l,l-1) \<lless> M \<and>
-           M \<subseteq> N"
+           a \<subseteq> N \<and> \<Union>(range b) \<subseteq> N \<and> infinite M \<and> b(l,l-1) \<lless> M \<and> M \<subseteq> N"
   have \<Psi>_DF: "\<Psi> (DF (Suc l)) l" for l
   proof (induction l)
     case 0
@@ -3039,7 +3003,7 @@ proof -
       apply (clarsimp simp add: bf_rec F_def DF_simps \<Psi>_def split: prod.split)
       apply (drule grab_eqD, blast dest: grab_eqD infinite_nxtN)+
       apply (auto simp: less_sets_UN2 less_sets_grab card_fst_bf elim!: less_sets_weaken2)
-      apply (metis Min_in card_eq_0_iff greaterThan_iff le_inf_iff less_nat_zero_code n_not_Suc_n nxt_def subsetD)
+      apply (metis card_1_singleton_iff Min_singleton greaterThan_iff insertI1 le0 nxt_subset_greaterThan subsetD)
       using nxt_subset snd_grab_subset bf_subset by blast+
   next
     case (Suc l)
@@ -3048,9 +3012,9 @@ proof -
       unfolding Let_def DF_simps(2)[of "Suc l"] F_def \<Psi>_def
       apply (clarsimp simp add: bf_rec DF_simps split: prod.split)
       apply (drule grab_eqD, metis grab_eqD infinite_nxtN)+
-      apply (safe, simp_all add: less_sets_UN2 less_sets_grab card_fst_bf)
+      apply (safe, simp_all add: less_sets_UN2 less_sets_grab card_fst_bf card_Suc_eq_finite)
              apply (meson less_sets_weaken2)
-            apply (metis (no_types, hide_lams) IntE Min_in card.empty greaterThan_iff leD not_less_eq_eq nxt_def subsetD zero_less_Suc)
+            apply (metis Min_in gr0I greaterThan_iff insert_not_empty le_inf_iff less_asym nxt_def subsetD)
            apply (meson bf_subset less_sets_weaken2)
           apply (meson nxt_subset subset_eq)
          apply (meson bf_subset nxt_subset subset_eq)
@@ -3100,14 +3064,13 @@ proof -
 
   have d_ne [simp]: "d j \<noteq> {}" and a_ne [simp]: "a j \<noteq> {}"
     and finite_d [simp]: "finite (d j)" and finite_a [simp]: "finite (a j)" for j
-    using \<Psi>_DF [of "j"] by (auto simp: \<Psi>_def a_def d_def split: prod.split_asm)
+    using \<Psi>_DF [of "j"]  by (auto simp: \<Psi>_def a_def d_def card_gt_0_iff split: prod.split_asm)
 
   have da: "d k \<lless> a k" for k
     using \<Psi>_DF [of "k"] by (simp add: \<Psi>_def a_def d_def split: prod.split_asm)
 
   have ab_same: "a k \<lless> \<Union>(range(b k))" for k
-    using \<Psi>_DF [of "k"]
-    by (simp add: \<Psi>_def a_def b_def M_def split: prod.split_asm)
+    using \<Psi>_DF [of "k"] by (simp add: \<Psi>_def a_def b_def M_def split: prod.split_asm)
 
   have snd_bf_subset: "snd (bf M r (j,i)) \<subseteq> snd (bf M r (j',i'))"
     if ji: "((j',i'), (j,i)) \<in> pair_less" "(j',i') \<in> IJ k"
@@ -3122,18 +3085,10 @@ proof -
         using less.prems pair_less_prev by blast
       then show ?thesis
       proof cases
-        case 1
-        then show ?thesis
-          by (simp add: Pair bf_rec snd_grab_subset)
-      next
-        case 2
-        then have "snd (bf M r x) \<subseteq> snd (bf M r (j', i'))"
-          by (simp add: Pair less.IH prev_pair_less that(2))
-        moreover have "snd (bf M r u) \<subseteq> snd (bf M r x)"
-          by (simp add: 2 Pair bf_rec snd_grab_subset)
-        ultimately show ?thesis
-          by auto
-      qed
+        case 2 with less.IH show ?thesis
+          unfolding bf_rec Pair
+          by (metis in_mono option.simps(5) prev_pair_less snd_grab_subset subsetI that(2)) 
+      qed (simp add: Pair bf_rec snd_grab_subset)
     qed
   qed
 
@@ -3147,13 +3102,13 @@ proof -
     proof cases
       case 1
       then show ?thesis
-        using bf_less_sets bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
+        using bf_less_sets bf_rec less_sets_fst_grab \<open>infinite M\<close> by force
     next
       case 2
       then have "fst (bf M r (j',i')) \<lless> snd (bf M r (j'',i''))"
         by (meson bf_less_sets snd_bf_subset less_sets_weaken2 that)
       with 2 show ?thesis
-        using bf_rec infinite_bf less_sets_fst_grab \<open>infinite M\<close> by auto
+        using bf_rec bf_subset less_sets_fst_grab \<open>infinite M\<close> by auto
     qed
   qed
 
@@ -3181,13 +3136,11 @@ proof -
     have deq: "d j = (if j = k then d' else dl j)" if "j\<le>k" for j
     proof (cases "j < k")
       case True
-      then show ?thesis
-        by (metis DF d_eq_dl less_not_refl)
+      then show ?thesis by (metis DF d_eq_dl less_not_refl)
     next
       case False
       then show ?thesis
-        using that DF gr
-        by (auto simp: d_def DF_simps F_def Let_def split: prod.split)
+        using that DF gr by (auto simp: d_def DF_simps F_def Let_def split: prod.split)
     qed
     have "M' \<subseteq> P"
       by (metis gr in_mono nxt_subset snd_conv snd_grab_subset subsetI)
@@ -3220,8 +3173,7 @@ proof -
     have "d j = (if j = k then d' else dl j)"
     proof (cases "j < k")
       case True
-      then show ?thesis
-        by (metis DF d_eq_dl less_not_refl)
+      then show ?thesis by (metis DF d_eq_dl less_not_refl)
     next
       case False
       then show ?thesis
@@ -3250,10 +3202,10 @@ proof -
       case False
       show ?thesis
       proof (rule less_sets_trans [OF _ bMkk])
-        show "b k (j,i) \<lless> b k (k, k - 1)"
+        show "b k (j,i) \<lless> b k (k, k-1)"
           using that \<open>infinite M'\<close> False
             by (force simp: bk pair_less_def IJ_def intro: less_bf)
-        show "b k (k, k - 1) \<noteq> {}"
+        show "b k (k, k-1) \<noteq> {}"
           using b_ne that by auto
       qed
     qed (use bMkk in auto)
@@ -3262,8 +3214,7 @@ proof -
   have b_InfM: "\<Union> (range (b k)) \<subseteq> {\<Sqinter>(M k)..}" for k
   proof (clarsimp simp add: \<Psi>_def b_def M_def DF_simps F_def Let_def split: prod.split)
     fix r dl :: "nat \<Rightarrow> nat set"
-      and a b and d' a' M'' M' P :: "nat set"
-      and x j' i' :: nat
+      and a b and d' a' M'' M' P and x j' i' :: nat
     assume gr: "grab M'' (Min d') = (a', M')"
                "grab (nxt P (enum N (Suc (Suc (Suc (2 * k)))))) (Suc k) = (d', M'')"
       and DF: "DF k = (dl, a, b, P)"
@@ -3272,7 +3223,7 @@ proof -
       using DF local.inf by blast
     then have "M' \<subseteq> P"
       by (meson gr grab_eqD infinite_nxtN nxt_subset order.trans)
-    with bf_subset show "\<Sqinter> P \<le> (x::nat)"
+    with bf_subset show "\<Sqinter> P \<le> x"
       using Inf_nat_def x le_less_linear not_less_Least by fastforce
   qed
 
@@ -3291,11 +3242,8 @@ proof -
   proof (rule atLeast_less_sets)
     show "b k' (j', i') \<lless> {Inf(M (Suc k'))}"
       using Suc_lessD b_Inf_M_Suc nat_less_le j by blast
-    have "b k (j,i) \<subseteq> {\<Sqinter>(M k)..}"
-      by (rule order_trans [OF _ b_InfM]) auto
-    also have "\<dots>  \<subseteq> {Inf(M (Suc k'))..}"
-      using Inf_M_telescoping k by auto
-    finally show "b k (j,i) \<subseteq> {Inf(M (Suc k'))..}" .
+    show "b k (j,i) \<subseteq> {Inf(M (Suc k'))..}"
+      by (meson Inf_M_telescoping Suc_leI UnionI b_InfM rangeI subset_eq k)
   qed
 
   have M_subset_N: "M k \<subseteq> N" for k
@@ -3313,11 +3261,8 @@ proof -
 
   define \<K>:: "[nat,nat] \<Rightarrow> nat set set"
     where "\<K> \<equiv> \<lambda>j0 j. nsets {j0<..} j"
-
-  have \<K>_finite: "K \<in> \<K> j0 j \<Longrightarrow> finite K" for K j0 j
-    by (simp add: \<K>_def nsets_def)
-  have \<K>_card: "K \<in> \<K> j0 j \<Longrightarrow> card K = j" for K j0 j
-    by (simp add: \<K>_def nsets_def)
+  have \<K>_finite: "finite K" and \<K>_card: "card K = j" if "K \<in> \<K> j0 j" for K j0 j
+    using that by (auto simp add: \<K>_def nsets_def)
   have \<K>_enum: "j0 < enum K i" if "K \<in> \<K> j0 j" "i < card K" for K j0 j i
     using that by (auto simp: \<K>_def nsets_def finite_enumerate_in_set subset_eq)
   have \<K>_0 [simp]: "\<K> k 0 = {{}}" for k
@@ -3331,13 +3276,14 @@ proof -
     proof clarsimp
       fix K
       assume K: "K \<subseteq> {j0<..}" "finite K" "card K = Suc j"
+      then have "Max K \<in> K"
+        by (metis Max_in card_0_eq nat.distinct(1))
       then obtain i where "Max (insert j0 (K - {Max K})) < i" "K = insert i (K - {Max K})"
-        apply (simp add: subset_iff)
-        by (metis Diff_iff Max.coboundedI Max_in card_0_eq insert_Diff insert_iff le_neq_implies_less nat.distinct(1))
-      then  show "\<exists>L\<subseteq>{j0<..}. finite L \<and> card L = j \<and>
-                 (\<exists>i\<in>{Max (insert j0 L)<..}. K = insert i L)"
+        using K 
+        by (simp add: subset_iff) (metis DiffE Max.coboundedI insertCI insert_Diff le_neq_implies_less)
+      then  show "\<exists>L\<subseteq>{j0<..}. finite L \<and> card L = j \<and> (\<exists>i\<in>{Max (insert j0 L)<..}. K = insert i L)"
         using K
-        by (metis Max_in card_Diff_singleton_if card_gt_0_iff diff_Suc_1 finite_Diff greaterThan_iff insert_subset zero_less_Suc)
+        by (metis \<open>Max K \<in> K\<close> card_Diff_singleton_if diff_Suc_1 finite_Diff greaterThan_iff insert_subset)
     qed
     show "?rhs \<subseteq> \<K> j0 (Suc j)"
       by (force simp:  \<K>_def nsets_def USigma_def)
@@ -3368,12 +3314,11 @@ proof -
       by (metis Kj Max_in cardK card_gt_0_iff greaterThan_iff subsetD zero_less_Suc)
     have MaxK: "Max K = enum K j"
     proof (rule Max_eqI)
-      show "enum K j \<in> K"
-        by (simp add: cardK finite_enumerate_in_set)
-      show "k \<le> enum K j" if "k \<in> K" for k
-        using that K
-        by (metis \<open>finite K\<close> cardK enum_obtain_index_finite finite_enumerate_mono leI less_Suc_eq less_asym)
-    qed auto
+      fix k
+      assume "k \<in> K" 
+      with K cardK show "k \<le> enum K j" 
+        by (metis \<open>finite K\<close> finite_enumerate_Ex finite_enumerate_mono_iff leI lessI not_less_eq)
+    qed (auto simp: cardK finite_enumerate_in_set)
     have ene: "i<j \<Longrightarrow> enum (K - {enum K j}) i = enum K i" for i
       using finite_enumerate_Diff_singleton [OF \<open>finite K\<close>] by (simp add: cardK)
     have "BB j0 (Suc j) K = list_of ((a j0 \<union> (\<Union>x<j. b (enum K x) (j0, x))) \<union> b (enum K j) (j0, j))"
@@ -3409,45 +3354,26 @@ proof -
     using bb [of i' j' k' k j i] that b_ne [of i' j' k'] b_ne [of i j k]
     by (simp add: less_sets_def Inf_nat_def1)
 
-  have b_ge_k: "\<Sqinter> (b k (k, k-1)) \<ge> k-1" if "k>0" for k
-    using that
+  have b_ge_k: "\<Sqinter> (b k (k, k-1)) \<ge> k-1" for k
   proof (induction k)
     case (Suc k)
     show ?case
     proof (cases "k=0")
       case False
-      have "\<Sqinter> (b k (k, k - Suc 0)) < \<Sqinter> (b (Suc k) (Suc k, k))"
-        using False Inf_b_less by auto
-      with False Suc show ?thesis
+      then have "\<Sqinter> (b k (k, k - 1)) < \<Sqinter> (b (Suc k) (Suc k, k))"
+        using Inf_b_less by auto
+      with Suc show ?thesis
         by simp
     qed auto
   qed auto
 
-  have b_ge: "\<Sqinter> (b k (j,i)) \<ge> k-1" if k: "k>0" "k \<ge> j" and "j > i" for k j i
-    using k
-  proof (induction k)
-    case (Suc k)
-    show ?case
-    proof (cases "j \<le> k")
-      case True
-      have "\<Sqinter> (b k (j,i)) < \<Sqinter> (b (Suc k) (j,i))"
-        using \<open>j > i\<close> Suc True by (force intro: Inf_b_less)
-      then show ?thesis
-        using Suc.IH True by linarith
-    next
-      case False
-      then have "j = Suc k"
-        using Suc.prems(2) by linarith
-      with \<open>i < j\<close> have "i < Suc k"
-        by fastforce
-      moreover have "\<not> \<Sqinter> (b (Suc k) (j,i)) < \<Sqinter> (b (Suc k) (j,i))"
-        by fastforce
-      ultimately have "\<not> Suc (\<Sqinter> (b (Suc k) (j,i))) < Suc k"
-        by (metis Inf_b_less \<open>j = Suc k\<close> b_ge_k diff_Suc_1 leD le_refl lessI zero_less_Suc)
-      then show ?thesis
-        by simp
-    qed
-  qed auto
+  have b_ge: "\<Sqinter> (b k (j,i)) \<ge> k-1" if "k \<ge> j" "j > i" for k j i
+  proof -
+    have "\<not> Suc (\<Sqinter> (b k (j, i))) < k"
+      by (metis (no_types) Inf_b_less Suc_leI b_ge_k diff_Suc_1 lessI not_less that)
+    then show ?thesis
+      by simp
+  qed
 
   have hd_b: "hd (list_of (b k (j,i))) = \<Sqinter> (b k (j,i))"
     if "i < j" "j \<le> k" for k j i
@@ -3479,8 +3405,8 @@ proof -
     proof (clarsimp simp add: infinite_nat_iff_unbounded_le)
       fix m
       show "\<exists>n\<ge>m. \<exists>k. n = \<Sqinter> (b k (j,i)) \<and> Max (insert j K) < k"
-        using b_ge [of _ j i] \<open>j > i\<close> Sucj
-        by (metis (no_types, lifting) diff_Suc_1 le_SucI le_trans less_Suc_eq_le nat_le_linear zero_less_Suc)
+        using b_ge \<open>j > i\<close> Sucj
+        by (metis (no_types, lifting) diff_Suc_1 le_SucI le_trans less_Suc_eq_le nat_le_linear)
     qed
     have [simp]: "Max (insert j K) < k \<longleftrightarrow> j < k \<and> (\<forall>a\<in>K. a < k)" for k
       using that by (auto simp: \<K>_finite)
@@ -3536,7 +3462,7 @@ proof -
 
   have ot\<omega>j: "ordertype (BB j0 j ` \<K> j0 j) ?LL = \<omega>\<up>j" if "j \<le> j0" for j j0
     using that
-  proof (induction j)
+  proof (induction j) \<comment>\<open>a difficult business, but no hints in Larson's text\<close>
     case 0
     then show ?case
       by (auto simp: XX_def)
