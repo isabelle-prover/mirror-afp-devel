@@ -620,7 +620,7 @@ lemma j_n: "j < n" using j unfolding C_def by auto
 
 definition "i = (SOME i. i < n \<and> P $$ (i, j - (m - 1)) \<noteq> 0)" 
 
-lemma i: "i < n" "P $$ (i, j - (m - 1)) \<noteq> 0"
+lemma i: "i < n" and P_ij0: "P $$ (i, j - (m - 1)) \<noteq> 0"
 proof -
   from j_n have lt: "j - (m - 1) < n" by auto
   show "i < n" "P $$ (i, j - (m - 1)) \<noteq> 0"
@@ -651,10 +651,59 @@ proof -
     "cc = (\<lambda> jj. ((\<Sum>k = 0..<n. (if k = jj - (m - 1) then P $$ (i, k) else 0)) * u $v jj))" 
   {
     fix off
+    define G where "G = (\<lambda> k. (A ^\<^sub>m f off k *\<^sub>v v) $v i * inv_op off k)" 
+    define F where "F = (\<Sum>j\<in>C. a j * lambda j ^ off)" 
+    {
+      fix kk
+      define k where "k = f off kk" 
+      have "((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk = Re (?c (((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk))" by simp
+      also have "?c (((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk) = ?cv ((A ^\<^sub>m k) *\<^sub>v v) $ i * ?c (inv_op off kk)" 
+        using i A by simp
+      also have "?cv ((A ^\<^sub>m k) *\<^sub>v v) = (?cm (A ^\<^sub>m k) *\<^sub>v ?v)" using A
+        by (subst of_real_hom.mult_mat_vec_hom[OF _ v], auto)
+      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v ?v)" 
+        by (simp add: of_real_hom.mat_hom_pow[OF A])
+      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v ((P * iP) *\<^sub>v ?v))" unfolding JNF using v by auto
+      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v (P *\<^sub>v u))" unfolding u_def
+        by (subst assoc_mult_mat_vec, insert JNF v, auto)
+      also have "\<dots> = (P * J ^\<^sub>m k *\<^sub>v u)" unfolding A_power_P[symmetric]
+        by (subst assoc_mult_mat_vec, insert u JNF(1) A, auto)
+      also have "\<dots> = (P *\<^sub>v (J ^\<^sub>m k *\<^sub>v u))"
+        by (rule assoc_mult_mat_vec, insert u JNF(1) A, auto)
+      finally have "(A ^\<^sub>m k *\<^sub>v v) $v i * inv_op off kk = Re ((P *\<^sub>v (J ^\<^sub>m k *\<^sub>v u)) $ i * inv_op off kk)" by simp
+      also have "\<dots> = Re (\<Sum>jj = 0..<n.
+           P $$ (i, jj) * (\<Sum>ia = 0..< n. (J ^\<^sub>m k) $$ (jj, ia) * u $v ia * inv_op off kk))"
+        by (subst index_mult_mat_vec, insert JNF(1) i u, auto simp: scalar_prod_def sum_distrib_right[symmetric]
+           mult.assoc[symmetric])  
+      finally have "(A ^\<^sub>m k *\<^sub>v v) $v i * inv_op off kk =
+        Re (\<Sum>jj = 0..<n. P $$ (i, jj) * (\<Sum>ia = 0..<n. (J ^\<^sub>m k) $$ (jj, ia) * inv_op off kk * u $v ia))" 
+        unfolding k_def
+        by (simp only: ac_simps)
+    } note A_to_u = this
+    have "G \<longlonglongrightarrow> 
+       Re (\<Sum>jj = 0..<n. P $$ (i, jj) *
+           (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))" 
+      unfolding A_to_u G_def
+      by (intro tendsto_intros limit_jordan_matrix, auto)
+    also have "(\<Sum>jj = 0..<n. P $$ (i, jj) *
+           (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))
+      = (\<Sum>jj = 0..<n. (\<Sum>ia \<in> C. (if ia \<in> C \<and> jj = ia - (m - 1) then P $$ (i, jj) else 0) * ((lambda ia)^off * u $v ia)))" 
+      by (rule sum.cong[OF refl], unfold sum_distrib_left, subst (2) sum.mono_neutral_left[of "{0..<n}"],
+        insert C_n, auto intro!: sum.cong)
+    also have "\<dots> = (\<Sum>ia \<in> C. (\<Sum>jj = 0..<n. (if jj = ia - (m - 1) then P $$ (i, jj) else 0)) * ((lambda ia)^off * u $v ia))"
+      unfolding sum.swap[of _ C] sum_distrib_right
+      by (rule sum.cong[OF refl], auto)
+    also have "\<dots> = (\<Sum>ia \<in> C. cc ia * (lambda ia)^off)" unfolding cc_def
+      by (rule sum.cong[OF refl], simp)
+    also have "\<dots> = F" unfolding cc_def a_def F_def
+      by (rule sum.cong[OF refl], insert C_n, auto)
+    finally have tend3: "G \<longlonglongrightarrow> Re F" . 
+    (* so far we did not use the definition of i or v, except that v is a real vector.
+       Hence, the result holds independently of i and v (if one would drop the Re) *)
+
     from j j_n have jR: "j \<in> C" and j: "j < n" by auto
     let ?exp = "\<lambda> k. sum (\<lambda> ii. P $$ (i, ii) * (J ^\<^sub>m k) $$ (ii,j)) {..<n}" 
     define M where "M = (\<lambda> k. cmod (?exp (f off k) * inv_op off k))" 
-    define G where "G = (\<lambda> k. (A ^\<^sub>m f off k *\<^sub>v v) $v i * inv_op off k)" 
     {
       fix kk
       define k where "k = f off kk" 
@@ -697,9 +746,9 @@ proof -
     have tend2: "M \<longlonglongrightarrow> cmod (P $$ (i, j - (m - 1)) * lambda j ^ off)" unfolding M_def
       by (rule tendsto_norm, rule tend1)
     define B where "B = cmod (P $$ (i, j - (m - 1))) / 2"
-    have B: "0 < B" unfolding B_def using i by auto
+    have B: "0 < B" unfolding B_def using P_ij0 by auto
     {
-      from i have 0: "P $$ (i, j - (m - 1)) \<noteq> 0" by auto
+      from P_ij0 have 0: "P $$ (i, j - (m - 1)) \<noteq> 0" by auto
       define E where "E = cmod (P $$ (i, j - (m - 1)) * lambda j ^ off)" 
       from cmod_lambda[OF jR] 0 have E: "E / 2 > 0" unfolding E_def by auto
       from tend2[folded E_def] have tend2: "M \<longlonglongrightarrow> E" .
@@ -721,53 +770,7 @@ proof -
       hence "\<exists> k'. \<forall> k. k \<ge> k' \<longrightarrow> G k \<ge> B" by auto
     }    
     hence Bound: "\<exists>k'. \<forall>k\<ge>k'. B \<le> G k" by auto
-    {
-      fix kk
-      define k where "k = f off kk" 
-      have "((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk = Re (?c (((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk))" by simp
-      also have "?c (((A ^\<^sub>m k) *\<^sub>v v) $ i * inv_op off kk) = ?cv ((A ^\<^sub>m k) *\<^sub>v v) $ i * ?c (inv_op off kk)" 
-        using i A by simp
-      also have "?cv ((A ^\<^sub>m k) *\<^sub>v v) = (?cm (A ^\<^sub>m k) *\<^sub>v ?v)" using A
-        by (subst of_real_hom.mult_mat_vec_hom[OF _ v], auto)
-      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v ?v)" 
-        by (simp add: of_real_hom.mat_hom_pow[OF A])
-      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v ((P * iP) *\<^sub>v ?v))" unfolding JNF using v by auto
-      also have "\<dots> = (cA ^\<^sub>m k *\<^sub>v (P *\<^sub>v u))" unfolding u_def
-        by (subst assoc_mult_mat_vec, insert JNF v, auto)
-      also have "\<dots> = (P * J ^\<^sub>m k *\<^sub>v u)" unfolding A_power_P[symmetric]
-        by (subst assoc_mult_mat_vec, insert u JNF(1) A, auto)
-      also have "\<dots> = (P *\<^sub>v (J ^\<^sub>m k *\<^sub>v u))"
-        by (rule assoc_mult_mat_vec, insert u JNF(1) A, auto)
-      finally have "(A ^\<^sub>m k *\<^sub>v v) $v i * inv_op off kk = Re ((P *\<^sub>v (J ^\<^sub>m k *\<^sub>v u)) $ i * inv_op off kk)" by simp
-      also have "\<dots> = Re (\<Sum>jj = 0..<n.
-           P $$ (i, jj) * (\<Sum>ia = 0..< n. (J ^\<^sub>m k) $$ (jj, ia) * u $v ia * inv_op off kk))"
-        by (subst index_mult_mat_vec, insert JNF(1) i u, auto simp: scalar_prod_def sum_distrib_right[symmetric]
-           mult.assoc[symmetric])  
-      finally have "(A ^\<^sub>m k *\<^sub>v v) $v i * inv_op off kk =
-        Re (\<Sum>jj = 0..<n. P $$ (i, jj) * (\<Sum>ia = 0..<n. (J ^\<^sub>m k) $$ (jj, ia) * inv_op off kk * u $v ia))" 
-        unfolding k_def
-        by (simp only: ac_simps)
-    } note A_to_u = this
-    define F where "F = (\<Sum>j\<in>C. a j * lambda j ^ off)" 
-    have "G \<longlonglongrightarrow> 
-       Re (\<Sum>jj = 0..<n. P $$ (i, jj) *
-           (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))" 
-      unfolding A_to_u G_def
-      by (intro tendsto_intros limit_jordan_matrix, auto)
-    also have "(\<Sum>jj = 0..<n. P $$ (i, jj) *
-           (\<Sum>ia = 0..<n. (if ia \<in> C \<and> jj = ia - (m - 1) then (lambda ia)^off else 0) * u $v ia))
-      = (\<Sum>jj = 0..<n. (\<Sum>ia \<in> C. (if ia \<in> C \<and> jj = ia - (m - 1) then P $$ (i, jj) else 0) * ((lambda ia)^off * u $v ia)))" 
-      by (rule sum.cong[OF refl], unfold sum_distrib_left, subst (2) sum.mono_neutral_left[of "{0..<n}"],
-        insert C_n, auto intro!: sum.cong)
-    also have "\<dots> = (\<Sum>ia \<in> C. (\<Sum>jj = 0..<n. (if jj = ia - (m - 1) then P $$ (i, jj) else 0)) * ((lambda ia)^off * u $v ia))"
-      unfolding sum.swap[of _ C] sum_distrib_right
-      by (rule sum.cong[OF refl], auto)
-    also have "\<dots> = (\<Sum>ia \<in> C. cc ia * (lambda ia)^off)" unfolding cc_def
-      by (rule sum.cong[OF refl], simp)
-    also have "\<dots> = F" unfolding cc_def a_def F_def
-      by (rule sum.cong[OF refl], insert C_n, auto)
-    finally have tend3: "G \<longlonglongrightarrow> Re F" .
-    from this[unfolded LIMSEQ_iff, rule_format, of "B / 2"] B
+    from tend3[unfolded LIMSEQ_iff, rule_format, of "B / 2"] B
     obtain kk where kk: "\<And> k. k \<ge> kk \<Longrightarrow> norm (G k - Re F) < B / 2" by auto
     from Bound obtain kk' where kk': "\<And> k. k \<ge> kk' \<Longrightarrow> B \<le> G k" by auto
     define k where "k = max kk kk'" 
