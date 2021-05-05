@@ -847,6 +847,12 @@ lemma \<omega>_power_imp_eq:
   shows "\<beta> + \<omega>\<up>\<delta> = \<omega>\<up>\<delta>"
   by (simp add: assms indecomposable_\<omega>_power indecomposable_imp_eq)
 
+lemma mult_oexp_indec: "\<lbrakk>Ord \<alpha>; Limit \<mu>; indecomposable \<mu>\<rbrakk> \<Longrightarrow> \<alpha> * (\<alpha> \<up> \<mu>) = (\<alpha> \<up> \<mu>)"
+  by (metis Limit_def Ord_1 OrdmemD indecomposable_imp_eq oexp_1_right oexp_add one_V_def)
+
+lemma mult_oexp_\<omega>: "Ord \<alpha> \<Longrightarrow> \<alpha> * (\<alpha> \<up> \<omega>) = (\<alpha> \<up> \<omega>)"
+  by (metis Ord_1 Ord_\<omega> oexp_1_right oexp_add one_plus_\<omega>_equals_\<omega>)
+  
 lemma type_imp_indecomposable:
   assumes \<alpha>: "Ord \<alpha>"
     and minor: "\<And>X. X \<subseteq> elts \<alpha> \<Longrightarrow> ordertype X VWF = \<alpha> \<or> ordertype (elts \<alpha> - X) VWF = \<alpha>"

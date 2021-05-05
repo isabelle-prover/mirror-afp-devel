@@ -3462,7 +3462,7 @@ proof -
 
   have ot\<omega>j: "ordertype (BB j0 j ` \<K> j0 j) ?LL = \<omega>\<up>j" if "j \<le> j0" for j j0
     using that
-  proof (induction j) \<comment>\<open>a difficult business, but no hints in Larson's text\<close>
+  proof (induction j) \<comment>\<open>a difficult proof, but no hints in Larson's text\<close>
     case 0
     then show ?case
       by (auto simp: XX_def)
@@ -3473,20 +3473,19 @@ proof -
     have "j \<le> j0"
       by (simp add: Suc.prems Suc_leD)
     have inj_BB: "inj_on (BB j0 j) ([{j0<..}]\<^bsup>j\<^esup>)"
-    proof (clarsimp simp: inj_on_def BB_def nsets_def subset_iff sorted_list_of_set_Un less_sets_UN2)
+    proof (clarsimp simp: inj_on_def BB_def nsets_def  sorted_list_of_set_Un less_sets_UN2)
       fix X Y
-      assume X [rule_format]: "\<forall>t. t \<in> X \<longrightarrow> j0 < t"
-        and Y [rule_format]: "\<forall>t. t \<in> Y \<longrightarrow> j0 < t"
-        and "finite X"
+      assume X: "X \<subseteq> {j0<..}" and Y: "Y \<subseteq> {j0<..}"
+        and "finite X" "finite Y"
         and jeq: "j = card X"
-        and "finite Y"
         and "card Y = card X"
         and eq: "list_of (a j0 \<union> (\<Union>i<card X. b (enum X i) (j0,i)))
                = list_of (a j0 \<union> (\<Union>i<card X. b (enum Y i) (j0,i)))"
       have enumX: "\<And>n. \<lbrakk>n < card X\<rbrakk> \<Longrightarrow> j0 \<le> enum X n"
         using X \<open>finite X\<close> finite_enumerate_in_set less_imp_le_nat by blast
       have enumY: "\<And>n. \<lbrakk>n < card X\<rbrakk> \<Longrightarrow> j0 \<le> enum Y n"
-        by (simp add: Y \<open>card Y = card X\<close> \<open>finite Y\<close> finite_enumerate_in_set less_imp_le_nat)
+        using subsetD [OF Y] 
+        by (metis \<open>card Y = card X\<close> \<open>finite Y\<close> finite_enumerate_in_set greaterThan_iff less_imp_le_nat)
       have smX: "strict_mono_sets {..<card X} (\<lambda>i. b (enum X i) (j0, i))"
         and smY: "strict_mono_sets {..<card X} (\<lambda>i. b (enum Y i) (j0, i))"
         using Suc.prems \<open>card Y = card X\<close> \<open>finite X\<close> \<open>finite Y\<close> bb enumX enumY jeq
@@ -3529,7 +3528,7 @@ proof -
            (usplit (\<lambda>L k. BB j0 j L @ list_of (b k (j0, j))) ` USigma (\<K> j0 j) (\<lambda>K. {Max (insert j0 K)<..})) ?LL"
       by (simp add: BB_Suc' \<K>_Suc)
     also have "\<dots> = \<omega> * ordertype (BB j0 j ` \<K> j0 j) ?LL"
-    proof (rule ordertype_append_image_IJ)
+    proof (intro ordertype_append_image_IJ)
       fix L k
       assume "L \<in> \<K> j0 j" and "k \<in> {Max (insert j0 L)<..}"
       then have "j0 < k" and L: "\<And>a. a \<in> L \<Longrightarrow> a < k"
@@ -3543,12 +3542,12 @@ proof -
       fix L
       assume L: "L \<in> \<K> j0 j"
       then show "L \<lless> {Max (insert j0 L)<..} \<and> finite L"
-        by (metis \<K>_finite atLeast_Suc_greaterThan finite_insert less_sets_Suc_Max less_sets_weaken1 subset_insertI)
+        by (simp add: \<K>_finite less_sets_def)
       show "ordertype ((\<lambda>i. list_of (b i (j0, j))) ` {Max (insert j0 L)<..}) ?LL = \<omega>"
         using L Suc.prems Suc_le_lessD ot\<omega> by blast
     qed (auto simp: \<K>_finite card_b)
     also have "\<dots> = \<omega> \<up> ord_of_nat (Suc j)"
-      by (metis ih One_nat_def Ord_\<omega> Ord_ord_of_nat oexp_1_right oexp_add one_V_def ord_of_nat.simps(1) ord_of_nat.simps(2) ord_of_nat_add plus_1_eq_Suc)
+      by (simp add: oexp_mult_commute ih)
     finally show ?case .
   qed
 
@@ -3583,25 +3582,12 @@ proof -
     apply (clarsimp simp: a_def M_def DF_simps F_def Let_def split: prod.split_asm)
     by (metis (no_types) fst_conv fst_grab_subset nxt_subset snd_conv snd_grab_subset subsetD)
   have ba_Suc: "b k (j,i) \<lless> a (Suc k)" if "i < j" "j \<le> k" for i j k
-    by (meson a_subset_M bM less_sets_weaken2 nat_less_le that(1) that(2))
+    by (meson a_subset_M bM less_sets_weaken2 nat_less_le that)
   have ba: "b k (j,i) \<lless> a r" if "i < j" "j \<le> k" "k < r" for i j k r
     by (metis Suc_lessI a_ne aa ba_Suc less_sets_trans that)
 
   have disjnt_ba: "disjnt (b k (j,i)) (a r)" if "i < j" "j \<le> k" for i j k r
-  proof (cases "k < r")
-    case True
-    then show ?thesis
-      by (simp add: ba less_sets_imp_disjnt that)
-  next
-    case False
-    then show ?thesis
-    proof -
-      have "a r \<lless> b k (j,i)"
-        by (metis False a_ne aa ab_same less_linear less_sets_UN2 less_sets_trans rangeI)
-      then show ?thesis
-        using disjnt_sym less_sets_imp_disjnt by blast
-    qed
-  qed
+    by (meson ab ba disjnt_sym less_sets_imp_disjnt not_le that)
 
   have bb_disjnt: "disjnt (b k (j,i)) (b l (r,q))"
     if "q < r" "i < j" "j \<le> k" "r \<le> l" "j < r" for i j q r k l
@@ -3624,24 +3610,20 @@ proof -
       by auto
   next
     case (Suc j)
+    then have "j < card K"
+      using that(3) by linarith
     have dis: "disjnt (b (enum K j) (j0, j)) (\<Union>i<j. b (enum K i) (j0, i))"
-    proof (clarsimp simp add: b_disjoint)
-      fix i
-      assume "i < j"
-      show "disjnt (b (enum K j) (j0, j)) (b (enum K i) (j0,i))"
-        by (meson Suc.prems \<open>i < j\<close> b_disjoint_less disjnt_def disjnt_sym less_Suc_eq that)
-    qed
+      unfolding disjoint_UN_iff
+      by (meson Suc.prems b_disjoint_less disjnt_def disjnt_sym lessThan_iff less_Suc_eq that)
     have j0_less: "j0 < enum K j"
-      by (meson Suc.prems Suc_le_lessD finite_enumerate_in_set greaterThan_iff less_le_trans subsetD K)
+      using K \<open>j < card K\<close> by (force simp: finite_enumerate_in_set)
     have "(\<Sum>i<Suc j. card (b (enum K i) (j0, i)))
           = card (b (enum K j) (j0, j)) + (\<Sum>i<j. card (b (enum K i) (j0, i)))"
       by (simp add: lessThan_Suc card_Un_disjnt [OF _ _ dis])
     also have "\<dots> = card (b (enum K j) (j0, j)) + enum (d j0) j - enum (d j0) 0"
       using \<open>Suc j \<le> j0\<close> by (simp add: Suc.IH split: nat_diff_split)
     also have "\<dots> = enum (d j0) (Suc j) - enum (d j0) 0"
-      using j0_less
-      apply (simp add: card_b split: nat_diff_split)
-      by (metis Suc.prems card_d finite_d finite_enumerate_step le_imp_less_Suc less_asym)
+      using j0_less Suc.prems card_b less_or_eq_imp_le by force
     finally show ?case .
   qed
 
@@ -3685,8 +3667,7 @@ proof -
       case False
       then have xy: "length x < length y"
         using len_xy by auto
-      obtain j r K L where K: "K \<in> \<K> j j" and xeq: "x = BB j j K"
-        and ne: "BB j j K \<noteq> BB r r L"
+      obtain j r K L where K: "K \<in> \<K> j j" and xeq: "x = BB j j K" and ne: "BB j j K \<noteq> BB r r L"
         and L: "L \<in> \<K> r r" and yeq: "y = BB r r L"
         using U by (auto simp: Ueq XX_def)
       then have "length x = enum (d j) j" "length y = enum (d r) r"
@@ -3716,10 +3697,11 @@ proof -
         let ?db = "\<Sqinter> (d j0) + ((\<Sum>i<j. card (b (enum K i) (j0,i))) + card (b (enum K j) (j0,j)))"
         have "j0 < enum K j"
           by (meson Suc.prems Suc_le_lessD finite_enumerate_in_set greaterThan_iff le_trans subsetD K)
+        then have "enum (d j0) j \<ge> \<Sqinter> (d j0)"
+          using Suc.prems card_d by (simp add: cInf_le_finite finite_enumerate_in_set)
         then have "?db = enum (d j0) (Suc j)"
-          using Suc.prems
-          apply (simp add: sum_card_b card_b that enum_d_0 split: nat_diff_split)
-          by (simp add: cInf_le_finite finite_enumerate_in_set leD)
+          using Suc.prems that
+          by (simp add: cInf_le_finite finite_enumerate_in_set sum_card_b card_b enum_d_0 \<open>j0 < enum K j\<close> less_or_eq_imp_le)
         then have "?db \<in> d j0"
           using Suc.prems finite_enumerate_in_set by (auto simp: finite_enumerate_in_set)
         moreover have "list.set (acc_lengths w (seqs j0 j K)) \<subseteq> (+) w ` d j0"
@@ -3749,7 +3731,7 @@ proof -
         moreover have "disjnt (b (enum K i) (j,i)) (b (enum L q) (r,q))" if "i < j" "q < r" for i q
         by (meson \<open>j < r\<close> bb_disjnt enumK enumL less_imp_le that)
       ultimately show ?thesis
-          by (simp add: xeq yeq BB_def)
+        by (simp add: xeq yeq BB_def)
       qed
       have "\<exists>us vs. merge (seqs j j K) (seqs r r L) us vs"
       proof (rule merge_exists)
@@ -3764,24 +3746,12 @@ proof -
         show "seqs j j K \<noteq> []" "seqs r r L \<noteq> []"
           using seqs_def by blast+
         have less_bb: "b (enum K i) (j,i) \<lless> b (enum L p) (r, p)"
-          if neg: "\<not> b (enum L p) (r, p) \<lless> b (enum K i) (j,i)" and "i < j" "p < r"
+          if "\<not> b (enum L p) (r, p) \<lless> b (enum K i) (j,i)" and "i < j" "p < r"
           for i p
-        proof (cases "enum K i" "enum L p" rule: linorder_cases)
-          case less
-          then show ?thesis
-            by (simp add: bb enumK less_imp_le_nat \<open>i < j\<close>)
-        next
-          case equal
-          then show ?thesis
-            using \<open>j < r\<close> enumK \<open>i < j\<close> by (force simp: IJ_iff pair_less_def intro: bb_same)
-        next
-          case greater
-          then show ?thesis
-            using bb enumL less_imp_le_nat neg \<open>p < r\<close> by blast
-        qed
+          by (metis IJ_iff \<open>j < r\<close> bb bb_same enumK enumL less_imp_le_nat linorder_neqE_nat pair_lessI1 that)
         show "u < v \<or> v < u"
           if "u \<in> list.set (seqs j j K)" and "v \<in> list.set (seqs r r L)" for u v
-          using that enumK enumL
+          using that enumK enumL unfolding seqs_def
           apply (auto simp: seqs_def aj_ar intro!: less_bb less_sets_imp_list_less)
           apply (meson ab ba less_imp_le_nat not_le)+
           done
@@ -3835,17 +3805,21 @@ proof -
           using da [of j] db [of j]  K \<K>_card \<K>_enum nat_less_le
           by (auto simp: xeq BB_def less_sets_Un2 less_sets_UN2)
         then have ac_x: "acc_lengths 0 (seqs j j K) < x"
-          by (meson Ksub \<open>finite K\<close> \<open>j \<le> card K\<close> acc_lengths_subset_d dual_order.refl less_sets_imp_list_less less_sets_weaken1)
+          by (meson Ksub \<open>finite K\<close> \<open>j \<le> card K\<close> acc_lengths_subset_d le_refl less_sets_imp_list_less less_sets_weaken1)
+        then have "ps < x"
+          by (meson Ksub \<open>d j \<lless> list.set x\<close> \<open>finite K\<close> \<open>j \<le> card K\<close> acc_lengths_subset_d le_refl less_sets_imp_list_less less_sets_weaken1 u_sub)
         then have "ps < u1"
-          by (metis K Ksub UnI1 \<K>_card \<open>finite K\<close> \<open>j \<le> card K\<close> \<open>d j \<lless> list.set x\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append u_sub xu_eq)
+          by (metis Nil_is_append_conv concat.simps(2) hd_append2 less_list_def xu_eq)
 
         have "d r \<lless> list.set y"
           using da [of r] db [of r]  L \<K>_card \<K>_enum nat_less_le
           by (auto simp: yeq BB_def less_sets_Un2 less_sets_UN2)
         then have "acc_lengths 0 (seqs r r L) < y"
-          by (meson Lsub \<open>finite L\<close> \<open>r \<le> card L\<close> acc_lengths_subset_d dual_order.refl less_sets_imp_list_less less_sets_weaken1)
+          by (meson Lsub \<open>finite L\<close> \<open>r \<le> card L\<close> acc_lengths_subset_d le_refl less_sets_imp_list_less less_sets_weaken1)
+        then have "qs < y"
+          by (metis L Lsub \<K>_card \<open>d r \<lless> list.set y\<close> \<open>finite L\<close> acc_lengths_subset_d less_sets_imp_list_less less_sets_weaken1 order_refl v_sub)
         then have "qs < v1"
-          by (metis L Lsub UnI1 \<K>_card \<open>finite L\<close> \<open>r \<le> card L\<close> \<open>d r \<lless> list.set y\<close> acc_lengths_subset_d concat.simps(2) empty_iff empty_set hd_append2 less_list_def less_sets_imp_list_less less_sets_weaken1 list.set_sel(1) set_append v_sub yv_eq)
+          by (metis concat.simps(2) gr_implies_not0 hd_append2 less_list_def list.size(3) xy yv_eq)
 
         have carda_v1: "card (a r) \<le> length v1"
           using length_hd_merge2 [OF merge] unfolding vs [symmetric] by (simp add: seqs_def)
@@ -3878,7 +3852,8 @@ proof -
           qed
           fix q
           assume "q < r"
-          show "u \<notin> b (enum L q) (r,q)" using l_cases
+          show "u \<notin> b (enum L q) (r,q)" 
+            using l_cases
           proof cases
             case 1
             then show ?thesis
@@ -3889,9 +3864,8 @@ proof -
             proof (cases "enum K i = enum L q")
               case True
               then show ?thesis
-                using 2 bb_same [of concl: "enum L q" j i r q] \<open>j < r\<close>
-                apply (simp add: IJ_def pair_less_def less_sets_def)
-                by (metis enumK b_ne card_b_finite last_in_set leD less_imp_le_nat set_sorted_list_of_set sorted_list_of_set_eq_Nil_iff)
+                using 2 bb_same [of concl: "enum L q" j i r q] \<open>j < r\<close> u
+                by (metis IJ_iff b_ne card_b_finite enumK last_in_set leD less_imp_le_nat less_setsD pair_lessI1 set_sorted_list_of_set sorted_list_of_set_eq_Nil_iff)
             next
               case False
               with 2 bb enumK enumL show ?thesis
@@ -3931,15 +3905,16 @@ proof -
               by (metis Inf_nat_def1 \<open>j < r\<close> ad d_ne finite_a less_setsD n set_sorted_list_of_set)
           next
             case 2
-            then have "Min (b (enum K i) (j,i)) \<le> n"
-              using n by (simp add: less_list_def disjnt_iff less_sets_def)
+            then have "hd (list_of (b (enum K i) (j,i))) = Min (b (enum K i) (j,i))"
+              by (meson b_ne card_b_finite enumK hd_list_of less_imp_le_nat)
+            also have "\<dots> \<le> n"
+              using 2 n by (simp add: less_list_def disjnt_iff less_sets_def)
             also have f8: "n < hd y"
               using less_setsD that u1_y
               by (metis gr_implies_not0 list.set_sel(1) list.size(3) xy)
             finally have "l < y"
-              using 2 disjnt_hd_last_K_y [OF l] u1_y
-              apply (simp add: less_list_def disjnt_iff)
-              by (metis card_b_finite hd_list_of leI less_imp_le_nat list.set_sel(1))
+              using 2 disjnt_hd_last_K_y [OF l]
+              by (simp add: disjnt_iff) (metis leI less_imp_le_nat less_list_def list.set_sel(1))
             moreover have "last (list_of (b (enum K i) (j,i))) < hd (list_of (a r))"
               using \<open>l < y\<close> L n by (auto simp:  2yeq BB_eq_concat_seqs seqs_def less_list_def)
             then have "enum K i < r"
@@ -4024,7 +3999,7 @@ proof -
       then have "enum N l \<le> enum N (Suc (2 * Suc j))"
         by (simp add: assms less_imp_le_nat)
       also have "\<dots> < Min (d j)"
-        by (metis Min_in card_0_eq card_d d_eq finite_d fst_grab_subset greaterThan_iff in_mono le_inf_iff nxt_def old.nat.distinct(2))
+        by (smt (verit, best) Min_gr_iff d_eq d_ne finite_d fst_grab_subset greaterThan_iff in_mono le_inf_iff nxt_def)
       finally have ls: "{enum N l} \<lless> d j"
         by simp
       have "l > 0"
@@ -4054,8 +4029,6 @@ proof -
     qed
   qed
 qed
-
-
 
 
 subsection \<open>The main partition theorem for @{term "\<omega>\<up>\<omega>"}\<close>
@@ -4105,7 +4078,7 @@ next
           by (simp add: partn_lst_VWF_imp_partn_lst [OF Theorem_3_2])
         show ?thesis
           using partn_lst_E [OF * fnm, simplified]
-          by (metis (no_types, hide_lams) One_nat_def Suc_1 WW_seg_subset_WW order.trans less_2_cases m not1 nth_Cons' nth_Cons_Suc)
+          by (metis One_nat_def WW_seg_subset_WW less_2_cases m not1 nth_Cons_0 nth_Cons_Suc numeral_2_eq_2 subset_trans)
       qed
       then obtain W':: "nat \<Rightarrow> nat list set"
           where otW': "\<And>n. ordertype (W' n) ?R = \<omega>\<up>n"
@@ -4125,7 +4098,7 @@ next
         show "ordertype WW' ?R \<le> \<omega> \<up> \<omega>"
           by simp
         have "\<omega> \<up> n \<le> ordertype (\<Union> (range W')) ?R" for n::nat
-          by (metis TC_small UNIV_I UN_I otW' lenlex_transI ordertype_mono subsetI trans_less_than wf_lenlex wf_less_than)
+          using oexp_Limit ordertype_\<omega>\<omega> otW' by auto
         then show "\<omega> \<up> \<omega> \<le> ordertype WW' ?R"
           by (auto simp: elts_\<omega> oexp_Limit ZFC_in_HOL.SUP_le_iff WW'_def)
       qed
@@ -4193,9 +4166,10 @@ next
               by auto
             then have "h_seg (length l) l \<noteq> []"
               using \<open>1 < m\<close> \<open>l \<in> WW\<close> len_h_seg by fastforce
-            with \<open>1 < m\<close> show ?thesis
-              apply (simp add: h_def len_h_seg \<open>l \<in> WW\<close>)
-              by (meson \<open>0 < length l\<close> bij_betw_inv_into_left bij_h_seg l)
+            moreover have "bij_betw (h_seg (length l)) (WW_seg (length l)) (W' (length l))"
+              using \<open>0 < length l\<close> bij_h_seg by presburger
+            ultimately show ?thesis
+              using \<open>l \<in> WW\<close> bij_betw_inv_into_left h_def l len_h_seg by fastforce
           qed (auto simp: h_def)
         next
           fix l
@@ -4266,10 +4240,8 @@ next
           then show ?lhs
           proof cases
             case 1
-            then have "(a, b) \<in> lenlex less_than"
-              using omega_sum_less_iff by auto
             then show ?thesis
-              by (simp add: \<open>a \<in> WW\<close> \<open>b \<in> WW\<close>)
+              using omega_sum_less_iff \<open>a \<in> WW\<close> \<open>b \<in> WW\<close> by auto
           next
             case 2
             then have ab: "a \<in> WW_seg (length a)" "b \<in> WW_seg (length a)"
@@ -4284,13 +4256,12 @@ next
       qed
 
       let ?fh = "f \<circ> image h"
-      have "bij_betw h WW WW'"
+      have "bij_betw h WW WW'" 
         using h unfolding iso_ll_def iso_iff2 by (fastforce simp: FR_WW FR_WW')
       moreover have "{..<Suc (Suc 0)} = {0,1}"
         by auto
       ultimately have fh: "?fh \<in> [WW]\<^bsup>2\<^esup> \<rightarrow> {0,1}"
         unfolding Pi_iff using bij_betwE f' bij_betw_nsets by (metis PiE comp_apply)
-
       have "f{x,y} = 0" if "x \<in> WW'" "y \<in> WW'" "length x = length y" "x \<noteq> y" for x y
       proof -
         obtain p q where "x \<in> W' p" and "y \<in> W' q"
@@ -4301,9 +4272,8 @@ next
         then show "f{x,y} = 0"
           using f_W' by blast
       qed
-      then have fh_eq_0_eqlen: "?fh{x,y} = 0" if "x \<in> WW" "y \<in> WW" "length x = length y" "x \<noteq> y" for x y
-        using  \<open>bij_betw h WW WW'\<close>  that hlen
-        by (simp add: bij_betw_iff_bijections) metis
+      then have fh_eq_0_eqlen: "?fh{x,y} = 0" if "x \<in> WW" "y \<in> WW" "length x = length y" "x\<noteq>y" for x y
+        using \<open>bij_betw h WW WW'\<close> that hlen by (simp add: bij_betw_iff_bijections) metis
       have m_f_0: "\<exists>x\<in>[M]\<^bsup>2\<^esup>. f x = 0" if "M \<subseteq> WW" "card M = m" for M
       proof -
         have "finite M"
@@ -4322,10 +4292,12 @@ next
           by (metis \<open>bij_betw h WW WW'\<close> bij_betw_def bij_betw_subset card_image that)
         ultimately have "\<exists>x \<in> [h ` M]\<^bsup>2\<^esup>. f x = 0"
           by (metis m_f_0)
-        then obtain Y where "f (h ` Y) = 0" "finite Y" "card Y = 2" "Y \<subseteq> M"
-          apply (simp add: nsets_def subset_image_iff)
-          by (metis \<open>M \<subseteq> WW\<close> \<open>bij_betw h WW WW'\<close> bij_betw_def card_image card.infinite inj_on_subset zero_neq_numeral)
-        then show ?thesis
+        then obtain Y where Y: "f (h ` Y) = 0" "Y \<subseteq> M" and "finite (h ` Y)" "card (h ` Y) = 2"
+          by (auto simp: nsets_def subset_image_iff)
+        then have "card Y = 2"
+          using \<open>bij_betw h WW WW'\<close> \<open>M \<subseteq> WW\<close>
+          by (metis bij_betw_def card_image inj_on_subset)
+        with Y card.infinite[of Y] show ?thesis
           by (auto simp: nsets_def)
       qed
 
@@ -4346,17 +4318,16 @@ next
         moreover
         have \<section>: "Form k u" "List.set (inter_scheme k u) \<subseteq> enum N ` {k<..}"
           by (simp_all add: MF Mi \<open>u \<in> [M]\<^bsup>2\<^esup>\<close>)
+        then have "hd (inter_scheme k u) \<in> enum N ` {k<..}"
+          using hd_in_set inter_scheme_simple that by blast
+        then have "[enum N k] < inter_scheme k u"
+          using strict_mono_enum [OF \<open>infinite N\<close>] by (auto simp: less_list_def strict_mono_def)
         moreover have "u \<in> [WW]\<^bsup>2\<^esup>"
           using M u by (auto simp: nsets_def)
         moreover have "enum N ` {k<..} \<subseteq> N"
           using \<open>infinite N\<close> range_enum by auto
-        moreover
-        have "[enum N k] < inter_scheme k u"
-          using inter_scheme [of k u]  strict_mono_enum [OF \<open>infinite N\<close>] \<section>
-          apply (auto simp: less_list_def subset_image_iff subset_eq Bex_def image_iff)
-          by (metis hd_in_set strict_mono_def)
         ultimately show ?thesis
-          using N that by auto
+          using N \<section> that by auto
       qed
       obtain X where "X \<subseteq> WW" and otX: "ordertype X (lenlex less_than) = \<omega>\<up>\<omega>"
             and X: "\<And>u. u \<in> [X]\<^bsup>2\<^esup> \<Longrightarrow>
@@ -4369,17 +4340,15 @@ next
         obtain l where "Form l u" and l: "l > 0 \<longrightarrow> [enum N l] < inter_scheme l u \<and> List.set (inter_scheme l u) \<subseteq> N"
           using u X by blast
         have "?fh u = 0"
-        proof (cases "l > 0")
-          case False
-          then have "l = 0"
-            by blast
+        proof (cases "l = 0")
+          case True
           then show ?thesis
             by (metis Form_0_cases_raw \<open>Form l u\<close> \<open>X \<subseteq> WW\<close> doubleton_in_nsets_2 fh_eq_0_eqlen subset_iff u)
         next
-          case True
+          case False
           then obtain "[enum N l] < inter_scheme l u" "List.set (inter_scheme l u) \<subseteq> N" "j l = 0"
             using Nat.neq0_conv j_0 l by blast
-          with True show ?thesis
+          with False show ?thesis
             using \<open>X \<subseteq> WW\<close> N inter_scheme \<open>Form l u\<close> doubleton_in_nsets_2 u by (auto simp: nsets_def)
         qed
         then show "f (h ` u) = 0"
