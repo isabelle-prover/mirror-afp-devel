@@ -3,7 +3,8 @@
 *)
 section \<open>Gauss-Jordan elimination algorithm\<close>
 theory Gauss_Jordan_Elim_Fun
-imports Main
+  imports
+    "HOL-Combinatorics.Transposition"
 begin
 
 text\<open>Matrices are functions:\<close>

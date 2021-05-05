@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Gauss-Jordan-Elim-Fun" (AFP) = HOL +
+session "Gauss-Jordan-Elim-Fun" (AFP) = "HOL-Combinatorics" +
   options [timeout = 600]
   theories
     Gauss_Jordan_Elim_Fun

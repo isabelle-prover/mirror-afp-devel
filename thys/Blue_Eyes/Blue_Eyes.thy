@@ -1,6 +1,7 @@
 (*<*)
 theory Blue_Eyes
-  imports Main
+  imports
+    "HOL-Combinatorics.Transposition"
 begin
 (*>*)
 

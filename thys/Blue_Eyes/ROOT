@@ -1,6 +1,6 @@
 chapter AFP
 
-session Blue_Eyes (AFP) = HOL +
+session Blue_Eyes (AFP) = "HOL-Combinatorics" +
   options [timeout = 300]
   theories
     Blue_Eyes
