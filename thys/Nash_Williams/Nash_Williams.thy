@@ -56,7 +56,7 @@ proof
     then have "Inf S' \<in> T"
       by (metis Diff_eq_empty_iff Diff_iff Inf_nat_def1 eq)
     moreover have "\<And>x. x \<in> S \<Longrightarrow> x < Inf S'"
-      using S' False by (auto simp: less_sets_def intro!: Inf_nat_def1)
+      using S' False by (metis Diff_eq_empty_iff Inf_nat_def1 eq less_sets_def)
     moreover have "{n \<in> T. n < Inf S'} \<subseteq> S"
       using Inf_nat_def eq not_less_Least by fastforce
     ultimately show ?rhs
@@ -66,10 +66,6 @@ next
   assume ?rhs
   then show ?lhs
   proof (elim disjE bexE)
-    assume "S = T"
-    then show "init_segment S T"
-      using init_segment_refl by blast
-  next
     fix m
     assume m: "m \<in> T" "S = {n \<in> T. n < m}"
     then have "T = S \<union> {n \<in> T. m \<le> n}"
@@ -78,7 +74,7 @@ next
       using m by (auto simp: less_sets_def)
     ultimately show "init_segment S T"
       using init_segment_Un by force
-  qed
+  qed (use init_segment_refl in blast)
 qed
 
 lemma init_segment_empty [iff]: "init_segment {} S"
@@ -86,20 +82,17 @@ lemma init_segment_empty [iff]: "init_segment {} S"
 
 lemma init_segment_insert_iff:
   assumes Sn: "S \<lless> {n}" and TS: "\<And>x. x \<in> T-S \<Longrightarrow> n\<le>x"
-  shows "init_segment (insert n S) T \<longleftrightarrow> init_segment S T \<and> n \<in> T"
+  shows "init_segment (insert n S) T \<longleftrightarrow> init_segment S T \<and> n \<in> T" (is "?lhs=?rhs")
 proof
-  assume "init_segment (insert n S) T"
-  then have "init_segment ({n} \<union> S) T"
-    by auto
-  then show "init_segment S T \<and> n \<in> T"
-    by (metis Sn Un_iff init_segment_def init_segment_trans insertI1 sup_commute)
+  assume ?lhs then show ?rhs
+    by (metis Sn Un_commute init_segment_Un init_segment_subset init_segment_trans insertI1 insert_is_Un subsetD)
 next
-  assume rhs: "init_segment S T \<and> n \<in> T"
+  assume rhs: ?rhs
   then obtain R where R: "T = S \<union> R" "S \<lless> R"
     by (auto simp: init_segment_def less_sets_def)
   then have "S\<union>R = insert n (S \<union> (R-{n})) \<and> insert n S \<lless> R-{n}"
     unfolding less_sets_def using rhs TS nat_less_le by auto
-  then show "init_segment (insert n S) T"
+  then show ?lhs
     using R init_segment_Un by force
 qed
 
@@ -213,14 +206,9 @@ proof -
     by (auto simp: F_def \<Phi>_def)
   have *: "infinite (F n) \<and> decides \<F> (f n) (F n) \<and> F n \<subseteq> M" for n
   proof (induction n)
-    case 0
-    with \<open>infinite M\<close> show ?case
-      by (auto simp: F_def M0)
-  next
-    case (Suc n)
-    then show ?case
+    case (Suc n) then show ?case
       by (metis P_Suc \<Phi>_def ex_infinite_decides_1 someI_ex subset_trans)
-  qed
+  qed (auto simp: F_def M0)
   then have telescope: "F (Suc n) \<subseteq> F n" for n
     by (metis P_Suc \<Phi>_def ex_infinite_decides_1 someI_ex)
   let ?N = "\<Inter>n<card (Pow S). F n"
@@ -317,7 +305,7 @@ proof -
     proof
       have "mmap ` K \<subseteq> list.set (map Inf (F (Suc (Max K))))"
         unfolding mmap_def image_subset_iff
-        by (metis F Max_ge \<open>finite K\<close> hd_in_set imageI map_Inf_subset not_less_eq_eq set_map subsetD)
+        by (metis F Max_ge Suc_le_mono \<open>finite K\<close> hd_in_set imageI map_Inf_subset set_map subsetD)
       with S show "S \<subseteq> list.set (map Inf (F (Suc (Max K))))"
         using \<open>S \<subseteq> mmap ` K\<close> by auto
     qed
@@ -328,10 +316,10 @@ proof -
     by (rule order_class.lift_Suc_antimono_le)
   have hd_Suc_eq_Eps: "hd (F (Suc n)) = Eps (\<Phi> (F n))" for n
     by simp
-  have Inf_hd_in_hd: "Inf (hd (F n)) \<in> hd (F n)" for n
+  have "Inf (hd (F n)) \<in> hd (F n)" for n
     by (metis Inf_nat_def1 \<Phi>F \<Phi>_def finite.emptyI rev_finite_subset)
   then have Inf_hd_in_Eps: "Inf (hd (F m)) \<in> Eps (\<Phi> (F n))" if "m>n" for m n
-    by (metis Eps_\<Phi>_decreasing Nat.lessE leD mmap_def not_less_eq_eq subsetD that hd_Suc_eq_Eps)
+    by (metis Eps_\<Phi>_decreasing Nat.lessE hd_Suc_eq_Eps less_imp_le_nat subsetD that)
   then have image_mmap_subset_hd_F: "mmap ` {n..} \<subseteq> hd (F (Suc n))" for n
     by (metis hd_Suc_eq_Eps atLeast_iff image_subsetI le_imp_less_Suc mmap_def)
   have "list.set (F k) \<subseteq> list.set (F n)" if "k \<le> n" for k n
@@ -350,7 +338,7 @@ proof -
       fix S
       assume "S \<subseteq> range mmap" "finite S"
       define n where "n \<equiv> LEAST n. S \<subseteq> List.set (map Inf (F n))"
-      have "\<exists>n. S \<subseteq> List.set (map Inf (F n))"
+      have "\<exists>m. S \<subseteq> List.set (map Inf (F m))"
         using \<open>S \<subseteq> range mmap\<close> \<open>finite S\<close> finite_F_bound by blast
       then have S: "S \<subseteq> List.set (map Inf (F n))" and minS: "\<And>m. m<n \<Longrightarrow> \<not> S \<subseteq> List.set (map Inf (F m))"
         unfolding n_def by (meson LeastI_ex not_less_Least)+
@@ -401,17 +389,9 @@ proof -
         then show ?thesis
         proof cases
           case 1
-          have "rejects \<F> S (range mmap)"
-          proof (clarsimp simp: rejects_def disjoint_iff)
-            fix X
-            assume "X \<in> comparables S (range mmap)" and "X \<in> \<F>"
-            moreover have "\<And>x X. \<lbrakk>X \<in> \<F>; init_segment S X; x \<in> X; x \<notin> S; x \<in> range mmap\<rbrakk>
-                                \<Longrightarrow> x \<in> Eps (\<Phi> (F n))"
-              using less_S Inf_hd_F mmap_def by blast
-            ultimately have "X \<in> comparables S (Eps (\<Phi> (F n)))"
-              by (auto simp: comparables_def disjoint_iff subset_iff)
-            with 1 \<open>X \<in> \<F>\<close> show False by (auto simp: rejects_def)
-          qed
+          then have "rejects \<F> S (range mmap)"
+            apply (simp add: rejects_def disjoint_iff mmap_def comparables_def image_iff subset_iff)
+            by (metis less_S Inf_hd_F hd_Suc_eq_Eps)
           then show ?thesis
             by (auto simp: decides_def)
         next
@@ -430,10 +410,8 @@ proof -
             ultimately show ?thesis
               using 2 by (auto simp: strongly_accepts_def)
           qed
-          with 2 have "strongly_accepts \<F> S (range mmap)"
-            by (auto simp: strongly_accepts_def)
-          then show ?thesis
-            by (auto simp: decides_def)
+          with 2 show ?thesis
+            by (auto simp: decides_def strongly_accepts_def)
         qed
       qed
     qed
@@ -455,16 +433,13 @@ proof (rule ccontr)
   moreover have "{n \<in> M. \<not> strongly_accepts \<F> (insert n S) M} = {n \<in> M. rejects \<F> (insert n S) M}"
     using dsM \<open>finite S\<close> \<open>infinite M\<close> \<open>S \<subseteq> M\<close> unfolding decides_subsets_def
     by (meson decides_def finite.insertI insert_subset strongly_accepts_imp_accepts)
-  ultimately have "infinite {n \<in> M. rejects \<F> (insert n S) M}"
-    by simp
-  then have "infinite N"
+  ultimately have "infinite N"
     by (simp add: N_def finite_nat_Int_greaterThan_iff)
   then have "accepts \<F> S N"
     using acc strongly_accepts_def \<open>N \<subseteq> M\<close> by blast
   then obtain T where T: "T \<in> comparables S N" "T \<in> \<F>" and TSN: "T \<subseteq> S \<union> N"
-    unfolding rejects_def
-    using comparables_iff init_segment_subset by fastforce
-  then consider "init_segment T S" | "init_segment S T" "S\<noteq>T"
+    unfolding rejects_def using comparables_iff init_segment_subset by fastforce
+  then consider "init_segment T S" | "init_segment S T" "S\<noteq>T" "\<not> init_segment T S"
     by (auto simp: comparables_def)
   then show False
   proof cases
@@ -476,26 +451,20 @@ proof (rule ccontr)
   next
     let ?n = "Min (T-S)"
     case 2
+    then obtain TS: "?n \<in> T-S" "finite (T-S)"
+      using T unfolding comparables_iff
+      by (meson Diff_eq_empty_iff Min_in finite_Diff init_segment_subset subset_antisym)
     then have "?n \<in> N"
-      by (metis Diff_partition Diff_subset_conv Min_in T(1) TSN comparables_iff finite_Diff init_segment_subset subsetD sup_bot.right_neutral)
+      by (meson Diff_subset_conv TSN in_mono)
     then have "rejects \<F> (insert ?n S) N"
       using rejects_subset \<open>N \<subseteq> M\<close> by (auto simp: N_def)
     then have \<section>: "\<not> init_segment T (insert ?n S) \<and> (init_segment (insert ?n S) T \<longrightarrow> insert ?n S = T)"
-      using T Diff_partition TSN \<open>Min (T - S) \<in> N\<close> \<open>finite S\<close>
-      unfolding rejects_def comparables_iff disjoint_iff
-      by auto
-    then have "T \<subseteq> insert ?n S"
-    proof (elim conjE impCE)
-      assume "\<not> init_segment T (insert ?n S)" "\<not> init_segment (insert ?n S) T"
-      moreover have "S \<lless> {Min (T - S)}"
-        using Sup_nat_less_sets_singleton N \<open>Min (T - S) \<in> N\<close> \<open>finite S\<close> by blast
-      moreover have "finite (T - S)"
-        using T comparables_iff by blast
-      ultimately show ?thesis
-        using \<open>init_segment S T\<close> Min_in init_segment_insert_iff by auto
-    qed auto
-    then show False
-      using "2" "\<section>" init_segment_iff by auto
+      using T Diff_partition TSN \<open>?n \<in> N\<close> \<open>finite S\<close>
+      by (auto simp: rejects_def comparables_iff disjoint_iff)
+    moreover have "S \<lless> {?n}"
+      using Sup_nat_less_sets_singleton N \<open>?n \<in> N\<close> \<open>finite S\<close> by blast
+    ultimately show ?thesis
+      using 2 TS Min_in init_segment_insert_iff by fastforce
   qed
 qed
 
