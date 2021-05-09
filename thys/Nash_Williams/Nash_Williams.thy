@@ -489,14 +489,10 @@ proof -
     have "\<exists>k. P S \<subseteq> {..k}"
       if "S \<subseteq> Inf ` set NL" "strongly_accepts \<F> S ?M" for S
     proof -
-      have "finite (P S)"
-        unfolding P_def
-      proof (rule strongly_accepts_1_19)
-        show "decides_subsets \<F> ?M"
-          using NL(2) decides_subsets_subset dsM by blast
-        show "finite S"
-          using finite_surj that(1) by blast
-      qed (use that NL assms in auto)
+      have "decides_subsets \<F> ?M"
+        using NL(2) decides_subsets_subset dsM by blast
+      with that NL assms finite_surj have "finite (P S)"
+        unfolding P_def by (blast intro!: strongly_accepts_1_19)
       then show ?thesis
         by (simp add: finite_nat_iff_bounded_le)
     qed
@@ -514,18 +510,18 @@ proof -
     have "\<Phi> NL (hd NL \<inter> {m<..})"
       unfolding \<Phi>_def
     proof (intro conjI)
-    have "Inf (hd NL) \<le> m"
-      by (simp add: m_def)
-    then show "Inf (hd NL) < Inf (hd NL \<inter> {m<..})"
-      by (metis Inf_nat_def1 Int_iff finite.emptyI finite_nat_Int_greaterThan_iff greaterThan_iff le_less_trans that(1))
       show "infinite (hd NL \<inter> {m<..})"
         by (simp add: finite_nat_Int_greaterThan_iff that(1))
+      moreover have "Inf (hd NL) \<le> m"
+        by (simp add: m_def)
+      ultimately show "Inf (hd NL) < Inf (hd NL \<inter> {m<..})"
+        using Inf_nat_def1 [of "(hd NL \<inter> {m<..})"] by force
       show "insert_closed NL (hd NL \<inter> {m<..})"
         by (auto intro: \<section> simp: insert_closed_def)
     qed auto
     then show ?thesis ..
   qed
-  then have \<Phi>_Eps: "\<Phi> NL (Eps (\<Phi> NL))" if "infinite (hd NL)"  "Inf ` set NL \<union> hd NL \<subseteq> M" for NL
+  then have \<Phi>_Eps: "\<Phi> NL (Eps (\<Phi> NL))" if "infinite (hd NL)" "(Inf ` set NL) \<union> hd NL \<subseteq> M" for NL
     by (meson someI_ex that)
   define F where "F \<equiv> rec_nat [M] (\<lambda>n NL. (Eps (\<Phi> NL)) # NL)"
   have F_simps [simp]: "F 0 = [M]" "F (Suc n) = Eps (\<Phi> (F n)) # F n" for n
@@ -537,20 +533,18 @@ proof -
     case (Suc n)
     have "hd (F n) \<subseteq> M"
       by (meson Pow_iff Suc.IH hd_in_set subsetD)
-    then have 1: "Ball (list.set (F n)) ((\<subseteq>) (Eps (\<Phi> (F n))))"
+    then obtain \<Phi>: "Ball (list.set (F n)) ((\<subseteq>) (Eps (\<Phi> (F n))))" "infinite (Eps (\<Phi> (F n)))" 
       using order_trans [OF _ sorted_wrt_subset]
       by (metis Suc.IH Un_subset_iff \<Phi>_Eps \<Phi>_def hd_in_set mem_Collect_eq subsetD)
-    have 2: "infinite (Eps (\<Phi> (F n)))"
-      by (metis Ball_Collect Pow_iff Suc.IH Un_subset_iff \<Phi>_Eps \<Phi>_def hd_in_set subset_iff)
-    have 3: "Eps (\<Phi> (F n)) \<subseteq> M"
-      by (meson Pow_iff Suc.IH 1 hd_in_set subset_iff)
-    have "Inf (Eps (\<Phi> (F n))) \<in> M"
-      by (metis 2 3 Inf_nat_def1 finite.simps in_mono)
-    with 1 2 3 show ?case
+    then have M: "Eps (\<Phi> (F n)) \<subseteq> M"
+      by (meson Pow_iff Suc.IH hd_in_set subset_iff)
+    with \<Phi> have "Inf (Eps (\<Phi> (F n))) \<in> M"
+      by (metis Inf_nat_def1 finite.simps in_mono)
+    with \<Phi> M show ?case
       using Suc by simp
   qed (auto simp: InfM \<open>infinite M\<close>)
   have \<Phi>F: "\<Phi> (F n) (Eps (\<Phi> (F n)))" for n
-    by (metis Ball_Collect F Pow_iff Un_subset_iff \<Phi>_Eps hd_in_set subset_code(1))
+    by (metis Ball_Collect F Pow_iff Un_subset_iff \<Phi>_Eps hd_in_set subsetD)
   then have insert_closed: "insert_closed (F n) (Eps (\<Phi> (F n)))" for n
     using \<Phi>_def by blast
   have Eps_subset_hd: "Eps (\<Phi> (F n)) \<subseteq> hd (F n)" for n
@@ -571,7 +565,7 @@ proof -
   have "Inf (hd (F n)) \<in> hd (F n)" for n
     by (metis Inf_nat_def1 \<Phi>F \<Phi>_def finite.emptyI finite_subset)
   then have Inf_hd_in_Eps: "Inf (hd (F m)) \<in> Eps (\<Phi> (F n))" if "m>n" for m n
-    by (metis Eps_\<Phi>_decreasing Nat.lessE hd_Suc_eq_Eps less_imp_le_nat subsetD that)
+    by (metis Eps_\<Phi>_decreasing Nat.lessE hd_Suc_eq_Eps nat_less_le subsetD that)
   then have image_mmap_subset_hd_F: "mmap ` {n..} \<subseteq> hd (F (Suc n))" for n
     by (metis hd_Suc_eq_Eps atLeast_iff image_subsetI le_imp_less_Suc mmap_def)
   have "list.set (F k) \<subseteq> list.set (F n)" if "k \<le> n" for k n
@@ -586,13 +580,13 @@ proof -
       using Eps_subset_hd image_mmap_subset_hd_F by fastforce
   next
     fix S a
-    assume "S \<subseteq> range mmap" "finite S" and acc: "strongly_accepts \<F> S (range mmap)"
+    assume S: "S \<subseteq> range mmap" "finite S" and acc: "strongly_accepts \<F> S (range mmap)"
        and a: "a \<in> range mmap" and Sn: "S \<lless> {a}"
     then obtain n where n: "a = mmap n"
       by auto
     define N where "N \<equiv> LEAST n. S \<subseteq> mmap ` {..<n}"
     have "\<exists>n. S \<subseteq> mmap ` {..<n}"
-      by (metis \<open>S \<subseteq> range mmap\<close> \<open>finite S\<close> finite_nat_iff_bounded finite_subset_image image_mono)
+      by (metis S finite_nat_iff_bounded finite_subset_image image_mono)
     then have S: "S \<subseteq> mmap ` {..<N}" and minS: "\<And>m. m<N \<Longrightarrow> \<not> S \<subseteq> mmap ` {..<m}"
       unfolding N_def by (meson LeastI_ex not_less_Least)+
     have range_mmap_subset: "range mmap \<subseteq> Inf ` list.set (F n) \<union> hd (F n)" for n
@@ -615,7 +609,7 @@ proof -
         by auto
       have "S \<subseteq> mmap ` {..<n}"
         using Sn S \<open>strict_mono mmap\<close> strict_mono_less
-        by (fastforce simp: less_sets_def n  image_iff subset_iff Bex_def)
+        by (fastforce simp: less_sets_def n image_iff subset_iff Bex_def)
       with leI minS have "n\<ge>N" by blast
       then show "a \<in> Eps (\<Phi> (F N))"
         using image_mmap_subset_hd_F n by fastforce
@@ -639,6 +633,9 @@ qed
 
 subsection \<open>Main Theorem\<close>
 
+lemma Nash_Williams_1: "Ramsey \<F> 1"
+  by (auto simp: Ramsey_def)
+
 text\<open>Weirdly, the assumption  @{term "f ` \<F> \<subseteq> {..<2}"} is not used here; it's unnecessary due to
      the particular way that @{term Ramsey} is defined. It's only needed for @{term "r > 2"}\<close>
 theorem Nash_Williams_2:
@@ -660,8 +657,8 @@ proof clarify
   proof cases
     case 1
     then have "?\<F> 0 \<inter> Pow N = {}"
-      unfolding rejects_def disjoint_iff
-      by (metis IntD2 PowD comparables_iff fin\<F> init_segment_empty sup_bot.left_neutral)
+      unfolding rejects_def disjoint_iff comparables_iff
+      by (metis IntD2 PowD fin\<F> init_segment_empty sup_bot.left_neutral)
     then show ?thesis
       using \<open>N \<subseteq> M\<close> \<open>infinite N\<close> less_2_cases_iff by auto
   next
@@ -684,10 +681,8 @@ proof clarify
         case (Suc n)
         then have Seq: "S = insert (Sup S) (S - {Sup S})"
           using Sup_nat_def Max_eq_iff by fastforce
-        then have "card (S - {Sup S}) = n"
-          using Suc card_Diff_singleton by fastforce
         then have sacc: "strongly_accepts (?\<F> 0) (S - {Sup S}) P"
-          using Suc by blast
+          by (metis Suc card_Diff_singleton diff_Suc_1 finite_Diff insertCI insert_subset) 
         have "S - {Sup S} \<lless> {Sup S}"
           using Suc by (simp add: Sup_nat_def dual_order.strict_iff_order less_sets_def)
         then have "strongly_accepts (?\<F> 0) (insert (Sup S) (S - {Sup S})) P"
@@ -713,14 +708,12 @@ proof (induction r)
   show ?case
   proof (cases "r<2")
     case True
-    then show ?thesis
-      by (metis Nash_Williams_2 One_nat_def Ramsey_def assms(1) less_2_cases less_one numeral_2_eq_2 order_refl)
+    with less_2_cases Nash_Williams_1 Nash_Williams_2 assms show ?thesis
+      by (auto simp: numeral_2_eq_2)
   next
     case False
-    with Suc.IH have Ram: "Ramsey \<F> r"
+    with Suc.IH have Ram: "Ramsey \<F> r" "r \<ge> 2"
       by auto
-    have "r \<ge> 2"
-      by (simp add: False leI)
     show ?thesis
       unfolding Ramsey_def
     proof clarify
@@ -752,7 +745,7 @@ proof (induction r)
         have him: "h \<in> \<F> \<rightarrow> {..<r}"
           using fim i False \<open>i<r\<close> by (force simp: h_def)
         then obtain P j where "P \<subseteq> N" "infinite P" "j<r" and j: "\<forall>k<r. j\<noteq>k \<longrightarrow> ?avoids h k P"
-          by (metis Ramsey_def Ram \<open>infinite N\<close>)
+          using Ram by (metis Ramsey_def \<open>infinite N\<close>)
         have "\<exists>i. \<forall>j<Suc r. j \<noteq> i \<longrightarrow> ?avoids f j P"
         proof (cases "j=0")
           case True
