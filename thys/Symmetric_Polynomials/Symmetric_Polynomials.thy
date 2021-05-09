@@ -1401,10 +1401,10 @@ lemma symmetric_mpoly_imp_orthogonal_or_subset:
 proof (rule ccontr)
   assume "\<not>(vars p \<inter> A = {} \<or> A \<subseteq> vars p)"
   then obtain x y where xy: "x \<in> vars p \<inter> A" "y \<in> A - vars p" by auto
-  define \<pi> where "\<pi> = Fun.swap x y id"
+  define \<pi> where "\<pi> = transpose x y"
   from xy have \<pi>: "\<pi> permutes A"
     unfolding \<pi>_def by (intro permutes_swap_id) auto
-  from xy have "y \<in> \<pi> ` vars p" by (auto simp: \<pi>_def Fun.swap_def)
+  from xy have "y \<in> \<pi> ` vars p" by (auto simp: \<pi>_def transpose_def)
   also from \<pi> have "\<pi> ` vars p = vars (mpoly_map_vars \<pi> p)"
     by (auto simp: vars_mpoly_map_vars permutes_bij)
   also have "mpoly_map_vars \<pi> p = p"
@@ -1507,7 +1507,7 @@ proof (cases "p = 0")
   show ?thesis
   proof (intro leI notI)
     assume less: "lookup m i < lookup m j"
-    define \<pi> where "\<pi> = Fun.swap i j id"
+    define \<pi> where "\<pi> = transpose i j"
     from assms have \<pi>: "\<pi> permutes A"
       unfolding \<pi>_def by (intro permutes_swap_id) auto
     have [simp]: "\<pi> \<circ> \<pi> = id" "\<pi> i = j" "\<pi> j = i" "\<And>k. k \<noteq> i \<Longrightarrow> k \<noteq> j \<Longrightarrow> \<pi> k = k"

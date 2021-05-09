@@ -8,7 +8,7 @@ begin
 section \<open>Modifying Permutations\<close>
 
 abbreviation funswapid :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightleftharpoons>\<^sub>F" 90) where
-  "x \<rightleftharpoons>\<^sub>F y \<equiv> Fun.swap x y id"
+  "x \<rightleftharpoons>\<^sub>F y \<equiv> transpose x y"
 
 definition perm_swap :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" where
   "perm_swap x y f \<equiv> x \<rightleftharpoons>\<^sub>F y o f o x \<rightleftharpoons>\<^sub>F y"
@@ -30,11 +30,11 @@ lemma perm_swap_id[simp]: "perm_swap a b id = id"
 lemma perm_rem_permutes:
   assumes "f permutes S \<union> {x}"
   shows "perm_rem x f permutes S"
-  using assms by (auto simp: permutes_def perm_rem_def) (metis swap_id_eq)+
+  using assms by (auto simp: permutes_def perm_rem_def) (metis transpose_def)+
 
 lemma perm_rem_same:
   assumes "bij f" "f y = y" shows "perm_rem x f y = f y"
-  using assms by (auto simp: perm_rem_def swap_id_eq bij_iff)
+  using assms by (auto simp: perm_rem_def bij_iff transpose_def)
 
 lemma perm_rem_simps:
   assumes "bij f"
@@ -42,9 +42,7 @@ lemma perm_rem_simps:
   "x = y \<Longrightarrow> perm_rem x f y = x"
   "f y = x \<Longrightarrow> perm_rem x f y = f x"
   "y \<noteq> x \<Longrightarrow> f y \<noteq> x \<Longrightarrow> perm_rem x f y = f y"
-  using assms
-  apply (auto simp: perm_rem_def )
-  by (metis bij_iff id_apply swap_apply(3))
+  using assms by (auto simp: perm_rem_def transpose_def bij_iff)
 
 lemma bij_swap_compose: "bij (x \<rightleftharpoons>\<^sub>F y o f) \<longleftrightarrow> bij f"
   by (metis UNIV_I bij_betw_comp_iff2 bij_betw_id bij_swap_iff subsetI)
@@ -77,14 +75,14 @@ lemma swap_swap_id[simp]: "(x \<rightleftharpoons>\<^sub>F y) ((x \<rightlefthar
   by (simp add: swap_id_eq)
 
 lemma in_funswapid_image_iff: "\<And>a b x S. x \<in> (a \<rightleftharpoons>\<^sub>F b) ` S \<longleftrightarrow> (a \<rightleftharpoons>\<^sub>F b) x \<in> S"
-  by (metis bij_def bij_id bij_swap_iff inj_image_mem_iff swap_swap_id)
-
+  by (metis inj_image_mem_iff inj_transpose swap_swap_id)
+  
 lemma perm_swap_comp: "perm_swap a b (f \<circ> g) x = perm_swap a b f (perm_swap a b g x)"
   by (auto simp: perm_swap_def)
 
 lemma bij_perm_swap_iff[simp]: "bij (perm_swap a b f) \<longleftrightarrow> bij f"
-  by (auto simp: perm_swap_def bij_swap_compose bij_comp comp_swap)
-
+  by (simp add: bij_swap_compose bij_swap_iff perm_swap_def)
+  
 lemma funpow_perm_swap: "perm_swap a b f ^^ n = perm_swap a b (f ^^ n)"
   by (induct n) (auto simp: perm_swap_def fun_eq_iff)
 
@@ -111,8 +109,8 @@ lemma perm_swap_permutes2:
   assumes "f permutes ((x \<rightleftharpoons>\<^sub>F y) ` S)"
   shows "perm_swap x y f permutes S"
   using assms
-  by (auto simp: perm_swap_def permutes_conv_has_dom has_dom_perm_swap[unfolded perm_swap_def])
-    (metis bij_swap_iff bij_swap_compose_bij comp_id comp_swap)
+  by (auto simp: perm_swap_def permutes_conv_has_dom has_dom_perm_swap [unfolded perm_swap_def] intro!: bij_comp)
+
 
 section \<open>Cyclic Permutations\<close>
 
@@ -147,7 +145,5 @@ lemma orbit_perm_rem_eq:
 lemma cyclic_on_perm_rem:
   assumes "cyclic_on f S" "bij f" "S \<noteq> {x}" shows "cyclic_on (perm_rem x f) (S - {x})"
   using assms[unfolded cyclic_on_alldef] by (simp add: cyclic_on_def orbit_perm_rem_eq) auto
-
-
 
 end

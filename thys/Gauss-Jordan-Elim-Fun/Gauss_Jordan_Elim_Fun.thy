@@ -132,7 +132,7 @@ next
     unfolding unit_def Fun.swap_def Suc_le_eq by (auto simp: le_less)
   from Suc.hyps[OF \<open>m\<le>n\<close> this rec] \<open>m<n\<close> p
   show ?case
-    by(simp add: solution_swap solution_upd1 solution_upd_but1[where A = "A(p := ?Ap' p)"])
+    by (simp only: solution_swap) (simp_all add: solution_swap solution_upd_but1 [where A = "A(p := ?Ap' p)"] solution_upd1)
 qed
 
 theorem gauss_jordan_correct:
@@ -251,8 +251,11 @@ next
     have "\<forall>j<Suc m. ?y j = x j" by (simp add: usolution_def)
     hence "\<forall>j<m. y j = x j"
       by simp (metis less_SucI nat_neq_iff)
-  } ultimately have "usolution ?A m n x" by(simp add: usolution_def)
-  from Suc.IH[OF \<open>m\<le>n\<close> this] 1 show ?case by(simp)
+  } ultimately have "usolution ?A m n x" 
+    by (simp add: usolution_def)
+  note * = Suc.IH [OF \<open>m \<le> n\<close> this]
+  from 1 show ?case
+    by auto (use * in blast)
 qed
 
 text\<open>Future work: extend the proof to matrix inversion.\<close>

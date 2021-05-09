@@ -1588,7 +1588,7 @@ context digraph_map begin
     {
       fix x show "(x \<in> arcs G) = (edge_rev (rev_swap a b) x \<noteq> x)"
         using assms(2)
-        by (cases "x \<in> {a,b}") (auto simp: rev_swap_def perm_swap_def arev_dom swap_id_eq split: if_splits)
+        by (cases "x \<in> {a,b}") (auto simp: rev_swap_def perm_swap_def arev_dom Transposition.transpose_def split: if_splits)
     next
       fix x assume "x \<in> arcs G" then show "edge_rev ?M' (edge_rev ?M' x) = x"
         by (auto simp: rev_swap_def perm_swap_comp[symmetric])

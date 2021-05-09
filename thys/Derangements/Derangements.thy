@@ -17,12 +17,13 @@ lemma card_product_dependent:
   shows "card {(x, y). x \<in> S \<and> y \<in> T x} = (\<Sum>x \<in> S. card (T x))"
 using card_SigmaI[OF assms, symmetric] by (auto intro!: arg_cong[where f=card] simp add: Sigma_def)
 
+
 subsubsection \<open>Additions to @{theory "HOL-Combinatorics.Permutations"} Theory\<close>
 
 lemma permutes_imp_bij':
   assumes "p permutes S"
   shows "bij p"
-using assms by (meson bij_def permutes_inj permutes_surj)
+using assms by (fact permutes_bij)
 
 lemma permutesE:
   assumes "p permutes S"
@@ -37,12 +38,7 @@ using assms bij_imp_permutes permutes_superset by force
 lemma permutes_swap:
   assumes "p permutes S"
   shows "Fun.swap x y p permutes (insert x (insert y S))"
-proof -
-  from assms have "p permutes (insert x (insert y S))" by (meson permutes_subset subset_insertI)
-  moreover have "Fun.swap x y id permutes (insert x (insert y S))" by (simp add: permutes_swap_id)
-  ultimately show "Fun.swap x y p permutes (insert x (insert y S))"
-    by (metis comp_id comp_swap permutes_compose)
-qed
+  by (rule permutes_compose) (use assms in \<open>simp_all add: assms permutes_imp_permutes_insert permutes_swap_id\<close>)
 
 lemma bij_extends:
   "bij p \<Longrightarrow> p x = x \<Longrightarrow> bij (p(x := y, inv p y := x))"
@@ -93,9 +89,21 @@ proof (rule bij_imp_permutes')
 qed
 
 lemma permutes_drop_cycle_size_two:
-  assumes "p permutes S" "p (p x) = x"
-  shows "Fun.swap x (p x) p permutes (S - {x, p x})"
-using assms by (auto intro!: bij_imp_permutes' elim!: permutesE) (metis swap_apply(1,3))
+  \<open>p \<circ> Transposition.transpose x (p x) permutes (S - {x, p x})\<close>
+  if \<open>p permutes S\<close> \<open>p (p x) = x\<close>
+proof (rule bij_imp_permutes')
+  from \<open>p permutes S\<close> have \<open>bij p\<close>
+    by (rule permutes_imp_bij')
+  then show \<open>bij (p \<circ> Transposition.transpose x (p x))\<close>
+    by (simp add: bij_swap_iff)
+  from \<open>p (p x) = x\<close> \<open>p permutes S\<close> have \<open>(p \<circ> Transposition.transpose x (p x)) y = y\<close>
+    if \<open>y \<notin> S - {x, p x}\<close> for y
+    using that by (cases \<open>y \<in> {x, p x}\<close>) (auto simp add: permutes_not_in)
+  then show \<open>\<forall>y. y \<notin> S - {x, p x} \<longrightarrow>
+    (p \<circ> Transposition.transpose x (p x)) y = y\<close>
+    by blast
+qed
+
 
 subsection \<open>Fixpoint-Free Permutations\<close>
 
@@ -112,6 +120,7 @@ lemma derangementsE:
   assumes "d : derangements S"
   obtains "d permutes S" "\<forall>x\<in>S. d x \<noteq> x"
 using assms unfolding derangements_def by auto
+
 
 subsection \<open>Properties of Derangements\<close>
 
@@ -218,6 +227,7 @@ next
     by (auto elim: derangementsE)
 qed
 
+
 subsection \<open>Cardinality of Derangements\<close>
 
 subsubsection \<open>Recursive Characterization\<close>
@@ -277,8 +287,8 @@ next
           by (auto simp add: derangements_in_image derangements_no_fixpoint)
         from d True have "Fun.swap x (d x) d \<in> derangements (S - {x, d x})"
           by (rule derangements_drop_minimal_cycle)
-        from \<open>d x \<in> S\<close> \<open>d x \<noteq> x\<close> this have "d : ?D1"
-          by (auto intro: image_eqI[where x = "(d x, Fun.swap x (d x) d)"])
+        with \<open>d x \<in> S\<close> \<open>d x \<noteq> x\<close> have \<open>d \<in> ?D1\<close>
+          by (auto intro!: image_eqI [where x = \<open>(d x, Fun.swap x (d x) d)\<close>])
         from this show ?thesis by auto
       next
         case False
@@ -392,6 +402,7 @@ next
     by (simp add: split card_Un_disjoint finite1 finite2 no_intersect card_1 card_2 field_simps)
 qed
 
+
 subsubsection \<open>Closed-Form Characterization\<close>
 
 lemma count_derangements:
@@ -426,6 +437,7 @@ proof (induct n rule: count_derangements.induct)
   qed
   finally show ?case by simp
 qed (auto)
+
 
 subsubsection \<open>Approximation of Cardinality\<close>
 

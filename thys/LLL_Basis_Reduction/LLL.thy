@@ -897,8 +897,8 @@ proof -
       then show ?thesis apply(intro image_cong) unfolding fs'_def using len i by auto
     next
       case False 
-      have "?f2 ` {0..<k} = Fun.swap i (i - 1) ?f1 ` {0..<k}"
-        unfolding Fun.swap_def fs'_def o_def using len i 
+      have "?f2 ` {0..<k} = (?f1 \<circ> transpose i (i - 1)) ` {0..<k}"
+        unfolding transpose_def fs'_def o_def using len i 
         by (intro image_cong, insert len kn, force+)
       also have "\<dots> = ?f1 ` {0..<k}"
         apply(rule swap_image_eq) using False by auto

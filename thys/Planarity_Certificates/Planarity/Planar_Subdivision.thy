@@ -45,7 +45,7 @@ context subdiv1_contr begin
   proof -
     have "arcs H \<subseteq> (vw \<rightleftharpoons>\<^sub>F rev_G uv) ` (uw \<rightleftharpoons>\<^sub>F uv) ` arcs G \<union> {wv} \<union> {wu}"
       using subdiv_distinct_arcs in_arcs_G
-      by (auto simp: arcs_H in_funswapid_image_iff swap_id_eq split: if_splits)
+      by (auto simp: arcs_H in_funswapid_image_iff transpose_def split: if_splits)
     then have "perm_swap uw uv (perm_swap vw (rev_G uv) (perm_rem (wv) (perm_rem (wu) (edge_succ HM)))) permutes arcs G"
       by (blast intro: perm_rem_permutes perm_swap_permutes2 permutes_subset H.edge_succ_permutes)
     then show ?thesis by (auto simp: edge_succ_GM)
@@ -75,7 +75,7 @@ context subdiv1_contr begin
       moreover have "x \<noteq> w" using assms not_in_verts_G by blast
       ultimately have "(uw \<rightleftharpoons>\<^sub>F uv) ((vw \<rightleftharpoons>\<^sub>F vu) a) \<in> out_arcs G x"
         using subdiv_distinct_arcs in_arcs_G not_in_arcs_G
-        by (auto simp: arcs_H ) (auto simp: swap_id_eq intro: tail_eqI[symmetric])
+        by (auto simp: arcs_H ) (auto simp: transpose_def intro: tail_eqI[symmetric])
     }
     then show "out_arcs H x = {}"
       using A by (auto simp del: in_out_arcs_conv)
@@ -87,7 +87,7 @@ context subdiv1_contr begin
   proof -
     have oa_Gx: "out_arcs G x = (uw \<rightleftharpoons>\<^sub>F uv) ` (vw \<rightleftharpoons>\<^sub>F vu) ` (out_arcs H x - {wu} - {wv})"
       using subdiv_distinct_arcs not_in_arcs_G in_arcs_G
-      by (auto simp: in_funswapid_image_iff arcs_H swap_id_eq tail_eq[symmetric] split: if_splits)
+      by (auto simp: in_funswapid_image_iff arcs_H transpose_def tail_eq[symmetric] split: if_splits)
 
     have "cyclic_on (perm_swap uw uv (perm_swap vw (rev_G uv) (perm_rem (wv) (perm_rem (wu) (edge_succ HM))))) (out_arcs G x)"
       unfolding oa_Gx
@@ -231,7 +231,8 @@ context subdiv1_contr begin
   lemma YYY:
     "(wu \<rightleftharpoons>\<^sub>F wv) (edge_succ HM vw) = (edge_succ HM vw)"
     "(wu \<rightleftharpoons>\<^sub>F wv) (edge_succ HM uw) = (edge_succ HM uw)"
-    using H.edge_succ_cyclic[of w] subdiv_distinct_verts0 by (auto simp: swap_id_eq dest: H_edge_succ_tail_eqD)
+    using H.edge_succ_cyclic[of w] subdiv_distinct_verts0
+    by (auto simp: Transposition.transpose_def dest: H_edge_succ_tail_eqD)
 
   text \<open>Project arcs of @{term H} to corresponding arcs of @{term G}\<close>
   definition proj_arcs_H :: "'b \<Rightarrow> 'b" where
@@ -327,10 +328,10 @@ context subdiv1_contr begin
     have "GM.face_cycle_succ a = (uw \<rightleftharpoons>\<^sub>F uv) ((vw \<rightleftharpoons>\<^sub>F rev_G uv) (perm_rem (wv) (perm_rem (wu) (edge_succ HM)) (((vw \<rightleftharpoons>\<^sub>F vu) ((uw \<rightleftharpoons>\<^sub>F uv) (rev_G a))))))"
       by (simp add: GM.face_cycle_succ_def perm_swap_def edge_succ_GM edge_rev_GM)
     also have "(vw \<rightleftharpoons>\<^sub>F vu) ((uw \<rightleftharpoons>\<^sub>F uv) (rev_G a)) = rev_G a"
-      using assms not_in_arcs_G by (auto simp: swap_id_eq G.arev_eq_iff)
+      using assms not_in_arcs_G by (auto simp: transpose_def G.arev_eq_iff)
     also have "perm_rem (wv) (perm_rem (wu) (edge_succ HM)) (rev_G a) = edge_succ HM (rev_G a)"
     proof -
-      have *: "\<And>a. tail H a \<noteq> w \<Longrightarrow> (wu \<rightleftharpoons>\<^sub>F wv) a = a" by (auto simp: swap_id_eq)
+      have *: "\<And>a. tail H a \<noteq> w \<Longrightarrow> (wu \<rightleftharpoons>\<^sub>F wv) a = a" by (auto simp: transpose_def)
       from assms have "head H a \<noteq> w" "tail H (rev_G a) = head H a"
         by (auto simp: tail_eq head_eq verts_G dest: G.head_in_verts)
       then have "((wu \<rightleftharpoons>\<^sub>F wv) (edge_succ HM (rev_G a))) = edge_succ HM (rev_G a)"

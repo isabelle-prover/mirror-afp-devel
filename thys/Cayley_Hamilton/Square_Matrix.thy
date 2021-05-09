@@ -571,15 +571,15 @@ lemma det_identical_cols:
   assumes "i \<noteq> i'" shows "col A i = col A i' \<Longrightarrow> det A = 0"
 proof (transfer fixing: i i')
   fix A :: "'a \<Rightarrow> 'a \<Rightarrow> 'b" assume "(\<chi> j. A j i) = (\<chi> i. A i i')"
-  then have [simp]: "\<And>j q. A j (Fun.swap i i' id (q j)) = A j (q j)"
-    by (auto simp: vec_eq_iff swap_id_eq)
+  then have [simp]: "\<And>j q. A j (Transposition.transpose i i' (q j)) = A j (q j)"
+    by (simp add: vec_eq_iff Transposition.transpose_def)
 
   let ?p = "\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i))"
-  let ?s = "\<lambda>q. Fun.swap i i' id \<circ> q"
+  let ?s = "\<lambda>q. Transposition.transpose i i' \<circ> q"
   let ?E = "{p. p permutes UNIV \<and> evenperm p}"
 
   have [simp]: "inj_on ?s ?E"
-    by (auto simp: inj_on_def fun_eq_iff swap_id_eq)
+    by (auto simp: inj_on_def fun_eq_iff Transposition.transpose_def)
 
   note p = permutes_UNIV_permutation evenperm_comp permutes_swap_id evenperm_swap permutes_compose
     sign_compose sign_swap_id

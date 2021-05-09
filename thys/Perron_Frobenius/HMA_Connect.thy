@@ -413,8 +413,8 @@ proof -
         case (swap a b p)
         then have \<open>permutation p\<close>
           by (auto intro: permutes_imp_permutation)
-        let ?sab = "Fun.swap a b id"
-        let ?sfab = "Fun.swap (?fn a) (?fn b) id"
+        let ?sab = "Transposition.transpose a b"
+        let ?sfab = "Transposition.transpose (?fn a) (?fn b)"
         have p_sab: "permutation ?sab" by (rule permutation_swap_id)
         have p_sfab: "permutation ?sfab" by (rule permutation_swap_id)
         from swap(4) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
@@ -431,10 +431,10 @@ proof -
             by (auto simp: from_nat_inj)
         } note inj = this
         from inj[OF swap(1-2)] have id2: "sign ?sfab = sign ?sab" unfolding sign_swap_id by simp
-        have id: "?ft (Fun.swap a b id \<circ> p) = Fun.swap (?fn a) (?fn b) id \<circ> ?ft p"
+        have id: "?ft (Transposition.transpose a b \<circ> p) = Transposition.transpose (?fn a) (?fn b) \<circ> ?ft p"
         proof
           fix c 
-          show "?ft (Fun.swap a b id \<circ> p) c = (Fun.swap (?fn a) (?fn b) id \<circ> ?ft p) c"
+          show "?ft (Transposition.transpose a b \<circ> p) c = (Transposition.transpose (?fn a) (?fn b) \<circ> ?ft p) c"
           proof (cases "p (?tn c) = a \<or> p (?tn c) = b")
             case True
             thus ?thesis by (cases, auto simp add: swap_id_eq)

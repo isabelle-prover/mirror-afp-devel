@@ -237,14 +237,14 @@ proof (rule trans[OF det_lower_triangular[of n]], unfold prod_list_diag_prod)
 qed (insert k, auto)
 
 lemma swap_rows_mat_eq_permute: 
-  "k < n \<Longrightarrow> l < n \<Longrightarrow> swaprows_mat n k l = mat n n (\<lambda>(i, j). 1\<^sub>m n $$ (Fun.swap k l id i, j))"
-  by (rule eq_matI) (auto simp add: swap_id_eq)
+  "k < n \<Longrightarrow> l < n \<Longrightarrow> swaprows_mat n k l = mat n n (\<lambda>(i, j). 1\<^sub>m n $$ (transpose k l i, j))"
+  by (rule eq_matI) (auto simp add: transpose_def)
 
 lemma det_swaprows_mat: assumes k: "k < n" and l: "l < n" and kl: "k \<noteq> l"
   shows "det (swaprows_mat n k l) = - 1"
 proof -
   let ?n = "{0 ..< (n :: nat)}"
-  let ?p = "Fun.swap k l id"
+  let ?p = "transpose k l"
   have p: "?p permutes ?n"
     by (rule permutes_swap_id, insert k l, auto)
   show ?thesis
@@ -280,7 +280,7 @@ lemma det_identical_rows:
     and r: "row A i = row A j"
   shows "det A = 0"
 proof-
-  let ?p = "Fun.swap i j id"
+  let ?p = "transpose i j"
   let ?n = "{0 ..< n}"
   have sp: "signof ?p = - 1" "sign ?p = (- 1 :: int)" using ij
     by (auto simp add: sign_swap_id)
@@ -1522,17 +1522,18 @@ proof (rule ext)
 qed
 
 lemma permutation_insert_row_step:
-  shows "permutation_insert (Suc i) j p \<circ> Fun.swap i (Suc i) id = permutation_insert i j p"
-    (is "?l = ?r")
+  \<open>permutation_insert (Suc i) j p \<circ> transpose i (Suc i) = permutation_insert i j p\<close> (is \<open>?l = ?r\<close>)
 proof (rule ext)
-  fix x show "?l x = ?r x"
-    by (cases rule: linorder_cases[of "x" "i"])
-      (auto simp add: swap_id_eq permutation_insert_expand)
+  fix x
+  consider \<open>x < i\<close> | \<open>x = i\<close> | \<open>x = Suc i\<close> | \<open>Suc i < x\<close>
+    using Suc_lessI by (cases rule: linorder_cases [of x i]) blast+
+  then show \<open>?l x = ?r x\<close>
+    by cases (simp_all add: permutation_insert_expand)
 qed
 
 lemma permutation_insert_column_step:
   assumes p: "p permutes {0..<n}" and "j < n"
-  shows "(Fun.swap j (Suc j) id) \<circ> (permutation_insert i (Suc j) p) = permutation_insert i j p"
+  shows "transpose j (Suc j) \<circ> permutation_insert i (Suc j) p = permutation_insert i j p"
     (is "?l = ?r")
 proof (rule ext)
   fix x show "?l x = ?r x"
@@ -2034,10 +2035,10 @@ proof -
         hence Sjn: "Suc j \<le> n" and j: "j < n" and Sj: "n - Suc j < n" by auto
         hence n0: "n > 0" by auto
         have ease: "Suc (n - Suc j) = n - j" using j by auto
-        let ?swap = "Fun.swap (n - Suc j) (n - j) id"
+        let ?swap = "transpose (n - Suc j) (n - j)"
         let ?prev = "permutation_insert n (n - j) p"
         have "signof (permutation_insert n (n - Suc j) p) = signof (?swap \<circ> ?prev)"
-          unfolding permutation_insert_column_step[OF p Sj, unfolded ease]..
+          unfolding permutation_insert_column_step [OF p Sj, unfolded ease] ..
         also have "... = signof ?swap * signof ?prev"
           proof(rule signof_compose)
             show "?swap permutes {0..<Suc n}" by (rule permutes_swap_id,auto)
@@ -2069,7 +2070,7 @@ proof -
         hence Sin: "Suc i \<le> n" and i: "i \<le> n" and Si: "n - Suc i < n" by auto
         have ease: "Suc (n - Suc i) = n - i" using Sin by auto
         let ?prev = "permutation_insert (n-i) j p"
-        let ?swap = "Fun.swap (n - Suc i) (n-i) id"
+        let ?swap = "transpose (n - Suc i) (n-i)"
         have "signof (permutation_insert (n - Suc i) j p) = signof (?prev \<circ> ?swap)"
           using permutation_insert_row_step[of "n - Suc i"] unfolding ease by auto
         also have "... = signof ?prev * signof ?swap"
