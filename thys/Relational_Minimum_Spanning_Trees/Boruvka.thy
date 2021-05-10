@@ -27,19 +27,6 @@ In this section we give results that hold more generally.
 context stone_kleene_relation_algebra
 begin
 
-definition "big_forest H d \<equiv>
-    equivalence H
-  \<and> d \<le> -H
-  \<and> univalent (H * d)
-  \<and> H \<sqinter> d * d\<^sup>T \<le> 1
-  \<and> (H * d)\<^sup>+ \<le> - H"
-
-definition "bf_between_points p q H d \<equiv> point p \<and> point q \<and> p \<le> (H * d)\<^sup>\<star> * H * d"
-
-definition "bf_between_arcs a b H d \<equiv> arc a \<and> arc b \<and> a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top"
-
-text \<open>Theorem 3\<close>
-
 lemma He_eq_He_THe_star:
   assumes "arc e"
     and "equivalence H"
@@ -157,7 +144,7 @@ lemma fch_equivalence:
   shows "equivalence (forest_components h)"
   by (simp add: assms forest_components_equivalence)
 
-lemma big_forest_path_split_1:
+lemma forest_modulo_equivalence_path_split_1:
   assumes "arc a"
     and "equivalence H"
   shows "(H * d)\<^sup>\<star> * H * a * top = (H * (d \<sqinter> - a))\<^sup>\<star> * H * a * top"
@@ -211,7 +198,7 @@ proof -
   have 2: "?d\<^sup>\<star> * ?a \<ge> ?x\<^sup>\<star> *?a"
     by (simp add: comp_isotone star_isotone)
   thus ?thesis
-    using 1 2 antisym mult_assoc by simp
+    using 1 2 order.antisym mult_assoc by simp
 qed
 
 lemma dTransHd_le_1:
@@ -242,35 +229,257 @@ proof -
     using assms(2) comp_injective_below_complement mult_assoc by auto
 qed
 
-text \<open>Theorem 4\<close>
+subsection \<open>Forests modulo an equivalence\<close>
 
-lemma expand_big_forest:
-  assumes "big_forest H d"
+text \<open>
+In the graphical interpretation, the arcs of d are directed towards the root(s) of the \<open>forest_modulo_equivalence\<close>.
+\<close>
+
+definition "forest_modulo_equivalence x d \<equiv> equivalence x \<and> univalent (x * d) \<and> x \<sqinter> d * d\<^sup>T \<le> 1 \<and> (x * d)\<^sup>+ \<sqinter> x \<le> bot"
+
+definition "forest_modulo_equivalence_path a b H d \<equiv> arc a \<and> arc b \<and> a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top"
+
+lemma d_separates_forest_modulo_equivalence_1:
+  assumes "forest_modulo_equivalence x d"
+  shows "x * d \<le> -x"
+proof -
+  have "x * d \<le> (x * d)\<^sup>+"
+    using star.circ_mult_increasing by simp
+  also have "... \<le> -x"
+    using assms(1) forest_modulo_equivalence_def le_bot pseudo_complement by blast
+  finally show ?thesis
+    by simp
+qed
+
+lemma d_separates_forest_modulo_equivalence_2:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> d * x \<le> -x"
+  using forest_modulo_equivalence_def schroeder_6_p d_separates_forest_modulo_equivalence_1 by metis
+
+lemma d_separates_forest_modulo_equivalence_3:
+  assumes "forest_modulo_equivalence x d"
+  shows "d \<le> -x"
+proof -
+  have "1 \<le> x"
+    using assms(1) forest_modulo_equivalence_def by auto
+  then have "d \<le> x * d"
+    using mult_left_isotone by fastforce
+  also have "... \<le> (x * d)\<^sup>+"
+    using star.circ_mult_increasing by simp
+  also have "... \<le> -x"
+    using assms(1) forest_modulo_equivalence_def le_bot pseudo_complement by blast
+  finally show ?thesis
+    by simp
+qed
+
+lemma d_separates_forest_modulo_equivalence_4:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> d\<^sup>T \<le> -x"
+  using d_separates_forest_modulo_equivalence_3 forest_modulo_equivalence_def conv_isotone symmetric_complement_closed by metis
+
+lemma d_separates_forest_modulo_equivalence_5:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> d \<squnion> d\<^sup>T \<le> -x"
+  using d_separates_forest_modulo_equivalence_3 d_separates_forest_modulo_equivalence_4 sup_least by blast
+
+lemma d_separates_forest_modulo_equivalence_6:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> d * x \<squnion> x * d \<le> -x"
+  using d_separates_forest_modulo_equivalence_1 d_separates_forest_modulo_equivalence_2 sup_least by blast
+
+lemma d_separates_forest_modulo_equivalence_7:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> x * (d \<squnion> d\<^sup>T) * x \<le> -x"
+  using d_separates_forest_modulo_equivalence_5 forest_modulo_equivalence_def inf.sup_monoid.add_commute preorder_idempotent pseudo_complement triple_schroeder_p by metis
+
+lemma d_separates_forest_modulo_equivalence_8:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (d * x)\<^sup>T \<le> -x"
+  using d_separates_forest_modulo_equivalence_2 forest_modulo_equivalence_def conv_isotone symmetric_complement_closed by metis
+
+lemma d_separates_forest_modulo_equivalence_9:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (x * d)\<^sup>T \<le> -x"
+  by (metis d_separates_forest_modulo_equivalence_1 forest_modulo_equivalence_def conv_isotone symmetric_complement_closed)
+
+lemma d_separates_forest_modulo_equivalence_10:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (d * x)\<^sup>+ \<le> -x"
+  using forest_modulo_equivalence_def le_bot pseudo_complement schroeder_5_p star_slide mult_assoc by metis
+
+lemma d_separates_forest_modulo_equivalence_11:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (x * d)\<^sup>+ \<le> -x"
+  using forest_modulo_equivalence_def le_bot pseudo_complement by blast
+
+lemma d_separates_forest_modulo_equivalence_12:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (d * x)\<^sup>T\<^sup>+ \<le> -x"
+  using d_separates_forest_modulo_equivalence_10 forest_modulo_equivalence_def conv_isotone conv_plus_commute symmetric_complement_closed by metis
+
+lemma d_separates_x_in_forest_13:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> (x * d)\<^sup>T\<^sup>+ \<le> -x"
+  using d_separates_forest_modulo_equivalence_11 forest_modulo_equivalence_def conv_isotone conv_plus_commute symmetric_complement_closed by metis
+
+lemma irreflexive_d_in_forest_modulo_equivalence:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> irreflexive d"
+  by (metis d_separates_forest_modulo_equivalence_3 forest_modulo_equivalence_def inf.cobounded2 inf.left_commute inf.orderE pseudo_complement)
+
+lemma univalent_d_in_forest_modulo_equivalence:
+  assumes "forest_modulo_equivalence x d"
+  shows "univalent d"
+proof -
+  have "d\<^sup>T * d \<le> d\<^sup>T * x\<^sup>T * x * d"
+    using assms(1) forest_modulo_equivalence_def comp_isotone comp_right_one mult_sub_right_one by metis
+  also have "... \<le> 1"
+    using assms(1) forest_modulo_equivalence_def comp_associative conv_dist_comp by auto
+  finally show ?thesis
+    by simp
+qed
+
+lemma acyclic_d_in_forest_modulo_equivalence:
+  assumes "forest_modulo_equivalence x d"
+  shows "acyclic d"
+proof -
+  have "d\<^sup>\<star> \<le> (x * d)\<^sup>\<star>"
+    using assms(1) forest_modulo_equivalence_def mult_left_isotone star.circ_circ_mult star.circ_circ_mult_1 star.circ_extra_circ star.left_plus_circ star_involutive star_isotone star_one star_slide mult_assoc by metis
+  then have "d * d\<^sup>\<star> \<le> d * (x * d)\<^sup>\<star>"
+    using mult_right_isotone by blast
+  also have "... \<le> x * d * (x * d)\<^sup>\<star>"
+    using assms(1) forest_modulo_equivalence_def eq_refl inf.order_trans mult_isotone star.circ_circ_mult_1 star_involutive star_one star_outer_increasing mult_assoc by metis
+  also have "... \<le> -x"
+    using assms d_separates_forest_modulo_equivalence_11 by blast
+  also have "... \<le> -1"
+    using assms(1) forest_modulo_equivalence_def p_antitone by blast
+  finally show ?thesis
+    by simp
+qed
+
+lemma acyclic_dt_d_in_forest_modulo_equivalence:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> acyclic (d\<^sup>T)"
+  using acyclic_d_in_forest_modulo_equivalence conv_plus_commute irreflexive_conv_closed by fastforce
+
+lemma dt_forest_modulo_equivalence_forest:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> forest (d\<^sup>T)"
+  using acyclic_dt_d_in_forest_modulo_equivalence univalent_d_in_forest_modulo_equivalence by simp
+
+lemma var_forest_modulo_equivalence_axiom:
+  shows "forest_modulo_equivalence x d \<Longrightarrow> d\<^sup>T * x * d \<le> 1"
+  using forest_modulo_equivalence_def comp_associative conv_dist_comp preorder_idempotent by metis
+
+lemma forest_modulo_equivalence_wcc:
+  assumes "forest_modulo_equivalence x d"
+  shows "(x * d)\<^sup>\<star> * (x * d)\<^sup>T\<^sup>\<star> = ((x * d) \<squnion> (x * d)\<^sup>T)\<^sup>\<star>"
+  using assms(1) forest_modulo_equivalence_def fc_wcc by force
+
+lemma forest_modulo_equivalence_direction_1:
+  assumes "forest_modulo_equivalence x d"
+  shows "(x * d)\<^sup>\<star> \<sqinter> (x * d)\<^sup>T = bot"
+  using assms(1) d_separates_forest_modulo_equivalence_11 forest_modulo_equivalence_def acyclic_star_below_complement_1 order_lesseq_imp p_antitone_iff by meson
+
+lemma forest_modulo_equivalence_direction_2:
+  assumes "forest_modulo_equivalence x d"
+  shows "(x * d)\<^sup>T\<^sup>\<star> \<sqinter> (x * d) \<le> bot"
+  using assms(1) forest_modulo_equivalence_direction_1 comp_inf.idempotent_bot_closed conv_inf_bot_iff conv_star_commute inf.sup_left_divisibility by metis
+
+lemma forest_modulo_equivalence_separate:
+  assumes "forest_modulo_equivalence x d"
+  shows "(x * d)\<^sup>\<star> * (x * d)\<^sup>T\<^sup>\<star> \<sqinter> (x * d)\<^sup>T * (x * d) \<le> 1"
+proof -
+  have "(x * d)\<^sup>\<star> \<sqinter> (x * d)\<^sup>T * (x * d) = (1 \<squnion> (x * d)\<^sup>+) \<sqinter> (x * d)\<^sup>T * (x * d)"
+    using star_left_unfold_equal by simp
+  also have "... = (1 \<sqinter> (x * d)\<^sup>T * (x * d)) \<squnion> ((x * d)\<^sup>+ \<sqinter> (x * d)\<^sup>T * (x * d))"
+    using comp_inf.semiring.distrib_right by simp
+  also have "... \<le> 1 \<squnion> ((x * d)\<^sup>+ \<sqinter> (x * d)\<^sup>T * (x * d))"
+    using inf.cobounded1 semiring.add_right_mono by blast
+  also have "... = 1 \<squnion> ((x * d)\<^sup>\<star> \<sqinter> (x * d)\<^sup>T) * (x * d)"
+    using assms(1) forest_modulo_equivalence_def forest_modulo_equivalence_direction_1 comp_inf.semiring.mult_zero_right inf.sup_left_divisibility le_infI2 semiring.mult_not_zero sup.orderE by metis
+  also have "... \<le> 1 \<squnion> bot"
+    using assms(1) forest_modulo_equivalence_direction_1 by simp
+  finally have 2: "(x * d)\<^sup>\<star> \<sqinter> (x * d)\<^sup>T * (x * d) \<le> 1"
+    by simp
+  then have 3: "(x * d)\<^sup>T\<^sup>\<star> \<sqinter> (x * d)\<^sup>T * (x * d) \<le> 1"
+    using assms(1) forest_modulo_equivalence_def conv_dist_comp conv_dist_inf conv_involutive conv_star_commute coreflexive_symmetric by metis
+  have "((x * d)\<^sup>\<star> \<squnion> (x * d)\<^sup>T\<^sup>\<star>) \<sqinter> ((x * d)\<^sup>T * (x * d)) \<le> 1"
+    using 2 3 inf_sup_distrib2 by simp
+  thus ?thesis
+    using assms(1) le_infI2 forest_modulo_equivalence_def by blast
+qed
+
+lemma forest_modulo_equivalence_path_trans_closure:
+  assumes "forest_modulo_equivalence x d"
+  shows "(x * d\<^sup>T)\<^sup>+ * x * d * x * d\<^sup>T \<le> (x * d\<^sup>T)\<^sup>+"
+proof -
+  have "(x * d\<^sup>T)\<^sup>+ * x * d * x * d\<^sup>T = (x * d\<^sup>T)\<^sup>\<star> * x * d\<^sup>T * x * d * x * d\<^sup>T"
+    using comp_associative star.circ_plus_same by metis
+  also have "... \<le> (x * d\<^sup>T)\<^sup>\<star> * x * 1 * x * d\<^sup>T"
+    using assms(1) forest_modulo_equivalence_def var_forest_modulo_equivalence_axiom comp_associative mult_left_isotone mult_right_isotone by metis
+  also have "... \<le> (x * d\<^sup>T)\<^sup>\<star> * x * d\<^sup>T"
+    using assms(1) forest_modulo_equivalence_def by (simp add: preorder_idempotent mult_assoc)
+  finally show ?thesis
+    using star.circ_plus_same mult_assoc by simp
+qed
+
+text \<open>
+The \<open>forest_modulo_equivalence\<close> structure is preserved if d is decreased.
+\<close>
+
+lemma forest_modulo_equivalence_decrease_d:
+  assumes "forest_modulo_equivalence x d"
+  shows "forest_modulo_equivalence x (d \<sqinter> c)"
+proof (unfold forest_modulo_equivalence_def, intro conjI)
+  show "reflexive x"
+    using assms(1) forest_modulo_equivalence_def by blast
+next
+  show "transitive x"
+    using assms(1) forest_modulo_equivalence_def by blast
+next
+  show "symmetric x"
+    using assms(1) forest_modulo_equivalence_def by blast
+next
+  show "univalent (x * (d \<sqinter> c))"
+  proof -
+    have "(x * (d \<sqinter> c))\<^sup>T * x * (d \<sqinter> c) \<le> (x * d)\<^sup>T * x * d"
+      using conv_order mult_isotone by auto
+    also have "... \<le> 1"
+      using assms(1) forest_modulo_equivalence_def mult_assoc by auto
+    finally show ?thesis
+      using mult_assoc by auto
+  qed
+next
+  show "coreflexive (x \<sqinter> ((d \<sqinter> c) * (d \<sqinter> c)\<^sup>T))"
+  proof -
+    have "x \<sqinter> (d \<sqinter> c) * (d \<sqinter> c)\<^sup>T \<le> x \<sqinter> d * d\<^sup>T"
+      using conv_dist_inf inf.sup_right_isotone mult_isotone by auto
+    thus ?thesis
+      using assms(1) forest_modulo_equivalence_def order_lesseq_imp by blast
+  qed
+next
+  show "(x * (d \<sqinter> c))\<^sup>+ \<sqinter> x \<le> bot"
+  proof -
+    have "(x * (d \<sqinter> c))\<^sup>+ \<le> (x * d)\<^sup>+"
+      using comp_isotone star_isotone by simp
+    thus ?thesis
+      using assms d_separates_forest_modulo_equivalence_11 dual_order.eq_iff dual_order.trans pseudo_complement by blast
+  qed
+qed
+
+lemma expand_forest_modulo_equivalence:
+  assumes "forest_modulo_equivalence H d"
   shows "(d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star> = (d\<^sup>T * H)\<^sup>\<star> \<squnion> (H * d)\<^sup>\<star>"
 proof -
   have "(H * d)\<^sup>T * H * d \<le> 1"
-    using assms big_forest_def mult_assoc by auto
+    using assms forest_modulo_equivalence_def mult_assoc by auto
   hence "d\<^sup>T * H * H * d \<le> 1"
-    using assms big_forest_def conv_dist_comp by auto
+    using assms forest_modulo_equivalence_def conv_dist_comp by auto
   thus ?thesis
     by (simp add: cancel_separate_eq comp_associative)
 qed
 
-
-lemma big_forest_path_bot:
+lemma forest_modulo_equivalence_path_bot:
   assumes "arc a"
     and "a \<le> d"
-    and "big_forest H d"
+    and "forest_modulo_equivalence H d"
   shows "(d \<sqinter> - a)\<^sup>T * (H * a * top) \<le> bot"
 proof -
   have 1: "d\<^sup>T * H * d \<le> 1"
-    using assms(3) big_forest_def dTransHd_le_1 by blast
+    using assms(3) forest_modulo_equivalence_def dTransHd_le_1 by blast
   hence "d * - 1 * d\<^sup>T \<le> - H"
     using triple_schroeder_p by force
   hence "d * - 1 * d\<^sup>T \<le> 1 \<squnion> - H"
     by (simp add: le_supI2)
   hence "d * d\<^sup>T \<squnion> d * - 1 * d\<^sup>T \<le> 1 \<squnion> - H"
-    by (metis assms(3) big_forest_def inf_commute regular_one_closed shunting_p le_supI)
+    by (metis assms(3) forest_modulo_equivalence_def inf_commute regular_one_closed shunting_p le_supI)
   hence "d * 1 * d\<^sup>T \<squnion> d * - 1 * d\<^sup>T \<le> 1 \<squnion> - H"
     by simp
   hence "d * (1 \<squnion> - 1) * d\<^sup>T \<le> 1 \<squnion> - H"
@@ -286,7 +495,7 @@ proof -
   hence "d \<le> a * top \<squnion> - H * a * top"
     by (simp add: comp_associative mult_right_dist_sup)
   also have "... \<le> a * top \<squnion> - (H * a * top)"
-    using assms(1, 3) HcompaT_le_compHaT big_forest_def sup_right_isotone by auto
+    using assms(1, 3) HcompaT_le_compHaT forest_modulo_equivalence_def sup_right_isotone by auto
   finally have "d \<le> a * top \<squnion> - (H * a * top)"
     by simp
   hence "d \<sqinter> --( H * a * top) \<le> a * top"
@@ -302,7 +511,7 @@ proof -
     also have "... \<le> d * top \<sqinter> H * a * d\<^sup>T * H\<^sup>T * d"
       using assms(2) mult_right_isotone mult_left_isotone conv_isotone inf.sup_right_isotone by auto
     also have "... = d * top \<sqinter> H * a * d\<^sup>T * H * d"
-      using assms(3) big_forest_def by auto
+      using assms(3) forest_modulo_equivalence_def by auto
     also have "... \<le> d * top \<sqinter> H * a * 1"
       using 1 by (metis inf.sup_right_isotone mult_right_isotone mult_assoc)
     also have "... \<le> H * a"
@@ -330,15 +539,15 @@ proof -
     by (simp add: schroeder_3_p)
 qed
 
-lemma big_forest_path_split_2:
+lemma forest_modulo_equivalence_path_split_2:
   assumes "arc a"
     and "a \<le> d"
-    and "big_forest H d"
+    and "forest_modulo_equivalence H d"
   shows "(H * (d \<sqinter> - a))\<^sup>\<star> * H * a * top = (H * ((d \<sqinter> - a) \<squnion> (d \<sqinter> - a)\<^sup>T))\<^sup>\<star> * H * a * top"
 proof -
   let ?lhs = "(H * (d \<sqinter> - a))\<^sup>\<star> * H * a * top"
   have 1: "d\<^sup>T * H * d \<le> 1"
-    using assms(3) big_forest_def dTransHd_le_1 by blast
+    using assms(3) forest_modulo_equivalence_def dTransHd_le_1 by blast
   have 2: "H * a * top \<le> ?lhs"
     by (metis le_iff_sup star.circ_loop_fixpoint star.circ_transitive_equal star_involutive sup_commute mult_assoc)
   have "(d \<sqinter> - a)\<^sup>T * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top) = (d \<sqinter> - a)\<^sup>T * H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top)"
@@ -348,7 +557,7 @@ proof -
     also have "... = (d \<sqinter> - a)\<^sup>T * H * a * top \<squnion> (d \<sqinter> - a)\<^sup>T * H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top)"
       by (smt mult_left_dist_sup star.circ_loop_fixpoint star.circ_mult_1 star_slide sup_commute mult_assoc)
     also have "... = bot \<squnion> (d \<sqinter> - a)\<^sup>T * H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top)"
-      by (metis assms(1, 2, 3) big_forest_path_bot mult_assoc le_bot)
+      by (metis assms(1, 2, 3) forest_modulo_equivalence_path_bot mult_assoc le_bot)
     thus ?thesis
       by (simp add: calculation)
   qed
@@ -363,11 +572,11 @@ proof -
     have "H * (d \<sqinter> - a)\<^sup>T * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top) \<le> H * (H * (d \<sqinter> - a))\<^sup>\<star> * H * a * top"
       using 3 mult_right_isotone mult_assoc by auto
     also have "... = H * H * ((d \<sqinter> - a) * H)\<^sup>\<star> * H * a * top"
-      by (metis assms(3) big_forest_def star_slide mult_assoc preorder_idempotent)
+      by (metis assms(3) forest_modulo_equivalence_def star_slide mult_assoc preorder_idempotent)
     also have "... = H * ((d \<sqinter> - a) * H)\<^sup>\<star> * H * a * top"
-      using assms(3) big_forest_def preorder_idempotent by fastforce
+      using assms(3) forest_modulo_equivalence_def preorder_idempotent by fastforce
     finally show ?thesis
-      by (metis assms(3) big_forest_def preorder_idempotent star_slide mult_assoc)
+      by (metis assms(3) forest_modulo_equivalence_def preorder_idempotent star_slide mult_assoc)
   qed
   have 5: "(H * (d \<sqinter> - a) \<squnion> H * (d \<sqinter> - a)\<^sup>T) * (H * (d \<sqinter> - a))\<^sup>\<star> * H * a * top \<le> ?lhs"
   proof -
@@ -397,17 +606,29 @@ qed
 
 end
 
+context stone_relation_algebra
+begin
+
+text \<open>
+A \<open>vector_classes\<close> corresponds to one or more equivalence classes and a \<open>unique_vector_class\<close> corresponds to a single equivalence class.
+\<close>
+
+definition vector_classes        :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "vector_classes x v \<equiv> regular x \<and> regular v \<and> equivalence x \<and> vector v \<and> x * v \<le> v \<and> v \<noteq> bot"
+definition unique_vector_class   :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "unique_vector_class x v \<equiv> vector_classes x v \<and> v * v\<^sup>T \<le> x"
+
+end
+
 subsection \<open>An operation to select components\<close>
 
 text \<open>
 We introduce the operation \<open>choose_component\<close>.
 \begin{itemize}
-\item Axiom \<open>component_in_v\<close> expresses that the result of \<open>choose_component\<close> is contained in the set of vertices, $v$, we are selecting from, ignoring the weights.
-\item Axiom \<open>component_is_vector\<close> states that the result of \<open>choose_component\<close> is a vector.
-\item Axiom \<open>component_is_regular\<close> states that the result of \<open>choose_component\<close> is regular.
-\item Axiom \<open>component_is_connected\<close> states that any two vertices from the result of \<open>choose_component\<close> are connected in $e$.
-\item Axiom \<open>component_single\<close> states that the result of \<open>choose_component\<close> is closed under being connected in $e$.
-\item Finally, axiom \<open>component_not_bot_when_v_bot_bot\<close> expresses that the operation \<open>choose_component\<close> returns a non-empty component if the input satisfies the given criteria.
+  \item Axiom \<open>component_in_v\<close> expresses that the result of \<open>choose_component\<close> is contained in the set of vertices, $v$, we are selecting from, ignoring the weights.
+  \item Axiom \<open>component_is_vector\<close> states that the result of \<open>choose_component\<close> is a vector.
+  \item Axiom \<open>component_is_regular\<close> states that the result of \<open>choose_component\<close> is regular.
+  \item Axiom \<open>component_is_connected\<close> states that any two vertices from the result of \<open>choose_component\<close> are connected in $e$.
+  \item Axiom \<open>component_single\<close> states that the result of \<open>choose_component\<close> is closed under being connected in $e$.
+  \item Finally, axiom \<open>component_not_bot_when_v_bot_bot\<close> expresses that the operation \<open>choose_component\<close> returns a non-empty component if the input satisfies the given criteria.
 \end{itemize}
 \<close>
 
@@ -415,20 +636,12 @@ class choose_component =
   fixes choose_component :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
 
 class choose_component_algebra = choose_component + stone_relation_algebra +
-  assumes component_in_v: "choose_component e v \<le> --v"
-  assumes component_is_vector: "vector (choose_component e v)"
-  assumes component_is_regular: "regular (choose_component e v)"
-  assumes component_is_connected: "choose_component e v * (choose_component e v)\<^sup>T \<le> e"
-  assumes component_single: "choose_component e v = e * choose_component e v"
-  assumes component_not_bot_when_v_bot_bot: "
-      regular e
-    \<and> equivalence e
-    \<and> vector v
-    \<and> regular v
-    \<and> e * v = v
-    \<and> v \<noteq> bot \<longrightarrow> choose_component e v \<noteq> bot"
-
-text \<open>Theorem 1\<close>
+  assumes component_is_vector:              "vector (choose_component e v)"
+  assumes component_is_regular:             "regular (choose_component e v)"
+  assumes component_in_v:                   "choose_component e v \<le> --v"
+  assumes component_is_connected:           "choose_component e v * (choose_component e v)\<^sup>T \<le> e"
+  assumes component_single:                 "e * choose_component e v \<le> choose_component e v"
+  assumes component_not_bot_when_v_bot_bot: "vector_classes e v \<longrightarrow> choose_component e v \<noteq> bot"
 
 text \<open>
 Every \<open>m_kleene_algebra\<close> is an instance of \<open>choose_component_algebra\<close> when the \<open>choose_component\<close> operation is defined as follows:
@@ -437,15 +650,8 @@ Every \<open>m_kleene_algebra\<close> is an instance of \<open>choose_component_
 context m_kleene_algebra
 begin
 
-definition "choose_component_input_condition e v \<equiv>
-    regular e
-  \<and> equivalence e
-  \<and> vector v
-  \<and> regular v
-  \<and> e * v = v"
-
 definition "m_choose_component e v \<equiv>
-  if choose_component_input_condition e v then
+  if vector_classes e v then
     e * minarc(v) * top
   else
     bot"
@@ -454,18 +660,18 @@ sublocale m_choose_component_algebra: choose_component_algebra where choose_comp
 proof
   fix e v
   show "m_choose_component e v \<le> -- v"
-  proof (cases "choose_component_input_condition e v")
+  proof (cases "vector_classes e v")
     case True
     hence "m_choose_component e v = e * minarc(v) * top"
       by (simp add: m_choose_component_def)
     also have "... \<le> e * --v * top"
       by (simp add: comp_isotone minarc_below)
     also have "... = e * v * top"
-      using True choose_component_input_condition_def by auto
-    also have "... = v * top"
-      using True choose_component_input_condition_def by auto
+      using True vector_classes_def by auto
+    also have "... \<le> v * top"
+      using True vector_classes_def mult_assoc by auto
     finally show ?thesis
-      using True choose_component_input_condition_def by auto
+      using True vector_classes_def by auto
   next
     case False
     hence "m_choose_component e v = bot"
@@ -476,7 +682,7 @@ proof
 next
   fix e v
   show "vector (m_choose_component e v)"
-  proof (cases "choose_component_input_condition e v")
+  proof (cases "vector_classes e v")
     case True
     thus ?thesis
       by (simp add: mult_assoc m_choose_component_def)
@@ -488,19 +694,19 @@ next
 next
   fix e v
   show "regular (m_choose_component e v)"
-    using choose_component_input_condition_def minarc_regular regular_closed_star regular_mult_closed m_choose_component_def by auto
+    using minarc_regular regular_mult_closed vector_classes_def m_choose_component_def by auto
 next
   fix e v
   show "m_choose_component e v * (m_choose_component e v)\<^sup>T \<le> e"
-  proof (cases "choose_component_input_condition e v")
+  proof (cases "vector_classes e v")
     case True
-    assume 1: "choose_component_input_condition e v"
+    assume 1: "vector_classes e v"
     hence "m_choose_component e v * (m_choose_component e v)\<^sup>T = e * minarc(v) * top * (e * minarc(v) * top)\<^sup>T"
       by (simp add: m_choose_component_def)
     also have "... = e * minarc(v) * top * top\<^sup>T * minarc(v)\<^sup>T * e\<^sup>T"
       by (metis comp_associative conv_dist_comp)
     also have "... = e * minarc(v) * top * top * minarc(v)\<^sup>T * e"
-      using 1 choose_component_input_condition_def by auto
+      using True vector_classes_def by auto
     also have "... = e * minarc(v) * top * minarc(v)\<^sup>T * e"
       by (simp add: comp_associative)
     also have "... \<le> e"
@@ -516,7 +722,7 @@ next
       hence "e * minarc(v) * top * minarc(v)\<^sup>T * e \<le> e * 1 * e"
         using mult_left_isotone by auto
       also have "... = e"
-        using 1 choose_component_input_condition_def preorder_idempotent by auto
+        using True preorder_idempotent vector_classes_def by auto
       thus ?thesis
         using calculation by auto
     qed
@@ -529,11 +735,11 @@ next
   qed
 next
   fix e v
-  show "m_choose_component e v = e * m_choose_component e v"
-  proof (cases "choose_component_input_condition e v")
+  show "e * m_choose_component e v \<le> m_choose_component e v"
+  proof (cases "vector_classes e v")
     case True
     thus ?thesis
-      by (metis choose_component_input_condition_def preorder_idempotent m_choose_component_def mult_assoc)
+      using comp_right_one dual_order.eq_iff mult_isotone vector_classes_def m_choose_component_def mult_assoc by metis
   next
     case False
     thus ?thesis
@@ -541,19 +747,19 @@ next
   qed
 next
   fix e v
-  show "regular e \<and> equivalence e \<and> vector v \<and> regular v \<and> e * v = v \<and> v \<noteq> bot \<longrightarrow> m_choose_component e v \<noteq> bot"
-  proof (cases "choose_component_input_condition e v")
+  show "vector_classes e v \<longrightarrow> m_choose_component e v \<noteq> bot"
+  proof (cases "vector_classes e v")
     case True
     hence "m_choose_component e v \<ge> minarc(v) * top"
-      by (metis choose_component_input_condition_def mult_1_left mult_left_isotone m_choose_component_def)
+      using vector_classes_def m_choose_component_def comp_associative minarc_arc shunt_bijective by fastforce
     also have "... \<ge> minarc(v)"
       using calculation dual_order.trans top_right_mult_increasing by blast
     thus ?thesis
-      using True bot_unique minarc_bot_iff by fastforce
+      using le_bot minarc_bot_iff vector_classes_def by fastforce
   next
     case False
     thus ?thesis
-      using choose_component_input_condition_def by blast
+      by blast
   qed
 qed
 
@@ -592,19 +798,53 @@ definition "boruvka_outer_invariant f g \<equiv>
 definition "boruvka_inner_invariant j f h g d \<equiv>
     boruvka_outer_invariant f g
   \<and> g \<noteq> bot
-  \<and> vector j
-  \<and> regular j
-  \<and> boruvka_outer_invariant h g
-  \<and> forest h
-  \<and> forest_components h \<le> forest_components f
-  \<and> big_forest (forest_components h) d
-  \<and> d * top \<le> - j
+  \<and> regular d
+  \<and> regular j \<and> vector j
+  \<and> regular h \<and> forest h
   \<and> forest_components h * j = j
-  \<and> forest_components f = (forest_components h * (d \<squnion> d\<^sup>T))\<^sup>\<star> * forest_components h
+  \<and> forest_modulo_equivalence (forest_components h) d
+  \<and> d * top \<le> - j
   \<and> f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T
-  \<and> (\<forall> a b . bf_between_arcs a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d
-    \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))
-  \<and> regular d"
+  \<and> (\<forall> a b . forest_modulo_equivalence_path a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
+
+lemma F_is_H_and_d:
+  assumes "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
+    and "injective f"
+    and "injective h"
+  shows "forest_components f = (forest_components h * (d \<squnion> d\<^sup>T))\<^sup>\<star> * forest_components h"
+proof -
+  have "forest_components f = (f \<squnion> f\<^sup>T)\<^sup>\<star>"
+    using assms(2) cancel_separate_1 by simp
+  also have "... = (h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T)\<^sup>\<star>"
+    using assms(1) by auto
+  also have "... = ((h \<squnion> h\<^sup>T)\<^sup>\<star> * (d \<squnion> d\<^sup>T))\<^sup>\<star> * (h \<squnion> h\<^sup>T)\<^sup>\<star>"
+    using star.circ_sup_9 sup_assoc by metis
+  also have "... = (forest_components h * (d \<squnion> d\<^sup>T))\<^sup>\<star> * forest_components h"
+    using assms(3) forest_components_wcc by simp
+  finally show ?thesis
+    by simp
+qed
+
+lemma H_below_F:
+  assumes "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
+    and "injective f"
+    and "injective h"
+  shows "forest_components h \<le> forest_components f"
+  using assms(1, 2, 3) cancel_separate_1 dual_order.trans star.circ_sub_dist by metis
+
+lemma H_below_regular_g:
+  assumes "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
+    and "f \<le> --g"
+    and "symmetric g"
+  shows "h \<le> --g"
+proof -
+  have "h \<le> f \<squnion> f\<^sup>T"
+    using assms(1) sup_assoc by simp
+  also have "... \<le> --g"
+    using assms(2, 3) conv_complement conv_isotone by fastforce
+  finally show ?thesis
+    using order_trans by blast
+qed
 
 lemma expression_equivalent_without_e_complement:
   assumes "selected_edge h j g \<le> - forest_components f"
@@ -634,8 +874,6 @@ proof -
     by auto
   thus ?thesis by auto
 qed
-
-text \<open>Theorem 2\<close>
 
 text \<open>
 The source of the \<open>selected_edge\<close> is contained in $j$, the vector describing those vertices still to be processed in the inner loop of Bor\r{u}vka's algorithm.
@@ -667,11 +905,21 @@ proof -
     by simp
 qed
 
-subsubsection \<open>Components of forests and big forests\<close>
+subsubsection \<open>Components of forests and forests modulo an equivalence\<close>
 
 text \<open>
-We prove a number of properties about \<open>big_forest\<close> and \<open>forest_components\<close>.
+We prove a number of properties about \<open>forest_modulo_equivalence\<close> and \<open>forest_components\<close>.
 \<close>
+
+lemma component_single_eq:
+  assumes "equivalence x"
+  shows "choose_component x v = x * choose_component x v"
+proof -
+  have 1: "choose_component x v \<le> x * choose_component x v"
+    by (meson component_is_connected ex231c mult_isotone order_lesseq_imp)
+  thus ?thesis
+    by (simp add: component_single order.antisym)
+qed
 
 lemma fc_j_eq_j_inv:
   assumes "forest h"
@@ -700,23 +948,21 @@ proof -
     using 2 3 order.antisym by simp
 qed
 
-text \<open>Theorem 5\<close>
-
 text \<open>
-There is a path in the \<open>big_forest\<close> between edges $a$ and $b$ if and only if there is either a path in the \<open>big_forest\<close> from $a$ to $b$ or one from $a$ to $c$ and one from $c$ to $b$.
+There is a path in the \<open>forest_modulo_equivalence\<close> between edges $a$ and $b$ if and only if there is either a path in the \<open>forest_modulo_equivalence\<close> from $a$ to $b$ or one from $a$ to $c$ and one from $c$ to $b$.
 \<close>
 
-lemma big_forest_path_split_disj:
+lemma forest_modulo_equivalence_path_split_disj:
   assumes "equivalence H"
     and "arc c"
     and "regular a \<and> regular b \<and> regular c \<and> regular d \<and> regular H"
-  shows "bf_between_arcs a b H (d \<squnion> c) \<longleftrightarrow> bf_between_arcs a b H d \<or> (bf_between_arcs a c H d \<and> bf_between_arcs c b H d)"
+  shows "forest_modulo_equivalence_path a b H (d \<squnion> c) \<longleftrightarrow> forest_modulo_equivalence_path a b H d \<or> (forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d)"
 proof -
-  have 1: "bf_between_arcs a b H (d \<squnion> c) \<longrightarrow> bf_between_arcs a b H d \<or> (bf_between_arcs a c H d \<and> bf_between_arcs c b H d)"
+  have 1: "forest_modulo_equivalence_path a b H (d \<squnion> c) \<longrightarrow> forest_modulo_equivalence_path a b H d \<or> (forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d)"
   proof (rule impI)
-    assume 11: "bf_between_arcs a b H (d \<squnion> c)"
+    assume 11: "forest_modulo_equivalence_path a b H (d \<squnion> c)"
     hence "a\<^sup>T * top \<le> (H * (d \<squnion> c))\<^sup>\<star> * H * b * top"
-      by (simp add: bf_between_arcs_def)
+      by (simp add: forest_modulo_equivalence_path_def)
     also have "... = ((H * d)\<^sup>\<star> \<squnion> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star>) * H * b * top"
       using assms(1, 2) path_through_components by simp
     also have "... = (H * d)\<^sup>\<star> * H * b * top \<squnion> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star> * H * b * top"
@@ -726,7 +972,7 @@ proof -
     have 13: "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top \<or> a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star> * H * b * top"
     proof (rule point_in_vector_sup)
       show "point (a\<^sup>T * top)"
-        using 11 bf_between_arcs_def mult_assoc by auto
+        using 11 forest_modulo_equivalence_path_def mult_assoc by auto
     next
       show "vector ((H * d)\<^sup>\<star> * H * b * top)"
         using vector_mult_closed by simp
@@ -737,12 +983,12 @@ proof -
       show "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top \<squnion> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star> * H * b * top"
         using 12 by simp
     qed
-    thus "bf_between_arcs a b H d \<or> (bf_between_arcs a c H d \<and> bf_between_arcs c b H d)"
+    thus "forest_modulo_equivalence_path a b H d \<or> (forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d)"
     proof (cases "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top")
       case True
       assume "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top"
-      hence "bf_between_arcs a b H d"
-        using 11 bf_between_arcs_def by auto
+      hence "forest_modulo_equivalence_path a b H d"
+        using 11 forest_modulo_equivalence_path_def by auto
       thus ?thesis
         by simp
     next
@@ -761,41 +1007,41 @@ proof -
         thus "False"
           using 13 False sup.absorb_iff1 mult_assoc by auto
       qed
-      hence "bf_between_arcs a c H d \<and> bf_between_arcs c b H d"
-        using 11 15 assms(2) bf_between_arcs_def by auto
+      hence "forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d"
+        using 11 15 assms(2) forest_modulo_equivalence_path_def by auto
       thus ?thesis
         by simp
     qed
   qed
-  have 2: "bf_between_arcs a b H d \<or> (bf_between_arcs a c H d \<and> bf_between_arcs c b H d) \<longrightarrow> bf_between_arcs a b H (d \<squnion> c)"
+  have 2: "forest_modulo_equivalence_path a b H d \<or> (forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d) \<longrightarrow> forest_modulo_equivalence_path a b H (d \<squnion> c)"
   proof -
-    have 21: "bf_between_arcs a b H d \<longrightarrow> bf_between_arcs a b H (d \<squnion> c)"
+    have 21: "forest_modulo_equivalence_path a b H d \<longrightarrow> forest_modulo_equivalence_path a b H (d \<squnion> c)"
     proof (rule impI)
-      assume 22:"bf_between_arcs a b H d"
+      assume 22:"forest_modulo_equivalence_path a b H d"
       hence "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * b * top"
-        using bf_between_arcs_def by blast
+        using forest_modulo_equivalence_path_def by blast
       hence "a\<^sup>T * top \<le> (H * (d \<squnion> c))\<^sup>\<star> * H * b * top"
         by (simp add: mult_left_isotone mult_right_dist_sup mult_right_isotone order.trans star_isotone star_slide)
-      thus "bf_between_arcs a b H (d \<squnion> c)"
-        using 22 bf_between_arcs_def by blast
+      thus "forest_modulo_equivalence_path a b H (d \<squnion> c)"
+        using 22 forest_modulo_equivalence_path_def by blast
     qed
-    have "bf_between_arcs a c H d \<and> bf_between_arcs c b H d \<longrightarrow> bf_between_arcs a b H (d \<squnion> c)"
+    have "forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d \<longrightarrow> forest_modulo_equivalence_path a b H (d \<squnion> c)"
     proof (rule impI)
-      assume 23: "bf_between_arcs a c H d \<and> bf_between_arcs c b H d"
+      assume 23: "forest_modulo_equivalence_path a c H d \<and> forest_modulo_equivalence_path c b H d"
       hence "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * c * top"
-        using bf_between_arcs_def by blast
+        using forest_modulo_equivalence_path_def by blast
       also have "... \<le> (H * d)\<^sup>\<star> * H * c * c\<^sup>T * c * top"
         by (metis ex231c comp_inf.star.circ_sup_2 mult_isotone mult_right_isotone mult_assoc)
       also have "... \<le> (H * d)\<^sup>\<star> * H * c * c\<^sup>T * top"
         by (simp add: mult_right_isotone mult_assoc)
       also have "... \<le> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star> * H * b * top"
-        using 23 mult_right_isotone mult_assoc by (simp add: bf_between_arcs_def)
+        using 23 mult_right_isotone mult_assoc by (simp add: forest_modulo_equivalence_path_def)
       also have "... \<le> (H * d)\<^sup>\<star> * H * b * top \<squnion> (H * d)\<^sup>\<star> * H * c * (H * d)\<^sup>\<star> * H * b * top"
-        by (simp add: bf_between_arcs_def)
+        by (simp add: forest_modulo_equivalence_path_def)
       finally have "a\<^sup>T * top \<le> (H * (d \<squnion> c))\<^sup>\<star> * H * b * top"
         using assms(1, 2) path_through_components mult_right_dist_sup by simp
-      thus "bf_between_arcs a b H (d \<squnion> c)"
-        using 23 bf_between_arcs_def by blast
+      thus "forest_modulo_equivalence_path a b H (d \<squnion> c)"
+        using 23 forest_modulo_equivalence_path_def by blast
     qed
     thus ?thesis
       using 21 by auto
@@ -830,218 +1076,220 @@ proof -
     using coreflexive_bot_closed le_bot by blast
 qed
 
-lemma big_forest_d_U_e:
+lemma forest_modulo_equivalence_d_U_e:
   assumes "forest f"
     and "vector j"
     and "regular j"
     and "forest h"
-    and "forest_components h \<le> forest_components f"
-    and "big_forest (forest_components h) d"
+    and "forest_modulo_equivalence (forest_components h) d"
     and "d * top \<le> - j"
     and "forest_components h * j = j"
     and "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
     and "selected_edge h j g \<le> - forest_components f"
-    and "selected_edge h j g \<noteq> bot"
     and "j \<noteq> bot"
-  shows "big_forest (forest_components h) (d \<squnion> selected_edge h j g)"
-proof (unfold big_forest_def, intro conjI)
+  shows "forest_modulo_equivalence (forest_components h) (d \<squnion> selected_edge h j g)"
+proof (cases "selected_edge h j g = bot")
+  let ?e = "selected_edge h j g"
+  case True
+  assume "?e = bot"
+  thus ?thesis
+    by (simp add: True assms(5))
+next
   let ?H = "forest_components h"
   let ?F = "forest_components f"
   let ?e = "selected_edge h j g"
   let ?d' = "d \<squnion> ?e"
-  show 01: "reflexive ?H"
-    by (simp add: assms(4) forest_components_equivalence)
-  show 02: "transitive ?H"
-    by (simp add: assms(4) forest_components_equivalence)
-  show 03: "symmetric ?H"
-    by (simp add: assms(4) forest_components_equivalence)
-  have 04: "equivalence ?H"
-    by (simp add: 01 02 03)
-  show 1: "?d' \<le> - ?H"
-  proof -
-    have "?H \<le> ?F"
-      by (simp add: assms(5))
-    hence 11: "?e \<le> - ?H"
-      using assms(10) order_lesseq_imp p_antitone by blast
-    have "d \<le> - ?H"
-      using assms(6) big_forest_def by auto
-    thus ?thesis
-      by (simp add: 11)
-  qed
-  show "univalent (?H * ?d')"
-  proof -
-    have "(?H * ?d')\<^sup>T * (?H * ?d') = ?d'\<^sup>T * ?H\<^sup>T * ?H * ?d'"
-      using conv_dist_comp mult_assoc by auto
-    also have "... = ?d'\<^sup>T * ?H * ?H * ?d'"
-      by (simp add: conv_dist_comp conv_star_commute)
-    also have "... = ?d'\<^sup>T * ?H * ?d'"
-      using 01 02 by (metis preorder_idempotent mult_assoc)
-    finally have 21: "univalent (?H * ?d') \<longleftrightarrow> ?e\<^sup>T * ?H * d \<squnion> d\<^sup>T * ?H * ?e \<squnion> ?e\<^sup>T * ?H * ?e \<squnion> d\<^sup>T * ?H * d \<le> 1"
-      using conv_dist_sup semiring.distrib_left semiring.distrib_right by auto
-    have 22: "?e\<^sup>T * ?H * ?e \<le> 1"
+  case False
+  assume e_not_bot: "?e \<noteq> bot"
+  have "forest_modulo_equivalence (forest_components h) (d \<squnion> selected_edge h j g)"
+  proof (unfold forest_modulo_equivalence_def, intro conjI)
+    show 01: "reflexive ?H"
+      by (simp add: assms(4) forest_components_equivalence)
+    show 02: "transitive ?H"
+      by (simp add: assms(4) forest_components_equivalence)
+    show 03: "symmetric ?H"
+      by (simp add: assms(4) forest_components_equivalence)
+    have 04: "equivalence ?H"
+      by (simp add: 01 02 03)
+    show "univalent (?H * ?d')"
     proof -
-      have 221: "?e\<^sup>T * ?H * ?e \<le> ?e\<^sup>T * top * ?e"
-        by (simp add: mult_left_isotone mult_right_isotone)
-      have "arc ?e"
-        using assms(11) minarc_arc minarc_bot_iff by blast
-      hence "?e\<^sup>T * top * ?e \<le> 1"
-        using arc_expanded by blast
+      have "(?H * ?d')\<^sup>T * (?H * ?d') = ?d'\<^sup>T * ?H\<^sup>T * ?H * ?d'"
+        using conv_dist_comp mult_assoc by auto
+      also have "... = ?d'\<^sup>T * ?H * ?H * ?d'"
+        by (simp add: conv_dist_comp conv_star_commute)
+      also have "... = ?d'\<^sup>T * ?H * ?d'"
+        using 01 02 by (metis preorder_idempotent mult_assoc)
+      finally have 21: "univalent (?H * ?d') \<longleftrightarrow> ?e\<^sup>T * ?H * d \<squnion> d\<^sup>T * ?H * ?e \<squnion> ?e\<^sup>T * ?H * ?e \<squnion> d\<^sup>T * ?H * d \<le> 1"
+        using conv_dist_sup semiring.distrib_left semiring.distrib_right by auto
+      have 22: "?e\<^sup>T * ?H * ?e \<le> 1"
+      proof -
+        have 221: "?e\<^sup>T * ?H * ?e \<le> ?e\<^sup>T * top * ?e"
+          by (simp add: mult_left_isotone mult_right_isotone)
+        have "arc ?e"
+          using e_not_bot minarc_arc minarc_bot_iff by blast
+        hence "?e\<^sup>T * top * ?e \<le> 1"
+          using arc_expanded by blast
+        thus ?thesis
+          using 221 dual_order.trans by blast
+      qed
+      have 24: "d\<^sup>T * ?H * ?e \<le> 1"
+        by (metis assms(2, 3, 6, 7, 10) dT_He_eq_bot coreflexive_bot_closed le_bot)
+      hence "(d\<^sup>T * ?H * ?e)\<^sup>T \<le> 1\<^sup>T"
+        using conv_isotone by blast
+      hence "?e\<^sup>T * ?H\<^sup>T * d\<^sup>T\<^sup>T \<le> 1"
+        by (simp add: conv_dist_comp mult_assoc)
+      hence 25: "?e\<^sup>T * ?H * d \<le> 1"
+        using assms(4) fch_equivalence by auto
+      have 8: "d\<^sup>T * ?H * d \<le> 1"
+        using 04 assms(5) dTransHd_le_1 forest_modulo_equivalence_def by blast
       thus ?thesis
-        using 221 dual_order.trans by blast
+        using 21 22 24 25 by simp
     qed
-    have 24: "d\<^sup>T * ?H * ?e \<le> 1"
-      by (metis assms(2, 3, 7, 8, 12) dT_He_eq_bot coreflexive_bot_closed le_bot)
-    hence "(d\<^sup>T * ?H * ?e)\<^sup>T \<le> 1\<^sup>T"
-      using conv_isotone by blast
-    hence "?e\<^sup>T * ?H\<^sup>T * d\<^sup>T\<^sup>T \<le> 1"
-      by (simp add: conv_dist_comp mult_assoc)
-    hence 25: "?e\<^sup>T * ?H * d \<le> 1"
-      using assms(4) fch_equivalence by auto
-    have 8: "d\<^sup>T * ?H * d \<le> 1"
-      using 04 assms(6) dTransHd_le_1 big_forest_def by blast
-    thus ?thesis
-      using 21 22 24 25 by simp
-  qed
-  show "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T)"
-  proof -
-    have "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T) \<longleftrightarrow> ?H \<sqinter> (d \<squnion> ?e) * (d\<^sup>T \<squnion> ?e\<^sup>T) \<le> 1"
-      by (simp add: conv_dist_sup)
-    also have "... \<longleftrightarrow> ?H \<sqinter> (d * d\<^sup>T \<squnion> d * ?e\<^sup>T \<squnion> ?e * d\<^sup>T \<squnion> ?e * ?e\<^sup>T) \<le> 1"
-      by (metis mult_left_dist_sup mult_right_dist_sup sup.left_commute sup_commute)
-    finally have 1: "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T) \<longleftrightarrow> ?H \<sqinter> d * d\<^sup>T \<squnion> ?H \<sqinter> d * ?e\<^sup>T \<squnion> ?H \<sqinter> ?e * d\<^sup>T \<squnion> ?H \<sqinter> ?e * ?e\<^sup>T \<le> 1"
-      by (simp add: inf_sup_distrib1)
-    have 31: "?H \<sqinter> d * d\<^sup>T \<le> 1"
-      using assms(6) big_forest_def by blast
-    have 32: "?H \<sqinter> ?e * d\<^sup>T \<le> 1"
+    show "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T)"
     proof -
-      have "?e * d\<^sup>T \<le> ?e * top * (d * top)\<^sup>T"
-        by (simp add: conv_isotone mult_isotone top_right_mult_increasing)
-      also have "... \<le> ?e * top * - j\<^sup>T"
-        by (metis assms(7) conv_complement conv_isotone mult_right_isotone)
-      also have "... \<le> j * - j\<^sup>T"
-        using assms(2, 3, 12) et_below_j mult_left_isotone by auto
+      have "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T) \<longleftrightarrow> ?H \<sqinter> (d \<squnion> ?e) * (d\<^sup>T \<squnion> ?e\<^sup>T) \<le> 1"
+        by (simp add: conv_dist_sup)
+      also have "... \<longleftrightarrow> ?H \<sqinter> (d * d\<^sup>T \<squnion> d * ?e\<^sup>T \<squnion> ?e * d\<^sup>T \<squnion> ?e * ?e\<^sup>T) \<le> 1"
+        by (metis mult_left_dist_sup mult_right_dist_sup sup.left_commute sup_commute)
+      finally have 1: "coreflexive (?H \<sqinter> ?d' * ?d'\<^sup>T) \<longleftrightarrow> ?H \<sqinter> d * d\<^sup>T \<squnion> ?H \<sqinter> d * ?e\<^sup>T \<squnion> ?H \<sqinter> ?e * d\<^sup>T \<squnion> ?H \<sqinter> ?e * ?e\<^sup>T \<le> 1"
+        by (simp add: inf_sup_distrib1)
+      have 31: "?H \<sqinter> d * d\<^sup>T \<le> 1"
+        using assms(5) forest_modulo_equivalence_def by blast
+      have 32: "?H \<sqinter> ?e * d\<^sup>T \<le> 1"
+      proof -
+        have "?e * d\<^sup>T \<le> ?e * top * (d * top)\<^sup>T"
+          by (simp add: conv_isotone mult_isotone top_right_mult_increasing)
+        also have "... \<le> ?e * top * - j\<^sup>T"
+          by (metis assms(6) conv_complement conv_isotone mult_right_isotone)
+        also have "... \<le> j * - j\<^sup>T"
+          using assms(2, 3, 10) et_below_j mult_left_isotone by auto
+        also have "... \<le> - ?H"
+          using 03 by (metis assms(2, 3, 7) conv_complement conv_dist_comp equivalence_top_closed mult_left_isotone schroeder_3_p vector_top_closed)
+        finally have "?e * d\<^sup>T \<le> - ?H"
+          by simp
+        thus ?thesis
+          by (metis inf.coboundedI1 p_antitone_iff p_shunting_swap regular_one_closed)
+      qed
+      have 33: "?H \<sqinter> d * ?e\<^sup>T \<le> 1"
+      proof -
+        have 331: "injective h"
+          by (simp add: assms(4))
+        have "(?H \<sqinter> ?e * d\<^sup>T)\<^sup>T \<le> 1"
+          using 32 coreflexive_conv_closed by auto
+        hence "?H \<sqinter> (?e * d\<^sup>T)\<^sup>T \<le> 1"
+          using 331 conv_dist_inf forest_components_equivalence by auto
+        thus ?thesis
+          using conv_dist_comp by auto
+      qed
+      have 34: "?H \<sqinter> ?e * ?e\<^sup>T \<le> 1"
+      proof -
+        have 341:"arc ?e \<and> arc (?e\<^sup>T)"
+          using e_not_bot minarc_arc minarc_bot_iff by auto
+        have "?H \<sqinter> ?e * ?e\<^sup>T \<le> ?e * ?e\<^sup>T"
+          by auto
+        thus ?thesis
+          using 341 arc_injective le_infI2 by blast
+      qed
+      thus ?thesis
+        using 1 31 32 33 34 by simp
+    qed
+    show 4:"(?H * (d \<squnion> ?e))\<^sup>+ \<sqinter> ?H \<le> bot"
+    proof -
+      have 40: "(?H * d)\<^sup>+ \<le> -?H"
+        using assms(5) forest_modulo_equivalence_def bot_unique pseudo_complement by blast
+      have "?e \<le> - ?F"
+        by (simp add: assms(9))
+      hence "?F \<le> - ?e"
+        by (simp add: p_antitone_iff)
+      hence "?F\<^sup>T * ?F \<le> - ?e"
+        using assms(1) fch_equivalence by fastforce
+      hence "?F\<^sup>T * ?F * ?F\<^sup>T \<le> - ?e"
+        by (metis assms(1) fch_equivalence forest_components_star star.circ_decompose_9)
+      hence 41: "?F * ?e * ?F \<le> - ?F"
+        using triple_schroeder_p by blast
+      hence 42:"(?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star> \<le> - ?F"
+      proof -
+        have 43: "?F * ?F = ?F"
+          using assms(1) forest_components_equivalence preorder_idempotent by auto
+        hence "?F * ?e * ?F = ?F * ?F * ?e * ?F"
+          by simp
+        also have "... = (?F)\<^sup>\<star> * ?F * ?e * (?F)\<^sup>\<star>"
+          by (simp add: assms(1) forest_components_star)
+        also have "... = (?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star>"
+          using 43 by simp
+        finally show ?thesis
+          using 41 by simp
+      qed
+      hence 44: "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> \<le> - ?H"
+      proof -
+        have 45: "?H \<le> ?F"
+          using assms(1, 4, 8) H_below_F by blast
+        hence 46:"?H * ?e \<le> ?F * ?e"
+          by (simp add: mult_left_isotone)
+        have "d \<le> f \<squnion> f\<^sup>T"
+          using assms(8) sup.left_commute sup_commute by auto
+        also have "... \<le> ?F"
+          by (metis forest_components_increasing le_supI2 star.circ_back_loop_fixpoint star.circ_increasing sup.bounded_iff)
+        finally have "d \<le> ?F"
+          by simp
+        hence "?H * d \<le> ?F * ?F"
+          using 45 mult_isotone by auto
+        hence 47: "(?H * d)\<^sup>\<star> \<le> (?F * ?F)\<^sup>\<star>"
+          by (simp add: star_isotone)
+        hence "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> \<le> (?H * d)\<^sup>\<star> * ?F * ?e * (?H * d)\<^sup>\<star>"
+          using 46 by (metis mult_left_isotone mult_right_isotone mult_assoc)
+        also have "... \<le> (?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star>"
+          using 47 mult_left_isotone mult_right_isotone by (simp add: comp_isotone)
+        also have "... \<le> - ?F"
+          using 42 by simp
+        also have "... \<le> - ?H"
+          using 45 by (simp add: p_antitone)
+        finally show ?thesis
+          by simp
+      qed
+      have "(?H * (d \<squnion> ?e))\<^sup>+ = (?H * (d \<squnion> ?e))\<^sup>\<star> * (?H * (d \<squnion> ?e))"
+        using star.circ_plus_same by auto
+      also have "... = ((?H * d)\<^sup>\<star> \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star>) * (?H * (d \<squnion> ?e))"
+        using assms(4) e_not_bot forest_components_equivalence minarc_arc minarc_bot_iff path_through_components by auto
+      also have "... = (?H * d)\<^sup>\<star> * (?H * (d \<squnion> ?e)) \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * (d \<squnion> ?e))"
+        using mult_right_dist_sup by auto
+      also have "... = (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e) \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
+        by (simp add: mult_left_dist_sup)
+      also have "... = (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
+        using mult_left_dist_sup mult_assoc by auto
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
+        by (simp add: star.circ_plus_same mult_assoc)
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * ?e"
+        by (simp add: mult.semigroup_axioms semiring.distrib_left sup.semigroup_axioms semigroup.assoc)
+      also have "... \<le> (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e"
+      proof -
+        have "?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?e * top * ?e"
+          by (metis comp_associative comp_inf.coreflexive_idempotent comp_inf.coreflexive_transitive comp_isotone top.extremum)
+        also have "... \<le> ?e"
+          using e_not_bot arc_top_arc minarc_arc minarc_bot_iff by auto
+        finally have "?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?e"
+          by simp
+        hence "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
+          by (simp add: comp_associative comp_isotone)
+        thus ?thesis
+          using sup_right_isotone by blast
+      qed
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d"
+        by (simp add: order.eq_iff ac_simps)
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>+"
+        using star.circ_plus_same mult_assoc by auto
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (1 \<squnion> (?H * d)\<^sup>+)"
+        by (simp add: mult_left_dist_sup sup_assoc)
+      also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star>"
+        by (simp add: star_left_unfold_equal)
       also have "... \<le> - ?H"
-        using 03 by (metis assms(2, 3, 8) conv_complement conv_dist_comp equivalence_top_closed mult_left_isotone schroeder_3_p vector_top_closed)
-      finally have "?e * d\<^sup>T \<le> - ?H"
-        by simp
-      thus ?thesis
-        by (metis inf.coboundedI1 p_antitone_iff p_shunting_swap regular_one_closed)
-    qed
-    have 33: "?H \<sqinter> d * ?e\<^sup>T \<le> 1"
-    proof -
-      have 331: "injective h"
-        by (simp add: assms(4))
-      have "(?H \<sqinter> ?e * d\<^sup>T)\<^sup>T \<le> 1"
-        using 32 coreflexive_conv_closed by auto
-      hence "?H \<sqinter> (?e * d\<^sup>T)\<^sup>T \<le> 1"
-        using 331 conv_dist_inf forest_components_equivalence by auto
-      thus ?thesis
-        using conv_dist_comp by auto
-    qed
-    have 34: "?H \<sqinter> ?e * ?e\<^sup>T \<le> 1"
-    proof -
-      have 341:"arc ?e \<and> arc (?e\<^sup>T)"
-        using assms(11) minarc_arc minarc_bot_iff by auto
-      have "?H \<sqinter> ?e * ?e\<^sup>T \<le> ?e * ?e\<^sup>T"
-        by auto
-      thus ?thesis
-        using 341 arc_injective le_infI2 by blast
-    qed
-    thus ?thesis
-      using 1 31 32 33 34 by simp
-  qed
-  show 4:"(?H * (d \<squnion> ?e))\<^sup>+ \<le> - ?H"
-  proof -
-    have "?e \<le> - ?F"
-      by (simp add: assms(10))
-    hence "?F \<le> - ?e"
-      by (simp add: p_antitone_iff)
-    hence "?F\<^sup>T * ?F \<le> - ?e"
-      using assms(1) fch_equivalence by fastforce
-    hence "?F\<^sup>T * ?F * ?F\<^sup>T \<le> - ?e"
-      by (metis assms(1) fch_equivalence forest_components_star star.circ_decompose_9)
-    hence 41: "?F * ?e * ?F \<le> - ?F"
-      using triple_schroeder_p by blast
-    hence 42:"(?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star> \<le> - ?F"
-    proof -
-      have 43: "?F * ?F = ?F"
-        using assms(1) forest_components_equivalence preorder_idempotent by auto
-      hence "?F * ?e * ?F = ?F * ?F * ?e * ?F"
-        by simp
-      also have "... = (?F)\<^sup>\<star> * ?F * ?e * (?F)\<^sup>\<star>"
-        by (simp add: assms(1) forest_components_star)
-      also have "... = (?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star>"
-        using 43 by simp
+        using 40 44 assms(5) sup.boundedI by blast
       finally show ?thesis
-        using 41 by simp
+        using pseudo_complement by force
     qed
-    hence 44: "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> \<le> - ?H"
-    proof -
-      have 45: "?H \<le> ?F"
-        by (simp add: assms(5))
-      hence 46:"?H * ?e \<le> ?F * ?e"
-        by (simp add: mult_left_isotone)
-      have "d \<le> f \<squnion> f\<^sup>T"
-        using assms(9) sup.left_commute sup_commute by auto
-      also have "... \<le> ?F"
-        by (metis forest_components_increasing le_supI2 star.circ_back_loop_fixpoint star.circ_increasing sup.bounded_iff)
-      finally have "d \<le> ?F"
-        by simp
-      hence "?H * d \<le> ?F * ?F"
-        using 45 mult_isotone by auto
-      hence 47: "(?H * d)\<^sup>\<star> \<le> (?F * ?F)\<^sup>\<star>"
-        by (simp add: star_isotone)
-      hence "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> \<le> (?H * d)\<^sup>\<star> * ?F * ?e * (?H * d)\<^sup>\<star>"
-        using 46 by (metis mult_left_isotone mult_right_isotone mult_assoc)
-      also have "... \<le> (?F * ?F)\<^sup>\<star> * ?F * ?e * (?F * ?F)\<^sup>\<star>"
-        using 47 mult_left_isotone mult_right_isotone by (simp add: comp_isotone)
-      also have "... \<le> - ?F"
-        using 42 by simp
-      also have "... \<le> - ?H"
-        using 45 by (simp add: p_antitone)
-      finally show ?thesis
-        by simp
-    qed
-    have "(?H * (d \<squnion> ?e))\<^sup>+ = (?H * (d \<squnion> ?e))\<^sup>\<star> * (?H * (d \<squnion> ?e))"
-      using star.circ_plus_same by auto
-    also have "... = ((?H * d)\<^sup>\<star> \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star>) * (?H * (d \<squnion> ?e))"
-      using assms(4, 11) forest_components_equivalence minarc_arc minarc_bot_iff path_through_components by auto
-    also have "... = (?H * d)\<^sup>\<star> * (?H * (d \<squnion> ?e)) \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * (d \<squnion> ?e))"
-      using mult_right_dist_sup by auto
-    also have "... = (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e) \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
-      by (simp add: mult_left_dist_sup)
-    also have "... = (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
-      using mult_left_dist_sup mult_assoc by auto
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * (?H * d \<squnion> ?H * ?e)"
-      by (simp add: star.circ_plus_same mult_assoc)
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * ?e"
-      by (simp add: mult.semigroup_axioms semiring.distrib_left sup.semigroup_axioms semigroup.assoc)
-    also have "... \<le> (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e"
-    proof -
-      have "?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?e * top * ?e"
-        by (metis comp_associative comp_inf.coreflexive_idempotent comp_inf.coreflexive_transitive comp_isotone top.extremum)
-      also have "... \<le> ?e"
-        using assms(11) arc_top_arc minarc_arc minarc_bot_iff by auto
-      finally have "?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?e"
-        by simp
-      hence "(?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
-        by (simp add: comp_associative comp_isotone)
-      thus ?thesis
-        using sup_right_isotone by blast
-    qed
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star> * ?H * d"
-      by (simp add: order.eq_iff ac_simps)
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>+"
-      using star.circ_plus_same mult_assoc by auto
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (1 \<squnion> (?H * d)\<^sup>+)"
-      by (simp add: mult_left_dist_sup sup_assoc)
-    also have "... = (?H * d)\<^sup>+ \<squnion> (?H * d)\<^sup>\<star> * ?H * ?e * (?H * d)\<^sup>\<star>"
-      by (simp add: star_left_unfold_equal)
-    also have "... \<le> - ?H"
-      using 44 assms(6) big_forest_def by auto
-    finally show ?thesis
-      by simp
   qed
+  thus ?thesis
+    by blast
 qed
 
 subsubsection \<open>Identifying arcs\<close>
@@ -1052,8 +1300,8 @@ Here, we prove this expression is an \<open>arc\<close>.
 \<close>
 
 lemma shows_arc_x:
-  assumes "big_forest H d"
-    and "bf_between_arcs a e H d"
+  assumes "forest_modulo_equivalence H d"
+    and "forest_modulo_equivalence_path a e H d"
     and "H * d * (H * d)\<^sup>\<star> \<le> - H"
     and "\<not> a\<^sup>T * top \<le> H * e * top"
     and "regular a"
@@ -1066,19 +1314,19 @@ proof -
   have 1:"regular ?x"
     using assms(5, 6, 7, 8) regular_closed_star regular_conv_closed regular_mult_closed by auto
   have 2: "a\<^sup>T * top * a \<le> 1"
-    using arc_expanded assms(2) bf_between_arcs_def by auto
+    using arc_expanded assms(2) forest_modulo_equivalence_path_def by auto
   have 3: "e * top * e\<^sup>T \<le> 1"
-    using assms(2) bf_between_arcs_def arc_expanded by blast
+    using assms(2) forest_modulo_equivalence_path_def arc_expanded by blast
   have 4: "top * ?x * top = top"
   proof -
     have "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * e * top"
-      using assms(2) bf_between_arcs_def by blast
+      using assms(2) forest_modulo_equivalence_path_def by blast
     also have "... = H * e * top \<squnion> (H * d)\<^sup>\<star> * H * d * H * e * top"
       by (metis star.circ_loop_fixpoint star.circ_plus_same sup_commute mult_assoc)
     finally have "a\<^sup>T * top \<le> H * e * top \<squnion> (H * d)\<^sup>\<star> * H * d * H * e * top"
       by simp
     hence "a\<^sup>T * top \<le> H * e * top \<or> a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * d * H * e * top"
-      using assms(2, 6, 7) point_in_vector_sup bf_between_arcs_def regular_mult_closed vector_mult_closed by auto
+      using assms(2, 6, 7) point_in_vector_sup forest_modulo_equivalence_path_def regular_mult_closed vector_mult_closed by auto
     hence "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * d * H * e * top"
       using assms(4) by blast
     also have "... = (H * d)\<^sup>\<star> * H * d * (H * e * top \<sqinter> H * e * top)"
@@ -1088,24 +1336,24 @@ proof -
     also have "... = (H * d)\<^sup>\<star> * H * (d \<sqinter> top\<^sup>T * e\<^sup>T * H\<^sup>T) * H * e * top"
       using conv_dist_comp mult_assoc by auto
     also have "... = (H * d)\<^sup>\<star> * H * (d \<sqinter> top * e\<^sup>T * H) * H * e * top"
-      using assms(1) by (simp add: big_forest_def)
+      using assms(1) by (simp add: forest_modulo_equivalence_def)
     finally have 2: "a\<^sup>T * top \<le> (H * d)\<^sup>\<star> * H * (d \<sqinter> top * e\<^sup>T * H) * H * e * top"
       by simp
     hence "e * top \<le> ((H * d)\<^sup>\<star> * H * (d \<sqinter> top * e\<^sup>T * H) * H)\<^sup>T * a\<^sup>T * top"
     proof -
       have "bijective (e * top) \<and> bijective (a\<^sup>T * top)"
-        using assms(2) bf_between_arcs_def by auto
+        using assms(2) forest_modulo_equivalence_path_def by auto
       thus ?thesis
         using 2 by (metis bijective_reverse mult_assoc)
     qed
     also have "... = H\<^sup>T * (d \<sqinter> top * e\<^sup>T * H)\<^sup>T * H\<^sup>T * (H * d)\<^sup>\<star>\<^sup>T * a\<^sup>T * top"
       by (simp add: conv_dist_comp mult_assoc)
     also have "... = H * (d \<sqinter> top * e\<^sup>T * H)\<^sup>T * H * (H * d)\<^sup>\<star>\<^sup>T * a\<^sup>T * top"
-      using assms(1) big_forest_def by auto
+      using assms(1) forest_modulo_equivalence_def by auto
     also have "... = H * (d \<sqinter> top * e\<^sup>T * H)\<^sup>T * H * (d\<^sup>T * H)\<^sup>\<star> * a\<^sup>T * top"
-      using assms(1) big_forest_def conv_dist_comp conv_star_commute by auto
+      using assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute by auto
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top) * H * (d\<^sup>T * H)\<^sup>\<star> * a\<^sup>T * top"
-      using assms(1) conv_dist_comp big_forest_def comp_associative conv_dist_inf by auto
+      using assms(1) conv_dist_comp forest_modulo_equivalence_def comp_associative conv_dist_inf by auto
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top) * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
       by (simp add: comp_associative star_slide)
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top) * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
@@ -1113,7 +1361,7 @@ proof -
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
       by (smt comp_inf_vector covector_comp_inf vector_conv_covector vector_top_closed mult_assoc)
     also have "... = H * (d\<^sup>T \<sqinter> (top * e\<^sup>T * H)\<^sup>T \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
-      using assms(1) big_forest_def conv_dist_comp mult_assoc by auto
+      using assms(1) forest_modulo_equivalence_def conv_dist_comp mult_assoc by auto
     also have "... = H * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
       by (simp add: conv_dist_inf)
     finally have 3: "e * top \<le> H * ?x\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
@@ -1124,7 +1372,7 @@ proof -
       hence "e * top = bot"
         using 3 le_bot by auto
       thus "False"
-        using assms(2, 4) bf_between_arcs_def mult_assoc semiring.mult_zero_right by auto
+        using assms(2, 4) forest_modulo_equivalence_path_def mult_assoc semiring.mult_zero_right by auto
     qed
     thus ?thesis
       using 1 using tarski by blast
@@ -1134,13 +1382,13 @@ proof -
     have 51: "H * (d * H)\<^sup>\<star> \<sqinter> d * H * d\<^sup>T \<le> 1"
     proof -
       have 511: "d * (H * d)\<^sup>\<star> \<le> - H"
-        using assms(1, 3) big_forest_def preorder_idempotent schroeder_4_p triple_schroeder_p by fastforce
+        using assms(1, 3) forest_modulo_equivalence_def preorder_idempotent schroeder_4_p triple_schroeder_p by fastforce
       hence "(d * H)\<^sup>\<star> * d \<le> - H"
         using star_slide by auto
       hence "H * (d\<^sup>T * H)\<^sup>\<star> \<le> - d"
-        by (smt assms(1) big_forest_def conv_dist_comp conv_star_commute schroeder_4_p star_slide)
+        by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute schroeder_4_p star_slide)
       hence "H * (d * H)\<^sup>\<star> \<le> - d\<^sup>T"
-        using 511 by (metis assms(1) big_forest_def schroeder_5_p star_slide)
+        using 511 by (metis assms(1) forest_modulo_equivalence_def schroeder_5_p star_slide)
       hence "H * (d * H)\<^sup>\<star> \<le> - (H * d\<^sup>T)"
         by (metis assms(3) p_antitone_iff schroeder_4_p star_slide mult_assoc)
       hence "H * (d * H)\<^sup>\<star> \<sqinter> H * d\<^sup>T \<le> bot"
@@ -1148,30 +1396,30 @@ proof -
       hence "H * d * (H * (d * H)\<^sup>\<star> \<sqinter> H * d\<^sup>T) \<le> 1"
         by (simp add: bot_unique)
       hence 512: "H * d * H * (d * H)\<^sup>\<star> \<sqinter> H * d * H * d\<^sup>T \<le> 1"
-        using univalent_comp_left_dist_inf assms(1) big_forest_def mult_assoc by fastforce
+        using univalent_comp_left_dist_inf assms(1) forest_modulo_equivalence_def mult_assoc by fastforce
       hence 513: "H * d * H * (d * H)\<^sup>\<star> \<sqinter> d * H * d\<^sup>T \<le> 1"
       proof -
         have "d * H * d\<^sup>T \<le> H * d * H * d\<^sup>T"
-          by (metis assms(1) big_forest_def conv_dist_comp conv_involutive mult_1_right mult_left_isotone)
+          by (metis assms(1) forest_modulo_equivalence_def conv_dist_comp conv_involutive mult_1_right mult_left_isotone)
         thus ?thesis
           using 512 by (smt dual_order.trans p_antitone p_shunting_swap regular_one_closed)
       qed
       have "d\<^sup>T * H * d \<le> 1 \<squnion> - H"
-        using assms(1) big_forest_def dTransHd_le_1 le_supI1 by blast
+        using assms(1) forest_modulo_equivalence_def dTransHd_le_1 le_supI1 by blast
       hence "(- 1 \<sqinter> H) * d\<^sup>T * H \<le> - d\<^sup>T"
-        by (metis assms(1) big_forest_def dTransHd_le_1 inf.sup_monoid.add_commute le_infI2 p_antitone_iff regular_one_closed schroeder_4_p mult_assoc)
+        by (metis assms(1) forest_modulo_equivalence_def dTransHd_le_1 inf.sup_monoid.add_commute le_infI2 p_antitone_iff regular_one_closed schroeder_4_p mult_assoc)
       hence "d * (- 1 \<sqinter> H) * d\<^sup>T \<le> - H"
-        by (metis assms(1) big_forest_def conv_dist_comp schroeder_3_p triple_schroeder_p)
+        by (metis assms(1) forest_modulo_equivalence_def conv_dist_comp schroeder_3_p triple_schroeder_p)
       hence "H \<sqinter> d * (- 1 \<sqinter> H) * d\<^sup>T \<le> 1"
         by (metis inf.coboundedI1 p_antitone_iff p_shunting_swap regular_one_closed)
       hence "H \<sqinter> d * d\<^sup>T \<squnion> H \<sqinter> d * (- 1 \<sqinter> H) * d\<^sup>T \<le> 1"
-        using assms(1) big_forest_def le_supI by blast
+        using assms(1) forest_modulo_equivalence_def le_supI by blast
       hence "H \<sqinter> (d * 1 * d\<^sup>T \<squnion> d * (- 1 \<sqinter> H) * d\<^sup>T) \<le> 1"
         using comp_inf.semiring.distrib_left by auto
       hence "H \<sqinter> (d * (1 \<squnion> (- 1 \<sqinter> H)) * d\<^sup>T) \<le> 1"
         by (simp add: mult_left_dist_sup mult_right_dist_sup)
       hence 514: "H \<sqinter> d * H * d\<^sup>T \<le> 1"
-        by (metis assms(1) big_forest_def comp_inf.semiring.distrib_left inf.le_iff_sup inf.sup_monoid.add_commute inf_top_right regular_one_closed stone)
+        by (metis assms(1) forest_modulo_equivalence_def comp_inf.semiring.distrib_left inf.le_iff_sup inf.sup_monoid.add_commute inf_top_right regular_one_closed stone)
       thus ?thesis
       proof -
         have "H \<sqinter> d * H * d\<^sup>T \<squnion> H * d * H * (d * H)\<^sup>\<star> \<sqinter> d * H * d\<^sup>T \<le> 1"
@@ -1187,7 +1435,7 @@ proof -
     have "?x * top * ?x\<^sup>T = (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top) * top * (d\<^sup>T \<sqinter> H\<^sup>T * e\<^sup>T\<^sup>T * top\<^sup>T \<sqinter> top\<^sup>T * a\<^sup>T\<^sup>T * H\<^sup>T * (d\<^sup>T\<^sup>T * H\<^sup>T)\<^sup>\<star>)"
       by (simp add: conv_dist_comp conv_dist_inf conv_star_commute mult_assoc)
     also have "... = (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top) * top * (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>)"
-      using assms(1) big_forest_def by auto
+      using assms(1) forest_modulo_equivalence_def by auto
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> (d \<sqinter> top * e\<^sup>T * H) * top * (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>)"
       by (metis inf_vector_comp vector_export_comp)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> (d \<sqinter> top * e\<^sup>T * H) * top * top * (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>)"
@@ -1201,7 +1449,7 @@ proof -
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * ((top * e\<^sup>T * H)\<^sup>T \<sqinter> (H * e * top)\<^sup>T) * d\<^sup>T"
       by (smt comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb comp_inf_covector fc_top star.circ_decompose_11 star.circ_top vector_export_comp)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * (H * e * top \<sqinter> top * e\<^sup>T * H) * d\<^sup>T"
-      using assms(1) big_forest_def conv_dist_comp mult_assoc by auto
+      using assms(1) forest_modulo_equivalence_def conv_dist_comp mult_assoc by auto
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * H * e * top * e\<^sup>T * H * d\<^sup>T"
       by (metis comp_inf_covector inf_top.left_neutral mult_assoc)
     also have "... \<le> (H * d\<^sup>T)\<^sup>\<star> * (H * d)\<^sup>\<star> * H \<sqinter> d * H * e * top * e\<^sup>T * H * d\<^sup>T"
@@ -1209,7 +1457,7 @@ proof -
       have "(H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> \<le> (H * d\<^sup>T)\<^sup>\<star> * H * 1 * H * (d * H)\<^sup>\<star>"
         using 2 by (metis comp_associative comp_isotone mult_left_isotone mult_semi_associative star.circ_transitive_equal)
       also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * (d * H)\<^sup>\<star>"
-        using assms(1) big_forest_def mult.semigroup_axioms preorder_idempotent semigroup.assoc by fastforce
+        using assms(1) forest_modulo_equivalence_def mult.semigroup_axioms preorder_idempotent semigroup.assoc by fastforce
       also have "... = (H * d\<^sup>T)\<^sup>\<star> * (H * d)\<^sup>\<star> * H"
         by (metis star_slide mult_assoc)
       finally show ?thesis
@@ -1220,22 +1468,22 @@ proof -
       have "d * H * e * top * e\<^sup>T * H * d\<^sup>T \<le> d * H * 1 * H * d\<^sup>T"
         using 3 by (metis comp_isotone idempotent_one_closed mult_left_isotone mult_sub_right_one mult_assoc)
       also have "... \<le> d * H * d\<^sup>T"
-        by (metis assms(1) big_forest_def mult_left_isotone mult_one_associative mult_semi_associative preorder_idempotent)
+        by (metis assms(1) forest_modulo_equivalence_def mult_left_isotone mult_one_associative mult_semi_associative preorder_idempotent)
       finally show ?thesis
         using inf.sup_right_isotone by auto
     qed
     also have "... = H * (d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star> * H \<sqinter> d * H * d\<^sup>T"
-      by (metis assms(1) big_forest_def comp_associative preorder_idempotent star_slide)
+      by (metis assms(1) forest_modulo_equivalence_def comp_associative preorder_idempotent star_slide)
     also have "... = H * ((d\<^sup>T * H)\<^sup>\<star> \<squnion> (H * d)\<^sup>\<star>) * H \<sqinter> d * H * d\<^sup>T"
-      by (simp add: assms(1) expand_big_forest mult.semigroup_axioms semigroup.assoc)
+      by (simp add: assms(1) expand_forest_modulo_equivalence mult.semigroup_axioms semigroup.assoc)
     also have "... = (H * (d\<^sup>T * H)\<^sup>\<star> * H \<squnion> H * (H * d)\<^sup>\<star> * H) \<sqinter> d * H * d\<^sup>T"
       by (simp add: mult_left_dist_sup mult_right_dist_sup)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H \<sqinter> d * H * d\<^sup>T \<squnion> H * (d * H)\<^sup>\<star> \<sqinter> d * H * d\<^sup>T"
-      by (smt assms(1) big_forest_def inf_sup_distrib2 mult.semigroup_axioms preorder_idempotent star_slide semigroup.assoc)
+      by (smt assms(1) forest_modulo_equivalence_def inf_sup_distrib2 mult.semigroup_axioms preorder_idempotent star_slide semigroup.assoc)
     also have "... \<le> (H * d\<^sup>T)\<^sup>\<star> * H \<sqinter> d * H * d\<^sup>T \<squnion> 1"
       using 51 comp_inf.semiring.add_left_mono by blast
     finally have "?x * top * ?x\<^sup>T \<le> 1"
-      using 51 by (smt assms(1) big_forest_def conv_dist_comp conv_dist_inf conv_dist_sup conv_involutive conv_star_commute equivalence_one_closed mult.semigroup_axioms sup.absorb2 semigroup.assoc conv_isotone conv_order)
+      using 51 by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp conv_dist_inf conv_dist_sup conv_involutive conv_star_commute equivalence_one_closed mult.semigroup_axioms sup.absorb2 semigroup.assoc conv_isotone conv_order)
     thus ?thesis
       by simp
   qed
@@ -1244,25 +1492,25 @@ proof -
     have "?x\<^sup>T * top * ?x = (d\<^sup>T \<sqinter> H\<^sup>T * e\<^sup>T\<^sup>T * top\<^sup>T \<sqinter> top\<^sup>T * a\<^sup>T\<^sup>T * H\<^sup>T * (d\<^sup>T\<^sup>T * H\<^sup>T)\<^sup>\<star>) * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       by (simp add: conv_dist_comp conv_dist_inf conv_star_commute mult_assoc)
     also have "... = (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>) * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
-      using assms(1) big_forest_def by auto
+      using assms(1) forest_modulo_equivalence_def by auto
     also have "... = H * e * top \<sqinter> (d\<^sup>T \<sqinter> top * a * H * (d * H)\<^sup>\<star>) * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       by (smt comp_associative inf.sup_monoid.add_assoc inf.sup_monoid.add_commute star.circ_left_top star.circ_top vector_inf_comp)
     also have "... = H * e * top \<sqinter> d\<^sup>T * ((top * a * H * (d * H)\<^sup>\<star>)\<^sup>T \<sqinter> top) * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       by (simp add: covector_comp_inf_1 covector_mult_closed)
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
-      using assms(1) big_forest_def comp_associative conv_dist_comp by auto
+      using assms(1) forest_modulo_equivalence_def comp_associative conv_dist_comp by auto
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top * (d \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top) \<sqinter> top * e\<^sup>T * H"
       by (smt comp_associative comp_inf_covector inf.sup_monoid.add_assoc inf.sup_monoid.add_commute)
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * (top \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * d \<sqinter> top * e\<^sup>T * H"
       by (metis comp_associative comp_inf_vector vector_conv_covector vector_top_closed)
     also have "... = H * e * top \<sqinter> (H * e * top)\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * d"
-      by (smt assms(1) big_forest_def conv_dist_comp inf.left_commute inf.sup_monoid.add_commute symmetric_top_closed mult_assoc inf_top.left_neutral)
+      by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp inf.left_commute inf.sup_monoid.add_commute symmetric_top_closed mult_assoc inf_top.left_neutral)
     also have "... = H * e * top * (H * e * top)\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * d"
       using vector_covector vector_mult_closed by auto
     also have "... = H * e * top * top\<^sup>T * e\<^sup>T * H\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top\<^sup>T * a\<^sup>T\<^sup>T * H\<^sup>T * (H * d\<^sup>T)\<^sup>\<star>\<^sup>T * d"
       by (smt conv_dist_comp mult.semigroup_axioms symmetric_top_closed semigroup.assoc)
     also have "... = H * e * top * top * e\<^sup>T * H \<sqinter> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d"
-      using assms(1) big_forest_def conv_dist_comp conv_star_commute by auto
+      using assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute by auto
     also have "... = H * e * top * e\<^sup>T * H \<sqinter> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d"
       using vector_top_closed mult_assoc by auto
     also have "... \<le> H \<sqinter> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * (d * H)\<^sup>\<star> * d"
@@ -1270,13 +1518,13 @@ proof -
       have "H * e * top * e\<^sup>T * H \<le> H * 1 * H"
         using 3 by (metis comp_associative mult_left_isotone mult_right_isotone)
       also have "... = H"
-        using assms(1) big_forest_def preorder_idempotent by auto
+        using assms(1) forest_modulo_equivalence_def preorder_idempotent by auto
       finally have 611: "H * e * top * e\<^sup>T * H \<le> H"
         by simp
       have "d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d \<le> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * 1 * H * (d * H)\<^sup>\<star> * d"
         using 2 by (metis comp_associative mult_left_isotone mult_right_isotone)
       also have "... = d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * (d * H)\<^sup>\<star> * d"
-        using assms(1) big_forest_def mult.semigroup_axioms preorder_idempotent semigroup.assoc by fastforce
+        using assms(1) forest_modulo_equivalence_def mult.semigroup_axioms preorder_idempotent semigroup.assoc by fastforce
       finally have "d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d \<le> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * (d * H)\<^sup>\<star> * d"
         by simp
       thus ?thesis
@@ -1287,22 +1535,22 @@ proof -
     also have "... \<le> H \<sqinter> (d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star>"
     proof -
       have "(d\<^sup>T * H)\<^sup>\<star> * d\<^sup>T * H * d * (H * d)\<^sup>\<star> \<le> (d\<^sup>T * H)\<^sup>\<star> * 1 * (H * d)\<^sup>\<star>"
-        by (smt assms(1) big_forest_def conv_dist_comp mult_left_isotone mult_right_isotone preorder_idempotent mult_assoc)
+        by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp mult_left_isotone mult_right_isotone preorder_idempotent mult_assoc)
       also have "... = (d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star>"
         by simp
       finally show ?thesis
         using inf.sup_right_isotone by blast
     qed
     also have "... = H \<sqinter> ((d\<^sup>T * H)\<^sup>\<star> \<squnion> (H * d)\<^sup>\<star>)"
-      by (simp add: assms(1) expand_big_forest)
+      by (simp add: assms(1) expand_forest_modulo_equivalence)
     also have "... = H \<sqinter> (d\<^sup>T * H)\<^sup>\<star> \<squnion> H \<sqinter> (H * d)\<^sup>\<star>"
       by (simp add: comp_inf.semiring.distrib_left)
     also have "... = 1 \<squnion> H \<sqinter> (d\<^sup>T * H)\<^sup>+ \<squnion> H \<sqinter> (H * d)\<^sup>+"
     proof -
       have 612: "H \<sqinter> (H * d)\<^sup>\<star> = 1 \<squnion> H \<sqinter> (H * d)\<^sup>+"
-        using assms(1) big_forest_def reflexive_inf_star by blast
+        using assms(1) forest_modulo_equivalence_def reflexive_inf_star by blast
       have "H \<sqinter> (d\<^sup>T * H)\<^sup>\<star> = 1 \<squnion> H \<sqinter> (d\<^sup>T * H)\<^sup>+"
-        using assms(1) big_forest_def reflexive_inf_star by auto
+        using assms(1) forest_modulo_equivalence_def reflexive_inf_star by auto
       thus ?thesis
         using 612 sup_assoc sup_commute by auto
     qed
@@ -1311,7 +1559,7 @@ proof -
       have 613: "H \<sqinter> (H * d)\<^sup>+ \<le> 1"
         by (metis assms(3) inf.coboundedI1 p_antitone_iff p_shunting_swap regular_one_closed)
       hence "H \<sqinter> (d\<^sup>T * H)\<^sup>+ \<le> 1"
-        by (metis assms(1) big_forest_def conv_dist_comp conv_dist_inf conv_plus_commute coreflexive_symmetric)
+        by (metis assms(1) forest_modulo_equivalence_def conv_dist_comp conv_dist_inf conv_plus_commute coreflexive_symmetric)
       thus ?thesis
         by (simp add: 613)
     qed
@@ -1648,75 +1896,66 @@ subsubsection \<open>Comparison of edge weights\<close>
 
 text \<open>
 In this section we compare the weight of the \<open>selected_edge\<close> with other edges of interest.
-Theorems 8, 9, 10 and 11 are supporting lemmas.
-For example, Theorem 8 is used to show that the \<open>selected_edge\<close> has its source inside and its target outside the component it is chosen for.
+For example, Theorem \<open>e_leq_c_c_complement_transpose_general\<close> is used to show that the \<open>selected_edge\<close> has its source inside and its target outside the component it is chosen for.
 \<close>
 
-text \<open>Theorem 8\<close>
-
 lemma e_leq_c_c_complement_transpose_general:
-  assumes "e = minarc (c * -(c)\<^sup>T \<sqinter> g)"
-    and "regular c"
-  shows "e \<le> c * -(c)\<^sup>T"
+  assumes "e = minarc (v * -(v)\<^sup>T \<sqinter> g)"
+    and "regular v"
+  shows "e \<le> v * -(v)\<^sup>T"
 proof -
-  have "e \<le> -- (c * - c\<^sup>T \<sqinter> g)"
+  have "e \<le> -- (v * - v\<^sup>T \<sqinter> g)"
     using assms(1) minarc_below order_trans by blast
-  also have "... \<le> -- (c * - c\<^sup>T)"
+  also have "... \<le> -- (v * - v\<^sup>T)"
     using order_lesseq_imp pp_isotone_inf by blast
-  also have "... = c * - c\<^sup>T"
+  also have "... = v * - v\<^sup>T"
     using assms(2) regular_mult_closed by auto
   finally show ?thesis
     by simp
 qed
 
-text \<open>Theorem 9\<close>
-
 lemma x_leq_c_transpose_general:
-  assumes "forest h"
-    and "vector c"
-    and "x\<^sup>T * top \<le> forest_components(h) * e * top"
-    and "e \<le> c * -c\<^sup>T"
-    and "c = forest_components(h) * c"
-  shows "x \<le> c\<^sup>T"
+  assumes "vector_classes x v"
+    and "a\<^sup>T * top \<le> x * e * top"
+    and "e \<le> v * -v\<^sup>T"
+  shows "a \<le> v\<^sup>T"
 proof -
-  let ?H = "forest_components h"
-  have "x \<le> top * x"
+  have 1: "equivalence x"
+    using assms(1) using vector_classes_def by blast
+  have "a \<le> top * a"
     using top_left_mult_increasing by blast
-  also have "... \<le> (?H * e * top)\<^sup>T"
-    using assms(3) conv_dist_comp conv_order by force
-  also have "... = top * e\<^sup>T * ?H"
-    using assms(1) comp_associative conv_dist_comp forest_components_equivalence by auto
-  also have "... \<le> top * (c * - c\<^sup>T)\<^sup>T * ?H"
-    by (simp add: assms(4) conv_isotone mult_left_isotone mult_right_isotone)
-  also have "... = top * (- c * c\<^sup>T) * ?H"
+  also have "... \<le> (x * e * top)\<^sup>T"
+    using assms(2) conv_dist_comp conv_isotone by fastforce
+  also have "... = top * e\<^sup>T * x"
+    using 1 by (simp add: conv_dist_comp mult_assoc)
+  also have "... \<le> top * (v * - v\<^sup>T)\<^sup>T * x"
+    by (metis assms(3) conv_dist_comp conv_isotone mult_left_isotone symmetric_top_closed)
+  also have "... = top * (- v * v\<^sup>T) * x"
     by (simp add: conv_complement conv_dist_comp)
-  also have "... \<le> top * c\<^sup>T * ?H"
+  also have "... \<le> top * v\<^sup>T * x"
     by (metis mult_left_isotone top.extremum mult_assoc)
-  also have "... = c\<^sup>T * ?H"
-    using assms(1, 2) component_is_vector vector_conv_covector by auto
-  also have "... = c\<^sup>T"
-    by (metis assms(1, 5) fch_equivalence conv_dist_comp)
+  also have "... = v\<^sup>T * x"
+    using assms(1) vector_classes_def vector_conv_covector by auto
+  also have "... = v\<^sup>T"
+    by (metis assms(1) order.antisym conv_dist_comp conv_order dual_order.trans mult_right_isotone mult_sub_right_one vector_classes_def)
   finally show ?thesis
     by simp
 qed
 
-text \<open>Theorem 10\<close>
-
 lemma x_leq_c_complement_general:
-  assumes "vector c"
-    and "c * c\<^sup>T \<le> forest_components h"
-    and "x \<le> c\<^sup>T"
-    and "x \<le> -forest_components h"
-  shows "x \<le> -c"
+  assumes "vector v"
+    and "v * v\<^sup>T \<le> x"
+    and "a \<le> v\<^sup>T"
+    and "a \<le> -x"
+  shows "a \<le> -v"
 proof -
-  let ?H = "forest_components h"
-  have "x \<le> - ?H \<sqinter> c\<^sup>T"
+  have "a \<le> -x \<sqinter> v\<^sup>T"
     using assms(3, 4) by auto
-  also have "... \<le> - c"
+  also have "... \<le> - v"
   proof -
-    have "c \<sqinter> c\<^sup>T \<le> ?H"
+    have "v \<sqinter> v\<^sup>T \<le> x"
       using assms(1, 2) vector_covector by auto
-    hence "-?H \<sqinter> c \<sqinter> c\<^sup>T \<le> bot"
+    hence "-x \<sqinter> v \<sqinter> v\<^sup>T \<le> bot"
       using inf.sup_monoid.add_assoc p_antitone pseudo_complement by fastforce
     thus ?thesis
       using le_bot p_shunting_swap pseudo_complement by blast
@@ -1725,54 +1964,45 @@ proof -
     by simp
 qed
 
-text \<open>Theorem 11\<close>
-
-lemma sum_e_below_sum_x_when_outgoing_same_component_general:
-  assumes "e = minarc (c * -(c)\<^sup>T \<sqinter> g)"
-    and "regular c"
-    and "forest h"
-    and "vector c"
-    and "x\<^sup>T * top \<le> (forest_components h) * e * top"
-    and "c = (forest_components h) * c"
-    and "c * c\<^sup>T \<le> forest_components h"
-    and "x \<le> - forest_components h \<sqinter> -- g"
+lemma sum_e_below_sum_a_when_outgoing_same_component_general:
+  assumes "e = minarc (v * -(v)\<^sup>T \<sqinter> g)"
     and "symmetric g"
-    and "arc x"
-    and "c \<noteq> bot"
-  shows "sum (e \<sqinter> g) \<le> sum (x \<sqinter> g)"
+    and "arc a"
+    and "a \<le> -x \<sqinter> -- g"
+    and "a\<^sup>T * top \<le> x * e * top"
+    and "unique_vector_class x v"
+  shows "sum (e \<sqinter> g) \<le> sum (a \<sqinter> g)"
 proof -
-  let ?H = "forest_components h"
-  have 1:"e \<le> c * - c\<^sup>T"
-    using assms(1, 2) e_leq_c_c_complement_transpose_general by auto
-  have 2: "x \<le> c\<^sup>T"
-    using 1 assms(3, 4, 5, 6) x_leq_c_transpose_general by auto
-  hence "x \<le> -c"
-    using assms(4, 7, 8) x_leq_c_complement_general inf.boundedE by blast
-  hence "x \<le> - c \<sqinter> c\<^sup>T"
+  have 1:"e \<le> v * - v\<^sup>T"
+    using assms(1, 6) e_leq_c_c_complement_transpose_general unique_vector_class_def vector_classes_def by auto
+  have 2: "a \<le> v\<^sup>T"
+    using 1 assms(5) assms(6) x_leq_c_transpose_general unique_vector_class_def by blast
+  hence "a \<le> -v"
+    using assms(4, 6) inf.boundedE unique_vector_class_def vector_classes_def x_leq_c_complement_general by meson
+  hence "a \<le> - v \<sqinter> v\<^sup>T"
     using 2 by simp
-  hence "x \<le> - c * c\<^sup>T"
-    using assms(4) by (simp add: vector_complement_closed vector_covector)
-  hence "x\<^sup>T \<le> c\<^sup>T\<^sup>T * - c\<^sup>T"
-    by (metis conv_complement conv_dist_comp conv_isotone)
-  hence 3: "x\<^sup>T \<le> c * - c\<^sup>T"
+  hence "a \<le> - v * v\<^sup>T"
+    using assms(6) vector_complement_closed vector_covector unique_vector_class_def vector_classes_def by metis
+  hence "a\<^sup>T \<le> v\<^sup>T\<^sup>T * - v\<^sup>T"
+    using conv_complement conv_dist_comp conv_isotone by metis
+  hence 3: "a\<^sup>T \<le> v * - v\<^sup>T"
     by simp
-  hence "x \<le> -- g"
-    using assms(8) by auto
-  hence "x\<^sup>T \<le> -- g"
-    using assms(9) conv_complement conv_isotone by fastforce
-  hence "x\<^sup>T \<sqinter> c * - c\<^sup>T \<sqinter> -- g \<noteq> bot"
-    using 3 by (metis assms(10, 11) comp_inf.semiring.mult_not_zero conv_dist_comp
-          conv_involutive inf.orderE mult_right_zero top.extremum)
-  hence "x\<^sup>T \<sqinter> c * - c\<^sup>T \<sqinter> g \<noteq> bot"
+  hence "a \<le> -- g"
+    using assms(4) by auto
+  hence "a\<^sup>T \<le> -- g"
+    using assms(2) conv_complement conv_isotone by fastforce
+  hence "a\<^sup>T \<sqinter> v * - v\<^sup>T \<sqinter> -- g \<noteq> bot"
+    using 3 assms(3, 6) inf.orderE semiring.mult_not_zero unique_vector_class_def vector_classes_def by metis
+  hence "a\<^sup>T \<sqinter> v * - v\<^sup>T \<sqinter> g \<noteq> bot"
     using inf.sup_monoid.add_commute pp_inf_bot_iff by auto
-  hence "sum (minarc (c * - c\<^sup>T \<sqinter> g) \<sqinter> (c * - c\<^sup>T \<sqinter> g)) \<le> sum (x\<^sup>T \<sqinter> c * - c\<^sup>T \<sqinter> g)"
-    using assms(10) minarc_min inf.sup_monoid.add_assoc by auto
-  hence "sum (e \<sqinter> c * - c\<^sup>T \<sqinter> g) \<le> sum (x\<^sup>T \<sqinter> c * - c\<^sup>T \<sqinter> g)"
-    using assms(1) inf.sup_monoid.add_assoc by auto
-  hence "sum (e \<sqinter> g) \<le> sum (x\<^sup>T \<sqinter> g)"
+  hence "sum (minarc (v * - v\<^sup>T \<sqinter> g) \<sqinter> (v * - v\<^sup>T \<sqinter> g)) \<le> sum (a\<^sup>T \<sqinter> v * - v\<^sup>T \<sqinter> g)"
+    using assms(3) minarc_min inf.sup_monoid.add_assoc by simp
+  hence "sum (e \<sqinter> v * - v\<^sup>T \<sqinter> g) \<le> sum (a\<^sup>T \<sqinter> v * - v\<^sup>T \<sqinter> g)"
+    using assms(1, 6) inf.sup_monoid.add_assoc by simp
+  hence "sum (e \<sqinter> g) \<le> sum (a\<^sup>T \<sqinter> g)"
     using 1 3 by (metis inf.orderE)
-  hence "sum (e \<sqinter> g) \<le> sum (x \<sqinter> g)"
-    using assms(9) sum_symmetric by auto
+  hence "sum (e \<sqinter> g) \<le> sum (a \<sqinter> g)"
+    by (simp add: assms(2) sum_symmetric)
   thus ?thesis
     by simp
 qed
@@ -1781,6 +2011,7 @@ lemma sum_e_below_sum_x_when_outgoing_same_component:
   assumes "symmetric g"
     and "vector j"
     and "forest h"
+    and "regular h"
     and "x \<le> - forest_components h \<sqinter> -- g"
     and "x\<^sup>T * top \<le> forest_components h * selected_edge h j g * top"
     and "j \<noteq> bot"
@@ -1791,69 +2022,82 @@ proof -
   let ?c = "choose_component (forest_components h) j"
   let ?H = "forest_components h"
   show ?thesis
-  proof (rule sum_e_below_sum_x_when_outgoing_same_component_general)
+  proof (rule sum_e_below_sum_a_when_outgoing_same_component_general)
   next
     show "?e = minarc (?c * - ?c\<^sup>T \<sqinter> g)"
       by simp
-  next
-    show "regular ?c"
-      using component_is_regular by auto
-  next
-    show "forest h"
-      by (simp add: assms(3))
-  next
-    show "vector ?c"
-      by (simp add: assms(2, 6) component_is_vector)
-  next
-    show "x\<^sup>T * top \<le> ?H * ?e * top"
-      by (simp add: assms(5))
-  next
-    show "?c = ?H * ?c"
-      using component_single by auto
-  next
-    show "?c * ?c\<^sup>T \<le> ?H"
-      by (simp add: component_is_connected)
-  next
-    show "x \<le> -?H \<sqinter> -- g"
-      using assms(4) by auto
   next
     show "symmetric g"
       by (simp add: assms(1))
   next
     show "arc x"
-      by (simp add: assms(7))
+      by (simp add: assms(8))
   next
-    show "?c \<noteq> bot"
-      using assms(2, 5 , 6, 7) inf_bot_left le_bot minarc_bot mult_left_zero mult_right_zero by fastforce
+    show "x \<le> -?H \<sqinter> -- g"
+      using assms(5) by auto
+  next
+    show "x\<^sup>T * top \<le> ?H * ?e * top"
+      by (simp add: assms(6))
+  next
+    show "unique_vector_class ?H ?c"
+    proof (unfold unique_vector_class_def, unfold vector_classes_def, intro conjI)
+    next
+      show "regular ?H"
+        by (metis assms(4) conv_complement pp_dist_star regular_mult_closed)
+    next
+      show "regular ?c"
+        using component_is_regular by auto
+    next
+      show "reflexive ?H"
+        using assms(3) forest_components_equivalence by blast
+    next
+      show "transitive ?H"
+        using assms(3) fch_equivalence by blast
+    next
+      show "symmetric ?H"
+        by (simp add: assms(3) fch_equivalence)
+    next
+      show "vector ?c"
+        by (simp add: assms(2, 6) component_is_vector)
+    next
+      show "?H * ?c \<le> ?c"
+        using component_single by auto
+    next
+      show "?c \<noteq> bot"
+        using assms(2, 6 , 7, 8) inf_bot_left le_bot minarc_bot mult_left_zero mult_right_zero by fastforce
+    next
+      show "?c * ?c\<^sup>T \<le> ?H"
+        by (simp add: component_is_connected)
+    qed
   qed
 qed
 
 text \<open>
-If there is a path in the \<open>big_forest\<close> from an edge between components, $a$, to the \<open>selected_edge\<close>, $e$, then the weight of $e$ is no greater than the weight of $a$.
+If there is a path in the \<open>forest_modulo_equivalence\<close> from an edge between components, $a$, to the \<open>selected_edge\<close>, $e$, then the weight of $e$ is no greater than the weight of $a$.
 This is because either,
 \begin{itemize}
 \item the edges $a$ and $e$ are adjacent the same component so that we can use \<open>sum_e_below_sum_x_when_outgoing_same_component\<close>, or
 \item there is at least one edge between $a$ and $e$, namely $x$, the edge incoming to the component that $e$ is outgoing from.
-      The path from $a$ to $e$ is split on $x$ using \<open>big_forest_path_split_disj\<close>.
+      The path from $a$ to $e$ is split on $x$ using \<open>forest_modulo_equivalence_path_split_disj\<close>.
       We show that the weight of $e$ is no greater than the weight of $x$ by making use of lemma \<open>sum_e_below_sum_x_when_outgoing_same_component\<close>.
       We define $x$ in a way that we can show that the weight of $x$ is no greater than the weight of $a$ using the invariant.
       Then, it follows that the weight of $e$ is no greater than the weight of $a$ owing to transitivity.
 \end{itemize}
 \<close>
 
-lemma a_to_e_in_bigforest:
+lemma a_to_e_in_forest_modulo_equivalence:
   assumes "symmetric g"
     and "f \<le> --g"
     and "vector j"
     and "forest h"
-    and "big_forest (forest_components h) d"
+    and "forest_modulo_equivalence (forest_components h) d"
     and "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
-    and "(\<forall> a b . bf_between_arcs a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
+    and "(\<forall> a b . forest_modulo_equivalence_path a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
     and "regular d"
     and "j \<noteq> bot"
     and "b = selected_edge h j g"
     and "arc a"
-    and "bf_between_arcs a b (forest_components h) (d \<squnion> selected_edge h j g)"
+    and "forest_modulo_equivalence_path a b (forest_components h) (d \<squnion> selected_edge h j g)"
     and "a \<le> - forest_components h \<sqinter> -- g"
     and "regular h"
   shows "sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
@@ -1889,6 +2133,9 @@ proof -
       next
         show "arc a"
           by (simp add: assms(11))
+      next
+        show "regular h"
+          using assms(14) by auto
       qed
       thus ?thesis
         using assms(10) by auto
@@ -1901,29 +2148,29 @@ proof -
       let ?x = "d \<sqinter> top * ?e\<^sup>T * ?H \<sqinter> (?H * d\<^sup>T)\<^sup>\<star> * ?H * a\<^sup>T * top"
       have 61: "arc (?x)"
       proof (rule shows_arc_x)
-        show "big_forest ?H d"
+        show "forest_modulo_equivalence ?H d"
           by (simp add: assms(5))
       next
-        show "bf_between_arcs a ?e ?H d"
+        show "forest_modulo_equivalence_path a ?e ?H d"
         proof -
-          have 611: "bf_between_arcs a b ?H (d \<squnion> b)"
+          have 611: "forest_modulo_equivalence_path a b ?H (d \<squnion> b)"
             using assms(10, 12) by auto
           have 616: "regular h"
             using assms(14) by auto
           have "regular a"
-            using 611 bf_between_arcs_def arc_regular by fastforce
+            using 611 forest_modulo_equivalence_path_def arc_regular by fastforce
           thus ?thesis
-            using 616 by (smt big_forest_path_split_disj assms(4, 8, 10, 12) bf_between_arcs_def fch_equivalence minarc_regular regular_closed_star regular_conv_closed regular_mult_closed)
+            using 616 by (smt forest_modulo_equivalence_path_split_disj assms(4, 8, 10, 12) forest_modulo_equivalence_path_def fch_equivalence minarc_regular regular_closed_star regular_conv_closed regular_mult_closed)
         qed
       next
         show "(?H * d)\<^sup>+ \<le> - ?H"
-          using assms(5) big_forest_def by blast
+          using assms(5) forest_modulo_equivalence_def le_bot pseudo_complement by blast
       next
         show "\<not> a\<^sup>T * top \<le> ?H * ?e * top"
           by (simp add: False)
       next
         show "regular a"
-          using assms(12) bf_between_arcs_def arc_regular by auto
+          using assms(12) forest_modulo_equivalence_path_def arc_regular by auto
       next
         show "regular ?e"
           using minarc_regular by auto
@@ -1950,12 +2197,12 @@ proof -
         by (simp add: star_slide)
       finally have "a\<^sup>T * top \<le> (?H * d)\<^sup>\<star> * ?H * ?x * top"
         by simp
-      hence 65: "bf_between_arcs a ?x ?H d"
-        using 61 assms(12) bf_between_arcs_def by blast
+      hence 65: "forest_modulo_equivalence_path a ?x ?H d"
+        using 61 assms(12) forest_modulo_equivalence_path_def by blast
       have 66: "?x \<le> d"
         by (simp add: inf.sup_monoid.add_assoc)
       hence x_below_a: "sum (?x \<sqinter> g) \<le> sum (a \<sqinter> g)"
-        using 65 bf_between_arcs_def assms(7, 13) by blast
+        using 65 forest_modulo_equivalence_path_def assms(7, 13) by blast
       have "sum (?e \<sqinter> g) \<le> sum (?x \<sqinter> g)"
       proof (rule sum_e_below_sum_x_when_outgoing_same_component)
         show "symmetric g"
@@ -1970,7 +2217,18 @@ proof -
         show "?x \<le> - ?H \<sqinter> -- g"
         proof -
           have 67: "?x \<le> - ?H"
-            using 66 assms(5) big_forest_def order_lesseq_imp by blast
+          proof -
+            have "?x \<le> d"
+              using 66 by blast
+            also have "... \<le> ?H * d"
+              using dual_order.trans star.circ_loop_fixpoint sup.cobounded2 mult_assoc by metis
+            also have "... \<le> (?H * d)\<^sup>+"
+              using star.circ_mult_increasing by blast
+            also have "... \<le> - ?H"
+              using assms(5) bot_unique pseudo_complement forest_modulo_equivalence_def by blast
+            thus ?thesis
+              using calculation inf.order_trans by blast
+          qed
           have "?x \<le> d"
             by (simp add: conv_isotone inf.sup_monoid.add_assoc)
           also have "... \<le> f \<squnion> f\<^sup>T"
@@ -2005,6 +2263,9 @@ proof -
       next
         show "arc (?x)"
           using 61 by blast
+      next
+        show "regular h"
+          using assms(14) by auto
       qed
       hence "sum (?e \<sqinter> g) \<le> sum (a \<sqinter> g)"
         using x_below_a order.trans by blast
@@ -2154,13 +2415,11 @@ lemma exists_a_w:
     and "vector j"
     and "regular j"
     and "forest h"
-    and "forest_components h \<le> forest_components f"
-    and "big_forest (forest_components h) d"
+    and "forest_modulo_equivalence (forest_components h) d"
     and "d * top \<le> - j"
     and "forest_components h * j = j"
-    and "forest_components f = (forest_components h * (d \<squnion> d\<^sup>T))\<^sup>\<star> * forest_components h"
     and "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
-    and "(\<forall> a b . bf_between_arcs a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
+    and "(\<forall> a b . forest_modulo_equivalence_path a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
     and "regular d"
     and "selected_edge h j g \<le> - forest_components f"
     and "selected_edge h j g \<noteq> bot"
@@ -2185,7 +2444,7 @@ proof -
   have "?e\<^sup>T * top * ?e\<^sup>T = ?e\<^sup>T"
     by (metis arc_conv_closed arc_top_arc coreflexive_bot_closed coreflexive_symmetric minarc_arc minarc_bot_iff semiring.mult_not_zero)
   hence "?e\<^sup>T * top * ?e\<^sup>T \<le> -?F"
-    using 5 assms(17) conv_complement conv_isotone by fastforce
+    using 5 assms(15) conv_complement conv_isotone by fastforce
   hence 6: "?e * ?F * ?e = bot"
     using assms(2) le_bot triple_schroeder_p by simp
   let ?q = "w \<sqinter> top * ?e * w\<^sup>T\<^sup>\<star>"
@@ -2271,7 +2530,7 @@ proof -
   have 13: "?v * ?e\<^sup>T = bot"
   proof (rule kruskal_reroot_edge)
     show "injective (?e\<^sup>T * top)"
-      using assms(18) minarc_arc minarc_bot_iff by blast
+      using assms(16) minarc_arc minarc_bot_iff by blast
   next
     show "pd_kleene_allegory_class.acyclic w"
       using 2 minimum_spanning_forest_def spanning_forest_def by simp
@@ -2289,7 +2548,7 @@ proof -
   have 16: "?F \<le> -?i"
   proof -
     have 161: "bijective (?e * top)"
-      using assms(18) minarc_arc minarc_bot_iff by auto
+      using assms(16) minarc_arc minarc_bot_iff by auto
     have "?i \<le> - ?F * ?e * top"
       using inf.cobounded2 inf.coboundedI1 by blast
     also have "... = - (?F * ?e * top)"
@@ -2349,7 +2608,7 @@ proof -
     also have "... = top * ?e\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>\<star>"
     proof -
       have "?e * top * ?e\<^sup>T \<le> 1"
-        using assms(18) arc_expanded minarc_arc minarc_bot_iff by auto
+        using assms(16) arc_expanded minarc_arc minarc_bot_iff by auto
       hence "?F * ?e * top * ?e\<^sup>T \<le> ?F * 1"
         by (metis comp_associative comp_isotone mult_semi_associative star.circ_transitive_equal)
       hence "?v * ?v\<^sup>T * ?F * ?e * top * ?e\<^sup>T \<le> 1 * ?F * 1"
@@ -2448,7 +2707,7 @@ proof -
         using 10 spanning_forest_def by blast
     next
       show "arc ?e"
-        using assms(18) minarc_arc minarc_bot_iff by blast
+        using assms(16) minarc_arc minarc_bot_iff by blast
     next
       show "regular ?F"
         using 3 regular_closed_star regular_conv_closed regular_mult_closed by auto
@@ -2470,7 +2729,7 @@ proof -
 
     next
       show "?e \<noteq> bot"
-        by (simp add: assms(18))
+        by (simp add: assms(16))
     qed
     show "minimum_spanning_forest ?w g"
     proof (unfold minimum_spanning_forest_def, intro conjI)
@@ -2534,7 +2793,7 @@ proof -
             using 1 2 by simp
         qed
         also have "... \<le> --g"
-            using assms(20, 21) by auto
+            using assms(18, 19) by auto
         finally show "?w \<le> --g"
           by simp
       next
@@ -2553,7 +2812,7 @@ proof -
             using 212 by blast
         next
           show "arc ?e"
-            using assms(18) minarc_arc minarc_bot_iff by auto
+            using assms(16) minarc_arc minarc_bot_iff by auto
         next
           show "?v \<le> --g"
             using 10 spanning_forest_def by blast
@@ -2613,14 +2872,14 @@ proof -
       qed
     next
       have 224: "?e \<sqinter> g \<noteq> bot"
-        using assms(18) inf.left_commute inf_bot_right minarc_meet_bot by fastforce
+        using assms(16) inf.left_commute inf_bot_right minarc_meet_bot by fastforce
       have 225: "sum (?e \<sqinter> g) \<le> sum (?i \<sqinter> g)"
-      proof (rule a_to_e_in_bigforest)
+      proof (rule a_to_e_in_forest_modulo_equivalence)
         show "symmetric g"
           using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
       next
         show "j \<noteq> bot"
-          by (simp add: assms(19))
+          by (simp add: assms(17))
       next
         show "f \<le> -- g"
           by (simp add: assms(3))
@@ -2631,17 +2890,17 @@ proof -
         show "forest h"
           by (simp add: assms(8))
       next
-        show " big_forest (forest_components h) d"
-          by (simp add: assms(10))
+        show " forest_modulo_equivalence (forest_components h) d"
+          by (simp add: assms(9))
       next
         show "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
-          by (simp add: assms(14))
+          by (simp add: assms(12))
       next
-        show "\<forall>a b. bf_between_arcs a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
-          by (simp add: assms(15))
+        show "\<forall>a b. forest_modulo_equivalence_path a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
+          by (simp add: assms(13))
       next
         show "regular d"
-          using assms(16) by auto
+          using assms(14) by auto
       next
         show "?e = ?e"
           by simp
@@ -2649,10 +2908,10 @@ proof -
         show "arc ?i"
           using 212 by blast
       next
-        show "bf_between_arcs ?i ?e ?H (d \<squnion> ?e)"
+        show "forest_modulo_equivalence_path ?i ?e ?H (d \<squnion> ?e)"
         proof -
           have "d\<^sup>T * ?H * ?e = bot"
-            using assms(6, 7, 11, 12, 19) dT_He_eq_bot le_bot by blast
+            using assms(6, 7, 10 ,11, 17) dT_He_eq_bot le_bot by blast
           hence 251: "d\<^sup>T * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
             by simp
           hence "d\<^sup>T * ?H * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
@@ -2660,7 +2919,7 @@ proof -
           hence "d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
           proof -
             have "d\<^sup>T * ?H * d \<le> 1"
-              using assms(10) big_forest_def dTransHd_le_1 by blast
+              using assms(9) forest_modulo_equivalence_def dTransHd_le_1 by blast
             hence "d\<^sup>T * ?H * d * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
               by (metis mult_left_isotone star.circ_circ_mult star_involutive star_one)
             hence "d\<^sup>T * ?H * ?e \<squnion> d\<^sup>T * ?H * d * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
@@ -2699,7 +2958,7 @@ proof -
           also have "... = ?F * ?e * top"
             by simp
           also have "... = (?H * (d \<squnion> d\<^sup>T))\<^sup>\<star> * ?H * ?e * top"
-            by (simp add: assms(13))
+            using assms(2, 8, 12) F_is_H_and_d by simp
           also have "... \<le> (?H * d)\<^sup>\<star> * ?H * ?e * top"
             by (simp add: 252 comp_isotone)
           also have "... \<le> (?H * (d \<squnion> ?e))\<^sup>\<star> * ?H * ?e * top"
@@ -2707,12 +2966,14 @@ proof -
           finally have "?i\<^sup>T * top \<le> (?H * (d \<squnion> ?e))\<^sup>\<star> * ?H * ?e * top"
             by blast
           thus ?thesis
-            using 212 assms(18) bf_between_arcs_def minarc_arc minarc_bot_iff by blast
+            using 212 assms(16) forest_modulo_equivalence_path_def minarc_arc minarc_bot_iff by blast
         qed
       next
         show "?i \<le> - ?H \<sqinter> -- g"
         proof -
-          have 241: "?i \<le> -?H"
+          have "forest_components h \<le> forest_components f"
+            using assms(2, 8, 12) H_below_F by blast
+          then have 241: "?i \<le> -?H"
             using 16 assms(9) inf.order_lesseq_imp p_antitone_iff by blast
           have "?i \<le> -- g"
             using 10 inf.coboundedI1 spanning_forest_def by blast
@@ -2721,7 +2982,7 @@ proof -
         qed
       next
         show "regular h"
-          using assms(20) by auto
+          using assms(18) by auto
       qed
       have "?v \<sqinter> ?e \<sqinter> -?i = bot"
         using 14 by simp
@@ -2953,10 +3214,7 @@ proof -
       show "forest h"
         using assms(1) boruvka_inner_invariant_def by blast
     next
-      show "forest_components h \<le> forest_components f"
-        using assms(1) boruvka_inner_invariant_def by blast
-    next
-      show "big_forest (forest_components h) d"
+      show "forest_modulo_equivalence (forest_components h) d"
         using assms(1) boruvka_inner_invariant_def by blast
     next
       show "d * top \<le> - j"
@@ -2965,13 +3223,10 @@ proof -
       show "forest_components h * j = j"
         using assms(1) boruvka_inner_invariant_def by blast
     next
-      show "forest_components f = (forest_components h * (d \<squnion> d\<^sup>T))\<^sup>\<star> * forest_components h"
-        using assms(1) boruvka_inner_invariant_def by blast
-    next
       show "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
         using assms(1) boruvka_inner_invariant_def by blast
     next
-      show "(\<forall> a b . bf_between_arcs a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
+      show "(\<forall> a b . forest_modulo_equivalence_path a b (forest_components h) d \<and> a \<le> -(forest_components h) \<sqinter> -- g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g))"
         using assms(1) boruvka_inner_invariant_def by blast
     next
       show "regular d"
@@ -2990,7 +3245,7 @@ proof -
         using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
     next
       show "h \<le> --g"
-        using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
+        using H_below_regular_g assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
     qed
   qed
 qed
@@ -3017,43 +3272,35 @@ proof -
   let ?j' = "j \<sqinter> -?c"
   show "boruvka_inner_invariant ?j' ?f' h g ?d'"
   proof (unfold boruvka_inner_invariant_def, intro conjI)
-    have 1: "boruvka_outer_invariant ?f' g"
+    show 1: "boruvka_outer_invariant ?f' g"
       using assms(1, 2, 3, 4) boruvka_outer_invariant_when_e_not_bot by blast
-    show "boruvka_outer_invariant ?f' g"
-      using assms(1, 2, 3, 4) boruvka_outer_invariant_when_e_not_bot by blast
+  next
     show "g \<noteq> bot"
       using assms(1) boruvka_inner_invariant_def by force
-    show "vector ?j'"
-      using assms(1, 2) boruvka_inner_invariant_def component_is_vector vector_complement_closed vector_inf_closed by simp
+  next
+    show "regular ?d'"
+      using assms(1) boruvka_inner_invariant_def minarc_regular by auto
+  next
     show "regular ?j'"
       using assms(1) boruvka_inner_invariant_def by auto
-    show "boruvka_outer_invariant h g"
+  next
+    show "vector ?j'"
+      using assms(1, 2) boruvka_inner_invariant_def component_is_vector vector_complement_closed vector_inf_closed by simp
+  next
+    show "regular h"
       by (meson assms(1) boruvka_inner_invariant_def)
+  next
     show "injective h"
       by (meson assms(1) boruvka_inner_invariant_def)
+  next
     show "pd_kleene_allegory_class.acyclic h"
       by (meson assms(1) boruvka_inner_invariant_def)
-    show "?H \<le> forest_components ?f'"
-    proof -
-      have 2: "?F \<le> forest_components ?f'"
-      proof (rule components_disj_increasing)
-        show "regular ?p"
-          using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def minarc_regular regular_closed_star regular_conv_closed regular_mult_closed by auto[1]
-      next
-        show "regular ?e"
-          using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def minarc_regular regular_closed_star regular_conv_closed regular_mult_closed by auto[1]
-      next
-        show "injective ?f'"
-          using 1 boruvka_outer_invariant_def by blast
-      next
-        show "injective f"
-          using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by blast
-      qed
-      thus ?thesis
-        using assms(1) boruvka_inner_invariant_def dual_order.trans by blast
-    qed
-    show "big_forest ?H ?d'"
-      using assms(1, 2, 3, 4) big_forest_d_U_e boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
+  next
+    show "?H * ?j' = ?j'"
+      using fc_j_eq_j_inv assms(1) boruvka_inner_invariant_def by blast
+  next
+    show "forest_modulo_equivalence ?H ?d'"
+      using assms(1, 2, 3) forest_modulo_equivalence_d_U_e boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
   next
     show "?d' * top \<le> -?j'"
     proof -
@@ -3062,8 +3309,8 @@ proof -
       have 32: "d * top \<le> -?j'"
         by (meson assms(1) boruvka_inner_invariant_def inf.coboundedI1 p_antitone_iff)
       have "regular (?c * - ?c\<^sup>T)"
-        using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def component_is_regular regular_conv_closed regular_mult_closed by auto
-      hence "minarc(?c * - ?c\<^sup>T \<sqinter> g) = minarc(?c \<sqinter> - ?c\<^sup>T \<sqinter> g)"
+        using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def component_is_regular regular_conv_closed regular_mult_closed by presburger
+      then have "minarc(?c * - ?c\<^sup>T \<sqinter> g) = minarc(?c \<sqinter> - ?c\<^sup>T \<sqinter> g)"
         by (metis component_is_vector covector_comp_inf inf_top.left_neutral vector_conv_compl)
       also have "... \<le> -- (?c \<sqinter> - ?c\<^sup>T \<sqinter> g)"
         using minarc_below by blast
@@ -3073,7 +3320,7 @@ proof -
         using component_is_regular by auto
       finally have "?e \<le> ?c"
         by simp
-      hence "?e * top \<le> ?c"
+      then have "?e * top \<le> ?c"
         by (metis component_is_vector mult_left_isotone)
       also have "... \<le> -j \<squnion> ?c"
         by simp
@@ -3083,35 +3330,6 @@ proof -
         by simp
       show ?thesis
         using 31 32 33 by auto
-    qed
-  next
-    show "?H * ?j' = ?j'"
-      using fc_j_eq_j_inv assms(1) boruvka_inner_invariant_def by blast
-  next
-    show "forest_components ?f' = (?H * (?d' \<squnion> ?d'\<^sup>T))\<^sup>\<star> * ?H"
-    proof -
-      have "forest_components ?f' = (f \<squnion> f\<^sup>T \<squnion> ?e \<squnion> ?e\<^sup>T)\<^sup>\<star>"
-      proof (rule simplify_forest_components_f)
-        show "regular ?p"
-          using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def minarc_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
-      next
-        show "regular ?e"
-          using minarc_regular by auto
-      next
-        show "injective ?f'"
-          using assms(1, 2, 3, 4) boruvka_outer_invariant_def boruvka_outer_invariant_when_e_not_bot by blast
-      next
-        show "injective f"
-          using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by blast
-      qed
-      also have "... = (h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T \<squnion> ?e \<squnion> ?e\<^sup>T)\<^sup>\<star>"
-        using assms(1) boruvka_inner_invariant_def by simp
-      also have "... = (h \<squnion> h\<^sup>T \<squnion> ?d' \<squnion> ?d'\<^sup>T)\<^sup>\<star>"
-        by (smt conv_dist_sup sup_monoid.add_assoc sup_monoid.add_commute)
-      also have "... = ((h \<squnion> h\<^sup>T)\<^sup>\<star> * (?d' \<squnion> ?d'\<^sup>T))\<^sup>\<star> * (h \<squnion> h\<^sup>T)\<^sup>\<star>"
-        by (metis star.circ_sup_9 sup_assoc)
-      finally show ?thesis
-        using assms(1) boruvka_inner_invariant_def forest_components_wcc by simp
     qed
   next
     show "?f' \<squnion> ?f'\<^sup>T = h \<squnion> h\<^sup>T \<squnion> ?d' \<squnion> ?d'\<^sup>T"
@@ -3134,8 +3352,8 @@ proof -
         by (smt conv_dist_sup sup.left_commute sup_commute)
     qed
   next
-    show "\<forall> a b . bf_between_arcs a b ?H ?d' \<and> a \<le> - ?H \<sqinter> -- g \<and> b \<le> ?d' \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
-    proof (intro allI, rule impI, unfold bf_between_arcs_def)
+    show "\<forall> a b . forest_modulo_equivalence_path a b ?H ?d' \<and> a \<le> - ?H \<sqinter> -- g \<and> b \<le> ?d' \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
+    proof (intro allI, rule impI, unfold forest_modulo_equivalence_path_def)
       fix a b
       assume 1: "(arc a \<and> arc b \<and> a\<^sup>T * top \<le> (?H * ?d')\<^sup>\<star> * ?H * b * top) \<and> a \<le> - ?H \<sqinter> -- g \<and> b \<le> ?d'"
       thus "sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
@@ -3149,7 +3367,7 @@ proof -
         next
           case a_ne_e: False
           have "sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
-          proof (rule a_to_e_in_bigforest)
+          proof (rule a_to_e_in_forest_modulo_equivalence)
             show "symmetric g"
               using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
           next
@@ -3165,13 +3383,13 @@ proof -
             show "forest h"
               using assms(1) boruvka_inner_invariant_def by blast
           next
-            show " big_forest (forest_components h) d"
+            show "forest_modulo_equivalence (forest_components h) d"
               using assms(1) boruvka_inner_invariant_def by blast
           next
             show "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
               using assms(1) boruvka_inner_invariant_def by blast
           next
-            show "\<forall>a b. bf_between_arcs a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
+            show "\<forall>a b. forest_modulo_equivalence_path a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
               using assms(1) boruvka_inner_invariant_def by blast
           next
             show "regular d"
@@ -3183,8 +3401,8 @@ proof -
             show "arc a"
               using 1 by simp
           next
-            show "bf_between_arcs a b ?H ?d'"
-              using 1 bf_between_arcs_def by simp
+            show "forest_modulo_equivalence_path a b ?H ?d'"
+              using 1 forest_modulo_equivalence_path_def by simp
           next
             show "a \<le> - ?H \<sqinter> -- g"
               using 1 by simp
@@ -3197,21 +3415,21 @@ proof -
         qed
       next
         case b_not_equal_e: False
-        hence b_below_d: "b \<le> d"
-          using 1 by (metis assms(4) different_arc_in_sup_arc minarc_arc minarc_bot_iff)
+        then have b_below_d: "b \<le> d"
+          using 1 assms(4) different_arc_in_sup_arc minarc_arc minarc_bot_iff by metis
         thus ?thesis
         proof (cases "?e \<le> d")
           case True
-          hence "bf_between_arcs a b ?H d \<and> b \<le> d"
-            using 1 bf_between_arcs_def sup.absorb1 by auto
+          then have "forest_modulo_equivalence_path a b ?H d \<and> b \<le> d"
+            using 1 forest_modulo_equivalence_path_def sup.absorb1 by auto
           thus ?thesis
             using 1 assms(1) boruvka_inner_invariant_def by blast
         next
           case e_not_less_than_d: False
           have 71:"equivalence ?H"
             using assms(1) fch_equivalence boruvka_inner_invariant_def by auto
-          hence 72: "bf_between_arcs a b ?H ?d' \<longleftrightarrow> bf_between_arcs a b ?H d \<or> (bf_between_arcs a ?e ?H d \<and> bf_between_arcs ?e b ?H d)"
-          proof (rule big_forest_path_split_disj)
+          then have 72: "forest_modulo_equivalence_path a b ?H ?d' \<longleftrightarrow> forest_modulo_equivalence_path a b ?H d \<or> (forest_modulo_equivalence_path a ?e ?H d \<and> forest_modulo_equivalence_path ?e b ?H d)"
+          proof (rule forest_modulo_equivalence_path_split_disj)
             show "arc ?e"
               using assms(4) minarc_arc minarc_bot_iff by blast
           next
@@ -3219,28 +3437,30 @@ proof -
               using assms(1) 1 boruvka_inner_invariant_def boruvka_outer_invariant_def arc_regular minarc_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
           qed
           thus ?thesis
-          proof (cases "bf_between_arcs a b ?H d")
+          proof (cases "forest_modulo_equivalence_path a b ?H d")
             case True
-            have "bf_between_arcs a b ?H d \<and> b \<le> d"
-              using 1 by (metis assms(4) True b_not_equal_e minarc_arc minarc_bot_iff different_arc_in_sup_arc)
+            have "forest_modulo_equivalence_path a b ?H d \<and> b \<le> d"
+              using 1 True forest_modulo_equivalence_path_def sup.absorb1 by (metis assms(4) b_not_equal_e minarc_arc minarc_bot_iff different_arc_in_sup_arc)
             thus ?thesis
               using 1 assms(1) b_below_d boruvka_inner_invariant_def by auto
           next
             case False
-            have 73:"bf_between_arcs a ?e ?H d \<and> bf_between_arcs ?e b ?H d"
-              using 1 72 False bf_between_arcs_def by blast
+            have 73:"forest_modulo_equivalence_path a ?e ?H d \<and> forest_modulo_equivalence_path ?e b ?H d"
+              using 1 72 False forest_modulo_equivalence_path_def by blast
             have 74: "?e \<le> --g"
               by (metis inf.boundedE minarc_below pp_dist_inf)
-            have "?e \<le> - ?H"
-              by (meson assms(1, 3) boruvka_inner_invariant_def dual_order.trans p_antitone_iff)
-            hence "?e \<le> - ?H \<sqinter> --g"
+            have "?H \<le> ?F"
+                using assms(1) H_below_F boruvka_inner_invariant_def boruvka_outer_invariant_def by blast
+            then have "?e \<le> - ?H"
+              using assms(3) order_trans p_antitone by blast
+            then have "?e \<le> - ?H \<sqinter> --g"
               using 74 by simp
-            hence 75: "sum (b \<sqinter> g) \<le> sum (?e \<sqinter> g)"
+            then have 75: "sum (b \<sqinter> g) \<le> sum (?e \<sqinter> g)"
               using assms(1) b_below_d 73 boruvka_inner_invariant_def by blast
-            have 76: "bf_between_arcs a ?e ?H ?d'"
-              using 73 by (meson big_forest_path_split_disj assms(1) bf_between_arcs_def boruvka_inner_invariant_def boruvka_outer_invariant_def fch_equivalence arc_regular regular_closed_star regular_conv_closed regular_mult_closed)
+            have 76: "forest_modulo_equivalence_path a ?e ?H ?d'"
+              by (meson 73 forest_modulo_equivalence_path_split_disj assms(1) forest_modulo_equivalence_path_def boruvka_inner_invariant_def boruvka_outer_invariant_def fch_equivalence arc_regular regular_closed_star regular_conv_closed regular_mult_closed)
             have 77: "sum (?e \<sqinter> g) \<le> sum (a \<sqinter> g)"
-            proof (rule a_to_e_in_bigforest)
+            proof (rule a_to_e_in_forest_modulo_equivalence)
               show "symmetric g"
                 using assms(1) boruvka_inner_invariant_def boruvka_outer_invariant_def by auto
             next
@@ -3256,13 +3476,13 @@ proof -
               show "forest h"
                 using assms(1) boruvka_inner_invariant_def by blast
             next
-              show " big_forest (forest_components h) d"
+              show "forest_modulo_equivalence (forest_components h) d"
                 using assms(1) boruvka_inner_invariant_def by blast
             next
               show "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
                 using assms(1) boruvka_inner_invariant_def by blast
             next
-              show "\<forall>a b. bf_between_arcs a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
+              show "\<forall>a b. forest_modulo_equivalence_path a b (?H) d \<and> a \<le> - ?H \<sqinter> - - g \<and> b \<le> d \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
                 using assms(1) boruvka_inner_invariant_def by blast
             next
               show "regular d"
@@ -3274,8 +3494,8 @@ proof -
               show "arc a"
                 using 1 by simp
             next
-              show "bf_between_arcs a ?e ?H ?d'"
-                by (simp add: 76)
+              show "forest_modulo_equivalence_path a ?e ?H ?d'"
+                by (simp add: "76")
             next
               show "a \<le> - ?H \<sqinter> --g"
                 using 1 by simp
@@ -3289,9 +3509,6 @@ proof -
         qed
       qed
     qed
-  next
-    show "regular ?d'"
-      using assms(1) boruvka_inner_invariant_def minarc_regular by auto
   qed
 qed
 
@@ -3318,18 +3535,21 @@ proof -
   proof (unfold boruvka_inner_invariant_def, intro conjI)
   next
     show "boruvka_outer_invariant ?f' g"
-      using assms(1, 3) boruvka_inner_invariant_def by auto
+      using assms(1) assms(3) boruvka_inner_invariant_def by auto
   next
     show "g \<noteq> bot"
       using assms(3) boruvka_inner_invariant_def by blast
   next
-    show "vector ?j'"
-      by (metis assms(3) boruvka_inner_invariant_def component_is_vector vector_complement_closed vector_inf_closed)
+    show "regular ?d'"
+      using assms(1) assms(3) boruvka_inner_invariant_def by auto
   next
     show "regular ?j'"
       using assms(3) boruvka_inner_invariant_def by auto
   next
-    show "boruvka_outer_invariant h g"
+    show "vector ?j'"
+      by (metis assms(3) boruvka_inner_invariant_def component_is_vector vector_complement_closed vector_inf_closed)
+  next
+    show "regular h"
       using assms(3) boruvka_inner_invariant_def by blast
   next
     show "injective h"
@@ -3338,28 +3558,19 @@ proof -
     show "pd_kleene_allegory_class.acyclic h"
       using assms(3) boruvka_inner_invariant_def by blast
   next
-    show "?H \<le> forest_components ?f'"
-      using assms(1, 3) boruvka_inner_invariant_def by auto
-  next
-    show " big_forest ?H ?d'"
-      using assms(1, 3) boruvka_inner_invariant_def by auto
-  next
-    show "?d' * top \<le> -?j'"
-      by (metis assms(1, 3) boruvka_inner_invariant_def order.trans p_antitone_inf sup_monoid.add_0_right)
-  next
     show "?H * ?j' = ?j'"
       using assms(3) fc_j_eq_j_inv boruvka_inner_invariant_def by blast
   next
-    show "forest_components ?f' = (?H * (?d' \<squnion> ?d'\<^sup>T))\<^sup>\<star> *?H"
-      using assms(1, 3) boruvka_inner_invariant_def by auto
+    show "forest_modulo_equivalence ?H ?d'"
+      using assms(1) assms(3) boruvka_inner_invariant_def by auto
+  next
+    show "?d' * top \<le> -?j'"
+      using assms(1) assms(3) boruvka_inner_invariant_def by (metis order.trans p_antitone_inf sup_monoid.add_0_right)
   next
     show "?f' \<squnion> ?f'\<^sup>T = h \<squnion> h\<^sup>T \<squnion> ?d' \<squnion> ?d'\<^sup>T"
       using assms(1, 3) boruvka_inner_invariant_def by auto
   next
-    show "\<forall>a b. bf_between_arcs a b ?H ?d' \<and> a \<le> -?H \<sqinter> --g \<and> b \<le> ?d' \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g)"
-      using assms(1, 3) boruvka_inner_invariant_def by auto
-  next
-    show "regular ?d'"
+    show "\<forall>a b. forest_modulo_equivalence_path a b ?H ?d' \<and> a \<le> -?H \<sqinter> --g \<and> b \<le> ?d' \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g)"
       using assms(1, 3) boruvka_inner_invariant_def by auto
   qed
 qed
@@ -3422,8 +3633,11 @@ next
     show "regular top"
       by simp
   next
-    show "boruvka_outer_invariant f g"
-      using 1 by auto
+    show "regular bot"
+      by auto
+  next
+    show "regular f"
+      using 1 boruvka_outer_invariant_def by blast
   next
     show "injective f"
       using 1 boruvka_outer_invariant_def by blast
@@ -3431,11 +3645,8 @@ next
     show "pd_kleene_allegory_class.acyclic f"
       using 1 boruvka_outer_invariant_def by blast
   next
-    show "?F \<le> ?F"
-      by simp
-  next
-    show "big_forest ?F bot"
-      by (simp add: 2 big_forest_def)
+    show "forest_modulo_equivalence ?F bot"
+      by (simp add: 2 forest_modulo_equivalence_def)
   next
     show "bot * top \<le> - top"
       by simp
@@ -3443,17 +3654,11 @@ next
     show "times_top_class.total (?F)"
       by (simp add: star.circ_right_top mult_assoc)
   next
-    show "?F = (?F * (bot \<squnion> bot\<^sup>T))\<^sup>\<star> * ?F"
-      by (metis mult_right_zero semiring.mult_zero_left star.circ_loop_fixpoint sup_commute sup_monoid.add_0_right symmetric_bot_closed)
-  next
     show "f \<squnion> f\<^sup>T = f \<squnion> f\<^sup>T \<squnion> bot \<squnion> bot\<^sup>T"
       by simp
   next
-    show "\<forall> a b. bf_between_arcs a b ?F bot \<and> a \<le> - ?F \<sqinter> -- g \<and> b \<le> bot \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
-      by (metis (full_types) bf_between_arcs_def bot_unique mult_left_zero mult_right_zero top.extremum)
-  next
-    show "regular bot"
-      by auto
+    show "\<forall> a b. forest_modulo_equivalence_path a b ?F bot \<and> a \<le> - ?F \<sqinter> -- g \<and> b \<le> bot \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"
+      by (metis (full_types) forest_modulo_equivalence_path_def bot_unique mult_left_zero mult_right_zero top.extremum)
   qed
 next
   fix f j h d
@@ -3493,8 +3698,11 @@ next
       show "regular ?j'"
         using 1 boruvka_inner_invariant_def by auto
     next
-      show "boruvka_outer_invariant h g"
-        using 1 boruvka_inner_invariant_def by auto
+      show "regular d"
+        using 1 boruvka_inner_invariant_def by blast
+    next
+      show "regular h"
+        using 1 boruvka_inner_invariant_def by blast
     next
       show "injective h"
         using 1 boruvka_inner_invariant_def by blast
@@ -3502,10 +3710,7 @@ next
       show "pd_kleene_allegory_class.acyclic h"
         using 1 boruvka_inner_invariant_def by blast
     next
-      show "?H \<le> ?F"
-        using 1 boruvka_inner_invariant_def by blast
-    next
-      show "big_forest ?H d"
+      show "forest_modulo_equivalence ?H d"
         using 1 boruvka_inner_invariant_def by blast
     next
       show "d * top \<le> -?j'"
@@ -3514,16 +3719,10 @@ next
       show "?H * ?j' = ?j'"
         using 1 fc_j_eq_j_inv boruvka_inner_invariant_def by blast
     next
-      show "?F = (?H * (d \<squnion> d\<^sup>T))\<^sup>\<star> * ?H"
-        using 1 boruvka_inner_invariant_def by blast
-    next
       show "f \<squnion> f\<^sup>T = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T"
         using 1 boruvka_inner_invariant_def by blast
     next
-      show "\<not> ?e \<le> -?F \<Longrightarrow> \<forall>a b. bf_between_arcs a b ?H d \<and> a \<le> -?H \<sqinter> --g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g)"
-        using 1 boruvka_inner_invariant_def by blast
-    next
-      show "\<not> ?e \<le> -?F \<Longrightarrow> regular d"
+      show "\<not> ?e \<le> -?F \<Longrightarrow> \<forall>a b. forest_modulo_equivalence_path a b ?H d \<and> a \<le> -?H \<sqinter> --g \<and> b \<le> d \<longrightarrow> sum(b \<sqinter> g) \<le> sum(a \<sqinter> g)"
         using 1 boruvka_inner_invariant_def by blast
     qed
   qed
@@ -3617,3 +3816,4 @@ qed
 end
 
 end
+
