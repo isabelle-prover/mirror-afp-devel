@@ -20,6 +20,12 @@ section \<open>Permutation Domains\<close>
 definition has_dom :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "has_dom f S \<equiv> \<forall>s. s \<notin> S \<longrightarrow> f s = s"
 
+lemma has_domD: "has_dom f S \<Longrightarrow> x \<notin> S \<Longrightarrow> f x = x"
+  by (auto simp: has_dom_def)
+
+lemma has_domI: "(\<And>x. x \<notin> S \<Longrightarrow> f x = x) \<Longrightarrow> has_dom f S"
+  by (auto simp: has_dom_def)
+
 lemma permutes_conv_has_dom:
   "f permutes S \<longleftrightarrow> bij f \<and> has_dom f S"
   by (auto simp: permutes_def has_dom_def bij_iff)

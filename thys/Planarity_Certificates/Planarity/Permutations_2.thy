@@ -5,10 +5,26 @@ imports
   Executable_Permutations
 begin
 
-section \<open>Modifying Permutations\<close>
+section \<open>More\<close>
 
 abbreviation funswapid :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightleftharpoons>\<^sub>F" 90) where
   "x \<rightleftharpoons>\<^sub>F y \<equiv> transpose x y"
+
+lemma in_funswapid_image_iff: "x \<in> (a \<rightleftharpoons>\<^sub>F b) ` S \<longleftrightarrow> (a \<rightleftharpoons>\<^sub>F b) x \<in> S"
+  by (fact in_transpose_image_iff)
+
+lemma bij_swap_compose: "bij (x \<rightleftharpoons>\<^sub>F y \<circ> f) \<longleftrightarrow> bij f"
+  by (metis UNIV_I bij_betw_comp_iff2 bij_betw_id bij_swap_iff subsetI)
+
+lemma bij_eq_iff:
+  assumes "bij f" shows "f x = f y \<longleftrightarrow> x = y"
+  using assms by (auto simp add: bij_iff) 
+
+lemma swap_swap_id[simp]: "(x \<rightleftharpoons>\<^sub>F y) ((x \<rightleftharpoons>\<^sub>F y) z) = z"
+  by (fact transpose_involutory)
+
+
+section \<open>Modifying Permutations\<close>
 
 definition perm_swap :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" where
   "perm_swap x y f \<equiv> x \<rightleftharpoons>\<^sub>F y o f o x \<rightleftharpoons>\<^sub>F y"
@@ -16,14 +32,12 @@ definition perm_swap :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a)
 definition perm_rem :: "'a \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" where
   "perm_rem x f \<equiv> if f x \<noteq> x then x \<rightleftharpoons>\<^sub>F f x o f else f"
 
-
 text \<open>
   An example:
 
   @{lemma "perm_rem (2 :: nat) (list_succ [1,2,3,4]) x = list_succ [1,3,4] x"
       by (auto simp: perm_rem_def Fun.swap_def list_succ_def)}
 \<close>
-
 lemma perm_swap_id[simp]: "perm_swap a b id = id"
   by (auto simp: perm_swap_def)
   
@@ -43,9 +57,6 @@ lemma perm_rem_simps:
   "f y = x \<Longrightarrow> perm_rem x f y = f x"
   "y \<noteq> x \<Longrightarrow> f y \<noteq> x \<Longrightarrow> perm_rem x f y = f y"
   using assms by (auto simp: perm_rem_def transpose_def bij_iff)
-
-lemma bij_swap_compose: "bij (x \<rightleftharpoons>\<^sub>F y o f) \<longleftrightarrow> bij f"
-  by (metis UNIV_I bij_betw_comp_iff2 bij_betw_id bij_swap_iff subsetI)
 
 lemma bij_perm_rem[simp]: "bij (perm_rem x f) \<longleftrightarrow> bij f"
   by (simp add: perm_rem_def bij_swap_compose)
@@ -67,16 +78,6 @@ qed
 lemma perm_rem_id[simp]: "perm_rem a id = id"
   by (simp add: perm_rem_def)
 
-lemma bij_eq_iff:
-  assumes "bij f" shows "f x = f y \<longleftrightarrow> x = y"
-  using assms by (metis bij_iff) 
-
-lemma swap_swap_id[simp]: "(x \<rightleftharpoons>\<^sub>F y) ((x \<rightleftharpoons>\<^sub>F y) z) = z"
-  by (simp add: swap_id_eq)
-
-lemma in_funswapid_image_iff: "\<And>a b x S. x \<in> (a \<rightleftharpoons>\<^sub>F b) ` S \<longleftrightarrow> (a \<rightleftharpoons>\<^sub>F b) x \<in> S"
-  by (metis inj_image_mem_iff inj_transpose swap_swap_id)
-  
 lemma perm_swap_comp: "perm_swap a b (f \<circ> g) x = perm_swap a b f (perm_swap a b g x)"
   by (auto simp: perm_swap_def)
 
@@ -98,12 +99,6 @@ proof -
   from assms have "\<And>x. x \<notin> A \<Longrightarrow> f x = x" by (auto simp: has_dom_def)
   then show ?thesis by (auto simp: perm_restrict_def fun_eq_iff)
 qed
-
-lemma has_domD: "has_dom f S \<Longrightarrow> x \<notin> S \<Longrightarrow> f x = x"
-  by (auto simp: has_dom_def)
-
-lemma has_domI: "(\<And>x. x \<notin> S \<Longrightarrow> f x = x) \<Longrightarrow> has_dom f S"
-  by (auto simp: has_dom_def)
 
 lemma perm_swap_permutes2:
   assumes "f permutes ((x \<rightleftharpoons>\<^sub>F y) ` S)"
