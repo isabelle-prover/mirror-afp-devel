@@ -7,6 +7,9 @@ theory Nash_Williams
   imports Nash_Extras
 begin
 
+lemma subset_vimage_iff: "A \<subseteq> f -` B \<longleftrightarrow> (\<forall>x\<in>A. f x \<in> B)"
+  by auto
+
 lemma finite_nat_Int_greaterThan_iff:
   fixes N :: "nat set"
   shows "finite (N \<inter> {n<..}) \<longleftrightarrow> finite N"
@@ -634,7 +637,7 @@ qed
 subsection \<open>Main Theorem\<close>
 
 lemma Nash_Williams_1: "Ramsey \<F> 1"
-  by (auto simp: Ramsey_def)
+  by (auto simp: Ramsey_eq)
 
 text\<open>Weirdly, the assumption  @{term "f ` \<F> \<subseteq> {..<2}"} is not used here; it's unnecessary due to
      the particular way that @{term Ramsey} is defined. It's only needed for @{term "r > 2"}\<close>
@@ -715,51 +718,52 @@ proof (induction r)
     with Suc.IH have Ram: "Ramsey \<F> r" "r \<ge> 2"
       by auto
     show ?thesis
-      unfolding Ramsey_def
+      unfolding Ramsey_eq
     proof clarify
       fix f and M :: "nat set"
       assume fim: "f \<in> \<F> \<rightarrow> {..<Suc r}"
         and "infinite M"
-      let ?avoids = "\<lambda>g j N. g -` {j} \<inter> \<F> \<inter> Pow N = {}"
+      let ?within = "\<lambda>g i N. \<F> \<inter> Pow N \<subseteq> g -` {i}"
       define g where "g \<equiv> \<lambda>x. if f x = r then r-1 else f x"
       have gim: "g \<in> \<F> \<rightarrow> {..<r}"
         using fim False by (force simp: g_def)
-      then obtain N i where  "N \<subseteq> M" "infinite N" "i<r" and i: "\<And>j. \<lbrakk>j<r; i\<noteq>j\<rbrakk> \<Longrightarrow> ?avoids g j N"
-        using Ram \<open>infinite M\<close> by (metis Ramsey_def)
-      show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i < Suc r \<and> (\<forall>j<Suc r. j \<noteq> i \<longrightarrow> ?avoids f j N)"
+      then obtain N i where "N \<subseteq> M" "infinite N" "i<r" and i: "?within g i N"
+        using Ram \<open>infinite M\<close> by (metis Ramsey_eq)
+      show "\<exists>N j. N \<subseteq> M \<and> infinite N \<and> j < Suc r \<and> ?within f j N"
       proof (cases "i<r-1")
         case True
-        have "?avoids f j N" if "j < Suc r" "i \<noteq> j" for j
-          using \<open>N \<subseteq> M\<close> \<open>infinite N\<close> \<open>i<r\<close> i that
-          apply (clarsimp simp add: disjoint_iff g_def less_Suc_eq)
-          by (metis True diff_less less_nat_zero_code nat_neq_iff zero_less_one)
+        then have "?within f i N"
+          using \<open>N \<subseteq> M\<close> \<open>infinite N\<close> \<open>i<r\<close> i by (fastforce simp add: g_def)
         then show ?thesis
-          by (metis \<open>N \<subseteq> M\<close> \<open>infinite N\<close> less_Suc_eq)
+          by (meson \<open>N \<subseteq> M\<close> \<open>i < r\<close> \<open>infinite N\<close> less_Suc_eq)
       next
         case False
         then have "i = r-1"
           using \<open>i<r\<close> by linarith
-        then have null: "?avoids f j N" if "j<r-1" for j
-          using that i [of j] \<open>i < r\<close> by (auto simp: g_def disjoint_iff split: if_split_asm)
+        then have null: "\<F> \<inter> Pow N \<subseteq> f -` {i,r}" 
+          using i \<open>i < r\<close> 
+          by (auto simp: g_def split: if_split_asm)
         define h where "h \<equiv> \<lambda>x. if f x = r then 0 else f x"
         have him: "h \<in> \<F> \<rightarrow> {..<r}"
           using fim i False \<open>i<r\<close> by (force simp: h_def)
-        then obtain P j where "P \<subseteq> N" "infinite P" "j<r" and j: "\<forall>k<r. j\<noteq>k \<longrightarrow> ?avoids h k P"
-          using Ram by (metis Ramsey_def \<open>infinite N\<close>)
-        have "\<exists>i. \<forall>j<Suc r. j \<noteq> i \<longrightarrow> ?avoids f j P"
+        then obtain P j where "P \<subseteq> N" "infinite P" "j<r" and j: "?within h j P"
+          using Ram \<open>i < r\<close> \<open>infinite N\<close> unfolding Ramsey_eq by metis
+        have "\<exists>i < Suc r. ?within f i P"
         proof (cases "j=0")
           case True
+          then have "\<F> \<inter> Pow P \<subseteq> f -` {r}"
+            using Ram(2) \<open>P \<subseteq> N\<close> \<open>i = r - 1\<close>  i j  
+            unfolding subset_vimage_iff g_def h_def
+            by (metis Int_iff Pow_iff Suc_1 diff_is_0_eq insert_iff not_less_eq_eq subset_trans)
           then show ?thesis
-            apply (rule_tac x=r in exI)
-            using null [of 0] \<open>r \<ge> 2\<close> \<open>P \<subseteq> N\<close> j by (force simp: h_def disjoint_iff less_Suc_eq)
+            by blast
         next
           case False
           then show ?thesis
-            apply (rule_tac x=j in exI)
-            using j \<open>j < r\<close> by (auto simp: h_def less_Suc_eq disjoint_iff intro: less_trans)
+            using j \<open>j < r\<close> by (fastforce simp add: h_def less_Suc_eq)
         qed
         then show ?thesis
-          by (metis Suc.prems \<open>N \<subseteq> M\<close> \<open>P \<subseteq> N\<close> \<open>infinite P\<close> subset_trans)
+          by (meson \<open>N \<subseteq> M\<close> \<open>P \<subseteq> N\<close> \<open>infinite P\<close> subset_trans)
       qed
     qed
   qed
