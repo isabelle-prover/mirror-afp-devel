@@ -1,14 +1,11 @@
 section \<open>The Nash-Williams Theorem\<close>
 
-text \<open>Following S. Todorčević, \emph{Introduction to Ramsey Spaces},
+text \<open>Following S. Todor\v{c}evi{\'c}, \emph{Introduction to Ramsey Spaces},
 Princeton University Press (2010), 11--12.\<close>
 
 theory Nash_Williams
   imports Nash_Extras
 begin
-
-lemma subset_vimage_iff: "A \<subseteq> f -` B \<longleftrightarrow> (\<forall>x\<in>A. f x \<in> B)"
-  by auto
 
 lemma finite_nat_Int_greaterThan_iff:
   fixes N :: "nat set"
@@ -120,7 +117,7 @@ definition Ramsey :: "[nat set set, nat] \<Rightarrow> bool"
                            (\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<r \<and>
                                   (\<forall>j<r. j\<noteq>i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {}))"
 
-text \<open>Alternative definition suggested by a referee. Despite its simplicity, it doesn't simplify proofs.\<close>
+text \<open>Alternative, simpler definition suggested by a referee.\<close>
 lemma Ramsey_eq: 
   "Ramsey \<F> r \<longleftrightarrow> (\<forall>f \<in> \<F> \<rightarrow> {..<r}.
                        \<forall>M. infinite M \<longrightarrow>
@@ -238,7 +235,7 @@ qed
 lemma sorted_wrt_subset: "\<lbrakk>X \<in> list.set l; sorted_wrt (\<le>) l\<rbrakk> \<Longrightarrow> hd l \<subseteq> X"
   by (induction l) auto
 
-text \<open>Todorčević's Lemma 1.18\<close>
+text \<open>Todor\v{c}evi{\'c}'s Lemma 1.18\<close>
 proposition ex_infinite_decides_subsets:
   assumes "thin_set \<F>" "infinite M"
   obtains N where "N \<subseteq> M" "infinite N" "decides_subsets \<F> N"
@@ -422,7 +419,7 @@ proof -
 qed
 
 
-text \<open>Todorčević's Lemma 1.19\<close>
+text \<open>Todor\v{c}evi{\'c}'s Lemma 1.19\<close>
 proposition strongly_accepts_1_19:
   assumes acc: "strongly_accepts \<F> S M"
     and "thin_set \<F>" "infinite M" "S \<subseteq> M" "finite S"
@@ -639,43 +636,41 @@ subsection \<open>Main Theorem\<close>
 lemma Nash_Williams_1: "Ramsey \<F> 1"
   by (auto simp: Ramsey_eq)
 
-text\<open>Weirdly, the assumption  @{term "f ` \<F> \<subseteq> {..<2}"} is not used here; it's unnecessary due to
-     the particular way that @{term Ramsey} is defined. It's only needed for @{term "r > 2"}\<close>
 theorem Nash_Williams_2:
   assumes "thin_set \<F>" shows "Ramsey \<F> 2"
-  unfolding Ramsey_def
+  unfolding Ramsey_eq
 proof clarify
   fix f :: "nat set \<Rightarrow> nat" and M :: "nat set"
-  assume "infinite M"
-  let ?\<F> = "\<lambda>i. f -` {i} \<inter> \<F>"
-  have fin\<F>: "\<And>X. X \<in> \<F> \<Longrightarrow> finite X"
+  assume "infinite M" and f2: "f \<in> \<F> \<rightarrow> {..<2}"
+  let ?\<F> = "\<lambda>i. f -` {i} \<inter> \<F>"  \<comment>\<open>needed with @{thm[source] Ramsey_eq}, not with  @{thm[source] Ramsey_def}\<close>
+  have \<F>: "?\<F> 0 \<union> ?\<F> 1 = \<F>"
+    using f2 less_2_cases by (auto simp: PiE)
+  have fin\<F>: "\<And>X. X \<in> \<F> \<Longrightarrow> finite X" and thin: "\<And>i. thin_set (?\<F> i)" 
     using assms thin_set_def by auto
-  have thin: "thin_set (?\<F> i)" for i
-    using assms thin_set_def by auto
-  obtain N where "N \<subseteq> M" "infinite N" and N: "decides_subsets (?\<F> 0) N"
-    using \<open>infinite M\<close> ex_infinite_decides_subsets thin by blast
+  then obtain N where "N \<subseteq> M" "infinite N" and N: "decides_subsets (?\<F> 0) N"
+    using \<open>infinite M\<close> ex_infinite_decides_subsets by blast
   then consider "rejects (?\<F> 0) {} N" | "strongly_accepts (?\<F> 0) {} N"
     unfolding decides_def decides_subsets_def by blast
-  then show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<2 \<and> (\<forall>j<2. j \<noteq> i \<longrightarrow> f -` {j} \<inter> \<F> \<inter> Pow N = {})"
+  then show "\<exists>N i. N \<subseteq> M \<and> infinite N \<and> i<2 \<and> \<F> \<inter> Pow N \<subseteq> f -` {i}"
   proof cases
     case 1
-    then have "?\<F> 0 \<inter> Pow N = {}"
-      unfolding rejects_def disjoint_iff comparables_iff
-      by (metis IntD2 PowD fin\<F> init_segment_empty sup_bot.left_neutral)
+    then have "(?\<F> 0 \<union> ?\<F> 1) \<inter> Pow N \<subseteq> f -` {1}"
+      using f2 fin\<F> 
+      by (force simp add: Fpow_def rejects_def disjoint_iff comparables_iff Pi_iff less_2_cases_iff simp flip: neq0_conv)
     then show ?thesis
-      using \<open>N \<subseteq> M\<close> \<open>infinite N\<close> less_2_cases_iff by auto
+      by (metis \<F> Suc_1 \<open>N \<subseteq> M\<close> \<open>infinite N\<close> lessI)
   next
     case 2
-    then have \<section>: "\<And>P. \<lbrakk>P\<subseteq>N; \<And>S. \<lbrakk>S \<subseteq> P; finite S\<rbrakk> \<Longrightarrow> S \<notin> (?\<F> 0)\<rbrakk> \<Longrightarrow> finite P"
+    then have \<section>: "\<And>P. \<lbrakk>P\<subseteq>N; \<And>S. \<lbrakk>S \<subseteq> P; finite S\<rbrakk> \<Longrightarrow> S \<notin> ?\<F> 0\<rbrakk> \<Longrightarrow> finite P"
       by (auto simp: Fpow_def disjoint_iff)
     obtain P where "P \<subseteq> N" "infinite P" and P:
       "\<And>S n. \<lbrakk>S \<subseteq> P; finite S; strongly_accepts (?\<F> 0) S P; n \<in> P; S \<lless> {n}\<rbrakk>
               \<Longrightarrow> strongly_accepts (?\<F> 0) (insert n S) P"
       using strongly_accepts_1_19_plus [OF thin \<open>infinite N\<close> N] by blast
-    have "?\<F> 1 \<inter> Pow P = {}"
-    proof (clarsimp simp: disjoint_iff)
+    have "\<F> \<inter> Pow P \<subseteq> f -` {0}"
+    proof (clarsimp simp: subset_vimage_iff)
       fix T
-      assume T: "f T = Suc 0" "T \<in> \<F>" and "T \<subseteq> P"
+      assume T: "T \<in> \<F>" and "T \<subseteq> P"
       then have "finite T"
         using fin\<F> by blast
       moreover have "strongly_accepts (?\<F> 0) S P" if "finite S" "S \<subseteq> P" for S
@@ -695,13 +690,14 @@ proof clarify
       qed (use 2 \<open>P \<subseteq> N\<close> in auto)
       ultimately have "\<exists>x\<in>comparables T P. f x = 0 \<and> x \<in> \<F>"
         using \<open>T \<subseteq> P\<close> \<open>infinite P\<close> rejects_def strongly_accepts_def by fastforce
-      then show False
+      then show "f T = 0"
         using T assms thin_set_def comparables_def by force
     qed
     then show ?thesis
-      by (metis One_nat_def \<open>N \<subseteq> M\<close> \<open>P \<subseteq> N\<close> \<open>infinite P\<close> less_2_cases_iff subset_trans)
+      by (meson \<open>N \<subseteq> M\<close> \<open>P \<subseteq> N\<close> \<open>infinite P\<close> less_2_cases_iff subset_trans)
   qed
-qed
+qed 
+  
 
 theorem Nash_Williams:
   assumes \<F>: "thin_set \<F>" "r > 0" shows "Ramsey \<F> r"
