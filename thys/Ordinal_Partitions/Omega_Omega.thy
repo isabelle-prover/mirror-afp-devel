@@ -315,10 +315,7 @@ proof -
       by (auto simp: Cantor_\<omega>\<omega> simp flip: omega_sum_less_iff)
     then show "(\<pi> \<alpha>, \<pi> \<beta>) \<in> lenlex less_than"
       by (simp add: \<pi>_def into_WW_lenlex_iff)
-  next
-    show "\<pi> ` elts (\<omega>\<up>\<omega>) \<subseteq> WW"
-      by (auto simp: \<pi>_def WW_def strict_sorted_into_WW)
-  qed auto
+  qed (auto simp: \<pi>_def WW_def strict_sorted_into_WW)
   finally show "\<omega>\<up>\<omega> \<le> ordertype WW (lenlex less_than)" .
 qed
 
@@ -563,11 +560,11 @@ proof -
     then show "h (list_of (list.set l)) < 2"
       using h \<open>l \<in> A\<close> \<open>list.set l \<subseteq> M\<close> by auto
   qed
-  ultimately obtain N i where N: "N \<subseteq> M" "infinite N" "i<2"
-    and "\<And>j. \<lbrakk>j<2; i\<noteq>j\<rbrakk> \<Longrightarrow> (h \<circ> list_of) -` {j} \<inter> (list.set ` AM) \<inter> Pow N = {}"
-    unfolding Ramsey_def by (metis \<open>infinite M\<close>)
+  ultimately obtain N i where N: "N \<subseteq> M" "infinite N" "i<2" 
+              and "list.set ` AM \<inter> Pow N \<subseteq> (h \<circ> list_of) -` {i}"
+    unfolding Ramsey_eq by (metis \<open>infinite M\<close>)
   then have N_disjoint: "(h \<circ> list_of) -` {1-i} \<inter> (list.set ` AM) \<inter> Pow N = {}"
-    by (metis One_nat_def diff_less_Suc not_less_eq numeral_2_eq_2 zero_less_diff)
+    unfolding subset_vimage_iff less_2_cases_iff by force
   have "h ` {l \<in> A. list.set l \<subseteq> N} \<subseteq> {i}"
   proof clarify
     fix l
@@ -3039,9 +3036,9 @@ proof -
   have Inf_M_Suc_ge: "Inf (M k) \<le> Inf (M (Suc k))" for k
     by (simp add: M_Suc_subset cInf_superset_mono infinite_imp_nonempty)
 
-  have Inf_M_telescoping: "{Inf (M k)..} \<subseteq> {Inf (M k')..}" if "k'\<le>k" for k k'
-    using that
-    by (induction "k-k'")(auto simp: Inf_M_Suc_ge M_Suc_subset cInf_superset_mono infinite_imp_nonempty lift_Suc_antimono_le)
+  have Inf_M_telescoping: "{Inf (M k)..} \<subseteq> {Inf (M k')..}" if k': "k'\<le>k" for k k'
+    using that Inf_nat_def1 infinite_M unfolding Inf_nat_def atLeast_subset_iff
+    by (metis M_Suc_subset finite.emptyI le_less_linear lift_Suc_antimono_le not_less_Least subsetD)
 
   have d_eq: "d k = fst (grab (nxt (M k) (enum N (Suc (2 * Suc k)))) (Suc k))" for k
     by (simp add: d_def M_def Let_def DF_simps F_def split: prod.split)
