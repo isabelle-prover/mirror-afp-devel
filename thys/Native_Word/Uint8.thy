@@ -105,8 +105,11 @@ lift_definition and_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint
 lift_definition or_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>(OR)\<close> .
 lift_definition xor_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>(XOR)\<close> .
 lift_definition mask_uint8 :: \<open>nat \<Rightarrow> uint8\<close> is mask .
+lift_definition set_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.set_bit\<close> .
+lift_definition unset_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>unset_bit\<close> .
+lift_definition flip_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>flip_bit\<close> .
 instance by (standard; transfer)
-  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1 mask_eq_decr_exp)
+  (simp_all add: bit_simps mask_eq_decr_exp minus_eq_not_minus_1 set_bit_def flip_bit_def)
 end
 
 lemma [code]:
@@ -117,6 +120,18 @@ lemma [code]:
   \<open>mask (Suc n) = push_bit n (1 :: uint8) OR mask n\<close>
   \<open>mask 0 = (0 :: uint8)\<close>
   by (simp_all add: mask_Suc_exp push_bit_of_1)
+
+lemma [code]:
+  \<open>Bit_Operations.set_bit n w = w OR push_bit n 1\<close> for w :: uint8
+  by (fact set_bit_eq_or)
+
+lemma [code]:
+  \<open>unset_bit n w = w AND NOT (push_bit n 1)\<close> for w :: uint8
+  by (fact unset_bit_eq_and_not)
+
+lemma [code]:
+  \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint8
+  by (fact flip_bit_eq_xor)
 
 instance uint8 :: semiring_bit_syntax ..
 
@@ -151,6 +166,8 @@ lift_definition msb_uint8 :: \<open>uint8 \<Rightarrow> bool\<close> is msb .
 instance ..
 end
 
+setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.qualified_path true \<^binding>\<open>Generic\<close>))\<close>
+
 instantiation uint8 :: set_bit
 begin
 lift_definition set_bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint8\<close> is set_bit .
@@ -160,6 +177,8 @@ instance
   apply (simp add: bit_simps)
   done
 end
+
+setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.parent_path))\<close>
 
 instantiation uint8 :: bit_comprehension begin
 lift_definition set_bits_uint8 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8" is "set_bits" .

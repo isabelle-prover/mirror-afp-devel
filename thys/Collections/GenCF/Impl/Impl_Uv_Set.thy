@@ -68,7 +68,7 @@ begin
 
   lemma set_bit_lookup[simp]: "lookup i (set_bit j ws) \<longleftrightarrow> (lookup i ws \<or> i=j)"
     apply (induction ws arbitrary: i j)
-     apply (auto simp add: test_bit_eq_bit word_size ring_bit_operations_class.bit_set_bit_iff)
+     apply (auto simp add: test_bit_eq_bit word_size Bit_Operations.bit_set_bit_iff)
     done
 
   primrec reset_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
@@ -376,7 +376,6 @@ subsection \<open>Autoref Setup\<close>
       simp: uv_memb_correct uv_empty_correct uv_insert_correct uv_delete_correct
       simp: uv_union_correct uv_inter_correct uv_diff_correct uv_isEmpty_correct
       simp: uv_equal_correct uv_subseteq_correct uv_subset_correct uv_disjoint_correct)
-
 
   export_code
     uv_lookup
