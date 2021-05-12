@@ -2,7 +2,6 @@ section \<open>Permutations as Products of Disjoint Cycles\<close>
 
 theory Executable_Permutations
 imports
-  "HOL-Library.Rewrite"
   "HOL-Combinatorics.Permutations"
   Graph_Theory.Auxiliary
   List_Aux
@@ -382,7 +381,7 @@ lemma iterate_funpow_step:
 proof -
   from assms have A: "y \<in> orbit f (f x)" by (simp add: orbit_step)
   have "iterate 0 (funpow_dist1 f x y) f x = x # iterate 1 (funpow_dist1 f x y) f x" (is "_ = _ # ?it")
-    unfolding iterate_def by (rewrite in "\<hole> = _" upt_conv_Cons) auto
+    unfolding iterate_def by (simp add: upt_rec) 
   also have "?it = map (\<lambda>n. (f ^^ n) x) (map Suc [0..<funpow_dist f (f x) y])"
     unfolding iterate_def map_Suc_upt by simp
   also have "\<dots> = map (\<lambda>n. (f ^^ n) (f x)) [0..<funpow_dist f (f x) y]"

@@ -10,7 +10,6 @@ theory Word_Lib_Sumo
 imports
   "HOL-Library.Word"
   Aligned
-  Ancient_Numeral
   Bit_Comprehension
   Bits_Int
   Bitwise_Signed
