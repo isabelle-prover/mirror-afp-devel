@@ -25,12 +25,14 @@ fun omega_sum_aux  where
 abbreviation omega_sum where "omega_sum ms \<equiv> omega_sum_aux (length ms) ms"
 
 text \<open>A normal expansion has no leading zeroes\<close>
-primrec normal:: "nat list \<Rightarrow> bool" where
-  normal_0: "normal [] = True"
-| normal_Suc: "normal (m#ms) = (m > 0)"
+inductive normal:: "nat list \<Rightarrow> bool" where
+  normal_Nil[iff]: "normal []"
+| normal_Cons:     "m > 0 \<Longrightarrow> normal (m#ms)"
+
+inductive_simps normal_Cons_iff [simp]: "normal (m#ms)"
 
 lemma omega_sum_0_iff [simp]: "normal ns \<Longrightarrow> omega_sum ns = 0 \<longleftrightarrow> ns = []"
-  by (induction ns) auto
+  by (induction ns rule: normal.induct) auto
 
 lemma Ord_omega_sum_aux [simp]: "Ord (omega_sum_aux k ms)"
   by (induction rule: omega_sum_aux.induct) auto
@@ -66,17 +68,16 @@ lemma omega_sum_ge: "m \<noteq> 0 \<Longrightarrow> \<omega> \<up> (length ms) \
   by (metis Ord_ord_of_nat add_le_cancel_left0 le_mult Nat.neq0_conv ord_of_eq_0_iff vsubsetD)
 
 lemma omega_sum_length_less:
-  assumes "length ms < length ns" "normal ns"
+  assumes "normal ns" "length ms < length ns"
   shows "omega_sum ms < omega_sum ns"
-proof (cases ns)
-  case (Cons n ns')
+  using assms
+proof (induction rule: normal.induct)
+  case (normal_Cons n ns')
   have "\<omega> \<up> length ms \<le> \<omega> \<up> length ns'"
-    using assms local.Cons by (simp add: oexp_mono_le)
-  then have "\<not> omega_sum (n#ns') \<le> omega_sum ms"
-    using omega_sum_ge [of n ns'] omega_sum_less [of ms] \<open>normal ns\<close> local.Cons by auto
-  then show ?thesis
-    by (metis Ord_linear2 Ord_omega_sum local.Cons)
-qed (use assms in auto)
+    using normal_Cons oexp_mono_le by auto
+  then show ?case
+    by (metis gr_implies_not_zero less_le_trans normal_Cons.hyps omega_sum_aux_less omega_sum_ge)
+qed auto
 
 lemma omega_sum_length_leD:
   assumes "omega_sum ms \<le> omega_sum ns" "normal ms"
@@ -112,21 +113,11 @@ lemma omega_sum_less_iff_cases:
             \<or> length ms = length ns \<and> m=n \<and> omega_sum ms < omega_sum ns"
     (is "?lhs = ?rhs")
 proof
-  assume L: ?lhs
-  then have "length ms \<le> length ns"
-    using omega_sum_length_leD [OF less_imp_le [OF L]] by (simp add: \<open>m > 0\<close>)
-  moreover have "m\<le>n" if "length ms = length ns"
-    using L omega_sum_less_eqlen_iff_cases that by auto
-  ultimately show ?rhs
-    using L by auto
+  assume ?lhs then show ?rhs
+    by (metis Suc_less_eq \<open>m>0\<close> length_Cons less_asym nat_neq_iff normal_Cons omega_sum_length_less omega_sum_less_eqlen_iff_cases)
 next
-  assume ?rhs
-  moreover
-  have "omega_sum (m # ms) < omega_sum (n # ns)"
-    if "length ms < length ns"
-    using that by (metis Suc_mono \<open>n > 0\<close> length_Cons normal_Suc omega_sum_length_less)
-  ultimately show ?lhs
-    using omega_sum_less_eqlen_iff_cases by force
+  assume ?rhs then show ?lhs
+    by (metis (full_types) Suc_less_eq \<open>n>0\<close> length_Cons normal_Cons omega_sum_length_less omega_sum_less_eqlen_iff_cases)
 qed
 
 lemma omega_sum_less_iff:
@@ -258,7 +249,11 @@ lemma length_into_WW: "length (into_WW x ns) = length ns"
   by (induction ns arbitrary: x) auto
 
 lemma WW_eq_range_into: "WW = range (into_WW 0)"
-  by (metis (mono_tags, hide_lams) WW_def equalityI image_subset_iff into_from_WW mem_Collect_eq rangeI strict_sorted_into_WW subset_iff)
+proof -
+  have "\<And>ns. strict_sorted ns \<Longrightarrow> ns \<in> range (into_WW 0)"
+    by (metis into_from_WW rangeI)
+  then show ?thesis by (auto simp: WW_def strict_sorted_into_WW)
+qed
 
 lemma into_WW_lenlex_iff: "(into_WW k ms, into_WW k ns) \<in> lenlex less_than \<longleftrightarrow> (ms, ns) \<in> lenlex less_than"
 proof (induction ms arbitrary: ns k)
@@ -271,11 +266,8 @@ next
     by (induction ns) (auto simp: Cons_lenlex_iff length_into_WW)
 qed
 
-lemma wf_llt [simp]: "wf (lenlex less_than)"
-  by blast
-
-lemma trans_llt [simp]: "trans (lenlex less_than)"
-  by blast
+lemma wf_llt [simp]: "wf (lenlex less_than)" and trans_llt [simp]: "trans (lenlex less_than)"
+  by blast+
 
 lemma total_llt [simp]: "total_on A (lenlex less_than)"
   by (meson UNIV_I total_lenlex total_less_than total_on_def)
@@ -415,16 +407,6 @@ lemma less_list_iff_less_sets:
   using assms sorted_hd_le sorted_le_last
   by (force simp: less_list_def less_sets_def intro: order.trans)
 
-lemma sorted_trans:
-  assumes "xs < ys" "ys < zs" "sorted ys" "ys \<noteq> []" shows "xs < zs"
-  using assms unfolding less_list_def
-  by (metis dual_order.strict_trans last_in_set leD neqE sorted_hd_le)
-
-lemma strict_sorted_imp_append_less:
-  assumes "strict_sorted (xs @ ys)"
-  shows "xs < ys"
-  using assms by (simp add: less_list_def sorted_wrt_append strict_sorted_sorted_wrt)
-
 lemma strict_sorted_append_iff:
   "strict_sorted (xs @ ys) \<longleftrightarrow> xs < ys \<and> strict_sorted xs \<and> strict_sorted ys" (is "?lhs = ?rhs")
 proof
@@ -435,30 +417,20 @@ next
   then have "\<And>x y. \<lbrakk>x \<in> list.set xs; y \<in> list.set ys\<rbrakk> \<Longrightarrow> x < y"
     using less_setsD sorted_list_of_set_imp_less_sets strict_sorted_imp_sorted by blast
   with R show ?lhs
-    by (auto simp: sorted_wrt_append strict_sorted_sorted_wrt)
+    by (metis sorted_wrt_append strict_sorted_sorted_wrt)
 qed
 
 lemma singleton_less_list_iff: "sorted xs \<Longrightarrow> [n] < xs \<longleftrightarrow> {..n} \<inter> list.set xs = {}"
-  apply (simp add: less_list_def set_eq_iff)
+  apply (simp add: less_list_def disjoint_iff)
   by (metis empty_iff less_le_trans list.set(1) list.set_sel(1) not_le sorted_hd_le)
-
-lemma less_last_iff: "xs@[x] < ys \<longleftrightarrow> [x] < ys"
-  by (simp add: less_list_def)
-
-lemma less_Cons_iff: "NO_MATCH [] ys \<Longrightarrow> xs < y#ys \<longleftrightarrow> xs < [y]"
-  by (simp add: less_list_def)
 
 lemma less_hd_imp_less: "xs < [hd ys] \<Longrightarrow> xs < ys"
   by (simp add: less_list_def)
 
-lemma last_less_imp_less: "[last xs] < ys \<Longrightarrow> xs < ys"
-  by (simp add: less_list_def)
-
 lemma strict_sorted_concat_I:
-  assumes
-    "\<And>x. x \<in> list.set xs \<Longrightarrow> strict_sorted x"
-    "\<And>n. Suc n < length xs \<Longrightarrow> xs!n < xs!Suc n"
-  assumes "xs \<in> lists (- {[]})"
+  assumes "\<And>x. x \<in> list.set xs \<Longrightarrow> strict_sorted x"
+          "\<And>n. Suc n < length xs \<Longrightarrow> xs!n < xs!Suc n"
+          "xs \<in> lists (- {[]})"
   shows "strict_sorted (concat xs)"
   using assms
 proof (induction xs)
@@ -520,7 +492,7 @@ proof
   next
     case (Cons a xs)
     with \<open>finite S'\<close> have "ys = a # xs @ list_of S'"
-      by (metis List.finite_set \<open>finite S'\<close> append_Cons assms(2) sorted_list_of_set_Un sorted_list_of_set_set_of)
+      by (metis List.finite_set append_Cons assms(2) sorted_list_of_set_Un sorted_list_of_set_set_of)
     then show ?case
       by (auto simp: Cons)
   qed
@@ -532,8 +504,7 @@ next
   proof cases
     case (1 ys)
     with assms(2) show ?thesis
-      using sorted_list_of_set_imp_less_sets strict_sorted_imp_sorted
-      by (auto simp: init_segment_def strict_sorted_append_iff)
+      by (metis init_segment_def set_append sorted_list_of_set_imp_less_sets strict_sorted_append_iff strict_sorted_imp_sorted)
   qed
 qed
 
@@ -740,13 +711,8 @@ proof (induction rule: interact.induct)
   moreover have "strict_sorted (interact xs ys)"
     using 3 by simp (metis Suc_less_eq nth_Cons_Suc)
   moreover have "y < interact xs ys"
-  proof (clarsimp simp add: less_list_def)
-    assume "y \<noteq> []" and ne: "interact xs ys \<noteq> []"
-    then show "last y < hd (interact xs ys)"
-      using 3
-      apply simp
-      by (metis dual_order.strict_trans1 hd_interact length_greater_0_conv less_list_def list.sel(1) lists.simps mem_lists_non_Nil nth_Cons' nth_mem)
-  qed
+    using 3 apply (simp add: less_list_def)
+    by (metis hd_interact le_zero_eq length_greater_0_conv list.sel(1) list.set_sel(1) list.size(3) lists.simps mem_lists_non_Nil nth_Cons_0)
   ultimately show ?case
     using 3 by (simp add: strict_sorted_append_iff less_list_def)
 qed auto
@@ -778,23 +744,14 @@ lemma Form_elim_upair:
   assumes "Form l U"
   obtains xs ys where "xs \<noteq> ys" "U = {xs,ys}" "length xs \<le> length ys"
   using assms
-  by (elim Form.cases Form_Body.cases; metis dual_order.order_iff_strict less_not_refl)
+  by (smt (verit, best) Form.simps Form_Body.cases less_or_eq_imp_le nat_neq_iff)
 
 
-lemma Form_Body_WW:
-  assumes "Form_Body ka kb xs ys zs"
-  shows "zs \<in> WW"
-  by (rule Form_Body.cases [OF assms]) (auto simp: WW_def)
-
-lemma Form_Body_nonempty:
-  assumes "Form_Body ka kb xs ys zs"
-  shows "length zs > 0"
-  by (rule Form_Body.cases [OF assms]) auto
-
-lemma Form_Body_length:
-  assumes "Form_Body ka kb xs ys zs"
-  shows "length xs < length ys"
-  using Form_Body.cases assms by blast
+lemma assumes "Form_Body ka kb xs ys zs"
+  shows Form_Body_WW: "zs \<in> WW" 
+    and Form_Body_nonempty: "length zs > 0" 
+    and Form_Body_length: "length xs < length ys"
+  using Form_Body.cases [OF assms] by (fastforce simp: WW_def)+
 
 lemma form_cases:
   fixes l::nat
@@ -811,34 +768,9 @@ subsubsection \<open>Interactions\<close>
 lemma interact:
   assumes "Form l U" "l>0"
   obtains ka kb xs ys zs where "l = ka+kb - 1" "U = {xs,ys}" "Form_Body ka kb xs ys zs" "0 < kb" "kb \<le> ka" "ka \<le> Suc kb"
-  using form_cases [of l]
-proof cases
-  case zero
-  then show ?thesis
-    using Form_0_cases_raw assms that(1) by auto
-next
-  case (nz ka kb)
-  obtain xs ys where xys: "xs \<noteq> ys" "U = {xs,ys}" "length xs \<le> length ys"
-    using Form_elim_upair assms by blast
-  show ?thesis
-  proof (cases "ka = kb")
-    case True
-    show ?thesis
-      using Form.cases [OF \<open>Form l U\<close>]
-    proof cases
-      case (2 k xs' ys' zs') then show ?thesis
-        by (metis le_Suc_eq le_refl mult_2 that)
-    qed (use True nz in \<open>presburger+\<close>)
-  next
-    case False
-    show ?thesis
-      using Form.cases [OF \<open>Form l U\<close>]
-    proof cases
-      case (3 k xs' ys' zs') then show ?thesis
-        by (metis add_Suc_right add_Suc_shift diff_Suc_1 le_Suc_eq mult_2 order_refl that)
-    qed (use False nz in \<open>presburger+\<close>)
-  qed
-qed
+  using assms
+  unfolding Form.simps
+  by (smt (verit, best) add_Suc diff_Suc_1 lessI mult_2 nat_less_le order_refl)
 
 
 definition inter_scheme :: "nat \<Rightarrow> nat list set \<Rightarrow> nat list"
@@ -879,16 +811,15 @@ proof cases
     by (simp add: 2 that)
 qed (use \<open>l > 0\<close> in auto)
 
+lemma inter_scheme_strict_sorted:
+  assumes "Form l U" "l>0"
+  shows "strict_sorted (inter_scheme l U)"
+  using Form_Body.simps assms inter_scheme by fastforce
 
 lemma inter_scheme_simple:
   assumes "Form l U" "l>0"
   shows "inter_scheme l U \<in> WW \<and> length (inter_scheme l U) > 0"
   using inter_scheme [OF assms] by (meson Form_Body_WW Form_Body_nonempty)
-
-lemma inter_scheme_strict_sorted:
-  assumes "Form l U" "l>0"
-  shows "strict_sorted (inter_scheme l U)"
-  using inter_scheme_simple [OF assms] by (auto simp: WW_def)
 
 subsubsection \<open>Injectivity of interactions\<close>
 
@@ -949,49 +880,16 @@ lemma strict_sorted_interact_imp_concat:
     "strict_sorted (interact as bs) \<Longrightarrow> strict_sorted (concat as) \<and> strict_sorted (concat bs)"
 proof (induction as bs rule: interact.induct)
   case (3 x xs y ys)
-  show ?case
-  proof (cases x)
-    case Nil
-    show ?thesis
-    proof (cases y)
-      case Nil
-      then show ?thesis
-        using "3" strict_sorted_append_iff by (auto simp: \<open>x = []\<close>)
-    next
-      case (Cons a list)
-      with Nil 3 show ?thesis
-        apply (simp add: strict_sorted_append_iff)
-        by (metis (no_types, lifting) Un_iff set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
-    qed
-  next
-    case (Cons a list)
-    have \<section>: "sorted_wrt (<) ((a # list) @ y @ interact xs ys)"
-      by (metis (no_types) "3.prems" interact.simps(3) local.Cons strict_sorted_sorted_wrt)
-    then have "list = [] \<or> concat xs = [] \<or> last list < hd (concat xs)"
-      by (metis (full_types) Un_iff hd_in_set last_ConsR last_in_set list.simps(3) set_append set_interact sorted_wrt_append)
-    then have "list < concat xs"
-      using less_list_def by blast
-    have "list < y"
-      by (metis \<section> append.assoc last.simps less_list_def list.distinct(1) strict_sorted_append_iff strict_sorted_sorted_wrt)
-    note Cons1 = Cons
-    show ?thesis
-    proof (cases y)
-      case Nil
-      then show ?thesis
-        using 3 by (simp add: sorted_wrt_append strict_sorted_sorted_wrt)
-    next
-      case (Cons a' list')
-      have "strict_sorted (list' @ concat ys)"
-        using "3.IH" local.Cons "\<section>" by (simp add: strict_sorted_sorted_wrt sorted_wrt_append)
-     moreover have "y < concat ys"
-        by (metis "\<section>" Un_iff hd_in_set last_in_set less_list_def set_interact sorted_wrt_append)
-      ultimately show ?thesis
-        using 3 \<open>list < concat xs\<close>
-        by (auto simp: Cons1 strict_sorted_append_iff)
-    qed
-  qed
+  have "x < concat xs"
+    using "3.prems"
+    apply (simp add: strict_sorted_append_iff)
+    by (metis (full_types) Un_iff hd_in_set last_in_set less_list_def set_append set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
+  moreover have "y < concat ys"
+    using "3.prems" 
+    by (metis Un_iff hd_in_set interact.simps(3) last_in_set less_list_def set_interact sorted_wrt_append strict_sorted_sorted_wrt)
+  ultimately show ?case
+    using 3 by (auto simp add: strict_sorted_append_iff)
 qed auto
-
 
 
 lemma strict_sorted_interact_hd:
