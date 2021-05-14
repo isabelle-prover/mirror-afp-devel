@@ -10564,3 +10564,22 @@ abstract =
   work is described in Mansky and Gunter's LSFA 2020 paper and
   Mansky's doctoral thesis (UIUC, 2020).
 
+[Padic_Ints]
+title = Hensel's Lemma for the p-adic Integers
+author = Aaron Crighton <mailto:crightoa@mcmaster.ca>
+topic = Mathematics/Number theory
+date = 2021-03-23
+notify = crightoa@mcmaster.ca
+abstract = 
+  We formalize the ring of <em>p</em>-adic integers within the framework of the
+  HOL-Algebra library. The carrier of the ring is formalized as the
+  inverse limit of quotients of the integers by powers of a fixed prime
+  <em>p</em>. We define an integer-valued valuation, as well as an
+  extended-integer valued valuation which sends 0 to the infinite
+  element. Basic topological facts about the <em>p</em>-adic integers are
+  formalized, including completeness and sequential compactness. Taylor
+  expansions of polynomials over a commutative ring are defined,
+  culminating in the formalization of Hensel's Lemma based on a
+  proof due to Keith Conrad.
+
+

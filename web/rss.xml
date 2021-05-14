@@ -139,6 +139,24 @@ prove that the spectrum of a ring is a locally ringed space, hence an
 affine scheme. Finally, we prove that any affine scheme is a scheme.</description>
     </item>
     <item>
+       <title>Hensel's Lemma for the p-adic Integers</title>
+              <link>https://www.isa-afp.org/entries/Padic_Ints.html</link>
+       <guid>https://www.isa-afp.org/entries/Padic_Ints.html</guid>
+       <dc:creator> Aaron Crighton       </dc:creator>
+       <pubDate>23 Mar 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalize the ring of &lt;em&gt;p&lt;/em&gt;-adic integers within the framework of the
+HOL-Algebra library. The carrier of the ring is formalized as the
+inverse limit of quotients of the integers by powers of a fixed prime
+&lt;em&gt;p&lt;/em&gt;. We define an integer-valued valuation, as well as an
+extended-integer valued valuation which sends 0 to the infinite
+element. Basic topological facts about the &lt;em&gt;p&lt;/em&gt;-adic integers are
+formalized, including completeness and sequential compactness. Taylor
+expansions of polynomials over a commutative ring are defined,
+culminating in the formalization of Hensel&#39;s Lemma based on a
+proof due to Keith Conrad.</description>
+    </item>
+    <item>
        <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
               <link>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
        <guid>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
@@ -560,27 +578,6 @@ developed by Vladimir Lifschitz. It also contains formally verified
 checkers for checking the well-formedness of problems specified in
 either language as well the correctness of potential solutions. The
 formalisation in this entry was described in an earlier publication.</description>
-    </item>
-    <item>
-       <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-              <link>https://www.isa-afp.org/entries/Physical_Quantities.html</link>
-       <guid>https://www.isa-afp.org/entries/Physical_Quantities.html</guid>
-       <dc:creator> Simon Foster, Burkhart Wolff       </dc:creator>
-       <pubDate>20 Oct 2020 00:00:00 +0000</pubDate>
-       <description>
-The present Isabelle theory builds a formal model for both the
-International System of Quantities (ISQ) and the International System
-of Units (SI), which are both fundamental for physics and engineering.
-Both the ISQ and the SI are deeply integrated into Isabelle&#39;s
-type system. Quantities are parameterised by dimension types, which
-correspond to base vectors, and thus only quantities of the same
-dimension can be equated. Since the underlying &#34;algebra of
-quantities&#34; induces congruences on quantity and SI types,
-specific tactic support is developed to capture these. Our
-construction is validated by a test-set of known equivalences between
-both quantities and SI units. Moreover, the presented theory can be
-used for type-safe conversions between the SI system and others, like
-the British Imperial System (BIS).</description>
     </item>
   </channel>
 </rss>
