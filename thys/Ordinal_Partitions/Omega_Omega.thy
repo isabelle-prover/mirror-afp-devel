@@ -409,16 +409,7 @@ lemma less_list_iff_less_sets:
 
 lemma strict_sorted_append_iff:
   "strict_sorted (xs @ ys) \<longleftrightarrow> xs < ys \<and> strict_sorted xs \<and> strict_sorted ys" (is "?lhs = ?rhs")
-proof
-  assume ?lhs then show ?rhs
-    by (auto simp: sorted_wrt_append strict_sorted_sorted_wrt less_list_def)
-next
-  assume R: ?rhs
-  then have "\<And>x y. \<lbrakk>x \<in> list.set xs; y \<in> list.set ys\<rbrakk> \<Longrightarrow> x < y"
-    using less_setsD sorted_list_of_set_imp_less_sets strict_sorted_imp_sorted by blast
-  with R show ?lhs
-    by (metis sorted_wrt_append strict_sorted_sorted_wrt)
-qed
+  by (metis less_list_iff_less_sets less_setsD sorted_wrt_append strict_sorted_imp_less_sets strict_sorted_imp_sorted)
 
 lemma singleton_less_list_iff: "sorted xs \<Longrightarrow> [n] < xs \<longleftrightarrow> {..n} \<inter> list.set xs = {}"
   apply (simp add: less_list_def disjoint_iff)
@@ -882,11 +873,9 @@ proof (induction as bs rule: interact.induct)
   case (3 x xs y ys)
   have "x < concat xs"
     using "3.prems"
-    apply (simp add: strict_sorted_append_iff)
-    by (metis (full_types) Un_iff hd_in_set last_in_set less_list_def set_append set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
+    by (smt (verit, del_insts) Un_iff hd_in_set interact.simps(3) last_in_set less_list_def set_append set_interact sorted_wrt_append)
   moreover have "y < concat ys"
-    using "3.prems" 
-    by (metis Un_iff hd_in_set interact.simps(3) last_in_set less_list_def set_interact sorted_wrt_append strict_sorted_sorted_wrt)
+    using 3 sorted_wrt_append strict_sorted_append_iff by fastforce 
   ultimately show ?case
     using 3 by (auto simp add: strict_sorted_append_iff)
 qed auto
@@ -895,7 +884,7 @@ qed auto
 lemma strict_sorted_interact_hd:
   "\<lbrakk>strict_sorted (interact cs ds); cs \<noteq> []; ds \<noteq> []; hd cs \<noteq> []; hd ds \<noteq> []\<rbrakk>
        \<Longrightarrow> hd (hd cs) < hd (hd ds)"
-  by (metis Nil_is_append_conv hd_append2 hd_in_set interact.simps(3) list.exhaust_sel sorted_wrt_append strict_sorted_sorted_wrt)
+  by (metis append_is_Nil_conv hd_append2 hd_in_set interact.simps(3) list.exhaust_sel sorted_wrt_append)
 
 
 text \<open>the lengths of the two lists can differ by one\<close>
@@ -918,12 +907,15 @@ next
   show ?case
   proof (cases k)
     case 0
-    then obtain a a' where "as = [a]" "as' = [a']"
+    then obtain a a' where aa': "as = [a]" "as' = [a']"
       by (metis Suc.hyps(2) \<open>length as = length as'\<close> Suc_length_conv length_0_conv)
-    with 0 show ?thesis
-      using Suc.prems
-      apply (simp add: le_Suc_eq)
-      by (metis concat.simps length_0_conv length_Suc_conv self_append_conv)
+    show ?thesis
+    proof
+      show "as = as'"
+        using aa' \<open>concat as = concat as'\<close> by force
+      with Suc 0 show " bs = bs'"
+        by (metis Suc_leI append_Nil2 concat.simps impossible_Cons le_antisym length_greater_0_conv list.exhaust)
+    qed
   next
     case (Suc k')
     then obtain a cs b ds where eq: "as = a#cs" "bs = b#ds"
@@ -940,23 +932,18 @@ next
       using Suc.prems by (simp add: eq eq')
     then have "hd b' = hd b"
       using Suc.prems(2) by (metis concat.simps(2) eq'(2) eq(2) hd_append2)
-
     have ss_ab: "strict_sorted (concat as)" "strict_sorted (concat bs)"
       using strict_sorted_interact_imp_concat Suc.prems(5) by blast+
-    have "a < b"
-      by (metis eq Suc.prems(5) append.assoc interact.simps(3) strict_sorted_append_iff)
-    have sw_ab: "sorted_wrt (<) (a @ b @ interact cs ds)"
-      by (metis Suc.prems(5) eq interact.simps(3) strict_sorted_sorted_wrt)
-    then have "hd b \<notin> list.set (concat cs)"
-      by (metis Un_iff \<open>b \<noteq> []\<close> list.set_sel(1) not_less_iff_gr_or_eq set_interact sorted_wrt_append)
-    have "b < concat cs"
-      using eq \<open>strict_sorted (interact as bs)\<close>
-      unfolding strict_sorted_append_iff
-      by (metis Un_iff last_in_set less_list_def list.set_sel(1) set_interact sorted_wrt_append sw_ab)
+    have sw_ab: "strict_sorted (a @ b @ interact cs ds)"
+      by (metis Suc.prems(5) eq interact.simps(3))
+    then obtain "a < b" "strict_sorted a" "strict_sorted b"
+      by (metis append_assoc strict_sorted_append_iff)
+    have b_cs: "strict_sorted (concat (b # cs))"
+      by (metis append.simps(1) concat.simps(2) interact.simps(3) strict_sorted_interact_imp_concat sw_ab)
+    then have "b < concat cs"
+      using strict_sorted_append_iff by auto
     have "strict_sorted (a @ concat cs)"
       using eq(1) ss_ab(1) by force
-    then have b_cs: "strict_sorted (b @ concat cs)"
-      by (metis \<open>b < concat cs\<close> strict_sorted_append_iff strict_sorted_sorted_wrt sw_ab)
     have "list.set a = list.set (concat as) \<inter> {..< hd b}"
     proof -
       have "x \<in> list.set a"
@@ -968,16 +955,16 @@ next
     moreover
     have ss_ab': "strict_sorted (concat as')" "strict_sorted (concat bs')"
       using strict_sorted_interact_imp_concat Suc.prems(10) by blast+
-    have "a' < b'"
-      by (metis eq' Suc.prems(10) append.assoc interact.simps(3) strict_sorted_append_iff)
-    have sw_ab': "sorted_wrt (<) (a' @ b' @ interact cs' ds')"
-      by (metis Suc.prems(10) eq' interact.simps(3) strict_sorted_sorted_wrt)
+    have sw_ab': "strict_sorted (a' @ b' @ interact cs' ds')"
+      by (metis Suc.prems(10) eq' interact.simps(3))
+    then obtain "a' < b'" "strict_sorted a'" "strict_sorted b'"
+      by (metis append_assoc strict_sorted_append_iff)
+    have b_cs': "strict_sorted (concat (b' # cs'))"
+      by (metis (no_types) Suc.prems(10) append_Nil eq' interact.simps(3) strict_sorted_append_iff strict_sorted_interact_imp_concat)
+    then have "b' < concat cs'"
+      by (simp add: strict_sorted_append_iff)
     then have "hd b' \<notin> list.set (concat cs')"
-      by (metis Un_iff \<open>b' \<noteq> []\<close> list.set_sel(1) not_less_iff_gr_or_eq set_interact sorted_wrt_append)
-    have "b' < concat cs'"
-      using eq' \<open>strict_sorted (interact as' bs')\<close>
-      apply (simp add: strict_sorted_append_iff)
-      by (metis Un_iff last_in_set less_list_def list.set_sel(1) set_interact sorted_wrt_append sw_ab')
+      by (metis Un_iff \<open>b' \<noteq> []\<close> list.set_sel(1) not_less_iff_gr_or_eq set_interact sorted_wrt_append sw_ab')
     have "strict_sorted (a' @ concat cs')"
       using eq'(1) ss_ab'(1) by force
     then have b_cs': "strict_sorted (b' @ concat cs')"
@@ -991,7 +978,7 @@ next
         using \<open>b' \<noteq> []\<close> sw_ab' by (force simp: strict_sorted_append_iff sorted_wrt_append eq')
     qed
     ultimately have "a=a'"
-      by (metis Suc.prems(1) \<open>hd b' = hd b\<close> sorted_wrt_append strict_sorted_equal strict_sorted_sorted_wrt sw_ab sw_ab')
+      by (simp add: Suc.prems(1) \<open>hd b' = hd b\<close> \<open>strict_sorted a'\<close> \<open>strict_sorted a\<close> strict_sorted_equal)
     moreover
     have ccat_cs_cs': "concat cs = concat cs'"
       using Suc.prems(1) \<open>a = a'\<close> eq'(1) eq(1) by fastforce
@@ -1002,12 +989,10 @@ next
         using \<open>length bs = length bs'\<close> Suc.prems(2) eq'(2) eq(2) by auto
     next
       case False
-      then have "ds \<noteq> []" "ds' \<noteq> []"
-        by auto
-      have "sorted (concat ds)" "sorted (concat ds')"
+      then have "ds \<noteq> []" "ds' \<noteq> []" "sorted (concat ds)" "sorted (concat ds')"
         using eq(2) ss_ab(2) eq'(2) ss_ab'(2) strict_sorted_append_iff strict_sorted_imp_sorted by auto
-      have "strict_sorted b"
-        by (metis Suc.prems(2) concat.simps(2) eq(2) ss_ab'(2) strict_sorted_append_iff)
+      have "strict_sorted b" "strict_sorted b'"
+        using b_cs b_cs' sorted_wrt_append by auto
       moreover
       have "cs \<noteq> []"
         using k local.Suc by auto
@@ -1018,15 +1003,19 @@ next
         using \<open>cs \<noteq> []\<close> hd_in_set by auto
       have "hd (concat cs) < hd (concat ds)"
         using strict_sorted_interact_hd
-        by (metis \<open>cs \<noteq> []\<close> \<open>ds \<noteq> []\<close> \<open>hd cs \<noteq> []\<close> \<open>hd ds \<noteq> []\<close> hd_concat strict_sorted_append_iff strict_sorted_sorted_wrt sw_ab)
-      then have "list.set b = list.set (concat bs) \<inter> {..< hd (concat cs)}"
-        using ss_ab \<open>b < concat cs\<close>   
-        apply (auto simp: strict_sorted_append_iff eq)
-        apply (metis \<open>concat cs \<noteq> []\<close> b_cs hd_in_set sorted_wrt_append strict_sorted_sorted_wrt)
-        using \<open>sorted (concat ds)\<close> sorted_hd_le by fastforce
+        by (metis \<open>cs \<noteq> []\<close> \<open>ds \<noteq> []\<close> \<open>hd cs \<noteq> []\<close> \<open>hd ds \<noteq> []\<close> hd_concat sorted_wrt_append sw_ab)
+
+      have "list.set b = list.set (concat bs) \<inter> {..< hd (concat cs)}"
+      proof -
+        have 1: "x \<in> list.set b"
+          if "x < hd (concat cs)" and "l \<in> list.set ds" and "x \<in> list.set l" for x l
+          using \<open>hd (concat cs) < hd (concat ds)\<close> \<open>sorted (concat ds)\<close> sorted_hd_le that by fastforce
+        have 2: "l < hd (concat cs)" if "l \<in> list.set b" for l
+          by (meson \<open>b < concat cs\<close> \<open>b \<noteq> []\<close> \<open>concat cs \<noteq> []\<close> \<open>strict_sorted b\<close> le_less_trans less_list_def sorted_le_last strict_sorted_imp_sorted that)
+        show ?thesis
+          using 1 2 by (auto simp: strict_sorted_append_iff sorted_wrt_append eq)
+      qed
       moreover
-      have "sorted (concat ds')"
-        using eq'(2) ss_ab'(2) strict_sorted_append_iff strict_sorted_imp_sorted by auto
       have "cs' \<noteq> []"
         using k local.Suc \<open>concat cs \<noteq> []\<close> ccat_cs_cs' by auto
       then obtain "hd cs' \<noteq> []" "hd ds' \<noteq> []"
@@ -1035,14 +1024,19 @@ next
         using \<open>cs' \<noteq> []\<close> hd_in_set by auto
       have "hd (concat cs') < hd (concat ds')"
         using strict_sorted_interact_hd
-        by (metis \<open>cs' \<noteq> []\<close> \<open>ds' \<noteq> []\<close> \<open>hd cs' \<noteq> []\<close> \<open>hd ds' \<noteq> []\<close> hd_concat strict_sorted_append_iff strict_sorted_sorted_wrt sw_ab')
-      then have "list.set b' = list.set (concat bs') \<inter> {..< hd (concat cs')}"
-        using ss_ab' \<open>b' < concat cs'\<close>
-        apply (auto simp: strict_sorted_append_iff eq')
-         apply (metis \<open>concat cs' \<noteq> []\<close> b_cs' list.set_sel(1) sorted_wrt_append strict_sorted_sorted_wrt)
-        using \<open>sorted (concat ds')\<close> sorted_hd_le by fastforce
+        by (metis \<open>cs' \<noteq> []\<close> \<open>ds' \<noteq> []\<close> \<open>hd cs' \<noteq> []\<close> \<open>hd ds' \<noteq> []\<close> hd_concat sorted_wrt_append sw_ab')
+      have "list.set b' = list.set (concat bs') \<inter> {..< hd (concat cs')}"
+      proof -
+        have 1: "x \<in> list.set b'"
+          if "x < hd (concat cs')" and "l \<in> list.set ds'" and "x \<in> list.set l" for x l
+          using \<open>hd (concat cs') < hd (concat ds')\<close> \<open>sorted (concat ds')\<close> sorted_hd_le that by fastforce
+        have 2: "l < hd (concat cs')" if "l \<in> list.set b'" for l
+          by (metis \<open>concat cs' \<noteq> []\<close> b_cs' list.set_sel(1) sorted_wrt_append that)
+        show ?thesis
+          using 1 2 by (auto simp: strict_sorted_append_iff sorted_wrt_append eq')
+      qed
       ultimately show "b = b'"
-        by (metis Suc.prems(2) ccat_cs_cs' strict_sorted_append_iff strict_sorted_equal strict_sorted_sorted_wrt sw_ab')
+        by (simp add: Suc.prems(2) ccat_cs_cs' strict_sorted_equal)
     qed
     moreover
     have "cs = cs' \<and> ds = ds'"
@@ -1312,43 +1306,42 @@ proof -
                      \<and> (\<forall>U. Form l U \<and> U \<subseteq> WW \<and> [n] < inter_scheme l U \<and> list.set (inter_scheme l U) \<subseteq> N \<longrightarrow> g U = j)"
   have *: "\<exists>n N j. \<Phi> n N \<and> \<Psi> l m n M N j" if "l > 0" "\<Phi> m M" for l m::nat and M :: "nat set"
   proof -
-    let ?A = "inter_scheme l ` {U \<in> [WW]\<^bsup>2\<^esup>. Form l U}"
-    define h where "h \<equiv> \<lambda>zs. g (inv_into {U \<in> [WW]\<^bsup>2\<^esup>. Form l U} (inter_scheme l) zs)"
-    have "thin ?A"
-      using \<open>l > 0\<close> lemma_3_11 by (simp add: thin_def)
+    define FF where "FF \<equiv> {U \<in> [WW]\<^bsup>2\<^esup>. Form l U}"
+    define h where "h \<equiv> \<lambda>zs. g (inv_into FF (inter_scheme l) zs)"
+    have "thin (inter_scheme l ` FF)"
+      using \<open>l > 0\<close> lemma_3_11 by (simp add: thin_def FF_def)
     moreover
-    have "?A \<subseteq> WW"
-      using inter_scheme_simple \<open>0 < l\<close> by blast
+    have "inter_scheme l ` FF \<subseteq> WW"
+      using inter_scheme_simple \<open>0 < l\<close> FF_def by blast
     moreover
-    have "h ` {l \<in> ?A. List.set l \<subseteq> M} \<subseteq> {..<2}"
-      using g inv_into_into[of concl: "{U \<in> [WW]\<^bsup>2\<^esup>. Form l U}" "inter_scheme l"]
-      by (force simp: h_def Pi_iff)
+    have "h ` {xs \<in> inter_scheme l ` FF. List.set xs \<subseteq> M} \<subseteq> {..<2}"
+      using g inv_into_into[of concl: "FF" "inter_scheme l"]
+      by (force simp: h_def FF_def Pi_iff)
     ultimately
-    obtain j N where "j < 2" "infinite N" "N \<subseteq> M" and hj: "h ` {l \<in> ?A. List.set l \<subseteq> N} \<subseteq> {j}"
+    obtain j N where "j < 2" "infinite N" "N \<subseteq> M" and hj: "h ` {xs \<in> inter_scheme l ` FF. List.set xs \<subseteq> N} \<subseteq> {j}"
       using \<open>\<Phi> m M\<close> unfolding \<Phi>_def by (blast intro: Nash_Williams_WW [of M])
-    define n where "n \<equiv> Inf N"
-    have "n > m"
-      using \<open>\<Phi> m M\<close> \<open>infinite N\<close> unfolding n_def \<Phi>_def Inf_nat_def infinite_nat_iff_unbounded
+    let ?n = "Inf N"
+    have "?n > m"
+      using \<open>\<Phi> m M\<close> \<open>infinite N\<close> unfolding \<Phi>_def Inf_nat_def infinite_nat_iff_unbounded
       by (metis LeastI_ex \<open>N \<subseteq> M\<close> le_less_trans not_less not_less_Least subsetD)
-    have "g U = j" if "Form l U" "U \<subseteq> WW" "[n] < inter_scheme l U" "list.set (inter_scheme l U) \<subseteq> N - {n}" for U
+    have "g U = j" if "Form l U" "U \<subseteq> WW" "[?n] < inter_scheme l U" "list.set (inter_scheme l U) \<subseteq> N - {?n}" for U
     proof -
       obtain xs ys where xys: "xs \<noteq> ys" "U = {xs,ys}"
         using Form_elim_upair \<open>Form l U\<close> by blast
-      moreover have "inj_on (inter_scheme l) {U \<in> [WW]\<^bsup>2\<^esup>. Form l U}"
-        using \<open>0 < l\<close> inj_on_def inter_scheme_injective by blast
+      moreover have "inj_on (inter_scheme l) FF"
+        using \<open>0 < l\<close> inj_on_def inter_scheme_injective FF_def by blast
       moreover 
-      have "g (inv_into {U \<in> [WW]\<^bsup>2\<^esup>. Form l U} (inter_scheme l) (inter_scheme l U)) = j"
-        using hj that xys subset_Diff_insert by (fastforce simp: h_def image_iff)
+      have "g (inv_into FF (inter_scheme l) (inter_scheme l U)) = j"
+        using hj that xys subset_Diff_insert by (fastforce simp: h_def FF_def image_iff)
       ultimately show ?thesis
-        using that by auto
+        using that FF_def by auto
     qed
-    moreover have "n < Inf (N - {n})"
-      unfolding n_def
+    moreover have "?n < Inf (N - {?n})"
       by (metis Diff_iff Inf_nat_def Inf_nat_def1 \<open>infinite N\<close> finite.emptyI infinite_remove linorder_neqE_nat not_less_Least singletonI)
-    moreover have "n \<in> M"
-      by (metis Inf_nat_def1 \<open>N \<subseteq> M\<close> \<open>infinite N\<close> finite.emptyI n_def subsetD)
-    ultimately have "\<Phi> n (N - {n}) \<and> \<Psi> l m n M (N - {n}) j"
-      using \<open>\<Phi> m M\<close> \<open>infinite N\<close> \<open>N \<subseteq> M\<close> \<open>n > m\<close> by (auto simp: \<Phi>_def \<Psi>_def)
+    moreover have "?n \<in> M"
+      by (metis Inf_nat_def1 \<open>N \<subseteq> M\<close> \<open>infinite N\<close> finite.emptyI subsetD)
+    ultimately have "\<Phi> ?n (N - {?n}) \<and> \<Psi> l m ?n M (N - {?n}) j"
+      using \<open>\<Phi> m M\<close> \<open>infinite N\<close> \<open>N \<subseteq> M\<close> \<open>?n > m\<close> by (auto simp: \<Phi>_def \<Psi>_def)
     then show ?thesis
       by blast
   qed
@@ -1389,7 +1382,7 @@ proof -
   qed auto
   then have H_increasing_less: "(case H k of (n, N, j') \<Rightarrow> N) \<supseteq> (case H l of (n, N, j') \<Rightarrow> insert n N)"
     if "k<l" for k l
-    by (smt (verit, best) H_increasing_Suc add.commute less_imp_Suc_add order_trans that)
+    by (smt (verit, best) H_increasing_Suc add.commute less_natE order_trans that)
   have "\<nu> k < \<nu> (Suc k)" for k
     using H\<Phi> [of k] unfolding \<nu>_def
     by (auto simp: H_simps split: prod.split dest: G_increasing [where l=k])
@@ -1421,9 +1414,6 @@ proof -
       and sub: "list.set (inter_scheme l U) \<subseteq> ?N"
     obtain k where k: "l = Suc k"
       using \<open>0 < l\<close> gr0_conv_Suc by blast
-    have "U \<subseteq> WW"
-      using U by (auto simp: nsets_def)
-    moreover
     have "g U = v" if "H k = (m, M, j0)" and "G k m M = (n, N', v)"
       for m M j0 n N' v
     proof -
@@ -1435,10 +1425,10 @@ proof -
         using that sub ** [of "Suc k" n N' v] Suc_le_eq not_less_eq_eq
         by (fastforce simp:  k n enum_N H_simps)
       then show ?thesis
-        using that interU \<open>U \<subseteq> WW\<close> G\<Psi> [of m M k] H\<Phi> [of k]
-        by (auto simp: \<Psi>_def k enum_N H_simps n)
+        using that interU U G\<Psi> [of m M k] H\<Phi> [of k]
+        by (auto simp: \<Psi>_def k enum_N H_simps n nsets_def)
     qed
-    ultimately show "g U = j l"
+    with U show "g U = j l"
       by (auto simp: k j_def H_simps split: prod.split)
   qed
 qed
@@ -2626,7 +2616,7 @@ proof induction
     using merge_preserves strict_sorted_append_iff by fastforce+
   then have "concat bs1 < interact as bs"
     unfolding less_list_def using App bs
-    by (metis (no_types, lifting) Un_iff concat_append hd_in_set last_in_set merge_preserves set_interact sorted_wrt_append strict_sorted_append_iff strict_sorted_sorted_wrt)
+    by (metis (no_types, lifting) Un_iff concat_append hd_in_set last_in_set merge_preserves set_interact sorted_wrt_append strict_sorted_append_iff)
   with App show ?case
     apply (simp add: strict_sorted_append_iff del: concat_eq_Nil_conv)
     by (metis hd_append2 less_list_def xx)

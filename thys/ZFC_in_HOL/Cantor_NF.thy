@@ -452,7 +452,7 @@ lemma Cantor_sum_ge:
   shows "\<omega> \<up> \<alpha> \<le> Cantor_sum (\<alpha>#\<alpha>s) ms"
 proof -
   obtain m ns where ms: "ms = Cons m ns"
-    using assms(3) strict_sorted.cases by auto
+    by (meson assms(3) list.set_cases nth_mem)
   then have "\<omega> \<up> \<alpha> \<le> \<omega> \<up> \<alpha> * ord_of_nat m"
     using assms(2) le_mult by auto
   then show ?thesis

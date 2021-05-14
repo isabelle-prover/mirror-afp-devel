@@ -162,7 +162,7 @@ lemma sorted_list_of_set_Un:
 proof -
   have "strict_sorted (sorted_list_of_set A @ sorted_list_of_set B)"
     using AB unfolding less_sets_def
-    by (metis fin set_sorted_list_of_set sorted_wrt_append strict_sorted_list_of_set strict_sorted_sorted_wrt)
+    by (metis fin set_sorted_list_of_set sorted_wrt_append strict_sorted_list_of_set)
   moreover have "card A + card B = card (A \<union> B)"
     using less_sets_imp_disjnt [OF AB]
     by (simp add: assms card_Un_disjoint disjnt_def)

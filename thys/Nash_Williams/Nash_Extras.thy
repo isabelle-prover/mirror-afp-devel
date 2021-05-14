@@ -40,7 +40,7 @@ lemma less_sets_Un2: "less_sets A (B \<union> B') \<longleftrightarrow> A \<lles
 
 lemma strict_sorted_imp_less_sets:
   "strict_sorted (as @ bs) \<Longrightarrow> (list.set as) \<lless> (list.set bs)"
-  by (simp add: less_sets_def sorted_wrt_append strict_sorted_sorted_wrt)
+  by (simp add: less_sets_def sorted_wrt_append)
 
 lemma Sup_nat_less_sets_singleton:
   fixes n::nat
