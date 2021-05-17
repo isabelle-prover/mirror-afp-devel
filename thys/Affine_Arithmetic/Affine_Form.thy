@@ -1182,6 +1182,17 @@ lemma pdevs_val_zip: "pdevs_val e (pdevs_of_list xs) = (\<Sum>(i,x)\<leftarrow>z
     intro!: pdevs_val_inj_sumI[of _ fst]
     split: if_split_asm)
 
+lemma pdevs_val_map:
+  \<open>pdevs_val e (pdevs_of_list xs)
+    = (\<Sum>n\<leftarrow>[0..<length xs]. e n *\<^sub>R xs ! n)\<close>
+proof -
+  have \<open>map2 (\<lambda>i. (*\<^sub>R) (e i)) [0..<length xs] xs =
+    map (\<lambda>n. e n *\<^sub>R xs ! n) [0..<length xs]\<close>
+    by (rule nth_equalityI) simp_all
+  then show ?thesis
+    by (simp add: pdevs_val_zip)
+qed
+
 lemma scaleR_sum_list:
   fixes xs::"'a::real_vector list"
   shows "a *\<^sub>R sum_list xs = sum_list (map (scaleR a) xs)"
@@ -1346,31 +1357,45 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma degree_pdevs_of_list_eq':
+  \<open>degree (pdevs_of_list xs) = Min {n. n \<le> length xs \<and> (\<forall>m. n \<le> m \<longrightarrow> m < length xs \<longrightarrow> xs ! m = 0)}\<close>
+  apply (simp add: degree_def pdevs_apply_pdevs_of_list)
+  apply (rule Least_equality)
+   apply auto
+   apply (subst (asm) Min_le_iff)
+     apply auto
+  apply (subst Min_le_iff)
+    apply auto
+  apply (metis le_cases not_less)
+  done
+
+lemma pdevs_val_permuted:
+  \<open>pdevs_val (e \<circ> p) (pdevs_of_list (permute_list p xs)) = pdevs_val e (pdevs_of_list xs)\<close> (is \<open>?r = ?s\<close>)
+  if perm: \<open>p permutes {..<length xs}\<close>
+proof -
+  from that have \<open>image_mset p (mset_set {0..<length xs}) = mset_set {0..<length xs}\<close>
+    by (simp add: permutes_image_mset lessThan_atLeast0)
+  moreover have \<open>map (\<lambda>n. e (p n) *\<^sub>R permute_list p xs ! n) [0..<length xs] =
+    map (\<lambda>n. e n *\<^sub>R xs ! n) (map p [0..<length xs])\<close>
+    using that by (simp add: permute_list_nth)
+  ultimately show ?thesis
+    using that by (simp add: pdevs_apply_pdevs_of_list pdevs_val_map
+      flip: map_map sum_mset_sum_list)
+qed
+
 lemma pdevs_val_perm_ex:
   assumes "xs <~~> ys"
   assumes mem: "e \<in> UNIV \<rightarrow> I"
   shows "\<exists>e'. e' \<in> UNIV \<rightarrow> I \<and> pdevs_val e (pdevs_of_list xs) = pdevs_val e' (pdevs_of_list ys)"
-  using assms
-proof (induct arbitrary: e)
-  case Nil
-  thus ?case
-    by auto
-next
-  case (Cons xs ys z)
-  hence "(e \<circ> (+) (Suc 0)) \<in> UNIV \<rightarrow> I" by auto
-  from Cons(2)[OF this] obtain e' where "e' \<in> UNIV \<rightarrow> I"
-      "pdevs_val (e \<circ> (+) (Suc 0)) (pdevs_of_list xs) = pdevs_val e' (pdevs_of_list ys)"
-    by metis
-  thus ?case using Cons
-    by (auto intro!: exI[where x="\<lambda>x. if x = 0 then e 0 else e' (x - 1)"] simp: o_def Pi_iff)
-next
-  case (trans xs ys zs)
-  thus ?case by metis
-next
-  case (swap y x l)
-  thus ?case
-    by (auto intro!: exI[where x="\<lambda>i. if i = 0 then e 1 else if i = 1 then e 0 else e i"]
-      simp: o_def Pi_iff)
+proof -
+  from \<open>mset xs = mset ys\<close>
+  have \<open>mset ys = mset xs\<close> ..
+  then obtain p where \<open>p permutes {..<length xs}\<close> \<open>permute_list p xs = ys\<close>
+    by (rule mset_eq_permutation)
+  moreover define e' where \<open>e' = e \<circ> p\<close>
+  ultimately have \<open>e' \<in> UNIV \<rightarrow> I\<close> \<open>pdevs_val e (pdevs_of_list xs) = pdevs_val e' (pdevs_of_list ys)\<close>
+    using mem by (auto simp add: pdevs_val_permuted)
+  then show ?thesis by blast
 qed
 
 lemma pdevs_val_perm:
@@ -1388,16 +1413,7 @@ lemmas pdevs_val_permute = pdevs_val_perm[OF set_distinct_permI]
 
 lemma partition_permI:
   "filter p xs @ filter (Not o p) xs <~~> xs"
-proof (induct xs)
-  case (Cons x xs)
-  have swap_app_Cons: "filter p xs @ x # [a\<leftarrow>xs . \<not> p a] <~~> x # filter p xs @ [a\<leftarrow>xs . \<not> p a]"
-    by (metis perm_sym perm_append_Cons)
-  also have "\<dots> <~~> x#xs"
-    using Cons by auto
-  finally (trans)
-  show ?case using Cons
-    by simp
-qed simp
+  by simp
 
 lemma pdevs_val_eqI:
   assumes "\<And>i. i \<in> pdevs_domain y \<Longrightarrow> i \<in> pdevs_domain x \<Longrightarrow>
@@ -1572,7 +1588,7 @@ lemma
   using assms by induct auto
 
 lemma rev_perm: "rev xs <~~> ys \<longleftrightarrow> xs <~~> ys"
-  by (metis perm.trans perm_rev rev_rev_ident)
+  by simp
 
 lemma list_of_pdevs_perm_filter_nonzero:
   "map snd (list_of_pdevs X) <~~> (filter ((\<noteq>) 0) (dense_list_of_pdevs X))"
@@ -1652,7 +1668,7 @@ lemma
 proof -
   from list_of_pdevs_perm_filter_nonzero[of X]
   have perm: "(filter ((\<noteq>) 0) (dense_list_of_pdevs X)) <~~> map snd (list_of_pdevs X)"
-    by (simp add: perm_sym)
+    by simp
   have "pdevs_val e X = pdevs_val e (pdevs_of_list (dense_list_of_pdevs X))"
     by (simp add: pdevs_of_list_dense_list_of_pdevs)
   also from pdevs_val_partition[OF \<open>e \<in> _\<close>, of "dense_list_of_pdevs X" "(\<noteq>) 0"]

@@ -326,11 +326,17 @@ proof -
      if px: \<open>mset p = mset x\<close> and \<open>sorted_wrt (rel2p (Id \<union> lexord var_order_rel)) (map fst x)\<close>
      for x :: \<open>llist_polynomial\<close>
   proof -
-    obtain f where
-      f: \<open>bij_betw f {..<length x} {..<length p}\<close> and
-      [simp]: \<open>\<And>i. i<length x \<Longrightarrow> x ! i = p ! (f i)\<close>
-      using px apply - apply (subst (asm)(2) eq_commute)  unfolding mset_eq_perm
-      by (auto dest!: permutation_Ex_bij)
+    from px have \<open>length x = length p\<close>
+      by (metis size_mset)
+    from px have \<open>mset x = mset p\<close>
+      by simp 
+    then obtain f where \<open>f permutes {..<length p}\<close> \<open>permute_list f p = x\<close>
+      by (rule mset_eq_permutation)
+    with \<open>length x = length p\<close> have f: \<open>bij_betw f {..<length x} {..<length p}\<close>
+      by (simp add: permutes_imp_bij)      
+    from \<open>f permutes {..<length p}\<close> \<open>permute_list f p = x\<close> [symmetric] 
+    have [simp]: \<open>\<And>i. i < length x \<Longrightarrow> x ! i = p ! (f i)\<close>
+      by (simp add: permute_list_nth)
     let ?y = \<open>map (\<lambda>i. y ! f i) [0 ..< length x]\<close>
     have \<open>i < length y \<Longrightarrow> (p ! f i, y ! f i) \<in> term_poly_list_rel \<times>\<^sub>r int_rel\<close> for i
       using list_all2_nthD[of _ p y
@@ -893,11 +899,17 @@ proof -
      if px: \<open>mset p = mset x\<close> and \<open>sorted_wrt (rel2p (Id \<union> lexord var_order_rel)) (map fst x)\<close>
      for x :: \<open>llist_polynomial\<close>
   proof -
-    obtain f where
-      f: \<open>bij_betw f {..<length x} {..<length p}\<close> and
-      [simp]: \<open>\<And>i. i<length x \<Longrightarrow> x ! i = p ! (f i)\<close>
-      using px apply - apply (subst (asm)(2) eq_commute)  unfolding mset_eq_perm
-      by (auto dest!: permutation_Ex_bij)
+    from px have \<open>length x = length p\<close>
+      by (metis size_mset)
+    from px have \<open>mset x = mset p\<close>
+      by simp 
+    then obtain f where \<open>f permutes {..<length p}\<close> \<open>permute_list f p = x\<close>
+      by (rule mset_eq_permutation)
+    with \<open>length x = length p\<close> have f: \<open>bij_betw f {..<length x} {..<length p}\<close>
+      by (simp add: permutes_imp_bij)      
+    from \<open>f permutes {..<length p}\<close> \<open>permute_list f p = x\<close> [symmetric] 
+    have [simp]: \<open>\<And>i. i < length x \<Longrightarrow> x ! i = p ! (f i)\<close>
+      by (simp add: permute_list_nth)
     let ?y = \<open>map (\<lambda>i. y ! f i) [0 ..< length x]\<close>
     have \<open>i < length y \<Longrightarrow> (p ! f i, y ! f i) \<in> term_poly_list_rel \<times>\<^sub>r int_rel\<close> for i
       using list_all2_nthD[of _ p y
@@ -1258,4 +1270,3 @@ lemma weak_equality_l_weak_equality_spec:
     dest: list_rel_term_poly_list_rel_same_rightD)
 
 end
-
