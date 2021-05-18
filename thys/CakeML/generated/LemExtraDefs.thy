@@ -352,7 +352,8 @@ proof (rule ext)
     case Nil thus ?case by simp
   next
     case (Cons x xs)
-    thus ?case by (cases xs) (simp_all del: sorted.simps(2) add: sorted2_simps)
+    thus ?case
+      by (smt (verit, best) list.inject sorted1 sorted2 sorted_by.elims(1))
   qed
 qed
 

@@ -139,7 +139,7 @@ proof(induct l)
 next
   case (Cons a l)
   then show ?case
-    by (metis sorted_Max_Cons Max_singleton hd_rev last.simps list.set(1) list.simps(15) sorted.simps(2))
+    by (metis sorted_Max_Cons Max_singleton hd_rev last.simps list.set(1) list.simps(15) sorted_simps(2))
 qed
 
 lemma [code]: "fMax (fset_of_list (h#t)) = last (nativeSort (h#t))"

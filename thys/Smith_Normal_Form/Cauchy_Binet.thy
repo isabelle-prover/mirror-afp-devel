@@ -100,7 +100,7 @@ next
       by (smt "1" Suc_less_eq True a_def a_notin_I distinct_card distinct_sorted_list_of_set finI i2
           ia' index_a' insort_nth2 length_insort lessI list.size(3) nat_less_le not_less_zero
           pick_in_set_le set_sorted_list_of_set sorted_list_of_set(2) sorted_list_of_set.insert
-          sorted_list_of_set_eq_pick sorted_sorted_wrt sorted_wrt_nth_less)
+          sorted_list_of_set_eq_pick sorted_wrt_nth_less)
     moreover have "a = insort a (sorted_list_of_set I) ! i" using True 1 2 a_def by auto
     ultimately show ?thesis using 1 2
       by (metis distinct_card finI i0 i2 set_sorted_list_of_set

@@ -251,7 +251,7 @@ next
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
       then have "sorted (key # take j (drop 1 (Array.get h\<^sub>2 a)))"
-        by (metis less_imp_le sorted.simps(2))
+        by (metis less_imp_le sorted_simps(2))
       then show ?thesis by (simp add: *)
     next
       assume "0 < i' \<and> key \<ge> Array.get h\<^sub>2 a ! (i' - 1)"
@@ -428,7 +428,7 @@ next
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
       then have "sorted (key # take j (drop 1 (Array.get h\<^sub>2 a)))"
-        by (metis less_imp_le sorted.simps(2))
+        by (metis less_imp_le sorted_simps(2))
       then show ?thesis by (simp add: *)
     next
       assume "0 < i' \<and> key \<ge> Array.get h\<^sub>2 a ! (i' - 1)"

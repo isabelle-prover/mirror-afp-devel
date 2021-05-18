@@ -390,7 +390,7 @@ begin
     {
       assume "sorted_wrt R xs"
       thus "sorted_wrt' R xs"
-        by (induction xs)(auto simp: list_all_iff sorted_sorted_wrt[symmetric])
+        by (induction xs)(auto simp: list_all_iff)
     }
     {
       assume "sorted_wrt' R xs"

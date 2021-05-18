@@ -1589,7 +1589,7 @@ qed
 
 lemma sorted_hd_last:
   "\<lbrakk>sorted l; l\<noteq>[]\<rbrakk> \<Longrightarrow> hd l \<le> last l"
-by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted.simps(2))
+by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted_wrt.simps(2))
 
 lemma (in linorder) sorted_hd_min:
   "\<lbrakk>xs \<noteq> []; sorted xs\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. hd xs \<le> x"
@@ -1895,12 +1895,12 @@ subsubsection \<open>Sorted List with arbitrary Relations\<close>
 
 lemma (in linorder) sorted_wrt_rev_linord [simp] :
   "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
-by (simp add: sorted_sorted_wrt sorted_wrt_rev)
+by (simp add: sorted_wrt_rev)
 
 lemma (in linorder) sorted_wrt_map_linord [simp] :
   "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
   \<longleftrightarrow> sorted (map fst l)"
-by (simp add: sorted_sorted_wrt sorted_wrt_map)
+by (simp add: sorted_wrt_map)
 
 lemma (in linorder) sorted_wrt_map_rev_linord [simp] :
   "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
@@ -2607,8 +2607,7 @@ qed
 
 lemma sorted_quicksort_by_rel:
   "sorted (quicksort_by_rel (\<le>) [] xs)"
-unfolding sorted_sorted_wrt
-by (rule sorted_wrt_quicksort_by_rel) auto
+  by (rule sorted_wrt_quicksort_by_rel) auto
 
 lemma sort_quicksort_by_rel:
   "sort = quicksort_by_rel (\<le>) []"
@@ -2819,7 +2818,6 @@ qed
 
 lemma sorted_mergesort_by_rel:
   "sorted (mergesort_by_rel (\<le>) xs)"
-unfolding sorted_sorted_wrt
 by (rule sorted_wrt_mergesort_by_rel) auto
 
 lemma sort_mergesort_by_rel:

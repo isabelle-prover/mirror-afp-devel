@@ -128,7 +128,7 @@ lemma sorted_hd_Min:
   "sorted l \<Longrightarrow>
    l \<noteq> [] \<Longrightarrow>
    hd l = Min (set l)"
-  by (metis List.finite_set Min_eqI eq_iff hd_Cons_tl insertE list.set_sel(1) list.simps(15) sorted.simps(2))
+  by (metis List.finite_set Min_eqI eq_iff hd_Cons_tl insertE list.set_sel(1) list.simps(15) sorted_simps(2))
 
 lemma hd_sort_Min: "l \<noteq> [] \<Longrightarrow> hd (sort l) = Min (set l)"
   by (metis sorted_hd_Min set_empty set_sort sorted_sort)
@@ -214,7 +214,7 @@ lemma sorted_distinct_ffold_ord: assumes "sorted l"
   using assms
   apply (induct l arbitrary: b)
    apply simp
-  by (metis distinct.simps(2) ffold_ord_cons fold_simps(2) sorted.simps(2))
+  by (metis distinct.simps(2) ffold_ord_cons fold_simps(2) sorted_simps(2))
 
 lemma ffold_ord_fold_sorted: "ffold_ord f s b = fold f (sorted_list_of_fset s) b"
   by (metis exists_sorted_distinct_fset_of_list sorted_distinct_ffold_ord distinct_remdups_id sorted_list_of_fset_sort sorted_sort_id)

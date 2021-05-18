@@ -101,7 +101,7 @@ end (* context linorder *)
 section \<open>The @{term "odlist"} type\<close>
 
 typedef (overloaded) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
-  morphisms toList odlist_Abs by (auto iff: sorted.simps(1))
+  morphisms toList odlist_Abs by (auto iff: sorted_simps(1))
 
 lemma distinct_toList[simp]: "distinct (toList xs)"
   using toList by auto
@@ -642,11 +642,7 @@ next
   also have "... = map_of (msort (List.map (\<lambda>k. (k, f k)) (x # xs)))"
     by (simp only: toList_ODList)
   also from insert have "... = map_of (List.map (\<lambda>k. (k, f k)) (x # xs))"
-    apply (subst msort_map)
-    apply (auto intro: inj_onI)
-    apply (rule mono_onI)
-    apply (simp add: less_eq_prod_def less_le)
-    done
+    by (metis msort_idle tabulate_def tabulate_toList toList_ODList)
   also with insert IH have "... = (Some \<circ> f) |` toSet dxs"
     by (auto simp add: restrict_map_def fun_eq_iff)
   finally show ?case .

@@ -253,8 +253,7 @@ subsubsection \<open>Optimizing Folds\<close>
       \<and> distinct (map fst (it_to_list it s))
       \<and> sorted ((map fst (it_to_list it s)))"
     using map_it_to_list_genord_correct[where it=it,
-      OF A[unfolded set_iterator_map_linord_def]]
-    by (simp add: sorted_sorted_wrt)
+      OF A[unfolded set_iterator_map_linord_def]] .
 
   lemma (in linorder) map_it_to_list_rev_linord_correct:
     assumes A: "map_iterator_rev_linord (it s) m"

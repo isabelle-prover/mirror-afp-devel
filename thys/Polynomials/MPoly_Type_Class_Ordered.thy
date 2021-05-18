@@ -2527,7 +2527,7 @@ proof -
     have tr: "transp (\<preceq>\<^sub>t)" using transp_def by fastforce
     have *: "(\<lambda>x y. y \<succeq>\<^sub>t x) = (\<preceq>\<^sub>t)" by simp
     show ?thesis
-      by (simp only: * pps_to_list_def sorted_wrt_rev ord_term_lin.sorted_sorted_wrt[symmetric],
+      by (simp only: * pps_to_list_def sorted_wrt_rev,
           rule ord_term_lin.sorted_sorted_list_of_set)
   qed
   with distinct_pps_to_list have "sorted_wrt (\<lambda>x y. x \<succeq>\<^sub>t y \<and> x \<noteq> y) (pps_to_list S)"

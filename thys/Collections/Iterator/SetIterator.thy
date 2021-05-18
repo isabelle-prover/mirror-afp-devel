@@ -696,7 +696,7 @@ context linorder begin
   lemma set_iterator_linord_foldli_conv :
     "set_iterator_linord iti S \<longleftrightarrow>
      (\<exists>l0. distinct l0 \<and> S = set l0 \<and> sorted l0 \<and> iti = foldli l0)"
-  unfolding set_iterator_linord_def set_iterator_genord_def by (simp add: sorted_sorted_wrt)
+  unfolding set_iterator_linord_def set_iterator_genord_def by simp
 
   lemma set_iterator_linord_I [intro] :
     "\<lbrakk>distinct l0; S = set l0; sorted l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
@@ -770,7 +770,7 @@ context linorder begin
     "map_iterator_linord iti m \<longleftrightarrow>
      (\<exists>l0. distinct (map fst l0) \<and> m = map_of l0 \<and> sorted (map fst l0) \<and> iti = foldli l0)"
   unfolding set_iterator_map_linord_def map_iterator_genord_foldli_conv
-  by (simp add: sorted_wrt_keys_map_fst sorted_sorted_wrt)
+  by (simp add: sorted_wrt_keys_map_fst)
 
   lemma map_iterator_linord_I [intro] :
     "\<lbrakk>distinct (map fst l0); m = map_of l0; sorted (map fst l0); iti = foldli l0\<rbrakk> \<Longrightarrow>

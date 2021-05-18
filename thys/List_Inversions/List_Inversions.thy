@@ -380,7 +380,7 @@ theorem sorted_merge_sort [simp, intro]: "sorted (merge_sort xs)"
 lemma inversion_number_between_code:
   "inversion_number_between xs ys = inversion_number_between_sorted (sort xs) (sort ys)"
   by (subst inversion_number_between_sorted_correct)
-     (simp_all add: sorted_sorted_wrt [symmetric] cong: inversion_number_between_cong_mset)
+     (simp_all add: cong: inversion_number_between_cong_mset)
 
 lemmas (in -) [code_unfold] = inversion_number_between_code
 
@@ -432,7 +432,6 @@ proof (induction xs rule: length_induct)
       by (subst inversion_number_append, subst sort_and_count_inversions.simps)
          (use False 1 in \<open>auto simp: Let_def split_list_def case_prod_unfold 
                                      inversion_number_between_sorted_correct
-                                     sorted_sorted_wrt [symmetric]
                                cong: inversion_number_between_cong_mset\<close>)
     finally show ?thesis ..
   qed (auto simp: sort_and_count_inversions.simps)
