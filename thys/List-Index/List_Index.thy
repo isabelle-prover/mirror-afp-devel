@@ -469,7 +469,7 @@ proof (induct pxs arbitrary: xs i p b)
       case (snoc pb' pxs)
       then obtain p' b' where "pb' = (p', b')" by auto
       with snoc.prems have "\<forall>p \<in> fst ` set pxs. p < p'" "p' \<le> Suc (length xs + length pxs)"
-        by (auto simp: image_iff sorted_append le_eq_less_or_eq)
+        by (auto simp: image_iff sorted_wrt_append le_eq_less_or_eq)
       with snoc.prems show ?case by (intro snoc(1)) (auto simp: sorted_append)
     qed auto
     with 0 Cons.prems show ?thesis unfolding fold.simps o_apply

@@ -189,7 +189,7 @@ proof -
   moreover have \<open>sorted (map of_nat [m..<n] :: 'l word list)\<close>
     apply (simp add: sorted_map)
     apply (rule sorted_wrt_mono_rel [of _ \<open>(\<le>)\<close>])
-     apply (simp_all flip: sorted_sorted_wrt)
+     apply simp_all
     apply (simp add: le_unat_uoi less_Suc_eq_le n_def word_of_nat_le)
     apply transfer
     apply simp

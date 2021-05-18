@@ -340,7 +340,7 @@ lemma distinct_sortet_list_app:
   "\<lbrakk>sorted xs; distinct xs; xs = as @ b # cs\<rbrakk>
   \<Longrightarrow> \<forall> x\<in> set cs. b < x"
   by (metis distinct.simps(2) distinct_append 
-    antisym_conv2 sorted.simps(2) sorted_append)
+    antisym_conv2 sorted_wrt.simps(2) sorted_append)
 
 lemma distinct_sorted_list_lem1:
   assumes 

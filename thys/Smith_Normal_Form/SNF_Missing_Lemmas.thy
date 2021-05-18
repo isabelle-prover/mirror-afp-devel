@@ -963,7 +963,7 @@ next
   proof (unfold pick.simps, rule Least_equality[symmetric], rule conjI)
     show 1: "pick I i < sorted_list_of_set I ! Suc i"
       by (metis Suc.hyps Suc.prems Suc_lessD distinct_sorted_list_of_set find_first_unique lessI
-          nat_less_le sorted_sorted_list_of_set sorted_sorted_wrt sorted_wrt_nth_less)
+          nat_less_le sorted_sorted_list_of_set sorted_wrt_nth_less)
     show "sorted_list_of_set I ! Suc i \<in> I"
       using Suc.prems finI nth_mem set_sorted_list_of_set by blast
     have rw: "sorted_list_of_set I ! i = pick I i"

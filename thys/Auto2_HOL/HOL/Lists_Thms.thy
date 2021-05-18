@@ -82,12 +82,12 @@ subsection \<open>sorted\<close>
 
 lemma sorted_Nil [resolve]: "sorted []" by simp
 lemma sorted_single [resolve]: "sorted [x]" by simp
-setup \<open>add_backward_prfstep (equiv_backward_th @{thm sorted.simps(2)})\<close>
+setup \<open>add_backward_prfstep (equiv_backward_th @{thm sorted_simps(2)})\<close>
 
 lemma sorted_ConsD1 [forward]: "sorted (x # xs) \<Longrightarrow> sorted xs"
-  using sorted.simps(2) by blast
+  by simp
 lemma sorted_ConsD2 [forward, backward2]: "sorted (x # xs) \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<le> y"
-  using sorted.simps(2) by blast
+  by simp
 
 lemma sorted_appendI [backward]:
   "sorted xs \<and> sorted ys \<and> (\<forall>x\<in>set xs. \<forall>y\<in>set ys. x \<le> y) \<Longrightarrow> sorted (xs @ ys)"
@@ -103,9 +103,11 @@ lemma sorted_appendE2 [forward]:
 lemma sorted_nth_mono' [backward]:
   "sorted xs \<Longrightarrow> j < length xs \<Longrightarrow> i \<le> j \<Longrightarrow> xs ! i \<le> xs ! j" using sorted_nth_mono by auto
 
+(*NOT CLEAR WHY THIS THEOREM IS CURRENTLY REJECTED WHEN IT WAS ALLOWED BEFORE:
+  "gen_prfstep: new schematic variable in pats_r / cases"
 lemma sorted_nth_mono_less [forward]:
   "sorted xs \<Longrightarrow> i < length xs \<Longrightarrow> xs ! i < xs ! j \<Longrightarrow> i < j" by (meson leD not_le_imp_less sorted_nth_mono)
-
+*)
 subsection \<open>sort\<close>
 
 setup \<open>add_forward_prfstep_cond @{thm sorted_sort} [with_term "sort ?xs"]\<close>

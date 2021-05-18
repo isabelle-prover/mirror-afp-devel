@@ -1354,10 +1354,10 @@ proof -
               by(clarsimp simp add: proper_interval_simps)
             have "last (y # ys) \<in> set (y # ys)" by(rule last_in_set) simp
             with ys z' have "z' \<in> above ao" "z' \<notin> set (y # ys)"
-              by(auto simp del: last.simps sorted.simps(2) intro: above_upclosed dest: sorted_last)
+              using above_upclosed local.not_less local.sorted_last ys(1) z' by blast+
             with eq_z have "z = z'" by fastforce
             from z' have "\<And>x. x \<in> set (y # ys) \<Longrightarrow> x < z'" using ys
-              by(auto dest: sorted_last simp del: sorted.simps(2))
+              by(auto dest: sorted_last simp del: sorted_wrt.simps(2))
             with eq_z \<open>z = z'\<close>
             have "\<And>x. x \<in> above ao \<Longrightarrow> x \<le> z'" by(fastforce)
             with \<open>A \<sqsubset>' {z}\<close> nempty \<open>z = z'\<close> subset
@@ -1462,10 +1462,10 @@ proof -
               by(clarsimp simp add: proper_interval_simps)
             have "last (x # xs) \<in> set (x # xs)" by(rule last_in_set) simp
             with xs z' have "z' \<in> above ao" "z' \<notin> set (x # xs)"
-              by(auto simp del: last.simps sorted.simps(2) intro: above_upclosed dest: sorted_last)
+              by(auto simp del: last.simps sorted_wrt.simps(2) intro: above_upclosed dest: sorted_last)
             with z have "z = z'" by fastforce
             from z' have y_less: "\<And>y. y \<in> set (x # xs) \<Longrightarrow> y < z'" using xs
-              by(auto simp del: sorted.simps(2) dest: sorted_last)
+              by(auto simp del: sorted_wrt.simps(2) dest: sorted_last)
             with z \<open>z = z'\<close> have "\<And>y. y \<in> above ao \<Longrightarrow> y \<le> z'" by(fastforce)
             
             from lessA subset obtain y where y: "y \<in> A" "y \<in> above ao" "y \<notin> set (x # xs)"

@@ -157,7 +157,7 @@ proof -
   note res = res[unfolded next_candidates_def]
   note n = n[unfolded candidate_invariant_def]
   show "m = 0 \<or> m mod 30 = 11" using res n by (auto split: if_splits)
-  show "sorted ps" using res n by (auto split: if_splits simp: primes_1000_def sorted2_simps simp del: sorted.simps(2))
+  show "sorted ps" using res n by (auto split: if_splits simp: primes_1000_def sorted2_simps simp del: sorted_wrt.simps(2))
   show "set ps \<subseteq> {2..} \<inter> {n..<m}" using res n by (auto split: if_splits simp: primes_1000_def)
   show "distinct ps" using res n by (auto split: if_splits simp: primes_1000_def)
   show "ps \<noteq> []" using res n by (auto split: if_splits simp: primes_1000_def)
