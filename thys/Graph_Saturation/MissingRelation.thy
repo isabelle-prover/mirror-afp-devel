@@ -270,11 +270,11 @@ lemma idempotent_subset:
 lemma list_sorted_max[simp]:
   shows "sorted list \<Longrightarrow> list = (x#xs) \<Longrightarrow> fold max xs x = (last list)"
 proof (induct list arbitrary:x xs)
-  case (Cons a list)
+  case (Cons a list) 
   hence "xs = y # ys \<Longrightarrow> fold max ys y = last xs" "sorted (x # xs)" "sorted xs" for y ys 
     using Cons.prems(1,2) by auto
   hence "xs \<noteq> [] \<Longrightarrow> fold max xs x = last xs"
-    by (metis (full_types) fold_simps(2) max.orderE sorted.elims(2) sorted2)
+    by (metis fold_simps(2) hd_Cons_tl list.set_intros(1) max.absorb1 sorted_simps(2))
   thus ?case unfolding Cons by auto
 qed auto
 
