@@ -1659,8 +1659,8 @@ lemma Mapping_lookup_update: "Mapping.lookup (Mapping.update k v m) k' =
   (if k = k' then Some v else Mapping.lookup m k')"
   by transfer auto
 
-lemma hd_le_set: "sorted xs \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> x \<in> set xs \<Longrightarrow> hd xs \<le> x"
-  by (metis eq_iff list.sel(1) set_ConsD sorted.elims(2))
+lemma hd_le_set: "sorted xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> hd xs \<le> x"
+  by (metis dual_order.eq_iff equals0D hd_Cons_tl set_ConsD set_empty sorted_simps(2))
 
 lemma Mapping_lookup_combineE: "Mapping.lookup (Mapping.combine f m m') k = Some v \<Longrightarrow>
   (Mapping.lookup m k = Some v \<Longrightarrow> P) \<Longrightarrow>
@@ -1803,7 +1803,7 @@ proof -
       using assms(3)[unfolded filter_a2_map_def]
       by (fastforce split: option.splits)
     have ts_le_ts': "ts \<le> ts'"
-      using hd_le_set[OF _ lin_tss_not_Nil assms(1)] valid_before
+      using hd_le_set[OF _ assms(1)] valid_before
       unfolding ts_hd by auto
     have tp_bef_in: "tp_bef \<in> {tp - len..tp}"
       using defs(2) valid_before by (auto intro!: Mapping_keys_intro)
@@ -1866,7 +1866,7 @@ proof -
       using assms(3)[unfolded filter_a2_map_def]
       by (fastforce split: option.splits)
     have ts_le_ts': "ts \<le> ts'"
-      using hd_le_set[OF _ lin_tss_not_Nil assms(1)] valid_before
+      using hd_le_set[OF _ assms(1)] valid_before
       unfolding ts_hd by auto
     have tp_bef_in: "tp_bef \<in> {tp - (len - 1)..tp}"
       using defs(2) a2_map''_keys by (auto intro!: Mapping_keys_intro)
