@@ -808,7 +808,7 @@ struct
 local
 
 fun ml_text name ml =
-  Thy_Output.antiquotation_raw_embedded name (Scan.lift Args.text_input \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
+  Document_Output.antiquotation_raw_embedded name (Scan.lift Args.text_input \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
     (fn ctxt => fn text =>
       let val file_content =
             Token.file_source
@@ -836,8 +836,8 @@ fun ml_text name ml =
          |> Symbol_Pos.implode
          |> enclose "\n" "\n"
          |> cartouche
-         |> Thy_Output.output_source ctxt
-         |> Thy_Output.isabelle ctxt
+         |> Document_Output.output_source ctxt
+         |> Document_Output.isabelle ctxt
       end);
 
 fun ml_enclose bg en source =
