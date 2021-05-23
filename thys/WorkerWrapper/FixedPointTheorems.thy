@@ -11,7 +11,7 @@ imports
 begin
 
 setup \<open>
-  Thy_Output.antiquotation_raw \<^binding>\<open>haskell\<close> (Scan.lift Args.name)
+  Document_Output.antiquotation_raw \<^binding>\<open>haskell\<close> (Scan.lift Args.name)
     (fn _ => fn s => Latex.string ("\\" ^ "<" ^ s ^ "\\>"))
 \<close>
 

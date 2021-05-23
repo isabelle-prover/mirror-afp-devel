@@ -1,15 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
-FMT="$1"
-VARIANT="$2"
-
 export HUFFMAN_TEX=Huffman.tex
-perl -pi -i.bak -e 's/\{\\isacharprime\}a/\$\\alpha\$/g' $HUFFMAN_TEX
-perl -pi -i.bak -e 's/\{\\isacharprime\}b/\$\\beta\$/g' $HUFFMAN_TEX
-perl -pi -i.bak -e 's/\{\\isacharbraceleft\}\{\\isacharbraceright\}/\{\\ensuremath\{\\emptyset\}\}/g' $HUFFMAN_TEX
-perl -pi -i.bak -e 's/\{\\isacharunderscore\}\{\\isadigit\{([0-9])\}\}/\{\\isacharunderscore\}\{\1\}/g' $HUFFMAN_TEX
+perl -pi -i.bak -e 's/\{\\isacharprime\}\{\\kern0pt\}a/\$\\alpha\$/g' $HUFFMAN_TEX
+perl -pi -i.bak -e 's/\{\\isacharprime\}\{\\kern0pt\}b/\$\\beta\$/g' $HUFFMAN_TEX
+perl -pi -i.bak -e 's/\{\\isacharbraceleft\}\{\\kern0pt\}\{\\isacharbraceright\}\{\\kern0pt\}/\{\\ensuremath\{\\emptyset\}\}/g' $HUFFMAN_TEX
+perl -pi -i.bak -e 's/\{\\isacharunderscore\}\{\\kern0pt\}\{\\isadigit\{([0-9])\}\}/\{\\isacharunderscore\}\{\1\}/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/([a-z]|\{\\isacharparenright\})\{\\isacharplus\}/\1\$\{\}^+\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\b(if|then|else(\\ if)?)\\( |isanewline)/\\ensuremath\{\\mathrm\{\1\}\}\\vthinspace\\\3/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\\isactrlisub F/\\isactrlisub\{\\ensuremath\{\\mathsf\{\\scriptscriptstyle F\}\}\}/g' $HUFFMAN_TEX
@@ -30,8 +27,3 @@ mv $HUFFMAN_TEX.bak $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharcolon\}%/\{\\isacharcolon\}\\nopagebreak%/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\\isakeyword\{where\}/\\isakeyword\{where\}\\nopagebreak/' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/(\{\\isacharbrackleft\})(\{\\isacharbrackright\})/\1\\vthinspace\2/g' $HUFFMAN_TEX
-
-"$ISABELLE_TOOL" latex -o sty
-"$ISABELLE_TOOL" latex -o "$FMT"
-"$ISABELLE_TOOL" latex -o "$FMT"
-

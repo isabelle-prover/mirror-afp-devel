@@ -40,7 +40,7 @@ theory C_Document
   imports C_Command
 begin
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/thy_output.ML\<close>\<close>
+ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
 (*  Title:      Pure/Thy/thy_output.ML
     Author:     Makarius
@@ -48,7 +48,7 @@ ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/thy_output.ML\<close>\<close
 Theory document output.
 *)
 \<open>
-structure C_Thy_Output =
+structure C_Document_Output =
 struct
 
 (* output document source *)
@@ -189,7 +189,7 @@ fun prepare_text ctxt =
   Input.source_content #> #1 #> Document_Antiquotation.prepare_lines ctxt;
 
 val theory_text_antiquotation =
-  Thy_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Args.text_input)
+  Document_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Args.text_input)
     (fn ctxt => fn text =>
       let
         val keywords = C_Thy_Header.get_keywords' ctxt;
@@ -203,8 +203,8 @@ val theory_text_antiquotation =
       in
         prepare_text ctxt text
         |> C_Token.explode0 keywords
-        |> maps (C_Thy_Output.output_token ctxt)
-        |> Thy_Output.isabelle ctxt
+        |> maps (C_Document_Output.output_token ctxt)
+        |> Document_Output.isabelle ctxt
       end);
 
 in
@@ -219,7 +219,7 @@ end;
 local
 
 fun c_text name c =
-  Thy_Output.antiquotation_verbatim_embedded name (Scan.lift Args.text_input)
+  Document_Output.antiquotation_verbatim_embedded name (Scan.lift Args.text_input)
     (fn ctxt => fn text =>
       let val _ = C_Module.eval_in text (SOME (Context.Proof ctxt)) (c text)
       in #1 (Input.source_content text) end);

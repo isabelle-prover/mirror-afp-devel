@@ -91,7 +91,7 @@ local
 val arg = enclose "{" "}" o clean_string;
 
 fun entity check markup binding index =
-  Thy_Output.antiquotation_raw
+  Document_Output.antiquotation_raw
     (binding |> Binding.map_name (fn name => name ^
       (case index of NONE => "" | SOME true => "_def" | SOME false => "_ref")))
     (Scan.lift (Scan.optional (Args.parens Args.name) "" -- Parse.position Args.name))

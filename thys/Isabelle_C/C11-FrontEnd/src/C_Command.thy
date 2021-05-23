@@ -691,7 +691,7 @@ fun command_ml environment debug files gthy =
     val file: Token.file = hd (files (Context.theory_of gthy));
     val source = Token.file_source file;
 
-    val _ = Thy_Output.check_comments (Context.proof_of gthy) (Input.source_explode source);
+    val _ = Document_Output.check_comments (Context.proof_of gthy) (Input.source_explode source);
 
     val flags: ML_Compiler.flags =
       {environment = environment, redirect = true, verbose = true,
