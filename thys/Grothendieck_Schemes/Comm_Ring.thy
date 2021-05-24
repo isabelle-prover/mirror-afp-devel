@@ -3707,7 +3707,7 @@ locale lideal = subgroup_of_additive_group_of_ring +
 begin
 
 lemma subset: "I \<subseteq> R"
-  by simp
+  by blast
 
 lemma has_one_imp_equal:
   assumes "\<one> \<in> I"
@@ -4623,14 +4623,16 @@ proof -
           then show "multA r a \<in> (g \<circ> f \<down> A) \<^sup>\<inverse> A \<ww>\<^sub>C"
             by (simp add: maxC.lideal gf.multiplicative.commutes_with_composition)
         qed (use maxgf.unit_closed maxgf.composition_closed in auto)
-        show "(g \<circ> f \<down> A) \<^sup>\<inverse> A \<ww>\<^sub>C \<noteq> A"
-          by (metis f.source.multiplicative.unit_closed f.target.multiplicative.unit_closed Int_iff
-              compose_eq f.multiplicative.commutes_with_unit maxg.has_one_imp_equal maxg.neq_ring
-              vimage_eq)
-        show "\<ww>\<^sub>A \<subseteq> (g \<circ> f \<down> A) \<^sup>\<inverse> A \<ww>\<^sub>C"
-          apply clarsimp
-          using f.preimage_of_max_lideal g.preimage_of_max_lideal \<ww>\<^sub>B
-          by (metis IntD1 maxA.additive.sub compose_eq max vimageD)
+        have "\<And>x. x \<in> \<ww>\<^sub>A \<Longrightarrow> g (f x) \<in> \<ww>\<^sub>C"
+          by (metis IntD1 \<ww>\<^sub>B f.preimage_of_max_lideal g.preimage_of_max_lideal max vimageD)
+        then show "\<ww>\<^sub>A \<subseteq> (g \<circ> f \<down> A) \<^sup>\<inverse> A \<ww>\<^sub>C"
+          by (auto simp: compose_eq)
+        have "oneB \<notin> g -` \<ww>\<^sub>C"
+          using maxg.has_one_imp_equal maxg.neq_ring by force
+        then have "g oneB \<notin> \<ww>\<^sub>C"
+          by blast
+        then show "(g \<circ> f \<down> A) \<^sup>\<inverse> A \<ww>\<^sub>C \<noteq> A"
+          by (metis Int_iff compose_eq f.multiplicative.commutes_with_unit f.source.multiplicative.unit_closed vimage_eq)
       qed
     qed
   qed
@@ -4647,7 +4649,6 @@ interpretation pi:pr_ideal R \<pp> "(+)" "(\<cdot>)" \<zero> \<one>
   by (simp add: is_prime spectrum_imp_pr)
 
 interpretation top: topological_space Spec is_zariski_open
-
   by simp
 
 interpretation pr:presheaf_of_rings Spec is_zariski_open sheaf_spec sheaf_spec_morphisms
