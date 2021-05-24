@@ -38,6 +38,7 @@ BNF_Operations
 BTree
 Banach_Steinhaus
 Bell_Numbers_Spivey
+BenOr_Kozen_Reif
 Berlekamp_Zassenhaus
 Bernoulli
 Bertrands_Postulate
@@ -193,6 +194,7 @@ Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
 GPU_Kernel_PL
 Gabow_SCC
+GaleStewart_Games
 Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
@@ -217,6 +219,7 @@ Green
 Groebner_Bases
 Groebner_Macaulay
 Gromov_Hyperbolicity
+Grothendieck_Schemes
 Group-Ring-Module
 HOL-CSP
 HOLCF-Prelude
@@ -237,6 +240,7 @@ Hybrid_Multi_Lane_Spatial_Logic
 Hybrid_Systems_VCs
 HyperCTL
 IEEE_Floating_Point
+IFC_Tracking
 IMAP-CRDT
 IMO2019
 IMP2
@@ -340,6 +344,7 @@ Median_Of_Medians_Selection
 Menger
 Mereology
 Mersenne_Primes
+Metalogic_ProofChecker
 MiniML
 Minimal_SSA
 Minkowskis_Theorem
@@ -390,6 +395,7 @@ PCF
 PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
+Padic_Ints
 Pairing_Heap
 Paraconsistency
 Parity_Game
@@ -426,6 +432,7 @@ Probabilistic_System_Zoo
 Probabilistic_Timed_Automata
 Probabilistic_While
 Program-Conflict-Analysis
+Progress_Tracking
 Projective_Geometry
 Projective_Measurements
 Promela
@@ -457,6 +464,7 @@ Refine_Imperative_HOL
 Refine_Monadic
 RefinementReactive
 Regex_Equivalence
+Regression_Test_Selection
 Regular-Sets
 Regular_Algebras
 Relation_Algebra

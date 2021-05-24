@@ -2251,7 +2251,7 @@ notify = christian.urban@kcl.ac.uk
 
 [Universal_Turing_Machine]
 title = Universal Turing Machine
-author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
+author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <https://sjcjoosten.nl/>
 topic = Logic/Computability, Computer science/Automata and formal languages
 date = 2019-02-08
 notify = sjcjoosten@gmail.com, christian.urban@kcl.ac.uk
@@ -4361,7 +4361,7 @@ notify = eberlm@in.tum.de
 
 [Sturm_Tarski]
 title = The Sturm-Tarski Theorem
-author = Wenda Li <mailto:wl302@cam.ac.uk>
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 date = 2014-09-19
 topic = Mathematics/Analysis
 abstract = We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem), which generalizes Sturm's theorem. Sturm's theorem is usually used as a way to count distinct real roots, while the Sturm-Tarksi theorem forms the basis for Tarski's classic quantifier elimination for real closed field.
@@ -4956,7 +4956,7 @@ notify =
 
 [Koenigsberg_Friendship]
 title = The Königsberg Bridge Problem and the Friendship Theorem
-author = Wenda Li <mailto:wl302@cam.ac.uk>
+author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 date = 2013-07-19
 topic = Mathematics/Graph theory
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
@@ -7774,7 +7774,7 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <https://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -7799,7 +7799,7 @@ extra-history =
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
-author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <https://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada <mailto:ayamada@trs.cm.is.nagoya-u.ac.jp>
 topic = Mathematics/Algebra
 date = 2018-02-06
 notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -8955,6 +8955,25 @@ abstract =
   application and regain soundness by a variable condition at the
   replacements.  The formalization is based on prior non-mechanized
   soundness proofs for dGL.
+
+[BenOr_Kozen_Reif]
+title = The BKR Decision Procedure for Univariate Real Arithmetic
+author = Katherine Cordwell <https://www.cs.cmu.edu/~kcordwel/>, Yong Kiam Tan <https://www.cs.cmu.edu/~yongkiat/>, André Platzer <https://www.cs.cmu.edu/~aplatzer/>
+topic = Computer science/Algorithms/Mathematical
+date = 2021-04-24
+notify = kcordwel@cs.cmu.edu, yongkiat@cs.cmu.edu, aplatzer@cs.cmu.edu
+abstract =
+  We formalize the univariate case of Ben-Or, Kozen, and Reif's
+  decision procedure for first-order real arithmetic (the BKR
+  algorithm). We also formalize the univariate case of Renegar's
+  variation of the BKR algorithm. The two formalizations differ
+  mathematically in minor ways (that have significant impact on the
+  multivariate case), but are quite similar in proof structure.  Both
+  rely on sign-determination (finding the set of consistent sign
+  assignments for a set of polynomials).  The method used for
+  sign-determination is similar to Tarski's original quantifier
+  elimination algorithm (it stores key information in a matrix
+  equation), but with a reduction step to keep complexity low.
 
 [Complete_Non_Orders]
 title = Complete Non-Orders and Fixed Points
@@ -10180,7 +10199,7 @@ abstract =
 
 [Isabelle_Marries_Dirac]
 title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information
-author = Anthony Bordg <mailto:apdb3@cam.ac.uk>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>, Hanna Lachnitt<mailto:lachnitt@stanford.edu>, Yijun He<mailto:yh403@cam.ac.uk>
 topic = Computer science/Algorithms/Quantum computing, Mathematics/Physics/Quantum information
 date = 2020-11-22
 notify = apdb3@cam.ac.uk, lachnitt@stanford.edu
@@ -10420,7 +10439,7 @@ author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, S. Reza Sefidgar
 topic = Computer science/Security/Cryptography, Mathematics/Probability theory
 date = 2021-03-17
 notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
-abstract = 
+abstract =
   Constructive Cryptography (CC) [<a
   href="https://conference.iiis.tsinghua.edu.cn/ICS2011/content/papers/14.html">ICS
   2011</a>, <a
@@ -10450,5 +10469,132 @@ abstract =
   href="http://www.andreas-lochbihler.de/pub/basin2021.pdf">Abstract
   Modeling of Systems Communication in Constructive Cryptography using
   CryptHOL</a>.
+
+[IFC_Tracking]
+title = Information Flow Control via Dependency Tracking
+author = Benedikt Nordhoff <mailto:b.n@wwu.de>
+topic = Computer science/Security
+date = 2021-04-01
+notify = b.n@wwu.de
+abstract =
+  We provide a characterisation of how information is propagated by
+  program executions based on the tracking data and control dependencies
+  within executions themselves.  The characterisation might be used for
+  deriving approximative safety properties to be targeted by static
+  analyses or checked at runtime.  We utilise a simple yet versatile
+  control flow graph model as a program representation.  As our model is
+  not assumed to be finite it can be instantiated for a broad class of
+  programs.  The targeted security property is indistinguishable
+  security where executions produce sequences of observations and only
+  non-terminating executions are allowed to drop a tail of those.  A
+  very crude approximation of our characterisation is slicing based on
+  program dependence graphs, which we use as a minimal example and
+  derive a corresponding soundness result.  For further details and
+  applications refer to the authors upcoming dissertation.
+
+[Grothendieck_Schemes]
+title = Grothendieck's Schemes in Algebraic Geometry
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>, Lawrence Paulson <https://www.cl.cam.ac.uk/~lp15/>,  Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+date = 2021-03-29
+notify = apdb3@cam.ac.uk, lp15@cam.ac.uk
+abstract =
+  We formalize mainstream structures in algebraic geometry culminating
+  in Grothendieck's schemes: presheaves of rings, sheaves of rings,
+  ringed spaces, locally ringed spaces, affine schemes and schemes. We
+  prove that the spectrum of a ring is a locally ringed space, hence an
+  affine scheme. Finally, we prove that any affine scheme is a scheme.
+
+[Progress_Tracking]
+title = Formalization of Timely Dataflow's Progress Tracking Protocol
+author = Matthias Brun<>, Sára Decova<>, Andrea Lattuada<https://andrea.lattuada.me>, Dmitriy Traytel <https://traytel.bitbucket.io/>
+topic = Computer science/Algorithms/Distributed
+date = 2021-04-13
+notify = matthias.brun@inf.ethz.ch, traytel@di.ku.dk
+abstract =
+  Large-scale stream processing systems often follow the dataflow
+  paradigm, which enforces a program structure that exposes a high
+  degree of parallelism. The Timely Dataflow distributed system supports
+  expressive cyclic dataflows for which it offers low-latency data- and
+  pipeline-parallel stream processing. To achieve high expressiveness
+  and performance, Timely Dataflow uses an intricate distributed
+  protocol for tracking the computation’s progress. We formalize this
+  progress tracking protocol and verify its safety. Our formalization is
+  described in detail in our forthcoming <a
+  href="https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf">ITP'21
+  paper</a>.
+
+[GaleStewart_Games]
+title = Gale-Stewart Games
+author = Sebastiaan Joosten <https://sjcjoosten.nl>
+topic = Mathematics/Games and economics
+date = 2021-04-23
+notify = sjcjoosten@gmail.com
+abstract = 
+  This is a formalisation of the main result of Gale and Stewart from
+  1953, showing that closed finite games are determined. This property
+  is now known as the Gale Stewart Theorem. While the original paper
+  shows some additional theorems as well, we only formalize this main
+  result, but do so in a somewhat general way. We formalize games of a
+  fixed arbitrary length, including infinite length, using co-inductive
+  lists, and show that defensive strategies exist unless the other
+  player is winning. For closed games, defensive strategies are winning
+  for the closed player, proving that such games are determined. For
+  finite games, which are a special case in our formalisation, all games
+  are closed.
+
+[Metalogic_ProofChecker]
+title = Isabelle's Metalogic: Formalization and Proof Checker
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Simon Roßkopf <http://www21.in.tum.de/~rosskops>
+topic = Logic/General logic
+date = 2021-04-27
+notify = rosskops@in.tum.de
+abstract = 
+  In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
+  Furthermore, we define a language of proof terms and an executable
+  proof checker and prove its soundness wrt. the metalogic.  The
+  formalization is intentionally kept close to the Isabelle
+  implementation(for example using de Brujin indices) to enable easy
+  integration of generated code with the Isabelle system without a
+  complicated translation layer.  The formalization is described in our
+  <a href="https://arxiv.org/pdf/2104.12224.pdf">CADE 28 paper</a>.
+
+[Regression_Test_Selection]
+title = Regression Test Selection
+author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
+topic = Computer science/Algorithms
+date = 2021-04-30
+notify = sjohnsn2@illinois.edu, susannahej@gmail.com
+abstract = 
+  This development provides a general definition for safe Regression
+  Test Selection (RTS) algorithms. RTS algorithms select which tests to
+  rerun on revised code, reducing the time required to check for newly
+  introduced errors. An RTS algorithm is considered safe if and only if
+  all deselected tests would have unchanged results.  This definition is
+  instantiated with two class-collection-based RTS algorithms run over
+  the JVM as modeled by JinjaDCI. This is achieved with a general
+  definition for Collection Semantics, small-step semantics instrumented
+  to collect information during execution. As the RTS definition
+  mandates safety, these instantiations include proofs of safety.  This
+  work is described in Mansky and Gunter's LSFA 2020 paper and
+  Mansky's doctoral thesis (UIUC, 2020).
+
+[Padic_Ints]
+title = Hensel's Lemma for the p-adic Integers
+author = Aaron Crighton <mailto:crightoa@mcmaster.ca>
+topic = Mathematics/Number theory
+date = 2021-03-23
+notify = crightoa@mcmaster.ca
+abstract = 
+  We formalize the ring of <em>p</em>-adic integers within the framework of the
+  HOL-Algebra library. The carrier of the ring is formalized as the
+  inverse limit of quotients of the integers by powers of a fixed prime
+  <em>p</em>. We define an integer-valued valuation, as well as an
+  extended-integer valued valuation which sends 0 to the infinite
+  element. Basic topological facts about the <em>p</em>-adic integers are
+  formalized, including completeness and sequential compactness. Taylor
+  expansions of polynomials over a commutative ring are defined,
+  culminating in the formalization of Hensel's Lemma based on a
+  proof due to Keith Conrad.
 
 
