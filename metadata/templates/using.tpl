@@ -17,29 +17,29 @@ your own developments. If you would like to make your work available to others
 <i>without</i> having to include the AFP articles you depend on, here is how to do it.
 </p>
 <p>
-If you are using Isabelle2021, and have downloaded your AFP directory to
-<code>/home/myself/afp</code>, for Linux/Mac you can run the following command to make the AFP session ROOTS available to Isabelle:</p>
-<p>
-<pre class="code">
-    echo "/home/myself/afp/thys" >> ~/.isabelle/Isabelle2021/ROOTS
-</pre>
-This adds the path <code>/home/myself/afp/thys/</code> to the ROOTS file, which
-Isabelle will scan by default. You can also manually edit and/or create that
-ROOTS file. There are many other ways to achieve the same outcome, this is just
-one option.
+From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle
+is the <code>isabelle components -u</code> command.
 </p>
+
+<h2>Linux/Mac</h2>
 <p>
-For Windows, the idea is the same just the path is slightly different. If the
-AFP is in <code>C:\afp</code>, you should be able to run the following in a
-Cygwin terminal.
+Assuming you have downloaded and unzipped the afp to <code>/home/myself/afp</code>, run
+</p>
 <pre class="code">
-    echo "/cygdrive/c/afp/thys" >> ~/.isabelle/Isabelle2021/ROOTS
+    isabelle components -u /home/myself/afp
+</pre>
+
+<h2>Windows</h2>
+<p>
+If the AFP is in <code>C:\afp</code>, run the following command in a Cygwin terminal:
+<pre class="code">
+  isabelle components -u /cygdrive/c/afp
 </pre>
 </p>
 
+<h2>Use</h2>
 <p>
-You can now refer to article <code>ABC</code> from the AFP in some theory of
-yours via</p>
+You can now refer to article <code>ABC</code> from the AFP in another theory via</p>
 
 <pre class="code">
     imports "ABC.Some_ABC_Theory"
