@@ -1057,8 +1057,7 @@ proof -
   have "A *  take_cols B inds = mat_of_cols nr (map (\<lambda>x. A *\<^sub>v cols B ! x) (filter ((>) (dim_col B)) inds))"
     unfolding take_cols_def using assms by (auto simp add: o_def)
   also have "... = take_cols (A * B) inds"
-    unfolding take_cols_def using assms apply (auto intro!: cong1)
-    by (simp add: mult_mat_vec_def)
+    unfolding take_cols_def using assms by (auto intro!: cong1)
   ultimately show ?thesis by auto
 qed
 
@@ -1478,16 +1477,15 @@ proof  (induct i j rule: pivot_positions_main_gen.induct[of nr nc A z])
 qed
 
 lemma pivot_positions_form_helper_2:
-  shows "strict_sorted (map fst (pivot_positions_main_gen z A nr nc i j))"
+  shows "sorted_wrt (<) (map fst (pivot_positions_main_gen z A nr nc i j))"
 proof  (induct i j rule: pivot_positions_main_gen.induct[of nr nc A z])
   case (1 i j)
-  then show ?case using  pivot_positions_main_gen.simps[of z A nr nc i j]
-    apply (auto) using pivot_positions_form_helper_1
-    by (simp add: pivot_positions_form_helper_1 Suc_le_lessD)
+  then show ?case using  pivot_positions_main_gen.simps[of z A nr nc i j] 
+    by (auto simp: pivot_positions_form_helper_1 Suc_le_lessD) 
 qed
 
 lemma sorted_pivot_positions:
-  shows "strict_sorted (map fst (pivot_positions A))"
+  shows "sorted_wrt (<) (map fst (pivot_positions A))"
   using pivot_positions_form_helper_2
   by (simp add: pivot_positions_form_helper_2 pivot_positions_gen_def) 
 

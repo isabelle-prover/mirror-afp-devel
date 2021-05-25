@@ -1085,15 +1085,14 @@ lemma sorted_list_lemma:
   fixes n:: "nat"
   assumes "a < b"
   assumes "(n + 1) < length l"
-  assumes strict_sort: "strict_sorted l"
+  assumes strict_sort: "sorted_wrt (<) l"
   assumes lt_a: "(l ! n) < a"
   assumes b_lt: "b < (l ! (n+1))"
   shows "\<not>(\<exists>(x::real). (List.member l x \<and> a \<le> x \<and> x \<le> b))"
 proof -
   have sorted_hyp_var: "\<forall>q1 < length l. \<forall>q2 < length l. (q1 < q2 \<longrightarrow>
      (l ! q1) < (l ! q2))" 
-    apply (auto)
-    by (metis (no_types, lifting) strict_sort sorted_wrt_iff_nth_less strict_sorted_sorted_wrt) 
+    using strict_sort by (auto simp: sorted_wrt_iff_nth_less)
   then have sorted_hyp_var2:  "\<forall>q1 < length l. \<forall>q2 < length l. ((l ! q1) < (l ! q2)) \<longrightarrow> q1 < q2"
     using linorder_neqE_nat
     by (metis Groups.add_ac(2) add_mono_thms_linordered_field(5) less_irrefl) 
@@ -1274,18 +1273,16 @@ lemma roots_of_coprime_r_capture_sgas_without_zeros:
 proof - 
   obtain x1 where x1_prop: "sga = (sign_vec qs x1)" using ex_x1 by auto
   let ?zer_list = "sorted_list_of_set {(x::real). (\<exists>q \<in> set(qs). (rpoly q x = 0))} :: real list"
-  have strict_sorted_h: "strict_sorted ?zer_list" using sorted_sorted_list_of_set
+  have strict_sorted_h: "sorted_wrt (<) ?zer_list" using sorted_sorted_list_of_set
       strict_sorted_iff by auto
   then have sorted_hyp: "\<forall>q < length ?zer_list. (q + 1 < length ?zer_list) \<longrightarrow>
      (?zer_list ! q) < (?zer_list ! (q +1))" 
-    apply (auto) using lessI sorted_wrt_iff_nth_less strict_sorted_sorted_wrt
-    by (metis (no_types, lifting) length_sorted_list_of_set strict_sorted_h)  
+    using strict_sorted_h by (auto simp: sorted_wrt_iff_nth_less)
   then have sorted_hyp_var: "\<forall>q1 < length ?zer_list. \<forall>q2 < length ?zer_list. (q1 < q2 \<longrightarrow>
      (?zer_list ! q1) < (?zer_list ! q2))"
-    by (metis (no_types, lifting) sorted_wrt_iff_nth_less strict_sorted_h strict_sorted_sorted_wrt) 
+    using sorted_wrt_iff_nth_less strict_sorted_h by blast
   then have sorted_hyp_var2: "\<forall>q1 < length ?zer_list. ((?zer_list ! q1)::real) \<le> (?zer_list ! (length ?zer_list - 1))"
-    apply (auto)
-    by (smt (z3) Suc_pred diff_less gr_implies_not0 less_SucE zero_less_Suc) 
+    by (smt (verit, ccfv_SIG) One_nat_def Suc_pred bot_nat_0.extremum less_Suc_eq_le less_le not_less)
   have nonz_q: "\<forall>q \<in>set qs. q \<noteq> 0"
     using all_squarefree unfolding rsquarefree_def using in_set_member by auto 
   then have "\<forall>q \<in>set qs. finite {x. rpoly q x = 0}"
