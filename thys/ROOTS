@@ -90,6 +90,9 @@ CofGroups
 Coinductive
 Coinductive_Languages
 Collections
+Combinatorics_Words
+Combinatorics_Words_Graph_Lemma
+Combinatorics_Words_Lyndon
 Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Complete_Non_Orders
