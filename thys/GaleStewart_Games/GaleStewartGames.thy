@@ -110,7 +110,7 @@ proof (induct "m-n" arbitrary:m n)
   case (Suc x)
   hence [simp]:"Suc (x + n) = m" by auto
   from Suc.hyps(2) 
-    prefix_order.order.trans[OF Suc.hyps(1)[of "x + n" n] plays_from_strategy_chain_Suc[of _ _ "x+n"]]
+    prefix_order.trans[OF Suc.hyps(1)[of "x + n" n] plays_from_strategy_chain_Suc[of _ _ "x+n"]]
   show ?case by auto
 qed auto
 
@@ -160,7 +160,7 @@ proof -
           (augment_list s2 ^^ n) (augment_list s2 p)" for n
     proof(induct n)
     case (Suc n)
-    with assms[OF prefix_order.order.trans[OF _ prefix_augment]]
+    with assms[OF prefix_order.trans[OF _ prefix_augment]]
     show ?case by (auto)
   qed auto
   hence "strategy_progression s1 p $ n = strategy_progression s2 p $ n"

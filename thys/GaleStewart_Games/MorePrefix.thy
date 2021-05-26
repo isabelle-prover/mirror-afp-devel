@@ -131,7 +131,7 @@ proof(induct "m-n" arbitrary:m n)
   case (Suc x)
   hence [simp]:"Suc (x + n) = m" by auto
   from Suc.hyps(2) 
-    prefix_order.order.trans[OF Suc.hyps(1)[of "x + n" n] augment_list_Suc_prefix[of "x+n" f p]]
+    prefix_order.trans[OF Suc.hyps(1)[of "x + n" n] augment_list_Suc_prefix[of "x+n" f p]]
   show ?case by auto
 qed auto
 
