@@ -9,7 +9,54 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 Apr 2021 00:00:00 +0000</pubDate>
+    <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Lyndon words</title>
+              <link>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</link>
+       <guid>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</guid>
+       <dc:creator> Štěpán Holub, Štěpán Starosta       </dc:creator>
+       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+       <description>
+Lyndon words are words lexicographically minimal in their conjugacy
+class. We formalize their basic properties and characterizations, in
+particular the concepts of the longest Lyndon suffix and the Lyndon
+factorization. Most of the work assumes a fixed lexicographical order.
+Nevertheless we also define the smallest relation guaranteeing
+lexicographical minimality of a given word (in its conjugacy class).</description>
+    </item>
+    <item>
+       <title>Graph Lemma</title>
+              <link>https://www.isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</link>
+       <guid>https://www.isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</guid>
+       <dc:creator> Štěpán Holub, Štěpán Starosta       </dc:creator>
+       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+       <description>
+Graph lemma quantifies the defect effect of a system of word
+equations. That is, it provides an upper bound on the rank of the
+system. We formalize the proof based on the decomposition of a
+solution into its free basis. A direct application is an alternative
+proof of the fact that two noncommuting words form a code.</description>
+    </item>
+    <item>
+       <title>Combinatorics on Words Basics</title>
+              <link>https://www.isa-afp.org/entries/Combinatorics_Words.html</link>
+       <guid>https://www.isa-afp.org/entries/Combinatorics_Words.html</guid>
+       <dc:creator> Štěpán Holub, Martin Raška, Štěpán Starosta       </dc:creator>
+       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalize basics of Combinatorics on Words. This is an extension of
+existing theories on lists. We provide additional properties related
+to prefix, suffix, factor, length and rotation. The topics include
+prefix and suffix comparability, mismatch, word power, total and
+reversed morphisms, border, periods, primitivity and roots. We also
+formalize basic, mostly folklore results related to word equations:
+equidivisibility, commutation and conjugation. Slightly advanced
+properties include the Periodicity lemma (often cited as the Fine and
+Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
+words. We support the algebraic point of view which sees words as
+generators of submonoids of a free monoid. This leads to the concepts
+of the (free) hull, the (free) basis (or code).</description>
+    </item>
     <item>
        <title>Regression Test Selection</title>
               <link>https://www.isa-afp.org/entries/Regression_Test_Selection.html</link>
@@ -522,62 +569,6 @@ matrix representation for quantum circuits, successfully formalising
 the no-cloning theorem, quantum teleportation, Deutsch&#39;s
 algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
 Dilemma.</description>
-    </item>
-    <item>
-       <title>The HOL-CSP Refinement Toolkit</title>
-              <link>https://www.isa-afp.org/entries/CSP_RefTK.html</link>
-       <guid>https://www.isa-afp.org/entries/CSP_RefTK.html</guid>
-       <dc:creator> Safouan Taha, Burkhart Wolff, Lina Ye       </dc:creator>
-       <pubDate>19 Nov 2020 00:00:00 +0000</pubDate>
-       <description>
-We use a formal development for CSP, called HOL-CSP2.0, to analyse a
-family of refinement notions, comprising classic and new ones. This
-analysis enables to derive a number of properties that allow to deepen
-the understanding of these notions, in particular with respect to
-specification decomposition principles for the case of infinite sets
-of events. The established relations between the refinement relations
-help to clarify some obscure points in the CSP literature, but also
-provide a weapon for shorter refinement proofs. Furthermore, we
-provide a framework for state-normalisation allowing to formally
-reason on parameterised process architectures. As a result, we have a
-modern environment for formal proofs of concurrent systems that allow
-for the combination of general infinite processes with locally finite
-ones in a logically safe way. We demonstrate these
-verification-techniques for classical, generalised examples: The
-CopyBuffer for arbitrary data and the Dijkstra&#39;s Dining
-Philosopher Problem of arbitrary size.</description>
-    </item>
-    <item>
-       <title>Verified SAT-Based AI Planning</title>
-              <link>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</link>
-       <guid>https://www.isa-afp.org/entries/Verified_SAT_Based_AI_Planning.html</guid>
-       <dc:creator> Mohammad Abdulaziz, Friedrich Kurz       </dc:creator>
-       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
-       <description>
-We present an executable formally verified SAT encoding of classical
-AI planning that is based on the encodings by Kautz and Selman and the
-one by Rintanen et al. The encoding was experimentally tested and
-shown to be usable for reasonably sized standard AI planning
-benchmarks. We also use it as a reference to test a state-of-the-art
-SAT-based planner, showing that it sometimes falsely claims that
-problems have no solutions of certain lengths. The formalisation in
-this submission was described in an independent publication.</description>
-    </item>
-    <item>
-       <title>AI Planning Languages Semantics</title>
-              <link>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</link>
-       <guid>https://www.isa-afp.org/entries/AI_Planning_Languages_Semantics.html</guid>
-       <dc:creator> Mohammad Abdulaziz, Peter Lammich       </dc:creator>
-       <pubDate>29 Oct 2020 00:00:00 +0000</pubDate>
-       <description>
-This is an Isabelle/HOL formalisation of the semantics of the
-multi-valued planning tasks language that is used by the planning
-system Fast-Downward, the STRIPS fragment of the Planning Domain
-Definition Language (PDDL), and the STRIPS soundness meta-theory
-developed by Vladimir Lifschitz. It also contains formally verified
-checkers for checking the well-formedness of problems specified in
-either language as well the correctness of potential solutions. The
-formalisation in this entry was described in an earlier publication.</description>
     </item>
   </channel>
 </rss>

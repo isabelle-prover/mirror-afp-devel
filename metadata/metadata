@@ -10597,4 +10597,49 @@ abstract =
   culminating in the formalization of Hensel's Lemma based on a
   proof due to Keith Conrad.
 
+[Combinatorics_Words]
+title = Combinatorics on Words Basics
+author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Martin Raška<>, Štěpán Starosta <https://users.fit.cvut.cz/~staroste/>
+topic = Computer science/Automata and formal languages
+date = 2021-05-24
+notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
+abstract = 
+  We formalize basics of Combinatorics on Words. This is an extension of
+  existing theories on lists. We provide additional properties related
+  to prefix, suffix, factor, length and rotation. The topics include
+  prefix and suffix comparability, mismatch, word power, total and
+  reversed morphisms, border, periods, primitivity and roots. We also
+  formalize basic, mostly folklore results related to word equations:
+  equidivisibility, commutation and conjugation. Slightly advanced
+  properties include the Periodicity lemma (often cited as the Fine and
+  Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
+  words. We support the algebraic point of view which sees words as
+  generators of submonoids of a free monoid. This leads to the concepts
+  of the (free) hull, the (free) basis (or code).
 
+[Combinatorics_Words_Lyndon]
+title = Lyndon words
+author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Štěpán Starosta <https://users.fit.cvut.cz/~staroste/>
+topic = Computer science/Automata and formal languages
+date = 2021-05-24
+notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
+abstract = 
+  Lyndon words are words lexicographically minimal in their conjugacy
+  class. We formalize their basic properties and characterizations, in
+  particular the concepts of the longest Lyndon suffix and the Lyndon
+  factorization. Most of the work assumes a fixed lexicographical order.
+  Nevertheless we also define the smallest relation guaranteeing
+  lexicographical minimality of a given word (in its conjugacy class).
+
+[Combinatorics_Words_Graph_Lemma]
+title = Graph Lemma
+author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Štěpán Starosta <https://users.fit.cvut.cz/~staroste/>
+topic = Computer science/Automata and formal languages
+date = 2021-05-24
+notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
+abstract = 
+  Graph lemma quantifies the defect effect of a system of word
+  equations. That is, it provides an upper bound on the rank of the
+  system. We formalize the proof based on the decomposition of a
+  solution into its free basis. A direct application is an alternative
+  proof of the fact that two noncommuting words form a code.

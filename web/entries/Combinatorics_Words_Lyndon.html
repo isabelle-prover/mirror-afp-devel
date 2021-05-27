@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Order Extension and Szpilrajn's Extension Theorem - Archive of Formal Proofs
+<title>Lyndon words - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,9 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">O</font>rder
+  <h1>          <font class="first">L</font>yndon
   
-          <font class="first">E</font>xtension
-  
-          and
-  
-          <font class="first">S</font>zpilrajn's
-  
-          <font class="first">E</font>xtension
-  
-          <font class="first">T</font>heorem
+          words
   
 </h1>
   <p>&nbsp;</p>
@@ -93,7 +85,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Order Extension and Szpilrajn's Extension Theorem</td>
+  <td class="data" width="80%">Lyndon words</td>
 </tr>
 
 <tr>
@@ -101,8 +93,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    Peter Zeller (p_zeller /at/ cs /dot/ uni-kl /dot/ de) and
-          <a href="https://www21.in.tum.de/team/stevensl">Lukas Stevens</a>
+                    <a href="https://www2.karlin.mff.cuni.cz/~holub/">Štěpán Holub</a> and
+          <a href="https://users.fit.cvut.cz/~staroste/">Štěpán Starosta</a>
       </td>
 </tr>
 
@@ -110,33 +102,31 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-07-27</td>
+  <td class="data">2021-05-24</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This entry is concerned with the principle of order extension, i.e. the extension of an order relation to a total order relation.
-To this end, we prove a more general version of Szpilrajn's extension theorem employing terminology from the book "Consistency, Choice, and Rationality" by Bossert and Suzumura.
-We also formalize theorem 2.7 of their book.</td>
+Lyndon words are words lexicographically minimal in their conjugacy
+class. We formalize their basic properties and characterizations, in
+particular the concepts of the longest Lyndon suffix and the Lyndon
+factorization. Most of the work assumes a fixed lexicographical order.
+Nevertheless we also define the smallest relation guaranteeing
+lexicographical minimality of a given word (in its conjugacy class).</td>
 </tr>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2021-03-22]:
-(by Lukas Stevens) generalise Szpilrajn's extension theorem and add material from the book "Consistency, Choice, and Rationality"</td>
-  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Szpilrajn-AFP,
-  author  = {Peter Zeller and Lukas Stevens},
-  title   = {Order Extension and Szpilrajn's Extension Theorem},
+        <pre>@article{Combinatorics_Words_Lyndon-AFP,
+  author  = {Štěpán Holub and Štěpán Starosta},
+  title   = {Lyndon words},
   journal = {Archive of Formal Proofs},
-  month   = jul,
-  year    = 2019,
-  note    = {\url{https://isa-afp.org/entries/Szpilrajn.html},
+  month   = may,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Combinatorics_Words_Lyndon.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -147,10 +137,10 @@ We also formalize theorem 2.7 of their book.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Combinatorics_Words_Lyndon.html">Combinatorics_Words_Lyndon</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Combinatorics_Words.html">Combinatorics_Words</a>, <a href="Szpilrajn.html">Szpilrajn</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -162,34 +152,23 @@ We also formalize theorem 2.7 of their book.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Szpilrajn/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Szpilrajn/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Combinatorics_Words_Lyndon/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Combinatorics_Words_Lyndon/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Szpilrajn/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Combinatorics_Words_Lyndon/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Szpilrajn-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Combinatorics_Words_Lyndon-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Szpilrajn-2020-04-20.tar.gz">
-              afp-Szpilrajn-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Szpilrajn-2019-07-28.tar.gz">
-              afp-Szpilrajn-2019-07-28.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
