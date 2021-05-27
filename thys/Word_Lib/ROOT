@@ -3,9 +3,18 @@ chapter AFP
 session Word_Lib (AFP) = HOL +
   options [timeout = 300]
   sessions
+    "HOL-Library"
     "HOL-Eisbach"
+  theories [document=false]
+    More_Arithmetic
+    Even_More_List
+    More_Sublist
+    More_Misc
+    Strict_part_mono
+    Many_More
+    Ancient_Numeral
+    Examples
   theories
     Guide
-    Examples
   document_files
     "root.tex"

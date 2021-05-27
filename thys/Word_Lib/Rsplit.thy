@@ -6,12 +6,14 @@
 
 (* Author: Jeremy Dawson and Gerwin Klein, NICTA *)
 
+section \<open>Splitting words into lists\<close>
+
 theory Rsplit
   imports "HOL-Library.Word" Bits_Int
 begin
 
 definition word_rsplit :: "'a::len word \<Rightarrow> 'b::len word list"
-  where "word_rsplit w = map word_of_int (bin_rsplit (LENGTH('b)) (LENGTH('a), uint w))"
+  where "word_rsplit w = map word_of_int (bin_rsplit LENGTH('b) (LENGTH('a), uint w))"
 
 lemma word_rsplit_no:
   "(word_rsplit (numeral bin :: 'b::len word) :: 'a word list) =

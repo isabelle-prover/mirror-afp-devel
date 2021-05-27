@@ -6,7 +6,7 @@
 
 (*<*)
 theory Guide
-  imports Word_Lib_Sumo Word_64
+  imports Word_Lib_Sumo Word_64 Ancient_Numeral
 begin
 
 hide_const (open) Generic_set_bit.set_bit
@@ -69,19 +69,19 @@ text \<open>
 
     \<^item> Truncation: @{thm take_bit_eq_mod [where ?'a = int, no_vars]}
 
-    \<^item> Negation: @{thm [mode=iff] bit_not_iff [where ?'a = int, no_vars]}
+    \<^item> Bitwise negation: @{thm [mode=iff] bit_not_iff [where ?'a = int, no_vars]}
 
-    \<^item> And: @{thm [mode=iff] bit_and_iff [where ?'a = int, no_vars]}
+    \<^item> Bitwise conjunction: @{thm [mode=iff] bit_and_iff [where ?'a = int, no_vars]}
 
-    \<^item> Or: @{thm [mode=iff] bit_or_iff [where ?'a = int, no_vars]}
+    \<^item> Bitwise disjunction: @{thm [mode=iff] bit_or_iff [where ?'a = int, no_vars]}
 
-    \<^item> Xor: @{thm [mode=iff] bit_xor_iff [where ?'a = int, no_vars]}
+    \<^item> Bitwise exclusive disjunction: @{thm [mode=iff] bit_xor_iff [where ?'a = int, no_vars]}
 
-    \<^item> Set a single bit: @{thm set_bit_def [where ?'a = int, no_vars]}
+    \<^item> Setting a single bit: @{thm set_bit_def [where ?'a = int, no_vars]}
 
-    \<^item> Unset a single bit: @{thm unset_bit_def [where ?'a = int, no_vars]}
+    \<^item> Unsetting a single bit: @{thm unset_bit_def [where ?'a = int, no_vars]}
 
-    \<^item> Flip a single bit: @{thm flip_bit_def [where ?'a = int, no_vars]}
+    \<^item> Flipping a single bit: @{thm flip_bit_def [where ?'a = int, no_vars]}
 
     \<^item> Signed truncation, or modulus centered around \<^term>\<open>0::int\<close>:
         @{thm [display] signed_take_bit_def [where ?'a = int, no_vars]}
@@ -89,6 +89,12 @@ text \<open>
     \<^item> (Bounded) conversion from and to a list of bits:
         @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
 
+  Bit concatenation on \<^typ>\<open>int\<close> as given by 
+    @{thm [display] concat_bit_def [no_vars]}
+  appears quite
+  technical but is the logical foundation for the quite natural bit concatenation
+  on \<^typ>\<open>'a word\<close> (see below).
+  
   Proper word types are introduced in theory \<^theory>\<open>HOL-Library.Word\<close>, with
   the following specific operations:
 
@@ -286,7 +292,7 @@ text \<open>
       \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>]
 
           for 64-bit words. This theory is not part of \<^text>\<open>Word_Lib_Sumo\<close>, because it shadows
-          names from \<^theory>\<open>Word_Lib.Word_32\<close>. They can be used together, but then will have
+          names from \<^theory>\<open>Word_Lib.Word_32\<close>. They can be used together, but then require
           to use qualified names in applications.
 \<close>
 
@@ -317,7 +323,7 @@ text \<open>
     for backward compatibility: start importing this theory when
     migrating applications to Isabelle2021, and later sort out
     what you really need. You may need to include
-   \<^theory>\<open>Word_Lib.Word_32\<close> or \<^theory>\<open>Word_Lib.Word_64\<close> separately.
+   \<^theory>\<open>Word_Lib.Word_64\<close> separately.
 
   \<^descr>[\<^theory>\<open>Word_Lib.Generic_set_bit\<close>]
 
@@ -351,6 +357,15 @@ text \<open>
     Collection of operations and theorems which are kept for backward
     compatibility and not used in other theories in session \<^text>\<open>Word_Lib\<close>.
     They are used in applications of \<^text>\<open>Word_Lib\<close>, but should be migrated to there.
+\<close>
+
+section \<open>Changelog\<close>
+
+text \<open>
+  \<^descr>[Changes since AFP 2021] ~
+
+    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is not part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
+      any longer.
 \<close>
 
 (*<*)
