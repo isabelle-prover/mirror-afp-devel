@@ -144,7 +144,7 @@ next
         apply simp
        apply simp
       apply simp
-      apply (metis ih(3) subseq_order.order.trans take_map take_subseq)
+      apply (metis ih(3) subseq_order.trans take_map take_subseq)
       done
   next
     case False

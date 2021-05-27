@@ -76,7 +76,7 @@ lemma order_finite_set_obtain_foundation:
 subsection\<open>Multisets\<close>
 
 lemma finite_nonzero_count: "finite {t. count M t > 0}"
-  using count unfolding multiset_def by auto
+  using count by auto
 
 lemma finite_count[simp]: "finite {t. count M t > i}"
   by (rule finite_subset[OF _ finite_nonzero_count[of M]]) (auto simp only: set_mset_def)

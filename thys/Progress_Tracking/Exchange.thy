@@ -88,7 +88,8 @@ lemma justified_with_alt: "justified_with C M N =
     apply (drule spec[of _ s])
     apply safe
     using order.strict_trans order.strict_trans2 apply blast+
-    apply (metis add_less_zeroD order.order_iff_strict not_less_iff_gr_or_eq order_class.order.strict_trans)
+    apply (simp add: not_less not_le)
+    apply (smt (verit, best) antisym_conv2)
     done
   apply blast
   done
@@ -659,7 +660,7 @@ lemma justified_add:
             apply (intro conjI)
               apply blast
              apply (rule add_nonpos_neg)
-              apply (metis order.strict_trans1 less_imp_le not_le not_less_iff_gr_or_eq order_class.order.strict_trans2 supported_strong_def)
+            apply (metis assms(3) le_less_linear less_trans order_class.le_less supported_strong_def)
              apply simp
             apply (clarsimp simp: nonpos_upto_def)
             done
@@ -733,7 +734,7 @@ lemma justified_add:
               apply (clarsimp simp: nonpos_upto_def intro!: exI[of _ s])
               using assms(2)[unfolded justified_alt nonpos_upto_def supported_strong_def, rule_format, of s]
                 assms(4)[rule_format, of s]
-              apply (metis (mono_tags, hide_lams) less_add_same_cancel1 order.strict_trans2 less_imp_le not_less order_class.order.not_eq_order_implies_strict order_class.order.strict_implies_order)
+              apply (smt (verit, best) dual_order.strict_trans)
               done
             done
           subgoal
@@ -906,7 +907,7 @@ proof (intro allI impI justified_leastI)
         apply (drule order_zmset_exists_foundation_neg')
         apply (elim exE conjE)
         subgoal for s s'
-          by (auto intro!: exI[of _ s'] simp: nonpos_upto_def order_class.antisym)
+          by (auto intro!: exI[of _ s'] simp: nonpos_upto_def order_class.order_antisym)
         done
       then show ?thesis
         apply (cases "\<exists>s'\<le>s. zcount (timestamps (zmset_of \<Delta>)) s' > 0")
@@ -976,7 +977,7 @@ proof (intro allI impI justified_leastI)
           subgoal for s
             apply simp
             apply (drule assms(2)[unfolded minting_self_def, rule_format])
-            apply (meson add_pos_nonneg order.ordering_axioms of_nat_0_le_iff ordering.strict_trans1)
+            apply (smt (z3) order.strict_trans1 of_nat_0_le_iff)
             done
           subgoal
             apply (intro disjI1 exI[of _ t'] conjI)
@@ -1170,11 +1171,11 @@ proof (intro justified_with_leastI allI impI)
             apply (drule assms(2)[unfolded justified_alt supported_strong_def, rule_format])
             apply (elim disjE exE conjE)
             subgoal for u
-              by (metis (full_types) order.ordering_axioms order_class.order.irrefl order_class.order.strict_trans2 ordering.strict_trans s'(1) s(3))
+              by (meson local.order.strict_trans not_less s'(1) s(3))
             subgoal for u
-              by (metis (no_types, hide_lams) 1(2) add_cancel_left_right assms(5) less_trans order_class.antisym s'(1) s(1) zcount_union)
+              by (metis add_strict_increasing assms(5) local.less_trans s'(1) s(1) zcount_union)
             subgoal
-              by (metis (no_types, hide_lams) 1(2) add_cancel_left_right assms(5) less_trans not_le order_class.antisym order_class.order.strict_trans2 s'(1) s(1) s(3) zcount_union)
+              by (smt (verit, ccfv_threshold) assms(5) local.dual_order.strict_trans s'(1) s(1) s(3) zcount_union)
             done
           done
       next
@@ -1191,7 +1192,7 @@ proof (intro justified_with_leastI allI impI)
       next
         case 3
         then show ?thesis
-          by (metis 2(1) add_cancel_left_right add_strict_increasing2 assms(4) not_le order_class.order.irrefl order_class.order.strict_trans2 pos_add_strict s(1) zcount_union)
+          by (smt (verit) "2"(1) assms(4) s(1) zcount_union)
       qed
     qed
   next
@@ -1201,7 +1202,7 @@ proof (intro justified_with_leastI allI impI)
       apply -
       apply (rule disjI2)
       apply (rule disjI1)
-      apply (metis order_class.order.strict_trans2 subset_zmset.le_add_same_cancel1 subseteq_zmset_def zcount_empty)
+      apply (metis add_strict_increasing zcount_union)
       done
   next
     case 4
@@ -2018,8 +2019,9 @@ proof -
               apply (intro allI impI)
               apply (rule ccontr)
               subgoal
-              using assms(3)[unfolded InvCapsNonneg_def, rule_format]
-              by (simp add: order_class.order.not_eq_order_implies_strict)
+                using assms(3)[unfolded InvCapsNonneg_def, rule_format]
+                apply auto
+                by (metis order_class.le_less zcount_ne_zero_iff)
               done
             done
           have \<Delta>counts:
@@ -2066,8 +2068,7 @@ proof -
           apply (simp only: if_P zcount_union zcount_diff)
           apply (subst complex_change(4)[of t])
           using assms(3)[unfolded InvCapsNonneg_def, rule_format]
-           apply (simp add: order_class.antisym)
-          apply simp
+          apply (simp_all add: antisym)
           done
       qed
     next \<comment> \<open>Adding @{term \<Delta>} made @{term M} positive at @{term t} in @{term c}1\<close>
@@ -2449,8 +2450,7 @@ lemma invs_imp_InvGlobNonposImpRecordsNonpos:
       using order_zmset_exists_foundation[OF u] by auto
         \<comment> \<open>from the @{term records} count we know that GII also has positive count\<close>
     from u'(1,3) assms(2) gvu have pos_gii: "0 < zcount ?GII u'"
-      unfolding InvRecordCount_def
-      by (metis add_diff_cancel_left' diff_eq_eq less_add_same_cancel1 order_class.order.strict_trans1 zcount_diff)
+      by (simp add: InvRecordCount_def) (smt (verit) zcount_union)
         \<comment> \<open>Case distinction on which part of the partition GII's u is in\<close>
     { \<comment> \<open>Original proof from Abadi paper, change is justified by uprightness\<close>
       assume "supported_strong ?GII u'"
@@ -2459,7 +2459,7 @@ lemma invs_imp_InvGlobNonposImpRecordsNonpos:
         using order.strict_implies_order supported_strong_def by blast
           \<comment> \<open>..which is also negative in @{term records}..\<close>
       with u'(3) v(1) assms(2) have "zcount (records c) v < 0"
-        by (metis (no_types, hide_lams) InvRecordCount_def add.commute gvu less_add_same_cancel2 order.trans not_le order_class.order.strict_trans2 zcount_union)
+        by (smt (verit, ccfv_threshold) InvRecordCount_def gvu local.order_trans zcount_union)
           \<comment> \<open>..contradicting InvNrecNonneg\<close>
       with assms(3) have "False"
         unfolding InvRecordsNonneg_def
@@ -2567,12 +2567,12 @@ proof -
       apply clarsimp
       subgoal for _ s
         apply (rule exI[of _ s])
-        apply (meson order.ordering_axioms nonpos_upto_def np order_class.le_less ordering.trans zcount_ne_zero_iff)
+        apply (meson order.ordering_axioms nonpos_upto_def np order_class.le_less order_trans zcount_ne_zero_iff)
         done
       done
         \<comment> \<open>No records @{term "s' \<le> s"} can exist, since that would violate InvGlobNonposImpRecordsNonpos\<close>
     have norec: "s' \<le> s \<Longrightarrow> zcount (records c) s' = 0" for s'
-      by (metis (full_types) order.ordering_axioms nonneg nonpos_upto_def np order_class.antisym_conv ordering.trans s(1) safe)
+      by (metis (full_types) nonneg nonpos_upto_def np order_class.antisym_conv order_trans s(1) safe)
         \<comment> \<open>Hence GII must be positive at @{term s}\<close>
     have gii: "zcount (GlobalIncomingInfoAt c q) s > 0"
       using count[of q] s(2) norec[of s, simplified]
