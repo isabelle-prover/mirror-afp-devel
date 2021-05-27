@@ -434,7 +434,7 @@ proof(cases "w = \<epsilon>", simp)
   case False
   from longest_Lyndon_suf_suf[OF this]
     suffix_order.order_refl[THEN longest_Lyndon_suf_max[OF _ assms]]
-    suffix_order.order.antisym 
+    suffix_order.antisym_conv 
   show ?thesis by blast
 qed
 
@@ -468,7 +468,7 @@ lemma longest_Lyndon_sufI:
 proof(cases "w = \<epsilon>")
   case True
   then show ?thesis
-    using assms(1) longest_Lyndon_suffix.simps(1) suffix_bot.bot.extremum_uniqueI by blast 
+    using assms(1) by fastforce
 next
   case False
   from all_s longest_Lyndon_suf_Lyndon[OF this] longest_Lyndon_suf_max[OF assms(1) assms(2)]
@@ -743,7 +743,6 @@ proof-
   show ?thesis
     using Lyndon_mono_last_smallest[OF \<open>Lyndon_mono ws\<close> \<open>LynSuf (concat ws) \<le>ns concat ws\<close>]
       Lyndon_suf_le[OF longest_Lyndon_suf_Lyndon[OF \<open>concat ws \<noteq> \<epsilon>\<close>], OF \<open>last ws \<le>ns LynSuf (concat ws)\<close>]
-      dual_rlex.eq_iff
     by simp
 qed
 
@@ -800,7 +799,7 @@ proof-
     using \<open>tl w \<noteq> \<epsilon>\<close> local.longest_Lyndon_suf_Lyndon by blast
   have "m \<le>s w"
     unfolding m_def 
-    using suffix_order.order.trans[OF longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] suffix_tl[of w]]. 
+    using suffix_order.trans[OF longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] suffix_tl[of w]]. 
   moreover have "m \<noteq> w"
     unfolding m_def using  hd_word'[OF \<open>w \<noteq> \<epsilon>\<close>] list.simps(3) longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] same_suffix_nil
     by fastforce
