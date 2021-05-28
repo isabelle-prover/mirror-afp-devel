@@ -89,7 +89,7 @@ lemma uint_2_id:
   by simp
 
 lemma bintrunc_id:
-  "\<lbrakk>m \<le> of_nat n; 0 < m\<rbrakk> \<Longrightarrow> bintrunc n m = m"
+  "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
   by (simp add: bintrunc_mod2p le_less_trans)
 
 lemma shiftr1_unfold: "shiftr1 x = x >> 1"
@@ -745,7 +745,7 @@ lemma Bit_in_uintsI: "of_bool c + 2 * w \<in> uints m" if "w \<in> uints (m - 1)
   by auto
 
 lemma bin_cat_in_uintsI:
-  \<open>bin_cat a n b \<in> uints m\<close> if \<open>a \<in> uints l\<close> \<open>m \<ge> l + n\<close>
+  \<open>concat_bit n b a \<in> uints m\<close> if \<open>a \<in> uints l\<close> \<open>m \<ge> l + n\<close>
 proof -
   from \<open>m \<ge> l + n\<close> obtain q where \<open>m = l + n + q\<close>
     using le_Suc_ex by blast
@@ -760,22 +760,22 @@ proof -
     by (simp add: uints_def)
 qed
 
-lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
-  if "n = m" "a = c" "bintrunc m b = bintrunc m d"
+lemma bin_cat_cong: "concat_bit n b a = concat_bit m d c"
+  if "n = m" "a = c" "take_bit m b = take_bit m d"
   using that(3) unfolding that(1,2) by (simp add: bin_cat_eq_push_bit_add_take_bit)
 
-lemma bin_cat_eqD1: "bin_cat a n b = bin_cat c n d \<Longrightarrow> a = c"
+lemma bin_cat_eqD1: "concat_bit n b a = concat_bit n d c \<Longrightarrow> a = c"
   by (metis drop_bit_bin_cat_eq)
 
-lemma bin_cat_eqD2: "bin_cat a n b = bin_cat c n d \<Longrightarrow> bintrunc n b = bintrunc n d"
+lemma bin_cat_eqD2: "concat_bit n b a = concat_bit n d c \<Longrightarrow> take_bit n b = take_bit n d"
   by (metis take_bit_bin_cat_eq)
 
-lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c \<and> bintrunc n b = bintrunc n d"
+lemma bin_cat_inj: "(concat_bit n b a) = concat_bit n d c \<longleftrightarrow> a = c \<and> take_bit n b = take_bit n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
 
 lemma word_of_int_bin_cat_eq_iff:
-  "(word_of_int (bin_cat (uint a) LENGTH('b) (uint b))::'c::len word) =
-  word_of_int (bin_cat (uint c) LENGTH('b) (uint d)) \<longleftrightarrow> b = d \<and> a = c"
+  "(word_of_int (concat_bit LENGTH('b) (uint b) (uint a))::'c::len word) =
+  word_of_int (concat_bit LENGTH('b) (uint d) (uint c)) \<longleftrightarrow> b = d \<and> a = c"
   if "LENGTH('a) + LENGTH('b) \<le> LENGTH('c)"
   for a::"'a::len word" and b::"'b::len word"
   by (subst word_uint.Abs_inject)
@@ -1547,19 +1547,19 @@ begin
 
 private lemma sbintrunc_uint_ucast:
   assumes "Suc n = LENGTH('b::len)"
-  shows "sbintrunc n (uint (ucast w :: 'b word)) = sbintrunc n (uint w)"
-  by (metis assms sbintrunc_bintrunc ucast_eq word_ubin.eq_norm)
+  shows "signed_take_bit n (uint (ucast w :: 'b word)) = signed_take_bit n (uint w)"
+  by (rule bit_eqI) (use assms in \<open>simp add: bit_simps\<close>)
 
 private lemma test_bit_sbintrunc:
   assumes "i < LENGTH('a)"
-  shows "(word_of_int (sbintrunc n (uint w)) :: 'a word) !! i
+  shows "(word_of_int (signed_take_bit n (uint w)) :: 'a word) !! i
            = (if n < i then w !! n else w !! i)"
   using assms by (simp add: nth_sbintr)
                  (simp add: test_bit_bin)
 
 private lemma test_bit_sbintrunc_ucast:
   assumes len_a: "i < LENGTH('a)"
-  shows "(word_of_int (sbintrunc (LENGTH('b) - 1) (uint (ucast w :: 'b word))) :: 'a word) !! i
+  shows "(word_of_int (signed_take_bit (LENGTH('b) - 1) (uint (ucast w :: 'b word))) :: 'a word) !! i
           = (if LENGTH('b::len) \<le> i then w !! (LENGTH('b) - 1) else w !! i)"
   apply (subst sbintrunc_uint_ucast)
    apply simp

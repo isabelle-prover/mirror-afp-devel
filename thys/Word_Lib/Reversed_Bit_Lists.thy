@@ -336,7 +336,7 @@ definition bl_to_bin :: "bool list \<Rightarrow> int"
 primrec bin_to_bl_aux :: "nat \<Rightarrow> int \<Rightarrow> bool list \<Rightarrow> bool list"
   where
     Z: "bin_to_bl_aux 0 w bl = bl"
-  | Suc: "bin_to_bl_aux (Suc n) w bl = bin_to_bl_aux n (bin_rest w) ((bin_last w) # bl)"
+  | Suc: "bin_to_bl_aux (Suc n) w bl = bin_to_bl_aux n (w div 2) (odd w # bl)"
 
 definition bin_to_bl :: "nat \<Rightarrow> int \<Rightarrow> bool list"
   where "bin_to_bl n w = bin_to_bl_aux n w []"
@@ -429,20 +429,20 @@ lemma bin_to_bl_minus1: "bin_to_bl n (- 1) = replicate n True"
 
 subsection \<open>Semantic interpretation of \<^typ>\<open>bool list\<close> as \<^typ>\<open>int\<close>\<close>
 
-lemma bin_bl_bin': "bl_to_bin (bin_to_bl_aux n w bs) = bl_to_bin_aux bs (bintrunc n w)"
+lemma bin_bl_bin': "bl_to_bin (bin_to_bl_aux n w bs) = bl_to_bin_aux bs (take_bit n w)"
   by (induct n arbitrary: w bs) (auto simp: bl_to_bin_def take_bit_Suc ac_simps mod_2_eq_odd)
 
-lemma bin_bl_bin [simp]: "bl_to_bin (bin_to_bl n w) = bintrunc n w"
+lemma bin_bl_bin [simp]: "bl_to_bin (bin_to_bl n w) = take_bit n w"
   by (auto simp: bin_to_bl_def bin_bl_bin')
 
 lemma bl_to_bin_rep_F: "bl_to_bin (replicate n False @ bl) = bl_to_bin bl"
   by (simp add: bin_to_bl_zero_aux [symmetric] bin_bl_bin') (simp add: bl_to_bin_def)
 
-lemma bin_to_bl_trunc [simp]: "n \<le> m \<Longrightarrow> bin_to_bl n (bintrunc m w) = bin_to_bl n w"
+lemma bin_to_bl_trunc [simp]: "n \<le> m \<Longrightarrow> bin_to_bl n (take_bit m w) = bin_to_bl n w"
   by (auto intro: bl_to_bin_inj)
 
 lemma bin_to_bl_aux_bintr:
-  "bin_to_bl_aux n (bintrunc m bin) bl =
+  "bin_to_bl_aux n (take_bit m bin) bl =
     replicate (n - m) False @ bin_to_bl_aux (min n m) bin bl"
   apply (induct n arbitrary: m bin bl)
    apply clarsimp
@@ -455,7 +455,7 @@ lemma bin_to_bl_aux_bintr:
   done
 
 lemma bin_to_bl_bintr:
-  "bin_to_bl n (bintrunc m bin) = replicate (n - m) False @ bin_to_bl (min n m) bin"
+  "bin_to_bl n (take_bit m bin) = replicate (n - m) False @ bin_to_bl (min n m) bin"
   unfolding bin_to_bl_def by (rule bin_to_bl_aux_bintr)
 
 lemma bl_to_bin_rep_False: "bl_to_bin (replicate n False) = 0"
@@ -473,25 +473,25 @@ lemma sign_bl_bin': "bin_sign (bl_to_bin_aux bs w) = bin_sign w"
 lemma sign_bl_bin: "bin_sign (bl_to_bin bs) = 0"
   by (simp add: bl_to_bin_def sign_bl_bin')
 
-lemma bl_sbin_sign_aux: "hd (bin_to_bl_aux (Suc n) w bs) = (bin_sign (sbintrunc n w) = -1)"
+lemma bl_sbin_sign_aux: "hd (bin_to_bl_aux (Suc n) w bs) = (bin_sign (signed_take_bit n w) = -1)"
   by (induction n arbitrary: w bs) (auto simp add: bin_sign_def even_iff_mod_2_eq_zero bit_Suc)
 
-lemma bl_sbin_sign: "hd (bin_to_bl (Suc n) w) = (bin_sign (sbintrunc n w) = -1)"
+lemma bl_sbin_sign: "hd (bin_to_bl (Suc n) w) = (bin_sign (signed_take_bit n w) = -1)"
   unfolding bin_to_bl_def by (rule bl_sbin_sign_aux)
 
 lemma bin_nth_of_bl_aux:
-  "bin_nth (bl_to_bin_aux bl w) n =
-    (n < size bl \<and> rev bl ! n \<or> n \<ge> length bl \<and> bin_nth w (n - size bl))"
+  "bit (bl_to_bin_aux bl w) n =
+    (n < size bl \<and> rev bl ! n \<or> n \<ge> length bl \<and> bit w (n - size bl))"
   apply (induction bl arbitrary: w)
    apply simp_all
   apply safe
                       apply (simp_all add: not_le nth_append bit_double_iff even_bit_succ_iff split: if_splits)
   done
 
-lemma bin_nth_of_bl: "bin_nth (bl_to_bin bl) n = (n < length bl \<and> rev bl ! n)"
+lemma bin_nth_of_bl: "bit (bl_to_bin bl) n = (n < length bl \<and> rev bl ! n)"
   by (simp add: bl_to_bin_def bin_nth_of_bl_aux)
 
-lemma bin_nth_bl: "n < m \<Longrightarrow> bin_nth w n = nth (rev (bin_to_bl m w)) n"
+lemma bin_nth_bl: "n < m \<Longrightarrow> bit w n = nth (rev (bin_to_bl m w)) n"
   apply (induct n arbitrary: m w)
    apply clarsimp
    apply (case_tac m, clarsimp)
@@ -514,7 +514,7 @@ lemma nth_bin_to_bl_aux:
      less_antisym less_imp_Suc_add list.size(3) nat_less_le nth_append size_bin_to_bl_aux)
   done
 
-lemma nth_bin_to_bl: "n < m \<Longrightarrow> (bin_to_bl m w) ! n = bin_nth w (m - Suc n)"
+lemma nth_bin_to_bl: "n < m \<Longrightarrow> (bin_to_bl m w) ! n = bit w (m - Suc n)"
   by (simp add: bin_to_bl_def nth_bin_to_bl_aux)
 
 lemma takefill_bintrunc: "takefill False n bl = rev (bin_to_bl n (bl_to_bin (rev bl)))"
@@ -579,26 +579,26 @@ lemma bl_to_bin_ge0: "bl_to_bin bs \<ge> 0"
   apply simp
   done
 
-lemma butlast_rest_bin: "butlast (bin_to_bl n w) = bin_to_bl (n - 1) (bin_rest w)"
+lemma butlast_rest_bin: "butlast (bin_to_bl n w) = bin_to_bl (n - 1) (w div 2)"
   apply (unfold bin_to_bl_def)
   apply (cases n, clarsimp)
   apply clarsimp
   apply (auto simp add: bin_to_bl_aux_alt)
   done
 
-lemma butlast_bin_rest: "butlast bl = bin_to_bl (length bl - Suc 0) (bin_rest (bl_to_bin bl))"
+lemma butlast_bin_rest: "butlast bl = bin_to_bl (length bl - Suc 0) (bl_to_bin bl div 2)"
   using butlast_rest_bin [where w="bl_to_bin bl" and n="length bl"] by simp
 
 lemma butlast_rest_bl2bin_aux:
-  "bl \<noteq> [] \<Longrightarrow> bl_to_bin_aux (butlast bl) w = bin_rest (bl_to_bin_aux bl w)"
+  "bl \<noteq> [] \<Longrightarrow> bl_to_bin_aux (butlast bl) w = bl_to_bin_aux bl w div 2"
   by (induct bl arbitrary: w) auto
 
-lemma butlast_rest_bl2bin: "bl_to_bin (butlast bl) = bin_rest (bl_to_bin bl)"
+lemma butlast_rest_bl2bin: "bl_to_bin (butlast bl) = bl_to_bin bl div 2"
   by (cases bl) (auto simp: bl_to_bin_def butlast_rest_bl2bin_aux)
 
 lemma trunc_bl2bin_aux:
-  "bintrunc m (bl_to_bin_aux bl w) =
-    bl_to_bin_aux (drop (length bl - m) bl) (bintrunc (m - length bl) w)"
+  "take_bit m (bl_to_bin_aux bl w) =
+    bl_to_bin_aux (drop (length bl - m) bl) (take_bit (m - length bl) w)"
 proof (induct bl arbitrary: w)
   case Nil
   show ?case by simp
@@ -616,13 +616,13 @@ next
   qed
 qed
 
-lemma trunc_bl2bin: "bintrunc m (bl_to_bin bl) = bl_to_bin (drop (length bl - m) bl)"
+lemma trunc_bl2bin: "take_bit m (bl_to_bin bl) = bl_to_bin (drop (length bl - m) bl)"
   by (simp add: bl_to_bin_def trunc_bl2bin_aux)
 
-lemma trunc_bl2bin_len [simp]: "bintrunc (length bl) (bl_to_bin bl) = bl_to_bin bl"
+lemma trunc_bl2bin_len [simp]: "take_bit (length bl) (bl_to_bin bl) = bl_to_bin bl"
   by (simp add: trunc_bl2bin)
 
-lemma bl2bin_drop: "bl_to_bin (drop k bl) = bintrunc (length bl - k) (bl_to_bin bl)"
+lemma bl2bin_drop: "bl_to_bin (drop k bl) = take_bit (length bl - k) (bl_to_bin bl)"
   apply (rule trans)
    prefer 2
    apply (rule trunc_bl2bin [symmetric])
@@ -630,19 +630,19 @@ lemma bl2bin_drop: "bl_to_bin (drop k bl) = bintrunc (length bl - k) (bl_to_bin 
    apply auto
   done
 
-lemma take_rest_power_bin: "m \<le> n \<Longrightarrow> take m (bin_to_bl n w) = bin_to_bl m ((bin_rest ^^ (n - m)) w)"
+lemma take_rest_power_bin: "m \<le> n \<Longrightarrow> take m (bin_to_bl n w) = bin_to_bl m (((\<lambda>w. w div 2) ^^ (n - m)) w)"
   apply (rule nth_equalityI)
    apply simp
   apply (clarsimp simp add: nth_bin_to_bl nth_rest_power_bin)
   done
 
-lemma last_bin_last': "size xs > 0 \<Longrightarrow> last xs \<longleftrightarrow> bin_last (bl_to_bin_aux xs w)"
+lemma last_bin_last': "size xs > 0 \<Longrightarrow> last xs \<longleftrightarrow> odd (bl_to_bin_aux xs w)"
   by (induct xs arbitrary: w) auto
 
-lemma last_bin_last: "size xs > 0 \<Longrightarrow> last xs \<longleftrightarrow> bin_last (bl_to_bin xs)"
+lemma last_bin_last: "size xs > 0 \<Longrightarrow> last xs \<longleftrightarrow> odd (bl_to_bin xs)"
   unfolding bl_to_bin_def by (erule last_bin_last')
 
-lemma bin_last_last: "bin_last w \<longleftrightarrow> last (bin_to_bl (Suc n) w)"
+lemma bin_last_last: "odd w \<longleftrightarrow> last (bin_to_bl (Suc n) w)"
   by (simp add: bin_to_bl_def) (auto simp: bin_to_bl_aux_alt)
 
 lemma drop_bin2bl_aux:
@@ -694,22 +694,22 @@ lemma bl_bin_bl_rep_drop:
   by (simp add: bl_to_bin_inj bl_to_bin_rep_F trunc_bl2bin)
 
 lemma bl_to_bin_aux_cat:
-  "bl_to_bin_aux bs (bin_cat w nv v) =
-    bin_cat w (nv + length bs) (bl_to_bin_aux bs v)"
+  "bl_to_bin_aux bs (concat_bit nv v w) =
+    concat_bit (nv + length bs) (bl_to_bin_aux bs v) w"
   by (rule bit_eqI)
     (auto simp add: bin_nth_of_bl_aux bin_nth_cat algebra_simps)
 
 lemma bin_to_bl_aux_cat:
-  "bin_to_bl_aux (nv + nw) (bin_cat v nw w) bs =
+  "bin_to_bl_aux (nv + nw) (concat_bit nw w v) bs =
     bin_to_bl_aux nv v (bin_to_bl_aux nw w bs)"
   by (induction nw arbitrary: w bs) (simp_all add: concat_bit_Suc)
 
-lemma bl_to_bin_aux_alt: "bl_to_bin_aux bs w = bin_cat w (length bs) (bl_to_bin bs)"
+lemma bl_to_bin_aux_alt: "bl_to_bin_aux bs w = concat_bit (length bs) (bl_to_bin bs) w"
   using bl_to_bin_aux_cat [where nv = "0" and v = "0"]
   by (simp add: bl_to_bin_def [symmetric])
 
 lemma bin_to_bl_cat:
-  "bin_to_bl (nv + nw) (bin_cat v nw w) =
+  "bin_to_bl (nv + nw) (concat_bit nw w v) =
     bin_to_bl_aux nv v (bin_to_bl nw w)"
   by (simp add: bin_to_bl_def bin_to_bl_aux_cat)
 
@@ -720,15 +720,15 @@ lemmas bin_to_bl_aux_cat_app =
   trans [OF bin_to_bl_aux_cat bin_to_bl_aux_alt]
 
 lemma bl_to_bin_app_cat:
-  "bl_to_bin (bsa @ bs) = bin_cat (bl_to_bin bsa) (length bs) (bl_to_bin bs)"
+  "bl_to_bin (bsa @ bs) = concat_bit (length bs) (bl_to_bin bs) (bl_to_bin bsa)"
   by (simp only: bl_to_bin_aux_app_cat bl_to_bin_def)
 
 lemma bin_to_bl_cat_app:
-  "bin_to_bl (n + nw) (bin_cat w nw wa) = bin_to_bl n w @ bin_to_bl nw wa"
+  "bin_to_bl (n + nw) (concat_bit nw wa w) = bin_to_bl n w @ bin_to_bl nw wa"
   by (simp only: bin_to_bl_def bin_to_bl_aux_cat_app)
 
 text \<open>\<open>bl_to_bin_app_cat_alt\<close> and \<open>bl_to_bin_app_cat\<close> are easily interderivable.\<close>
-lemma bl_to_bin_app_cat_alt: "bin_cat (bl_to_bin cs) n w = bl_to_bin (cs @ bin_to_bl n w)"
+lemma bl_to_bin_app_cat_alt: "concat_bit n w (bl_to_bin cs) = bl_to_bin (cs @ bin_to_bl n w)"
   by (simp add: bl_to_bin_app_cat)
 
 lemma mask_lem: "(bl_to_bin (True # replicate n False)) = bl_to_bin (replicate n True) + 1"
@@ -925,15 +925,15 @@ lemma sclem: "size (concat (map (bin_to_bl n) xs)) = length xs * n"
   by (simp add: length_concat comp_def sum_list_triv)
 
 lemma bin_cat_foldl_lem:
-  "foldl (\<lambda>u. bin_cat u n) x xs =
-    bin_cat x (size xs * n) (foldl (\<lambda>u. bin_cat u n) y xs)"
+  "foldl (\<lambda>u k. concat_bit n k u) x xs =
+    concat_bit (size xs * n) (foldl (\<lambda>u k. concat_bit n k u) y xs) x"
   apply (induct xs arbitrary: x)
    apply simp
   apply (simp (no_asm))
   apply (frule asm_rl)
   apply (drule meta_spec)
   apply (erule trans)
-  apply (drule_tac x = "bin_cat y n a" in meta_spec)
+  apply (drule_tac x = "concat_bit n a y" in meta_spec)
   apply (simp add: bin_cat_assoc_sym)
   done
 
@@ -946,10 +946,10 @@ lemma bin_rcat_bl: "bin_rcat n wl = bl_to_bin (concat (map (bin_to_bl n) wl))"
   apply (simp add: bin_cat_foldl_lem [symmetric])
   done
 
-lemma bin_last_bl_to_bin: "bin_last (bl_to_bin bs) \<longleftrightarrow> bs \<noteq> [] \<and> last bs"
+lemma bin_last_bl_to_bin: "odd (bl_to_bin bs) \<longleftrightarrow> bs \<noteq> [] \<and> last bs"
 by(cases "bs = []")(auto simp add: bl_to_bin_def last_bin_last'[where w=0])
 
-lemma bin_rest_bl_to_bin: "bin_rest (bl_to_bin bs) = bl_to_bin (butlast bs)"
+lemma bin_rest_bl_to_bin: "bl_to_bin bs div 2 = bl_to_bin (butlast bs)"
 by(cases "bs = []")(simp_all add: bl_to_bin_def butlast_rest_bl2bin_aux)
 
 lemma bl_xor_aux_bin:
@@ -1300,7 +1300,7 @@ lemma bl_word_or: "to_bl (v OR w) = map2 (\<or>) (to_bl v) (to_bl w)"
 lemma bl_word_and: "to_bl (v AND w) = map2 (\<and>) (to_bl v) (to_bl w)"
   by transfer (simp flip: bl_and_bin)
 
-lemma bin_nth_uint': "bin_nth (uint w) n \<longleftrightarrow> rev (bin_to_bl (size w) (uint w)) ! n \<and> n < size w"
+lemma bin_nth_uint': "bit (uint w) n \<longleftrightarrow> rev (bin_to_bl (size w) (uint w)) ! n \<and> n < size w"
   apply (unfold word_size)
   apply (safe elim!: bin_nth_uint_imp)
    apply (frule bin_nth_uint_imp)
@@ -2130,11 +2130,11 @@ lemma bin_to_bl_of_bl_eq:
 
 (* FIXME: move to Word distribution *)
 lemma bin_nth_minus_Bit0[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit0 w)) n = bin_nth (numeral w) (n - 1)"
+  "0 < n \<Longrightarrow> bit (numeral (num.Bit0 w) :: int) n = bit (numeral w :: int) (n - 1)"
   by (cases n; simp)
 
 lemma bin_nth_minus_Bit1[simp]:
-  "0 < n \<Longrightarrow> bin_nth (numeral (num.Bit1 w)) n = bin_nth (numeral w) (n - 1)"
+  "0 < n \<Longrightarrow> bit (numeral (num.Bit1 w) :: int) n = bit (numeral w :: int) (n - 1)"
   by (cases n; simp)
 
 (* casting a long word to a shorter word and casting back to the long word

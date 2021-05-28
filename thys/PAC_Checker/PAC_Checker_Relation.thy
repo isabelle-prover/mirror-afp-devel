@@ -54,9 +54,9 @@ lemma nat_of_uint64_012[simp]: \<open>nat_of_uint64 0 = 0\<close> \<open>nat_of_
 
 definition uint64_of_nat_conv where
   [simp]: \<open>uint64_of_nat_conv (x :: nat) = x\<close>
-lemma less_upper_bintrunc_id: \<open>n < 2 ^b \<Longrightarrow> n \<ge> 0 \<Longrightarrow> bintrunc b n = n\<close>
-  unfolding uint32_of_nat_def
-  by (simp add: no_bintr_alt1)
+
+lemma less_upper_bintrunc_id: \<open>n < 2 ^b \<Longrightarrow> n \<ge> 0 \<Longrightarrow> take_bit b n = n\<close> for n :: int
+  by (rule take_bit_int_eq_self)
 
 lemma nat_of_uint64_uint64_of_nat_id: \<open>n < 2^64 \<Longrightarrow> nat_of_uint64 (uint64_of_nat n) = n\<close>
   unfolding uint64_of_nat_def

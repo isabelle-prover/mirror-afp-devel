@@ -170,7 +170,7 @@ lemma rbl_sshiftr:
   done
 
 lemma nth_word_of_int:
-  "(word_of_int x :: 'a::len word) !! n = (n < LENGTH('a) \<and> bin_nth x n)"
+  "(word_of_int x :: 'a::len word) !! n = (n < LENGTH('a) \<and> bit x n)"
   apply (simp add: test_bit_bl word_size to_bl_of_bin)
   apply (subst conj_cong[OF refl], erule bin_nth_bl)
   apply auto

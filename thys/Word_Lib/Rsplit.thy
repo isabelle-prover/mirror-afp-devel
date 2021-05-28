@@ -45,7 +45,7 @@ lemma test_bit_rsplit:
   for sw :: "'a::len word list"
   apply (unfold word_rsplit_def word_test_bit_def)
   apply (rule trans)
-   apply (rule_tac f = "\<lambda>x. bin_nth x m" in arg_cong)
+   apply (rule_tac f = "\<lambda>x. bit x m" in arg_cong)
    apply (rule nth_map [symmetric])
    apply simp
   apply (rule bin_nth_rsplit)

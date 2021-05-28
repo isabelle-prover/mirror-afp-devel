@@ -71,7 +71,7 @@ instantiation word :: (len) msb
 begin
 
 definition msb_word :: \<open>'a word \<Rightarrow> bool\<close>
-  where \<open>msb a \<longleftrightarrow> bin_sign (sbintrunc (LENGTH('a) - 1) (uint a)) = - 1\<close>
+  where \<open>msb a \<longleftrightarrow> bin_sign (signed_take_bit (LENGTH('a) - 1) (uint a)) = - 1\<close>
 
 lemma msb_word_eq:
   \<open>msb w \<longleftrightarrow> bit w (LENGTH('a) - 1)\<close> for w :: \<open>'a::len word\<close>
@@ -97,15 +97,15 @@ lemma msb_word_iff_sless_0:
   \<open>msb w \<longleftrightarrow> w <s 0\<close>
   by (simp add: word_msb_sint word_sless_alt)
 
-lemma msb_word_of_int: "msb (word_of_int x::'a::len word) = bin_nth x (LENGTH('a) - 1)"
+lemma msb_word_of_int: "msb (word_of_int x::'a::len word) = bit x (LENGTH('a) - 1)"
   by (simp add: word_msb_def bin_sign_lem)
 
 lemma word_msb_numeral [simp]:
-  "msb (numeral w::'a::len word) = bin_nth (numeral w) (LENGTH('a) - 1)"
+  "msb (numeral w::'a::len word) = bit (numeral w :: int) (LENGTH('a) - 1)"
   unfolding word_numeral_alt by (rule msb_word_of_int)
 
 lemma word_msb_neg_numeral [simp]:
-  "msb (- numeral w::'a::len word) = bin_nth (- numeral w) (LENGTH('a) - 1)"
+  "msb (- numeral w::'a::len word) = bit (- numeral w :: int) (LENGTH('a) - 1)"
   unfolding word_neg_numeral_alt by (rule msb_word_of_int)
 
 lemma word_msb_0 [simp]: "\<not> msb (0::'a::len word)"
@@ -115,7 +115,7 @@ lemma word_msb_1 [simp]: "msb (1::'a::len word) \<longleftrightarrow> LENGTH('a)
   unfolding word_1_wi msb_word_of_int eq_iff [where 'a=nat]
   by (simp add: Suc_le_eq)
 
-lemma word_msb_nth: "msb w = bin_nth (uint w) (LENGTH('a) - 1)"
+lemma word_msb_nth: "msb w = bit (uint w) (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (simp add: word_msb_def sint_uint bin_sign_lem)
 

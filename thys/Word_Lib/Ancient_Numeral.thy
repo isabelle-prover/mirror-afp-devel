@@ -5,7 +5,7 @@
  *)
 
 theory Ancient_Numeral
-  imports Main Reversed_Bit_Lists
+  imports Main Reversed_Bit_Lists Legacy_Aliases
 begin
 
 definition Bit :: "int \<Rightarrow> bool \<Rightarrow> int"  (infixl "BIT" 90)

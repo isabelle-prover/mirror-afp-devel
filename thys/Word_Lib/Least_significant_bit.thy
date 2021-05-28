@@ -29,7 +29,7 @@ instance
 
 end
 
-lemma bin_last_conv_lsb: "bin_last = lsb"
+lemma bin_last_conv_lsb: "odd = (lsb :: int \<Rightarrow> bool)"
   by (simp add: lsb_odd)
 
 lemma int_lsb_numeral [simp]:
@@ -78,11 +78,11 @@ lemma word_lsb_int: "lsb w \<longleftrightarrow> uint w mod 2 = 1"
 lemmas word_ops_lsb = lsb0 [unfolded word_lsb_alt]
 
 lemma word_lsb_numeral [simp]:
-  "lsb (numeral bin :: 'a::len word) \<longleftrightarrow> bin_last (numeral bin)"
+  "lsb (numeral bin :: 'a::len word) \<longleftrightarrow> odd (numeral bin :: int)"
   unfolding word_lsb_alt test_bit_numeral by simp
 
 lemma word_lsb_neg_numeral [simp]:
-  "lsb (- numeral bin :: 'a::len word) \<longleftrightarrow> bin_last (- numeral bin)"
+  "lsb (- numeral bin :: 'a::len word) \<longleftrightarrow> odd (- numeral bin :: int)"
   by (simp add: word_lsb_alt)
 
 lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"

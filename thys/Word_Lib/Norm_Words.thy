@@ -16,8 +16,7 @@ text \<open>
 \<close>
 
 lemma neg_num_bintr:
-  "(- numeral x :: 'a::len word) =
-  word_of_int (bintrunc (LENGTH('a)) (-numeral x))"
+  "(- numeral x :: 'a::len word) = word_of_int (take_bit LENGTH('a) (- numeral x))"
   by transfer simp
 
 ML \<open>

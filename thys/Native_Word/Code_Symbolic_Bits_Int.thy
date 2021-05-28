@@ -76,7 +76,7 @@ lemma int_xor_code [code]: fixes i j :: int shows
   "Int.Pos n XOR Int.Neg m = NOT (Int.Pos n XOR Num.sub m num.One)"
   by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
 
-lemma bin_rest_code: "bin_rest i = i >> 1"
+lemma bin_rest_code: "i div 2 = i >> 1" for i :: int
   by (simp add: shiftr_int_def)
 
 lemma set_bits_code [code]: 

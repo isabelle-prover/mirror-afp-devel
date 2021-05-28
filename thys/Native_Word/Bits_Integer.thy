@@ -62,8 +62,8 @@ section \<open>Bit operations on @{typ integer}\<close>
 
 text \<open>Bit operations on @{typ integer} are the same as on @{typ int}\<close>
 
-lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is bin_rest .
-lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is bin_last .
+lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is \<open>\<lambda>k . k div 2\<close> .
+lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is odd .
 lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is \<open>\<lambda>k b. of_bool b + 2 * k\<close> .
 
 end

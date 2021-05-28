@@ -3,6 +3,62 @@ imports Lib_Numbers_toString
         Word_Lib.Word_Lemmas
 begin
 
+context unique_euclidean_semiring_numeral
+begin
+
+lemma exp_estimate [simp]:
+  \<open>numeral Num.One \<le> 2 ^ n\<close>  (is \<open>?P1\<close>)
+  \<open>numeral Num.One < 2 ^ n \<longleftrightarrow> 1 \<le> n\<close>  (is \<open>?P2\<close>)
+  \<open>numeral (Num.Bit0 k) \<le> 2 ^ n \<longleftrightarrow> 1 \<le> n \<and> numeral k \<le> 2 ^ (n - 1)\<close>  (is \<open>?P3\<close>)
+  \<open>numeral (Num.Bit0 k) < 2 ^ n \<longleftrightarrow> 1 \<le> n \<and> numeral k < 2 ^ (n - 1)\<close>  (is \<open>?P4\<close>)
+  \<open>numeral (Num.Bit1 k) \<le> 2 ^ n \<longleftrightarrow> 1 \<le> n \<and> numeral k < 2 ^ (n - 1)\<close>  (is \<open>?P5\<close>)
+  \<open>numeral (Num.Bit1 k) < 2 ^ n \<longleftrightarrow> 1 \<le> n \<and> numeral k < 2 ^ (n - 1)\<close>  (is \<open>?P6\<close>)
+proof -
+  show ?P1
+    by simp
+  show ?P2
+    using one_less_power power_eq_if by auto
+
+  let ?K = \<open>numeral k :: nat\<close>
+
+  define m where \<open>m = n - 1\<close>
+  then consider \<open>n = 0\<close> | \<open>n = Suc m\<close>
+    by (cases n) simp_all
+  note Suc = this
+
+  have \<open>2 * ?K \<le> 2 * 2 ^ m \<longleftrightarrow> ?K \<le> 2 ^ m\<close>
+    by linarith
+  then have \<open>of_nat (2 * ?K) \<le> of_nat (2 * 2 ^ m) \<longleftrightarrow> of_nat ?K \<le> of_nat (2 ^ m)\<close>
+    by (simp only: of_nat_le_iff)
+  then show ?P3
+    by (auto intro: Suc)
+
+  have \<open>2 * ?K < 2 * 2 ^ m \<longleftrightarrow> ?K < 2 ^ m\<close>
+    by linarith
+  then have \<open>of_nat (2 * ?K) < of_nat (2 * 2 ^ m) \<longleftrightarrow> of_nat ?K < of_nat (2 ^ m)\<close>
+    by (simp only: of_nat_less_iff)
+  then show ?P4
+    by (auto intro: Suc)
+
+  have \<open>Suc (2 * ?K) \<le> 2 * 2 ^ m \<longleftrightarrow> ?K < 2 ^ m\<close>
+    by linarith
+  then have \<open>of_nat (Suc (2 * ?K)) \<le> of_nat (2 * 2 ^ m) \<longleftrightarrow> of_nat ?K < of_nat (2 ^ m)\<close>
+    by (simp only: of_nat_le_iff of_nat_less_iff)
+  then show ?P5
+    by (auto intro: Suc)
+
+  have \<open>Suc (2 * ?K) < 2 * 2 ^ m \<longleftrightarrow> ?K < 2 ^ m\<close>
+    by linarith
+  then have \<open>of_nat (Suc (2 * ?K)) < of_nat (2 * 2 ^ m) \<longleftrightarrow> of_nat ?K < of_nat (2 ^ m)\<close>
+    by (simp only: of_nat_less_iff)
+  then show ?P6
+    by (auto intro: Suc)
+
+qed
+
+end
+
+
 section\<open>Printing Machine Words\<close>
 
 (*imitation of http://stackoverflow.com/questions/23864965/string-of-nat-in-isabelle*)
@@ -84,60 +140,47 @@ lemma string_of_word_single_atoi:
   by(simp add: string_of_word_single_def)
 
 (*TODO: move!*)
-lemma bintrunc_pos_eq: "x \<ge> 0 \<Longrightarrow> bintrunc n x = x \<longleftrightarrow> x < 2^n"
-apply(rule iffI)
- subgoal using bintr_lt2p by metis
-by (simp add: mod_pos_pos_trivial no_bintr_alt1; fail)
-
+lemma bintrunc_pos_eq: "x \<ge> 0 \<Longrightarrow> take_bit n x = x \<longleftrightarrow> x < 2^n" for x :: int
+  by (simp add: take_bit_int_eq_self_iff)
 
 (*The following lemma [symmetric] as [code_unfold] may give some cool speedup*)
 lemma string_of_word_base_ten_zeropad:
   fixes w ::"'a::len word"
   assumes lena: "LENGTH('a) \<ge> 5" (*word must be long enough to encode 10 = 0xA*)
   shows "base = 10 \<Longrightarrow> zero = 0 \<Longrightarrow> string_of_word True base zero w = string_of_nat (unat w)"
-  proof(induction True base zero w rule: string_of_word.induct)
+proof(induction True base zero w rule: string_of_word.induct)
   case (1 base ml n)
 
   note  Word.word_less_no[simp del]
   note  Word.uint_bintrunc[simp del]
 
-  have "5 \<le> n \<Longrightarrow> bintrunc n 10 = 10" for n
-   apply(subst bintrunc_pos_eq)
-    apply(simp; fail)
-   apply(induction rule: Nat.dec_induct)
-    by simp+
-  with lena have unat_ten: "unat (0xA::'a::len word) = 10" by(simp)
+  define l where \<open>l = LENGTH('a) - 5\<close>
+  with lena have l: \<open>LENGTH('a) = l + 5\<close>
+    by simp
 
-  have "5 \<le> n \<Longrightarrow> bintrunc n 2 = 2" for n
-   apply(subst bintrunc_pos_eq)
-    apply(simp; fail)
-   apply(induction rule: Nat.dec_induct)
-    by simp+
-  with lena have unat_two: "unat (2::'a::len word) = 2" by(simp)
+  have [simp]: \<open>take_bit LENGTH('a) (10 :: nat) = 10\<close>
+    using lena by (auto simp add: take_bit_nat_eq_self_iff l Suc_lessI)
+
+  have [simp]: \<open>take_bit LENGTH('a) (10 :: int) = 10\<close>
+    using lena by (auto simp add: take_bit_int_eq_self_iff l)
+      (smt (verit) zero_less_power)
 
   have unat_mod_ten: "unat (n mod 0xA) = unat n mod 10"
-    apply(subst Word.unat_mod)
-    apply(subst unat_ten)
-    by(simp)
+    by (simp add: nat_take_bit_eq unat_mod)
     
   have unat_div_ten: "(unat (n div 0xA)) = unat n div 10"
-    apply(subst Word.unat_div)
-    apply(subst unat_ten)
-    by simp
+    by (simp add: nat_take_bit_eq unat_div)
+
   have n_less_ten_unat: "n < 0xA \<Longrightarrow> (unat n < 10)"
-    apply(rule unat_less_helper)
-    by(simp)
+    by (simp add: unat_less_helper)
+
   have "0xA \<le> n \<Longrightarrow> 10 \<le> unat n" 
-    apply(subst(asm) Word.word_le_nat_alt)
-    apply(subst(asm) unat_ten)
-    by(simp)
+    by (simp add: nat_take_bit_eq word_le_nat_alt)
+
   hence n_less_ten_unat_not: "\<not> n < 0xA \<Longrightarrow> \<not> unat n < 10" by fastforce
   have not_wordlength_too_small: "\<not> LENGTH('a) < 2" using lena by fastforce
   have "2 \<le> (0xA::'a word)"
-    apply(subst word_le_nat_alt)
-    apply(subst unat_ten unat_two)
-    apply(subst unat_two)
-    by(simp)
+    by simp
   hence ten_not_less_two: "\<not> (0xA::'a word) < 2" by (simp add: Word.word_less_no Word.uint_bintrunc)
   with 1(2,3) have " \<not> (base < 2 \<or> LENGTH(32) < 2)"
     by(simp)
@@ -159,12 +202,9 @@ lemma string_of_word_base_ten_zeropad:
     apply(simp add: not_wordlength_too_small ten_not_less_two)
     apply(subst string_of_word_single_atoi)
      apply(rule Word.word_mod_less_divisor)
-     using unat_ten word_gt_0_no apply fastforce
-    apply(simp add: unat_mod_ten)
-    apply(rule sym)
-    apply(drule n_less_ten_unat_not)
-    apply(simp add: unat_div_ten)
-    by (simp add: string_of_nat.simps)
+     apply (auto simp add: not_less)
+    apply (metis \<open>10 \<le> n \<Longrightarrow> 10 \<le> unat n\<close> not_le string_of_nat.simps unat_div_ten unat_mod_ten)
+    done
 qed
 
 (*TODO: one for all words?*)
