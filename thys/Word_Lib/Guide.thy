@@ -373,6 +373,8 @@ text \<open>
     \<^item> Abbreviations \<^abbrev>\<open>bin_nth\<close>, \<^abbrev>\<open>bin_last\<close>, \<^abbrev>\<open>bin_rest\<close>,
       \<^abbrev>\<open>bintrunc\<close>, \<^abbrev>\<open>sbintrunc\<close>, \<^abbrev>\<open>norm_sint\<close>,
       \<^abbrev>\<open>bin_cat\<close> moved into theory \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
+
+    \<^item> Operation \<^const>\<open>complement\<close> replaced by input abbreviation \<^abbrev>\<open>complement\<close>.
 \<close>
 
 (*<*)

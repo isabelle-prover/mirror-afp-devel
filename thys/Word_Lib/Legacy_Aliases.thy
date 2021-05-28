@@ -34,13 +34,12 @@ abbreviation (input) norm_sint :: \<open>nat \<Rightarrow> int \<Rightarrow> int
 abbreviation (input) max_word :: \<open>'a::len word\<close>
   where \<open>max_word \<equiv> - 1\<close>
 
-definition
-  complement :: "'a :: len word \<Rightarrow> 'a word"  where
- "complement x \<equiv> NOT x"
+abbreviation (input) complement :: \<open>'a :: len word \<Rightarrow> 'a word\<close>
+  where \<open>complement \<equiv> not\<close>
 
 lemma complement_mask:
   "complement (2 ^ n - 1) = NOT (mask n)"
-  unfolding complement_def mask_eq_decr_exp by simp
+  unfolding mask_eq_decr_exp by simp
 
 lemmas less_def = less_eq [symmetric]
 lemmas le_def = not_less [symmetric, where ?'a = nat]
