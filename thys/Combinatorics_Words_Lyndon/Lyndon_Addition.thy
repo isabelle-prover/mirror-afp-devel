@@ -63,12 +63,12 @@ proof
     using trancl_id trancl_mono by metis
 next
   assume "?L" thus "?R"
-    using can_extend_acyclic_order_to_strict_linear by auto
+    using acyclic_order_extension by auto
 qed
 
 
 lemma slo_linorder: "strict_linear_order r \<Longrightarrow> class.linorder (\<lambda> a b. (a,b) \<in> r\<^sup>=) (\<lambda> a b. (a,b) \<in> r)"
-    unfolding strict_linear_order_def strict_partial_order_def irrefl_def trans_def total_on_def
+    unfolding strict_linear_order_on_def strict_partial_order_def irrefl_def trans_def total_on_def
     by unfold_locales blast+
 
 text\<open>Application examples\<close>

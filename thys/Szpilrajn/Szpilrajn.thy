@@ -686,6 +686,16 @@ proof -
   then show ?thesis by blast
 qed
 
+corollary acyclic_order_extension:
+  assumes "acyclic r"
+  shows "\<exists>r_ext. strict_linear_order r_ext \<and> r \<subseteq> r_ext"
+proof -
+  from assms have "strict_partial_order (r\<^sup>+)"
+    unfolding strict_partial_order_def using acyclic_irrefl trans_trancl by blast
+  thus ?thesis
+    by (meson Szpilrajn r_into_trancl' subset_iff)
+qed
+
 section \<open>Consistency\<close>
 
 text \<open>
