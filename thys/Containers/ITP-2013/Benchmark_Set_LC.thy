@@ -33,7 +33,7 @@ fun proper_interval_word :: "'a word option \<Rightarrow> 'a word option \<Right
 where
   "proper_interval_word None None = True"
 | "proper_interval_word None (Some y) = (y \<noteq> 0)"
-| "proper_interval_word (Some x) None = (x \<noteq> max_word)"
+| "proper_interval_word (Some x) None = (x \<noteq> - 1)"
 | "proper_interval_word (Some x) (Some y) = (x < y \<and> x \<noteq> y - 1)"
 
 instance
@@ -42,10 +42,10 @@ proof
   show "?pi None None = True" by simp
   fix y
   show "?pi None (Some y) = (\<exists>z. z < y)"
-    by simp (metis word_gt_0 word_not_simps(1))
+    using word_neq_0_conv [of y] by auto
   fix x
   show "?pi (Some x) None = (\<exists>z. x < z)"
-    by simp (metis eq_iff max_word_max not_le)
+    using word_order.not_eq_extremum [of x] by auto
 
   have "(x < y \<and> x \<noteq> y - 1) = (\<exists>z>x. z < y)" (is "?lhs \<longleftrightarrow> ?rhs")
   proof

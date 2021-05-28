@@ -444,10 +444,10 @@ begin
           WordInterval (if ms = 0 then 1 else s) (min e (word_prev ms))
         else if ms \<le> s
         then
-          WordInterval (max s (word_next me)) (if me = max_word then 0 else e)
+          WordInterval (max s (word_next me)) (if me = - 1 then 0 else e)
         else
           RangeUnion (WordInterval (if ms = 0 then 1 else s) (word_prev ms))
-                     (WordInterval (word_next me) (if me = max_word then 0 else e))
+                     (WordInterval (word_next me) (if me = - 1 then 0 else e))
         )" |
      "wordinterval_setminus' (RangeUnion r1 r2) t =
         RangeUnion (wordinterval_setminus' r1 t) (wordinterval_setminus' r2 t)"|
@@ -465,7 +465,7 @@ begin
      apply(case_tac [!] "e \<le> me")
       apply(case_tac [!] "ms = 0")
         apply(case_tac [!] "ms \<le> s")
-            apply(case_tac [!] "me = max_word")
+            apply(case_tac [!] "me = - 1")
                     apply(simp_all add: word_next_unfold word_prev_unfold min_def max_def)
             apply(safe)
                                   apply(auto)
@@ -515,7 +515,7 @@ begin
 end
 
 definition wordinterval_UNIV :: "'a::len wordinterval" where
-  "wordinterval_UNIV \<equiv> WordInterval 0 max_word"
+  "wordinterval_UNIV \<equiv> WordInterval 0 (- 1)"
 lemma wordinterval_UNIV_set_eq[simp]: "wordinterval_to_set wordinterval_UNIV = UNIV"
   unfolding wordinterval_UNIV_def
   using max_word_max by fastforce
@@ -528,7 +528,7 @@ lemma wordinterval_invert_set_eq[simp]:
 lemma wordinterval_invert_UNIV_empty:
   "wordinterval_empty (wordinterval_invert wordinterval_UNIV)" by simp
 
-lemma wi2l_univ[simp]: "wi2l wordinterval_UNIV = [(0, max_word)]"
+lemma wi2l_univ[simp]: "wi2l wordinterval_UNIV = [(0, - 1)]"
   unfolding wordinterval_UNIV_def
   by simp
 

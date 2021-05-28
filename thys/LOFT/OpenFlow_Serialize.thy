@@ -38,8 +38,8 @@ primrec serialize_of_match where
 "serialize_of_match _ (IPv4Proto i) = ''nw_proto='' @ dec_string_of_word0 i" |
 "serialize_of_match _ (IPv4Src p) = ''nw_src='' @ prefix_to_string p" |
 "serialize_of_match _ (IPv4Dst p) = ''nw_dst='' @ prefix_to_string p" |
-"serialize_of_match _ (L4Src i m) = ''tp_src='' @ dec_string_of_word0 i @ (if m = max_word then [] else ''/0x'' @ hex_string_of_word 3 m)" |
-"serialize_of_match _ (L4Dst i m) = ''tp_dst='' @ dec_string_of_word0 i @ (if m = max_word then [] else ''/0x'' @ hex_string_of_word 3 m)"
+"serialize_of_match _ (L4Src i m) = ''tp_src='' @ dec_string_of_word0 i @ (if m = - 1 then [] else ''/0x'' @ hex_string_of_word 3 m)" |
+"serialize_of_match _ (L4Dst i m) = ''tp_dst='' @ dec_string_of_word0 i @ (if m = - 1 then [] else ''/0x'' @ hex_string_of_word 3 m)"
 
 definition serialize_of_matches :: "(string \<Rightarrow> string) \<Rightarrow> of_match_field set \<Rightarrow> string"
   where

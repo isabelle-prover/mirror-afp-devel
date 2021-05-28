@@ -183,7 +183,7 @@ lemma of_nat_mono_maybe:
 
 lemma word_and_max_word:
   fixes a::"'a::len word"
-  shows "x = max_word \<Longrightarrow> a AND x = a"
+  shows "x = - 1 \<Longrightarrow> a AND x = a"
   by simp
 
 lemma word_and_full_mask_simp:
@@ -781,7 +781,7 @@ lemma plus_one_helper2:
 
 lemma less_x_plus_1:
   fixes x :: "'a :: len word" shows
-  "x \<noteq> max_word \<Longrightarrow> (y < (x + 1)) = (y < x \<or> y = x)"
+  "x \<noteq> - 1 \<Longrightarrow> (y < (x + 1)) = (y < x \<or> y = x)"
   apply (rule iffI)
    apply (rule disjCI)
    apply (drule plus_one_helper)
@@ -794,11 +794,11 @@ lemma less_x_plus_1:
   done
 
 lemma word_Suc_leq:
-  fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrightarrow> x < k + 1 \<longleftrightarrow> x \<le> k"
+  fixes k::"'a::len word" shows "k \<noteq> - 1 \<Longrightarrow> x < k + 1 \<longleftrightarrow> x \<le> k"
   using less_x_plus_1 word_le_less_eq by auto
 
 lemma word_Suc_le:
-   fixes k::"'a::len word" shows "x \<noteq> max_word \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
+   fixes k::"'a::len word" shows "x \<noteq> - 1 \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
   by (meson not_less word_Suc_leq)
 
 lemma word_lessThan_Suc_atMost:
@@ -815,7 +815,7 @@ lemma word_atLeastAtMost_Suc_greaterThanAtMost:
 
 lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
   fixes l::"'a::len word"
-  assumes "m \<noteq> max_word" and "l \<le> m" and "m \<le> u"
+  assumes "m \<noteq> - 1" and "l \<le> m" and "m \<le> u"
   shows "{l..m} \<union> {m+1..u} = {l..u}"
   proof -
   from ivl_disj_un_two(8)[OF assms(2) assms(3)] have "{l..u} = {l..m} \<union> {m<..u}" by blast

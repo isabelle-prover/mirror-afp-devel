@@ -1821,7 +1821,7 @@ lemmas word_rotl_dt_no_bin' [simp] =
   word_rotl_dt [where w="numeral w", unfolded to_bl_numeral] for w
   (* FIXME: negative numerals, 0 and 1 *)
 
-lemma max_word_bl: "to_bl (max_word::'a::len word) = replicate LENGTH('a) True"
+lemma max_word_bl: "to_bl (- 1::'a::len word) = replicate LENGTH('a) True"
   by (fact to_bl_n1)
 
 lemma to_bl_mask:

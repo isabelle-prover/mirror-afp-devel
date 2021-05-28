@@ -63,7 +63,7 @@ lemma minBound_word:
   by (simp add: minBound_def enum_word_def upt_conv_Cons)
 
 lemma maxBound_max_word:
-  "(maxBound::'a::len word) = max_word"
+  "(maxBound::'a::len word) = - 1"
   by (fact maxBound_word)
 
 lemma leq_maxBound [simp]:

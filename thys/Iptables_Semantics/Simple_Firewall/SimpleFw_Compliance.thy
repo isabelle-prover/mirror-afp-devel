@@ -122,7 +122,7 @@ lemma match_iface_simple_match_any_simps:
      "simple_match_port (sports simple_match_any) (p_sport p)"
      "simple_match_port (dports simple_match_any) (p_dport p)"
         apply (simp_all add: simple_match_any_def match_ifaceAny ipset_from_cidr_0)
-   apply (subgoal_tac [!] "(65535::16 word) = max_word")
+   apply (subgoal_tac [!] "(65535::16 word) = - 1")
      apply (simp_all only:)
      apply simp_all
   done

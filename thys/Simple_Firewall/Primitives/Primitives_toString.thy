@@ -42,7 +42,7 @@ definition port_toString :: "16 word \<Rightarrow> string" where
   "port_toString p \<equiv> dec_string_of_word0 p"
 
 fun ports_toString :: "string \<Rightarrow> (16 word \<times> 16 word) \<Rightarrow> string" where
-  "ports_toString descr (s,e) = (if s = 0 \<and> e = max_word then '''' else descr @ (if s=e then port_toString s else port_toString s@'':''@port_toString e))"
+  "ports_toString descr (s,e) = (if s = 0 \<and> e = - 1 then '''' else descr @ (if s=e then port_toString s else port_toString s@'':''@port_toString e))"
 lemma "ports_toString ''spt: '' (0,65535) = ''''" by eval
 lemma "ports_toString ''spt: '' (1024,2048) = ''spt: 1024:2048''" by eval
 lemma "ports_toString ''spt: '' (1024,1024) = ''spt: 1024''" by eval

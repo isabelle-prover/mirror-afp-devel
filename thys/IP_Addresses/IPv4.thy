@@ -30,7 +30,7 @@ section \<open>IPv4 Adresses\<close>
     unfolding max_ipv4_addr_def ipv4addr_of_nat_def by(simp)
   lemma "max_ipv4_addr = 0b11111111111111111111111111111111"
     by(fact max_ipv4_addr_number)
-  lemma max_ipv4_addr_max_word: "max_ipv4_addr = max_word"
+  lemma max_ipv4_addr_max_word: "max_ipv4_addr = - 1"
     by(simp add: max_ipv4_addr_number)
   lemma max_ipv4_addr_max[simp]: "\<forall>a. a \<le> max_ipv4_addr"
     by(simp add: max_ipv4_addr_max_word)

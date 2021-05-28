@@ -168,7 +168,7 @@ qed(simp add: word_upto.simps)
 lemma word_upto_alt: "(a :: ('l :: len) word) \<le> b \<Longrightarrow>
   word_upto a b = map of_nat (upt (unat a) (Suc (unat b)))"
 proof -
-   let ?mmw = "max_word :: 'l word"
+   let ?mmw = "- 1 :: 'l word"
    assume le: "a \<le> b"
    hence nle: "unat a \<le> unat b" by(unat_arith)
    have lem: "unat b \<le> unat ?mmw" by (simp add: word_unat_less_le) 

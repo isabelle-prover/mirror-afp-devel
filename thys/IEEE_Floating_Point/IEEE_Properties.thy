@@ -24,12 +24,12 @@ lemma valof_eq:
   by transfer (auto simp: bias_def divide_simps unat_eq_0)
 
 lemma exponent_le[simp]:
-  "exponent a \<le> unat (max_word::'a word)" for a::"('a, _)float"
+  "exponent a \<le> unat (-1::'a word)" for a::"('a, _)float"
   by transfer (auto intro!: unat_mono simp: word_le_nat_alt[symmetric])
 
 lemma
   max_word_le_exponent_iff[simp]:
-  "unat (max_word::'a word) \<le> exponent a \<longleftrightarrow> unat (max_word::'a word) = exponent a"
+  "unat (- 1::'a word) \<le> exponent a \<longleftrightarrow> unat (- 1::'a word) = exponent a"
   for a::"('a, _)float"
   using le_antisym by fastforce
 

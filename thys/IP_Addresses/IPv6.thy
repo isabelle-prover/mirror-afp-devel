@@ -30,7 +30,7 @@ lemma "ipv6addr_of_nat n = word_of_int (int n)"
     unfolding max_ipv6_addr_def ipv6addr_of_nat_def by(simp)
   lemma "max_ipv6_addr = 340282366920938463463374607431768211455"
     by(fact max_ipv6_addr_number)
-  lemma max_ipv6_addr_max_word: "max_ipv6_addr = max_word"
+  lemma max_ipv6_addr_max_word: "max_ipv6_addr = - 1"
     by(simp add: max_ipv6_addr_number)
   lemma max_ipv6_addr_max: "\<forall>a. a \<le> max_ipv6_addr"
     by(simp add: max_ipv6_addr_max_word)

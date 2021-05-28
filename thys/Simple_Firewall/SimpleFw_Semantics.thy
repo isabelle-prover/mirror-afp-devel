@@ -53,7 +53,7 @@ begin
     "simple_match_any \<equiv> \<lparr>iiface=ifaceAny, oiface=ifaceAny, src=(0,0), dst=(0,0), proto=ProtoAny, sports=(0,65535), dports=(0,65535) \<rparr>"
   lemma simple_match_any: "simple_matches simple_match_any p"
     proof -
-      have *: "(65535::16 word) = max_word"
+      have *: "(65535::16 word) = - 1"
         by simp
       show ?thesis
         by (simp add: simple_match_any_def ipset_from_cidr_0 match_ifaceAny *)
@@ -135,7 +135,7 @@ subsection\<open>Simple Ports\<close>
 
   lemma simple_match_port_code[code] :"simple_match_port (s,e) p_p = (s \<le> p_p \<and> p_p \<le> e)" by simp
 
-  lemma simple_match_port_UNIV: "{p. simple_match_port (s,e) p} = UNIV \<longleftrightarrow> (s = 0 \<and> e = max_word)"
+  lemma simple_match_port_UNIV: "{p. simple_match_port (s,e) p} = UNIV \<longleftrightarrow> (s = 0 \<and> e = - 1)"
     apply(simp)
     apply(rule)
      apply(case_tac "s = 0")
@@ -300,11 +300,11 @@ subsection\<open>Reality check: Validity of Simple Matches\<close>
     valid_prefix_fw (src m) \<and> valid_prefix_fw (dst m)" 
   
   lemma simple_match_valid_alt[code_unfold]: "simple_match_valid = (\<lambda> m.
-    (let c = (\<lambda>(s,e). (s \<noteq> 0 \<or> e \<noteq> max_word)) in (
+    (let c = (\<lambda>(s,e). (s \<noteq> 0 \<or> e \<noteq> - 1)) in (
     if c (sports m) \<or> c (dports m) then proto m = Proto TCP \<or> proto m = Proto UDP \<or> proto m = Proto L4_Protocol.SCTP else True)) \<and>
   valid_prefix_fw (src m) \<and> valid_prefix_fw (dst m))" 
   proof -
-    have simple_match_valid_alt_hlp1: "{p. simple_match_port x p} \<noteq> UNIV \<longleftrightarrow> (case x of (s,e) \<Rightarrow> s \<noteq> 0 \<or> e \<noteq> max_word)"
+    have simple_match_valid_alt_hlp1: "{p. simple_match_port x p} \<noteq> UNIV \<longleftrightarrow> (case x of (s,e) \<Rightarrow> s \<noteq> 0 \<or> e \<noteq> - 1)"
       for x using simple_match_port_UNIV by auto
     have simple_match_valid_alt_hlp2: "{p. simple_match_port x p} \<noteq> {} \<longleftrightarrow> (case x of (s,e) \<Rightarrow> s \<le> e)" for x by auto
     show ?thesis

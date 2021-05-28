@@ -763,7 +763,7 @@ qed
   
   lemma simple_conn_matches_simple_match_any: "simple_conn_matches simple_match_any c"
     apply (simp add: simple_conn_matches_def simple_match_any_def match_ifaceAny)
-    apply (subgoal_tac "(65535::16 word) = max_word")
+    apply (subgoal_tac "(65535::16 word) = - 1")
      apply (simp only:)
      apply simp_all
     done

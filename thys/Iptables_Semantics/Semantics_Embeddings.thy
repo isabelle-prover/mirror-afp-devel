@@ -333,7 +333,7 @@ lemma Semantics_optimize_primitive_univ_common_matcher:
   assumes "matcher_agree_on_exact_matches \<gamma> common_matcher" 
     shows "Semantics.matches \<gamma> (optimize_primitive_univ m) p = Semantics.matches \<gamma> m p"
 proof -
-  have "65535 = (max_word::16 word)"
+  have "65535 = (- 1::16 word)"
     by simp
   then have port_range: "\<And>s e port. s = 0 \<and> e = 0xFFFF \<longrightarrow> (port::16 word) \<le> 0xFFFF"
     by (simp only:) simp

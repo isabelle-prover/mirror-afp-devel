@@ -518,7 +518,7 @@ lemma test_bit_rcat:
 
 lemmas test_bit_cong = arg_cong [where f = "test_bit", THEN fun_cong]
 
-lemma max_test_bit: "(max_word::'a::len word) !! n \<longleftrightarrow> n < LENGTH('a)"
+lemma max_test_bit: "(- 1::'a::len word) !! n \<longleftrightarrow> n < LENGTH('a)"
   by (fact nth_minus1)
 
 lemma shiftr_x_0 [iff]: "x >> 0 = x"

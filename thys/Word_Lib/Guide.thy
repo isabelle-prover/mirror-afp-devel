@@ -364,8 +364,11 @@ section \<open>Changelog\<close>
 text \<open>
   \<^descr>[Changes since AFP 2021] ~
 
-    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is not part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
+    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is no part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
       any longer.
+
+    \<^item> Abbreviation \<^abbrev>\<open>max_word\<close> moved from distribution into theory
+      \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
 \<close>
 
 (*<*)

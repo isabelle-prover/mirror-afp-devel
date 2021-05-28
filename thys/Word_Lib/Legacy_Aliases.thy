@@ -10,6 +10,9 @@ theory Legacy_Aliases
   imports "HOL-Library.Word"
 begin
 
+abbreviation (input) max_word :: \<open>'a::len word\<close>
+  where "max_word \<equiv> - 1"
+
 definition
   complement :: "'a :: len word \<Rightarrow> 'a word"  where
  "complement x \<equiv> NOT x"

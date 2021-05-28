@@ -22,7 +22,7 @@ subsection \<open>Additional lemmas about generic floats\<close>
 
 lemma is_nan_some_nan[simp]: "is_nan (some_nan :: ('e, 'f) float)"
   unfolding some_nan_def
-  by (rule someI[where x="Abs_float (0, max_word :: 'e word, 1)"])
+  by (rule someI[where x="Abs_float (0, - 1 :: 'e word, 1)"])
     (auto simp add: is_nan_def exponent_def fraction_def emax_def Abs_float_inverse[simplified])
 
 lemma not_is_nan_0[simp]: "\<not> is_nan 0"

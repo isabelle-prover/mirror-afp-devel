@@ -46,7 +46,7 @@ lemma "simple_proto_conjunct p1 (Proto p2) \<noteq> None \<Longrightarrow> \<for
   definition compress_protocols :: "protocol negation_type list \<Rightarrow> (protocol list \<times> protocol list) option" where
     "compress_protocols ps \<equiv> case (compress_pos_protocols (getPos ps))
         of None \<Rightarrow> None
-        |  Some proto \<Rightarrow> if ProtoAny \<in> set (getNeg ps) \<or> (\<forall>p \<in> {0..max_word}. Proto p \<in> set (getNeg ps)) then
+        |  Some proto \<Rightarrow> if ProtoAny \<in> set (getNeg ps) \<or> (\<forall>p \<in> {0..- 1}. Proto p \<in> set (getNeg ps)) then
                            None
                          else if proto = ProtoAny then
                            Some ([], getNeg ps)
@@ -59,22 +59,22 @@ lemma "simple_proto_conjunct p1 (Proto p2) \<noteq> None \<Longrightarrow> \<for
   
   (* It is kind of messy to find a definition that checks whether a match is the exhaustive list
     and is executable *)
-  lemma all_proto_hlp2: "ProtoAny \<in> a \<or> (\<forall>p \<in> {0..max_word}. Proto p \<in> a) \<longleftrightarrow>
+  lemma all_proto_hlp2: "ProtoAny \<in> a \<or> (\<forall>p \<in> {0..- 1}. Proto p \<in> a) \<longleftrightarrow>
                                ProtoAny \<in> a \<or> a = {p. p \<noteq> ProtoAny}"
   proof -   
-    have all_proto_hlp: "ProtoAny \<notin> a \<Longrightarrow> (\<forall>p \<in> {0..max_word}. Proto p \<in> a) \<longleftrightarrow> a = {p. p \<noteq> ProtoAny}"
+    have all_proto_hlp: "ProtoAny \<notin> a \<Longrightarrow> (\<forall>p \<in> {0..- 1}. Proto p \<in> a) \<longleftrightarrow> a = {p. p \<noteq> ProtoAny}"
       by(auto intro: protocol.exhaust)
     thus ?thesis by blast
   qed
 
-  lemma set_word8_word_upto: "{0..(max_word :: 8 word)} = set (word_upto 0 255)"
+  lemma set_word8_word_upto: "{0..(- 1 :: 8 word)} = set (word_upto 0 255)"
   proof -
-    have \<open>0xFF = (max_word :: 8 word)\<close>
+    have \<open>0xFF = (- 1 :: 8 word)\<close>
       by simp
     then show ?thesis
       by (simp only:) (auto simp add: word_upto_set_eq)
   qed
-  lemma "(\<forall>p \<in> {0..max_word}. Proto p \<in> set (getNeg ps)) \<longleftrightarrow>
+  lemma "(\<forall>p \<in> {0..- 1}. Proto p \<in> set (getNeg ps)) \<longleftrightarrow>
          ((\<forall>p \<in> set (word_upto 0 255). Proto p \<in> set (getNeg ps)))"
     by(simp add: set_word8_word_upto)
  

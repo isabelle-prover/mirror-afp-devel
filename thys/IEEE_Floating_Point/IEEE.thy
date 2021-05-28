@@ -44,7 +44,7 @@ definition bias :: "('e, 'f) float itself \<Rightarrow> nat"
   where "bias x = 2^(LENGTH('e) - 1) - 1"
 
 definition emax :: "('e, 'f) float itself \<Rightarrow> nat"
-  where "emax x = unat(max_word::'e word)"
+  where "emax x = unat (- 1::'e word)"
 
 abbreviation fracwidth::"('e, 'f) float itself \<Rightarrow> nat" where
   "fracwidth _ \<equiv> LENGTH('f)"
@@ -108,9 +108,9 @@ definition is_finite :: "('e, 'f) float \<Rightarrow> bool"
 
 subsection \<open>Special values\<close>
 
-lift_definition plus_infinity :: "('e, 'f) float" ("\<infinity>") is "(0, max_word, 0)" .
+lift_definition plus_infinity :: "('e, 'f) float" ("\<infinity>") is "(0, - 1, 0)" .
 
-lift_definition topfloat :: "('e, 'f) float" is "(0, max_word - 1, 2^LENGTH('f) - 1)" .
+lift_definition topfloat :: "('e, 'f) float" is "(0, - 2, 2^LENGTH('f) - 1)" .
 
 instantiation float::(len, len) zero begin
 

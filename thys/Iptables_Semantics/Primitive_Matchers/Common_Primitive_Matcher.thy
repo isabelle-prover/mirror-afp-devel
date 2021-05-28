@@ -158,7 +158,7 @@ subsection\<open>Basic optimisations\<close>
     shows "matches (common_matcher, \<alpha>) m = matches (common_matcher, \<alpha>) (optimize_primitive_univ m)"
     proof(simp add: fun_eq_iff, clarify, rename_tac a p)
       fix a and p :: "('i::len, 'a) tagged_packet_scheme"
-      have "65535 = (max_word::16 word)" by simp
+      have "65535 = (-1::16 word)" by simp
       then have port_range: "\<And>s e port. s = 0 \<and> e = 0xFFFF \<longrightarrow> (port::16 word) \<le> 0xFFFF"
         by (simp only:) simp
       have "ternary_ternary_eval (map_match_tac common_matcher p m) = ternary_ternary_eval (map_match_tac common_matcher p (optimize_primitive_univ m))"

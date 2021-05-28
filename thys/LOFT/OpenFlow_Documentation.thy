@@ -404,7 +404,7 @@ let
   nrd = generalized_fw_join frt nfw;
   ard = (map (apfst of_nat) \<circ> annotate_rlen) nrd
   in
-  if length nrd < unat (max_word :: 16 word)
+  if length nrd < unat (- 1 :: 16 word)
   then Inr (pack_OF_entries ifs ard)
   else Inl ''Error in creating OpenFlow table: priority number space exhausted''
 )"

@@ -17,6 +17,10 @@ theory Word_Lemmas
     Aligned
 begin
 
+lemma max_word_not_less [simp]:
+   "\<not> - 1 < x" for x :: \<open>'a::len word\<close>
+  by (fact word_order.extremum_strict)
+
 (* The seL4 bitfield generator produces functions containing mask and shift operations, such that
  * invoking two of them consecutively can produce something like the following.
  *)
@@ -366,7 +370,7 @@ lemma le_shiftr':
   apply (fastforce dest: le_shiftr1')
   done
 
-lemma word_add_no_overflow:"(x::'a::len word) < max_word \<Longrightarrow> x < x + 1"
+lemma word_add_no_overflow:"(x::'a::len word) < - 1 \<Longrightarrow> x < x + 1"
   using less_x_plus_1 order_less_le by blast
 
 lemma lt_plus_1_le_word:
@@ -554,8 +558,8 @@ proof (subst upto_enum_red, subst if_not_P [OF leD [OF lt3]], clarsimp, rule con
 qed
 
 lemma max_word_mask:
-  "(max_word :: 'a::len word) = mask LENGTH('a)"
-  unfolding mask_eq_decr_exp by simp
+  "(- 1 :: 'a::len word) = mask LENGTH('a)"
+  by (fact minus_1_eq_mask)
 
 lemmas mask_len_max = max_word_mask[symmetric]
 
@@ -924,10 +928,6 @@ proof -
     using assms by (auto dest: arg_cong[where f=set])
   then show ?thesis by auto
 qed
-
-lemma max_word_not_less[simp]:
-   "\<not> max_word < x"
-  by (simp add: not_less)
 
 lemma word_enum_prefix:
   "[x .e. (y ::'a::len word)] = as @ a # bs \<Longrightarrow> as = (if x < a then [x .e. a - 1] else [])"
@@ -1421,7 +1421,7 @@ lemma unat_ucast_le:
   by (simp add: ucast_nat_def word_unat_less_le)
 
 lemma ucast_le_up_down_iff:
-  "\<lbrakk> LENGTH('a) \<le> LENGTH('b); (x :: 'b :: len word) \<le> ucast (max_word :: 'a :: len word) \<rbrakk>
+  "\<lbrakk> LENGTH('a) \<le> LENGTH('b); (x :: 'b :: len word) \<le> ucast (- 1 :: 'a :: len word) \<rbrakk>
    \<Longrightarrow> (ucast x \<le> (y :: 'a word)) = (x \<le> ucast y)"
   using le_max_word_ucast_id ucast_le_ucast by metis
 
