@@ -83,20 +83,20 @@ proof -
       split del: if_split split: if_split_asm)
 qed
 
-lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
-  by (simp add: test_bit_eq_bit bit_set_bits_word_iff)
+lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
+  by (fact bit_set_bits_word_iff)
 
-lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
-  by (rule word_eqI) (auto simp add: word_test_bit_set_bits)
+lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
+  by (rule word_eqI) (auto simp add: word_test_bit_set_bits bit_simps)
 
 lemma word_and_mask_or_conv_and_mask:
-  "n !! index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
+  "bit n index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
   for n :: \<open>'a::len word\<close>
-by(rule word_eqI)(auto simp add: word_ao_nth word_size nth_shiftl simp del: shiftl_1)
+by(rule word_eqI)(auto simp add: bit_simps)
 
 lemma uint_and_mask_or_full:
   fixes n :: "'a :: len word"
-  assumes "n !! (LENGTH('a) - 1)"
+  assumes "bit n (LENGTH('a) - 1)"
   and "mask1 = mask (LENGTH('a) - 1)"
   and "mask2 = 1 << LENGTH('a) - 1"
   shows "uint (n AND mask1) OR mask2 = uint n"
@@ -221,11 +221,15 @@ context fixes f :: "nat \<Rightarrow> bool" begin
 definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word\<close>
   where \<open>set_bits_aux w n = push_bit n w OR take_bit n (set_bits f)\<close>
 
+lemma bit_set_bit_aux [bit_simps]:
+  \<open>bit (set_bits_aux w n) m \<longleftrightarrow> m < LENGTH('a) \<and>
+    (if m < n then f m else bit w (m - n))\<close> for w :: \<open>'a::len word\<close>
+  by (auto simp add: bit_simps set_bits_aux_def)
+
 lemma set_bits_aux_conv:
   \<open>set_bits_aux w n = (w << n) OR (set_bits f AND mask n)\<close>
   for w :: \<open>'a::len word\<close>
-  by (rule bit_word_eqI)
-    (auto simp add: set_bits_aux_def shiftl_word_eq bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff)
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 corollary set_bits_conv_set_bits_aux:
   \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
@@ -233,12 +237,11 @@ corollary set_bits_conv_set_bits_aux:
 
 lemma set_bits_aux_0 [simp]:
   \<open>set_bits_aux w 0 = w\<close>
-  by  (simp add: set_bits_aux_conv)
+  by (simp add: set_bits_aux_conv)
 
 lemma set_bits_aux_Suc [simp]:
   \<open>set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n\<close>
-  by (simp add: set_bits_aux_def shiftl_word_eq bit_eq_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_set_bits_word_iff)
-    (auto simp add: bit_exp_iff not_less bit_1_iff less_Suc_eq_le)
+  by (rule bit_word_eqI) (auto simp add: bit_simps not_less le_less_Suc_eq)
 
 lemma set_bits_aux_simps [code]:
   \<open>set_bits_aux w 0 = w\<close>
@@ -257,7 +260,7 @@ lemma word_of_int_via_signed:
   shows
   "(word_of_int i :: 'a :: len word) =
    (let i' = i AND mask
-    in if i' !! index then
+    in if bit i' index then
          if i' - shift < least \<or> overflow \<le> i' - shift then arbitrary1 i' else word_of_int (i' - shift)
        else if i' < least \<or> overflow \<le> i' then arbitrary2 i' else word_of_int i')"
 proof -
@@ -265,7 +268,7 @@ proof -
   have "shift = mask + 1" unfolding assms by(simp add: bin_mask_p1_conv_shift)
   hence "i' < shift" by(simp add: mask_def i'_def int_and_le)
   show ?thesis
-  proof(cases "i' !! index")
+  proof(cases "bit i' index")
     case True
     then have unf: "i' = overflow OR i'"
       apply (simp add: assms i'_def shiftl_eq_push_bit push_bit_of_1 flip: take_bit_eq_mask)
@@ -295,7 +298,7 @@ proof -
     hence "least \<le> i'" using \<open>least \<le> 0\<close> by simp
     moreover
     have "word_of_int i' = (word_of_int i :: 'a word)"
-      by(rule word_eqI)(auto simp add: i'_def bin_nth_ops mask_def)
+      by (simp add: i'_def mask_def of_int_and_eq of_int_mask_eq)
     ultimately show ?thesis using False by(simp add: Let_def i'_def)
   qed
 qed

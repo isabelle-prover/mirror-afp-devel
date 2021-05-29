@@ -74,10 +74,6 @@ context
   includes lifting_syntax integer.lifting
 begin
 
-lemma test_bit_integer_transfer [transfer_rule]:
-  \<open>(pcr_integer ===> (=)) bit (!!)\<close>
-  unfolding test_bit_eq_bit by transfer_prover
-
 lemma shiftl_integer_transfer [transfer_rule]:
   \<open>(pcr_integer ===> (=) ===> pcr_integer) (\<lambda>k n. push_bit n k) (<<)\<close>
   unfolding shiftl_eq_push_bit by transfer_prover
@@ -653,7 +649,7 @@ definition bit_integer_test :: "bool" where
     , 21, -1, 4, -7
     , 4, -8
     , 12, -13] \<and>
-    [ (5 :: integer) !! 4, (5 :: integer) !! 2, (-5 :: integer) !! 4, (-5 :: integer) !! 2
+    [ bit (5 :: integer) 4, bit (5 :: integer) 2, bit (-5 :: integer) 4, bit (-5 :: integer) 2
     , lsb (5 :: integer), lsb (4 :: integer), lsb (-1 :: integer), lsb (-2 :: integer),
       msb (5 :: integer), msb (0 :: integer), msb (-1 :: integer), msb (-2 :: integer)]
   = [ False, True, True, False,

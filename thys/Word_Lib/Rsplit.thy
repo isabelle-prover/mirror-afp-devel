@@ -41,7 +41,7 @@ lemma word_rsplit_empty_iff_size: "word_rsplit w = [] \<longleftrightarrow> size
 
 lemma test_bit_rsplit:
   "sw = word_rsplit w \<Longrightarrow> m < size (hd sw) \<Longrightarrow>
-    k < length sw \<Longrightarrow> (rev sw ! k) !! m = w !! (k * size (hd sw) + m)"
+    k < length sw \<Longrightarrow> bit (rev sw ! k) m = bit w (k * size (hd sw) + m)"
   for sw :: "'a::len word list"
   apply (unfold word_rsplit_def word_test_bit_def)
   apply (rule trans)
@@ -59,8 +59,8 @@ lemma test_bit_rsplit:
   using bin_rsplit_size_sign take_bit_int_eq_self_iff by blast
 
 lemma test_bit_rsplit_alt:
-  \<open>(word_rsplit w  :: 'b::len word list) ! i !! m \<longleftrightarrow>
-    w !! ((length (word_rsplit w :: 'b::len word list) - Suc i) * size (hd (word_rsplit w :: 'b::len word list)) + m)\<close>
+  \<open>bit ((word_rsplit w  :: 'b::len word list) ! i) m \<longleftrightarrow>
+    bit w ((length (word_rsplit w :: 'b::len word list) - Suc i) * size (hd (word_rsplit w :: 'b::len word list)) + m)\<close>
   if \<open>i < length (word_rsplit w :: 'b::len word list)\<close> \<open>m < size (hd (word_rsplit w :: 'b::len word list))\<close> \<open>0 < length (word_rsplit w :: 'b::len word list)\<close>
   for w :: \<open>'a::len word\<close>
   apply (rule trans)

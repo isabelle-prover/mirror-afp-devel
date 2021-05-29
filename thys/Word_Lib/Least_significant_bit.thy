@@ -22,7 +22,7 @@ instantiation int :: lsb
 begin
 
 definition lsb_int :: \<open>int \<Rightarrow> bool\<close>
-  where \<open>lsb i = i !! 0\<close> for i :: int
+  where \<open>lsb i = bit i 0\<close> for i :: int
 
 instance
   by standard (simp add: fun_eq_iff lsb_int_def)
@@ -62,7 +62,7 @@ lemma lsb_word_eq:
   \<open>lsb = (odd :: 'a word \<Rightarrow> bool)\<close> for w :: \<open>'a::len word\<close>
   by (fact lsb_odd)
 
-lemma word_lsb_alt: "lsb w = test_bit w 0"
+lemma word_lsb_alt: "lsb w = bit w 0"
   for w :: "'a::len word"
   by (auto simp: word_test_bit_def word_lsb_def)
 
@@ -79,11 +79,11 @@ lemmas word_ops_lsb = lsb0 [unfolded word_lsb_alt]
 
 lemma word_lsb_numeral [simp]:
   "lsb (numeral bin :: 'a::len word) \<longleftrightarrow> odd (numeral bin :: int)"
-  unfolding word_lsb_alt test_bit_numeral by simp
+  by (simp only: lsb_odd, transfer) rule
 
 lemma word_lsb_neg_numeral [simp]:
   "lsb (- numeral bin :: 'a::len word) \<longleftrightarrow> odd (- numeral bin :: int)"
-  by (simp add: word_lsb_alt)
+  by (simp only: lsb_odd, transfer) rule
 
 lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"
   apply (simp add: word_lsb_def Groebner_Basis.algebra(31))

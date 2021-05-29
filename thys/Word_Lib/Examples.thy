@@ -96,12 +96,12 @@ lemma "NOT 0 = (255 :: 8 word)" by simp
 
 lemma "(-1 :: 32 word) = 0xFFFFFFFF" by simp
 
-lemma "(0b0010 :: 4 word) !! 1" by simp
-lemma "\<not> (0b0010 :: 4 word) !! 0" by simp
-lemma "\<not> (0b1000 :: 3 word) !! 4" by simp
-lemma "\<not> (1 :: 3 word) !! 2" by simp
+lemma "bit (0b0010 :: 4 word) 1" by simp
+lemma "\<not> bit (0b0010 :: 4 word) 0" by simp
+lemma "\<not> bit (0b1000 :: 3 word) 4" by simp
+lemma "\<not> bit (1 :: 3 word) 2" by simp
 
-lemma "(0b11000 :: 10 word) !! n = (n = 4 \<or> n = 3)"
+lemma "bit  (0b11000 :: 10 word) n = (n = 4 \<or> n = 3)"
   by (auto simp add: bin_nth_Bit0 bin_nth_Bit1)
 
 lemma "set_bit 55 7 True = (183::'a::len word)" by simp

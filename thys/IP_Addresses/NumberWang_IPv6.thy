@@ -216,7 +216,7 @@ proof -
   have ucast_mask: "(ucast:: 16 word \<Rightarrow> 128 word) b && mask 16 = ucast b" 
     by transfer (simp flip: take_bit_eq_mask)
   from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
-    by (auto simp add: nth_ucast word_size intro: word_eqI)
+    by (auto simp add: bit_simps word_size intro!: bit_word_eqI)
   thus ?thesis
   apply(subst word_and_mask_shiftl)
   apply(subst shiftl_shiftr3)

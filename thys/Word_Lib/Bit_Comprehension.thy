@@ -72,7 +72,7 @@ instance by standard
 
 end
 
-lemma bit_set_bits_word_iff:
+lemma bit_set_bits_word_iff [bit_simps]:
   \<open>bit (set_bits P :: 'a::len word) n \<longleftrightarrow> n < LENGTH('a) \<and> P n\<close>
   by (auto simp add: word_set_bits_def bit_horner_sum_bit_word_iff)
 

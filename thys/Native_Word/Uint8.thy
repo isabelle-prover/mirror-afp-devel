@@ -139,10 +139,6 @@ context
   includes lifting_syntax
 begin
 
-lemma test_bit_uint8_transfer [transfer_rule]:
-  \<open>(cr_uint8 ===> (=)) bit (!!)\<close>
-  unfolding test_bit_eq_bit by transfer_prover
-
 lemma shiftl_uint8_transfer [transfer_rule]:
   \<open>(cr_uint8 ===> (=) ===> cr_uint8) (\<lambda>k n. push_bit n k) (<<)\<close>
   unfolding shiftl_eq_push_bit by transfer_prover
@@ -499,8 +495,8 @@ code_printing
 definition uint8_test_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool"
 where [code del]:
   "uint8_test_bit x n =
-  (if n < 0 \<or> 7 < n then undefined (test_bit :: uint8 \<Rightarrow> _) x n
-   else x !! (nat_of_integer n))"
+  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) x n
+   else bit x (nat_of_integer n))"
 
 lemma bit_uint8_code [code]:
   "bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
@@ -509,9 +505,9 @@ lemma bit_uint8_code [code]:
 
 lemma uint8_test_bit_code [code]:
   "uint8_test_bit w n =
-  (if n < 0 \<or> 7 < n then undefined (test_bit :: uint8 \<Rightarrow> _) w n else Rep_uint8 w !! nat_of_integer n)"
+  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) w n else bit (Rep_uint8 w) (nat_of_integer n))"
   unfolding uint8_test_bit_def
-  by (simp add: bit_uint8.rep_eq test_bit_eq_bit)
+  by (simp add: bit_uint8.rep_eq)
 
 code_printing constant uint8_test_bit \<rightharpoonup>
   (SML) "Uint8.test'_bit" and
@@ -560,8 +556,8 @@ lemma set_bits_uint8 [code]:
 by transfer(simp add: set_bits_conv_set_bits_aux)
 
 
-lemma lsb_code [code]: fixes x :: uint8 shows "lsb x = x !! 0"
-  by transfer (simp add: lsb_odd)
+lemma lsb_code [code]: fixes x :: uint8 shows "lsb x = bit x 0"
+  by (simp add: lsb_odd)
 
 
 definition uint8_shiftl :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
@@ -614,7 +610,7 @@ where [code del]:
 
 lemma sshiftr_uint8_code [code]:
   "x >>> n = 
-  (if n < 8 then uint8_sshiftr x (integer_of_nat n) else if x !! 7 then -1 else 0)"
+  (if n < 8 then uint8_sshiftr x (integer_of_nat n) else if bit x 7 then -1 else 0)"
   including undefined_transfer integer.lifting unfolding uint8_sshiftr_def
   by transfer (simp add: not_less signed_drop_bit_beyond word_size)
 
@@ -632,7 +628,7 @@ code_printing constant uint8_sshiftr \<rightharpoonup>
   (Scala) "Uint8.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed x i)"
 
-lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> (x :: uint8) !! 7"
+lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint8) 7"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
@@ -651,7 +647,7 @@ unfolding integer_of_uint8_def including integer.lifting by transfer simp
 
 definition integer_of_uint8_signed :: "uint8 \<Rightarrow> integer"
 where
-  "integer_of_uint8_signed n = (if n !! 7 then undefined integer_of_uint8 n else integer_of_uint8 n)"
+  "integer_of_uint8_signed n = (if bit n 7 then undefined integer_of_uint8 n else integer_of_uint8 n)"
 
 lemma integer_of_uint8_signed_code [code]:
   "integer_of_uint8_signed n =

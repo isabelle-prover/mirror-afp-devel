@@ -505,16 +505,19 @@ lemma is_aligned_no_overflow'':
   apply (erule word_sub_1_le)
   done
 
+lemma is_aligned_bitI:
+  \<open>is_aligned p m\<close> if \<open>\<And>n. n < m \<Longrightarrow> \<not> bit p n\<close>
+  apply (simp add: is_aligned_mask)
+  apply (rule bit_word_eqI)
+  using that
+  apply (auto simp add: bit_simps)
+  done
+
 lemma is_aligned_nth [word_eqI_simps]:
-  "is_aligned p m = (\<forall>n < m. \<not>p !! n)"
-  apply (clarsimp simp: is_aligned_mask bang_eq word_size)
-  apply (rule iffI)
-   apply clarsimp
-   apply (case_tac "n < size p")
-    apply (simp add: word_size)
-   apply (drule test_bit_size)
-   apply simp
-  apply clarsimp
+  "is_aligned p m = (\<forall>n < m. \<not> bit p n)"
+  apply (auto intro: is_aligned_bitI simp add: is_aligned_mask bit_eq_iff)
+   apply (auto simp: bit_simps)
+  using bit_imp_le_length not_less apply blast
   done
 
 lemma range_inter:
@@ -632,24 +635,24 @@ lemma is_aligned_minus:
 
 lemma add_mask_lower_bits:
   "\<lbrakk>is_aligned (x :: 'a :: len word) n;
-    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n'\<rbrakk> \<Longrightarrow> x + p AND NOT (mask n) = x"
+    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> bit p n'\<rbrakk> \<Longrightarrow> x + p AND NOT (mask n) = x"
   apply (subst word_plus_and_or_coroll)
    apply (rule word_eqI)
    apply (clarsimp simp: word_size is_aligned_nth)
    apply (erule_tac x=na in allE)+
-   apply simp
+   apply (simp add: bit_simps)
   apply (rule bit_word_eqI)
-  apply (auto simp add: bit_simps not_less test_bit_eq_bit)
-  apply (metis is_aligned_nth not_le test_bit_eq_bit)
+  apply (auto simp add: bit_simps not_less word_size)
+  apply (metis is_aligned_nth not_le)
   done
 
 lemma is_aligned_andI1:
   "is_aligned x n \<Longrightarrow> is_aligned (x AND y) n"
-  by (simp add: is_aligned_nth)
+  by (simp add: is_aligned_nth bit_simps)
 
 lemma is_aligned_andI2:
   "is_aligned y n \<Longrightarrow> is_aligned (x AND y) n"
-  by (simp add: is_aligned_nth)
+  by (simp add: is_aligned_nth bit_simps)
 
 lemma is_aligned_shiftl:
   "is_aligned w (n - m) \<Longrightarrow> is_aligned (w << m) n"
@@ -674,13 +677,13 @@ lemma is_aligned_shiftr_shiftl:
 lemma aligned_shiftr_mask_shiftl:
   "is_aligned x n \<Longrightarrow> ((x >> n) AND mask v) << n = x AND mask (v + n)"
   apply (rule word_eqI)
-  apply (simp add: word_size nth_shiftl nth_shiftr)
-  apply (subgoal_tac "\<forall>m. x !! m \<longrightarrow> m \<ge> n")
+  apply (simp add: word_size nth_shiftl nth_shiftr bit_simps)
+  apply (subgoal_tac "\<forall>m. bit x m \<longrightarrow> m \<ge> n")
    apply auto[1]
   apply (clarsimp simp: is_aligned_mask)
   apply (drule_tac x=m in word_eqD)
   apply (frule test_bit_size)
-  apply (simp add: word_size)
+  apply (simp add: word_size bit_simps)
   done
 
 lemma mask_zero:
@@ -922,9 +925,28 @@ lemma and_neg_mask_eq_iff_not_mask_le:
   by (metis eq_iff neg_mask_mono_le word_and_le1 word_and_le2 word_bw_same(1))
 
 lemma neg_mask_le_high_bits [word_eqI_simps]:
-  "NOT(mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. w !! i)"
+  \<open>NOT (mask n) \<le> w \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. bit w i)\<close> (is \<open>?P \<longleftrightarrow> ?Q\<close>)
   for w :: \<open>'a::len word\<close>
-  by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric] word_eq_iff neg_mask_test_bit)
+proof
+  assume ?Q
+  then have \<open>w AND NOT (mask n) = NOT (mask n)\<close>
+    by (auto simp add: bit_simps word_size intro: bit_word_eqI)
+  then show ?P
+    by (simp add: and_neg_mask_eq_iff_not_mask_le)
+next
+  assume ?P
+  then have *: \<open>w AND NOT (mask n) = NOT (mask n)\<close>
+    by (simp add: and_neg_mask_eq_iff_not_mask_le)
+  show \<open>?Q\<close>
+  proof (rule ccontr)
+    assume \<open>\<not> (\<forall>i\<in>{n..<size w}. bit w i)\<close>
+    then obtain m where m: \<open>\<not> bit w m\<close> \<open>n \<le> m\<close> \<open>m < LENGTH('a)\<close>
+      by (auto simp add: word_size)
+    from * have \<open>bit (w AND NOT (mask n)) m \<longleftrightarrow> bit (NOT (mask n :: 'a word)) m\<close>
+      by auto
+    with m show False by (auto simp add: bit_simps)
+  qed
+qed
 
 lemma is_aligned_add_less_t2n:
   "\<lbrakk>is_aligned (p::'a::len word) n; d < 2^n; n \<le> m; p < 2^m\<rbrakk> \<Longrightarrow> p + d < 2^m"
@@ -1017,7 +1039,7 @@ lemma aligned_less_plus_1:
   apply (drule arg_cong[where f="\<lambda>x. x - 1"])
   apply (clarsimp simp: is_aligned_mask)
   apply (drule word_eqD[where x=0])
-  apply simp
+  apply (simp add: even_mask_iff)
   done
 
 lemma aligned_add_offset_less:
@@ -1183,18 +1205,18 @@ lemma aligned_shift:
   "\<lbrakk>x < 2 ^ n; is_aligned (y :: 'a :: len word) n;n \<le> LENGTH('a)\<rbrakk>
    \<Longrightarrow> x + y >> n = y >> n"
   apply (subst word_plus_and_or_coroll; rule bit_word_eqI)
-   apply (auto simp add: bit_simps is_aligned_nth test_bit_eq_bit)
-   apply (metis less_2p_is_upper_bits_unset not_le test_bit_word_eq)
-  apply (metis le_add1 less_2p_is_upper_bits_unset test_bit_bin test_bit_word_eq)
+   apply (auto simp add: bit_simps is_aligned_nth)
+   apply (metis less_2p_is_upper_bits_unset not_le)
+  apply (metis le_add1 less_2p_is_upper_bits_unset test_bit_bin)
   done
 
 lemma aligned_shift':
   "\<lbrakk>x < 2 ^ n; is_aligned (y :: 'a :: len word) n;n \<le> LENGTH('a)\<rbrakk>
    \<Longrightarrow> y + x >> n = y >> n"
   apply (subst word_plus_and_or_coroll; rule bit_word_eqI)
-   apply (auto simp add: bit_simps is_aligned_nth test_bit_eq_bit)
-   apply (metis less_2p_is_upper_bits_unset not_le test_bit_eq_bit)
-  apply (metis bit_imp_le_length le_add1 less_2p_is_upper_bits_unset test_bit_eq_bit)
+   apply (auto simp add: bit_simps is_aligned_nth)
+   apply (metis less_2p_is_upper_bits_unset not_le)
+  apply (metis bit_imp_le_length le_add1 less_2p_is_upper_bits_unset)
   done
 
 lemma and_neg_mask_plus_mask_mono: "(p AND NOT (mask n)) + mask n \<ge> p"

@@ -31,6 +31,7 @@ imports
   Reversed_Bit_Lists
   Rsplit
   Signed_Words
+  Syntax_Bundles
   Traditional_Infix_Syntax
   Typedef_Morphisms
   Type_Syntax
@@ -44,6 +45,8 @@ imports
   More_Word_Operations
   Many_More
 begin
+
+unbundle bit_projection_infix_syntax
 
 declare word_induct2[induct type]
 declare word_nat_cases[cases type]
@@ -123,7 +126,7 @@ declare of_nat_diff [simp]
 
 (* Haskellish names/syntax *)
 notation (input)
-  test_bit ("testBit")
+  bit ("testBit")
 
 lemmas cast_simps = cast_simps ucast_down_bl
 

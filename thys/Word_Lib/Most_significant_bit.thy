@@ -119,7 +119,7 @@ lemma word_msb_nth: "msb w = bit (uint w) (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (simp add: word_msb_def sint_uint bin_sign_lem)
 
-lemma msb_nth: "msb w = w !! (LENGTH('a) - 1)"
+lemma msb_nth: "msb w = bit w (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (simp add: word_msb_nth word_test_bit_def)
 
@@ -159,7 +159,7 @@ lemma not_msb_from_less:
   apply (clarsimp simp add: msb_nth)
   apply (drule less_mask_eq)
   apply (drule word_eqD, drule(1) iffD2)
-  apply simp
+  apply (simp add: bit_simps)
   done
 
 lemma sint_eq_uint:
@@ -177,7 +177,7 @@ lemma scast_eq_ucast:
   apply (rule bit_word_eqI)
   apply (auto simp add: bit_signed_iff bit_unsigned_iff min_def msb_word_eq)
   apply (erule notE)
-  apply (metis le_less_Suc_eq test_bit_bin test_bit_word_eq)
+  apply (metis le_less_Suc_eq test_bit_bin)
   done
 
 lemma msb_ucast_eq:

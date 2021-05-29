@@ -50,7 +50,7 @@ definition test_uint32 where
    , (0x5 :: uint32) < 0x5, (0x5 :: uint32) < 0x6, (-5 :: uint32) < 6, (6 :: uint32) < -5
    , (0x5 :: uint32) \<le> 0x5, (0x5 :: uint32) \<le> 0x4, (-5 :: uint32) \<le> 6, (6 :: uint32) \<le> -5 
    , (0x7FFFFFFF :: uint32) < 0x80000000, (0xFFFFFFFF :: uint32) < 0, (0x80000000 :: uint32) < 0x7FFFFFFF
-   , (0x7FFFFFFF :: uint32) !! 0, (0x7FFFFFFF :: uint32) !! 31, (0x80000000 :: uint32) !! 31, (0x80000000 :: uint32) !! 32
+   , bit (0x7FFFFFFF :: uint32) 0, bit (0x7FFFFFFF :: uint32) 31, bit (0x80000000 :: uint32) 31, bit (0x80000000 :: uint32) 32
    ]
   =
    [ True, False
@@ -131,7 +131,7 @@ definition test_uint16 where
    , (0x5 :: uint16) < 0x5, (0x5 :: uint16) < 0x6, (-5 :: uint16) < 6, (6 :: uint16) < -5
    , (0x5 :: uint16) \<le> 0x5, (0x5 :: uint16) \<le> 0x4, (-5 :: uint16) \<le> 6, (6 :: uint16) \<le> -5 
    , (0x7FFF :: uint16) < 0x8000, (0xFFFF :: uint16) < 0, (0x8000 :: uint16) < 0x7FFF
-   , (0x7FFF :: uint16) !! 0, (0x7FFF :: uint16) !! 15, (0x8000 :: uint16) !! 15, (0x8000 :: uint16) !! 16
+   , bit (0x7FFF :: uint16) 0, bit (0x7FFF :: uint16) 15, bit (0x8000 :: uint16) 15, bit (0x8000 :: uint16) 16
    ]
   =
    [ True, False
@@ -203,7 +203,7 @@ definition test_uint8 where
    , (0x5 :: uint8) < 0x5, (0x5 :: uint8) < 0x6, (-5 :: uint8) < 6, (6 :: uint8) < -5
    , (0x5 :: uint8) \<le> 0x5, (0x5 :: uint8) \<le> 0x4, (-5 :: uint8) \<le> 6, (6 :: uint8) \<le> -5 
    , (0x7F :: uint8) < 0x80, (0xFF :: uint8) < 0, (0x80 :: uint8) < 0x7F
-   , (0x7F :: uint8) !! 0, (0x7F :: uint8) !! 7, (0x80 :: uint8) !! 7, (0x80 :: uint8) !! 8
+   , bit (0x7F :: uint8) 0, bit (0x7F :: uint8) 7, bit (0x80 :: uint8) 7, bit (0x80 :: uint8) 8
    ]
   =
    [ True, False
@@ -300,7 +300,7 @@ definition "test_uint \<equiv> let
    , (0x5 :: uint) < 0x5, (0x5 :: uint) < 0x6, (-5 :: uint) < 6, (6 :: uint) < -5
    , (0x5 :: uint) \<le> 0x5, (0x5 :: uint) \<le> 0x4, (-5 :: uint) \<le> 6, (6 :: uint) \<le> -5 
    , (HS - 1) < HS, (HS + HS - 1) < 0, HS < HS - 1
-   , (HS - 1) !! 0, (HS - 1 :: uint) !! (dflt_size - 1), (HS :: uint) !! (dflt_size - 1), (HS :: uint) !! dflt_size
+   , bit (HS - 1) 0, bit (HS - 1 :: uint) (dflt_size - 1), bit (HS :: uint) (dflt_size - 1), bit (HS :: uint) dflt_size
    ]);
 
   test_list_c2 =
@@ -376,7 +376,7 @@ definition test_uint64 where
    , (0x5 :: uint64) < 0x5, (0x5 :: uint64) < 0x6, (-5 :: uint64) < 6, (6 :: uint64) < -5
    , (0x5 :: uint64) \<le> 0x5, (0x5 :: uint64) \<le> 0x4, (-5 :: uint64) \<le> 6, (6 :: uint64) \<le> -5 
    , (0x7FFFFFFFFFFFFFFF :: uint64) < 0x8000000000000000, (0xFFFFFFFFFFFFFFFF :: uint64) < 0, (0x8000000000000000 :: uint64) < 0x7FFFFFFFFFFFFFFF
-   , (0x7FFFFFFFFFFFFFFF :: uint64) !! 0, (0x7FFFFFFFFFFFFFFF :: uint64) !! 63, (0x8000000000000000 :: uint64) !! 63, (0x8000000000000000 :: uint64) !! 64
+   , bit (0x7FFFFFFFFFFFFFFF :: uint64) 0, bit (0x7FFFFFFFFFFFFFFF :: uint64) 63, bit (0x8000000000000000 :: uint64) 63, bit (0x8000000000000000 :: uint64) 64
    ]
   =
    [ True, False

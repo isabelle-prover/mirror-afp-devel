@@ -23,6 +23,7 @@ named_theorems word_eqI_simps
 
 lemmas [word_eqI_simps] =
   word_ops_nth_size
+  bit_mask_iff
   word_size
   word_or_zero
   neg_mask_test_bit
@@ -39,7 +40,7 @@ lemmas [word_eqI_simps] =
 lemmas word_eqI_rule = word_eqI [rule_format]
 
 lemma test_bit_lenD:
-  "x !! n \<Longrightarrow> n < LENGTH('a) \<and> x !! n" for x :: "'a :: len word"
+  "bit x n \<Longrightarrow> n < LENGTH('a) \<and> bit x n" for x :: "'a :: len word"
   by (fastforce dest: test_bit_size simp: word_size)
 
 method word_eqI uses simp simp_del split split_del cong flip =

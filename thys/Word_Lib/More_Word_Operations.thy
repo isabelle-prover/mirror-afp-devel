@@ -108,7 +108,7 @@ where
 definition
   sign_extend :: "nat \<Rightarrow> 'a::len word \<Rightarrow> 'a word"
 where
-  "sign_extend n w \<equiv> if w !! n then w OR NOT (mask n) else w AND mask n"
+  "sign_extend n w \<equiv> if bit w n then w OR NOT (mask n) else w AND mask n"
 
 lemma sign_extend_eq_signed_take_bit:
   \<open>sign_extend = signed_take_bit\<close>
@@ -119,7 +119,7 @@ proof (rule ext)+
     fix q
     assume \<open>q < LENGTH('a)\<close>
     then show \<open>bit (sign_extend n w) q \<longleftrightarrow> bit (signed_take_bit n w) q\<close>
-      by (auto simp add: test_bit_eq_bit bit_signed_take_bit_iff
+      by (auto simp add: bit_signed_take_bit_iff
         sign_extend_def bit_and_iff bit_or_iff bit_not_iff bit_mask_iff not_less
         exp_eq_0_imp_not_bit not_le min_def)
   qed
@@ -128,7 +128,7 @@ qed
 definition
   sign_extended :: "nat \<Rightarrow> 'a::len word \<Rightarrow> bool"
 where
-  "sign_extended n w \<equiv> \<forall>i. n < i \<longrightarrow> i < size w \<longrightarrow> w !! i = w !! n"
+  "sign_extended n w \<equiv> \<forall>i. n < i \<longrightarrow> i < size w \<longrightarrow> bit w i = bit w n"
 
 lemma ptr_add_0 [simp]:
   "ptr_add ref 0 = ref "
@@ -216,17 +216,17 @@ proof -
 qed
 
 lemma word_log2_nth_same:
-  "w \<noteq> 0 \<Longrightarrow> w !! word_log2 w"
-  by (drule bit_word_log2) (simp add: test_bit_eq_bit)
+  "w \<noteq> 0 \<Longrightarrow> bit w (word_log2 w)"
+  by (drule bit_word_log2) simp
 
 lemma word_log2_nth_not_set:
-  "\<lbrakk> word_log2 w < i ; i < size w \<rbrakk> \<Longrightarrow> \<not> w !! i"
-  using word_log2_maximum [of w i] by (auto simp add: test_bit_eq_bit)
+  "\<lbrakk> word_log2 w < i ; i < size w \<rbrakk> \<Longrightarrow> \<not> bit w i"
+  using word_log2_maximum [of w i] by auto
 
 lemma word_log2_highest:
-  assumes a: "w !! i"
+  assumes a: "bit w i"
   shows "i \<le> word_log2 w"
-  using a by (simp add: test_bit_eq_bit word_log2_maximum)
+  using a by (simp add: word_log2_maximum)
 
 lemma word_log2_max:
   "word_log2 w < size w"
@@ -536,21 +536,26 @@ qed
 
 (* Sign extension from bit n. *)
 
+lemma bin_sign_extend_iff [bit_simps]:
+  \<open>bit (sign_extend e w) i \<longleftrightarrow> bit w (min e i)\<close>
+  if \<open>i < LENGTH('a)\<close> for w :: \<open>'a::len word\<close>
+  using that by (simp add: sign_extend_def bit_simps min_def)
+
 lemma sign_extend_bitwise_if:
-  "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)"
-  by (simp add: sign_extend_def neg_mask_test_bit word_size)
+  "i < size w \<Longrightarrow> bit (sign_extend e w) i \<longleftrightarrow> (if i < e then bit w i else bit w e)"
+  by (simp add: word_size bit_simps)
 
 lemma sign_extend_bitwise_if'  [word_eqI_simps]:
-  \<open>i < LENGTH('a) \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (if i < e then w !! i else w !! e)\<close>
+  \<open>i < LENGTH('a) \<Longrightarrow> bit (sign_extend e w) i \<longleftrightarrow> (if i < e then bit w i else bit w e)\<close>
   for w :: \<open>'a::len word\<close>
   using sign_extend_bitwise_if [of i w e] by (simp add: word_size)
 
 lemma sign_extend_bitwise_disj:
-  "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> i \<le> e \<and> w !! i \<or> e \<le> i \<and> w !! e"
+  "i < size w \<Longrightarrow> bit (sign_extend e w) i \<longleftrightarrow> i \<le> e \<and> bit w i \<or> e \<le> i \<and> bit w e"
   by (auto simp: sign_extend_bitwise_if)
 
 lemma sign_extend_bitwise_cases:
-  "i < size w \<Longrightarrow> sign_extend e w !! i \<longleftrightarrow> (i \<le> e \<longrightarrow> w !! i) \<and> (e \<le> i \<longrightarrow> w !! e)"
+  "i < size w \<Longrightarrow> bit (sign_extend e w) i \<longleftrightarrow> (i \<le> e \<longrightarrow> bit w i) \<and> (e \<le> i \<longrightarrow> bit w e)"
   by (auto simp: sign_extend_bitwise_if)
 
 lemmas sign_extend_bitwise_disj' = sign_extend_bitwise_disj[simplified word_size]
@@ -559,8 +564,8 @@ lemmas sign_extend_bitwise_cases' = sign_extend_bitwise_cases[simplified word_si
 (* Often, it is easier to reason about an operation which does not overwrite
    the bit which determines which mask operation to apply. *)
 lemma sign_extend_def':
-  "sign_extend n w = (if w !! n then w OR NOT (mask (Suc n)) else w AND mask (Suc n))"
-  by (rule bit_word_eqI) (auto simp add: bit_simps sign_extend_eq_signed_take_bit min_def test_bit_eq_bit less_Suc_eq_le)
+  "sign_extend n w = (if bit w n then w OR NOT (mask (Suc n)) else w AND mask (Suc n))"
+  by (rule bit_word_eqI) (auto simp add: bit_simps sign_extend_eq_signed_take_bit min_def less_Suc_eq_le)
 
 lemma sign_extended_sign_extend:
   "sign_extended n (sign_extend n w)"
@@ -570,7 +575,7 @@ lemma sign_extended_iff_sign_extend:
   "sign_extended n w \<longleftrightarrow> sign_extend n w = w"
   apply auto
    apply (auto simp add: bit_eq_iff)
-    apply (simp_all add: bit_simps sign_extend_eq_signed_take_bit not_le min_def sign_extended_def test_bit_eq_bit word_size split: if_splits)
+    apply (simp_all add: bit_simps sign_extend_eq_signed_take_bit not_le min_def sign_extended_def word_size split: if_splits)
   using le_imp_less_or_eq apply auto[1]
    apply (metis bit_imp_le_length nat_less_le)
   apply (metis Suc_leI Suc_n_not_le_n le_trans nat_less_le)
@@ -585,7 +590,7 @@ lemma sign_extend_sign_extend_eq:
   by (rule bit_word_eqI) (simp add: sign_extend_eq_signed_take_bit bit_simps)
 
 lemma sign_extended_high_bits:
-  "\<lbrakk> sign_extended e p; j < size p; e \<le> i; i < j \<rbrakk> \<Longrightarrow> p !! i = p !! j"
+  "\<lbrakk> sign_extended e p; j < size p; e \<le> i; i < j \<rbrakk> \<Longrightarrow> bit p i = bit p j"
   by (drule (1) sign_extended_weaken; simp add: sign_extended_def)
 
 lemma sign_extend_eq:
@@ -601,11 +606,11 @@ lemma sign_extended_add:
 proof (cases "e < size p")
   case True
   note and_or = is_aligned_add_or[OF p f]
-  have "\<not> f !! e"
+  have "\<not> bit f e"
     using True e less_2p_is_upper_bits_unset[THEN iffD1, OF f]
     by (fastforce simp: word_size)
-  hence i: "(p + f) !! e = p !! e"
-    by (simp add: and_or)
+  hence i: "bit (p + f) e = bit p e"
+    by (simp add: and_or bit_simps)
   have fm: "f AND mask e = f"
     by (fastforce intro: subst[where P="\<lambda>f. f AND mask e = f", OF less_mask_eq[OF f]]
                   simp: mask_twice e)
@@ -622,7 +627,7 @@ qed
 
 lemma sign_extended_neq_mask:
   "\<lbrakk>sign_extended n ptr; m \<le> n\<rbrakk> \<Longrightarrow> sign_extended n (ptr AND NOT (mask m))"
-  by (fastforce simp: sign_extended_def word_size neg_mask_test_bit)
+  by (fastforce simp: sign_extended_def word_size neg_mask_test_bit bit_simps)
 
 definition
   "limited_and (x :: 'a :: len word) y \<longleftrightarrow> (x AND y = x)"
@@ -685,8 +690,8 @@ definition
   "to_bool \<equiv> (\<noteq>) 0"
 
 lemma to_bool_and_1:
-  "to_bool (x AND 1) = (x !! 0)"
-  by (simp add: test_bit_word_eq to_bool_def and_one_eq mod_2_eq_odd)
+  "to_bool (x AND 1) \<longleftrightarrow> bit x 0"
+  by (simp add: to_bool_def and_one_eq mod_2_eq_odd)
 
 lemma to_bool_from_bool [simp]:
   "to_bool (from_bool r) = r"
@@ -768,7 +773,7 @@ lemma aligned_offset_in_range:
    apply (simp add: bit_simps)
   apply (erule is_alignedE')
    apply (auto simp add: bit_simps not_le)[1]
-   apply (metis less_2p_is_upper_bits_unset test_bit_eq_bit)
+   apply (metis less_2p_is_upper_bits_unset)
   apply (simp only: is_aligned_add_or word_ao_dist flip: neg_mask_in_mask_range)
   apply (subgoal_tac \<open>y AND NOT (mask n) = 0\<close>)
    apply simp

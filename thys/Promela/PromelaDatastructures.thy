@@ -9,10 +9,6 @@ imports
   CAVA_Base.CAVA_Code_Target
 begin
 
-(*<*)
-no_notation test_bit (infixl "!!" 100)
-(*>*)
-
 subsection \<open>Abstract Syntax Tree \emph{after} preprocessing\<close>
 
 text \<open>

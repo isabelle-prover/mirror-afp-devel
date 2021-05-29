@@ -96,16 +96,16 @@ lemma bit_set_bit_word_iff [bit_simps]:
   for w :: \<open>'a::len word\<close>
   by (auto simp add: bit_simps dest: bit_imp_le_length)
 
-lemma word_set_nth [simp]: "set_bit w n (test_bit w n) = w"
+lemma word_set_nth: "set_bit w n (bit w n) = w"
   for w :: "'a::len word"
   by (auto simp: word_test_bit_def word_set_bit_def)
 
-lemma test_bit_set: "(set_bit w n x) !! n \<longleftrightarrow> n < size w \<and> x"
+lemma test_bit_set: "bit (set_bit w n x) n \<longleftrightarrow> n < size w \<and> x"
   for w :: "'a::len word"
   by (auto simp: word_size word_test_bit_def word_set_bit_def nth_bintr)
 
 lemma test_bit_set_gen:
-  "test_bit (set_bit w n x) m = (if m = n then n < size w \<and> x else test_bit w m)"
+  "bit (set_bit w n x) m = (if m = n then n < size w \<and> x else bit w m)"
   for w :: "'a::len word"
   apply (unfold word_size word_test_bit_def word_set_bit_def)
   apply (clarsimp simp add: nth_bintr bin_nth_sc_gen)
@@ -125,7 +125,7 @@ lemma word_set_set_diff:
 
 lemma set_bit_word_of_int: "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
   unfolding word_set_bit_def
-  by (rule word_eqI)(simp add: word_size bin_nth_sc_gen nth_bintr)
+  by (rule word_eqI) (simp add: word_size bin_nth_sc_gen nth_bintr bit_simps)
 
 lemma word_set_numeral [simp]:
   "set_bit (numeral bin::'a::len word) n b =
@@ -143,7 +143,7 @@ lemma word_set_bit_0 [simp]: "set_bit 0 n b = word_of_int (bin_sc n b 0)"
 lemma word_set_bit_1 [simp]: "set_bit 1 n b = word_of_int (bin_sc n b 1)"
   unfolding word_1_wi by (rule set_bit_word_of_int)
 
-lemma word_set_nth_iff: "set_bit w n b = w \<longleftrightarrow> w !! n = b \<or> n \<ge> size w"
+lemma word_set_nth_iff: "set_bit w n b = w \<longleftrightarrow> bit w n = b \<or> n \<ge> size w"
   for w :: "'a::len word"
   apply (rule iffI)
    apply (rule disjCI)
@@ -153,9 +153,10 @@ lemma word_set_nth_iff: "set_bit w n b = w \<longleftrightarrow> w !! n = b \<or
   apply (erule disjE)
    apply clarsimp
   apply (rule word_eqI)
-  apply (clarsimp simp add : test_bit_set_gen)
-  apply (drule test_bit_size)
-  apply force
+   apply (clarsimp simp add : test_bit_set_gen)
+   apply (auto simp add: word_size)
+  apply (rule bit_eqI)
+  apply (simp add: bit_simps)
   done
 
 lemma word_clr_le: "w \<ge> set_bit w n False"
@@ -177,11 +178,11 @@ lemma word_set_ge: "w \<le> set_bit w n True"
 
 lemma set_bit_beyond:
   "size x \<le> n \<Longrightarrow> set_bit x n b = x" for x :: "'a :: len word"
-  by (auto intro: word_eqI simp add: test_bit_set_gen word_size)
+  by (simp add: word_set_nth_iff)
 
 lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
   apply (rule word_eqI)
-  apply (auto simp add: test_bit_set_gen nth_shiftl word_size
+  apply (auto simp add: nth_shiftl word_size bit_simps
               simp del: word_set_bit_0 shiftl_1)
   done
 

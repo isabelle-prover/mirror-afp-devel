@@ -872,10 +872,6 @@ lemmas bin_sc_minus_simps =
 
 instance int :: semiring_bit_syntax ..
 
-lemma test_bit_int_def [iff]:
-  "i !! n \<longleftrightarrow> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) i n"
-  by (simp add: test_bit_eq_bit)
-
 lemma shiftl_int_def:
   "shiftl x n = x * 2 ^ n" for x :: int
   by (simp add: push_bit_int_def shiftl_eq_push_bit)
@@ -1211,7 +1207,7 @@ by(cases n)(simp_all)
 lemma bin_nth_shiftl [simp]: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (x << n) m \<longleftrightarrow> n \<le> m \<and> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (m - n)"
   by (simp add: bit_push_bit_iff_int shiftl_eq_push_bit)
 
-lemma bin_last_shiftr: "odd (x >> n) \<longleftrightarrow> x !! n" for x :: int
+lemma bin_last_shiftr: "odd (x >> n) \<longleftrightarrow> bit x n" for x :: int
   by (simp add: shiftr_eq_drop_bit bit_iff_odd_drop_bit)
 
 lemma bin_rest_shiftr [simp]: "(\<lambda>k::int. k div 2) (x >> n) = x >> Suc n"
@@ -1242,7 +1238,7 @@ by(induct n) simp_all
 lemma shiftl_lt_0 [simp]: fixes i :: int shows "i << n < 0 \<longleftrightarrow> i < 0"
 by (metis not_le shiftl_ge_0)
 
-lemma int_shiftl_test_bit: "(n << i :: int) !! m \<longleftrightarrow> m \<ge> i \<and> n !! (m - i)"
+lemma int_shiftl_test_bit: "bit (n << i :: int) m \<longleftrightarrow> m \<ge> i \<and> bit n (m - i)"
   by simp
 
 lemma int_0shiftr [simp]: "(0 :: int) >> x = 0"

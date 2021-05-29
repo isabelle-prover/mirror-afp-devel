@@ -1126,7 +1126,7 @@ lemma of_bl_drop':
   by transfer (simp flip: trunc_bl2bin)
 
 lemma test_bit_of_bl:
-  "(of_bl bl::'a::len word) !! n = (rev bl ! n \<and> n < LENGTH('a) \<and> n < length bl)"
+  "bit (of_bl bl::'a::len word) n = (rev bl ! n \<and> n < LENGTH('a) \<and> n < length bl)"
   by transfer (simp add: bin_nth_of_bl ac_simps)
 
 lemma no_of_bl: "(numeral bin ::'a::len word) = of_bl (bin_to_bl (LENGTH('a)) (numeral bin))"
@@ -1309,10 +1309,10 @@ lemma bin_nth_uint': "bit (uint w) n \<longleftrightarrow> rev (bin_to_bl (size 
 
 lemmas bin_nth_uint = bin_nth_uint' [unfolded word_size]
 
-lemma test_bit_bl: "w !! n \<longleftrightarrow> rev (to_bl w) ! n \<and> n < size w"
+lemma test_bit_bl: "bit w n \<longleftrightarrow> rev (to_bl w) ! n \<and> n < size w"
   by transfer (auto simp add: bin_nth_bl)
 
-lemma to_bl_nth: "n < size w \<Longrightarrow> to_bl w ! n = w !! (size w - Suc n)"
+lemma to_bl_nth: "n < size w \<Longrightarrow> to_bl w ! n = bit w (size w - Suc n)"
   by (simp add: word_size rev_nth test_bit_bl)
 
 lemma map_bit_interval_eq:
@@ -1326,7 +1326,7 @@ proof (rule nth_equalityI)
   then have \<open>m < n\<close>
     by simp
   then have \<open>bit w m \<longleftrightarrow> takefill False n (rev (to_bl w)) ! m\<close>
-    by (auto simp add: nth_takefill not_less rev_nth to_bl_nth word_size test_bit_word_eq dest: bit_imp_le_length)
+    by (auto simp add: nth_takefill not_less rev_nth to_bl_nth word_size dest: bit_imp_le_length)
   with \<open>m < n \<close>show \<open>map (bit w) [0..<n] ! m \<longleftrightarrow> takefill False n (rev (to_bl w)) ! m\<close>
     by simp
 qed
@@ -1436,7 +1436,7 @@ proof (rule bit_word_eqI)
       by simp
     with \<open>n < LENGTH('a)\<close> show ?thesis
       by (simp add: bit_shiftr1_iff bit_of_bl_iff rev_nth nth_butlast
-        word_size test_bit_word_eq to_bl_nth)
+        word_size to_bl_nth)
   qed
 qed
 
@@ -1460,7 +1460,7 @@ proof (rule nth_equalityI)
     by simp
   then show \<open>to_bl (sshiftr1 w) ! n \<longleftrightarrow> (hd (to_bl w) # butlast (to_bl w)) ! n\<close>
     apply (cases n)
-     apply (simp_all add: to_bl_nth word_size hd_conv_nth test_bit_eq_bit bit_sshiftr1_iff nth_butlast Suc_diff_Suc nth_to_bl)
+     apply (simp_all add: to_bl_nth word_size hd_conv_nth bit_sshiftr1_iff nth_butlast Suc_diff_Suc nth_to_bl)
     done
 qed simp
 
@@ -1565,7 +1565,7 @@ lemma aligned_bl_add_size [OF refl]:
   done
 
 lemma mask_bl: "mask n = of_bl (replicate n True)"
-  by (auto simp add : test_bit_of_bl word_size intro: word_eqI)
+  by (auto simp add: bit_simps intro!: word_eqI)
 
 lemma bl_and_mask':
   "to_bl (w AND mask n :: 'a::len word) =
@@ -1573,7 +1573,7 @@ lemma bl_and_mask':
     drop (LENGTH('a) - n) (to_bl w)"
   apply (rule nth_equalityI)
    apply simp
-  apply (clarsimp simp add: to_bl_nth word_size)
+  apply (clarsimp simp add: to_bl_nth word_size bit_simps)
   apply (auto simp add: word_size test_bit_bl nth_append rev_nth)
   done
 
@@ -1888,18 +1888,18 @@ lemma bin_to_bl_or:
 
 lemma word_and_1_bl:
   fixes x::"'a::len word"
-  shows "(x AND 1) = of_bl [x !! 0]"
-  by (simp add: mod_2_eq_odd test_bit_word_eq and_one_eq)
+  shows "(x AND 1) = of_bl [bit x 0]"
+  by (simp add: mod_2_eq_odd and_one_eq)
 
 lemma word_1_and_bl:
   fixes x::"'a::len word"
-  shows "(1 AND x) = of_bl [x !! 0]"
-  by (simp add: mod_2_eq_odd test_bit_word_eq one_and_eq)
+  shows "(1 AND x) = of_bl [bit x 0]"
+  by (simp add: mod_2_eq_odd one_and_eq)
 
 lemma of_bl_drop:
   "of_bl (drop n xs) = (of_bl xs AND mask (length xs - n))"
-  apply (clarsimp simp: bang_eq test_bit_of_bl rev_nth cong: rev_conj_cong)
-  apply (safe; simp add: word_size to_bl_nth)
+  apply (rule bit_word_eqI)
+  apply (auto simp: rev_nth bit_simps cong: rev_conj_cong)
   done
 
 lemma to_bl_1:
@@ -1957,27 +1957,7 @@ lemma word_lsb_last:
 
 lemma is_aligned_to_bl:
   "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
-  apply (simp add: is_aligned_mask eq_zero_set_bl)
-  apply (clarsimp simp: in_set_conv_nth word_size)
-  apply (simp add: to_bl_nth word_size cong: conj_cong)
-  apply (simp add: diff_diff_less)
-  apply safe
-   apply (case_tac "n \<le> LENGTH('a)")
-    prefer 2
-    apply (rule_tac x=i in exI)
-    apply clarsimp
-   apply (subgoal_tac "\<exists>j < LENGTH('a). j < n \<and> LENGTH('a) - n + j = i")
-    apply (erule exE)
-    apply (rule_tac x=j in exI)
-    apply clarsimp
-   apply (thin_tac "w !! t" for t)
-   apply (rule_tac x="i + n - LENGTH('a)" in exI)
-   apply clarsimp
-   apply arith
-  apply (rule_tac x="LENGTH('a) - n + i" in exI)
-  apply clarsimp
-  apply arith
-  done
+  by (simp add: is_aligned_mask eq_zero_set_bl bl_and_mask word_size)
 
 lemma is_aligned_replicate:
   fixes w::"'a::len word"
@@ -2057,22 +2037,10 @@ lemma xor_2p_to_bl:
   (if n < LENGTH('a)
    then take (LENGTH('a)-Suc n) (to_bl x) @ (\<not>rev (to_bl x)!n) # drop (LENGTH('a)-n) (to_bl x)
    else to_bl x)"
-proof -
-  have x: "to_bl x = take (LENGTH('a)-Suc n) (to_bl x) @ drop (LENGTH('a)-Suc n) (to_bl x)"
-    by simp
-
-  show ?thesis
-  apply simp
-  apply (rule conjI)
-   apply (clarsimp simp: word_size)
-   apply (simp add: bl_word_xor to_bl_2p)
-   apply (subst x)
-   apply (subst zip_append)
-    apply simp
-   apply (simp add: map_zip_replicate_False_xor drop_minus)
-  apply (auto simp add: word_size nth_w2p intro!: word_eqI)
+  apply (auto simp add: to_bl_eq_rev take_map drop_map take_rev drop_rev bit_simps)
+  apply (rule nth_equalityI)
+   apply (auto simp add: bit_simps rev_nth nth_append Suc_diff_Suc)
   done
-qed
 
 lemma is_aligned_replicateD:
   "\<lbrakk> is_aligned (w::'a::len word) n; n \<le> LENGTH('a) \<rbrakk>
@@ -2172,7 +2140,7 @@ proof -
 qed
 
 lemma map_bits_rev_to_bl:
-  "map ((!!) x) [0..<size x] = rev (to_bl x)"
+  "map (bit x) [0..<size x] = rev (to_bl x)"
   by (auto simp: list_eq_iff_nth_eq test_bit_bl word_size)
 
 lemma of_bl_length2:

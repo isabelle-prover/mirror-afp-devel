@@ -181,6 +181,9 @@ text \<open>
 
     \<^descr>[Syntax]
 
+      \<^descr>[\<^theory>\<open>Word_Lib.Syntax_Bundles\<close>]
+        Bundles to provide alternative syntax for various bit operations
+
       \<^descr>[\<^theory>\<open>Word_Lib.Hex_Words\<close>]
         Printing word numerals as hexadecimal numerals.
 
@@ -236,8 +239,6 @@ text \<open>
 
         Clones of existing operations decorated with
         traditional syntax:
-
-          \<^item> @{thm test_bit_eq_bit [no_vars]}
 
           \<^item> @{thm shiftl_eq_push_bit [no_vars]}
 

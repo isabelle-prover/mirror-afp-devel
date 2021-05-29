@@ -132,10 +132,6 @@ context
   includes lifting_syntax
 begin
 
-lemma test_bit_uint32_transfer [transfer_rule]:
-  \<open>(cr_uint32 ===> (=)) bit (!!)\<close>
-  unfolding test_bit_eq_bit by transfer_prover
-
 lemma shiftl_uint32_transfer [transfer_rule]:
   \<open>(cr_uint32 ===> (=) ===> cr_uint32) (\<lambda>k n. push_bit n k) (<<)\<close>
   unfolding shiftl_eq_push_bit by transfer_prover
@@ -745,7 +741,7 @@ proof -
     including undefined_transfer integer.lifting
     apply transfer
     apply (rule bit_eqI)
-    apply (simp add: test_bit_eq_bit bit_or_iff bit_take_bit_iff bit_uint_iff)
+    apply (simp add: bit_or_iff bit_take_bit_iff bit_uint_iff)
     apply (simp only: bit_exp_iff bit_or_iff **)
     apply auto
     done

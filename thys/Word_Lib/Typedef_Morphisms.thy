@@ -346,11 +346,11 @@ lemmas uint_mod_alt = word_mod_def [THEN trans [OF uint_cong int_word_uint]]
 
 interpretation test_bit:
   td_ext
-    "(!!) :: 'a::len word \<Rightarrow> nat \<Rightarrow> bool"
+    "bit :: 'a::len word \<Rightarrow> nat \<Rightarrow> bool"
     set_bits
     "{f. \<forall>i. f i \<longrightarrow> i < LENGTH('a::len)}"
     "(\<lambda>h i. h i \<and> i < LENGTH('a::len))"
-  by standard (auto simp add: test_bit_word_eq bit_imp_le_length bit_set_bits_word_iff set_bits_bit_eq)
+  by standard (auto simp add: bit_imp_le_length bit_set_bits_word_iff set_bits_bit_eq)
 
 lemmas td_nth = test_bit.td_thm
 

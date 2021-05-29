@@ -170,17 +170,17 @@ lemma rbl_sshiftr:
   done
 
 lemma nth_word_of_int:
-  "(word_of_int x :: 'a::len word) !! n = (n < LENGTH('a) \<and> bit x n)"
+  "bit (word_of_int x :: 'a::len word) n = (n < LENGTH('a) \<and> bit x n)"
   apply (simp add: test_bit_bl word_size to_bl_of_bin)
   apply (subst conj_cong[OF refl], erule bin_nth_bl)
   apply auto
   done
 
 lemma nth_scast:
-  "(scast (x :: 'a::len word) :: 'b::len word) !! n =
+  "bit (scast (x :: 'a::len word) :: 'b::len word) n =
     (n < LENGTH('b) \<and>
-    (if n < LENGTH('a) - 1 then x !! n
-     else x !! (LENGTH('a) - 1)))"
+    (if n < LENGTH('a) - 1 then bit x n
+     else bit x (LENGTH('a) - 1)))"
   apply transfer
   apply (auto simp add: bit_signed_take_bit_iff min_def)
   done
@@ -349,13 +349,10 @@ lemma rev_bin_to_bl_simps:
     False # rev (bin_to_bl n (- numeral num.One))"
   by (simp_all add: bin_to_bl_aux_append bin_to_bl_zero_aux bin_to_bl_minus1_aux replicate_append_same)
 
-lemma to_bl_upt: "to_bl x = rev (map ((!!) x) [0 ..< size x])"
-  apply (rule nth_equalityI)
-   apply (simp add: word_size)
-  apply (auto simp: to_bl_nth word_size rev_nth)
-  done
+lemma to_bl_upt: "to_bl x = rev (map (bit x) [0 ..< size x])"
+  by (simp add: to_bl_eq_rev word_size rev_map)
 
-lemma rev_to_bl_upt: "rev (to_bl x) = map ((!!) x) [0 ..< size x]"
+lemma rev_to_bl_upt: "rev (to_bl x) = map (bit x) [0 ..< size x]"
   by (simp add: to_bl_upt)
 
 lemma upt_eq_list_intros:

@@ -81,8 +81,8 @@ definition
     length (tarr s i) = unat NSUM \<and> tarr s i = garr s ! i"
 
 abbreviation
-  "sumarr_inv_till_lock s i \<equiv> \<not>gdone s !! i \<and> ((\<not> (ghost_lock s) (1 - i)) \<longrightarrow> ((gdone s = 0 \<and> gsum s = 0) \<or>
-    (gdone s !! (1 - i) \<and> gsum s = local_sum (garr s !(1 - i)))))"
+  "sumarr_inv_till_lock s i \<equiv> \<not> bit (gdone s) i \<and> ((\<not> (ghost_lock s) (1 - i)) \<longrightarrow> ((gdone s = 0 \<and> gsum s = 0) \<or>
+    (bit (gdone s) (1 - i) \<and> gsum s = local_sum (garr s !(1 - i)))))"
 
 abbreviation
   "lock_inv s \<equiv>
@@ -107,25 +107,25 @@ where
     END"
 
 definition
- "sumarr_in_lock1 s i \<equiv> \<not>gdone s !! i \<and> ((gdone s = 0 \<and> gsum s = local_sum (tarr s i)) \<or>
-   (gdone s !! (1 - i) \<and> \<not> gdone s !! i \<and> gsum s = global_sum (garr s)))"
+ "sumarr_in_lock1 s i \<equiv> \<not>bit (gdone s) i \<and> ((gdone s = 0 \<and> gsum s = local_sum (tarr s i)) \<or>
+   (bit (gdone s) (1 - i) \<and> \<not> bit (gdone s) i \<and> gsum s = global_sum (garr s)))"
 
 definition
- "sumarr_in_lock2 s i \<equiv> (gdone s !! i \<and> \<not> gdone s !! (1 - i) \<and> gsum s = local_sum (tarr s i)) \<or>
-   (gdone s !! i \<and> gdone s !! (1 - i) \<and> gsum s = global_sum (garr s))"
+ "sumarr_in_lock2 s i \<equiv> (bit (gdone s) i \<and> \<not> bit (gdone s) (1 - i) \<and> gsum s = local_sum (tarr s i)) \<or>
+   (bit (gdone s) i \<and> bit (gdone s) (1 - i) \<and> gsum s = global_sum (garr s))"
 
 definition
   unlock :: "routine \<Rightarrow> (sumarr_state, funcs, faults) ann_com"
 where
   "unlock i \<equiv>
     \<lbrace>  \<acute>sumarr_inv i \<and> \<acute>tsum i = local_sum (\<acute>tarr i) \<and> \<acute>glock = 1 \<and>
-    \<acute>ghost_lock i \<and> \<acute>gdone !! (unat (\<acute>tid i - 1)) \<and> \<acute>sumarr_in_lock2 i \<rbrace>
+    \<acute>ghost_lock i \<and> bit \<acute>gdone (unat (\<acute>tid i - 1)) \<and> \<acute>sumarr_in_lock2 i \<rbrace>
     \<langle>\<acute>glock := 0,, \<acute>ghost_lock:=\<acute>ghost_lock (i:= False)\<rangle>"
 
 definition
- "local_postcond s i \<equiv> (\<not> (ghost_lock s) (1 - i) \<longrightarrow> gsum s = (if gdone s !! 0 \<and> gdone s !! 1
+ "local_postcond s i \<equiv> (\<not> (ghost_lock s) (1 - i) \<longrightarrow> gsum s = (if bit (gdone s) 0 \<and> bit (gdone s) 1
               then global_sum (garr s)
-              else local_sum (garr s ! i))) \<and> gdone s !! i \<and> \<not>ghost_lock s i"
+              else local_sum (garr s ! i))) \<and> bit (gdone s) i \<and> \<not>ghost_lock s i"
 
 definition
   sumarr :: "routine \<Rightarrow> (sumarr_state, funcs, faults) ann_com"
@@ -189,7 +189,7 @@ where
     \<acute>ghost_lock i \<and> \<acute>sumarr_in_lock1 i \<rbrace>
   \<acute>gdone:=(\<acute>gdone OR \<acute>tid i) ;;
   \<lbrace> \<acute>sumarr_inv i \<and> \<acute>tsum i = local_sum (\<acute>tarr i) \<and> \<acute>glock = 1 \<and>
-    \<acute>ghost_lock i \<and> \<acute>gdone !! (unat (\<acute>tid i - 1)) \<and> \<acute>sumarr_in_lock2 i \<rbrace>
+    \<acute>ghost_lock i \<and> bit \<acute>gdone (unat (\<acute>tid i - 1)) \<and> \<acute>sumarr_in_lock2 i \<rbrace>
   SCALL (''unlock'', i) 0"
 
 definition
@@ -204,7 +204,7 @@ definition
  postcond
 where
  "postcond s \<equiv> (gsum s) = global_sum (garr s) \<and>
-               (\<forall>i < 2. (gdone s) !! i)"
+               (\<forall>i < 2. bit (gdone s) i)"
 
 definition
   "call_sumarr i \<equiv>
@@ -357,15 +357,16 @@ lemma sumarr_proc_simp[unfolded oghoare_simps]:
 lemmas sumarr_proc_simp_unfolded = sumarr_proc_simp[unfolded sumarr_def unlock_def lock_def oghoare_simps]
 
 lemma oghoare_sumarr:
-notes sumarr_proc_simp_unfolded[proc_simp add]
-shows
- "i < 2 \<Longrightarrow>
-  \<Gamma>, \<Theta>
-    |\<turnstile>\<^bsub>/F\<^esub> sumarr i \<lbrace>\<acute>local_postcond i\<rbrace>, \<lbrace>False\<rbrace>"
+  \<open>\<Gamma>, \<Theta> |\<turnstile>\<^bsub>/F\<^esub> sumarr i \<lbrace>\<acute>local_postcond i\<rbrace>, \<lbrace>False\<rbrace>\<close> if \<open>i < 2\<close>
+proof -
+  from that have \<open>i = 0 \<or> i = 1\<close> by auto
+  note sumarr_proc_simp_unfolded[proc_simp add]
+  show ?thesis
+  using that apply -
   unfolding sumarr_def unlock_def lock_def
     ann_call_def call_def block_def
   apply simp
-  apply oghoare (*23*)
+  apply oghoare (*24*)
   unfolding tarr_inv_def array_length_def array_nth_def array_in_bound_def
     sumarr_in_lock1_def sumarr_in_lock2_def
   apply (tactic "PARALLEL_ALLGOALS ((TRY' o SOLVED')
@@ -375,7 +376,10 @@ shows
              (@{context} addSDs @{thms less_2_cases}
                          addIs @{thms local_sum_Suc unat_mono}
                         )
-          ))") (*2*)
+          ))") (*4*)
+  using \<open>i = 0 \<or> i = 1\<close> apply rule
+      apply (clarsimp simp add: bit_simps even_or_iff)
+      apply (clarsimp simp add: bit_simps even_or_iff)
    apply clarsimp
    apply (rule conjI)
     apply (fastforce intro!: local_sum_Suc unat_mono)
@@ -387,8 +391,10 @@ shows
    apply (clarsimp simp: not_le)
    apply (erule (1) local_sum_MAXSUM'[rotated] ; unat_arith)
   apply clarsimp
-  apply unat_arith
+    apply unat_arith
+  apply (fact that)
  done
+qed
 
 lemma less_than_two_2[simp]:
   "i < 2 \<Longrightarrow> Suc 0 - i < 2"
@@ -412,9 +418,11 @@ lemma less_than_two_inv[simp]:
   "i < 2 \<Longrightarrow> j < 2 \<Longrightarrow> i \<noteq> j \<Longrightarrow> Suc 0 - i = j"
   by simp
  
-lemma inter_aux_call_sumarr[simplified]:
-notes  sumarr_proc_simp_unfolded[proc_simp add] com.simps[oghoare_simps add]
-shows
+lemma inter_aux_call_sumarr [simplified]:
+  notes sumarr_proc_simp_unfolded [proc_simp add]
+     com.simps [oghoare_simps add]
+     bit_simps [simp]
+  shows
   "i < 2 \<Longrightarrow> j < 2 \<Longrightarrow> i \<noteq> j \<Longrightarrow> interfree_aux \<Gamma> \<Theta>
      F (com (call_sumarr i), (ann (call_sumarr i), \<lbrace>\<acute>local_postcond i\<rbrace>, \<lbrace>False\<rbrace>),
         com (call_sumarr j), ann (call_sumarr j))"

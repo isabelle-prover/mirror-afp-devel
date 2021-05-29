@@ -27,7 +27,6 @@ lemma select_correct:
   text \<open>Cleaning up the namespace a bit\<close>
   
   hide_type (open) Word.word
-  no_notation test_bit (infixl "!!" 100)
 
   text \<open>Some custom setup in cava, that does not match HOL defaults:\<close>
   declare Let_def[simp add]

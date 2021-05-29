@@ -10,6 +10,9 @@ theory Legacy_Aliases
   imports "HOL-Library.Word"
 begin
 
+abbreviation (input) test_bit :: \<open>'a::semiring_bits \<Rightarrow> nat \<Rightarrow> bool\<close>
+  where \<open>test_bit \<equiv> bit\<close>
+
 abbreviation (input) bin_nth :: \<open>int \<Rightarrow> nat \<Rightarrow> bool\<close>
   where \<open>bin_nth \<equiv> bit\<close>
 
@@ -34,7 +37,7 @@ abbreviation (input) norm_sint :: \<open>nat \<Rightarrow> int \<Rightarrow> int
 abbreviation (input) max_word :: \<open>'a::len word\<close>
   where \<open>max_word \<equiv> - 1\<close>
 
-abbreviation (input) complement :: \<open>'a :: len word \<Rightarrow> 'a word\<close>
+abbreviation (input) complement :: \<open>'a::len word \<Rightarrow> 'a word\<close>
   where \<open>complement \<equiv> not\<close>
 
 lemma complement_mask:

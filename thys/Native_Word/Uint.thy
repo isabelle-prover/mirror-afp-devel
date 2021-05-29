@@ -180,10 +180,6 @@ context
   includes lifting_syntax
 begin
 
-lemma test_bit_uint_transfer [transfer_rule]:
-  \<open>(cr_uint ===> (=)) bit (!!)\<close>
-  unfolding test_bit_eq_bit by transfer_prover
-
 lemma shiftl_uint_transfer [transfer_rule]:
   \<open>(cr_uint ===> (=) ===> cr_uint) (\<lambda>k n. push_bit n k) (<<)\<close>
   unfolding shiftl_eq_push_bit by transfer_prover
