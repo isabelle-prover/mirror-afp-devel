@@ -94,6 +94,18 @@ complicated translation layer.  The formalization is described in our
 &lt;a href=&#34;https://arxiv.org/pdf/2104.12224.pdf&#34;&gt;CADE 28 paper&lt;/a&gt;.</description>
     </item>
     <item>
+       <title>Lifting the Exponent</title>
+              <link>https://www.isa-afp.org/entries/Lifting_the_Exponent.html</link>
+       <guid>https://www.isa-afp.org/entries/Lifting_the_Exponent.html</guid>
+       <dc:creator> Jakub Kądziołka       </dc:creator>
+       <pubDate>27 Apr 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalize the &lt;i&gt;Lifting the Exponent Lemma&lt;/i&gt;, which
+shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
+a prime $p$ and positive integers $a$ and $b$. The proof follows &lt;a
+href=&#34;https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf&#34;&gt;Amir Hossein Parvardi&#39;s&lt;/a&gt;.</description>
+    </item>
+    <item>
        <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
               <link>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</link>
        <guid>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</guid>
@@ -552,23 +564,6 @@ verification of a sample authentication protocol, comprising Password
 Authenticated Connection Establishment (PACE) with Chip Authentication
 Mapping followed by the explicit verification of an additional
 password over the PACE secure channel.</description>
-    </item>
-    <item>
-       <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
-              <link>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
-       <guid>https://www.isa-afp.org/entries/Isabelle_Marries_Dirac.html</guid>
-       <dc:creator> Anthony Bordg, Hanna Lachnitt, Yijun He       </dc:creator>
-       <pubDate>22 Nov 2020 00:00:00 +0000</pubDate>
-       <description>
-This work is an effort to formalise some quantum algorithms and
-results in quantum information theory. Formal methods being critical
-for the safety and security of algorithms and protocols, we foresee
-their widespread use for quantum computing in the future. We have
-developed a large library for quantum computing in Isabelle based on a
-matrix representation for quantum circuits, successfully formalising
-the no-cloning theorem, quantum teleportation, Deutsch&#39;s
-algorithm, the Deutsch-Jozsa algorithm and the quantum Prisoner&#39;s
-Dilemma.</description>
     </item>
   </channel>
 </rss>

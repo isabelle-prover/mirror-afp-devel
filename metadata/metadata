@@ -10628,3 +10628,15 @@ abstract =
   system. We formalize the proof based on the decomposition of a
   solution into its free basis. A direct application is an alternative
   proof of the fact that two noncommuting words form a code.
+
+[Lifting_the_Exponent]
+title = Lifting the Exponent
+author = Jakub Kądziołka <kuba@kadziolka.net>
+topic = Mathematics/Number theory
+date = 2021-04-27
+notify = kuba@kadziolka.net
+abstract = 
+  We formalize the <i>Lifting the Exponent Lemma</i>, which
+  shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
+  a prime $p$ and positive integers $a$ and $b$. The proof follows <a
+  href="https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf">Amir Hossein Parvardi's</a>.
