@@ -1452,6 +1452,12 @@ proof -
     done
 qed
 
+lemma bintrunc_id:
+  "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
+  apply (simp add: take_bit_int_eq_self_iff)
+  apply (metis n_less_equal_power_2 not_le of_nat_less_iff of_nat_numeral order_trans semiring_1_class.of_nat_power)
+  done
+
 code_identifier
   code_module Bits_Int \<rightharpoonup>
   (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations

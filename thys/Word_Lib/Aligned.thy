@@ -1264,4 +1264,12 @@ lemma and_mask_plus:
   apply (simp add:word_bw_comms word_bw_lcs)
   done
 
+lemma is_aligned_add_not_aligned:
+  "\<lbrakk>is_aligned (p::'a::len word) n; \<not> is_aligned (q::'a::len word) n\<rbrakk> \<Longrightarrow> \<not> is_aligned (p + q) n"
+  by (metis is_aligned_addD1)
+
+lemma neg_mask_add_aligned:
+  "\<lbrakk> is_aligned p n; q < 2 ^ n \<rbrakk> \<Longrightarrow> (p + q) AND NOT (mask n) = p AND NOT (mask n)"
+  by (metis is_aligned_add_helper is_aligned_neg_mask_eq)
+
 end
