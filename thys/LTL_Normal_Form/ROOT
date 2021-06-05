@@ -12,4 +12,4 @@ session LTL_Normal_Form (AFP) = "LTL" +
     "root.tex"
     "root.bib"
   export_files (in ".") [1]
-    "LTL_Normal_Form.Normal_Form_Code_Export:**"
+    "LTL_Normal_Form.Normal_Form_Code_Export:code/**"

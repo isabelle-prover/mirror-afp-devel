@@ -17,4 +17,4 @@ session LTL (AFP) = "HOL-Library" +
     "root.tex"
     "root.bib"
   export_files (in "example") [2]
-    "LTL.Example:**"
+    "LTL.Example:code/**"

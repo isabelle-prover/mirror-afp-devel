@@ -22,4 +22,4 @@ session LTL_Master_Theorem (AFP) = "Transition_Systems_and_Automata" +
     "root.tex"
     "root.bib"
   export_files (in ".") [1]
-    "LTL_Master_Theorem.Code_Export:**"
+    "LTL_Master_Theorem.Code_Export:code/**"

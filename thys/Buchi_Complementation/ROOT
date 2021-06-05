@@ -12,4 +12,4 @@ session Buchi_Complementation (AFP) = "Transition_Systems_and_Automata" +
     "root.tex"
     "root.bib"
   export_files (in ".") [1]
-    "Buchi_Complementation.Complementation_Build:**"
+    "Buchi_Complementation.Complementation_Build:code/**"
