@@ -17,6 +17,7 @@ theory Reversed_Bit_Lists
     Even_More_List
     "HOL-Library.Sublist"
     Aligned
+    Legacy_Aliases
 begin
 
 lemma horner_sum_of_bool_2_concat:
@@ -1036,12 +1037,9 @@ lemma of_bl_eq:
 
 lemma bshiftr1_eq:
   \<open>bshiftr1 b w = of_bl (b # butlast (to_bl w))\<close>
-  apply transfer
-  apply auto
-   apply (subst bl_to_bin_app_cat [of \<open>[True]\<close>, simplified])
-   apply simp
-   apply (metis One_nat_def add.commute bin_bl_bin bin_last_bl_to_bin bin_rest_bl_to_bin butlast_bin_rest concat_bit_eq last.simps list.distinct(1) list.size(3) list.size(4) odd_iff_mod_2_eq_one plus_1_eq_Suc power_Suc0_right push_bit_of_1 size_bin_to_bl take_bit_eq_mod trunc_bl2bin_len)
-  apply (simp add: butlast_rest_bl2bin)
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps to_bl_eq_rev nth_append rev_nth nth_butlast not_less simp flip: bit_Suc)
+  apply (metis Suc_pred len_gt_0 less_eq_decr_length_iff not_bit_length verit_la_disequality)
   done
 
 lemma length_to_bl_eq:
@@ -1393,7 +1391,7 @@ lemma rbl_word_not: "rev (to_bl (NOT x)) = map Not (rev (to_bl x))"
 
 lemma bshiftr1_numeral [simp]:
   \<open>bshiftr1 b (numeral w :: 'a word) = of_bl (b # butlast (bin_to_bl LENGTH('a::len) (numeral w)))\<close>
-  by (simp add: bshiftr1_eq)
+  by (rule bit_word_eqI) (auto simp add: bit_simps rev_nth nth_append nth_butlast nth_bin_to_bl simp flip: bit_Suc)
 
 lemma bshiftr1_bl: "to_bl (bshiftr1 b w) = b # butlast (to_bl w)"
   unfolding bshiftr1_eq by (rule word_bl.Abs_inverse) simp
@@ -1529,19 +1527,16 @@ lemma bl_shiftl: "to_bl (w << n) = drop n (to_bl w) @ replicate (min (size w) n)
 lemma shiftr1_bl_of:
   "length bl \<le> LENGTH('a) \<Longrightarrow>
     shiftr1 (of_bl bl::'a::len word) = of_bl (butlast bl)"
-  by transfer (simp add: butlast_rest_bl2bin trunc_bl2bin)
+  apply (cases bl rule: rev_cases)
+  apply simp_all
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps simp flip: bit_Suc)
+  done
 
 lemma shiftr_bl_of:
   "length bl \<le> LENGTH('a) \<Longrightarrow>
     (of_bl bl::'a::len word) >> n = of_bl (take (length bl - n) bl)"
-  apply (unfold shiftr_def)
-  apply (induct n)
-   apply clarsimp
-  apply clarsimp
-  apply (subst shiftr1_bl_of)
-   apply simp
-  apply (simp add: butlast_take)
-  done
+  by (rule bit_word_eqI) (auto simp add: bit_simps rev_nth)
 
 lemma shiftr_bl: "x >> n \<equiv> of_bl (take (LENGTH('a) - n) (to_bl x))"
   for x :: "'a::len word"

@@ -125,17 +125,10 @@ lemma le_or_mask:
   for w w' :: \<open>'a::len word\<close>
   by (metis neg_mask_add_mask add.commute le_word_or1 mask_2pm1 neg_mask_mono_le word_plus_mono_left)
 
-lemma le_shiftr1':
-  "\<lbrakk> shiftr1 u \<le> shiftr1 v ; shiftr1 u \<noteq> shiftr1 v \<rbrakk> \<Longrightarrow> u \<le> v"
-  apply transfer
-  apply simp
-  done
-
 lemma le_shiftr':
   "\<lbrakk> u >> n \<le> v >> n ; u >> n \<noteq> v >> n \<rbrakk> \<Longrightarrow> (u::'a::len word) \<le> v"
-  apply (induct n; simp add: shiftr_def)
-  apply (case_tac "(shiftr1 ^^ n) u = (shiftr1 ^^ n) v", simp)
-  apply (fastforce dest: le_shiftr1')
+  apply (simp add: shiftr_eq_drop_bit)
+  apply (metis le_cases le_shiftr shiftr_word_eq verit_la_disequality)
   done
 
 lemma word_add_no_overflow:"(x::'a::len word) < - 1 \<Longrightarrow> x < x + 1"

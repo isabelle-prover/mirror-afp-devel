@@ -1336,11 +1336,11 @@ lemmas wils1 = bin_log_bintrs [THEN word_of_int_eq_iff [THEN iffD2],
 lemmas word_log_binary_defs =
   word_and_def word_or_def word_xor_def
 
-lemma setBit_no [simp]: "setBit (numeral bin) n = word_of_int (bin_sc n True (numeral bin))"
+lemma setBit_no: "set_bit n (numeral bin) = word_of_int (bin_sc n True (numeral bin))"
   by transfer (simp add: bin_sc_eq)
 
-lemma clearBit_no [simp]:
-  "clearBit (numeral bin) n = word_of_int (bin_sc n False (numeral bin))"
+lemma clearBit_no:
+  "unset_bit n (numeral bin) = word_of_int (bin_sc n False (numeral bin))"
   by transfer (simp add: bin_sc_eq)
 
 lemma eq_mod_iff: "0 < n \<Longrightarrow> b = b mod n \<longleftrightarrow> 0 \<le> b \<and> b < n"

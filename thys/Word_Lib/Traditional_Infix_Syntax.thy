@@ -47,20 +47,17 @@ lemma shiftr_word_eq:
   \<open>w >> n = drop_bit n w\<close> for w :: \<open>'a::len word\<close>
   by (fact shiftr_eq_drop_bit)
 
-lemma shiftl1_code [code]:
-  \<open>shiftl1 w = push_bit 1 w\<close>
-  by transfer (simp add: ac_simps)
-
 lemma uint_shiftr_eq:
   \<open>uint (w >> n) = uint w div 2 ^ n\<close>
   by transfer (simp flip: drop_bit_eq_div add: drop_bit_take_bit min_def le_less less_diff_conv)
 
-lemma shiftr1_code [code]:
-  \<open>shiftr1 w = drop_bit 1 w\<close>
-  by transfer (simp add: drop_bit_Suc)
+lemma bit_shiftl_word_iff [bit_simps]:
+  \<open>bit (w << m) n \<longleftrightarrow> m \<le> n \<and> n < LENGTH('a) \<and> bit w (n - m)\<close>
+  for w :: \<open>'a::len word\<close>
+  by (simp add: shiftl_word_eq bit_push_bit_iff not_le)
 
 lemma shiftl_def:
-  \<open>w << n = (shiftl1 ^^ n) w\<close>
+  \<open>w << n = ((*) 2 ^^ n) w\<close> for w :: \<open>'a::len word\<close>
 proof -
   have \<open>push_bit n = (((*) 2 ^^ n) :: int \<Rightarrow> int)\<close> for n
     by (induction n) (simp_all add: fun_eq_iff funpow_swap1, simp add: ac_simps)
@@ -69,22 +66,13 @@ proof -
 qed
 
 lemma shiftr_def:
-  \<open>w >> n = (shiftr1 ^^ n) w\<close>
+  \<open>w >> n = ((\<lambda>w. w div 2) ^^ n) w\<close> for w :: \<open>'a::len word\<close>
 proof -
-  have \<open>shiftr1 ^^ n = (drop_bit n :: 'a word \<Rightarrow> 'a word)\<close>
-    apply (induction n)
-    apply simp
-    apply (simp only: shiftr1_eq_div_2 [abs_def] drop_bit_eq_div [abs_def] funpow_Suc_right)
-    apply (use div_exp_eq [of _ 1, where ?'a = \<open>'a word\<close>] in simp)
-    done
+  have \<open>(\<lambda>w. w div 2) ^^ n = (drop_bit n :: 'a word \<Rightarrow> 'a word)\<close>
+    by (induction n) (simp_all add: drop_bit_half drop_bit_Suc)
   then show ?thesis
     by (simp add: shiftr_eq_drop_bit)
 qed
-
-lemma bit_shiftl_word_iff [bit_simps]:
-  \<open>bit (w << m) n \<longleftrightarrow> m \<le> n \<and> n < LENGTH('a) \<and> bit w (n - m)\<close>
-  for w :: \<open>'a::len word\<close>
-  by (simp add: shiftl_word_eq bit_push_bit_iff not_le)
 
 lemma bit_shiftr_word_iff [bit_simps]:
   \<open>bit (w >> m) n \<longleftrightarrow> bit w (m + n)\<close>
@@ -100,9 +88,9 @@ lemma sshiftr_eq [code]:
   by transfer simp
 
 lemma sshiftr_eq_funpow_sshiftr1:
-  \<open>w >>> n = (sshiftr1 ^^ n) w\<close>
+  \<open>w >>> n = (signed_drop_bit (Suc 0) ^^ n) w\<close>
   apply (rule sym)
-  apply (simp add: sshiftr1_eq_signed_drop_bit_Suc_0 sshiftr_eq)
+  apply (simp add: sshiftr_eq)
   apply (induction n)
    apply simp_all
   done
@@ -111,10 +99,6 @@ lemma uint_sshiftr_eq:
   \<open>uint (w >>> n) = take_bit LENGTH('a) (sint w div 2 ^  n)\<close>
   for w :: \<open>'a::len word\<close>
   by transfer (simp flip: drop_bit_eq_div)
-
-lemma sshift1_code [code]:
-  \<open>sshiftr1 w = signed_drop_bit 1 w\<close>
-  by transfer (simp add: drop_bit_Suc)
 
 lemma sshiftr_0 [simp]: "0 >>> n = 0"
   by transfer simp
@@ -193,16 +177,13 @@ lemmas nth_shiftl = nth_shiftl' [unfolded word_size]
 
 lemma nth_shiftr: "bit (w >> m) n = bit w (n + m)"
   for w :: "'a::len word"
-  apply (unfold shiftr_def)
-  apply (induct "m" arbitrary: n)
-   apply (auto simp add: nth_shiftr1)
-  done
+  by (simp add: bit_simps ac_simps)
 
 lemma shiftr_div_2n: "uint (shiftr w n) = uint w div 2 ^ n"
   by (fact uint_shiftr_eq)
 
 lemma shiftl_rev: "shiftl w n = word_reverse (shiftr (word_reverse w) n)"
-  by (induct n) (auto simp add: shiftl_def shiftr_def shiftl1_rev)
+  by (rule bit_word_eqI) (auto simp add: bit_simps)
 
 lemma rev_shiftl: "word_reverse w << n = word_reverse (w >> n)"
   by (simp add: shiftl_rev)
@@ -225,7 +206,7 @@ lemma shiftl_zero_size: "size x \<le> n \<Longrightarrow> x << n = 0"
 
 lemma shiftl_t2n: "shiftl w n = 2 ^ n * w"
   for w :: "'a::len word"
-  by (induct n) (auto simp: shiftl_def shiftl1_2t)
+  by (simp add: shiftl_eq_push_bit push_bit_eq_mult)
 
 lemma shiftr_numeral [simp]:
   \<open>(numeral k >> numeral n :: 'a::len word) = drop_bit (numeral n) (numeral k)\<close>
@@ -375,10 +356,9 @@ lemma shiftr_div_2n_w: "n < size w \<Longrightarrow> w >> n = w div (2^n :: 'a :
 
 lemma le_shiftr:
   "u \<le> v \<Longrightarrow> u >> (n :: nat) \<le> (v :: 'a :: len word) >> n"
-  apply (unfold shiftr_def)
-  apply (induct_tac "n")
-   apply auto
-  apply (erule le_shiftr1)
+  apply transfer
+  apply (simp add: take_bit_drop_bit)
+  apply (simp add: drop_bit_eq_div zdiv_mono1)
   done
 
 lemma shiftr_mask_le:
@@ -767,11 +747,11 @@ lemma bitfield_op_twice'':
   apply clarsimp
   done
 
-lemma shiftr1_unfold: "shiftr1 x = x >> 1"
-  by (metis One_nat_def comp_apply funpow.simps(1) funpow.simps(2) id_apply shiftr_def)
+lemma shiftr1_unfold: "x div 2 = x >> 1"
+  by (simp add: drop_bit_eq_div shiftr_eq_drop_bit)
 
 lemma shiftr1_is_div_2: "(x::('a::len) word) >> 1 = x div 2"
-  by transfer (simp add: drop_bit_Suc)
+  by (simp add: drop_bit_eq_div shiftr_eq_drop_bit)
 
 lemma shiftl1_is_mult: "(x << 1) = (x :: 'a::len word) * 2"
   by (metis One_nat_def mult_2 mult_2_right one_add_one
