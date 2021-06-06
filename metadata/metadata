@@ -10515,7 +10515,7 @@ author = Sebastiaan Joosten <https://sjcjoosten.nl>
 topic = Mathematics/Games and economics
 date = 2021-04-23
 notify = sjcjoosten@gmail.com
-abstract = 
+abstract =
   This is a formalisation of the main result of Gale and Stewart from
   1953, showing that closed finite games are determined. This property
   is now known as the Gale Stewart Theorem. While the original paper
@@ -10534,7 +10534,7 @@ author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>, Simon Roßkopf <http://
 topic = Logic/General logic
 date = 2021-04-27
 notify = rosskops@in.tum.de
-abstract = 
+abstract =
   In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
   Furthermore, we define a language of proof terms and an executable
   proof checker and prove its soundness wrt. the metalogic.  The
@@ -10550,7 +10550,7 @@ author = Susannah Mansky <mailto:sjohnsn2@illinois.edu>
 topic = Computer science/Algorithms
 date = 2021-04-30
 notify = sjohnsn2@illinois.edu, susannahej@gmail.com
-abstract = 
+abstract =
   This development provides a general definition for safe Regression
   Test Selection (RTS) algorithms. RTS algorithms select which tests to
   rerun on revised code, reducing the time required to check for newly
@@ -10570,7 +10570,7 @@ author = Aaron Crighton <mailto:crightoa@mcmaster.ca>
 topic = Mathematics/Number theory
 date = 2021-03-23
 notify = crightoa@mcmaster.ca
-abstract = 
+abstract =
   We formalize the ring of <em>p</em>-adic integers within the framework of the
   HOL-Algebra library. The carrier of the ring is formalized as the
   inverse limit of quotients of the integers by powers of a fixed prime
@@ -10588,7 +10588,7 @@ author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Martin Rašk
 topic = Computer science/Automata and formal languages
 date = 2021-05-24
 notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
-abstract = 
+abstract =
   We formalize basics of Combinatorics on Words. This is an extension of
   existing theories on lists. We provide additional properties related
   to prefix, suffix, factor, length and rotation. The topics include
@@ -10608,7 +10608,7 @@ author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Štěpán St
 topic = Computer science/Automata and formal languages
 date = 2021-05-24
 notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
-abstract = 
+abstract =
   Lyndon words are words lexicographically minimal in their conjugacy
   class. We formalize their basic properties and characterizations, in
   particular the concepts of the longest Lyndon suffix and the Lyndon
@@ -10622,7 +10622,7 @@ author = Štěpán Holub <https://www2.karlin.mff.cuni.cz/~holub/>, Štěpán St
 topic = Computer science/Automata and formal languages
 date = 2021-05-24
 notify = holub@karlin.mff.cuni.cz, stepan.starosta@fit.cvut.cz
-abstract = 
+abstract =
   Graph lemma quantifies the defect effect of a system of word
   equations. That is, it provides an upper bound on the rank of the
   system. We formalize the proof based on the decomposition of a
@@ -10631,11 +10631,11 @@ abstract =
 
 [Lifting_the_Exponent]
 title = Lifting the Exponent
-author = Jakub Kądziołka <kuba@kadziolka.net>
+author = Jakub Kądziołka <mailto:kuba@kadziolka.net>
 topic = Mathematics/Number theory
 date = 2021-04-27
 notify = kuba@kadziolka.net
-abstract = 
+abstract =
   We formalize the <i>Lifting the Exponent Lemma</i>, which
   shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
   a prime $p$ and positive integers $a$ and $b$. The proof follows <a
