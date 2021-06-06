@@ -26,14 +26,14 @@ is the <code>isabelle components -u</code> command.
 Assuming you have downloaded and unzipped the afp to <code>/home/myself/afp</code>, run
 </p>
 <pre class="code">
-    isabelle components -u /home/myself/afp
+    isabelle components -u /home/myself/afp/thys
 </pre>
 
 <h2>Windows</h2>
 <p>
 If the AFP is in <code>C:\afp</code>, run the following command in a Cygwin terminal:
 <pre class="code">
-  isabelle components -u /cygdrive/c/afp
+  isabelle components -u /cygdrive/c/afp/thys
 </pre>
 </p>
 
