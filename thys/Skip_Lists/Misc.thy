@@ -42,7 +42,7 @@ proof -
   have *: "A = insert (Min A) A"
     using assms Min_in by (auto)
   then have "sorted_list_of_set A = insort (Min A) (sorted_list_of_set (A - {Min A}))"
-    using assms by (subst *, intro sorted_list_of_set_insert) auto
+    using assms by (subst *, intro sorted_list_of_set_insert_remove) auto
   also have "\<dots> = Min A # sorted_list_of_set (A - {Min A})"
     using assms by (intro insort_is_Cons) (auto)
   finally show ?thesis
@@ -97,7 +97,7 @@ proof -
   have *: "A = insert (Max A) A"
     using assms Max_in by (auto)
   then have "sorted_list_of_set A = insort (Max A) (sorted_list_of_set (A - {Max A}))"
-    using assms by (subst *, intro sorted_list_of_set_insert) auto
+    using assms by (subst *, intro sorted_list_of_set_insert_remove) auto
   also have "\<dots> = sorted_list_of_set (A - {Max A}) @ [Max A]"
     using assms by (intro sorted_insort_is_snoc) (auto)
   finally show ?thesis

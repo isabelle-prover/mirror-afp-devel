@@ -142,7 +142,7 @@ lemma atLeast_less_sets: "\<lbrakk>less_sets A {x}; B \<subseteq> {x..}\<rbrakk>
 
 subsection \<open>The list-of function\<close>
 
-lemma sorted_list_of_set_insert_cons:
+lemma sorted_list_of_set_insert_remove_cons:
   assumes "finite A" "less_sets {a} A"
   shows "sorted_list_of_set (insert a A) = a # sorted_list_of_set A"
 proof -

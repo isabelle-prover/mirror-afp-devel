@@ -39,7 +39,7 @@ next
     proof
       assume "sorted_list_of_set (insert a R) = sorted_list_of_set (insert b S)"
       with insert(1,2,4,5) have "insort a (sorted_list_of_set R) = insort b (sorted_list_of_set S)"
-        by (elim box_equals[OF _ sorted_list_of_set.insert sorted_list_of_set.insert]) auto
+        by fastforce
       with insert(2,5) have "a # sorted_list_of_set R = b # sorted_list_of_set S"
         apply (cases "sorted_list_of_set R" "sorted_list_of_set S" rule: list.exhaust[case_product list.exhaust])
         apply (auto split: if_splits simp add: not_le)
@@ -187,7 +187,7 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   case (single x1)
   thus ?case
     apply (auto intro!: trans[OF pnPlus_singleton_PLUS]
-      simp: insert_absorb simp del: sorted_list_of_set_insert)
+      simp: insert_absorb simp del: sorted_list_of_set_insert_remove)
     apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])
     apply (metis remdups_id_iff_distinct sorted_list_of_set_sort_remdups sorted_sort_id)
@@ -199,9 +199,9 @@ next
   apply (unfold PLUS_eq_Zero) []
   apply (metis in_set_conv_decomp rexp.disc(1))
   apply (subst cons(1))
-  apply (simp_all del: sorted_list_of_set_insert)
+  apply (simp_all del: sorted_list_of_set_insert_remove)
   apply (rule trans[OF pnPlus_singleton_PLUS])
-  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert_remove)
   apply safe
   unfolding insert_commute[of x11]
   apply (auto simp only: Un_insert_left[of x11, symmetric] insert_absorb) []
@@ -227,11 +227,11 @@ lemma pnTimes_PLUS:
 proof (induct xs arbitrary: r rule: list_singleton_induct)
   case (cons x y xs) then show ?case unfolding rexp_of_list.simps pnTimes.simps
   apply (subst pnTimes_not_Zero_or_Plus)
-  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert_remove)
   apply (subst pnPlus_singleton_PLUS)
-  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert_remove)
   unfolding insert_commute[of "Times y r"]
-  apply (simp del: sorted_list_of_set_insert)
+  apply (simp del: sorted_list_of_set_insert_remove)
   apply safe
   apply (subst insert_absorb[of "Times x r"])
   apply simp_all

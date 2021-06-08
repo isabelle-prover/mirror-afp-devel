@@ -1026,7 +1026,7 @@ lemma fold_product:
 
 lemma fold_union:
   "Finite_Set.fold (\<lambda>x. (\<union>) {x}) {} (fset x) = fset x"
-  by (induction x) (simp_all add: notin_fset comp_fun_idem.fold_insert_idem comp_fun_idem_insert)
+  by (induction x) (simp_all add: notin_fset comp_fun_idem_on.fold_insert_idem[OF comp_fun_idem_insert[unfolded comp_fun_idem_def']])
 
 lemma fold_union_fold_product:
   assumes "finite X" and "\<And>\<Psi> \<psi>. \<Psi> \<in> X \<Longrightarrow> \<psi> \<in> fset \<Psi> \<Longrightarrow> dnf \<psi> = {{|\<psi>|}}"

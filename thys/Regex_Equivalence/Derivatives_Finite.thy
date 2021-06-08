@@ -384,7 +384,7 @@ lemma ACI_nPlus_PLUS:
 proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   case (single x1)
   thus ?case
-    apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp del: sorted_list_of_set_insert)
+    apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp del: sorted_list_of_set_insert_remove)
     apply (simp only: insert_absorb)
     apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])
@@ -392,9 +392,9 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
     done
 next
   case (cons x11 x12 xs1) thus ?case
-  apply (simp del: sorted_list_of_set_insert)
+  apply (simp del: sorted_list_of_set_insert_remove)
   apply (rule trans[OF ACI_nPlus_singleton_PLUS])
-  apply (auto simp del: sorted_list_of_set_insert simp add: insert_commute[of x11])
+  apply (auto simp del: sorted_list_of_set_insert_remove simp add: insert_commute[of x11])
   apply (auto simp only: Un_insert_left[of x11, symmetric] insert_absorb) []
   apply (auto simp only: Un_insert_right[of _ x11, symmetric] insert_absorb) []
   apply (auto simp add: insert_commute[of x12])

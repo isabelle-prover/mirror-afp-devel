@@ -374,15 +374,6 @@ lemma set_to_map_set_is_map_of:
 
 context linorder begin
 
-  lemma sorted_list_of_set_eq_nil[simp]:
-    assumes "finite A" 
-    shows "sorted_list_of_set A = [] \<longleftrightarrow> A={}"
-    using assms
-    apply (induct rule: finite_induct)
-    apply simp
-    apply simp
-    done
-
   lemma sorted_list_of_set_eq_nil2[simp]:
     assumes "finite A" 
     shows "[] = sorted_list_of_set A \<longleftrightarrow> A={}"
@@ -414,15 +405,6 @@ context linorder begin
     using sorted_list_of_set_inj_aux
     by blast
  
-  lemma the_sorted_list_of_set:
-    assumes "distinct l"
-    assumes "sorted l"
-    shows "sorted_list_of_set (set l) = l"
-    using assms
-    by (simp 
-      add: sorted_list_of_set_sort_remdups distinct_remdups_id sorted_sort_id)
-
-
   definition "sorted_list_of_map m \<equiv> 
     map (\<lambda>k. (k, the (m k))) (sorted_list_of_set (dom m))"
 
@@ -433,7 +415,7 @@ context linorder begin
   proof -
     have "dom (map_of l) = set (map fst l)" by (induct l) force+
     hence "sorted_list_of_set (dom (map_of l)) = map fst l"
-      using the_sorted_list_of_set[OF assms] by simp
+      using sorted_list_of_set.idem_if_sorted_distinct[OF assms(2,1)] by simp
     hence "sorted_list_of_map (map_of l) 
       = map (\<lambda>k. (k, the (map_of l k))) (map fst l)"
       unfolding sorted_list_of_map_def by simp

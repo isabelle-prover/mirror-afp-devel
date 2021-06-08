@@ -1440,7 +1440,7 @@ proof -
     using \<open>h2 \<turnstile> get_child_nodes (cast new_element_ptr) \<rightarrow>\<^sub>r []\<close>
     apply(auto simp add: a_distinct_lists_def object_ptr_kinds_eq_h document_ptr_kinds_eq_h
         disconnected_nodes_eq2_h intro!: distinct_concat_map_I)[1]
-       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert)
+       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert_remove)
       apply(case_tac "x=cast new_element_ptr")
        apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]
       apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]

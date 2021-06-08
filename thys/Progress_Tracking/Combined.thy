@@ -14,7 +14,12 @@ lemma fold_invar:
     and   "\<forall>z. \<forall>x\<in>M. P z \<longrightarrow> P (f x z)"
     and   "comp_fun_commute f"
   shows   "P (Finite_Set.fold f z M)"
-  using assms by (induct M arbitrary: z rule: finite_induct) (auto simp: comp_fun_commute.fold_insert)
+proof -
+  interpret commute: comp_fun_commute f
+    by (fact \<open>comp_fun_commute f\<close>)
+  from assms show ?thesis
+    by (induct M arbitrary: z rule: finite_induct) auto
+qed
 
 subsection\<open>Could-result-in Relation\<close>
 
@@ -369,11 +374,11 @@ proof -
     obtain loc' t' where x_pair: "x = (loc', t')" by (meson surj_pair)
     from insert have nonmember: "x \<noteq> (loc, t)" by auto
     then have finite_s: "finite F" using insert by auto
-    have commute: "comp_fun_commute ?f"
+    interpret commute: comp_fun_commute ?f
       by (simp add: comp_fun_commute_def comp_def apply_cm_commute)
-    with finite_s have step1:
+    from finite_s have step1:
       "Finite_Set.fold ?f c (insert x F) = ?f x (Finite_Set.fold ?f c F)"
-      by (metis (mono_tags, lifting) comp_fun_commute.fold_insert insert.hyps(1) insert.hyps(2))
+      by (metis (mono_tags, lifting) commute.fold_insert insert.hyps(1) insert.hyps(2))
     from nonmember have step2:
       "zcount (c_pts (?f x (Finite_Set.fold ?f c F)) loc) t
           = zcount (c_pts (Finite_Set.fold ?f c F) loc) t"
@@ -420,13 +425,12 @@ proof -
     then have fold_rec: "Finite_Set.fold ?f c (set_zmset \<Delta>)
              = ?f (loc, x) (Finite_Set.fold ?f c (set_zmset \<Delta> - {(loc, x)}))"
     proof -
+      interpret commute: comp_fun_commute "(\<lambda>(loc, t) c. apply_cm c loc t (f loc t))" for f
+        by (fact comp_fun_commute_apply_cm)
       have "(loc, x) \<in>#\<^sub>z \<Delta>"
         by (meson case_member zcount_inI)
       then show ?thesis
-        using comp_fun_commute_apply_cm
-        apply (intro comp_fun_commute.fold_rec)
-          apply simp_all
-        done
+        by (intro commute.fold_rec) simp_all
     qed
     have "zcount (c_pts (Finite_Set.fold ?f c (set_zmset \<Delta> - {(loc, x)})) loc) x
           = zcount (c_pts c loc) x" by (simp add: fold_nop)

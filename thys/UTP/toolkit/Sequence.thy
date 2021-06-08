@@ -262,7 +262,7 @@ Nil_rel [iff]: "sorted_rel R []" |
 Cons_rel: "\<forall> y \<in> set xs. (x = y \<or> (x, y) \<in> R) \<Longrightarrow> sorted_rel R xs \<Longrightarrow> sorted_rel R (x # xs)"
 
 definition list_of_set :: "'a rel \<Rightarrow> 'a set \<Rightarrow> 'a list" where
-"list_of_set R = folding.F (insort_rel R) []"
+"list_of_set R = folding_on.F (insort_rel R) []"
 
 lift_definition seq_inj :: "'a seq seq \<Rightarrow> 'a seq" is
 "\<lambda> f i. f (fst (prod_decode i)) (snd (prod_decode i))" .

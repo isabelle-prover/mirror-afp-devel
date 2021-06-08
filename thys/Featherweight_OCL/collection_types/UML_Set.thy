@@ -2287,6 +2287,8 @@ proof -
  have inject : "inj (\<lambda>a \<tau>. a)"
  by(rule inj_fun, simp)
 
+ interpret F_commute: comp_fun_commute "F"
+   by (fact F_commute)
  show ?thesis
   apply(subst (1 2) cp_OclIterate, subst OclIncluding_def, subst OclExcluding_def)
   apply(case_tac "\<not> ((\<delta> S) \<tau> = true \<tau> \<and> (\<upsilon> a) \<tau> = true \<tau>)", simp add: invalid_def)
@@ -2303,7 +2305,7 @@ proof -
 
   apply(case_tac "\<not> ((\<upsilon> A) \<tau> = true \<tau>)", (simp add: F_valid_arg)+)
   apply(rule impI,
-        subst Finite_Set.comp_fun_commute.fold_fun_left_comm[symmetric, OF F_commute],
+        subst F_commute.fold_fun_left_comm[symmetric],
         rule remove_finite, simp)
 
   apply(subst image_set_diff[OF inject], simp)
@@ -2311,7 +2313,7 @@ proof -
       F (\<lambda>\<tau>'. a \<tau>) (Finite_Set.fold F A ((\<lambda>a \<tau>. a) ` \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> - {\<lambda>\<tau>'. a \<tau>})) \<tau>")
    apply(subst F_cp, simp)
 
- by(subst Finite_Set.comp_fun_commute.fold_insert_remove[OF F_commute], simp+)
+ by(subst F_commute.fold_insert_remove, simp+)
 qed
 
 subsubsection\<open>Execution Rules on Select\<close>
@@ -2929,9 +2931,9 @@ lemma OclForall_iterate:
  assumes S_finite: "finite \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil>"
    shows "S->forAll\<^sub>S\<^sub>e\<^sub>t(x | P x) \<tau> = (S->iterate\<^sub>S\<^sub>e\<^sub>t(x; acc = true | acc and P x)) \<tau>"
 proof -
- have and_comm : "comp_fun_commute (\<lambda>x acc. acc and P x)"
+ interpret and_comm: comp_fun_commute "(\<lambda>x acc. acc and P x)"
   apply(simp add: comp_fun_commute_def comp_def)
- by (metis OclAnd_assoc OclAnd_commute)
+  by (metis OclAnd_assoc OclAnd_commute)
 
  have ex_insert : "\<And>x F P. (\<exists>x\<in>insert x F. P x) = (P x \<or> (\<exists>x\<in>F. P x))"
  by (metis insert_iff)
@@ -2961,13 +2963,13 @@ proof -
    apply(rule finite_ne_induct[OF S_finite], simp)
     (* *)
     apply(simp only: image_insert)
-    apply(subst comp_fun_commute.fold_insert[OF and_comm], simp)
+    apply(subst and_comm.fold_insert, simp)
      apply (metis empty_iff image_empty)
     apply(simp add: invalid_def)
     apply (metis bot_fun_def destruct_ocl null_fun_def)
    (* *)
    apply(simp only: image_insert)
-   apply(subst comp_fun_commute.fold_insert[OF and_comm], simp)
+   apply(subst and_comm.fold_insert, simp)
     apply (metis (mono_tags) imageE)
 
    (* *)

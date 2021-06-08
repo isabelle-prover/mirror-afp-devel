@@ -907,7 +907,7 @@ next
   have "sorted_list_of_set (g ` {0..<Suc n}) = sorted_list_of_set (insert (g n) (g ` {0..<n}))"
     using g_image_rw by simp
   also have "... = insort (g n) (sorted_list_of_set (g ` {0..<n}))"
-  proof (rule sorted_list_of_set.insert)
+  proof (rule sorted_list_of_set_insert)
     have "inj_on g {0..<Suc n}" using sg strict_mono_on_imp_inj_on by blast
     thus "g n \<notin> g ` {0..<n}" unfolding inj_on_def by fastforce
   qed (simp)
@@ -947,7 +947,7 @@ proof -
   have finI: "finite I"
   proof (rule ccontr)
     assume "infinite I"
-    hence "length (sorted_list_of_set I) = 0" using sorted_list_of_set.infinite by auto
+    hence "length (sorted_list_of_set I) = 0" by auto
     thus False using i by simp
   qed
   show ?thesis

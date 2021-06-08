@@ -440,7 +440,7 @@ next
   have le: \<open>\<forall> y \<in> set (sorted_list_of_set ys). x < y\<close> using insert(4) assms(2) sorted_list_of_set by auto
   have \<open>sorted_list_of_set (insert x xs \<union> ys) = sorted_list_of_set (insert x (xs \<union> ys))\<close> by auto
   also 
-  have \<open>\<dots> = insort x (sorted_list_of_set (xs \<union> ys))\<close> by (metis Un_iff assms(2) finite_Un insert.hyps(1) insert.hyps(2) insert.prems insertI1 less_irrefl sorted_list_of_set.insert)
+  have \<open>\<dots> = insort x (sorted_list_of_set (xs \<union> ys))\<close> by (metis Un_iff assms(2) finite_Un insert.hyps(1) insert.hyps(2) insert.prems insertI1 less_irrefl sorted_list_of_set_insert)
   also 
   have \<open>\<dots> = insort x (sorted_list_of_set xs @ sorted_list_of_set ys)\<close> using iv by simp
   also
@@ -461,7 +461,7 @@ next
   have **: \<open>P x \<Longrightarrow> {y \<in> insert x xs. P y} = insert x {y \<in> xs. P y}\<close> by auto
   have ***: \<open>\<not> P x \<Longrightarrow> {y \<in> insert x xs. P y} = {y \<in> xs. P y}\<close> by auto
   note filter_insort[OF *(2),of \<open>P\<close> \<open>x\<close>] sorted_list_of_set_insert[OF insert(1), of \<open>x\<close>] insert(2,3) ** ***  
-  thus \<open>?case\<close> by (metis (mono_tags) "*"(1) List.finite_set distinct_filter distinct_insort distinct_sorted_list_of_set set_filter sorted_list_of_set.insert)
+  thus \<open>?case\<close> by (metis (mono_tags) "*"(1) List.finite_set distinct_filter distinct_insort distinct_sorted_list_of_set set_filter sorted_list_of_set_insert)
 qed
 
 lemma unbounded_nat_set_infinite: assumes \<open>\<forall> (i::nat). \<exists> j\<ge>i. j \<in> A\<close> shows \<open>\<not> finite A\<close> using assms
@@ -557,12 +557,12 @@ using fin proof (induction)
   case empty thus \<open>?case\<close> by simp
 next
   case (insert x A)
-  have [simp]:\<open>sorted_list_of_set (insert x A) = insort x (sorted_list_of_set A)\<close> using insert sorted_list_of_set.insert by simp
+  have [simp]:\<open>sorted_list_of_set (insert x A) = insort x (sorted_list_of_set A)\<close> using insert sorted_list_of_set_insert by simp
   have \<open>f ` insert x A = insert (f x) (f ` A)\<close> by auto
   moreover
   have \<open>f x \<notin> f`A\<close> apply (rule ccontr) using insert(2) mono apply auto by (metis insert.hyps(2) mono neq_iff)
   ultimately
-  have \<open>sorted_list_of_set (f ` insert x A) = insort (f x) (sorted_list_of_set (f`A))\<close> using insert(1) sorted_list_of_set.insert by simp
+  have \<open>sorted_list_of_set (f ` insert x A) = insort (f x) (sorted_list_of_set (f`A))\<close> using insert(1) sorted_list_of_set_insert by simp
   also
   have \<open>\<dots> = insort (f x) (map f (sorted_list_of_set A))\<close> using insert.IH by auto
   also have \<open>\<dots> = map f (insort x (sorted_list_of_set A))\<close> using insort_map_mono[OF mono] by auto

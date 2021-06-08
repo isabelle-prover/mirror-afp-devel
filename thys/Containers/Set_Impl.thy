@@ -407,8 +407,8 @@ by(rule exI[where x="\<lambda>_. id"])(simp, unfold_locales, auto)
 setup_lifting type_definition_comp_fun_commute
 
 lemma comp_fun_commute_apply' [simp]:
-  "comp_fun_commute (comp_fun_commute_apply f)"
-using comp_fun_commute_apply[of f] by simp
+  "comp_fun_commute_on UNIV (comp_fun_commute_apply f)"
+using comp_fun_commute_apply[of f] by (simp add: comp_fun_commute_def')
 
 lift_definition set_fold_cfc :: "('a, 'b) comp_fun_commute \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
 
@@ -435,17 +435,18 @@ lemma set_fold_cfc_code [code]:
                      | Some _ \<Rightarrow> RBT_Set2.fold (comp_fun_commute_apply f'') rbt b)"
   (is ?RBT_set)
 proof -
+  note fold_set_fold_remdups = comp_fun_commute_def' comp_fun_commute_on.fold_set_fold_remdups[OF _ subset_UNIV]
   show ?Set_Monad
-    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfc_def comp_fun_commute.fold_set_fold_remdups)
-  show ?DList_set
-    apply(auto split: option.split simp add: DList_set_def)
-    apply transfer
-    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_commute.fold_set_fold_remdups distinct_remdups_id)
+    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfc_def fold_set_fold_remdups)
+  show ?DList_set                                 
+    apply(auto split: option.splits simp add: DList_set_def)
+    apply transfer                      
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] fold_set_fold_remdups distinct_remdups_id)
     done
   show ?RBT_set
     apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
     apply transfer
-    apply(simp add: comp_fun_commute.fold_set_fold_remdups distinct_remdups_id linorder.distinct_keys[OF ID_ccompare] ord.is_rbt_rbt_sorted)
+    apply(simp add: fold_set_fold_remdups distinct_remdups_id linorder.distinct_keys[OF ID_ccompare] ord.is_rbt_rbt_sorted)
     done
 qed simp_all
 
@@ -456,8 +457,8 @@ by(rule exI[where x="\<lambda>_. id"])(simp, unfold_locales, auto)
 setup_lifting type_definition_comp_fun_idem
 
 lemma comp_fun_idem_apply' [simp]:
-  "comp_fun_idem (comp_fun_idem_apply f)"
-using comp_fun_idem_apply[of f] by simp
+  "comp_fun_idem_on UNIV (comp_fun_idem_apply f)"
+using comp_fun_idem_apply[of f] by (simp add: comp_fun_idem_def')
 
 lift_definition set_fold_cfi :: "('a, 'b) comp_fun_idem \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
 
@@ -481,16 +482,16 @@ lemma set_fold_cfi_code [code]:
   (is ?RBT_set)
 proof -
   show ?Set_Monad
-    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfi_def comp_fun_idem.fold_set_fold)
+    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfi_def comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV])
   show ?DList_set
     apply(auto split: option.split simp add: DList_set_def)
     apply transfer
-    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_idem.fold_set_fold)
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV])
     done
   show ?RBT_set
     apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
     apply transfer
-    apply(simp add: comp_fun_idem.fold_set_fold)
+    apply(simp add: comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV])
     done
 qed simp_all
 
@@ -508,7 +509,7 @@ lemma semilattice_set_apply' [simp]:
 using semilattice_set_apply[of f] by simp
 
 lemma comp_fun_idem_semilattice_set_apply [simp]:
-  "comp_fun_idem (semilattice_set_apply f)"
+  "comp_fun_idem_on UNIV (semilattice_set_apply f)"
 proof -
   interpret semilattice_set "semilattice_set_apply f" by simp
   show ?thesis by(unfold_locales)(simp_all add: fun_eq_iff left_commute)
@@ -540,12 +541,13 @@ lemma set_fold1_code [code]:
                                  else RBT_Set2.fold1 (semilattice_set_apply f'') rbt)"
   (is "?RBT_set")
 proof -
+  note fold_set_fold = comp_fun_idem_def' comp_fun_idem_on.fold_set_fold[OF _ subset_UNIV]
   show ?Set_Monad
-    by(simp add: set_fold1_def semilattice_set.eq_fold comp_fun_idem.fold_set_fold)
+    by(simp add: set_fold1_def semilattice_set.eq_fold fold_set_fold)
   show ?DList_set
-    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold comp_fun_idem.fold_set_fold DList_set_def DList_Set.Collect_member split: option.split)(transfer, simp)
+    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold fold_set_fold DList_set_def DList_Set.Collect_member split: option.split)(transfer, simp)
   show ?RBT_set
-    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold comp_fun_idem.fold_set_fold RBT_set_def RBT_Set2.member_conv_keys RBT_Set2.fold1_conv_fold split: option.split)
+    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold fold_set_fold RBT_set_def RBT_Set2.member_conv_keys RBT_Set2.fold1_conv_fold split: option.split)
 qed simp_all
 
 text \<open>Implementation of set operations\<close>

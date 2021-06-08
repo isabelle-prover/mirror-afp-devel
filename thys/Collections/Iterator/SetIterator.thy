@@ -189,9 +189,11 @@ begin
     assume "x \<in> S0 - S" "S \<subseteq> S0" and \<sigma>_eq: "\<sigma> = Finite_Set.fold f \<sigma>0 S"
     from finite_S0 \<open>S \<subseteq> S0\<close> have fin_S: "finite S" by (metis finite_subset)
     from \<open>x \<in> S0 - S\<close> have x_nin_S: "x \<notin> S" by simp
-    note fold_eq = comp_fun_commute.fold_insert [OF lc_f fin_S x_nin_S]
 
-    show "f x \<sigma> = Finite_Set.fold f \<sigma>0 (insert x S)" 
+    interpret comp_fun_commute: comp_fun_commute f
+      by (fact lc_f)
+    note fold_eq = comp_fun_commute.fold_insert [OF fin_S x_nin_S]
+    show "f x \<sigma> = Finite_Set.fold f \<sigma>0 (insert x S)"
       by (simp add: fold_eq \<sigma>_eq)
   qed simp_all
 end

@@ -1353,7 +1353,7 @@ by(auto simp add: finfun_to_list_const card_UNIV card_eq_0_iff)
 
 lemma remove1_insort_insert_same:
   "x \<notin> set xs \<Longrightarrow> remove1 x (insort_insert x xs) = xs"
-by (metis insort_insert_insort remove1_insort)
+by (metis insort_insert_insort remove1_insort_key)
 
 lemma finfun_dom_conv:
   "finfun_dom f $ x \<longleftrightarrow> f $ x \<noteq> finfun_default f"

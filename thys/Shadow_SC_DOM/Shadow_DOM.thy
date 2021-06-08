@@ -5005,7 +5005,7 @@ h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
       using a7 a6 a5 a4 a3 a2 a1 by (metis (no_types) IntI
           distinct_concat_map_E(1)[of "(\<lambda>ptr. |h2 \<turnstile> get_disconnected_nodes ptr|\<^sub>r)"] disconnected_nodes_eq2_h2
           empty_iff finite_fset finsert.rep_eq fmember.rep_eq insert_iff set_sorted_list_of_set
-          sorted_list_of_set.insert_remove)
+          sorted_list_of_set_insert_remove)
   next
     fix x xa xb
     assume 0: "distinct (concat (map (\<lambda>ptr. |h2 \<turnstile> get_child_nodes ptr|\<^sub>r)
@@ -10802,7 +10802,7 @@ proof -
     using \<open>h2 \<turnstile> get_child_nodes (cast new_element_ptr) \<rightarrow>\<^sub>r []\<close>
     apply(auto simp add: CD.a_distinct_lists_def object_ptr_kinds_eq_h document_ptr_kinds_eq_h
         disconnected_nodes_eq2_h intro!: distinct_concat_map_I)[1]
-       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert)
+       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert_remove)
       apply(case_tac "x=cast new_element_ptr")
        apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]
       apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]
@@ -11599,7 +11599,7 @@ proof -
     using \<open>h2 \<turnstile> get_child_nodes (cast new_character_data_ptr) \<rightarrow>\<^sub>r []\<close>
     apply(auto simp add: CD.a_distinct_lists_def object_ptr_kinds_eq_h document_ptr_kinds_eq_h
         disconnected_nodes_eq2_h intro!: distinct_concat_map_I)[1]
-       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert)
+       apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert_remove)
       apply(case_tac "x=cast new_character_data_ptr")
        apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]
       apply(auto simp add: children_eq2_h[symmetric] insort_split dest: distinct_concat_map_E(2))[1]
@@ -12045,7 +12045,7 @@ proof -
 
     apply(auto simp add: children_eq2[symmetric] CD.a_distinct_lists_def insort_split object_ptr_kinds_eq
         document_ptr_kinds_eq_h  disconnected_nodes_eq2_h intro!: distinct_concat_map_I)[1]
-          apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert)
+          apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert_remove)
 
          apply(auto simp add:  dest: distinct_concat_map_E)[1]
         apply(auto simp add:  dest: distinct_concat_map_E)[1]
@@ -12605,7 +12605,7 @@ proof -
 
     apply(auto simp add: children_eq2_h[symmetric] CD.a_distinct_lists_def insort_split object_ptr_kinds_eq_h
         document_ptr_kinds_eq_h  disconnected_nodes_eq2_h intro!: distinct_concat_map_I)[1]
-          apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert)
+          apply (metis distinct_sorted_list_of_set finite_fset sorted_list_of_set_insert_remove)
 
          apply(auto simp add:  dest: distinct_concat_map_E)[1]
         apply(auto simp add:  dest: distinct_concat_map_E)[1]
