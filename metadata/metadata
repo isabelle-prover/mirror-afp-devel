@@ -4004,7 +4004,7 @@ abstract =
   (Cambridge University Press 2001).
 extra-history =
   Change history:
-  [2020-04-15]: Added completeness of modal logics T, KB, K4, S4 and S5.
+  [2021-04-15]: Added completeness of modal logics T, KB, K4, S4 and S5.
 
 [SequentInvertibility]
 title = Invertibility in Sequent Calculi
