@@ -14,8 +14,11 @@ In this file we restrict ourself to the case where the two triangles ABC and A'B
 
 section \<open>Desargues's Theorem: The Non-coplanar Case\<close>
 
+context higher_projective_space_rank
+begin
+
 definition desargues_config_3D :: 
-  "[Points, Points, Points, Points, Points, Points, Points, Points, Points, Points] => bool" 
+  "['point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point] => bool" 
   where "desargues_config_3D A B C A' B' C' P \<alpha> \<beta> \<gamma> \<equiv> rk {A, B, C} = 3 \<and> rk {A', B', C'} = 3 \<and> 
 rk {A, A', P} = 2 \<and> rk {B, B', P} = 2 \<and> rk {C, C', P} = 2 \<and> rk {A, B, C, A', B', C'} \<ge> 4 \<and> 
 rk {B, C, \<alpha>} = 2 \<and> rk {B', C', \<alpha>} = 2 \<and> rk {A, C, \<beta>} = 2 \<and> rk {A', C', \<beta>} = 2 \<and> rk {A, B, \<gamma>} = 2 \<and>
@@ -187,6 +190,8 @@ proof-
     using assms desargues_config_3D_coplanar_6 desargues_config_3D_non_coplanar
     by fastforce
 qed
+
+end
 
 end
 

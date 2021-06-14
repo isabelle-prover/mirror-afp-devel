@@ -7,25 +7,28 @@ begin
 text \<open>
 Contents:
 \<^item> We give two formulations of Pappus's property for a configuration of nine points
- [\<open>is_pappus1\<close>] [\<open>is_pappus2\<close>].
-\<^item> We prove the equivalence of these two formulations [\<open>pappus_equiv\<close>].
-\<^item> We state Pappus property for a plane [\<open>is_pappus\<close>]. 
+ @{term is_pappus1} @{term is_pappus2}.
+\<^item> We prove the equivalence of these two formulations @{term pappus_equiv}.
+\<^item> We state Pappus property for a plane @{term is_pappus}. 
 \<close>
 
 section \<open>Pappus's Property\<close>
 
-definition col :: "[Points, Points, Points] \<Rightarrow> bool" where
+context projective_plane
+begin
+
+definition col :: "['point, 'point, 'point] \<Rightarrow> bool" where
 "col A B C \<equiv> \<exists>l. incid A l \<and> incid B l \<and> incid C l"
 
-definition distinct6 ::
-  "[Points, Points, Points, Points, Points, Points] \<Rightarrow> bool" where
-"distinct6 A B C D E F \<equiv> (A \<noteq> B) \<and> (A \<noteq> C) \<and> (A \<noteq> D) \<and> (A \<noteq> E) \<and> (A \<noteq> F) \<and>
+lemma distinct6_def:
+"distinct [A,B,C,D,E,F] \<equiv> (A \<noteq> B) \<and> (A \<noteq> C) \<and> (A \<noteq> D) \<and> (A \<noteq> E) \<and> (A \<noteq> F) \<and>
 (B \<noteq> C) \<and> (B \<noteq> D) \<and> (B \<noteq> E) \<and> (B \<noteq> F) \<and>
 (C \<noteq> D) \<and> (C \<noteq> E) \<and> (C \<noteq> F) \<and>
 (D \<noteq> E) \<and> (D \<noteq> F) \<and>
 (E \<noteq> F)"
+  by auto
 
-definition lines :: "Points \<Rightarrow> Points \<Rightarrow> Lines set" where
+definition lines :: "'point \<Rightarrow> 'point \<Rightarrow> 'line set" where
 "lines P Q \<equiv> {l. incid P l \<and> incid Q l}"
 
 lemma uniq_line:
@@ -34,34 +37,34 @@ lemma uniq_line:
   using assms lines_def ax_uniqueness 
   by blast
 
-definition line :: "Points \<Rightarrow> Points \<Rightarrow> Lines" where
+definition line :: "'point \<Rightarrow> 'point \<Rightarrow> 'line" where
 "line P Q \<equiv> @l. incid P l \<and> incid Q l"
 
 
 (* The point P is the intersection of the lines AB and CD. For P to be well-defined,
 A and B should be distinct, C and D should be distinct, and the lines AB and CD should
 be distinct *)
-definition is_a_proper_intersec :: "[Points, Points, Points, Points, Points] \<Rightarrow> bool" where
+definition is_a_proper_intersec :: "['point, 'point, 'point, 'point, 'point] \<Rightarrow> bool" where
 "is_a_proper_intersec P A B C D \<equiv> (A \<noteq> B) \<and> (C \<noteq> D) \<and> (line A B \<noteq> line C D)
 \<and> col P A B \<and> col P C D"
 
 (* We state a first form of Pappus's property *)
 definition is_pappus1 :: 
-"[Points, Points, Points, Points, Points, Points, Points, Points, Points] => bool " where
+"['point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point] => bool " where
 "is_pappus1 A B C A' B' C' P Q R \<equiv> 
-  distinct6 A B C A' B' C' \<longrightarrow> col A B C \<longrightarrow> col A' B' C'
+  distinct[A,B,C,A',B',C'] \<longrightarrow> col A B C \<longrightarrow> col A' B' C'
   \<longrightarrow> is_a_proper_intersec P A B' A' B \<longrightarrow> is_a_proper_intersec Q B C' B' C
   \<longrightarrow> is_a_proper_intersec R A C' A' C 
   \<longrightarrow> col P Q R"
 
-definition is_a_intersec :: "[Points, Points, Points, Points, Points] \<Rightarrow> bool" where
+definition is_a_intersec :: "['point, 'point, 'point, 'point, 'point] \<Rightarrow> bool" where
 "is_a_intersec P A B C D \<equiv> col P A B \<and> col P C D"
 
 (* We state a second form of Pappus's property *)
 definition is_pappus2 ::
-"[Points, Points, Points, Points, Points, Points, Points, Points, Points] \<Rightarrow> bool" where
+"['point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point] \<Rightarrow> bool" where
 "is_pappus2 A B C A' B' C' P Q R \<equiv> 
-  (distinct6 A B C A' B' C' \<or> (A \<noteq> B' \<and> A'\<noteq> B \<and> line A B' \<noteq> line A' B \<and> 
+  (distinct [A,B,C,A',B',C'] \<or> (A \<noteq> B' \<and> A'\<noteq> B \<and> line A B' \<noteq> line A' B \<and> 
   B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
   A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C)) 
   \<longrightarrow> col A B C \<longrightarrow> col A' B' C' \<longrightarrow> is_a_intersec P A B' A' B 
@@ -98,7 +101,7 @@ lemma incidB_lAB: "incid B (line A B)"
   by (metis (no_types, lifting) ax1 line_def someI_ex)
 
 lemma degenerate_hexagon_is_pappus:
-  assumes "distinct6 A B C A' B' C'" and "col A B C" and "col A' B' C'" and
+  assumes "distinct [A,B,C,A',B',C']" and "col A B C" and "col A' B' C'" and
 "is_a_intersec P A B' A' B" and "is_a_intersec Q B C' B' C" and "is_a_intersec R A C' A' C"
 and "line A B' = line A' B \<or> line B C' = line B' C \<or> line A C' = line A' C"
   shows "col P Q R"
@@ -186,7 +189,7 @@ proof -
   have "col P Q R" if "A \<noteq> B \<and> A \<noteq> C \<and> A \<noteq> A' \<and> B \<noteq> C \<and> B \<noteq> B' \<and> C \<noteq> C' \<and> A'\<noteq> B'
     \<and> A' \<noteq> C' \<and> B' \<noteq> C'"
   proof -
-    have a1:"distinct6 A B C A' B' C'"
+    have a1:"distinct [A,B,C,A',B',C']"
       using \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
         A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> distinct6_def that 
       by auto
@@ -217,38 +220,38 @@ proof -
         \<open>B' = C' \<Longrightarrow> col P Q R\<close> \<open>C = C' \<Longrightarrow> col P Q R\<close> 
       by blast
   qed  
-  have "col P Q R" if "distinct6 A B C A' B' C'" and "col A B C" and "col A' B' C'"
+  have "col P Q R" if "distinct [A,B,C,A',B',C']" and "col A B C" and "col A' B' C'"
     and "is_a_intersec P A B' A' B" and "is_a_intersec Q B C' B' C" and "is_a_intersec R A C' A' C"
   proof -
     have "col P Q R" if "line A B' = line A' B"
-      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec P A B' A' B\<close> 
+      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec P A B' A' B\<close> 
         \<open>is_a_intersec Q B C' B' C\<close> \<open>is_a_intersec R A C' A' C\<close> degenerate_hexagon_is_pappus that 
       by blast
     have "col P Q R" if "line B C' = line B' C"
-      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec P A B' A' B\<close> 
+      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec P A B' A' B\<close> 
         \<open>is_a_intersec Q B C' B' C\<close> \<open>is_a_intersec R A C' A' C\<close> degenerate_hexagon_is_pappus that 
       by blast
     have "col P Q R" if "line A' C = line A C'"
-      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec P A B' A' B\<close> 
+      using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec P A B' A' B\<close> 
         \<open>is_a_intersec Q B C' B' C\<close> \<open>is_a_intersec R A C' A' C\<close> degenerate_hexagon_is_pappus that 
       by auto
     have "col P Q R" if "line A B' \<noteq> line A' B" and "line B C' \<noteq> line B' C" and
       "line A C' \<noteq> line A' C"
     proof -
       have "is_a_proper_intersec P A B' A' B"
-        using \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec P A B' A' B\<close> distinct6_def is_a_intersec_def 
+        using \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec P A B' A' B\<close> distinct6_def is_a_intersec_def 
           is_a_proper_intersec_def that(1) 
         by auto
       have "is_a_proper_intersec Q B C' B' C"
-        using \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec Q B C' B' C\<close> distinct6_def is_a_intersec_def 
+        using \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec Q B C' B' C\<close> distinct6_def is_a_intersec_def 
           is_a_proper_intersec_def that(2) 
         by auto
       have "is_a_proper_intersec R A C' A' C"
-        using \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_intersec R A C' A' C\<close> distinct6_def is_a_intersec_def 
+        using \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_intersec R A C' A' C\<close> distinct6_def is_a_intersec_def 
           is_a_proper_intersec_def that(3) 
         by auto
       show "col P Q R"
-        using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct6 A B C A' B' C'\<close> \<open>is_a_proper_intersec P A B' A' B\<close> 
+        using \<open>col A B C\<close> \<open>col A' B' C'\<close> \<open>distinct [A,B,C,A',B',C']\<close> \<open>is_a_proper_intersec P A B' A' B\<close> 
           \<open>is_a_proper_intersec Q B C' B' C\<close> \<open>is_a_proper_intersec R A C' A' C\<close> assms is_pappus1_def 
         by blast
     qed
@@ -261,7 +264,7 @@ proof -
   show "is_pappus2 A B C A' B' C' P Q R"
     by (simp add: \<open>\<lbrakk>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C 
       \<and> A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C; col A B C; col A' B' C'; is_a_intersec P A B' A' B; is_a_intersec Q B C' B' C; is_a_intersec R A C' A' C\<rbrakk> \<Longrightarrow> col P Q R\<close> 
-        \<open>\<lbrakk>distinct6 A B C A' B' C'; col A B C; col A' B' C'; is_a_intersec P A B' A' B; is_a_intersec Q B C' B' C; is_a_intersec R A C' A' C\<rbrakk> \<Longrightarrow> col P Q R\<close> 
+        \<open>\<lbrakk>distinct [A,B,C,A',B',C']; col A B C; col A' B' C'; is_a_intersec P A B' A' B; is_a_intersec Q B C' B' C; is_a_intersec R A C' A' C\<rbrakk> \<Longrightarrow> col P Q R\<close> 
         is_pappus2_def)
 qed
 
@@ -274,5 +277,7 @@ of any hexagon of that plane, whose vertices lie alternately on two lines, are c
 
 definition is_pappus :: "bool" where
 "is_pappus \<equiv> \<forall>A B C D E F P Q R. is_pappus2 A B C D E F P Q R"
+
+end
 
 end

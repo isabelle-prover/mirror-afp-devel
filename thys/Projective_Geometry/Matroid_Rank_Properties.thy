@@ -12,6 +12,9 @@ that will allow us to simplify our future proofs.
 
 section \<open>Proof Techniques Using Ranks\<close>
 
+context higher_projective_space_rank
+begin
+
 lemma matroid_ax_3_alt:
   assumes "I \<subseteq> X \<inter> Y"
   shows "rk (X \<union> Y) + rk I \<le> rk X + rk Y"
@@ -28,8 +31,7 @@ proof-
     by (metis (full_types) \<open>{A, B, M} \<union> {A, B, P} = {A, B, M, P}\<close> insert_commute le_inf_iff 
         matroid_ax_3_alt subset_insertI)
   then have "rk {A,B,M,P} = 2"
-    by (smt Un_upper1 Un_upper2 \<open>{A, B, M} \<union> {A, B, P} = {A, B, M, P}\<close> add_diff_cancel_left' 
-        add_diff_cancel_right' add_mono antisym assms(1) assms(3) assms(5) le_diff_conv matroid_ax_2)
+    by (metis add_diff_cancel_right' antisym assms(1) assms(3) assms(5) insert_commute le_diff_conv matroid_ax_2 subset_insertI)
   have "{C,D,M} \<union> {C,D,P} = {C,D,M,P}"
     by auto
   have "rk {C,D,M,P} + rk {C,D} \<le> rk {C,D,M} + rk {C,D,P}"
@@ -75,9 +77,7 @@ proof-
     then have "rk {A,B,C,D,M} + rk {M} \<le> rk {A,B,M} + rk {C,D,M}"
       by (smt le_inf_iff matroid_ax_3_alt order_trans subset_insertI)
     then have "rk {A,B,C,D,M} \<le> 3" if "rk {A,B,M} = 2" and "rk {C,D,M} = 2"
-      by (smt One_nat_def Suc_leI Suc_le_mono Suc_numeral add_Suc_right add_leD1 add_mono le_antisym 
-          not_le numeral_3_eq_3 numeral_One numeral_plus_one one_add_one rk_ax_singleton that(1) 
-          that(2))
+      by (smt (z3) One_nat_def Suc_le_eq Suc_numeral add_Suc_right add_le_same_cancel1 nat_1_add_1 not_less numeral_Bit1 numerals(1) order_trans rk_ax_singleton semiring_norm(2) that(1) that(2))
     then have "rk {A,B,C,D} \<le> 3" if "rk {A,B,M} = 2" and "rk {C,D,M} = 2"
       by (smt insert_commute matroid_ax_2 order_trans subset_insertI that(1) that(2))
     thus "rk {A, B, M} \<noteq> 2 \<or> rk {C, D, M} \<noteq> 2 "
@@ -227,6 +227,7 @@ qed
 
 end
 
+end
 
 
 
