@@ -14,8 +14,11 @@ In this file we restrict ourself to the case where the two triangles ABC and A'B
 
 section \<open>Desargues's Theorem: The Coplanar Case\<close>
 
+context higher_projective_space_rank
+begin
+
 definition desargues_config_2D :: 
-  "[Points, Points, Points, Points, Points, Points, Points, Points, Points, Points] \<Rightarrow> bool" 
+  "['point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point, 'point] \<Rightarrow> bool" 
   where "desargues_config_2D A B C A' B' C' P \<alpha> \<beta> \<gamma> \<equiv> rk {A, B, C} = 3 \<and> rk {A', B', C'} = 3 \<and> 
 rk {A, A', P} = 2 \<and> rk {B, B', P} = 2 \<and> rk {C, C', P} = 2 \<and> rk {A, B, \<gamma>} = 2 \<and> rk {A', B', \<gamma>} = 2 \<and>
 rk {A, C, \<beta>} = 2 \<and> rk {A', C', \<beta>} = 2 \<and> rk {B, C, \<alpha>} = 2 \<and> rk {B', C', \<alpha>} = 2 \<and> 
@@ -1028,5 +1031,6 @@ proof-
       rk_couple rk_singleton_bis 
     by blast
 qed
+end
 
 end
