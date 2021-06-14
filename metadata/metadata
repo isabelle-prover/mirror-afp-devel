@@ -10196,6 +10196,9 @@ abstract =
   compilation function.</li> </ul>  This formalization was
   described in the CPP 2021 paper <em>Towards Efficient and
   Verified Virtual Machines for Dynamic Languages</em>
+extra-history =
+  Change history:
+  [2021-06-14]: refactored function definitions to contain explicit basic blocks<br>
 
 [Isabelle_Marries_Dirac]
 title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information
