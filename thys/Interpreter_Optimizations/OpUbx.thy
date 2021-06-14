@@ -7,11 +7,11 @@ section \<open>n-ary operations\<close>
 
 locale nary_operations_ubx =
   nary_operations_inl \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy> \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll> +
-  unboxedval is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
+  unboxedval unitialized is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
   for
     \<OO>\<pp> :: "'op \<Rightarrow> 'dyn list \<Rightarrow> 'dyn" and \<AA>\<rr>\<ii>\<tt>\<yy> and
     \<II>\<nn>\<ll>\<OO>\<pp> and \<II>\<nn>\<ll> and \<II>\<ss>\<II>\<nn>\<ll> and \<DD>\<ee>\<II>\<nn>\<ll> :: "'opinl \<Rightarrow> 'op" and
-    is_true :: "'dyn \<Rightarrow> bool" and is_false and
+    unitialized :: 'dyn and is_true and is_false and
     box_ubx1 :: "'ubx1 \<Rightarrow> 'dyn" and unbox_ubx1 and
     box_ubx2 :: "'ubx2 \<Rightarrow> 'dyn" and unbox_ubx2 +
   fixes
@@ -37,9 +37,5 @@ locale nary_operations_ubx =
         \<exists>y. \<UU>\<bb>\<xx>\<OO>\<pp> opubx xs = Some y \<and> typeof y = \<tau>" and
     \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_complete:
       "\<UU>\<bb>\<xx>\<OO>\<pp> opubx xs = Some y \<Longrightarrow> \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (map typeof xs, typeof y)"
-
-begin
-
-end
 
 end

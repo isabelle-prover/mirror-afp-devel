@@ -1,5 +1,5 @@
 theory Op_example
-  imports OpUbx Ubx_type_inference Global Unboxed_lemmas
+  imports OpUbx Global Unboxed_lemmas
 begin
 
 
@@ -8,16 +8,17 @@ section \<open>Dynamic values\<close>
 datatype dynamic = DNil | DBool bool | DNum nat
 
 definition is_true where
-  "is_true d = (d = DBool True)"
+  "is_true d \<equiv> (d = DBool True)"
 
 definition is_false where
-  "is_false d = (d = DBool False)"
+  "is_false d \<equiv> (d = DBool False)"
 
-definition box_bool :: "bool \<Rightarrow> dynamic" where
-  "box_bool = DBool"
-
-definition box_num :: "nat \<Rightarrow> dynamic" where
-  "box_num = DNum"
+interpretation dynval_dynamic: dynval DNil is_true is_false
+proof unfold_locales
+  fix d
+  show "\<not> (is_true d \<and> is_false d)"
+    by (cases d) (simp_all add: is_true_def is_false_def)
+qed
 
 fun unbox_num :: "dynamic \<Rightarrow> nat option" where
    "unbox_num (DNum n) = Some n" |
@@ -28,15 +29,15 @@ fun unbox_bool :: "dynamic \<Rightarrow> bool option" where
    "unbox_bool _ = None"
 
 interpretation unboxed_dynamic:
-  unboxedval is_true is_false box_num unbox_num box_bool unbox_bool
-proof (unfold_locales; (simp add: is_true_def is_false_def)?)
+  unboxedval DNil is_true is_false DNum unbox_num DBool unbox_bool
+proof (unfold_locales)
   fix d n
-  show "unbox_num d = Some n \<Longrightarrow> box_num n = d"
-    by (cases d; simp add: box_num_def)
+  show "unbox_num d = Some n \<Longrightarrow> DNum n = d"
+    by (cases d; simp add: )
 next
   fix d b
-  show "unbox_bool d = Some b \<Longrightarrow> box_bool b = d"
-    by (cases d; simp add: box_bool_def)
+  show "unbox_bool d = Some b \<Longrightarrow> DBool b = d"
+    by (cases d; simp add:)
 qed
 
 
@@ -175,8 +176,7 @@ lemma eval_ubx_correct:
   "eval_ubx opubx xs = Some z \<Longrightarrow>
     eval_inl (deubx opubx) (map unboxed_dynamic.norm_unboxed xs) = unboxed_dynamic.norm_unboxed z"
   apply (cases opubx; simp)
-  apply (induction xs rule: eval_AddNumUbx.induct; auto)
-  by (simp add: box_num_def)
+  by (induction xs rule: eval_AddNumUbx.induct) auto
 
 lemma eval_ubx_to_inl:
   assumes "eval_ubx opubx \<Sigma> = Some z"
@@ -187,12 +187,11 @@ proof (cases opubx)
     using assms by simp
   then show ?thesis
     using OpAddNumUbx
-    apply (induction \<Sigma> rule: eval_AddNumUbx.induct; simp)
-    by (simp add: box_num_def)
+    by (induction \<Sigma> rule: eval_AddNumUbx.induct) simp_all
 qed
 
 
-subsection \<open>Abstract interpretation\<close>
+subsection \<open>Typing\<close>
 
 fun typeof_opubx :: "opubx \<Rightarrow> type option list \<times> type option" where
   "typeof_opubx OpAddNumUbx = ([Some Ubx1, Some Ubx1], Some Ubx1)"
@@ -227,7 +226,7 @@ lemma typeof_opubx_ar: "length (fst (typeof_opubx opubx)) = ar (deinl (deubx opu
 interpretation op_OpUbx:
   nary_operations_ubx
     eval ar eval_inl inl isinl deinl
-    is_true is_false box_num unbox_num box_bool unbox_bool
+    DNil is_true is_false DNum unbox_num DBool unbox_bool
     eval_ubx ubx deubx typeof_opubx
   using ubx_invertible
   using eval_ubx_correct

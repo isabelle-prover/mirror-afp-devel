@@ -1,8 +1,33 @@
 theory Inca_to_Ubx_simulation
-  imports List_util Option_applicative Result
+  imports List_util Result
     "VeriComp.Simulation"
-    Inca Ubx Ubx_type_inference Unboxed_lemmas
+    Inca Ubx Ubx_Verification Unboxed_lemmas
 begin
+
+lemma take_:"Suc n = length xs \<Longrightarrow> take n xs = butlast xs"
+  using butlast_conv_take diff_Suc_1 append_butlast_last_id
+  by (metis butlast_conv_take diff_Suc_1)
+
+lemma append_take_singleton_conv:"Suc n = length xs \<Longrightarrow> xs = take n xs @ [xs ! n]"
+proof (induction xs arbitrary: n)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  then show ?case
+  proof (cases n)
+    case 0
+    then show ?thesis
+      using Cons
+      by simp
+  next
+    case (Suc n')
+    have "Suc n' = length xs"
+      by (rule Cons.prems[unfolded Suc, simplified])
+    from Suc show ?thesis
+      by (auto intro: Cons.IH[OF \<open>Suc n' = length xs\<close>])
+  qed
+qed
 
 
 section \<open>Locale imports\<close>
@@ -11,28 +36,31 @@ locale inca_to_ubx_simulation =
   Sinca: inca
     Finca_empty Finca_get Finca_add Finca_to_list
     heap_empty heap_get heap_add heap_to_list
-    is_true is_false
+    uninitialized is_true is_false
     \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy> \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll> +
-  Subx: ubx_sp
+  Subx: ubx
     Fubx_empty Fubx_get Fubx_add Fubx_to_list
     heap_empty heap_get heap_add heap_to_list
-    is_true is_false box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
+    uninitialized is_true is_false
+    box_ubx1 unbox_ubx1 box_ubx2 unbox_ubx2
     \<OO>\<pp> \<AA>\<rr>\<ii>\<tt>\<yy> \<II>\<nn>\<ll>\<OO>\<pp> \<II>\<nn>\<ll> \<II>\<ss>\<II>\<nn>\<ll> \<DD>\<ee>\<II>\<nn>\<ll> \<UU>\<bb>\<xx>\<OO>\<pp> \<UU>\<bb>\<xx> \<BB>\<oo>\<xx> \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
   for
     \<comment> \<open>Functions environments\<close>
     Finca_empty and
-    Finca_get :: "'fenv_inca \<Rightarrow> 'fun \<Rightarrow> ('dyn, 'var, 'fun, 'op, 'opinl) Inca.instr fundef option" and
+    Finca_get :: "'fenv_inca \<Rightarrow> 'fun \<Rightarrow> ('label, ('dyn, 'var, 'fun, 'label, 'op, 'opinl) Inca.instr) fundef option" and
     Finca_add and Finca_to_list and
 
     Fubx_empty and
-    Fubx_get :: "'fenv_ubx \<Rightarrow> 'fun \<Rightarrow> ('dyn, 'var, 'fun, 'op, 'opinl, 'opubx, 'ubx1, 'ubx2) Ubx.instr fundef option" and
+    Fubx_get :: "'fenv_ubx \<Rightarrow> 'fun \<Rightarrow> ('label, ('dyn, 'var, 'fun, 'label, 'op, 'opinl, 'opubx, 'ubx1, 'ubx2) Ubx.instr) fundef option" and
     Fubx_add and Fubx_to_list and
 
     \<comment> \<open>Memory heap\<close>
     heap_empty and heap_get :: "'henv \<Rightarrow> 'var \<times> 'dyn \<Rightarrow> 'dyn option" and heap_add and heap_to_list and
 
+    \<comment> \<open>Dynamic values\<close>
+    uninitialized :: 'dyn and is_true and is_false and
+
     \<comment> \<open>Unboxed values\<close>
-    is_true and is_false and
     box_ubx1 and unbox_ubx1 and
     box_ubx2 and unbox_ubx2 and
 
@@ -40,25 +68,6 @@ locale inca_to_ubx_simulation =
     \<OO>\<pp> and \<AA>\<rr>\<ii>\<tt>\<yy> and \<II>\<nn>\<ll>\<OO>\<pp> and \<II>\<nn>\<ll> and \<II>\<ss>\<II>\<nn>\<ll> and \<DD>\<ee>\<II>\<nn>\<ll> and \<UU>\<bb>\<xx>\<OO>\<pp> and \<UU>\<bb>\<xx> and \<BB>\<oo>\<xx> and \<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>
 begin
 
-declare Subx.sp_append[simp]
-
-
-section \<open>Strongest postcondition\<close>
-
-definition sp_fundef where
-  "sp_fundef F fd xs \<equiv> Subx.sp F xs (replicate (arity fd) None)"
-
-lemmas sp_fundef_generalize =
-  Subx.sp_generalize[where \<Sigma> = "replicate (arity fd) None" for fd, simplified, folded sp_fundef_def]
-
-lemma eq_sp_to_eq_sp_fundef:
-  assumes "Subx.sp F1 = (Subx.sp F2 :: ('dyn, 'id, _, _, _, _, 'num, 'bool) Ubx.instr list \<Rightarrow> _)"
-  shows "sp_fundef F1 = (sp_fundef F2 :: _ \<Rightarrow> ('dyn, 'id, _, _, _, _, 'num, 'bool) Ubx.instr list \<Rightarrow> _)"
-  using assms(1)
-  by (intro ext; simp add: sp_fundef_def)
-
-definition sp_fundefs where
-  "sp_fundefs F \<equiv> \<forall>f fd. F f = Some fd \<longrightarrow> sp_fundef F fd (body fd) = Ok [None]"
 
 section \<open>Normalization\<close>
 
@@ -67,6 +76,10 @@ fun norm_instr where
   "norm_instr (Ubx.IPushUbx1 n) = Inca.IPush (box_ubx1 n)" |
   "norm_instr (Ubx.IPushUbx2 b) = Inca.IPush (box_ubx2 b)" |
   "norm_instr Ubx.IPop = Inca.IPop" |
+  "norm_instr (Ubx.IGet n) = Inca.IGet n" |
+  "norm_instr (Ubx.IGetUbx _ n) = Inca.IGet n" |
+  "norm_instr (Ubx.ISet n) = Inca.ISet n" |
+  "norm_instr (Ubx.ISetUbx _ n) = Inca.ISet n" |
   "norm_instr (Ubx.ILoad x) = Inca.ILoad x" |
   "norm_instr (Ubx.ILoadUbx _ x) = Inca.ILoad x" |
   "norm_instr (Ubx.IStore x) = Inca.IStore x" |
@@ -74,62 +87,59 @@ fun norm_instr where
   "norm_instr (Ubx.IOp op) = Inca.IOp op" |
   "norm_instr (Ubx.IOpInl op) = Inca.IOpInl op" |
   "norm_instr (Ubx.IOpUbx op) = Inca.IOpInl (\<BB>\<oo>\<xx> op)" |
-  "norm_instr (Ubx.ICJump n) = Inca.ICJump n" |
-  "norm_instr (Ubx.ICall x) = Inca.ICall x"
+  "norm_instr (Ubx.ICJump l\<^sub>t l\<^sub>f) = Inca.ICJump l\<^sub>t l\<^sub>f" |
+  "norm_instr (Ubx.ICall x) = Inca.ICall x" |
+  "norm_instr Ubx.IReturn = Inca.IReturn"
 
-definition rel_fundefs where
-  "rel_fundefs f g = (\<forall>x. rel_option (rel_fundef (\<lambda>y z. y = norm_instr z)) (f x) (g x))"
-
-abbreviation (input) norm_eq where
-  "norm_eq x y \<equiv> x = norm_instr y"
-
-lemma norm_generalize_instr: "norm_instr (Subx.generalize_instr instr) = norm_instr instr"
+lemma norm_generalize_instr[simp]: "norm_instr (Subx.generalize_instr instr) = norm_instr instr"
   by (cases instr) simp_all
 
-lemma rel_fundef_body_nth:
-  assumes "rel_fundef norm_eq fd1 fd2" and "pc < length (body fd1)"
-  shows "body fd1 ! pc = norm_instr (body fd2 ! pc)"
+abbreviation norm_eq where
+  "norm_eq x y \<equiv> x = norm_instr y"
+
+definition rel_fundefs where
+  "rel_fundefs f g = (\<forall>x. rel_option (rel_fundef (=) norm_eq) (f x) (g x))"
+
+lemma rel_fundefsI:
+  assumes "\<And>x. rel_option (rel_fundef (=) norm_eq) (F1 x) (F2 x)"
+  shows "rel_fundefs F1 F2"
   using assms
-  by (auto dest: list_all2_nthD simp: fundef.rel_sel)
+  by (simp add: rel_fundefs_def)
 
-lemma rel_fundef_rewrite_body:
-  assumes
-    "rel_fundef norm_eq fd1 fd2" and
-    "norm_instr (body fd2 ! pc) = norm_instr instr"
-  shows "rel_fundef norm_eq fd1 (rewrite_fundef_body fd2 pc instr)"
-  using assms(1)
-proof (cases rule: fundef.rel_cases)
-  case (Fundef xs ar' ys ar)
-  hence "length xs = length ys"
-    by (simp add: list_all2_conv_all_nth)
-  hence "length xs = length (rewrite ys pc instr)"
-    by simp
-  hence "list_all2 norm_eq xs (rewrite ys pc instr)"
-  proof (elim list_all2_all_nthI)
-    fix n
-    assume "n < length xs"
-    hence "n < length ys"
-      by (simp add: \<open>length xs = length ys\<close>)
-    thus "xs ! n = norm_instr (rewrite ys pc instr ! n)"
-      using list_all2_nthD[OF \<open>list_all2 norm_eq xs ys\<close> \<open>n < length xs\<close>, symmetric]
-      using assms(2)[unfolded Fundef(2), simplified]
-      by (cases "pc = n"; simp)
-  qed
-  thus ?thesis
-    using Fundef by simp
+lemma rel_fundefsD:
+  assumes "rel_fundefs F1 F2"
+  shows "rel_option (rel_fundef (=) norm_eq) (F1 x) (F2 x)"
+  using assms
+  by (simp add: rel_fundefs_def)
+
+lemma rel_fundefs_next_instr:
+  assumes rel_F1_F2: "rel_fundefs F1 F2"
+  shows "rel_option norm_eq (next_instr F1 f l pc) (next_instr F2 f l pc)"
+  using rel_F1_F2[THEN rel_fundefsD, of f]
+proof (cases rule: option.rel_cases)
+  case None
+  thus ?thesis by (simp add: next_instr_def)
+next
+  case (Some fd1 fd2)
+  then show ?thesis
+    by (auto simp: next_instr_def intro: rel_fundef_imp_rel_option_instr_at)
 qed
 
-lemma rel_fundef_generalize:
-  assumes "rel_fundef norm_eq fd1 fd2"
-  shows "rel_fundef norm_eq fd1 (Subx.generalize_fundef fd2)"
-  using assms(1)
-proof (cases rule: fundef.rel_cases)
-  case (Fundef xs ar' ys ar)
-  hence "list_all2 (\<lambda>x y. x = norm_instr y) xs (map Subx.generalize_instr ys)"
-    by (auto elim!: list_all2_mono simp: list.rel_map norm_generalize_instr)
-  thus ?thesis
-    using Fundef by simp
-qed
+lemma rel_fundefs_next_instr1:
+  assumes rel_F1_F2: "rel_fundefs F1 F2" and next_instr1: "next_instr F1 f l pc = Some instr1"
+  shows "\<exists>instr2. next_instr F2 f l pc = Some instr2 \<and> norm_eq instr1 instr2"
+  using rel_fundefs_next_instr[OF rel_F1_F2, of f l pc]
+  unfolding next_instr1
+  unfolding option_rel_Some1
+  by assumption
+
+lemma rel_fundefs_next_instr2:
+  assumes rel_F1_F2: "rel_fundefs F1 F2" and next_instr2: "next_instr F2 f l pc = Some instr2"
+  shows "\<exists>instr1. next_instr F1 f l pc = Some instr1 \<and> norm_eq instr1 instr2"
+  using rel_fundefs_next_instr[OF rel_F1_F2, of f l pc]
+  unfolding next_instr2
+  unfolding option_rel_Some2
+  by assumption
 
 lemma rel_fundefs_empty: "rel_fundefs (\<lambda>_. None) (\<lambda>_. None)"
   by (simp add: rel_fundefs_def)
@@ -146,9 +156,9 @@ lemma rel_fundefs_None2:
 
 lemma rel_fundefs_Some1:
   assumes "rel_fundefs f g" and "f x = Some y"
-  shows "\<exists>z. g x = Some z \<and> rel_fundef norm_eq y z"
+  shows "\<exists>z. g x = Some z \<and> rel_fundef (=) norm_eq y z"
 proof -
-  from assms(1) have "rel_option (rel_fundef norm_eq) (f x) (g x)"
+  from assms(1) have "rel_option (rel_fundef (=) norm_eq) (f x) (g x)"
     unfolding rel_fundefs_def by simp
   with assms(2) show ?thesis
     by (simp add: option_rel_Some1)
@@ -156,23 +166,66 @@ qed
 
 lemma rel_fundefs_Some2:
   assumes "rel_fundefs f g" and "g x = Some y"
-  shows "\<exists>z. f x = Some z \<and> rel_fundef norm_eq z y"
+  shows "\<exists>z. f x = Some z \<and> rel_fundef (=) norm_eq z y"
 proof -
-  from assms(1) have "rel_option (rel_fundef norm_eq) (f x) (g x)"
+  from assms(1) have "rel_option (rel_fundef (=) norm_eq) (f x) (g x)"
     unfolding rel_fundefs_def by simp
   with assms(2) show ?thesis
     by (simp add: option_rel_Some2)
 qed
 
 lemma rel_fundefs_rel_option:
-  assumes "rel_fundefs f g" and "\<And>x y. rel_fundef norm_eq x y \<Longrightarrow> h x y"
+  assumes "rel_fundefs f g" and "\<And>x y. rel_fundef (=) norm_eq x y \<Longrightarrow> h x y"
   shows "rel_option h (f z) (g z)"
 proof -
-  have "rel_option (rel_fundef norm_eq) (f z) (g z)"
+  have "rel_option (rel_fundef (=) norm_eq) (f z) (g z)"
     using assms(1)[unfolded rel_fundefs_def] by simp
   then show ?thesis
     unfolding rel_option_unfold
     by (auto simp add: assms(2))
+qed
+
+lemma rel_fundef_generalizeI:
+  assumes "rel_fundef (=) norm_eq fd1 fd2"
+  shows "rel_fundef (=) norm_eq fd1 (Subx.generalize_fundef fd2)"
+  using assms
+  by (cases rule: fundef.rel_cases)
+    (auto simp: map_ran_def list.rel_map elim: list.rel_mono_strong)
+
+lemma rel_fundefs_generalizeI:
+  assumes "rel_fundefs (Finca_get F1) (Fubx_get F2)"
+  shows "rel_fundefs (Finca_get F1) (Fubx_get (Subx.Fenv.map_entry F2 f Subx.generalize_fundef))"
+proof (rule rel_fundefsI)
+  fix x
+  show "rel_option (rel_fundef (=) norm_eq)
+    (Finca_get F1 x) (Fubx_get (Subx.Fenv.map_entry F2 f Subx.generalize_fundef) x)"
+    unfolding Subx.Fenv.get_map_entry_conv
+    unfolding option.rel_map
+    using assms(1)[THEN rel_fundefsD, of x]
+    by (auto intro: rel_fundef_generalizeI elim: option.rel_mono_strong)
+qed
+
+lemma rel_fundefs_rewriteI:
+  assumes
+    rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" and
+    "norm_eq instr1' instr2'"
+  shows "rel_fundefs
+    (Finca_get (Sinca.Fenv.map_entry F1 f (\<lambda>fd. rewrite_fundef_body fd l pc instr1')))
+    (Fubx_get (Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc instr2')))"
+  (is "rel_fundefs (Finca_get ?F1') (Fubx_get ?F2')")
+proof (rule rel_fundefsI)
+  fix x
+  show "rel_option (rel_fundef (=) norm_eq) (Finca_get ?F1' x) (Fubx_get ?F2' x)"
+  proof (cases "f = x")
+    case True
+    show ?thesis
+      using rel_F1_F2[THEN rel_fundefsD, of x] True assms(2)
+      by (cases rule: option.rel_cases) (auto intro: rel_fundef_rewrite_body)
+  next
+    case False
+    then show ?thesis
+      using rel_F1_F2[THEN rel_fundefsD, of x] by simp
+  qed
 qed
 
 
@@ -201,1009 +254,996 @@ lemma length_norm_stack[simp]: "length (norm_stack xs) = length xs"
   by (simp add: norm_stack_def)
 
 definition is_valid_fun_call where
-  "is_valid_fun_call get fd2 n \<Sigma>2 g \<equiv> n < length (body fd2) \<and> body fd2 ! n = ICall g \<and>
-      (\<exists>gd. get g = Some gd \<and> list_all is_dyn_operand (take (arity gd) \<Sigma>2))"
+  "is_valid_fun_call F f l pc \<Sigma> g \<equiv> next_instr F f l pc = Some (ICall g) \<and>
+      (\<exists>gd. F g = Some gd \<and> arity gd \<le> length \<Sigma> \<and> list_all is_dyn_operand (take (arity gd) \<Sigma>))"
 
-inductive rel_stacktraces for get where
-  rel_stacktraces_Nil:
-    "rel_stacktraces get [] [] opt" |
-
-  rel_stacktraces_Cons:
-    "rel_stacktraces get st1 st2 (Some f) \<Longrightarrow>
-    \<Sigma>1 = norm_stack \<Sigma>2 \<Longrightarrow>
-    get f = Some fd2 \<Longrightarrow>
-    sp_fundef get fd2 (take n (body fd2)) = Ok (map typeof \<Sigma>2) \<Longrightarrow>
-    pred_option (is_valid_fun_call get fd2 n \<Sigma>2) opt \<Longrightarrow>
-    rel_stacktraces get (Frame f n \<Sigma>1 # st1) (Frame f n \<Sigma>2 # st2) opt"
-
-definition all_same_arities where
-  "all_same_arities F1 F2 \<equiv> \<forall>f. rel_option (\<lambda>fd gd. arity fd = arity gd) (F1 f) (F2 f)"
-
-lemma all_same_arities_commutative: "all_same_arities F1 F2 = all_same_arities F2 F1"
-proof
-  assume "all_same_arities F1 F2"
-  then show "all_same_arities F2 F1"
-    unfolding all_same_arities_def
-    by (simp add: rel_option_unfold)
-next
-  assume "all_same_arities F2 F1"
-  then show "all_same_arities F1 F2"
-    unfolding all_same_arities_def
-    by (simp add: rel_option_unfold)
-qed
-
-lemma sp_instr_same_arities:
-  "all_same_arities F1 F2 \<Longrightarrow> Subx.sp_instr F1 x ys = Subx.sp_instr F2 x ys"
-proof (induction F1 x ys rule: Subx.sp_instr.induct)
-  fix F1 f \<Sigma>
-  assume assms: "all_same_arities F1 F2"
-  show "Subx.sp_instr F1 (Ubx.ICall f) \<Sigma> = Subx.sp_instr F2 (Ubx.ICall f) \<Sigma>"
-  proof (cases "F1 f")
-    case None
-    then have "F2 f = None"
-      using HOL.spec[OF assms[unfolded all_same_arities_def], of f] by simp
-    with None show ?thesis by simp
-  next
-    case (Some a)
-    then obtain b where "F2 f = Some b" and "arity a = arity b"
-      using HOL.spec[OF assms[unfolded all_same_arities_def], of f] by (auto simp: option_rel_Some1)
-    with Some show ?thesis by simp
-  qed
-qed simp_all
-
-lemma sp_same_arities:
-  assumes "all_same_arities F1 F2"
-  shows "Subx.sp F1 = Subx.sp F2"
-proof (intro ext allI)
-  fix xs ys
-  show "Subx.sp F1 xs ys = Subx.sp F2 xs ys"
-  proof (induction xs arbitrary: ys)
-    case Nil
-    then show ?case by simp
-  next
-    case (Cons x xs)
-    show ?case
-      apply simp
-      apply (cases "(F1, x, ys)" rule: Subx.sp_instr.cases;
-          simp add: Cons.IH Let_def)
-      subgoal for opubx
-        apply (cases "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx")
-        by (auto simp: Cons.IH Let_def)
-      subgoal for f
-        apply (rule option.rel_induct[of "(\<lambda>fd gd. arity fd = arity gd)" "F1 f" "F2 f"])
-        using assms(1)[unfolded all_same_arities_def]
-        by (auto simp add: Cons.IH)
-      done
-  qed
-qed
-
-lemmas sp_fundef_same_arities = sp_same_arities[THEN eq_sp_to_eq_sp_fundef]
-
-lemma all_same_arities_add:
-  assumes "Fubx_get F f = Some fd1" and "arity fd1 = arity fd2"
-  shows "all_same_arities (Fubx_get F) (Fubx_get (Fubx_add F f fd2))"
-  unfolding  all_same_arities_def
-proof (intro allI)
-  fix g
-  show "rel_option (\<lambda>fd gd. arity fd = arity gd)
-           (Fubx_get F g)
-           (Fubx_get (Fubx_add F f fd2) g)"
+lemma is_valid_funcall_map_entry_generalize_fundefI:
+  assumes "is_valid_fun_call (Fubx_get F2) g l pc \<Sigma> z"
+  shows "is_valid_fun_call (Fubx_get (Subx.Fenv.map_entry F2 f Subx.generalize_fundef)) g l pc \<Sigma> z"
+proof (cases "f = z")
+  case True
+  then show ?thesis
     using assms
-    by (cases "f = g") (simp_all add: option.rel_refl)
-qed
-
-lemma all_same_arities_generalize_fundef:
-  assumes "Fubx_get F f = Some fd"
-  shows "all_same_arities (Fubx_get F) (Fubx_get (Fubx_add F f (Subx.generalize_fundef fd)))"
-  using all_same_arities_add[OF assms(1)]
-  using ubx.arity_generalize_fundef
-  by simp
-
-lemma rel_stacktraces_box:
-  assumes
-    "rel_stacktraces F1 xs ys opt" and
-    "F2 f = map_option Subx.generalize_fundef (F1 f)" and
-    "\<And>g. f \<noteq> g \<Longrightarrow> F2 g = F1 g" and
-    "all_same_arities F1 F2"
-  shows "rel_stacktraces F2 xs (Subx.box_stack f ys) opt"
-  using assms(1)
-proof (induction xs ys opt rule: rel_stacktraces.induct)
-  case rel_stacktraces_Nil
-  then show ?case
-    by (auto intro: rel_stacktraces.intros)
+    by (cases "z = g")
+      (auto simp: is_valid_fun_call_def next_instr_def Subx.instr_at_generalize_fundef_conv)
 next
-  case (rel_stacktraces_Cons st1 st2 g \<Sigma>1 \<Sigma>2 gd n opt)
-  note sp_F1_eq_sp_F2[simp] = sp_same_arities[OF assms(4)]
-  note sp_fundef_F1_eq_sp_fundef_F2[simp] = eq_sp_to_eq_sp_fundef[OF sp_F1_eq_sp_F2]
-  show ?case
-    apply simp
-  proof (intro conjI impI)
-    assume "f = g"
-    then have get2_g: "F2 g = Some (Subx.generalize_fundef gd)"
-      using assms(2) \<open>F1 g = Some gd\<close> by simp
-
-    show "rel_stacktraces F2 (Frame g n \<Sigma>1 # st1)
-      (Frame g n (map Subx.box_operand \<Sigma>2) # Subx.box_stack g st2) opt"
-    proof (intro rel_stacktraces.intros)
-      show "rel_stacktraces F2 st1 (Subx.box_stack g st2) (Some g)"
-        using rel_stacktraces_Cons.IH
-        unfolding \<open>f = g\<close>
-        by simp
-    next
-      show "\<Sigma>1 = norm_stack (map Subx.box_operand \<Sigma>2)"
-        using \<open>\<Sigma>1 = norm_stack \<Sigma>2\<close> by simp
-    next
-      show "F2 g = Some (Subx.generalize_fundef gd)"
-        using get2_g .
-    next
-      show "sp_fundef F2 (Subx.generalize_fundef gd) (take n (body (Subx.generalize_fundef gd))) =
-        Ok (map typeof (map Subx.box_operand \<Sigma>2))"
-        using sp_fundef_generalize[OF rel_stacktraces_Cons.hyps(4)]
-        by (simp add: take_map sp_fundef_def)
-    next
-      show "pred_option
-        (is_valid_fun_call F2 (Subx.generalize_fundef gd) n (map Subx.box_operand \<Sigma>2)) opt"
-      proof (cases opt)
-        case (Some h)
-        then show ?thesis
-          using rel_stacktraces_Cons.hyps(5)
-          apply (simp add: take_map list.pred_map list.pred_True is_valid_fun_call_def)
-          using \<open>f = g\<close> assms(3) get2_g by fastforce
-      qed simp
-    qed
-  next
-    assume "f \<noteq> g"
-    show "rel_stacktraces F2 (Frame g n \<Sigma>1 # st1) (Frame g n \<Sigma>2 # Subx.box_stack f st2) opt"
-      using rel_stacktraces_Cons assms(3)[OF \<open>f \<noteq> g\<close>]
-      apply (auto intro!: rel_stacktraces.intros;
-          cases opt; simp add: sp_fundef_def is_valid_fun_call_def)
-      subgoal for h
-        using assms(2,3) by (cases "f = h"; auto)
-      done
-  qed
+  case False
+  then show ?thesis
+    using assms
+    by (cases "Fubx_get F2 g")
+      (auto simp: is_valid_fun_call_def next_instr_def
+          Subx.instr_at_generalize_fundef_conv Subx.Fenv.get_map_entry_conv)
 qed
 
-lemma rel_stacktraces_generalize:
-  assumes
-    "rel_stacktraces (Fubx_get F) st1 st2 (Some f)" and
-    "Fubx_get F f = Some fd " and
-    sp_prefix: "sp_fundef (Fubx_get F) fd (take pc (body fd)) = Ok (None # map typeof \<Sigma>2)" and
-    norm_stacks: "\<Sigma>1 = norm_stack \<Sigma>2" and
-    pc_in_range: "pc < length (body fd)" and
-    sp_instr: "Subx.sp_instr (Fubx_get F) (Subx.generalize_instr (body fd ! pc))
-      (None # map (\<lambda>_. None) \<Sigma>2) = Ok (None # map (typeof \<circ> Subx.box_operand) \<Sigma>2)"
-  shows "rel_stacktraces (Fubx_get (Fubx_add F f (Subx.generalize_fundef fd)))
-          (Frame f (Suc pc) (d # \<Sigma>1) # st1)
-          (Frame f (Suc pc) (OpDyn d # map Subx.box_operand \<Sigma>2) # Subx.box_stack f st2) None"
-proof -
-  let ?fd' = "Subx.generalize_fundef fd"
-  let ?F' = "Fubx_add F f ?fd'"
+lemma is_valid_fun_call_map_box_operandI:
+  assumes "is_valid_fun_call (Fubx_get F2) g l pc \<Sigma> z"
+  shows "is_valid_fun_call (Fubx_get F2) g l pc (map Subx.box_operand \<Sigma>) z"
+  using assms
+  unfolding is_valid_fun_call_def
+  by (auto simp: take_map list.pred_map list.pred_True)
+
+lemma inst_at_rewrite_fundef_body_disj:
+  "instr_at (rewrite_fundef_body fd l pc instr) l pc = Some instr \<or>
+   instr_at (rewrite_fundef_body fd l pc instr) l pc = None"
+proof (cases fd)
+  case (Fundef bblocks ar locals)
   show ?thesis
-  proof (intro rel_stacktraces_Cons)
-    show "rel_stacktraces (Fubx_get ?F') st1 (Subx.box_stack f st2) (Some f)"
-      using assms(2) all_same_arities_generalize_fundef
-      by (auto intro: rel_stacktraces_box[OF assms(1)])
-  next
-    show "d # \<Sigma>1 = norm_stack (OpDyn d # map Subx.box_operand \<Sigma>2)"
-      using norm_stacks by simp
-  next
-    show "Fubx_get ?F' f = Some ?fd'"
-      by simp
-  next
-    show "sp_fundef (Fubx_get ?F') ?fd' (take (Suc pc) (body ?fd')) =
-      Ok (map typeof (OpDyn d # map Subx.box_operand \<Sigma>2))"
-      unfolding all_same_arities_generalize_fundef[THEN sp_fundef_same_arities,
-          OF assms(2), symmetric]
-      using sp_fundef_generalize[OF sp_prefix] sp_instr
-      by (auto simp add: sp_fundef_def take_map take_Suc_conv_app_nth[OF pc_in_range])
-  qed simp_all
-qed
-
-lemma rel_fundefs_rewrite:
-  assumes
-    rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" and
-    F2_get_f: "Fubx_get F2 f = Some fd2" and
-    F2_add_f: "Fubx_add F2 f (rewrite_fundef_body fd2 pc instr) = F2'" and
-    eq_norm: "norm_instr (body fd2 ! pc) = norm_instr instr"
-  shows "rel_fundefs (Finca_get F1) (Fubx_get F2')"
-  unfolding rel_fundefs_def
-proof
-  fix x
-  show "rel_option (rel_fundef norm_eq) (Finca_get F1 x) (Fubx_get F2' x)"
-  proof (cases "x = f")
-    case True
-    then have F2'_get_x: "Fubx_get F2' x = Some (rewrite_fundef_body fd2 pc instr)"
-      using F2_add_f by auto
-    obtain fd1 where "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-      using rel_fundefs_Some2[OF rel_F1_F2 F2_get_f] by auto
+  proof (cases "map_of bblocks l")
+    case None
     thus ?thesis
-      unfolding F2'_get_x option_rel_Some2
-      using True rel_fundef_rewrite_body[OF rel_fd1_fd2 eq_norm]
-      by auto
+      using Fundef
+      by (simp add: rewrite_fundef_body_def instr_at_def map_entry_map_of_None_conv)
   next
-    case False
-    then have "Fubx_get F2' x = Fubx_get F2 x"
-      using F2_add_f by auto
-    then show ?thesis
-      using rel_F1_F2 rel_fundefs_def
-      by fastforce
+    case (Some instr')
+    moreover hence "l \<in> fst ` set bblocks"
+      by (meson domI domIff map_of_eq_None_iff)
+    ultimately show ?thesis
+      using Fundef
+      apply (auto simp add: rewrite_fundef_body_def instr_at_def map_entry_map_of_Some_conv)
+      by (smt (verit, ccfv_threshold) length_list_update nth_list_update_eq option.case_eq_if option.distinct(1) option.sel update_Some_unfold)
   qed
 qed
 
-lemma rel_fundef_rewrite_both:
-  assumes "rel_fundef norm_eq fd1 fd2" and "norm_instr y = x"
-  shows "rel_fundef norm_eq (rewrite_fundef_body fd1 pc x) (rewrite_fundef_body fd2 pc y)"
-  using assms by (auto simp: fundef.rel_sel)
-
-lemma rel_fundefs_rewrite_both:
-  assumes
-    rel_init: "rel_fundefs (Finca_get F1) (Fubx_get F2)" and
-    rel_new: "rel_fundef norm_eq fd1 fd2"
-  shows "rel_fundefs (Finca_get (Finca_add F1 f fd1)) (Fubx_get (Fubx_add F2 f fd2))"
-  unfolding rel_fundefs_def
-proof
-  fix x
-  show "rel_option (rel_fundef norm_eq) (Finca_get (Finca_add F1 f fd1) x) (Fubx_get (Fubx_add F2 f fd2) x)"
-  proof (cases "x = f")
+lemma is_valid_fun_call_map_entry_conv:
+  assumes "next_instr (Fubx_get F2) f l pc = Some instr" "\<not> is_fun_call instr" "\<not> is_fun_call instr'"
+  shows
+    "is_valid_fun_call (Fubx_get (Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc instr')))=
+     is_valid_fun_call (Fubx_get F2)"
+proof (intro ext)
+  fix f' l' pc' \<Sigma> g
+  show
+    "is_valid_fun_call (Fubx_get (Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc instr'))) f' l' pc' \<Sigma> g =
+     is_valid_fun_call (Fubx_get F2) f' l' pc' \<Sigma> g"
+  proof (cases "f = f'")
     case True
-    then show ?thesis
-      using rel_new by simp
-  next
-    case False
-    then show ?thesis
-      using rel_init
-      by (simp add: rel_fundefs_def)
-  qed
-qed
-
-lemma rel_fundefs_generalize:
-  assumes
-    rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" and
-    F2_get_f: "Fubx_get F2 f = Some fd2"
-  shows "rel_fundefs (Finca_get F1) (Fubx_get (Fubx_add F2 f (Subx.generalize_fundef fd2)))"
-  unfolding rel_fundefs_def
-proof
-  let ?F2' = "(Fubx_add F2 f (Subx.generalize_fundef fd2))"
-  fix x
-  show "rel_option (rel_fundef norm_eq) (Finca_get F1 x) (Fubx_get ?F2' x)"
-  proof (cases "x = f")
-    case True
-    then have F2'_get_x: "Fubx_get ?F2' x = Some (Subx.generalize_fundef fd2)"
-      using Subx.Fenv.get_add_eq by auto
-    obtain fd1 where "Finca_get F1 f = Some fd1" and "rel_fundef norm_eq fd1 fd2"
-      using rel_fundefs_Some2[OF rel_F1_F2 F2_get_f] by auto
-    thus ?thesis
-      unfolding F2'_get_x option_rel_Some2
-      using True rel_fundef_generalize
-      by auto
-  next
-    case False
-    then have "Fubx_get ?F2' x = Fubx_get F2 x"
-      using Subx.Fenv.get_add_neq by auto
-    then show ?thesis
-      using rel_F1_F2 rel_fundefs_def
-      by fastforce
-  qed
-qed
-
-lemma rel_stacktraces_rewrite_fundef:
-  assumes
-    "rel_stacktraces (Fubx_get F2) xs ys opt" and
-    "Fubx_get F2 f = Some fd" and
-    "pc < length (body fd)" and
-    "\<forall>\<Sigma>. Subx.sp_instr (Fubx_get F2) (body fd ! pc) \<Sigma> = Subx.sp_instr (Fubx_get F2) instr \<Sigma>" and
-    "\<not> is_fun_call (body fd ! pc)"
-  shows "rel_stacktraces
-     (Fubx_get (Fubx_add F2 f (rewrite_fundef_body fd pc instr))) xs ys opt"
-  using assms(1)
-proof (induction xs ys opt rule: rel_stacktraces.induct)
-  case rel_stacktraces_Nil
-  then show ?case
-    by (auto intro: rel_stacktraces.intros)
-next
-  case (rel_stacktraces_Cons st1 st2 g \<Sigma>1 \<Sigma>2 gd n opt)
-  have same_arities: "all_same_arities (Fubx_get F2)
-    (Fubx_get (Fubx_add F2 f (rewrite_fundef_body fd pc instr)))"
-    using all_same_arities_add[OF assms(2)]
-    by simp
-
-  show ?case
-  proof (cases "g = f")
-    case True
-    then have "gd = fd"
-      using assms(2) rel_stacktraces_Cons.hyps(3) by auto
-    thus ?thesis
-      using True rel_stacktraces_Cons
-      apply (auto intro!: rel_stacktraces.intros
-        simp: sp_fundef_same_arities[OF same_arities, symmetric])
-      apply (cases "n \<le> pc"; simp add: sp_fundef_def)
-      subgoal
-        using assms(3,4)
-        by (simp add: Subx.sp_rewrite_eq_Ok take_rewrite_swap)
-      subgoal
-         using rel_stacktraces_Cons.hyps(5)
-       proof (induction opt)
-         case (Some h)
-         hence "rewrite (body fd) pc instr ! n = Ubx.ICall h"
-           using \<open>gd = fd\<close>
-           apply (simp add: is_valid_fun_call_def)
-           by (metis assms(5) instr.disc nth_rewrite_neq)
-         then show ?case
-           using Some \<open>gd = fd\<close>
-           apply (simp add: is_valid_fun_call_def)
-           by (metis arity_rewrite_fundef_body assms(2) option.inject Subx.Fenv.get_add_eq Subx.Fenv.get_add_neq)
-       qed simp
-       done
-  next
-    case False
-    thus ?thesis
-      using rel_stacktraces_Cons
-      apply (auto intro!: rel_stacktraces.intros
-        simp: sp_fundef_same_arities[OF same_arities, symmetric])
-    proof (induction opt)
-      case (Some h)
-      then show ?case
-        using Some assms(2)
-        by (cases "h = f"; simp add: is_valid_fun_call_def)
-    qed simp
-  qed
-qed
-
-
-section \<open>Matching relation\<close>
-
-lemma sp_fundefs_get:
-  assumes "sp_fundefs F" and "F f = Some fd"
-  shows "sp_fundef F fd (body fd) = Ok [None]"
-  using assms by (simp add: sp_fundefs_def)
-
-lemma sp_fundefs_generalize:
-  assumes "sp_fundefs (Fubx_get F)" and "Fubx_get F f = Some fd"
-  shows "sp_fundefs (Fubx_get (Fubx_add F f (Subx.generalize_fundef fd)))"
-  unfolding sp_fundefs_def
-proof (intro allI impI)
-  fix g gd
-  assume get_g: "Fubx_get (Fubx_add F f (Subx.generalize_fundef fd)) g = Some gd"
-  note sp_F_eq_sp_F' = all_same_arities_generalize_fundef[OF assms(2), THEN sp_same_arities, symmetric]
-  show "sp_fundef (Fubx_get (Fubx_add F f (Subx.generalize_fundef fd))) gd (body gd) = Ok [None]"
-  proof (cases "f = g")
-    case True
-    then have "gd = Subx.generalize_fundef fd"
-      using get_g by simp
     then show ?thesis
       using assms
-      by (simp add: sp_fundefs_def sp_fundef_def sp_F_eq_sp_F' Subx.sp_generalize2)
+      apply (cases "f = g")
+      by (auto simp: is_valid_fun_call_def next_instr_eq_Some_conv
+          instr_at_rewrite_fundef_body_conv if_split_eq1)
   next
     case False
     then show ?thesis
-      using get_g assms
-      by (simp add: sp_fundefs_def sp_fundef_def sp_F_eq_sp_F')
+      using assms
+      apply (cases "f = g")
+      by (auto simp: is_valid_fun_call_def next_instr_eq_Some_conv)
   qed
 qed
 
-lemma sp_fundefs_add:
-  assumes
-    "sp_fundefs (Fubx_get F)" and
-    "sp_fundef (Fubx_get F) fd (body fd) = Ok [None]" and
-    "all_same_arities (Fubx_get F) (Fubx_get (Fubx_add F f fd))"
-  shows "sp_fundefs (Fubx_get (Fubx_add F f fd))"
-  unfolding sp_fundefs_def
-proof (intro allI impI)
-  fix g gd
-  assume "Fubx_get (Fubx_add F f fd) g = Some gd"
-  show "sp_fundef (Fubx_get (Fubx_add F f fd)) gd (body gd) = Ok [None]"
+lemma is_valid_fun_call_map_entry_neq_f_neq_l:
+  assumes "f \<noteq> g" "l \<noteq> l'"
+  shows
+    "is_valid_fun_call (Fubx_get (Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc instr'))) g l' =
+     is_valid_fun_call (Fubx_get F2) g l'"
+  apply (intro ext)
+  unfolding is_valid_fun_call_def
+  using assms
+  apply (simp add: next_instr_eq_Some_conv)
+  apply (rule iffI; simp)
+  unfolding Subx.Fenv.get_map_entry_conv
+  apply simp
+   apply (metis arity_rewrite_fundef_body)
+  apply safe
+  by simp
+
+inductive rel_stacktraces for F where
+  rel_stacktraces_Nil:
+    "rel_stacktraces F opt [] []" |
+
+  rel_stacktraces_Cons:
+    "rel_stacktraces F (Some f) st1 st2 \<Longrightarrow>
+    \<Sigma>1 = map Subx.norm_unboxed \<Sigma>2 \<Longrightarrow>
+    R1 = map Subx.norm_unboxed R2 \<Longrightarrow>
+    list_all is_dyn_operand R2 \<Longrightarrow>
+    F f = Some fd2 \<Longrightarrow> map_of (body fd2) l = Some instrs \<Longrightarrow>
+    Subx.sp_instrs (map_option funtype \<circ> F) (return fd2) (take pc instrs) [] (map typeof \<Sigma>2) \<Longrightarrow>
+    pred_option (is_valid_fun_call F f l pc \<Sigma>2) opt \<Longrightarrow>
+    rel_stacktraces F opt (Frame f l pc R1 \<Sigma>1 # st1) (Frame f l pc R2 \<Sigma>2 # st2)"
+
+lemma rel_stacktraces_map_entry_gneralize_fundefI[intro]:
+  assumes "rel_stacktraces (Fubx_get F2) opt st1 st2"
+  shows "rel_stacktraces (Fubx_get (Subx.Fenv.map_entry F2 f Subx.generalize_fundef))
+    opt st1 (Subx.box_stack f st2)"
+  using assms(1)
+proof (induction opt st1 st2 rule: rel_stacktraces.induct)
+  case (rel_stacktraces_Nil opt)
+  thus ?case
+    by (auto intro: rel_stacktraces.rel_stacktraces_Nil)
+next
+  case (rel_stacktraces_Cons g st1 st2 \<Sigma>1 \<Sigma>2 R1 R2 gd2 l instrs pc opt)
+  show ?case
   proof (cases "f = g")
     case True
-    then have "gd = fd"
-      using \<open>Fubx_get (Fubx_add F f fd) g = Some gd\<close> by simp
     then show ?thesis
-      unfolding sp_fundef_same_arities[OF assms(3), symmetric]
-      using assms(2) by simp 
+      using rel_stacktraces_Cons
+    apply auto
+     apply (rule rel_stacktraces.rel_stacktraces_Cons)
+             apply assumption
+            apply simp
+           apply (rule refl)
+          apply assumption
+        apply simp
+      by (auto simp add: take_map Subx.map_of_generalize_fundef_conv
+          intro!: Subx.sp_instrs_generalize0
+          intro!: is_valid_funcall_map_entry_generalize_fundefI is_valid_fun_call_map_box_operandI
+          elim!: option.pred_mono_strong)
   next
     case False
     then show ?thesis
-      unfolding sp_fundef_same_arities[OF assms(3), symmetric]
-      using \<open>Fubx_get (Fubx_add F f fd) g = Some gd\<close>
-      using sp_fundefs_get[OF assms(1)]
-      by simp
+      using rel_stacktraces_Cons
+      by (auto intro: rel_stacktraces.intros is_valid_funcall_map_entry_generalize_fundefI
+          elim!: option.pred_mono_strong)
   qed
 qed
 
+lemma rel_stacktraces_map_entry_rewrite_fundef_body:
+  assumes
+    "rel_stacktraces (Fubx_get F2) opt st1 st2" and
+    "next_instr (Fubx_get F2) f l pc = Some instr" and
+    "\<And>ret. Subx.sp_instr (map_option funtype \<circ> Fubx_get F2) ret instr =
+      Subx.sp_instr (map_option funtype \<circ> Fubx_get F2) ret instr'" and
+    "\<not> is_fun_call instr" "\<not> is_fun_call instr'"
+  shows "rel_stacktraces
+    (Fubx_get (Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc instr'))) opt st1 st2"
+  using assms(1)
+proof (induction opt st1 st2 rule: rel_stacktraces.induct)
+  case (rel_stacktraces_Nil opt)
+  then show ?case 
+    by (auto intro: rel_stacktraces.rel_stacktraces_Nil)
+next
+  case (rel_stacktraces_Cons g st1 st2 \<Sigma>1 \<Sigma>2 R1 R2 gd2 l' instrs pc' opt)
+  show ?case (is "rel_stacktraces (Fubx_get ?F2') opt ?st1 ?st2")
+  proof (cases "f = g")
+    case True
+    show ?thesis
+    proof (cases "l' = l")
+      case True
+      show ?thesis
+        apply (rule rel_stacktraces.rel_stacktraces_Cons)
+        using rel_stacktraces_Cons.IH apply simp
+        using rel_stacktraces_Cons.hyps apply simp
+        using rel_stacktraces_Cons.hyps apply simp
+        using rel_stacktraces_Cons.hyps apply simp
+        using rel_stacktraces_Cons.hyps \<open>f = g\<close> apply simp
+        using rel_stacktraces_Cons.hyps True apply simp
+        using rel_stacktraces_Cons.hyps apply simp
+        using rel_stacktraces_Cons.hyps assms \<open>f = g\<close> True
+         apply (cases "pc' \<le> pc") []
+         apply (auto simp add: take_update_swap intro!: Subx.sp_instrs_list_update
+            dest!: next_instrD instr_atD) [2]
+        using rel_stacktraces_Cons.hyps
+        unfolding is_valid_fun_call_map_entry_conv[OF assms(2,4,5)]
+        by simp
+    next
+      case False
+      show ?thesis
+      proof (rule rel_stacktraces.rel_stacktraces_Cons)
+        show "Fubx_get ?F2' g = Some (rewrite_fundef_body gd2 l pc instr')"
+          unfolding \<open>f = g\<close>
+          using rel_stacktraces_Cons.hyps by simp
+      next
+        show "pred_option (is_valid_fun_call (Fubx_get ?F2') g l' pc' \<Sigma>2) opt"
+          unfolding is_valid_fun_call_map_entry_conv[OF assms(2,4,5)]
+          using rel_stacktraces_Cons.hyps by simp
+      qed (insert rel_stacktraces_Cons False, simp_all)
+    qed
+  next
+    case False
+    then show ?thesis
+      using rel_stacktraces_Cons
+      by (auto simp: is_valid_fun_call_map_entry_conv[OF assms(2,4,5)]
+          intro!: rel_stacktraces.rel_stacktraces_Cons)
+  qed
+qed
+
+
+section \<open>Simulation relation\<close>
+
 inductive match (infix "\<sim>" 55) where
-  "rel_fundefs (Finca_get F1) (Fubx_get F2) \<Longrightarrow>
-  sp_fundefs (Fubx_get F2) \<Longrightarrow>
-  rel_stacktraces (Fubx_get F2) st1 st2 None \<Longrightarrow>
-  match (State F1 H st1) (State F2 H st2)"
+  matchI: "Subx.wf_state (State F2 H st2) \<Longrightarrow>
+    rel_fundefs (Finca_get F1) (Fubx_get F2) \<Longrightarrow>
+    rel_stacktraces (Fubx_get F2) None st1 st2 \<Longrightarrow>
+    match (State F1 H st1) (State F2 H st2)"
+
+lemmas matchI[consumes 0, case_names wf_state rel_fundefs rel_stacktraces] = match.intros(1)
 
 
 section \<open>Backward simulation\<close>
 
-lemma traverse_cast_Dyn_to_norm: "traverse cast_Dyn xs = Some ys \<Longrightarrow> norm_stack xs = ys"
-proof (induction xs arbitrary: ys)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons x xs)
-  from Cons.prems show ?case
-    by (auto intro: Cons.IH elim: cast_Dyn.elims simp: Option.bind_eq_Some_conv)
+lemma map_eq_append_map_drop:
+  "map f xs = ys @ map f (drop n xs) \<longleftrightarrow> map f (take n xs) = ys"
+  by (metis append_same_eq append_take_drop_id map_append)
+
+lemma ap_map_list_cast_Dyn_to_map_norm:
+  assumes "ap_map_list cast_Dyn xs = Some ys"
+  shows "ys = map Subx.norm_unboxed xs"
+proof -
+  from assms have "list_all2 (\<lambda>x y. cast_Dyn x = Some y) xs ys"
+    by (simp add: ap_map_list_iff_list_all2)
+  thus ?thesis
+    by (induction xs ys rule: list.rel_induct) (auto dest: cast_inversions)
 qed
 
-lemma traverse_cast_Dyn_to_all_Dyn:
-  "traverse cast_Dyn xs = Some ys \<Longrightarrow> list_all (\<lambda>x. typeof x = None) xs"
-proof (induction xs arbitrary: ys)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons x xs)
-  from Cons.prems show ?case
-    by (auto intro: Cons.IH elim: cast_Dyn.elims simp: Option.bind_eq_Some_conv)
+lemma ap_map_list_cast_Dyn_to_all_Dyn:
+  assumes "ap_map_list cast_Dyn xs = Some ys"
+  shows "list_all (\<lambda>x. typeof x = None) xs"
+proof -
+  from assms have "list_all2 (\<lambda>x y. cast_Dyn x = Some y) xs ys"
+    by (simp add: ap_map_list_iff_list_all2)
+  hence "list_all2 (\<lambda>x y. typeof x = None) xs ys"
+    by (auto intro: list.rel_mono_strong cast_Dyn_eq_Some_imp_typeof)
+  thus ?thesis
+    by (induction xs ys rule: list.rel_induct) auto
 qed
+
+lemma ap_map_list_cast_Dyn_map_typeof_replicate_conv:
+  assumes "ap_map_list cast_Dyn xs = Some ys" and "n = length xs"
+  shows "map typeof xs = replicate n None"
+  using assms
+  by (auto simp: list.pred_set intro!: replicate_eq_map[symmetric]
+        dest!: ap_map_list_cast_Dyn_to_all_Dyn)
+
+lemma cast_Dyn_eq_Some_conv_norm_unboxed[simp]: "cast_Dyn i = Some i' \<Longrightarrow> Subx.norm_unboxed i = i'"
+  by (cases i) simp_all
+
+lemma cast_Dyn_eq_Some_conv_typeof[simp]: "cast_Dyn i = Some i' \<Longrightarrow> typeof i = None"
+  by (cases i) simp_all
 
 lemma backward_lockstep_simulation:
-  assumes "Subx.step s2 s2'" and "s1 \<sim> s2"
-  shows "\<exists>s1'. Sinca.step s1 s1' \<and> s1' \<sim> s2'"
-  using assms(2,1)
+  assumes "match s1 s2" and "Subx.step s2 s2'"
+  shows "\<exists>s1'. Sinca.step s1 s1' \<and> match s1' s2'"
+  using assms
 proof (induction s1 s2 rule: match.induct)
-  case (1 F1 F2 st1 st2 H)
-  have rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" using 1 by simp
-  have sp_F2: "sp_fundefs (Fubx_get F2)" using 1 by simp
-
-  from "1"(3,4) show ?case
-  proof (induction st1 st2 "None :: 'fun option" rule: rel_stacktraces.induct)
+  case (matchI F2 H st2 F1 st1)
+  from matchI(3,1,2,4) show ?case
+  proof (induction "None :: 'fun option" st1 st2 rule: rel_stacktraces.induct)
     case rel_stacktraces_Nil
     hence False by (auto elim: Subx.step.cases)
     thus ?case by simp
   next
-    case (rel_stacktraces_Cons st1 st2 f \<Sigma>1 \<Sigma>2 fd2 pc)
-    have F2_f: "Fubx_get F2 f = Some fd2"
-      using rel_stacktraces_Cons by simp
-    have rel_st1_st2: "rel_stacktraces (Fubx_get F2) st1 st2 (Some f)"
-      using rel_stacktraces_Cons by simp
-    have sp_fundef_prefix: "sp_fundef (Fubx_get F2) fd2 (take pc (body fd2)) = Ok (map typeof \<Sigma>2)"
-      using rel_stacktraces_Cons by simp
-    have \<Sigma>1_def: "\<Sigma>1 = norm_stack \<Sigma>2"
-      using rel_stacktraces_Cons by simp
+    case (rel_stacktraces_Cons f st1 st2 \<Sigma>1 \<Sigma>2 R1 R2 fd2 l instrs pc)
+    note hyps = rel_stacktraces_Cons.hyps
+    note prems = rel_stacktraces_Cons.prems
+    have wf_state2: "Subx.wf_state (State F2 H (Frame f l pc R2 \<Sigma>2 # st2))" using prems by simp
+    have rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" using prems by simp
+    have rel_st1_st2: "rel_stacktraces (Fubx_get F2) (Some f) st1 st2" using hyps by simp
+    have \<Sigma>1_def: "\<Sigma>1 = map Subx.norm_unboxed \<Sigma>2" using hyps by simp
+    have R1_def: "R1 = map Subx.norm_unboxed R2" using hyps by simp
+    have all_dyn_R2: "list_all is_dyn_operand R2" using hyps by simp
+    have F2_f: "Fubx_get F2 f = Some fd2" using hyps by simp
+    have map_of_fd2_l: "map_of (body fd2) l = Some instrs" using hyps by simp
+    have sp_instrs_prefix: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+      (take pc instrs) [] (map typeof \<Sigma>2)"
+      using hyps by simp
 
-    note sp_fundef_def[simp]
-    note sp_prefix = sp_fundef_prefix[unfolded sp_fundef_def]
+    note next_instr2 = rel_fundefs_next_instr2[OF rel_F1_F2]
+    note sp_instrs_prefix' =
+      Subx.sp_instrs_singletonI[THEN Subx.sp_instrs_appendI[OF sp_instrs_prefix]]
 
-    have sp_generalized: "Subx.sp (Fubx_get (Fubx_add F2 f (Subx.generalize_fundef fd2)))
-      (map Subx.generalize_instr (take pc (body fd2))) (replicate (arity fd2) None) =
-      Ok (map (\<lambda>_. None) \<Sigma>2)"
-      using Subx.sp_generalize[OF sp_prefix, simplified]
-      using all_same_arities_generalize_fundef[OF F2_f]
-      by (simp add: sp_same_arities)
+    obtain fd1 where
+      F1_f: "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef (=) norm_eq fd1 fd2"
+      using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
+
+    have wf_F2: "Subx.wf_fundefs (Fubx_get F2)"
+      by (rule wf_state2[THEN Subx.wf_stateD, simplified])
+
+    have wf_fd2: "Subx.wf_fundef (map_option funtype \<circ> Fubx_get F2) fd2"
+      using F2_f wf_F2[THEN Subx.wf_fundefsD, THEN spec, of f]
+      by simp
+
+    have
+      instrs_neq_Nil: "instrs \<noteq> []" and
+      all_jumps_in_range: "list_all (Subx.jump_in_range (fst ` set (body fd2))) instrs" and
+      sp_instrs_instrs: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2) instrs [] []"
+      using list_all_map_of_SomeD[OF wf_fd2[THEN Subx.wf_fundef_all_wf_basic_blockD] map_of_fd2_l]
+      by (auto dest: Subx.wf_basic_blockD)
+
+    have sp_instrs_instrs': "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+      (butlast instrs @ [instrs ! pc]) [] []" if pc_def: "pc = length instrs - 1"
+      unfolding pc_def last_conv_nth[OF instrs_neq_Nil, symmetric]
+      unfolding append_butlast_last_id[OF instrs_neq_Nil]
+      by (rule sp_instrs_instrs)
+
+    have sp_instr_last: "Subx.sp_instr (map_option funtype \<circ> Fubx_get F2) (return fd2)
+      (instrs ! pc) (map typeof \<Sigma>2) []" if pc_def: "pc = length instrs - 1"
+      using sp_instrs_instrs'[OF pc_def]
+      using sp_instrs_prefix[unfolded pc_def butlast_conv_take[symmetric]]
+      by (auto dest!: Subx.sp_instrs_appendD')
+
+    from list_all_map_of_SomeD[OF wf_fd2[THEN Subx.wf_fundef_all_wf_basic_blockD] map_of_fd2_l]
+    have is_jump_nthD: "\<And>n. is_jump (instrs ! n) \<Longrightarrow> n < length instrs \<Longrightarrow> n = length instrs - 1"
+      by (auto dest!: Subx.wf_basic_blockD
+            list_all_butlast_not_nthD[of "\<lambda>i. \<not> is_jump i \<and> \<not> Ubx.instr.is_return i", simplified, OF _ disjI1])
+
+    note wf_s2' = Subx.wf_state_step_preservation[OF wf_state2 prems(3)]
     
-    from rel_stacktraces_Cons.prems(1) show ?case
-    proof (induction "State F2 H (Frame f pc \<Sigma>2 # st2)" s2' rule: Subx.step.induct)
-      case (step_push fd2' d)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (d # \<Sigma>1) # st1)"
-        have "?STEP ?s1'"
-          using step_push fd1_thms
-          by (auto intro: Sinca.step_push simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_push rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
+    from prems(3) show ?case
+      using wf_s2'
+    proof (induction "State F2 H (Frame f l pc R2 \<Sigma>2 # st2)" s2' rule: Subx.step.induct)
+      case (step_push d)
+      let ?st1' = "Frame f l (Suc pc) R1 (d # \<Sigma>1) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          using step_push.hyps
+          by (auto intro!: Sinca.step_push dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_push.hyps rel_stacktraces_Cons
+          using Subx.sp_instr.Push[THEN sp_instrs_prefix']
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_push.prems rel_F1_F2
+          by (auto intro: match.intros)
       qed
     next
-      case (step_push_ubx1 fd2' n)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (box_ubx1 n # \<Sigma>1) # st1)"
-        have "?STEP ?s1'"
-          using step_push_ubx1 fd1_thms
-          by (auto intro: Sinca.step_push simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_push_ubx1 rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
+      case (step_push_ubx1 n)
+      let ?st1' = "Frame f l (Suc pc) R1 (box_ubx1 n # \<Sigma>1) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          using step_push_ubx1.hyps
+          by (auto intro!: Sinca.step_push dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_push_ubx1.hyps rel_stacktraces_Cons
+          using Subx.sp_instr.PushUbx1[THEN sp_instrs_prefix']
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_push_ubx1.prems rel_F1_F2
+          by (auto intro!: match.intros)
       qed
     next
-      case (step_push_ubx2 fd2' b)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (box_ubx2 b # \<Sigma>1) # st1)"
-        have "?STEP ?s1'"
-          using step_push_ubx2 fd1_thms
-          by (auto intro: Sinca.step_push simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_push_ubx2 rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
+      case (step_push_ubx2 b)
+      let ?st1' = "Frame f l (Suc pc) R1 (box_ubx2 b # \<Sigma>1) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          using step_push_ubx2.hyps
+          by (auto intro!: Sinca.step_push dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_push_ubx2.hyps rel_stacktraces_Cons
+          using Subx.sp_instr.PushUbx2[THEN sp_instrs_prefix']
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_push_ubx2.prems rel_F1_F2
+          by (auto intro!: match.intros)
       qed
     next
-      case (step_pop fd2' x \<Sigma>2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (norm_stack \<Sigma>2') # st1)"
-        have "?STEP ?s1'"
+      case (step_pop d \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
           unfolding \<Sigma>1_def
-          using step_pop fd1_thms
-          by (auto intro!: Sinca.step_pop simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_pop rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
+          using step_pop.hyps
+          by (auto intro!: Sinca.step_pop dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_pop.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Pop
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_pop.prems rel_F1_F2
+          by (auto intro!: match.intros)
       qed
     next
-      case (step_load fd2' x i i' d \<Sigma>2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (d # norm_stack \<Sigma>2') # st1)"
-        have pc_in_range: "pc < length (body fd1)"
-          using rel_fd1_fd2 step_load(2) by simp
-        have "?STEP ?s1'"
-          using step_load rel_fundef_body_nth[OF rel_fd1_fd2 pc_in_range]
-          by (auto intro!: Sinca.step_load[OF F1_f pc_in_range, of x]
-                dest: cast_inversions(1)
-                simp: \<Sigma>1_def)
-        moreover have "?MATCH ?s1'"
-          using step_load refl rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros(2)[OF rel_st1_st2]
-              dest!: cast_inversions(1)
-              simp: take_Suc_conv_app_nth[OF step_load(2), simplified])
-        ultimately show "?thesis" by blast
+      case (step_get n d)
+      let ?st1' = "Frame f l (Suc pc) R1 (R1 ! n # map Subx.norm_unboxed \<Sigma>2) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def R1_def
+          using step_get.hyps
+          by (auto intro!: Sinca.step_get dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_get.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Get
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_get.prems rel_F1_F2
+          by (auto intro!: match.intros)
       qed
     next
-      case (step_load_ubx_hit fd2' \<tau> x i i' d blob \<Sigma>2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (d # norm_stack \<Sigma>2') # st1)"
-        have pc_in_range: "pc < length (body fd1)"
-          using rel_fd1_fd2 step_load_ubx_hit(2) by simp
-        have "?STEP ?s1'"
-          using step_load_ubx_hit rel_fundef_body_nth[OF rel_fd1_fd2 pc_in_range]
-          by (auto intro!: Sinca.step_load[OF F1_f pc_in_range, of x]
-              dest: cast_inversions(1)
-              simp: rel_fundef_body_nth \<Sigma>1_def)
-        moreover have "?MATCH ?s1'"
-          using step_load_ubx_hit rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros intro: rel_stacktraces.intros(2)[OF rel_st1_st2]
-              dest!: cast_inversions(1)
-              simp: take_Suc_conv_app_nth[OF step_load_ubx_hit(2), simplified])
-        ultimately show "?thesis" by blast
+      case (step_get_ubx_hit \<tau> n d blob)
+      let ?st1' = "Frame f l (Suc pc) R1 (R1 ! n # map Subx.norm_unboxed \<Sigma>2) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def R1_def
+          using step_get_ubx_hit.hyps
+          by (auto intro!: Sinca.step_get dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_get_ubx_hit.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.GetUbx
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_get_ubx_hit.prems rel_F1_F2
+          by (auto intro!: match.intros)
       qed
     next
-      case (step_load_ubx_miss fd2' \<tau> x i i' d F2' \<Sigma>2')
-      then have fd2'_def[simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (d # norm_stack \<Sigma>2') # st1)"
-        have pc_in_range: "pc < length (body fd1)"
-          using rel_fd1_fd2 step_load_ubx_miss(2) by simp
-        have "?STEP ?s1'"
-          using step_load_ubx_miss F1_f rel_fd1_fd2
-          by (auto intro!: Sinca.step_load[OF F1_f pc_in_range, of x]
-              dest!: cast_inversions(1)
-              simp: rel_fundef_body_nth \<Sigma>1_def)
-        moreover have "?MATCH ?s1'"
+      case (step_get_ubx_miss \<tau> n d F2')
+      hence "R1 ! n = d"
+        by (simp add: R1_def)
+      let ?st1' = "Frame f l (Suc pc) R1 (R1 ! n # map Subx.norm_unboxed \<Sigma>2) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2' H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def R1_def
+          using step_get_ubx_miss.hyps
+          by (auto intro!: Sinca.step_get dest: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2') None ?st1' ?st2'"
+          apply simp
+        proof (rule rel_stacktraces.intros)
+          show "rel_stacktraces (Fubx_get F2') (Some f) st1 (Subx.box_stack f st2)"
+            unfolding step_get_ubx_miss.hyps
+            using rel_st1_st2
+            by (rule rel_stacktraces_map_entry_gneralize_fundefI)
+        next
+          show "Fubx_get F2' f = Some (Subx.generalize_fundef fd2)"
+            unfolding step_get_ubx_miss.hyps
+            using F2_f
+            by simp
+        next
+          show "map_of (body (Subx.generalize_fundef fd2)) l = Some (map Subx.generalize_instr instrs)"
+            unfolding Subx.map_of_generalize_fundef_conv
+            unfolding map_of_fd2_l
+            by simp
+        next
+          show "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2')
+            (return (Subx.generalize_fundef fd2))
+            (take (Suc pc) (map Subx.generalize_instr instrs))
+            [] (map typeof (OpDyn d # map Subx.box_operand \<Sigma>2))"
+            using step_get_ubx_miss.hyps F2_f map_of_fd2_l
+            by (auto simp: take_map take_Suc_conv_app_nth simp del: map_append
+              intro!: sp_instrs_prefix'[THEN Subx.sp_instrs_generalize0] Subx.sp_instr.GetUbx
+              dest!: next_instrD instr_atD)
+        qed (insert R1_def all_dyn_R2 \<open>R1 ! n = d\<close>, simp_all)
+        thus "?MATCH ?s1' (State F2' H ?st2')"
+          using step_get_ubx_miss.prems rel_F1_F2
+          unfolding step_get_ubx_miss.hyps
+          by (auto intro!: match.intros rel_fundefs_generalizeI)
+      qed
+    next
+      case (step_set n blob d R2' \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) (map Subx.norm_unboxed R2') (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def R1_def
+          using step_set.hyps
+          by (auto simp: map_update intro!: Sinca.step_set dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_set.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Set
+              intro: list_all_list_updateI
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_set.prems rel_F1_F2
+          by (auto intro!: match.intros)
+      qed
+    next
+      case (step_set_ubx \<tau> n blob d R2' \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) (map Subx.norm_unboxed R2') (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def R1_def
+          using step_set_ubx.hyps
+          by (auto simp: map_update intro!: Sinca.step_set dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_set_ubx.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.SetUbx
+              intro: list_all_list_updateI
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_set_ubx.prems rel_F1_F2
+          by (auto intro!: match.intros)
+      qed
+    next
+      case (step_load x i i' d \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (d # map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_load.hyps
+          by (auto intro!: Sinca.step_load dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_load.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Load
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_load.prems rel_F1_F2
+          by (auto intro!: match.intros)
+      qed
+    next
+      case (step_load_ubx_hit \<tau> x i i' d blob \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (d # map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_load_ubx_hit.hyps
+          by (auto intro!: Sinca.step_load dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_load_ubx_hit.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.LoadUbx
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_load_ubx_hit.prems rel_F1_F2
+          by (auto intro!: match.intros)
+      qed
+    next
+      case (step_load_ubx_miss \<tau> x i i' d F2' \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (d # map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2' H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_load_ubx_miss.hyps
+          by (auto intro!: Sinca.step_load dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2') None ?st1' ?st2'"
+          apply simp
+        proof (rule rel_stacktraces.intros)
+          show "rel_stacktraces (Fubx_get F2') (Some f) st1 (Subx.box_stack f st2)"
+          unfolding step_load_ubx_miss
+          using rel_st1_st2
+          by (rule rel_stacktraces_map_entry_gneralize_fundefI)
+        next
+          show "Fubx_get F2' f = Some (Subx.generalize_fundef fd2)"
+            unfolding step_load_ubx_miss.hyps
+            using F2_f by (simp add: Subx.map_of_generalize_fundef_conv)
+        next
+          show "map_of (body (Subx.generalize_fundef fd2)) l =
+            Some (map Subx.generalize_instr instrs)"
+            unfolding Subx.map_of_generalize_fundef_conv
+            using step_load_ubx_miss.hyps F2_f map_of_fd2_l
+            by simp
+        next
+          show "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2') (return (Subx.generalize_fundef fd2))
+            (take (Suc pc) (map Subx.generalize_instr instrs))
+            [] (map typeof (OpDyn d # map Subx.box_operand \<Sigma>2'))"
+            using step_load_ubx_miss.hyps F2_f map_of_fd2_l
+            by (auto simp: take_map take_Suc_conv_app_nth simp del: map_append
+              intro!: sp_instrs_prefix'[THEN Subx.sp_instrs_generalize0] Subx.sp_instr.LoadUbx
+              dest!: next_instrD instr_atD)
+        qed (insert all_dyn_R2, simp_all add: R1_def)
+        thus "?MATCH ?s1' (State F2' H ?st2')"
+          using step_load_ubx_miss.prems rel_F1_F2
+          unfolding step_load_ubx_miss.hyps
+          by (auto intro: match.intros rel_fundefs_generalizeI)
+      qed
+    next
+      case (step_store x i i' y d H' \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H' ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H' ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_store.hyps
+          by (auto intro: Sinca.step_store dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_store.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Store
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H' ?st2')"
+          using step_store.prems rel_F1_F2
+          by (auto intro: match.intros)
+      qed
+    next
+      case (step_store_ubx \<tau> x i i' blob d H' \<Sigma>2')
+      let ?st1' = "Frame f l (Suc pc) R1 (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H' ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H' ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_store_ubx.hyps
+          by (auto intro: Sinca.step_store dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_store_ubx.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.StoreUbx
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H' ?st2')"
+          using step_store_ubx.prems rel_F1_F2
+          by (auto intro: match.intros)
+      qed
+    next
+      case (step_op op ar \<Sigma>2' x)
+      let ?st1' = "Frame f l (Suc pc) R1 (x # drop ar (map Subx.norm_unboxed \<Sigma>2)) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_op.hyps
+          by (auto simp: take_map ap_map_list_cast_Dyn_to_map_norm[symmetric]
+              intro!: Sinca.step_op dest!: next_instr2)
+      next
+        have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+          using step_op.hyps rel_stacktraces_Cons
+          by (auto simp: take_Suc_conv_app_nth drop_map map_eq_append_map_drop
+              simp: ap_map_list_cast_Dyn_map_typeof_replicate_conv
+              intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Op
+              dest!: next_instrD instr_atD)
+        thus "?MATCH ?s1' (State F2 H ?st2')"
+          using step_op.prems rel_F1_F2
+          by (auto intro: match.intros)
+      qed
+    next
+      case (step_op_inl op ar \<Sigma>2' opinl x F2')
+      let ?F1' = "Sinca.Fenv.map_entry F1 f (\<lambda>fd. rewrite_fundef_body fd l pc (Inca.IOpInl opinl))"
+      let ?st1' = "Frame f l (Suc pc) R1 (x # drop ar (map Subx.norm_unboxed  \<Sigma>2)) # st1"
+      let ?s1' = "State ?F1' H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2' H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_op_inl.hyps
+          by (auto simp: take_map ap_map_list_cast_Dyn_to_map_norm[symmetric]
+              intro!: Sinca.step_op_inl dest!: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2' H ?st2')"
+          using step_op_inl.prems
         proof (rule match.intros)
-          show "rel_fundefs (Finca_get F1) (Fubx_get F2')"
-            unfolding step_load_ubx_miss.hyps(7)[symmetric]
-            using rel_fundefs_generalize[OF rel_F1_F2 F2_f]
-            by simp
-        next
-          show "sp_fundefs (Fubx_get F2')"
-            unfolding step_load_ubx_miss.hyps(7)[symmetric]
-            using sp_fundefs_generalize[OF sp_F2 F2_f]
-            by simp
-        next
-          show "rel_stacktraces (Fubx_get F2')
-            (Frame f (Suc pc) (d # norm_stack \<Sigma>2') # st1)
-            (Subx.box_stack f (Frame f (Suc pc) (OpDyn d # \<Sigma>2') # st2)) None"
-            using step_load_ubx_miss sp_fundef_prefix
-            by (auto intro!: rel_stacktraces_generalize[OF rel_st1_st2 F2_f] dest: cast_inversions)
-        qed
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_store fd2' x i i' y d H' \<Sigma>2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H' (Frame f (Suc pc) (norm_stack \<Sigma>2') # st1)"
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def
-          using step_store fd1_thms
-          by (auto intro!: Sinca.step_store dest!: cast_inversions
-              simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_store rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros rel_stacktraces.intros dest!: cast_inversions
-              simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_store_ubx fd2' \<tau> x i i' blob d H' \<Sigma>2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H' (Frame f (Suc pc) (norm_stack \<Sigma>2') # st1)"
-        have pc_in_range: "pc < length (body fd1)"
-          using rel_fd1_fd2 step_store_ubx.hyps(2) by auto
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def \<open>i # blob # \<Sigma>2' = \<Sigma>2\<close>[symmetric]
-          using step_store_ubx pc_in_range
-          by (auto intro!: Sinca.step_store[OF F1_f]
-              dest!: cast_inversions
-              simp: rel_fundef_body_nth[OF rel_fd1_fd2])
-        moreover have "?MATCH ?s1'"
-          using step_store_ubx rel_stacktraces_Cons rel_F1_F2 sp_F2
-          by (auto intro!: match.intros rel_stacktraces.intros
-              dest!: cast_inversions
-              simp: take_Suc_conv_app_nth)
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_op fd2' op ar \<Sigma>2' x)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)"
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def
-          using step_op fd1_thms take_norm_stack traverse_cast_Dyn_to_norm
-          by (auto intro!: Sinca.step_op simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_op rel_stacktraces_Cons rel_F1_F2 sp_F2 
-          by (auto intro!: match.intros rel_stacktraces.intros
-              simp: take_Suc_conv_app_nth drop_norm_stack Let_def take_map drop_map
-                traverse_cast_Dyn_replicate)
-        ultimately show "?thesis" by blast
-      qed    
-    next
-      case (step_op_inl fd2' op ar \<Sigma>2' opinl x F2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?F1' = "Finca_add F1 f (rewrite_fundef_body fd1 pc (Inca.IOpInl opinl))"
-        let ?s1' = "State ?F1' H (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)"
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def
-          using step_op_inl F1_f rel_fd1_fd2 take_norm_stack traverse_cast_Dyn_to_norm
-          by (auto intro!: Sinca.step_op_inl simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-        proof
           show "rel_fundefs (Finca_get ?F1') (Fubx_get F2')"
-            using step_op_inl.hyps(9)
-            using rel_fundefs_rewrite_both[OF rel_F1_F2]
-            using rel_fundef_rewrite_both[OF rel_fd1_fd2]
-            by auto
+            unfolding step_op_inl.hyps
+            using rel_F1_F2
+            by (auto intro: rel_fundefs_rewriteI)
         next
-          show "sp_fundefs (Fubx_get F2')"
-            using step_op_inl.hyps all_same_arities_add sp_fundefs_get[OF sp_F2]
-            using Sinca.\<II>\<nn>\<ll>_invertible
-            by (auto intro!: sp_fundefs_add[OF sp_F2] Subx.sp_rewrite_eq_Ok
-                simp: Subx.sp_instr_op Let_def)
-        next
-          have sp_F2_F2': "Subx.sp (Fubx_get F2) = Subx.sp (Fubx_get F2')"
-            using step_op_inl.hyps(1,9)
-            by (auto intro!: sp_same_arities all_same_arities_add)
-          
-          let ?fd2' = "rewrite_fundef_body fd2' pc (Ubx.IOpInl opinl)"
-          
-          show "rel_stacktraces (Fubx_get F2')
-            (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)
-            (Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2) # st2) None"
-            using step_op_inl
-          proof (intro rel_stacktraces.intros)
-            show "rel_stacktraces (Fubx_get F2') st1 st2 (Some f)"
-              using step_op_inl Sinca.\<II>\<nn>\<ll>_invertible
-              by (auto intro!: rel_stacktraces_rewrite_fundef[OF rel_st1_st2] simp: Subx.sp_instr_op)
-          next
-            show "sp_fundef (Fubx_get F2') ?fd2' (take (Suc pc) (body ?fd2'))  =
-              Ok (map typeof (OpDyn x # drop ar \<Sigma>2))"
-              using step_op_inl Sinca.\<II>\<nn>\<ll>_invertible sp_prefix
-              using traverse_cast_Dyn_to_all_Dyn
-              by (auto simp: take_Suc_conv_app_nth[of pc] sp_F2_F2'[symmetric] Let_def
-                    take_map drop_map traverse_cast_Dyn_replicate)
-          qed (auto simp add: drop_norm_stack)
-        qed
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_op_inl_hit fd2' opinl ar \<Sigma>2' x)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)"
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def
-          using step_op_inl_hit fd1_thms take_norm_stack traverse_cast_Dyn_to_norm
-          by (auto intro!: Sinca.step_op_inl_hit simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-          using step_op_inl_hit rel_stacktraces_Cons rel_F1_F2 sp_F2
-          apply (auto intro!: match.intros rel_stacktraces.intros simp: take_Suc_conv_app_nth)
-          using drop_norm_stack apply blast
-          by (simp add: Let_def drop_map take_map traverse_cast_Dyn_replicate)
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_op_inl_miss fd2' opinl ar \<Sigma>2' x F2')
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where
-        F1_f: "Finca_get F1 f = Some fd1" and
-        rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?F1' = "Finca_add F1 f (rewrite_fundef_body fd1 pc (Inca.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl)))"
-        let ?s1' = "State ?F1' H (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)"
-        have "?STEP ?s1'"
-          unfolding \<Sigma>1_def
-          using step_op_inl_miss F1_f rel_fd1_fd2 take_norm_stack traverse_cast_Dyn_to_norm
-          by (auto intro!: Sinca.step_op_inl_miss simp: rel_fundef_body_nth)
-        moreover have "?MATCH ?s1'"
-        proof
-          show "rel_fundefs (Finca_get ?F1') (Fubx_get F2')"
-            using step_op_inl_miss
-            using rel_fundefs_rewrite_both[OF rel_F1_F2]
-            using rel_fundef_rewrite_both[OF rel_fd1_fd2]
-            by auto
-        next
-          show "sp_fundefs (Fubx_get F2')"
-            using step_op_inl_miss.hyps all_same_arities_add sp_fundefs_get[OF sp_F2] 
-            by (auto intro!: sp_fundefs_add[OF sp_F2] Subx.sp_rewrite_eq_Ok
-                simp: Subx.sp_instr_op[symmetric])
-        next
-          have sp_F2_F2': "Subx.sp (Fubx_get F2) = Subx.sp (Fubx_get F2')"
-            using step_op_inl_miss
-            by (auto intro!: sp_same_arities all_same_arities_add)
-
-          let ?fd2' = "rewrite_fundef_body fd2' pc (Ubx.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl))"
-
-          show "rel_stacktraces (Fubx_get F2')
-            (Frame f (Suc pc) (x # drop ar (norm_stack \<Sigma>2)) # st1)
-            (Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2) # st2) None"
-          proof
-            show "rel_stacktraces (Fubx_get F2') st1 st2 (Some f)"
-              using step_op_inl_miss.hyps
-              by (auto intro: rel_stacktraces_rewrite_fundef[OF rel_st1_st2] simp: Subx.sp_instr_op[symmetric])
+          let ?fd2' = "rewrite_fundef_body fd2 l pc (Ubx.instr.IOpInl opinl)"
+          let ?instrs' = "instrs[pc := Ubx.instr.IOpInl opinl]"
+          show "rel_stacktraces (Fubx_get F2') None ?st1' ?st2'"
+          proof (rule rel_stacktraces.intros)
+            show "rel_stacktraces (Fubx_get F2') (Some f) st1 st2"
+              using step_op_inl.hyps rel_st1_st2 Sinca.\<II>\<nn>\<ll>_invertible
+              by (auto simp: Subx.sp_instr_Op_OpInl_conv
+                  intro: rel_stacktraces_map_entry_rewrite_fundef_body)
           next
             show "Fubx_get F2' f = Some ?fd2'"
-              using step_op_inl_miss Subx.Fenv.get_add_eq by blast
+              unfolding step_op_inl.hyps
+              using F2_f by simp
           next
-            show "sp_fundef (Fubx_get F2') ?fd2' (take (Suc pc) (body ?fd2')) =
-              Ok (map typeof (OpDyn x # drop ar \<Sigma>2))"
-              using \<open>pc < length (body fd2')\<close>
-              using sp_prefix step_op_inl_miss traverse_cast_Dyn_to_all_Dyn
-              by (auto simp add: take_Suc_conv_app_nth[of pc] sp_F2_F2'[symmetric]
-                  traverse_cast_Dyn_replicate take_map drop_map)
-          qed (simp_all add: drop_norm_stack)
+            show "map_of (body ?fd2') l = Some ?instrs'"
+              using map_of_fd2_l by simp
+          next
+            show "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2')
+              (return (rewrite_fundef_body fd2 l pc (Ubx.instr.IOpInl opinl)))
+              (take (Suc pc) ?instrs') [] (map typeof (OpDyn x # drop ar \<Sigma>2))"
+            using rel_stacktraces_Cons step_op_inl.hyps
+            by (auto simp add: take_Suc_conv_app_nth Subx.Fenv.map_option_comp_map_entry
+                map_eq_append_map_drop ap_map_list_cast_Dyn_map_typeof_replicate_conv
+                Sinca.\<II>\<nn>\<ll>_invertible
+                intro!: sp_instrs_prefix' Subx.sp_instr.OpInl
+                dest!: next_instrD instr_atD)
+          qed (insert all_dyn_R2 R1_def, simp_all add: drop_map)
         qed
-        ultimately show "?thesis" by blast
       qed
     next
-      case (step_op_ubx fd2' opubx op ar x)
-      then have [simp]: "fd2' = fd2" using F2_f by simp
-      obtain fd1 where fd1_thms: "Finca_get F1 f = Some fd1" "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame f (Suc pc) (Subx.norm_unboxed x # drop ar (norm_stack \<Sigma>2)) # st1)"
-        have "pc < length (body fd1)"
-          using fd1_thms(2) step_op_ubx.hyps(2) by auto
-        hence nth_fd1: "body fd1 ! pc = Inca.instr.IOpInl (\<BB>\<oo>\<xx> opubx)"
-          using rel_fundef_body_nth[OF fd1_thms(2)]
-          using \<open>body fd2' ! pc = IOpUbx opubx\<close>
-          by simp
-        have "\<II>\<ss>\<II>\<nn>\<ll> (\<BB>\<oo>\<xx> opubx) (take ar (map Subx.norm_unboxed \<Sigma>2))"
-          using step_op_ubx
-          by (auto intro: Sinca.\<II>\<nn>\<ll>_\<II>\<ss>\<II>\<nn>\<ll> Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_to_\<II>\<nn>\<ll> simp: take_map)
-        hence "?STEP ?s1'"
-          unfolding norm_stack_def \<Sigma>1_def
-          using step_op_ubx fd1_thms(1) nth_fd1 \<open>pc < length (body fd1)\<close>
-          using Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_correct
-          by (auto intro!: Sinca.step_op_inl_hit simp: take_map)
-        moreover have "?MATCH ?s1'"
-          using step_op_ubx rel_stacktraces_Cons rel_F1_F2 sp_F2 Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_complete
-          by (auto intro!: match.intros rel_stacktraces.intros
-              simp: take_Suc_conv_app_nth drop_norm_stack Let_def drop_map take_map min.absorb2)
-        ultimately show "?thesis" by blast
+      case (step_op_inl_hit opinl ar \<Sigma>2' x)
+      let ?st1' = "Frame f l (Suc pc) R1 (x # drop ar (map Subx.norm_unboxed \<Sigma>2)) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_op_inl_hit.hyps
+          by (auto simp: take_map ap_map_list_cast_Dyn_to_map_norm[symmetric]
+              intro!: Sinca.step_op_inl_hit dest!: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2 H ?st2')"
+          using step_op_inl_hit.prems rel_F1_F2
+        proof (rule match.intros)
+          show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+            using step_op_inl_hit.hyps rel_stacktraces_Cons
+            by (auto simp: take_Suc_conv_app_nth drop_map map_eq_append_map_drop
+                simp: ap_map_list_cast_Dyn_map_typeof_replicate_conv
+                intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.OpInl
+                dest!: next_instrD instr_atD)
+        qed
       qed
     next
-      case (step_cjump_true fd2' n x \<Sigma>2')
-      then have False
-        using F2_f sp_fundefs_get[OF sp_F2, unfolded sp_fundef_def, THEN Subx.sp_no_jump] nth_mem
-        by force
-      thus ?case by simp
-    next
-      case (step_cjump_false fd2' n x \<Sigma>2')
-      then have False
-        using F2_f sp_fundefs_get[OF sp_F2, unfolded sp_fundef_def, THEN Subx.sp_no_jump] nth_mem
-        by force
-      thus ?case by simp
-    next
-      case (step_fun_call f' fd2' pc' g gd2 ar \<Sigma>2' frame\<^sub>g)
-      then have [simp]: "f' = f" "pc' = pc" "fd2' = fd2" using F2_f by auto
-      obtain fd1 where "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      obtain gd1 where "Finca_get F1 g = Some gd1" and rel_gd1_gd2: "rel_fundef norm_eq gd1 gd2"
-        using step_fun_call rel_fundefs_Some2[OF rel_F1_F2] by blast
-      have pc_in_range: "pc < length (body fd1)"
-        using \<open>pc' < length (body fd2')\<close> rel_fundef_body_length[OF rel_fd1_fd2]
-        by simp
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame g 0 (take (arity gd1) \<Sigma>1) # Frame f pc \<Sigma>1 # st1)"
-        have "?STEP ?s1'"
-          using step_fun_call rel_stacktraces_Cons.hyps(2) pc_in_range
-          using \<open>Finca_get F1 f = Some fd1\<close> \<open>Finca_get F1 g = Some gd1\<close>
-          using rel_fundef_body_nth[OF rel_fd1_fd2]
-          using rel_fundef_arities[OF rel_gd1_gd2, symmetric]
-          by (auto intro!: Sinca.step_fun_call)
-        moreover have "?MATCH ?s1'"
-        proof
-          show "rel_fundefs (Finca_get F1) (Fubx_get F2)"
-            using rel_F1_F2 .
+      case (step_op_inl_miss opinl ar \<Sigma>2' x F2')
+      let ?F1' = "Sinca.Fenv.map_entry F1 f (\<lambda>fd. rewrite_fundef_body fd l pc (Inca.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl)))"
+      let ?st1' = "Frame f l (Suc pc) R1 (x # drop ar (map Subx.norm_unboxed  \<Sigma>2)) # st1"
+      let ?s1' = "State ?F1' H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2' H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_op_inl_miss.hyps
+          by (auto simp: take_map ap_map_list_cast_Dyn_to_map_norm[symmetric]
+              intro!: Sinca.step_op_inl_miss dest!: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2' H ?st2')"
+          using step_op_inl_miss.prems
+        proof (rule match.intros)
+          show "rel_fundefs (Finca_get ?F1') (Fubx_get F2')"
+            unfolding step_op_inl_miss.hyps
+            using rel_F1_F2
+            by (auto intro: rel_fundefs_rewriteI)
         next
-          show "sp_fundefs (Fubx_get F2)"
-            using sp_F2 .
-        next
-          show "rel_stacktraces (Fubx_get F2)
-            (Frame g 0 (take (arity gd1) \<Sigma>1) # Frame f pc \<Sigma>1 # st1)
-            (frame\<^sub>g # Frame f pc \<Sigma>2 # st2) None"
-            unfolding step_fun_call(9)
+          let ?fd2' = "rewrite_fundef_body fd2 l pc (Ubx.instr.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl))"
+          let ?instrs' = "instrs[pc := Ubx.instr.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl)]"
+          show "rel_stacktraces (Fubx_get F2') None ?st1' ?st2'"
+          proof (rule rel_stacktraces.intros)
+            show "rel_stacktraces (Fubx_get F2') (Some f) st1 st2"
+              using step_op_inl_miss.hyps rel_st1_st2 Sinca.\<II>\<nn>\<ll>_invertible
+              by (auto intro: rel_stacktraces_map_entry_rewrite_fundef_body
+                  Subx.sp_instr_Op_OpInl_conv[OF refl, symmetric])
+          next
+            show "Fubx_get F2' f = Some ?fd2'"
+              unfolding step_op_inl_miss.hyps
+              using F2_f by simp
+          next
+            show "map_of (body ?fd2') l = Some ?instrs'"
+              using map_of_fd2_l by simp
+          next
+            show "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2')
+              (return (rewrite_fundef_body fd2 l pc (Ubx.instr.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl))))
+              (take (Suc pc) ?instrs') [] (map typeof (OpDyn x # drop ar \<Sigma>2))"
+            using rel_stacktraces_Cons step_op_inl_miss.hyps
+            by (auto simp add: take_Suc_conv_app_nth Subx.Fenv.map_option_comp_map_entry
+                map_eq_append_map_drop ap_map_list_cast_Dyn_map_typeof_replicate_conv
+                Sinca.\<II>\<nn>\<ll>_invertible
+                intro!: sp_instrs_prefix' Subx.sp_instr.Op
+                dest!: next_instrD instr_atD)
+          qed (insert all_dyn_R2 R1_def, simp_all add: drop_map)
+        qed
+      qed
+    next
+      case (step_op_ubx opubx op ar x)
+      let ?st1' = "Frame f l (Suc pc) R1 (Subx.norm_unboxed x # drop ar (map Subx.norm_unboxed \<Sigma>2)) # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_op_ubx.hyps
+          by (auto simp: take_map
+              intro!: Sinca.step_op_inl_hit
+              intro: Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_to_\<II>\<nn>\<ll>[THEN Sinca.\<II>\<nn>\<ll>_\<II>\<ss>\<II>\<nn>\<ll>] Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_correct
+              dest: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2 H ?st2')"
+          using step_op_ubx.prems rel_F1_F2
+        proof (rule match.intros)
+          show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+            using step_op_ubx.hyps rel_stacktraces_Cons
+            by (auto simp: take_Suc_conv_app_nth drop_map map_eq_append_map_drop
+                intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.OpUbx
+                dest!: next_instrD instr_atD
+                dest!: Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_complete)
+        qed
+      qed
+    next
+      case (step_cjump l\<^sub>t l\<^sub>f x d l' \<Sigma>2')
+      hence "instr_at fd2 l pc = Some (Ubx.instr.ICJump l\<^sub>t l\<^sub>f)"
+        using F2_f by (auto dest!: next_instrD)
+      hence pc_in_dom: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = Ubx.instr.ICJump l\<^sub>t l\<^sub>f"
+        using map_of_fd2_l by (auto dest!: instr_atD)
+      hence "{l\<^sub>t, l\<^sub>f} \<subseteq> fst ` set (body fd2)"
+        using all_jumps_in_range by (auto simp: list_all_length)
+      moreover have "l' \<in> {l\<^sub>t, l\<^sub>f}"
+        using step_cjump.hyps by auto
+      ultimately have "l' \<in> fst ` set (body fd2)"
+        by blast
+      then obtain instrs' where map_of_l': "map_of (body fd2) l' = Some instrs'"
+        by (auto dest: weak_map_of_SomeI)
+
+      have pc_def: "pc = length instrs - 1"
+        using is_jump_nthD[OF _ pc_in_dom] nth_instrs_pc by simp
+      have \<Sigma>2'_eq_Nil: "\<Sigma>2' = []"
+        using sp_instr_last[OF pc_def] step_cjump.hyps
+        by (auto simp: nth_instrs_pc elim!: Subx.sp_instr.cases)
+
+      let ?st1' = "Frame f l' 0 R1 (map Subx.norm_unboxed \<Sigma>2') # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_cjump.hyps
+          by (auto intro!: Sinca.step_cjump dest: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2 H ?st2')"
+          using step_cjump.prems rel_F1_F2
+        proof (rule match.intros)
+          show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+            using map_of_l' rel_stacktraces_Cons(1,3-5)
+            by (auto simp: \<Sigma>2'_eq_Nil intro!: rel_stacktraces.intros intro: Subx.sp_instrs.Nil)
+        qed
+      qed
+    next
+      case (step_call g gd2 frame\<^sub>g)
+      then obtain gd1 where
+        F1_g: "Finca_get F1 g = Some gd1" and rel_gd1_gd2: "rel_fundef (=) norm_eq gd1 gd2"
+        using rel_fundefs_Some2[OF rel_F1_F2] by auto
+                
+      have wf_gd2: "Subx.wf_fundef (map_option funtype \<circ> Fubx_get F2) gd2"
+        using Subx.wf_fundefs_getD[OF wf_F2] step_call.hyps by simp
+
+      obtain intrs\<^sub>g where gd2_fst_bblock: "map_of (body gd2) (fst (hd (body gd2))) = Some intrs\<^sub>g"
+        using Subx.wf_fundef_body_neq_NilD[OF wf_gd2]
+        by (metis hd_in_set map_of_eq_None_iff not_Some_eq prod.collapse prod_in_set_fst_image_conv)
+
+      let ?frame\<^sub>g = "allocate_frame g gd1 (take (arity gd1) \<Sigma>1) uninitialized"
+      let ?st1' = "?frame\<^sub>g # Frame f l pc R1 \<Sigma>1 # st1"
+      let ?s1' = "State F1 H ?st1'"
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+      proof (intro exI conjI)
+        show "?STEP ?s1'"
+          unfolding \<Sigma>1_def
+          using step_call.hyps F1_g rel_gd1_gd2
+          by (auto simp: rel_fundef_arities intro!: Sinca.step_call dest: next_instr2)
+      next
+        show "?MATCH ?s1' (State F2 H ?st2')"
+          using step_call.prems rel_F1_F2
+        proof (rule match.intros)
+          have FOO: "fst (hd (body gd1)) = fst (hd (body gd2))"
+            apply (rule rel_fundef_rel_fst_hd_bodies[OF rel_gd1_gd2])
+            using Subx.wf_fundefs_getD[OF wf_F2 \<open>Fubx_get F2 g = Some gd2\<close>]
+            by (auto dest: Subx.wf_fundef_body_neq_NilD)
+          show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+            unfolding step_call allocate_frame_def FOO
           proof (rule rel_stacktraces.intros(2))
-            show "rel_stacktraces (Fubx_get F2) (Frame f pc \<Sigma>1 # st1) (Frame f pc \<Sigma>2 # st2) (Some g)"
-              using rel_st1_st2 F2_f \<Sigma>1_def sp_prefix
-              using step_fun_call
-              by (auto intro!: rel_stacktraces.intros
-                  elim!: list.pred_mono_strong simp: is_valid_fun_call_def)
+            show "rel_stacktraces (Fubx_get F2) (Some g)
+              (Frame f l pc R1 \<Sigma>1 # st1) (Frame f l pc R2 \<Sigma>2 # st2)"
+              using step_call rel_stacktraces_Cons
+              by (auto simp: is_valid_fun_call_def intro: rel_stacktraces.intros)
           next
-            show "take (arity gd1) \<Sigma>1 = norm_stack (take ar \<Sigma>2')"
-              using \<Sigma>1_def rel_fundef_arities[OF rel_gd1_gd2]
-              using step_fun_call by (simp add: take_norm_stack)
+            show "take (arity gd1) \<Sigma>1 @ replicate (fundef_locals gd1) uninitialized =
+              map Subx.norm_unboxed (take (arity gd2) \<Sigma>2 @
+              replicate (fundef_locals gd2) (OpDyn uninitialized))"
+              using rel_gd1_gd2
+              by (simp add: rel_fundef_arities rel_fundef_locals take_map \<Sigma>1_def)
           next
-            show "Fubx_get F2 g = Some gd2"
-              using step_fun_call by simp
-          next
-            show "sp_fundef (Fubx_get F2) gd2 (take 0 (body gd2)) = Ok (map typeof (take ar \<Sigma>2'))"
-              using step_fun_call
-              by (auto elim: replicate_eq_map)
-          qed simp_all
+            show "list_all is_dyn_operand (take (arity gd2) \<Sigma>2 @
+              replicate (fundef_locals gd2) (OpDyn uninitialized))"
+              using step_call.hyps by auto
+          qed (insert step_call gd2_fst_bblock, simp_all add: Subx.sp_instrs.Nil)
         qed
-        ultimately show "?thesis" by blast
       qed
     next
-      case (step_fun_end f' fd2' \<Sigma>2\<^sub>g pc' \<Sigma>2' frame\<^sub>g g pc\<^sub>g frame\<^sub>g' st2')
-      then have [simp]: "f' = f" "fd2' = fd2" "pc' = pc" "\<Sigma>2' = \<Sigma>2" using F2_f by auto
-      obtain fd1 where "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using rel_fundefs_Some2[OF rel_F1_F2 F2_f] by auto
-      obtain gd2 \<Sigma>1\<^sub>g st1' where
-        st1_def: "st1 = Frame g pc\<^sub>g \<Sigma>1\<^sub>g # st1'" and
-        "\<Sigma>1\<^sub>g = norm_stack \<Sigma>2\<^sub>g" and
-        rel_st1'_st2': "rel_stacktraces (Fubx_get F2) st1' st2' (Some g)" and
-        "Fubx_get F2 g = Some gd2" and
-        sp_prefix_gd2: "Subx.sp (Fubx_get F2) (take pc\<^sub>g (body gd2))
-          (replicate (arity gd2) None) = Ok (map typeof \<Sigma>2\<^sub>g)" and
-        pc\<^sub>g_in_range: "pc\<^sub>g < length (body gd2)" and
-        "body gd2 ! pc\<^sub>g = Ubx.ICall f" and
-        prefix_all_dyn_\<Sigma>2\<^sub>g: "list_all is_dyn_operand (take (arity fd2) \<Sigma>2\<^sub>g)"
-        using rel_st1_st2 step_fun_end
-        by (auto elim: rel_stacktraces.cases simp: is_valid_fun_call_def)
-      have pc_at_end: "pc = length (body fd1)"
-        using \<open>pc' = length (body fd2')\<close>
-        using rel_fundef_body_length[OF rel_fd1_fd2]
-        by simp
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F1 H (Frame g (Suc pc\<^sub>g) (\<Sigma>1 @ drop (arity fd1) \<Sigma>1\<^sub>g) # st1')"
-        have "?STEP ?s1'"
-          using step_fun_end.hyps(2)
-          using st1_def \<open>\<Sigma>1\<^sub>g = norm_stack \<Sigma>2\<^sub>g\<close>
-          using \<open>Finca_get F1 f = Some fd1\<close> pc_at_end
-          using rel_fundef_arities[OF rel_fd1_fd2, symmetric]
-          by (auto intro!: Sinca.step_fun_end)
-        moreover have "?MATCH ?s1'"
-          using rel_F1_F2 sp_F2
-        proof
-          show "rel_stacktraces (Fubx_get F2)
-            (Frame g (Suc pc\<^sub>g) (\<Sigma>1 @ drop (arity fd1) \<Sigma>1\<^sub>g) # st1')
-            (frame\<^sub>g' # st2') None"
-            unfolding step_fun_end(6)
-            using rel_st1'_st2'
-          proof (rule rel_stacktraces.rel_stacktraces_Cons)
-            show "\<Sigma>1 @ drop (arity fd1) \<Sigma>1\<^sub>g = norm_stack (\<Sigma>2' @ drop (arity fd2') \<Sigma>2\<^sub>g)"
-              using \<Sigma>1_def \<open>\<Sigma>1\<^sub>g = norm_stack \<Sigma>2\<^sub>g\<close>
-              using rel_fundef_arities[OF rel_fd1_fd2]
-              by (simp add: norm_stack_append drop_norm_stack)
+      case (step_return fd2' \<Sigma>2\<^sub>g frame\<^sub>g' g l\<^sub>g pc\<^sub>g R2\<^sub>g st2')
+      hence fd2_fd2'[simp]: "fd2' = fd2"
+        using F2_f by simp
+      then obtain fd1 where
+        F1_f: "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef (=) norm_eq fd1 fd2"
+        using F2_f rel_fundefs_Some2[OF rel_F1_F2] by auto
+      show ?case
+        using rel_st1_st2 unfolding \<open>Frame g l\<^sub>g pc\<^sub>g R2\<^sub>g \<Sigma>2\<^sub>g # st2' = st2\<close>[symmetric]
+      proof (cases rule: rel_stacktraces.cases)
+        case (rel_stacktraces_Cons st1' \<Sigma>1\<^sub>g R1\<^sub>g gd2 instrs)
+        hence is_valid_call_f: "is_valid_fun_call (Fubx_get F2) g l\<^sub>g pc\<^sub>g \<Sigma>2\<^sub>g f"
+          by simp
+        let ?s1' = "State F1 H (Frame g l\<^sub>g (Suc pc\<^sub>g) R1\<^sub>g (\<Sigma>1 @ drop (arity fd2) \<Sigma>1\<^sub>g) # st1')"
+        show ?thesis (is "\<exists>x. ?STEP x \<and> ?MATCH x (State F2 H ?st2')")
+        proof (intro exI conjI)
+          show "?STEP ?s1'"
+            unfolding rel_stacktraces_Cons
+          proof (rule Sinca.step.step_return)
+            show "next_instr (Finca_get F1) f l pc = Some Inca.instr.IReturn"
+              using \<open>next_instr (Fubx_get F2) f l pc = Some Ubx.instr.IReturn\<close>
+              using rel_fundefs_next_instr2[OF rel_F1_F2]
+              by force
           next
-            show "Fubx_get F2 g = Some gd2"
-              using \<open>Fubx_get F2 g = Some gd2\<close> .
-          next
-            have "arity fd2 \<le> length \<Sigma>2\<^sub>g"
-              using step_fun_end.hyps(2) by simp
-            moreover have "list_all (\<lambda>x. x = None) (take (arity fd2) (map typeof \<Sigma>2\<^sub>g))"
-              using prefix_all_dyn_\<Sigma>2\<^sub>g
-              by (auto elim!: list.pred_mono_strong simp: take_map list.pred_map is_dyn_operand_def)
-            moreover have "map typeof \<Sigma>2 = [None]"
-              using \<open>pc' = length (body fd2')\<close> sp_prefix
-              using sp_fundefs_get[OF sp_F2 F2_f] 
-              by simp
-            ultimately show "sp_fundef (Fubx_get F2) gd2 (take (Suc pc\<^sub>g) (body gd2)) =
-              Ok (map typeof (\<Sigma>2' @ drop (arity fd2') \<Sigma>2\<^sub>g))"
-              using sp_prefix_gd2
-              using \<open>body gd2 ! pc\<^sub>g = Ubx.ICall f\<close> F2_f
-              by (auto dest: list_all_eq_const_imp_replicate
-                  simp: take_Suc_conv_app_nth[OF pc\<^sub>g_in_range] Let_def drop_map)
-          qed simp
+            show "Finca_get F1 f = Some fd1"
+              by (rule F1_f)
+          qed (insert step_return.hyps rel_fd1_fd2,
+              simp_all add: \<Sigma>1_def rel_fundef_arities rel_fundef_return)
+        next
+          show "?MATCH ?s1' (State F2 H ?st2')"
+            unfolding step_return.hyps
+          proof (rule match.intros)
+            have "next_instr (Fubx_get F2) g l\<^sub>g pc\<^sub>g = Some (Ubx.instr.ICall f)" and
+              "arity fd2 \<le> length \<Sigma>2\<^sub>g" and "list_all is_dyn_operand (take (arity fd2) \<Sigma>2\<^sub>g)"
+              using is_valid_call_f[unfolded is_valid_fun_call_def] F2_f
+              by simp_all
+            hence
+              pc\<^sub>g_in_range: "pc\<^sub>g < length instrs" and
+              nth_instrs_pc\<^sub>g: "instrs ! pc\<^sub>g = Ubx.instr.ICall f"
+              using rel_stacktraces_Cons
+              by (auto dest!: next_instrD instr_atD)
+            have replicate_None: "replicate (arity fd2) None = map typeof (take (arity fd2) \<Sigma>2\<^sub>g)"
+              using \<open>arity fd2 \<le> length \<Sigma>2\<^sub>g\<close> \<open>list_all is_dyn_operand (take (arity fd2) \<Sigma>2\<^sub>g)\<close>
+              by (auto simp: is_dyn_operand_eq_typeof list_all_iff intro!: replicate_eq_map)
+            show "rel_stacktraces (Fubx_get F2) None
+             (Frame g l\<^sub>g (Suc pc\<^sub>g) R1\<^sub>g (\<Sigma>1 @ drop (arity fd2) \<Sigma>1\<^sub>g) # st1')
+             (Frame g l\<^sub>g (Suc pc\<^sub>g) R2\<^sub>g (\<Sigma>2 @ drop (arity fd2') \<Sigma>2\<^sub>g) # st2')"
+              using rel_stacktraces_Cons
+              apply (auto simp: \<Sigma>1_def drop_map take_Suc_conv_app_nth[OF pc\<^sub>g_in_range] nth_instrs_pc\<^sub>g
+                  intro!: rel_stacktraces.intros elim!: Subx.sp_instrs_appendI)
+              apply (rule Subx.sp_instr.Call[of _ _ _ _ _ "map typeof (drop (arity fd2) \<Sigma>2\<^sub>g)"])
+                apply (simp add: F2_f funtype_def)
+               apply (simp add: replicate_None map_append[symmetric])
+              using \<open>length \<Sigma>2 = return fd2'\<close> \<open>list_all is_dyn_operand \<Sigma>2\<close>
+              by (auto simp: list.pred_set intro: replicate_eq_map[symmetric])
+          qed (insert step_return rel_F1_F2, simp_all)
         qed
-        ultimately show "?thesis" by blast
       qed
     qed
   qed
 qed
 
 lemma match_final_backward:
-  "s1 \<sim> s2 \<Longrightarrow> Subx.final s2 \<Longrightarrow> Sinca.final s1"
-proof (induction s1 s2 rule: match.induct)
-  case (1 F1 F2 st1 st2 H)
-  obtain f fd2 pc \<Sigma>2 where
-    st2_def: "st2 = [Frame f pc \<Sigma>2]" and "Fubx_get F2 f = Some fd2" and "pc = length (body fd2)"
-    using \<open>Subx.final (State F2 H st2)\<close>
-    by (auto elim!: Subx.final.cases)
-  obtain \<Sigma>1 where st1_def: "st1 = [Frame f pc \<Sigma>1]"
-    using \<open>rel_stacktraces (Fubx_get F2) st1 st2 None\<close>
-    unfolding st2_def
-    by (auto elim!: rel_stacktraces.cases)
-  obtain fd1 where "Finca_get F1 f = Some fd1" and rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-    using \<open>rel_fundefs (Finca_get F1) (Fubx_get F2)\<close> \<open>Fubx_get F2 f = Some fd2\<close>
-    using rel_fundefs_Some2
-    by fastforce
-  have "length (body fd1) = length (body fd2)"
-    using rel_fd1_fd2 by simp
-  thus ?case
-    unfolding st1_def
-    using \<open>Finca_get F1 f = Some fd1\<close> \<open>pc = length (body fd2)\<close>
-    by (auto intro: Sinca.final.intros)
+  assumes "match s1 s2" and final_s2: "final Fubx_get Ubx.IReturn s2"
+  shows "final Finca_get Inca.IReturn s1"
+  using \<open>match s1 s2\<close>
+proof (cases s1 s2 rule: match.cases)
+  case (matchI F2 H st2 F1 st1)
+  show ?thesis
+    using final_s2[unfolded matchI]
+  proof (cases _ _ "State F2 H st2" rule: final.cases)
+    case (finalI f l pc R \<Sigma>)
+    then show ?thesis
+      using matchI
+      by (auto intro!: final.intros elim!: rel_stacktraces.cases dest: rel_fundefs_next_instr2)
+  qed
 qed
 
 sublocale inca_to_ubx_simulation:
-  backward_simulation Sinca.step Subx.step Sinca.final Subx.final "\<lambda>_ _. False" "\<lambda>_. match"
+  backward_simulation Sinca.step Subx.step
+    "final Finca_get Inca.IReturn"
+    "final Fubx_get Ubx.IReturn"
+    "\<lambda>_ _. False" "\<lambda>_. match"
   using match_final_backward backward_lockstep_simulation
    lockstep_to_plus_backward_simulation[of match Subx.step Sinca.step]
   by unfold_locales auto
@@ -1211,13 +1251,13 @@ sublocale inca_to_ubx_simulation:
 
 section \<open>Forward simulation\<close>
 
-lemma traverse_cast_Dyn_eq_norm_stack:
+lemma ap_map_list_cast_Dyn_eq_norm_stack:
   assumes "list_all (\<lambda>x. x = None) (map typeof xs)"
-  shows "traverse cast_Dyn xs = Some (norm_stack xs)"
+  shows "ap_map_list cast_Dyn xs = Some (map Subx.norm_unboxed xs)"
   using assms
 proof (induction xs)
   case Nil
-  then show ?case by simp
+  thus ?case by simp
 next
   case (Cons x xs)
   from Cons.prems have
@@ -1232,692 +1272,1094 @@ next
 qed
 
 lemma forward_lockstep_simulation:
-  assumes "Sinca.step s1 s1'" and "s1 \<sim> s2"
-  shows "\<exists>s2'. Subx.step s2 s2' \<and> s1' \<sim> s2'"
-  using assms(2,1)
-proof (induction s1 s2 rule: match.induct)
-  case (1 F1 F2 st1 st2 H)
-  have rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" using 1 by simp
-  have sp_F2: "sp_fundefs (Fubx_get F2)" using 1 by simp
+  assumes "match s1 s2" and "Sinca.step s1 s1'"
+  shows "\<exists>s2'. Subx.step s2 s2' \<and> match s1' s2'"
+  using assms(1)
+proof (cases s1 s2 rule: match.cases)
+  case (matchI F2 H st2 F1 st1)
+  have s2_def: "s2 = Global.state.State F2 H st2" using matchI by simp
+  have rel_F1_F2: "rel_fundefs (Finca_get F1) (Fubx_get F2)" using matchI by simp
+  have wf_s2: "Subx.wf_state s2" using matchI by simp
+  hence wf_F2: "Subx.wf_fundefs (Fubx_get F2)" by (auto simp: s2_def dest: Subx.wf_stateD)
 
-  note rel_fundefs_rewrite_both' =
-    rel_fundef_rewrite_both[THEN rel_fundefs_rewrite_both[OF rel_F1_F2]]
+  note wf_s2'I = Subx.wf_state_step_preservation[OF wf_s2]
 
-  from "1"(3,4) show ?case
-  proof (induction st1 st2 "None :: 'fun option" rule: rel_stacktraces.induct)
+  from \<open>rel_stacktraces (Fubx_get F2) None st1 st2\<close> show ?thesis
+  proof (cases "Fubx_get F2" "None :: 'fun option" st1 st2 rule: rel_stacktraces.cases)
     case rel_stacktraces_Nil
-    hence False by (auto elim: Sinca.step.cases)
-    thus ?case by simp
+    with matchI assms(2) show ?thesis by (auto elim: Sinca.step.cases)
   next
-    case (rel_stacktraces_Cons st1 st2 f \<Sigma>1 \<Sigma>2 fd2 pc)
-    have F2_f: "Fubx_get F2 f = Some fd2"
+    case (rel_stacktraces_Cons f st1' st2' \<Sigma>1 \<Sigma>2 R1 R2 fd2 l instrs pc)
+    have rel_st1'_st2': "rel_stacktraces (Fubx_get F2) (Some f) st1' st2'"
       using rel_stacktraces_Cons by simp
-    have rel_st1_st2: "rel_stacktraces (Fubx_get F2) st1 st2 (Some f)"
+    have st2_def: "st2 = Frame f l pc R2 \<Sigma>2 # st2'" using rel_stacktraces_Cons by simp
+    have \<Sigma>1_def: "\<Sigma>1 = map Subx.norm_unboxed \<Sigma>2" using rel_stacktraces_Cons by simp
+    have all_dyn_R2: "list_all is_dyn_operand R2" using rel_stacktraces_Cons by simp
+    have F2_f: "Fubx_get F2 f = Some fd2" using rel_stacktraces_Cons by simp
+    have map_of_fd2_l: "map_of (body fd2) l = Some instrs" using rel_stacktraces_Cons by simp
+    have sp_instrs_prefix: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+      (take pc instrs) [] (map typeof \<Sigma>2)"
       using rel_stacktraces_Cons by simp
-    have sp_fundef_prefix: "sp_fundef (Fubx_get F2) fd2 (take pc (body fd2)) = Ok (map typeof \<Sigma>2)"
-      using rel_stacktraces_Cons by simp
-    have \<Sigma>1_def: "\<Sigma>1 = norm_stack \<Sigma>2"
-      using rel_stacktraces_Cons by simp
+    note sp_instrs_prefix' =
+      Subx.sp_instrs_singletonI[THEN Subx.sp_instrs_appendI[OF sp_instrs_prefix]]
 
-    note sp_fundef_def[simp]
-    note sp_prefix = sp_fundef_prefix[unfolded sp_fundef_def]
+    have wf_fd2: "Subx.wf_fundef (map_option funtype \<circ> Fubx_get F2) fd2"
+      using wf_F2 F2_f by (auto dest: Subx.wf_fundefs_getD)
+    hence sp_instrs_instrs:
+      "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2) instrs [] []"
+      using wf_fd2[THEN Subx.wf_fundef_all_wf_basic_blockD] map_of_fd2_l
+      by (auto dest: list_all_map_of_SomeD[OF _ map_of_fd2_l] dest: Subx.wf_basic_blockD)
+    hence sp_instrs_sufix: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+      (instrs ! pc # drop (Suc pc) instrs) (map typeof \<Sigma>2) []" if "pc < length instrs"
+      using that Subx.sp_instrs_appendD'[OF _ sp_instrs_prefix]
+      by (simp add: Cons_nth_drop_Suc)
 
-    note ex_F1_f = rel_fundefs_Some2[OF rel_F1_F2 F2_f]
-    note sp_fundef_full = sp_fundefs_get[OF sp_F2 \<open>Fubx_get F2 f = Some fd2\<close>]
-    note sp_full = sp_fundef_full[unfolded sp_fundef_def]
-    hence sp_sufix: "Subx.sp (Fubx_get F2)
-      (body fd2 ! pc # drop (Suc pc) (body fd2)) (map typeof \<Sigma>2) = Ok [None]"
-      if pc_in_range: "pc < length (body fd2)"
-      unfolding Cons_nth_drop_Suc[OF pc_in_range]
-      unfolding Subx.sp_eq_bind_take_drop[of _ "body fd2" _ pc]
-      unfolding sp_prefix
-      by simp
+    have
+      instrs_neq_Nil: "instrs \<noteq> []" and
+      all_jumps_in_range: "list_all (Subx.jump_in_range (fst ` set (body fd2))) instrs" and
+      sp_instrs_instrs: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2) instrs [] []"
+      using list_all_map_of_SomeD[OF wf_fd2[THEN Subx.wf_fundef_all_wf_basic_blockD] map_of_fd2_l]
+      by (auto dest: Subx.wf_basic_blockD)
 
-    from rel_stacktraces_Cons.prems(1) show ?case
-    proof (induction "State F1 H (Frame f pc \<Sigma>1 # st1)" s1' rule: Sinca.step.induct)
-      case (step_push fd1 d)
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_push rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_push rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_push norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
+    from assms(2)[unfolded matchI rel_stacktraces_Cons] show ?thesis
+    proof (induction "State F1 H (Frame f l pc (map Subx.norm_unboxed R2) (map Subx.norm_unboxed \<Sigma>2) # st1')" s1' rule: Sinca.step.induct)
+      case (step_push d)
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IPush d) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      then show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
         case (IPush d2)
-        then have d_def: "d = d2"
-          using norm_instr_nth_body step_push.hyps(3) by auto
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpDyn d2 # \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using IPush step_push d_def F2_f pc_in_range
-          by (auto intro: Subx.step_push)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-          using IPush d_def sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn d # \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding IPush
+            by (auto simp: s2_def st2_def intro: Subx.step_push)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding IPush
+              by (auto simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' intro: Subx.sp_instr.Push)
+          qed (simp_all add: rel_F1_F2)
+        qed
       next
-        case (IPushUbx1 n)
-        then have d_def: "d = box_ubx1 n"
-          using norm_instr_nth_body step_push.hyps(3) by auto
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpUbx1 n # \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using IPushUbx1 step_push d_def F2_f pc_in_range
-          by (auto intro: Subx.step_push_ubx1)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-          using IPushUbx1 d_def sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
+        case (IPushUbx1 u)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpUbx1 u # \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding IPushUbx1
+            by (auto simp: s2_def st2_def intro: Subx.step_push_ubx1)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 norm_eq_instr1_instr2 rel_stacktraces_Cons
+              unfolding IPushUbx1
+              by (auto simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' intro: Subx.sp_instr.PushUbx1)
+          qed (simp_all add: rel_F1_F2)
+        qed
       next
-        case (IPushUbx2 b)
-        then have d_def: "d = box_ubx2 b"
-          using norm_instr_nth_body step_push.hyps(3) by auto
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpUbx2 b # \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using IPushUbx2 step_push d_def F2_f pc_in_range
-          by (auto intro: Subx.step_push_ubx2)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-          using IPushUbx2 d_def sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
+        case (IPushUbx2 u)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpUbx2 u # \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding IPushUbx2
+            by (auto simp: s2_def st2_def intro: Subx.step_push_ubx2)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 norm_eq_instr1_instr2 rel_stacktraces_Cons
+              unfolding IPushUbx2
+              by (auto simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' intro: Subx.sp_instr.PushUbx2)
+          qed (simp_all add: rel_F1_F2)
+        qed
       qed simp_all
     next
-      case (step_pop fd1 x \<Sigma>1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_pop rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_pop rel_fundef_body_length[OF rel_fd1_fd2] by simp
-      obtain x' \<Sigma>2' where \<Sigma>2_def: "\<Sigma>2 = x' # \<Sigma>2'" and "\<Sigma>1' = norm_stack \<Sigma>2'"
-        using step_pop \<open>\<Sigma>1 = norm_stack \<Sigma>2\<close> norm_stack_def by auto
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_pop norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
+      case (step_pop d \<Sigma>1')
+      then obtain u \<Sigma>2' where
+        \<Sigma>2_def: "\<Sigma>2 = u # \<Sigma>2'" and "d = Subx.norm_unboxed u" and
+        \<Sigma>1'_def: "\<Sigma>1' = map Subx.norm_unboxed \<Sigma>2'"
+        by auto
+      from step_pop obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq Inca.IPop instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      then show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
         case IPop
-        let ?s2' = "State F2 H (Frame f (Suc pc) \<Sigma>2' # st2)"
-        have "?STEP ?s2'"
-          using IPop step_pop F2_f pc_in_range \<Sigma>2_def
-          by (auto intro: Subx.step_pop)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<open>\<Sigma>1' = norm_stack \<Sigma>2'\<close>
-          using IPop sp_prefix take_Suc_conv_app_nth[OF pc_in_range] \<Sigma>2_def
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
+        let ?st2' = "Frame f l (Suc pc) R2 \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding IPop
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_pop)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding IPop
+              by (auto simp: \<Sigma>2_def \<Sigma>1'_def next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Pop)
+          qed (simp_all add: rel_F1_F2)
+        qed
       qed simp_all
     next
-      case (step_load fd1 var i d \<Sigma>1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_load rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_load rel_fundef_body_length[OF rel_fd1_fd2] by simp
-      obtain i' \<Sigma>2' where
-        \<Sigma>2_def: "\<Sigma>2 = i' # \<Sigma>2'" and norm_i': "Subx.norm_unboxed i' = i" and "norm_stack \<Sigma>2' = \<Sigma>1'"
-        using step_load \<Sigma>1_def norm_stack_def by auto
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_load norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (ILoad var')
-        then have [simp]: "var' = var"
-          using norm_instr_nth_body step_load.hyps(3) by auto
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpDyn d # \<Sigma>2') # st2)"
-        have "i' = OpDyn i"
-          using sp_sufix[OF pc_in_range, unfolded \<Sigma>2_def ILoad, simplified]
-          using norm_i'
-          by (cases i'; simp)
-        hence "?STEP ?s2'"
-          using ILoad step_load F2_f pc_in_range
-          by (auto intro!: Subx.step_load simp: \<Sigma>2_def)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-          using ILoad sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros
-              simp: \<open>norm_stack \<Sigma>2' = \<Sigma>1'\<close> \<open>i' = OpDyn i\<close> \<Sigma>2_def)
-        ultimately show ?thesis by auto
+      case (step_get n d)
+      hence nth_R2_n: "R2 ! n = OpDyn d"
+        using all_dyn_R2
+        by (metis Subx.norm_unboxed.simps(1) is_dyn_operand_def length_map list_all_length nth_map)
+      from step_get obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IGet n) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      then show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (IGet n')
+        hence "n' = n" using norm_eq_instr1_instr2 by simp
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn d # \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_get nth_R2_n
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding IGet
+            by (auto simp: s2_def st2_def intro: Subx.step_get)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding IGet
+              by (auto simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' intro: Subx.sp_instr.Get)
+          qed (simp_all add: rel_F1_F2)
+        qed
       next
-        case (ILoadUbx \<tau> var')
-        then have [simp]: "var' = var"
-          using norm_instr_nth_body step_load.hyps(3) by auto
-        have [simp]: "i' = OpDyn i"
-          using sp_sufix[OF pc_in_range, unfolded \<Sigma>2_def ILoadUbx, simplified]
-          using norm_i'
-          by (cases i'; simp)
+        case (IGetUbx \<tau> n')
+        hence "n' = n" using norm_eq_instr1_instr2 by simp
         show ?thesis
         proof (cases "Subx.unbox \<tau> d")
           case None
-          let ?F2' = "Fubx_add F2 f (Subx.generalize_fundef fd2)"
-          let ?frame = "Frame f (Suc pc) (OpDyn d # \<Sigma>2')"
-          let ?s2' = "State ?F2' H (Subx.box_stack f (?frame # st2))"
-          have "?STEP ?s2'"
-            using None ILoadUbx
-            using step_load pc_in_range F2_f
-            by (auto intro!: Subx.step_load_ubx_miss
-                simp add: \<Sigma>2_def
-                simp del: Subx.box_stack_Cons)
-          moreover have "?MATCH ?s2'"
-            using rel_fundefs_generalize[OF rel_F1_F2 F2_f]
-            using sp_fundefs_generalize[OF sp_F2 F2_f]
-            using sp_fundef_prefix ILoadUbx
-            using pc_in_range
-            by (auto intro!: match.intros rel_stacktraces_generalize[OF rel_st1_st2 F2_f]
-                simp: \<Sigma>2_def \<open>norm_stack \<Sigma>2' = \<Sigma>1'\<close>)
-          ultimately show ?thesis by auto
+          let ?F2' = "Subx.Fenv.map_entry F2 f Subx.generalize_fundef"
+          let ?st2' = "Subx.box_stack f (Frame f l (Suc pc) R2 (OpDyn d # \<Sigma>2) # st2')"
+          let ?s2' = "State ?F2' H ?st2'"
+          show ?thesis
+          proof (intro exI conjI)
+            show "?STEP ?s2'"
+              using step_get nth_R2_n None
+              using next_instr2 norm_eq_instr1_instr2
+              unfolding IGetUbx
+              by (auto simp: s2_def st2_def intro: Subx.step_get_ubx_miss[simplified])
+          next
+            show "?MATCH (State F1 H ?st1') ?s2'"
+            proof (rule match.intros)
+              show "Subx.wf_state ?s2'"
+                using wf_F2
+                by (auto intro!: Subx.wf_stateI intro: Subx.wf_fundefs_generalize)
+            next
+              show "rel_fundefs (Finca_get F1) (Fubx_get ?F2')"
+                using rel_F1_F2
+                by (auto intro: rel_fundefs_generalizeI)
+            next
+              have sp_instrs_gen: "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+                (take (Suc pc) (map Subx.generalize_instr instrs)) [] (map Map.empty (OpDyn d # \<Sigma>2))"
+                using rel_stacktraces_Cons step_get.hyps
+                using IGetUbx \<open>n' = n\<close>
+                using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+                by (auto simp: take_Suc_conv_app_nth take_map
+                    intro!: Subx.sp_instrs_appendI
+                    intro: Subx.sp_instrs_generalize0 Subx.sp_instr.Get)
+              then show "rel_stacktraces (Fubx_get ?F2') None ?st1' ?st2'"
+                apply simp
+              proof (rule rel_stacktraces.intros)
+                show "rel_stacktraces (Fubx_get ?F2') (Some f) st1' (Subx.box_stack f st2')"
+                  using rel_st1'_st2' rel_stacktraces_map_entry_gneralize_fundefI by simp
+              next
+                show "Fubx_get ?F2' f = Some (Subx.generalize_fundef fd2)"
+                  using F2_f by simp
+              next
+                show "map_of (body (Subx.generalize_fundef fd2)) l =
+                  Some (map Subx.generalize_instr instrs)"
+                  using map_of_fd2_l by (simp add: Subx.map_of_generalize_fundef_conv)
+              qed (insert all_dyn_R2 map_of_fd2_l, simp_all add: Subx.map_of_generalize_fundef_conv)
+            qed
+          qed
         next
-          case (Some blob)
-          let ?s2' = "State F2 H (Frame f (Suc pc) (blob # \<Sigma>2') # st2)"
-          have "?STEP ?s2'"
-            using Some ILoadUbx step_load F2_f pc_in_range
-            by (auto intro: Subx.step_load_ubx_hit simp: \<Sigma>2_def)
-          moreover have "?MATCH ?s2'"
-            using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-            using Some ILoadUbx sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-            by (auto intro!: match.intros rel_stacktraces.intros
-                simp: \<open>norm_stack \<Sigma>2' = \<Sigma>1'\<close> \<Sigma>2_def)
-          ultimately show ?thesis by auto
+          case (Some u)
+          let ?st2' = "Frame f l (Suc pc) R2 (u # \<Sigma>2) # st2'"
+          let ?s2' = "State F2 H ?st2'"
+          show ?thesis
+          proof (intro exI conjI)
+            show "?STEP ?s2'"
+              using step_get nth_R2_n Some
+              using next_instr2 norm_eq_instr1_instr2
+              unfolding IGetUbx
+              by (auto simp: s2_def st2_def intro: Subx.step_get_ubx_hit)
+          next
+            show "?MATCH (State F1 H ?st1') ?s2'"
+            proof (rule match.intros)
+              show "Subx.wf_state ?s2'"
+                using wf_F2 by (auto intro: Subx.wf_stateI)
+            next
+              show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+                using next_instr2 rel_stacktraces_Cons
+                using Some
+                unfolding IGetUbx
+                by (auto simp: next_instr_take_Suc_conv
+                    intro!: rel_stacktraces.intros sp_instrs_prefix' intro: Subx.sp_instr.GetUbx)
+            qed (simp_all add: rel_F1_F2)
+          qed
         qed
       qed simp_all
     next
-    case (step_store fd1 var i x H' \<Sigma>1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_store rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_store rel_fundef_body_length[OF rel_fd1_fd2] by simp
-      obtain i' x' \<Sigma>2' where
-        \<Sigma>2_def: "\<Sigma>2 = i' # x' # \<Sigma>2'" and
-        norm_i': "Subx.norm_unboxed i' = i" and
-        norm_x': "Subx.norm_unboxed x' = x" and
-        "norm_stack \<Sigma>2' = \<Sigma>1'"
-        using step_store \<Sigma>1_def norm_stack_def by auto
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_store norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (IStore var')
-        then have [simp]: "var' = var"
-          using norm_instr_nth_body step_store.hyps(3) by auto
-        note sp_sufix' = sp_sufix[OF pc_in_range, unfolded \<Sigma>2_def IStore, simplified]
-        have [simp]: "i' = OpDyn i"
-          using norm_i' sp_sufix' by (cases i'; simp)
-        have [simp]: "x' = OpDyn x"
-          using norm_x' sp_sufix' by (cases x'; simp)
-        let ?s2' = "State F2 (heap_add H (var, i) x) (Frame f (Suc pc) \<Sigma>2' # st2)"
-        have "?STEP ?s2'"
-          using IStore \<Sigma>2_def pc_in_range F2_f
-          by (auto intro: Subx.step_store)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>2_def
-          using \<open>norm_stack \<Sigma>2' = \<Sigma>1'\<close> \<open>heap_add H (var, i) x = H'\<close>
-          using IStore sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
+      case (step_set n R1' d \<Sigma>1')
+      then obtain u \<Sigma>2' where
+        \<Sigma>2_def: "\<Sigma>2 = u # \<Sigma>2'" and d_def: "d = Subx.norm_unboxed u" and
+        \<Sigma>1'_def: "\<Sigma>1' = map Subx.norm_unboxed \<Sigma>2'"
+        by auto
+      from step_set obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.ISet n) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (ISet n')
+        hence "n' = n" using norm_eq_instr1_instr2 by simp
+        have typeof_u: "typeof u = None"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ISet, simplified]
+          by (auto simp: \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases)
+        hence cast_Dyn_u: "cast_Dyn u = Some d"
+          by (auto simp add: d_def dest: Subx.typeof_and_norm_unboxed_imp_cast_Dyn)
+        let ?R2' = "R2[n := OpDyn d]"
+        let ?st2' = "Frame f l (Suc pc) ?R2' \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_set.hyps cast_Dyn_u
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding ISet
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_set)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding ISet
+              using step_set.hyps cast_Dyn_u
+              by (auto simp: \<Sigma>1'_def \<Sigma>2_def map_update next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Set
+                  intro: list_all_list_updateI)
+          qed (simp_all add: rel_F1_F2)
+        qed
       next
-        case (IStoreUbx \<tau> var')
-        then have [simp]: "var' = var"
-          using norm_instr_nth_body step_store.hyps(3) by auto
-        note sp_sufix' = sp_sufix[OF pc_in_range, unfolded \<Sigma>2_def IStoreUbx, simplified]
-        have [simp]: "i' = OpDyn i"
-          using norm_i' sp_sufix' by (cases i'; simp)
-        have typeof_x'[simp]: "typeof x' = Some \<tau>"
-          using sp_sufix' apply (auto simp add: Result.bind_eq_Ok_conv elim!: Subx.sp_instr.elims)
-          by (metis result.simps(4))
-        let ?s2' = "State F2 (heap_add H (var, i) x) (Frame f (Suc pc) \<Sigma>2' # st2)"
-        have "?STEP ?s2'"
-          unfolding \<Sigma>2_def
-          using F2_f pc_in_range IStoreUbx
-          using Subx.typeof_and_norm_unboxed_imp_cast_and_box[OF typeof_x' norm_x']
-          by (auto intro!: Subx.step_store_ubx)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>2_def
-          using \<open>norm_stack \<Sigma>2' = \<Sigma>1'\<close> \<open>heap_add H (var, i) x = H'\<close>
-          using IStoreUbx sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          by (auto intro!: match.intros rel_stacktraces.intros)
-        ultimately show ?thesis by auto
-      qed simp_all
-    next
-      case (step_op fd1 op ar x)
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_op rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_op rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_op norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (IOp op')
-        then have "op' = op"
-          using norm_instr_nth_body step_op.hyps(3) by auto
-        hence "ar \<le> length \<Sigma>2" and
-          all_arg_Dyn: "list_all (\<lambda>x. x = None) (map typeof (take ar \<Sigma>2))"
-          using IOp step_op sp_sufix[OF pc_in_range]
-          by (auto simp: take_map)
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using IOp step_op \<open>op' = op\<close> \<Sigma>1_def pc_in_range F2_f
-          using traverse_cast_Dyn_eq_norm_stack[OF all_arg_Dyn]
-          by (auto intro!: Subx.step_op simp: take_norm_stack)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f
-          using IOp sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          using arg_cong[OF \<Sigma>1_def, of "drop ar"] \<open>ar \<le> length \<Sigma>2\<close>
-          using \<open>op' = op\<close> all_arg_Dyn \<Sigma>1_def \<open>\<AA>\<rr>\<ii>\<tt>\<yy> op = ar\<close>
-          by (auto intro!: match.intros rel_stacktraces.intros
-              dest: list_all_eq_const_imp_replicate
-              simp: drop_norm_stack[symmetric] Let_def take_map drop_map)
-        ultimately show ?thesis by auto
-      qed simp_all
-    next
-      case (step_op_inl fd1 op ar opinl x F1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_op_inl rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_op_inl rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_op_inl norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (IOp op')
-        then have "op' = op"
-          using norm_instr_nth_body step_op_inl.hyps(3) by simp
-        hence "ar \<le> length \<Sigma>2" and
-          all_arg_Dyn: "list_all (\<lambda>x. x = None) (map typeof (take ar \<Sigma>2))"
-          using IOp step_op_inl sp_sufix[OF pc_in_range]
-          by (auto simp: take_map)
-        let ?fd2' = "rewrite_fundef_body fd2 pc (Ubx.IOpInl opinl)"
-        let ?F2' = "Fubx_add F2 f ?fd2'"
-        let ?frame = "Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2)"
-        let ?s2' = "State ?F2' H (?frame # st2)"
-        have "?STEP ?s2'"
-          using IOp step_op_inl \<open>op' = op\<close>
-          using \<Sigma>1_def pc_in_range \<open>Fubx_get F2 f = Some fd2\<close>
-          using all_arg_Dyn take_norm_stack traverse_cast_Dyn_eq_norm_stack
-          by (auto intro!: Subx.step_op_inl)
-        moreover have "?MATCH ?s2'"
-        proof
-          show "rel_fundefs (Finca_get F1') (Fubx_get ?F2')"
-            using step_op_inl rel_fd1_fd2
-            by (auto intro: rel_fundefs_rewrite_both')
+        case (ISetUbx \<tau> n')
+        hence "n' = n" using norm_eq_instr1_instr2 by simp
+        have typeof_u: "typeof u = Some \<tau>"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ISetUbx, simplified]
+          by (auto simp: \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases)
+        hence cast_and_box_u: "Subx.cast_and_box \<tau> u = Some d"
+          by (auto simp add: d_def dest: Subx.typeof_and_norm_unboxed_imp_cast_and_box)
+        let ?R2' = "R2[n := OpDyn d]"
+        let ?st2' = "Frame f l (Suc pc) ?R2' \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_set cast_and_box_u
+            using next_instr2 norm_eq_instr1_instr2
+            unfolding ISetUbx
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_set_ubx)
         next
-          have "arity fd2 = arity ?fd2'" by simp
-          hence "all_same_arities (Fubx_get F2) (Fubx_get ?F2')"
-            using all_same_arities_add[OF F2_f] by simp
-          thus "sp_fundefs (Fubx_get ?F2')"
-            apply (auto intro!: sp_fundefs_add[OF sp_F2])
-            apply (rule Subx.sp_rewrite_eq_Ok[OF pc_in_range _ sp_full])
-            apply (rule allI)
-            unfolding IOp
-            apply (rule Subx.sp_instr_op)
-            using Sinca.\<II>\<nn>\<ll>_invertible \<open>op' = op\<close> step_op_inl.hyps(6) by blast
-        next
-          have "rel_stacktraces (Fubx_get F2)
-            (Frame f (Suc pc) (x # drop ar \<Sigma>1) # st1) (?frame # st2) None"
-              using rel_st1_st2 sp_prefix F2_f
-              using IOp take_Suc_conv_app_nth[OF pc_in_range]
-              using arg_cong[OF \<Sigma>1_def, of "drop ar"] \<open>ar \<le> length \<Sigma>2\<close>
-              using \<open>op' = op\<close> step_op_inl.hyps(4) all_arg_Dyn
-              by (auto intro!: rel_stacktraces.intros
-                  dest: list_all_eq_const_imp_replicate
-                  simp: drop_norm_stack[symmetric] Let_def take_map drop_map)
-          thus "rel_stacktraces (Fubx_get ?F2')
-          (Frame f (Suc pc) (x # drop ar \<Sigma>1) # st1) (?frame # st2) None"
-            using F2_f pc_in_range IOp
-            using Sinca.\<II>\<nn>\<ll>_invertible \<open>op' = op\<close> step_op_inl.hyps(6)
-            by (auto intro!: rel_stacktraces_rewrite_fundef simp: Subx.sp_instr_op Let_def)
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding ISetUbx
+              using step_set.hyps cast_and_box_u
+              by (auto simp: \<Sigma>1'_def \<Sigma>2_def map_update next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.SetUbx
+                  intro: list_all_list_updateI)
+          qed (simp_all add: rel_F1_F2)
         qed
-        ultimately show ?thesis by auto
       qed simp_all
     next
-      case (step_op_inl_hit fd1 opinl ar x)
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_op_inl_hit rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_op_inl_hit rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_op_inl_hit norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
+      case (step_load x y d \<Sigma>1')
+      then obtain u \<Sigma>2' where
+        \<Sigma>2_def: "\<Sigma>2 = u # \<Sigma>2'" and d_def: "y = Subx.norm_unboxed u" and
+        \<Sigma>1'_def: "\<Sigma>1' = map Subx.norm_unboxed \<Sigma>2'"
+        by auto
+      from step_load obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.ILoad x) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (ILoad x')
+        hence "x' = x" using norm_eq_instr1_instr2 by simp
+        have typeof_u: "typeof u = None"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ILoad, simplified]
+          by (auto simp: \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases)
+        hence cast_Dyn_u: "cast_Dyn u = Some y"
+          by (auto simp add: d_def dest: Subx.typeof_and_norm_unboxed_imp_cast_Dyn)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn d # \<Sigma>2') # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_load.hyps cast_Dyn_u next_instr2
+            unfolding ILoad \<open>x' = x\<close>
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_load)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding ILoad \<open>x' = x\<close>
+              using step_load.hyps cast_Dyn_u
+              by (auto simp: \<Sigma>1'_def \<Sigma>2_def map_update next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Load
+                  intro: list_all_list_updateI)
+          qed (simp_all add: rel_F1_F2)
+        qed
+      next
+        case (ILoadUbx \<tau> x')
+        hence "x' = x" using norm_eq_instr1_instr2 by simp
+        have typeof_u: "typeof u = None"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ILoadUbx, simplified]
+          by (auto simp: \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases)
+        hence cast_Dyn_u: "cast_Dyn u = Some y"
+          by (auto simp add: d_def dest: Subx.typeof_and_norm_unboxed_imp_cast_Dyn)
+        show ?thesis
+        proof (cases "Subx.unbox \<tau> d")
+          case None
+          let ?F2' = "Subx.Fenv.map_entry F2 f Subx.generalize_fundef"
+          let ?st2' = "Subx.box_stack f (Frame f l (Suc pc) R2 (OpDyn d # \<Sigma>2') # st2')"
+          let ?s2' = "State ?F2' H ?st2'"
+          show ?thesis
+          proof (intro exI conjI)
+            show "?STEP ?s2'"
+              using step_load.hyps next_instr2 cast_Dyn_u None 
+              unfolding ILoadUbx \<open>x' = x\<close>
+              by (auto simp add: s2_def st2_def \<Sigma>2_def intro: Subx.step_load_ubx_miss[simplified])
+          next
+            show "?MATCH (State F1 H ?st1') ?s2'"
+            proof (rule match.intros)
+              show "Subx.wf_state ?s2'"
+                using wf_F2
+                by (auto intro!: Subx.wf_stateI intro: Subx.wf_fundefs_generalize)
+            next
+              show "rel_fundefs (Finca_get F1) (Fubx_get ?F2')"
+                using rel_F1_F2
+                by (auto intro: rel_fundefs_generalizeI)
+            next
+              have "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+                (take (Suc pc) (map Subx.generalize_instr instrs)) [] (None # map Map.empty \<Sigma>2')"
+                using rel_stacktraces_Cons step_load.hyps
+                using pc_in_range nth_instrs_pc
+                using ILoadUbx \<open>x' = x\<close>
+                by (auto simp: \<Sigma>2_def take_Suc_conv_app_nth take_map
+                    intro!: Subx.sp_instrs_appendI
+                    intro: Subx.sp_instrs_generalize0 Subx.sp_instr.Load)
+              thus "rel_stacktraces (Fubx_get ?F2') None ?st1' ?st2'"
+                apply simp
+              proof (rule rel_stacktraces.intros)
+                show "Fubx_get ?F2' f = Some (Subx.generalize_fundef fd2)"
+                  using F2_f by simp
+              next
+                show "map_of (body (Subx.generalize_fundef fd2)) l =
+                  Some (map Subx.generalize_instr instrs)"
+                  using map_of_fd2_l
+                  by (simp add: Subx.map_of_generalize_fundef_conv)
+              qed (insert rel_F1_F2 all_dyn_R2 F2_f map_of_fd2_l rel_st1'_st2', auto simp: \<Sigma>1'_def)
+            qed
+          qed
+        next
+          case (Some u2)
+          let ?st2' = "Frame f l (Suc pc) R2 (u2 # \<Sigma>2') # st2'"
+          let ?s2' = "State F2 H ?st2'"
+          show ?thesis
+          proof (intro exI conjI)
+            show "?STEP ?s2'"
+              using step_load.hyps next_instr2 cast_Dyn_u Some
+              unfolding ILoadUbx \<open>x' = x\<close>
+              by (auto simp add: s2_def st2_def \<Sigma>2_def intro: Subx.step_load_ubx_hit[simplified])
+          next
+            show "?MATCH (State F1 H ?st1') ?s2'"
+            proof (rule match.intros)
+              show "Subx.wf_state ?s2'"
+                using wf_F2
+                by (auto intro!: Subx.wf_stateI intro: Subx.wf_fundefs_generalize)
+            next
+              show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+                using next_instr2 rel_stacktraces_Cons
+                using Some typeof_u
+                unfolding ILoadUbx
+                by (auto simp: \<Sigma>2_def \<Sigma>1'_def next_instr_take_Suc_conv
+                    intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.LoadUbx)
+            qed (insert rel_F1_F2, simp_all)
+          qed
+        qed
+      qed simp_all
+    next
+      case (step_store x d1 d2 H' \<Sigma>1')
+      then obtain u1 u2 \<Sigma>2' where
+        \<Sigma>2_def: "\<Sigma>2 = u1 # u2 # \<Sigma>2'" and
+        d1_def: "d1 = Subx.norm_unboxed u1" and
+        d2_def: "d2 = Subx.norm_unboxed u2" and
+        \<Sigma>1'_def: "\<Sigma>1' = map Subx.norm_unboxed \<Sigma>2'"
+        by auto
+      from step_store obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.instr.IStore x) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H' ?st1') x")
+      proof (cases instr2)
+        case (IStore x')
+        hence "x' = x" using norm_eq_instr1_instr2 by simp
+        have casts: "cast_Dyn u1 = Some d1" "cast_Dyn u2 = Some d2"
+          unfolding atomize_conj
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IStore, simplified]
+          by (auto simp: d1_def d2_def \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases
+              intro: Subx.typeof_and_norm_unboxed_imp_cast_Dyn)
+        let ?st2' = "Frame f l (Suc pc) R2 \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H' ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_store.hyps casts next_instr2
+            unfolding IStore \<open>x' = x\<close>
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_store)
+        next
+          show "?MATCH (State F1 H' ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding IStore \<open>x' = x\<close>
+              using step_store.hyps casts
+              by (auto simp: \<Sigma>1'_def \<Sigma>2_def map_update next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Store
+                  intro: list_all_list_updateI)
+          qed (insert rel_F1_F2, simp_all)
+        qed
+      next
+        case (IStoreUbx \<tau> x')
+        hence "x' = x" using norm_eq_instr1_instr2 by simp
+        have casts: "cast_Dyn u1 = Some d1" "Subx.cast_and_box \<tau> u2 = Some d2"
+          unfolding atomize_conj
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IStoreUbx, simplified]
+          by (auto simp: d1_def d2_def \<Sigma>2_def elim: Subx.sp_instrs.cases Subx.sp_instr.cases
+              intro: Subx.typeof_and_norm_unboxed_imp_cast_Dyn
+              intro: Subx.typeof_and_norm_unboxed_imp_cast_and_box)
+        let ?st2' = "Frame f l (Suc pc) R2 \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H' ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_store.hyps casts next_instr2
+            unfolding IStoreUbx \<open>x' = x\<close>
+            by (auto simp: s2_def st2_def \<Sigma>2_def intro: Subx.step_store_ubx)
+        next
+          show "?MATCH (State F1 H' ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using next_instr2 rel_stacktraces_Cons
+              unfolding IStoreUbx \<open>x' = x\<close>
+              using step_store.hyps casts
+              by (auto simp: \<Sigma>1'_def \<Sigma>2_def map_update next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.StoreUbx
+                  intro: list_all_list_updateI)
+          qed (insert rel_F1_F2, simp_all)
+        qed
+      qed simp_all
+    next
+      case (step_op op ar x)
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IOp op) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (IOp op')
+        hence "op' = op" using norm_eq_instr1_instr2 by simp
+        have casts:
+          "ap_map_list cast_Dyn (take ar \<Sigma>2) = Some (take ar (map Subx.norm_unboxed \<Sigma>2))"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOp, simplified]
+          using step_op.hyps
+          by (auto simp: \<open>op' = op\<close> take_map
+              elim!: Subx.sp_instrs.cases[of _ _ "x # xs" for x xs, simplified] Subx.sp_instr.cases
+              intro!: ap_map_list_cast_Dyn_eq_norm_stack[of "take (\<AA>\<rr>\<ii>\<tt>\<yy> op) \<Sigma>2"]
+              dest!: map_eq_append_replicate_conv)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn x # drop ar \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'"
+            using step_op.hyps casts next_instr2
+            unfolding IOp \<open>op' = op\<close>
+            by (auto simp: s2_def st2_def intro: Subx.step_op)
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              using wf_F2 by (auto intro: Subx.wf_stateI)
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using step_op.hyps casts next_instr2 rel_stacktraces_Cons
+              unfolding IOp \<open>op' = op\<close>
+              by (auto simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.Op
+                  intro: list_all_list_updateI
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+          qed (insert rel_F1_F2, simp_all)
+        qed
+      qed simp_all
+    next
+      case (step_op_inl op ar opinl x F1')
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IOp op) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1' H ?st1') x")
+      proof (cases instr2)
+        case (IOp op')
+        hence "op' = op" using norm_eq_instr1_instr2 by simp
+        have casts:
+          "ap_map_list cast_Dyn (take ar \<Sigma>2) = Some (take ar (map Subx.norm_unboxed \<Sigma>2))"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOp, simplified]
+          using step_op_inl.hyps
+          by (auto simp: \<open>op' = op\<close> take_map
+              elim!: Subx.sp_instrs.cases[of _ _ "x # xs" for x xs, simplified] Subx.sp_instr.cases
+              intro!: ap_map_list_cast_Dyn_eq_norm_stack[of "take (\<AA>\<rr>\<ii>\<tt>\<yy> op) \<Sigma>2"]
+              dest!: map_eq_append_replicate_conv)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn x # drop ar \<Sigma>2) # st2'"
+        let ?F2' = "Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc (Ubx.IOpInl opinl))"
+        let ?s2' = "State ?F2' H ?st2'"
+        have step_s2_s2': "?STEP ?s2'"
+          using step_op_inl.hyps casts next_instr2
+          unfolding IOp \<open>op' = op\<close>
+          by (auto simp: s2_def st2_def intro: Subx.step_op_inl)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
+        next
+          show "?MATCH (State F1' H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            show "rel_fundefs (Finca_get F1') (Fubx_get ?F2')"
+              using rel_F1_F2 step_op_inl
+              by (auto intro: rel_fundefs_rewriteI)
+          next
+            have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using rel_st1'_st2'
+              apply (rule rel_stacktraces.intros)
+              using step_op_inl.hyps casts next_instr2 rel_stacktraces_Cons
+              unfolding IOp \<open>op' = op\<close>
+              by (auto simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: sp_instrs_prefix' Subx.sp_instr.Op
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+            then show "rel_stacktraces (Fubx_get ?F2') None ?st1' ?st2'"
+              apply (rule rel_stacktraces_map_entry_rewrite_fundef_body)
+              apply (rule next_instr2)
+              unfolding IOp \<open>op' = op\<close>
+              using Sinca.\<II>\<nn>\<ll>_invertible Subx.sp_instr_Op_OpInl_conv step_op_inl.hyps(4) apply blast
+               apply simp
+              apply simp
+              done
+          qed
+        qed
+      qed simp_all
+    next
+      case (step_op_inl_hit opinl ar x)
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IOpInl opinl) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
         case (IOpInl opinl')
-        then have "opinl' = opinl"
-          using norm_instr_nth_body step_op_inl_hit.hyps(3) by simp
-        hence "ar \<le> length \<Sigma>2" and
-          all_arg_Dyn: "list_all (\<lambda>x. x = None) (map typeof (take ar \<Sigma>2))"
-          using IOpInl step_op_inl_hit sp_sufix[OF pc_in_range]
-          by (auto simp: take_map)
-
-        let ?s2' = "State F2 H (Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using IOpInl step_op_inl_hit \<open>opinl' = opinl\<close>
-          using \<Sigma>1_def pc_in_range F2_f all_arg_Dyn
-          by (auto intro: Subx.step_op_inl_hit traverse_cast_Dyn_eq_norm_stack
-                simp: take_norm_stack)
-        moreover have "?MATCH ?s2'"
-          using rel_F1_F2 sp_F2 rel_st1_st2 F2_f
-          using IOpInl sp_prefix take_Suc_conv_app_nth[OF pc_in_range]
-          using arg_cong[OF \<Sigma>1_def, of "drop ar"]
-          using \<open>ar \<le> length \<Sigma>2\<close> \<open>opinl' = opinl\<close> step_op_inl_hit.hyps(4,5) all_arg_Dyn
-          by (auto intro!: match.intros rel_stacktraces.intros
-              dest: list_all_eq_const_imp_replicate
-              simp: drop_norm_stack[symmetric] Let_def take_map drop_map)
-        ultimately show ?thesis by auto
+        hence "opinl' = opinl" using norm_eq_instr1_instr2 by simp
+        have casts:
+          "ap_map_list cast_Dyn (take ar \<Sigma>2) = Some (take ar (map Subx.norm_unboxed \<Sigma>2))"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOpInl, simplified]
+          using step_op_inl_hit.hyps
+          by (auto simp: \<open>opinl' = opinl\<close> take_map
+              elim!: Subx.sp_instrs.cases[of _ _ "x # xs" for x xs, simplified] Subx.sp_instr.cases
+              intro!: ap_map_list_cast_Dyn_eq_norm_stack[of "take (\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> opinl)) \<Sigma>2"]
+              dest!: map_eq_append_replicate_conv)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn x # drop ar \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+        have step_s2_s2': "?STEP ?s2'"
+          using step_op_inl_hit.hyps casts next_instr2
+          unfolding IOpInl \<open>opinl' = opinl\<close>
+          by (auto simp: s2_def st2_def intro: Subx.step_op_inl_hit)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using step_op_inl_hit.hyps casts next_instr2 rel_stacktraces_Cons
+              unfolding IOpInl \<open>opinl' = opinl\<close>
+              by (auto simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.OpInl
+                  intro: list_all_list_updateI
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+          qed (insert rel_F1_F2, simp_all)
+        qed
       next
         case (IOpUbx opubx)
-        then have "\<BB>\<oo>\<xx> opubx = opinl"
-          using norm_instr_nth_body step_op_inl_hit.hyps(3) by simp
-        hence \<AA>\<rr>\<ii>\<tt>\<yy>_opubx[simp]: "\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> (\<BB>\<oo>\<xx> opubx)) = ar"
-          using step_op_inl_hit.hyps(4,5) by simp
-        note sp_sufix' = sp_sufix[OF pc_in_range, unfolded IOpUbx, simplified, unfolded Let_def, simplified]
-        obtain dom codom where typeof_opubx: "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (dom, codom)"
-          using prod.exhaust_sel by blast
-        hence dom_def: "dom = map typeof (take ar \<Sigma>2)"
-          unfolding \<AA>\<rr>\<ii>\<tt>\<yy>_opubx[unfolded Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_\<AA>\<rr>\<ii>\<tt>\<yy>, symmetric]
-          using sp_sufix'
-          by (auto simp: Let_def take_map)
+        hence "opinl = \<BB>\<oo>\<xx> opubx" using norm_eq_instr1_instr2 by simp
+        let ?ar = "\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> (\<BB>\<oo>\<xx> opubx))"
 
-        obtain x' where
-          eval_op: "\<UU>\<bb>\<xx>\<OO>\<pp> opubx (take ar \<Sigma>2) = Some x'" and
-          typeof_x': "typeof x' = codom"
-          using typeof_opubx[unfolded dom_def, THEN Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_correct]
-          by auto
+        obtain codom where typeof_opubx: "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (map typeof (take ?ar \<Sigma>2), codom)"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOpUbx, simplified]
+          by (cases "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx")
+            (auto simp: eq_append_conv_conj Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_\<AA>\<rr>\<ii>\<tt>\<yy> take_map
+              dest!: Subx.sp_instrs_ConsD elim!: Subx.sp_instr.cases)
 
-        let ?s2' = "State F2 H (Frame f (Suc pc) (x' # drop ar \<Sigma>2) # st2)"
-        have "?STEP ?s2'"
-          using \<Sigma>1_def step_op_inl_hit eval_op \<AA>\<rr>\<ii>\<tt>\<yy>_opubx
-          using pc_in_range IOpUbx F2_f
-          by (auto intro!: Subx.step_op_ubx)
-        moreover have "?MATCH ?s2'"
-        proof -
-          have "x = Subx.norm_unboxed x'"
-            using Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_correct[OF eval_op, unfolded \<open>\<BB>\<oo>\<xx> opubx = opinl\<close>]
-            using step_op_inl_hit \<Sigma>1_def
-            by (simp add: take_map norm_stack_def)
-          thus ?thesis
-            using rel_F1_F2 sp_F2 rel_st1_st2 F2_f \<Sigma>1_def
-            using sp_prefix take_Suc_conv_app_nth[OF pc_in_range, unfolded IOpUbx]
-            using step_op_inl_hit
-            using typeof_opubx typeof_x'
-            by (auto intro!: match.intros rel_stacktraces.intros
-                simp: dom_def drop_norm_stack Let_def min.absorb2 take_map drop_map)
+        obtain u where
+          eval_opubx: "\<UU>\<bb>\<xx>\<OO>\<pp> opubx (take ?ar \<Sigma>2) = Some u" and typeof_u: "typeof u = codom"
+          using Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_correct[OF typeof_opubx] by auto
+        hence x_def: "x = Subx.norm_unboxed u"
+          using step_op_inl_hit.hyps
+          using Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_correct[OF eval_opubx]
+          unfolding \<open>opinl = \<BB>\<oo>\<xx> opubx\<close> take_map
+          by simp
+
+        let ?st2' = "Frame f l (Suc pc) R2 (u # drop ?ar \<Sigma>2) # st2'"
+        let ?s2' = "State F2 H ?st2'"
+
+        have step_s2_s2': "?STEP ?s2'"
+          using step_op_inl_hit.hyps next_instr2
+          unfolding IOpUbx \<open>opinl = \<BB>\<oo>\<xx> opubx\<close>
+          using eval_opubx
+          by (auto simp: s2_def st2_def intro!: Subx.step_op_ubx)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using step_op_inl_hit.hyps next_instr2 rel_stacktraces_Cons
+              unfolding IOpUbx \<open>opinl = \<BB>\<oo>\<xx> opubx\<close> x_def
+              by (auto simp: typeof_opubx typeof_u
+                  simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.OpUbx
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+          qed (insert rel_F1_F2, simp_all)
         qed
-        ultimately show ?thesis by auto
       qed simp_all
     next
-      case (step_op_inl_miss fd1 opinl ar x F1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_op_inl_miss rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_op_inl_miss rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-        using step_op_inl_miss norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
+      case (step_op_inl_miss opinl ar x F1')
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.IOpInl opinl) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1' H ?st1') x")
+      proof (cases instr2)
         case (IOpInl opinl')
-        then have "opinl' = opinl"
-          using norm_instr_nth_body step_op_inl_miss.hyps(3) by simp
-        hence "ar \<le> length \<Sigma>2" and
-          all_arg_Dyn: "list_all (\<lambda>x. x = None) (map typeof (take ar \<Sigma>2))"
-          using IOpInl step_op_inl_miss sp_sufix[OF pc_in_range]
-          by (auto simp: take_map)
-
-        let ?fd2' = "rewrite_fundef_body fd2 pc (Ubx.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl))"
-        let ?F2' = "Fubx_add F2 f ?fd2'"
-        let ?frame = "Frame f (Suc pc) (OpDyn x # drop ar \<Sigma>2)"
-        let ?s2' = "State ?F2' H (?frame # st2)"
-        have "?STEP ?s2'"
-          using IOpInl step_op_inl_miss \<open>opinl' = opinl\<close>
-          using \<Sigma>1_def pc_in_range F2_f
-          using traverse_cast_Dyn_eq_norm_stack[OF all_arg_Dyn]
-          by (auto intro!: Subx.step_op_inl_miss simp: take_norm_stack)
-        moreover have "?MATCH ?s2'"
-        proof
-          show "rel_fundefs (Finca_get F1') (Fubx_get ?F2')"
-            using step_op_inl_miss rel_fd1_fd2
-            by (auto intro: rel_fundefs_rewrite_both')
+        hence "opinl' = opinl" using norm_eq_instr1_instr2 by simp
+        have casts:
+          "ap_map_list cast_Dyn (take ar \<Sigma>2) = Some (take ar (map Subx.norm_unboxed \<Sigma>2))"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOpInl, simplified]
+          using step_op_inl_miss.hyps
+          by (auto simp: \<open>opinl' = opinl\<close> take_map
+              elim!: Subx.sp_instrs.cases[of _ _ "x # xs" for x xs, simplified] Subx.sp_instr.cases
+              intro!: ap_map_list_cast_Dyn_eq_norm_stack[of "take (\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> opinl)) \<Sigma>2"]
+              dest!: map_eq_append_replicate_conv)
+        let ?st2' = "Frame f l (Suc pc) R2 (OpDyn x # drop ar \<Sigma>2) # st2'"
+        let ?F2' = "Subx.Fenv.map_entry F2 f (\<lambda>fd. rewrite_fundef_body fd l pc (Ubx.IOp (\<DD>\<ee>\<II>\<nn>\<ll> opinl)))"
+        let ?s2' = "State ?F2' H ?st2'"
+        have step_s2_s2': "?STEP ?s2'"
+          using step_op_inl_miss.hyps casts next_instr2
+          unfolding IOpInl \<open>opinl' = opinl\<close>
+          by (auto simp: s2_def st2_def intro: Subx.step_op_inl_miss)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
         next
-          show "sp_fundefs (Fubx_get ?F2')"
-            using IOpInl \<open>opinl' = opinl\<close> all_same_arities_add[OF F2_f] sp_full
-            by (auto intro: sp_fundefs_add[OF sp_F2]
-                simp: Subx.sp_instr_op[symmetric] Subx.sp_rewrite[OF pc_in_range])
-        next
-          have "rel_stacktraces (Fubx_get F2)
-            (Frame f (Suc pc) (x # drop ar \<Sigma>1) # st1) (?frame # st2) None"
-              using rel_st1_st2 sp_prefix F2_f
-              using IOpInl \<Sigma>1_def take_Suc_conv_app_nth[OF pc_in_range]
-              using \<open>ar \<le> length \<Sigma>2\<close> \<open>opinl' = opinl\<close> step_op_inl_miss.hyps(4,5)
-              using all_arg_Dyn
-              by (auto intro!: rel_stacktraces.intros
-                  dest: list_all_eq_const_imp_replicate
-                  simp: drop_norm_stack Let_def take_map drop_map)
-              
-          thus "rel_stacktraces (Fubx_get ?F2')
-            (Frame f (Suc pc) (x # drop ar \<Sigma>1) # st1) (?frame # st2) None"
-            using F2_f pc_in_range IOpInl
-            by (auto intro: rel_stacktraces_rewrite_fundef
-                simp: \<open>opinl' = opinl\<close> Let_def Subx.sp_instr_op[symmetric])
+          show "?MATCH (State F1' H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            show "rel_fundefs (Finca_get F1') (Fubx_get ?F2')"
+              using rel_F1_F2 step_op_inl_miss.hyps
+              by (auto intro: rel_fundefs_rewriteI)
+          next
+            have "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using rel_st1'_st2'
+              apply (rule rel_stacktraces.intros)
+              using step_op_inl_miss.hyps casts next_instr2 rel_stacktraces_Cons
+              unfolding IOpInl \<open>opinl' = opinl\<close>
+              by (auto simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: sp_instrs_prefix' Subx.sp_instr.OpInl
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+            then show "rel_stacktraces (Fubx_get ?F2') None ?st1' ?st2'"
+              apply (rule rel_stacktraces_map_entry_rewrite_fundef_body)
+              apply (rule next_instr2)
+              unfolding IOpInl \<open>opinl' = opinl\<close>
+              using Sinca.\<II>\<nn>\<ll>_invertible Subx.sp_instr_Op_OpInl_conv step_op_inl_miss.hyps apply metis
+               apply simp
+              apply simp
+              done
+          qed
         qed
-        ultimately show ?thesis by auto
       next
         case (IOpUbx opubx)
-        then have "\<BB>\<oo>\<xx> opubx = opinl"
-          using norm_instr_nth_body step_op_inl_miss.hyps(3) by simp
-        hence \<AA>\<rr>\<ii>\<tt>\<yy>_opubx: "\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> (\<BB>\<oo>\<xx> opubx)) = ar"
-          using step_op_inl_miss.hyps(4,5) by simp
-        obtain dom codom where "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (dom, codom)"
-          using prod.exhaust_sel by blast
-        hence "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (map typeof (take ar \<Sigma>2), codom)"
-          unfolding \<AA>\<rr>\<ii>\<tt>\<yy>_opubx[unfolded Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_\<AA>\<rr>\<ii>\<tt>\<yy>, symmetric]
-          using sp_sufix[OF pc_in_range]
-          unfolding IOpUbx
-          by (auto simp: Let_def case_prod_beta take_map)
-        then obtain x where eval_op: "\<UU>\<bb>\<xx>\<OO>\<pp> opubx (take ar \<Sigma>2) = Some x"
-          using Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_correct by blast
-        hence "\<II>\<ss>\<II>\<nn>\<ll> opinl (take ar \<Sigma>1)"
-          unfolding \<Sigma>1_def norm_stack_def
-          using \<open>\<BB>\<oo>\<xx> opubx = opinl\<close>
-          by (auto intro: Sinca.\<II>\<nn>\<ll>_\<II>\<ss>\<II>\<nn>\<ll> Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_to_\<II>\<nn>\<ll> simp: take_map)
+        hence "opinl = \<BB>\<oo>\<xx> opubx" using norm_eq_instr1_instr2 by simp
+        let ?ar = "\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> (\<BB>\<oo>\<xx> opubx))"
+
+        obtain codom where typeof_opubx: "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx = (map typeof (take ?ar \<Sigma>2), codom)"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IOpUbx, simplified]
+          by (cases "\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp> opubx")
+            (auto simp: eq_append_conv_conj Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_\<AA>\<rr>\<ii>\<tt>\<yy> take_map
+              dest!: Subx.sp_instrs_ConsD elim!: Subx.sp_instr.cases)
+        obtain u where "\<UU>\<bb>\<xx>\<OO>\<pp> opubx (take ?ar \<Sigma>2) = Some u"
+          using Subx.\<TT>\<yy>\<pp>\<ee>\<OO>\<ff>\<OO>\<pp>_correct[OF typeof_opubx] by auto
+        hence "\<II>\<ss>\<II>\<nn>\<ll> opinl (take ?ar \<Sigma>1)"
+          unfolding \<Sigma>1_def
+          by (auto simp: \<open>opinl = \<BB>\<oo>\<xx> opubx\<close> take_map dest: Subx.\<UU>\<bb>\<xx>\<OO>\<pp>_to_\<II>\<nn>\<ll>[THEN Sinca.\<II>\<nn>\<ll>_\<II>\<ss>\<II>\<nn>\<ll>])
         hence False
-          using step_op_inl_miss by auto
+          using step_op_inl_miss.hyps
+          by (simp add: \<Sigma>1_def \<open>opinl = \<BB>\<oo>\<xx> opubx\<close>)
         thus ?thesis by simp
       qed simp_all
     next
-      case (step_cjump_true fd1 n \<Sigma>1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_cjump_true rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_cjump_true rel_fundef_body_length[OF rel_fd1_fd2] by simp
+      case (step_cjump l\<^sub>t l\<^sub>f d l' \<Sigma>1')
+      then obtain u \<Sigma>2' where
+        \<Sigma>2_def: "\<Sigma>2 = u # \<Sigma>2'" and
+        d_def: "d = Subx.norm_unboxed u" and
+        \<Sigma>1'_def: "\<Sigma>1' = map Subx.norm_unboxed \<Sigma>2'"
+        by auto
+      from step_cjump.hyps obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.ICJump l\<^sub>t l\<^sub>f) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+
+      from next_instr2 norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (ICJump l\<^sub>t' l\<^sub>f')
+        hence "l\<^sub>t' = l\<^sub>t" and "l\<^sub>f' = l\<^sub>f" using norm_eq_instr1_instr2 by simp_all
+        hence "{l\<^sub>t, l\<^sub>f} \<subseteq> fst ` set (body fd2)"
+          using all_jumps_in_range pc_in_range nth_instrs_pc ICJump by (auto simp: list_all_length)
+        moreover have "l' \<in> {l\<^sub>t, l\<^sub>f}"
+          using step_cjump.hyps by auto
+        ultimately have "l' \<in> fst ` set (body fd2)"
+          by blast
+        then obtain instrs' where map_of_l': "map_of (body fd2) l' = Some instrs'"
+          by (auto dest: weak_map_of_SomeI)
+
+        have sp_instrs_instrs': "Subx.sp_instrs (map_option funtype \<circ> Fubx_get F2) (return fd2)
+          (butlast instrs @ [instrs ! pc]) [] []" if pc_def: "pc = length instrs - 1"
+          unfolding pc_def last_conv_nth[OF instrs_neq_Nil, symmetric]
+          unfolding append_butlast_last_id[OF instrs_neq_Nil]
+          by (rule sp_instrs_instrs)
   
-      show ?case
-        using step_cjump_true norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (ICJump n')
-        then have False
-          using F2_f sp_fundefs_get[OF sp_F2, unfolded sp_fundef_def, THEN Subx.sp_no_jump]
-          using nth_mem pc_in_range by fastforce
-        thus ?thesis by simp
+        have sp_instr_last: "Subx.sp_instr (map_option funtype \<circ> Fubx_get F2) (return fd2)
+          (instrs ! pc) (map typeof \<Sigma>2) []" if pc_def: "pc = length instrs - 1"
+          using sp_instrs_instrs'[OF pc_def]
+          using sp_instrs_prefix[unfolded pc_def butlast_conv_take[symmetric]]
+          by (auto dest!: Subx.sp_instrs_appendD')
+
+        have is_jump_nthD: "\<And>n. is_jump (instrs ! n) \<Longrightarrow> n < length instrs \<Longrightarrow> n = length instrs - 1"
+          using list_all_map_of_SomeD[OF wf_fd2[THEN Subx.wf_fundef_all_wf_basic_blockD] map_of_fd2_l]
+          by (auto dest!: Subx.wf_basic_blockD
+                list_all_butlast_not_nthD[of "\<lambda>i. \<not> is_jump i \<and> \<not> Ubx.instr.is_return i", simplified, OF _ disjI1])
+
+        have pc_def: "pc = length instrs - 1"
+          using is_jump_nthD[OF _ pc_in_range] nth_instrs_pc ICJump by simp
+        have \<Sigma>2'_eq_Nil: "\<Sigma>2' = []"
+          using sp_instr_last[OF pc_def] step_cjump.hyps
+          by (auto simp: \<Sigma>2_def d_def nth_instrs_pc ICJump elim!: Subx.sp_instr.cases)
+
+        have cast: "cast_Dyn u = Some d"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ICJump, simplified]
+          by (auto simp: \<Sigma>2_def d_def dest!: Subx.sp_instrs_ConsD elim!: Subx.sp_instr.cases
+              intro: Subx.typeof_and_norm_unboxed_imp_cast_Dyn)
+
+        let ?st2' = "Frame f l' 0 R2 \<Sigma>2' # st2'"
+        let ?s2' = "State F2 H ?st2'"
+
+        have step_s2_s2': "?STEP ?s2'"
+          using step_cjump.hyps cast next_instr2
+          unfolding ICJump \<open>l\<^sub>t' = l\<^sub>t\<close> \<open>l\<^sub>f' = l\<^sub>f\<close>
+          by (auto simp: s2_def st2_def \<Sigma>2_def intro!: Subx.step_cjump)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              using step_cjump.hyps cast next_instr2 rel_stacktraces_Cons
+              using map_of_l'
+              unfolding ICJump \<open>l\<^sub>t' = l\<^sub>t\<close> \<open>l\<^sub>f' = l\<^sub>f\<close> \<Sigma>1'_def \<Sigma>2'_eq_Nil
+              by (auto simp: min_absorb2 take_map[symmetric] drop_map[symmetric]
+                  simp: next_instr_take_Suc_conv
+                  intro!: rel_stacktraces.intros sp_instrs_prefix' Subx.sp_instr.CJump
+                  intro: Subx.sp_instrs.Nil
+                  dest!: ap_map_list_cast_Dyn_replicate[symmetric])
+          qed (insert rel_F1_F2, simp_all)
+        qed
       qed simp_all
     next
-      case (step_cjump_false fd1 n \<Sigma>1')
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using ex_F1_f by simp
-      hence norm_instr_nth_body: "norm_instr (body fd2 ! pc) = body fd1 ! pc"
-        using step_cjump_false rel_fundef_body_nth by metis
-      have pc_in_range: "pc < length (body fd2)"
-        using step_cjump_false rel_fundef_body_length[OF rel_fd1_fd2] by simp
-  
-      show ?case
-        using step_cjump_false norm_instr_nth_body
-      proof (cases "body fd2 ! pc")
-        case (ICJump n')
-        then have False
-          using F2_f sp_fundefs_get[OF sp_F2, unfolded sp_fundef_def, THEN Subx.sp_no_jump]
-          using nth_mem pc_in_range by fastforce
-        thus ?thesis by simp
+      case (step_call g gd1 frame\<^sub>g)
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq (Inca.ICall g) instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
+
+      from step_call.hyps obtain gd2 where
+        F2_g: "Fubx_get F2 g = Some gd2" and rel_gd1_gd2: "rel_fundef (=) norm_eq gd1 gd2"
+        using rel_fundefs_Some1[OF rel_F1_F2] by auto
+                
+      have wf_gd2: "Subx.wf_fundef (map_option funtype \<circ> Fubx_get F2) gd2"
+        by (rule Subx.wf_fundefs_getD[OF wf_F2 F2_g])
+
+      obtain intrs\<^sub>g where gd2_fst_bblock: "map_of (body gd2) (fst (hd (body gd2))) = Some intrs\<^sub>g"
+        using Subx.wf_fundef_body_neq_NilD[OF wf_gd2]
+        by (metis hd_in_set map_of_eq_None_iff not_Some_eq prod.collapse prod_in_set_fst_image_conv)
+
+      from norm_eq_instr1_instr2
+      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case (ICall g')
+        hence "g' = g" using norm_eq_instr1_instr2 by simp
+        hence all_dyn_args: "list_all is_dyn_operand (take (arity gd2) \<Sigma>2)"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc ICall, simplified]
+          using F2_g
+          by (auto simp: funtype_def eq_append_conv_conj take_map list.pred_set
+              dest!: Subx.sp_instrs_ConsD replicate_eq_impl_Ball_eq elim!: Subx.sp_instr.cases)
+
+        let ?frame\<^sub>g = "allocate_frame g gd2 (take (arity gd2) \<Sigma>2) (OpDyn uninitialized)"
+        let ?st2' = "?frame\<^sub>g # Frame f l pc R2 \<Sigma>2 # st2'"
+        let ?s2' = "State F2 H ?st2'"
+
+        have step_s2_s2': "?STEP ?s2'"
+          using step_call.hyps next_instr2 F2_g rel_gd1_gd2 all_dyn_args
+          unfolding ICall \<open>g' = g\<close>
+          by (auto simp: s2_def st2_def rel_fundef_arities intro!: Subx.step_call)
+        show ?thesis
+        proof (intro exI conjI)
+          show "?STEP ?s2'" by (rule step_s2_s2')
+        next
+          show "?MATCH (State F1 H ?st1') ?s2'"
+          proof (rule match.intros)
+            show "Subx.wf_state ?s2'"
+              by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+          next
+            have FOO: "fst (hd (body gd1)) = fst (hd (body gd2))"
+              apply (rule rel_fundef_rel_fst_hd_bodies[OF rel_gd1_gd2])
+              using Subx.wf_fundefs_getD[OF wf_F2 \<open>Fubx_get F2 g = Some gd2\<close>]
+              by (auto dest: Subx.wf_fundef_body_neq_NilD)
+            show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+              unfolding step_call.hyps allocate_frame_def FOO
+            proof (rule rel_stacktraces.intros)
+              show "Fubx_get F2 g = Some gd2"
+                by (rule F2_g)
+            next
+              show "rel_stacktraces (Fubx_get F2) (Some g)
+                (Frame f l pc (map Subx.norm_unboxed R2) (map Subx.norm_unboxed \<Sigma>2) # st1')
+                (Frame f l pc R2 \<Sigma>2 # st2')"
+                using step_call.hyps rel_stacktraces_Cons next_instr2 F2_g rel_gd1_gd2 all_dyn_args
+                unfolding ICall \<open>g' = g\<close>
+                by (auto simp: is_valid_fun_call_def rel_fundef_arities intro!: rel_stacktraces.intros)
+            qed (insert rel_gd1_gd2 all_dyn_args gd2_fst_bblock,
+                simp_all add: take_map rel_fundef_arities rel_fundef_locals Subx.sp_instrs.Nil
+                list_all_replicateI)
+          qed (insert rel_F1_F2, simp_all)
+        qed
       qed simp_all
     next
-      case (step_fun_call f' fd1 pc' g gd1 \<Sigma>1' frame\<^sub>g)
-      hence [simp]: "f' = f" "pc' = pc" "\<Sigma>1' = \<Sigma>1" by auto
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using step_fun_call ex_F1_f by simp
-      obtain gd2 where "Fubx_get F2 g = Some gd2" and rel_gd1_gd2: "rel_fundef norm_eq gd1 gd2"
-        using step_fun_call rel_fundefs_Some1[OF rel_F1_F2] by blast
-      have pc_in_range: "pc < length (body fd2)"
-        using step_fun_call rel_fd1_fd2 by simp
+      case (step_return fd1 \<Sigma>1\<^sub>g frame\<^sub>g' g l\<^sub>g pc\<^sub>g R1\<^sub>g st1'')
+      then obtain instr2 where
+        next_instr2: "next_instr (Fubx_get F2) f l pc = Some instr2" and
+        norm_eq_instr1_instr2: "norm_eq Inca.IReturn instr2"
+        by (auto dest: rel_fundefs_next_instr1[OF rel_F1_F2])
+      have pc_in_range: "pc < length instrs" and nth_instrs_pc: "instrs ! pc = instr2"
+        using next_instr_get_map_ofD[OF next_instr2 F2_f map_of_fd2_l]
+        by simp_all
 
-      have nth_body2: "body fd2 ! pc = Ubx.ICall g"
-        using rel_fundef_body_nth[OF rel_fd1_fd2 \<open>pc' < length (body fd1)\<close>, symmetric]
-        unfolding \<open>body fd1 ! pc' = Inca.ICall g\<close>
-        by (cases "body fd2 ! pc'"; simp)
+      from step_return.hyps have rel_fd1_fd2: "rel_fundef (=) norm_eq fd1 fd2"
+        using rel_fundefsD[OF rel_F1_F2, of f] F2_f  by simp
 
-      have prefix_\<Sigma>2_all_Dyn: "list_all (\<lambda>x. x = None) (map typeof (take (arity gd2) \<Sigma>2))"
-        using \<open>Fubx_get F2 g = Some gd2\<close> sp_sufix[OF pc_in_range] nth_body2
-        by (auto simp: Let_def take_map)
-      hence all_dyn_args: "list_all is_dyn_operand (take (arity gd2) \<Sigma>2)"
-        by (auto elim: list.pred_mono_strong simp add: list.pred_map comp_def)
-
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?args = "map OpDyn (norm_stack (take (arity gd2) \<Sigma>2))"
-        let ?frame = "Frame g 0 ?args"
-        let ?s1' = "State F2 H (?frame # Frame f pc \<Sigma>2 # st2)"
-        have "?STEP ?s1'"
-        proof -
-          have "arity gd2 \<le> length \<Sigma>2"
-            using \<open>arity gd1 \<le> length \<Sigma>1'\<close>
-            using rel_fundef_arities[OF rel_gd1_gd2] \<Sigma>1_def
-            by simp
-          thus ?thesis
-            using pc_in_range nth_body2
-            using  \<open>Fubx_get F2 g = Some gd2\<close> rel_stacktraces_Cons.hyps(3)
-            using all_dyn_args
-            by (auto intro!: Subx.step_fun_call[of _ _ fd2] nth_equalityI
-                simp: typeof_unboxed_eq_const list_all_length norm_stack_def)
-        qed
-        moreover have "?MATCH ?s1'"
-          using rel_F1_F2 sp_F2
-        proof
-          show "rel_stacktraces (Fubx_get F2)
-           (frame\<^sub>g # Frame f pc \<Sigma>1 # st1)
-           (?frame # Frame f pc \<Sigma>2 # st2) None"
-            unfolding step_fun_call(7)
-          proof (rule rel_stacktraces.intros)
-            show "rel_stacktraces (Fubx_get F2) (Frame f pc \<Sigma>1 # st1) (Frame f pc \<Sigma>2 # st2)
-              (Some g)"
-              using pc_in_range nth_body2 rel_stacktraces_Cons
-              using \<open>Fubx_get F2 g = Some gd2\<close> all_dyn_args
-              by (auto intro!: rel_stacktraces.intros simp: is_valid_fun_call_def)
+      from norm_eq_instr1_instr2
+      show ?case  (is "\<exists>x. ?STEP x \<and> ?MATCH (State F1 H ?st1') x")
+      proof (cases instr2)
+        case IReturn
+        have map_typeof_\<Sigma>2: "map typeof \<Sigma>2 = replicate (return fd2) None"
+          using sp_instrs_sufix[OF pc_in_range, unfolded nth_instrs_pc IReturn, simplified]
+          by (auto elim: Subx.sp_instr.cases dest: Subx.sp_instrs_ConsD)
+        hence all_dyn_\<Sigma>2: "list_all is_dyn_operand \<Sigma>2"
+          by (auto simp: list.pred_set dest: replicate_eq_impl_Ball_eq[OF sym])
+        show ?thesis
+          using rel_st1'_st2' unfolding \<open>Frame g l\<^sub>g pc\<^sub>g R1\<^sub>g \<Sigma>1\<^sub>g # st1'' = st1'\<close>[symmetric]
+        proof (cases rule: rel_stacktraces.cases)
+          case (rel_stacktraces_Cons st2'' \<Sigma>2\<^sub>g R2\<^sub>g gd2 instrs\<^sub>g)
+          let ?st2' = "Frame g l\<^sub>g (Suc pc\<^sub>g) R2\<^sub>g (\<Sigma>2 @ drop (arity fd2) \<Sigma>2\<^sub>g) # st2''"
+          let ?s2' = "State F2 H ?st2'"
+          have step_s2_s2': "?STEP ?s2'"
+            using step_return.hyps next_instr2 F2_f rel_fd1_fd2 rel_stacktraces_Cons all_dyn_\<Sigma>2
+            unfolding IReturn
+            by (auto simp: s2_def st2_def rel_fundef_arities rel_fundef_return
+                intro: Subx.step_return)
+          show ?thesis
+          proof (intro exI conjI)
+            show "?STEP ?s2'" by (rule step_s2_s2')
           next
-            show "take (arity gd1) \<Sigma>1' = norm_stack ?args"
-              using \<Sigma>1_def
-              using rel_fundef_arities[OF rel_gd1_gd2]
-              by (simp add: norm_stack_map take_norm_stack)
-          next
-            show "Fubx_get F2 g = Some gd2"
-              using \<open>Fubx_get F2 g = Some gd2\<close> .
-          next
-            show "sp_fundef (Fubx_get F2) gd2 (take 0 (body gd2)) = Ok (map typeof ?args)"
-              using \<Sigma>1_def step_fun_call.hyps(5)
-              using rel_fundef_arities[OF rel_gd1_gd2]
-              by (simp add: map_replicate_const)
-          qed simp_all
+            show "?MATCH (State F1 H ?st1') ?s2'"
+            proof (rule match.intros)
+              show "Subx.wf_state ?s2'"
+                by (rule Subx.wf_state_step_preservation[OF wf_s2 step_s2_s2'])
+            next
+              have "Subx.sp_instr (map_option funtype \<circ> Fubx_get F2) (return gd2)
+                (Ubx.instr.ICall f) (map typeof \<Sigma>2\<^sub>g)
+                (replicate (return fd2) None @ map typeof (drop (arity fd2) \<Sigma>2\<^sub>g))"
+                using rel_stacktraces_Cons F2_f
+                using replicate_eq_map[of "arity fd2" "take (arity fd2) \<Sigma>2\<^sub>g" typeof None]
+                by (auto simp: funtype_def is_valid_fun_call_def
+                    simp: min_absorb2 list.pred_set take_map[symmetric] drop_map[symmetric]
+                    intro!: Subx.sp_instr.Call[where \<Sigma> = "map typeof (drop (arity fd2) \<Sigma>2\<^sub>g)"])
+              then show "rel_stacktraces (Fubx_get F2) None ?st1' ?st2'"
+                unfolding step_return.hyps
+                using rel_stacktraces_Cons rel_fd1_fd2 F2_f
+                using map_typeof_\<Sigma>2
+                by (auto simp: drop_map rel_fundef_arities is_valid_fun_call_def
+                    simp: next_instr_take_Suc_conv funtype_def
+                    intro!: rel_stacktraces.intros Subx.sp_instrs_appendI[where \<Sigma> = "map typeof \<Sigma>2\<^sub>g"])
+            qed (insert rel_F1_F2, simp_all)
+          qed
         qed
-        ultimately show "?thesis" by blast
-      qed
-    next
-      case (step_fun_end f' fd1 \<Sigma>1\<^sub>g pc' \<Sigma>1' frame\<^sub>g g pc\<^sub>g frame\<^sub>g' st1')
-      hence [simp]: "f' = f" "pc' = pc" "\<Sigma>1' = \<Sigma>1" by auto
-      hence rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-        using step_fun_end ex_F1_f by simp
-
-      note arities_fd1_fd2 = rel_fundef_arities[OF rel_fd1_fd2]
-
-      obtain \<Sigma>2\<^sub>g st2' where
-        st2_def: "st2 = Frame g pc\<^sub>g \<Sigma>2\<^sub>g # st2'"
-        using step_fun_end rel_st1_st2
-        by (auto elim: rel_stacktraces.cases)
-
-      hence all_dyn_prefix_\<Sigma>2\<^sub>g: "list_all (\<lambda>x. x = None) (map typeof (take (arity fd2) \<Sigma>2\<^sub>g))"
-        using step_fun_end rel_st1_st2 F2_f
-        by (auto
-            elim!: rel_stacktraces.cases[of _ "_ # _"] list.pred_mono_strong
-            simp: list.pred_map is_valid_fun_call_def)
-
-      show ?case (is "\<exists>x. ?STEP x \<and> ?MATCH x")
-      proof -
-        let ?s1' = "State F2 H (Frame g (Suc pc\<^sub>g) (\<Sigma>2 @ drop (arity fd2) \<Sigma>2\<^sub>g) # st2')"
-        have "?STEP ?s1'"
-          unfolding st2_def
-          using step_fun_end st2_def rel_st1_st2
-          using arities_fd1_fd2
-          using rel_fundef_body_length[OF rel_fd1_fd2]
-          by (auto intro!: Subx.step_fun_end[OF \<open>Fubx_get F2 f = Some fd2\<close>]
-              elim!: rel_stacktraces.cases[of _ "_ # _"])
-        moreover have "?MATCH ?s1'"
-        proof -
-          have "map typeof \<Sigma>2 = [None]"
-            using step_fun_end st2_def rel_st1_st2
-            using rel_fd1_fd2 sp_full sp_prefix
-            by (auto elim!: rel_stacktraces.cases[of _ "_ # _"])
-            
-          thus ?thesis
-            using step_fun_end st2_def rel_st1_st2
-            using arities_fd1_fd2 \<Sigma>1_def F2_f all_dyn_prefix_\<Sigma>2\<^sub>g
-            by (auto intro!: match.intros rel_stacktraces.intros
-                intro: rel_F1_F2 sp_F2
-                elim!: rel_stacktraces.cases[of _ "_ # _"]
-                dest: list_all_eq_const_imp_replicate
-                simp: take_Suc_conv_app_nth Let_def drop_norm_stack take_map drop_map
-                simp: is_valid_fun_call_def)
-        qed
-        ultimately show ?thesis by auto
-      qed
+      qed simp_all
     qed
   qed
 qed
 
 lemma match_final_forward:
-  "s1 \<sim> s2 \<Longrightarrow> Sinca.final s1 \<Longrightarrow> Subx.final s2"
-proof (induction s1 s2 rule: match.induct)
-  case (1 F1 F2 st1 st2 H)
-  obtain f fd1 pc \<Sigma>1 where
-    st1_def: "st1 = [Frame f pc \<Sigma>1]" and
-    F1_f: "Finca_get F1 f = Some fd1" and
-    pc_def: "pc = length (body fd1)"
-    using \<open>Sinca.final (State F1 H st1)\<close>
-    by (auto elim: Sinca.final.cases)
-  obtain \<Sigma>2 where st2_def: "st2 = [Frame f pc \<Sigma>2]"
-    using \<open>rel_stacktraces (Fubx_get F2) st1 st2 None\<close>
-    unfolding st1_def
-    by (auto elim: rel_stacktraces.cases)
-  obtain fd2 where F2_f: "Fubx_get F2 f = Some fd2" and rel_fd1_fd2: "rel_fundef norm_eq fd1 fd2"
-    using rel_fundefs_Some1[OF \<open>rel_fundefs (Finca_get F1) (Fubx_get F2)\<close> F1_f]
-    by auto
-  have "length (body fd1) = length (body fd2)"
-    using rel_fd1_fd2 by simp
-  thus ?case
-    unfolding st2_def pc_def
-    using F2_f by (auto intro: Subx.final.intros)
+  assumes "match s1 s2" and final_s1: "final Finca_get Inca.IReturn s1"
+  shows "final Fubx_get Ubx.IReturn s2"
+  using \<open>match s1 s2\<close>
+proof (cases s1 s2 rule: match.cases)
+  case (matchI F2 H st2 F1 st1)
+  show ?thesis
+    using final_s1[unfolded matchI]
+  proof (cases _ _ "State F1 H st1" rule: final.cases)
+    case (finalI f l pc R \<Sigma>)
+    then show ?thesis
+      using matchI
+      by (auto intro!: final.intros elim: rel_stacktraces.cases norm_instr.elims[OF sym]
+          dest: rel_fundefs_next_instr1)
+  qed
 qed
 
 sublocale inca_ubx_forward_simulation:
-  forward_simulation Sinca.step Subx.step Sinca.final Subx.final "\<lambda>_ _. False" "\<lambda>_. match"
+  forward_simulation Sinca.step Subx.step
+    "final Finca_get Inca.IReturn"
+    "final Fubx_get Ubx.IReturn"
+    "\<lambda>_ _. False" "\<lambda>_. match"
   using match_final_forward forward_lockstep_simulation
   using lockstep_to_plus_forward_simulation[of match Sinca.step _ Subx.step]
   by unfold_locales auto
@@ -1926,7 +2368,8 @@ sublocale inca_ubx_forward_simulation:
 section \<open>Bisimulation\<close>
 
 sublocale inca_ubx_bisimulation:
-  bisimulation Sinca.step Subx.step Sinca.final Subx.final "\<lambda>_ _. False" "\<lambda>_. match"
+  bisimulation Sinca.step Subx.step "final Finca_get Inca.IReturn" "final Fubx_get Ubx.IReturn"
+  "\<lambda>_ _. False" "\<lambda>_. match"
   by unfold_locales
 
 end

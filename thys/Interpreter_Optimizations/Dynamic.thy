@@ -4,6 +4,7 @@ begin
 
 locale dynval =
   fixes
+    uninitialized :: 'dyn and
     is_true :: "'dyn \<Rightarrow> bool" and
     is_false :: "'dyn \<Rightarrow> bool"
   assumes

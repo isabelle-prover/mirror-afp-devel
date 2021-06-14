@@ -2,6 +2,9 @@ theory Unboxed_lemmas
   imports Unboxed
 begin
 
+lemma cast_Dyn_eq_Some_imp_typeof: "cast_Dyn u = Some d \<Longrightarrow> typeof u = None"
+  by (auto elim: cast_Dyn.elims)
+
 lemma typeof_bind_OpDyn[simp]: "typeof \<circ> OpDyn = (\<lambda>_. None)"
   by auto
 
@@ -31,8 +34,8 @@ lemma cast_inversions:
   "cast_Ubx2 x = Some b \<Longrightarrow> x = OpUbx2 b"
   by (cases x; simp)+
 
-lemma traverse_cast_Dyn_replicate:
-  assumes "traverse cast_Dyn xs = Some ys"
+lemma ap_map_list_cast_Dyn_replicate:
+  assumes "ap_map_list cast_Dyn xs = Some ys"
   shows "map typeof xs = replicate (length xs) None"
   using assms
 proof (induction xs arbitrary: ys)
@@ -41,7 +44,7 @@ proof (induction xs arbitrary: ys)
 next
   case (Cons x xs)
   from Cons.prems show ?case
-    by (auto intro: Cons.IH dest: cast_inversions(1) simp add: bind_eq_Some_conv)
+    by (auto intro: Cons.IH dest: cast_inversions(1) simp: ap_option_eq_Some_conv)
 qed
 
 context unboxedval begin
@@ -61,6 +64,13 @@ lemma norm_cast_and_box_inverse[simp]:
   "cast_and_box \<tau> blob = Some d \<Longrightarrow> norm_unboxed blob = d"
   by (induction \<tau>; auto elim: cast_Dyn.elims cast_Ubx1.elims cast_Ubx2.elims)
 
+lemma typeof_and_norm_unboxed_imp_cast_Dyn:
+  assumes "typeof x' = None" "norm_unboxed x' = x"
+  shows "cast_Dyn x' = Some x"
+  using assms
+  unfolding typeof_unboxed_eq_const
+  by auto
+
 lemma typeof_and_norm_unboxed_imp_cast_and_box:
   assumes "typeof x' = Some \<tau>" "norm_unboxed x' = x"
   shows "cast_and_box \<tau> x' = Some x"
@@ -73,8 +83,11 @@ lemma norm_unboxed_bind_OpDyn[simp]: "norm_unboxed \<circ> OpDyn = id"
 lemmas box_stack_Nil[simp] = list.map(1)[of "box_frame f" for f, folded box_stack_def]
 lemmas box_stack_Cons[simp] = list.map(2)[of "box_frame f" for f, folded box_stack_def]
 
-lemma typeof_box_operand[simp]: "typeof (box_operand x) = None"
-  by (cases x; simp)
+lemma typeof_box_operand[simp]: "typeof (box_operand u) = None"
+  by (cases u) simp_all
+
+lemma typeof_box_operand_comp[simp]:  "typeof \<circ> box_operand = (\<lambda>_. None)"
+  by auto
 
 lemma is_dyn_box_operand: "is_dyn_operand (box_operand x)"
   by (cases x) simp_all

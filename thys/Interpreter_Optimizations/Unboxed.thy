@@ -26,8 +26,8 @@ fun cast_Ubx2 where
   "cast_Ubx2 (OpUbx2 x) = Some x" |
   "cast_Ubx2 _ = None"
 
-locale unboxedval = dynval is_true is_false
-  for is_true :: "'dyn \<Rightarrow> bool" and is_false +
+locale unboxedval = dynval uninitialized is_true is_false
+  for uninitialized :: 'dyn and is_true and is_false +
   fixes
     box_ubx1 :: "'ubx1 \<Rightarrow> 'dyn" and unbox_ubx1 :: "'dyn \<Rightarrow> 'ubx1 option" and
     box_ubx2 :: "'ubx2 \<Rightarrow> 'dyn" and unbox_ubx2 :: "'dyn \<Rightarrow> 'ubx2 option"
@@ -56,7 +56,7 @@ fun box_operand where
   "box_operand (OpUbx2 x) = OpDyn (box_ubx2 x)"
 
 fun box_frame where
-  "box_frame f (Frame g pc \<Sigma>) = Frame g pc (if f = g then map box_operand \<Sigma> else \<Sigma>)"
+  "box_frame f (Frame g l pc R \<Sigma>) = Frame g l pc R (if f = g then map box_operand \<Sigma> else \<Sigma>)"
 
 definition box_stack where
   "box_stack f \<equiv> map (box_frame f)"
