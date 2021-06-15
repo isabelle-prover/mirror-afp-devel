@@ -455,9 +455,8 @@ few lemmas first. \<close>
 lemma [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
  \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
 (*<*)
-apply(induct Vs Ts vs e rule:blocks_induct)
-apply(simp_all add:hyperset_defs)
-done
+by (induct Vs Ts vs e rule:blocks_induct)
+   (simp_all add:hyperset_defs)
 (*>*)
 
 
@@ -466,11 +465,59 @@ lemma red_lA_incr: "P \<turnstile> \<langle>e,(h,l,sh),b\<rangle> \<rightarrow> 
 and reds_lA_incr: "P \<turnstile> \<langle>es,(h,l,sh),b\<rangle> [\<rightarrow>] \<langle>es',(h',l',sh'),b'\<rangle>
    \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A>s es'"
 (*<*)
-apply(induct rule:red_reds_inducts)
-apply(simp_all del:fun_upd_apply add:hyperset_defs)
-apply auto
-apply(blast dest:red_lcl_incr)+
-done
+proof(induct rule:red_reds_inducts)
+  case TryRed then show ?case
+    by(simp del:fun_upd_apply add:hyperset_defs)
+      (blast dest:red_lcl_incr)+
+next
+  case BinOpRed1 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case BinOpRed2 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case LAssRed then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case FAssRed1 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case FAssRed2 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case CallObj then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case CallParams then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case BlockRedNone then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case BlockRedSome then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case InitBlockRed then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case SeqRed then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case CondRed then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case RedCondT then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case RedCondF then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case ListRed1 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+next
+  case ListRed2 then show ?case
+    by(auto simp del:fun_upd_apply simp:hyperset_defs)
+qed (simp_all del:fun_upd_apply add:hyperset_defs)
 (*>*)
 
 text\<open> Now preservation of definite assignment. \<close>
@@ -552,10 +599,10 @@ lemma wt_blocks:
        (P,E,h,sh \<turnstile> blocks(Vs,Ts,vs,e) : T) =
        (P,E(Vs[\<mapsto>]Ts),h,sh \<turnstile> e:T \<and> (\<exists>Ts'. map (typeof\<^bsub>h\<^esub>) vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))"
 (*<*)
-apply(induct Vs Ts vs e rule:blocks_induct)
-apply (force simp add:rel_list_all2_Cons2)
-apply simp_all
-done
+proof(induct Vs Ts vs e rule:blocks_induct)
+  case (1 V Vs T Ts v vs e)
+  then show ?case by(force simp add:rel_list_all2_Cons2)
+qed simp_all
 (*>*)
 
 theorem assumes wf: "wf_J_prog P"
@@ -1306,26 +1353,29 @@ by(cases b) (auto simp:wf_config_def sconf_def)
 (*>*)
 
 corollary TypeSafety:
-  "\<lbrakk> wf_J_prog P; P,E \<turnstile> s \<surd>; P,E \<turnstile> e::T; \<D> e \<lfloor>dom(lcl s)\<rfloor>;
-     iconf (shp s) e; P,(shp s) \<turnstile>\<^sub>b (e,b) \<surd>;
-     P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>; \<not>(\<exists>e'' s'' b''. P \<turnstile> \<langle>e',s',b'\<rangle> \<rightarrow> \<langle>e'',s'',b''\<rangle>) \<rbrakk>
- \<Longrightarrow> (\<exists>v. e' = Val v \<and> P,hp s' \<turnstile> v :\<le> T) \<or>
+fixes s::state and e::expr
+assumes wf: "wf_J_prog P" and sconf: "P,E \<turnstile> s \<surd>" and wt: "P,E \<turnstile> e::T"
+  and \<D>: "\<D> e \<lfloor>dom(lcl s)\<rfloor>"
+  and iconf: "iconf (shp s) e" and bconf: "P,(shp s) \<turnstile>\<^sub>b (e,b) \<surd>"
+  and steps: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle>"
+  and nstep: "\<not>(\<exists>e'' s'' b''. P \<turnstile> \<langle>e',s',b'\<rangle> \<rightarrow> \<langle>e'',s'',b''\<rangle>)"
+shows "(\<exists>v. e' = Val v \<and> P,hp s' \<turnstile> v :\<le> T) \<or>
       (\<exists>a. e' = Throw a \<and> a \<in> dom(hp s'))"
 (*<*)
-apply(subgoal_tac "wwf_J_prog P")
- prefer 2 apply(rule wf_prog_wwf_prog, simp)
-apply(subgoal_tac " P,E,s \<turnstile> e:T \<surd>")
- prefer 2
- apply(fastforce simp:wf_config_def dest:WT_implies_WTrt)
-apply(frule (2) Subject_reductions)
-apply(erule exE conjE)+
-apply(frule (2) Red_preserves_defass)
-apply(frule (3) Red_preserves_bconf)
-apply(subgoal_tac "final e'")
- prefer 2
- apply(blast dest: Progress)
-apply (fastforce simp:wf_config_def final_def conf_def dest: Progress)
-done
+proof -
+  have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog[OF wf])
+  have wfc: "P,E,s \<turnstile> e:T \<surd>" using WT_implies_WTrt[OF wt] sconf iconf
+    by(simp add:wf_config_def)
+  obtain T' where wfc': "P,E,s' \<turnstile> e' : T' \<surd>" and T': "P \<turnstile> T' \<le> T"
+    using Subject_reductions[OF wf steps wfc] by clarsimp
+  have \<D>': "\<D> e' \<lfloor>dom (lcl s')\<rfloor>"
+    by(rule Red_preserves_defass[OF wf steps \<D>])
+  have bconf': "P,(shp s') \<turnstile>\<^sub>b (e',b') \<surd>"
+    by(rule Red_preserves_bconf[OF wwf steps iconf bconf])
+  have fin': "final e'" using Progress[OF wf wfc' \<D>' bconf'] nstep by blast
+  then show ?thesis using wfc wfc' T'
+    by(fastforce simp:wf_config_def final_def conf_def)
+qed
 (*>*)
 
 

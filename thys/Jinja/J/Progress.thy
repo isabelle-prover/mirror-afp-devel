@@ -91,53 +91,46 @@ inductive_cases WTrt'_elim_cases[elim!]:
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 :' T\<^sub>2 = (\<exists>T\<^sub>1. P,E,h \<turnstile> e\<^sub>1:' T\<^sub>1 \<and> P,E,h \<turnstile> e\<^sub>2:' T\<^sub>2)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)(*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Val v :' T = (typeof\<^bsub>h\<^esub> v = Some T)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)(*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Var v :' T = (E v = Some T)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-done
-(*>*)
+(*<*)by(rule iffI) (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)(*>*)
 
 
 lemma wt_wt': "P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :' T"
 and wts_wts': "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> P,E,h \<turnstile> es [:'] Ts"
 (*<*)
-apply (induct rule:WTrt_inducts)
-prefer 14
-apply(case_tac "assigned V e")
-apply(clarsimp simp add:fun_upd_same assigned_def simp del:fun_upd_apply)
-apply(erule (2) WTrt'_WTrts'.intros)
-apply(erule (1) WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)+
-done
+proof(induct rule:WTrt_inducts)
+  case (WTrtBlock E V T e T')
+  then show ?case
+  proof(cases "assigned V e")
+    case True then show ?thesis using WTrtBlock.hyps(2)
+      by(clarsimp simp add:fun_upd_same assigned_def WTrt'_WTrts'.intros
+                  simp del:fun_upd_apply)
+  next
+    case False then show ?thesis
+      by (simp add: WTrtBlock.hyps(2) WTrt'_WTrts'.intros)
+  qed
+qed (blast intro:WTrt'_WTrts'.intros)+
 (*>*)
 
 
 lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and wts'_wts: "P,E,h \<turnstile> es [:'] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 (*<*)
-apply (induct rule:WTrt'_inducts)
-prefer 16
-apply(rule WTrt_WTrts.intros)
-apply(rule WTrt_WTrts.intros)
-apply(rule WTrt_WTrts.intros)
-apply simp
-apply(erule (2) WTrt_WTrts.intros)
-apply(blast intro:WTrt_WTrts.intros)+
-done
+proof(induct rule:WTrt'_inducts)
+  case Block: (16 v T\<^sub>1 T E V e\<^sub>2 T\<^sub>2)
+  let ?E = "E(V \<mapsto> T)"
+  have "P,?E,h \<turnstile> Val v : T\<^sub>1" using Block.hyps(1) by simp
+  moreover have "P \<turnstile> T\<^sub>1 \<le> T" by(rule Block.hyps(2))
+  ultimately have "P,?E,h \<turnstile> V:=Val v : Void" using WTrtLAss by simp
+  moreover have "P,?E,h \<turnstile> e\<^sub>2 : T\<^sub>2" by(rule Block.hyps(4))
+  ultimately have "P,?E,h \<turnstile> V:=Val v;; e\<^sub>2 : T\<^sub>2" by blast
+  then show ?case by simp
+qed (blast intro:WTrt_WTrts.intros)+
 (*>*)
 
 

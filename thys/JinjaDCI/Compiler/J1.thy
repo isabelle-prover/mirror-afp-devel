@@ -432,11 +432,17 @@ lemma eval\<^sub>1_final: "P \<turnstile>\<^sub>1 \<langle>e,s\<rangle> \<Righta
 (*<*)by(induct rule:eval\<^sub>1_evals\<^sub>1.inducts, simp_all)(*>*)
 
 
-lemma eval\<^sub>1_final_same: "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>; final e \<rbrakk> \<Longrightarrow> e = e' \<and> s = s'"
+lemma eval\<^sub>1_final_same:
+assumes eval: "P \<turnstile>\<^sub>1 \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" shows "final e \<Longrightarrow> e = e' \<and> s = s'"
 (*<*)
-apply(erule finalE)
- using eval\<^sub>1_cases(3) apply blast
-by (metis eval\<^sub>1_cases(3,17) exp.distinct(101) exp.inject(3) val.distinct(13))
+proof(erule finalE)
+  fix v assume Val: "e = Val v"
+  then show ?thesis using eval eval\<^sub>1_cases(3) by blast
+next
+  fix a assume "e = Throw a"
+  then show ?thesis using eval
+    by (metis eval\<^sub>1_cases(3,17) exp.distinct(101) exp.inject(3) val.distinct(13))
+qed
 (*>*)
 
 subsection "Property preservation"
@@ -450,11 +456,7 @@ and evals\<^sub>1_preserves_len:
 
 lemma evals\<^sub>1_preserves_elen:
   "\<And>es' s s'. P \<turnstile>\<^sub>1 \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> length es = length es'"
-(*<*)
-apply(induct es type:list)
-apply (auto elim:evals\<^sub>1.cases)
-done
-(*>*)
+(*<*)by(induct es type:list) (auto elim:evals\<^sub>1.cases)(*>*)
 
 
 lemma clinit\<^sub>1_loc_pres:
@@ -501,10 +503,21 @@ subsection "Initialization"
 lemma rinit\<^sub>1_throw:
  "P\<^sub>1 \<turnstile>\<^sub>1 \<langle>RI (D,Throw xa) ; Cs \<leftarrow> e,(h, l, sh)\<rangle> \<Rightarrow> \<langle>e',(h', l', sh')\<rangle>
     \<Longrightarrow> e' = Throw xa"
-apply(induct Cs arbitrary: D h l sh h' l' sh')
- apply(drule eval\<^sub>1_cases(20), auto elim: eval\<^sub>1_cases)
-apply(drule eval\<^sub>1_cases(20), auto elim: eval\<^sub>1_cases dest: eval\<^sub>1_final_same simp: final_def)
-done
+proof(induct Cs arbitrary: D h l sh h' l' sh')
+  case Nil then show ?case
+  proof(rule eval\<^sub>1_cases(20)) qed(auto elim: eval\<^sub>1_cases)
+next
+  case (Cons C Cs) show ?case using Cons.prems
+  proof(induct rule: eval\<^sub>1_cases(20))
+    case RInit\<^sub>1: 1
+    then show ?case using Cons.hyps by(auto elim: eval\<^sub>1_cases)
+  next
+    case RInitInitFail\<^sub>1: 2
+    then show ?case using Cons.hyps eval\<^sub>1_final_same final_def by blast
+  next
+    case RInitFailFinal\<^sub>1: 3 then show ?case by simp
+  qed
+qed
 
 lemma rinit\<^sub>1_throwE:
 "P \<turnstile>\<^sub>1 \<langle>RI (C,throw e) ; Cs \<leftarrow> e\<^sub>0,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>

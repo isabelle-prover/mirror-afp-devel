@@ -1349,58 +1349,54 @@ declare sup_state_opt_any_Some [iff]
 declare not_Err_eq [iff]
 
 lemma Load_correct:
-"\<lbrakk> wf_prog wt P;
-    P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-    ins!pc = Load idx; 
-    P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh); 
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Load idx" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-  apply(subgoal_tac "ics = No_ics")
-   prefer 2 apply(cases ics, (auto)[4])
-  apply clarsimp 
-  apply (drule (1) sees_method_fun)
-  apply(fastforce elim!: confTs_confT_sup conf_clinit_diff)
-  done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: confTs_confT_sup conf_clinit_diff)
+qed
 (*>*)
 
 declare [[simproc del: list_to_set_comprehension]]
 
 lemma Store_correct:
-"\<lbrakk> wf_prog wt P;
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C;
-  ins!pc = Store idx;
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M;
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh);
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Store idx" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-  apply(subgoal_tac "ics = No_ics")
-   prefer 2 apply(cases ics, (auto)[4])
-  apply clarsimp 
-  apply (drule (1) sees_method_fun)
-  apply (blast intro!: list_all2_update_cong conf_clinit_diff)+
-  done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by clarsimp (blast intro!: list_all2_update_cong conf_clinit_diff)
+qed
 (*>*)
 
 
 lemma Push_correct:
-"\<lbrakk> wf_prog wt P;
-    P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-    ins!pc = Push v;
-    P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh);
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>" 
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Push v" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-  apply(subgoal_tac "ics = No_ics")
-   prefer 2 apply(cases ics, (auto)[4])
-  apply clarsimp 
-  apply (drule (1) sees_method_fun)
-  apply (blast dest: typeof_lit_conf conf_clinit_diff)+
-  done
-(*>*)
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by clarsimp (blast dest: typeof_lit_conf conf_clinit_diff)
+qed
 
 
 lemma Cast_conf2:
@@ -1408,35 +1404,33 @@ lemma Cast_conf2:
      P \<turnstile> Class C \<le> T'; is_class P C\<rbrakk> 
   \<Longrightarrow> P,h \<turnstile> v :\<le> T'"
 (*<*)
-  apply (unfold cast_ok_def is_refT_def)
-  apply (frule Class_widen)
-  apply (elim exE disjE) 
-     apply simp
-    apply simp
-   apply simp  
-  apply (clarsimp simp: conf_def obj_ty_def)
-  apply (cases v)
-  apply (auto intro: rtrancl_trans)
-  done
+proof -
+  assume "wf_prog ok P" and "P,h \<turnstile> v :\<le> T" and "is_refT T" and
+   "cast_ok P C h v" and wid: "P \<turnstile> Class C \<le> T'" and "is_class P C"
+  then show "P,h \<turnstile> v :\<le> T'" using Class_widen[OF wid]
+    by(cases v)
+      (auto simp: cast_ok_def is_refT_def conf_def obj_ty_def
+            intro: rtrancl_trans)
+qed
 (*>*)
 
 
 lemma Checkcast_correct:
-"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
-    P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-    ins!pc = Checkcast D; 
-    P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>;
-    fst (exec_step P h stk loc C M pc ics frs sh) = None \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Checkcast D" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>" and
+    "fst (exec_step P h stk loc C M pc ics frs sh) = None"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-  apply(subgoal_tac "ics = No_ics")
-   prefer 2 apply(cases ics, (auto)[4])
-  apply (clarsimp simp: wf_jvm_prog_phi_def split: if_split_asm)
-  apply (drule (1) sees_method_fun)
-  apply (blast intro: Cast_conf2 dest: sees_method_fun conf_clinit_diff)
-  done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms
+    by (clarsimp simp: wf_jvm_prog_phi_def split: if_split_asm)
+       (blast intro: Cast_conf2 dest: sees_method_fun conf_clinit_diff)
+qed
 (*>*)
 
 declare split_paired_All [simp del]
@@ -1883,9 +1877,8 @@ proof -
   moreover
   from h frame less suc_pc wf
   have "conf_f P ?h' sh (ST', LT') ins ?f"
-    apply (clarsimp simp: fun_upd_apply conf_def blank_def split_beta)
-    apply (auto intro: confs_hext confTs_hext)
-    done      
+    by (clarsimp simp: fun_upd_apply conf_def blank_def split_beta)
+       (auto intro: confs_hext confTs_hext)      
   moreover
   from h have "h \<unlhd> ?h'" by simp
   with frames have "conf_fs P ?h' sh \<Phi> C M (size Ts) T frs" by (rule conf_fs_hext)
@@ -1948,105 +1941,102 @@ qed
 
 
 lemma Goto_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = Goto branch; 
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Goto branch" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply clarsimp 
-apply (drule (1) sees_method_fun)
-apply (fastforce elim!: conf_clinit_diff)
-done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: conf_clinit_diff)
+qed
 (*>*)
 
 
 lemma IfFalse_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = IfFalse branch; 
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = IfFalse branch" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply clarsimp
-apply (drule (1) sees_method_fun)
-apply (fastforce elim!: conf_clinit_diff)
-done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: conf_clinit_diff)
+qed
 (*>*)
 
 lemma CmpEq_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = CmpEq;
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = CmpEq" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply clarsimp
-apply (drule (1) sees_method_fun)
-apply (fastforce elim!: conf_clinit_diff)
-done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: conf_clinit_diff)
+qed
 (*>*)
 
 lemma Pop_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = Pop;
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Pop" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply clarsimp
-apply (drule (1) sees_method_fun)
-apply (fastforce elim!: conf_clinit_diff)
-done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: conf_clinit_diff)
+qed
 (*>*)
 
 
 lemma IAdd_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = IAdd; 
-  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = IAdd" and
+    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>"
+shows "P,\<Phi> |- \<sigma>' [ok]"
 (*<*)
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply (clarsimp simp: conf_def)
-apply (drule (1) sees_method_fun)
-apply (fastforce elim!: conf_clinit_diff)
-done
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
+    by(fastforce elim!: conf_clinit_diff)
+qed
 (*>*)
 
 
 lemma Throw_correct:
-"\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C; 
-  ins ! pc = Throw; 
-  Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>;
-  fst (exec_step P h stk loc C M pc ics frs sh) = None \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-apply(subgoal_tac "ics = No_ics")
- prefer 2 apply(cases ics, (auto)[4])
-apply simp
-done
+assumes "wf_prog wt P" and
+    mC: "P \<turnstile> C sees M,b:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C" and
+    i: "ins!pc = Throw" and
+    "Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc,ics)#frs, sh)" and
+    cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc,ics)#frs, sh)\<surd>" and
+    "fst (exec_step P h stk loc C M pc ics frs sh) = None"
+shows "P,\<Phi> |- \<sigma>' [ok]"
+(*<*)
+proof -
+  have "ics = No_ics" using mC i cf by(cases ics) auto
+  then show ?thesis using assms by simp
+qed
+(*>*)
 
 text \<open>
   The next theorem collects the results of the sections above,
@@ -2218,22 +2208,29 @@ lemma correct_state_impl_Some_method:
 lemma BV_correct_1 [rule_format]:
 "\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,\<Phi> \<turnstile> \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
-apply (simp only: split_tupled_all exec_1_iff)
-apply (rename_tac xp h frs sh)
-apply (case_tac xp)
- apply (case_tac frs)
-  apply simp
- apply (simp only: split_tupled_all)
- apply hypsubst
- apply (frule correct_state_impl_Some_method)
- apply clarify
- apply (rule step_correct)
-    apply assumption+
-  apply (rule sym)
-  apply assumption+
-apply (case_tac frs)
- apply simp_all
-done
+proof -
+  fix \<sigma> assume wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and cf: "P,\<Phi> \<turnstile> \<sigma>\<surd>"
+  obtain xp h frs sh where \<sigma>[simp]: "\<sigma> = (xp, h, frs, sh)" by(cases \<sigma>) simp
+  have "exec (P, xp, h, frs, sh) = \<lfloor>\<sigma>'\<rfloor> \<longrightarrow> P,\<Phi> |- \<sigma>' [ok]"
+  proof(cases xp)
+    case None
+    with wf cf show ?thesis
+    proof(cases frs)
+      case (Cons fr frs')
+      obtain stk loc C M pc ics where [simp]: "fr = (stk,loc,C,M,pc,ics)" by(cases fr) simp
+      then have cf': "P,\<Phi> |- (None, h, (stk,loc,C,M,pc,ics) # frs', sh) [ok]"
+        using Cons None cf by simp
+      then obtain b mxs mxl\<^sub>0 ins xt Ts T
+       where mC: "P \<turnstile> C sees M, b :  Ts\<rightarrow>T = (mxs, mxl\<^sub>0, ins, xt) in C"
+        using correct_state_impl_Some_method[OF cf'] by clarify
+      show ?thesis using Cons None step_correct[OF wf mC _ cf'] by simp
+    qed simp
+  next
+    case (Some a)
+    then show ?thesis using wf cf by (case_tac frs) simp_all
+  qed
+  then show "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>" by(simp add: exec_1_iff)
+qed
 (*>*)
 
 
@@ -2245,70 +2242,77 @@ theorem progress:
 lemma progress_conform:
   "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,\<Phi> \<turnstile> (xp,h,frs,sh)\<surd>; xp=None; frs\<noteq>[]\<rbrakk> 
   \<Longrightarrow> \<exists>\<sigma>'. P \<turnstile> (xp,h,frs,sh) -jvm\<rightarrow>\<^sub>1 \<sigma>' \<and> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
-apply (drule progress)
- apply assumption
-apply (fast intro: BV_correct_1)
-done
-(*>*)
+(*<*)by (drule (1) progress) (fast intro: BV_correct_1)(*>*)
 
 theorem BV_correct [rule_format]:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<rbrakk> \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>\<surd> \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
-apply (simp only: exec_all_def1)
-apply (erule rtrancl_induct)
- apply simp
-apply clarify
-apply (erule (2) BV_correct_1)
-done
+proof -
+  assume wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
+  then have "(\<sigma>, \<sigma>') \<in> (exec_1 P)\<^sup>*" by (simp only: exec_all_def1)
+  then show ?thesis proof(induct rule: rtrancl_induct)
+    case (step y z)
+    then show ?case by clarify (erule (1) BV_correct_1[OF wf])
+  qed simp
+qed
 (*>*)
 
 lemma hconf_start:   
   assumes wf: "wf_prog wf_mb P"
   shows "P \<turnstile> (start_heap P) \<surd>"
 (*<*)
-  apply (unfold hconf_def)
-  apply (simp add: preallocated_start)
-  apply (clarify)
-  apply (drule sym)
-  apply (unfold start_heap_def)
-  apply (insert wf)
-  apply (auto simp: fun_upd_apply is_class_xcpt split: if_split_asm)
-  done
+proof -
+  {  fix a obj assume assm: "start_heap P a = \<lfloor>obj\<rfloor>"
+     have "P,start_heap P \<turnstile> obj \<surd>" using wf assm[THEN sym]
+      by (unfold start_heap_def)
+         (auto simp: fun_upd_apply is_class_xcpt split: if_split_asm)
+  }
+  then show ?thesis using preallocated_start[of P]
+    by (unfold hconf_def) simp
+qed
 (*>*)
 
 lemma shconf_start:   
   "\<not> is_class P Start \<Longrightarrow> P,start_heap P \<turnstile>\<^sub>s start_sheap \<surd>"
 (*<*)
-  apply (unfold shconf_def)
-  apply (clarsimp simp: preallocated_start fun_upd_apply soconf_def has_field_is_class)
-  done
+ by (unfold shconf_def)
+    (clarsimp simp: preallocated_start fun_upd_apply soconf_def has_field_is_class)
 (*>*)
 
 lemma BV_correct_initial: 
-  shows "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<not>is_class P Start;
-     P \<turnstile> C sees M,Static:[]\<rightarrow>Void = m in C; M \<noteq> clinit;
-     \<Phi>' Start start_m = start_\<phi>\<^sub>m \<rbrakk>
-  \<Longrightarrow> start_prog P C M,\<Phi>' \<turnstile> start_state P \<surd>"
+assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
+  and nStart: "\<not>is_class P Start"
+  and mC: "P \<turnstile> C sees M,Static:[]\<rightarrow>Void = m in C"
+  and nclinit: "M \<noteq> clinit"
+  and \<Phi>: "\<Phi>' Start start_m = start_\<phi>\<^sub>m"
+shows "start_prog P C M,\<Phi>' \<turnstile> start_state P \<surd>"
 (*<*)
-  apply(subgoal_tac "is_class P Object")
-   prefer 2 apply(simp add: wf_jvm_prog_phi_def)
-  apply(subgoal_tac "\<exists>Mm. P \<turnstile> Object sees_methods Mm")
-   prefer 2 apply(fastforce simp: is_class_def dest: sees_methods_Object)
-  apply (cases m)                            
-  apply (unfold  start_state_def)
-  apply (unfold correct_state_def)
-  apply (simp del: defs1)
-  apply (rule conjI)
-   apply (simp add: wf_jvm_prog_phi_def class_add_hconf_wf[OF _ hconf_start] start_heap_nStart)
-  apply (rule conjI)
-   using start_prog_start_shconf apply(simp add: wf_jvm_prog_phi_def)
-  apply (rule conjI)
-   apply(simp add: conf_clinit_def distinct_clinit_def)
-  apply (drule wt_jvm_prog_impl_wt_start, assumption+)
-  apply (unfold conf_f_def wt_start_def)
-  apply (fastforce dest: start_prog_Start_sees_start_method)
-  done
+proof -
+  let ?P = "class_add P (start_class C M)"
+  let ?h = "start_heap P" and ?sh = "[Start \<mapsto> (Map.empty, Done)]"
+  let ?C = Start and ?M = start_m and ?pc = 0 and ?ics = No_ics
+  let ?f = "([], [], ?C, ?M, ?pc, ?ics)" and ?fs = "[]"
+  let ?frs = "?f#?fs"
+  have "is_class P Object" using wf by(simp add: wf_jvm_prog_phi_def)
+  then obtain Mm where Mm: "P \<turnstile> Object sees_methods Mm"
+    by(fastforce simp: is_class_def dest: sees_methods_Object)
+  obtain mxs mxl\<^sub>0 ins xt where
+   mC': "P \<turnstile> C sees M,Static:[]\<rightarrow>Void = (mxs,mxl\<^sub>0,ins,xt) in C"
+    using mC by (cases m) simp
+  have "?P\<turnstile> ?h\<surd>" using wf nStart class_add_hconf_wf[OF _ hconf_start]
+    by (simp add: wf_jvm_prog_phi_def start_heap_nStart)
+  moreover have "?P,?h\<turnstile>\<^sub>s ?sh\<surd>" by(rule start_prog_start_shconf)
+  moreover have "conf_clinit ?P ?sh ?frs"
+    by(simp add: conf_clinit_def distinct_clinit_def)
+  moreover have "\<exists>b Ts T mxs mxl\<^sub>0 is xt \<tau>.
+                    (?P \<turnstile> ?C sees ?M,b:Ts\<rightarrow>T = (mxs,mxl\<^sub>0,is,xt) in ?C)
+             \<and> \<Phi>' ?C ?M ! ?pc = Some \<tau>
+             \<and> conf_f ?P ?h ?sh \<tau> is ?f \<and> conf_fs ?P ?h ?sh \<Phi>' ?C ?M (size Ts) T ?fs"
+    using \<Phi> start_prog_Start_sees_start_method[OF Mm]
+      by (unfold conf_f_def wt_start_def) fastforce
+  ultimately show ?thesis
+    by (simp del: defs1 add: start_state_def correct_state_def)
+qed
 
 declare [[simproc add: list_to_set_comprehension]]
 (*>*)

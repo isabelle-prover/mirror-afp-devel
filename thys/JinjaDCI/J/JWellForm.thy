@@ -52,30 +52,21 @@ abbreviation
 lemma wf_J_prog_wf_J_mdecl:
   "\<lbrakk> wf_J_prog P; (C, D, fds, mths) \<in> set P; jmdcl \<in> set mths \<rbrakk>
   \<Longrightarrow> wf_J_mdecl P C jmdcl"
-(*<*)
-apply (simp add: wf_prog_def)
-apply (simp add: wf_cdecl_def)
-apply (erule conjE)+
-apply (drule bspec, assumption)
-apply simp
-apply (erule conjE)+
-apply (drule bspec, assumption)
-apply (simp add: wf_mdecl_def split_beta)
-done
-(*>*)
+(*<*)by(fastforce simp: wf_prog_def wf_cdecl_def wf_mdecl_def)(*>*)
                                   
 lemma wf_mdecl_wwf_mdecl: "wf_J_mdecl P C Md \<Longrightarrow> wwf_J_mdecl P C Md"
 (*<*)
-apply(clarsimp simp:wwf_J_mdecl_def) apply(rename_tac M b Ts T pns body)
-apply (case_tac b)
- by (fastforce dest!:WT_fv)+
+proof -
+  obtain M b Ts T pns body where "Md = (M, b, Ts, T, pns, body)" by(cases Md) simp
+  then show "wf_J_mdecl P C Md \<Longrightarrow> wwf_J_mdecl P C Md"
+    by(case_tac b) (fastforce simp:wwf_J_mdecl_def dest!:WT_fv)+
+qed
 (*>*)
 
 lemma wf_prog_wwf_prog: "wf_J_prog P \<Longrightarrow> wwf_J_prog P"
 (*<*)
-apply(simp add:wf_prog_def wf_cdecl_def wf_mdecl_def)
-apply(fast intro:wf_mdecl_wwf_mdecl)
-done
+by (simp add:wf_prog_def wf_cdecl_def wf_mdecl_def)
+   (fast intro:wf_mdecl_wwf_mdecl)
 (*>*)
 
 

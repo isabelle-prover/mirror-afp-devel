@@ -30,11 +30,9 @@ lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f c)) ts) =
   map_option (\<lambda>(a,b,c).(a,b,f c)) \<circ> (map_of ts)"
 (*<*)
-apply(induct ts)
- apply simp
-apply(rule ext)
-apply fastforce
-done
+proof(induct ts)
+  case Nil then show ?case by simp
+qed fastforce
 (*>*)
 
 
@@ -56,31 +54,45 @@ lemma [simp]: "is_class (compP f P) C = is_class P C"
 
 lemma [simp]: "class (compP f P) C = map_option (\<lambda>c. snd(compC f (C,c))) (class P C)"
 (*<*)
-apply(simp add:compP_def compC_def class_def map_of_map4)
-apply(simp add:split_def)
-done
+by(simp add:compP_def compC_def class_def map_of_map4)
+  (simp add:split_def)
 (*>*)
 
 
 lemma sees_methods_compP:
   "P \<turnstile> C sees_methods Mm \<Longrightarrow>
   compP f P \<turnstile> C sees_methods (map_option (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
-(*<*)
-apply(erule Methods.induct)
- apply(rule sees_methods_Object)
-  apply(erule class_compP)
- apply(rule ext)
- apply(simp add:compM_def map_of_map4 option.map_comp)
- apply(case_tac "map_of ms x")
-  apply simp
- apply fastforce
-apply(rule sees_methods_rec)
-   apply(erule class_compP)
-  apply assumption
- apply assumption
-apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
-done
+(*<*)(is "?P \<Longrightarrow> compP f P \<turnstile> C sees_methods (?map Mm)")
+proof(induct rule: Methods.induct)
+  case Object: (sees_methods_Object D fs ms Mm)
+  let ?Mm1 = "\<lambda>x. map_option ((\<lambda>m. (m, Object)) \<circ> (\<lambda>(Ts, T, m). (Ts, T, f m))) (map_of ms x)"
+  let ?Mm2 = "\<lambda>x. map_option (case_prod (\<lambda>(Ts, T, m).
+                   Pair (Ts, T, f m)) \<circ> (\<lambda>m. (m, Object))) (map_of ms x)"
+  have Mm_eq: "\<And>x. ?Mm1 x = ?Mm2 x"
+  proof -
+    fix x show "?Mm1 x = ?Mm2 x"
+    proof(cases "map_of ms x")
+      case None then show ?thesis by simp
+    qed fastforce
+  qed
+
+  have Mm: "Mm = map_option (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  let ?Mm = "map_option (\<lambda>m. (m, Object)) \<circ> map_of (map (compM f) ms)"
+  let ?Mm' = "?map Mm"
+  have "?Mm' = ?Mm"
+    by(rule ext) (simp add:Mm Mm_eq compM_def map_of_map4 option.map_comp)
+  then show ?case by(rule sees_methods_Object[OF class_compP[OF Object(1)]])
+next
+  case rec: (sees_methods_rec C D fs ms Mm Mm')
+  have Mm': "Mm' = Mm ++ (map_option (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
+  let ?Mm' = "?map Mm'"
+  let ?Mm'' = "(?map Mm) ++ (map_option (\<lambda>m. (m, C)) \<circ> map_of (map (compM f) ms))"
+  have "?Mm' = ?Mm''"
+    by(rule ext) (simp add:Mm' map_add_def compM_def map_of_map4)
+  moreover have "compP f P \<turnstile> C sees_methods ?Mm''"
+    using sees_methods_rec[OF class_compP[OF rec(1)] rec(2,4)] by fast
+  ultimately show "compP f P \<turnstile> C sees_methods ?Mm'" by simp
+qed
 (*>*)
 
 
@@ -94,12 +106,18 @@ lemma [simp]:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
   method (compP f P) C M = (D,Ts,T,f m)"
 (*<*)
-apply(drule sees_method_compP)
-apply(simp add:method_def)
-apply(rule the_equality)
- apply simp
-apply(fastforce dest:sees_method_fun)
-done
+proof -
+  let ?P = "\<lambda>(D, Ts, T, m). compP f P \<turnstile> C sees M:  Ts\<rightarrow>T = m in D"
+  let ?a = "(D, Ts, T, f m)"
+  assume cM: "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
+  have compP_cM: "?P ?a" using sees_method_compP[OF cM] by simp
+  moreover {
+    fix x assume "?P x" then have "x = ?a"
+      using compP_cM by(fastforce dest:sees_method_fun)
+  }
+  ultimately have "(THE x. ?P x) = ?a" by(rule the_equality)
+  then show ?thesis by(simp add:method_def)
+qed
 (*>*)
 
 
@@ -107,24 +125,51 @@ lemma sees_methods_compPD:
   "\<lbrakk> cP \<turnstile> C sees_methods Mm'; cP = compP f P \<rbrakk> \<Longrightarrow>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and>
         Mm' = (map_option (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
-(*<*)
-apply(erule Methods.induct)
- apply(clarsimp simp:compC_def)
- apply(rule exI)
- apply(rule conjI, erule sees_methods_Object)
- apply(rule refl)
- apply(rule ext)
- apply(simp add:compM_def map_of_map4 option.map_comp)
- apply(case_tac "map_of b x")
-  apply simp
- apply fastforce
-apply(clarsimp simp:compC_def)
-apply(rule exI, rule conjI)
-apply(erule (2) sees_methods_rec)
- apply(rule refl)
-apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
-done
+(*<*)(is "\<lbrakk> ?P; ?Q \<rbrakk> \<Longrightarrow> \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm' = (?map Mm)")
+proof(induct rule: Methods.induct)
+  case Object: (sees_methods_Object D fs ms Mm)
+  then obtain ms' where P_Obj: "class P Object = \<lfloor>(D, fs, ms')\<rfloor>"
+    and ms: "ms = map (compM f) ms'" by(clarsimp simp:compC_def)
+
+  let ?Mm1 = "\<lambda>x. map_option ((\<lambda>m. (m, Object)) \<circ> (\<lambda>(Ts, T, m). (Ts, T, f m))) (map_of ms' x)"
+  let ?Mm2 = "\<lambda>x. map_option (case_prod (\<lambda>(Ts, T, m). Pair (Ts, T, f m)) \<circ> (\<lambda>m. (m, Object)))
+          (map_of ms' x)"
+  have Mm_eq: "\<And>x. ?Mm1 x = ?Mm2 x"
+  proof -
+    fix x show "?Mm1 x = ?Mm2 x"
+    proof(cases "map_of ms' x")
+      case None then show ?thesis by simp
+    qed fastforce
+  qed
+
+  let ?Mm = "map_option (\<lambda>m. (m,Object)) \<circ> map_of ms'"
+  let ?Mm' = "?map ?Mm"
+  have Mm: "Mm = map_option (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  have "P \<turnstile> Object sees_methods ?Mm"
+    using sees_methods_Object[OF P_Obj] by simp
+  moreover have "Mm = ?Mm'"
+    by(rule ext) (simp add:Mm_eq Mm ms compM_def map_of_map4 option.map_comp)
+  ultimately show ?case by fast
+next
+  case rec: (sees_methods_rec C D fs ms Mm Mm')
+  then obtain ms' Mm\<^sub>D where P_D: "class P C = \<lfloor>(D, fs, ms')\<rfloor>"
+     and ms: "ms = map (compM f) ms'" and C_nObj: "C \<noteq> Object"
+     and Mm\<^sub>D: "P \<turnstile> D sees_methods Mm\<^sub>D"
+     and Mm: "Mm = (\<lambda>a. map_option (case_prod (\<lambda>(Ts, T, m). Pair (Ts, T, f m))) (Mm\<^sub>D a))"
+    by(clarsimp simp:compC_def)
+
+  let ?Mm = "Mm\<^sub>D ++ (map_option (\<lambda>m. (m, C)) \<circ> map_of ms')"
+  let ?Mm1 = "Mm ++ (map_option (\<lambda>m. (m, C)) \<circ> map_of ms)"
+  let ?Mm2 = "Mm ++ (map_option (\<lambda>m. (m, C)) \<circ> map_of (map (compM f) ms'))"
+  let ?Mm3 = "?map ?Mm"
+  have "Mm' = ?Mm1" by fact
+  also have "\<dots> = ?Mm2" using ms by simp
+  also have "\<dots> = ?Mm3"
+    by(rule ext)(simp add:Mm map_add_def compM_def map_of_map4)
+  moreover have "P \<turnstile> C sees_methods ?Mm"
+    using sees_methods_rec[OF P_D C_nObj Mm\<^sub>D] by simp
+  ultimately show ?case by fast
+qed
 (*>*)
 
 
@@ -132,12 +177,14 @@ lemma sees_method_compPD:
   "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = fm in D \<Longrightarrow>
   \<exists>m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<and> f m = fm"
 (*<*)
-apply(simp add:Method_def)
-apply clarify
-apply(drule sees_methods_compPD[OF _ refl])
-apply clarsimp
-apply blast
-done
+proof -
+  assume "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = fm in D"
+  then obtain Mm where Mm: "compP f P \<turnstile> C sees_methods Mm"
+     and MmM: "Mm M = \<lfloor>((Ts, T, fm), D)\<rfloor>"
+    by(clarsimp simp:Method_def)
+  show ?thesis using sees_methods_compPD[OF Mm refl] MmM
+    by(fastforce simp: Method_def)
+qed
 (*>*)
 
 
@@ -153,11 +200,10 @@ lemma compP_widen[simp]: "(compP f P \<turnstile> T \<le> T') = (P \<turnstile> 
 
 lemma [simp]: "(compP f P \<turnstile> Ts [\<le>] Ts') = (P \<turnstile> Ts [\<le>] Ts')"
 (*<*)
-apply(induct Ts)
- apply simp
-apply(cases Ts')
-apply(auto simp:fun_of_def)
-done
+proof(induct Ts)
+  case (Cons a Ts)
+  then show ?case by(cases Ts')(auto simp:fun_of_def)
+qed simp
 (*>*)
 
 
@@ -211,19 +257,15 @@ subsection\<open>Invariance of @{term wf_prog} under compilation\<close>
 
 lemma [iff]: "distinct_fst (compP f P) = distinct_fst P"
 (*<*)
-apply(simp add:distinct_fst_def compP_def compC_def)
-apply(induct P)
-apply (auto simp:image_iff)
-done
+by (induct P)
+   (auto simp:distinct_fst_def compP_def compC_def image_iff)
 (*>*)
 
 
 lemma [iff]: "distinct_fst (map (compM f) ms) = distinct_fst ms"
 (*<*)
-apply(simp add:distinct_fst_def compM_def)
-apply(induct ms)
-apply (auto simp:image_iff)
-done
+by (induct ms)
+   (auto simp:distinct_fst_def compM_def image_iff)
 (*>*)
 
 
@@ -248,17 +290,47 @@ lemma wf_cdecl_compPI:
     \<forall>x\<in>set P. wf_cdecl wf\<^sub>1 P x; x \<in> set (compP f P); wf_prog p P \<rbrakk>
   \<Longrightarrow> wf_cdecl wf\<^sub>2 (compP f P) x"
 (*<*)
-apply(clarsimp simp add:wf_cdecl_def Ball_def set_compP)
-apply(rename_tac C D fs ms)
-apply(rule conjI)
- apply (clarsimp simp:compM_def)
- apply (drule (2) mdecl_visible)
- apply simp
-apply(clarify)
-apply(drule sees_method_compPD[where f = f])
-apply clarsimp 
-apply(fastforce simp:image_iff compM_def)
-done
+proof -
+  assume
+   wfm: "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^sub>1 P C (M,Ts,T,m); P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<rbrakk>
+     \<Longrightarrow> wf_mdecl wf\<^sub>2 (compP f P) C (M,Ts,T, f m)"
+    and wfc: "\<forall>x\<in>set P. wf_cdecl wf\<^sub>1 P x"
+    and compP: "x \<in> set (compP f P)" and wf: "wf_prog p P"
+  obtain C D fs ms where x: "x = (C, D, fs, map (compM f) ms)"
+    and x_set: "(C, D, fs, ms) \<in> set P"
+   using compP by(case_tac x) (clarsimp simp: set_compP)
+  have wfc': "wf_cdecl wf\<^sub>1 P (C, D, fs, ms)" using wfc x_set by fast
+  let ?P = "compP f P" and ?ms = "compM f ` set ms"
+  { fix M Ts T m
+    assume M: "(M,Ts,T,m) \<in> set ms"
+    then have "wf_mdecl wf\<^sub>1 P C (M, Ts, T, m)" using wfc'
+      by(simp add:wf_cdecl_def)
+    moreover have cM: "P \<turnstile> C sees M :  Ts\<rightarrow>T = m in C" using M
+      by(rule mdecl_visible[OF wf x_set])
+    ultimately have "wf_mdecl wf\<^sub>2 (compP f P) C (M, Ts, T, f m)"
+      by(rule wfm)
+  }
+  then have "\<forall>m \<in> ?ms. wf_mdecl wf\<^sub>2 ?P C m"
+    by (clarsimp simp:compM_def)
+  moreover have "C \<noteq> Object \<longrightarrow>
+   (\<forall>(M,Ts,T,m)\<in>?ms.
+      \<forall>D' Ts' T' m'. ?P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow>
+                       P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')"
+  proof -
+    { fix M Ts T m D' Ts' T' m'
+      assume "C \<noteq> Object" and "(M,Ts,T,m)\<in>?ms"
+        and dM: "?P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D'"
+      then have "P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'"
+       using wfc' sees_method_compPD[OF dM]
+        by(fastforce simp:wf_cdecl_def image_iff compM_def)
+    }
+    then show ?thesis by fast
+  qed
+  moreover have "(\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and> distinct_fst ms
+     \<and> (C \<noteq> Object \<longrightarrow> is_class P D \<and> \<not> P \<turnstile> D \<preceq>\<^sup>* C)" using wfc'
+    by(simp add: wf_cdecl_def)
+  ultimately show ?thesis using x by(simp add:wf_cdecl_def)
+qed
 (*>*)
 
 

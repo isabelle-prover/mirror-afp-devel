@@ -32,10 +32,10 @@ lemma [iff]: "\<not> P \<turnstile> Object \<prec>\<^sup>1 C"
 
 lemma [iff]: "(P \<turnstile> Object \<preceq>\<^sup>* C) = (C = Object)"
 (*<*)
-apply(rule iffI)
- apply(erule converse_rtranclE)
-  apply simp_all
-done
+proof(rule iffI)
+ assume "P \<turnstile> Object \<preceq>\<^sup>* C" then show "C = Object"
+  by(auto elim: converse_rtranclE)
+qed simp
 (*>*)
 
 lemma subcls1_def2:
@@ -47,11 +47,17 @@ lemma subcls1_def2:
 
 lemma finite_subcls1: "finite (subcls1 P)"
 (*<*)
-apply (simp add: subcls1_def2)
-apply(rule finite_SigmaI [OF finite_is_class])
-apply(rule_tac B = "{fst (the (class P C))}" in finite_subset)
-apply  auto
-done
+proof -
+  let ?SIG = "SIGMA C:{C. is_class P C}. {D. fst (the (class P C)) = D \<and> C \<noteq> Object}"
+  have "subcls1 P = ?SIG" by(simp add: subcls1_def2)
+  also have "finite ?SIG"
+  proof(rule finite_SigmaI [OF finite_is_class])
+    fix C assume C_in: "C \<in> {C. is_class P C}"
+    then show "finite {D. fst (the (class P C)) = D \<and> C \<noteq> Object}"
+     by(rule_tac finite_subset[where B = "{fst (the (class P C))}"]) auto
+  qed
+  ultimately show ?thesis by simp
+qed
 (*>*)
 (*
 lemma subcls_is_class: "(C,D) \<in> (subcls1 P)\<^sup>+ \<Longrightarrow> is_class P C"
@@ -105,24 +111,20 @@ lemma [iff]: "(P \<turnstile> Integer \<le> T) = (T = Integer)"
 
 lemma Class_widen: "P \<turnstile> Class C \<le> T  \<Longrightarrow>  \<exists>D. T = Class D"
 (*<*)
-apply (ind_cases "P \<turnstile> Class C \<le> T")
-apply auto
-done
+by (ind_cases "P \<turnstile> Class C \<le> T") auto
 (*>*)
 
 lemma [iff]: "(P \<turnstile> T \<le> NT) = (T = NT)"
 (*<*)
-apply(cases T)
-apply(auto dest:Class_widen)
-done
+by(cases T) (auto dest:Class_widen)
 (*>*)
 
 lemma Class_widen_Class [iff]: "(P \<turnstile> Class C \<le> Class D) = (P \<turnstile> C \<preceq>\<^sup>* D)"
 (*<*)
-apply (rule iffI)
-apply (ind_cases "P \<turnstile> Class C \<le> Class D")
-apply (auto elim: widen_subcls)
-done
+proof(rule iffI)
+  show "P \<turnstile> Class C \<le> Class D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
+  proof(ind_cases "P \<turnstile> Class C \<le> Class D") qed(auto)
+qed(auto elim: widen_subcls)
 (*>*)
 
 lemma widen_Class: "(P \<turnstile> T \<le> Class C) = (T = NT \<or> (\<exists>D. T = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* C))"
@@ -296,18 +298,27 @@ lemma sees_method_idemp:
  (*<*)by(fastforce simp: Method_def intro:sees_methods_idemp)(*>*)
 
 lemma sees_method_decl_mono:
-  "\<lbrakk> P \<turnstile> C' \<preceq>\<^sup>* C; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D;
-     P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<rbrakk> \<Longrightarrow> P \<turnstile> D' \<preceq>\<^sup>* D"
+assumes sub: "P \<turnstile> C' \<preceq>\<^sup>* C" and
+        C_sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=m in D" and
+        C'_sees: "P \<turnstile> C' sees M:Ts'\<rightarrow>T'=m' in D'"
+shows   "P \<turnstile> D' \<preceq>\<^sup>* D"
  (*<*)
-apply(frule sees_method_decl_above)
-apply(unfold Method_def)
-apply clarsimp
-apply(drule (1) sees_methods_decl_mono)
-apply clarsimp
-apply(drule (1) sees_methods_fun)
-apply clarsimp
-apply(blast intro:rtrancl_trans)
-done
+proof -
+  obtain Ms where Ms: "P \<turnstile> C sees_methods Ms"
+    using C_sees by(auto simp: Method_def)
+  obtain Ms' Ms2 where Ms': "P \<turnstile> C' sees_methods Ms'" and
+     Ms'_def: "Ms' = Ms ++ Ms2" and
+     Ms2_imp: "(\<forall>M m D. Ms2 M = \<lfloor>(m, D)\<rfloor> \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C)"
+    using sees_methods_decl_mono[OF sub Ms] by clarsimp
+  have "(Ms ++ Ms2) M = \<lfloor>((Ts', T', m'), D')\<rfloor>"
+    using C'_sees sees_methods_fun[OF Ms'] Ms'_def by(clarsimp simp: Method_def)
+  then have "Ms2 M = \<lfloor>((Ts', T', m'), D')\<rfloor> \<or>
+             Ms2 M = None \<and> Ts = Ts' \<and> T = T' \<and> m = m' \<and> D = D'"
+    using C_sees sees_methods_fun[OF Ms] by(clarsimp simp: Method_def)
+  also have "Ms2 M = \<lfloor>((Ts', T', m'), D')\<rfloor> \<Longrightarrow> P \<turnstile> D' \<preceq>\<^sup>* C"
+    using Ms2_imp by simp
+  ultimately show ?thesis using sub sees_method_decl_above[OF C_sees] by auto
+qed
 (*>*)
 
 lemma sees_method_is_class:
@@ -357,14 +368,20 @@ assumes sub: "P \<turnstile> C has_fields FDTs"
 shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; class P D = Some(D',fs,ms); (F,T) \<in> set fs \<rbrakk>
        \<Longrightarrow> ((F,D),T) \<in> set FDTs"
 (*<*)
-using sub apply(induct)
- apply(simp add:image_def)
- apply(erule converse_rtranclE)
-  apply(force)
- apply(drule subcls1D)
- apply fastforce
-apply(force simp:image_def)
-done
+using sub proof(induct)
+  case (has_fields_rec C D' fs ms FDTs FDTs')
+  then have C_D: "P \<turnstile> C \<preceq>\<^sup>* D" by simp
+  then show ?case proof(rule converse_rtranclE)
+    assume "C = D"
+    then show ?case using has_fields_rec by force
+  next
+    fix y assume sub1: "P \<turnstile> C \<prec>\<^sup>1 y" and sub2: "P \<turnstile> y \<preceq>\<^sup>* D"
+    then show ?case using has_fields_rec subcls1D[OF sub1] by simp
+  qed
+next
+  case (has_fields_Object D fs ms FDTs)
+  then show ?case by force
+qed
 (*>*)
 
 
@@ -372,14 +389,22 @@ lemma has_fields_decl_above:
 assumes fields: "P \<turnstile> C has_fields FDTs"
 shows "((F,D),T) \<in> set FDTs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
-using fields apply(induct)
- prefer 2 apply fastforce
-apply clarsimp
-apply(erule disjE)
- apply(clarsimp simp add:image_def)
-apply simp
-apply(blast dest:subcls1I converse_rtrancl_into_rtrancl)
-done
+using fields proof(induct)
+  case (has_fields_rec C D' fs ms FDTs FDTs')
+  then have "((F, D), T) \<in> (\<lambda>x. case x of (F, x) \<Rightarrow> ((F, C), x)) ` set fs \<or>
+    ((F, D), T) \<in> set FDTs" by clarsimp
+  then show ?case proof(rule disjE)
+    assume "((F, D), T) \<in> (\<lambda>x. case x of (F, x) \<Rightarrow> ((F, C), x)) ` set fs"
+    then show ?case using has_fields_rec by clarsimp
+  next
+    assume "((F, D), T) \<in> set FDTs"
+    then show ?case using has_fields_rec
+     by(blast dest:subcls1I converse_rtrancl_into_rtrancl)
+  qed
+next
+  case (has_fields_Object D fs ms FDTs)
+  then show ?case by fastforce
+qed
 (*>*)
 
 
@@ -387,18 +412,33 @@ lemma subcls_notin_has_fields:
 assumes fields: "P \<turnstile> C has_fields FDTs"
 shows "((F,D),T) \<in> set FDTs \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
 (*<*)
-using fields apply(induct)
- prefer 2 apply(fastforce dest: tranclD)
-apply clarsimp
-apply(erule disjE)
- apply(clarsimp simp add:image_def)
- apply(drule tranclD)
- apply clarify
- apply(frule subcls1D)
- apply(fastforce dest:all_fields_in_has_fields)
-apply simp
-apply(blast dest:subcls1I trancl_into_trancl)
-done
+using fields proof(induct)
+  case (has_fields_rec C D' fs ms FDTs FDTs')
+  then have "((F, D), T) \<in> (\<lambda>x. case x of (F, x) \<Rightarrow> ((F, C), x)) ` set fs
+               \<or> ((F, D), T) \<in> set FDTs" by clarsimp
+  then show ?case proof(rule disjE)
+    assume "((F, D), T) \<in> (\<lambda>x. case x of (F, x) \<Rightarrow> ((F, C), x)) ` set fs"
+    then have CD[simp]: "C = D" and fs: "(F, T) \<in> set fs" by clarsimp+
+    then have "(D, D) \<in> (subcls1 P)\<^sup>+ \<Longrightarrow> False" proof -
+      assume DD: "(D, D) \<in> (subcls1 P)\<^sup>+"
+      obtain z where z1: "P \<turnstile> D \<prec>\<^sup>1 z" and z_s: "P \<turnstile> z \<preceq>\<^sup>* D"
+        using tranclD[OF DD] by clarsimp
+      have [simp]: "z = D'" using subcls1D[OF z1] has_fields_rec.hyps(1) by clarsimp
+      then have "((F, D), T) \<in> set FDTs"
+        using z_s all_fields_in_has_fields[OF has_fields_rec.hyps(3) _ has_fields_rec.hyps(1) fs]
+         by simp
+      then have "(D, z) \<notin> (subcls1 P)\<^sup>+" using has_fields_rec.hyps(4) by simp
+      then show False using z1 by auto
+    qed
+    then show ?case by clarsimp
+  next
+    assume "((F, D), T) \<in> set FDTs"
+    then show ?case using has_fields_rec by(blast dest:subcls1I trancl_into_trancl)
+  qed
+next
+  case (has_fields_Object D fs ms FDTs)
+  then show ?case by(fastforce dest: tranclD)
+qed
 (*>*)
 
 
@@ -407,24 +447,25 @@ assumes sub: "P \<turnstile> D \<preceq>\<^sup>* C"
 shows "P \<turnstile> C has_fields FDTs
          \<Longrightarrow> \<exists>pre. P \<turnstile> D has_fields pre@FDTs \<and> dom(map_of pre) \<inter> dom(map_of FDTs) = {}"
 (*<*)
-using sub apply(induct rule:converse_rtrancl_induct)
- apply(rule_tac x = "[]" in exI)
- apply simp
-apply clarsimp
-apply(rename_tac D' D pre)
-apply(subgoal_tac "(D',C) : (subcls1 P)^+")
- prefer 2 apply(erule (1) rtrancl_into_trancl2)
-apply(drule subcls1D)
-apply clarsimp
-apply(rename_tac fs ms)
-apply(drule (2) has_fields_rec)
- apply(rule refl)
-apply(rule_tac x = "map (\<lambda>(F,T). ((F,D'),T)) fs @ pre" in exI)
-apply simp
-apply(simp add:Int_Un_distrib2)
-apply(rule equals0I)
-apply(auto dest: subcls_notin_has_fields simp:dom_map_of_conv_image_fst image_def)
-done
+using sub proof(induct rule:converse_rtrancl_induct)
+  case base
+  then show ?case by(rule_tac x = "[]" in exI) simp
+next
+  case (step D' D)
+  then obtain pre where D_flds: "P \<turnstile> D has_fields pre @ FDTs" and
+    dom: "dom (map_of pre) \<inter> dom (map_of FDTs) = {}" by clarsimp
+  have "(D',C) \<in> (subcls1 P)^+" by (rule rtrancl_into_trancl2[OF step.hyps(1,2)])
+  obtain fs ms where D'_cls: "class P D' = \<lfloor>(D, fs, ms)\<rfloor>" "D' \<noteq> Object"
+    using subcls1D[OF step.hyps(1)] by clarsimp+
+  have "P \<turnstile> D' has_fields map (\<lambda>(F, T). ((F, D'), T)) fs @ pre @ FDTs"
+    using has_fields_rec[OF D'_cls D_flds] by simp
+  also have "dom (map_of (map (\<lambda>(F, T). ((F, D'), T)) fs @ pre))
+                 \<inter> dom (map_of FDTs) = {}"
+    using dom subcls_notin_has_fields[OF D_flds, where D=D'] step.hyps(1)
+      by(auto simp:dom_map_of_conv_image_fst) fast
+  ultimately show ?case
+    by(rule_tac x = "map (\<lambda>(F,T). ((F,D'),T)) fs @ pre" in exI) simp
+qed
 (*>*)
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
@@ -435,12 +476,17 @@ where
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some T"
 
 lemma has_field_mono:
-  "\<lbrakk> P \<turnstile> C has F:T in D; P \<turnstile> C' \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> P \<turnstile> C' has F:T in D"
+assumes has: " P \<turnstile> C has F:T in D" and sub: "P \<turnstile> C' \<preceq>\<^sup>* C"
+shows "P \<turnstile> C' has F:T in D"
 (*<*)
-apply(clarsimp simp:has_field_def)
-apply(drule (1) has_fields_mono_lem)
-apply(fastforce simp: map_add_def split:option.splits)
-done
+proof -
+  obtain FDTs where FDTs:"P \<turnstile> C has_fields FDTs" and "map_of FDTs (F, D) = \<lfloor>T\<rfloor>"
+    using has by(clarsimp simp: has_field_def)
+  also obtain pre where "P \<turnstile> C' has_fields pre @ FDTs"
+     and "dom (map_of pre) \<inter> dom (map_of FDTs) = {}"
+    using has_fields_mono_lem[OF sub FDTs] by clarify
+  ultimately show ?thesis by(fastforce simp: has_field_def map_add_def split:option.splits)
+qed
 (*>*)
 
 
@@ -469,31 +515,32 @@ lemma sees_field_fun:
 lemma sees_field_decl_above:
   "P \<turnstile> C sees F:T in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
-apply(auto simp:sees_field_def)
-apply(blast  intro: has_fields_decl_above map_of_SomeD map_of_remap_SomeD)
-done
+by(auto simp:sees_field_def
+        intro: has_fields_decl_above map_of_SomeD map_of_remap_SomeD)
 (*>*)
 
-(* FIXME ugly *)  
 lemma sees_field_idemp:
-  "P \<turnstile> C sees F:T in D \<Longrightarrow> P \<turnstile> D sees F:T in D"
+assumes sees: "P \<turnstile> C sees F:T in D"
+shows "P \<turnstile> D sees F:T in D"
 (*<*)
-  apply (unfold sees_field_def)
-  apply clarsimp
-  apply (rule_tac P = "map_of xs F = y" for xs y in mp)
-   prefer 2 
-   apply assumption 
-  apply (thin_tac "map_of xs F = y" for xs y)
-  apply (erule Fields.induct)
-   apply clarsimp
-   apply (frule map_of_SomeD)
-   apply clarsimp
-   apply (fastforce intro: has_fields_rec)
-  apply clarsimp
-  apply (frule map_of_SomeD)
-  apply clarsimp
-  apply (fastforce intro: has_fields_Object)
-  done
+proof -
+  obtain FDTs where C_flds: "P \<turnstile> C has_fields FDTs"
+     and FDTs: "map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor>"
+     (is "?FDTs")
+   using sees by(clarsimp simp: sees_field_def)
+  have map: "\<And>C' fs. map_of (map ((\<lambda>((F, D), a). (F, D, a)) \<circ> (\<lambda>(F, y). ((F, C'), y))) fs) F 
+              = \<lfloor>(D, T)\<rfloor> \<Longrightarrow> C' = D \<and> (F, T) \<in> set fs"
+    by(frule map_of_SomeD) clarsimp
+  have "?FDTs \<longrightarrow> P \<turnstile> D sees F:T in D"
+  using C_flds proof induct
+    case NObj: has_fields_rec
+    then show ?case using map by (fastforce intro: has_fields_rec simp: sees_field_def)
+  next
+    case Obj: has_fields_Object
+    then show ?case using map by(fastforce intro: has_fields_Object simp: sees_field_def)
+  qed
+  then show ?thesis using FDTs by(rule mp)
+qed
 (*>*)
 
 subsection "Functional lookup"

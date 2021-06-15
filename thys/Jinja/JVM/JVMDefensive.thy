@@ -169,17 +169,23 @@ lemma defensive_imp_aggressive:
 (*<*)
 proof -
   have "\<And>x y. P \<turnstile> x -jvmd\<rightarrow> y \<Longrightarrow> \<forall>\<sigma> \<sigma>'. x = Normal \<sigma> \<longrightarrow> y = Normal \<sigma>' \<longrightarrow>  P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
-    apply (unfold exec_all_d_def1)
-    apply (erule rtrancl_induct)
-     apply (simp add: exec_all_def)
-    apply (fold exec_all_d_def1)
-    apply simp
-    apply (intro allI impI)
-    apply (erule exec_1_d.cases, simp)
-    apply (simp add: exec_all_def exec_d_def split: type_error.splits if_split_asm)
-    apply (rule rtrancl_trans, assumption)
-    apply blast
-    done
+  proof -
+    fix x y assume xy: "P \<turnstile> x -jvmd\<rightarrow> y"
+    then have "(x, y) \<in> (exec_1_d P)\<^sup>*" by (unfold exec_all_d_def1)
+    then show "\<forall>\<sigma> \<sigma>'. x = Normal \<sigma> \<longrightarrow> y = Normal \<sigma>' \<longrightarrow>  P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
+    proof(induct rule: rtrancl_induct)
+      case base
+      then show ?case by (simp add: exec_all_def)
+    next
+      case (step y' z')
+      show ?case proof(induct rule: exec_1_d.cases[OF step.hyps(2)])
+        case (2 \<sigma> \<sigma>')
+        then have "(\<sigma>, \<sigma>') \<in> {(\<sigma>, \<sigma>'). exec (P, \<sigma>) = \<lfloor>\<sigma>'\<rfloor>}\<^sup>*" using step
+          by(fastforce simp: exec_d_def split: type_error.splits if_split_asm)
+        then show ?case using step 2 by (auto simp: exec_all_def)
+      qed simp
+    qed
+  qed
   moreover
   assume "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>')" 
   ultimately

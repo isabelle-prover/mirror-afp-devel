@@ -39,11 +39,8 @@ declare drop_drop[simp del]
 
 lemma [simp]: "P,C,M,pc \<rhd> (is\<^sub>1 @ is\<^sub>2) = (P,C,M,pc \<rhd> is\<^sub>1 \<and> P,C,M,pc + size is\<^sub>1 \<rhd> is\<^sub>2)"
 (*<*)
-apply(simp add:before_def prefix_def)
-apply(subst add.commute)
-apply(simp add: drop_drop[symmetric])
-apply fastforce
-done
+by(subst add.commute)
+  (fastforce simp add:before_def prefix_def drop_drop[symmetric])
 (*>*)
 
 (*<*)
@@ -59,9 +56,8 @@ lemma beforeM:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D \<Longrightarrow>
   compP\<^sub>2 P,D,M,0 \<rhd> compE\<^sub>2 body @ [Return]"
 (*<*)
-apply(drule sees_method_idemp)
-apply(simp add:before_def compP\<^sub>2_def compMb\<^sub>2_def)
-done
+by(drule sees_method_idemp)
+  (simp add:before_def compP\<^sub>2_def compMb\<^sub>2_def)
 (*>*)
 
 text\<open>This lemma executes a single instruction by rewriting:\<close>
@@ -72,9 +68,8 @@ lemma [simp]:
   ((None, h, (vs,ls,C,M,pc) # frs) = \<sigma>' \<or>
    (\<exists>\<sigma>. exec(P,(None, h, (vs,ls,C,M,pc) # frs)) = Some \<sigma> \<and> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'))"
 (*<*)
-apply(simp only: exec_all_def)
-apply(blast intro: converse_rtranclE converse_rtrancl_into_rtrancl)
-done
+by(simp only: exec_all_def)
+  (blast intro: converse_rtranclE converse_rtrancl_into_rtrancl)
 (*>*)
 
 
@@ -88,10 +83,31 @@ lemma pcs_subset:
 shows "\<And>pc d. pcs(compxE\<^sub>2 e pc d) \<subseteq> {pc..<pc+size(compE\<^sub>2 e)}"
 and "\<And>pc d. pcs(compxEs\<^sub>2 es pc d) \<subseteq> {pc..<pc+size(compEs\<^sub>2 es)}"
 (*<*)
-apply(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
-apply (simp_all add:pcs_def)
-apply (fastforce split:bop.splits)+
-done
+proof(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
+  case Cast then show ?case by (fastforce simp:pcs_def)
+next
+  case BinOp then show ?case by (fastforce simp:pcs_def split:bop.splits)
+next
+  case LAss then show ?case by (fastforce simp: pcs_def)
+next
+  case FAcc then show ?case by (fastforce simp: pcs_def)
+next
+  case FAss then show ?case by (fastforce simp: pcs_def)
+next
+  case Call then show ?case by (fastforce simp: pcs_def)
+next
+  case Seq then show ?case by (fastforce simp: pcs_def)
+next
+  case Cond then show ?case by (fastforce simp: pcs_def)
+next
+  case While then show ?case by (fastforce simp: pcs_def)
+next
+  case throw then show ?case by (fastforce simp: pcs_def)
+next
+  case TryCatch then show ?case by (fastforce simp: pcs_def)
+next
+  case Cons_exp then show ?case by (fastforce simp: pcs_def)
+qed (simp_all add:pcs_def)
 (*>*)
 
 
@@ -189,6 +205,16 @@ definition beforex :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Righta
 definition dummyx :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"  ("(2_,_,_ \<triangleright>/ _ '/_,_)" [51,0,0,0,0,51] 50) where
   "P,C,M \<triangleright> xt/I,d \<longleftrightarrow> P,C,M \<rhd> xt/I,d"
 
+abbreviation
+"beforex\<^sub>0 P C M d I xt xt\<^sub>0 xt\<^sub>1
+  \<equiv> ex_table_of P C M = xt\<^sub>0 @ xt @ xt\<^sub>1 \<and> pcs xt\<^sub>0 \<inter> I = {}
+      \<and> pcs xt \<subseteq> I \<and> (\<forall>pc \<in> I. \<forall>C pc' d'. match_ex_table P C pc xt\<^sub>1 = \<lfloor>(pc',d')\<rfloor> \<longrightarrow> d' \<le> d)"
+
+lemma beforex_beforex\<^sub>0_eq:
+ "P,C,M \<rhd> xt / I,d \<equiv> \<exists>xt\<^sub>0 xt\<^sub>1. beforex\<^sub>0 P C M d I xt xt\<^sub>0 xt\<^sub>1"
+using beforex_def by auto
+
+
 lemma beforexD1: "P,C,M \<rhd> xt / I,d \<Longrightarrow> pcs xt \<subseteq> I"
 (*<*)by(auto simp add:beforex_def)(*>*)
 
@@ -205,44 +231,65 @@ lemma beforex_append[simp]:
   "pcs xt\<^sub>1 \<inter> pcs xt\<^sub>2 = {} \<Longrightarrow>
   P,C,M \<rhd> xt\<^sub>1 @ xt\<^sub>2/I,d =
   (P,C,M \<rhd> xt\<^sub>1/I-pcs xt\<^sub>2,d  \<and>  P,C,M \<rhd> xt\<^sub>2/I-pcs xt\<^sub>1,d \<and> P,C,M \<triangleright> xt\<^sub>1@xt\<^sub>2/I,d)"
-(*<*)
-apply(rule iffI)
- prefer 2
- apply(simp add:dummyx_def)
-apply(auto simp add: beforex_def dummyx_def)
- apply(rule_tac x = xt\<^sub>0 in exI)
- apply auto
-apply(rule_tac x = "xt\<^sub>0@xt\<^sub>1" in exI)
-apply auto
-done
+(*<*)(is "?Q \<Longrightarrow> ?P = (?P1 \<and> ?P2 \<and> ?P3)" is "?Q \<Longrightarrow> ?P = ?P123")
+proof -
+  assume pcs: ?Q
+  show ?thesis proof(rule iffI)
+    assume "?P123" then show ?P by(simp add:dummyx_def)
+  next
+    assume hyp: ?P
+    let ?xt = "xt\<^sub>1 @ xt\<^sub>2"
+    let ?beforex = "beforex\<^sub>0 P C M d"
+    obtain xt\<^sub>0 xt\<^sub>1' where beforex: "?beforex I ?xt xt\<^sub>0 xt\<^sub>1'"
+      using hyp by(clarsimp simp: beforex_def)
+    have "\<exists>xt\<^sub>0 xt\<^sub>1'. ?beforex (I - pcs xt\<^sub>2) xt\<^sub>1 xt\<^sub>0 xt\<^sub>1'" \<comment> \<open>?P1\<close>
+      using pcs beforex by(rule_tac x=xt\<^sub>0 in exI) auto
+    moreover have "\<exists>xt\<^sub>0 xt\<^sub>1'. ?beforex (I - pcs xt\<^sub>1) xt\<^sub>2 xt\<^sub>0 xt\<^sub>1'"  \<comment> \<open>?P2\<close>
+      using pcs beforex by(rule_tac x="xt\<^sub>0@xt\<^sub>1" in exI) auto
+    moreover have ?P3 using hyp by(simp add: dummyx_def)
+    ultimately show ?P123 by (simp add: beforex_def)
+  qed
+qed
 (*>*)
 
 
 lemma beforex_appendD1:
-  "\<lbrakk> P,C,M \<rhd> xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)] / I,d;
-    pcs xt\<^sub>1 \<subseteq> J; J \<subseteq> I; J \<inter> pcs xt\<^sub>2 = {} \<rbrakk>
-  \<Longrightarrow> P,C,M \<rhd> xt\<^sub>1 / J,d"
+assumes bx: "P,C,M \<rhd> xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)] / I,d"
+  and pcs: "pcs xt\<^sub>1 \<subseteq> J" and JI: "J \<subseteq> I" and Jpcs: "J \<inter> pcs xt\<^sub>2 = {}"
+shows "P,C,M \<rhd> xt\<^sub>1 / J,d"
 (*<*)
-apply(auto simp:beforex_def)
-apply(rule exI,rule exI,rule conjI, rule refl)
-apply(rule conjI, blast)
-apply(auto)
-apply(subgoal_tac "pc \<notin> pcs xt\<^sub>2")
- prefer 2 apply blast
-apply (auto split:if_split_asm)
-done
+proof -
+  let ?beforex = "beforex\<^sub>0 P C M d"
+  obtain xt\<^sub>0 xt\<^sub>1' where bx': "?beforex I (xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)]) xt\<^sub>0 xt\<^sub>1'"
+    using bx by(clarsimp simp:beforex_def)
+  let ?xt0 = xt\<^sub>0 and ?xt1 = "xt\<^sub>2 @ (f, t, D, h, d) # xt\<^sub>1'"
+  have "pcs xt\<^sub>0 \<inter> J = {}" using bx' JI by blast
+  moreover {
+    fix pc C pc' d' assume pcJ: "pc\<in>J"
+    then have "pc \<notin> pcs xt\<^sub>2" using bx' Jpcs by blast
+    then have "match_ex_table P C pc (xt\<^sub>2 @ (f, t, D, h, d) # xt\<^sub>1')
+                   = \<lfloor>(pc', d')\<rfloor> \<longrightarrow> d' \<le> d"
+      using bx' JI pcJ by (auto split:if_split_asm)
+  }
+  ultimately have "?beforex J xt\<^sub>1 ?xt0 ?xt1" using bx' pcs by simp
+  then show ?thesis using beforex_def by blast
+qed
 (*>*)
 
 
 lemma beforex_appendD2:
-  "\<lbrakk> P,C,M \<rhd> xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)] / I,d;
-    pcs xt\<^sub>2 \<subseteq> J; J \<subseteq> I; J \<inter> pcs xt\<^sub>1 = {} \<rbrakk>
-  \<Longrightarrow> P,C,M \<rhd> xt\<^sub>2 / J,d"
+assumes bx: "P,C,M \<rhd> xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)] / I,d"
+  and pcs: "pcs xt\<^sub>2 \<subseteq> J" and JI: "J \<subseteq> I" and Jpcs: "J \<inter> pcs xt\<^sub>1 = {}"
+shows "P,C,M \<rhd> xt\<^sub>2 / J,d"
 (*<*)
-apply(auto simp:beforex_def)
-apply(rule_tac x = "xt\<^sub>0 @ xt\<^sub>1" in exI)
-apply fastforce
-done
+proof -
+  let ?beforex = "beforex\<^sub>0 P C M d"
+  obtain xt\<^sub>0 xt\<^sub>1' where bx': "?beforex I (xt\<^sub>1 @ xt\<^sub>2 @ [(f,t,D,h,d)]) xt\<^sub>0 xt\<^sub>1'"
+    using bx by(clarsimp simp:beforex_def)
+  then have "\<exists>xt\<^sub>1''. beforex\<^sub>0 P C M d J xt\<^sub>2 (xt\<^sub>0 @ xt\<^sub>1) xt\<^sub>1''"
+    using assms by fastforce
+  then show ?thesis using beforex_def by blast
+qed
 (*>*)
 
 
@@ -250,24 +297,29 @@ lemma beforexM:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D \<Longrightarrow>
   compP\<^sub>2 P,D,M \<rhd> compxE\<^sub>2 body 0 0/{..<size(compE\<^sub>2 body)},0"
 (*<*)
-apply(drule sees_method_idemp)
-apply(drule sees_method_compP[where f = compMb\<^sub>2])
-apply(simp add:beforex_def compP\<^sub>2_def compMb\<^sub>2_def)
-apply(rule_tac x = "[]" in exI)
-using pcs_subset apply fastforce
-done
+proof -
+  assume cM: "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D"
+  let ?xt0 = "[]"
+  have "\<exists>xt1. beforex\<^sub>0 (compP\<^sub>2 P) D M 0 ({..<size(compE\<^sub>2 body)}) (compxE\<^sub>2 body 0 0) ?xt0 xt1"
+    using sees_method_compP[where f = compMb\<^sub>2, OF sees_method_idemp[OF cM]]
+          pcs_subset by(fastforce simp add: compP\<^sub>2_def compMb\<^sub>2_def)
+  then show ?thesis using beforex_def by blast
+qed
 (*>*)
 
 
 lemma match_ex_table_SomeD2:
- "\<lbrakk> match_ex_table P D pc (ex_table_of P C M) = \<lfloor>(pc',d')\<rfloor>;
-    P,C,M \<rhd> xt/I,d; \<forall>x \<in> set xt. \<not> matches_ex_entry P D pc x; pc \<in> I \<rbrakk>
- \<Longrightarrow> d' \<le> d"
+assumes met: "match_ex_table P D pc (ex_table_of P C M) = \<lfloor>(pc',d')\<rfloor>"
+  and bx: "P,C,M \<rhd> xt/I,d"
+  and nmet: "\<forall>x \<in> set xt. \<not> matches_ex_entry P D pc x" and pcI: "pc \<in> I"
+shows "d' \<le> d"
 (*<*)
-apply(auto simp:beforex_def)
-apply(subgoal_tac "pc \<notin> pcs xt\<^sub>0")
-apply auto
-done
+proof -
+  obtain xt\<^sub>0 xt\<^sub>1 where bx': "beforex\<^sub>0 P C M d I xt xt\<^sub>0 xt\<^sub>1"
+    using bx by(clarsimp simp:beforex_def)
+  then have "pc \<notin> pcs xt\<^sub>0" using pcI by blast
+  then show ?thesis using bx' met nmet pcI by simp
+qed
 (*>*)
 
 
@@ -297,15 +349,18 @@ lemma handle_Cons:
 (*<*)by(auto simp:handle_def Suc_diff_le dest: match_ex_table_SomeD2)(*>*)
 
 lemma handle_append:
- "\<lbrakk> P,C,M \<rhd> xt/I,d; d \<le> size vs; pc \<in> I; pc \<notin> pcs xt \<rbrakk> \<Longrightarrow>
-  handle P C M xa h (ws @ vs) ls pc frs = handle P C M xa h vs ls pc frs"
+assumes bx: "P,C,M \<rhd> xt/I,d" and d: "d \<le> size vs"
+  and pcI: "pc \<in> I" and pc_not: "pc \<notin> pcs xt"
+shows "handle P C M xa h (ws @ vs) ls pc frs = handle P C M xa h vs ls pc frs"
 (*<*)
-apply(auto simp:handle_def)
-apply(rename_tac pc' d')
-apply(subgoal_tac "size ws \<le> length ws + length vs - d'")
-apply(simp add:drop_all)
-apply(fastforce dest:match_ex_table_SomeD2 split:nat_diff_split)
-done
+proof -
+  { fix pc' d'
+    assume "match_ex_table P (cname_of h xa) pc (ex_table_of P C M) = \<lfloor>(pc', d')\<rfloor>"
+    then have "length ws \<le> length ws + length vs - d'"
+      using assms by(fastforce dest:match_ex_table_SomeD2 split:nat_diff_split)
+  }
+  then show ?thesis by(simp add: handle_def)
+qed
 (*>*)
 
 

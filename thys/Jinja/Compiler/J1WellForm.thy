@@ -129,28 +129,18 @@ lemma WT\<^sub>1_unique:
   "P,E \<turnstile>\<^sub>1 e :: T\<^sub>1 \<Longrightarrow> (\<And>T\<^sub>2. P,E \<turnstile>\<^sub>1 e :: T\<^sub>2 \<Longrightarrow> T\<^sub>1 = T\<^sub>2)" and
   "P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>1 \<Longrightarrow> (\<And>Ts\<^sub>2. P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>2 \<Longrightarrow> Ts\<^sub>1 = Ts\<^sub>2)"
 (*<*)
-apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
-apply blast
-apply blast
-apply clarsimp
-apply blast
-apply clarsimp
-apply(case_tac bop)
-apply clarsimp
-apply clarsimp
-apply blast
-apply (blast dest:sees_field_idemp sees_field_fun)
-apply blast
-apply (blast dest:sees_method_idemp sees_method_fun)
-apply blast
-apply blast
-apply blast
-apply blast
-apply clarify
-apply blast
-apply blast
-apply blast
-done
+proof(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
+  case WTVal\<^sub>1 then show ?case by clarsimp
+next
+  case (WTBinOp\<^sub>1 E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2 bop T)
+  then show ?case by(case_tac bop) force+
+next
+  case WTFAcc\<^sub>1 then show ?case
+    by (blast dest:sees_field_idemp sees_field_fun)
+next
+  case WTCall\<^sub>1 then show ?case
+    by (blast dest:sees_method_idemp sees_method_fun)
+qed blast+
 (*>*)
 
 
@@ -158,25 +148,21 @@ lemma assumes wf: "wf_prog p P"
 shows WT\<^sub>1_is_type: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
 and "P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> True"
 (*<*)
-apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
-apply simp
-apply simp
-apply (simp add:typeof_lit_is_type)
-apply (blast intro:nth_mem)
-apply(simp split:bop.splits)
-apply simp
-apply (simp add:sees_field_is_type[OF _ wf])
-apply simp
-apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply simp
-apply simp
-apply blast
-apply simp
-apply simp
-apply simp
-apply simp
-apply simp
-done
+proof(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
+  case WTVal\<^sub>1 then show ?case by (simp add:typeof_lit_is_type)
+next
+  case WTVar\<^sub>1 then show ?case by (blast intro:nth_mem)
+next
+  case WTBinOp\<^sub>1 then show ?case by (simp split:bop.splits)
+next
+  case WTFAcc\<^sub>1 then show ?case
+    by (simp add:sees_field_is_type[OF _ wf])
+next
+  case WTCall\<^sub>1 then show ?case
+    by (fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+next
+  case WTCond\<^sub>1 then show ?case by blast
+qed simp+
 (*>*)
 
 

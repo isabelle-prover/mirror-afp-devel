@@ -210,11 +210,7 @@ and evals\<^sub>1_preserves_len:
 
 lemma evals\<^sub>1_preserves_elen:
   "\<And>es' s s'. P \<turnstile>\<^sub>1 \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> length es = length es'"
-(*<*)
-apply(induct es type:list)
-apply (auto elim:evals\<^sub>1.cases)
-done
-(*>*)
+(*<*)by(induct es type:list) (auto elim:evals\<^sub>1.cases)(*>*)
 
 
 lemma eval\<^sub>1_final: "P \<turnstile>\<^sub>1 \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> final e'"

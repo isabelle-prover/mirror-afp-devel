@@ -36,17 +36,7 @@ abbreviation
 lemma wf_J_prog_wf_J_mdecl:
   "\<lbrakk> wf_J_prog P; (C, D, fds, mths) \<in> set P; jmdcl \<in> set mths \<rbrakk>
   \<Longrightarrow> wf_J_mdecl P C jmdcl"
-(*<*)
-apply (simp add: wf_prog_def)
-apply (simp add: wf_cdecl_def)
-apply (erule conjE)+
-apply (drule bspec, assumption)
-apply simp
-apply (erule conjE)+
-apply (drule bspec, assumption)
-apply (simp add: wf_mdecl_def split_beta)
-done
-(*>*)
+(*<*)by(fastforce simp: wf_prog_def wf_cdecl_def wf_mdecl_def)(*>*)
 
 
 lemma wf_mdecl_wwf_mdecl: "wf_J_mdecl P C Md \<Longrightarrow> wwf_J_mdecl P C Md"
@@ -55,9 +45,8 @@ lemma wf_mdecl_wwf_mdecl: "wf_J_mdecl P C Md \<Longrightarrow> wwf_J_mdecl P C M
 
 lemma wf_prog_wwf_prog: "wf_J_prog P \<Longrightarrow> wwf_J_prog P"
 (*<*)
-apply(simp add:wf_prog_def wf_cdecl_def wf_mdecl_def)
-apply(fast intro:wf_mdecl_wwf_mdecl)
-done
+by (simp add:wf_prog_def wf_cdecl_def wf_mdecl_def)
+   (fast intro:wf_mdecl_wwf_mdecl)
 (*>*)
 
 

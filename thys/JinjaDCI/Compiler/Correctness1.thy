@@ -42,10 +42,10 @@ primrec unmod :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
 lemma hidden_unmod: "\<And>Vs. hidden Vs i \<Longrightarrow> unmod (compE\<^sub>1 Vs e) i" and
  "\<And>Vs. hidden Vs i \<Longrightarrow> unmods (compEs\<^sub>1 Vs es) i"
 (*<*)
-apply(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
-apply (simp_all add:hidden_inacc)
-apply(auto simp add:hidden_def)
-done
+proof(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
+  case TryCatch
+  then show ?case by(simp add:hidden_inacc)(auto simp add:hidden_def)
+qed (simp_all add:hidden_inacc)
 (*>*)
 
 
@@ -759,30 +759,23 @@ and  "\<And>Vs Ts Us.
   \<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> es [::] Us; size Ts = size Vs \<rbrakk>
   \<Longrightarrow> compP f P,Ts \<turnstile>\<^sub>1 compEs\<^sub>1 Vs es [::] Us"
 (*<*)
-apply(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
-apply clarsimp
-apply(fastforce)
-apply clarsimp
-apply(fastforce split:bop.splits)
-apply (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
-apply (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
-apply (fastforce dest!: sees_method_compP[where f = f])
-apply (fastforce dest!: sees_method_compP[where f = f])
-apply (fastforce simp:nth_append)
-apply (fastforce)
-apply (fastforce)
-apply (fastforce)
-apply (fastforce)
-apply (fastforce simp:nth_append)
-apply simp
-apply simp
-apply simp
-apply (fastforce)
-done
+proof(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
+  case Var then show ?case
+    by (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
+next
+  case LAss then show ?case
+    by (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
+next
+  case Call then show ?case
+    by (fastforce dest!: sees_method_compP[where f = f])
+next
+  case SCall then show ?case
+    by (fastforce dest!: sees_method_compP[where f = f])
+next
+  case Block then show ?case by (fastforce simp:nth_append)
+next
+  case TryCatch then show ?case by (fastforce simp:nth_append)
+qed fastforce+
 (*>*)
 
 text\<open>\noindent and the correct block numbering: \<close>
@@ -1038,20 +1031,33 @@ qed
 
 lemma compP\<^sub>1_pres_wf: "wf_J_prog P \<Longrightarrow> wf_J\<^sub>1_prog (compP\<^sub>1 P)"
 (*<*)
-apply simp
-apply(rule wf_prog_compPI)
- prefer 2 apply assumption
-apply(case_tac m)
-apply(simp add:wf_mdecl_def wf_J\<^sub>1_mdecl_def)
-apply(clarify) apply(rename_tac C M b Ts T x1 x2 pns body)
-apply(case_tac b)
- apply clarsimp
- apply(frule WT_fv)
- apply(auto intro!: compE\<^sub>1_pres_wt D_compE\<^sub>1 \<B>)[1]
-apply clarsimp
-apply(frule WT_fv)
-apply(fastforce intro!: compE\<^sub>1_pres_wt D_compE\<^sub>1' \<B>)
-done
+proof -
+  assume wf: "wf_J_prog P"
+  let ?f = "(\<lambda>b (pns, body).
+           compE\<^sub>1 (case b of Static \<Rightarrow> pns | NonStatic \<Rightarrow> this # pns) body)"
+  let ?wf\<^sub>2 = "wf_J\<^sub>1_mdecl"
+
+  { fix C M b Ts T m
+    assume cM: "P \<turnstile> C sees M, b :  Ts\<rightarrow>T = m in C"
+      and wfm: "wf_mdecl wf_J_mdecl P C (M, b, Ts, T, m)"
+    obtain pns body where [simp]: "m = (pns, body)" by(cases m) simp
+    let ?E = "\<lambda>b. case b of Static \<Rightarrow> [pns [\<mapsto>] Ts] | NonStatic \<Rightarrow> [pns [\<mapsto>] Ts, this \<mapsto> Class C]"
+    obtain T' where WT: "P,?E b \<turnstile> body :: T'" and subT: "P \<turnstile> T' \<le> T"
+      using wfm by(cases b) (auto simp: wf_mdecl_def)
+    have fv: "fv body \<subseteq> dom (?E b)" by(rule WT_fv[OF WT])
+    have "wf_mdecl ?wf\<^sub>2 (compP ?f P) C (M, b, Ts, T, ?f b m)"
+    proof(cases b)
+      case Static then show ?thesis using cM wfm fv
+        by(auto simp:wf_mdecl_def wf_J\<^sub>1_mdecl_def
+                intro!: compE\<^sub>1_pres_wt D_compE\<^sub>1 \<B>)
+    next
+      case NonStatic then show ?thesis using cM wfm fv
+        by(clarsimp simp add:wf_mdecl_def wf_J\<^sub>1_mdecl_def)
+          (fastforce intro!: compE\<^sub>1_pres_wt D_compE\<^sub>1' \<B>)
+    qed
+  }
+  then show ?thesis by simp (rule wf_prog_compPI[OF _ wf])
+qed
 (*>*)
 
 

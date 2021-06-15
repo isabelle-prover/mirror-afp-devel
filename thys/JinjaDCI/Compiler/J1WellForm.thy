@@ -152,31 +152,24 @@ lemma WT\<^sub>1_unique:
   "P,E \<turnstile>\<^sub>1 e :: T\<^sub>1 \<Longrightarrow> (\<And>T\<^sub>2. P,E \<turnstile>\<^sub>1 e :: T\<^sub>2 \<Longrightarrow> T\<^sub>1 = T\<^sub>2)" and
   WTs\<^sub>1_unique: "P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>1 \<Longrightarrow> (\<And>Ts\<^sub>2. P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>2 \<Longrightarrow> Ts\<^sub>1 = Ts\<^sub>2)"
 (*<*)
-apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
-apply blast
-apply blast
-apply clarsimp
-apply blast
-apply clarsimp
-apply(case_tac bop)
-apply clarsimp
-apply clarsimp
-apply blast
-apply (blast dest:sees_field_idemp sees_field_fun)
-apply (blast dest:sees_field_fun)
-apply blast
-apply (blast dest:sees_field_fun)
-apply (blast dest:sees_method_idemp sees_method_fun)
-apply (blast dest:sees_method_fun)
-apply blast
-apply blast
-apply blast
-apply blast
-apply clarify
-apply blast
-apply blast
-apply blast
-done
+proof(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
+  case WTVal\<^sub>1 then show ?case by clarsimp
+next
+  case (WTBinOp\<^sub>1 E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2 bop T)
+  then show ?case by(case_tac bop) force+
+next
+  case WTFAcc\<^sub>1 then show ?case
+    by (blast dest:sees_field_idemp sees_field_fun)
+next
+  case WTSFAcc\<^sub>1 then show ?case by (blast dest:sees_field_fun)
+next
+  case WTSFAss\<^sub>1 then show ?case by (blast dest:sees_field_fun)
+next
+  case WTCall\<^sub>1 then show ?case
+    by (blast dest:sees_method_idemp sees_method_fun)
+next
+  case WTSCall\<^sub>1 then show ?case by (blast dest:sees_method_fun)
+qed blast+
 (*>*)
 
 
@@ -184,28 +177,27 @@ lemma assumes wf: "wf_prog p P"
 shows WT\<^sub>1_is_type: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
 and "P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> True"
 (*<*)
-apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
-apply simp
-apply simp
-apply (simp add:typeof_lit_is_type)
-apply (blast intro:nth_mem)
-apply(simp split:bop.splits)
-apply simp
-apply (simp add:sees_field_is_type[OF _ wf])
-apply (simp add:sees_field_is_type[OF _ wf])
-apply simp
-apply simp
-apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply simp
-apply simp
-apply blast
-apply simp
-apply simp
-apply simp
-apply simp
-apply simp
-done
+proof(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
+  case WTVal\<^sub>1 then show ?case by (simp add:typeof_lit_is_type)
+next
+  case WTVar\<^sub>1 then show ?case by (blast intro:nth_mem)
+next
+  case WTBinOp\<^sub>1 then show ?case by (simp split:bop.splits)
+next
+  case WTFAcc\<^sub>1 then show ?case
+    by (simp add:sees_field_is_type[OF _ wf])
+next
+  case WTSFAcc\<^sub>1 then show ?case
+    by (simp add:sees_field_is_type[OF _ wf])
+next
+  case WTCall\<^sub>1 then show ?case
+    by (fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+next
+  case WTSCall\<^sub>1 then show ?case
+    by (fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+next
+  case WTCond\<^sub>1 then show ?case by blast
+qed simp+
 (*>*)
 
 lemma WT\<^sub>1_nsub_RI: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> \<not>sub_RI e"
@@ -383,30 +375,26 @@ inductive_cases WTrt\<^sub>1_elim_cases[elim!]:
 lemma WT\<^sub>1_implies_WTrt\<^sub>1: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> P,E,h,sh \<turnstile>\<^sub>1 e : T"
 and WTs\<^sub>1_implies_WTrts\<^sub>1: "P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> P,E,h,sh \<turnstile>\<^sub>1 es [:] Ts"
 (*<*)
-apply(induct rule: WT\<^sub>1_WTs\<^sub>1_inducts)
-apply fast
-apply (fast)
-apply(fastforce dest:typeof_lit_typeof)
-apply(fast)
-apply(rename_tac E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2 bop T) apply(case_tac bop)
- apply(fastforce)
- apply(fastforce)
-apply(fastforce)
-apply(meson WTrtFAcc\<^sub>1 has_visible_field)
-apply(meson WTrtSFAcc\<^sub>1 has_visible_field)
-apply(meson WTrtFAss\<^sub>1 has_visible_field)
-apply(meson WTrtSFAss\<^sub>1 has_visible_field)
-apply(fastforce simp: WTrtCall\<^sub>1)
-apply(fastforce simp: WTrtSCall\<^sub>1)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce simp: WTrtCond\<^sub>1)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
-apply(simp)
-apply(fast)
-done
+proof(induct rule: WT\<^sub>1_WTs\<^sub>1_inducts)
+  case WTVal\<^sub>1 then show ?case by (fastforce dest:typeof_lit_typeof)
+next
+  case (WTBinOp\<^sub>1 E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2 bop T)
+  then show ?case by (case_tac bop) fastforce+
+next
+  case WTFAcc\<^sub>1 then show ?case
+    by (fastforce simp: WTrtFAcc\<^sub>1 has_visible_field)
+next
+  case WTSFAcc\<^sub>1 then show ?case
+    by (fastforce simp: WTrtSFAcc\<^sub>1 has_visible_field)
+next
+  case WTFAss\<^sub>1 then show ?case by (meson WTrtFAss\<^sub>1 has_visible_field)
+next
+  case WTSFAss\<^sub>1 then show ?case by (meson WTrtSFAss\<^sub>1 has_visible_field)
+next
+  case WTCall\<^sub>1 then show ?case by (fastforce simp: WTrtCall\<^sub>1)
+next
+  case WTSCall\<^sub>1 then show ?case by (fastforce simp: WTrtSCall\<^sub>1)
+qed fastforce+
 (*>*)
 
 subsection\<open> Well-formedness\<close>
@@ -468,10 +456,9 @@ lemma wf_J\<^sub>1_mdecl_Static[simp]:
 abbreviation "wf_J\<^sub>1_prog == wf_prog wf_J\<^sub>1_mdecl"
 
 lemma sees_wf\<^sub>1_nsub_RI:
- "\<lbrakk> wf_J\<^sub>1_prog P; P \<turnstile> C sees M,b : Ts\<rightarrow>T = body in D \<rbrakk> \<Longrightarrow> \<not>sub_RI body"
-apply(drule sees_wf_mdecl, simp)
-apply(unfold wf_J\<^sub>1_mdecl_def wf_mdecl_def, simp)
-done
+assumes wf: "wf_J\<^sub>1_prog P" and cM: "P \<turnstile> C sees M,b : Ts\<rightarrow>T = body in D"
+shows "\<not>sub_RI body"
+using sees_wf_mdecl[OF wf cM] by(simp add: wf_J\<^sub>1_mdecl_def wf_mdecl_def)
 
 lemma wf\<^sub>1_types_clinit:
 assumes wf:"wf_prog wf_md P" and ex: "class P C = Some a" and proc: "sh C = \<lfloor>(sfs, Processing)\<rfloor>"
@@ -521,6 +508,7 @@ next
   case (RInitInitFail\<^sub>1 e h l sh a h' l' sh' C1 sfs i sh'' D Cs e\<^sub>1 h1 l1 sh1)
   then show ?case using eval\<^sub>1_final by fastforce
 qed(auto)
+(*>*)
 
 lemma clinit\<^sub>1_proc_pres:
   "\<lbrakk> wf_J\<^sub>1_prog P; P \<turnstile>\<^sub>1 \<langle>C\<^sub>0\<bullet>\<^sub>sclinit([]),(h,l,sh)\<rangle> \<Rightarrow> \<langle>e',(h',l',sh')\<rangle>;

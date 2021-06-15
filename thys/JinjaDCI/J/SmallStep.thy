@@ -471,10 +471,13 @@ lemma [iff]: "\<not> P \<turnstile> \<langle>Throw a,s,b\<rangle> \<rightarrow> 
 
 lemma map_Vals_no_step [iff]: "\<not> P \<turnstile> \<langle>map Val vs,s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
 (*<*)
-apply(induct vs arbitrary: es', simp)
-apply(rule notI)
-apply(erule reds.cases, auto)
-done
+proof(induct vs arbitrary: es')
+  case (Cons a vs)
+  { assume "P \<turnstile> \<langle>map Val (a # vs),s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
+    then have False by(rule reds.cases) (insert Cons, auto)
+  }
+  then show ?case by clarsimp
+qed simp
 (*>*)
 
 lemma vals_no_step: "map_vals_of es = \<lfloor>vs\<rfloor> \<Longrightarrow> \<not> P \<turnstile> \<langle>es,s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
@@ -482,10 +485,19 @@ lemma vals_no_step: "map_vals_of es = \<lfloor>vs\<rfloor> \<Longrightarrow> \<n
 
 lemma vals_throw_no_step [iff]: "\<not> P \<turnstile> \<langle>map Val vs @ Throw a # es,s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
 (*<*)
-apply(induct vs arbitrary: es', auto)
-apply(erule reds.cases, auto)
-apply(erule reds.cases, auto)
-done
+proof(induct vs arbitrary: es')
+  case Nil
+  { assume "P \<turnstile> \<langle>Throw a # es,s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
+    then have False by(rule reds.cases) (insert Cons, auto)
+  }
+  then show ?case by clarsimp
+next
+  case (Cons a' vs')
+  { assume "P \<turnstile> \<langle>map Val (a'#vs') @ Throw a # es,s,b\<rangle> [\<rightarrow>] \<langle>es',s',b'\<rangle>"
+    then have False by(rule reds.cases) (insert Cons, auto)
+  }
+  then show ?case by clarsimp
+qed
 (*>*)
 
 lemma lass_val_of_red:

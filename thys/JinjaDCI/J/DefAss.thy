@@ -61,10 +61,18 @@ lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfl
 (*<*)by(simp add:hyperset_defs)(*>*)
 
 lemma hyper_comm: "A \<squnion> B = B \<squnion> A \<and> A \<squnion> B \<squnion> C = B \<squnion> A \<squnion> C"
-apply(case_tac A, simp, case_tac B, simp)
-apply(case_tac C, simp add: Un_commute)
-apply(simp add: Un_left_commute Un_commute)
-done
+(*<*)
+proof(cases A)
+  case SomeA: Some then show ?thesis
+  proof(cases B)
+    case SomeB: Some with SomeA show ?thesis
+    proof(cases C)
+      case SomeC: Some with SomeA SomeB show ?thesis
+        by(simp add: Un_left_commute Un_commute)
+    qed (simp add: Un_commute)
+  qed simp
+qed simp
+(*>*)
 
 subsection "Definite assignment"
 
@@ -135,10 +143,8 @@ lemma D_append[iff]: "\<And>A. \<D>s (es @ es') A = (\<D>s es A \<and> \<D>s es'
 lemma A_fv: "\<And>A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fv e"
 and  "\<And>A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fvs es"
 (*<*)
-apply(induct e and es rule: \<A>.induct \<A>s.induct)
-apply (simp_all add:hyperset_defs)
-apply blast+
-done
+by (induct e and es rule: \<A>.induct \<A>s.induct)
+   (fastforce simp add:hyperset_defs)+
 (*>*)
 
 
@@ -152,30 +158,27 @@ lemma diff_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<ominus> b \<sqsubseteq
 lemma D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> (e::'a exp) A'"
 and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s (es::'a exp list) A'"
 (*<*)
-apply(induct e and es rule: \<D>.induct \<D>s.induct)
-apply simp
-apply simp
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply (fastforce simp add:hyperset_defs)
-apply simp
-apply simp
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:diff_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-apply simp
-apply simp
-apply simp
-apply simp apply (iprover dest:sqUn_lem)
-done
+proof(induct e and es rule: \<D>.induct \<D>s.induct)
+  case BinOp then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case Var then show ?case by (fastforce simp add:hyperset_defs)
+next
+  case FAss then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case Call then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case Block then show ?case by simp (iprover dest:diff_lem)
+next
+  case Seq then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case Cond then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case While then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case TryCatch then show ?case by simp (iprover dest:sqUn_lem)
+next
+  case Cons_exp then show ?case by simp (iprover dest:sqUn_lem)
+qed simp_all
 (*>*)
 
 (* And this is the order of premises preferred during application: *)
