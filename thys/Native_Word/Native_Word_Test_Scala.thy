@@ -14,7 +14,6 @@ text \<open>
   instances for one of them.
 \<close>
 code_printing class_instance uint32 :: equal \<rightharpoonup> (Scala) -
-code_printing class_instance uint32 :: semiring_bit_syntax \<rightharpoonup> (Scala) -
 
 test_code
   test_uint64 "test_uint64' = 0x12"

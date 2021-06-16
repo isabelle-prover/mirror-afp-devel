@@ -12,7 +12,7 @@ begin
 
 declare iszero_0 [intro]
 
-declare min.absorb1 [simp] min.absorb2 [simp]
+declare min.absorb1 [simp] min.absorb2 [simp] \<comment> \<open>TODO: consider for move to distro; and the same also for max\<close>
 
 lemma n_less_equal_power_2 [simp]:
   "n < 2 ^ n"

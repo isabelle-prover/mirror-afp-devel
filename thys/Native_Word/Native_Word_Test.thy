@@ -6,7 +6,7 @@ chapter \<open>Test cases\<close>
 
 theory Native_Word_Test imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
-  "HOL-Library.Code_Test"
+  "HOL-Library.Code_Test" "Word_Lib.Bit_Shifts_Infix_Syntax"
 begin
 
 section \<open>Tests for @{typ uint32}\<close>
@@ -267,7 +267,7 @@ definition "test_uint \<equiv> let
       , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
       , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
       , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit (- 5) dflt_size True, set_bit (- 5) dflt_size False
-      , 1 << 2, -1 << 3, 1 << dflt_size, 1 << 0
+      , 1 << 2, -1 << 3, push_bit dflt_size 1, 1 << 0
       , 31 >> 3, -1 >> 3, 31 >> dflt_size, -1 >> dflt_size
       , 15 >>> 2, -1 >>> 3, 15 >>> dflt_size, -1 >>> dflt_size]
     else []) :: uint list));
@@ -463,14 +463,14 @@ ML \<open>
 
 definition test_casts_uint :: bool where
   "test_casts_uint \<longleftrightarrow>
-  map uint_of_uint32 ([0, 10] @ (if dflt_size < 32 then [1 << (dflt_size - 1), 0xFFFFFFFF] else [0xFFFFFFFF])) = 
-  [0, 10] @ (if dflt_size < 32 then [1 << (dflt_size - 1), (1 << dflt_size) - 1] else [0xFFFFFFFF]) \<and>
-  map uint32_of_uint [0, 10, if dflt_size < 32 then 1 << (dflt_size - 1) else 0xFFFFFFFF] =
-  [0, 10, if dflt_size < 32 then 1 << (dflt_size - 1) else 0xFFFFFFFF] \<and>
-  map uint_of_uint64 [0, 10, 1 << (dflt_size - 1), 0xFFFFFFFFFFFFFFFF] =
-  [0, 10, 1 << (dflt_size - 1), (1 << dflt_size) - 1] \<and>
-  map uint64_of_uint [0, 10, 1 << (dflt_size - 1)] =
-  [0, 10, 1 << (dflt_size - 1)]"
+  map uint_of_uint32 ([0, 10] @ (if dflt_size < 32 then [push_bit (dflt_size - 1) 1, 0xFFFFFFFF] else [0xFFFFFFFF])) = 
+  [0, 10] @ (if dflt_size < 32 then [push_bit (dflt_size - 1) 1, (push_bit dflt_size 1) - 1] else [0xFFFFFFFF]) \<and>
+  map uint32_of_uint [0, 10, if dflt_size < 32 then push_bit (dflt_size - 1) 1 else 0xFFFFFFFF] =
+  [0, 10, if dflt_size < 32 then push_bit (dflt_size - 1) 1 else 0xFFFFFFFF] \<and>
+  map uint_of_uint64 [0, 10, push_bit (dflt_size - 1) 1, 0xFFFFFFFFFFFFFFFF] =
+  [0, 10, push_bit (dflt_size - 1) 1, (push_bit dflt_size 1) - 1] \<and>
+  map uint64_of_uint [0, 10, push_bit (dflt_size - 1) 1] =
+  [0, 10, push_bit (dflt_size - 1) 1]"
 
 definition test_casts_uint' :: bool where
   "test_casts_uint' \<longleftrightarrow>

@@ -579,7 +579,7 @@ definition instance_Word_WordAnd_Num_int32_dict  :: "( 32 word)WordAnd_class "  
 definition instance_Word_WordLsl_Num_int32_dict  :: "( 32 word)WordLsl_class "  where 
      " instance_Word_WordLsl_Num_int32_dict = ((|
 
-  lsl_method = (<<)|) )"
+  lsl_method = (\<lambda>w n. push_bit n w)|) )"
 
 
 \<comment> \<open>\<open>val int32Lsr  : int32 -> nat -> int32\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -587,7 +587,7 @@ definition instance_Word_WordLsl_Num_int32_dict  :: "( 32 word)WordLsl_class "  
 definition instance_Word_WordLsr_Num_int32_dict  :: "( 32 word)WordLsr_class "  where 
      " instance_Word_WordLsr_Num_int32_dict = ((|
 
-  lsr_method = (>>)|) )"
+  lsr_method = (\<lambda>w n. drop_bit n w)|) )"
 
 
 
@@ -596,7 +596,7 @@ definition instance_Word_WordLsr_Num_int32_dict  :: "( 32 word)WordLsr_class "  
 definition instance_Word_WordAsr_Num_int32_dict  :: "( 32 word)WordAsr_class "  where 
      " instance_Word_WordAsr_Num_int32_dict = ((|
 
-  asr_method = (>>>)|) )"
+  asr_method = (\<lambda>w n. signed_drop_bit n w)|) )"
 
 
 
@@ -641,7 +641,7 @@ definition instance_Word_WordAnd_Num_int64_dict  :: "( 64 word)WordAnd_class "  
 definition instance_Word_WordLsl_Num_int64_dict  :: "( 64 word)WordLsl_class "  where 
      " instance_Word_WordLsl_Num_int64_dict = ((|
 
-  lsl_method = (<<)|) )"
+  lsl_method = (\<lambda>w n. push_bit n w)|) )"
 
 
 \<comment> \<open>\<open>val int64Lsr  : int64 -> nat -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -649,7 +649,7 @@ definition instance_Word_WordLsl_Num_int64_dict  :: "( 64 word)WordLsl_class "  
 definition instance_Word_WordLsr_Num_int64_dict  :: "( 64 word)WordLsr_class "  where 
      " instance_Word_WordLsr_Num_int64_dict = ((|
 
-  lsr_method = (>>)|) )"
+  lsr_method = (\<lambda>w n. drop_bit n w)|) )"
 
 
 \<comment> \<open>\<open>val int64Asr  : int64 -> nat -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -657,7 +657,7 @@ definition instance_Word_WordLsr_Num_int64_dict  :: "( 64 word)WordLsr_class "  
 definition instance_Word_WordAsr_Num_int64_dict  :: "( 64 word)WordAsr_class "  where 
      " instance_Word_WordAsr_Num_int64_dict = ((|
 
-  asr_method = (>>>)|) )"
+  asr_method = (\<lambda>w n. signed_drop_bit n w)|) )"
 
 
 

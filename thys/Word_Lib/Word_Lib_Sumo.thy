@@ -11,6 +11,7 @@ imports
   "HOL-Library.Word"
   Aligned
   Bit_Comprehension
+  Bit_Shifts_Infix_Syntax
   Bits_Int
   Bitwise_Signed
   Bitwise
@@ -32,7 +33,6 @@ imports
   Rsplit
   Signed_Words
   Syntax_Bundles
-  Traditional_Infix_Syntax
   Typedef_Morphisms
   Type_Syntax
   Word_EqI
@@ -97,11 +97,6 @@ lemmas word_prev_def = word_prev_unfold
 
 lemmas is_aligned_def = is_aligned_iff_dvd_nat
 
-lemma shiftl_transfer [transfer_rule]:
-  includes lifting_syntax
-  shows "(pcr_word ===> (=) ===> pcr_word) (<<) (<<)"
-  by (unfold shiftl_eq_push_bit) transfer_prover
-
 lemmas word_and_max_simps =
   word8_and_max_simp
   word16_and_max_simp
@@ -134,6 +129,6 @@ lemmas cast_simps = cast_simps ucast_down_bl
 lemma nth_ucast:
   "(ucast (w::'a::len word)::'b::len word) !! n =
    (w !! n \<and> n < min LENGTH('a) LENGTH('b))"
-  by transfer (simp add: bit_take_bit_iff ac_simps)
+  by (auto simp add: bit_simps not_le dest: bit_imp_le_length)
 
 end

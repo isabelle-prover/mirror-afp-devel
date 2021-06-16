@@ -98,7 +98,7 @@ private lemma valid_prefix_alt: fixes p::"'a::len prefix_match"
    shiftl_1
   unfolding pfxm_prefix_def pfxm_mask_def mask_eq
   apply (cases p)
-  apply (simp add: ac_simps)
+  apply (simp add: ac_simps push_bit_of_1)
   done
 
 subsection\<open>Address Semantics\<close>

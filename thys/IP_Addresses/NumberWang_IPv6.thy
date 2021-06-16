@@ -62,7 +62,7 @@ lemma length_drop_mask_inner: fixes ip::"'a::len word"
 
 
 lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = (mask 128 :: 'a::len word)"
-  by (simp add: mask_eq)
+  by (simp add: mask_eq push_bit_of_1)
 
 
 (*-------------- things for ipv6 syntax round trip property two ------------------*)

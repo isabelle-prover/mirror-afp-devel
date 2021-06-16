@@ -9,6 +9,7 @@ theory Bitwise
     "HOL-Library.Word"
     More_Arithmetic
     Reversed_Bit_Lists
+    Bit_Shifts_Infix_Syntax
 begin
 
 text \<open>Helper constants used in defining addition\<close>
@@ -165,7 +166,7 @@ lemma rbl_sshiftr:
       drop_nonempty_def take_Cons')
    apply (case_tac "LENGTH('a)", simp_all)
   apply (rule word_eqI)
-  apply (simp add: nth_sshiftr word_size test_bit_of_bl
+  apply (simp add: bit_simps word_size test_bit_of_bl
       msb_nth)
   done
 
@@ -235,7 +236,7 @@ next
     by (cases z) (simp cong: map_cong, simp add: map_replicate_const cong: map_cong)
 
   have shiftl: "of_bl xs * 2 * y = (of_bl xs * y) << 1" for xs
-    by (simp add: shiftl_t2n)
+    by (simp add: push_bit_eq_mult)
 
   have zip_take_triv: "\<And>xs ys n. n = length ys \<Longrightarrow> zip (take n xs) ys = zip xs ys"
     by (rule nth_equalityI) simp_all
@@ -244,7 +245,10 @@ next
     apply (simp add: trans [OF of_bl_append add.commute]
         rbl_mul_simps rbl_word_plus' distrib_right mult_bit shiftl rbl_shiftl)
     apply (simp add: takefill_alt word_size rev_map take_rbl_plus min_def)
-    apply (simp add: rbl_plus_def zip_take_triv)
+    apply (simp add: rbl_plus_def)
+    apply (simp add: zip_take_triv)
+    apply (simp only: mult.commute [of _ 2] mult.assoc bl_shiftl1)
+    apply (simp flip: butlast_rev add: take_butlast)
     done
 qed
 

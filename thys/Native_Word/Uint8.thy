@@ -133,22 +133,6 @@ lemma [code]:
   \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint8
   by (fact flip_bit_eq_xor)
 
-instance uint8 :: semiring_bit_syntax ..
-
-context
-  includes lifting_syntax
-begin
-
-lemma shiftl_uint8_transfer [transfer_rule]:
-  \<open>(cr_uint8 ===> (=) ===> cr_uint8) (\<lambda>k n. push_bit n k) (<<)\<close>
-  unfolding shiftl_eq_push_bit by transfer_prover
-
-lemma shiftr_uint8_transfer [transfer_rule]:
-  \<open>(cr_uint8 ===> (=) ===> cr_uint8) (\<lambda>k n. drop_bit n k) (>>)\<close>
-  unfolding shiftr_eq_drop_bit by transfer_prover
-
-end
-
 instantiation uint8 :: lsb
 begin
 lift_definition lsb_uint8 :: \<open>uint8 \<Rightarrow> bool\<close> is lsb .
@@ -460,13 +444,12 @@ lemma uint8_divmod_code [code]:
   "uint8_divmod x y =
   (if 0x80 \<le> y then if x < y then (0, x) else (1, x - y)
    else if y = 0 then (div0_uint8 x, mod0_uint8 x)
-   else let q = (uint8_sdiv (x >> 1) y) << 1;
+   else let q = push_bit 1 (uint8_sdiv (drop_bit 1 x) y);
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
 including undefined_transfer unfolding uint8_divmod_def uint8_sdiv_def div0_uint8_def mod0_uint8_def
   apply transfer
-  apply (simp add: divmod_via_sdivmod)
-  apply (simp add: shiftl_eq_push_bit shiftr_eq_drop_bit)
+  apply (simp add: divmod_via_sdivmod push_bit_eq_mult)
   done
 
 lemma uint8_sdiv_code [code abstract]:
@@ -548,7 +531,7 @@ lemma uint8_set_bits_code [code]:
    else let n' = n - 1 in uint8_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
   apply (transfer fixing: n)
   apply (cases n)
-   apply (simp_all add: shiftl_eq_push_bit)
+   apply simp_all
   done
 
 lemma set_bits_uint8 [code]:
@@ -584,7 +567,7 @@ code_printing constant uint8_shiftl \<rightharpoonup>
 
 definition uint8_shiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
 where [code del]:
-  "uint8_shiftr x n = (if n < 0 \<or> 8 \<le> n then undefined (shiftr :: uint8 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
+  "uint8_shiftr x n = (if n < 0 \<or> 8 \<le> n then undefined (drop_bit :: _ \<Rightarrow> _ \<Rightarrow> uint8) x n else drop_bit (nat_of_integer n) x)"
 
 lemma shiftr_uint8_code [code]:
   "drop_bit n x = (if n < 8 then uint8_shiftr x (integer_of_nat n) else 0)"
@@ -593,7 +576,7 @@ lemma shiftr_uint8_code [code]:
 
 lemma uint8_shiftr_code [code abstract]:
   "Rep_uint8 (uint8_shiftr w n) =
-  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (shiftr :: uint8 \<Rightarrow> _) w n) 
+  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (drop_bit :: _ \<Rightarrow> _ \<Rightarrow> uint8) w n) 
    else drop_bit (nat_of_integer n) (Rep_uint8 w))"
 including undefined_transfer unfolding uint8_shiftr_def by transfer simp
 

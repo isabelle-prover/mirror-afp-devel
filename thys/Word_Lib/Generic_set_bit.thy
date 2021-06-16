@@ -102,7 +102,7 @@ lemma word_set_nth: "set_bit w n (bit w n) = w"
 
 lemma test_bit_set: "bit (set_bit w n x) n \<longleftrightarrow> n < size w \<and> x"
   for w :: "'a::len word"
-  by (auto simp: word_size word_test_bit_def word_set_bit_def nth_bintr)
+  by (auto simp add: bit_simps word_size)
 
 lemma test_bit_set_gen:
   "bit (set_bit w n x) m = (if m = n then n < size w \<and> x else bit w m)"
@@ -180,12 +180,12 @@ lemma set_bit_beyond:
   "size x \<le> n \<Longrightarrow> set_bit x n b = x" for x :: "'a :: len word"
   by (simp add: word_set_nth_iff)
 
-lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
+lemma one_bit_shiftl: "set_bit 0 n True = push_bit n (1 :: 'a :: len word)"
   apply (rule word_eqI)
-  apply (auto simp add: nth_shiftl word_size bit_simps
-              simp del: word_set_bit_0 shiftl_1)
+  apply (auto simp add: word_size bit_simps
+              simp del: word_set_bit_0)
   done
 
-lemmas one_bit_pow = trans [OF one_bit_shiftl shiftl_1]
+lemmas one_bit_pow = trans [OF one_bit_shiftl push_bit_of_1]
 
 end

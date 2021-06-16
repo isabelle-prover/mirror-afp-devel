@@ -137,22 +137,6 @@ lemma [code]:
   \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint64
   by (fact flip_bit_eq_xor)
 
-instance uint64 :: semiring_bit_syntax ..
-
-context
-  includes lifting_syntax
-begin
-
-lemma shiftl_uint64_transfer [transfer_rule]:
-  \<open>(cr_uint64 ===> (=) ===> cr_uint64) (\<lambda>k n. push_bit n k) (<<)\<close>
-  unfolding shiftl_eq_push_bit by transfer_prover
-
-lemma shiftr_uint64_transfer [transfer_rule]:
-  \<open>(cr_uint64 ===> (=) ===> cr_uint64) (\<lambda>k n. drop_bit n k) (>>)\<close>
-  unfolding shiftr_eq_drop_bit by transfer_prover
-
-end
-
 instantiation uint64 :: lsb
 begin
 lift_definition lsb_uint64 :: \<open>uint64 \<Rightarrow> bool\<close> is lsb .
@@ -568,7 +552,7 @@ lemma Uint64_code [code]:
   including undefined_transfer integer.lifting unfolding Uint64_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-     apply (auto simp add: shiftl_eq_push_bit push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+     apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
   done
 
 lemma Uint64_signed_code [code abstract]:
@@ -739,7 +723,7 @@ lemma uint64_divmod_code [code]:
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
   including undefined_transfer unfolding uint64_divmod_def uint64_sdiv_def div0_uint64_def mod0_uint64_def
-  by transfer (simp add: divmod_via_sdivmod shiftr_eq_drop_bit shiftl_eq_push_bit ac_simps)
+  by transfer (simp add: divmod_via_sdivmod ac_simps)
 
 lemma uint64_sdiv_code [code abstract]:
   "Rep_uint64 (uint64_sdiv x y) =
@@ -820,7 +804,7 @@ lemma uint64_set_bits_code [code]:
    else let n' = n - 1 in uint64_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
   apply (transfer fixing: n)
   apply (cases n)
-   apply (simp_all add: shiftl_eq_push_bit)
+   apply simp_all
   done
 
 lemma set_bits_uint64 [code]:

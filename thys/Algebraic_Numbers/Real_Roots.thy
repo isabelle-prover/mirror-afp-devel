@@ -333,7 +333,7 @@ proof -
             with rais have rais: "\<And> x. x \<in> set (?rai # rais) \<Longrightarrow> invariant_2 x" 
               and dist: "distinct (map real_of_2 rais)" by auto
             have rt3: "?rt3 = {real_of_2 ?rai}" 
-              using rc1 ur rai by (auto intro: the_unique_root_eqI theI')            
+              using ur rai by (auto intro: the_unique_root_eqI theI')            
             have "real_of_2 ` set (roots_of_2_main p ri cr lrs (?rai # rais)) =
               real_of_2 ` set (?rai # rais) \<union> ?rt2 \<and>
               Ball (set (roots_of_2_main p ri cr lrs (?rai # rais))) invariant_2 \<and>

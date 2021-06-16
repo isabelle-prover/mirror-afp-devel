@@ -76,7 +76,7 @@ lemma int_xor_code [code]: fixes i j :: int shows
   "Int.Pos n XOR Int.Neg m = NOT (Int.Pos n XOR Num.sub m num.One)"
   by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
 
-lemma bin_rest_code: "i div 2 = i >> 1" for i :: int
+lemma bin_rest_code: "i div 2 = drop_bit 1 i" for i :: int
   by (simp add: shiftr_int_def)
 
 lemma set_bits_code [code]: 
@@ -84,9 +84,9 @@ lemma set_bits_code [code]:
 by simp
 
 lemma fixes i :: int 
-  shows int_set_bit_True_conv_OR [code]: "set_bit i n True = i OR (1 << n)"
-  and int_set_bit_False_conv_NAND [code]: "set_bit i n False = i AND NOT (1 << n)"
-  and int_set_bit_conv_ops: "set_bit i n b = (if b then i OR (1 << n) else i AND NOT (1 << n))"
+  shows int_set_bit_True_conv_OR [code]: "set_bit i n True = i OR push_bit n 1"
+  and int_set_bit_False_conv_NAND [code]: "set_bit i n False = i AND NOT (push_bit n 1)"
+  and int_set_bit_conv_ops: "set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
 by(simp_all add: set_bit_int_def bin_set_conv_OR bin_clr_conv_NAND)
 
 declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
@@ -100,7 +100,7 @@ lemma drop_bit_int_code [code]: fixes i :: int shows
   "drop_bit (Suc n) (Int.Neg num.One) = - 1"
   "drop_bit (Suc n) (Int.Neg (num.Bit0 m)) = drop_bit n (Int.Neg m)"
   "drop_bit (Suc n) (Int.Neg (num.Bit1 m)) = drop_bit n (Int.Neg (Num.inc m))"
-  by (simp_all add: shiftr_eq_drop_bit drop_bit_Suc add_One)
+  by (simp_all add: drop_bit_Suc add_One)
 
 declare [[code drop: \<open>push_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
 

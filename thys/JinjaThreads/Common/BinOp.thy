@@ -6,7 +6,7 @@ section \<open>Binary Operators\<close>
 
 theory BinOp
 imports
-  WellForm "Word_Lib.Traditional_Infix_Syntax"
+  WellForm "Word_Lib.Bit_Shifts_Infix_Syntax"
 begin
 
 datatype bop =  \<comment> \<open>names of binary operations\<close>

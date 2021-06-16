@@ -13,6 +13,7 @@ theory More_Word_Operations
     Reversed_Bit_Lists
     More_Misc
     Signed_Words
+    Word_Lemmas
 begin
 
 definition
@@ -319,7 +320,7 @@ next
   case False
 
   have lt0: "unat a div 2 ^ n < 2 ^ (LENGTH('a) - n)" using sz
-    by (metis shiftr_div_2n' word_shiftr_lt)
+    by (metis le_add_diff_inverse2 less_mult_imp_div_less order_less_imp_le power_add unsigned_less)
 
   have"2 ^ n * (unat a div 2 ^ n + 1) \<le> 2 ^ LENGTH('a)" using sz
     by (metis One_nat_def Suc_leI add.right_neutral add_Suc_right lt0 nat_le_power_trans nat_less_le)
@@ -413,7 +414,7 @@ next
     assume asm: "alignUp a n = 0"
 
     have lt0: "unat a div 2 ^ n < 2 ^ (LENGTH('a) - n)" using sz
-      by (metis shiftr_div_2n' word_shiftr_lt)
+      by (metis le_add_diff_inverse2 less_mult_imp_div_less order_less_imp_le power_add unsigned_less)
 
     have leq: "2 ^ n * (unat a div 2 ^ n + 1) \<le> 2 ^ LENGTH('a)" using sz
       by (metis One_nat_def Suc_leI add.right_neutral add_Suc_right lt0 nat_le_power_trans
@@ -648,12 +649,12 @@ lemma limited_and_eq_id:
 lemma lshift_limited_and:
   "limited_and x z \<Longrightarrow> limited_and (x << n) (z << n)"
   unfolding limited_and_def
-  by (simp add: shiftl_over_and_dist[symmetric])
+  by (metis push_bit_and)
 
 lemma rshift_limited_and:
   "limited_and x z \<Longrightarrow> limited_and (x >> n) (z >> n)"
   unfolding limited_and_def
-  by (simp add: shiftr_over_and_dist[symmetric])
+  by (metis drop_bit_and)
 
 lemmas limited_and_simps1 = limited_and_eq_0 limited_and_eq_id
 
@@ -665,8 +666,7 @@ lemmas limited_and_simps = limited_and_simps1
        limited_and_simps1[OF lshift_limited_and]
        limited_and_simps1[OF rshift_limited_and]
        limited_and_simps1[OF rshift_limited_and, OF is_aligned_limited_and]
-       not_one shiftl_shiftr1[unfolded word_size mask_eq_decr_exp]
-       shiftl_shiftr2[unfolded word_size mask_eq_decr_exp]
+       not_one
 
 definition
   from_bool :: "bool \<Rightarrow> 'a::len word" where
@@ -884,9 +884,21 @@ lemma aligned_mask_ranges_disjoint2:
    \<Longrightarrow> mask_range p n \<inter> mask_range ptr bits = {}"
   apply safe
   apply (simp only: flip: neg_mask_in_mask_range)
+  apply simp
   apply (drule_tac x="x AND mask n >> m" in spec)
-  apply (clarsimp simp: and_mask_less_size wsst_TYs shiftr_less_t2n multiple_mask_trivia neg_mask_twice
-                        word_bw_assocs max_absorb2 shiftr_shiftl1)
+  apply (auto simp add: and_mask_less_size wsst_TYs multiple_mask_trivia neg_mask_twice
+                        word_bw_assocs max_absorb2)
+   apply (erule notE)
+
+  apply (simp add: shiftr_mask2)
+   apply (rule and_mask_less')
+  apply simp
+  apply (subst (asm) disjunctive_add)
+   apply (simp add: bit_simps)
+  apply auto
+  apply (erule notE)
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps)
   done
 
 lemma word_clz_sint_upper[simp]:

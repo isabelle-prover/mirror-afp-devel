@@ -9,7 +9,23 @@ theory Guide
   imports Word_Lib_Sumo Word_64 Ancient_Numeral
 begin
 
-hide_const (open) Generic_set_bit.set_bit
+notation (output)  push_bit (\<open>push'_bit\<close>)
+
+notation (output)  drop_bit (\<open>drop'_bit\<close>)
+
+notation (output)  signed_drop_bit (\<open>signed'_drop'_bit\<close>)
+
+notation (output)  Generic_set_bit.set_bit (\<open>Generic'_set'_bit.set'_bit\<close>)
+
+hide_const (open) Generic_set_bit.set_bit push_bit drop_bit signed_drop_bit
+
+no_notation bit  (infixl \<open>!!\<close> 100)
+
+abbreviation \<open>push_bit n a \<equiv> a << n\<close>
+
+abbreviation \<open>drop_bit n a \<equiv> a >> n\<close>
+
+abbreviation \<open>signed_drop_bit n a \<equiv> a >>> n\<close>
 
 (*>*)
 section \<open>A short overview over bit operations and word types\<close>
@@ -53,7 +69,7 @@ text \<open>
 
       \<^item> Induction rule: @{thm [display, mode=iff] bits_induct [where ?'a = int, no_vars]}
 
-    \<^item> Characteristic properties \<^prop>\<open>bit (f x) n \<longleftrightarrow> P x n\<close>
+    \<^item> Characteristic properties @{prop [source] \<open>bit (f x) n \<longleftrightarrow> P x n\<close>}
       are available in fact collection \<^text>\<open>bit_simps\<close>.
 
   On top of this, the following generic operations are provided
@@ -182,7 +198,7 @@ text \<open>
     \<^descr>[Syntax]
 
       \<^descr>[\<^theory>\<open>Word_Lib.Syntax_Bundles\<close>]
-        Bundles to provide alternative syntax for various bit operations
+        Bundles to provide alternative syntax for various bit operations.
 
       \<^descr>[\<^theory>\<open>Word_Lib.Hex_Words\<close>]
         Printing word numerals as hexadecimal numerals.
@@ -235,16 +251,16 @@ text \<open>
 
           \<^item> @{thm [mode=iff] msb_word_iff_bit [no_vars]}
 
-      \<^descr>[\<^theory>\<open>Word_Lib.Traditional_Infix_Syntax\<close>]
+      \<^descr>[\<^theory>\<open>Word_Lib.Bit_Shifts_Infix_Syntax\<close>]
 
-        Clones of existing operations decorated with
-        traditional syntax:
+        Abbreviations for bit shifts decorated with
+        traditional infix syntax:
 
-          \<^item> @{thm shiftl_eq_push_bit [no_vars]}
+          \<^item> @{abbrev shiftl}
 
-          \<^item> @{thm shiftr_eq_drop_bit [no_vars]}
+          \<^item> @{abbrev shiftr}
 
-          \<^item> @{thm sshiftr_eq [no_vars]}
+          \<^item> @{abbrev sshiftr}
 
       \<^descr>[\<^theory>\<open>Word_Lib.Next_and_Prev\<close>] \
 
@@ -371,6 +387,14 @@ text \<open>
     \<^item> Abbreviation \<^abbrev>\<open>max_word\<close> moved from distribution into theory
       \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
 
+    \<^item> Operation \<^const>\<open>test_bit\<close> replaced by input abbreviation \<^abbrev>\<open>test_bit\<close>.
+
+    \<^item> Operation \<^const>\<open>shiftl\<close> replaced by input abbreviation \<^abbrev>\<open>shiftl\<close>.
+
+    \<^item> Operation \<^const>\<open>shiftr\<close> replaced by input abbreviation \<^abbrev>\<open>shiftr\<close>.
+
+    \<^item> Operation \<^const>\<open>sshiftr\<close> replaced by input abbreviation \<^abbrev>\<open>sshiftr\<close>.
+
     \<^item> Abbreviations \<^abbrev>\<open>bin_nth\<close>, \<^abbrev>\<open>bin_last\<close>, \<^abbrev>\<open>bin_rest\<close>,
       \<^abbrev>\<open>bintrunc\<close>, \<^abbrev>\<open>sbintrunc\<close>, \<^abbrev>\<open>norm_sint\<close>,
       \<^abbrev>\<open>bin_cat\<close> moved into theory \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
@@ -378,8 +402,6 @@ text \<open>
     \<^item> Operations \<^abbrev>\<open>shiftl1\<close>, \<^abbrev>\<open>shiftr1\<close>, \<^abbrev>\<open>sshiftr1\<close>, \<^abbrev>\<open>bshiftr1\<close>,
       \<^abbrev>\<open>setBit\<close>, \<^abbrev>\<open>clearBit\<close> moved from distribution into theory
       \<^theory>\<open>Word_Lib.Legacy_Aliases\<close> and replaced by input abbreviations.
-
-    \<^item> Operation \<^const>\<open>test_bit\<close> replaced by input abbreviation \<^abbrev>\<open>test_bit\<close>.
 
     \<^item> Operation \<^const>\<open>complement\<close> replaced by input abbreviation \<^abbrev>\<open>complement\<close>.
 \<close>

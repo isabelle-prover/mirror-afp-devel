@@ -174,22 +174,6 @@ lemma [code]:
   \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint
   by (fact flip_bit_eq_xor)
 
-instance uint :: semiring_bit_syntax ..
-
-context
-  includes lifting_syntax
-begin
-
-lemma shiftl_uint_transfer [transfer_rule]:
-  \<open>(cr_uint ===> (=) ===> cr_uint) (\<lambda>k n. push_bit n k) (<<)\<close>
-  unfolding shiftl_eq_push_bit by transfer_prover
-
-lemma shiftr_uint_transfer [transfer_rule]:
-  \<open>(cr_uint ===> (=) ===> cr_uint) (\<lambda>k n. drop_bit n k) (>>)\<close>
-  unfolding shiftr_eq_drop_bit by transfer_prover
-
-end
-
 instantiation uint :: lsb
 begin
 lift_definition lsb_uint :: \<open>uint \<Rightarrow> bool\<close> is lsb .
@@ -472,7 +456,7 @@ lemma Uint_code [code]:
   unfolding Uint_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-       apply (auto simp add: shiftl_eq_push_bit push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed
+       apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed
          wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def)
   done
 
@@ -702,7 +686,7 @@ next
     unfolding uint_divmod_def uint_sdiv_def div0_uint_def mod0_uint_def
       wivs_overflow_uint_def
     apply transfer
-    apply (simp add: divmod_via_sdivmod push_bit_of_1 shiftl_eq_push_bit shiftr_eq_drop_bit)
+    apply (simp add: divmod_via_sdivmod push_bit_of_1)
     done
 qed
 
@@ -791,7 +775,7 @@ lemma uint_set_bits_code [code]:
    else let n' = n - 1 in uint_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
   apply (transfer fixing: n)
   apply (cases n)
-   apply (simp_all add: shiftl_eq_push_bit)
+   apply simp_all
   done
 
 lemma set_bits_uint [code]:

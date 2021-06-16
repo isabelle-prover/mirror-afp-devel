@@ -7,9 +7,7 @@
 section \<open>Bitwise Operations on integers\<close>
 
 theory Bits_Int
-  imports
-    "HOL-Library.Word"
-    Traditional_Infix_Syntax
+  imports "HOL-Library.Word"
 begin
 
 subsection \<open>Implicit bit representation of \<^typ>\<open>int\<close>\<close>
@@ -185,10 +183,10 @@ lemma bin_nth_Bit1:
   by auto
 
 lemma bintrunc_bintrunc_l: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by simp
+  by (simp add: min.absorb2)
 
 lemma sbintrunc_sbintrunc_l: "n \<le> m \<Longrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: min_def)
+  by (simp add: min.absorb2)
 
 lemma bintrunc_bintrunc_ge: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
   by (rule bin_eqI) (auto simp: nth_bintr)
@@ -791,7 +789,7 @@ primrec bin_sc :: "nat \<Rightarrow> bool \<Rightarrow> int \<Rightarrow> int"
     Z: "bin_sc 0 b w = of_bool b + 2 * (\<lambda>k::int. k div 2) w"
   | Suc: "bin_sc (Suc n) b w = of_bool (odd w) + 2 * bin_sc n b (w div 2)"
 
-lemma bin_nth_sc [simp]: "bit (bin_sc n b w) n \<longleftrightarrow> b"
+lemma bin_nth_sc [bit_simps]: "bit (bin_sc n b w) n \<longleftrightarrow> b"
   by (induction n arbitrary: w) (simp_all add: bit_Suc)
 
 lemma bin_sc_sc_same [simp]: "bin_sc n c (bin_sc n b w) = bin_sc n c w"
@@ -870,15 +868,13 @@ lemma bin_sc_numeral [simp]:
 lemmas bin_sc_minus_simps =
   bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]
 
-instance int :: semiring_bit_syntax ..
-
 lemma shiftl_int_def:
-  "shiftl x n = x * 2 ^ n" for x :: int
-  by (simp add: push_bit_int_def shiftl_eq_push_bit)
+  "push_bit n x = x * 2 ^ n" for x :: int
+  by (fact push_bit_eq_mult)
 
 lemma shiftr_int_def:
-  "shiftr x n = x div 2 ^ n" for x :: int
-  by (simp add: drop_bit_int_def shiftr_eq_drop_bit)
+  "drop_bit n x = x div 2 ^ n" for x :: int
+  by (fact drop_bit_eq_div)
 
 
 subsubsection \<open>Basic simplification rules\<close>
@@ -1052,11 +1048,6 @@ lemma bbw_ao_dist: "(x OR y) AND z = (x AND z) OR (y AND z)"
   for x y z :: int
   by (auto simp add: bin_eq_iff bin_nth_ops)
 
-(*
-Why were these declared simp???
-declare bin_ops_comm [simp] bbw_assocs [simp]
-*)
-
 
 subsubsection \<open>Simplification with numerals\<close>
 
@@ -1191,95 +1182,95 @@ by(simp add: int_not_def)
 subsection \<open>Setting and clearing bits\<close>
 
 lemma int_shiftl_BIT: fixes x :: int
-  shows int_shiftl0 [simp]: "x << 0 = x"
-  and int_shiftl_Suc [simp]: "x << Suc n = 2 * (x << n)"
+  shows int_shiftl0: "push_bit 0 x = x"
+  and int_shiftl_Suc: "push_bit (Suc n) x = 2 * push_bit n x"
   by (auto simp add: shiftl_int_def)
 
-lemma int_0_shiftl [simp]: "0 << n = (0 :: int)"
-by(induct n) simp_all
+lemma int_0_shiftl: "push_bit n 0 = (0 :: int)"
+  by (fact push_bit_of_0)
 
-lemma bin_last_shiftl: "(odd :: int \<Rightarrow> bool) (x << n) \<longleftrightarrow> n = 0 \<and> (odd :: int \<Rightarrow> bool) x"
-by(cases n)(simp_all)
+lemma bin_last_shiftl: "odd (push_bit n x) \<longleftrightarrow> n = 0 \<and> (odd :: int \<Rightarrow> bool) x"
+  by simp
 
-lemma bin_rest_shiftl: "(\<lambda>k::int. k div 2) (x << n) = (if n > 0 then x << (n - 1) else (\<lambda>k::int. k div 2) x)"
-by(cases n)(simp_all)
+lemma bin_rest_shiftl: "(\<lambda>k::int. k div 2) (push_bit n x) = (if n > 0 then push_bit (n - 1) x else (\<lambda>k::int. k div 2) x)"
+  by (cases n) (simp_all add: push_bit_eq_mult)
 
-lemma bin_nth_shiftl [simp]: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (x << n) m \<longleftrightarrow> n \<le> m \<and> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (m - n)"
-  by (simp add: bit_push_bit_iff_int shiftl_eq_push_bit)
+lemma bin_nth_shiftl: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (push_bit n x) m \<longleftrightarrow> n \<le> m \<and> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (m - n)"
+  by (fact bit_push_bit_iff_int)
 
-lemma bin_last_shiftr: "odd (x >> n) \<longleftrightarrow> bit x n" for x :: int
-  by (simp add: shiftr_eq_drop_bit bit_iff_odd_drop_bit)
+lemma bin_last_shiftr: "odd (drop_bit n x) \<longleftrightarrow> bit x n" for x :: int
+  by (simp add: bit_iff_odd_drop_bit)
 
-lemma bin_rest_shiftr [simp]: "(\<lambda>k::int. k div 2) (x >> n) = x >> Suc n"
-  by (simp add: bit_eq_iff shiftr_eq_drop_bit drop_bit_Suc bit_drop_bit_eq drop_bit_half)
+lemma bin_rest_shiftr: "(\<lambda>k::int. k div 2) (drop_bit n x) = drop_bit (Suc n) x"
+  by (simp add: drop_bit_Suc drop_bit_half)
 
-lemma bin_nth_shiftr [simp]: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (x >> n) m = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (n + m)"
-  by (simp add: shiftr_eq_drop_bit bit_drop_bit_eq)
+lemma bin_nth_shiftr: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (drop_bit n x) m = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (n + m)"
+  by (simp add: bit_simps)
 
 lemma bin_nth_conv_AND:
   fixes x :: int shows
-  "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n \<longleftrightarrow> x AND (1 << n) \<noteq> 0"
-  by (simp add: bit_eq_iff)
-    (auto simp add: shiftl_eq_push_bit bit_and_iff bit_push_bit_iff bit_exp_iff)
+  "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n \<longleftrightarrow> x AND (push_bit n 1) \<noteq> 0"
+  by (fact bit_iff_and_push_bit_not_eq_0)
 
 lemma int_shiftl_numeral [simp]:
-  "(numeral w :: int) << numeral w' = numeral (num.Bit0 w) << pred_numeral w'"
-  "(- numeral w :: int) << numeral w' = - numeral (num.Bit0 w) << pred_numeral w'"
+  "push_bit (numeral w') (numeral w :: int) = push_bit (pred_numeral w') (numeral (num.Bit0 w))"
+  "push_bit (numeral w') (- numeral w :: int) = push_bit (pred_numeral w') (- numeral (num.Bit0 w))"
 by(simp_all add: numeral_eq_Suc shiftl_int_def)
   (metis add_One mult_inc semiring_norm(11) semiring_norm(13) semiring_norm(2) semiring_norm(6) semiring_norm(87))+
 
 lemma int_shiftl_One_numeral [simp]:
-  "(1 :: int) << numeral w = 2 << pred_numeral w"
-  using int_shiftl_numeral [of Num.One w] by simp
+  "push_bit (numeral w) (1::int) = push_bit (pred_numeral w) 2"
+  using int_shiftl_numeral [of Num.One w]
+  by (simp add: numeral_eq_Suc) 
 
-lemma shiftl_ge_0 [simp]: fixes i :: int shows "i << n \<ge> 0 \<longleftrightarrow> i \<ge> 0"
-by(induct n) simp_all
+lemma shiftl_ge_0: fixes i :: int shows "push_bit n i \<ge> 0 \<longleftrightarrow> i \<ge> 0"
+  by (fact push_bit_nonnegative_int_iff)
 
-lemma shiftl_lt_0 [simp]: fixes i :: int shows "i << n < 0 \<longleftrightarrow> i < 0"
-by (metis not_le shiftl_ge_0)
+lemma shiftl_lt_0: fixes i :: int shows "push_bit n i < 0 \<longleftrightarrow> i < 0"
+  by (fact push_bit_negative_int_iff)
 
-lemma int_shiftl_test_bit: "bit (n << i :: int) m \<longleftrightarrow> m \<ge> i \<and> bit n (m - i)"
-  by simp
+lemma int_shiftl_test_bit: "bit (push_bit i n :: int) m \<longleftrightarrow> m \<ge> i \<and> bit n (m - i)"
+  by (fact bit_push_bit_iff_int)
 
-lemma int_0shiftr [simp]: "(0 :: int) >> x = 0"
-by(simp add: shiftr_int_def)
+lemma int_0shiftr: "drop_bit x (0 :: int) = 0"
+  by (fact drop_bit_of_0)
 
-lemma int_minus1_shiftr [simp]: "(-1 :: int) >> x = -1"
-by(simp add: shiftr_int_def div_eq_minus1)
+lemma int_minus1_shiftr: "drop_bit x (-1 :: int) = -1"
+  by (fact drop_bit_minus_one)
 
-lemma int_shiftr_ge_0 [simp]: fixes i :: int shows "i >> n \<ge> 0 \<longleftrightarrow> i \<ge> 0"
-  by (simp add: shiftr_eq_drop_bit)
+lemma int_shiftr_ge_0: fixes i :: int shows "drop_bit n i \<ge> 0 \<longleftrightarrow> i \<ge> 0"
+  by (fact drop_bit_nonnegative_int_iff)
 
-lemma int_shiftr_lt_0 [simp]: fixes i :: int shows "i >> n < 0 \<longleftrightarrow> i < 0"
-by (metis int_shiftr_ge_0 not_less)
+lemma int_shiftr_lt_0 [simp]: fixes i :: int shows "drop_bit n i < 0 \<longleftrightarrow> i < 0"
+  by (fact drop_bit_negative_int_iff)
 
 lemma int_shiftr_numeral [simp]:
-  "(1 :: int) >> numeral w' = 0"
-  "(numeral num.One :: int) >> numeral w' = 0"
-  "(numeral (num.Bit0 w) :: int) >> numeral w' = numeral w >> pred_numeral w'"
-  "(numeral (num.Bit1 w) :: int) >> numeral w' = numeral w >> pred_numeral w'"
-  "(- numeral (num.Bit0 w) :: int) >> numeral w' = - numeral w >> pred_numeral w'"
-  "(- numeral (num.Bit1 w) :: int) >> numeral w' = - numeral (Num.inc w) >> pred_numeral w'"
-  by (simp_all add: shiftr_eq_drop_bit numeral_eq_Suc add_One drop_bit_Suc)
+  "drop_bit (numeral w') (1 :: int) = 0"
+  "drop_bit (numeral w') (numeral num.One :: int) = 0"
+  "drop_bit (numeral w') (numeral (num.Bit0 w) :: int) = drop_bit (pred_numeral w') (numeral w)"
+  "drop_bit (numeral w') (numeral (num.Bit1 w) :: int) = drop_bit (pred_numeral w') (numeral w)"
+  "drop_bit (numeral w') (- numeral (num.Bit0 w) :: int) = drop_bit (pred_numeral w') (- numeral w)"
+  "drop_bit (numeral w') (- numeral (num.Bit1 w) :: int) = drop_bit (pred_numeral w') (- numeral (Num.inc w))"
+  by (simp_all add: numeral_eq_Suc add_One drop_bit_Suc)
 
 lemma int_shiftr_numeral_Suc0 [simp]:
-  "(1 :: int) >> Suc 0 = 0"
-  "(numeral num.One :: int) >> Suc 0 = 0"
-  "(numeral (num.Bit0 w) :: int) >> Suc 0 = numeral w"
-  "(numeral (num.Bit1 w) :: int) >> Suc 0 = numeral w"
-  "(- numeral (num.Bit0 w) :: int) >> Suc 0 = - numeral w"
-  "(- numeral (num.Bit1 w) :: int) >> Suc 0 = - numeral (Num.inc w)"
-  by (simp_all add: shiftr_eq_drop_bit drop_bit_Suc add_One)
+  "drop_bit (Suc 0) (1 :: int) = 0"
+  "drop_bit (Suc 0) (numeral num.One :: int) = 0"
+  "drop_bit (Suc 0) (numeral (num.Bit0 w) :: int) = numeral w"
+  "drop_bit (Suc 0) (numeral (num.Bit1 w) :: int) = numeral w"
+  "drop_bit (Suc 0) (- numeral (num.Bit0 w) :: int) = - numeral w"
+  "drop_bit (Suc 0) (- numeral (num.Bit1 w) :: int) = - numeral (Num.inc w)"
+  by (simp_all add: drop_bit_Suc add_One)
 
 lemma bin_nth_minus_p2:
   assumes sign: "bin_sign x = 0"
-  and y: "y = 1 << n"
+  and y: "y = push_bit n 1"
   and m: "m < n"
   and x: "x < y"
-  shows "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (x - y) m = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x m"
+  shows "bit (x - y) m = bit x m"
 proof -
   from sign y x have \<open>x \<ge> 0\<close> and \<open>y = 2 ^ n\<close> and \<open>x < 2 ^ n\<close>
-    by (simp_all add: bin_sign_def shiftl_eq_push_bit push_bit_eq_mult split: if_splits)
+    by (simp_all add: bin_sign_def push_bit_eq_mult split: if_splits)
   from \<open>0 \<le> x\<close> \<open>x < 2 ^ n\<close> \<open>m < n\<close> have \<open>bit x m \<longleftrightarrow> bit (x - 2 ^ n) m\<close>
   proof (induction m arbitrary: x n)
     case 0
@@ -1303,12 +1294,12 @@ proof -
 qed
 
 lemma bin_clr_conv_NAND:
-  "bin_sc n False i = i AND NOT (1 << n)"
-  by (induct n arbitrary: i) (rule bin_rl_eqI; simp)+
+  "bin_sc n False i = i AND NOT (push_bit n 1)"
+  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
 
 lemma bin_set_conv_OR:
-  "bin_sc n True i = i OR (1 << n)"
-  by (induct n arbitrary: i) (rule bin_rl_eqI; simp)+
+  "bin_sc n True i = i OR (push_bit n 1)"
+  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
 
 
 subsection \<open>More lemmas on words\<close>
@@ -1360,13 +1351,13 @@ lemma word_cat_hom:
   by transfer (simp add: take_bit_concat_bit_eq)
 
 lemma bintrunc_shiftl:
-  "take_bit n (m << i) = take_bit (n - i) m << i"
+  "take_bit n (push_bit i m) = push_bit i (take_bit (n - i) m)"
   for m :: int
-  by (rule bit_eqI) (auto simp add: bit_take_bit_iff)
+  by (fact take_bit_push_bit)
 
 lemma uint_shiftl:
-  "uint (n << i) = take_bit (size n) (uint n << i)"
-  by transfer (simp add: push_bit_take_bit shiftl_eq_push_bit)
+  "uint (push_bit i n) = take_bit (size n) (push_bit i (uint n))"
+  by (simp add: unsigned_push_bit_eq word_size)
 
 lemma bin_mask_conv_pow2:
   "mask n = 2 ^ n - (1 :: int)"
@@ -1383,13 +1374,13 @@ lemma bin_mask_numeral:
   "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"
   by (fact mask_numeral)
 
-lemma bin_nth_mask [simp]: "bit (mask n :: int) i \<longleftrightarrow> i < n"
+lemma bin_nth_mask: "bit (mask n :: int) i \<longleftrightarrow> i < n"
   by (simp add: bit_mask_iff)
 
 lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
   by (simp add: bin_sign_def bin_mask_conv_pow2)
 
-lemma bin_mask_p1_conv_shift: "mask n + 1 = (1 :: int) << n"
+lemma bin_mask_p1_conv_shift: "mask n + 1 = push_bit n (1 :: int)"
   by (simp add: bin_mask_conv_pow2 shiftl_int_def)
 
 lemma sbintrunc_eq_in_range:
@@ -1448,15 +1439,13 @@ proof -
     using P[unfolded range_sbintrunc] abs_ab le
     apply clarsimp
     apply (transfer fixing: r s)
-    apply (auto simp add: signed_take_bit_int_eq_self simp flip: signed_take_bit_eq_iff_take_bit_eq)
+    apply (auto simp add: signed_take_bit_int_eq_self min.absorb2 simp flip: signed_take_bit_eq_iff_take_bit_eq)
     done
 qed
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
-  apply (simp add: take_bit_int_eq_self_iff)
-  apply (metis n_less_equal_power_2 not_le of_nat_less_iff of_nat_numeral order_trans semiring_1_class.of_nat_power)
-  done
+  by (simp add: take_bit_int_eq_self_iff le_less_trans less_exp)
 
 code_identifier
   code_module Bits_Int \<rightharpoonup>

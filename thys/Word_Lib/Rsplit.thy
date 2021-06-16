@@ -9,7 +9,7 @@
 section \<open>Splitting words into lists\<close>
 
 theory Rsplit
-  imports "HOL-Library.Word" Bits_Int
+  imports "HOL-Library.Word" More_Word Bits_Int
 begin
 
 definition word_rsplit :: "'a::len word \<Rightarrow> 'b::len word list"
@@ -154,12 +154,12 @@ lemma word_rsplit_rcat_size [OF refl]:
 
 lemma word_rsplit_upt:
   "\<lbrakk> size x = LENGTH('a :: len) * n; n \<noteq> 0 \<rbrakk>
-    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (x >> i * len_of TYPE ('a)) :: 'a word) (rev [0 ..< n])"
+    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (drop_bit (i * LENGTH('a)) x) :: 'a word) (rev [0 ..< n])"
   apply (subgoal_tac "length (word_rsplit x :: 'a word list) = n")
    apply (rule nth_equalityI, simp)
    apply (intro allI word_eqI impI)
    apply (simp add: test_bit_rsplit_alt word_size)
-   apply (simp add: nth_ucast nth_shiftr rev_nth field_simps)
+   apply (simp add: nth_ucast bit_simps rev_nth field_simps)
   apply (simp add: length_word_rsplit_exp_size)
   apply transfer
   apply (metis (no_types, lifting) Nat.add_diff_assoc Suc_leI add_0_left diff_Suc_less div_less len_gt_0 msrevs(1) mult.commute)

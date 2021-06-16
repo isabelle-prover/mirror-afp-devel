@@ -292,7 +292,7 @@ lemma unat_le: "y \<le> unat z \<Longrightarrow> y \<in> unats (LENGTH('a))"
   for z :: "'a::len word"
   apply (unfold unats_def)
   apply clarsimp
-  apply (rule xtrans, rule unat_lt2p, assumption)
+  apply (metis le_unat_uoi unsigned_less)
   done
 
 lemma td_ext_sbin:

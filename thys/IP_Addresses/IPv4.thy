@@ -138,7 +138,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       done
     from a b c d show ?thesis
       apply (simp add: ipv4addr_of_dotdecimal.simps dotdecimal_of_ipv4addr.simps)
-      apply (simp add: mask_eq)
+      apply (simp add: mask_eq push_bit_of_1)
       done
   qed
 
@@ -152,14 +152,13 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     have and_mask_bl_take: "length x \<ge> n \<Longrightarrow> ((of_bl x) AND mask n) = (of_bl (rev (take n (rev (x)))))"
       for x n by(simp add: List_rev_drop_geqn of_bl_drop)
     have ipv4addr_and_255: "x AND 255 = x AND mask 8" for x :: ipv4addr
-      by(simp add: mask_eq)
+      by (simp add: mask_eq push_bit_of_1)
     have bit_equality:
       "((ip >> 24) AND 0xFF << 24) + ((ip >> 16) AND 0xFF << 16) + ((ip >> 8) AND 0xFF << 8) + (ip AND 0xFF) =
        of_bl (take 8 (to_bl ip) @ take 8 (drop 8 (to_bl ip)) @ take 8 (drop 16 (to_bl ip)) @ drop 24 (to_bl ip))"
       apply(simp add: ipv4addr_and_255)
       apply(simp add: shiftr_slice)
-      apply(simp add: slice_take' size_ipv4addr)
-      apply(simp add: and_mask_bl_take)
+      apply(simp add: slice_take' size_ipv4addr and_mask_bl_take flip: push_bit_and)
       apply(simp add: List_rev_drop_geqn)
       apply(simp add: drop_take)
       apply(simp add: shiftl_of_bl)
@@ -170,11 +169,11 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       blip = (take 8 blip) @ (take 8 (drop 8 blip)) @ (take 8 (drop 16 blip)) @ (take 8 (drop 24 blip))"
       by(rename_tac blip,case_tac blip,simp_all)+ (*I'm so sorry for this ...*)
     have "ipv4addr_of_dotdecimal (dotdecimal_of_ipv4addr ip) = of_bl (to_bl ip)"
-      apply(subst blip_split)
-       apply(simp; fail)
-      apply(simp add: ipv4addr_of_dotdecimal_bit dotdecimal_of_ipv4addr.simps)
-      apply(simp add: ipv4addr_of_nat_nat_of_ipv4addr)
-      apply(simp add: bit_equality)
+      apply (subst blip_split)
+       apply simp
+      apply (simp add: ipv4addr_of_dotdecimal_bit dotdecimal_of_ipv4addr.simps)
+      apply (simp add: ipv4addr_of_nat_nat_of_ipv4addr)
+      apply (simp flip: bit_equality)
       done
     thus ?thesis using word_bl.Rep_inverse[symmetric] by simp
   qed
@@ -208,7 +207,7 @@ subsection\<open>IP Ranges: Examples\<close>
 
   lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,42)) 16 =
           {ipv4addr_of_dotdecimal (192,168,0,0) .. ipv4addr_of_dotdecimal (192,168,255,255)}"
-   by(simp add: ipset_from_cidr_alt mask_eq ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
+   by(simp add: ipset_from_cidr_alt mask_eq ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def push_bit_of_1)
 
   lemma "ip \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (0, 0, 0, 0)) 0)"
     by(simp add: ipset_from_cidr_0)

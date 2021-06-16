@@ -12,7 +12,7 @@ theory Most_significant_bit
   imports
     "HOL-Library.Word"
     Bits_Int
-    Traditional_Infix_Syntax
+    More_Word
     More_Arithmetic
 begin
 
@@ -47,10 +47,10 @@ by(simp add: msb_int_def)
 lemma int_msb_not [simp]: "msb (NOT (x :: int)) \<longleftrightarrow> \<not> msb x"
 by(simp add: msb_int_def not_less)
 
-lemma msb_shiftl [simp]: "msb ((x :: int) << n) \<longleftrightarrow> msb x"
+lemma msb_shiftl [simp]: "msb (push_bit n (x :: int)) \<longleftrightarrow> msb x"
 by(simp add: msb_int_def)
 
-lemma msb_shiftr [simp]: "msb ((x :: int) >> r) \<longleftrightarrow> msb x"
+lemma msb_shiftr [simp]: "msb (drop_bit r (x :: int)) \<longleftrightarrow> msb x"
 by(simp add: msb_int_def)
 
 lemma msb_bin_sc [simp]: "msb (bin_sc n b x) \<longleftrightarrow> msb x"
@@ -121,14 +121,14 @@ lemma word_msb_nth: "msb w = bit (uint w) (LENGTH('a) - 1)"
 
 lemma msb_nth: "msb w = bit w (LENGTH('a) - 1)"
   for w :: "'a::len word"
-  by (simp add: word_msb_nth word_test_bit_def)
-
+  by (fact msb_word_eq)
+  
 lemma word_msb_n1 [simp]: "msb (-1::'a::len word)"
   by (simp add: msb_word_eq not_le)
 
-lemma msb_shift: "msb w \<longleftrightarrow> w >> (LENGTH('a) - 1) \<noteq> 0"
+lemma msb_shift: "msb w \<longleftrightarrow> drop_bit (LENGTH('a) - 1) w \<noteq> 0"
   for w :: "'a::len word"
-  by (simp add: msb_word_eq shiftr_word_eq bit_iff_odd_drop_bit drop_bit_eq_zero_iff_not_bit_last)
+  by (simp add: msb_word_eq bit_iff_odd_drop_bit drop_bit_eq_zero_iff_not_bit_last)
 
 lemmas word_ops_msb = msb1 [unfolded msb_nth [symmetric, unfolded One_nat_def]]
 
@@ -186,18 +186,21 @@ lemma msb_ucast_eq:
   by (simp add: msb_word_eq bit_simps)
 
 lemma msb_big:
-     "msb (a :: ('a::len) word) = (a \<ge> 2 ^ (LENGTH('a)  - Suc 0))"
-  apply (rule iffI)
-   apply (clarsimp simp: msb_nth)
-   apply (drule bang_is_le)
-   apply simp
+  \<open>msb a \<longleftrightarrow> 2 ^ (LENGTH('a) - Suc 0) \<le> a\<close>
+  for a :: \<open>'a::len word\<close>
+  using bang_is_le [of a \<open>LENGTH('a) - Suc 0\<close>]
+  apply (auto simp add: msb_nth word_le_not_less)
   apply (rule ccontr)
+  apply (erule notE)
+  apply (rule ccontr)
+    apply (clarsimp simp: not_less)
   apply (subgoal_tac "a = a AND mask (LENGTH('a) - Suc 0)")
    apply (cut_tac and_mask_less' [where w=a and n="LENGTH('a) - Suc 0"])
-    apply (clarsimp simp: word_not_le [symmetric])
-   apply clarsimp
-  apply (rule sym, subst and_mask_eq_iff_shiftr_0)
-  apply (clarsimp simp: msb_shift)
+    apply clarsimp
+  apply simp
+  apply (simp flip: take_bit_eq_mask)
+  apply (rule sym)
+  apply (simp add: take_bit_eq_self_iff_drop_bit_eq_0 drop_bit_eq_zero_iff_not_bit_last)
   done
 
 end

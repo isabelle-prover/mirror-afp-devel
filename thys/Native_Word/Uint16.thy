@@ -142,22 +142,6 @@ lemma [code]:
   \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint16
   by (fact flip_bit_eq_xor)
 
-instance uint16 :: semiring_bit_syntax ..
-
-context
-  includes lifting_syntax
-begin
-
-lemma shiftl_uint16_transfer [transfer_rule]:
-  \<open>(cr_uint16 ===> (=) ===> cr_uint16) (\<lambda>k n. push_bit n k) (<<)\<close>
-  unfolding shiftl_eq_push_bit by transfer_prover
-
-lemma shiftr_uint16_transfer [transfer_rule]:
-  \<open>(cr_uint16 ===> (=) ===> cr_uint16) (\<lambda>k n. drop_bit n k) (>>)\<close>
-  unfolding shiftr_eq_drop_bit by transfer_prover
-
-end
-
 instantiation uint16 :: lsb
 begin
 lift_definition lsb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is lsb .
@@ -508,7 +492,7 @@ lemma uint16_set_bits_code [code]:
    else let n' = n - 1 in uint16_set_bits f ((push_bit 1 w) OR (if f n' then 1 else 0)) n')"
   apply (transfer fixing: n)
   apply (cases n)
-   apply (simp_all add: shiftl_eq_push_bit)
+   apply simp_all
   done
 
 lemma set_bits_uint16 [code]:

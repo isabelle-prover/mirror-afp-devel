@@ -221,13 +221,9 @@ lemma int_lsb_BIT [simp]: fixes x :: int shows
 by(simp add: lsb_int_def)
 
 lemma int_shiftr_BIT [simp]: fixes x :: int
-  shows int_shiftr0: "x >> 0 = x"
-  and int_shiftr_Suc: "x BIT b >> Suc n = x >> n"
-proof -
-  show "x >> 0 = x" by (simp add: shiftr_int_def)
-  show "x BIT b >> Suc n = x >> n" by (cases b)
-   (simp_all add: shiftr_int_def Bit_def add.commute pos_zdiv_mult_2)
-qed
+  shows int_shiftr0: "drop_bit 0 x = x"
+  and int_shiftr_Suc: "drop_bit (Suc n) (x BIT b) = drop_bit n x"
+  by (simp_all add: drop_bit_Suc)
 
 lemma msb_BIT [simp]: "msb (x BIT b) = msb x"
 by(simp add: msb_int_def)

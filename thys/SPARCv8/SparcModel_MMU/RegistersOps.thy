@@ -1,6 +1,6 @@
 section\<open>Register Operations\<close>
 theory RegistersOps
-imports Main "../lib/WordDecl" "Word_Lib.Traditional_Infix_Syntax"
+imports Main "../lib/WordDecl" "Word_Lib.Bit_Shifts_Infix_Syntax"
 begin
 
 text\<open>

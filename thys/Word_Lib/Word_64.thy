@@ -80,10 +80,7 @@ lemma of_nat64_0:
 
 lemma unat_mask_2_less_4:
   "unat (p && mask 2 :: word64) < 4"
-  apply (rule unat_less_helper)
-  apply (rule order_le_less_trans, rule word_and_le1)
-  apply (simp add: mask_eq)
-  done
+  by (rule unat_less_helper) (simp flip: take_bit_eq_mask add: take_bit_eq_mod word_mod_less_divisor)
 
 lemmas unat_of_nat64' = unat_of_nat_eq[where 'a=64]
 lemmas unat_of_nat64 = unat_of_nat64'[unfolded word_bits_len_of]
@@ -121,20 +118,21 @@ lemma unat_less_2p_word_bits:
 
 lemma Suc_unat_mask_div:
   "Suc (unat (mask sz div word_size::word64)) = 2 ^ (min sz word_bits - 3)"
-  apply (case_tac "sz < word_bits")
-   apply (case_tac "3 \<le> sz")
-    apply (clarsimp simp: word_size_def word_bits_def min_def mask_eq)
-    apply (drule (2) Suc_div_unat_helper
-           [where 'a=64 and sz=sz and us=3, simplified, symmetric])
-   apply (simp add: not_le word_size_def word_bits_def)
-   apply (case_tac sz, simp add: unat_word_ariths)
-   apply (case_tac nat, simp add: unat_word_ariths
-                                  unat_mask_word64 min_def word_bits_def)
-   apply (case_tac nata, simp add: unat_word_ariths unat_mask_word64 word_bits_def)
-   apply simp
-  apply (simp add: unat_word_ariths
-                   unat_mask_word64 min_def word_bits_def word_size_def)
-  done
+proof (cases \<open>sz \<ge> 3\<close>)
+  case False
+  then have \<open>sz \<in> {0, 1, 2}\<close>
+    by auto
+  then show ?thesis by (auto simp add: unat_div word_size_def unat_mask)
+next
+  case True
+  moreover define n where \<open>n = sz - 3\<close>
+  ultimately have \<open>sz = n + 3\<close>
+    by simp
+  moreover have \<open>2 ^ n * 8 - Suc 0 = (2 ^ n - 1) * 8 + 7\<close>
+    by (simp add: mult_eq_if)
+  ultimately show ?thesis
+    by (simp add: unat_div unat_mask word_size_def word_bits_def min_def power_add)
+qed
 
 lemmas word64_minus_one_le' = word_minus_one_le[where 'a=64]
 lemmas word64_minus_one_le = word64_minus_one_le'[simplified]

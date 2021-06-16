@@ -105,7 +105,7 @@ definition uminus_p32 :: "uint32 \<Rightarrow> uint32" where
 definition mult_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "mult_p32 x y = (x * y mod p)"
 
-lemma int_of_uint32_shift: "int_of_uint32 (shiftr n k) = (int_of_uint32 n) div (2 ^ k)" 
+lemma int_of_uint32_shift: "int_of_uint32 (drop_bit k n) = (int_of_uint32 n) div (2 ^ k)" 
   apply transfer
   apply transfer
   apply (simp add: take_bit_drop_bit min_def)
@@ -139,7 +139,7 @@ lemma int_of_uint32_inv: "0 \<le> x \<Longrightarrow> x < 4294967296 \<Longright
 
 function power_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "power_p32 x n = (if n = 0 then 1 else
-    let rec = power_p32 (mult_p32 x x) (shiftr n 1) in
+    let rec = power_p32 (mult_p32 x x) (drop_bit 1 n) in
     if n AND 1 = 0 then rec else mult_p32 rec x)"
   by pat_completeness auto
 
@@ -184,7 +184,7 @@ definition finite_field_ops32 :: "uint32 arith_ops_record" where
 end 
 
 lemma shiftr_uint32_code [code_unfold]: "drop_bit 1 x = (uint32_shiftr x 1)"
-  by (simp add: uint32_shiftr_def shiftr_eq_drop_bit)
+  by (simp add: uint32_shiftr_def)
 
 (* ******************************************************************************** *)
 subsubsection \<open>Transfer Relation\<close>
@@ -639,7 +639,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       done
     from urel32_eq[OF this urel32_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
-    have div: "urel32 (shiftr y 1) (int d')" unfolding d' using y unfolding urel32_def using small
+    have div: "urel32 (drop_bit 1 y) (int d')" unfolding d' using y unfolding urel32_def using small
       unfolding ppp 
       apply transfer
       apply transfer
@@ -805,7 +805,7 @@ definition uminus_p64 :: "uint64 \<Rightarrow> uint64" where
 definition mult_p64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" where
   "mult_p64 x y = (x * y mod p)"
 
-lemma int_of_uint64_shift: "int_of_uint64 (shiftr n k) = (int_of_uint64 n) div (2 ^ k)" 
+lemma int_of_uint64_shift: "int_of_uint64 (drop_bit k n) = (int_of_uint64 n) div (2 ^ k)" 
   apply transfer
   apply transfer
   apply (simp add: take_bit_drop_bit min_def)
@@ -839,7 +839,7 @@ lemma int_of_uint64_inv: "0 \<le> x \<Longrightarrow> x < 18446744073709551616 \
 
 function power_p64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" where
   "power_p64 x n = (if n = 0 then 1 else
-    let rec = power_p64 (mult_p64 x x) (shiftr n 1) in
+    let rec = power_p64 (mult_p64 x x) (drop_bit 1 n) in
     if n AND 1 = 0 then rec else mult_p64 rec x)"
   by pat_completeness auto
 
@@ -1069,7 +1069,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       done
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
-    have div: "urel64 (shiftr y 1) (int d')" unfolding d' using y unfolding urel64_def using small
+    have div: "urel64 (drop_bit 1 y) (int d')" unfolding d' using y unfolding urel64_def using small
       unfolding ppp
       apply transfer
       apply transfer
@@ -1253,13 +1253,13 @@ lemma int_of_integer_mod: "int_of_integer (x mod y) = (int_of_integer x mod int_
 
 lemma int_of_integer_inv: "int_of_integer (integer_of_int x) = x" by simp
 
-lemma int_of_integer_shift: "int_of_integer (shiftr n k) = (int_of_integer n) div (2 ^ k)" 
+lemma int_of_integer_shift: "int_of_integer (drop_bit k n) = (int_of_integer n) div (2 ^ k)" 
   by transfer (simp add: int_of_integer_pow shiftr_integer_conv_div_pow2)
 
 
 function power_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
   "power_p_integer x n = (if n \<le> 0 then 1 else
-    let rec = power_p_integer (mult_p_integer x x) (shiftr n 1) in
+    let rec = power_p_integer (mult_p_integer x x) (drop_bit 1 n) in
     if n AND 1 = 0 then rec else mult_p_integer rec x)"
   by pat_completeness auto
 
@@ -1482,7 +1482,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       done
     from urel_integer_eq[OF this urel_integer_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
-    have div: "urel_integer (shiftr y 1) (int d')" unfolding d' using y unfolding urel_integer_def
+    have div: "urel_integer (drop_bit 1 y) (int d')" unfolding d' using y unfolding urel_integer_def
       unfolding ppp shiftr_integer_conv_div_pow2 by auto
     from id have "y' \<noteq> 0" by auto
     note IH = 1(1)[OF this refl dr'[symmetric] urel_integer_mult[OF x x] div]
@@ -1648,5 +1648,4 @@ thm
   ring_finite_field_ops_int
 end
 
-no_notation shiftr (infixl ">>" 55) (* to avoid conflict with bind *)
 end

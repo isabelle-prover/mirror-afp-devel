@@ -8,7 +8,6 @@ theory IPv6
     (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
-
 section \<open>IPv6 Addresses\<close>
   text\<open>An IPv6 address is basically a 128 bit unsigned integer. RFC 4291, Section 2.\<close>
   type_synonym ipv6addr = "128 word"
@@ -459,7 +458,7 @@ subsection\<open>Semantics\<close>
     "(0xFFFF00000000::ipv6addr) = (mask 16) << 32"
     "(0xFFFF0000::ipv6addr) = (mask 16) << 16"
     "(0xFFFF::ipv6addr) = (mask 16)"
-    by(simp add: mask_eq)+
+    by (simp_all add: mask_eq push_bit_of_1)
 
 
   text\<open>Correctness: round trip property one\<close>
@@ -498,7 +497,10 @@ subsection\<open>Semantics\<close>
            ip AND 0xFFFF00000000"
       "(ucast ((ucast::ipv6addr \<Rightarrow> 16 word) (ip AND 0xFFFF0000 >> 16)) << 16) =
            ip AND 0xFFFF0000"
-      by((subst word128_masks_ipv6pieces)+, subst ucast_ipv6_piece, simp_all)+
+            apply (simp_all add: word128_masks_ipv6pieces ucast_ipv6_piece and_mask2 word_size flip: take_bit_eq_mask)
+            apply (simp_all add: bit_eq_iff)
+            apply (auto simp add: bit_simps)
+      done
 
     have ucast16_ucast128_masks_highest_bits0: 
       "(ucast ((ucast::ipv6addr \<Rightarrow> 16 word) (ip AND 0xFFFF))) = ip AND 0xFFFF"
@@ -521,20 +523,20 @@ subsection\<open>Semantics\<close>
              ip && mask 16 =
              ip"
       apply(subst word_ao_dist2[symmetric])+
-      apply(simp add: mask_eq)
+      apply(simp add: mask_eq push_bit_of_1)
       apply(subst mask128)
       apply(rule mask_len_word)
       apply simp
       done
 
     show ?thesis
-      apply(simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
-      apply(simp add: ucast16_ucast128_masks_highest_bits ucast16_ucast128_masks_highest_bits0)
-      apply(simp add: word128_masks_ipv6pieces)
-      apply(rule ipv6addr_16word_pieces_compose_or)
+      apply (simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
+      apply (simp add: ucast16_ucast128_masks_highest_bits ucast16_ucast128_masks_highest_bits0)
+      apply (simp add: word128_masks_ipv6pieces ucast_ucast_mask)
+      using ipv6addr_16word_pieces_compose_or
+      apply (simp flip: push_bit_and add: shiftr_and_eq_shiftl)
       done
   qed
-
 
   text\<open>Correctness: round trip property two\<close>
   lemma int_to_ipv6preferred_ipv6preferred_to_int: "int_to_ipv6preferred (ipv6preferred_to_int ip) = ip"
@@ -545,13 +547,21 @@ subsection\<open>Semantics\<close>
     note ucast_simps=helper_masked_ucast_reverse_generic[where m=0, simplified]
                      helper_masked_ucast_equal_generic[where n=0, simplified]
     show ?thesis
-    apply(cases ip, rename_tac a b c d e f g h)
-    apply(simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
-    apply(simp add: word128_masks_ipv6pieces)
-    apply(simp add: word_ao_dist ucast_shift_simps ucast_simps)
-    done
+    apply (cases ip, rename_tac a b c d e f g h)
+    apply (simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
+    apply (simp add: word128_masks_ipv6pieces)
+      apply (simp add: word_ao_dist ucast_shift_simps ucast_simps)
+      apply (simp add: unsigned_or_eq)
+      apply (simp flip: take_bit_eq_mask add: unsigned_take_bit_eq take_bit_word_eq_self)
+      apply (simp add: shiftl_shiftr1 shiftl_shiftr2)
+      apply (simp flip: take_bit_eq_mask push_bit_and add: word_size)
+      apply (simp add: unsigned_take_bit_eq take_bit_word_eq_self)
+      apply (simp flip: unsigned_take_bit_eq)
+      apply (simp add: unsigned_ucast_eq)
+      apply (simp add: unsigned_push_bit_eq take_bit_word_eq_self)
+      apply (simp flip: ucast_drop_bit_eq)
+      done
   qed
-
 
 
 text\<open>compressed to preferred format\<close>

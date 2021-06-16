@@ -1462,37 +1462,29 @@ proof (rule nth_equalityI)
     done
 qed simp
 
-lemma drop_shiftr: "drop n (to_bl (w >> n)) = take (size w - n) (to_bl w)"
+lemma drop_shiftr: "drop n (to_bl (drop_bit n w)) = take (size w - n) (to_bl w)"
   for w :: "'a::len word"
-  apply (unfold shiftr_def)
-  apply (induct n)
-   prefer 2
-   apply (simp add: drop_Suc bl_shiftr1 butlast_drop [symmetric])
-   apply (rule butlast_take [THEN trans])
-    apply (auto simp: word_size)
+  apply (rule nth_equalityI)
+   apply (simp_all add: word_size to_bl_nth bit_simps)
   done
 
-lemma drop_sshiftr: "drop n (to_bl (w >>> n)) = take (size w - n) (to_bl w)"
+lemma drop_sshiftr: "drop n (to_bl (signed_drop_bit n w)) = take (size w - n) (to_bl w)"
   for w :: "'a::len word"
-   apply (simp_all add: word_size sshiftr_eq)
+   apply (simp_all add: word_size)
   apply (rule nth_equalityI)
    apply (simp_all add: word_size nth_to_bl bit_signed_drop_bit_iff)
   done
 
-lemma take_shiftr: "n \<le> size w \<Longrightarrow> take n (to_bl (w >> n)) = replicate n False"
-  apply (unfold shiftr_def)
-  apply (induct n)
-   prefer 2
-   apply (simp add: bl_shiftr1' length_0_conv [symmetric] word_size)
-   apply (rule take_butlast [THEN trans])
-    apply (auto simp: word_size)
-  done
+lemma take_shiftr: "n \<le> size w \<Longrightarrow> take n (to_bl (drop_bit n w)) = replicate n False"
+  apply (rule nth_equalityI)
+   apply (simp_all add: word_size to_bl_nth bit_simps)
+  using bit_imp_le_length by fastforce
 
 lemma take_sshiftr':
-  "n \<le> size w \<Longrightarrow> hd (to_bl (w >>> n)) = hd (to_bl w) \<and>
-    take n (to_bl (w >>> n)) = replicate n (hd (to_bl w))"
+  "n \<le> size w \<Longrightarrow> hd (to_bl (signed_drop_bit n w)) = hd (to_bl w) \<and>
+    take n (to_bl (signed_drop_bit n w)) = replicate n (hd (to_bl w))"
   for w :: "'a::len word"
-  apply (auto simp add: sshiftr_eq hd_bl_sign_sint bin_sign_def not_le word_size sint_signed_drop_bit_eq)
+  apply (auto simp add: hd_bl_sign_sint bin_sign_def not_le word_size sint_signed_drop_bit_eq)
   apply (rule nth_equalityI)
     apply (auto simp add: nth_to_bl bit_signed_drop_bit_iff bit_last_iff)
   apply (rule nth_equalityI)
@@ -1508,20 +1500,22 @@ lemma atd_lem: "take n xs = t \<Longrightarrow> drop n xs = d \<Longrightarrow> 
 lemmas bl_shiftr = atd_lem [OF take_shiftr drop_shiftr]
 lemmas bl_sshiftr = atd_lem [OF take_sshiftr drop_sshiftr]
 
-lemma shiftl_of_bl: "of_bl bl << n = of_bl (bl @ replicate n False)"
-  by (induct n) (auto simp: shiftl_def shiftl1_of_bl replicate_app_Cons_same)
+lemma shiftl_of_bl: "push_bit n (of_bl bl) = of_bl (bl @ replicate n False)"
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps nth_append)
+  done
 
-lemma shiftl_bl: "w << n = of_bl (to_bl w @ replicate n False)"
+lemma shiftl_bl: "push_bit n w = of_bl (to_bl w @ replicate n False)"
   for w :: "'a::len word"
 proof -
-  have "w << n = of_bl (to_bl w) << n"
+  have "push_bit n w = push_bit n (of_bl (to_bl w))"
     by simp
   also have "\<dots> = of_bl (to_bl w @ replicate n False)"
     by (rule shiftl_of_bl)
   finally show ?thesis .
 qed
 
-lemma bl_shiftl: "to_bl (w << n) = drop n (to_bl w) @ replicate (min (size w) n) False"
+lemma bl_shiftl: "to_bl (push_bit n w) = drop n (to_bl w) @ replicate (min (size w) n) False"
   by (simp add: shiftl_bl word_rep_drop word_size)
 
 lemma shiftr1_bl_of:
@@ -1535,10 +1529,10 @@ lemma shiftr1_bl_of:
 
 lemma shiftr_bl_of:
   "length bl \<le> LENGTH('a) \<Longrightarrow>
-    (of_bl bl::'a::len word) >> n = of_bl (take (length bl - n) bl)"
+    drop_bit n (of_bl bl::'a::len word) = of_bl (take (length bl - n) bl)"
   by (rule bit_word_eqI) (auto simp add: bit_simps rev_nth)
 
-lemma shiftr_bl: "x >> n \<equiv> of_bl (take (LENGTH('a) - n) (to_bl x))"
+lemma shiftr_bl: "drop_bit n x \<equiv> of_bl (take (LENGTH('a) - n) (to_bl x))"
   for x :: "'a::len word"
   using shiftr_bl_of [where 'a='a, of "to_bl x"] by simp
 
@@ -1959,14 +1953,9 @@ lemma is_aligned_replicate:
   assumes aligned: "is_aligned w n"
   and          nv: "n \<le> LENGTH('a)"
   shows   "to_bl w = (take (LENGTH('a) - n) (to_bl w)) @ replicate n False"
-proof -
-  from nv have rl: "\<And>q. q < 2 ^ (LENGTH('a) - n) \<Longrightarrow>
-      to_bl (2 ^ n * (of_nat q :: 'a word)) =
-      drop n (to_bl (of_nat q :: 'a word)) @ replicate n False"
-    by (metis bl_shiftl le_antisym min_def shiftl_t2n wsst_TYs(3))
-  show ?thesis using aligned
-    by (auto simp: rl elim: is_alignedE)
-qed
+  apply (rule nth_equalityI)
+  using assms apply (simp_all add: nth_append not_less word_size to_bl_nth is_aligned_imp_not_bit)
+  done
 
 lemma is_aligned_drop:
   fixes w::"'a::len word"
@@ -2021,9 +2010,12 @@ lemma to_bl_2p:
   "n < LENGTH('a) \<Longrightarrow>
    to_bl ((2::'a::len word) ^ n) =
    replicate (LENGTH('a) - Suc n) False @ True # replicate n False"
-  apply (subst shiftl_1 [symmetric])
-  apply (subst bl_shiftl)
-  apply (simp add: to_bl_1 min_def word_size)
+  apply (rule nth_equalityI)
+   apply (auto simp add: nth_append to_bl_nth word_size bit_simps not_less nth_Cons le_diff_conv)
+  subgoal for i
+  apply (cases \<open>Suc (i + n) - LENGTH('a)\<close>)
+  apply simp_all
+    done
   done
 
 lemma xor_2p_to_bl:
@@ -2080,8 +2072,8 @@ lemma of_bl_mult_and_not_mask_eq:
 
 lemma bin_to_bl_of_bl_eq:
   "\<lbrakk>is_aligned (a::'a::len word) n; length b + c \<le> n; length b + c < LENGTH('a)\<rbrakk>
-  \<Longrightarrow> bin_to_bl (length b) (uint ((a + of_bl b * 2^c) >> c)) = b"
-  apply (simp flip: push_bit_eq_mult take_bit_eq_mask add: shiftr_eq_drop_bit)
+  \<Longrightarrow> bin_to_bl (length b) (uint (drop_bit c (a + of_bl b * 2^c))) = b"
+  apply (simp flip: push_bit_eq_mult take_bit_eq_mask)
   apply (subst disjunctive_add)
    apply (auto simp add: bit_simps not_le not_less unsigned_or_eq unsigned_drop_bit_eq
      unsigned_push_bit_eq bin_to_bl_or simp flip: bin_to_bl_def)
@@ -2160,35 +2152,25 @@ lemma sshiftr_clamp_pos:
   assumes
     "LENGTH('a) \<le> n"
     "0 \<le> sint x"
-  shows "(x::'a::len word) >>> n = 0"
+  shows "signed_drop_bit n (x::'a::len word) = 0"
   apply (rule word_sint.Rep_eqD)
-  apply (unfold sshiftr_div_2n Word.sint_0)
-  apply (rule div_pos_pos_trivial)
-  subgoal using assms(2) .
-  apply (rule order.strict_trans[where b="2 ^ (LENGTH('a) - 1)"])
-  using sint_lt assms(1) by auto
+  apply (simp add: sint_signed_drop_bit_eq)
+  using assms
+  by (metis Word.sint_0 bit_last_iff not_less signed_drop_bit_beyond sint_signed_drop_bit_eq) 
 
 lemma sshiftr_clamp_neg:
   assumes
     "LENGTH('a) \<le> n"
     "sint x < 0"
-  shows "(x::'a::len word) >>> n = -1"
-proof -
-  have *: "- (2 ^ n) < sint x"
-    apply (rule order.strict_trans2[where b="- (2 ^ (LENGTH('a) - 1))"])
-    using assms(1) sint_ge by auto
-  show ?thesis
-    apply (rule word_sint.Rep_eqD)
-    apply (unfold sshiftr_div_2n Word.sint_n1)
-    apply (subst div_minus_minus[symmetric])
-    apply (rule div_pos_neg_trivial)
-    subgoal using assms(2) by linarith
-    using * by simp
-qed
+  shows "signed_drop_bit n (x::'a::len word) = -1"
+  apply (rule word_sint.Rep_eqD)
+  apply (simp add: sint_signed_drop_bit_eq)
+  using assms
+  by (metis bit_last_iff signed_drop_bit_beyond sint_n1 sint_signed_drop_bit_eq) 
 
 lemma sshiftr_clamp:
   assumes "LENGTH('a) \<le> n"
-  shows "(x::'a::len word) >>> n = x >>> LENGTH('a)"
+  shows "signed_drop_bit n (x::'a::len word) = signed_drop_bit LENGTH('a) x"
   apply (cases "0 \<le> sint x")
   subgoal
     apply (subst sshiftr_clamp_pos[OF assms])
@@ -2226,54 +2208,19 @@ Like @{thm shiftr_bl_of}.
 \<close>
 lemma sshiftr_bl_of:
   assumes "length bl = LENGTH('a)"
-  shows "(of_bl bl::'a::len word) >>> n = of_bl (replicate n (hd bl) @ take (length bl - n) bl)"
+  shows "signed_drop_bit n (of_bl bl::'a::len word) = of_bl (replicate n (hd bl) @ take (length bl - n) bl)"
 proof -
-  {
-    fix n
-    assume "n \<le> LENGTH('a)"
-    hence "(of_bl bl::'a::len word) >>> n = of_bl (replicate n (hd bl) @ take (length bl - n) bl)"
-    proof (induction n)
-      case (Suc n)
-      hence "n < length bl" by (simp add: assms)
-      hence ne: "\<not>take (length bl - n) bl = []" by auto
-      have left: "hd (replicate n (hd bl) @ take (length bl - n) bl) = (hd bl)"
-        by (cases "0 < n") auto
-      have right: "butlast (take (length bl - n) bl) = take (length bl - Suc n) bl"
-        by (subst butlast_take) auto
-      have "(of_bl bl::'a::len word) >>> Suc n = sshiftr1 ((of_bl bl::'a::len word) >>> n)"
-        unfolding sshiftr_eq_funpow_sshiftr1 by simp
-      also have "\<dots> = of_bl (replicate (Suc n) (hd bl) @ take (length bl - Suc n) bl)"
-        apply (subst Suc.IH[OF Suc_leD[OF Suc.prems]])
-        apply (subst sshiftr1_bl_of)
-        subgoal using assms Suc.prems by simp
-        apply (rule arg_cong[where f=of_bl])
-        apply (subst butlast_append)
-        unfolding left right using ne by simp
-      finally show ?case .
-    qed (transfer, simp)
-  }
-  note pos = this
-  {
-    assume n: "LENGTH('a) \<le> n"
-    have "(of_bl bl::'a::len word) >>> n = (of_bl bl::'a::len word) >>> LENGTH('a)"
-      by (rule sshiftr_clamp[OF n])
-    also have "\<dots> = of_bl (replicate LENGTH('a) (hd bl) @ take (length bl - LENGTH('a)) bl)"
-      apply (rule pos) ..
-    also have "\<dots> = of_bl (replicate n (hd bl) @ take (length bl - n) bl)"
-    proof -
-      have "(of_bl (replicate LENGTH('a) (hd bl)) :: 'a word) = of_bl (replicate n (hd bl))"
-        apply (subst of_bl_drop'[symmetric, of "n - LENGTH('a)" "replicate n (hd bl)"])
-        unfolding length_replicate by (auto simp: n)
-      thus ?thesis by (simp add: assms n)
-    qed
-    finally have "(of_bl bl::'a::len word) >>> n
-      = of_bl (replicate n (hd bl) @ take (length bl - n) bl)" .
-  }
-  thus ?thesis using pos by fastforce
+  from assms obtain b bs where \<open>bl = b # bs\<close>
+    by (cases bl) simp_all
+  then have *: \<open>bl ! 0 \<longleftrightarrow> b\<close> \<open>hd bl \<longleftrightarrow> b\<close>
+    by simp_all
+  show ?thesis
+  apply (rule bit_word_eqI)
+    using assms * by (auto simp add: bit_simps nth_append rev_nth not_less)
 qed
 
 text\<open>Like @{thm shiftr_bl}\<close>
-lemma sshiftr_bl: "x >>> n \<equiv> of_bl (replicate n (msb x) @ take (LENGTH('a) - n) (to_bl x))"
+lemma sshiftr_bl: "signed_drop_bit n x \<equiv> of_bl (replicate n (msb x) @ take (LENGTH('a) - n) (to_bl x))"
   for x :: "'a::len word"
   unfolding word_msb_alt
   by (smt (z3) length_to_bl_eq sshiftr_bl_of word_bl.Rep_inverse)

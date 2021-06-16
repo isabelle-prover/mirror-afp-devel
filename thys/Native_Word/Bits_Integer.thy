@@ -68,22 +68,6 @@ lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer
 
 end
 
-instance integer :: semiring_bit_syntax ..
-
-context
-  includes lifting_syntax integer.lifting
-begin
-
-lemma shiftl_integer_transfer [transfer_rule]:
-  \<open>(pcr_integer ===> (=) ===> pcr_integer) (\<lambda>k n. push_bit n k) (<<)\<close>
-  unfolding shiftl_eq_push_bit by transfer_prover
-
-lemma shiftr_integer_transfer [transfer_rule]:
-  \<open>(pcr_integer ===> (=) ===> pcr_integer) (\<lambda>k n. drop_bit n k) (>>)\<close>
-  unfolding shiftr_eq_drop_bit by transfer_prover
-
-end
-
 instantiation integer :: lsb begin
 context includes integer.lifting begin
 
@@ -474,8 +458,8 @@ by(simp add: integer_set_bit_def)
 
 lemma set_bit_integer_conv_masks:
   fixes x :: integer shows
-  "set_bit x i b = (if b then x OR (1 << i) else x AND NOT (1 << i))"
-  by transfer (simp add: int_set_bit_False_conv_NAND int_set_bit_True_conv_OR shiftl_eq_push_bit)
+  "set_bit x i b = (if b then x OR (push_bit i 1) else x AND NOT (push_bit i 1))"
+  by transfer (simp add: int_set_bit_False_conv_NAND int_set_bit_True_conv_OR)
 
 end
 
@@ -512,8 +496,8 @@ begin
 
 lemma shiftl_integer_conv_mult_pow2:
   fixes x :: integer shows
-  "x << n = x * 2 ^ n"
-  by (simp add: push_bit_eq_mult shiftl_eq_push_bit)
+  "push_bit n x = x * 2 ^ n"
+  by (fact push_bit_eq_mult)
 
 lemma integer_shiftl_code [code]:
   "integer_shiftl x (Code_Numeral.Neg n) = undefined x (Code_Numeral.Neg n)"
@@ -541,8 +525,8 @@ declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> integer \<Rightarrow> 
 
 lemma shiftr_integer_conv_div_pow2:
   includes integer.lifting fixes x :: integer shows
-  "x >> n = x div 2 ^ n"
-  by (simp add: drop_bit_eq_div shiftr_eq_drop_bit)
+  "drop_bit n x = x div 2 ^ n"
+  by (fact drop_bit_eq_div)
 
 lemma shiftr_integer_code [code]:
   fixes x :: integer shows
@@ -640,8 +624,8 @@ definition bit_integer_test :: "bool" where
     , NOT 1, NOT (- 3)
     , -1 XOR 3, 1 XOR (- 3), 3 XOR 5, -5 XOR (- 3)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , 1 << 2, -1 << 3
-    , 100 >> 3, -100 >> 3] :: integer list)
+    , push_bit 2 1, push_bit 3 (- 1)
+    , drop_bit 3 100, drop_bit 3 (- 100)] :: integer list)
   = [ 3, 1, 1, -7
     , -3, -3, 7, -1
     , -2, 2

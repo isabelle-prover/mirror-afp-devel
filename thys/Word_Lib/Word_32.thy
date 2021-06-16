@@ -84,10 +84,7 @@ lemma of_nat32_0:
 
 lemma unat_mask_2_less_4:
   "unat (p && mask 2 :: word32) < 4"
-  apply (rule unat_less_helper)
-  apply (rule order_le_less_trans, rule word_and_le1)
-  apply (simp add: mask_eq)
-  done
+  by (rule unat_less_helper) (simp flip: take_bit_eq_mask add: take_bit_eq_mod word_mod_less_divisor)
 
 lemmas unat_of_nat32' = unat_of_nat_eq[where 'a=32]
 lemmas unat_of_nat32 = unat_of_nat32'[unfolded word_bits_len_of]
@@ -125,19 +122,23 @@ lemma unat_less_2p_word_bits:
 
 lemma Suc_unat_mask_div:
   "Suc (unat (mask sz div word_size::word32)) = 2 ^ (min sz word_bits - 2)"
-  apply (case_tac "sz < word_bits")
-   apply (case_tac "2 \<le> sz")
-    apply (clarsimp simp: word_size_def word_bits_def min_def mask_eq)
-    apply (drule (2) Suc_div_unat_helper
-           [where 'a=32 and sz=sz and us=2, simplified, symmetric])
-   apply (simp add: not_le word_size_def word_bits_def)
-   apply (case_tac sz, simp add: unat_word_ariths)
-   apply (case_tac nat, simp add: unat_word_ariths
-                                  unat_mask_word32 min_def word_bits_def)
-   apply simp
-  apply (simp add: unat_word_ariths
-                   unat_mask_word32 min_def word_bits_def word_size_def)
-  done
+proof (cases \<open>sz \<ge> 2\<close>)
+  case False
+  then have \<open>sz \<in> {0, 1}\<close>
+    by auto
+  then show ?thesis by (auto simp add: unat_div word_size_def)
+next
+  case True
+  moreover define n where \<open>n = sz - 2\<close>
+  ultimately have \<open>sz = n + 2\<close>
+    by simp
+  moreover have \<open>4 * 2 ^ n = 2 ^ n * (4::nat)\<close>
+    by (simp add: ac_simps)
+  then have \<open>4 * 2 ^ n - Suc 0 = (2 ^ n - 1) * 4 + 3\<close>
+    by (simp add: mult_eq_if)
+  ultimately show ?thesis
+    by (simp add: unat_div unat_mask word_size_def word_bits_def min_def)
+qed
 
 lemmas word32_minus_one_le' = word_minus_one_le[where 'a=32]
 lemmas word32_minus_one_le = word32_minus_one_le'[simplified]

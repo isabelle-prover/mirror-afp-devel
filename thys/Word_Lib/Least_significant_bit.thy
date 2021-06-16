@@ -12,6 +12,7 @@ theory Least_significant_bit
   imports
     "HOL-Library.Word"
     Bits_Int
+    More_Word
 begin
 
 class lsb = semiring_bits +
@@ -64,7 +65,7 @@ lemma lsb_word_eq:
 
 lemma word_lsb_alt: "lsb w = bit w 0"
   for w :: "'a::len word"
-  by (auto simp: word_test_bit_def word_lsb_def)
+  by (simp add: lsb_word_eq)
 
 lemma word_lsb_1_0 [simp]: "lsb (1::'a::len word) \<and> \<not> lsb (0::'b::len word)"
   unfolding word_lsb_def by simp
