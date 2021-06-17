@@ -172,8 +172,8 @@ proof -
    assume le: "a \<le> b"
    hence nle: "unat a \<le> unat b" by(unat_arith)
    have lem: "unat b \<le> unat ?mmw" by (simp add: word_unat_less_le) 
-   note word_upto_eq_upto[OF nle lem, unfolded word_unat.Rep_inverse]
-   thus "word_upto a b = map of_nat [unat a..<Suc (unat b)]" .
+   then show "word_upto a b = map of_nat [unat a..<Suc (unat b)]"
+   using word_upto_eq_upto [OF nle lem] by simp
 qed
 
 lemma word_upto_upt:

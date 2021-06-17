@@ -71,12 +71,9 @@ lift_definition normal_of_Float :: "Float.float \<Rightarrow> ('e, 'f)float"
 lemma sign_normal_of_Float:"sign (normal_of_Float x) = (if x > 0 then 0 else 1)"
   by transfer (auto simp: Let_def mantissa_pos_iff)
 
-lemma uints_bitlen_eq: "uints n = {i. 0 \<le> i \<and> bitlen i \<le> n}"
-  by (auto simp: uints_num bitlen_le_iff_power)
-
 lemma uint_word_of_int_bitlen_eq:
   "uint (word_of_int x::'a::len word) = x" if "bitlen x \<le> LENGTH('a)" "x \<ge> 0"
-  by (subst word_uint.Abs_inverse) (simp_all add: uints_bitlen_eq that)
+  using that by (simp add: bitlen_le_iff_power take_bit_int_eq_self) 
 
 lemma fraction_normal_of_Float:"fraction (normal_of_Float x::('e, 'f)float) =
   (nat \<bar>mantissa x\<bar> * 2 ^ (Suc LENGTH('f) - nat (bitlen \<bar>mantissa x\<bar>)) - 2 ^ LENGTH('f))"

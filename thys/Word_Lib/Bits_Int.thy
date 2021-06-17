@@ -1447,6 +1447,20 @@ lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
   by (simp add: take_bit_int_eq_self_iff le_less_trans less_exp)
 
+lemma bin_cat_cong: "concat_bit n b a = concat_bit m d c"
+  if "n = m" "a = c" "take_bit m b = take_bit m d"
+  using that(3) unfolding that(1,2)
+  by (simp add: bin_cat_eq_push_bit_add_take_bit)
+
+lemma bin_cat_eqD1: "concat_bit n b a = concat_bit n d c \<Longrightarrow> a = c"
+  by (metis drop_bit_bin_cat_eq)
+
+lemma bin_cat_eqD2: "concat_bit n b a = concat_bit n d c \<Longrightarrow> take_bit n b = take_bit n d"
+  by (metis take_bit_bin_cat_eq)
+
+lemma bin_cat_inj: "(concat_bit n b a) = concat_bit n d c \<longleftrightarrow> a = c \<and> take_bit n b = take_bit n d"
+  by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
+
 code_identifier
   code_module Bits_Int \<rightharpoonup>
   (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations

@@ -11,7 +11,6 @@ theory Aligned
     "HOL-Library.Word"
     More_Word
     Word_EqI
-    Typedef_Morphisms
 begin
 
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
@@ -185,11 +184,9 @@ proof cases
     ultimately have upls: "unat x + unat y = 2 ^ m * (2 ^ k * q1 + q2)"
     proof -
       have f1: "unat x = 2 ^ (m + k) * q1"
-        by (metis (no_types) \<open>x = of_nat (2 ^ (m + k) * q1)\<close> l1 nat_mod_lem word_unat.inverse_norm
-                             zero_less_numeral zero_less_power)
+        using q1v unat_mult_power_lem xv by blast
       have "unat y = 2 ^ m * q2"
-        by (metis (no_types) \<open>y = of_nat (2 ^ m * q2)\<close> l2 nat_mod_lem word_unat.inverse_norm
-                             zero_less_numeral zero_less_power)
+        using q2v unat_mult_power_lem yv by blast
       then show ?thesis
         using f1 by (simp add: power_add semiring_normalization_rules(34))
     qed
@@ -255,7 +252,7 @@ proof cases
       by (rule div_mult_mod_eq)
 
     have "unat (push_bit m k) = unat (2 ^ m * k)"
-      by (simp add: push_bit_eq_mult)
+      by (simp add: push_bit_eq_mult ac_simps)
     also have "\<dots> = (2 ^ m * unat k) mod (2 ^ LENGTH('a))" using mv
       by (simp add: unat_word_ariths(2))
     also have "\<dots> = 2 ^ m * (unat k mod 2 ^ q)"
@@ -769,16 +766,12 @@ proof cases
     by (rule aligned_add_offset_no_wrap) fact+
 
   show ?thesis using al szv
-    apply -
-    apply (erule is_alignedE)
-    apply (subst word_unat.Rep_inject [symmetric])
-    apply (subst unat_mod)
-    apply (subst iffD1 [OF unat_add_lem], rule ux)
-    apply simp
-    apply (subst unat_mult_power_lem, assumption+)
-    apply (simp)
-    apply (rule mod_less[OF less_le_trans[OF unat_mono], OF kv])
-    apply (erule eq_imp_le[OF unat_power_lower])
+    apply (simp flip: take_bit_eq_mod)
+    apply (rule bit_word_eqI)
+    apply (auto simp add: bit_simps)
+    apply (metis assms(2) bit_or_iff is_aligned_mask is_aligned_nth leD less_mask_eq word_and_le1 word_bw_lcs(1) word_neq_0_conv word_plus_and_or_coroll)
+     apply (meson assms(2) leI less_2p_is_upper_bits_unset)
+    apply (metis assms(2) bit_disjunctive_add_iff bit_imp_le_length bit_push_bit_iff is_alignedE' less_2p_is_upper_bits_unset)
     done
 next
   assume "\<not> sz < LENGTH('a)"
@@ -1278,5 +1271,58 @@ lemma is_aligned_add_not_aligned:
 lemma neg_mask_add_aligned:
   "\<lbrakk> is_aligned p n; q < 2 ^ n \<rbrakk> \<Longrightarrow> (p + q) AND NOT (mask n) = p AND NOT (mask n)"
   by (metis is_aligned_add_helper is_aligned_neg_mask_eq)
+
+lemma word_add_power_off:
+  fixes a :: "'a :: len word"
+  assumes ak: "a < k"
+  and kw: "k < 2 ^ (LENGTH('a) - m)"
+  and mw: "m < LENGTH('a)"
+  and off: "off < 2 ^ m"
+shows "(a * 2 ^ m) + off < k * 2 ^ m"
+proof (cases "m = 0")
+  case True
+  then show ?thesis using off ak by simp
+next
+  case False
+
+  from ak have ak1: "a + 1 \<le> k" by (rule inc_le)
+  then have "(a + 1) * 2 ^ m \<noteq> 0"
+    apply -
+    apply (rule word_power_nonzero)
+    apply (erule order_le_less_trans  [OF _ kw])
+    apply (rule mw)
+    apply (rule less_is_non_zero_p1 [OF ak])
+    done
+  then have "(a * 2 ^ m) + off < ((a + 1) * 2 ^ m)" using kw mw
+    apply -
+    apply (simp add: distrib_right)
+    apply (rule word_plus_strict_mono_right [OF off])
+    apply (rule is_aligned_no_overflow'')
+    apply (rule is_aligned_mult_triv2)
+    apply assumption
+    done
+  also have "\<dots> \<le> k * 2 ^ m" using ak1 mw kw False
+    apply -
+    apply (erule word_mult_le_mono1)
+    apply (simp add: p2_gt_0)
+    apply (simp add: word_less_nat_alt)
+    apply (meson nat_mult_power_less_eq zero_less_numeral)
+    done
+  finally show ?thesis .
+qed
+
+lemma offset_not_aligned:
+  "\<lbrakk> is_aligned (p::'a::len word) n; i > 0; i < 2 ^ n; n < LENGTH('a)\<rbrakk> \<Longrightarrow>
+   \<not> is_aligned (p + of_nat i) n"
+  apply (erule is_aligned_add_not_aligned)
+  apply transfer
+  apply (auto simp add: is_aligned_iff_udvd)
+  apply (metis (no_types, lifting) le_less_trans less_not_refl2 less_or_eq_imp_le of_nat_eq_0_iff take_bit_eq_0_iff take_bit_nat_eq_self_iff take_bit_of_nat unat_lt2p unat_power_lower)
+  done
+
+lemma le_or_mask:
+  "w \<le> w' \<Longrightarrow> w OR mask x \<le> w' OR mask x"
+  for w w' :: \<open>'a::len word\<close>
+  by (metis neg_mask_add_mask add.commute le_word_or1 mask_2pm1 neg_mask_mono_le word_plus_mono_left)
 
 end

@@ -396,7 +396,7 @@ proof (cases rule: sign_cases[of x])
   assume "sign x = 0"
   then have "x = plus_infinity" using assms
     unfolding float_defs
-    by transfer (auto simp: emax_def unat_eq_0)
+    by transfer (auto simp: emax_def unat_eq_0 simp flip: word_eq_iff_unsigned)
   then show ?thesis ..
 next
   assume "sign x = 1"
@@ -479,8 +479,7 @@ lemma normal_exponent_bounds_real:
 
 lemma float_eqI:
   "x = y" if "sign x = sign y" "fraction x = fraction y" "exponent x = exponent y"
-  using that
-  by transfer auto
+  using that by transfer (auto simp add: word_unat_eq_iff)
 
 lemma float_induct[induct type:float, case_names normal denormal neg zero infinity nan]:
   fixes a::"('e, 'f)float"
