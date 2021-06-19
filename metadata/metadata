@@ -10042,6 +10042,11 @@ abstract =
   algebras and Kleene algebras we verify the correctness of an
   array-based implementation of disjoint-set forests with a naive union
   operation and a find operation with path compression.
+extra-history =
+  Change history:
+  [2021-06-19]:
+  added path halving, path splitting, relational Peano structures, union by rank
+  (revision 98c7aa03457d)
 
 [PAC_Checker]
 title = Practical Algebraic Calculus Checker
