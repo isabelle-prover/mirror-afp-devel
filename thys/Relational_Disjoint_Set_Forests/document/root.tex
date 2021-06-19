@@ -18,7 +18,7 @@
 \begin{abstract}
   We give a simple relation-algebraic semantics of read and write operations on associative arrays.
   The array operations seamlessly integrate with assignments in the Hoare-logic library.
-  Using relation algebras and Kleene algebras we verify the correctness of an array-based implementation of disjoint-set forests with a naive union operation and a find operation with path compression.
+  Using relation algebras and Kleene algebras we verify the correctness of an array-based implementation of disjoint-set forests using the union-by-rank strategy and find operations with path compression, path splitting and path halving.
 \end{abstract}
 
 \tableofcontents
@@ -32,16 +32,19 @@ We give a relation-algebraic semantics for such read/write access to associative
 This allows us to extend relation-algebraic verification methods to a lower level of more efficient implementations.
 
 In this theory we focus on arrays with the same index and value sets, which can be modelled as homogeneous relations and therefore as elements of relation algebras and Kleene algebras \cite{Kozen1994,Tarski1941}.
-We implement and verify the correctness of disjoint-set forests with path compression and naive union \cite{CormenLeisersonRivest1990,GallerFisher1964,Tarjan1975}.
+We implement and verify the correctness of disjoint-set forests with path compression strategies and union-by-rank \cite{CormenLeisersonRivest1990,GallerFisher1964,Tarjan1975}.
 
 In order to prepare this theory for future applications with weighted graphs, the verification uses Stone relation algebras, which have weaker axioms than relation algebras \cite{Guttmann2018c}.
 
 Section 2 contains the simple relation-algebraic semantics of associative array read and write and basic properties of these access operations.
 In Section 3 we give a Kleene-relation-algebraic semantics of disjoint-set forests.
-The make-set, find-set and union-sets operations are implemented and verified in Section 4.
+The make-set operation, find-set with path compression and the naive union-sets operation are implemented and verified in Section 4.
+Section 5 presents further results on disjoint-set forests and relational array access.
+The initialisation of disjoint-set forests, path halving and path splitting are implemented and verified in Section 6.
+In Section 7 we study relational Peano structures and implement and verify union-by-rank.
 
-This Isabelle/HOL theory formally verifies results in \cite{Guttmann2020b}.
-Theorem numbers from this paper are mentioned in the theory for reference.
+This Isabelle/HOL theory formally verifies results in \cite{Guttmann2020b} and in an extended version of that paper.
+Theorem numbers from the extended version of the paper are mentioned in the theories for reference.
 See the paper for further details and related work.
 
 Several Isabelle/HOL theories are related to disjoint sets.

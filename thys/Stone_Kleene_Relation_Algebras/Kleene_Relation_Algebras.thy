@@ -1418,6 +1418,10 @@ proof -
     by (simp add: assms(1) conv_complement conv_dist_inf)
 qed
 
+lemma acyclic_plus:
+  "acyclic x \<Longrightarrow> acyclic (x\<^sup>+)"
+  by (simp add: star.circ_transitive_equal star.left_plus_circ mult_assoc)
+
 end
 
 text \<open>
@@ -3264,6 +3268,33 @@ A Kleene relation algebra is based on a relation algebra.
 \<close>
 
 class kleene_relation_algebra = relation_algebra + stone_kleene_relation_algebra
+
+class stone_kleene_relation_algebra_tarski = stone_kleene_relation_algebra + stone_relation_algebra_tarski
+
+class kleene_relation_algebra_tarski = kleene_relation_algebra + stone_kleene_relation_algebra_tarski
+begin
+
+subclass relation_algebra_tarski ..
+
+end
+
+class stone_kleene_relation_algebra_consistent = stone_kleene_relation_algebra + stone_relation_algebra_consistent
+
+class kleene_relation_algebra_consistent = kleene_relation_algebra + stone_kleene_relation_algebra_consistent
+begin
+
+subclass relation_algebra_consistent ..
+
+end
+
+class stone_kleene_relation_algebra_tarski_consistent = stone_kleene_relation_algebra + stone_relation_algebra_tarski_consistent
+
+class kleene_relation_algebra_tarski_consistent = kleene_relation_algebra + stone_kleene_relation_algebra_tarski_consistent
+begin
+
+subclass relation_algebra_tarski_consistent ..
+
+end
 
 end
 

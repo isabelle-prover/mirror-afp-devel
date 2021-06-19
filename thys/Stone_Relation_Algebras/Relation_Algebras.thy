@@ -890,6 +890,43 @@ lemma point_arc:
   "point x \<Longrightarrow> arc (x * x\<^sup>T)"
   by (simp add: points_arc)
 
+lemma arc_expanded_1:
+  "arc e \<Longrightarrow> e * x * e\<^sup>T \<le> 1"
+  by (meson arc_expanded order_trans top_greatest mult_left_isotone mult_right_isotone)
+
+lemma arc_expanded_2:
+  "arc e \<Longrightarrow> e\<^sup>T * x * e \<le> 1"
+  by (meson arc_expanded order_trans top_greatest mult_left_isotone mult_right_isotone)
+
+lemma point_conv_comp:
+  "point x \<Longrightarrow> x\<^sup>T * x = top"
+  using order_eq_iff shunt_bijective top_greatest vector_conv_covector by blast
+
+lemma point_antisymmetric:
+  "point x \<Longrightarrow> antisymmetric x"
+  by (simp add: vector_covector)
+
+lemma mapping_inf_point_arc:
+  assumes "mapping x"
+      and "point y"
+    shows "arc (x \<sqinter> y)"
+proof (unfold arc_expanded, intro conjI)
+  show "(x \<sqinter> y) * top * (x \<sqinter> y)\<^sup>T \<le> 1"
+    by (metis assms conv_dist_comp covector_conv_vector inf.orderE inf.sup_monoid.add_commute surjective_conv_total top.extremum top_right_mult_increasing vector_export_comp)
+  have "(x \<sqinter> y)\<^sup>T * top * (x \<sqinter> y) = x\<^sup>T * y * (x \<sqinter> y)"
+    by (simp add: assms(2) conv_dist_inf covector_inf_comp_3)
+  also have "... = x\<^sup>T * (y \<sqinter> y\<^sup>T) * x"
+    by (simp add: assms(2) comp_associative covector_inf_comp_3 inf.sup_monoid.add_commute)
+  also have "... \<le> x\<^sup>T * x"
+    by (metis assms(2) comp_right_one mult_left_isotone mult_right_isotone vector_covector)
+  also have "... \<le> 1"
+    by (simp add: assms(1))
+  finally show "(x \<sqinter> y)\<^sup>T * top * (x \<sqinter> y) \<le> 1"
+    .
+  show "top * (x \<sqinter> y) * top = top"
+    by (metis assms inf_top_right inf_vector_comp mult_assoc)
+qed
+
 end
 
 subsection \<open>Single-Object Pseudocomplemented Distributive Allegories\<close>
@@ -1550,6 +1587,10 @@ proof -
     using inf_pp_semi_commute order_lesseq_imp by blast
 qed
 
+lemma antisymmetric_inf_diversity:
+  "antisymmetric x \<Longrightarrow> x \<sqinter> -1 = x \<sqinter> -x\<^sup>T"
+  by (smt (verit, del_insts) inf.orderE inf.sup_monoid.add_assoc inf.sup_monoid.add_commute inf_import_p one_inf_conv)
+
 end
 
 subsection \<open>Stone Relation Algebras\<close>
@@ -1956,6 +1997,10 @@ lemma arc_not_bot:
   "arc x \<Longrightarrow> x \<noteq> bot"
   using consistent mult_right_zero by auto
 
+lemma point_not_bot:
+  "point p \<Longrightarrow> p \<noteq> bot"
+  using consistent by force
+
 end
 
 class relation_algebra_consistent = relation_algebra + stone_relation_algebra_consistent
@@ -1968,6 +2013,8 @@ lemma arc_in_partition_xor:
   by (simp add: non_bot_arc_in_partition_xor arc_not_bot)
 
 end
+
+class relation_algebra_tarski_consistent = relation_algebra + stone_relation_algebra_tarski_consistent
 
 end
 

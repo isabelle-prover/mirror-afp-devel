@@ -547,6 +547,10 @@ lemma order_char_2:
   "x \<le> y \<longleftrightarrow> x \<squnion> -x \<le> y \<squnion> -x"
   using order_char_1 by auto
 
+lemma half_shunting:
+  "x \<le> y \<squnion> z \<Longrightarrow> x \<sqinter> -z \<le> y"
+  by (metis inf.sup_right_isotone inf_commute inf_sup_distrib1 sup.boundedE maddux_3_12)
+
 (*
 lemma pp_dist_sup [simp]: "--(x \<squnion> y) = --x \<squnion> --y" nitpick [expect=genuine] oops
 lemma regular_closed_sup: "regular x \<and> regular y \<longrightarrow> regular (x \<squnion> y)" nitpick [expect=genuine] oops

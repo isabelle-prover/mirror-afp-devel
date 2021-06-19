@@ -9,6 +9,7 @@ session Relational_Disjoint_Set_Forests (AFP) = Stone_Kleene_Relation_Algebras +
 
   theories
     Disjoint_Set_Forests
+    More_Disjoint_Set_Forests
 
   document_files
     "root.tex"
