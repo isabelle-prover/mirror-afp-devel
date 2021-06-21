@@ -42,10 +42,15 @@ object profile extends isabelle.CI_Profile
   {
 
     def entry_of_session(info: Sessions.Info): Option[String] =
-      if (info.dir.dir.file == afp_thys.file)
-        Some(info.dir.base.implode)
+    {
+      val afp_path = afp_thys.canonical_file.toPath
+      val session_path = info.dir.canonical_file.toPath
+
+      if (session_path.startsWith(afp_path))
+        Some(afp_path.relativize(session_path).getName(0).toFile.getName)
       else
         None
+    }
 
     def group_by_entry(results: Build.Results): Map[Option[String], List[String]] =
       results.sessions.toList.map { name =>
