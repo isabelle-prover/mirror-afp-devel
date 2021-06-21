@@ -10640,3 +10640,25 @@ abstract =
   shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
   a prime $p$ and positive integers $a$ and $b$. The proof follows <a
   href="https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf">Amir Hossein Parvardi's</a>.
+
+[IMP_Compiler]
+title = A Shorter Compiler Correctness Proof for Language IMP
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer science/Programming languages/Compiling
+date = 2021-06-04
+notify = pasquale.noce.lavoro@gmail.com
+abstract = 
+  This paper presents a compiler correctness proof for the didactic
+  imperative programming language IMP, introduced in Nipkow and
+  Klein's book on formal programming language semantics (version of
+  March 2021), whose size is just two thirds of the book's proof in
+  the number of formal text lines. As such, it promises to constitute a
+  further enhanced reference for the formal verification of compilers
+  meant for larger, real-world programming languages.  The presented
+  proof does not depend on language determinism, so that the proposed
+  approach can be applied to non-deterministic languages as well. As a
+  confirmation, this paper extends IMP with an additional
+  non-deterministic choice command, and proves compiler correctness,
+  viz. the simulation of compiled code execution by source code, for
+  such extended language.
+

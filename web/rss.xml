@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+    <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+              <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP_Compiler.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This paper presents a compiler correctness proof for the didactic
+imperative programming language IMP, introduced in Nipkow and
+Klein&#39;s book on formal programming language semantics (version of
+March 2021), whose size is just two thirds of the book&#39;s proof in
+the number of formal text lines. As such, it promises to constitute a
+further enhanced reference for the formal verification of compilers
+meant for larger, real-world programming languages.  The presented
+proof does not depend on language determinism, so that the proposed
+approach can be applied to non-deterministic languages as well. As a
+confirmation, this paper extends IMP with an additional
+non-deterministic choice command, and proves compiler correctness,
+viz. the simulation of compiled code execution by source code, for
+such extended language.</description>
+    </item>
     <item>
        <title>Lyndon words</title>
               <link>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</link>
@@ -544,26 +565,6 @@ optimization (Ubx), a proof of bisimulation with (Inca), and a simple
 compilation function.&lt;/li&gt; &lt;/ul&gt;  This formalization was
 described in the CPP 2021 paper &lt;em&gt;Towards Efficient and
 Verified Virtual Machines for Dynamic Languages&lt;/em&gt;</description>
-    </item>
-    <item>
-       <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
-              <link>https://www.isa-afp.org/entries/Relational_Method.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Method.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-This paper introduces a new method for the formal verification of
-cryptographic protocols, the relational method, derived from
-Paulson&#39;s inductive method by means of some enhancements aimed at
-streamlining formal definitions and proofs, specially for protocols
-using public key cryptography. Moreover, this paper proposes a method
-to formalize a further security property, message anonymity, in
-addition to message confidentiality and authenticity.  The relational
-method, including message anonymity, is then applied to the
-verification of a sample authentication protocol, comprising Password
-Authenticated Connection Establishment (PACE) with Chip Authentication
-Mapping followed by the explicit verification of an additional
-password over the PACE secure channel.</description>
     </item>
   </channel>
 </rss>
