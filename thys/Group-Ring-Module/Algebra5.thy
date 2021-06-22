@@ -3315,7 +3315,7 @@ locale PolynRg = Ring +
        fixes S (structure)
        fixes X (structure)
        assumes X_mem_R:"X \<in> carrier R"
-       and not_zeroring:"\<not> Zero_ring S"
+       and not_zeroring:"\<not> zeroring S"
        and subring:  "Subring R S"
        and algfree: "algfree_cond R S X"
        and S_X_generate:"x \<in> carrier R \<Longrightarrow>
@@ -3388,8 +3388,8 @@ lemma (in PolynRg) is_Ring: "Ring R" ..
 lemma (in PolynRg) polyn_ring_nonzero:"1\<^sub>r \<noteq> \<zero>"
 apply (cut_tac Ring, cut_tac subring)
 apply (simp add:Subring_zero_ring_zero[THEN sym])
-apply (simp add:Subring_one_ring_one[THEN sym])
-apply (simp add:not_zeroring)
+  apply (simp add:Subring_one_ring_one[THEN sym])
+  using Ring.Zero_ring1 not_zeroring subring_Ring apply blast
 done
 
 lemma (in PolynRg) polyn_ring_S_nonzero:"1\<^sub>r\<^bsub>S\<^esub> \<noteq> \<zero>\<^bsub>S\<^esub>"
