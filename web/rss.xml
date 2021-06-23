@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
+    <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Van der Waerden's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Van_der_Waerden.html</link>
+       <guid>https://www.isa-afp.org/entries/Van_der_Waerden.html</guid>
+       <dc:creator> Katharina Kreuzer, Manuel Eberl       </dc:creator>
+       <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This article formalises the proof of Van der Waerden&#39;s Theorem
+from Ramsey theory.  Van der Waerden&#39;s Theorem states that for
+integers $k$ and $l$ there exists a number $N$ which guarantees that
+if an integer interval of length at least $N$ is coloured with $k$
+colours, there will always be an arithmetic progression of length $l$
+of the same colour in said interval. The proof goes along the lines of
+\cite{Swan}.  The smallest number $N_{k,l}$ fulfilling Van der
+Waerden&#39;s Theorem is then called the Van der Waerden Number.
+Finding the Van der Waerden Number is still an open problem for most
+values of $k$ and $l$.</description>
+    </item>
     <item>
        <title>A Shorter Compiler Correctness Proof for Language IMP</title>
               <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
@@ -545,26 +563,6 @@ logics.</description>
 We verify the correctness of Prim&#39;s, Kruskal&#39;s and
 Borůvka&#39;s minimum spanning tree algorithms based on algebras for
 aggregation and minimisation.</description>
-    </item>
-    <item>
-       <title>Inline Caching and Unboxing Optimization for Interpreters</title>
-              <link>https://www.isa-afp.org/entries/Interpreter_Optimizations.html</link>
-       <guid>https://www.isa-afp.org/entries/Interpreter_Optimizations.html</guid>
-       <dc:creator> Martin Desharnais       </dc:creator>
-       <pubDate>07 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization builds on the
-&lt;em&gt;VeriComp&lt;/em&gt; entry of the &lt;em&gt;Archive of Formal
-Proofs&lt;/em&gt; to provide the following contributions:  &lt;ul&gt;
-&lt;li&gt;an operational semantics for a realistic virtual machine
-(Std) for dynamically typed programming languages;&lt;/li&gt;
-&lt;li&gt;the formalization of an inline caching optimization (Inca),
-a proof of bisimulation with (Std), and a compilation
-function;&lt;/li&gt; &lt;li&gt;the formalization of an unboxing
-optimization (Ubx), a proof of bisimulation with (Inca), and a simple
-compilation function.&lt;/li&gt; &lt;/ul&gt;  This formalization was
-described in the CPP 2021 paper &lt;em&gt;Towards Efficient and
-Verified Virtual Machines for Dynamic Languages&lt;/em&gt;</description>
     </item>
   </channel>
 </rss>
