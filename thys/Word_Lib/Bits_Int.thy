@@ -57,7 +57,7 @@ lemma bin_nth_eq_iff: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) x = (bi
 
 lemma bin_eqI:
   "x = y" if "\<And>n. (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n \<longleftrightarrow> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) y n"
-  using that bin_nth_eq_iff [of x y] by (simp add: fun_eq_iff)
+  using that by (rule bit_eqI)
 
 lemma bin_eq_iff: "x = y \<longleftrightarrow> (\<forall>n. (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) y n)"
   by (fact bit_eq_iff)
@@ -69,7 +69,7 @@ lemma bin_nth_1 [simp]: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) 1 n \
   by (cases n) (simp_all add: bit_Suc)
 
 lemma bin_nth_minus1 [simp]: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (- 1) n"
-  by (induction n) (simp_all add: bit_Suc)
+  by simp
 
 lemma bin_nth_numeral: "(\<lambda>k::int. k div 2) x = y \<Longrightarrow> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x (numeral n) = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) y (pred_numeral n)"
   by (simp add: numeral_eq_Suc bit_Suc)
@@ -357,10 +357,10 @@ lemma bintr_Min: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- 1) 
   by (simp add: stable_imp_take_bit_eq)
 
 lemma sbintr_ge: "- (2 ^ n) \<le> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: sbintrunc_mod2p)
+  by (fact signed_take_bit_int_greater_eq_minus_exp)
 
 lemma sbintr_lt: "(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w < 2 ^ n"
-  by (simp add: sbintrunc_mod2p)
+  by (fact signed_take_bit_int_less_exp)
 
 lemma sign_Pls_ge_0: "bin_sign bin = 0 \<longleftrightarrow> bin \<ge> 0"
   for bin :: int
