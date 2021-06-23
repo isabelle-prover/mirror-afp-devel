@@ -847,7 +847,7 @@ proof(rule ta_seq_consist_nthI)
     by(simp only: ldropn_Suc_conv_ldropn lappend_ltake_enat_ldropn)
   also have "\<dots> = lappend (ltake (enat (ws i)) E) (LCons (lnth E (ws i)) (ldropn (Suc (ws i)) (ltake (enat i) E)))"
     using \<open>ws i < i\<close> i_len \<open>enat (ws i) < llength (ltake (enat i) E)\<close> 
-    by(simp add: lnth_ltake)(simp add: min_def)
+    by (simp add: lnth_ltake)
   finally have r_E: "ltake (enat i) E = \<dots>" .
 
   have "mrw_values P Map.empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al)

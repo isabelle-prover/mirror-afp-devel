@@ -103,7 +103,7 @@ lemma Rep_hf_hinsert:
   done
 
 lemma less_two_power: "n < 2 ^ n"
-  by (induct n, auto)
+  by (fact less_exp)
 
 
 section \<open>Verifying the Axioms of HF\<close>

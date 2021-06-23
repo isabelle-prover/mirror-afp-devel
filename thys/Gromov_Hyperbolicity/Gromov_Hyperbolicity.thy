@@ -265,7 +265,7 @@ proof -
   have "t - 2 * deltaG(TYPE('a)) = min t (t- deltaG(TYPE('a))) - deltaG(TYPE('a))"
     unfolding min_def using antisym by fastforce
   also have "... \<le> min (Gromov_product_at x (geodesic_segment_param G x t) y) (Gromov_product_at x y (geodesic_segment_param H x t)) - deltaG(TYPE('a))"
-    using I * by auto
+    using I * by (simp add: algebra_simps)
   also have "... \<le> Gromov_product_at x (geodesic_segment_param G x t) (geodesic_segment_param H x t)"
     by (rule hyperb_ineq)
   finally have I: "Gromov_product_at x (geodesic_segment_param G x t) (geodesic_segment_param H x t) \<ge> t - 2 * deltaG(TYPE('a))"

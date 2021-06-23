@@ -239,6 +239,7 @@ proof-
     apply (rule filterlim_at_top_smallomega_1, simp)
     using eventually_gt_at_top[of "max 1 (1/b)"]
     apply (auto elim!: eventually_mono intro!: add_pos_nonneg simp: field_simps)
+    apply (smt (z3) divide_nonneg_nonneg mult_neg_pos mult_nonneg_nonneg powr_non_neg)
     done
   hence ev_g: "eventually (\<lambda>x. \<bar>1 - ?g x\<bar> < 1) at_top"
     by (intro smallo_imp_abs_less_real smalloI_tendsto) simp_all

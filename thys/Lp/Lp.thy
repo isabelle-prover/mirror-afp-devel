@@ -448,7 +448,7 @@ proof -
       using times_ereal.simps(1) by (auto simp add: abs_mult)
     show ?thesis
       unfolding e2ennreal_mult[OF \<open>ereal \<bar>c\<bar> \<ge> 0\<close>] * scaleR_fun_def
-      using ennreal.abs_eq ennreal.rep_eq by auto
+      by simp
   qed
 
   have "esssup M (\<lambda>x. ereal 0) \<le> 0" using esssup_I by auto
@@ -490,7 +490,7 @@ next
   assume H: "f \<in> borel_measurable M" "AE x in M. \<bar>f x\<bar> \<le> C"
   then have "esssup M (\<lambda>x. \<bar>f x\<bar>) \<le> C" using esssup_I by auto
   then have "eNorm (\<LL> \<infinity> M) f \<le> C" unfolding L_infinity(1) using H(1)
-    by (auto, metis antisym e2ennreal_mono enn2ereal_ennreal ennreal.abs_eq ennreal.rep_eq ennreal_eq_0_iff ereal_less_eq(4) linear order.trans zero_ereal_def)
+    by auto (metis e2ennreal_ereal e2ennreal_mono)
   then show "f \<in> space\<^sub>N (\<LL> \<infinity> M)"
     using spaceN_iff le_less_trans by fastforce
 qed
@@ -528,7 +528,8 @@ proof (cases "f \<in> borel_measurable M")
 next
   case True
   then have "ennreal \<bar>f x\<bar> \<le> eNorm (\<LL> \<infinity> M) f" if "\<bar>f x\<bar> \<le> esssup M (\<lambda>x. \<bar>f x\<bar>)" for x
-    unfolding L_infinity(1) using that e2ennreal_mono ennreal.abs_eq ennreal.rep_eq by fastforce
+    unfolding L_infinity(1) using that e2ennreal_mono
+    by fastforce
   then show ?thesis using esssup_AE[of "\<lambda>x. ereal \<bar>f x\<bar>"] by force
 qed
 
@@ -554,7 +555,7 @@ proof -
   then have "eNorm (\<LL> \<infinity> M) f \<le> ereal C"
     unfolding L_infinity(1) using assms(1) e2ennreal_mono by force
   then have "ennreal (Norm (\<LL> \<infinity> M) f) \<le> ennreal C"
-    using eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> \<infinity> M)\<close>] assms(3) ennreal.abs_eq ennreal.rep_eq by auto
+    using eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> \<infinity> M)\<close>] assms(3) by auto
   then show "Norm (\<LL> \<infinity> M) f \<le> C" using assms(3) by auto
 qed
 

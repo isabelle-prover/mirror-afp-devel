@@ -456,7 +456,6 @@ apply (frule_tac c = c and k = "c_max S c" in polyn_expr_short, simp,
            polyn_expr R X (c_max S c) (c_max S c, snd c)",
         thin_tac "polyn_expr R X (c_max S d) d =
            polyn_expr R X (c_max S d) (c_max S d, snd d)")
-  apply (simp add: max.absorb1 max.absorb2)
   apply (frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
                   add_cf_pol_coeff, assumption+,
          rule_tac p = "polyn_expr R X (c_max S d)
@@ -5218,7 +5217,5 @@ apply (frule aadd_le_mono[of "0" "deg R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p 
 apply (simp add:aadd_0_l, simp add:aadd_commute[of  _ 
                 "deg R S X (snd (Hpr\<^bsub> R S X t R' Y f g h\<^esub> m))"])
 done
-
-declare max.absorb1 [simp del] max.absorb2 [simp del]
 
 end

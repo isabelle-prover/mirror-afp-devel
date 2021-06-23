@@ -126,7 +126,8 @@ lemma sorted_wrt_hd_less:
 lemma sorted_wrt_hd_less_take:
   assumes "sorted_wrt f (x # xs)" "\<And>x. f x x"
   shows "\<forall>y \<in> set (take n (x # xs)). f x y"
-  using assms sorted_wrt_hd_less in_set_takeD by fastforce
+  using assms sorted_wrt_hd_less [of f \<open>x # xs\<close>] in_set_takeD [of _ n \<open>x # xs\<close>]
+  by auto
 
 lemma sorted_wrt_take_less_hd_drop:
   assumes "sorted_wrt f xs" "n < length xs"

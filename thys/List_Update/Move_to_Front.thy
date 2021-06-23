@@ -32,8 +32,8 @@ proof-
   let ?xs = "take (index xs z) xs @ xs ! index xs z # drop (Suc (index xs z)) xs"
   have "x < y in mtf z xs = (y \<noteq> z \<and> (if x=z then y \<in> set ?xs else x < y in ?xs))"
     using assms
-    by(auto simp add: mtf_def before_in_def index_append)
-      (metis add_lessD1 index_less_size_conv length_take less_Suc_eq not_less_eq)
+    by (auto simp add: mtf_def before_in_def index_append)
+      (metis index_take index_take_if_set le_add1 le_trans less_imp_le_nat)
   with id_take_nth_drop[OF 0, symmetric] show ?thesis by(simp)
 qed
 

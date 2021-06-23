@@ -983,7 +983,7 @@ lemma psi_bounds_sustained:
   assumes "c \<ge> 0"
   shows "psi n \<le> c * ln 2 * n"
 proof -
-  have *: "psi n \<le> c * ln 2 * n" if "n \<le> 2^j" for j n
+  have "psi n \<le> c * ln 2 * n" if "n \<le> 2^j" for j n
   using that
   proof (induction j arbitrary: n)
     case 0
@@ -1008,8 +1008,7 @@ proof -
         finally show ?thesis using assms(1) by simp
       qed
     qed
-    have "n < 2 ^ n" by (induction n) simp_all
-    with *[of n n] show ?thesis by simp
+    from less_exp this [of n n] show ?thesis by simp
 qed
 
 lemma psi_ubound_log: "psi n \<le> 551 / 256 * ln 2 * n"
@@ -1544,7 +1543,8 @@ proof cases
   from \<open>n > 1\<close> n_less have "\<exists>p \<in> prime_constants. n < p \<and> p < 2 * n"
     unfolding bex_simps greaterThanLessThan_iff prime_constants_def by presburger
   moreover have "\<forall>p\<in>prime_constants. prime p" 
-    unfolding prime_constants_def ball_simps HOL.simp_thms by (intro conjI; pratt (silent))
+    unfolding prime_constants_def ball_simps HOL.simp_thms
+    by (intro conjI; pratt (silent))
   ultimately show ?thesis
     unfolding greaterThanLessThan_def greaterThan_def lessThan_def by blast
 next

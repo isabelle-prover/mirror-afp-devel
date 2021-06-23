@@ -652,7 +652,7 @@ next
     case True
     have h: "n < length gs" by fact
     thus "?thesis"
-    proof(simp add: take_Suc_conv_app_nth cn_merge_gs_tl_app)
+    proof (simp add: take_Suc_conv_app_nth cn_merge_gs_tl_app)
       obtain gp ga gf where a: "rec_ci (gs!n) = (gp, ga, gf)"
         by (metis prod_cases3)
       moreover have "min (length gs) n = n"
@@ -722,7 +722,7 @@ next
                       (ft + n),  ga := 0]}"
               using a c d e h
               apply(rule_tac mv_box_correct)
-               apply(simp, arith, arith)
+              apply simp_all
               done
             moreover have "(xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
               map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything)
@@ -740,10 +740,20 @@ next
         qed  
       qed
       ultimately show 
-        "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything}
-        cn_merge_gs (map rec_ci (take n gs)) ft [+] (case rec_ci (gs ! n) of (gprog, gpara, gn) \<Rightarrow>
-        gprog [+] mv_box gpara (ft + min (length gs) n))
-        {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything}"
+        "{\<lambda>nl. nl =
+          xs @
+          0 # 0 \<up> (ft + length gs) @ anything}
+    cn_merge_gs (map rec_ci (take n gs)) ft [+]
+    (case rec_ci (gs ! n) of
+     (gprog, gpara, gn) \<Rightarrow>
+       gprog [+] mv_box gpara (ft + n))
+    {\<lambda>nl. nl =
+          xs @
+          0 \<up> (ft - length xs) @
+          map (\<lambda>i. rec_exec i xs) (take n gs) @
+          rec_exec (gs ! n) xs #
+          0 \<up> (length gs - Suc n) @
+          0 # 0 \<up> length xs @ anything}"
         by simp
     qed
   next
@@ -1468,14 +1478,17 @@ lemma contract_dec_ft_length_plus_7[simp]: "\<lbrakk>ft = max (n + 3) (max fft g
      {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything}
      [Dec ft (length gap + 7)] 
      {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything}"
-  apply(simp add: abc_Hoare_halt_def)
-  apply(rule_tac x = 1 in exI)
+  apply (simp add: abc_Hoare_halt_def)
+  apply (rule_tac x = 1 in exI)
+  apply (auto simp add: max_def)
   apply(auto simp: abc_steps_l.simps abc_step_l.simps abc_fetch.simps nth_append 
       abc_lm_v.simps abc_lm_s.simps list_update_append)
   using list_update_length
     [of "(x - Suc y) # rec_exec (Pr (length xs) f g) (xs @ [x - Suc y]) #
           0 \<up> (max (length xs + 3) (max fft gft) - Suc (Suc (length xs)))" "Suc y" anything y]
-  apply(simp)
+     apply (auto simp add: Suc_diff_Suc)
+  using numeral_3_eq_3 apply presburger
+  using numeral_3_eq_3 apply presburger
   done
 
 lemma adjust_paras': 

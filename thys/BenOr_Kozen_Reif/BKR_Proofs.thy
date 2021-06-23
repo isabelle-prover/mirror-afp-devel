@@ -1915,7 +1915,8 @@ proof (induction "length qs" arbitrary: qs rule: less_induct)
       by blast 
   qed
   have q1_sat_props: "length qs > 1 \<longrightarrow> (p \<noteq> 0 \<and> (length qs > 0) \<and> (\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))) ) \<longrightarrow> satisfies_properties p ?q1 (get_subsets (calculate_data p ?q1)) (get_signs (calculate_data p ?q1)) (get_matrix (calculate_data p ?q1))"
-    using less.hyps[of ?q1] h_q1_len h_q1_copr by auto
+    using less.hyps[of ?q1] h_q1_len h_q1_copr
+    by (auto simp add: Let_def)
   have q2_help: "length qs > 1 \<longrightarrow> length (drop (length qs div 2) qs) < length qs"
     using h_q1_len by auto  
   then have q2_sat_props: "length qs > 1 \<longrightarrow> (p \<noteq> 0 \<and> (length qs > 0) \<and> (\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))) ) \<longrightarrow> satisfies_properties p ?q2 (get_subsets (calculate_data p ?q2)) (get_signs (calculate_data p ?q2)) (get_matrix (calculate_data p ?q2))"

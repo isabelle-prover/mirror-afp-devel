@@ -409,12 +409,7 @@ qed
 
 lemma fw_upd_canonical_id:
   "canonical M n \<Longrightarrow> i \<le> n \<Longrightarrow> j \<le> n \<Longrightarrow> k \<le> n \<Longrightarrow> fw_upd M k i j = M"
-proof (auto simp: fw_upd_def upd_def less_eq[symmetric] min.coboundedI2, goal_cases)
-  case 1
-  then have "M i j \<le> M i k + M k j" by auto
-  then have "min (M i j) (M i k + M k j) = M i j" by (simp split: split_min)
-  thus ?case by force
-qed
+  by (auto simp: fw_upd_def upd_def)
 
 lemma fw_canonical_id:
   "canonical M n \<Longrightarrow> i \<le> n \<Longrightarrow> j \<le> n \<Longrightarrow> k \<le> n \<Longrightarrow> fw M n k i j = M"

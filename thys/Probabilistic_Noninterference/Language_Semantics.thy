@@ -409,8 +409,7 @@ lemma sum_all0_intro:
 assumes "b = 0"
 and "\<And> a. a \<in> A \<Longrightarrow> f a = 0"
 shows "sum f A = b"
-apply(cases "finite A")
-by(metis assms sum.neutral sum.infinite)+
+  using assms by simp
 
 lemma sum_1:
 assumes I: "finite I" and ss: "sum f I = 1" and i: "i \<in> I - I1" and I1: "I1 \<subseteq> I"
@@ -808,7 +807,7 @@ shows
 "locateT cl ii < length cl \<and>
  locateI cl ii < brn (cl ! (locateT cl ii)) \<and>
  ii = brnL cl (locateT cl ii) + locateI cl ii"
-using assms locate[of cl brn] brn_gt_0
+using assms locate[of cl brn ii] brn_gt_0
 unfolding locateT_def locateI_def brnL_def
 unfolding brnL_lsum[THEN sym] by auto
 

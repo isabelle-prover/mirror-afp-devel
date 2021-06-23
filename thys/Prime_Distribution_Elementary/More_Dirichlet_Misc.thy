@@ -217,7 +217,8 @@ proof (rule finite_subset)
   show "{i. real (p ^ (k * i + l)) \<le> x} \<subseteq> {..nat \<lfloor>x\<rfloor>}"
   proof safe
     fix i assume i: "real (p ^ (k * i + l)) \<le> x"
-    have "i < 2 ^ i" by (induction i) auto
+    have "i < 2 ^ i"
+      by (rule less_exp)
     also from assms have "i \<le> k * i + l" by (cases k) auto
     hence "2 ^ i \<le> (2 ^ (k * i + l) :: nat)"
       using assms by (intro power_increasing) auto

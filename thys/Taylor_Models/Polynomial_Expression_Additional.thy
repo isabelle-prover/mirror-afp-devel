@@ -83,7 +83,10 @@ lemma num_params_polyadd:
 proof (induction p1 p2 rule: polyadd.induct)
   case (4 c n p c' n' p')
   then show ?case
-    by auto (auto simp: max_def Let_def split: if_splits)
+    apply (simp only: num_params.simps polyadd.simps ac_simps not_less Let_def le_max_iff_disj max.bounded_iff split: if_split)
+    apply simp
+        apply (smt (verit, ccfv_SIG) dual_order.trans le_cases3)
+    done
 qed auto
 
 lemma num_params_polyneg:
@@ -95,8 +98,13 @@ lemma num_params_polymul:
 proof (induction p1 p2 rule: polymul.induct)
   case (4 c n p c' n' p')
   then show ?case
-    by auto (auto simp: max_def Let_def split: if_splits
-          intro!: num_params_polyadd[THEN order_trans])
+    apply (cases n n' rule: linorder_cases)
+      apply (simp_all only: num_params.simps polyadd.simps polymul.simps ac_simps not_less Let_def le_max_iff_disj max.bounded_iff split: if_split)
+      apply simp_all
+      apply (smt (verit, best) le_cases3 order_trans)
+     apply (smt (verit, del_insts) le_max_iff_disj max_0L max_def num_params.simps(1) num_params.simps(8) num_params_polyadd)
+    apply (smt (z3) dual_order.trans nle_le)
+    done
 qed auto
 
 lemma num_params_polypow:

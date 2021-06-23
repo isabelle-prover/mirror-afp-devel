@@ -46,13 +46,7 @@ lemma drop_n_lem:
   fixes n :: nat and l :: "'a list"
   assumes "Suc n \<le> length l"
   shows "drop (Suc n) (l[n := x]) = drop (Suc n) l"
-proof -
-  from assms have "n < length l" by simp
-  from 
-    upd_conv_take_nth_drop[OF this] drop_Suc[of n "l[n := x]"] 
-    drop_Suc[of n l] assms
-  show ?thesis by (simp,(subst drop_tl)+, simp)
-qed
+  using assms by simp
 
 lemma drop_n: 
   fixes n :: nat and l :: "'a list" and g :: "'a list"

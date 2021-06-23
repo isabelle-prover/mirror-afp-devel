@@ -1217,6 +1217,8 @@ next
   case False
   then have "n > 0" "k > 0"
     by auto
+  from \<open>k > 0\<close> less_exp [of \<open>k - 1\<close>] have \<open>k \<le> 2 ^ (k - 1)\<close>
+    by (cases k) (simp_all add: less_eq_Suc_le)
   have PV: "partn_lst_VWF (\<omega> \<up> (1 + ord_of_nat (n-1) * ord_of_nat (k-1))) [ord_of_nat (2 ^ (k-1)), \<omega> \<up> (1 + ord_of_nat (n-1))] 2"
     using Erdos_Milner [of "ord_of_nat (n-1)" "k-1"] Ord_\<omega>1 Ord_mem_iff_lt less_imp_le by blast
   have "k+n \<le> Suc (k * n)"
@@ -1232,8 +1234,8 @@ next
   then have "partn_lst_VWF (\<omega>\<up>(n*k)) [\<omega> \<up> n, ord_of_nat (2 ^ (k-1))] 2"
     using ord_of_minus_1 [OF \<open>n > 0\<close>] by (simp add: one_V_def)
   then show ?thesis
-    using power_gt_expt [of 2 "k-1"]
-    by (force simp: less_Suc_eq intro: partn_lst_less)
+    using \<open>k \<le> 2 ^ (k - 1)\<close>
+    by (auto elim!: partn_lst_less simp add: less_Suc_eq)
 qed
 
 end

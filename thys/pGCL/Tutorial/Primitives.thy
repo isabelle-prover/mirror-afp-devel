@@ -105,7 +105,7 @@ is \emph{at least} 1/3, but we can make no stronger statement:\<close>
 lemma
   "\<lambda>s. 1/3 \<tturnstile> wp (flip_a (2/3) \<Sqinter> flip_a (1/3)) \<guillemotleft>\<lambda>s. a s = Heads\<guillemotright>"
   unfolding flip_a_def
-  by(pvcg, simp add:o_def le_funI)
+  by pvcg
 
 subsection \<open>Properties of Expectations\<close>
 

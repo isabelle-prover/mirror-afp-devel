@@ -2163,10 +2163,7 @@ proof (rule ccontr)
     by simp
   have yy: "y < 2 ^ length_nat y"
     apply (simp add: length_nat_def)
-    apply (rule LeastI)
-    apply (subgoal_tac "y < 2 ^ y",assumption)
-    apply (cases "0 \<le> y")
-    apply (induct y,simp_all)
+    using less_exp apply (rule LeastI)
     done
   with xx have "y < x" by simp
   with xy show False by simp

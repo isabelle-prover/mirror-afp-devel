@@ -407,14 +407,13 @@ next
   qed
 qed
 
-
-
 declare abs_split.node\<^sub>i.simps [simp add]
+
 lemma node\<^sub>i_rule: assumes c_cap: "2*k \<le> c" "c \<le> 4*k+1"
   shows "<is_pfa c tsi (a,n) * list_assn ((btree_assn k) \<times>\<^sub>a id_assn) ts tsi * btree_assn k t ti>
   node\<^sub>i k (a,n) ti
   <\<lambda>r. btupi_assn k (abs_split.node\<^sub>i k ts t) r >\<^sub>t"
-proof (cases "length ts \<le> 2*k")
+proof (cases "length ts \<le> 2 * k")
   case [simp]: True
   then show ?thesis
     apply(subst node\<^sub>i_def)
@@ -426,6 +425,8 @@ proof (cases "length ts \<le> 2*k")
     using True apply(sep_auto dest!: mod_starD list_assn_len)
     done
 next
+  note max.absorb1 [simp del] max.absorb2 [simp del] max.absorb3 [simp del] max.absorb4 [simp del]
+  note min.absorb1 [simp del] min.absorb2 [simp del] min.absorb3 [simp del] min.absorb4 [simp del]
   case [simp]: False
   then obtain ls sub sep rs where
     split_half_eq: "BTree_Set.split_half ts = (ls,(sub,sep)#rs)"
@@ -435,13 +436,12 @@ next
     apply(rule hoare_triple_preI)
     apply(sep_auto dest!: mod_starD list_assn_len)
        apply(sep_auto simp add:  split_relation_alt split_relation_length is_pfa_def dest!: mod_starD list_assn_len)
-
     using False apply(sep_auto simp add: split_relation_alt )
     using False  apply(sep_auto simp add: is_pfa_def)[]
     apply(sep_auto)[]
       apply(sep_auto simp add: is_pfa_def split_relation_alt)[]
     using c_cap apply(sep_auto simp add: is_pfa_def)[]
-    apply(sep_auto)[]
+     apply(sep_auto)[]
     using c_cap apply(sep_auto simp add: is_pfa_def)[]
     using c_cap apply(simp)
     apply(vcg)

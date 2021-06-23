@@ -2253,7 +2253,8 @@ lemma summable_fds_exp_aux:
 proof (rule summable_finite)
   fix k assume "k \<notin> {..n}"
   hence "n < k" by simp
-  also have "\<dots> < 2 ^ k" by (induction k) auto
+  also have "\<dots> < 2 ^ k"
+    by (rule less_exp)
   finally have "fds_nth (f' ^ k) n = 0"
     using assms by (intro fds_nth_power_eq_0) auto
   thus "fds_nth (f' ^ k) n /\<^sub>R fact k = 0" by simp
@@ -2748,7 +2749,8 @@ proof
   have less: "n < 2 ^ k" if "n < k" for k
   proof -
     have "n < k" by fact
-    also have "\<dots> < 2 ^ k" by (induction k) auto
+    also have "\<dots> < 2 ^ k"
+      by (rule less_exp)
     finally show ?thesis .
   qed
   have nonneg_power: "fds_nth (f' ^ k) n \<in> \<real>\<^sub>\<ge>\<^sub>0" for k

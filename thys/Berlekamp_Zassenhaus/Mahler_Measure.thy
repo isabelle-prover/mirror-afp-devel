@@ -358,7 +358,8 @@ proof -
   let ?roots = "(complex_roots_complex f)"
   let ?g = "\<Prod>a\<leftarrow>?roots. linH a"
   (* g is chosen such that lead_coeff_g holds, and its l2 norm is equal to f's l2 norm *)
-  have max:"\<And>a. cmod (if 1 < cmod a then cnj a else 1) = max 1 (cmod a)" by(simp add:if_split,auto)
+  have max:"\<And>a. cmod (if 1 < cmod a then cnj a else 1) = max 1 (cmod a)"
+    by simp
   have "\<And>a. 1 < cmod a \<Longrightarrow> a \<noteq> 0" by auto
   hence "\<And>a. lead_coeff (linH a) = (if (cmod a > 1) then cnj a else 1)" by(auto simp:if_split)
   hence lead_coeff_g:"cmod (lead_coeff ?g) = (\<Prod>a\<leftarrow>?roots. max 1 (cmod a))" by(auto simp:max)

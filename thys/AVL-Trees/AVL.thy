@@ -167,7 +167,7 @@ next
   with assms show ?thesis
   proof(cases "height l = height r + 2")
     case True
-      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split) arith+
+      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split)
   next
     case False
       with assms show ?thesis by (simp add: avl_mkt)
@@ -186,7 +186,7 @@ next
   with assms show ?thesis
   proof(cases "height r = height l + 2")
     case True
-      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split) arith+
+      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split)
   next
     case False
       with assms show ?thesis by (simp add: avl_mkt)

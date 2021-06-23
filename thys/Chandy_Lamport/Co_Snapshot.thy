@@ -164,8 +164,6 @@ lemma cotrace_cos: "cotrace init t \<Longrightarrow> j < llength t \<Longrightar
   apply (auto simp: s_chop[of j "_ # ltake j _"] cos_def nth_Cons' ltake_LCons lnth_LCons'
     take_Cons' take_ltake
     split: llist.splits enat.splits if_splits elim: order.strict_trans2[rotated])
-  apply (subst (asm) nth_ltake)
-   apply (auto elim!: order.strict_trans2[rotated]) []
   apply (subst (asm) s_chop[of j "_ # ltake j _"])
    apply (auto simp: take_Cons' take_ltake split: enat.splits)
   done

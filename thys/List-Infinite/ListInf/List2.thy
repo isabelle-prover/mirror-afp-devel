@@ -613,7 +613,6 @@ apply (insert length_upt[of m "m+n"])
 apply (simp add: expand_list_eq)
 apply (simp add: sublist_list_length)
 apply (frule add_le_imp_le_diff2)
-apply (simp add: min_eqR)
 apply (clarsimp, rename_tac i)
 apply (simp add: sublist_list_nth)
 done

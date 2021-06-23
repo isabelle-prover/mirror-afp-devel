@@ -46,14 +46,16 @@ qed
 
 lemma nat_to_set_upper_bound: "x \<in> nat_to_set u \<Longrightarrow> 2 ^ x \<le> u" by (simp add: nat_to_set_def)
 
-lemma x_lt_2_x: "x < 2 ^ x" by (induct x) auto
+lemma x_lt_2_x: "x < 2 ^ x"
+  by (rule less_exp)
 
 lemma nat_to_set_upper_bound1: "x \<in> nat_to_set u \<Longrightarrow> x < u"
 proof -
   assume "x \<in> nat_to_set u"
   then have S1: "2 ^ x \<le> u" by (simp add: nat_to_set_def)
   have S2: "x < 2 ^ x" by (rule x_lt_2_x)
-  from S1 S2 show ?thesis by auto
+  from S2 S1 show ?thesis
+    by (rule less_le_trans)
 qed
 
 lemma nat_to_set_upper_bound2: "nat_to_set u \<subseteq> {i. i < u}"
@@ -130,7 +132,8 @@ qed
 lemma log2_gt: "x < 2 ^ (log2 x + 1)"
 proof -
   have "x < 2^x" by (rule x_lt_2_x)
-  then have S1: "x < 2^(x+1)" by simp
+  then have S1: "x < 2^(x+1)"
+    by (simp add: numeral_2_eq_2)
   define y where "y = x"
   from S1 y_def have S2: "x < 2^(y+1)" by auto
   let ?P = "\<lambda> z. x < 2^(z+1)"

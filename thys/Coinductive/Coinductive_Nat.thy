@@ -589,7 +589,7 @@ next
     case (enat x')
     { assume "finite (max x ` Y)"
       hence "finite (max x ` {y \<in> Y. y > x})"
-        by(rule finite_subset[rotated]) auto
+        by (rule rev_finite_subset) (auto simp add: image_iff dest: max.absorb4 sym)
       hence "finite {y \<in> Y. y > x}"
         by(rule finite_imageD)(auto intro!: inj_onI simp add: max_def split: if_split_asm)
       moreover have "finite {y \<in> Y. y \<le> x}"

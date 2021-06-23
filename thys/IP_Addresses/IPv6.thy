@@ -828,7 +828,9 @@ begin
     else
       map Some [a,b,c,d,e,f,g,h]
     )"
-  by(simp add: ipv6_preferred_to_compressed.simps max_zero_streak_def List_explode_goup_by_zeros)
+    apply (simp only: ipv6_preferred_to_compressed.simps Let_def max_zero_streak_def List_explode_goup_by_zeros)
+    using List_explode_goup_by_zeros by presburger
+
 
     
   private lemma "ipv6_preferred_to_compressed (IPv6AddrPreferred 0 0 0 0 0 0 0 0) = [None]" by eval

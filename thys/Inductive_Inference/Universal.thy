@@ -403,7 +403,8 @@ proof -
     proof -
       have "length (take k ?ys) < length gs"
         by (simp add: \<open>k < length gs\<close> less_imp_le_nat min_less_iff_disj)
-      then show ?thesis using step_reachable by auto
+      then show ?thesis using step_reachable \<open>k < length gs\<close>
+        by auto
     qed
     finally have "reachable (?stack, None) (?stack1, None)" .
     moreover have "nonterminating (?stack1, None)"

@@ -35,7 +35,7 @@ proof -
       with **[of "c - max 0 (c - x) / 2"] show ?case by force
     qed
     then obtain X where X: "\<And>n. f (X n) \<notin> A m" "\<And>n. X n < c" "\<And>n. X (Suc n) > c - max 0 ((c - X n) / 2)"
-      by auto
+      by auto (metis diff_gt_0_iff_gt half_gt_zero_iff max.absorb3 max.commute)
     have X_ge: "X n \<ge> c - (c - X 0) / 2 ^ n" for n
     proof (induction n)
       case (Suc n)
@@ -131,7 +131,7 @@ proof -
       with **[of "c + max 0 (x - c) / 2"] show ?case by force
     qed
     then obtain X where X: "\<And>n. f (X n) \<notin> A m" "\<And>n. X n > c" "\<And>n. X (Suc n) < c + max 0 ((X n - c) / 2)"
-      by auto
+      by auto (metis add.left_neutral half_gt_zero_iff less_diff_eq max.absorb4) 
     have X_le: "X n \<le> c + (X 0 - c) / 2 ^ n" for n
     proof (induction n)
       case (Suc n)

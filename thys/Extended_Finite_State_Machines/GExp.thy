@@ -166,17 +166,17 @@ next
 qed auto
 
 definition max_input :: "vname gexp \<Rightarrow> nat option" where
-  "max_input g = (let inputs = (enumerate_gexp_inputs g) in if inputs = {} then None else Some (Max inputs))"
+  "max_input g = (let inputs = enumerate_gexp_inputs g in if inputs = {} then None else Some (Max inputs))"
 
 definition max_input_list :: "vname gexp list \<Rightarrow> nat option" where
-  "max_input_list g = fold max (map (\<lambda>g. max_input g) g) None"
+  "max_input_list g = fold max (map max_input g) None"
 
 lemma max_input_list_cons:
   "max_input_list (a # G) = max (max_input a) (max_input_list G)"
-  apply (simp add: max_input_list_def)
-  apply (cases "max_input a")
-   apply (simp add: max_def_raw)
-  by (metis (no_types, lifting) List.finite_set Max.insert Max.set_eq_fold fold_simps(1) list.set(2) max.assoc set_empty)
+  apply (cases \<open>max_input a\<close>)
+   apply (simp_all add: max_input_list_def flip: Max.set_eq_fold)
+  apply (metis (mono_tags, lifting) List.finite_set Max_insert Max_singleton bot_option_def finite_imageI max.assoc max_bot2)
+  done
 
 fun enumerate_regs :: "vname gexp \<Rightarrow> nat set" where
   "enumerate_regs (Bc _) = {}" |
@@ -233,12 +233,13 @@ proof-
 qed
 
 definition max_reg_list :: "vname gexp list \<Rightarrow> nat option" where
-  "max_reg_list g = (fold max (map (\<lambda>g. max_reg g) g) None)"
+  "max_reg_list g = fold max (map max_reg g) None"
 
 lemma max_reg_list_cons:
   "max_reg_list (a # G) = max (max_reg a) (max_reg_list G)"
-  apply (simp add: max_reg_list_def)
-  by (metis (no_types, lifting) List.finite_set Max.insert Max.set_eq_fold fold.simps(1) id_apply list.simps(15) max.assoc set_empty)
+  apply (simp add: max_reg_list_def flip: Max.set_eq_fold)
+  apply (metis List.finite_set Max_insert bot_option_def empty_not_insert finite_imageI finite_insert insert_commute max.commute max_bot2)
+  done
 
 lemma max_reg_list_append_singleton:
   "max_reg_list (as@[bs]) = max (max_reg_list as) (max_reg_list [bs])"
@@ -713,18 +714,7 @@ lemma length_padding: "length (padding n) = n"
   by (induct n, auto)
 
 lemma length_take_or_pad: "length (take_or_pad a n) = n"
-proof(induct n)
-  case 0
-  then show ?case
-    by (simp add: take_or_pad_def)
-next
-  case (Suc n)
-  then show ?case
-    apply (simp add: take_or_pad_def)
-    apply standard
-     apply auto[1]
-    by (simp add: length_padding)
-qed
+  by (induction n) (simp_all add: take_or_pad_def length_padding)
 
 fun enumerate_gexp_strings :: "'a gexp \<Rightarrow> String.literal set" where
   "enumerate_gexp_strings (Bc _) = {}" |

@@ -877,7 +877,7 @@ proof (rule nat_less_induct, (rule impI)+)
    by simp
   moreover have "ipurge_tr I (c_dom D) u (c_tr step out ?s (take n ys)) =
     c_tr step out ?s (ipurge_tr I D u (take n ys))"
-  proof (rule c_tr_ipurge_tr_1, simp, erule conjE, simp add: min_def)
+  proof (rule c_tr_ipurge_tr_1, simp, erule conjE)
     fix m
     have "m < n \<longrightarrow> m \<in> {..<length ys} \<longrightarrow>
       D (ys ! m) \<notin> sinks I D u (take (Suc m) ys) \<longrightarrow>

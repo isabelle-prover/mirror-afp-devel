@@ -4400,9 +4400,11 @@ apply (subst polyn_add, assumption+,
        frule_tac c = "(n + na, h)" and 
                d = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))" in 
                add_cf_pol_coeff, assumption)
-apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
-       (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))" in polyn_expr_split,
-       simp only:mp,
+  apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
+       (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))" in polyn_expr_split)
+  apply (simp only: mp)
+
+  apply (
        thin_tac "polyn_expr R X (Suc (n + na))
          (add_cf S (n + na, h)
            (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))) =
@@ -4410,15 +4412,18 @@ apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
          (fst (add_cf S (n + na, h)
                 (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))),
           snd (add_cf S (n + na, h)
-                (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))))",
-       subst add_cf_len, assumption+,
-       simp add:sp_cf_len, simp add:ext_cf_len max_def,
-       cut_tac f = "add_cf S (n + na, h)
+                (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))))")
+  apply (subst add_cf_len)
+  apply assumption+
+  apply (simp add: sp_cf_len)
+  apply (simp add: ext_cf_len max_def)
+  apply (cut_tac f = "add_cf S (n + na, h)
            (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))" in 
-            pol_coeff_split,
-       simp only:add_cf_len,
-             simp only:sp_cf_len, simp add:ext_cf_len, simp add:max_def,
-       thin_tac "pol_coeff S
+            pol_coeff_split)
+  apply (simp only: add_cf_len)
+  apply (simp only: sp_cf_len)
+  apply (simp add: ext_cf_len)
+  apply (thin_tac "pol_coeff S
          (add_cf S (n + na, h)
            (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))))",
        subgoal_tac "snd (add_cf S (n + na, h) (sp_cf S (g (Suc na)) 
@@ -4589,19 +4594,16 @@ apply (frule m_cf_pol_coeff[of d])
         simp,
         simp only:polyn_minus_m_cf[of d "fst d"],
         drule sym, simp)
- apply (frule polyn_add1[of c "m_cf S d"], assumption+, simp add:m_cf_len,
-        thin_tac "polyn_expr R X (fst c) c \<plusminus> polyn_expr R X (fst d) 
-         (m_cf S d) =
-         polyn_expr R X (max (fst c) (fst d)) (add_cf S c (m_cf S d))",
-        thin_tac "polyn_expr R X (fst d) d = polyn_expr R X (fst c) c",
-        thin_tac "polyn_expr R X (fst c) c \<in> carrier R", drule sym)
+  apply (frule polyn_add1 [of c "m_cf S d"])
+  apply assumption+
+  apply (simp add: m_cf_len)
+  apply (thin_tac "polyn_expr R X (fst d) d = polyn_expr R X (fst c) c")
+  apply (thin_tac "polyn_expr R X (fst c) c \<in> carrier R", drule sym)
  apply (frule_tac add_cf_pol_coeff[of c "m_cf S d"], simp add:m_cf_len)
  apply (frule coeff_0_pol_0[THEN sym, of "add_cf S c (m_cf S d)" 
-                "max (fst c) (fst d)"],
-        simp add:add_cf_len m_cf_len, simp,
-        thin_tac "polyn_expr R X (max (fst c) (fst d)) 
-                                          (add_cf S c (m_cf S d)) = \<zero>",
-        thin_tac "pol_coeff S (add_cf S c (m_cf S d))")
+                "max (fst c) (fst d)"])
+  apply (simp add:add_cf_len m_cf_len, simp)
+        apply (thin_tac "pol_coeff S (add_cf S c (m_cf S d))")
  apply (simp add:add_cf_def m_cf_def max_def)
  apply (rule conjI)
   apply (rule allI, rule impI,
@@ -4681,8 +4683,9 @@ apply (rule subsetI, simp)
  apply (erule conjE)
 
  apply (case_tac "fst c \<le> fst d")
- apply (frule_tac i = x in le_trans[of _ "fst c" "fst d"], assumption+, simp,
-        rule contrapos_pp, simp+, simp add:max_def,
+  apply (frule_tac i = x in le_trans[of _ "fst c" "fst d"], assumption+, simp)
+apply (
+        rule contrapos_pp, simp+,
         frule_tac i = x in le_trans[of _ "fst c" "fst d"], assumption+,
         drule_tac a = x in forall_spec, assumption,
         drule le_imp_less_or_eq[of "fst c" "fst d"],

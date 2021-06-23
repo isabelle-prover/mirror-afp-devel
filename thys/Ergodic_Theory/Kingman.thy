@@ -283,6 +283,20 @@ private fun v :: "nat \<Rightarrow> 'a \<Rightarrow> real" where "v n x = (
   else if n = 1 then u 1 x
   else min (u n x) (Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n})))"
 
+private lemma v0 [simp]:
+  \<open>v 0 x = max (u 0 x) 0\<close>
+  by simp
+
+private lemma v1 [simp]:
+  \<open>v (Suc 0) x = u 1 x\<close>
+  by simp
+
+private lemma v2 [simp]:
+  \<open>v n x = min (u n x) (Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n}))\<close> if \<open>n \<ge> 2\<close>
+  using that by (subst v.simps) (simp del: v.simps)
+
+declare v.simps [simp del]
+
 private lemma integrable_v:
   "integrable M (v n)" for n
 proof (induction n rule: nat_less_induct)
@@ -300,7 +314,7 @@ proof (induction n rule: nat_less_induct)
   next
     assume "n > 1"
     hence "v n x = min (u n x) (MIN k \<in> {0<..<n}. v k x + v (n-k) ((T^^k) x))" for x
-      by auto
+      by simp
     moreover have "integrable M (\<lambda>x. min (u n x) (MIN k \<in> {0<..<n}. v k x + v (n-k) ((T^^k) x)))"
       apply (rule integrable_min)
       apply (simp add: H(2))
@@ -1843,7 +1857,8 @@ proof -
                       "subcocycle_lim_ereal v x = - real K"
                       "\<forall>n. real_cond_exp M Invariants (u n) x \<le> real_cond_exp M Invariants (w n) x"
       have "subcocycle_lim_ereal w x > -\<infinity>"
-        using H(2) H(3) MInfty_neq_ereal(1) ereal_MInfty_lessI max.cobounded2 by fastforce
+        using H(2) H(3) 
+        by auto (metis MInfty_neq_ereal(1) ereal_infty_less_eq2(2) max.cobounded2)
       then have "subcocycle_lim_ereal w x = ereal(subcocycle_lim w x)"
         unfolding subcocycle_lim_def using subcocycle_lim_ereal_not_PInf[of w x] ereal_real by force
       moreover have "(\<lambda>n. real_cond_exp M Invariants (w n) x / n) \<longlonglongrightarrow> ereal(subcocycle_lim w x)" using H(1) by auto
