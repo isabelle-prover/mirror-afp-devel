@@ -7,13 +7,17 @@
 section "Normalising Word Numerals"
 
 theory Norm_Words
-  imports Bits_Int Signed_Words
+  imports Signed_Words
 begin
 
 text \<open>
   Normalise word numerals, including negative ones apart from @{term "-1"}, to the
   interval \<open>[0..2^len_of 'a)\<close>. Only for concrete word lengths.
 \<close>
+
+lemma bintrunc_numeral:
+  "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (numeral k) x = of_bool (odd x) + 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (pred_numeral k) (x div 2)"
+  by (simp add: numeral_eq_Suc take_bit_Suc mod_2_eq_odd)
 
 lemma neg_num_bintr:
   "(- numeral x :: 'a::len word) = word_of_int (take_bit LENGTH('a) (- numeral x))"

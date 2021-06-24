@@ -892,10 +892,7 @@ lemma word_and_or_mask_aligned2:
 
 lemma is_aligned_ucastI:
   "is_aligned w n \<Longrightarrow> is_aligned (ucast w) n"
-  apply transfer
-  apply (auto simp add: min_def)
-  apply (metis bintrunc_bintrunc_ge bintrunc_n_0 nat_less_le not_le take_bit_eq_0_iff)
-  done
+  by (simp add: bit_ucast_iff is_aligned_nth)
 
 lemma ucast_le_maskI:
   "a \<le> mask n \<Longrightarrow> UCAST('a::len \<rightarrow> 'b::len) a \<le> mask n"
@@ -955,9 +952,9 @@ proof -
     by simp
   then have \<open>concat_bit n' (int (push_bit n m)) (int q)
     = concat_bit n' (int (push_bit n m')) (int q')\<close>
-    by (simp add: of_nat_push_bit of_nat_take_bit bin_cat_eq_push_bit_add_take_bit)
+    by (simp add: of_nat_push_bit of_nat_take_bit concat_bit_eq)
   then show ?thesis
-    by (simp add: bin_cat_inj p p' off off' take_bit_of_nat take_bit_push_bit word_of_nat_eq_iff)
+    by (simp add: p p' off off' take_bit_of_nat take_bit_push_bit word_of_nat_eq_iff concat_bit_eq_iff)
       (simp add: push_bit_eq_mult)
 qed
 
@@ -1533,7 +1530,7 @@ lemma of_int_sint_scast:
 
 lemma scast_of_nat_to_signed [simp]:
   "scast (of_nat x :: 'a :: len word) = (of_nat x :: 'a signed word)"
-  by transfer simp
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 lemma scast_of_nat_signed_to_unsigned_add:
   "scast (of_nat x + of_nat y :: 'a :: len signed word) = (of_nat x + of_nat y :: 'a :: len word)"
@@ -1866,11 +1863,7 @@ proof (rule classical)
   let ?range = \<open>{- (2 ^ (size a - 1))..<2 ^ (size a - 1)} :: int set\<close>
 
   have result_range: "sint a sdiv sint b \<in> ?range \<union> {2 ^ (size a - 1)}"
-    apply (cut_tac sdiv_int_range [where a="sint a" and b="sint b"])
-    apply (erule rev_subsetD)
-    using sint_range' [where x=a]  sint_range' [where x=b]
-    apply (auto simp: max_def abs_if word_size)
-    done
+    using sdiv_word_min [of a b] sdiv_word_max [of a b] by auto
 
   have result_range_overflow: "(sint a sdiv sint b = 2 ^ (size a - 1)) = (?a_int_min \<and> ?b_minus1)"
     apply (rule iffI [rotated])
@@ -1888,7 +1881,7 @@ proof (rule classical)
     apply auto
     apply (cases \<open>size a\<close>)
      apply simp_all
-    apply (smt (z3) One_nat_def diff_Suc_1 signed_word_eqI sint_int_min sint_range' wsst_TYs(3))
+    apply (smt (z3) One_nat_def diff_Suc_1 signed_word_eqI sint_int_min sint_range_size wsst_TYs(3))
     done
 
   have result_range_simple: "(sint a sdiv sint b \<in> ?range) \<Longrightarrow> ?thesis"
@@ -1921,8 +1914,7 @@ lemma signed_arith_ineq_checks_to_eq:
     = (sint a sdiv sint b = sint (a sdiv b))"
   "((- (2 ^ (size a - 1)) \<le> (sint a smod sint b)) \<and> (sint a smod sint b \<le> (2 ^ (size a - 1) - 1)))
     = (sint a smod sint b = sint (a smod b))"
-  by (auto simp: sint_word_ariths word_size signed_div_arith signed_mod_arith
-                    sbintrunc_eq_in_range range_sbintrunc)
+  by (auto simp: sint_word_ariths word_size signed_div_arith signed_mod_arith signed_take_bit_int_eq_self_iff intro: sym dest: sym)
 
 lemma signed_arith_sint:
   "((- (2 ^ (size a - 1)) \<le> (sint a + sint b)) \<and> (sint a + sint b \<le> (2 ^ (size a - 1) - 1)))

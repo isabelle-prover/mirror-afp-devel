@@ -6,7 +6,6 @@ chapter \<open>More bit operations on integers\<close>
 
 theory More_Bits_Int
 imports
-  "Word_Lib.Bits_Int"
   "Word_Lib.Bit_Comprehension"
 begin
 
@@ -97,27 +96,29 @@ where
 | "bitANDN_num (num.Bit1 m) (num.Bit0 n) = (case bitANDN_num m n of None \<Rightarrow> Some num.One | Some n' \<Rightarrow> Some (num.Bit1 n'))"
 | "bitANDN_num (num.Bit1 m) (num.Bit1 n) = map_option num.Bit0 (bitANDN_num m n)"
 
-lemma int_numeral_bitOR_num: "numeral n OR numeral m = (numeral (bitOR_num n m) :: int)"
-by(induct n m rule: bitOR_num.induct) simp_all
+lemma int_numeral_bitOR_num:
+  "numeral n OR numeral m = (numeral (bitOR_num n m) :: int)"
+  by (induction n m rule: bitOR_num.induct) simp_all
 
-lemma int_numeral_bitAND_num: "numeral n AND numeral m = (case bitAND_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
-by(induct n m rule: bitAND_num.induct)(simp_all split: option.split)
+lemma int_numeral_bitAND_num:
+  "numeral n AND numeral m = (case bitAND_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
+  by (induction n m rule: bitAND_num.induct) (simp_all split: option.split)
 
 lemma int_numeral_bitXOR_num:
   "numeral m XOR numeral n = (case bitXOR_num m n of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
-by(induct m n rule: bitXOR_num.induct)(simp_all split: option.split)
+  by (induction m n rule: bitXOR_num.induct) (simp_all split: option.split)
 
 lemma int_or_not_bitORN_num:
   "numeral n OR NOT (numeral m) = (- numeral (bitORN_num n m) :: int)"
-  by (induction n m rule: bitORN_num.induct) (simp_all add: add_One BitM_inc_eq)
+  by (induction n m rule: bitORN_num.induct) (simp_all add: add_One BitM_inc_eq not_int_def)
 
 lemma int_and_not_bitANDN_num:
   "numeral n AND NOT (numeral m) = (case bitANDN_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
-  by (induction n m rule: bitANDN_num.induct) (simp_all add: add_One BitM_inc_eq split: option.split)
+  by (induction n m rule: bitANDN_num.induct) (simp_all add: add_One BitM_inc_eq not_int_def split: option.split)
 
 lemma int_not_and_bitANDN_num:
   "NOT (numeral m) AND numeral n = (case bitANDN_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
-by(simp add: int_and_not_bitANDN_num[symmetric] int_and_comm)
+  by (simp add: ac_simps flip: int_and_not_bitANDN_num)
 
 code_identifier
   code_module More_Bits_Int \<rightharpoonup>

@@ -10,8 +10,6 @@ theory More_Arithmetic
   imports Main "HOL-Library.Type_Length" "HOL-Library.Bit_Operations"
 begin
 
-declare iszero_0 [intro]
-
 lemma n_less_equal_power_2:
   "n < 2 ^ n"
   by (fact less_exp)

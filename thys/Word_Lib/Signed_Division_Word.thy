@@ -93,6 +93,25 @@ lemma sdiv_word_min:
   apply (metis abs_le_iff add.inverse_inverse le_cases le_minus_iff not_le signed_take_bit_int_eq_self_iff signed_take_bit_minus)
   done
 
+lemma sdiv_word_max:
+  \<open>sint a sdiv sint b \<le> 2 ^ (size a - Suc 0)\<close>
+  for a b :: \<open>'a::len word\<close>
+proof (cases \<open>sint a = 0 \<or> sint b = 0 \<or> sgn (sint a) \<noteq> sgn (sint b)\<close>)
+  case True then show ?thesis
+    apply (auto simp add: sgn_if not_less signed_divide_int_def split: if_splits)
+     apply (smt (z3) pos_imp_zdiv_neg_iff zero_le_power)
+    apply (smt (z3) not_exp_less_eq_0_int pos_imp_zdiv_neg_iff)
+    done
+next
+  case False
+  then have \<open>\<bar>sint a\<bar> div \<bar>sint b\<bar> \<le> \<bar>sint a\<bar>\<close>
+    by (subst nat_le_eq_zle [symmetric]) (simp_all add: div_abs_eq_div_nat)
+  also have \<open>\<bar>sint a\<bar> \<le> 2 ^ (size a - Suc 0)\<close>
+    using sint_range_size [of a] by auto
+  finally show ?thesis
+    using False by (simp add: signed_divide_int_def)
+qed
+
 lemmas word_sdiv_numerals_lhs = sdiv_word_def[where v="numeral x" for x]
     sdiv_word_def[where v=0] sdiv_word_def[where v=1]
 

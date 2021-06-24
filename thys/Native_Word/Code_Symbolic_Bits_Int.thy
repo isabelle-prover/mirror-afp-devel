@@ -8,6 +8,7 @@ theory Code_Symbolic_Bits_Int
 imports
   "Word_Lib.Generic_set_bit"
   "Word_Lib.Least_significant_bit"
+  "Word_Lib.Bits_Int"
   More_Bits_Int
 begin
 
@@ -87,7 +88,7 @@ lemma fixes i :: int
   shows int_set_bit_True_conv_OR [code]: "set_bit i n True = i OR push_bit n 1"
   and int_set_bit_False_conv_NAND [code]: "set_bit i n False = i AND NOT (push_bit n 1)"
   and int_set_bit_conv_ops: "set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
-by(simp_all add: set_bit_int_def bin_set_conv_OR bin_clr_conv_NAND)
+  by (simp_all add: set_bit_int_def bin_set_conv_OR bin_clr_conv_NAND Bit_Operations.set_bit_int_def unset_bit_int_def)
 
 declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
 
