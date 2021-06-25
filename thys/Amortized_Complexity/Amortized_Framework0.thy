@@ -233,9 +233,9 @@ subsection "Stack with multipop"
 
 datatype 'a op\<^sub>s\<^sub>t\<^sub>k = Push 'a | Pop nat
 
-fun nxT_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"nxT_stk (Push x) xs = x # xs" |
-"nxT_stk (Pop n) xs = drop n xs"
+fun nxt_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+"nxt_stk (Push x) xs = x # xs" |
+"nxt_stk (Pop n) xs = drop n xs"
 
 fun T_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> real" where
 "T_stk (Push x) xs = 1" |
@@ -243,7 +243,7 @@ fun T_stk :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 
 
 
 interpretation stack: Amortized
-where init = "[]" and nxt = nxT_stk and inv = "\<lambda>_. True"
+where init = "[]" and nxt = nxt_stk and inv = "\<lambda>_. True"
 and T = T_stk and \<Phi> = "length" and U = "\<lambda>f _. case f of Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by auto
@@ -266,9 +266,9 @@ datatype 'a op\<^sub>q = Enq 'a | Deq
 
 type_synonym 'a queue = "'a list * 'a list"
 
-fun nxT_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> 'a queue" where
-"nxT_q (Enq x) (xs,ys) = (x#xs,ys)" |
-"nxT_q Deq (xs,ys) = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
+fun nxt_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> 'a queue" where
+"nxt_q (Enq x) (xs,ys) = (x#xs,ys)" |
+"nxt_q Deq (xs,ys) = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
 fun T_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 "T_q (Enq x) (xs,ys) = 1" |
@@ -276,7 +276,7 @@ fun T_q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 
 
 interpretation queue: Amortized
-where init = "([],[])" and nxt = nxT_q and inv = "\<lambda>_. True"
+where init = "([],[])" and nxt = nxt_q and inv = "\<lambda>_. True"
 and T = T_q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by auto
@@ -331,16 +331,16 @@ subsection "Dynamic tables: insert and delete"
 
 datatype op\<^sub>t\<^sub>b = Ins | Del
 
-fun nxT_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
-"nxT_tb Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
-"nxT_tb Del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
+fun nxt_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
+"nxt_tb Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
+"nxt_tb Del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
 fun T_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
 "T_tb Ins (n,l) = (if n<l then 1 else n+1)" |
 "T_tb Del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
 
 interpretation tb: Amortized
-where init = "(0,0)" and nxt = nxT_tb
+where init = "(0,0)" and nxt = nxt_tb
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
 and T = T_tb and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
 and U = "\<lambda>f _. case f of Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
