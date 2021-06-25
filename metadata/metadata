@@ -10680,3 +10680,14 @@ abstract =
   viz. the simulation of compiled code execution by source code, for
   such extended language.
 
+[Public_Announcement_Logic]
+title = Public Announcement Logic
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-06-17
+notify = ahfrom@dtu.dk
+abstract = 
+  This work is a formalization of public announcement logic with
+  countably many agents. It includes proofs of soundness and
+  completeness for a variant of the axiom system PA + DIST! + NEC!. The
+  completeness proof builds on the Epistemic Logic theory.

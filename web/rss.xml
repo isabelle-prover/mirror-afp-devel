@@ -29,6 +29,18 @@ Finding the Van der Waerden Number is still an open problem for most
 values of $k$ and $l$.</description>
     </item>
     <item>
+       <title>Public Announcement Logic</title>
+              <link>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>17 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of public announcement logic with
+countably many agents. It includes proofs of soundness and
+completeness for a variant of the axiom system PA + DIST! + NEC!. The
+completeness proof builds on the Epistemic Logic theory.</description>
+    </item>
+    <item>
        <title>A Shorter Compiler Correctness Proof for Language IMP</title>
               <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
        <guid>https://www.isa-afp.org/entries/IMP_Compiler.html</guid>
@@ -552,17 +564,6 @@ employing the proof assistant Isabelle/HOL. By means of the SSE
 technique we can effectively harness theorem provers, model finders
 and &#39;hammers&#39; for reasoning with quantified non-classical
 logics.</description>
-    </item>
-    <item>
-       <title>Relational Minimum Spanning Tree Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</guid>
-       <dc:creator> Walter Guttmann, Nicolas Robinson-O'Brien       </dc:creator>
-       <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-We verify the correctness of Prim&#39;s, Kruskal&#39;s and
-Borůvka&#39;s minimum spanning tree algorithms based on algebras for
-aggregation and minimisation.</description>
     </item>
   </channel>
 </rss>
