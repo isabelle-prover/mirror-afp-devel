@@ -1,5 +1,6 @@
 theory Inca_to_Ubx_compiler
   imports Inca_to_Ubx_simulation Result
+    Inca_Verification
     "VeriComp.Compiler"
     "HOL-Library.Monad_Syntax"
 begin
@@ -23,6 +24,16 @@ lemma monadic_fold_map_ConsD[dest]:
   shows "\<exists>y ys' b. ys = y # ys' \<and> f a x = Some (b, y) \<and> monadic_fold_map f b xs = Some (c, ys')"
   using assms
   by (auto simp add: bind_eq_Some_conv)
+
+lemma monadic_fold_map_eq_Some_conv:
+  "monadic_fold_map f a (x # xs) = Some (c, ys) \<longleftrightarrow>
+    (\<exists>y ys' b. f a x = Some (b, y) \<and> monadic_fold_map f b xs = Some (c, ys') \<and> ys = y # ys')"
+  by (auto simp add: bind_eq_Some_conv)
+
+lemma monadic_fold_map_eq_Some_conv':
+  "monadic_fold_map f a (x # xs) = Some p \<longleftrightarrow>
+    (\<exists>y ys' b. f a x = Some (b, y) \<and> monadic_fold_map f b xs = Some (fst p, ys') \<and> snd p = y # ys')"
+  by (cases p) (auto simp add: bind_eq_Some_conv)
 
 lemma monadic_fold_map_list_all2:
   assumes "monadic_fold_map f acc xs = Some (acc', ys)" and
@@ -64,7 +75,8 @@ context inca_to_ubx_simulation begin
 
 section \<open>Lifting\<close>
 
-fun lift_instr where
+fun lift_instr :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow>
+  ((_, _, _, _, _, _, 'opubx, 'ubx1, 'ubx2) Ubx.instr \<times> _) option" where
   "lift_instr F L ret N (Inca.IPush d) \<Sigma> = Some (IPush d, None # \<Sigma>)" |
   "lift_instr F L ret N Inca.IPop (_ # \<Sigma>) = Some (IPop, \<Sigma>)" |
   "lift_instr F L ret N (Inca.IGet n) \<Sigma> = (if n < N then Some (IGet n, None # \<Sigma>) else None)" |
@@ -234,9 +246,18 @@ begin
 definition orelse :: "'a option \<Rightarrow> 'a option \<Rightarrow> 'a option"  (infixr "orelse" 55) where
   "x orelse y = (case x of Some x' \<Rightarrow> Some x' | None \<Rightarrow> y)"
 
+lemma None_orelse[simp]: "None orelse y = y"
+  by (simp add: orelse_def)
+
+lemma orelse_None[simp]: "x orelse None = x"
+  by (cases x) (simp_all add: orelse_def)
+
+lemma Some_orelse[simp]: "Some x orelse y = Some x"
+  by (simp add: orelse_def)
+
 lemma orelse_eq_Some_conv:
   "x orelse y = Some z \<longleftrightarrow> (x = Some z \<or> x = None \<and> y = Some z)"
-  by (cases x) (simp_all add: orelse_def)
+  by (cases x) simp_all
 
 lemma orelse_eq_SomeE:
   assumes
@@ -252,6 +273,9 @@ fun drop_prefix where
   "drop_prefix [] ys = Some ys" |
   "drop_prefix (x # xs) (y # ys) = (if x = y then drop_prefix xs ys else None)" |
   "drop_prefix _ _ = None "
+
+lemma drop_prefix_append_prefix[simp]: "drop_prefix xs (xs @ ys) = Some ys"
+  by (induction xs) simp_all
 
 lemma drop_prefix_eq_Some_conv: "drop_prefix xs ys = Some zs \<longleftrightarrow> ys = xs @ zs"
   by (induction xs ys arbitrary: zs rule: drop_prefix.induct)
@@ -312,6 +336,14 @@ definition optim_instrs where
       (monadic_fold_map (\<lambda>(pc, \<Sigma>) instr.
         map_option (\<lambda>(instr', \<Sigma>o). ((Suc pc, \<Sigma>o), instr')) (optim_instr F ret pc instr \<Sigma>))
       (pc, \<Sigma>i) instrs)"
+
+lemma optim_instrs_Cons_eq_Some_conv:
+  "optim_instrs F ret pc \<Sigma>i (instr # instrs) = Some (\<Sigma>o, ys) \<longleftrightarrow> (\<exists>y ys' \<Sigma>.
+    ys = y # ys' \<and>
+    optim_instr F ret pc instr \<Sigma>i = Some (y, \<Sigma>) \<and>
+    optim_instrs F ret (Suc pc) \<Sigma> instrs = Some (\<Sigma>o, ys'))"
+  unfolding optim_instrs_def
+  by (auto simp: bind_eq_Some_conv)
 
 lemma optim_instrs_length:
   assumes "optim_instrs F ret pc \<Sigma>i xs = Some (\<Sigma>o, ys)"
@@ -453,33 +485,42 @@ lemma optim_instrs_sp:
 
 section \<open>Compilation of function definition\<close>
 
-definition lift_basic_block where
-  "lift_basic_block F L ret N \<equiv>
+definition compile_basic_block where
+  "compile_basic_block F L ret N \<equiv>
     ap_map_prod Some (\<lambda>i1. do {
       _ \<leftarrow> if i1 \<noteq> [] then Some () else None;
       _ \<leftarrow> if list_all (\<lambda>i. \<not> Inca.is_jump i \<and> \<not> Inca.is_return i) (butlast i1) then Some () else None;
       (\<Sigma>o, i2) \<leftarrow> lift_instrs F L ret N ([] :: type option list) i1;
-      (\<Sigma>o', i2') \<leftarrow> optim_instrs F ret 0 ([] :: type option list) i2;
-      (if \<Sigma>o' = [] then
-        Some i2'
-      else (if \<Sigma>o = [] then
-        Some i2
+      if \<Sigma>o = [] then
+        case optim_instrs F ret 0 ([] :: type option list) i2 of
+          Some (\<Sigma>o', i2') \<Rightarrow> Some (if \<Sigma>o' = [] then i2' else i2) |
+          None \<Rightarrow> Some i2
       else
-        None))
+        None
     })"
 
-lemma lift_basic_block_rel_prod_all_norm_eq:
-  assumes "lift_basic_block F L ret N bblock1 = Some bblock2"
+lemma compile_basic_block_rel_prod_all_norm_eq:
+  assumes "compile_basic_block F L ret N bblock1 = Some bblock2"
   shows "rel_prod (=) (list_all2 norm_eq) bblock1 bblock2"
   using assms
-  unfolding lift_basic_block_def
+  unfolding compile_basic_block_def
   apply (auto simp add: ap_map_prod_eq_Some_conv bind_eq_Some_conv
       simp: if_split_eq1
       intro: lift_instrs_all_norm
       dest!: optim_instrs_all_norm lift_instrs_all_norm)
-  subgoal for _ xs zs ys
-    using list_all2_trans[of norm_eq "\<lambda>i. norm_eq (norm_instr i)" norm_eq xs ys zs, simplified]
-    by simp
+  subgoal premises prems for _ xs zs ys
+    using \<open>list_all2 norm_eq xs ys\<close>
+  proof (rule list_all2_trans[of norm_eq "\<lambda>i. norm_eq (norm_instr i)" norm_eq xs ys zs, simplified])
+    show "list_all2 (\<lambda>i. norm_eq (norm_instr i)) ys zs"
+    proof (cases "optim_instrs F ret 0 [] ys")
+      case None
+      with prems show ?thesis by (simp add: list.rel_refl)
+    next
+      case (Some p)
+      with prems show ?thesis
+        by (cases p) (auto simp: list.rel_refl intro: optim_instrs_all_norm)
+    qed
+  qed
   done
 
 lemma list_all_iff_butlast_last:
@@ -488,45 +529,44 @@ lemma list_all_iff_butlast_last:
   using assms
   by (induction xs) auto
 
-lemma lift_basic_block_wf:
-  assumes "lift_basic_block F L ret N x = Some y"
+lemma compile_basic_block_wf:
+  assumes "compile_basic_block F L ret N x = Some y"
   shows "Subx.wf_basic_block F (set L) ret N y"
 proof -
-  obtain f instrs1 \<Sigma>2 instrs2 \<Sigma>3 instrs3 instrs4 where
+  obtain f instrs1 instrs2 instrs3 where
     x_def: "x = (f, instrs1)" and
-    y_def: "y = (f, instrs4)" and
+    y_def: "y = (f, instrs3)" and
     "instrs1 \<noteq> []" and
     all_not_jump_not_return_instrs1:
       "list_all (\<lambda>i. \<not> Inca.is_jump i \<and> \<not> Inca.is_return i) (butlast instrs1)" and
-    lift_instrs1: "lift_instrs F L ret N ([] :: type option list) instrs1 = Some (\<Sigma>2, instrs2)" and
-    optim_instrs2: "optim_instrs F ret 0 ([] :: type option list) instrs2 = Some (\<Sigma>3, instrs3)" and
-    instr4_defs: "instrs4 = instrs3 \<and> \<Sigma>3 = [] \<or> instrs4 = instrs2 \<and> \<Sigma>2 = []"
+    lift_instrs1: "lift_instrs F L ret N ([] :: type option list) instrs1 = Some ([], instrs2)" and
+    instr4_defs: "instrs3 = instrs2 \<or>
+      optim_instrs F ret 0 ([] :: type option list) instrs2 = Some ([], instrs3)"
     using assms
-    unfolding lift_basic_block_def ap_map_prod_eq_Some_conv
-    apply (auto simp: bind_eq_Some_conv if_split_eq1)
-    by auto
+    unfolding compile_basic_block_def
+    apply (auto simp: ap_map_prod_eq_Some_conv bind_eq_Some_conv if_split_eq1 option.case_eq_if)
+    by blast
 
-  have "instrs4 \<noteq> []"
+  have "instrs3 \<noteq> []"
     using instr4_defs \<open>instrs1 \<noteq> []\<close>
     using lift_instrs_not_Nil[OF lift_instrs1]
-    using optim_instrs_not_Nil[OF optim_instrs2]
-    by meson
-  moreover have "list_all (Subx.local_var_in_range N) instrs4"
-    using instr4_defs lift_instrs1 optim_instrs2
+    by (auto simp: optim_instrs_not_Nil)
+  moreover have "list_all (Subx.local_var_in_range N) instrs3"
+    using instr4_defs lift_instrs1
     by (auto dest: lift_instrs_all_local_var_in_range simp: optim_instrs_all_local_var_in_range)
-  moreover have "list_all (Subx.fun_call_in_range F) instrs4"
-    using instr4_defs lift_instrs1 optim_instrs2
+  moreover have "list_all (Subx.fun_call_in_range F) instrs3"
+    using instr4_defs lift_instrs1
     by (auto dest: lift_instrs_all_fun_call_in_range simp: optim_instrs_all_fun_call_in_range)
-  moreover have "list_all (Subx.jump_in_range (set L)) instrs4"
-    using instr4_defs lift_instrs1 optim_instrs2
+  moreover have "list_all (Subx.jump_in_range (set L)) instrs3"
+    using instr4_defs lift_instrs1
     by (auto dest: lift_instrs_all_jump_in_range simp: optim_instrs_all_jump_in_range)
-  moreover have "list_all (\<lambda>i. \<not> Ubx.instr.is_jump i \<and> \<not> Ubx.instr.is_return i) (butlast instrs4)"
-    using instr4_defs lift_instrs1 optim_instrs2 all_not_jump_not_return_instrs1
+  moreover have "list_all (\<lambda>i. \<not> Ubx.instr.is_jump i \<and> \<not> Ubx.instr.is_return i) (butlast instrs3)"
+    using instr4_defs lift_instrs1 all_not_jump_not_return_instrs1
     by (auto simp:
         lift_instrs_all_butlast_not_jump_not_return
         optim_instrs_all_butlast_not_jump_not_return)
-  moreover have "Subx.sp_instrs F ret instrs4 [] []"
-    using instr4_defs lift_instrs1 optim_instrs2
+  moreover have "Subx.sp_instrs F ret instrs3 [] []"
+    using instr4_defs lift_instrs1
     by (auto intro: lift_instrs_sp optim_instrs_sp)
   ultimately show ?thesis
     by (auto simp: y_def intro!: Subx.wf_basic_blockI)
@@ -535,7 +575,7 @@ qed
 fun compile_fundef where
   "compile_fundef F (Fundef bblocks1 ar ret locals) = do {
     _ \<leftarrow> if bblocks1 = [] then None else Some ();
-    bblocks2 \<leftarrow> ap_map_list (lift_basic_block F (map fst bblocks1) ret (ar + locals)) bblocks1;
+    bblocks2 \<leftarrow> ap_map_list (compile_basic_block F (map fst bblocks1) ret (ar + locals)) bblocks1;
     Some (Fundef bblocks2 ar ret locals)
   }"
 
@@ -565,7 +605,7 @@ proof (cases fd1)
   with assms obtain bblocks2 where
     "bblocks1 \<noteq> []" and
     lift_bblocks1:
-      "ap_map_list (lift_basic_block F (map fst bblocks1) ret (ar + locals)) bblocks1 = Some bblocks2" and
+      "ap_map_list (compile_basic_block F (map fst bblocks1) ret (ar + locals)) bblocks1 = Some bblocks2" and
     fd2_def: "fd2 = Fundef bblocks2 ar ret locals"
     by (auto simp add: bind_eq_Some_conv)
 
@@ -577,7 +617,7 @@ proof (cases fd1)
       show "list_all2 (rel_prod (=) (list_all2 norm_eq)) bblocks1 bblocks2"
         using lift_bblocks1
         unfolding ap_map_list_iff_list_all2
-        by (auto elim: list.rel_mono_strong intro: lift_basic_block_rel_prod_all_norm_eq)
+        by (auto elim: list.rel_mono_strong intro: compile_basic_block_rel_prod_all_norm_eq)
     qed simp_all
   next
     have "bblocks2 \<noteq> []"
@@ -585,12 +625,12 @@ proof (cases fd1)
     moreover have "list_all (Subx.wf_basic_block F (fst ` set bblocks1) ret (ar + locals)) bblocks2"
       using lift_bblocks1
       unfolding ap_map_list_iff_list_all2
-      by (auto elim!: list_rel_imp_pred2 dest: lift_basic_block_wf)
+      by (auto elim!: list_rel_imp_pred2 dest: compile_basic_block_wf)
     moreover have "fst ` set bblocks1 = fst ` set bblocks2"
       using lift_bblocks1
       unfolding ap_map_list_iff_list_all2
       by (induction bblocks1 bblocks2 rule: list.rel_induct)
-        (auto simp add: lift_basic_block_def ap_map_prod_eq_Some_conv)
+        (auto simp add: compile_basic_block_def ap_map_prod_eq_Some_conv)
     ultimately show ?WF
       unfolding fd2_def
       by (auto intro: Subx.wf_fundefI)
@@ -783,6 +823,165 @@ interpretation std_to_inca_compiler:
     "\<lambda>_ _. False" "\<lambda>_. match" compile
 using compile_load
   by unfold_locales auto
+
+
+subsection \<open>Completeness of compilation\<close>
+
+lemma lift_instr_None_preservation:
+  assumes "lift_instr F L ret N instr \<Sigma> = Some (instr', \<Sigma>')" and "list_all ((=) None) \<Sigma>"
+  shows "list_all ((=) None) \<Sigma>'"
+  using assms
+  by (cases "(F, L, ret, N, instr, \<Sigma>)" rule: lift_instr.cases)
+    (auto simp: Let_def bind_eq_Some_conv)
+
+lemma lift_instr_complete:
+  assumes
+    "Sinca.local_var_in_range N instr" and
+    "Sinca.jump_in_range (set L) instr" and
+    "Sinca.fun_call_in_range F instr" and
+    "Sinca.sp_instr F ret instr (length \<Sigma>) k" and
+    "list_all ((=) None) \<Sigma>"
+  shows "\<exists>instr' \<Sigma>'. lift_instr F L ret N instr \<Sigma> = Some (instr', \<Sigma>') \<and> length \<Sigma>' = k"
+  using assms
+  by (cases "(F, L, ret, N, instr, \<Sigma>)" rule: lift_instr.cases)
+    (auto simp add: in_set_member Let_def
+      dest: Map.domD dest!: list_all_eq_const_imp_replicate' elim: Sinca.sp_instr.cases)
+
+lemma lift_instrs_complete:
+  fixes \<Sigma> :: "type option list"
+  assumes
+    "list_all (Sinca.local_var_in_range N) instrs" and
+    "list_all (Sinca.jump_in_range (set L)) instrs" and
+    "list_all (Sinca.fun_call_in_range F) instrs" and
+    "Sinca.sp_instrs F ret instrs (length \<Sigma>) k" and
+    "list_all ((=) None) \<Sigma>"
+  shows "\<exists>\<Sigma>' instrs'. lift_instrs F L ret N \<Sigma> instrs = Some (\<Sigma>', instrs') \<and> length \<Sigma>' = k"
+  using assms
+proof (induction instrs arbitrary: \<Sigma>)
+  case Nil
+  thus ?case
+    unfolding lift_instrs_def
+    by (auto elim: Sinca.sp_instrs.cases)
+next
+  case (Cons instr instrs')
+  from Cons.prems(4) obtain k' where
+    sp_head: "Sinca.sp_instr F ret instr (length \<Sigma>) k'" and
+    sp_tail: "Sinca.sp_instrs F ret instrs' k' k"
+    by (cases rule: Sinca.sp_instrs.cases) simp
+
+  have inv_instrs':
+    "list_all (Sinca.local_var_in_range N) instrs'"
+    "list_all (Sinca.jump_in_range (set L)) instrs'"
+    "list_all (Sinca.fun_call_in_range F) instrs'"
+    using Cons.prems(1-3) by simp_all
+
+  from Cons.prems(1-3,5) obtain instr2 \<Sigma>tmp where
+    lift_head: "lift_instr F L ret N instr \<Sigma> = Some (instr2, \<Sigma>tmp)" and
+    "length \<Sigma>tmp = k'"
+    using lift_instr_complete[OF _ _ _ sp_head, of N L] by auto
+  hence "list_all ((=) None) \<Sigma>tmp"
+    by (meson Cons.prems(5) lift_instr_None_preservation)
+  then obtain instrs2 and \<Sigma>' :: "type option list" where
+    lift_tail: "lift_instrs F L ret N \<Sigma>tmp instrs' = Some (\<Sigma>', instrs2)" and
+    "length \<Sigma>' = k"
+    using Cons.IH[OF inv_instrs', of \<Sigma>tmp] sp_tail
+    unfolding \<open>length \<Sigma>tmp = k'\<close>
+    by auto
+  show ?case
+  proof (intro exI conjI)
+    show "lift_instrs F L ret N \<Sigma> (instr # instrs') = Some (\<Sigma>', instr2 # instrs2)"
+      using lift_head lift_tail
+      by (simp add: lift_instrs_def)
+  next
+    show "length \<Sigma>' = k"
+      by (rule \<open>length \<Sigma>' = k\<close>)
+  qed
+qed
+
+lemma optim_instr_complete:
+  assumes sp: "Subx.sp_instr F ret instr \<Sigma> \<Sigma>'"
+  shows "\<exists>\<Sigma>'' instr'. optim_instr \<O> F ret pc instr \<Sigma> = Some (instr', \<Sigma>'') \<and> length \<Sigma>' = length \<Sigma>''"
+  using sp
+proof (cases F ret instr \<Sigma> \<Sigma>' rule: Subx.sp_instr.cases)
+  case (Push d)
+  thus ?thesis
+    by (cases "unbox_ubx1 d"; cases "unbox_ubx2 d") simp_all
+next
+  case (Get n)
+  thus ?thesis
+    by (cases "\<O> pc") simp_all
+next
+  case (Load x \<Sigma>)
+  then show ?thesis
+    by (cases "\<O> pc") simp_all
+next
+  case (OpInl opinl \<Sigma>)
+  then show ?thesis
+    by (cases "\<UU>\<bb>\<xx> opinl (replicate (\<AA>\<rr>\<ii>\<tt>\<yy> (\<DD>\<ee>\<II>\<nn>\<ll> opinl)) None)")
+      (simp_all add: Let_def Subx.\<UU>\<bb>\<xx>_opubx_type)
+qed simp_all
+
+lemma compile_basic_block_complete:
+  assumes wf_bblock1: "Sinca.wf_basic_block F (set L) ret n bblock1"
+  shows "\<exists>bblock2. compile_basic_block \<O> F L ret n bblock1 = Some bblock2"
+proof (cases bblock1)
+  case (Pair label instrs1)
+  moreover obtain instrs2 where
+    "lift_instrs F L ret n ([] :: type option list) instrs1 = Some ([], instrs2)"
+    using wf_bblock1[unfolded Pair, simplified]
+    using lift_instrs_complete[of n instrs1 L F ret "[]" 0]
+    by (auto simp: Sinca.wf_basic_block_def)
+  ultimately show ?thesis
+    using wf_bblock1[unfolded Pair, simplified]
+    apply (simp add: compile_basic_block_def ap_map_prod_eq_Some_conv)
+    by (cases "optim_instrs \<O> F ret 0 [] instrs2") (auto simp: Sinca.wf_basic_block_def)
+qed
+
+lemma bind_eq_map_option[simp]: "x \<bind> (\<lambda>y. Some (f y)) = map_option f x"
+  by (cases x) simp_all
+
+lemma compile_fundef_complete:
+  assumes wf_fd1: "Sinca.wf_fundef F fd1"
+  shows "\<exists>fd2. compile_fundef \<O> F fd1 = Some fd2"
+proof (cases fd1)
+  case (Fundef bblocks ar ret locals)
+  then obtain bblock bblocks' where bblocks_def: "bblocks = bblock # bblocks'"
+    using wf_fd1 by (cases bblocks; auto simp: Sinca.wf_fundef_def)
+  obtain label instrs where "bblock = (label, instrs)"
+    by (cases bblock) simp
+  show ?thesis
+    using wf_fd1
+    by (auto simp add: Fundef Sinca.wf_fundef_def
+        intro!: ex_ap_map_list_eq_SomeI intro: compile_basic_block_complete
+        elim!: list.pred_mono_strong)
+qed
+
+lemma compile_env_entry_complete:
+  assumes wf_fd1: "Sinca.wf_fundef F fd1"
+  shows "\<exists>fd2. compile_env_entry F (f, fd1) = Some fd2"
+    using compile_fundef_complete[OF wf_fd1]
+    by (simp add: compile_env_entry_def ap_map_prod_eq_Some_conv)
+
+lemma compile_env_complete:
+  assumes wf_F1: "pred_map (Sinca.wf_fundef (map_option funtype \<circ> Finca_get F1)) (Finca_get F1)"
+  shows "\<exists>F2. compile_env F1 = Some F2"
+proof -
+  show ?thesis
+    using wf_F1
+    by (auto simp add: compile_env_def
+        intro: ex_ap_map_list_eq_SomeI Sinca.Fenv.to_list_list_allI compile_env_entry_complete
+          pred_map_get)
+qed
+
+theorem compile_complete:
+  assumes wf_p1: "Sinca.wf_prog p1"
+  shows "\<exists>p2. compile p1 = Some p2"
+proof (cases p1)
+  case (Prog F1 H main)
+  then show ?thesis
+    using wf_p1 unfolding Sinca.wf_prog_def
+    by (auto simp: Let_def dest: compile_env_complete)
+qed
 
 end
 

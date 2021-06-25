@@ -91,12 +91,21 @@ lemma list_all_eq_const_imp_replicate:
   using assms
   by (induction xs; simp)
 
+lemma list_all_eq_const_imp_replicate':
+  assumes "list_all ((=) y) xs"
+  shows "xs = replicate (length xs) y"
+  using assms
+  by (induction xs; simp)
+
 lemma list_all_eq_const_replicate_lhs[intro]:
   "list_all (\<lambda>x. y = x) (replicate n y)"
   by (simp add: list_all_length)
 
 lemma list_all_eq_const_replicate_rhs[intro]:
   "list_all (\<lambda>x. x = y) (replicate n y)"
+  by (simp add: list_all_length)
+
+lemma list_all_eq_const_replicate[simp]: "list_all ((=) c) (replicate n c)"
   by (simp add: list_all_length)
 
 lemma replicate_eq_map:
@@ -222,6 +231,9 @@ lemma map_eq_replicate_imp_list_all_const:
 
 lemma map_eq_replicateI: "length xs = n \<Longrightarrow> (\<And>x. x \<in> set xs \<Longrightarrow> f x = c) \<Longrightarrow> map f xs = replicate n c"
   by (induction xs arbitrary: n) auto
+
+lemma list_all_dropI[intro]: "list_all P xs \<Longrightarrow> list_all P (drop n xs)"
+  by (metis append_take_drop_id list_all_append)
 
 
 section \<open>Non-empty list\<close>

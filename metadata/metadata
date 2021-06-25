@@ -10214,6 +10214,7 @@ abstract =
 extra-history =
   Change history:
   [2021-06-14]: refactored function definitions to contain explicit basic blocks<br>
+  [2021-06-25]: proved conditional completeness of compilation<br>
 
 [Isabelle_Marries_Dirac]
 title = Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information

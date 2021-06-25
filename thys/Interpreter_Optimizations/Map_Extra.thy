@@ -49,4 +49,14 @@ next
     by (simp add: option.case_eq_if)
 qed
 
+section \<open>pred\_map\<close>
+
+definition pred_map where
+  "pred_map P m \<equiv> (\<forall>x y. m x = Some y \<longrightarrow> P y)"
+
+lemma pred_map_get:
+  assumes "pred_map P m" and "m x = Some y"
+  shows "P y"
+  using assms unfolding pred_map_def by simp
+
 end

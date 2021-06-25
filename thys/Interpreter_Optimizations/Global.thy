@@ -93,18 +93,10 @@ next
 qed
 
 definition wf_fundef where
-  "wf_fundef fd \<longleftrightarrow> body fd \<noteq> [] \<and> distinct (map fst (body fd))"
+  "wf_fundef fd \<longleftrightarrow> body fd \<noteq> []"
 
 lemma wf_fundef_non_empty_bodyD[dest,intro]: "wf_fundef fd \<Longrightarrow> body fd \<noteq> []"
   by (simp add: wf_fundef_def)
-
-lemma wf_fundef_distinct_basic_blocksD[dest,intro]: "wf_fundef fd \<Longrightarrow> distinct (map fst (body fd))"
-  by (simp add: wf_fundef_def)
-
-lemma wf_fundef_last_basic_block:
-  assumes "wf_fundef fd" and "last (body fd) = (l, instrs)"
-  shows "map_of (body fd) l = Some instrs"
-  using assms by (cases fd; auto simp: wf_fundef_def dest: last_in_set)
 
 definition wf_fundefs where
   "wf_fundefs F \<longleftrightarrow> (\<forall>f fd. F f = Some fd \<longrightarrow> wf_fundef fd)"

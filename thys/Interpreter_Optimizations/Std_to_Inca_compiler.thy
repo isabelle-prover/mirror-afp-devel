@@ -3,6 +3,9 @@ theory Std_to_Inca_compiler
     "VeriComp.Compiler"
 begin
 
+
+subsection \<open>Compilation of function definitions\<close>
+
 fun compile_instr where
   "compile_instr (Std.IPush d) = Inca.IPush d" |
   "compile_instr Std.IPop = Inca.IPop" |
@@ -18,10 +21,7 @@ fun compile_instr where
 fun compile_fundef where
   "compile_fundef (Fundef [] _ _ _) = None" |
   "compile_fundef (Fundef bblocks ar ret locals) =
-    (if distinct (map fst bblocks) then
-      Some (Fundef (map_ran (\<lambda>_. map compile_instr) bblocks) ar ret locals)
-    else
-      None)"
+    Some (Fundef (map_ran (\<lambda>_. map compile_instr) bblocks) ar ret locals)"
 
 context std_inca_simulation begin
 
@@ -79,6 +79,9 @@ proof (cases rule: compile_fundef.elims)
     by (simp add: const_eq_if_conv wf_fundef_def map_ran_Cons_sel)
 qed simp_all
 
+
+subsection \<open>Compilation of function environments\<close>
+
 definition compile_env where
   "compile_env e \<equiv>
     Some Sinca.Fenv.from_list \<diamondop> ap_map_list (ap_map_prod Some compile_fundef) (Fstd_to_list e)"
@@ -122,6 +125,9 @@ lemma compile_env_imp_wf_fundefs2:
   shows "wf_fundefs (Finca_get F2)"
   unfolding Finca_get_compile[OF assms(1)]
   by (auto simp: bind_eq_Some_conv intro!: wf_fundefsI intro: compile_fundef_wf)
+
+
+subsection \<open>Compilation of programs\<close>
 
 fun compile where
   "compile (Prog F1 H f) = Some Prog \<diamondop> compile_env F1 \<diamondop> Some H \<diamondop> Some f"
@@ -191,7 +197,8 @@ sublocale std_to_inca_compiler:
   using compile_load
   by unfold_locales  auto
 
-section \<open>Completeness of compilation\<close>
+
+subsection \<open>Completeness of compilation\<close>
 
 lemma compile_fundef_complete:
   assumes "wf_fundef fd1"
@@ -201,7 +208,7 @@ proof (cases fd1)
   then obtain bb bbs' where bbs_def: "bbs = bb # bbs'"
     using assms(1) by (cases bbs; auto)
   show ?thesis
-    using assms(1)[THEN wf_fundef_distinct_basic_blocksD]
+    using assms
     unfolding Fundef bbs_def
     by simp
 qed
@@ -218,6 +225,16 @@ proof -
 qed
 
 theorem compile_complete:
+  assumes wf_p1: "wf_prog Fstd_get p1"
+  shows "\<exists>p2. compile p1 = Some p2"
+proof (cases p1)
+  case (Prog x1 x2 x3)
+  then show ?thesis
+    using wf_p1 unfolding wf_prog_def
+    by (auto dest: compile_env_complete)
+qed
+
+theorem compile_load_forward:
   assumes
     wf_p1: "wf_prog Fstd_get p1" and load_p1: "Sstd.load p1 s1"
   shows "\<exists>p2 s2. compile p1 = Some p2 \<and> Sinca.load p2 s2 \<and> match s1 s2"

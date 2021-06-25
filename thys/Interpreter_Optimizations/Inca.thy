@@ -146,10 +146,7 @@ proof (rule notI)
   then obtain s' where "step s s'" by auto
   thus False
     using \<open>final F_get IReturn s\<close>
-    by (auto
-        simp: state_ok_def
-          wf_fundefs_imp_wf_fundef[THEN wf_fundef_last_basic_block, THEN next_instr_length_instrs[rotated]]
-        elim!: step.cases final.cases)
+    by (auto simp: state_ok_def elim!: step.cases final.cases)
 qed
 
 sublocale semantics step "final F_get IReturn"

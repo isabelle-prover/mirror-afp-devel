@@ -5,7 +5,7 @@ begin
 
 section \<open>Dynamic values\<close>
 
-datatype dynamic = DNil | DBool bool | DNum nat
+datatype dynamic = DNil | DBool bool | DNum int
 
 definition is_true where
   "is_true d \<equiv> (d = DBool True)"
@@ -20,7 +20,7 @@ proof unfold_locales
     by (cases d) (simp_all add: is_true_def is_false_def)
 qed
 
-fun unbox_num :: "dynamic \<Rightarrow> nat option" where
+fun unbox_num :: "dynamic \<Rightarrow> int option" where
    "unbox_num (DNum n) = Some n" |
    "unbox_num _ = None"
 
@@ -165,11 +165,11 @@ fun deubx :: "opubx \<Rightarrow> opinl" where
 lemma ubx_invertible: "ubx opinl xs = Some opubx \<Longrightarrow> deubx opubx = opinl"
   by (induction opinl xs rule: ubx.induct; simp)
 
-fun eval_AddNumUbx :: "(dynamic, nat, bool) unboxed list \<Rightarrow> (dynamic, nat, bool) unboxed option" where
+fun eval_AddNumUbx where
   "eval_AddNumUbx [OpUbx1 x, OpUbx1 y] = Some (OpUbx1 (x + y))" |
   "eval_AddNumUbx _ = None"
 
-fun eval_ubx :: "opubx \<Rightarrow> (dynamic, nat, bool) unboxed list \<Rightarrow> (dynamic, nat, bool) unboxed option" where
+fun eval_ubx where
   "eval_ubx OpAddNumUbx = eval_AddNumUbx"
 
 lemma eval_ubx_correct:

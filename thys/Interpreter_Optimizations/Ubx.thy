@@ -98,9 +98,6 @@ lemma generalize_instr_idempotent_comp[simp]:
 lemma length_body_generalize_fundef[simp]: "length (body (generalize_fundef fd)) = length (body fd)"
   by (cases fd) (simp add: map_ran_def)
 
-(* lemma body_generalize_fundef[simp]: "body (generalize_fundef fd) = map generalize_instr (body fd)"
-  by (cases fd) simp *)
-
 lemma arity_generalize_fundef[simp]: "arity (generalize_fundef fd) = arity fd"
   by (cases fd) simp
 
@@ -296,10 +293,7 @@ proof (rule notI)
   then obtain s' where "step s s'" by auto
   thus False
     using \<open>final F_get IReturn s\<close>
-    by (auto
-        simp: state_ok_def
-          wf_fundefs_imp_wf_fundef[THEN wf_fundef_last_basic_block, THEN next_instr_length_instrs[rotated]]
-        elim!: step.cases final.cases)
+    by (auto simp: state_ok_def elim!: step.cases final.cases)
 qed
 
 sublocale ubx_sem: semantics step "final F_get IReturn"
