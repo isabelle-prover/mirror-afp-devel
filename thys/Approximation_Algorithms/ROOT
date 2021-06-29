@@ -11,6 +11,7 @@ session Approximation_Algorithms (AFP) = HOL +
     Approx_MIS_Hoare
     Approx_LB_Hoare
     Approx_BP_Hoare
+    Center_Selection
   document_files
     "root.bib"
     "root.tex"
