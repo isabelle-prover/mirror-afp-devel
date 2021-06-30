@@ -5,8 +5,6 @@ imports
   "HOL-Library.Code_Target_Nat"
 begin
 
-lemma [code_unfold del]: "card \<equiv> Cardinality.card'" by(simp)
-
 instantiation word :: (len) ceq begin
 definition "CEQ('a word) = Some (=)"
 instance by(intro_classes)(simp add: ceq_word_def)

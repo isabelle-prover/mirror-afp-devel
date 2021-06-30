@@ -8,7 +8,7 @@ section "Code set"
 
 theory Code_Set
 imports
-  "HOL-Library.Cardinality"
+  "HOL-Library.Code_Cardinality"
 begin
 
 text\<open>The following setup could help to get code generation for List.coset, 
@@ -21,7 +21,7 @@ declare remove_code(2) [code del]
 declare insert_code(2) [code del]
 declare inter_coset_fold [code del]
 declare compl_coset[code del]
-declare Cardinality.card'_code(2)[code del]
+declare Code_Cardinality.card'_code(2)[code del]
 
 code_datatype set
 

@@ -1,11 +1,12 @@
 theory Benchmark_Set_Default 
 imports
   Benchmark_Set
+  "HOL-Library.Code_Cardinality"
   "HOL-Library.Code_Target_Nat"
 begin
 
 text \<open>Implement set equality for all combinations of @{term "List.set"} and @{term "List.coset"}\<close>
-lemma [code]: "equal_class.equal A B \<longleftrightarrow> Cardinality.eq_set A B" 
+lemma [code]: "equal_class.equal A B \<longleftrightarrow> Code_Cardinality.eq_set A B" 
  by(simp add: equal_eq)
 
 ML_val \<open>

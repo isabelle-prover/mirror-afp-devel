@@ -1,7 +1,7 @@
 section \<open> Enumeration Extras \<close>
 
 theory Enum_extra
-  imports "HOL-Library.Cardinality"
+  imports "HOL-Library.Code_Cardinality"
 begin
 
 subsection \<open> First Index Function \<close>

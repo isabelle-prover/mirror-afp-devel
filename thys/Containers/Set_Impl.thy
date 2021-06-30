@@ -284,16 +284,6 @@ lemma is_UNIV_unfold [code_unfold]:
   "set_eq UNIV A \<longleftrightarrow> is_UNIV A"
 by(auto simp add: is_UNIV_def set_eq_def)
 
-lemma [code_unfold del, symmetric, code_post del]:
-  "x \<in> set xs \<equiv> List.member xs x" 
-by(simp add: List.member_def)
-
-lemma [code_unfold del, symmetric, code_post del]:
-  "finite \<equiv> Cardinality.finite'" by(simp)
-
-lemma [code_unfold del, symmetric, code_post del]:
-  "card \<equiv> Cardinality.card'" by simp
-
 declare [[code drop:
   Set.empty
   Set.is_empty
@@ -333,26 +323,18 @@ declare [[code drop:
   List.map_project
   Sup_pred_inst.Sup_pred
   finite
-  Cardinality.finite'
   card
-  Cardinality.card'
   Inf_pred_inst.Inf_pred
   pred_of_set
-  Cardinality.subset'
-  Cardinality.eq_set
   Wellfounded.acc
   Bleast
   can_select
-  "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool"
+  (* "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool" *)
   irrefl
   bacc
   set_of_pred
   set_of_seq
   ]]
-
-declare 
-  Cardinality.finite'_def[code]
-  Cardinality.card'_def[code]
 
 subsection \<open>Set implementations\<close>
 
@@ -579,6 +561,10 @@ lemma finite_code [code]:
   "finite (Collect_set P) \<longleftrightarrow>
   of_phantom (finite_UNIV :: 'c finite_UNIV) \<or> Code.abort (STR ''finite Collect_set'') (\<lambda>_. finite (Collect_set P))"
 by(auto simp add: DList_set_def RBT_set_def member_conv_keys card_gt_0_iff finite_UNIV split: option.split elim: finite_subset[rotated 1])
+
+lemma CARD_code [code_unfold]:
+  "CARD('a :: card_UNIV) = of_phantom (card_UNIV :: 'a card_UNIV)"
+by(simp add: card_UNIV)
 
 lemma card_code [code]:
   fixes dxs :: "'a :: ceq set_dlist" and xs :: "'a list"
@@ -1252,23 +1238,7 @@ end
 
 lemmas [code] = ord.sorted_list_subset_fusion_code
 
-text \<open>
-  Define a new constant for the subset operation
-  because @{theory "HOL-Library.Cardinality"} introduces @{const "Cardinality.subset'"}
-  and rewrites @{const "subset"} to @{const "Cardinality.subset'"} 
-  based on the sort of the element type.
-\<close>
-
-definition subset_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"
-where [simp, code del]: "subset_eq = (\<subseteq>)"
-
-lemma subseteq_code [code]: "(\<subseteq>) = subset_eq"
-by simp
-
-lemma subset'_code [code]: "Cardinality.subset' = subset_eq"
-by simp
-
-lemma subset_eq_code [folded subset_eq_def, code]:
+lemma subset_eq_code [code]:
   fixes A1 A2 :: "'a set"
   and rbt :: "'b :: ccompare set_rbt"
   and rbt1 rbt2 :: "'d :: {ccompare, ceq} set_rbt"
@@ -1281,9 +1251,9 @@ lemma subset_eq_code [folded subset_eq_def, code]:
   (case ID CEQ('c) of None \<Rightarrow> Code.abort (STR ''subset DList_set1: ceq = None'') (\<lambda>_. DList_set dxs \<subseteq> C)
                      | Some _ \<Rightarrow> DList_Set.dlist_all (\<lambda>x. x \<in> C) dxs)" (is ?dlist)
   "Set_Monad xs \<subseteq> C \<longleftrightarrow> list_all (\<lambda>x. x \<in> C) xs" (is ?Set_Monad)
-  and Collect_subset_eq_Complement [folded subset_eq_def, set_complement_code]:
+  and Collect_subset_eq_Complement [set_complement_code]:
   "Collect_set P \<subseteq> Complement A \<longleftrightarrow> A \<subseteq> {x. \<not> P x}" (is ?Collect_set_Compl)
-  and Complement_subset_eq_Complement [folded subset_eq_def, set_complement_code]:
+  and Complement_subset_eq_Complement [set_complement_code]:
   "Complement A1 \<subseteq> Complement A2 \<longleftrightarrow> A2 \<subseteq> A1" (is ?Compl)
   and
   "RBT_set rbt1 \<subseteq> RBT_set rbt2 \<longleftrightarrow>
@@ -1301,12 +1271,6 @@ proof -
   show ?Set_Monad by(auto simp add: list_all_iff split: option.split)
   show ?Collect_set_Compl ?Compl by auto
 qed
-
-hide_const (open) subset_eq
-hide_fact (open) subset_eq_def
-
-lemma eq_set_code [code]: "Cardinality.eq_set = set_eq"
-by(simp add: set_eq_def)
 
 lemma set_eq_code [code]:
   fixes rbt1 rbt2 :: "'b :: {ccompare, ceq} set_rbt" shows
