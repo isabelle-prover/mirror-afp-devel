@@ -63,6 +63,8 @@ text \<open>
   This will reconfigure the code generator such that it implements the types @{typ "'a set"} for sets and @{typ "('a, 'b) mapping"} for maps with one of the data structures supported.
   As with all the theories that adapt the code generator setup, it is important that @{theory Containers.Containers} comes at the end of the imports.
 
+  \textbf{Note:} LC should not be used together with the theory @{text "HOL-Library.Code_Cardinality"}.
+
   Run the following command, e.g., to check that LC works correctly and implements sets of @{typ int}s as red-black trees (RBT):
 \<close>
 

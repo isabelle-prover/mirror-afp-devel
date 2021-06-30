@@ -12,6 +12,7 @@ imports
   "../BV/BCVExec"
   "../Compiler/Compiler"
   Coinductive.Lazy_TLList
+  "HOL-Library.Code_Cardinality"
   "HOL-Library.Code_Target_Int"
   "HOL-Library.Code_Target_Numeral"
 begin

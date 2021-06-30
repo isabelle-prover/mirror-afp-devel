@@ -4,6 +4,7 @@ imports
   "HOL-Analysis.Multivariate_Analysis"
   "List-Index.List_Index"
   "HOL-Library.Float"
+  "HOL-Library.Code_Cardinality"
   Affine_Arithmetic_Auxiliarities
 begin
 
