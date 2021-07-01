@@ -8787,6 +8787,18 @@ abstract =
   transitive closures and tuples. It defines also a generic object model independent
   from OCL. It allows one to use the theory as a reference for formalization of analogous languages.</p>
 
+[Public_Announcement_Logic]
+title = Public Announcement Logic
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-06-17
+notify = ahfrom@dtu.dk
+abstract = 
+  This work is a formalization of public announcement logic with
+  countably many agents. It includes proofs of soundness and
+  completeness for a variant of the axiom system PA + DIST! + NEC!. The
+  completeness proof builds on the Epistemic Logic theory.
+
 [QHLProver]
 title = Quantum Hoare Logic
 author = Junyi Liu<>, Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>, Shuling Wang<>, Shenggang Ying<>, Tao Liu<>, Yangjia Li<>, Mingsheng Ying<>, Naijun Zhan<>
