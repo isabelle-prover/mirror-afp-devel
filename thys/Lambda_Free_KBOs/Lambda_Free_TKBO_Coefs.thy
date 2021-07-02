@@ -30,8 +30,6 @@ definitions and proofs substantially.
 
 subsection \<open>Setup\<close>
 
-hide_const (open) Complex.arg
-
 locale tkbo_coefs = kbo_std_basis _ _ arity_sym arity_var wt_sym
     for
       arity_sym :: "'s \<Rightarrow> enat" and

@@ -14,7 +14,7 @@ subsubsection \<open>Oriented angle\<close>
 
 text \<open>Oriented angle between two vectors (it is always in the interval $(-\pi, \pi]$).\<close>
 definition ang_vec ("\<angle>") where
-  [simp]: "\<angle> z1 z2 \<equiv> \<downharpoonright>arg z2 - arg z1\<downharpoonleft>"
+  [simp]: "\<angle> z1 z2 \<equiv> \<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>"
 
 lemma ang_vec_bounded:
   shows "-pi < \<angle> z1 z2 \<and> \<angle> z1 z2 \<le> pi"
@@ -25,7 +25,7 @@ lemma ang_vec_sym:
   shows "\<angle> z1 z2 = - \<angle> z2 z1"
   using assms
   unfolding ang_vec_def
-  using canon_ang_uminus[of "arg z2 - arg z1"]
+  using canon_ang_uminus[of "Arg z2 - Arg z1"]
   by simp
 
 lemma ang_vec_sym_pi:
@@ -33,7 +33,7 @@ lemma ang_vec_sym_pi:
   shows "\<angle> z1 z2 = \<angle> z2 z1"
   using assms
   unfolding ang_vec_def
-  using canon_ang_uminus_pi[of "arg z2 - arg z1"]
+  using canon_ang_uminus_pi[of "Arg z2 - Arg z1"]
   by simp
 
 lemma ang_vec_plus_pi1:
@@ -46,7 +46,7 @@ next
   show "- pi < \<angle> z1 z2 - pi \<and> \<angle> z1 z2 - pi \<le> pi"
     using assms
     unfolding ang_vec_def
-    using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+    using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
     by auto
 qed
 
@@ -57,7 +57,7 @@ proof (rule canon_ang_id)
   show "- pi < \<angle> z1 z2 + pi \<and> \<angle> z1 z2 + pi \<le> pi"
     using assms
     unfolding ang_vec_def
-    using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+    using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
     by auto
 qed
 
@@ -65,16 +65,16 @@ lemma ang_vec_opposite1:
   assumes "z1 \<noteq> 0"
   shows "\<angle> (-z1) z2 = \<downharpoonright>\<angle> z1 z2 - pi\<downharpoonleft>"
 proof-
-  have "\<angle> (-z1) z2 = \<downharpoonright>arg z2 - (arg z1 + pi)\<downharpoonleft>"
+  have "\<angle> (-z1) z2 = \<downharpoonright>Arg z2 - (Arg z1 + pi)\<downharpoonleft>"
     unfolding ang_vec_def
     using arg_uminus[OF assms] 
     using canon_ang_arg[of z2, symmetric]
-    using canon_ang_diff[of "arg z2" "arg z1 + pi", symmetric]
+    using canon_ang_diff[of "Arg z2" "Arg z1 + pi", symmetric]
     by simp
   moreover
-  have "\<downharpoonright>\<angle> z1 z2 - pi\<downharpoonleft> = \<downharpoonright>arg z2 - arg z1 - pi\<downharpoonleft>"
+  have "\<downharpoonright>\<angle> z1 z2 - pi\<downharpoonleft> = \<downharpoonright>Arg z2 - Arg z1 - pi\<downharpoonleft>"
     using canon_ang_id[of pi, symmetric]
-    using canon_ang_diff[of "arg z2 - arg z1" "pi", symmetric]
+    using canon_ang_diff[of "Arg z2 - Arg z1" "pi", symmetric]
     by simp_all
   ultimately
   show ?thesis
@@ -87,8 +87,8 @@ lemma ang_vec_opposite2:
   unfolding ang_vec_def
   using arg_mult[of "-1" "z2"] assms
   using arg_complex_of_real_negative[of "-1"]
-  using canon_ang_diff[of "arg (-1) + arg z2" "arg z1", symmetric]
-  using canon_ang_sum[of "arg z2 - arg z1" "pi", symmetric]
+  using canon_ang_diff[of "Arg (-1) + Arg z2" "Arg z1", symmetric]
+  using canon_ang_sum[of "Arg z2 - Arg z1" "pi", symmetric]
   using canon_ang_id[of pi] canon_ang_arg[of z1]
   by (auto simp: algebra_simps)
   
@@ -178,7 +178,7 @@ lemma ang_vec_c_sym:
   by (cases "\<angle> z1 z2 = pi") auto
 
 lemma ang_vec_c_bounded: "0 \<le> \<angle>c z1 z2 \<and> \<angle>c z1 z2 \<le> pi"
-  using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+  using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
   by auto
 
 text \<open>Cosine and scalar product\<close>
@@ -240,7 +240,7 @@ next
     moreover
     have "\<angle>a z1 (-z2) = pi + \<angle> z1 z2"
       unfolding ang_vec_a_def ang_vec_c_def abs_real_def
-      using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+      using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
       using ang_vec_plus_pi2[of z1 z2] True \<open>\<angle> z1 z2 < 0\<close> \<open>z2 \<noteq> 0\<close>
       using ang_vec_opposite2[of z2 z1]
       by auto
@@ -261,7 +261,7 @@ next
         using \<open>\<not> \<angle> z1 z2 < - pi / 2\<close> True
         unfolding ang_vec_a_def ang_vec_c_def abs_real_def
         using ang_vec_plus_pi2[of z1 z2]
-        using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+        using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
         using \<open>z2 \<noteq> 0\<close> ang_vec_opposite2[of z2 z1]
         by auto
       ultimately
@@ -281,7 +281,7 @@ next
           using \<open>\<not> \<angle> z1 z2 \<le> 0\<close> True
           unfolding ang_vec_a_def ang_vec_c_def abs_real_def
           using ang_vec_plus_pi1[of z1 z2]
-          using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+          using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
           using \<open>z2 \<noteq> 0\<close> ang_vec_opposite2[of z2 z1]
           by auto
         ultimately
@@ -301,7 +301,7 @@ next
           unfolding ang_vec_a_def ang_vec_c_def abs_real_def
           using False \<open>\<angle> z1 z2 > 0\<close>
           using ang_vec_plus_pi1[of z1 z2]
-          using canon_ang(1)[of "arg z2 - arg z1"] canon_ang(2)[of "arg z2 - arg z1"]
+          using canon_ang(1)[of "Arg z2 - Arg z1"] canon_ang(2)[of "Arg z2 - Arg z1"]
           using \<open>z2 \<noteq> 0\<close> ang_vec_opposite2[of z2 z1]
           by auto
         ultimately
@@ -355,59 +355,59 @@ lemma ang_vec_a_scale:
 lemma ang_a_cnj_cnj:
   shows "\<angle>a z1 z2 = \<angle>a (cnj z1) (cnj z2)"
 unfolding ang_vec_a_def ang_vec_c_def ang_vec_def
-proof(cases "arg z1 \<noteq> pi \<and> arg z2 \<noteq> pi")
+proof(cases "Arg z1 \<noteq> pi \<and> Arg z2 \<noteq> pi")
   case True
-  thus "acute_ang \<bar>\<downharpoonright>arg z2 - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg (cnj z2) - arg (cnj z1)\<downharpoonleft>\<bar>"
+  thus "acute_ang \<bar>\<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg (cnj z2) - Arg (cnj z1)\<downharpoonleft>\<bar>"
     using arg_cnj_not_pi[of z1] arg_cnj_not_pi[of z2]
     apply (auto simp del:acute_ang_def)
-    proof(cases "\<downharpoonright>arg z2 - arg z1\<downharpoonleft> = pi")
+    proof(cases "\<downharpoonright>Arg z2 - Arg z1\<downharpoonleft> = pi")
       case True
-      thus "acute_ang \<bar>\<downharpoonright>arg z2 - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg z1 - arg z2\<downharpoonleft>\<bar>"
-        using  canon_ang_uminus_pi[of "arg z2 - arg z1"]
+      thus "acute_ang \<bar>\<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg z1 - Arg z2\<downharpoonleft>\<bar>"
+        using  canon_ang_uminus_pi[of "Arg z2 - Arg z1"]
         by (auto simp add:field_simps)
     next
       case False
-      thus "acute_ang \<bar>\<downharpoonright>arg z2 - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg z1 - arg z2\<downharpoonleft>\<bar>"
-        using  canon_ang_uminus[of "arg z2 - arg z1"]
+      thus "acute_ang \<bar>\<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg z1 - Arg z2\<downharpoonleft>\<bar>"
+        using  canon_ang_uminus[of "Arg z2 - Arg z1"]
         by (auto simp add:field_simps)
     qed
   next
     case False
-    thus "acute_ang \<bar>\<downharpoonright>arg z2 - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg (cnj z2) - arg (cnj z1)\<downharpoonleft>\<bar>"
-    proof(cases "arg z1 = pi")
+    thus "acute_ang \<bar>\<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg (cnj z2) - Arg (cnj z1)\<downharpoonleft>\<bar>"
+    proof(cases "Arg z1 = pi")
       case False
-      hence "arg z2 = pi"
-        using \<open> \<not> (arg z1 \<noteq> pi \<and> arg z2 \<noteq> pi)\<close>
+      hence "Arg z2 = pi"
+        using \<open> \<not> (Arg z1 \<noteq> pi \<and> Arg z2 \<noteq> pi)\<close>
         by auto
       thus ?thesis
         using False
         using arg_cnj_not_pi[of z1] arg_cnj_pi[of z2]
         apply (auto simp del:acute_ang_def)
-      proof(cases "arg z1 > 0")
+      proof(cases "Arg z1 > 0")
           case True
-          hence "-arg z1 \<le> 0"
+          hence "-Arg z1 \<le> 0"
             by auto
-          thus "acute_ang \<bar>\<downharpoonright>pi - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>pi + arg z1\<downharpoonleft>\<bar>"
-            using True canon_ang_plus_pi1[of "arg z1"]
-            using arg_bounded[of z1] canon_ang_plus_pi2[of "-arg z1"]
+          thus "acute_ang \<bar>\<downharpoonright>pi - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>pi + Arg z1\<downharpoonleft>\<bar>"
+            using True canon_ang_plus_pi1[of "Arg z1"]
+            using Arg_bounded[of z1] canon_ang_plus_pi2[of "-Arg z1"]
             by (auto simp add:field_simps)
         next
           case False
-          hence "-arg z1 \<ge> 0"
+          hence "-Arg z1 \<ge> 0"
              by simp
-          thus "acute_ang \<bar>\<downharpoonright>pi - arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>pi + arg z1\<downharpoonleft>\<bar>"
-          proof(cases "arg z1 = 0")
+          thus "acute_ang \<bar>\<downharpoonright>pi - Arg z1\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>pi + Arg z1\<downharpoonleft>\<bar>"
+          proof(cases "Arg z1 = 0")
             case True
             thus ?thesis
               by (auto simp del:acute_ang_def)
           next
             case False
-            hence "-arg z1 > 0"
-              using \<open>-arg z1 \<ge> 0\<close>
+            hence "-Arg z1 > 0"
+              using \<open>-Arg z1 \<ge> 0\<close>
               by auto
             thus ?thesis
-            using False canon_ang_plus_pi1[of "-arg z1"]
-            using arg_bounded[of z1] canon_ang_plus_pi2[of "arg z1"]
+            using False canon_ang_plus_pi1[of "-Arg z1"]
+            using Arg_bounded[of z1] canon_ang_plus_pi2[of "Arg z1"]
             by (auto simp add:field_simps)
         qed
       qed
@@ -416,41 +416,41 @@ proof(cases "arg z1 \<noteq> pi \<and> arg z2 \<noteq> pi")
       thus ?thesis
         using arg_cnj_pi[of z1]
         apply (auto simp del:acute_ang_def)
-      proof(cases "arg z2 = pi")
+      proof(cases "Arg z2 = pi")
         case True
-        thus "acute_ang \<bar>\<downharpoonright>arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg (cnj z2) - pi\<downharpoonleft>\<bar>"
+        thus "acute_ang \<bar>\<downharpoonright>Arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg (cnj z2) - pi\<downharpoonleft>\<bar>"
           using arg_cnj_pi[of z2]
           by auto
       next
         case False
-        thus "acute_ang \<bar>\<downharpoonright>arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>arg (cnj z2) - pi\<downharpoonleft>\<bar>"
+        thus "acute_ang \<bar>\<downharpoonright>Arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>Arg (cnj z2) - pi\<downharpoonleft>\<bar>"
           using arg_cnj_not_pi[of z2]
           apply (auto simp del:acute_ang_def)
-        proof(cases "arg z2 > 0")
+        proof(cases "Arg z2 > 0")
           case True
-          hence "-arg z2 \<le> 0"
+          hence "-Arg z2 \<le> 0"
             by auto
-          thus "acute_ang \<bar>\<downharpoonright>arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>- arg z2 - pi\<downharpoonleft>\<bar>"
-            using True canon_ang_minus_pi1[of "arg z2"]
-            using arg_bounded[of z2] canon_ang_minus_pi2[of "-arg z2"]
+          thus "acute_ang \<bar>\<downharpoonright>Arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>- Arg z2 - pi\<downharpoonleft>\<bar>"
+            using True canon_ang_minus_pi1[of "Arg z2"]
+            using Arg_bounded[of z2] canon_ang_minus_pi2[of "-Arg z2"]
             by (auto simp add: field_simps)
         next
           case False
-          hence "-arg z2 \<ge> 0"
+          hence "-Arg z2 \<ge> 0"
              by simp
-          thus "acute_ang \<bar>\<downharpoonright>arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>- arg z2 - pi\<downharpoonleft>\<bar>"
-          proof(cases "arg z2 = 0")
+          thus "acute_ang \<bar>\<downharpoonright>Arg z2 - pi\<downharpoonleft>\<bar> = acute_ang \<bar>\<downharpoonright>- Arg z2 - pi\<downharpoonleft>\<bar>"
+          proof(cases "Arg z2 = 0")
             case True
             thus ?thesis
               by (auto simp del:acute_ang_def)
           next
             case False
-            hence "-arg z2 > 0"
-              using \<open>-arg z2 \<ge> 0\<close>
+            hence "-Arg z2 > 0"
+              using \<open>-Arg z2 \<ge> 0\<close>
               by auto
             thus ?thesis
-            using False canon_ang_minus_pi1[of "-arg z2"]
-            using arg_bounded[of z2] canon_ang_minus_pi2[of "arg z2"]
+            using False canon_ang_minus_pi1[of "-Arg z2"]
+            using Arg_bounded[of z2] canon_ang_minus_pi2[of "Arg z2"]
             by (auto simp add:field_simps)
         qed
       qed

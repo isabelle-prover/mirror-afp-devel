@@ -828,7 +828,7 @@ next
           using \<open>poincare_between 0\<^sub>h (of_complex x) n\<close> xx \<open>of_complex x \<noteq> 0\<^sub>h\<close>
           using False ** \<open>of_complex x \<in> unit_disc\<close> \<open>n \<noteq> 0\<^sub>h\<close>
           using cmod_Re_le_iff poincare_between_0uv
-          by (metis Re_complex_of_real arg_0_iff rcis_cmod_arg rcis_zero_arg to_complex_of_complex)
+          by (metis Re_complex_of_real arg_0_iff rcis_cmod_Arg rcis_zero_arg to_complex_of_complex)
         
         have "poincare_between (of_complex m') (of_complex x) (of_complex n')" 
           using \<open>Re x \<le> Re n'\<close> \<open>Re m' \<le> Re x\<close>

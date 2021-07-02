@@ -20,13 +20,13 @@ subsection \<open>Auxiliary Facts\<close>
   
 (* TODO Move *)
 lemma arg_of_real [simp]:
-  "x > 0 \<Longrightarrow> arg (complex_of_real x) = 0"
-  "x < 0 \<Longrightarrow> arg (complex_of_real x) = pi"
-  by (rule arg_unique; simp add: complex_sgn_def scaleR_conv_of_real)+
+  "x > 0 \<Longrightarrow> Arg (complex_of_real x) = 0"
+  "x < 0 \<Longrightarrow> Arg (complex_of_real x) = pi"
+  by (auto simp add: Arg_of_real)
   
 lemma arg_conv_arctan:
   assumes "Re z > 0"
-  shows   "arg z = arctan (Im z / Re z)"
+  shows   "Arg z = arctan (Im z / Re z)"
 proof (rule arg_unique)
   show "sgn z = cis (arctan (Im z / Re z))"
   proof (rule complex_eqI)
@@ -133,7 +133,7 @@ lemma deriv_of_real [simp]:
   by (auto intro!: vector_derivative_within derivative_eq_intros)
 
 lemma deriv_Re [simp]: "deriv Re = (\<lambda>_. 1)"
-  by (auto intro!: DERIV_imp_deriv simp: fun_eq_iff)
+  by simp
     
 lemma vector_derivative_of_real_left:
   assumes "f differentiable at x"
@@ -304,27 +304,27 @@ qed
 
 lemma arg_cis [simp]:
   assumes "x \<in> {-pi<..pi}"
-  shows   "arg (cis x) = x"
+  shows   "Arg (cis x) = x"
   using assms by (intro arg_unique) auto
 
 lemma arg_mult_of_real_left [simp]:
   assumes "r > 0"
-  shows   "arg (of_real r * z) = arg z"
+  shows   "Arg (of_real r * z) = Arg z"
 proof (cases "z = 0")
   case False
   thus ?thesis
-    using arg_bounded[of z] assms
-    by (intro arg_unique) (auto simp: sgn_mult sgn_of_real cis_arg)
+    using Arg_bounded[of z] assms
+    by (intro arg_unique) (auto simp: sgn_mult sgn_of_real cis_Arg)
 qed auto
 
 lemma arg_mult_of_real_right [simp]:
   assumes "r > 0"
-  shows   "arg (z * of_real r) = arg z"
+  shows   "Arg (z * of_real r) = Arg z"
   by (subst mult.commute, subst arg_mult_of_real_left) (simp_all add: assms)
 
 lemma arg_rcis [simp]:
   assumes "x \<in> {-pi<..pi}" "r > 0"
-  shows   "arg (rcis r x) = x"
+  shows   "Arg (rcis r x) = x"
   using assms by (simp add: rcis_def)
 
 lemma rcis_in_complex_cone [intro]: 
@@ -333,11 +333,11 @@ lemma rcis_in_complex_cone [intro]:
   using assms by (auto simp: complex_cone_def)  
 
 lemma arg_imp_in_complex_cone:
-  assumes "arg z \<in> {a..b}"
+  assumes "Arg z \<in> {a..b}"
   shows   "z \<in> complex_cone a b"
 proof -
-  have "z = rcis (norm z) (arg z)"
-    by (simp add: rcis_cmod_arg)
+  have "z = rcis (norm z) (Arg z)"
+    by (simp add: rcis_cmod_Arg)
   also have "\<dots> \<in> complex_cone a b"
     using assms by auto
   finally show ?thesis .
@@ -345,12 +345,12 @@ qed
 
 lemma complex_cone_altdef:
   assumes "-pi < a" "a \<le> b" "b \<le> pi"
-  shows   "complex_cone a b = insert 0 {z. arg z \<in> {a..b}}"
+  shows   "complex_cone a b = insert 0 {z. Arg z \<in> {a..b}}"
 proof (intro equalityI subsetI)
   fix z assume "z \<in> complex_cone a b"
   then obtain r \<alpha> where *: "r \<ge> 0" "\<alpha> \<in> {a..b}" "z = rcis r \<alpha>"
     by (auto elim: complex_coneE)
-  have "arg z \<in> {a..b}" if [simp]: "z \<noteq> 0"
+  have "Arg z \<in> {a..b}" if [simp]: "z \<noteq> 0"
   proof -
     have "r > 0" using that * by (subst (asm) *) auto
     hence "\<alpha> \<in> {a..b}"
@@ -360,7 +360,7 @@ proof (intro equalityI subsetI)
     ultimately show ?thesis using *(3) \<open>r > 0\<close>
       by (subst *) auto
   qed
-  thus "z \<in> insert 0 {z. arg z \<in> {a..b}}"
+  thus "z \<in> insert 0 {z. Arg z \<in> {a..b}}"
     by auto
 qed (use assms in \<open>auto intro: arg_imp_in_complex_cone\<close>)
 
@@ -1217,7 +1217,7 @@ proof -
   have *: "norm (stirling_integral n s) \<le> C / norm s ^ (n - 1)"
     if s: "s \<in> complex_cone' \<alpha> - {0}" for s :: complex
   proof (rule Lim_norm_ubound[OF _ LIMSEQ_stirling_integral])
-    from s \<alpha> have arg: "\<bar>arg s\<bar> \<le> \<alpha>" by (auto simp: complex_cone_altdef)
+    from s \<alpha> have Arg: "\<bar>Arg s\<bar> \<le> \<alpha>" by (auto simp: complex_cone_altdef)
     have s': "s \<notin> \<real>\<^sub>\<le>\<^sub>0"
       using complex_cone_inter_nonpos_Reals[of "-\<alpha>" \<alpha>] \<alpha> s  by auto
     from s have [simp]: "s \<noteq> 0" by auto
@@ -1288,32 +1288,32 @@ proof -
       next
 
         case False
-        have "cos \<bar>arg s\<bar> = cos (arg s)"
+        have "cos \<bar>Arg s\<bar> = cos (Arg s)"
           by (simp add: abs_if)
-        also have "cos (arg s) = Re (rcis (norm s) (arg s)) / norm s"
+        also have "cos (Arg s) = Re (rcis (norm s) (Arg s)) / norm s"
           by (subst Re_rcis) auto
         also have "\<dots> = Re s / norm s"
-          by (subst rcis_cmod_arg) auto
+          by (subst rcis_cmod_Arg) auto
         also have "\<dots> \<le> cos (pi / 2)"
           using False by (auto simp: field_simps)
-        finally have "\<bar>arg s\<bar> \<ge> pi / 2"
-          using arg \<alpha> by (subst (asm) cos_mono_le_eq) auto
+        finally have "\<bar>Arg s\<bar> \<ge> pi / 2"
+          using Arg \<alpha> by (subst (asm) cos_mono_le_eq) auto
 
         have "sin \<alpha> * norm s = sin (pi - \<alpha>) * norm s"
           by simp
-        also have "\<dots> \<le> sin (pi - \<bar>arg s\<bar>) * norm s"
-          using \<alpha> arg \<open>\<bar>arg s\<bar> \<ge> pi / 2\<close>
+        also have "\<dots> \<le> sin (pi - \<bar>Arg s\<bar>) * norm s"
+          using \<alpha> Arg \<open>\<bar>Arg s\<bar> \<ge> pi / 2\<close>
           by (intro mult_right_mono sin_monotone_2pi_le) auto
-        also have "sin \<bar>arg s\<bar> \<ge> 0"
-          using arg_bounded[of s] by (intro sin_ge_zero) auto
-        hence "sin (pi - \<bar>arg s\<bar>) = \<bar>sin \<bar>arg s\<bar>\<bar>"
+        also have "sin \<bar>Arg s\<bar> \<ge> 0"
+          using Arg_bounded[of s] by (intro sin_ge_zero) auto
+        hence "sin (pi - \<bar>Arg s\<bar>) = \<bar>sin \<bar>Arg s\<bar>\<bar>"
           by simp 
-        also have "\<dots> = \<bar>sin (arg s)\<bar>"
+        also have "\<dots> = \<bar>sin (Arg s)\<bar>"
           by (simp add: abs_if)
-        also have "\<dots> * norm s = \<bar>Im (rcis (norm s) (arg s))\<bar>"
+        also have "\<dots> * norm s = \<bar>Im (rcis (norm s) (Arg s))\<bar>"
           by (simp add: abs_mult)
         also have "\<dots> = \<bar>Im s\<bar>"
-          by (subst rcis_cmod_arg) auto
+          by (subst rcis_cmod_Arg) auto
         finally have abs_Im_ge: "\<bar>Im s\<bar> \<ge> sin \<alpha> * norm s" .
 
         have [simp]: "Im s \<noteq> 0" "s \<noteq> 0"
@@ -1946,7 +1946,7 @@ subsection \<open>Asymptotics of the complex Gamma function\<close>
 
 text \<open>
   The \<open>m\<close>-th order remainder of Stirling's formula for $\log\Gamma$ is $O(s^{-m})$ uniformly over
-  any complex cone $\text{arg}(z) \leq \alpha$, $z\neq 0$ for any angle
+  any complex cone $\text{Arg}(z) \leq \alpha$, $z\neq 0$ for any angle
   $\alpha\in(0, \pi)$. This means that there is bounded by $c z^{-m}$ for some constant $c$ for
   all $z$ in this cone.
 \<close>
@@ -1990,7 +1990,7 @@ theorem ln_Gamma_complex_asymptotics_explicit:
   where "\<forall>s::complex. s \<notin> \<real>\<^sub>\<le>\<^sub>0 \<longrightarrow>
                ln_Gamma s = (s - 1/2) * ln s - s + ln (2 * pi) / 2 +
                             (\<Sum>k=1..<m. bernoulli (k+1) / (k * (k+1) * s ^ k)) - R s"
-    and "\<forall>s. s \<noteq> 0 \<and> \<bar>arg s\<bar> \<le> \<alpha> \<longrightarrow> norm (R s) \<le> C / norm s ^ m"    
+    and "\<forall>s. s \<noteq> 0 \<and> \<bar>Arg s\<bar> \<le> \<alpha> \<longrightarrow> norm (R s) \<le> C / norm s ^ m"    
 proof -
   obtain c where c: "\<And>s. s \<in> complex_cone' \<alpha> - {0} \<Longrightarrow> norm (stirling_integral m s) \<le> c / norm s ^ m"
     using stirling_integral_bound'[OF assms] by blast
@@ -2007,7 +2007,7 @@ proof -
                ln_Gamma s = (s - 1 / 2) * ln s - s + ln (2 * pi) / 2 +
                (\<Sum>k=1..<m. bernoulli (k+1) / (k * (k+1) * s ^ k)) - R s"
       by (auto simp add: R_def algebra_simps)
-    show "\<forall>s. s \<noteq> 0 \<and> \<bar>arg s\<bar> \<le> \<alpha> \<longrightarrow> cmod (R s) \<le> c / real m / cmod s ^ m"
+    show "\<forall>s. s \<noteq> 0 \<and> \<bar>Arg s\<bar> \<le> \<alpha> \<longrightarrow> cmod (R s) \<le> c / real m / cmod s ^ m"
     proof (safe, goal_cases)
       case (1 s)
       show ?case
@@ -2021,7 +2021,7 @@ qed
 text \<open>
   Lastly, we can also derive the asymptotics of $\Gamma$ itself:
   \[\Gamma(z) \sim \sqrt{2\pi / z} \left(\frac{z}{e}\right)^z\]
-  uniformly for $|z|\to\infty$ within the cone $\text{arg}(z) \leq \alpha$ for $\alpha\in(0,\pi)$:
+  uniformly for $|z|\to\infty$ within the cone $\text{Arg}(z) \leq \alpha$ for $\alpha\in(0,\pi)$:
 \<close>
 
 context

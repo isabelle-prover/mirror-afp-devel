@@ -378,12 +378,12 @@ proof-
   from assms obtain c where *: "u = of_complex c"
     using inf_or_of_complex
     by blast
-  have "is_real (cis (- arg c) * c)" "Re (cis (-arg c) * c) > 0"
+  have "is_real (cis (- Arg c) * c)" "Re (cis (-Arg c) * c) > 0"
     using "*" assms is_real_rot_to_x_axis positive_rot_to_x_axis of_complex_zero_iff
     by blast+
   thus ?thesis
     using *
-    by (rule_tac x="-arg c" in exI) (simp add: positive_x_axis_def circline_set_x_axis)
+    by (rule_tac x="-Arg c" in exI) (simp add: positive_x_axis_def circline_set_x_axis)
 qed
 
 lemma ex_rotation_mapping_u_to_positive_y_axis:
@@ -393,12 +393,12 @@ proof-
   from assms obtain c where *: "u = of_complex c"
     using inf_or_of_complex
     by blast
-  have "is_imag (cis (pi/2 - arg c) * c)" "Im (cis (pi/2 - arg c) * c) > 0"
+  have "is_imag (cis (pi/2 - Arg c) * c)" "Im (cis (pi/2 - Arg c) * c) > 0"
     using "*" assms is_real_rot_to_x_axis positive_rot_to_x_axis of_complex_zero_iff
     by - (simp, simp, simp add: field_simps)
   thus ?thesis
     using *
-    by (rule_tac x="pi/2-arg c" in exI) (simp add: positive_y_axis_def circline_set_y_axis)
+    by (rule_tac x="pi/2-Arg c" in exI) (simp add: positive_y_axis_def circline_set_y_axis)
 qed
 
 lemma wlog_rotation_to_positive_x_axis:
@@ -728,7 +728,7 @@ qed
 
 lemma blaschke_real_preserve_sgn_arg [simp]:
   assumes "is_real a" and "cmod a < 1" and "z \<notin> circline_set x_axis"
-  shows "sgn (arg (to_complex (moebius_pt (blaschke a) z))) = sgn (arg (to_complex z))"
+  shows "sgn (Arg (to_complex (moebius_pt (blaschke a) z))) = sgn (Arg (to_complex z))"
 proof-
   have "z \<noteq> \<infinity>\<^sub>h"
     using assms
