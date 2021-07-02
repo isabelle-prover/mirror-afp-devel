@@ -228,13 +228,13 @@ lemma unitary11_gen_cis_blaschke:
   shows "\<exists> k' \<phi> a'. k' \<noteq> 0 \<and> a' * cnj a' \<noteq> 1 \<and> 
                                  M = k' *\<^sub>s\<^sub>m (cis \<phi>, 0, 0, 1) *\<^sub>m\<^sub>m (1, -a', -cnj a', 1)"
 proof-
-  have "a = cnj a * cis (2 * arg a)"
-    using rcis_cmod_arg[of a] rcis_cnj[of a]
+  have "a = cnj a * cis (2 * Arg a)"
+    using rcis_cmod_Arg[of a] rcis_cnj[of a]
     using cis_rcis_eq rcis_mult
     by simp
   thus ?thesis
     using assms
-    by (rule_tac x="k*cnj a" in exI, rule_tac x="2*arg a" in exI, rule_tac x="- b / a" in exI) (auto simp add: field_simps)
+    by (rule_tac x="k*cnj a" in exI, rule_tac x="2*Arg a" in exI, rule_tac x="- b / a" in exI) (auto simp add: field_simps)
 qed
 
 lemma unitary11_gen_cis_blaschke':
@@ -268,8 +268,8 @@ lemma unitary11_gen_cis_inversion:
   shows "\<exists> k' \<phi>. k' \<noteq> 0 \<and>
                               M = k' *\<^sub>s\<^sub>m (cis \<phi>, 0, 0, 1) *\<^sub>m\<^sub>m (0, 1, 1, 0)"
 using assms
-using rcis_cmod_arg[of b, symmetric] rcis_cnj[of b] cis_rcis_eq
-by simp (rule_tac x="2*arg b" in exI, simp add: rcis_mult)
+using rcis_cmod_Arg[of b, symmetric] rcis_cnj[of b] cis_rcis_eq
+by simp (rule_tac x="2*Arg b" in exI, simp add: rcis_mult)
 
 lemma unitary11_gen_cis_inversion':
   assumes "k \<noteq> 0" and "M = k *\<^sub>s\<^sub>m (-1, 0, 0, 1) *\<^sub>m\<^sub>m (0, b, cnj b, 0)" and "b \<noteq> 0"

@@ -15,9 +15,6 @@ the \emph{Archive of Formal Proofs}. Most (but certainly not all) of them are
 used to formalize orders on \<open>\<lambda>\<close>-free higher-order terms.
 \<close>
 
-hide_const (open) Complex.arg
-
-
 subsection \<open>Finite Sets\<close>
 
 lemma finite_set_fold_singleton[simp]: "Finite_Set.fold f z {x} = f x z"

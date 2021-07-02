@@ -447,7 +447,7 @@ definition euclidean_line_cmat :: "complex_mat \<Rightarrow> euclidean_line" whe
  [simp]: "euclidean_line_cmat H =
          (let (A, B, C, D) = H;
               z1 = -(D*B)/(2*B*C);
-              z2 = z1 + \<i> * sgn (if arg B > 0 then -B else B)
+              z2 = z1 + \<i> * sgn (if Arg B > 0 then -B else B)
            in (z1, z2))"
 
 lift_definition euclidean_line_clmat :: "circline_mat \<Rightarrow> euclidean_line" is euclidean_line_cmat
@@ -465,11 +465,11 @@ proof transfer
   then obtain k where "k \<noteq> 0" and *: "A2 = cor k * A1" "B2 = cor k * B1" "C2 = cor k * C1" "D2 = cor k * D1"
     using HH1 HH2
     by auto
-  have 1: "B1 \<noteq> 0 \<and> 0 < arg B1 \<longrightarrow> \<not> 0 < arg (- B1)"
-    using canon_ang_plus_pi1[of "arg B1"] arg_bounded[of B1]
+  have 1: "B1 \<noteq> 0 \<and> 0 < Arg B1 \<longrightarrow> \<not> 0 < Arg (- B1)"
+    using canon_ang_plus_pi1[of "Arg B1"] Arg_bounded[of B1]
     by (auto simp add: arg_uminus)
-  have 2: "B1 \<noteq> 0 \<and> \<not> 0 < arg B1 \<longrightarrow> 0 < arg (- B1)"
-    using canon_ang_plus_pi2[of "arg B1"] arg_bounded[of B1]
+  have 2: "B1 \<noteq> 0 \<and> \<not> 0 < Arg B1 \<longrightarrow> 0 < Arg (- B1)"
+    using canon_ang_plus_pi2[of "Arg B1"] Arg_bounded[of B1]
     by (auto simp add: arg_uminus)
 
   show "euclidean_line_cmat H1 = euclidean_line_cmat H2"
@@ -496,7 +496,7 @@ proof-
     by auto
 
   let ?z1 = "- cor (Re D) * B / (2 * B * cnj B)"
-  let ?z2 = "?z1 + \<i> * sgn (if 0 < arg B then - B else B)"
+  let ?z2 = "?z1 + \<i> * sgn (if 0 < Arg B then - B else B)"
   have "z1 = ?z1 \<and> z2 = ?z2"
     using \<open>(z1, z2) = euclidean_line H\<close> * \<open>is_real A\<close> \<open>is_real D\<close> \<open>C = cnj B\<close>
     by simp (transfer, transfer, simp add: Let_def)
@@ -1599,7 +1599,7 @@ proof-
   also have "... \<longleftrightarrow> cmod z1 = sqrt (Re (-k2 /k1))"
     by (metis norm_ge_zero real_sqrt_ge_0_iff real_sqrt_pow2 real_sqrt_power)
   also have "... \<longleftrightarrow> (\<exists> \<phi>. z1 = rcis (sqrt (Re (-k2 /k1))) \<phi>)"
-    using rcis_cmod_arg[of z1, symmetric] assms abs_of_nonneg[of "sqrt (Re (-k2/k1))"]
+    using rcis_cmod_Arg[of z1, symmetric] assms abs_of_nonneg[of "sqrt (Re (-k2/k1))"]
     using \<open>Re (-k2/k1) \<ge> 0\<close>
     by auto
   finally show ?thesis

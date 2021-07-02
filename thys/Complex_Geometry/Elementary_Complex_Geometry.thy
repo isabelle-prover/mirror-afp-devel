@@ -250,7 +250,7 @@ lemma circline_line:
     "A = 0" and "BC \<noteq> 0" and
     "cl = circline A BC D" and
     "z1 = - cor D * BC / (2 * BC * cnj BC)" and
-    "z2 = z1 + \<i> * sgn (if arg BC > 0 then -BC else BC)"
+    "z2 = z1 + \<i> * sgn (if Arg BC > 0 then -BC else BC)"
   shows
     "cl = line z1 z2"
 proof-
@@ -267,7 +267,7 @@ proof-
       by (auto simp add: sgn_eq)
     moreover
     have "\<exists> k. k \<noteq> 0 \<and> BC = cor k*rot90 (z2 - z1)"
-    proof (cases "arg BC > 0")
+    proof (cases "Arg BC > 0")
       case True
       thus ?thesis
         using assms
@@ -277,7 +277,7 @@ proof-
       thus ?thesis
         using assms
         by (rule_tac x="-(cmod BC)" in exI, simp)
-           (smt Complex.Re_sgn Im_sgn cis_arg complex_minus complex_surj mult_minus_right rcis_cmod_arg rcis_def)
+           (smt Complex.Re_sgn Im_sgn cis_Arg complex_minus complex_surj mult_minus_right rcis_cmod_Arg rcis_def)
     qed
     then obtain k where "cor k \<noteq> 0" "BC = cor k*rot90 (z2 - z1)"
       by auto
@@ -302,7 +302,7 @@ lemma circline_ex_line:
   shows "\<exists> z1 z2. z1 \<noteq> z2 \<and> cl = line z1 z2"
 proof-
   let ?z1 = "- cor D * BC / (2 * BC * cnj BC)"
-  let ?z2 = "?z1 + \<i> * sgn (if 0 < arg BC then - BC else BC)"
+  let ?z2 = "?z1 + \<i> * sgn (if 0 < Arg BC then - BC else BC)"
   have "?z1 \<noteq> ?z2"
     using \<open>BC \<noteq> 0\<close>
     by (simp add: sgn_eq)
@@ -413,7 +413,7 @@ text \<open>Explicit expression for oriented angle between two circles\<close>
 lemma ang_circ_simp:
   assumes "E \<noteq> \<mu>1" and "E \<noteq> \<mu>2"
   shows "ang_circ E \<mu>1 \<mu>2 p1 p2 =
-         \<downharpoonright>arg (E - \<mu>2) - arg (E - \<mu>1) + sgn_bool p1 * pi / 2 - sgn_bool p2 * pi / 2\<downharpoonleft>"
+         \<downharpoonright>Arg (E - \<mu>2) - Arg (E - \<mu>1) + sgn_bool p1 * pi / 2 - sgn_bool p2 * pi / 2\<downharpoonleft>"
   unfolding ang_circ_def ang_vec_def circ_tang_vec_def
   apply (rule canon_ang_eq)
   using assms
@@ -430,10 +430,10 @@ text \<open>Explicit expression for the cosine of angle between two circles\<clo
 lemma cos_ang_circ_simp:
   assumes "E \<noteq> \<mu>1" and "E \<noteq> \<mu>2"
   shows "cos (ang_circ E \<mu>1 \<mu>2 p1 p2) =
-         sgn_bool (p1 = p2) * cos (arg (E - \<mu>2) - arg (E - \<mu>1))"
+         sgn_bool (p1 = p2) * cos (Arg (E - \<mu>2) - Arg (E - \<mu>1))"
   using assms
-  using cos_periodic_pi2[of "arg (E - \<mu>2) - arg (E - \<mu>1)"]
-  using cos_minus_pi[of "arg (E - \<mu>2) - arg (E - \<mu>1)"]
+  using cos_periodic_pi2[of "Arg (E - \<mu>2) - Arg (E - \<mu>1)"]
+  using cos_minus_pi[of "Arg (E - \<mu>2) - Arg (E - \<mu>1)"]
   using ang_circ_simp[OF assms, of p1 p2]
   by auto
 
@@ -441,7 +441,7 @@ text \<open>Explicit expression for the unoriented angle between two circles\<cl
 lemma ang_circ_c_simp:
   assumes "E \<noteq> \<mu>1" and "E \<noteq> \<mu>2"
   shows "ang_circ_c E \<mu>1 \<mu>2 p1 p2 = 
-        \<bar>\<downharpoonright>arg (E - \<mu>2) - arg (E - \<mu>1) + sgn_bool p1 * pi / 2 - sgn_bool p2 * pi / 2\<downharpoonleft>\<bar>"
+        \<bar>\<downharpoonright>Arg (E - \<mu>2) - Arg (E - \<mu>1) + sgn_bool p1 * pi / 2 - sgn_bool p2 * pi / 2\<downharpoonleft>\<bar>"
   unfolding ang_circ_c_def ang_vec_c_def
   using ang_circ_simp[OF assms]
   unfolding ang_circ_def
@@ -451,7 +451,7 @@ text \<open>Explicit expression for the acute angle between two circles\<close>
 lemma ang_circ_a_simp:
   assumes "E \<noteq> \<mu>1" and "E \<noteq> \<mu>2"
   shows "ang_circ_a E \<mu>1 \<mu>2 p1 p2 = 
-         acute_ang (abs (canon_ang (arg(E - \<mu>2) - arg(E - \<mu>1) + (sgn_bool p1) * pi/2 - (sgn_bool p2) * pi/2)))"
+         acute_ang (abs (canon_ang (Arg(E - \<mu>2) - Arg(E - \<mu>1) + (sgn_bool p1) * pi/2 - (sgn_bool p2) * pi/2)))"
   unfolding ang_circ_a_def ang_vec_a_def
   using ang_circ_c_simp[OF assms]
   unfolding ang_circ_c_def

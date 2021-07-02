@@ -228,12 +228,12 @@ proof-
 
       have phi_sin: "\<phi> > 0 \<longleftrightarrow> sin \<phi> > 0" "\<phi> < 0 \<longleftrightarrow> sin \<phi> < 0"
         using \<open>\<phi> = arg z'\<close> \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> \<noteq> pi\<close>
-        using arg_bounded[of z']
+        using Arg_bounded[of z']
         by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
       have theta_sin: "\<theta> > 0 \<longleftrightarrow> sin \<theta> > 0" "\<theta> < 0 \<longleftrightarrow> sin \<theta> < 0"
         using \<open>\<theta> = arg y'\<close> \<open>\<theta> \<noteq> 0\<close> \<open>\<theta> \<noteq> pi\<close>
-        using arg_bounded[of y']
+        using Arg_bounded[of y']
         by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
       have "sin \<phi> * sin \<theta> < 0"
@@ -246,7 +246,7 @@ proof-
         hence "sin (\<phi> - \<theta>) = 0"
           by simp
         have "- 2 * pi < \<phi> - \<theta>" "\<phi> - \<theta> < 2 * pi"
-          using \<open>\<phi> = arg z'\<close> \<open>\<theta> = arg y'\<close> arg_bounded[of z'] arg_bounded[of y'] \<open>\<phi> \<noteq> pi\<close> \<open>\<theta> \<noteq> pi\<close>
+          using \<open>\<phi> = arg z'\<close> \<open>\<theta> = arg y'\<close> Arg_bounded[of z'] Arg_bounded[of y'] \<open>\<phi> \<noteq> pi\<close> \<open>\<theta> \<noteq> pi\<close>
           by auto
         hence "\<phi> - \<theta> = -pi \<or> \<phi> - \<theta> = 0 \<or> \<phi> - \<theta> = pi"
           using \<open>sin (\<phi> - \<theta>) = 0\<close>
@@ -1803,7 +1803,7 @@ next
             ultimately
             have "Re ?x \<le> Re ?y"
               using \<open>x \<in> unit_disc\<close> \<open>y \<in> unit_disc\<close>
-              by (metis Re_complex_of_real arg_0_iff le_less of_complex_zero poincare_between_0uv rcis_cmod_arg rcis_zero_arg to_complex_of_complex)
+              by (metis Re_complex_of_real arg_0_iff le_less of_complex_zero poincare_between_0uv rcis_cmod_Arg rcis_zero_arg to_complex_of_complex)
 
             have "Re ?x \<noteq> Re ?y"
               using \<open>\<phi> x \<and> \<psi> y\<close> \<open>is_real ?x\<close> \<open>is_real ?y\<close>
@@ -1966,7 +1966,7 @@ next
               show "poincare_between x B y"
                 using \<open>is_real (to_complex B)\<close> \<open>x \<in> unit_disc\<close> \<open>y \<in> unit_disc\<close> \<open>B \<in> unit_disc\<close>
                 using poincare_between_x_axis_uvw[of "Re (to_complex x)" "Re (to_complex B)" "Re (to_complex y)"]
-                by (smt Re_complex_of_real arg_0_iff poincare_between_nonstrict(1) rcis_cmod_arg rcis_zero_arg unit_disc_iff_cmod_lt_1)
+                by (smt Re_complex_of_real arg_0_iff poincare_between_nonstrict(1) rcis_cmod_Arg rcis_zero_arg unit_disc_iff_cmod_lt_1)
             qed
           qed            
         qed

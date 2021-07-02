@@ -9,8 +9,8 @@ imports
   Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
-lemma cis_mult_cmod_id: "cis (arg x) * of_real (cmod x) = x"
-  using rcis_cmod_arg[unfolded rcis_def] by (simp add: ac_simps)
+lemma cis_mult_cmod_id: "cis (Arg x) * of_real (cmod x) = x"
+  using rcis_cmod_Arg[unfolded rcis_def] by (simp add: ac_simps)
 
 lemma rcis_mult_cis[simp]: "rcis n a * cis b = rcis n (a + b)" unfolding cis_rcis_eq rcis_mult by simp
 lemma rcis_div_cis[simp]: "rcis n a / cis b = rcis n (a - b)" unfolding cis_rcis_eq rcis_divide by simp
@@ -31,11 +31,6 @@ proof (induct n)
   finally show ?case .
 qed simp
 
-declare cis_pi[simp]
-
-lemma cis_pi_2[simp]: "cis (pi / 2) = \<i>"
-  by (auto simp: complex_eq_iff)
-
 lemma cis_add_pi[simp]: "cis (pi + x) = - cis x"
   by (auto simp: complex_eq_iff)
 
@@ -51,10 +46,10 @@ lemma rcis_plus_2pi[simp]: "rcis y (x + 2 * pi) = rcis y x" unfolding rcis_def b
 lemma rcis_times_2pi[simp]: "rcis r (of_nat n * 2 * pi) = of_real r"
   unfolding rcis_def cis_times_2pi by simp
 
-lemma arg_rcis_cis: assumes n: "n > 0" shows "arg (rcis n x) = arg (cis x)"
-  using arg_bounded arg_unique cis_arg complex_mod_rcis n rcis_def sgn_eq by auto
+lemma arg_rcis_cis: assumes n: "n > 0" shows "Arg (rcis n x) = Arg (cis x)"
+  using Arg_bounded arg_unique cis_Arg complex_mod_rcis n rcis_def sgn_eq by auto
 
-lemma arg_eqD: assumes "arg (cis x) = arg (cis y)" "-pi < x" "x \<le> pi" "-pi < y" "y \<le> pi"
+lemma arg_eqD: assumes "Arg (cis x) = Arg (cis y)" "-pi < x" "x \<le> pi" "-pi < y" "y \<le> pi"
   shows "x = y"
   using assms(1) unfolding arg_unique[OF sgn_cis assms(2-3)] arg_unique[OF sgn_cis assms(4-5)] .
 
@@ -66,7 +61,7 @@ proof (rule inj_onI, goal_cases)
   from arg_cong[OF this, of uminus] have *: "cis (-x + pi) = cis (-y + pi)"
     by (auto simp: complex_eq_iff)
   have "- x + pi = - y + pi"
-    by (rule arg_eqD[OF arg_cong[OF *, of arg]], insert 1(1-2), auto)
+    by (rule arg_eqD[OF arg_cong[OF *, of Arg]], insert 1(1-2), auto)
   thus ?case by simp
 qed
 

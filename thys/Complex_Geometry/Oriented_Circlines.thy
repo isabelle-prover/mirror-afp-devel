@@ -269,7 +269,7 @@ with $A < 0$ negatively oriented. However, Schwerdtfeger did not discuss the pos
 definition pos_oriented_cmat :: "complex_mat \<Rightarrow> bool" where
   [simp]: "pos_oriented_cmat H \<longleftrightarrow>
            (let (A, B, C, D) = H
-              in (Re A > 0 \<or> (Re A = 0 \<and> ((B \<noteq> 0 \<and> arg B > 0) \<or> (B = 0 \<and> Re D > 0)))))"
+              in (Re A > 0 \<or> (Re A = 0 \<and> ((B \<noteq> 0 \<and> Arg B > 0) \<or> (B = 0 \<and> Re D > 0)))))"
 lift_definition pos_oriented_clmat :: "circline_mat \<Rightarrow> bool" is pos_oriented_cmat
   done
 
@@ -290,8 +290,8 @@ proof (transfer, transfer)
     using hh hermitean_elems[of A B C D]
     by (cases A, cases D) (auto simp add: Complex_eq)
   moreover
-  have "B \<noteq> 0 \<and> \<not> 0 < arg B \<longrightarrow> 0 < arg (- B)"
-    using canon_ang_plus_pi2[of "arg B"] arg_bounded[of B]
+  have "B \<noteq> 0 \<and> \<not> 0 < Arg B \<longrightarrow> 0 < Arg (- B)"
+    using canon_ang_plus_pi2[of "Arg B"] Arg_bounded[of B]
     by (auto simp add: arg_uminus)
   ultimately
   show "pos_oriented_cmat H \<or> pos_oriented_cmat (opposite_ocircline_cmat H)"
@@ -309,12 +309,12 @@ proof-
     using assms hermitean_elems[of A B C D]
     by (cases A, cases D) (auto simp add: Complex_eq)
   moreover
-  have "B \<noteq> 0 \<and> \<not> 0 < arg B \<longrightarrow> 0 < arg (- B)"
-    using canon_ang_plus_pi2[of "arg B"] arg_bounded[of B]
+  have "B \<noteq> 0 \<and> \<not> 0 < Arg B \<longrightarrow> 0 < Arg (- B)"
+    using canon_ang_plus_pi2[of "Arg B"] Arg_bounded[of B]
     by (auto simp add: arg_uminus)
   moreover
-  have "B \<noteq> 0 \<and> 0 < arg B \<longrightarrow> \<not> 0 < arg (- B)"
-    using canon_ang_plus_pi1[of "arg B"] arg_bounded[of B]
+  have "B \<noteq> 0 \<and> 0 < Arg B \<longrightarrow> \<not> 0 < Arg (- B)"
+    using canon_ang_plus_pi1[of "Arg B"] Arg_bounded[of B]
     by (auto simp add: arg_uminus)
   ultimately
   show "pos_oriented_cmat (opposite_ocircline_cmat H) = (\<not> pos_oriented_cmat H)"

@@ -744,7 +744,7 @@ definition moebius_rotation_dilatation where
 
 lemma moebius_rotation_dilatation:                                     
   assumes "a \<noteq> 0"
-  shows "moebius_rotation_dilatation a = moebius_rotation (arg a) + moebius_dilatation (cmod a)"
+  shows "moebius_rotation_dilatation a = moebius_rotation (Arg a) + moebius_dilatation (cmod a)"
   using assms
   unfolding moebius_rotation_dilatation_def moebius_rotation_def moebius_dilatation_def
   by simp
@@ -776,7 +776,7 @@ subsection \<open>Decomposition of M\"obius transformations\<close>
 text \<open>Every Euclidean similarity can be decomposed using translations, rotations, and dilatations.\<close>
 lemma similarity_decomposition:
   assumes "a \<noteq> 0"
-  shows "moebius_similarity a b = (moebius_translation b) + (moebius_rotation (arg a)) + (moebius_dilatation (cmod a))"
+  shows "moebius_similarity a b = (moebius_translation b) + (moebius_rotation (Arg a)) + (moebius_dilatation (cmod a))"
 proof-
   have "moebius_similarity a b = (moebius_translation b) + (moebius_rotation_dilatation a)"
     using assms
@@ -828,7 +828,7 @@ proof-
       show ?thesis
         using moebius_decomposition[of c a d b] \<open>mat_det (a, b, c, d) \<noteq> 0\<close> \<open>c \<noteq> 0\<close> \<open>M = mk_moebius a b c d\<close>
         using moebius_rotation_dilatation[of "(b*c - a*d) / (c*c)"]
-        using trans[of "a/c"] rot[of "arg ((b*c - a*d) / (c*c))"] dil[of "cmod ((b*c - a*d) / (c*c))"] recip
+        using trans[of "a/c"] rot[of "Arg ((b*c - a*d) / (c*c))"] dil[of "cmod ((b*c - a*d) / (c*c))"] recip
         using comp
         by (simp add: trans)
     next
@@ -840,7 +840,7 @@ proof-
       thus ?thesis
         using \<open>c = 0\<close> \<open>mat_det (a, b, c, d) \<noteq> 0\<close>
         using similarity_decomposition[of "a/d" "b/d"]
-        using trans[of "b/d"] rot[of "arg (a/d)"] dil[of "cmod (a/d)"] comp
+        using trans[of "b/d"] rot[of "Arg (a/d)"] dil[of "cmod (a/d)"] comp
         by simp
     qed
 qed

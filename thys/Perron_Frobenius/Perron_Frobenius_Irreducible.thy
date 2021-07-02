@@ -960,7 +960,7 @@ proof -
 qed
 
 lemma similar_matrix_rotation: assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
-  shows "similar_matrix (cis (arg \<alpha>) *k cA) cA" 
+  shows "similar_matrix (cis (Arg \<alpha>) *k cA) cA" 
 proof -
   from ev obtain y where ev: "eigen_vector cA y \<alpha>" unfolding eigen_value_def by auto
   let ?y = "norm_v y"
@@ -977,22 +977,22 @@ proof -
   have ev_yp: "A *v yp = sr *s yp" 
     and pos_yp: "lt_vec 0 yp" 
     using sr_imp_eigen_vector_main[OF yp 2] sr_u_pos[OF yp 2] by auto
-  define D where "D = diagvector (\<lambda> j. cis (arg (y $ j)))" 
-  define inv_D where "inv_D = diagvector (\<lambda> j. cis (- arg (y $ j)))" 
+  define D where "D = diagvector (\<lambda> j. cis (Arg (y $ j)))" 
+  define inv_D where "inv_D = diagvector (\<lambda> j. cis (- Arg (y $ j)))" 
   have DD: "inv_D ** D = mat 1" "D ** inv_D = mat 1" unfolding D_def inv_D_def 
     by (auto simp add: diagvector_eq_mat cis_mult)
   {
     fix i
-    have "(D *v ?yp) $ i = cis (arg (y $ i)) * c (cmod (y $ i))" 
+    have "(D *v ?yp) $ i = cis (Arg (y $ i)) * c (cmod (y $ i))" 
       unfolding D_def yp_def by (simp add: maps) 
     also have "\<dots> = y $ i" by (simp add: cis_mult_cmod_id)
     also note calculation
   }
   hence y_D_yp: "y = D *v ?yp" by (auto simp: vec_eq_iff)
-  define \<phi> where "\<phi> = arg \<alpha>" 
+  define \<phi> where "\<phi> = Arg \<alpha>" 
   let ?\<phi> = "cis (- \<phi>)" 
   have [simp]: "cis (- \<phi>) * rcis sr \<phi> = sr" unfolding cis_rcis_eq rcis_mult by simp
-  have \<alpha>: "\<alpha> = rcis sr \<phi>" unfolding \<phi>_def \<alpha>[symmetric] rcis_cmod_arg ..
+  have \<alpha>: "\<alpha> = rcis sr \<phi>" unfolding \<phi>_def \<alpha>[symmetric] rcis_cmod_Arg ..
   define F where "F = ?\<phi> *k (inv_D ** cA ** D)" 
   have "cA *v (D *v ?yp) = \<alpha> *s y" unfolding y_D_yp[symmetric] ev_y by simp
   also have "inv_D *v \<dots> = \<alpha> *s ?yp" 
@@ -1002,11 +1002,11 @@ proof -
   also have "\<dots> = cA *v ?yp" unfolding ev_yp[symmetric] by (auto simp: maps matrix_vector_mult_def)
   finally have F: "F *v ?yp = cA *v ?yp" unfolding F_def matrix_scalar_vector_ac[symmetric]
     unfolding matrix_vector_mul_assoc[symmetric] vector_smult_distrib .
-  have prod: "inv_D ** cA ** D = (\<chi> i j. cis (- arg (y $ i)) * cA $ i $ j * cis (arg (y $ j)))" 
+  have prod: "inv_D ** cA ** D = (\<chi> i j. cis (- Arg (y $ i)) * cA $ i $ j * cis (Arg (y $ j)))" 
     unfolding inv_D_def D_def diagvector_mult_right diagvector_mult_left by simp
   {
     fix i j
-    have "cmod (F $ i $ j) = cmod (?\<phi> * cA $h i $h j * (cis (- arg (y $h i)) * cis (arg (y $h j))))" 
+    have "cmod (F $ i $ j) = cmod (?\<phi> * cA $h i $h j * (cis (- Arg (y $h i)) * cis (Arg (y $h j))))" 
       unfolding F_def prod vec_lambda_beta matrix_scalar_mult_def
       by (simp only: ac_simps)
     also have "\<dots> = A $ i $ j" unfolding cis_mult unfolding norm_mult by simp
@@ -1036,10 +1036,10 @@ qed
 
 lemma assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
   shows maximal_eigen_value_order_1: "order \<alpha> (charpoly cA) = 1" 
-    and maximal_eigen_value_rotation: "eigen_value cA (x * cis (arg \<alpha>)) = eigen_value cA x"
-      "eigen_value cA (x / cis (arg \<alpha>)) = eigen_value cA x"
+    and maximal_eigen_value_rotation: "eigen_value cA (x * cis (Arg \<alpha>)) = eigen_value cA x"
+      "eigen_value cA (x / cis (Arg \<alpha>)) = eigen_value cA x"
 proof -
-  let ?a = "cis (arg \<alpha>)" 
+  let ?a = "cis (Arg \<alpha>)" 
   let ?p = "charpoly cA" 
   from similar_matrix_rotation[OF ev \<alpha>]
   have "similar_matrix (?a *k cA) cA" .
@@ -1070,9 +1070,9 @@ proof -
   {
     fix a
     assume *: "rcis sr a \<in> M" 
-    have id: "cis (arg (rcis sr a)) = cis a"
+    have id: "cis (Arg (rcis sr a)) = cis a"
       by (smt * M mem_Collect_eq nonzero_mult_div_cancel_left of_real_eq_0_iff 
-         rcis_cmod_arg rcis_def sr_pos) 
+         rcis_cmod_Arg rcis_def sr_pos) 
     from *[unfolded assms] have "eigen_value cA (rcis sr a)" "cmod (rcis sr a) = sr" by auto
     from maximal_eigen_value_rotation[OF this, unfolded id]
     have "eigen_value cA (x * cis a) = eigen_value cA x" 
@@ -1112,8 +1112,8 @@ proof -
   obtain m where Mm: "M = set m" and dist: "distinct m" by auto
   from Mm dist have card: "?M = length m" by (auto simp: distinct_card)
   have sr: "sr \<in> set m" using eigen_value_sr_c sr_pos unfolding Mm[symmetric] M by auto
-  define s where "s = sort_key arg m" 
-  define a where "a = map arg s" 
+  define s where "s = sort_key Arg m" 
+  define a where "a = map Arg s" 
   let ?k = "length a" 
   from dist Mm card sr have s: "M = set s" "distinct s"  "sr \<in> set s" 
     and card: "?M = ?k"
@@ -1125,12 +1125,12 @@ proof -
     assume "x \<in> set s" 
     from this[folded s(1), unfolded M] 
     have id: "cmod x = sr" by auto
-    show "sr * cis (arg x) = x" 
-      by (subst (5) rcis_cmod_arg[symmetric], unfold id[symmetric] rcis_def, simp)
+    show "sr * cis (Arg x) = x" 
+      by (subst (5) rcis_cmod_Arg[symmetric], unfold id[symmetric] rcis_def, simp)
   qed
   from s(2)[folded map_s, unfolded distinct_map] have a: "distinct a" "inj_on cis (set a)" by auto
   from s(3) obtain aa a' where a_split: "a = aa # a'" unfolding a_def by (cases s, auto)
-  from arg_bounded have bounded: "x \<in> set a \<Longrightarrow> - pi < x \<and> x \<le> pi" for x unfolding a_def by auto
+  from Arg_bounded have bounded: "x \<in> set a \<Longrightarrow> - pi < x \<and> x \<le> pi" for x unfolding a_def by auto
   from bounded[of aa, unfolded a_split] have aa: "- pi < aa \<and> aa \<le> pi" by auto
   let ?aa = "aa + 2 * pi" 
   define args where "args = a @ [?aa]" 
@@ -1248,10 +1248,10 @@ proof -
   from Min_M[unfolded Min] 
   have ev: "eigen_value cA ?rphi" unfolding M by auto
   have cm: "cmod ?rphi = sr" using sr_pos by simp
-  have id: "cis (arg ?rphi) = cis (arg ?phi) * cmod ?phi" 
+  have id: "cis (Arg ?rphi) = cis (Arg ?phi) * cmod ?phi" 
     unfolding arg_rcis_cis[OF sr_pos] by simp
   also have "\<dots> = ?phi" unfolding cis_mult_cmod_id ..
-  finally have id: "cis (arg ?rphi) = ?phi" .
+  finally have id: "cis (Arg ?rphi) = ?phi" .
   define phi where "phi = ?phi" 
   have phi: "phi \<noteq> 0" unfolding phi_def by auto
   note max = maximal_eigen_value_rotation[OF ev cm, unfolded id phi_def[symmetric]]
