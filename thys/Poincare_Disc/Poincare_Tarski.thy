@@ -78,18 +78,18 @@ proof-
 
       assume "poincare_between 0\<^sub>h u z"
 
-      hence "arg u' = arg z'" "cmod u' \<le> cmod z'"
+      hence "Arg u' = Arg z'" "cmod u' \<le> cmod z'"
         using * poincare_between_0uv[of u z] distinct in_disc
         by auto
 
       then obtain \<phi> ru rz where
         uz_polar: "u' = cor ru * cis \<phi>" "z' = cor rz * cis \<phi>" "0 < ru" "ru \<le> rz" "0 < rz" and
-                  "\<phi> = arg u'" "\<phi> = arg z'"
+                  "\<phi> = Arg u'" "\<phi> = Arg z'"
         using * \<open>u' \<noteq> 0\<close> \<open>z' \<noteq> 0\<close>
         by (smt cmod_cis norm_le_zero_iff)
 
       obtain \<theta> ry where
-        y_polar: "y' = cor ry * cis \<theta>" "ry > 0" and "\<theta> = arg y'"
+        y_polar: "y' = cor ry * cis \<theta>" "ry > 0" and "\<theta> = Arg y'"
         using \<open>y' \<noteq> 0\<close>
         by (smt cmod_cis norm_le_zero_iff)
 
@@ -213,7 +213,7 @@ proof-
         using poincare_between_x_axis_intersection[of y z "of_complex v"]
         using in_disc \<open>of_complex v \<in> unit_disc\<close> distinct
         using \<open>of_complex v \<in> circline_set ?yz\<close> \<open>of_complex v \<in> circline_set x_axis\<close>
-        using \<open>\<phi> = arg z'\<close> \<open>\<theta> = arg y'\<close> *
+        using \<open>\<phi> = Arg z'\<close> \<open>\<theta> = Arg y'\<close> *
         by (simp add: field_simps)
 
       have "\<phi> \<noteq> pi" "\<phi> \<noteq> 0"
@@ -227,12 +227,12 @@ proof-
         by auto
 
       have phi_sin: "\<phi> > 0 \<longleftrightarrow> sin \<phi> > 0" "\<phi> < 0 \<longleftrightarrow> sin \<phi> < 0"
-        using \<open>\<phi> = arg z'\<close> \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> \<noteq> pi\<close>
+        using \<open>\<phi> = Arg z'\<close> \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> \<noteq> pi\<close>
         using Arg_bounded[of z']
         by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
       have theta_sin: "\<theta> > 0 \<longleftrightarrow> sin \<theta> > 0" "\<theta> < 0 \<longleftrightarrow> sin \<theta> < 0"
-        using \<open>\<theta> = arg y'\<close> \<open>\<theta> \<noteq> 0\<close> \<open>\<theta> \<noteq> pi\<close>
+        using \<open>\<theta> = Arg y'\<close> \<open>\<theta> \<noteq> 0\<close> \<open>\<theta> \<noteq> pi\<close>
         using Arg_bounded[of y']
         by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
@@ -246,7 +246,7 @@ proof-
         hence "sin (\<phi> - \<theta>) = 0"
           by simp
         have "- 2 * pi < \<phi> - \<theta>" "\<phi> - \<theta> < 2 * pi"
-          using \<open>\<phi> = arg z'\<close> \<open>\<theta> = arg y'\<close> Arg_bounded[of z'] Arg_bounded[of y'] \<open>\<phi> \<noteq> pi\<close> \<open>\<theta> \<noteq> pi\<close>
+          using \<open>\<phi> = Arg z'\<close> \<open>\<theta> = Arg y'\<close> Arg_bounded[of z'] Arg_bounded[of y'] \<open>\<phi> \<noteq> pi\<close> \<open>\<theta> \<noteq> pi\<close>
           by auto
         hence "\<phi> - \<theta> = -pi \<or> \<phi> - \<theta> = 0 \<or> \<phi> - \<theta> = pi"
           using \<open>sin (\<phi> - \<theta>) = 0\<close>
@@ -290,7 +290,7 @@ proof-
       proof-
         have "\<not> is_real u'"
           using * polar in_disc
-          using \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> = arg u'\<close> \<open>\<phi> \<noteq> pi\<close>  phi_sin(1) phi_sin(2)
+          using \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> = Arg u'\<close> \<open>\<phi> \<noteq> pi\<close>  phi_sin(1) phi_sin(2)
           by (metis is_real_arg2)
         moreover
         have "u \<noteq> \<infinity>\<^sub>h"
@@ -522,7 +522,7 @@ proof-
           using calc_x_axis_intersection[OF is_poincare_line_poincare_line[OF \<open>y \<noteq> u\<close>] \<open>intersects_x_axis ?yu\<close>]
           using calc_x_axis_intersection_in_unit_disc[OF is_poincare_line_poincare_line[OF \<open>y \<noteq> u\<close>] \<open>intersects_x_axis ?yu\<close>]
           using in_disc \<open>y \<noteq> u\<close> \<open>y \<notin> circline_set x_axis\<close> \<open>u \<notin> circline_set x_axis\<close>
-          using * \<open>\<phi> = arg u'\<close> \<open>\<theta> = arg y'\<close> \<open>\<phi> * \<theta> < 0\<close>
+          using * \<open>\<phi> = Arg u'\<close> \<open>\<theta> = Arg y'\<close> \<open>\<phi> * \<theta> < 0\<close>
           by (subst poincare_between_rev, auto simp add: mult.commute)
       next
         show "poincare_between 0\<^sub>h ?a (of_complex v)"
@@ -1294,7 +1294,7 @@ proof-
       hence "cmod (to_complex ?d) \<le> cmod (to_complex ?t)"
         by (simp add: Let_def cmod_def power2_eq_square field_simps)
       moreover
-      have "arg (to_complex ?d) = arg (to_complex ?t)"
+      have "Arg (to_complex ?d) = Arg (to_complex ?t)"
       proof-
         have 1: "to_complex ?d = ((5 - sqrt 17) / 4) * (1 + \<i>)"
           by (simp add: field_simps)
@@ -1319,7 +1319,7 @@ proof-
           by simp
       qed
       ultimately
-      show "let d' = to_complex ?d; t' = to_complex ?t in arg d' = arg t' \<and> cmod d' \<le> cmod t'"
+      show "let d' = to_complex ?d; t' = to_complex ?t in Arg d' = Arg t' \<and> cmod d' \<le> cmod t'"
         by simp
     qed
 
@@ -2464,7 +2464,7 @@ proof-
 
                   have "intersects_x_axis ?lx"
                   proof-
-                    have "arg (to_complex ?a1) * arg (to_complex ?a2) < 0"
+                    have "Arg (to_complex ?a1) * Arg (to_complex ?a2) < 0"
                       using \<open>poincare_between ?a1 ?a ?a2\<close> \<open>?a1 \<in> unit_disc\<close> \<open>?a2 \<in> unit_disc\<close>
                       using poincare_between_x_axis_intersection[of ?a1 ?a2 "of_complex xa"]
                       using \<open>?a1 \<noteq> ?a2\<close> \<open>?a \<in> unit_disc\<close> \<open>?a1 \<notin> circline_set x_axis \<and> ?a2 \<notin> circline_set x_axis\<close> \<open>?a \<in> positive_x_axis\<close>

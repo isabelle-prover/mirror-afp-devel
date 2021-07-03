@@ -1824,7 +1824,7 @@ lemma poincare_collinear_zero_polar_form:
   shows "\<exists> \<phi> rx ry. x = cor rx * cis \<phi> \<and> y = cor ry * cis \<phi> \<and> rx \<noteq> 0 \<and> ry \<noteq> 0"
 proof-
   from \<open>x \<noteq> 0\<close> \<open>y \<noteq> 0\<close> obtain \<phi> \<phi>' rx ry where
-    polar: "x = cor rx * cis \<phi>" "y = cor ry * cis \<phi>'" and  "\<phi> = arg x" "\<phi>' = arg y"
+    polar: "x = cor rx * cis \<phi>" "y = cor ry * cis \<phi>'" and  "\<phi> = Arg x" "\<phi>' = Arg y"
     by (metis cmod_cis)
   hence "rx \<noteq> 0" "ry \<noteq> 0"
     using \<open>x \<noteq> 0\<close> \<open>y \<noteq> 0\<close>

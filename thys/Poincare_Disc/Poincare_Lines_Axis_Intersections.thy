@@ -18,12 +18,12 @@ lemma poincare_between_x_axis_intersection:
   assumes "u \<in> unit_disc" and "v \<in> unit_disc" and "z \<in> unit_disc" and "u \<noteq> v"
   assumes "u \<notin> circline_set x_axis" and "v \<notin> circline_set x_axis"
   assumes "z \<in> circline_set (poincare_line u v) \<inter> circline_set x_axis"
-  shows "poincare_between u z v \<longleftrightarrow> arg (to_complex u) * arg (to_complex v) < 0"
+  shows "poincare_between u z v \<longleftrightarrow> Arg (to_complex u) * Arg (to_complex v) < 0"
 proof-
   have "\<forall> u v. u \<in> unit_disc \<and> v \<in> unit_disc \<and> u \<noteq> v \<and>
        u \<notin> circline_set x_axis \<and> v \<notin> circline_set x_axis \<and> 
        z \<in> circline_set (poincare_line u v) \<inter> circline_set x_axis \<longrightarrow> 
-       (poincare_between u z v \<longleftrightarrow> arg (to_complex u) * arg (to_complex v) < 0)" (is "?P z")
+       (poincare_between u z v \<longleftrightarrow> Arg (to_complex u) * Arg (to_complex v) < 0)" (is "?P z")
   proof (rule wlog_real_zero)
     show "?P 0\<^sub>h"
     proof ((rule allI)+, rule impI, (erule conjE)+)
@@ -40,7 +40,7 @@ proof-
         using *
         by auto
 
-      hence "arg u' \<noteq> 0" "arg v' \<noteq> 0"
+      hence "Arg u' \<noteq> 0" "Arg v' \<noteq> 0"
         using * arg_0_iff[of u'] arg_0_iff[of v']
         unfolding circline_set_x_axis uv
         by auto
@@ -49,14 +49,14 @@ proof-
         using *
         unfolding poincare_collinear_def
         by (rule_tac x="poincare_line u v" in exI, simp)
-      have "(\<exists>k<0. u' = cor k * v') \<longleftrightarrow> (arg u' * arg v' < 0)" (is "?lhs \<longleftrightarrow> ?rhs")
+      have "(\<exists>k<0. u' = cor k * v') \<longleftrightarrow> (Arg u' * Arg v' < 0)" (is "?lhs \<longleftrightarrow> ?rhs")
       proof
         assume "?lhs"
         then obtain k where "k < 0" "u' = cor k * v'"
           by auto
         thus ?rhs
           using arg_mult_real_negative[of k v'] arg_uminus_opposite_sign[of v']
-          using \<open>u' \<noteq> 0\<close> \<open>v' \<noteq> 0\<close> \<open>arg u' \<noteq> 0\<close> \<open>arg v' \<noteq> 0\<close>
+          using \<open>u' \<noteq> 0\<close> \<open>v' \<noteq> 0\<close> \<open>Arg u' \<noteq> 0\<close> \<open>Arg v' \<noteq> 0\<close>
           by (auto simp add: mult_neg_pos mult_pos_neg)
       next
         assume ?rhs
@@ -75,7 +75,7 @@ proof-
           using polar     
           by (rule_tac x="ru / rv" in exI, auto simp add: divide_less_0_iff mult_less_0_iff)
       qed
-      thus "poincare_between u 0\<^sub>h v = (arg (to_complex u) * arg (to_complex v) < 0)"
+      thus "poincare_between u 0\<^sub>h v = (Arg (to_complex u) * Arg (to_complex v) < 0)"
         using poincare_between_u0v[of u v] * \<open>u \<noteq> 0\<^sub>h\<close> \<open>v \<noteq> 0\<^sub>h\<close> uv
         by simp
     qed
@@ -97,7 +97,7 @@ proof-
         by simp
 
       assume "z \<in> circline_set (poincare_line u v) \<inter> circline_set x_axis"
-      thus "poincare_between u z v = (arg (to_complex u) * arg (to_complex v) < 0)"
+      thus "poincare_between u z v = (Arg (to_complex u) * Arg (to_complex v) < 0)"
         using * 1 2[rule_format, of ?Mu ?Mv] \<open>cmod a < 1\<close> \<open>is_real a\<close> blaschke_unit_disc_fix[of a]
         using inversion_noteq_unit_disc[of "of_complex a" u] \<open>u \<noteq> \<infinity>\<^sub>h\<close>
         using inversion_noteq_unit_disc[of "of_complex a" v] \<open>v \<noteq> \<infinity>\<^sub>h\<close>
