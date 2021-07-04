@@ -312,7 +312,7 @@ lemma cis_inj:
   assumes "cis \<alpha> = cis \<alpha>'"
   shows "\<alpha> = \<alpha>'"
   using assms
-  by (metis arg_unique sgn_cis)
+  by (metis cis_Arg_unique sgn_cis)
 
 text \<open>@{term cis} of an angle combined with @{term cis} of the opposite angle\<close>
 
@@ -459,7 +459,7 @@ lemma canon_ang_arg:
 
 lemma arg_cis:
   shows "Arg (cis \<phi>) = \<downharpoonright>\<phi>\<downharpoonleft>"
-  using arg_unique canon_ang canon_ang_cos canon_ang_sin cis.ctr sgn_cis by presburger
+  using cis_Arg_unique canon_ang canon_ang_cos canon_ang_sin cis.ctr sgn_cis by presburger
 
 text \<open>Cosine and sine of @{term Arg}\<close>
 

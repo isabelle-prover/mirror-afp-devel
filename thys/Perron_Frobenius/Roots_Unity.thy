@@ -47,11 +47,11 @@ lemma rcis_times_2pi[simp]: "rcis r (of_nat n * 2 * pi) = of_real r"
   unfolding rcis_def cis_times_2pi by simp
 
 lemma arg_rcis_cis: assumes n: "n > 0" shows "Arg (rcis n x) = Arg (cis x)"
-  using Arg_bounded arg_unique cis_Arg complex_mod_rcis n rcis_def sgn_eq by auto
+  using Arg_bounded cis_Arg_unique cis_Arg complex_mod_rcis n rcis_def sgn_eq by auto
 
 lemma arg_eqD: assumes "Arg (cis x) = Arg (cis y)" "-pi < x" "x \<le> pi" "-pi < y" "y \<le> pi"
   shows "x = y"
-  using assms(1) unfolding arg_unique[OF sgn_cis assms(2-3)] arg_unique[OF sgn_cis assms(4-5)] .
+  using assms(1) unfolding cis_Arg_unique[OF sgn_cis assms(2-3)] cis_Arg_unique[OF sgn_cis assms(4-5)] .
 
 lemma rcis_inj_on: assumes r: "r \<noteq> 0" shows "inj_on (rcis r) {0 ..< 2 * pi}"
 proof (rule inj_onI, goal_cases)
