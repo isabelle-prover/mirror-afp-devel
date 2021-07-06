@@ -115,10 +115,10 @@ Just a "standard" programming sequential operator without output frills.\<close>
 (* TODO: Eliminate/Modify this. Is a consequence of the Monad-Instantiation. *)
 
 
-definition bind_SE' :: "('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr ";-" 60)
-where     "f ;- g = (_ \<leftarrow> f ; g)"
+definition bind_SE' :: "('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr ";-" 10)
+where     "(f ;- g) = (_ \<leftarrow> f ; g)"
 
-lemma bind_assoc'[simp]: "((m;- k);- h ) = (m;- (k;- h))"
+lemma bind_assoc'[simp]: "((m ;- k);- h ) = (m;- (k;- h))"
 by(simp add:bind_SE'_def)
 
 
@@ -339,7 +339,7 @@ by (simp add: Rel2Mon_def)
 
 lemma Rel2Mon_homomorphism:
   assumes determ_X: "single_valued X" and determ_Y: "single_valued Y"
-  shows   "Rel2Mon (X O Y) = (Rel2Mon X) ;- (Rel2Mon Y)"
+  shows   "Rel2Mon (X O Y) = ((Rel2Mon X) ;- (Rel2Mon Y))"
 proof - 
     have relational_partial_next_in_O: "\<And>x E F. (\<exists>y. (x, y) \<in> (E O F)) \<Longrightarrow> (\<exists>y. (x, y) \<in> E)" 
                         by (auto)

@@ -292,9 +292,9 @@ qed
 subsection\<open>Experimental Alternative Definitions (Transformer-Style Rely-Guarantee)\<close>
 
 definition  hoare\<^sub>1 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" ("\<turnstile>\<^sub>1 ({(1_)}/ (_)/ {(1_)})" 50)
-where  "(\<turnstile>\<^sub>1{P} M {Q} ) = (\<forall>\<sigma>. \<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E P ; x  \<leftarrow> M; assert\<^sub>S\<^sub>E (Q x)))"
+where  "(\<turnstile>\<^sub>1{P} M {Q} ) = (\<forall>\<sigma>. (\<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E P ; x  \<leftarrow> M; assert\<^sub>S\<^sub>E (Q x))))"
 
-(* Problem: Severe Deviation for the case of an unsatisfyabke precondition *)
+(* Problem: Severe Deviation for the case of an unsatisfyable precondition *)
 
 definition  hoare\<^sub>2 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" ("\<turnstile>\<^sub>2 ({(1_)}/ (_)/ {(1_)})" 50)
 where  "(\<turnstile>\<^sub>2{P} M {Q} ) = (\<forall>\<sigma>. P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>  (x \<leftarrow> M; assert\<^sub>S\<^sub>E (Q x))))"

@@ -55,7 +55,7 @@ Seen from an automata perspective (where the monad - operations correspond to
 the step function), valid execution sequences can be used to model ``feasible paths''
 across an automaton.\<close>
 
-definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 15)
+definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 9)
 where "(\<sigma> \<Turnstile> m) = (m \<sigma> \<noteq> None \<and> fst(the (m \<sigma>)))"
 text\<open>This notation consideres failures as valid -- a definition
 inspired by I/O conformance.\<close>
@@ -100,7 +100,7 @@ by(simp add: valid_SE_def unit_SE_def bind_SE_def )
 
 
 lemma exec_bind_SE_success'':
-"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> v \<sigma>'. the(A \<sigma>) = (v,\<sigma>') \<and> \<sigma>' \<Turnstile> (M v)"
+"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> v \<sigma>'. the(A \<sigma>) = (v,\<sigma>') \<and> (\<sigma>' \<Turnstile> M v)"
 apply(auto simp: valid_SE_def unit_SE_def bind_SE_def)
 apply(cases "A \<sigma>", simp_all)
 apply(drule_tac x="A \<sigma>" and f=the in arg_cong, simp)
@@ -110,7 +110,7 @@ done
 
 
 lemma exec_bind_SE_success''':
-"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> a. (A \<sigma>) = Some a \<and> (snd a) \<Turnstile> (M (fst a))"
+"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> a. (A \<sigma>) = Some a \<and> (snd a \<Turnstile> M (fst a))"
 apply(auto simp: valid_SE_def unit_SE_def bind_SE_def)
 apply(cases "A \<sigma>", simp_all)
 apply(drule_tac x="A \<sigma>" and f=the in arg_cong, simp)
@@ -120,7 +120,7 @@ done
 
 
 lemma  exec_bind_SE_success'''' :
-"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> v \<sigma>'. A \<sigma> = Some(v,\<sigma>') \<and> \<sigma>' \<Turnstile> (M v)"
+"\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> v \<sigma>'. A \<sigma> = Some(v,\<sigma>') \<and> (\<sigma>' \<Turnstile> M v)"
 apply(auto simp: valid_SE_def unit_SE_def bind_SE_def)
 apply(cases "A \<sigma>", simp_all)
 apply(drule_tac x="A \<sigma>" and f=the in arg_cong, simp)
@@ -166,7 +166,8 @@ by(simp add: exec_bind_SE_failure)
 
 lemma exec_mbindFPurge_failure: 
 "ioprog a \<sigma> = None \<Longrightarrow> 
-   (\<sigma> \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e (a#S) ioprog ; M s)) = (\<sigma> \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e (S) ioprog ; M s))" 
+   (\<sigma> \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e (a#S) ioprog ; M s)) = 
+   (\<sigma> \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e (S) ioprog ; M s))" 
 by(simp add: valid_SE_def unit_SE_def bind_SE_def mbind''.simps)
 
 

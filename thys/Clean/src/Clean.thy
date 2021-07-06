@@ -36,13 +36,13 @@
 
 (*
  * Clean --- a basic abstract ("shallow") programming language for test and proof.
- * Burkhart Wolff, Frédéric Tuong and Chantal Keller, LRI, Univ. Paris-Saclay, France
+ * Burkhart Wolff and Frédéric Tuong, LRI, Univ. Paris-Saclay, France
  *)
 
 chapter \<open>The Clean Language\<close>
 
 theory Clean
-  imports Symbex_MonadSE
+  imports Optics Symbex_MonadSE
   keywords "global_vars" "local_vars_test" :: thy_decl 
      and "returns" "pre" "post" "local_vars" "variant" 
      and "function_spec" :: thy_decl
@@ -137,6 +137,9 @@ record  control_state =
             break_status  :: bool
             return_status :: bool
 
+(* ML level representation: *)
+ML\<open> val t = @{term "\<sigma> \<lparr> break_status := False \<rparr>"}\<close>
+
 (* break quits innermost while or for, return quits an entire execution sequence. *)  
 definition break :: "(unit, ('\<sigma>_ext) control_state_ext) MON\<^sub>S\<^sub>E"
   where   "break \<equiv> (\<lambda> \<sigma>. Some((), \<sigma> \<lparr> break_status := True \<rparr>))"
@@ -154,6 +157,12 @@ definition unset_return_status :: "(unit, ('\<sigma>_ext) control_state_ext) MON
 definition exec_stop :: "('\<sigma>_ext) control_state_ext \<Rightarrow> bool"
   where   "exec_stop = (\<lambda> \<sigma>. break_status \<sigma> \<or> return_status \<sigma> )"
 
+
+abbreviation normal_execution :: "('\<sigma>_ext) control_state_ext \<Rightarrow> bool" 
+  where "(normal_execution s) \<equiv> (\<not> exec_stop s)"
+notation normal_execution ("\<triangleright>")
+
+
 lemma exec_stop1[simp] : "break_status \<sigma> \<Longrightarrow> exec_stop \<sigma>" 
   unfolding exec_stop_def by simp
 
@@ -168,6 +177,33 @@ text\<open>For Reasoning over Clean programs, we need the notion of independance
      update from the control-block: \<close>
 
 
+definition break_status\<^sub>L 
+  where "break_status\<^sub>L = create\<^sub>L control_state.break_status control_state.break_status_update"
+lemma "vwb_lens break_status\<^sub>L"
+  unfolding break_status\<^sub>L_def
+  by (simp add: vwb_lens_def  create\<^sub>L_def wb_lens_def mwb_lens_def 
+                mwb_lens_axioms_def upd2put_def wb_lens_axioms_def weak_lens_def)
+
+
+
+definition return_status\<^sub>L 
+  where "return_status\<^sub>L = create\<^sub>L control_state.return_status control_state.return_status_update"
+lemma "vwb_lens return_status\<^sub>L"
+  unfolding return_status\<^sub>L_def
+  by (simp add: vwb_lens_def  create\<^sub>L_def wb_lens_def mwb_lens_def 
+                mwb_lens_axioms_def upd2put_def wb_lens_axioms_def weak_lens_def)
+
+lemma break_return_indep : "break_status\<^sub>L \<bowtie> return_status\<^sub>L "
+  by (simp add: break_status\<^sub>L_def lens_indepI return_status\<^sub>L_def upd2put_def create\<^sub>L_def)
+
+definition strong_control_independence  ("\<sharp>!")
+  where "\<sharp>! L = (break_status\<^sub>L \<bowtie> L \<and> return_status\<^sub>L \<bowtie> L)"
+
+lemma "vwb_lens break_status\<^sub>L"
+  unfolding vwb_lens_def break_status\<^sub>L_def create\<^sub>L_def wb_lens_def mwb_lens_def
+  by (simp add: mwb_lens_axioms_def upd2put_def wb_lens_axioms_def weak_lens_def)
+
+
 definition control_independence ::
                  "(('b\<Rightarrow>'b)\<Rightarrow>'a control_state_scheme \<Rightarrow> 'a control_state_scheme) \<Rightarrow> bool"    ("\<sharp>")
            where "\<sharp> upd \<equiv> (\<forall>\<sigma> T b. break_status (upd T \<sigma>) = break_status \<sigma> 
@@ -175,12 +211,81 @@ definition control_independence ::
                                  \<and> upd T (\<sigma>\<lparr> return_status := b \<rparr>) = (upd T \<sigma>)\<lparr> return_status := b \<rparr>
                                  \<and> upd T (\<sigma>\<lparr> break_status := b \<rparr>) = (upd T \<sigma>)\<lparr> break_status := b \<rparr>) "
 
+lemma strong_vs_weak_ci : "\<sharp>! L \<Longrightarrow> \<sharp> (\<lambda>f. \<lambda>\<sigma>. lens_put L \<sigma> (f (lens_get L \<sigma>)))"
+  unfolding strong_control_independence_def control_independence_def
+  by (simp add: break_status\<^sub>L_def lens_indep_def return_status\<^sub>L_def upd2put_def create\<^sub>L_def)
+
+lemma expimnt :"\<sharp>! (create\<^sub>L getv updv) \<Longrightarrow> (\<lambda>f \<sigma>. updv (\<lambda>_. f (getv \<sigma>)) \<sigma>) = updv"
+  unfolding create\<^sub>L_def strong_control_independence_def 
+            break_status\<^sub>L_def return_status\<^sub>L_def lens_indep_def
+  apply(rule ext, rule ext) 
+  apply auto
+  unfolding upd2put_def
+  (* seems to be independent *)
+  oops
+
+lemma expimnt :  
+   "vwb_lens (create\<^sub>L getv updv) \<Longrightarrow>  (\<lambda>f \<sigma>. updv (\<lambda>_. f (getv \<sigma>)) \<sigma>) = updv"
+  unfolding create\<^sub>L_def strong_control_independence_def lens_indep_def
+            break_status\<^sub>L_def return_status\<^sub>L_def vwb_lens_def
+  apply(rule ext, rule ext) 
+  apply auto
+  unfolding upd2put_def wb_lens_def weak_lens_def wb_lens_axioms_def mwb_lens_def 
+            mwb_lens_axioms_def
+  apply auto
+  (* seems to be independent *)
+  oops
+
+lemma strong_vs_weak_upd : 
+  assumes * :  "\<sharp>! (create\<^sub>L getv updv)"    (* getv and upd are constructed as lense *)
+    and  ** :  "(\<lambda>f \<sigma>. updv (\<lambda>_. f (getv \<sigma>)) \<sigma>) = updv" (* getv and upd are involutive *)
+  shows "\<sharp> (updv)"
+  apply(insert * **)
+  unfolding create\<^sub>L_def upd2put_def
+  by(drule strong_vs_weak_ci, auto)
+
+
+text\<open>This quite tricky proof establishes the fact that the special case 
+     \<open>hd(getv \<sigma>) = []\<close> for \<open>getv \<sigma> = []\<close> is finally irrelevant in our setting.
+     This implies that we don't need the list-lense-construction (so far).\<close>
+lemma strong_vs_weak_upd_list : 
+  assumes * :  "\<sharp>! (create\<^sub>L (getv:: 'b control_state_scheme \<Rightarrow> 'c list) 
+                            (updv:: ('c list \<Rightarrow> 'c list) \<Rightarrow> 'b control_state_scheme \<Rightarrow> 'b control_state_scheme))"  
+                 (* getv and upd are constructed as lense *)
+    and  ** :  "(\<lambda>f \<sigma>. updv (\<lambda>_. f (getv \<sigma>)) \<sigma>) = updv" (* getv and upd are involutive *)
+  shows        "\<sharp> (updv \<circ> upd_hd)"
+proof - 
+  have *** : "\<sharp>! (create\<^sub>L (hd \<circ> getv ) (updv \<circ> upd_hd))"
+       using * ** by (simp add: indep_list_lift strong_control_independence_def)
+  show "\<sharp> (updv \<circ> upd_hd)"
+    apply(rule strong_vs_weak_upd)
+     apply(rule ***)
+    apply(rule ext, rule ext, simp)
+    apply(subst (2) **[symmetric])
+  proof -
+    fix f:: "'c \<Rightarrow> 'c" fix \<sigma> :: "'b control_state_scheme"
+    show "updv (upd_hd (\<lambda>_. f (hd (getv \<sigma>)))) \<sigma> = updv (\<lambda>_. upd_hd f (getv \<sigma>)) \<sigma>"
+      proof (cases "getv \<sigma>")
+        case Nil
+        then show ?thesis           
+          by (simp,metis (no_types) "**" upd_hd.simps(1))
+      next
+        case (Cons a list)
+        then show ?thesis 
+        proof -
+          have "(\<lambda>c. f (hd (getv \<sigma>))) = ((\<lambda>c. f a)::'c \<Rightarrow> 'c)"
+            using local.Cons by auto
+          then show ?thesis
+            by (metis (no_types) "**" local.Cons upd_hd.simps(2))
+        qed
+      qed
+  qed
+qed
 
 
 lemma exec_stop_vs_control_independence [simp]:
   "\<sharp> upd \<Longrightarrow> exec_stop (upd f \<sigma>) = exec_stop \<sigma>"
   unfolding control_independence_def exec_stop_def  by simp
-
 
 lemma exec_stop_vs_control_independence' [simp]:
   "\<sharp> upd \<Longrightarrow> (upd f (\<sigma> \<lparr> return_status := b \<rparr>)) = (upd f \<sigma>)\<lparr> return_status := b \<rparr>"
@@ -228,15 +333,15 @@ form of assignments or expressions accessing the underlying state. \<close>
 
 consts syntax_assign :: "('\<alpha>  \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> term" (infix ":=" 60)
 
-definition assign :: "(('\<sigma>_ext) control_state_scheme  \<Rightarrow> 
+definition  assign :: "(('\<sigma>_ext) control_state_scheme  \<Rightarrow> 
                        ('\<sigma>_ext) control_state_scheme) \<Rightarrow> 
                        (unit,('\<sigma>_ext) control_state_scheme)MON\<^sub>S\<^sub>E"
-  where   "assign f = (\<lambda>\<sigma>. if exec_stop \<sigma> then Some((), \<sigma>) else Some((), f \<sigma>))"
+  where    "assign f = (\<lambda>\<sigma>. if exec_stop \<sigma> then Some((), \<sigma>) else Some((), f \<sigma>))"
 
 
 definition  assign_global :: "(('a  \<Rightarrow> 'a ) \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                               \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                              \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"
+                              \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" (infix ":==\<^sub>G" 100)
   where    "assign_global upd rhs = assign(\<lambda>\<sigma>. ((upd) (\<lambda>_. rhs \<sigma>)) \<sigma>)"
 
 text\<open>An update of the variable \<open>A\<close> based on the state of the previous example is done 
@@ -249,24 +354,16 @@ automated generation of specific push- and pop operations used to model the effe
 entering or leaving a function block (to be discussed later).\<close>
 
 
-fun      map_hd :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a list \<Rightarrow> 'a list" 
-  where "map_hd f [] = []"
-      | "map_hd f (a#S) = f a # S"
-
-lemma tl_map_hd [simp] :"tl (map_hd f S) = tl S"  by (metis list.sel(3) map_hd.elims) 
-
-definition "map_nth = (\<lambda>i f l. list_update l i (f (l ! i)))"
-
 definition  assign_local :: "(('a list \<Rightarrow> 'a list) 
                                  \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                              \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                             \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"
-  where    "assign_local upd rhs = assign(\<lambda>\<sigma>. ((upd o map_hd) (%_. rhs \<sigma>)) \<sigma>)"
+                             \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"  (infix ":==\<^sub>L" 100)
+  where    "assign_local upd rhs = assign(\<lambda>\<sigma>. ((upd o upd_hd) (%_. rhs \<sigma>)) \<sigma>)"
 
 
 text\<open>Semantically, the difference between \<^emph>\<open>global\<close> and \<^emph>\<open>local\<close> is rather unimpressive as the 
      following lemma shows. However, the distinction matters for the pretty-printing setup of Clean.\<close>
-lemma "assign_local upd rhs = assign_global (upd o map_hd) rhs "
+lemma "(upd :==\<^sub>L rhs) = ((upd \<circ> upd_hd) :==\<^sub>G rhs)"
       unfolding assign_local_def assign_global_def by simp
 
 text\<open>The \<open>return\<close> command in C-like languages is represented basically by an assignment to a local
@@ -274,11 +371,15 @@ variable \<open>result_value\<close> (see below in the Clean-package generation)
 \<^term>\<open>return_status\<close>. Note that a \<^term>\<open>return\<close> may appear after a \<^term>\<open>break\<close> and should have no effect
 in this case.\<close>
 
+definition return\<^sub>C0
+  where   "return\<^sub>C0 A = (\<lambda>\<sigma>. if exec_stop \<sigma> then Some((), \<sigma>) 
+                                            else (A ;- set_return_status) \<sigma>)"
+
 definition return\<^sub>C :: "(('a list \<Rightarrow> 'a list) \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                       \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                      \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"
-  where   "return\<^sub>C upd rhs =(\<lambda>\<sigma>. if exec_stop \<sigma> then Some((), \<sigma>) 
-                                                else (assign_local upd rhs ;- set_return_status) \<sigma>)" 
+                      \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" ("return\<index>")
+  where   "return\<^sub>C upd rhs = return\<^sub>C0 (assign_local upd rhs)"
+
 
 subsection\<open>Example for a Local Variable Space\<close>
 text\<open>Consider the usual operation \<open>swap\<close> defined in some free-style syntax as follows:
@@ -350,7 +451,6 @@ structure Data = Generic_Data
   val  extend                 = I
   fun  merge((s1,t1),(s2,t2)) = (Symtab.merge (op =)(s1,s2),merge_control_stateS(t1,t2))
 );
-
 
 val get_data                   = Data.get o Context.Proof;
 val map_data                   = Data.map;
@@ -429,7 +529,7 @@ definition swap :: "nat \<times> nat \<Rightarrow>  (unit,'a local_swap_state_sc
 subsection\<open>Call Semantics\<close>
 
 text\<open>It is now straight-forward to define the semantics of a generic call --- 
-which is simply a monad execution that is \<^term>\<open>break\<close>-aware and \<^term>\<open>return\<close>-aware.\<close>
+which is simply a monad execution that is \<^term>\<open>break\<close>-aware and \<^term>\<open>return\<^bsub>upd\<^esub>\<close>-aware.\<close>
 
 definition call\<^sub>C :: "( '\<alpha> \<Rightarrow> ('\<rho>, ('\<sigma>_ext) control_state_ext)MON\<^sub>S\<^sub>E) \<Rightarrow>
                        ((('\<sigma>_ext) control_state_ext) \<Rightarrow> '\<alpha>) \<Rightarrow>                        
@@ -517,6 +617,8 @@ fun wfrecT order recs =
         val ordTy = HOLogic.mk_setT(HOLogic.mk_prodT (aTy,aTy))
     in Const(\<^const_name>\<open>Wfrec.wfrec\<close>, ordTy --> (funT --> funT) --> funT) $ order $ recs end
 
+fun mk_lens_type from_ty to_ty = Type(@{type_name "lens.lens_ext"},
+                                      [from_ty, to_ty, HOLogic.unitT]);
 
 \<close>
 
@@ -556,7 +658,7 @@ fun  map_to_update sty is_pop thy ((struct_name, attr_name), local_var (Type("fu
        let val tlT = if is_pop then Const(\<^const_name>\<open>List.tl\<close>, ty --> ty)
                      else Const(\<^const_name>\<open>List.Cons\<close>, dest_listTy ty --> ty --> ty)
                           $ mk_undefined (dest_listTy ty)
-           val update_name = Sign.intern_const  thy (struct_name^"."^attr_name^"_update")
+           val update_name = Sign.intern_const thy (struct_name^"."^attr_name^"_update")
        in (Const(update_name, (ty --> ty) --> sty --> sty) $ tlT) $ term end
    | map_to_update _ _ _ ((_, _),_) _ = error("internal error map_to_update")     
 
@@ -573,6 +675,8 @@ fun construct_update is_pop binding sty thy =
 fun cmd (decl, spec, prems, params) = #2 oo Specification.definition' decl params prems spec
 
 fun mk_push_name binding = Binding.prefix_name "push_" binding
+
+fun mk_lense_name binding = Binding.suffix_name "\<^sub>L" binding
 
 fun push_eq binding  name_op rty sty lthy = 
          let val mty = MON_SE_T rty sty 
@@ -633,6 +737,25 @@ fun parse_typ_'a ctxt binding =
      | _ => error ("Unexpected type" ^ Position.here \<^here>)
   end
 
+fun define_lense binding sty (attr_name,rty,_) lthy = 
+     let    val prefix = Binding.name_of binding^"_"
+            val name_L = attr_name |> Binding.prefix_name prefix 
+                                   |> mk_lense_name 
+            val name_upd = Binding.suffix_name "_update" attr_name
+            val acc_ty = sty --> rty
+            val upd_ty = (rty --> rty) --> sty --> sty
+            val cr = Const(@{const_name "Optics.create\<^sub>L"}, 
+                           acc_ty --> upd_ty --> mk_lens_type rty sty)
+            val thy = Proof_Context.theory_of lthy
+            val acc_name = Sign.intern_const thy (Binding.name_of attr_name)
+            val upd_name = Sign.intern_const thy (Binding.name_of name_upd)
+            val acc = Const(acc_name, acc_ty)
+            val upd = Const(upd_name, upd_ty)
+            val lens_ty = mk_lens_type rty sty
+            val eq = mk_meta_eq (Free(Binding.name_of name_L, lens_ty), cr $ acc $ upd) 
+            val args = (SOME(name_L, SOME lens_ty, NoSyn), (Binding.empty_atts,eq),[],[])
+    in cmd args true lthy  end
+
 fun add_record_cmd0 read_fields overloaded is_global_kind raw_params binding raw_parent raw_fields thy =
   let
     val ctxt = Proof_Context.init_global thy;
@@ -662,10 +785,14 @@ fun add_record_cmd0 read_fields overloaded is_global_kind raw_params binding raw
                                                             
                  end
             else thy
+    fun define_lenses thy = 
+        let val sty = parse_typ_'a (Proof_Context.init_global thy) binding;
+        in  thy |> Named_Target.theory_map (fold (define_lense binding sty)  fields') end
   in thy |> Record.add_record overloaded (params', binding) parent fields' 
          |> (fn thy =>  List.foldr insert_var (thy) (fields'))
          |> upd_state_typ
          |> define_push_pop 
+         |> define_lenses
   end;
 
 
@@ -685,8 +812,8 @@ fun new_state_record0 add_record_cmd is_global_kind (((raw_params, binding), res
                       else mk_local_state_name binding
         val raw_parent = SOME(typ_2_string_raw (StateMgt_core.get_state_type_global thy))
         val pos = Binding.pos_of binding
-        fun upd_state_typ thy =
-          StateMgt_core.upd_state_type_global (K (parse_typ_'a (Proof_Context.init_global thy) binding)) thy
+        fun upd_state_typ thy =  StateMgt_core.upd_state_type_global 
+                                  (K (parse_typ_'a (Proof_Context.init_global thy) binding)) thy
         val result_binding = Binding.make(result_name,pos)
         val raw_fields' = case res_ty of 
                             NONE => raw_fields
@@ -730,28 +857,37 @@ section\<open>Syntactic Sugar supporting \<open>\<lambda>\<close>-lifting for Gl
 ML \<open>
 structure Clean_Syntax_Lift =
 struct
+  type T = { is_local : string -> bool
+           , is_global : string -> bool }
+
+  val init =
+    Proof_Context.theory_of
+    #> (fn thy =>
+        { is_local = fn name => StateMgt_core.is_local_program_variable name thy
+        , is_global = fn name => StateMgt_core.is_global_program_variable name thy })
+
   local
     fun mk_local_access X = Const (@{const_name "Fun.comp"}, dummyT) 
                             $ Const (@{const_name "List.list.hd"}, dummyT) $ X
   in
-    fun app_sigma db tm ctxt = case tm of
-        Const(name, _) => if StateMgt_core.is_global_program_variable name (Proof_Context.theory_of ctxt) 
+    fun app_sigma0 (st : T) db tm = case tm of
+        Const(name, _) => if #is_global st name 
                           then tm $ (Bound db) (* lambda lifting *)
-                          else if StateMgt_core.is_local_program_variable name (Proof_Context.theory_of ctxt) 
+                          else if #is_local st name 
                                then (mk_local_access tm) $ (Bound db) (* lambda lifting local *)
                                else tm              (* no lifting *)
       | Free _ => tm
       | Var _ => tm
       | Bound n => if n > db then Bound(n + 1) else Bound n 
-      | Abs (x, ty, tm') => Abs(x, ty, app_sigma (db+1) tm' ctxt)
-      | t1 $ t2 => (app_sigma db t1 ctxt) $ (app_sigma db t2 ctxt)
+      | Abs (x, ty, tm') => Abs(x, ty, app_sigma0 st (db+1) tm')
+      | t1 $ t2 => (app_sigma0 st db t1) $ (app_sigma0 st db t2)
 
-    fun scope_var name =
-      Proof_Context.theory_of
-      #> (fn thy =>
-            if StateMgt_core.is_global_program_variable name thy then SOME true
-            else if StateMgt_core.is_local_program_variable name thy then SOME false
-            else NONE)
+    fun app_sigma db tm = init #> (fn st => app_sigma0 st db tm)
+
+    fun scope_var st name =
+      if #is_global st name then SOME true
+      else if #is_local st name then SOME false
+      else NONE
 
     fun assign_update var = var ^ Record.updateN
 
@@ -769,12 +905,12 @@ struct
             $ abs t2
        | _ => abs tm
 
-    fun transform_term ctxt sty =
+    fun transform_term st sty =
       transform_term0
-        (fn tm => Abs ("\<sigma>", sty, app_sigma 0 tm ctxt))
-        (fn name => scope_var name ctxt)
+        (fn tm => Abs ("\<sigma>", sty, app_sigma0 st 0 tm))
+        (scope_var st)
 
-    fun transform_term' ctxt = transform_term ctxt dummyT
+    fun transform_term' st = transform_term st dummyT
 
     fun string_tr ctxt content args =
       let fun err () = raise TERM ("string_tr", args)
@@ -784,7 +920,7 @@ struct
             (case Term_Position.decode_position p of
               SOME (pos, _) => Symbol_Pos.implode (content (s, pos))
                             |> Syntax.parse_term ctxt
-                            |> transform_term ctxt (StateMgt_core.get_state_type ctxt)
+                            |> transform_term (init ctxt) (StateMgt_core.get_state_type ctxt)
                             |> Syntax.check_term ctxt
             | NONE => err ())
         | _ => err ())
@@ -815,35 +951,46 @@ The reader interested in details is referred to the \<^file>\<open>../examples/Q
 accompanying this distribution.
 \<close>
 
+
+text\<open>In order to support the \<^verbatim>\<open>old\<close>-notation known from JML and similar annotation languages,
+we introduce the following definition:\<close>
 definition old :: "'a \<Rightarrow> 'a" where "old x = x"
 
-
-ML\<open> 
-\<close>
-
+text\<open>The core module of the parser and operation specification construct is implemented in the
+following module:\<close>
 ML \<open> 
 structure Function_Specification_Parser  = 
   struct
 
     type funct_spec_src = {    
-        binding:  binding,                         (* name *)
-        params: (binding*string) list,             (* parameters and their type*)
-        ret_type: string,                          (* return type; default unit *)
-        locals: (binding*string*mixfix)list,       (* local variables *)
-        pre_src: string,                           (* precondition src *)
-        post_src: string,                          (* postcondition src *)
-        variant_src: string option,                       (* variant src *)
-        body_src: string * Position.T              (* body src *)
+        binding:  binding,                              (* name *)
+        params: (binding*string) list,                  (* parameters and their type*)
+        ret_type: string,                               (* return type; default unit *)
+        locals: (binding*string*mixfix)list,            (* local variables *)
+        pre_src: string,                                (* precondition src *)
+        post_src: string,                               (* postcondition src *)
+        variant_src: string option,                     (* variant src *)
+        body_src: string * Position.T                   (* body src *)
+      }                                               
+                                                      
+    type funct_spec_sem_old = {                       
+        params: (binding*typ) list,                     (* parameters and their type*)
+        ret_ty: typ,                                    (* return type *)
+        pre: term,                                      (* precondition  *)
+        post: term,                                     (* postcondition  *)
+        variant: term option                            (* variant  *)
       }
 
     type funct_spec_sem = {    
-        params: (binding*typ) list,                (* parameters and their type*)
-        ret_ty: typ,                               (* return type *)
-        pre: term,                                 (* precondition  *)
-        post: term,                                (* postcondition  *)
-        variant: term option                       (* variant  *)
+        binding:  binding,                              (* name *)
+        params: (binding*string) list,                  (* parameters and their type*)
+        ret_type: string,                               (* return type; default unit *)
+        locals: (binding*string*mixfix)list,            (* local variables *)
+        read_pre: Proof.context -> term,                (* precondition src *)
+        read_post: Proof.context -> term,               (* postcondition src *)
+        read_variant_opt: (Proof.context->term) option, (* variant src *)
+        read_body: Proof.context -> typ -> term         (* body src *)
       }
-
 
     val parse_arg_decl = Parse.binding -- (Parse.$$$ "::" |-- Parse.typ)
 
@@ -860,7 +1007,7 @@ structure Function_Specification_Parser  =
        -- parse_returns_clause
        --| \<^keyword>\<open>pre\<close>             -- Parse.term 
        --| \<^keyword>\<open>post\<close>            -- Parse.term 
-       -- (Scan.option  ( \<^keyword>\<open>variant\<close> |-- Parse.term))
+       -- (Scan.option  ( \<^keyword>\<open>variant\<close>    |-- Parse.term))
        -- (Scan.optional( \<^keyword>\<open>local_vars\<close> |-- (Scan.repeat1 Parse.const_binding))([]))
        --| \<^keyword>\<open>defines\<close>         -- (Parse.position (Parse.term)) 
       ) >> (fn ((((((((binding,params),ret_ty),pre_src),post_src),variant_src),locals)),body_src) => 
@@ -885,11 +1032,14 @@ structure Function_Specification_Parser  =
               val ctxt' = Variable.declare_typ ty ctxt           
           in  (ty, ctxt') end
 
-   fun read_function_spec ({ params, ret_type, variant_src, ...} : funct_spec_src) ctxt =
+   fun read_function_spec ( params, ret_type, read_variant_opt)  ctxt =
        let val (params_Ts, ctxt') = read_params params ctxt
            val (rty, ctxt'') = read_result ret_type ctxt' 
-           val variant = Option.map (Syntax.read_term ctxt'')  variant_src
-       in ({params = (params, params_Ts), ret_ty = rty,variant = variant},ctxt'') end 
+           val variant = case read_variant_opt of 
+                               NONE => NONE
+                              |SOME f => SOME(f ctxt'')
+           val paramT_l = (map2 (fn (b, _) => fn T => (b, T)) params params_Ts)
+       in ((paramT_l, rty, variant),ctxt'') end 
 
 
    fun check_absence_old term = 
@@ -908,56 +1058,57 @@ structure Function_Specification_Parser  =
                |transform_old0 term = term
        in  Abs("\<sigma>\<^sub>p\<^sub>r\<^sub>e", sty, transform_old0 term) end
    
-   fun define_cond binding f_sty transform_old src_suff check_absence_old params src ctxt = 
-       let val src' = case transform_old (Syntax.read_term ctxt src) of 
-                        Abs(nn, sty_pre, term) => mk_pat_tupleabs (map (apsnd #2) params) (Abs(nn,sty_pre(* sty root ! !*),term))
+   fun define_cond binding f_sty transform_old check_absence_old cond_suffix params read_cond (ctxt:local_theory) = 
+       let val params' = map (fn(b, ty) => (Binding.name_of b,ty)) params
+           val src' = case transform_old (read_cond ctxt) of 
+                        Abs(nn, sty_pre, term) => mk_pat_tupleabs params' (Abs(nn,sty_pre,term))
                       | _ => error ("define abstraction for result" ^ Position.here \<^here>)
-           val bdg = Binding.suffix_name src_suff binding
+           val bdg = Binding.suffix_name cond_suffix binding
            val _ = check_absence_old src'
-           val eq =  mk_meta_eq(Free(Binding.name_of bdg, HOLogic.mk_tupleT(map (#2 o #2) params) --> f_sty HOLogic.boolT),src')
+           val bdg_ty = HOLogic.mk_tupleT(map (#2) params) --> f_sty HOLogic.boolT
+           val eq =  mk_meta_eq(Free(Binding.name_of bdg, bdg_ty),src')
            val args = (SOME(bdg,NONE,NoSyn), (Binding.empty_atts,eq),[],[]) 
        in  StateMgt.cmd args true ctxt end
 
    fun define_precond binding sty =
-     define_cond binding (fn boolT => sty --> boolT) I "_pre" check_absence_old
+       define_cond binding (fn boolT => sty --> boolT) I check_absence_old "_pre" 
 
    fun define_postcond binding rty sty =
-     define_cond binding (fn boolT => sty --> sty --> rty --> boolT) (transform_old sty) "_post" I
+       define_cond binding (fn boolT => sty --> sty --> rty --> boolT) (transform_old sty) I "_post" 
 
    fun define_body_core binding args_ty sty params body =
-       let val bdg_core = Binding.suffix_name "_core" binding
+       let val params' = map (fn(b,ty) => (Binding.name_of b, ty)) params
+           val bdg_core = Binding.suffix_name "_core" binding
            val bdg_core_name = Binding.name_of bdg_core
 
            val umty = args_ty --> StateMgt.MON_SE_T @{typ "unit"} sty
 
-           val eq = mk_meta_eq(Free (bdg_core_name, umty),mk_pat_tupleabs(map(apsnd #2)params) body)
+           val eq = mk_meta_eq(Free (bdg_core_name, umty),mk_pat_tupleabs params' body)
            val args_core =(SOME (bdg_core, SOME umty, NoSyn), (Binding.empty_atts, eq), [], [])
 
        in StateMgt.cmd args_core true
        end 
  
-   fun define_body_main {recursive = x:bool} binding rty sty params variant_src _ ctxt = 
+   fun define_body_main {recursive = x:bool} binding rty sty params read_variant_opt _ ctxt = 
        let val push_name = StateMgt.mk_push_name (StateMgt.mk_local_state_name binding)
            val pop_name = StateMgt.mk_pop_name (StateMgt.mk_local_state_name binding)
            val bdg_core = Binding.suffix_name "_core" binding
            val bdg_core_name = Binding.name_of bdg_core
            val bdg_rec_name = Binding.name_of(Binding.suffix_name "_rec" binding)
            val bdg_ord_name = Binding.name_of(Binding.suffix_name "_order" binding)
-
-           val args_ty = HOLogic.mk_tupleT (map (#2 o #2) params)
-           val params' = map (apsnd #2) params
+           val args_ty = HOLogic.mk_tupleT (map snd params)
            val rmty = StateMgt_core.MON_SE_T rty sty 
-
            val umty = StateMgt.MON_SE_T @{typ "unit"} sty
            val argsProdT = HOLogic.mk_prodT(args_ty,args_ty)
            val argsRelSet = HOLogic.mk_setT argsProdT
-           val measure_term = case variant_src of
+           val params' = map (fn(b, ty) => (Binding.name_of b,ty)) params
+           val measure_term = case read_variant_opt  of
                                  NONE => Free(bdg_ord_name,args_ty --> HOLogic.natT)
-                               | SOME str => (Syntax.read_term ctxt str |> mk_pat_tupleabs params')
+                               | SOME f => ((f ctxt) |> mk_pat_tupleabs params')
            val measure =  Const(@{const_name "Wellfounded.measure"}, (args_ty --> HOLogic.natT)
                                                                      --> argsRelSet )
                           $ measure_term
-           val lhs_main = if x andalso is_none variant_src
+           val lhs_main = if x andalso is_none (read_variant_opt )
                           then Free(Binding.name_of binding, (args_ty --> HOLogic.natT)
                                                                        --> args_ty --> rmty) $
                                          Free(bdg_ord_name, args_ty --> HOLogic.natT)
@@ -984,52 +1135,98 @@ structure Function_Specification_Parser  =
        in  ctxt |> StateMgt.cmd args_main true 
        end 
 
+val _ = Local_Theory.exit_result_global;
+val _ = Named_Target.theory_map_result;
+val _ = Named_Target.theory_map;
 
-   fun checkNsem_function_spec {recursive = false} ({variant_src=SOME _, ...}) _ = 
+
+  
+ 
+(* This code is in large parts so messy because the extensible record package (used inside
+   StateMgt.new_state_record) is only available as transformation on global contexts, 
+   which cuts the local context calculations into two halves. The second halves is cut 
+   again into two halves because the definition of the core apparently does not take effect
+   before defining the block - structure when not separated (this problem can perhaps be overcome 
+   somehow))
+   
+   Precondition: the terms of the read-functions are full typed in the respective
+                 local contexts.
+   *)
+  fun checkNsem_function_spec_gen {recursive = false} ({read_variant_opt=SOME _, ...}) _ =
                                error "No measure required in non-recursive call"
-      |checkNsem_function_spec (isrec as {recursive = _:bool}) 
-                               (args as {binding, ret_type, variant_src, locals, body_src, pre_src, post_src, ...} : funct_spec_src)
+      |checkNsem_function_spec_gen (isrec as {recursive = _:bool}) 
+                               ({binding, ret_type, read_variant_opt, locals, 
+                                 read_body, read_pre, read_post, params} : funct_spec_sem)
                                thy =
-       let val (theory_map, thy') =
-             Named_Target.theory_map_result
-               (K (fn f => Named_Target.theory_map o f))
-               (read_function_spec args
-               #> uncurry (fn {params=(params, Ts),ret_ty,variant = _} =>
-                            pair (fn f =>
-                                  Proof_Context.add_fixes (map2 (fn (b, _) => fn T => (b, SOME T, NoSyn)) params Ts)
+       let fun addfixes ((params_Ts,ret_ty,t_opt), ctxt) = 
+                            (fn fg => fn ctxt =>
+                                   ctxt
+                                  |> Proof_Context.add_fixes (map (fn (s,ty)=>(s,SOME ty,NoSyn)) params_Ts)
                                     (* this declares the parameters of a function specification
                                        as Free variables (overrides a possible constant declaration)
                                        and assigns the declared type to them *)
-                                  #> uncurry (fn params' => f (@{map 3} (fn b' => fn (b, _) => fn T => (b',(b,T))) params' params Ts) ret_ty))))
-                thy
+                                  |> (fn (X, ctxt) => fg params_Ts ret_ty ctxt)
+                            , ctxt)
+           val (theory_map, thy') = Named_Target.theory_map_result
+                                    (K (fn f => Named_Target.theory_map o f))
+                                    (   read_function_spec (params, ret_type, read_variant_opt)
+                                     #> addfixes
+                                    )
+                                    (thy)
        in  thy' |> theory_map
                      let val sty_old = StateMgt_core.get_state_type_global thy'
-                     in fn params => fn ret_ty =>
-                         define_precond binding sty_old params pre_src
-                      #> define_postcond binding ret_ty sty_old params post_src end
+                         fun parse_contract params ret_ty = 
+                                      (    define_precond binding sty_old params read_pre
+                                        #> define_postcond binding ret_ty sty_old params read_post)
+                     in parse_contract
+                     end
                 |> StateMgt.new_state_record false ((([],binding), SOME ret_type),locals)
                 |> theory_map
                          (fn params => fn ret_ty => fn ctxt => 
                           let val sty = StateMgt_core.get_state_type ctxt
-                              val args_ty = HOLogic.mk_tupleT (map (#2 o #2) params)
+                              val args_ty = HOLogic.mk_tupleT (map snd params)
                               val mon_se_ty = StateMgt_core.MON_SE_T ret_ty sty
+                              val body = read_body ctxt mon_se_ty
                               val ctxt' =
                                 if #recursive isrec then
                                   Proof_Context.add_fixes 
                                     [(binding, SOME (args_ty --> mon_se_ty), NoSyn)] ctxt |> #2
                                 else
                                   ctxt
-                              val body = Syntax.read_term ctxt' (fst body_src)
+                              val body = read_body  ctxt' mon_se_ty
                           in  ctxt' |> define_body_core binding args_ty sty params body
-                          end)
+                          end) (* separation nasty, but nec. in order to make the body definition 
+                                  take effect. No other reason. *)
+                                  
                 |> theory_map
                          (fn params => fn ret_ty => fn ctxt => 
                           let val sty = StateMgt_core.get_state_type ctxt
-                              val body = Syntax.read_term ctxt (fst body_src)
-                          in  ctxt |> define_body_main isrec binding ret_ty sty params variant_src body
+                              val mon_se_ty = StateMgt_core.MON_SE_T ret_ty sty
+                              val body = read_body ctxt mon_se_ty
+                          in  ctxt |> define_body_main isrec binding ret_ty sty 
+                                                       params read_variant_opt body
                           end)
         end
 
+   fun checkNsem_function_spec (isrec as {recursive = _:bool}) 
+                               ( {binding, ret_type, variant_src, locals, 
+                                  body_src, pre_src, post_src, params} : funct_spec_src)
+                               thy = 
+       checkNsem_function_spec_gen (isrec) 
+                               ( {binding   = binding, 
+                                  params    = params, 
+                                  ret_type  = ret_type, 
+                                  read_variant_opt = (case variant_src of 
+                                                       NONE => NONE
+                                                     | SOME t=> SOME(fn ctxt 
+                                                                     => Syntax.read_term ctxt t)), 
+                                  locals    = locals, 
+                                  read_body = fn ctxt => fn expected_type 
+                                                         => Syntax.read_term ctxt (fst body_src), 
+                                  read_pre  = fn ctxt => Syntax.read_term ctxt pre_src, 
+                                  read_post = fn ctxt => Syntax.read_term ctxt post_src} : funct_spec_sem)
+                               thy
+         
   
    val _ =
      Outer_Syntax.command 
@@ -1057,7 +1254,7 @@ definition if_C :: "[('\<sigma>_ext) control_state_ext \<Rightarrow> bool,
 
 syntax    (xsymbols)
           "_if_SECLEAN" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
-          ("(if\<^sub>C _ then _ else _fi)" [5,8,8]8)
+          ("(if\<^sub>C _ then _ else _fi)" [5,8,8]20)
 translations 
           "(if\<^sub>C cond then T1 else T2 fi)" == "CONST Clean.if_C cond T1 T2"
 
@@ -1072,13 +1269,157 @@ definition while_C :: "(('\<sigma>_ext) control_state_ext \<Rightarrow> bool)
   
 syntax    (xsymbols)
           "_while_C" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
-          ("(while\<^sub>C _ do _ od)" [8,8]8)
+          ("(while\<^sub>C _ do _ od)" [8,8]20)
 translations 
           "while\<^sub>C c do b od" == "CONST Clean.while_C c b"
 
-  
+
+
+section\<open>Miscellaneous\<close>
+
+text\<open>Since \<^verbatim>\<open>int\<close> were mapped to Isabelle/HOL @{typ "int"} and \<^verbatim>\<open>unsigned int\<close> to @{typ "nat"},
+there is the need for a common interface for accesses in arrays, which were represented by 
+Isabelle/HOL lists:
+\<close>
+
+consts nth\<^sub>C :: "'a list \<Rightarrow> 'b \<Rightarrow> 'a"
+overloading nth\<^sub>C \<equiv> "nth\<^sub>C :: 'a list \<Rightarrow> nat \<Rightarrow> 'a"
+begin 
+definition
+   nth\<^sub>C_nat : "nth\<^sub>C (S::'a list) (a) \<equiv> nth S a"
+end
+
+overloading nth\<^sub>C \<equiv> "nth\<^sub>C :: 'a list \<Rightarrow> int \<Rightarrow> 'a"
+begin 
+definition
+   nth\<^sub>C_int : "nth\<^sub>C (S::'a list) (a) \<equiv> nth S (nat a)"
+end
+
+definition while_C_A :: " (('\<sigma>_ext) control_state_scheme \<Rightarrow> bool)
+                        \<Rightarrow> (('\<sigma>_ext) control_state_scheme \<Rightarrow> nat) 
+                        \<Rightarrow> (('\<sigma>_ext) control_state_ext \<Rightarrow> bool) 
+                        \<Rightarrow> (unit, ('\<sigma>_ext) control_state_ext)MON\<^sub>S\<^sub>E 
+                        \<Rightarrow> (unit, ('\<sigma>_ext) control_state_ext)MON\<^sub>S\<^sub>E"
+  where   "while_C_A Inv f c B \<equiv> while_C c B"
+
+
+ML\<open>
+
+structure Clean_Term_interface = 
+struct
+
+fun mk_seq_C C C' = let val t = fastype_of C
+                     val t' =  fastype_of C'
+                 in  Const(\<^const_name>\<open>bind_SE'\<close>, t --> t' --> t') end;
+
+fun mk_skip_C sty = Const(\<^const_name>\<open>skip\<^sub>S\<^sub>E\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty)
+
+fun mk_break sty = 
+    Const(\<^const_name>\<open>if_C\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty )
+
+fun mk_return_C upd rhs =
+    let val ty = fastype_of rhs 
+        val (sty,rty) = case ty of 
+                         Type("fun", [sty,rty]) => (sty,rty)
+                        | _  => error "mk_return_C: illegal type for body"
+        val upd_ty = (HOLogic.listT rty --> HOLogic.listT rty) --> sty --> sty
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>return\<^sub>C\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+fun mk_assign_global_C upd rhs =
+    let val ty = fastype_of rhs 
+        val (sty,rty) = case ty of 
+                         Type("fun", [sty,rty]) => (sty,rty)
+                        | _  => error "mk_assign_global_C: illegal type for body"
+        val upd_ty = (rty --> rty) --> sty --> sty
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>assign_global\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+fun mk_assign_local_C upd rhs =
+    let val ty = fastype_of rhs 
+        val (sty,rty) = case ty of 
+                         Type("fun", [sty,rty]) => (sty,rty)
+                        | _  => error "mk_assign_local_C: illegal type for body"
+        val upd_ty = (HOLogic.listT rty --> HOLogic.listT rty) --> sty --> sty
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>assign_local\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+fun mk_call_C opn args =
+    let val ty = fastype_of opn 
+        val (argty,mty) = case ty of 
+                         Type("fun", [argty,mty]) => (argty,mty)
+                        | _  => error "mk_call_C: illegal type for body"
+        val sty = case mty of 
+                         Type("fun", [sty,_]) => sty
+                        | _  => error "mk_call_C: illegal type for body 2"
+        val args_ty = sty --> argty
+    in Const(\<^const_name>\<open>call\<^sub>C\<close>, ty --> args_ty --> mty) $ opn $ args end
+
+(* missing : a call_assign_local and a call_assign_global. Or define at HOL level ? *)
+
+fun mk_if_C c B B' =
+    let val ty = fastype_of B
+        val ty_cond = case ty of 
+                         Type("fun", [argty,_]) => argty --> HOLogic.boolT
+                        |_ => error "mk_if_C: illegal type for body"
+    in  Const(\<^const_name>\<open>if_C\<close>, ty_cond --> ty --> ty --> ty) $ c $ B $ B'
+    end;
+
+fun mk_while_C c B =
+    let val ty = fastype_of B
+        val ty_cond = case ty of 
+                         Type("fun", [argty,_]) => argty --> HOLogic.boolT
+                        |_ => error "mk_while_C: illegal type for body"
+    in  Const(\<^const_name>\<open>while_C\<close>, ty_cond --> ty --> ty) $ c $ B
+    end;
+
+fun mk_while_anno_C inv f c B =
+    (* no  type-check on inv and measure f *)
+    let val ty = fastype_of B
+        val (ty_cond,ty_m) = case ty of 
+                         Type("fun", [argty,_]) =>( argty --> HOLogic.boolT,
+                                                    argty --> HOLogic.natT)
+                        |_ => error "mk_while_anno_C: illegal type for body"
+    in  Const(\<^const_name>\<open>while_C_A\<close>, ty_cond --> ty_m --> ty_cond --> ty --> ty) 
+        $ inv $ f $ c $ B
+    end;
+
+fun mk_block_C push body pop = 
+    let val body_ty = fastype_of body 
+        val pop_ty  = fastype_of pop
+        val bty = body_ty --> body_ty --> pop_ty --> pop_ty
+    in Const(\<^const_name>\<open>block\<^sub>C\<close>, bty) $ push $ body $ pop end  
+
+end;\<close>
+
+section\<open>Function-calls in Expressions\<close>
+
+text\<open>The precise semantics of function-calls appearing inside expressions is underspecified in C,
+which is a notorious problem for compilers and analysis tools. In Clean, it is impossible by 
+construction --- and the type displine --- to have function-calls inside expressions.
+However, there is a somewhat \<^emph>\<open>recommended coding-scheme\<close> for this feature, which leaves this
+issue to decisions in the front-end:
+\begin{verbatim}
+  a = f() + g();
+\end{verbatim}
+can be represented in Clean by:
+\<open>x \<leftarrow> f(); y \<leftarrow> g(); \<open>a := x + y\<close> \<close> or 
+\<open>x \<leftarrow> g(); y \<leftarrow> f(); \<open>a := y + x\<close> \<close>
+which makes the evaluation order explicit without introducing
+local variables or any form of explicit trace on the state-space of the Clean program. We assume, 
+however, even in this coding scheme, that \<^verbatim>\<open>f()\<close> and \<^verbatim>\<open>g()\<close> are atomic actions; note that this 
+assumption is not necessarily justified in modern compilers, where actually neither of these
+two (atomic) serializations of \<^verbatim>\<open>f()\<close> and \<^verbatim>\<open>g()\<close> may exists.
+
+Note, furthermore, that expressions may not only be right-hand-sides of (local or global) 
+assignments or conceptually similar return-statements,  but also passed as argument of other 
+function calls, where the same problem arises.  
+\<close>
+
+
 
 end
 
-  
-  

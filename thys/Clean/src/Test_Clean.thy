@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-theory Test_Clean
+theory    Test_Clean
   imports Clean_Symbex
           "HOL-Eisbach.Eisbach"
 

@@ -34,15 +34,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-
 (*
- * Clean --- a basic abstract ("shallow") programming language for test and proof.
  * Authors : Burkhart Wolff, Frédéric Tuong
- *           Contributions by Chantal Keller
  *)
 
-theory Clean_Main
-  imports Clean Hoare_Clean Test_Clean
+chapter \<open> A Clean Semantics Example : Linear Search\<close>
+
+text\<open>The following show-case introduces subsequently a non-trivial example involving
+local and global variable declarations, declarations of operations with pre-post conditions as
+well as direct-recursive operations (i.e. C-like functions with side-effects on global and
+local variables. \<close>
+
+theory LinearSearch
+  imports Clean.Clean
+          Clean.Hoare_MonadSE
 begin
+
+
+section\<open>The LinearSearch Example\<close>
+
+definition bool2int where "bool2int x = (if x then 1::int else 0)"
+
+global_vars state
+    t :: "int list"
+
+function_spec linearsearch (x::int, n::int) returns int
+pre          "\<open> 0 \<le> n \<and> n < int(length t) \<and> sorted t\<close>"    
+post         "\<open>\<lambda>res::int. res = bool2int (\<exists> i \<in> {0 ..< length t}. t!i = x) \<close>" 
+local_vars   i  :: int
+defines      " \<open>i := 0 \<close> ;-
+               while\<^sub>C \<open>i < n \<close> 
+                 do if\<^sub>C \<open>t ! (nat i) < x\<close>  
+                      then  \<open>i := i + 1 \<close>
+                      else return\<^sub>C result_value_update \<open>bool2int(t!(nat i) = x)\<close> 
+                    fi 
+                 od " 
+
+(*
+C\<open>
+/*@ requires "n >= 0"
+    requires "valid(t+(0..n-1))"
+    requires "(forall integer i,j; 0<=i<=j<n ==> t[i] <= t[j])"
+    ensures "exists integer i; (0<=i<n && t[i] == x) <==> result == 1"
+    ensures "(forall integer i; 0<=i<n ==> t[i] != x) <==> result == 0"
+    assigns nothing
+ */
+
+int linearsearch(int x, int t[], int n) {
+  int i = 0;
+
+  /*@ loop invariant "0<=i<=n"
+      loop invariant "forall integer j; 0<=j<i ==> (t[j] != x)"
+      loop assigns i
+      loop variant "n-i"
+   */
+  while (i < n) {
+    if (t[i] < x) {
+      i++;
+    } else {
+      return (t[i] == x);
+    }
+  }
+
+  return 0;
+}
+\<close>
+
+*)
 
 end

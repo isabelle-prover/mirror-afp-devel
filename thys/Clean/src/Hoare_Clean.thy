@@ -37,7 +37,8 @@
 (*
  * A Hoare Calculus for Clean
  *
- * Authors : Burkhart Wolff
+ * Author : Burkhart Wolff
+ * 
  *)
 
 theory Hoare_Clean
@@ -68,18 +69,19 @@ lemma unset_return1:
 subsection\<open>Clean Skip Rules\<close>
 
 lemma assign_global_skip:
-"\<lbrace>\<lambda>\<sigma>.   exec_stop \<sigma> \<and> P \<sigma> \<rbrace>  assign_global upd rhs  \<lbrace>\<lambda>r \<sigma>. exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
+"\<lbrace>\<lambda>\<sigma>.   exec_stop \<sigma> \<and> P \<sigma> \<rbrace>  upd :==\<^sub>G rhs  \<lbrace>\<lambda>r \<sigma>. exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
   unfolding    hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def
   by (simp add: assign_def assign_global_def)
 
 lemma assign_local_skip:
-"\<lbrace>\<lambda>\<sigma>.   exec_stop \<sigma> \<and> P \<sigma> \<rbrace> assign_local upd rhs  \<lbrace>\<lambda>r \<sigma>. exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
+"\<lbrace>\<lambda>\<sigma>.   exec_stop \<sigma> \<and> P \<sigma> \<rbrace> upd :==\<^sub>L rhs  \<lbrace>\<lambda>r \<sigma>. exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
   unfolding    hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def
   by (simp add: assign_def assign_local_def)
 
 lemma return_skip:
 "\<lbrace>\<lambda>\<sigma>.  exec_stop \<sigma> \<and> P \<sigma> \<rbrace> return\<^sub>C upd rhs \<lbrace>\<lambda>r \<sigma>. exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
-  unfolding hoare\<^sub>3_def return\<^sub>C_def unit_SE_def assign_local_def assign_def bind_SE'_def bind_SE_def
+  unfolding hoare\<^sub>3_def return\<^sub>C_def return\<^sub>C0_def unit_SE_def assign_local_def assign_def
+            bind_SE'_def bind_SE_def
   by auto
 
 lemma assign_clean_skip:
@@ -120,34 +122,32 @@ subsection\<open>Clean Assign Rules\<close>
 
 lemma assign_global:
   assumes * : "\<sharp> upd"
-  shows "\<lbrace>\<lambda>\<sigma>. \<not>exec_stop \<sigma> \<and> P (upd (\<lambda>_. rhs \<sigma>) \<sigma>) \<rbrace> 
-         assign_global upd rhs 
-         \<lbrace>\<lambda>r \<sigma>. \<not>exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
+  shows       "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P (upd (\<lambda>_. rhs \<sigma>) \<sigma>) \<rbrace> upd :==\<^sub>G rhs \<lbrace>\<lambda>r \<sigma>. \<triangleright> \<sigma> \<and> P \<sigma> \<rbrace>"
   unfolding    hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def assign_global_def  assign_def
   by(auto simp: assms)
 
+find_theorems "\<sharp> _ "
+
 lemma assign_local:
-  assumes * : "\<sharp> (upd \<circ> map_hd)"
-  shows "\<lbrace>\<lambda>\<sigma>.  \<not> exec_stop \<sigma> \<and> P ((upd \<circ> map_hd) (\<lambda>_. rhs \<sigma>) \<sigma>) \<rbrace>  
-          assign_local upd rhs  
-         \<lbrace>\<lambda>r \<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma> \<rbrace>"
+  assumes * : "\<sharp> (upd \<circ> upd_hd)"
+  shows       "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P ((upd \<circ> upd_hd) (\<lambda>_. rhs \<sigma>) \<sigma>) \<rbrace> upd :==\<^sub>L rhs  \<lbrace>\<lambda>r \<sigma>. \<triangleright> \<sigma> \<and> P \<sigma> \<rbrace>"
   unfolding    hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def assign_local_def  assign_def
   using assms exec_stop_vs_control_independence by fastforce
 
 lemma return_assign:
-  assumes * : "\<sharp> (upd \<circ> map_hd)"
-  shows "\<lbrace>\<lambda> \<sigma>. \<not> exec_stop \<sigma> \<and> P ((upd \<circ> map_hd) (\<lambda>_. rhs \<sigma>) (\<sigma> \<lparr> return_status := True \<rparr>))\<rbrace> 
-          return\<^sub>C upd rhs
-         \<lbrace>\<lambda>r \<sigma>. P \<sigma> \<and> return_status \<sigma> \<rbrace>"
-  unfolding return\<^sub>C_def hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def assign_local_def assign_def 
+  assumes * : "\<sharp> (upd \<circ> upd_hd)"
+  shows       "\<lbrace>\<lambda> \<sigma>. \<triangleright> \<sigma> \<and> P ((upd \<circ> upd_hd) (\<lambda>_. rhs \<sigma>) (\<sigma> \<lparr> return_status := True \<rparr>))\<rbrace> 
+               return\<^bsub>upd\<^esub>(rhs)
+               \<lbrace>\<lambda>r \<sigma>. P \<sigma> \<and> return_status \<sigma> \<rbrace>"
+  unfolding return\<^sub>C_def return\<^sub>C0_def hoare\<^sub>3_def skip\<^sub>S\<^sub>E_def unit_SE_def assign_local_def assign_def 
             set_return_status_def bind_SE'_def bind_SE_def 
 proof (auto)
   fix \<sigma> :: "'b control_state_scheme"
-    assume a1: "P (upd (map_hd (\<lambda>_. rhs \<sigma>)) (\<sigma>\<lparr>return_status := True\<rparr>))"
-    assume "\<not> exec_stop \<sigma>"
-    show "P (upd (map_hd (\<lambda>_. rhs \<sigma>)) \<sigma>\<lparr>return_status := True\<rparr>)"
+    assume a1: "P (upd (upd_hd (\<lambda>_. rhs \<sigma>)) (\<sigma>\<lparr>return_status := True\<rparr>))"
+    assume "\<triangleright> \<sigma>"
+    show "P (upd (upd_hd (\<lambda>_. rhs \<sigma>)) \<sigma>\<lparr>return_status := True\<rparr>)"
       using a1 assms exec_stop_vs_control_independence' by fastforce
-  qed
+qed
   (* do we need independence of rhs ? Not really. 'Normal' programs would never
      be control-state dependent, and 'artificial' ones would still be correct ...*)
 
@@ -155,9 +155,9 @@ proof (auto)
 subsection\<open>Clean Construct Rules\<close>
 
 lemma cond_clean : 
-  "    \<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma> \<and> cond \<sigma>\<rbrace> M \<lbrace>Q\<rbrace>
-   \<Longrightarrow> \<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma> \<and> \<not> cond \<sigma>\<rbrace> M' \<lbrace>Q\<rbrace>  
-   \<Longrightarrow> \<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma>\<rbrace> if\<^sub>C cond then M else M' fi\<lbrace>Q\<rbrace>"
+  "    \<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma> \<and> cond \<sigma>\<rbrace> M \<lbrace>Q\<rbrace>
+   \<Longrightarrow> \<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma> \<and> \<not> cond \<sigma>\<rbrace> M' \<lbrace>Q\<rbrace>  
+   \<Longrightarrow> \<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma>\<rbrace> if\<^sub>C cond then M else M' fi\<lbrace>Q\<rbrace>"
   unfolding hoare\<^sub>3_def hoare\<^sub>3'_def bind_SE_def if_SE_def
   by (simp add: if_C_def)
 
@@ -174,15 +174,15 @@ lemma while_clean_no_break :
   and measure: "\<forall>\<sigma>. \<not> exec_stop \<sigma> \<and> cond \<sigma> \<and> P \<sigma> 
                     \<longrightarrow> M \<sigma> \<noteq> None \<and> f(snd(the(M \<sigma>))) < ((f \<sigma>)::nat) "
                (is "\<forall>\<sigma>. _ \<and> cond \<sigma> \<and> P \<sigma> \<longrightarrow> ?decrease \<sigma>")
-  shows        "\<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma>\<rbrace> 
+  shows        "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma>\<rbrace> 
                 while\<^sub>C cond do M od 
                 \<lbrace>\<lambda>_ \<sigma>. (return_status \<sigma> \<or> \<not> cond \<sigma>) \<and> \<not> break_status \<sigma> \<and> P \<sigma>\<rbrace>"
                 (is "\<lbrace>?pre\<rbrace> while\<^sub>C cond do M od \<lbrace>\<lambda>_ \<sigma>. ?post1 \<sigma> \<and> ?post2 \<sigma>\<rbrace>")  
   unfolding while_C_def hoare\<^sub>3_def hoare\<^sub>3'_def
   proof (simp add: hoare\<^sub>3_def[symmetric],rule sequence') 
     show "\<lbrace>?pre\<rbrace> 
-          while\<^sub>S\<^sub>E (\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> cond \<sigma>) do M od
-          \<lbrace>\<lambda>_ \<sigma>. \<not> (\<not> exec_stop \<sigma> \<and> cond \<sigma>) \<and> \<not> break_status \<sigma> \<and> P \<sigma>\<rbrace>"
+          while\<^sub>S\<^sub>E (\<lambda>\<sigma>.  \<triangleright> \<sigma> \<and> cond \<sigma>) do M od
+          \<lbrace>\<lambda>_ \<sigma>. \<not> ( \<triangleright>  \<sigma> \<and> cond \<sigma>) \<and> \<not> break_status \<sigma> \<and> P \<sigma>\<rbrace>"
           (is "\<lbrace>?pre\<rbrace> while\<^sub>S\<^sub>E ?cond' do M od \<lbrace>\<lambda>_ \<sigma>. \<not> ( ?cond' \<sigma>) \<and> ?post2 \<sigma>\<rbrace>")
       proof (rule consequence_unit) 
          fix \<sigma> show " ?pre \<sigma> \<longrightarrow> ?post2 \<sigma>"  using exec_stop1 by blast
@@ -201,7 +201,7 @@ lemma while_clean_no_break :
          fix \<sigma> show " \<not>?cond' \<sigma> \<and> ?post2 \<sigma> \<longrightarrow> \<not>?cond' \<sigma> \<and> ?post2 \<sigma>"  by blast
       qed
   next
-    show "\<lbrace>\<lambda>\<sigma>. \<not> (\<not> exec_stop \<sigma> \<and> cond \<sigma>) \<and> ?post2 \<sigma>\<rbrace> unset_break_status
+    show "\<lbrace>\<lambda>\<sigma>. \<not> (\<triangleright> \<sigma> \<and> cond \<sigma>) \<and> ?post2 \<sigma>\<rbrace> unset_break_status
           \<lbrace>\<lambda>_ \<sigma>'. (return_status \<sigma>' \<or> \<not> cond \<sigma>') \<and> ?post2 \<sigma>'\<rbrace>"
          (is "\<lbrace>\<lambda>\<sigma>. \<not> (?cond'' \<sigma>) \<and> ?post2 \<sigma>\<rbrace> unset_break_status \<lbrace>\<lambda>_ \<sigma>'. ?post3 \<sigma>' \<and> ?post2 \<sigma>' \<rbrace>")
       proof (rule consequence_unit) 
@@ -228,18 +228,15 @@ text\<open>In the following we present a version allowing a break inside the bod
 
 
 lemma while_clean':
-  assumes  M_inv   : "\<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> cond \<sigma> \<and> P \<sigma>\<rbrace>  M \<lbrace>\<lambda>_. P\<rbrace>"
+  assumes  M_inv   : "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> cond \<sigma> \<and> P \<sigma>\<rbrace>  M \<lbrace>\<lambda>_. P\<rbrace>"
   and cond_idpc    : "\<forall>x \<sigma>.  (cond (\<sigma>\<lparr>break_status := x\<rparr>)) = cond \<sigma> "
   and inv_idpc     : "\<forall>x \<sigma>.  (P (\<sigma>\<lparr>break_status := x\<rparr>)) = P \<sigma> "
-  and f_is_measure : "\<forall>\<sigma>. \<not> exec_stop \<sigma> \<and> cond \<sigma> \<and> P \<sigma> \<longrightarrow> 
-                       M \<sigma> \<noteq> None \<and> f(snd(the(M \<sigma>))) < ((f \<sigma>)::nat) "
-shows    "\<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma>\<rbrace> 
-          while\<^sub>C cond do M od 
-          \<lbrace>\<lambda>_ \<sigma>.  \<not> break_status \<sigma> \<and> P \<sigma>\<rbrace>"
+  and f_is_measure : "\<forall>\<sigma>. \<triangleright> \<sigma> \<and> cond \<sigma> \<and> P \<sigma> \<longrightarrow>  M \<sigma> \<noteq> None \<and> f(snd(the(M \<sigma>))) < ((f \<sigma>)::nat)"
+shows    "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma>\<rbrace>  while\<^sub>C cond do M od  \<lbrace>\<lambda>_ \<sigma>.  \<not> break_status \<sigma> \<and> P \<sigma>\<rbrace>"
   unfolding while_C_def hoare\<^sub>3_def hoare\<^sub>3'_def
   proof (simp add: hoare\<^sub>3_def[symmetric], rule sequence')
-    show "\<lbrace>\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> P \<sigma>\<rbrace> 
-            while\<^sub>S\<^sub>E (\<lambda>\<sigma>. \<not> exec_stop \<sigma> \<and> cond \<sigma>) do M od
+    show "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> P \<sigma>\<rbrace> 
+            while\<^sub>S\<^sub>E (\<lambda>\<sigma>. \<triangleright> \<sigma> \<and> cond \<sigma>) do M od
           \<lbrace>\<lambda>_ \<sigma>. P (\<sigma>\<lparr>break_status := False\<rparr>)\<rbrace>"
           apply(rule consequence_unit, rule impI, erule conjunct2)
           apply(rule_tac f = "f" in while)
@@ -256,8 +253,3 @@ text\<open>Consequence and Sequence rules where inherited from the underlying Ho
 
 
 end
-
-
-
-
-

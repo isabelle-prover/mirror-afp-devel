@@ -1,5 +1,7 @@
 \documentclass[fontsize=11pt,paper=a4,open=right,twoside,abstract=true]{scrreprt}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
 \usepackage[numbers, sort&compress, sectionbib]{natbib}
 \usepackage{isabelle,isabellesym}
 \usepackage[only,bigsqcap]{stmaryrd}
@@ -17,7 +19,6 @@
 \newenvironment{matharray}[1]{\[\begin{array}{#1}}{\end{array}\]} % from 'iman.sty'
 \newcommand{\indexdef}[3]%
 {\ifthenelse{\equal{}{#1}}{\index{#3 (#2)|bold}}{\index{#3 (#1\ #2)|bold}}} % from 'isar.sty'
-\newcommand{\isactrlC}{{\bf C}}
 
 %%
 
@@ -67,8 +68,8 @@ construction is based on the extensible record package. Direct recursion of proc
 Clean's design strives for extreme simplicity. It is geared towards symbolic execution and proven
 correct verification tools. The underlying libraries of this package, however, deliberately restrict
 themselves to the most elementary infrastructure for these tasks. The package is intended to serve
-as demonstrator semantic backend for Isabelle/C~\cite{TuongWolff19}, or for the test-generation
-techniques described in~\cite{DBLP:conf/tap/Keller18}.
+as demonstrator semantic backend for Isabelle/C~\cite{Tuong-IsabelleC:2019}, or for the
+test-generation techniques described in~\cite{DBLP:conf/tap/Keller18}.
 \end{abstract}
 
 \newpage
@@ -80,9 +81,11 @@ techniques described in~\cite{DBLP:conf/tap/Keller18}.
 % \input{session}
 \newpage
 \input{Clean.tex}
-
 \input{Quicksort_concept.tex}
+\input{Quicksort.tex}
 \input{SquareRoot_concept.tex}
+\input{IsPrime.tex}
+\input{LinearSearch.tex}
 
 \newpage
 \chapter{Appendix : Used Monad Libraries}

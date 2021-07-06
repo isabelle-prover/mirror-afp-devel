@@ -39,10 +39,10 @@
  * Burkhart Wolff and Chantal Keller, LRI, Univ. Paris-Sud, France
  *)
 
-section \<open> The Squareroot Example for Symbolic Execution \<close>
+section \<open> The Squareroot Example for Symbolic Execution \<close> 
 
 theory SquareRoot_concept
-  imports Test_Clean
+  imports Clean.Test_Clean
 begin
 
 
@@ -53,18 +53,18 @@ text\<open> In high-level notation, the algorithm we are investigating looks lik
 @{cartouche [display=true]
 \<open>\<open>
 function_spec sqrt (a::int) returns int
-pre          "\<open>0 \<le> a\<close>"
-post         "\<open>\<lambda>res::int.  (res + 1)\<^sup>2 > a \<and> a \<ge> (res)\<^sup>2\<close>"
+pre          "\<open>0 \<le> a\<close>"    
+post         "\<open>\<lambda>res::int.  (res + 1)\<^sup>2 > a \<and> a \<ge> (res)\<^sup>2\<close>" 
 defines      " (\<open>tm := 1\<close> ;-
                \<open>sqsum := 1\<close> ;-
                \<open>i := 0\<close> ;-
-               (while\<^sub>S\<^sub>E \<open>sqsum <= a\<close> do
+               (while\<^sub>S\<^sub>E \<open>sqsum <= a\<close> do 
                   \<open>i := i+1\<close> ;-
                   \<open>tm := tm + 2\<close> ;-
                   \<open>sqsum := tm + sqsum\<close>
                od) ;-
-               return\<^sub>C result_value_update \<open>i\<close>
-               )"
+               return\<^sub>C result_value_update \<open>i\<close>   
+               )" 
 \<close>\<close>}
 
 \<close>
@@ -122,7 +122,7 @@ lemma tm_simp : "tm (\<sigma>\<lparr>tm := t\<rparr>) = t"
   using [[simp_trace]]  by simp
 (* from trace:
    [1]Procedure "record" produced rewrite rule:
-   tm (?r\<lparr>tm := ?k\<rparr>) \<equiv> ?k
+   tm (?r\<lparr>tm := ?k\<rparr>) \<equiv> ?k 
 
    Unfortunately, this lemma is not exported ... It looks as if it is computed on the fly ...
    This could explain why this is slow for our purposes ...
@@ -137,17 +137,17 @@ lemma i_simp1 : "i (\<sigma>\<lparr>tm := i'\<rparr>) = i \<sigma>" by simp
 lemma i_simp2 : "i (\<sigma>\<lparr>sqsum := i'\<rparr>) = i \<sigma>" by simp
 
 lemmas memory_theory =
-  tm_simp tm_simp1 tm_simp2
-  sqsum_simp sqsum_simp1 sqsum_simp2
-  i_simp i_simp1 i_simp2
-
+  tm_simp tm_simp1 tm_simp2 
+  sqsum_simp sqsum_simp1 sqsum_simp2 
+  i_simp i_simp1 i_simp2 
+     
 
 declare memory_theory [memory_theory]
 
 
 lemma non_exec_assign_globalD':
   assumes "\<sharp> upd"
-  shows   "\<sigma> \<Turnstile> assign_global upd rhs ;- M \<Longrightarrow>\<not> exec_stop \<sigma> \<Longrightarrow>  upd (\<lambda>_. rhs \<sigma>) \<sigma> \<Turnstile> M"
+  shows   "\<sigma> \<Turnstile> upd :==\<^sub>G rhs ;- M \<Longrightarrow> \<triangleright> \<sigma> \<Longrightarrow>  upd (\<lambda>_. rhs \<sigma>) \<sigma> \<Turnstile> M"
   apply(drule non_exec_assign_global'[THEN iffD1])
   using assms exec_stop_vs_control_independence apply blast
   by auto
@@ -156,21 +156,21 @@ lemmas non_exec_assign_globalD'_tm = non_exec_assign_globalD'[OF tm_independent]
 lemmas non_exec_assign_globalD'_i = non_exec_assign_globalD'[OF i_independent]
 lemmas non_exec_assign_globalD'_sqsum = non_exec_assign_globalD'[OF sqsum_independent]
 
-text\<open> Now we run a symbolic execution. We run match-tactics (rather than the Isabelle simplifier
+text\<open> Now we run a symbolic execution. We run match-tactics (rather than the Isabelle simplifier 
   which would do the trick as well) in order to demonstrate a symbolic execution in Isabelle. \<close>
 
 
 subsection\<open> A Symbolic Execution Simulation \<close>
 
 
-lemma
-  assumes non_exec_stop[simp]: "\<not> exec_stop \<sigma>\<^sub>0"
+lemma 
+  assumes non_exec_stop[simp]: "\<not> exec_stop \<sigma>\<^sub>0" 
    and    pos : "0 \<le> (a::int)"
-   and    annotated_program:
+   and    annotated_program: 
           "\<sigma>\<^sub>0 \<Turnstile> \<open>tm := 1\<close> ;-
                 \<open>sqsum := 1\<close> ;-
                 \<open>i := 0\<close> ;-
-                (while\<^sub>S\<^sub>E \<open>sqsum <= a\<close> do
+                (while\<^sub>S\<^sub>E \<open>sqsum <= a\<close> do 
                    \<open>i := i+1\<close> ;-
                    \<open>tm := tm + 2\<close> ;-
                    \<open>sqsum := tm + sqsum\<close>
@@ -178,7 +178,7 @@ lemma
                 assert\<^sub>S\<^sub>E(\<lambda>\<sigma>. \<sigma>=\<sigma>\<^sub>R)"
 
        shows "\<sigma>\<^sub>R \<Turnstile>assert\<^sub>S\<^sub>E \<open>i\<^sup>2  \<le> a \<and> a < (i + 1)\<^sup>2\<close> "
-
+  
 
   apply(insert annotated_program)
 
@@ -206,28 +206,28 @@ lemma
     apply(tactic "ematch_tac @{context} [@{thm \"if_SE_execE''\"}] 1")
     apply(simp_all only: memory_theory MonadSE.bind_assoc')
 
-
+     
     apply(tactic "dmatch_tac @{context} [@{thm \"non_exec_assign_globalD'_i\"}] 1",simp)
     apply(tactic "dmatch_tac @{context} [@{thm \"non_exec_assign_globalD'_tm\"}] 1",simp)
     apply(tactic "dmatch_tac @{context} [@{thm \"non_exec_assign_globalD'_sqsum\"}] 1",simp)
      apply(simp_all)
 
-  text\<open>Here are all abstract test-cases explicit. Each subgoal correstponds to
+  text\<open>Here are all abstract test-cases explicit. Each subgoal correstponds to 
        a path taken through the loop.\<close>
 
 
   txt\<open>push away the test-hyp: postcond is true for programs with more than
     three loop traversals (criterion: all-paths(k). This reveals explicitly
-    the three test-cases for  @{term "k<3"}. \<close>
-   defer 1
+    the three test-cases for  @{term "k<3"}. \<close>   
+   defer 1 
 
 
 (*
 txt\<open>Instead of testing, we @{emph \<open>prove\<close>} that the test cases satisfy the
-    post-condition for all @{term "k<3"} loop traversals and @{emph \<open>all\<close>}
-    positive inputs @{term "a "}.\<close>
+    post-condition for all @{term "k<3"} loop traversals and @{emph \<open>all\<close>} 
+    positive inputs @{term "a "}.\<close>     
    apply(auto  simp: assert_simp)
- *)
+ *) 
 oops
 
 text\<open>TODO: re-establish  automatic test-coverage tactics of @{cite "DBLP:conf/tap/Keller18"}.\<close>
