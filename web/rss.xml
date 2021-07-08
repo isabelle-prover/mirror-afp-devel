@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
+    <pubDate>01 Jul 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
+              <link>https://www.isa-afp.org/entries/SpecCheck.html</link>
+       <guid>https://www.isa-afp.org/entries/SpecCheck.html</guid>
+       <dc:creator> Kevin Kappelmann, Lukas Bulwahn, Sebastian Willenbrink       </dc:creator>
+       <pubDate>01 Jul 2021 00:00:00 +0000</pubDate>
+       <description>
+SpecCheck is a &lt;a
+href=&#34;https://en.wikipedia.org/wiki/QuickCheck&#34;&gt;QuickCheck&lt;/a&gt;-like
+testing framework for Isabelle/ML. You can use it to write
+specifications for ML functions. SpecCheck then checks whether your
+specification holds by testing your function against a given number of
+generated inputs. It helps you to identify bugs by printing
+counterexamples on failure and provides you timing information.
+SpecCheck is customisable and allows you to specify your own input
+generators, test output formats, as well as pretty printers and
+shrinking functions for counterexamples among other things.</description>
+    </item>
     <item>
        <title>Van der Waerden's Theorem</title>
               <link>https://www.isa-afp.org/entries/Van_der_Waerden.html</link>
@@ -551,19 +569,6 @@ and dynamic class initialization, based on the Java SE 8
 specification. This includes extension of definitions and proofs. This
 work is partially described in Mansky and Gunter&#39;s paper at CPP
 2019 and Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
-    </item>
-    <item>
-       <title>Cofinality and the Delta System Lemma</title>
-              <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
-       <guid>https://www.isa-afp.org/entries/Delta_System_Lemma.html</guid>
-       <dc:creator> Pedro Sánchez Terraf       </dc:creator>
-       <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize the basic results on cofinality of linearly ordered sets
-and ordinals and Šanin’s Lemma for uncountable families of finite
-sets. This last result is used to prove the countable chain condition
-for Cohen posets. We work in the set theory framework of Isabelle/ZF,
-using the Axiom of Choice as needed.</description>
     </item>
   </channel>
 </rss>
