@@ -166,7 +166,7 @@ lemma sq_le_cancel:
   by (metis less_eq_real_def mult_le_cancel_left semiring_normalization_rules(29))
 
 lemma frac_diff_eq1: "a \<noteq> b \<Longrightarrow> a / (a - b) - b / (a - b) = 1" for a::real
-  by (metis (no_types, hide_lams) ab_left_minus add.commute add_left_cancel 
+  by (metis (no_types, opaque_lifting) ab_left_minus add.commute add_left_cancel 
       diff_divide_distrib diff_minus_eq_add div_self)
 
 lemma exp_add: "x * y - y * x = 0 \<Longrightarrow> exp (x + y) = exp x * exp y" 

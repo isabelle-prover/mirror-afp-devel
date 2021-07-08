@@ -44,7 +44,7 @@ proof(rule continuous_onI, simp add: dist_norm)
     also have "... \<le> ?\<epsilon> * (\<parallel>s\<parallel>)"
       using dHyp \<open>\<tau> \<in> T\<close> \<open>\<bar>\<tau> - t\<bar> < \<delta>\<close> mult_right_mono norm_ge_zero by blast 
     finally have "\<parallel>A \<tau> *v s - A t *v s\<parallel> \<le> e"
-      by (subst (asm) obs) (metis (mono_tags, hide_lams) \<open>0 < e\<close> less_eq_real_def order_trans)}
+      by (subst (asm) obs) (metis (mono_tags, opaque_lifting) \<open>0 < e\<close> less_eq_real_def order_trans)}
   thus "\<exists>d>0. \<forall>\<tau>\<in>T. \<bar>\<tau> - t\<bar> < d \<longrightarrow> \<parallel>A \<tau> *v s - A t *v s\<parallel> \<le> e"
     using dHyp by blast
 qed
