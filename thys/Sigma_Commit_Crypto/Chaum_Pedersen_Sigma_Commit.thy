@@ -307,7 +307,7 @@ proof-
   hence "[(int z - int z') * fst (bezw (e - e') (order \<G>))  = int t * ((e - e') * fst (bezw (e - e') (order \<G>)))] (mod order \<G>)" 
     by (simp add: more_arith_simps(11))
   hence "[(int z - int z') * fst (bezw (e - e') (order \<G>))  = int t * 1] (mod order \<G>)" 
-    by (metis (no_types, hide_lams) cong_scalar_left cong_trans inverse gcd)
+    by (metis (no_types, opaque_lifting) cong_scalar_left cong_trans inverse gcd)
   hence "[(int z - int z') * fst (bezw (e - e') (order \<G>)) mod order \<G>  = t] (mod order \<G>)" 
     by simp
   hence "[nat ((int z - int z') * fst (bezw (e - e') (order \<G>)) mod order \<G>)  = t] (mod order \<G>)" 
@@ -358,13 +358,13 @@ proof-
   hence "[(int x * (int z - int z')) * fst (bezw (e - e') (order \<G>)) = int t * ((e - e') * fst (bezw (e - e') (order \<G>)))] (mod order \<G>)"
     by (simp add: more_arith_simps(11))
   hence *: "[(int x * (int z - int z')) * fst (bezw (e - e') (order \<G>)) = int t * 1] (mod order \<G>)"
-    by (metis (no_types, hide_lams) cong_scalar_left cong_trans gcd inverse)
+    by (metis (no_types, opaque_lifting) cong_scalar_left cong_trans gcd inverse)
   hence "[nat ((int x * (int z - int z')) * fst (bezw (e - e') (order \<G>)) mod order \<G>) = t] (mod order \<G>)"
     by (metis cong_def cong_mod_right more_arith_simps(6) nat_int zmod_int)
   hence "\<^bold>g [^] (nat ((int x * (int z - int z')) * fst (bezw (e - e') (order \<G>)) mod order \<G>)) = \<^bold>g [^] t"
     using order_gt_0 order_gt_0_iff_finite pow_generator_eq_iff_cong by blast
   thus ?thesis using t 
-    by (metis (mono_tags, hide_lams) * cong_def g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) more_arith_simps(6) pow_generator_mod_int)
+    by (metis (mono_tags, opaque_lifting) * cong_def g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) more_arith_simps(6) pow_generator_mod_int)
 qed
 
 lemma ss_rewrite_snd_h:
@@ -412,7 +412,7 @@ proof-
   hence "\<^bold>g [^] (int x * (int z - int z') * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>))) = \<^bold>g [^] t"
     by (metis cong_def int_pow_int more_arith_simps(6) pow_generator_mod_int)
   thus ?thesis using t 
-    by (metis (mono_tags, hide_lams) g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) pow_generator_mod_int)
+    by (metis (mono_tags, opaque_lifting) g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) pow_generator_mod_int)
 qed
 
 lemma special_soundness:

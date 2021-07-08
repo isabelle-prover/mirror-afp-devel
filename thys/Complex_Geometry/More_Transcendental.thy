@@ -140,7 +140,7 @@ that dependency\<close>
 lemma sin_periodic_nat [simp]: 
   fixes n :: nat
   shows "sin (x + n * (2 * pi)) = sin x"
-  by (metis (no_types, hide_lams) add.commute add.left_neutral cos_2npi cos_one_2pi_int mult.assoc mult.commute mult.left_neutral mult_zero_left sin_add sin_int_2pin)
+  by (metis (no_types, opaque_lifting) add.commute add.left_neutral cos_2npi cos_one_2pi_int mult.assoc mult.commute mult.left_neutral mult_zero_left sin_add sin_int_2pin)
 
 lemma sin_periodic_int [simp]:
   fixes i :: int

@@ -245,7 +245,7 @@ lemma r2f_f2r_galois_var: "(\<R> \<circ> f = R) = (\<F> \<circ> R = f)"
   by (force simp: f2r_def r2f_def)
 
 lemma r2f_f2r_galois_var2: "(f \<circ> \<R> = R) = (R \<circ> \<F> = f)"
-  by (metis (no_types, hide_lams) comp_id f2r2f_inv2 map_fun_def o_assoc r2f2r_inv1)
+  by (metis (no_types, opaque_lifting) comp_id f2r2f_inv2 map_fun_def o_assoc r2f2r_inv1)
 
 lemma r2f_inj: "inj \<F>"
   by (meson inj_on_inverseI r2f_f2r_galois)
@@ -435,7 +435,7 @@ lemma kop_galois_var: "(op\<^sub>K \<circ> f = g) = (op\<^sub>K \<circ> g = f)"
   by (auto simp: kop_def f2r_def r2f_def converse_def fun_eq_iff)   
 
 lemma kop_galois_var2: "(f \<circ> op\<^sub>K = g) = (g \<circ> op\<^sub>K = f)"
-  by (metis (no_types, hide_lams) comp_assoc comp_id kop_idem)
+  by (metis (no_types, opaque_lifting) comp_assoc comp_id kop_idem)
 
 lemma kop_inj: "inj op\<^sub>K"
   unfolding inj_def by (simp add: f2r_inj_iff kop_def r2f_inj_iff)

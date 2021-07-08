@@ -91,7 +91,7 @@ proof (induction m)
         hence "\<delta> (token_run x (n + m)) (suffix x w j) = token_run x (n + (Suc m))"
           unfolding suffix_def by fastforce
         thus ?thesis
-          using wellformed_F Suc suffix_nth by (metis (no_types, hide_lams))
+          using wellformed_F Suc suffix_nth by (metis (no_types, opaque_lifting))
     qed fastforce
 qed simp
 
@@ -103,7 +103,7 @@ proof (cases "x \<le> n")
     then obtain n' where "token_run x (x + n') \<in> F"
       using assms by force
     hence "\<exists>m. token_run x (x + m) \<notin> F - {q\<^sub>0} \<and> token_run x (x + Suc m) \<in> F"
-      by (induction n') ((metis (erased, hide_lams) token_stays_in_final_states token_run_intial_state  Diff_iff Nat.add_0_right Suc_eq_plus1 insertCI ), blast)
+      by (induction n') ((metis (erased, opaque_lifting) token_stays_in_final_states token_run_intial_state  Diff_iff Nat.add_0_right Suc_eq_plus1 insertCI ), blast)
     thus ?thesis
       by (metis add_Suc_right le_add1)
 next

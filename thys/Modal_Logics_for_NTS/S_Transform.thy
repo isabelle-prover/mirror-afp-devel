@@ -476,7 +476,7 @@ lemma S_transform_Tree_eqvt [eqvt]: "p \<bullet> S_transform_Tree t = S_transfor
 proof (induct t)
   case (tConj tset)
   then show ?case
-    by simp (metis (no_types, hide_lams) bset.map_cong0 map_bset_eqvt permute_fun_def permute_minus_cancel(1))
+    by simp (metis (no_types, opaque_lifting) bset.map_cong0 map_bset_eqvt permute_fun_def permute_minus_cancel(1))
 qed simp_all
 
 text \<open>@{const S_transform_Tree} respects $\alpha$-equivalence.\<close>
@@ -708,7 +708,7 @@ begin
         by (metis S_transform.valid_Act_fresh bn_S_action.simps(1) bn_eqvt)
 
       from valid have "-p \<bullet> P' \<Turnstile>\<^sub>S S_transform x"
-        by (metis (no_types, hide_lams) S_transform.valid_eqvt S_transform_eqvt permute_minus_cancel(1))
+        by (metis (no_types, opaque_lifting) S_transform.valid_eqvt S_transform_eqvt permute_minus_cancel(1))
       then have "-p \<bullet> P' \<Turnstile> x"
         using Act.hyps(1) by metis
       then have "P' \<Turnstile> p \<bullet> x"

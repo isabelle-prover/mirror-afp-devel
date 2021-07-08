@@ -441,7 +441,7 @@ proof(induction arbitrary: gpv rule: expectation_gpv_fixp_induct)
     by(intro add_left_mono mult_right_mono) simp_all
   also have "\<dots> \<le> max c fail"
     by(simp add: measure_spmf.emeasure_eq_measure pmf_None_eq_weight_spmf ennreal_minus[symmetric])
-      (metis (no_types, hide_lams) add_diff_eq_iff_ennreal distrib_left ennreal_le_1 le_max_iff_disj max.cobounded2 mult.commute mult.left_neutral weight_spmf_le_1)
+      (metis (no_types, opaque_lifting) add_diff_eq_iff_ennreal distrib_left ennreal_le_1 le_max_iff_disj max.cobounded2 mult.commute mult.left_neutral weight_spmf_le_1)
   finally show ?case by(simp add: add_mono)
 qed
 

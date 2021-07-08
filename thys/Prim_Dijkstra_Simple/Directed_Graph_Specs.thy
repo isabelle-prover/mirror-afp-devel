@@ -64,7 +64,7 @@ lemma valid_graph_rep_ex1:
            blast)
   subgoal for w w'
     apply (simp add: fun_eq_iff)
-    by (metis (mono_tags, hide_lams) not_enat_eq)
+    by (metis (mono_tags, opaque_lifting) not_enat_eq)
   done  
 
 text \<open>We define this graph using determinate choice\<close>  

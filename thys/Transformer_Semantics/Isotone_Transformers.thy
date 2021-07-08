@@ -205,7 +205,7 @@ lemma fpower_Sup_subcomm: "mono f \<Longrightarrow> f \<circ> fstar f \<le> fsta
 lemma fpower_inductl: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
   shows "mono f \<Longrightarrow> mono g \<Longrightarrow> h \<le> g \<sqinter> (f \<circ> h) \<Longrightarrow> h \<le> fpower f i \<circ> g"
-  apply (induct i, simp_all) by (metis (no_types, hide_lams) fun.map_comp fun_isol order_trans) 
+  apply (induct i, simp_all) by (metis (no_types, opaque_lifting) fun.map_comp fun_isol order_trans) 
 
 lemma fpower_inductr: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
@@ -316,7 +316,7 @@ lemma Ri_weaken: "x \<le> x' \<Longrightarrow>  y' \<le> y \<Longrightarrow> Ri 
   by (meson H_iso_cond2 Ri_least Ri_spec iso_Ri order.trans)
  
 lemma Ri_seq: "Ri x y z \<le> Ri x w (Ri w y z)"
-  by (metis (no_types, hide_lams) H_iso_cond2 Ri_prop Ri_spec iso_Ri iso_fcomp o_apply)
+  by (metis (no_types, opaque_lifting) H_iso_cond2 Ri_prop Ri_spec iso_Ri iso_fcomp o_apply)
 
 lemma Ri_seq_var: "Ri x y z \<le> ((Ri x w) \<circ> (Ri w y)) z"
   by (simp add: Ri_seq)

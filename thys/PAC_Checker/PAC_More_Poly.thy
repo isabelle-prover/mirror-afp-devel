@@ -239,7 +239,7 @@ proof -
       have H: \<open>\<And>xa. x \<notin> F \<Longrightarrow> xa \<in> F \<Longrightarrow>
         MPoly_Type.monom xa (MPoly_Type.coeff (p - MPoly_Type.monom x (MPoly_Type.coeff p x)) xa) =
          MPoly_Type.monom xa (MPoly_Type.coeff p xa)\<close>
-        by (metis (mono_tags, hide_lams) add_diff_cancel_right' remove_term_coeff
+        by (metis (mono_tags, opaque_lifting) add_diff_cancel_right' remove_term_coeff
           remove_term_sum when_def)
       have \<open>?p = (\<Sum>xa\<in>F. MPoly_Type.monom xa (MPoly_Type.coeff ?p xa))\<close>
         apply (rule IH)
@@ -779,7 +779,7 @@ proof -
     by (auto simp: field_simps)
 
   moreover have \<open>x' \<notin> vars (-Ax' * p)\<close>
-    using \<open>x' \<notin> vars Ax'\<close> by (metis (no_types, hide_lams) UnE add.right_neutral
+    using \<open>x' \<notin> vars Ax'\<close> by (metis (no_types, opaque_lifting) UnE add.right_neutral
       add_minus_cancel assms(4) subsetD vars_in_right_only vars_mult)
    moreover have \<open>Axx \<noteq> 0 \<Longrightarrow> MPoly_Type.degree (- Axx * p) x' < degree Ax x'\<close>
      using degree_times_le[of Axx p x'] x
@@ -828,7 +828,7 @@ proof -
     \<exists>xa. (\<exists>k. xa = monomial (Suc 0) x + k) \<and>
          lookup (mapping_of p) (xa - monomial (Suc 0) x) \<noteq> 0 \<and>
          0 < lookup xa x\<close>
-   by (metis (no_types, hide_lams) One_nat_def ab_semigroup_add_class.add.commute
+   by (metis (no_types, opaque_lifting) One_nat_def ab_semigroup_add_class.add.commute
      add_diff_cancel_right' aux lookup_add lookup_single_eq mapping_of_inject
      neq0_conv one_neq_zero plus_eq_zero_2 zero_mpoly.rep_eq)
   then show ?thesis

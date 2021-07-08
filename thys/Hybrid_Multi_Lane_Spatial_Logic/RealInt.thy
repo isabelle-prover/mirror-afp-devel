@@ -248,11 +248,11 @@ lemma chop_leq2:"R_Chop(r,s,t) \<longrightarrow> t \<le> r"
   by (metis (full_types) less_eq_real_int_def order_refl real_int.left_leq_right real_int.rchop_def)
     
 lemma chop_empty1:"R_Chop(r,s,t) \<and> \<parallel>s\<parallel> = 0 \<longrightarrow> r = t " 
-  by (metis (no_types, hide_lams) Rep_real_int_inject left.rep_eq prod.collapse
+  by (metis (no_types, opaque_lifting) Rep_real_int_inject left.rep_eq prod.collapse
       real_int.length_zero_iff_borders_eq real_int.rchop_def right.rep_eq)
 
 lemma chop_empty2:"R_Chop(r,s,t) \<and> \<parallel>t\<parallel> = 0 \<longrightarrow> r = s " 
-  by (metis (no_types, hide_lams) Rep_real_int_inject left.rep_eq prod.collapse
+  by (metis (no_types, opaque_lifting) Rep_real_int_inject left.rep_eq prod.collapse
       real_int.length_zero_iff_borders_eq real_int.rchop_def right.rep_eq)
     
 end

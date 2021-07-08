@@ -101,7 +101,7 @@ proof -
 qed 
 
 lemma natUnion_ex: "x \<in> natUnion f \<Longrightarrow> \<exists> i. x \<in> f i"
-  by (metis (no_types, hide_lams) mk_disjoint_insert natUnion_superset natUnion_upperbound 
+  by (metis (no_types, opaque_lifting) mk_disjoint_insert natUnion_superset natUnion_upperbound 
     subsetCE subset_insert)
 
 lemma locate_in_limit:

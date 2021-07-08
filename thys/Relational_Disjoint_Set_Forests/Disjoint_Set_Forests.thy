@@ -70,7 +70,7 @@ proof -
   have "(-y \<sqinter> x)\<^sup>T * (y \<sqinter> z\<^sup>T) = (-y\<^sup>T \<sqinter> x\<^sup>T) * (y \<sqinter> z\<^sup>T)"
     by (simp add: conv_complement conv_dist_inf)
   also have "... = x\<^sup>T * (-y \<sqinter> y \<sqinter> z\<^sup>T)"
-    using 3 by (metis (mono_tags, hide_lams) conv_complement covector_inf_comp_3 inf.sup_monoid.add_assoc inf.sup_monoid.add_commute)
+    using 3 by (metis (mono_tags, opaque_lifting) conv_complement covector_inf_comp_3 inf.sup_monoid.add_assoc inf.sup_monoid.add_commute)
   finally have 4: "(-y \<sqinter> x)\<^sup>T * (y \<sqinter> z\<^sup>T) = bot"
     by simp
   have 5: "univalent (-y \<sqinter> x)"
@@ -1007,7 +1007,7 @@ proof -
     show "surjective (p[[y]])"
       using 2 by simp
     show "p[[y]] \<le> p\<^sup>T\<^sup>\<star> * x"
-      using 1 by (metis (hide_lams) find_set_invariant_def comp_associative comp_isotone star.circ_increasing star.circ_transitive_equal)
+      using 1 by (metis (opaque_lifting) find_set_invariant_def comp_associative comp_isotone star.circ_increasing star.circ_transitive_equal)
     show "card ?t < card ?s"
     proof -
       have 3: "(p\<^sup>T \<sqinter> -1) * (p\<^sup>T \<sqinter> -1)\<^sup>+ * y \<le> (p\<^sup>T \<sqinter> -1)\<^sup>+ * y"
@@ -1374,7 +1374,7 @@ proof -
       also have "... = ((p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1) \<squnion> ((p \<sqinter> -1)\<^sup>+ \<sqinter> 1)\<^sup>T"
         by (metis conv_complement conv_dist_inf conv_plus_commute equivalence_one_closed reachable_without_loops)
       also have "... \<le> ((p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1) \<squnion> (-1 \<sqinter> 1)\<^sup>T"
-        by (metis (no_types, hide_lams) i1 sup_right_isotone inf.sup_left_isotone conv_isotone)
+        by (metis (no_types, opaque_lifting) i1 sup_right_isotone inf.sup_left_isotone conv_isotone)
       also have "... = (p\<^sup>T \<sqinter> 1) * p\<^sup>T\<^sup>\<star> \<sqinter> 1"
         by simp
       also have "... \<le> (p\<^sup>T \<sqinter> 1) * top \<sqinter> 1"
@@ -1556,7 +1556,7 @@ proof -
     also have "... \<le> -p\<^sup>T\<^sup>+ \<sqinter> p"
       using 7 by (simp add: inf.coboundedI2 inf.sup_monoid.add_commute)
     finally have "w \<sqinter> p \<sqinter> 1 = bot"
-      by (metis (no_types, hide_lams) conv_dist_inf coreflexive_symmetric inf.absorb1 inf.boundedE inf.cobounded2 pseudo_complement star.circ_mult_increasing)
+      by (metis (no_types, opaque_lifting) conv_dist_inf coreflexive_symmetric inf.absorb1 inf.boundedE inf.cobounded2 pseudo_complement star.circ_mult_increasing)
     also have "w \<sqinter> y\<^sup>T \<sqinter> 1 = bot"
       using 5 antisymmetric_bot_closed asymmetric_bot_closed comp_inf.schroeder_2 inf.absorb1 one_inf_conv by fastforce
     finally have "w \<sqinter> p \<sqinter> 1 = w \<sqinter> y\<^sup>T \<sqinter> 1"

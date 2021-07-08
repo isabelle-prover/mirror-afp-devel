@@ -221,7 +221,7 @@ using eq_refl by auto
 lemma eq_FF[simp]:
   "(FF = eq\<cdot>xs\<cdot>ys) \<longleftrightarrow> (xs \<noteq> \<bottom> \<and> ys \<noteq> \<bottom> \<and> xs \<noteq> ys)"
   "(eq\<cdot>xs\<cdot>ys = FF) \<longleftrightarrow> (xs \<noteq> \<bottom> \<and> ys \<noteq> \<bottom> \<and> xs \<noteq> ys)"
-by (metis (mono_tags, hide_lams) Exh_tr dist_eq_tr(5) eq_TT_dest eq_bottom_iff eq_self_neq_FF')+
+by (metis (mono_tags, opaque_lifting) Exh_tr dist_eq_tr(5) eq_TT_dest eq_bottom_iff eq_self_neq_FF')+
 
 lemma eq_TT[simp]:
   "(TT = eq\<cdot>xs\<cdot>ys) \<longleftrightarrow> (xs \<noteq> \<bottom> \<and> ys \<noteq> \<bottom> \<and> xs = ys)"

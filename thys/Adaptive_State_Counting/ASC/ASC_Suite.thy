@@ -822,7 +822,7 @@ next
   proof (cases xs')
     case Nil
     then show ?thesis
-      by (metis (no_types, hide_lams) \<open>0 < i\<close> TS.simps(2) TS_subset append_Nil2 assms(2) 
+      by (metis (no_types, opaque_lifting) \<open>0 < i\<close> TS.simps(2) TS_subset append_Nil2 assms(2) 
           contra_subsetD leD mcp.elims(2) not_less_eq_eq)
   next
     case (Cons a list)

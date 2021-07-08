@@ -225,7 +225,7 @@ lemma m_weakly_prefers_Pm:
   assumes "(m, w) \<in> \<mu>"
   shows "w' \<in> m_weakly_prefers m \<mu> \<longleftrightarrow> (w, w') \<in> Pm m"
 using spec[OF Pm_pref, where x=m] assms unfolding m_weakly_prefers_def match_def preorder_on_def
-by simp (metis (no_types, hide_lams) FieldI2 fst_conv inj_on_contraD snd_conv)
+by simp (metis (no_types, opaque_lifting) FieldI2 fst_conv inj_on_contraD snd_conv)
 
 lemma match_Field:
   assumes "match \<mu>"
@@ -358,7 +358,7 @@ proof(rule ccontr)
       from \<open>simple \<mu>\<close> \<open>blocks m' w' ?\<mu>'\<close> \<open>w' \<noteq> w\<close> \<open>(m, w') \<in> \<mu>\<close>
       show ?thesis
         unfolding simple_def match_def
-        by clarsimp (metis (no_types, hide_lams) fst_conv inj_on_contraD snd_conv)
+        by clarsimp (metis (no_types, opaque_lifting) fst_conv inj_on_contraD snd_conv)
     next
       case False
       from Pm_pref \<open>blocks m w \<mu>\<close> \<open>blocks m' w' ?\<mu>'\<close> \<open>(m, w') \<notin> \<mu>\<close>

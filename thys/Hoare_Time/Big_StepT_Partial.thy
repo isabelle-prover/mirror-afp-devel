@@ -380,7 +380,7 @@ lemma FrameD: assumes "Frame P Q F" " P s "
     
 lemma Frame'_match: "Frame' (P ** P') \<box> Q F \<Longrightarrow> Frame' (x \<hookrightarrow> v ** P) P' (x \<hookrightarrow> v ** Q) F" 
   unfolding Frame_def Frame'_def apply (auto simp: sep_conj_ac)
-  by (metis (no_types, hide_lams) prod.collapse sep.mult_assoc sep_conj_impl1)   
+  by (metis (no_types, opaque_lifting) prod.collapse sep.mult_assoc sep_conj_impl1)   
     
 lemma R: assumes "\<And>s. (A imp B) s" shows "((A ** $n) imp (B ** $n)) s"    
 proof (safe)

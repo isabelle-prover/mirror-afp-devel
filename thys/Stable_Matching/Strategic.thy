@@ -439,7 +439,7 @@ proof -
             and xy: "(x, y) \<in> Pd'_tax (Xd x)" ..
   from TruePref_tax.stable_on_range'[OF TruePref_tax.Theorem_1]
   have "dX (CH (TruePref_tax.fp_cop_F ds)) (Xd x) \<subseteq> Field (Pd' (Xd x))"
-    by (clarsimp simp: dX_def) (metis (no_types, hide_lams) Pd'_tax_Pd' contra_subsetD mono_Field)
+    by (clarsimp simp: dX_def) (metis (no_types, opaque_lifting) Pd'_tax_Pd' contra_subsetD mono_Field)
   moreover
   from TruePref_tax.fp_cop_F_allocation[of ds] Pd'_tax_Pd' y xy
   have "Above (Pd' (Xd x)) (dX (CH (TruePref_tax.fp_cop_F ds)) (Xd x))

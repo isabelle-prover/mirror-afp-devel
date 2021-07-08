@@ -300,7 +300,7 @@ proof (cases "y=p")
 next
   case False
   have "norm (v - y)^2 = norm ((v - p) + (p - y))^2"
-    by (metis (hide_lams, no_types) add_diff_cancel_left add_ac(1) add_diff_add add_diff_cancel)
+    by (metis (opaque_lifting, no_types) add_diff_cancel_left add_ac(1) add_diff_add add_diff_cancel)
   also have "... = norm (v - p)^2 + norm (p - y)^2" 
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal)
     show "p - y \<in> S" by (metis assms(3) assms(4) subspace_S subspace_diff)
@@ -395,20 +395,20 @@ proof -
   also have "... = (transpose (?Q ** ?R) ** (?Q ** ?R) *v x = transpose (?Q ** ?R) *v b)"
     using QR_decomposition_mult[OF r] by simp
   also have "... = (transpose ?R ** transpose ?Q **  (?Q ** ?R) *v x  = transpose ?R ** transpose ?Q *v b)"
-    by (metis (hide_lams, no_types) matrix_transpose_mul)
+    by (metis (opaque_lifting, no_types) matrix_transpose_mul)
   also have "... = (transpose ?R *v (transpose ?Q ** (?Q ** ?R) *v x)  = transpose ?R *v (transpose ?Q *v b))"
-    by (metis (hide_lams, no_types) matrix_vector_mul_assoc)
+    by (metis (opaque_lifting, no_types) matrix_vector_mul_assoc)
   also have "... = (matrix_inv (transpose ?R) *v (transpose ?R *v (transpose ?Q ** (?Q ** ?R) *v x))  
     = matrix_inv (transpose ?R) *v (transpose ?R *v (transpose ?Q *v b)))"
     using inv_matrix_vector_mul_left[OF inv_inv_tR] by auto
   also have "... = ((matrix_inv (transpose ?R) ** transpose ?R) *v (transpose ?Q ** (?Q ** ?R) *v x)  
     = (matrix_inv (transpose ?R) ** transpose ?R) *v (transpose ?Q *v b))"
-    by (metis (hide_lams, no_types) matrix_vector_mul_assoc)
+    by (metis (opaque_lifting, no_types) matrix_vector_mul_assoc)
   also have "... = (transpose ?Q ** (?Q ** ?R) *v x = transpose ?Q *v b)"
     unfolding matrix_inv_left[OF inv_tR]
     unfolding matrix_vector_mul_lid ..
   also have "... = ((transpose ?Q ** ?Q) ** ?R *v x = transpose ?Q *v b)"
-    by (metis (hide_lams, no_types) matrix_mul_assoc)
+    by (metis (opaque_lifting, no_types) matrix_mul_assoc)
   also have "... = (?R *v x = transpose ?Q *v b)"
     unfolding orthogonal_matrix_fst_QR_decomposition[OF r]
     unfolding matrix_mul_lid ..
@@ -427,7 +427,7 @@ proof -
   have "(x \<in> set_least_squares_approximation A b) = (?R *v x = transpose ?Q *v b)"
     using in_set_least_squares_approximation_eq_full_rank_QR[OF r] .
   also have "... = (matrix_inv ?R ** ?R *v x = matrix_inv ?R ** transpose ?Q *v b)"
-    by (metis (hide_lams, no_types) Gauss_Jordan_PA_eq calculation fst_Gauss_Jordan_PA inv_R 
+    by (metis (opaque_lifting, no_types) Gauss_Jordan_PA_eq calculation fst_Gauss_Jordan_PA inv_R 
       inv_matrix_vector_mul_left invertible_fst_Gauss_Jordan_PA matrix_inv_Gauss matrix_vector_mul_assoc)
   also have "... = (x = matrix_inv ?R ** transpose ?Q *v b)"
     by (metis inv_R matrix_inv_left matrix_vector_mul_lid)
@@ -438,13 +438,13 @@ lemma set_least_squares_approximation_unique_solution:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(set_least_squares_approximation A b) = {matrix_inv (transpose A ** A)**transpose A *v b}"
-  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank
+  by (metis (opaque_lifting, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank
     empty_iff insertI1 r subsetI subset_singletonD)
 
 lemma set_least_squares_approximation_unique_solution_QR:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(set_least_squares_approximation A b) = {matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b}"
-  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank_QR2 insertI1 r subsetI subset_singletonD)
+  by (metis (opaque_lifting, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank_QR2 insertI1 r subsetI subset_singletonD)
 
 end

@@ -260,7 +260,7 @@ begin
       apply (erule s1.run_sim, auto simp: run_rel_def build_rel_def intro!: ext) []
 
       apply (erule s2.run_sim, auto simp: run_rel_def build_rel_def)
-      by (metis (no_types, hide_lams) fun_comp_eq_conv)
+      by (metis (no_types, opaque_lifting) fun_comp_eq_conv)
   
     lemma inj_map_run_eq:
       assumes "inj \<alpha>"

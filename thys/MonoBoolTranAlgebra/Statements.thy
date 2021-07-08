@@ -371,12 +371,12 @@ lemma "hoare p S q \<Longrightarrow> datarefin ({\<cdot>p} * S) S1 D D1 \<Longri
 lemma inf_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> x \<sqinter> y \<in> conjunctive"
   apply (subst conjunctive_def, safe)
   apply (simp add: inf_comp conjunctiveD)
-  by (metis (hide_lams, no_types) inf_assoc inf_left_commute)
+  by (metis (opaque_lifting, no_types) inf_assoc inf_left_commute)
 
 lemma sup_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive \<Longrightarrow> x \<squnion> y \<in> disjunctive"
   apply (subst disjunctive_def, safe)
   apply (simp add: sup_comp disjunctiveD)
-  by (metis (hide_lams, no_types) sup_assoc sup_left_commute)
+  by (metis (opaque_lifting, no_types) sup_assoc sup_left_commute)
 
 lemma assumption_conjuncive [simp]: "[\<cdot>p] \<in> conjunctive"
   by (simp add: assume_def dual_disjunctive assertion_disjunctive)

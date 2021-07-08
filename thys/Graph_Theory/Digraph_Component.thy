@@ -887,7 +887,7 @@ context wf_digraph begin
           using \<open>S \<subseteq> T\<close> \<open>T \<noteq> S\<close> by auto
         then have "G \<restriction> S \<notin> sccs" unfolding sccs_def by blast
         then have "S \<notin> verts ` sccs"
-          by (metis (erased, hide_lams) \<open>S \<subseteq> T\<close> \<open>T \<noteq> S\<close> \<open>induced_subgraph (G \<restriction> T) G\<close> \<open>strongly_connected (G \<restriction> T)\<close>
+          by (metis (erased, opaque_lifting) \<open>S \<subseteq> T\<close> \<open>T \<noteq> S\<close> \<open>induced_subgraph (G \<restriction> T) G\<close> \<open>strongly_connected (G \<restriction> T)\<close>
             dual_order.order_iff_strict image_iff in_sccsE induce_subgraph_verts)
         then have False using assms by metis
       }

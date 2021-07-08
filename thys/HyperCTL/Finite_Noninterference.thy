@@ -61,7 +61,7 @@ assumes "env p = i" and "env p' = i'"
 shows "sem (EqButGH p p') env = eqButGH i i'"
 using assms finite_EqButGH
 unfolding EqButGH_def eqButGH_def sem_Scon[OF finite_EqButGH] image_def
-by simp (metis (hide_lams, no_types) EqOnUC_eqOnUC)
+by simp (metis (opaque_lifting, no_types) EqOnUC_eqOnUC)
 
 lemma FV_EqButGH: "FV (EqButGH p p') \<subseteq> {p,p'}" (is "?L \<subseteq> ?R")
 proof-
@@ -99,7 +99,7 @@ assumes "env p = i" and "env p' = i'"
 shows "sem (EqOnGL p p') env = eqOnGL i i'"
 using assms finite_EqOnGL
 unfolding EqOnGL_def eqOnGL_def sem_Scon[OF finite_EqOnGL] image_def
-by simp (metis (hide_lams, no_types) EqOnUOut_eqOnUOut)
+by simp (metis (opaque_lifting, no_types) EqOnUOut_eqOnUOut)
 
 lemma FV_EqOnGL: "FV (EqOnGL p p') \<subseteq> {p,p'}" (is "?L \<subseteq> ?R")
 proof-

@@ -2190,7 +2190,7 @@ lemma diff_col_ex:
 lemma diff_bet_ex3:
   assumes "Bet A B C"
   shows "\<exists> D. A \<noteq> D \<and> B \<noteq> D \<and> C \<noteq> D \<and> Col A B D"
-  by (metis (mono_tags, hide_lams) Col_def bet_out_1 between_trivial2 col_transitivity_1 l6_4_1 point_construction_different)
+  by (metis (mono_tags, opaque_lifting) Col_def bet_out_1 between_trivial2 col_transitivity_1 l6_4_1 point_construction_different)
 
 lemma diff_col_ex3:
   assumes "Col A B C"
@@ -3689,7 +3689,7 @@ proof -
   have P38: "Y \<noteq> Z"
     using P15 P3 cong_reverse_identity by blast
   then have P40: "X \<noteq> Y"
-    by (metis (mono_tags, hide_lams) Col_perm Cong_perm P14 P24 P25 P27 P36 P8 Per_def assms colx per_not_colp)
+    by (metis (mono_tags, opaque_lifting) Col_perm Cong_perm P14 P24 P25 P27 P36 P8 Per_def assms colx per_not_colp)
   have "Col A B X"
     using Col_perm P26 P31 P37 P38 col3 by blast
   thus ?thesis
@@ -12486,7 +12486,7 @@ lemma l11_44_1_a:
     "A \<noteq> C" and
     "Cong B A B C"
   shows "B A C CongA B C A"
-  by (metis (no_types, hide_lams) Cong3_def assms(1) assms(2) assms(3) cong3_conga cong_inner_transitivity cong_pseudo_reflexivity)
+  by (metis (no_types, opaque_lifting) Cong3_def assms(1) assms(2) assms(3) cong3_conga cong_inner_transitivity cong_pseudo_reflexivity)
 
 lemma l11_44_2_a:
   assumes "\<not> Col A B C" and
@@ -23654,7 +23654,7 @@ next
     proof cases
       assume P3: "B = B'"
       then have "Col PO C C'"
-        by (metis (no_types, hide_lams) Col_def P1 P2 assms(1) assms(2) assms(9) col_transitivity_1)
+        by (metis (no_types, opaque_lifting) Col_def P1 P2 assms(1) assms(2) assms(9) col_transitivity_1)
       then have "C = C'"
         using assms(5) assms(8) l8_9 not_col_permutation_5 by blast
       then show ?thesis

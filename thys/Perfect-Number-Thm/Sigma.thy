@@ -147,7 +147,7 @@ proof -
   also from cop have "... = (\<Sum> {p^f*b| f b . f\<le>n \<and> b dvd m})"
     by (auto simp add: prodsums_eq_sumprods prime_nat_iff)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) \<and> b dvd m})"
-    by (metis (no_types, hide_lams) le_imp_power_dvd divides_primepow_nat p)
+    by (metis (no_types, opaque_lifting) le_imp_power_dvd divides_primepow_nat p)
   also have "\<dots> = \<Sum>{c. c dvd (p^n*m)}"
     using cop2 div_decomp_comp by auto
   finally show ?thesis

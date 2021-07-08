@@ -983,7 +983,7 @@ proof-
     by (metis Suc_1 Suc_eq_plus1 Suc_le_mono \<open>rk {P, Q, R} = 2\<close> add_Suc_right eval_nat_numeral(3))
   then have f2:"rk {Q, A', R, A} \<le> 3"
     using matroid_ax_2
-    by (metis (no_types, hide_lams) dual_order.trans insert_commute subset_insertI)
+    by (metis (no_types, opaque_lifting) dual_order.trans insert_commute subset_insertI)
   obtain a where "rk {Q, A', a} = 2" and "rk {R, A, a} = 2"
     using f2 rk_ax_pasch 
     by blast
@@ -995,7 +995,7 @@ proof-
     by (metis Suc_1 Suc_eq_plus1 Suc_le_mono \<open>rk {P, Q, R} = 2\<close> add_Suc_right eval_nat_numeral(3))
   then have f3:"rk {Q, B', R, B} \<le> 3"
     using matroid_ax_2
-    by (metis (no_types, hide_lams) dual_order.trans insert_commute subset_insertI)
+    by (metis (no_types, opaque_lifting) dual_order.trans insert_commute subset_insertI)
   obtain b where "rk {Q, B', b} = 2" and "rk {R, B, b} = 2"
     using f3 rk_ax_pasch 
     by blast
@@ -1007,7 +1007,7 @@ proof-
     by (metis Suc_1 Suc_eq_plus1 Suc_le_mono \<open>rk {P, Q, R} = 2\<close> add_Suc_right eval_nat_numeral(3))
   then have f4:"rk {Q, C', R, C} \<le> 3"
     using matroid_ax_2
-    by (metis (no_types, hide_lams) dual_order.trans insert_commute subset_insertI)
+    by (metis (no_types, opaque_lifting) dual_order.trans insert_commute subset_insertI)
   obtain c where "rk {Q, C', c} = 2" and "rk {R, C, c} = 2"
     using f4 rk_ax_pasch 
     by blast

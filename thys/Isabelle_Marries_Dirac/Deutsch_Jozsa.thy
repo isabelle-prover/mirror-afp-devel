@@ -772,7 +772,7 @@ next
     ultimately have "(U\<^sub>f * (\<psi>\<^sub>1 n)) $$ (i,j) = (1-f(i div 2))* 1/(sqrt 2)^(n+1) + (-f(i div 2))* 1/(sqrt 2)^(n+1)" by simp
     also have "... = ((1-f(i div 2))+-f(i div 2)) * 1/(sqrt 2)^(n+1)" 
       using add_divide_distrib 
-      by (metis (no_types, hide_lams) mult.right_neutral of_int_add of_int_of_nat_eq)
+      by (metis (no_types, opaque_lifting) mult.right_neutral of_int_add of_int_of_nat_eq)
     also have "... = \<psi>\<^sub>2 $$ (i,j)" 
       using a0 a1 a2 snd_rep_of_\<psi>\<^sub>2 by simp
     finally show "(U\<^sub>f * (\<psi>\<^sub>1 n)) $$ (i,j) = \<psi>\<^sub>2 $$ (i,j)" by simp
@@ -793,7 +793,7 @@ next
     ultimately have "(U\<^sub>f * (\<psi>\<^sub>1 n)) $$ (i,j) = (1-f(i div 2))* -1/(sqrt 2)^(n+1) +(f(i div 2))* 1/(sqrt 2)^(n+1)" 
       using of_real_add by simp
     also have "... = (-(1-f(i div 2)) + (f(i div 2))) * 1/(sqrt 2)^(n+1)" 
-      by (metis (no_types, hide_lams) mult.right_neutral add_divide_distrib mult_minus1_right 
+      by (metis (no_types, opaque_lifting) mult.right_neutral add_divide_distrib mult_minus1_right 
           of_int_add of_int_of_nat_eq)
     also have "... = (-1)^(f(i div 2)+1)/(sqrt 2)^(n+1)" 
        using a0 a1 a2 snd_rep_of_\<psi>\<^sub>2 by simp

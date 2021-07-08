@@ -57,7 +57,7 @@ lemma document_ptr_kinds_M_reads:
   using object_ptr_kinds_M_reads
   apply (simp add: reads_def object_ptr_kinds_M_defs document_ptr_kinds_M_defs 
     document_ptr_kinds_def preserved_def cong del: image_cong_simp)
-  apply (metis (mono_tags, hide_lams) object_ptr_kinds_preserved_small old.unit.exhaust preserved_def)
+  apply (metis (mono_tags, opaque_lifting) object_ptr_kinds_preserved_small old.unit.exhaust preserved_def)
   done
 
 global_interpretation l_dummy defines get_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t = "l_get_M.a_get_M get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t" .

@@ -275,7 +275,7 @@ proof -
     then have L: "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
       using abs_Gromov_completion_limit by auto
     have *: "v n = y" for n
-      using uv by (metis (mono_tags, hide_lams) Gromov_completion_rel_def Quotient3_Gromov_completion Quotient3_rep_abs abs_Gromov_completion_in_Gromov_boundary not_in_Gromov_boundary' rep_Gromov_completion_to_Gromov_completion)
+      using uv by (metis (mono_tags, opaque_lifting) Gromov_completion_rel_def Quotient3_Gromov_completion Quotient3_rep_abs abs_Gromov_completion_in_Gromov_boundary not_in_Gromov_boundary' rep_Gromov_completion_to_Gromov_completion)
     show "ereal (- (Busemann_function_at (abs_Gromov_completion u) y x / 2)) \<le> liminf (\<lambda>n. ereal (Gromov_product_at x (u n) (v n)))"
       unfolding uv(1)[symmetric] * using A[OF L] by simp
   qed

@@ -897,7 +897,7 @@ proof -
   also have "... \<le> (extended_Gromov_product_at e x t + deltaG(TYPE('a))) + deltaG(TYPE('a))"
     by (intro mono_intros)
   finally show ?thesis apply (auto simp add: algebra_simps)
-    by (metis (no_types, hide_lams) add.commute add.left_commute mult_2_right plus_ereal.simps(1))
+    by (metis (no_types, opaque_lifting) add.commute add.left_commute mult_2_right plus_ereal.simps(1))
 qed
 
 lemma extended_hyperb_ineq_4_points [mono_intros]:
@@ -2491,7 +2491,7 @@ proof -
     proof -
       obtain x1 where x1: "dist x x1 < e/2" "x1 \<in> range to_Gromov_completion"
         using to_Gromov_completion_range_dense \<open>e > 0\<close>
-        by (metis (no_types, hide_lams) UNIV_I closure_approachableD divide_pos_pos zero_less_numeral)
+        by (metis (no_types, opaque_lifting) UNIV_I closure_approachableD divide_pos_pos zero_less_numeral)
       then obtain z where z: "x1 = to_Gromov_completion z" by auto
       then obtain y where y: "y \<in> k" "dist (to_Gromov_completion y) (to_Gromov_completion z) \<le> e/2"
         using B by auto

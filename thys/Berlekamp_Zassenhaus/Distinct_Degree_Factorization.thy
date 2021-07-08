@@ -377,7 +377,7 @@ proof (rule ccontr)
         by (metis degree_0 dvd_eq_mod_eq_0 gcd_dvd1 gcd_dvd2 irr_f 
             irreducible\<^sub>dD(1) mod_poly_less nat_neq_iff x x3)
       show "degree (gcd f x) \<noteq> 0"
-        by (metis (no_types, hide_lams) g degree_mod_less' gcd.bottom_left_bottom gcd_eq_0_iff 
+        by (metis (no_types, opaque_lifting) g degree_mod_less' gcd.bottom_left_bottom gcd_eq_0_iff 
             gcd_left_idem gcd_mod_left gr_implies_not0 x)
     qed
     moreover have "gcd f x dvd f" by auto
@@ -902,7 +902,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
         by (auto simp: Let_def)
       from mon_v have mon_g: "monic ?g" by (metis deg_v degree_0 poly_gcd_monic)
       have ww: "?w = ?x ^ ?p ^ ?d mod v" unfolding w
-        by simp (metis (mono_tags, hide_lams) One_nat_def mult.commute power_Suc power_mod power_mult x_pow_n)
+        by simp (metis (mono_tags, opaque_lifting) One_nat_def mult.commute power_Suc power_mod power_mult x_pow_n)
       have gv: "?g dvd v" by auto
       hence gv': "v div ?g dvd v"
         by (metis dvd_def dvd_div_mult_self)

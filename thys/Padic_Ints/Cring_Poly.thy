@@ -57,7 +57,7 @@ lemma(in ring) ring_hom_a_inv:
   shows "h (\<ominus> b) =  \<ominus>\<^bsub>S\<^esub> h b"
 proof-
   have "h b \<oplus>\<^bsub>S\<^esub> h (\<ominus> b) = \<zero>\<^bsub>S\<^esub>"
-    by (metis (no_types, hide_lams) abelian_group.a_inv_closed assms(1) assms(2) assms(3) 
+    by (metis (no_types, opaque_lifting) abelian_group.a_inv_closed assms(1) assms(2) assms(3) 
         is_abelian_group local.ring_axioms r_neg ring_hom_add ring_hom_zero)        
   then show ?thesis 
     by (metis (no_types, lifting) abelian_group.minus_equality add.inv_closed assms(1) 
@@ -161,7 +161,7 @@ proof(rule ring_hom_memI)
       then have  "f (x \<oplus>\<^bsub>R\<^esub> y) = g ((h x) \<oplus>\<^bsub>S\<^esub> (h y))"
         using A(1) A(2) assms(4) ring_hom_add by fastforce
       then have  "f (x \<oplus>\<^bsub>R\<^esub> y) = g (h x) \<oplus>\<^bsub>T\<^esub> g (h y)"
-        by (metis (no_types, hide_lams) A(1) A(2) assms(4) assms(5) ring_hom_add ring_hom_closed)
+        by (metis (no_types, opaque_lifting) A(1) A(2) assms(4) assms(5) ring_hom_add ring_hom_closed)
       then show ?thesis
         by (simp add: A(1) A(2) assms(6))
     qed
@@ -3172,7 +3172,7 @@ lemma times_X_not_zero:
   assumes "p \<in> carrier P"
   assumes "p \<noteq> \<zero>\<^bsub>P\<^esub>"
   shows "(X \<otimes>\<^bsub>P\<^esub> p) \<noteq> \<zero>\<^bsub>P\<^esub>"
-  by (metis (no_types, hide_lams) lcf_monom(1) lcf_of_X_minus ltrm_of_X_minus P.inv_unique
+  by (metis (no_types, opaque_lifting) lcf_monom(1) lcf_of_X_minus ltrm_of_X_minus P.inv_unique
       P.r_null R.l_one R.one_closed UP_zero_closed X_closed zcf_def 
       zcf_zero_degree_zero assms(1) assms(2) cfs_closed cfs_zero cring_lcf_mult 
       deg_monom deg_nzero_nzero deg_ltrm degree_X degree_of_X_minus 
@@ -3739,7 +3739,7 @@ next
             unfolding X_poly_def 
             using P_def cring_monom_degree by auto
           show ?thesis 
-            by (metis (no_types, hide_lams) F0 F1 ltrm_deg_0 P(2) P.r_null P_def R.l_null R.l_one 
+            by (metis (no_types, opaque_lifting) F0 F1 ltrm_deg_0 P(2) P.r_null P_def R.l_null R.l_one 
                 R.nat_pow_closed R.zero_closed X_poly_def assms cfs_closed 
                 add_0 deg_const deg_zero deg_ltrm 
                 monom_pow monom_zero zero_le)                                    
@@ -5762,7 +5762,7 @@ proof(rule poly_induct6[of p])
     have 1: "to_fun (one_over_poly (p \<oplus>\<^bsub>P\<^esub> monom P a n)) x = x[^]n \<otimes> (a \<otimes> inv x [^]n \<oplus> to_fun p (inv x))"
     proof-
       have "x[^]n \<otimes> a \<otimes> inv x [^]n = a"
-        by (metis (no_types, hide_lams) A(1) R.Units_inv_closed R.Units_r_inv R.m_assoc 
+        by (metis (no_types, opaque_lifting) A(1) R.Units_inv_closed R.Units_r_inv R.m_assoc 
             R.m_comm R.nat_pow_closed R.nat_pow_distrib R.nat_pow_one R.r_one assms(2) assms(3))
       thus ?thesis 
         using A R.ring_simprules(23)[of _ _  "x[^]n"] 0 R.m_assoc assms(2) assms(3) to_fun_closed 

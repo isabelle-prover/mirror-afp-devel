@@ -33,7 +33,7 @@ lemma in_minus_pairs [simp]: "p \<in> A -\<^sub>p B \<longleftrightarrow> (p \<i
   by (metis Diff_iff in_pair_def minus_pairs_def)
 
 lemma in_pair_Int_pairs [simp]: "p \<in>\<^sub>p A \<inter>\<^sub>p B \<longleftrightarrow> (p \<in>\<^sub>p A \<and> p \<in>\<^sub>p B)"
-  by (metis (no_types, hide_lams) Int_iff Int_pairs_def in_pair_alt in_pair_def old.prod.exhaust swap_simp)
+  by (metis (no_types, opaque_lifting) Int_iff Int_pairs_def in_pair_alt in_pair_def old.prod.exhaust swap_simp)
 
 lemma in_pair_Un [simp]: "p \<in>\<^sub>p A \<union> B \<longleftrightarrow> (p \<in>\<^sub>p A \<or> p \<in>\<^sub>p B)"
   by (metis (mono_tags, lifting) UnE UnI1 UnI2 image_Un in_pair_def)

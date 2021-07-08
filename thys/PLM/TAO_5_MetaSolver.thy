@@ -527,7 +527,7 @@ text\<open>\label{TAO_MetaSolver_Identity_TwoPlaceRelation}\<close>
       hence "a u s w = b u s w" by auto
       hence "(eval\<Pi>\<^sub>2 F (\<nu>\<upsilon> x) u s w) = (eval\<Pi>\<^sub>2 G (\<nu>\<upsilon> x) u s w)"
         unfolding a_def b_def
-        by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
+        by (metis (no_types, opaque_lifting) \<nu>\<upsilon>_surj surj_def)
       hence "(eval\<Pi>\<^sub>2 F v u s w) = (eval\<Pi>\<^sub>2 G v u s w)"
         unfolding x_def by auto
     }
@@ -568,7 +568,7 @@ text\<open>\label{TAO_MetaSolver_Identity_ThreePlaceRelation}\<close>
       hence "a u s w = b u s w" by auto
       hence "(eval\<Pi>\<^sub>3 F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) u s w) = (eval\<Pi>\<^sub>3 G (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) u s w)"
         unfolding a_def b_def
-        by (metis (no_types, hide_lams) \<nu>\<upsilon>_surj surj_def)
+        by (metis (no_types, opaque_lifting) \<nu>\<upsilon>_surj surj_def)
       hence "(eval\<Pi>\<^sub>3 F v r u s w) = (eval\<Pi>\<^sub>3 G v r u s w)"
         unfolding x_def y_def by auto
     }

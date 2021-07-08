@@ -704,7 +704,7 @@ proof -
       assume "x \<in> ?X k"
       thus "mem\<^sub>1 x = mem\<^sub>1' x"
         using a b c change_respecting_doesnt_modify domh 
-        by (metis (erased, hide_lams) Un_upper1 contra_subsetD)
+        by (metis (erased, opaque_lifting) Un_upper1 contra_subsetD)
     next
       fix x
       assume "x \<in> ?X k"
@@ -726,7 +726,7 @@ proof -
       assume "x \<in> ?X k"
       thus "dma mem\<^sub>1 x = dma mem\<^sub>1' x"
         using a b c change_respecting_doesnt_modify_dma domh 
-        by (metis (erased, hide_lams))      
+        by (metis (erased, opaque_lifting))      
     qed
 
     define mems'_k where "mems'_k x =
@@ -1292,7 +1292,7 @@ proof -
                    ?mems\<^sub>2'i [\<mapsto> \<sigma>] x \<noteq> ?mems\<^sub>2i [\<mapsto> \<sigma>'] x;
                    x \<notin> ?X' i \<rbrakk> \<Longrightarrow>
                  mem\<^sub>1' x = mem\<^sub>2' x"
-        by (metis (erased, hide_lams) \<open>i \<noteq> k\<close> compat_different_vars i_le len_unchanged mems'_i_2 o_downgrade)
+        by (metis (erased, opaque_lifting) \<open>i \<noteq> k\<close> compat_different_vars i_le len_unchanged mems'_i_2 o_downgrade)
 
         have q: "\<And> x. \<lbrakk> dma mem\<^sub>1' x = Low;
                    ?mems\<^sub>1'i [\<mapsto> \<sigma>] x \<noteq> ?mems\<^sub>1i [\<mapsto> \<sigma>'] x \<or>
@@ -1870,7 +1870,7 @@ proof -
       assume "i = k"
       thus ?thesis
         using i_le ev loc_sound
-        by (metis (hide_lams, no_types) locally_sound_modes_invariant nth_list_update surj_pair)
+        by (metis (opaque_lifting, no_types) locally_sound_modes_invariant nth_list_update surj_pair)
     next
       assume "i \<noteq> k"
       hence "cms' ! i = cms ! i"

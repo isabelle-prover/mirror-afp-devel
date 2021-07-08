@@ -215,7 +215,7 @@ lemma prob_index_0_alice:
 proof
   show "prob0 3 (alice \<phi>) 0 = 1/2"
     using alice_result assms prob0_def alice_state
-    apply auto by (metis (no_types, hide_lams) One_nat_def phi_vec_length four_x_squared mult.commute 
+    apply auto by (metis (no_types, opaque_lifting) One_nat_def phi_vec_length four_x_squared mult.commute 
 nonzero_mult_div_cancel_right times_divide_eq_right zero_neq_numeral)
   then show"prob1 3 (alice \<phi>) 0 = 1/2"
     using prob_sum_is_one[of "3" "alice \<phi>" "0"] alice_state[of "\<phi>"] assms by linarith

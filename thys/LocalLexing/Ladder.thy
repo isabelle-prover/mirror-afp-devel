@@ -2733,7 +2733,7 @@ proof -
        (ladder_\<gamma> \<alpha> D L 1)"
        by blast
     have "\<beta> = Derive (ladder_\<alpha> \<alpha> D L 1) [D ! n]"
-      by (metis (no_types, hide_lams) LeftDerivationIntrosAt_def LeftDerives1_Derive \<beta> 
+      by (metis (no_types, opaque_lifting) LeftDerivationIntrosAt_def LeftDerives1_Derive \<beta> 
         cancel_comm_monoid_add_class.diff_cancel introsAt_L_1 n prod.collapse) 
     then have \<beta>_def: "\<beta> = ladder_stepdown_\<alpha>_0 \<alpha> D L"
       proof -
@@ -2820,7 +2820,7 @@ proof -
         apply (simp add: ladder_stepdown_n[OF helpers] index_lower_bound)
         apply (subst drop_at_shift)
         using index_lower_bound
-        apply (metis (no_types, hide_lams) L' LeftDerivationLadder_def One_nat_def Suc_eq_plus1 
+        apply (metis (no_types, opaque_lifting) L' LeftDerivationLadder_def One_nat_def Suc_eq_plus1 
           add.commute diff_Suc_1 index_upper_bound is_ladder_def ladder_stepdown_diff_def 
           ladder_stepdown_length ldl le_add_diff_inverse2 length_L less_or_eq_imp_le n 
           nat.simps(3) neq0_conv not_less not_less_eq_eq) 

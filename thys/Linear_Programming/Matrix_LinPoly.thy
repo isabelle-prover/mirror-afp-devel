@@ -495,7 +495,7 @@ proof -
   also have "... = (\<Sum>j\<in> vars ?p. coeff ?p j * x$j)"
     using eval_poly_with_sum by blast
   also have "... = (\<Sum>j\<in> vars ?p. coeff ?p j * (\<lambda>i. (if i < dim_vec x then x$i else 0)) j)"
-    by (metis (full_types, hide_lams) \<open>\<And>j. Abstract_Linear_Poly.coeff (matrix_to_lpolies A ! i) j \<noteq> 0 \<Longrightarrow> j < dim_vec x\<close> mult.commute mult_zero_right)
+    by (metis (full_types, opaque_lifting) \<open>\<And>j. Abstract_Linear_Poly.coeff (matrix_to_lpolies A ! i) j \<noteq> 0 \<Longrightarrow> j < dim_vec x\<close> mult.commute mult_zero_right)
   also have "... = (?p \<lbrace> (\<lambda>i. (if i < dim_vec x then x$i else 0)) \<rbrace>)"
     using eval_poly_with_sum by presburger
   finally show ?thesis

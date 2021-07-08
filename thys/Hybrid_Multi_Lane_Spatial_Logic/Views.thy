@@ -133,11 +133,11 @@ qed
   
 lemma horizontal_chop_empty_right :"\<forall>v. \<exists> u. (v=v\<parallel>u)" 
   using hchop_def real_int.chop_singleton_right 
-  by (metis (no_types, hide_lams) select_convs) 
+  by (metis (no_types, opaque_lifting) select_convs) 
     
 lemma horizontal_chop_empty_left :"\<forall>v. \<exists>u. (v=u\<parallel>v)" 
   using hchop_def real_int.chop_singleton_left 
-  by (metis (no_types, hide_lams) select_convs) 
+  by (metis (no_types, opaque_lifting) select_convs) 
     
 lemma horizontal_chop_non_empty:
   "\<parallel>ext v\<parallel> > 0 \<longrightarrow> (\<exists>u w. (v=u\<parallel>w) \<and> \<parallel>ext u\<parallel> > 0 \<and> \<parallel>ext w\<parallel>>0)"
@@ -229,16 +229,16 @@ lemma horizontal_chop_own_trans:"(v=u\<parallel>w) \<longrightarrow> own u = own
     
 lemma vertical_chop1:"\<forall>v. \<exists> u w. (v=u--w)"
   using vchop_def  nat_int.chop_always_possible
-  by (metis (no_types, hide_lams) select_convs)
+  by (metis (no_types, opaque_lifting) select_convs)
     
 lemma vertical_chop_empty_down:"\<forall>v.\<exists> u.(v=v--u)"
   using vchop_def nat_int.chop_empty_right 
-  by (metis (no_types, hide_lams) select_convs)
+  by (metis (no_types, opaque_lifting) select_convs)
     
     
 lemma vertical_chop_empty_up:"\<forall>v.\<exists>u.(v=u--v)"
   using vchop_def nat_int.chop_empty_left 
-  by (metis (no_types, hide_lams) select_convs)
+  by (metis (no_types, opaque_lifting) select_convs)
     
     
 lemma vertical_chop_assoc1:
@@ -566,22 +566,22 @@ lemma switch_triangle:"(v=c>u) \<and> (v=d>w) \<longrightarrow> (u=d>w)"
 lemma switch_hchop1:
   "(v=v1\<parallel>v2) \<and> (v=c>v') \<longrightarrow>
      (\<exists> v1' v2'. (v1 =c> v1') \<and> (v2 =c> v2') \<and> (v'=v1'\<parallel>v2'))" 
-  by (metis (no_types, hide_lams) select_convs view.hchop_def view.switch_def)
+  by (metis (no_types, opaque_lifting) select_convs view.hchop_def view.switch_def)
     
 lemma switch_hchop2:
   "(v'=v1'\<parallel>v2') \<and> (v=c>v') \<longrightarrow> 
       (\<exists> v1 v2. (v1 =c> v1') \<and> (v2 =c> v2') \<and> (v=v1\<parallel>v2))"
-  by (metis (no_types, hide_lams) select_convs view.hchop_def view.switch_def)
+  by (metis (no_types, opaque_lifting) select_convs view.hchop_def view.switch_def)
     
 lemma switch_vchop1:
   "(v=v1--v2) \<and> (v=c>v') \<longrightarrow> 
       (\<exists> v1' v2'. (v1 =c> v1') \<and> (v2 =c> v2') \<and> (v'=v1'--v2'))"
-  by (metis (no_types, hide_lams) select_convs view.vchop_def view.switch_def)
+  by (metis (no_types, opaque_lifting) select_convs view.vchop_def view.switch_def)
     
 lemma switch_vchop2:
   "(v'=v1'--v2') \<and> (v=c>v') \<longrightarrow>
        (\<exists> v1 v2. (v1 =c> v1') \<and> (v2 =c> v2') \<and> (v=v1--v2))"
-  by (metis (no_types, hide_lams) select_convs view.vchop_def view.switch_def)
+  by (metis (no_types, opaque_lifting) select_convs view.vchop_def view.switch_def)
     
 lemma switch_leq:"u' \<le> u \<and> (v=c>u) \<longrightarrow> (\<exists>v'. (v'=c>u') \<and> v' \<le> v)" 
 proof 

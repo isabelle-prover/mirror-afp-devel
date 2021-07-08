@@ -151,7 +151,7 @@ lemma cnf_BigAnd: "cnf (\<^bold>\<And>ls) = (\<Union>x \<in> set ls. cnf x)"
   by(induction ls; simp)
 
 lemma cnf_BigOr: "cnf (\<^bold>\<Or> (x @ y)) =  {f \<union> g |f g. f \<in> cnf (\<^bold>\<Or>x) \<and> g \<in> cnf (\<^bold>\<Or>y)}"
-  by(induction x arbitrary: y; simp) (metis (no_types, hide_lams) sup.assoc)
+  by(induction x arbitrary: y; simp) (metis (no_types, opaque_lifting) sup.assoc)
 
 lemma cnf_cnf: "is_nnf F \<Longrightarrow> cnf (cnf_form_of F) = cnf F"
   by(induction F rule: cnf.induct; 

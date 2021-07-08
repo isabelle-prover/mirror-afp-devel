@@ -582,7 +582,7 @@ next
       by auto
     from this idx(2) have "((idn, S), Tv fresh_idn S) \<in> set
       (zip (map fst inst) (map2 Tv fresh_idns (map (snd \<circ> fst) inst)))"
-      by (metis (no_types, hide_lams) "2.prems"(1) length_map map_fst_zip map_map map_snd_zip nth_mem)
+      by (metis (no_types, opaque_lifting) "2.prems"(1) length_map map_fst_zip map_map map_snd_zip nth_mem)
     from this have 1: "(lookup (\<lambda>x. x = (idn, S)) 
       (zip (map fst inst) (map2 Tv fresh_idns (map (snd \<circ> fst) inst)))) = Some (Tv fresh_idn S)"
       by (simp add: "2.prems"(1) "2.prems"(3) lookup_present_eq_key'')
@@ -745,7 +745,7 @@ using assms proof (induction t arbitrary: fresh_idns insts)
       by auto
     from this idx(2) have "((idn, ty), Fv fresh_idn ty) \<in> set
       (zip (map fst insts) (map2 Fv fresh_idns (map (snd \<circ> fst) insts)))"
-      by (metis (no_types, hide_lams) "Fv.prems"(1) length_map map_fst_zip map_map map_snd_zip nth_mem)
+      by (metis (no_types, opaque_lifting) "Fv.prems"(1) length_map map_fst_zip map_map map_snd_zip nth_mem)
     from this have 1: "(lookup (\<lambda>x. x = (idn, ty)) 
       (zip (map fst insts) (map2 Fv fresh_idns (map (snd \<circ> fst) insts)))) = Some (Fv fresh_idn ty)"
       by (simp add: "Fv.prems"(1) "Fv.prems"(3) lookup_present_eq_key'')

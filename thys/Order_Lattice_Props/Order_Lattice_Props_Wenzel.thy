@@ -265,7 +265,7 @@ lemma downset_set_upset_set_dual: "(`) \<partial> \<circ> \<Down> = \<Up> \<circ
   also have "... = {\<partial> y |y. \<exists>x \<in> X. \<partial> x \<le> \<partial> y}"
     by (meson dual_anti_iff)
   also have "... = {y. \<exists>x \<in> \<partial> ` X. x \<le> y}"
-    by (metis (mono_tags, hide_lams) dual.exhaust image_iff)
+    by (metis (mono_tags, opaque_lifting) dual.exhaust image_iff)
   finally have "((`) \<partial> \<circ> \<Down>) X = (\<Up> \<circ> (`) \<partial>) X"
     by (simp add: upset_set_def)}
   thus ?thesis

@@ -112,12 +112,12 @@ lemma inv_conserv_at_ground[bb_real_arith]:
 proof-
   from pos have "g * \<tau>\<^sup>2  + 2 * v * \<tau> + 2 * x = 0" by auto
   then have "g\<^sup>2 * \<tau>\<^sup>2  + 2 * g * v * \<tau> + 2 * g * x = 0"
-    by (metis (mono_tags, hide_lams) Groups.mult_ac(1,3) mult_zero_right
+    by (metis (mono_tags, opaque_lifting) Groups.mult_ac(1,3) mult_zero_right
         monoid_mult_class.power2_eq_square semiring_class.distrib_left)
   hence "g\<^sup>2 * \<tau>\<^sup>2 + 2 * g * v * \<tau> + v\<^sup>2 + 2 * g * h = 0"
     using invar by (simp add: monoid_mult_class.power2_eq_square)
   hence obs: "(g * \<tau> + v)\<^sup>2 + 2 * g * h = 0"
-    apply(subst power2_sum) by (metis (no_types, hide_lams) Groups.add_ac(2, 3)
+    apply(subst power2_sum) by (metis (no_types, opaque_lifting) Groups.add_ac(2, 3)
         Groups.mult_ac(2, 3) monoid_mult_class.power2_eq_square nat_distrib(2))
   thus "2 * g * h + (g * \<tau> * (g * \<tau> + v) + v * (g * \<tau> + v)) = 0"
     by (simp add: monoid_mult_class.power2_eq_square)

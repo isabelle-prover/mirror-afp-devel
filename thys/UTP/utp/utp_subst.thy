@@ -299,21 +299,21 @@ lemma subst_unrest_3 [usubst]:
   assumes "x \<sharp> P" "x \<bowtie> y" "x \<bowtie> z"
   shows "\<sigma>(x \<mapsto>\<^sub>s u, y \<mapsto>\<^sub>s v, z \<mapsto>\<^sub>s w) \<dagger> P = \<sigma>(y \<mapsto>\<^sub>s v, z \<mapsto>\<^sub>s w) \<dagger> P"
   using assms
-  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, hide_lams) lens_indep_comm)
+  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, opaque_lifting) lens_indep_comm)
 
 lemma subst_unrest_4 [usubst]: 
   fixes P :: "('a, '\<alpha>) uexpr"
   assumes "x \<sharp> P" "x \<bowtie> y" "x \<bowtie> z" "x \<bowtie> u"
   shows "\<sigma>(x \<mapsto>\<^sub>s e, y \<mapsto>\<^sub>s f, z \<mapsto>\<^sub>s g, u \<mapsto>\<^sub>s h) \<dagger> P = \<sigma>(y \<mapsto>\<^sub>s f, z \<mapsto>\<^sub>s g, u \<mapsto>\<^sub>s h) \<dagger> P"
   using assms
-  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, hide_lams) lens_indep_comm)
+  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, opaque_lifting) lens_indep_comm)
 
 lemma subst_unrest_5 [usubst]: 
   fixes P :: "('a, '\<alpha>) uexpr"
   assumes "x \<sharp> P" "x \<bowtie> y" "x \<bowtie> z" "x \<bowtie> u" "x \<bowtie> v"
   shows "\<sigma>(x \<mapsto>\<^sub>s e, y \<mapsto>\<^sub>s f, z \<mapsto>\<^sub>s g, u \<mapsto>\<^sub>s h, v \<mapsto>\<^sub>s i) \<dagger> P = \<sigma>(y \<mapsto>\<^sub>s f, z \<mapsto>\<^sub>s g, u \<mapsto>\<^sub>s h, v \<mapsto>\<^sub>s i) \<dagger> P"
   using assms
-  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, hide_lams) lens_indep_comm)
+  by (simp add: subst_upd_uvar_def, transfer, auto, metis (no_types, opaque_lifting) lens_indep_comm)
 
 lemma subst_compose_upd [usubst]: "x \<sharp> \<sigma> \<Longrightarrow> \<sigma> \<circ> \<rho>(x \<mapsto>\<^sub>s v) = (\<sigma> \<circ> \<rho>)(x \<mapsto>\<^sub>s v) "
   by (simp add: subst_upd_uvar_def, transfer, auto simp add: unrest_usubst_def)
@@ -465,12 +465,12 @@ lemma usubst_cond_upd_1 [usubst]:
 lemma usubst_cond_upd_2 [usubst]:
   "\<lbrakk> vwb_lens x; x \<sharp> \<rho> \<rbrakk> \<Longrightarrow> \<sigma>(x \<mapsto>\<^sub>s u) \<triangleleft> b \<triangleright>\<^sub>s \<rho> = (\<sigma> \<triangleleft> b \<triangleright>\<^sub>s \<rho>)(x \<mapsto>\<^sub>s u \<triangleleft> b \<triangleright> &x)"
   by (simp add: cond_subst_def subst_upd_uvar_def unrest_usubst_def uexpr_defs, transfer)
-     (metis (full_types, hide_lams) id_apply pr_var_def subst_upd_uvar_def usubst_upd_pr_var_id var.rep_eq)
+     (metis (full_types, opaque_lifting) id_apply pr_var_def subst_upd_uvar_def usubst_upd_pr_var_id var.rep_eq)
  
 lemma usubst_cond_upd_3 [usubst]:
   "\<lbrakk> vwb_lens x; x \<sharp> \<sigma> \<rbrakk> \<Longrightarrow> \<sigma> \<triangleleft> b \<triangleright>\<^sub>s \<rho>(x \<mapsto>\<^sub>s v) = (\<sigma> \<triangleleft> b \<triangleright>\<^sub>s \<rho>)(x \<mapsto>\<^sub>s &x \<triangleleft> b \<triangleright> v)"
   by (simp add: cond_subst_def subst_upd_uvar_def unrest_usubst_def uexpr_defs, transfer)
-     (metis (full_types, hide_lams) id_apply pr_var_def subst_upd_uvar_def usubst_upd_pr_var_id var.rep_eq)
+     (metis (full_types, opaque_lifting) id_apply pr_var_def subst_upd_uvar_def usubst_upd_pr_var_id var.rep_eq)
     
 lemma usubst_cond_id [usubst]:
   "\<sigma> \<triangleleft> b \<triangleright>\<^sub>s \<sigma> = \<sigma>"

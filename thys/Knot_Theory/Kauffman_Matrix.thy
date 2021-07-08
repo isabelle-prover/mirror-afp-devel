@@ -165,19 +165,19 @@ where
 lemma inverse1:"rat_poly_times A B = 1"
  using non_zero  One_fract_def monoid_mult_class.mult.right_neutral 
        mult_fract mult_fract_cancel  var_def1 var_def2
- by (metis (hide_lams, no_types))
+ by (metis (opaque_lifting, no_types))
 
 lemma inverse2:"rat_poly_times B A = 1"
  using  One_fract_def monoid_mult_class.mult.right_neutral mult_fract 
         mult_fract_cancel non_zero var_def1 var_def2
- by (metis (hide_lams, no_types))
+ by (metis (opaque_lifting, no_types))
 
 lemma B_non_zero:"B \<noteq> 0"
  using A_non_zero mult_inv_non_zero inverse1 
        divide_fract div_0 fract_collapse(2) 
        monoid_mult_class.mult.left_neutral 
        mult_fract_cancel non_zero var_def2 zero_neq_one
- by (metis (hide_lams, mono_tags))
+ by (metis (opaque_lifting, mono_tags))
 
 lemma "rat_poly_times p (q + r) 
                  = (rat_poly_times p q) + (rat_poly_times p r)"
@@ -1628,7 +1628,7 @@ proof(induction n)
                        \<and>((j mod (2^k)) = (i mod (2^k))))
                         then 1 
                          else 0)))"
-               by (metis (hide_lams, no_types) "6" "7")
+               by (metis (opaque_lifting, no_types) "6" "7")
     then have 20:"(\<forall>i. \<forall>j. (i <(2^(k+1))) \<and> (j < (2^(k+1))) \<longrightarrow>
                          ((rat_poly.Tensor (mat1 2)  (mat1 (2^k))!j!i)  = (if  (j = i)
                                                                                 then 1 
@@ -1714,7 +1714,7 @@ proof-
  ultimately have "rat_poly.matrix_match A1 A2 B1 [[1]]"
         unfolding rat_poly.matrix_match_def 
         using assms weak_matrix_match_def "1" blockmat.simps(1)
-              matrix_blockmat by (metis (hide_lams, no_types))
+              matrix_blockmat by (metis (opaque_lifting, no_types))
  then have "((rat_poly.matrix_mult A1  A2)\<otimes>(rat_poly.matrix_mult B1  [[1]])) 
                = (rat_poly.matrix_mult (A1 \<otimes> B1) (A2 \<otimes> [[1]]))" 
         using rat_poly.distributivity by auto
@@ -1754,7 +1754,7 @@ proof-
         unfolding rat_poly.matrix_match_def  
         using assms weak_matrix_match2_def  
              "1" blockmat.simps(1) matrix_blockmat
-        by (metis (hide_lams, no_types))
+        by (metis (opaque_lifting, no_types))
  then have "((rat_poly.matrix_mult A1  [[1]])\<otimes>(rat_poly.matrix_mult B1 B2)) 
                = (rat_poly.matrix_mult (A1 \<otimes> B1) ([[1]] \<otimes> B2))" 
         using rat_poly.distributivity by auto

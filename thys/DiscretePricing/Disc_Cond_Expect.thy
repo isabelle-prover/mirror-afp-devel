@@ -750,7 +750,7 @@ proof
     qed
     let ?ind = "(indicator (Y -` {Y w} \<inter> space M))::'a\<Rightarrow>real"
     have "integral\<^sup>L M (\<lambda>y. (X y) * (indicator (countable_preimages B Y i \<inter> space M)) y) = integral\<^sup>L M (\<lambda>y. X y * ?ind y)"
-      by (metis (no_types, hide_lams) \<open>Y w = from_nat_into B i\<close> \<open>\<And>thesis. (\<And>w. w \<in> countable_preimages B Y i \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> countable_preimages_def empty_iff)
+      by (metis (no_types, opaque_lifting) \<open>Y w = from_nat_into B i\<close> \<open>\<And>thesis. (\<And>w. w \<in> countable_preimages B Y i \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> countable_preimages_def empty_iff)
     also have "... =
       expl_cond_expect M Y X w * measure M (Y -` {Y w} \<inter> space M)"  using dce_prod[of N Y X]
        by (metis (no_types, lifting) \<open>Y w \<in> B\<close> assms subsetCE)
@@ -780,7 +780,7 @@ proof
         by (meson Bochner_Integration.integral_cong)
     qed
     also have "... = integral\<^sup>L M (\<lambda>y. expl_cond_expect M Y X y * indicator (countable_preimages B Y i \<inter> space M) y)"
-      by (metis (no_types, hide_lams) \<open>Y w = from_nat_into B i\<close> \<open>\<And>thesis. (\<And>w. w \<in> countable_preimages B Y i \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> countable_preimages_def empty_iff)
+      by (metis (no_types, opaque_lifting) \<open>Y w = from_nat_into B i\<close> \<open>\<And>thesis. (\<And>w. w \<in> countable_preimages B Y i \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> countable_preimages_def empty_iff)
     finally show ?thesis .
   qed
 qed

@@ -306,7 +306,7 @@ proof-
       getFrN_var[of "map snd txs" "t # map fst txs" "[]" _ "length txs"]
       getFrN_length[of "map snd txs" "t # map fst txs" "[]" "length txs"]
       getFrN_distinct[of "map snd txs" "t # map fst txs" "[]" "length txs"]
-    by auto (metis (no_types, hide_lams) IntI empty_iff image_iff old.prod.inject surjective_pairing)
+    by auto (metis (no_types, opaque_lifting) IntI empty_iff image_iff old.prod.inject surjective_pairing)
   show ?thesis using assms us_facts unfolding psubstT_def
     by (force simp: Let_def us[symmetric] dest: set_zip_leftD set_zip_rightD intro!: rawpsubstT)
 qed
@@ -551,7 +551,7 @@ proof-
     Fvars \<phi> - snd ` set txs \<union>
     \<Union>{if x \<in> Fvars \<phi> then {u} else {} |u x. u \<in> var \<and> (Var u, x) \<in> set (zip (map Var us) (map snd txs))}"
     (is "\<dots> = ?R")
-    using FvarsT_Var by (metis (no_types, hide_lams) 00)
+    using FvarsT_Var by (metis (no_types, opaque_lifting) 00)
   finally have 0: "Fvars \<chi> = ?R" .
   have 1: "Fvars (rawpsubst \<chi> (zip (map fst txs) us)) =
         (Fvars \<chi> - set us) \<union>

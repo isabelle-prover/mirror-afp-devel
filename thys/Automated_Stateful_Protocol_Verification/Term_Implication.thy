@@ -620,7 +620,7 @@ proof -
 
     have "take n S@drop n T = S1@T ! n#T2" "take (Suc n) S@drop (Suc n) T = S1@S ! n#T2"
       using n T S append_eq_conv_conj
-      by (metis, metis (no_types, hide_lams) Cons_nth_drop_Suc append.assoc append_Cons
+      by (metis, metis (no_types, opaque_lifting) Cons_nth_drop_Suc append.assoc append_Cons
                                              append_Nil take_Suc_conv_app_nth) 
     moreover have "(T ! n, S ! n) \<in> timpl_closure' c" using IH Suc.prems by simp
     ultimately show ?case

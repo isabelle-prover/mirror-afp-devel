@@ -249,7 +249,7 @@ text\<open>
       show "S = Fail"
         proof (rule antisym)
           show "S \<le> Fail"
-            by (metis (hide_lams, no_types) A B bot.extremum_unique compl_le_compl_iff fail_def le_fun_def monoD top_greatest)
+            by (metis (opaque_lifting, no_types) A B bot.extremum_unique compl_le_compl_iff fail_def le_fun_def monoD top_greatest)
           next
             show "Fail \<le> S"
               by (metis Fail_def bot.extremum)

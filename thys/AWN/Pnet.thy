@@ -391,7 +391,7 @@ lemma pnet_tau_single_node [elim]:
     assume "s \<in> reachable (pnet np \<langle>ii; R\<^sub>i\<rangle>) TT"
        and "(s, \<tau>, s') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"
     from this obtain p R p' R' where "s = NodeS ii p R" and "s' = NodeS ii p' R'"
-      by (metis (hide_lams, no_types) TT_True net_node_reachable_is_node
+      by (metis (opaque_lifting, no_types) TT_True net_node_reachable_is_node
                                       reachable_step)
     hence "net_ips s = {ii}"
       and "net_ips s' = {ii}" by simp_all
@@ -445,7 +445,7 @@ lemma pnet_tau_single_node [elim]:
         assume "j \<noteq> i"
         with * have "netmap s1' j = netmap s1 j" by simp
         thus "(netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
-          by (metis (hide_lams, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
+          by (metis (opaque_lifting, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
       qed
       ultimately show ?thesis using \<open>i\<in>dom(netmap s1)\<close> subs subs'
         by (auto simp add: net_ips_is_dom_netmap)
@@ -473,7 +473,7 @@ lemma pnet_tau_single_node [elim]:
         assume "j \<noteq> i"
         with * have "netmap s2' j = netmap s2 j" by simp
         thus "(netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
-          by (metis (hide_lams, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
+          by (metis (opaque_lifting, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
       qed
       ultimately show ?thesis using \<open>i\<in>dom(netmap s2)\<close> subs subs'
         by (clarsimp simp add: net_ips_is_dom_netmap)
@@ -492,7 +492,7 @@ lemma pnet_deliver_single_node [elim]:
     assume sr: "s \<in> reachable (pnet np \<langle>ii; R\<^sub>i\<rangle>) TT"
        and tr: "(s, i:deliver(d), s') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"
     from this obtain p R p' R' where "s = NodeS ii p R" and "s' = NodeS ii p' R'"
-      by (metis (hide_lams, no_types) TT_True net_node_reachable_is_node
+      by (metis (opaque_lifting, no_types) TT_True net_node_reachable_is_node
                                       reachable_step)
     hence "net_ips s = {ii}"
       and "net_ips s' = {ii}" by simp_all
@@ -548,7 +548,7 @@ lemma pnet_deliver_single_node [elim]:
         assume "j \<noteq> i"
         with * have "netmap s1' j = netmap s1 j" by simp
         thus "(netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
-          by (metis (hide_lams, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
+          by (metis (opaque_lifting, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
       qed
       ultimately show ?thesis using \<open>i\<in>net_ips s1\<close> subs subs' by auto
     next
@@ -576,7 +576,7 @@ lemma pnet_deliver_single_node [elim]:
         assume "j \<noteq> i"
         with * have "netmap s2' j = netmap s2 j" by simp
         thus "(netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
-          by (metis (hide_lams, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
+          by (metis (opaque_lifting, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
       qed
       ultimately show ?thesis using \<open>i\<in>net_ips s2\<close> subs subs' by auto
     qed simp_all

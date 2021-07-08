@@ -111,8 +111,8 @@ lemma diamond_cube_valid_two_cube:
   shows "valid_two_cube (diamond_cube)"
   apply (auto simp add: valid_two_cube_def boundary_def horizontal_boundary_def vertical_boundary_def diamond_cube_def 
       diamond_x_def card_insert_if)
-   apply (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_2 mult_zero_right order_less_irrefl prod.inject field_sum_of_halves)
-  apply (metis (no_types, hide_lams) add_diff_cancel_right' d_gt_0 mult_cancel_left mult_zero_right order_less_irrefl prod.inject)
+   apply (metis (no_types, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_2 mult_zero_right order_less_irrefl prod.inject field_sum_of_halves)
+  apply (metis (no_types, opaque_lifting) add_diff_cancel_right' d_gt_0 mult_cancel_left mult_zero_right order_less_irrefl prod.inject)
   done
 
 lemma rot_diamond_cube_boundary_valid:
@@ -228,7 +228,7 @@ lemma diamond_top_left_edge_neq_diamond_top_right_edge:
   apply (simp add: diamond_top_left_edge_def diamond_top_right_edge_def diamond_x_def diamond_y_def)
     using d_gt_0
     apply (auto simp add: algebra_simps divide_simps)
-    by (metis (no_types, hide_lams) diff_zero div_0 divide_divide_eq_right order_less_irrefl prod.inject field_sum_of_halves)
+    by (metis (no_types, opaque_lifting) diff_zero div_0 divide_divide_eq_right order_less_irrefl prod.inject field_sum_of_halves)
 
 lemma neqs1:
   shows "(\<lambda>x. (diamond_x x, diamond_y (diamond_x x))) \<noteq> (\<lambda>x. (diamond_x x, - diamond_y (diamond_x x)))"
@@ -272,8 +272,8 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
     proof (intro exI conjI)
       have 1: "(boundary (diamond_cube)) - ?pj = {diamond_top_edges, diamond_bot_edges}"
         apply (auto simp add: diamond_cube_boundary_explicit diamond_x_def diamond_top_edges_def diamond_bot_edges_def)
-         apply (metis (no_types, hide_lams) abs_zero cancel_comm_monoid_add_class.diff_cancel diamond_x_def diamond_y_def diff_0 minus_diff_eq mult.commute mult_zero_right prod.inject neqs2)
-        by (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff linorder_not_le mult.commute mult_zero_right order_refl prod.sel(1) zero_neq_numeral)
+         apply (metis (no_types, opaque_lifting) abs_zero cancel_comm_monoid_add_class.diff_cancel diamond_x_def diamond_y_def diff_0 minus_diff_eq mult.commute mult_zero_right prod.inject neqs2)
+        by (metis (no_types, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff linorder_not_le mult.commute mult_zero_right order_refl prod.sel(1) zero_neq_numeral)
       then show "\<Union> (?f ` (boundary (diamond_cube) - ?pj)) = ?subdiv"
         by (auto simp add: diamond_top_edges_def diamond_bot_edges_def diamond_cube_boundary_to_subdiv_def)
       have "chain_subdiv_path (reversepath (\<lambda>x. (diamond_x x, diamond_y (diamond_x x))))
@@ -327,8 +327,8 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
       let ?f = "rot_diamond_cube_boundary_to_subdiv"
       have 1: "(vertical_boundary (rot_diamond_cube) - ?pi) = {diamond_left_edges, diamond_right_edges}"
         apply (auto simp add: rot_diamond_cube_vertical_boundary_explicit  diamond_left_edges_def diamond_right_edges_def)
-         apply (metis (no_types, hide_lams) add.inverse_inverse add_diff_cancel_right' diff_numeral_special(11) mult.left_neutral mult.right_neutral prod.inject neqs1(2) uminus_add_conv_diff)
-        by (metis (no_types, hide_lams) diff_0 mult.left_neutral mult_minus_left mult_zero_right prod.inject neqs1(2))
+         apply (metis (no_types, opaque_lifting) add.inverse_inverse add_diff_cancel_right' diff_numeral_special(11) mult.left_neutral mult.right_neutral prod.inject neqs1(2) uminus_add_conv_diff)
+        by (metis (no_types, opaque_lifting) diff_0 mult.left_neutral mult_minus_left mult_zero_right prod.inject neqs1(2))
       show "\<Union> (?f ` (vertical_boundary (rot_diamond_cube) - ?pi)) = ?subdiv"
         apply (simp add: rot_diamond_cube_boundary_to_subdiv_def 1 UNION_eq subpath_def)
         apply (auto simp add: set_eq_iff diamond_right_edges_def diamond_left_edges_def)

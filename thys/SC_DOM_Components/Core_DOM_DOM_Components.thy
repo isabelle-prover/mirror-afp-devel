@@ -220,7 +220,7 @@ proof -
 
   obtain root_ptr where root_ptr: "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root_ptr" and c: "h \<turnstile> to_tree_order root_ptr \<rightarrow>\<^sub>r c"
     using assms(4)
-    by (metis (no_types, hide_lams) bind_returns_result_E2 get_dom_component_def get_root_node_pure)
+    by (metis (no_types, opaque_lifting) bind_returns_result_E2 get_dom_component_def get_root_node_pure)
   then have "h \<turnstile> get_root_node (cast node_ptr) \<rightarrow>\<^sub>r root_ptr"
     using assms(1) assms(2) assms(3) assms(5) to_tree_order_same_root by blast
   then have "h \<turnstile> get_root_node parent \<rightarrow>\<^sub>r root_ptr"
@@ -305,7 +305,7 @@ lemma get_dom_component_to_tree_order:
   assumes "h \<turnstile> to_tree_order ptr' \<rightarrow>\<^sub>r to"
   assumes "ptr \<in> set to"
   shows "h \<turnstile> get_dom_component ptr' \<rightarrow>\<^sub>r c"
-  by (metis (no_types, hide_lams) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6)
+  by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6)
       get_dom_component_ok get_dom_component_subset get_dom_component_to_tree_order_subset
       is_OK_returns_result_E local.to_tree_order_ptr_in_result local.to_tree_order_ptrs_in_heap
       select_result_I2 subsetCE)
@@ -366,7 +366,7 @@ proof(insert assms(1) assms(6), induct x rule: heap_wellformed_induct_rev )
       using assms(1) False get_root_node_not_node_same by auto
     then show ?thesis
       using assms(1) assms(2) assms(3) assms(4) step.prems assms(5)
-      by (metis (no_types, hide_lams) bind_returns_result_E2 get_dom_component_def
+      by (metis (no_types, opaque_lifting) bind_returns_result_E2 get_dom_component_def
           get_root_node_pure returns_result_eq to_tree_order_same_root)
   qed
 qed
@@ -1509,7 +1509,7 @@ proof -
       using disc_nodes_document_ptr_h disconnected_nodes_eq2_h3
       apply -
       apply(cases "xb = document_ptr")
-       apply (metis (no_types, hide_lams) "3" "4" "6"
+       apply (metis (no_types, opaque_lifting) "3" "4" "6"
           \<open>\<And>p. p |\<in>| object_ptr_kinds h3
                       \<Longrightarrow> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h3 \<turnstile> get_child_nodes p|\<^sub>r\<close>
           \<open>a_distinct_lists h3\<close> children_eq2_h3 disc_nodes_h3 distinct_lists_no_parent h'

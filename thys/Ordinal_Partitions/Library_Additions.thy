@@ -237,7 +237,7 @@ proof -
   have "enum N 0 \<in> N"
     using assms range_enum by auto
   moreover have "\<And>x. x \<in> N \<Longrightarrow> enum N 0 \<le> x"
-    by (metis (mono_tags, hide_lams) assms imageE le0 less_mono_imp_le_mono range_enum strict_monoD strict_mono_enum)
+    by (metis (mono_tags, opaque_lifting) assms imageE le0 less_mono_imp_le_mono range_enum strict_monoD strict_mono_enum)
   ultimately show ?thesis
     by (metis cInf_eq_minimum)
 qed

@@ -599,7 +599,7 @@ proof -
       using PrefixListTransitive by auto
     moreover have "msg \<in> set (drop (length trace) trace''')" 
       using Prefix(2) PrefixLists MsgInTrace'' 
-      by (metis (hide_lams, no_types) PrefixListHasTail append_eq_conv_conj 
+      by (metis (opaque_lifting, no_types) PrefixListHasTail append_eq_conv_conj 
          drop_take rev_subsetD set_take_subset)
     ultimately show ?thesis by auto
   qed

@@ -439,7 +439,7 @@ next
     with leq have "2 ^ n * (unat a div 2 ^ n + 1) = 2 ^ LENGTH('a)"
       by (force elim!: le_SucE)
     then have "unat a div 2 ^ n = 2 ^ LENGTH('a) div 2 ^ n - 1"
-      by (metis (no_types, hide_lams) Groups.add_ac(2) add.right_neutral
+      by (metis (no_types, opaque_lifting) Groups.add_ac(2) add.right_neutral
                 add_diff_cancel_left' div_le_dividend div_mult_self4 gr_implies_not0
                 le_neq_implies_less power_eq_0_iff zero_neq_numeral)
     then have "unat a div 2 ^ n = 2 ^ (LENGTH('a) - n) - 1"

@@ -2154,7 +2154,7 @@ lemma llp_var:
   assumes "test y"
     shows "y \<le> !(d x) \<longleftrightarrow> x \<le> !y \<sqinter> x"
   apply (rule iffI)
-  apply (metis (no_types, hide_lams) assms gla Least_equality il_inf_left_unit il_inf_right_dist_sup il_less_eq il_unit_bot order.refl neg_char)
+  apply (metis (no_types, opaque_lifting) assms gla Least_equality il_inf_left_unit il_inf_right_dist_sup il_less_eq il_unit_bot order.refl neg_char)
   by (metis assms gla gla_var llp il_commutative il_sub_inf_right_isotone neg_char)
 
 lemma d_idempotent:
@@ -2196,7 +2196,7 @@ lemma d_isotone_var:
 
 lemma d3_conv:
   "d (x \<sqinter> y) \<le> d (x \<sqinter> d y)"
-  by (metis (mono_tags, hide_lams) d1_eq d2 d_closed il_inf_associative)
+  by (metis (mono_tags, opaque_lifting) d1_eq d2 d_closed il_inf_associative)
 
 lemma d_test_inf_idempotent:
   "d x \<sqinter> d x = d x"
@@ -2412,7 +2412,7 @@ proof -
   hence "!p \<sqinter> d (p \<sqinter> x) = bot"
     using d_bot_only by blast
   thus ?thesis
-    by (metis (no_types, hide_lams) assms d_sub_identity il_bot_unit il_inf_left_unit il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone neg_char)
+    by (metis (no_types, opaque_lifting) assms d_sub_identity il_bot_unit il_inf_left_unit il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone neg_char)
 qed
 
 subclass d_semiring
@@ -2457,7 +2457,7 @@ lemma l3:
 
 lemma l5:
   "--x \<le> --y \<Longrightarrow> -y \<le> -x"
-  by (metis (mono_tags, hide_lams) l3 a_stone bot_least il_bot_unit il_inf_left_unit il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone sup_right_isotone)
+  by (metis (mono_tags, opaque_lifting) l3 a_stone bot_least il_bot_unit il_inf_left_unit il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone sup_right_isotone)
 
 lemma l4:
   "---x = -x"

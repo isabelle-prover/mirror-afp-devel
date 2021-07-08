@@ -438,14 +438,14 @@ proof -
     using assms unfolding extended_distance_set_def extended_distance_def by simp
   then have "u n \<in> extended_distance_set"
     unfolding extended_distance_set_def extended_distance_def apply auto
-    by (metis (no_types, hide_lams) underS_notIn zero_neq_one)
+    by (metis (no_types, opaque_lifting) underS_notIn zero_neq_one)
   moreover have "u n \<in> wo.underS (would_be_Cauchy u)"
     by (auto simp add: Bonk_Schramm_extension_unfolded_wo_props')
   ultimately show "u n \<in> extended_distance_set \<inter> wo.underS (would_be_Cauchy u)"
     by auto
   show "\<forall>eps > (0::real). \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extended_distance (u n) (u m) < eps"
     using * unfolding extended_distance_set_def extended_distance_def apply auto
-    by (metis (no_types, hide_lams) zero_neq_one)
+    by (metis (no_types, opaque_lifting) zero_neq_one)
 qed
 
 lemma extended_distance_triang_ineq:
@@ -636,7 +636,7 @@ proof -
             using 2 unfolding C extended_distance_set_def extended_distance_def
             using extend_distance_fp by auto
           then have cauch: "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "e > 0" for e
-            apply auto using \<open>e > 0\<close> by (metis (no_types, hide_lams) zero_neq_one)
+            apply auto using \<open>e > 0\<close> by (metis (no_types, opaque_lifting) zero_neq_one)
           have "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. abs(extended_distance y (u n) - extended_distance y (u m)) < e" if "e > 0" for e
           proof -
             obtain N where *: "extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "n \<ge> N" "m \<ge> N" for m n

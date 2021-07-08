@@ -370,7 +370,7 @@ lemma white_heap_eq_imp:
 apply (clarsimp simp: all_conj_distrib eq_imp_def white_def white_heap_def obj_at_def fun_eq_iff
                split: option.splits)
 apply (rule iffI)
-apply (metis (hide_lams, no_types) map_option_eq_Some)+
+apply (metis (opaque_lifting, no_types) map_option_eq_Some)+
 done
 
 lemma no_black_refs_eq_imp:
@@ -650,7 +650,7 @@ apply (subgoal_tac "\<forall>r'. valid_ref r' s \<longleftrightarrow> valid_ref 
      apply force
     apply (metis option.set_map)
    apply (clarsimp split: obj_at_splits)
-   apply (metis (no_types, hide_lams) None_eq_map_option_iff option.exhaust)
+   apply (metis (no_types, opaque_lifting) None_eq_map_option_iff option.exhaust)
   apply clarsimp
  apply clarsimp
 apply clarsimp

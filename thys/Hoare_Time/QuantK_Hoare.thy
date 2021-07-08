@@ -340,7 +340,7 @@ next
           also have "\<dots> \<le> enat (Suc p) + enat k * (INV t + 1)" using q2'
             by (metis ab_semigroup_add_class.add_ac(1) add_left_mono) 
           also have "\<dots> \<le> 1 + enat k * (INV s)" using q
-            by (metis (no_types, hide_lams) add.commute add_left_mono eSuc_enat iadd_Suc plus_1_eSuc(1))
+            by (metis (no_types, opaque_lifting) add.commute add_left_mono eSuc_enat iadd_Suc plus_1_eSuc(1))
           also have "\<dots> \<le> enat k + enat k * (INV s)" using g0
             by (simp add: Suc_leI one_enat_def) 
           also have "\<dots> \<le>  enat k * (INV s + 1)"

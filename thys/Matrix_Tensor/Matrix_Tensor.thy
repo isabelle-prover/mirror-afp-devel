@@ -563,7 +563,7 @@ proof(induct M)
                  (length (a#M)) 
                            (vec_mat_Tensor v (a#M))"
            using mat_def  "5" length_code
-           by (metis (hide_lams, no_types))
+           by (metis (opaque_lifting, no_types))
     then show ?thesis by auto
     qed
     with  hyp  show ?case by auto  
@@ -1933,7 +1933,7 @@ lemma  col_formula:
              using add_0_iff add_diff_inverse diff_is_0_eq 
                    less_diff_conv less_imp_le linorder_cases add.commute 
                    neq0_conv
-             by (metis (hide_lams, no_types))
+             by (metis (opaque_lifting, no_types))
     have 3:"(v#M)\<otimes>M2 = (vec_mat_Tensor v M2)@(M \<otimes> M2)"
              using Tensor.simps by auto
     have "(col ((v#M)\<otimes>M2) j) = (col ((vec_mat_Tensor v M2)@(M \<otimes> M2)) j)"
@@ -2180,7 +2180,7 @@ lemma row_vec_mat_Tensor_prelim:
                               = (w!(i mod (length w)))
                                         #(row N (i mod row_length N))"
                      using Cons_3 3 assms 2 neq_Nil_conv row_Cons row_empty 
-                           row_length_eq by (metis (hide_lams, no_types))
+                           row_length_eq by (metis (opaque_lifting, no_types))
          then have "times 
                            (v!(i div row_length (w#N)))  
                            ((w!(i mod (length w)))

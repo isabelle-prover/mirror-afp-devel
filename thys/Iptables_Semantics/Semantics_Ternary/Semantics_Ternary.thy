@@ -425,7 +425,7 @@ corollary approximating_semantics_iff_fun_good_ruleset: "good_ruleset rs \<Longr
 lemma approximating_bigstep_deterministic: "\<lbrakk> \<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t; \<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Rightarrow>\<^sub>\<alpha> t' \<rbrakk> \<Longrightarrow> t = t'"
   proof(induction arbitrary: t' rule: approximating_bigstep_induct)
   case Seq thus ?case
-    by (metis (hide_lams, mono_tags) append_Nil2 approximating_bigstep_fun.simps(1) approximating_bigstep_fun_seq_semantics)
+    by (metis (opaque_lifting, mono_tags) append_Nil2 approximating_bigstep_fun.simps(1) approximating_bigstep_fun_seq_semantics)
   qed(auto dest: approximating_bigstepD)
 
 

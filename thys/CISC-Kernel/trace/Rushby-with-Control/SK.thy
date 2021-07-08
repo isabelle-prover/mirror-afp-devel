@@ -1140,7 +1140,7 @@ proof-
             have "vpeq v s t'" by auto 
           from this vpeq_s_ns vpeq_t_nt vpeq_transitive vpeq_symmetric vpeq_reflexive
             have "vpeq v (step (next_state s execs) (next_action s execs)) ?nt"
-            by (metis (hide_lams, no_types))
+            by (metis (opaque_lifting, no_types))
           }
           hence vpeq_ns_nt: "\<forall> v . ifp v u \<and> \<not>intermediary v u \<longrightarrow> vpeq v (step (next_state s execs) (next_action s execs)) ?nt" by auto
           from vpeq_s_t 2 F purged_a_a2 current_s_t thread_not_empty_s have purged_na_na2: "ipurged_relation1 u (next_execs s execs) ?na2"

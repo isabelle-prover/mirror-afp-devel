@@ -640,7 +640,7 @@ text\<open>OclIncluding\<close>
 
 lemma OclIncluding_valid_args_valid:
 "(\<tau> \<Turnstile> \<upsilon>(X->including\<^sub>B\<^sub>a\<^sub>g(x))) = ((\<tau> \<Turnstile>(\<delta> X)) \<and> (\<tau> \<Turnstile>(\<upsilon> x)))"
-by (metis (hide_lams, no_types) OclIncluding.def_valid_then_def OclIncluding.defined_args_valid)
+by (metis (opaque_lifting, no_types) OclIncluding.def_valid_then_def OclIncluding.defined_args_valid)
 
 lemma OclIncluding_valid_args_valid''[simp,code_unfold]:
 "\<upsilon>(X->including\<^sub>B\<^sub>a\<^sub>g(x)) = ((\<delta> X) and (\<upsilon> x))"
@@ -721,7 +721,7 @@ lemma OclIsEmpty_defined_args_valid:"\<tau> \<Turnstile> \<delta> (X->isEmpty\<^
   apply(case_tac "(X->size\<^sub>B\<^sub>a\<^sub>g() \<doteq> \<zero>) \<tau>", simp add: bot_option_def, simp, rename_tac x)
   apply(case_tac x, simp add: null_option_def bot_option_def, simp)
   apply(simp add: OclSize_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r valid_def)
-by (metis (hide_lams, no_types)
+by (metis (opaque_lifting, no_types)
            bot_fun_def OclValid_def defined_def foundation2 invalid_def)
 
 lemma "\<tau> \<Turnstile> \<delta> (null->isEmpty\<^sub>B\<^sub>a\<^sub>g())"
@@ -740,11 +740,11 @@ by(simp add: OclSize_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^s
 text\<open>OclNotEmpty\<close>
 
 lemma OclNotEmpty_defined_args_valid:"\<tau> \<Turnstile> \<delta> (X->notEmpty\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
-by (metis (hide_lams, no_types) OclNotEmpty_def OclNot_defargs OclNot_not foundation6 foundation9
+by (metis (opaque_lifting, no_types) OclNotEmpty_def OclNot_defargs OclNot_not foundation6 foundation9
                                 OclIsEmpty_defined_args_valid)
 
 lemma "\<tau> \<Turnstile> \<delta> (null->notEmpty\<^sub>B\<^sub>a\<^sub>g())"
-by (metis (hide_lams, no_types) OclNotEmpty_def OclAnd_false1 OclAnd_idem OclIsEmpty_def
+by (metis (opaque_lifting, no_types) OclNotEmpty_def OclAnd_false1 OclAnd_idem OclIsEmpty_def
                                 OclNot3 OclNot4 OclOr_def defined2 defined4 transform1 valid2)
 
 lemma OclNotEmpty_infinite: "\<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<not> finite (Rep_Bag_base X \<tau>) \<Longrightarrow> \<not> \<tau> \<Turnstile> \<delta> (X->notEmpty\<^sub>B\<^sub>a\<^sub>g())"
@@ -809,7 +809,7 @@ proof -
            apply(frule Bag_inv_lemma[OF foundation16[THEN iffD2], OF conjI], simp)
            apply(subgoal_tac "(\<delta> X) \<tau> = true \<tau>")
             prefer 2
-            apply (metis (hide_lams, no_types) OclValid_def foundation16)
+            apply (metis (opaque_lifting, no_types) OclValid_def foundation16)
            apply(simp add: true_def,
                  drule OclNotEmpty_has_elt'[simplified OclValid_def true_def], simp)
            apply(erule exE,

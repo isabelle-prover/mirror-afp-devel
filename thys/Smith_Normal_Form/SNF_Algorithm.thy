@@ -482,7 +482,7 @@ proof -
     have "?MDMD $$ (i, i) = ?MD $$ (insert_index (k-1) i, insert_index 0 i)"
     proof (rule mat_delete_index[symmetric, OF _ _ _ i i])
       show "mat_delete (local.make_mat n k B) 0 k \<in> carrier_mat (Suc (n-2)) (Suc (n-2))"
-        by (metis (mono_tags, hide_lams) Suc_diff_Suc card_num_simps(30) i make_mat_carrier 
+        by (metis (mono_tags, opaque_lifting) Suc_diff_Suc card_num_simps(30) i make_mat_carrier 
             mat_delete_carrier nat_diff_split_asm not_less0 not_less_eq numerals(2))    
       show "k - 1 < Suc (n - 2)" using kn by auto
       show "0 < Suc (n - 2)" using kn by auto

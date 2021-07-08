@@ -185,7 +185,7 @@ next
         [of i "from_nat (Suc k)" "Gram_Schmidt_upt_k A k", unfolded tn_fn_suc])
       have set_rw: "{column i (Gram_Schmidt_upt_k A k) |i. i < from_nat (Suc k)} 
         = {column i (Gram_Schmidt_upt_k A k) |i. to_nat i \<le> k}"
-        by (metis (mono_tags, hide_lams) less_Suc_eq_le less_le not_less tn_fn_suc to_nat_mono)      
+        by (metis (mono_tags, opaque_lifting) less_Suc_eq_le less_le not_less tn_fn_suc to_nat_mono)      
       show "i \<noteq> from_nat (Suc k)" using i_not_k .
       show "i < from_nat (Suc k)" using True ij by blast
       show "column (from_nat (Suc k)) (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k)) =

@@ -211,7 +211,7 @@ proof -
   (\<exists> mo . Deliver (i, Store e mo i) \<in> set pre)"
     using Broadcast_Deliver_prefix_closed assms(1) by auto
   hence "Deliver (i, Append i e) \<in> set pre" using assms P f1
-    by (metis (no_types, hide_lams) delivery_has_a_cause events_in_local_order fst_conv 
+    by (metis (no_types, opaque_lifting) delivery_has_a_cause events_in_local_order fst_conv 
         hb_broadcast_exists1 hb_deliver msg_id_unique prefix_msg_in_history)
   thus ?thesis using P events_in_local_order hb_deliver by blast
 qed

@@ -3070,7 +3070,7 @@ proof -
         unfolding excursion_def by auto
       have EL: "excursion L = xM"
         unfolding excursion_def L_def apply (auto simp add: uM(2) um(2) sgn_mult_abs)
-        by (metis (mono_tags, hide_lams) add.left_neutral add_increasing2 add_le_same_cancel1 dist_real_def
+        by (metis (mono_tags, opaque_lifting) add.left_neutral add_increasing2 add_le_same_cancel1 dist_real_def
               Gromov_product_e_x_x Gromov_product_nonneg metric_space_class.dist_le_zero_iff)
       have [simp]: "L \<ge> 0" unfolding L_def by auto
       have "L > 0"

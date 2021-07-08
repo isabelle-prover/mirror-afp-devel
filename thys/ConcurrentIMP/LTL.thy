@@ -575,7 +575,7 @@ proof -
     apply (induct t arbitrary: \<phi> \<delta>)
     unfolding LTL.defs split_def
     apply clarsimp
-    apply (metis (no_types, hide_lams) ab_semigroup_add_class.add_ac(1) fst_eqD snd_conv surjective_pairing)
+    apply (metis (no_types, opaque_lifting) ab_semigroup_add_class.add_ac(1) fst_eqD snd_conv surjective_pairing)
     done
   with W1 show ?thesis
     apply -

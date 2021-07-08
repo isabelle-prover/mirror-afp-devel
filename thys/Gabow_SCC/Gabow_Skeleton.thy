@@ -2321,7 +2321,7 @@ begin
          apply (metis diff_diff_cancel le_diff_conv le_eq_less_or_eq 
            trans_le_add1 distinct_sorted_mono[OF B_sorted B_distinct, of i])
          
-         apply (metis (hide_lams, no_types) Suc_lessD Suc_lessI less_trans_Suc
+         apply (metis (opaque_lifting, no_types) Suc_lessD Suc_lessI less_trans_Suc
            B_in_bound')
          done
       } note AUX2 = this

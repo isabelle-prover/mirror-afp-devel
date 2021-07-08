@@ -314,7 +314,7 @@ sublocale profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^
       apply(simp)
      apply(subst cp_valid, simp)
     apply (simp add: const_valid)
-   apply (metis (hide_lams, mono_tags) OclValid_def def_scheme defined5 defined6 defined_and_I foundation1 foundation10' foundation16' foundation18 foundation21 foundation22 foundation9)
+   apply (metis (opaque_lifting, mono_tags) OclValid_def def_scheme defined5 defined6 defined_and_I foundation1 foundation10' foundation16' foundation18 foundation21 foundation22 foundation9)
   apply(simp add: def_scheme, subst StrongEq_def, simp)
  by (metis OclValid_def def_scheme defined7 foundation16)
 
@@ -366,7 +366,7 @@ locale profile_bin\<^sub>v_\<^sub>v =
 sublocale profile_bin\<^sub>v_\<^sub>v < profile_bin_scheme valid valid
  apply(unfold_locales)
          apply(simp, subst cp_valid, simp, rule const_valid, simp)+
-   apply (metis (hide_lams, mono_tags) OclValid_def def_scheme defined5 defined6 defined_and_I 
+   apply (metis (opaque_lifting, mono_tags) OclValid_def def_scheme defined5 defined6 defined_and_I 
          foundation1 foundation10' foundation16' foundation18 foundation21 foundation22 foundation9)
   apply(simp add: def_scheme)
  apply(simp add: defined_def OclValid_def false_def true_def 

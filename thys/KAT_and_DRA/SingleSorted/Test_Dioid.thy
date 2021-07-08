@@ -217,7 +217,7 @@ next
   also have "...  \<sqsubseteq> t (n y \<oplus> n x \<cdot> t y)"
     by (metis calculation local.mult_1_right mult_t_closed n_add_op_def n_add_ub2 n_distrib2 n_t_compl)
   finally show "n x \<sqsubseteq> n y \<oplus> n z"
-    by (metis (no_types, hide_lams) a mult_t_closed ts_ord_add_isol ts_ord_trans n_add_op_def)
+    by (metis (no_types, opaque_lifting) a mult_t_closed ts_ord_add_isol ts_ord_trans n_add_op_def)
 qed
 
 lemma n_galois2: "n x \<sqsubseteq> t y \<oplus> n z \<longleftrightarrow> n x \<cdot> n y \<sqsubseteq> n z"

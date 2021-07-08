@@ -2866,7 +2866,7 @@ next (* if *)
         apply (metis cxt_to_stmt.simps(1) eval\<^sub>w_simplep.if_true eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq if_type(8))
        using if_type.prems(6) apply blast
       apply (subgoal_tac "c\<^sub>1' = el")
-       apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
+       apply (metis (opaque_lifting, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
       using if_type.prems(6) by blast
     with \<open>\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>\<close> show ?thesis  
     by (metis if_elim if_type.prems(6))    
@@ -3607,7 +3607,7 @@ next (* if *)
         apply (metis cxt_to_stmt.simps(1) eval\<^sub>w_simplep.if_true eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq if_type(8))
        using if_type.prems(6) apply blast
       apply (subgoal_tac "c\<^sub>1' = el")
-       apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
+       apply (metis (opaque_lifting, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
       using if_type.prems(6) by blast
     with \<open>\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>\<close> show ?thesis  
     by (metis if_elim if_type.prems(6))    

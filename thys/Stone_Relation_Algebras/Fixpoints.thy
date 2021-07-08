@@ -206,11 +206,11 @@ The square rule for fixpoints of a function applied twice.
 
 lemma mu_square:
   "isotone f \<Longrightarrow> has_least_fixpoint f \<Longrightarrow> has_least_fixpoint (f \<circ> f) \<Longrightarrow> \<mu> f = \<mu> (f \<circ> f)"
-  by (metis (no_types, hide_lams) order.antisym is_least_fixpoint_def isotone_def least_fixpoint_char least_fixpoint_unique o_apply)
+  by (metis (no_types, opaque_lifting) order.antisym is_least_fixpoint_def isotone_def least_fixpoint_char least_fixpoint_unique o_apply)
 
 lemma nu_square:
   "isotone f \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> has_greatest_fixpoint (f \<circ> f) \<Longrightarrow> \<nu> f = \<nu> (f \<circ> f)"
-  by (metis (no_types, hide_lams) order.antisym is_greatest_fixpoint_def isotone_def greatest_fixpoint_char greatest_fixpoint_unique o_apply)
+  by (metis (no_types, opaque_lifting) order.antisym is_greatest_fixpoint_def isotone_def greatest_fixpoint_char greatest_fixpoint_unique o_apply)
 
 text \<open>
 The rolling rule for fixpoints of the composition of two functions.

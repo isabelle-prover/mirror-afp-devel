@@ -304,7 +304,7 @@ lemma(in ring_functions) fun_add_comm:
   assumes "y \<in> carrier F" 
   shows "x \<oplus>\<^bsub>F\<^esub> y = y \<oplus>\<^bsub>F\<^esub> x"
   using fun_add_eval_comm assms 
-  by (metis (no_types, hide_lams) fun_add_closed function_ring_car_eqI)
+  by (metis (no_types, opaque_lifting) fun_add_closed function_ring_car_eqI)
 
     (**************************************************************************************************)
     (**************************************************************************************************)

@@ -309,10 +309,10 @@ lemma circle_cube_valid_two_cube: "valid_two_cube (circle_cube)"
 proof (auto simp add: valid_two_cube_def boundary_def horizontal_boundary_def vertical_boundary_def circle_cube_def)
   have iv: "(- 1::int, \<lambda>y::real. (- (d/2), 0)) \<noteq> (- 1, \<lambda>x. ((x - 1/2) * d, d * sqrt (1/4 - (x - 1/2) * (x - 1/2))))"
     using d_gt_0  apply (auto simp add: algebra_simps)
-    by (metis (no_types, hide_lams) add_diff_cancel_right' add_uminus_conv_diff cancel_comm_monoid_add_class.diff_cancel less_eq_real_def linorder_not_le mult.left_neutral prod.simps(1))
+    by (metis (no_types, opaque_lifting) add_diff_cancel_right' add_uminus_conv_diff cancel_comm_monoid_add_class.diff_cancel less_eq_real_def linorder_not_le mult.left_neutral prod.simps(1))
   have v: "(1::int, \<lambda>y. (d/2, 0)) \<noteq> (1, \<lambda>x. ((x - 1/2) * d, - (d * sqrt (1/4 - (x - 1/2) * (x - 1/2)))))"
     using d_gt_0  apply (auto simp add: algebra_simps)
-    by (metis (no_types, hide_lams) diff_0 equal_neg_zero mult_zero_left nonzero_mult_div_cancel_left order_less_irrefl prod.sel(1) times_divide_eq_right zero_neq_numeral)
+    by (metis (no_types, opaque_lifting) diff_0 equal_neg_zero mult_zero_left nonzero_mult_div_cancel_left order_less_irrefl prod.sel(1) times_divide_eq_right zero_neq_numeral)
   show " card {(- 1::int, \<lambda>y. (- (d/2), 0)), (1, \<lambda>y. (d/2, 0)), (1, \<lambda>x. ((x - 1/2) * d, - (d * sqrt (1/4 - (x - 1/2) * (x - 1/2))))),
                    (- 1, \<lambda>x. ((x - 1/2) * d, d * sqrt (1/4 - (x - 1/2) * (x - 1/2))))} = 4"
     using iv v by auto
@@ -331,7 +331,7 @@ lemma circle_top_bot_edges_neq' [simp]:
 
 lemma rot_circle_top_left_edges_neq [simp]: "rot_circle_top_edge \<noteq> rot_circle_left_edge"
   apply (simp add: rot_circle_left_edge_def rot_circle_top_edge_def x_coord_def)
-  by (metis (mono_tags, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff mult_zero_left order_less_irrefl prod.sel(2) zero_neq_numeral)
+  by (metis (mono_tags, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff mult_zero_left order_less_irrefl prod.sel(2) zero_neq_numeral)
 
 lemma rot_circle_bot_left_edges_neq [simp]: "rot_circle_bot_edge \<noteq> rot_circle_left_edge"
   by (simp add: rot_circle_left_edge_def rot_circle_bot_edge_def x_coord_def)
@@ -341,14 +341,14 @@ lemma rot_circle_top_right_edges_neq [simp]: "rot_circle_top_edge \<noteq> rot_c
 
 lemma rot_circle_bot_right_edges_neq [simp]: "rot_circle_bot_edge \<noteq> rot_circle_right_edge"
   apply (simp add: rot_circle_right_edge_def rot_circle_bot_edge_def x_coord_def)
-  by (metis (mono_tags, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff mult_zero_left neg_0_equal_iff_equal order_less_irrefl prod.sel(2) zero_neq_numeral)
+  by (metis (mono_tags, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff mult_zero_left neg_0_equal_iff_equal order_less_irrefl prod.sel(2) zero_neq_numeral)
 
 lemma rot_circle_right_top_edges_neq' [simp]: "rot_circle_right_edge \<noteq> rot_circle_left_edge"
   by (simp add: rot_circle_left_edge_def rot_circle_right_edge_def)
 
 lemma rot_circle_left_bot_edges_neq [simp]: "rot_circle_left_edge \<noteq> rot_circle_top_edge"
   apply (simp add: rot_circle_top_edge_def rot_circle_left_edge_def)
-  by (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_zero_right nonzero_mult_div_cancel_left order_less_irrefl prod.sel(2) times_divide_eq_right x_coord_def zero_neq_numeral)
+  by (metis (no_types, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_zero_right nonzero_mult_div_cancel_left order_less_irrefl prod.sel(2) times_divide_eq_right x_coord_def zero_neq_numeral)
 
 lemma circle_right_top_edges_neq [simp]: "circle_right_edge \<noteq> circle_top_edge"
 proof -

@@ -468,7 +468,7 @@ proof (cases "y \<in> space\<^sub>N N")
     using eNorm_Norm assms True by metis
   also have "... = ennreal(defect N * Norm N x + defect N * Norm N y)"
     using ennreal_mult ennreal_plus Norm_nonneg defect_ge_1
-    by (metis (no_types, hide_lams) ennreal_eq_0_iff less_le ennreal_ge_1 ennreal_mult' le_less_linear not_one_le_zero semiring_normalization_rules(34))
+    by (metis (no_types, opaque_lifting) ennreal_eq_0_iff less_le ennreal_ge_1 ennreal_mult' le_less_linear not_one_le_zero semiring_normalization_rules(34))
   finally show ?thesis
     apply (subst ennreal_le_iff[symmetric]) using * by auto
 next
@@ -694,7 +694,7 @@ proof -
   proof (cases "f \<in> space\<^sub>N N1")
     case True
     then show ?thesis using assms[OF \<open>f \<in> space\<^sub>N N1\<close>]
-      by (metis (no_types, hide_lams) dual_order.trans ennreal_leI max.cobounded2 max.commute
+      by (metis (no_types, opaque_lifting) dual_order.trans ennreal_leI max.cobounded2 max.commute
       mult.commute ordered_comm_semiring_class.comm_mult_left_mono zero_le)
   next
     case False

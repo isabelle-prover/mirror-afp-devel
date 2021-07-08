@@ -1386,7 +1386,7 @@ proof-
         mem_Sigma_iff monoid.select_convs(2) partial_object.select_convs(1) semiring_simprules(4) zero_closed)
   have "x \<in> carrier rec_rng_of_frac"
     using a2 a1 subset rev_subsetD rec_rng_of_frac_def
-    by (metis (no_types, hide_lams) ring_hom_closed rng_to_rng_of_frac_def rng_to_rng_of_frac_is_ring_hom)
+    by (metis (no_types, opaque_lifting) ring_hom_closed rng_to_rng_of_frac_def rng_to_rng_of_frac_is_ring_hom)
   thus ?thesis
     using Units_def[of rec_rng_of_frac] f3 
     by auto

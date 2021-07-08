@@ -1645,7 +1645,7 @@ proof -
                                        prefix_same_cases set_append suffix_def)
       hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
         using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "constr Di" E'] ***
-        by (metis (no_types, hide_lams) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
+        by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
                                         snoc_suffix_snoc suffix_appendD,
             auto)
       then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F (filter (\<lambda>d. d \<notin> set Di) D))"
@@ -1692,7 +1692,7 @@ proof -
                                        prefix_same_cases set_append suffix_def)
       hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
         using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" constr E'] ***
-        by (metis (no_types, hide_lams) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
+        by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
                                         snoc_suffix_snoc suffix_appendD,
             auto)
       then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis

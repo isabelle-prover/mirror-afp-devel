@@ -2168,7 +2168,7 @@ proof -
         unfolding comp_tfr\<^sub>s\<^sub>e\<^sub>t_def Let_def by metis
       thus ?thesis
         using vars_term_disjoint_imp_unifier[OF var_rename_fv_set_disjoint[OF M_finite]] s0(1) t0(1)
-        unfolding s0(3) t0(3) by (metis (no_types, hide_lams) subst_subst_compose)
+        unfolding s0(3) t0(3) by (metis (no_types, opaque_lifting) subst_subst_compose)
     qed (use st_type_neq st(2,4) in auto)
     thus "\<Gamma> s = \<Gamma> t" when "\<exists>\<delta>. Unifier \<delta> s t" by (metis that)
   qed

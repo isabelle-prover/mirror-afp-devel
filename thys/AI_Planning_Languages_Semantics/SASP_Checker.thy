@@ -12,7 +12,7 @@ section \<open>An Executable Checker for Multi-Valued Planning Problem Solutions
     assumes "\<And>k v. (k,v)\<in>set l \<Longrightarrow> m k = Some v"
     shows "map_of l \<subseteq>\<^sub>m m"  
     using assms
-    by (metis (no_types, hide_lams) domIff map_le_def map_of_SomeD not_Some_eq)  
+    by (metis (no_types, opaque_lifting) domIff map_le_def map_of_SomeD not_Some_eq)  
 
   lemma [simp]: "fst \<circ> (\<lambda>(a, b, c, d). (f a b c d, g a b c d)) = (\<lambda>(a,b,c,d). f a b c d)"
     by auto

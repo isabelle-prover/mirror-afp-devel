@@ -12,13 +12,13 @@ proof -
     assume *: "f\<in>set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP"
 
     from * have 1: "sinvar \<lparr>nodes = nodesG, edges = edgesG - f \<rparr> nP"
-      by (metis (hide_lams, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
+      by (metis (opaque_lifting, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
     from * have 2: "edgesG - \<Union> (set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP) \<subseteq> edgesG - f"
       by blast
     note 1 2
   }
   with assms show ?thesis 
-    by (metis (hide_lams, no_types) Diff_empty Union_empty defined_offending equals0I mono_sinvar wf_graph_remove_edges)
+    by (metis (opaque_lifting, no_types) Diff_empty Union_empty defined_offending equals0I mono_sinvar wf_graph_remove_edges)
 qed
 
 
@@ -30,7 +30,7 @@ proof -
     assume *: "f\<in>set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP"
 
     from * have 1: "sinvar \<lparr>nodes = nodesG, edges = edgesG - f \<rparr> nP"
-      by (metis (hide_lams, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
+      by (metis (opaque_lifting, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
     from * have 2: "edgesG - \<Union> (set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP) \<subseteq> edgesG - f"
       by blast
     note 1 2
@@ -58,7 +58,7 @@ proof -
   { fix f
     assume *: "f\<in>set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP"
     from * have 1: "sinvar \<lparr>nodes = nodesG, edges = edgesG - f \<rparr> nP"
-      by (metis (hide_lams, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
+      by (metis (opaque_lifting, mono_tags) SecurityInvariant_withOffendingFlows.valid_without_offending_flows delete_edges_simp2 graph.select_convs(1) graph.select_convs(2))
     note 1
   }
   with in_offending show ?thesis by (simp add: some_in_eq)

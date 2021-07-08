@@ -436,7 +436,7 @@ proof -
       apply(auto simp add: next1_def all_conj_distrib dec_update_def x_update_def
         get_msgs_benign send1_def isVote_def msgRcvd_def identicalVoteRcvd_def 
         someVoteRcvd_def restrict_map_def)
-      by (metis (erased, hide_lams) option.distinct(2) option.sel r1(1))
+      by (metis (erased, opaque_lifting) option.distinct(2) option.sel r1(1))
     thus ?thesis
       by auto
   next

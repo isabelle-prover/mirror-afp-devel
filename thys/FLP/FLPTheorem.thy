@@ -1120,7 +1120,7 @@ proof -
                 using BasicProperties by simp
               show "length (ft n) \<le> length (ft (Suc indexa))"
                 using LengthNA PrefixListMonotonicity[OF PrefixIndexA]
-                by (metis (hide_lams, no_types) antisym le_cases 
+                by (metis (opaque_lifting, no_types) antisym le_cases 
                   less_imp_le less_le_trans)
             qed
           qed
@@ -1457,7 +1457,7 @@ proof -
       using execution.length by simp
     hence "lengthLimit < length (fe limit) - 1" 
       using lengthLimit_def 
-      by (metis (hide_lams, no_types) Length Limit One_nat_def Suc_eq_plus1
+      by (metis (opaque_lifting, no_types) Length Limit One_nat_def Suc_eq_plus1
         Suc_le_eq diff_less 
         diffs0_imp_equal gr_implies_not0 less_Suc0 neq0_conv)
     hence "((fe limit) ! lengthLimit) \<turnstile> ((ft limit) ! lengthLimit) 

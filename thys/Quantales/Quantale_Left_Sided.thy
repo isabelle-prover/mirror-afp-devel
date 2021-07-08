@@ -270,7 +270,7 @@ lemma lsl_inj_on: "inj_on \<nu> (Fix (\<nu>::'a::unital_quantale \<Rightarrow> '
 text \<open>Additional preservation properties of lsl and lsu are useful in proofs.\<close>
 
 lemma lsl_Inf_closed_var [simp]: "\<nu> (\<Sqinter>x \<in> X. \<nu> x) = (\<Sqinter>x \<in> X.  \<nu> (x::'a::unital_quantale))"
-  by (metis (no_types, hide_lams) INF_image lsided_def3 lsu_Inf_pres lsu_lsl_prop_eq o_apply)
+  by (metis (no_types, opaque_lifting) INF_image lsided_def3 lsu_Inf_pres lsu_lsl_prop_eq o_apply)
 
 lemma lsl_Sup_closed_var [simp]: "\<nu> (\<Squnion>x \<in> X. \<nu> x) = (\<Squnion>x \<in> X. \<nu> (x::'a::unital_quantale))"
   unfolding lsl_def by (metis Sup_distl mult.assoc top_times_top)
@@ -333,7 +333,7 @@ end
 text \<open>Now lsl is a quantic nucleus.\<close>
 
 lemma lsl_lax: "\<nu> x \<cdot> \<nu> y \<le> \<nu> (x \<cdot> (y::'aa::ab_unital_quantale))"
-  by (metis (no_types, hide_lams) lsl_almost_lax lsl_def mult.commute mult.left_commute)
+  by (metis (no_types, opaque_lifting) lsl_almost_lax lsl_def mult.commute mult.left_commute)
 
 lemma lsl_nuc: "nucleus (\<nu>::'a::ab_unital_quantale \<Rightarrow> 'a)" 
   by (simp add: lsl_clop nucleus_def lsl_lax)

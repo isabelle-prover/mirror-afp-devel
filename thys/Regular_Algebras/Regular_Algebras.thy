@@ -124,7 +124,7 @@ qed
 lemma powsum_ub: "i \<le> n \<Longrightarrow> x\<^bsup>i\<^esup> \<le> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
 proof (induct n)
   case 0 show ?case
-    by (metis (hide_lams, mono_tags) "0.prems" order.eq_iff le_0_eq power_0 powsum_00)
+    by (metis (opaque_lifting, mono_tags) "0.prems" order.eq_iff le_0_eq power_0 powsum_00)
 next
   case (Suc n) show ?case
 proof -
@@ -147,7 +147,7 @@ proof -
   hence "x\<^bsup>m\<^esup> \<cdot>  (x\<^bsup>n\<^esup>)\<^sup>\<star> =  x\<^bsup>m\<^esup> \<cdot> (x\<^bsup>n-m\<^esup> \<cdot> x\<^bsup>m\<^esup>)\<^sup>\<star>"
     by (metis (full_types) le_add_diff_inverse2 power_add)
   also have "... = (x\<^bsup>n-m\<^esup> \<cdot> x\<^bsup>m\<^esup>)\<^sup>\<star> \<cdot>  x\<^bsup>m\<^esup>"
-    by (metis (hide_lams, mono_tags) C_slide ab_semigroup_add_class.add.commute power_add)
+    by (metis (opaque_lifting, mono_tags) C_slide ab_semigroup_add_class.add.commute power_add)
   finally show ?thesis
     by (metis (full_types) assm le_add_diff_inverse ab_semigroup_add_class.add.commute power_add)
 qed

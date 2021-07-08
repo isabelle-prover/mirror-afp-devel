@@ -71,7 +71,7 @@ lemma inconsistent_updates:
            (\<exists>r' P. P (p2 $ r') \<and> (\<exists>y. p1 $ r' = Some y) \<and> \<not> P (p1 $ r')) \<Longrightarrow>
 
     \<not> subsumes t2 r t1"
-  by (metis (no_types, hide_lams) option.simps(3) subsumes_def)
+  by (metis (no_types, opaque_lifting) option.simps(3) subsumes_def)
 
 lemma bad_outputs:
   "\<exists>i. can_take_transition t1 i r \<and> evaluate_outputs t1 i r \<noteq> evaluate_outputs t2 i r \<Longrightarrow>

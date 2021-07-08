@@ -1233,7 +1233,7 @@ lemma minus_one_less_multI:
 lemma less_one_multI:
   fixes e x::real
   shows "e \<le> 1 \<Longrightarrow> 0 < x \<Longrightarrow> x < 1 \<Longrightarrow> e * x < 1"
-  by (metis (erased, hide_lams) less_eq_real_def monoid_mult_class.mult.left_neutral
+  by (metis (erased, opaque_lifting) less_eq_real_def monoid_mult_class.mult.left_neutral
     mult_strict_mono zero_less_one)
 
 lemma ccw_half_segments_of_aform_strictI:

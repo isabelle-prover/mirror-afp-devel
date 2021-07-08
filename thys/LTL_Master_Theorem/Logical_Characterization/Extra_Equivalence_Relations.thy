@@ -194,7 +194,7 @@ proof -
     fix x
     assume "x \<in> X"
     then have "g x \<in> g ` Y"
-      by (metis (no_types, hide_lams) \<open>x \<in> X\<close> assms(1) Y_def image_iff)
+      by (metis (no_types, opaque_lifting) \<open>x \<in> X\<close> assms(1) Y_def image_iff)
   }
   then have "g ` X = g ` Y"
     using assms \<open>Y \<subseteq> X\<close> by blast

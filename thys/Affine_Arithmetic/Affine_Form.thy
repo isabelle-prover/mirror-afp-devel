@@ -1850,7 +1850,7 @@ lemma pdevs_apply_pdevs_of_ivl:
 lemma deg_length_less_imp[simp]:
   "k < degree (pdevs_of_ivl l u::'a::executable_euclidean_space pdevs) \<Longrightarrow>
     k < length (Basis_list::'a list)"
-  by (metis (no_types, hide_lams) degree_One_pdevs degree_inner_scaleR_pdevs_le degree_scaleR_pdevs
+  by (metis (no_types, opaque_lifting) degree_One_pdevs degree_inner_scaleR_pdevs_le degree_scaleR_pdevs
       dual_order.strict_trans length_Basis_list_pos nat_neq_iff not_le pdevs_of_ivl_def)
 
 lemma tdev_pdevs_of_ivl: "tdev (pdevs_of_ivl l u) = \<bar>u - l\<bar> /\<^sub>R 2"

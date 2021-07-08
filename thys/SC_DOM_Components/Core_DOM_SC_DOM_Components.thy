@@ -1405,7 +1405,7 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
             using "2" "4" "5" "6" "7" False \<open>children' = children\<close> assms(1) child_in_children_h
               child_parent_dual children children_h disc_nodes' get_child_nodes_ptr_in_heap
               list.set_cases list.simps(3) option.simps(1) returns_result_eq set_ConsD
-            by (metis (no_types, hide_lams) assms)
+            by (metis (no_types, opaque_lifting) assms)
         next
           case False
           then show ?thesis
@@ -1566,7 +1566,7 @@ proof -
         owner_document select_result_I2)
   have "ptr \<notin> set |h \<turnstile> get_dom_component (cast |h \<turnstile> get_owner_document (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr)|\<^sub>r)|\<^sub>r"
     using get_scdom_component_owner_document_same
-    by (metis (no_types, hide_lams)
+    by (metis (no_types, opaque_lifting)
         \<open>\<And>thesis. (\<And>owner_document. h \<turnstile> get_owner_document (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr) \<rightarrow>\<^sub>r owner_document \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
         \<open>h \<turnstile> get_scdom_component (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r owner_document) \<rightarrow>\<^sub>r child_sc\<close>
         \<open>ptr \<notin> set |h \<turnstile> get_scdom_component (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r |h \<turnstile> get_owner_document (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr)|\<^sub>r)|\<^sub>r\<close>
@@ -1899,7 +1899,7 @@ proof -
         next
           case False
           then show ?thesis
-            by (metis (no_types, hide_lams) \<open>distinct disc_nodes_old_document_h2\<close>
+            by (metis (no_types, opaque_lifting) \<open>distinct disc_nodes_old_document_h2\<close>
                 disc_nodes_old_document_h3 disconnected_nodes_eq2_h3
                 distinct_remove1 docs_neq select_result_I2)
         qed
@@ -3424,7 +3424,7 @@ proof -
     using owner_document' by auto
 
   have "ptr \<noteq> ptr'"
-    by (metis (mono_tags, hide_lams) assms(1) assms(2) assms(3) assms(5) assms(7) is_OK_returns_result_I
+    by (metis (mono_tags, opaque_lifting) assms(1) assms(2) assms(3) assms(5) assms(7) is_OK_returns_result_I
         l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_ok l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_ptr
         l_get_owner_document.get_owner_document_ptr_in_heap local.l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms
         local.l_get_owner_document_axioms owner_document' return_returns_result returns_result_select_result)

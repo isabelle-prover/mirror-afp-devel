@@ -545,7 +545,7 @@ lemma fold_sum_aux:
   assumes "\<forall>u \<in> set (a # xs). \<forall>v \<in> set (a # xs). f v + W u v \<ge> f u"
   shows "sum_list (map f (a # xs @ [a])) \<le> sum_list (map f (a # xs @ [a])) + weight (a # xs @ [a])"
   using fold_sum_aux'[of a xs a f] assms
-  by auto (metis (no_types, hide_lams) add.assoc add.commute add_left_mono)
+  by auto (metis (no_types, opaque_lifting) add.assoc add.commute add_left_mono)
 
 context
 begin

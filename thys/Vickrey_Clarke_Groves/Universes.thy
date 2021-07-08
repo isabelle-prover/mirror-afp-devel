@@ -350,7 +350,7 @@ lemma lm034:
   shows "(a^-1 \<in> injections (Range a) N & 
          Range a \<in> all_partitions G)"
   using assms 
-  by (metis (mono_tags, hide_lams) posssibleAllocationsRelCharacterization
+  by (metis (mono_tags, opaque_lifting) posssibleAllocationsRelCharacterization
                                    allocationInverseRangeDomainProperty)
 
 lemma lm035: 
@@ -445,7 +445,7 @@ proof -
   0: "\<forall> X\<in>?P1. \<forall> Y \<in> ?P1. (X \<inter> Y = {} \<longrightarrow> X \<noteq> Y)" 
       using assms is_non_overlapping_def Int_absorb Int_empty_left UnionI Union_disjoint 
             ex_in_conv imageE 
-      by (metis (hide_lams, no_types))
+      by (metis (opaque_lifting, no_types))
   {
     fix X Y 
     assume 
@@ -508,7 +508,7 @@ proof -
     6: "?a1\<noteq>{} & ?a2\<noteq>{}" 
     then have "?r ?a2\<supseteq>{?Y}" 
          using Diff_cancel Range_insert empty_subsetI insert_Diff_single insert_iff insert_subset 
-         by (metis (hide_lams, no_types)) 
+         by (metis (opaque_lifting, no_types)) 
     then have 
     7: "?U (?r a) = ?U (?r ?a1) \<union> ?U (?r ?a2)" using 2 by blast
     have "?r ?a1 \<noteq> {} & ?r ?a2 \<noteq> {}" using 6 by auto

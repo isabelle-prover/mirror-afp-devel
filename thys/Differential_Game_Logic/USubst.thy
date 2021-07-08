@@ -850,7 +850,7 @@ proof-
     next
       case (ODE x \<theta>)
       then show ?case using usubstappt_antimon ODEo_undef
-        by (metis (no_types, hide_lams) Un_mono order_refl snd_conv usubstappp.simps(8))
+        by (metis (no_types, opaque_lifting) Un_mono order_refl snd_conv usubstappp.simps(8))
     next
       case (Test \<phi>)
       then show ?case by (metis Testo_undef snd_conv usubstappp.simps(3))

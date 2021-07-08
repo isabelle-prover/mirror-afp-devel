@@ -131,7 +131,7 @@ instance
   apply (metis (mono_tags, lifting) Rep_coreflexive_inject top_greatest conv_coreflexive.rep_eq coreflexive_commutative less_eq_coreflexive.rep_eq one_coreflexive.rep_eq one_coreflexive_def times_coreflexive.rep_eq top_coreflexive_def)
   apply (simp only: conv_coreflexive.rep_eq less_eq_coreflexive.rep_eq one_coreflexive.rep_eq times_coreflexive.rep_eq inf_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym], metis coreflexive_dedekind Rep_coreflexive mem_Collect_eq)
   apply (metis (mono_tags, lifting) Rep_coreflexive Rep_coreflexive_inject coreflexive_pp_dist_comp mem_Collect_eq times_coreflexive.rep_eq uminus_coreflexive.rep_eq)
-  by (metis (mono_tags, hide_lams) Rep_coreflexive_inverse inf.commute inf.idem inf_import_p one_coreflexive.rep_eq pp_one uminus_coreflexive.rep_eq)
+  by (metis (mono_tags, opaque_lifting) Rep_coreflexive_inverse inf.commute inf.idem inf_import_p one_coreflexive.rep_eq pp_one uminus_coreflexive.rep_eq)
 
 end
 

@@ -18,7 +18,7 @@ lemma drop_not_empty: "xs \<noteq> [] \<Longrightarrow> drop (length xs div 2) x
 
 lemma split_half_not_empty: "length xs \<ge> 1 \<Longrightarrow> \<exists>ls sub sep rs. split_half xs = (ls,(sub,sep)#rs)"
   using drop_not_empty
-  by (metis (no_types, hide_lams) drop0 drop_eq_Nil eq_snd_iff hd_Cons_tl le_trans not_one_le_zero split_half.simps)
+  by (metis (no_types, opaque_lifting) drop0 drop_eq_Nil eq_snd_iff hd_Cons_tl le_trans not_one_le_zero split_half.simps)
 
 subsection "The split function locale"
 

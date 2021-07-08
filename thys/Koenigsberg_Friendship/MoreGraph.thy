@@ -1105,7 +1105,7 @@ next
             by auto
           hence "even (degree x1 G)" by (metis parity_x1_x3(1))
           thus ?thesis 
-            by (metis (hide_lams, mono_tags) Cons.prems(3)  is_trail.simps(2)  
+            by (metis (opaque_lifting, mono_tags) Cons.prems(3)  is_trail.simps(2)  
                 monoid_add_class.add.right_neutral x)
         next
           case False
@@ -1346,7 +1346,7 @@ qed
 lemma (in valid_unMultigraph) trail_bound: 
     assumes "finite E" " is_trail v ps v'"
     shows "length ps \<le>card E" 
-by (metis (hide_lams, no_types) assms(1) assms(2) card_mono no_rep_length path_in_edges)
+by (metis (opaque_lifting, no_types) assms(1) assms(2) card_mono no_rep_length path_in_edges)
 
 definition (in valid_unMultigraph) exist_path_length:: "'v \<Rightarrow> nat \<Rightarrow>bool" where
   "exist_path_length v l\<equiv>\<exists>v' ps. is_trail v' ps v \<and> length ps=l"   
@@ -1414,7 +1414,7 @@ proof -
     by (metis empty_iff finite.emptyI odd_card)
   then obtain v0 w where v0w:  "(v',w,v0)\<in>E" "(v',w,v0)\<notin>set ps \<union> set (rev_path ps)" by auto
   hence "is_trail v0 ((v0,w,v')#ps) v" 
-    by (metis (hide_lams, mono_tags) Un_iff assms(2) corres in_set_rev_path is_trail.simps(2))  
+    by (metis (opaque_lifting, mono_tags) Un_iff assms(2) corres in_set_rev_path is_trail.simps(2))  
   thus ?thesis by metis
 qed
 
@@ -1563,7 +1563,7 @@ proof -
   have valid_graph: "valid_graph (del_unEdge v e v' G)" 
     using valid_graph_axioms del_undirected by (metis delete_edge_valid)
   have fin_E': "finite(edges (del_unEdge v e v' G))" 
-    by (metis (hide_lams, no_types) assms(1) del_undirected delete_edge_def 
+    by (metis (opaque_lifting, no_types) assms(1) del_undirected delete_edge_def 
         finite_Diff select_convs(2))
   have fin_V': "finite(nodes (del_unEdge v e v' G))" 
     by (metis (mono_tags) assms(2) del_undirected delete_edge_def select_convs(1))

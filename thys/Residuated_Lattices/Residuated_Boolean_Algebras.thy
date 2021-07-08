@@ -176,7 +176,7 @@ proof -
     by (metis conjugate_iff_def resf)
   hence "x \<sqinter> conjugate f (y \<sqinter> -z) = \<bottom>"
     apply (subgoal_tac "conjugate f (y \<sqinter> -z) \<le> conjugate f y \<sqinter> conjugate f (-z)")
-    apply (metis (no_types, hide_lams) dual_order.trans inf.commute inf_bot_iff_le inf_left_commute)
+    apply (metis (no_types, opaque_lifting) dual_order.trans inf.commute inf_bot_iff_le inf_left_commute)
     by (metis conj_iso inf_le2 inf_top.left_neutral le_inf_iff resf)
   hence "f(x) \<sqinter> y \<sqinter> -z = \<bottom>"
     by (metis conjugateI2 inf.assoc resf)

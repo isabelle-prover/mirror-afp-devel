@@ -431,8 +431,8 @@ lemma bij_map_Some:
   "bij_betw f a (Some ` b) \<Longrightarrow> bij_betw (the \<circ> f) a b"
   apply (simp add:bij_betw_def)
   apply (safe)
-    apply (metis (hide_lams, no_types) comp_inj_on_iff f_the_inv_into_f inj_on_inverseI option.sel)
-   apply (metis (hide_lams, no_types) image_iff option.sel)
+    apply (metis (opaque_lifting, no_types) comp_inj_on_iff f_the_inv_into_f inj_on_inverseI option.sel)
+   apply (metis (opaque_lifting, no_types) image_iff option.sel)
   apply (metis Option.these_def Some_image_these_eq image_image these_image_Some_eq)
   done
 
@@ -448,7 +448,7 @@ lemma ran_map_add [simp]:
     apply (rename_tac x a b y)
     apply (rule_tac x="b" in exI)
     apply (simp)
-   apply (metis (hide_lams, no_types) IntI domI image_iff)
+   apply (metis (opaque_lifting, no_types) IntI domI image_iff)
   apply (metis (full_types) map_add_None map_add_dom_app_simps(1) map_add_dom_app_simps(3) not_None_eq)
   done
 
@@ -537,7 +537,7 @@ lemma distinct_map_ran:
   apply (simp add:map_upds_def)
   apply (subgoal_tac "distinct (map fst (rev (zip xs ys)))")
   apply (simp add:ran_distinct)
-  apply (metis (hide_lams, no_types) image_iff set_zip_rightD surjective_pairing)
+  apply (metis (opaque_lifting, no_types) image_iff set_zip_rightD surjective_pairing)
   apply (simp add:zip_rev[THEN sym])
 done
 
@@ -613,7 +613,7 @@ theorem inv_map_inv:
      apply (simp)
      apply (rule some_equality)
       apply (simp)
-     apply (metis (hide_lams, mono_tags) domD domI dom_left_map_add inj_on_contraD map_add_Some map_add_dom_app_simps(3) option.sel)
+     apply (metis (opaque_lifting, mono_tags) domD domI dom_left_map_add inj_on_contraD map_add_Some map_add_dom_app_simps(3) option.sel)
     apply (simp add:dom_def)
    apply (metis ranI)
   apply (simp)

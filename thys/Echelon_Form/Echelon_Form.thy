@@ -240,7 +240,7 @@ next
         by (metis assms echelon_form_implies_echelon_form_upt)   
       have zero_j_k: "is_zero_row_upt_k j k A" 
         unfolding is_zero_row_upt_k_def
-        by (metis (hide_lams, mono_tags) Suc.hyps leD le_less_linear 
+        by (metis (opaque_lifting, mono_tags) Suc.hyps leD le_less_linear 
           j_eq_k to_nat_mono' upper_triangular_upt_k_def)
       hence zero_i_k: "is_zero_row_upt_k i k A" 
         by (metis (poly_guards_query) assms echelon_form_implies_echelon_form_upt 
@@ -860,7 +860,7 @@ proof -
       unfolding det_row_add'[OF not_sym[OF a_not_b]]
       unfolding mult_b_dp_def unfolding det_mult_row ..
     ultimately show ?thesis
-      by (metis (erased, hide_lams) False aj d_dvd_a dvd_0_left_iff mult_cancel_left1 mult_eq_0_iff)
+      by (metis (erased, opaque_lifting) False aj d_dvd_a dvd_0_left_iff mult_cancel_left1 mult_eq_0_iff)
   qed
 qed
 
@@ -1314,7 +1314,7 @@ next
       have "bezout_iterate ?B n i (from_nat k) bezout $ a $ (from_nat k) = ?B $ a $ from_nat k" 
       proof (rule bezout_iterate_preserves_below_n[OF _ ib])
         show "echelon_form_upt_k ?B k"
-          by (metis (erased, hide_lams) Suc.prems(1) Suc.prems(2) Suc.prems(4) Suc.prems(6) True
+          by (metis (erased, opaque_lifting) Suc.prems(1) Suc.prems(2) Suc.prems(4) Suc.prems(6) True
             echelon_form_upt_k_bezout_matrix from_nat_to_nat_id i_le_a ib)
         show "?B $ i $ from_nat k \<noteq> 0" 
           by (metis Suc.prems(2) bezout_matrix_not_zero i_not_fn ib)
@@ -2245,7 +2245,7 @@ proof (unfold to_nat_eq_0, rule Greatest_equality)
       show "k < ncols (interchange_rows A 0 (LEAST n. A $ n $ from_nat k \<noteq> 0))"
         using k unfolding ncols_def by simp
       show "to_nat a \<le> nrows A - Suc 0"
-        by (metis (erased, hide_lams) One_nat_def Suc_leI Suc_le_D diff_Suc_eq_diff_pred 
+        by (metis (erased, opaque_lifting) One_nat_def Suc_leI Suc_le_D diff_Suc_eq_diff_pred 
           not_le nrows_def to_nat_less_card zero_less_diff)
       show "is_zero_row_upt_k 0 k (interchange_rows A 0 (LEAST n. A $ n $ from_nat k \<noteq> 0))"
         by (metis all_zero interchange_rows_i is_zero_row_upt_k_def)

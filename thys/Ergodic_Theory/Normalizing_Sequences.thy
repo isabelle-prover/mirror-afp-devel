@@ -1049,7 +1049,7 @@ proof -
     qed
     have "ln (M n)/n \<le> ln (M 0)* (1/n) + ln L + (card (Bj \<inter> {..<n})/n) * ln (C^j)" if "n\<ge>1" for n
       using that apply (auto simp add: algebra_simps divide_simps)
-      by (metis (no_types, hide_lams) I add.assoc mult.commute mult_left_mono of_nat_0_le_iff semiring_normalization_rules(34))
+      by (metis (no_types, opaque_lifting) I add.assoc mult.commute mult_left_mono of_nat_0_le_iff semiring_normalization_rules(34))
     then have A: "eventually (\<lambda>n. ln (M n)/n \<le> ln (M 0)* (1/n) + ln L + (card (Bj \<inter> {..<n})/n) * ln (C^j)) sequentially"
       unfolding eventually_sequentially by blast
 

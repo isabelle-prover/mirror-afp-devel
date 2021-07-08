@@ -384,7 +384,7 @@ proof-
     \<Union>{if x \<in> FvarsT r then {u} else {} |u x. u \<in> var \<and> (Var u, x) \<in> set (zip (map Var us) (map snd txs))}"
   (is "\<dots> = ?R")
   apply(subst 00)
-  by (metis (no_types, hide_lams) FvarsT_Var)
+  by (metis (no_types, opaque_lifting) FvarsT_Var)
   finally have 0: "FvarsT \<chi> = ?R" .
   have 1: "FvarsT (rawpsubstT \<chi> (zip (map fst txs) us)) =
         (FvarsT \<chi> - set us) \<union>

@@ -270,7 +270,7 @@ proof-
   with assms show ?thesis
     apply (auto simp: simp del: distinct_swap)
     apply (metis index_nth_id list_update_same_conv)
-    apply (metis (erased, hide_lams) index_nth_id length_list_update list_update_swap nth_list_update_eq)
+    apply (metis (erased, opaque_lifting) index_nth_id length_list_update list_update_swap nth_list_update_eq)
     apply (metis index_nth_id length_list_update nth_list_update_eq)
     by (metis index_update_if_diff2 length_list_update nth_list_update)
 qed

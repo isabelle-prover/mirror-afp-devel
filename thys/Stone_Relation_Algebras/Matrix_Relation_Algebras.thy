@@ -322,7 +322,7 @@ next
     also have "... = (\<Squnion>\<^sub>k (if i = k then 1 else bot) * f (k,j))"
       by (simp add: one_matrix_def)
     also have "... = (\<Squnion>\<^sub>k if i = k then 1 * f (k,j) else bot * f (k,j))"
-      by (metis (full_types, hide_lams))
+      by (metis (full_types, opaque_lifting))
     also have "... = (\<Squnion>\<^sub>k if i = k then f (k,j) else bot)"
       by (meson mult_left_one mult_left_zero)
     also have "... = f (i,j)"
@@ -340,7 +340,7 @@ next
     also have "... = (\<Squnion>\<^sub>k f (i,k) * (if k = j then 1 else bot))"
       by (simp add: one_matrix_def)
     also have "... = (\<Squnion>\<^sub>k if k = j then f (i,k) * 1 else f (i,k) * bot)"
-      by (metis (full_types, hide_lams))
+      by (metis (full_types, opaque_lifting))
     also have "... = (\<Squnion>\<^sub>k if k = j then f (i,k) else bot)"
       by (meson mult.right_neutral semiring.mult_zero_right)
     also have "... = f (i,j)"

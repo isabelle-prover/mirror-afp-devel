@@ -890,7 +890,7 @@ using goodAbs_imp_qGoodAbs_pick alphaAbs_refl by auto
 lemma alphaAbs_imp_asAbs_equal:
 assumes "qGoodAbs qA" and "qA $= qB"
 shows "asAbs qA = asAbs qB"
-by (metis (no_types, hide_lams) proj_iff alphaAbsGood_def alphaAbsGood_equivP 
+by (metis (no_types, opaque_lifting) proj_iff alphaAbsGood_def alphaAbsGood_equivP 
  alphaAbs_preserves_qGoodAbs asAbs_def assms)
 
 lemma asAbs_equal_imp_alphaAbs:
@@ -956,7 +956,7 @@ proof(safe, rule ext)
     then obtain X' where inp': "inp' i = Some X'" and XX': "pick X = pick X'"
     unfolding lift_def by(cases "inp' i", auto)
     hence "good X \<and> good X'"
-    using inp good goodInp_def liftAll_def by (metis (hide_lams, full_types))
+    using inp good goodInp_def liftAll_def by (metis (opaque_lifting, full_types))
     hence "X = X'" using XX' by auto
     thus ?thesis unfolding inp inp' by simp
   qed
@@ -1134,7 +1134,7 @@ proof(safe, rule ext)
     then obtain A' where binp': "binp' i = Some A'" and AA': "pick A = pick A'"
     unfolding lift_def by(cases "binp' i", auto)
     hence "goodAbs A \<and> goodAbs A'"
-    using binp good goodBinp_def liftAll_def by (metis (hide_lams, full_types))
+    using binp good goodBinp_def liftAll_def by (metis (opaque_lifting, full_types))
     hence "A = A'" using AA' by auto
     thus ?thesis unfolding binp binp' by simp
   qed

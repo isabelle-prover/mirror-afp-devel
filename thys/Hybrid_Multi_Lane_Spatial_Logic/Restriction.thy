@@ -63,11 +63,11 @@ lemma restriction_un:
     
 lemma restriction_mon1:"(v=u--w) \<longrightarrow> restrict u f c \<sqsubseteq> restrict v f c" 
   using inf_mono nat_int.chop_subset1 restrict_def vchop_def
-  by (metis (no_types, hide_lams) order_refl)
+  by (metis (no_types, opaque_lifting) order_refl)
     
 lemma restriction_mon2:"(v=u--w) \<longrightarrow> restrict w f c \<sqsubseteq> restrict v f c" 
   using inf_mono nat_int.chop_subset2 restrict_def vchop_def 
-  by (metis (no_types, hide_lams) order_refl)
+  by (metis (no_types, opaque_lifting) order_refl)
 
 lemma restriction_disj:"(v=u--w) \<longrightarrow> (restrict u f c) \<sqinter> (restrict w f c) = \<emptyset>" 
 proof

@@ -1011,7 +1011,7 @@ proof(coinduction arbitrary: us vs)
       case (scons u' us')
       from \<open>pat \<noteq> \<bottom>\<close> scons \<open>us \<noteq> \<bottom>\<close> \<open>vs \<noteq> \<bottom>\<close>
       obtain usl vsl where splitl: "split\<cdot>pat\<cdot>us' = (usl, vsl)" "usl \<noteq> \<bottom>" "vsl \<noteq> \<bottom>" "usl :@ vsl = pat"
-        by (metis (no_types, hide_lams) Rep_cfun_strict1 prod.collapse sappend_strict sappend_strict2 split_pattern)
+        by (metis (no_types, opaque_lifting) Rep_cfun_strict1 prod.collapse sappend_strict sappend_strict2 split_pattern)
       from scons obtain l r where r: "rep2\<cdot>pat\<cdot>(us, vs) = Node\<cdot>(us, vs)\<cdot>l\<cdot>r" by (simp add: rep2.simps)
       moreover
       have "(\<exists>us vs. l = rep2\<cdot>pat\<cdot>(us, vs) \<and> us :@ vs = pat) \<or> K l"

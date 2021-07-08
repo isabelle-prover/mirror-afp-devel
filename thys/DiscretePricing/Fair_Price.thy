@@ -1923,7 +1923,7 @@ lemma (in disc_filtr_prob_space) coincides_on_stocks_viable:
   assumes "coincides_on Mkt Mkt2 (stocks Mkt)"
   and "viable_market Mkt"
 shows "viable_market Mkt2" using coincides_on_arbitrage
-  by (metis (mono_tags, hide_lams) assms(1) assms(2) coincides_on_def stock_portfolio_def viable_market_def)
+  by (metis (mono_tags, opaque_lifting) assms(1) assms(2) coincides_on_def stock_portfolio_def viable_market_def)
 
 
 lemma coincides_stocks_val_process:
@@ -2335,7 +2335,7 @@ proof -
       price_structure_init[of der matur \<pi> pr] by (simp add: \<open>w \<in> space M\<close>)
     also have "... = (\<pi> - initial_value pf) - \<pi> + (initial_value pf)" using initial_valueI assms unfolding replicating_portfolio_def
       using \<open>w \<in> space M\<close> coincides_stocks_cls_val_process self_financingE readable
-      by (metis (no_types, hide_lams) support_adapt_def stock_portfolio_def subsetCE)
+      by (metis (no_types, opaque_lifting) support_adapt_def stock_portfolio_def subsetCE)
     also have "... = 0" by simp
     finally show "cls_val_process Mkt2 contr_pf 0 w = 0" .
   qed
@@ -3097,7 +3097,7 @@ proof (rule disc_martingale_charact)
   show "filtration N F" using assms by (simp  add:filt_equiv_filtration)
   have "borel_adapt_stoch_proc F (discounted_value r (cls_val_process Mkt pf))" using assms discounted_adapted
     cls_val_process_adapted[of pf] stock_portfolio_def
-    by (metis (mono_tags, hide_lams) support_adapt_def readable subsetCE)
+    by (metis (mono_tags, opaque_lifting) support_adapt_def readable subsetCE)
   thus "\<forall>m. discounted_value r (cls_val_process Mkt pf) m \<in> borel_measurable (F m)" unfolding adapt_stoch_proc_def by simp
   show "\<forall>t. integrable N (discounted_value r (cls_val_process Mkt pf) t)"
   proof
@@ -3389,7 +3389,7 @@ proof -
   have "discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N"
     using assms(3) disc_equity_market.replicating_portfolio_def disc_equity_market_axioms discounted_adapted
     filtrated_prob_space.borel_adapt_stoch_proc_borel_measurable fn cls_val_process_adapted
-    by (metis (no_types, hide_lams) support_adapt_def readable  stock_portfolio_def subsetCE)
+    by (metis (no_types, opaque_lifting) support_adapt_def readable  stock_portfolio_def subsetCE)
   have "discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N"
   proof -
     have "(\<lambda>m. pyf) matur \<in> borel_measurable (F matur)" using assms by simp

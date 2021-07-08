@@ -1385,7 +1385,7 @@ proof -
   hence "q * u + (1 - q) * d = 1+r" using S0_positive by simp
   hence "q * u + d - q * d = 1+r" by (simp add: left_diff_distrib)
   hence "q * (u - d) = 1 + r - d"
-    by (metis (no_types, hide_lams) add.commute add.left_commute add_diff_cancel_left' add_uminus_conv_diff left_diff_distrib mult.commute)
+    by (metis (no_types, opaque_lifting) add.commute add.left_commute add_diff_cancel_left' add_uminus_conv_diff left_diff_distrib mult.commute)
   thus "q = (1 + r - d) / (u - d)" using down_lt_up
     by (metis add.commute add.right_neutral diff_add_cancel nonzero_eq_divide_eq order_less_irrefl)
 qed
@@ -3024,7 +3024,7 @@ proof -
             thus ?thesis by simp
           qed
           also have "... = (1+r) * X n w + (- V (Suc n) (pseudo_proj_True n w) * q + V (Suc n) (pseudo_proj_False n w)* q)"
-            by (metis (no_types, hide_lams) add.inverse_inverse distrib_right minus_mult_commute minus_real_def mult_minus_left)
+            by (metis (no_types, opaque_lifting) add.inverse_inverse distrib_right minus_mult_commute minus_real_def mult_minus_left)
           also have "... = (1+r) * X n w - q * V (Suc n) (pseudo_proj_True n w) + q * V (Suc n) (pseudo_proj_False n w)" by simp
           also have "... = (1+r) * V n w -q * V (Suc n) (pseudo_proj_True n w) +
             q * V (Suc n) (pseudo_proj_False n w)" using \<open>X n w = V n w\<close> by simp

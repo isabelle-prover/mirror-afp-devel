@@ -2200,7 +2200,7 @@ lemma(in monoid)  nat_pow_of_inv:
   fixes n::nat 
   assumes "a \<in> Units G"
   shows "inv a[^] n = inv (a[^] n)"
-  by (metis (no_types, hide_lams) Units_inv_Units Units_inv_closed Units_inv_inv Units_pow_closed
+  by (metis (no_types, opaque_lifting) Units_inv_Units Units_inv_closed Units_inv_inv Units_pow_closed
       Units_r_inv assms inv_unique' nat_pow_closed nat_pow_one pow_mult_distrib)
     
 lemma(in monoid)  int_pow_of_inv:

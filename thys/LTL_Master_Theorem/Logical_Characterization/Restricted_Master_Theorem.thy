@@ -103,9 +103,9 @@ proof -
       apply (cases "\<psi> \<in> subformulas\<^sub>\<nu> \<chi>2")
        apply (meson le_supI1 le_supI2 subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subfrmlsn subformulas\<^sub>\<nu>_subset subset_eq subset_insertI2)
       apply (cases "\<psi> \<in> subformulas\<^sub>\<mu> \<chi>1")
-       apply (metis (no_types, hide_lams) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
+       apply (metis (no_types, opaque_lifting) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
       apply simp
-      by (metis (no_types, hide_lams) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
+      by (metis (no_types, opaque_lifting) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
   next
     case (Release_ltln \<chi>1 \<chi>2)
     then show ?case by simp blast
@@ -123,9 +123,9 @@ proof -
       apply (cases "\<psi> \<in> subformulas\<^sub>\<nu> \<chi>2")
        apply (meson le_supI1 le_supI2 subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subfrmlsn subformulas\<^sub>\<nu>_subset subset_eq subset_insertI2)
       apply (cases "\<psi> \<in> subformulas\<^sub>\<mu> \<chi>1")
-       apply (metis (no_types, hide_lams) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
+       apply (metis (no_types, opaque_lifting) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
       apply simp
-      by (metis (no_types, hide_lams) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
+      by (metis (no_types, opaque_lifting) Un_insert_right subformulas\<^sub>\<mu>_subfrmlsn subformulas\<^sub>\<mu>_subset subformulas\<^sub>\<nu>_subset subsetD sup.coboundedI2 sup_commute)
   qed auto
 
   ultimately

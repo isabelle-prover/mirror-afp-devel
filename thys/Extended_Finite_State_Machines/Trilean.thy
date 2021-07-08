@@ -134,22 +134,22 @@ next
   case 3
   then show ?case
     apply simp
-    by (metis (no_types, hide_lams) plus_trilean.simps(1) plus_trilean.simps(4) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) trilean.exhaust)
+    by (metis (no_types, opaque_lifting) plus_trilean.simps(1) plus_trilean.simps(4) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) trilean.exhaust)
 next
   case "4_1"
   then show ?case
     apply simp
-    by (metis (no_types, hide_lams) plus_trilean.simps(1) plus_trilean.simps(5) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
+    by (metis (no_types, opaque_lifting) plus_trilean.simps(1) plus_trilean.simps(5) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
 next
   case "4_2"
   then show ?case
     apply simp
-    by (metis (no_types, hide_lams) plus_trilean.simps(1) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
+    by (metis (no_types, opaque_lifting) plus_trilean.simps(1) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
 next
   case 5
   then show ?case
     apply simp
-    by (metis (no_types, hide_lams) plus_trilean.simps(1) plus_trilean.simps(6) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
+    by (metis (no_types, opaque_lifting) plus_trilean.simps(1) plus_trilean.simps(6) plus_trilean.simps(7) times_trilean.simps(1) times_trilean.simps(4) times_trilean.simps(5) times_trilean.simps(6) times_trilean.simps(7) trilean.exhaust)
 qed
 
 instance
@@ -254,7 +254,7 @@ lemma maybe_not_eq: "(\<not>? x = \<not>? y) = (x = y)"
 
 lemma de_morgans_1:
   "\<not>? (a \<or>? b) = (\<not>?a) \<and>? (\<not>?b)"
-  by (metis (no_types, hide_lams) add.commute invalid_maybe_and maybe_and_idempotent maybe_and_one maybe_not.elims maybe_not.simps(1) maybe_not.simps(3) maybe_not_invalid maybe_or_zero plus_trilean.simps(1) plus_trilean.simps(4) times_trilean.simps(1) times_trilean_commutative trilean.exhaust trilean.simps(6))
+  by (metis (no_types, opaque_lifting) add.commute invalid_maybe_and maybe_and_idempotent maybe_and_one maybe_not.elims maybe_not.simps(1) maybe_not.simps(3) maybe_not_invalid maybe_or_zero plus_trilean.simps(1) plus_trilean.simps(4) times_trilean.simps(1) times_trilean_commutative trilean.exhaust trilean.simps(6))
 
 lemma de_morgans_2:
   "\<not>? (a \<and>? b) = (\<not>?a) \<or>? (\<not>?b)"

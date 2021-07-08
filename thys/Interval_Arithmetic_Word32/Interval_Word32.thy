@@ -2234,7 +2234,7 @@ next
     using f3 a2 by fastforce
   have rule:"\<And>c. c > 0 \<Longrightarrow> r1 \<ge> c \<and> r2 \<le> -1 \<Longrightarrow> r1 * r2 \<le> -c"
     apply auto
-    by (metis (no_types, hide_lams) f5 mult_less_cancel_left_pos 
+    by (metis (no_types, opaque_lifting) f5 mult_less_cancel_left_pos 
         mult_minus1_right neg_le_iff_le not_less)
   have "r1 * r2 \<le> NegInf"
     using "PosNeg" f6 fact rule[of PosInf] a1

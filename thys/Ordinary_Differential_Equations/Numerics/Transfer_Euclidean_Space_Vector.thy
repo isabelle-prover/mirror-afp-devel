@@ -370,7 +370,7 @@ lemma blinfun_of_matrix_transfer[transfer_rule]:
     done
   subgoal for a b c d e f g
     apply (clarsimp simp: inner_Basis)
-    by (metis (full_types, hide_lams) Basis_list_transfer dim index_Basis_list_nth length_Basis_list
+    by (metis (full_types, opaque_lifting) Basis_list_transfer dim index_Basis_list_nth length_Basis_list
         list_all2_conv_all_nth)
   done
 

@@ -60,7 +60,7 @@ proof (intro_classes)
   show "0 = (Abs::int \<Rightarrow> 'a mod_ring) 0"
     by (simp add: Abs_mod_ring_def)
   show "1 = (Abs::int \<Rightarrow> 'a mod_ring) 1"
-    by (metis (mono_tags, hide_lams) Abs_mod_ring_def of_int_hom.hom_one of_int_of_int_mod_ring)
+    by (metis (mono_tags, opaque_lifting) Abs_mod_ring_def of_int_hom.hom_one of_int_of_int_mod_ring)
   fix x y::"'a mod_ring"
   show "x + y = Abs ((Rep x + Rep y) mod int CARD('a mod_ring))"
     unfolding Abs_mod_ring_def Rep_mod_ring_def by (transfer, auto)

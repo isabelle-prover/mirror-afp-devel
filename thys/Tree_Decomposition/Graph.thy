@@ -291,7 +291,7 @@ next
     assume "xs \<noteq> ys"
     hence "\<exists>ps xs' ys'. xs = ps @ xs' \<and> ys = ps @ ys' \<and> (xs' = Nil \<or> ys' = Nil \<or> hd xs' \<noteq> hd ys')"
       by (induct xs ys rule: list_induct2', blast, blast, blast)
-         (metis (no_types, hide_lams) append_Cons append_Nil list.sel(1))
+         (metis (no_types, opaque_lifting) append_Cons append_Nil list.sel(1))
     then obtain ps xs' ys' where
       ps: "xs = ps @ xs'" "ys = ps @ ys'" "xs' = Nil \<or> ys' = Nil \<or> hd xs' \<noteq> hd ys'" by blast
 

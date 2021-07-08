@@ -1037,7 +1037,7 @@ lemma add_mult_aligned_neg_mask:
   \<open>(x + y * m) AND NOT(mask n) = (x AND NOT(mask n)) + y * m\<close>
   if \<open>m AND (2 ^ n - 1) = 0\<close>
   for x y m :: \<open>'a::len word\<close>
-  by (metis (no_types, hide_lams)
+  by (metis (no_types, opaque_lifting)
     add.assoc add.commute add.right_neutral add_uminus_conv_diff
    mask_eq_decr_exp mask_eqs(2) mask_eqs(6) mult.commute mult_zero_left
    subtract_mask(1) that)
@@ -1221,7 +1221,7 @@ lemma ucast_add:
 lemma ucast_minus:
   "ucast (a - (b :: 'a :: len word)) = ucast a - (ucast b :: ('a signed word))"
   apply (insert ucast_add[where a=a and b="-b"])
-  apply (metis (no_types, hide_lams) add_diff_eq diff_add_cancel ucast_add)
+  apply (metis (no_types, opaque_lifting) add_diff_eq diff_add_cancel ucast_add)
   done
 
 lemma scast_ucast_add_one [simp]:

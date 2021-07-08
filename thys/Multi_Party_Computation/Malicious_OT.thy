@@ -554,7 +554,7 @@ proof-
     have "[(r * u1 + v1) = (r * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G>)] (mod (order \<G>))"
     proof-
       have "[(r * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G>) = r * (s + u1) + (r * order \<G> - r * s + v1)] (mod (order \<G>))" 
-        by (metis (no_types, hide_lams) cong_def mod_add_left_eq mod_add_right_eq mod_mult_right_eq)
+        by (metis (no_types, opaque_lifting) cong_def mod_add_left_eq mod_add_right_eq mod_mult_right_eq)
       hence "[(r * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G>) = r * s + r * u1 + r * order \<G> - r * s + v1] (mod (order \<G>))" 
         by (metis (no_types, lifting) Nat.add_diff_assoc add.assoc assms distrib_left less_or_eq_imp_le mult_le_mono)
       hence "[(r * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G>) = r * u1 + r * order \<G> + v1] (mod (order \<G>))" by simp
@@ -831,7 +831,7 @@ proof-
               have "\<forall>n na. \<not> n \<le> na \<or> \<not> na * order \<G> < n * nat (fst (bezw t (order \<G>)) mod int (order \<G>))"
                 by (meson \<open>nat (fst (bezw (t::nat) (order \<G>)) mod int (order \<G>)) \<le> order \<G>\<close> mult_le_mono not_le)
               then show ?thesis
-                by(metis  (no_types, hide_lams) \<open>(s::nat) < order \<G>\<close> mult_less_cancel2 nat_less_le not_le not_less_zero)
+                by(metis  (no_types, opaque_lifting) \<open>(s::nat) < order \<G>\<close> mult_less_cancel2 nat_less_le not_le not_less_zero)
             qed
           qed
           thus ?thesis using False
@@ -933,7 +933,7 @@ proof-
             using \<open>[(t::nat) * ((order \<G> * order \<G> - (s::nat) * nat (fst (bezw t (order \<G>)) mod int (order \<G>)) + (x::nat)) mod order \<G> + s * nat (fst (bezw t (order \<G>)) mod int (order \<G>))) = t * (order \<G> * order \<G> - s * nat (fst (bezw t (order \<G>)) mod int (order \<G>)) + x + s * nat (fst (bezw t (order \<G>)) mod int (order \<G>)))] (mod order \<G>)\<close> by auto
         qed
         thus ?thesis 
-          by (metis (no_types, hide_lams) add.commute cong_def mod_mult_right_eq mod_mult_self1)
+          by (metis (no_types, opaque_lifting) add.commute cong_def mod_mult_right_eq mod_mult_self1)
       qed
       thus ?thesis using finite_group pow_generator_eq_iff_cong  by blast
     qed
@@ -969,7 +969,7 @@ proof-
       using eq 
       by (simp add: distrib_left mult.commute semiring_normalization_rules(18))
     hence "[t * (u0 + (s * (nat ((fst (bezw t (order \<G>))) mod order \<G>)))) = t * u0 + s * (t * (fst (bezw t (order \<G>))))] (mod order \<G>)"
-      by (metis (no_types, hide_lams) cong_def mod_add_right_eq mod_mult_right_eq)
+      by (metis (no_types, opaque_lifting) cong_def mod_add_right_eq mod_mult_right_eq)
     hence "[t * (u0 + (s * (nat ((fst (bezw t (order \<G>))) mod order \<G>)))) = t * u0 + s * 1] (mod order \<G>)" using inverse_t'  
       using cong_trans cong_int_iff by blast
     thus ?thesis by simp

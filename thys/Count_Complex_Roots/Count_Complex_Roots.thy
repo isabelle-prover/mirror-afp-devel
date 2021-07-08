@@ -1767,7 +1767,7 @@ next
       have "w r =  winding_number ((\<lambda>x. pc*x - pc*a) \<circ> (g r)) 0"
         unfolding w_def pc_def g_def q_def
         apply auto
-        by (metis (no_types, hide_lams) add.right_neutral mult.commute mult_zero_right 
+        by (metis (no_types, opaque_lifting) add.right_neutral mult.commute mult_zero_right 
             poly_0 poly_pCons uminus_add_conv_diff)
       also have "... =  winding_number (g r) a "
         apply (subst winding_number_comp_linear[where b="-pc*a",simplified])

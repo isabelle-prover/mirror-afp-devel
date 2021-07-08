@@ -3204,16 +3204,16 @@ lemma insert_before_writes:
        |h \<turnstile> get_owner_document (cast child)|\<^sub>r |h \<turnstile> get_owner_document ptr|\<^sub>r) (insert_before ptr child ref) h h'"
   apply(auto simp add: insert_before_def insert_before_locs_def a_insert_node_def 
       intro!: writes_bind)[1]
-       apply (metis (no_types, hide_lams) ensure_pre_insertion_validity_pure local.adopt_node_writes 
+       apply (metis (no_types, opaque_lifting) ensure_pre_insertion_validity_pure local.adopt_node_writes 
                     local.get_owner_document_pure next_sibling_pure pure_returns_heap_eq 
                     select_result_I2 sup_commute writes_union_right_I)
-      apply (metis (no_types, hide_lams) ensure_pre_insertion_validity_pure next_sibling_pure 
+      apply (metis (no_types, opaque_lifting) ensure_pre_insertion_validity_pure next_sibling_pure 
                    pure_returns_heap_eq select_result_I2 set_disconnected_nodes_writes 
                    writes_union_right_I)
      apply (simp add: set_child_nodes_writes writes_union_left_I writes_union_right_I)
-    apply (metis (no_types, hide_lams) adopt_node_writes ensure_pre_insertion_validity_pure 
+    apply (metis (no_types, opaque_lifting) adopt_node_writes ensure_pre_insertion_validity_pure 
                  get_owner_document_pure pure_returns_heap_eq select_result_I2 writes_union_left_I)
-   apply (metis (no_types, hide_lams) ensure_pre_insertion_validity_pure pure_returns_heap_eq 
+   apply (metis (no_types, opaque_lifting) ensure_pre_insertion_validity_pure pure_returns_heap_eq 
                 select_result_I2 set_disconnected_nodes_writes writes_union_right_I)
   by (simp add: set_child_nodes_writes writes_union_left_I writes_union_right_I)                      
 end

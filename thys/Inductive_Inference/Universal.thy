@@ -715,7 +715,7 @@ proof -
     next
       case (Suc t)
       then show ?case
-        using h_inj by (metis (no_types, hide_lams) le_Suc_eq less_not_refl3 less_trans)
+        using h_inj by (metis (no_types, opaque_lifting) le_Suc_eq less_not_refl3 less_trans)
     qed
 
     have "nonterminating (?stack, None)"

@@ -486,7 +486,7 @@ proof -
     using threshold_properties(2)[OF assms(1)] by blast
   hence "\<forall>m. \<exists>j. \<G>' \<Turnstile>\<^sub>P af\<^sub>G \<psi> ((suffix l w) [m \<rightarrow> j])"
     unfolding subsequence_shift using \<open>k \<le> l\<close> \<open>\<forall>i \<ge> k. \<exists>j. \<G>' \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [i \<rightarrow> j])\<close> 
-    by (metis (mono_tags, hide_lams) leI less_imp_add_positive order_refl subsequence_empty trans_le_add1)
+    by (metis (mono_tags, opaque_lifting) leI less_imp_add_positive order_refl subsequence_empty trans_le_add1)
   ultimately
   show ?thesis
     by simp

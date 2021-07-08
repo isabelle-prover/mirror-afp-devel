@@ -297,7 +297,7 @@ proof-
   moreover have "\<dots> = select_index (Suc n) i (2*k)"
   proof-
     have "i < n" using assms(2) select_index_def
-      by (metis (no_types, hide_lams) Suc_eq_plus1 assms(1) calculation diff_diff_left diff_le_self 
+      by (metis (no_types, opaque_lifting) Suc_eq_plus1 assms(1) calculation diff_diff_left diff_le_self 
 diff_self_eq_0 div_by_1 le_0_eq le_eq_less_or_eq less_imp_diff_less mod_div_trivial mult.left_neutral mult_eq_0_iff mult_le_mono1 not_less plus_1_eq_Suc power_0 semiring_normalization_rules(7))
     thus ?thesis
       using select_index_div_2 assms(1) select_index_def by(metis Suc_1 Suc_eq_plus1 Suc_mult_less_cancel1 power_Suc)
@@ -319,7 +319,7 @@ proof-
       by (smt Suc_1 Suc_eq_plus1 Suc_le_lessD Suc_le_mono add_Suc_right distrib_left_numeral le_add_diff_inverse mult_le_mono2 nat_mult_1_right one_le_numeral one_le_power plus_1_eq_Suc power_add power_one_right)
     moreover have "i < n" 
       using assms(2) select_index_def
-      by (metis (no_types, hide_lams) add_cancel_left_left add_diff_inverse_nat diff_le_self div_by_1 le_antisym less_le_trans less_one mod_div_trivial not_le power_0)
+      by (metis (no_types, opaque_lifting) add_cancel_left_left add_diff_inverse_nat diff_le_self div_by_1 le_antisym less_le_trans less_one mod_div_trivial not_le power_0)
     ultimately show ?thesis
       using select_index_div_2[of "2*k+1" "n" i] select_index_def
       by (metis Nat.le_diff_conv2 Suc_eq_plus1 Suc_leI assms(2) diff_Suc_1 less_imp_le less_power_add_imp_div_less one_le_numeral one_le_power power_one_right)

@@ -118,7 +118,7 @@ lemma af\<^sub>\<nu>_lifted_semantics:
   "\<up>af\<^sub>\<nu> X (Abs \<xi>, Abs \<zeta>) w = (Abs (fst (af\<^sub>\<nu> X (\<xi>, \<zeta>) w)), Abs (snd (af\<^sub>\<nu> X (\<xi>, \<zeta>) w)))"
   apply (induction w rule: rev_induct) 
    apply (auto simp: af_letter\<^sub>\<nu>_lifted_def af_letter\<^sub>\<nu>_lifted_semantics af_letter_lifted_semantics)
-  by (metis (no_types, hide_lams) af_letter\<^sub>\<nu>_lifted_def af\<^sub>\<nu>_fst af_letter\<^sub>\<nu>_lifted_semantics eq_fst_iff prod.sel(2))
+  by (metis (no_types, opaque_lifting) af_letter\<^sub>\<nu>_lifted_def af\<^sub>\<nu>_fst af_letter\<^sub>\<nu>_lifted_semantics eq_fst_iff prod.sel(2))
 
 
 
@@ -526,7 +526,7 @@ lemma \<CC>_nodes:
   unfolding \<CC>_def dca.nodes_alt_def dca.reachable_alt_def
   apply (auto simp add: af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics)
   using af\<^sub>\<nu>_fst_nested_prop_atoms apply force
-  by (metis (no_types, hide_lams) GF_advice_nested_prop_atoms\<^sub>\<nu> af\<^sub>\<nu>_snd_nested_prop_atoms fst_eqD nested_prop_atoms\<^sub>\<nu>_subset normalise_nested_propos order_refl order_trans snd_eqD sup.order_iff)
+  by (metis (no_types, opaque_lifting) GF_advice_nested_prop_atoms\<^sub>\<nu> af\<^sub>\<nu>_snd_nested_prop_atoms fst_eqD nested_prop_atoms\<^sub>\<nu>_subset normalise_nested_propos order_refl order_trans snd_eqD sup.order_iff)
 
 
 

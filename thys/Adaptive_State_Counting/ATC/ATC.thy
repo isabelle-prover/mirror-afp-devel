@@ -171,7 +171,7 @@ proof
   proof (rule ccontr)
     assume assm : "\<not> IO M q Leaf \<subseteq> {[]}"
     then obtain io_hd io_tl where elem_ex : "Cons io_hd io_tl \<in> IO M q Leaf" 
-      by (metis (no_types, hide_lams) insertI1 neq_Nil_conv subset_eq) 
+      by (metis (no_types, opaque_lifting) insertI1 neq_Nil_conv subset_eq) 
     then show "False" 
       using atc_reaction_nonempty_no_leaf assm by (metis IO.simps mem_Collect_eq)
   qed  
@@ -738,7 +738,7 @@ proof
   then obtain res where res_def : "ioR = io @ res" "res \<in> B M1 io \<Omega>" 
     by auto
   then have "res \<in> B M2 io \<Omega>" 
-    using assms B_reduction by (metis (no_types, hide_lams) subset_iff)
+    using assms B_reduction by (metis (no_types, opaque_lifting) subset_iff)
   then show "ioR \<in> append_io_B M2 io \<Omega>" 
     using ioR_assm res_def by auto
 qed 

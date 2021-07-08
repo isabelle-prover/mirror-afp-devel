@@ -1430,12 +1430,12 @@ next
       show ?thesis
       proof-
         have P0: " (a \<ominus> \<alpha>) \<in> nonzero Zp"
-          by (metis (mono_tags, hide_lams) F1 not_eq_diff_nonzero 
+          by (metis (mono_tags, opaque_lifting) F1 not_eq_diff_nonzero 
               \<open>Zp_converges_to ns \<alpha>\<close> a_closed Zp_converges_to_def fa_nonzero)
         have P1: "(\<alpha> \<ominus> (ns K)) \<in> nonzero Zp"
           using False not_eq_diff_nonzero \<open>Zp_converges_to ns \<alpha>\<close> 
             Zp_converges_to_def newton_seq_closed
-          by (metis (mono_tags, hide_lams))
+          by (metis (mono_tags, opaque_lifting))
         have P2: "a \<ominus> (ns K) \<in> nonzero Zp"
           using F22 not_eq_diff_nonzero 
                 a_closed newton_seq_closed 
@@ -1715,7 +1715,7 @@ next
     using alpha_def order_less_le by blast    
   thus ?thesis 
     using 0  
-    by (metis (no_types, hide_lams) R.minus_closed alpha_def(1-3) assms(2) equal_val_Zp val_Zp_ultrametric_eq')
+    by (metis (no_types, opaque_lifting) R.minus_closed alpha_def(1-3) assms(2) equal_val_Zp val_Zp_ultrametric_eq')
 qed
 
 (**************************************************************************************************)

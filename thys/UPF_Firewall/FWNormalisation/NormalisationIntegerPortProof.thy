@@ -470,7 +470,7 @@ next
       apply (case_tac "xs = []", simp_all)
       unfolding removeShadowRules1_alternative_def
        apply (case_tac x, simp_all)
-      by (metis (no_types, hide_lams) CConcEnd2 CConcStart C_DenyAll RS1n_nMT aux114 
+      by (metis (no_types, opaque_lifting) CConcEnd2 CConcStart C_DenyAll RS1n_nMT aux114 
           domIff removeShadowRules1_alternative_def 
           removeShadowRules1_alternative_rev.simps(2) rev.simps(2))
     done 

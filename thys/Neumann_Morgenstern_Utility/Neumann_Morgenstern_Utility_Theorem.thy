@@ -235,7 +235,7 @@ lemma non_unique_continuous_unfolding:
 proof -
   have "\<forall>p q. p\<in> (lotteries_on outcomes) \<and> q \<in> (lotteries_on outcomes) \<longleftrightarrow> p \<succeq>[\<R>] q \<or> q \<succeq>[\<R>] p"
     using assms rational_preference.compl[of "lotteries_on outcomes" \<R>]
-    by (metis (no_types, hide_lams) preference_def rational_preference_def)
+    by (metis (no_types, opaque_lifting) preference_def rational_preference_def)
   then show ?thesis
     using continuous_vnmD[OF assms(1)] by (metis assms(3) assms(4))
 qed

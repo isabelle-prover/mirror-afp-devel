@@ -240,7 +240,7 @@ proof (rule ccontr)
     with m_reset have "\<not> af\<^sub>F \<phi> (F\<^sub>n \<phi>) (w [0 \<rightarrow> i]) \<sim> true\<^sub>n"
       by (metis (mono_tags, lifting) Max_ge_iff Suc_n_not_le_n \<open>finite resets\<close> empty_Collect_eq m_def mem_Collect_eq resets_def)
     with m_reset have "\<not> af\<^sub>F \<phi>  (F\<^sub>n \<phi>)(w [m \<rightarrow> i]) \<sim> true\<^sub>n"
-      by (metis (mono_tags, hide_lams) \<open>m \<le> i\<close> af\<^sub>F_segments bot_nat_def le0 subsequence_append_general)
+      by (metis (mono_tags, opaque_lifting) \<open>m \<le> i\<close> af\<^sub>F_segments bot_nat_def le0 subsequence_append_general)
   }
 
   then have "\<nexists>j. af\<^sub>F \<phi> (F\<^sub>n \<phi>) (w [m \<rightarrow> j]) \<sim> true\<^sub>n"
@@ -275,7 +275,7 @@ proof
     with m_reset have "\<not> af\<^sub>G \<phi> (G\<^sub>n \<phi>) (w [0 \<rightarrow> i]) \<sim> false\<^sub>n"
       by (metis (mono_tags, lifting) Max_ge_iff Suc_n_not_le_n \<open>finite resets\<close> empty_Collect_eq m_def mem_Collect_eq resets_def)
     with m_reset have "\<not> af\<^sub>G \<phi> (G\<^sub>n \<phi>) (w [m \<rightarrow> i]) \<sim> false\<^sub>n"
-      by (metis (mono_tags, hide_lams) \<open>m \<le> i\<close> af\<^sub>G_segments bot_nat_def le0 subsequence_append_general)
+      by (metis (mono_tags, opaque_lifting) \<open>m \<le> i\<close> af\<^sub>G_segments bot_nat_def le0 subsequence_append_general)
   }
 
   then have "\<forall>j. \<not> af\<^sub>G \<phi> (G\<^sub>n \<phi>) (w [m \<rightarrow> j]) \<sim> false\<^sub>n"

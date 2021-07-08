@@ -41,7 +41,7 @@ lemma nuc_prop1: "nucleus f \<Longrightarrow> f (x \<cdot> y) = f (x \<cdot> f y
 lemma nuc_prop2: "nucleus f \<Longrightarrow> f (x \<cdot> y) = f (f x \<cdot> y)"
   apply (rule antisym)
   apply (simp add: clop_extensive_var clop_iso_var nsrnq.mult_isor nucleus_def)
-  by (metis (mono_tags, hide_lams) clop_alt nuc_prop1 nucleus_def)
+  by (metis (mono_tags, opaque_lifting) clop_alt nuc_prop1 nucleus_def)
 
 lemma nuc_comp_prop: "nucleus f \<Longrightarrow>  f (f x \<cdot> f y) = f (x \<cdot> y)"
   using nuc_prop1 nuc_prop2 by force
@@ -373,7 +373,7 @@ lemma downset_Sup_pres: "\<down> (\<Squnion>X) = (\<down> \<circ> Sup) (\<Union>
   by (metis downset_Sup_pres_var downset_set_prop_var)  
 
 lemma downset_comp_pres: "\<down> ((x::'a::quantale) \<cdot> y) = (\<down> \<circ> Sup) (\<down>x \<cdot> \<down>y)"
-  by (metis (no_types, hide_lams) Sup_downset_adj_var comp_apply comp_dist_mix downset_iso_iff dual_order.antisym order_refl)
+  by (metis (no_types, opaque_lifting) Sup_downset_adj_var comp_apply comp_dist_mix downset_iso_iff dual_order.antisym order_refl)
 
 text \<open>This finishes the proof of Theorem 3.1.2.\<close>
  

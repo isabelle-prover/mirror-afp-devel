@@ -784,7 +784,7 @@ proof -
   obtain sc' where "h \<turnstile> get_scdom_component root \<rightarrow>\<^sub>r sc'"
     by (meson assms(1) assms(2) assms(3) local.get_scdom_component_ok select_result_I)
   ultimately show ?thesis
-    by (metis (no_types, hide_lams) IntE \<open>\<And>thesis. (\<And>sc'. h \<turnstile> get_scdom_component root \<rightarrow>\<^sub>r sc' \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
+    by (metis (no_types, opaque_lifting) IntE \<open>\<And>thesis. (\<And>sc'. h \<turnstile> get_scdom_component root \<rightarrow>\<^sub>r sc' \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
         \<open>\<And>thesis. (\<And>sc. h \<turnstile> get_scdom_component ptr' \<rightarrow>\<^sub>r sc \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> assms(1) assms(2) assms(3) empty_subsetI
         local.get_scdom_component_ptrs_same_scope_component returns_result_eq select_result_I2 subsetI subset_antisym)
 qed

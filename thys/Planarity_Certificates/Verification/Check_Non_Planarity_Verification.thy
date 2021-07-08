@@ -36,7 +36,7 @@ next
   have "distinct (inner_verts es)"
     apply (rule snoc.hyps)
       using snoc.prems apply (auto dest: progressing_appendD1)
-    apply (metis (hide_lams, no_types) disjoint_iff_not_equal in_set_inner_verts_appendI_l)
+    apply (metis (opaque_lifting, no_types) disjoint_iff_not_equal in_set_inner_verts_appendI_l)
     done
   show ?case
   proof (rule ccontr)
@@ -1625,7 +1625,7 @@ lemma is_K5_inner_step:
   shows "is_K5_inner_inv G k (Suc l)"
   using assms distinct_ig_verts unfolding is_K5_inner_inv_def
   apply (auto elim: less_SucE)
-  by (metis (hide_lams, no_types) Suc_lessD less_SucE less_trans_Suc linorder_neqE_nat nth_eq_iff_index_eq)
+  by (metis (opaque_lifting, no_types) Suc_lessD less_SucE less_trans_Suc linorder_neqE_nat nth_eq_iff_index_eq)
 
 lemma iK5E:
   assumes "K\<^bsub>5\<^esub> (mk_graph' G)"

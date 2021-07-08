@@ -359,7 +359,7 @@ proof -
     using mem_existence_ivl_iv_defined t by blast+
   show "t0 \<in> existence_ivl t (flow t0 x0 t)"
     using assms
-    by (metis (no_types, hide_lams) closed_segment_commute closed_segment_subset_interval
+    by (metis (no_types, opaque_lifting) closed_segment_commute closed_segment_subset_interval
         ends_in_segment(2) general.csol(2-4)
         general.existence_ivl_maximal_segment general.is_interval_existence_ivl
         is_interval_closed_segment_1 iv_defined ll_on_open_it.equals_flowI
@@ -872,7 +872,7 @@ proof -
     using iv_defined b
     by (auto simp: seg_def closed_segment_eq_real_ivl
         intro!: compact_continuous_image continuous_at_imp_continuous_on flow_continuous;
-      metis (erased, hide_lams) atLeastAtMost_iff closed_segment_eq_real_ivl
+      metis (erased, opaque_lifting) atLeastAtMost_iff closed_segment_eq_real_ivl
         closed_segment_subset_existence_ivl contra_subsetD order.trans)
   moreover note open_domain(2)
   moreover have "seg \<subseteq> X"
@@ -3123,7 +3123,7 @@ lemma vareq_trans: "t0 \<in> existence_ivl0 x0 \<Longrightarrow> t \<in> existen
 
 lemma diff_existence_ivl_trans:
   "t0 \<in> existence_ivl0 x0 \<Longrightarrow> t \<in> existence_ivl0 x0 \<Longrightarrow> t - t0 \<in> existence_ivl0 (flow0 x0 t0)" for t
-  by (metis (no_types, hide_lams) add.left_neutral diff_add_eq
+  by (metis (no_types, opaque_lifting) add.left_neutral diff_add_eq
       local.existence_ivl_reverse local.existence_ivl_trans local.flows_reverse)
 
 lemma has_vderiv_on_blinfun_compose_right[derivative_intros]:

@@ -2537,7 +2537,7 @@ proof (cases "\<I> = {}")
           case 2
           with \<open>?mx \<in> \<I>\<close> show ?thesis
             using \<open>(Max y) \<in> J ?my\<close> \<open>(Max x) \<in> J ?mx\<close> ordermap_mono_less
-            by (metis (no_types, hide_lams) Kirby.add_less_cancel_left TC_small image_iff inv_into_IA trans_llt wf_llt y)
+            by (metis (no_types, opaque_lifting) Kirby.add_less_cancel_left TC_small image_iff inv_into_IA trans_llt wf_llt y)
         qed
         then show "f p < f q"
           using \<open>?my \<in> \<I>\<close> \<open>?mx \<in> \<I>\<close> \<open>(Max y) \<in> J ?my\<close> \<open>(Max x) \<in> J ?mx\<close>

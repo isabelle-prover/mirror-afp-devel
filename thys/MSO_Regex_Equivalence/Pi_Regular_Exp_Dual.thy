@@ -214,7 +214,7 @@ next
   case "5_9" thus ?case by auto
 next
   case "5_10" thus ?case
-    by auto (metis (no_types, hide_lams) Cons_in_lists_iff Diff_iff imageI list.simps(8) list.simps(9) lists.Nil)+
+    by auto (metis (no_types, opaque_lifting) Cons_in_lists_iff Diff_iff imageI list.simps(8) list.simps(9) lists.Nil)+
 next
   case "5_11" thus ?case by auto
 next
@@ -240,7 +240,7 @@ next
   case "5_21" thus ?case by auto
 next
   case "5_22" thus ?case
-    by auto (metis (no_types, hide_lams) Cons_in_lists_iff Diff_iff imageI list.simps(8) list.simps(9) lists.Nil)+
+    by auto (metis (no_types, opaque_lifting) Cons_in_lists_iff Diff_iff imageI list.simps(8) list.simps(9) lists.Nil)+
 next
   case "5_23" thus ?case by auto
 next

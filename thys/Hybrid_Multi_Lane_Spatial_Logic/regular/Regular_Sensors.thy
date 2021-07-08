@@ -31,7 +31,7 @@ interpretation regular_sensors: sensors "regular :: cars \<Rightarrow> traffic \
 proof unfold_locales
   fix e ts c
   show " 0 < regular e ts c" 
-    by (metis (no_types, hide_lams) less_add_same_cancel2 less_trans regular_def
+    by (metis (no_types, opaque_lifting) less_add_same_cancel2 less_trans regular_def
         traffic.psGeZero traffic.sdGeZero)
 qed        
   

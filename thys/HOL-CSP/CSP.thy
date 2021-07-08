@@ -331,7 +331,7 @@ next
         using tickFree_tl apply blast
        apply (metis event.distinct(1) hd_append image_iff list.sel(1))
       apply (metis event.distinct(1) hd_append list.sel(1) tl_append2)
-     apply (metis (no_types, hide_lams) append_Cons event.distinct(1) image_eqI list.distinct(1) 
+     apply (metis (no_types, opaque_lifting) append_Cons event.distinct(1) image_eqI list.distinct(1) 
                       list.exhaust_sel list.sel(1) list.sel(3) tickFree_Cons)
     by (metis append_Cons list.exhaust_sel list.sel(1) list.sel(3))
 qed
@@ -943,7 +943,7 @@ proof (auto simp add: Process_eq_spec,
       by (metis (no_types, lifting) disjoint_iff_not_equal event.inject filter.simps(2)
                                     hd_Cons_tl imageE list.sel(1))
     with 4(1, 7) aa have nf: "\<forall>i. f i \<noteq> [] \<and> hd (f i) = ev a"    
-      by (metis (mono_tags, hide_lams) "4"(5) append_Cons le_list_def le_simps(2) list.distinct(1) 
+      by (metis (mono_tags, opaque_lifting) "4"(5) append_Cons le_list_def le_simps(2) list.distinct(1) 
                 list.exhaust_sel list.sel(1) neq0_conv old.nat.distinct(1) strict_mono_less_eq) 
     with 4(5) have sm:"strict_mono (tl \<circ> f)" by (simp add: less_tail strict_mono_def)
     with 4 aa kk nf show ?case
@@ -1018,7 +1018,7 @@ next
       by (metis (no_types, lifting) disjoint_iff_not_equal event.inject filter.simps(2)
                                     hd_Cons_tl imageE list.sel(1))
     with 2(1, 7) aa have nf: "\<forall>i. f i \<noteq> [] \<and> hd (f i) = ev a"    
-      by (metis (mono_tags, hide_lams) 2(5) append_Cons le_list_def le_simps(2) list.distinct(1) 
+      by (metis (mono_tags, opaque_lifting) 2(5) append_Cons le_list_def le_simps(2) list.distinct(1) 
                 list.exhaust_sel list.sel(1) neq0_conv old.nat.distinct(1) strict_mono_less_eq) 
     with 2(5) have sm:"strict_mono (tl \<circ> f)" by (simp add: less_tail strict_mono_def)
     from 2(1,4) nf aa kk have x1:"x \<noteq> []"
@@ -1535,7 +1535,7 @@ next
   then show ?case
   apply(cases t1) using append_self_conv2 interleave_set apply fastforce
   apply(cases u) apply(exI "[]", exI "[]") apply auto[1]
-    apply (metis (no_types, hide_lams) Nil_is_append_conv append_Cons)
+    apply (metis (no_types, opaque_lifting) Nil_is_append_conv append_Cons)
   proof (auto simp add: subset_iff split:if_splits, goal_cases)
     case (1 list lista)
     with Cons(1)[of "list" "t2" "lista", simplified, OF 1(5)] show ?case
@@ -2663,12 +2663,12 @@ next
          apply(rule disjI2, simp)
         apply(intro disjI2 conjI)
           using empty_setinterleaving apply blast
-         apply (metis (no_types, hide_lams) DiffI Sync.sym UnI2 contra_subsetD emptyLeftNonSync 
+         apply (metis (no_types, opaque_lifting) DiffI Sync.sym UnI2 contra_subsetD emptyLeftNonSync 
                 emptyLeftProperty hd_in_set image_diff_subset insert_is_Un) 
         apply (metis Sync.sym Un_commute emptyLeftProperty list.sel(1) list.sel(3) neq_Nil_conv syncTlEmpty)
        apply(intro disjI2 conjI)       
          using empty_setinterleaving apply blast
-        apply (metis (no_types, hide_lams) DiffI Sync.sym event.distinct(1) event.inject 
+        apply (metis (no_types, opaque_lifting) DiffI Sync.sym event.distinct(1) event.inject 
                      imageE image_eqI insertI1 insertI2 list.sel(1) syncHd_Tl syncSameHdTl)
        apply (metis Sync.sym event.distinct(1) insertI1 list.sel(1) syncHd_Tl syncSameHdTl)
        done
@@ -2906,7 +2906,7 @@ next
             obtain tt1 where t3: "fu j = (fufs 0) @ tt @ tt1" by (metis append.assoc le_list_def t1 t2)
             with t0 interleave_order[of "f j" "fufs 0" "tt@tt1" "ev ` C \<union> {tick}" "ft j"] ft_fu_f 
               have t4:"set tt \<subseteq> set (drop (length (f 0)) (f j))"
-                by (metis (no_types, hide_lams) Sync.sym Un_subset_iff order_trans set_append set_drop_subset_set_drop)
+                by (metis (no_types, opaque_lifting) Sync.sym Un_subset_iff order_trans set_append set_drop_subset_set_drop)
             with 21 isInfHiddenRun_1[of f _ A] have t5: "set (drop (length (f 0)) (f j)) \<subseteq> ev ` A"
               by (metis (full_types) a append_eq_conv_conj) 
             with t4 have "set tt \<subseteq> ev ` A" by simp
@@ -3398,7 +3398,7 @@ proof(auto simp add: Process_eq_spec_optimized subset_antisym[OF hide_sync_D1 hi
     next
       case (112 t)
       from 112(7) have a:"front_tickFree t" 
-        by (metis (mono_tags, hide_lams) D_imp_front_tickFree append_Nil2 
+        by (metis (mono_tags, opaque_lifting) D_imp_front_tickFree append_Nil2 
                   front_tickFree_append ftf_syn is_processT2_TR)
       from 112 have "t \<in> D (P \<lbrakk>C\<rbrakk> Q)" by (simp add:D_sync)
       with 112(1,2,3) have "a \<in> D ((P \<lbrakk>C\<rbrakk> Q) \\ A)" 

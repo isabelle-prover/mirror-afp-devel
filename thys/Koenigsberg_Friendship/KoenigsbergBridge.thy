@@ -645,7 +645,7 @@ proof (induct "card E" arbitrary: G rule: less_induct)
         using \<open>(n1,w,v')\<in>edges G\<close> by auto
       hence "card (edges (del_unEdge n1 w v' G)) < card (edges G)"
         using \<open>finite (edges G)\<close> unfolding del_unEdge_def
-        by (metis (hide_lams, no_types) psubset_card_mono select_convs(2))
+        by (metis (opaque_lifting, no_types) psubset_card_mono select_convs(2))
       moreover have "finite (edges (del_unEdge n1 w v' G))"
         unfolding del_unEdge_def
         by (metis (full_types) \<open>finite (edges G)\<close> finite_Diff select_convs(2))
@@ -803,7 +803,7 @@ proof (induct "card E" arbitrary: G rule: less_induct)
             by (metis (lifting) mem_Collect_eq)
           moreover have "odd(degree n2 G2)"
             using sub_graph_degree_frame[of G1 G2 "del_unEdge n1 w v' G"]
-            by (metis (hide_lams, no_types) G1_G2_edges_union \<open>nodes G1 \<inter> nodes G2 = {}\<close>
+            by (metis (opaque_lifting, no_types) G1_G2_edges_union \<open>nodes G1 \<inter> nodes G2 = {}\<close>
               \<open>valid_graph G1\<close> \<open>n2 \<in> nodes G2\<close> inf_assoc inf_bot_right inf_sup_absorb
                odd_n2 sup_bot_right sup_commute)
           hence "n2\<in>{v \<in> nodes G2. odd (degree v G2)}"
@@ -880,7 +880,7 @@ next
           assume "edges G \<noteq> {}"
           then obtain e1 e2 e3 where e:"(e1,e2,e3)\<in>edges G" by (metis ex_in_conv prod_cases3)
           hence "e1=e3" using \<open>nodes G={v}\<close>
-            by (metis (hide_lams, no_types) append_Nil2 valid_unMultigraph.is_trail_rev
+            by (metis (opaque_lifting, no_types) append_Nil2 valid_unMultigraph.is_trail_rev
                 valid_unMultigraph.is_trail.simps(1) \<open>valid_unMultigraph G\<close> singletonE
                 valid_unMultigraph.is_trail_split valid_unMultigraph.singleton_distinct_path)
           thus False by (metis e \<open>valid_unMultigraph G\<close> valid_unMultigraph.no_id)

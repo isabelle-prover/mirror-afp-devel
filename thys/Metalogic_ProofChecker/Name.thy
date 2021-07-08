@@ -79,7 +79,7 @@ lemma variant_variable_fresh:
   using assms fresh_name'_fresh
   apply (metis finite_imageI fstI name.simps(1) rev_image_eqI variant_variable.simps(1))
   using assms fresh_name'_fresh 
-  by (metis (no_types, hide_lams) finite_imageI fst_conv image_iff name.simps(2) surj_pair variant_variable.simps(2))
+  by (metis (no_types, opaque_lifting) finite_imageI fst_conv image_iff name.simps(2) surj_pair variant_variable.simps(2))
 
 lemma variant_variable_adds:
   shows "snd (variant_variable s S) = insert (fst (variant_variable s S)) S"

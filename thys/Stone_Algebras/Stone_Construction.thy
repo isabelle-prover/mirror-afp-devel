@@ -691,19 +691,19 @@ All operations are lifted point-wise.
 \<close>
 
 lift_definition sup_lifted_pair :: "('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair" is "\<lambda>xf yf f . triple.pairs_sup (xf f) (yf f)"
-  by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_sup_closed prod.collapse)
+  by (metis (no_types, opaque_lifting) simp_phi triple_def triple.pairs_sup_closed prod.collapse)
 
 lift_definition inf_lifted_pair :: "('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair" is "\<lambda>xf yf f . triple.pairs_inf (xf f) (yf f)"
-  by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_inf_closed prod.collapse)
+  by (metis (no_types, opaque_lifting) simp_phi triple_def triple.pairs_inf_closed prod.collapse)
 
 lift_definition uminus_lifted_pair :: "('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair" is "\<lambda>xf f . triple.pairs_uminus (Rep_phi f) (xf f)"
-  by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_uminus_closed prod.collapse)
+  by (metis (no_types, opaque_lifting) simp_phi triple_def triple.pairs_uminus_closed prod.collapse)
 
 lift_definition bot_lifted_pair :: "('a,'b) lifted_pair" is "\<lambda>f . triple.pairs_bot"
-  by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_bot_closed)
+  by (metis (no_types, opaque_lifting) simp_phi triple_def triple.pairs_bot_closed)
 
 lift_definition top_lifted_pair :: "('a,'b) lifted_pair" is "\<lambda>f . triple.pairs_top"
-  by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_top_closed)
+  by (metis (no_types, opaque_lifting) simp_phi triple_def triple.pairs_top_closed)
 
 lift_definition less_eq_lifted_pair :: "('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair \<Rightarrow> bool" is "\<lambda>xf yf . \<forall>f . triple.pairs_less_eq (xf f) (yf f)" .
 
@@ -1030,7 +1030,7 @@ The following lemma shows that in both cases the value of the function is a vali
 
 lemma stone_phi_embed_triple_pair:
   "(if Rep_phi f = stone_phi then Rep_stone_phi_pair x else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (Rep_stone_phi_pair x))) \<in> triple.pairs (Rep_phi f)"
-  by (metis (no_types, hide_lams) Rep_stone_phi_pair simp_phi surj_pair triple.pairs_uminus_closed triple_def)
+  by (metis (no_types, opaque_lifting) Rep_stone_phi_pair simp_phi surj_pair triple.pairs_uminus_closed triple_def)
 
 text \<open>
 The following result shows that the embedding preserves the operations of Stone algebras.
@@ -1134,11 +1134,11 @@ next
   have "stone_phi_embed (top::'a stone_phi_pair) = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then Rep_stone_phi_pair top else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (Rep_stone_phi_pair top)))"
     by simp
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (top,bot) else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (top,bot)))"
-    by (metis (no_types, hide_lams) bot_filter.abs_eq top_stone_phi_pair.rep_eq)
+    by (metis (no_types, opaque_lifting) bot_filter.abs_eq top_stone_phi_pair.rep_eq)
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (top,bot) else triple.pairs_uminus (Rep_phi f) (bot,top))"
-    by (metis (no_types, hide_lams) dense_closed_top simp_phi triple.pairs_uminus.simps triple_def)
+    by (metis (no_types, opaque_lifting) dense_closed_top simp_phi triple.pairs_uminus.simps triple_def)
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (top,bot) else (top,bot))"
-    by (metis (no_types, hide_lams) p_bot simp_phi triple.pairs_uminus.simps triple_def)
+    by (metis (no_types, opaque_lifting) p_bot simp_phi triple.pairs_uminus.simps triple_def)
   also have "... = Abs_lifted_pair (\<lambda>f . (top,Abs_filter {top}))"
     by (simp add: bot_filter.abs_eq)
   also have "... = top"
@@ -1149,11 +1149,11 @@ next
   have "stone_phi_embed (bot::'a stone_phi_pair) = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then Rep_stone_phi_pair bot else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (Rep_stone_phi_pair bot)))"
     by simp
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (bot,top) else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (bot,top)))"
-    by (metis (no_types, hide_lams) top_filter.abs_eq bot_stone_phi_pair.rep_eq)
+    by (metis (no_types, opaque_lifting) top_filter.abs_eq bot_stone_phi_pair.rep_eq)
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (bot,top) else triple.pairs_uminus (Rep_phi f) (top,bot))"
-    by (metis (no_types, hide_lams) p_bot simp_phi triple.pairs_uminus.simps triple_def)
+    by (metis (no_types, opaque_lifting) p_bot simp_phi triple.pairs_uminus.simps triple_def)
   also have "... = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then (bot,top) else (bot,top))"
-    by (metis (no_types, hide_lams) p_top simp_phi triple.pairs_uminus.simps triple_def)
+    by (metis (no_types, opaque_lifting) p_top simp_phi triple.pairs_uminus.simps triple_def)
   also have "... = Abs_lifted_pair (\<lambda>f . (bot,Abs_filter UNIV))"
     by (simp add: top_filter.abs_eq)
   also have "... = bot"
@@ -1733,7 +1733,7 @@ abbreviation ba_iso :: "('a::non_trivial_boolean_algebra,'b::distrib_lattice_top
 
 lemma ba_iso_inv_lifted_pair:
   "(Rep_lifted_boolean_algebra xf f,Rep_phi f (-Rep_lifted_boolean_algebra xf f)) \<in> triple.pairs (Rep_phi f)"
-  by (metis (no_types, hide_lams) double_compl simp_phi triple.pairs_uminus.simps triple_def triple.pairs_uminus_closed)
+  by (metis (no_types, opaque_lifting) double_compl simp_phi triple.pairs_uminus.simps triple_def triple.pairs_uminus_closed)
 
 lemma ba_iso_inv_regular:
   "regular (Abs_lifted_pair (\<lambda>f . (Rep_lifted_boolean_algebra xf f,Rep_phi f (-Rep_lifted_boolean_algebra xf f))))"
@@ -1965,7 +1965,7 @@ abbreviation dl_iso :: "('a::non_trivial_boolean_algebra,'b::distrib_lattice_top
 
 lemma dl_iso_inv_lifted_pair:
   "(top,up_filter (Rep_lifted_distrib_lattice_top xf f)) \<in> triple.pairs (Rep_phi f)"
-  by (metis (no_types, hide_lams) compl_bot_eq double_compl simp_phi sup_bot.left_neutral triple.sa_iso_pair triple_def)
+  by (metis (no_types, opaque_lifting) compl_bot_eq double_compl simp_phi sup_bot.left_neutral triple.sa_iso_pair triple_def)
 
 lemma dl_iso_inv_dense:
   "dense (Abs_lifted_pair (\<lambda>f . (top,up_filter (Rep_lifted_distrib_lattice_top xf f))))"
@@ -2015,7 +2015,7 @@ proof -
     also have "... = Abs_lifted_pair (\<lambda>f . (bot,Rep_phi f top))"
       by (simp add: triple.pairs_uminus.simps triple_def)
     also have "... = Abs_lifted_pair (\<lambda>f . triple.pairs_bot)"
-      by (metis (no_types, hide_lams) simp_phi triple.phi_top triple_def)
+      by (metis (no_types, opaque_lifting) simp_phi triple.phi_top triple_def)
     also have "... = bot"
       by (simp add: bot_lifted_pair_def)
     finally show ?thesis
@@ -2253,7 +2253,7 @@ proof -
       next
         assume 10: "g \<noteq> f"
         have "triple.pairs_less_eq (?ppf g) triple.pairs_top"
-          using 1 by (metis (no_types, hide_lams) bot.extremum top_greatest prod.collapse triple_def triple.pairs_less_eq.simps triple.phi_bot)
+          using 1 by (metis (no_types, opaque_lifting) bot.extremum top_greatest prod.collapse triple_def triple.pairs_less_eq.simps triple.phi_bot)
         thus ?thesis
           using 10 by simp
       qed
@@ -2280,7 +2280,7 @@ proof -
     hence "triple.pairs_less_eq (Rep_lifted_pair (-Rep_regular pf) f) (top,up_filter z)"
       by (metis less_eq_lifted_pair.rep_eq get_dense_char)
     hence "up_filter z \<le> snd (Rep_lifted_pair (-Rep_regular pf) f)"
-      using 1 by (metis (no_types, hide_lams) prod.collapse triple.pairs_less_eq.simps)
+      using 1 by (metis (no_types, opaque_lifting) prod.collapse triple.pairs_less_eq.simps)
     also have "... = snd (?ppf f)"
       by (metis uminus_lifted_pair.rep_eq)
     also have "... = ?r (fst (Rep_lifted_pair (Rep_regular pf) f))"

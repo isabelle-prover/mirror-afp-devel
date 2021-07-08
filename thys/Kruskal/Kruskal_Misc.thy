@@ -216,7 +216,7 @@ lemma edges_less_eq_linorder: "is_linorder_rel edges_less_eq"
 
 
 lemma sort_edges_correct: "sorted_wrt edges_less_eq (quicksort_by_rel edges_less_eq [] l)"
-  by (metis (no_types, hide_lams) edges_less_eq_linorder is_linorder_rel_def sorted_wrt_quicksort_by_rel)
+  by (metis (no_types, opaque_lifting) edges_less_eq_linorder is_linorder_rel_def sorted_wrt_quicksort_by_rel)
 
 lemma distinct_mset_eq:"distinct a \<Longrightarrow> mset a = mset b \<Longrightarrow> distinct b"
   by (metis card_distinct distinct_card set_mset_mset size_mset)

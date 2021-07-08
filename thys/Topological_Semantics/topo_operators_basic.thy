@@ -407,7 +407,7 @@ definition "Fr_inf \<phi> \<equiv> \<forall>S. \<^bold>\<And>S \<^bold>\<and> \<
 lemma CF_inf: "Fr_2 \<phi> \<Longrightarrow> Fr_inf \<phi> \<Longrightarrow> Cl_inf(\<C>\<^sub>F \<phi>)" unfolding iADDI_a_def  Fr_inf_def 
   by (smt Cl_fr_def Fr_2_def Ra_restr_ex compl_def dom_compl_def2 iDM_b join_def meet_def supremum_def)
 lemma IF_inf: "Fr_inf \<phi> \<Longrightarrow> Int_inf(\<I>\<^sub>F \<phi>)" unfolding Fr_inf_def iMULT_b_def Int_fr_def Ra_restr_all
-  by (metis (mono_tags, hide_lams) diff_def infimum_def meet_def pfunRange_restr_def supremum_def)
+  by (metis (mono_tags, opaque_lifting) diff_def infimum_def meet_def pfunRange_restr_def supremum_def)
 
 text\<open>\noindent{This condition is indeed strong enough to entail closure of the fixed-point predicates under infimum/supremum.}\<close>
 lemma fp_IF_inf_closed: "Fr_inf \<phi> \<Longrightarrow> infimum_closed (fp (\<I>\<^sub>F \<phi>))" by (metis (full_types) IF2 IF_inf Ra_restr_all dEXP_def iMULT_b_def infimum_def)

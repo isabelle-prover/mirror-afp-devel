@@ -3702,7 +3702,7 @@ next
       have "lookup ?p (except s X) =
               (\<Sum>t\<in>keys p. lookup p t when except t X = except s X \<and> except t (- X) = except s (- X))"
         by (simp add: lookup_sum lookup_single when_def if_distrib if_distribR)
-            (metis (no_types, hide_lams) lookup_single_eq lookup_single_not_eq lookup_zero)
+            (metis (no_types, opaque_lifting) lookup_single_eq lookup_single_not_eq lookup_zero)
       also have "\<dots> = (\<Sum>t\<in>{s}. lookup p t)"
       proof (intro sum.mono_neutral_cong_right ballI)
         fix t

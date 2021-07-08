@@ -191,7 +191,7 @@ proof-
          by (metis (full_types) Example.transitive)
   qed
   from 0 1 2 show ?thesis using trans transp_def trans compose_Nil
-          by (metis (hide_lams, no_types) Example.transitive)
+          by (metis (opaque_lifting, no_types) Example.transitive)
  qed
  let ?y = "((basic ([])) \<circ> (basic (cup#[])))  "
  let ?temp = "(basic (vert#over#vert#[]))\<circ>(basic (cap#vert#vert#[])) "  
@@ -368,7 +368,7 @@ proof-
                \<open>is_tangle_diagram (basic [cap, cap] \<circ> basic [])\<close> codomain_wall_compose 
                compose_leftassociativity converse_composition_of_tangle_diagrams 
                domain_block.simps(1) domain_wall.simps(1)
-        by (metis (hide_lams, mono_tags) Tangle_Equivalence.compose_eq 
+        by (metis (opaque_lifting, mono_tags) Tangle_Equivalence.compose_eq 
                 Tangle_Equivalence.refl 
                 \<open>codomain_wall (basic [cup, cup]) 
                          = domain_wall (basic [vert, over, vert] \<circ> basic [cap, vert, vert])\<close> 
@@ -381,7 +381,7 @@ proof-
         using 14 15 by auto
   then have 17:" ((basic (cup#[]))\<circ>(basic (cap#[])))~ ?aa"
         using 9 10 Tangle_Equivalence.trans  Tangle_Equivalence.sym 
-        by (metis (hide_lams, no_types))
+        by (metis (opaque_lifting, no_types))
   have "(((basic (cup#[]))\<circ>(basic (cap#[])))~ ?aa)\<and>(?aa ~ ?cc)
             \<Longrightarrow> ((basic (cup#[]))\<circ>(basic (cap#[])))~ ?cc" 
         using transitive by auto

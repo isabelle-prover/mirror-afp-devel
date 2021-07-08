@@ -323,7 +323,7 @@ lemma esqrt_square2 [simp]:
   "esqrt(x * x) = abs(x)"
 proof -
   have "esqrt(x * x) = esqrt(abs x * abs x)"
-    by (metis (no_types, hide_lams) abs_ereal_ge0 ereal_abs_mult ereal_zero_le_0_iff linear)
+    by (metis (no_types, opaque_lifting) abs_ereal_ge0 ereal_abs_mult ereal_zero_le_0_iff linear)
   also have "... = abs x"
     by (auto simp add: esqrt_mult)
   finally show ?thesis by auto

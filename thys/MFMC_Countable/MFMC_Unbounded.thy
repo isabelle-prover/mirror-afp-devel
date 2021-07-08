@@ -1728,7 +1728,7 @@ proof(rule ccontr)
       (auto simp add: g'_simps field_simps mult_left_le)
 
   have "4 + (n * 6 + n * (n * 2)) \<noteq> (0 :: real)" for n :: nat
-    by(metis (mono_tags, hide_lams) add_is_0 of_nat_eq_0_iff of_nat_numeral zero_neq_numeral)
+    by(metis (mono_tags, opaque_lifting) add_is_0 of_nat_eq_0_iff of_nat_numeral zero_neq_numeral)
   then have IN_g': "d_IN (g' n) x = (if x = b then weight \<Gamma> b - \<epsilon> 0 else d_IN (g n) x)" for x n
     using b_TER[of n] bnA factor_pos[of n] factor[of n] wb_pos \<delta>
     by(auto simp add: d_IN_def g'_simps nn_integral_divide nn_integral_cmult currentD_SAT[OF g] wb_conv \<epsilon>_def field_simps

@@ -300,7 +300,7 @@ next
     also have "?r \<sim> ro(t1) \<cdot>\<^sub>r ro(t2) +\<^sub>r ro(t1) \<cdot>\<^sub>r t2' +\<^sub>r t1' \<cdot>\<^sub>r ro(t2) +\<^sub>r t1' \<cdot>\<^sub>r t2'" (is "?l \<sim> ?r")
       apply (transfer, unfold lang.simps)
       apply (simp only: distrib_right' semiring_class.distrib_left)
-      apply (metis (hide_lams, no_types) join_semilattice_class.add_comm semiring_class.combine_common_factor)
+      apply (metis (opaque_lifting, no_types) join_semilattice_class.add_comm semiring_class.combine_common_factor)
     done
     also have "?r \<sim> ro(t1 \<cdot>\<^sub>r t2) +\<^sub>r ro(t1) \<cdot>\<^sub>r t2' +\<^sub>r t1' \<cdot>\<^sub>r ro(t2) +\<^sub>r t1' \<cdot>\<^sub>r t2'" (is "?l \<sim> ?r")
       by (transfer, simp)

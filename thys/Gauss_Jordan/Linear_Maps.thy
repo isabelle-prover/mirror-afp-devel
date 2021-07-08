@@ -121,8 +121,8 @@ proof -
   obtain B where AB: "A**B=mat 1" and BA: "B**A=mat 1" using invertible_A unfolding invertible_def by blast
   show ?thesis 
   proof (rule vec.invertible_lf_intro [of "(\<lambda>x. B *v x)"]) 
-    show id1: "(*v) B \<circ> (*v) A = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
-    show "(*v) A \<circ> (*v) B = id" by (metis (hide_lams, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
+    show id1: "(*v) B \<circ> (*v) A = id" by (metis (opaque_lifting, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
+    show "(*v) A \<circ> (*v) B = id" by (metis (opaque_lifting, no_types) AB BA isomorphism_expand matrix_vector_mul_assoc matrix_vector_mul_lid) 
   qed
 qed
 

@@ -815,7 +815,7 @@ case (acq_mode_rel c\<^sub>A x m tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A
   have in_Rel': "(\<langle>?c\<^sub>1\<^sub>A', ?mds\<^sub>A', ?mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> RelS_Eg1Eg2"
     by (metis A.neval_Suc_simp One_nat_def acq_mode_rel.prems)
   ultimately show ?case
-    by (metis (no_types, hide_lams) One_nat_def abs_steps.simps n_not_Suc_n)
+    by (metis (no_types, opaque_lifting) One_nat_def abs_steps.simps n_not_Suc_n)
 next
 case (rel_mode_rel c\<^sub>A x m c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\<^sub>C)
   let ?mds\<^sub>A' = "mds\<^sub>A_of mds\<^sub>C'"
@@ -844,7 +844,7 @@ case (rel_mode_rel c\<^sub>A x m c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A m
   have in_Rel': "(\<langle>?c\<^sub>1\<^sub>A', ?mds\<^sub>A', ?mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> RelS_Eg1Eg2"
     by (metis A.neval_Suc_simp One_nat_def rel_mode_rel.prems)
   ultimately show ?case
-    by (metis (no_types, hide_lams) One_nat_def abs_steps.simps n_not_Suc_n)
+    by (metis (no_types, opaque_lifting) One_nat_def abs_steps.simps n_not_Suc_n)
 next
 case (assign_load_rel c\<^sub>A x y tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\<^sub>C)
   let ?c\<^sub>1\<^sub>A' = "Stop ;; tail\<^sub>A"

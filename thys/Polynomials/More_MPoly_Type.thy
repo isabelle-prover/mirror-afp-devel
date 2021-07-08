@@ -171,7 +171,7 @@ next
   proof (cases "a=0")
     assume "a=0"
     then have "monom (Poly_Mapping.single v k) a = 0" by (metis monom.abs_eq monom_zero single_zero)
-    then show ?thesis by (metis (mono_tags, hide_lams) \<open>k \<noteq> 0\<close> \<open>a=0\<close> monom.abs_eq single_zero singleton_inject subset_singletonD vars_monom_single)
+    then show ?thesis by (metis (mono_tags, opaque_lifting) \<open>k \<noteq> 0\<close> \<open>a=0\<close> monom.abs_eq single_zero singleton_inject subset_singletonD vars_monom_single)
   next
     assume "a\<noteq>0"
     then have "v \<in> vars (monom (Poly_Mapping.single v k) a)" by (simp add: \<open>k \<noteq> 0\<close> vars_def)

@@ -1560,8 +1560,8 @@ shows "\<exists> \<sigma>' \<tau>'. DD ars r (\<tau>,\<sigma>,\<sigma>',\<tau>')
  hence \<tau>l: "labels \<tau> = [hd (labels \<tau>)]" by auto
  from assms have \<sigma>':"(fst \<sigma>1,snd \<sigma>1@snd \<sigma>2@snd \<sigma>3) \<in> seq ars" (is "?\<sigma>' \<in> _") and \<tau>':"(fst \<tau>1,snd \<tau>1@snd \<tau>2@snd \<tau>3) \<in> seq ars" (is "?\<tau>' \<in> _")
   unfolding LDD_def LDD1_def local_diagram1_def local_peak_def peak_def apply auto apply (metis fst_eqD seq_concat(1) snd_eqD)  by (metis fst_eqD seq_concat(1) snd_eqD)
- from assms have sigmas: "fst ?\<sigma>' = fst \<sigma>1" "lst ?\<sigma>' = lst \<sigma>3" unfolding LDD_def LDD1_def local_diagram1_def local_peak_def peak_def apply auto by (metis (hide_lams, no_types) \<sigma>' append_assoc seq_chop(1) seq_concat(2) seq_concat_helper)
- from assms have taus: "fst ?\<tau>' = fst \<tau>1" "lst ?\<tau>' = lst \<tau>3" unfolding LDD_def LDD1_def local_diagram1_def local_peak_def peak_def apply auto  by (metis (hide_lams, no_types) \<tau>' append_assoc seq_chop(1) seq_concat(2) seq_concat_helper)
+ from assms have sigmas: "fst ?\<sigma>' = fst \<sigma>1" "lst ?\<sigma>' = lst \<sigma>3" unfolding LDD_def LDD1_def local_diagram1_def local_peak_def peak_def apply auto by (metis (opaque_lifting, no_types) \<sigma>' append_assoc seq_chop(1) seq_concat(2) seq_concat_helper)
+ from assms have taus: "fst ?\<tau>' = fst \<tau>1" "lst ?\<tau>' = lst \<tau>3" unfolding LDD_def LDD1_def local_diagram1_def local_peak_def peak_def apply auto  by (metis (opaque_lifting, no_types) \<tau>' append_assoc seq_chop(1) seq_concat(2) seq_concat_helper)
  have "diagram ars (\<tau>,\<sigma>,?\<sigma>',?\<tau>')" using assms unfolding LDD_def LDD1_def local_diagram1_def diagram_def local_peak_def apply auto
   unfolding peak_def apply auto using sigmas taus \<sigma>' \<tau>' by auto
  moreover have "D2 r (\<tau>,\<sigma>,?\<sigma>',?\<tau>')" using assms proposition3_4[OF t i] \<sigma>l \<tau>l unfolding LDD_def LDD1_def D2_def LD'_def labels_def by auto
@@ -1656,8 +1656,8 @@ proof -
     from conv_imp_valley[OF t IH \<rho> \<rho>m M] obtain \<tau>3'' \<sigma>3'' where
      \<tau>3'':"\<tau>3'' \<in> seq ars" and \<sigma>3'': "\<sigma>3'' \<in> seq ars" and eq:"fst \<tau>3'' = fst \<rho> \<and> fst \<sigma>3'' = lst_conv \<rho> \<and> lst \<tau>3'' = lst \<sigma>3'' \<and>
     set_mset (measure r (\<tau>3'', \<sigma>3'')) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}"  apply auto by fast
-    have s1: "set (labels \<sigma>3'') \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set subsetD t)
-    have s2: "set (labels \<tau>3'') \<subseteq> ds r {fst \<beta>_step, fst \<alpha>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set subsetD t)
+    have s1: "set (labels \<sigma>3'') \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using eq unfolding dm_def measure_def apply auto by (metis (opaque_lifting, no_types) insert_commute lexmax_set subsetD t)
+    have s2: "set (labels \<tau>3'') \<subseteq> ds r {fst \<beta>_step, fst \<alpha>_step}" using eq unfolding dm_def measure_def apply auto by (metis (opaque_lifting, no_types) insert_commute lexmax_set subsetD t)
     have \<sigma>1_eq: "lst (s, [\<beta>_step]) = fst \<sigma>1" and \<tau>1_eq: "lst (s, [\<alpha>_step]) = fst \<tau>1" using onetwo1 onetwo2 surjective_pairing unfolding lst_def by auto
     have eqn: " lst \<tau>3'' = lst \<sigma>3''" and \<sigma>_eq: "lst \<sigma>3' = fst \<sigma>3''" and \<tau>_eq: "lst \<tau>3' = fst \<tau>3''" using eq eq1 eq2 by auto
     have \<sigma>3':"(fst \<sigma>3',snd \<sigma>3'@snd \<sigma>3'') \<in> seq ars" (is "?\<sigma>3 \<in> _") using seq_concat[OF _ \<sigma>3'' \<sigma>_eq] sigmas by blast

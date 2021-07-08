@@ -429,7 +429,7 @@ next
   have h1: "prod_list (retrieve_polys qs (a # I)) = (nth qs a)*(prod_list (retrieve_polys qs I))"
     by (simp add: retrieve_polys_def)
   have h2: "(z (a # I) sign) = (nth sign a)*(z I sign)"
-    by (metis (mono_tags, hide_lams) list.simps(9) prod_list.Cons z_def)
+    by (metis (mono_tags, opaque_lifting) list.simps(9) prod_list.Cons z_def)
   have h3help: "list_constr (a#I) (length qs) \<longrightarrow> a < length qs" unfolding list_constr_def
     by simp 
   then have h3: "list_constr (a#I) (length qs) \<longrightarrow> 

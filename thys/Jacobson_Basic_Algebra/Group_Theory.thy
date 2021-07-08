@@ -1600,7 +1600,7 @@ theorem induced_kernel:
 proof -
   have "induced.Ker = { a \<cdot>| L | a. a \<in> G \<and> a \<in> Ker }"
     unfolding induced.Ker_equality
-    by simp (metis (hide_lams) contained.Class_is_Left_Coset Ker_image Ker_memI
+    by simp (metis (opaque_lifting) contained.Class_is_Left_Coset Ker_image Ker_memI
         induced_left_coset_equality contained.Class_in_Partition contained.representant_exists)
   also have "\<dots> = Ker / L.Congruence"
     using L.Class_is_Left_Coset L.Class_in_Partition

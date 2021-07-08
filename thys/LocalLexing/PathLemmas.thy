@@ -31,7 +31,7 @@ next
     with admissible_p snoc.hyps obtain u where u: "p \<in> \<P> (charslength p) u" by blast
     have "\<exists>u. (p @ [a]) ! (length p) \<in> \<Z> (charslength (take (length p) (p @ [a]))) u"
       using snoc
-      by (metis (no_types, hide_lams) add_Suc_right append_Nil2 length_Cons length_append 
+      by (metis (no_types, opaque_lifting) add_Suc_right append_Nil2 length_Cons length_append 
         less_Suc_eq_le less_or_eq_imp_le) 
     then obtain v where "(p @ [a]) ! (length p) \<in> \<Z> (charslength (take (length p) (p @ [a]))) v"
       by blast

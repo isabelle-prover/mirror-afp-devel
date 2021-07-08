@@ -621,7 +621,7 @@ next
         apply (unfold make_fmap_union sup.commute[of "{|v|}"])
         apply (unfold fminus_funion)
         using v_initial_not_S apply auto
-        by (metis (hide_lams, no_types) finsert_absorb finsert_fminus_single finter_fminus
+        by (metis (opaque_lifting, no_types) finsert_absorb finsert_fminus_single finter_fminus
             inf_commute inf_idem v_initial_not_S)
       next
         show "post \<Pi> = [ terminals G |=> Bot ]"

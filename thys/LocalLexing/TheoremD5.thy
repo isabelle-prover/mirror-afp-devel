@@ -510,7 +510,7 @@ proof -
   with assms(3) have k': "k' = k" by blast
   with th have "t \<in> \<Z> k' (Suc u') \<and> u' < u" using indexlt_simp by auto
   then show ?thesis
-    by (metis (no_types, hide_lams) \<Z>_subset_Suc k' linorder_neqE_nat not_less_eq 
+    by (metis (no_types, opaque_lifting) \<Z>_subset_Suc k' linorder_neqE_nat not_less_eq 
       subsetCE subset_fSuc_strict)
 qed
 
@@ -681,9 +681,9 @@ next
             then obtain v2 where v2: "q \<in> \<P> ?i v2" by blast
             let ?v = "max v1 v2"
             have "v1 \<le> ?v" by auto
-            with v1 have dom1: "?p' \<in> \<P> ?i ?v" by (metis (no_types, hide_lams) subsetCE subset_\<P>k) 
+            with v1 have dom1: "?p' \<in> \<P> ?i ?v" by (metis (no_types, opaque_lifting) subsetCE subset_\<P>k) 
             have "v2 \<le> ?v" by auto
-            with v2 have dom2: "q \<in> \<P> ?i ?v" by (metis (no_types, hide_lams) subsetCE subset_\<P>k) 
+            with v2 have dom2: "q \<in> \<P> ?i ?v" by (metis (no_types, opaque_lifting) subsetCE subset_\<P>k) 
             from compatibility_def[OF dom1 dom2 _ q_split] 
             have "p @ drop n q \<in> \<P> ?i ?v"
               by (simp only: p'last charslength_i[symmetric] Suc.prems(5))

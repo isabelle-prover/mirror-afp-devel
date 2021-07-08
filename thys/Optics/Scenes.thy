@@ -220,8 +220,8 @@ lemma scene_inter_indep:
   using assms
   unfolding lens_defs
   apply (transfer, auto)
-  apply (metis (no_types, hide_lams) idem_overrider.ovr_idem overrider.ovr_assoc overrider.ovr_overshadow_right)
-  apply (metis (no_types, hide_lams) idem_overrider.ovr_idem overrider.ovr_overshadow_right)
+  apply (metis (no_types, opaque_lifting) idem_overrider.ovr_idem overrider.ovr_assoc overrider.ovr_overshadow_right)
+  apply (metis (no_types, opaque_lifting) idem_overrider.ovr_idem overrider.ovr_overshadow_right)
   done
 
 lemma scene_union_idem: "X \<squnion>\<^sub>S X = X"
@@ -266,7 +266,7 @@ lemma subscene_refl: "X \<subseteq>\<^sub>S X"
   by (simp add: less_eq_scene_def)
 
 lemma subscene_trans: "\<lbrakk> idem_scene Y; X \<subseteq>\<^sub>S Y; Y \<subseteq>\<^sub>S Z \<rbrakk> \<Longrightarrow> X \<subseteq>\<^sub>S Z"
-  by (simp add: less_eq_scene_def, transfer, auto, metis (no_types, hide_lams) idem_overrider.ovr_idem)
+  by (simp add: less_eq_scene_def, transfer, auto, metis (no_types, opaque_lifting) idem_overrider.ovr_idem)
 
 lemma subscene_antisym: "\<lbrakk> idem_scene Y; X \<subseteq>\<^sub>S Y; Y \<subseteq>\<^sub>S X \<rbrakk> \<Longrightarrow> X = Y"
   apply (simp add: less_eq_scene_def, transfer, auto)
@@ -293,7 +293,7 @@ lemma scene_top_greatest: "X \<le> \<top>\<^sub>S"
 
 lemma scene_union_ub: "\<lbrakk> idem_scene Y; X \<bowtie>\<^sub>S Y \<rbrakk> \<Longrightarrow> X \<le> (X \<squnion>\<^sub>S Y)"
   by (simp add: less_eq_scene_def, transfer, auto)
-     (metis (no_types, hide_lams) idem_overrider.ovr_idem overrider.ovr_overshadow_right)
+     (metis (no_types, opaque_lifting) idem_overrider.ovr_idem overrider.ovr_overshadow_right)
 
 lemma scene_le_then_compat: "\<lbrakk> idem_scene X; idem_scene Y; X \<le> Y \<rbrakk> \<Longrightarrow> X ##\<^sub>S Y"
   unfolding less_eq_scene_def

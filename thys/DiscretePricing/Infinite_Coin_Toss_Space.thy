@@ -2611,7 +2611,7 @@ next
           moreover have "y!!0 = c" using \<open>y \<in> {w \<in> range (pseudo_proj_True (Suc n)). w !! 0 = c}\<close> by simp
           ultimately show "x = y" using \<open>stl x=  stl y\<close>
             by (smt snth.simps(1) stream_eq_Stream_iff)
-            (*by (metis (full_types, hide_lams)  pmf_bernoulli_True snth.simps(1) stream_eq_Stream_iff) *)
+            (*by (metis (full_types, opaque_lifting)  pmf_bernoulli_True snth.simps(1) stream_eq_Stream_iff) *)
         qed
         show "range (pseudo_proj_True n) = stl ` {w \<in> range (pseudo_proj_True (Suc n)). w !! 0 = c}"
         proof
@@ -3597,7 +3597,7 @@ proof
     hence "\<And>i. i \<in>{m. m \<le> n} \<Longrightarrow> X i x = X i w" by simp
     hence "\<And>i. i \<le> n \<Longrightarrow> X i x = X i w" by auto
     hence "psX x = psX w" unfolding psX_def
-      by (metis (mono_tags, hide_lams) diff_streams_only_if linear not_le order_refl
+      by (metis (mono_tags, opaque_lifting) diff_streams_only_if linear not_le order_refl
           proj_stoch_proc_component(1) proj_stoch_proc_component(2))
     thus "x \<in> (proj_stoch_proc X n) -` {proj_stoch_proc X n w}" unfolding psX_def by auto
   qed

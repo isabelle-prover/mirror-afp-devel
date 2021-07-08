@@ -1473,7 +1473,7 @@ proof -
         using f_props(1) finite_chain2
         by (meson Sup_upper finite_subset)
       have disj: " \<forall>A\<in>f ` one_chain1. \<forall>B\<in>f ` one_chain1. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
-        by (metis (no_types, hide_lams) f_props(3) image_iff)
+        by (metis (no_types, opaque_lifting) f_props(3) image_iff)
       show "one_chain_line_integral F basis (\<Union>(f ` one_chain1)) =
                                 (\<Sum>one_chain \<in> (f ` one_chain1). one_chain_line_integral F basis one_chain)"
         using Groups_Big.comm_monoid_add_class.sum.Union_disjoint[OF finite disj]

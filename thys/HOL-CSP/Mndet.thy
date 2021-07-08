@@ -207,7 +207,7 @@ next
         using a False D_LUB[OF mndet_chainpreserving[OF a], of A] 
               limproc_is_thelub[OF mndet_chainpreserving[OF a], of A] 
         apply (auto simp add:write0_def D_Mprefix D_LUB[OF ch2ch_fun[OF a]] limproc_is_thelub_fun[OF a] D_mndet) 
-        by (metis (mono_tags, hide_lams) event.inject)
+        by (metis (mono_tags, opaque_lifting) event.inject)
     next
       fix s :: "'a event list"
       assume "s \<notin> D (\<sqinter>x\<in>A \<rightarrow> Lub Y x)"
@@ -216,7 +216,7 @@ next
         using a False F_LUB[OF mndet_chainpreserving[OF a], of A] 
               limproc_is_thelub[OF mndet_chainpreserving[OF a], of A] 
         apply (auto simp add:write0_def F_Mprefix F_LUB[OF ch2ch_fun[OF a]] limproc_is_thelub_fun[OF a] F_mndet)
-        by (metis (mono_tags, hide_lams) event.inject)
+        by (metis (mono_tags, opaque_lifting) event.inject)
     next
       show "min_elems (D (\<sqinter>x\<in>A \<rightarrow> Lub Y x)) \<subseteq> T (\<Squnion>i. \<sqinter>x\<in>A \<rightarrow> Y i x)"
         unfolding min_elems_def

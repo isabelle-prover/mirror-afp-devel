@@ -94,7 +94,7 @@ lemma monomial_inj:
   assumes "monomial c s = monomial (d::'b::zero_neq_one) t"
   shows "(c = 0 \<and> d = 0) \<or> (c = d \<and> s = t)"
   using assms unfolding poly_mapping_eq_iff
-  by (metis (mono_tags, hide_lams) lookup_single_eq lookup_single_not_eq)
+  by (metis (mono_tags, opaque_lifting) lookup_single_eq lookup_single_not_eq)
 
 definition is_monomial :: "('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> bool"
   where "is_monomial p \<longleftrightarrow> card (keys p) = 1"

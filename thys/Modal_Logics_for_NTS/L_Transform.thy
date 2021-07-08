@@ -287,7 +287,7 @@ lemma L_transform_Tree_eqvt [eqvt]: "p \<bullet> L_transform_Tree t = L_transfor
 proof (induct t)
   case (tConj tset)
   then show ?case
-    by simp (metis (no_types, hide_lams) bset.map_cong0 map_bset_eqvt permute_fun_def permute_minus_cancel(1))
+    by simp (metis (no_types, opaque_lifting) bset.map_cong0 map_bset_eqvt permute_fun_def permute_minus_cancel(1))
 qed simp_all
 
 text \<open>@{const L_transform_Tree} respects $\alpha$-equivalence.\<close>
@@ -627,7 +627,7 @@ begin
             from \<alpha>\<^sub>LP\<^sub>L' obtain p where p: "(\<alpha>\<^sub>L,P\<^sub>L') = p \<bullet> (Act \<alpha>, EF (L (\<alpha>,F,f), P'))" and supp_p: "supp p \<subseteq> bn \<alpha> \<union> bn \<alpha>\<^sub>L"
               by (metis (no_types, lifting) bn_L_action.simps(1) residual_eq_iff_perm_renaming)
             from supp_p and fresh and fresh\<^sub>L and Q\<^sub>L have "supp p \<sharp>* (\<langle>f\<rangle>Q, F, f)"
-              unfolding fresh_star_def by (metis (no_types, hide_lams) Un_iff fresh_Pair fresh_def subsetCE supp_AC)
+              unfolding fresh_star_def by (metis (no_types, opaque_lifting) Un_iff fresh_Pair fresh_def subsetCE supp_AC)
             then have p_fQ: "p \<bullet> \<langle>f\<rangle>Q = \<langle>f\<rangle>Q" and p_Ff: "p \<bullet> (F,f) = (F,f)"
               by (simp add: fresh_star_def perm_supp_eq)+
             from p and p_Ff have "\<alpha>\<^sub>L = Act (p \<bullet> \<alpha>)" and "P\<^sub>L' = EF (L (p \<bullet> \<alpha>, F, f), p \<bullet> P')"
@@ -727,7 +727,7 @@ begin
         from alpha obtain p where p: "(Act \<alpha> :: ('act,'effect) L_action, Q\<^sub>L'') = p \<bullet> (Act \<alpha>', EF (L (\<alpha>',F,f), Q'))" and supp_p: "supp p \<subseteq> bn \<alpha> \<union> bn \<alpha>'"
           by (metis Un_commute bn_L_action.simps(1) residual_eq_iff_perm_renaming)
         from supp_p and fresh and fresh' have "supp p \<sharp>* (\<langle>f\<rangle>Q, F,f)"
-          unfolding fresh_star_def by (metis (no_types, hide_lams) Un_iff subsetCE)
+          unfolding fresh_star_def by (metis (no_types, opaque_lifting) Un_iff subsetCE)
         then have p_fQ: "p \<bullet> \<langle>f\<rangle>Q = \<langle>f\<rangle>Q" and p_F: "p \<bullet> F = F" and p_f: "p \<bullet> f = f"
           by (simp add: fresh_star_def perm_supp_eq)+
         from p and p_F and p_f have p_\<alpha>': "p \<bullet> \<alpha>' = \<alpha>" and Q\<^sub>L'': "Q\<^sub>L'' = EF (L (p \<bullet> \<alpha>', F, f), p \<bullet> Q')"

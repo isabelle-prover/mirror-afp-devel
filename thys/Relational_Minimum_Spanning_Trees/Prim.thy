@@ -313,9 +313,9 @@ next
   let ?n2 = "card { x . regular x \<and> x \<le> ?c \<and> x \<le> -?v\<^sup>T }"
   assume 1: "prim_invariant t v g r \<and> ?vcv \<noteq> bot"
   hence 2: "regular v \<and> regular (v * v\<^sup>T)"
-    by (metis (no_types, hide_lams) prim_invariant_def prim_spanning_invariant_def spanning_tree_def prim_precondition_def regular_conv_closed regular_closed_star regular_mult_closed conv_involutive)
+    by (metis (no_types, opaque_lifting) prim_invariant_def prim_spanning_invariant_def spanning_tree_def prim_precondition_def regular_conv_closed regular_closed_star regular_mult_closed conv_involutive)
   have 3: "t \<le> v * v\<^sup>T \<sqinter> ?g"
-    using 1 2 by (metis (no_types, hide_lams) prim_invariant_def prim_spanning_invariant_def spanning_tree_def inf_pp_commute inf.boundedE)
+    using 1 2 by (metis (no_types, opaque_lifting) prim_invariant_def prim_spanning_invariant_def spanning_tree_def inf_pp_commute inf.boundedE)
   hence 4: "t \<le> v * v\<^sup>T"
     by simp
   have 5: "t \<le> ?g"

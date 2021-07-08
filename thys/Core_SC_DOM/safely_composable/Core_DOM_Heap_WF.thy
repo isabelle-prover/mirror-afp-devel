@@ -370,7 +370,7 @@ lemma heap_is_wellformed_children_disc_nodes_different:
   "heap_is_wellformed h \<Longrightarrow> h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
     \<Longrightarrow> h \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes
    \<Longrightarrow> set children \<inter> set disc_nodes = {}"
-  by (metis (no_types, hide_lams) disjoint_iff_not_equal distinct_lists_no_parent
+  by (metis (no_types, opaque_lifting) disjoint_iff_not_equal distinct_lists_no_parent
       is_OK_returns_result_I local.get_child_nodes_ptr_in_heap
       local.heap_is_wellformed_def select_result_I2)
 
@@ -508,7 +508,7 @@ proof -
     by(simp add: object_ptr_kinds_M_defs)
   then have h1: "ptr \<in> set ptrs"
     using get_child_nodes_ok assms(2) is_OK_returns_result_I
-    by (metis (no_types, hide_lams) ObjectMonad.ptr_kinds_ptr_kinds_M
+    by (metis (no_types, opaque_lifting) ObjectMonad.ptr_kinds_ptr_kinds_M
         \<open>\<And>thesis. (\<And>ptrs. h \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
         get_child_nodes_ptr_in_heap returns_result_eq select_result_I2)
 
@@ -2680,7 +2680,7 @@ proof -
     using assms(2) child_parent_dual[OF assms(1)] type_wf
       assms(1) assms(5) get_child_nodes_ok known_ptrs_known_ptr option.simps(3)
       returns_result_eq returns_result_select_result
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
   moreover have "node_ptr |\<in>| node_ptr_kinds h"
     using assms(2) get_parent_ptr_in_heap by blast
   ultimately
@@ -2694,7 +2694,7 @@ proof -
     using get_owner_document_disconnected_nodes known_ptrs type_wf assms
     using DocumentMonad.ptr_kinds_ptr_kinds_M assms(1) assms(3) assms(4) get_disconnected_nodes_ok
       returns_result_select_result select_result_I2
-    by (metis (no_types, hide_lams) )
+    by (metis (no_types, opaque_lifting) )
 qed
 
 lemma get_owner_document_owner_document_in_heap:
@@ -4032,7 +4032,7 @@ node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
             using "2" "4" "5" "6" "7" False \<open>children' = children\<close> assms(1) child_in_children_h
               child_parent_dual children children_h disc_nodes' get_child_nodes_ptr_in_heap
               list.set_cases list.simps(3) option.simps(1) returns_result_eq set_ConsD
-            by (metis (no_types, hide_lams) assms(3) type_wf)
+            by (metis (no_types, opaque_lifting) assms(3) type_wf)
         next
           case False
           then show ?thesis
@@ -4749,7 +4749,7 @@ proof -
         next
           case False
           then show ?thesis
-            by (metis (no_types, hide_lams) \<open>distinct disc_nodes_old_document_h2\<close>
+            by (metis (no_types, opaque_lifting) \<open>distinct disc_nodes_old_document_h2\<close>
                 disc_nodes_old_document_h3 disconnected_nodes_eq2_h3
                 distinct_remove1 docs_neq select_result_I2)
         qed
@@ -5424,7 +5424,7 @@ proof -
     then have "set (insert_before_list node reference_child children_h3) \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
       using node_in_heap
       apply(auto simp add: node_ptr_kinds_eq2_h node_ptr_kinds_eq2_h2 node_ptr_kinds_eq2_h3)[1]
-      by (metis (no_types, hide_lams) contra_subsetD finite_set_in insert_before_list_in_set
+      by (metis (no_types, opaque_lifting) contra_subsetD finite_set_in insert_before_list_in_set
           node_ptr_kinds_commutes object_ptr_kinds_M_eq3_h object_ptr_kinds_M_eq3_h'
           object_ptr_kinds_M_eq3_h2)
     then show ?thesis
@@ -5469,7 +5469,7 @@ proof -
         using distinct_concat_map_E(1)[OF 1]
         using 2 3 4 5 6 select_result_I2[OF disconnected_nodes_h3]  select_result_I2[OF disconnected_nodes_h2]
         apply(auto simp add: True disconnected_nodes_eq2_h2[OF \<open>y \<noteq> owner_document\<close>])[1]
-        by (metis (no_types, hide_lams) disconnected_nodes_eq2_h2 disjoint_iff_not_equal notin_set_remove1)
+        by (metis (no_types, opaque_lifting) disconnected_nodes_eq2_h2 disjoint_iff_not_equal notin_set_remove1)
     next
       case False
       then show ?thesis
@@ -5479,7 +5479,7 @@ proof -
           using distinct_concat_map_E(1)[OF 1]
           using 2 3 4 5 6 select_result_I2[OF disconnected_nodes_h3]  select_result_I2[OF disconnected_nodes_h2]
           apply(auto simp add: True disconnected_nodes_eq2_h2[OF \<open>x \<noteq> owner_document\<close>])[1]
-          by (metis (no_types, hide_lams) disconnected_nodes_eq2_h2 disjoint_iff_not_equal notin_set_remove1)
+          by (metis (no_types, opaque_lifting) disconnected_nodes_eq2_h2 disjoint_iff_not_equal notin_set_remove1)
       next
         case False
         then show ?thesis
@@ -5557,7 +5557,7 @@ proof -
       then show ?thesis
         using  children_h3 children_h' child_not_in_any_children[unfolded children_eq_h2] 5 6
         apply(auto simp add:  True children_eq2_h3[OF \<open>ptr \<noteq> y\<close>])[1]
-        by (metis (no_types, hide_lams) "3" "7" \<open>type_wf h3\<close> children_eq2_h3 disjoint_iff_not_equal
+        by (metis (no_types, opaque_lifting) "3" "7" \<open>type_wf h3\<close> children_eq2_h3 disjoint_iff_not_equal
             get_child_nodes_ok insert_before_list_in_set known_ptrs local.known_ptrs_known_ptr
             object_ptr_kinds_M_eq3_h object_ptr_kinds_M_eq3_h'
             object_ptr_kinds_M_eq3_h2 returns_result_select_result select_result_I2)
@@ -5569,7 +5569,7 @@ proof -
         then show ?thesis
           using  children_h3 children_h' child_not_in_any_children[unfolded children_eq_h2] 5 6
           apply(auto simp add:  True children_eq2_h3[OF \<open>ptr \<noteq> x\<close>])[1]
-          by (metis (no_types, hide_lams) "2" "4" "7" IntI \<open>known_ptrs h3\<close> \<open>type_wf h'\<close>
+          by (metis (no_types, opaque_lifting) "2" "4" "7" IntI \<open>known_ptrs h3\<close> \<open>type_wf h'\<close>
               children_eq_h3 empty_iff insert_before_list_in_set local.get_child_nodes_ok
               local.known_ptrs_known_ptr object_ptr_kinds_M_eq3_h'
               returns_result_select_result select_result_I2)
@@ -6200,7 +6200,7 @@ proof -
       using disc_nodes_document_ptr_h disconnected_nodes_eq2_h3
       apply -
       apply(cases "xb = document_ptr")
-       apply (metis (no_types, hide_lams) "3" "4" "6"
+       apply (metis (no_types, opaque_lifting) "3" "4" "6"
           \<open>\<And>p. p |\<in>| object_ptr_kinds h3
                       \<Longrightarrow> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h3 \<turnstile> get_child_nodes p|\<^sub>r\<close>
           \<open>a_distinct_lists h3\<close> children_eq2_h3 disc_nodes_h3 distinct_lists_no_parent h'
@@ -6668,7 +6668,7 @@ proof -
     show "False"
       using disc_nodes_document_ptr_h disconnected_nodes_eq2_h3
       apply(cases "xb = document_ptr")
-       apply (metis (no_types, hide_lams) "3" "4" "6"
+       apply (metis (no_types, opaque_lifting) "3" "4" "6"
           \<open>\<And>p. p |\<in>| object_ptr_kinds h3 \<Longrightarrow> cast new_character_data_ptr \<notin> set |h3 \<turnstile> get_child_nodes p|\<^sub>r\<close>
           \<open>a_distinct_lists h3\<close> children_eq2_h3 disc_nodes_h3 distinct_lists_no_parent h'
           select_result_I2 set_ConsD set_disconnected_nodes_get_disconnected_nodes)

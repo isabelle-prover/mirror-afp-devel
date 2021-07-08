@@ -298,7 +298,7 @@ lemma vangle_eq_zeroD: "vangle u v = 0 \<Longrightarrow> (\<exists>k. v = k *\<^
 lemma less_one_multI:\<comment> \<open>TODO: also in AA!\<close>
   fixes e x::real
   shows "e \<le> 1 \<Longrightarrow> 0 < x \<Longrightarrow> x < 1 \<Longrightarrow> e * x < 1"
-  by (metis (erased, hide_lams) less_eq_real_def monoid_mult_class.mult.left_neutral
+  by (metis (erased, opaque_lifting) less_eq_real_def monoid_mult_class.mult.left_neutral
     mult_strict_mono zero_less_one)
 
 lemma conemem_expansion_estimate:

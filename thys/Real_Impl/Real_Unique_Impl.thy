@@ -163,7 +163,7 @@ proof
         let ?b1 = "int b1"
         let ?b2 = "int b2"
         from eq have eq: "?sq i1 * ?b1 = ?sq i2 * ?b2"
-          by (metis (hide_lams, no_types) of_int_eq_iff of_int_mult of_int_of_nat_eq)
+          by (metis (opaque_lifting, no_types) of_int_eq_iff of_int_mult of_int_of_nat_eq)
         from 0 have 0: "i1 \<noteq> 0" "i2 \<noteq> 0" by auto
         from arg_cong[OF eq, of nat] have "?sq (nat (abs i1)) * b1 = ?sq (nat (abs i2)) * b2"
           by (metis abs_of_nat eq nat_abs_mult_distrib nat_int)

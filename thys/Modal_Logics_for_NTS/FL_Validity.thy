@@ -344,7 +344,7 @@ begin
     moreover from 2 have "supp (p \<bullet> x') - bn (p \<bullet> \<alpha>') = supp x' - bn \<alpha>'"
       by (metis Diff_eqvt atom_set_perm_eq bn_eqvt supp_eqvt)
     moreover from 3 have "supp (p \<bullet> \<alpha>') - bn (p \<bullet> \<alpha>') = supp \<alpha>' - bn \<alpha>'"
-      by (metis (no_types, hide_lams) Diff_eqvt atom_set_perm_eq bn_eqvt supp_eqvt)
+      by (metis (no_types, opaque_lifting) Diff_eqvt atom_set_perm_eq bn_eqvt supp_eqvt)
     ultimately have "Act f \<alpha>' x' = Act f (p \<bullet> \<alpha>') (p \<bullet> x')"
       by (auto simp add: Act_eq_iff_perm)
 

@@ -93,7 +93,7 @@ proof -
     by standard (auto simp: fps_of_poly_add fps_of_poly_mult)
   from distinct have distinct': "(a, b1) \<in> set cs \<Longrightarrow>
     (a, b2) \<in> set cs \<Longrightarrow> b1 = b2" for a b1 b2
-    by (metis (no_types, hide_lams) Some_eq_map_of_iff image_set in_set_zipE insert_iff list.simps(15) map_of_Cons_code(2) map_of_SomeD nz snd_conv)
+    by (metis (no_types, opaque_lifting) Some_eq_map_of_iff image_set in_set_zipE insert_iff list.simps(15) map_of_Cons_code(2) map_of_SomeD nz snd_conv)
   from nz have nz': "(0, b) \<notin> set cs" for b
     by (auto simp add: image_iff)
   define n where "n = length cs"

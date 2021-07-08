@@ -137,7 +137,7 @@ proof (induct "int_size x" arbitrary:x rule: nat_less_induct)
     (e) "elem \<lbrakk>Final i1\<rbrakk> x \<and> snd x \<le> \<lbrakk>Final i2\<rbrakk>" |
     (f) "snd x \<le> \<lbrakk>Final i2\<rbrakk> \<and> snd x \<le> \<lbrakk>Final i1\<rbrakk>" 
     using assms "1"(2) apply (cases x) 
-    by (metis (mono_tags, hide_lams) dual_order.strict_trans elem.simps
+    by (metis (mono_tags, opaque_lifting) dual_order.strict_trans elem.simps
         fst_conv leI snd_conv)
   then show ?case
   proof (cases)
@@ -222,7 +222,7 @@ proof (induct "int_size x'" arbitrary: x x' rule: nat_less_induct)
   next
     case after
     have b: "snd x \<le> \<lbrakk>Final i\<rbrakk>" using after 1 apply (cases x) 
-      by (metis (mono_tags, hide_lams) dual_order.trans prod.exhaust_sel
+      by (metis (mono_tags, opaque_lifting) dual_order.trans prod.exhaust_sel
           subset.simps)
     obtain z where z_def:"\<Psi> x' i = NonFinal (\<gamma> (snd x') Left) z" 
       using after d by (cases x', simp)

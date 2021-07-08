@@ -239,7 +239,7 @@ by (induct xs rule:length_induct, rule assms) auto
 lemma The_Min: "Ex1 P \<Longrightarrow> The P = Min {x. P x}"
 apply (rule the_equality)
  apply (metis (mono_tags) Min.infinite Min_in Min_singleton all_not_in_conv finite_subset insert_iff mem_Collect_eq subsetI)
-by (metis (erased, hide_lams) Least_Min Least_equality Set.set_insert ex_in_conv finite.emptyI finite_insert insert_iff mem_Collect_eq order_refl)
+by (metis (erased, opaque_lifting) Least_Min Least_equality Set.set_insert ex_in_conv finite.emptyI finite_insert insert_iff mem_Collect_eq order_refl)
 
 lemma The_Max: "Ex1 P \<Longrightarrow> The P = Max {x. P x}"
 apply (rule the_equality)

@@ -1754,7 +1754,7 @@ next
 
             thus "is_real ?y \<and> 0 < Re ?y"
               using xx \<open>?X \<in> unit_disc\<close> \<open>y \<in> unit_disc\<close>
-              by (metis (mono_tags, hide_lams) arg_0_iff of_complex_zero_iff poincare_between_0uv poincare_between_sandwich to_complex_of_complex unit_disc_to_complex_inj zero_in_unit_disc)
+              by (metis (mono_tags, opaque_lifting) arg_0_iff of_complex_zero_iff poincare_between_0uv poincare_between_sandwich to_complex_of_complex unit_disc_to_complex_inj zero_in_unit_disc)
           qed
 
           have \<phi>noneg: "\<forall> x \<in> unit_disc. \<phi> x \<longrightarrow> (is_real (to_complex x) \<and> Re (to_complex x) \<ge> 0)"
@@ -2556,7 +2556,7 @@ proof-
                         apply (subst left_diff_distrib[symmetric])+
                         apply (subst semiring_normalization_rules(18))+
                         apply (subst left_diff_distrib[symmetric])+
-                        by (metis (no_types, hide_lams)  field_class.field_divide_inverse mult.commute times_divide_times_eq)
+                        by (metis (no_types, opaque_lifting)  field_class.field_divide_inverse mult.commute times_divide_times_eq)
                       finally have 2: "Re ?Ba1 / Re ?Aa1 = (5 / 4) * ((Im ?i1 - Im ?i2) / (Im ?i2 * (Re ?i1) - Im ?i1 * (Re ?i2)))"
                         by simp
 

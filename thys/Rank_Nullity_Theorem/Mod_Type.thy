@@ -130,7 +130,7 @@ proof (unfold bij_betw_def, rule conjI)
     show "inj_on int {0::nat..<CARD('a)}" by (metis inj_of_nat subset_inj_on top_greatest)
     show "inj_on (Abs'::int=>'a) (int ` {0::nat..<CARD('a)})"
       using bij_Abs unfolding bij_betw_def set_eq
-      by (metis (hide_lams, no_types) Abs'_def Abs_inverse Rep_inverse Rep_mod inj_on_def set_eq)
+      by (metis (opaque_lifting, no_types) Abs'_def Abs_inverse Rep_inverse Rep_mod inj_on_def set_eq)
   qed
   show "(from_nat::nat=>'a)` {0::nat..<CARD('a)} = UNIV"
     unfolding from_nat_def using bij_Abs'
@@ -168,7 +168,7 @@ lemma least_0: "(LEAST n. n \<in> (UNIV::'a set)) = 0"
 proof (rule Least_equality, auto)
   fix y::"'a"
   have "(0::'a) \<le> Abs (Rep y mod int CARD('a))" using strict_mono_Rep unfolding strict_mono_def
-  by (metis (hide_lams, mono_tags) Rep_0 Rep_ge_0 strict_mono_Rep strict_mono_less_eq)
+  by (metis (opaque_lifting, mono_tags) Rep_0 Rep_ge_0 strict_mono_Rep strict_mono_less_eq)
   also have "... = y" by (metis Rep_inverse Rep_mod)
   finally show "(0::'a) \<le> y" .
 qed
@@ -185,7 +185,7 @@ lemma add_def':
   shows "x + y = Abs' (Rep x + Rep y)" unfolding Abs'_def using add_def by simp
 
 lemma Abs'_0:
-  shows "Abs' (CARD('a))=(0::'a)" by (metis (hide_lams, mono_tags) Abs'_def mod_self zero_def)
+  shows "Abs' (CARD('a))=(0::'a)" by (metis (opaque_lifting, mono_tags) Abs'_def mod_self zero_def)
 
 lemma Rep_plus_one_le_card:
   assumes a: "a + 1 \<noteq> 0"
@@ -395,10 +395,10 @@ proof (clarify)
   have zero_ge_card_1: "0 \<le> int CARD('a) - 1" using size1 by auto
   have card_less: "int CARD('a) - 1 < int CARD('a)" by auto
   have not_zero: "1 mod int CARD('a) \<noteq> 0"
-    by (metis (hide_lams, mono_tags) Rep_Abs_1 Rep_mod zero_neq_one)
+    by (metis (opaque_lifting, mono_tags) Rep_Abs_1 Rep_mod zero_neq_one)
   have int_card: "int (CARD('a) - 1) = int CARD('a) - 1" using of_nat_diff[of 1 "CARD ('a)"]
     using size1 by simp
-  have "a = Abs' (Rep a)" by (metis (hide_lams, mono_tags) Rep_0 add_0_right add_def'
+  have "a = Abs' (Rep a)" by (metis (opaque_lifting, mono_tags) Rep_0 add_0_right add_def'
       monoid_add_class.add.right_neutral)
   also have "... = Abs' (int (nat (Rep a)))" by (metis Rep_ge_0 int_nat_eq)
   also have "...  \<le> Abs' (int (CARD('a) - 1))"
@@ -455,10 +455,10 @@ proof (rule ccontr, simp)
   assume a_plus_one_zero: "a + 1 = 0"
   hence rep_eq_card: "Rep a + 1 = CARD('a)"
     using assms to_nat_0 Suc_eq_plus1 Suc_lessI Zero_not_Suc to_nat_less_card to_nat_suc
-    by (metis (hide_lams, mono_tags))
+    by (metis (opaque_lifting, mono_tags))
   moreover have "Rep a + 1 < CARD('a)"
     using Abs'_0 Rep_1 Suc_eq_plus1 Suc_lessI Suc_neq_Zero add_def' assms
-    rep_eq_card to_nat_0 to_nat_less_card to_nat_suc by (metis (hide_lams, mono_tags))
+    rep_eq_card to_nat_0 to_nat_less_card to_nat_suc by (metis (opaque_lifting, mono_tags))
   ultimately show False by fastforce
 qed
 

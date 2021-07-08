@@ -146,7 +146,7 @@ lemma test4: "`!p\<cdot>q\<cdot>p = 0`"
 lemma total_correctness: "`p\<cdot>x\<cdot>!q = 0` \<longleftrightarrow> `x\<cdot>!q \<le> !p\<cdot>\<top>`"
   apply standard
   apply (metis join.bot.extremum mult.assoc test_eq1 top_elim)
-  by (metis (no_types, hide_lams) add_zeror annil less_eq_def mult.assoc mult_isol test_comp_mult2)
+  by (metis (no_types, opaque_lifting) add_zeror annil less_eq_def mult.assoc mult_isol test_comp_mult2)
 
 lemma test_iteration_sim: "`p\<cdot>x \<le> x\<cdot>p` \<Longrightarrow> `p\<cdot>x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>\<cdot>p`"
   by (metis iteration_sim)

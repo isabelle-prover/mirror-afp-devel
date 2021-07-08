@@ -200,7 +200,7 @@ lemma safety_transition_relation:
   shows "safety (\<lambda>\<sigma>. \<forall>i. (\<sigma> i, \<sigma> (i + 1)) \<in> R)"
 apply (rule safetyI)
 apply clarsimp
-apply (metis (no_types, hide_lams) Suc_eq_plus1 add.left_neutral add_Suc_right add_diff_cancel_left' le_add1 list.sel(1) list.simps(3) shift_simps(1) stake.simps(2) stake_suffix suffix_def)
+apply (metis (no_types, opaque_lifting) Suc_eq_plus1 add.left_neutral add_Suc_right add_diff_cancel_left' le_add1 list.sel(1) list.simps(3) shift_simps(1) stake.simps(2) stake_suffix suffix_def)
 done
 
 lemma safety_conj:

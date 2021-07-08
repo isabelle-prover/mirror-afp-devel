@@ -193,7 +193,7 @@ next
   have "proots_count ([:a, - 1:] * p) s = 1 + proots_count p s"
     apply (subst proots_count_times)
     subgoal using root.prems rsquarefree_def by blast
-    subgoal by (metis (no_types, hide_lams) add.inverse_inverse add.inverse_neutral 
+    subgoal by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral 
                   minus_pCons proots_count_pCons_1_iff proots_count_uminus root.hyps(1))  
     done
   also have "... = 1 + card (proots_within p s)"
@@ -217,7 +217,7 @@ next
       assume "\<not> poly p a \<noteq> 0"
       then have "order a p >0" by (simp add: order_root)
       moreover have "order a [:a,-1:] = 1"
-        by (metis (no_types, hide_lams) add.inverse_inverse add.inverse_neutral minus_pCons 
+        by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral minus_pCons 
             order_power_n_n order_uminus power_one_right)
       ultimately have "order a  ([:a, - 1:] * p) > 1"
         apply (subst order_mult)
@@ -343,7 +343,7 @@ proof -
           by (auto simp add:power2_eq_square)
         moreover have "1 + tt * tt \<noteq> 0" unfolding tt_def 
           apply (fold of_real_mult)
-          by (metis (no_types, hide_lams) mult_numeral_1 numeral_One of_real_add of_real_eq_0_iff
+          by (metis (no_types, opaque_lifting) mult_numeral_1 numeral_One of_real_add of_real_eq_0_iff
               of_real_numeral sum_squares_eq_zero_iff zero_neq_one)
         ultimately have "z0 +  r * ( (cos t) + \<i> * (sin t))
             =(z0*(1+tt*tt)+rr*(1-tt*tt)+\<i>*rr*2*tt ) / (1 + tt * tt) "

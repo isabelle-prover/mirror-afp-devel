@@ -836,7 +836,7 @@ proof(rule conjI, rule_tac [2] conjI)
   have "R\<^sup>\<star>*y \<cdot> R\<^sup>T*y \<noteq> 0"
   proof
     have "R\<^sup>+ \<cdot> 1' = (R\<^sup>+)\<^sup>T \<cdot> 1'"
-      by (metis (mono_tags, hide_lams) conv_e conv_times inf.cobounded1 inf.commute
+      by (metis (mono_tags, opaque_lifting) conv_e conv_times inf.cobounded1 inf.commute
                 many_strongly_connected_iff_6_eq mult_oner star_subid)
     also have "... = R\<^sup>T\<^sup>+ \<cdot> 1'"
       using plus_conv by fastforce

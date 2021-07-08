@@ -848,7 +848,7 @@ next (* if *)
         apply (metis cxt_to_stmt.simps(1) eval\<^sub>w_simplep.if_true eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq if_type(8))
        apply (metis if_elim if_type(8))
       apply (subgoal_tac "c\<^sub>1' = el")
-       apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
+       apply (metis (opaque_lifting, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
       by (metis if_elim if_type(8))
     thus ?thesis
       by (metis \<open>\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>\<close> if_elim if_type(8))
@@ -895,7 +895,7 @@ next (* if *)
         hence [simp]: "c\<^sub>1' = el"
           by (metis (lifting) if_type(8) if_elim)
         hence "\<langle>If e th el, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>th, mds, mem\<^sub>2\<rangle>"
-          by (metis (hide_lams, mono_tags) \<open>\<not> ev\<^sub>B mem\<^sub>1 e\<close> cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_true if_type(8) neq)
+          by (metis (opaque_lifting, mono_tags) \<open>\<not> ev\<^sub>B mem\<^sub>1 e\<close> cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_true if_type(8) neq)
         moreover
         from \<open>th \<sim>\<^bsub>mds\<^esub> el\<close> have "el \<sim>\<^bsub>mds\<^esub> th"
           by (metis low_indistinguishable_sym)
@@ -1020,7 +1020,7 @@ next
         thus "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<R>\<^sup>3\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
           using \<R>\<^sub>3_aux.intro\<^sub>3
           apply auto
-          by (metis (hide_lams, no_types) context_le_refl has_type.sub sub.hyps(4))
+          by (metis (opaque_lifting, no_types) context_le_refl has_type.sub sub.hyps(4))
       qed
     ultimately show "?thesis c\<^sub>1 mds mem\<^sub>1 c\<^sub>2 mem\<^sub>2"
       by (auto simp: \<R>.intros)
@@ -1089,7 +1089,7 @@ proof -
            apply (metis eval\<^sub>w.seq)
           apply auto
           apply (rule \<R>.intro\<^sub>3)
-          by (metis (hide_lams, no_types) \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c\<close>)
+          by (metis (opaque_lifting, no_types) \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c\<close>)
       qed
     next
       case (intro\<^sub>2 \<Gamma> c\<^sub>1 mds mem\<^sub>1 c\<^sub>2 mem\<^sub>2 cn \<Gamma>')

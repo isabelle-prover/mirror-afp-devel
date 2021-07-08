@@ -86,7 +86,7 @@ lemma inpcp: "\<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<bottom> \<Longrighta
     
 lemma HC_case_distinction: "\<Gamma> \<union> AX10 \<turnstile>\<^sub>H F \<^bold>\<rightarrow> G \<Longrightarrow> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<^bold>\<not> F \<^bold>\<rightarrow> G \<Longrightarrow> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H G"
   using HC_intros(7)[of F G "Not F"] lem2
-  by (metis (no_types, hide_lams) HC.simps HC_mono insertI1 sim_disj subset_insertI)
+  by (metis (no_types, opaque_lifting) HC.simps HC_mono insertI1 sim_disj subset_insertI)
   
 lemma nand_sim: "\<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<^bold>\<not> (F \<^bold>\<and> G) \<Longrightarrow> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<^bold>\<not> F \<^bold>\<or> \<^bold>\<not> G"
 proof goal_cases case 1
@@ -125,7 +125,7 @@ lemma not_imp: "\<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<^bold>\<not> F \<^
 proof goal_cases case 1
   have "\<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<^bold>\<not> F \<^bold>\<rightarrow> F \<^bold>\<rightarrow> \<bottom>" by (simp add: AX10.intros(9) Ax)
   hence "\<^bold>\<not> F \<triangleright> F \<triangleright> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H \<bottom>" by (meson HC.simps HC_mono insertI1 subset_insertI)
-  hence "\<^bold>\<not> F \<triangleright> F \<triangleright> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H G" by (metis (no_types, hide_lams) Un_commute Un_insert_right inpcp)
+  hence "\<^bold>\<not> F \<triangleright> F \<triangleright> \<Gamma> \<union> AX10 \<turnstile>\<^sub>H G" by (metis (no_types, opaque_lifting) Un_commute Un_insert_right inpcp)
   thus ?case by (metis Un_insert_left dt insert_commute)
 qed
 

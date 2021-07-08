@@ -2476,7 +2476,7 @@ proof -
   also have "... = 1 \<sqinter> (?v\<^sup>+ * e * ?v\<^sup>\<star> \<squnion> ?v\<^sup>+ \<squnion> e * ?v\<^sup>\<star>)"
     using 7 by simp
   also have "... = 1 \<sqinter> (?v\<^sup>\<star> * e * ?v\<^sup>\<star> \<squnion> ?v\<^sup>+)"
-    by (metis (mono_tags, hide_lams) comp_associative star.circ_loop_fixpoint sup_assoc sup_commute)
+    by (metis (mono_tags, opaque_lifting) comp_associative star.circ_loop_fixpoint sup_assoc sup_commute)
   also have "... \<le> 1 \<sqinter> (?v\<^sup>\<star> * e * ?v\<^sup>\<star> \<squnion> w\<^sup>+)"
     using comp_inf.mult_right_isotone comp_isotone semiring.add_right_mono star_isotone sup_commute by simp
   also have "... = (1 \<sqinter> ?v\<^sup>\<star> * e * ?v\<^sup>\<star>) \<squnion> (1 \<sqinter> w\<^sup>+)"

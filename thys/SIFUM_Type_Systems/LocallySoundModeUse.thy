@@ -210,7 +210,7 @@ proof (cases "x = y")
      apply (rule cxt_eval)
      apply (rule eval\<^sub>w.unannotated)
      apply simp
-     apply (metis (hide_lams, no_types) \<open>x = y\<close> \<open>y \<notin> aexp_vars e\<close> eval\<^sub>w_simple.assign eval_vars_det\<^sub>A fun_upd_apply fun_upd_upd)
+     apply (metis (opaque_lifting, no_types) \<open>x = y\<close> \<open>y \<notin> aexp_vars e\<close> eval\<^sub>w_simple.assign eval_vars_det\<^sub>A fun_upd_apply fun_upd_upd)
     by (metis assign_elim)
 next
   assume asms: "y \<notin> aexp_vars e" "x \<noteq> y"
@@ -664,7 +664,7 @@ next
   case (sub mds\<^sub>2'' c mds\<^sub>2' mds\<^sub>1 mds\<^sub>1' c\<^sub>1)
   thus ?case
     apply auto
-    by (metis (hide_lams, no_types) inf_absorb2 le_infI1)
+    by (metis (opaque_lifting, no_types) inf_absorb2 le_infI1)
 qed
 
 end

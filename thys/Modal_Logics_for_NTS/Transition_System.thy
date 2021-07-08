@@ -175,7 +175,7 @@ begin
         from 7 have "Q \<rightarrow> \<langle>\<alpha>, -p \<bullet> pQ'\<rangle>"
           using 4 by (metis permute_minus_cancel(2) supp_perm_eq transition_eqvt')
         moreover from 6 and 8 have "?bisim P' (-p \<bullet> pQ')"
-          by (metis (no_types, hide_lams) bisimilar_eqvt permute_minus_cancel(2) relcompp.simps)
+          by (metis (no_types, opaque_lifting) bisimilar_eqvt permute_minus_cancel(2) relcompp.simps)
         ultimately show "\<exists>Q'. Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> ?bisim P' Q'"
           by metis
       qed

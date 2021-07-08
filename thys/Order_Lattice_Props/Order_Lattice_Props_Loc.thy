@@ -474,7 +474,7 @@ lemma fun_isor: "mono f \<Longrightarrow> mono (\<lambda>x. x \<circ> f)"
 lemma Sup_sup_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Sup_pres f \<Longrightarrow> sup_pres f"
-  by (metis (no_types, hide_lams) Sup_empty Sup_insert comp_apply image_insert sup_bot.right_neutral)
+  by (metis (no_types, opaque_lifting) Sup_empty Sup_insert comp_apply image_insert sup_bot.right_neutral)
 
 lemma Inf_inf_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"

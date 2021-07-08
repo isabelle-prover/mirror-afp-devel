@@ -186,7 +186,7 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
   thus s: "vec.span (columns (fst (QR_decomposition A))) = (UNIV::(real^'m::{mod_type}) set)"
     using is_basis_columns_Gram_Schmidt_matrix[OF b c] unfolding is_basis_def by simp
   thus "card (columns (fst (QR_decomposition A))) = ncols A"
-    by (metis (hide_lams, mono_tags) b c card_columns_le_ncols vec.card_le_dim_spanning 
+    by (metis (opaque_lifting, mono_tags) b c card_columns_le_ncols vec.card_le_dim_spanning 
       finite_columns vec.indep_card_eq_dim_span is_basis_def ncols_def top_greatest)
   thus "vec.independent (columns (fst (QR_decomposition A)))"
     by (metis s b c vec.card_eq_dim_span_indep finite_columns vec.indep_card_eq_dim_span is_basis_def)
@@ -421,7 +421,7 @@ proof -
     fix x
     assume x: "x \<in> {column i (Gram_Schmidt_matrix A) |i. i < k}"
     show "((1 / norm x) *\<^sub>R x \<bullet> column k A) *\<^sub>R (1 / norm x) *\<^sub>R x = (x \<bullet> column k A / (x \<bullet> x)) *\<^sub>R x"
-      by (metis (hide_lams, no_types) mult.right_neutral inner_commute inner_scaleR_right 
+      by (metis (opaque_lifting, no_types) mult.right_neutral inner_commute inner_scaleR_right 
         norm_cauchy_schwarz_eq scaleR_one scaleR_scaleR times_divide_eq_right times_divide_times_eq)
   qed
   finally have "?ak - (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)

@@ -309,7 +309,7 @@ proof (intro strip)
     unfolding ff_def sp_def using assu2 by (auto simp:algebra_simps)
   ultimately have "\<forall>j. s\<le>j \<and> j\<le>n \<longrightarrow> A / ff j > sp n" by force
   then show "sp n< A / Max (ff ` {s..n})" 
-    by (metis (mono_tags, hide_lams) Max_in \<open>n\<ge>s\<close> atLeastAtMost_iff empty_iff 
+    by (metis (mono_tags, opaque_lifting) Max_in \<open>n\<ge>s\<close> atLeastAtMost_iff empty_iff 
         finite_atLeastAtMost finite_imageI imageE image_is_empty order_refl)
 qed
 
@@ -350,7 +350,7 @@ proof-
       also have "... \<le> Max (ff ` {s..n}) * max 1 (d (n+1))"
       proof -
         have "Max (ff ` {s..n}) \<ge> 0" 
-          by (metis (mono_tags, hide_lams) Max_in \<open>\<And>j. 0 < ff j\<close> \<open>m \<le> n\<close> assms(5) 
+          by (metis (mono_tags, opaque_lifting) Max_in \<open>\<And>j. 0 < ff j\<close> \<open>m \<le> n\<close> assms(5) 
               atLeastAtMost_iff empty_iff finite_atLeastAtMost finite_imageI imageE 
               image_is_empty less_eq_real_def)
         then show ?thesis using max_mult_distrib_right 

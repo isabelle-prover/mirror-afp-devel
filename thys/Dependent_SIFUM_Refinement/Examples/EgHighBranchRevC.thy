@@ -1996,22 +1996,22 @@ proof(clarify)
   case (if_then_rel_1 tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.eval\<^sub>w.seq C.eval_det C.seq_stop_elim C.seq_stop_eval\<^sub>w C.skip_eval\<^sub>w subsetI)
+      by (metis (no_types, opaque_lifting) C.eval\<^sub>w.seq C.eval_det C.seq_stop_elim C.seq_stop_eval\<^sub>w C.skip_eval\<^sub>w subsetI)
   next
   case (if_then_rel_1' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_then_rel_2 tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.eval\<^sub>w.seq C.eval_det C.seq_stop_elim C.seq_stop_eval\<^sub>w C.skip_eval\<^sub>w subsetI)
+      by (metis (no_types, opaque_lifting) C.eval\<^sub>w.seq C.eval_det C.seq_stop_elim C.seq_stop_eval\<^sub>w C.skip_eval\<^sub>w subsetI)
   next
   case (if_then_rel_2' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_then_rel_3 tail\<^sub>C)
     with does_eval
@@ -2021,7 +2021,7 @@ proof(clarify)
   case (if_then_rel_3' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_then_rel_4)
     with does_eval
@@ -2036,7 +2036,7 @@ proof(clarify)
   case (if_else_rel_1' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_else_rel_2 tail\<^sub>C)
     with does_eval
@@ -2046,7 +2046,7 @@ proof(clarify)
   case (if_else_rel_2' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_else_rel_3 tail\<^sub>C)
     with does_eval
@@ -2056,7 +2056,7 @@ proof(clarify)
   case (if_else_rel_3' tail\<^sub>C)
     with does_eval
     show ?thesis
-      by (metis (no_types, hide_lams) C.seq_stop_elim subsetI)
+      by (metis (no_types, opaque_lifting) C.seq_stop_elim subsetI)
   next
   case (if_else_rel_4)
     with does_eval
@@ -4529,7 +4529,7 @@ case (if_then_rel_4 c\<^sub>A c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\
     from in_rel_inv\<^sub>C if_then_rel_4(1-4) in_R
     have "mem\<^sub>A z_var = mem\<^sub>A_of mem\<^sub>2\<^sub>C z_var"
       using inR_E A.low_mds_eq_def dma_def emptyE inv\<^sub>5E var.distinct(5)
-      by (metis (mono_tags, hide_lams))
+      by (metis (mono_tags, opaque_lifting))
     with z\<^sub>A have z\<^sub>2\<^sub>A: "mem\<^sub>A_of mem\<^sub>2\<^sub>C z_var = 0"
       by simp
 
@@ -4645,7 +4645,7 @@ case (if_else_rel_4 c\<^sub>A c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\
     from in_rel_inv\<^sub>C if_else_rel_4(1-4) in_R
     have "mem\<^sub>A z_var = mem\<^sub>A_of mem\<^sub>2\<^sub>C z_var"
       using inR_E A.low_mds_eq_def dma_def emptyE inv\<^sub>6E var.distinct(5)
-      by (metis (mono_tags, hide_lams))
+      by (metis (mono_tags, opaque_lifting))
     with z\<^sub>A have z\<^sub>2\<^sub>A: "mem\<^sub>A_of mem\<^sub>2\<^sub>C z_var = 0"
       by simp
 

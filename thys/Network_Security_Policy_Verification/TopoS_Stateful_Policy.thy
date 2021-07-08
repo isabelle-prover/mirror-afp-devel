@@ -311,7 +311,7 @@ locale stateful_policy_compliance =
           from this obtain E1 E2 where E1_prop: "E1 \<subseteq> backflows (filternew_flows_state \<T>)" and E2_prop: "E2 \<subseteq> (backflows (flows_state \<T>) - backflows (filternew_flows_state \<T>))" and "E = E1 \<union> E2" and "E1 \<inter> E2 = {}" by blast
     
           \<comment> \<open>the stateful flows are @{text "\<subseteq>"} fix flows. If substracting the new stateful flows, onyly the existing fix flows remain\<close>
-          from E2_prop filternew_flows_state_alt have "E2 \<subseteq> flows_fix \<T>" by (metis (hide_lams, no_types) Diff_subset_conv Un_Diff_cancel2 backflows_minus_backflows inf_sup_ord(3) order.trans)
+          from E2_prop filternew_flows_state_alt have "E2 \<subseteq> flows_fix \<T>" by (metis (opaque_lifting, no_types) Diff_subset_conv Un_Diff_cancel2 backflows_minus_backflows inf_sup_ord(3) order.trans)
           \<comment> \<open>hence, E2 disappears\<close>
           from Set.Un_absorb1[OF this] have E2_absorb: "flows_fix \<T> \<union> E2 = flows_fix \<T>" by blast
     

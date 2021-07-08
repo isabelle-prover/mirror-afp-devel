@@ -1059,7 +1059,7 @@ proof -
     finally have "extended_Gromov_product_at basepoint (Gromov_extension (f^^n) x) (to_Gromov_completion ((f^^n) basepoint)) \<ge> dist basepoint ((f^^n) basepoint) - (2 * deltaG(TYPE('a)) + K)"
       apply (simp only: ereal_minus_le [OF J] ereal_minus(1) [symmetric])
       apply (auto simp add: algebra_simps)
-      apply (metis (no_types, hide_lams) add.assoc add.left_commute mult_2_right plus_ereal.simps(1))
+      apply (metis (no_types, opaque_lifting) add.assoc add.left_commute mult_2_right plus_ereal.simps(1))
       done
     moreover have "dist basepoint ((f ^^ n) basepoint) - (2 * deltaG TYPE('a) + K) \<ge> M + deltaG(TYPE('a))"
       using Nd[OF n(3)] by auto

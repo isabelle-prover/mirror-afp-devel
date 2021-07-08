@@ -53,7 +53,7 @@ lemma frequently_eventually_at_top:
   shows "frequently (\<lambda>x. P x \<and> (\<forall>y\<ge>x. Q y) ) at_top"
   using assms
   unfolding frequently_def eventually_at_top_linorder 
-  by (metis (mono_tags, hide_lams) le_cases order_trans)
+  by (metis (mono_tags, opaque_lifting) le_cases order_trans)
 
 lemma eventually_at_top_mono:
   fixes P Q::"'a::linorder \<Rightarrow> bool"

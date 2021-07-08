@@ -1825,7 +1825,7 @@ next
   then have \<open>f ` A \<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>(\<^bold>\<not> \<^bold>\<not> sub f p) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using Neg(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3))
+    using Neg(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(3))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using Neg' by fast
   then show ?case
@@ -1837,7 +1837,7 @@ next
     \<open>f ` A \<turnstile> (sub f q # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp_all
   moreover have \<open>(sub f p \<^bold>\<or> sub f q) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DisP(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(4))
+    using DisP(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(4))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using DisP'' by fast
   then show ?case
@@ -1847,7 +1847,7 @@ next
   then have \<open>f ` A \<turnstile> ((\<^bold>\<not> sub f q) # (\<^bold>\<not> sub f p) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>(\<^bold>\<not> (sub f p \<^bold>\<or> sub f q)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DisN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3-4))
+    using DisN(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(3-4))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using DisN' by fast
   then show ?case
@@ -1946,9 +1946,9 @@ next
   then have \<open>f ` A \<turnstile> ((\<^bold>\<not> (\<^bold>@ (f i) (sub f p))) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>(\<^bold>\<not> (\<^bold>\<diamond> sub f p)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DiaN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3, 5))
+    using DiaN(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(3, 5))
   moreover have \<open>(\<^bold>\<diamond> Nom (f i)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DiaN(2) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(2, 5))
+    using DiaN(2) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(2, 5))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using DiaN' by fast
   then show ?case
@@ -1958,7 +1958,7 @@ next
   then have \<open>f ` A \<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>(\<^bold>@ (f a) (sub f p)) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using SatP(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(6))
+    using SatP(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(6))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using SatP' by fast
   then show ?case
@@ -1968,7 +1968,7 @@ next
   then have \<open>f ` A \<turnstile> ((\<^bold>\<not> sub f p) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>(\<^bold>\<not> (\<^bold>@ (f a) (sub f p))) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using SatN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3, 6))
+    using SatN(1) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(3, 6))
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
     using SatN' by fast
   then show ?case
@@ -1990,7 +1990,7 @@ next
   moreover have \<open>sub f p at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
     using Nom(1) at_in_sub_branch by fast
   moreover have \<open>Nom (f a) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using Nom(2) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(2))
+    using Nom(2) at_in_sub_branch by (metis (no_types, opaque_lifting) sub.simps(2))
   moreover have \<open>\<forall>i. sub f p = Nom i \<or> sub f p = (\<^bold>\<diamond> Nom i) \<longrightarrow> i \<in> f ` A\<close>
     using Nom(3) sub_still_allowed by metis
   ultimately have \<open>f ` A \<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>

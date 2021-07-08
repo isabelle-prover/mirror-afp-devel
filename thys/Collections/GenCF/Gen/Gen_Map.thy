@@ -9,7 +9,7 @@ begin
     apply (drule not_distinct_decomp)
     using assms
     apply (clarsimp elim!: map_eq_appendE)
-    by (metis (hide_lams, no_types) insert_iff map_to_set_inj)
+    by (metis (opaque_lifting, no_types) insert_iff map_to_set_inj)
 
 
   (* TODO: Make foldli explicit, such that it is seen by 

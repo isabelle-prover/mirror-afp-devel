@@ -568,7 +568,7 @@ proof -
     using bprules(1) pairwise_subset by blast
   moreover have "B\<^sub>2 \<notin> P\<^sub>2" using invrules(4) by simp
   ultimately have DISJNT: "\<Union>P\<^sub>2 \<inter> B\<^sub>2 = {}"
-    by (auto, metis (no_types, hide_lams) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
+    by (auto, metis (no_types, opaque_lifting) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
 
   have "finite (\<Union>P\<^sub>2)" using U_Finite bprules(3) by auto
   have "finite B\<^sub>2" using bp_bins_finite[OF invrules(1)] wrap_not_empty by blast
@@ -836,7 +836,7 @@ proof -
       using bprules(1) pairwise_subset by blast
     moreover have "B\<^sub>2 \<notin> P\<^sub>2" using inv\<^sub>1E(4)[OF invrules(1)]  by simp
     ultimately have DISJNT: "\<Union>P\<^sub>2 \<inter> B\<^sub>2 = {}"
-      by (auto, metis (no_types, hide_lams) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
+      by (auto, metis (no_types, opaque_lifting) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
     have "finite (\<Union>P\<^sub>2)" using U_Finite bprules(3) by auto
     have "finite B\<^sub>2" using inv\<^sub>1E(1)[OF invrules(1)] bp_bins_finite wrap_not_empty by blast
 
@@ -1350,7 +1350,7 @@ proof -
     using bprules(1) pairwise_subset by blast
   moreover have "B\<^sub>2 \<notin> P\<^sub>2" using invrules(4) by simp
   ultimately have DISJNT: "\<Union>P\<^sub>2 \<inter> B\<^sub>2 = {}"
-    by (auto, metis (no_types, hide_lams) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
+    by (auto, metis (no_types, opaque_lifting) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
 
   have "finite (\<Union>P\<^sub>2)" using U_Finite bprules(3) by auto
   have "finite B\<^sub>2" using bp_bins_finite[OF invrules(1)] wrap_not_empty by blast
@@ -1604,7 +1604,7 @@ proof -
       using bprules(1) pairwise_subset by blast
     moreover have "B\<^sub>2 \<notin> P\<^sub>2" using inv\<^sub>1E(4)[OF invrules(1)]  by simp
     ultimately have DISJNT: "\<Union>P\<^sub>2 \<inter> B\<^sub>2 = {}"
-      by (auto, metis (no_types, hide_lams) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
+      by (auto, metis (no_types, opaque_lifting) sup_bot.right_neutral Un_insert_right disjnt_iff mk_disjoint_insert pairwise_insert wrap_Un)
     have "finite (\<Union>P\<^sub>2)" using U_Finite bprules(3) by auto
     have "finite B\<^sub>2" using inv\<^sub>1E(1)[OF invrules(1)] bp_bins_finite wrap_not_empty by blast
 

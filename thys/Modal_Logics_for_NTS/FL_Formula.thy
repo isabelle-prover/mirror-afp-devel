@@ -738,7 +738,7 @@ next
       moreover have "?p \<bullet> bn ((x \<rightleftharpoons> b) \<bullet> \<alpha>) = bn \<alpha>"
         by (simp add: bn_eqvt)
       moreover have "supp ((x \<rightleftharpoons> b) \<bullet> \<alpha>) - bn ((x \<rightleftharpoons> b) \<bullet> \<alpha>) = supp \<alpha> - bn \<alpha>"
-        using "**" and b2 by (metis (mono_tags, hide_lams) Diff_eqvt Diff_iff bn_eqvt supp_eqvt swap_set_not_in)
+        using "**" and b2 by (metis (mono_tags, opaque_lifting) Diff_eqvt Diff_iff bn_eqvt supp_eqvt swap_set_not_in)
       moreover then have "(supp ((x \<rightleftharpoons> b) \<bullet> \<alpha>) - bn ((x \<rightleftharpoons> b) \<bullet> \<alpha>)) \<sharp>* ?p"
         using "**" and b2 by (simp add: fresh_star_def fresh_def supp_perm) (metis Diff_iff swap_atom_simps(3))
       moreover have "?p \<bullet> (x \<rightleftharpoons> b) \<bullet> \<alpha> = \<alpha>"
@@ -1011,7 +1011,7 @@ lemma hereditarily_fs_eqvt [eqvt]:
   shows "hereditarily_fs (p \<bullet> t\<^sub>\<alpha>)"
 using assms proof (induction rule: hereditarily_fs.induct)
   case Conj\<^sub>\<alpha> then show ?case
-    by (metis (erased, hide_lams) Conj\<^sub>\<alpha>_eqvt hereditarily_fs.Conj\<^sub>\<alpha> mem_permute_iff permute_finite permute_minus_cancel(1) set_bset_eqvt supp_eqvt)
+    by (metis (erased, opaque_lifting) Conj\<^sub>\<alpha>_eqvt hereditarily_fs.Conj\<^sub>\<alpha> mem_permute_iff permute_finite permute_minus_cancel(1) set_bset_eqvt supp_eqvt)
 next
   case Not\<^sub>\<alpha> then show ?case
     by (metis Not\<^sub>\<alpha>_eqvt hereditarily_fs.Not\<^sub>\<alpha>)
@@ -1218,7 +1218,7 @@ lemma Conj_eq_iff [simp]:
   assumes "finite (supp xset1)" and "finite (supp xset2)"
   shows "Conj xset1 = Conj xset2 \<longleftrightarrow> xset1 = xset2"
 using assms
-by (metis (erased, hide_lams) Conj\<^sub>\<alpha>_eq_iff Conj_rep_eq Rep_formula_inverse injI inj_eq bset.inj_map)
+by (metis (erased, opaque_lifting) Conj\<^sub>\<alpha>_eq_iff Conj_rep_eq Rep_formula_inverse injI inj_eq bset.inj_map)
 
 lemma Not_eq_iff [simp]: "Not x1 = Not x2 \<longleftrightarrow> x1 = x2"
 by (metis Not.rep_eq Not\<^sub>\<alpha>_eq_iff Rep_formula_inverse)

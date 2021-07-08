@@ -555,7 +555,7 @@ lemma transversal_segment_reverse:
   assumes "transversal_segment x y"
   shows "transversal_segment y x"
   unfolding transversal_segment_def
-  by (metis (no_types, hide_lams) add.left_neutral add_uminus_conv_diff assms closed_segment_commute inner_diff_left inner_zero_left nrm_reverse transversal_segment_def) 
+  by (metis (no_types, opaque_lifting) add.left_neutral add_uminus_conv_diff assms closed_segment_commute inner_diff_left inner_zero_left nrm_reverse transversal_segment_def) 
 
 lemma transversal_segment_commute: "transversal_segment x y \<longleftrightarrow> transversal_segment y x"
   using transversal_segment_reverse by blast
@@ -1311,7 +1311,7 @@ proof -
         unfolding eq[symmetric] using tt_ex xx
         apply (subst flow_trans[symmetric])
           apply (auto simp add: neg_tt_ex)
-        by (metis (no_types, hide_lams) sub1b subset_eq subset_open_segment)
+        by (metis (no_types, opaque_lifting) sub1b subset_eq subset_open_segment)
       ultimately show ?thesis by simp
     next
       case 2
@@ -1427,7 +1427,7 @@ proof -
         unfolding eq[symmetric] using tt_ex xx
         apply (subst flow_trans[symmetric])
           apply (auto simp add: neg_tt_ex)
-        by (metis (no_types, hide_lams) suba2 subset_eq subset_open_segment)
+        by (metis (no_types, opaque_lifting) suba2 subset_eq subset_open_segment)
       ultimately show ?thesis by simp
     next
       case 2
@@ -1598,7 +1598,7 @@ proof -
 
     then have t2o: "\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 x (t2 + t) \<in> outer"
       using r1a3[OF x2] exist flow_trans
-      by (metis (no_types, hide_lams) closed_segment_commute ends_in_segment(1) local.existence_ivl_trans' local.flow_undefined0 real_Icc_closed_segment subset_eq \<open>t1 \<le> t2\<close>)
+      by (metis (no_types, opaque_lifting) closed_segment_commute ends_in_segment(1) local.existence_ivl_trans' local.flow_undefined0 real_Icc_closed_segment subset_eq \<open>t1 \<le> t2\<close>)
 
 (* Construct a sequence of times converging to these points in r2 \<subseteq> inner *)
     have inner: "{a <--< flow0 x t2} \<subseteq> closure inner"
@@ -1705,7 +1705,7 @@ proof -
 
     then have t2o: "\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 x (t2 + t) \<in> inner"
       using r1a3[OF x2] exist flow_trans
-      by (metis (no_types, hide_lams) closed_segment_commute ends_in_segment(1) local.existence_ivl_trans' local.flow_undefined0 real_Icc_closed_segment subset_eq \<open>t1 \<le> t2\<close>)
+      by (metis (no_types, opaque_lifting) closed_segment_commute ends_in_segment(1) local.existence_ivl_trans' local.flow_undefined0 real_Icc_closed_segment subset_eq \<open>t1 \<le> t2\<close>)
 
 (* Construct a sequence of times converging to these points in r2 \<subseteq> outer *)
     have outer: "{a <--< flow0 x t2} \<subseteq> closure outer"

@@ -207,7 +207,7 @@ lemma nth_take_eq: "take n ls = take n ls' \<Longrightarrow> i < n \<Longrightar
 
 lemma map_snd_sorted_less: "\<lbrakk>sorted_less (map snd xs); i < j; j < length xs\<rbrakk>
        \<Longrightarrow> snd (xs ! i) < snd (xs ! j)"
-  by (metis (mono_tags, hide_lams) length_map less_trans nth_map sorted_wrt_iff_nth_less)
+  by (metis (mono_tags, opaque_lifting) length_map less_trans nth_map sorted_wrt_iff_nth_less)
 
 lemma map_snd_sorted_lesseq: "\<lbrakk>sorted_less (map snd xs); i \<le> j; j < length xs\<rbrakk>
        \<Longrightarrow> snd (xs ! i) \<le> snd (xs ! j)"

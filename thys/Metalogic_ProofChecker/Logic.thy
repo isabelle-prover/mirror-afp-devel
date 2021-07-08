@@ -1624,7 +1624,7 @@ proof-
       using snoc.prems \<open>wf_theory \<Theta>\<close> 1 apply (solves simp)+ 
       using typ_ofy ynn apply (simp add: wt_term_def typ_of_def)
       using snoc.prems apply simp
-      by (metis (full_types, hide_lams) UN_I fst_conv image_eqI)
+      by (metis (full_types, opaque_lifting) UN_I fst_conv image_eqI)
     moreover have "fold (\<lambda>single. subst_term [single])
             (zip (zip (xs @ [x]) (map snd (map fst (ys @ [y]))))
               (map snd (ys @ [y])))

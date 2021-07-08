@@ -339,7 +339,7 @@ next
   then have s1: "(prod_list (map (nth (map_sgas sign)) (a#xa))) = 1 \<longleftrightarrow> 
     ((sign ! a)^2 = 0 \<and> (prod_list (map ((!) (map_sgas sign)) (xa))) = 1)"
     using eo h
-    by (metis (mono_tags, hide_lams) cancel_comm_monoid_add_class.diff_cancel diff_zero mult.left_neutral mult_zero_left)
+    by (metis (mono_tags, opaque_lifting) cancel_comm_monoid_add_class.diff_cancel diff_zero mult.left_neutral mult_zero_left)
   have "(sign ! a)^2 = 0 \<longleftrightarrow> (poly (qs ! a) x = 0)"
     using sign_fix unfolding consistent_sign_vec_def welldef apply (auto)
      apply (smt (z3) class_field.neg_1_not_0 class_field.zero_not_one nth_map welldef)
@@ -491,7 +491,7 @@ proof -
       then show ?thesis
         using z_signs_R1[where signs = "sign", where I = "fst I"] horiz_vector_helper_pos_ind_R1[where sign = "sign", where I = "fst I", where p = "p", where x = "x"] assms 
         apply (auto)
-        by (metis (mono_tags, hide_lams) \<open>prod_list (map ((!) (map_sgas sign)) (fst I)) = 1 \<or> prod_list (map ((!) (map_sgas sign)) (fst I)) = 0\<close> mult_zero_left z_R_def) 
+        by (metis (mono_tags, opaque_lifting) \<open>prod_list (map ((!) (map_sgas sign)) (fst I)) = 1 \<or> prod_list (map ((!) (map_sgas sign)) (fst I)) = 0\<close> mult_zero_left z_R_def) 
     qed
     then have h2: "(z_R I sign = 1) \<longrightarrow> (poly (prod_list (retrieve_polys qs (snd I))) x > 0)" 
       unfolding z_R_def using assms horiz_vector_helper_pos_ind_R2[where p = "p", where x = "x", where sign = "sign", where qs = "qs", where I ="snd I"]

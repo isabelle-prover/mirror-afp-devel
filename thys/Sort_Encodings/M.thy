@@ -268,7 +268,7 @@ assumes "\<And>x. x \<in> varsA at \<Longrightarrow> \<xi>1 x = \<xi>2 x"
 shows "satA \<xi>1 at \<longleftrightarrow> satA \<xi>2 at"
 using assms int_cong[of _ \<xi>1 \<xi>2]
 apply(cases at) apply(fastforce intro!: int_cong[of _ \<xi>1 \<xi>2])
-apply simp by (metis (hide_lams, mono_tags) map_eq_conv)
+apply simp by (metis (opaque_lifting, mono_tags) map_eq_conv)
 
 lemma satL_cong:
 assumes "\<And> x. x \<in> varsL l \<Longrightarrow> \<xi>1 x = \<xi>2 x"
@@ -407,7 +407,7 @@ apply(cases at)
 apply(fastforce intro!: fsyms_int_cong[OF S1 S2, of _ \<xi>]
                 simp: Struct.satA.simps[OF S1, of \<xi>] Struct.satA.simps[OF S2, of \<xi>])
 apply (simp add: Struct.satA.simps[OF S1, of \<xi>] Struct.satA.simps[OF S2, of \<xi>])
-by (metis (hide_lams, mono_tags) map_eq_conv)
+by (metis (opaque_lifting, mono_tags) map_eq_conv)
 
 lemma fsyms_satL_cong:
 assumes S1: "Struct wtFsym wtPsym arOf resOf intT intF1 intP"

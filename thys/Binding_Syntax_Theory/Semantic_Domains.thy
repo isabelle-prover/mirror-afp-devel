@@ -819,7 +819,7 @@ by (simp add: updVal_def swapVal_def eqBut_def sw_def)
 lemma asIMOD_igAbsCongS: "sWlsDisj SEM \<Longrightarrow> igAbsCongS (asIMOD SEM)"
 unfolding igAbsCongS_def asIMOD_igFresh asIMOD_igSwap asIMOD_igAbs2 
 apply safe apply (simp add: asIMOD_igAbs2) 
-by (rule ext) (metis (hide_lams) updVal_swapVal_eqBut swapVal_preserves_sWls updVal_preserves_sWls) 
+by (rule ext) (metis (opaque_lifting) updVal_swapVal_eqBut swapVal_preserves_sWls updVal_preserves_sWls) 
 
  
 

@@ -32,7 +32,7 @@ lemma is_word_terminals: "wellformed_tokens p \<Longrightarrow> is_word (termina
 by (simp add: is_word_def list_all_length terminals_def wellformed_token_def wellformed_tokens_def)
 
 lemma is_word_subset: "is_word x \<Longrightarrow> set y \<subseteq> set x \<Longrightarrow> is_word y"
-by (metis (mono_tags, hide_lams) in_set_conv_nth is_word_def list_all_length subsetCE)
+by (metis (mono_tags, opaque_lifting) in_set_conv_nth is_word_def list_all_length subsetCE)
  
 lemma is_word_terminals_take: "wellformed_tokens p \<Longrightarrow> is_word(terminals (take n p))"
 by (metis append_take_drop_id is_word_terminals list_all_append wellformed_tokens_def)

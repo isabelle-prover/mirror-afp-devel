@@ -969,7 +969,7 @@ proof -
     have "{birkhoff_sum f n (T x) |n. n \<in> {1..}} = {birkhoff_sum f (1+n) (x) - f x |n. n \<in> {1..}}"
       unfolding birkhoff_sum_cocycle by auto
     also have "... = {birkhoff_sum f n x - f x |n. n \<in> {2..}}"
-      by (metis (no_types, hide_lams) Suc_1 Suc_eq_plus1_left Suc_le_D Suc_le_mono atLeast_iff)
+      by (metis (no_types, opaque_lifting) Suc_1 Suc_eq_plus1_left Suc_le_D Suc_le_mono atLeast_iff)
     finally have *: "{birkhoff_sum f n (T x) |n. n \<in> {1..}} = (\<lambda>t. t - (f x))`{birkhoff_sum f n x |n. n \<in> {2..}}"
       by auto
 

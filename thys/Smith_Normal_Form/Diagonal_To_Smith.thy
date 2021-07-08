@@ -1339,7 +1339,7 @@ proof -
       unfolding diagonal_step_PQ_def 
       unfolding row_add_def interchange_rows_def
       by (auto simp add: Let_def split_beta)
-         (metis (mono_tags, hide_lams) fst_conv snd_conv)+
+         (metis (mono_tags, opaque_lifting) fst_conv snd_conv)+
     thus ?thesis unfolding vec_eq_iff unfolding vec_lambda_beta by auto
 qed
 
@@ -1371,7 +1371,7 @@ proof -
   using PQ ik1 pquvd unfolding diagonal_step_PQ_def
   unfolding column_add_def mult_column_def
   by (auto simp add: Let_def split_beta)
-     (metis (mono_tags, hide_lams) fst_conv snd_conv)+
+     (metis (mono_tags, opaque_lifting) fst_conv snd_conv)+
   thus ?thesis unfolding vec_eq_iff unfolding vec_lambda_beta by auto
 qed
   
@@ -1602,7 +1602,7 @@ proof (induct xs bezout "(P,A,Q)" arbitrary: P A Q rule: diagonal_to_Smith_aux_P
 next
   case (2 i xs bezout P A Q)
   then show ?case
-    by (metis (no_types, hide_lams) append_Cons diagonal_to_Smith_aux_PQ.simps(2) prod_cases3)
+    by (metis (no_types, opaque_lifting) append_Cons diagonal_to_Smith_aux_PQ.simps(2) prod_cases3)
 qed 
 
 (*

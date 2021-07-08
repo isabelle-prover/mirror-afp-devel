@@ -178,7 +178,7 @@ proof (induction "length t + length u" arbitrary:s t u rule:nat_less_induct)
         apply (metis "1.hyps" add_Suc_right length_Cons lessI set_ConsD) 
        apply (metis "1.hyps" add_less_mono length_Cons lessI set_ConsD) 
       apply (metis "1.hyps" add_Suc_right length_Cons lessI set_ConsD) 
-     apply (metis (no_types, hide_lams) "1.hyps" add.commute add_Suc_right insert_iff 
+     apply (metis (no_types, opaque_lifting) "1.hyps" add.commute add_Suc_right insert_iff 
                                          length_Cons lessI list.simps(15)) 
     by (metis "1.hyps" add_less_le_mono length_Cons lessI order_refl set_ConsD)
 qed

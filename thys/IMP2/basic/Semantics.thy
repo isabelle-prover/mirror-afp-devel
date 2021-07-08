@@ -362,7 +362,7 @@ lemma smalls_pscope:
   "small_steps \<pi>' (c, s) (Some (c', s')) \<Longrightarrow> small_steps \<pi> (PScope \<pi>' c, s) (Some (PScope \<pi>' c',s'))"
   apply (induction \<pi>' "(c,s)" "(Some (c', s'))" arbitrary: c s rule: small_steps.induct)
   apply auto
-  by (metis (no_types, hide_lams) option.inject prod.inject small_pscope small_steps.simps small_steps_append small_steps_skip_term)
+  by (metis (no_types, opaque_lifting) option.inject prod.inject small_pscope small_steps.simps small_steps_append small_steps_skip_term)
   
   
   
@@ -552,7 +552,7 @@ lemma wp_equiv_iff: "(\<forall>\<pi>. wp \<pi> c = wp \<pi> c') \<longleftrighta
 
 lemma wlp_equiv_iff: "(\<forall>\<pi>. wlp \<pi> c = wlp \<pi> c') \<longleftrightarrow> c \<sim> c'" 
   unfolding equiv_c_def wlp_def
-  by (auto; metis (no_types, hide_lams))
+  by (auto; metis (no_types, opaque_lifting))
 
 
 subsubsection \<open>While Loops and Weakest Precondition\<close>  

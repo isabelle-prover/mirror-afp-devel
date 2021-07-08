@@ -95,7 +95,7 @@ lemma sorted_map: "\<lbrakk> sorted xs; mono f \<rbrakk> \<Longrightarrow> sorte
 lemma sorted_distinct [intro]: "\<lbrakk> sorted (xs); distinct(xs) \<rbrakk> \<Longrightarrow> (\<forall> i<length xs - 1. xs!i < xs!(i + 1))"
   apply (induct xs)
    apply (auto)
-  apply (metis (no_types, hide_lams) Suc_leI Suc_less_eq Suc_pred gr0_conv_Suc not_le not_less_iff_gr_or_eq nth_Cons_Suc nth_mem nth_non_equal_first_eq)
+  apply (metis (no_types, opaque_lifting) Suc_leI Suc_less_eq Suc_pred gr0_conv_Suc not_le not_less_iff_gr_or_eq nth_Cons_Suc nth_mem nth_non_equal_first_eq)
   done
 
 text \<open> Is the given list a permutation of the given set? \<close>

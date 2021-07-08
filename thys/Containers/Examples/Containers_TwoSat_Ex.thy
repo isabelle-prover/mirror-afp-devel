@@ -283,7 +283,7 @@ termination by lexicographic_order
 lemma comp_fun_idem_insert_clause: "comp_fun_idem insert_clause"
   apply(unfold_locales)
   subgoal for x y by(cases x; cases y; simp; metis commute_left_comp comp_fun_commute rewriteL_comp_comp)
-  subgoal for x by(cases x; simp; metis (no_types, hide_lams) commute_left_comp comp_assoc comp_fun_idem)
+  subgoal for x by(cases x; simp; metis (no_types, opaque_lifting) commute_left_comp comp_assoc comp_fun_idem)
   done
 
 lift_definition insert_clause' :: "(clause, (lit, lit set) mapping) comp_fun_idem" is "insert_clause"

@@ -160,7 +160,7 @@ begin
 
   lift_definition star_reg_lan :: "'a reg_lan \<Rightarrow> 'a reg_lan"
     is star
-    by (metis (hide_lams, no_types) image_iff lang.simps(6) rangeI)
+    by (metis (opaque_lifting, no_types) image_iff lang.simps(6) rangeI)
 
   lift_definition zero_reg_lan :: "'a reg_lan"
     is 0
@@ -178,11 +178,11 @@ begin
 
   lift_definition plus_reg_lan :: "'a reg_lan \<Rightarrow> 'a reg_lan \<Rightarrow> 'a reg_lan"
     is plus
-    by (metis (hide_lams, no_types) image_iff lang.simps(4) rangeI)
+    by (metis (opaque_lifting, no_types) image_iff lang.simps(4) rangeI)
 
   lift_definition times_reg_lan :: "'a reg_lan \<Rightarrow> 'a reg_lan \<Rightarrow> 'a reg_lan"
     is times
-    by (metis (hide_lams, no_types) image_iff lang.simps(5) rangeI)
+    by (metis (opaque_lifting, no_types) image_iff lang.simps(5) rangeI)
 
   instance
   proof

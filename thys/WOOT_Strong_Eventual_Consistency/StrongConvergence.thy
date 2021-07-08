@@ -207,7 +207,7 @@ proof -
     moreover have "set (received_messages (i,j)) \<subseteq> make_set n (\<lambda>k x. event_at (ids ! k) (Send x))"
       using ij_def apply (simp add:received_messages_eff del:received_messages.simps, rule_tac subsetI)
       using sent_before_recv a apply (simp add:make_set_def) 
-      by (metis (no_types, hide_lams) distinct_Ex1 ids_def in_set_conv_nth)
+      by (metis (no_types, opaque_lifting) distinct_Ex1 ids_def in_set_conv_nth)
     moreover have "(i,j) \<notin> I ` insert_messages (make_set n (\<lambda>k x. event_at (ids ! k) (Send x)))"
         apply (simp add:insert_messages_def image_iff make_set_def del:event_at.simps)  
         using ids_def le_eq_less_or_eq nth_eq_iff_index_eq send_insert_id  

@@ -203,7 +203,7 @@ next
   hence "(\<forall>m>i. A $ m $ k = 0) = (\<forall>m\<ge>i+1. A $ m $ k = 0)" using i_le le_Suc by auto 
   also have "... = vector_all_zero_from_index ((to_nat i)+1, vec_to_iarray (column k A))"
     unfolding matrix_vector_all_zero_from_index
-    by (metis (mono_tags, hide_lams) from_nat_suc from_nat_to_nat_id i_le not_less0 
+    by (metis (mono_tags, opaque_lifting) from_nat_suc from_nat_to_nat_id i_le not_less0 
       to_nat_0 to_nat_from_nat_id to_nat_mono to_nat_plus_one_less_card)
   finally show ?thesis .
 qed

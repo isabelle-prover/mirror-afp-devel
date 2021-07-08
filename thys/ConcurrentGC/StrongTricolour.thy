@@ -469,7 +469,7 @@ next case (mark_loop_blacken s s') then show ?case
       apply (intro allI conjI impI; clarsimp)
        apply (drule mut_m.handshake_phase_invD[where m=m], clarsimp simp: hp_step_rel_def)
       apply (clarsimp simp: mut_m.reachable_snapshot_inv_def in_snapshot_def grey_protects_white_def)
-      apply (metis (no_types, hide_lams) obj_fields_marked_inv_has_white_path_to_blacken)
+      apply (metis (no_types, opaque_lifting) obj_fields_marked_inv_has_white_path_to_blacken)
       done
 next case (mark_loop_mo_co_mark s s' y) then show ?case by (clarsimp simp: handshake_in_syncD mut_m.reachable_snapshot_inv_mo_co_mark)
 next case (mark_loop_get_roots_load_W s s') then show ?case

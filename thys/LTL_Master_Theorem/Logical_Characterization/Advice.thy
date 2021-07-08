@@ -729,7 +729,7 @@ proof -
   then obtain k where leq: "(\<And>i. i \<le> Suc n \<Longrightarrow> min i n \<le> k)"
     and suffix: "\<And>i :: nat. i < Suc (Suc n) \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (if i \<le> n then \<phi> else \<psi>) (w [min i n \<rightarrow> k])[X]\<^sub>\<nu>"
     using GF_advice_sync[of "Suc (Suc n)" ?index w ?formula X]
-    by (metis (no_types, hide_lams) less_Suc_eq min_le_iff_disj)
+    by (metis (no_types, opaque_lifting) less_Suc_eq min_le_iff_disj)
 
   have "\<forall>j \<le> n. suffix k w \<Turnstile>\<^sub>n af \<phi> (w [j \<rightarrow> k])[X]\<^sub>\<nu>"
     using suffix by (metis (full_types) le_SucI less_Suc_eq_le min.orderE)

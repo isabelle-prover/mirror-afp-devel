@@ -362,7 +362,7 @@ shows "\<K> \<le> 1"
 proof -
     have ineq: "\<And>k. 0 < k \<Longrightarrow> \<K> \<le> root k k * root k max_len"
       using \<K>_pos \<K>_power_bound
-      by (metis (no_types, hide_lams) not_less of_nat_0_le_iff of_nat_mult power_strict_mono real_root_mult real_root_pos_pos_le real_root_pos_unique real_root_power)
+      by (metis (no_types, opaque_lifting) not_less of_nat_0_le_iff of_nat_mult power_strict_mono real_root_mult real_root_pos_pos_le real_root_pos_unique real_root_power)
     hence "0 < max_len \<Longrightarrow> (\<lambda>k. root k k * root k max_len) \<longlonglongrightarrow> 1"
       by (auto intro!: tendsto_eq_intros LIMSEQ_root LIMSEQ_root_const)
     moreover have "\<forall>n\<ge>1. \<K> \<le> root n n * root n max_len"
@@ -576,7 +576,7 @@ proof -
       using \<K>_pos
       by (simp add: log_inverse_eq divide_inverse sum_one_L)
     also have "\<dots> = (\<Sum> i \<in> L. fi i * log b (fi i / ?r i)) - log b (\<K>)"
-      by (metis (mono_tags, hide_lams) divide_divide_eq_left divide_divide_eq_right)
+      by (metis (mono_tags, opaque_lifting) divide_divide_eq_left divide_divide_eq_right)
     also have "\<dots> = KL_div L fi ?r - log b ( \<K>)"
       using b_gt_1 \<K>_pos log_inverse KL_div_def
       by simp

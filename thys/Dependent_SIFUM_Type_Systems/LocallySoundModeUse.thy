@@ -742,7 +742,7 @@ next
   case (sub mds\<^sub>2'' c mds\<^sub>2' mds\<^sub>1 mds\<^sub>1' c\<^sub>1)
   thus ?case
     apply clarsimp
-    by (metis (hide_lams, no_types) inf_absorb2 le_infI1)
+    by (metis (opaque_lifting, no_types) inf_absorb2 le_infI1)
 qed
 
 end

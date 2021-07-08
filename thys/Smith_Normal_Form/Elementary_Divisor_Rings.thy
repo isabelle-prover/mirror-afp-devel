@@ -909,7 +909,7 @@ proof -
     by (metis a d d' add_ac(2) add_diff_cancel add_diff_eq mult_ac(2) ring_distribs(1,4) 
         semiring_normalization_rules(18))
   have 2: "?b1'*d' = b"
-    by (metis (no_types, hide_lams) b d d' add_ac(2) add_diff_cancel add_diff_eq mult_ac(2) mult_ac(3) 
+    by (metis (no_types, opaque_lifting) b d d' add_ac(2) add_diff_cancel add_diff_eq mult_ac(2) mult_ac(3) 
         ring_distribs(2,4) semiring_normalization_rules(18)) 
   have "(s*l-b1)*?a1' + (t*l+a1)*?b1' = 1"
   proof -

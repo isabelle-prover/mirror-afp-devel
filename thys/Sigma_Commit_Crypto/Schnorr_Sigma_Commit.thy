@@ -305,7 +305,7 @@ proof-
     by (smt \<open>[int z - int z' = int t * (int e - int e')] (mod int (order \<G>))\<close> assms(1) assms(2)
           cong_scalar_right int_nat_eq less_imp_of_nat_less mod_less more_arith_simps(11) nat_less_iff of_nat_0_le_iff)
   hence "[(int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)) = int t * 1] (mod  order \<G>)"
-    by (metis (no_types, hide_lams) gcd inverse assms(2) cong_scalar_left cong_trans less_imp_diff_less mod_less mult.comm_neutral nat_minus_as_int)
+    by (metis (no_types, opaque_lifting) gcd inverse assms(2) cong_scalar_left cong_trans less_imp_diff_less mod_less mult.comm_neutral nat_minus_as_int)
   hence "[(int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)) 
               = t] (mod  order \<G>)" by simp
   hence "[ ((int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)))mod order \<G> 

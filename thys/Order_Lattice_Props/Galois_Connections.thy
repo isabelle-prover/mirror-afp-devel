@@ -65,7 +65,7 @@ lemma adj_comp: "f \<stileturn> g \<Longrightarrow> adj h k \<Longrightarrow> (f
 lemma adj_dual: 
   fixes f :: "'a::ord_with_dual \<Rightarrow> 'b::ord_with_dual"
   shows "f \<stileturn> g = (\<partial>\<^sub>F g) \<stileturn> (\<partial>\<^sub>F f)"
-  unfolding adj_def map_dual_def comp_def by (metis (mono_tags, hide_lams) dual_dual_ord invol_dual_var)
+  unfolding adj_def map_dual_def comp_def by (metis (mono_tags, opaque_lifting) dual_dual_ord invol_dual_var)
 
 subsection \<open>Properties for (Pre)Orders\<close>
 
@@ -209,7 +209,7 @@ qed
 lemma Sup_pres_ladj_aux: 
   fixes f :: "'a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual" 
   shows "Sup_pres f \<Longrightarrow> f \<stileturn> (radj f)"
-  by (metis (no_types, hide_lams) Inf_pres_radj_aux Sup_pres_map_dual_var adj_dual fun_dual5 map_dual_def radj_adj)
+  by (metis (no_types, opaque_lifting) Inf_pres_radj_aux Sup_pres_map_dual_var adj_dual fun_dual5 map_dual_def radj_adj)
 
 lemma Inf_pres_radj: 
   fixes g :: "'b::complete_lattice \<Rightarrow> 'a::complete_lattice"

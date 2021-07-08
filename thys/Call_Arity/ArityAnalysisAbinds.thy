@@ -78,7 +78,7 @@ lemma ABinds_restr_fresh:
   apply simp
   apply (auto simp del: fun_meet_simp simp add: env_restr_join fresh_star_Pair fresh_star_Cons fresh_star_delete)
   apply (subst lookup_env_restr)
-  apply (metis (no_types, hide_lams) ComplI fresh_at_base(2) fresh_star_def imageI)
+  apply (metis (no_types, opaque_lifting) ComplI fresh_at_base(2) fresh_star_def imageI)
   apply simp
   done
 

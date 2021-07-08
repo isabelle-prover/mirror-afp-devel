@@ -1351,7 +1351,7 @@ proof -
       using prod_list_zero_iff[where xs = "(cast_rat_list qs)"] unfolding cast_rat_list_def
       apply (auto)
       using nonz_q apply blast
-      by (metis (no_types, hide_lams) image_eqI list.set_map of_rat_poly_hom.prod_list_map_hom poly_prod_list_zero_iff) 
+      by (metis (no_types, opaque_lifting) image_eqI list.set_map of_rat_poly_hom.prod_list_map_hom poly_prod_list_zero_iff) 
     have "?zer_list \<noteq>[] \<longrightarrow> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0})
      (?zer_list ! 0)" 
       using nth_Cons_0 apply (auto)
@@ -1415,7 +1415,7 @@ proof -
       using prod_list_zero_iff[where xs = "(cast_rat_list qs)"] unfolding cast_rat_list_def
       apply (auto)
       using nonz_q apply blast
-      by (metis (no_types, hide_lams) image_eqI list.set_map of_rat_poly_hom.prod_list_map_hom poly_prod_list_zero_iff) 
+      by (metis (no_types, opaque_lifting) image_eqI list.set_map of_rat_poly_hom.prod_list_map_hom poly_prod_list_zero_iff) 
     have "?zer_list \<noteq>[] \<longrightarrow> List.member (sorted_list_of_set {x. \<exists>q\<in>set qs. rpoly q x = 0})
      (?zer_list ! (length ?zer_list -1))" 
       using nth_Cons_0 apply (auto)

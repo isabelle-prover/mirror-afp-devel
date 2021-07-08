@@ -56,7 +56,7 @@ begin
   abbreviation "fins P w \<equiv> \<not> infs P w"
 
   lemma infs_suffix: "infs P w \<longleftrightarrow> (\<forall> u v. w = u @- v \<longrightarrow> Bex (sset v) P)"
-    using alwD alw_iff_sdrop alw_shift ev_holds_sset stake_sdrop by (metis (mono_tags, hide_lams))
+    using alwD alw_iff_sdrop alw_shift ev_holds_sset stake_sdrop by (metis (mono_tags, opaque_lifting))
   lemma infs_snth: "infs P w \<longleftrightarrow> (\<forall> n. \<exists> k \<ge> n. P (w !! k))"
     by (auto simp: alw_iff_sdrop ev_iff_sdrop holds.simps intro: le_add1 dest: le_Suc_ex)
   lemma infs_infm: "infs P w \<longleftrightarrow> (\<exists>\<^sub>\<infinity> i. P (w !! i))"

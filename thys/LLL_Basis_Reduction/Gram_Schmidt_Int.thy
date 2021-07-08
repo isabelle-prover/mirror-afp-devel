@@ -1097,7 +1097,7 @@ proof -
     using that by auto
   then have "{?r_fs ! i $ j |i j. i < length ?r_fs \<and> j < n} = 
              {rat_of_int (fs ! i $ j) |i j. i < length fs \<and> j < n}"
-    by (metis (mono_tags, hide_lams) length_map)
+    by (metis (mono_tags, opaque_lifting) length_map)
   then have "x \<in> {?r_fs ! i $ j |i j. i < length (map of_int_hom.vec_hom fs) \<and> j < n}
                  \<union> {gs.\<mu>' i j |i j. j \<le> i \<and> i < length ?r_fs}
                  \<union> {gs.\<sigma> l i j |i j l. i < length ?r_fs \<and> j \<le> i \<and> l \<le> j}"

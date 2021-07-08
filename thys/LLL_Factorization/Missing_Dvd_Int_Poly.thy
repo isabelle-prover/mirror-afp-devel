@@ -234,7 +234,7 @@ proof (auto simp add: rel_fun_def MP_Rel_Pair_def)
     define h where h: "h = Polynomial.smult (inverse_p m (lead_coeff (Mp g))) (Mp g)"
     define H where H: "H = Polynomial.smult (inverse (lead_coeff G)) G"
     have hH': "MP_Rel ?h H" unfolding MP_Rel_def unfolding H 
-      by (metis (mono_tags, hide_lams) "2" MP_Rel_def M_to_int_mod_ring Mp_f_representative 
+      by (metis (mono_tags, opaque_lifting) "2" MP_Rel_def M_to_int_mod_ring Mp_f_representative 
          rel_inverse_p functional_relation left_total_MP_Rel of_int_hom.map_poly_hom_smult 
          pm.mod_ring_rel_def right_unique_MP_Rel to_int_mod_ring_hom.injectivity to_int_mod_ring_of_int_M)
      have "Mp (Polynomial.smult (inverse_p m (lead_coeff (Mp g))) g) 

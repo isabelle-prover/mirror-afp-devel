@@ -703,7 +703,7 @@ context ast_problem begin
   lemma (in ast_domain) of_type_trans[trans]:
     "of_type T1 T2 \<Longrightarrow> of_type T2 T3 \<Longrightarrow> of_type T1 T3"
     unfolding of_type_def
-    by clarsimp (metis (no_types, hide_lams)
+    by clarsimp (metis (no_types, opaque_lifting)
       Image_mono contra_subsetD order_refl rtrancl_image_idem)
 
   lemma is_of_type_map_ofE:

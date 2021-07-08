@@ -608,7 +608,7 @@ next
       .
   qed
   thus "[l]\<langle>star o f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>(m#ms) \<preceq> [l]\<langle>g\<rangle>(m#ms)"
-    using 2 5 by (metis (no_types, hide_lams) matrix_idempotent_semiring.mult_left_dist_sup matrix_semilattice_sup.sup.mono restrict_nonempty_right)
+    using 2 5 by (metis (no_types, opaque_lifting) matrix_idempotent_semiring.mult_left_dist_sup matrix_semilattice_sup.sup.mono restrict_nonempty_right)
 qed
 
 lemma restrict_star_right_induct:
@@ -649,7 +649,7 @@ next
       .
   qed
   thus "(m#ms)\<langle>g\<rangle>[l] \<odot> [l]\<langle>star o f\<rangle>[l] \<preceq> (m#ms)\<langle>g\<rangle>[l]"
-    using 2 5 by (metis (no_types, hide_lams) matrix_idempotent_semiring.mult_right_dist_sup matrix_semilattice_sup.sup.mono restrict_nonempty_left)
+    using 2 5 by (metis (no_types, opaque_lifting) matrix_idempotent_semiring.mult_right_dist_sup matrix_semilattice_sup.sup.mono restrict_nonempty_left)
 qed
 
 lemma restrict_pp:

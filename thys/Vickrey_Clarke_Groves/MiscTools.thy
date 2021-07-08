@@ -1189,7 +1189,7 @@ lemma lm151:
   assumes "f \<subseteq> g" "runiq g" "Domain f = Domain g" 
   shows "g \<subseteq> f"
   using assms Domain_iff contra_subsetD runiq_wrt_ex1 subrelI
-  by (metis (full_types,hide_lams))
+  by (metis (full_types,opaque_lifting))
 
 lemma lm152: 
   assumes "R \<subseteq> f" "runiq f" "Domain f \<subseteq> Domain R" 

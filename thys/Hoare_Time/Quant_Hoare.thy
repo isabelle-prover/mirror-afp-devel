@@ -247,7 +247,7 @@ next
           also have "\<dots> \<le> enat (Suc p) + INV t + 1" using q2'
             by (metis ab_semigroup_add_class.add_ac(1) add_left_mono) 
           also have "\<dots> \<le> INV s + 1" using q
-            by (metis (no_types, hide_lams) add.commute add_left_mono eSuc_enat iadd_Suc plus_1_eSuc(1))
+            by (metis (no_types, opaque_lifting) add.commute add_left_mono eSuc_enat iadd_Suc plus_1_eSuc(1))
           finally show "enat (1 + p + p2) + (INV t2 + \<up> (\<not> bval b t2)) \<le> INV s + 1" .
         qed
             

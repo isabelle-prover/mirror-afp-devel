@@ -184,7 +184,7 @@ proof(intro iffI conjI)
   assume L: ?L
   with count_eq_zero_iff count_single show "is_mset_set X"
     unfolding is_mset_set_def
-    by (metis (no_types, hide_lams) add_mset_add_single count_add_mset nat.inject set_mset_add_mset_insert union_single_eq_member)
+    by (metis (no_types, opaque_lifting) add_mset_add_single count_add_mset nat.inject set_mset_add_mset_insert union_single_eq_member)
   show "x \<notin># X"
   proof
     assume "x \<in># X"

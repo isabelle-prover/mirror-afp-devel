@@ -588,12 +588,12 @@ proof
   have "i \<squnion> j  = Abs_nat_int{minimum i .. maximum j}" 
     by (metis Rep_nat_int_inverse assm nat_int.consec_un_min_max)
   then have 5:"(i \<squnion> j) \<squnion> k = Abs_nat_int{minimum i .. maximum k}" 
-    by (metis (no_types, hide_lams) "3" Rep_nat_int_inverse antisym assm bot.extremum
+    by (metis (no_types, opaque_lifting) "3" Rep_nat_int_inverse antisym assm bot.extremum
         nat_int.consec_def nat_int.consec_un_min nat_int.consec_un_min_max nat_int.un_subset1)
   have "j \<squnion> k = Abs_nat_int{minimum j .. maximum k}" 
     by (metis Rep_nat_int_inverse assm nat_int.consec_un_min_max)
   then have 6:"i \<squnion> (j \<squnion> k) = Abs_nat_int{minimum i .. maximum k}" 
-    by (metis (no_types, hide_lams) "4" Rep_nat_int_inverse antisym assm bot.extremum
+    by (metis (no_types, opaque_lifting) "4" Rep_nat_int_inverse antisym assm bot.extremum
         nat_int.consec_def nat_int.consec_un_max nat_int.consec_un_min_max nat_int.un_subset2)
   from 5 and 6 show " (i \<squnion> j) \<squnion> k = i \<squnion> (j \<squnion> k)" by simp
 qed

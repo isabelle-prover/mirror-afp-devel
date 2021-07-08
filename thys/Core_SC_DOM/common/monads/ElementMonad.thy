@@ -56,7 +56,7 @@ lemma element_ptr_kinds_M_reads:
   "reads (\<Union>element_ptr. {preserved (get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t element_ptr RObject.nothing)}) element_ptr_kinds_M h h'"
   apply (simp add: reads_def node_ptr_kinds_M_defs element_ptr_kinds_M_defs element_ptr_kinds_def
     node_ptr_kinds_M_reads preserved_def cong del: image_cong_simp)
-  apply (metis (mono_tags, hide_lams) node_ptr_kinds_small old.unit.exhaust preserved_def)
+  apply (metis (mono_tags, opaque_lifting) node_ptr_kinds_small old.unit.exhaust preserved_def)
   done
 
 global_interpretation l_dummy defines get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t = "l_get_M.a_get_M get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t" .

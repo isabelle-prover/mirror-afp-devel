@@ -301,7 +301,7 @@ proof -
     hence "Insert m' \<in> M" using assms by simp
     then show "i \<in> I ` insert_messages M"
       using assms is_associated_string_def associated_string_assm consistent_def
-      by (metis (no_types, hide_lams) Union_iff contra_subsetD image_iff)
+      by (metis (no_types, opaque_lifting) Union_iff contra_subsetD image_iff)
   qed
   hence "i \<in> I ` (set s)"
     using associated_string_assm by (simp add:is_associated_string_def)

@@ -470,7 +470,7 @@ next
         subgoal for x y
           using jLen fin_string_upto_length[of j x] fin_string_upto_length[of j y]
           unfolding List.member_def ilength_def apply auto
-          by (metis (mono_tags, hide_lams) Rep_fin_string_inverse fin_string_cons.rep_eq le_trans
+          by (metis (mono_tags, opaque_lifting) Rep_fin_string_inverse fin_string_cons.rep_eq le_trans
               list.inject not_less_eq_eq string_cons.simps)
           done
       qed

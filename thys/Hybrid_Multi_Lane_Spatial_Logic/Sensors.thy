@@ -38,7 +38,7 @@ definition space ::" traffic \<Rightarrow> view \<Rightarrow> cars \<Rightarrow>
 lemma left_space: "left (space ts v c) = pos ts c" 
 proof -
   have 1:"pos ts c < pos ts c + sensors (own v) ts c" using sensors_ge  
-    by (metis (no_types, hide_lams)  less_add_same_cancel1  )
+    by (metis (no_types, opaque_lifting)  less_add_same_cancel1  )
   show "left (space ts v c ) = pos ts c" 
     using space_def Abs_real_int_inverse 1 by simp 
 qed
@@ -46,7 +46,7 @@ qed
 lemma right_space: "right (space ts v c) =   pos ts c + sensors (own v) ts c"
 proof - 
   have 1:"pos ts c < pos ts c + sensors (own v) ts c" using sensors_ge  
-    by (metis (no_types, hide_lams)  less_add_same_cancel1  )
+    by (metis (no_types, opaque_lifting)  less_add_same_cancel1  )
   show 3:"right(space ts v c ) = pos ts c + sensors (own v) ts c" 
     using space_def Abs_real_int_inverse 1 by simp
 qed

@@ -353,7 +353,7 @@ next
   from assms have "[] \<notin> X"
     unfolding qtable_def table_def by fastforce
   with left(1) obtain x where "x # v \<in> X"
-    by (metis (no_types, hide_lams) image_iff hd_Cons_tl)    
+    by (metis (no_types, opaque_lifting) image_iff hd_Cons_tl)    
   with assms show ?case
     by (rule in_qtableE) (auto simp: left(3) split: if_splits)
 next

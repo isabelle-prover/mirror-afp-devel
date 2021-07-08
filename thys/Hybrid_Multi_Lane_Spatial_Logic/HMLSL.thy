@@ -573,14 +573,14 @@ qed
 
 lemma clm_sing:"\<Turnstile>\<^bold>\<not>  (cl(c) \<^bold>\<smile> cl(c)) "
   using atMostOneClm  restriction_add_clm vchop_def restriction_clm_leq_one   
-  by (metis (no_types, hide_lams) add_eq_self_zero le_add1 le_antisym one_neq_zero)
+  by (metis (no_types, opaque_lifting) add_eq_self_zero le_add1 le_antisym one_neq_zero)
 
 lemma clm_sing_somewhere:"\<Turnstile>\<^bold>\<not>  \<^bold>\<langle>cl(c) \<^bold>\<smile> cl(c)\<^bold>\<rangle> "
   using clm_sing by blast
 
 lemma clm_sing_not_interrupted:"\<Turnstile> \<^bold>\<not>(cl(c) \<^bold>\<smile> \<^bold>\<top> \<^bold>\<smile> cl(c))"
   using atMostOneClm  restriction_add_clm vchop_def restriction_clm_leq_one clm_sing
-  by (metis (no_types, hide_lams) add.commute add_eq_self_zero dual_order.antisym
+  by (metis (no_types, opaque_lifting) add.commute add_eq_self_zero dual_order.antisym
       le_add1 one_neq_zero)
 
 lemma clm_sing_somewhere2:"\<Turnstile>\<^bold>\<not>  (\<^bold>\<top> \<^bold>\<smile> cl(c) \<^bold>\<smile> \<^bold>\<top> \<^bold>\<smile>  cl(c) \<^bold>\<smile> \<^bold>\<top>) " 
@@ -770,12 +770,12 @@ proof (rule allI|rule impI)+
     proof
       assume "restrict v (clm ts) c \<noteq> \<emptyset>"
       then show False 
-        by (metis (no_types, hide_lams) assm add.left_neutral ex len_hchop_add
+        by (metis (no_types, opaque_lifting) assm add.left_neutral ex len_hchop_add
             restriction.restrict_def view.hchop_def)    
     next
       assume "restrict v (res ts) c \<noteq> \<emptyset>"
       then show False 
-        by (metis (no_types, hide_lams) assm add.left_neutral ex len_hchop_add 
+        by (metis (no_types, opaque_lifting) assm add.left_neutral ex len_hchop_add 
             restriction.restrict_def view.hchop_def)  
     qed
   qed

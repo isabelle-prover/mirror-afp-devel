@@ -220,7 +220,7 @@ lemma env_delete_below_cong[intro]:
 
 lemma env_delete_env_restr_swap:
   "env_delete x (env_restr S e) = env_restr S (env_delete x e)"
-  by (metis (erased, hide_lams) env_delete_def env_restr_fun_upd env_restr_fun_upd_other fun_upd_triv lookup_env_restr_eq)
+  by (metis (erased, opaque_lifting) env_delete_def env_restr_fun_upd env_restr_fun_upd_other fun_upd_triv lookup_env_restr_eq)
 
 lemma env_delete_mono:
   "m \<sqsubseteq> m' \<Longrightarrow> env_delete x m \<sqsubseteq> env_delete x m'"

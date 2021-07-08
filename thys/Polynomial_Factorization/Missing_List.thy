@@ -544,7 +544,7 @@ proof -
   have e: "0 + i \<le> i" by auto
   show ?thesis 
     using take_upt[OF e] take_map map_nth
-    by (metis (hide_lams, no_types) add.left_neutral i nat_less_le take_upt)
+    by (metis (opaque_lifting, no_types) add.left_neutral i nat_less_le take_upt)
 qed
 
 

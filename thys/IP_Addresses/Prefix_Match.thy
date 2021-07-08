@@ -126,7 +126,7 @@ subsection\<open>Relation between prefix and set\<close>
     apply(rule subsetI)
     apply(simp add: prefix_to_wordset_def addr_in_ipset_from_cidr_code)
     apply(intro impI conjI)
-     apply (metis (erased, hide_lams) order_trans word_and_le2)
+     apply (metis (erased, opaque_lifting) order_trans word_and_le2)
     apply(simp add: pfxm_mask_def)
     done
 

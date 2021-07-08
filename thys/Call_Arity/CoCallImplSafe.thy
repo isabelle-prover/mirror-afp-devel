@@ -39,7 +39,7 @@ next
 next
   case (Let \<Gamma> e x y)
   hence [simp]: "x \<notin> domA \<Gamma> " "y \<notin> domA \<Gamma>"
-    by (metis (erased, hide_lams) bn_subst domA_not_fresh fresh_def fresh_star_at_base fresh_star_def obtain_fresh subst_is_fresh(2))+
+    by (metis (erased, opaque_lifting) bn_subst domA_not_fresh fresh_def fresh_star_at_base fresh_star_def obtain_fresh subst_is_fresh(2))+
 
   note Let(1,2)[simp]
 

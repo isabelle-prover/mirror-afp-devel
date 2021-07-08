@@ -83,7 +83,7 @@ proof (rule bij_imp_permutes')
     by (intro injI) (auto split: if_split_asm; metis permutes_inverses(2))+
   moreover have "surj (p(x := x, inv p x := p x))"
     using assms UNIV_I bij_betw_swap_iff permutes_inj permutes_surj surj_f_inv_f
-    by (metis (no_types, hide_lams) Fun.swap_def bij_betw_def)
+    by (metis (no_types, opaque_lifting) Fun.swap_def bij_betw_def)
   ultimately show "bij (p(x := x, inv p x := p x))"
     by (rule bijI)
 qed

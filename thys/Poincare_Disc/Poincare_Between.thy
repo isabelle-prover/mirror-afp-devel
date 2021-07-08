@@ -556,7 +556,7 @@ next
            (y * y + y * (y * (x * z)) - (y * x + y * (y * (y * z)))) /
            (y * y + y * (y * (x * z)) - (y * z + y * (y * (y * x)))) =
            (y + y * (x * z) - (x + y * (y * z))) / (y + y * (x * z) - (z + y * (y * x)))"
-        by (metis (no_types, hide_lams) ab_group_add_class.ab_diff_conv_add_uminus distrib_left mult_divide_mult_cancel_left_if mult_minus_right)
+        by (metis (no_types, opaque_lifting) ab_group_add_class.ab_diff_conv_add_uminus distrib_left mult_divide_mult_cancel_left_if mult_minus_right)
       thus ?thesis
         using \<open>y \<noteq> x\<close> \<open>z \<noteq> x\<close> False \<open>\<not> (x = 0 \<or> y = 0 \<or> z = 0)\<close>
         using \<open>cor y * cor x \<noteq> 1\<close>

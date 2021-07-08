@@ -42,7 +42,7 @@ definition times_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" where
 instance
   apply intro_classes
   unfolding times_set_def
-  by (clarsimp, metis (no_types, hide_lams) mult.assoc)
+  by (clarsimp, metis (no_types, opaque_lifting) mult.assoc)
 
 end
 
@@ -340,7 +340,7 @@ lemma p_fusion_last:
   and "ps \<noteq> []"
   and "qs \<noteq> []"
   shows "List.last (p_fusion ps qs) = List.last qs"
-  by (metis (hide_lams, no_types) List.last.simps List.last_append append_Nil2 assms list.sel(1) neq_Nil_conv p_fusion.simps(3))
+  by (metis (opaque_lifting, no_types) List.last.simps List.last_append append_Nil2 assms list.sel(1) neq_Nil_conv p_fusion.simps(3))
 
 lemma p_fusion_hd: "\<lbrakk>ps \<noteq> []; qs \<noteq> []\<rbrakk> \<Longrightarrow> hd (p_fusion ps qs) = hd ps"
   by (metis list.exhaust p_fusion.simps(3) append_Cons list.sel(1))
@@ -376,7 +376,7 @@ proof (rule set_eqI)
       by auto (metis nonempty_p_fusion p_prod_iff)+
   next
     case Cons thus ?thesis
-      by (auto simp add: p_prod_iff) (metis (hide_lams, mono_tags) nonempty_p_fusion p_fusion_assoc p_fusion_hd p_fusion_last)+
+      by (auto simp add: p_prod_iff) (metis (opaque_lifting, mono_tags) nonempty_p_fusion p_fusion_assoc p_fusion_hd p_fusion_last)+
   qed
 qed
 

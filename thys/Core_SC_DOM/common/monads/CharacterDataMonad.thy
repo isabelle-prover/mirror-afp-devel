@@ -64,7 +64,7 @@ lemma character_data_ptr_kinds_M_reads:
 global_interpretation l_dummy defines get_M\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a = "l_get_M.a_get_M get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a" .
 lemma get_M_is_l_get_M: "l_get_M get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a type_wf character_data_ptr_kinds"
   apply(simp add: get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_type_wf l_get_M_def)
-  by (metis (no_types, hide_lams) NodeMonad.get_M_is_l_get_M bind_eq_Some_conv 
+  by (metis (no_types, opaque_lifting) NodeMonad.get_M_is_l_get_M bind_eq_Some_conv 
       character_data_ptr_kinds_commutes get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def l_get_M_def option.distinct(1))
 lemmas get_M_defs = get_M\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 

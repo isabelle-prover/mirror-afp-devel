@@ -117,7 +117,7 @@ assume j_not_zero: "j \<noteq> 0" and j_eq_k: "to_nat j = k"
                       proof (rule Least_equality)
                         show "Gauss_Jordan A $ b $ b \<noteq> 0" by (metis a id_k id_upt_k_def zero_neq_one)
                         show "\<And>y. Gauss_Jordan A $ b $ y \<noteq> 0 \<Longrightarrow> b \<le> y"
-                          by (metis (hide_lams, no_types) a not_less_iff_gr_or_eq id_k id_upt_k_def less_trans not_less to_nat_mono)
+                          by (metis (opaque_lifting, no_types) a not_less_iff_gr_or_eq id_k id_upt_k_def less_trans not_less to_nat_mono)
                       qed
                     moreover have "\<not> is_zero_row_upt_k b k (Gauss_Jordan A)"
                       unfolding is_zero_row_upt_k_def apply auto apply (rule exI[of _ b]) using a id_k unfolding id_upt_k_def by simp

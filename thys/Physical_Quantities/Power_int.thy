@@ -23,7 +23,7 @@ lemma one_intpow [simp]: "1 ^\<^sub>Z n = 1"
 
 lemma intpow_plus: "x > 0 \<Longrightarrow> x ^\<^sub>Z (m + n) = x ^\<^sub>Z m * x ^\<^sub>Z n"
   apply (simp add: intpow_def field_simps power_add)
-  apply (metis (no_types, hide_lams) abs_ge_zero add.commute add_diff_cancel_right' nat_add_distrib power_add uminus_add_conv_diff zabs_def)
+  apply (metis (no_types, opaque_lifting) abs_ge_zero add.commute add_diff_cancel_right' nat_add_distrib power_add uminus_add_conv_diff zabs_def)
   done
 
 lemma intpow_mult_combine: "x > 0 \<Longrightarrow> x ^\<^sub>Z m * (x ^\<^sub>Z n * y) = x ^\<^sub>Z (m + n) * y"

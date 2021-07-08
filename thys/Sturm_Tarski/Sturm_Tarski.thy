@@ -461,7 +461,7 @@ proof -
   have "sign_r_pos p x \<or> sign_r_pos (-p) x"
     unfolding sign_r_pos_def eventually_at_right 
     using next_non_root_interval[OF \<open>p\<noteq>0\<close>,unfolded not_eq_pos_or_neg_iff_1] 
-    by (metis (erased, hide_lams) le_less minus_zero neg_less_iff_less poly_minus)
+    by (metis (erased, opaque_lifting) le_less minus_zero neg_less_iff_less poly_minus)
   moreover have "sign_r_pos p x \<Longrightarrow> \<not> sign_r_pos (-p) x" unfolding sign_r_pos_def 
     using eventually_neg[OF trivial_limit_at_right_real, of "\<lambda>x. poly p x > 0" x] poly_minus 
     by (metis (lifting) eventually_mono less_asym neg_less_0_iff_less)
@@ -620,7 +620,7 @@ next
   qed                                                                                    
   moreover have " poly ([:- a, 1:] ^ Suc n) a=0" by (metis old.nat.distinct(2) poly_power_n_eq)
   hence "sign_r_pos ([:- a, 1:] ^ Suc n) a = sign_r_pos (smult (Suc n) ([:-a,1:]^n)) a"
-    using sign_r_pos_rec by (metis (erased, hide_lams) calculation pderiv_0)
+    using sign_r_pos_rec by (metis (erased, opaque_lifting) calculation pderiv_0)
   hence "sign_r_pos ([:- a, 1:] ^ Suc n) a = sign_r_pos  ([:-a,1:]^n) a"
     using sign_r_pos_smult by auto
   ultimately show ?case using Suc.hyps by auto

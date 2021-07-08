@@ -2296,7 +2296,7 @@ proof -
       moreover 
       have "\<alpha> y = Var z"
         using zn
-        by (metis (no_types, hide_lams) \<sigma> subst_compose_def subst_imgI subst_to_var_is_var
+        by (metis (no_types, opaque_lifting) \<sigma> subst_compose_def subst_imgI subst_to_var_is_var
                   term.distinct(1) transaction_fresh_subst_def var_comp(2)) 
       then have "\<alpha> y \<cdot> \<I> = \<I> z"
         by auto

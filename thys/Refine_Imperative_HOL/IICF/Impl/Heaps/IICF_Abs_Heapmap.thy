@@ -927,7 +927,7 @@ begin
         and CNV_RHS: "prio v' = h.prio_of (hmr_\<alpha> hm) i" 
         apply (clarsimp simp: heapmap_\<alpha>_def heapmap_invar_def hmr_invar_def hmr_\<alpha>_def
           h.valid_def h.val_of_def)
-        by (metis (no_types, hide_lams) Suc_leI comp_apply diff_Suc_Suc 
+        by (metis (no_types, opaque_lifting) Suc_leI comp_apply diff_Suc_Suc 
           diff_zero domI index_less_size_conv neq0_conv nth_index nth_map 
           old.nat.distinct(2) option.sel)
         

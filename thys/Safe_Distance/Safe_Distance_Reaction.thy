@@ -1264,7 +1264,7 @@ proof -
       hence " (\<delta> + other.t_stop) * (\<delta> - other.t_stop) = (\<delta>\<^sup>2 - other.t_stop\<^sup>2)"
         by (simp add: power2_eq_square square_diff_square_factored)
       hence "0 > v\<^sub>o * (\<delta> - other.t_stop) + 1/2 * a\<^sub>o * (\<delta>\<^sup>2 - other.t_stop\<^sup>2)"
-        by (metis (no_types, hide_lams) \<open>v\<^sub>o * (\<delta> - other.t_stop) + 1 / 2 * a\<^sub>o * (\<delta> + other.t_stop) * (\<delta> - other.t_stop) < 0\<close> divide_divide_eq_left divide_divide_eq_right times_divide_eq_left)
+        by (metis (no_types, opaque_lifting) \<open>v\<^sub>o * (\<delta> - other.t_stop) + 1 / 2 * a\<^sub>o * (\<delta> + other.t_stop) * (\<delta> - other.t_stop) < 0\<close> divide_divide_eq_left divide_divide_eq_right times_divide_eq_left)
       hence "0 > v\<^sub>o * \<delta> - v\<^sub>o * other.t_stop  + 1/2 * a\<^sub>o * \<delta>\<^sup>2 -  1/2 * a\<^sub>o * other.t_stop\<^sup>2 "
         by (simp add: right_diff_distrib)
       hence "- v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 > - v\<^sub>o  * (- v\<^sub>o / a\<^sub>o) - 1/2 * a\<^sub>o * (- v\<^sub>o / a\<^sub>o)\<^sup>2"

@@ -342,7 +342,7 @@ begin
         from 7 have "Q \<Rightarrow>\<langle>\<alpha>\<rangle> (-p \<bullet> pQ')"
           using 4 by (metis permute_minus_cancel(2) supp_perm_eq weak_transition_eqvt)
         moreover from 6 and 8 have "?bisim P' (-p \<bullet> pQ')"
-          by (metis (no_types, hide_lams) weakly_bisimilar_eqvt permute_minus_cancel(2) relcompp.simps)
+          by (metis (no_types, opaque_lifting) weakly_bisimilar_eqvt permute_minus_cancel(2) relcompp.simps)
         ultimately show "\<exists>Q'. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q' \<and> ?bisim P' Q'"
           by metis
       qed

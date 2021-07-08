@@ -86,7 +86,7 @@ proof-
   also have "... = \<Sqinter>{\<partial> u |u. u \<le> f u}"
     by (simp add: setcompr_eq_image)
   also have "... = \<Sqinter>{u |u. (\<partial>\<^sub>F f) u \<le> u}"
-    by (metis (no_types, hide_lams) dual_dual_ord dual_iff map_dual_def o_def)
+    by (metis (no_types, opaque_lifting) dual_dual_ord dual_iff map_dual_def o_def)
   finally have "\<partial> (gfp f) = lfp (\<partial>\<^sub>F f)"
     by (metis lfp_def)}
   thus ?thesis
@@ -163,7 +163,7 @@ lemma min_max_set_dual_var: "\<partial> ` (min_set X) = max_set (\<partial> ` X)
   using comp_eq_dest min_max_set_dual by fastforce  
 
 lemma max_min_set_dual: "(`) \<partial> \<circ> max_set = min_set \<circ> (`) \<partial>"
-  by (metis (no_types, hide_lams) comp_id fun.map_comp id_comp image_dual min_max_set_dual)  
+  by (metis (no_types, opaque_lifting) comp_id fun.map_comp id_comp image_dual min_max_set_dual)  
 
 lemma min_to_max_set: "min_set = (`) \<partial> \<circ> max_set \<circ> (`) \<partial>"
   by (metis comp_id image_dual max_min_set_dual o_assoc)
@@ -250,7 +250,7 @@ lemma downset_set_upset_set_dual: "(`) \<partial> \<circ> \<Down> = \<Up> \<circ
   by (clarsimp, metis (mono_tags, lifting) dual_iff image_iff mem_Collect_eq ord_dual)
 
 lemma upset_set_downset_set_dual: "(`) \<partial> \<circ> \<Up> = \<Down> \<circ> (`) \<partial>"
-  using downset_set_upset_set_dual by (metis (no_types, hide_lams) comp_id id_comp image_dual o_assoc)
+  using downset_set_upset_set_dual by (metis (no_types, opaque_lifting) comp_id id_comp image_dual o_assoc)
 
 lemma upset_set_to_downset_set: "\<Up> = (`) \<partial> \<circ> \<Down> \<circ> (`) \<partial>"
   by (simp add: comp_assoc downset_set_upset_set_dual)
@@ -837,7 +837,7 @@ lemma fun_isor: "mono f \<Longrightarrow> mono (\<lambda>x. x \<circ> f)"
 lemma Sup_sup_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Sup_pres f \<Longrightarrow> sup_pres f"
-  by (metis (no_types, hide_lams) Sup_empty Sup_insert comp_apply image_insert sup_bot.right_neutral)
+  by (metis (no_types, opaque_lifting) Sup_empty Sup_insert comp_apply image_insert sup_bot.right_neutral)
 
 lemma Inf_inf_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"

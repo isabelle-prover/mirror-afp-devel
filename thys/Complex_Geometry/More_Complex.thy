@@ -44,7 +44,7 @@ lemma cor_eq_0: "cor x + \<i> * cor y = 0 \<longleftrightarrow> x = 0 \<and> y =
 
 lemma one_plus_square_neq_zero [simp]:
   shows "1 + (cor x)\<^sup>2 \<noteq> 0"
-  by (metis (hide_lams, no_types) of_real_1 of_real_add of_real_eq_0_iff of_real_power power_one sum_power2_eq_zero_iff zero_neq_one)
+  by (metis (opaque_lifting, no_types) of_real_1 of_real_add of_real_eq_0_iff of_real_power power_one sum_power2_eq_zero_iff zero_neq_one)
 
 text \<open>Additional lemmas about @{term Complex} constructor. Following newer versions of Isabelle,
 these should be deprecated.\<close>

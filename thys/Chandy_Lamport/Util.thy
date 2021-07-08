@@ -255,7 +255,7 @@ proof -
   have "\<forall>j. j < length l' - 1 \<longrightarrow> l' ! j \<noteq> m" 
     by (metis assms(1) assms(2) butlast_snoc length_butlast nth_append nth_mem)
   then have one_j: "\<forall>j. j < length l' \<and> l' ! j = m \<longrightarrow> j = (length l' - 1)"
-    by (metis (no_types, hide_lams) diff_Suc_1 lessE)
+    by (metis (no_types, opaque_lifting) diff_Suc_1 lessE)
   show ?thesis
   proof (rule ccontr)
     assume "~ ?P"
@@ -319,7 +319,7 @@ next
         let ?ys = "drop (k+1) l"
         case True
         then have "length (filter ((=) a) ?xs) > 0" 
-          by (metis (full_types, hide_lams) add.commute assm discrete filter_empty_conv length_greater_0_conv length_take less_add_one lka min.absorb2 nth_mem nth_take)
+          by (metis (full_types, opaque_lifting) add.commute assm discrete filter_empty_conv length_greater_0_conv length_take less_add_one lka min.absorb2 nth_mem nth_take)
         moreover have "length (filter ((=) a) ?ys) > 0"
         proof -
           have "?ys ! (j - (k+1)) = l ! j" 
@@ -339,7 +339,7 @@ next
         let ?ys = "drop (j+1) l"
         case False
         then have "length (filter ((=) a) ?xs) > 0" 
-          by (metis (full_types, hide_lams) add.commute j discrete filter_empty_conv length_greater_0_conv length_take less_add_one min.absorb2 nth_mem nth_take)
+          by (metis (full_types, opaque_lifting) add.commute j discrete filter_empty_conv length_greater_0_conv length_take less_add_one min.absorb2 nth_mem nth_take)
         moreover have "length (filter ((=) a) ?ys) > 0"
         proof -
           have "?ys ! (k - (j+1)) = l ! k" 

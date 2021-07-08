@@ -60,7 +60,7 @@ lemma R_consistent: "pcp {\<Gamma>|\<Gamma>. \<not>((\<forall>\<gamma> \<in> \<G
           apply safe
           apply (metis Ass Pow_bottom Pow_empty UN_I cnf.simps(3))
          apply (metis Diff_insert_absorb Resolution.simps insert_absorb singletonI sup_bot.right_neutral atomD)
-        apply (simp; metis (no_types, hide_lams) UN_insert cnf.simps(5) insert_absorb is_cnf.simps(1) sup_assoc)
+        apply (simp; metis (no_types, opaque_lifting) UN_insert cnf.simps(5) insert_absorb is_cnf.simps(1) sup_assoc)
        apply (auto intro: pcp_disj)
   done
     

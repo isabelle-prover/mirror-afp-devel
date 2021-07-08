@@ -150,7 +150,7 @@ proof -
     by(fastforce simp:Rats_eq_int_div_nat)
   have "of_int (n) * f(of_int i / of_int n) = f(of_int i + of_int (n - 1))"
     using \<open>n\<noteq>0\<close>
-    by (metis (no_types, hide_lams) f_mult mult.commute nonzero_divide_eq_eq of_int_of_nat_eq of_nat_0_eq_iff) 
+    by (metis (no_types, opaque_lifting) f_mult mult.commute nonzero_divide_eq_eq of_int_of_nat_eq of_nat_0_eq_iff) 
   also have "\<dots> = f(of_int (i + int n - 1))" using \<open>n\<noteq>0\<close>[simplified]
     by (metis One_nat_def Suc_leI of_nat_1 add_diff_eq of_int_add of_nat_diff)
   also have "\<dots> = of_int (i + int n - 1) + 1" by(rule f_int)

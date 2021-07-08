@@ -344,7 +344,7 @@ lemma next_performop_vacant:
   apply clarsimp
   subgoal for p c u r
     apply (clarsimp simp: upright_def supported_def)
-    apply (metis (no_types, hide_lams) gr_implies_not_zero of_nat_le_0_iff order.strict_implies_order order_trans zero_less_iff_neq_zero)
+    apply (metis (no_types, opaque_lifting) gr_implies_not_zero of_nat_le_0_iff order.strict_implies_order order_trans zero_less_iff_neq_zero)
     done
   done
 
@@ -405,7 +405,7 @@ lemma invs_imp_InvGlobVacantUptoImpliesNrec:
     with * obtain v where **: "v \<le> u" "zcount (GlobalIncomingInfoAt (shd s) q) v < 0"
       by (meson order.strict_iff_order upright_def supported_def)
     with assms(2) have "zcount (c_records (shd s)) v < 0"
-      by (metis (no_types, hide_lams) InvGlobalRecordCount_def add.right_neutral order.trans globvut holds.elims(2) uleqt zcount_union)
+      by (metis (no_types, opaque_lifting) InvGlobalRecordCount_def add.right_neutral order.trans globvut holds.elims(2) uleqt zcount_union)
     with assms(3) show "False"
       using atLeastatMost_empty by auto
   qed
@@ -476,7 +476,7 @@ proof -
       with assms s x have "x \<le> t" "zcount va x > 0"
          apply -
          apply simp
-        apply (metis (no_types, hide_lams) add.left_neutral order.order_iff_strict order.trans vacant_upto_def zcount_union)
+        apply (metis (no_types, opaque_lifting) add.left_neutral order.order_iff_strict order.trans vacant_upto_def zcount_union)
         done
       with assms(2,3) s x show ?thesis
         by force
@@ -486,7 +486,7 @@ proof -
   from assms(2,3) show ?thesis
     unfolding vacant_upto_def
     apply clarsimp
-    apply (metis (no_types, hide_lams) r add_cancel_right_left order.order_iff_strict order.trans le_less_linear less_add_same_cancel2 upright_obtain_support)
+    apply (metis (no_types, opaque_lifting) r add_cancel_right_left order.order_iff_strict order.trans le_less_linear less_add_same_cancel2 upright_obtain_support)
     done
 qed
 

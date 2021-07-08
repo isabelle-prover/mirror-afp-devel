@@ -995,7 +995,7 @@ proof
   have *: "(x \<le> y \<and> y \<le> z) \<or> (z \<le> y \<and> y \<le> x)"
     using G H \<open>G \<inter> H = {y}\<close> unfolding min_def max_def
     apply auto
-    apply (metis (mono_tags, hide_lams) min_le_iff_disj order_refl)
+    apply (metis (mono_tags, opaque_lifting) min_le_iff_disj order_refl)
     by (metis (full_types) less_eq_real_def max_def)
   show "geodesic_segment_between (G \<union> H) x z"
     using * apply rule

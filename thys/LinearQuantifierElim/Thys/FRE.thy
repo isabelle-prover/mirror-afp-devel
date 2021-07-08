@@ -110,10 +110,10 @@ proof(induct f)
   qed
 next
   case (And f1 f2) thus ?case
-    by auto (metis (no_types, hide_lams))+
+    by auto (metis (no_types, opaque_lifting))+
 next
   case (Or f1 f2) thus ?case
-    by auto (metis (no_types, hide_lams))+
+    by auto (metis (no_types, opaque_lifting))+
 qed fastforce+
 
 theorem I_FR\<^sub>1:

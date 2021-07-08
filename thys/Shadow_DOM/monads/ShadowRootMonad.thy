@@ -423,7 +423,7 @@ lemma type_wf_put_ptr_in_heap_E:
   using assms
   apply(auto simp add: type_wf_defs elim!: DocumentMonad.type_wf_put_ptr_in_heap_E
       split: option.splits if_splits)[1]
-  by (metis (no_types, hide_lams) ObjectClass.a_type_wf_def ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
+  by (metis (no_types, opaque_lifting) ObjectClass.a_type_wf_def ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
       bind.bind_lunit finite_set_in get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def is_shadow_root_kind_def option.exhaust_sel)
 
 

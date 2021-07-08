@@ -3077,7 +3077,7 @@ proof -
         next
           case True
           hence deg: "degree (v - [: of_nat i :]) = 0"
-            by (metis (no_types, hide_lams) degree_pCons_0 diff_pCons diff_zero pCons_one)
+            by (metis (no_types, opaque_lifting) degree_pCons_0 diff_pCons diff_zero pCons_one)
           from 3(2) Cons(5,7)[of u] have "monic u" by auto
           from gcd_monic_constant[OF this deg] show ?thesis .
         qed

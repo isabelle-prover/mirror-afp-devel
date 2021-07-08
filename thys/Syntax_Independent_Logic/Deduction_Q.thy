@@ -440,7 +440,7 @@ subsection \<open>General properties, unconstrained by numerals\<close>
 
 lemma prv_pls_suc_zer:
 "t \<in> atrm \<Longrightarrow> prv (eql (pls t (suc zer)) (suc t))"
-by (metis (no_types, hide_lams) atrm.atrm_pls atrm_imp_trm
+by (metis (no_types, opaque_lifting) atrm.atrm_pls atrm_imp_trm
  pls prv_eql_trans prv_pls_suc prv_pls_zer prv_suc_cong suc zer_atrm)
 
 lemma prv_LLq_suc_imp:

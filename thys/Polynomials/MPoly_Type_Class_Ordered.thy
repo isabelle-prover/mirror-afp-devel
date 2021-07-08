@@ -569,7 +569,7 @@ lemma lt_minus_lessE_2: "lt q \<prec>\<^sub>t lt (p - q) \<Longrightarrow> lt q 
 
 lemma lt_minus_lessI: "p - q \<noteq> 0 \<Longrightarrow> lt q = lt p \<Longrightarrow> lc q = lc p \<Longrightarrow> lt (p - q) \<prec>\<^sub>t lt p"
   for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
-  by (metis (no_types, hide_lams) diff_diff_eq2 diff_self group_eq_aux lc_def lc_not_0 lookup_minus
+  by (metis (no_types, opaque_lifting) diff_diff_eq2 diff_self group_eq_aux lc_def lc_not_0 lookup_minus
       lt_minus_eqI ord_term_lin.antisym_conv3)
     
 lemma lt_max_keys:

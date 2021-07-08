@@ -258,7 +258,7 @@ proof -
             by (auto simp: field_simps comm_monoid_add_class.sum.distrib
               power2_eq_square ideal.scale_left_commute sum_distrib_left)
           moreover have \<open>x' \<notin> vars ?q\<close>
-            by (metis (no_types, hide_lams) Groups.add_ac(2) Un_iff add_diff_cancel_left'
+            by (metis (no_types, opaque_lifting) Groups.add_ac(2) Un_iff add_diff_cancel_left'
               diff_minus_eq_add in_mono leading q'_def semiring_normalization_rules(29)
               vars_in_right_only vars_mult)
           moreover {
@@ -494,7 +494,7 @@ lemma vars_subst_in_left_only_diff_iff:
   shows \<open>vars (p - Var x) = insert x (vars p)\<close>
 proof -
   have \<open>\<And>xa. x \<notin> vars p \<Longrightarrow> xa \<in> vars (p - Var x) \<Longrightarrow> xa \<notin> vars p \<Longrightarrow> xa = x\<close>
-    by (metis (no_types, hide_lams) diff_0_right diff_minus_eq_add empty_iff in_vars_addE insert_iff
+    by (metis (no_types, opaque_lifting) diff_0_right diff_minus_eq_add empty_iff in_vars_addE insert_iff
       keys_single minus_diff_eq monom_one mult.right_neutral one_neq_zero single_zero
       vars_monom_keys vars_mult_Var vars_uminus)
   moreover have \<open>\<And>xa. x \<notin> vars p \<Longrightarrow> xa \<in> vars p \<Longrightarrow> xa \<in> vars (p - Var x)\<close>

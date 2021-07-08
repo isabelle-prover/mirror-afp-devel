@@ -99,7 +99,7 @@ lemma inf: "small (range (g :: nat \<Rightarrow> V))"
   by (simp add: inf_raw small_iff_range)
 
 lemma small_image_nat_V [simp]: "small (g ` N)" for g :: "nat \<Rightarrow> V"
-  by (metis (mono_tags, hide_lams) down elts_of_set image_iff inf rangeI subsetI)
+  by (metis (mono_tags, opaque_lifting) down elts_of_set image_iff inf rangeI subsetI)
 
 lemma Finite_V:
   fixes X :: "V set"

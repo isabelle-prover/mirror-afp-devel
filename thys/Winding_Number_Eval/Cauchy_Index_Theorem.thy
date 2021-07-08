@@ -839,7 +839,7 @@ lemma poly_has_sgnx_left_right:
             then (poly p has_sgnx c) (at_right a)
             else (poly p has_sgnx -c) (at_right a))"
 using poly_sgnx_left_right 
-by (metis (no_types, hide_lams) add.inverse_inverse assms has_sgnx_unique 
+by (metis (no_types, opaque_lifting) add.inverse_inverse assms has_sgnx_unique 
      sgnx_able_poly sgnx_able_sgnx trivial_limit_at_left_real trivial_limit_at_right_real)    
     
     
@@ -987,7 +987,7 @@ proof -
       unfolding has_sgnx_def eventually_at_left
       apply (intro exI[where x="x-d1"])
       using \<open>d1>0\<close> d1_def 
-      by (metis (no_types, hide_lams) add.commute add_uminus_conv_diff assms(2) diff_add_cancel 
+      by (metis (no_types, opaque_lifting) add.commute add_uminus_conv_diff assms(2) diff_add_cancel 
           diff_strict_left_mono diff_zero minus_diff_eq sgn_neg)  
     thus ?thesis by auto 
   qed
@@ -999,7 +999,7 @@ proof -
         unfolding has_sgnx_def eventually_at_left
         apply (intro exI[where x="x-d1"])
         using \<open>d1>0\<close> d1_def 
-        by (metis (no_types, hide_lams) add.commute add_uminus_conv_diff assms(2) diff_add_cancel
+        by (metis (no_types, opaque_lifting) add.commute add_uminus_conv_diff assms(2) diff_add_cancel
             diff_zero less_diff_eq minus_diff_eq sgn_pos)
     thus ?thesis using \<open>c<0\<close>  by auto
   qed
@@ -1029,7 +1029,7 @@ proof -
       unfolding has_sgnx_def eventually_at_right
       apply (intro exI[where x="x+d2"])
       using \<open>d2>0\<close> d2_def 
-      by (metis (no_types, hide_lams) add.commute add.right_inverse add_uminus_conv_diff assms(2) 
+      by (metis (no_types, opaque_lifting) add.commute add.right_inverse add_uminus_conv_diff assms(2) 
           diff_add_cancel diff_less_eq sgn_neg)
     thus ?thesis using \<open>c<0\<close> by auto
   qed
@@ -3816,7 +3816,7 @@ next
       apply (rule Re_winding_number_half_right[of _ 0,simplified])
       using Re_const \<open>valid_path h\<close> \<open>z \<notin> path_image h\<close> 
         apply auto
-      by (metis (no_types, hide_lams) add.commute imageE le_add_same_cancel1 order_refl 
+      by (metis (no_types, opaque_lifting) add.commute imageE le_add_same_cancel1 order_refl 
             path_image_def plus_complex.simps(1))
     moreover have "Im (Ln (h 1 - z)) = Im (Ln (h 0 - z))"
     proof -
@@ -3922,7 +3922,7 @@ next
         have "Re(winding_number g2 z) = 0"
           apply (rule Re_winding_0[OF *]) 
           subgoal using g2_def subEq.hyps(1) subEq.prems(1) valid_path_subpath by fastforce
-          subgoal by (metis (no_types, hide_lams) Path_Connected.path_image_subpath_subset 
+          subgoal by (metis (no_types, opaque_lifting) Path_Connected.path_image_subpath_subset 
                 atLeastAtMost_iff atLeastLessThan_iff g2_def less_eq_real_def subEq.hyps(1) 
                 subEq.prems(1) subEq.prems(2) subsetCE valid_path_imp_path zero_le_one)  
           done
@@ -4263,7 +4263,7 @@ next
                 subpath_def that)
           subgoal by (simp add: \<open>g2 \<equiv> subpath s 1 g\<close> subNEq.prems(3) subpath_def)
           subgoal using g2_def subNEq.hyps(1) subNEq.prems(1) valid_path_subpath by fastforce
-          subgoal by (metis (no_types, hide_lams) Path_Connected.path_image_subpath_subset 
+          subgoal by (metis (no_types, opaque_lifting) Path_Connected.path_image_subpath_subset 
                 \<open>path g\<close> atLeastAtMost_iff atLeastLessThan_iff g2_def less_eq_real_def subNEq.hyps(1) 
                 subNEq.prems(2) subsetCE zero_le_one)
           done

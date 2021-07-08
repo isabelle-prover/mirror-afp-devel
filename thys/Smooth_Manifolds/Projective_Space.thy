@@ -202,7 +202,7 @@ lemma euclidean_proj_space_def: "euclidean = map_topology Proj euclidean"
 
 lemma continuous_on_proj_spaceI: "continuous_on (S) f" if "continuous_on (Proj -` S) (f o Proj)" "open (S)"
   for f::"_ proj_space \<Rightarrow> _"
- by (metis (no_types, hide_lams) continuous_on_open_vimage open_vimage_Proj_iff that vimage_Int vimage_comp) 
+ by (metis (no_types, opaque_lifting) continuous_on_open_vimage open_vimage_Proj_iff that vimage_Int vimage_comp) 
 
 lemma saturate_eq: "Proj -` Proj ` X = (\<Union>c\<in>UNIV-{0}. (*\<^sub>R) c ` X)"
   apply (auto simp: )

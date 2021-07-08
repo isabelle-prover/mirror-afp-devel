@@ -61,7 +61,7 @@ lemma ds_inj: "inj (ds::'a::order \<Rightarrow> 'a downset)"
   by (simp add: ds_faithful dual_order.antisym injI)
 
 lemma ds_surj: "surj ds"
-  by (metis (no_types, hide_lams) Rep_downset Rep_downset_inverse ds_def image_iff o_apply surj_def)
+  by (metis (no_types, opaque_lifting) Rep_downset Rep_downset_inverse ds_def image_iff o_apply surj_def)
 
 lemma ds_bij: "bij (ds::'a::order \<Rightarrow> 'a downset)"
   by (simp add: bijI ds_inj ds_surj)
@@ -139,7 +139,7 @@ lemma map_SSup_func2:
   by (metis comp_apply ds_SSup_inv ds_def id_apply)
 
 lemma map_SSup_map_ds_inv: "map_SSup \<circ> map_ds = (id::('a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<Rightarrow> ('a \<Rightarrow> 'b))"
-  by (metis (no_types, hide_lams) SSup_ds_inv comp_def eq_id_iff fun.map_comp fun.map_id0 id_apply map_SSup_prop map_ds_prop)
+  by (metis (no_types, opaque_lifting) SSup_ds_inv comp_def eq_id_iff fun.map_comp fun.map_id0 id_apply map_SSup_prop map_ds_prop)
 
 lemma map_ds_map_SSup_inv: "map_ds \<circ> map_SSup = (id::('a::complete_lattice downset \<Rightarrow> 'b::complete_lattice downset) \<Rightarrow> ('a downset \<Rightarrow> 'b downset))"
   unfolding map_SSup_def map_ds_def SSup_def ds_def id_def comp_def fun_eq_iff
@@ -183,7 +183,7 @@ lemma us_ds: "us = Abs_upset \<circ> (`) \<partial> \<circ> Rep_downset \<circ> 
 
 lemma IInf_SSup: "IInf = \<partial> \<circ> SSup \<circ> Abs_downset \<circ> (`) (\<partial>::'a::complete_lattice_with_dual \<Rightarrow> 'a) \<circ> Rep_upset"
   unfolding IInf_def SSup_def fun_eq_iff comp_def
-  by (metis (no_types, hide_lams) Abs_downset_inverse Rep_upset Sup_dual_def_var image_iff rangeI subset_dual upset_to_downset3)
+  by (metis (no_types, opaque_lifting) Abs_downset_inverse Rep_upset Sup_dual_def_var image_iff rangeI subset_dual upset_to_downset3)
 
 lemma us_IInf_inv: "us \<circ> IInf = (id::'a::complete_lattice_with_dual upset \<Rightarrow> 'a upset)"
   unfolding us_def IInf_def fun_eq_iff id_def comp_def
@@ -271,11 +271,11 @@ lemma map_us_map_IInf_inv: "map_us \<circ> map_IInf = (id::('a::complete_lattice
 
 lemma inj_map_us: "inj (map_us::('a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual) \<Rightarrow> ('a upset \<Rightarrow> 'b upset))"
   unfolding map_us_def us_def IInf_def inj_def comp_def fun_eq_iff
-  by (metis (no_types, hide_lams) Abs_upset_inverse Inf_upset_id pointfree_idE rangeI)
+  by (metis (no_types, opaque_lifting) Abs_upset_inverse Inf_upset_id pointfree_idE rangeI)
 
 lemma inj_map_IInf: "inj (map_IInf::('a::complete_lattice_with_dual upset \<Rightarrow> 'b::complete_lattice_with_dual upset) \<Rightarrow> ('a \<Rightarrow> 'b))"
   unfolding map_IInf_def fun_eq_iff inj_def comp_def IInf_def us_def
-  by (metis (no_types, hide_lams) Inf_upset_id Rep_upset Rep_upset_inverse image_iff pointfree_idE)
+  by (metis (no_types, opaque_lifting) Inf_upset_id Rep_upset Rep_upset_inverse image_iff pointfree_idE)
 
 lemma map_us_map_IInf_iff: 
   fixes g :: "'a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual" 
@@ -384,7 +384,7 @@ instance
        apply transfer using Abs_atoms_inverse atom_map_bot_pres apply blast
       apply (transfer, metis Abs_atoms_inverse Rep_atoms atom_map_compl_pres atom_map_top_pres diff_eq double_compl inf_le1 rangeE rangeI)
      apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_inf_pres atom_map_sup_pres image_iff rangeI sup_inf_distrib1)
-    apply (transfer, metis (no_types, hide_lams) Abs_atoms_inverse Diff_disjoint Rep_atoms atom_map_compl_pres rangeE rangeI)
+    apply (transfer, metis (no_types, opaque_lifting) Abs_atoms_inverse Diff_disjoint Rep_atoms atom_map_compl_pres rangeE rangeI)
    apply (transfer, smt Abs_atoms_inverse uminus_atoms.abs_eq Rep_atoms Un_Diff_cancel atom_map_compl_pres atom_map_inf_pres atom_map_minus_pres atom_map_sup_pres atom_map_top_pres diff_eq double_compl inf_compl_bot_right rangeE rangeI sup_commute sup_compl_top)
   by transfer (smt Abs_atoms_inverse Rep_atoms atom_map_compl_pres atom_map_inf_pres atom_map_minus_pres diff_eq rangeE rangeI)
 
@@ -552,7 +552,7 @@ lift_definition  Sup_atoms :: "'a::complete_boolean_algebra_alt atoms set \<Righ
 
 instance
   apply (intro_classes; transfer)
-       apply (metis (no_types, hide_lams) Abs_atoms_inverse image_iff inf_le1 le_Inf_iff le_infI2 order_refl rangeI surj_atom_map)
+       apply (metis (no_types, opaque_lifting) Abs_atoms_inverse image_iff inf_le1 le_Inf_iff le_infI2 order_refl rangeI surj_atom_map)
       apply (metis (no_types, lifting) Abs_atoms_inverse Int_subset_iff Rep_atoms Sup_upper atom_map_atoms inf_le1 le_INF_iff rangeI surj_atom_map)
      apply (metis Abs_atoms_inverse Rep_atoms SUP_least SUP_upper Sup_upper atom_map_atoms rangeI surj_atom_map)
     apply (metis Abs_atoms_inverse Rep_atoms SUP_least Sup_upper atom_map_atoms rangeI surj_atom_map)

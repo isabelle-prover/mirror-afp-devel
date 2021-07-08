@@ -455,7 +455,7 @@ proof -
   { fix n
     have "sum (f' n) {..n + 1} = sum (g' n) {..n + 1}" using sum_fg
       unfolding f'_def g'_def suminf_minus_initial_segment[OF summ_f] suminf_minus_initial_segment[OF summ_g]
-      by(simp)(metis (no_types, hide_lams) add.commute add.left_inverse atLeast0AtMost atLeast0LessThan atLeastLessThanSuc_atLeastAtMost minus_add_distrib sum.lessThan_Suc uminus_add_conv_diff)
+      by(simp)(metis (no_types, opaque_lifting) add.commute add.left_inverse atLeast0AtMost atLeast0LessThan atLeastLessThanSuc_atLeastAtMost minus_add_distrib sum.lessThan_Suc uminus_add_conv_diff)
     moreover have "sum (f' n) X \<le> sum (g' n) (R' n `` X)" if "X \<subseteq> {..n + 1}" for X
     proof -
       from that have [simp]: "finite X" by(rule finite_subset) simp

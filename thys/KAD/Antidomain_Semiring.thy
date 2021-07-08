@@ -1015,7 +1015,7 @@ lemma kat_4_equiv: "d x \<cdot> y = d x \<cdot> y \<cdot> d z \<longleftrightarr
 lemma kat_3_equiv_opp: "ad z \<cdot> y \<cdot> d x = 0 \<longleftrightarrow> y \<cdot> d x = d z \<cdot> y \<cdot> d x"
 proof -
   have "ad z \<cdot> (y \<cdot> d x) = 0 \<longrightarrow> (ad z \<cdot> y \<cdot> d x = 0) = (y \<cdot> d x = d z \<cdot> y \<cdot> d x)"
-    by (metis (no_types, hide_lams) add_commute local.add_zerol local.ads_d_def local.as3 local.distrib_right' local.mult_1_left mult_assoc)
+    by (metis (no_types, opaque_lifting) add_commute local.add_zerol local.ads_d_def local.as3 local.distrib_right' local.mult_1_left mult_assoc)
   thus ?thesis
     by (metis a_4 local.a_add_idem local.a_gla2 local.ads_d_def mult_assoc am_add_op_def)
 qed

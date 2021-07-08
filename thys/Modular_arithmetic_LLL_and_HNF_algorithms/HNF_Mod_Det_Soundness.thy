@@ -419,7 +419,7 @@ proof -
     finally show ?thesis by auto
   qed
   ultimately show ?thesis unfolding lattice_of_altdef_lincomb[OF set_cols_in]
-    by (metis (mono_tags, hide_lams))
+    by (metis (mono_tags, opaque_lifting))
 qed
 
 
@@ -890,7 +890,7 @@ lemma invertible_mat_mult_int:
     and "invertible_mat P" 
     and "invertible_mat (map_mat rat_of_int B)"
   shows "invertible_mat (map_mat rat_of_int A)"
-  by (metis (no_types, hide_lams) assms dvd_field_iff 
+  by (metis (no_types, opaque_lifting) assms dvd_field_iff 
       invertible_iff_is_unit_JNF invertible_mult_JNF map_carrier_mat not_is_unit_0 
       of_int_hom.hom_0 of_int_hom.hom_det of_int_hom.mat_hom_mult)
 
@@ -8988,7 +8988,7 @@ proof (intro rel_funI, goal_cases)
     let ?s' = "((res_int (A' $h i' $h j') (A' $h ?from_nat_rows n $h j') 
       - A' $h ?from_nat_rows n $h j') div A' $h i' $h j')"
     have ss'[transfer_rule]: "?s = ?s'" unfolding res_int_def Anj Aij
-      by (metis (no_types, hide_lams) Groups.add_ac(2) add_diff_cancel_left' div_by_0 
+      by (metis (no_types, opaque_lifting) Groups.add_ac(2) add_diff_cancel_left' div_by_0 
           minus_div_mult_eq_mod more_arith_simps(7) nat_arith.rule0 nonzero_mult_div_cancel_right
           uminus_add_conv_diff)
     have H_JNF_eq: "?H_JNF A (Suc n) i j = ?H_JNF (addrow (- (A $$ (n, j) div A $$ (i, j))) n i A) n i j"

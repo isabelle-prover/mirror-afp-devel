@@ -842,7 +842,7 @@ proof -
             moreover have "rat_of_int \<bar>d\<mu> fs'' i' j'\<bar> = \<bar>\<mu>'' * (rat_of_int d'')\<bar>" 
               using eq by (metis of_int_abs of_rat_hom.injectivity of_rat_mult of_rat_of_int_eq)
             moreover then have "\<bar>\<mu>'' * rat_of_int d'' \<bar> =  \<bar>\<mu>''\<bar> * rat_of_int \<bar>d''\<bar>"
-              by (metis (mono_tags, hide_lams) abs_mult of_int_abs)
+              by (metis (mono_tags, opaque_lifting) abs_mult of_int_abs)
             moreover have "\<dots> = \<bar>\<mu>''\<bar> * rat_of_int d'' " using gtz by simp
             moreover have "\<dots> < rat_of_int d''" using lh gtz by simp
             ultimately have "rat_of_int \<bar>d\<mu> fs'' i' j'\<bar> < rat_of_int d''" by simp
@@ -2021,7 +2021,7 @@ proof -
         using g1 by linarith
       have "2 * sqrt (real_of_rat ((rat_of_int (p - 1))\<^sup>2 / 4)) =
       sqrt (real_of_rat (4 * ((rat_of_int (p - 1))\<^sup>2 / 4)))"
-        by (metis (no_types, hide_lams) real_sqrt_mult of_int_numeral of_rat_hom.hom_mult 
+        by (metis (no_types, opaque_lifting) real_sqrt_mult of_int_numeral of_rat_hom.hom_mult 
             of_rat_of_int_eq real_sqrt_four times_divide_eq_right)
       also have "\<dots> = sqrt (real_of_rat ((rat_of_int (p - 1))\<^sup>2))" using i by simp
       also have "(real_of_rat ((rat_of_int (p - 1))\<^sup>2)) = (real_of_rat (rat_of_int (p - 1)))\<^sup>2"

@@ -46,8 +46,8 @@ instance
   apply (metis Inf_Sec_def Sec.exhaust less_eq_Sec_def)
   apply (metis Sec.exhaust Sup_Sec_def less_eq_Sec_def)
   apply (metis (full_types) Sup_Sec_def less_eq_Sec_def)
-  apply (metis (hide_lams, mono_tags) Inf_Sec_def empty_iff top_Sec_def)
-  by (metis (hide_lams, mono_tags) Sup_Sec_def bot_Sec_def empty_iff)
+  apply (metis (opaque_lifting, mono_tags) Inf_Sec_def empty_iff top_Sec_def)
+  by (metis (opaque_lifting, mono_tags) Sup_Sec_def bot_Sec_def empty_iff)
 end
 
 text \<open>Memories are mappings from variables to values\<close>

@@ -762,7 +762,7 @@ proof -
   have "sink (token_run x n)"
     using assms by (metis option.distinct(1) rank.simps)
   hence "sink (token_run x (Suc n))"
-    using token_stays_in_sink by (metis (erased, hide_lams) Suc_leD le_Suc_ex not_less_eq_eq)
+    using token_stays_in_sink by (metis (erased, opaque_lifting) Suc_leD le_Suc_ex not_less_eq_eq)
   thus ?thesis
     by simp
 qed
@@ -1164,13 +1164,13 @@ proof -
     by auto
   also
   have "\<dots> = {q'. \<exists>t ot. oldest_token q' n = Some t \<and> t = senior ot n \<and> t < senior x n \<and> \<not> sink q'}"
-    unfolding senior.simps by (metis (erased, hide_lams) oldest_token_always_def push_down_oldest_token_token_run option.sel)
+    unfolding senior.simps by (metis (erased, opaque_lifting) oldest_token_always_def push_down_oldest_token_token_run option.sel)
   also
   have "\<dots> = {q'. \<exists>t. oldest_token q' n = Some t \<and> t < senior x n \<and> \<not> sink q'}"
     by auto
   also
   have "\<dots> = ?rhs"
-    unfolding senior_states.simps senior.simps by (metis (erased, hide_lams) oldest_token_always_def option.sel)
+    unfolding senior_states.simps senior.simps by (metis (erased, opaque_lifting) oldest_token_always_def option.sel)
   finally
   show "?lhs = ?rhs"
     .

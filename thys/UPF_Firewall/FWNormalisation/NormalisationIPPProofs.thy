@@ -1214,7 +1214,7 @@ next
   case (3 v va vb y z) thus ?case
     apply (cases "z = []", simp_all)
      apply (simp add: PLemmas(8) UPFDefs(8) list2FWpolicyconc sepnMT)
-    by (metis (no_types, hide_lams) Conc_not_MT Cdom2  nlpaux domIff l2p_aux sepnMT)
+    by (metis (no_types, opaque_lifting) Conc_not_MT Cdom2  nlpaux domIff l2p_aux sepnMT)
 next
   case (4 v va y z) thus ?case
     apply (cases "z = []", simp_all)

@@ -59,7 +59,7 @@ proof
     by (auto simp add: field_simps)
   thus "a11 * fst ?x + a12 * snd ?x = b1 \<and> a21 * fst ?x + a22 * snd ?x = b2"
     using assms
-    by (metis (hide_lams, no_types) det2_def add_divide_distrib eq_divide_imp fst_eqD snd_eqD times_divide_eq_right)
+    by (metis (opaque_lifting, no_types) det2_def add_divide_distrib eq_divide_imp fst_eqD snd_eqD times_divide_eq_right)
 
   fix x'
   assume "a11 * fst x' + a12 * snd x' = b1 \<and> a21 * fst x' + a22 * snd x' = b2"

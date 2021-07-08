@@ -18,7 +18,7 @@ class bn = fs +
   and bn_finite: "finite (bn \<alpha>)"
 
 lemma bn_subset_supp: "bn \<alpha> \<subseteq> supp \<alpha>"
-by (metis (erased, hide_lams) bn_eqvt bn_finite eqvt_at_def finite_supp supp_eqvt_at supp_finite_atom_set)
+by (metis (erased, opaque_lifting) bn_eqvt bn_finite eqvt_at_def finite_supp supp_eqvt_at supp_finite_atom_set)
 
 
 subsection \<open>Raw residuals and \texorpdfstring{$\alpha$}{alpha}-equivalence\<close>

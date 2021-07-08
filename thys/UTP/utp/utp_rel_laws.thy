@@ -171,7 +171,7 @@ lemma seqr_insert_ident_right:
   assumes "vwb_lens x" "$x\<acute> \<sharp> P" "$x \<sharp> Q"
   shows "(P ;; ($x\<acute> =\<^sub>u $x \<and> Q)) = (P ;; Q)"
   using assms
-  by (rel_simp, metis (no_types, hide_lams) vwb_lens_def wb_lens_def weak_lens.put_get)
+  by (rel_simp, metis (no_types, opaque_lifting) vwb_lens_def wb_lens_def weak_lens.put_get)
 
 lemma seq_var_ident_lift:
   assumes "vwb_lens x" "$x\<acute> \<sharp> P" "$x \<sharp> Q"
@@ -592,7 +592,7 @@ lemma rel_frext_commute:
   apply (rel_auto)
    apply (rename_tac a c b)
    apply (subgoal_tac "\<And>b a. get\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> b a) = get\<^bsub>y\<^esub> b")
-    apply (metis (no_types, hide_lams) lens_indep_comm lens_indep_get)
+    apply (metis (no_types, opaque_lifting) lens_indep_comm lens_indep_get)
    apply (simp add: lens_indep.lens_put_irr2)
   apply (subgoal_tac "\<And>b c. get\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> b c) = get\<^bsub>x\<^esub> b")
    apply (subgoal_tac "\<And>b a. get\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> b a) = get\<^bsub>y\<^esub> b")
@@ -749,7 +749,7 @@ proof (induct n)
 next
   case (Suc n)
   then show ?case
-    by (auto simp add: upred_semiring.power_Suc, metis (no_types, hide_lams) dual_order.trans order_refl seqr_assoc seqr_mono)
+    by (auto simp add: upred_semiring.power_Suc, metis (no_types, opaque_lifting) dual_order.trans order_refl seqr_assoc seqr_mono)
 qed
 
 lemma upower_inductr:

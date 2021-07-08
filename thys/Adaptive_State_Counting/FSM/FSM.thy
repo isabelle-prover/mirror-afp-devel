@@ -1114,7 +1114,7 @@ lemma det_state_cover_d_reachable[elim] :
   and     "v \<in> V"
 obtains q
 where "d_reaches M (initial M) v q"
-  by (metis (no_types, hide_lams) assms(1) assms(2) image_iff is_det_state_cover.simps 
+  by (metis (no_types, opaque_lifting) assms(1) assms(2) image_iff is_det_state_cover.simps 
       is_det_state_cover_ass.elims(2))
 
 

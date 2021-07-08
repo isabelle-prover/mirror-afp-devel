@@ -373,7 +373,7 @@ proof -
     assume "\<not> - pi / 2 < a1"
     then have "a1=- pi / 2" using \<open>-pi/2\<le>a1\<close> by auto
     then have "cos a = 0" unfolding aa1
-      by (metis (no_types, hide_lams) add.commute add_0_left cos_pi_half 
+      by (metis (no_types, opaque_lifting) add.commute add_0_left cos_pi_half 
               diff_eq_eq mult.left_neutral mult_minus_right mult_zero_left 
               sin_add sin_pi_half sin_zero_iff_int2 times_divide_eq_left uminus_add_conv_diff)
     then show False using assms by auto

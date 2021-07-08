@@ -273,7 +273,7 @@ proof -
   qed
   \<comment> \<open>Main body of the proof, using helper facts above\<close>
   have "((1 + fps_X^p)^?N * (1 + fps_X)^?rn) $ k = (((1 + fps_X)^?rn) * (1 + fps_X^p)^?N) $ k"
-    by (metis (no_types, hide_lams) distrib_left distrib_right fps_mult_fps_X_commute fps_one_mult(1) 
+    by (metis (no_types, opaque_lifting) distrib_left distrib_right fps_mult_fps_X_commute fps_one_mult(1) 
         fps_one_mult(2) power_commuting_commutes)
   also have "... = (\<Sum>i=0..k.(of_nat(?rn choose i)) * ((1 + (fps_X)^p)^?N $ (k - i)))" 
     by (simp add: fps_mult_nth binomial_coeffs_induct) 
@@ -312,7 +312,7 @@ proof -
     using fps_freshmans_dream assms fps_mult_equiv fps_power_equiv by blast \<comment> \<open>Application of equivalence facts and freshmans dream lemma\<close>
   then have modrel2: "((1 + ?fx)^n, ((1 + ?fx^p)^(?N) * (1 + ?fx)^(?rn))) 
                           \<in> fpsmodrel p"
-    by (metis (mono_tags, hide_lams) mult_div_mod_eq power_add power_mult)
+    by (metis (mono_tags, opaque_lifting) mult_div_mod_eq power_add power_mult)
   thus ?thesis
     using fpsrel_iff binomial_coeffs_induct rhs_coeffs by (metis of_nat_eq_iff zmod_int) 
 qed

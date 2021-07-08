@@ -164,7 +164,7 @@ proof-
       have "[int x1 * (int a mod int q - int a' mod int q) = int x1 * (int a - int a')] (mod int q)"
         by (meson cong_def cong_mult cong_refl mod_diff_eq)
       then show ?thesis
-        by (metis (no_types, hide_lams) Groups.mult_ac(2) \<open>[int a * int x1 - int a' * int x1 = int b' - int b] (mod int q)\<close> cong_def mod_diff_left_eq mod_diff_right_eq mod_mult_right_eq)
+        by (metis (no_types, opaque_lifting) Groups.mult_ac(2) \<open>[int a * int x1 - int a' * int x1 = int b' - int b] (mod int q)\<close> cong_def mod_diff_left_eq mod_diff_right_eq mod_mult_right_eq)
     qed
     hence "[int x1 * (int a mod q - int a' mod q) = int b'- int b] (mod q)" 
       by(metis int_distrib(3) mult.commute)

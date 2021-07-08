@@ -485,7 +485,7 @@ lemma labeled_list_insert_eq_cases:
   "d \<notin> set (unlabel D) \<Longrightarrow> List.insert d (unlabel D) = unlabel (List.insert (i,d) D)"
   "(i,d) \<in> set D \<Longrightarrow> List.insert d (unlabel D) = unlabel (List.insert (i,d) D)"
 unfolding unlabel_def
-by (metis (no_types, hide_lams) List.insert_def image_eqI list.simps(9) set_map snd_conv,
+by (metis (no_types, opaque_lifting) List.insert_def image_eqI list.simps(9) set_map snd_conv,
     metis in_set_insert set_zip_rightD zip_map_fst_snd)
 
 lemma labeled_list_insert_eq_ex_cases:

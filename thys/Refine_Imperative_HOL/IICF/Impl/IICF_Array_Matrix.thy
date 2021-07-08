@@ -177,7 +177,7 @@ begin
     shows "mtx_nonzero a = mtx_nonzero a'"
     using assms
     apply (clarsimp simp: mtx_nonzero_def PRES_ZERO_UNIQUE_def)
-    by (metis (no_types, hide_lams) IdI Image_singleton_iff converse_iff singletonD tagged_fun_relD_none)
+    by (metis (no_types, opaque_lifting) IdI Image_singleton_iff converse_iff singletonD tagged_fun_relD_none)
     
 
   lemma op_mtx_new_fref': 

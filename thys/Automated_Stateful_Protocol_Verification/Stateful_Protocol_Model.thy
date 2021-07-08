@@ -1765,7 +1765,7 @@ proof -
       "prefix (B@[\<langle>\<theta> x != \<theta> y\<rangle>]) (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))) \<or>
        prefix (B@[\<langle>\<theta> y != \<theta> x\<rangle>]) (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)))"
     unfolding prefix_def
-    by (metis (no_types, hide_lams) append.assoc append_Cons append_Nil split_list)
+    by (metis (no_types, opaque_lifting) append.assoc append_Cons append_Nil split_list)
   thus ?thesis
     using \<I> strand_sem_append_stateful[of IK DB _ _ \<I>]
           stateful_strand_sem_NegChecks_no_bvars(2)
@@ -2550,7 +2550,7 @@ proof -
     hence "\<exists>a. \<Gamma> (Var x) = TAtom a"
       by simp
     hence "\<exists>a. \<Gamma> (Fun f T) = TAtom a"
-      by (metis (no_types, hide_lams) \<I>' welltyped_constraint_model_def fT_p wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def)
+      by (metis (no_types, opaque_lifting) \<I>' welltyped_constraint_model_def fT_p wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def)
     ultimately show "(\<exists>f. \<I> x = Fun f []) \<or> (\<exists>y. \<I> x = Var y)"
       using TAtom_term_cases fT_p by metis
   qed
@@ -3762,7 +3762,7 @@ proof (induction \<A> rule: reachable_constraints.induct)
         by (metis IH n(1))
       thus ?thesis
         using n x_nin_\<A> trms\<^sub>s\<^sub>s\<^sub>t_unlabel_prefix_subset(1)[of B]
-        by (metis (no_types, hide_lams) self_append_conv subset_iff subterms\<^sub>s\<^sub>e\<^sub>t_mono prefix_def)
+        by (metis (no_types, opaque_lifting) self_append_conv subset_iff subterms\<^sub>s\<^sub>e\<^sub>t_mono prefix_def)
     qed (use n x_nin_\<A> in fastforce)
   qed
 

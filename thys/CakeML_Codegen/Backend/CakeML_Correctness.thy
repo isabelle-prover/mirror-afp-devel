@@ -1108,7 +1108,7 @@ next
               done
             subgoal using * by simp
             subgoal using *
-              by (metis (no_types, hide_lams) comp_def fimageI fmdom_fmap_of_list fset_of_list_map fst_comp_map_prod)
+              by (metis (no_types, opaque_lifting) comp_def fimageI fmdom_fmap_of_list fset_of_list_map fst_comp_map_prod)
             subgoal using **
               by (metis fmlookup_ns fmrel_on_fsetD mat1.prems(2))
             done

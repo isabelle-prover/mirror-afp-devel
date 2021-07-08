@@ -39,7 +39,7 @@ next
     moreover from \<open>p permutes A\<close> have "inv p permutes A"
       by (simp add: permutes_inv)
     moreover from \<open>p permutes A\<close> \<open>\<forall>x\<in>A. f x = f' (p x)\<close> have "\<forall>x\<in>A. f' x = f (inv p x)"
-      using permutes_in_image permutes_inverses(1) by (metis (mono_tags, hide_lams))
+      using permutes_in_image permutes_inverses(1) by (metis (mono_tags, opaque_lifting))
     ultimately show "(f', f) \<in> domain_permutation A B"
       unfolding domain_permutation_def by auto
   qed
@@ -114,7 +114,7 @@ proof (rule congruentI)
       by (auto simp add: permutes_in_image)
   next
     from \<open>p permutes A\<close> \<open>\<forall>x\<in>A. f x = f' (p x)\<close> have "\<forall>x\<in>A. f' x = f (inv p x)"
-      using permutes_in_image permutes_inverses(1) by (metis (mono_tags, hide_lams))
+      using permutes_in_image permutes_inverses(1) by (metis (mono_tags, opaque_lifting))
     from this show "f' ` A \<subseteq> f ` A"
       using \<open>p permutes A\<close> by (auto simp add: permutes_inv permutes_in_image)
   qed
@@ -133,7 +133,7 @@ proof (rule congruentI)
     unfolding domain_permutation_def by auto
   have "bij_betw f A B \<longleftrightarrow> bij_betw (f' o p) A B"
     using \<open>\<forall>x\<in>A. f x = f' (p x)\<close>
-    by (metis (mono_tags, hide_lams) bij_betw_cong comp_apply)
+    by (metis (mono_tags, opaque_lifting) bij_betw_cong comp_apply)
   also have "... \<longleftrightarrow> bij_betw f' A B"
     using \<open>p permutes A\<close>
     by (auto intro!: bij_betw_comp_iff[symmetric] permutes_imp_bij)
@@ -266,7 +266,7 @@ proof (rule congruentI)
     unfolding range_permutation_def by auto
   have "bij_betw f A B \<longleftrightarrow> bij_betw (p o f') A B"
     using \<open>\<forall>x\<in>A. f x = p (f' x)\<close>
-    by (metis (mono_tags, hide_lams) bij_betw_cong comp_apply)
+    by (metis (mono_tags, opaque_lifting) bij_betw_cong comp_apply)
   also have "... \<longleftrightarrow> bij_betw f' A B"
     using \<open>f' \<in> A \<rightarrow>\<^sub>E B\<close> \<open>p permutes B\<close>
     by (auto intro!: bij_betw_comp_iff2[symmetric] permutes_imp_bij)

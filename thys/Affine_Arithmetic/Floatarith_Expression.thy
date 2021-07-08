@@ -563,7 +563,7 @@ lemma
     apply (cases "j < length es")
     subgoal
       apply (auto simp: nth_append isFDERIV_def)
-      by (metis (no_types, hide_lams) isDERIV_max_VarI le_trans less_le
+      by (metis (no_types, opaque_lifting) isDERIV_max_VarI le_trans less_le
           max_Var_floatarith_le_max_Var_floatariths_nthI nat_le_linear)
     subgoal by (auto simp: nth_append)
     done

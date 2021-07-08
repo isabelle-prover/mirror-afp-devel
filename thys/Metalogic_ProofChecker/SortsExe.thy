@@ -294,7 +294,7 @@ proof-
     from this obtain c where c: "ars c = Some ss"
       using in_range_if_ex_key p(2) by force
     have "exewf_sort cs s"
-      by (metis (no_types, hide_lams) \<open>(name, arsl) \<in> set arss\<close> \<open>map_of arsl = ars\<close> assms(1) assms(2) 
+      by (metis (no_types, opaque_lifting) \<open>(name, arsl) \<in> set arss\<close> \<open>map_of arsl = ars\<close> assms(1) assms(2) 
           exe_all_normalized_and_ex_tcsigs_def exe_ars_conds_def image_iff p(2) p(3) ran_distinct snd_conv)
     hence "wf_sort (set cs) s"
       by (simp add: normalize_sort_code sort_ex_code wf_sort_def)

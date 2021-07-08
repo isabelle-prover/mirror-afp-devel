@@ -166,7 +166,7 @@ apply(induction rs Undecided Undecided rule: iptables_bigstep_induct)
   apply(frule iptables_bigstep_to_undecided)
   apply(simp)
   apply(simp add: good_ruleset_append)
-  apply (metis (hide_lams, no_types) approximating_bigstep.decision Semantics_Ternary.seq')
+  apply (metis (opaque_lifting, no_types) approximating_bigstep.decision Semantics_Ternary.seq')
  apply(simp add: good_ruleset_def)
 apply(simp add: good_ruleset_def)
 done

@@ -307,7 +307,7 @@ proof-
   hence "[(int z1 + int x * int z1' - int z2 - int x * int z2') * fst (bezw (e - e') (order \<G>)) = int t * ((e - e') * fst (bezw (e - e') (order \<G>)))] (mod order \<G>)"
     by (simp add: mult.assoc)
   hence "[(int z1 + int x * int z1' - int z2 - int x * int z2') * fst (bezw (e - e') (order \<G>)) = int t * 1] (mod order \<G>)"
-    by (metis (no_types, hide_lams) cong_scalar_left cong_trans inverse gcd)
+    by (metis (no_types, opaque_lifting) cong_scalar_left cong_trans inverse gcd)
   hence "[(int z1 - int z2 + int x * int z1' - int x * int z2') * fst (bezw (e - e') (order \<G>)) = int t] (mod order \<G>)"
     by smt
   hence "[(int z1 - int z2 + int x * (int z1' - int z2')) * fst (bezw (e - e') (order \<G>)) = int t] (mod order \<G>)"
@@ -323,7 +323,7 @@ proof-
   hence "\<^bold>g [^] ((int z1 - int z2) * fst (bezw (e - e') (order \<G>))) \<otimes> \<^bold>g [^] (int x * (int z1' - int z2') * fst (bezw (e - e') (order \<G>))) = \<^bold>g [^] t"
     using int_pow_mult by auto
   thus ?thesis 
-    by (metis (mono_tags, hide_lams) g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) pow_generator_mod_int t)
+    by (metis (mono_tags, opaque_lifting) g'_def generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) pow_generator_mod_int t)
 qed
 
 lemma 
@@ -394,7 +394,7 @@ proof-
   hence "[(int (fst z) - int (fst z')) * (fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>) + (int x * (int (snd z) - int (snd z'))) 
             * (fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>) 
                = int t] (mod order \<G>)"
-    by (metis (no_types, hide_lams) cong_mod_left distrib_right mod_mult_right_eq)
+    by (metis (no_types, opaque_lifting) cong_mod_left distrib_right mod_mult_right_eq)
   hence "[(int (fst z) - int (fst z')) * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G> + (int x * (int (snd z) - int (snd z'))) 
             * (fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>) 
                = t] (mod order \<G>)"

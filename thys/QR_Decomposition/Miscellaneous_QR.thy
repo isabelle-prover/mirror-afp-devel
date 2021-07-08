@@ -248,7 +248,7 @@ proof -
   have "A *v (b - c) = A *v (b + - c)" by (metis diff_minus_eq_add minus_minus)
   also have "... = (A *v b) + (A *v (- c))" unfolding matrix_vector_right_distrib ..
   also have "... = (A *v b) - (A *v c)" 
-    by (metis (no_types, hide_lams) add.commute add_minus_cancel
+    by (metis (no_types, opaque_lifting) add.commute add_minus_cancel
         matrix_vector_right_distrib uminus_add_conv_diff)
   finally show ?thesis .
 qed

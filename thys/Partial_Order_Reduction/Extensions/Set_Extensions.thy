@@ -323,7 +323,7 @@ begin
     have 1: "f ` ({a} \<union> B) = g ` C" using assms(2) by simp
     obtain D E where 2: "f ` {a} = g ` D" "f ` B = g ` E" "D \<subseteq> C" "E \<subseteq> C"
       using image_union_split 1 by this
-    obtain d where 3: "D = {d}" using assms(1) 2(1) by (auto, metis (erased, hide_lams) imageE
+    obtain d where 3: "D = {d}" using assms(1) 2(1) by (auto, metis (erased, opaque_lifting) imageE
       image_empty image_insert inj_image_eq_iff singletonI)
     show ?thesis using that 2 unfolding 3 by simp
   qed

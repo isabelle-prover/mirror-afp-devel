@@ -504,7 +504,7 @@ proof -
       by (smt Suc_ile_eq add.commute add.left_commute add_Suc less_imp_le plus_enat_simps(1)
           the_enat.simps)
     from Suc have Cj_in_wP: "(C, j) \<in># wP_of_wstate (lnth Sts (t_C + t_Cj + t))"
-      by (metis (no_types, hide_lams) Suc_ile_eq add.commute add_Suc_right less_imp_le)
+      by (metis (no_types, opaque_lifting) Suc_ile_eq add.commute add_Suc_right less_imp_le)
     moreover have "C \<in> P_of_state (state_of_wstate (lnth Sts (Suc (t_C + t_Cj + t))))"
       using t_C_p(2) Suc.prems by auto
     then have "\<exists>k. (C, k) \<in># wP_of_wstate (lnth Sts (Suc (t_C + t_Cj + t)))"

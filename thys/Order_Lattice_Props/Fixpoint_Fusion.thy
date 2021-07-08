@@ -145,7 +145,7 @@ lemma gfp_fusion_var:
   and "mono g"
   and "\<forall>h. F h x = g (h x)"
   shows "gfp F x = gfp g"
-  by (metis (no_types, hide_lams) assms eq_iff gfp_fixpoint gfp_upperbound k_adju_var monoE order_refl)
+  by (metis (no_types, opaque_lifting) assms eq_iff gfp_fixpoint gfp_upperbound k_adju_var monoE order_refl)
 
 text \<open>This time, Isabelle is picking up dualities rather inconsistently.\<close>
 

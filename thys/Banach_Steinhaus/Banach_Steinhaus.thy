@@ -279,7 +279,7 @@ proof(rule classical)
     for g::\<open>'a \<Rightarrow>\<^sub>L 'b\<close> and x and r
     by blast
   have \<open>\<forall>n. \<exists>k. norm (f k) \<ge> 4^n\<close>
-    using \<open>\<not>(bounded (range f))\<close> by (metis (mono_tags, hide_lams) boundedI image_iff linear)
+    using \<open>\<not>(bounded (range f))\<close> by (metis (mono_tags, opaque_lifting) boundedI image_iff linear)
   hence  \<open>\<exists>k. \<forall>n. norm (f (k n)) \<ge> 4^n\<close>
     by metis
   hence  \<open>\<exists>k. \<forall>n. norm ((f \<circ> k) n) \<ge> 4^n\<close>
@@ -451,7 +451,7 @@ proof-
     have \<open>\<forall> n. \<forall>x. norm ((*\<^sub>v) (f n) x) \<le> norm x * norm (f n)\<close>
       apply transfer apply auto by (metis mult.commute onorm) 
     thus  ?thesis using \<open>\<exists> M. \<forall> n. norm (f n) \<le> M\<close>
-      by (metis (no_types, hide_lams) dual_order.trans norm_eq_zero order_refl 
+      by (metis (no_types, opaque_lifting) dual_order.trans norm_eq_zero order_refl 
           mult_le_cancel_iff2 vector_space_over_itself.scale_zero_left zero_less_norm_iff)
   qed 
   have norm_F_x: \<open>\<exists>K. \<forall>x. norm (F x) \<le> norm x * K\<close>

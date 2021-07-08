@@ -77,7 +77,7 @@ proof -
         next
           case False
           then show ?thesis
-            by (metis (no_types, hide_lams) \<open>i < n\<close> assms(2) assms(3) assms(4) assms(5) wf_tuple_def
+            by (metis (no_types, opaque_lifting) \<open>i < n\<close> assms(2) assms(3) assms(4) assms(5) wf_tuple_def
                 wf_tuple_restrict_simple)
         qed
       qed

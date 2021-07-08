@@ -51,7 +51,7 @@ proof (rule usolves_odeI)
   obtain c where c: "\<And>t. t \<in> {t0 -- t1} \<Longrightarrow> ?es t = c" by auto
   hence "(exp ((t - t0) *\<^sub>R A) * (exp (-((t - t0) *\<^sub>R A)))) (s t) = exp ((t - t0) *\<^sub>R A) c"
     if "t \<in> {t0 -- t1}" for t
-    by (metis (no_types, hide_lams) blinop_apply_times_blinop real_vector.scale_minus_left that)
+    by (metis (no_types, opaque_lifting) blinop_apply_times_blinop real_vector.scale_minus_left that)
   then have s_def: "s t = exp ((t - t0) *\<^sub>R A) c" if "t \<in> {t0 -- t1}" for t
     by (simp add: exp_minus_inverse that)
   from s0 s_def

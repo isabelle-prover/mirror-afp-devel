@@ -29,7 +29,7 @@ lemma chsh_real:
 proof -
   have "A0 * B1 - A0 * B0 = A0 * B1 - A0 * B0 + A0 * B1 * A1 * B0 - A0 * B1 * A1 * B0" by simp
   also have "... = A0 * B1 * (1 + A1*B0) - A0 * B0 * (1 + A1* B1)"
-    by (metis (no_types, hide_lams) add_diff_cancel_right calculation diff_add_eq 
+    by (metis (no_types, opaque_lifting) add_diff_cancel_right calculation diff_add_eq 
         group_cancel.sub1 mult.commute mult.right_neutral 
         vector_space_over_itself.scale_left_commute 
         vector_space_over_itself.scale_right_diff_distrib 

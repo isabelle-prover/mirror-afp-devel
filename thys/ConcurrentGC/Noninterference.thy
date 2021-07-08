@@ -560,7 +560,7 @@ done
 next case (lop_store_ins s s' p w ws y) then show ?case
       apply -
       apply (cases w; clarsimp simp: valid_W_invD(1) split: obj_at_splits)
-        apply (metis (no_types, hide_lams) hs_phase.distinct(5,7) mut_m_not_idle_no_fM_write)
+        apply (metis (no_types, opaque_lifting) hs_phase.distinct(5,7) mut_m_not_idle_no_fM_write)
        apply (clarsimp simp: p_not_sys; elim disjE; clarsimp simp: phase_rel_def handshake_in_syncD dest!: phase_rel_invD; fail)+
       done
 qed

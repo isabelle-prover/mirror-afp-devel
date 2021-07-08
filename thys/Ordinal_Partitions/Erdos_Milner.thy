@@ -539,7 +539,7 @@ next
             using le_\<iota>0 that by auto
         next
           case (Suc i') then show ?thesis
-            by (metis (no_types, hide_lams) Suc_pred le_less less_Suc_eq less_Suc_eq_0_disj less_\<iota>_I not_less_eq that)
+            by (metis (no_types, opaque_lifting) Suc_pred le_less less_Suc_eq less_Suc_eq_0_disj less_\<iota>_I not_less_eq that)
         qed
 
         have [simp]: "\<iota> p = \<beta>"

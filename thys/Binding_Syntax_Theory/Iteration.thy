@@ -1954,7 +1954,7 @@ proof-
         using Op unfolding wlsBinp_iff sameDom_def by force
         hence "igFreshAbs MOD ys y (hA A)"
         using Op.IH y_fresh binp unfolding freshBinp_def liftAll_def liftAll2_def 
-        by simp (metis (no_types, hide_lams) freshBinp_def liftAll_def old.prod.exhaust)
+        by simp (metis (no_types, opaque_lifting) freshBinp_def liftAll_def old.prod.exhaust)
        }
        ultimately have "igFreshInp MOD ys y (lift h inp) \<and> igFreshBinp MOD ys y (lift hA binp)"
        unfolding igFreshInp_def igFreshBinp_def liftAll_lift_comp unfolding liftAll_def by auto        
@@ -2104,7 +2104,7 @@ proof-
             lift hA (substBinp ys Y y binp) = igSubstBinp MOD ys (h Y) y (lift hA binp)"
       using Op YP yP by (simp add: substInp_def2 igSubstInp_def substBinp_def2 igSubstBinp_def lift_comp 
       lift_def liftAll2_def fun_eq_iff wlsInp_iff wlsBinp_iff sameDom_def split: option.splits) 
-      (metis (no_types, hide_lams) not_Some_eq option.distinct(1) sinp wlsBinp.simps) 
+      (metis (no_types, opaque_lifting) not_Some_eq option.distinct(1) sinp wlsBinp.simps) 
       moreover
       have "igOp MOD delta (igSubstInp MOD ys (h Y) y (lift h inp))
                         (igSubstBinp MOD ys (h Y) y (lift hA binp)) =

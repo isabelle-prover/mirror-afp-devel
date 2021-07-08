@@ -274,7 +274,7 @@ proof -
     case True
     show ?thesis using True i
       by (auto, metis mult_ac(2) semiring_normalization_rules)
-      (metis (no_types, hide_lams) add_minus_cancel mult_ac ring_distribs semiring_normalization_rules)
+      (metis (no_types, opaque_lifting) add_minus_cancel mult_ac ring_distribs semiring_normalization_rules)
   next
     case False
     have 1: "\<exists>p q. (\<Sum>i\<in>{a, b}. f i * i) = p * a + q * b" for f

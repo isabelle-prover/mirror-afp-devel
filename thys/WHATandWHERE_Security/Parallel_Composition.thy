@@ -178,7 +178,7 @@ next
   have "Domain R \<inter> Domain (Rc \<union> RV) = {}"
     by (simp add: R_def Rc_def RV_def, auto,
       metis inf_bot_right le_inf_iff subset_empty unique_V_uneq,
-      metis (hide_lams, no_types) inf_absorb1 inf_bot_right le_inf_iff unique_c_uneq)
+      metis (opaque_lifting, no_types) inf_absorb1 inf_bot_right le_inf_iff unique_c_uneq)
             
   with commonArefl_subset_commonDomain
   have Areflassump2: "Arefl R \<inter> Arefl (Rc \<union> RV) \<subseteq> {[]}"

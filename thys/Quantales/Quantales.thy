@@ -688,7 +688,7 @@ qed
 lemma unital_quantale_hom_closed_unital_map:
   fixes f :: "'a::unital_quantale_with_dual \<Rightarrow> 'b::unital_quantale_with_dual"
   shows "(f \<in> unital_quantale_homset) \<Longrightarrow> (radj f \<in> quantale_closed_unital_maps)"
-  by (metis (no_types, hide_lams) adj_def order_refl quantale_closed_maps_iff quantale_closed_unital_maps_iff quantale_hom_closed_map quantale_hom_radj quantale_homset_iff unital_quantale_homset_iff)
+  by (metis (no_types, opaque_lifting) adj_def order_refl quantale_closed_maps_iff quantale_closed_unital_maps_iff quantale_hom_closed_map quantale_hom_radj quantale_homset_iff unital_quantale_homset_iff)
 
  end
 

@@ -131,7 +131,7 @@ proof-
     by (simp add: \<open>P (s k)\<close>)
   thus "\<And>m. P (s' m)" using  assms(2) assms(3) dual_order.strict_trans filter_exist filtered_seq_def
       lessI less_Suc_eq_le take_subseq_def 
-    by (metis (mono_tags, hide_lams) assms(1))    
+    by (metis (mono_tags, opaque_lifting) assms(1))    
 qed
 
 definition kth_res_equals :: "nat \<Rightarrow> int \<Rightarrow> (padic_int  \<Rightarrow> bool)"  where

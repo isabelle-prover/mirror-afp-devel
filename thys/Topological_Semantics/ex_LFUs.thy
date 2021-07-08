@@ -60,7 +60,7 @@ lemma "\<DD> \<D> \<Longrightarrow> DM3(\<^bold>\<not>)" nitpick oops (*counterm
 lemma "Der_1a \<D> \<Longrightarrow> DM4(\<^bold>\<not>)" unfolding Defs using ADDI_a_def ineg_prop compl_def diff_def  join_def meet_def by auto
 lemma "Der_3 \<D> \<Longrightarrow> nNor(\<^bold>\<not>)" by (simp add: NOR_def ineg_prop nNor_def bottom_def compl_def diff_def top_def)
 lemma "nDNor(\<^bold>\<not>)" by (simp add: bottom_def diff_def ineg_prop nDNor_def top_def)
-lemma "Der_1b \<D> \<Longrightarrow> MT0(\<^bold>\<not>)" unfolding Defs by (metis (mono_tags, hide_lams) CD1b Disj_I OpCldual PD1 bottom_def compl_def ineg_def meet_def top_def)
+lemma "Der_1b \<D> \<Longrightarrow> MT0(\<^bold>\<not>)" unfolding Defs by (metis (mono_tags, opaque_lifting) CD1b Disj_I OpCldual PD1 bottom_def compl_def ineg_def meet_def top_def)
 lemma "Der_1b \<D> \<Longrightarrow> Der_3 \<D> \<Longrightarrow> MT1(\<^bold>\<not>)" unfolding Defs by (metis (full_types) NOR_def PD1 bottom_def compl_def diff_def ineg_prop top_def)
 lemma "\<DD> \<D> \<Longrightarrow> MT2(\<^bold>\<not>)" nitpick oops (*countermodel*)
 lemma "\<DD> \<D> \<Longrightarrow> MT3(\<^bold>\<not>)" nitpick oops (*countermodel*)

@@ -431,7 +431,7 @@ proof (rule ccontr)
           using ur sum_mono[of "{0..<m}" "\<lambda> i.  cmod (conjugate (v $ i)) * cmod (v $ i)" "\<lambda> i. cmod (conjugate (v $ i)) * (\<Sum>j = 0..<m. cmod (v $ j))"]
           by auto
         moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i)  *cmod (v $ i))) = (\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i)))"
-          using norm_ge_zero norm_mult norm_of_real by (metis (no_types, hide_lams) abs_of_nonneg)
+          using norm_ge_zero norm_mult norm_of_real by (metis (no_types, opaque_lifting) abs_of_nonneg)
         moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i))) = inner_prod v v" using invv by auto
         ultimately have "?u \<ge>  inner_prod v v"
           by (metis (no_types, lifting) Im_complex_of_real Re_complex_of_real invv less_eq_complex_def norm_mult sum.cong)

@@ -1089,7 +1089,7 @@ lemma linear_asymmetric:
 
 lemma strict_linear_sup_closed:
   "strict_linear x \<Longrightarrow> strict_linear y \<Longrightarrow> strict_linear (x \<squnion> y)"
-  by (metis (mono_tags, hide_lams) conv_dist_sup sup.right_idem sup_assoc sup_commute)
+  by (metis (mono_tags, opaque_lifting) conv_dist_sup sup.right_idem sup_assoc sup_commute)
 
 lemma strict_linear_irreflexive:
   "strict_linear x \<Longrightarrow> irreflexive x"

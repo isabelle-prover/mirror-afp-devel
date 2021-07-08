@@ -620,7 +620,7 @@ proof (cases "n=0 \<or> n=1")
     hence "Determinant.det P * H $$ (0,0) = Determinant.det Q * K $$ (0,0)"
       by (metis H K determinant_one_element)
     obtain u where uH_K: "u * H $$(0,0) = K $$ (0,0)" and unit_u: "is_unit u"
-      by (metis (no_types, hide_lams) H K PH_QK algebraic_semidom_class.dvd_mult_unit_iff det_P_dvd_1 
+      by (metis (no_types, opaque_lifting) H K PH_QK algebraic_semidom_class.dvd_mult_unit_iff det_P_dvd_1 
           det_Q_dvd_1 det_singleton dvdE dvd_mult_cancel_left mult.commute mult.right_neutral one_dvd)
     have H00_not_0: "H $$ (0,0) \<noteq> 0"
       by (metis A A_PH Determinant.det_mult False H P determinant_one_element inv_A
@@ -778,7 +778,7 @@ proof (cases "n=0 \<or> n=1")
     hence "Determinant.det P * H $$ (0,0) = Determinant.det Q * K $$ (0,0)"
       by (metis H K determinant_one_element)
     obtain u where uH_K: "u * H $$(0,0) = K $$ (0,0)" and unit_u: "is_unit u"
-      by (metis (no_types, hide_lams) H K PH_QK algebraic_semidom_class.dvd_mult_unit_iff det_P_dvd_1 
+      by (metis (no_types, opaque_lifting) H K PH_QK algebraic_semidom_class.dvd_mult_unit_iff det_P_dvd_1 
           det_Q_dvd_1 det_singleton dvdE dvd_mult_cancel_left mult.commute mult.right_neutral one_dvd)
     have H00_not_0: "H $$ (0,0) \<noteq> 0"
     proof -      

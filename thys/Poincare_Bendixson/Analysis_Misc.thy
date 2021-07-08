@@ -196,7 +196,7 @@ lemma tendsto_at_top_eq_left:
   assumes "\<And>x. x \<ge> x0 \<Longrightarrow> f x = g x"
   shows "(g \<longlongrightarrow> l) at_top"
   unfolding tendsto_at_top_iff
-  by (metis (no_types, hide_lams) assms(1) assms(2) linear order_trans tendsto_at_topE)
+  by (metis (no_types, opaque_lifting) assms(1) assms(2) linear order_trans tendsto_at_topE)
 
 lemma lim_divide_n: "(\<lambda>x. e / real x) \<longlonglongrightarrow> 0"
 proof -

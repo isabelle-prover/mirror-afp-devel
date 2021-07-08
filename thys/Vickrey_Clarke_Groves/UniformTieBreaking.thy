@@ -167,7 +167,7 @@ corollary lm010:
   assumes "N \<noteq> {}" "G\<noteq>{}" 
   shows "allAllocations N G \<noteq> {}"
   using assms lm009
-  by (metis (hide_lams, no_types) equals0I image_insert insert_absorb insert_not_empty)
+  by (metis (opaque_lifting, no_types) equals0I image_insert insert_absorb insert_not_empty)
 
 corollary lm011: 
   assumes "N \<noteq> {}" "finite N" "G \<noteq> {}" "finite G" 
@@ -471,7 +471,7 @@ lemma lm047:
          {(x, Y)| Y x. Y \<in> finestpart (a,,x) & x \<in> Domain a}"
          (is "?L=?R") 
   using assms Domain.DomainI fst_conv functionOnFirstEqualsSecond runiq_wrt_ex1 surjective_pairing
-  by (metis(hide_lams,no_types))
+  by (metis(opaque_lifting,no_types))
 
 corollary lm048: 
   assumes "runiq a" 

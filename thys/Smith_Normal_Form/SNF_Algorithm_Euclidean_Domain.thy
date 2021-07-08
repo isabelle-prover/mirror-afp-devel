@@ -265,7 +265,7 @@ proof (induct "(P,A,Q)" arbitrary: P A Q rule: diagonalize_2x2_aux.induct)
         next
           case False
           hence a1: "a = 1" and b0: "b = 0"
-            by (metis (no_types, hide_lams) False a_not_b exhaust_2 zero_neq_one)+
+            by (metis (no_types, opaque_lifting) False a_not_b exhaust_2 zero_neq_one)+
           have "(?P' ** A ** ?Q') $h a $h b = (?P' ** A) $h a $h b" 
             unfolding a1 b0 column_add_mat_1
             by (simp add: column_add_code_nth column_add_row_def)

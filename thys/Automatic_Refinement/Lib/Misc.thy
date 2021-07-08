@@ -3386,7 +3386,7 @@ subsection \<open>Directed Graphs and Relations\<close>
       by (metis insertE prod.inject r_into_trancl' rtrancl_eq_or_trancl)
   next
     case (step y z) thus ?thesis
-      by (metis (hide_lams, no_types)
+      by (metis (opaque_lifting, no_types)
         Pair_inject insertE rtrancl.simps trancl.simps trancl_into_rtrancl)
   qed
 

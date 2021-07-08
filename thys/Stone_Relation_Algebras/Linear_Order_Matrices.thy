@@ -187,7 +187,7 @@ A mapping therefore means that each row has exactly one \<open>top\<close> entry
 lemma mapping_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.mapping f \<longleftrightarrow> (\<forall>i . \<exists>j . f (i,j) = top \<and> (\<forall>k . j \<noteq> k \<longrightarrow> f (i,k) = bot))"
-  by (unfold total_linorder_matrix univalent_linorder_matrix) (metis (mono_tags, hide_lams) comp_inf.mult_1_right comp_inf.mult_right_zero)
+  by (unfold total_linorder_matrix univalent_linorder_matrix) (metis (mono_tags, opaque_lifting) comp_inf.mult_1_right comp_inf.mult_right_zero)
 
 lemma mapping_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
@@ -259,7 +259,7 @@ lemma pp_total_linorder_matrix:
 lemma pp_mapping_linorder_matrix:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.pp_mapping f \<longleftrightarrow> (\<forall>i . \<exists>j . f (i,j) \<noteq> bot \<and> (\<forall>k . j \<noteq> k \<longrightarrow> f (i,k) = bot))"
-  by (metis (mono_tags, hide_lams) pp_total_linorder_matrix univalent_linorder_matrix_1 univalent_linorder_matrix_2)
+  by (metis (mono_tags, opaque_lifting) pp_total_linorder_matrix univalent_linorder_matrix_1 univalent_linorder_matrix_2)
 
 lemma pp_mapping_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
@@ -580,7 +580,7 @@ lemma arc_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.arc f \<longleftrightarrow> (\<exists>!e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
   apply (rule iffI)
-  apply (metis (no_types, hide_lams) arc_linorder_matrix bot_not_top)
+  apply (metis (no_types, opaque_lifting) arc_linorder_matrix bot_not_top)
   using arc_linorder_matrix by blast
 
 lemma pp_arc_linorder_matrix_1:
@@ -638,7 +638,7 @@ lemma pp_arc_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.pp_arc f \<longleftrightarrow> (\<exists>!e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
   apply (rule iffI)
-  apply (metis (no_types, hide_lams) pp_arc_linorder_matrix)
+  apply (metis (no_types, opaque_lifting) pp_arc_linorder_matrix)
   using pp_arc_linorder_matrix by blast
 
 text \<open>
@@ -792,7 +792,7 @@ proof -
   have "matrix_stone_relation_algebra.antisymmetric f \<longleftrightarrow> (\<forall>i j . i \<noteq> j \<longrightarrow> f (i,j) \<sqinter> f (j,i) \<le> bot)"
     by (simp add: conv_matrix_def inf_matrix_def less_eq_matrix_def one_matrix_def)
   thus ?thesis
-    by (metis (no_types, hide_lams) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
+    by (metis (no_types, opaque_lifting) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
 qed
 
 text \<open>
@@ -807,7 +807,7 @@ proof -
     apply (unfold conv_matrix_def inf_matrix_def conv_def id_def bot_matrix_def)
     by (metis (mono_tags, lifting) bot.extremum bot.extremum_uniqueI case_prod_conv old.prod.exhaust)
   thus ?thesis
-    by (metis (no_types, hide_lams) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
+    by (metis (no_types, opaque_lifting) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
 qed
 
 text \<open>

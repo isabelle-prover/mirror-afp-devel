@@ -1008,7 +1008,7 @@ next
     using c e by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl6: "(a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)) \<in> radical_sqrt"
     using a e f b c sl6 sl7 sl8 sl9 sl10
-    by (metis (hide_lams, no_types) power2_eq_square radical_sqrt.intros(4))
+    by (metis (opaque_lifting, no_types) power2_eq_square radical_sqrt.intros(4))
   have "a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c = a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)"
     by auto
   hence "(a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c) \<in> radical_sqrt"
@@ -1331,7 +1331,7 @@ proof-
       by blast
   have r3eq: "r^3 - 3 * r = 1"
     using hypsy hypsr [[hypsubst_thin = true]]
-    by auto (metis (hide_lams, no_types) of_rat_1 of_rat_diff of_rat_eq_iff of_rat_mult of_rat_numeral_eq of_rat_power)
+    by auto (metis (opaque_lifting, no_types) of_rat_1 of_rat_diff of_rat_eq_iff of_rat_mult of_rat_numeral_eq of_rat_power)
   have l7: "(snd p) ^3 > 0 & coprime ((fst p)^3) ((snd p)^3)"
     using hypsp by simp
   have "r^3  = Fract ((fst p)^3) ((snd p)^3)"

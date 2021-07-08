@@ -436,7 +436,7 @@ lemma sorted_word_upt:
   shows "sorted_descending (map won (rev [0..<Suc (length l)]))" 
 using assms
   by(induction l rule: rev_induct;clarsimp)
-    (metis (mono_tags, hide_lams) le_SucI le_unat_uoi of_nat_Suc order_refl word_le_nat_alt)
+    (metis (mono_tags, opaque_lifting) le_SucI le_unat_uoi of_nat_Suc order_refl word_le_nat_alt)
     (* This proof is kind of ugly. In case it breaks unfixably, go back to rev a9c4927 and get word_upto.
        The lemmas on word_upto can be used to shows this trivially. *)
 

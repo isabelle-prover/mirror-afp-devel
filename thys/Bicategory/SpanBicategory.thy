@@ -183,7 +183,7 @@ subsection "Spans"
     interpretation V: partial_magma vcomp
       using not_arr_Null vcomp_def
       apply unfold_locales
-      by (metis (no_types, hide_lams))
+      by (metis (no_types, opaque_lifting))
 
     lemma is_partial_magma:
     shows "partial_magma vcomp"

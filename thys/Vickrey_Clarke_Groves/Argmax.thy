@@ -40,7 +40,7 @@ lemma maxLemma:
   assumes "x \<in> X" "finite X" 
   shows "Max (f`X) >= f x" 
   (is "?L >= ?R") using assms 
-  by (metis (hide_lams, no_types) Max.coboundedI finite_imageI image_eqI)
+  by (metis (opaque_lifting, no_types) Max.coboundedI finite_imageI image_eqI)
 
 lemma lm01: 
   "argmax f A = A \<inter> f -` {Max (f ` A)}" 
@@ -139,7 +139,7 @@ proof -
   [n . n <- [0..<size l], (n<size l), (?fl!n  \<ge> Max (set ?fl))]" by simp
   also have "... = 
   [n . n <- [0..<size l], (n<size l) \<and> (f (l!n)  \<ge> Max (set ?fl))]" 
-  using nth_map by (metis (poly_guards_query, hide_lams)) also have "... = 
+  using nth_map by (metis (poly_guards_query, opaque_lifting)) also have "... = 
   [n . n <- [0..<size l], (n\<in> set [0..<size l]),(f (l!n)  \<ge> Max (set ?fl))]" 
   using atLeastLessThan_iff le0 set_upt by (metis(no_types))
   also have "... =  

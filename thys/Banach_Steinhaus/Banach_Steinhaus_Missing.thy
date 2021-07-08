@@ -347,7 +347,7 @@ next
         have \<open>y' n = (1 - (inverse (real (Suc n)))) *\<^sub>R \<parallel>f *\<^sub>v x\<parallel>\<close>
           using y'_def \<open>y = \<parallel>f *\<^sub>v x\<parallel>\<close> by blast
         also have \<open>... = \<bar>(1 - (inverse (real (Suc n))))\<bar> *\<^sub>R \<parallel>f *\<^sub>v x\<parallel>\<close>
-          by (metis (mono_tags, hide_lams) \<open>y = \<parallel>f *\<^sub>v x\<parallel>\<close> abs_1 abs_le_self_iff abs_of_nat 
+          by (metis (mono_tags, opaque_lifting) \<open>y = \<parallel>f *\<^sub>v x\<parallel>\<close> abs_1 abs_le_self_iff abs_of_nat 
               abs_of_nonneg add_diff_cancel_left' add_eq_if cancel_comm_monoid_add_class.diff_cancel
               diff_ge_0_iff_ge eq_iff_diff_eq_0 inverse_1 inverse_le_iff_le nat.distinct(1) of_nat_0
               of_nat_Suc of_nat_le_0_iff zero_less_abs_iff zero_neq_one)

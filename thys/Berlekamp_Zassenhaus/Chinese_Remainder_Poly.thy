@@ -173,7 +173,7 @@ lemma coprime_cong_mult_poly:
   assumes "[(a::'b::{field_gcd} poly) = b] (mod m)" and "[a = b] (mod n)" and "coprime m n"
   shows "[a = b] (mod m * n)"
   using divides_mult assms
-  by (metis (no_types, hide_lams) cong_dvd_modulus_poly cong_iff_lin_poly dvd_mult2 dvd_refl minus_add_cancel mult.right_neutral) 
+  by (metis (no_types, opaque_lifting) cong_dvd_modulus_poly cong_iff_lin_poly dvd_mult2 dvd_refl minus_add_cancel mult.right_neutral) 
 
 lemma coprime_cong_prod_poly:
     "(\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))) \<Longrightarrow>

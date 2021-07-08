@@ -535,7 +535,7 @@ next
     using root by (auto simp add:proots_count_pCons_1_iff)
   finally have "card (proots_within ([:- a, 1:] * p) s) \<le> proots_count ([:- a, 1:] * p) s" .
   then show ?case 
-    by (metis (no_types, hide_lams) add.inverse_inverse add.inverse_neutral minus_pCons 
+    by (metis (no_types, opaque_lifting) add.inverse_inverse add.inverse_neutral minus_pCons 
         mult_minus_left proots_count_uminus proots_within_uminus)
 qed
 

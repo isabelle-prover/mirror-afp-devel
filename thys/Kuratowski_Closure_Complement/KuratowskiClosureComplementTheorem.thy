@@ -602,7 +602,7 @@ lemma part_eqs:
   shows
     "K \<circ> I = (I :: 'a set \<Rightarrow> 'a set)"
     "I \<circ> K = (K :: 'a set \<Rightarrow> 'a set)"
-using assms unfolding part_def by (assumption, metis (no_types, hide_lams) I_I K_I o_assoc)
+using assms unfolding part_def by (assumption, metis (no_types, opaque_lifting) I_I K_I o_assoc)
 
 lemma part_not_discrete_card:
   assumes "part (X :: 'a::topological_space set)"
@@ -994,7 +994,7 @@ lemma not_ed_ou_neqs:
     "K \<noteq> K \<circ> (I :: 'a set \<Rightarrow> 'a set)"
 using assms unfolding ed_ou_def
 by (simp_all add: fun_eq_iff I_K K_def C_def o_apply)
-   (metis (no_types, hide_lams) closure_eq_empty disjoint_eq_subset_Compl double_complement interior_Int interior_complement set_eq_subset)+
+   (metis (no_types, opaque_lifting) closure_eq_empty disjoint_eq_subset_Compl double_complement interior_Int interior_complement set_eq_subset)+
 
 lemma open_unresolvable_not_ed_ou_card:
   assumes "open_unresolvable (X :: 'a::topological_space set)"

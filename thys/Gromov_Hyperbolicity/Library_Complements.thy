@@ -151,7 +151,7 @@ proof -
     apply (rule mono_cSup)
     using mono_inv[OF assms(3) assms(4)] assms(2) bdd_above_image_mono[OF assms(3) assms(1)] by auto
   then have "f (Sup ((inv f)`(f`A))) \<le> Sup (f`A)"
-    using assms mono_def by (metis (no_types, hide_lams) bij_betw_imp_surj_on surj_f_inv_f)
+    using assms mono_def by (metis (no_types, opaque_lifting) bij_betw_imp_surj_on surj_f_inv_f)
   moreover have "f (Sup ((inv f)`(f`A))) = f(Sup A)"
     using assms by (simp add: bij_is_inj)
   ultimately show ?thesis using mono_cSup[OF assms(1) assms(2) assms(3)] by auto

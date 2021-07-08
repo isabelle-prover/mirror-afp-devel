@@ -483,7 +483,7 @@ proof-
        by (simp add: add_mult_distrib2)
    qed
   show ?thesis using Amicable_pair_equiv_def_conv A B assms one_le_mult_iff  One_nat_def Suc_leI
-    by (metis (no_types, hide_lams)  nat_less_le)
+    by (metis (no_types, opaque_lifting)  nat_less_le)
 qed
 
 
@@ -1058,7 +1058,7 @@ zero_neq_numeral  by (smt less_imp_le_nat)
           qed
 
            show ?thesis using A aa assms
-            by (metis (no_types, hide_lams)  a nat_0_less_mult_iff right_diff_distrib'
+            by (metis (no_types, opaque_lifting)  a nat_0_less_mult_iff right_diff_distrib'
                 semiring_normalization_rules(18) semiring_normalization_rules(29)
                semiring_normalization_rules(7))
         qed

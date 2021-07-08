@@ -921,12 +921,12 @@ theorem framing:
    apply(simp add: UML_Set.OclExcluding_def split: if_split_asm)
     apply(subst (asm) (2) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse)
      apply(simp, (rule disjI2)+)
-     apply (metis (hide_lams, mono_tags) Diff_iff Set_inv_lemma def_X)
+     apply (metis (opaque_lifting, mono_tags) Diff_iff Set_inv_lemma def_X)
     apply(simp)
     apply(erule ballE[where P = "\<lambda>x. x \<noteq> null"]) apply(assumption)
     apply(simp)
-    apply (metis (hide_lams, no_types) def_x  foundation16[THEN iffD1])
-   apply (metis (hide_lams, no_types) OclValid_def def_X def_x foundation20
+    apply (metis (opaque_lifting, no_types) def_x  foundation16[THEN iffD1])
+   apply (metis (opaque_lifting, no_types) OclValid_def def_X def_x foundation20
                                       OclExcluding_valid_args_valid OclExcluding_valid_args_valid'')
  by(simp add: invalid_def bot_option_def)
 
@@ -944,11 +944,11 @@ theorem framing:
     apply(drule foundation5[simplified OclValid_def true_def], simp)
     apply(subst (asm) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp)
      apply(rule disjI2)+
-     apply (metis (hide_lams, no_types) DiffD1 OclValid_def Set_inv_lemma def_x
+     apply (metis (opaque_lifting, no_types) DiffD1 OclValid_def Set_inv_lemma def_x
                                         foundation16 foundation18')
     apply(simp)
     apply(erule_tac x = "oid_of (x (\<sigma>, \<sigma>'))" in ballE) apply simp+
-    apply (metis (hide_lams, no_types)
+    apply (metis (opaque_lifting, no_types)
                  DiffD1 image_iff image_insert insert_Diff_single insert_absorb oid_is_typerepr)
    apply(simp add: invalid_def bot_option_def)+
  by blast
@@ -1092,7 +1092,7 @@ lemma fold_val_elem\<^sub>S\<^sub>e\<^sub>q:
  shows "list_all (\<lambda>x. (\<tau> \<Turnstile> \<upsilon> (f p x))) s_set"
  apply(rule rev_induct[where P = "\<lambda>s_set. \<tau> \<Turnstile> \<upsilon> foldl UML_Sequence.OclIncluding Sequence{} (List.map (f p) s_set) \<longrightarrow> list_all (\<lambda>x. \<tau> \<Turnstile> \<upsilon> f p x) s_set", THEN mp])
    apply(simp, auto)
-    apply (metis (hide_lams, mono_tags) UML_Sequence.OclIncluding.def_valid_then_def UML_Sequence.OclIncluding.defined_args_valid foundation20)+
+    apply (metis (opaque_lifting, mono_tags) UML_Sequence.OclIncluding.def_valid_then_def UML_Sequence.OclIncluding.defined_args_valid foundation20)+
 by(simp add: assms)
 
 lemma fold_val_elem\<^sub>S\<^sub>e\<^sub>t:
@@ -1100,7 +1100,7 @@ lemma fold_val_elem\<^sub>S\<^sub>e\<^sub>t:
  shows "list_all (\<lambda>x. (\<tau> \<Turnstile> \<upsilon> (f p x))) s_set"
  apply(rule rev_induct[where P = "\<lambda>s_set. \<tau> \<Turnstile> \<upsilon> foldl UML_Set.OclIncluding Set{} (List.map (f p) s_set) \<longrightarrow> list_all (\<lambda>x. \<tau> \<Turnstile> \<upsilon> f p x) s_set", THEN mp])
    apply(simp, auto)
-    apply (metis (hide_lams, mono_tags) foundation10' foundation20)+
+    apply (metis (opaque_lifting, mono_tags) foundation10' foundation20)+
 by(simp add: assms)
 
 lemma select_object_any_defined\<^sub>S\<^sub>e\<^sub>q:
@@ -1258,7 +1258,7 @@ proof -
   proof - fix z' a list show "(\<lambda>x. f x \<tau>) ` set s_set = {z'} \<Longrightarrow> s_set = a # list \<Longrightarrow> \<exists>e. List.member s_set e \<and> z' = f e \<tau>"
     apply(drule list_same[where x1 = a])
      apply (metis member_rec(1))
-   by (metis (hide_lams, mono_tags) ListMem_iff elem in_set_member)
+   by (metis (opaque_lifting, mono_tags) ListMem_iff elem in_set_member)
   qed
 qed blast+
 

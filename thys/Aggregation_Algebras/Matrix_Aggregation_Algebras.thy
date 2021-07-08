@@ -834,7 +834,7 @@ next
       from minarc_at_least_one obtain ei ej where 3: "(minarc\<^sub>M f) (ei,ej) = top"
         using 1 by force
       hence 4: "\<forall>k l . \<not>(k = ei \<and> l = ej) \<longrightarrow> (minarc\<^sub>M f) (k,l) = bot"
-        by (metis (mono_tags, hide_lams) bot.extremum inf.bot_unique prod.inject minarc_at_most_one)
+        by (metis (mono_tags, opaque_lifting) bot.extremum inf.bot_unique prod.inject minarc_at_most_one)
       from agg_matrix_bot obtain di dj where 5: "(g \<otimes> f) (di,dj) \<noteq> bot"
         using 1 by force
       hence 6: "g (di,dj) \<noteq> bot"

@@ -1813,7 +1813,7 @@ proof
   thus "mdss \<in> reachable_mode_states (cms, mem)"
     using reachable_mode_states_def
     apply auto
-    by (metis (hide_lams, no_types) assms converse_rtrancl_into_rtrancl)
+    by (metis (opaque_lifting, no_types) assms converse_rtrancl_into_rtrancl)
 qed
 
 lemma globally_sound_modes_invariant:
@@ -1877,7 +1877,7 @@ proof -
       assume "i = k"
       thus ?thesis
         using i_le ev loc_sound
-        by (metis (hide_lams, no_types) locally_sound_modes_invariant nth_list_update surj_pair)
+        by (metis (opaque_lifting, no_types) locally_sound_modes_invariant nth_list_update surj_pair)
     next
       assume "i \<noteq> k"
       hence "cms' ! i = cms ! i"

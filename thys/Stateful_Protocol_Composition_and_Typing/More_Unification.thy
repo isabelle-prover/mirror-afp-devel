@@ -1062,7 +1062,7 @@ proof
     unfolding range_vars_alt_def subst_compose_def by (auto simp add: subst_domain_def)
 
   { assume "x \<notin> ?img \<theta>1" hence "x \<in> ?img \<theta>2"
-      by (metis (no_types, hide_lams) fv_in_subst_img Un_iff subst_compose_def 
+      by (metis (no_types, opaque_lifting) fv_in_subst_img Un_iff subst_compose_def 
                 vt subsetCE subst_apply_term.simps(1) subst_sends_fv_to_img) 
   }
   thus "x \<in> ?img \<theta>1 \<union> ?img \<theta>2" by auto

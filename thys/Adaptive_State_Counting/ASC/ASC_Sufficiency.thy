@@ -533,7 +533,7 @@ proof
     have "length ?yr = length xr"
       using \<open>prefix xr (map fst xs)\<close> prefix_length_le by fastforce 
     have "(xr || ?yr) = take (length xr) xs"
-      by (metis (no_types, hide_lams) \<open>prefix xr (map fst xs)\<close> append_eq_conv_conj prefixE take_zip
+      by (metis (no_types, opaque_lifting) \<open>prefix xr (map fst xs)\<close> append_eq_conv_conj prefixE take_zip
           zip_map_fst_snd) 
   
     have "prefix (vs@(xr || ?yr)) (vs@xs)"

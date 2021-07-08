@@ -482,7 +482,7 @@ proof (induct "length P'" arbitrary: P P' rule: less_induct)
         using subs
           apply (simp add: case_prod_beta)
           apply (rule arg_cong[of _ _ "\<lambda>x. image_mset (apfst mset) x"])
-        apply (metis (no_types, hide_lams) strictly_subsume_def)
+        apply (metis (no_types, opaque_lifting) strictly_subsume_def)
          apply (subst (3) p')
          apply (subst list.size)
          apply (metis (no_types, lifting) less_Suc0 less_add_same_cancel1 linorder_neqE_nat

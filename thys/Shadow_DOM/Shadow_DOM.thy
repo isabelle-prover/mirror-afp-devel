@@ -4877,7 +4877,7 @@ proof -
           local.get_shadow_root_ok mem_Collect_eq prod.simps(2) select_result_I2)
     then show ?thesis
       using \<open>parent_child_rel h = parent_child_rel h2\<close>
-      by (metis (no_types, hide_lams) \<open>acyclic (parent_child_rel h \<union> a_host_shadow_root_rel h)\<close>
+      by (metis (no_types, opaque_lifting) \<open>acyclic (parent_child_rel h \<union> a_host_shadow_root_rel h)\<close>
           acyclic_subset order_refl sup_mono)
   qed
   then
@@ -4889,7 +4889,7 @@ proof -
       using \<open>parent_child_rel h' \<subseteq> parent_child_rel h2\<close>
         \<open>acyclic (parent_child_rel h2 \<union> a_host_shadow_root_rel h2)\<close>
       using acyclic_subset sup_mono
-      by (metis (no_types, hide_lams))
+      by (metis (no_types, opaque_lifting))
   qed
 
   moreover
@@ -4923,14 +4923,14 @@ proof -
     apply(auto intro!: distinct_concat_map_I split: option.splits)[1]
     apply(case_tac "x = ptr")
      apply(simp)
-     apply (metis (no_types, hide_lams) assms(2) h2 is_OK_returns_result_I
+     apply (metis (no_types, opaque_lifting) assms(2) h2 is_OK_returns_result_I
         l_set_shadow_root_get_shadow_root.set_shadow_root_get_shadow_root
         l_set_shadow_root_get_shadow_root_axioms local.type_wf_impl option.discI
         returns_result_eq returns_result_select_result)
 
     apply(case_tac "y = ptr")
      apply(simp)
-     apply (metis (no_types, hide_lams) assms(2) h2 is_OK_returns_result_I
+     apply (metis (no_types, opaque_lifting) assms(2) h2 is_OK_returns_result_I
         l_set_shadow_root_get_shadow_root.set_shadow_root_get_shadow_root
         l_set_shadow_root_get_shadow_root_axioms local.type_wf_impl option.discI
         returns_result_eq returns_result_select_result)
@@ -6700,14 +6700,14 @@ proof -
           local.known_ptrs_known_ptr local.l_heap_is_wellformed_axioms node_ptr_kinds_eq3_h2
           object_ptr_kinds_h2_eq3 object_ptr_kinds_h3_eq3 object_ptr_kinds_h_eq3
           returns_result_select_result wellformed_h2)
-      by (metis (no_types, hide_lams) disc_nodes_old_document_h2 disc_nodes_old_document_h3
+      by (metis (no_types, opaque_lifting) disc_nodes_old_document_h2 disc_nodes_old_document_h3
           disconnected_nodes_eq2_h2 document_ptr_kinds_eq3_h2 finite_set_in select_result_I2
           set_remove1_subset subsetD)
     then have "CD.a_all_ptrs_in_heap h'"
       apply(auto simp add: CD.a_all_ptrs_in_heap_def node_ptr_kinds_eq3_h3 children_eq_h3)[1]
-       apply (metis (no_types, hide_lams) children_eq2_h3 finite_set_in object_ptr_kinds_h3_eq3
+       apply (metis (no_types, opaque_lifting) children_eq2_h3 finite_set_in object_ptr_kinds_h3_eq3
           subsetD)
-      by (metis (no_types, hide_lams) \<open>child \<in> set disc_nodes_old_document_h2\<close> disc_nodes_document_ptr_h'
+      by (metis (no_types, opaque_lifting) \<open>child \<in> set disc_nodes_old_document_h2\<close> disc_nodes_document_ptr_h'
           disc_nodes_document_ptr_h2 disc_nodes_old_document_h2 disconnected_nodes_eq2_h3
           document_ptr_kinds_eq3_h3 finite_set_in local.heap_is_wellformed_disc_nodes_in_heap
           node_ptr_kinds_eq3_h2 node_ptr_kinds_eq3_h3 select_result_I2 set_ConsD subsetD wellformed_h2)
@@ -6767,7 +6767,7 @@ proof -
         next
           case False
           then show ?thesis
-            by (metis (no_types, hide_lams) \<open>distinct disc_nodes_old_document_h2\<close>
+            by (metis (no_types, opaque_lifting) \<open>distinct disc_nodes_old_document_h2\<close>
                 disc_nodes_old_document_h3 disconnected_nodes_eq2_h3 distinct_remove1 docs_neq select_result_I2)
         qed
       next
@@ -7484,7 +7484,7 @@ proof -
       using disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3
       using node_ptr_kinds_eq2_h2 apply auto[1]
        apply (metis (no_types, lifting) children_eq2_h2 in_mono notin_fset object_ptr_kinds_M_eq3_h2)
-      by (metis (no_types, hide_lams) NodeMonad.ptr_kinds_ptr_kinds_M disconnected_nodes_eq2_h2
+      by (metis (no_types, opaque_lifting) NodeMonad.ptr_kinds_ptr_kinds_M disconnected_nodes_eq2_h2
           disconnected_nodes_h2 disconnected_nodes_h3 document_ptr_kinds_commutes finite_set_in
           node_ptr_kinds_eq2_h2 object_ptr_kinds_M_eq3_h2 select_result_I2 set_remove1_subset subsetD)
     have "set children_h3  \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
@@ -7497,7 +7497,7 @@ proof -
     then have "set (insert_before_list node reference_child children_h3) \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
       using node_in_heap
       apply(auto simp add: node_ptr_kinds_eq2_h node_ptr_kinds_eq2_h2 node_ptr_kinds_eq2_h3)[1]
-      by (metis (no_types, hide_lams) contra_subsetD finite_set_in insert_before_list_in_set
+      by (metis (no_types, opaque_lifting) contra_subsetD finite_set_in insert_before_list_in_set
           node_ptr_kinds_commutes object_ptr_kinds_M_eq3_h object_ptr_kinds_M_eq3_h' object_ptr_kinds_M_eq3_h2)
     then show ?thesis
       using \<open>CD.a_all_ptrs_in_heap h3\<close>
@@ -7542,7 +7542,7 @@ proof -
         using 2 3 4 5 6 select_result_I2[OF disconnected_nodes_h3]
           select_result_I2[OF disconnected_nodes_h2]
         apply(auto simp add: True disconnected_nodes_eq2_h2[OF \<open>y \<noteq> owner_document\<close>])[1]
-        by (metis (no_types, hide_lams) disconnected_nodes_eq2_h2 disjoint_iff_not_equal
+        by (metis (no_types, opaque_lifting) disconnected_nodes_eq2_h2 disjoint_iff_not_equal
             notin_set_remove1)
     next
       case False
@@ -7554,7 +7554,7 @@ proof -
           using 2 3 4 5 6 select_result_I2[OF disconnected_nodes_h3]
             select_result_I2[OF disconnected_nodes_h2]
           apply(auto simp add: True disconnected_nodes_eq2_h2[OF \<open>x \<noteq> owner_document\<close>])[1]
-          by (metis (no_types, hide_lams) disconnected_nodes_eq2_h2 disjoint_iff_not_equal
+          by (metis (no_types, opaque_lifting) disconnected_nodes_eq2_h2 disjoint_iff_not_equal
               notin_set_remove1)
       next
         case False
@@ -7632,7 +7632,7 @@ proof -
       then show ?thesis
         using  children_h3 children_h' child_not_in_any_children[unfolded children_eq_h2] 5 6
         apply(auto simp add:  True children_eq2_h3[OF \<open>ptr \<noteq> y\<close>])[1]
-        by (metis (no_types, hide_lams) "3" "7" \<open>type_wf h3\<close> children_eq2_h3 disjoint_iff_not_equal
+        by (metis (no_types, opaque_lifting) "3" "7" \<open>type_wf h3\<close> children_eq2_h3 disjoint_iff_not_equal
             get_child_nodes_ok insert_before_list_in_set \<open>known_ptrs h\<close> local.known_ptrs_known_ptr
             object_ptr_kinds_M_eq3_h object_ptr_kinds_M_eq3_h' object_ptr_kinds_M_eq3_h2
             returns_result_select_result select_result_I2)
@@ -7644,7 +7644,7 @@ proof -
         then show ?thesis
           using  children_h3 children_h' child_not_in_any_children[unfolded children_eq_h2] 5 6
           apply(auto simp add:  True children_eq2_h3[OF \<open>ptr \<noteq> x\<close>])[1]
-          by (metis (no_types, hide_lams) "2" "4" "7" IntI \<open>known_ptrs h3\<close> \<open>type_wf h'\<close>
+          by (metis (no_types, opaque_lifting) "2" "4" "7" IntI \<open>known_ptrs h3\<close> \<open>type_wf h'\<close>
               children_eq_h3 empty_iff insert_before_list_in_set local.get_child_nodes_ok
               local.known_ptrs_known_ptr object_ptr_kinds_M_eq3_h' returns_result_select_result select_result_I2)
       next
@@ -8539,7 +8539,7 @@ proof -
       using disc_nodes_document_ptr_h disconnected_nodes_eq2_h3
       apply -
       apply(cases "xb = document_ptr")
-       apply (metis (no_types, hide_lams) "3" "4" "6"
+       apply (metis (no_types, opaque_lifting) "3" "4" "6"
           \<open>\<And>p. p |\<in>| object_ptr_kinds h3
                       \<Longrightarrow> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h3 \<turnstile> get_child_nodes p|\<^sub>r\<close>
           \<open> CD.a_distinct_lists h3\<close> children_eq2_h3 disc_nodes_h3 CD.distinct_lists_no_parent h'
@@ -9269,7 +9269,7 @@ cast new_character_data_ptr \<notin> set |h3 \<turnstile> get_child_nodes p|\<^s
     then show "distinct |h' \<turnstile> get_disconnected_nodes x|\<^sub>r"
       using document_ptr_kinds_eq_h3 disconnected_nodes_eq_h3 h'
         set_disconnected_nodes_get_disconnected_nodes
-      by (metis (no_types, hide_lams)
+      by (metis (no_types, opaque_lifting)
           \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set disc_nodes_h3\<close> \<open>type_wf h2\<close> assms(1)
           disc_nodes_document_ptr_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3
           disconnected_nodes_eq_h distinct.simps(2) document_ptr_kinds_eq_h2 local.get_disconnected_nodes_ok

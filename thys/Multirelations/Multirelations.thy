@@ -360,7 +360,7 @@ lemma cl5: "(R \<cdot> S) \<cdot> (T \<cdot> {}) = R \<cdot> (S \<cdot> (T \<cdo
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (\<exists> C. (b,C) \<in> S \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {}) \<and> f b = {})) \<and> A = \<Union>((\<lambda>x. f x) ` B))"
       by (clarsimp simp: mr_simp) fastforce
     hence "\<exists>B. (a,B) \<in> R \<and> (\<forall>b \<in> B. (\<exists> C. (b,C) \<in> S \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {}))) \<and> A = {}"
-      by (metis (erased, hide_lams) SUP_bot_conv(2))
+      by (metis (erased, opaque_lifting) SUP_bot_conv(2))
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S \<and> (\<forall>x \<in> f b. (x,{}) \<in> T \<cdot> {}))) \<and> A = {}" 
       by metis
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> (\<forall>x \<in> \<Union>((\<lambda>x. f x) ` B). (x,{}) \<in> T \<cdot> {})) \<and> A = {}"

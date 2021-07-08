@@ -166,7 +166,7 @@ next
       apply safe
       by (metis act4 image_Collect image_image)
     also have "... = (x ^ Suc (Suc i), \<alpha> (x ^ 0) y \<squnion> (\<Squnion>{\<alpha> (x ^ k) y |k.  0 < k \<and> k \<le> Suc i}))"
-      by (metis (no_types, hide_lams) Suc_le_eq Suc_le_mono le_0_eq not0_implies_Suc zero_less_Suc)
+      by (metis (no_types, opaque_lifting) Suc_le_eq Suc_le_mono le_0_eq not0_implies_Suc zero_less_Suc)
     finally show ?thesis 
       using sd_power_prop_aux by simp
   qed

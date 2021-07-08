@@ -417,7 +417,7 @@ proof -
           then show "\<exists> k \<in> (set S). consistent_sign_vec qs k = consistent_sign_vec qs y"
             using neg_crb_in unfolding consistent_sign_vec_def squash_def  
             apply (auto)
-            by (metis (no_types, hide_lams) antisym_conv3 class_field.neg_1_not_0 equal_neg_zero less_irrefl of_int_minus) 
+            by (metis (no_types, opaque_lifting) antisym_conv3 class_field.neg_1_not_0 equal_neg_zero less_irrefl of_int_minus) 
         qed
         have c_c2: "length ?zer_list > 0 \<Longrightarrow>  \<exists> k \<in> (set S). consistent_sign_vec qs k = consistent_sign_vec qs y"
         proof - 
@@ -695,7 +695,7 @@ proof -
               by fastforce 
             then show ?thesis 
               using s_prop unfolding squash_def consistent_sign_vec_def apply (auto)
-              by (metis (no_types, hide_lams) class_field.neg_1_not_0 equal_neg_zero less_irrefl linorder_neqE_linordered_idom) 
+              by (metis (no_types, opaque_lifting) class_field.neg_1_not_0 equal_neg_zero less_irrefl linorder_neqE_linordered_idom) 
           qed
           show ?thesis
             using lengt sg1 sg2 sg3 sg4 len_gtz_prop is_not_const

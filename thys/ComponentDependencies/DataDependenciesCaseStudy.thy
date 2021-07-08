@@ -1519,7 +1519,7 @@ proof -
   have "(Sources level1 sA81) = (DSources level1 sA81) \<union> (\<Union> S \<in> (DSources level1 sA81). (Sources level1 S))" 
     by (rule SourcesDef)
   with dA81 have  "(Sources level1 sA81) = ({sA71, sA91} \<union> (Sources level1 sA71) \<union> (Sources level1 sA91))"
-    by (metis (hide_lams, no_types) SUP_empty UN_insert Un_insert_left sup_bot.left_neutral sup_commute)
+    by (metis (opaque_lifting, no_types) SUP_empty UN_insert Un_insert_left sup_bot.left_neutral sup_commute)
   hence sourcesA81:"(Sources level1 sA81) = ({sA71, sA91, sA6} \<union> (Sources level1 sA91))"
     by (metis SourcesA71_L1 insert_is_Un sup_assoc)
   have "(Sources level1 sA91) = (DSources level1 sA91) \<union> (\<Union> S \<in> (DSources level1 sA91). (Sources level1 S))" 

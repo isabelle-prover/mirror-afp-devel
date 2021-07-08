@@ -699,7 +699,7 @@ lemma vD_invalidate_rt_strictly_fresher [simp]:
     hence "dests dip = None" by auto
     moreover with \<open>dip \<in> vD(invalidate rt1 dests)\<close> have "dip \<in> vD(rt1)"
       unfolding invalidate_def vD_def
-      by clarsimp (metis (hide_lams, no_types) assms vD_Some vD_invalidate_vD_not_dests)
+      by clarsimp (metis (opaque_lifting, no_types) assms vD_Some vD_invalidate_vD_not_dests)
     ultimately show ?thesis
       unfolding invalidate_def rt_strictly_fresher_def' by auto
   qed

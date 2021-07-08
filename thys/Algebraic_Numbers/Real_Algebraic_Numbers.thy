@@ -2423,11 +2423,11 @@ qed
 
 lemma sgn_less_eq_1_rat: fixes a b :: rat
   shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
-  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_rat_def)
+  by (metis (no_types, opaque_lifting) not_less one_neq_neg_one one_neq_zero order_trans sgn_rat_def)
 
 lemma sgn_less_eq_1_real: fixes a b :: real
   shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
-  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_real_def)
+  by (metis (no_types, opaque_lifting) not_less one_neq_neg_one one_neq_zero order_trans sgn_real_def)
 
 definition compare_1_rat :: "real_alg_1 \<Rightarrow> rat \<Rightarrow> order" where
   "compare_1_rat rai = (let p = poly_real_alg_1 rai in

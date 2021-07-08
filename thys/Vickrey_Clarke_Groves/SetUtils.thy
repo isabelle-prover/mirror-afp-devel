@@ -133,7 +133,7 @@ lemma trivial_cartesian: assumes "trivial X" "trivial Y"
 lemma trivial_same: "trivial X = (\<forall>x1 \<in> X. \<forall>x2 \<in> X. x1 = x2)" 
       using trivial_def trivial_imp_no_distinct ex_in_conv insertCI subsetI subset_singletonD
             trivial_singleton 
-      by (metis (no_types, hide_lams))
+      by (metis (no_types, opaque_lifting))
 
 lemma lm08: assumes "(Pow X \<subseteq> {{},X})" 
               shows  "trivial X" 

@@ -1553,7 +1553,7 @@ proof -
   moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p)\<close>
     by (simp add: A1')
   ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (K i p) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p))\<close>
-    by (metis (no_types, hide_lams) R1' S5'_map_K S5'_trans)
+    by (metis (no_types, opaque_lifting) R1' S5'_map_K S5'_trans)
   then have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (K i p) \<^bold>\<longrightarrow> K i p)\<close>
     by (meson S5'_L_dual R1' S5'_trans)
   then show ?thesis

@@ -79,7 +79,7 @@ next
   let ?g = "\<lambda>j. degree f - j"
   have image_g: "?g ` {0..<Suc (degree f)} = {0..<Suc (degree f)}" 
     by (auto simp add: image_def) 
-       (metis (no_types, hide_lams) Nat.add_diff_assoc add.commute add_diff_cancel_left' 
+       (metis (no_types, opaque_lifting) Nat.add_diff_assoc add.commute add_diff_cancel_left' 
         atLeastLessThan_iff diff_Suc_Suc diff_Suc_less less_Suc_eq_le zero_le)
   have bij_h: "bij_betw ?h {0..<Suc (degree f)} {i..< Suc (degree f + i)}"
     unfolding bij_betw_def image_def

@@ -150,12 +150,12 @@ lemma [bb_real_arith]:
 proof-
   from pos have "g \<cdot> \<tau>\<^sup>2  + 2 \<cdot> v \<cdot> \<tau> + 2 \<cdot> x = 0" by auto
   then have "g\<^sup>2  \<cdot> \<tau>\<^sup>2  + 2 \<cdot> g \<cdot> v \<cdot> \<tau> + 2 \<cdot> g \<cdot> x = 0"
-    by (metis (mono_tags, hide_lams) Groups.mult_ac(1,3) mult_zero_right
+    by (metis (mono_tags, opaque_lifting) Groups.mult_ac(1,3) mult_zero_right
         monoid_mult_class.power2_eq_square semiring_class.distrib_left)
   hence "g\<^sup>2 \<cdot> \<tau>\<^sup>2 + 2 \<cdot> g \<cdot> v \<cdot> \<tau> + v\<^sup>2 + 2 \<cdot> g \<cdot> h = 0"
     using invar by (simp add: monoid_mult_class.power2_eq_square) 
   hence obs: "(g \<cdot> \<tau> + v)\<^sup>2 + 2 \<cdot> g \<cdot> h = 0"
-    apply(subst power2_sum) by (metis (no_types, hide_lams) Groups.add_ac(2, 3) 
+    apply(subst power2_sum) by (metis (no_types, opaque_lifting) Groups.add_ac(2, 3) 
         Groups.mult_ac(2, 3) monoid_mult_class.power2_eq_square nat_distrib(2))
   thus "2 \<cdot> g \<cdot> h + (g \<cdot> \<tau> \<cdot> (g \<cdot> \<tau> + v) + v \<cdot> (g \<cdot> \<tau> + v)) = 0"
     by (simp add: monoid_mult_class.power2_eq_square)

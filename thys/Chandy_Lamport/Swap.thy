@@ -91,9 +91,9 @@ proof -
     also have "... = msgs c i" 
       by (metis False Send_ev assms(1) assms(3) event.sel(8) msgs_unchanged_for_other_is regular_event)
     also have "... = msgs d' i" 
-      by (metis (no_types, hide_lams) \<open>msgs d i = msgs c i\<close> assms(2) assms(4) assms(5) calculation regular_event same_messages_imply_same_resulting_messages)
+      by (metis (no_types, opaque_lifting) \<open>msgs d i = msgs c i\<close> assms(2) assms(4) assms(5) calculation regular_event same_messages_imply_same_resulting_messages)
     also have "... = msgs e' i" 
-      by (metis (no_types, hide_lams) \<open>msgs c i = msgs d' i\<close> \<open>msgs d i = msgs c i\<close> assms(1) assms(3) assms(6) regular_event same_messages_imply_same_resulting_messages)
+      by (metis (no_types, opaque_lifting) \<open>msgs c i = msgs d' i\<close> \<open>msgs d i = msgs c i\<close> assms(1) assms(3) assms(6) regular_event same_messages_imply_same_resulting_messages)
     finally show ?thesis by simp
   qed
 qed
@@ -151,7 +151,7 @@ proof -
     also have "... = msgs c i" 
       by (metis False Recv_ev assms(1) assms(3) event.sel(9) msgs_unchanged_for_other_is regular_event)
     also have "... = msgs d' i" 
-      by (metis (no_types, hide_lams) \<open>msgs d i = msgs c i\<close> assms(2) assms(4) assms(5) calculation regular_event same_messages_imply_same_resulting_messages)
+      by (metis (no_types, opaque_lifting) \<open>msgs d i = msgs c i\<close> assms(2) assms(4) assms(5) calculation regular_event same_messages_imply_same_resulting_messages)
     also have "... = msgs e' i" 
       by (metis (no_types, lifting) \<open>msgs c i = msgs d' i\<close> \<open>msgs d i = msgs c i\<close> assms(1) assms(3) assms(6) regular_event same_messages_imply_same_resulting_messages)
     finally show ?thesis by simp

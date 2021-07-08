@@ -104,7 +104,7 @@ proof -
           using assms(1) by (simp add: conv_complement conv_dist_inf inf_commute inf_left_commute kruskal_spanning_invariant_def)
       next
         show "g \<sqinter> --?h = ?h"
-          using 1 2 by (metis (hide_lams) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
+          using 1 2 by (metis (opaque_lifting) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
       next
         show "spanning_forest ?f (-?h \<sqinter> g)"
         proof (unfold spanning_forest_def, intro conjI)
@@ -156,7 +156,7 @@ proof -
           using assms(1) by (simp add: conv_complement conv_dist_inf inf_commute inf_left_commute kruskal_spanning_invariant_def)
       next
         show "g \<sqinter> --?h = ?h"
-          using 1 2 by (metis (hide_lams) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
+          using 1 2 by (metis (opaque_lifting) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
       next
         show "spanning_forest f (-?h \<sqinter> g)"
         proof (unfold spanning_forest_def, intro conjI)

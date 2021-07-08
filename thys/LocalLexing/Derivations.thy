@@ -499,7 +499,7 @@ proof -
           leftmost_unaffected_Derives1 order_refl)
   next
     case False show ?thesis
-      by (metis (no_types, hide_lams) Derives1 Derives1_bound Derives1_sentence2 
+      by (metis (no_types, opaque_lifting) Derives1 Derives1_bound Derives1_sentence2 
           Derives1_take append_take_drop_id ij le_neq_implies_less leftmost 
           leftmost_append leftmost_cons_less leftmost_def length_take 
           min.absorb2 nat_le_linear nonword_leftmost_exists not_le)

@@ -1238,7 +1238,7 @@ proof (intro justified_with_leastI allI impI)
             subgoal
               apply (rule ccontr)
               apply (clarsimp simp: not_le not_less)
-              apply (metis (no_types, hide_lams) add_cancel_right_right add_neg_neg assms(4) assms(5) least less_trans not_less order_class.order.not_eq_order_implies_strict pos_add_strict)
+              apply (metis (no_types, opaque_lifting) add_cancel_right_right add_neg_neg assms(4) assms(5) least less_trans not_less order_class.order.not_eq_order_implies_strict pos_add_strict)
               done
             done
           subgoal
@@ -3096,7 +3096,7 @@ proof (rule ccontr)
      apply (subst Min_less_iff)
        apply (auto simp: in_set_conv_nth nth_tl) []
       apply (clarsimp simp: in_set_conv_nth nth_tl)
-      apply (metis (no_types, hide_lams) Suc_less_eq Suc_pred hd_conv_nth list.size(3) not_gr_zero not_less_zero)
+      apply (metis (no_types, opaque_lifting) Suc_less_eq Suc_pred hd_conv_nth list.size(3) not_gr_zero not_less_zero)
      apply (clarsimp simp: in_set_conv_nth nth_tl)
     subgoal for s x
       by (rule exI[of _ "x-1"])

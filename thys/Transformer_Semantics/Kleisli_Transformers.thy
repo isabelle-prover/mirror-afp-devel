@@ -834,7 +834,7 @@ proof-
   also have "... = (X \<inter> \<partial> (bb\<^sub>\<F> f (\<partial> Y)) = {})"
     by (simp add: dual_set_def)
   finally show ?thesis
-    by (metis (no_types, hide_lams) comp_apply fbb_fbd_demorgan invol_dual_var)
+    by (metis (no_types, opaque_lifting) comp_apply fbb_fbd_demorgan invol_dual_var)
 qed
 
 lemma rfd_rbd_conjugation: "((fd\<^sub>\<R> R X) \<inter> Y = {}) = (X \<inter> (bd\<^sub>\<R> R Y) = {})"

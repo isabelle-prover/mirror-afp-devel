@@ -4533,7 +4533,7 @@ proof -
       unfolding orient_lit_inst_def by auto
     from \<open>M = (Pos e)\<close> and \<open>subst_lit M' \<eta> =  M\<close> 
       obtain e' where "(subst_equation e' \<eta>)  = e" and "M' = (Pos e')"
-      by (metis (no_types, hide_lams) subst_lit.simps(1) subst_lit.simps(2) atom.simps(1) 
+      by (metis (no_types, opaque_lifting) subst_lit.simps(1) subst_lit.simps(2) atom.simps(1) 
           literal.distinct(1) positive_literal.elims(1)) 
     from \<open>e = (Eq u v) \<or> e = (Eq v u)\<close> and \<open>(subst_equation e' \<eta>)  = e\<close>
       obtain u' v' where "e' = (Eq u' v') \<or> (e' = (Eq v' u'))" and "(subst u' \<eta>) = u" and 

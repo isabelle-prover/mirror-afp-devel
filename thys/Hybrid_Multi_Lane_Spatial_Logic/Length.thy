@@ -455,7 +455,7 @@ proof
       hence "left (ext v2) > right (space ts v2 c)" 
         using assm hchop_def space_def by auto 
       then have len:"len v2 ( ts) c = Abs_real_int (left (ext v2),left (ext v2))" 
-        by (metis (no_types, hide_lams) len_def l2 le_less_trans not_less order.asym
+        by (metis (no_types, opaque_lifting) len_def l2 le_less_trans not_less order.asym
             space_nonempty r2)   
       show "(right ((len v2 ts) c) = right (ext v2))" 
       proof (cases "right ((space ts v) c) \<ge> left (ext v)")
@@ -464,7 +464,7 @@ proof
           using len_def real_int.left_leq_right Abs_real_int_inverse  
           by (meson less_trans not_less space_nonempty)
         show "(right ((len v2 ts) c) = right (ext v2))"
-          by (metis (no_types, hide_lams) Rep_real_int_inverse assm dual_order.antisym 
+          by (metis (no_types, opaque_lifting) Rep_real_int_inverse assm dual_order.antisym 
               left.rep_eq len len_empty prod.collapse real_int.chop_singleton_left 
               real_int.rchop_def right.rep_eq view.h_chop_middle1 view.hchop_def)
       next
@@ -653,7 +653,7 @@ proof
       have right_len_leq:
         "  min (right (ext v)) (right (space ts v c)) 
          \<ge> min (right (ext v1)) (right (space ts v c))"
-        by (metis (no_types, hide_lams) assm min.bounded_iff min_less_iff_conj not_le
+        by (metis (no_types, opaque_lifting) assm min.bounded_iff min_less_iff_conj not_le
             order_refl real_int.rchop_def view.h_chop_middle2 view.hchop_def)
       hence left_geq_right:
         "  max (left (ext v1)) (left (space ts v c))
@@ -738,7 +738,7 @@ proof
       have left_len_eq:
         "  max (left (ext v)) (left (space ts v c)) 
         \<le> max (left (ext v2)) (left (space ts v c))"
-        by (metis (no_types, hide_lams) assm left_leq_right max.mono order_refl
+        by (metis (no_types, opaque_lifting) assm left_leq_right max.mono order_refl
             real_int.rchop_def view.hchop_def)
       have right_len_leq:
         "  min (right (ext v)) (right (space ts v c)) 
@@ -755,11 +755,11 @@ proof
       then have 
         "  max (left (ext v2)) (left (space ts v2 c))
          = min (right (ext v2)) (right (space ts v2 c))"
-        by (metis (no_types, hide_lams) antisym_conv assm hchop_def len_v_empty
+        by (metis (no_types, opaque_lifting) antisym_conv assm hchop_def len_v_empty
             max_def min.bounded_iff not_le space_def right_inside_v2 right_len_leq
             view.h_chop_middle2)
       thus "\<parallel>len v2 ( ts) c\<parallel> = 0" 
-        by (metis (no_types, hide_lams)  assm hchop_def len_v len_v2 len_v_empty
+        by (metis (no_types, opaque_lifting)  assm hchop_def len_v len_v2 len_v_empty
             space_def right_len_leq)
     qed
   qed
@@ -1003,7 +1003,7 @@ proof
       next
         assume right_le:"right ((space ts v) c) < left (ext v)"
         thus False 
-          by (metis (no_types, hide_lams) Rep_real_int_inverse assm left.rep_eq len_def
+          by (metis (no_types, opaque_lifting) Rep_real_int_inverse assm left.rep_eq len_def
               length_zero_iff_borders_eq less_irrefl prod.collapse real_int.rchop_def 
               right.rep_eq view.hchop_def view.horizontal_chop_empty_left 
               view.horizontal_chop_empty_right)

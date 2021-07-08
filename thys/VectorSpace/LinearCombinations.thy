@@ -348,8 +348,8 @@ next
   from assms show 2: "abelian_group (md N)" 
     apply (unfold submodule_def)
     apply (intro abelian_groupI, auto)
-      apply (metis (no_types, hide_lams) M.add.m_assoc contra_subsetD)
-     apply (metis (no_types, hide_lams) M.add.m_comm contra_subsetD)
+      apply (metis (no_types, opaque_lifting) M.add.m_assoc contra_subsetD)
+     apply (metis (no_types, opaque_lifting) M.add.m_comm contra_subsetD)
     apply (rename_tac v)
     txt \<open>The inverse of $v$ under addition is $-v$\<close>
     apply (rule_tac x="\<ominus>\<^bsub>M\<^esub>v" in bexI)
@@ -358,9 +358,9 @@ next
 next
   from assms show 3: "module_axioms R (md N)"
     apply (unfold module_axioms_def submodule_def, auto)
-      apply (metis (no_types, hide_lams) smult_l_distr contra_subsetD)
-     apply (metis (no_types, hide_lams) smult_r_distr contra_subsetD)
-    by (metis (no_types, hide_lams) smult_assoc1 contra_subsetD)
+      apply (metis (no_types, opaque_lifting) smult_l_distr contra_subsetD)
+     apply (metis (no_types, opaque_lifting) smult_r_distr contra_subsetD)
+    by (metis (no_types, opaque_lifting) smult_assoc1 contra_subsetD)
 qed
 
 text \<open>$N_1+N_2=\{x+y | x\in N_1,y\in N_2\}$\<close>

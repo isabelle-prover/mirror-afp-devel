@@ -168,7 +168,7 @@ proof -
         case True
         then have "Im ((g1 +++ g2) (1 / 2) - z) \<noteq> 0"
           using assms(5,6)
-          by (metis (no_types, hide_lams) Re_divide_numeral complex_Re_numeral complex_eq 
+          by (metis (no_types, opaque_lifting) Re_divide_numeral complex_Re_numeral complex_eq 
               divide_self_if joinpaths_def  minus_complex.simps mult.commute mult.left_neutral
               numeral_One pathfinish_def pathstart_def right_minus_eq times_divide_eq_left zero_neq_numeral)
         show ?thesis
@@ -1248,7 +1248,7 @@ proof -
                   proof (rule ccontr)
                     assume "sgn (g t) \<noteq> 1"
                     then have "cos t + 1\<le>0" using \<open>r>0\<close> unfolding g_alt 
-                      by (metis (no_types, hide_lams) add_le_same_cancel1 add_minus_cancel 
+                      by (metis (no_types, opaque_lifting) add_le_same_cancel1 add_minus_cancel 
                           mult_le_cancel_left1 mult_le_cancel_right1 mult_minus_right mult_zero_left 
                           sgn_pos zero_le_one)
                     then have "cos t = -1" 
@@ -1718,7 +1718,7 @@ proof -
     have "(sin st > 0 \<or> (cos st=1) ) \<and> f st > 0 \<or> (sin st < 0 \<or>  (cos st=-1) ) \<and> f st < 0"  
     proof -
       have "sin st = 0 \<longleftrightarrow> cos st=-1 \<or> cos st=1"  
-        by (metis (no_types, hide_lams) add.right_neutral cancel_comm_monoid_add_class.diff_cancel 
+        by (metis (no_types, opaque_lifting) add.right_neutral cancel_comm_monoid_add_class.diff_cancel 
             cos_diff cos_zero mult_eq_0_iff power2_eq_1_iff power2_eq_square sin_squared_eq)
       moreover have "((sin st \<le> 0 \<and> cos st \<noteq>1 ) \<or> f st > 0) \<and> ((sin st \<ge> 0 \<and>  cos st\<noteq>-1) \<or> f st < 0)"
         using that(2) \<open>f st\<noteq>0\<close> by argo  
@@ -1889,7 +1889,7 @@ proof -
     have "(sin tt > 0 \<or> cos tt=-1 ) \<and> f tt > 0 \<or> (sin tt < 0 \<or>  cos tt=1 ) \<and> f tt < 0"  
     proof -
       have "sin tt = 0 \<longleftrightarrow> cos tt=-1 \<or> cos tt=1"  
-        by (metis (no_types, hide_lams) add.right_neutral cancel_comm_monoid_add_class.diff_cancel 
+        by (metis (no_types, opaque_lifting) add.right_neutral cancel_comm_monoid_add_class.diff_cancel 
             cos_diff cos_zero mult_eq_0_iff power2_eq_1_iff power2_eq_square sin_squared_eq)
       moreover have "((sin tt \<le> 0 \<and> cos tt \<noteq>-1 ) \<or> f tt > 0) \<and> ((sin tt \<ge> 0 \<and>  cos tt\<noteq>1) \<or> f tt < 0)"
         using that(2) \<open>f tt\<noteq>0\<close> by argo  

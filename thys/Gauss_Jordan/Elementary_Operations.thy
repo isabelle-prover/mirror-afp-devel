@@ -384,7 +384,7 @@ proof (unfold matrix_matrix_mult_def row_add_def, vector, auto)
       finally show ?thesis by simp
     qed
     also have "... = A $ a $ j + q * A $ b $ j" 
-      by (unfold True mat_def, simp, metis (hide_lams, no_types) vector_add_component vector_sadd_rdistrib vector_smult_component vector_smult_lid)
+      by (unfold True mat_def, simp, metis (opaque_lifting, no_types) vector_add_component vector_sadd_rdistrib vector_smult_component vector_smult_lid)
     finally show ?thesis .
   qed
   fix i assume i: "i\<noteq>a"

@@ -221,7 +221,7 @@ proof -
   obtain root_ptr where root_ptr: "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root_ptr" and
     c: "h \<turnstile> to_tree_order root_ptr \<rightarrow>\<^sub>r c"
     using assms(4)
-    by (metis (no_types, hide_lams) bind_returns_result_E2 get_component_def get_root_node_pure)
+    by (metis (no_types, opaque_lifting) bind_returns_result_E2 get_component_def get_root_node_pure)
   then have "h \<turnstile> get_root_node (cast node_ptr) \<rightarrow>\<^sub>r root_ptr"
     using assms(1) assms(2) assms(3) assms(5) to_tree_order_same_root by blast
   then have "h \<turnstile> get_root_node parent \<rightarrow>\<^sub>r root_ptr"
@@ -305,7 +305,7 @@ lemma get_component_to_tree_order:
   assumes "h \<turnstile> to_tree_order ptr' \<rightarrow>\<^sub>r to"
   assumes "ptr \<in> set to"
   shows "h \<turnstile> get_component ptr' \<rightarrow>\<^sub>r c"
-  by (metis (no_types, hide_lams) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6)
+  by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6)
       get_component_ok get_component_subset get_component_to_tree_order_subset is_OK_returns_result_E
       local.to_tree_order_ptr_in_result local.to_tree_order_ptrs_in_heap select_result_I2 subsetCE)
 
@@ -366,7 +366,7 @@ proof(insert assms(1) assms(6), induct x rule: heap_wellformed_induct_rev )
       using assms(1) False get_root_node_not_node_same by auto
     then show ?thesis
       using assms(1) assms(2) assms(3) assms(4) step.prems assms(5)
-      by (metis (no_types, hide_lams) bind_returns_result_E2 get_component_def get_root_node_pure
+      by (metis (no_types, opaque_lifting) bind_returns_result_E2 get_component_def get_root_node_pure
           returns_result_eq to_tree_order_same_root)
   qed
 qed
@@ -574,7 +574,7 @@ proof -
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
     using get_dom_component_get_child_nodes local.get_component_impl local.get_dom_component_ptr
-    by (metis (no_types, hide_lams) Int_iff finite_set_in get_parent_is_strongly_dom_component_safe_step
+    by (metis (no_types, opaque_lifting) Int_iff finite_set_in get_parent_is_strongly_dom_component_safe_step
         local.get_component_ok local.get_parent_parent_in_heap local.to_tree_order_ok local.to_tree_order_parent
         local.to_tree_order_ptr_in_result local.to_tree_order_ptrs_in_heap returns_result_select_result)
 qed

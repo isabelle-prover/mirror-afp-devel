@@ -475,7 +475,7 @@ private lemma trace_eq_core: "trace_core_eq ideal_core' real_core'
 proof -
 
   have inj_xor: "\<lbrakk>msg \<in> carrier \<L> ; x \<in> carrier \<L>; y \<in> carrier \<L>; x \<oplus> msg = y \<oplus> msg\<rbrakk> \<Longrightarrow> x = y" for msg x y
-    by (metis (no_types, hide_lams) local.xor_ac(2) local.xor_left_inverse)
+    by (metis (no_types, opaque_lifting) local.xor_ac(2) local.xor_left_inverse)
 
   note [simp] = enc_callee_def dec_callee_def look_callee_def nempty_carrier finite_carrier
     exec_gpv_bind spmf.map_comp map_bind_spmf bind_map_spmf bind_spmf_const o_def Let_def

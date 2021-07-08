@@ -293,7 +293,7 @@ proof(rule ccontr)
   then obtain R S ws bs
     where cl: "closure as ([({r},{s})],[]) = Some((R,S)#ws,bs)"
     using closure_Some[of "{r}" "{s}", simplified]
-    by (metis (hide_lams, no_types) list.exhaust prod.exhaust)
+    by (metis (opaque_lifting, no_types) list.exhaust prod.exhaust)
   from assms closure_Some_Inv[OF this]
     while_option_stop[OF cl[unfolded closure_def]]
   show "False" by auto

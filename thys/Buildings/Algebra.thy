@@ -2920,7 +2920,7 @@ lemma nil_reduced_word_for_0: "reduced_word_for A 0 []"
 lemma reduced_word_for_0_imp_nil: "reduced_word_for A 0 as \<Longrightarrow> as = []"
   using     nil_reduced_word_for_0[of A] reduced_word_for_minimal[of A 0 as]
   unfolding reduced_word_for_def is_arg_min_def
-  by (metis (mono_tags, hide_lams) length_0_conv length_greater_0_conv)
+  by (metis (mono_tags, opaque_lifting) length_0_conv length_greater_0_conv)
 
 lemma not_reduced_word_for:
   "\<lbrakk> bs \<in> lists A; sum_list bs = a; length bs < length as \<rbrakk> \<Longrightarrow>
