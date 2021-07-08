@@ -23,6 +23,7 @@ object profile extends isabelle.CI_Profile
     println(s"AFP id $afp_id")
     if (status_file.exists())
       status_file.delete()
+    Result.ok
   }
 
   def post_hook(results: Build.Results) =
@@ -34,6 +35,7 @@ object profile extends isabelle.CI_Profile
     println("Writing dependencies file ...")
     File.write(deps_file, result.out)
     print_section("COMPLETED")
+    Result.ok
   }
 
   def selection =

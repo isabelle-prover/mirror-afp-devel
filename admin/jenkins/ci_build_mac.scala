@@ -12,9 +12,12 @@ object profile extends isabelle.CI_Profile
   def select = Nil
 
   def pre_hook(args: List[String]) =
+  {
     println(s"Build for AFP id ${hg_id(afp)}")
+    Result.ok
+  }
 
-  def post_hook(results: Build.Results) = {}
+  def post_hook(results: Build.Results) = Result.ok
 
   def selection = Sessions.Selection(
     all_sessions = true,
