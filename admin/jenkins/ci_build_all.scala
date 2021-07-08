@@ -197,8 +197,12 @@ object profile extends isabelle.CI_Profile
 
     File.write(report_file, "")
 
-    if (!can_send_mails)
+    if (!can_send_mails) {
       println(s"Mail configuration not found.")
+      Result.error
+    } else {
+      Result.ok
+    }
   }
 
   def post_hook(results: Build.Results) =
@@ -236,9 +240,11 @@ object profile extends isabelle.CI_Profile
     println("Running sitegen ...")
 
     val script = afp + Path.explode("admin/sitegen-devel")
-    val sitegen_result = List(script.file.toString, status_file.toString, deps_file.toString).!
-    if (sitegen_result > 0)
+    val sitegen_rc = List(script.file.toString, status_file.toString, deps_file.toString).!
+    if (sitegen_rc > 0)
+    {
       println("sitegen failed")
+    }
 
     if (!results.ok)
     {
@@ -252,6 +258,7 @@ object profile extends isabelle.CI_Profile
     }
 
     print_section("COMPLETED")
+    Result(sitegen_rc)
   }
 
   def selection =

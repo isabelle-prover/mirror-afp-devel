@@ -85,6 +85,7 @@ object profile extends isabelle.CI_Profile
       report_file.delete()
 
     File.write(report_file, "")
+    Result.ok
   }
 
   def post_hook(results: Build.Results) =
@@ -109,6 +110,7 @@ object profile extends isabelle.CI_Profile
     println("Writing report file ...")
     File.write(report_file, metadata.status_as_html(status))
     print_section("COMPLETED")
+    Result.ok
   }
 
   def selection =
