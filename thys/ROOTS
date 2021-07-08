@@ -63,6 +63,7 @@ CAVA_LTL_Modelchecker
 CCS
 CISC-Kernel
 CRDT
+CSP_RefTK
 CYK
 CakeML
 CakeML_Codegen
@@ -115,8 +116,8 @@ Core_SC_DOM
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
-CSP_RefTK
 DFS_Framework
+DOM_Components
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
@@ -142,7 +143,6 @@ Dirichlet_Series
 DiscretePricing
 Discrete_Summation
 DiskPaxos
-DOM_Components
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -248,6 +248,7 @@ IMAP-CRDT
 IMO2019
 IMP2
 IMP2_Binary_Heap
+IMP_Compiler
 IP_Addresses
 Imperative_Insertion_Sort
 Impossible_Geometry
@@ -264,10 +265,10 @@ Interval_Arithmetic_Word32
 Iptables_Semantics
 Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
+IsaGeoCoq
 Isabelle_C
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
-IsaGeoCoq
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
@@ -281,7 +282,6 @@ KBPs
 KD_Tree
 Key_Agreement_Strong_Adversaries
 Kleene_Algebra
-Knuth_Bendix_Order
 Knot_Theory
 Knuth_Bendix_Order
 Knuth_Morris_Pratt
@@ -350,12 +350,13 @@ Mereology
 Mersenne_Primes
 Metalogic_ProofChecker
 MiniML
+MiniSail
 Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
 Modal_Logics_for_NTS
-Modular_arithmetic_LLL_and_HNF_algorithms
 Modular_Assembly_Kit_Security
+Modular_arithmetic_LLL_and_HNF_algorithms
 Monad_Memo_DP
 Monad_Normalisation
 MonoBoolTranAlgebra
@@ -498,7 +499,6 @@ Safe_Distance
 Safe_OCL
 Saturation_Framework
 Saturation_Framework_Extensions
-Shadow_DOM
 Secondary_Sylow
 Security_Protocol_Refinement
 Selection_Heap_Sort
@@ -507,6 +507,7 @@ Separata
 Separation_Algebra
 Separation_Logic_Imperative_HOL
 SequentInvertibility
+Shadow_DOM
 Shadow_SC_DOM
 Shivers-CFA
 ShortestPath
@@ -524,6 +525,7 @@ Smith_Normal_Form
 Smooth_Manifolds
 Sort_Encodings
 Source_Coding_Theorem
+SpecCheck
 Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
@@ -582,6 +584,7 @@ UTP
 Universal_Turing_Machine
 UpDown_Scheme
 Valuation
+Van_der_Waerden
 VectorSpace
 VeriComp
 Verified-Prover

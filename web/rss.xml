@@ -9,7 +9,94 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+    <pubDate>01 Jul 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
+              <link>https://www.isa-afp.org/entries/SpecCheck.html</link>
+       <guid>https://www.isa-afp.org/entries/SpecCheck.html</guid>
+       <dc:creator> Kevin Kappelmann, Lukas Bulwahn, Sebastian Willenbrink       </dc:creator>
+       <pubDate>01 Jul 2021 00:00:00 +0000</pubDate>
+       <description>
+SpecCheck is a &lt;a
+href=&#34;https://en.wikipedia.org/wiki/QuickCheck&#34;&gt;QuickCheck&lt;/a&gt;-like
+testing framework for Isabelle/ML. You can use it to write
+specifications for ML functions. SpecCheck then checks whether your
+specification holds by testing your function against a given number of
+generated inputs. It helps you to identify bugs by printing
+counterexamples on failure and provides you timing information.
+SpecCheck is customisable and allows you to specify your own input
+generators, test output formats, as well as pretty printers and
+shrinking functions for counterexamples among other things.</description>
+    </item>
+    <item>
+       <title>Van der Waerden's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Van_der_Waerden.html</link>
+       <guid>https://www.isa-afp.org/entries/Van_der_Waerden.html</guid>
+       <dc:creator> Katharina Kreuzer, Manuel Eberl       </dc:creator>
+       <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This article formalises the proof of Van der Waerden&#39;s Theorem
+from Ramsey theory.  Van der Waerden&#39;s Theorem states that for
+integers $k$ and $l$ there exists a number $N$ which guarantees that
+if an integer interval of length at least $N$ is coloured with $k$
+colours, there will always be an arithmetic progression of length $l$
+of the same colour in said interval. The proof goes along the lines of
+\cite{Swan}.  The smallest number $N_{k,l}$ fulfilling Van der
+Waerden&#39;s Theorem is then called the Van der Waerden Number.
+Finding the Van der Waerden Number is still an open problem for most
+values of $k$ and $l$.</description>
+    </item>
+    <item>
+       <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+              <link>https://www.isa-afp.org/entries/MiniSail.html</link>
+       <guid>https://www.isa-afp.org/entries/MiniSail.html</guid>
+       <dc:creator> Mark Wassell       </dc:creator>
+       <pubDate>18 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+MiniSail is a kernel language for Sail, an instruction set
+architecture (ISA) specification language. Sail is an imperative
+language with a light-weight dependent type system similar to
+refinement type systems. From an ISA specification, the Sail compiler
+can generate theorem prover code and C (or OCaml) to give an
+executable emulator for an architecture. The idea behind MiniSail is
+to capture the key and novel features of Sail in terms of their
+syntax, typing rules and operational semantics, and to confirm that
+they work together by proving progress and preservation lemmas. We use
+the Nominal2 library to handle binding.</description>
+    </item>
+    <item>
+       <title>Public Announcement Logic</title>
+              <link>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>17 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of public announcement logic with
+countably many agents. It includes proofs of soundness and
+completeness for a variant of the axiom system PA + DIST! + NEC!. The
+completeness proof builds on the Epistemic Logic theory.</description>
+    </item>
+    <item>
+       <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+              <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP_Compiler.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This paper presents a compiler correctness proof for the didactic
+imperative programming language IMP, introduced in Nipkow and
+Klein&#39;s book on formal programming language semantics (version of
+March 2021), whose size is just two thirds of the book&#39;s proof in
+the number of formal text lines. As such, it promises to constitute a
+further enhanced reference for the formal verification of compilers
+meant for larger, real-world programming languages.  The presented
+proof does not depend on language determinism, so that the proposed
+approach can be applied to non-deterministic languages as well. As a
+confirmation, this paper extends IMP with an additional
+non-deterministic choice command, and proves compiler correctness,
+viz. the simulation of compiled code execution by source code, for
+such extended language.</description>
+    </item>
     <item>
        <title>Lyndon words</title>
               <link>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</link>
@@ -482,88 +569,6 @@ and dynamic class initialization, based on the Java SE 8
 specification. This includes extension of definitions and proofs. This
 work is partially described in Mansky and Gunter&#39;s paper at CPP
 2019 and Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
-    </item>
-    <item>
-       <title>Cofinality and the Delta System Lemma</title>
-              <link>https://www.isa-afp.org/entries/Delta_System_Lemma.html</link>
-       <guid>https://www.isa-afp.org/entries/Delta_System_Lemma.html</guid>
-       <dc:creator> Pedro Sánchez Terraf       </dc:creator>
-       <pubDate>27 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-We formalize the basic results on cofinality of linearly ordered sets
-and ordinals and Šanin’s Lemma for uncountable families of finite
-sets. This last result is used to prove the countable chain condition
-for Cohen posets. We work in the set theory framework of Isabelle/ZF,
-using the Axiom of Choice as needed.</description>
-    </item>
-    <item>
-       <title>Topological semantics for paraconsistent and paracomplete logics</title>
-              <link>https://www.isa-afp.org/entries/Topological_Semantics.html</link>
-       <guid>https://www.isa-afp.org/entries/Topological_Semantics.html</guid>
-       <dc:creator> David Fuenmayor       </dc:creator>
-       <pubDate>17 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-We introduce a generalized topological semantics for paraconsistent
-and paracomplete logics by drawing upon early works on topological
-Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey &amp;
-Tarski, etc.). In particular, this work exemplarily illustrates the
-shallow semantical embeddings approach (&lt;a
-href=&#34;http://dx.doi.org/10.1007/s11787-012-0052-y&#34;&gt;SSE&lt;/a&gt;)
-employing the proof assistant Isabelle/HOL. By means of the SSE
-technique we can effectively harness theorem provers, model finders
-and &#39;hammers&#39; for reasoning with quantified non-classical
-logics.</description>
-    </item>
-    <item>
-       <title>Relational Minimum Spanning Tree Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</guid>
-       <dc:creator> Walter Guttmann, Nicolas Robinson-O'Brien       </dc:creator>
-       <pubDate>08 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-We verify the correctness of Prim&#39;s, Kruskal&#39;s and
-Borůvka&#39;s minimum spanning tree algorithms based on algebras for
-aggregation and minimisation.</description>
-    </item>
-    <item>
-       <title>Inline Caching and Unboxing Optimization for Interpreters</title>
-              <link>https://www.isa-afp.org/entries/Interpreter_Optimizations.html</link>
-       <guid>https://www.isa-afp.org/entries/Interpreter_Optimizations.html</guid>
-       <dc:creator> Martin Desharnais       </dc:creator>
-       <pubDate>07 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization builds on the
-&lt;em&gt;VeriComp&lt;/em&gt; entry of the &lt;em&gt;Archive of Formal
-Proofs&lt;/em&gt; to provide the following contributions:  &lt;ul&gt;
-&lt;li&gt;an operational semantics for a realistic virtual machine
-(Std) for dynamically typed programming languages;&lt;/li&gt;
-&lt;li&gt;the formalization of an inline caching optimization (Inca),
-a proof of bisimulation with (Std), and a compilation
-function;&lt;/li&gt; &lt;li&gt;the formalization of an unboxing
-optimization (Ubx), a proof of bisimulation with (Inca), and a simple
-compilation function.&lt;/li&gt; &lt;/ul&gt;  This formalization was
-described in the CPP 2021 paper &lt;em&gt;Towards Efficient and
-Verified Virtual Machines for Dynamic Languages&lt;/em&gt;</description>
-    </item>
-    <item>
-       <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
-              <link>https://www.isa-afp.org/entries/Relational_Method.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Method.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>05 Dec 2020 00:00:00 +0000</pubDate>
-       <description>
-This paper introduces a new method for the formal verification of
-cryptographic protocols, the relational method, derived from
-Paulson&#39;s inductive method by means of some enhancements aimed at
-streamlining formal definitions and proofs, specially for protocols
-using public key cryptography. Moreover, this paper proposes a method
-to formalize a further security property, message anonymity, in
-addition to message confidentiality and authenticity.  The relational
-method, including message anonymity, is then applied to the
-verification of a sample authentication protocol, comprising Password
-Authenticated Connection Establishment (PACE) with Chip Authentication
-Mapping followed by the explicit verification of an additional
-password over the PACE secure channel.</description>
     </item>
   </channel>
 </rss>

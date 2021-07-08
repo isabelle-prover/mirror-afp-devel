@@ -5569,6 +5569,24 @@ abstract =
   recurrences and derive a fully executable solver for them that can be
   exported to programming languages like Haskell. </p>
 
+[Van_der_Waerden]
+title = Van der Waerden's Theorem
+author = Katharina Kreuzer <https://www21.in.tum.de/team/kreuzer/>, Manuel Eberl <https://www21.in.tum.de/~eberlm/>
+topic = Mathematics/Combinatorics
+date = 2021-06-22
+notify = kreuzerk@in.tum.de, eberlm@in.tum.de
+abstract =
+  This article formalises the proof of Van der Waerden's Theorem
+  from Ramsey theory.  Van der Waerden's Theorem states that for
+  integers $k$ and $l$ there exists a number $N$ which guarantees that
+  if an integer interval of length at least $N$ is coloured with $k$
+  colours, there will always be an arithmetic progression of length $l$
+  of the same colour in said interval. The proof goes along the lines of
+  \cite{Swan}.  The smallest number $N_{k,l}$ fulfilling Van der
+  Waerden's Theorem is then called the Van der Waerden Number.
+  Finding the Van der Waerden Number is still an open problem for most
+  values of $k$ and $l$.
+
 [Lambert_W]
 title = The Lambert W Function on the Reals
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -10687,3 +10705,73 @@ abstract =
   shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
   a prime $p$ and positive integers $a$ and $b$. The proof follows <a
   href="https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf">Amir Hossein Parvardi's</a>.
+
+[IMP_Compiler]
+title = A Shorter Compiler Correctness Proof for Language IMP
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer science/Programming languages/Compiling
+date = 2021-06-04
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  This paper presents a compiler correctness proof for the didactic
+  imperative programming language IMP, introduced in Nipkow and
+  Klein's book on formal programming language semantics (version of
+  March 2021), whose size is just two thirds of the book's proof in
+  the number of formal text lines. As such, it promises to constitute a
+  further enhanced reference for the formal verification of compilers
+  meant for larger, real-world programming languages.  The presented
+  proof does not depend on language determinism, so that the proposed
+  approach can be applied to non-deterministic languages as well. As a
+  confirmation, this paper extends IMP with an additional
+  non-deterministic choice command, and proves compiler correctness,
+  viz. the simulation of compiled code execution by source code, for
+  such extended language.
+
+[Public_Announcement_Logic]
+title = Public Announcement Logic
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-06-17
+notify = ahfrom@dtu.dk
+abstract = 
+  This work is a formalization of public announcement logic with
+  countably many agents. It includes proofs of soundness and
+  completeness for a variant of the axiom system PA + DIST! + NEC!. The
+  completeness proof builds on the Epistemic Logic theory.
+
+[MiniSail]
+title = MiniSail - A kernel language for the ISA specification language SAIL
+author = Mark Wassell <mailto:mpwassell@gmail.com>
+topic = Computer science/Programming languages/Type systems
+date = 2021-06-18
+notify = mpwassell@gmail.com
+abstract = 
+  MiniSail is a kernel language for Sail, an instruction set
+  architecture (ISA) specification language. Sail is an imperative
+  language with a light-weight dependent type system similar to
+  refinement type systems. From an ISA specification, the Sail compiler
+  can generate theorem prover code and C (or OCaml) to give an
+  executable emulator for an architecture. The idea behind MiniSail is
+  to capture the key and novel features of Sail in terms of their
+  syntax, typing rules and operational semantics, and to confirm that
+  they work together by proving progress and preservation lemmas. We use
+  the Nominal2 library to handle binding.
+
+[SpecCheck]
+title = SpecCheck - Specification-Based Testing for Isabelle/ML
+author = Kevin Kappelmann <https://www21.in.tum.de/team/kappelmk/>, Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>, Sebastian Willenbrink <mailto:sebastian.willenbrink@tum.de>
+topic = Tools
+date = 2021-07-01
+notify = kevin.kappelmann@tum.de
+abstract = 
+  SpecCheck is a <a
+  href="https://en.wikipedia.org/wiki/QuickCheck">QuickCheck</a>-like
+  testing framework for Isabelle/ML. You can use it to write
+  specifications for ML functions. SpecCheck then checks whether your
+  specification holds by testing your function against a given number of
+  generated inputs. It helps you to identify bugs by printing
+  counterexamples on failure and provides you timing information.
+  SpecCheck is customisable and allows you to specify your own input
+  generators, test output formats, as well as pretty printers and
+  shrinking functions for counterexamples among other things.
+
