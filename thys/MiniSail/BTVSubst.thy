@@ -627,7 +627,7 @@ instance proof
     case (AE_app f v)
     then show ?case using subst_eb.simps fresh_def pure_fresh subst_b_e_def 
         e.supp v.supp  has_subst_b_class.fresh_subst_if subst_b_v_def 
-      by (metis (mono_tags, hide_lams) e.fresh(2))
+      by (metis (mono_tags, opaque_lifting) e.fresh(2))
   next
     case (AE_appP f b' v)
     then show ?case unfolding subst_eb.simps   subst_b_e_def e.fresh using

@@ -1770,7 +1770,7 @@ proof -
   next
     case (Cons a dclist)
     then show ?case using supp_Pair supp_Cons 
-      by (metis (mono_tags, hide_lams) Un_empty_left Un_empty_right pure_supp subset_Un_eq subset_singletonD supp_list_member)
+      by (metis (mono_tags, opaque_lifting) Un_empty_left Un_empty_right pure_supp subset_Un_eq subset_singletonD supp_list_member)
   qed
 qed
   
@@ -2545,7 +2545,7 @@ proof -
 
   show ?thesis proof(cases "bv1 = bv")
     case True
-    then show ?thesis using *  fun_typ_q.eq_iff  Abs1_eq_iff   by (metis (no_types, hide_lams) wfFT_wf_aux)
+    then show ?thesis using *  fun_typ_q.eq_iff  Abs1_eq_iff   by (metis (no_types, opaque_lifting) wfFT_wf_aux)
   next
     case False
     obtain x1 b1 c1 t1 s1 where **: "ft1 = AF_fun_typ x1 b1 c1 t1 s1" using fun_typ.eq_iff 
@@ -4600,7 +4600,7 @@ next
     show \<open> \<Theta>  \<turnstile>\<^sub>w\<^sub>f \<Phi> \<close> using wfX_wfY wfE_eqI by metis
     show \<open> \<Theta> ; B ; \<Gamma>[bv::=b]\<^sub>\<Gamma>\<^sub>b \<turnstile>\<^sub>w\<^sub>f \<Delta>[bv::=b]\<^sub>\<Delta>\<^sub>b \<close> using wfX_wfY wfE_eqI by metis
     show \<open> \<Theta> ; B ; \<Gamma>[bv::=b]\<^sub>\<Gamma>\<^sub>b \<turnstile>\<^sub>w\<^sub>f v1[bv::=b]\<^sub>v\<^sub>b : bb \<close> using subst_bb.simps wfE_eqI 
-      by (metis (no_types, hide_lams) empty_iff insert_iff wf_b_subst1(1))
+      by (metis (no_types, opaque_lifting) empty_iff insert_iff wf_b_subst1(1))
     show \<open> \<Theta> ; B ; \<Gamma>[bv::=b]\<^sub>\<Gamma>\<^sub>b \<turnstile>\<^sub>w\<^sub>f v2[bv::=b]\<^sub>v\<^sub>b : bb \<close> using wfX_wfY wfE_eqI       
       by (metis insert_iff singleton_iff wf_b_subst1(1) wf_b_subst_lemmas(86) wf_b_subst_lemmas(87) wf_b_subst_lemmas(90))
     show \<open>bb \<in> {B_bool, B_int, B_unit}\<close> using wfE_eqI by auto

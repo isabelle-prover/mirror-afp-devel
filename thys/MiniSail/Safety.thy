@@ -4,7 +4,7 @@ theory Safety
 begin
   (*>*)
 
-method supp_calc = (metis (mono_tags, hide_lams) pure_supp  c.supp e.supp v.supp supp_l_empty opp.supp sup_bot.right_neutral supp_at_base)
+method supp_calc = (metis (mono_tags, opaque_lifting) pure_supp  c.supp e.supp v.supp supp_l_empty opp.supp sup_bot.right_neutral supp_at_base)
 declare infer_e.intros[simp]
 declare infer_e.intros[intro]
 

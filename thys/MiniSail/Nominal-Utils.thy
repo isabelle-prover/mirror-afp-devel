@@ -26,17 +26,17 @@ lemma fun_eqvtI:
 lemma eqvt_at_apply:
   assumes "eqvt_at f x"
   shows "(p \<bullet> f) x = f x"
-by (metis (hide_lams, no_types) assms eqvt_at_def permute_fun_def permute_minus_cancel(1))
+by (metis (opaque_lifting, no_types) assms eqvt_at_def permute_fun_def permute_minus_cancel(1))
 
 lemma eqvt_at_apply':
   assumes "eqvt_at f x"
   shows "p \<bullet> f x = f (p \<bullet> x)"
-by (metis (hide_lams, no_types) assms eqvt_at_def)
+by (metis (opaque_lifting, no_types) assms eqvt_at_def)
 
 lemma eqvt_at_apply'':
   assumes "eqvt_at f x"
   shows "(p \<bullet> f) (p \<bullet> x) = f (p \<bullet> x)"
-by (metis (hide_lams, no_types) assms eqvt_at_def permute_fun_def permute_minus_cancel(1))
+by (metis (opaque_lifting, no_types) assms eqvt_at_def permute_fun_def permute_minus_cancel(1))
 
 lemma size_list_eqvt[eqvt]: "p \<bullet> size_list f x = size_list (p \<bullet> f) (p \<bullet> x)"
 proof (induction x)

@@ -247,7 +247,7 @@ proof(induct bv)
 next
   case (Cons a bv)
   then show ?case using supp_Cons  bit.supp
-    by (metis (mono_tags, hide_lams) bit.strong_exhaust l.supp(5) sup_bot.right_neutral)
+    by (metis (mono_tags, opaque_lifting) bit.strong_exhaust l.supp(5) sup_bot.right_neutral)
 qed
 
 lemma bitvec_pure[simp]:
@@ -417,7 +417,7 @@ next
     assume "V_pair v1 v2= V_pair vone vtwo"    
     thus  "(\<exists>v1' v2'. va = V_pair v1' v2' \<and> (x \<leftrightarrow> c) \<bullet> vone = (xa \<leftrightarrow> c) \<bullet> v1' \<and> (x \<leftrightarrow> c) \<bullet> vtwo = (xa \<leftrightarrow> c) \<bullet> v2')"
       using V_pair assms 
-      by (metis (no_types, hide_lams) flip_def permute_swap_cancel v.perm_simps(3)) 
+      by (metis (no_types, opaque_lifting) flip_def permute_swap_cancel v.perm_simps(3)) 
   qed
   thus ?case using V_pair by auto
 next
@@ -451,7 +451,7 @@ next
       using as by fastforce
     hence " va = V_consp tyid dc b ((xa \<leftrightarrow> c) \<bullet> v1') \<and> (x \<leftrightarrow> c) \<bullet> vone = v1'" using permute_flip_cancel empty_iff flip_def fresh_def supp_b_empty swap_fresh_fresh
         pure_fresh v.perm_simps 
-      by (metis (mono_tags, hide_lams))   
+      by (metis (mono_tags, opaque_lifting))   
     thus   "(\<exists>v1'. va = V_consp tyid dc  b v1' \<and> (x \<leftrightarrow> c) \<bullet> vone = (xa \<leftrightarrow> c) \<bullet> v1')"
       using V_consp assms by simp     
   qed
@@ -521,7 +521,7 @@ next
 
   hence "supp ((z \<leftrightarrow> d) \<bullet> AE_op opp v1 v2) = supp (AE_op opp ((z \<leftrightarrow> d) \<bullet>v1)  ((z \<leftrightarrow> d) \<bullet>v2))" by simp
   also have "... = supp  ((z \<leftrightarrow> d) \<bullet>v1) \<union> supp  ((z \<leftrightarrow> d) \<bullet>v2)" using e.supp 
-    by (metis (mono_tags, hide_lams) opp.strong_exhaust opp.supp sup_bot.left_neutral)
+    by (metis (mono_tags, opaque_lifting) opp.strong_exhaust opp.supp sup_bot.left_neutral)
   also have "... \<subseteq> (supp v1 -  { atom z } \<union> { atom d}) \<union>  (supp v2 - { atom z } \<union> { atom d})" using swap_v_supp AE_op df by blast
   finally show ?case using e.supp opp.supp by blast
 next
@@ -563,7 +563,7 @@ next
 
   hence "supp ((z \<leftrightarrow> d) \<bullet> CE_op opp v1 v2) = supp (CE_op opp ((z \<leftrightarrow> d) \<bullet>v1)  ((z \<leftrightarrow> d) \<bullet>v2))" by simp
   also have "... = supp  ((z \<leftrightarrow> d) \<bullet>v1) \<union> supp  ((z \<leftrightarrow> d) \<bullet>v2)" using ce.supp 
-    by (metis (mono_tags, hide_lams) opp.strong_exhaust opp.supp sup_bot.left_neutral)
+    by (metis (mono_tags, opaque_lifting) opp.strong_exhaust opp.supp sup_bot.left_neutral)
   also have "... \<subseteq> (supp v1 -  { atom z } \<union> { atom d}) \<union>  (supp v2 - { atom z } \<union> { atom d})" using swap_v_supp CE_op df by blast
   finally show ?case using ce.supp opp.supp by blast
 next
