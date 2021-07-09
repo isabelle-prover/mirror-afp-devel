@@ -6,7 +6,7 @@ session Regex_Equivalence (AFP) = HOL +
     "HOL-Library"
     "Regular-Sets"
     "Efficient-Mergesort"
-    Spec_Check
+    SpecCheck
   theories
     Regex_Equivalence
   theories [document = false]
