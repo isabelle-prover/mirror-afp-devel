@@ -9,7 +9,6 @@ imports
   "Word_Lib.Generic_set_bit"
   "Word_Lib.Least_significant_bit"
   "Word_Lib.Bits_Int"
-  More_Bits_Int
 begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>
@@ -33,49 +32,46 @@ lemma int_not_code [code]:
   "NOT (0 :: int) = -1"
   "NOT (Int.Pos n) = Int.Neg (Num.inc n)"
   "NOT (Int.Neg n) = Num.sub n num.One"
-by(simp_all add: Num.add_One int_not_def)
+  by (simp_all add: Num.add_One int_not_def)
 
 lemma int_and_code [code]: fixes i j :: int shows
   "0 AND j = 0"
   "i AND 0 = 0"
-  "Int.Pos n AND Int.Pos m = (case bitAND_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Int.Pos n')"
+  "Int.Pos n AND Int.Pos m = (case and_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Int.Pos n')"
   "Int.Neg n AND Int.Neg m = NOT (Num.sub n num.One OR Num.sub m num.One)"
   "Int.Pos n AND Int.Neg num.One = Int.Pos n"
-  "Int.Pos n AND Int.Neg (num.Bit0 m) = Num.sub (bitORN_num (Num.BitM m) n) num.One"
-  "Int.Pos n AND Int.Neg (num.Bit1 m) = Num.sub (bitORN_num (num.Bit0 m) n) num.One"
+  "Int.Pos n AND Int.Neg (num.Bit0 m) = Num.sub (or_not_num_neg (Num.BitM m) n) num.One"
+  "Int.Pos n AND Int.Neg (num.Bit1 m) = Num.sub (or_not_num_neg (num.Bit0 m) n) num.One"
   "Int.Neg num.One AND Int.Pos m = Int.Pos m"
-  "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (bitORN_num (Num.BitM n) m) num.One"
-  "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (bitORN_num (num.Bit0 n) m) num.One"
-           apply (simp_all add: int_numeral_bitAND_num Num.add_One
-              sub_inc_One_eq inc_BitM_eq not_minus_numeral_inc_eq
-              flip: int_not_neg_numeral int_or_not_bitORN_num split: option.split)
-   apply (simp_all add: ac_simps)
-  done
+  "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (or_not_num_neg (Num.BitM n) m) num.One"
+  "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (or_not_num_neg (num.Bit0 n) m) num.One"
+  by (simp_all add: and_num_eq_None_iff and_num_eq_Some_iff sub_one_eq_not_neg
+    numeral_or_not_num_eq ac_simps split: option.split)
 
 lemma int_or_code [code]: fixes i j :: int shows
   "0 OR j = j"
   "i OR 0 = i"
-  "Int.Pos n OR Int.Pos m = Int.Pos (bitOR_num n m)"
+  "Int.Pos n OR Int.Pos m = Int.Pos (or_num n m)"
   "Int.Neg n OR Int.Neg m = NOT (Num.sub n num.One AND Num.sub m num.One)"
   "Int.Pos n OR Int.Neg num.One = Int.Neg num.One"
-  "Int.Pos n OR Int.Neg (num.Bit0 m) = (case bitANDN_num (Num.BitM m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-  "Int.Pos n OR Int.Neg (num.Bit1 m) = (case bitANDN_num (num.Bit0 m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
+  "Int.Pos n OR Int.Neg (num.Bit0 m) = (case and_not_num (Num.BitM m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
+  "Int.Pos n OR Int.Neg (num.Bit1 m) = (case and_not_num (num.Bit0 m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
   "Int.Neg num.One OR Int.Pos m = Int.Neg num.One"
-  "Int.Neg (num.Bit0 n) OR Int.Pos m = (case bitANDN_num (Num.BitM n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-  "Int.Neg (num.Bit1 n) OR Int.Pos m = (case bitANDN_num (num.Bit0 n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-           apply (simp_all add: int_numeral_bitOR_num flip: int_not_neg_numeral)
-     apply (simp_all add: or_int_def int_and_comm int_not_and_bitANDN_num del: int_not_simps(4) split: option.split)
-     apply (simp_all add: Num.add_One)
+  "Int.Neg (num.Bit0 n) OR Int.Pos m = (case and_not_num (Num.BitM n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
+  "Int.Neg (num.Bit1 n) OR Int.Pos m = (case and_not_num (num.Bit0 n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
+  apply (simp_all add: and_not_num_eq_None_iff and_not_num_eq_Some_iff numeral_or_num_eq
+    sub_one_eq_not_neg add_One ac_simps split: option.split)
+     apply (simp_all add: or_eq_not_not_and minus_numeral_inc_eq)
   done
 
 lemma int_xor_code [code]: fixes i j :: int shows
   "0 XOR j = j"
   "i XOR 0 = i"
-  "Int.Pos n XOR Int.Pos m = (case bitXOR_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Int.Pos n')"
+  "Int.Pos n XOR Int.Pos m = (case xor_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Int.Pos n')"
   "Int.Neg n XOR Int.Neg m = Num.sub n num.One XOR Num.sub m num.One"
   "Int.Neg n XOR Int.Pos m = NOT (Num.sub n num.One XOR Int.Pos m)"
   "Int.Pos n XOR Int.Neg m = NOT (Int.Pos n XOR Num.sub m num.One)"
-  by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
+  by (simp_all add: xor_num_eq_None_iff xor_num_eq_Some_iff sub_one_eq_not_neg split: option.split)
 
 lemma bin_rest_code: "i div 2 = drop_bit 1 i" for i :: int
   by (simp add: shiftr_int_def)

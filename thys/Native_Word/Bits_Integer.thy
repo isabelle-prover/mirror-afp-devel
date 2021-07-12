@@ -5,7 +5,8 @@
 chapter \<open>Bit operations for target language integers\<close>
 
 theory Bits_Integer imports
-  More_Bits_Int
+  "Word_Lib.Bit_Comprehension"
+  Code_Int_Integer_Conversion
   Code_Symbolic_Bits_Int
 begin
 

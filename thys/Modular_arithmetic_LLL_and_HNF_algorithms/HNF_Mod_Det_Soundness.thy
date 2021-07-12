@@ -6378,12 +6378,17 @@ proof (rule echelon_form_JNF_intro)
 
     have least_not0: "(LEAST n. H $$ (i, n) \<noteq> 0) \<noteq> 0" 
     proof -
-      have "\<exists>n. H $$ (i, n) \<noteq> 0 \<and> H $$ (i, 0) = 0"
-        by (metis (no_types) False H Hi0 Num.numeral_nat(7) atLeastLessThan_iff carrier_matD(1)
-            is_zero_row_JNF_def j nat_LEAST_True nat_neq_iff not_less_Least not_less_eq order.strict_trans
-            ij not_zero_iH wellorder_Least_lemma(1) wellorder_Least_lemma(2))
-      then show ?thesis
-        by (metis (mono_tags, lifting) LeastI_ex)
+      have \<open>dim_row H = m\<close>
+        using H by auto
+      with \<open>i < j\<close> \<open>j < dim_row H\<close> have \<open>i < m\<close>
+        by simp
+      then have \<open>H $$ (i, 0) = 0\<close>
+        using i_not0 by (auto simp add: Suc_le_eq intro: Hi0)
+      moreover from is_zero_row_JNF_def [of i H] not_zero_iH
+      obtain n where \<open>H $$ (i, n) \<noteq> 0\<close>
+        by blast
+      ultimately show ?thesis
+        by (metis (mono_tags, lifting) LeastI)
     qed
     have least_not0j: "(LEAST n. H $$ (j, n) \<noteq> 0) \<noteq> 0"
     proof -

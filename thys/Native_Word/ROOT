@@ -5,7 +5,6 @@ session "Native_Word" (AFP) = Word_Lib +
   sessions
     "HOL-Imperative_HOL"
   theories
-    Code_Target_Bits_Int
     Uint64
     Uint32
     Uint16

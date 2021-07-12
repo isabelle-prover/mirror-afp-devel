@@ -7,7 +7,6 @@ chapter \<open>Common base for target language implementations of word types\<cl
 theory Code_Target_Word_Base imports
   "HOL-Library.Word"
   "Word_Lib.Signed_Division_Word"
-  (*"Word_Lib.Bit_Shifts_Infix_Syntax"*)
   Bits_Integer
 begin
 

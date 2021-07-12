@@ -964,7 +964,7 @@ subsubsection \<open>Basic simplification rules\<close>
 
 lemmas int_not_def = not_int_def
 
-lemma int_not_simps [simp]:
+lemma int_not_simps:
   "NOT (0::int) = -1"
   "NOT (1::int) = -2"
   "NOT (- 1::int) = 0"
