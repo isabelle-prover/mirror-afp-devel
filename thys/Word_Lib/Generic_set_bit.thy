@@ -25,6 +25,17 @@ lemma set_bit_eq:
   for a :: \<open>'a::{ring_bit_operations, set_bit}\<close>
   by (rule bit_eqI) (simp add: bit_simps)
 
+instantiation int :: set_bit
+begin
+
+definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> int\<close>
+  where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
+
+instance
+  by standard (simp_all add: set_bit_int_def bit_simps)
+
+end
+
 instantiation word :: (len) set_bit
 begin
 

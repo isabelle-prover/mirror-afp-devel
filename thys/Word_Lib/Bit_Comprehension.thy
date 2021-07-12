@@ -7,7 +7,8 @@
 section \<open>Comprehension syntax for bit expressions\<close>
 
 theory Bit_Comprehension
-  imports "HOL-Library.Word"
+  imports
+    "HOL-Library.Word"
 begin
 
 class bit_comprehension = ring_bit_operations +

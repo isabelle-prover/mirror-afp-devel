@@ -381,7 +381,7 @@ begin
 lemma bitNOT_integer_code [code]:
   fixes i :: integer shows
   "NOT i = - i - 1"
-by transfer(simp add: int_not_def)
+  by transfer (simp add: not_int_def)
 
 lemma bin_rest_integer_code [code nbe]:
   "bin_rest_integer i = i div 2"
@@ -389,15 +389,15 @@ lemma bin_rest_integer_code [code nbe]:
 
 lemma bin_last_integer_code [code]:
   "bin_last_integer i \<longleftrightarrow> i AND 1 \<noteq> 0"
-  by transfer (rule bin_last_conv_AND)
+  by transfer (simp add: and_one_eq odd_iff_mod_2_eq_one)
 
 lemma bin_last_integer_nbe [code nbe]:
   "bin_last_integer i \<longleftrightarrow> i mod 2 \<noteq> 0"
-by transfer(simp add: bin_last_def)
+  by transfer (simp add: odd_iff_mod_2_eq_one)
 
 lemma bitval_bin_last_integer [code_unfold]:
   "of_bool (bin_last_integer i) = i AND 1"
-by transfer(rule bitval_bin_last)
+  by transfer (simp add: and_one_eq mod_2_eq_odd)
 
 end
 
@@ -430,9 +430,7 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg n) (Code_Numeral.sub n' num.One)"
   "integer_test_bit (Code_Numeral.Neg (num.Bit1 n)) (Code_Numeral.Pos n') =
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
-                apply (simp_all add: integer_test_bit_def bit_integer_def)
-  using bin_nth_numeral_simps bit_numeral_int_simps(6)
-  by presburger
+  by (simp_all add: integer_test_bit_def bit_integer_def flip: bit_not_int_iff')
 
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Bits'_Integer.test'_bit" and
@@ -569,12 +567,12 @@ begin
 
 lemma Bit_integer_code [code]:
   "Bit_integer i False = push_bit 1 i"
-  "Bit_integer i True = (push_bit 1 i) + 1"
-  by (transfer; simp add: shiftl_int_def)+
+  "Bit_integer i True = push_bit 1 i + 1"
+  by (transfer; simp)+
 
 lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"
-by transfer(simp add: msb_int_def)
+  by transfer (simp add: msb_int_def)
 
 end
 

@@ -11,13 +11,15 @@ theory Code_Target_Bits_Int
 begin
 
 declare [[code drop:
-  "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "(NOT) :: int \<Rightarrow> _"
+  "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "NOT :: int \<Rightarrow> _"
   "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "bit :: int \<Rightarrow> _"
   "push_bit :: _ \<Rightarrow> int \<Rightarrow> _" "drop_bit :: _ \<Rightarrow> int \<Rightarrow> _"
   int_of_integer_symbolic
   ]]
 
-declare bitval_bin_last [code_unfold]
+lemma [code_unfold]:
+  \<open>of_bool (odd i) = i AND 1\<close> for i :: int
+  by (simp add: and_one_eq mod2_eq_if)
 
 lemma [code_unfold]:
   \<open>bit x n \<longleftrightarrow> x AND (push_bit n 1) \<noteq> 0\<close> for x :: int

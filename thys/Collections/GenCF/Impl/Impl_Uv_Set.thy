@@ -55,7 +55,7 @@ begin
   lemma lookup_single_bit[simp]: "lookup i ((single_bit n)::'a::len word list) \<longleftrightarrow> i = n"
     apply (induction n arbitrary: i rule: single_bit.induct)
     apply (subst single_bit.simps)
-    apply (auto simp: bin_nth_sc_gen bit_simps)
+    apply (auto simp add: bit_simps)
     done
 
   primrec set_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where

@@ -6,9 +6,9 @@ chapter \<open>Symbolic implementation of bit operations on int\<close>
 
 theory Code_Symbolic_Bits_Int
 imports
-  "Word_Lib.Generic_set_bit"
   "Word_Lib.Least_significant_bit"
-  "Word_Lib.Bits_Int"
+  "Word_Lib.Generic_set_bit"
+  "Word_Lib.Bit_Comprehension"
 begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>
@@ -32,7 +32,7 @@ lemma int_not_code [code]:
   "NOT (0 :: int) = -1"
   "NOT (Int.Pos n) = Int.Neg (Num.inc n)"
   "NOT (Int.Neg n) = Num.sub n num.One"
-  by (simp_all add: Num.add_One int_not_def)
+  by (simp_all add: Num.add_One not_int_def)
 
 lemma int_and_code [code]: fixes i j :: int shows
   "0 AND j = 0"
@@ -74,17 +74,17 @@ lemma int_xor_code [code]: fixes i j :: int shows
   by (simp_all add: xor_num_eq_None_iff xor_num_eq_Some_iff sub_one_eq_not_neg split: option.split)
 
 lemma bin_rest_code: "i div 2 = drop_bit 1 i" for i :: int
-  by (simp add: shiftr_int_def)
-
+  by (simp add: drop_bit_eq_div)
+  
 lemma set_bits_code [code]: 
   "set_bits = Code.abort (STR ''set_bits is unsupported on type int'') (\<lambda>_. set_bits :: _ \<Rightarrow> int)"
-by simp
+  by simp
 
 lemma fixes i :: int 
-  shows int_set_bit_True_conv_OR [code]: "set_bit i n True = i OR push_bit n 1"
-  and int_set_bit_False_conv_NAND [code]: "set_bit i n False = i AND NOT (push_bit n 1)"
-  and int_set_bit_conv_ops: "set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
-  by (simp_all add: set_bit_int_def bin_set_conv_OR bin_clr_conv_NAND Bit_Operations.set_bit_int_def unset_bit_int_def)
+  shows int_set_bit_True_conv_OR [code]: "Generic_set_bit.set_bit i n True = i OR push_bit n 1"
+  and int_set_bit_False_conv_NAND [code]: "Generic_set_bit.set_bit i n False = i AND NOT (push_bit n 1)"
+  and int_set_bit_conv_ops: "Generic_set_bit.set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
+  by (simp_all add: bit_eq_iff) (auto simp add: bit_simps)
 
 declare [[code drop: \<open>drop_bit :: nat \<Rightarrow> int \<Rightarrow> int\<close>]]
 

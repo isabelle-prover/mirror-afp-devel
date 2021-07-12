@@ -643,7 +643,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       unfolding ppp 
       apply transfer
       apply transfer
-      apply (auto simp add: drop_bit_Suc)
+      apply (auto simp add: drop_bit_Suc take_bit_int_eq_self)
       done
     note IH = 1(1)[OF False refl dr'[symmetric] urel32_mult[OF x x] div]
     show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p32.simps[of _ _ y] dr' id if_False rem
@@ -1073,7 +1073,7 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
       unfolding ppp
       apply transfer
       apply transfer
-      apply (auto simp add: drop_bit_Suc)
+      apply (auto simp add: drop_bit_Suc take_bit_int_eq_self)
       done
     note IH = 1(1)[OF False refl dr'[symmetric] urel64_mult[OF x x] div]
     show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p64.simps[of _ _ y] dr' id if_False rem

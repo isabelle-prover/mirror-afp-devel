@@ -7,7 +7,11 @@
 section \<open>Bitwise Operations on integers\<close>
 
 theory Bits_Int
-  imports "HOL-Library.Word" "Word_Lib.Most_significant_bit" "Word_Lib.Generic_set_bit"
+  imports
+    "Word_Lib.Most_significant_bit"
+    "Word_Lib.Least_significant_bit"
+    "Word_Lib.Generic_set_bit"
+    "Word_Lib.Bit_Comprehension"
 begin
 
 subsection \<open>Implicit bit representation of \<^typ>\<open>int\<close>\<close>
@@ -784,17 +788,6 @@ lemma bin_rsplit_len_indep:
 
 subsection \<open>Logical operations\<close>
 
-instantiation int :: set_bit
-begin
-
-definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> int\<close>
-  where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
-
-instance
-  by standard (simp_all add: set_bit_int_def bit_simps)
-
-end
-
 abbreviation (input) bin_sc :: \<open>nat \<Rightarrow> bool \<Rightarrow> int \<Rightarrow> int\<close>
   where \<open>bin_sc n b i \<equiv> set_bit i n b\<close>
 
@@ -921,7 +914,7 @@ lemmas int_set_bit_numerals [simp] =
 
 lemma msb_set_bit [simp]:
   "msb (set_bit (x :: int) n b) \<longleftrightarrow> msb x"
-  by (smt (z3) Bits_Int.set_bit_int_def bin_sign_def bin_sign_sc msb_int_def)
+  by (simp add: msb_int_def set_bit_int_def)
 
 lemma word_set_bit_def:
   \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>

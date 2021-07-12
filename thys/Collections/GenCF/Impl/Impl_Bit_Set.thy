@@ -33,7 +33,7 @@ context includes integer.lifting begin
 
   lemma bs_isEmpty_correct: "bs_isEmpty s \<longleftrightarrow> bs_\<alpha> s = {}"
     unfolding bs_isEmpty_def bs_\<alpha>_def 
-    by transfer (auto simp: bin_eq_iff) 
+    by transfer (auto simp: bit_eq_iff) 
     
   term set_bit
   definition bs_insert :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
@@ -41,22 +41,14 @@ context includes integer.lifting begin
 
   lemma bs_insert_correct: "bs_\<alpha> (bs_insert i s) = insert i (bs_\<alpha> s)"
     unfolding bs_\<alpha>_def bs_insert_def
-    apply transfer
-    apply auto
-    apply (metis bin_nth_sc_gen bin_set_conv_OR int_set_bit_True_conv_OR)
-    apply (metis bin_nth_sc_gen bin_set_conv_OR int_set_bit_True_conv_OR)
-    by (metis bin_nth_sc_gen bin_set_conv_OR int_set_bit_True_conv_OR)
+    by transfer (auto simp add: bit_simps)
 
   definition bs_delete :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
     "bs_delete i s \<equiv> set_bit s i False"
 
   lemma bs_delete_correct: "bs_\<alpha> (bs_delete i s) = (bs_\<alpha> s) - {i}"
     unfolding bs_\<alpha>_def bs_delete_def
-    apply transfer
-    apply auto
-    apply (metis bin_nth_ops(1) int_set_bit_False_conv_NAND)
-    apply (metis (full_types) bin_nth_sc set_bit_int_def)
-    by (metis (full_types) bin_nth_sc_gen set_bit_int_def)
+    by transfer (auto simp add: bit_simps split: if_splits)
   
   definition bs_mem :: "nat \<Rightarrow> bitset \<Rightarrow> bool" where
     "bs_mem i s \<equiv> bit s i"
@@ -71,44 +63,42 @@ context includes integer.lifting begin
   lemma bs_eq_correct: "bs_eq s1 s2 \<longleftrightarrow> bs_\<alpha> s1 = bs_\<alpha> s2"
     unfolding bs_eq_def bs_\<alpha>_def
     including integer.lifting
-    apply transfer
-    apply auto
-    by (metis bin_eqI mem_Collect_eq)
+    by transfer (simp add: bit_eq_iff set_eq_iff)
 
   definition bs_subset_eq :: "bitset \<Rightarrow> bitset \<Rightarrow> bool" where
     "bs_subset_eq s1 s2 \<equiv> s1 AND NOT s2 = 0"
   
   lemma bs_subset_eq_correct: "bs_subset_eq s1 s2 \<longleftrightarrow> bs_\<alpha> s1 \<subseteq> bs_\<alpha> s2"
     unfolding bs_\<alpha>_def bs_subset_eq_def
-    by transfer (auto simp add: bit_eq_iff bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
   definition bs_disjoint :: "bitset \<Rightarrow> bitset \<Rightarrow> bool" where
     "bs_disjoint s1 s2 \<equiv> s1 AND s2 = 0"
   
   lemma bs_disjoint_correct: "bs_disjoint s1 s2 \<longleftrightarrow> bs_\<alpha> s1 \<inter> bs_\<alpha> s2 = {}"
     unfolding bs_\<alpha>_def bs_disjoint_def
-    by transfer (auto simp add: bit_eq_iff bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
   definition bs_union :: "bitset \<Rightarrow> bitset \<Rightarrow> bitset" where
     "bs_union s1 s2 = s1 OR s2"
 
   lemma bs_union_correct: "bs_\<alpha> (bs_union s1 s2) = bs_\<alpha> s1 \<union> bs_\<alpha> s2"
     unfolding bs_\<alpha>_def bs_union_def
-    by transfer (auto simp: bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
   definition bs_inter :: "bitset \<Rightarrow> bitset \<Rightarrow> bitset" where
     "bs_inter s1 s2 = s1 AND s2"
 
   lemma bs_inter_correct: "bs_\<alpha> (bs_inter s1 s2) = bs_\<alpha> s1 \<inter> bs_\<alpha> s2"
     unfolding bs_\<alpha>_def bs_inter_def
-    by transfer (auto simp: bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
   definition bs_diff :: "bitset \<Rightarrow> bitset \<Rightarrow> bitset" where
     "bs_diff s1 s2 = s1 AND NOT s2"
 
   lemma bs_diff_correct: "bs_\<alpha> (bs_diff s1 s2) = bs_\<alpha> s1 - bs_\<alpha> s2"
     unfolding bs_\<alpha>_def bs_diff_def
-    by transfer (auto simp: bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
   definition bs_UNIV :: "unit \<Rightarrow> bitset" where "bs_UNIV \<equiv> \<lambda>_. -1"
 
@@ -121,7 +111,7 @@ context includes integer.lifting begin
 
   lemma bs_complement_correct: "bs_\<alpha> (bs_complement s) = - bs_\<alpha> s"
     unfolding bs_\<alpha>_def bs_complement_def
-    by transfer (auto simp: bin_nth_ops)
+    by transfer (simp add: bit_eq_iff, auto simp add: bit_simps)
 
 end
 

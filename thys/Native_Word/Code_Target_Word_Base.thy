@@ -103,7 +103,7 @@ lemma uint_and_mask_or_full:
   shows "uint (n AND mask1) OR mask2 = uint n"
 proof -
   have "mask2 = uint (push_bit (LENGTH('a) - 1) 1 :: 'a word)" using assms
-    by (simp add: uint_shiftl word_size bintrunc_shiftl)
+    by transfer (simp add: take_bit_push_bit)
   hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (push_bit (LENGTH('a) - 1) 1 :: 'a word))"
     by(simp add: uint_or)
   also have "\<dots> = uint (n AND mask (LENGTH('a) - 1 + 1))"
@@ -189,12 +189,16 @@ next
     by (cases \<open>LENGTH('a)\<close>)
       (auto dest: less_imp_of_nat_less [where ?'a = int])
   with y n have "sint (drop_bit 1 x) = uint (drop_bit 1 x)"
-    by (simp add: sint_uint sbintrunc_mod2p drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib)
+    by (cases \<open>LENGTH('a)\<close>)
+      (auto simp add: sint_uint drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib signed_take_bit_int_eq_self_iff)
   moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
     using y by (cases \<open>LENGTH('a)\<close>)
       (simp_all add: not_le push_bit_of_1 word_less_alt uint_power_lower)
   then have "sint y = uint y"
-    by (simp add: sint_uint sbintrunc_mod2p)
+    apply (cases \<open>LENGTH('a)\<close>)
+     apply (auto simp add: sint_uint signed_take_bit_int_eq_self_iff)
+    using uint_ge_0 [of y]
+    by linarith 
   ultimately show ?thesis using y
     apply (subst div_half_word [OF assms])
     apply (simp add: sdiv_word_def signed_divide_int_def flip: uint_div)
@@ -266,8 +270,10 @@ lemma word_of_int_via_signed:
        else if i' < least \<or> overflow \<le> i' then arbitrary2 i' else word_of_int i')"
 proof -
   define i' where "i' = i AND mask"
-  have "shift = mask + 1" unfolding assms by(simp add: bin_mask_p1_conv_shift)
-  hence "i' < shift" by(simp add: mask_def i'_def int_and_le)
+  have "shift = mask + 1" unfolding assms
+    by (simp add: mask_eq_exp_minus_1 push_bit_of_1) 
+  hence "i' < shift"
+    by (simp add: mask_def i'_def)
   show ?thesis
   proof(cases "bit i' index")
     case True
@@ -276,7 +282,10 @@ proof -
       apply (rule bit_eqI)
       apply (auto simp add: bit_take_bit_iff bit_or_iff bit_exp_iff)
       done
-    have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
+    have \<open>overflow \<le> overflow OR i'\<close>
+      by (simp add: i'_def mask_def or_greater_eq)
+    then have "overflow \<le> i'"
+      by (subst unf)
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
       by(cases "LENGTH('a)")(simp_all add: not_less push_bit_of_1)
     moreover
@@ -288,11 +297,15 @@ proof -
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False
-    hence "i' = i AND Bit_Operations.mask (LENGTH('a) - 1)" unfolding assms i'_def
-      by(clarsimp simp add: i'_def bit_simps intro!: bin_eqI)(cases "LENGTH('a)", auto simp add: less_Suc_eq)
-    also have "\<dots> \<le> Bit_Operations.mask (LENGTH('a) - 1)" by(rule int_and_le) simp
-    also have "\<dots> < overflow" unfolding overflow_def
-      by(simp add: bin_mask_p1_conv_shift[symmetric])
+    have "i' = i AND Bit_Operations.mask (LENGTH('a) - 1)"
+      apply (rule bit_eqI)
+      apply (use False in \<open>auto simp add: bit_simps assms i'_def\<close>)
+      apply (auto simp add: less_le)
+      done
+    also have "\<dots> \<le> Bit_Operations.mask (LENGTH('a) - 1)"
+      using AND_upper2 mask_nonnegative_int by blast
+    also have "\<dots> < overflow"
+      by (simp add: mask_int_def push_bit_of_1 overflow_def)
     also
     have "least \<le> 0" unfolding least_def overflow_def by simp
     have "0 \<le> i'" by (simp add: i'_def mask_def)
