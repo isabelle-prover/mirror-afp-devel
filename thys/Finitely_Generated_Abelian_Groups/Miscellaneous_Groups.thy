@@ -55,7 +55,7 @@ lemma (in group) subgroups_card_coprime_inter_card_one:
   shows "card (H \<inter> J) = 1"
 proof -
   from assms inter_subgroup_dvd_card have "is_unit (card (H \<inter> J))" unfolding coprime_def
-    by (meson Int_lower2 sub_subgroup_dvd_card subgroup_Int)
+    by (metis assms(3) coprime_common_divisor inf_commute)
   then show ?thesis by simp
 qed
 

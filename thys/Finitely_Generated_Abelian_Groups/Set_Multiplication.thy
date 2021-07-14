@@ -5,7 +5,7 @@
 section \<open>Set Multiplication\<close>
 
 theory Set_Multiplication
-  imports "HOL-Algebra.Algebra"
+  imports "HOL-Algebra.Multiplicative_Group"
 begin
 
 text \<open>This theory/section is of auxiliary nature and is mainly used to establish a connection
@@ -88,7 +88,7 @@ next
     using set_mult_def[of G _ J] by blast
   then have "\<And>a b. \<lbrakk>a \<in> (insert x H); b \<in> (insert x H); a \<noteq> b\<rbrakk> \<Longrightarrow> ((\<otimes>) a ` J) \<inter> ((\<otimes>) b ` J) = {}"
     using \<open>x \<notin> H\<close> ih by blast
-  then show ?case using step by algebra
+  then show ?case using step by presburger
 qed
 
 lemma (in group) set_mult_card_eq_impl_empty_inter':

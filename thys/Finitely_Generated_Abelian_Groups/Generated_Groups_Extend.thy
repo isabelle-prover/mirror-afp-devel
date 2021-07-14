@@ -5,7 +5,7 @@
 section \<open>Generated Groups\<close>
 
 theory Generated_Groups_Extend
-  imports Miscellaneous_Groups "HOL-Algebra.Algebra"
+  imports Miscellaneous_Groups
 begin
 
 text \<open>This section extends the lemmas and facts about \<open>generate\<close>. Starting with a basic fact.\<close>

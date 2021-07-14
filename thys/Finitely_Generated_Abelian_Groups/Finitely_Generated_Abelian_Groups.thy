@@ -44,7 +44,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
     have m: "map ord gs = replicate (length gs) 0" using o
       by (induction gs; auto)
     show ?thesis
-    proof(intro exI conjI subsetI)
+    proof(rule, safe)
       show "\<And>x. x \<in> set gs \<Longrightarrow> x \<in> generate G A" using gs generate.incl[of _ A G] by blast
       show "distinct gs" by fact
       show "is_idirprod (generate G A) (\<lambda>g. generate G {g}) (set gs)"

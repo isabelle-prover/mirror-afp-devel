@@ -66,7 +66,7 @@ lemma (in comm_group) finprod_relations_triv_harder_better_stronger:
 proof(rule, rule)
   fix f
   assume f: "f \<in> (\<Pi>\<^sub>E a\<in>A. generate G {a})" "finprod G f A = \<one>"
-  with generate_pow assms(1) have "\<forall>a\<in>A. \<exists>k::int. f a = a [^] k" by auto
+  with generate_pow assms(1) have "\<forall>a\<in>A. \<exists>k::int. f a = a [^] k" by blast
   then obtain r::"'a \<Rightarrow> int" where r: "\<forall>a\<in>A. f a = a [^] r a" by metis
   have "restrict r A \<in> relations A"
   proof(intro in_relationsI)

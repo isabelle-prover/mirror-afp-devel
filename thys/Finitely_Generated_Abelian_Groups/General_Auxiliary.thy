@@ -5,7 +5,9 @@
 section \<open>Auxiliary lemmas\<close>
 
 theory General_Auxiliary
-  imports "HOL-Algebra.Algebra"
+  imports Complex_Main
+          "HOL-Algebra.IntRing"
+          "HOL.Rings"
 begin
 
 lemma inter_imp_subset: "A \<inter> B = A \<Longrightarrow> A \<subseteq> B"
