@@ -154,7 +154,7 @@ begin
       using is_extensional
           apply auto[4]
       by (metis A1.ideD(1) A1.comp_ide_self A1xA2.comp_simp A1xA2.seq_char fst_conv
-          preserves_comp_2 snd_conv)
+          as_nat_trans.preserves_comp_2 snd_conv)
 
     lemma fixing_ide_gives_functor_2:
     assumes "A2.ide a2"
@@ -164,7 +164,7 @@ begin
       using is_extensional
           apply auto[4]
       by (metis A1xA2.comp_simp A1xA2.seq_char A2.ideD(1) A2.comp_ide_self fst_conv
-          preserves_comp_2 snd_conv)
+          as_nat_trans.preserves_comp_2 snd_conv)
 
     text\<open>
       Fixing one or the other argument of a binary functor to be an arrow

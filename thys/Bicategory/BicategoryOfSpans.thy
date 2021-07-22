@@ -8144,7 +8144,7 @@ $$
           show "\<guillemotleft>\<a>\<^sup>-\<^sup>1[u\<^sub>1, \<tau>\<mu>.p\<^sub>0, chine] : u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0 \<star> chine \<Rightarrow> (u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine\<guillemotright>"
             by auto
           show "\<guillemotleft>inv t\<^sub>0u\<^sub>1.\<phi> \<star> chine : (u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine \<Rightarrow> (t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1) \<star> chine\<guillemotright>"
-            using t\<^sub>0u\<^sub>1.\<phi>_uniqueness(2)
+            using t\<^sub>0u\<^sub>1.\<phi>_uniqueness(2) hcomp_in_vhom
             by (simp add: t\<^sub>0u\<^sub>1.\<phi>_in_hom(2) w_in_hom(2))
           show "\<guillemotleft>\<a>[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine] : (t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1) \<star> chine \<Rightarrow> t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1 \<star> chine\<guillemotright>"
             using \<tau>.T0.antipar(1) by auto

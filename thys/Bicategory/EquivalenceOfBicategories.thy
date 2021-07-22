@@ -1489,7 +1489,7 @@ begin
     proof -
       show "B.iso (CMP f g)"
         unfolding CMP_def P_def
-        using assms B.VV.arr_char P.components_are_iso
+        using assms B.VV.arr_char P.as_nat_iso.components_are_iso
         by (intro B.isos_compose B.iso_hcomp) auto
       thus "iso (CMP f g)"
         using assms iso_char arr_char CMP_simps(1) by auto
@@ -1752,7 +1752,7 @@ begin
         also have
           "... = ((e ?c \<star>\<^sub>B \<mu>) \<star>\<^sub>B d ?b) \<cdot>\<^sub>B \<a>\<^sub>B\<^sup>-\<^sup>1[e ?c, ?f, d ?b] \<star>\<^sub>B P \<nu> \<cdot>\<^sub>B P ?h"
           using assms B.comp_arr_dom B.comp_cod_arr B.src_cod B.src_dom
-                B.trg_cod B.trg_dom P.naturality
+                B.trg_cod B.trg_dom P.as_nat_trans.naturality
           by simp
         also have "... = (((e ?c \<star>\<^sub>B \<mu>) \<star>\<^sub>B d ?b) \<star>\<^sub>B P \<nu>) \<cdot>\<^sub>B (\<a>\<^sub>B\<^sup>-\<^sup>1[e ?c, ?f, d ?b] \<star>\<^sub>B P ?h)"
           using assms B.interchange by auto
@@ -3996,7 +3996,7 @@ begin
     and "dom (\<eta>\<^sub>1 f) = PoE.map f \<star> e (src f)"
     and "cod (\<eta>\<^sub>1 f) = e (trg f) \<star> I\<^sub>S.map f"
     and "iso (\<eta>\<^sub>1 f)"
-      using assms unit\<^sub>1_in_hom\<^sub>S iso_char ide_char arr_char P.components_are_iso
+      using assms unit\<^sub>1_in_hom\<^sub>S iso_char ide_char arr_char P.as_nat_iso.components_are_iso
       by auto
 
     sublocale unit: pseudonatural_equivalence comp hcomp \<a> \<i>\<^sub>B src trg
@@ -6232,7 +6232,7 @@ begin
             using a B.obj_simps P\<^sub>0_props obj_char arr_char by simp
           moreover have "P\<^sub>0 a \<cdot>\<^sub>B P\<^sub>0 a \<in> Obj"
             using 1 arr_char P\<^sub>0_props(1) obj_char
-            by (metis (no_types, lifting) B.cod_trg B.obj_def' B.trg.is_natural_2)
+            by (metis (no_types, lifting) B.cod_trg B.obj_def' B.trg.as_nat_trans.is_natural_2)
           moreover have "emb.unit (P\<^sub>0 (src\<^sub>B a)) = P\<^sub>0 (src\<^sub>B a)"
             using a 0 1 emb.unit_char' P.map\<^sub>0_def src_def by simp
           ultimately show ?thesis
@@ -6466,7 +6466,9 @@ begin
         using \<mu>\<nu> 1 hom\<^sub>D.arr_char hom\<^sub>D.comp_def by fastforce
       have "G (hom\<^sub>D.comp \<mu> \<nu>) = hom\<^sub>C.comp (G \<mu>) (G \<nu>)"
         unfolding G_def
-        using 1 2 G\<^sub>0_props Faa'.G\<^sub>1_props hom\<^sub>D.arr_char Faa'.\<eta>\<epsilon>.F.preserves_comp_2 by auto
+        using 1 2 G\<^sub>0_props Faa'.G\<^sub>1_props hom\<^sub>D.arr_char
+              Faa'.\<eta>\<epsilon>.F.as_nat_trans.preserves_comp_2
+        by auto
       thus "G (\<mu> \<cdot>\<^sub>D \<nu>) = G \<mu> \<cdot>\<^sub>C G \<nu>"
         using \<mu>\<nu> 1 2 G_def hom\<^sub>C.comp_simp hom\<^sub>D.comp_simp D.src_vcomp D.trg_vcomp
               Faa'.\<eta>\<epsilon>.F.preserves_arr
@@ -6838,32 +6840,32 @@ begin
     interpretation Go\<eta>: natural_transformation V\<^sub>D V\<^sub>C G GFG.map \<open>G \<circ> \<eta>\<close>
     proof -
       have "G \<circ> D.map = G"
-        using G.natural_transformation_axioms by auto
+        using G.as_nat_trans.natural_transformation_axioms by auto
       moreover have "G \<circ> FG.map = GFG.map"
         by auto
       ultimately show "natural_transformation V\<^sub>D V\<^sub>C G GFG.map (G \<circ> \<eta>)"
-        using \<eta>.natural_transformation_axioms G.natural_transformation_axioms
+        using \<eta>.natural_transformation_axioms G.as_nat_trans.natural_transformation_axioms
               horizontal_composite [of V\<^sub>D V\<^sub>D D.map FG.map \<eta> V\<^sub>C G G G] by simp
     qed
 
     interpretation \<eta>oF: natural_transformation V\<^sub>C V\<^sub>D F FGF.map \<open>\<eta> \<circ> F\<close>
-      using \<eta>.natural_transformation_axioms natural_transformation_axioms
+      using \<eta>.natural_transformation_axioms as_nat_trans.natural_transformation_axioms
             horizontal_composite [of V\<^sub>C V\<^sub>D F F F V\<^sub>D D.map FG.map \<eta>]
       by simp
 
     interpretation \<epsilon>oG: natural_transformation V\<^sub>D V\<^sub>C GFG.map G \<open>\<epsilon> \<circ> G\<close>
-      using \<epsilon>.natural_transformation_axioms G.natural_transformation_axioms
+      using \<epsilon>.natural_transformation_axioms G.as_nat_trans.natural_transformation_axioms
             horizontal_composite [of V\<^sub>D V\<^sub>C G G G V\<^sub>C GF.map C.map \<epsilon>]
       by simp
 
     interpretation Fo\<epsilon>: natural_transformation V\<^sub>C V\<^sub>D FGF.map F \<open>F \<circ> \<epsilon>\<close>
     proof -
       have "F \<circ> C.map = F"
-        using natural_transformation_axioms by auto
+        using as_nat_trans.natural_transformation_axioms by auto
       moreover have "F \<circ> GF.map = FGF.map"
         by auto
       ultimately show "natural_transformation V\<^sub>C V\<^sub>D FGF.map F (F \<circ> \<epsilon>)"
-        using \<epsilon>.natural_transformation_axioms natural_transformation_axioms
+        using \<epsilon>.natural_transformation_axioms as_nat_trans.natural_transformation_axioms
               horizontal_composite [of V\<^sub>C V\<^sub>C GF.map C.map \<epsilon> V\<^sub>D F F F]
         by simp
     qed
@@ -7515,7 +7517,7 @@ begin
       proof
         show "\<guillemotleft>G \<nu> \<star>\<^sub>C G \<nu>' :
                  G (D.dom \<nu>) \<star>\<^sub>C G (D.dom \<nu>') \<Rightarrow>\<^sub>C G (D.cod \<nu>) \<star>\<^sub>C G (D.cod \<nu>')\<guillemotright>"
-          using assms G_in_hom(2) by auto
+          using assms G_in_hom(2) C.hcomp_in_vhom by auto
         show "\<guillemotleft>\<Phi>\<^sub>G.map (D.cod \<nu>, D.cod \<nu>') :
                  G (D.cod \<nu>) \<star>\<^sub>C G (D.cod \<nu>') \<Rightarrow>\<^sub>C G (D.cod \<nu> \<star>\<^sub>D D.cod \<nu>')\<guillemotright>"
           using assms \<Phi>\<^sub>G\<^sub>0_in_hom \<Phi>\<^sub>G.map_simp_ide D.VV.ide_char D.VV.arr_char by auto
@@ -7572,7 +7574,7 @@ begin
                      (C.inv (\<epsilon> (G f \<star>\<^sub>C G g)) \<star>\<^sub>C G h))"
           using assms \<Phi>\<^sub>G_simps G.FF_def G\<^sub>0_props by auto
         thus ?thesis
-          by (metis C.seqE preserves_comp_2)
+          by (metis C.seqE as_nat_trans.preserves_comp_2)
       qed
       also have "... = F (G \<a>\<^sub>D[f, g, h]) \<cdot>\<^sub>D
                        F (G (D.inv (\<eta> (f \<star>\<^sub>D g)) \<star>\<^sub>D D.inv (\<eta> h))) \<cdot>\<^sub>D
@@ -7893,7 +7895,7 @@ begin
                      (G f \<star>\<^sub>C C.inv (\<epsilon> (G g \<star>\<^sub>C G h))))"
           using assms G\<^sub>0_props by auto
         thus ?thesis
-          using assms by (metis C.seqE preserves_comp_2)
+          using assms by (metis C.seqE as_nat_trans.preserves_comp_2)
       qed
       also have "... = F (G (D.inv (\<eta> f) \<star>\<^sub>D D.inv (\<eta> (g \<star>\<^sub>D h)))) \<cdot>\<^sub>D
                        F (G (D.inv (\<Phi> (G f, G (g \<star>\<^sub>D h))))) \<cdot>\<^sub>D
@@ -8964,7 +8966,7 @@ begin
       apply unfold_locales
                   apply auto
        apply (metis C.comp_ide_self C.ide_src C.src_cod C.src_dom)
-      by (metis C.trg.is_natural_2 C.trg.naturality C.trg_cod)
+      by (metis C.trg.as_nat_trans.is_natural_2 C.trg.as_nat_trans.naturality C.trg_cod)
 
     interpretation C\<^sub>U: dense_subbicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C U  (* 25 sec *)
     proof
@@ -8981,7 +8983,7 @@ begin
       apply unfold_locales
                   apply auto
        apply (metis D.comp_ide_self D.ide_src D.src_cod D.src_dom)
-      by (metis D.trg.is_natural_2 D.trg.naturality D.trg_cod)
+      by (metis D.trg.as_nat_trans.is_natural_2 D.trg.as_nat_trans.naturality D.trg_cod)
 
     interpretation D\<^sub>V: dense_subbicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V  (* 35 sec *)
       using V_dense D.equivalent_objects_def D.equivalent_objects_symmetric V_def

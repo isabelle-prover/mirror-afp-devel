@@ -2680,10 +2680,10 @@ begin
     proof (intro NaturalTransformation.eqI)
       show "natural_transformation \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<mu>.map" ..
       have "natural_transformation \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp \<F>\<^sub>SC.map \<F>\<^sub>SC.map \<F>\<^sub>SC.map"
-        using DoS.natural_transformation_axioms DoS_eq_\<F>\<^sub>SC by simp
+        using DoS.as_nat_trans.natural_transformation_axioms DoS_eq_\<F>\<^sub>SC by simp
       moreover have "\<F>\<^sub>SC.map = \<mu>" unfolding \<mu>_def using \<F>\<^sub>SC.map_def by blast
       ultimately show "natural_transformation \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<mu>"
-        using \<F>\<^sub>SC.natural_transformation_axioms DoS_eq_\<F>\<^sub>SC by simp
+        using \<F>\<^sub>SC.as_nat_trans.natural_transformation_axioms DoS_eq_\<F>\<^sub>SC by simp
       show "\<And>a. \<F>\<^sub>SC.ide a \<Longrightarrow> \<mu>.map a = \<mu> a"
         using \<mu>.map_simp_ide \<F>\<^sub>SC.ideD \<mu>_def by simp
     qed
@@ -3273,7 +3273,7 @@ begin
         also have "... = E.map (\<F>C.D f \<cdot> \<F>C.\<nu> (\<F>C.dom f))"
           using f EQ.\<eta>.naturality \<F>\<^sub>SC.map_simp EQ.F.preserves_arr by simp
         also have "... = E.map (\<F>\<^sub>SC.map (\<F>C.D f)) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
-          using f 1 E.preserves_comp_2 EQ.F.preserves_arr \<F>\<^sub>SC.map_simp
+          using f 1 E.as_nat_trans.preserves_comp_2 EQ.F.preserves_arr \<F>\<^sub>SC.map_simp
           by (metis (no_types, lifting))
         also have "... = E.map (\<F>C.D f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
           using f EQ.F.preserves_arr \<F>\<^sub>SC.map_simp by simp
@@ -3289,7 +3289,7 @@ begin
       moreover have "D.dom (E.map (\<F>C.D f)) = D.cod (E.map (\<F>C.\<nu> (\<F>C.dom f)))"
           using f 1 E.preserves_seq EQ.F.preserves_arr \<F>\<^sub>SC.map_simp by auto
       ultimately show ?thesis
-        using f D.comp_arr_dom D.ideD D.arr_dom_iff_arr E.is_natural_2
+        using f D.comp_arr_dom D.ideD D.arr_dom_iff_arr E.as_nat_trans.is_natural_2
         by (metis E.preserves_cod \<F>C.ide_cod \<F>C.ide_dom)
     qed
 

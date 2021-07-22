@@ -3517,7 +3517,7 @@ $$\xymatrix{
         assume f: "C.arr f"
         assume 1: "Arr u \<and> \<^bold>\<langle>C.dom f\<^bold>\<rangle> = Cod u"
         show "\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u\<rbrace> = V f \<cdot> \<lbrace>u\<rbrace>"
-          using f u 1 preserves_comp_2 by (cases u; simp)
+          using f u 1 as_nat_trans.preserves_comp_2 by (cases u; simp)
         next
         fix u v w
         assume I1: "\<And>u. \<lbrakk> Diag v; Diag u; Arr u \<and> Dom v = Cod u \<rbrakk> \<Longrightarrow>

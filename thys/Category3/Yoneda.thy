@@ -162,34 +162,13 @@ begin
       assume gf: "CopxC.arr gf"
       thus arr: "S.arr (map gf)" using gf arr_map by blast
       show "S.dom (map gf) = map (CopxC.dom gf)"
-      proof -
-        have "S.dom (map gf) = S.mkArr (set (CopxC.dom gf)) (set (CopxC.dom gf)) (\<lambda>x. x)"
-          using gf arr_map map_def S.mkIde_as_mkArr S.arr_mkArr by simp
-        also have "... = S.mkArr (set (CopxC.dom gf)) (set (CopxC.dom gf))
-                                 (\<phi> (CopxC.dom gf) o
-                                  (\<lambda>h. snd (CopxC.dom gf) \<cdot> h \<cdot> fst (CopxC.dom gf)) o
-                                  \<psi> (CopxC.dom gf))"
-          using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
-          apply (intro S.mkArr_eqI', auto)
-          by (metis C.comp_arr_dom C.comp_cod_arr C.in_homE)
-        also have "... = map (CopxC.dom gf)"
-          using gf map_def C.arr_dom_iff_arr C.arr_cod_iff_arr by simp
-        finally show ?thesis by auto
-      qed
+        using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
+              arr map_ide
+        by auto
       show "S.cod (map gf) = map (CopxC.cod gf)"
-      proof -
-        have "S.cod (map gf) = S.mkArr (set (CopxC.cod gf)) (set (CopxC.cod gf)) (\<lambda>x. x)"
-          using gf map_def arr_map S.mkIde_as_mkArr S.arr_mkArr by simp
-        also have "... = S.mkArr (set (CopxC.cod gf)) (set (CopxC.cod gf))
-                                 (\<phi> (CopxC.cod gf) o
-                                  (\<lambda>h. snd (CopxC.cod gf) \<cdot> h \<cdot> fst (CopxC.cod gf)) o
-                                  \<psi> (CopxC.cod gf))"
-          using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
-          apply (intro S.mkArr_eqI', auto)
-          by (metis C.comp_arr_dom C.comp_cod_arr C.in_homE)
-        also have "... = map (CopxC.cod gf)" using gf map_def by simp
-        finally show ?thesis by auto
-      qed
+        using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
+              arr map_ide
+        by auto
       next
       fix gf gf'
       assume gf': "CopxC.seq gf' gf"
@@ -337,9 +316,7 @@ begin
       also have "... = S.mkArr (set (C.cod g, a)) (set (C.dom g, a))
                                (\<phi> (C.dom g, a) o Cop.comp g o \<psi> (C.cod g, a))"
         using assms 1 preserves_arr [of "(g, a)"] set_def C.in_homI C.comp_cod_arr
-        apply (intro S.mkArr_eqI)
-           apply simp_all
-        by auto
+        by (intro S.mkArr_eqI) auto
      finally show ?thesis by blast
     qed
 
@@ -354,9 +331,7 @@ begin
       also have "... = S.mkArr (set (b, C.dom f)) (set (b, C.cod f))
                                (\<phi> (b, C.cod f) o C f o \<psi> (b, C.dom f))"
         using assms 1 preserves_arr [of "(b, f)"] set_def C.in_homI C.comp_arr_dom
-        apply (intro S.mkArr_eqI)
-           apply simp_all
-        by auto
+        by (intro S.mkArr_eqI) auto
       finally show ?thesis by blast
     qed
 
@@ -586,15 +561,13 @@ begin
       proof
         fix x
         assume x: "x \<in> Hom.set (b, a)"
-        hence "\<guillemotleft>\<psi> (b, a) x : b \<rightarrow> a\<guillemotright>" using assms ide_a Hom.\<psi>_mapsto by auto
-        hence "F.FUN (\<psi> (b, a) x) \<in> F.SET a \<rightarrow> F.SET b"
-          using S.Fun_mapsto [of "F (\<psi> (b, a) x)"] by fastforce
-        thus "F.FUN (\<psi> (b, a) x) e \<in> F.SET b" using e by auto
+        thus "F.FUN (\<psi> (b, a) x) e \<in> F.SET b"
+          using assms e ide_a Hom.\<psi>_mapsto S.Fun_mapsto [of "F (\<psi> (b, a) x)"] by force
       qed
       ultimately show "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
         using ide_a b S.mkArr_in_hom [of "Hom.set (b, a)" "F.SET b"] Hom.set_subset_Univ
               S.mkIde_set
-        by auto
+        by force
     qed
 
     text\<open>
@@ -1096,7 +1069,7 @@ begin
           show 3: "Cop_S.Map (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Map t"
             using NT Y_surjective_on_homs Y_def by simp
           show 4: "Cop_S.Dom (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Dom t"
-            using t 2 natural_transformation_axioms Cop_S.Map_dom by (metis Cop_S.in_homE)
+            using t 2 functor_axioms Cop_S.Map_dom by (metis Cop_S.in_homE)
           show "Cop_S.Cod (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Cod t"
             using 2 3 4 t Cop_S.Map_cod by (metis Cop_S.in_homE)
         qed

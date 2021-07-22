@@ -1073,18 +1073,18 @@ begin
       have "Diag \<circ> map = Diag"
         by auto
       thus "natural_transformation C CC.comp Diag \<Delta>o\<Pi>o\<Delta>.map (Diag \<circ> dup)"
-        using \<Delta>.natural_transformation_axioms \<delta>.natural_transformation_axioms o_assoc
-              horizontal_composite [of C C map \<Pi>o\<Delta>.map dup CC.comp Diag Diag Diag]
+        using \<Delta>.as_nat_trans.natural_transformation_axioms \<delta>.natural_transformation_axioms
+              o_assoc horizontal_composite [of C C map \<Pi>o\<Delta>.map dup CC.comp Diag Diag Diag]
         by metis
     qed
 
     interpretation \<delta>o\<Pi>: natural_transformation CC.comp C Prod \<Pi>o\<Delta>o\<Pi>.map \<open>dup \<circ> Prod\<close>
-      using \<delta>.natural_transformation_axioms \<Pi>.natural_transformation_axioms o_assoc
-            horizontal_composite [of CC.comp C Prod Prod Prod C map \<Pi>o\<Delta>.map dup]
+      using \<delta>.natural_transformation_axioms \<Pi>.as_nat_trans.natural_transformation_axioms
+            o_assoc horizontal_composite [of CC.comp C Prod Prod Prod C map \<Pi>o\<Delta>.map dup]
       by simp
 
     interpretation \<pi>o\<Delta>: natural_transformation C CC.comp \<Delta>o\<Pi>o\<Delta>.map Diag \<open>\<pi>.map \<circ> Diag\<close>
-      using \<pi>.natural_transformation_axioms \<Delta>.natural_transformation_axioms
+      using \<pi>.natural_transformation_axioms \<Delta>.as_nat_trans.natural_transformation_axioms
             horizontal_composite
               [of C CC.comp Diag Diag Diag CC.comp \<Delta>o\<Pi>.map CC.map \<pi>.map]
       by simp
@@ -1094,7 +1094,8 @@ begin
       have "Prod \<circ> \<Delta>o\<Pi>.map = \<Pi>o\<Delta>o\<Pi>.map"
         by auto
       thus "natural_transformation CC.comp C \<Pi>o\<Delta>o\<Pi>.map Prod (Prod \<circ> \<pi>.map)"
-        using \<pi>.natural_transformation_axioms \<Pi>.natural_transformation_axioms o_assoc
+        using \<pi>.natural_transformation_axioms \<Pi>.as_nat_trans.natural_transformation_axioms
+              o_assoc
               horizontal_composite
                 [of CC.comp CC.comp \<Delta>o\<Pi>.map CC.map \<pi>.map C Prod Prod Prod]
         by simp
@@ -1147,7 +1148,7 @@ begin
                              (fst fg \<otimes> snd fg)"
               using fg prod_tuple by simp
             also have "... = Prod fg"
-              using fg comp_arr_dom \<Pi>.is_natural_2 by auto
+              using fg comp_arr_dom \<Pi>.as_nat_trans.is_natural_2 by auto
             finally show ?thesis by simp
           qed
           ultimately show ?thesis by blast

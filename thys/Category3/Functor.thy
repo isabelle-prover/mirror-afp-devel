@@ -240,15 +240,22 @@ begin
     shows "map f = f"
       using assms map_def by simp
 
-    lemma is_functor:
-    shows "functor C C map"
+    sublocale "functor" C C map
       using C.arr_dom_iff_arr C.arr_cod_iff_arr
       by (unfold_locales; auto simp add: map_def)
 
-  end
+    lemma is_functor:
+    shows "functor C C map"
+      ..
 
-  sublocale identity_functor \<subseteq> "functor" C C map
-    using is_functor by auto
+    sublocale fully_faithful_functor C C map
+      using C.arrI by unfold_locales auto
+
+    lemma is_fully_faithful:
+    shows "fully_faithful_functor C C map"
+      ..
+
+  end
 
   text \<open>
     It is convenient to have an easy way to obtain from a category the identity functor
@@ -289,10 +296,14 @@ begin
     abbreviation map
     where "map \<equiv> G o F"
 
-  end
+    sublocale "functor" A C \<open>G o F\<close>
+      using functor_comp F.functor_axioms G.functor_axioms by blast
 
-  sublocale composite_functor \<subseteq> "functor" A C \<open>G o F\<close>
-    using functor_comp F.functor_axioms G.functor_axioms by blast
+    lemma is_functor:
+    shows "functor A C (G o F)"
+      ..
+
+  end
 
   lemma comp_functor_identity [simp]:
   assumes "functor A B F"
@@ -516,6 +527,40 @@ begin
     lemma inv_is_inverse:
     shows "inverse_functors A B inv G" ..
   
+    sublocale fully_faithful_functor A B G
+    proof -
+      obtain F where F: "inverse_functors A B F G"
+        using invertible by auto
+      interpret FG: inverse_functors A B F G
+        using F by simp
+      show "fully_faithful_functor A B G"
+      proof
+        fix f f'
+        assume par: "A.par f f'" and eq: "G f = G f'"
+        show "f = f'"
+          using par eq FG.inv'
+          by (metis A.map_simp comp_apply)
+        next
+        fix a a' g
+        assume a: "A.ide a" and a': "A.ide a'" and g: "\<guillemotleft>g : G a \<rightarrow>\<^sub>B G a'\<guillemotright>"
+        show "\<exists>f. \<guillemotleft>f : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G f = g"
+        proof
+          have "\<guillemotleft>F g : F (G a) \<rightarrow>\<^sub>A F (G a')\<guillemotright> \<and> G (F g) = g"
+            using a a' g FG.inv FG.inv' comp_apply
+            by (metis B.arrI B.map_simp FG.F.preserves_hom)
+          moreover have "F (G a) = a \<and> F (G a') = a'"
+            using a a' FG.inv' comp_apply
+            by (metis A.ideD(1) A.map_simp)
+          ultimately show "\<guillemotleft>F g : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G (F g) = g"
+            by simp
+        qed
+      qed
+    qed
+
+    lemma is_fully_faithful:
+    shows "fully_faithful_functor A B G"
+      ..
+
     lemma preserves_terminal:
     assumes "A.terminal a"
     shows "B.terminal (G a)"

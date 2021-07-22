@@ -64,14 +64,14 @@ begin
             dom_simp cod_simp
       apply unfold_locales
           apply auto[4]
-      by (metis B.src.preserves_comp_2 comp_char seq_char)
+      by (metis B.src.as_nat_trans.preserves_comp_2 comp_char seq_char)
 
     interpretation trg: endofunctor \<open>(\<cdot>)\<close> trg
       using trg_def null_char inclusion arr_char src_closed trg_closed dom_closed cod_closed
             dom_simp cod_simp
       apply unfold_locales
           apply auto[4]
-      by (metis B.trg.preserves_comp_2 comp_char seq_char)
+      by (metis B.trg.as_nat_trans.preserves_comp_2 comp_char seq_char)
 
     interpretation horizontal_homs \<open>(\<cdot>)\<close> src trg
       using src_def trg_def src.preserves_arr trg.preserves_arr null_char ide_char arr_char

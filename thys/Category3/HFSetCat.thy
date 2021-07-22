@@ -205,7 +205,7 @@ begin
           have XY: "\<langle>X, Y\<rangle> \<^bold>\<in> A * B"
             using assms Y by simp
           hence 1: "\<exists>!Z. \<langle>\<langle>X, Y\<rangle>, Z\<rangle> \<^bold>\<in> F"
-            using assms XY hfunE [of "A * B" C F] by blast
+            using assms XY hfunE [of "A * B" C F] by metis
           obtain Z where Z: "\<langle>\<langle>X, Y\<rangle>, Z\<rangle> \<^bold>\<in> F"
             using 1 by auto
           have "\<exists>Z. \<langle>Y, Z\<rangle> \<^bold>\<in> \<lbrace>YZ \<^bold>\<in> B * C. \<langle>\<langle>X, hfst YZ\<rangle>, hsnd YZ\<rangle> \<^bold>\<in> F\<rbrace>"
@@ -1858,9 +1858,9 @@ begin
               by (metis (mono_tags, lifting))
             have 6: "cod (comp (eval b c) (HF'.prod h b)) = c"
               using assms 4 by (metis (no_types, lifting))
-            have "arr_to_hfun (comp (eval b c) (HF'.prod h b)) =
-                  \<lbrace>xy \<^bold>\<in> ide_to_hf (HF'.prod a b) * ide_to_hf c.
-                     hsnd xy = DOWN (Fun (comp (eval b c) (HF'.prod h b)) (UP (hfst xy)))\<rbrace>"
+            have 7: "arr_to_hfun (comp (eval b c) (HF'.prod h b)) =
+                     \<lbrace>xy \<^bold>\<in> ide_to_hf (HF'.prod a b) * ide_to_hf c.
+                        hsnd xy = DOWN (Fun (comp (eval b c) (HF'.prod h b)) (UP (hfst xy)))\<rbrace>"
               unfolding arr_to_hfun_def
               using 2 5 6 by metis
             have "Fun (\<Lambda> a b c (comp (eval b c) (HF'.prod h b))) x =
@@ -1916,10 +1916,7 @@ begin
                           \<langle>\<langle>DOWN x, hfst yz\<rangle>, hsnd yz\<rangle> \<^bold>\<in> ide_to_hf (HF'.prod a b) * ide_to_hf c \<and>
                           hsnd yz = DOWN (Fun (comp (eval b c) (HF'.prod h b))
                                          (UP \<langle>DOWN x, hfst yz\<rangle>))"
-                      unfolding arr_to_hfun_def
-                      using assms 5 6
-                      by (metis (mono_tags, lifting) HCollect_iff hfst_conv hsnd_conv)
-                      (* 20 sec *)
+                      using 7 by auto
                     moreover have "\<langle>\<langle>DOWN x, hfst yz\<rangle>, hsnd yz\<rangle>
                                       \<^bold>\<in> ide_to_hf (prod a b) * ide_to_hf c"
                     proof -

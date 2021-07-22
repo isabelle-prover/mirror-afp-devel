@@ -3,7 +3,7 @@ chapter AFP
 session Bicategory (AFP slow) = MonoidalCategory +
   options [timeout = 10800, names_unique = false]
   theories
-    BicategoryOfSpans Modification
+    BicategoryOfSpans Modification CatBicat
   document_files
     "root.bib"
     "root.tex"

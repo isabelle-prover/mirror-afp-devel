@@ -94,41 +94,23 @@ begin
     lemma are_uniquely_isomorphic:
       shows "\<exists>!\<phi>. \<guillemotleft>\<phi> : a \<rightarrow> a'\<guillemotright> \<and> C.iso \<phi> \<and> map \<phi> = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map"
     proof -
-      have "natural_isomorphism Cop.comp S (Y a) F \<Phi>" ..
-      moreover have "natural_isomorphism Cop.comp S F (Y a') \<Psi>'.map" ..
-      ultimately have 1: "natural_isomorphism Cop.comp S (Y a) (Y a') \<Phi>\<Psi>'.map"
-        using NaturalTransformation.natural_isomorphisms_compose by blast
       interpret \<Phi>\<Psi>': natural_isomorphism Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<Phi>\<Psi>'.map
-        using 1 by auto
-
-      have "natural_isomorphism Cop.comp S (Y a') F \<Phi>'" ..
-      moreover have "natural_isomorphism Cop.comp S F (Y a) \<Psi>.map" ..
-      ultimately have 2: "natural_isomorphism Cop.comp S (Y a') (Y a) \<Phi>'\<Psi>.map"
-        using NaturalTransformation.natural_isomorphisms_compose by blast
+        using \<Phi>.natural_isomorphism_axioms \<Psi>'.natural_isomorphism_axioms
+              natural_isomorphisms_compose
+        by blast
       interpret \<Phi>'\<Psi>: natural_isomorphism Cop.comp S \<open>Y a'\<close> \<open>Y a\<close> \<Phi>'\<Psi>.map
-        using 2 by auto
-
+        using \<Phi>'.natural_isomorphism_axioms \<Psi>.natural_isomorphism_axioms
+              natural_isomorphisms_compose
+        by blast
       interpret \<Phi>\<Psi>'_\<Phi>'\<Psi>: inverse_transformations Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<Phi>\<Psi>'.map \<Phi>'\<Psi>.map
       proof
         fix x
         assume X: "Cop.ide x"
         show "S.inverse_arrows (\<Phi>\<Psi>'.map x) (\<Phi>'\<Psi>.map x)"
-        proof
-          have 1: "S.arr (\<Phi>\<Psi>'.map x) \<and> \<Phi>\<Psi>'.map x = \<Psi>'.map x \<cdot>\<^sub>S \<Phi> x"
-            using X \<Phi>\<Psi>'.preserves_reflects_arr [of x]
-            by (simp add: \<Phi>\<Psi>'.map_simp_2)
-          have 2: "S.arr (\<Phi>'\<Psi>.map x) \<and> \<Phi>'\<Psi>.map x = \<Psi>.map x \<cdot>\<^sub>S \<Phi>' x"
-            using X \<Phi>'\<Psi>.preserves_reflects_arr [of x]
-            by (simp add: \<Phi>'\<Psi>.map_simp_1)
-          show "S.ide (\<Phi>\<Psi>'.map x \<cdot>\<^sub>S \<Phi>'\<Psi>.map x)"
-            using 1 2 X \<Psi>.is_natural_2 \<Psi>'.inverts_components \<Psi>.inverts_components
-            by (metis S.inverse_arrows_def S.inverse_arrows_compose)
-          show "S.ide (\<Phi>'\<Psi>.map x \<cdot>\<^sub>S \<Phi>\<Psi>'.map x)"
-            using 1 2 X \<Psi>'.inverts_components \<Psi>.inverts_components
-            by (metis S.inverse_arrows_def S.inverse_arrows_compose)
-        qed
+          using S.inverse_arrows_compose S.inverse_arrows_sym X \<Phi>'\<Psi>.map_simp_ide
+                \<Phi>\<Psi>'.map_simp_ide \<Psi>'.inverts_components \<Psi>.inverts_components
+          by force
       qed
-
       have "Cop_S.inverse_arrows (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
                                  (Cop_S.MkArr (Y a') (Y a) \<Phi>'\<Psi>.map)"
       proof -
@@ -137,46 +119,22 @@ begin
         have \<Phi>\<Psi>': "natural_transformation Cop.comp S (Y a) (Y a') \<Phi>\<Psi>'.map" ..
         have \<Phi>'\<Psi>: "natural_transformation Cop.comp S (Y a') (Y a) \<Phi>'\<Psi>.map" ..
         show ?thesis
-        proof (intro Cop_S.inverse_arrowsI)
-          have 0: "inverse_transformations Cop.comp S (Y a) (Y a') \<Phi>\<Psi>'.map \<Phi>'\<Psi>.map" ..
-          have 1: "Cop_S.antipar (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
-                                 (Cop_S.MkArr (Y a') (Y a) \<Phi>'\<Psi>.map)"
-            using Ya Ya' \<Phi>\<Psi>' \<Phi>'\<Psi> Cop_S.dom_char Cop_S.cod_char Cop_S.seqI
-                  Cop_S.arr_MkArr Cop_S.cod_MkArr Cop_S.dom_MkArr
-            by presburger
-          show "Cop_S.ide (Cop_S.comp (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
-                                      (Cop_S.MkArr (Y a') (Y a) \<Phi>'\<Psi>.map))"
-            using 0 1 NaturalTransformation.inverse_transformations_inverse(2) Cop_S.comp_MkArr
-            by (metis Cop_S.cod_MkArr Cop_S.ide_char' Cop_S.seqE)
-          show "Cop_S.ide (Cop_S.comp (Cop_S.MkArr (Y a') (Y a) \<Phi>'\<Psi>.map)
-                                      (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map))"
-            using 0 1 NaturalTransformation.inverse_transformations_inverse(1) Cop_S.comp_MkArr
-            by (metis Cop_S.cod_MkArr Cop_S.ide_char' Cop_S.seqE)
-        qed
+          by (metis (no_types, lifting) Cop_S.arr_MkArr Cop_S.comp_MkArr Cop_S.ide_MkIde
+              Cop_S.inverse_arrows_def Ya'.functor_axioms Ya.functor_axioms
+              \<Phi>'\<Psi>.natural_transformation_axioms \<Phi>\<Psi>'.natural_transformation_axioms
+              \<Phi>\<Psi>'_\<Phi>'\<Psi>.inverse_transformations_axioms inverse_transformations_inverse(1-2)
+              mem_Collect_eq)
       qed
       hence 3: "Cop_S.iso (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map)" using Cop_S.isoI by blast
-      hence "Cop_S.arr (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map)" using Cop_S.iso_is_arr by blast
-      hence "Cop_S.in_hom (Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map) (map a) (map a')"
-        using Ya.ide_a Ya'.ide_a Cop_S.dom_char Cop_S.cod_char by auto
       hence "\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> map f = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map"
         using Ya.ide_a Ya'.ide_a is_full Y_def Cop_S.iso_is_arr full_functor.is_full
-        by auto     
+              Cop_S.MkArr_in_hom \<Phi>\<Psi>'.natural_transformation_axioms preserves_ide
+        by force
       from this obtain \<phi>
         where \<phi>: "\<guillemotleft>\<phi> : a \<rightarrow> a'\<guillemotright> \<and> map \<phi> = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map"
         by blast
-      from \<phi> have "C.iso \<phi>"
-        using 3 reflects_iso [of \<phi> a a'] by simp
-      hence EX: "\<exists>\<phi>. \<guillemotleft>\<phi> : a \<rightarrow> a'\<guillemotright> \<and> C.iso \<phi> \<and> map \<phi> = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map"
-        using \<phi> by blast
-      have
-        UN: "\<And>\<phi>'. \<guillemotleft>\<phi>' : a \<rightarrow> a'\<guillemotright> \<and> map \<phi>' = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map \<Longrightarrow> \<phi>' = \<phi>"
-      proof -
-        fix \<phi>'
-        assume \<phi>': "\<guillemotleft>\<phi>' : a \<rightarrow> a'\<guillemotright> \<and> map \<phi>' = Cop_S.MkArr (Y a) (Y a') \<Phi>\<Psi>'.map"
-        have "C.par \<phi> \<phi>' \<and> map \<phi> = map \<phi>'" using \<phi> \<phi>' by auto
-        thus "\<phi>' = \<phi>" using is_faithful by fast
-      qed
-      from EX UN show ?thesis by auto
+      show ?thesis
+        by (metis 3 C.in_homE \<phi> is_faithful reflects_iso)
     qed
 
   end
@@ -259,11 +217,11 @@ begin
     interpret \<chi>: cone J C D a \<chi> using assms(1) by auto
     interpret F: "functor" J' J F using assms(2) by auto
     interpret A': constant_functor J' C a
-      apply unfold_locales using \<chi>.A.value_is_ide by auto
+      using \<chi>.A.value_is_ide by unfold_locales auto
     have 1: "\<chi>.A.map o F = A'.map"
       using \<chi>.A.map_def A'.map_def \<chi>.J.not_arr_null by auto
     interpret \<chi>': natural_transformation J' C A'.map \<open>D o F\<close> \<open>\<chi> o F\<close>
-      using 1 horizontal_composite F.natural_transformation_axioms
+      using 1 horizontal_composite F.as_nat_trans.natural_transformation_axioms
             \<chi>.natural_transformation_axioms
       by fastforce
     show "cone J' C (D o F) a (\<chi> o F)" ..
@@ -278,13 +236,8 @@ begin
   assumes "cone J C D a \<chi>"
   and "natural_transformation J C D D' \<tau>"
   shows "cone J C D' a (vertical_composite.map J C \<chi> \<tau>)"
-  proof -
-    interpret \<chi>: cone J C D a \<chi> using assms(1) by auto
-    interpret \<tau>: natural_transformation J C D D' \<tau> using assms(2) by auto
-    interpret \<tau>o\<chi>: vertical_composite J C \<chi>.A.map D D' \<chi> \<tau> ..
-    interpret \<tau>o\<chi>: cone J C D' a \<tau>o\<chi>.map ..
-    show ?thesis ..
-  qed
+    by (meson assms cone.axioms(4-5) cone.intro diagram.intro natural_transformation.axioms(1-4)
+              vertical_composite.intro vertical_composite.is_natural_transformation)
 
   context "functor"
   begin
@@ -293,11 +246,7 @@ begin
     fixes J :: "'j comp"
     assumes "diagram J A D"
     shows "diagram J B (F o D)"
-    proof -
-      interpret D: diagram J A D using assms by auto
-      interpret FoD: composite_functor J A B D F ..
-      show "diagram J B (F o D)" ..
-    qed
+      by (meson assms diagram_def functor_axioms functor_comp functor_def)
 
     lemma preserves_cones:
     fixes J :: "'j comp"
@@ -306,7 +255,7 @@ begin
     proof -
       interpret \<chi>: cone J A D a \<chi> using assms by auto
       interpret Fa: constant_functor J B \<open>F a\<close>
-        apply unfold_locales using \<chi>.ide_apex by auto
+        using \<chi>.ide_apex by unfold_locales auto
       have 1: "F o \<chi>.A.map = Fa.map"
       proof
         fix f
@@ -316,7 +265,7 @@ begin
       qed
       interpret \<chi>': natural_transformation J B Fa.map \<open>F o D\<close> \<open>F o \<chi>\<close>
         using 1 horizontal_composite \<chi>.natural_transformation_axioms
-              natural_transformation_axioms
+              as_nat_trans.natural_transformation_axioms
         by fastforce
       show "cone J B (F o D) (F a) (F o \<chi>)" ..
     qed
@@ -354,7 +303,7 @@ begin
         hence \<chi>: "cone (C.cod f) \<chi>" by auto
         interpret \<chi>: cone J C D \<open>C.cod f\<close> \<chi> using \<chi> by auto
         interpret B: constant_functor J C \<open>C.dom f\<close>
-          apply unfold_locales using assms by auto
+          using assms by unfold_locales auto
         have "cone (C.dom f) (\<lambda>j. if J.arr j then \<chi> j \<cdot> f else C.null)"
           using assms B.value_is_ide \<chi>.is_natural_1 \<chi>.is_natural_2
           apply (unfold_locales, auto)
@@ -405,17 +354,7 @@ begin
               using \<chi> assms by auto
           qed
           also have "... = (\<lambda>j. if J.arr j then \<chi> j \<cdot> f \<cdot> g else C.null)"
-          proof -
-            have "\<And>j. J.arr j \<Longrightarrow> (\<chi> j \<cdot> f) \<cdot> g = \<chi> j \<cdot> f \<cdot> g"
-            proof -
-              interpret \<chi>: cone J C D \<open>C.cod f\<close> \<chi> using assms \<chi> by auto
-              fix j
-              assume j: "J.arr j"
-              show "(\<chi> j \<cdot> f) \<cdot> g = \<chi> j \<cdot> f \<cdot> g"
-                using assms C.comp_assoc by simp
-            qed
-            thus ?thesis by auto
-          qed
+            using C.comp_assoc by fastforce
           finally show ?thesis by auto
         qed
       qed
@@ -949,10 +888,7 @@ begin
               have "(?G o ?F) x = ?G (?F x)" by simp
               also have "... = \<iota> (D.cones_map (\<psi> (C.dom g, a)
                                      (\<phi> (C.dom g, a) (\<psi> (C.cod g, a) x \<cdot> g))) \<chi>)"
-              proof -
-                have "?F x = \<phi> (C.dom g, a) (\<psi> (C.cod g, a) x \<cdot> g)" by simp
-                thus ?thesis by presburger (* presburger 5ms, metis 797ms! Why? *)
-              qed
+                by (metis Cop.comp_def comp_apply)
               finally show ?thesis by auto
             qed
             also have "... = \<iota> (D.cones_map (\<psi> (C.cod g, a) x \<cdot> g) \<chi>)"
@@ -970,7 +906,7 @@ begin
         qed
         also have "... = Cones.map g \<cdot>\<^sub>S \<Phi>o (Cop.dom g)"
           using 2 by auto
-       finally show ?thesis by auto
+        finally show ?thesis by auto
       qed
     qed
 
@@ -1122,11 +1058,14 @@ begin
         by simp
       also have "... = \<iota> (D.cones_map a \<chi>)"
       proof -
-        have "\<phi> (a, a) a \<in> Hom.set (a, a)"
-          using ide_apex Hom.\<phi>_mapsto by fastforce
-        hence "(\<lambda>x \<in> Hom.set (a, a). \<iota> (D.cones_map (\<psi> (a, a) x) \<chi>)) (\<phi> (a, a) a)
-                  = \<iota> (D.cones_map (\<psi> (a, a) (\<phi> (a, a) a)) \<chi>)"
-          using restrict_apply' [of "\<phi> (a, a) a" "Hom.set (a, a)"] by blast
+        have "(\<lambda>x \<in> Hom.set (a, a). \<iota> (D.cones_map (\<psi> (a, a) x) \<chi>)) (\<phi> (a, a) a)
+                 = \<iota> (D.cones_map (\<psi> (a, a) (\<phi> (a, a) a)) \<chi>)"
+        proof -
+          have "\<phi> (a, a) a \<in> Hom.set (a, a)"
+            using ide_apex Hom.\<phi>_mapsto by fastforce
+          thus ?thesis
+            using restrict_apply' [of "\<phi> (a, a) a" "Hom.set (a, a)"] by blast
+        qed
         also have "... = \<iota> (D.cones_map a \<chi>)"
         proof -
           have "\<psi> (a, a) (\<phi> (a, a) a) = a"
@@ -1151,13 +1090,7 @@ begin
 
     lemma induces_limit_situation:
     shows "limit_situation J C D S.comp \<phi> \<iota> a \<Phi> \<chi>"
-    proof
-      show "\<chi> = \<o> (\<Phi>.FUN a (\<phi> (a, a) a))" using \<chi>_in_terms_of_\<Phi> by auto
-      fix a'
-      show "Cop.ide a' \<Longrightarrow> \<Phi>.map a' = S.mkArr (Hom.set (a', a)) (\<iota> ` D.cones a')
-                                              (\<lambda>x. \<iota> (D.cones_map (\<psi> (a', a) x) \<chi>))"
-        using \<Phi>.map_simp_ide \<Phi>o_def [of a'] by force
-    qed
+      using \<chi>_in_terms_of_\<Phi> \<Phi>o_def by unfold_locales auto
 
     no_notation S.comp      (infixr "\<cdot>\<^sub>S" 55)
 
@@ -1584,7 +1517,7 @@ begin
       show "J_C.dom (map f) = map (C.dom f)"
       proof -
         have "constant_transformation J C (C.dom f)"
-          apply unfold_locales using f by auto
+          using f by unfold_locales auto
         hence "constant_transformation.map J C (C.dom f) = Dom_f.map"
           using Dom_f.map_def constant_transformation.map_def [of J C "C.dom f"] by auto
         thus ?thesis using f 1 by (simp add: map_def J_C.dom_char)
@@ -1592,7 +1525,7 @@ begin
       show "J_C.cod (map f) = map (C.cod f)"
       proof -
         have "constant_transformation J C (C.cod f)"
-          apply unfold_locales using f by auto
+          using f by unfold_locales auto
         hence "constant_transformation.map J C (C.cod f) = Cod_f.map"
           using Cod_f.map_def constant_transformation.map_def [of J C "C.cod f"] by auto
         thus ?thesis using f 1 by (simp add: map_def J_C.cod_char)
@@ -1602,15 +1535,15 @@ begin
       assume g: "C.seq g f"
       have f: "C.arr f" using g by auto
       interpret Dom_f: constant_functor J C \<open>C.dom f\<close>
-        using f by (unfold_locales, auto)
+        using f by unfold_locales auto
       interpret Cod_f: constant_functor J C \<open>C.cod f\<close>
-        using f by (unfold_locales, auto)
+        using f by unfold_locales auto
       interpret Fun_f: constant_transformation J C f
-        using f by (unfold_locales, auto)
+        using f by unfold_locales auto
       interpret Cod_g: constant_functor J C \<open>C.cod g\<close>
-        using g by (unfold_locales, auto)
+        using g by unfold_locales auto
       interpret Fun_g: constant_transformation J C g
-        using g by (unfold_locales, auto)
+        using g by unfold_locales auto
       interpret Fun_g: natural_transformation J C Cod_f.map Cod_g.map Fun_g.map
         apply unfold_locales
         using f g C.seqE [of g f] C.comp_arr_dom C.comp_cod_arr Fun_g.is_extensional by auto
@@ -1626,7 +1559,7 @@ begin
         also have "... = J_C.MkArr Dom_f.map Cod_g.map (\<lambda>j. if J.arr j then C g f else C.null)"
         proof -
           have "constant_transformation J C (g \<cdot> f)"
-            apply unfold_locales using g by auto
+            using g by unfold_locales auto
           thus ?thesis using constant_transformation.map_def by metis
         qed
         also have "... = J_C.comp (J_C.MkArr Cod_f.map Cod_g.map Fun_g.map)
@@ -1640,11 +1573,7 @@ begin
             by blast
           also have "... = J_C.MkArr Dom_f.map Cod_g.map
                                      (\<lambda>j. if J.arr j then g \<cdot> f else C.null)"
-          proof -
-            have "Fun_fg.map = (\<lambda>j. if J.arr j then g \<cdot> f else C.null)"
-              using 1 f g Fun_fg.map_def by auto
-            thus ?thesis by auto
-          qed
+            using Fun_fg.is_extensional Fun_fg.map_simp_2 by auto
           finally show ?thesis by auto
         qed
         also have "... = map g \<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] map f"
@@ -1715,15 +1644,7 @@ begin
       interpret \<alpha>: constant_transformation J C a
         using x.arrow by (unfold_locales, auto)
       have Dom_x: "J_C.Dom x = A.map"
-      proof -
-        have "J_C.dom x = map a" using x.arrow by blast
-        hence "J_C.Map (J_C.dom x) = J_C.Map (map a)" by simp
-        hence "J_C.Dom x = J_C.Map (map a)"
-          using A.value_is_ide x.arrow J_C.in_homE by (metis J_C.Map_dom)
-        moreover have "J_C.Map (map a) = \<alpha>.map"
-          using A.value_is_ide preserves_ide map_def by simp
-        ultimately show ?thesis using \<alpha>.map_def A.map_def by auto
-      qed
+        using J_C.in_hom_char map_def x.arrow by force
       have Cod_x: "J_C.Cod x = J_C.Map d"
         using x.arrow by auto
       interpret \<chi>: natural_transformation J C A.map \<open>J_C.Map d\<close> \<open>J_C.Map x\<close>
@@ -1789,31 +1710,13 @@ begin
         show x': "J_C.arr ?x'"
           using \<chi>'.natural_transformation_axioms J_C.arr_char [of ?x'] by simp
         have 3: "\<guillemotleft>?x : map a \<rightarrow>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] J_C.MkIde D\<guillemotright>"
-        proof -
-          have 1: "map a = J_C.MkIde A.map"
-            using \<chi>.ide_apex A.equals_dom_if_value_is_ide A.equals_cod_if_value_is_ide map_def
-            by auto
-          have "J_C.arr ?x" using x by blast
-          moreover have "J_C.dom ?x = map a"
-            using x J_C.dom_char 1 x \<chi>.ide_apex A.equals_dom_if_value_is_ide \<chi>.D.functor_axioms
-                    J_C.ide_char
-            by auto
-          moreover have "J_C.cod ?x = J_C.MkIde D" using x J_C.cod_char by auto
-          ultimately show ?thesis by fast
-        qed
+          using \<chi>.D.diagram_axioms arrow_from_functor.arrow cone_\<chi> cone_determines_arrow(1)
+                diagram_determines_ide(1)
+          by fastforce
         have 4: "\<guillemotleft>?x' : map a' \<rightarrow>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] J_C.MkIde D\<guillemotright>"
-        proof -
-          have 1: "map a' = J_C.MkIde A'.map"
-            using \<chi>'.ide_apex A'.equals_dom_if_value_is_ide A'.equals_cod_if_value_is_ide map_def
-            by auto
-          have "J_C.arr ?x'" using x' by blast
-          moreover have "J_C.dom ?x' = map a'"
-            using x' J_C.dom_char 1 x' \<chi>'.ide_apex A'.equals_dom_if_value_is_ide \<chi>.D.functor_axioms
-                    J_C.ide_char
-            by force
-          moreover have "J_C.cod ?x' = J_C.MkIde D" using x' J_C.cod_char by auto
-          ultimately show ?thesis by fast
-        qed
+          by (metis (no_types, lifting) J_C.Dom.simps(1) J_C.Dom_cod J_C.Map_cod
+              J_C.cod_MkArr \<chi>'.cone_axioms arrow_from_functor.arrow category.ide_cod
+              cone_determines_arrow(1) functor_def is_functor x)
         have seq_xg: "J_C.seq ?x (map g)"
           using assms(1) 3 preserves_hom [of g] by (intro J_C.seqI', auto)
         show 2: "J_C.seq ?x (map g)"
@@ -1901,19 +1804,20 @@ begin
             using 0 x.is_coext_def by fast
           moreover have "... = D.cones_map g ?\<chi>"
           proof -
-            have "J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)) =
-                  x \<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] map g"
-              using d g cones_map_is_composition arrow_determines_cone(2) \<chi>.cone_axioms
-                    x.arrow_from_functor_axioms
-              by auto
-            hence f1: "J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)) = x'"
-              by (metis 1)
-            have "J_C.arr (J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)))"
+            have "J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)) = x'"
+            proof -
+              have "J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)) =
+                    x \<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] map g"
+                using d g cones_map_is_composition arrow_determines_cone(2) \<chi>.cone_axioms
+                      x.arrow_from_functor_axioms
+                by auto
+              thus ?thesis by (metis 1)
+            qed
+            moreover have "J_C.arr (J_C.MkArr A'.map (J_C.Map d) (D.cones_map g (J_C.Map x)))"
               using 1 d g cones_map_is_composition preserves_arr arrow_determines_cone(2)
                     \<chi>.cone_axioms x.arrow_from_functor_axioms assms(3)
               by auto
-            thus ?thesis
-              using f1 by auto
+            ultimately show ?thesis by auto
           qed
           ultimately show ?thesis by blast
         qed
@@ -2011,19 +1915,7 @@ begin
         hence 4: "\<exists>!g. x.is_coext a' ?x' g"
           using x.is_terminal by simp
         have 5: "\<And>g. \<guillemotleft>g : a' \<rightarrow>\<^sub>C ?a\<guillemotright> \<Longrightarrow> x.is_coext a' ?x' g \<longleftrightarrow> D.cones_map g ?\<chi> = \<chi>'"
-        proof -
-          fix g
-          assume g: "\<guillemotleft>g : a' \<rightarrow>\<^sub>C ?a\<guillemotright>"
-          show "x.is_coext a' ?x' g \<longleftrightarrow> D.cones_map g ?\<chi> = \<chi>'"
-          proof -
-            have "\<guillemotleft>?x' : \<Delta>.map a' \<rightarrow>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] ?d\<guillemotright>"
-              using x'.arrow by simp
-            thus ?thesis
-              using 1 2 3 g \<Delta>.coextension_iff_cones_map \<Delta>.cone_determines_arrow(2)
-                    cone_\<chi>'
-              by force
-          qed
-        qed
+          using \<Delta>.coextension_iff_cones_map x'.arrow x.arrow_from_functor_axioms by auto
         have 6: "\<And>g. x.is_coext a' ?x' g \<Longrightarrow> \<guillemotleft>g : a' \<rightarrow>\<^sub>C ?a\<guillemotright>"
           using x.is_coext_def by simp
         show "\<exists>!g. \<guillemotleft>g : a' \<rightarrow>\<^sub>C ?a\<guillemotright> \<and> D.cones_map g ?\<chi> = \<chi>'"
@@ -2058,16 +1950,12 @@ begin
       interpret \<Delta>: left_adjoint_functor C J_C.comp \<Delta>.map using A by auto
       interpret Adj: meta_adjunction J_C.comp C \<Delta>.map \<Delta>.G \<Delta>.\<phi> \<Delta>.\<psi>
         using \<Delta>.induces_meta_adjunction by auto
-      have "meta_adjunction J_C.comp C \<Delta>.map \<Delta>.G \<Delta>.\<phi> \<Delta>.\<psi>" ..
-      hence 1: "adjoint_functors J_C.comp C \<Delta>.map \<Delta>.G"
-        using adjoint_functors_def by blast
+      have 1: "adjoint_functors J_C.comp C \<Delta>.map \<Delta>.G"
+        using adjoint_functors_def \<Delta>.induces_meta_adjunction by blast
       interpret G: right_adjoint_to_diagonal_functor J C \<Delta>.G \<Delta>.\<phi> \<Delta>.\<psi>
-        using 1 by (unfold_locales, auto)
-      have "\<And>D. diagram J C D \<Longrightarrow> \<exists>a. diagram.has_as_limit J C D a"
-        using A G.gives_limits by blast
-      hence "\<And>D. diagram J C D \<Longrightarrow> \<exists>a \<chi>. limit_cone J C D a \<chi>"
-        by metis
-      thus "has_limits_of_shape J" using has_limits_of_shape_def by blast
+        using 1 by unfold_locales auto
+      show "has_limits_of_shape J"
+        using A G.gives_limits has_limits_of_shape_def by blast
       next
       text\<open>
         If @{term "has_limits J"}, then every diagram @{term D} from @{term J} to
@@ -2308,10 +2196,13 @@ begin
             proof -
               have "\<chi> j \<cdot>\<^sub>C f = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j)"
               proof -
-                have "E.cone (C.cod f) \<chi>"
-                  using f \<chi>.cone_axioms by blast
-                hence "\<chi> j \<cdot>\<^sub>C f = E.cones_map f \<chi> j"
-                  using \<chi>.is_extensional by simp
+                have "\<chi> j \<cdot>\<^sub>C f = E.cones_map f \<chi> j"
+                proof -
+                  have "E.cone (C.cod f) \<chi>"
+                    using f \<chi>.cone_axioms by blast
+                  thus ?thesis
+                    using \<chi>.is_extensional by simp
+                qed
                 also have "... = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j)"
                   using j f by simp
                 finally show ?thesis by blast
@@ -2496,7 +2387,7 @@ begin
     shows "cone a (mkCone F)"
     proof -
       interpret A: constant_functor J C a
-        apply unfold_locales using assms(1) by auto
+         using assms(1) by unfold_locales auto
       show "cone a (mkCone F)"
         using assms(2) is_discrete
         apply unfold_locales
@@ -2543,7 +2434,7 @@ begin
 
   sublocale discrete_diagram_from_map \<subseteq> discrete_diagram J.comp C map
     using map_def maps_to_ide J.arr_char J.Null_not_in_Obj J.null_char
-    by (unfold_locales, auto)
+    by unfold_locales auto
 
   locale product_cone =
     J: category J +
@@ -2572,13 +2463,9 @@ begin
     proof -
       let ?\<chi> = "D.mkCone F"
       interpret B: constant_functor J C b
-        apply unfold_locales using assms(1) by auto
+        using assms(1) by unfold_locales auto
       have cone_\<chi>: "D.cone b ?\<chi>"
-        using assms D.is_discrete
-        apply unfold_locales
-            apply auto
-         apply (meson C.comp_ide_arr C.ide_in_hom C.seqI' D.preserves_ide)
-        using C.comp_arr_dom by blast
+        using assms D.is_discrete D.cone_mkCone by blast
       interpret \<chi>: cone J C D b ?\<chi> using cone_\<chi> by auto
       have "\<exists>!f. \<guillemotleft>f : b \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<pi> = ?\<chi>"
         using cone_\<chi> is_universal by force
@@ -2620,7 +2507,7 @@ begin
     shows "\<And>j. J.arr j \<Longrightarrow> \<pi> j \<cdot> induced_arrow' b F = F j"
     proof -
       interpret B: constant_functor J C b
-        apply unfold_locales using assms(1) by auto
+        using assms(1) by unfold_locales auto
       interpret \<chi>: cone J C D b \<open>D.mkCone F\<close>
         using assms D.cone_mkCone by blast
       have cone_\<chi>: "D.cone b (D.mkCone F)" ..
@@ -2644,11 +2531,7 @@ begin
     lemma product_coneI:
     assumes "limit_cone a \<pi>" 
     shows "product_cone J C D a \<pi>"
-    proof -
-      interpret L: limit_cone J C D a \<pi>
-        using assms by auto
-      show "product_cone J C D a \<pi>" ..
-    qed
+      by (meson assms discrete_diagram_axioms functor_axioms functor_def product_cone.intro)
 
   end
 
@@ -2803,7 +2686,7 @@ begin
             ultimately show "(D.map \<circ> ?\<phi>') j' = D' j'" by blast
           qed
           ultimately show "natural_transformation J' C A.map D' ?\<pi>'"
-            using \<pi>.natural_transformation_axioms \<phi>'.natural_transformation_axioms
+            using \<pi>.natural_transformation_axioms \<phi>'.as_nat_trans.natural_transformation_axioms
                   horizontal_composite [of J' J.comp ?\<phi>' ?\<phi>' ?\<phi>' C \<pi>.A.map D.map \<pi>]
             by simp
         qed
@@ -2826,7 +2709,8 @@ begin
               moreover have "D' \<circ> ?\<phi> = D.map"
                 using \<phi> D.map_def D'.is_extensional by auto
               ultimately show "natural_transformation J.comp C A'.map D.map ?\<chi>"
-                using \<chi>'.natural_transformation_axioms \<phi>.natural_transformation_axioms
+                using \<chi>'.natural_transformation_axioms
+                      \<phi>.as_nat_trans.natural_transformation_axioms
                       horizontal_composite [of J.comp J' ?\<phi> ?\<phi> ?\<phi> C \<chi>'.A.map D' \<chi>']
                 by simp
             qed
@@ -3114,19 +2998,7 @@ begin
        apply auto[2]
   proof -
     show 1: "\<And>j. J.arr j \<Longrightarrow> C.cod (map j) = map (J.cod j)"
-    proof -
-      fix j
-      assume j: "J.arr j"
-      show "C.cod (map j) = map (J.cod j)"
-      proof -
-        have "j = J.Zero \<or> j = J.One \<Longrightarrow> ?thesis" using is_parallel map_def by auto
-        moreover have "j = J.j0 \<or> j = J.j1 \<Longrightarrow> ?thesis"
-          using is_parallel map_def J.Zero_not_eq_j0 J.One_not_eq_j0 J.Zero_not_eq_One
-                J.Zero_not_eq_j1 J.One_not_eq_j1 J.Zero_not_eq_One J.cod_simp
-          by presburger
-        ultimately show ?thesis using j J.arr_char by fast
-      qed
-    qed
+      using is_parallel map_simp(1-4) J.arr_char by auto
     next
     fix j j'
     assume jj': "J.seq j' j"
@@ -3135,13 +3007,11 @@ begin
       have 1: "(j = J.Zero \<and> j' \<noteq> J.One) \<or> (j \<noteq> J.Zero \<and> j' = J.One)"
         using jj' J.seq_char by blast
       moreover have "j = J.Zero \<and> j' \<noteq> J.One \<Longrightarrow> ?thesis"
-        using jj' map_def is_parallel J.arr_char J.cod_simp J.dom_simp J.seq_char
         by (metis (no_types, lifting) C.arr_dom_iff_arr C.comp_arr_dom C.dom_dom
-            J.comp_arr_dom)
+            J.comp_simp(1) jj' map_simp(1,3-4) J.arr_char is_parallel)
       moreover have "j \<noteq> J.Zero \<and> j' = J.One \<Longrightarrow> ?thesis"
-        using jj' J.ide_char map_def J.Zero_not_eq_One is_parallel
-        by (metis (no_types, lifting) C.arr_cod_iff_arr C.comp_arr_dom C.comp_cod_arr
-            C.comp_ide_arr C.ext C.ide_cod J.comp_simp(2))
+        by (metis (no_types, lifting) C.comp_arr_dom C.comp_cod_arr C.seqE J.comp_char jj'
+            map_simp(2-4) J.arr_char is_parallel)
       ultimately show ?thesis by blast
     qed
   qed
@@ -3170,39 +3040,23 @@ begin
         using C.dom_comp C.seqE C.cod_comp J.Zero_not_eq_One J.arr_char' J.cod_char map_def
           apply (metis (no_types, lifting) C.not_arr_null parallel_pair.cod_simp(1) preserves_arr)
       proof -
-        fix j
-        assume j: "J.arr j"
-        show "map j \<cdot> mkCone e (J.dom j) = mkCone e j"
-        proof -
-          have 1: "\<forall>a. if a = J.Zero then map a = C.dom f0
-                        else if a = J.One then map a = C.cod f0
-                        else if a = J.j0 then map a = f0
-                        else if a = J.j1 then map a = f1
-                        else map a = C.null"
-            using map_def by auto
-          hence 2: "map j = f1 \<or> j = J.One \<or> j = J.Zero \<or> j = J.j0"
-            using j parallel_pair.arr_char by meson
-          have "j = J.Zero \<or> map j \<cdot> mkCone e (J.dom j) = mkCone e j"
-            using assms j 1 2 mkCone_def C.cod_comp
-            by (metis (no_types, lifting) C.comp_cod_arr J.arr_char J.dom_simp(2-4) is_parallel)
-          thus ?thesis
-            using assms 1 j
-            by (metis (no_types, lifting) C.comp_cod_arr C.seqE mkCone_def J.dom_simp(1))
-        qed
-        next
-        show "\<And>j. J.arr j \<Longrightarrow> mkCone e (J.cod j) \<cdot> E.map j = mkCone e j"
+        show "\<And>j. J.arr j \<Longrightarrow> map j \<cdot> mkCone e (J.dom j) = mkCone e j"
         proof -
           fix j
           assume j: "J.arr j"
-          have "J.cod j = J.Zero \<Longrightarrow> mkCone e (J.cod j) \<cdot> E.map j = mkCone e j"
-            unfolding mkCone_def
-            using assms j J.arr_char J.cod_char C.comp_arr_dom mkCone_def J.Zero_not_eq_One
-            by (metis (no_types, lifting) C.seqE E.map_simp)
-          moreover have "J.cod j \<noteq> J.Zero \<Longrightarrow> mkCone e (J.cod j) \<cdot> E.map j = mkCone e j"
-            unfolding mkCone_def
-            using assms j C.comp_arr_dom by auto
-          ultimately show "mkCone e (J.cod j) \<cdot> E.map j = mkCone e j" by blast
+          have 1: "j = J.Zero \<or> map j \<cdot> mkCone e (J.dom j) = mkCone e j"
+            using assms j mkCone_def C.cod_comp
+            by (metis (no_types, lifting) C.comp_cod_arr J.arr_char J.dom_char map_def
+                J.dom_simp(2))
+          show "map j \<cdot> mkCone e (J.dom j) = mkCone e j"
+            by (metis (no_types, lifting) 1 C.comp_cod_arr C.seqE assms j map_simp(1)
+                  mkCone_def J.dom_simp(1))
         qed
+        next
+        show "\<And>j. J.arr j \<Longrightarrow> mkCone e (J.cod j) \<cdot> E.map j = mkCone e j"
+          by (metis (no_types, lifting) C.comp_arr_dom C.comp_assoc C.seqE
+              J.arr_cod_iff_arr J.seqI J.seq_char assms E.map_simp mkCone_def
+              J.cod_simp(1) J.dom_simp(1))
       qed
     qed
 
@@ -3213,10 +3067,9 @@ begin
       interpret \<chi>: cone J.comp C map a \<chi>
         using assms by auto
       show ?thesis
-        using assms J.arr_char J.dom_char J.cod_char
-              J.One_not_eq_j0 J.One_not_eq_j1 J.Zero_not_eq_j0 J.Zero_not_eq_j1 J.j0_not_eq_j1
-        by (metis (no_types, lifting) Limit.cone_def \<chi>.is_natural_1 \<chi>.naturality
-            \<chi>.preserves_reflects_arr constant_functor.map_simp map_simp(3) map_simp(4))
+        by (metis (no_types, lifting) J.arr_char J.cod_char cone_def
+            \<chi>.component_in_hom \<chi>.is_natural_1 \<chi>.naturality assms C.in_homE
+            constant_functor.map_simp J.dom_simp(3-4) map_simp(3-4))
     qed
 
     lemma mkCone_cone:
@@ -3259,7 +3112,7 @@ begin
     lemma equalizes:
     shows "D.is_equalized_by e"
     proof
-      show 1: "C.seq f0 e"
+      show "C.seq f0 e"
       proof (intro C.seqI)
         show "C.arr e" using ide_apex C.arr_dom_iff_arr by fastforce
         show "C.arr f0"
@@ -3268,8 +3121,6 @@ begin
           using J.arr_char J.ide_char D.mkCone_def D.map_simp preserves_cod [of J.Zero]
           by auto
       qed
-      hence 2: "C.seq f1 e"
-        using D.is_parallel by fastforce
       show "f0 \<cdot> e = f1 \<cdot> e"
         using D.map_simp D.mkCone_def J.arr_char naturality [of J.j0] naturality [of J.j1]
         by force
@@ -3314,23 +3165,7 @@ begin
               using h e' cone_\<chi> D.mkCone_def J.arr_char [of J.Zero] by force
             moreover have
                 "J.arr j \<and> j \<noteq> J.Zero \<Longrightarrow> D.cones_map h (D.mkCone e) j = D.mkCone e' j"
-            proof -
-              assume j: "J.arr j \<and> j \<noteq> J.Zero"
-              have "D.cones_map h (D.mkCone e) j = C (D.mkCone e j) h"
-                using j h equalizes D.mkCone_def D.cone_mkCone J.arr_char
-                      J.Zero_not_eq_One J.Zero_not_eq_j0 J.Zero_not_eq_j1
-                by auto
-              also have "... = (f0 \<cdot> e) \<cdot> h"
-                using j D.mkCone_def J.arr_char J.Zero_not_eq_One J.Zero_not_eq_j0
-                      J.Zero_not_eq_j1
-                by auto
-              also have "... = f0 \<cdot> e \<cdot> h"
-                using h equalizes C.comp_assoc by blast
-              also have "... = D.mkCone e' j"
-                using j e' h equalizes D.mkCone_def J.arr_char [of J.One] J.Zero_not_eq_One
-                by auto
-              finally show ?thesis by auto
-            qed
+              using C.comp_assoc D.mkCone_def cone_\<chi> e' h by auto
             ultimately show "D.cones_map h (D.mkCone e) j = D.mkCone e' j" by blast
           qed
         qed
@@ -3352,9 +3187,8 @@ begin
         using cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by force
       also have "... = e'"
       proof -
-        have
-            "D.cones_map (induced_arrow (C.dom e') (D.mkCone e')) (D.mkCone e) =
-             D.mkCone e'"
+        have "D.cones_map (induced_arrow (C.dom e') (D.mkCone e')) (D.mkCone e) =
+              D.mkCone e'"
           using cone induced_arrowI by blast
         thus ?thesis
           using J.arr_char D.mkCone_def by simp
@@ -3461,15 +3295,7 @@ begin
         have f_map: "\<Delta>a.cones_map ?f \<pi>a = ?\<chi>"
           using \<chi>.cone_axioms \<pi>a.induced_arrowI by blast
         have ff: "\<And>j. J.arr j \<Longrightarrow> \<pi>a j \<cdot> ?f = \<pi>o (J.cod j)"
-        proof -
-          fix j
-          assume j: "J.arr j"
-          have "\<pi>a j \<cdot> ?f = \<Delta>a.cones_map ?f \<pi>a j"
-            using f_in_hom \<pi>a.is_cone \<pi>a.is_extensional by auto
-          also have "... = \<pi>o (J.cod j)"
-            using j f_map by fastforce
-          finally show "\<pi>a j \<cdot> ?f = \<pi>o (J.cod j)" by auto
-        qed
+          using \<chi>.component_in_hom \<pi>a.induced_arrowI' \<pi>o.ide_apex by auto
 
         let ?\<chi>' = "\<lambda>j. if Arr.arr j then D j \<cdot> \<pi>o (J.dom j) else null"
         interpret \<chi>': cone Arr.comp C \<Delta>a.map \<Pi>o ?\<chi>'
@@ -3481,20 +3307,11 @@ begin
         have g_map: "\<Delta>a.cones_map ?g \<pi>a = ?\<chi>'"
           using \<chi>'.cone_axioms \<pi>a.induced_arrowI by blast
         have gg: "\<And>j. J.arr j \<Longrightarrow> \<pi>a j \<cdot> ?g = D j \<cdot> \<pi>o (J.dom j)"
-        proof -
-          fix j
-          assume j: "J.arr j"
-          have "\<pi>a j \<cdot> ?g = \<Delta>a.cones_map ?g \<pi>a j"
-            using g_in_hom \<pi>a.is_cone \<pi>a.is_extensional by force
-          also have "... = D j \<cdot> \<pi>o (J.dom j)"
-            using j g_map by fastforce
-          finally show "\<pi>a j \<cdot> ?g = D j \<cdot> \<pi>o (J.dom j)" by auto
-        qed
+          using \<chi>'.component_in_hom \<pi>a.induced_arrowI' \<pi>o.ide_apex by force
 
         interpret PP: parallel_pair_diagram C ?f ?g
           using f_in_hom g_in_hom
           by (elim in_homE, unfold_locales, auto)
-
         from PP.is_parallel obtain e where equ: "PP.has_as_equalizer e"
           using has_equalizers has_equalizers_def has_as_equalizer_def by blast
         interpret EQU: limit_cone PP.J.comp C PP.map \<open>dom e\<close> \<open>PP.mkCone e\<close>
@@ -3542,19 +3359,11 @@ begin
               have "\<pi>a j \<cdot> ?f \<cdot> h = (\<pi>a j \<cdot> ?f) \<cdot> h"
                 using comp_assoc by simp
               also have "... = ?\<chi> j \<cdot> h"
-              proof -
-                have "\<pi>a j \<cdot> ?f = \<Delta>a.cones_map ?f \<pi>a j"
-                  using j f_in_hom \<pi>a.cone_axioms \<Delta>a.map_def \<pi>a.cone_\<chi> by auto
-                thus ?thesis using f_map by fastforce
-              qed
+                using ff j by force
               also have "... = ?\<chi>' j \<cdot> h"
                 using 1 j by auto
               also have "... = (\<pi>a j \<cdot> ?g) \<cdot> h"
-              proof -
-                have "\<pi>a j \<cdot> ?g = \<Delta>a.cones_map ?g \<pi>a j"
-                  using j g_in_hom \<pi>a.cone_axioms \<Delta>a.map_def \<pi>a.cone_\<chi> by auto
-                thus ?thesis using g_map by simp
-              qed
+                using gg j by force
               also have "... = \<pi>a j \<cdot> ?g \<cdot> h"
                 using comp_assoc by simp
               finally show "\<pi>a j \<cdot> ?f \<cdot> h = \<pi>a j \<cdot> ?g \<cdot> h"
@@ -3597,13 +3406,7 @@ begin
               using j comp_arr_dom comp_cod_arr by (elim in_homE, auto)
           qed
           have 2: "\<And>e j. \<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright> \<Longrightarrow> J.arr j \<Longrightarrow> ?\<chi>' j \<cdot> e = D j \<cdot> \<pi>o (J.dom j) \<cdot> e"
-          proof -
-            fix e j
-            assume e: "\<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright>"
-            assume j: "J.arr j"
-            show "?\<chi>' j \<cdot> e = D j \<cdot> \<pi>o (J.dom j) \<cdot> e"
-              using j comp_assoc by fastforce
-          qed
+            by (simp add: comp_assoc)
           show "\<And>e. \<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright> \<Longrightarrow>
                    ?f \<cdot> e = ?g \<cdot> e \<longleftrightarrow>
                      (\<forall>j. J.arr j \<longrightarrow>
@@ -3636,7 +3439,7 @@ begin
           using \<mu> comp_cod_arr e_in_hom e_map E'
             apply unfold_locales
                apply auto
-          by (metis D.is_natural_1 comp_assoc)
+          by (metis D.as_nat_trans.is_natural_1 comp_assoc)
         text\<open>
           If @{term \<tau>} is any cone over @{term D} then @{term \<tau>} restricts to a cone over
           @{term \<Delta>o} for which the induced arrow to @{term \<Pi>o} equalizes @{term f} and @{term g}.
@@ -3780,13 +3583,7 @@ begin
                 proof -
                   have 2: "\<guillemotleft>e \<cdot> h' : a \<rightarrow> \<Pi>o\<guillemotright>" using h'_in_hom e_in_hom by auto
                   moreover have "?f \<cdot> e \<cdot> h' = ?g \<cdot> e \<cdot> h'"
-                  proof -
-                    have "?f \<cdot> e \<cdot> h' = (?f \<cdot> e) \<cdot> h'"
-                      using comp_assoc by auto
-                    also have "... = ?g \<cdot> e \<cdot> h'"
-                      using EQU.equalizes comp_assoc by auto
-                    finally show ?thesis by auto
-                  qed
+                    by (metis (no_types, lifting) EQU.equalizes comp_assoc)
                   moreover have "\<Delta>o.cones_map (e \<cdot> h') \<pi>o = \<Delta>o.mkCone \<tau>"
                   proof
                     have "\<Delta>o.cones_map (e \<cdot> h') \<pi>o = \<Delta>o.cones_map h' (\<Delta>o.cones_map e \<pi>o)"
@@ -3964,14 +3761,8 @@ begin
                   by fastforce
                 interpret \<chi>: cone J S D S.unity \<open>\<phi> (f \<cdot> y)\<close>
                   using 1 by simp
-                have "(D j \<cdot> ?\<chi> f (J.dom j)) \<cdot> y = D j \<cdot> ?\<chi> f (J.dom j) \<cdot> y"
-                  using S.comp_assoc by simp
-                also have "... = D j \<cdot> \<phi> (f \<cdot> y) (J.dom j)"
-                  using f y \<chi> \<chi>.is_extensional by simp
-                also have "... = \<phi> (f \<cdot> y) j" using j by auto
-                also have "... = ?\<chi> f j \<cdot> y"
-                  using f j y \<chi> by force
-                finally show "(D j \<cdot> ?\<chi> f (J.dom j)) \<cdot> y = ?\<chi> f j \<cdot> y" by auto
+                show "(D j \<cdot> ?\<chi> f (J.dom j)) \<cdot> y = ?\<chi> f j \<cdot> y"
+                  using J.arr_dom S.comp_assoc \<chi> \<chi>.is_natural_1 f j y by presburger
                 have "(?\<chi> f (J.cod j) \<cdot> B.map j) \<cdot> y = ?\<chi> f (J.cod j) \<cdot> y"
                   using j B.map_simp par2 B.value_is_ide S.comp_arr_ide
                   by (metis (no_types, lifting))
@@ -4201,7 +3992,7 @@ begin
         assume par: "par f0 f1"
         interpret J: parallel_pair .
         interpret PP: parallel_pair_diagram S f0 f1
-          apply unfold_locales using par by auto
+          using par by unfold_locales auto
         interpret PP: diagram_in_set_category J.comp S \<AA> PP.map ..
         text\<open>
           Let @{term a} be the object corresponding to the set of all images of equalizing points
@@ -4237,12 +4028,7 @@ begin
           have "ide (dom f0)"
             using PP.is_parallel by simp
           moreover have "set ?a \<subseteq> set (dom f0)"
-          proof -
-            have "set ?a = img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e}"
-              using img_point_in_Univ set_a by blast
-            thus ?thesis
-              using imageE img_point_elem_set mem_Collect_eq subsetI by auto
-          qed
+            using img_point_elem_set set_a by fastforce
           ultimately show ?thesis
             using incl_in_def \<open>ide ?a\<close> by simp
         qed
@@ -4305,22 +4091,28 @@ begin
           It follows that @{term a} is a limit of \<open>PP\<close>, and that the limit cone gives an
           equalizer of @{term f0} and @{term f1}.
 \<close>
-        have "\<exists>\<mu>. bij_betw \<mu> (hom unity ?a) (set ?a)"
-          using bij_betw_points_and_set ide_a by auto
-        from this obtain \<mu> where \<mu>: "bij_betw \<mu> (hom unity ?a) (set ?a)" by blast
-        have "bij_betw (?\<phi> o \<mu>) (hom unity ?a) (PP.cones unity)"
-          using bij \<mu> bij_betw_comp_iff by blast
-        hence "\<exists>\<phi>. bij_betw \<phi> (hom unity ?a) (PP.cones unity)" by auto
-        hence "PP.has_as_limit ?a"
-          using ide_a PP.limits_are_sets_of_cones by simp
+        have "PP.has_as_limit ?a"
+        proof -
+          have "\<exists>\<mu>. bij_betw \<mu> (hom unity ?a) (set ?a)"
+            using bij_betw_points_and_set ide_a by auto
+          from this obtain \<mu> where \<mu>: "bij_betw \<mu> (hom unity ?a) (set ?a)" by blast
+          have "bij_betw (?\<phi> o \<mu>) (hom unity ?a) (PP.cones unity)"
+            using bij \<mu> bij_betw_comp_iff by blast
+          hence "\<exists>\<phi>. bij_betw \<phi> (hom unity ?a) (PP.cones unity)" by auto
+          thus ?thesis
+            using ide_a PP.limits_are_sets_of_cones by simp
+        qed
         from this obtain \<epsilon> where \<epsilon>: "limit_cone J.comp S PP.map ?a \<epsilon>" by auto
-        interpret \<epsilon>: limit_cone J.comp S PP.map ?a \<epsilon> using \<epsilon> by auto
-        have "PP.mkCone (\<epsilon> (J.Zero)) = \<epsilon>"
-          using \<epsilon> PP.mkCone_cone \<epsilon>.cone_axioms by simp
-        moreover have "dom (\<epsilon> (J.Zero)) = ?a"
-          using J.ide_char \<epsilon>.preserves_hom \<epsilon>.A.map_def by simp
-        ultimately have "PP.has_as_equalizer (\<epsilon> J.Zero)"
-          using \<epsilon> by simp
+        have "PP.has_as_equalizer (\<epsilon> J.Zero)"
+        proof -
+          interpret \<epsilon>: limit_cone J.comp S PP.map ?a \<epsilon> using \<epsilon> by auto
+          have "PP.mkCone (\<epsilon> (J.Zero)) = \<epsilon>"
+            using \<epsilon> PP.mkCone_cone \<epsilon>.cone_axioms by simp
+          moreover have "dom (\<epsilon> (J.Zero)) = ?a"
+            using J.ide_char \<epsilon>.preserves_hom \<epsilon>.A.map_def by simp
+          ultimately show ?thesis
+            using \<epsilon> by simp
+        qed
         thus "\<exists>e. has_as_equalizer f0 f1 e"
           using par has_as_equalizer_def by auto   
       qed
@@ -4395,13 +4187,7 @@ begin
     lemma extensional'_monotone:
     assumes "A \<subseteq> B"
     shows "extensional' A \<subseteq> extensional' B"
-    proof
-      fix f
-      assume f: "f \<in> extensional' A"
-      have 1: "\<forall>x. x \<notin> A \<longrightarrow> f x = unity" using f extensional'_def by fast
-      hence "\<forall>x. x \<notin> B \<longrightarrow> f x = unity" using assms by auto
-      thus "f \<in> extensional' B" using extensional'_def by blast
-    qed
+      using assms extensional'_arb by fastforce
 
     lemma PiE'_mono: "(\<And>x. x \<in> A \<Longrightarrow> B x \<subseteq> C x) \<Longrightarrow> PiE' A B \<subseteq> PiE' A C"
       by auto
@@ -4478,11 +4264,7 @@ begin
           using S.mkPoint_img(1) coneToFun_def is_discrete \<chi>.component_in_hom
           by (simp add: S.img_point_elem_set restrict_apply')
         show "coneToFun \<chi> \<in> S.extensional' I"
-        proof
-          fix x
-          show "x \<notin> I \<Longrightarrow> coneToFun \<chi> x = S.unity"
-            using coneToFun_def by simp
-        qed
+          by (metis S.extensional'I coneToFun_def mem_Collect_eq)
       qed
     qed
 
@@ -4634,20 +4416,7 @@ begin
         have 7: "\<And>A B C D F G H. F \<in> A \<rightarrow> B \<and> G \<in> B \<rightarrow> C \<and> H \<in> C \<rightarrow> D
                       \<and> inj_on F A \<and> inj_on G B \<and> inj_on H C
                     \<Longrightarrow> inj_on (H o G o F) A"
-        proof (intro inj_onI)
-          fix A :: "'a set" and B :: "'b set" and C :: "'c set" and D :: "'d set"
-          and F :: "'a \<Rightarrow> 'b" and G :: "'b \<Rightarrow> 'c" and H :: "'c \<Rightarrow> 'd"
-          assume a1: "F \<in> A \<rightarrow> B \<and> G \<in> B \<rightarrow> C \<and> H \<in> C \<rightarrow> D \<and>
-                      inj_on F A \<and> inj_on G B \<and> inj_on H C"
-          fix a a'
-          assume a: "a \<in> A" and a': "a' \<in> A" and eq: "(H o G o F) a = (H o G o F) a'"
-          have "H (G (F a)) = H (G (F a'))" using eq by simp
-          moreover have "G (F a) \<in> C \<and> G (F a') \<in> C" using a a' a1 by auto
-          ultimately have "G (F a) = G (F a')" using a1 inj_onD by metis
-          moreover have "F a \<in> B \<and> F a' \<in> B" using a a' a1 by auto
-          ultimately have "F a = F a'" using a1 inj_onD by metis
-          thus "a = a'" using a a' a1 inj_onD by metis
-        qed
+          by (simp add: Pi_iff inj_on_def)
         show ?thesis
           using 1 2 3 4 5 6 7 [of D.funToCone "PiE' I (set o D.map)" "D.cones unity"
                                   "inv_into (hom unity \<Pi>D) \<phi>" "hom unity \<Pi>D"
@@ -4823,34 +4592,9 @@ begin
       next
       assume admits_tupling: "\<forall>I :: 'j set. I \<noteq> UNIV \<longrightarrow> admits_tupling I"
       show "has_limits (undefined :: 'j)"
-      proof -
-        have 1: "\<And>I :: 'j set. I \<noteq> UNIV \<Longrightarrow> has_products I"
-          using admits_tupling has_products_iff_admits_tupling by auto
-        have "\<And>J :: 'j comp. category J \<Longrightarrow> has_products (Collect (partial_magma.arr J))"
-        proof -
-          fix J :: "'j comp"
-          assume J: "category J"
-          interpret J: category J using J by auto
-          have "Collect J.arr \<noteq> UNIV" using J.not_arr_null by blast
-          thus "has_products (Collect J.arr)"
-            using 1 by simp
-        qed
-        hence "\<And>J :: 'j comp. category J \<Longrightarrow> has_limits_of_shape J"
-        proof -
-          fix J :: "'j comp"
-          assume J: "category J"
-          interpret J: category J using J by auto
-          show "has_limits_of_shape J"
-          proof -
-            have "Collect J.arr \<noteq> UNIV" using J.not_arr_null by fast
-            moreover have "Collect J.ide \<noteq> UNIV" using J.not_arr_null by blast
-            ultimately show ?thesis
-              using 1 has_limits_if_has_products J.category_axioms by metis
-          qed
-        qed
-        thus "has_limits (undefined :: 'j)"
-          using has_limits_def by metis
-      qed
+        using has_limits_def admits_tupling has_products_iff_admits_tupling
+        by (metis category.axioms(1) category.ideD(1) has_limits_if_has_products
+            iso_tuple_UNIV_I mem_Collect_eq partial_magma.not_arr_null)
     qed
 
   end
@@ -5796,16 +5540,9 @@ $$\xymatrix{
         let ?l = "\<lambda>a. diagram.some_limit J B (D.at a D)"
         let ?\<chi> = "\<lambda>a. diagram.some_limit_cone J B (D.at a D)"
         have l\<chi>: "\<And>a. A.ide a \<Longrightarrow> diagram.limit_cone J B (D.at a D) (?l a) (?\<chi> a)"
-        proof -
-          fix a
-          assume a: "A.ide a"
-          interpret Da: diagram J B \<open>D.at a D\<close>
-            using a D.at_ide_is_diagram by blast
-          show "limit_cone J B (D.at a D) (?l a) (?\<chi> a)"
-            using assms(2) B.has_limits_of_shape_def Da.diagram_axioms
-                  Da.limit_cone_some_limit_cone
-            by auto
-        qed
+          using B.has_limits_of_shape_def D.at_ide_is_diagram assms(2)
+                diagram.limit_cone_some_limit_cone
+          by blast
         text\<open>
           The choice of limit cones induces a limit functor from \<open>A\<close> to \<open>B\<close>.
 \<close>
@@ -5907,7 +5644,7 @@ $$\xymatrix{
             also have "... = (D.at ?a D (J.cod ?j) \<cdot>\<^sub>B D.at (A.dom ?a) D ?j) \<cdot>\<^sub>B ?\<chi>' (JxA.dom ja)"
               using j ja B.comp_assoc by presburger
             also have "... = B (D.at ?a D ?j) (?\<chi>' (JxA.dom ja))"
-              using a j ja Map_comp A.comp_arr_dom D.is_natural_2 by simp
+              using a j ja Map_comp A.comp_arr_dom D.as_nat_trans.is_natural_2 by simp
            also have "... = Curry.uncurry D ja \<cdot>\<^sub>B ?\<chi>' (JxA.dom ja)"
              using Curry.uncurry_def by simp
            finally show ?thesis by auto
@@ -5917,7 +5654,8 @@ $$\xymatrix{
          Since \<open>\<chi>'\<close> is constant on \<open>J\<close>, \<open>curry \<chi>'\<close> is a cone over \<open>D\<close>.
 \<close>
        interpret constL: constant_functor J comp \<open>MkIde ?L\<close>
-         using L.natural_transformation_axioms MkArr_in_hom ide_in_hom L.functor_axioms
+         using L.as_nat_trans.natural_transformation_axioms MkArr_in_hom ide_in_hom
+              L.functor_axioms
          by unfold_locales blast
        (* TODO: This seems a little too involved. *)
        have curry_L': "constL.map = Curry.curry ?L' ?L' ?L'"
@@ -5930,12 +5668,12 @@ $$\xymatrix{
          ultimately show "constL.map j = Curry.curry ?L' ?L' ?L' j" by blast
        qed
        hence uncurry_constL: "Curry.uncurry constL.map = ?L'"
-         using L'.natural_transformation_axioms Curry.uncurry_curry by simp
+         using L'.as_nat_trans.natural_transformation_axioms Curry.uncurry_curry by simp
        interpret curry_\<chi>': natural_transformation J comp constL.map D
                              \<open>Curry.curry ?L' (Curry.uncurry D) \<chi>'.map\<close>
        proof -
          have "Curry.curry (Curry.uncurry D) (Curry.uncurry D) (Curry.uncurry D) = D"
-           using Curry.curry_uncurry D.functor_axioms D.natural_transformation_axioms
+           using Curry.curry_uncurry D.functor_axioms D.as_nat_trans.natural_transformation_axioms
            by blast
          thus "natural_transformation J comp constL.map D
                  (Curry.curry ?L' (Curry.uncurry D) \<chi>'.map)"

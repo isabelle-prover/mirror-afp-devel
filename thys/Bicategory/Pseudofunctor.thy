@@ -168,8 +168,8 @@ begin
         proof -
           have "FF (C.VV.comp \<mu>\<nu> \<tau>\<pi>) = (F (fst \<mu>\<nu>) \<cdot>\<^sub>D F (fst \<tau>\<pi>), F (snd \<mu>\<nu>) \<cdot>\<^sub>D F (snd \<tau>\<pi>))"
             using 1 2 FF_def C.VV.comp_char C.VxV.comp_char C.VV.arr_char
-            by (metis (no_types, lifting) C.VV.seq_char C.VxV.seqE fst_conv preserves_comp_2
-                snd_conv)
+            by (metis (no_types, lifting) C.VV.seq_char C.VxV.seqE fst_conv
+                as_nat_trans.preserves_comp_2 snd_conv)
           also have "... = D.VV.comp (FF \<mu>\<nu>) (FF \<tau>\<pi>)"
             using 1 2 FF_def D.VV.comp_char D.VxV.comp_char C.VV.arr_char D.VV.arr_char
                   C.VV.seq_char C.VxV.seqE preserves_seq
@@ -382,7 +382,7 @@ begin
         unfolding map\<^sub>0_def
         using assms \<i>_in_hom D.src_cod [of "F a"]
         by (metis C.unit_simps(1) C.unit_simps(5) D.arrI D.src_vcomp D.vseq_implies_hpar(1)
-            is_natural_2 preserves_arr)
+            as_nat_trans.is_natural_2 preserves_arr)
       show "trg\<^sub>D \<i>[a] = map\<^sub>0 a"
         unfolding map\<^sub>0_def
         using assms \<i>_in_hom D.trg_cod [of "F a"]
@@ -675,7 +675,7 @@ begin
       thus ?thesis
         using assms 1 unit_char(1-2) C.ideD(1) C.obj_trg D.inverse_arrows_hcomp(1)
               D.invert_side_of_triangle(2) D.lunit_simps(1) unit_simps(2) preserves_ide
-              D.iso_hcomp components_are_iso
+              D.iso_hcomp as_nat_iso.components_are_iso
         by metis
     qed
 
@@ -749,7 +749,7 @@ begin
               thus ?thesis
                 using assms 1 D.invert_side_of_triangle D.iso_inv_iso
                 by (metis C.iso_hcomp C.ideD(1) C.ide_is_iso C.iso_lunit C.iso_unit
-                    C.lunit_simps(3) C.obj_trg C.src_trg C.trg.components_are_iso
+                    C.lunit_simps(3) C.obj_trg C.src_trg C.trg.as_nat_iso.components_are_iso
                     C.unit_simps(2) D.arr_inv D.inv_inv preserves_iso)
             qed
             thus ?thesis by argo
@@ -1343,7 +1343,8 @@ begin
         by auto
       thus ?thesis
         by (metis (no_types) assms C.hcomp_simps(3) C.hseqE C.ide_dom C.src_dom C.trg_dom
-            D.comp_arr_inv' D.comp_assoc cmp_components_are_iso cmp_simps(5) is_natural_1)
+            D.comp_arr_inv' D.comp_assoc cmp_components_are_iso cmp_simps(5)
+            as_nat_trans.is_natural_1)
     qed
 
     lemma preserves_adjunction_data:
@@ -1466,8 +1467,8 @@ begin
     where "cmp \<equiv> \<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>"
 
     interpretation cmp: natural_transformation B.VV.comp V\<^sub>B H\<^sub>BoII.map IoH\<^sub>B.map cmp
-      using B.VV.arr_char B.VV.dom_simp B.VV.cod_simp B.H.is_natural_1 B.H.is_natural_2
-            I.FF_def
+      using B.VV.arr_char B.VV.dom_simp B.VV.cod_simp B.H.as_nat_trans.is_natural_1
+            B.H.as_nat_trans.is_natural_2 I.FF_def
       apply unfold_locales
           apply auto
       by (meson B.hseqE B.hseq_char')+
@@ -1866,7 +1867,7 @@ begin
       show "GFoH\<^sub>B.map \<mu>\<nu> \<cdot>\<^sub>D cmp (B.VV.dom \<mu>\<nu>) = cmp \<mu>\<nu>"
         unfolding cmp_def
         using \<mu>\<nu> B.VV.ide_char B.VV.arr_char D.comp_ide_arr B.VV.dom_char D.comp_assoc
-              is_natural_1
+              as_nat_trans.is_natural_1
         apply simp
         by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(3))
       show "cmp (B.VV.cod \<mu>\<nu>) \<cdot>\<^sub>D H\<^sub>DoGF_GF.map \<mu>\<nu> = cmp \<mu>\<nu>"
@@ -1970,7 +1971,7 @@ begin
             using hk G.\<Phi>.components_are_iso [of "(F (B.dom (fst hk)), F (B.dom (snd hk)))"]
                   C.VV.ide_char B.VV.arr_char B.VV.dom_char
             by (metis (no_types, lifting) B.VV.ideD(1) B.VV.ideD(2) B.VxV.dom_char
-                F.FF_def F.FF.components_are_iso G.\<Phi>.preserves_iso fst_conv snd_conv)
+                F.FF_def F.FF.as_nat_iso.components_are_iso G.\<Phi>.preserves_iso fst_conv snd_conv)
           show "D.iso (G (\<Phi>\<^sub>F (B.VV.dom hk)))"
             using hk F.\<Phi>.components_are_iso B.VV.arr_char B.VV.dom_char B.VV.ideD(2)
             by auto
@@ -2009,12 +2010,13 @@ begin
                             (G (F (f \<star>\<^sub>B g)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using f g h fg gh D.comp_ide_arr D.comp_assoc
           by (metis B.ideD(1) B.ide_hcomp B.src_hcomp F.cmp_simps(1) F.cmp_simps(5)
-              G.is_natural_2)
+              G.as_nat_trans.is_natural_2)
         also have "... = G (F \<a>\<^sub>B[f, g, h]) \<cdot>\<^sub>D
                           (G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h)) \<cdot>\<^sub>D
                             (G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using f g fg
-          by (metis (no_types) D.comp_assoc F.cmp_simps(1) F.cmp_simps(5) G.is_natural_2)
+          by (metis (no_types) D.comp_assoc F.cmp_simps(1) F.cmp_simps(5)
+              G.as_nat_trans.is_natural_2)
         also have "... = (G (F \<a>\<^sub>B[f, g, h]) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h))) \<cdot>\<^sub>D
                             \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h) \<cdot>\<^sub>D (G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using D.comp_assoc by simp
@@ -2663,10 +2665,10 @@ begin
         apply (intro C.inverse_arrowsI)
          apply (metis C.cod_comp C.dom_comp C.ide_dom C.in_homE C.seqI D.comp_inv_arr'
                 faithful_functor_axioms faithful_functor_def functor.preserves_ide
-                preserves_comp_2 preserves_dom)
+                as_nat_trans.preserves_comp_2 preserves_dom)
         by (metis C.cod_comp C.dom_comp C.ide_cod C.in_homE C.seqI D.comp_arr_inv'
             faithful_functor_axioms faithful_functor_def functor.preserves_ide
-            preserves_cod preserves_comp_2)
+            preserves_cod as_nat_trans.preserves_comp_2)
       thus ?thesis by auto
     qed
 
@@ -2838,7 +2840,7 @@ begin
           using assms g \<mu> E'.antipar E''.antipar cmp_in_hom unit_char
                 E'.counit_in_hom D.iso_inv_iso E'.counit_is_iso \<epsilon>'
           by (metis C.ideD(1) C.obj_src D.arrI D.iso_hcomp D.hseq_char D.ide_is_iso
-              D.isos_compose D.seqE E'.ide_right components_are_iso)
+              D.isos_compose D.seqE E'.ide_right as_nat_iso.components_are_iso)
       qed
       obtain \<eta> where \<eta>: "\<guillemotleft>\<eta> : src\<^sub>C f \<Rightarrow>\<^sub>C g \<star>\<^sub>C f\<guillemotright> \<and> F \<eta> = ?\<eta>'"
         using assms g E'.antipar \<eta>' locally_full [of "src\<^sub>C f" "g \<star>\<^sub>C f" ?\<eta>']
@@ -3029,8 +3031,6 @@ begin
     sublocale equivalence_pseudofunctor V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
                 map cmp
     proof
-      show "\<And>f f'. \<lbrakk>B.par f f'; map f = map f'\<rbrakk> \<Longrightarrow> f = f'"
-        by simp
       show "\<And>a'. B.obj a' \<Longrightarrow> \<exists>a. B.obj a \<and> B.equivalent_objects (map\<^sub>0 a) a'"
         by (auto simp add: B.equivalent_objects_reflexive map\<^sub>0_def B.obj_simps)
       show "\<And>a b g. \<lbrakk>B.obj a; B.obj b; B.in_hhom g (map\<^sub>0 a) (map\<^sub>0 b); B.ide g\<rbrakk>

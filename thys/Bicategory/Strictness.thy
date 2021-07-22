@@ -153,6 +153,56 @@ begin
 
   end
 
+  context bicategory
+  begin
+
+    text \<open>
+      The following result gives conditions for strictness of a bicategory that are typically
+      somewhat easier to verify than those used for the definition.
+    \<close>
+
+    lemma is_strict_if:
+    assumes "\<And>f. ide f \<Longrightarrow> f \<star> src f = f"
+    and "\<And>f. ide f \<Longrightarrow> trg f \<star> f = f"
+    and "\<And>a. obj a \<Longrightarrow> ide \<i>[a]"
+    and "\<And>f g h. \<lbrakk>ide f; ide g; ide h; src f = trg g; src g = trg h\<rbrakk> \<Longrightarrow> ide \<a>[f, g, h]"
+    shows "strict_bicategory V H \<a> \<i> src trg"
+    proof
+      show "\<And>f g h. \<lbrakk>ide f; ide g; ide h; src f = trg g; src g = trg h\<rbrakk> \<Longrightarrow> ide \<a>[f, g, h]"
+        by fact
+      fix f
+      assume f: "ide f"
+      show "\<l>[f] = f"
+      proof -
+        have "f = \<l>[f]"
+          using assms f unit_simps(5)
+          by (intro lunit_eqI) (auto simp add: comp_arr_ide)
+        thus ?thesis by simp
+      qed
+      show "\<r>[f] = f"
+      proof -
+        have "f = \<r>[f]"
+        proof (intro runit_eqI)
+          show "ide f" by fact
+          show "\<guillemotleft>f : f \<star> src f \<Rightarrow> f\<guillemotright>"
+            using f assms(1) by auto
+          show "f \<star> src f = (f \<star> \<i>[src f]) \<cdot> \<a>[f, src f, src f]"
+          proof -
+            have "(f \<star> \<i>[src f]) \<cdot> \<a>[f, src f, src f] = (f \<star> src f) \<cdot> \<a>[f, src f, src f]"
+              using f assms(2-3) unit_simps(5) by simp
+            also have "... = (f \<star> src f \<star> src f) \<cdot> \<a>[f, src f, src f]"
+              using f assms(1-2) ideD(1) trg_src src.preserves_ide by metis
+            also have "... = f \<star> src f"
+              using f comp_arr_ide assms(1,4) assoc_in_hom [of f "src f" "src f"] by auto
+            finally show ?thesis by simp
+          qed
+        qed
+        thus ?thesis by simp
+      qed
+    qed
+
+  end
+
   subsection "Strictification"
 
   (*
@@ -343,7 +393,7 @@ begin
       using assms trg_def arr_char by auto
 
     interpretation src: endofunctor vcomp src
-      using src_def comp_char
+      using src_def comp_char E.Obj_implies_Ide
       apply (unfold_locales)
           apply auto[4]
     proof -
@@ -356,7 +406,7 @@ begin
         also have "... = MkIde (E.Src (Dom f))"
           using gf by (simp add: seq_char)
         also have "... = MkIde (E.Src (Dom g)) \<cdot> MkIde (E.Src (Dom f))"
-          using gf seq_char by auto
+          using gf seq_char E.Obj_implies_Ide by auto
         also have "... = src g \<cdot> src f"
           using gf src_def comp_char by auto
         finally show "src (g \<cdot> f) = src g \<cdot> src f" by blast
@@ -364,7 +414,7 @@ begin
     qed
 
     interpretation trg: endofunctor vcomp trg
-      using trg_def comp_char
+      using trg_def comp_char E.Obj_implies_Ide
       apply (unfold_locales)
           apply auto[4]
     proof -
@@ -377,7 +427,7 @@ begin
         also have "... = MkIde (E.Trg (Dom f))"
           using gf by (simp add: seq_char)
         also have "... = MkIde (E.Trg (Dom g)) \<cdot> MkIde (E.Trg (Dom f))"
-          using gf seq_char by auto
+          using gf seq_char E.Obj_implies_Ide by auto
         also have "... = trg g \<cdot> trg f"
           using gf trg_def comp_char by auto
         finally show "trg (g \<cdot> f) = trg g \<cdot> trg f" by blast
@@ -385,7 +435,7 @@ begin
     qed
 
     interpretation horizontal_homs vcomp src trg
-      using src_def trg_def Cod_in_Obj Map_in_Hom
+      using src_def trg_def Cod_in_Obj Map_in_Hom E.Obj_implies_Ide
       by unfold_locales auto
 
     notation in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
@@ -1809,7 +1859,7 @@ begin
                     \<a> (fst (VVV.dom \<tau>\<mu>\<nu>)) (fst (snd (VVV.dom \<tau>\<mu>\<nu>)))
                       (snd (snd (VVV.dom \<tau>\<mu>\<nu>))) =
                   \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-        using \<a>_def HoVH.is_natural_1 HoVH_def by auto
+        using \<a>_def HoVH.as_nat_trans.is_natural_1 HoVH_def by auto
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
                    \<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>)))
                      (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot> HoHV \<tau>\<mu>\<nu> =
@@ -2357,9 +2407,7 @@ begin
               by blast
             moreover
             have "cmp\<^sub>U\<^sub>P (g, h) = MkArr (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle> (g \<star>\<^sub>B h)"
-              using f g h fg gh \<Phi>.map_def UP.FF_def UP_def hcomp_def B.VV.arr_char
-                    B.can_Ide_self src_def trg_def arr_char B.VV.cod_simp
-              by auto
+              using g h gh cmp\<^sub>U\<^sub>P_ide_simp by blast
             moreover have "MkIde \<^bold>\<langle>f\<^bold>\<rangle> \<star> MkArr (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle> (g \<star>\<^sub>B h) =
                            MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle>) (f \<star>\<^sub>B g \<star>\<^sub>B h)"
               using f g h fg gh hcomp_def arr_char src_def trg_def B.can_Ide_self
@@ -2374,7 +2422,7 @@ begin
               thus ?thesis
                 using f g h fg gh hcomp_def arr_char src_def trg_def B.can_Ide_self
                       B.comp_arr_dom B.comp_cod_arr
-                by simp
+                by auto
             qed
             ultimately show ?thesis
               using comp_assoc by auto
@@ -2688,7 +2736,7 @@ begin
       show "B.isomorphic (DN (src \<mu>)) (src\<^sub>B (DN \<mu>))"
       proof -
         have "DN (src \<mu>) = src\<^sub>B (DN \<mu>)"
-          using \<mu> DN_def arr_char E.eval_simps(2) E.Ide_implies_Arr
+          using \<mu> DN_def arr_char E.eval_simps(2) E.Ide_implies_Arr E.Obj_implies_Ide
           apply simp
           by (metis (no_types, lifting) B.vconn_implies_hpar(1) E.Nml_implies_Arr ideE
               ide_src src_simps(3))
@@ -2700,7 +2748,7 @@ begin
       show "B.isomorphic (DN (trg \<mu>)) (trg\<^sub>B (DN \<mu>))"
       proof -
         have "DN (trg \<mu>) = trg\<^sub>B (DN \<mu>)"
-          using \<mu> DN_def arr_char E.eval_simps(3) E.Ide_implies_Arr
+          using \<mu> DN_def arr_char E.eval_simps(3) E.Ide_implies_Arr E.Obj_implies_Ide
           apply simp
           by (metis (no_types, lifting) B.vconn_implies_hpar(2) E.Nml_implies_Arr ideE
               ide_trg trg_simps(3))

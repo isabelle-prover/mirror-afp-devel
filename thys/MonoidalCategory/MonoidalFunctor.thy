@@ -690,7 +690,7 @@ $$\xymatrix{
 
     lemma structure_is_natural_isomorphism:
     shows "natural_isomorphism C.CC.comp D T\<^sub>DoFF.map FoT\<^sub>C.map \<phi>"
-      using T\<^sub>DoFF.natural_isomorphism_axioms structure_is_trivial by force
+      using T\<^sub>DoFF.as_nat_iso.natural_isomorphism_axioms structure_is_trivial by force
 
   end
 

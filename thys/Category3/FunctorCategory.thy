@@ -63,9 +63,19 @@ begin
         using \<tau>\<sigma>.map_def \<tau>\<sigma>.is_natural_transformation by simp
     qed
 
+    lemma is_concrete_category:
+    shows "concrete_category (Collect (functor A B))
+             (\<lambda>F G. Collect (natural_transformation A B F G)) (\<lambda>F. F)
+             (\<lambda>F G H \<tau> \<sigma>. vertical_composite.map A B \<sigma> \<tau>)"
+      ..
+
     abbreviation comp      (infixr "\<cdot>" 55)
     where "comp \<equiv> COMP"
     notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+
+    lemma is_category:
+    shows "category comp"
+      ..
 
     lemma arrI [intro]:
     assumes "f \<noteq> null" and "natural_transformation A B (Dom f) (Cod f) (Map f)"
@@ -355,7 +365,7 @@ begin
         interpret F_dom_f1: "functor" A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
           using f1 \<tau>.F.is_extensional apply (unfold_locales, simp_all)
           by (metis A1.arr_dom A1.comp_arr_dom A1.dom_dom A1xA2.comp_simp A1xA2.seqI
-              \<tau>.F.preserves_comp_2 fst_conv snd_conv)
+              \<tau>.F.as_nat_trans.preserves_comp_2 fst_conv snd_conv)
         interpret G_cod_f1: "functor" A2 B \<open>\<lambda>f2. G (A1.cod f1, f2)\<close>
           using f1 \<tau>.G.is_extensional A1.arr_cod_iff_arr
           apply (unfold_locales, simp_all)
