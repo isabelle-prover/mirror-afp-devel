@@ -39,20 +39,20 @@
  * Authors : Burkhart Wolff, Frédéric Tuong
  *)
 
-
+chapter AFP
 
 session Clean (AFP) = HOL +
   options [timeout=300, document = pdf, document_output = "output"]
   sessions
-    "HOL-Eisbach" 
+    "HOL-Eisbach"
     "HOL-Computational_Algebra"
   directories
     "src"
-    "examples" 
+    "examples"
   theories
     "src/Clean_Main"
     "examples/IsPrime"
-    "examples/LinearSearch" 
+    "examples/LinearSearch"
     "examples/Quicksort"
     "examples/Quicksort_concept"
     "examples/SquareRoot_concept"
