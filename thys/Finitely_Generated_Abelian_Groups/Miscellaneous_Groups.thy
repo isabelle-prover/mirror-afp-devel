@@ -206,7 +206,7 @@ next
   assume x:"x \<in> P"
   then have xc: "x \<in> carrier G" using assms subgroup.subset unfolding normal_def by fast
   from x have "P #> x = P" using assms
-    by (simp add: normal_imp_subgroup subgroup.rcos_const) 
+    by (simp add: normal_imp_subgroup subgroup.rcos_const)
   thus "x \<in> kernel G (G Mod P) ((#>) P)" unfolding kernel_def using xc by simp
 qed
 

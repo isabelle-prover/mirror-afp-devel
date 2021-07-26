@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Jul 2021 00:00:00 +0000</pubDate>
+    <pubDate>07 Jul 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Finitely Generated Abelian Groups</title>
+              <link>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
+       <guid>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</guid>
+       <dc:creator> Joseph Thommes, Manuel Eberl       </dc:creator>
+       <pubDate>07 Jul 2021 00:00:00 +0000</pubDate>
+       <description>
+This article deals with the formalisation of some group-theoretic
+results including the fundamental theorem of finitely generated
+abelian groups characterising the structure of these groups as a
+uniquely determined product of cyclic groups. Both the invariant
+factor decomposition and the primary decomposition are covered.
+Additional work includes results about the direct product, the
+internal direct product and more group-theoretic lemmas.</description>
+    </item>
     <item>
        <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
               <link>https://www.isa-afp.org/entries/SpecCheck.html</link>
@@ -556,19 +571,6 @@ original design is due to &lt;a
 href=&#34;https://doi.org/10.1016/0020-0190(81)90030-2&#34;&gt;Hood
 and Melville&lt;/a&gt;. This formalization follows the presentation in
 &lt;em&gt;Purely Functional Data Structures&lt;/em&gt;by Okasaki.</description>
-    </item>
-    <item>
-       <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
-              <link>https://www.isa-afp.org/entries/JinjaDCI.html</link>
-       <guid>https://www.isa-afp.org/entries/JinjaDCI.html</guid>
-       <dc:creator> Susannah Mansky       </dc:creator>
-       <pubDate>11 Jan 2021 00:00:00 +0000</pubDate>
-       <description>
-We extend Jinja to include static fields, methods, and instructions,
-and dynamic class initialization, based on the Java SE 8
-specification. This includes extension of definitions and proofs. This
-work is partially described in Mansky and Gunter&#39;s paper at CPP
-2019 and Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
     </item>
   </channel>
 </rss>

@@ -54,7 +54,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
         show "generate G A = IDirProds G (\<lambda>g. generate G {g}) (set gs)" unfolding IDirProds_def
           by (subst gs(1), use generate_idem_Un i(3) in blast)
         show "compl_fam (\<lambda>g. generate G {g}) (set gs)" using compl_fam_iff_relations_triv[OF i(2, 3)] o gs(1) True
-          by blast 
+          by blast
       qed
       show "successively (dvd) (map ord gs)" using m
       proof (induction gs)
@@ -107,7 +107,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
         proof -
           have "card (A - {a}) = n - 1" using a n by (meson card_Diff_singleton_if i(2))
           hence "card ?B = n" using inv i(2, 3) n a(1)
-            by (metis Un_empty_right Un_insert_right card.remove card_insert_disjoint finite_Diff) 
+            by (metis Un_empty_right Un_insert_right card.remove card_insert_disjoint finite_Diff)
           moreover have "generate G A = generate G ?B"
           proof(intro generate_one_switched_eqI[OF i(3) a(1), of _ "inv a"])
             show "inv a \<in> generate G A" using generate.inv[OF a(1), of G] .
@@ -277,7 +277,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
                       have "finprod G (\<lambda>x. x [^] ?r x) s = x [^] r \<otimes> (t [^] rel g \<otimes> finprod G (\<lambda>x. x [^] rel x) (gs - {g} - {x}))"
                       proof -
                         have "finprod G (\<lambda>x. x [^] ?r x) s = x [^] ?r x \<otimes> finprod G (\<lambda>x. x [^] ?r x) (s - {x})"
-                          by (intro finprod_minus[OF xs _ fs], use sc in auto) 
+                          by (intro finprod_minus[OF xs _ fs], use sc in auto)
                         moreover have "finprod G (\<lambda>x. x [^] ?r x) (s - {x}) = t [^] ?r t \<otimes> finprod G (\<lambda>x. x [^] ?r x) (s - {x} - {t})"
                           by (intro finprod_minus, use ts xnt fs sc in auto)
                         moreover have "finprod G (\<lambda>x. x [^] ?r x) (s - {x} - {t}) = finprod G (\<lambda>x. x [^] rel x) (s - {x} - {t})"
@@ -326,7 +326,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
                       qed
                       also have "\<dots> = finprod G (\<lambda>x. x [^] rel x) gs" by (intro finprod_minus[symmetric, OF gr(3) _ fgs], use gsc in auto)
                       finally show ?thesis .
-                    qed                        
+                    qed
                     thus "finprod G (\<lambda>x. x [^] ?r x) s = \<one>" using gr(2) unfolding relations_def by simp
                   qed auto
                   show "nat r \<in> nat ` {e \<in> ?r ` s. 0 < e}" using xs xnt rq(2) by fastforce
@@ -344,7 +344,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
         case dv: True
         define tau where "tau = finprod G (\<lambda>x. x [^] ((rel x) div rel g)) gs"
         have tc: "tau \<in> carrier G"
-          by (subst tau_def, intro finprod_closed[of "(\<lambda>x. x [^] ((rel x) div rel g))" gs], use gsc in fast) 
+          by (subst tau_def, intro finprod_closed[of "(\<lambda>x. x [^] ((rel x) div rel g))" gs], use gsc in fast)
         have gts: "generate G gs = generate G (gs - {g} \<union> {tau})"
         proof(intro generate_one_switched_eqI[OF gsc gr(3), of _ tau])
           show "tau \<in> generate G gs" by (subst generate_eq_finprod_Pi_int_image[OF fgs gsc], unfold tau_def, fast)
@@ -394,7 +394,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
         proof -
           from gr(4, 5) have "rel g > 0" by simp
           with otdrg have "ord tau \<le> rel g" by (meson zdvd_imp_le)
-          moreover have "\<not>ord tau < rel g" 
+          moreover have "\<not>ord tau < rel g"
           proof
             assume a: "int (ord tau) < rel g"
             define T where T: "T = gs - {g} \<union> {tau}"
@@ -451,7 +451,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
               ultimately show ?thesis by linarith
             qed
             thus "\<lbrakk>\<not> distinct l \<Longrightarrow> thesis; length l < n \<and> distinct l \<Longrightarrow> thesis; length l = n \<and> distinct l \<Longrightarrow> thesis\<rbrakk> \<Longrightarrow> thesis"
-              by linarith 
+              by linarith
           qed
           thus ?thesis
           proof(cases)
@@ -513,7 +513,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
               qed
               thus ?thesis unfolding complementary_def using generate.one ghs by blast
             qed
-            moreover have idl: "is_idirprod (generate G A) (\<lambda>g. generate G {g}) (set l)" 
+            moreover have idl: "is_idirprod (generate G A) (\<lambda>g. generate G {g}) (set l)"
             proof -
               have "is_idirprod (generate G (set hs \<union> {tau})) (\<lambda>g. generate G {g}) (set hs \<union> {tau})"
                 by (intro idirprod_generate_ind, use tc hsc hs(3) ghs c in auto)
@@ -544,7 +544,7 @@ proof (induction "card A" arbitrary: A rule: nat_less_induct)
                     show "b \<in> generate G (set l)"
                     proof -
                       have "tau \<in> generate G (set l)" using l generate.incl[of tau "set l"] by auto
-                      moreover have "a [^] q \<in> generate G (set l)" 
+                      moreover have "a [^] q \<in> generate G (set l)"
                         using mono_generate[of "{a}" "set l"] generate_pow[OF ac] Cons l by auto
                       ultimately show ?thesis using b generate.eng by fast
                     qed
@@ -687,7 +687,7 @@ proof -
   moreover have "successively (dvd) (map ord ?r)"
   proof (cases gs)
     case (Cons a list)
-    have r: "(map ord (remove1 \<one> gs)) = remove1 1 (map ord gs)" using gs(1) 
+    have r: "(map ord (remove1 \<one> gs)) = remove1 1 (map ord gs)" using gs(1)
     proof(induction gs)
       case (Cons a gs)
       hence "a \<in> carrier G" by simp
@@ -713,7 +713,7 @@ proof -
   from invariant_factor_decomposition_idirprod obtain gs where
     gs: "set gs \<subseteq> carrier G" "distinct gs" "is_idirprod (carrier G) (\<lambda>g. generate G {g}) (set gs)"
         "successively (dvd) (map ord gs)" "card (set gs) \<le> card gen" "\<one> \<notin> set gs" by blast
-  with cong_DirProds_IDirProds[OF gs(3)] gs 
+  with cong_DirProds_IDirProds[OF gs(3)] gs
   have "DirProds (\<lambda>g. G\<lparr>carrier := generate G {g}\<rparr>) (set gs) \<cong> G" by blast
   with gs that show ?thesis by auto
 qed
@@ -795,7 +795,7 @@ proof -
         \<and> successively (dvd) ?ns \<and> length ?ns \<le> card gen"
       unfolding lessThan_def by simp
   next
-    case c: (Cons a list)    
+    case c: (Cons a list)
     let ?l = "map ord gs"
     from c have l: "length ?l > 0" by auto
     have "DirProds (\<lambda>n. Z (?l ! n)) {..<length ?l} \<cong> G"
@@ -861,7 +861,7 @@ next
     proof (intro pairwise_coprime_dvd'[OF _ _ n[symmetric]])
       show "finite (prime_factors n)" by simp
       show "\<forall>a\<in>#prime_factorization n. a ^ multiplicity a n dvd j"
-      proof 
+      proof
         show "p ^ multiplicity p n dvd j" if "p \<in> prime_factors n" for p
         proof -
           from j have "(?f [^]\<^bsub>?DP\<^esub> j) p = 0"
