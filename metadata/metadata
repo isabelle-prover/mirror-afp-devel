@@ -10763,3 +10763,18 @@ abstract =
   generators, test output formats, as well as pretty printers and
   shrinking functions for counterexamples among other things.
 
+[Finitely_Generated_Abelian_Groups]
+title = Finitely Generated Abelian Groups
+author = Joseph Thommes, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2021-07-07
+notify = joseph-thommes@gmx.de, eberlm@in.tum.de
+abstract =
+  This article deals with the formalisation of some group-theoretic
+  results including the fundamental theorem of finitely generated
+  abelian groups characterising the structure of these groups as a
+  uniquely determined product of cyclic groups. Both the invariant
+  factor decomposition and the primary decomposition are covered.
+  Additional work includes results about the direct product, the
+  internal direct product and more group-theoretic lemmas.
+
