@@ -42,7 +42,7 @@
 chapter AFP
 
 session Clean (AFP) = HOL +
-  options [timeout=300, document = pdf, document_output = "output"]
+  options [timeout=300]
   sessions
     "HOL-Eisbach"
     "HOL-Computational_Algebra"
