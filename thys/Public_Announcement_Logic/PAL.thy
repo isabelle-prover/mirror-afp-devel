@@ -34,9 +34,9 @@ fun
 | \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<or>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<or> (M, w \<Turnstile>\<^sub>! q))\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<and>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<and> (M, w \<Turnstile>\<^sub>! q))\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<longrightarrow> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! K\<^sub>! i p) = (\<forall>v \<in> \<K> M i w. M, v \<Turnstile>\<^sub>! p)\<close>
+| \<open>(M, w \<Turnstile>\<^sub>! K\<^sub>! i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile>\<^sub>! p)\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! [r]\<^sub>! p) = ((M, w \<Turnstile>\<^sub>! r) \<longrightarrow> (restrict M r, w \<Turnstile>\<^sub>! p))\<close>
-| \<open>restrict M p = Kripke (\<pi> M) (\<lambda>i w. {v. v \<in> \<K> M i w \<and> (M, v \<Turnstile>\<^sub>! p)})\<close>
+| \<open>restrict M p = Kripke {w |w. w \<in> \<W> M \<and> M, w \<Turnstile>\<^sub>! p} (\<pi> M) (\<K> M)\<close>
 
 primrec static :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>static \<^bold>\<bottom>\<^sub>! = True\<close>
@@ -179,16 +179,16 @@ qed
 
 section \<open>Soundness\<close>
 
-lemma peval_semantics: \<open>peval (val w) (\<lambda>q. Kripke val r, w \<Turnstile>\<^sub>! q) p = (Kripke val r, w \<Turnstile>\<^sub>! p)\<close>
+lemma peval_semantics: \<open>peval (val w) (\<lambda>q. Kripke W val r, w \<Turnstile>\<^sub>! q) p = (Kripke W val r, w \<Turnstile>\<^sub>! p)\<close>
   by (induct p) simp_all
 
 lemma ptautology:
   assumes \<open>ptautology p\<close>
   shows \<open>M, w \<Turnstile>\<^sub>! p\<close>
 proof -
-  from assms have \<open>peval (g w) (\<lambda>q. Kripke g r, w \<Turnstile>\<^sub>! q) p\<close> for g r
+  from assms have \<open>peval (g w) (\<lambda>q. Kripke W g r, w \<Turnstile>\<^sub>! q) p\<close> for W g r
     by simp
-  then have \<open>Kripke g r, w \<Turnstile>\<^sub>! p\<close> for g r
+  then have \<open>Kripke W g r, w \<Turnstile>\<^sub>! p\<close> for W g r
     using peval_semantics by fast
   then show \<open>M, w \<Turnstile>\<^sub>! p\<close>
     by (metis kripke.collapse)
