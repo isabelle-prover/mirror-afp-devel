@@ -44,7 +44,7 @@ proof(rule continuous_onI, simp add: dist_norm)
     also have "... \<le> ?\<epsilon> * (\<parallel>s\<parallel>)"
       using dHyp \<open>\<tau> \<in> T\<close> \<open>\<bar>\<tau> - t\<bar> < \<delta>\<close> mult_right_mono norm_ge_zero by blast 
     finally have "\<parallel>A \<tau> *v s - A t *v s\<parallel> \<le> e"
-      by (subst (asm) obs) (metis (mono_tags, opaque_lifting) \<open>0 < e\<close> less_eq_real_def order_trans)}
+      by (subst (asm) obs) (metis (mono_tags) \<open>0 < e\<close> less_eq_real_def order_trans)}
   thus "\<exists>d>0. \<forall>\<tau>\<in>T. \<bar>\<tau> - t\<bar> < d \<longrightarrow> \<parallel>A \<tau> *v s - A t *v s\<parallel> \<le> e"
     using dHyp by blast
 qed
@@ -130,6 +130,8 @@ subsection \<open> Flow for affine systems \<close>
 
 subsubsection \<open> Derivative rules for square matrices \<close>
 
+declare has_derivative_component [simp del]
+
 lemma has_derivative_exp_scaleRl[derivative_intros]:
   fixes f::"real \<Rightarrow> real" (* by Fabian Immler and Johannes Hölzl *)
   assumes "D f \<mapsto> f' at t within T"
@@ -168,7 +170,7 @@ lemma vderiv_on_mtx_vec_multI[poly_derivatives]:
   assumes "D u = u' on T" and "D A = A' on T"
       and "g = (\<lambda>t. A t *\<^sub>V u' t + A' t *\<^sub>V u t )"
     shows "D (\<lambda>t. A t *\<^sub>V u t) = g on T"
-  using assms unfolding has_vderiv_on_def has_vector_derivative_def apply clarsimp
+  using assms unfolding has_vderiv_on_def has_vector_derivative_def apply clarify
   apply(erule_tac x=x in ballE, simp_all)+
   apply(rule derivative_eq_intros)
   by (auto simp: fun_eq_iff mtx_vec_scaleR_commute pth_6 scaleR_mtx_vec_assoc)
@@ -184,16 +186,17 @@ lemma has_derivative_mtx_vec_multl[derivative_intros]:
   apply(rule_tac f'1="\<lambda>i \<tau>. \<tau> *\<^sub>R  (x $ i *\<^sub>R \<c>\<o>\<l> i (A' t))" in derivative_eq_intros(10))
    apply(simp_all add: scaleR_right.sum)
   apply(rule_tac g'1="\<lambda>\<tau>. \<tau> *\<^sub>R \<c>\<o>\<l> i (A' t)" in derivative_eq_intros(4), simp_all add: mult.commute)
-  using assms unfolding sq_mtx_col_def column_def apply(transfer, simp)
-  apply(rule has_derivative_vec_lambda)
-  by (simp add: scaleR_vec_def)
+  using assms unfolding sq_mtx_col_def column_def 
+  by (transfer, simp add: has_derivative_component)
+
+declare has_derivative_component [simp]
 
 lemma continuous_on_mtx_vec_multr: "continuous_on S ((*\<^sub>V) A)"
   by transfer (simp add: matrix_vector_mult_linear_continuous_on)
 
-\<comment> \<open>Automatically generated derivative rules from this subsubsection \<close>
+text \<open>Isabelle automatically generates derivative rules from this subsubsection \<close>
 
-thm derivative_eq_intros(140,141,142,143)
+thm derivative_eq_intros(140-)
 
 
 subsubsection \<open> Existence and uniqueness with square matrices \<close>

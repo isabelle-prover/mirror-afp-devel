@@ -1,5 +1,5 @@
 (*  Title:       Preliminaries for hybrid systems verification
-    Author:      Jonathan Julián Huerta y Munive, 2020
+    Author:      Jonathan Julián Huerta y Munive, 2021
     Maintainer:  Jonathan Julián Huerta y Munive <jonjulian23@gmail.com>
 *)
 
@@ -12,13 +12,31 @@ theory HS_Preliminaries
   imports "Ordinary_Differential_Equations.Picard_Lindeloef_Qualitative"
 begin
 
-\<comment> \<open> Syntax \<close>
+\<comment> \<open> Notation \<close>
+
+bundle derivative_notation
+begin
 
 no_notation has_vderiv_on (infix "(has'_vderiv'_on)" 50)
 
 notation has_derivative ("(1(D _ \<mapsto> (_))/ _)" [65,65] 61)
      and has_vderiv_on ("(1 D _ = (_)/ on _)" [65,65] 61)
-     and norm ("(1\<parallel>_\<parallel>)" [65] 61)
+
+end
+
+bundle derivative_no_notation
+begin
+
+notation has_vderiv_on (infix "(has'_vderiv'_on)" 50)
+
+no_notation has_derivative ("(1(D _ \<mapsto> (_))/ _)" [65,65] 61)
+     and has_vderiv_on ("(1 D _ = (_)/ on _)" [65,65] 61)
+
+end
+
+unbundle derivative_notation
+
+notation norm ("\<parallel>_\<parallel>")
 
 subsection \<open> Real numbers \<close>
 
@@ -55,6 +73,22 @@ proof-
   thus "(x * cos t + y * sin t)\<^sup>2 + (y * cos t - x * sin t)\<^sup>2 = x\<^sup>2 + y\<^sup>2"
     by (simp add: add.commute add.left_commute power2_diff power2_sum)
 qed
+
+lemma sum_eq_Sum:
+  assumes "inj_on f A"
+  shows "(\<Sum>x\<in>A. f x) = (\<Sum> {f x |x. x \<in> A})"
+proof-
+  have "(\<Sum> {f x |x. x \<in> A}) = (\<Sum> (f ` A))"
+    apply(auto simp: image_def)
+    by (rule_tac f=Sum in arg_cong, auto)
+  also have "... = (\<Sum>x\<in>A. f x)"
+    by (subst sum.image_eq[OF assms], simp)
+  finally show "(\<Sum>x\<in>A. f x) = (\<Sum> {f x |x. x \<in> A})"
+    by simp
+qed
+
+lemma triangle_norm_vec_le_sum: "\<parallel>x\<parallel> \<le> (\<Sum>i\<in>UNIV. \<parallel>x $ i\<parallel>)"
+  by (simp add: L2_set_le_sum norm_vec_def)
 
 
 subsection \<open> Single variable derivatives \<close>
@@ -261,49 +295,98 @@ definition vec_upd :: "('a^'b) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> '
 lemma vec_upd_eq: "vec_upd s i a = (\<chi> j. if j = i then a else s$j)"
   by (simp add: vec_upd_def)
 
-lemma frechet_vec_lambda:
+lemma has_derivative_vec_nth[derivative_intros]: 
+  "D (\<lambda>s. s $ i) \<mapsto> (\<lambda>s. s $ i) (at x within S)"
+  by (clarsimp simp: has_derivative_within) standard
+
+lemma bounded_linear_component:
+  "(bounded_linear f) \<longleftrightarrow> (\<forall>i. bounded_linear (\<lambda>x. (f x) $ i))" (is "?lhs = ?rhs")
+proof
+  assume ?lhs 
+  thus ?rhs
+    apply(clarsimp, rule_tac f="(\<lambda>x. x $ i)" in bounded_linear_compose)
+     apply(simp_all add: bounded_linear_def bounded_linear_axioms_def linear_iff)
+    by (rule_tac x=1 in exI, clarsimp) (meson Finite_Cartesian_Product.norm_nth_le)
+next
+  assume ?rhs
+  hence "(\<forall>i. \<exists>K. \<forall>x. \<parallel>f x $ i\<parallel> \<le> \<parallel>x\<parallel> * K)" "linear f"
+    by (auto simp: bounded_linear_def bounded_linear_axioms_def linear_iff vec_eq_iff)
+  then obtain F where F: "\<And>i x. \<parallel>f x $ i\<parallel> \<le> \<parallel>x\<parallel> * F i"
+    by metis
+  have "\<parallel>f x\<parallel> \<le> \<parallel>x\<parallel> * sum F UNIV" for x
+  proof -
+    have "norm (f x) \<le> (\<Sum>i\<in>UNIV. \<parallel>f x $ i\<parallel>)"
+      by (simp add: L2_set_le_sum norm_vec_def)
+    also have "... \<le> (\<Sum>i\<in>UNIV. norm x * F i)"
+      by (metis F sum_mono)
+    also have "... = norm x * sum F UNIV"
+      by (simp add: sum_distrib_left)
+    finally show ?thesis .
+  qed
+  then show ?lhs
+    by (force simp: bounded_linear_def bounded_linear_axioms_def \<open>linear f\<close>)
+qed
+
+lemma open_preimage_nth:
+  "open S \<Longrightarrow> open {s::('a::real_normed_vector^'n::finite). s $ i \<in> S}"
+  unfolding open_contains_ball apply clarsimp
+  apply(erule_tac x="x$i" in ballE; clarsimp)
+  apply(rule_tac x=e in exI; clarsimp simp: dist_norm subset_eq ball_def)
+  apply(rename_tac x e y, erule_tac x="y$i" in allE)
+  using Finite_Cartesian_Product.norm_nth_le
+  by (metis le_less_trans vector_minus_component)
+
+lemma tendsto_nth_iff: \<comment> \<open> following @{thm tendsto_componentwise_iff} \<close>
+  fixes l::"'a::real_normed_vector^'n::finite"
+  defines "m \<equiv> real CARD('n)"
+  shows "(f \<longlongrightarrow> l) F \<longleftrightarrow> (\<forall>i. ((\<lambda>x. f x $ i) \<longlongrightarrow> l $ i) F)" (is "?lhs = ?rhs")
+proof
+  assume ?lhs
+  thus ?rhs
+    unfolding tendsto_def
+    by (clarify, drule_tac x="{s. s $ i \<in> S}" in spec) (auto simp: open_preimage_nth)
+next
+  assume ?rhs
+  thus ?lhs
+  proof(unfold tendsto_iff dist_norm, clarify)
+    fix \<epsilon>::real assume "0 < \<epsilon>"
+    assume evnt_h: "\<forall>i \<epsilon>. 0 < \<epsilon> \<longrightarrow> (\<forall>\<^sub>F x in F. \<parallel>f x $ i - l $ i\<parallel> < \<epsilon>)"
+    {fix x assume hyp: "\<forall>i. \<parallel>f x $ i - l $ i\<parallel> < (\<epsilon>/m)"
+      have "\<parallel>f x - l\<parallel> \<le> (\<Sum>i\<in>UNIV. \<parallel>f x $ i - l $ i\<parallel>)"
+        using triangle_norm_vec_le_sum[of "f x - l"] by auto
+      also have "... < (\<Sum>(i::'n)\<in>UNIV. (\<epsilon>/m))"
+        apply(rule sum_strict_mono[of UNIV "\<lambda>i. \<parallel>f x $ i - l $ i\<parallel>" "\<lambda>i. \<epsilon>/m"])
+        using hyp by auto
+      also have "... = m * (\<epsilon>/m)"
+        unfolding assms by simp
+      finally have "\<parallel>f x - l\<parallel> < \<epsilon>" 
+        unfolding assms by simp}
+    hence key: "\<And>x. \<forall>i. \<parallel>f x $ i - l $ i\<parallel> < (\<epsilon>/m) \<Longrightarrow> \<parallel>f x - l\<parallel> < \<epsilon>"
+      by blast
+    have obs: "\<forall>\<^sub>F x in F. \<forall>i. \<parallel>f x $ i - l $ i\<parallel> < (\<epsilon>/m)"
+      apply(rule eventually_all_finite)
+      using \<open>0 < \<epsilon>\<close> evnt_h unfolding assms by auto
+    thus "\<forall>\<^sub>F x in F. \<parallel>f x - l\<parallel> < \<epsilon>"
+      by (rule eventually_mono[OF _ key], simp)
+  qed
+qed
+
+lemma has_derivative_component[simp]: \<comment> \<open> following @{thm has_derivative_componentwise_within} \<close>
+  "(D f \<mapsto> f' at x within S) \<longleftrightarrow> (\<forall>i. D (\<lambda>s. f s $ i) \<mapsto> (\<lambda>s. f' s $ i) at x within S)"
+  by (simp add: has_derivative_within tendsto_nth_iff 
+      bounded_linear_component all_conj_distrib)
+
+lemma has_vderiv_on_component[simp]:
+  fixes x::"real \<Rightarrow> ('a::banach)^('n::finite)"
+  shows "(D x = x' on T) = (\<forall>i. D (\<lambda>t. x t $ i) = (\<lambda>t. x' t $ i) on T)"
+  unfolding has_vderiv_on_def has_vector_derivative_def by auto
+
+lemma frechet_tendsto_vec_lambda:
   fixes f::"real \<Rightarrow> ('a::banach)^('m::finite)" and x::real and T::"real set"
   defines "x\<^sub>0 \<equiv> netlimit (at x within T)" and "m \<equiv> real CARD('m)"
   assumes "\<forall>i. ((\<lambda>y. (f y $ i - f x\<^sub>0 $ i - (y - x\<^sub>0) *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
   shows "((\<lambda>y. (f y - f x\<^sub>0 - (y - x\<^sub>0) *\<^sub>R f' x) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
-proof(simp add: tendsto_iff, clarify)
-  fix \<epsilon>::real assume "0 < \<epsilon>"
-  let "?\<Delta>" = "\<lambda>y. y - x\<^sub>0" and "?\<Delta>f" = "\<lambda>y. f y - f x\<^sub>0"
-  let "?P" = "\<lambda>i e y. inverse \<bar>?\<Delta> y\<bar> * (\<parallel>f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i\<parallel>) < e"
-    and "?Q" = "\<lambda>y. inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>) < \<epsilon>"
-  have "0 < \<epsilon> / sqrt m"
-    using \<open>0 < \<epsilon>\<close> by (auto simp: assms)
-  hence "\<forall>i. eventually (\<lambda>y. ?P i (\<epsilon> / sqrt m) y) (at x within T)"
-    using assms unfolding tendsto_iff by simp
-  thus "eventually ?Q (at x within T)"
-  proof(rule eventually_all_finite_mono, simp add: norm_vec_def L2_set_def, clarify)
-    fix t::real
-    let ?c = "inverse \<bar>t - x\<^sub>0\<bar>" and "?u t" = "\<lambda>i. f t $ i - f x\<^sub>0 $ i - ?\<Delta> t *\<^sub>R f' x $ i"
-    assume hyp:"\<forall>i. ?c * (\<parallel>?u t i\<parallel>) < \<epsilon> / sqrt m"
-    hence "\<forall>i. (?c *\<^sub>R (\<parallel>?u t i\<parallel>))\<^sup>2 < (\<epsilon> / sqrt m)\<^sup>2"
-      by (simp add: power_strict_mono)
-    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m"
-      by (simp add: power_mult_distrib power_divide assms)
-    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m"
-      by (auto simp: assms)
-    also have "({}::'m set) \<noteq> UNIV \<and> finite (UNIV :: 'm set)"
-      by simp
-    ultimately have "(\<Sum>i\<in>UNIV. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2) < (\<Sum>(i::'m)\<in>UNIV. \<epsilon>\<^sup>2 / m)"
-      by (metis (lifting) sum_strict_mono)
-    moreover have "?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) = (\<Sum>i\<in>UNIV. ?c\<^sup>2 *  (\<parallel>?u t i\<parallel>)\<^sup>2)"
-      using sum_distrib_left by blast
-    ultimately have "?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>\<^sup>2"
-      by (simp add: assms)
-    hence "sqrt (?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2)) < sqrt (\<epsilon>\<^sup>2)"
-      using real_sqrt_less_iff by blast
-    also have "... = \<epsilon>"
-      using \<open>0 < \<epsilon>\<close> by auto
-    moreover have "?c * sqrt (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) = sqrt (?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2))"
-      by (simp add: real_sqrt_mult)
-    ultimately show "?c * sqrt (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>"
-      by simp
-  qed
-qed
+  using assms by (simp add: tendsto_nth_iff)
 
 lemma tendsto_norm_bound:
   "\<forall>x. \<parallel>G x - L\<parallel> \<le> \<parallel>F x - L\<parallel> \<Longrightarrow> (F \<longlongrightarrow> L) net \<Longrightarrow> (G \<longlongrightarrow> L) net"
@@ -317,7 +400,7 @@ lemma tendsto_zero_norm_bound:
   apply(rule_tac P="\<lambda>x. \<parallel>F x\<parallel> < e" in eventually_mono, simp)
   by (rename_tac e z) (erule_tac x=z in allE, simp)
 
-lemma frechet_vec_nth:
+lemma frechet_tendsto_vec_nth:
   fixes f::"real \<Rightarrow> ('a::real_normed_vector)^'m"
   assumes "((\<lambda>x. (f x - f x\<^sub>0 - (x - x\<^sub>0) *\<^sub>R f' t) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at t within T)"
   shows "((\<lambda>x. (f x $ i - f x\<^sub>0 $ i - (x - x\<^sub>0) *\<^sub>R f' t $ i) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at t within T)"
@@ -325,26 +408,5 @@ lemma frechet_vec_nth:
    apply(clarsimp, rule mult_left_mono)
     apply (metis Finite_Cartesian_Product.norm_nth_le vector_minus_component vector_scaleR_component)
   using assms by simp_all
-
-lemma has_derivative_vec_lambda:
-  fixes f::"real \<Rightarrow> ('a::banach)^('n::finite)"
-  assumes "\<forall>i. D (\<lambda>t. f t $ i) \<mapsto> (\<lambda> h. h *\<^sub>R f' x $ i) (at x within T)"
-  shows "D f \<mapsto> (\<lambda>h. h *\<^sub>R f' x) at x within T"
-  apply(unfold has_derivative_def, safe)
-   apply(force simp: bounded_linear_def bounded_linear_axioms_def)
-  using assms frechet_vec_lambda[of x T ] unfolding has_derivative_def by auto
-
-lemma has_derivative_vec_nth:
-  assumes "D f \<mapsto> (\<lambda>h. h *\<^sub>R f' x) at x within T"
-  shows "D (\<lambda>t. f t $ i) \<mapsto> (\<lambda>h. h *\<^sub>R f' x $ i) at x within T"
-  apply(unfold has_derivative_def, safe)
-   apply(force simp: bounded_linear_def bounded_linear_axioms_def)
-  using frechet_vec_nth assms unfolding has_derivative_def by auto
-
-lemma has_vderiv_on_vec_eq[simp]:
-  fixes x::"real \<Rightarrow> ('a::banach)^('n::finite)"
-  shows "(D x = x' on T) = (\<forall>i. D (\<lambda>t. x t $ i) = (\<lambda>t. x' t $ i) on T)"
-  unfolding has_vderiv_on_def has_vector_derivative_def apply safe
-  using has_derivative_vec_nth has_derivative_vec_lambda by blast+
 
 end
