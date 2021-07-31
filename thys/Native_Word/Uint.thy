@@ -6,7 +6,7 @@
 chapter \<open>Unsigned words of default size\<close>
 
 theory Uint imports
-  Code_Target_Word_Base
+  Code_Target_Word_Base Word_Type_Copies
 begin
 
 text \<open>
@@ -58,204 +58,145 @@ end
 
 section \<open>Type definition and primitive operations\<close>
 
-typedef uint = "UNIV :: dflt_size word set" .. 
+typedef uint = \<open>UNIV :: dflt_size word set\<close> ..
+
+global_interpretation uint: word_type_copy Abs_uint Rep_uint
+  using type_definition_uint by (rule word_type_copy.intro)
 
 setup_lifting type_definition_uint
 
-text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint}.\<close>
-declare Rep_uint_inverse[code abstype]
+declare uint.of_word_of [code abstype]
 
-declare Quotient_uint[transfer_rule]
+declare Quotient_uint [transfer_rule]
 
-instantiation uint :: comm_ring_1
-begin
-lift_definition zero_uint :: uint is "0 :: dflt_size word" .
-lift_definition one_uint :: uint is "1" .
-lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(+) :: dflt_size word \<Rightarrow> _" .
-lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(-)" .
-lift_definition uminus_uint :: "uint \<Rightarrow> uint" is uminus .
-lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(*)" .
-instance by (standard; transfer) (simp_all add: algebra_simps)
-end
-
-instantiation uint :: semiring_modulo
-begin
-lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(div)" .
-lift_definition modulo_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(mod)" .
-instance by (standard; transfer) (fact word_mod_div_equality)
-end
-
-instantiation uint :: linorder begin
-lift_definition less_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "(<)" .
-lift_definition less_eq_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "(\<le>)" .
-instance by (standard; transfer) (simp_all add: less_le_not_le linear)
-end
-
-lemmas [code] = less_uint.rep_eq less_eq_uint.rep_eq
-
-context
-  includes lifting_syntax
-  notes
-    transfer_rule_of_bool [transfer_rule]
-    transfer_rule_numeral [transfer_rule]
+instantiation uint :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
 begin
 
-lemma [transfer_rule]:
-  "((=) ===> cr_uint) of_bool of_bool"
-  by transfer_prover
+lift_definition zero_uint :: uint is 0 .
+lift_definition one_uint :: uint is 1 .
+lift_definition plus_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(+)\<close> .
+lift_definition uminus_uint :: \<open>uint \<Rightarrow> uint\<close> is uminus .
+lift_definition minus_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(-)\<close> .
+lift_definition times_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(*)\<close> .
+lift_definition divide_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(div)\<close> .
+lift_definition modulo_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(mod)\<close> .
+lift_definition equal_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
+lift_definition less_eq_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
+lift_definition less_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(<)\<close> .
 
-lemma transfer_rule_numeral_uint [transfer_rule]:
-  "((=) ===> cr_uint) numeral numeral"
-  by transfer_prover
+global_interpretation uint: word_type_copy_ring Abs_uint Rep_uint
+  by standard (fact zero_uint.rep_eq one_uint.rep_eq
+    plus_uint.rep_eq uminus_uint.rep_eq minus_uint.rep_eq
+    times_uint.rep_eq divide_uint.rep_eq modulo_uint.rep_eq
+    equal_uint.rep_eq less_eq_uint.rep_eq less_uint.rep_eq)+
 
-lemma [transfer_rule]:
-  \<open>(cr_uint ===> (\<longleftrightarrow>)) even ((dvd) 2 :: uint \<Rightarrow> bool)\<close>
-  by (unfold dvd_def) transfer_prover
+instance proof -
+  show \<open>OFCLASS(uint, comm_ring_1_class)\<close>
+    by (rule uint.of_class_comm_ring_1)
+  show \<open>OFCLASS(uint, semiring_modulo_class)\<close>
+    by (fact uint.of_class_semiring_modulo)
+  show \<open>OFCLASS(uint, equal_class)\<close>
+    by (fact uint.of_class_equal)
+  show \<open>OFCLASS(uint, linorder_class)\<close>
+    by (fact uint.of_class_linorder)
+qed
 
-end
-
-instantiation uint :: semiring_bits
-begin
-
-lift_definition bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-
-instance
-  by (standard; transfer)
-    (fact bit_iff_odd even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
-       bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
-       even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
-       div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
-
-end
-
-instantiation uint :: semiring_bit_shifts
-begin
-lift_definition push_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is push_bit .
-lift_definition drop_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is drop_bit .
-lift_definition take_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is take_bit .
-instance by (standard; transfer)
-  (fact push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod)+
 end
 
 instantiation uint :: ring_bit_operations
 begin
+
+lift_definition bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint :: \<open>uint \<Rightarrow> uint\<close> is NOT .
 lift_definition and_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(AND)\<close> .
 lift_definition or_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(OR)\<close> .
 lift_definition xor_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(XOR)\<close> .
 lift_definition mask_uint :: \<open>nat \<Rightarrow> uint\<close> is mask .
-lift_definition set_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.set_bit\<close> .
-lift_definition unset_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>unset_bit\<close> .
-lift_definition flip_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>flip_bit\<close> .
-instance by (standard; transfer)
-  (simp_all add: bit_simps mask_eq_decr_exp minus_eq_not_minus_1 set_bit_def flip_bit_def)
-end
+lift_definition push_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is push_bit .
+lift_definition drop_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is drop_bit .
+lift_definition signed_drop_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is signed_drop_bit .
+lift_definition take_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is take_bit .
+lift_definition set_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is Bit_Operations.set_bit .
+lift_definition unset_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is unset_bit .
+lift_definition flip_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is flip_bit .
 
-lemma [code]:
-  \<open>take_bit n a = a AND mask n\<close> for a :: uint
-  by (fact take_bit_eq_mask)
+global_interpretation uint: word_type_copy_bits Abs_uint Rep_uint signed_drop_bit_uint
+  by standard (fact bit_uint.rep_eq not_uint.rep_eq and_uint.rep_eq or_uint.rep_eq xor_uint.rep_eq
+    mask_uint.rep_eq push_bit_uint.rep_eq drop_bit_uint.rep_eq signed_drop_bit_uint.rep_eq take_bit_uint.rep_eq
+    set_bit_uint.rep_eq unset_bit_uint.rep_eq flip_bit_uint.rep_eq)+
 
-lemma [code]:
-  \<open>mask (Suc n) = push_bit n (1 :: uint) OR mask n\<close>
-  \<open>mask 0 = (0 :: uint)\<close>
-  by (simp_all add: mask_Suc_exp push_bit_of_1)
-
-lemma [code]:
-  \<open>Bit_Operations.set_bit n w = w OR push_bit n 1\<close> for w :: uint
-  by (fact set_bit_eq_or)
-
-lemma [code]:
-  \<open>unset_bit n w = w AND NOT (push_bit n 1)\<close> for w :: uint
-  by (fact unset_bit_eq_and_not)
-
-lemma [code]:
-  \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint
-  by (fact flip_bit_eq_xor)
-
-instantiation uint :: lsb
-begin
-lift_definition lsb_uint :: \<open>uint \<Rightarrow> bool\<close> is lsb .
-instance by (standard; transfer)
-  (fact lsb_odd)
-end
-
-instantiation uint :: msb
-begin
-lift_definition msb_uint :: \<open>uint \<Rightarrow> bool\<close> is msb .
-instance ..
-end
-
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.qualified_path true \<^binding>\<open>Generic\<close>))\<close>
-
-instantiation uint :: set_bit
-begin
-lift_definition set_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint\<close> is set_bit .
 instance
+  by (fact uint.of_class_ring_bit_operations)
+
+end
+
+lift_definition uint_of_nat :: \<open>nat \<Rightarrow> uint\<close>
+  is word_of_nat .
+
+lift_definition nat_of_uint :: \<open>uint \<Rightarrow> nat\<close>
+  is unat .
+
+lift_definition uint_of_int :: \<open>int \<Rightarrow> uint\<close>
+  is word_of_int .
+
+lift_definition int_of_uint :: \<open>uint \<Rightarrow> int\<close>
+  is uint .
+
+context
+  includes integer.lifting
+begin
+
+lift_definition Uint :: \<open>integer \<Rightarrow> uint\<close>
+  is word_of_int .
+
+lift_definition integer_of_uint :: \<open>uint \<Rightarrow> integer\<close>
+  is uint .
+
+end
+
+global_interpretation uint: word_type_copy_more Abs_uint Rep_uint signed_drop_bit_uint
+  uint_of_nat nat_of_uint uint_of_int int_of_uint Uint integer_of_uint
   apply standard
-  apply transfer
-  apply (simp add: bit_simps)
+       apply (simp_all add: uint_of_nat.rep_eq nat_of_uint.rep_eq
+         uint_of_int.rep_eq int_of_uint.rep_eq
+         Uint.rep_eq integer_of_uint.rep_eq integer_eq_iff)
   done
-end
 
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.parent_path))\<close>
+instantiation uint :: "{size, msb, lsb, set_bit, bit_comprehension}"
+begin
 
-instantiation uint :: bit_comprehension begin
-lift_definition set_bits_uint :: "(nat \<Rightarrow> bool) \<Rightarrow> uint" is "set_bits" .
-instance by (standard; transfer) (fact set_bits_bit_eq)
-end
+lift_definition size_uint :: \<open>uint \<Rightarrow> nat\<close> is size .
 
-lemmas [code] = bit_uint.rep_eq lsb_uint.rep_eq msb_uint.rep_eq
+lift_definition msb_uint :: \<open>uint \<Rightarrow> bool\<close> is msb .
+lift_definition lsb_uint :: \<open>uint \<Rightarrow> bool\<close> is lsb .
 
-instantiation uint :: equal begin
-lift_definition equal_uint :: "uint \<Rightarrow> uint \<Rightarrow> bool" is "equal_class.equal" .
-instance by standard (transfer, simp add: equal_eq)
-end
+text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
-lemmas [code] = equal_uint.rep_eq
+definition set_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint\<close>
+  where set_bit_uint_eq: \<open>set_bit_uint a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
 
-instantiation uint :: size begin
-lift_definition size_uint :: "uint \<Rightarrow> nat" is "size" .
-instance ..
-end
+context
+  includes lifting_syntax
+begin
 
-lemmas [code] = size_uint.rep_eq
-
-lift_definition sshiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
-
-lift_definition uint_of_int :: "int \<Rightarrow> uint" is "word_of_int" .
-
-text \<open>Use pretty numerals from integer for pretty printing\<close>
-
-context includes integer.lifting begin
-
-lift_definition Uint :: "integer \<Rightarrow> uint" is "word_of_int" .
-
-lemma Rep_uint_numeral [simp]: "Rep_uint (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint_def Abs_uint_inverse numeral.simps plus_uint_def)
-
-lemma numeral_uint_transfer [transfer_rule]:
-  "(rel_fun (=) cr_uint) numeral numeral"
-by(auto simp add: cr_uint_def)
-
-lemma numeral_uint [code_unfold]: "numeral n = Uint (numeral n)"
-by transfer simp
-
-lemma Rep_uint_neg_numeral [simp]: "Rep_uint (- numeral n) = - numeral n"
-by(simp only: uminus_uint_def)(simp add: Abs_uint_inverse)
-
-lemma neg_numeral_uint [code_unfold]: "- numeral n = Uint (- numeral n)"
-by transfer(simp add: cr_uint_def)
+lemma set_bit_uint_transfer [transfer_rule]:
+  \<open>(cr_uint ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
+  by (simp only: set_bit_eq [abs_def] set_bit_uint_eq [abs_def]) transfer_prover
 
 end
 
-lemma Abs_uint_numeral [code_post]: "Abs_uint (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint_def numeral.simps plus_uint_def Abs_uint_inverse)
+lift_definition set_bits_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint\<close> is set_bits .
+lift_definition set_bits_aux_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint \<Rightarrow> uint\<close> is set_bits_aux .
 
-lemma Abs_uint_0 [code_post]: "Abs_uint 0 = 0"
-by(simp add: zero_uint_def)
+global_interpretation uint: word_type_copy_misc Abs_uint Rep_uint signed_drop_bit_uint
+  uint_of_nat nat_of_uint uint_of_int int_of_uint Uint integer_of_uint dflt_size set_bits_aux_uint
+  by (standard; transfer) simp_all
 
-lemma Abs_uint_1 [code_post]: "Abs_uint 1 = 1"
-by(simp add: one_uint_def)
+instance using uint.of_class_bit_comprehension
+  uint.of_class_set_bit uint.of_class_lsb
+  by simp_all standard
+
+end
 
 section \<open>Code setup\<close>
 
@@ -458,7 +399,7 @@ lemma Uint_code [code]:
          wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def)
   done
 
-lemma Uint_signed_code [code abstract]:
+lemma Uint_signed_code [code]:
   "Rep_uint (Uint_signed i) = 
   (if i < wivs_least_integer \<or> i \<ge> wivs_overflow_integer then Rep_uint (undefined Uint i) else word_of_int (int_of_integer_symbolic i))"
   unfolding Uint_signed_def Uint_def int_of_integer_symbolic_def word_of_integer_def
@@ -658,6 +599,17 @@ declare [[code abort: mod0_uint]]
 definition wivs_overflow_uint :: uint 
   where "wivs_overflow_uint \<equiv> push_bit (dflt_size - 1) 1"
 
+lemma Rep_uint_wivs_overflow_uint_eq:
+  \<open>Rep_uint wivs_overflow_uint = 2 ^ (dflt_size - Suc 0)\<close>
+  by (simp add: wivs_overflow_uint_def one_uint.rep_eq push_bit_uint.rep_eq uint.word_of_power push_bit_eq_mult)
+
+lemma wivs_overflow_uint_greater_eq_0:
+  \<open>wivs_overflow_uint > 0\<close>
+  apply (simp add: less_uint.rep_eq zero_uint.rep_eq Rep_uint_wivs_overflow_uint_eq)
+  apply transfer
+  apply (simp add: take_bit_push_bit push_bit_eq_mult)
+  done
+
 lemma uint_divmod_code [code]:
   "uint_divmod x y =
   (if wivs_overflow_uint \<le> y then if x < y then (0, x) else (1, x - y)
@@ -669,12 +621,7 @@ proof (cases \<open>y = 0\<close>)
   case True
   moreover have \<open>x \<ge> 0\<close>
     by transfer simp
-  moreover have \<open>wivs_overflow_uint > 0\<close>
-    apply (simp add: wivs_overflow_uint_def push_bit_of_1)
-    apply transfer
-    apply transfer
-    apply simp
-    done
+  moreover note wivs_overflow_uint_greater_eq_0
   ultimately show ?thesis
     by (auto simp add: uint_divmod_def div0_uint_def mod0_uint_def not_less)
 next
@@ -688,7 +635,7 @@ next
     done
 qed
 
-lemma uint_sdiv_code [code abstract]:
+lemma uint_sdiv_code [code]:
   "Rep_uint (uint_sdiv x y) =
    (if y = 0 then Rep_uint (undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint))
     else Rep_uint x sdiv Rep_uint y)"
@@ -751,7 +698,7 @@ lemma set_bit_uint_code [code]:
   including undefined_transfer integer.lifting unfolding uint_set_bit_def
   by (transfer) (auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
-lemma uint_set_bit_code [code abstract]:
+lemma uint_set_bit_code [code]:
   "Rep_uint (uint_set_bit w n b) = 
   (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (set_bit :: uint \<Rightarrow> _) w n b)
    else set_bit (Rep_uint w) (nat_of_integer n) b)"
@@ -765,24 +712,6 @@ code_printing constant uint_set_bit \<rightharpoonup>
   (OCaml) "Uint.set'_bit" and
   (Scala) "Uint.set'_bit"
 
-lift_definition uint_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint \<Rightarrow> nat \<Rightarrow> uint" is set_bits_aux .
-
-lemma uint_set_bits_code [code]:
-  "uint_set_bits f w n =
-  (if n = 0 then w 
-   else let n' = n - 1 in uint_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
-  apply (transfer fixing: n)
-  apply (cases n)
-   apply simp_all
-  done
-
-lemma set_bits_uint [code]:
-  "(BITS n. f n) = uint_set_bits f 0 dflt_size"
-  by transfer (simp add: set_bits_conv_set_bits_aux)
-
-lemma lsb_code [code]: fixes x :: uint shows "lsb x = bit x 0"
-  by transfer (simp add: lsb_word_eq)
-
 definition uint_shiftl :: "uint \<Rightarrow> integer \<Rightarrow> uint"
 where [code del]:
   "uint_shiftl x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
@@ -791,7 +720,7 @@ lemma shiftl_uint_code [code]: "push_bit n x = (if n < dflt_size then uint_shift
   including undefined_transfer integer.lifting unfolding uint_shiftl_def
   by (transfer fixing: n) simp
 
-lemma uint_shiftl_code [code abstract]:
+lemma uint_shiftl_code [code]:
   "Rep_uint (uint_shiftl w n) =
   (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint w))"
   including undefined_transfer integer.lifting unfolding uint_shiftl_def by transfer simp
@@ -811,11 +740,11 @@ where [code del]:
 lemma shiftr_uint_code [code]: "drop_bit n x = (if n < dflt_size then uint_shiftr x (integer_of_nat n) else 0)"
   including undefined_transfer integer.lifting unfolding uint_shiftr_def
   by (transfer fixing: n) simp
-  
-lemma uint_shiftr_code [code abstract]:
+
+lemma uint_shiftr_code [code]:
   "Rep_uint (uint_shiftr w n) =
   (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (drop_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint w))"
-including undefined_transfer unfolding uint_shiftr_def by transfer simp
+  including undefined_transfer integer.lifting unfolding uint_shiftr_def by transfer simp
 
 code_printing constant uint_shiftr \<rightharpoonup>
   (SML) "Uint.shiftr" and
@@ -828,19 +757,19 @@ code_printing constant uint_shiftr \<rightharpoonup>
 definition uint_sshiftr :: "uint \<Rightarrow> integer \<Rightarrow> uint"
 where [code del]:
   "uint_sshiftr x n =
-  (if n < 0 \<or> dflt_size_integer \<le> n then undefined sshiftr_uint x n else sshiftr_uint x (nat_of_integer n))"
+  (if n < 0 \<or> dflt_size_integer \<le> n then undefined signed_drop_bit_uint n x else signed_drop_bit_uint (nat_of_integer n) x)"
 
 lemma sshiftr_uint_code [code]:
-  "x >>> n = 
+  "signed_drop_bit_uint n x = 
   (if n < dflt_size then uint_sshiftr x (integer_of_nat n) else 
     if bit x wivs_index then -1 else 0)"
 including undefined_transfer integer.lifting unfolding uint_sshiftr_def
 by transfer(simp add: not_less signed_drop_bit_beyond word_size wivs_index_def)
 
-lemma uint_sshiftr_code [code abstract]:
+lemma uint_sshiftr_code [code]:
   "Rep_uint (uint_sshiftr w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined sshiftr_uint w n) else signed_drop_bit (nat_of_integer n) (Rep_uint w))"
-including undefined_transfer unfolding uint_sshiftr_def by transfer simp
+  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined signed_drop_bit_uint n w) else signed_drop_bit (nat_of_integer n) (Rep_uint w))"
+including undefined_transfer integer.lifting unfolding uint_sshiftr_def by transfer simp
 
 code_printing constant uint_sshiftr \<rightharpoonup>
   (SML) "Uint.shiftr'_signed" and
@@ -888,7 +817,5 @@ lemmas partial_term_of_uint [code] = partial_term_of_code
 
 instance ..
 end
-
-no_notation sshiftr_uint (infixl ">>>" 55)
 
 end

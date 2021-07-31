@@ -50,7 +50,7 @@ instance uint64 :: semiring_numeral
   by standard
 
 lemma nat_of_uint64_012[simp]: \<open>nat_of_uint64 0 = 0\<close> \<open>nat_of_uint64 2 = 2\<close> \<open>nat_of_uint64 1 = 1\<close>
-  by (transfer, auto)+
+  by (simp_all add: nat_of_uint64.rep_eq zero_uint64.rep_eq one_uint64.rep_eq)
 
 definition uint64_of_nat_conv where
   [simp]: \<open>uint64_of_nat_conv (x :: nat) = x\<close>
@@ -59,12 +59,7 @@ lemma less_upper_bintrunc_id: \<open>n < 2 ^b \<Longrightarrow> n \<ge> 0 \<Long
   by (rule take_bit_int_eq_self)
 
 lemma nat_of_uint64_uint64_of_nat_id: \<open>n < 2^64 \<Longrightarrow> nat_of_uint64 (uint64_of_nat n) = n\<close>
-  unfolding uint64_of_nat_def
-  apply simp
-  apply transfer
-  apply (subst unat_eq_nat_uint)
-  apply transfer
-  by (auto simp: less_upper_bintrunc_id)
+  by transfer (simp add: take_bit_nat_eq_self)
 
 lemma [sepref_fr_rules]:
   \<open>(return o uint64_of_nat, RETURN o uint64_of_nat_conv) \<in> [\<lambda>a. a < 2 ^64]\<^sub>a nat_assn\<^sup>k \<rightarrow> uint64_nat_assn\<close>

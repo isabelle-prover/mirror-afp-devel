@@ -5,218 +5,150 @@
 chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
-  Code_Target_Word_Base
+  Code_Target_Word_Base Word_Type_Copies
 begin
 
 section \<open>Type definition and primitive operations\<close>
 
-typedef uint32 = "UNIV :: 32 word set" .. 
+typedef uint32 = \<open>UNIV :: 32 word set\<close> ..
+
+global_interpretation uint32: word_type_copy Abs_uint32 Rep_uint32
+  using type_definition_uint32 by (rule word_type_copy.intro)
 
 setup_lifting type_definition_uint32
 
-text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint32}.\<close>
-declare Rep_uint32_inverse[code abstype]
+declare uint32.of_word_of [code abstype]
 
-declare Quotient_uint32[transfer_rule]
+declare Quotient_uint32 [transfer_rule]
 
-instantiation uint32 :: comm_ring_1
-begin
-lift_definition zero_uint32 :: uint32 is "0 :: 32 word" .
-lift_definition one_uint32 :: uint32 is "1" .
-lift_definition plus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(+) :: 32 word \<Rightarrow> _" .
-lift_definition minus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(-)" .
-lift_definition uminus_uint32 :: "uint32 \<Rightarrow> uint32" is uminus .
-lift_definition times_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(*)" .
-instance by (standard; transfer) (simp_all add: algebra_simps)
-end
-
-instantiation uint32 :: semiring_modulo
-begin
-lift_definition divide_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(div)" .
-lift_definition modulo_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(mod)" .
-instance by (standard; transfer) (fact word_mod_div_equality)
-end
-
-instantiation uint32 :: linorder begin
-lift_definition less_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> bool" is "(<)" .
-lift_definition less_eq_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> bool" is "(\<le>)" .
-instance by (standard; transfer) (simp_all add: less_le_not_le linear)
-end
-
-lemmas [code] = less_uint32.rep_eq less_eq_uint32.rep_eq
-
-context
-  includes lifting_syntax
-  notes
-    transfer_rule_of_bool [transfer_rule]
-    transfer_rule_numeral [transfer_rule]
+instantiation uint32 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
 begin
 
-lemma [transfer_rule]:
-  "((=) ===> cr_uint32) of_bool of_bool"
-  by transfer_prover
+lift_definition zero_uint32 :: uint32 is 0 .
+lift_definition one_uint32 :: uint32 is 1 .
+lift_definition plus_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(+)\<close> .
+lift_definition uminus_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is uminus .
+lift_definition minus_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(-)\<close> .
+lift_definition times_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(*)\<close> .
+lift_definition divide_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(div)\<close> .
+lift_definition modulo_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(mod)\<close> .
+lift_definition equal_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
+lift_definition less_eq_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
+lift_definition less_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
 
-lemma transfer_rule_numeral_uint [transfer_rule]:
-  "((=) ===> cr_uint32) numeral numeral"
-  by transfer_prover
+global_interpretation uint32: word_type_copy_ring Abs_uint32 Rep_uint32
+  by standard (fact zero_uint32.rep_eq one_uint32.rep_eq
+    plus_uint32.rep_eq uminus_uint32.rep_eq minus_uint32.rep_eq
+    times_uint32.rep_eq divide_uint32.rep_eq modulo_uint32.rep_eq
+    equal_uint32.rep_eq less_eq_uint32.rep_eq less_uint32.rep_eq)+
 
-lemma [transfer_rule]:
-  \<open>(cr_uint32 ===> (\<longleftrightarrow>)) even ((dvd) 2 :: uint32 \<Rightarrow> bool)\<close>
-  by (unfold dvd_def) transfer_prover
+instance proof -
+  show \<open>OFCLASS(uint32, comm_ring_1_class)\<close>
+    by (rule uint32.of_class_comm_ring_1)
+  show \<open>OFCLASS(uint32, semiring_modulo_class)\<close>
+    by (fact uint32.of_class_semiring_modulo)
+  show \<open>OFCLASS(uint32, equal_class)\<close>
+    by (fact uint32.of_class_equal)
+  show \<open>OFCLASS(uint32, linorder_class)\<close>
+    by (fact uint32.of_class_linorder)
+qed
 
-end
-
-instantiation uint32:: semiring_bits
-begin
-
-lift_definition bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-
-instance
-  by (standard; transfer)
-    (fact bit_iff_odd even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
-       bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
-       even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
-       div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
-
-end
-
-instantiation uint32 :: semiring_bit_shifts
-begin
-lift_definition push_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is push_bit .
-lift_definition drop_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is drop_bit .
-lift_definition take_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is take_bit .
-instance by (standard; transfer)
-  (fact push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod)+
 end
 
 instantiation uint32 :: ring_bit_operations
 begin
+
+lift_definition bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is NOT .
 lift_definition and_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(AND)\<close> .
 lift_definition or_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(OR)\<close> .
 lift_definition xor_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(XOR)\<close> .
 lift_definition mask_uint32 :: \<open>nat \<Rightarrow> uint32\<close> is mask .
-lift_definition set_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.set_bit\<close> .
-lift_definition unset_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>unset_bit\<close> .
-lift_definition flip_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>flip_bit\<close> .
-instance by (standard; transfer)
-  (simp_all add: bit_simps mask_eq_decr_exp minus_eq_not_minus_1 set_bit_def flip_bit_def)
-end
+lift_definition push_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is push_bit .
+lift_definition drop_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is drop_bit .
+lift_definition signed_drop_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is signed_drop_bit .
+lift_definition take_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is take_bit .
+lift_definition set_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is Bit_Operations.set_bit .
+lift_definition unset_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is unset_bit .
+lift_definition flip_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is flip_bit .
 
-lemma [code]:
-  \<open>take_bit n a = a AND mask n\<close> for a :: uint32
-  by (fact take_bit_eq_mask)
+global_interpretation uint32: word_type_copy_bits Abs_uint32 Rep_uint32 signed_drop_bit_uint32
+  by standard (fact bit_uint32.rep_eq not_uint32.rep_eq and_uint32.rep_eq or_uint32.rep_eq xor_uint32.rep_eq
+    mask_uint32.rep_eq push_bit_uint32.rep_eq drop_bit_uint32.rep_eq signed_drop_bit_uint32.rep_eq take_bit_uint32.rep_eq
+    set_bit_uint32.rep_eq unset_bit_uint32.rep_eq flip_bit_uint32.rep_eq)+
 
-lemma [code]:
-  \<open>mask (Suc n) = push_bit n (1 :: uint32) OR mask n\<close>
-  \<open>mask 0 = (0 :: uint32)\<close>
-  by (simp_all add: mask_Suc_exp push_bit_of_1)
-
-lemma [code]:
-  \<open>Bit_Operations.set_bit n w = w OR push_bit n 1\<close> for w :: uint32
-  by (fact set_bit_eq_or)
-
-lemma [code]:
-  \<open>unset_bit n w = w AND NOT (push_bit n 1)\<close> for w :: uint32
-  by (fact unset_bit_eq_and_not)
-
-lemma [code]:
-  \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint32
-  by (fact flip_bit_eq_xor)
-
-instantiation uint32 :: lsb
-begin
-lift_definition lsb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is lsb .
-instance by (standard; transfer)
-  (fact lsb_odd)
-end
-
-instantiation uint32 :: msb
-begin
-lift_definition msb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is msb .
-instance ..
-end
-
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.qualified_path true \<^binding>\<open>Generic\<close>))\<close>
-
-instantiation uint32 :: set_bit
-begin
-lift_definition set_bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32\<close> is set_bit .
 instance
+  by (fact uint32.of_class_ring_bit_operations)
+
+end
+
+lift_definition uint32_of_nat :: \<open>nat \<Rightarrow> uint32\<close>
+  is word_of_nat .
+
+lift_definition nat_of_uint32 :: \<open>uint32 \<Rightarrow> nat\<close>
+  is unat .
+
+lift_definition uint32_of_int :: \<open>int \<Rightarrow> uint32\<close>
+  is word_of_int .
+
+lift_definition int_of_uint32 :: \<open>uint32 \<Rightarrow> int\<close>
+  is uint .
+
+context
+  includes integer.lifting
+begin
+
+lift_definition Uint32 :: \<open>integer \<Rightarrow> uint32\<close>
+  is word_of_int .
+
+lift_definition integer_of_uint32 :: \<open>uint32 \<Rightarrow> integer\<close>
+  is uint .
+
+end
+
+global_interpretation uint32: word_type_copy_more Abs_uint32 Rep_uint32 signed_drop_bit_uint32
+  uint32_of_nat nat_of_uint32 uint32_of_int int_of_uint32 Uint32 integer_of_uint32
   apply standard
-  apply transfer
-  apply (simp add: bit_simps)
+       apply (simp_all add: uint32_of_nat.rep_eq nat_of_uint32.rep_eq
+         uint32_of_int.rep_eq int_of_uint32.rep_eq
+         Uint32.rep_eq integer_of_uint32.rep_eq integer_eq_iff)
   done
-end
 
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.parent_path))\<close>
+instantiation uint32 :: "{size, msb, lsb, set_bit, bit_comprehension}"
+begin
 
-instantiation uint32 :: bit_comprehension begin
-lift_definition set_bits_uint32 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32" is "set_bits" .
-instance by (standard; transfer) (fact set_bits_bit_eq)
-end
+lift_definition size_uint32 :: \<open>uint32 \<Rightarrow> nat\<close> is size .
 
-lemmas [code] = bit_uint32.rep_eq lsb_uint32.rep_eq msb_uint32.rep_eq
+lift_definition msb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is msb .
+lift_definition lsb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is lsb .
 
-instantiation uint32 :: equal begin
-lift_definition equal_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> bool" is "equal_class.equal" .
-instance by standard (transfer, simp add: equal_eq)
-end
+text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
-lemmas [code] = equal_uint32.rep_eq
+definition set_bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32\<close>
+  where set_bit_uint32_eq: \<open>set_bit_uint32 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
 
-instantiation uint32 :: size begin
-lift_definition size_uint32 :: "uint32 \<Rightarrow> nat" is "size" .
-instance ..
-end
+context
+  includes lifting_syntax
+begin
 
-lemmas [code] = size_uint32.rep_eq                                                    
-
-lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
-
-lift_definition uint32_of_int :: "int \<Rightarrow> uint32" is "word_of_int" .
-
-definition uint32_of_nat :: "nat \<Rightarrow> uint32"
-where "uint32_of_nat = uint32_of_int \<circ> int"
-
-lift_definition int_of_uint32 :: "uint32 \<Rightarrow> int" is "uint" .
-lift_definition nat_of_uint32 :: "uint32 \<Rightarrow> nat" is "unat" .
-
-definition integer_of_uint32 :: "uint32 \<Rightarrow> integer"
-where "integer_of_uint32 = integer_of_int o int_of_uint32"
-
-text \<open>Use pretty numerals from integer for pretty printing\<close>
-
-context includes integer.lifting begin
-
-lift_definition Uint32 :: "integer \<Rightarrow> uint32" is "word_of_int" .
-
-lemma Rep_uint32_numeral [simp]: "Rep_uint32 (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint32_def Abs_uint32_inverse numeral.simps plus_uint32_def)
-
-lemma numeral_uint32_transfer [transfer_rule]:
-  "(rel_fun (=) cr_uint32) numeral numeral"
-by(auto simp add: cr_uint32_def)
-
-lemma numeral_uint32 [code_unfold]: "numeral n = Uint32 (numeral n)"
-by transfer simp
-
-lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (- numeral n) = - numeral n"
-by(simp only: uminus_uint32_def)(simp add: Abs_uint32_inverse)
-
-lemma neg_numeral_uint32 [code_unfold]: "- numeral n = Uint32 (- numeral n)"
-by transfer(simp add: cr_uint32_def)
+lemma set_bit_uint32_transfer [transfer_rule]:
+  \<open>(cr_uint32 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint32) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
+  by (simp only: set_bit_eq [abs_def] set_bit_uint32_eq [abs_def]) transfer_prover
 
 end
 
-lemma Abs_uint32_numeral [code_post]: "Abs_uint32 (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint32_def numeral.simps plus_uint32_def Abs_uint32_inverse)
+lift_definition set_bits_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint32\<close> is set_bits .
+lift_definition set_bits_aux_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is set_bits_aux .
 
-lemma Abs_uint32_0 [code_post]: "Abs_uint32 0 = 0"
-by(simp add: zero_uint32_def)
+global_interpretation uint32: word_type_copy_misc Abs_uint32 Rep_uint32 signed_drop_bit_uint32
+  uint32_of_nat nat_of_uint32 uint32_of_int int_of_uint32 Uint32 integer_of_uint32 32 set_bits_aux_uint32
+  by (standard; transfer) simp_all
 
-lemma Abs_uint32_1 [code_post]: "Abs_uint32 1 = 1"
-by(simp add: one_uint32_def)
+instance using uint32.of_class_bit_comprehension
+  uint32.of_class_set_bit uint32.of_class_lsb
+  by simp_all standard
+
+end
 
 section \<open>Code setup\<close>
 
@@ -354,7 +286,7 @@ lemma Uint32_code [code]:
      apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
   done
 
-lemma Uint32_signed_code [code abstract]:
+lemma Uint32_signed_code [code]:
   "Rep_uint32 (Uint32_signed i) = 
   (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer_symbolic i))"
 unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def word_of_integer_def
@@ -523,9 +455,12 @@ lemma uint32_divmod_code [code]:
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
   including undefined_transfer unfolding uint32_divmod_def uint32_sdiv_def div0_uint32_def mod0_uint32_def
-  by transfer (simp add: divmod_via_sdivmod ac_simps)
+    less_eq_uint32.rep_eq
+  apply transfer
+  apply (simp add: divmod_via_sdivmod push_bit_eq_mult)
+  done
 
-lemma uint32_sdiv_code [code abstract]:
+lemma uint32_sdiv_code [code]:
   "Rep_uint32 (uint32_sdiv x y) =
    (if y = 0 then Rep_uint32 (undefined ((div) :: uint32 \<Rightarrow> _) x (0 :: uint32))
     else Rep_uint32 x sdiv Rep_uint32 y)"
@@ -583,7 +518,7 @@ lemma set_bit_uint32_code [code]:
 including undefined_transfer integer.lifting unfolding uint32_set_bit_def
 by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
-lemma uint32_set_bit_code [code abstract]:
+lemma uint32_set_bit_code [code]:
   "Rep_uint32 (uint32_set_bit w n b) = 
   (if n < 0 \<or> 31 < n then Rep_uint32 (undefined (set_bit :: uint32 \<Rightarrow> _) w n b)
    else set_bit (Rep_uint32 w) (nat_of_integer n) b)"
@@ -596,26 +531,6 @@ code_printing constant uint32_set_bit \<rightharpoonup>
   (Scala) "Uint32.set'_bit" and
   (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit x n b)"
 
-lift_definition uint32_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32 \<Rightarrow> nat \<Rightarrow> uint32" is set_bits_aux .
-
-lemma uint32_set_bits_code [code]:
-  "uint32_set_bits f w n =
-  (if n = 0 then w 
-   else let n' = n - 1 in uint32_set_bits f (push_bit 1 w OR (if f n' then 1 else 0)) n')"
-  apply (transfer fixing: n)
-  apply (cases n)
-   apply simp_all
-  done
-
-lemma set_bits_uint32 [code]:
-  "(BITS n. f n) = uint32_set_bits f 0 32"
-by transfer(simp add: set_bits_conv_set_bits_aux)
-
-
-lemma lsb_code [code]: fixes x :: uint32 shows "lsb x \<longleftrightarrow> bit x 0"
-  by transfer (simp add: lsb_word_eq)
-
-
 definition uint32_shiftl :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
   "uint32_shiftl x n = (if n < 0 \<or> 32 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
@@ -624,7 +539,7 @@ lemma shiftl_uint32_code [code]: "push_bit n x = (if n < 32 then uint32_shiftl x
   including undefined_transfer integer.lifting unfolding uint32_shiftl_def
   by transfer simp
 
-lemma uint32_shiftl_code [code abstract]:
+lemma uint32_shiftl_code [code]:
   "Rep_uint32 (uint32_shiftl w n) =
   (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint32 w))"
   including undefined_transfer unfolding uint32_shiftl_def
@@ -645,7 +560,7 @@ lemma shiftr_uint32_code [code]: "drop_bit n x = (if n < 32 then uint32_shiftr x
   including undefined_transfer integer.lifting unfolding uint32_shiftr_def
   by transfer simp
 
-lemma uint32_shiftr_code [code abstract]:
+lemma uint32_shiftr_code [code]:
   "Rep_uint32 (uint32_shiftr w n) =
   (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (drop_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint32 w))"
   including undefined_transfer unfolding uint32_shiftr_def by transfer simp
@@ -660,17 +575,17 @@ code_printing constant uint32_shiftr \<rightharpoonup>
 definition uint32_sshiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
 where [code del]:
   "uint32_sshiftr x n =
-  (if n < 0 \<or> 32 \<le> n then undefined sshiftr_uint32 x n else sshiftr_uint32 x (nat_of_integer n))"
+  (if n < 0 \<or> 32 \<le> n then undefined signed_drop_bit_uint32 n x else signed_drop_bit_uint32 (nat_of_integer n) x)"
 
 lemma sshiftr_uint32_code [code]:
-  "x >>> n = 
+  "signed_drop_bit_uint32 n x = 
   (if n < 32 then uint32_sshiftr x (integer_of_nat n) else if bit x 31 then - 1 else 0)"
   including undefined_transfer integer.lifting unfolding uint32_sshiftr_def
   by transfer (simp add: not_less signed_drop_bit_beyond)
 
-lemma uint32_sshiftr_code [code abstract]:
+lemma uint32_sshiftr_code [code]:
   "Rep_uint32 (uint32_sshiftr w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined sshiftr_uint32 w n) else signed_drop_bit (nat_of_integer n) (Rep_uint32 w))"
+  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined signed_drop_bit_uint32 n w) else signed_drop_bit (nat_of_integer n) (Rep_uint32 w))"
 including undefined_transfer unfolding uint32_sshiftr_def by transfer simp
 
 code_printing constant uint32_sshiftr \<rightharpoonup>
@@ -690,13 +605,13 @@ lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
 lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
 including integer.lifting by transfer simp
 
-lemma int_of_uint32_code [code]:
-  "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
-by(simp add: integer_of_uint32_def)
+lemma int_of_uint32_code [code]: "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
+including integer.lifting by transfer simp
 
 lemma nat_of_uint32_code [code]:
   "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
 unfolding integer_of_uint32_def including integer.lifting by transfer simp
+
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where
@@ -705,28 +620,22 @@ where
 lemma integer_of_uint32_signed_code [code]:
   "integer_of_uint32_signed n =
   (if bit n 31 then undefined integer_of_uint32 n else integer_of_int (uint (Rep_uint32' n)))"
-unfolding integer_of_uint32_signed_def integer_of_uint32_def
-including undefined_transfer by transfer simp
+  by (simp add: integer_of_uint32_signed_def integer_of_uint32_def)
 
 lemma integer_of_uint32_code [code]:
   "integer_of_uint32 n =
   (if bit n 31 then integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 else integer_of_uint32_signed n)"
 proof -
-  have \<open>(0x7FFFFFFF :: uint32) = mask 31\<close>
-    by (simp add: mask_eq_exp_minus_1)
-  then have *: \<open>n AND 0x7FFFFFFF = take_bit 31 n\<close>
-    by (simp add: take_bit_eq_mask)
-  have **: \<open>(0x80000000 :: int) = 2 ^ 31\<close>
-    by simp
-  show ?thesis
-    unfolding integer_of_uint32_def integer_of_uint32_signed_def o_def *
-    including undefined_transfer integer.lifting
-    apply transfer
-    apply (rule bit_eqI)
-    apply (simp add: bit_or_iff bit_take_bit_iff bit_uint_iff)
-    apply (simp only: bit_exp_iff bit_or_iff **)
-    apply auto
-    done
+  have \<open>integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 = Bit_Operations.set_bit 31 (integer_of_uint32_signed (take_bit 31 n))\<close>
+    by (simp add: take_bit_eq_mask set_bit_eq_or push_bit_eq_mult mask_eq_exp_minus_1)
+  moreover have \<open>integer_of_uint32 n = Bit_Operations.set_bit 31 (integer_of_uint32 (take_bit 31 n))\<close> if \<open>bit n 31\<close>
+  proof (rule bit_eqI)
+    fix m
+    from that show \<open>bit (integer_of_uint32 n) m = bit (Bit_Operations.set_bit 31 (integer_of_uint32 (take_bit 31 n))) m\<close> for m
+      including integer.lifting by transfer (auto simp add: bit_simps dest: bit_imp_le_length)
+  qed
+  ultimately show ?thesis
+    by simp (simp add: integer_of_uint32_signed_def bit_simps)
 qed
 
 code_printing
@@ -761,7 +670,5 @@ lemmas partial_term_of_uint32 [code] = partial_term_of_code
 
 instance ..
 end
-
-no_notation sshiftr_uint32 (infixl ">>>" 55)
 
 end

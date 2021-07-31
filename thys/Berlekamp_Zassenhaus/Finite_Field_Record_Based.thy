@@ -621,21 +621,16 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
   next
     case False
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel32_eq[OF y urel32_0] by auto
+    from y have \<open>int y' = int_of_uint32 y\<close> \<open>int y' < p\<close>
+      by (simp_all add: urel32_def)
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have "urel32 (y AND 1) r'"
-      unfolding r'
-      using y
-      unfolding urel32_def
-      using small
-      apply (simp add: ppp and_one_eq)
-      apply transfer
-      apply transfer
-      apply (auto simp add: zmod_int take_bit_int_eq_self)
-      apply (rule le_less_trans)
-       apply (rule zmod_le_nonneg_dividend)
-      apply simp_all
+      using \<open>int y' < p\<close> small
+      apply (simp add: urel32_def and_one_eq r')
+      apply (auto simp add: ppp and_one_eq)
+      apply (simp add: of_nat_mod int_of_uint32.rep_eq modulo_uint32.rep_eq uint_mod \<open>int y' = int_of_uint32 y\<close>)
       done
     from urel32_eq[OF this urel32_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
@@ -656,7 +651,7 @@ lemma urel32_inverse: assumes x: "urel32 x x'"
   shows "urel32 (inverse_p32 pp x) (inverse_p p x')" 
 proof -
   have p: "urel32 (pp - 2) (int (nat (p - 2)))" using p2 small unfolding urel32_def unfolding ppp
-    by (transfer, auto simp: uint_word_ariths)
+    by (simp add: int_of_uint32.rep_eq minus_uint32.rep_eq uint_sub_if')
   show ?thesis
     unfolding inverse_p32_def inverse_p_def urel32_eq[OF x urel32_0] using urel32_0 urel32_power[OF x p]
     by auto
@@ -1050,22 +1045,16 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
   next
     case False
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel64_eq[OF y urel64_0] by auto
+    from y have \<open>int y' = int_of_uint64 y\<close> \<open>int y' < p\<close>
+      by (simp_all add: urel64_def)
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have "urel64 (y AND 1) r'"
-      unfolding r'
-      using y
-      unfolding urel64_def
-      using small
-      apply (simp add: ppp and_one_eq)
-      apply transfer apply transfer
-      apply (auto simp add: int_eq_iff nat_take_bit_eq nat_mod_distrib zmod_int)
-       apply (auto simp add: zmod_int mod_2_eq_odd)
-      apply (auto simp add: less_le)
-        apply (auto simp add: le_less)
-       apply (metis linorder_neqE_linordered_idom mod_pos_pos_trivial not_take_bit_negative power_0 take_bit_0 take_bit_eq_mod take_bit_nonnegative)
-      apply (metis even_take_bit_eq mod_pos_pos_trivial neq0_conv numeral_eq_Suc power_0 take_bit_eq_mod take_bit_nonnegative zero_less_Suc)
+      using \<open>int y' < p\<close> small
+      apply (simp add: urel64_def and_one_eq r')
+      apply (auto simp add: ppp and_one_eq)
+      apply (simp add: of_nat_mod int_of_uint64.rep_eq modulo_uint64.rep_eq uint_mod \<open>int y' = int_of_uint64 y\<close>)
       done
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
@@ -1086,7 +1075,7 @@ lemma urel64_inverse: assumes x: "urel64 x x'"
   shows "urel64 (inverse_p64 pp x) (inverse_p p x')" 
 proof -
   have p: "urel64 (pp - 2) (int (nat (p - 2)))" using p2 small unfolding urel64_def unfolding ppp
-    by (transfer, auto simp: uint_word_ariths)
+    by (simp add: int_of_uint64.rep_eq minus_uint64.rep_eq uint_sub_if')
   show ?thesis
     unfolding inverse_p64_def inverse_p_def urel64_eq[OF x urel64_0] using urel64_0 urel64_power[OF x p]
     by auto

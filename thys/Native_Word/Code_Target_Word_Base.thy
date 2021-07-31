@@ -223,35 +223,36 @@ lemma word_of_int_code:
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 
-definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word\<close>
-  where \<open>set_bits_aux w n = push_bit n w OR take_bit n (set_bits f)\<close>
+definition set_bits_aux :: \<open>nat \<Rightarrow> 'a word \<Rightarrow> 'a::len word\<close>
+  where \<open>set_bits_aux n w = push_bit n w OR take_bit n (set_bits f)\<close>
 
 lemma bit_set_bit_aux [bit_simps]:
-  \<open>bit (set_bits_aux w n) m \<longleftrightarrow> m < LENGTH('a) \<and>
+  \<open>bit (set_bits_aux n w) m \<longleftrightarrow> m < LENGTH('a) \<and>
     (if m < n then f m else bit w (m - n))\<close> for w :: \<open>'a::len word\<close>
   by (auto simp add: bit_simps set_bits_aux_def)
 
-lemma set_bits_aux_conv:
-  \<open>set_bits_aux w n = (push_bit n w) OR (set_bits f AND mask n)\<close>
-  for w :: \<open>'a::len word\<close>
+corollary set_bits_conv_set_bits_aux:
+  \<open>set_bits f = (set_bits_aux LENGTH('a) 0 :: 'a :: len word)\<close>
   by (rule bit_word_eqI) (simp add: bit_simps)
 
-corollary set_bits_conv_set_bits_aux:
-  \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
-  by (simp add: set_bits_aux_conv)
-
 lemma set_bits_aux_0 [simp]:
-  \<open>set_bits_aux w 0 = w\<close>
-  by (simp add: set_bits_aux_conv)
+  \<open>set_bits_aux 0 w = w\<close>
+  by (simp add: set_bits_aux_def)
 
 lemma set_bits_aux_Suc [simp]:
-  \<open>set_bits_aux w (Suc n) = set_bits_aux (push_bit 1 w OR (if f n then 1 else 0)) n\<close>
-  by (rule bit_word_eqI) (auto simp add: bit_simps not_less le_less_Suc_eq mult.commute [of _ 2])
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
+  by (rule bit_word_eqI) (auto simp add: bit_simps le_less_Suc_eq mult.commute [of _ 2])
 
 lemma set_bits_aux_simps [code]:
-  \<open>set_bits_aux w 0 = w\<close>
-  \<open>set_bits_aux w (Suc n) = set_bits_aux (push_bit 1 w OR (if f n then 1 else 0)) n\<close>
+  \<open>set_bits_aux 0 w = w\<close>
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
   by simp_all
+
+lemma set_bits_aux_rec:
+  \<open>set_bits_aux n w =
+  (if n = 0 then w 
+   else let n' = n - 1 in set_bits_aux n' (push_bit 1 w OR (if f n' then 1 else 0)))\<close>
+  by (cases n) simp_all
 
 end
 

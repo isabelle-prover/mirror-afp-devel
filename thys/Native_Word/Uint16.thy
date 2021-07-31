@@ -5,7 +5,7 @@
 chapter \<open>Unsigned words of 16 bits\<close>
 
 theory Uint16 imports
-  Code_Target_Word_Base
+  Code_Target_Word_Base Word_Type_Copies
 begin
 
 text \<open>
@@ -16,7 +16,7 @@ text \<open>
   rather than \<open>SML\<close>.  This ensures that code generation still
   works as long as \<open>uint16\<close> is not involved.
   For the target \<open>SML\<close> itself, no special code generation 
-  for this type is set up. Nevertheless, it should work by emulation via @{typ "16 word"} 
+  for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>
   if the theory \<open>Code_Target_Bits_Int\<close> is imported.
 
   Restriction for OCaml code generation:
@@ -26,213 +26,145 @@ text \<open>
 
 section \<open>Type definition and primitive operations\<close>
 
-typedef uint16 = "UNIV :: 16 word set" ..
+typedef uint16 = \<open>UNIV :: 16 word set\<close> ..
+
+global_interpretation uint16: word_type_copy Abs_uint16 Rep_uint16
+  using type_definition_uint16 by (rule word_type_copy.intro)
 
 setup_lifting type_definition_uint16
 
-text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint16}.\<close>
-declare Rep_uint16_inverse[code abstype]
+declare uint16.of_word_of [code abstype]
 
-declare Quotient_uint16[transfer_rule]
+declare Quotient_uint16 [transfer_rule]
 
-instantiation uint16 :: comm_ring_1
-begin
-lift_definition zero_uint16 :: uint16 is "0 :: 16 word" .
-lift_definition one_uint16 :: uint16 is "1" .
-lift_definition plus_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(+) :: 16 word \<Rightarrow> _" .
-lift_definition minus_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(-)" .
-lift_definition uminus_uint16 :: "uint16 \<Rightarrow> uint16" is uminus .
-lift_definition times_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(*)" .
-instance by (standard; transfer) (simp_all add: algebra_simps)
-end
-
-instantiation uint16 :: semiring_modulo
-begin
-lift_definition divide_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(div)" .
-lift_definition modulo_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(mod)" .
-instance by (standard; transfer) (fact word_mod_div_equality)
-end
-
-instantiation uint16 :: linorder begin
-lift_definition less_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "(<)" .
-lift_definition less_eq_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "(\<le>)" .
-instance by (standard; transfer) (simp_all add: less_le_not_le linear)
-end
-
-lemmas [code] = less_uint16.rep_eq less_eq_uint16.rep_eq
-
-context
-  includes lifting_syntax
-  notes
-    transfer_rule_of_bool [transfer_rule]
-    transfer_rule_numeral [transfer_rule]
+instantiation uint16 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
 begin
 
-lemma [transfer_rule]:
-  "((=) ===> cr_uint16) of_bool of_bool"
-  by transfer_prover
+lift_definition zero_uint16 :: uint16 is 0 .
+lift_definition one_uint16 :: uint16 is 1 .
+lift_definition plus_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(+)\<close> .
+lift_definition uminus_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is uminus .
+lift_definition minus_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(-)\<close> .
+lift_definition times_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(*)\<close> .
+lift_definition divide_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(div)\<close> .
+lift_definition modulo_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(mod)\<close> .
+lift_definition equal_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
+lift_definition less_eq_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
+lift_definition less_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
 
-lemma transfer_rule_numeral_uint [transfer_rule]:
-  "((=) ===> cr_uint16) numeral numeral"
-  by transfer_prover
+global_interpretation uint16: word_type_copy_ring Abs_uint16 Rep_uint16
+  by standard (fact zero_uint16.rep_eq one_uint16.rep_eq
+    plus_uint16.rep_eq uminus_uint16.rep_eq minus_uint16.rep_eq
+    times_uint16.rep_eq divide_uint16.rep_eq modulo_uint16.rep_eq
+    equal_uint16.rep_eq less_eq_uint16.rep_eq less_uint16.rep_eq)+
 
-lemma [transfer_rule]:
-  \<open>(cr_uint16 ===> (\<longleftrightarrow>)) even ((dvd) 2 :: uint16 \<Rightarrow> bool)\<close>
-  by (unfold dvd_def) transfer_prover
+instance proof -
+  show \<open>OFCLASS(uint16, comm_ring_1_class)\<close>
+    by (rule uint16.of_class_comm_ring_1)
+  show \<open>OFCLASS(uint16, semiring_modulo_class)\<close>
+    by (fact uint16.of_class_semiring_modulo)
+  show \<open>OFCLASS(uint16, equal_class)\<close>
+    by (fact uint16.of_class_equal)
+  show \<open>OFCLASS(uint16, linorder_class)\<close>
+    by (fact uint16.of_class_linorder)
+qed
 
-end
-
-instantiation uint16 :: semiring_bits
-begin
-
-lift_definition bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-
-instance
-  by (standard; transfer)
-    (fact bit_iff_odd even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
-       bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
-       even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
-       div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
-
-end
-
-instantiation uint16 :: semiring_bit_shifts
-begin
-lift_definition push_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is push_bit .
-lift_definition drop_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is drop_bit .
-lift_definition take_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is take_bit .
-instance by (standard; transfer)
-  (fact push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod)+
 end
 
 instantiation uint16 :: ring_bit_operations
 begin
+
+lift_definition bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is NOT .
 lift_definition and_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(AND)\<close> .
 lift_definition or_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(OR)\<close> .
 lift_definition xor_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(XOR)\<close> .
 lift_definition mask_uint16 :: \<open>nat \<Rightarrow> uint16\<close> is mask .
-lift_definition set_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.set_bit\<close> .
-lift_definition unset_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>unset_bit\<close> .
-lift_definition flip_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>flip_bit\<close> .
-instance by (standard; transfer)
-  (simp_all add: bit_simps mask_eq_decr_exp minus_eq_not_minus_1 set_bit_def flip_bit_def)
-end
+lift_definition push_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is push_bit .
+lift_definition drop_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is drop_bit .
+lift_definition signed_drop_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is signed_drop_bit .
+lift_definition take_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is take_bit .
+lift_definition set_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is Bit_Operations.set_bit .
+lift_definition unset_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is unset_bit .
+lift_definition flip_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is flip_bit .
 
-lemma [code]:
-  \<open>take_bit n a = a AND mask n\<close> for a :: uint16
-  by (fact take_bit_eq_mask)
+global_interpretation uint16: word_type_copy_bits Abs_uint16 Rep_uint16 signed_drop_bit_uint16
+  by standard (fact bit_uint16.rep_eq not_uint16.rep_eq and_uint16.rep_eq or_uint16.rep_eq xor_uint16.rep_eq
+    mask_uint16.rep_eq push_bit_uint16.rep_eq drop_bit_uint16.rep_eq signed_drop_bit_uint16.rep_eq take_bit_uint16.rep_eq
+    set_bit_uint16.rep_eq unset_bit_uint16.rep_eq flip_bit_uint16.rep_eq)+
 
-lemma [code]:
-  \<open>mask (Suc n) = push_bit n (1 :: uint16) OR mask n\<close>
-  \<open>mask 0 = (0 :: uint16)\<close>
-  by (simp_all add: mask_Suc_exp push_bit_of_1)
-
-lemma [code]:
-  \<open>Bit_Operations.set_bit n w = w OR push_bit n 1\<close> for w :: uint16
-  by (fact set_bit_eq_or)
-
-lemma [code]:
-  \<open>unset_bit n w = w AND NOT (push_bit n 1)\<close> for w :: uint16
-  by (fact unset_bit_eq_and_not)
-
-lemma [code]:
-  \<open>flip_bit n w = w XOR push_bit n 1\<close> for w :: uint16
-  by (fact flip_bit_eq_xor)
-
-instantiation uint16 :: lsb
-begin
-lift_definition lsb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is lsb .
-instance by (standard; transfer)
-  (fact lsb_odd)
-end
-
-instantiation uint16 :: msb
-begin
-lift_definition msb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is msb .
-instance ..
-end
-
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.qualified_path true \<^binding>\<open>Generic\<close>))\<close>
-
-instantiation uint16 :: set_bit
-begin
-lift_definition set_bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint16\<close> is set_bit .
 instance
+  by (fact uint16.of_class_ring_bit_operations)
+
+end
+
+lift_definition uint16_of_nat :: \<open>nat \<Rightarrow> uint16\<close>
+  is word_of_nat .
+
+lift_definition nat_of_uint16 :: \<open>uint16 \<Rightarrow> nat\<close>
+  is unat .
+
+lift_definition uint16_of_int :: \<open>int \<Rightarrow> uint16\<close>
+  is word_of_int .
+
+lift_definition int_of_uint16 :: \<open>uint16 \<Rightarrow> int\<close>
+  is uint .
+
+context
+  includes integer.lifting
+begin
+
+lift_definition Uint16 :: \<open>integer \<Rightarrow> uint16\<close>
+  is word_of_int .
+
+lift_definition integer_of_uint16 :: \<open>uint16 \<Rightarrow> integer\<close>
+  is uint .
+
+end
+
+global_interpretation uint16: word_type_copy_more Abs_uint16 Rep_uint16 signed_drop_bit_uint16
+  uint16_of_nat nat_of_uint16 uint16_of_int int_of_uint16 Uint16 integer_of_uint16
   apply standard
-  apply transfer
-  apply (simp add: bit_simps)
+       apply (simp_all add: uint16_of_nat.rep_eq nat_of_uint16.rep_eq
+         uint16_of_int.rep_eq int_of_uint16.rep_eq
+         Uint16.rep_eq integer_of_uint16.rep_eq integer_eq_iff)
   done
-end
 
-setup \<open>Context.theory_map (Name_Space.map_naming (Name_Space.parent_path))\<close>
+instantiation uint16 :: "{size, msb, lsb, set_bit, bit_comprehension}"
+begin
 
-instantiation uint16 :: bit_comprehension begin
-lift_definition set_bits_uint16 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint16" is "set_bits" .
-instance by (standard; transfer) (fact set_bits_bit_eq)
-end
+lift_definition size_uint16 :: \<open>uint16 \<Rightarrow> nat\<close> is size .
 
-lemmas [code] = bit_uint16.rep_eq lsb_uint16.rep_eq msb_uint16.rep_eq
+lift_definition msb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is msb .
+lift_definition lsb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is lsb .
 
-instantiation uint16 :: equal begin
-lift_definition equal_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "equal_class.equal" .
-instance by standard (transfer, simp add: equal_eq)
-end
+text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
-lemmas [code] = equal_uint16.rep_eq
+definition set_bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint16\<close>
+  where set_bit_uint16_eq: \<open>set_bit_uint16 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
 
-instantiation uint16 :: size begin
-lift_definition size_uint16 :: "uint16 \<Rightarrow> nat" is "size" .
-instance ..
-end
+context
+  includes lifting_syntax
+begin
 
-lemmas [code] = size_uint16.rep_eq
-
-lift_definition sshiftr_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16" (infixl ">>>" 55) is \<open>\<lambda>w n. signed_drop_bit n w\<close> .
-
-lift_definition uint16_of_int :: "int \<Rightarrow> uint16" is "word_of_int" .
-
-definition uint16_of_nat :: "nat \<Rightarrow> uint16"
-where "uint16_of_nat = uint16_of_int \<circ> int"
-
-lift_definition int_of_uint16 :: "uint16 \<Rightarrow> int" is "uint" .
-lift_definition nat_of_uint16 :: "uint16 \<Rightarrow> nat" is "unat" .
-
-definition integer_of_uint16 :: "uint16 \<Rightarrow> integer"
-where "integer_of_uint16 = integer_of_int o int_of_uint16"
-
-text \<open>Use pretty numerals from integer for pretty printing\<close>
-
-context includes integer.lifting begin
-
-lift_definition Uint16 :: "integer \<Rightarrow> uint16" is "word_of_int" .
-
-lemma Rep_uint16_numeral [simp]: "Rep_uint16 (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint16_def Abs_uint16_inverse numeral.simps plus_uint16_def)
-
-lemma Rep_uint16_neg_numeral [simp]: "Rep_uint16 (- numeral n) = - numeral n"
-by(simp only: uminus_uint16_def)(simp add: Abs_uint16_inverse)
-
-lemma numeral_uint16_transfer [transfer_rule]:
-  "(rel_fun (=) cr_uint16) numeral numeral"
-by(auto simp add: cr_uint16_def)
-
-lemma numeral_uint16 [code_unfold]: "numeral n = Uint16 (numeral n)"
-by transfer simp
-
-lemma neg_numeral_uint16 [code_unfold]: "- numeral n = Uint16 (- numeral n)"
-by transfer(simp add: cr_uint16_def)
+lemma set_bit_uint16_transfer [transfer_rule]:
+  \<open>(cr_uint16 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint16) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
+  by (simp only: set_bit_eq [abs_def] set_bit_uint16_eq [abs_def]) transfer_prover
 
 end
 
-lemma Abs_uint16_numeral [code_post]: "Abs_uint16 (numeral n) = numeral n"
-by(induction n)(simp_all add: one_uint16_def numeral.simps plus_uint16_def Abs_uint16_inverse)
+lift_definition set_bits_uint16 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint16\<close> is set_bits .
+lift_definition set_bits_aux_uint16 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is set_bits_aux .
 
-lemma Abs_uint16_0 [code_post]: "Abs_uint16 0 = 0"
-by(simp add: zero_uint16_def)
+global_interpretation uint16: word_type_copy_misc Abs_uint16 Rep_uint16 signed_drop_bit_uint16
+  uint16_of_nat nat_of_uint16 uint16_of_int int_of_uint16 Uint16 integer_of_uint16 16 set_bits_aux_uint16
+  by (standard; transfer) simp_all
 
-lemma Abs_uint16_1 [code_post]: "Abs_uint16 1 = 1"
-by(simp add: one_uint16_def)
+instance using uint16.of_class_bit_comprehension
+  uint16.of_class_set_bit uint16.of_class_lsb
+  by simp_all standard
+
+end
 
 section \<open>Code setup\<close>
 
@@ -337,7 +269,7 @@ lemma term_of_uint16_code [code]:
        (term_of_class.term_of (Rep_uint16' x))"
 by(simp add: term_of_anything)
 
-lemma Uin16_code [code abstract]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer_symbolic i)"
+lemma Uint16_code [code]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer_symbolic i)"
 unfolding Uint16_def int_of_integer_symbolic_def by(simp add: Abs_uint16_inverse)
 
 code_printing
@@ -418,12 +350,12 @@ unfolding uint16_div_def by transfer (simp add: word_div_def)
 lemma mod_uint16_code [code]: "x mod y = (if y = 0 then x else uint16_mod x y)"
 unfolding uint16_mod_def by transfer (simp add: word_mod_def)
 
-lemma uint16_div_code [code abstract]:
+lemma uint16_div_code [code]:
   "Rep_uint16 (uint16_div x y) =
   (if y = 0 then Rep_uint16 (undefined ((div) :: uint16 \<Rightarrow> _) x (0 :: uint16)) else Rep_uint16 x div Rep_uint16 y)"
 unfolding uint16_div_def by transfer simp
 
-lemma uint16_mod_code [code abstract]:
+lemma uint16_mod_code [code]:
   "Rep_uint16 (uint16_mod x y) =
   (if y = 0 then Rep_uint16 (undefined ((mod) :: uint16 \<Rightarrow> _) x (0 :: uint16)) else Rep_uint16 x mod Rep_uint16 y)"
 unfolding uint16_mod_def by transfer simp
@@ -471,7 +403,7 @@ lemma set_bit_uint16_code [code]:
 including undefined_transfer integer.lifting unfolding uint16_set_bit_def
 by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
-lemma uint16_set_bit_code [code abstract]:
+lemma uint16_set_bit_code [code]:
   "Rep_uint16 (uint16_set_bit w n b) = 
   (if n < 0 \<or> 15 < n then Rep_uint16 (undefined (set_bit :: uint16 \<Rightarrow> _) w n b)
    else set_bit (Rep_uint16 w) (nat_of_integer n) b)"
@@ -482,25 +414,6 @@ code_printing constant uint16_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (Scala) "Uint16.set'_bit"
 
-lift_definition uint16_set_bits :: "(nat \<Rightarrow> bool) \<Rightarrow> uint16 \<Rightarrow> nat \<Rightarrow> uint16" is set_bits_aux .
-
-lemma uint16_set_bits_code [code]:
-  "uint16_set_bits f w n =
-  (if n = 0 then w 
-   else let n' = n - 1 in uint16_set_bits f ((push_bit 1 w) OR (if f n' then 1 else 0)) n')"
-  apply (transfer fixing: n)
-  apply (cases n)
-   apply simp_all
-  done
-
-lemma set_bits_uint16 [code]:
-  "(BITS n. f n) = uint16_set_bits f 0 16"
-by transfer(simp add: set_bits_conv_set_bits_aux)
-
-
-lemma lsb_code [code]: fixes x :: uint16 shows "lsb x \<longleftrightarrow> bit x 0"
-  by transfer (simp add: lsb_odd)
-
 definition uint16_shiftl :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
 where [code del]:
   "uint16_shiftl x n = (if n < 0 \<or> 16 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
@@ -509,7 +422,7 @@ lemma shiftl_uint16_code [code]: "push_bit n x = (if n < 16 then uint16_shiftl x
   including undefined_transfer integer.lifting unfolding uint16_shiftl_def
   by transfer simp
 
-lemma uint16_shiftl_code [code abstract]:
+lemma uint16_shiftl_code [code]:
   "Rep_uint16 (uint16_shiftl w n) =
   (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
    else push_bit (nat_of_integer n) (Rep_uint16 w))"
@@ -529,7 +442,7 @@ lemma shiftr_uint16_code [code]: "drop_bit n x = (if n < 16 then uint16_shiftr x
   including undefined_transfer integer.lifting unfolding uint16_shiftr_def
   by transfer simp
 
-lemma uint16_shiftr_code [code abstract]:
+lemma uint16_shiftr_code [code]:
   "Rep_uint16 (uint16_shiftr w n) =
   (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (drop_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
    else drop_bit (nat_of_integer n) (Rep_uint16 w))"
@@ -543,19 +456,20 @@ code_printing constant uint16_shiftr \<rightharpoonup>
 definition uint16_sshiftr :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
 where [code del]:
   "uint16_sshiftr x n =
-  (if n < 0 \<or> 16 \<le> n then undefined sshiftr_uint16 x n else sshiftr_uint16 x (nat_of_integer n))"
+  (if n < 0 \<or> 16 \<le> n then undefined signed_drop_bit_uint16 n x else signed_drop_bit_uint16 (nat_of_integer n) x)"
 
 lemma sshiftr_uint16_code [code]:
-  "x >>> n = 
+  "signed_drop_bit_uint16 n x = 
   (if n < 16 then uint16_sshiftr x (integer_of_nat n) else if bit x 15 then -1 else 0)"
-including undefined_transfer integer.lifting unfolding uint16_sshiftr_def
-by transfer (simp add: not_less signed_drop_bit_beyond word_size)
+  including undefined_transfer integer.lifting unfolding uint16_sshiftr_def
+  by transfer (simp add: not_less signed_drop_bit_beyond word_size)
 
-lemma uint16_sshiftr_code [code abstract]:
+lemma uint16_sshiftr_code [code]:
   "Rep_uint16 (uint16_sshiftr w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined sshiftr_uint16 w n)
+  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined signed_drop_bit_uint16 n w)
    else signed_drop_bit (nat_of_integer n) (Rep_uint16 w))"
-including undefined_transfer unfolding uint16_sshiftr_def by transfer simp
+  including undefined_transfer unfolding uint16_sshiftr_def
+  by transfer simp
 
 code_printing constant uint16_sshiftr \<rightharpoonup>
   (SML_word) "Uint16.shiftr'_signed" and
@@ -574,11 +488,11 @@ including integer.lifting by transfer simp
 
 lemma int_of_uint16_code [code]:
   "int_of_uint16 x = int_of_integer (integer_of_uint16 x)"
-by(simp add: integer_of_uint16_def)
+  by (simp add: int_of_uint16.rep_eq integer_of_uint16_def)
 
 lemma nat_of_uint16_code [code]:
   "nat_of_uint16 x = nat_of_integer (integer_of_uint16 x)"
-unfolding integer_of_uint16_def including integer.lifting by transfer simp
+  unfolding integer_of_uint16_def including integer.lifting by transfer simp
 
 lemma integer_of_uint16_code [code]:
   "integer_of_uint16 n = integer_of_int (uint (Rep_uint16' n))"
@@ -614,7 +528,5 @@ lemmas partial_term_of_uint16 [code] = partial_term_of_code
 
 instance ..
 end
-
-no_notation sshiftr_uint16 (infixl ">>>" 55)
 
 end

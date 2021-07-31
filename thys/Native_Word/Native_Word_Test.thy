@@ -11,7 +11,8 @@ begin
 
 section \<open>Tests for @{typ uint32}\<close>
 
-notation sshiftr_uint32 (infixl ">>>" 55)
+abbreviation (input) sshiftr_uint32 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint32 n w\<close>
 
 definition test_uint32 where
   "test_uint32 \<longleftrightarrow>
@@ -92,7 +93,8 @@ by(simp add: fun_eq_iff)
 
 section \<open>Tests for @{typ uint16}\<close>
 
-notation sshiftr_uint16 (infixl ">>>" 55)
+abbreviation (input) sshiftr_uint16 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint16 n w\<close>
 
 definition test_uint16 where
   "test_uint16 \<longleftrightarrow>
@@ -144,10 +146,8 @@ definition test_uint16 where
   =
    [0, 0x7FFF, 0x8000, 0xAAAA])"
 
-no_notation sshiftr_uint16 (infixl ">>>" 55)
-
 export_code test_uint16 checking Haskell? Scala
-export_code test_uint16 in SML_word
+export_code test_uint16 checking SML_word
 
 notepad begin
 have test_uint16 by code_simp
@@ -164,7 +164,8 @@ by(simp add: fun_eq_iff)
 
 section \<open>Tests for @{typ uint8}\<close>
 
-notation sshiftr_uint8 (infixl ">>>" 55)
+abbreviation (input) sshiftr_uint8 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint8 n w\<close>
 
 definition test_uint8 where
   "test_uint8 \<longleftrightarrow> 
@@ -220,9 +221,8 @@ no_notation sshiftr_uint8 (infixl ">>>" 55)
 
 export_code test_uint8 checking SML Haskell? Scala
 
-export_code test_uint8 in SML
-
 notepad begin
+
 have test_uint8 by eval
 have test_uint8 by code_simp
 have test_uint8 by normalization
@@ -248,7 +248,8 @@ by(simp add: fun_eq_iff)
 
 section \<open>Tests for @{typ "uint"}\<close>
 
-notation sshiftr_uint (infixl ">>>" 55)
+abbreviation (input) sshiftr_uint (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint n w\<close>
 
 definition "test_uint \<equiv> let 
   test_list1 = (let
@@ -337,7 +338,8 @@ by(simp add: fun_eq_iff)
 
 section \<open> Tests for @{typ uint64} \<close>
 
-notation sshiftr_uint64 (infixl ">>>" 55)
+abbreviation (input) sshiftr_uint64 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint64 n w\<close>
 
 definition test_uint64 where
   "test_uint64 \<longleftrightarrow>
