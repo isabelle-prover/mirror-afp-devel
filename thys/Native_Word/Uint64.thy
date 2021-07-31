@@ -19,8 +19,6 @@ text \<open>
   version which does not suffer from a division bug found in PolyML 5.6.
 \<close>
 
-declare prod.Quotient[transfer_rule]
-
 section \<open>Type definition and primitive operations\<close>
 
 typedef uint64 = "UNIV :: 64 word set" .. 

@@ -56,8 +56,6 @@ lemma dflt_size[simp]:
   by (simp_all del: len_gt_0)
 end
 
-declare prod.Quotient[transfer_rule]
-
 section \<open>Type definition and primitive operations\<close>
 
 typedef uint = "UNIV :: dflt_size word set" .. 

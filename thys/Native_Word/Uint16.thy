@@ -24,8 +24,6 @@ text \<open>
   for this type is set up.
 \<close>
 
-declare prod.Quotient[transfer_rule]
-
 section \<open>Type definition and primitive operations\<close>
 
 typedef uint16 = "UNIV :: 16 word set" ..

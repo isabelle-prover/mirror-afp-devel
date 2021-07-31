@@ -8,8 +8,6 @@ theory Uint32 imports
   Code_Target_Word_Base
 begin
 
-declare prod.Quotient[transfer_rule]
-
 section \<open>Type definition and primitive operations\<close>
 
 typedef uint32 = "UNIV :: 32 word set" .. 

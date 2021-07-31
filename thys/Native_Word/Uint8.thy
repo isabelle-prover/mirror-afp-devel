@@ -15,8 +15,6 @@ text \<open>
   is imported, the type \<open>uint8\<close> is emulated via @{typ "8 word"}.
 \<close>
 
-declare prod.Quotient[transfer_rule]
-
 section \<open>Type definition and primitive operations\<close>
 
 typedef uint8 = "UNIV :: 8 word set" ..
