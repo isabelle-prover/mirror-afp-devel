@@ -71,9 +71,9 @@ begin
 
 lift_definition bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint64 :: \<open>uint64 \<Rightarrow> uint64\<close> is NOT .
-lift_definition and_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>(AND)\<close> .
-lift_definition or_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>(OR)\<close> .
-lift_definition xor_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>(XOR)\<close> .
+lift_definition and_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.and\<close> .
+lift_definition or_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.or\<close> .
+lift_definition xor_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.xor\<close> .
 lift_definition mask_uint64 :: \<open>nat \<Rightarrow> uint64\<close> is mask .
 lift_definition push_bit_uint64 :: \<open>nat \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is push_bit .
 lift_definition drop_bit_uint64 :: \<open>nat \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is drop_bit .
@@ -472,6 +472,10 @@ text \<open>
   The following justifies the implementation.
 \<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 definition Uint64_signed :: "integer \<Rightarrow> uint64" 
 where "Uint64_signed i = (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then undefined Uint64 i else Uint64 i)"
 
@@ -490,6 +494,8 @@ lemma Uint64_signed_code [code]:
   (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then Rep_uint64 (undefined Uint64 i) else word_of_int (int_of_integer_symbolic i))"
 unfolding Uint64_signed_def Uint64_def int_of_integer_symbolic_def word_of_integer_def
 by(simp add: Abs_uint64_inverse)
+
+end
 
 text \<open>
   Avoid @{term Abs_uint64} in generated code, use @{term Rep_uint64'} instead. 
@@ -596,17 +602,17 @@ code_printing
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int64.lognot" and
   (Scala) "_.unary'_~"
-| constant "(AND) :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.and :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.andb" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Int64.logand" and
   (Scala) infixl 3 "&"
-| constant "(OR) :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.or :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.orb" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Int64.logor" and
   (Scala) infixl 1 "|"
-| constant "(XOR) :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.xor :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.xorb" and
   (Haskell) "Data'_Bits.xor" and
   (OCaml) "Int64.logxor" and
@@ -793,6 +799,10 @@ code_printing constant uint64_sshiftr \<rightharpoonup>
   (Scala) "Uint64.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed x i)"
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint64) 63"
   by transfer (simp add: msb_word_iff_bit)
 
@@ -834,6 +844,8 @@ proof -
   ultimately show ?thesis
     by simp (simp add: integer_of_uint64_signed_def bit_simps)
 qed
+
+end
 
 code_printing
   constant "integer_of_uint64" \<rightharpoonup>

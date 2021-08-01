@@ -76,9 +76,9 @@ begin
 
 lift_definition bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is NOT .
-lift_definition and_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(AND)\<close> .
-lift_definition or_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(OR)\<close> .
-lift_definition xor_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(XOR)\<close> .
+lift_definition and_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.and\<close> .
+lift_definition or_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.or\<close> .
+lift_definition xor_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.xor\<close> .
 lift_definition mask_uint16 :: \<open>nat \<Rightarrow> uint16\<close> is mask .
 lift_definition push_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is push_bit .
 lift_definition drop_bit_uint16 :: \<open>nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is drop_bit .
@@ -323,15 +323,15 @@ code_printing
   (SML_word) "Word16.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toChar"
-| constant "(AND) :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.and :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (Scala) "(_ & _).toChar"
-| constant "(OR) :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.or :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (Scala) "(_ | _).toChar"
-| constant "(XOR) :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.xor :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (Scala) "(_ ^ _).toChar"

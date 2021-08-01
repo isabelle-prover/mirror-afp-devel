@@ -15,6 +15,10 @@ imports
   Word_Lemmas
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma len8: "len_of (x :: 8 itself) = 8" by simp
 
 lemma word8_and_max_simp:
@@ -104,5 +108,7 @@ lemma word8_exhaust:
    apply (erule emptyE)
   apply (subst enum_UNIV, rule UNIV_I)
   done
+
+end
 
 end

@@ -46,7 +46,12 @@ section \<open>IPv4 Adresses\<close>
   lemma ipv4addr_of_nat_nat_of_ipv4addr: "ipv4addr_of_nat (nat_of_ipv4addr addr) = addr"
     by(simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
 
-subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
+  subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   fun ipv4addr_of_dotdecimal :: "nat \<times> nat \<times> nat \<times> nat \<Rightarrow> ipv4addr" where
     "ipv4addr_of_dotdecimal (a,b,c,d) = ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a )"
 
@@ -256,5 +261,7 @@ lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of
           network_prefix = (pre AND netmask)
       in (network_prefix, network_prefix OR (NOT netmask)))"
   by(simp add: ipcidr_to_interval_def Let_def ipcidr_to_interval_start.simps ipcidr_to_interval_end.simps)
+
+  end
 
 end

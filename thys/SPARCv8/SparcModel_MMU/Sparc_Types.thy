@@ -129,6 +129,10 @@ datatype CPU_register =
 text \<open>The following two functions are dummies since we will not use 
         ASRs. Future formalisation may add more details to this.\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 definition privileged_ASR :: "word5 \<Rightarrow> bool"
 where
 "privileged_ASR r \<equiv> False
@@ -299,6 +303,8 @@ where
   tmp2
 "
 
+end
+
 text \<open>
    SPARC V8 architecture is organized in windows of 32 user registers.
    The data stored in a register is defined as a 32 bits word @{term reg_type}:
@@ -462,6 +468,10 @@ where "write_interrupt_level w v \<equiv> v\<lparr>itrpt_lvl := w\<rparr>"
 
 definition write_store_barrier_pending :: "bool \<Rightarrow> sparc_state_var \<Rightarrow> sparc_state_var"
 where "write_store_barrier_pending b v \<equiv> v\<lparr>st_bar := b\<rparr>"
+
+context
+  includes bit_operations_syntax
+begin
 
 text \<open>Given a word7 value, find the highest bit,
         and fill the left bits to be the highest bit.\<close>
@@ -787,5 +797,7 @@ invalid_cond_f2
 |unsupported_instruction
 |fetch_instruction_error
 |invalid_trap_cond
+
+end
 
 end

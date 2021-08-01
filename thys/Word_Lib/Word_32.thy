@@ -16,6 +16,10 @@ theory Word_32
     Bitwise
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 type_synonym word32 = "32 word"
 lemma len32: "len_of (x :: 32 itself) = 32" by simp
 
@@ -338,5 +342,7 @@ lemma word32_and_max_simp:
   \<open>x AND 0xFFFFFFFF = x\<close> for x :: \<open>32 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
+
+end
 
 end

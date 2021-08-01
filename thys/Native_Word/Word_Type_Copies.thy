@@ -69,7 +69,7 @@ declaration \<open>
        \<^term>\<open>HOL.equal\<close>, \<^term>\<open>(\<le>)\<close>, \<^term>\<open>(<)\<close>,
        \<^term>\<open>(dvd)\<close>, \<^term>\<open>of_bool\<close>, \<^term>\<open>numeral\<close>, \<^term>\<open>of_nat\<close>,
        \<^term>\<open>bit\<close>,
-       \<^term>\<open>NOT\<close>, \<^term>\<open>(AND)\<close>, \<^term>\<open>(OR)\<close>, \<^term>\<open>(XOR)\<close>, \<^term>\<open>mask\<close>,
+       \<^term>\<open>NOT\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
        \<^term>\<open>push_bit\<close>, \<^term>\<open>drop_bit\<close>, \<^term>\<open>take_bit\<close>,
        \<^term>\<open>Bit_Operations.set_bit\<close>, \<^term>\<open>unset_bit\<close>, \<^term>\<open>flip_bit\<close>,
        \<^term>\<open>msb\<close>, \<^term>\<open>lsb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>Generic_set_bit.set_bit\<close>, \<^term>\<open>set_bits\<close>]
@@ -118,7 +118,7 @@ lemma of_class_linorder:
 end
 
 locale word_type_copy_bits = word_type_copy_ring
-  opening constraintless +
+  opening constraintless bit_operations_syntax +
   constrains word_of :: \<open>'a::{comm_ring_1, semiring_modulo, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes signed_drop_bit :: \<open>nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
   assumes bit_eq_word_of [code]: \<open>bit p = bit (word_of p)\<close>
@@ -302,7 +302,7 @@ lemma neg_numeral_eq_integer [code_unfold]:
 end
 
 locale word_type_copy_misc = word_type_copy_more
-  opening constraintless +
+  opening constraintless bit_operations_syntax +
   constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes size :: nat and set_bits_aux :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
     assumes size_eq_length: \<open>size = LENGTH('b::len)\<close>

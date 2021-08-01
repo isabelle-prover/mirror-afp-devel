@@ -108,9 +108,9 @@ begin
 
 lift_definition bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint :: \<open>uint \<Rightarrow> uint\<close> is NOT .
-lift_definition and_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(AND)\<close> .
-lift_definition or_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(OR)\<close> .
-lift_definition xor_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(XOR)\<close> .
+lift_definition and_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.and\<close> .
+lift_definition or_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.or\<close> .
+lift_definition xor_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.xor\<close> .
 lift_definition mask_uint :: \<open>nat \<Rightarrow> uint\<close> is mask .
 lift_definition push_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is push_bit .
 lift_definition drop_bit_uint :: \<open>nat \<Rightarrow> uint \<Rightarrow> uint\<close> is drop_bit .
@@ -358,7 +358,10 @@ text \<open>
   The following justifies the implementation.
 \<close>
 
-context includes integer.lifting begin
+context
+  includes integer.lifting bit_operations_syntax
+begin
+
 definition wivs_mask :: int where "wivs_mask = 2^ dflt_size - 1"
 lift_definition wivs_mask_integer :: integer is wivs_mask .
 lemma [code]: "wivs_mask_integer = 2 ^ dflt_size - 1"
@@ -541,21 +544,21 @@ code_printing
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Pervasives.lnot" and
   (Scala) "_.unary'_~"
-| constant "(AND) :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.and :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.andb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Pervasives.(land)" and
   (Scala) infixl 3 "&"
-| constant "(OR) :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.or :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.orb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Pervasives.(lor)" and
   (Scala) infixl 1 "|"
-| constant "(XOR) :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.xor :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.xorb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.xorb ((_),/ (_))" and

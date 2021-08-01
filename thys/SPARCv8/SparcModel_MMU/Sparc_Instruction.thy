@@ -58,6 +58,10 @@ where "get_operand_opf (Opf r) = r"
 primrec get_operand_imm7:: "inst_operand \<Rightarrow> word7"
 where "get_operand_imm7 (Imm7 r) = r"
 
+context
+  includes bit_operations_syntax
+begin
+
 type_synonym instruction = "(sparc_operation \<times> inst_operand list)"
 
 definition get_op::"word32 \<Rightarrow> int"
@@ -2784,5 +2788,7 @@ where "store_barrier_instr instr \<equiv>
     modify (\<lambda>s. (store_barrier_pending_mod True s));
     return ()
   od"
+
+end
 
 end

@@ -13,6 +13,10 @@ theory More_Word
     More_Divides
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 \<comment> \<open>problem posed by TPHOLs referee:
       criterion for overflow of addition of signed integers\<close>
 
@@ -2540,5 +2544,7 @@ proof -
         power_inject_exp semiring_norm(76) unat_power_lower zero_neq_one)
   then show ?thesis by auto
 qed
+
+end
 
 end

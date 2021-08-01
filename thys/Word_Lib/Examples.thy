@@ -8,6 +8,10 @@ theory Examples
   imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax Signed_Division_Word
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 text "modulus"
 
 lemma "(27 :: 4 word) = -5" by simp
@@ -222,5 +226,7 @@ lemma
 
 lemma "1 < (1024::32 word) \<and> 1 \<le> (1024::32 word)"
   by simp
+
+end
 
 end

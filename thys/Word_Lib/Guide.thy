@@ -384,6 +384,9 @@ text \<open>
     \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is no part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
       any longer.
 
+    \<^item> Infix syntax for \<^term>\<open>(AND)\<close>, \<^term>\<open>(OR)\<close>, \<^term>\<open>(XOR)\<close> organized in
+      syntax bundle \<^text>\<open>bit_operations_syntax\<close>.
+
     \<^item> Abbreviation \<^abbrev>\<open>max_word\<close> moved from distribution into theory
       \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
 

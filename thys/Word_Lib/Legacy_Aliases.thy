@@ -53,8 +53,14 @@ abbreviation (input)  shiftr1 :: \<open>'a::len word \<Rightarrow> 'a word\<clos
 abbreviation (input) sshiftr1 :: \<open>'a::len word \<Rightarrow> 'a word\<close>
   where \<open>sshiftr1 \<equiv> signed_drop_bit (Suc 0)\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 abbreviation (input) bshiftr1 :: \<open>bool \<Rightarrow> 'a::len word \<Rightarrow> 'a word\<close>
   where \<open>bshiftr1 b w \<equiv> w div 2 OR push_bit (LENGTH('a) - Suc 0) (of_bool b) \<close>
+
+end
 
 lemma shiftr1_1: "shiftr1 (1::'a::len word) = 0"
   by (fact bits_1_div_2)

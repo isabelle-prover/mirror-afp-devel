@@ -137,6 +137,10 @@ lemma int_of_uint32_mod: "int_of_uint32 (x mod y) = (int_of_uint32 x mod int_of_
 lemma int_of_uint32_inv: "0 \<le> x \<Longrightarrow> x < 4294967296 \<Longrightarrow> int_of_uint32 (uint32_of_int x) = x"
   by transfer (simp add: take_bit_int_eq_self)
 
+context
+  includes bit_operations_syntax
+begin
+
 function power_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "power_p32 x n = (if n = 0 then 1 else
     let rec = power_p32 (mult_p32 x x) (drop_bit 1 n) in
@@ -154,6 +158,8 @@ proof -
   show ?thesis
     by (relation "measure (\<lambda> (x,n). nat (int_of_uint32 n))", auto simp: int_of_uint32_shift *) 
 qed
+
+end
 
 text \<open>In experiments with Berlekamp-factorization (where the prime $p$ is usually small),
   it turned out that taking the below implementation of inverse via exponentiation
@@ -610,7 +616,7 @@ shows "urel32 (if y = 0 then x else 0) (if y' = 0 then x' else 0)"
   unfolding urel32_eq[OF y urel32_0] using urel32_0 x by auto 
 
 lemma urel32_power: "urel32 x x' \<Longrightarrow> urel32 y (int y') \<Longrightarrow> urel32 (power_p32 pp x y) (power_p p x' y')"
-proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
+including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
   case (1 x' y' x y)
   note x = 1(2) note y = 1(3)
   show ?case
@@ -832,6 +838,10 @@ lemma int_of_uint64_mod: "int_of_uint64 (x mod y) = (int_of_uint64 x mod int_of_
 lemma int_of_uint64_inv: "0 \<le> x \<Longrightarrow> x < 18446744073709551616 \<Longrightarrow> int_of_uint64 (uint64_of_int x) = x"
   by transfer (simp add: take_bit_int_eq_self)
 
+context
+  includes bit_operations_syntax 
+begin
+
 function power_p64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" where
   "power_p64 x n = (if n = 0 then 1 else
     let rec = power_p64 (mult_p64 x x) (drop_bit 1 n) in
@@ -849,6 +859,8 @@ proof -
   show ?thesis
     by (relation "measure (\<lambda> (x,n). nat (int_of_uint64 n))", auto simp: int_of_uint64_shift *) 
 qed
+
+end
 
 text \<open>In experiments with Berlekamp-factorization (where the prime $p$ is usually small),
   it turned out that taking the below implementation of inverse via exponentiation
@@ -1034,7 +1046,7 @@ shows "urel64 (if y = 0 then x else 0) (if y' = 0 then x' else 0)"
   unfolding urel64_eq[OF y urel64_0] using urel64_0 x by auto 
 
 lemma urel64_power: "urel64 x x' \<Longrightarrow> urel64 y (int y') \<Longrightarrow> urel64 (power_p64 pp x y) (power_p p x' y')"
-proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
+including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
   case (1 x' y' x y)
   note x = 1(2) note y = 1(3)
   show ?case
@@ -1245,6 +1257,9 @@ lemma int_of_integer_inv: "int_of_integer (integer_of_int x) = x" by simp
 lemma int_of_integer_shift: "int_of_integer (drop_bit k n) = (int_of_integer n) div (2 ^ k)" 
   by transfer (simp add: int_of_integer_pow shiftr_integer_conv_div_pow2)
 
+context
+  includes bit_operations_syntax
+begin
 
 function power_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
   "power_p_integer x n = (if n \<le> 0 then 1 else
@@ -1265,6 +1280,8 @@ proof -
   show ?thesis
     by (relation "measure (\<lambda> (x,n). nat (int_of_integer n))", auto simp: * int_of_integer_shift) 
 qed
+
+end
 
 text \<open>In experiments with Berlekamp-factorization (where the prime $p$ is usually small),
   it turned out that taking the below implementation of inverse via exponentiation
@@ -1448,7 +1465,7 @@ shows "urel_integer (if y = 0 then x else 0) (if y' = 0 then x' else 0)"
   unfolding urel_integer_eq[OF y urel_integer_0] using urel_integer_0 x by auto 
 
 lemma urel_integer_power: "urel_integer x x' \<Longrightarrow> urel_integer y (int y') \<Longrightarrow> urel_integer (power_p_integer pp x y) (power_p p x' y')"
-proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
+including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
   case (1 x' y' x y)
   note x = 1(2) note y = 1(3)
   show ?case

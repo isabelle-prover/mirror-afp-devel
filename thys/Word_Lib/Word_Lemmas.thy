@@ -18,6 +18,10 @@ theory Word_Lemmas
     Bit_Shifts_Infix_Syntax
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma ucast_le_ucast_eq:
   fixes x y :: "'a::len word"
   assumes x: "x < 2 ^ n"
@@ -1930,5 +1934,7 @@ lemma signed_arith_sint:
   "((- (2 ^ (size a - 1)) \<le> (sint a smod sint b)) \<and> (sint a smod sint b \<le> (2 ^ (size a - 1) - 1)))
     \<Longrightarrow> sint (a smod b) = (sint a smod sint b)"
   by (subst (asm) signed_arith_ineq_checks_to_eq; simp)+
+
+end
 
 end

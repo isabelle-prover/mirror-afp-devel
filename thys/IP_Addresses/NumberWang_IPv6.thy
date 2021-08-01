@@ -39,6 +39,10 @@ proof -
   using assms by(simp)
 qed
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma length_drop_mask_outer: fixes ip::"'a::len word"
   shows "LENGTH('a) - n' = len \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> len"
   apply(subst word_and_mask_shiftl)
@@ -49,6 +53,7 @@ lemma length_drop_mask_outer: fixes ip::"'a::len word"
   apply(simp add: word_size)
   apply(simp add: length_drop_mask)
   done
+
 lemma length_drop_mask_inner: fixes ip::"'a::len word"
   shows "n \<le> LENGTH('a) - n' \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> n"
   apply(subst word_and_mask_shiftl)
@@ -60,6 +65,7 @@ lemma length_drop_mask_inner: fixes ip::"'a::len word"
   apply(simp add: length_drop_mask)
   done
 
+end
 
 lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = (mask 128 :: 'a::len word)"
   by (simp add: mask_eq push_bit_of_1)

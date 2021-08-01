@@ -26,6 +26,10 @@ end
 definition pfxm_mask :: "'a prefix_match \<Rightarrow> 'a::len word" where
   "pfxm_mask x \<equiv> mask (len_of (TYPE('a)) - pfxm_length x)"
 
+context
+  includes bit_operations_syntax
+begin
+
 definition valid_prefix :: "('a::len) prefix_match \<Rightarrow> bool" where
   "valid_prefix pf = ((pfxm_mask pf) AND pfxm_prefix pf = 0)"
 text\<open>Note that @{const valid_prefix} looks very elegant as a definition. However, it hides something nasty:\<close>
@@ -43,6 +47,7 @@ proof -
   by(simp add: valid_prefix_def pfxm_mask_def pfxm_length_def pfxm_prefix_def)
 qed
 
+end
 
 text\<open>The type @{typ "'a prefix_match"} usually requires @{const valid_prefix}.
       When we allow working on arbitrary IPs in CIDR notation,
@@ -85,6 +90,7 @@ lemma "sorted_list_of_set
   by eval
 
 context
+  includes bit_operations_syntax
 begin
 
 private lemma valid_prefix_E: "valid_prefix pf \<Longrightarrow> ((pfxm_mask pf) AND pfxm_prefix pf = 0)" 
@@ -125,6 +131,7 @@ subsection\<open>Relation between prefix and set\<close>
       "prefix_to_wordset pfx \<subseteq> ipset_from_cidr (pfxm_prefix pfx) (pfxm_length pfx)"
     apply(rule subsetI)
     apply(simp add: prefix_to_wordset_def addr_in_ipset_from_cidr_code)
+
     apply(intro impI conjI)
      apply (metis (erased, opaque_lifting) order_trans word_and_le2)
     apply(simp add: pfxm_mask_def)

@@ -546,7 +546,7 @@ definition instance_Word_WordAsr_Word_bitSequence_dict  :: "(bitSequence)WordAsr
 definition instance_Word_WordNot_Num_int32_dict  :: "( 32 word)WordNot_class "  where 
      " instance_Word_WordNot_Num_int32_dict = ((|
 
-  lnot_method = (\<lambda> w. (NOT w))|) )"
+  lnot_method = NOT|) )"
 
 
 
@@ -555,7 +555,7 @@ definition instance_Word_WordNot_Num_int32_dict  :: "( 32 word)WordNot_class "  
 definition instance_Word_WordOr_Num_int32_dict  :: "( 32 word)WordOr_class "  where 
      " instance_Word_WordOr_Num_int32_dict = ((|
 
-  lor_method = (OR)|) )"
+  lor_method = Bit_Operations.or|) )"
 
 
 \<comment> \<open>\<open>val int32Lxor : int32 -> int32 -> int32\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -563,7 +563,7 @@ definition instance_Word_WordOr_Num_int32_dict  :: "( 32 word)WordOr_class "  wh
 definition instance_Word_WordXor_Num_int32_dict  :: "( 32 word)WordXor_class "  where 
      " instance_Word_WordXor_Num_int32_dict = ((|
 
-  lxor_method = (XOR)|) )"
+  lxor_method = Bit_Operations.xor|) )"
 
 
 \<comment> \<open>\<open>val int32Land : int32 -> int32 -> int32\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -571,7 +571,7 @@ definition instance_Word_WordXor_Num_int32_dict  :: "( 32 word)WordXor_class "  
 definition instance_Word_WordAnd_Num_int32_dict  :: "( 32 word)WordAnd_class "  where 
      " instance_Word_WordAnd_Num_int32_dict = ((|
 
-  land_method = (AND)|) )"
+  land_method = Bit_Operations.and|) )"
 
 
 \<comment> \<open>\<open>val int32Lsl  : int32 -> nat -> int32\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -609,7 +609,7 @@ definition instance_Word_WordAsr_Num_int32_dict  :: "( 32 word)WordAsr_class "  
 definition instance_Word_WordNot_Num_int64_dict  :: "( 64 word)WordNot_class "  where 
      " instance_Word_WordNot_Num_int64_dict = ((|
 
-  lnot_method = (\<lambda> w. (NOT w))|) )"
+  lnot_method = NOT|) )"
 
 
 \<comment> \<open>\<open>val int64Lor  : int64 -> int64 -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -617,7 +617,7 @@ definition instance_Word_WordNot_Num_int64_dict  :: "( 64 word)WordNot_class "  
 definition instance_Word_WordOr_Num_int64_dict  :: "( 64 word)WordOr_class "  where 
      " instance_Word_WordOr_Num_int64_dict = ((|
 
-  lor_method = (OR)|) )"
+  lor_method = Bit_Operations.or|) )"
 
 
 \<comment> \<open>\<open>val int64Lxor : int64 -> int64 -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -625,7 +625,7 @@ definition instance_Word_WordOr_Num_int64_dict  :: "( 64 word)WordOr_class "  wh
 definition instance_Word_WordXor_Num_int64_dict  :: "( 64 word)WordXor_class "  where 
      " instance_Word_WordXor_Num_int64_dict = ((|
 
-  lxor_method = (XOR)|) )"
+  lxor_method = Bit_Operations.xor|) )"
 
 
 \<comment> \<open>\<open>val int64Land : int64 -> int64 -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>
@@ -633,7 +633,7 @@ definition instance_Word_WordXor_Num_int64_dict  :: "( 64 word)WordXor_class "  
 definition instance_Word_WordAnd_Num_int64_dict  :: "( 64 word)WordAnd_class "  where 
      " instance_Word_WordAnd_Num_int64_dict = ((|
 
-  land_method = (AND)|) )"
+  land_method = Bit_Operations.and|) )"
 
 
 \<comment> \<open>\<open>val int64Lsl  : int64 -> nat -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>

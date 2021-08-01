@@ -686,7 +686,10 @@ lemma [code]: "sdiv_impl x y = Abs_uint32' (Rep_uint32' x sdiv Rep_uint32' y)"
 
 lemma [code]: "smod_impl a b = a - sdiv_impl a b * b"
   by transfer (simp add: smod_by_div_abs)
-  
+
+context
+  includes bit_operations_syntax
+begin
 
 primrec eval_bin_op_impl_aux :: "bin_op \<Rightarrow> uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "eval_bin_op_impl_aux bo_plus v1 v2 = v1+v2"
@@ -701,17 +704,15 @@ primrec eval_bin_op_impl_aux :: "bin_op \<Rightarrow> uint32 \<Rightarrow> uint3
 | "eval_bin_op_impl_aux bo_or v1 v2 = v1 OR v2"
 | "eval_bin_op_impl_aux bo_xor v1 v2 = v1 XOR v2"
 
+end
+
 lift_definition eval_bin_op_impl :: "bin_op \<Rightarrow> uint32 \<Rightarrow> uint32 \<Rightarrow> uint32"
   is eval_bin_op .
-print_theorems
 
 lemma [code]: "eval_bin_op_impl bop v1 v2 = eval_bin_op_impl_aux bop v1 v2"
   apply (cases bop)
-  apply simp_all
-  apply (transfer, simp)+
-  done  
-
-
+  apply (transfer; simp)+
+  done
 
 primrec eval_un_op_impl_aux :: "un_op \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "eval_un_op_impl_aux uo_minus v = -v"

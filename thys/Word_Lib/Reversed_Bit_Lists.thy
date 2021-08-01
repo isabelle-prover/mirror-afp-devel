@@ -20,6 +20,10 @@ theory Reversed_Bit_Lists
     Legacy_Aliases
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma horner_sum_of_bool_2_concat:
   \<open>horner_sum of_bool 2 (concat (map (\<lambda>x. map (bit x) [0..<LENGTH('a)]) ws)) = horner_sum uint (2 ^ LENGTH('a)) ws\<close>
   for ws :: \<open>'a::len word list\<close>
@@ -1084,7 +1088,7 @@ lemma td_bl:
   apply (auto dest: sym)
   done
 
-interpretation word_bl:
+global_interpretation word_bl:
   type_definition
     "to_bl :: 'a::len word \<Rightarrow> bool list"
     of_bl
@@ -1758,6 +1762,8 @@ declare word_rotl_eqs (1) [simp]
 
 lemmas abl_cong = arg_cong [where f = "of_bl"]
 
+end
+
 locale word_rotate
 begin
 
@@ -1828,6 +1834,10 @@ lemma map_replicate_False:
   "n = length xs \<Longrightarrow> map (\<lambda>(x,y). x \<and> y)
     (zip xs (replicate n False)) = replicate n False"
   by (induct xs arbitrary: n) auto
+
+context
+  includes bit_operations_syntax
+begin
 
 lemma bl_and_mask:
   fixes w :: "'a::len word"
@@ -2224,5 +2234,7 @@ lemma sshiftr_bl: "signed_drop_bit n x \<equiv> of_bl (replicate n (msb x) @ tak
   for x :: "'a::len word"
   unfolding word_msb_alt
   by (smt (z3) length_to_bl_eq sshiftr_bl_of word_bl.Rep_inverse)
+
+end
 
 end

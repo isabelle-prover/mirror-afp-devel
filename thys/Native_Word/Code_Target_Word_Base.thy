@@ -90,6 +90,10 @@ lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftr
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
   by (rule word_eqI) (auto simp add: word_test_bit_set_bits bit_simps)
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma word_and_mask_or_conv_and_mask:
   "bit n index \<Longrightarrow> (n AND mask index) OR (push_bit index 1) = n AND mask (index + 1)"
   for n :: \<open>'a::len word\<close>
@@ -111,6 +115,8 @@ proof -
   also have "\<dots> = uint n" by simp
   finally show ?thesis .
 qed
+
+end
 
 
 text \<open>Division on @{typ "'a word"} is unsigned, but Scala and OCaml only have signed division and modulus.\<close>
@@ -209,19 +215,27 @@ qed
 text \<open>More implementations tailored towards target-language implementations\<close>
 
 context
-includes integer.lifting
+  includes integer.lifting
 begin
+
 lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len word" is word_of_int .
 
 lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
-by(simp add: word_of_integer.rep_eq)
+  by(simp add: word_of_integer.rep_eq)
+
 end
+
+context
+  includes bit_operations_syntax
+begin
 
 lemma word_of_int_code:
   "uint (word_of_int x :: 'a word) = x AND mask (LENGTH('a :: len))"
   by (simp add: take_bit_eq_mask)
 
-context fixes f :: "nat \<Rightarrow> bool" begin
+context
+  fixes f :: "nat \<Rightarrow> bool"
+begin
 
 definition set_bits_aux :: \<open>nat \<Rightarrow> 'a word \<Rightarrow> 'a::len word\<close>
   where \<open>set_bits_aux n w = push_bit n w OR take_bit n (set_bits f)\<close>
@@ -318,6 +332,7 @@ proof -
   qed
 qed
 
+end
 
 
 text \<open>Quickcheck conversion functions\<close>

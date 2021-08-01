@@ -483,18 +483,18 @@ fun opb_lookup  :: " opb \<Rightarrow> int \<Rightarrow> int \<Rightarrow> bool 
 
 \<comment> \<open>\<open>val opw8_lookup : opw -> word8 -> word8 -> word8\<close>\<close>
 fun opw8_lookup  :: " opw \<Rightarrow> 8 word \<Rightarrow> 8 word \<Rightarrow> 8 word "  where 
-     " opw8_lookup Andw = ( (AND) )"
-|" opw8_lookup Orw = ( (OR) )"
-|" opw8_lookup Xor = ( (XOR) )"
+     " opw8_lookup Andw = ( Bit_Operations.and )"
+|" opw8_lookup Orw = ( Bit_Operations.or )"
+|" opw8_lookup Xor = ( Bit_Operations.xor )"
 |" opw8_lookup Add = ( Groups.plus )"
 |" opw8_lookup Sub = ( Groups.minus )"
 
 
 \<comment> \<open>\<open>val opw64_lookup : opw -> word64 -> word64 -> word64\<close>\<close>
 fun opw64_lookup  :: " opw \<Rightarrow> 64 word \<Rightarrow> 64 word \<Rightarrow> 64 word "  where 
-     " opw64_lookup Andw = ( (AND) )"
-|" opw64_lookup Orw = ( (OR) )"
-|" opw64_lookup Xor = ( (XOR) )"
+     " opw64_lookup Andw = ( Bit_Operations.and )"
+|" opw64_lookup Orw = ( Bit_Operations.or )"
+|" opw64_lookup Xor = ( Bit_Operations.xor )"
 |" opw64_lookup Add = ( Groups.plus )"
 |" opw64_lookup Sub = ( Groups.minus )"
 

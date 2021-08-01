@@ -46,6 +46,7 @@ imports
   Many_More
 begin
 
+unbundle bit_operations_syntax
 unbundle bit_projection_infix_syntax
 
 declare word_induct2[induct type]

@@ -19,7 +19,9 @@ begin
   definition bs_\<alpha> :: "bitset \<Rightarrow> nat set" where "bs_\<alpha> s \<equiv> { n . bit s n}"
 
 
-context includes integer.lifting begin
+  context
+    includes integer.lifting bit_operations_syntax
+  begin
 
   definition bs_empty :: "unit \<Rightarrow> bitset" where "bs_empty \<equiv> \<lambda>_. 0"
 

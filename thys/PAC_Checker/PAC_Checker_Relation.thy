@@ -30,8 +30,15 @@ end
 
 instantiation uint64 :: hashable
 begin
+
+context
+  includes bit_operations_syntax
+begin
+
 definition hashcode_uint64 :: \<open>uint64 \<Rightarrow> uint32\<close> where
   \<open>hashcode_uint64 n = (uint32_of_nat (nat_of_uint64 ((n) AND ((2 :: uint64)^32 -1))))\<close>
+
+end
 
 definition def_hashmap_size_uint64 :: \<open>uint64 itself \<Rightarrow> nat\<close> where
   \<open>def_hashmap_size_uint64 = (\<lambda>_. 16)\<close>

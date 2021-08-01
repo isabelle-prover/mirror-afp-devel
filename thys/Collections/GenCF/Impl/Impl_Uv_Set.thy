@@ -86,6 +86,10 @@ begin
 
   subsubsection \<open>Binary Operations\<close>
 
+  context
+    includes bit_operations_syntax
+  begin
+
   definition
     is_bin_op_impl
     :: "(bool\<Rightarrow>bool\<Rightarrow>bool) \<Rightarrow> ('a::len word \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word) \<Rightarrow> bool"
@@ -339,12 +343,13 @@ subsection \<open>Lifting to Uint\<close>
     subset.simps
     disjoint.simps
 
+  end
 
   hide_const (open) \<alpha> lookup empty single_bit set_bit reset_bit union inter diff zeroes
     equal subseteq subset disjoint
 
 
-subsection \<open>Autoref Setup\<close>
+  subsection \<open>Autoref Setup\<close>
 
   definition uv_set_rel_def_internal:
     "uv_set_rel Rk \<equiv>

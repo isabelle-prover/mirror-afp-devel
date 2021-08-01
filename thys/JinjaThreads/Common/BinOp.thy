@@ -30,6 +30,10 @@ datatype bop =  \<comment> \<open>names of binary operations\<close>
 
 subsection\<open>The semantics of binary operators\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 type_synonym 'addr binop_ret = "'addr val + 'addr" \<comment> \<open>a value or the address of an exception\<close>
 
 fun binop_LessThan :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
@@ -165,6 +169,8 @@ proof -
   qed
 qed
 
+end
+
 notepad begin
 have  "  5  sdiv ( 3 :: word32) =  1"
   and "  5  smod ( 3 :: word32) =  2"
@@ -178,7 +184,8 @@ have  "  5  sdiv ( 3 :: word32) =  1"
   by eval+
 end
 
-context heap_base begin
+context heap_base
+begin
 
 fun binop_Mod :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
@@ -213,6 +220,10 @@ where
 | "binop ShiftRightSigned = binop_ShiftRightSigned"
 
 end
+
+context
+  includes bit_operations_syntax
+begin
 
 lemma [simp]:
   "(binop_LessThan v1 v2 = Some va) \<longleftrightarrow> 
@@ -282,7 +293,10 @@ lemma [simp]:
    (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 >>> unat (i2 AND 0x1f))))"
 by(cases "(v1, v2)" rule: binop_ShiftRightSigned.cases) auto
 
-context heap_base begin
+end
+
+context heap_base
+begin
 
 lemma [simp]:
   "(binop_Mod v1 v2 = Some va) \<longleftrightarrow> 

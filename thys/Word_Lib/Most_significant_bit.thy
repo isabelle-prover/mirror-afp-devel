@@ -31,6 +31,10 @@ lemma msb_bin_rest [simp]: "msb (x div 2) = msb x"
   for x :: int
   by (simp add: msb_int_def)
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma int_msb_and [simp]: "msb ((x :: int) AND y) \<longleftrightarrow> msb x \<and> msb y"
 by(simp add: msb_int_def)
 
@@ -39,6 +43,8 @@ by(simp add: msb_int_def)
 
 lemma int_msb_xor [simp]: "msb ((x :: int) XOR y) \<longleftrightarrow> msb x \<noteq> msb y"
 by(simp add: msb_int_def)
+
+end
 
 lemma int_msb_not [simp]: "msb (NOT (x :: int)) \<longleftrightarrow> \<not> msb x"
 by(simp add: msb_int_def not_less)
@@ -175,11 +181,10 @@ lemma msb_big:
   apply (rule ccontr)
   apply (erule notE)
   apply (rule ccontr)
-    apply (clarsimp simp: not_less)
-  apply (subgoal_tac "a = a AND mask (LENGTH('a) - Suc 0)")
+  apply (clarsimp simp: not_less)
+  apply (subgoal_tac "a = take_bit (LENGTH('a) - Suc 0) a")
    apply (cut_tac and_mask_less' [where w=a and n="LENGTH('a) - Suc 0"])
-    apply clarsimp
-  apply simp
+    apply auto
   apply (simp flip: take_bit_eq_mask)
   apply (rule sym)
   apply (simp add: take_bit_eq_self_iff_drop_bit_eq_0 drop_bit_eq_zero_iff_not_bit_last)

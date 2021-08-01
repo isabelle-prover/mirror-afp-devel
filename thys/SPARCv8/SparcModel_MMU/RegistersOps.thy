@@ -3,6 +3,10 @@ theory RegistersOps
 imports Main "../lib/WordDecl" "Word_Lib.Bit_Shifts_Infix_Syntax"
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 text\<open>
  This theory provides operations to get, set and clear bits in registers
 \<close>
@@ -75,5 +79,7 @@ where
                                                   let (w,res) = get_nat_from_mask w 1 res in
                                                         res
 "
+
+end
 
 end 

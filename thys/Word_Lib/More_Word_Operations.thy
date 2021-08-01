@@ -16,6 +16,10 @@ theory More_Word_Operations
     Word_Lemmas
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 definition
   ptr_add :: "'a :: len word \<Rightarrow> nat \<Rightarrow> 'a word" where
   "ptr_add ptr n \<equiv> ptr + of_nat n"
@@ -1022,5 +1026,7 @@ lemma aligned_mask_diff:
   using is_aligned_no_overflow_mask leD apply blast
   apply (meson aligned_add_mask_less_eq is_aligned_weaken le_less_trans)
   done
+
+end
 
 end

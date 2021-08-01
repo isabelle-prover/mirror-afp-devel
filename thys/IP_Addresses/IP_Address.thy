@@ -37,6 +37,11 @@ section \<open>Modelling IP Adresses\<close>
   lemma "size (x::'i::len word) = len_of(TYPE('i))" by(simp add:word_size)
 
 subsection\<open>Sets of IP Addresses\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   (*Warning, not executable!*)
   text\<open>Specifying sets with network masks: 192.168.0.0 255.255.255.0\<close>
   definition ipset_from_netmask::"'i::len word \<Rightarrow> 'i::len word \<Rightarrow> 'i::len word set" where
@@ -411,5 +416,6 @@ subsection\<open>Code Equations\<close>
         addr \<le> pre OR (mask (LENGTH('i) - len))"
   unfolding ipset_from_cidr_alt by simp
 
+  end
 
 end

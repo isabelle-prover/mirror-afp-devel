@@ -60,9 +60,9 @@ begin
 
 lift_definition bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is NOT .
-lift_definition and_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(AND)\<close> .
-lift_definition or_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(OR)\<close> .
-lift_definition xor_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(XOR)\<close> .
+lift_definition and_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.and\<close> .
+lift_definition or_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.or\<close> .
+lift_definition xor_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.xor\<close> .
 lift_definition mask_uint32 :: \<open>nat \<Rightarrow> uint32\<close> is mask .
 lift_definition push_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is push_bit .
 lift_definition drop_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is drop_bit .
@@ -273,6 +273,10 @@ text \<open>
   The following justifies the implementation.
 \<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 definition Uint32_signed :: "integer \<Rightarrow> uint32" 
 where "Uint32_signed i = (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then undefined Uint32 i else Uint32 i)"
 
@@ -291,6 +295,8 @@ lemma Uint32_signed_code [code]:
   (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer_symbolic i))"
 unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def word_of_integer_def
 by(simp add: Abs_uint32_inverse)
+
+end
 
 text \<open>
   Avoid @{term Abs_uint32} in generated code, use @{term Rep_uint32'} instead. 
@@ -398,17 +404,17 @@ code_printing
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int32.lognot" and
   (Scala) "_.unary'_~"
-| constant "(AND) :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.and :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Int32.logand" and
   (Scala) infixl 3 "&"
-| constant "(OR) :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.or :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Int32.logor" and
   (Scala) infixl 1 "|"
-| constant "(XOR) :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.xor :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (OCaml) "Int32.logxor" and
@@ -596,6 +602,10 @@ code_printing constant uint32_sshiftr \<rightharpoonup>
   (Scala) "Uint32.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr'_signed out of bounds\" else Uint32.shiftr'_signed x i)"
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint32) 31"
   by transfer (simp add: msb_word_iff_bit)
 
@@ -611,7 +621,6 @@ including integer.lifting by transfer simp
 lemma nat_of_uint32_code [code]:
   "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
 unfolding integer_of_uint32_def including integer.lifting by transfer simp
-
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where
@@ -637,6 +646,8 @@ proof -
   ultimately show ?thesis
     by simp (simp add: integer_of_uint32_signed_def bit_simps)
 qed
+
+end
 
 code_printing
   constant "integer_of_uint32" \<rightharpoonup>

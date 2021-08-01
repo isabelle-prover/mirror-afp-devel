@@ -18,7 +18,7 @@ section \<open>IPv6 Addresses\<close>
   definition ipv6addr_of_nat :: "nat \<Rightarrow> ipv6addr" where
     "ipv6addr_of_nat n =  of_nat n"
 
-lemma "ipv6addr_of_nat n = word_of_int (int n)"
+  lemma "ipv6addr_of_nat n = word_of_int (int n)"
     by(simp add: ipv6addr_of_nat_def)
 
   text\<open>The maximum IPv6 address\<close>
@@ -45,7 +45,7 @@ lemma "ipv6addr_of_nat n = word_of_int (int n)"
   lemma ipv6addr_of_nat_nat_of_ipv6addr: "ipv6addr_of_nat (nat_of_ipv6addr addr) = addr"
     by(simp add: ipv6addr_of_nat_def nat_of_ipv6addr_def)
 
-subsection\<open>Syntax of IPv6 Adresses\<close>
+  subsection\<open>Syntax of IPv6 Adresses\<close>
   text\<open>RFC 4291, Section 2.2.: Text Representation of Addresses\<close>
 
   text\<open>Quoting the RFC (note: errata exists):\<close>
@@ -416,7 +416,12 @@ qed
   (*TODO*)
   (*TODO: oh boy, they can also be compressed*)
 
-subsection\<open>Semantics\<close>
+  subsection\<open>Semantics\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   fun ipv6preferred_to_int :: "ipv6addr_syntax \<Rightarrow> ipv6addr" where
     "ipv6preferred_to_int (IPv6AddrPreferred a b c d e f g h) = (ucast a << (16 * 7)) OR
                                                                 (ucast b << (16 * 6)) OR
@@ -434,7 +439,6 @@ subsection\<open>Semantics\<close>
           338958331222012082418099330867817087233" by eval
 
   declare ipv6preferred_to_int.simps[simp del]
-
 
   definition int_to_ipv6preferred :: "ipv6addr \<Rightarrow> ipv6addr_syntax" where
     "int_to_ipv6preferred i = IPv6AddrPreferred (ucast ((i AND 0xFFFF0000000000000000000000000000) >> 16*7))
@@ -665,7 +669,8 @@ definition ipv6_unparsed_compressed_to_preferred :: "((16 word) option) list \<R
    using parse_ipv6_address_compressed_identity2 apply presburger
   using ipv6_unparsed_compressed_to_preferred_identity1 apply blast
   done
-  
+
+  end
 
 subsection\<open>IPv6 Pretty Printing (converting to compressed format)\<close>
 text_raw\<open>
@@ -953,6 +958,7 @@ begin
       done
     from 1 2 ip show ?thesis by(elim exE conjE, simp)
   qed
+
 end
 
 end

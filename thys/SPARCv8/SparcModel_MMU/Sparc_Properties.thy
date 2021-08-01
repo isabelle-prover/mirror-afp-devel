@@ -78,6 +78,10 @@ by (simp add: set_annul_def simpler_modify_def)
 lemma raise_trap_result : "snd (raise_trap t s) = False"
 by (simp add: raise_trap_def simpler_modify_def)
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma rett_instr_result: "(fst i) = ctrl_type RETT \<and> 
   (get_ET (cpu_reg_val PSR s) \<noteq> 1 \<and>
   (((get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
@@ -8578,5 +8582,7 @@ apply (induction n)
  apply (simp add: user_seq_exe_def)
 apply clarsimp
 by (simp add: non_interference_induct_case_sub2)
+
+end
 
 end

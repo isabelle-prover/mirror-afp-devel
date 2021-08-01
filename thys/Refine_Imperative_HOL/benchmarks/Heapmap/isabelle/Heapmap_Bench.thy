@@ -4,8 +4,14 @@ imports
   "../../../Sepref_ICF_Bindings"
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 definition rrand :: "uint32 \<Rightarrow> uint32" 
   where "rrand s \<equiv> (s * 1103515245 + 12345) AND 0x7FFFFFFF"
+
+end
 
 definition rand :: "uint32 \<Rightarrow> nat \<Rightarrow> (uint32 * nat)" where
   "rand s m \<equiv> let

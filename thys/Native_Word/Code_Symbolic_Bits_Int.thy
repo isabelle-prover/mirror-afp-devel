@@ -13,6 +13,10 @@ begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma test_bit_int_code [code]:
   "bit (0::int)          n = False"
   "bit (Int.Neg num.One) n = True"
@@ -115,5 +119,7 @@ lemma int_lsb_code [code]:
   "lsb (Int.Neg (num.Bit0 w)) = False"
   "lsb (Int.Neg (num.Bit1 w)) = True"
   by simp_all
+
+end
 
 end

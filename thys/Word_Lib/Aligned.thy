@@ -13,6 +13,10 @@ theory Aligned
     Word_EqI
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
   is \<open>\<lambda>k n. 2 ^ n dvd take_bit LENGTH('a) k\<close>
   by simp
@@ -1324,5 +1328,7 @@ lemma le_or_mask:
   "w \<le> w' \<Longrightarrow> w OR mask x \<le> w' OR mask x"
   for w w' :: \<open>'a::len word\<close>
   by (metis neg_mask_add_mask add.commute le_word_or1 mask_2pm1 neg_mask_mono_le word_plus_mono_left)
+
+end
 
 end

@@ -15,6 +15,8 @@ imports
   Word_Lib.Word_32
 begin
 
+unbundle bit_operations_syntax
+
 type_synonym routine = nat
 type_synonym word32 = "32 word"
 type_synonym funcs = "string \<times> nat"

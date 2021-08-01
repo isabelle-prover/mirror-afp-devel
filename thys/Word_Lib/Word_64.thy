@@ -15,6 +15,10 @@ theory Word_64
     More_Word_Operations
 begin
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma len64: "len_of (x :: 64 itself) = 64" by simp
 
 type_synonym machine_word_len = 64
@@ -302,5 +306,7 @@ lemma word64_and_max_simp:
   \<open>x AND 0xFFFFFFFFFFFFFFFF = x\<close> for x :: \<open>64 word\<close>
   using word_and_full_mask_simp [of x]
   by (simp add: numeral_eq_Suc mask_Suc_exp)
+
+end
 
 end

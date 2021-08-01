@@ -67,9 +67,9 @@ begin
 
 lift_definition bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
 lift_definition not_uint8 :: \<open>uint8 \<Rightarrow> uint8\<close> is NOT .
-lift_definition and_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>(AND)\<close> .
-lift_definition or_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>(OR)\<close> .
-lift_definition xor_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>(XOR)\<close> .
+lift_definition and_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.and\<close> .
+lift_definition or_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.or\<close> .
+lift_definition xor_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.xor\<close> .
 lift_definition mask_uint8 :: \<open>nat \<Rightarrow> uint8\<close> is mask .
 lift_definition push_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is push_bit .
 lift_definition drop_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is drop_bit .
@@ -324,15 +324,15 @@ code_printing type_constructor uint8 \<rightharpoonup>
   (SML) "Word8.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toByte"
-| constant "(AND) :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.and :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (Scala) "(_ & _).toByte"
-| constant "(OR) :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.or :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (Scala) "(_ | _).toByte"
-| constant "(XOR) :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.xor :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (Scala) "(_ ^ _).toByte"
@@ -522,6 +522,10 @@ code_printing constant uint8_sshiftr \<rightharpoonup>
   (Scala) "Uint8.shiftr'_signed" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed x i)"
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint8) 7"
   by transfer (simp add: msb_word_iff_bit)
 
@@ -563,6 +567,8 @@ proof -
   ultimately show ?thesis
     by simp (simp add: integer_of_uint8_signed_def bit_simps)
 qed
+
+end
 
 code_printing
   constant "integer_of_uint8" \<rightharpoonup>

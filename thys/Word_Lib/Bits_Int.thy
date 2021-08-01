@@ -955,6 +955,10 @@ lemma shiftr_int_def:
 
 subsubsection \<open>Basic simplification rules\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 lemmas int_not_def = not_int_def
 
 lemma int_not_simps:
@@ -1377,6 +1381,8 @@ lemma bin_set_conv_OR:
   "bin_sc n True i = i OR (push_bit n 1)"
   by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
 
+end
+
 
 subsection \<open>More lemmas on words\<close>
 
@@ -1459,9 +1465,15 @@ lemma bin_mask_conv_pow2:
 lemma bin_mask_ge0: "mask n \<ge> (0 :: int)"
   by (fact mask_nonnegative_int)
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
   for x :: int
   by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
+
+end
 
 lemma bin_mask_numeral:
   "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"

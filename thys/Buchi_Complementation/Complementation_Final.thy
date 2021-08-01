@@ -20,7 +20,7 @@ begin
 
   definition "hci k \<equiv> uint32_of_nat k * 1103515245 + 12345"
   definition "hc \<equiv> \<lambda> (p, q, b). hci p + hci q * 31 + (if b then 1 else 0)"
-  definition "list_hash xs \<equiv> fold ((XOR) \<circ> hc) xs 0"
+  definition "list_hash xs \<equiv> fold (xor \<circ> hc) xs 0"
 
   lemma list_hash_eq:
     assumes "distinct xs" "distinct ys" "set xs = set ys"
@@ -29,7 +29,7 @@ begin
     have "mset (remdups xs) = mset (remdups ys)" using assms(3)
       using set_eq_iff_mset_remdups_eq by blast 
     then have "mset xs = mset ys" using assms(1, 2) by (simp add: distinct_remdups_id)
-    have "fold ((XOR) \<circ> hc) xs = fold ((XOR) \<circ> hc) ys"
+    have "fold (xor \<circ> hc) xs = fold (xor \<circ> hc) ys"
       apply (rule fold_multiset_equiv)
        apply (simp_all add: fun_eq_iff ac_simps)
       using \<open>mset xs = mset ys\<close> .

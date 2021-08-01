@@ -342,19 +342,19 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
 } /* object Bits_Integer */\<close>
 
 code_printing
-  constant "(AND) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+  constant "Bit_Operations.and :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.andb ((_),/ (_))" and
   (OCaml) "Z.logand" and
   (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 3 "&"
-| constant "(OR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.or :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.orb ((_),/ (_))" and
   (OCaml) "Z.logor" and
   (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 1 "|"
-| constant "(XOR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.xor :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.xorb ((_),/ (_))" and
   (OCaml) "Z.logxor" and
   (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
@@ -375,7 +375,7 @@ code_printing constant bin_rest_integer \<rightharpoonup>
   (Scala) "_ >> 1"
 
 context
-includes integer.lifting
+  includes integer.lifting bit_operations_syntax
 begin
 
 lemma bitNOT_integer_code [code]:
@@ -440,7 +440,7 @@ code_printing constant integer_test_bit \<rightharpoonup>
   (Scala) "Bits'_Integer.testBit"
 
 context
-includes integer.lifting
+  includes integer.lifting bit_operations_syntax
 begin
 
 lemma lsb_integer_code [code]:
@@ -472,12 +472,19 @@ text \<open>
   OCaml.Big\_int does not have a method for changing an individual bit, so we emulate that with masks.
   We prefer an Isabelle implementation, because this then takes care of the signs for AND and OR.
 \<close>
+
+context
+  includes bit_operations_syntax
+begin
+
 lemma integer_set_bit_code [code]:
   "integer_set_bit x n b =
   (if n < 0 then undefined x n b else
    if b then x OR (push_bit (nat_of_integer n) 1)
    else x AND NOT (push_bit (nat_of_integer n) 1))"
   by (auto simp add: integer_set_bit_def not_less set_bit_eq set_bit_def unset_bit_def)
+
+end
 
 definition integer_shiftl :: "integer \<Rightarrow> integer \<Rightarrow> integer"
 where [code del]: "integer_shiftl x n = (if n < 0 then undefined x n else push_bit (nat_of_integer n) x)"
@@ -577,7 +584,7 @@ lemma msb_integer_code [code]:
 end
 
 context
-includes integer.lifting natural.lifting
+  includes integer.lifting natural.lifting bit_operations_syntax
 begin
 
 lemma bitAND_integer_unfold [code]:
@@ -615,6 +622,10 @@ end
 
 
 section \<open>Test code generator setup\<close>
+
+context
+  includes bit_operations_syntax
+begin
 
 definition bit_integer_test :: "bool" where
   "bit_integer_test =
@@ -660,6 +671,8 @@ oops
 lemma "(f :: integer \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
+
+end
 
 hide_const bit_integer_test
 hide_fact bit_integer_test_def
