@@ -809,16 +809,21 @@ lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint64) 63"
 lemma msb_uint64_code [code]: "msb x \<longleftrightarrow> uint64_test_bit x 63"
   by (simp add: uint64_test_bit_def uint64_msb_test_bit)
 
-lemma uint64_of_int_code [code]: "uint64_of_int i = Uint64 (integer_of_int i)"
-including integer.lifting by transfer simp
+lemma uint64_of_int_code [code]:
+  "uint64_of_int i = Uint64 (integer_of_int i)"
+  including integer.lifting by transfer simp
 
 lemma int_of_uint64_code [code]:
   "int_of_uint64 x = int_of_integer (integer_of_uint64 x)"
-including integer.lifting by transfer simp
+  including integer.lifting by transfer simp
+
+lemma uint64_of_nat_code [code]:
+  "uint64_of_nat = uint64_of_int \<circ> int"
+  by transfer (simp add: fun_eq_iff)
 
 lemma nat_of_uint64_code [code]:
   "nat_of_uint64 x = nat_of_integer (integer_of_uint64 x)"
-unfolding integer_of_uint64_def including integer.lifting by transfer simp
+  unfolding integer_of_uint64_def including integer.lifting by transfer simp
 
 definition integer_of_uint64_signed :: "uint64 \<Rightarrow> integer"
 where

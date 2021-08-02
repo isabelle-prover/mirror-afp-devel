@@ -532,12 +532,17 @@ lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint8) 7"
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
   by (simp add: uint8_test_bit_def uint8_msb_test_bit)
 
-lemma uint8_of_int_code [code]: "uint8_of_int i = Uint8 (integer_of_int i)"
-including integer.lifting by transfer simp
+lemma uint8_of_int_code [code]:
+  "uint8_of_int i = Uint8 (integer_of_int i)"
+  including integer.lifting by transfer simp
 
 lemma int_of_uint8_code [code]:
   "int_of_uint8 x = int_of_integer (integer_of_uint8 x)"
   by (simp add: int_of_uint8.rep_eq integer_of_uint8_def)
+
+lemma uint8_of_nat_code [code]:
+  "uint8_of_nat = uint8_of_int \<circ> int"
+  by transfer (simp add: fun_eq_iff)
 
 lemma nat_of_uint8_code [code]:
   "nat_of_uint8 x = nat_of_integer (integer_of_uint8 x)"

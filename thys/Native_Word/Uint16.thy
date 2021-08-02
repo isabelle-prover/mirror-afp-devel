@@ -490,6 +490,10 @@ lemma int_of_uint16_code [code]:
   "int_of_uint16 x = int_of_integer (integer_of_uint16 x)"
   by (simp add: int_of_uint16.rep_eq integer_of_uint16_def)
 
+lemma uint16_of_nat_code [code]:
+  "uint16_of_nat = uint16_of_int \<circ> int"
+  by transfer (simp add: fun_eq_iff)
+
 lemma nat_of_uint16_code [code]:
   "nat_of_uint16 x = nat_of_integer (integer_of_uint16 x)"
   unfolding integer_of_uint16_def including integer.lifting by transfer simp

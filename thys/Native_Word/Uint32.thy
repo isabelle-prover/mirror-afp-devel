@@ -612,15 +612,21 @@ lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint32) 31"
 lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
   by (simp add: uint32_test_bit_def uint32_msb_test_bit)
 
-lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
-including integer.lifting by transfer simp
+lemma uint32_of_int_code [code]:
+  "uint32_of_int i = Uint32 (integer_of_int i)"
+  including integer.lifting by transfer simp
 
-lemma int_of_uint32_code [code]: "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
-including integer.lifting by transfer simp
+lemma int_of_uint32_code [code]:
+  "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
+  including integer.lifting by transfer simp
+
+lemma uint32_of_nat_code [code]:
+  "uint32_of_nat = uint32_of_int \<circ> int"
+  by transfer (simp add: fun_eq_iff)
 
 lemma nat_of_uint32_code [code]:
   "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
-unfolding integer_of_uint32_def including integer.lifting by transfer simp
+  unfolding integer_of_uint32_def including integer.lifting by transfer simp
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where
