@@ -112,7 +112,7 @@ done
 
 end
 
-context boolean_algebra begin
+context Lattices.boolean_algebra begin
 
 lemma boolean_is_boolean_II:
   "class.boolean_algebra_II uminus inf sup bot top"
@@ -134,7 +134,7 @@ text \<open>We shall illustrate here that all Boolean algebra using our
         to first show that the library instances Huntington algebras to exploit 
         previous results, and then use our previously derived correspondence.\<close>
 
-context boolean_algebra begin
+context Lattices.boolean_algebra begin
 lemma boolean_is_huntington:
   "class.huntington_algebra uminus inf sup bot top"
 apply unfold_locales
@@ -152,7 +152,7 @@ lemma boolean_II_is_huntington:
   "class.huntington_algebra uminus (\<sqinter>) (\<squnion>) \<bottom> \<top>"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
+    Lattices.boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
       by (fact boolean_II_is_boolean)
   show ?thesis by (simp add: boolean.boolean_is_huntington)
 qed
@@ -375,7 +375,7 @@ end
 
 subsection \<open>Robbins' Algebra\<close>
 
-context boolean_algebra begin
+context Lattices.boolean_algebra begin
 lemma boolean_is_robbins:
   "class.robbins_algebra uminus inf sup bot top"
 apply unfold_locales
@@ -389,7 +389,7 @@ lemma boolean_II_is_robbins:
   "class.robbins_algebra uminus inf sup bot top"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
+    Lattices.boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
       by (fact boolean_II_is_boolean)
   show ?thesis by (simp add: boolean.boolean_is_robbins)
 qed
@@ -400,7 +400,7 @@ lemma huntington_is_robbins:
   "class.robbins_algebra uminus inf sup bot top"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
+    Lattices.boolean_algebra minus uminus "(\<sqinter>)" "(\<sqsubseteq>)" "(\<sqsubset>)" "(\<squnion>)" \<bottom> \<top>
       by (fact huntington_is_boolean)
   show ?thesis by (simp add: boolean.boolean_is_robbins)
 qed

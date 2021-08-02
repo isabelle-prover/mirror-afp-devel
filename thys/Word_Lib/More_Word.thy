@@ -1810,7 +1810,7 @@ lemma le_step_down_word_2:
       simp add: word_le_minus_one_leq)
 
 lemma NOT_mask_AND_mask[simp]: "(w AND mask n) AND NOT (mask n) = 0"
-  by (clarsimp simp add: mask_eq_decr_exp Parity.bit_eq_iff bit_and_iff bit_not_iff bit_mask_iff)
+  by (rule bit_eqI) (simp add: bit_simps)
 
 lemma and_and_not[simp]:"(a AND b) AND NOT b = 0"
   for a b :: \<open>'a::len word\<close>
@@ -2104,7 +2104,7 @@ lemma bit_twiddle_max:
 
 lemma swap_with_xor:
   "\<lbrakk>(x::'a::len word) = a XOR b; y = b XOR x; z = x XOR y\<rbrakk> \<Longrightarrow> z = b \<and> y = a"
-  by (auto simp add: Parity.bit_eq_iff bit_xor_iff max_def)
+  by (auto intro: bit_word_eqI simp add: bit_simps)
 
 lemma le_mask_imp_and_mask:
   "(x::'a::len word) \<le> mask n \<Longrightarrow> x AND mask n = x"

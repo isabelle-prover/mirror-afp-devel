@@ -662,7 +662,7 @@ subsection \<open>Shunting Laws\<close>
 text \<open>The first set of laws supplies so-called shunting laws for boolean algebras. 
 Such laws rather belong into Isabelle Main.\<close>
 
-context boolean_algebra
+context Lattices.boolean_algebra
 begin
     
 lemma shunt1: "(x \<sqinter> y \<le> z) = (x \<le> -y \<squnion> z)"
@@ -1216,7 +1216,7 @@ end
 text \<open>Here are two equivalent definitions for atoms; first in boolean algebras, and then in complete 
 boolean algebras.\<close>
 
-context boolean_algebra
+context Lattices.boolean_algebra
 begin
 
 text \<open>The following two conditions are taken from Koppelberg's book~\cite{Koppelberg89}.\<close>

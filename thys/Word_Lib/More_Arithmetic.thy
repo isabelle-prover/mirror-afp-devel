@@ -7,7 +7,7 @@
 section \<open>Arithmetic lemmas\<close>
 
 theory More_Arithmetic
-  imports Main "HOL-Library.Type_Length" "HOL-Library.Bit_Operations"
+  imports Main "HOL-Library.Type_Length"
 begin
 
 lemma n_less_equal_power_2:

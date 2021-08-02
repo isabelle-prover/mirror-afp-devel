@@ -278,12 +278,3 @@ lemma upset_set_downset_set_dual: "(`) \<partial> \<circ> \<Up> = \<Down> \<circ
   by (metis (mono_tags, lifting) dual.exhaust dual_anti_iff mem_Collect_eq rev_image_eqI)
 
 end
-
-
-
-
-
-
-
-
-

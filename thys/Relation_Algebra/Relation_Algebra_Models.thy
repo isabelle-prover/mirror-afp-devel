@@ -71,7 +71,7 @@ text \<open>We now show that infinite Boolean matrices form a Boolean algebra.\<
 lemma le_funI2: "(\<And>i j. f i j \<le> g i j) \<Longrightarrow> f \<le> g"
 by (metis le_funI)
 
-interpretation matrix_ba: boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" mat_add mat_zero mat_top
+interpretation matrix_ba: Lattices.boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" mat_add mat_zero mat_top
 by standard (force intro!: le_funI simp: mat_inter_def plus_bool_def mat_add_def mat_zero_def zero_bool_def mat_top_def mat_complement_def)+
 
 text \<open>We continue working towards the main result of this section, that

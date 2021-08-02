@@ -72,8 +72,7 @@ text \<open>
     \<^item> Characteristic properties @{prop [source] \<open>bit (f x) n \<longleftrightarrow> P x n\<close>}
       are available in fact collection \<^text>\<open>bit_simps\<close>.
 
-  On top of this, the following generic operations are provided
-  after import of theory \<^theory>\<open>HOL-Library.Bit_Operations\<close>:
+  On top of this, the following generic operations are provided::
 
     \<^item> Singleton \<^term>\<open>n\<close>th bit: \<^term>\<open>(2 :: int) ^ n\<close>
 

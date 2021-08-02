@@ -680,7 +680,7 @@ lemma word_shift_zero:
 
 lemma mask_shift_and_negate[simp]:"(w AND mask n << m) AND NOT (mask n << m) = 0"
   for w :: \<open>'a::len word\<close>
-  by (clarsimp simp add: mask_eq_decr_exp Parity.bit_eq_iff bit_and_iff bit_not_iff bit_push_bit_iff)
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 (* The seL4 bitfield generator produces functions containing mask and shift operations, such that
  * invoking two of them consecutively can produce something like the following.

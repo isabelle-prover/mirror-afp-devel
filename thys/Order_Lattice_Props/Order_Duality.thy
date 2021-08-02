@@ -60,7 +60,7 @@ end
 
 text \<open>In boolean algebras, duality is of course De Morgan duality and can be expressed within the language.\<close>
 
-sublocale boolean_algebra \<subseteq> ba_dual: dual "uminus"  
+sublocale Lattices.boolean_algebra \<subseteq> ba_dual: dual "uminus"  
   by (unfold_locales, simp_all add: inj_def)
 
 definition map_dual:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a::dual \<Rightarrow> 'b::dual" ("\<partial>\<^sub>F") where 
@@ -251,7 +251,7 @@ end
 
 class boolean_algebra_with_dual = lattice_with_dual + boolean_algebra
 
-sublocale boolean_algebra \<subseteq> badual: boolean_algebra_with_dual _ _ _ _ _ _ _ _ uminus
+sublocale Lattices.boolean_algebra \<subseteq> badual: boolean_algebra_with_dual _ _ _ _ _ _ _ _ uminus
   by unfold_locales simp_all
 
 class Sup_lattice_with_dual = Sup_lattice + dual +
@@ -313,8 +313,3 @@ subclass bounded_lattice_with_dual..
 end
 
 end
-
-
-
-
-

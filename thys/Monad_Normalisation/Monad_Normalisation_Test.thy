@@ -83,7 +83,7 @@ lemma
       x \<leftarrow> sample_uniform (order \<G>);
       guess \<leftarrow> \<A>2 (f y, xor (f x) (if b then msg1 else msg2)) \<sigma>;
       return_spmf (guess \<longleftrightarrow> b)
-    }"
+    }" for xor
 by (simp add: split_def)
 
 lemma
@@ -142,7 +142,7 @@ lemma elgamal_step3:
                  xor (f (y * ya)) (if b then fst (fst p) else snd (fst p)))
              (snd p);
       return_spmf (b' \<longleftrightarrow> b)
-    }"
+    }" for xor
 by (simp)
 
 end

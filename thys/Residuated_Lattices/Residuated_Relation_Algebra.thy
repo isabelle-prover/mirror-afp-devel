@@ -9,7 +9,7 @@ theory Residuated_Relation_Algebra
   imports Residuated_Boolean_Algebras Relation_Algebra.Relation_Algebra
 begin
 
-context boolean_algebra begin
+context Lattices.boolean_algebra begin
 
 text \<open>
   The notation used in the relation algebra AFP entry differs a little from ours.

@@ -208,7 +208,7 @@ definition
 lemma if_assertion: "(If p then x else y) = {\<cdot>p} * x \<squnion> {\<cdot> -p} * y"
   by (simp add: if_stm_def if_Assertion_assumption)
 
-lemma (in boolean_algebra) sup_neg_inf:
+lemma (in Lattices.boolean_algebra) sup_neg_inf:
   "(p \<le> q \<squnion> r) = (p \<sqinter> -q \<le> r)"
   apply (safe)
   apply(cut_tac a = p and c = "q \<squnion> r" and b = "-q" and d = "-q" in inf_mono)

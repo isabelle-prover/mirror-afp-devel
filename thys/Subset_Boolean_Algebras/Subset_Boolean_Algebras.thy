@@ -385,7 +385,7 @@ qed
 
 end
 
-context boolean_algebra
+context Lattices.boolean_algebra
 begin
 
 sublocale ba_he: huntington_extended
@@ -437,7 +437,7 @@ qed
 
 end
 
-context boolean_algebra
+context Lattices.boolean_algebra
 begin
 
 sublocale ba_rsa: regular_stone_algebra

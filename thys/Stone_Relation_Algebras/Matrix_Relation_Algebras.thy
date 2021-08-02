@@ -274,7 +274,7 @@ interpretation matrix_heyting_stone_algebra: heyting_stone_algebra where sup = s
   apply (simp add: uminus_eq)
   by simp
 
-interpretation matrix_boolean_algebra: boolean_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::boolean_algebra) square" and top = top_matrix and uminus = uminus_matrix and minus = minus_matrix
+interpretation matrix_boolean_algebra: Lattices.boolean_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::boolean_algebra) square" and top = top_matrix and uminus = uminus_matrix and minus = minus_matrix
   apply unfold_locales
   apply simp
   apply (simp add: sup_matrix_def uminus_matrix_def top_matrix_def)

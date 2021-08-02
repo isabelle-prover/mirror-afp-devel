@@ -307,7 +307,7 @@ subsection \<open>Stone's Theorem in the Presence of Atoms\<close>
 
 text \<open>Atom-map is a boolean algebra morphism.\<close>
 
-context boolean_algebra
+context Lattices.boolean_algebra
 begin
 
 lemma atom_map_compl_pres: "atom_map (-x) = Collect atom - atom_map x"
@@ -350,7 +350,7 @@ end
 text \<open>The homomorphic images of boolean algebras under atom-map are boolean algebras 
 --- in fact powerset boolean algebras.\<close>
 
-instantiation atoms :: (boolean_algebra) boolean_algebra
+instantiation atoms :: (Lattices.boolean_algebra) Lattices.boolean_algebra
 begin
 
 lift_definition minus_atoms :: "'a atoms \<Rightarrow> 'a atoms \<Rightarrow> 'a atoms" is "\<lambda>x y. Abs_atoms (Rep_atoms x - Rep_atoms y)".
@@ -618,8 +618,3 @@ setup_lifting type_definition_Fix
 *)
 
 end
-
-
-
-
-

@@ -301,7 +301,7 @@ lemma dag_setof_subsetD: "\<lbrakk>Dag p low high t; n \<in> set_of t; Dag n low
 apply (simp add: dag_setofD)
 done  
 
-lemma subdag_parentdag_low: "not <= lt \<Longrightarrow> not <= (Node lt p rt)"
+lemma subdag_parentdag_low: "not <= lt \<Longrightarrow> not <= (Node lt p rt)" for not
 apply (cases "not = lt")
 apply (cases lt)
 apply simp
@@ -313,7 +313,7 @@ apply (simp add: le_dag_def less_dag_def)
 apply (simp add: le_dag_def less_dag_def)
 done
 
-lemma subdag_parentdag_high: "not <= rt \<Longrightarrow> not <= (Node lt p rt)"
+lemma subdag_parentdag_high: "not <= rt \<Longrightarrow> not <= (Node lt p rt)" for not
 apply (cases "not = rt")
 apply (cases lt)
 apply simp
@@ -413,7 +413,7 @@ next
   qed
 qed
     
-lemma ordered_subdag: "\<lbrakk>ordered t var; not <= t\<rbrakk> \<Longrightarrow> ordered not var"
+lemma ordered_subdag: "\<lbrakk>ordered t var; not <= t\<rbrakk> \<Longrightarrow> ordered not var" for not
 proof (induct t)
   case Tip
   then show ?thesis by (simp add: less_dag_def le_dag_def)
@@ -937,7 +937,7 @@ lemma bdt_child:
 
 lemma subbdt_ex_dag_def: 
 "\<And> bdt1 p. \<lbrakk>Dag p low high t; bdt t var = Some bdt1; Dag no low high not; 
-no \<in> set_of t\<rbrakk> \<Longrightarrow> \<exists> bdt2.  bdt not var = Some bdt2"
+no \<in> set_of t\<rbrakk> \<Longrightarrow> \<exists> bdt2.  bdt not var = Some bdt2" for not
 proof (induct t)
   case Tip
   then show ?case by simp

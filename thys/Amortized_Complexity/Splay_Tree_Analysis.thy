@@ -18,7 +18,7 @@ function @{const A_splay}, but that is impossible because this involves @{const 
 and thus depends on the ordering. We would need a truly symmetric version of @{const splay}
 that takes the ordering as an explicit argument. Then we could define
 all the symmetric cases by one final equation
-@{term"splay2 less t = splay2 (not o less) (mirror t)"}.
+\<^prop>\<open>splay2 less t = splay2 (\<lambda>x y. Not (less x y)) (mirror t)\<close>.
 This would simplify the code and the proofs.\<close>
 
 lemma zig_zig: fixes lx x rx lb b rb a ra u lb1 lb2

@@ -9,6 +9,8 @@ theory Expr
 imports Update
 begin
 
+no_notation not ("NOT")
+
 datatype ('s,'e)expr = true
                         | In 's
                         | En 'e
