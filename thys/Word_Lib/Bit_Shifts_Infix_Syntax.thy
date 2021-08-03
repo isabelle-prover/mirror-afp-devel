@@ -12,7 +12,7 @@ theory Bit_Shifts_Infix_Syntax
   imports "HOL-Library.Word"
 begin
 
-context semiring_bit_shifts
+context semiring_bit_operations
 begin
 
 abbreviation shiftl :: \<open>'a \<Rightarrow> nat \<Rightarrow> 'a\<close>  (infixl "<<" 55)
