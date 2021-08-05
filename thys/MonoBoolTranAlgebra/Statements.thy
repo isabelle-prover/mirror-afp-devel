@@ -208,14 +208,6 @@ definition
 lemma if_assertion: "(If p then x else y) = {\<cdot>p} * x \<squnion> {\<cdot> -p} * y"
   by (simp add: if_stm_def if_Assertion_assumption)
 
-lemma (in Lattices.boolean_algebra) sup_neg_inf:
-  "(p \<le> q \<squnion> r) = (p \<sqinter> -q \<le> r)"
-  apply (safe)
-  apply(cut_tac a = p and c = "q \<squnion> r" and b = "-q" and d = "-q" in inf_mono)
-  apply simp apply simp apply (simp add: inf_sup_distrib2)
-  apply(cut_tac b = "p \<sqinter> - q" and d = "r" and a = "q" and c = "q" in sup_mono)
-  apply simp apply simp  by (simp add: sup_inf_distrib)
-
 lemma hoare_if: "hoare p (If b then x else y) q = (hoare (p \<sqinter> b) x q \<and> hoare (p \<sqinter> -b) y q)"
   by (simp add: hoare_def if_stm_def wp_choice inf_fun_def wp_comp wp_assume sup_neg_inf)
 

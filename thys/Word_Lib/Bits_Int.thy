@@ -980,11 +980,11 @@ lemma int_and_0 [simp]: "0 AND x = 0"
 
 lemma int_and_m1 [simp]: "-1 AND x = x"
   for x :: int
-  by (fact bit.conj_one_left)
+  by (fact and.left_neutral)
 
 lemma int_or_zero [simp]: "0 OR x = x"
   for x :: int
-  by (fact bit.disj_zero_left)
+  by (fact or.left_neutral)
 
 lemma int_or_minus1 [simp]: "-1 OR x = -1"
   for x :: int
@@ -992,7 +992,7 @@ lemma int_or_minus1 [simp]: "-1 OR x = -1"
 
 lemma int_xor_zero [simp]: "0 XOR x = x"
   for x :: int
-  by (fact bit.xor_zero_left)
+  by (fact xor.left_neutral)
 
 
 subsubsection \<open>Binary destructors\<close>

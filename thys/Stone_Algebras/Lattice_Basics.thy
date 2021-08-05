@@ -472,7 +472,7 @@ This section gives definitions of lattice homomorphisms and isomorphisms and bas
 class sup_inf_top_bot_uminus = sup + inf + top + bot + uminus
 class sup_inf_top_bot_uminus_ord = sup_inf_top_bot_uminus + ord
 
-context Lattices.boolean_algebra
+context boolean_algebra
 begin
 
 subclass sup_inf_top_bot_uminus_ord .

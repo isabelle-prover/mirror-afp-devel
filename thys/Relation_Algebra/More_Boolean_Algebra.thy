@@ -16,7 +16,7 @@ text \<open>The following laws of Boolean algebra support relational proofs. We
 might add laws for the binary minus since that would make certain theorems look
 more nicely. These are currently not so well supported.\<close>
 
-context Lattices.boolean_algebra
+context boolean_algebra
 begin
 
 no_notation

@@ -1180,7 +1180,11 @@ lemma mask_eq1_nochoice:
 
 lemma shiftr_and_eq_shiftl:
   "(w >> n) AND x = y \<Longrightarrow> w AND (x << n) = (y << n)" for y :: "'a:: len word"
-  by (metis (no_types, lifting) and_not_mask bit.conj_ac(1) bit.conj_ac(2) mask_eq_0_eq_x shiftl_mask_is_0 shiftl_over_and_dist)
+  apply (drule sym)
+  apply simp
+  apply (rule bit_word_eqI)
+  apply (auto simp add: bit_simps)
+  done
 
 lemma add_mask_lower_bits':
   "\<lbrakk> len = LENGTH('a); is_aligned (x :: 'a :: len word) n;

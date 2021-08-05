@@ -1220,7 +1220,7 @@ This section integrates Boolean algebras in the above hierarchy.
 In particular, we strengthen several results shown above.
 \<close>
 
-context Lattices.boolean_algebra
+context boolean_algebra
 begin
 
 text \<open>

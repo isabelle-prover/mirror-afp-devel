@@ -138,7 +138,7 @@ sublocale lattice \<subseteq> dual_lattice: lattice sup "(\<ge>)" "(>)" inf
 sublocale bounded_lattice \<subseteq> dual_bounded_lattice: bounded_lattice sup "(\<ge>)" "(>)" inf \<top> \<bottom>
   by (unfold_locales, simp_all)
 
-sublocale Lattices.boolean_algebra \<subseteq> dual_boolean_algebra: Lattices.boolean_algebra "\<lambda>x y. x \<squnion> -y" uminus sup "(\<ge>)" "(>)" inf \<top> \<bottom>
+sublocale boolean_algebra \<subseteq> dual_boolean_algebra: boolean_algebra "\<lambda>x y. x \<squnion> -y" uminus sup "(\<ge>)" "(>)" inf \<top> \<bottom>
   by (unfold_locales, simp_all add: inf_sup_distrib1)
 
 sublocale complete_lattice \<subseteq> dual_complete_lattice: complete_lattice Sup Inf sup "(\<ge>)" "(>)" inf \<top> \<bottom>

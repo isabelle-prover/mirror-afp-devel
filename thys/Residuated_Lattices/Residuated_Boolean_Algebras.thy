@@ -16,7 +16,7 @@ text \<open>
   arbitrary residuated functions on boolean algebras.
 \<close>
 
-context Lattices.boolean_algebra
+context boolean_algebra
 begin
 
 lemma inf_bot_iff_le: "x \<sqinter> y = \<bottom> \<longleftrightarrow> x \<le> -y"

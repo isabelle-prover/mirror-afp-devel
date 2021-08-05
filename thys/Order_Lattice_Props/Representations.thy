@@ -307,7 +307,7 @@ subsection \<open>Stone's Theorem in the Presence of Atoms\<close>
 
 text \<open>Atom-map is a boolean algebra morphism.\<close>
 
-context Lattices.boolean_algebra
+context boolean_algebra
 begin
 
 lemma atom_map_compl_pres: "atom_map (-x) = Collect atom - atom_map x"
@@ -316,7 +316,7 @@ proof-
   have "(y \<in> atom_map (-x)) = (atom y \<and> y \<le> -x)"
     by (simp add: atom_map_def)
   also have "... = (atom y \<and> \<not>(y \<le> x))"
-    by (metis atom_sup_iff inf.orderE meet_shunt sup_compl_top top.ordering_top_axioms ordering_top.extremum)
+    by (metis atom_sup_iff inf.orderE inf_shunt sup_compl_top top.ordering_top_axioms ordering_top.extremum)
    also have "... = (y \<in> Collect atom - atom_map x)"
      using atom_map_def by auto
    finally have "(y \<in> atom_map (-x)) = (y \<in> Collect atom - atom_map x)".}
@@ -350,7 +350,7 @@ end
 text \<open>The homomorphic images of boolean algebras under atom-map are boolean algebras 
 --- in fact powerset boolean algebras.\<close>
 
-instantiation atoms :: (Lattices.boolean_algebra) Lattices.boolean_algebra
+instantiation atoms :: (boolean_algebra) boolean_algebra
 begin
 
 lift_definition minus_atoms :: "'a atoms \<Rightarrow> 'a atoms \<Rightarrow> 'a atoms" is "\<lambda>x y. Abs_atoms (Rep_atoms x - Rep_atoms y)".
@@ -422,11 +422,11 @@ proof-
   {fix x y ::'a
     assume "x \<noteq> y"
   hence "x \<sqinter> -y \<noteq> \<bottom> \<or> -x \<sqinter> y \<noteq> \<bottom>"
-    by (auto simp: meet_shunt) 
+    by (auto simp: inf_shunt) 
   hence "\<exists>z. atom z \<and> (z \<le> x \<sqinter> -y \<or> z \<le> -x \<sqinter> y)"
     using atomicity by blast
   hence "\<exists>z. atom z \<and> ((z \<in> atom_map x \<and> \<not>(z \<in> atom_map y)) \<or> (\<not>(z \<in> atom_map x) \<and> z \<in> atom_map y))"
-    unfolding atom_def atom_map_def by (clarsimp, metis diff_eq inf.orderE meet_shunt_var)
+    unfolding atom_def atom_map_def by (clarsimp, metis diff_eq inf.orderE diff_shunt_var)
   hence "atom_map x \<noteq> atom_map y"
     by blast}
   thus ?thesis
@@ -491,9 +491,9 @@ next
   {fix z
   assume h: "z \<in> Collect atom - Y"
   hence "\<forall>y \<in> Y. y \<sqinter> z = \<bottom>"
-    by (metis DiffE a h atom_def dual_order.not_eq_order_implies_strict inf.absorb_iff2 inf_le2 meet_shunt mem_Collect_eq)
+    by (metis DiffE a h atom_def dual_order.not_eq_order_implies_strict inf.absorb_iff2 inf_le2 inf_shunt mem_Collect_eq)
   hence "\<Squnion>Y \<sqinter> z = \<bottom>"
-    using Sup_least meet_shunt by simp
+    using Sup_least inf_shunt by simp
   hence "z \<notin> atom_map (\<Squnion>Y)"
     using atom_map_bot_pres atom_map_def by force}
   thus  "atom_map (\<Squnion>Y) \<subseteq> Y"

@@ -464,9 +464,10 @@ end
 
 subsection\<open>Relational Model of Boolean Domain Quantales\<close>
 
-interpretation rel_dbq: domain_boolean_quantale Inter Union "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" UNIV minus uminus Id "(O)"
-  apply (standard, simp_all add: O_assoc)
-  by blast +
+interpretation rel_dbq: domain_boolean_quantale
+  \<open>(-)\<close> uminus \<open>(\<inter>)\<close> \<open>(\<subseteq>)\<close> \<open>(\<subset>)\<close> \<open>(\<union>)\<close> \<open>{}\<close> UNIV \<open>\<Inter>\<close> \<open>\<Union>\<close> Id \<open>(O)\<close>
+  by standard auto
+
 
 subsection\<open>Modal Boolean Quantales\<close>
 

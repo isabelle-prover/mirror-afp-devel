@@ -849,7 +849,7 @@ proof-
   also have "... = (\<partial> (bb\<^sub>\<F> f Y) \<subseteq> X)"
     by (metis comp_def fbb_fbd_demorgan)
   also have "... = (X \<union> (bb\<^sub>\<F> f Y) = UNIV)"
-    by (metis compl_le_swap2 dual_set_def join_shunt)
+    by (metis compl_le_swap2 dual_set_def sup_shunt)
     finally show ?thesis.
 qed
 

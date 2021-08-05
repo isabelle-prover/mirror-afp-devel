@@ -10,6 +10,65 @@ theory Legacy_Aliases
   imports "HOL-Library.Word"
 begin
 
+context abstract_boolean_algebra
+begin
+
+lemma conj_assoc: "(x \<^bold>\<sqinter> y) \<^bold>\<sqinter> z = x \<^bold>\<sqinter> (y \<^bold>\<sqinter> z)"
+  by (fact conj.assoc)
+
+lemma conj_commute: "x \<^bold>\<sqinter> y = y \<^bold>\<sqinter> x"
+  by (fact conj.commute)
+
+lemmas conj_left_commute = conj.left_commute
+lemmas conj_ac = conj.assoc conj.commute conj.left_commute
+
+lemma conj_one_left: "\<^bold>1 \<^bold>\<sqinter> x = x"
+  by (fact conj.left_neutral)
+
+lemma conj_left_absorb: "x \<^bold>\<sqinter> (x \<^bold>\<sqinter> y) = x \<^bold>\<sqinter> y"
+  by (fact conj.left_idem)
+
+lemma conj_absorb: "x \<^bold>\<sqinter> x = x"
+  by (fact conj.idem)
+
+lemma disj_assoc: "(x \<^bold>\<squnion> y) \<^bold>\<squnion> z = x \<^bold>\<squnion> (y \<^bold>\<squnion> z)"
+  by (fact disj.assoc)
+
+lemma disj_commute: "x \<^bold>\<squnion> y = y \<^bold>\<squnion> x"
+  by (fact disj.commute)
+
+lemmas disj_left_commute = disj.left_commute
+
+lemmas disj_ac = disj.assoc disj.commute disj.left_commute
+
+lemma disj_zero_left: "\<^bold>0 \<^bold>\<squnion> x = x"
+  by (fact disj.left_neutral)
+
+lemma disj_left_absorb: "x \<^bold>\<squnion> (x \<^bold>\<squnion> y) = x \<^bold>\<squnion> y"
+  by (fact disj.left_idem)
+
+lemma disj_absorb: "x \<^bold>\<squnion> x = x"
+  by (fact disj.idem)
+
+end
+
+context abstract_boolean_algebra_sym_diff
+begin
+
+lemmas xor_assoc = xor.assoc
+lemmas xor_commute = xor.commute
+lemmas xor_left_commute = xor.left_commute
+
+lemmas xor_ac = xor.assoc xor.commute xor.left_commute
+
+lemma xor_zero_right: "x \<^bold>\<ominus> \<^bold>0 = x"
+  by (fact xor.comm_neutral)
+
+lemma xor_zero_left: "\<^bold>0 \<^bold>\<ominus> x = x"
+  by (fact xor.left_neutral)
+
+end
+
 abbreviation (input) test_bit :: \<open>'a::semiring_bits \<Rightarrow> nat \<Rightarrow> bool\<close>
   where \<open>test_bit \<equiv> bit\<close>
 

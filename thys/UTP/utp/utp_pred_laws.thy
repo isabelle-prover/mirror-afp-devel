@@ -9,7 +9,7 @@ subsection \<open> Propositional Logic \<close>
 text \<open> Showing that predicates form a Boolean Algebra (under the predicate operators as opposed to
   the lattice operators) gives us many useful laws. \<close>
 
-interpretation Lattices.boolean_algebra diff_upred not_upred conj_upred "(\<le>)" "(<)"
+interpretation boolean_algebra diff_upred not_upred conj_upred "(\<le>)" "(<)"
   disj_upred false_upred true_upred
   by (unfold_locales; pred_auto)
 
