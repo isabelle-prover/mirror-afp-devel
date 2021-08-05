@@ -384,18 +384,18 @@ text \<open>
       any longer.
 
     \<^item> Infix syntax for \<^term>\<open>(AND)\<close>, \<^term>\<open>(OR)\<close>, \<^term>\<open>(XOR)\<close> organized in
-      syntax bundle \<^text>\<open>bit_operations_syntax\<close>.
+      syntax bundle \<^bundle>\<open>bit_operations_syntax\<close>.
 
     \<^item> Abbreviation \<^abbrev>\<open>max_word\<close> moved from distribution into theory
       \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
 
     \<^item> Operation \<^const>\<open>test_bit\<close> replaced by input abbreviation \<^abbrev>\<open>test_bit\<close>.
 
-    \<^item> Operation \<^const>\<open>shiftl\<close> replaced by input abbreviation \<^abbrev>\<open>shiftl\<close>.
+    \<^item> Operation \<^const>\<open>shiftl\<close> replaced by abbreviation \<^abbrev>\<open>shiftl\<close>.
 
-    \<^item> Operation \<^const>\<open>shiftr\<close> replaced by input abbreviation \<^abbrev>\<open>shiftr\<close>.
+    \<^item> Operation \<^const>\<open>shiftr\<close> replaced by abbreviation \<^abbrev>\<open>shiftr\<close>.
 
-    \<^item> Operation \<^const>\<open>sshiftr\<close> replaced by input abbreviation \<^abbrev>\<open>sshiftr\<close>.
+    \<^item> Operation \<^const>\<open>sshiftr\<close> replaced by abbreviation \<^abbrev>\<open>sshiftr\<close>.
 
     \<^item> Abbreviations \<^abbrev>\<open>bin_nth\<close>, \<^abbrev>\<open>bin_last\<close>, \<^abbrev>\<open>bin_rest\<close>,
       \<^abbrev>\<open>bintrunc\<close>, \<^abbrev>\<open>sbintrunc\<close>, \<^abbrev>\<open>norm_sint\<close>,
