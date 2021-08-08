@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Jul 2021 00:00:00 +0000</pubDate>
+    <pubDate>03 Aug 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Forests</title>
+              <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>03 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+We study second-order formalisations of graph properties expressed as
+first-order formulas in relation algebras extended with a Kleene star.
+The formulas quantify over relations while still avoiding
+quantification over elements of the base set. We formalise the
+property of undirected graphs being acyclic this way. This involves a
+study of various kinds of orientation of graphs. We also verify basic
+algorithms to constructively prove several second-order properties.</description>
+    </item>
     <item>
        <title>Finitely Generated Abelian Groups</title>
               <link>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
@@ -558,19 +573,6 @@ from communicating are stranded on an island, and may only leave once
 they have figured out their own eye color. We present a method of
 modeling the behavior of perfect logicians and formalize a solution of
 the puzzle.</description>
-    </item>
-    <item>
-       <title>Hood-Melville Queue</title>
-              <link>https://www.isa-afp.org/entries/Hood_Melville_Queue.html</link>
-       <guid>https://www.isa-afp.org/entries/Hood_Melville_Queue.html</guid>
-       <dc:creator> Alejandro Gómez-Londoño       </dc:creator>
-       <pubDate>18 Jan 2021 00:00:00 +0000</pubDate>
-       <description>
-This is a verified implementation of a constant time queue. The
-original design is due to &lt;a
-href=&#34;https://doi.org/10.1016/0020-0190(81)90030-2&#34;&gt;Hood
-and Melville&lt;/a&gt;. This formalization follows the presentation in
-&lt;em&gt;Purely Functional Data Structures&lt;/em&gt;by Okasaki.</description>
     </item>
   </channel>
 </rss>
