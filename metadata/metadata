@@ -5359,18 +5359,28 @@ notify = uuomul@yahoo.com
 
 [Bounded_Deducibility_Security]
 title = Bounded-Deducibility Security
-author = Andrei Popescu <https://www.andreipopescu.uk>, Peter Lammich <http://www21.in.tum.de/~lammich>
+author = Andrei Popescu <https://www.andreipopescu.uk>, Peter Lammich <http://www21.in.tum.de/~lammich>, Thomas Bauereiss <mailto:thomas@bauereiss.name>
 date = 2014-04-22
 topic = Computer science/Security
 abstract = This is a formalization of bounded-deducibility security (BD
 	security), a flexible notion of information-flow security applicable
-	to arbitrary input-output automata. It generalizes Sutherland's
+	to arbitrary transition systems. It generalizes Sutherland's
 	classic notion of nondeducibility by factoring in declassification
 	bounds and trigger, whereas nondeducibility states that, in a
 	system, information cannot flow between specified sources and sinks,
 	BD security indicates upper bounds for the flow and triggers under
 	which these upper bounds are no longer guaranteed.
-notify = uuomul@yahoo.com, lammich@in.tum.de
+notify = uuomul@yahoo.com, lammich@in.tum.de, thomas@bauereiss.name
+extra-history =
+	Change history:
+	[2021-08-12]:
+	Generalised BD Security from I/O automata to nondeterministic
+	transition systems, with the former retained as an instance of the
+	latter (renaming locale BD_Security to BD_Security_IO).
+	Generalise unwinding conditions to allow making more than one
+	transition at a time when constructing alternative traces.
+	Add results about the expressivity of declassification triggers vs.
+	bounds, due to Thomas Bauereiss (added as author).
 
 [Network_Security_Policy_Verification]
 title = Network Security Policy Verification

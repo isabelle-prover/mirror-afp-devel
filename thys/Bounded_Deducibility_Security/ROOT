@@ -1,9 +1,12 @@
 chapter AFP
 
 session "Bounded_Deducibility_Security" (AFP) = HOL +
-  options [timeout = 600]
+  options [timeout = 600, document = pdf, document_output = "output"]
+  sessions
+    "HOL-Library"
   theories
-    Bounded_Deducibility_Security
+    "Bounded_Deducibility_Security"
   document_files
     "root.tex"
+    "root.bib"
     "intro.tex"
