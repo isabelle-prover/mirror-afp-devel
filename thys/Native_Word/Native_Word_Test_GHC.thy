@@ -22,6 +22,10 @@ in GHC
 
 subsection \<open>Test quickcheck narrowing\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma "(x :: uint64) AND y = x OR y"
 quickcheck[narrowing, expect=counterexample]
 oops
@@ -61,5 +65,7 @@ oops
 lemma "(f :: uint \<Rightarrow> bool) = g"
 quickcheck[narrowing, size=3, expect=counterexample]
 oops
+
+end
 
 end
