@@ -15,7 +15,7 @@ export_code
   nat_of_uint32 uint32_of_nat
   nat_of_uint64 uint64_of_nat
   nat_of_uint uint_of_nat
-  in SML file "/tmp/foo.ML"
+  in SML
 
 section \<open>Tests for @{typ uint32}\<close>
 
