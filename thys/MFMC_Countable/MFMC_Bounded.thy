@@ -520,24 +520,24 @@ end
 
 locale bounded_countable_network = countable_network \<Delta>
   for \<Delta> :: "('v, 'more) network_scheme" (structure) +
-  assumes out: "\<lbrakk> x \<in> \<^bold>V; x \<noteq> source \<Delta> \<rbrakk> \<Longrightarrow> d_OUT (capacity \<Delta>) x < \<top>"
+  assumes out: "\<lbrakk> x \<in> \<^bold>V; x \<noteq> source \<Delta>; x \<noteq> sink \<Delta> \<rbrakk> \<Longrightarrow> d_OUT (capacity \<Delta>) x < \<top>"
 
 context antiparallel_edges begin
 
 lemma \<Delta>''_bounded_countable_network: "bounded_countable_network \<Delta>''"
-  if "\<And>x. \<lbrakk> x \<in> \<^bold>V; x \<noteq> source \<Delta> \<rbrakk> \<Longrightarrow> d_OUT (capacity \<Delta>) x < \<top>"
+  if "\<And>x. \<lbrakk> x \<in> \<^bold>V; x \<noteq> source \<Delta>; x \<noteq> sink \<Delta> \<rbrakk> \<Longrightarrow> d_OUT (capacity \<Delta>) x < \<top>"
 proof -
   interpret ae: countable_network \<Delta>'' by(rule \<Delta>''_countable_network)
   show ?thesis
   proof
     fix x
-    assume x: "x \<in> \<^bold>V\<^bsub>\<Delta>''\<^esub>" and not_source: "x \<noteq> source \<Delta>''"
+    assume x: "x \<in> \<^bold>V\<^bsub>\<Delta>''\<^esub>" and not_source: "x \<noteq> source \<Delta>''" and not_sink: "x \<noteq> sink \<Delta>''"
     from x consider (Vertex) x' where "x = Vertex x'" "x' \<in> \<^bold>V" | (Edge) y z where "x = Edge y z" "edge \<Delta> y z"
       unfolding "\<^bold>V_\<Delta>''" by auto
     then show "d_OUT (capacity \<Delta>'') x < \<top>"
     proof cases
       case Vertex
-      then show ?thesis using x not_source that[of x'] by auto
+      then show ?thesis using x not_source not_sink that[of x'] by auto
     next
       case Edge
       then show ?thesis using capacity_finite[of "(y, z)"] by(simp del: capacity_finite add: less_top)
@@ -564,6 +564,8 @@ proof -
     assume "e \<in> \<^bold>V\<^bsub>?\<Gamma>\<^esub> - B ?\<Gamma>"
     then obtain x y where e: "e = (x, y)" and xy: "edge \<Delta> x y" by(cases e) simp
     from xy have y: "y \<noteq> source \<Delta>" using source_in[of x] by auto
+    have out_sink: "d_OUT (capacity \<Delta>) (sink \<Delta>) = 0" unfolding d_OUT_def
+      by(auto simp add: nn_integral_0_iff_AE AE_count_space sink_out intro!: capacity_outside)
     have "\<^bold>E\<^bsub>?\<Gamma>\<^esub> `` {e} \<subseteq> \<^bold>E \<inter> {y} \<times> UNIV" using e by auto
     hence "(\<Sum>\<^sup>+ e' \<in> \<^bold>E\<^bsub>?\<Gamma>\<^esub> `` {e}. weight ?\<Gamma> e') \<le> (\<Sum>\<^sup>+ e \<in> \<^bold>E \<inter> {y} \<times> UNIV. capacity \<Delta> e)" using e
       by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
@@ -571,7 +573,7 @@ proof -
       by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
     also have "\<dots> = d_OUT (capacity \<Delta>) y" unfolding d_OUT_def
       by(rule nn_integral_count_space_reindex) simp
-    also have "\<dots> < \<top>" using out[of y] xy y by(auto simp add: vertex_def)
+    also have "\<dots> < \<top>" using out[of y] xy y out_sink by(cases "y = sink \<Delta>")(auto simp add: vertex_def)
     finally show "(\<Sum>\<^sup>+ e' \<in> \<^bold>E\<^bsub>?\<Gamma>\<^esub> `` {e}. weight ?\<Gamma> e') < \<top>" .
   qed
 qed
@@ -629,10 +631,10 @@ proof -
   show ?thesis 
   proof
     fix x
-    assume x: "x \<in> \<^bold>V\<^bsub>\<Delta>'''\<^esub>" and not_source: "x \<noteq> source \<Delta>'''"
+    assume x: "x \<in> \<^bold>V\<^bsub>\<Delta>'''\<^esub>" and not_source: "x \<noteq> source \<Delta>'''" and not_sink: "x \<noteq> sink \<Delta>'''"
     from x have x': "x \<in> \<^bold>V" by(auto simp add: vertex_def)
     have "d_OUT (capacity \<Delta>''') x \<le> d_OUT (capacity \<Delta>) x" by(rule d_OUT_mono) simp
-    also have "\<dots> < \<top>" using x' not_source by(simp add: out)
+    also have "\<dots> < \<top>" using x' not_source not_sink by(simp add: out)
     finally show "d_OUT (capacity \<Delta>''') x < \<top>"  .
   qed
 qed
