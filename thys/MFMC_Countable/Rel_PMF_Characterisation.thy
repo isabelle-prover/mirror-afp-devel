@@ -100,21 +100,6 @@ proof -
   qed
 qed
 
-corollary rel_pmf_distr_mono: "rel_pmf R OO rel_pmf S \<le> rel_pmf (R OO S)"
-\<comment> \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF,
-  but this proof is much shorter and more elegant. See @{cite HoelzlLochbihlerTraytel2015ITP} for a
-  comparison of formalisations.\<close>
-proof(intro le_funI le_boolI rel_pmf_measureI, elim relcomppE)
-  fix p q r A
-  assume pq: "rel_pmf R p q" and qr: "rel_pmf S q r"
-  have "measure (measure_pmf p) A \<le> measure (measure_pmf q) {y. \<exists>x\<in>A. R x y}"
-    (is "_ \<le> measure _ ?B") using pq by(rule rel_pmf_measureD)
-  also have "\<dots> \<le> measure (measure_pmf r) {z. \<exists>y\<in>?B. S y z}"
-    using qr by(rule rel_pmf_measureD)
-  also have "{z. \<exists>y\<in>?B. S y z} = {z. \<exists>x\<in>A. (R OO S) x z}" by auto
-  finally show "measure (measure_pmf p) A \<le> measure (measure_pmf r) \<dots>" .
-qed
-
 subsection \<open>Code generation for @{const rel_pmf}\<close>
 
 proposition rel_pmf_measureI':
