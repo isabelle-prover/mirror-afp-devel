@@ -34,7 +34,7 @@ fun new_entry name =
   Data.map (fn data =>
     if Symtab.defined data name
     then error ("Duplicate declaration of named theorems: " ^ quote name)
-    else Symtab.update (name, Thm.full_rules) data);
+    else Symtab.update (name, Thm.item_net) data);
 
 fun undeclared name = "Undeclared named theorems " ^ quote name;
 

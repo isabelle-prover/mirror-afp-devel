@@ -218,12 +218,12 @@ val red_of_afun = Symtab.lookup o #reds o thms_of_afun;
 val has_red_afun = is_some oo red_of_afun;
 
 fun mk_afun name terms rel thms =
-  AFun {name = name, terms = terms, rel = rel, thms = thms, unfolds = Thm.full_rules};
+  AFun {name = name, terms = terms, rel = rel, thms = thms, unfolds = Thm.item_net};
 
 fun map_afun f1 f2 f3 f4 f5 (AFun {name, terms, rel, thms, unfolds}) =
   AFun {name = f1 name, terms = f2 terms, rel = f3 rel, thms = f4 thms, unfolds = f5 unfolds};
 
-fun map_unfolds f thms = fold Item_Net.update (map f (Item_Net.content thms)) Thm.full_rules;
+fun map_unfolds f thms = fold Item_Net.update (map f (Item_Net.content thms)) Thm.item_net;
 
 fun morph_afun phi =
   let
