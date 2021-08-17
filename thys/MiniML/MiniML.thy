@@ -1,4 +1,4 @@
-(* Title:     HOL/MiniML/MiniML.thy
+(* Title:     MiniML/MiniML.thy
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -16,41 +16,37 @@ datatype
 \<comment> \<open>type inference rules\<close>
 inductive
   has_type :: "[ctxt, expr, typ] => bool"
-                  ("((_) |-/ (_) :: (_))" [60,0,60] 60)
+                  ("((_) \<turnstile>/ (_) :: (_))" [60,0,60] 60)
 where
-  VarI: "[| n < length A; t <| A!n |] ==> A |- Var n :: t"
-| AbsI: "[| (mk_scheme t1)#A |- e :: t2 |] ==> A |- Abs e :: t1 -> t2"
-| AppI: "[| A |- e1 :: t2 -> t1; A |- e2 :: t2 |] 
-         ==> A |- App e1 e2 :: t1"
-| LETI: "[| A |- e1 :: t1; (gen A t1)#A |- e2 :: t |] ==> A |- LET e1 e2 :: t"
+  VarI: "[| n < length A; t <| A!n |] ==> A \<turnstile> Var n :: t"
+| AbsI: "[| (mk_scheme t1)#A \<turnstile> e :: t2 |] ==> A \<turnstile> Abs e :: t1 -> t2"
+| AppI: "[| A \<turnstile> e1 :: t2 -> t1; A \<turnstile> e2 :: t2 |] 
+         ==> A \<turnstile> App e1 e2 :: t1"
+| LETI: "[| A \<turnstile> e1 :: t1; (gen A t1)#A \<turnstile> e2 :: t |] ==> A \<turnstile> LET e1 e2 :: t"
 
 declare has_type.intros [simp]
 declare Un_upper1 [simp] Un_upper2 [simp]
 declare is_bound_typ_instance_closed_subst [simp]
 
-lemma s'_t_equals_s_t: 
+lemma s'_t_equals_s_t[simp]: 
   "\<And>t::typ. $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) t = $S t"
 apply (rule typ_substitutions_only_on_free_variables)
 apply (simp add: Ball_def)
 done
 
-declare s'_t_equals_s_t [simp]
-
-lemma s'_a_equals_s_a: 
+lemma s'_a_equals_s_a [simp]: 
   "\<And>A::type_scheme list. $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then (S n) else (TVar n)) A = $S A"
 apply (rule scheme_list_substitutions_only_on_free_variables)
 apply (simp add: Ball_def)
 done
 
-declare s'_a_equals_s_a [simp]
-
 lemma replace_s_by_s': 
- "$(\<lambda>n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) A |-  
+ "$(\<lambda>n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) A \<turnstile>  
      e :: $(\<lambda>n. if n : (free_tv A) Un (free_tv t) then S n else TVar n) t  
-  \<Longrightarrow> $S A |- e :: $S t"
-apply (rule_tac P = "\<lambda>A. A |- e :: $S t" in ssubst)
+  \<Longrightarrow> $S A \<turnstile> e :: $S t"
+apply (rule_tac P = "\<lambda>A. A \<turnstile> e :: $S t" in ssubst)
 apply (rule s'_a_equals_s_a [symmetric])
-apply (rule_tac P = "\<lambda>t. $ (\<lambda>n. if n : free_tv A Un free_tv (t2 S) then S n else TVar n) A |- e :: t" for t2 in ssubst)
+apply (rule_tac P = "\<lambda>t. $ (\<lambda>n. if n : free_tv A Un free_tv (t2 S) then S n else TVar n) A \<turnstile> e :: t" for t2 in ssubst)
 apply (rule s'_t_equals_s_t [symmetric])
 apply simp
 done
@@ -139,7 +135,7 @@ apply (simp (no_asm))
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_type: "\<And>t::typ. new_tv n t \<Longrightarrow> {x. \<exists>y. x = n + y} Int free_tv t = {}"
+lemma new_tv_Int_free_tv_empty_type: "\<And>t::typ. new_tv n t \<Longrightarrow> {x. \<exists>y. x = n + y} \<inter> free_tv t = {}"
 apply safe
 apply (cut_tac le_add1)
 apply (drule new_tv_le)
@@ -149,7 +145,8 @@ apply (drule new_tv_not_free_tv)
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_scheme: "\<And>sch::type_scheme. new_tv n sch \<Longrightarrow> {x. \<exists>y. x = n + y} Int free_tv sch = {}"
+lemma new_tv_Int_free_tv_empty_scheme:
+  "\<And>sch::type_scheme. new_tv n sch \<Longrightarrow> {x. \<exists>y. x = n + y} \<inter> free_tv sch = {}"
 apply safe
 apply (cut_tac le_add1)
 apply (drule new_tv_le)
@@ -159,7 +156,8 @@ apply (drule new_tv_not_free_tv)
 apply fast
 done
 
-lemma new_tv_Int_free_tv_empty_scheme_list: "\<forall>A::type_scheme list. new_tv n A \<longrightarrow> {x. \<exists>y. x = n + y} Int free_tv A = {}"
+lemma new_tv_Int_free_tv_empty_scheme_list:
+  "\<forall>A::type_scheme list. new_tv n A \<longrightarrow> {x. \<exists>y. x = n + y} \<inter> free_tv A = {}"
 apply (rule allI)
 apply (induct_tac "A")
 apply (simp (no_asm))
@@ -191,7 +189,7 @@ done
 
 declare has_type.intros [intro!]
 
-lemma has_type_le_env [rule_format (no_asm)]: "A |- e::t \<Longrightarrow> \<forall>B. A \<le> B \<longrightarrow> B |- e::t"
+lemma has_type_le_env [rule_format (no_asm)]: "A \<turnstile> e::t \<Longrightarrow> \<forall>B. A \<le> B \<longrightarrow> B \<turnstile> e::t"
 apply (erule has_type.induct)
    apply (simp (no_asm) add: le_env_def)
    apply (fastforce elim: bound_typ_instance_trans)
@@ -201,7 +199,7 @@ apply (slow elim: le_env_free_tv [THEN free_tv_subset_gen_le])
 done
 
 \<comment> \<open>@{text has_type} is closed w.r.t. substitution\<close>
-lemma has_type_cl_sub: "A |- e :: t \<Longrightarrow> \<forall>S. $S A |- e :: $S t"
+lemma has_type_cl_sub: "A \<turnstile> e :: t \<Longrightarrow> \<forall>S. $S A \<turnstile> e :: $S t"
 apply (erule has_type.induct)
 (* case VarI *)
    apply (rule allI)
@@ -236,7 +234,7 @@ apply (subst gen_subst_commutes)
   apply (erule IntE)
   apply (drule free_tv_S' [THEN subsetD])
   apply (drule free_tv_alpha [THEN subsetD])
-  apply (simp del: full_SetCompr_eq)
+  apply (simp)
   apply (erule exE)
   apply (hypsubst)
   apply (subgoal_tac "new_tv (n + y) ($ S A) ")

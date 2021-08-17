@@ -1,4 +1,4 @@
-(* Title:     HOL/MiniML/W.thy
+(* Title:     MiniML/W.thy
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -12,7 +12,7 @@ begin
 type_synonym result_W = "(subst * typ * nat) option"
 
 \<comment> \<open>type inference algorithm W\<close>
-primrec W :: "[expr, ctxt, nat] => result_W" where
+fun W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
                                  bound_typ_inst (\<lambda>b. TVar(b+n)) (A!i),   
@@ -35,10 +35,10 @@ primrec W :: "[expr, ctxt, nat] => result_W" where
 declare Suc_le_lessD [simp]
 
 inductive_cases has_type_casesE:
-"A |- Var n :: t"
-"A |- Abs e :: t"
-"A |- App e1 e2 ::t"
-"A |- LET e1 e2 ::t"
+"A \<turnstile> Var n :: t"
+"A \<turnstile> Abs e :: t"
+"A \<turnstile> App e1 e2 ::t"
+"A \<turnstile> LET e1 e2 ::t"
 
 
 \<comment> \<open>the resulting type variable is always greater or equal than the given one\<close>
@@ -68,7 +68,7 @@ done
 lemma new_tv_compatible_W: 
   "new_tv n A \<Longrightarrow> Some (S,t,m) = W e A n \<Longrightarrow> new_tv m A"
 apply (drule W_var_geD)
-apply (rule new_scheme_list_le)
+apply (rule new_tv_le)
 apply assumption
 apply assumption
 done
@@ -137,27 +137,27 @@ next
     apply (rule new_tv_subst_comp_2)
     apply (rule new_tv_subst_comp_2)
     apply (rule lessI [THEN less_imp_le, THEN new_tv_le])
-    apply (rule_tac n = "n1" in new_tv_subst_le)
+    apply (rule_tac n = "n1" in new_tv_le)
     apply (simp add: rotate_Some)
     apply (simp (no_asm_simp))
-    apply (fast dest: W_var_geD intro: new_scheme_list_le new_tv_subst_scheme_list lessI [THEN less_imp_le [THEN new_tv_subst_le]])
+    apply (fast dest: W_var_geD intro: new_tv_le new_tv_subst_scheme_list lessI [THEN less_imp_le [THEN new_tv_le]])
     apply (erule sym [THEN mgu_new])
     apply (blast dest!: W_var_geD
       intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
-      new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+      new_tv_subst_scheme_list new_tv_le)
 
     apply (erule impE)
-    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_tv_le)
     apply clarsimp
 
     apply (rule lessI [THEN new_tv_subst_var])
     apply (erule sym [THEN mgu_new])
     apply (blast dest!: W_var_geD
       intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
-      new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+      new_tv_subst_scheme_list new_tv_le)
 
     apply (erule impE)
-    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_tv_le)
     apply clarsimp
     done
 next
@@ -180,7 +180,7 @@ next
     apply (rule conjI)
     apply (simp only: o_def)
     apply (rule new_tv_subst_comp_2)
-    apply (erule W_var_ge [THEN new_tv_subst_le])
+    apply (erule W_var_ge [THEN new_tv_le])
     apply assumption
     apply assumption
     apply assumption
@@ -208,7 +208,7 @@ proof (induct e)
     apply (simp (no_asm) add: free_tv_subst split: split_option_bind)
     apply (intro strip)
     apply (case_tac "v : free_tv (A!n)")
-    apply simp
+    apply (simp add: free_tv_nth_A_impl_free_tv_A)
     apply (drule free_tv_bound_typ_inst1)
     apply (simp (no_asm) add: o_def)
     apply (erule exE)
@@ -293,7 +293,7 @@ apply fast
 done
 
 \<comment> \<open>correctness of W with respect to @{text has_type}\<close>
-lemma W_correct_lemma [rule_format (no_asm)]: "\<forall>A S t m n . new_tv n A \<longrightarrow> Some (S,t,m) = W e A n \<longrightarrow> $S A |- e :: t"
+lemma W_correct_lemma [rule_format (no_asm)]: "\<forall>A S t m n . new_tv n A \<longrightarrow> Some (S,t,m) = W e A n \<longrightarrow> $S A \<turnstile> e :: t"
 apply (induct_tac "e")
 (* case Var n *)
 apply simp
@@ -309,7 +309,7 @@ apply (intro strip)
 apply (erule_tac x = " (mk_scheme (TVar n)) # A" in allE)
 apply simp
 apply (rule has_type.AbsI)
-apply (drule le_refl [THEN le_SucI, THEN new_scheme_list_le])
+apply (drule le_refl [THEN le_SucI, THEN new_tv_le])
 apply (drule sym)
 apply (erule allE)+
 apply (erule impE)
@@ -324,7 +324,7 @@ apply (rule_tac ?t2.0 = "$ S3 t2" in has_type.AppI)
 apply (rule_tac S1 = "S3" in app_subst_TVar [THEN subst])
 apply (rule app_subst_Fun [THEN subst])
 apply (rule_tac t = "$S3 (t2 -> (TVar n2))" and s = "$S3 ($S2 t1) " in subst)
-apply simp
+apply (simp add: mgu_eq)
 apply (simp only: subst_comp_scheme_list [symmetric] o_def) 
 apply ((rule has_type_cl_sub [THEN spec]) , (rule has_type_cl_sub [THEN spec]))
 apply (simp add: eq_sym_conv)
@@ -334,7 +334,7 @@ apply (frule new_tv_W)
 apply assumption
 apply (drule conjunct1)
 apply (frule new_tv_subst_scheme_list)
-apply (rule new_scheme_list_le)
+apply (rule new_tv_le)
 apply (rule W_var_ge)
 apply assumption
 apply assumption
@@ -385,7 +385,7 @@ apply (rule weaken_not_elem_A_minus_B)
 
 \<comment> \<open>Completeness of W w.r.t. @{text has_type}\<close>
 lemma W_complete_lemma [rule_format (no_asm)]: 
-  "\<forall>S' A t' n. $S' A |- e :: t' \<longrightarrow> new_tv n A \<longrightarrow>
+  "\<forall>S' A t' n. $S' A \<turnstile> e :: t' \<longrightarrow> new_tv n A \<longrightarrow>
                (\<exists>S t. (\<exists>m. W e A n = Some (S,t,m)) \<and>
                        (\<exists>R. $S' A = $R ($S A) \<and> t' = $R t))"
   apply (induct e)
@@ -399,8 +399,8 @@ lemma W_complete_lemma [rule_format (no_asm)]:
      apply (rename_tac "S")
      apply (rule_tac x = "\<lambda>x. (if x < n then S' x else S (x - n))" in exI)
      apply (rule conjI)
-      apply (simp (no_asm_simp))
-     apply (simp (no_asm_simp) add: bound_typ_inst_composed_subst [symmetric] new_tv_nth_nat_A o_def nth_subst 
+      apply (simp (no_asm_simp) add: new_if_subst_type_scheme_list)
+     apply (simp (no_asm_simp) add: new_if_subst_type_scheme bound_typ_inst_composed_subst [symmetric] new_tv_nth_nat_A o_def nth_subst 
       del: bound_typ_inst_composed_subst)
 
 (* case Abs e *)
@@ -426,7 +426,7 @@ lemma W_complete_lemma [rule_format (no_asm)]:
    apply (erule_tac x = "m" in allE)
    apply simp
    apply safe
-    apply (blast intro: sym [THEN W_var_geD] new_tv_W [THEN conjunct1] new_scheme_list_le new_tv_subst_scheme_list)
+    apply (blast intro: sym [THEN W_var_geD] new_tv_W [THEN conjunct1] new_tv_le new_tv_subst_scheme_list)
 
 (** LEVEL 33 **)
    apply (subgoal_tac "$ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) ($ Sa t) = $ (\<lambda>x. if x=ma then t' else (if x: (free_tv t - free_tv Sa) then R x else Ra x)) (ta -> (TVar ma))")
@@ -455,7 +455,7 @@ lemma W_complete_lemma [rule_format (no_asm)]:
       apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
       apply (erule_tac [3] conjE)
       apply (drule_tac [3] new_tv_subst_scheme_list)
-       prefer 3 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
+       prefer 3 apply (fast intro: new_tv_le dest: sym [THEN W_var_geD])
       prefer 3 apply (fastforce dest: new_tv_W new_tv_not_free_tv simp add: cod_def free_tv_subst)
      prefer 2 apply (fastforce simp add: cod_def free_tv_subst)
     prefer 2 apply (simp (no_asm)) prefer 2
@@ -465,7 +465,7 @@ lemma W_complete_lemma [rule_format (no_asm)]:
      apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
      apply (erule_tac [3] conjE)
      apply (drule_tac [3] sym [THEN W_var_geD])
-     prefer 3 apply (fast dest: new_scheme_list_le new_tv_subst_scheme_list new_tv_W new_tv_not_free_tv)
+     prefer 3 apply (fast dest: new_tv_le new_tv_subst_scheme_list new_tv_W new_tv_not_free_tv)
     apply (case_tac [2] "na: free_tv t - free_tv Sa")
     (* case na \<notin> free_tv t - free_tv Sa *)
      prefer 3 
@@ -501,13 +501,13 @@ lemma W_complete_lemma [rule_format (no_asm)]:
     apply (frule_tac [2] new_tv_W) prefer 2 apply assumption
     apply (erule_tac [2] conjE)
     apply (drule_tac [2] new_tv_subst_scheme_list)
-     prefer 2 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
+     prefer 2 apply (fast intro: new_tv_le dest: sym [THEN W_var_geD])
     apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
     apply (erule_tac [2] conjE)
     apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
     apply (tactic \<open>
     (fast_tac (put_claset (claset_of @{theory_context Fun}) @{context}
-      addDs [sym RS @{thm W_var_geD}, @{thm new_scheme_list_le}, @{thm codD},
+      addDs [sym RS @{thm W_var_geD}, @{thm new_tv_le}, @{thm codD},
         @{thm new_tv_not_free_tv}]) 2)\<close>)
    apply (case_tac "na: free_tv t - free_tv Sa")
     (* case na \<notin> free_tv t - free_tv Sa *)
@@ -551,8 +551,7 @@ lemma W_complete_lemma [rule_format (no_asm)]:
 
 
 theorem W_complete: 
-  "[] |- e :: t' \<Longrightarrow> (\<exists>S t. (\<exists>m. W e [] n = Some(S,t,m)) \<and>
-                     (\<exists>R. t' = $ R t))"
-  by (metis W_complete_lemma app_subst_Nil new_tv_Nil)
+  "[] \<turnstile> e :: t' \<Longrightarrow> \<exists>S t m. W e [] n = Some(S,t,m) \<and> (\<exists>R. t' = $ R t)"
+by (metis W_complete_lemma app_subst_Nil new_tv_Nil)
 
 end

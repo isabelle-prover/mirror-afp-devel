@@ -1,5 +1,4 @@
-(* Title:     HOL/MiniML/Maybe.thy
-
+(* Title:     MiniML/Maybe.thy
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
