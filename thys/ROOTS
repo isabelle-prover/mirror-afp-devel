@@ -191,6 +191,7 @@ Formula_Derivatives
 Fourier
 Free-Boolean-Algebra
 Free-Groups
+Fresh_Identifiers
 FunWithFunctions
 FunWithTilings
 Functional-Automata
@@ -477,6 +478,7 @@ Regular_Algebras
 Relation_Algebra
 Relational-Incorrectness-Logic
 Relational_Disjoint_Set_Forests
+Relational_Forests
 Relational_Method
 Relational_Minimum_Spanning_Trees
 Relational_Paths
