@@ -42,36 +42,28 @@ inductive_cases has_type_casesE:
 
 
 \<comment> \<open>the resulting type variable is always greater or equal than the given one\<close>
-lemma W_var_ge [rule_format (no_asm)]: 
-  "\<forall>A n S t m. W e A n  = Some (S,t,m) \<longrightarrow> n\<le>m"
-apply (induct_tac "e")
-(* case Var(n) *)
-apply (simp (no_asm) split: split_option_bind)
-(* case Abs e *)
-apply (simp (no_asm) split: split_option_bind)
-apply (fast dest: Suc_leD)
-(* case App e1 e2 *)
-apply (simp (no_asm) split: split_option_bind)
-apply (blast intro: le_SucI le_trans)
-(* case LET e1 e2 *)
-apply (simp (no_asm) split: split_option_bind)
-apply (blast intro: le_trans)
-done
+lemma W_var_ge: 
+  "W e A n  = Some (S,t,m) \<Longrightarrow> n \<le> m"
+proof (induction e arbitrary: A n S t m)
+  case Var thus ?case by (auto split: if_splits)
+next
+  case Abs thus ?case by (fastforce split: split_option_bind_asm)
+next
+  case App thus ?case by (fastforce split: split_option_bind_asm)
+next
+  case LET thus ?case by (fastforce split: split_option_bind_asm)
+qed
 
-declare W_var_ge [simp]
+declare W_var_ge [simp] (* FIXME*)
 
 lemma W_var_geD: 
   "Some (S,t,m) = W e A n \<Longrightarrow> n\<le>m"
-apply (simp add: eq_sym_conv)
-done
+by (metis W_var_ge)
+
 
 lemma new_tv_compatible_W: 
   "new_tv n A \<Longrightarrow> Some (S,t,m) = W e A n \<Longrightarrow> new_tv m A"
-apply (drule W_var_geD)
-apply (rule new_tv_le)
-apply assumption
-apply assumption
-done
+by (metis W_var_ge new_tv_le)
 
 lemma new_tv_bound_typ_inst_sch [rule_format (no_asm)]: 
   "new_tv n sch \<longrightarrow> new_tv (n + (min_new_bound_tv sch)) (bound_typ_inst (\<lambda>b. TVar (b + n)) sch)"
@@ -187,20 +179,11 @@ next
     done
 qed
 
-lemma free_tv_bound_typ_inst1 [rule_format (no_asm)]: 
-  "(v \<notin> free_tv sch) \<longrightarrow> (v \<in> free_tv (bound_typ_inst (TVar \<circ> S) sch)) \<longrightarrow> (\<exists>x. v = S x)"
-apply (induct_tac "sch")
-apply simp
-apply simp
-apply (intro strip)
-apply (rule exI)
-apply (rule refl)
-apply simp
-done
+lemma free_tv_bound_typ_inst1:
+  "v \<notin> free_tv sch \<Longrightarrow> v \<in> free_tv (bound_typ_inst (TVar \<circ> S) sch) \<Longrightarrow> \<exists>x. v = S x"
+by (induction sch) auto
 
-declare free_tv_bound_typ_inst1 [simp]
-
-lemma free_tv_W [rule_format (no_asm)]: 
+lemma free_tv_W [rule_format]: 
   "\<forall>n A S t m v. W e A n = Some (S,t,m) \<longrightarrow>             
           (v\<in>free_tv S \<or> v\<in>free_tv t) \<longrightarrow> v<n \<longrightarrow> v\<in>free_tv A"
 proof (induct e)
@@ -293,7 +276,7 @@ apply fast
 done
 
 \<comment> \<open>correctness of W with respect to @{text has_type}\<close>
-lemma W_correct_lemma [rule_format (no_asm)]: "\<forall>A S t m n . new_tv n A \<longrightarrow> Some (S,t,m) = W e A n \<longrightarrow> $S A \<turnstile> e :: t"
+lemma W_correct_lemma [rule_format]: "\<forall>A S t m n . new_tv n A \<longrightarrow> Some (S,t,m) = W e A n \<longrightarrow> $S A \<turnstile> e :: t"
 apply (induct_tac "e")
 (* case Var n *)
 apply simp
@@ -384,7 +367,7 @@ apply (rule weaken_not_elem_A_minus_B)
   by (metis free_tv_W free_tv_gen_cons free_tv_le_new_tv new_tv_W)
 
 \<comment> \<open>Completeness of W w.r.t. @{text has_type}\<close>
-lemma W_complete_lemma [rule_format (no_asm)]: 
+lemma W_complete_lemma [rule_format]: 
   "\<forall>S' A t' n. $S' A \<turnstile> e :: t' \<longrightarrow> new_tv n A \<longrightarrow>
                (\<exists>S t. (\<exists>m. W e A n = Some (S,t,m)) \<and>
                        (\<exists>R. $S' A = $R ($S A) \<and> t' = $R t))"

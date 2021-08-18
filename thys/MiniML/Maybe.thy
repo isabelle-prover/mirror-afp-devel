@@ -32,6 +32,11 @@ lemma split_option_bind: "P(option_bind res f) =
   unfolding option_bind_def
   by (rule option.split)
 
+lemma split_option_bind_asm: "P(option_bind res f) =  
+          (~ ((res = None \<and> \<not> P None) \<or> (\<exists>s. res = Some s \<and> \<not> P(f s))))"
+  unfolding option_bind_def
+  by (rule option.split_asm)
+
 lemma option_bind_eq_None [simp]:
     "((option_bind m f) = None) = ((m=None) | (\<exists>p. m = Some p \<and> f p = None))"
   by (simp split: split_option_bind)
