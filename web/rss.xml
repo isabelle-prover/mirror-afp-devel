@@ -24,6 +24,26 @@ infinite type, as well as executable instantiations for natural
 numbers and strings.</description>
     </item>
     <item>
+       <title>CoSMed: A confidentiality-verified social media platform</title>
+              <link>https://www.isa-afp.org/entries/CoSMed.html</link>
+       <guid>https://www.isa-afp.org/entries/CoSMed.html</guid>
+       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
+       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+This entry contains the confidentiality verification of the
+(functional kernel of) the CoSMed  social media platform. The
+confidentiality properties are formalized as instances of BD Security
+[&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;1&lt;/a&gt;,
+&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;2&lt;/a&gt;].
+An innovation in the deployment of BD Security compared to previous
+work is the use of dynamic declassification triggers, incorporated as
+part of inductive bounds, for providing stronger guarantees that
+account for the repeated opening and closing of access windows. To
+further strengthen the confidentiality guarantees, we also prove
+&#34;traceback&#34; properties about the accessibility decisions
+affecting the information managed by the system.</description>
+    </item>
+    <item>
        <title>CoCon: A Confidentiality-Verified Conference Management System</title>
               <link>https://www.isa-afp.org/entries/CoCon.html</link>
        <guid>https://www.isa-afp.org/entries/CoCon.html</guid>
@@ -33,16 +53,13 @@ numbers and strings.</description>
 This entry contains the confidentiality verification of the
 (functional kernel of) the CoCon conference management system [&lt;a
 href=&#34;https://doi.org/10.1007/978-3-319-08867-9_11&#34;&gt;1&lt;/a&gt;,
-&lt;a
-href=&#34;https://doi.org/10.1007/s10817-020-09566-9&#34;&gt;2&lt;/a&gt;].
+&lt;a href=&#34;https://doi.org/10.1007/s10817-020-09566-9&#34;&gt;2&lt;/a&gt;].
 The confidentiality properties refer to the documents managed by the
 system, namely papers, reviews, discussion logs and
 acceptance/rejection decisions, and also to the assignment of
 reviewers to papers. They have all been formulated as instances of BD
-Security [&lt;a
-href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;3&lt;/a&gt;,
-&lt;a
-href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;4&lt;/a&gt;]
+Security [&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;3&lt;/a&gt;,
+&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;4&lt;/a&gt;]
 and verified using the BD Security unwinding technique.</description>
     </item>
     <item>
@@ -55,17 +72,14 @@ and verified using the BD Security unwinding technique.</description>
 Building on a previous &lt;a
 href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;AFP
 entry&lt;/a&gt; that formalizes the Bounded-Deducibility Becurity (BD
-Security) framework &lt;a
-href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
+Security) framework &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
 we formalize compositionality and transport theorems for information
 flow security. These results allow lifting BD Security properties from
 individual components specified as transition systems, to a
 composition of systems specified as communicating products of
 transition systems. The underlying ideas of these results are
-presented in the papers &lt;a
-href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;
-and &lt;a
-href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;[2]&lt;/a&gt;.
+presented in the papers &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;
+and &lt;a href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;[2]&lt;/a&gt;.
 The latter paper also describes a major case study where these results
 have been used: on verifying the CoSMeDis distributed social media
 platform (itself formalized as an &lt;a
@@ -545,23 +559,6 @@ relationship between height and the number of nodes.  The results are
 discussed in greater detail in the corresponding &lt;a
 href=&#34;https://mediatum.ub.tum.de/1596550&#34;&gt;Bachelor&#39;s
 Thesis&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Formal Puiseux Series</title>
-              <link>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</link>
-       <guid>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>17 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Formal Puiseux series are generalisations of formal power
-series and formal Laurent series that also allow for fractional
-exponents. They have the following general form: \[\sum_{i=N}^\infty
-a_{i/d} X^{i/d}\] where &lt;em&gt;N&lt;/em&gt; is an integer and
-&lt;em&gt;d&lt;/em&gt; is a positive integer.&lt;/p&gt; &lt;p&gt;This
-entry defines these series including their basic algebraic properties.
-Furthermore, it proves the Newton–Puiseux Theorem, namely that the
-Puiseux series over an algebraically closed field of characteristic 0
-are also algebraically closed.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

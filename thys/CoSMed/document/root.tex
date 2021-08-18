@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{CoSMed: A confidentiality-verified social media platform}
+\author{Thomas Bauereiss \and Andrei Popescu}
+\maketitle
+
+\begin{abstract}
+	This entry contains the confidentiality verification of the (functional kernel of) the CoSMed  social media platform.
+	%
+	The confidentiality properties are formalized as instances of BD Security
+	\cite{BDsecurity-ITP2021,BDSecurity-AFP}.  An innovation in the deployment of BD Security compared to previous work is the use of dynamic declassification triggers, incorporated as part of inductive bounds, for providing stronger guarantees that account for the repeated opening and closing of access windows.
+	To further strengthen the confidentiality guarantees,
+	we also prove ``traceback'' properties about the accessibility decisions affecting the information managed by the system.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction}
+
+CoSMed  \cite{cosmed-itp2016,cosmed-jar2018} is a
+minimalistic social media platform where users can register,
+create posts and establish friendship relationships. This document presents the
+formulation and proof of confidentiality properties about posts, friendship relationships,
+and friendship requests.
+
+After this introduction and a section on technical preliminaries, this document presents the specification of the CoSMed system, as an input/output (I/O) automaton.
+Next is a section on proved safety properties about the system (invariants) that are needed in the proofs of confidentiality.
+
+The confidentiality properties of CoSMed are expressed as instances of BD Security \cite{BDsecurity-ITP2021}, a general confidentiality verification framework that has been formalized in the AFP entry \cite{BDSecurity-AFP}. They cover confidentiality aspects about:
+\begin{itemize}
+	\item posts
+	\item friendship status (whether or not two users are friends)
+	\item friendship request status (whether or not a user has submitted a friendship request to another user)
+\end{itemize}
+%
+Each of these types of confidentiality properties have dedicated sections (and corresponding folders in the formalization) with self-explanatory names.  BD Security is defined in terms of an observation infrastructure, a secrecy infrastructure,  a declassification trigger and a declassification bound. The observations are always given by an arbitrary set of users (which is fixed in the ``Observation Setup'' section). In each case, the
+declassification trigger is vacuously false, since we use dynamic triggers which are made part of the inductive definition of bounds. \cite[Section 3.3]{cosmed-itp2016} explains dynamic triggers in detail. The secrets (called ``values'' in this formalization) and the declassification bounds (which relate indistinguishable secrets) are specific to each property.
+
+The proofs proceed using the method of BD Security unwinding, which
+is part of the AFP entry on BD Security \cite{BDSecurity-AFP} and
+is described in detail in \cite[Section 4.1]{cocon-JAR2021} and \cite[Section 2.6]{BDsecurity-ITP2021}.  For managing proof complexity, we take a modular approach, building several
+unwinding relations that are connected in a sequence and also have an exit point into error components. This approach is presented in \cite{cocon-JAR2021} as Corollary 6 (Sequential Unwinding Theorem)
+and in \cite{BDsecurity-ITP2021} as Theorem 4 (Sequential Multiplex Unwinding Theorem).
+
+The last section formalizes what we call \emph{traceback properties}.\footnote{In previous work, we called
+	these types of properties  \emph{accountability properties}  \cite{cosmed-itp2016,cosmed-jar2018} or \emph{forensic properties} \cite{cocon-CAV2014}.
+	The  \emph{traceback properties} terminology is used in \cite{cocon-JAR2021}.}
+These are natural ``supplements'' that strengthen the confidentiality guarantees. Indeed, confidentiality (in its BD security formulation) states: Unless a user acquires such role or a document becomes public, that user cannot learn such information. But can a user not forge the acquisition of that role or maliciously determine the publication of the document? Traceback properties show that this is not possible, except by identity theft. \cite[Section 5.2]{cosmed-itp2016} explains traceback properties (called there ``accountability properties'') in detail.
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
