@@ -1,0 +1,23 @@
+chapter AFP
+
+session CoSMeDis (AFP) = BD_Security_Compositional +
+  options [timeout = 1200]
+  sessions
+    Fresh_Identifiers
+  directories
+    "Post_Confidentiality"
+    "Post_Confidentiality/Independent_Posts"
+    "Friend_Confidentiality"
+    "Friend_Request_Confidentiality"
+    "Outer_Friend_Confidentiality"
+    "Outer_Friend_Confidentiality/Issuer"
+    "Outer_Friend_Confidentiality/Receiver"
+  theories
+    API_Network
+    Post_All
+    Friend_All
+    Friend_Request_All
+    Outer_Friend_All
+  document_files
+    "root.tex"
+    "root.bib"

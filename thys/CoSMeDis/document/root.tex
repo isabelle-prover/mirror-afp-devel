@@ -1,0 +1,153 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\setlength{\parindent}{2em}
+
+
+\begin{document}
+
+\title{CoSMeDis: A confidentiality-verified distributed social media platform}
+\author{Thomas Bauereiss \and Andrei Popescu}
+
+\maketitle
+
+\begin{abstract}
+ This entry contains the confidentiality verification of the (functional kernel of) the CoSMeDis  distributed social media platform presented in \cite{cosmedis-SandP2017}.  CoSMeDis is a multi-node extension the CoSMed prototype social media platform \cite{cosmed-itp2016,cosmed-jar2018,cosmed-AFP}.
+ %
+ The confidentiality properties are formalized as instances of BD Security
+ \cite{BDsecurity-ITP2021,BDSecurity-AFP}. The lifting of confidentiality properties from single nodes to the entire CoSMeDis network is performed using compositionality and transport theorems for BD Security, which are
+ described in \cite{cosmedis-SandP2017} and formalized in the AFP entry \cite{BDSecuritycomp-AFP}.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+This entry contains the confidentiality verification of the (functional kernel of) the CoSMeDis  distributed social media platform presented in \cite{cosmedis-SandP2017}.
+
+CoSMed  \cite{cosmed-itp2016,cosmed-jar2018} (whose formalization is described in a separate AFP entry, \cite{cosmed-AFP}) is a
+simple Facebook-style social media platform where users can register,
+create posts and establish friendship relationships.
+%
+CoSMeDis is a multi-node distributed extension of CoSMed that follows a Diaspora-style
+scheme \cite{diaspora}: Different nodes can be deployed independently at different internet locations.
+The admins of any two nodes can initiate a protocol to connect these nodes, after which
+the users of one node can establish friendship relationships and share data with users of the
+other. Thus, a node of CoSMeDis consists of CoSMed plus actions for connecting nodes and
+cross-node post sharing and friending.
+
+After this introduction and a section on technical preliminaries/prerequisites, this document presents the specification of a single CoSMeDis node, followed by a specification of the entire CoSMeDis network, consisting of a finite but unbounded number of mutually communicating nodes.
+
+Next is a section on proved safety properties about the system---essentially, some system invariants that are needed in the proofs of confidentiality.
+
+Next come the main sections, those dealing with confidentiality.
+The confidentiality properties of CoSMeDis (like those of CoSMed) are formalized as instances of BD Security \cite{BDsecurity-ITP2021}, a general confidentiality verification framework that has been formalized in the AFP entry \cite{BDSecurity-AFP}. They cover confidentiality aspects about:
+\begin{itemize}
+	\item posts
+    \item friendship status (whether or not two users are friends)
+    \item friendship request status (whether or not a user has submitted a friendship request to another user)
+\end{itemize}
+%
+Each of these types of confidentiality properties have dedicated sections (and corresponding folders in the formalization) with self-explanatory names.
+
+In addition to the properties lifted from CoSMed, we also prove the confidentiality of remote friendships (i.e., friendship relations established between users at different nodes), which is a new feature of CoSMeDis compared to CoSMed. This has a dedicated section/folder as well.
+%
+
+The properties are first proved for individual nodes, and then they are lifted to
+the entire CoSMeDis network using compositionality and transport theorems for BD Security, which are
+described in \cite{cosmedis-SandP2017} and formalized in the AFP entry \cite{BDSecuritycomp-AFP}.
+
+All the sections on confidentiality follow a similar structure (with some variations), as can be seen in the names of their subsections. There are subsections for:
+\begin{itemize}
+	\item defining the observation and secrecy infrastructures\footnote{NB:  The secrets are called ``values'' in the formalization.}
+	\item defining the declassification bounds and triggers\footnote{In many cases, the CoSMed and CoSMeDis bounds incorporate the triggers as well---see \cite[Appendix~C]{cosmedis-SandP2017} and \cite[Section~3.3]{cosmed-jar2018}.}
+	\item the main results, namely:
+	  \begin{itemize}
+		\item the BD Security instance proved by unwinding for an individual node
+		\item the lifting of this result from a CoSMeDis node to an entire
+		network  using the $n$-ary compositionality theorem for BD security
+	  \end{itemize}
+\end{itemize}
+
+In the case of post confidentiality and outer friend confidentiality, the
+secret may be communicated from the issuer to other nodes. For this purpose, we
+formalize corresponding local security properties for the issuer and the
+receiver nodes, contained in separate subsections with names containing ``Issuer'' and
+``Receiver'', respectively.
+
+In the case of post confidentiality, we have a version with
+static declassification trigger and one with dynamic trigger. (The dynamic version is described  in \cite[Appendix~C]{cosmedis-SandP2017}.)
+Moreover, in the
+section on ``independent posts'', we formalize the lifting of
+the confidentiality of
+one given (arbitrary but fixed) post to the confidentiality of two posts of
+arbitrary nodes of the network (as described in \cite[Appendix~E]{cosmedis-SandP2017}).
+
+As a matter of notation, this formalization (similarly to all our AFP formalizations involving BD security)
+differs from the paper \cite{cosmedis-SandP2017}
+(and on most papers on CoSMed, CoSMeDis or CoCon)
+in
+that the secrets are called ``values'' (and consequently the type of secrets is
+denoted by ``value''), and are ranged over by $v$ rather than $s$. On the other
+hand, we use $s$ (rather than $\sigma$) to range over states.
+%
+Moreover, the formalization uses the following notations for the various BD
+security components:
+\begin{itemize}
+\item $\varphi$ for the secret discriminator for isSec
+\item $f$ for the secret selector getSec
+\item $\gamma$ for the observation discriminator  isObs
+\item $g$  for the observation selector getObs
+\end{itemize}
+
+Finally, what the paper  \cite{cosmedis-SandP2017}  refers to as ``nodes'' are referred in the formalization as ``APIs''. (The ``API'' terminology is justified by the fact that nodes behave similarly to a form communicating APIs.)
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

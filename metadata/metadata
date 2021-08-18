@@ -10881,3 +10881,29 @@ abstract =
   further strengthen the confidentiality guarantees, we also prove
   "traceback" properties about the accessibility decisions
   affecting the information managed by the system.
+
+[CoSMeDis]
+title = CoSMeDis: A confidentiality-verified distributed social media platform
+author = Thomas Bauereiss <mailto:thomas@bauereiss.name>, Andrei Popescu <https://www.andreipopescu.uk>
+topic = Computer science/Security
+date = 2021-08-16
+notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
+abstract = 
+  This entry contains the confidentiality verification of the
+  (functional kernel of) the CoSMeDis  distributed social media platform
+  presented in [<a href="https://doi.org/10.1109/SP.2017.24">1</a>].
+  CoSMeDis is a multi-node extension the CoSMed prototype social media
+  platform [<a href="https://doi.org/10.1007/978-3-319-43144-4_6">2</a>,
+  <a href="https://doi.org/10.1007/s10817-017-9443-3">3</a>,
+  <a href="https://www.isa-afp.org/entries/CoSMed.html">4</a>].
+  The confidentiality properties are formalized as instances of BD
+  Security [<a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">5</a>,
+  <a href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">6</a>].
+  The lifting of confidentiality properties from single nodes to the
+  entire CoSMeDis network is performed using compositionality and
+  transport theorems for BD Security, which are described in [<a
+  href="https://doi.org/10.1109/SP.2017.24">1</a>]
+  and formalized in a separate <a
+  href="https://www.isa-afp.org/entries/Compositional_BD_Security.html">AFP
+  entry</a>.
+

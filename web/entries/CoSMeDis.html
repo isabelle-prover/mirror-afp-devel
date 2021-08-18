@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Compositional BD Security - Archive of Formal Proofs
+<title>CoSMeDis: A confidentiality-verified distributed social media platform - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,19 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ompositional
+  <h1>          <font class="first">C</font>oSMeDis:
   
-          <font class="first">B</font>D
+          <font class="first">A</font>
   
-          <font class="first">S</font>ecurity
+          confidentiality-verified
+  
+          distributed
+  
+          social
+  
+          media
+  
+          platform
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +95,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Compositional BD Security</td>
+  <td class="data" width="80%">CoSMeDis: A confidentiality-verified distributed social media platform</td>
 </tr>
 
 <tr>
@@ -110,35 +118,36 @@ MathJax = {
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-Building on a previous <a
-href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">AFP
-entry</a> that formalizes the Bounded-Deducibility Becurity (BD
-Security) framework <a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">[1]</a>,
-we formalize compositionality and transport theorems for information
-flow security. These results allow lifting BD Security properties from
-individual components specified as transition systems, to a
-composition of systems specified as communicating products of
-transition systems. The underlying ideas of these results are
-presented in the papers <a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">[1]</a>
-and <a href="https://doi.org/10.1109/SP.2017.24">[2]</a>.
-The latter paper also describes a major case study where these results
-have been used: on verifying the CoSMeDis distributed social media
-platform (itself formalized as an <a
-href="https://www.isa-afp.org/entries/CoSMeDis.html">AFP
-entry</a> that builds on this entry).</td>
+This entry contains the confidentiality verification of the
+(functional kernel of) the CoSMeDis  distributed social media platform
+presented in [<a href="https://doi.org/10.1109/SP.2017.24">1</a>].
+CoSMeDis is a multi-node extension the CoSMed prototype social media
+platform [<a href="https://doi.org/10.1007/978-3-319-43144-4_6">2</a>,
+<a href="https://doi.org/10.1007/s10817-017-9443-3">3</a>,
+<a href="https://www.isa-afp.org/entries/CoSMed.html">4</a>].
+The confidentiality properties are formalized as instances of BD
+Security [<a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">5</a>,
+<a href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">6</a>].
+The lifting of confidentiality properties from single nodes to the
+entire CoSMeDis network is performed using compositionality and
+transport theorems for BD Security, which are described in [<a
+href="https://doi.org/10.1109/SP.2017.24">1</a>]
+and formalized in a separate <a
+href="https://www.isa-afp.org/entries/Compositional_BD_Security.html">AFP
+entry</a>.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{BD_Security_Compositional-AFP,
+        <pre>@article{CoSMeDis-AFP,
   author  = {Thomas Bauereiss and Andrei Popescu},
-  title   = {Compositional BD Security},
+  title   = {CoSMeDis: A confidentiality-verified distributed social media platform},
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/BD_Security_Compositional.html},
+  note    = {\url{https://isa-afp.org/entries/CoSMeDis.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,11 +159,9 @@ entry</a> that builds on this entry).</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bounded_Deducibility_Security.html">Bounded_Deducibility_Security</a>      </td></tr>
+          <td class="data"><a href="BD_Security_Compositional.html">BD_Security_Compositional</a>, <a href="Fresh_Identifiers.html">Fresh_Identifiers</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CoSMeDis.html">CoSMeDis</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -166,17 +173,17 @@ entry</a> that builds on this entry).</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/CoSMeDis/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/CoSMeDis/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/CoSMeDis/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-BD_Security_Compositional-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-CoSMeDis-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
