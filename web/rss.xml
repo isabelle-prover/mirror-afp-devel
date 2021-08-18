@@ -46,6 +46,33 @@ href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34
 and verified using the BD Security unwinding technique.</description>
     </item>
     <item>
+       <title>Compositional BD Security</title>
+              <link>https://www.isa-afp.org/entries/BD_Security_Compositional.html</link>
+       <guid>https://www.isa-afp.org/entries/BD_Security_Compositional.html</guid>
+       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
+       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+Building on a previous &lt;a
+href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;AFP
+entry&lt;/a&gt; that formalizes the Bounded-Deducibility Becurity (BD
+Security) framework &lt;a
+href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
+we formalize compositionality and transport theorems for information
+flow security. These results allow lifting BD Security properties from
+individual components specified as transition systems, to a
+composition of systems specified as communicating products of
+transition systems. The underlying ideas of these results are
+presented in the papers &lt;a
+href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;
+and &lt;a
+href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;[2]&lt;/a&gt;.
+The latter paper also describes a major case study where these results
+have been used: on verifying the CoSMeDis distributed social media
+platform (itself formalized as an &lt;a
+href=&#34;https://www.isa-afp.org/entries/CoSMeDis.html&#34;&gt;AFP
+entry&lt;/a&gt; that builds on this entry).</description>
+    </item>
+    <item>
        <title>Relational Forests</title>
               <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
        <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
@@ -535,33 +562,6 @@ entry defines these series including their basic algebraic properties.
 Furthermore, it proves the Newton–Puiseux Theorem, namely that the
 Puiseux series over an algebraically closed field of characteristic 0
 are also algebraically closed.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Laws of Large Numbers</title>
-              <link>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
-       <guid>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Law of Large Numbers states that, informally, if one
-performs a random experiment $X$ many times and takes the average of
-the results, that average will be very close to the expected value
-$E[X]$.&lt;/p&gt; &lt;p&gt; More formally, let
-$(X_i)_{i\in\mathbb{N}}$ be a sequence of independently identically
-distributed random variables whose expected value $E[X_1]$ exists.
-Denote the running average of $X_1, \ldots, X_n$ as $\overline{X}_n$.
-Then:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;The Weak Law of Large Numbers
-states that $\overline{X}_{n} \longrightarrow E[X_1]$ in probability
-for $n\to\infty$, i.e. $\mathcal{P}(|\overline{X}_{n} - E[X_1]| &gt;
-\varepsilon) \longrightarrow 0$ as $n\to\infty$ for any $\varepsilon
-&gt; 0$.&lt;/li&gt; &lt;li&gt;The Strong Law of Large Numbers states
-that $\overline{X}_{n} \longrightarrow E[X_1]$ almost surely for
-$n\to\infty$, i.e. $\mathcal{P}(\overline{X}_{n} \longrightarrow
-E[X_1]) = 1$.&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;In this entry, I
-formally prove the strong law and from it the weak law. The approach
-used for the proof of the strong law is a particularly quick and slick
-one based on ergodic theory, which was formalised by Gouëzel in
-another AFP entry.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
