@@ -477,9 +477,6 @@ lemma new_tv_subst_scheme_list:
   "new_tv n S \<Longrightarrow> new_tv n (A::type_scheme list) \<Longrightarrow> new_tv n ($ S A)"
 by (meson UnE codD free_tv_app_subst_scheme_list in_mono new_tv_def)
 
-lemma new_tv_Suc_list: "new_tv n A \<Longrightarrow> new_tv (Suc n) ((TVar n)#A)"
-by (simp add: new_tv_list)
-
 lemma new_tv_only_depends_on_free_tv_type_scheme:
   fixes sch :: type_scheme
   shows "free_tv sch = free_tv sch' \<Longrightarrow> new_tv n sch \<Longrightarrow> new_tv n sch'"
@@ -491,7 +488,7 @@ lemma new_tv_only_depends_on_free_tv_scheme_list:
   unfolding new_tv_def by simp
 
 lemma new_tv_nth_nat_A: 
-  "m < length A \<Longrightarrow> new_tv n A \<Longrightarrow> (new_tv n (A!m))"
+  "m < length A \<Longrightarrow> new_tv n A \<Longrightarrow> new_tv n (A!m)"
 unfolding new_tv_def using free_tv_nth_A_impl_free_tv_A by blast
 
 
