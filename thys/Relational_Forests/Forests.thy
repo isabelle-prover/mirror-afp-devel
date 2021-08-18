@@ -169,7 +169,7 @@ abbreviation "orientable_8 x \<equiv> symmetric x \<and> irreflexive_inf x \<lon
 
 lemma super_orientation_diagonal:
   "x \<le> y \<squnion> y\<^sup>T \<Longrightarrow> y \<sqinter> y\<^sup>T \<le> x \<sqinter> 1 \<Longrightarrow> y \<sqinter> y\<^sup>T = x \<sqinter> 1"
-  using inf.antisym loop_super_orientation_diagonal by auto
+  using order.antisym loop_super_orientation_diagonal by auto
 
 lemma orientable_2_implies_1:
   "orientable_2 x \<Longrightarrow> orientable_1 x"
@@ -619,7 +619,7 @@ text \<open>Theorem 1.7\<close>
 (* move to Kleene_Relation_Algebras *)
 lemma acyclic_irreflexive_star_antisymmetric:
   "acyclic x \<longleftrightarrow> irreflexive x \<and> antisymmetric (x\<^sup>\<star>)"
-  by (metis acyclic_star_inf_conv_iff conv_star_commute dual_order.trans eq_iff reflexive_inf_closed star.circ_mult_increasing star.circ_reflexive)
+by (metis acyclic_star_inf_conv_iff conv_star_commute order.trans reflexive_inf_closed star.circ_mult_increasing star.circ_reflexive order.antisym)
 
 text \<open>Theorem 1.8\<close>
 
@@ -633,7 +633,7 @@ text \<open>(Theorem 1.1 is \<open>acyclic_asymmetric\<close> in \<open>Kleene_R
 
 lemma transitive_acyclic_irreflexive:
   "transitive x \<Longrightarrow> acyclic x \<longleftrightarrow> irreflexive x"
-  using antisym star.circ_mult_increasing star_right_induct_mult by fastforce
+  using order.antisym star.circ_mult_increasing star_right_induct_mult by fastforce
 
 lemma transitive_acyclic_asymmetric:
   "transitive x \<Longrightarrow> acyclic x \<longleftrightarrow> asymmetric x"
@@ -768,16 +768,16 @@ lemma acyclic_2_implies_1:
   using acyclic_2_def acyclic_1_def by auto
 
 text \<open>Theorem 8\<close>
-
+thm eq_iff order.eq_iff
 lemma acyclic_4a_4b:
   "acyclic_4a x \<longleftrightarrow> acyclic_4b x"
-  using acyclic_4a_def acyclic_4b_def eq_iff star.circ_increasing by auto
+  using acyclic_4a_def acyclic_4b_def order.eq_iff star.circ_increasing by auto
 
 text \<open>Theorem 7\<close>
 
 lemma acyclic_3a_3b:
   "acyclic_3a x \<longleftrightarrow> acyclic_3b x"
-  by (metis acyclic_3a_def acyclic_3b_def antisym star.circ_increasing star_involutive star_isotone)
+  by (metis acyclic_3a_def acyclic_3b_def order.antisym star.circ_increasing star_involutive star_isotone)
 
 text \<open>Theorem 7\<close>
 
@@ -1000,7 +1000,7 @@ proof -
         finally show "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y \<sqinter> -z)\<^sup>+ \<le> 1"
           using bot_least le_bot by blast
         have "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>+ * (y \<sqinter> -z)\<^sup>\<star> \<le> (y\<^sup>T \<sqinter> z) * top \<sqinter> (y\<^sup>T \<sqinter> -z) * top"
-          by (smt comp_inf.mult_isotone comp_isotone eq_iff top.extremum mult_assoc)
+          using comp_associative inf.sup_mono mult_right_isotone top.extremum by presburger
         also have "... = bot"
           using 1 by (simp add: top_injective_inf_complement_2)
         finally show "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>+ * (y \<sqinter> -z)\<^sup>\<star> \<le> 1"
@@ -1010,7 +1010,7 @@ proof -
         .
     qed
     finally show "z\<^sup>\<star> \<sqinter> (x \<sqinter> -z)\<^sup>\<star> = 1"
-      by (simp add: antisym star.circ_reflexive)
+      by (simp add: order.antisym star.circ_reflexive)
   qed
 qed
 
@@ -1071,7 +1071,7 @@ proof
     hence "y\<^sup>\<star> \<sqinter> z\<^sup>\<star> \<le> 1"
       using 1 2 by (metis acyclic_5a_def comp_inf.mult_isotone inf.cobounded1 inf.right_idem star_isotone)
     thus "y\<^sup>\<star> \<sqinter> z\<^sup>\<star> = 1"
-      by (simp add: antisym star.circ_reflexive)
+      by (simp add: order.antisym star.circ_reflexive)
   qed
 next
   assume 1: "acyclic_5e x"
@@ -1171,7 +1171,7 @@ proof -
   have 3: "asymmetric ?y"
     using 1 acyclic_plus_asymmetric by auto
   have "?y \<squnion> ?y\<^sup>T = x\<^sup>+ \<sqinter> -1"
-  proof (rule antisym)
+  proof (rule order.antisym)
     have 4: "?y \<le> x\<^sup>+"
       using 1 comp_isotone star_isotone by auto
     hence "?y\<^sup>T \<le> x\<^sup>+"
@@ -1245,11 +1245,11 @@ proof -
   have 4: "p \<le> ?y \<squnion> 1"
     by (simp add: regular_complement_top sup_commute sup_inf_distrib1)
   have "top = p\<^sup>T * p"
-    using assms inf.eq_iff shunt_bijective top_greatest vector_conv_covector by blast
+    using assms order.eq_iff shunt_bijective top_greatest vector_conv_covector by blast
   also have "... \<le> (?y \<squnion> 1)\<^sup>T * (?y \<squnion> 1)"
     using 4 by (simp add: conv_isotone mult_isotone)
   also have "... = (?y \<squnion> ?y\<^sup>T)\<^sup>\<star>"
-    using 1 2 by (smt antisym cancel_separate_1 conv_star_commute star.circ_mult_1 star.circ_mult_increasing star.right_plus_circ star_right_induct_mult sup_commute)
+    using 1 2 by (smt order.antisym cancel_separate_1 conv_star_commute star.circ_mult_1 star.circ_mult_increasing star.right_plus_circ star_right_induct_mult sup_commute)
   finally have "-1 \<le> (?y \<squnion> ?y\<^sup>T)\<^sup>\<star>"
     using top.extremum top_le by blast
   thus "spanning (-1) (p \<sqinter> -1)"
@@ -1269,7 +1269,7 @@ proof -
   hence "x \<le> (x \<sqinter> -1)\<^sup>\<star>"
     using 1 by (smt maddux_3_11_pp regular_one_closed sup.absorb_iff1 sup_assoc)
   thus ?thesis
-    by (metis antisym inf.cobounded1 star_involutive star_isotone)
+    by (metis order.antisym inf.cobounded1 star_involutive star_isotone)
 qed
 
 text \<open>Theorem 6.5\<close>
@@ -1377,7 +1377,7 @@ next
     also have "... = 1"
       using 1 by (simp add: acyclic_5g_def inf.left_commute inf.sup_monoid.add_commute maddux_3_11_pp)
     finally show "y\<^sup>\<star> \<sqinter> z\<^sup>\<star> = 1"
-      by (simp add: antisym star.circ_reflexive)
+      by (simp add: order.antisym star.circ_reflexive)
   qed
 qed
 

@@ -174,7 +174,7 @@ proof -
           using assms(1) by (simp add: conv_complement conv_dist_inf inf_commute inf_left_commute kruskal_spanning_invariant_def)
       next
         show "g \<sqinter> --?h = ?h"
-          using 1 2 by (metis (hide_lams) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
+          using 1 2 by (metis assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
       next
         show "spanning_forest ?f (-?h \<sqinter> g)"
         proof (unfold spanning_forest_def, intro conjI)
@@ -226,7 +226,7 @@ proof -
           using assms(1) by (simp add: conv_complement conv_dist_inf inf_commute inf_left_commute kruskal_spanning_invariant_def)
       next
         show "g \<sqinter> --?h = ?h"
-          using 1 2 by (metis (hide_lams) assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
+          using 1 2 by (metis assms(1) kruskal_spanning_invariant_def inf_assoc pp_dist_inf)
       next
         show "spanning_forest f (-?h \<sqinter> g)"
         proof (unfold spanning_forest_def, intro conjI)
@@ -323,7 +323,7 @@ next
   fix p q t
   assume 1: "(regular r \<and> regular q \<and> vector q \<and> asymmetric t \<and> t \<le> r \<and> t \<le> q \<and> q = t\<^sup>T\<^sup>\<star> * s \<and> p = -q \<sqinter> r\<^sup>T * q) \<and> \<not> p \<noteq> bot"
   have "q = r\<^sup>T\<^sup>\<star> * s"
-    apply (rule antisym)
+    apply (rule order.antisym)
     using 1 conv_order mult_left_isotone star_isotone apply simp
     using 1 by (metis inf.sup_monoid.add_commute mult_1_left mult_left_isotone mult_right_isotone order_lesseq_imp pseudo_complement star.circ_reflexive star_left_induct_mult)
   thus "asymmetric t \<and> t \<le> r \<and> q = t\<^sup>T\<^sup>\<star> * s \<and> q = r\<^sup>T\<^sup>\<star> * s"
@@ -351,7 +351,7 @@ next
         also have "... \<le> t \<sqinter> p"
           using 3 by (metis comp_inf.mult_right_isotone comp_inf.star.circ_sup_sub_sup_one_1 inf.boundedE le_sup_iff mult_right_isotone)
         finally have 4: "t \<sqinter> (r \<sqinter> q * p\<^sup>T)\<^sup>T = bot"
-          using 2 by (metis antisym bot_least inf.sup_monoid.add_assoc pseudo_complement)
+          using 2 by (metis order.antisym bot_least inf.sup_monoid.add_assoc pseudo_complement)
         hence 5: "r \<sqinter> q * p\<^sup>T \<sqinter> t\<^sup>T = bot"
           using conv_inf_bot_iff inf_commute by force
         have "r \<sqinter> q * p\<^sup>T \<sqinter> (r \<sqinter> q * p\<^sup>T)\<^sup>T \<le> q * p\<^sup>T \<sqinter> p * q\<^sup>T"
@@ -372,7 +372,7 @@ next
       show "t \<squnion> (r \<sqinter> q * p\<^sup>T) \<le> q \<squnion> p"
         using 2 by (metis comp_inf.star.circ_sup_sub_sup_one_1 inf.absorb2 inf.coboundedI2 inf.sup_monoid.add_commute le_sup_iff mult_right_isotone sup_left_divisibility)
       show "q \<squnion> p = (t \<squnion> (r \<sqinter> q * p\<^sup>T))\<^sup>T\<^sup>\<star> * s"
-      proof (rule antisym)
+      proof (rule order.antisym)
         have 7: "q \<le> (t \<squnion> (r \<sqinter> q * p\<^sup>T))\<^sup>T\<^sup>\<star> * s"
           using 2 by (metis conv_order mult_left_isotone star_isotone sup_left_divisibility)
         have "-q \<sqinter> (r \<sqinter> q * p\<^sup>T)\<^sup>T * q \<le> (t \<squnion> (r \<sqinter> q * p\<^sup>T))\<^sup>T * t\<^sup>T\<^sup>\<star> * s"
@@ -434,7 +434,7 @@ next
           using 2 by (smt (verit, ccfv_SIG) star.circ_loop_fixpoint star_left_induct sup.bounded_iff sup_left_divisibility)
       qed
       show "-(q \<squnion> p) \<sqinter> r\<^sup>T * p = -(q \<squnion> p) \<sqinter> r\<^sup>T * (q \<squnion> p)"
-      proof (rule antisym)
+      proof (rule order.antisym)
         show "-(q \<squnion> p) \<sqinter> r\<^sup>T * p \<le> -(q \<squnion> p) \<sqinter> r\<^sup>T * (q \<squnion> p)"
           using inf.sup_right_isotone mult_left_sub_dist_sup_right by blast
         have 15: "- (q \<squnion> p) \<sqinter> r\<^sup>T * (q \<squnion> p) = - (q \<squnion> p) \<sqinter> r\<^sup>T * q \<squnion> - (q \<squnion> p) \<sqinter> r\<^sup>T * p"
