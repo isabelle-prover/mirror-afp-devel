@@ -24,6 +24,28 @@ infinite type, as well as executable instantiations for natural
 numbers and strings.</description>
     </item>
     <item>
+       <title>CoCon: A Confidentiality-Verified Conference Management System</title>
+              <link>https://www.isa-afp.org/entries/CoCon.html</link>
+       <guid>https://www.isa-afp.org/entries/CoCon.html</guid>
+       <dc:creator> Andrei Popescu, Peter Lammich, Thomas Bauereiss       </dc:creator>
+       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+This entry contains the confidentiality verification of the
+(functional kernel of) the CoCon conference management system [&lt;a
+href=&#34;https://doi.org/10.1007/978-3-319-08867-9_11&#34;&gt;1&lt;/a&gt;,
+&lt;a
+href=&#34;https://doi.org/10.1007/s10817-020-09566-9&#34;&gt;2&lt;/a&gt;].
+The confidentiality properties refer to the documents managed by the
+system, namely papers, reviews, discussion logs and
+acceptance/rejection decisions, and also to the assignment of
+reviewers to papers. They have all been formulated as instances of BD
+Security [&lt;a
+href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;3&lt;/a&gt;,
+&lt;a
+href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;4&lt;/a&gt;]
+and verified using the BD Security unwinding technique.</description>
+    </item>
+    <item>
        <title>Relational Forests</title>
               <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
        <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
@@ -540,38 +562,6 @@ formally prove the strong law and from it the weak law. The approach
 used for the proof of the strong law is a particularly quick and slick
 one based on ergodic theory, which was formalised by Gouëzel in
 another AFP entry.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
-              <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
-       <guid>https://www.isa-afp.org/entries/IsaGeoCoq.html</guid>
-       <dc:creator> Roland Coghetto       </dc:creator>
-       <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
-of geometry using the Coq proof assistant. It contains both proofs
-about the foundations of geometry and high-level proofs in the same
-style as in high school.  We port a part of the GeoCoq
-2.4.0 library to Isabelle/HOL: more precisely,
-the files Chap02.v to Chap13_3.v, suma.v as well as the associated
-definitions and some useful files for the demonstration of certain
-parallel postulates. The synthetic approach of the demonstrations is directly
-inspired by those contained in GeoCoq. The names of the lemmas and
-theorems used are kept as far as possible as well as the definitions.
-&lt;/p&gt;
-&lt;p&gt;It should be noted that T.J.M. Makarios has done
-&lt;a href=&#34;https://www.isa-afp.org/entries/Tarskis_Geometry.html&#34;&gt;some proofs in Tarski&#39;s Geometry&lt;/a&gt;. It uses a definition that does not quite
-coincide with the definition used in Geocoq and here.
-Furthermore, corresponding definitions in the &lt;a href=&#34;https://www.isa-afp.org/entries/Poincare_Disc.html&#34;&gt;Poincaré Disc Model
-development&lt;/a&gt; are not identical to those defined in GeoCoq.
-&lt;/p&gt;
-&lt;p&gt;In the last part, it is
-formalized that, in the neutral/absolute space, the axiom of the
-parallels of Tarski&#39;s system implies the Playfair axiom, the 5th
-postulate of Euclid and Euclid&#39;s original parallel postulate. These
-proofs, which are not constructive, are directly inspired by Pierre
-Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
-&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
