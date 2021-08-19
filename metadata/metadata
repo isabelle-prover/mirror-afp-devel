@@ -10847,7 +10847,7 @@ notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
 abstract = 
   Building on a previous <a
   href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">AFP
-  entry</a> that formalizes the Bounded-Deducibility Becurity (BD
+  entry</a> that formalizes the Bounded-Deducibility Security (BD
   Security) framework <a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">[1]</a>,
   we formalize compositionality and transport theorems for information
   flow security. These results allow lifting BD Security properties from

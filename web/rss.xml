@@ -96,7 +96,7 @@ and verified using the BD Security unwinding technique.</description>
        <description>
 Building on a previous &lt;a
 href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;AFP
-entry&lt;/a&gt; that formalizes the Bounded-Deducibility Becurity (BD
+entry&lt;/a&gt; that formalizes the Bounded-Deducibility Security (BD
 Security) framework &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
 we formalize compositionality and transport theorems for information
 flow security. These results allow lifting BD Security properties from
