@@ -65,7 +65,7 @@ entire CoSMeDis network is performed using compositionality and
 transport theorems for BD Security, which are described in [&lt;a
 href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;1&lt;/a&gt;]
 and formalized in a separate &lt;a
-href=&#34;https://www.isa-afp.org/entries/Compositional_BD_Security.html&#34;&gt;AFP
+href=&#34;https://www.isa-afp.org/entries/BD_Security_Compositional.html&#34;&gt;AFP
 entry&lt;/a&gt;.</description>
     </item>
     <item>

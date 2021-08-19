@@ -10904,6 +10904,6 @@ abstract =
   transport theorems for BD Security, which are described in [<a
   href="https://doi.org/10.1109/SP.2017.24">1</a>]
   and formalized in a separate <a
-  href="https://www.isa-afp.org/entries/Compositional_BD_Security.html">AFP
+  href="https://www.isa-afp.org/entries/BD_Security_Compositional.html">AFP
   entry</a>.
 
