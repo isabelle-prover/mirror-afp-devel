@@ -1,10 +1,9 @@
 chapter AFP
 
 session IsaGeoCoq (AFP) = HOL +
-  options [timeout = 300]
+  options [timeout = 600]
   theories
     Tarski_Neutral
-
   document_files
     "root.bib"
     "root.tex"
