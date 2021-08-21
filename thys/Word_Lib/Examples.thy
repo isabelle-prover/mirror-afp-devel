@@ -5,7 +5,7 @@
  *)
 
 theory Examples
-  imports Bitwise Next_and_Prev Generic_set_bit Word_Syntax Signed_Division_Word
+  imports Bitwise Next_and_Prev Signed_Division_Word
 begin
 
 context

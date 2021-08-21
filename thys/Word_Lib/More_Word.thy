@@ -1307,7 +1307,7 @@ lemma mask_eq_x_eq_0:
   by auto
 
 lemma compl_of_1: "NOT 1 = (-2 :: 'a :: len word)"
-  by (fact not_one)
+  by (fact not_one_eq)
 
 lemma split_word_eq_on_mask:
   "(x = y) = (x AND m = y AND m \<and> x AND NOT m = y AND NOT m)"

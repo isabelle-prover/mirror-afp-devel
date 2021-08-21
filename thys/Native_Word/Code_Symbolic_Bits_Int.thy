@@ -49,8 +49,10 @@ lemma int_and_code [code]: fixes i j :: int shows
   "Int.Neg num.One AND Int.Pos m = Int.Pos m"
   "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (or_not_num_neg (Num.BitM n) m) num.One"
   "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (or_not_num_neg (num.Bit0 n) m) num.One"
-  by (simp_all add: and_num_eq_None_iff and_num_eq_Some_iff sub_one_eq_not_neg
-    numeral_or_not_num_eq ac_simps split: option.split)
+  apply (simp_all add: and_num_eq_None_iff [where ?'a = int] and_num_eq_Some_iff [where ?'a = int] split: option.split)
+  apply (simp_all add: sub_one_eq_not_neg numeral_or_not_num_eq)
+  apply (simp_all add: ac_simps)
+  done
 
 lemma int_or_code [code]: fixes i j :: int shows
   "0 OR j = j"
@@ -63,9 +65,8 @@ lemma int_or_code [code]: fixes i j :: int shows
   "Int.Neg num.One OR Int.Pos m = Int.Neg num.One"
   "Int.Neg (num.Bit0 n) OR Int.Pos m = (case and_not_num (Num.BitM n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
   "Int.Neg (num.Bit1 n) OR Int.Pos m = (case and_not_num (num.Bit0 n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-  apply (simp_all add: and_not_num_eq_None_iff and_not_num_eq_Some_iff numeral_or_num_eq
-    sub_one_eq_not_neg add_One ac_simps split: option.split)
-     apply (simp_all add: or_eq_not_not_and minus_numeral_inc_eq)
+  apply (simp_all add: and_not_num_eq_None_iff and_not_num_eq_Some_iff numeral_or_num_eq minus_numeral_inc_eq ac_simps split: option.split)
+  apply (simp_all add: or_int_def)
   done
 
 lemma int_xor_code [code]: fixes i j :: int shows
@@ -75,7 +76,7 @@ lemma int_xor_code [code]: fixes i j :: int shows
   "Int.Neg n XOR Int.Neg m = Num.sub n num.One XOR Num.sub m num.One"
   "Int.Neg n XOR Int.Pos m = NOT (Num.sub n num.One XOR Int.Pos m)"
   "Int.Pos n XOR Int.Neg m = NOT (Int.Pos n XOR Num.sub m num.One)"
-  by (simp_all add: xor_num_eq_None_iff xor_num_eq_Some_iff sub_one_eq_not_neg split: option.split)
+  by (simp_all add: xor_num_eq_None_iff [where ?'a = int] xor_num_eq_Some_iff [where ?'a = int] split: option.split)
 
 lemma bin_rest_code: "i div 2 = drop_bit 1 i" for i :: int
   by (simp add: drop_bit_eq_div)

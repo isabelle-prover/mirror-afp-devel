@@ -670,7 +670,7 @@ lemmas limited_and_simps = limited_and_simps1
        limited_and_simps1[OF lshift_limited_and]
        limited_and_simps1[OF rshift_limited_and]
        limited_and_simps1[OF rshift_limited_and, OF is_aligned_limited_and]
-       not_one
+       not_one_eq
 
 definition
   from_bool :: "bool \<Rightarrow> 'a::len word" where

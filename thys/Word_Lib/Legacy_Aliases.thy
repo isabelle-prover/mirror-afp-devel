@@ -157,7 +157,7 @@ lemma shiftl1_p:
 lemma shiftr1_bintr:
   "(shiftr1 (numeral w) :: 'a::len word) =
     word_of_int (take_bit LENGTH('a) (numeral w) div 2)"
-  by (rule bit_word_eqI) (simp add: bit_simps flip: bit_Suc)
+  by (rule bit_word_eqI) (simp add: bit_simps bit_numeral_iff [where ?'a = int] flip: bit_Suc)
 
 lemma sshiftr1_sbintr:
   "(sshiftr1 (numeral w) :: 'a::len word) =
