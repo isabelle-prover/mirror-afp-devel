@@ -75,15 +75,6 @@ lemma dist_lemmas:
 lemma radius_max_prop: "(\<forall>s \<in> S. distance C s \<le> r) \<Longrightarrow> (radius C \<le> r)"
   by (metis image_iff radius_contained)
 
-lemma someI_ex_extended: "\<forall>a \<in> A. \<exists>b. P a b \<Longrightarrow> \<forall>a \<in> A. P a (SOME b. P a b)" 
-proof 
-  fix a
-  assume "\<forall>a \<in> A. \<exists>b. P a b" "a \<in> A"
-  then have "\<exists>b. P a b" by auto
-  then show "P a (SOME b. P a b)" 
-    by (meson someI)
-qed
-
 lemma dist_ins:
 assumes "\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> x < dist c\<^sub>1 c\<^sub>2"
 and "distance C s > x"
@@ -228,51 +219,42 @@ lemma inv_last_1:
   assumes "\<forall>s \<in> (S - S'). distance C s \<le> 2*r"
     and "S' = {}"
   shows "radius C \<le> 2*r"
-  by (metis Diff_empty assms(1) assms(2) image_iff radius_contained)
+  by (metis Diff_empty assms image_iff radius_contained)
 
 lemma inv_last_2: 
   assumes "finite C"
   and "card C > n"
   and "C \<subseteq> S"
   and "\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> dist c\<^sub>1 c\<^sub>2 > 2*r"
-  shows "\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r"
+  shows "\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r" (is ?P)
 proof (rule ccontr)
-  assume "\<not>(\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r)"
-  then have "\<exists>C'. card C' \<le> n \<and> card C' > 0 \<and> radius C' \<le> r" by auto
+  assume "\<not> ?P"
   then obtain C' where card_C': "card C' \<le> n \<and> card C' > 0" and radius_C': "radius C' \<le> r" by auto
-  have key_lemma: "\<forall>c \<in> C. (\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r)"
+  have "\<forall>c \<in> C. (\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r)"
   proof
     fix c
     assume "c \<in> C"
     then have "c \<in> S" using assms(3) by blast
-    then have "distance C' c \<le> radius C'" using finite_distances Max.coboundedI by (simp add: radius_def)
+    then have "distance C' c \<le> radius C'" using finite_distances by (simp add: radius_def)
     then have "distance C' c \<le> r" using radius_C' by simp
     then show "\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r" using dist_lemmas
       by (metis card_C' card_gt_0_iff)
   qed
-  let ?f = "(\<lambda>c. (SOME c'. c' \<in> C' \<and> dist c c' \<le> r))" 
-  have f_props: "\<forall>c \<in> C. ?f c \<in> C' \<and> dist c (?f c) \<le> r  "
-    using key_lemma someI_ex_extended[of C "\<lambda>c c'. c' \<in> C' \<and> dist c c' \<le> r"] by simp
-  have "inj_on ?f C \<or> \<not>inj_on ?f C" by simp
-  then show False
-  proof (elim disjE)
-    assume local_assm: "inj_on ?f C"
-    then have "?f ` C \<subseteq> C' " using f_props by auto
-    then have "card C' \<ge> card C" using local_assm card_inj_on_le card_ge_0_finite card_C' by blast
-    then have "card C' > n" using assms by simp
-    then show False using card_C' by simp
-  next
-    assume "\<not>inj_on ?f C"
-    then have "\<exists>c1 \<in> C. \<exists>c2 \<in> C. c1 \<noteq> c2 \<and> ?f c1 = ?f c2" using inj_on_def by blast
-    then obtain c1 c2 where defs: "c1 \<in> C \<and> c2 \<in> C \<and> c1 \<noteq> c2 \<and> ?f c1 = ?f c2" by blast
-    then have *: "dist c1 (?f c1) \<le> r \<and> dist c2 (?f c1) \<le> r" using f_props by auto
-
-    have "2 * r < dist c1 c2" using assms defs by simp
-    also have " ... \<le> dist c1 (?f c1) + dist (?f c1) c2" using dist_triangle by auto
-    also have " ... = dist c1 (?f c1) + dist c2 (?f c1)" using dist_commute by auto
-    also have " ... \<le> 2 * r" using * by simp
-    finally show False by simp
+  then obtain f where f: "\<forall>c\<in>C. f c \<in> C' \<and> dist c (f c) \<le> r" by metis
+  have "\<not>inj_on f C"
+  proof
+    assume "inj_on f C"
+    then have "card C' \<ge> card C" using \<open>inj_on f C\<close> card_inj_on_le card_ge_0_finite card_C' f by blast
+    then show False using card_C' \<open>n < card C\<close> by linarith
   qed
+  then obtain c1 c2 where defs: "c1 \<in> C \<and> c2 \<in> C \<and> c1 \<noteq> c2 \<and> f c1 = f c2" using inj_on_def by blast
+  then have *: "dist c1 (f c1) \<le> r \<and> dist c2 (f c1) \<le> r" using f by auto
+
+  have "2 * r < dist c1 c2" using assms defs by simp
+  also have " ... \<le> dist c1 (f c1) + dist (f c1) c2" by(rule dist_triangle)
+  also have " ... = dist c1 (f c1) + dist c2 (f c1)" using dist_commute by simp
+  also have " ... \<le> 2 * r" using * by simp
+  finally show False by simp
 qed
 
 lemma inv_last:
