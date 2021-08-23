@@ -453,8 +453,8 @@ fun reports keywords tok =
     let
       val pos = pos_of tok;
       val (m, text) = token_kind_markup (kind_of tok);
-      val delete = #2 (Symbol_Pos.explode_delete (source_of tok, pos));
-    in ((pos, m), text) :: map (fn p => ((p, Markup.delete), "")) delete end;
+      val deleted = Symbol_Pos.explode_deleted (source_of tok, pos);
+    in ((pos, m), text) :: map (fn p => ((p, Markup.delete), "")) deleted end;
 
 fun markups keywords = map (#2 o #1) o reports keywords;
 
@@ -470,7 +470,7 @@ fun unparse' (Token ((source0, _), (kind, x), _)) =
           taking into account consecutive \<^ML>\<open>Symbol.DEL\<close> symbols potentially appearing
           at the beginning, or at the end of the string.
 
-          As remark, \<^ML>\<open>Symbol_Pos.explode_delete\<close>
+          As remark, \<^ML>\<open>Symbol_Pos.explode\<close>
           will remove any potentially consecutive \<^ML>\<open>Symbol.DEL\<close> symbols.
           This is why it is not used here.\<close>
       case Symbol.explode source0 of
