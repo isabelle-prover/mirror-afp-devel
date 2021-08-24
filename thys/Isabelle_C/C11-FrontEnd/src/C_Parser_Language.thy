@@ -322,8 +322,8 @@ struct
       #> report' cons' def global
       #> (case typing of NONE => I | SOME x => cons x))
        (map (fn pos =>
-              markup_init (Markup.properties (Position.entity_properties_of def id pos) entity))
-            ps)
+        let val props = #2 (Position.make_entity_markup def id "" ("", pos))
+        in markup_init (Markup.properties props entity) end) ps)
     end)
 
   fun markup_make' typing get_global desc report =
