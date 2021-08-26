@@ -1,7 +1,7 @@
 chapter AFP
 
 session CoCon (AFP) = "Bounded_Deducibility_Security" +
-  options [timeout = 1200]
+  options [timeout = 3600]
   sessions
     Fresh_Identifiers
   directories

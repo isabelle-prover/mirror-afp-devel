@@ -1,7 +1,7 @@
 chapter AFP
 
 session CoSMeDis (AFP) = BD_Security_Compositional +
-  options [timeout = 1200]
+  options [timeout = 7200]
   sessions
     Fresh_Identifiers
   directories
