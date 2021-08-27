@@ -2118,7 +2118,8 @@ theorem seskey_forward_secret:
 proof -
   have "(Owner m, SesKey SK) \<in> s"
     using A and B by (drule_tac owner_v_state, auto)
-  with A have "\<exists>C D. snd (snd SK) = {C, D} \<and> (Owner m, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s"
+  with A have "\<exists>C D. snd (snd SK) = {C, D} \<and>
+    (Owner m, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s"
     by (drule_tac owner_seskey_other, auto)
   then obtain C D where
     D: "snd (snd SK) = {C, D} \<and> (Owner m, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s"
@@ -2142,7 +2143,8 @@ proof -
     using A by (rule_tac notI, drule_tac seskey_spied, auto)
   moreover have "Crypt (SesK SK) (Pwd n) \<in> used s"
     using A and C by (drule_tac asset_v_state, auto)
-  hence "(\<exists>SK'. SesK SK = SesK SK' \<and> (Owner n, Crypt (SesK SK') (Pwd n)) \<in> s) \<or>
+  hence "(\<exists>SK'. SesK SK = SesK SK' \<and>
+    (Owner n, Crypt (SesK SK') (Pwd n)) \<in> s) \<or>
     {Pwd n, Key (SesK SK)} \<subseteq> spied s"
     using A by (rule_tac parts_crypt_pwd, auto)
   ultimately have "(Owner n, Crypt (SesK SK) (Pwd n)) \<in> s"
