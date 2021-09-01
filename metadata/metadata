@@ -10770,3 +10770,18 @@ abstract =
   identifier.  The entry provides a default instantiation for any
   infinite type, as well as executable instantiations for natural
   numbers and strings.
+
+[Three_Circles]
+title = The Theorem of Three Circles
+author = Fox Thomson <mailto:foxthomson0@gmail.com>, Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Analysis
+date = 2021-08-21
+notify = foxthomson0@gmail.com, wl302@cam.ac.uk
+abstract = 
+  The Descartes test based on Bernstein coefficients and Descartes’ rule
+  of signs effectively (over-)approximates the number of real roots of a
+  univariate polynomial over an interval. In this entry we formalise the
+  theorem of three circles, which gives sufficient conditions for when
+  the Descartes test returns 0 or 1. This is the first step for
+  efficient root isolation.
+

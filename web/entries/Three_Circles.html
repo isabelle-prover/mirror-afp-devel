@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity - Archive of Formal Proofs
+<title>The Theorem of Three Circles - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -76,21 +76,13 @@ MathJax = {
   <p>&nbsp;</p>
   <h1>          <font class="first">T</font>he
   
-          <font class="first">B</font>udan-Fourier
-  
           <font class="first">T</font>heorem
   
-          and
+          of
   
-          <font class="first">C</font>ounting
+          <font class="first">T</font>hree
   
-          <font class="first">R</font>eal
-  
-          <font class="first">R</font>oots
-  
-          with
-  
-          <font class="first">M</font>ultiplicity
+          <font class="first">C</font>ircles
   
 </h1>
   <p>&nbsp;</p>
@@ -99,15 +91,16 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</td>
+  <td class="data" width="80%">The Theorem of Three Circles</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
+                    Fox Thomson (foxthomson0 /at/ gmail /dot/ com) and
+          <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
       </td>
 </tr>
 
@@ -115,40 +108,31 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-09-02</td>
+  <td class="data">2021-08-21</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This entry is mainly about counting and approximating real roots (of a
-polynomial) with multiplicity. We have first formalised the
-Budan-Fourier theorem: given a polynomial with real coefficients, we
-can calculate sign variations on Fourier sequences to over-approximate
-the number of real roots (counting multiplicity) within an interval.
-When all roots are known to be real, the over-approximation becomes
-tight: we can utilise this theorem to count real roots exactly. It is
-also worth noting that Descartes' rule of sign is a direct
-consequence of the Budan-Fourier theorem, and has been included in
-this entry. In addition, we have extended previous formalised
-Sturm's theorem to count real roots with multiplicity, while the
-original Sturm's theorem only counts distinct real roots.
-Compared to the Budan-Fourier theorem, our extended Sturm's
-theorem always counts roots exactly but may suffer from greater
-computational cost.</td>
+The Descartes test based on Bernstein coefficients and Descartes’ rule
+of signs effectively (over-)approximates the number of real roots of a
+univariate polynomial over an interval. In this entry we formalise the
+theorem of three circles, which gives sufficient conditions for when
+the Descartes test returns 0 or 1. This is the first step for
+efficient root isolation.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Budan_Fourier-AFP,
-  author  = {Wenda Li},
-  title   = {The Budan-Fourier Theorem and Counting Real Roots with Multiplicity},
+        <pre>@article{Three_Circles-AFP,
+  author  = {Fox Thomson and Wenda Li},
+  title   = {The Theorem of Three Circles},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2018,
-  note    = {\url{https://isa-afp.org/entries/Budan_Fourier.html},
+  month   = aug,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Three_Circles.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -160,11 +144,9 @@ computational cost.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Sturm_Tarski.html">Sturm_Tarski</a>      </td></tr>
+          <td class="data"><a href="Budan_Fourier.html">Budan_Fourier</a>, <a href="Polynomial_Interpolation.html">Polynomial_Interpolation</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Three_Circles.html">Three_Circles</a>, <a href="Winding_Number_Eval.html">Winding_Number_Eval</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -176,39 +158,23 @@ computational cost.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Budan_Fourier/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Budan_Fourier/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Three_Circles/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Three_Circles/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Budan_Fourier/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Three_Circles/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Budan_Fourier-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Three_Circles-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Budan_Fourier-2020-04-18.tar.gz">
-              afp-Budan_Fourier-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Budan_Fourier-2019-06-11.tar.gz">
-              afp-Budan_Fourier-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Budan_Fourier-2018-09-04.tar.gz">
-              afp-Budan_Fourier-2018-09-04.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

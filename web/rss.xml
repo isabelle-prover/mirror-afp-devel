@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
+    <pubDate>21 Aug 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Theorem of Three Circles</title>
+              <link>https://www.isa-afp.org/entries/Three_Circles.html</link>
+       <guid>https://www.isa-afp.org/entries/Three_Circles.html</guid>
+       <dc:creator> Fox Thomson, Wenda Li       </dc:creator>
+       <pubDate>21 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+The Descartes test based on Bernstein coefficients and Descartes’ rule
+of signs effectively (over-)approximates the number of real roots of a
+univariate polynomial over an interval. In this entry we formalise the
+theorem of three circles, which gives sufficient conditions for when
+the Descartes test returns 0 or 1. This is the first step for
+efficient root isolation.</description>
+    </item>
     <item>
        <title>Fresh identifiers</title>
               <link>https://www.isa-afp.org/entries/Fresh_Identifiers.html</link>
@@ -540,38 +554,6 @@ formally prove the strong law and from it the weak law. The approach
 used for the proof of the strong law is a particularly quick and slick
 one based on ergodic theory, which was formalised by Gouëzel in
 another AFP entry.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Tarski's Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
-              <link>https://www.isa-afp.org/entries/IsaGeoCoq.html</link>
-       <guid>https://www.isa-afp.org/entries/IsaGeoCoq.html</guid>
-       <dc:creator> Roland Coghetto       </dc:creator>
-       <pubDate>31 Jan 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The &lt;a href=&#34;https://geocoq.github.io/GeoCoq/&#34;&gt;GeoCoq library&lt;/a&gt;  contains a formalization
-of geometry using the Coq proof assistant. It contains both proofs
-about the foundations of geometry and high-level proofs in the same
-style as in high school.  We port a part of the GeoCoq
-2.4.0 library to Isabelle/HOL: more precisely,
-the files Chap02.v to Chap13_3.v, suma.v as well as the associated
-definitions and some useful files for the demonstration of certain
-parallel postulates. The synthetic approach of the demonstrations is directly
-inspired by those contained in GeoCoq. The names of the lemmas and
-theorems used are kept as far as possible as well as the definitions.
-&lt;/p&gt;
-&lt;p&gt;It should be noted that T.J.M. Makarios has done
-&lt;a href=&#34;https://www.isa-afp.org/entries/Tarskis_Geometry.html&#34;&gt;some proofs in Tarski&#39;s Geometry&lt;/a&gt;. It uses a definition that does not quite
-coincide with the definition used in Geocoq and here.
-Furthermore, corresponding definitions in the &lt;a href=&#34;https://www.isa-afp.org/entries/Poincare_Disc.html&#34;&gt;Poincaré Disc Model
-development&lt;/a&gt; are not identical to those defined in GeoCoq.
-&lt;/p&gt;
-&lt;p&gt;In the last part, it is
-formalized that, in the neutral/absolute space, the axiom of the
-parallels of Tarski&#39;s system implies the Playfair axiom, the 5th
-postulate of Euclid and Euclid&#39;s original parallel postulate. These
-proofs, which are not constructive, are directly inspired by Pierre
-Boutry, Charly Gries, Julien Narboux and Pascal Schreck.
-&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
