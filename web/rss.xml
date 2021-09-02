@@ -38,6 +38,30 @@ infinite type, as well as executable instantiations for natural
 numbers and strings.</description>
     </item>
     <item>
+       <title>Combinatorial Design Theory</title>
+              <link>https://www.isa-afp.org/entries/Design_Theory.html</link>
+       <guid>https://www.isa-afp.org/entries/Design_Theory.html</guid>
+       <dc:creator> Chelsea Edmonds, Lawrence Paulson       </dc:creator>
+       <pubDate>13 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+Combinatorial design theory studies incidence set systems with certain
+balance and symmetry properties. It is closely related to hypergraph
+theory. This formalisation presents a general library for formal
+reasoning on incidence set systems, designs and their applications,
+including formal definitions and proofs for many key properties,
+operations, and theorems on the construction and existence of designs.
+Notably, this includes formalising t-designs, balanced incomplete
+block designs (BIBD), group divisible designs (GDD), pairwise balanced
+designs (PBD), design isomorphisms, and the relationship between
+graphs and designs. A locale-centric approach has been used to manage
+the relationships between the many different types of designs.
+Theorems of particular interest include the necessary conditions for
+existence of a BIBD, Wilson&#39;s construction on GDDs, and
+Bose&#39;s inequality on resolvable designs. Parts of this
+formalisation are explored in the paper &#34;A Modular First
+Formalisation of Combinatorial Design Theory&#34;, presented at CICM 2021.</description>
+    </item>
+    <item>
        <title>Relational Forests</title>
               <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
        <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
@@ -527,33 +551,6 @@ entry defines these series including their basic algebraic properties.
 Furthermore, it proves the Newton–Puiseux Theorem, namely that the
 Puiseux series over an algebraically closed field of characteristic 0
 are also algebraically closed.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Laws of Large Numbers</title>
-              <link>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
-       <guid>https://www.isa-afp.org/entries/Laws_of_Large_Numbers.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>10 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Law of Large Numbers states that, informally, if one
-performs a random experiment $X$ many times and takes the average of
-the results, that average will be very close to the expected value
-$E[X]$.&lt;/p&gt; &lt;p&gt; More formally, let
-$(X_i)_{i\in\mathbb{N}}$ be a sequence of independently identically
-distributed random variables whose expected value $E[X_1]$ exists.
-Denote the running average of $X_1, \ldots, X_n$ as $\overline{X}_n$.
-Then:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;The Weak Law of Large Numbers
-states that $\overline{X}_{n} \longrightarrow E[X_1]$ in probability
-for $n\to\infty$, i.e. $\mathcal{P}(|\overline{X}_{n} - E[X_1]| &gt;
-\varepsilon) \longrightarrow 0$ as $n\to\infty$ for any $\varepsilon
-&gt; 0$.&lt;/li&gt; &lt;li&gt;The Strong Law of Large Numbers states
-that $\overline{X}_{n} \longrightarrow E[X_1]$ almost surely for
-$n\to\infty$, i.e. $\mathcal{P}(\overline{X}_{n} \longrightarrow
-E[X_1]) = 1$.&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;In this entry, I
-formally prove the strong law and from it the weak law. The approach
-used for the proof of the strong law is a particularly quick and slick
-one based on ergodic theory, which was formalised by Gouëzel in
-another AFP entry.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
