@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Aug 2021 00:00:00 +0000</pubDate>
+    <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Solving Cubic and Quartic Equations</title>
+              <link>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
+       <guid>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;We formalize Cardano&#39;s formula to solve a cubic equation
+$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari&#39;s formula to
+solve a quartic equation. We further turn both formulas into
+executable algorithms based on the algebraic number implementation in
+the AFP. To this end we also slightly extended this library, namely by
+making the minimal polynomial of an algebraic number executable, and
+by defining and implementing $n$-th roots of complex
+numbers.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Theorem of Three Circles</title>
               <link>https://www.isa-afp.org/entries/Three_Circles.html</link>
@@ -534,23 +550,6 @@ relationship between height and the number of nodes.  The results are
 discussed in greater detail in the corresponding &lt;a
 href=&#34;https://mediatum.ub.tum.de/1596550&#34;&gt;Bachelor&#39;s
 Thesis&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Formal Puiseux Series</title>
-              <link>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</link>
-       <guid>https://www.isa-afp.org/entries/Formal_Puiseux_Series.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>17 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Formal Puiseux series are generalisations of formal power
-series and formal Laurent series that also allow for fractional
-exponents. They have the following general form: \[\sum_{i=N}^\infty
-a_{i/d} X^{i/d}\] where &lt;em&gt;N&lt;/em&gt; is an integer and
-&lt;em&gt;d&lt;/em&gt; is a positive integer.&lt;/p&gt; &lt;p&gt;This
-entry defines these series including their basic algebraic properties.
-Furthermore, it proves the Newton–Puiseux Theorem, namely that the
-Puiseux series over an algebraically closed field of characteristic 0
-are also algebraically closed.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

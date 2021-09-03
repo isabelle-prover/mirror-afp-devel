@@ -5996,6 +5996,22 @@ abstract =
 	as well as primality-testing and prime-factorization algorithms for integers.
 notify = rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 
+[Cubic_Quartic_Equations]
+title = Solving Cubic and Quartic Equations
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Analysis
+date = 2021-09-03
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  <p>We formalize Cardano's formula to solve a cubic equation
+  $$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari's formula to
+  solve a quartic equation. We further turn both formulas into
+  executable algorithms based on the algebraic number implementation in
+  the AFP. To this end we also slightly extended this library, namely by
+  making the minimal polynomial of an algebraic number executable, and
+  by defining and implementing $n$-th roots of complex
+  numbers.</p>
+
 [Perron_Frobenius]
 title = Perron-Frobenius Theorem for Spectral Radius Analysis
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Ondřej Kunčar <http://www21.in.tum.de/~kuncar/>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
