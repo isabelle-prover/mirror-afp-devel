@@ -246,10 +246,11 @@ proof(unfold closure_def)
     qed
     have "?m2(step as s) < ?m2 s"
     proof -
-      have "finite(?m1 bs)"
+      have fin: "finite(?m1 bs)"
         by(metis assms finite_Diff finite_PDERIVS finite_cartesian_product finite_Pow_iff)
-      moreover have "?m2(step as s) < ?m2 s" using \<open>?Inv s\<close>
-        by(auto intro: psubset_card_mono[OF \<open>finite(?m1 bs)\<close>])
+      have "?m2(step as s) < ?m2 s" using \<open>?Inv s\<close> psubset_card_mono[OF \<open>finite(?m1 bs)\<close>]
+        apply (simp split: prod.split_asm)
+        by (metis Diff_iff Pow_iff SigmaI fin card_gt_0_iff diff_Suc_less emptyE)
       then show ?thesis using \<open>?Inv s\<close> by simp
     qed
     note * and this
