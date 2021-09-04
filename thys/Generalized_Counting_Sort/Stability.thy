@@ -661,8 +661,7 @@ next
         hence K: "?nma < Suc (Suc 0)"
           using True by simp
         ultimately have "card ({..<Suc (Suc 0)} - {?nma} - {?nmi}) = 0"
-          using I by ((subst card_Diff_singleton, simp, simp)+,
-           subst card_lessThan, simp)
+          using I by auto
         hence L: "{..<Suc (Suc 0)} - {?nma} - {?nmi} = {}" by simp
         have "length (fill ?zs (offs ?ms 0) index key m ?mi ?ma) = 0"
           using True by (simp add: fill_length)

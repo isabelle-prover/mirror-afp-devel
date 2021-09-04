@@ -26,7 +26,7 @@ next
   then have x: "enumerate S i < x"
     by (meson enumerate_step finite_enumerate_step less_trans)
   have cardSx: "Suc i < card (S - {x})" and "i < card S"
-    using Suc \<open>finite S\<close> card_Diff_singleton_if finite_enumerate_Ex by fastforce+
+    using Suc \<open>finite S\<close> card_Diff_singleton_if[of S] finite_enumerate_Ex by fastforce+
   have "(LEAST s. s \<in> S \<and> s\<noteq>x \<and> enumerate (S - {x}) i < s) = (LEAST s. s \<in> S \<and> enumerate S i < s)"
        (is "_ = ?r")
   proof (intro Least_equality conjI)
