@@ -1,6 +1,6 @@
 chapter AFP
 
-session Forcing (AFP) =  "ZF-Constructible" +
+session Forcing (AFP) = "ZF-Constructible" +
   description "
     Formalization of Forcing in Isabelle/ZF
 
@@ -9,7 +9,7 @@ session Forcing (AFP) =  "ZF-Constructible" +
     transitive model of ZFC, we construct a proper generic extension
     and show that the latter also satisfies ZFC.
   "
-  options [timeout=300]
+  options [timeout = 300]
   theories [document = false]
     Utils
   theories
