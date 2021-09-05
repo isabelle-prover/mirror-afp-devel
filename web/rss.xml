@@ -27,6 +27,27 @@ by defining and implementing $n$-th roots of complex
 numbers.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Logging-independent Message Anonymity in the Relational Method</title>
+              <link>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</link>
+       <guid>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>26 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+In the context of formal cryptographic protocol verification,
+logging-independent message anonymity is the property for a given
+message to remain anonymous despite the attacker&#39;s capability of
+mapping messages of that sort to agents based on some intrinsic
+feature of such messages, rather than by logging the messages
+exchanged by legitimate agents as with logging-dependent message
+anonymity.
+This paper illustrates how logging-independent message
+anonymity can be formalized according to the relational method for
+formal protocol verification by considering a real-world protocol,
+namely the Restricted Identification one by the BSI. This sample model
+is used to verify that the pseudonymous identifiers output by user
+identification tokens remain anonymous under the expected conditions.</description>
+    </item>
+    <item>
        <title>The Theorem of Three Circles</title>
               <link>https://www.isa-afp.org/entries/Three_Circles.html</link>
        <guid>https://www.isa-afp.org/entries/Three_Circles.html</guid>
@@ -524,32 +545,6 @@ sunflower lemma of Erd&amp;odblac;s and Rado: whenever a set of
 size-&lt;i&gt;k&lt;/i&gt;-sets has a larger cardinality than
 &lt;i&gt;(r - 1)&lt;sup&gt;k&lt;/sup&gt; &amp;middot; k!&lt;/i&gt;,
 then it contains a sunflower of cardinality &lt;i&gt;r&lt;/i&gt;.</description>
-    </item>
-    <item>
-       <title>A Verified Imperative Implementation of B-Trees</title>
-              <link>https://www.isa-afp.org/entries/BTree.html</link>
-       <guid>https://www.isa-afp.org/entries/BTree.html</guid>
-       <dc:creator> Niels Mündler       </dc:creator>
-       <pubDate>24 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-In this work, we use the interactive theorem prover Isabelle/HOL to
-verify an imperative implementation of the classical B-tree data
-structure invented by Bayer and McCreight [ACM 1970]. The
-implementation supports set membership and insertion queries with
-efficient binary search for intra-node navigation. This is
-accomplished by first specifying the structure abstractly in the
-functional modeling language HOL and proving functional correctness.
-Using manual refinement, we derive an imperative implementation in
-Imperative/HOL. We show the validity of this refinement using the
-separation logic utilities from the &lt;a
-href=&#34;https://www.isa-afp.org/entries/Refine_Imperative_HOL.html&#34;&gt;
-Isabelle Refinement Framework &lt;/a&gt; . The code can be exported to
-the programming languages SML and Scala. We examine the runtime of all
-operations indirectly by reproducing results of the logarithmic
-relationship between height and the number of nodes.  The results are
-discussed in greater detail in the corresponding &lt;a
-href=&#34;https://mediatum.ub.tum.de/1596550&#34;&gt;Bachelor&#39;s
-Thesis&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

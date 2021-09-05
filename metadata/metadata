@@ -10824,3 +10824,26 @@ abstract =
   Bose's inequality on resolvable designs. Parts of this
   formalisation are explored in the paper "A Modular First
   Formalisation of Combinatorial Design Theory", presented at CICM 2021.
+
+[Logging_Independent_Anonymity]
+title = Logging-independent Message Anonymity in the Relational Method
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer science/Security
+date = 2021-08-26
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  In the context of formal cryptographic protocol verification,
+  logging-independent message anonymity is the property for a given
+  message to remain anonymous despite the attacker's capability of
+  mapping messages of that sort to agents based on some intrinsic
+  feature of such messages, rather than by logging the messages
+  exchanged by legitimate agents as with logging-dependent message
+  anonymity.
+
+  This paper illustrates how logging-independent message
+  anonymity can be formalized according to the relational method for
+  formal protocol verification by considering a real-world protocol,
+  namely the Restricted Identification one by the BSI. This sample model
+  is used to verify that the pseudonymous identifiers output by user
+  identification tokens remain anonymous under the expected conditions.
+
