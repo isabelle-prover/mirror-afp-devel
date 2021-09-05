@@ -19,7 +19,6 @@ signature UTILS =
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
-    val inList: ''a -> ''a list -> bool
     val isFree: term -> bool
     val length_: term -> term
     val list_: term -> term
@@ -41,8 +40,6 @@ signature UTILS =
 structure Utils : UTILS =
 struct 
 (* Smart constructors for ZF-terms *)
-
-fun inList a = exists (fn b => a = b)
 
 fun binop h t u = h $ t $ u
 val mk_Pair  = binop @{const Pair}
