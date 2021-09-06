@@ -791,7 +791,7 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
       map (lookup (map mk_map alpha_bn_imps) o fst o dest_Const) alpha_bn_trms
 
     fun mk_thm thm1 thm2 =
-      (forall_intr_vars thm2) COMP (thm1 RS rsp_equivp)
+      (Thm.forall_intr_vars thm2) COMP (thm1 RS rsp_equivp)
   in
     map2 mk_thm alpha_bn_equivp alpha_bn_imps'
   end

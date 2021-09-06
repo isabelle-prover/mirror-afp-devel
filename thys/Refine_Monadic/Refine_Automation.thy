@@ -259,7 +259,7 @@ fun define_concrete_fun gen_code fun_name attribs_raw param_names thm pats
   (orig_lthy:local_theory) = 
 let
   val lthy = orig_lthy;
-  val ((inst,thm'),lthy) = yield_singleton2 (Variable.import true) thm lthy;
+  val (((_,inst),thm'),lthy) = yield_singleton2 (Variable.import true) thm lthy;
 
   val concl = thm' |> Thm.concl_of
 
@@ -268,7 +268,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (apsnd Thm.term_of) 
+  val term_subst = build (inst |> Term_Subst.Vars.fold (cons o apsnd Thm.term_of))
 
   val param_terms = map (fn name =>
     case AList.lookup (fn (n,v) => n = #1 v) term_subst name of
