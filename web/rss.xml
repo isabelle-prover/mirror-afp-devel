@@ -114,6 +114,21 @@ study of various kinds of orientation of graphs. We also verify basic
 algorithms to constructively prove several second-order properties.</description>
     </item>
     <item>
+       <title>Schutz' Independent Axioms for Minkowski Spacetime</title>
+              <link>https://www.isa-afp.org/entries/Schutz_Spacetime.html</link>
+       <guid>https://www.isa-afp.org/entries/Schutz_Spacetime.html</guid>
+       <dc:creator> Richard Schmoetten, Jake Palmer, Jacques Fleuriot       </dc:creator>
+       <pubDate>27 Jul 2021 00:00:00 +0000</pubDate>
+       <description>
+This is a formalisation of Schutz&#39; system of axioms for Minkowski
+spacetime published under the name &#34;Independent axioms for
+Minkowski space-time&#34; in 1997, as well as most of the results in
+the third chapter (&#34;Temporal Order on a Path&#34;) of the above
+monograph. Many results are proven here that cannot be found in
+Schutz, either preceding the theorem they are needed for, or within
+their own thematic section.</description>
+    </item>
+    <item>
        <title>Finitely Generated Abelian Groups</title>
               <link>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
        <guid>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</guid>
@@ -532,19 +547,6 @@ transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
        <description>
 We use Isabelle/HOL to verify elementary theorems and alternative
 axiomatizations of classical extensional mereology.</description>
-    </item>
-    <item>
-       <title>The Sunflower Lemma of Erdős and Rado</title>
-              <link>https://www.isa-afp.org/entries/Sunflowers.html</link>
-       <guid>https://www.isa-afp.org/entries/Sunflowers.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-We formally define sunflowers and provide a formalization of the
-sunflower lemma of Erd&amp;odblac;s and Rado: whenever a set of
-size-&lt;i&gt;k&lt;/i&gt;-sets has a larger cardinality than
-&lt;i&gt;(r - 1)&lt;sup&gt;k&lt;/sup&gt; &amp;middot; k!&lt;/i&gt;,
-then it contains a sunflower of cardinality &lt;i&gt;r&lt;/i&gt;.</description>
     </item>
   </channel>
 </rss>
