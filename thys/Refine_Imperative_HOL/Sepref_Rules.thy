@@ -1013,7 +1013,7 @@ begin
         case Thm.concl_of thm of
           @{mpat "Trueprop ((_,_) \<in> fref _ _ _)"} =>
             (@{thm frefD} OF [thm])
-            |> forall_intr_vars
+            |> Thm.forall_intr_vars
             |> Local_Defs.unfold0 ctxt unf_thms
             |> Variable.gen_all ctxt
         | @{mpat "Trueprop ((_,_) \<in> _)"} =>
