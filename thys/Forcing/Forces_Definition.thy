@@ -11,7 +11,7 @@ definition
 
 definition
   frecrelP_fm :: "i \<Rightarrow> i" where
-  "frecrelP_fm(a) \<equiv> Exists(Exists(And(pair_fm(1,0,a#+2),frecR_fm(0,1))))"
+  "frecrelP_fm(a) \<equiv> Exists(Exists(And(pair_fm(1,0,a#+2),frecR_fm(1,0))))"
 
 lemma arity_frecrelP_fm :
   "a\<in>nat \<Longrightarrow> arity(frecrelP_fm(a)) = succ(a)"
@@ -274,8 +274,8 @@ definition
   "Hfrc_fm(P,leq,fnnc,f) \<equiv>
     Exists(Exists(Exists(Exists(
       And(Member(0,P #+ 4),And(is_tuple_fm(3,2,1,0,fnnc #+ 4),
-      Or(And(empty_fm(3),eq_case_fm(leq #+ 4,1,2,0,f #+ 4,P #+ 4)),
-         And(number1_fm(3),mem_case_fm(leq #+ 4,1,2,0,f #+ 4,P #+ 4)))))))))"
+      Or(And(empty_fm(3),eq_case_fm(2,1,0,P #+ 4,leq #+ 4,f #+ 4)),
+         And(number1_fm(3),mem_case_fm(2,1,0,P #+ 4,leq #+ 4,f #+ 4)))))))))"
 
 lemma Hfrc_fm_type[TC] :
   "\<lbrakk>P\<in>nat;leq\<in>nat;fnnc\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> Hfrc_fm(P,leq,fnnc,f)\<in>formula"
@@ -374,7 +374,7 @@ definition
 
 definition
   forcerel_fm :: "i\<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(trans_closure_fm(z#+2,1),
+  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(trans_closure_fm(1, z#+2),
                                         And(is_names_below_fm(p#+2,x#+2,0),frecrel_fm(0,1)))))"
 
 lemma arity_forcerel_fm:
@@ -394,7 +394,7 @@ lemma sats_forcerel_fm:
   shows
     "sats(A,forcerel_fm(p,x,z),env) \<longleftrightarrow> is_forcerel(##A,nth(p,env),nth(x, env),nth(z, env))"
 proof -
-  have "sats(A,trans_closure_fm(z #+ 2,1),Cons(nb,Cons(r,env))) \<longleftrightarrow>
+  have "sats(A,trans_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
         tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
     using that assms trans_closure_fm_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
   moreover

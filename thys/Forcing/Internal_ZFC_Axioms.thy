@@ -297,7 +297,7 @@ lemma sats_univalent_fm :
     and 
     asms: "nth(i,env) = B" "i \<in> nat" "env \<in> list(A)"
   shows
-    "A,env \<Turnstile> univalent_fm(Q2_fm,Q1_fm,i) \<longleftrightarrow> univalent(##A,B,Q)"
+    "A,env \<Turnstile> univalent_fm(Q1_fm,Q2_fm,i) \<longleftrightarrow> univalent(##A,B,Q)"
   unfolding univalent_fm_def using asms sats_univalent_fm_auto[OF Q_iff_sats] by simp
 
 definition
@@ -344,7 +344,7 @@ lemma sats_univalent_fm_assm:
 definition
   rep_body_fm :: "i \<Rightarrow> i" where
   "rep_body_fm(p) \<equiv> Forall(Implies(
-        univalent_fm(univalent_Q2(incr_bv(p)`2),univalent_Q1(incr_bv(p)`2),0),
+        univalent_fm(univalent_Q1(incr_bv(p)`2),univalent_Q2(incr_bv(p)`2),0),
         Exists(Forall(
           Iff(Member(0,1),Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2)))))))"
 
