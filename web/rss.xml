@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+    <pubDate>05 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>A data flow analysis algorithm for computing dominators</title>
+              <link>https://www.isa-afp.org/entries/Dominance_CHK.html</link>
+       <guid>https://www.isa-afp.org/entries/Dominance_CHK.html</guid>
+       <dc:creator> Nan Jiang       </dc:creator>
+       <pubDate>05 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This entry formalises the fast iterative algorithm for computing dominators
+due to Cooper, Harvey and Kennedy. It gives a specification of computing
+dominators on a control
+flow graph where each node refers to its reverse post order number. A
+semilattice of reversed-ordered list which represents dominators is
+built and a Kildall-style algorithm on the semilattice is defined for
+computing dominators. Finally the soundness and completeness of the
+algorithm are proved w.r.t. the specification.</description>
+    </item>
     <item>
        <title>Solving Cubic and Quartic Equations</title>
               <link>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
@@ -537,16 +553,6 @@ etc. are transcendental for algebraic
 $z\in\mathbb{C}\setminus\{0\}$&lt;/li&gt; &lt;li&gt;$\ln z$ is
 transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
 1\}$&lt;/li&gt; &lt;/ul&gt;</description>
-    </item>
-    <item>
-       <title>Mereology</title>
-              <link>https://www.isa-afp.org/entries/Mereology.html</link>
-       <guid>https://www.isa-afp.org/entries/Mereology.html</guid>
-       <dc:creator> Ben Blumson       </dc:creator>
-       <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-We use Isabelle/HOL to verify elementary theorems and alternative
-axiomatizations of classical extensional mereology.</description>
     </item>
   </channel>
 </rss>

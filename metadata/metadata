@@ -10862,3 +10862,19 @@ abstract =
   is used to verify that the pseudonymous identifiers output by user
   identification tokens remain anonymous under the expected conditions.
 
+[Dominance_CHK]
+title = A data flow analysis algorithm for computing dominators
+author = Nan Jiang<>
+topic = Computer science/Programming languages/Static analysis
+date = 2021-09-05
+notify = nanjiang@whu.edu.cn
+abstract = 
+  This entry formalises the fast iterative algorithm for computing dominators
+  due to Cooper, Harvey and Kennedy. It gives a specification of computing
+  dominators on a control
+  flow graph where each node refers to its reverse post order number. A
+  semilattice of reversed-ordered list which represents dominators is
+  built and a Kildall-style algorithm on the semilattice is defined for
+  computing dominators. Finally the soundness and completeness of the
+  algorithm are proved w.r.t. the specification.
+
