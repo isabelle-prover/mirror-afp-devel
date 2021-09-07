@@ -322,7 +322,7 @@ struct
       #> report' cons' def global
       #> (case typing of NONE => I | SOME x => cons x))
        (map (fn pos =>
-        let val props = #2 (Position.make_entity_markup def id "" ("", pos))
+        let val props = #2 (Position.make_entity_markup {def = def} id "" ("", pos))
         in markup_init (Markup.properties props entity) end) ps)
     end)
 

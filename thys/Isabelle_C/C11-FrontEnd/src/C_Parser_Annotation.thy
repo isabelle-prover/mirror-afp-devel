@@ -116,7 +116,7 @@ fun add_command name cmd thy =
         | SOME cmd' => err_dup_command name [command_pos cmd, command_pos cmd']);
       val _ =
         Context_Position.report_generic (Context.the_generic_context ())
-          (command_pos cmd) (command_markup true (name, cmd));
+          (command_pos cmd) (command_markup {def = true} (name, cmd));
     in Data.map (Symtab.update (name, cmd)) thy end;
 
 fun delete_command (name, pos) thy =
@@ -174,7 +174,7 @@ fun parse_command thy =
       case lookup_commands thy name of
         SOME (cmd as Command {command_parser = Parser parse, ...}) =>
           C_Parse.!!! (command_tags :|-- parse)
-          >> pair [((pos, command_markup false (name, cmd)), "")]
+          >> pair [((pos, command_markup {def = false} (name, cmd)), "")]
       | NONE =>
           Scan.fail_with (fn _ => fn _ =>
             let
@@ -190,7 +190,7 @@ fun command_reports thy tok =
     let val name = C_Token.content_of tok in
       (case lookup_commands thy name of
         NONE => []
-      | SOME cmd => [((C_Token.pos_of tok, command_markup false (name, cmd)), "")])
+      | SOME cmd => [((C_Token.pos_of tok, command_markup {def = false} (name, cmd)), "")])
     end
   else [];
 
