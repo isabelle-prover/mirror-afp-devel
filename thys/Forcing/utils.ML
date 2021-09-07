@@ -19,7 +19,6 @@ signature UTILS =
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
-    val inList: ''a -> ''a list -> bool
     val isFree: term -> bool
     val length_: term -> term
     val list_: term -> term
@@ -33,7 +32,7 @@ signature UTILS =
     val nth_: term -> term -> term
     val subset_: term -> term -> term
     val thm_concl_tm :  Proof.context -> xstring -> 
-        ((indexname * typ) * cterm) list * term * Proof.context
+        cterm Term_Subst.Vars.table * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
   end
@@ -41,8 +40,6 @@ signature UTILS =
 structure Utils : UTILS =
 struct 
 (* Smart constructors for ZF-terms *)
-
-fun inList a = exists (fn b => a = b)
 
 fun binop h t u = h $ t $ u
 val mk_Pair  = binop @{const Pair}
@@ -114,7 +111,8 @@ val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
 
 fun thm_concl_tm ctxt thm_ref =
-  let val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
+  let
+    val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
   in (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
 end
 

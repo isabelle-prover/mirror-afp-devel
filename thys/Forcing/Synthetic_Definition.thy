@@ -72,18 +72,20 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
 fun synthetic_def def_name thmref pos tc auto thy =
   let
     val (thm_ref,_) = thmref |>> Facts.ref_name
-    val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
+    val thm = Proof_Context.get_thm thy thm_ref;
+    val thm_vars = rev (Term.add_vars (Thm.full_prop_of thm) []);
+    val (((_,inst),thm_tms),_) = Variable.import true [thm] thy
+    val vars = map (fn v => (v, the (Term_Subst.Vars.lookup inst v))) thm_vars;
     val (tm,hyps) = thm_tms |> hd |> pair Thm.concl_of Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
     val ((set,t),env) = rhs |> Utils.dest_sats_frm
-    fun olist t = Ord_List.make String.compare (Term.add_free_names t [])
     fun relevant ts (@{const mem} $ t $ _) = not (Term.is_Free t) orelse
-        Ord_List.member String.compare ts (t |> Term.dest_Free |> #1)
+          member (op =) ts (t |> Term.dest_Free |> #1)
       | relevant _ _ = false
-    val t_vars = olist t
-    val vs = List.filter (fn (((v,_),_),_) => Utils.inList v t_vars) vars
-    val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
-    val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
+    val t_vars = sort_strings (Term.add_free_names t [])
+    val vs = filter (member (op =) t_vars o #1 o #1 o #1) vars
+    val at = fold_rev (lambda o Thm.term_of o #2) vs t
+    val hyps' = filter (relevant t_vars o Utils.dest_trueprop) hyps
   in
     Local_Theory.define ((Binding.name def_name, NoSyn),
                         ((Binding.name (def_name ^ "_def"), []), at)) thy |> #2 |>

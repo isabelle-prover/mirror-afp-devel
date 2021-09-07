@@ -632,7 +632,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
           forall_intr_rename (n, cert (Var (varmap (n, T), T)))) qs thm
       end
   in
-    ((Rdef, map2 requantify intrs intrs_gen, forall_intr_vars elim_gen, induct), lthy)
+    ((Rdef, map2 requantify intrs intrs_gen, Thm.forall_intr_vars elim_gen, induct), lthy)
   end
 
 (* nominal *)
@@ -980,7 +980,7 @@ fun mk_nest_term_rule ctxt globals R R_cases clauses =
     |> Thm.forall_intr (Thm.cterm_of ctxt x)
     |> (fn it => Drule.compose (it, 2, wf_induct_rule))
     |> curry op RS (Thm.assume wfR')
-    |> forall_intr_vars
+    |> Thm.forall_intr_vars
     |> (fn it => it COMP allI)
     |> fold Thm.implies_intr hyps
     |> Thm.implies_intr wfR'

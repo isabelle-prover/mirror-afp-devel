@@ -492,7 +492,7 @@ fun transform_prem2 ctxt names thm =
 
 
 (* transforms a theorem into one of the object logic *)
-fun atomize ctxt = Conv.fconv_rule (Object_Logic.atomize ctxt) o forall_intr_vars;
+fun atomize ctxt = Conv.fconv_rule (Object_Logic.atomize ctxt) o Thm.forall_intr_vars;
 fun atomize_rule ctxt i thm =
   Conv.fconv_rule (Conv.concl_conv i (Object_Logic.atomize ctxt)) thm
 fun atomize_concl ctxt thm = atomize_rule ctxt (length (Thm.prems_of thm)) thm
