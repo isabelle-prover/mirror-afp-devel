@@ -51,20 +51,20 @@ end (* M_seqspace *)
 sublocale M_ctm \<subseteq> M_seqspace "##M"
 proof (unfold_locales, simp)
   fix B
-  have "arity(seqspace_rep_fm(1,0,2)) \<le> 3" "seqspace_rep_fm(1,0,2)\<in>formula" 
+  have "arity(seqspace_rep_fm(0,1,2)) \<le> 3" "seqspace_rep_fm(0,1,2)\<in>formula" 
     unfolding seqspace_rep_fm_def 
     using arity_pair_fm arity_omega_fm arity_typed_function_fm nat_simp_union 
     by auto
   moreover
   assume "B\<in>M"
   ultimately
-  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(1, 0, 2))"
-    using replacement_ax[of "seqspace_rep_fm(1,0,2)"]
+  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))"
+    using replacement_ax[of "seqspace_rep_fm(0,1,2)"]
     by simp
   moreover 
   note \<open>B\<in>M\<close>
   moreover from this
-  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(1, 0, 2))" 
+  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))" 
     if "A\<in>M" for A 
     using that unfolding univalent_def seqspace_rep_fm_def  
     by (auto, blast dest:transitivity)
