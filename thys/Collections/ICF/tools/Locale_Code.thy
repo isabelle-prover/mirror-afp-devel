@@ -201,8 +201,7 @@ structure Locale_Code :LOCALE_CODE = struct
     wrap_lthy_result_global
       (fn lthy => let
         val (((instT,inst),thms),lthy) = Variable.import true thms lthy;
-        val cpat =
-          Thm.instantiate_cterm (Term_Subst.TVars.dest instT, Term_Subst.Vars.dest inst) cpat;
+        val cpat = Thm.instantiate_cterm (TVars.dest instT, Vars.dest inst) cpat;
         val pat = Thm.term_of cpat;
         val name = inst_name lthy pat;
         val ((_,(_,def_thm)),lthy) 

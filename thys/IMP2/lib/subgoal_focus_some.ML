@@ -61,9 +61,9 @@ fun gen_focus (do_prems, do_concl) ctxt i bindings raw_st =
     val text = fasms @ (if do_concl then [concl] else []);
 
     val ((_, inst), ctxt3) = Variable.import_inst true (map Thm.term_of text) ctxt2;
-    val schematic_terms = Term_Subst.Vars.fold (fn (v, t) => cons (v, Thm.cterm_of ctxt3 t)) inst [];
+    val schematic_terms = Vars.fold (fn (v, t) => cons (v, Thm.cterm_of ctxt3 t)) inst [];
 
-    val schematics = (Term_Subst.TVars.dest schematic_types, schematic_terms);
+    val schematics = (TVars.dest schematic_types, schematic_terms);
     val asms' = map (apsnd (Thm.instantiate_cterm schematics)) asms;
     val fasms' = filter fst asms' |> map snd
     val concl' = Thm.instantiate_cterm schematics concl;

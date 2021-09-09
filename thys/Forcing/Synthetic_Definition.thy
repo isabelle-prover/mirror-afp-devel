@@ -75,7 +75,7 @@ fun synthetic_def def_name thmref pos tc auto thy =
     val thm = Proof_Context.get_thm thy thm_ref;
     val thm_vars = rev (Term.add_vars (Thm.full_prop_of thm) []);
     val (((_,inst),thm_tms),_) = Variable.import true [thm] thy
-    val vars = map (fn v => (v, the (Term_Subst.Vars.lookup inst v))) thm_vars;
+    val vars = map (fn v => (v, the (Vars.lookup inst v))) thm_vars;
     val (tm,hyps) = thm_tms |> hd |> pair Thm.concl_of Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
     val ((set,t),env) = rhs |> Utils.dest_sats_frm

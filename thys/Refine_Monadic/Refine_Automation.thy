@@ -268,7 +268,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = build (inst |> Term_Subst.Vars.fold (cons o apsnd Thm.term_of))
+  val term_subst = build (inst |> Vars.fold (cons o apsnd Thm.term_of))
 
   val param_terms = map (fn name =>
     case AList.lookup (fn (n,v) => n = #1 v) term_subst name of

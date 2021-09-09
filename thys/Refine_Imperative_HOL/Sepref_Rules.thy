@@ -1379,8 +1379,8 @@ begin
           
         (* Hrmpf!: Gone for good from 2015\<rightarrow>2016. Inserting ctxt-based substitute here. *)  
         fun certify_inst ctxt (instT, inst) =
-         (map (apsnd (Thm.ctyp_of ctxt)) (Term_Subst.TVars.dest instT),
-          map (apsnd (Thm.cterm_of ctxt)) (Term_Subst.Vars.dest inst));
+         (map (apsnd (Thm.ctyp_of ctxt)) (TVars.dest instT),
+          map (apsnd (Thm.cterm_of ctxt)) (Vars.dest inst));
 
         (*  
         fun mk_RETURN (t,r) = if r then @{mk_term "RETURN o ?t"} else t

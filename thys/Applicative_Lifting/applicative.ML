@@ -165,10 +165,10 @@ fun import_poly_terms pt ctxt =
         | _ => I)) t;
     val paramTs = rev (fold insert_paramTs (unpack_poly_terms pt) []);
     val (tfrees, ctxt') = Variable.invent_types (map #2 paramTs) ctxt;
-    val instT = Term_Subst.TVars.table (paramTs ~~ map TFree tfrees);
+    val instT = TVars.make (paramTs ~~ map TFree tfrees);
     val params = map (apsnd (Term_Subst.instantiateT instT)) (rev (Term.add_vars pt []));
     val (frees, ctxt'') = Variable.variant_fixes (map (Name.clean o #1 o #1) params) ctxt';
-    val inst = Term_Subst.Vars.table (params ~~ map Free (frees ~~ map #2 params));
+    val inst = Vars.make (params ~~ map Free (frees ~~ map #2 params));
     val pt' = Term_Subst.instantiate (instT, inst) pt;
   in (unpack_poly_terms pt', ctxt'') end;
 
@@ -896,8 +896,7 @@ fun derive_combinator_red ctxt af_inst red_thms (base_thm, eq_thm) =
     val base_prop = Thm.prop_of base_thm;
     val tvars = Term.add_tvars base_prop [];
     val (Ts, ctxt_Ts) = mk_TFrees_of (length tvars) (inner_sort_of af_inst) ctxt;
-    val base_prop' = base_prop
-      |> Term_Subst.instantiate (Term_Subst.TVars.table (tvars ~~ Ts), Term_Subst.Vars.empty);
+    val base_prop' = base_prop |> Term_Subst.instantiate (TVars.make (tvars ~~ Ts), Vars.empty);
     val (lhs, rhs) = Logic.dest_equals base_prop';
     val ([lhs', rhs'], ctxt') = generalize_lift_terms af_inst [lhs, rhs] ctxt_Ts;
     val lifted_prop = (lhs', rhs') |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
@@ -989,7 +988,7 @@ fun mk_terms ctxt (raw_pure, raw_ap, raw_rel, raw_set) =
     fun unify_ap_type T (tyenv, maxidx) =
       let
         val argT = TVar ((Name.aT, maxidx + 1), []);
-        val T1' = Term_Subst.instantiateT (Term_Subst.TVars.table [(tvar, argT)]) T1;
+        val T1' = Term_Subst.instantiateT (TVars.make [(tvar, argT)]) T1;
         val (tyenv', maxidx') = Sign.typ_unify thy (T1', T) (tyenv, maxidx + 1)
           handle Type.TUNIFY => no_unifier (T1', T);
       in (argT, (tyenv', maxidx')) end;
@@ -1118,7 +1117,7 @@ fun mk_comb_prop lift_pos thm af_inst ctxt_Ts =
     val tvars = Term.add_tvars base [];
     val (Ts, (ctxt', Ts')) = reuse_TFrees (length tvars) (inner_sort_of af_inst) ctxt_Ts;
     val base' = base
-      |> Term_Subst.instantiate (Term_Subst.TVars.table (tvars ~~ Ts), Term_Subst.Vars.empty);
+      |> Term_Subst.instantiate (TVars.make (tvars ~~ Ts), Vars.empty);
     val (lhs, rhs) = Logic.dest_equals base';
     val (_, lhs_args) = strip_comb lhs;
     val lift_var = Var o apsnd (mk_type af_inst) o dest_Var;

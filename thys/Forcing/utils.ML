@@ -32,7 +32,7 @@ signature UTILS =
     val nth_: term -> term -> term
     val subset_: term -> term -> term
     val thm_concl_tm :  Proof.context -> xstring -> 
-        cterm Term_Subst.Vars.table * term * Proof.context
+        cterm Vars.table * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
   end

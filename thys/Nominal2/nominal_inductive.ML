@@ -415,7 +415,7 @@ fun prove_strong_inductive_cmd (pred_name, avoids) ctxt =
       let
         (* fixme hack *)
         val (((_, inst), _), ctxt') = Variable.import true [intr] ctxt
-        val trms = build (inst |> Term_Subst.Vars.fold (cons o Thm.term_of o snd))
+        val trms = build (inst |> Vars.fold (cons o Thm.term_of o snd))
         val ctxt'' = fold Variable.declare_term trms ctxt'
       in
         map (Syntax.read_term ctxt'') avoid_trms
