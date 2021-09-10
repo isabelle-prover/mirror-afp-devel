@@ -1391,7 +1391,7 @@ fun split_pair_apps ctxt thm =
   val subst = map (fn (v,t) => (dest_Var v, Thm.cterm_of ctxt t)) (mk_subst [] t);
 
   in full_simplify (put_simpset HOL_basic_ss ctxt addsimps [@{thm fst_conv}, @{thm snd_conv}])
-       (Drule.instantiate_normalize ([],subst) thm)
+       (Drule.instantiate_normalize (TVars.empty, Vars.make subst) thm)
   end;
 
 (* Generates split theorems, for !!,!,? quantifiers and for UN, e.g.
@@ -1470,7 +1470,7 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
                     (max_idx + 1 upto (max_idx + length vars));
        fun tvar n = (n, Sign.defaultS thy);
        val pT = Thm.ctyp_of ctxt (foldr1 HOLogic.mk_prodT types);
-       val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,pT)],[]) r)) tvar_rules;
+       val rules' = map (fn (z,r) => (Drule.instantiate_normalize (TVars.make [(tvar z,pT)], Vars.empty) r)) tvar_rules;
        val splits = mk_split_thms ctxt (vars ~~ types);
        val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
      in if split_app then (map (split_pair_apps ctxt) rules'') else rules'' end
@@ -1480,7 +1480,7 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
         val thy = Proof_Context.theory_of ctxt;
         fun tvar n = (n, Sign.defaultS thy);
         val uT = Thm.ctyp_of ctxt HOLogic.unitT;
-        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,uT)],[]) r)) tvar_rules;
+        val rules' = map (fn (z,r) => (Drule.instantiate_normalize (TVars.make [(tvar z,uT)], Vars.empty) r)) tvar_rules;
         val splits = [@{thm Hoare.unit_meta},@{thm Hoare.unit_object},@{thm Hoare.unit_ex},@{thm Hoare.unit_UN}];
         val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
       in rules'' end

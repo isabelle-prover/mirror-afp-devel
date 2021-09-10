@@ -634,7 +634,7 @@ fun subst_thm_thy thy (tyinsts, insts) th =
           ((v, Envir.subst_type tyinsts T), Thm.global_cterm_of thy u)
       val ts = map process_tenv (Vartab.dest insts)
     in
-      th |> Drule.instantiate_normalize (tys, ts)
+      th |> Drule.instantiate_normalize (TVars.make tys, Vars.make ts)
     end
 
 fun subst_thm ctxt (tyinsts, insts) th =

@@ -3021,11 +3021,12 @@ fun mk_option ty _ NONE = mk_None ty
   | mk_option ty f (SOME x) = mk_Some ty (f x)
 fun check_lines_tac' s m n ctxt =
   resolve_tac ctxt
-    [Thm.instantiate ([],
-      [("s", @{typ "string option"}, mk_option @{typ string} (using_master_directory_term ctxt) s),
+    [Thm.instantiate (TVars.empty,
+      Vars.make ([
+       ("s", @{typ "string option"}, mk_option @{typ string} (using_master_directory_term ctxt) s),
        ("m", @{typ nat}, HOLogic.mk_nat m),
        ("n", @{typ nat}, HOLogic.mk_nat n)]
-        |> map (fn (s, ty, t) => (((s, 0), ty), Thm.cterm_of ctxt t)))
+        |> map (fn (s, ty, t) => (((s, 0), ty), Thm.cterm_of ctxt t))))
       @{thm check_linesI}]
   THEN' CONVERSION (check_line ctxt)
   THEN' resolve_tac ctxt @{thms TrueI}

@@ -255,7 +255,7 @@ fun reverse ths context th =
   in
     th
     |> Drule.instantiate_normalize
-       ([], add_inst_vars vars [])
+       (TVars.empty, Vars.make (add_inst_vars vars []))
     |> Simplifier.rewrite_rule ctxt init_rev_wrap
     |> Simplifier.rewrite_rule ctxt init_unwrap
     |> Simplifier.rewrite_rule ctxt rules

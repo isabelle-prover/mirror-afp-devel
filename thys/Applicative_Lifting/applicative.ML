@@ -925,7 +925,7 @@ fun weak_red_closure ctxt (af_inst, merge_thm) strong_red =
                 | SOME T => (T, ctxt));
               val (v', ctxt'') = mk_Free (#1 v) T ctxt';
               val pure_v = Thm.cterm_of ctxt'' (lift_term af_inst v');
-              val next = Drule.instantiate_normalize ([], [((v, af_T), pure_v)]) prev;
+              val next = Drule.instantiate_normalize (TVars.empty, Vars.make [((v, af_T), pure_v)]) prev;
               val next' = Raw_Simplifier.rewrite_rule ctxt'' [merge_thm] next;
               val next'' = singleton (Variable.export ctxt'' ctxt) next';
             in closure vs next'' (prev::thms) end);

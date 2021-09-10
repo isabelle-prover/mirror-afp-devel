@@ -437,7 +437,7 @@ fun disj_prop_match ctxt (id, (tyinst, inst)) (t, (var_t, ts), (var_u, cus)) =
         val var_t' = map (Envir.subst_term_types tyinst') var_t
         val ts' = ts |> map (Envir.subst_term_types tyinst')
         val var_ct' = map (Thm.cterm_of ctxt) var_t'
-        val cus' = cus |> map (Thm.instantiate_cterm ([], var_u ~~ var_ct'))
+        val cus' = cus |> map (Thm.instantiate_cterm (TVars.empty, Vars.make (var_u ~~ var_ct')))
 
         (* Match the type-instantiated pattern with term. *)
         val insts = Matcher.rewrite_match_subset

@@ -590,8 +590,8 @@ ML \<open>
 
       fun mpat_conv pat ctxt ct = let
         val (tym,tm) = Thm.first_order_match (pat,ct);
-        val tm' = map (fn (pt as ((name, _), _),ot) => (pt, tag_ct ctxt name ot)) tm;
-        val ct' = Thm.instantiate_cterm (tym,tm') pat;
+        val tm' = Vars.map (fn ((name, _), _) => tag_ct ctxt name) tm;
+        val ct' = Thm.instantiate_cterm (tym, tm') pat;
         val rthm =
           Goal.prove_internal ctxt []
             (Thm.cterm_of ctxt (Logic.mk_equals (apply2 Thm.term_of (ct, ct'))))
@@ -937,7 +937,7 @@ ML \<open>
       fun instantiate_tuples ctxt inTs = let
         val inst = inTs ~~ map (get_tuple_inst ctxt) inTs
       in
-        Thm.instantiate ([],inst)
+        Thm.instantiate (TVars.empty, Vars.make inst)
       end
   
       val _ = COND'

@@ -50,7 +50,7 @@ ML \<open>
       val u' = list_comb (v, ubs') |> dummy_abs 0 Us1;
       val subst = [(Term.dest_Var tx, Thm.cterm_of ctxt' t'), (Term.dest_Var ux, Thm.cterm_of ctxt' u')];
     in
-      instantiate_normalize ([], subst) thm
+      instantiate_normalize (TVars.empty, Vars.make subst) thm
     end;
     fun smash ctxt thm =
       case (Thm.tpairs_of thm) of
