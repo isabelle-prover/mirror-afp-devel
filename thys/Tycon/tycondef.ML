@@ -98,7 +98,7 @@ fun isodefl'_const T =
   Const (@{const_name isodefl'}, (T ->> T) --> udeflT --> HOLogic.boolT)
 
 fun mk_deflation t =
-  Const (@{const_name deflation}, Term.fastype_of t --> boolT) $ t
+  Const (@{const_name deflation}, Term.fastype_of t --> HOLogic.boolT) $ t
 
 (* splits a cterm into the right and lefthand sides of equality *)
 fun dest_eqs t = HOLogic.dest_eq (HOLogic.dest_Trueprop t)
@@ -729,7 +729,7 @@ fun domain_isomorphism
     (* prove lub of take equals ID *)
     fun prove_lub_take (((dbind, take_const), map_ID_thm), (lhsT, _)) thy =
       let
-        val n = Free ("n", natT)
+        val n = Free ("n", HOLogic.natT)
         val goal = mk_eqs (mk_lub (lambda n (take_const $ n)), mk_ID lhsT)
         fun tac ctxt =
             EVERY
