@@ -210,14 +210,7 @@ lemma word_and_max_word:
 
 lemma word_and_full_mask_simp:
   \<open>x AND mask LENGTH('a) = x\<close> for x :: \<open>'a::len word\<close>
-proof (rule bit_eqI)
-  fix n
-  assume \<open>2 ^ n \<noteq> (0 :: 'a word)\<close>
-  then have \<open>n < LENGTH('a)\<close>
-    by simp
-  then show \<open>bit (x AND Bit_Operations.mask LENGTH('a)) n \<longleftrightarrow> bit x n\<close>
-    by (simp add: bit_and_iff bit_mask_iff)
-qed
+  by (simp add: bit_eq_iff bit_simps)
 
 lemma of_int_uint:
   "of_int (uint x) = x"
@@ -1828,7 +1821,7 @@ lemma not_switch:"NOT a = x \<Longrightarrow> a = NOT x"
 
 lemma test_bit_eq_iff: "bit u = bit v \<longleftrightarrow> u = v"
   for u v :: "'a::len word"
-  by (simp add: bit_eq_iff fun_eq_iff)
+  by (auto intro: bit_eqI simp add: fun_eq_iff)
 
 lemma test_bit_size: "bit w n \<Longrightarrow> n < size w"
   for w :: "'a::len word"
@@ -2008,7 +2001,7 @@ lemma word_leI:
 lemma bang_eq:
   fixes x :: "'a::len word"
   shows "(x = y) = (\<forall>n. bit x n = bit y n)"
-  by (auto simp add: bit_eq_iff)
+  by (auto intro!: bit_eqI)
 
 lemma neg_mask_test_bit:
   "bit (NOT(mask n) :: 'a :: len word) m = (n \<le> m \<and> m < LENGTH('a))"
@@ -2477,7 +2470,7 @@ lemma ucast_or_distrib:
 
 lemma word_exists_nth:
   "(w::'a::len word) \<noteq> 0 \<Longrightarrow> \<exists>i. bit w i"
-  by (simp add: bit_eq_iff)
+  by (auto simp add: bit_eq_iff)
 
 lemma max_word_not_0 [simp]:
   "- 1 \<noteq> (0 :: 'a::len word)"

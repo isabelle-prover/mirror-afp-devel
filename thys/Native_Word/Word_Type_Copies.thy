@@ -231,7 +231,7 @@ proof -
     using \<open>OFCLASS('a, semiring_parity_class)\<close> by (rule ring_parity_class.intro) standard
   moreover have \<open>class.ring_bit_operations_axioms (+) (-) (0::'a) (*) 1 bit uminus NOT\<close>
     by standard (simp_all add: eq_iff_word_of word_of_power word_of_numeral
-      bit_eq_word_of word_of_diff word_of_1 bit_simps
+      bit_eq_word_of word_of_diff word_of_1 bit_simps linorder_not_le
       word_of_not word_of_0
       word_of_minus minus_eq_not_minus_1)
   ultimately show \<open>OFCLASS('a, ring_bit_operations_class)\<close>
@@ -330,7 +330,7 @@ lemma of_class_lsb:
 
 lemma of_class_set_bit:
   \<open>OFCLASS('a, set_bit_class)\<close>
-  by standard (simp add: eq_iff_word_of word_of_generic_set_bit bit_eq_word_of word_of_power word_of_numeral word_of_0 bit_simps)
+  by standard (simp add: eq_iff_word_of word_of_generic_set_bit bit_eq_word_of word_of_power word_of_0 bit_simps linorder_not_le)
 
 lemma of_class_bit_comprehension:
   \<open>OFCLASS('a, bit_comprehension_class)\<close>

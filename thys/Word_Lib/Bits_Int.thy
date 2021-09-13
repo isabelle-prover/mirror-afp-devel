@@ -64,7 +64,7 @@ lemma bin_eqI:
   using that by (rule bit_eqI)
 
 lemma bin_eq_iff: "x = y \<longleftrightarrow> (\<forall>n. (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) y n)"
-  by (fact bit_eq_iff)
+  by (metis bit_eq_iff)
 
 lemma bin_nth_zero [simp]: "\<not> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) 0 n"
   by simp

@@ -875,14 +875,11 @@ lemma mask_out_add_aligned:
 
 lemma is_aligned_add_or:
   "\<lbrakk>is_aligned p n; d < 2 ^ n\<rbrakk> \<Longrightarrow> p + d = p OR d"
-  apply (subst disjunctive_add)
-   apply (simp_all add: is_aligned_iff_take_bit_eq_0)
-  apply (simp add: bit_eq_iff)
-  apply (auto simp add: bit_simps)
+  apply (subst disjunctive_add, simp_all)
+  apply (clarsimp simp: is_aligned_nth less_2p_is_upper_bits_unset)
   subgoal for m
     apply (cases \<open>m < n\<close>)
-     apply (auto simp add: not_less)
-    apply (metis bit_take_bit_iff less_mask_eq take_bit_eq_mask)
+     apply (auto simp add: not_less dest: bit_imp_possible_bit)
     done
   done
 

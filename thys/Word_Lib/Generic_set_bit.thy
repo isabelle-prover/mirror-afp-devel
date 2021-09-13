@@ -16,9 +16,11 @@ begin
 
 class set_bit = semiring_bits +
   fixes set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a\<close>
-  assumes bit_set_bit_iff [bit_simps]:
+  assumes bit_set_bit_iff_2n:
     \<open>bit (set_bit a m b) n \<longleftrightarrow>
       (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> 0\<close>
+
+lemmas bit_set_bit_iff[bit_simps] = bit_set_bit_iff_2n[simplified fold_possible_bit simp_thms]
 
 lemma set_bit_eq:
   \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>

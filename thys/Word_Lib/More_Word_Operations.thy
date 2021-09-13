@@ -198,7 +198,7 @@ lemma bit_word_log2:
   \<open>bit w (word_log2 w)\<close> if \<open>w \<noteq> 0\<close>
 proof -
   from \<open>w \<noteq> 0\<close> have \<open>\<exists>r. bit w r\<close>
-    by (simp add: bit_eq_iff)
+    by (auto intro: bit_eqI)
   then obtain r where \<open>bit w r\<close> ..
   from \<open>w \<noteq> 0\<close> have \<open>word_log2 w = Max {n. bit w n}\<close>
     by (simp add: word_log2_unfold)
@@ -888,21 +888,12 @@ lemma aligned_mask_ranges_disjoint2:
    \<Longrightarrow> mask_range p n \<inter> mask_range ptr bits = {}"
   apply safe
   apply (simp only: flip: neg_mask_in_mask_range)
-  apply simp
   apply (drule_tac x="x AND mask n >> m" in spec)
-  apply (auto simp add: and_mask_less_size wsst_TYs multiple_mask_trivia neg_mask_twice
-                        word_bw_assocs max_absorb2)
-   apply (erule notE)
-
-  apply (simp add: shiftr_mask2)
-   apply (rule and_mask_less')
-  apply simp
-  apply (subst (asm) disjunctive_add)
-   apply (simp add: bit_simps)
-  apply auto
-  apply (erule notE)
-  apply (rule bit_word_eqI)
-  apply (auto simp add: bit_simps)
+  apply (erule notE[OF mp])
+   apply (rule shiftr_less_t2n)
+   apply (simp add: word_size and_mask_less_size)
+  apply (subst disjunctive_add)
+   apply (auto simp add: bit_simps word_size intro!: bit_eqI)
   done
 
 lemma word_clz_sint_upper[simp]:
