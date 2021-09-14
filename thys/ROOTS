@@ -65,6 +65,9 @@ CISC-Kernel
 CRDT
 CSP_RefTK
 CYK
+CZH_Elementary_Categories
+CZH_Foundations
+CZH_Universal_Constructions
 CakeML
 CakeML_Codegen
 Call_Arity
@@ -105,6 +108,8 @@ ConcurrentGC
 ConcurrentIMP
 Concurrent_Ref_Alg
 Concurrent_Revisions
+Conditional_Simplification
+Conditional_Transfer_Rule
 Consensus_Refined
 Constructive_Cryptography
 Constructive_Cryptography_CM
@@ -267,6 +272,7 @@ InformationFlowSlicing_Inter
 Integration
 Interpreter_Optimizations
 Interval_Arithmetic_Word32
+Intro_Dest_Elim
 Iptables_Semantics
 Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
@@ -587,6 +593,7 @@ Trie
 Twelvefold_Way
 Tycon
 Types_Tableaus_and_Goedels_God
+Types_To_Sets_Extension
 UPF
 UPF_Firewall
 UTP
