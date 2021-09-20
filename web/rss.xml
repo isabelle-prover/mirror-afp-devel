@@ -28,7 +28,7 @@ projectors, extension of bounded linear functions (BLT theorem),
 adjoints, Loewner order, closed subspaces and more.  For the
 finite-dimensional case, we provide code generation support by
 identifying finite-dimensional operators with matrices as formalized
-in the &lt;a href=&#34;Jordan_Normal_Form&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
+in the &lt;a href=&#34;Jordan_Normal_Form.html&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
     </item>
     <item>
        <title>Extension of Types-To-Sets</title>
