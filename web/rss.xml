@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+    <pubDate>18 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Complex Bounded Operators</title>
+              <link>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</link>
+       <guid>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</guid>
+       <dc:creator> Jose Manuel Rodriguez Caballero, Dominique Unruh       </dc:creator>
+       <pubDate>18 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of bounded operators on complex vector
+spaces.  Our formalization contains material on complex vector spaces
+(normed spaces, Banach spaces, Hilbert spaces) that complements and
+goes beyond the developments of real vectors spaces in the
+Isabelle/HOL standard library.  We define the type of bounded
+operators between complex vector spaces
+(&lt;em&gt;cblinfun&lt;/em&gt;) and develop the theory of unitaries,
+projectors, extension of bounded linear functions (BLT theorem),
+adjoints, Loewner order, closed subspaces and more.  For the
+finite-dimensional case, we provide code generation support by
+identifying finite-dimensional operators with matrices as formalized
+in the &lt;a href=&#34;Jordan_Normal_Form&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
+    </item>
     <item>
        <title>Extension of Types-To-Sets</title>
               <link>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</link>
@@ -503,25 +523,6 @@ player is winning. For closed games, defensive strategies are winning
 for the closed player, proving that such games are determined. For
 finite games, which are a special case in our formalisation, all games
 are closed.</description>
-    </item>
-    <item>
-       <title>Formalization of Timely Dataflow's Progress Tracking Protocol</title>
-              <link>https://www.isa-afp.org/entries/Progress_Tracking.html</link>
-       <guid>https://www.isa-afp.org/entries/Progress_Tracking.html</guid>
-       <dc:creator> Matthias Brun, Sára Decova, Andrea Lattuada, Dmitriy Traytel       </dc:creator>
-       <pubDate>13 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-Large-scale stream processing systems often follow the dataflow
-paradigm, which enforces a program structure that exposes a high
-degree of parallelism. The Timely Dataflow distributed system supports
-expressive cyclic dataflows for which it offers low-latency data- and
-pipeline-parallel stream processing. To achieve high expressiveness
-and performance, Timely Dataflow uses an intricate distributed
-protocol for tracking the computation’s progress. We formalize this
-progress tracking protocol and verify its safety. Our formalization is
-described in detail in our forthcoming &lt;a
-href=&#34;https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf&#34;&gt;ITP&#39;21
-paper&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

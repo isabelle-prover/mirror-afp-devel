@@ -11002,3 +11002,24 @@ abstract =
   by Fabian Immler and Bohua Zhan and published in the proceedings of
   the <i>International Conference on Certified Programs and
   Proofs</i> in 2019.
+  
+[Complex_Bounded_Operators]
+title = Complex Bounded Operators
+author = Jose Manuel Rodriguez Caballero <https://josephcmac.github.io/>, Dominique Unruh <https://www.ut.ee/~unruh/>
+topic = Mathematics/Analysis
+date = 2021-09-18
+notify = unruh@ut.ee
+abstract = 
+  We present a formalization of bounded operators on complex vector
+  spaces.  Our formalization contains material on complex vector spaces
+  (normed spaces, Banach spaces, Hilbert spaces) that complements and
+  goes beyond the developments of real vectors spaces in the
+  Isabelle/HOL standard library.  We define the type of bounded
+  operators between complex vector spaces
+  (<em>cblinfun</em>) and develop the theory of unitaries,
+  projectors, extension of bounded linear functions (BLT theorem),
+  adjoints, Loewner order, closed subspaces and more.  For the
+  finite-dimensional case, we provide code generation support by
+  identifying finite-dimensional operators with matrices as formalized
+  in the <a href="Jordan_Normal_Form">Jordan_Normal_Form</a> AFP entry.
+
