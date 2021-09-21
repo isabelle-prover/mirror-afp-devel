@@ -8,9 +8,9 @@ section \<open>Locale-Based Duality\<close>
 
 theory Order_Lattice_Props_Loc
   imports Main 
-          "HOL-Library.Lattice_Syntax"
-
 begin
+
+unbundle lattice_syntax
 
 text \<open>This section explores order and lattice duality based on locales. Used within the context of a class or locale, 
 this is very effective, though more opaque than the previous approach. Outside of such a context, however, it apparently

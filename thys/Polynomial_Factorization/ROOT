@@ -29,7 +29,6 @@ session "JNF-AFP-Lib" (AFP) in "Lib" = "HOL-Algebra" +
     "HOL-Library.DAList"
     "HOL-Library.DAList_Multiset"
     "HOL-Library.Infinite_Set"
-    "HOL-Library.Lattice_Syntax"
     "HOL-Library.Mapping"
     "HOL-Library.Monad_Syntax"
     "HOL-Library.More_List"

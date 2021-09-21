@@ -740,14 +740,9 @@ subsection \<open>Hiding lattice syntax\<close>
 text \<open>
   The following command hides the lattice syntax, to avoid potential
   conflicts with other theories that import this one.  To re-enable
-  the syntax, users should import theory \<open>Lattice_Syntax\<close> from
-  the Isabelle library.
+  the syntax, users should unbundle \<open>lattice_syntax\<close>.
 \<close>
 
-no_notation
-  top ("\<top>") and
-  bot ("\<bottom>") and
-  inf  (infixl "\<sqinter>" 70) and
-  sup  (infixl "\<squnion>" 65)
+unbundle no_lattice_syntax
 
 end

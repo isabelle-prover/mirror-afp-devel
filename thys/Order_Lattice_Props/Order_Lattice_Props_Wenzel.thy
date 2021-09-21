@@ -8,9 +8,9 @@ section \<open>Duality Based on a Data Type\<close>
 
 theory Order_Lattice_Props_Wenzel
   imports Main 
-          "HOL-Library.Lattice_Syntax"
-
 begin
+
+unbundle lattice_syntax
 
 subsection \<open>Wenzel's Approach Revisited\<close>
 
