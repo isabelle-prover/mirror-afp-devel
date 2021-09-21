@@ -199,7 +199,7 @@ struct
         (Sign.syntax_cmd false mode args)
     | (no_notation (mode, args)) =>
         (Named_Target.theory_map
-          (Specification.notation_cmd false mode args))));
+          (Local_Theory.notation_cmd false mode args))));
 
   fun execute_all thy =
     (Output.writeln "Restoring purged notations and syntax...\n";

@@ -37,7 +37,7 @@ ML \<open>
         (fn (mode, args) =>
           (Local_Theory.background_theory
             (TotalRecall.record_no_notation mode args)) o
-          (Specification.notation_cmd false mode args)));
+          (Local_Theory.notation_cmd false mode args)));
 
   val _ =
     Outer_Syntax.command @{command_keyword recall_syntax}
