@@ -28,7 +28,7 @@ ML \<open>
       ((Parse.syntax_mode -- Scan.repeat1 Parse.const_decl) >>
         (Toplevel.theory o (fn (mode, args) =>
           (TotalRecall.record_no_syntax mode args) o
-          (Sign.del_syntax_cmd mode args))));
+          (Sign.syntax_cmd false mode args))));
 
   val _ =
     Outer_Syntax.local_theory @{command_keyword purge_notation}
