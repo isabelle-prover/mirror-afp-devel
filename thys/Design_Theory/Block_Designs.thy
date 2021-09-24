@@ -165,7 +165,7 @@ begin
 lemma obtain_t_subset_points:
   obtains T where "T \<subseteq> \<V>" "card T = \<t>" "finite T"
   using obtain_subset_with_card_int_n design_points_nempty t_lt_order t_non_zero finite_sets
-  by (metis (no_types, hide_lams) dual_order.strict_trans2 not_le_imp_less of_nat_1 of_nat_less_0_iff) 
+  by (metis int_one_le_iff_zero_less less_eq_int_code(1) linorder_not_le verit_la_generic)
 
 lemma multiple_t_wise_balance_index [simp]:
   assumes "ps \<subseteq> \<V>"

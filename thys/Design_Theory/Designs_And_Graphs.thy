@@ -88,7 +88,7 @@ next
   fix xa
   assume assm1: "{x, y} = arc_to_block  xa" and assm2: "xa \<in> (arcs G)"
   thus "(y, x) \<in> arc_to_ends G ` arcs G" using arcs_ends_def
-    by (metis (mono_tags, hide_lams) arc_blocks_end_subset graph_symmetric image_iff subset_refl)
+    by (metis dual_order.refl graph.arc_blocks_end_subset graph_axioms graph_symmetric imageI)
 qed
 
 lemma arcs_blocks_iff: "{x, y} \<in># arcs_blocks \<longleftrightarrow> (x, y) \<in> arcs_ends G \<and> (y, x) \<in> arcs_ends G"

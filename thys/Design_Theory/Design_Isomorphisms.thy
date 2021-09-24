@@ -56,8 +56,8 @@ proof -
     by simp 
   have "image_mset ((`) (inv_into \<V> \<pi>)) \<B>' = image_mset ((`) (inv_into \<V> \<pi>)) (image_mset ((`) \<pi>) \<B>)" 
     using block_img by simp
-  then have "image_mset ((`) (inv_into \<V> \<pi>)) \<B>' = image_mset ((`) ((inv_into \<V> \<pi>) \<circ> \<pi>)) \<B>"
-    by (metis (no_types, hide_lams) comp_apply image_comp multiset.map_comp multiset.map_cong0)
+  then have "image_mset ((`) (inv_into \<V> \<pi>)) \<B>' = image_mset ((`) ((inv_into \<V> \<pi>) \<circ> \<pi>)) \<B>" 
+    by (metis (no_types, opaque_lifting) block_img comp_apply image_comp multiset.map_comp multiset.map_cong0)
   thus ?thesis using img by simp
 qed
 
@@ -237,7 +237,7 @@ qed
 lemma design_iso_rep_numbers_eq: "source.replication_numbers = target.replication_numbers"
   apply (simp add: source.replication_numbers_def target.replication_numbers_def)
   using  design_iso_point_rep_num_eq design_isomorphism.design_iso_point_rep_num_eq iso_points_map
-  by (metis (no_types, hide_lams) imageI inverse_design_isomorphism iso_points_inv_map)
+  by (metis (no_types, lifting) inverse_design_isomorphism iso_points_inv_map rev_image_eqI)
 
 lemma design_iso_block_size_eq: "bl \<in># \<B> \<Longrightarrow> card bl = card (\<pi> ` bl)"
   using card_image_le finite_subset_image image_inv_into_cancel
@@ -245,7 +245,7 @@ lemma design_iso_block_size_eq: "bl \<in># \<B> \<Longrightarrow> card bl = card
   
 lemma design_iso_block_sizes_eq: "source.sys_block_sizes = target.sys_block_sizes"
   apply (simp add: source.sys_block_sizes_def target.sys_block_sizes_def)
-  by (metis (no_types, hide_lams) design_iso_block_size_eq iso_block_in iso_img_block_orig_exists) 
+  by (metis (no_types, lifting) design_iso_block_size_eq iso_block_in iso_img_block_orig_exists)
 
 lemma design_iso_points_index_eq: 
   assumes "ps \<subseteq> \<V>" 

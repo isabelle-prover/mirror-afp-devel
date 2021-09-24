@@ -4,8 +4,12 @@
 
 section \<open>Micellanious Helper Functions on Sets and Multisets\<close>
 
-theory Multisets_Extras imports Main "HOL-Library.Multiset" "Card_Partitions.Set_Partition"
-"Nested_Multisets_Ordinals.Multiset_More" "HOL-Library.Disjoint_Sets"
+theory Multisets_Extras imports 
+  "HOL-Library.Multiset" 
+  Card_Partitions.Set_Partition
+  Nested_Multisets_Ordinals.Multiset_More 
+  Nested_Multisets_Ordinals.Duplicate_Free_Multiset
+  "HOL-Library.Disjoint_Sets"
 begin
 
 subsection \<open>Set Theory Extras\<close>
@@ -189,7 +193,7 @@ proof -
 qed
 
 lemma mset_union_size: "size (A \<union># B) = size (A) + size (B - A)"
-  by (simp add: sup_subset_mset_def) 
+  by (simp add: union_mset_def)
 
 lemma mset_union_size_inter: "size (A \<union># B) = size (A) + size B - size (A \<inter># B)"
   by (metis diff_add_inverse2 size_Un_Int) 
@@ -213,7 +217,7 @@ lemma elem_in_repeat_in_original: "a \<in># repeat_mset n A \<Longrightarrow> a 
   by (metis count_inI count_repeat_mset in_countE mult.commute mult_zero_left nat.distinct(1))
 
 lemma elem_in_original_in_repeat: "n > 0 \<Longrightarrow> a \<in># A \<Longrightarrow> a \<in># repeat_mset n A"
-  by (metis (full_types) Suc_pred repeat_mset.simps(2) union_iff)
+  by (metis count_greater_zero_iff count_repeat_mset nat_0_less_mult_iff)
 
 text \<open>Lemmas on image and filter for multisets\<close>
 
@@ -304,7 +308,7 @@ qed
 
 lemma size_cartesian_product: "size (A \<times># B) = size A * size B"
   by (induct A) (simp_all add: size_add_elem_step_eq)
-
+ 
 lemma cart_prod_distinct_mset:
   assumes assm1: "distinct_mset A"
   assumes assm2: "distinct_mset B"
@@ -466,7 +470,7 @@ lemma sum_mset_0_left: "(\<And> x . f x \<ge> 0) \<Longrightarrow> (\<Sum> x \<i
   apply (induction A)
    apply auto
     using local.add_nonneg_eq_0_iff sum_mset_ge0 apply blast
-  by (metis local.antisym local.sum_mset.insert sum_mset_ge0 sum_order_add_mset)
+    using local.add_nonneg_eq_0_iff sum_mset_ge0 by blast
 
 lemma sum_mset_0_iff_ge_0:
   assumes "(\<And> x . f x \<ge> 0)"
@@ -742,7 +746,7 @@ next
     using set_eqI' partition_on_mset_elems assms by auto
   show "\<And>p p'. p \<in># image_mset set_mset P \<Longrightarrow> p' \<in># image_mset set_mset P \<Longrightarrow> 
       p \<noteq> p' \<Longrightarrow> p \<inter> p' = {}"
-    using partition_on_set_mset_distinct assms by fastforce
+    using partition_on_set_mset_distinct assms by blast
 qed
 
 lemma partition_on_mset_eq_imp_eq_carrier:
