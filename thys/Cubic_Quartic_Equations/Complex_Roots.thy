@@ -60,7 +60,7 @@ text \<open>While the definition of the complex root is quite natural and easy,
   complex number is the chosen one.\<close>
 
 definition croot :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
-  "croot n x = (rcis (root n (cmod x)) (arg x / of_nat n))" 
+  "croot n x = (rcis (root n (cmod x)) (Arg x / of_nat n))" 
 
 lemma croot_0[simp]: "croot n 0 = 0" "croot 0 x = 0"
   unfolding croot_def by auto
@@ -68,74 +68,74 @@ lemma croot_0[simp]: "croot n 0 = 0" "croot 0 x = 0"
 lemma croot_power: assumes n: "n \<noteq> 0" 
   shows "(croot n x) ^ n = x" 
   unfolding croot_def DeMoivre2
-  by (subst real_root_pow_pos2, insert n, auto simp: rcis_cmod_arg)
+  by (subst real_root_pow_pos2, insert n, auto simp: rcis_cmod_Arg)
 
-lemma arg_of_real: "arg (of_real x) = 
+lemma Arg_of_real: "Arg (of_real x) = 
   (if x < 0 then pi else 0)"
 proof (cases "x = 0")
   case False
   hence "x < 0 \<or> x > 0" by auto
-  thus ?thesis by (intro arg_unique, auto
+  thus ?thesis by (intro cis_Arg_unique, auto
       simp: complex_sgn_def scaleR_complex.ctr complex_eq_iff)
-qed (auto simp: arg_def)
+qed (auto simp: Arg_def)
 
 
-lemma arg_rcis_cis[simp]: assumes "x > 0" 
-  shows "arg (rcis x y) = arg (cis y)" 
+lemma Arg_rcis_cis[simp]: assumes "x > 0" 
+  shows "Arg (rcis x y) = Arg (cis y)" 
   using assms unfolding rcis_def by simp
 
-lemma cis_arg_1[simp]: "cis (arg 1) = 1" 
-  using arg_of_real[of 1] by simp
+lemma cis_Arg_1[simp]: "cis (Arg 1) = 1" 
+  using Arg_of_real[of 1] by simp
 
-lemma cis_arg_power[simp]: assumes "x \<noteq> 0" 
-  shows "cis (arg (x ^ n)) = cis (arg x * real n)" 
+lemma cis_Arg_power[simp]: assumes "x \<noteq> 0" 
+  shows "cis (Arg (x ^ n)) = cis (Arg x * real n)" 
 proof (induct n)
   case (Suc n)
   show ?case unfolding power.simps
   proof (subst cis_arg_mult)    
-    show "cis (arg x + arg (x ^ n)) = cis (arg x * real (Suc n))" 
-      unfolding mult.commute[of "arg x"] DeMoivre[symmetric]
+    show "cis (Arg x + Arg (x ^ n)) = cis (Arg x * real (Suc n))" 
+      unfolding mult.commute[of "Arg x"] DeMoivre[symmetric]
       unfolding power.simps using Suc
       by (metis DeMoivre cis_mult mult.commute)
     show "x * x ^ n \<noteq> 0" using assms by auto
   qed
 qed simp
 
-lemma arg_croot[simp]: "arg (croot n x) = arg x / real n" 
+lemma Arg_croot[simp]: "Arg (croot n x) = Arg x / real n" 
 proof (cases "n = 0 \<or> x = 0")
   case True
-  thus ?thesis by (auto simp: arg_def)
+  thus ?thesis by (auto simp: Arg_def)
 next
   case False
   hence n: "n \<noteq> 0" and x: "x \<noteq> 0" by auto
   let ?root = "croot n x" 
   from n have n1: "real n \<ge> 1" "real n > 0" "real n \<noteq> 0" by auto
-  have bounded: "- pi < arg x / real n \<and> arg x / real n \<le> pi" 
-  proof (cases "arg x < 0")
+  have bounded: "- pi < Arg x / real n \<and> Arg x / real n \<le> pi" 
+  proof (cases "Arg x < 0")
     case True
-    from arg_bounded[of x] have "- pi < arg x" by auto
-    also have "\<dots> \<le> arg x / real n" using n1 True
+    from Arg_bounded[of x] have "- pi < Arg x" by auto
+    also have "\<dots> \<le> Arg x / real n" using n1 True
       by (smt (z3) div_by_1 divide_minus_left frac_le)
-    finally have one: "- pi < arg x / real n" .
-    have "arg x / real n \<le> 0" using True n1 
+    finally have one: "- pi < Arg x / real n" .
+    have "Arg x / real n \<le> 0" using True n1 
       by (smt (verit) divide_less_0_iff)
     also have "\<dots> \<le> pi" by simp
     finally show ?thesis using one by auto
   next
     case False
-    hence ax: "arg x \<ge> 0" by auto
-    have "arg x / real n \<le> arg x" using n1 ax
+    hence ax: "Arg x \<ge> 0" by auto
+    have "Arg x / real n \<le> Arg x" using n1 ax
       by (smt (verit) div_by_1 frac_le)
-    also have "\<dots> \<le> pi" using arg_bounded[of x] by simp
-    finally have one: "arg x / real n \<le> pi" .
+    also have "\<dots> \<le> pi" using Arg_bounded[of x] by simp
+    finally have one: "Arg x / real n \<le> pi" .
     have "-pi < 0" by simp
-    also have "\<dots> \<le> arg x / real n" using ax n1 by simp
+    also have "\<dots> \<le> Arg x / real n" using ax n1 by simp
     finally show ?thesis using one by auto
   qed
-  have "arg ?root = arg (cis (arg x / real n))" 
+  have "Arg ?root = Arg (cis (Arg x / real n))" 
     unfolding croot_def using x n by simp 
-  also have "\<dots> = arg x / real n" 
-    by (rule arg_unique, force, insert bounded, auto)
+  also have "\<dots> = Arg x / real n" 
+    by (rule cis_Arg_unique, force, insert bounded, auto)
   finally show ?thesis .
 qed
 
@@ -303,36 +303,36 @@ next
   hence "cmod (?root ^ n) = cmod (y ^ n)" by simp
   hence norm_eq: "cmod ?root = cmod y" using n unfolding norm_power
     by (meson gr_zeroI norm_ge_zero power_eq_imp_eq_base)
-  have "cis (arg y * real n) = cis (arg (y^n))" by (subst cis_arg_power[OF y0], simp) 
-  also have "\<dots> = cis (arg x)" using y by simp
-  finally have ciseq: "cis (arg y * real n) = cis (arg x)" by simp
+  have "cis (Arg y * real n) = cis (Arg (y^n))" by (subst cis_Arg_power[OF y0], simp) 
+  also have "\<dots> = cis (Arg x)" using y by simp
+  finally have ciseq: "cis (Arg y * real n) = cis (Arg x)" by simp
   from cis_eq[OF ciseq] obtain i where
-    "arg y * real n - arg x = 2 * real_of_int i * pi" 
+    "Arg y * real n - Arg x = 2 * real_of_int i * pi" 
     by auto
-  hence "arg y * real n = arg x + 2 * real_of_int i * pi" by auto
+  hence "Arg y * real n = Arg x + 2 * real_of_int i * pi" by auto
   from arg_cong[OF this, of "\<lambda> x. x / real n"] n1
-  have argy: "arg y = arg ?root + 2 * real_of_int i * pi / real n" 
+  have Argy: "Arg y = Arg ?root + 2 * real_of_int i * pi / real n" 
     by (auto simp: field_simps)
   have i0: "i \<noteq> 0" 
   proof
     assume "i = 0" 
-    hence "arg y = arg ?root" unfolding argy by simp
-    with norm_eq have "?root = y" by (metis rcis_cmod_arg)
+    hence "Arg y = Arg ?root" unfolding Argy by simp
+    with norm_eq have "?root = y" by (metis rcis_cmod_Arg)
     with neq show False by simp
   qed
   from y0 have cy0: "cmod y > 0" by auto
-  from arg_bounded[of x] have abs_pi: "abs (arg x) \<le> pi" by auto
+  from Arg_bounded[of x] have abs_pi: "abs (Arg x) \<le> pi" by auto
   have "Re y \<le> Re ?root \<longleftrightarrow> Re y / cmod y \<le> Re ?root / cmod y"
     using cy0 unfolding divide_le_cancel by simp
-  also have cosy: "Re y / cmod y = cos (arg y)" unfolding cos_arg[OF y0] ..
-  also have cosrt: "Re ?root / cmod y = cos (arg ?root)" 
+  also have cosy: "Re y / cmod y = cos (Arg y)" unfolding cos_arg[OF y0] ..
+  also have cosrt: "Re ?root / cmod y = cos (Arg ?root)" 
     unfolding norm_eq[symmetric] by (subst cos_arg, insert norm_eq cy0, auto)
-  also have "cos (arg y) \<le> cos (arg ?root) \<longleftrightarrow> abs (arg ?root) \<le> abs (arg y)" 
-    by (rule cos_mono_le, insert arg_bounded[of y] arg_bounded[of ?root], auto)
-  also have "\<dots> \<longleftrightarrow> abs (arg ?root) * real n \<le> abs (arg y) * real n" 
+  also have "cos (Arg y) \<le> cos (Arg ?root) \<longleftrightarrow> abs (Arg ?root) \<le> abs (Arg y)" 
+    by (rule cos_mono_le, insert Arg_bounded[of y] Arg_bounded[of ?root], auto)
+  also have "\<dots> \<longleftrightarrow> abs (Arg ?root) * real n \<le> abs (Arg y) * real n" 
     unfolding mult_le_cancel_right using n1 by simp
-  also have "\<dots> \<longleftrightarrow> abs (arg x) \<le> \<bar>arg x + 2 * real_of_int i * pi\<bar>" 
-    unfolding argy using n1 by (simp add: field_simps)
+  also have "\<dots> \<longleftrightarrow> abs (Arg x) \<le> \<bar>Arg x + 2 * real_of_int i * pi\<bar>" 
+    unfolding Argy using n1 by (simp add: field_simps)
   also have "\<dots>" using abs_pi
     by (rule abs_add_2_mult_bound)
   finally have le: "Re y \<le> Re (croot n x)" .
@@ -343,29 +343,29 @@ next
   next
     case True
     hence "Re y / cmod y = Re ?root / cmod y" by simp
-    hence "cos (arg y) = cos (arg ?root)" unfolding cosy cosrt .
-    hence "cos (abs (arg y)) = cos (abs (arg ?root))" unfolding cos_abs .
+    hence "cos (Arg y) = cos (Arg ?root)" unfolding cosy cosrt .
+    hence "cos (abs (Arg y)) = cos (abs (Arg ?root))" unfolding cos_abs .
     from cos_inj_pi[OF _ _ _ _ this]
-    have "abs (arg y) = abs (arg ?root)" 
-      using arg_bounded[of y] arg_bounded[of ?root] by auto
-    hence "abs (arg y) * real n = abs (arg ?root) * real n" by simp
-    hence "abs (arg x) = \<bar>arg x + 2 * real_of_int i * pi\<bar>" unfolding argy 
+    have "abs (Arg y) = abs (Arg ?root)" 
+      using Arg_bounded[of y] Arg_bounded[of ?root] by auto
+    hence "abs (Arg y) * real n = abs (Arg ?root) * real n" by simp
+    hence "abs (Arg x) = \<bar>Arg x + 2 * real_of_int i * pi\<bar>" unfolding Argy 
       using n1 by (simp add: field_simps)
-    from abs_eq_add_2_mult[OF this _ _ \<open>i \<noteq> 0\<close>] arg_bounded[of x]  
-    have argx: "arg x = pi" and i: "i = -1" by auto
-    have argy: "arg y = -pi / real n" 
-      unfolding argy arg_croot i argx by simp
+    from abs_eq_add_2_mult[OF this _ _ \<open>i \<noteq> 0\<close>] Arg_bounded[of x]  
+    have Argx: "Arg x = pi" and i: "i = -1" by auto
+    have Argy: "Arg y = -pi / real n" 
+      unfolding Argy Arg_croot i Argx by simp
     have "Im ?root > Im y \<longleftrightarrow> Im ?root / cmod ?root > Im y / cmod y"
       unfolding norm_eq using cy0
       by (meson divide_less_cancel divide_strict_right_mono) 
-    also have "\<dots> \<longleftrightarrow> sin (arg ?root) > sin (arg y)" 
+    also have "\<dots> \<longleftrightarrow> sin (Arg ?root) > sin (Arg y)" 
       by (subst (1 2) sin_arg, insert y0 norm_eq, auto)
     also have "\<dots> \<longleftrightarrow> sin (- pi / real n) < sin (pi / real n)" 
-      unfolding argy arg_croot argx by simp
+      unfolding Argy Arg_croot Argx by simp
     also have \<dots>
     proof -
       have "sin (- pi / real n) < 0" 
-        using n1 by (smt (verit) arg_bounded argy divide_neg_pos sin_gt_zero sin_minus)
+        using n1 by (smt (verit) Arg_bounded Argy divide_neg_pos sin_gt_zero sin_minus)
       also have "\<dots> < sin (pi / real n)" 
         using n1 calculation by fastforce
       finally show ?thesis .
