@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Compositional BD Security - Archive of Formal Proofs
+<title>Solving Cubic and Quartic Equations - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ompositional
+  <h1>          <font class="first">S</font>olving
   
-          <font class="first">B</font>D
+          <font class="first">C</font>ubic
   
-          <font class="first">S</font>ecurity
+          and
+  
+          <font class="first">Q</font>uartic
+  
+          <font class="first">E</font>quations
   
 </h1>
   <p>&nbsp;</p>
@@ -87,16 +91,15 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Compositional BD Security</td>
+  <td class="data" width="80%">Solving Cubic and Quartic Equations</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    Thomas Bauereiss (thomas /at/ bauereiss /dot/ name) and
-          <a href="https://www.andreipopescu.uk">Andrei Popescu</a>
+              René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
       </td>
 </tr>
 
@@ -104,41 +107,33 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-08-16</td>
+  <td class="data">2021-09-03</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-Building on a previous <a
-href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">AFP
-entry</a> that formalizes the Bounded-Deducibility Security (BD
-Security) framework <a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">[1]</a>,
-we formalize compositionality and transport theorems for information
-flow security. These results allow lifting BD Security properties from
-individual components specified as transition systems, to a
-composition of systems specified as communicating products of
-transition systems. The underlying ideas of these results are
-presented in the papers <a href="https://doi.org/10.4230/LIPIcs.ITP.2021.3">[1]</a>
-and <a href="https://doi.org/10.1109/SP.2017.24">[2]</a>.
-The latter paper also describes a major case study where these results
-have been used: on verifying the CoSMeDis distributed social media
-platform (itself formalized as an <a
-href="https://www.isa-afp.org/entries/CoSMeDis.html">AFP
-entry</a> that builds on this entry).</td>
+<p>We formalize Cardano's formula to solve a cubic equation
+$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari's formula to
+solve a quartic equation. We further turn both formulas into
+executable algorithms based on the algebraic number implementation in
+the AFP. To this end we also slightly extended this library, namely by
+making the minimal polynomial of an algebraic number executable, and
+by defining and implementing $n$-th roots of complex
+numbers.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{BD_Security_Compositional-AFP,
-  author  = {Thomas Bauereiss and Andrei Popescu},
-  title   = {Compositional BD Security},
+        <pre>@article{Cubic_Quartic_Equations-AFP,
+  author  = {René Thiemann},
+  title   = {Solving Cubic and Quartic Equations},
   journal = {Archive of Formal Proofs},
-  month   = aug,
+  month   = sep,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/BD_Security_Compositional.html},
+  note    = {\url{https://isa-afp.org/entries/Cubic_Quartic_Equations.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,11 +145,9 @@ entry</a> that builds on this entry).</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bounded_Deducibility_Security.html">Bounded_Deducibility_Security</a>      </td></tr>
+          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Complex_Geometry.html">Complex_Geometry</a>, <a href="Hermite_Lindemann.html">Hermite_Lindemann</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CoSMeDis.html">CoSMeDis</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -166,17 +159,17 @@ entry</a> that builds on this entry).</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BD_Security_Compositional/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-BD_Security_Compositional-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Cubic_Quartic_Equations-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

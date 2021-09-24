@@ -9,7 +9,37 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
+    <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Solving Cubic and Quartic Equations</title>
+              <link>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
+       <guid>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;We formalize Cardano&#39;s formula to solve a cubic equation
+$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari&#39;s formula to
+solve a quartic equation. We further turn both formulas into
+executable algorithms based on the algebraic number implementation in
+the AFP. To this end we also slightly extended this library, namely by
+making the minimal polynomial of an algebraic number executable, and
+by defining and implementing $n$-th roots of complex
+numbers.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>The Theorem of Three Circles</title>
+              <link>https://www.isa-afp.org/entries/Three_Circles.html</link>
+       <guid>https://www.isa-afp.org/entries/Three_Circles.html</guid>
+       <dc:creator> Fox Thomson, Wenda Li       </dc:creator>
+       <pubDate>21 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+The Descartes test based on Bernstein coefficients and Descartes’ rule
+of signs effectively (over-)approximates the number of real roots of a
+univariate polynomial over an interval. In this entry we formalise the
+theorem of three circles, which gives sufficient conditions for when
+the Descartes test returns 0 or 1. This is the first step for
+efficient root isolation.</description>
+    </item>
     <item>
        <title>Fresh identifiers</title>
               <link>https://www.isa-afp.org/entries/Fresh_Identifiers.html</link>
@@ -110,6 +140,30 @@ have been used: on verifying the CoSMeDis distributed social media
 platform (itself formalized as an &lt;a
 href=&#34;https://www.isa-afp.org/entries/CoSMeDis.html&#34;&gt;AFP
 entry&lt;/a&gt; that builds on this entry).</description>
+    </item>
+    <item>
+       <title>Combinatorial Design Theory</title>
+              <link>https://www.isa-afp.org/entries/Design_Theory.html</link>
+       <guid>https://www.isa-afp.org/entries/Design_Theory.html</guid>
+       <dc:creator> Chelsea Edmonds, Lawrence Paulson       </dc:creator>
+       <pubDate>13 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+Combinatorial design theory studies incidence set systems with certain
+balance and symmetry properties. It is closely related to hypergraph
+theory. This formalisation presents a general library for formal
+reasoning on incidence set systems, designs and their applications,
+including formal definitions and proofs for many key properties,
+operations, and theorems on the construction and existence of designs.
+Notably, this includes formalising t-designs, balanced incomplete
+block designs (BIBD), group divisible designs (GDD), pairwise balanced
+designs (PBD), design isomorphisms, and the relationship between
+graphs and designs. A locale-centric approach has been used to manage
+the relationships between the many different types of designs.
+Theorems of particular interest include the necessary conditions for
+existence of a BIBD, Wilson&#39;s construction on GDDs, and
+Bose&#39;s inequality on resolvable designs. Parts of this
+formalisation are explored in the paper &#34;A Modular First
+Formalisation of Combinatorial Design Theory&#34;, presented at CICM 2021.</description>
     </item>
     <item>
        <title>Relational Forests</title>
@@ -502,62 +556,6 @@ also known as von Neumann measurements, which are based on elements of
 spectral theory. We also formalized the CHSH inequality, an inequality
 involving expectations in a probability space that is violated by
 quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.</description>
-    </item>
-    <item>
-       <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
-              <link>https://www.isa-afp.org/entries/Hermite_Lindemann.html</link>
-       <guid>https://www.isa-afp.org/entries/Hermite_Lindemann.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of the
-Hermite-Lindemann-Weierstraß Theorem (also known as simply
-Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
-crowning achievements of 19th century number theory.&lt;/p&gt;
-&lt;p&gt;The theorem states that if $\alpha_1, \ldots,
-\alpha_n\in\mathbb{C}$ are algebraic numbers that are linearly
-independent over $\mathbb{Z}$, then $e^{\alpha_1},\ldots,e^{\alpha_n}$
-are algebraically independent over $\mathbb{Q}$.&lt;/p&gt;
-&lt;p&gt;Like the &lt;a
-href=&#34;https://doi.org/10.1007/978-3-319-66107-0_5&#34;&gt;previous
-formalisation in Coq by Bernard&lt;/a&gt;, I proceeded by formalising
-&lt;a
-href=&#34;https://doi.org/10.1017/CBO9780511565977&#34;&gt;Baker&#39;s
-version of the theorem and proof&lt;/a&gt; and then deriving the
-original one from that. Baker&#39;s version states that for any
-algebraic numbers $\beta_1, \ldots, \beta_n\in\mathbb{C}$ and distinct
-algebraic numbers $\alpha_i, \ldots, \alpha_n\in\mathbb{C}$, we have
-$\beta_1 e^{\alpha_1} + \ldots + \beta_n e^{\alpha_n} = 0$ if and only
-if all the $\beta_i$ are zero.&lt;/p&gt; &lt;p&gt;This has a number of
-direct corollaries, e.g.:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;$e$ and $\pi$
-are transcendental&lt;/li&gt; &lt;li&gt;$e^z$, $\sin z$, $\tan z$,
-etc. are transcendental for algebraic
-$z\in\mathbb{C}\setminus\{0\}$&lt;/li&gt; &lt;li&gt;$\ln z$ is
-transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
-1\}$&lt;/li&gt; &lt;/ul&gt;</description>
-    </item>
-    <item>
-       <title>Mereology</title>
-              <link>https://www.isa-afp.org/entries/Mereology.html</link>
-       <guid>https://www.isa-afp.org/entries/Mereology.html</guid>
-       <dc:creator> Ben Blumson       </dc:creator>
-       <pubDate>01 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-We use Isabelle/HOL to verify elementary theorems and alternative
-axiomatizations of classical extensional mereology.</description>
-    </item>
-    <item>
-       <title>The Sunflower Lemma of Erdős and Rado</title>
-              <link>https://www.isa-afp.org/entries/Sunflowers.html</link>
-       <guid>https://www.isa-afp.org/entries/Sunflowers.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>25 Feb 2021 00:00:00 +0000</pubDate>
-       <description>
-We formally define sunflowers and provide a formalization of the
-sunflower lemma of Erd&amp;odblac;s and Rado: whenever a set of
-size-&lt;i&gt;k&lt;/i&gt;-sets has a larger cardinality than
-&lt;i&gt;(r - 1)&lt;sup&gt;k&lt;/sup&gt; &amp;middot; k!&lt;/i&gt;,
-then it contains a sunflower of cardinality &lt;i&gt;r&lt;/i&gt;.</description>
     </item>
   </channel>
 </rss>

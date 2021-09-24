@@ -120,6 +120,7 @@ CoSMeDis
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
+Cubic_Quartic_Equations
 DFS_Framework
 DOM_Components
 DPT-SAT-Solver
@@ -137,6 +138,7 @@ Depth-First-Search
 Derangements
 Deriving
 Descartes_Sign_Rule
+Design_Theory
 Dict_Construction
 Differential_Dynamic_Logic
 Differential_Game_Logic
@@ -568,6 +570,7 @@ TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
+Three_Circles
 Timed_Automata
 Topological_Semantics
 Topology
