@@ -874,7 +874,7 @@ proof (induction p rule: real_poly_roots_induct)
                  Re z \<le> 0 \<and> (cmod z)\<^sup>2 \<le> 4 * (Re z)\<^sup>2)"
   hence 2: "(\<And>z. poly (map_poly complex_of_real p) z = 0 \<Longrightarrow>
                  Re z \<le> 0 \<and> (cmod z)\<^sup>2 \<le> 4 * (Re z)\<^sup>2)"
-    by (metis (no_types, hide_lams) four_x_squared mult.commute mult_cancel_left1 of_real_poly_map_mult poly_mult)
+    by (metis four_x_squared mult_zero_left of_real_poly_map_mult poly_mult)
   have 3: "normal_poly [:-x, 1:]"
     apply (subst linear_normal_iff, 
         subst Re_complex_of_real[symmetric], rule conjunct1)

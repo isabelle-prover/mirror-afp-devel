@@ -78,9 +78,8 @@ subsection \<open>Misc results about polynomials\<close>
 
 lemma smult_power: "smult (x^n) (p^n) = smult x p ^ n"
   apply (induction n)
-  subgoal by fastforce
-  by (metis (no_types, hide_lams) mult_smult_left mult_smult_right 
-      power_Suc smult_smult)
+  subgoal by fastforce 
+  by (metis smult_power)
 
 lemma reflect_poly_monom: "reflect_poly (monom n i) = monom n 0"
   apply (induction i)
@@ -344,8 +343,7 @@ proof (induction d arbitrary: p rule: less_induct)
   next
     assume hdeg: "0 \<noteq> degree p" 
     hence "\<not> constant (poly (map_poly of_real p))"
-      by (metis (no_types, hide_lams) constant_def constant_degree
-          of_real_eq_iff of_real_poly_map_poly)
+      by (metis (no_types, opaque_lifting) constant_def constant_degree of_real_eq_iff of_real_poly_map_poly)
     then obtain z::complex where h: "poly (map_poly of_real p) z = 0" 
       using fundamental_theorem_of_algebra by blast
     show "P p"
