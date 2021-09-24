@@ -30,6 +30,7 @@ imports
   Algebraic_Numbers
   Sturm_Rat
   Factors_of_Int_Poly
+  Min_Int_Poly
 begin
 
 text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
@@ -3479,6 +3480,71 @@ proof
 qed
 end
 
+instantiation real_alg ::
+  "{unique_euclidean_ring, normalization_euclidean_semiring, normalization_semidom_multiplicative}"
+begin
+
+definition [simp]: "normalize_real_alg = (normalize_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "unit_factor_real_alg = (unit_factor_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "modulo_real_alg = (mod_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "euclidean_size_real_alg = (euclidean_size_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "division_segment (x :: real_alg) = 1"
+
+instance
+  by standard
+    (simp_all add: dvd_field_iff field_split_simps split: if_splits)
+
+end
+
+instantiation real_alg :: euclidean_ring_gcd
+begin
+
+definition gcd_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> real_alg" where
+  "gcd_real_alg = Euclidean_Algorithm.gcd"
+definition lcm_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> real_alg" where
+  "lcm_real_alg = Euclidean_Algorithm.lcm"
+definition Gcd_real_alg :: "real_alg set \<Rightarrow> real_alg" where
+ "Gcd_real_alg = Euclidean_Algorithm.Gcd"
+definition Lcm_real_alg :: "real_alg set \<Rightarrow> real_alg" where
+ "Lcm_real_alg = Euclidean_Algorithm.Lcm"
+
+instance by standard (simp_all add: gcd_real_alg_def lcm_real_alg_def Gcd_real_alg_def Lcm_real_alg_def)
+
+end
+
+instance real_alg :: field_gcd ..
+
+definition min_int_poly_real_alg :: "real_alg \<Rightarrow> int poly" where
+  "min_int_poly_real_alg x = (case info_real_alg x of Inl r \<Rightarrow> poly_rat r | Inr (p,_) \<Rightarrow> p)"
+
+lemma min_int_poly_real_alg_real_of: "min_int_poly_real_alg x = min_int_poly (real_of x)"
+proof (cases "info_real_alg x")
+  case (Inl r)
+  show ?thesis unfolding info_real_alg(2)[OF Inl] min_int_poly_real_alg_def Inl
+    by (simp add: min_int_poly_of_rat)
+next
+  case (Inr pair)
+  then obtain p n where Inr: "info_real_alg x = Inr (p,n)" by (cases pair, auto)
+  hence "poly_cond p" by (transfer, transfer, auto simp: info_2_card)
+  hence "min_int_poly (real_of x) = p" using info_real_alg(1)[OF Inr]
+    by (intro min_int_poly_unique, auto)
+  thus ?thesis unfolding min_int_poly_real_alg_def Inr by simp
+qed
+
+lemma min_int_poly_real_code: "min_int_poly_real (real_of x) = min_int_poly_real_alg x"
+  by (simp add: min_int_poly_real_alg_real_of)
+
+
+lemma min_int_poly_real_of: "min_int_poly (real_of x) = min_int_poly x" 
+proof (rule min_int_poly_unique[OF _ min_int_poly_irreducible lead_coeff_min_int_poly_pos]) 
+  show "min_int_poly x represents real_of x" oops (* TODO: this gives an implementation of min-int-poly 
+    on type real-alg
+qed
+
+lemma min_int_poly_real_alg_code_unfold [code_unfold]: "min_int_poly = min_int_poly_real_alg"
+  by (intro ext, unfold min_int_poly_real_alg_real_of, simp add: min_int_poly_real_of) *)
+
+
 definition real_alg_of_real :: "real \<Rightarrow> real_alg" where
   "real_alg_of_real x = (if (\<exists> y. x = real_of y) then (THE y. x = real_of y) else 0)" 
 
@@ -3526,6 +3592,7 @@ lemmas real_alg_code_eqns =
   floor_real_alg
   is_rat_real_alg
   to_rat_real_alg
+  min_int_poly_real_code
 
 code_datatype real_of
 
@@ -3545,6 +3612,7 @@ declare [[code drop:
   "1 :: real"
   "sgn :: real \<Rightarrow> real"
   "abs :: real \<Rightarrow> real"
+  min_int_poly_real
   root]]
 
 declare real_alg_code_eqns [code equation]
@@ -3558,6 +3626,6 @@ proof (transfer)
   fix x
   show "real_of_3 (Real_Alg_Invariant (Rational x)) = real_of_rat x" 
     by (simp add: Real_Alg_Invariant_inverse real_of_3.rep_eq)
-qed
+qed  
 
 end

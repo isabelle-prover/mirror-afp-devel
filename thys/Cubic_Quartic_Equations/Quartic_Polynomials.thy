@@ -224,6 +224,5 @@ definition rroots4 :: "real poly \<Rightarrow> real list" where
 lemma rroots4: assumes deg: "degree p = 4" 
   shows "set (rroots4 p) = { x. poly p x = 0}" 
   unfolding rroots4_def by (rule roots4_generic[OF deg solve_depressed_quartic_real])
-
-
+ 
 end

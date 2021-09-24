@@ -6,13 +6,6 @@ theory Cubic_Polynomials
     Complex_Roots
 begin
 
-hide_const (open) MPoly_Type.degree
-hide_const (open) MPoly_Type.coeffs
-
-(* TODO: this should be integrated into distribution *)
-lemma complex_of_real_code[code_unfold]: "complex_of_real = (\<lambda> x. Complex x 0)" 
-  by (intro ext, auto simp: complex_eq_iff)
-
 text \<open>The real case where a result is only delivered if the discriminant is negative\<close>
 
 definition solve_depressed_cubic_Cardano_real :: "real \<Rightarrow> real \<Rightarrow> real option" where

@@ -6,8 +6,8 @@
 section \<open>Explicit Formulas for Roots\<close>
 
 text \<open>We provide algorithms which use the explicit formulas to 
-  compute the roots of polynomials of degree up to 2. We also define the formula for 
-  polynomials of degree 3, but did not (yet) prove anything about it.\<close>  
+  compute the roots of polynomials of degree up to 2. For polynomials of degree
+  3 and 4 have a look at the AFP entry "Cubic-Quartic-Equations".\<close>  
 
 theory Explicit_Roots
 imports   
@@ -153,26 +153,4 @@ lemma rroots: assumes "p \<noteq> 0" "degree p \<le> 2"
   using roots0[of p] roots1[of p] rroots2[of p]
   by (auto split: if_splits)
 
-text \<open>Although there is a closed form for cubic roots, 
-  which is specified below, we did not yet integrate it into the
- @{const croots} and @{const rroots} algorithms.
- One obstracle is that for complex numbers, the cubic root is not
- even defined. Therefore, we also did not proof soundness of the croots3 algorithm.\<close>
-
-context
-  fixes croot :: "nat \<Rightarrow> complex \<Rightarrow> complex"
-begin
-
-definition croots3 :: "complex poly \<Rightarrow> complex \<times> complex \<times> complex \<times> complex" where
-  "croots3 p = (let a = coeff p 3; b = coeff p 2; c = coeff p 1; d = coeff p 0; 
-    \<Delta>\<^sub>0 = b^2 - 3 * a * c;
-    \<Delta>\<^sub>1 = 2 * b^3 - 9 * a * b * c + 27 * a^2 * d;
-    C = croot 3 ((\<Delta>\<^sub>1 + csqrt ( \<Delta>\<^sub>1^2 - 4 * \<Delta>\<^sub>0^3)) / 2);
-    u\<^sub>1 = 1;
-    u\<^sub>2 = (-1 + \<i> * csqrt 3) / 2;
-    u\<^sub>3 = (-1 - \<i> * csqrt 3) / 2;
-    x\<^sub>k = (\<lambda> u. (-1 / (3 * a)) * (b + u * C + \<Delta>\<^sub>0 / (u * C)))
-    in
-     (x\<^sub>k u\<^sub>1, x\<^sub>k u\<^sub>2, x\<^sub>k u\<^sub>3, a))"
-end
 end

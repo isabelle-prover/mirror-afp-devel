@@ -3,7 +3,7 @@ section \<open>$n$-th roots of complex numbers\<close>
 theory Complex_Roots
   imports 
     Complex_Geometry.More_Complex
-    Min_Int_Poly_Impl
+    Min_Int_Poly_Complex_Impl
     "HOL-Library.Product_Lexorder"
 begin
 

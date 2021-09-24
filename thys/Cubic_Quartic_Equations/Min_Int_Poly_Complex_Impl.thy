@@ -1,46 +1,10 @@
-section \<open>Implementation of the minimal polynomial of a real or complex algebraic number\<close>
+section \<open>Implementation of the minimal polynomial of a complex algebraic number\<close>
 
-text \<open>This theory provides implementation of the minimal-representing-polynomial of an algebraic
-  number, for both the real-numbers and the complex-numbers.\<close>
-
-theory Min_Int_Poly_Impl
+theory Min_Int_Poly_Complex_Impl
   imports     
-    Hermite_Lindemann.Min_Int_Poly
-    Algebraic_Numbers.Real_Algebraic_Numbers
     Algebraic_Numbers.Complex_Algebraic_Numbers
 begin
- 
-definition min_int_poly_real_alg :: "real_alg \<Rightarrow> int poly" where
-  "min_int_poly_real_alg x = (case info_real_alg x of Inl r \<Rightarrow> poly_rat r | Inr (p,_) \<Rightarrow> p)" 
-
-lemma min_int_poly_of_rat: "min_int_poly (of_rat r :: 'a :: {field_char_0, field_gcd}) = poly_rat r"
-  by (intro min_int_poly_unique, auto)
-  
-lemma min_int_poly_real_alg: "min_int_poly_real_alg x = min_int_poly (real_of x)" 
-proof (cases "info_real_alg x")
-  case (Inl r)
-  show ?thesis unfolding info_real_alg(2)[OF Inl] min_int_poly_real_alg_def Inl
-    by (simp add: min_int_poly_of_rat)
-next
-  case (Inr pair)
-  then obtain p n where Inr: "info_real_alg x = Inr (p,n)" by (cases pair, auto)
-  hence "poly_cond p" by (transfer, transfer, auto simp: info_2_card)  
-  hence "min_int_poly (real_of x) = p" using info_real_alg(1)[OF Inr]
-    by (intro min_int_poly_unique, auto)
-  thus ?thesis unfolding min_int_poly_real_alg_def Inr by simp
-qed
-
-definition min_int_poly_real :: "real \<Rightarrow> int poly" where
-  [simp]: "min_int_poly_real = min_int_poly" 
-
-lemma min_int_poly_real_code_unfold [code_unfold]: "min_int_poly = min_int_poly_real" 
-  by simp
-
-lemma min_int_poly_real_code[code]: "min_int_poly_real (real_of x) = min_int_poly_real_alg x" 
-  by (simp add: min_int_poly_real_alg)
-
-text \<open>Now let us head for the complex numbers\<close>
-  
+   
 definition complex_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly list" where
   "complex_poly re im = (let i = [:1,0,1:] 
      in factors_of_int_poly (poly_add re (poly_mult im i)))" 
@@ -82,7 +46,8 @@ next
   thus ?thesis by (auto simp: algebraic_altdef_ipoly)
 qed
 
-lemma algebraic_complex_iff[code_unfold]: "algebraic x \<longleftrightarrow> algebraic (Re x) \<and> algebraic (Im x)" 
+lemma algebraic_complex_iff[code_unfold]: "algebraic x \<longleftrightarrow> (let y = x in algebraic (Re y) \<and> algebraic (Im y))" 
+  unfolding Let_def
 proof
   assume "algebraic x" 
   from this[unfolded algebraic_altdef_ipoly] obtain p where "ipoly p x = 0" "p \<noteq> 0" by auto
@@ -164,7 +129,6 @@ qed
 
 (* outcommented tests, since time-consuming:
 
-value (code) "min_int_poly (sqrt 2 + 3)" 
 value (code) "min_int_poly (sqrt 2 + \<i>)" 
 
 *)
