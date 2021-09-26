@@ -3,6 +3,7 @@ chapter AFP
 session Akra_Bazzi (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
+    "Pure-ex"
     "HOL-Decision_Procs"
     Landau_Symbols
   theories

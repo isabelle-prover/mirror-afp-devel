@@ -146,7 +146,8 @@ proof -
     using assms by (simp_all add: linorder_sorted_wrt_list_of_set xs_def ys_def)
       
   from xs_ys have "mset ys = mset xs" by (simp add: set_eq_iff_mset_eq_distinct [symmetric])
-  from mset_eq_permutation[OF this] guess \<pi> . note \<pi> = this
+  then obtain \<pi> where \<pi>: "\<pi> permutes {..<length xs}" "permute_list \<pi> xs = ys"
+    by (rule mset_eq_permutation)
   define \<pi>' where "\<pi>' = (\<lambda>x. if x \<notin> A then x else xs ! inv \<pi> (index xs x))"
   have \<pi>': "\<pi>' permutes A"
   proof (rule permutesI)

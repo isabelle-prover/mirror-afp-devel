@@ -3,6 +3,7 @@ chapter AFP
 session Zeta_Function (AFP) = Dirichlet_Series +
   options [timeout = 600]
   sessions
+    "Pure-ex"
     Euler_MacLaurin
     Bernoulli
     "HOL-Library"

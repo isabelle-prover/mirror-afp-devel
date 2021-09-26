@@ -103,7 +103,8 @@ lemma liouville_irrational_algebraic:
   obtains c :: real and n :: nat
     where "c > 0" and "\<And>(p::int) (q::int). q > 0 \<Longrightarrow> abs (x - p / q) > c / of_int q ^ n"
 proof -
-  from \<open>algebraic x\<close> guess p by (elim algebraicE) note p = this
+  from \<open>algebraic x\<close> obtain p where p: "\<And>i. coeff p i \<in> \<int>" "p \<noteq> 0" "poly p x = 0"
+    by (elim algebraicE) blast
   define n where "n = degree p"
 
   \<comment> \<open>The derivative of @{term p} is bounded within @{term "{x-1..x+1}"}.\<close>
@@ -214,7 +215,10 @@ text \<open>
 lemma (in liouville) transcendental: "\<not>algebraic x"
 proof
   assume "algebraic x"
-  from liouville_irrational_algebraic[OF irrational this] guess c n . note cn = this
+  from liouville_irrational_algebraic[OF irrational this]
+  obtain c n where cn:
+    "c > 0" "\<And>p q. q > 0 \<Longrightarrow> c / real_of_int q ^ n < \<bar>x - real_of_int p / real_of_int q\<bar>"
+    by auto
   
   define r where "r = nat \<lceil>log 2 (1 / c)\<rceil>"
   define m where "m = n + r"

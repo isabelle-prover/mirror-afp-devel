@@ -694,7 +694,12 @@ proof
     case False
     with \<open>?lhs\<close> have "(\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
       \<and> [a^((p - 1) div q) \<noteq> 1] (mod p))" by auto
-    then guess q y by (elim exE conjE) note qy = this
+    then obtain q y where qy:
+      "x = q * y"
+      "Prime q \<in> set xs"
+      "Triple p a y \<in> set xs"
+      "[a ^ ((p - 1) div q) \<noteq> 1] (mod p)"
+      by blast
     hence "(\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
         Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
         (let q = x div y in Prime q \<in> set xs \<and> mod_exp_nat a ((p-1) div q) p \<noteq> 1))"

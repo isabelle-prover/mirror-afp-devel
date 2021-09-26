@@ -887,8 +887,9 @@ lemma lran_eq_append_iff:
       subgoal
         using add1_zle_eq by fastforce
       done
-    from Cons.IH[OF this(1,3)] guess i by safe
-    note IH = this
+    from Cons.IH[OF this(1,3)] obtain i
+      where IH: "l + 1 \<le> i" "i \<le> h" "as = lran a (l + 1) i" "bs = lran a i h"
+      by auto
     with \<open>a l = x\<close> show ?case
       apply (intro exI[where x = i])
       apply auto

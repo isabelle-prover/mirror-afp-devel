@@ -1528,7 +1528,8 @@ proof -
     by (subst sum.union_disjoint [symmetric]) (auto simp: ivl_disj_un)
   also note assms(1)
   finally have "(\<Sum>p\<in>{m<..n}. if prime p then ln (real p) else 0) \<noteq> 0" by simp
-  from sum.not_neutral_contains_not_neutral [OF this] guess p .
+  then obtain p where "p \<in> {m<..n}" "(if prime p then ln (real p) else 0) \<noteq> 0"
+    by (rule sum.not_neutral_contains_not_neutral)
   thus ?thesis using that[of p] by (auto intro!: exI[of _ p] split: if_splits)
 qed
 

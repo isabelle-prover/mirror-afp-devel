@@ -7,12 +7,14 @@ proof(induction rule: ND.induct)
   case (Ax F \<Gamma>) thus ?case by(intro exI[of _ "{F}"]) (simp add: ND.Ax)
 next
   case (AndI \<Gamma> F G)
-  from AndI.IH(1) guess \<Gamma>1 .. moreover
-  from AndI.IH(2) guess \<Gamma>2 .. ultimately
-  show ?case by(intro exI[where x="\<Gamma>1\<union>\<Gamma>2"]) (force elim: Weaken intro!: ND.AndI)
+  from AndI.IH obtain \<Gamma>1 \<Gamma>2
+    where "\<Gamma>1 \<subseteq> \<Gamma> \<and> finite \<Gamma>1 \<and> (\<Gamma>1 \<turnstile> F)"
+      and "\<Gamma>2 \<subseteq> \<Gamma> \<and> finite \<Gamma>2 \<and> (\<Gamma>2 \<turnstile> G)"
+    by blast
+  then show ?case by(intro exI[where x="\<Gamma>1\<union>\<Gamma>2"]) (force elim: Weaken intro!: ND.AndI)
 next
   case (CC F \<Gamma>)
-  from CC.IH guess \<Gamma>' .. note \<Gamma>' = this
+  from CC.IH obtain \<Gamma>' where \<Gamma>': "\<Gamma>' \<subseteq> \<^bold>\<not> F \<triangleright> \<Gamma> \<and> finite \<Gamma>' \<and> (\<Gamma>' \<turnstile> \<bottom>)" ..
   thus ?case proof(cases "Not F \<in> \<Gamma>'") text\<open>case distinction: Did we actually use @{term "\<^bold>\<not>F"}?\<close>
     case False hence "\<Gamma>' \<subseteq> \<Gamma>" using \<Gamma>' by blast
     with \<Gamma>' show ?thesis using BotE by(intro exI[where x="\<Gamma>'"]) fast
@@ -30,10 +32,12 @@ next
   case OrI2 thus ?case by(blast dest: ND.OrI2)
 next
   case (OrE \<Gamma> F G H)
-  from OrE.IH(1) guess \<Gamma>1 .. moreover
-  from OrE.IH(2) guess \<Gamma>2 .. moreover
-  from OrE.IH(3) guess \<Gamma>3 ..
-  note IH = calculation this
+  from OrE.IH obtain \<Gamma>1 \<Gamma>2 \<Gamma>3
+    where IH:
+      "\<Gamma>1 \<subseteq> \<Gamma> \<and> finite \<Gamma>1 \<and> (\<Gamma>1 \<turnstile> F \<^bold>\<or> G)"
+      "\<Gamma>2 \<subseteq> F \<triangleright> \<Gamma> \<and> finite \<Gamma>2 \<and> (\<Gamma>2 \<turnstile> H)"
+      "\<Gamma>3 \<subseteq> G \<triangleright> \<Gamma> \<and> finite \<Gamma>3 \<and> (\<Gamma>3 \<turnstile> H)"
+    by blast
   let ?w = "\<Gamma>1 \<union> (\<Gamma>2 - {F}) \<union> (\<Gamma>3 - {G})"
   from IH have "?w \<turnstile> F \<^bold>\<or> G" using Weaken[OF _ sup_ge1] by metis moreover
   from IH have "F\<triangleright>?w \<turnstile> H" "G\<triangleright>?w \<turnstile> H" using Weaken by (metis Un_commute Un_insert_right Un_upper1 Weaken insert_Diff_single)+ ultimately
@@ -42,21 +46,25 @@ next
   text\<open>Clever evasion of the case distinction made for CC.\<close>
 next
   case (ImpI F \<Gamma> G)
-  from ImpI.IH guess \<Gamma>' ..
+  from ImpI.IH obtain \<Gamma>' where "\<Gamma>' \<subseteq> F \<triangleright> \<Gamma> \<and> finite \<Gamma>' \<and> (\<Gamma>' \<turnstile> G)" ..
   thus ?case by (intro exI[where x="\<Gamma>' - {F}"]) (force elim: Weaken intro!: ND.ImpI)
 next
   case (ImpE \<Gamma> F G)
-  from ImpE.IH(1) guess \<Gamma>1 .. moreover
-  from ImpE.IH(2) guess \<Gamma>2 .. ultimately
-  show ?case by(intro exI[where x="\<Gamma>1 \<union> \<Gamma>2"]) (force elim: Weaken intro: ND.ImpE[where F=F])
+  from ImpE.IH obtain \<Gamma>1 \<Gamma>2 where
+      "\<Gamma>1 \<subseteq> \<Gamma> \<and> finite \<Gamma>1 \<and> (\<Gamma>1 \<turnstile> F \<^bold>\<rightarrow> G)"
+      "\<Gamma>2 \<subseteq> \<Gamma> \<and> finite \<Gamma>2 \<and> (\<Gamma>2 \<turnstile> F)"
+    by blast
+  then show ?case by(intro exI[where x="\<Gamma>1 \<union> \<Gamma>2"]) (force elim: Weaken intro: ND.ImpE[where F=F])
 next
   case (NotE \<Gamma> F)
-  from NotE.IH(1) guess \<Gamma>1 .. moreover
-  from NotE.IH(2) guess \<Gamma>2 .. ultimately
-  show ?case by(intro exI[where x="\<Gamma>1 \<union> \<Gamma>2"]) (force elim: Weaken intro: ND.NotE[where F=F])
+  from NotE.IH obtain \<Gamma>1 \<Gamma>2 where
+      "\<Gamma>1 \<subseteq> \<Gamma> \<and> finite \<Gamma>1 \<and> (\<Gamma>1 \<turnstile> \<^bold>\<not> F)"
+      "\<Gamma>2 \<subseteq> \<Gamma> \<and> finite \<Gamma>2 \<and> (\<Gamma>2 \<turnstile> F)"
+    by blast
+  then show ?case by(intro exI[where x="\<Gamma>1 \<union> \<Gamma>2"]) (force elim: Weaken intro: ND.NotE[where F=F])
 next
   case (NotI F \<Gamma>)
-  from NotI.IH guess \<Gamma>' ..
+  from NotI.IH obtain \<Gamma>' where "\<Gamma>' \<subseteq> F \<triangleright> \<Gamma> \<and> finite \<Gamma>' \<and> (\<Gamma>' \<turnstile> \<bottom>)" ..
   thus ?case by(intro exI[where x="\<Gamma>' - {F}"]) (force elim: Weaken intro: ND.NotI[where F=F])
 qed
 

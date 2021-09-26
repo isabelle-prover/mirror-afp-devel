@@ -820,7 +820,9 @@ proof -
   from eq have "{#weak_ranking (R1 x). x \<in># mset_set agents#} = 
                   {#weak_ranking (R2 x). x \<in># mset_set agents#}"
     by (simp add: R1.anonymous_profile_def R2.anonymous_profile_def o_def)
-  from image_mset_eq_permutation[OF this fin] guess \<pi> . note \<pi> = this
+  from image_mset_eq_permutation[OF this fin] obtain \<pi>
+    where \<pi>: "\<pi> permutes agents"
+      "\<And>x. x \<in> agents \<Longrightarrow> weak_ranking (R2 (\<pi> x)) = weak_ranking (R1 x)" by auto
   from \<pi> have wf': "pref_profile_wf agents alts (R2 \<circ> \<pi>)"
     by (intro R2.wf_permute_agents)
   then interpret R2': pref_profile_wf agents alts "R2 \<circ> \<pi>" .

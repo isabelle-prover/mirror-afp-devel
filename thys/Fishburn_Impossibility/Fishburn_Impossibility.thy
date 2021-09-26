@@ -316,19 +316,20 @@ lemma card_ge_3E:
   assumes "finite A" "card A \<ge> 3"
   obtains a b c where "distinct [a,b,c]" "{a,b,c} \<subseteq> A"
 proof -
-  from finite_list_subset[OF assms] guess xs .
-  moreover then obtain a b c where "xs = [a, b, c]" 
+  from finite_list_subset[OF assms]
+  obtain xs where xs: "set xs \<subseteq> A" "distinct xs" "length xs = 3" by auto
+  then obtain a b c where "xs = [a, b, c]" 
     by (auto simp: eval_nat_numeral length_Suc_conv)
-  ultimately show ?thesis by (intro that[of a b c]) simp_all
+  with xs show ?thesis by (intro that[of a b c]) simp_all
 qed
 
 theorem absurd: False
 proof -
-  from card_ge_3E[OF finite_agents card_agents_ge] guess A1 A2 A3 .
-  note agents = this
+  from card_ge_3E[OF finite_agents card_agents_ge] obtain A1 A2 A3
+    where agents: "distinct [A1, A2, A3]" "{A1, A2, A3} \<subseteq> agents" .
   let ?agents' = "{A1, A2, A3}"
-  from card_ge_3E[OF finite_alts card_alts_ge] guess a b c .
-  note alts = this
+  from card_ge_3E[OF finite_alts card_alts_ge]
+  obtain a b c where alts: "distinct [a, b, c]" "{a, b, c} \<subseteq> alts" .
   let ?alts' = "{a, b, c}"
 
   interpret scf_lowering_anonymous agents alts scf ?agents' ?alts'

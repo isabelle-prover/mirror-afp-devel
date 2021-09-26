@@ -11,6 +11,7 @@ imports
   "Winding_Number_Eval.Winding_Number_Eval"
   "HOL-Real_Asymp.Real_Asymp"
   Zeta_Library
+  "Pure-ex.Guess"
 begin
 
 subsection \<open>Preliminary facts\<close>

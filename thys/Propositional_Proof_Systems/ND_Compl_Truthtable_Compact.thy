@@ -7,7 +7,7 @@ theorem
   shows "\<Gamma> \<TTurnstile> F \<Longrightarrow> \<Gamma> \<turnstile> F"
 proof -
   assume \<open>\<Gamma> \<TTurnstile> F\<close>
-  with compact_to_formula guess G .
+  then obtain G  where "set G \<subseteq> \<Gamma>" "\<Turnstile> \<^bold>\<And>G \<^bold>\<rightarrow> F" by (rule compact_to_formula)
   from ND_complete \<open>\<Turnstile> \<^bold>\<And>G \<^bold>\<rightarrow> F\<close> have \<open>{} \<turnstile> \<^bold>\<And>G \<^bold>\<rightarrow> F\<close> .
   with AssmBigAnd have \<open>set G \<turnstile> F\<close> ..
   with Weaken show ?thesis using \<open>set G \<subseteq> \<Gamma>\<close> .

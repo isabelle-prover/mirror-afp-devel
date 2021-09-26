@@ -64,7 +64,7 @@ proof -
   have "\<Gamma> \<Rightarrow> \<Theta> \<Longrightarrow> \<exists>\<Gamma>''. \<Gamma>=\<Gamma>''@\<Gamma>' \<Longrightarrow> \<Gamma>'@\<Gamma> \<Rightarrow> \<Theta>" for \<Gamma>'
   proof(induction \<Gamma>')
     case (Cons a as)
-    from \<open>\<exists>\<Gamma>''. \<Gamma> = \<Gamma>'' @ a # as\<close> guess \<Gamma>'' ..
+    then obtain \<Gamma>'' where "\<Gamma> = \<Gamma>'' @ a # as" by blast
     hence "\<exists>\<Gamma>''. \<Gamma> = \<Gamma>'' @ as" by(intro exI[where x="\<Gamma>'' @ [a]"]) simp
     from Cons.IH[OF Cons.prems(1) this] have "as @ \<Gamma> \<Rightarrow> \<Theta>" .
     thus ?case using VerduennungA by simp
@@ -76,7 +76,7 @@ proof -
   have "\<Gamma> \<Rightarrow> \<Theta> \<Longrightarrow> \<exists>\<Theta>''. \<Theta>=\<Theta>''@\<Theta>' \<Longrightarrow> \<Gamma> \<Rightarrow> \<Theta>'@\<Theta>" for \<Theta>'
   proof(induction \<Theta>')
     case (Cons a as)
-    from \<open>\<exists>\<Theta>''. \<Theta> = \<Theta>'' @ a # as\<close> guess \<Theta>'' ..
+    then obtain \<Theta>'' where "\<Theta> = \<Theta>'' @ a # as" by blast
     hence "\<exists>\<Theta>''. \<Theta> = \<Theta>'' @ as" by(intro exI[where x="\<Theta>'' @ [a]"]) simp
     from Cons.IH[OF Cons.prems(1) this] have " \<Gamma> \<Rightarrow> as @ \<Theta>" .
     thus ?case using VerduennungS by simp
@@ -89,7 +89,7 @@ proof -
   have "\<Gamma>'@\<Gamma> \<Rightarrow> \<Theta> \<Longrightarrow> \<exists>\<Gamma>''. \<Gamma>=\<Gamma>''@\<Gamma>' \<Longrightarrow> \<Gamma> \<Rightarrow> \<Theta>" for \<Gamma>'
   proof(induction \<Gamma>')
     case (Cons a \<Gamma>')
-    from \<open>\<exists>\<Gamma>''. \<Gamma> = \<Gamma>'' @ a # \<Gamma>'\<close> guess \<Gamma>'' .. note \<Gamma>'' = this
+    then obtain \<Gamma>'' where \<Gamma>'': "\<Gamma> = \<Gamma>'' @ a # \<Gamma>'" by blast
     then obtain \<Gamma>1 \<Gamma>2 where \<Gamma>: "\<Gamma> = \<Gamma>1 @ a # \<Gamma>2" by blast
     from \<Gamma>'' have **: "\<exists>\<Gamma>''. \<Gamma> = \<Gamma>'' @ \<Gamma>'" by(intro exI[where x="\<Gamma>'' @ [a]"]) simp
     from Cons.prems(1) have "a # (a # \<Gamma>') @ \<Gamma>1 @ \<Gamma>2 \<Rightarrow> \<Theta>" unfolding \<Gamma>  using MittenTauschA by (metis append_assoc)
@@ -104,7 +104,7 @@ proof -
   have "\<Gamma> \<Rightarrow> \<Theta>'@\<Theta> \<Longrightarrow> \<exists>\<Theta>''. \<Theta>=\<Theta>''@\<Theta>' \<Longrightarrow> \<Gamma> \<Rightarrow> \<Theta>" for \<Theta>'
   proof(induction \<Theta>')
     case (Cons a \<Theta>')
-    from \<open>\<exists>\<Theta>''. \<Theta> = \<Theta>'' @ a # \<Theta>'\<close> guess \<Theta>'' .. note \<Theta>'' = this
+    then obtain \<Theta>'' where \<Theta>'': "\<Theta> = \<Theta>'' @ a # \<Theta>'" by blast
     then obtain \<Theta>1 \<Theta>2 where \<Theta>: "\<Theta> = \<Theta>1 @ a # \<Theta>2" by blast
     from \<Theta>'' have **: "\<exists>\<Theta>''. \<Theta> = \<Theta>'' @ \<Theta>'" by(intro exI[where x="\<Theta>'' @ [a]"]) simp
     from Cons.prems(1) have "\<Gamma> \<Rightarrow> a # (a # \<Theta>') @ \<Theta>1 @ \<Theta>2" unfolding \<Theta>  using MittenTauschS by (metis append_assoc)
@@ -140,17 +140,20 @@ theorem gentzen_sc_eq: "mset \<Gamma> \<Rightarrow> mset \<Delta> \<longleftrigh
       from Suc.IH[OF this] show ?thesis unfolding \<Gamma> using AnfangTauschA NEA by blast
     next
       case (NotR F \<Delta>')
-      from sr[OF NotR(1)] guess \<Delta>1 .. then guess \<Delta>2 .. note \<Delta> = this
+      from sr[OF NotR(1)] obtain \<Delta>1 \<Delta>2 where \<Delta>: "\<Delta> = \<Delta>1 @ \<^bold>\<not> F # \<Delta>2 \<and> \<Delta>' = mset (\<Delta>1 @ \<Delta>2)"
+        by blast
       with NotR have "mset (F#\<Gamma>) \<Rightarrow> mset (\<Delta>1@\<Delta>2) \<down> n" by (simp add: add.commute)
       from Suc.IH[OF this] show ?thesis using \<Delta> using AnfangTauschS NES by blast
     next
       case (AndR F \<Delta>' G)
-      from sr[OF AndR(1)] guess \<Delta>1 .. then guess \<Delta>2 .. note \<Delta> = this
+      from sr[OF AndR(1)] obtain \<Delta>1 \<Delta>2 where \<Delta>: "\<Delta> = \<Delta>1 @ F \<^bold>\<and> G # \<Delta>2 \<and> \<Delta>' = mset (\<Delta>1 @ \<Delta>2)"
+        by blast
       with AndR have "mset \<Gamma> \<Rightarrow> mset (F # \<Delta>1@\<Delta>2) \<down> n" "mset \<Gamma> \<Rightarrow> mset (G # \<Delta>1@\<Delta>2) \<down> n" by (simp add: add.commute)+
       from this[THEN Suc.IH] show ?thesis using \<Delta> using AnfangTauschS UES by blast
     next
       case (OrR F G \<Delta>')
-      from sr[OF OrR(1)] guess \<Delta>1 .. then guess \<Delta>2 .. note \<Delta> = this
+      from sr[OF OrR(1)] obtain \<Delta>1 \<Delta>2 where \<Delta>: "\<Delta> = \<Delta>1 @ F \<^bold>\<or> G # \<Delta>2 \<and> \<Delta>' = mset (\<Delta>1 @ \<Delta>2)"
+        by blast
       with OrR have "mset \<Gamma> \<Rightarrow> mset (G # F # \<Delta>1@\<Delta>2) \<down> n" by (simp add: add.commute add.left_commute add_mset_commute)
       from this[THEN Suc.IH] have "\<Gamma> \<Rightarrow> G # F # \<Delta>1 @ \<Delta>2" .
       with OES2 have "\<Gamma> \<Rightarrow> F \<^bold>\<or> G # F # \<Delta>1 @ \<Delta>2" .
@@ -160,12 +163,14 @@ theorem gentzen_sc_eq: "mset \<Gamma> \<Rightarrow> mset \<Delta> \<longleftrigh
       thus ?thesis unfolding \<Delta>[THEN conjunct1] using AnfangTauschS by blast
     next
       case (ImpR F G \<Delta>')
-      from sr[OF ImpR(1)] guess \<Delta>1 .. then guess \<Delta>2 .. note \<Delta> = this
+      from sr[OF ImpR(1)] obtain \<Delta>1 \<Delta>2 where \<Delta>: "\<Delta> = \<Delta>1 @ F \<^bold>\<rightarrow> G # \<Delta>2 \<and> \<Delta>' = mset (\<Delta>1 @ \<Delta>2)"
+        by blast
       with ImpR have "mset (F#\<Gamma>) \<Rightarrow> mset (G # \<Delta>1@\<Delta>2) \<down> n" by (simp add: add.commute)
       from this[THEN Suc.IH] show ?thesis using \<Delta> using AnfangTauschS FES by blast
     next
       case (AndL F G \<Gamma>')
-      from sr[OF this(1)] guess \<Gamma>1 .. then guess \<Gamma>2 .. note \<Gamma> = this
+      from sr[OF this(1)] obtain \<Gamma>1 \<Gamma>2 where \<Gamma>: "\<Gamma> = \<Gamma>1 @ F \<^bold>\<and> G # \<Gamma>2 \<and> \<Gamma>' = mset (\<Gamma>1 @ \<Gamma>2)"
+        by blast
       with AndL have "mset (G # F # \<Gamma>1@\<Gamma>2) \<Rightarrow> mset \<Delta> \<down> n" by (simp add: add.commute add.left_commute add_mset_commute)
       from this[THEN Suc.IH] have "G # F # \<Gamma>1 @ \<Gamma>2 \<Rightarrow> \<Delta>" .
       with UEA2 have "F \<^bold>\<and> G # F # \<Gamma>1 @ \<Gamma>2 \<Rightarrow> \<Delta>" .
@@ -175,12 +180,14 @@ theorem gentzen_sc_eq: "mset \<Gamma> \<Rightarrow> mset \<Delta> \<longleftrigh
       thus ?thesis unfolding \<Gamma>[THEN conjunct1] using AnfangTauschA by blast
     next
       case (OrL F \<Delta>' G)
-      from sr[OF this(1)] guess \<Gamma>1 .. then guess \<Gamma>2 .. note \<Gamma> = this
+      from sr[OF this(1)] obtain \<Gamma>1 \<Gamma>2 where \<Gamma>: "\<Gamma> = \<Gamma>1 @ F \<^bold>\<or> G # \<Gamma>2 \<and> \<Delta>' = mset (\<Gamma>1 @ \<Gamma>2)"
+        by blast
       with OrL have "mset (F # \<Gamma>1@\<Gamma>2) \<Rightarrow> mset \<Delta> \<down> n" "mset (G # \<Gamma>1@\<Gamma>2) \<Rightarrow> mset \<Delta> \<down> n" by (simp add: add.commute)+
       from this[THEN Suc.IH] show ?thesis using \<Gamma> using AnfangTauschA OEA by blast
     next
       case (ImpL \<Gamma>' F G)
-      from sr[OF this(1)] guess \<Gamma>1 .. then guess \<Gamma>2 .. note \<Gamma> = this
+      from sr[OF this(1)] obtain \<Gamma>1 \<Gamma>2 where \<Gamma>: "\<Gamma> = \<Gamma>1 @ F \<^bold>\<rightarrow> G # \<Gamma>2 \<and> \<Gamma>' = mset (\<Gamma>1 @ \<Gamma>2)"
+        by blast
       with ImpL have "mset (\<Gamma>1@\<Gamma>2) \<Rightarrow> mset (F#\<Delta>) \<down> n" "mset (G # \<Gamma>1@\<Gamma>2) \<Rightarrow> mset \<Delta> \<down> n" by (simp add: add.commute)+
       from this[THEN Suc.IH] have "\<Gamma>1 @ \<Gamma>2 \<Rightarrow> F # \<Delta>" "G # \<Gamma>1 @ \<Gamma>2 \<Rightarrow> \<Delta>" .
       from FEA[OF this] have "F \<^bold>\<rightarrow> G # (\<Gamma>1 @ \<Gamma>2) @ (\<Gamma>1 @ \<Gamma>2) \<Rightarrow> \<Delta> @ \<Delta>" .

@@ -374,8 +374,9 @@ proof -
   proof -
     fix ps n
     assume "(Q \<and>* (\<lambda>s. True)) (ps, n div k) "
-    then guess ps1 n1 ps2 n2 unfolding sep_conj_def by auto
-    note o = this
+    then obtain ps1 n1 ps2 n2
+      where o: "ps1 ## ps2" "ps = ps1 + ps2" "Q (ps1, n1)" "n div k = n1 + n2"
+      unfolding sep_conj_def by auto
     from o(4) have nn1: "n\<ge>n1" using k
       by (metis (full_types) add_leE div_le_dividend) 
     show "(Q \<and>* (\<lambda>s. True)) (ps, n)" unfolding sep_conj_def
@@ -386,8 +387,11 @@ proof -
   then have z': "\<forall>s. ((Q \<and>* (\<lambda>s. True)) (fst s, (snd s) div k) \<longrightarrow> (Q \<and>* (\<lambda>s. True)) s)"
     by (metis prod.collapse)   
       
-  from vc_complete[OF R]   guess C by auto
-  note o = this
+  from vc_complete[OF R] obtain C
+    where o: "vc C (\<lambda>(ps, n). (Q \<and>* (\<lambda>s. True)) (ps, n div k))"
+      "\<forall>a b. wp\<^sub>3\<^sub>' (strip C) (\<lambda>(ps, n). (Q \<and>* (\<lambda>s. True)) (ps, n div k)) (a, b) \<longrightarrow>
+          pre C (\<lambda>(ps, n). (Q \<and>* (\<lambda>s. True)) (ps, n div k)) (a, b)"
+      "c = strip C" by auto
     
   have y: "\<And>ps n. P (ps, n) \<Longrightarrow>  pre C (\<lambda>(ps, n). (Q \<and>* (\<lambda>s. True)) (ps, n div k)) (ps, k * n)"
     using o p by metis 

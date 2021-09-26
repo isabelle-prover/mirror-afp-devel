@@ -520,14 +520,15 @@ proof (induct n)
 next
   have [simp]: "Suc x \<le> Suc (Suc b)^x" for x by (induct x) auto
   case (Suc n)
-  then guess n' by (rule bexE)
+  then obtain n' where "n' \<in> hbase (Suc (Suc b))" "evalC (Suc (Suc b)) n' = n" by blast
   then obtain n' j where n': "Suc n \<le> j" "j = evalC (Suc (Suc b)) n'" "n' \<in> hbase (Suc (Suc b))"
     by (intro that[of _ "C [n']"])
       (auto intro!: intro: hbase.intros(1) dest!: hbaseI2[of 1 "b+2" n' "[]", simplified])
   then show ?case
   proof (induct rule: inc_induct)
     case (step m)
-    guess n' using step(3)[OF step(4,5)] by (rule bexE)
+    obtain n' where "n' \<in> hbase (Suc (Suc b))" "evalC (Suc (Suc b)) n' = Suc m"
+      using step(3)[OF step(4,5)] by blast
     then show ?case using stepC_dec[of n' "b"]
       by (cases n' rule: C2O.cases) (auto intro: stepC_sound hbase_ext.intros(1))
   qed blast

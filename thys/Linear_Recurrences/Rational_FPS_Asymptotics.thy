@@ -13,6 +13,7 @@ imports
   RatFPS
   Rational_FPS_Solver
   "HOL-Library.Code_Target_Numeral"
+
 begin
 
 lemma poly_asymp_equiv:
@@ -157,7 +158,12 @@ proof -
   define q' where "q' = reflect_poly q"
   from roots1[of 0] and \<open>R > 0\<close> have [simp]: "coeff q 0 \<noteq> 0" "q \<noteq> 0"
     by (auto simp: poly_0_coeff_0)
-  from ratfps_closed_form_exists[OF this(1), of p] guess r rs . note closed_form = this
+  from ratfps_closed_form_exists[OF this(1), of p]
+  obtain r rs where closed_form:
+      "\<And>n. (fps_of_poly p / fps_of_poly q) $ n =
+        coeff r n + (\<Sum>c | poly (reflect_poly q) c = 0. poly (rs c) (of_nat n) * c ^ n)"
+      "\<And>z. poly (reflect_poly q) z = 0 \<Longrightarrow> degree (rs z) \<le> order z (reflect_poly q) - 1"
+    by blast
 
   have "fps_nth (fps_of_poly p / fps_of_poly q) =
           (\<lambda>n. coeff r n + (\<Sum>c | poly q' c = 0. poly (rs c) (of_nat n) * c ^ n))"

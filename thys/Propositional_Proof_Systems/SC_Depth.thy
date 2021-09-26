@@ -48,7 +48,8 @@ theorem SC_SCp_eq:
   fixes \<Gamma> \<Delta> :: "'a formula multiset"
   shows "(\<exists>n. \<Gamma> \<Rightarrow> \<Delta> \<down> n) \<longleftrightarrow> \<Gamma> \<Rightarrow> \<Delta>" (is "?c \<longleftrightarrow> ?p")
 proof
-  assume ?c then guess n ..
+  assume ?c
+  then obtain n where "\<Gamma> \<Rightarrow> \<Delta> \<down> n" ..
   thus ?p by(induction rule: SCc.induct; simp add: SCp.intros)
 next
   have deeper_max: "\<Gamma> \<Rightarrow> \<Delta> \<down> max m n" "\<Gamma> \<Rightarrow> \<Delta> \<down> max n m" if "\<Gamma> \<Rightarrow> \<Delta> \<down> n" for n m and \<Gamma> \<Delta> :: "'a formula multiset"

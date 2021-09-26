@@ -661,7 +661,8 @@ lemma pbernpoly_over_power_tendsto_0:
 proof -
   from s have neq: "s + of_nat n \<noteq> 0" for n
     by (auto simp: complex_eq_iff complex_nonpos_Reals_iff)
-  from bounded_pbernpoly[of "Suc n"] guess c . note c = this
+  obtain c where c: "\<And>x. norm (pbernpoly (Suc n) x) \<le> c"
+    using bounded_pbernpoly by auto
   have "eventually (\<lambda>x. real x + Re s > 0) at_top"
     by real_asymp
   hence "eventually (\<lambda>x. norm (of_real (pbernpoly (Suc n) (real x)) / 
@@ -1332,7 +1333,8 @@ lemma deriv_stirling_integral_real_bound:
   assumes m: "m > 0"
   shows   "(deriv ^^ j) (stirling_integral m) \<in> O(\<lambda>x::real. 1 / x ^ (m + j))"
 proof -
-  from stirling_integral_bound[OF m] guess c . note c = this
+  obtain c where c: "\<And>s. 0 < Re s \<Longrightarrow> cmod (stirling_integral m s) \<le> c / Re s ^ m"
+    using stirling_integral_bound[OF m] by auto
   have "0 \<le> cmod (stirling_integral m 1)" by simp
   also have "\<dots> \<le> c" using c[of 1] by simp
   finally have c_nonneg: "c \<ge> 0" .

@@ -199,7 +199,8 @@ next
   have "\<not>(q \<succ>[Pareto(SD \<circ> R')] p)" if q: "q \<in> lotteries_on alts'" for q
   proof
     assume less: "q \<succ>[Pareto(SD \<circ> R')] p"
-    from R'.SD_efficient_lottery_exists[OF q] guess q' . note q' = this
+    from R'.SD_efficient_lottery_exists[OF q]
+    obtain q' where q': "q' \<in> lotteries_on alts'" "Pareto (SD \<circ> R') q q'" "SD_efficient R' q'" .
     have "x \<notin> set_pmf q'" if x: "x \<in> alts' - alts" for x
     proof -
       from x have "x \<in> pareto_losers R'" by (simp add: pareto_losers_lift_pref_profile)

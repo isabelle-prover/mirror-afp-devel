@@ -811,7 +811,7 @@ context begin interpretation timing_syntax .
             assume "ll = w" with d show ?thesis by (auto simp add: lowlink_set_def)
           next
             assume "\<exists>p. lowlink_path ?s w p ll"
-            then guess p .. note p = this
+            then obtain p where p: "lowlink_path ?s w p ll" ..
 
             hence [simp]: "p\<noteq>[]" by (simp add: lowlink_path_def)
     
@@ -1033,7 +1033,7 @@ context begin interpretation timing_syntax .
           next
             assume "ll \<noteq> w"
             assume "\<exists>p. lowlink_path ?s w p ll"
-            then guess p .. note p = this
+            then obtain p where p: "lowlink_path ?s w p ll" ..
 
             hence [simp]: "p\<noteq>[]" by (simp add: lowlink_path_def)
     

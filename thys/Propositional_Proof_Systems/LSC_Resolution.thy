@@ -180,7 +180,8 @@ proof -
       assume "F = {}"
       with m show False by simp
     next
-      assume "\<exists>E. E \<in> F \<and> E \<noteq> \<box>" then guess E .. note E = this
+      assume "\<exists>E. E \<in> F \<and> E \<noteq> \<box>"
+      then obtain E where E: "E \<in> F \<and> E \<noteq> \<box>" ..
       show False proof cases
         assume "G = {}" with m show False by simp
       next

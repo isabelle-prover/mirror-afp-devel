@@ -858,7 +858,7 @@ proof -
     by (auto intro!: sum.cong H_eq)
   finally have "\<exists>y\<in>C. recurrent y"
     by (rule_tac ccontr) (simp add: H_eq(2))
-  then guess y ..
+  then obtain y where "y \<in> C" "recurrent y" ..
   from essential_classD3[OF C(1) x this(1)] recurrent_acc(3)[OF this(2)]
   show "recurrent x"
     by (simp add: communicating_def)
@@ -1156,7 +1156,9 @@ lemma stat_subprob:
   shows "emeasure (stat C) C \<le> 1"
 proof -
   let ?L = "at_left (1::real)"
-  from finite_sequence_to_countable_set[OF \<open>countable C\<close>] guess A . note A = this
+  from finite_sequence_to_countable_set[OF \<open>countable C\<close>]
+  obtain A where A: "\<And>i. A i \<subseteq> C" "\<And>i. A i \<subseteq> A (Suc i)" "\<And>i. finite (A i)" "\<Union> (range A) = C"
+    by blast
   then have "(\<lambda>n. emeasure (stat C) (A n)) \<longlonglongrightarrow> emeasure (stat C) (\<Union>i. A i)"
     by (intro Lim_emeasure_incseq) (auto simp: incseq_Suc_iff)
   then have "emeasure (stat C) (\<Union>i. A i) \<le> 1"
@@ -1392,7 +1394,9 @@ proof -
     have "\<exists>A\<subseteq>C. finite A \<and> 1 - e < measure N A"
     proof (rule ccontr)
       assume contr: "\<not> (\<exists>A \<subseteq> C. finite A \<and> 1 - e < measure N A)"
-      from finite_sequence_to_countable_set[OF \<open>countable C\<close>] guess F . note F = this
+      from finite_sequence_to_countable_set[OF \<open>countable C\<close>]
+      obtain F where F: "\<And>i. F i \<subseteq> C" "\<And>i. F i \<subseteq> F (Suc i)" "\<And>i. finite (F i)" "\<Union> (range F) = C"
+        by blast
       then have *: "(\<lambda>n. measure N (F n)) \<longlonglongrightarrow> measure N (\<Union>i. F i)"
         by (intro measure_pmf.finite_Lim_measure_incseq) (auto simp: incseq_Suc_iff)
       with F contr have "measure N (\<Union>i. F i) \<le> 1 - e"

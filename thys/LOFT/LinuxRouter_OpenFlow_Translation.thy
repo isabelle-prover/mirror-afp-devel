@@ -6,6 +6,7 @@ imports IP_Addresses.CIDR_Split
 	OpenFlow_Matches
 	OpenFlow_Action
 	Routing.Linux_Router
+	"Pure-ex.Guess"
 begin
 hide_const Misc.uncurry
 hide_fact Misc.uncurry_def

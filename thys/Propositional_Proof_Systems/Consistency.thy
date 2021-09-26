@@ -276,8 +276,7 @@ proof -
     hence "\<exists>k. s \<subseteq> pcp_seq C S k" 
     proof(induction s rule: finite_induct) 
       case (insert x s)
-      hence "\<exists>k. s \<subseteq> pcp_seq C S k" by fast
-      then guess k1 ..
+      then obtain k1 where "s \<subseteq> pcp_seq C S k1" by blast
       moreover obtain k2 where "x \<in> pcp_seq C S k2"
         by (meson pcp_lim_inserted_at_ex insert.prems insert_subset)
       ultimately have "x \<triangleright> s \<subseteq> pcp_seq C S (max k1 k2)"

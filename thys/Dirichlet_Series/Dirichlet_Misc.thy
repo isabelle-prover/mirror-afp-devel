@@ -116,7 +116,8 @@ proof
   show "(\<lambda>x. fst x * snd x) ` ({d. d dvd a} \<times> {d. d dvd b}) = {k. k dvd a * b}"
   proof safe
     fix x assume "x dvd a * b"
-    from division_decomp[OF this] guess b' c' by (elim exE conjE)
+    then obtain b' c' where "x = b' * c'" "b' dvd a" "c' dvd b"
+      using division_decomp by blast
     thus "x \<in> (\<lambda>x. fst x * snd x) ` ({d. d dvd a} \<times> {d. d dvd b})" by force
   qed (insert assms, auto intro: mult_dvd_mono)
 qed

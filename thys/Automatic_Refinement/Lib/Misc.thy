@@ -132,7 +132,7 @@ proof (induction fl arbitrary: ls thesis)
   case (Cons x xs)
     then obtain l ls' where [simp]: "ls = l#ls'" "f l = x" by force
     with Cons.prems(2) have "map f ls' = xs @ fl'" by simp
-    from Cons.IH[OF _ this] guess ll ll' .
+    from Cons.IH[OF _ this] obtain ll ll' where "ls' = ll @ ll'" "map f ll = xs" "map f ll' = fl'" .
     with Cons.prems(1)[of "l#ll" ll'] show thesis by simp
 qed simp
 

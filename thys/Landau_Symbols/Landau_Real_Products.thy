@@ -259,8 +259,11 @@ proof (intro equalityI subsetI)
     by (elim set_times_elim, hypsubst, unfold func_times) (erule (1) landau_theta.mult)
 next
   fix h assume "h \<in> \<Theta>[F](\<lambda>x. f x * g x)"
-  then guess c1 c2 :: real unfolding bigtheta_def by (elim landau_o.bigE landau_omega.bigE IntE)
-  note c = this
+  then obtain c1 c2 :: real
+    where c:
+      "c1 > 0" "\<forall>\<^sub>F x in F. norm (h x) \<le> c1 * norm (f x * g x)"
+      "c2 > 0" "\<forall>\<^sub>F x in F. c2 * norm (f x * g x) \<le> norm (h x)"
+    unfolding bigtheta_def by (blast elim: landau_o.bigE)
 
   define h1 h2
     where "h1 x = (if g x = 0 then if f x = 0 then if h x = 0 then h x else 1 else f x else h x / g x)"

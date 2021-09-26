@@ -4,6 +4,7 @@ imports IP_Addresses.Prefix_Match
         IP_Addresses.IPv4 IP_Addresses.IPv6
         Linorder_Helper
         IP_Addresses.Prefix_Match_toString
+        "Pure-ex.Guess"
 begin
 
 text\<open>This section makes the necessary definitions to work with a routing table using longest prefix matching.\<close>

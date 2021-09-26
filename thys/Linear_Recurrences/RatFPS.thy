@@ -38,7 +38,13 @@ proof -
   define denom where "denom = snd (quot_of_fract x) * snd (quot_of_fract y)"
   define z where "z = (num, denom)"
   from assms have "snd z \<noteq> 0" by (auto simp: denom_def z_def)
-  from normalize_quotE'[OF this] guess d . note d = this
+  then obtain d where d:
+    "fst z = fst (normalize_quot z) * d"
+    "snd z = snd (normalize_quot z) * d"
+    "d dvd fst z"
+    "d dvd snd z"
+    "d \<noteq> 0"
+    by (rule normalize_quotE')
   from assms have z: "coeff (snd z) 0 \<noteq> 0" by (simp add: z_def denom_def coeff_0_mult)
   
   have "coeff (snd (quot_of_fract (x + y))) 0 = coeff (snd (normalize_quot z)) 0"
@@ -52,7 +58,13 @@ lemma coeff_0_normalize_quot_nonzero [simp]:
   shows   "coeff (snd (normalize_quot x)) 0 \<noteq> 0"
 proof -
   from assms have "snd x \<noteq> 0" by auto
-  from normalize_quotE'[OF this] guess d .
+  then obtain d where
+      "fst x = fst (normalize_quot x) * d"
+      "snd x = snd (normalize_quot x) * d"
+      "d dvd fst x"
+      "d dvd snd x"
+      "d \<noteq> 0"
+    by (rule normalize_quotE')
   with assms show ?thesis by (auto simp: coeff_0_mult)
 qed
 
@@ -838,7 +850,13 @@ proof (transfer, goal_cases)
   define x' y' where "x' = fst (normalize_quot (x,y))" and "y' = snd (normalize_quot (x,y))"
   from 1 have nz: "y \<noteq> 0" by auto
   have eq: "normalize_quot (x', y') = (x', y')" by (simp add: x'_def y'_def)
-  from normalize_quotE[OF nz, of x] guess d . note d = this [folded x'_def y'_def]
+  from normalize_quotE[OF nz, of x] obtain d where 
+    "x = fst (normalize_quot (x, y)) * d"
+    "y = snd (normalize_quot (x, y)) * d"
+    "d dvd x"
+    "d dvd y"
+    "d \<noteq> 0" .
+  note d [folded x'_def y'_def] = this
   have "(case quot_of_fract (if coeff y' 0 = 0 then 0 else quot_to_fract (x', y')) of
           (a, b) \<Rightarrow> fps_of_poly a / fps_of_poly b) = fps_of_poly x / fps_of_poly y"
     using d eq 1 by (auto simp: case_prod_unfold fps_of_poly_simps quot_of_fract_quot_to_fract 

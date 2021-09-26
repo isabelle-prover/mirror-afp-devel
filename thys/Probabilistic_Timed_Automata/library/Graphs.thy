@@ -438,7 +438,8 @@ proof induction
   then show ?case by (inst_existentials "[s\<^sub>0]"; force)
 next
   case (step y z)
-  from step.IH guess xs by clarify
+  from step.IH obtain xs where "steps xs" "s\<^sub>0 = hd xs" "y = last xs"
+    by auto
   with step.hyps show ?case
     apply (inst_existentials "xs @ [z]")
     apply (force intro: graphI)
@@ -883,11 +884,12 @@ lemma simulation_steps'_map:
     \<and> list_all PA as \<and> list_all PB bs"
   if "A.steps (a # as)" "a \<sim> b" "PA a" "PB b"
 proof -
-  from simulation_steps'[OF that] guess bs by clarify
-  note guessed = this
-  from this(2) have "bs = map f as"
+  from simulation_steps'[OF that]
+  obtain bs where bs: "B.steps (b # bs)" "list_all2 (\<sim>) as bs" "list_all PA as" "list_all PB bs"
+    by auto
+  from bs(2) have "bs = map f as"
     by (induction; simp add: eq)
-  with guessed show ?thesis
+  with bs show ?thesis
     by auto
 qed
 
@@ -992,8 +994,9 @@ lemma steps_map:
   "\<exists> as. bs = map f as" if "B.steps (f a # bs)" "PA a" "PB (f a)"
 proof -
   have "a \<sim> f a" unfolding eq ..
-  from B_A.simulation_steps'[OF that(1) this \<open>PB _\<close> \<open>PA _\<close>] guess as by clarify
-  from this(2) show ?thesis
+  from B_A.simulation_steps'[OF that(1) this \<open>PB _\<close> \<open>PA _\<close>]
+  obtain as where "list_all2 (\<lambda>a b. b \<sim> a) bs as" by auto
+  then show ?thesis
     unfolding eq by (inst_existentials as, induction rule: list_all2_induct, auto)
 qed
 

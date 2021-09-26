@@ -56,7 +56,8 @@ lemma harm_remainder_bigo:
   assumes "N > 0"
   shows   "harm_remainder N \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 1))"
 proof -
-  from harm_remainder_bound[OF assms] guess C ..
+  from harm_remainder_bound[OF assms]
+  obtain C where "\<forall>n\<ge>1. norm (harm_remainder N n) \<le> C / real n ^ (2 * N + 1)" ..
   thus ?thesis
     by (intro bigoI[of _ C] eventually_mono[OF eventually_ge_at_top[of 1]]) auto
 qed
@@ -125,7 +126,10 @@ lemma sum_inverse_squares_remainder_bigo:
   assumes "N > 0"
   shows   "R N \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
 proof -
-  from sum_inverse_squares_remainder_bound[OF assms] guess C ..
+  from sum_inverse_squares_remainder_bound[OF assms]
+  obtain C
+    where "\<forall>n\<ge>1. norm (EM_remainder (2 * N + 1) (\<lambda>x. - fact (2 * N + 2) / x ^ (2 * N + 3)) (int n))
+      \<le> C / real n ^ (2 * N + 2)" ..
   thus ?thesis
     by (intro bigoI[of _ C] eventually_mono[OF eventually_ge_at_top[of 1]]) (auto simp: R_def)
 qed
