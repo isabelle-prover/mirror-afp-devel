@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Formalization of Knuth–Bendix Orders - Archive of Formal Proofs
+<title>A Formalization of Weighted Path Orders and Recursive Path Orders - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -80,7 +80,17 @@ MathJax = {
   
           of
   
-          <font class="first">K</font>nuth–Bendix
+          <font class="first">W</font>eighted
+  
+          <font class="first">P</font>ath
+  
+          <font class="first">O</font>rders
+  
+          and
+  
+          <font class="first">R</font>ecursive
+  
+          <font class="first">P</font>ath
   
           <font class="first">O</font>rders
   
@@ -91,7 +101,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Formalization of Knuth–Bendix Orders</td>
+  <td class="data" width="80%">A Formalization of Weighted Path Orders and Recursive Path Orders</td>
 </tr>
 
 <tr>
@@ -99,8 +109,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com) and
-          René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
+                      Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com),
+                René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
+          Akihisa Yamada (akihisa /dot/ yamada /at/ aist /dot/ go /dot/ jp)
       </td>
 </tr>
 
@@ -108,30 +119,38 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-05-13</td>
+  <td class="data">2021-09-16</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We define a generalized version of Knuth&ndash;Bendix orders,
-including subterm coefficient functions. For these orders we formalize
-several properties such as strong normalization, the subterm property,
-closure properties under substitutions and contexts, as well as ground
-totality.</td>
+We define the weighted path order (WPO) and formalize several
+properties such as strong normalization, the subterm property, and
+closure properties under substitutions and contexts. Our definition of
+WPO extends the original definition by also permitting multiset
+comparisons of arguments instead of just lexicographic extensions.
+Therefore, our WPO not only subsumes lexicographic path orders (LPO),
+but also recursive path orders (RPO). We formally prove these
+subsumptions and therefore all of the mentioned properties of WPO are
+automatically transferable to LPO and RPO as well. Such a
+transformation is not required for Knuth&ndash;Bendix orders
+(KBO), since they have already been formalized. Nevertheless, we still
+provide a proof that WPO subsumes KBO and thereby underline the
+generality of WPO.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Knuth_Bendix_Order-AFP,
-  author  = {Christian Sternagel and René Thiemann},
-  title   = {A Formalization of Knuth–Bendix Orders},
+        <pre>@article{Weighted_Path_Order-AFP,
+  author  = {Christian Sternagel and René Thiemann and Akihisa Yamada},
+  title   = {A Formalization of Weighted Path Orders and Recursive Path Orders},
   journal = {Archive of Formal Proofs},
-  month   = may,
-  year    = 2020,
-  note    = {\url{https://isa-afp.org/entries/Knuth_Bendix_Order.html},
+  month   = sep,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Weighted_Path_Order.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -143,11 +162,9 @@ totality.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>, <a href="Matrix.html">Matrix</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
+          <td class="data"><a href="Knuth_Bendix_Order.html">Knuth_Bendix_Order</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Functional_Ordered_Resolution_Prover.html">Functional_Ordered_Resolution_Prover</a>, <a href="Weighted_Path_Order.html">Weighted_Path_Order</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -159,34 +176,23 @@ totality.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Weighted_Path_Order/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Weighted_Path_Order/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Weighted_Path_Order/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Knuth_Bendix_Order-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Weighted_Path_Order-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2020:
-            <a href="../release/afp-Knuth_Bendix_Order-2020-05-16.tar.gz">
-              afp-Knuth_Bendix_Order-2020-05-16.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2020:
-            <a href="../release/afp-Knuth_Bendix_Order-2020-05-15.tar.gz">
-              afp-Knuth_Bendix_Order-2020-05-15.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
