@@ -9,12 +9,12 @@ session SpecCheck (AFP) = "Pure" +
   options [timeout = 300]
 
   directories
-    dynamic
-    examples
-    generators
-    output_styles
-    "show"
-    shrink
+    Dynamic
+    Examples
+    Generators
+    Output_Styles
+    Show
+    Shrink
 
   theories
     SpecCheck_Generators

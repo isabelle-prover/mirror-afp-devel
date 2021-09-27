@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/generators/gen_types.ML
+(*  Title:      SpecCheck/Generators/gen_types.ML
     Author:     Kevin Kappelmann
 
 Shared type definitions for SpecCheck generators.

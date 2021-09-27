@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/generators/gen.ML
+(*  Title:      SpecCheck/Generators/gen.ML
     Author:     Kevin Kappelmann, TU Muenchen
 
 Structure containing all generators.

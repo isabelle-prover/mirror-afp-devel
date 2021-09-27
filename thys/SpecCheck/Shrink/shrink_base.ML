@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/shrink/shrink_base.ML
+(*  Title:      SpecCheck/Shrink/shrink_base.ML
     Author:     Kevin Kappelmann
 
 Basic utility functions to create and combine shrink functions.

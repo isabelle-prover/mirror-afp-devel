@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/shrink/shrink.ML
+(*  Title:      SpecCheck/Shrink/shrink.ML
     Author:     Kevin Kappelmann, TU Muenchen
 
 Structure containing all shrink functions.

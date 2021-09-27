@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/output_styles/output_style.ML
+(*  Title:      SpecCheck/Output_Styles/output_style.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
     Author:     Christopher League
 

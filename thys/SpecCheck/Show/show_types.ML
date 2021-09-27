@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/show/show_types.ML
+(*  Title:      SpecCheck/Show/show_types.ML
     Author:     Kevin Kappelmann
 
 Shared type definitions for SpecCheck showable types.

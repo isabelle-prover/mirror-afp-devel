@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/show/show_base.ML
+(*  Title:      SpecCheck/Show/show_base.ML
     Author:     Kevin Kappelmann
 
 Basic utility functions to create and combine show functions.

@@ -10,6 +10,7 @@ representation of the value. Refer to @{file "show_base.ML"} for some basic exam
 
 ML_file \<open>show_types.ML\<close>
 ML_file \<open>show_base.ML\<close>
+ML_file \<open>show_term.ML\<close>
 ML_file \<open>show.ML\<close>
 
 end

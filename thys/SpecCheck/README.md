@@ -25,8 +25,6 @@ An experimental alternative allows you to specify tests using strings:
 1. Import `SpecCheck_Dynamic.Dynamic` into your environment.
 2. `check_property "ALL x. P x"` where `P x` is some ML code evaluating to a boolean
 
-Examples can be found in `examples/`.
-
 ## Notes
 
 SpecCheck is based on [QCheck](https://github.com/league/qcheck), a testing framework for Standard ML by

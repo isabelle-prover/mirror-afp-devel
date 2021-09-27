@@ -1,9 +1,10 @@
-(*  Title:      SpecCheck/generators/gen_term.ML
+(*  Title:      SpecCheck/Generators/gen_term.ML
     Author:     Sebastian Willenbrink and Kevin Kappelmann TU Muenchen
 
 Generators for terms and types.
 *)
-signature SPECCHECK_GEN_TERM = sig
+signature SPECCHECK_GEN_TERM =
+sig
   (* sort generators *)
 
   (*first parameter determines the number of classes to pick*)

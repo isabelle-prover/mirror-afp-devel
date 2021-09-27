@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/generators/gen_real.ML
+(*  Title:      SpecCheck/Generators/gen_real.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
     Author:     Christopher League
 

@@ -20,14 +20,14 @@ sig
   val check_style : 'a SpecCheck_Output_Style_Types.output_style ->
     ('a SpecCheck_Show.show) option ->  'a SpecCheck_Shrink.shrink ->
     ('a, 's) SpecCheck_Generator.gen_state -> string -> 'a SpecCheck_Property.prop ->
-    Proof.context -> 's -> 's
+    (Proof.context, 's) Lecker.test_state
   val check_shrink : 'a SpecCheck_Show.show -> 'a SpecCheck_Shrink.shrink ->
     ('a, 's) SpecCheck_Generator.gen_state -> string -> 'a SpecCheck_Property.prop ->
-    Proof.context -> 's -> 's
+    (Proof.context, 's) Lecker.test_state
   val check : 'a SpecCheck_Show.show -> ('a, 's) SpecCheck_Generator.gen_state -> string ->
-    'a SpecCheck_Property.prop -> Proof.context -> 's -> 's
+    'a SpecCheck_Property.prop -> (Proof.context, 's) Lecker.test_state
   val check_base : ('a, 's) SpecCheck_Generator.gen_state -> string ->
-    'a SpecCheck_Property.prop -> Proof.context -> 's -> 's
+    'a SpecCheck_Property.prop -> (Proof.context, 's) Lecker.test_state
 
   (*returns all unprocessed elements of the sequence*)
   val check_seq_style : 'a SpecCheck_Output_Style_Types.output_style ->

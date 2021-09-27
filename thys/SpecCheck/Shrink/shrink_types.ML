@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/shrink/shrink_types.ML
+(*  Title:      SpecCheck/Shrink/shrink_types.ML
     Author:     Kevin Kappelmann
 
 Shared type definitions for SpecCheck shrinkable types.

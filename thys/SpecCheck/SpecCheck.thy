@@ -11,7 +11,7 @@ begin
 paragraph \<open>Summary\<close>
 text \<open>The SpecCheck (specification based) testing environment and Lecker testing framework.\<close>
 
-ML_file \<open>speccheck.ML\<close>
 ML_file \<open>lecker.ML\<close>
+ML_file \<open>speccheck.ML\<close>
 
 end

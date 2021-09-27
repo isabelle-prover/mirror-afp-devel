@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/dynamic/speccheck_dynamic.ML
+(*  Title:      SpecCheck/Dynamic/speccheck_dynamic.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
 
 This file allows to run SpecCheck tests specified as a string representing ML code.
