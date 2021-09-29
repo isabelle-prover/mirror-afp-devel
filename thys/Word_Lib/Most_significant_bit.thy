@@ -44,10 +44,10 @@ by(simp add: msb_int_def)
 lemma int_msb_xor [simp]: "msb ((x :: int) XOR y) \<longleftrightarrow> msb x \<noteq> msb y"
 by(simp add: msb_int_def)
 
-end
-
 lemma int_msb_not [simp]: "msb (NOT (x :: int)) \<longleftrightarrow> \<not> msb x"
 by(simp add: msb_int_def not_less)
+
+end
 
 lemma msb_shiftl [simp]: "msb (push_bit n (x :: int)) \<longleftrightarrow> msb x"
 by(simp add: msb_int_def)

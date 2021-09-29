@@ -59,7 +59,7 @@ instantiation uint32 :: ring_bit_operations
 begin
 
 lift_definition bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-lift_definition not_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is NOT .
+lift_definition not_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.not\<close> .
 lift_definition and_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.and\<close> .
 lift_definition or_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.or\<close> .
 lift_definition xor_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>Bit_Operations.xor\<close> .
@@ -399,7 +399,7 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint32.less" and
   (Scala) "Uint32.less"
-| constant "NOT :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.not :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.notb" and
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int32.lognot" and

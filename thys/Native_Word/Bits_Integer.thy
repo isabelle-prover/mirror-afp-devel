@@ -360,7 +360,7 @@ code_printing
   (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 2 "^"
-| constant "NOT :: integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.not :: integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.notb" and
   (OCaml) "Z.lognot" and
   (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and

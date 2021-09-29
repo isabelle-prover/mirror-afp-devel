@@ -716,7 +716,7 @@ lemma [code]: "eval_bin_op_impl bop v1 v2 = eval_bin_op_impl_aux bop v1 v2"
 
 primrec eval_un_op_impl_aux :: "un_op \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "eval_un_op_impl_aux uo_minus v = -v"
-| "eval_un_op_impl_aux uo_not v = NOT v"
+| "eval_un_op_impl_aux uo_not v = Bit_Operations.not v"
 
 lift_definition eval_un_op_impl :: "un_op \<Rightarrow> uint32 \<Rightarrow> uint32"
   is eval_un_op .

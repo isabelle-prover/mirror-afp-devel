@@ -75,7 +75,7 @@ instantiation uint16 :: ring_bit_operations
 begin
 
 lift_definition bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-lift_definition not_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is NOT .
+lift_definition not_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.not\<close> .
 lift_definition and_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.and\<close> .
 lift_definition or_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.or\<close> .
 lift_definition xor_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>Bit_Operations.xor\<close> .
@@ -319,7 +319,7 @@ code_printing
   (SML_word) "Word16.< ((_), (_))" and
   (Haskell) infix 4 "<" and
   (Scala) infixl 4 "<"
-| constant "NOT :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.not :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toChar"

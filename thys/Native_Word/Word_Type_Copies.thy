@@ -69,7 +69,7 @@ declaration \<open>
        \<^term>\<open>HOL.equal\<close>, \<^term>\<open>(\<le>)\<close>, \<^term>\<open>(<)\<close>,
        \<^term>\<open>(dvd)\<close>, \<^term>\<open>of_bool\<close>, \<^term>\<open>numeral\<close>, \<^term>\<open>of_nat\<close>,
        \<^term>\<open>bit\<close>,
-       \<^term>\<open>NOT\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
+       \<^term>\<open>Bit_Operations.not\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
        \<^term>\<open>push_bit\<close>, \<^term>\<open>drop_bit\<close>, \<^term>\<open>take_bit\<close>,
        \<^term>\<open>Bit_Operations.set_bit\<close>, \<^term>\<open>unset_bit\<close>, \<^term>\<open>flip_bit\<close>,
        \<^term>\<open>msb\<close>, \<^term>\<open>lsb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>Generic_set_bit.set_bit\<close>, \<^term>\<open>set_bits\<close>]

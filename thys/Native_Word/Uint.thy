@@ -107,7 +107,7 @@ instantiation uint :: ring_bit_operations
 begin
 
 lift_definition bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-lift_definition not_uint :: \<open>uint \<Rightarrow> uint\<close> is NOT .
+lift_definition not_uint :: \<open>uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.not\<close> .
 lift_definition and_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.and\<close> .
 lift_definition or_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.or\<close> .
 lift_definition xor_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>Bit_Operations.xor\<close> .
@@ -537,7 +537,7 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint.less" and
   (Scala) "Uint.less"
-| constant "NOT :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.not :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.notb" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.notb" and

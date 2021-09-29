@@ -546,7 +546,7 @@ definition instance_Word_WordAsr_Word_bitSequence_dict  :: "(bitSequence)WordAsr
 definition instance_Word_WordNot_Num_int32_dict  :: "( 32 word)WordNot_class "  where 
      " instance_Word_WordNot_Num_int32_dict = ((|
 
-  lnot_method = NOT|) )"
+  lnot_method = Bit_Operations.not|) )"
 
 
 
@@ -609,7 +609,7 @@ definition instance_Word_WordAsr_Num_int32_dict  :: "( 32 word)WordAsr_class "  
 definition instance_Word_WordNot_Num_int64_dict  :: "( 64 word)WordNot_class "  where 
      " instance_Word_WordNot_Num_int64_dict = ((|
 
-  lnot_method = NOT|) )"
+  lnot_method = Bit_Operations.not|) )"
 
 
 \<comment> \<open>\<open>val int64Lor  : int64 -> int64 -> int64\<close>\<close> \<comment> \<open>\<open> XXX: fix \<close>\<close>

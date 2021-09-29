@@ -66,7 +66,7 @@ instantiation uint8 :: ring_bit_operations
 begin
 
 lift_definition bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-lift_definition not_uint8 :: \<open>uint8 \<Rightarrow> uint8\<close> is NOT .
+lift_definition not_uint8 :: \<open>uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.not\<close> .
 lift_definition and_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.and\<close> .
 lift_definition or_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.or\<close> .
 lift_definition xor_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is \<open>Bit_Operations.xor\<close> .
@@ -320,7 +320,7 @@ code_printing type_constructor uint8 \<rightharpoonup>
   (SML) "Word8.< ((_), (_))" and
   (Haskell) infix 4 "<" and
   (Scala) "Uint8.less"
-| constant "NOT :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.not :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toByte"

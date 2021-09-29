@@ -70,7 +70,7 @@ instantiation uint64 :: ring_bit_operations
 begin
 
 lift_definition bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
-lift_definition not_uint64 :: \<open>uint64 \<Rightarrow> uint64\<close> is NOT .
+lift_definition not_uint64 :: \<open>uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.not\<close> .
 lift_definition and_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.and\<close> .
 lift_definition or_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.or\<close> .
 lift_definition xor_uint64 :: \<open>uint64 \<Rightarrow> uint64 \<Rightarrow> uint64\<close> is \<open>Bit_Operations.xor\<close> .
@@ -597,7 +597,7 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint64.less" and
   (Scala) "Uint64.less"
-| constant "NOT :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "Bit_Operations.not :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.notb" and
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int64.lognot" and

@@ -100,7 +100,7 @@ abbreviation (input) complement :: \<open>'a::len word \<Rightarrow> 'a word\<cl
   where \<open>complement \<equiv> not\<close>
 
 lemma complement_mask:
-  "complement (2 ^ n - 1) = NOT (mask n)"
+  "complement (2 ^ n - 1) = not (mask n)"
   unfolding mask_eq_decr_exp by simp
 
 abbreviation (input) shiftl1 :: \<open>'a::len word \<Rightarrow> 'a word\<close>

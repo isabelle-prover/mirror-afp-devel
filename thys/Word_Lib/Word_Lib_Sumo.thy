@@ -59,7 +59,7 @@ lemmas of_int_and_nat = unsigned_of_nat unsigned_of_int signed_of_int signed_of_
 
 bundle no_take_bit
 begin
-  declare of_int_and_nat[simp del]
+declare of_int_and_nat[simp del]
 end
 
 lemmas bshiftr1_def = bshiftr1_eq

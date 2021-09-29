@@ -102,7 +102,7 @@ lemma rbl_succ2_simps:
   "rbl_succ2 b (x # xs) = (b \<noteq> x) # rbl_succ2 (x \<and> b) xs"
   by (simp_all add: rbl_succ2_def)
 
-lemma twos_complement: "- x = word_succ (NOT x)"
+lemma twos_complement: "- x = word_succ (not x)"
   using arg_cong[OF word_add_not[where x=x], where f="\<lambda>a. a - x + 1"]
   by (simp add: word_succ_p1 word_sp_01[unfolded word_succ_p1] del: word_add_not)
 

@@ -188,12 +188,12 @@ lemma sbintrunc_Suc_minus_Is:
 lemma bin_cat_Suc_Bit: "bin_cat w (Suc n) (v BIT b) = bin_cat w n v BIT b"
   by (auto simp add: Bit_def concat_bit_Suc)
 
-lemma int_not_BIT [simp]: "NOT (w BIT b) = (NOT w) BIT (\<not> b)"
-  by (simp add: not_int_def Bit_def)
-
 context
   includes bit_operations_syntax
 begin
+
+lemma int_not_BIT [simp]: "NOT (w BIT b) = (NOT w) BIT (\<not> b)"
+  by (simp add: not_int_def Bit_def)
 
 lemma int_and_Bits [simp]: "(x BIT b) AND (y BIT c) = (x AND y) BIT (b \<and> c)"
   using and_int_rec [of \<open>x BIT b\<close> \<open>y BIT c\<close>] by (auto simp add: Bit_B0_2t Bit_B1_2t)
