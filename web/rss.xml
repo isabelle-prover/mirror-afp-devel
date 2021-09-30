@@ -9,7 +9,148 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
+    <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Extension of Types-To-Sets</title>
+              <link>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</link>
+       <guid>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+In their article titled &lt;i&gt;From Types to Sets by Local Type
+Definitions in Higher-Order Logic&lt;/i&gt; and published in the
+proceedings of the conference &lt;i&gt;Interactive Theorem
+Proving&lt;/i&gt; in 2016, Ondřej Kunčar and Andrei Popescu propose an
+extension of the logic Isabelle/HOL and an associated algorithm for
+the relativization of the &lt;i&gt;type-based theorems&lt;/i&gt; to
+more flexible &lt;i&gt;set-based theorems&lt;/i&gt;, collectively
+referred to as &lt;i&gt;Types-To-Sets&lt;/i&gt;. One of the aims of
+their work was to open an opportunity for the development of a
+software tool for applied relativization in the implementation of the
+logic Isabelle/HOL of the proof assistant Isabelle. In this article,
+we provide a prototype of a software framework for the interactive
+automated relativization of theorems in Isabelle/HOL, developed as an
+extension of the proof language Isabelle/Isar. The software framework
+incorporates the implementation of the proposed extension of the
+logic, and builds upon some of the ideas for further work expressed in
+the original article on Types-To-Sets by Ondřej Kunčar and Andrei
+Popescu and the subsequent article &lt;i&gt;Smooth Manifolds and Types
+to Sets for Linear Algebra in Isabelle/HOL&lt;/i&gt; that was written
+by Fabian Immler and Bohua Zhan and published in the proceedings of
+the &lt;i&gt;International Conference on Certified Programs and
+Proofs&lt;/i&gt; in 2019.</description>
+    </item>
+    <item>
+       <title>IDE: Introduction, Destruction, Elimination</title>
+              <link>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</link>
+       <guid>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+The article provides the command &lt;b&gt;mk_ide&lt;/b&gt; for the
+object logic Isabelle/HOL of the formal proof assistant Isabelle. The
+command &lt;b&gt;mk_ide&lt;/b&gt; enables the automated synthesis of
+the introduction, destruction and elimination rules from arbitrary
+definitions of constant predicates stated in Isabelle/HOL.</description>
+    </item>
+    <item>
+       <title>Conditional Transfer Rule</title>
+              <link>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</link>
+       <guid>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This article provides a collection of experimental utilities for
+unoverloading of definitions and synthesis of conditional transfer
+rules for the object logic Isabelle/HOL of the formal proof assistant
+Isabelle written in Isabelle/ML.</description>
+    </item>
+    <item>
+       <title>Conditional Simplification</title>
+              <link>https://www.isa-afp.org/entries/Conditional_Simplification.html</link>
+       <guid>https://www.isa-afp.org/entries/Conditional_Simplification.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+The article provides a collection of experimental general-purpose
+proof methods for the object logic Isabelle/HOL of the formal proof
+assistant Isabelle. The methods in the collection offer functionality
+that is similar to certain aspects of the functionality provided by
+the standard proof methods of Isabelle that combine classical
+reasoning and rewriting, such as the method &lt;i&gt;auto&lt;/i&gt;,
+but use a different approach for rewriting. More specifically, these
+methods allow for the side conditions of the rewrite rules to be
+solved via intro-resolution.</description>
+    </item>
+    <item>
+       <title>Category Theory for ZFC in HOL III: Universal Constructions</title>
+              <link>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</link>
+       <guid>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+The article provides a formalization of elements of the theory of
+universal constructions for 1-categories (such as limits, adjoints and
+Kan extensions) in the object logic ZFC in HOL of the formal proof
+assistant Isabelle. The article builds upon the foundations
+established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
+II: Elementary Theory of 1-Categories&lt;/i&gt;.</description>
+    </item>
+    <item>
+       <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
+              <link>https://www.isa-afp.org/entries/CZH_Foundations.html</link>
+       <guid>https://www.isa-afp.org/entries/CZH_Foundations.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This article provides a foundational framework for the formalization
+of category theory in the object logic ZFC in HOL of the formal proof
+assistant Isabelle. More specifically, this article provides a
+formalization of canonical set-theoretic constructions internalized in
+the type &lt;i&gt;V&lt;/i&gt; associated with the ZFC in HOL,
+establishes a design pattern for the formalization of mathematical
+structures using sequences and locales, and showcases the developed
+infrastructure by providing formalizations of the elementary theories
+of digraphs and semicategories. The methodology chosen for the
+formalization of the theories of digraphs and semicategories (and
+categories in future articles) rests on the ideas that were originally
+expressed in the article &lt;i&gt;Set-Theoretical Foundations of
+Category Theory&lt;/i&gt; written by Solomon Feferman and Georg
+Kreisel. Thus, in the context of this work, each of the aforementioned
+mathematical structures is represented as a term of the type
+&lt;i&gt;V&lt;/i&gt; embedded into a stage of the von Neumann
+hierarchy.</description>
+    </item>
+    <item>
+       <title>Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories</title>
+              <link>https://www.isa-afp.org/entries/CZH_Elementary_Categories.html</link>
+       <guid>https://www.isa-afp.org/entries/CZH_Elementary_Categories.html</guid>
+       <dc:creator> Mihails Milehins       </dc:creator>
+       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This article provides a formalization of the foundations of the theory
+of 1-categories in the object logic ZFC in HOL of the formal proof
+assistant Isabelle. The article builds upon the foundations that were
+established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
+I: Foundations: Design Patterns, Set Theory, Digraphs,
+Semicategories&lt;/i&gt;.</description>
+    </item>
+    <item>
+       <title>A data flow analysis algorithm for computing dominators</title>
+              <link>https://www.isa-afp.org/entries/Dominance_CHK.html</link>
+       <guid>https://www.isa-afp.org/entries/Dominance_CHK.html</guid>
+       <dc:creator> Nan Jiang       </dc:creator>
+       <pubDate>05 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This entry formalises the fast iterative algorithm for computing dominators
+due to Cooper, Harvey and Kennedy. It gives a specification of computing
+dominators on a control
+flow graph where each node refers to its reverse post order number. A
+semilattice of reversed-ordered list which represents dominators is
+built and a Kildall-style algorithm on the semilattice is defined for
+computing dominators. Finally the soundness and completeness of the
+algorithm are proved w.r.t. the specification.</description>
+    </item>
     <item>
        <title>Solving Cubic and Quartic Equations</title>
               <link>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
@@ -25,6 +166,27 @@ the AFP. To this end we also slightly extended this library, namely by
 making the minimal polynomial of an algebraic number executable, and
 by defining and implementing $n$-th roots of complex
 numbers.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Logging-independent Message Anonymity in the Relational Method</title>
+              <link>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</link>
+       <guid>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>26 Aug 2021 00:00:00 +0000</pubDate>
+       <description>
+In the context of formal cryptographic protocol verification,
+logging-independent message anonymity is the property for a given
+message to remain anonymous despite the attacker&#39;s capability of
+mapping messages of that sort to agents based on some intrinsic
+feature of such messages, rather than by logging the messages
+exchanged by legitimate agents as with logging-dependent message
+anonymity.
+This paper illustrates how logging-independent message
+anonymity can be formalized according to the relational method for
+formal protocol verification by considering a real-world protocol,
+namely the Restricted Identification one by the BSI. This sample model
+is used to verify that the pseudonymous identifiers output by user
+identification tokens remain anonymous under the expected conditions.</description>
     </item>
     <item>
        <title>The Theorem of Three Circles</title>
@@ -179,6 +341,21 @@ quantification over elements of the base set. We formalise the
 property of undirected graphs being acyclic this way. This involves a
 study of various kinds of orientation of graphs. We also verify basic
 algorithms to constructively prove several second-order properties.</description>
+    </item>
+    <item>
+       <title>Schutz' Independent Axioms for Minkowski Spacetime</title>
+              <link>https://www.isa-afp.org/entries/Schutz_Spacetime.html</link>
+       <guid>https://www.isa-afp.org/entries/Schutz_Spacetime.html</guid>
+       <dc:creator> Richard Schmoetten, Jake Palmer, Jacques Fleuriot       </dc:creator>
+       <pubDate>27 Jul 2021 00:00:00 +0000</pubDate>
+       <description>
+This is a formalisation of Schutz&#39; system of axioms for Minkowski
+spacetime published under the name &#34;Independent axioms for
+Minkowski space-time&#34; in 1997, as well as most of the results in
+the third chapter (&#34;Temporal Order on a Path&#34;) of the above
+monograph. Many results are proven here that cannot be found in
+Schutz, either preceding the theorem they are needed for, or within
+their own thematic section.</description>
     </item>
     <item>
        <title>Finitely Generated Abelian Groups</title>
@@ -364,198 +541,6 @@ implementation(for example using de Brujin indices) to enable easy
 integration of generated code with the Isabelle system without a
 complicated translation layer.  The formalization is described in our
 &lt;a href=&#34;https://arxiv.org/pdf/2104.12224.pdf&#34;&gt;CADE 28 paper&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Lifting the Exponent</title>
-              <link>https://www.isa-afp.org/entries/Lifting_the_Exponent.html</link>
-       <guid>https://www.isa-afp.org/entries/Lifting_the_Exponent.html</guid>
-       <dc:creator> Jakub Kądziołka       </dc:creator>
-       <pubDate>27 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize the &lt;i&gt;Lifting the Exponent Lemma&lt;/i&gt;, which
-shows how to find the largest power of $p$ dividing $a^n \pm b^n$, for
-a prime $p$ and positive integers $a$ and $b$. The proof follows &lt;a
-href=&#34;https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf&#34;&gt;Amir Hossein Parvardi&#39;s&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
-              <link>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</link>
-       <guid>https://www.isa-afp.org/entries/BenOr_Kozen_Reif.html</guid>
-       <dc:creator> Katherine Cordwell, Yong Kiam Tan, André Platzer       </dc:creator>
-       <pubDate>24 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize the univariate case of Ben-Or, Kozen, and Reif&#39;s
-decision procedure for first-order real arithmetic (the BKR
-algorithm). We also formalize the univariate case of Renegar&#39;s
-variation of the BKR algorithm. The two formalizations differ
-mathematically in minor ways (that have significant impact on the
-multivariate case), but are quite similar in proof structure.  Both
-rely on sign-determination (finding the set of consistent sign
-assignments for a set of polynomials).  The method used for
-sign-determination is similar to Tarski&#39;s original quantifier
-elimination algorithm (it stores key information in a matrix
-equation), but with a reduction step to keep complexity low.</description>
-    </item>
-    <item>
-       <title>Gale-Stewart Games</title>
-              <link>https://www.isa-afp.org/entries/GaleStewart_Games.html</link>
-       <guid>https://www.isa-afp.org/entries/GaleStewart_Games.html</guid>
-       <dc:creator> Sebastiaan Joosten       </dc:creator>
-       <pubDate>23 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-This is a formalisation of the main result of Gale and Stewart from
-1953, showing that closed finite games are determined. This property
-is now known as the Gale Stewart Theorem. While the original paper
-shows some additional theorems as well, we only formalize this main
-result, but do so in a somewhat general way. We formalize games of a
-fixed arbitrary length, including infinite length, using co-inductive
-lists, and show that defensive strategies exist unless the other
-player is winning. For closed games, defensive strategies are winning
-for the closed player, proving that such games are determined. For
-finite games, which are a special case in our formalisation, all games
-are closed.</description>
-    </item>
-    <item>
-       <title>Formalization of Timely Dataflow's Progress Tracking Protocol</title>
-              <link>https://www.isa-afp.org/entries/Progress_Tracking.html</link>
-       <guid>https://www.isa-afp.org/entries/Progress_Tracking.html</guid>
-       <dc:creator> Matthias Brun, Sára Decova, Andrea Lattuada, Dmitriy Traytel       </dc:creator>
-       <pubDate>13 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-Large-scale stream processing systems often follow the dataflow
-paradigm, which enforces a program structure that exposes a high
-degree of parallelism. The Timely Dataflow distributed system supports
-expressive cyclic dataflows for which it offers low-latency data- and
-pipeline-parallel stream processing. To achieve high expressiveness
-and performance, Timely Dataflow uses an intricate distributed
-protocol for tracking the computation’s progress. We formalize this
-progress tracking protocol and verify its safety. Our formalization is
-described in detail in our forthcoming &lt;a
-href=&#34;https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf&#34;&gt;ITP&#39;21
-paper&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Information Flow Control via Dependency Tracking</title>
-              <link>https://www.isa-afp.org/entries/IFC_Tracking.html</link>
-       <guid>https://www.isa-afp.org/entries/IFC_Tracking.html</guid>
-       <dc:creator> Benedikt Nordhoff       </dc:creator>
-       <pubDate>01 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-We provide a characterisation of how information is propagated by
-program executions based on the tracking data and control dependencies
-within executions themselves.  The characterisation might be used for
-deriving approximative safety properties to be targeted by static
-analyses or checked at runtime.  We utilise a simple yet versatile
-control flow graph model as a program representation.  As our model is
-not assumed to be finite it can be instantiated for a broad class of
-programs.  The targeted security property is indistinguishable
-security where executions produce sequences of observations and only
-non-terminating executions are allowed to drop a tail of those.  A
-very crude approximation of our characterisation is slicing based on
-program dependence graphs, which we use as a minimal example and
-derive a corresponding soundness result.  For further details and
-applications refer to the authors upcoming dissertation.</description>
-    </item>
-    <item>
-       <title>Grothendieck's Schemes in Algebraic Geometry</title>
-              <link>https://www.isa-afp.org/entries/Grothendieck_Schemes.html</link>
-       <guid>https://www.isa-afp.org/entries/Grothendieck_Schemes.html</guid>
-       <dc:creator> Anthony Bordg, Lawrence Paulson, Wenda Li       </dc:creator>
-       <pubDate>29 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize mainstream structures in algebraic geometry culminating
-in Grothendieck&#39;s schemes: presheaves of rings, sheaves of rings,
-ringed spaces, locally ringed spaces, affine schemes and schemes. We
-prove that the spectrum of a ring is a locally ringed space, hence an
-affine scheme. Finally, we prove that any affine scheme is a scheme.</description>
-    </item>
-    <item>
-       <title>Hensel's Lemma for the p-adic Integers</title>
-              <link>https://www.isa-afp.org/entries/Padic_Ints.html</link>
-       <guid>https://www.isa-afp.org/entries/Padic_Ints.html</guid>
-       <dc:creator> Aaron Crighton       </dc:creator>
-       <pubDate>23 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize the ring of &lt;em&gt;p&lt;/em&gt;-adic integers within the framework of the
-HOL-Algebra library. The carrier of the ring is formalized as the
-inverse limit of quotients of the integers by powers of a fixed prime
-&lt;em&gt;p&lt;/em&gt;. We define an integer-valued valuation, as well as an
-extended-integer valued valuation which sends 0 to the infinite
-element. Basic topological facts about the &lt;em&gt;p&lt;/em&gt;-adic integers are
-formalized, including completeness and sequential compactness. Taylor
-expansions of polynomials over a commutative ring are defined,
-culminating in the formalization of Hensel&#39;s Lemma based on a
-proof due to Keith Conrad.</description>
-    </item>
-    <item>
-       <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
-              <link>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
-       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography_CM.html</guid>
-       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
-       <pubDate>17 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-Constructive Cryptography (CC) [&lt;a
-href=&#34;https://conference.iiis.tsinghua.edu.cn/ICS2011/content/papers/14.html&#34;&gt;ICS
-2011&lt;/a&gt;, &lt;a
-href=&#34;https://doi.org/10.1007/978-3-642-27375-9_3&#34;&gt;TOSCA
-2011&lt;/a&gt;, &lt;a
-href=&#34;https://doi.org/10.1007/978-3-662-53641-4_1&#34;&gt;TCC
-2016&lt;/a&gt;] introduces an abstract approach to composable security
-statements that allows one to focus on a particular aspect of security
-proofs at a time. Instead of proving the properties of concrete
-systems, CC studies system classes, i.e., the shared behavior of
-similar systems, and their transformations.  Modeling of systems
-communication plays a crucial role in composability and reusability of
-security statements; yet, this aspect has not been studied in any of
-the existing CC results. We extend our previous CC formalization
-[&lt;a href=&#34;https://isa-afp.org/entries/Constructive_Cryptography.html&#34;&gt;Constructive_Cryptography&lt;/a&gt;,
-&lt;a href=&#34;https://doi.org/10.1109/CSF.2019.00018&#34;&gt;CSF
-2019&lt;/a&gt;] with a new semantic domain called Fused Resource
-Templates (FRT) that abstracts over the systems communication patterns
-in CC proofs. This widens the scope of cryptography proof
-formalizations in the CryptHOL library [&lt;a
-href=&#34;https://isa-afp.org/entries/CryptHOL.html&#34;&gt;CryptHOL&lt;/a&gt;,
-&lt;a
-href=&#34;https://doi.org/10.1007/978-3-662-49498-1_20&#34;&gt;ESOP
-2016&lt;/a&gt;, &lt;a
-href=&#34;https://doi.org/10.1007/s00145-019-09341-z&#34;&gt;J
-Cryptol 2020&lt;/a&gt;].  This formalization is described in &lt;a
-href=&#34;http://www.andreas-lochbihler.de/pub/basin2021.pdf&#34;&gt;Abstract
-Modeling of Systems Communication in Constructive Cryptography using
-CryptHOL&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
-              <link>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
-       <guid>https://www.isa-afp.org/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-       <dc:creator> Ralph Bottesch, Jose Divasón, René Thiemann       </dc:creator>
-       <pubDate>12 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-We verify two algorithms for which modular arithmetic plays an
-essential role: Storjohann&#39;s variant of the LLL lattice basis
-reduction algorithm and Kopparty&#39;s algorithm for computing the
-Hermite normal form of a matrix. To do this, we also formalize some
-facts about the modulo operation with symmetric range. Our
-implementations are based on the original papers, but are otherwise
-efficient. For basis reduction we formalize two versions: one that
-includes all of the optimizations/heuristics from Storjohann&#39;s
-paper, and one excluding a heuristic that we observed to often
-decrease efficiency. We also provide a fast, self-contained certifier
-for basis reduction, based on the efficient Hermite normal form
-algorithm.</description>
-    </item>
-    <item>
-       <title>Quantum projective measurements and the CHSH inequality</title>
-              <link>https://www.isa-afp.org/entries/Projective_Measurements.html</link>
-       <guid>https://www.isa-afp.org/entries/Projective_Measurements.html</guid>
-       <dc:creator> Mnacho Echenim       </dc:creator>
-       <pubDate>03 Mar 2021 00:00:00 +0000</pubDate>
-       <description>
-This work contains a formalization of quantum projective measurements,
-also known as von Neumann measurements, which are based on elements of
-spectral theory. We also formalized the CHSH inequality, an inequality
-involving expectations in a probability space that is violated by
-quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory.</description>
     </item>
   </channel>
 </rss>

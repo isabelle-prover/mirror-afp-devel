@@ -66,6 +66,9 @@ CISC-Kernel
 CRDT
 CSP_RefTK
 CYK
+CZH_Elementary_Categories
+CZH_Foundations
+CZH_Universal_Constructions
 CakeML
 CakeML_Codegen
 Call_Arity
@@ -107,6 +110,8 @@ ConcurrentGC
 ConcurrentIMP
 Concurrent_Ref_Alg
 Concurrent_Revisions
+Conditional_Simplification
+Conditional_Transfer_Rule
 Consensus_Refined
 Constructive_Cryptography
 Constructive_Cryptography_CM
@@ -149,6 +154,7 @@ Dirichlet_Series
 DiscretePricing
 Discrete_Summation
 DiskPaxos
+Dominance_CHK
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -270,6 +276,7 @@ InformationFlowSlicing_Inter
 Integration
 Interpreter_Optimizations
 Interval_Arithmetic_Word32
+Intro_Dest_Elim
 Iptables_Semantics
 Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
@@ -336,6 +343,7 @@ List_Update
 LocalLexing
 Localization_Ring
 Locally-Nameless-Sigma
+Logging_Independent_Anonymity
 Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
@@ -508,6 +516,7 @@ Safe_Distance
 Safe_OCL
 Saturation_Framework
 Saturation_Framework_Extensions
+Schutz_Spacetime
 Secondary_Sylow
 Security_Protocol_Refinement
 Selection_Heap_Sort
@@ -588,6 +597,7 @@ Trie
 Twelvefold_Way
 Tycon
 Types_Tableaus_and_Goedels_God
+Types_To_Sets_Extension
 UPF
 UPF_Firewall
 UTP
