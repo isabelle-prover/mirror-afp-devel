@@ -32,7 +32,8 @@ fun show_env_aux show_entry =
   #> map show_entry
   #> Pretty.list "[" "]"
 
-fun show_env_entry show (s, t) = Pretty.enum " := " "" "" (map show [s, t])
+fun show_env_entry show (s, t) = Pretty.block [show s, Pretty.str " := ", show t]
+
 in
 
 fun tyenv ctxt =
@@ -49,6 +50,10 @@ fun tenv ctxt =
 
 end
 
-fun env ctxt env = Show.zip (tyenv ctxt) (tenv ctxt) (Envir.type_env env, Envir.term_env env)
+fun env ctxt env = Show.record [
+    ("maxidx", Pretty.str (string_of_int (Envir.maxidx_of env))),
+    ("tyenv", tyenv ctxt (Envir.type_env env)),
+    ("tenv", tenv ctxt (Envir.term_env env))
+  ]
 
 end
