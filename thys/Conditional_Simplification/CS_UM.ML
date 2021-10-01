@@ -50,7 +50,7 @@ fun um_inst ctxt thm env =
   let
     val tenv = Vartab.dest (Envir.term_env env)
     val tyenv = Vartab.dest (Envir.type_env env)
-    val inst = (map (prep_ty ctxt) tyenv, map (prep_trm ctxt) tenv)
+    val inst = (TVars.make (map (prep_ty ctxt) tyenv), Vars.make (map (prep_trm ctxt) tenv))
   in 
     thm
     |> Drule.instantiate_normalize inst
