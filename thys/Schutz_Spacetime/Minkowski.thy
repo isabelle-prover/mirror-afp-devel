@@ -541,7 +541,7 @@ proof -
     by auto
   moreover have "z\<in>Q"
     using ordering_def assms card_gt_0_iff emptyE fin_long_chain_def long_ch_by_ord_def
-    by (metis (no_types, hide_lams) Suc_diff_1 lessI)
+    by (metis (no_types, opaque_lifting) Suc_diff_1 lessI)
   ultimately show ?thesis
     by blast
 qed

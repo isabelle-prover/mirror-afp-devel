@@ -110,7 +110,7 @@ lemma The_on_Some1I2:
 lemma The_on1I2:
   assumes "\<exists>!x. x \<in> U \<and> P x" and "\<And>x. x \<in> U \<Longrightarrow> P x \<Longrightarrow> Q x"
   shows "Q (the (THE x on U. P x))"
-  by (metis (mono_tags, hide_lams) The_on_I2 assms)
+  by (metis (mono_tags, opaque_lifting) The_on_I2 assms)
 
 lemma The_on1_equality [elim?]: 
   assumes "\<exists>!x. P x" and "a \<in> U" and "P a" 

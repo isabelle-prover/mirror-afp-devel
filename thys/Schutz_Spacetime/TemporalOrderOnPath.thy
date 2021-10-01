@@ -2405,7 +2405,7 @@ lemma long_chain_on_path:
 proof -
   obtain x y where "x\<in>X" and "y\<in>X" and "y\<noteq>x"
     using long_ch_by_ord_def assms
-    by (metis (mono_tags, hide_lams))
+    by (metis (mono_tags, opaque_lifting))
   obtain z where "z\<in>X" and "x\<noteq>z" and "y\<noteq>z"
     using long_ch_by_ord_def assms
     by metis
@@ -2520,7 +2520,7 @@ proof (rule ccontr)
     by blast
   thus False
     using fin_long_chain_def long_ch_by_ord_def asm assms fin_ch_betw
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
 qed
 
 (* potential misnomer: Schutz defines bounds only for infinite chains *)
@@ -2572,7 +2572,7 @@ proof
   then obtain a b c where "[f[a..b..c]X]"
     using get_fin_long_ch_bounds assms(2) by blast
   thus "3 \<le> card X"
-    by (metis (no_types, hide_lams) One_nat_def card_eq_0_iff diff_Suc_1 empty_iff
+    by (metis (no_types, opaque_lifting) One_nat_def card_eq_0_iff diff_Suc_1 empty_iff
         fin_long_chain_def index_middle_element leI less_3_cases less_one)
 next
   assume "3 \<le> card X"
@@ -2924,7 +2924,7 @@ proof -
       assume case1: "[[w a b]]"
       then obtain n where "f n = w" and "n<card X"
         using \<open>w\<in>X\<close> abc_bcd_abd abc_only_cba aligned assms fin_ch_betw fin_long_chain_def
-        by (metis (no_types, hide_lams))
+        by (metis (no_types, opaque_lifting))
       have "f 0 = a"
         using assms fin_long_chain_def
         by blast
@@ -4901,7 +4901,7 @@ proof -
         long_ch_by_ord_def not_numeral_le_zero zero_less_numeral)
   have bound_ind: "f 0 = a \<and> f (card X - 1) = c"
     using lch_X assms(1,3) unfolding fin_chain_def fin_long_chain_def
-    by (metis (no_types, hide_lams) One_nat_def Suc_1 ch_by_ord_def diff_Suc_Suc
+    by (metis (no_types, opaque_lifting) One_nat_def Suc_1 ch_by_ord_def diff_Suc_Suc
         less_Suc_eq_le neq0_conv numeral_3_eq_3 short_ch_card_2 zero_less_diff)
   
   have "[[a p c]]"
@@ -5170,7 +5170,7 @@ next
     assume asm_false: "g (card X - 2) \<noteq> p"
     obtain j where "g j = p" "j < card X - 1" "j>0"
       using \<open>X = insert c Y\<close> \<open>p\<in>Y\<close>  points_in_chain \<open>p\<noteq>c \<and> p\<noteq>a\<close>
-      by (metis (no_types, hide_lams) chain_bounds_unique f_ch
+      by (metis (no_types, opaque_lifting) chain_bounds_unique f_ch
           fin_long_chain_def g_ch index_middle_element insert_iff)
     hence "j < card X - 2"
       using asm_false le_eq_less_or_eq by fastforce
