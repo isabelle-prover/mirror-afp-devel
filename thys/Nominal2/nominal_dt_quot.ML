@@ -366,7 +366,7 @@ fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
 fun prove_perm_bn_alpha_thms qtys qperm_bns alpha_bns qinduct qperm_bn_simps qeq_iffs qalpha_refls ctxt =
   let
     val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     fun mk_goal qperm_bn alpha_bn =
       let
@@ -387,7 +387,7 @@ fun prove_perm_bn_alpha_thms qtys qperm_bns alpha_bns qinduct qperm_bn_simps qeq
 fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qbn_eqvts ctxt =
   let
     val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     fun mk_goal qbn qperm_bn =
       let
@@ -432,10 +432,10 @@ fun mk_abs bmode trm1 trm2 =
 fun is_abs_eq thm =
   let
     fun is_abs trm =
-      case (head_of trm) of
-        Const (@{const_name "Abs_set"}, _) => true
-      | Const (@{const_name "Abs_lst"}, _) => true
-      | Const (@{const_name "Abs_res"}, _) => true
+      case head_of trm of
+        \<^Const_>\<open>Abs_set _\<close> => true
+      | \<^Const_>\<open>Abs_lst _\<close> => true
+      | \<^Const_>\<open>Abs_res _\<close> => true
       | _ => false
   in
     thm |> Thm.prop_of
@@ -495,7 +495,7 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
       |> mk_perm (Bound 0)
 
     val goal = mk_fresh_star lhs rhs
-      |> mk_exists ("p", @{typ perm})
+      |> mk_exists ("p", \<^Type>\<open>perm\<close>)
       |> HOLogic.mk_Trueprop
 
     val ss = bn_finite_thms @ @{thms supp_Pair finite_supp finite_sets_supp}

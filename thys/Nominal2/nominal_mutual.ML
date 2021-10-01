@@ -220,7 +220,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
     val ([p], ctxt'') = ctxt'
       |> fold Variable.declare_term args
       |> Variable.variant_fixes ["p"]
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     val simpset =
       put_simpset HOL_basic_ss ctxt'' addsimps
@@ -288,7 +288,7 @@ fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   end
 
 
-fun forall_elim s (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = subst_bound (s, t)
+fun forall_elim s \<^Const_>\<open>Pure.all _ for \<open>Abs (_, _, t)\<close>\<close> = subst_bound (s, t)
   | forall_elim _ t = t
 
 val forall_elim_list = fold forall_elim
@@ -307,7 +307,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
     val insts = (map o map) SOME arg_namess
 
     val ([p_name], ctxt') = Variable.variant_fixes ["p"] ctxt
-    val p = Free (p_name, @{typ perm})
+    val p = Free (p_name, \<^Type>\<open>perm\<close>)
 
     (* extracting the acc-premises from the induction theorems *)
     val acc_prems =

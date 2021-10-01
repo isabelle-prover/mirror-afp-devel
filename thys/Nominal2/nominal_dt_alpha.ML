@@ -52,22 +52,15 @@ fun group xs = AList.group (op=) xs
 (* construct the compound terms for prod_fv and prod_alpha *)
 fun mk_prod_fv (t1, t2) =
   let
-    val ty1 = fastype_of t1
-    val ty2 = fastype_of t2
-    val resT = HOLogic.mk_prodT (domain_type ty1, domain_type ty2) --> @{typ "atom set"}
-  in
-    Const (@{const_name "prod_fv"}, [ty1, ty2] ---> resT) $ t1 $ t2
-  end
+    val A = domain_type (fastype_of t1)
+    val B = domain_type (fastype_of t2)
+  in \<^Const>\<open>prod_fv A B for t1 t2\<close> end
 
 fun mk_prod_alpha (t1, t2) =
   let
-    val ty1 = fastype_of t1
-    val ty2 = fastype_of t2
-    val prodT = HOLogic.mk_prodT (domain_type ty1, domain_type ty2)
-    val resT = [prodT, prodT] ---> @{typ "bool"}
-  in
-    Const (@{const_name "prod_alpha"}, [ty1, ty2] ---> resT) $ t1 $ t2
-  end
+    val A = domain_type (fastype_of t1)
+    val B = domain_type (fastype_of t2)
+  in \<^Const>\<open>prod_alpha A B for t1 t2\<close> end
 
 (* generates the compound binder terms *)
 fun comb_binders lthy bmode args binders =
@@ -103,7 +96,7 @@ fun mk_alpha_term bmode fv alpha args args' binders binders' =
     val pair_lhs = HOLogic.mk_prod (binders, args)
     val pair_rhs = HOLogic.mk_prod (binders', args')
   in
-    HOLogic.exists_const @{typ perm} $ Abs ("p", @{typ perm},
+    HOLogic.exists_const \<^Type>\<open>perm\<close> $ Abs ("p", \<^Type>\<open>perm\<close>,
       Const (alpha_name, [pair_ty, alpha_ty, fv_ty, @{typ "perm"}, pair_ty] ---> @{typ bool})
         $ pair_lhs $ alpha $ fv $ (Bound 0) $ pair_rhs)
   end
@@ -302,7 +295,7 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
 
     val args = map2 (curry Free) arg_names tys
 
-    val true_trms = replicate (length tys) (K @{term True})
+    val true_trms = replicate (length tys) (K \<^Const>\<open>True\<close>)
 
     fun apply_all x fs = map (fn f => f x) fs
 
@@ -343,7 +336,7 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
     val args1 = map2 (curry Free) arg_names1 arg_tys
     val args2 = map2 (curry Free) arg_names2 arg_tys
 
-    val true_trms = replicate (length alphas) (K @{term True})
+    val true_trms = replicate (length alphas) (K \<^Const>\<open>True\<close>)
 
     fun apply_all x fs = map (fn f => f x) fs
 
@@ -425,7 +418,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
 *)
 fun mk_simp_rule thm =
   case Thm.prop_of thm of
-    @{term "Trueprop"} $ (_ $ Const _ $ Const _) => thm RS @{thm eqTrueI}
+    \<^Const_>\<open>Trueprop for \<open>_ $ Const _ $ Const _\<close>\<close> => thm RS @{thm eqTrueI}
   | _ => thm
 
 fun alpha_eq_iff_tac ctxt dist_inj intros elims =
@@ -636,8 +629,7 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
     val symm' = map (fold_rule ctxt [symp_def'] o atomize ctxt) symm
     val trans' = map (fold_rule ctxt [transp_def'] o atomize ctxt) trans
 
-    fun prep_goal t =
-      HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t)
+    fun prep_goal t = \<^Const>\<open>Trueprop for \<^Const>\<open>equivp \<open>domain_type (fastype_of t)\<close> for t\<close>\<close>
   in
     Goal.prove_common ctxt NONE [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
     (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt @{thms equivpI} THEN'
@@ -829,7 +821,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
     val ty_assoc = (alpha_tys @ alpha_bn_tys) ~~ (alpha_trms @ alpha_bn_trms)
 
     val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     fun mk_prop t =
       let

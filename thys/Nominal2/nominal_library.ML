@@ -34,22 +34,18 @@ sig
   val listify_ty: Proof.context -> typ -> term -> term
   val listify: Proof.context -> term -> term
 
-  val fresh_ty: typ -> typ
   val fresh_const: typ -> term
   val mk_fresh_ty: typ -> term -> term -> term
   val mk_fresh: term -> term -> term
 
-  val fresh_star_ty: typ -> typ
   val fresh_star_const: typ -> term
   val mk_fresh_star_ty: typ -> term -> term -> term
   val mk_fresh_star: term -> term -> term
 
-  val supp_ty: typ -> typ
   val supp_const: typ -> term
   val mk_supp_ty: typ -> term -> term
   val mk_supp: term -> term
 
-  val supp_rel_ty: typ -> typ
   val supp_rel_const: typ -> term
   val mk_supp_rel_ty: typ -> term -> term -> term
   val mk_supp_rel: term -> term -> term
@@ -111,36 +107,24 @@ end
 structure Nominal_Library: NOMINAL_LIBRARY =
 struct
 
-fun mk_sort_of t = @{term "sort_of"} $ t;
+fun mk_sort_of t = \<^Const>\<open>sort_of for t\<close>;
 
 fun atom_ty ty = ty --> @{typ "atom"};
-fun atom_const ty = Const (@{const_name "atom"}, atom_ty ty)
+fun atom_const ty = \<^Const>\<open>atom ty\<close>
 fun mk_atom_ty ty t = atom_const ty $ t;
 fun mk_atom t = mk_atom_ty (fastype_of t) t;
 
 fun mk_atom_set_ty ty t =
-  let
-    val atom_ty = HOLogic.dest_setT ty
-    val img_ty = (atom_ty --> @{typ atom}) --> ty --> @{typ "atom set"};
-  in
-    Const (@{const_name image}, img_ty) $ atom_const atom_ty $ t
-  end
+  let val atom_ty = HOLogic.dest_setT ty
+  in \<^Const>\<open>image atom_ty \<^Type>\<open>atom\<close> for \<open>atom_const atom_ty\<close> t\<close> end
 
 fun mk_atom_fset_ty ty t =
-  let
-    val atom_ty = dest_fsetT ty
-    val fmap_ty = (atom_ty --> @{typ atom}) --> ty --> @{typ "atom fset"};
-  in
-    Const (@{const_name fimage}, fmap_ty) $ atom_const atom_ty $ t
-  end
+  let val atom_ty = dest_fsetT ty
+  in \<^Const>\<open>fimage atom_ty \<^Type>\<open>atom\<close> for \<open>atom_const atom_ty\<close> t\<close> end
 
 fun mk_atom_list_ty ty t =
-  let
-    val atom_ty = dest_listT ty
-    val map_ty = (atom_ty --> @{typ atom}) --> ty --> @{typ "atom list"}
-  in
-    Const (@{const_name map}, map_ty) $ atom_const atom_ty $ t
-  end
+  let val atom_ty = dest_listT ty
+  in \<^Const>\<open>map atom_ty \<^Type>\<open>atom\<close> for \<open>atom_const atom_ty\<close> t\<close> end
 
 fun mk_atom_set t = mk_atom_set_ty (fastype_of t) t
 fun mk_atom_fset t = mk_atom_fset_ty (fastype_of t) t
@@ -161,13 +145,13 @@ fun to_set t = to_set_ty (fastype_of t) t
 fun is_atom ctxt ty =
   Sign.of_sort (Proof_Context.theory_of ctxt) (ty, @{sort at_base})
 
-fun is_atom_set ctxt (Type ("fun", [ty, @{typ bool}])) = is_atom ctxt ty
+fun is_atom_set ctxt \<^Type>\<open>fun ty \<^Type>\<open>bool\<close>\<close> = is_atom ctxt ty
   | is_atom_set _ _ = false;
 
-fun is_atom_fset ctxt (Type (@{type_name "fset"}, [ty])) = is_atom ctxt ty
+fun is_atom_fset ctxt \<^Type>\<open>fset ty\<close> = is_atom ctxt ty
   | is_atom_fset _ _ = false;
 
-fun is_atom_list ctxt (Type (@{type_name "list"}, [ty])) = is_atom ctxt ty
+fun is_atom_list ctxt \<^Type>\<open>list ty\<close> = is_atom ctxt ty
   | is_atom_list _ _ = false
 
 
@@ -186,7 +170,7 @@ fun atomify_ty ctxt ty t =
 
 fun setify_ty ctxt ty t =
   if is_atom ctxt ty
-    then HOLogic.mk_set @{typ atom} [mk_atom_ty ty t]
+    then HOLogic.mk_set \<^Type>\<open>atom\<close> [mk_atom_ty ty t]
   else if is_atom_set ctxt ty
     then mk_atom_set_ty ty t
   else if is_atom_fset ctxt ty
@@ -197,7 +181,7 @@ fun setify_ty ctxt ty t =
 
 fun listify_ty ctxt ty t =
   if is_atom ctxt ty
-    then HOLogic.mk_list @{typ atom} [mk_atom_ty ty t]
+    then HOLogic.mk_list \<^Type>\<open>atom\<close> [mk_atom_ty ty t]
   else if is_atom_list ctxt ty
     then mk_atom_list_ty ty t
   else raise TERM ("listify: term is not an atom or list of atoms", [t])
@@ -206,33 +190,29 @@ fun atomify ctxt t = atomify_ty ctxt (fastype_of t) t
 fun setify ctxt t  = setify_ty ctxt (fastype_of t) t
 fun listify ctxt t = listify_ty ctxt (fastype_of t) t
 
-fun fresh_ty ty = [@{typ atom}, ty] ---> @{typ bool}
-fun fresh_const ty = Const (@{const_name fresh}, fresh_ty ty)
+fun fresh_const ty = \<^Const>\<open>fresh ty\<close>
 fun mk_fresh_ty ty t1 t2 = fresh_const ty $ t1 $ t2
 fun mk_fresh t1 t2 = mk_fresh_ty (fastype_of t2) t1 t2
 
-fun fresh_star_ty ty = [@{typ "atom set"}, ty] ---> @{typ bool}
-fun fresh_star_const ty = Const (@{const_name fresh_star}, fresh_star_ty ty)
+fun fresh_star_const ty = \<^Const>\<open>fresh_star ty\<close>
 fun mk_fresh_star_ty ty t1 t2 = fresh_star_const ty $ t1 $ t2
 fun mk_fresh_star t1 t2 = mk_fresh_star_ty (fastype_of t2) t1 t2
 
-fun supp_ty ty = ty --> @{typ "atom set"};
-fun supp_const ty = Const (@{const_name supp}, supp_ty ty)
+fun supp_const ty = \<^Const>\<open>supp ty\<close>
 fun mk_supp_ty ty t = supp_const ty $ t
 fun mk_supp t = mk_supp_ty (fastype_of t) t
 
-fun supp_rel_ty ty = ([ty, ty] ---> @{typ bool}) --> ty --> @{typ "atom set"};
-fun supp_rel_const ty = Const (@{const_name supp_rel}, supp_rel_ty ty)
+fun supp_rel_const ty = \<^Const>\<open>supp_rel ty\<close>
 fun mk_supp_rel_ty ty r t = supp_rel_const ty $ r $ t
 fun mk_supp_rel r t = mk_supp_rel_ty (fastype_of t) r t
 
-fun supports_const ty = Const (@{const_name supports}, [@{typ "atom set"}, ty] ---> @{typ bool});
+fun supports_const ty = \<^Const>\<open>supports ty\<close>;
 fun mk_supports_ty ty t1 t2 = supports_const ty $ t1 $ t2;
 fun mk_supports t1 t2 = mk_supports_ty (fastype_of t2) t1 t2;
 
-fun finite_const ty = Const (@{const_name finite}, ty --> @{typ bool})
+fun finite_const ty = \<^Const>\<open>finite ty\<close>
 fun mk_finite_ty ty t = finite_const ty $ t
-fun mk_finite t = mk_finite_ty (fastype_of t) t
+fun mk_finite t = mk_finite_ty (HOLogic.dest_setT (fastype_of t)) t
 
 
 (* functions that construct differences, appends and unions
@@ -298,8 +278,9 @@ fun fresh_args ctxt f =
 (* decompses a formula into params, premises and a conclusion *)
 fun strip_full_horn trm =
   let
-    fun strip_outer_params (Const (@{const_name Pure.all}, _) $ Abs (a, T, t)) = strip_outer_params t |>> cons (a, T)
-    | strip_outer_params B = ([], B)
+    fun strip_outer_params \<^Const_>\<open>Pure.all _ for \<open>Abs (a, T, t)\<close>\<close> =
+          strip_outer_params t |>> cons (a, T)
+      | strip_outer_params B = ([], B)
 
     val (params, body) = strip_outer_params trm
     val (prems, concl) = Logic.strip_horn body
@@ -364,24 +345,15 @@ val size_ss =
 
 val natT = @{typ nat}
 
-fun size_prod_const T1 T2 =
-  let
-    val T1_fun = T1 --> natT
-    val T2_fun = T2 --> natT
-    val prodT = HOLogic.mk_prodT (T1, T2)
-  in
-    Const (@{const_name size_prod}, [T1_fun, T2_fun, prodT] ---> natT)
-  end
-
-fun snd_const T1 T2 =
-  Const (@{const_name Product_Type.snd}, HOLogic.mk_prodT (T1, T2) --> T2)
+fun size_prod_const T1 T2 = \<^Const>\<open>size_prod T1 T2\<close>
+fun snd_const T1 T2 = \<^Const>\<open>Product_Type.snd T1 T2\<close>
 
 
 fun mk_measure_trm f ctxt T =
   HOLogic.dest_setT T
   |> fst o HOLogic.dest_prodT
   |> f
-  |> curry (op $) (Const (@{const_name "measure"}, dummyT))
+  |> curry (op $) \<^Const>\<open>measure dummyT\<close>
   |> Syntax.check_term ctxt
 
 (* wf-goal arising in induction_schema *)
@@ -389,10 +361,10 @@ fun prove_termination_ind ctxt =
   let
     fun mk_size_measure T =
       case T of
-        (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
-           Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
-      | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
-           HOLogic.mk_comp (mk_size_measure T2, snd_const T1 T2)
+        \<^Type>\<open>sum T1 T2\<close> =>
+          Sum_Tree.mk_sumcase T1 T2 \<^Type>\<open>nat\<close> (mk_size_measure T1) (mk_size_measure T2)
+      | \<^Type>\<open>prod T1 T2\<close> =>
+          HOLogic.mk_comp (mk_size_measure T2, snd_const T1 T2)
       | _ => HOLogic.size_const T
 
     val measure_trm = mk_measure_trm (mk_size_measure) ctxt
@@ -405,10 +377,10 @@ fun prove_termination_fun size_simps ctxt =
 let
   fun mk_size_measure T =
     case T of
-      (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
-         Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
-    | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
-         size_prod_const T1 T2 $ (mk_size_measure T1) $ (mk_size_measure T2)
+      \<^Type>\<open>sum T1 T2\<close> =>
+        Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
+    | \<^Type>\<open>prod T1 T2\<close> =>
+        size_prod_const T1 T2 $ (mk_size_measure T1) $ (mk_size_measure T2)
     | _ => HOLogic.size_const T
 
   val measure_trm = mk_measure_trm (mk_size_measure) ctxt
@@ -472,13 +444,13 @@ fun map_thm ctxt f tac thm =
 
  split_conj_i picks out the part R or P part
 *)
-fun split_conj1 names (Const (@{const_name "conj"}, _) $ f1 $ _) =
+fun split_conj1 names \<^Const_>\<open>conj for f1 _\<close> =
   (case head_of f1 of
      Const (name, _) => if member (op =) names name then SOME f1 else NONE
    | _ => NONE)
 | split_conj1 _ _ = NONE;
 
-fun split_conj2 names (Const (@{const_name "conj"}, _) $ f1 $ f2) =
+fun split_conj2 names \<^Const_>\<open>conj for f1 f2\<close> =
   (case head_of f1 of
      Const (name, _) => if member (op =) names name then SOME f2 else NONE
    | _ => NONE)
@@ -503,8 +475,8 @@ fun conj_tac ctxt tac i =
   let
      fun select (trm, i) =
        case trm of
-         @{term "Trueprop"} $ t' => select (t', i)
-       | @{term "(&)"} $ _ $ _ =>
+         \<^Const_>\<open>Trueprop for t'\<close> => select (t', i)
+       | \<^Const_>\<open>conj for _ _\<close> =>
           EVERY' [resolve_tac ctxt @{thms conjI}, RANGE [conj_tac ctxt tac, conj_tac ctxt tac]] i
        | _ => tac i
   in

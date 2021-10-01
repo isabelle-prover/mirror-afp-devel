@@ -114,21 +114,12 @@ fun find_calls tree =
 
 (* nominal *)
 fun mk_eqvt_at (f_trm, arg_trm) =
-  let
-    val f_ty = fastype_of f_trm
-    val arg_ty = domain_type f_ty
-  in
-    Const (@{const_name eqvt_at}, [f_ty, arg_ty] ---> @{typ bool}) $ f_trm $ arg_trm
-    |> HOLogic.mk_Trueprop
-  end
+  let val (A, B) = dest_funT (fastype_of f_trm)
+  in \<^Const>\<open>Trueprop for \<^Const>\<open>eqvt_at A B for f_trm arg_trm\<close>\<close> end
 
 fun mk_eqvt trm =
-  let
-    val ty = fastype_of trm
-  in
-    Const (@{const_name eqvt}, ty --> @{typ bool}) $ trm
-    |> HOLogic.mk_Trueprop
-  end
+  let val ty = fastype_of trm
+  in \<^Const>\<open>Trueprop for \<open>\<^Const>\<open>eqvt ty for trm\<close>\<close>\<close> end
 
 fun mk_inv inv (f_trm, arg_trm) =
   betapplys (inv, [arg_trm, (f_trm $ arg_trm)])
@@ -547,10 +538,11 @@ fun prove_stuff ctxt
     val Globals {h, domT, ranT, x, ...} = globals
 
     (* Inductive Hypothesis: !!z. (z,x):R ==> EX!y. (z,y):G *)
-    val ihyp = Logic.all_const domT $ Abs ("z", domT,
-      Logic.mk_implies (HOLogic.mk_Trueprop (R $ Bound 0 $ x),
-        HOLogic.mk_Trueprop (Const (@{const_name Ex1}, (ranT --> boolT) --> boolT) $
-          Abs ("y", ranT, G $ Bound 1 $ Bound 0))))
+    val ihyp =
+      \<^Const>\<open>Pure.all domT for \<open>Abs ("z", domT,
+        Logic.mk_implies
+         (HOLogic.mk_Trueprop (R $ Bound 0 $ x),
+          HOLogic.mk_Trueprop \<^Const>\<open>Ex1 ranT for \<open>Abs ("y", ranT, G $ Bound 1 $ Bound 0)\<close>\<close>\<close>\<close>))
       |> Thm.cterm_of ctxt
 
     val ihyp_thm = Thm.assume ihyp |> Thm.forall_elim_vars 0
@@ -662,7 +654,7 @@ fun define_graph Gname fvar domT ranT clauses RCss lthy =
 fun define_function fdefname (fname, mixfix) domT ranT G default lthy =
   let
     val f_def =
-      Abs ("x", domT, Const (@{const_name Fun_Def.THE_default}, ranT --> (ranT --> boolT) --> ranT)
+      Abs ("x", domT, \<^Const>\<open>Fun_Def.THE_default ranT\<close>
         $ (default $ Bound 0) $ Abs ("y", ranT, G $ Bound 1 $ Bound 0))
       |> Syntax.check_term lthy
   in
@@ -948,11 +940,9 @@ fun mk_nest_term_rule ctxt globals R R_cases clauses =
     val R' = Free ("R", fastype_of R)
 
     val Rrel = Free ("R", HOLogic.mk_setT (HOLogic.mk_prodT (domT, domT)))
-    val inrel_R = Const (@{const_name Fun_Def.in_rel},
-      HOLogic.mk_setT (HOLogic.mk_prodT (domT, domT)) --> fastype_of R) $ Rrel
+    val inrel_R = \<^Const>\<open>Fun_Def.in_rel domT domT for Rrel\<close>
 
-    val wfR' = HOLogic.mk_Trueprop (Const (@{const_name Wellfounded.wfP},
-      (domT --> domT --> boolT) --> boolT) $ R')
+    val wfR' = \<^Const>\<open>Trueprop for \<^Const>\<open>Wellfounded.wfP domT for R'\<close>\<close>
       |> Thm.cterm_of ctxt (* "wf R'" *)
 
     (* Inductive Hypothesis: !!z. (z,x):R' ==> z : acc R *)

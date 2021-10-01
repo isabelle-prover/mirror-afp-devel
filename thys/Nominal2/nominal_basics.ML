@@ -35,7 +35,6 @@ sig
   val mk_All: (string * typ) -> term -> term
   val mk_exists: (string * typ) -> term -> term
 
-  val case_sum_const: typ -> typ -> typ -> term
   val mk_case_sum: term -> term -> term
 
   val mk_equiv: thm -> thm
@@ -134,10 +133,10 @@ fun fold_left f [] z = z
 fun is_true @{term "Trueprop True"} = true
   | is_true _ = false
 
-fun dest_listT (Type (@{type_name list}, [T])) = T
+fun dest_listT \<^Type>\<open>list T\<close> = T
   | dest_listT T = raise TYPE ("dest_listT: list type expected", [T], [])
 
-fun dest_fsetT (Type (@{type_name fset}, [T])) = T
+fun dest_fsetT \<^Type>\<open>fset T\<close> = T
   | dest_fsetT T = raise TYPE ("dest_fsetT: fset type expected", [T], [])
 
 fun mk_id trm = HOLogic.id_const (fastype_of trm) $ trm
@@ -148,16 +147,11 @@ fun mk_All (a, T) t =  HOLogic.all_const T $ Abs (a, T, t)
 
 fun mk_exists (a, T) t =  HOLogic.exists_const T $ Abs (a, T, t)
 
-fun case_sum_const ty1 ty2 ty3 =
-  Const (@{const_name case_sum}, [ty1 --> ty3, ty2 --> ty3, Type (@{type_name sum}, [ty1, ty2])] ---> ty3)
-
 fun mk_case_sum trm1 trm2 =
   let
     val ([ty1], ty3) = strip_type (fastype_of trm1)
     val ty2 = domain_type (fastype_of trm2)
-  in
-    case_sum_const ty1 ty2 ty3 $ trm1 $ trm2
-  end
+  in \<^Const>\<open>case_sum ty1 ty2 ty3 for trm1 trm2\<close> end
 
 fun mk_equiv r = r RS @{thm eq_reflection}
 fun safe_mk_equiv r = mk_equiv r handle Thm.THM _ => r
@@ -166,12 +160,12 @@ fun mk_minus p = @{term "uminus::perm => perm"} $ p
 
 fun mk_plus p q = @{term "plus::perm => perm => perm"} $ p $ q
 
-fun perm_ty ty = @{typ "perm"} --> ty --> ty
-fun perm_const ty  = Const (@{const_name "permute"}, perm_ty ty)
+fun perm_ty ty = \<^typ>\<open>perm\<close> --> ty --> ty
+fun perm_const ty  = \<^Const>\<open>permute ty\<close>
 fun mk_perm_ty ty p trm = perm_const ty $ p $ trm
 fun mk_perm p trm = mk_perm_ty (fastype_of trm) p trm
 
-fun dest_perm (Const (@{const_name "permute"}, _) $ p $ t) = (p, t)
+fun dest_perm \<^Const_>\<open>permute _ for p t\<close> = (p, t)
   | dest_perm t = raise TERM ("dest_perm", [t])
 
 

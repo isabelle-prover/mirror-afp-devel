@@ -459,7 +459,7 @@ let
 
   (* filters the theorems that are of the form "qfv = supp" *)
   val qfv_names = map (fst o dest_Const) qfvs
-  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) =
+  fun is_qfv_thm \<^Const_>\<open>Trueprop for \<^Const_>\<open>HOL.eq _ for \<open>Const (lhs, _)\<close> _\<close>\<close> =
     member (op =) qfv_names lhs
   | is_qfv_thm _ = false
 

@@ -122,7 +122,7 @@ fun trace_info_conv ctxt ctrm =
   let
     val trm = Thm.term_of ctrm
     val _ = case (head_of trm) of
-        @{const "Trueprop"} => ()
+        \<^Const_>\<open>Trueprop\<close> => ()
       | _ => warning ("Analysing term " ^ Syntax.string_of_term ctxt trm)
   in
     Conv.no_conv ctrm
@@ -131,7 +131,7 @@ fun trace_info_conv ctxt ctrm =
 (* conversion for applications *)
 fun eqvt_apply_conv ctrm =
   case Thm.term_of ctrm of
-    Const (@{const_name "permute"}, _) $ _ $ (_ $ _) =>
+    \<^Const_>\<open>permute _ for _ \<open>_ $ _\<close>\<close> =>
       let
         val (perm, t) = Thm.dest_comb ctrm
         val (_, p) = Thm.dest_comb perm
@@ -148,7 +148,7 @@ fun eqvt_apply_conv ctrm =
 (* conversion for lambdas *)
 fun eqvt_lambda_conv ctrm =
   case Thm.term_of ctrm of
-    Const (@{const_name "permute"}, _) $ _ $ (Abs _) =>
+    \<^Const_>\<open>permute _ for _ \<open>Abs _\<close>\<close> =>
       Conv.rewr_conv @{thm eqvt_lambda} ctrm
   | _ => Conv.no_conv ctrm
 
@@ -168,8 +168,8 @@ fun progress_info_conv ctxt strict_flag excluded ctrm =
 
     val _ =
       case Thm.term_of ctrm of
-        Const (@{const_name "permute"}, _) $ _ $ (trm as Const _) => msg trm
-      | Const (@{const_name "permute"}, _) $ _ $ (trm as _ $ _) => msg trm
+        \<^Const_>\<open>permute _ for _ \<open>trm as Const _\<close>\<close> => msg trm
+      | \<^Const_>\<open>permute _ for _ \<open>trm as _ $ _\<close>\<close> => msg trm
       | _ => ()
   in
     Conv.all_conv ctrm
