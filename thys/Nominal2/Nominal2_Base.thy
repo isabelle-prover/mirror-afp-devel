@@ -3339,7 +3339,7 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = \<open>
 
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of
-           _ $ (Const (@{const_name fresh}, _) $ (Const (@{const_name atom}, _) $ atm) $ _) => SOME (atm) | _ => NONE)
+           _ $ \<^Const_>\<open>fresh _ for \<^Const_>\<open>atom _ for atm\<close> _\<close> => SOME atm | _ => NONE)
       |> distinct (op =)
 
      fun get_thm atm =
