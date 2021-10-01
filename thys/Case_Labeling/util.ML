@@ -49,19 +49,18 @@ fun none_inf_ord ord (SOME x, SOME y) = ord (x, y)
   | none_inf_ord _ (SOME _, NONE) = LESS;
 
 
-fun dest_option (Const (@{const_name "None"}, _)) = NONE
-  | dest_option (Const (@{const_name "Some"}, _) $ t) = SOME t
+fun dest_option \<^Const_>\<open>None _\<close> = NONE
+  | dest_option \<^Const_>\<open>Some _ for t\<close> = SOME t
   | dest_option t = raise TERM ("dest_option", [t])
 
-fun dest_bool @{const "True"} = true
-  | dest_bool @{const "False"} = false
+fun dest_bool \<^Const_>\<open>True\<close> = true
+  | dest_bool \<^Const>\<open>False\<close> = false
   | dest_bool t = raise TERM ("dest_bool", [t])
 
-fun dest_pair (Const (@{const_name "Pair"}, _) $ t $ u) = (t,u)
+fun dest_pair \<^Const_>\<open>Pair _ _ for t u\<close> = (t,u)
   | dest_pair t = raise TERM ("dest_pair", [t])
 
-fun dest_tuple (Const (@{const_name Pair}, _) $ t1 $ t2) =
-      t1 :: dest_tuple t2
+fun dest_tuple \<^Const_>\<open>Pair _ _ for t1 t2\<close> = t1 :: dest_tuple t2
   | dest_tuple t = [t]
 
 
