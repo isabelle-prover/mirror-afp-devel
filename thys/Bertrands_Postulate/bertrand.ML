@@ -24,7 +24,7 @@ type cache = (int * thm) list
 datatype primepow_cert = Primepow of int * int | NotPrimepow of int * int
 datatype primepow_thm = PrimepowThm of thm * thm | NotPrimepowThm of thm
 
-val mk_nat = HOLogic.mk_number @{typ nat}
+val mk_nat = HOLogic.mk_number \<^Type>\<open>nat\<close>
 
 fun mk_primepow_cert n =
   let
@@ -40,12 +40,12 @@ fun mk_primepow_cert n =
 
 fun bool_thm_to_eq_thm thm =
   case HOLogic.dest_Trueprop (Thm.concl_of thm) of
-    @{term "HOL.Not"} $ _ => thm RS @{thm Eq_FalseI}
+    \<^Const_>\<open>Not for _\<close> => thm RS @{thm Eq_FalseI}
   | _ => thm RS @{thm Eq_TrueI}
 
 fun prime_conv ctxt cache ct =
   case Thm.term_of ct of
-    @{const "HOL.Trueprop"} $ (@{term "prime :: nat \<Rightarrow> bool"} $ p) =>
+    \<^Const_>\<open>Trueprop for \<^Const>\<open>prime \<^Type>\<open>nat\<close> for p\<close>\<close> =>
       Pratt.prove_prime cache (snd (HOLogic.dest_number p)) ctxt
       |> fst |> the |> bool_thm_to_eq_thm
     | _ => raise CTERM ("prime_conv", [ct])
@@ -145,10 +145,9 @@ fun prove_psi ctxt n =
             |> Thm.concl_of |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> snd
           val y' = HOLogic.dest_number y |> snd
           val eq_thm1 = prove_nat_eq ctxt
-            (@{term "(+) :: nat \<Rightarrow> _"} $ mk_nat (k - 1) $ @{term "1 :: nat"}, mk_nat k)
+            (\<^Const>\<open>plus \<^Type>\<open>nat\<close>\<close> $ mk_nat (k - 1) $ @{term "1 :: nat"}, mk_nat k)
           val z = if y' = 1 then x else mk_nat (x' * y')
-          val eq_thm2 = prove_nat_eq ctxt
-            (@{term "(*) :: nat => _"} $ x $ y, z)
+          val eq_thm2 = prove_nat_eq ctxt (\<^Const>\<open>times \<^Type>\<open>nat\<close> for x y\<close>, z)
           val thm' = @{thm eval_psi_aux2} OF [thm, pre_mangoldt_thm, eq_thm1, eq_thm2]
         in
           go thm' z (x' * y') (k + 1) ((k - 1, x', thm) :: acc)
