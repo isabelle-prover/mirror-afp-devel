@@ -46,8 +46,10 @@ object profile extends isabelle.CI_Profile
 
     def send(): Unit = {
       val user = System.getProperty("mail.smtp.user")
-      val from = System.getProperty("mail.smtp.from")
+      val sender = System.getProperty("mail.smtp.from")
       val password = System.getProperty("mail.smtp.password")
+
+      System.setProperty("mail.smtp.ssl.protocols", "TLSv1.2")
 
       val authenticator = new Authenticator() {
         override def getPasswordAuthentication() =
@@ -56,8 +58,8 @@ object profile extends isabelle.CI_Profile
 
       val session = Session.getDefaultInstance(System.getProperties(), authenticator)
       val message = new MimeMessage(session)
-      message.setFrom(new InternetAddress(from, "Isabelle/Jenkins"))
-      message.setSender(new InternetAddress(user))
+      message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
+      message.setSender(new InternetAddress(sender))
       message.setSubject(subject)
       message.setText(text, "UTF-8")
       message.setSentDate(new java.util.Date())
