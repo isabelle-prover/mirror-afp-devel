@@ -75,8 +75,7 @@ fun dest_rules (trips, _, others) =
 fun get_key trip_conv t = let
     val t' = Thm.concl_of t |> trip_conv (Thm.theory_of_thm t)
         |> Envir.beta_eta_contract;
-  in case t' of Const (@{const_name Trueprop}, _) $
-      (Const (@{const_name triple_judgement}, _) $ _ $ f $ _) => SOME f
+  in case t' of \<^Const_>\<open>Trueprop for \<open>\<^Const_>\<open>triple_judgement _ _ for _ f _\<close>\<close>\<close> => SOME f
     | _ => NONE end;
 
 fun add_rule_inner trip_conv t (trips, n, others) = (
@@ -232,9 +231,8 @@ fun resolve_ruleset_tac ctxt rs used_rules_ref n t =
   in case
     Thm.cprem_of t n |> Thm.term_of |> snd (#trips rs) (Thm.theory_of_thm t)
         |> Envir.beta_eta_contract |> Logic.strip_assums_concl
-     handle THM _ => @{const True}
-  of Const (@{const_name Trueprop}, _) $
-      (Const (@{const_name triple_judgement}, _) $ _ $ f $ _) => let
+     handle THM _ => \<^Const>\<open>True\<close>
+  of \<^Const_>\<open>Trueprop for \<^Const_>\<open>triple_judgement _ _ for _ f _\<close>\<close> => let
         val ts = Net.unify_term (#1 (#rules rs)) f |> order_list |> rev;
         val combapps = Seq.maps (fn combapp => Seq.map (fn combapp' => (combapp, combapp')) (rtac combapp n t))
                                 (Seq.of_list (#combs rs)) |> Seq.list_of |> Seq.of_list;
