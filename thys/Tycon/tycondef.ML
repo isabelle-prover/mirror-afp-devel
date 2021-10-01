@@ -85,8 +85,6 @@ fun argumentTs (Type (@{type_name app}, [T, Type (_, Ts)])) = Ts @ [T]
   | argumentTs (Type (_, Ts)) = Ts
   | argumentTs T = []
 
-fun mk_u_defl t = mk_capply (@{const "u_defl"}, t)
-
 fun emb_const T = Const (@{const_name emb}, T ->> udomT)
 fun prj_const T = Const (@{const_name prj}, udomT ->> T)
 fun coerce_const (T, U) = mk_cfcomp (prj_const U, emb_const T)
