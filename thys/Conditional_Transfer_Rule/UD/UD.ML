@@ -109,7 +109,7 @@ fun map_sorts ctxt map_sortsT thm =
       |> map (Term.map_atyps (map_sortsT (Proof_Context.theory_of ctxt)))
       |> map (Thm.ctyp_of ctxt)
       |> curry op~~ Ts
-  in Drule.instantiate_normalize (instTs, []) thm end;
+  in Drule.instantiate_normalize (TVars.make instTs, Vars.empty) thm end;
 
 fun trivial_ud thy b cid' =
   let

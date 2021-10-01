@@ -60,7 +60,7 @@ fun unvarify_local_fact ctxt thms =
         map 
           (
             fn v as ((a, i), T) =>
-              let val T' = Term_Subst.instantiateT instT T
+              let val T' = Term_Subst.instantiateT (TVars.make instT) T
               in 
                 (
                   ((a, i), T'), 
@@ -76,7 +76,7 @@ fun unvarify_local_fact ctxt thms =
       map 
         (
           Drule.instantiate_normalize 
-            (map (apsnd (Thm.ctyp_of ctxt)) instT, insts)
+            (TVars.make (map (apsnd (Thm.ctyp_of ctxt)) instT), Vars.make insts)
         ) 
         thms     
   in (thms', ctxt''''') end;
