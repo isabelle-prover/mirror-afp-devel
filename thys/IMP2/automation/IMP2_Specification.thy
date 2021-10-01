@@ -78,10 +78,10 @@ ML \<open> structure IMP_Annotations
         
       in 
         case (Rs,Vs,Is) of
-          ([],[],[]) => mpt @{const While}
-        | ([],[],[I]) => mpt @{const WHILE_annotI} $ I
-        | ([],[V],[I]) => mpt @{const WHILE_annotVI} $ V $ I
-        | ([R],[V],[I]) => mpt @{const WHILE_annotRVI ('a)} $ R $ V $ I
+          ([],[],[]) => mpt \<^Const>\<open>While\<close>
+        | ([],[],[I]) => mpt \<^Const>\<open>WHILE_annotI for I\<close>
+        | ([],[V],[I]) => mpt \<^Const>\<open>WHILE_annotVI for V I\<close>
+        | ([R],[V],[I]) => mpt \<^Const>\<open>WHILE_annotRVI \<^typ>\<open>'a\<close> for R V I\<close>
         | _ => error "Illegal combination of annotations to while loop. The legal ones are: None, I, VI, RVI"
       
       end
@@ -226,7 +226,7 @@ ML \<open> structure VCG_Htriple_Syntax
     
     fun mk_htriple' total env (pre,prog_t,post) = let    
       (* Assemble Hoare-triple *)
-      val HT_const = if total then @{const HT'} else @{const HT'_partial}
+      val HT_const = if total then \<^Const>\<open>HT'\<close> else \<^Const>\<open>HT'_partial\<close>
       val res = HT_const$ env $pre$prog_t$post
     in
       res
@@ -910,8 +910,7 @@ ML \<open>structure Recursive_Program_Specification
         val thetaT = @{typ "'a \<Theta>elem_t"} |> typ_subst_atomic [(@{typ 'a},relT)]
         val theta = map mk_theta_entry specs |> HOLogic.mk_set thetaT
         
-        val HT'setC = @{const HT'set ('a)} |> subst_atomic_types [(@{typ 'a},relT)]
-        val goal = HT'setC $ pe_var $ theta
+        val goal = \<^Const>\<open>HT'set relT\<close> $ pe_var $ theta
           |> HOLogic.mk_Trueprop
         
         val _ = trace "(* Start proof *)"
