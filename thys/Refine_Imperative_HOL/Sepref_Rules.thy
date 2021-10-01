@@ -1165,9 +1165,9 @@ begin
           | atomize_prem _ = fail "Non-atomic premises"
     
         (* Make HOL conjunction list *)  
-        fun mk_conjs [] = @{const True}
+        fun mk_conjs [] = \<^Const>\<open>True\<close>
           | mk_conjs [p] = p
-          | mk_conjs (p::ps) = HOLogic.mk_binop @{const_name "HOL.conj"} (p,mk_conjs ps)
+          | mk_conjs (p::ps) = \<^Const>\<open>conj for p \<open>mk_conjs ps\<close>\<close>
     
     
         (***********************)      
