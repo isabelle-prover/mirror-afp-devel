@@ -2952,7 +2952,7 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = \<open>fn _ => fn ctx
             (let
                val atms = a :: HOLogic.strip_tuple b
              in
-               member ((=)) atms lhs andalso member ((=)) atms rhs
+               member (op =) atms lhs andalso member (op =) atms rhs
              end)
             | _ => false)
          |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
@@ -3343,7 +3343,7 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = \<open>
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of
            _ $ (Const (cfresh, _) $ (Const (catom, _) $ atm) $ _) => SOME (atm) | _ => NONE)
-      |> distinct ((=))
+      |> distinct (op =)
 
      fun get_thm atm =
        let

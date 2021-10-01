@@ -620,7 +620,7 @@ in
 end
 
 fun index_lookup xs x =
-  case AList.lookup ((=)) xs x of
+  case AList.lookup (op =) xs x of
     SOME x => x
   | NONE => error ("Cannot find " ^ x ^ " as argument annotation.");
 \<close>
@@ -668,7 +668,7 @@ ML \<open>
 fun included i bcs =
 let
   fun incl (BC (_, bns, bds)) =
-    member (op =) (map snd bns) i orelse member (=) bds i
+    member (op =) (map snd bns) i orelse member (op =) bds i
 in
   exists incl bcs
 end
