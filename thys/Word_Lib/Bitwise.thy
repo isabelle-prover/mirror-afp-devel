@@ -384,7 +384,7 @@ fun mk_nat_clist ns =
 
 fun upt_conv ctxt ct =
   case Thm.term_of ct of
-    (\<^const>\<open>upt\<close> $ n $ m) =>
+    \<^Const_>\<open>upt for n m\<close> =>
       let
         val (i, j) = apply2 (snd o HOLogic.dest_number) (n, m);
         val ns = map (Numeral.mk_cnumber \<^ctyp>\<open>nat\<close>) (i upto (j - 1))
@@ -406,7 +406,7 @@ val expand_upt_simproc =
 
 fun word_len_simproc_fn ctxt ct =
   (case Thm.term_of ct of
-    Const (\<^const_name>\<open>len_of\<close>, _) $ t =>
+    \<^Const_>\<open>len_of _ for t\<close> =>
      (let
         val T = fastype_of t |> dest_Type |> snd |> the_single
         val n = Numeral.mk_cnumber \<^ctyp>\<open>nat\<close> (Word_Lib.dest_binT T);

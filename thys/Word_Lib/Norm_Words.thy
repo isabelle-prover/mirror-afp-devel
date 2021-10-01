@@ -24,19 +24,19 @@ lemma neg_num_bintr:
   by transfer simp
 
 ML \<open>
-  fun is_refl (Const (@{const_name Pure.eq}, _) $ x $ y) = (x = y)
+  fun is_refl \<^Const_>\<open>Pure.eq _ for x y\<close> = (x = y)
     | is_refl _ = false;
 
-  fun signed_dest_wordT (Type (@{type_name word}, [Type (@{type_name signed}, [T])])) = Word_Lib.dest_binT T
+  fun signed_dest_wordT \<^Type>\<open>word \<^Type>\<open>signed T\<close>\<close> = Word_Lib.dest_binT T
     | signed_dest_wordT T = Word_Lib.dest_wordT T
 
   fun typ_size_of t = signed_dest_wordT (type_of (Thm.term_of t));
 
-  fun num_len (Const (@{const_name Num.Bit0}, _) $ n) = num_len n + 1
-    | num_len (Const (@{const_name Num.Bit1}, _) $ n) = num_len n + 1
-    | num_len (Const (@{const_name Num.One}, _)) = 1
-    | num_len (Const (@{const_name numeral}, _) $ t) = num_len t
-    | num_len (Const (@{const_name uminus}, _) $ t) = num_len t
+  fun num_len \<^Const_>\<open>Num.Bit0 for n\<close> = num_len n + 1
+    | num_len \<^Const_>\<open>Num.Bit1 for n\<close> = num_len n + 1
+    | num_len \<^Const_>\<open>Num.One\<close> = 1
+    | num_len \<^Const_>\<open>numeral _ for t\<close> = num_len t
+    | num_len \<^Const_>\<open>uminus _ for t\<close> = num_len t
     | num_len t = raise TERM ("num_len", [t])
 
   fun unsigned_norm is_neg _ ctxt ct =
