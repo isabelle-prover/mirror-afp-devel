@@ -50,10 +50,10 @@ val showsT = @{typ "shows"}
 fun showspT T = @{typ nat} --> T --> showsT
 val showsify_typ = map_atyps (K showsT)
 val showsify = map_types showsify_typ
-fun show_law_const T = Const (@{const_name show_law}, showspT T --> T --> HOLogic.boolT)
-fun shows_prec_const T = Const (@{const_name shows_prec}, showspT T)
-fun shows_list_const T = Const (@{const_name shows_list}, HOLogic.listT T --> showsT)
-fun showsp_list_const T = Const (@{const_name showsp_list}, showspT T --> showspT (HOLogic.listT T))
+fun show_law_const T = \<^Const>\<open>show_law T\<close>
+fun shows_prec_const T = \<^Const>\<open>shows_prec T\<close>
+fun shows_list_const T = \<^Const>\<open>shows_list T\<close>
+fun showsp_list_const T = \<^Const>\<open>showsp_list T\<close>
 val dest_showspT = binder_types #> tl #> hd
 
 type info =
@@ -99,11 +99,11 @@ fun register_foreign_showsp T show =
   in register_foreign_partial_and_full_showsp tyco 0 show show NONE (HOLogic.id_const T) NONE [] end
 
 fun shows_string c =
-  @{const "shows_string"} $ HOLogic.mk_string (Long_Name.base_name c)
+  \<^Const>\<open>shows_string for \<open>HOLogic.mk_string (Long_Name.base_name c)\<close>\<close>
 
 fun mk_shows_parens _ [t] = t
   | mk_shows_parens p ts = Library.foldl1 HOLogic.mk_comp
-      (@{const shows_pl} $ p :: separate @{const shows_space} ts @ [@{const shows_pr} $ p])
+      (\<^Const>\<open>shows_pl for p\<close> :: separate \<^Const>\<open>shows_space\<close> ts @ [\<^Const>\<open>shows_pr for p\<close>])
 
 fun simp_only_tac ctxt ths =
   CHANGED o full_simp_tac (clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps ths)

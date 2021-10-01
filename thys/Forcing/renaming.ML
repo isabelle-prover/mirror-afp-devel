@@ -2,7 +2,7 @@
 structure Renaming = struct
 open Utils
 
-fun sum_ f g m n p = @{const Renaming.sum} $ f $ g $ m $ n $ p
+fun sum_ f g m n p = \<^Const>\<open>Renaming.sum for f g m n p\<close>
 
 fun mk_ren rho rho' ctxt =
   let val rs  = to_ML_list rho
@@ -18,7 +18,7 @@ fun mk_ren rho rho' ctxt =
 
 fun mk_dom_lemma ren rho =
   let val n = rho |> to_ML_list |> length |> mk_ZFnat
-  in eq_ n (@{const domain} $ ren) |> tp
+  in eq_ n \<^Const>\<open>domain for ren\<close> |> tp
 end
 
 fun ren_tc_goal fin ren rho rho' =
@@ -47,7 +47,7 @@ fun ren_action_goal ren rho rho' ctxt =
     let val m_length = m |> to_ML_list |> length |> mk_ZFnat
         val n_length = n |> to_ML_list |> length |> mk_ZFnat
         val p_length = p |> length_
-        val id_fun = @{const id} $ p_length
+        val id_fun = \<^Const>\<open>id for p_length\<close>
         val sum_fun = sum_ f id_fun m_length n_length p_length
         val dom = add_ m_length p_length
         val codom = add_ n_length p_length

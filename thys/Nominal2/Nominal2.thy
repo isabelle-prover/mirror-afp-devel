@@ -459,7 +459,7 @@ let
 
   (* filters the theorems that are of the form "qfv = supp" *)
   val qfv_names = map (fst o dest_Const) qfvs
-  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) =
+  fun is_qfv_thm \<^Const_>\<open>Trueprop for \<^Const_>\<open>HOL.eq _ for \<open>Const (lhs, _)\<close> _\<close>\<close> =
     member (op =) qfv_names lhs
   | is_qfv_thm _ = false
 
@@ -620,7 +620,7 @@ in
 end
 
 fun index_lookup xs x =
-  case AList.lookup ((=)) xs x of
+  case AList.lookup (op =) xs x of
     SOME x => x
   | NONE => error ("Cannot find " ^ x ^ " as argument annotation.");
 \<close>
@@ -668,7 +668,7 @@ ML \<open>
 fun included i bcs =
 let
   fun incl (BC (_, bns, bds)) =
-    member (op =) (map snd bns) i orelse member (=) bds i
+    member (op =) (map snd bns) i orelse member (op =) bds i
 in
   exists incl bcs
 end

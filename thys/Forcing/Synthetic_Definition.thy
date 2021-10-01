@@ -32,7 +32,7 @@ fun prove_sats goal thms thm_auto ctxt =
               THEN TypeCheck.typecheck_tac ctxt')
   end
 
-fun is_mem (@{const mem} $ _ $  _) = true
+fun is_mem \<^Const_>\<open>mem for _ _\<close> = true
   | is_mem _ = false
 
 fun synth_thm_sats def_name term lhs set env hyps vars vs pos thm_auto lthy =
@@ -41,9 +41,9 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val vs' = map (Thm.term_of o #2) vs
     val vars' = map (Thm.term_of o #2) vars
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
-    val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
-    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
-    val concl = @{const IFOL.iff} $ lhs $ rhs
+    val sats = \<^Const>\<open>apply for \<^Const>\<open>satisfies for set r_tm\<close> env\<close>
+    val rhs = \<^Const>\<open>IFOL.eq \<^Type>\<open>i\<close> for sats \<^Const>\<open>succ for \<^Const>\<open>zero\<close>\<close>\<close>
+    val concl = \<^Const>\<open>iff for lhs rhs\<close>
     val g_iff = Logic.list_implies(hyps, Utils.tp concl)
     val thm = prove_sats g_iff thm_refs thm_auto ctxt2
     val name = Binding.name (def_name ^ "_iff_sats")
@@ -59,7 +59,7 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val vars' = map (Thm.term_of o #2) vars
     val tc_attrib = @{attributes [TC]}
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vars'
-    val concl = @{const mem} $ r_tm $ @{const formula}
+    val concl = \<^Const>\<open>mem for r_tm \<^Const>\<open>formula\<close>\<close>
     val g = Logic.list_implies(hyps, Utils.tp concl)
     val thm = prove_tc_form g thm_refs ctxt2
     val name = Binding.name (def_name ^ "_type")
@@ -79,7 +79,7 @@ fun synthetic_def def_name thmref pos tc auto thy =
     val (tm,hyps) = thm_tms |> hd |> pair Thm.concl_of Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
     val ((set,t),env) = rhs |> Utils.dest_sats_frm
-    fun relevant ts (@{const mem} $ t $ _) = not (Term.is_Free t) orelse
+    fun relevant ts \<^Const_>\<open>mem for t _\<close> = not (Term.is_Free t) orelse
           member (op =) ts (t |> Term.dest_Free |> #1)
       | relevant _ _ = false
     val t_vars = sort_strings (Term.add_free_names t [])

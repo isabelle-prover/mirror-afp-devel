@@ -94,7 +94,7 @@ fun raw_equivariance ctxt preds raw_induct intrs =
       ctxt
       |> Variable.import_terms false [Thm.concl_of raw_induct']
       ||>> Variable.variant_fixes ["p"]
-    val pi = Free (raw_pi, @{typ perm})
+    val pi = Free (raw_pi, \<^Type>\<open>perm\<close>)
 
     val preds_with_args = raw_concl
       |> HOLogic.dest_Trueprop

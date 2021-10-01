@@ -31,11 +31,11 @@ fun minus_permute_elim p thm =
   thm RS (Thm.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
 
 (* fixme: move to nominal_library *)
-fun real_head_of (@{term Trueprop} $ t) = real_head_of t
-  | real_head_of (Const (@{const_name Pure.imp}, _) $ _ $ t) = real_head_of t
-  | real_head_of (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = real_head_of t
-  | real_head_of (Const (@{const_name All}, _) $ Abs (_, _, t)) = real_head_of t
-  | real_head_of (Const (@{const_name HOL.induct_forall}, _) $ Abs (_, _, t)) = real_head_of t
+fun real_head_of \<^Const_>\<open>Trueprop for t\<close> = real_head_of t
+  | real_head_of \<^Const_>\<open>Pure.imp for _ t\<close> = real_head_of t
+  | real_head_of \<^Const_>\<open>Pure.all _ for \<open>Abs (_, _, t)\<close>\<close> = real_head_of t
+  | real_head_of \<^Const_>\<open>All _ for \<open>Abs (_, _, t)\<close>\<close> = real_head_of t
+  | real_head_of \<^Const_>\<open>HOL.induct_forall _ for \<open>Abs (_, _, t)\<close>\<close> = real_head_of t
   | real_head_of t = head_of t
 
 
@@ -77,11 +77,10 @@ fun add_p_c p (c, c_ty) trm =
   in
     list_comb (Free (P_name, (c_ty :: ty_args) ---> bool),  c :: args')
     |> (fn t => HOLogic.all_const c_ty $ lambda c t )
-    |> (fn t => HOLogic.all_const @{typ perm} $  lambda p t)
+    |> (fn t => HOLogic.all_const \<^Type>\<open>perm\<close> $  lambda p t)
   end
 
-fun induct_forall_const T =
-  Const (@{const_name HOL.induct_forall}, (T --> @{typ bool}) --> @{typ bool})
+fun induct_forall_const T = \<^Const>\<open>HOL.induct_forall T\<close>
 
 fun mk_induct_forall (a, T) t =
   induct_forall_const T $ Abs (a, T, t)
@@ -133,10 +132,6 @@ fun same_name (Free (a1, _), Free (a2, _)) = (a1 = a2)
   | same_name (Const (a1, _), Const (a2, _)) = (a1 = a2)
   | same_name _ = false
 
-(* fixme: move to nominal_library *)
-fun map7 _ [] [] [] [] [] [] [] = []
-  | map7 f (x :: xs) (y :: ys) (z :: zs) (u :: us) (v :: vs) (r :: rs) (s :: ss) =
-      f x y z u v r s :: map7 f xs ys zs us vs rs ss
 
 (* local abbreviations *)
 
@@ -208,8 +203,8 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
     val conj1 =
       mk_fresh_star (mk_perm (Bound 0) (mk_perm p avoid_trm)) c
     val conj2 =
-      mk_fresh_star_ty @{typ perm} (mk_supp (HOLogic.mk_tuple (map (mk_perm p) concl_args))) (Bound 0)
-    val fresh_goal = mk_exists ("q", @{typ perm}) (HOLogic.mk_conj (conj1, conj2))
+      mk_fresh_star_ty \<^Type>\<open>perm\<close> (mk_supp (HOLogic.mk_tuple (map (mk_perm p) concl_args))) (Bound 0)
+    val fresh_goal = mk_exists ("q", \<^Type>\<open>perm\<close>) (HOLogic.mk_conj (conj1, conj2))
       |> HOLogic.mk_Trueprop
 
     val ss = @{thms finite_supp supp_Pair finite_Un permute_finite} @
@@ -300,7 +295,7 @@ fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param
   {prems, context = ctxt} =
   let
     val cases_tac =
-      map7 (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
+      @{map 7} (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
   in
     EVERY1 [ DETERM o resolve_tac ctxt [raw_induct], RANGE cases_tac ]
   end
@@ -342,7 +337,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
     val ([c_name, a, p], ctxt'') = Variable.variant_fixes ["c", "'a", "p"] ctxt'
     val c_ty = TFree (a, @{sort fs})
     val c = Free (c_name, c_ty)
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     val (preconds, ind_concls) = ind_concl
       |> HOLogic.dest_Trueprop
