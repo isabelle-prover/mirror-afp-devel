@@ -132,10 +132,6 @@ fun same_name (Free (a1, _), Free (a2, _)) = (a1 = a2)
   | same_name (Const (a1, _), Const (a2, _)) = (a1 = a2)
   | same_name _ = false
 
-(* fixme: move to nominal_library *)
-fun map7 _ [] [] [] [] [] [] [] = []
-  | map7 f (x :: xs) (y :: ys) (z :: zs) (u :: us) (v :: vs) (r :: rs) (s :: ss) =
-      f x y z u v r s :: map7 f xs ys zs us vs rs ss
 
 (* local abbreviations *)
 
@@ -299,7 +295,7 @@ fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param
   {prems, context = ctxt} =
   let
     val cases_tac =
-      map7 (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
+      @{map 7} (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
   in
     EVERY1 [ DETERM o resolve_tac ctxt [raw_induct], RANGE cases_tac ]
   end
