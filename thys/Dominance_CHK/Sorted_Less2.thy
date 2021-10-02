@@ -43,7 +43,7 @@ lemma sorted_less_sorted_list_of_set: "sorted (sorted_list_of_set S)"
   by (auto intro:sorted_le2lt)
 
 lemma distinct_sorted: "sorted xs \<Longrightarrow> distinct xs" 
-  by (induct xs) (auto simp add: sorted_wrt_append sorted_sorted_wrt)  
+  by (induct xs) (auto simp add: sorted_wrt_append)  
 
 lemma sorted_less_set_unique:
   assumes "sorted xs"
