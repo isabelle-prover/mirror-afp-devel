@@ -2,6 +2,8 @@ chapter AFP
 
 session FOL_Axiomatic (AFP) = "HOL" +
   options [timeout = 300]
+  sessions
+    "HOL-Library"
   theories
     FOL_Axiomatic
   document_files
