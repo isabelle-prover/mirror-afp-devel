@@ -2,7 +2,7 @@
    Author: Mihails Milehins
    Copyright 2021 (C) Mihails Milehins
 *)
-section\<open>Relativization of the the results about lattices\<close>
+section\<open>Relativization of the results about lattices\<close>
 theory SML_Lattices
   imports SML_Semilattices
 begin

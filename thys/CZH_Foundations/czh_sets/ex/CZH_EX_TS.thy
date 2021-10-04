@@ -14,7 +14,7 @@ text\<open>
 The section presents elements of the foundations of the theory of topological
 spaces formalized in \<open>ZFC in HOL\<close>. The definitions were adopted 
 (with amendments) from the main library of Isabelle/HOL and 
-\cite{kelley_general_nodate}.
+\cite{kelley_general_1955}.
 \<close>
 
 named_theorems ts_struct_field_simps

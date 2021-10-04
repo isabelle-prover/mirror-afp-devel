@@ -130,12 +130,7 @@ subsection\<open>Opposite adjunction\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>
-The following definition has the desired properties of the operation
-of taking an opposite of an adjunction but helps to avoid dealing
-with isomorphisms that arise in certain applications if the conventional
-operation of taking the opposite is used instead.
-\<close>
+text\<open>See \cite{kan_adjoint_1958} for further information.\<close>
 
 abbreviation op_cf_adj_nt :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "op_cf_adj_nt \<CC> \<DD> \<phi> \<equiv> inv_ntcf (bnt_flip (op_cat \<CC>) \<DD> \<phi>)"

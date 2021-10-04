@@ -102,8 +102,8 @@ text\<open>
 The definition of a category that is used in this work is
 is similar to the definition that can be found in Chapter I-2 in 
 \cite{mac_lane_categories_2010}. The amendments to the definitions that are 
-associated with size have already been explained in the previous 
-installment of this body of work.
+associated with size have already been explained in 
+\cite{milehins_category_2021}.
 \<close>
 
 locale category = \<Z> \<alpha> + vfsequence \<CC> + CId: vsv \<open>\<CC>\<lparr>CId\<rparr>\<close> for \<alpha> \<CC> +

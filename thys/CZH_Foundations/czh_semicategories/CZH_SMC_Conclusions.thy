@@ -12,10 +12,11 @@ theory CZH_SMC_Conclusions
     CZH_SMC_PSemicategory
     CZH_SMC_Subsemicategory
     CZH_SMC_Simple
-    CZH_SMC_GRPH
-    CZH_SMC_SemiCAT
     CZH_SMC_Rel
     CZH_SMC_Par
     CZH_SMC_Set
+    CZH_SMC_GRPH
+    CZH_DG_SemiCAT
+    CZH_SMC_SemiCAT
 begin
 end

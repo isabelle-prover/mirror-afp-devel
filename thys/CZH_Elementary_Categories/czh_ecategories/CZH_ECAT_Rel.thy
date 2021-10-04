@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology chosen for the exposition of \<open>Rel\<close> as a category is analogous 
-to the one used in the previous installment of this work 
+to the one used in \cite{milehins_category_2021} 
 for the exposition of \<open>Rel\<close> as a semicategory. 
 The general references for this section are Chapter I-7 in 
 \cite{mac_lane_categories_2010} and nLab 

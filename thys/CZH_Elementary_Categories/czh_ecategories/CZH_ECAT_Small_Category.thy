@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 text\<open>
 An explanation of the methodology chosen for the exposition of all
 matters related to the size of the categories and associated entities
-is given in the first installment of this work.
+is given in \cite{milehins_category_2021}.
 \<close>
 
 named_theorems cat_small_cs_simps

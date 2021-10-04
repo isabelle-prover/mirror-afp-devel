@@ -31,7 +31,6 @@ subsection\<open>Related work\<close>
 
 
 text\<open>
-
 Since the publication of the framework Types-To-Sets in
 \cite{blanchette_types_2016}, there has been a growing interest
 in its use in applied formalization. Some 
@@ -46,9 +45,10 @@ of Isabelle/HOL.
 
 Nonetheless, it is likely that the work presented in this document 
 is the first significant application of the ETTS: 
-unsurprisingly, the content this document was developed 
+unsurprisingly, the content of this document was developed 
 in parallel with the extension of the framework itself. Also, perhaps, it is
-the largest application of the framework Types-To-Sets up to this date: 
+the largest application of the framework Types-To-Sets 
+at the time of writing: 
 only one of the three libraries (SML Relativization) presented in the 
 context of this work contains the relativization of over 800 theorems 
 from the standard library of Isabelle/HOL.
@@ -135,7 +135,7 @@ compiling out dependencies on overloaded constants, the manual invocation of the
 attributes related to the individual steps of the relativization algorithm, 
 the repeated explicit references to the theorem as it undergoes the 
 transformations associated with the individual steps of 
-a the relativization algorithm, the explicitly stated names of the set-based 
+the relativization algorithm, the explicitly stated names of the set-based 
 theorems were no longer needed. Furthermore, the theorems synthesized by the 
 ETTS in TTS Vector Spaces appear in the formal proof documents in a format 
 that is similar to the canonical format of the Isabelle/Isar declarations
@@ -172,13 +172,14 @@ performed with respect to all possible type variables; in this case,
 the type classes are not used in the type-based library. Currently,
 the library includes the results from the areas of order theory and
 semigroups. However, it is hoped that it can be seen
-that the library can be easily extended to include most of the
+that the library can be extended to include most of the
 content that is available in the main library of Isabelle/HOL.
 
 The library TTS Foundations demonstrates that the development of a 
 set-based library can be nearly fully automated using the 
 existing infrastructure associated with the UD, CTR and ETTS, 
 and requires almost no explicit proofs on
-behalf of the users of these frameworks.\<close>
+behalf of the users of these frameworks.
+\<close>
 
 end

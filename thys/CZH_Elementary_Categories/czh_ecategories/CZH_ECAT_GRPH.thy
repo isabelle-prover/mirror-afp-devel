@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology for the exposition of \<open>GRPH\<close> as a category is analogous to
-the one used in the previous installment of this body of work
+the one used in \cite{milehins_category_2021}
 for the exposition of \<open>GRPH\<close> as a semicategory.
 \<close>
 

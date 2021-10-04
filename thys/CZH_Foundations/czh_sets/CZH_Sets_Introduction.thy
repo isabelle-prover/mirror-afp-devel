@@ -41,7 +41,7 @@ from the main library of Isabelle/HOL \cite{noauthor_isabellehol_2020}.
 Other results were inspired by elements of the content of the books 
 \<open>Introduction to Axiomatic Set Theory\<close> by G. Takeuti 
 and W. M. Zaring \cite{takeuti_introduction_1971}, \<open>Theory of Sets\<close> 
-by N. Bourbaki \cite{bourbaki_elements_nodate} and \<open>Algebra\<close> by 
+by N. Bourbaki \cite{bourbaki_elements_1970} and \<open>Algebra\<close> by 
 T. W. Hungerford \cite{hungerford_algebra_2003}.
 Furthermore, several online encyclopedias and forums 
 (including Wikipedia \cite{noauthor_wikipedia_2001}, 
