@@ -10880,7 +10880,7 @@ abstract =
 
 [Conditional_Simplification]
 title = Conditional Simplification
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10897,7 +10897,7 @@ abstract =
 
 [Intro_Dest_Elim]
 title = IDE: Introduction, Destruction, Elimination
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10910,7 +10910,7 @@ abstract =
 
 [CZH_Foundations]
 title = Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory, Logic/Set theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10935,7 +10935,7 @@ abstract =
 
 [CZH_Elementary_Categories]
 title = Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10949,7 +10949,7 @@ abstract =
 
 [CZH_Universal_Constructions]
 title = Category Theory for ZFC in HOL III: Universal Constructions
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10963,7 +10963,7 @@ abstract =
 
 [Conditional_Transfer_Rule]
 title = Conditional Transfer Rule
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -10975,7 +10975,7 @@ abstract =
 
 [Types_To_Sets_Extension]
 title = Extension of Types-To-Sets
-author = Mihails Milehins <user9716869@gmail.com>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
