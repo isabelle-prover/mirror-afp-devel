@@ -11016,7 +11016,7 @@ abstract =
 
 [Conditional_Simplification]
 title = Conditional Simplification
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11033,7 +11033,7 @@ abstract =
 
 [Intro_Dest_Elim]
 title = IDE: Introduction, Destruction, Elimination
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11046,7 +11046,7 @@ abstract =
 
 [CZH_Foundations]
 title = Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory, Logic/Set theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11071,7 +11071,7 @@ abstract =
 
 [CZH_Elementary_Categories]
 title = Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11085,7 +11085,7 @@ abstract =
 
 [CZH_Universal_Constructions]
 title = Category Theory for ZFC in HOL III: Universal Constructions
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11099,7 +11099,7 @@ abstract =
 
 [Conditional_Transfer_Rule]
 title = Conditional Transfer Rule
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11111,7 +11111,7 @@ abstract =
 
 [Types_To_Sets_Extension]
 title = Extension of Types-To-Sets
-author = Mihails Milehins <>
+author = Mihails Milehins <mailto:user9716869@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11138,3 +11138,61 @@ abstract =
   by Fabian Immler and Bohua Zhan and published in the proceedings of
   the <i>International Conference on Certified Programs and
   Proofs</i> in 2019.
+  
+[Complex_Bounded_Operators]
+title = Complex Bounded Operators
+author = Jose Manuel Rodriguez Caballero <https://josephcmac.github.io/>, Dominique Unruh <https://www.ut.ee/~unruh/>
+topic = Mathematics/Analysis
+date = 2021-09-18
+notify = unruh@ut.ee
+abstract = 
+  We present a formalization of bounded operators on complex vector
+  spaces.  Our formalization contains material on complex vector spaces
+  (normed spaces, Banach spaces, Hilbert spaces) that complements and
+  goes beyond the developments of real vectors spaces in the
+  Isabelle/HOL standard library.  We define the type of bounded
+  operators between complex vector spaces
+  (<em>cblinfun</em>) and develop the theory of unitaries,
+  projectors, extension of bounded linear functions (BLT theorem),
+  adjoints, Loewner order, closed subspaces and more.  For the
+  finite-dimensional case, we provide code generation support by
+  identifying finite-dimensional operators with matrices as formalized
+  in the <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a> AFP entry.
+
+[Weighted_Path_Order]
+title = A Formalization of Weighted Path Orders and Recursive Path Orders
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@aist.go.jp>
+topic = Logic/Rewriting
+date = 2021-09-16
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We define the weighted path order (WPO) and formalize several
+  properties such as strong normalization, the subterm property, and
+  closure properties under substitutions and contexts. Our definition of
+  WPO extends the original definition by also permitting multiset
+  comparisons of arguments instead of just lexicographic extensions.
+  Therefore, our WPO not only subsumes lexicographic path orders (LPO),
+  but also recursive path orders (RPO). We formally prove these
+  subsumptions and therefore all of the mentioned properties of WPO are
+  automatically transferable to LPO and RPO as well. Such a
+  transformation is not required for Knuth&ndash;Bendix orders
+  (KBO), since they have already been formalized. Nevertheless, we still
+  provide a proof that WPO subsumes KBO and thereby underline the
+  generality of WPO.
+
+[FOL_Axiomatic]
+title = Soundness and Completeness of an Axiomatic System for First-Order Logic
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
+topic = Logic/General logic/Classical first-order logic, Logic/Proof theory
+date = 2021-09-24
+notify = ahfrom@dtu.dk
+abstract =
+  This work is a formalization of the soundness and completeness of an
+  axiomatic system for first-order logic. The proof system is based on
+  System Q1 by Smullyan and the completeness proof follows his textbook
+  "First-Order Logic" (Springer-Verlag 1968). The completeness
+  proof is in the Henkin style where a consistent set is extended to a
+  maximal consistent set using Lindenbaum's construction and Henkin
+  witnesses are added during the construction to ensure saturation as
+  well. The resulting set is a Hintikka set which, by the model
+  existence theorem, is satisfiable in the Herbrand universe.

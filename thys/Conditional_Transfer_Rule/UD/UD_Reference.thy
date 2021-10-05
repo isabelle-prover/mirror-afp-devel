@@ -20,14 +20,17 @@ subsection\<open>Introduction\<close>
 subsubsection\<open>Background\<close>
 
 text\<open>
-This section presents a reference manual for the (sub-)framework UD. 
-The framework UD can be used for the elimination of sort constraints and
-unoverloading of definitions in the object logic Isabelle/HOL of the 
-formal proof assistant Isabelle \cite{paulson_natural_1986}. 
-The framework UD evolved from the author's work on the extension of the 
-framework Types-To-Sets (see \cite{blanchette_types_2016,kuncar_types_2019}, 
-\cite{immler_smooth_2019} and \cite{immler_automation_2019} for a 
-description of the framework Types-To-Sets, but not the author's extension) 
+This section presents a reference manual for the sub-framework UD. 
+The UD can be used for the elimination of 
+\textit{sort constraints} (e.g., see \cite{altenkirch_constructive_2007})
+and unoverloading of definitions in the object logic Isabelle/HOL of the 
+formal proof assistant Isabelle. 
+The UD evolved from the author's work on an extension of the 
+framework \textit{Types-To-Sets} 
+(see 
+\cite{blanchette_types_2016, kuncar_types_2019, immler_smooth_2019, immler_automation_2019},
+for a description of the framework Types-To-Sets
+and \cite{milehins_extension_2021} for a description of the author's extension)
 and builds upon certain ideas expressed in \cite{kaufmann_mechanized_2010}.
 \<close>
 
@@ -37,11 +40,11 @@ subsubsection\<open>Purpose and scope\<close>
 text\<open>
 The primary functionality of the framework is available via the Isabelle/Isar 
 command @{command ud}. This command automates the processes of the 
-elimination of sort constrains and unoverloading of definitions.
+elimination of sort constraints and unoverloading of definitions.
 Thus, the command @{command ud} allows for the synthesis
 of the convenience constants and theorems that are usually needed for the 
 application of the derivation step 2 of the original relativization algorithm
-of Types-To-Sets (see \cite{blanchette_types_2016}). However, 
+of Types-To-Sets (see subsection 5.4 in \cite{blanchette_types_2016}). However, 
 it is expected that the command can be useful for other purposes.
 \<close>
 
@@ -53,18 +56,18 @@ The functionality provided by the command @{command ud} shares similarities
 with the functionality provided by the algorithms for the elimination of
 sort constraints and elimination of overloading that were 
 presented in \cite{kaufmann_mechanized_2010}
-and with the algorithms associated with the command 
+and with the algorithm associated with the command 
 \mbox{\textbf{unoverload\_definition}} that was proposed
 in \cite{immler_automation_2019}. 
 Nonetheless, technically, unlike \mbox{\textbf{unoverload\_definition}}, 
 the command @{command ud} does
 not require the additional axiom UO associated with Types-To-Sets for 
 its operation (see \cite{blanchette_types_2016}, 
-\cite{immler_automation_2019}), it uses the definitional axioms
+\cite{immler_automation_2019}), it uses 
+the \textit{definitional axioms} (e.g., see \cite{kaufmann_mechanized_2010})
 instead of arbitrary theorems supplied by the user
-and can be used for unoverloading almost any overloaded constants, 
-not merely the constants overloaded using the Isabelle's type-class 
-infrastructure 
+and it is independent of the infrastructure associated with
+the \textit{axiomatic type classes} 
 \cite{nipkow_type_1991,wenzel_type_1997,altenkirch_constructive_2007}.
 
 It should also be mentioned that the Isabelle/ML code from the main 
@@ -76,32 +79,48 @@ development of the UD.
 
 subsection\<open>Theory\label{sec:ud_theory}\<close>
 
+
 text\<open>
-It is assumed that there exists a variable $ud_{\mathsf{with}}$ that stores theorems 
-of the form $c_{\tau} = c_{\mathsf{with}}\ \bar{*}$, where $c_{\tau}$ and $c_{\mathsf{with}}$ are 
-distinct constant-instances and $\bar{*}$ is a finite sequence of unresolvable 
-constant-instances, such that, if $c_{\tau}$ depends on a type 
-variable $\alpha_{\Upsilon}$, with $\Upsilon$ being a type class that depends 
-on the overloaded constants $\bar{*'}$, then $\bar{*}$ contains $\bar{*'}$
-as a subsequence. The binary operation $\cup$ is defined 
-in a manner such that for any sequences $\bar{*}$ and $\bar{*'}$, 
-$\bar{*} \cup \bar{*'}$ is a sequence that consists of all elements of the 
-union of the elements of $\bar{*}$ and $\bar{*'}$ without duplication. 
-The inputs to the algorithm associated with the command @{command ud}
-are assumed to be a constant-instance $c_{\sigma}$ and a well-formed 
-definitional theory $D$.
-Given the constant-instance $c_{\sigma}$, there exists at most
-one definitional axiom $c_{\tau} = \phi_{\tau}\left[\bar{*}\right]$ 
-in $D$ such that $c_{\sigma} \leq c_{\tau}$: otherwise the orthogonality 
-of $D$ and, therefore, the well-formedness of $D$ are violated 
-($\phi$ is assumed to be parameterized by the types that it can have with 
-respect to the type substitution operation, and $\bar{*}$ in
-$c_{\tau} = \phi_{\tau}\left[\bar{*}\right]$ is a list of all uninterpreted
-constant-instances that occur in $\phi_{\tau}\left[\bar{*}\right]$).
+The general references for this subsection are
+\cite{kaufmann_mechanized_2010} and \cite{yang_comprehending_2017}.
+The command @{command ud} relies 
+on a restricted (non-recursive) variant of the 
+\textit{classical overloading elimination algorithm}
+that was originally proposed in \cite{kaufmann_mechanized_2010}.
+It is assumed that there exists 
+a variable $ud_{\mathsf{with}}$ that stores theorems of the 
+form $c_{\tau} = c_{\mathsf{with}}\ \bar{*}$, where $c_{\tau}$ and 
+$c_{\mathsf{with}}$ are distinct \textit{constant-instances} 
+and $\bar{*}$ is a finite sequence of \textit{uninterpreted constant-instances},
+such that, if $c_{\tau}$ depends on a type variable $\alpha_{\Upsilon}$, 
+with $\Upsilon$ being a \textit{type class} 
+\cite{nipkow_type_1991,wenzel_type_1997,altenkirch_constructive_2007}
+that depends on the overloaded 
+constants $\bar{*'}$, then $\bar{*}$ contains $\bar{*'}$ as a subsequence. 
+Lastly, the binary operation $\cup$ is defined in a manner such that 
+for any sequences $\bar{*}$ and $\bar{*'}$, $\bar{*} \cup \bar{*'}$ 
+is a sequence that consists of all elements of the union of the 
+elements of $\bar{*}$ and $\bar{*'}$ without duplication. 
+Assuming an underlying 
+\textit{well-formed definitional theory} $D$, 
+the input to the algorithm is a constant-instance $c_{\sigma}$. 
+Given the constant-instance $c_{\sigma}$, 
+there exists at most one definitional axiom
+$c_{\tau} = \phi_{\tau}\left[\bar{*}\right]$ 
+in $D$ such that $c_{\sigma} \leq c_{\tau}$: otherwise 
+the \textit{orthogonality} of $D$ and, 
+therefore, the \textit{well-formedness}
+of $D$ are violated ($\phi$ is assumed to be parameterized by 
+the types that it can have with respect to the
+type substitution operation, 
+and $\bar{*}$ in $c_{\tau} = \phi_{\tau}\left[\bar{*}\right]$ 
+is a list of all uninterpreted constant-instances that 
+occur in $\phi_{\tau}\left[\bar{*}\right]$).
 
 If a definitional axiom $c_{\tau}=\phi_{\tau}\left[\bar{*}\right]$ 
-such that $c_{\sigma} \leq c_{\tau}$ exists for the constant-instance 
-$c_{\sigma}$, then the following derivation is applied to it by the algorithm
+such that $c_{\sigma} \leq c_{\tau}$ 
+exists for the constant-instance $c_{\sigma}$, 
+then the following derivation is applied to it by the algorithm
 \[
 \infer[(6)]
 {\vdash c_{\sigma} = c_{\mathsf{with}}\ \left(\bar{*} \cup \bar{*'}\right)}
@@ -130,66 +149,34 @@ $c_{\sigma}$, then the following derivation is applied to it by the algorithm
 }
 }
 \]
-In step 1, the previously established property $c_{\sigma} \leq c_{\tau}$ is
-used to create the (extended variant of the) type substitution map $\rho$
-such that $\sigma = \rho \left( \tau \right)$ (see \cite{kuncar_types_2015}) 
-and perform the type substitution in 
-$c_{\tau}=\phi_{\tau}\left[\bar{*}\right]$ to obtain
-$c_{\sigma}=\phi_{\sigma}\left[\bar{*}\right]$; in step 2, the
-collection of theorems $ud_{\mathsf{with}}$ is unfolded, using it as 
-a term rewriting system, possibly introducing further uninterpreted constants
-$\bar{*'}$; in step 3, the term on the right hand side of the 
-theorem is processed by removing the sort constraints from all type variables 
-that occur in it, replacing every uninterpreted constant-instance (this 
-excludes all built-in constants of Isabelle/HOL) that occurs in 
-it by a fresh term variable, 
-and applying the abstraction until the resulting term is closed:
-this term forms the right hand side of a new definitional axiom 
-of a fresh constant $c_{\mathsf{with}}$ (if the conditions associated with the 
-definitional principles of Isabelle/HOL \cite{yang_comprehending_2017} are 
-satisfied); step 4 is justified by the beta-contraction; step 5 is a 
-substitution of the uninterpreted constants $\bar{*} \cup \bar{*'}$; 
-step 6 follows trivially from the results of the application of steps 2 and 5. 
-
-Assuming that the definitional axiom for the input to the
-algorithm $c_{\sigma}$ does not have any occurrences of uninterpreted 
-constants and there is exactly one type-variable $\alpha_{\Upsilon}$ that occurs
-in $c_{\sigma}$, with $\Upsilon$ being a type class that depends on the 
-overloaded constants $\bar{*}$, the algorithm can be restated as follows:
-\[
-\infer[(6)]
-{\vdash c_{\sigma}\left[?\alpha_{\Upsilon}\right] = c_{\mathsf{with}}\left[?\alpha_{\Upsilon}\right]\ \bar{*}}
-{
-\infer[(5)]
-{
-\vdash c_{\mathsf{with}}\left[?\alpha_{\Upsilon}\right]\ \bar{*} = \phi_{\mathsf{with}}\left[?\alpha_{\Upsilon}, \bar{*}\right]
-}
-{
-\infer[(4)]
-{\vdash c_{\mathsf{with}}\left[?\alpha\right]\ ?\bar{f}\left[?\alpha\right] = \phi_{\mathsf{with}}\left[?\alpha, ?\bar{f}\right]}
-{
-\infer[(3)]
-{\vdash c_{\mathsf{with}}\left[?\alpha\right] = (\lambda \bar{f}\left[?\alpha\right].\ \phi_{\mathsf{with}}\left[?\alpha, \bar{f}\right])}
-{
-\infer[(2)]
-{\vdash c_{\sigma}\left[?\alpha_{\Upsilon}\right] = \phi_{\mathsf{with}}\left[?\alpha_{\Upsilon}, \bar{*}\right]}
-{
-\infer[(1)]
-{\vdash c_{\sigma}\left[?\alpha_{\Upsilon}\right] = \phi_{\sigma}\left[?\alpha_{\Upsilon}\right]}
-{\vdash c_{\tau}\left[?\alpha\right]=\phi_{\tau}\left[?\alpha\right]}
-}
-}
-}
-}
-}
-\]
+In step 1, the previously established 
+property $c_{\sigma} \leq c_{\tau}$ is used to create the 
+(extended variant of the) type substitution 
+map $\rho$ such that $\sigma = \rho \left( \tau \right)$ 
+(see \cite{kuncar_types_2015}) and perform the type
+substitution in $c_{\tau}=\phi_{\tau}\left[\bar{*}\right]$ 
+to obtain $c_{\sigma}=\phi_{\sigma}\left[\bar{*}\right]$; 
+in step 2, the collection of theorems $ud_{\mathsf{with}}$ is unfolded,
+using it as a term rewriting system, possibly introducing further uninterpreted
+constants $\bar{*'}$; in step 3, the term on the right-hand side of the
+theorem is processed by removing the sort constraints from all type
+variables that occur in it, replacing every uninterpreted constant-instance 
+(this excludes all built-in constants of Isabelle/HOL) that occurs in it by a 
+fresh term variable, and applying the abstraction until the resulting term 
+is closed: this term forms the right-hand side of a new definitional axiom 
+of a fresh constant $c_{\mathsf{with}}$ (if the conditions associated with 
+the definitional principles of Isabelle/HOL \cite{yang_comprehending_2017} 
+are satisfied); step 4 is justified by the beta-contraction; 
+step 5 is a substitution of the uninterpreted constants $\bar{*} \cup \bar{*'}$;
+step 6 follows trivially from the results of the application of steps 2 and 5.
 
 The implementation of the command @{command ud} closely follows the steps of 
 the algorithm outlined above. Thus, at the end of the successful
 execution, the command declares the constant $c_{\mathsf{with}}$ and stores the 
 constant-instance definition that is obtained at the end of step 3 of
-the algorithm UD; furthermore, the command stores the theorem that is 
-obtained after the execution of step 6 of the algorithm.
+the algorithm UD; furthermore, the command adds the theorem that is 
+obtained after the execution of step 6 of the algorithm
+to $ud_{\mathsf{with}}$.
 
 Unlike the classical overloading elimination algorithm, 
 the algorithm employed in the implementation
@@ -209,7 +196,6 @@ limitation that was already outlined in \cite{kaufmann_mechanized_2010},
 it does not offer a solution for handling the 
 constants whose types contain occurrences of the type constructors whose 
 type definitions contain occurrences of unresolvable overloading.
-
 \<close>
 
 
@@ -253,7 +239,7 @@ to the dynamic fact @{thm [source] ud_with}.
 subsection\<open>Examples\label{sec:ud_ex}\<close>
 
 text\<open>
-In this subsection, some of the capabilities of the framework UD are 
+In this subsection, some of the capabilities of the UD are 
 demonstrated by example. The examples that are presented in this subsection are 
 expected to be sufficient for beginning an independent exploration of the 
 framework, but do not cover the entire spectrum of the functionality 

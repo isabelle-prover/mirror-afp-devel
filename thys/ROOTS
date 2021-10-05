@@ -103,6 +103,7 @@ Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Complete_Non_Orders
 Completeness
+Complex_Bounded_Operators
 Complex_Geometry
 Complx
 ComponentDependencies
@@ -174,6 +175,7 @@ Extended_Finite_State_Machines
 FFT
 FLP
 FOL-Fitting
+FOL_Axiomatic
 FOL_Harrison
 FOL_Seq_Calc1
 Factored_Transition_System_Bounding
@@ -616,6 +618,7 @@ VolpanoSmith
 WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
+Weighted_Path_Order
 Weight_Balanced_Trees
 Well_Quasi_Orders
 Winding_Number_Eval

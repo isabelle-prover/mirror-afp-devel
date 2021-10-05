@@ -16,17 +16,17 @@ section\<open>Introduction\<close>
 subsection\<open>Background\<close>
 
 text\<open>
-This section presents a reference manual for the framework 
+This document presents a reference manual for the framework 
 IDE. The framework IDE can be used for the automated synthesis of
 the introduction, destruction and elimination rules from the definitions
 of predicates stated in the object logic Isabelle/HOL 
-(e.g., see \cite{yang_comprehending_2017}) 
-of the proof assistant Isabelle \cite{paulson_natural_1986}.
+of the proof assistant Isabelle.
 
-The primary functionality of the framework is available via the Isar
+The primary functionality of the framework is available via the 
+\textit{Isabelle/Isar} \cite{bertot_isar_1999, wenzel_isabelleisar_2007} 
 command @{command mk_ide}.
 Given a definition of a predicate in Isabelle/HOL, the
-command can synthesise introduction, destruction and elimination rules
+command can synthesize introduction, destruction and elimination rules
 for this definition. The rules are stated
 in a certain predetermined format that is meant to be both natural and
 convenient for the end user and the tools for classical reasoning
@@ -38,7 +38,7 @@ available in Isabelle/HOL.
 subsection\<open>Related and previous work\<close>
 
 text\<open>
-The standard distribution of Isabelle2021 provides the attribute 
+The standard distribution of Isabelle provides the \textit{attribute} 
 @{attribute elim_format} \cite{wenzel_isabelle/isar_2019-1} 
 that can be used for the conversion of the
 destruction rules to the elimination rules. The primary functionality of this
@@ -83,10 +83,10 @@ text\<open>
     elim: @@{element "|elim"} (thmdef @'|')
   \<close>
 
-  \<^descr> \<^theory_text>\<open>mk_ide\<close> (@{element "rf"}) \<open>def_thm\<close> @{element "|intro"} 
-\<open>name[attrbs]\<close>@{element "|"} converts the
+  \<^descr> \<^theory_text>\<open>mk_ide\<close> (\<^theory_text>\<open>rf\<close>) \<open>def_thm\<close> \<^theory_text>\<open>|intro\<close> 
+\<open>name[attrbs]\<close>\<^theory_text>\<open>|\<close> converts the
 definition \<open>def_thm\<close> into an introduction rule, followed by the application of 
-the functionality associated with the optional keyword @{element "rf"} and
+the functionality associated with the optional keyword \<^theory_text>\<open>rf\<close> and
 the attributes \<open>attrbs\<close> to this rule. 
 The result of the application of the attributes \<open>attrbs\<close> 
 is stored in the local context under the name \<open>name\<close>. \<open>def_thm\<close> is meant to be 
@@ -94,8 +94,9 @@ a fact that consists of exactly one theorem of the form
 \begin{center}
 \<open>A a\<^sub>1 \<dots> a\<^sub>n \<simeq> f\<^sub>1 a\<^sub>1 \<dots> a\<^sub>n \<and> \<dots> \<and> f\<^sub>m a\<^sub>1 \<dots> a\<^sub>n\<close>,
 \end{center}
-where \<open>A\<close> is a constant predicate in \<open>n\<close> arguments, \<open>\<simeq>\<close> is either the meta-logic 
-equality or the object logic equality, \<open>n\<close> and \<open>m\<close> are natural numbers,
+where \<open>n\<close> and \<open>m\<close> are natural numbers,
+\<open>A\<close> is a constant predicate in \<open>n\<close> arguments, \<open>\<simeq>\<close> is either the meta-logic 
+equality or the object logic equality,
 \<open>a\<^sub>1 \<dots> a\<^sub>n\<close> are schematic variables and \<open>f\<^sub>1 \<dots> f\<^sub>m\<close> are suitable predicates in \<open>n\<close>
 arguments (however, there are further implicit restrictions). The resulting
 introduction rule is expected to be stated in the format 
@@ -103,15 +104,16 @@ introduction rule is expected to be stated in the format
 \<open>f\<^sub>1 a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> \<dots> \<Longrightarrow> f\<^sub>m a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> A a\<^sub>1 \<dots> a\<^sub>n\<close>
 \end{center}
 prior to the application of the functionality associated with the keyword 
-@{element "rf"} and the attributes \<open>attrbs\<close>. If the optional keyword
-@{element "rf"} is passed to the command, then the output of the command 
+\<^theory_text>\<open>rf\<close> and the attributes \<open>attrbs\<close>. If the optional keyword
+\<^theory_text>\<open>rf\<close> is passed as an argument to the command, 
+then the output of the command 
 (prior to the application of the attributes) is formatted using an algorithm
 associated with the attribute @{attribute rule_format} 
 \cite{wenzel_isabelle/isar_2019-1}. 
-  \<^descr> \<^theory_text>\<open>mk_ide\<close> (@{element "rf"}) \<open>def_thm\<close> @{element "|dest"} 
-\<open>name[attrbs]\<close>@{element "|"} converts the definition
+  \<^descr> \<^theory_text>\<open>mk_ide\<close> (\<^theory_text>\<open>rf\<close>) \<open>def_thm\<close> \<^theory_text>\<open>|dest\<close>
+\<open>name[attrbs]\<close>\<^theory_text>\<open>|\<close> converts the definition
 \<open>def_thm\<close> into one or more destruction rules, followed by the application of the
-functionality associated with the optional keyword @{element "rf"} and the 
+functionality associated with the optional keyword \<^theory_text>\<open>rf\<close> and the 
 attributes \<open>attrbs\<close> to each destruction rule. 
 Given the theorem \<open>def_thm\<close> in the format described above, 
 the command provides \<open>m\<close> destruction rules of the form
@@ -119,11 +121,11 @@ the command provides \<open>m\<close> destruction rules of the form
 \<open>A a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> f\<^sub>i a\<^sub>1 \<dots> a\<^sub>n\<close>
 \end{center}
 for each \<open>1\<le>i\<le>m\<close> prior to the application of the functionality associated with
-the keyword @{element "rf"} and the attributes \<open>attrbs\<close>.
-  \<^descr> \<^theory_text>\<open>mk_ide\<close> (@{element "rf"}) \<open>def_thm\<close> @{element "|elim"} 
-\<open>name[attrbs]\<close>@{element "|"} converts the definition
+the keyword \<^theory_text>\<open>rf\<close> and the attributes \<open>attrbs\<close>.
+  \<^descr> \<^theory_text>\<open>mk_ide\<close> (\<^theory_text>\<open>rf\<close>) \<open>def_thm\<close> \<^theory_text>\<open>|elim\<close>  
+\<open>name[attrbs]\<close>\<^theory_text>\<open>|\<close> converts the definition
 \<open>def_thm\<close> into an elimination rule, followed by the application of the
-functionality associated with the optional keyword @{element "rf"} and the 
+functionality associated with the optional keyword \<^theory_text>\<open>rf\<close> and the 
 attributes \<open>attrbs\<close> to each destruction rule. 
 Given the theorem \<open>def_thm\<close> in the format
 described above, the elimination rule has the format
@@ -131,11 +133,10 @@ described above, the elimination rule has the format
 \<open>A a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> (f\<^sub>1 a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> \<dots> \<Longrightarrow> f\<^sub>m a\<^sub>1 \<dots> a\<^sub>n \<Longrightarrow> P) \<Longrightarrow> P\<close>
 \end{center}
 prior to the application of the functionality associated with
-the keyword @{element "rf"} and the attributes \<open>attrbs\<close>.
+the keyword \<^theory_text>\<open>rf\<close> and the attributes \<open>attrbs\<close>.
 
-It is also possible to combine the keywords @{element "|intro"},
-@{element "|dest"} and @{element "|elim"} in a single invocation of the 
-command.
+It is possible to combine the keywords \<^theory_text>\<open>|intro\<close>, \<^theory_text>\<open>|dest\<close> and \<^theory_text>\<open>|elim\<close> in a 
+single invocation of the command.
 \<close>
 
 text\<open>\newpage\<close>

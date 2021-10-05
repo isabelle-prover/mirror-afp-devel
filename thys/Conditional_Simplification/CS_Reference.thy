@@ -15,12 +15,13 @@ section\<open>Introduction\<close>
 
 subsection\<open>Background\<close>
 
+
 text\<open>
-This section presents a reference manual for the framework CS. The framework CS
+This document presents a reference manual for the framework CS. The framework CS
 is a collection of experimental tactics and associated proof methods 
 aimed at the automation of conditional simplification  
-in the object logic Isabelle/HOL (e.g., see \cite{yang_comprehending_2017})
-of the formal proof assistant Isabelle \cite{paulson_natural_1986}. The methods
+in the object logic Isabelle/HOL
+of the formal proof assistant Isabelle. The methods
 that are provided in the collection offer the functionality that is similar to
 certain aspects of the functionality provided by the standard proof 
 methods of Isabelle that combine classical reasoning and simplification 
@@ -34,6 +35,7 @@ the rewrite rules to be solved via intro-resolution.
 
 
 subsection\<open>Purpose and scope\<close>
+
 
 text\<open>
 The primary functionality of the framework is available via 
@@ -54,14 +56,16 @@ of the proof methods @{method cs_concl} and @{method cs_prems}.
 
 subsection\<open>Related and previous work\<close>
 
+
 text\<open>
 No claim with regard to the originality of the algorithms used in the methods
 implemented as part of the CS is made and, due to the experimental
 and evolving nature of this work, a comprehensive literature review
 is considered to be outside its scope. Therefore, the only contributions
 claimed by the author are the implementation of the algorithms associated 
-with the methods provided as part of the CS in Isabelle/ML and their integration
-with the Isabelle/Isar infrastructure.
+with the methods provided as part of the CS in 
+\textit{Isabelle/ML} \cite{milner_definition_1997, wenzel_isabelle/isar_2019} 
+and their integration with the Isabelle/Isar infrastructure.
 
 The implementation of the methods associated with the framework builds 
 upon the existing infrastructure of Isabelle and provides only a very 
@@ -72,8 +76,8 @@ in Isabelle.
 
 It should also be mentioned that the Isabelle/ML code from the 
 main distribution of Isabelle2020 and from
-\<open>The Isabelle/ML Cookbook\<close> \cite{urban_isabelle_2019} was frequently reused
-(with amendments) during the development of the library. Some particular
+\textit{The Isabelle/ML Cookbook} \cite{urban_isabelle_2019} was frequently 
+reused (with amendments) during the development of the library. Some particular
 examples of such reuse include 
 \begin{itemize}
 \item The adoption of the code for the tactic \<open>remdups_tac\<close> from the file
@@ -89,6 +93,7 @@ text\<open>\newpage\<close>
 
 section\<open>Syntax\<close>
 
+
 text\<open>
 This section presents the syntactic categories that are associated with the 
 methods @{method cs_concl_step}, @{method cs_intro_step}, 
@@ -96,6 +101,7 @@ methods @{method cs_concl_step}, @{method cs_intro_step},
 @{method cs_prems_atom_step} and @{method cs_prems}. 
 It is important to note that the presentation is only approximate.
 \<close>
+
 
 text\<open>
 
@@ -153,7 +159,7 @@ matches are considered. Otherwise, only a single sensible default match
 is used for every applicable rule-term pair. If the optional
 argument @{element "cs_ist_simple"} is provided, then the search space
 of the method is expanded by allowing backtracking after every atomic
-step (the default behaviour uses a tailor-made empirically established
+step (the default behavior uses a tailor-made empirically established
 routine that can be inferred from the implementation of the method).
   \<^descr> @{method cs_prems_atom_step} \<open>thms\<close> performs a single rewrite step of 
 the first premise of some goal using the collection of the rewrite rules \<open>thms\<close>.
@@ -177,22 +183,21 @@ text\<open>\newpage\<close>
 
 section\<open>Known issues and limitations\<close>
 
+
 text\<open>
 The collection of the proof methods that are associated with the framework CS  
 is a result of experimentation during practical formalization 
-work. The collection of methods should be viewed as an idea or
+work. The CS should be viewed as an idea or
 a proposal for further development, rather than a finished product. 
-The limitations and the performance of these methods have not been 
-investigated and there is little guarantee that they will be suitable 
-for any specific target application.
-
-The methods have only been tested extensively on the subgoals that do
-not contain any explicit occurrences of the Isabelle/Pure universal 
-quantifier. Therefore, users should not assume that the methods
-associated with the CS provide any degree of support for dealing with 
-the subgoals that contain explicit occurrences of the Isabelle/Pure 
-quantifiers, although a limited and highly experimental capacity for 
-the first-order reasoning is provided.
+The limitations and the performance of the methods associated with the CS 
+have not been investigated and there is little guarantee that they will be 
+suitable for any specific target application.
+It is also important to note that the methods have only been tested 
+extensively on the subgoals that do not contain any explicit occurrences 
+of the \textit{Isabelle/Pure} \cite{paulson_foundation_1989}
+universal quantifier. Only very limited and highly experimental
+support for the first-/higher-order reasoning is provided by 
+the CS.
 \<close>
 
 end

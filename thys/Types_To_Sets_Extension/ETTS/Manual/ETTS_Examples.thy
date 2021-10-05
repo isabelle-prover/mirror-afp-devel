@@ -52,7 +52,7 @@ constant defined as \mbox{@{thm [names_short = true] closed_def[no_vars]}}
 for any @{term [show_sorts] "S::'a::topological_space set"}. 
 The constant may be unoverloaded with 
 the help of the command @{command ud} that is provided as part of 
-the framework ``Conditional Transfer Rule'' (CTR):
+the framework CTR:
 \<close>
 ud \<open>topological_space.closed\<close>
 ud closed' \<open>closed\<close>
@@ -61,13 +61,16 @@ This invocation declares the constant @{const closed.with} that is defined as
 \begin{center}
 @{thm closed.with_def[no_vars]}
 \end{center}
-and provides the theorem @{thm [source] closed.with}
+and provides the theorems @{thm [source] closed.with} given by
 \begin{center}
 @{thm closed.with[no_vars]}
 \end{center}
-that establishes the relationship between the unoverloaded constant
-and the overloaded constant. The theorem @{thm [source] closed.with}
-is automatically added to the dynamic fact @{thm [source] ud_with}.
+and @{thm [source] closed'.with} given by 
+\begin{center}
+@{thm closed'.with[no_vars]}
+\end{center}
+These theorems
+are automatically added to the dynamic fact @{thm [source] ud_with}.
 \<close>
 
 
@@ -85,7 +88,7 @@ Isabelle/HOL). For the theorem
 @{const class.topological_space} and @{const closed.with}.
 The transfer rules can be obtained with the help of the command @{command ctr} 
 from the framework CTR. The process may involve
-the synthesis of further ``relativized'' constants, as described in the
+the synthesis of further relativized constants, as described in the
 reference manual for the framework CTR.
 \<close>
 ctr
@@ -150,7 +153,7 @@ While our goal was achieved, that is, the theorem
 of the theorem @{thm [source] topological_space_class.closed_Un},
 something does not appear right. Is the assumption \<open>U \<noteq> {}\<close> necessary?
 Is it possible to simplify \<open>\<forall>x\<in>S. x \<in> U\<close>? Is it necessary to 
-use the such contrived name for the denotation of an open set? 
+use such a contrived name for the denotation of the open set predicate? 
 Of course, all of these 
 issues can be resolved by restating the theorem in the form that we would like 
 to see and using @{thm [source] closed_Un'} in the proof of this theorem, 

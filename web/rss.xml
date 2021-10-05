@@ -9,7 +9,65 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
+    <pubDate>24 Sep 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/FOL_Axiomatic.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Axiomatic.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>24 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of the soundness and completeness of an
+axiomatic system for first-order logic. The proof system is based on
+System Q1 by Smullyan and the completeness proof follows his textbook
+&#34;First-Order Logic&#34; (Springer-Verlag 1968). The completeness
+proof is in the Henkin style where a consistent set is extended to a
+maximal consistent set using Lindenbaum&#39;s construction and Henkin
+witnesses are added during the construction to ensure saturation as
+well. The resulting set is a Hintikka set which, by the model
+existence theorem, is satisfiable in the Herbrand universe.</description>
+    </item>
+    <item>
+       <title>Complex Bounded Operators</title>
+              <link>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</link>
+       <guid>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</guid>
+       <dc:creator> Jose Manuel Rodriguez Caballero, Dominique Unruh       </dc:creator>
+       <pubDate>18 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of bounded operators on complex vector
+spaces.  Our formalization contains material on complex vector spaces
+(normed spaces, Banach spaces, Hilbert spaces) that complements and
+goes beyond the developments of real vectors spaces in the
+Isabelle/HOL standard library.  We define the type of bounded
+operators between complex vector spaces
+(&lt;em&gt;cblinfun&lt;/em&gt;) and develop the theory of unitaries,
+projectors, extension of bounded linear functions (BLT theorem),
+adjoints, Loewner order, closed subspaces and more.  For the
+finite-dimensional case, we provide code generation support by
+identifying finite-dimensional operators with matrices as formalized
+in the &lt;a href=&#34;Jordan_Normal_Form.html&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
+    </item>
+    <item>
+       <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
+              <link>https://www.isa-afp.org/entries/Weighted_Path_Order.html</link>
+       <guid>https://www.isa-afp.org/entries/Weighted_Path_Order.html</guid>
+       <dc:creator> Christian Sternagel, René Thiemann, Akihisa Yamada       </dc:creator>
+       <pubDate>16 Sep 2021 00:00:00 +0000</pubDate>
+       <description>
+We define the weighted path order (WPO) and formalize several
+properties such as strong normalization, the subterm property, and
+closure properties under substitutions and contexts. Our definition of
+WPO extends the original definition by also permitting multiset
+comparisons of arguments instead of just lexicographic extensions.
+Therefore, our WPO not only subsumes lexicographic path orders (LPO),
+but also recursive path orders (RPO). We formally prove these
+subsumptions and therefore all of the mentioned properties of WPO are
+automatically transferable to LPO and RPO as well. Such a
+transformation is not required for Knuth&amp;ndash;Bendix orders
+(KBO), since they have already been formalized. Nevertheless, we still
+provide a proof that WPO subsumes KBO and thereby underline the
+generality of WPO.</description>
+    </item>
     <item>
        <title>Extension of Types-To-Sets</title>
               <link>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</link>
@@ -485,62 +543,6 @@ equations. That is, it provides an upper bound on the rank of the
 system. We formalize the proof based on the decomposition of a
 solution into its free basis. A direct application is an alternative
 proof of the fact that two noncommuting words form a code.</description>
-    </item>
-    <item>
-       <title>Combinatorics on Words Basics</title>
-              <link>https://www.isa-afp.org/entries/Combinatorics_Words.html</link>
-       <guid>https://www.isa-afp.org/entries/Combinatorics_Words.html</guid>
-       <dc:creator> Štěpán Holub, Martin Raška, Štěpán Starosta       </dc:creator>
-       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize basics of Combinatorics on Words. This is an extension of
-existing theories on lists. We provide additional properties related
-to prefix, suffix, factor, length and rotation. The topics include
-prefix and suffix comparability, mismatch, word power, total and
-reversed morphisms, border, periods, primitivity and roots. We also
-formalize basic, mostly folklore results related to word equations:
-equidivisibility, commutation and conjugation. Slightly advanced
-properties include the Periodicity lemma (often cited as the Fine and
-Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
-words. We support the algebraic point of view which sees words as
-generators of submonoids of a free monoid. This leads to the concepts
-of the (free) hull, the (free) basis (or code).</description>
-    </item>
-    <item>
-       <title>Regression Test Selection</title>
-              <link>https://www.isa-afp.org/entries/Regression_Test_Selection.html</link>
-       <guid>https://www.isa-afp.org/entries/Regression_Test_Selection.html</guid>
-       <dc:creator> Susannah Mansky       </dc:creator>
-       <pubDate>30 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-This development provides a general definition for safe Regression
-Test Selection (RTS) algorithms. RTS algorithms select which tests to
-rerun on revised code, reducing the time required to check for newly
-introduced errors. An RTS algorithm is considered safe if and only if
-all deselected tests would have unchanged results.  This definition is
-instantiated with two class-collection-based RTS algorithms run over
-the JVM as modeled by JinjaDCI. This is achieved with a general
-definition for Collection Semantics, small-step semantics instrumented
-to collect information during execution. As the RTS definition
-mandates safety, these instantiations include proofs of safety.  This
-work is described in Mansky and Gunter&#39;s LSFA 2020 paper and
-Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
-    </item>
-    <item>
-       <title>Isabelle's Metalogic: Formalization and Proof Checker</title>
-              <link>https://www.isa-afp.org/entries/Metalogic_ProofChecker.html</link>
-       <guid>https://www.isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
-       <dc:creator> Tobias Nipkow, Simon Roßkopf       </dc:creator>
-       <pubDate>27 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-In this entry we formalize Isabelle&#39;s metalogic in Isabelle/HOL.
-Furthermore, we define a language of proof terms and an executable
-proof checker and prove its soundness wrt. the metalogic.  The
-formalization is intentionally kept close to the Isabelle
-implementation(for example using de Brujin indices) to enable easy
-integration of generated code with the Isabelle system without a
-complicated translation layer.  The formalization is described in our
-&lt;a href=&#34;https://arxiv.org/pdf/2104.12224.pdf&#34;&gt;CADE 28 paper&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

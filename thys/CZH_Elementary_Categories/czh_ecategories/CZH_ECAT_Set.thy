@@ -16,7 +16,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology chosen for the exposition of \<open>Set\<close> as a category is 
-analogous to the one used in the previous installment of this work 
+analogous to the one used in \cite{milehins_category_2021} 
 for the exposition of \<open>Set\<close> as a semicategory. 
 \<close>
 

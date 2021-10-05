@@ -12,6 +12,7 @@ begin
 
 subsection\<open>Background\<close>
 
+
 text\<open>
 In this section, we describe our implementation of the prototype software 
 framework ETTS that offers the integration of Types-To-Sets with the 
@@ -19,11 +20,12 @@ Isabelle/Isar infrastructure and full automation of the application of
 the ERA under favorable conditions. 
 The design of the framework rests largely on our 
 interpretation of several ideas expressed by the authors 
-of \cite{immler_smooth_2019}. 
+of \cite{kuncar_types_2019} and \cite{immler_smooth_2019}. 
 
 It has already been mentioned that the primary functionality of the ETTS 
-is available via the Isabelle/Isar commands 
-@{command tts_context}, @{command tts_lemmas} and @{command tts_lemma}.
+is available via the Isabelle/Isar 
+\cite{bertot_isar_1999,wenzel_isabelleisar_2007}
+commands @{command tts_context}, @{command tts_lemmas} and @{command tts_lemma}.
 There also exist secondary commands aimed at resolving certain specific 
 problems that one may encounter during relativization:
 @{command tts_register_sbts} and @{command tts_find_sbts}.
@@ -33,8 +35,9 @@ to step 5 of the RA. The functionality of these commands is
 explained in more detail in subsection \ref{sec:sbts} below.
 
 It is important to note that the description of the ETTS presented
-in this subsection is only a simplified model 
-of its programmatic implementation in Isabelle/ML. 
+in this subsection is only a simplified model
+of its programmatic implementation in
+\textit{Isabelle/ML} \cite{milner_definition_1997,wenzel_isabelle/isar_2019}. 
 \<close>
 
 
@@ -51,43 +54,34 @@ and post-processing of the result of the relativization.
 In a certain restricted sense the ERA can be seen as 
 a localized form of the RA, as it provides additional infrastructure 
 aimed specifically at making the relativization of theorems stated in the 
-context of Isabelle's locales 
+context of Isabelle's \textit{locales} 
 \cite{kammuller_locales_1999, berardi_locales_2004, ballarin_locales_2014} 
 more convenient.
 
-In what follows, assume the existence of an underlying 
-well-formed theory $D$ (and an associated HOL signature $\Sigma$) 
-that contains all definitional axioms that appear 
-in the standard library of Isabelle/HOL. 
-If \mbox{$\Gamma \vdash {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$}
-and
-$\beta, U_{\alpha\ \mathsf{set}}, \mathsf{Rep}_{\beta\rightarrow\alpha}, \mathsf{Abs}_{\alpha\rightarrow\beta} \in \Gamma$,
-then the 4-tuple 
-$(U_{\alpha\ \mathsf{set}}, \beta, \mathsf{Rep}_{\beta\rightarrow\alpha}, \mathsf{Abs}_{\alpha\rightarrow\beta})$,
-will be referred to as a \textit{relativization isomorphism} (RI)
-\textit{with respect to} $\Gamma$ (or RI, if $\Gamma$ can be inferred). 
-Given the RI 
-$(U_{\alpha\ \mathsf{set}},\beta,\mathsf{Rep}_{\beta\rightarrow\alpha},\mathsf{Abs}_{\alpha\rightarrow\beta})$, 
-the term $U_{\alpha\ \mathsf{set}}$ will be referred to as the
-\textit{set associated with the RI}, $\beta$ will be referred to as the 
-\textit{type variable associated with the RI}, 
-$\mathsf{Rep}_{\beta\rightarrow\alpha}$ will be referred to as the 
-\textit{representation associated with the RI} 
-and $\mathsf{Abs}_{\alpha\rightarrow\beta}$ will be referred
-to as the \textit{abstraction associated with the RI}. 
+In what follows, assume the existence of an underlying well-formed 
+theory $D$ that contains all definitional axioms that appear in the 
+standard library of Isabelle/HOL. 
+If \mbox{$\Gamma \vdash {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$} 
+and $\beta, U_{\alpha\ \mathsf{set}}, \mathsf{Rep}_{\beta\rightarrow\alpha}, \mathsf{Abs}_{\alpha\rightarrow\beta} \in \Gamma$, 
+then the 4-tuple $(U_{\alpha\ \mathsf{set}}, \beta, \mathsf{Rep}_{\beta\rightarrow\alpha}, \mathsf{Abs}_{\alpha\rightarrow\beta})$, 
+will be referred to as a \textit{relativization isomorphism} (RI) \textit{with respect to} $\Gamma$ (or RI, if $\Gamma$ can be inferred). 
+Given the RI $(U_{\alpha\ \mathsf{set}},\beta,\mathsf{Rep}_{\beta\rightarrow\alpha},\mathsf{Abs}_{\alpha\rightarrow\beta})$, 
+the term $U_{\alpha\ \mathsf{set}}$ will be referred to as 
+the \textit{set associated with the RI}, $\beta$ will be referred to as 
+the \textit{type variable associated with the RI}, 
+$\mathsf{Rep}_{\beta\rightarrow\alpha}$ will be referred to as 
+the \textit{representation associated with the RI} and $\mathsf{Abs}_{\alpha\rightarrow\beta}$ 
+will be referred to as the \textit{abstraction associated with the RI}. 
 Moreover, any typed term variable $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$ 
-such that $\Gamma \vdash T = (\lambda x\ y.\ \mathsf{Rep}\ y = x)$ will be referred to as the 
-\textit{transfer relation associated with the RI}. 
-$\Gamma \vdash Domainp\ T = (\lambda x.\ x \in U)$ that holds for 
-this transfer relation will be referred to as the 
-\textit{transfer domain rule associated with the RI}, 
-$\Gamma \vdash bi\_ unique\ T$ and 
-$\Gamma \vdash right\_ total\ T$ will be referred to as the 
-\textit{side conditions associated with the RI}. For brevity, 
-the abbreviation 
+such that $\Gamma \vdash T = (\lambda x\ y.\ \mathsf{Rep}\ y = x)$ 
+will be referred to as the \textit{transfer relation associated with the RI}. 
+$\Gamma \vdash Domainp\ T = (\lambda x.\ x \in U)$ that holds for this transfer 
+relation will be referred to as the \textit{transfer domain rule associated 
+with the RI}, $\Gamma \vdash bi\_ unique\ T$ and $\Gamma \vdash right\_ total\ T$ 
+will be referred to as the \textit{side conditions associated with the RI}.
+For brevity, the abbreviation 
 $\mathsf{dbr}[T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}},U_{\alpha\ \mathsf{set}}]$ 
-will be used to mean that 
-$Domainp\ T = (\lambda x.\ x \in U)$, $bi\_ unique\ T$
+will be used to mean that $Domainp\ T = (\lambda x.\ x \in U)$, $bi\_ unique\ T$
 and $right\_ total\ T$ for any $\alpha$, $\beta$, 
 $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$ and $U_{\alpha\ \mathsf{set}}$.
 \<close>
@@ -99,7 +93,7 @@ subsection\<open>Set-based terms and their registration\label{sec:sbts}\<close>
 
 text\<open>
 Perhaps, one of the most challenging aspects of the automation of the 
-relativization process is related to the application of transfer during 
+relativization process is related to the application of Transfer during 
 step 5 of the RA: a suitable transfer rule for a given constant-instance 
 may exist only under non-conventional side conditions:
 an important example that showcases this issue is the built-in constant 
@@ -197,43 +191,32 @@ the \textit{attributes for the set-based theorem}.
 A sequence of the entities in the list above will be
 referred to as the \textit{ERA-parameterization for} $\Gamma$.
 
-The \textit{RI Specification} is a finite non-empty sequence
-of pairs \mbox{$\left(?\gamma, U_{\alpha\ \mathsf{set}} \right)$} of
-schematic type variables $\gamma$ and the typed term variables 
-$U_{\alpha\ \mathsf{set}}$, such that $U_{\alpha\ \mathsf{set}} \in \Gamma$.
-The individual elements of the RI specification will 
-be referred to as the \textit{RI specification elements}.
-Given an RI specification element, any type variable that occurs 
-on the left hand side (LHS) of the RI specification element will be referred to as the 
-\textit{type variable associated with the RI specification element},
-any typed term variable that occurs on the right hand side (RHS) of the RI specification
-element will be referred to as the 
+The RI Specification is a finite non-empty sequence of pairs of 
+variables \mbox{$\left(?\gamma, U_{\alpha\ \mathsf{set}} \right)$}, 
+such that $U_{\alpha\ \mathsf{set}} \in \Gamma$. The individual elements of 
+the RI specification will be referred to as 
+the \textit{RI specification elements}. 
+The first element of the RI specification element will be referred to as 
+the \textit{schematic type variable associated with the RI specification element}, 
+the second element will be referred to as the 
 \textit{set associated with the RI specification element}.
-The type variables associated with the RI specification elements 
-must be distinct and the type variables of the sets associated with the 
-RI specification elements must be distinct.
 
-The \textit{sbterm specification} is a finite sequence of 
+The sbterm specification is a finite sequence of 
 pairs \mbox{$(t : ?\bar{\alpha}\ K,\ u : \bar{\beta}\ K)$}, 
-where $t$ is either a constant-instance or a 
-schematic typed term variable and $u$ is an sbterm with respect to $\Gamma$.
-The individual elements of the sbterm specification will 
-be referred to as the \textit{sbterm specification elements}.
-Given an sbterm specification element, any term that 
-occurs on the LHS of the sbterm specification element will be referred to as the 
-\textit{tbt associated with the sbterm specification element},
-any sbterm that occurs on the RHS of the 
-sbterm specification element will be referred to as the 
-\textit{sbterm associated with the sbterm specification element}.
+where $t$ is either a constant-instance or a schematic typed term variable 
+and $u$ is an sbterm with respect to $\Gamma$. The notation for the elements 
+of the sbterm specification follows a convention similar to the one 
+introduced for the RI specification elements.
 
-The \textit{rewrite rules for the set-based theorem} can be any set
-of valid rules for the Isabelle simplifier \cite{wenzel_isabelle/isar_2019-1};
-the \textit{known premises for the set-based theorem} can be any finite 
-sequence of deductions in $\Gamma$; the 
-\textit{specification of the elimination of premises in the set-based theorem}
+The rewrite rules for the set-based theorem can be any set of 
+valid rules for the Isabelle simplifier \cite{wenzel_isabelle/isar_2019-1}; 
+the known premises for the set-based theorem can be any finite 
+sequence of deductions in $\Gamma$; 
+the specification of the elimination of premises in the set-based theorem 
 is a pair $(\bar{t}, m)$, where $\bar{t}$ is a sequence of formulae and $m$ 
-is a proof method; the \textit{attributes for the set-based theorem} 
-is a sequence of attributes of Isabelle (e.g., see \cite{wenzel_isabelle/isar_2019-1}).
+is a proof method; the attributes for the set-based theorem
+is a sequence of attributes of Isabelle
+(e.g., see \cite{wenzel_isabelle/isar_2019-1}).
 \<close>
 
 
@@ -242,83 +225,84 @@ subsection\<open>Definition of the ERA\label{sec:def-ERA}\<close>
 
 
 text\<open>
-Assume that there exists a context $\Gamma$ and an ERA-parameterization 
-for $\Gamma$. A valid input to the ERA is considered to be a theorem 
-$\vdash\phi$ such that all variables
-that occur in the theorem at the top level are schematic. 
-It is also assumed that there exists a (possibly empty) sequence of 
-schematic variables $?\bar{h}$ of length $m$ that form a subset 
-of the schematic variables that occur in $\phi$ and a sequence 
-$\bar{g}$ of sbterms in $\Gamma$ of the equivalent length, such that 
-$(?\bar{h}_i, \bar{g}_i)$ is an sbterm specification element of 
-the ERA-parameterization for all $i$ such that $1 \leq i \leq m$. 
+The relativization is performed inside a local context $\Gamma$ with an 
+associated ERA-parameterization (such a context-parameterization pair will 
+be called a \textit{tts context}). The ERA provides explicit support for 
+handling the transfer rules local to the context through the infrastructure 
+for the registration of sbterms, as explained in 
+subsection \ref{sec:sbts}. Apart from this, the main part of 
+the ERA largely follows the outline of the RA. However, 
+the ERA also provides several tools for post-processing of the raw result 
+of the relativization. The ERA also has an initialization stage, but this
+stage is largely hidden from the end-user. Thus, the ERA can be divided 
+in three distinct parts: 
+\textit{initialization of the relativization context}, 
+\textit{kernel of the ERA} (KERA) and \textit{post-processing}. 
 
-In what follows, like in the exposition of the ORA in 
-\cite{blanchette_types_2016} and the RA in subsection \ref{sec:ra}, 
-for brevity it is assumed
-that the set of the type variables that occur in $\phi$ is the singleton set 
-$\{?\alpha_{\Upsilon}\}$, 
-where $\Upsilon$ is a type class that depends on the sequence of
-overloaded constants $\bar{*}$ of length $n$.
-Thus, it is also assumed that the RI specification in the ERA-parameterization 
-contains exactly one RI specification element 
-$(?\alpha_{\Upsilon}, U_{\alpha\ \mathsf{set}})$
-and that there exists a sequence of $n$ sbterms $\bar{f}$ in $\Gamma$ 
-such that $(\bar{*}_i, \bar{f}_i)$ are sbterm specification elements 
-of the ERA-parameterization for all $i$ such that $1 \leq i \leq n$. 
-Lastly, it is assumed
-that the set of all type variables of the sbterms associated with 
-the sbterm specification elements of the ERA-parameterization 
-is the singleton set $\{\alpha\}$, thence, there exist sequences $\bar{K}$
-and $\bar{L}$ such that $\bar{h}_i : ?\alpha_{\Upsilon}\ \bar{K}_i$ and 
-$\bar{g}_i : \alpha\ \bar{K}_i$ for all $i$ such that $1 \leq i \leq m$, and
-$\bar{*}_i : ?\alpha_{\Upsilon}\ \bar{L}_i$ and 
-$\bar{f}_i : \alpha\ \bar{L}_i$ for all $i$ such that $1 \leq i \leq n$. 
+Assume that the context $\Gamma$ contains the variable
+$U_{\alpha\ \mathsf{set}}$ and the finite sequences of 
+variables $\bar{g}$ and $\bar{f}$ indexed by $I$ and $J$, respectively, 
+such that $\bar{g}_i : \alpha\ \bar{K}_i$ and 
+$\bar{f}_j : \alpha\ \bar{L}_j$ for all $i \in I$ and $j \in J$ 
+for some sequences of functions $\bar{K}$ and $\bar{L}$ also 
+indexed by $I$ and $J$, respectively, representing the type constructors. 
+Also, assume that the input to the relativization algorithm is 
+the type-based theorem 
+$\vdash\phi\left[?\alpha_{\Upsilon}, ?\bar{h}\left[?\alpha_{\Upsilon}\right]\right]$ 
+such that $?\bar{h}$ is indexed by $I$ and $\Upsilon$ depends on the 
+overloaded constants $\bar{*}$ indexed by $J$. Finally, assume that the 
+ERA is parameterized by the RI specification 
+$\left(?\alpha_{\Upsilon}, U_{\alpha\ \mathsf{set}}\right)$ 
+and the sbterm specification elements 
+$(?\bar{h}_i, \bar{g}_i)$ and $(\bar{*}_j, \bar{f}_j)$ 
+for all $i \in I$ and $j \in J$. 
 
-The ERA can be divided in three distinct parts: 
-\textit{initialization of the relativization context},
-\textit{kernel of the ERA} (KERA) and \textit{post-processing}.
-
-\textbf{Initialization of the relativization context}.
+\textbf{Initialization of the relativization context}. 
 Prior to the application of the relativization algorithm, the formula 
 $\exists \mathsf{Rep}\ \mathsf{Abs}.\ {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$ 
-is added to the context $\Gamma$, with the type variable $\beta$ being fresh 
-for $\Gamma$:  
-\mbox{$\Gamma' = \Gamma \cup \{\exists \mathsf{Rep}\ \mathsf{Abs}.\ {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}\}$}.
-In what follows, $\Gamma'$ will be referred to as the relativization context.
-Then, the properties of the Hilbert choice $\varepsilon$ 
-are used for the definition of $\mathsf{Rep}$ and
-$\mathsf{Abs}$ such that \mbox{$\Gamma' \vdash {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$}
+is added to the context $\Gamma$, with the type variable $\beta$ being fresh for 
+$\Gamma$, resulting in a new context $\Gamma'$ such that 
+$\Gamma \subseteq \Gamma'$ and 
+\mbox{$\exists \mathsf{Rep}\ \mathsf{Abs}.\ {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}} \in \Gamma'$}.
+Then, the properties of the Hilbert choice $\varepsilon$ are used for the 
+definition of $\mathsf{Rep}$ and $\mathsf{Abs}$ such that 
+\mbox{$\Gamma' \vdash {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$} 
 (e.g., see \cite{kuncar_types_2015}).
-In this case,
-\mbox{$(U_{\alpha\ \mathsf{set}},\beta,\mathsf{Rep}_{\beta\rightarrow\alpha},\mathsf{Abs}_{\alpha\rightarrow\beta})$} 
-is an RI with respect to $\Gamma'$. 
-Furthermore, a fresh $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$ 
-is defined as a transfer relation associated with the RI. Finally, the 
-transfer domain rule associated with the RI and the side conditions associated
-with the RI are proved for $T$ with respect to $\Gamma'$. 
-For each $\bar{g}_i$ such that \mbox{$1 \leq i \leq m$},
-the sbt-database contains a deduction
-\mbox{$
-\Gamma \vdash\mathsf{dbr}[?A, U] \longrightarrow
-\exists a.\ R\left[?A\right]_{\alpha\ \bar{K}_i \rightarrow ?\delta\ \bar{K}_i\rightarrow \mathbb{B}}\ \bar{g}_i\ a,
-$}.
-Thence, for each $i$ such that $1 \leq i \leq m$, $?\delta$ is instantiated 
-as $\beta$ and $?A_{\alpha\rightarrow?\delta\rightarrow\mathbb{B}}$ is instantiated 
-as $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$. The resulting theorems
-are used for the definition of a fresh sequence $\bar{a}$ such that  
-\mbox{$\Gamma' \vdash R\left[T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}\right]_{\alpha\ \bar{K}_i \rightarrow 
-\beta\ \bar{K}_i\rightarrow \mathbb{B}}\ \bar{g}_i\ \bar{a}_i$}.
+In this case, \mbox{$(U_{\alpha\ \mathsf{set}},\beta,\mathsf{Rep}_{\beta\rightarrow\alpha},\mathsf{Abs}_{\alpha\rightarrow\beta})$} 
+is an RI with respect to $\Gamma'$. Furthermore, a fresh 
+$T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$ (for $\Gamma$) is defined as a transfer 
+relation associated with the RI. Finally, the transfer domain rule associated 
+with the RI and the side conditions associated with the RI are proved for $T$
+with respect to $\Gamma'$. 
+For each $\bar{g}_i$ such that $i \in I$, the sbt-database contains a deduction 
+\mbox{$\Gamma \vdash\mathsf{dbr}[?A, U] \longrightarrow \exists a.\ R\left[?A\right]_{\alpha\ \bar{K}_i \rightarrow ?\delta\ \bar{K}_i\rightarrow \mathbb{B}}\ \bar{g}_i\ a$}. 
+Thence, for each $i \in I$, $?\delta$ is instantiated as 
+$\beta$ and $?A_{\alpha\rightarrow?\delta\rightarrow\mathbb{B}}$ is instantiated 
+as $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$. The resulting theorems 
+are used for the definition of a fresh (for $\Gamma$) sequence of variables $\bar{a}$ such that 
+\mbox{$\Gamma' \vdash R\left[T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}\right]_{\alpha\ \bar{K}_i \rightarrow \beta\ \bar{K}_i\rightarrow \mathbb{B}}\ \bar{g}_i\ \bar{a}_i$}.
 Similar deductions are also established for the sequence $\bar{f}$, with the 
-sequence of the elements appearing on the RHS of the transfer rule denoted
-by $\bar{b}$.
-These deductions are meant to be used by the transfer infrastructure during the step of the ERA that
-is equivalent to step 5 of the RA, as shown below.
+sequence of the variables appearing on the right-hand side of the transfer rules 
+denoted by $\bar{b}$. These deductions are meant to be used by the transfer 
+infrastructure during the step of the ERA that is equivalent to step 5 of the RA,
+as shown below. Thus, at the end of the initialization of the relativization context, 
+the theorem is transformed into a deduction of the form 
+\mbox{$\Gamma'\vdash\phi\left[?\alpha_{\Upsilon}, ?\bar{h}\left[?\alpha_{\Upsilon}\right]\right]$}, 
+where the context $\Gamma'$ (called the \textit{relativization context}) 
+is such that $\Gamma \subseteq \Gamma'$ 
+and it has an associated relativization isomorphism 
+$(U_{\alpha\ \mathsf{set}}, \beta, \mathsf{Rep}_{\beta\rightarrow\alpha}, \mathsf{Abs}_{\alpha\rightarrow\beta})$ 
+for some fresh $\beta$, the associated fresh transfer relation $T$ and fresh
+variables $\bar{a}$ and $\bar{b}$ indexed by $I$ and $J$
+(with freshness being assessed with respect to $\Gamma$).
+Also, the following transfer rules are provided for all $i \in I$ and $j \in J$: 
+\mbox{$\Gamma' \vdash \bar{R}_i\left[T\right]\ \bar{g}_i\ \bar{a}_i$} and 
+\mbox{$\Gamma' \vdash \bar{R'}_j\left[T\right]\ \bar{f}_j\ \bar{b}_j$} 
+($\bar{R}$ and $\bar{R'}$ are sequences of parametricity relations indexed 
+by $I$ and $J$, respectively).
 
-\textbf{Kernel of the ERA}. The KERA is similar to the
-the RA: 
+\textbf{Kernel of ERA}. The KERA is similar to the RA: 
 \[
-\scalebox{0.75}{
 \infer[(7)]
 {
 \Gamma\vdash U \neq\emptyset\longrightarrow
@@ -378,62 +362,57 @@ U\downarrow\bar{g},\bar{f}\longrightarrow
 }
 }
 }
-}
 \]
-Thus, step 1 will be referred to as the first step of the dictionary 
-construction (similar to step 1 of the RA);
-step 2 will be referred to as unoverloading of the type $?\alpha_{\Upsilon}$: 
-it includes class internalization and the application of the UO 
-(similar to step 2 of the RA); 
-in step 3, $?\alpha$ is 
-instantiated as $\beta$ using the RI specification 
-(similar to step 4 in the RA); 
-in step 4, the sbterm specification is used for the instantiation
+Thus, step 1 will be referred to as the first step
+of the dictionary construction (similar to step 1 of the RA); step 2 will 
+be referred to as unoverloading of the type $?\alpha_{\Upsilon}$: 
+it includes class internalization and the application of the 
+UO (similar to step 2 of the RA); in step 3, $?\alpha$ is instantiated 
+as $\beta$ using the RI specification (similar to step 4 in the RA); 
+in step 4, the sbterm specification is used for the instantiation 
 of $?\bar{h}$ as $\bar{a}$ and $?\bar{f}$ as $\bar{b}$; 
-step 5 refers to the application of transfer, including the
-transfer rules associated with the sbterms
-(similar to step 5 in the RA); in step 6, the result is exported from $\Gamma'$ 
-to $\Gamma$, providing the additional premise 
-$\exists \mathsf{Rep}\ \mathsf{Abs}.\ {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$;
-step 7 is the application of the attribute
-@{attribute cancel_type_definition}
+step 5 refers to the application of transfer, including the transfer rules 
+associated with the sbterms (similar to step 5 in the RA); 
+in step 6, the result is exported from $\Gamma'$ to $\Gamma$, providing the 
+additional premise 
+$\exists \mathsf{Rep}\ \mathsf{Abs}.\ {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$; 
+step 7 is the application of the attribute 
+@{attribute cancel_type_definition} 
 (similar to step 6 in the RA).
 
-The RI specification and the sbterm specification provide the information
-that is necessary to perform the type and term substitutions in steps
-3 and 4 of the KERA. If the specifications are viewed as finite maps, 
-their domains morph along the transformations that the theorem 
-undergoes until step 4. 
+The RI specification and the sbterm specification provide the information that 
+is necessary to perform the type and term substitutions in steps 3 and 4 of 
+the KERA. If the specifications are viewed as finite maps, their domains 
+morph along the transformations that the theorem undergoes until step 4. 
 
 \textbf{Post-processing}. The deduction that is obtained in the final step of 
-the KERA can often be simplified further.
-The following post-processing steps were created to allow for the presentation 
-of the set-based theorem in a format that is both desirable and convenient for 
-the usual applications:
+the KERA can often be simplified further. The following post-processing steps 
+were created to allow for the presentation 
+of the set-based theorem in a format that is both desirable and convenient 
+for the usual applications:
 \begin{enumerate}
-\item \textit{Simplification}. The 
-rewriting is performed using the rewrite rules for the set-based theorem:
-the implementation relies on the functionality of Isabelle's simplifier.
+\item \textit{Simplification}. The rewriting is performed using the rewrite 
+rules for the set-based theorem: the implementation relies on the 
+functionality of the Isabelle's simplifier.
 \item \textit{Substitution of known premises}. The known premises for the 
-set-based theorem are matched with the premises of the set-based theorem, allowing 
-for their elimination.
-\item \textit{Elimination of premises}. 
-Each premise is matched against each term 
-in the specification of the elimination of premises in the set-based theorem; 
-the associated method is applied in an attempt to eliminate 
-the matching premises (this can be useful for the 
-elimination of the premises of the form $U \neq \emptyset$).
+set-based theorem are matched with the premises of the set-based theorem, 
+allowing for their elimination.
+\item \textit{Elimination of premises}. Each premise is matched against each 
+term in the specification of the elimination of premises in the 
+set-based theorem; the associated method is applied in an attempt to eliminate 
+the matching premises (this can be useful for the elimination of the 
+premises of the form $U \neq \emptyset$).
 \item \textit{Application of the attributes for the set-based theorem}. 
-The attributes for the set-based theorem are applied as the 
-final step during post-processing.
+The attributes for the set-based theorem are applied as the final step 
+during post-processing.
 \end{enumerate}
 
 Generally, the desired form of the result after a successful application 
 of post-processing is similar to
 \mbox{$\Gamma\vdash\phi^{\mathsf{on}}_{\mathsf{with}}\left[\alpha,U,\bar{g},\bar{f}\right]$}
 with the premises \mbox{$U \neq \emptyset$, $U\downarrow\bar{g},\bar{f}$} and 
-\mbox{$\Upsilon^{\mathsf{on}}_{\mathsf{with}}\ U\ \bar{f}$} eliminated completely (these premises
-can often be inferred from the context $\Gamma$).
+\mbox{$\Upsilon^{\mathsf{on}}_{\mathsf{with}}\ U\ \bar{f}$} eliminated completely 
+(these premises can often be inferred from the context $\Gamma$).
 \<close>
 
 text\<open>\newpage\<close>

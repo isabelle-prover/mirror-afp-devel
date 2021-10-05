@@ -15,9 +15,8 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology for the exposition of \<open>SemiCAT\<close> as a category 
-is analogous to the one used in the previous installment 
-of this body of work for the exposition of \<open>SemiCAT\<close> 
-as a semicategory.
+is analogous to the one used in \cite{milehins_category_2021} 
+for the exposition of \<open>SemiCAT\<close> as a semicategory.
 \<close>
 
 named_theorems cat_SemiCAT_simps

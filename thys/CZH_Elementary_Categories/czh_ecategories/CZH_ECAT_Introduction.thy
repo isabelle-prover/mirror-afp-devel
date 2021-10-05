@@ -14,8 +14,7 @@ text\<open>
 This article provides a 
 formalization of the elementary theory of 1-categories without
 an additional structure. For further information see 
-chapter Introduction in the first installment of 
-this work: \<open>Category Theory for ZFC in HOL I: Foundations\<close>.
+chapter Introduction in \cite{milehins_category_2021}.
 \<close>
 
 

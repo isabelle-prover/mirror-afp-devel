@@ -45,13 +45,11 @@ locale module_pair_with =
     and scale\<^sub>2 (infixr \<open>*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h\<^sub>'_\<^sub>2\<close> 75)
 
 lemma module_pair_with_overloaded[ud_with]: 
-  "
-  module_pair = 
+  "module_pair =
     (
-      \<lambda>scale\<^sub>1 scale\<^sub>2. 
+      \<lambda>scale\<^sub>1 scale\<^sub>2.
         module_pair_with (+) 0 (-) uminus scale\<^sub>1 (+) 0 (-) uminus scale\<^sub>2
-    )
-  "
+    )"
   unfolding module_pair_def module_pair_with_def 
   unfolding module_with_overloaded
   ..
