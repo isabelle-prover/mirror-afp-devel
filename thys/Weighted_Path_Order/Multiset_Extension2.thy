@@ -1,6 +1,6 @@
 section \<open>Multiset extension of order pairs in the other direction\<close>
 
-text \<open>Many term orders are formulated in the other direction, i.e., they use 
+text \<open>Many term orders are formulated in the other direction, i.e., they use
   strong normalization of $>$ instead of well-foundedness of $<$. Here, we
   flip the direction of the multiset extension of two orders, connect it to existing interfaces,
   and prove some further properties of the multiset extension.\<close>
@@ -43,7 +43,7 @@ qed auto
 
 subsection\<open>Definition of the multiset extension of $>$-orders\<close>
 
-text\<open>We define here the non-strict extension of the order pair $(\geqslant, >)$ -- 
+text\<open>We define here the non-strict extension of the order pair $(\geqslant, >)$ --
   usually written as (ns, s) in the sources --
   by just flipping the directions twice.\<close>
 
@@ -223,7 +223,7 @@ lemma supset_imp_s_mul_ext:
   shows "(A, B) \<in> s_mul_ext NS S"
   using assms subset_mset.add_diff_inverse[of B A]
   by (auto intro!: s_mul_extI[of A B "A - B" B B "{#}"] multpw_refl' refl_imp_locally_refl
-      simp: Diff_eq_empty_iff_mset subset_mset.order.strict_iff_order)
+      simp: Diff_eq_empty_iff_mset)
 
 end
 
@@ -245,8 +245,8 @@ proof
   assume "(xs1, xs2) \<in> s_mul_ext {(x, y). snd (f x y)} {(x, y). fst (f x y)}"
   from s_mul_ext_local_mono[OF _ _ this, of "{(x, y). snd (g x y)}" "{(x, y). fst (g x y)}"]
   show "(ys1, ys2) \<in> s_mul_ext {(x, y). snd (g x y)} {(x, y). fst (g x y)}"
-    using assms by force 
-next 
+    using assms by force
+next
   assume "(ys1, ys2) \<in> s_mul_ext {(x, y). snd (g x y)} {(x, y). fst (g x y)}"
   from s_mul_ext_local_mono[OF _ _ this, of "{(x, y). snd (f x y)}" "{(x, y). fst (f x y)}"]
   show "(xs1, xs2) \<in> s_mul_ext {(x, y). snd (f x y)} {(x, y). fst (f x y)}"
@@ -263,8 +263,8 @@ proof
   assume "(xs1, xs2) \<in> ns_mul_ext {(x, y). snd (f x y)} {(x, y). fst (f x y)}"
   from ns_mul_ext_local_mono[OF _ _ this, of "{(x, y). snd (g x y)}" "{(x, y). fst (g x y)}"]
   show "(ys1, ys2) \<in> ns_mul_ext {(x, y). snd (g x y)} {(x, y). fst (g x y)}"
-    using assms by force 
-next 
+    using assms by force
+next
   assume "(ys1, ys2) \<in> ns_mul_ext {(x, y). snd (g x y)} {(x, y). fst (g x y)}"
   from ns_mul_ext_local_mono[OF _ _ this, of "{(x, y). snd (f x y)}" "{(x, y). fst (f x y)}"]
   show "(xs1, xs2) \<in> ns_mul_ext {(x, y). snd (f x y)} {(x, y). fst (f x y)}"
@@ -279,7 +279,7 @@ lemma mulextp_cong[fundef_cong]:
     and "xs2 = ys2"
     and "\<And> x x'. x \<in># ys1 \<Longrightarrow> x' \<in># ys2 \<Longrightarrow> f x x' = g x x'"
   shows "mulextp f xs1 xs2 = mulextp g ys1 ys2"
-  unfolding mulextp_def using assms by (auto cong: nsmulextp_cong smulextp_cong) 
+  unfolding mulextp_def using assms by (auto cong: nsmulextp_cong smulextp_cong)
 
 lemma mset_s_mul_ext:
   "(mset xs, mset ys) \<in> s_mul_ext {(x, y). snd (f x y)} {(x, y).fst (f x y)} \<longleftrightarrow>
@@ -455,7 +455,7 @@ lemma mul_ext_unfold:
   "(x,y) \<in> {(a,b). fst (mul_ext g a b)} \<longleftrightarrow> (mset x, mset y) \<in> (s_mul_ext {(a,b). snd (g a b)} {(a,b). fst (g a b)})"
   unfolding mul_ext_def by (simp add: Let_def)
 
-text \<open>The next lemma is a local version of strong-normalization of 
+text \<open>The next lemma is a local version of strong-normalization of
   the multiset extension, where the base-order only has to be strongly normalizing
   on elements of the multisets. This will be crucial for orders that are defined recursively
   on terms, such as RPO or WPO.\<close>
@@ -637,16 +637,16 @@ lemma mul_ext_mono:
   assumes "\<And>x y. \<lbrakk>x \<in> set xs; y \<in> set ys; fst (P x y)\<rbrakk> \<Longrightarrow> fst (P' x y)"
     and   "\<And>x y. \<lbrakk>x \<in> set xs; y \<in> set ys; snd (P x y)\<rbrakk> \<Longrightarrow> snd (P' x y)"
   shows
-    "fst (mul_ext P xs ys) \<Longrightarrow> fst (mul_ext P' xs ys)" 
+    "fst (mul_ext P xs ys) \<Longrightarrow> fst (mul_ext P' xs ys)"
     "snd (mul_ext P xs ys) \<Longrightarrow> snd (mul_ext P' xs ys)"
   unfolding mul_ext_def Let_def fst_conv snd_conv
-proof - 
-  assume mem: "(mset xs, mset ys) \<in> s_mul_ext {(x, y). snd (P x y)} {(x, y). fst (P x y)}" 
-  show "(mset xs, mset ys) \<in> s_mul_ext {(x, y). snd (P' x y)} {(x, y). fst (P' x y)}" 
+proof -
+  assume mem: "(mset xs, mset ys) \<in> s_mul_ext {(x, y). snd (P x y)} {(x, y). fst (P x y)}"
+  show "(mset xs, mset ys) \<in> s_mul_ext {(x, y). snd (P' x y)} {(x, y). fst (P' x y)}"
     by (rule s_mul_ext_local_mono[OF _ _ mem], insert assms, auto)
 next
-  assume mem: "(mset xs, mset ys) \<in> ns_mul_ext {(x, y). snd (P x y)} {(x, y). fst (P x y)}" 
-  show "(mset xs, mset ys) \<in> ns_mul_ext {(x, y). snd (P' x y)} {(x, y). fst (P' x y)}" 
+  assume mem: "(mset xs, mset ys) \<in> ns_mul_ext {(x, y). snd (P x y)} {(x, y). fst (P x y)}"
+  show "(mset xs, mset ys) \<in> ns_mul_ext {(x, y). snd (P' x y)} {(x, y). fst (P' x y)}"
     by (rule ns_mul_ext_local_mono[OF _ _ mem], insert assms, auto)
 qed
 
