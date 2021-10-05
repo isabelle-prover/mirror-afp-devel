@@ -67,7 +67,7 @@ lemma cinner_scaleC_right [simp]: "cinner x (scaleC r y) = r * (cinner x y)"
 
 lemma cinner_zero_right [simp]: "cinner x 0 = 0"
   using cinner_zero_left [of x]
-  by (metis (mono_tags, hide_lams) complex_cnj_zero local.cinner_commute)
+  by (metis (mono_tags, opaque_lifting) complex_cnj_zero local.cinner_commute)
 
 lemma cinner_minus_right [simp]: "cinner x (- y) = - cinner x y"
   using cinner_minus_left [of y x]
@@ -79,14 +79,14 @@ lemma cinner_diff_right: "cinner x (y - z) = cinner x y - cinner x z"
 
 lemma cinner_sum_right: "cinner x (\<Sum>y\<in>A. f y) = (\<Sum>y\<in>A. cinner x (f y))"
 proof (subst cinner_commute)
-  have "(\<Sum>y\<in>A. cinner (f y) x) = (\<Sum>y\<in>A. cinner (f y) x)" 
-    by blast   
+  have "(\<Sum>y\<in>A. cinner (f y) x) = (\<Sum>y\<in>A. cinner (f y) x)"
+    by blast
   hence "cnj (\<Sum>y\<in>A. cinner (f y) x) = cnj (\<Sum>y\<in>A. (cinner (f y) x))"
     by simp
   hence "cnj (cinner (sum f A) x) = (\<Sum>y\<in>A. cnj (cinner (f y) x))"
     by (simp add: cinner_sum_left)
   thus "cnj (cinner (sum f A) x) = (\<Sum>y\<in>A. (cinner x (f y)))"
-    by (subst (2) cinner_commute)    
+    by (subst (2) cinner_commute)
 qed
 
 lemmas cinner_add [algebra_simps] = cinner_add_left cinner_add_right
@@ -201,12 +201,12 @@ proof
       by (metis complex_add_cnj local.cinner_commute)
     also have "\<dots> \<le> complex_of_real (2 * cmod (cinner x y))"
       using complex_Re_le_cmod complex_of_real_mono a1
-      by blast      
+      by blast
     also have "\<dots> = 2 * abs (cinner x y)"
       unfolding abs_complex_def by simp
     also have "\<dots> \<le> 2 * complex_of_real (norm x) * complex_of_real (norm y)"
       using Cauchy_Schwarz_ineq2 unfolding abs_complex_def by auto
-    finally have xyyx: "cinner x y + cinner y x \<le> complex_of_real (2 * norm x * norm y)" 
+    finally have xyyx: "cinner x y + cinner y x \<le> complex_of_real (2 * norm x * norm y)"
       by auto
     have "complex_of_real ((norm (x + y))\<^sup>2) = cinner (x+y) (x+y)"
       by (simp add: power2_norm_eq_cinner)
@@ -228,9 +228,9 @@ proof
     show "(norm (a *\<^sub>C x))\<^sup>2 = (cmod a * norm x)\<^sup>2"
       by (simp_all add: norm_eq_sqrt_cinner norm_mult power2_eq_square)
     show "0 \<le> norm (a *\<^sub>C x)"
-      by (simp_all add: norm_eq_sqrt_cinner)     
+      by (simp_all add: norm_eq_sqrt_cinner)
     show "0 \<le> cmod a * norm x"
-      by (simp_all add: norm_eq_sqrt_cinner)     
+      by (simp_all add: norm_eq_sqrt_cinner)
   qed
   show "norm (r *\<^sub>R x) = \<bar>r\<bar> * norm x"
     unfolding scaleR_scaleC norm_scaleC by auto
@@ -363,7 +363,7 @@ proof
     unfolding cinner_complex_def complex_cnj complex_mult complex_norm
     by (simp add: power2_eq_square)
   thus "norm x = sqrt (cmod (cinner x x))"
-    by (cases x, hypsubst_thin) 
+    by (cases x, hypsubst_thin)
 qed
 
 end
@@ -406,14 +406,14 @@ lemmas cinner_simps = cinner_add_left cinner_add_right cinner_diff_right cinner_
 (* Analogue to both dot_norm and dot_norm_neg *)
 lemma cdot_norm: "cinner x y = ((norm (x+y))\<^sup>2 - (norm (x-y))\<^sup>2 - \<i> * (norm (x + \<i> *\<^sub>C y))\<^sup>2 + \<i> * (norm (x - \<i> *\<^sub>C y))\<^sup>2) / 4"
   unfolding power2_norm_eq_cinner
-  by (simp add: power2_norm_eq_cinner cinner_add_left cinner_add_right 
+  by (simp add: power2_norm_eq_cinner cinner_add_left cinner_add_right
       cinner_diff_left cinner_diff_right ring_distribs)
 
-lemma of_complex_inner_1 [simp]: 
+lemma of_complex_inner_1 [simp]:
   "cinner (of_complex x) (1 :: 'a :: {complex_inner, complex_normed_algebra_1}) = cnj x"
   by (metis Complex_Inner_Product0.complex_inner_1_right cinner_complex_def cinner_mult_left complex_cnj_one norm_one of_complex_def power2_norm_eq_cinner scaleC_conv_of_complex)
 
-lemma summable_of_complex_iff: 
+lemma summable_of_complex_iff:
   "summable (\<lambda>x. of_complex (f x) :: 'a :: {complex_normed_algebra_1,complex_inner}) \<longleftrightarrow> summable f"
 proof
   assume *: "summable (\<lambda>x. of_complex (f x) :: 'a)"
@@ -450,7 +450,7 @@ proof (insert assms)
       and "(g has_field_derivative cnj dg) (at (f x))"
     unfolding cgderiv_def has_field_derivative_def cinner_scaleC_left complex_cnj_cnj
     using that
-    by (simp add: cgderiv_def has_derivative_compose has_field_derivative_imp_has_derivative) 
+    by (simp add: cgderiv_def has_derivative_compose has_field_derivative_imp_has_derivative)
 
 qed
 
@@ -502,27 +502,27 @@ lemma cGDERIV_inverse:
 
 (* Don't know if this holds: *)
 (* lemma cGDERIV_norm:
-  assumes "x \<noteq> 0" shows "cGDERIV (\<lambda>x. norm x) x :> sgn x" 
+  assumes "x \<noteq> 0" shows "cGDERIV (\<lambda>x. norm x) x :> sgn x"
 *)
 
 
 lemma has_derivative_norm[derivative_intros]:
   fixes x :: "'a::complex_inner"
-  assumes "x \<noteq> 0" 
+  assumes "x \<noteq> 0"
   shows "(norm has_derivative (\<lambda>h. Re (cinner (sgn x) h))) (at x)"
   thm has_derivative_norm
 proof -
   have Re_pos: "0 < Re (cinner x x)"
-    using assms 
+    using assms
     by (metis Re_strict_mono cinner_gt_zero_iff zero_complex.simps(1))
-  have Re_plus_Re: "Re (cinner x y) + Re (cinner y x) = 2 * Re (cinner x y)" 
+  have Re_plus_Re: "Re (cinner x y) + Re (cinner y x) = 2 * Re (cinner x y)"
     for x y :: 'a
     by (metis cinner_commute cnj.simps(1) mult_2_right semiring_normalization_rules(7))
   have norm: "norm x = sqrt (Re (cinner x x))" for x :: 'a
     apply (subst norm_eq_sqrt_cinner, subst cmod_Re)
     using cinner_ge_zero by auto
   have v2:"((\<lambda>x. sqrt (Re (cinner x x))) has_derivative
-          (\<lambda>xa. (Re (cinner x xa) + Re (cinner xa x)) * (inverse (sqrt (Re (cinner x x))) / 2))) (at x)" 
+          (\<lambda>xa. (Re (cinner x xa) + Re (cinner xa x)) * (inverse (sqrt (Re (cinner x x))) / 2))) (at x)"
     by (rule derivative_eq_intros | simp add: Re_pos)+
   have v1: "((\<lambda>x. sqrt (Re (cinner x x))) has_derivative (\<lambda>y. Re (cinner x y) / sqrt (Re (cinner x x)))) (at x)"
     if "((\<lambda>x. sqrt (Re (cinner x x))) has_derivative (\<lambda>xa. Re (cinner x xa) * inverse (sqrt (Re (cinner x x))))) (at x)"

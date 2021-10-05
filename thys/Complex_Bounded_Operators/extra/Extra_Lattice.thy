@@ -32,12 +32,12 @@ end
 unbundle lattice_notation
 
 text \<open>The following class \<open>complemented_lattice\<close> describes complemented lattices (with
-  \<^const>\<open>uminus\<close> for the complement). The definition follows 
+  \<^const>\<open>uminus\<close> for the complement). The definition follows
   \<^url>\<open>https://en.wikipedia.org/wiki/Complemented_lattice#Definition_and_basic_properties\<close>.
-  Additionally, it adopts the convention from \<^class>\<open>boolean_algebra\<close> of defining 
+  Additionally, it adopts the convention from \<^class>\<open>boolean_algebra\<close> of defining
   \<^const>\<open>minus\<close> in terms of the complement.\<close>
 
-class complemented_lattice = bounded_lattice + uminus + minus + 
+class complemented_lattice = bounded_lattice + uminus + minus +
   assumes inf_compl_bot[simp]: "inf x (-x) = bot"
     and sup_compl_top[simp]: "sup x (-x) = top"
     and diff_eq:  "x - y = inf x (- y)" begin
@@ -60,7 +60,7 @@ lemma compl_sup_top [simp]: "sup (- x) x = top"
 
 end
 
-class complete_complemented_lattice = complemented_lattice + complete_lattice 
+class complete_complemented_lattice = complemented_lattice + complete_lattice
 
 text \<open>The following class \<open>complemented_lattice\<close> describes orthocomplemented lattices,
   following   \<^url>\<open>https://en.wikipedia.org/wiki/Complemented_lattice#Orthocomplementation\<close>.\<close>
@@ -107,7 +107,7 @@ proof -
   hence 2: \<open>-x \<sqinter> -y \<le> - (x \<squnion> y)\<close>
     using ortho_antimono by fastforce
   from 1 2 show ?thesis
-    by (simp add: eq_iff)
+    using dual_order.antisym by blast
 qed
 
 text \<open>De Morgan's law\<close>
@@ -214,11 +214,11 @@ instance complete_orthomodular_lattice \<subseteq> complete_orthocomplemented_la
 
 instance boolean_algebra \<subseteq> orthomodular_lattice
 proof
-  fix x y :: 'a  
+  fix x y :: 'a
   show "sup (x::'a) (inf (- x) y) = y"
     if "(x::'a) \<le> y"
     using that
-    by (simp add: sup.absorb_iff2 sup_inf_distrib1) 
+    by (simp add: sup.absorb_iff2 sup_inf_distrib1)
   show "x - y = inf x (- y)"
     by (simp add: boolean_algebra_class.diff_eq)
 qed auto

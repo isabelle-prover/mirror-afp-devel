@@ -1,18 +1,18 @@
 section \<open>\<open>Extra_Ordered_Fields\<close> -- Additional facts about ordered fields\<close>
 
 theory Extra_Ordered_Fields
-  imports Complex_Main 
+  imports Complex_Main
     Jordan_Normal_Form.Conjugate (* Defines ordering for complex. We have to use theirs, otherwise there will be conflicts *)
 begin
 
 
 subsection\<open>Ordered Fields\<close>
 text \<open>In this section we introduce some type classes for ordered rings/fields/etc.
-that are weakenings of existing classes. Most theorems in this section are 
-copies of the eponymous theorems from Isabelle/HOL, except that they are now proven 
+that are weakenings of existing classes. Most theorems in this section are
+copies of the eponymous theorems from Isabelle/HOL, except that they are now proven
 requiring weaker type classes (usually the need for a total order is removed).
 
-Since the lemmas are identical to the originals except for weaker type constraints, 
+Since the lemmas are identical to the originals except for weaker type constraints,
 we use the same names as for the original lemmas. (In fact, the new lemmas could replace
 the original ones in Isabelle/HOL with at most minor incompatibilities.\<close>
 
@@ -27,9 +27,9 @@ instance unbounded_dense_linorder \<subseteq> unbounded_dense_order ..
 subsection \<open>Missing from Rings.thy\<close>
 
 text \<open>The existing class \<^class>\<open>abs_if\<close> requires \<^term>\<open>\<bar>a\<bar> = (if a < 0 then - a else a)\<close>.
-However, if \<^term>\<open>(<)\<close> is not a total order, this condition is too strong when \<^term>\<open>a\<close> 
+However, if \<^term>\<open>(<)\<close> is not a total order, this condition is too strong when \<^term>\<open>a\<close>
 is incomparable with \<^term>\<open>0\<close>. (Namely, it requires the absolute value to be
-the identity on such elements. E.g., the absolute value for complex numbers does not 
+the identity on such elements. E.g., the absolute value for complex numbers does not
 satisfy this.) The following class \<open>partial_abs_if\<close> is analogous to \<^class>\<open>abs_if\<close>
 but does not require anything if \<^term>\<open>a\<close> is incomparable with \<^term>\<open>0\<close>.\<close>
 
@@ -73,7 +73,7 @@ proof
     using mult_strict_left_mono by (cases "c = 0") auto
   from t2 show "a * c \<le> b * c"
     unfolding le_less
-    by (metis local.antisym_conv2 local.mult_not_zero local.mult_strict_right_mono t1)    
+    by (metis local.antisym_conv2 local.mult_not_zero local.mult_strict_right_mono t1)
 qed
 
 lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
@@ -91,8 +91,8 @@ lemma mult_strict_mono:
   shows "a * c < b * d"
 proof-
   have "a * c < b * d"
-    by (metis local.dual_order.order_iff_strict local.dual_order.strict_trans2 
-        local.mult_strict_left_mono local.mult_strict_right_mono local.mult_zero_right t1 t2 t3 t4)        
+    by (metis local.dual_order.order_iff_strict local.dual_order.strict_trans2
+        local.mult_strict_left_mono local.mult_strict_right_mono local.mult_zero_right t1 t2 t3 t4)
   thus ?thesis
     using assms by blast
 qed
@@ -107,39 +107,39 @@ lemma mult_strict_mono':
 lemma mult_less_le_imp_less:
   assumes t1: "a < b" and t2: "c \<le> d" and t3: "0 \<le> a" and t4: "0 < c"
   shows "a * c < b * d"
-  using local.mult_strict_mono' local.mult_strict_right_mono local.order.order_iff_strict 
+  using local.mult_strict_mono' local.mult_strict_right_mono local.order.order_iff_strict
     t1 t2 t3 t4 by auto
 
 lemma mult_le_less_imp_less:
   assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
   shows "a * c < b * d"
-  by (metis assms(1) assms(2) assms(3) assms(4) local.antisym_conv2 local.dual_order.strict_trans1 
+  by (metis assms(1) assms(2) assms(3) assms(4) local.antisym_conv2 local.dual_order.strict_trans1
       local.mult_strict_left_mono local.mult_strict_mono)
 
 end
 
-subclass (in linordered_semiring_strict) ordered_semiring_strict 
+subclass (in linordered_semiring_strict) ordered_semiring_strict
 proof
   show "c * a < c * b"
     if "a < b"
       and "0 < c"
     for a :: 'a
-      and b 
-      and c 
+      and b
+      and c
     using that
-    by (simp add: local.mult_strict_left_mono) 
+    by (simp add: local.mult_strict_left_mono)
   show "a * c < b * c"
     if "a < b"
       and "0 < c"
     for a :: 'a
-      and b 
-      and c 
+      and b
+      and c
     using that
-    by (simp add: local.mult_strict_right_mono) 
+    by (simp add: local.mult_strict_right_mono)
 qed
 
 class ordered_semiring_1_strict = ordered_semiring_strict + semiring_1
-  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1_strict\<close> without requiring 
+  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1_strict\<close> without requiring
   a total order\<close>
 begin
 
@@ -157,7 +157,7 @@ qed
 
 end
 
-subclass (in linordered_semiring_1_strict) ordered_semiring_1_strict .. 
+subclass (in linordered_semiring_1_strict) ordered_semiring_1_strict ..
 
 class ordered_comm_semiring_strict = comm_semiring_0 + ordered_cancel_ab_semigroup_add +
   \<comment> \<open>missing class analogous to \<^class>\<open>linordered_comm_semiring_strict\<close> without requiring a total order\<close>
@@ -185,7 +185,7 @@ qed
 
 end
 
-subclass (in linordered_comm_semiring_strict) ordered_comm_semiring_strict 
+subclass (in linordered_comm_semiring_strict) ordered_comm_semiring_strict
   apply standard
   by (simp add: local.mult_strict_left_mono)
 
@@ -216,8 +216,8 @@ lemmas mult_sign_intros =
 
 subsection \<open>Ordered fields\<close>
 
-class ordered_field = field + order + ordered_comm_semiring_strict + ordered_ab_group_add 
-  + partial_abs_if 
+class ordered_field = field + order + ordered_comm_semiring_strict + ordered_ab_group_add
+  + partial_abs_if
   \<comment> \<open>missing class analogous to \<^class>\<open>linordered_field\<close> without requiring a total order\<close>
 begin
 
@@ -258,9 +258,9 @@ lemma divide_eq_eq_1 [simp]:
 end (* class ordered_field *)
 
 
-text \<open>The following type class intends to capture some important properties 
+text \<open>The following type class intends to capture some important properties
   that are common both to the real and the complex numbers. The purpose is
-  to be able to state and prove lemmas that apply both to the real and the complex 
+  to be able to state and prove lemmas that apply both to the real and the complex
   numbers without needing to state the lemma twice.
 \<close>
 
@@ -278,40 +278,40 @@ proof
     if "a \<le> 0"
     for a :: 'a
     using that
-    by simp 
+    by simp
   show "\<bar>a\<bar> = a"
     if "0 \<le> a"
     for a :: 'a
     using that
-    by simp 
+    by simp
   show "0 < inverse a"
     if "0 < a"
     for a :: 'a
     using that
-    by simp 
+    by simp
   show "b \<le> a"
     if "inverse a \<le> inverse b"
       and "0 < a"
     for a :: 'a
       and b
     using that
-    using local.inverse_le_imp_le by blast 
+    using local.inverse_le_imp_le by blast
   show "y \<le> z"
     if "\<And>x::'a. x < y \<Longrightarrow> x \<le> z"
     for y
       and z
     using that
-    using local.dense_le by blast 
+    using local.dense_le by blast
   show "a \<le> b \<or> b \<le> a"
     if "0 \<le> a"
       and "0 \<le> b"
     for a :: 'a
       and b
     using that
-    by auto 
+    by auto
   show "0 \<le> \<bar>x\<bar>"
     for x :: 'a
-    by simp    
+    by simp
 qed
 
 lemma comparable:
@@ -323,9 +323,9 @@ proof-
     if t1: "\<not> b \<le> a" and t2: "a \<le> c" and t3: "b \<le> c"
   proof-
     have "0 \<le> c-a"
-      by (simp add: t2)      
+      by (simp add: t2)
     moreover have "0 \<le> c-b"
-      by (simp add: t3)      
+      by (simp add: t3)
     ultimately have "c-a \<le> c-b \<or> c-a \<ge> c-b" by (rule nn_comparable)
     hence "-a \<le> -b \<or> -a \<ge> -b"
       using local.add_le_imp_le_right local.uminus_add_conv_diff by presburger
@@ -335,8 +335,8 @@ proof-
   moreover have "a \<le> b"
     if t1: "\<not> b \<le> a" and t2: "c \<le> a" and t3: "b \<le> c"
   proof-
-    have "b \<le> a"       
-      using local.dual_order.trans t2 t3 by blast 
+    have "b \<le> a"
+      using local.dual_order.trans t2 t3 by blast
     thus ?thesis
       using t1 by auto
   qed
@@ -344,9 +344,9 @@ proof-
     if t1: "\<not> b \<le> a" and t2: "c \<le> a" and t3: "c \<le> b"
   proof-
     have "0 \<le> a-c"
-      by (simp add: t2)        
+      by (simp add: t2)
     moreover have "0 \<le> b-c"
-      by (simp add: t3)      
+      by (simp add: t3)
     ultimately have "a-c \<le> b-c \<or> a-c \<ge> b-c" by (rule nn_comparable)
     hence "a \<le> b \<or> a \<ge> b"
       by (simp add: local.le_diff_eq)
@@ -403,7 +403,7 @@ qed
 lemma less_imp_inverse_less:
   assumes less: "a < b" and apos:  "0 < a"
   shows "inverse b < inverse a"
-  using assms by (metis local.dual_order.strict_iff_order 
+  using assms by (metis local.dual_order.strict_iff_order
       local.inverse_inverse_eq local.inverse_le_imp_le local.positive_imp_inverse_positive)
 
 lemma inverse_less_imp_less:
@@ -428,7 +428,7 @@ text\<open>These results refer to both operands being negative.  The opposite-si
 case is trivial, since inverse preserves signs.\<close>
 lemma inverse_le_imp_le_neg:
   "inverse a \<le> inverse b \<Longrightarrow> b < 0 \<Longrightarrow> b \<le> a"
-  by (metis local.inverse_le_imp_le local.inverse_minus_eq local.neg_0_less_iff_less 
+  by (metis local.inverse_le_imp_le local.inverse_minus_eq local.neg_0_less_iff_less
       local.neg_le_iff_le)
 
 lemma inverse_less_imp_less_neg:
@@ -437,7 +437,7 @@ lemma inverse_less_imp_less_neg:
 
 lemma inverse_less_iff_less_neg [simp]:
   "a < 0 \<Longrightarrow> b < 0 \<Longrightarrow> inverse a < inverse b \<longleftrightarrow> b < a"
-  by (metis local.antisym_conv2 local.inverse_less_imp_less_neg local.negative_imp_inverse_negative 
+  by (metis local.antisym_conv2 local.inverse_less_imp_less_neg local.negative_imp_inverse_negative
       local.nonzero_inverse_inverse_eq local.order.strict_implies_order)
 
 lemma le_imp_inverse_le_neg:
@@ -459,45 +459,45 @@ lemma one_le_inverse:
 lemma pos_le_divide_eq [field_simps]:
   assumes "0 < c"
   shows "a \<le> b / c \<longleftrightarrow> a * c \<le> b"
-  using assms by (metis local.divide_eq_imp local.divide_inverse_commute 
-      local.dual_order.order_iff_strict local.dual_order.strict_iff_order 
-      local.mult_right_mono local.mult_strict_left_mono local.nonzero_divide_eq_eq 
+  using assms by (metis local.divide_eq_imp local.divide_inverse_commute
+      local.dual_order.order_iff_strict local.dual_order.strict_iff_order
+      local.mult_right_mono local.mult_strict_left_mono local.nonzero_divide_eq_eq
       local.order.strict_implies_order local.positive_imp_inverse_positive)
 
 lemma pos_less_divide_eq [field_simps]:
   assumes "0 < c"
   shows "a < b / c \<longleftrightarrow> a * c < b"
-  using assms local.dual_order.strict_iff_order local.nonzero_divide_eq_eq local.pos_le_divide_eq 
+  using assms local.dual_order.strict_iff_order local.nonzero_divide_eq_eq local.pos_le_divide_eq
   by auto
 
 lemma neg_less_divide_eq [field_simps]:
   assumes "c < 0"
   shows "a < b / c \<longleftrightarrow> b < a * c"
-  by (metis assms local.minus_divide_divide local.mult_minus_right local.neg_0_less_iff_less 
+  by (metis assms local.minus_divide_divide local.mult_minus_right local.neg_0_less_iff_less
       local.neg_less_iff_less local.pos_less_divide_eq)
 
 lemma neg_le_divide_eq [field_simps]:
   assumes "c < 0"
   shows "a \<le> b / c \<longleftrightarrow> b \<le> a * c"
-  by (metis assms local.dual_order.order_iff_strict local.dual_order.strict_iff_order 
+  by (metis assms local.dual_order.order_iff_strict local.dual_order.strict_iff_order
       local.neg_less_divide_eq local.nonzero_divide_eq_eq)
 
 lemma pos_divide_le_eq [field_simps]:
   assumes "0 < c"
   shows "b / c \<le> a \<longleftrightarrow> b \<le> a * c"
-  by (metis assms local.dual_order.strict_iff_order local.nonzero_eq_divide_eq 
+  by (metis assms local.dual_order.strict_iff_order local.nonzero_eq_divide_eq
       local.pos_le_divide_eq)
 
 lemma pos_divide_less_eq [field_simps]:
   assumes "0 < c"
   shows "b / c < a \<longleftrightarrow> b < a * c"
-  by (metis assms local.minus_divide_left local.mult_minus_left local.neg_less_iff_less 
+  by (metis assms local.minus_divide_left local.mult_minus_left local.neg_less_iff_less
       local.pos_less_divide_eq)
 
 lemma neg_divide_le_eq [field_simps]:
   assumes "c < 0"
   shows "b / c \<le> a \<longleftrightarrow> a * c \<le> b"
-  by (metis assms local.minus_divide_left local.mult_minus_left local.neg_le_divide_eq 
+  by (metis assms local.minus_divide_left local.mult_minus_left local.neg_le_divide_eq
       local.neg_le_iff_le)
 
 lemma neg_divide_less_eq [field_simps]:
@@ -542,7 +542,7 @@ lemma frac_le_eq:
 
 
 text\<open>Lemmas \<open>sign_simps\<close> is a first attempt to automate proofs
-of positivity/negativity needed for \<open>field_simps\<close>. Have not added \<open>sign_simps\<close> to \<open>field_simps\<close> 
+of positivity/negativity needed for \<open>field_simps\<close>. Have not added \<open>sign_simps\<close> to \<open>field_simps\<close>
   because the former can lead to case explosions.\<close>
 
 lemma divide_pos_pos[simp]:
@@ -626,7 +626,7 @@ proof-
     for a b c::'a
     by (meson local.nonzero_eq_divide_eq)
   have f6: "0 < z"
-    using a2 a1 by (meson local.order.ordering_axioms ordering.strict_trans2)
+    using a2 a1 by (meson local.order.ordering_axioms order.strict_trans2)
   have "z \<noteq> 0"
     using a2 a1 by (meson local.leD)
   moreover have "x / z \<noteq> y / w"
@@ -634,13 +634,13 @@ proof-
   ultimately have "x / z \<noteq> y / w"
     using f5 by (metis (no_types))
   thus ?thesis
-    using a4 a3 a2 a1 by (meson local.frac_le local.order.not_eq_order_implies_strict 
+    using a4 a3 a2 a1 by (meson local.frac_le local.order.not_eq_order_implies_strict
         local.order.strict_implies_order)
 qed
 
 
 lemma frac_less2: "0 < x \<Longrightarrow> x \<le> y \<Longrightarrow> 0 < w \<Longrightarrow> w < z  \<Longrightarrow> x / z < y / w"
-  by (metis local.antisym_conv2 local.divide_cancel_left local.dual_order.strict_implies_order 
+  by (metis local.antisym_conv2 local.divide_cancel_left local.dual_order.strict_implies_order
       local.frac_le local.frac_less)
 
 lemma less_half_sum: "a < b \<Longrightarrow> a < (a+b) / (1+1)"
@@ -654,7 +654,7 @@ proof
   fix x y :: 'a
   have less_add_one: "a < a + 1" for a::'a by auto
   from less_add_one show "\<exists>y. x < y"
-    by blast 
+    by blast
 
   from less_add_one have "x + (- 1) < (x + 1) + (- 1)"
     by (rule add_strict_right_mono)
@@ -732,26 +732,26 @@ proof (rule)
   then consider (leq0) "inverse x \<le> 0" | (pos) "inverse x > 0" | (zero) "inverse x = 0"
     using local.antisym_conv1 by blast
   thus "x \<le> 0 \<or> 1 < x"
-    by (metis invx1 local.eq_iff local.inverse_1 local.inverse_less_imp_less 
-        local.inverse_nonpositive_iff_nonpositive local.inverse_positive_imp_positive)
+    by (metis invx1 local.eq_refl local.inverse_1 inverse_less_imp_less
+              inverse_nonpositive_iff_nonpositive inverse_positive_iff_positive)
 next
   assume "x \<le> 0 \<or> 1 < x"
   then consider (neg) "x \<le> 0" | (g1) "1 < x" by auto
   thus "inverse x < 1"
     by (metis local.dual_order.not_eq_order_implies_strict local.dual_order.strict_trans
-        local.inverse_1 local.inverse_negative_iff_negative local.inverse_zero 
-        local.less_imp_inverse_less local.zero_less_one)  
+        local.inverse_1 local.inverse_negative_iff_negative local.inverse_zero
+        local.less_imp_inverse_less local.zero_less_one)
 qed
 
 lemma inverse_le_1_iff: "inverse x \<le> 1 \<longleftrightarrow> x \<le> 0 \<or> 1 \<le> x"
-  by (metis local.dual_order.order_iff_strict local.inverse_1 local.inverse_le_iff_le 
+  by (metis local.dual_order.order_iff_strict local.inverse_1 local.inverse_le_iff_le
       local.inverse_less_1_iff local.one_le_inverse_iff)
 
 text\<open>Simplify expressions such as \<open>0 < 1/x\<close> to \<open>0 < x\<close>\<close>
 
 lemma zero_le_divide_1_iff [simp]:
   "0 \<le> 1 / a \<longleftrightarrow> 0 \<le> a"
-  using local.dual_order.order_iff_strict local.inverse_eq_divide 
+  using local.dual_order.order_iff_strict local.inverse_eq_divide
     local.inverse_positive_iff_positive by auto
 
 lemma zero_less_divide_1_iff [simp]:
@@ -760,7 +760,7 @@ lemma zero_less_divide_1_iff [simp]:
 
 lemma divide_le_0_1_iff [simp]:
   "1 / a \<le> 0 \<longleftrightarrow> a \<le> 0"
-  by (smt local.abs_0 local.abs_1 local.abs_divide local.abs_neg local.abs_nn 
+  by (smt local.abs_0 local.abs_1 local.abs_divide local.abs_neg local.abs_nn
       local.divide_cancel_left local.le_minus_iff local.minus_divide_right local.zero_neq_one)
 
 lemma divide_less_0_1_iff [simp]:
@@ -776,7 +776,7 @@ lemma divide_right_mono_neg: "a \<le> b
   by (metis local.divide_cancel_right local.divide_strict_right_mono_neg local.dual_order.strict_implies_order local.eq_refl local.le_imp_less_or_eq)
 
 lemma divide_left_mono_neg: "a \<le> b
-    \<Longrightarrow> c \<le> 0 \<Longrightarrow> 0 < a * b \<Longrightarrow> c / a \<le> c / b"  
+    \<Longrightarrow> c \<le> 0 \<Longrightarrow> 0 < a * b \<Longrightarrow> c / a \<le> c / b"
   by (metis local.divide_left_mono local.minus_divide_left local.neg_0_le_iff_le local.neg_le_iff_le mult_commute)
 
 lemma divide_nonneg_nonneg [simp]:
@@ -811,7 +811,7 @@ lemma divide_le_eq_1_pos [simp]:
 
 lemma divide_le_eq_1_neg [simp]:
   "a < 0 \<Longrightarrow> (b/a \<le> 1) = (a \<le> b)"
-  by (metis local.divide_le_eq_1_pos local.minus_divide_divide local.neg_0_less_iff_less 
+  by (metis local.divide_le_eq_1_pos local.minus_divide_divide local.neg_0_less_iff_less
       local.neg_le_iff_le)
 
 lemma less_divide_eq_1_pos [simp]:
@@ -835,7 +835,7 @@ lemma abs_div_pos: "0 < y \<Longrightarrow>
   by (simp add: local.abs_pos)
 
 lemma zero_le_divide_abs_iff [simp]: "(0 \<le> a / \<bar>b\<bar>) = (0 \<le> a | b = 0)"
-proof 
+proof
   assume assm: "0 \<le> a / \<bar>b\<bar>"
   have absb: "abs b \<ge> 0" by (fact abs_nn)
   thus "0 \<le> a \<or> b = 0"
@@ -857,7 +857,7 @@ lemma scaling_mono:
   shows "u + r * (v - u) / s \<le> v"
 proof -
   have "r/s \<le> 1" using assms
-    by (metis local.divide_le_eq_1_pos local.division_ring_divide_zero 
+    by (metis local.divide_le_eq_1_pos local.division_ring_divide_zero
         local.dual_order.order_iff_strict local.dual_order.trans local.zero_less_one)
   hence "(r/s) * (v - u) \<le> 1 * (v - u)"
     using assms(1) local.diff_ge_0_iff_ge local.mult_right_mono by blast
@@ -896,30 +896,30 @@ proof intro_classes
   hence "a = Complex ra ia" "b = Complex rb ib" "c = Complex rc ic" by auto
   note ri = this ri
   have "rb \<le> ra"
-    if "1 / ra \<le> (if rb = 0 then 0 else 1 / rb)" 
+    if "1 / ra \<le> (if rb = 0 then 0 else 1 / rb)"
       and "ia = 0" and "0 < ra" and "ib = 0"
   proof(cases "rb = 0")
     case True
     thus ?thesis
-      using that(3) by auto 
+      using that(3) by auto
   next
     case False
     thus ?thesis
-      by (smt nice_ordered_field_class.frac_less2 that(1) that(3)) 
+      by (smt nice_ordered_field_class.frac_less2 that(1) that(3))
   qed
   thus "inverse a \<le> inverse b \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> a" unfolding defs ri
-    by (auto simp: power2_eq_square) 
+    by (auto simp: power2_eq_square)
   show "(\<And>a. a < b \<Longrightarrow> a \<le> c) \<Longrightarrow> b \<le> c" unfolding defs ri
-    by (metis complex.sel(1) complex.sel(2) dense less_le_not_le 
-        nice_ordered_field_class.linordered_field_no_lb not_le_imp_less)    
+    by (metis complex.sel(1) complex.sel(2) dense less_le_not_le
+        nice_ordered_field_class.linordered_field_no_lb not_le_imp_less)
   show "0 \<le> a \<Longrightarrow> 0 \<le> b \<Longrightarrow> a \<le> b \<or> b \<le> a" unfolding defs by auto
   show "0 \<le> \<bar>x\<bar>" unfolding defs by auto
 qed
 end
 
-lemma less_eq_complexI: "Re x \<le> Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x\<le>y" unfolding less_eq_complex_def 
+lemma less_eq_complexI: "Re x \<le> Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x\<le>y" unfolding less_eq_complex_def
   by simp
-lemma less_complexI: "Re x < Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x<y" unfolding less_complex_def 
+lemma less_complexI: "Re x < Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x<y" unfolding less_complex_def
   by simp
 
 lemma complex_of_real_mono:

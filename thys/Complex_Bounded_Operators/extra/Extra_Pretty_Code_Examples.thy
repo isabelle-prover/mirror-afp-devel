@@ -2,7 +2,7 @@ section \<open>\<open>Extra_Pretty_Code_Examples\<close> -- Setup for nicer outp
 
 theory Extra_Pretty_Code_Examples
   imports 
-    "HOL-ex.Sqrt"
+    "HOL-Examples.Sqrt"
     Real_Impl.Real_Impl
     "HOL-Library.Code_Target_Numeral" 
     Jordan_Normal_Form.Matrix_Impl

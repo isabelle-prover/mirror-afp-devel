@@ -6,7 +6,7 @@ section \<open>\<open>Complex_Vector_Spaces0\<close> -- Vector Spaces and Algebr
 theory Complex_Vector_Spaces0
   imports HOL.Real_Vector_Spaces HOL.Topological_Spaces HOL.Vector_Spaces
     Complex_Main Jordan_Normal_Form.Conjugate
-begin                                   
+begin
 
 (* Jordan_Normal_Form.Conjugate declares these as simps. Seems too aggressive to me. *)
 declare less_complex_def[simp del]
@@ -463,7 +463,7 @@ lemma Complexs_0 [simp]: "0 \<in> \<complex>" and Complexs_1 [simp]: "1 \<in> \<
 
 lemma Complexs_add [simp]: "a \<in> \<complex> \<Longrightarrow> b \<in> \<complex> \<Longrightarrow> a + b \<in> \<complex>"
   apply (auto simp add: Complexs_def)
-  by (metis of_complex_add range_eqI) 
+  by (metis of_complex_add range_eqI)
 
 lemma Complexs_minus [simp]: "a \<in> \<complex> \<Longrightarrow> - a \<in> \<complex>"
   by (auto simp: Complexs_def)
@@ -481,7 +481,7 @@ lemma Complexs_mult [simp]: "a \<in> \<complex> \<Longrightarrow> b \<in> \<comp
 lemma nonzero_Complexs_inverse: "a \<in> \<complex> \<Longrightarrow> a \<noteq> 0 \<Longrightarrow> inverse a \<in> \<complex>"
   for a :: "'a::complex_div_algebra"
   apply (auto simp add: Complexs_def)
-  by (metis of_complex_inverse range_eqI) 
+  by (metis of_complex_inverse range_eqI)
 
 lemma Complexs_inverse: "a \<in> \<complex> \<Longrightarrow> inverse a \<in> \<complex>"
   for a :: "'a::{complex_div_algebra,division_ring}"
@@ -599,11 +599,11 @@ lemma pos_minus_divideC_le_eq [field_simps]:
 
 lemma pos_minus_divideC_less_eq [field_simps]:
   "- (b /\<^sub>C c) < a \<longleftrightarrow> - b < c *\<^sub>C a" if "c > 0"
-  using that by (simp add: less_le_not_le pos_le_minus_divideC_eq pos_minus_divideC_le_eq) 
+  using that by (simp add: less_le_not_le pos_le_minus_divideC_eq pos_minus_divideC_le_eq)
 
 lemma scaleC_image_atLeastAtMost: "c > 0 \<Longrightarrow> scaleC c ` {x..y} = {c *\<^sub>C x..c *\<^sub>C y}"
   apply (auto intro!: scaleC_left_mono simp: image_iff Bex_def)
-  by (meson local.eq_iff pos_divideC_le_eq pos_le_divideC_eq)
+  by (meson order.eq_iff pos_divideC_le_eq pos_le_divideC_eq)
 
 end (* class ordered_complex_vector *)
 
@@ -1008,7 +1008,7 @@ next
   then have *: \<open>{a..b} = {}\<close>
     using less_eq_complex_def by auto
   show ?thesis
-    by (simp add: *)  
+    by (simp add: *)
 qed
 
 (* As far as I can tell, there is no analogue to this for complex:
@@ -1040,7 +1040,7 @@ setup \<open>Sign.add_const_constraint
 
 subsection \<open>Sign function\<close>
 
-(* Inherited from real_normed_vector: 
+(* Inherited from real_normed_vector:
 lemma norm_sgn: "norm (sgn x) = (if x = 0 then 0 else 1)"
   for x :: "'a::complex_normed_vector"
 lemma sgn_zero [simp]: "sgn (0::'a::complex_normed_vector) = 0"
