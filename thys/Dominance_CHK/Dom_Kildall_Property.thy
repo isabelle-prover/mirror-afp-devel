@@ -318,6 +318,8 @@ declare sorted_list_of_set_insert[simp del]
 
 lemmas [simp] = Let_def Semilat.le_iff_plus_unchanged [OF Semilat.intro, symmetric]
 
+declare sorted_list_of_set_insert_remove[simp del]
+
 lemma decomp_propa: "\<And>ss w. 
    (\<forall>(q,t)\<in>set qs. q < size ss \<and> t \<in> A ) \<Longrightarrow> 
    sorted w \<Longrightarrow> 
