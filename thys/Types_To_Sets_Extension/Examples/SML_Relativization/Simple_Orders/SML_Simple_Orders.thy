@@ -247,7 +247,7 @@ ud bdd_below' \<open>bdd_below\<close>
 ctr relativization
   synthesis ctr_simps
   assumes [transfer_domain_rule, transfer_rule]: "Domainp A = (\<lambda>x. x \<in> U)"
-    and [transfer_rule]: "right_total A" "bi_unique A"
+    and [transfer_rule]: "right_total A"
   trp (?'a A)
   in bdd_ow: bdd.with_def
     (\<open>(on _ with _ : \<guillemotleft>bdd\<guillemotright> _)\<close> [1000, 1000, 1000] 10)
