@@ -110,7 +110,7 @@ proof -
       using total hoare_total_correct_def \<rho> by auto
     moreover have "trace (denote S \<rho>) \<le> trace \<rho>"
       using denote_trace[OF S] \<rho> density_states_def by auto
-    ultimately show ?thesis by auto
+    ultimately show ?thesis by (auto simp: less_eq_complex_def)
   qed
   then show ?thesis
     using hoare_partial_correct_def by auto
@@ -961,7 +961,7 @@ proof (auto)
   {
     fix \<rho> assume dsr: "\<rho> \<in> density_states"
     then have "trace (Q * \<rho>) \<le> trace (P * (denote S \<rho>)) + trace \<rho> - trace (denote S \<rho>)" 
-      using hoare_partial_correct_def p by auto
+      using hoare_partial_correct_def p by (auto simp: less_eq_complex_def)
     then have "trace (Q * \<rho>) \<le> trace (wlp S P * \<rho>)" using eq[symmetric] dsr by auto
   }
   then show "Q \<le>\<^sub>L wlp S P" using lowner_le_trace density_states_def qpQ qpWP is_quantum_predicate_def by auto
@@ -1024,7 +1024,7 @@ next
     have 2: "trace (Q * denote S1 \<rho>) \<le> trace (R * denote S2 (denote S1 \<rho>)) + (trace (denote S1 \<rho>) - trace (denote S2 (denote S1 \<rho>)))"
       using wc2 hoare_partial_correct_def \<rho>' by auto
     show "trace (P * \<rho>) \<le> trace (R * denote S2 (denote S1 \<rho>)) + (trace \<rho> - trace (denote S2 (denote S1 \<rho>)))"
-      using 1 2 by auto
+      using 1 2 by (auto simp: less_eq_complex_def)
   qed
 next
   case (4 n P Q S M) (*if*)
@@ -1093,7 +1093,7 @@ next
             apply (simp add: dMk adjoint_dim[OF dMk] dr mult_carrier_mat[of _ d d _ d] k)
            apply (simp add: dsMrk k)
           apply (subst eq4)
-          apply (insert eq2 Suc(1) k, fastforce)
+          apply (insert eq2 Suc(1) k, fastforce simp: less_eq_complex_def)
           done
       qed
       then have leq: "trace (matrix_sum d (\<lambda>k. adjoint (M k) * P k * M k) n * \<rho>)
@@ -1122,7 +1122,8 @@ next
   define DS where "DS = denote S"
 
   have "\<forall>\<rho> \<in> density_states. trace (Q * \<rho>) \<le> trace ((adjoint M0 * P * M0 + adjoint M1 * Q * M1) * DS \<rho>) + trace \<rho> - trace (DS \<rho>)" 
-    using hoare_partial_correct_def[of Q S "adjoint M0 * P * M0 + adjoint M1 * Q * M1"] c DS_def by auto
+    using hoare_partial_correct_def[of Q S "adjoint M0 * P * M0 + adjoint M1 * Q * M1"] c DS_def
+    by (auto simp: less_eq_complex_def)
   define D0 where "D0 = denote_while_n M0 M1 DS"
   define D1 where "D1 = denote_while_n_comp M0 M1 DS"
   define D where "D = denote_while_n_iter M0 M1 DS"
@@ -1179,7 +1180,7 @@ next
         unfolding D_def 
         apply (subst denote_while_n_iter_assoc)
         by (fold denote_while_n_comp.simps D1_def, auto)
-      ultimately show ?thesis using leQn' by auto
+      ultimately show ?thesis using leQn' by (auto simp: less_eq_complex_def)
     qed
   
     have 12: "trace (P * (M0 * \<rho> * adjoint M0)) + trace (Q * (M1 * \<rho> * adjoint M1))
@@ -1189,13 +1190,14 @@ next
       case 0
       show ?case apply (simp del: less_eq_complex_def) 
         unfolding D0_def D1_def D_def  denote_while_n_comp.simps denote_while_n.simps denote_while_n_iter.simps 
-        using leQn[of 0] unfolding D1_def D0_def D_def denote_while_n.simps denote_while_n_comp.simps denote_while_n_iter.simps by auto
+        using leQn[of 0] unfolding D1_def D0_def D_def denote_while_n.simps denote_while_n_comp.simps denote_while_n_iter.simps 
+        by (auto simp: less_eq_complex_def)
     next
       case (Suc n)
       have "trace (Q * D1 (n + 1) \<rho>) 
           \<le> trace (P * D0 (Suc (Suc n)) \<rho>) + trace (Q * D1 (Suc (Suc n)) \<rho>)
           + trace (D1 (Suc n) \<rho>) - trace (D (Suc (Suc n)) \<rho>)" using leQn[of "n + 1"] by auto
-      with Suc show ?case apply (simp del: less_eq_complex_def) by auto
+      with Suc show ?case apply (simp del: less_eq_complex_def) by (auto simp: less_eq_complex_def)
     qed
   
     have tr_measurement: "\<rho> \<in> carrier_mat d d
@@ -1230,7 +1232,8 @@ next
       finally show ?thesis.
     qed
   
-    have tmp: "\<And>a b c. 0 \<le> a \<Longrightarrow> b \<le> c - a \<Longrightarrow> b \<le> (c::complex)" by simp
+    have tmp: "\<And>a b c. 0 \<le> a \<Longrightarrow> b \<le> c - a \<Longrightarrow> b \<le> (c::complex)"
+      by (simp add: less_eq_complex_def)
     then have 151: "\<And>n. trace (Q * (D1 n \<rho>)) \<le> trace (D n \<rho>)" 
       by (auto simp add: tmp[OF trge0 15] simp del: less_eq_complex_def)
   
@@ -1246,7 +1249,7 @@ next
       also have 
         "\<dots> \<le> (\<Sum>k=0..<(n+2). trace (P * (D0 k \<rho>))) + trace (D (n+1) \<rho>) - trace (D0 (n+1) \<rho>)
             + trace \<rho> - trace (D (n+1) \<rho>) - (\<Sum>k=0..<(n+1). trace (D0 k \<rho>))"
-        using 15[of "n+1"] by auto
+        using 15[of "n+1"] by (auto simp: less_eq_complex_def)
       also have "\<dots> = (\<Sum>k=0..<(n+2). trace (P * (D0 k \<rho>))) + trace \<rho> - (\<Sum>k=0..<(n+2). trace (D0 k \<rho>))" by auto
       also have "\<dots> = trace (matrix_sum d (\<lambda>k. (P * (D0 k \<rho>))) (n+2)) + trace \<rho> - (\<Sum>k=0..<(n+2). trace (D0 k \<rho>))"
         using trace_matrix_sum_linear[of "n+2" "\<lambda>k. (P * (D0 k \<rho>))" d, symmetric] dPD0kr by auto
@@ -1287,9 +1290,10 @@ next
       have limrs: "(\<lambda>n. trace \<rho> + seq n) \<longlonglongrightarrow> (trace \<rho> + seqlim)" using tendsto_add[OF _ limseq] by auto
   
       have limrsRe: "(\<lambda>n. Re (trace \<rho> + seq n)) \<longlonglongrightarrow> Re (trace \<rho> + seqlim)" using tendsto_Re[OF limrs] by auto
-      have main_leq_Re: "Re ?lhs \<le> Re (trace \<rho> + seq n)" for n using main_leq' by auto
+      have main_leq_Re: "Re ?lhs \<le> Re (trace \<rho> + seq n)" for n using main_leq'
+        by (auto simp: less_eq_complex_def)
       have Re: "Re ?lhs \<le> Re (trace \<rho> + seqlim)" 
-        using Lim_bounded2[OF limrsRe ]  main_leq_Re by auto
+        using Lim_bounded2[OF limrsRe ]  main_leq_Re by (auto simp: less_eq_complex_def)
   
       have limrsIm: "(\<lambda>n. Im (trace \<rho> + seq n)) \<longlonglongrightarrow> Im (trace \<rho> + seqlim)" using tendsto_Im[OF limrs] by auto
       have main_leq_Im: "Im ?lhs = Im (trace \<rho> + seq n)" for n using main_leq' unfolding less_eq_complex_def by auto
@@ -1297,8 +1301,8 @@ next
       have Im: "Im ?lhs = Im (trace \<rho> + seqlim)" 
         using tendsto_unique[OF _ limIm limrsIm] by auto
   
-      have "?lhs \<le> trace \<rho> + seqlim" using Re Im by auto
-      then show "?lhs \<le> ?rhs" unfolding seqlim_def by auto
+      have "?lhs \<le> trace \<rho> + seqlim" using Re Im by (auto simp: less_eq_complex_def)
+      then show "?lhs \<le> ?rhs" unfolding seqlim_def by (auto simp: less_eq_complex_def)
     qed
   
     have "trace ((adjoint M0 * P * M0 + adjoint M1 * Q * M1) * \<rho>) =
@@ -1306,7 +1310,7 @@ next
       using dr dM0 dM1 dP dQ by (mat_assoc d)
     then have "trace ((adjoint M0 * P * M0 + adjoint M1 * Q * M1) * \<rho>) \<le> 
       trace (P * (denote (While M S) \<rho>)) + (trace \<rho> - trace (denote (While M S) \<rho>))"
-      using leq_lim by auto
+      using leq_lim by (auto simp: less_eq_complex_def)
   }
   then show ?case unfolding hoare_partial_correct_def denote.simps(5) 
     apply (fold M0_def M1_def DS_def D0_def D1_def) by auto
@@ -1382,7 +1386,7 @@ proof -
   {
     fix \<rho> assume dsr: "\<rho> \<in> density_states"
     then have "trace (P * \<rho>) \<le> trace (Q * (denote S \<rho>)) + trace \<rho> - trace (denote S \<rho>)" 
-      using hoare_partial_correct_def p by auto
+      using hoare_partial_correct_def p by (auto simp: less_eq_complex_def)
     then have "trace (P * \<rho>) \<le> trace (wlp S Q * \<rho>)" using eq[symmetric] dsr by auto
   }
   then have le: "P \<le>\<^sub>L wlp S Q" using lowner_le_trace density_states_def qpP qpWP is_quantum_predicate_def by auto

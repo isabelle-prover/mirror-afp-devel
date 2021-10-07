@@ -282,7 +282,8 @@ proof -
     finally show ?case.
   qed
 
-  have reduce_le_complex: "(b::complex) \<ge> 0 \<Longrightarrow> a + b \<le> c \<Longrightarrow> a \<le> c" for a b c by simp
+  have reduce_le_complex: "(b::complex) \<ge> 0 \<Longrightarrow> a + b \<le> c \<Longrightarrow> a \<le> c" for a b c
+    by (simp add: less_eq_complex_def)
   have "positive (denote_while_n_comp M0 M1 DS n \<rho>)" for n using pdoW1k unfolding partial_density_operator_def by auto
   then have "trace (denote_while_n_comp M0 M1 DS n \<rho>) \<ge> 0" for n using positive_trace
     using \<open>\<And>n. denote_while_n_comp M0 M1 DS n \<rho> \<in> carrier_mat d d\<close> by blast
@@ -658,12 +659,12 @@ next
     from tr1 tr2 Suc have "trace ( (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1)) +  (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))) \<le> trace (\<rho>\<^sub>1 + \<rho>\<^sub>2)"
       using trace_add_linear trace_add_linear[of "(x1 1 * \<rho>\<^sub>1 * adjoint (x1 1))" d "(x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))"]
             trace_add_linear[of \<rho>\<^sub>1 d \<rho>\<^sub>2]
-      using dim1 dim2 by auto
+      using dim1 dim2 by (auto simp: less_eq_complex_def)
     then have trless1: "trace ( (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1)) +  (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))) \<le> 1" using Suc by auto
     from trr1 trr2 Suc have "trace (denote x2 (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1)) + denote x2 (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))) \<le> trace (\<rho>\<^sub>1 + \<rho>\<^sub>2)"
       using trace_add_linear[of "denote x2 (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1))" d "denote x2 (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))"]
             trace_add_linear[of \<rho>\<^sub>1 d \<rho>\<^sub>2]
-      using dimr1 dimr2 by auto
+      using dimr1 dimr2 by (auto simp: less_eq_complex_def)
     then have trless2: "trace (denote x2 (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1)) + denote x2 (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))) \<le> 1"
       using Suc by auto
     have "x1 1 * (\<rho>\<^sub>1 + \<rho>\<^sub>2) * adjoint (x1 1) = (x1 1 * \<rho>\<^sub>1 * adjoint (x1 1)) + (x1 1 * \<rho>\<^sub>2 * adjoint (x1 1))"
@@ -855,7 +856,7 @@ lemma mulfact:
   fixes c:: real and a:: complex and b:: complex
   assumes "c\<ge>0" "a \<le> b"
   shows "c * a \<le> c * b"
-  using assms mult_le_cancel_iff2 by force
+  using assms mult_le_cancel_iff2 unfolding less_eq_complex_def by force
 
 lemma denote_while_n_scale:
   fixes c:: real
@@ -941,7 +942,7 @@ proof -
       using trace_smult dimr by auto
     moreover have "trace (c \<cdot>\<^sub>m \<rho>) =  c * trace \<rho>"  using trace_smult assms by auto        
     ultimately have "trace (c \<cdot>\<^sub>m matrix_sum d (\<lambda>n. denote_while_n (x1 0) (x1 1) (denote x2) n \<rho>) n) \<le> trace (c \<cdot>\<^sub>m \<rho>)"
-      using  assms(4) by (simp add: ordered_comm_semiring_class.comm_mult_left_mono)
+      using  assms(4) by (simp add: ordered_comm_semiring_class.comm_mult_left_mono less_eq_complex_def)
     then show ?thesis
       using assms by auto
   qed

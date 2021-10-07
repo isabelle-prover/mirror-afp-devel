@@ -1609,7 +1609,7 @@ lemma norm_ket_k_ge_K:
 lemma norm_ket_k:
   "inner_prod (ket_k k) (ket_k k) \<le> 1"
   apply (case_tac "k < K")
-  using norm_ket_k_lt_K norm_ket_k_ge_K by auto
+  using norm_ket_k_lt_K norm_ket_k_ge_K by (auto simp: less_eq_complex_def)
 
 lemma proj_k_mat:
   assumes "k < K"

@@ -327,7 +327,7 @@ proof (rule ccontr)
     obtain v where vA: "dim_vec v = dim_col A \<and> \<not> inner_prod v (A *\<^sub>v v) \<ge> 0" using evA by auto
     from vA herprod have "\<not> 0 \<le> inner_prod v (A *\<^sub>v v) \<and> inner_prod v (A *\<^sub>v v) \<in> Reals" by auto
     then have "inner_prod v (A *\<^sub>v v) < 0"
-      using complex_is_Real_iff by auto
+      using complex_is_Real_iff by (auto simp: less_complex_def less_eq_complex_def)
     then have  "\<exists> v. dim_vec v = dim_col A \<and>  inner_prod v (A *\<^sub>v v) < 0" using vA by auto
     then show ?thesis by auto
   qed
@@ -351,14 +351,15 @@ proof (rule ccontr)
       by (metis carrier_matD(2) carrier_vec_dim_vec dimA mult_cancel_left1 neg normalized_cscalar_prod normalized_vec_norm nzero vec_norm_def)
     moreover have "vec_norm v > 0" using nzero vec_norm_ge_0 neg dimA
       by (metis carrier_matD(2) carrier_vec_dim_vec)
-    ultimately have "inner_prod v v > 0" by auto
+    ultimately have "inner_prod v v > 0" by (auto simp: less_eq_complex_def less_complex_def)
     then show ?thesis by auto
   qed
 
   have invv: "inner_prod v v = (\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i)))"
   proof -
     {
-      have "\<forall> i < m. conjugate (v $ i) * (v $ i) \<ge> 0" using conjugate_square_smaller_0 by simp
+      have "\<forall> i < m. conjugate (v $ i) * (v $ i) \<ge> 0" using conjugate_square_smaller_0
+        by (simp add: less_eq_complex_def)
       then have vi: "\<forall> i < m. conjugate (v $ i) * (v $ i) = cmod (conjugate (v $ i) * (v $ i))" using cmod_eq_Re
         by (simp add: complex.expand)
 
@@ -435,7 +436,7 @@ proof (rule ccontr)
         moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i))) = inner_prod v v" using invv by auto
         ultimately have "?u \<ge>  inner_prod v v"
           by (metis (no_types, lifting) Im_complex_of_real Re_complex_of_real invv less_eq_complex_def norm_mult sum.cong)
-        then have "?u > 0"  using invgeq by auto
+        then have "?u > 0"  using invgeq by (auto simp: less_eq_complex_def less_complex_def)
         then show ?thesis by auto
       qed
 
@@ -497,7 +498,8 @@ proof (rule ccontr)
   qed
 
   from limXv have "\<forall>r>0. \<exists>no. \<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < r" unfolding LIMSEQ_def dist_norm by auto
-  then have "\<exists>no. \<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < -?r" using rl by auto
+  then have "\<exists>no. \<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < -?r" using rl
+    by (auto simp: less_eq_complex_def less_complex_def)
   then obtain N where Ng: "\<forall>n\<ge>N. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < -?r" by auto
   then have XN: "cmod (inner_prod v (X N *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < -?r" by auto
 
@@ -506,10 +508,12 @@ proof (rule ccontr)
     by (metis Complex_Matrix.positive_def carrier_matD(2) dimA dimX neg)
 
   from rl XNv have XX: "cmod (inner_prod v (X N *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) = cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v))"
-    using XN cmod_eq_Re by auto
+    using XN cmod_eq_Re by (auto simp: less_eq_complex_def less_complex_def)
   then have YY: "cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v)) < -?r" using XN by auto
-  then have "cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v)) < cmod(inner_prod v (A *\<^sub>v v))" using rl cmod_eq_Re by auto
-  then have  "cmod(inner_prod v (X N *\<^sub>v v)) < 0"  using XNv XX YY cmod_eq_Re by auto
+  then have "cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v)) < cmod(inner_prod v (A *\<^sub>v v))"
+    using rl cmod_eq_Re by (auto simp: less_eq_complex_def less_complex_def)
+  then have  "cmod(inner_prod v (X N *\<^sub>v v)) < 0"  using XNv XX YY cmod_eq_Re
+    by (auto simp: less_eq_complex_def less_complex_def)
   then have "False" using XNv by simp
   with npA show False by auto
 qed
@@ -604,7 +608,7 @@ lemma trace_adjoint_element_ineq:
   assumes rindex: "i \<in> {0 ..< dim_row A}"
      and  cindex: "j \<in> {0 ..< dim_col A}"
   shows "(norm(A $$ (i,j)))\<^sup>2 \<le> trace (A * adjoint A)"
-proof (simp add: trace_adjoint_eq_u)
+proof (simp add: trace_adjoint_eq_u less_eq_complex_def)
   have ineqi: "(cmod (A $$ (i, j)))\<^sup>2 \<le> (\<Sum>xa = 0..<dim_col A. (cmod (A $$ (i, xa)))\<^sup>2)"
     using cindex member_le_sum[of j " {0 ..< dim_col A}" "\<lambda> x. (cmod (A $$ (i, x)))\<^sup>2"] by auto
   also have ineqj: "\<dots> \<le> (\<Sum>x = 0..<dim_row A. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2)"
@@ -814,8 +818,10 @@ proof-
     using pdo inc dim positive_trace[of "f(Suc n) - f n"] trace_minus_linear[of "f (Suc n)" dim "f n"]
     unfolding partial_density_operator_def lowner_le_def
     using Complex_Matrix.positive_def by force
-    moreover from trless tracefn  have "norm(trace (f n)) \<le> norm(trace (f (Suc n)))" unfolding cmod_def by simp
-    moreover from trless tracefn have "norm(trace (f n)) \<le> 1" using pdo partial_density_operator_def cmod_def by simp
+    moreover from trless tracefn  have "norm(trace (f n)) \<le> norm(trace (f (Suc n)))" unfolding cmod_def
+      by (simp add: less_eq_complex_def less_complex_def)
+    moreover from trless tracefn have "norm(trace (f n)) \<le> 1" using pdo partial_density_operator_def cmod_def
+      by (simp add: less_eq_complex_def less_complex_def)
     ultimately show ?thesis by auto
   qed
   then have inctrace: "incseq (\<lambda> n. norm(trace (f n)))" by (simp add: incseq_SucI)
@@ -824,7 +830,7 @@ proof-
   then have tr_cauchy: "Cauchy (\<lambda> n. norm(trace (f n)))" using  Cauchy_convergent_iff convergent_def by blast
   then have tr_cauchy_def: "\<forall>e>0. \<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. dist(norm(trace (f n))) (norm(trace (f m))) < e" unfolding Cauchy_def by blast
   moreover have "\<forall>m n. dist(norm(trace (f m))) (norm(trace (f n))) = norm(trace (f m) - trace (f n))"
-    using tracefn cmod_eq_Re dist_real_def by auto
+    using tracefn cmod_eq_Re dist_real_def by (auto simp: less_eq_complex_def less_complex_def)
   ultimately have norm_trace: "\<forall>e>0.\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. norm((trace (f n)) - (trace (f m))) < e" by auto
 
   have eq_minus: "\<forall> m n. trace (f m) - trace (f n) = trace (f m - f n)" using trace_minus_linear dim by metis
@@ -861,7 +867,7 @@ proof-
     have "(norm ((f n - f m) $$ (i, j)))\<^sup>2 \<le> (trace ((f n - f m) * adjoint (f n - f m)))" using norm_minus nm by auto
     also have "\<dots> = norm (trace ((f n - f m) * adjoint (f n - f m)))" using tr_re_g nm
       by (smt Re_complex_of_real less_eq_complex_def matrix_seq.trace_adjoint_eq_u matrix_seq_axioms mult_cancel_left2 norm_one norm_scaleR of_real_def of_real_hom.hom_zero)
-    finally show ?thesis by auto
+    finally show ?thesis by (auto simp: less_eq_complex_def less_complex_def)
   qed
 
   from norm_minus_le cauchy_adj have cauchy_ij: "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. (norm ((f n - f m) $$ (i, j)))\<^sup>2  < e\<^sup>2" if e: "e > 0" for e
@@ -1124,8 +1130,10 @@ lemma lowner_lub_trace:
 proof -
   have "\<forall> n. trace (f n) \<ge> 0" using positive_trace pdo unfolding partial_density_operator_def
     using dim by blast
-  then have Re: "\<forall> n. Re (trace (f n)) \<ge> 0 \<and> Im (trace (f n)) = 0" by auto
-  then have lex: "\<forall> n. Re (trace (f n)) \<le> Re x \<and> Im x = 0" using assms by auto
+  then have Re: "\<forall> n. Re (trace (f n)) \<ge> 0 \<and> Im (trace (f n)) = 0"
+    by (auto simp: less_eq_complex_def less_complex_def)
+  then have lex: "\<forall> n. Re (trace (f n)) \<le> Re x \<and> Im x = 0" using assms
+    by (auto simp: less_eq_complex_def less_complex_def)
 
   have "limit_mat f lowner_lub dim"  using lowner_lub_is_limit by auto
   then have conv: "(\<lambda>n. trace (f n)) \<longlonglongrightarrow> trace lowner_lub" using mat_trace_limit by auto
@@ -1139,7 +1147,7 @@ proof -
   then  have Imll: "Im (trace lowner_lub) = 0" using Re
     by (simp add: Lim_bounded Lim_bounded2 dual_order.antisym)
 
-  from Rell Imll lex show ?thesis by simp
+  from Rell Imll lex show ?thesis by (simp add: less_eq_complex_def less_complex_def)
 qed
 
 lemma lowner_lub_is_positive:
@@ -1665,14 +1673,16 @@ proof -
   then have dAmf0: "A - f 0 \<in> carrier_mat d d" using dfn[of 0] by auto
   have "positive (A - f 0)" using ub lowner_le_def by auto
   then have tgeq0: "trace (A - f 0) \<ge> 0" using positive_trace dAmf0 by auto
-  then have "trace (A - f 0) + 1 > 0" by auto
-  then have gtc: "c > 0" unfolding c_def using complex_is_Real_iff by auto
-  then have gtci: "(1 / c) > 0" using complex_is_Real_iff by auto
+  then have "trace (A - f 0) + 1 > 0" by (auto simp: less_eq_complex_def less_complex_def)
+  then have gtc: "c > 0" unfolding c_def using complex_is_Real_iff
+    by (auto simp: less_eq_complex_def less_complex_def)
+  then have gtci: "(1 / c) > 0" using complex_is_Real_iff
+    by (auto simp: less_eq_complex_def less_complex_def)
 
   have "trace (c \<cdot>\<^sub>m (A - f 0)) = c * trace (A - f 0)"
     using trace_smult dAmf0 by auto
   also have "\<dots> = (1 / (trace (A - f 0) + 1)) * trace (A - f 0)" unfolding c_def by auto
-  also have "\<dots> < 1" using tgeq0 by (simp add: complex_is_Real_iff)
+  also have "\<dots> < 1" using tgeq0 by (simp add: complex_is_Real_iff less_eq_complex_def less_complex_def)
   finally have lt1: "trace (c \<cdot>\<^sub>m (A - f 0)) < 1".
 
   have le0: "- f 0 \<le>\<^sub>L - f 0" using lowner_le_refl[of "- f 0" d] dfn by auto
@@ -1688,7 +1698,9 @@ proof -
     using mf0smcle ub dfn dA by auto
   then have "trace (c \<cdot>\<^sub>m (f n - f 0)) \<le> trace (c \<cdot>\<^sub>m (A - f 0))" for n
     using lowner_le_imp_trace_le[of "c \<cdot>\<^sub>m (f n - f 0)" d] dmfn0 dAmf0 by auto
-  then have trlt1: "trace (c \<cdot>\<^sub>m (f n - f 0)) < 1" for n using lt1 by fastforce
+  then have trlt1: "trace (c \<cdot>\<^sub>m (f n - f 0)) < 1" for n using lt1
+    unfolding less_eq_complex_def less_complex_def
+    by (metis add.commute add_less_cancel_right add_mono_thms_linordered_field(3))
 
   have "f 0 \<le>\<^sub>L f n" for n
   proof (induct n)
@@ -1708,7 +1720,8 @@ proof -
   define g where "g n = c \<cdot>\<^sub>m (f n - f 0)" for n
   then have "positive (g n)" and "trace (g n) < 1" and "(g n) \<le>\<^sub>L (g (Suc n))" and dgn: "(g n) \<in> carrier_mat d d" for n
     unfolding g_def using p trlt1 inc' dmfn0 by auto
-  then have ms: "matrix_seq d g" unfolding matrix_seq_def partial_density_operator_def by fastforce
+  then have ms: "matrix_seq d g" unfolding matrix_seq_def partial_density_operator_def
+    by (simp add: less_eq_complex_def less_complex_def dual_order.strict_iff_not)
   then have uniM: "\<exists>!M. matrix_seq.lowner_is_lub g M" using matrix_seq.lowner_lub_unique by auto
   then obtain M where M: "matrix_seq.lowner_is_lub g M" by auto
   then have leg: "g n \<le>\<^sub>L M" and lubg: "\<And>M'. (\<forall>n. g n \<le>\<^sub>L M') \<longrightarrow> M \<le>\<^sub>L M'" for n
