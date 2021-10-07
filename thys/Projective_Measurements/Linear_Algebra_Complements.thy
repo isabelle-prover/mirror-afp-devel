@@ -1790,7 +1790,7 @@ lemma trace_proj_pos_real:
 shows "Re (Complex_Matrix.trace (R * P)) = Complex_Matrix.trace (R * P)" 
 proof -
   have "Complex_Matrix.trace (R * P) \<ge> 0" using assms  positive_proj_trace by simp
-  thus ?thesis by (simp add: complex_eqI) 
+  thus ?thesis by (simp add: complex_eqI less_eq_complex_def)
 qed
 
 lemma (in cpx_sq_mat) trace_sum_mat_proj_pos_real:

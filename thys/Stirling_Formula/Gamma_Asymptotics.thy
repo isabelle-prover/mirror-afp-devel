@@ -386,7 +386,7 @@ proof -
              (of_nat n + 1/2 + s) * (ln (of_nat (n + 1) + s) - ln (of_nat n + s)) - 1) 
            {of_nat n..of_nat (n + 1)}" for n
   proof (rule has_integral_spike)      
-    have "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (x + s)) - 1) has_integral 
+    have "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (of_real x + s)) - 1) has_integral 
               (of_nat n + 1/2 + s) * (ln (of_real (real (n + 1)) + s) - ln (of_real (real n) + s)) - 1) 
             {of_nat n..of_nat (n + 1)}" 
       using s has_integral_const_real[of 1 "of_nat n" "of_nat (n + 1)"]
@@ -394,7 +394,7 @@ proof -
          (auto intro!: derivative_eq_intros has_vector_derivative_real_field
                simp: has_field_derivative_iff_has_vector_derivative [symmetric] field_simps
                      complex_nonpos_Reals_iff)
-    thus "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (x + s)) - 1) has_integral 
+    thus "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (of_real x + s)) - 1) has_integral 
               (of_nat n + 1/2 + s) * (ln (of_nat (n + 1) + s) - ln (of_nat n + s)) - 1) 
             {of_nat n..of_nat (n + 1)}" by simp
              

@@ -84,7 +84,7 @@ lemma scaleC_minus1_left_vec: "-1 \<cdot>\<^sub>v v = - v" for v :: "_::ring_1 v
 lemma square_nneg_complex:
   fixes x :: complex
   assumes "x \<in> \<real>" shows "x^2 \<ge> 0"
-  apply (cases x) using assms unfolding Reals_def by auto
+  apply (cases x) using assms unfolding Reals_def less_eq_complex_def by auto
 
 definition "vec_is_zero n v = (\<forall>i<n. v $ i = 0)"
 

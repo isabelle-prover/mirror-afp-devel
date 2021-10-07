@@ -570,7 +570,7 @@ proof -
       using poly_iff[of 1] assms unfolding pc_def by (auto simp add:poly_pcompose)
     ultimately show ?thesis using sturm_interval[of 0 1 g] by auto
   qed
-  also have "... = card {t::real. poly pc t = 0 \<and> 0 < t \<and> t < 1}"
+  also have "... = card {t::real. poly pc (of_real t) = 0 \<and> 0 < t \<and> t < 1}"
     unfolding poly_iff by simp
   also have "... = ?L"
   proof (cases "st=tt")
@@ -821,7 +821,7 @@ next
       using poly_iff[of 1] True unfolding pc_def by (auto simp add:poly_pcompose)
     ultimately show ?thesis using sturm_interval[of 0 1 g] by auto
   qed
-  also have "... = ({x. poly g x = 0 \<and> 0 < x \<and> x < 1} = {})"
+  also have "... = ({x. poly g (of_real x) = 0 \<and> 0 < x \<and> x < 1} = {})"
   proof -
     have "g\<noteq>0"
     proof (rule ccontr)
@@ -836,7 +836,8 @@ next
   qed
   also have "... = ?L"
   proof -
-    have "(\<exists>t. poly g t = 0 \<and> 0 < t \<and> t < 1) \<longleftrightarrow> (\<exists>t::real. poly pc t = 0 \<and> 0 < t \<and> t < 1)"
+    have "(\<exists>t. poly g (of_real t) = 0 \<and> 0 < t \<and> t < 1) \<longleftrightarrow>
+          (\<exists>t::real. poly pc (of_real t) = 0 \<and> 0 < t \<and> t < 1)"
       using poly_iff by auto
     also have "... \<longleftrightarrow> (\<exists>x. x \<in> closed_segment st tt \<and> poly p x = 0)" 
     proof 

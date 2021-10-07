@@ -871,11 +871,6 @@ end (* class nice_ordered_field *)
 code_identifier
   code_module Ordered_Fields \<rightharpoonup> (SML) Arith and (OCaml) Arith and (Haskell) Arith
 
-subsection\<open>Ordered Complex\<close>
-
-declare Conjugate.less_eq_complex_def[simp del]
-declare Conjugate.less_complex_def[simp del]
-
 subsection \<open>Ordering on complex numbers\<close>
 
 instantiation complex :: nice_ordered_field begin

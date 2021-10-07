@@ -336,7 +336,7 @@ proof (cases x)
     if "x = Complex x1 x2"
     for x1 :: real
       and x2 :: real
-    using that by (auto simp: complex_cnj complex_mult complex_of_real_def)
+    using that by (auto simp: complex_cnj complex_mult complex_of_real_def less_eq_complex_def)
 qed
 
 

@@ -205,7 +205,7 @@ proof
     also have "\<dots> = 2 * abs (cinner x y)"
       unfolding abs_complex_def by simp
     also have "\<dots> \<le> 2 * complex_of_real (norm x) * complex_of_real (norm y)"
-      using Cauchy_Schwarz_ineq2 unfolding abs_complex_def by auto
+      using Cauchy_Schwarz_ineq2 unfolding abs_complex_def less_eq_complex_def by auto
     finally have xyyx: "cinner x y + cinner y x \<le> complex_of_real (2 * norm x * norm y)"
       by auto
     have "complex_of_real ((norm (x + y))\<^sup>2) = cinner (x+y) (x+y)"

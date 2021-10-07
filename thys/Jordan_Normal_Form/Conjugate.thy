@@ -4,7 +4,7 @@
     License:     BSD
 *)
 theory Conjugate
-  imports HOL.Complex
+  imports HOL.Complex "HOL-Library.Complex_Order"
 begin
 
 class conjugate =
@@ -48,10 +48,10 @@ subsection \<open>Instantiations\<close>
 instantiation complex :: conjugatable_ordered_field
 begin
   definition [simp]: "conjugate \<equiv> cnj"
-  definition [simp]: "x < y \<equiv> Im x = Im y \<and> Re x < Re y"
-  definition [simp]: "x \<le> y \<equiv> Im x = Im y \<and> Re x \<le> Re y"
   
-  instance by (intro_classes, auto simp: complex.expand)
+instance
+  by intro_classes (auto simp: less_eq_complex_def)
+
 end
 
 instantiation real :: conjugatable_ordered_field

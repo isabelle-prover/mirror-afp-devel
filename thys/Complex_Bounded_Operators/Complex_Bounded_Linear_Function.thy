@@ -970,7 +970,7 @@ proof (cases \<open>class.not_singleton TYPE('b)\<close>)
       using \<open>norm \<psi> = 1\<close>
       by (smt (verit, best) Im_complex_of_real Re_complex_of_real \<open>(A* *\<^sub>V \<psi>) \<bullet>\<^sub>C (A* *\<^sub>V \<psi>) = \<psi> \<bullet>\<^sub>C (A *\<^sub>V A* *\<^sub>V \<psi>)\<close> \<open>\<psi> \<bullet>\<^sub>C (A *\<^sub>V A* *\<^sub>V \<psi>) = \<psi> \<bullet>\<^sub>C ((A o\<^sub>C\<^sub>L A*) *\<^sub>V \<psi>)\<close> cdot_square_norm cinner_ge_zero cmod_Re complex_inner_class.Cauchy_Schwarz_ineq2 less_eq_complex_def mult_cancel_left1 mult_cancel_right1 norm_cblinfun)
     finally show ?thesis
-      by auto
+      by (auto simp: less_eq_complex_def)
   qed
   then have 1: \<open>(norm A)\<^sup>2 \<le> norm (A o\<^sub>C\<^sub>L A*)\<close>
     by (metis field_le_mult_one_interval less_eq_real_def ordered_field_class.sign_simps(5))

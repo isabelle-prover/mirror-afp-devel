@@ -372,6 +372,7 @@ proof -
 qed
 
 lemma zeta_partial_sum_gt_1_asymp_equiv:
+  fixes s :: real
   assumes "s > 1"
   defines "\<zeta> \<equiv> Re (zeta s)"
   shows "sum_upto (\<lambda>n. n powr -s) \<sim>[at_top] (\<lambda>x. \<zeta>)"

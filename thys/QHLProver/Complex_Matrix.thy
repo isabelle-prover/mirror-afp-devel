@@ -210,7 +210,8 @@ proof -
   also have "\<dots> =  (inner_prod x x - (inner_prod x y) * cnj (inner_prod x y) / (inner_prod y y))" 
   unfolding a_def cnj_a_def by simp
   finally have " 0 \<le>  (inner_prod x x - (inner_prod x y) * cnj (inner_prod x y) / (inner_prod y y)) " .
-  hence "0 \<le> (inner_prod x x - (inner_prod x y) * cnj (inner_prod x y) / (inner_prod y y)) * (inner_prod y y)" by auto
+  hence "0 \<le> (inner_prod x x - (inner_prod x y) * cnj (inner_prod x y) / (inner_prod y y)) * (inner_prod y y)"
+    by (auto simp: less_eq_complex_def)
   also have "\<dots> = ((inner_prod x x)*(inner_prod y y) - (inner_prod x y) * cnj (inner_prod x y))"
     by (smt add.inverse_neutral add_diff_cancel diff_0 diff_divide_eq_iff divide_cancel_right mult_eq_0_iff nonzero_mult_div_cancel_right rw_0)
   finally have "(inner_prod x y) * cnj (inner_prod x y) \<le> (inner_prod x x)*(inner_prod y y)" by auto
@@ -545,7 +546,7 @@ definition vec_norm :: "complex vec \<Rightarrow> complex" where
 lemma vec_norm_geq_0:
   fixes v :: "complex vec"
   shows "vec_norm v \<ge> 0"
-  unfolding vec_norm_def by (insert self_cscalar_prod_geq_0[of v], simp)
+  unfolding vec_norm_def by (insert self_cscalar_prod_geq_0[of v], simp add: less_eq_complex_def)
 
 lemma vec_norm_zero:
   fixes v ::  "complex vec"
@@ -636,7 +637,8 @@ proof (intro conjI impI)
   {
     assume asmw: "w \<noteq> 0\<^sub>v n" and asmv: "v \<noteq> 0\<^sub>v n"
     have "vec_norm w > 0" by (insert asmw dim0, rule vec_norm_ge_0, auto)
-    then have cw: "conjugate (1 / vec_norm w) = 1 / vec_norm w" by (simp add: complex_eq_iff complex_is_Real_iff) 
+    then have cw: "conjugate (1 / vec_norm w) = 1 / vec_norm w"
+      by (simp add: complex_eq_iff complex_is_Real_iff less_complex_def) 
     from dim0 have 
       "((1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w)) = 1 / vec_norm v * (v \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w))" by auto
     also have "\<dots> = 1 / vec_norm v * (v \<bullet> (conjugate (1 / vec_norm w) \<cdot>\<^sub>v conjugate w))"
@@ -662,7 +664,8 @@ proof (simp, rule conjI)
   note dim = dim_v dim_a
   have nvge0: "vec_norm v > 0" using vec_norm_ge_0 neq0 dim_v by auto
   then have vvvv: "v \<bullet>c v = (vec_norm v) * (vec_norm v)" unfolding vec_norm_def by (metis power2_csqrt power2_eq_square)
-  from nvge0 have "conjugate (vec_norm v) = vec_norm v" by (simp add: complex_eq_iff complex_is_Real_iff) 
+  from nvge0 have "conjugate (vec_norm v) = vec_norm v"
+    by (simp add: complex_eq_iff complex_is_Real_iff less_complex_def) 
   then have "v \<bullet>c (1 / vec_norm v \<cdot>\<^sub>v v) = 1 / vec_norm v * (v \<bullet>c v)" 
     by (subst conjugate_smult_vec, auto)
   also have "\<dots> = 1 / vec_norm v * vec_norm v * vec_norm v" using vvvv by auto
@@ -682,7 +685,7 @@ next
   proof (simp, rule impI)
     assume asm: "v \<noteq> 0\<^sub>v n"
     then have "vec_norm v > 0" using vec_norm_ge_0 assms by auto
-    then have nvge0: "1 / vec_norm v > 0" by (simp add: complex_is_Real_iff)
+    then have nvge0: "1 / vec_norm v > 0" by (simp add: complex_is_Real_iff less_complex_def)
     have "\<exists>k < n. v $ k \<noteq> 0" using asm assms by auto
     then obtain k where kn: "k < n" and  vkneq0: "v $ k \<noteq> 0" by auto
     then have "(1 / vec_norm v \<cdot>\<^sub>v v) $ k = (1 / vec_norm v) * (v $ k)" 
@@ -759,7 +762,7 @@ proof -
     then have neq0: "(ws ! i) \<noteq> 0\<^sub>v n" "(ws ! j) \<noteq> 0\<^sub>v n"
       by (auto simp add: conjugate_square_eq_0_vec[of "ws ! i" n])
     then have "vec_norm (ws ! i) > 0" "vec_norm (ws ! j) > 0" using vec_norm_ge_0 dimws by auto
-    then have ge0: "vec_norm (ws ! i) * vec_norm (ws ! j) > 0" by auto
+    then have ge0: "vec_norm (ws ! i) * vec_norm (ws ! j) > 0" by (auto simp: less_complex_def)
     have ws': "vs ! i = vec_normalize (ws ! i)" 
         "vs ! j = vec_normalize (ws ! j)" 
       using len i j vs_def by auto
@@ -1590,7 +1593,8 @@ next
     next
       case False
       then have 1: "vec_norm v > 0" using vec_norm_ge_0 dimv by auto
-      then have cnv: "cnj (vec_norm v) = vec_norm v" using Reals_cnj_iff complex_is_Real_iff by auto
+      then have cnv: "cnj (vec_norm v) = vec_norm v"
+        using Reals_cnj_iff complex_is_Real_iff less_complex_def by auto
       define w where "w = vec_normalize v"
       then have dimw: "w \<in> carrier_vec n" using dimv by auto
       have nvw: "v = vec_norm v \<cdot>\<^sub>v w" using w_def vec_eq_norm_smult_normalized by auto
@@ -1637,7 +1641,7 @@ proof -
       apply (rule) 
       apply (fold n_def)
       apply (simp add: complex_is_Real_iff[of "inner_prod v (A *\<^sub>v v)"])
-      apply (auto simp add: dimvA)
+      apply (auto simp add: dimvA less_complex_def less_eq_complex_def)
       done
     ultimately have "inner_prod v (C *\<^sub>v v) = 0" using of_real_Re by fastforce
   } 
@@ -1722,9 +1726,9 @@ proof -
   {
     fix i assume i: "i < n"
     define c where "c = csqrt (B$$(i, i))"
-    have c: "c \<ge> 0" using Bii i c_def by auto
+    have c: "c \<ge> 0" using Bii i c_def by (auto simp: less_complex_def less_eq_complex_def)
     then have "conjugate c = c" 
-      using Reals_cnj_iff complex_is_Real_iff by auto
+      using Reals_cnj_iff complex_is_Real_iff unfolding less_complex_def less_eq_complex_def by auto
     then have "c * cnj c = B$$(i, i)" using c_def c unfolding conjugate_complex_def by (metis power2_csqrt power2_eq_square)
   }  
   note cBii = this
@@ -1907,10 +1911,11 @@ lemma positive_smult:
     and "c \<ge> 0"
   shows "positive (c \<cdot>\<^sub>m A)"
 proof -
-  have sc: "csqrt c \<ge> 0" using assms(3) by fastforce
+  have sc: "csqrt c \<ge> 0" using assms(3) by (fastforce simp: less_eq_complex_def)
   obtain M where dimM: "M \<in> carrier_mat n n" and A: "M * adjoint M = A" using assms(1-2) positive_iff_decomp by auto
   have "c \<cdot>\<^sub>m A  = c \<cdot>\<^sub>m (M * adjoint M)" using A by auto
-  have ccsq: "conjugate (csqrt c) = (csqrt c)" using sc Reals_cnj_iff[of "csqrt c"] complex_is_Real_iff by auto
+  have ccsq: "conjugate (csqrt c) = (csqrt c)" using sc Reals_cnj_iff[of "csqrt c"] complex_is_Real_iff 
+    by (auto simp: less_eq_complex_def)
   have MM: "(M * adjoint M) \<in> carrier_mat n n" using A assms by fastforce
   have leftd: "c  \<cdot>\<^sub>m (M * adjoint M) \<in> carrier_mat n n" using A assms by fastforce
   have rightd: "(csqrt c \<cdot>\<^sub>m M) * (adjoint (csqrt c \<cdot>\<^sub>m M))\<in> carrier_mat n n" using A assms by fastforce
@@ -1938,7 +1943,7 @@ lemma positive_scale:
     and "positive A"
     and "c \<ge> 0"
   shows "positive (c \<cdot>\<^sub>m A)"
-  apply (rule positive_smult) using assms by auto
+  apply (rule positive_smult) using assms by (auto simp: less_eq_complex_def)
 
 subsection \<open>L\"{o}wner partial order\<close>
 
@@ -2078,7 +2083,7 @@ proof -
       using du assms by auto
     also have "\<dots> \<le> inner_prod u u * inner_prod v v" using Cauchy_Schwarz_complex_vec du assms by auto
     also have "\<dots> \<le> inner_prod u u" using assms(2) r geq0 
-      by (simp add: mult_right_le_one_le)
+      by (simp add: mult_right_le_one_le less_eq_complex_def)
     finally have le: "inner_prod u (?o *\<^sub>v u) \<le> inner_prod u u".
 
     have "inner_prod u ((1\<^sub>m n - ?o) *\<^sub>v u) = inner_prod u ((1\<^sub>m n *\<^sub>v u) - ?o *\<^sub>v u)"
@@ -2158,7 +2163,7 @@ lemma lowner_le_smult:
   fixes c :: real
   assumes "c \<ge> 0" "A \<le>\<^sub>L B" "A \<in> carrier_mat n n" "B \<in> carrier_mat n n"
   shows "c \<cdot>\<^sub>m A \<le>\<^sub>L c \<cdot>\<^sub>m B"
-  apply (rule lowner_le_smultc) using assms by auto
+  apply (rule lowner_le_smultc) using assms by (auto simp: less_eq_complex_def)
 
 lemma minus_smult_vec_distrib:
   fixes w :: "'a::comm_ring_1 vec"
@@ -2237,7 +2242,7 @@ proof
        apply (rule carrier_vec_conjugate[OF dimv])
       apply (rule carrier_vec_conjugate[OF dimw])
       done
-    also have "\<dots> \<ge> 0" by auto
+    also have "\<dots> \<ge> 0" by (auto simp: less_eq_complex_def)
     finally show "inner_prod w ((outer_prod v v) *\<^sub>v w) \<ge> 0".
   qed
   have eq: "trace (outer_prod v v) = (\<Sum>i=0..<n. v$i * conjugate(v$i))" unfolding trace_def 
