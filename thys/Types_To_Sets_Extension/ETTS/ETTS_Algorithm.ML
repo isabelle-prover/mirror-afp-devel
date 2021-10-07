@@ -554,7 +554,10 @@ fun etts_algorithm_fresh_stv
 
     val thm' = 
       let val rhs_cT = map (Thm.ctyp_of ctxt) rhsTs
-      in Drule.instantiate_normalize (thm_stvs ~~ rhs_cT, []) thm end
+      in 
+        Drule.instantiate_normalize 
+          (TVars.make (thm_stvs ~~ rhs_cT), Vars.empty) thm 
+      end
     fun thm_stvs_map (v, T) = 
       case AList.lookup op= (thm_stvs ~~ rhsTs) (v, T) of 
           SOME T => T
@@ -630,13 +633,16 @@ fun etts_algorithm_unoverload_types
     val out_prem_ts = out_t |> Logic.strip_imp_prems |> drop (out_n - n)
 
     val out_t' = Logic.list_implies (out_prem_ts, Logic.strip_imp_concl out_t)
-    
+
+    (*FIXME: scalable datastructures*)
     val (mapT, mapt) = (Thm.cterm_of ctxt' out_t', Thm.cprop_of thm)
       |> Thm.match 
+      |>> TVars.map (K Thm.typ_of) 
+      ||> Vars.map (K Thm.term_of)
+      |>> TVars.dest
+      ||> Vars.dest
       |>> map (apfst TVar)
       ||> map (apfst Var)
-      |>> map (apsnd Thm.typ_of)
-      ||> map (apsnd Thm.term_of)
       |>> map swap
       ||> map swap
 
@@ -662,15 +668,15 @@ fun etts_algorithm_subst_type ctxt' etts_output_type writer rispec thm =
   let
     val writer' = verbose_writer_prem 
       etts_output_type writer "substitution of type variables..."
-    val thm' = 
-      Drule.instantiate_normalize 
-        (
-          rispec 
-          |> map (apsnd TFree) 
-          |> map (apsnd (Thm.ctyp_of ctxt')), 
-          []
-        )
-        thm
+    val thm' = Drule.instantiate_normalize 
+      (
+        rispec 
+        |> map (apsnd TFree) 
+        |> map (apsnd (Thm.ctyp_of ctxt'))
+        |> TVars.make, 
+        Vars.empty
+      )
+      thm
     val _ = verbose_writer_concl_thms etts_output_type ctxt' (single thm')
   in (writer', thm') end;
 

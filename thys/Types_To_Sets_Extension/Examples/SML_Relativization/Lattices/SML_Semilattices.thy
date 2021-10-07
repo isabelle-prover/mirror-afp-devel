@@ -189,7 +189,7 @@ proof
   qed
 
   show ***: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<sqinter>\<^sub>o\<^sub>w b = b \<sqinter>\<^sub>o\<^sub>w a" for a b
-    by (simp add: eq_iff inf_greatest)
+    by (simp add: inf_greatest xt1(5))
 
   show ****: "x \<in> U \<Longrightarrow> x \<sqinter>\<^sub>o\<^sub>w x = x" for x
   proof-
@@ -200,8 +200,8 @@ proof
   qed
 
   show *****: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> (a \<le>\<^sub>o\<^sub>w b) = (a = a \<sqinter>\<^sub>o\<^sub>w b)" for a b
-    by (metis * *** eq_iff inf_greatest inf_le1 inf_le2)
-
+    by (metis * *** inf_greatest inf_le2 order.eq_iff)
+  
   show "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> (a <\<^sub>o\<^sub>w b) = (a = a \<sqinter>\<^sub>o\<^sub>w b \<and> a \<noteq> b)" for a b
     by (simp add: ***** less_le)
 
@@ -290,7 +290,7 @@ proof
   qed
 
   show ***: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<squnion>\<^sub>o\<^sub>w b = b \<squnion>\<^sub>o\<^sub>w a" for a b
-    by (simp add: eq_iff sup_least)
+    by (simp add: antisym sup_least)
 
   show ****: "x \<in> U \<Longrightarrow> x \<squnion>\<^sub>o\<^sub>w x = x" for x
   proof-
@@ -301,7 +301,7 @@ proof
   qed
 
   show *****: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> (a \<ge>\<^sub>o\<^sub>w b) = (a = a \<squnion>\<^sub>o\<^sub>w b)" for a b 
-    by (metis *** sup_ge2 sup_least eq_iff eq_refl sup_closed')
+    by (metis *** order.eq_iff sup_ge2 sup_least sup_closed)
 
   show "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> (a >\<^sub>o\<^sub>w b) = (a = a \<squnion>\<^sub>o\<^sub>w b \<and> a \<noteq> b)" for a b
     by (auto simp: ***** less_le)

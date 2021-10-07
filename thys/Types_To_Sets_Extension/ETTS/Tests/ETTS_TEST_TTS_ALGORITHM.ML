@@ -169,7 +169,8 @@ fun test_exc_fvs ctxt =
     val aT = TVar (("'a", 0), \<^sort>\<open>type\<close>)
     val xv = ("x", 0)
     val xt = Free ("x", aT) |> Thm.cterm_of ctxt
-    val in_thm = Drule.instantiate_normalize ([], [((xv, aT), xt)]) @{thm exI'}
+    val in_thm = Drule.instantiate_normalize 
+      (TVars.empty, Vars.make [((xv, aT), xt)]) @{thm exI'}
     val tts_algorithm_in : tts_algorithm_in_type = 
       (
         ctxt,

@@ -181,12 +181,44 @@ subsection\<open>Preorders\<close>
 
 subsubsection\<open>Definitions and common properties\<close>
 
+locale partial_preordering_ow =
+  fixes U :: "'ao set"
+    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
+  assumes refl: "a \<in> U \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w a"
+    and trans: "\<lbrakk> a \<in> U; b \<in> U; c \<in> U; a \<^bold>\<le>\<^sub>o\<^sub>w b; b \<^bold>\<le>\<^sub>o\<^sub>w c \<rbrakk> \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w c"
+begin
+
+notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
+
+end
+
+locale preordering_ow = partial_preordering_ow U le 
+  for U :: "'ao set"
+    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50) +
+  fixes ls :: \<open>'ao \<Rightarrow> 'ao \<Rightarrow> bool\<close> (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+  assumes strict_iff_not: 
+    "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<^bold><\<^sub>o\<^sub>w b \<longleftrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w b \<and> \<not> b \<^bold>\<le>\<^sub>o\<^sub>w a"
+
 locale preorder_ow = ord_ow U le ls 
   for U :: "'ao set" and le ls +
   assumes less_le_not_le: 
     "\<lbrakk> x \<in> U; y \<in> U \<rbrakk> \<Longrightarrow> x <\<^sub>o\<^sub>w y \<longleftrightarrow> x \<le>\<^sub>o\<^sub>w y \<and> \<not> (y \<le>\<^sub>o\<^sub>w x)"
     and order_refl[iff]: "x \<in> U \<Longrightarrow> x \<le>\<^sub>o\<^sub>w x"
     and order_trans: "\<lbrakk> x \<in> U; y \<in> U; z \<in> U; x \<le>\<^sub>o\<^sub>w y; y \<le>\<^sub>o\<^sub>w z \<rbrakk> \<Longrightarrow> x \<le>\<^sub>o\<^sub>w z"
+begin
+
+sublocale 
+  order: preordering_ow U \<open>(\<le>\<^sub>o\<^sub>w)\<close> \<open>(<\<^sub>o\<^sub>w)\<close> + 
+  dual_order: preordering_ow U \<open>(\<ge>\<^sub>o\<^sub>w)\<close> \<open>(>\<^sub>o\<^sub>w)\<close>
+  apply unfold_locales
+  subgoal by auto
+  subgoal by (meson order_trans)
+  subgoal using less_le_not_le by simp
+  subgoal by (meson order_trans)
+  subgoal by (metis less_le_not_le)
+  done
+
+end
 
 locale ord_preorder_ow = 
   ord\<^sub>1: ord_ow U\<^sub>1 le\<^sub>1 ls\<^sub>1 + ord\<^sub>2: preorder_ow U\<^sub>2 le\<^sub>2 ls\<^sub>2
@@ -206,20 +238,25 @@ sublocale ord_preorder_ow ..
 
 end
 
-ud \<open>preorder.bdd_above\<close> (\<open>(with _ : \<guillemotleft>bdd'_above\<guillemotright> _)\<close> [1000, 1000] 10)
+ud \<open>preordering_bdd.bdd\<close>
+ud \<open>preorder.bdd_above\<close>
 ud bdd_above' \<open>bdd_above\<close> 
-ud \<open>preorder.bdd_below\<close> (\<open>(with _ : \<guillemotleft>bdd'_below\<guillemotright> _)\<close> [1000, 1000] 10)
+ud \<open>preorder.bdd_below\<close> 
 ud bdd_below' \<open>bdd_below\<close> 
 
 ctr relativization
   synthesis ctr_simps
   assumes [transfer_domain_rule, transfer_rule]: "Domainp A = (\<lambda>x. x \<in> U)"
-    and [transfer_rule]: "right_total A" 
+    and [transfer_rule]: "right_total A" "bi_unique A"
   trp (?'a A)
-  in bdd_above_ow: bdd_above.with_def
+  in bdd_ow: bdd.with_def
+    (\<open>(on _ with _ : \<guillemotleft>bdd\<guillemotright> _)\<close> [1000, 1000, 1000] 10)
+    and bdd_above_ow: bdd_above.with_def
     (\<open>(on _ with _ : \<guillemotleft>bdd'_above\<guillemotright> _)\<close> [1000, 1000, 1000] 10)
     and bdd_below_ow: bdd_below.with_def
     (\<open>(on _ with _ : \<guillemotleft>bdd'_below\<guillemotright> _)\<close> [1000, 1000, 1000] 10)
+
+declare bdd.with[ud_with del]
 
 context preorder_ow
 begin
@@ -238,6 +275,28 @@ context
   includes lifting_syntax
 begin
 
+lemma partial_preordering_transfer[transfer_rule]:
+  assumes [transfer_rule]: "right_total A"
+  shows 
+    "((A ===> A ===> (=)) ===> (=))
+      (partial_preordering_ow (Collect (Domainp A))) partial_preordering"
+  unfolding partial_preordering_ow_def partial_preordering_def
+  apply transfer_prover_start
+  apply transfer_step+
+  by blast
+
+lemma preordering_transfer[transfer_rule]:
+  assumes [transfer_rule]: "right_total A"
+  shows 
+    "((A ===> A ===> (=)) ===> (A ===> A ===> (=)) ===> (=))
+      (preordering_ow (Collect (Domainp A))) preordering"
+  unfolding 
+    preordering_ow_def preordering_ow_axioms_def 
+    preordering_def preordering_axioms_def
+  apply transfer_prover_start
+  apply transfer_step+
+  by blast
+
 lemma preorder_transfer[transfer_rule]:
   assumes [transfer_rule]: "right_total A"
   shows 
@@ -252,6 +311,50 @@ end
 
 
 subsubsection\<open>Relativization\<close>
+
+context preordering_ow
+begin
+
+tts_context
+  tts: (?'a to U)
+  rewriting ctr_simps
+  substituting preordering_ow_axioms
+  eliminating through auto
+begin
+
+tts_lemma strict_implies_order:
+  assumes "a \<in> U" and "b \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b"
+  shows "a \<^bold>\<le>\<^sub>o\<^sub>w b"
+    is preordering.strict_implies_order.
+
+tts_lemma irrefl:
+  assumes "a \<in> U"
+  shows "\<not>a \<^bold><\<^sub>o\<^sub>w a"
+    is preordering.irrefl.
+
+tts_lemma asym:
+  assumes "a \<in> U" and "b \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w a"
+  shows False
+    is preordering.asym.
+
+tts_lemma strict_trans1:
+  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold>\<le>\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w c"
+  shows "a \<^bold><\<^sub>o\<^sub>w c"
+    is preordering.strict_trans1.
+
+tts_lemma strict_trans2:
+  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold>\<le>\<^sub>o\<^sub>w c"
+  shows "a \<^bold><\<^sub>o\<^sub>w c"
+    is preordering.strict_trans2.
+
+tts_lemma strict_trans:
+  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w c"
+  shows "a \<^bold><\<^sub>o\<^sub>w c"
+    is preordering.strict_trans.
+
+end
+
+end
 
 context preorder_ow
 begin
@@ -436,10 +539,7 @@ tts_lemma bdd_below_mono:
     is preorder_class.bdd_below_mono.
 
 tts_lemma atLeastAtMost_subseteq_atLeastLessThan_iff:
-  assumes "a \<in> U"
-    and "b \<in> U"
-    and "c \<in> U"
-    and "d \<in> U"
+  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "d \<in> U"
   shows "({a..\<^sub>o\<^sub>wb} \<subseteq> (on U with (\<le>\<^sub>o\<^sub>w) (<\<^sub>o\<^sub>w) : {c..<d})) = 
     (a \<le>\<^sub>o\<^sub>w b \<longrightarrow> b <\<^sub>o\<^sub>w d \<and> c \<le>\<^sub>o\<^sub>w a)"
     is preorder_class.atLeastAtMost_subseteq_atLeastLessThan_iff.
@@ -533,7 +633,6 @@ tts_lemma greaterThanAtMost_empty_iff:
 
 end
 
-
 tts_context
   tts: (?'a to U)
   substituting preorder_ow_axioms
@@ -587,18 +686,18 @@ subsection\<open>Partial orders\<close>
 
 subsubsection\<open>Definitions and common properties\<close>
 
-locale ordering_ow =
-  fixes U :: "'ao set"
-    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
-    and ls :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+locale ordering_ow = partial_preordering_ow U le 
+  for U :: "'ao set" and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50) +
+  fixes ls :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold><\<^sub>o\<^sub>w" 50)
   assumes strict_iff_order: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<^bold><\<^sub>o\<^sub>w b \<longleftrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w b \<and> a \<noteq> b"
-    and refl: "a \<in> U \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w a"
     and antisym: "\<lbrakk> a \<in> U; b \<in> U; a \<^bold>\<le>\<^sub>o\<^sub>w b; b \<^bold>\<le>\<^sub>o\<^sub>w a \<rbrakk> \<Longrightarrow> a = b"
-    and trans: "\<lbrakk> a \<in> U; b \<in> U; c \<in> U; a \<^bold>\<le>\<^sub>o\<^sub>w b; b \<^bold>\<le>\<^sub>o\<^sub>w c \<rbrakk> \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w c"
 begin
 
 notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
   and ls (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+
+sublocale preordering_ow U \<open>(\<^bold>\<le>\<^sub>o\<^sub>w)\<close> \<open>(\<^bold><\<^sub>o\<^sub>w)\<close>  
+  using local.antisym strict_iff_order by unfold_locales blast
 
 end
 
@@ -611,12 +710,9 @@ sublocale
   dual_order: ordering_ow U \<open>(\<ge>\<^sub>o\<^sub>w)\<close> \<open>(>\<^sub>o\<^sub>w)\<close>
   apply unfold_locales
   subgoal by (force simp: less_le_not_le antisym)
-  subgoal by simp 
   subgoal by (simp add: antisym)
-  subgoal by (metis order_trans)
   subgoal by (force simp: less_le_not_le antisym)
   subgoal by (simp add: antisym)
-  subgoal by (metis order_trans)
   done
 
 no_notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
@@ -674,7 +770,7 @@ lemma ordering_transfer[transfer_rule]:
   shows 
     "((A ===> A ===> (=)) ===> (A ===> A ===> (=)) ===> (=)) 
       (ordering_ow (Collect (Domainp A))) ordering"
-  unfolding ordering_ow_def ordering_def
+  unfolding ordering_ow_def ordering_ow_axioms_def ordering_def ordering_axioms_def 
   apply transfer_prover_start
   apply transfer_step+
   unfolding Ball_Collect[symmetric]
@@ -706,16 +802,6 @@ tts_context
   eliminating through simp
 begin
 
-tts_lemma irrefl:
-  assumes "a \<in> U"
-  shows "\<not> a \<^bold><\<^sub>o\<^sub>w a"
-    is ordering.irrefl.
-    
-tts_lemma strict_implies_order:
-  assumes "a \<in> U" and "b \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b"
-  shows "a \<^bold>\<le>\<^sub>o\<^sub>w b"
-  is ordering.strict_implies_order.
-    
 tts_lemma strict_implies_not_eq:
   assumes "a \<in> U" and "b \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b"
   shows "a \<noteq> b"
@@ -725,31 +811,16 @@ tts_lemma order_iff_strict:
   assumes "a \<in> U" and "b \<in> U"
   shows "(a \<^bold>\<le>\<^sub>o\<^sub>w b) = (a \<^bold><\<^sub>o\<^sub>w b \<or> a = b)"
     is ordering.order_iff_strict.
-    
-tts_lemma asym:
-  assumes "a \<in> U" and "b \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w a"
-  shows False
-    is ordering.asym.
-    
-tts_lemma strict_trans:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w c"
-  shows "a \<^bold><\<^sub>o\<^sub>w c"
-    is ordering.strict_trans.
-    
-tts_lemma strict_trans2:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold><\<^sub>o\<^sub>w b" and "b \<^bold>\<le>\<^sub>o\<^sub>w c"
-  shows "a \<^bold><\<^sub>o\<^sub>w c"
-    is ordering.strict_trans2.
-    
-tts_lemma strict_trans1:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<^bold>\<le>\<^sub>o\<^sub>w b" and "b \<^bold><\<^sub>o\<^sub>w c"
-  shows "a \<^bold><\<^sub>o\<^sub>w c"
-    is ordering.strict_trans1.
-    
+   
 tts_lemma not_eq_order_implies_strict:
   assumes "a \<in> U" and "b \<in> U" and "a \<noteq> b" and "a \<^bold>\<le>\<^sub>o\<^sub>w b"
   shows "a \<^bold><\<^sub>o\<^sub>w b"
     is ordering.not_eq_order_implies_strict.
+
+tts_lemma eq_iff:
+  assumes "a \<in> U" and "b \<in> U"
+  shows "(a = b) = (a \<^bold>\<le>\<^sub>o\<^sub>w b \<and> b \<^bold>\<le>\<^sub>o\<^sub>w a)"
+    is ordering.eq_iff.
 
 end
 
@@ -831,11 +902,6 @@ tts_lemma less_separate:
     "\<exists>x'\<in>U. \<exists>y'\<in>U. x \<in> {..<\<^sub>o\<^sub>wx'} \<and> y \<in> {y'<\<^sub>o\<^sub>w..} \<and> {..<\<^sub>o\<^sub>wx'} \<inter> {y'<\<^sub>o\<^sub>w..} = {}"
     is order_class.less_separate.
 
-tts_lemma eq_iff:
-  assumes "x \<in> U" and "y \<in> U"
-  shows "(x = y) = (x \<le>\<^sub>o\<^sub>w y \<and> y \<le>\<^sub>o\<^sub>w x)"
-    is order_class.eq_iff.
-
 tts_lemma order_iff_strict:
   assumes "a \<in> U" and "b \<in> U"
   shows "(a \<le>\<^sub>o\<^sub>w b) = (a <\<^sub>o\<^sub>w b \<or> a = b)"
@@ -845,11 +911,6 @@ tts_lemma le_less:
   assumes "x \<in> U" and "y \<in> U"
   shows "(x \<le>\<^sub>o\<^sub>w y) = (x <\<^sub>o\<^sub>w y \<or> x = y)"
     is order_class.le_less.
-
-tts_lemma asym:
-  assumes "a \<in> U" and "b \<in> U" and "a <\<^sub>o\<^sub>w b" and "b <\<^sub>o\<^sub>w a"
-  shows False
-    is order_class.order.asym.
     
 tts_lemma strict_iff_order:
   assumes "a \<in> U" and "b \<in> U"
@@ -876,21 +937,6 @@ tts_lemma antisym_conv:
   shows "(x \<le>\<^sub>o\<^sub>w y) = (x = y)"
     is order_class.antisym_conv.
 
-tts_lemma strict_trans:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a <\<^sub>o\<^sub>w b" and "b <\<^sub>o\<^sub>w c"
-  shows "a <\<^sub>o\<^sub>w c"
-    is order_class.order.strict_trans.
-
-tts_lemma strict_trans2:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a <\<^sub>o\<^sub>w b" and "b \<le>\<^sub>o\<^sub>w c"
-  shows "a <\<^sub>o\<^sub>w c"
-    is order_class.order.strict_trans2.
-
-tts_lemma strict_trans1:
-  assumes "a \<in> U" and "b \<in> U" and "c \<in> U" and "a \<le>\<^sub>o\<^sub>w b" and "b <\<^sub>o\<^sub>w c"
-  shows "a <\<^sub>o\<^sub>w c"
-    is order_class.order.strict_trans1.
-    
 tts_lemma le_neq_trans:
   assumes "a \<in> U" and "b \<in> U" and "a \<le>\<^sub>o\<^sub>w b" and "a \<noteq> b"
   shows "a <\<^sub>o\<^sub>w b"
@@ -989,11 +1035,6 @@ tts_lemma decseq_imp_monoseq:
   assumes "range X \<subseteq> U" and "on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> X"
   shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
     is Topological_Spaces.decseq_imp_monoseq.
-    
-tts_lemma irrefl:
-  assumes "a \<in> U"
-  shows "\<not> a <\<^sub>o\<^sub>w a"
-    is order_class.order.irrefl.
     
 tts_lemma incseq_Suc_iff:
   assumes "range f \<subseteq> U"
@@ -1266,7 +1307,8 @@ tts_context
         mono_ow_def
         antimono_ow_def
         bdd_above_ow_def
-        bdd_below_ow_def,
+        bdd_below_ow_def
+        bdd_ow_def,
       clarsimp
     )
 begin
@@ -1333,7 +1375,7 @@ tts_lemma strict_mono_mono:
     and "on U\<^sub>1 with (<\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (<\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>strict_mono\<guillemotright> f"
   shows "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>mono\<guillemotright> f"
     is Orderings.strict_mono_mono.
-    
+
 tts_lemma bdd_below_image_antimono:
   assumes "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
     and "A \<subseteq> U\<^sub>1"
@@ -1823,7 +1865,7 @@ begin
 tts_lemma bdd_above_bot:
   assumes "A \<subseteq> U"
   shows "bdd_below A"
-    is order_bot_class.bdd_above_bot.
+    is order_bot_class.bdd_below_bot.
 
 tts_lemma not_less_bot:
   assumes "a \<in> U"

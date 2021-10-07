@@ -5,7 +5,7 @@
 
 chapter\<open>ETTS Case Studies: Introduction\<close>
 theory Introduction
-  imports Types_To_Sets_Extension.ETTS_Auxiliary
+  imports "../ETTS/ETTS_Auxiliary"
 begin
 
 

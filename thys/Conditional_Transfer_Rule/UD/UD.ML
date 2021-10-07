@@ -207,7 +207,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
       in 
         Global_Theory.add_defs false [((b', def_t), [])] thy' |>> the_single
           handle ERROR c =>
-            let val msg_match = "Specification depends on extra type variables"
+            let val msg_match = "Extra type variables on rhs"
             in 
               if String.isSubstring msg_match c
               then error msg_extra_type_variables 

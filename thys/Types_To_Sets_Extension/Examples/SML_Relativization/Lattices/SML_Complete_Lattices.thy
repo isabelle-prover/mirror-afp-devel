@@ -482,7 +482,7 @@ tts_context
   tts: (?'a to U) and (?'b to \<open>U\<^sub>2::'b set\<close>)
   rewriting ctr_simps
   substituting complete_lattice_ow_axioms and sup_bot.sl_neut.not_empty
-  eliminating through (auto simp: sup_bot.eq_iff)
+  eliminating through (auto simp: order.eq_iff)
 begin
 
 tts_lemma SUP_eqI:
