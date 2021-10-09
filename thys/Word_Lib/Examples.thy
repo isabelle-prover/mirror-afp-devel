@@ -12,6 +12,78 @@ context
   includes bit_operations_syntax
 begin
 
+text \<open>naturals\<close>
+
+lemma
+  \<open>(1705 :: nat) AND 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) OR 42 = 1707\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) XOR 42 = 1667\<close>
+  by simp
+
+text \<open>integers\<close>
+
+lemma
+  \<open>(NOT 1705 :: int) = - 1706\<close>
+  by simp
+
+lemma
+  \<open>(NOT (- 42 :: int)) = 41\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) AND 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) AND - 42 = 1664\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) AND 42 = 2\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) AND - 42 = - 1706\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) OR 42 = 1707\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) OR - 42 = - 1\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) OR 42 = - 1665\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) OR - 42 = - 41\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) XOR 42 = 1667\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) XOR - 42 = - 1665\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) XOR 42 = - 1667\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) XOR - 42 = 1665\<close>
+  by simp
+
 text "modulus"
 
 lemma "(27 :: 4 word) = -5" by simp

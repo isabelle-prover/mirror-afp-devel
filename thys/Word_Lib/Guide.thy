@@ -216,6 +216,9 @@ text \<open>
       \<^descr>[\<^theory>\<open>Word_Lib.Bitwise\<close>]
         Method @{method word_bitwise} decomposes word equalities and inequalities into bit propositions.
 
+      \<^descr>[\<^theory>\<open>Word_Lib.Bitwise_Signed\<close>]
+        Method @{method word_bitwise_signed} decomposes word equalities and inequalities into bit propositions.
+
       \<^descr>[\<^theory>\<open>Word_Lib.Word_EqI\<close>]
         Method @{method word_eqI_solve} decomposes word equalities and inequalities into bit propositions.
 

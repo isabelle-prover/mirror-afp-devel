@@ -49,9 +49,11 @@ lemma int_and_code [code]: fixes i j :: int shows
   "Int.Neg num.One AND Int.Pos m = Int.Pos m"
   "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (or_not_num_neg (Num.BitM n) m) num.One"
   "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (or_not_num_neg (num.Bit0 n) m) num.One"
-  apply (simp_all add: and_num_eq_None_iff [where ?'a = int] and_num_eq_Some_iff [where ?'a = int] split: option.split)
-  apply (simp_all add: sub_one_eq_not_neg numeral_or_not_num_eq)
-  apply (simp_all add: ac_simps)
+  apply (simp_all add: and_num_eq_None_iff [where ?'a = int] and_num_eq_Some_iff [where ?'a = int]
+    split: option.split)
+     apply (simp_all only: sub_one_eq_not_neg numeral_or_not_num_eq minus_minus and_not_numerals
+       bit.de_Morgan_disj bit.double_compl and_not_num_eq_None_iff and_not_num_eq_Some_iff ac_simps)
+     apply auto
   done
 
 lemma int_or_code [code]: fixes i j :: int shows
@@ -65,8 +67,10 @@ lemma int_or_code [code]: fixes i j :: int shows
   "Int.Neg num.One OR Int.Pos m = Int.Neg num.One"
   "Int.Neg (num.Bit0 n) OR Int.Pos m = (case and_not_num (Num.BitM n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
   "Int.Neg (num.Bit1 n) OR Int.Pos m = (case and_not_num (num.Bit0 n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-  apply (simp_all add: and_not_num_eq_None_iff and_not_num_eq_Some_iff numeral_or_num_eq minus_numeral_inc_eq ac_simps split: option.split)
-  apply (simp_all add: or_int_def)
+  apply (auto simp add: numeral_or_num_eq split: option.splits)
+         apply (simp_all only: and_not_num_eq_None_iff and_not_num_eq_Some_iff and_not_numerals
+           numeral_or_not_num_eq or_int_def bit.double_compl ac_simps flip: numeral_eq_iff [where ?'a = int])
+         apply simp_all
   done
 
 lemma int_xor_code [code]: fixes i j :: int shows
