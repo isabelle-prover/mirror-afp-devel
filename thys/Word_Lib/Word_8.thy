@@ -46,7 +46,7 @@ lemma enum_word8_eq:
                             244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255]\<close> (is \<open>?lhs = ?rhs\<close>)
 proof -
   have \<open>map unat ?lhs = [0..<256]\<close>
-    by (simp add: enum_word_def comp_def take_bit_nat_eq_self map_idem_upt_eq)
+    by (simp add: enum_word_def comp_def take_bit_nat_eq_self map_idem_upt_eq unsigned_of_nat)
   also have \<open>\<dots> = map unat ?rhs\<close>
     by (simp add: upt_zero_numeral_unfold)
   finally show ?thesis

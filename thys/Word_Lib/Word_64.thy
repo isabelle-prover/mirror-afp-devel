@@ -247,7 +247,7 @@ lemma ucast_of_nats [simp]:
   "(ucast (of_nat x :: word64) :: sword64) = (of_nat x)"
   "(ucast (of_nat x :: word64) :: 16 sword) = (of_nat x)"
   "(ucast (of_nat x :: word64) :: 8 sword) = (of_nat x)"
-  by (simp_all add: of_nat_take_bit take_bit_word_eq_self)
+  by (simp_all add: of_nat_take_bit take_bit_word_eq_self unsigned_of_nat)
 
 lemmas signed_shift_guard_simpler_64'
     = power_strict_increasing_iff[where b="2 :: nat" and y=31]
@@ -295,10 +295,7 @@ qed
 
 lemma unat_of_int_64:
   "\<lbrakk>i \<ge> 0; i \<le> 2 ^ 63\<rbrakk> \<Longrightarrow> (unat ((of_int i)::sword64)) = nat i"
-  unfolding unat_eq_nat_uint
-  apply (subst eq_nat_nat_iff)
-  apply (simp_all add: take_bit_int_eq_self)
-  done
+  by (simp add: unsigned_of_int nat_take_bit_eq take_bit_nat_eq_self)
 
 lemmas word_ctz_not_minus_1_64 = word_ctz_not_minus_1[where 'a=64, simplified]
 

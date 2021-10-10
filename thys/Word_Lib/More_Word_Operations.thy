@@ -53,6 +53,36 @@ definition
 where
   "word_ctz w \<equiv> length (takeWhile Not (rev (to_bl w)))"
 
+lemma word_ctz_unfold:
+  \<open>word_ctz w = length (takeWhile (Not \<circ> bit w) [0..<LENGTH('a)])\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: word_ctz_def rev_to_bl_eq takeWhile_map)
+
+lemma word_ctz_unfold':
+  \<open>word_ctz w = Min (insert LENGTH('a) {n. bit w n})\<close> for w :: \<open>'a::len word\<close>
+proof (cases \<open>\<exists>n. bit w n\<close>)
+  case True
+  then obtain n where \<open>bit w n\<close> ..
+  from \<open>bit w n\<close> show ?thesis
+    apply (simp add: word_ctz_unfold)
+    apply (subst Min_eq_length_takeWhile [symmetric])
+      apply (auto simp add: bit_imp_le_length)
+    apply (subst Min_insert)
+      apply auto
+    apply (subst min.absorb2)
+     apply (subst Min_le_iff)
+       apply auto
+    apply (meson bit_imp_le_length order_less_le)
+    done
+next
+  case False
+  then have \<open>bit w = bot\<close>
+    by auto
+  then have \<open>word_ctz w = LENGTH('a)\<close>
+    by (simp add: word_ctz_def rev_to_bl_eq bot_fun_def map_replicate_const)
+  with \<open>bit w = bot\<close> show ?thesis
+    by simp
+qed
+
 lemma word_ctz_le:
   "word_ctz (w :: ('a::len word)) \<le> LENGTH('a)"
   apply (clarsimp simp: word_ctz_def)
@@ -92,11 +122,11 @@ qed
 
 lemma unat_of_nat_ctz_mw:
   "unat (of_nat (word_ctz (w :: 'a :: len word)) :: 'a :: len word) = word_ctz w"
-  by simp
+  by (simp add: unsigned_of_nat)
 
 lemma unat_of_nat_ctz_smw:
   "unat (of_nat (word_ctz (w :: 'a :: len word)) :: 'a :: len signed word) = word_ctz w"
-  by simp
+  by (simp add: unsigned_of_nat)
 
 definition
   word_log2 :: "'a::len word \<Rightarrow> nat"
@@ -581,9 +611,7 @@ lemma sign_extended_iff_sign_extend:
   apply auto
    apply (auto simp add: bit_eq_iff)
     apply (simp_all add: bit_simps sign_extend_eq_signed_take_bit not_le min_def sign_extended_def word_size split: if_splits)
-  using le_imp_less_or_eq apply auto[1]
-   apply (metis bit_imp_le_length nat_less_le)
-  apply (metis Suc_leI Suc_n_not_le_n le_trans nat_less_le)
+  using le_imp_less_or_eq apply auto
   done
 
 lemma sign_extended_weaken:
@@ -899,7 +927,7 @@ lemma aligned_mask_ranges_disjoint2:
 lemma word_clz_sint_upper[simp]:
   "LENGTH('a) \<ge> 3 \<Longrightarrow> sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a sword) \<le> int (LENGTH('a))"
   using word_clz_max [of w]
-  apply (simp add: word_size)
+  apply (simp add: word_size signed_of_nat)
   apply (subst signed_take_bit_int_eq_self)
     apply simp_all
    apply (metis negative_zle of_nat_numeral semiring_1_class.of_nat_power)
@@ -913,9 +941,9 @@ lemma word_clz_sint_lower[simp]:
    \<Longrightarrow> - sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a signed word) \<le> int (LENGTH('a))"
   apply (subst sint_eq_uint)
   using word_clz_max [of w]
-   apply (simp_all add: word_size)
+   apply (simp_all add: word_size unsigned_of_nat)
   apply (rule not_msb_from_less)
-  apply (simp add: word_less_nat_alt)
+  apply (simp add: word_less_nat_alt unsigned_of_nat)
   apply (subst take_bit_nat_eq_self)
    apply (simp add: le_less_trans)
   apply (drule small_powers_of_2)
@@ -989,14 +1017,27 @@ lemma from_to_bool_last_bit:
   by (metis from_bool_to_bool_iff word_and_1)
 
 lemma sint_ctz:
-  "LENGTH('a) > 2
-   \<Longrightarrow> 0 \<le> sint (of_nat (word_ctz (x :: 'a :: len word)) :: 'a signed word)
-        \<and> sint (of_nat (word_ctz x) :: 'a signed word) \<le> int (LENGTH('a))"
-  apply (subgoal_tac "LENGTH('a) < 2 ^ (LENGTH('a) - 1)")
-   apply (rule conjI)
-    apply (metis len_signed order_le_less_trans sint_of_nat_ge_zero word_ctz_le)
-   apply (metis int_eq_sint len_signed sint_of_nat_le word_ctz_le)
-  using small_powers_of_2 [of \<open>LENGTH('a)\<close>] by simp
+  \<open>0 \<le> sint (of_nat (word_ctz (x :: 'a :: len word)) :: 'a signed word)
+     \<and> sint (of_nat (word_ctz x) :: 'a signed word) \<le> int (LENGTH('a))\<close> (is \<open>?P \<and> ?Q\<close>)
+  if \<open>LENGTH('a) > 2\<close>
+proof
+  have *: \<open>word_ctz x < 2 ^ (LENGTH('a) - Suc 0)\<close>
+    using word_ctz_le apply (rule le_less_trans)
+    using that small_powers_of_2 [of \<open>LENGTH('a)\<close>] apply simp
+    done
+  have \<open>int (word_ctz x) div 2 ^ (LENGTH('a) - Suc 0) = 0\<close>
+    apply (rule div_pos_pos_trivial)
+     apply (simp_all add: *)
+    done
+  then show ?P by (simp add: signed_of_nat bit_iff_odd)
+  show ?Q
+    apply (auto simp add: signed_of_nat)
+    apply (subst signed_take_bit_int_eq_self)
+      apply (auto simp add: word_ctz_le * minus_le_iff [of _ \<open>int (word_ctz x)\<close>])
+    apply (rule order.trans [of _ 0])
+     apply simp_all
+    done
+qed
 
 lemma unat_of_nat_word_log2:
   "LENGTH('a) < 2 ^ LENGTH('b)

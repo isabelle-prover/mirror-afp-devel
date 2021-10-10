@@ -456,7 +456,7 @@ lemma is_aligned_no_wrap''':
   apply (drule is_aligned_no_wrap[where off="of_nat off"])
    apply (simp add: word_less_nat_alt)
    apply (erule order_le_less_trans[rotated])
-  apply (simp add: take_bit_eq_mod)
+  apply (simp add: take_bit_eq_mod unsigned_of_nat)
   apply (subst(asm) unat_of_nat_len)
    apply (erule order_less_trans)
    apply (erule power_strict_increasing)
@@ -1157,12 +1157,12 @@ proof -
       by (rule diff_less, simp)
     ultimately show "of_nat (mq - 2 ^ sq * nq) < (2::'a word) ^ (LENGTH('a) - s1)"
       using take_bit_nat_less_self_iff [of \<open>LENGTH('a)\<close> \<open>mq - 2 ^ sq * nq\<close>]
-      apply (auto simp add: word_less_nat_alt not_le not_less)
+      apply (auto simp add: word_less_nat_alt not_le not_less unsigned_of_nat)
       apply (metis take_bit_nat_eq_self_iff)
       done
   qed
   then have "mq - 2 ^ sq * nq < 2 ^ (s2 - s1)" using mq s2wb
-    apply (simp add: word_less_nat_alt take_bit_eq_mod)
+    apply (simp add: word_less_nat_alt take_bit_eq_mod unsigned_of_nat)
     apply (subst (asm) mod_less)
     apply auto
      apply (rule order_le_less_trans)

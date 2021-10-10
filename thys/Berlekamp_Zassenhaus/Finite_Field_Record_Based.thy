@@ -135,7 +135,7 @@ lemma int_of_uint32_mod: "int_of_uint32 (x mod y) = (int_of_uint32 x mod int_of_
   by (transfer, unfold uint_mod two_32, rule refl)  
 
 lemma int_of_uint32_inv: "0 \<le> x \<Longrightarrow> x < 4294967296 \<Longrightarrow> int_of_uint32 (uint32_of_int x) = x"
-  by transfer (simp add: take_bit_int_eq_self)
+  by transfer (simp add: take_bit_int_eq_self unsigned_of_int)
 
 context
   includes bit_operations_syntax
@@ -836,7 +836,7 @@ lemma int_of_uint64_mod: "int_of_uint64 (x mod y) = (int_of_uint64 x mod int_of_
   by (transfer, unfold uint_mod two_64, rule refl)  
 
 lemma int_of_uint64_inv: "0 \<le> x \<Longrightarrow> x < 18446744073709551616 \<Longrightarrow> int_of_uint64 (uint64_of_int x) = x"
-  by transfer (simp add: take_bit_int_eq_self)
+  by transfer (simp add: take_bit_int_eq_self unsigned_of_int)
 
 context
   includes bit_operations_syntax 

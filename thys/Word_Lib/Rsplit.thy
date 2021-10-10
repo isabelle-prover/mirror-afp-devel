@@ -55,7 +55,7 @@ lemma test_bit_rsplit:
    defer
    apply (rule map_ident [THEN fun_cong])
   apply (rule refl [THEN map_cong])
-  apply simp
+  apply (simp add: unsigned_of_int take_bit_int_eq_self_iff)
   using bin_rsplit_size_sign take_bit_int_eq_self_iff by blast
 
 lemma test_bit_rsplit_alt:

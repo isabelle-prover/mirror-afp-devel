@@ -60,7 +60,7 @@ proof -
   have "n div 2 div m < 2 ^ LENGTH('a)"
     using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    by (auto simp add: drop_bit_eq_div word_arith_nat_div uno_simps take_bit_nat_eq_self)
+    by (auto simp add: drop_bit_eq_div word_arith_nat_div uno_simps take_bit_nat_eq_self unsigned_of_nat)
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"
@@ -76,10 +76,10 @@ proof -
     using n m unfolding q
      apply (simp_all add: of_nat_diff)
     apply (subst of_nat_diff)
-    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths)
+    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths unsigned_of_nat)
     done
   then show ?thesis using n m div_half_nat [OF \<open>m \<noteq> 0\<close>, of n] unfolding q
-    by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self
+    by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self unsigned_of_nat
       flip: zdiv_int zmod_int
       split del: if_split split: if_split_asm)
 qed
@@ -180,7 +180,7 @@ proof(cases "push_bit (LENGTH('a) - 1) 1 \<le> y")
     also have "\<dots> \<le> 2 * n" using y n
       by transfer (simp add: push_bit_of_1 take_bit_eq_mod)
     finally have div: "x div of_nat n = 1" using False n
-      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self)
+      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self unsigned_of_nat)
     moreover have "x mod y = x - x div y * y"
       by (simp add: minus_div_mult_eq_mod)
     with div n have "x mod y = x - y" by simp
@@ -196,7 +196,8 @@ next
       (auto dest: less_imp_of_nat_less [where ?'a = int])
   with y n have "sint (drop_bit 1 x) = uint (drop_bit 1 x)"
     by (cases \<open>LENGTH('a)\<close>)
-      (auto simp add: sint_uint drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib signed_take_bit_int_eq_self_iff)
+      (auto simp add: sint_uint drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib
+        signed_take_bit_int_eq_self_iff unsigned_of_nat)
   moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
     using y by (cases \<open>LENGTH('a)\<close>)
       (simp_all add: not_le push_bit_of_1 word_less_alt uint_power_lower)
@@ -231,7 +232,7 @@ begin
 
 lemma word_of_int_code:
   "uint (word_of_int x :: 'a word) = x AND mask (LENGTH('a :: len))"
-  by (simp add: take_bit_eq_mask)
+  by (simp add: unsigned_of_int take_bit_eq_mask)
 
 context
   fixes f :: "nat \<Rightarrow> bool"

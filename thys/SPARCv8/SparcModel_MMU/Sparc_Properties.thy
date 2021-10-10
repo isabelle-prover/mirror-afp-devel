@@ -7255,38 +7255,39 @@ proof (cases "fst instr = ctrl_type SAVE")
   case True
   then have f1: "fst instr = ctrl_type SAVE" by auto
   then show ?thesis using a1
-  apply (simp add: save_restore_instr_def)
-  apply (simp add: Let_def)
-  apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-  apply (simp add: case_prod_unfold)
-  apply auto
-     apply (simp add: raise_trap_def add_trap_set_def simpler_modify_def)
-     apply (simp add: get_curr_win_traps_low_equal)
+    apply (simp add: save_restore_instr_def)
+    apply (simp add: Let_def)
     apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-    apply (simp add: get_WIM_bit_low_equal)
-   apply (simp add: get_WIM_bit_low_equal)
-  apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-  apply (simp add: get_curr_win_low_equal)
-  using get_curr_win2_low_equal save_restore_instr_sub1_low_equal get_addr2_low_equal
-  apply metis
-  done
+    apply (simp add: case_prod_unfold)
+    apply (auto simp add: unsigned_of_int)
+       apply (simp add: raise_trap_def add_trap_set_def simpler_modify_def)
+       apply (simp add: get_curr_win_traps_low_equal)
+      apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
+      apply (simp add: get_WIM_bit_low_equal)
+     apply (simp add: get_WIM_bit_low_equal)
+    apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
+    apply (simp add: get_curr_win_low_equal)
+    using get_curr_win2_low_equal save_restore_instr_sub1_low_equal get_addr2_low_equal
+    apply metis
+    done
 next
   case False
   then show ?thesis using a1
-  apply (simp add: save_restore_instr_def)
-  apply (simp add: Let_def)
-  apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-  apply (simp add: case_prod_unfold)
-  apply auto
-     apply (simp add: raise_trap_def add_trap_set_def simpler_modify_def)
-     apply (simp add: get_curr_win_traps_low_equal)
+    apply (simp add: save_restore_instr_def)
+    apply (simp add: Let_def)
     apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-    apply (simp add: get_WIM_bit_low_equal2)
-   apply (simp add: get_WIM_bit_low_equal2)
-  apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
-  apply (simp add: get_curr_win_low_equal)
-  using get_curr_win2_low_equal save_restore_instr_sub1_low_equal get_addr2_low_equal
-  by metis 
+    apply (simp add: case_prod_unfold)
+    apply (auto simp add: unsigned_of_int)
+       apply (simp add: raise_trap_def add_trap_set_def simpler_modify_def)
+       apply (simp add: get_curr_win_traps_low_equal)
+      apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
+      apply (simp add: get_WIM_bit_low_equal2)
+     apply (simp add: get_WIM_bit_low_equal2)
+    apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
+    apply (simp add: get_curr_win_low_equal)
+    using get_curr_win2_low_equal save_restore_instr_sub1_low_equal get_addr2_low_equal
+    apply metis
+    done
 qed
 
 lemma call_instr_low_equal: 

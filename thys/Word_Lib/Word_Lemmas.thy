@@ -950,7 +950,7 @@ proof -
   moreover have \<open>push_bit n' q' + take_bit n' (push_bit n m') < 2 ^ LENGTH('b)\<close>
     by (metis \<open>n' - n = LENGTH('a)\<close> id_apply is_aligned_no_wrap''' m'_def of_nat_eq_id of_nat_push_bit off' p'(1) p'(2) take_bit_nat_eq_self_iff take_bit_push_bit that(3) that(5) unsigned_of_nat)
   ultimately have \<open>push_bit n' q + take_bit n' (push_bit n m) = push_bit n' q' + take_bit n' (push_bit n m')\<close>
-    using * by (simp add: p p' off off' push_bit_of_nat push_bit_take_bit word_of_nat_inj flip: of_nat_add)
+    using * by (simp add: p p' off off' push_bit_of_nat push_bit_take_bit word_of_nat_inj unsigned_of_nat flip: of_nat_add)
   then have \<open>int (push_bit n' q + take_bit n' (push_bit n m))
     = int (push_bit n' q' + take_bit n' (push_bit n m'))\<close>
     by simp
@@ -1204,11 +1204,7 @@ lemma ucast_ucast_eq_mask_shift:
 
 lemma const_le_unat:
   "\<lbrakk> b < 2 ^ LENGTH('a); of_nat b \<le> a \<rbrakk> \<Longrightarrow> b \<le> unat (a :: 'a :: len word)"
-  apply (simp add: word_le_def)
-  apply (simp only: uint_nat zle_int)
-  apply transfer
-  apply (simp add: take_bit_nat_eq_self)
-  done
+  by (simp add: word_le_nat_alt unsigned_of_nat take_bit_nat_eq_self)
 
 lemma upt_enum_offset_trivial:
   "\<lbrakk> x < 2 ^ LENGTH('a) - 1 ; n \<le> unat x \<rbrakk>

@@ -665,7 +665,7 @@ lemma unat_mult_power_lem:
 proof (cases \<open>sz < LENGTH('a)\<close>)
   case True
   with assms show ?thesis
-    by (simp add: unat_word_ariths take_bit_eq_mod mod_simps)
+    by (simp add: unat_word_ariths take_bit_eq_mod mod_simps unsigned_of_nat)
       (simp add: take_bit_nat_eq_self_iff nat_less_power_trans flip: take_bit_eq_mod)
 next
   case False
@@ -693,7 +693,7 @@ lemma word_less_sub_le[simp]:
 
 lemma unat_of_nat_len:
   "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x :: 'a::len word) = x"
-  by (simp add: take_bit_nat_eq_self_iff)
+  by (simp add: unsigned_of_nat take_bit_nat_eq_self_iff)
 
 lemma unat_of_nat_eq:
   "x < 2 ^ LENGTH('a) \<Longrightarrow> unat (of_nat x ::'a::len word) = x"
@@ -938,7 +938,7 @@ lemma word_of_nat_less:
   "\<lbrakk> n < unat x \<rbrakk> \<Longrightarrow> of_nat n < x"
   apply (simp add: word_less_nat_alt)
   apply (erule order_le_less_trans[rotated])
-  apply (simp add: take_bit_eq_mod)
+  apply (simp add: unsigned_of_nat take_bit_eq_mod)
   done
 
 lemma unat_mask:
@@ -961,7 +961,7 @@ lemma Suc_2p_unat_mask:
 
 lemma sint_of_nat_ge_zero:
   "x < 2 ^ (LENGTH('a) - 1) \<Longrightarrow> sint (of_nat x :: 'a :: len word) \<ge> 0"
-  by (simp add: bit_iff_odd)
+  by (simp add: bit_iff_odd signed_of_nat)
 
 lemma int_eq_sint:
   "x < 2 ^ (LENGTH('a) - 1) \<Longrightarrow> sint (of_nat x :: 'a :: len word) = int x"
@@ -1063,7 +1063,7 @@ lemma ucast_range_less:
   apply (rule_tac x="ucast x" in exI)
   apply (rule bit_word_eqI)
   apply (auto simp add: bit_simps)
-  apply (metis bit_take_bit_iff less_mask_eq not_less take_bit_eq_mask)
+  apply (metis bit_take_bit_iff take_bit_word_eq_self_iff)
   done
 
 lemma word_power_less_diff:
@@ -1145,7 +1145,7 @@ lemma unat_less_helper:
   "x < of_nat n \<Longrightarrow> unat x < n"
   apply (simp add: word_less_nat_alt)
   apply (erule order_less_le_trans)
-  apply (simp add: take_bit_eq_mod)
+  apply (simp add: take_bit_eq_mod unsigned_of_nat)
   done
 
 lemma nat_uint_less_helper:
@@ -1157,7 +1157,7 @@ lemma nat_uint_less_helper:
 
 lemma of_nat_0:
   "\<lbrakk>of_nat n = (0::'a::len word); n < 2 ^ LENGTH('a)\<rbrakk> \<Longrightarrow> n = 0"
-  by transfer (simp add: take_bit_eq_mod)
+  by (auto simp add: word_of_nat_eq_0_iff)
 
 lemma of_nat_inj:
   "\<lbrakk>x < 2 ^ LENGTH('a); y < 2 ^ LENGTH('a)\<rbrakk> \<Longrightarrow>
@@ -1463,7 +1463,10 @@ lemma word_less_power_trans_ofnat:
    \<Longrightarrow> of_nat n * 2 ^ k < (2::'a::len word) ^ m"
   apply (subst mult.commute)
   apply (rule word_less_power_trans)
-    apply (simp_all add: word_less_nat_alt less_le_trans take_bit_eq_mod)
+    apply (simp_all add: word_less_nat_alt unsigned_of_nat)
+  using take_bit_nat_less_eq_self
+  apply (rule le_less_trans)
+  apply assumption
   done
 
 lemma word_1_le_power:
@@ -1727,7 +1730,7 @@ lemma uint_range':
 
 lemma sint_of_int_eq:
   "\<lbrakk> - (2 ^ (LENGTH('a) - 1)) \<le> x; x < 2 ^ (LENGTH('a) - 1) \<rbrakk> \<Longrightarrow> sint (of_int x :: ('a::len) word) = x"
-  by (simp add: signed_take_bit_int_eq_self)
+  by (simp add: signed_take_bit_int_eq_self signed_of_int)
 
 lemma of_int_sint:
   "of_int (sint a) = a"

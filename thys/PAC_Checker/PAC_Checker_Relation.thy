@@ -66,7 +66,7 @@ lemma less_upper_bintrunc_id: \<open>n < 2 ^b \<Longrightarrow> n \<ge> 0 \<Long
   by (rule take_bit_int_eq_self)
 
 lemma nat_of_uint64_uint64_of_nat_id: \<open>n < 2^64 \<Longrightarrow> nat_of_uint64 (uint64_of_nat n) = n\<close>
-  by transfer (simp add: take_bit_nat_eq_self)
+  by transfer (simp add: take_bit_nat_eq_self unsigned_of_nat)
 
 lemma [sepref_fr_rules]:
   \<open>(return o uint64_of_nat, RETURN o uint64_of_nat_conv) \<in> [\<lambda>a. a < 2 ^64]\<^sub>a nat_assn\<^sup>k \<rightarrow> uint64_nat_assn\<close>
