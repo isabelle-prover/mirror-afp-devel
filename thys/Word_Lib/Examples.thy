@@ -299,23 +299,23 @@ lemma
   \<open>drop_bit 3 (1705 :: 16 word) = 213\<close>
   by simp
 
-(*lemma
+lemma
   \<open>drop_bit (Suc (Suc (Suc 0))) (1705 :: 16 word) = 213\<close>
   by simp
 
 lemma
-  \<open>drop_bit 3 (- 1705 :: 16 word) = - 214\<close>
+  \<open>drop_bit 3 (- 1705 :: 16 word) = 7978\<close>
   by simp
 
 lemma
-  \<open>drop_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = - 214\<close>
-  by simp*)
+  \<open>drop_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7978\<close>
+  by simp
 
 lemma
   \<open>signed_drop_bit 3 (1705 :: 16 word) = 213\<close>
   by simp
 
-(*lemma
+lemma
   \<open>signed_drop_bit (Suc (Suc (Suc 0))) (1705 :: 16 word) = 213\<close>
   by simp
 
@@ -325,39 +325,39 @@ lemma
 
 lemma
   \<open>signed_drop_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = - 214\<close>
-  by simp*)
-
-lemma
-  \<open>take_bit 3 (1705 :: 'a::len word) = 1\<close>
-  by simp
-
-(*lemma
-  \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: 'a::len word) = 1\<close>
   by simp
 
 lemma
-  \<open>take_bit 3 (- 1705 :: 'a::len word) = 7\<close>
+  \<open>take_bit 3 (1705 :: 16 word) = 1\<close>
   by simp
 
 lemma
-  \<open>take_bit (Suc (Suc (Suc 0))) (- 1705 :: 'a::len word) = 7\<close>
+  \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: 16 word) = 1\<close>
   by simp
 
 lemma
-  \<open>signed_take_bit 3 (1705 :: 'a::len word) = - 7\<close>
+  \<open>take_bit 3 (- 1705 :: 16 word) = 7\<close>
   by simp
 
 lemma
-  \<open>signed_take_bit (Suc (Suc (Suc 0))) (1705 :: 'a::len word) = - 7\<close>
+  \<open>take_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7\<close>
   by simp
 
 lemma
-  \<open>signed_take_bit 3 (- 1705 :: 'a::len word) = 7\<close>
+  \<open>signed_take_bit 3 (1705 :: 16 word) = - 7\<close>
   by simp
 
 lemma
-  \<open>signed_take_bit (Suc (Suc (Suc 0))) (- 1705 :: 'a::len word) = 7\<close>
-  by simp*)
+  \<open>signed_take_bit (Suc (Suc (Suc 0))) (1705 :: 16 word) = - 7\<close>
+  by simp
+
+lemma
+  \<open>signed_take_bit 3 (- 1705 :: 16 word) = 7\<close>
+  by simp
+
+lemma
+  \<open>signed_take_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7\<close>
+  by simp
 
 text "modulus"
 

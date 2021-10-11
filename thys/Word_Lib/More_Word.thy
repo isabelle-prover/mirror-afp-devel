@@ -1682,6 +1682,7 @@ lemma sint_minus1 [simp]: "(sint x = -1) = (x = -1)"
   apply (cases \<open>LENGTH('a)\<close>)
    apply simp_all
   apply transfer
+  apply simp
   apply (simp flip: signed_take_bit_eq_iff_take_bit_eq)
   done
 
