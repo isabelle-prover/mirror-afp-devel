@@ -9,6 +9,15 @@ theory Guide
   imports Word_Lib_Sumo Word_64 Ancient_Numeral
 begin
 
+context semiring_bit_operations
+begin
+
+lemma bit_eq_iff:
+  \<open>a = b \<longleftrightarrow> (\<forall>n. 2 ^ n \<noteq> 0 \<longrightarrow> bit a n \<longleftrightarrow> bit b n)\<close>
+  using bit_eq_iff [of a b] by (simp add: possible_bit_def)
+
+end
+
 notation (output)  push_bit (\<open>push'_bit\<close>)
 
 notation (output)  drop_bit (\<open>drop'_bit\<close>)
@@ -30,7 +39,7 @@ abbreviation \<open>signed_drop_bit n a \<equiv> a >>> n\<close>
 (*>*)
 section \<open>A short overview over bit operations and word types\<close>
 
-subsection \<open>Basic theories and key ideas\<close>
+subsection \<open>Key principles\<close>
 
 text \<open>
   When formalizing bit operations, it is tempting to represent
@@ -49,7 +58,7 @@ text \<open>
       in @{term [source] 0} which can be represented by type \<^typ>\<open>nat\<close> but
       only support a restricted set of operations).
 
-  The most fundamental ideas are developed in theory \<^theory>\<open>HOL.Parity\<close>
+  The fundamental principles are developed in theory \<^theory>\<open>HOL.Bit_Operations\<close>
   (which is part of \<^theory>\<open>Main\<close>):
 
     \<^item> Multiplication by \<^term>\<open>2 :: int\<close> is a bit shift to the left and
@@ -84,7 +93,7 @@ text \<open>
 
     \<^item> Truncation: @{thm take_bit_eq_mod [where ?'a = int, no_vars]}
 
-    \<^item> Bitwise negation: @{thm [mode=iff] bit_not_iff [where ?'a = int, no_vars]}
+    \<^item> Bitwise negation: @{thm [mode=iff] bit_not_iff_eq [where ?'a = int, no_vars]}
 
     \<^item> Bitwise conjunction: @{thm [mode=iff] bit_and_iff [where ?'a = int, no_vars]}
 
@@ -109,7 +118,11 @@ text \<open>
   appears quite
   technical but is the logical foundation for the quite natural bit concatenation
   on \<^typ>\<open>'a word\<close> (see below).
-  
+\<close>
+
+subsection \<open>Core word theory\<close>
+
+text \<open>
   Proper word types are introduced in theory \<^theory>\<open>HOL-Library.Word\<close>, with
   the following specific operations:
 
