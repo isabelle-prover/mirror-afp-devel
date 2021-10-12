@@ -362,7 +362,7 @@ text \<open>Theorem 7.8\<close>
 
 lemma wcc_sup_wcc:
   "wcc (x \<squnion> y) = wcc (x \<squnion> wcc y)"
-  by (smt (verit, del_insts) le_sup_iff order.antisym sup_right_divisibility wcc_below_wcc wcc_increasing wcc_isotone)
+  by (smt (verit, ccfv_SIG) le_sup_iff order.antisym sup_right_divisibility wcc_below_wcc wcc_increasing)
 
 text \<open>Components of a forest, which is represented using edges directed towards the roots\<close>
 
