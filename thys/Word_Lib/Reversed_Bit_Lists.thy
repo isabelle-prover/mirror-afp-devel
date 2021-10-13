@@ -17,6 +17,7 @@ theory Reversed_Bit_Lists
     Even_More_List
     "HOL-Library.Sublist"
     Aligned
+    Singleton_Bit_Shifts
     Legacy_Aliases
 begin
 
@@ -1401,21 +1402,30 @@ lemma bshiftr1_bl: "to_bl (bshiftr1 b w) = b # butlast (to_bl w)"
   unfolding bshiftr1_eq by (rule word_bl.Abs_inverse) simp
 
 lemma shiftl1_of_bl: "shiftl1 (of_bl bl) = of_bl (bl @ [False])"
-  by transfer (simp add: bl_to_bin_append)
+  apply (rule bit_word_eqI)
+  apply (simp add: bit_simps)
+  subgoal for n
+    apply (cases n)
+     apply simp_all
+    done
+  done
 
 lemma shiftl1_bl: "shiftl1 w = of_bl (to_bl w @ [False])"
-  for w :: "'a::len word"
-proof -
-  have "shiftl1 w = shiftl1 (of_bl (to_bl w))"
-    by simp
-  also have "\<dots> = of_bl (to_bl w @ [False])"
-    by (rule shiftl1_of_bl)
-  finally show ?thesis .
-qed
+  apply (rule bit_word_eqI)
+  apply (simp add: bit_simps)
+  subgoal for n
+    apply (cases n)
+     apply (simp_all add: nth_rev_to_bl)
+    done
+  done
 
 lemma bl_shiftl1: "to_bl (shiftl1 w) = tl (to_bl w) @ [False]"
   for w :: "'a::len word"
   by (simp add: shiftl1_bl word_rep_drop drop_Suc drop_Cons') (fast intro!: Suc_leI)
+
+lemma to_bl_double_eq:
+  \<open>to_bl (2 * w) = tl (to_bl w) @ [False]\<close>
+  using bl_shiftl1 [of w] by (simp add: shiftl1_def ac_simps)
 
 \<comment> \<open>Generalized version of \<open>bl_shiftl1\<close>. Maybe this one should replace it?\<close>
 lemma bl_shiftl1': "to_bl (shiftl1 w) = tl (to_bl w @ [False])"
@@ -1525,10 +1535,10 @@ lemma bl_shiftl: "to_bl (push_bit n w) = drop n (to_bl w) @ replicate (min (size
 lemma shiftr1_bl_of:
   "length bl \<le> LENGTH('a) \<Longrightarrow>
     shiftr1 (of_bl bl::'a::len word) = of_bl (butlast bl)"
-  apply (cases bl rule: rev_cases)
-  apply simp_all
   apply (rule bit_word_eqI)
-  apply (auto simp add: bit_simps simp flip: bit_Suc)
+  apply (simp add: bit_simps)
+  apply (cases bl rule: rev_cases)
+  apply auto
   done
 
 lemma shiftr_bl_of:

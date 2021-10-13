@@ -247,7 +247,7 @@ next
     apply (simp add: takefill_alt word_size rev_map take_rbl_plus min_def)
     apply (simp add: rbl_plus_def)
     apply (simp add: zip_take_triv)
-    apply (simp only: mult.commute [of _ 2] mult.assoc bl_shiftl1)
+    apply (simp only: mult.commute [of _ 2] mult.assoc to_bl_double_eq)
     apply (simp flip: butlast_rev add: take_butlast)
     done
 qed

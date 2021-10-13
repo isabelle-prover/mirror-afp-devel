@@ -417,9 +417,12 @@ text \<open>
       \<^abbrev>\<open>bintrunc\<close>, \<^abbrev>\<open>sbintrunc\<close>, \<^abbrev>\<open>norm_sint\<close>,
       \<^abbrev>\<open>bin_cat\<close> moved into theory \<^theory>\<open>Word_Lib.Legacy_Aliases\<close>.
 
-    \<^item> Operations \<^abbrev>\<open>shiftl1\<close>, \<^abbrev>\<open>shiftr1\<close>, \<^abbrev>\<open>sshiftr1\<close>, \<^abbrev>\<open>bshiftr1\<close>,
+    \<^item> Operations \<^abbrev>\<open>bshiftr1\<close>,
       \<^abbrev>\<open>setBit\<close>, \<^abbrev>\<open>clearBit\<close> moved from distribution into theory
       \<^theory>\<open>Word_Lib.Legacy_Aliases\<close> and replaced by input abbreviations.
+
+    \<^item> Operations \<^const>\<open>shiftl1\<close>, \<^const>\<open>shiftr1\<close>, \<^const>\<open>sshiftr1\<close>
+      moved here from distribution.
 
     \<^item> Operation \<^const>\<open>complement\<close> replaced by input abbreviation \<^abbrev>\<open>complement\<close>.
 \<close>

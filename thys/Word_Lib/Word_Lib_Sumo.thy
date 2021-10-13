@@ -42,6 +42,7 @@ imports
   Word_32
   Word_Syntax
   Signed_Division_Word
+  Singleton_Bit_Shifts
   More_Word_Operations
   Many_More
 begin
