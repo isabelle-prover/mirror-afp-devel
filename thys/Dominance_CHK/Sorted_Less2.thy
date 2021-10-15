@@ -77,4 +77,13 @@ lemma sorted_less_rev_set_eq:
     shows "sorted_list_of_set (set xs) = rev xs"
   using assms sorted_less_set_eq[of "rev xs"] by auto
 
+lemma sorted_insort_remove1: "sorted w \<Longrightarrow> (insort a (remove1 a w)) = sorted_list_of_set (insert a (set w)) "
+proof-
+  assume "sorted w"
+  then have "(sorted_list_of_set (set w - {a})) = remove1 a w" using sorted_less_set_eq
+    by (fastforce simp add:sorted_list_of_set_remove)
+  hence "insort a (remove1 a w) = insort a (sorted_list_of_set (set w - {a}))" by simp
+  then show ?thesis by (auto simp add:sorted_list_of_set_insert)
+qed
+
 end

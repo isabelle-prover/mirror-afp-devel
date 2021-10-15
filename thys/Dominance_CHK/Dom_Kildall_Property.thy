@@ -330,6 +330,8 @@ lemma decomp_propa: "\<And>ss w.
    apply (fastforce intro:sorted_less_set_eq)
   apply (simp (no_asm))
   apply clarify 
+ apply (subst sorted_insort_remove1)
+  apply simp
   apply (simp add: sorted_less_sorted_list_of_set Semilat.closed_f[OF Semilat.intro, OF is_semi])
   apply (rule conjI)   
    apply (blast intro: arg_cong)

@@ -21,7 +21,7 @@ where
 | "propa f (q'# qs) \<tau>s wl = (let (q,\<tau>) = q';
                              u =  (\<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!q);
                              wl' = (if u = \<tau>s!q then wl 
-                                    else sorted_list_of_set (insert q (set wl)))
+                                    else (insort q (remove1 q wl)))
                          in propa f qs (\<tau>s[q := u]) wl')"
 
 definition  iter :: 
