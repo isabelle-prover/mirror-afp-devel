@@ -1005,13 +1005,12 @@ proof -
     apply (subst Transfer.Rel_def[symmetric]) \<comment> \<open>Setup typical goal for automated reasoner.\<close>
     \<comment> \<open>We need to reason manually because we are not in the context where \<open>bf\<^sub>m\<close> was defined.\<close>
     \<comment> \<open>This is roughly what @{method "memoize_prover_match_step"}/\<open>Transform_Tactic.step_tac\<close> does.\<close>
-    ML_prf \<open>val ctxt = @{context}\<close>
-    apply (tactic \<open>Transform_Tactic.solve_relator_tac ctxt 1\<close>
+    apply (tactic \<open>Transform_Tactic.solve_relator_tac \<^context> 1\<close>
           | rule HOL.refl
           | rule bf\<^sub>m.dp_match_rule
           | rule bf\<^sub>m.crel_vs_return_ext
           | (subst Rel_def, rule crel_bf\<^sub>m')
-          | tactic \<open>Transform_Tactic.transfer_raw_tac ctxt 1\<close>)+
+          | tactic \<open>Transform_Tactic.transfer_raw_tac \<^context> 1\<close>)+
     done
 qed
 

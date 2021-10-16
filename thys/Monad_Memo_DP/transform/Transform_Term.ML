@@ -1,5 +1,18 @@
-fun list_conv (head_conv, arg_convs) lthy =
-  Library.foldl (uncurry Conv.combination_conv) (head_conv lthy, map (fn conv => conv lthy) arg_convs)
+signature TRANSFORM_TERM =
+sig
+  val repeat_sweep_conv: (Proof.context -> conv) -> Proof.context -> conv
+  val rewrite_pureapp_beta_conv: conv
+  val wrap_head: Transform_Const.MONAD_CONSTS -> term -> int -> term
+  val lift_equation: Transform_Const.MONAD_CONSTS -> Proof.context ->
+    term * term -> term option -> (Proof.context -> conv) * term * int
+end
+
+structure Transform_Term : TRANSFORM_TERM =
+struct
+
+fun list_conv (head_conv, arg_convs) ctxt =
+  Library.foldl (uncurry Conv.combination_conv)
+    (head_conv ctxt, map (fn conv => conv ctxt) arg_convs)
 
 fun eta_conv1 ctxt =
   (Conv.abs_conv (K Conv.all_conv) ctxt)
@@ -20,8 +33,6 @@ val app_mark_conv = Conv.rewr_conv @{thm App_def[symmetric]}
 val app_unmark_conv = Conv.rewr_conv @{thm App_def}
 val wrap_mark_conv = Conv.rewr_conv @{thm Wrap_def[symmetric]}
 
-structure Transform_Term = struct
-
 fun eta_expand tm =
   let
     val n_args = Integer.min 1 (length (binder_types (fastype_of tm)))
@@ -36,16 +47,15 @@ fun is_ctr_sugar ctxt tp_name =
 fun type_nargs tp = tp |> strip_type |> fst |> length
 fun term_nargs tm = type_nargs (fastype_of tm)
 
-fun
-  lift_type (monad_consts: Transform_Const.MONAD_CONSTS) ctxt tp = #mk_stateT monad_consts  (lift_type' monad_consts ctxt tp)
-and
-  lift_type' monad_consts ctxt (tp as Type (@{type_name fun}, _))
-    = lift_type' monad_consts ctxt (domain_type tp) --> lift_type monad_consts ctxt (range_type tp)
-| lift_type' monad_consts ctxt (tp as Type (tp_name, tp_args))
-    = if is_ctr_sugar ctxt tp_name then Type (tp_name, map (lift_type' monad_consts ctxt) tp_args)
+fun lift_type (monad_consts: Transform_Const.MONAD_CONSTS) ctxt tp =
+      #mk_stateT monad_consts  (lift_type' monad_consts ctxt tp)
+and lift_type' monad_consts ctxt (tp as Type (@{type_name fun}, _)) =
+      lift_type' monad_consts ctxt (domain_type tp) --> lift_type monad_consts ctxt (range_type tp)
+  | lift_type' monad_consts ctxt (tp as Type (tp_name, tp_args)) =
+      if is_ctr_sugar ctxt tp_name then Type (tp_name, map (lift_type' monad_consts ctxt) tp_args)
       else if null tp_args then tp (* int, nat, \<dots> *)
       else raise TYPE("not a ctr_sugar", [tp], [])
-| lift_type' _ _ tp = tp
+  | lift_type' _ _ tp = tp
 
 fun is_atom_type monad_consts ctxt tp =
   tp = lift_type' monad_consts ctxt tp
@@ -72,9 +82,8 @@ fun wrap_1st_term monad_consts ctxt tm n_args_opt inner_wrap =
       #return monad_consts (Term.absfree name_typ tm)
     )
     val (conv, result) = Library.foldr wrap (vars_name_typ, (
-      if inner_wrap then (wrap_mark_conv, #return monad_consts body) else (Conv.all_conv, body) 
+      if inner_wrap then (wrap_mark_conv, #return monad_consts body) else (Conv.all_conv, body)
     ))
-    
   in
     (K conv, result)
   end
@@ -119,11 +128,8 @@ fun lift_abs' monad_consts ctxt (name, typ) cont lift_dict body =
     val (conv_free, body_free) = (cont (lift_dict') body)
 
     val body' = lambda freeT' body_free
-    fun conv lthy =
-      eta_conv1 ctxt then_conv Conv.abs_conv (fn (_, lthy') => conv_free lthy') lthy
-  in
-    (conv, body')
-  end
+    fun conv ctxt' = eta_conv1 ctxt then_conv Conv.abs_conv (conv_free o #2) ctxt'
+  in (conv, body') end
 
 fun lift_arg monad_consts ctxt lift_dict tm =
   (*
@@ -196,7 +202,7 @@ and lift_term monad_consts ctxt lift_dict tm = let
         let
           val (name', body') = Term.dest_abs (name, typ, body)
           val (conv, tm') = lift_abs' monad_consts ctxt (name', typ) check_cont lift_dict body'
-          fun convT lthy = conv lthy then_conv wrap_mark_conv
+          fun convT ctxt' = conv ctxt' then_conv wrap_mark_conv
           val tmT = #return monad_consts tm'
         in SOME (convT, tmT) end
     | _ => NONE
@@ -208,10 +214,10 @@ and lift_term monad_consts ctxt lift_dict tm = let
         val (case_name, case_type) = lookup_case_term head |> the |> dest_Const
         val ((clause_typs, _), _) =
           strip_type case_type |>> split_last
-        
+
         val clase_nparams = clause_typs |> map type_nargs
         (* ('a\<Rightarrow>'b) \<Rightarrow> ('a\<Rightarrow>'b) |> type_nargs = 1*)
-  
+
         fun lift_clause n_param clause =
           let
             val (vars_name_typ, body) = Term.strip_abs_eta n_param clause
@@ -221,11 +227,11 @@ and lift_term monad_consts ctxt lift_dict tm = let
           in
             (conv, clauseT)
           end
-  
+
         val head' = Const (case_name, dummyT) (* clauses are sufficient for type inference *)
         val (convs, clauses') = map2 lift_clause clase_nparams args |> split_list
 
-        fun conv lthy = list_conv (K Conv.all_conv, convs) lthy then_conv wrap_mark_conv
+        fun conv ctxt' = list_conv (K Conv.all_conv, convs) ctxt' then_conv wrap_mark_conv
         val tm' = #return monad_consts (list_comb (head', clauses'))
       in
         (conv, tm')
@@ -238,7 +244,7 @@ and lift_term monad_consts ctxt lift_dict tm = let
           val (f_conv, tmf) = check_cont lift_dict f
           val (x_conv, tmx) = check_cont_arg lift_dict x
           val tm' = #app monad_consts (tmf, tmx)
-          fun conv lthy = Conv.combination_conv (f_conv lthy then_conv app_mark_conv) (x_conv lthy)
+          fun conv ctxt' = Conv.combination_conv (f_conv ctxt' then_conv app_mark_conv) (x_conv ctxt')
         in
           SOME (conv, tm')
         end
@@ -315,9 +321,9 @@ fun lift_equation monad_consts ctxt (lhs, rhs) memoizer_opt =
 
     val frees = fold Term.add_frees args []
      |> filter_out (is_atom_type monad_consts ctxt o snd)
-    
+
     val lift_dict_args = frees |> map (fn (name, typ) => (
-      Free (name, typ), 
+      Free (name, typ),
       (K wrap_mark_conv,
        #return monad_consts (Free (name, lift_type' monad_consts ctxt typ)))
     ))
@@ -335,6 +341,5 @@ fun lift_equation monad_consts ctxt (lhs, rhs) memoizer_opt =
   in
     (rhs_conv, eqs', n_args)
   end
-
 
 end

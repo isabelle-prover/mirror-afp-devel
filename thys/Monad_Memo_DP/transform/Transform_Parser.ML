@@ -1,4 +1,12 @@
-structure Transform_Parser = struct
+signature TRANSFORM_PARSER =
+sig
+  val dp_fun_part1_parser: ((binding * string) * ((bool * (string * Position.T)) *
+    (string * string) list) option) parser
+  val dp_fun_part2_parser: (string * (Facts.ref * Token.src list) list) parser
+end
+
+structure Transform_Parser : TRANSFORM_PARSER =
+struct
 
 val dp_fun_parser =
   Parse.binding (* name of instantiation and monadified term *)

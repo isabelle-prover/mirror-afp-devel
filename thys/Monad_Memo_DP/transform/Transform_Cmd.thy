@@ -29,47 +29,48 @@ val _ =
 val _ =
   Outer_Syntax.local_theory @{command_keyword monadifies} "whatever"
     (Transform_Parser.dp_fun_part2_parser >> Transform_DP.dp_fun_part2_cmd)
-\<close>
 
-ML \<open>
 val _ =
   Outer_Syntax.local_theory_to_proof @{command_keyword memoize_correct} "whatever"
     (Scan.succeed Transform_DP.dp_correct_cmd)
 \<close>
 
 method_setup memoize_prover = \<open>
-Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_last_cmd_info ctxt
-  |> Transform_Tactic.solve_consistentDP_tac ctxt)))
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Transform_Data.get_last_cmd_info ctxt
+    |> Transform_Tactic.solve_consistentDP_tac ctxt))
 \<close>
 
 method_setup memoize_prover_init = \<open>
-Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_last_cmd_info ctxt
-  |> Transform_Tactic.prepare_consistentDP_tac ctxt)))
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Transform_Data.get_last_cmd_info ctxt
+    |> Transform_Tactic.prepare_consistentDP_tac ctxt))
 \<close>
 
 method_setup memoize_prover_case_init = \<open>
-Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_last_cmd_info ctxt
-  |> Transform_Tactic.prepare_case_tac ctxt)))
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Transform_Data.get_last_cmd_info ctxt
+    |> Transform_Tactic.prepare_case_tac ctxt))
 \<close>
 
 method_setup memoize_prover_match_step = \<open>
-Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_last_cmd_info ctxt
-  |> Transform_Tactic.step_tac ctxt)))
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Transform_Data.get_last_cmd_info ctxt
+    |> Transform_Tactic.step_tac ctxt))
 \<close>
 
 method_setup memoize_unfold_defs  = \<open>
-Scan.option (Scan.lift (Args.parens Args.name) -- Args.term) >> (fn tm_opt => fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_or_last_cmd_info ctxt tm_opt
-  |> Transform_Tactic.dp_unfold_defs_tac ctxt)))
+  Scan.option (Scan.lift (Args.parens Args.name) -- Args.term) >>
+    (fn tm_opt => fn ctxt => SIMPLE_METHOD'
+      (Transform_Data.get_or_last_cmd_info ctxt tm_opt
+        |> Transform_Tactic.dp_unfold_defs_tac ctxt))
 \<close>
 
 method_setup memoize_combinator_init  = \<open>
-Scan.option (Scan.lift (Args.parens Args.name) -- Args.term) >> (fn tm_opt => fn ctxt => (SIMPLE_METHOD' (
-  Transform_Data.get_or_last_cmd_info ctxt tm_opt
-  |> Transform_Tactic.prepare_combinator_tac ctxt)))
+  Scan.option (Scan.lift (Args.parens Args.name) -- Args.term) >>
+    (fn tm_opt => fn ctxt => SIMPLE_METHOD'
+      (Transform_Data.get_or_last_cmd_info ctxt tm_opt
+        |> Transform_Tactic.prepare_combinator_tac ctxt))
 \<close>
-end (* theory *)
+
+end

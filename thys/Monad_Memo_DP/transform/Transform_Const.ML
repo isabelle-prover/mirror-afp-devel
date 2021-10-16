@@ -1,4 +1,19 @@
-structure Transform_Const = struct
+signature TRANSFORM_CONST =
+sig
+  type MONAD_CONSTS = {
+    monad_name: string,
+    mk_stateT: typ -> typ,
+    return: term -> term,
+    app: (term * term) -> term,
+    if_termN: string,
+    checkmemVN: string,
+    rewrite_app_beta_conv: conv
+  }
+  val get_monad_const: string -> MONAD_CONSTS
+end
+
+structure Transform_Const : TRANSFORM_CONST =
+struct
   val pureappN = @{const_name Pure_Monad.App}
   fun pureapp tm = Const (pureappN, dummyT) $ tm
 
@@ -11,24 +26,24 @@ structure Transform_Const = struct
     checkmemVN: string,
     rewrite_app_beta_conv: conv
   }
-  
+
   val state_monad: MONAD_CONSTS =
     let
       val memT = TFree ("MemoryType", @{sort type})
       val memT = dummyT
-    
+
       fun mk_stateT tp =
         Type (@{type_name State_Monad.state}, [memT, tp])
-    
+
       val returnN = @{const_name State_Monad.return}
       fun return tm = Const (returnN, dummyT --> mk_stateT dummyT) $ tm
-    
+
       val appN = @{const_name State_Monad_Ext.fun_app_lifted}
       fun app (tm0, tm1) = Const (appN, dummyT) $ tm0 $ tm1
-    
+
       fun checkmem'C ctxt = Transform_Misc.get_const_pat ctxt "checkmem'"
       fun checkmem' ctxt param body = checkmem'C ctxt $ param $ body
-    
+
       val checkmemVN = "checkmem"
       val checkmemC = @{const_name "state_mem_defs.checkmem"}
 
@@ -54,16 +69,16 @@ structure Transform_Const = struct
     let
       fun mk_stateT tp =
         Type (@{type_name Heap_Monad.Heap}, [tp])
-    
+
       val returnN = @{const_name Heap_Monad.return}
       fun return tm = Const (returnN, dummyT --> mk_stateT dummyT) $ tm
-    
+
       val appN = @{const_name Heap_Monad_Ext.fun_app_lifted}
       fun app (tm0, tm1) = Const (appN, dummyT) $ tm0 $ tm1
-    
+
       fun checkmem'C ctxt = Transform_Misc.get_const_pat ctxt "checkmem'"
       fun checkmem' ctxt param body = checkmem'C ctxt $ param $ body
-    
+
       val checkmemVN = "checkmem"
       val checkmemC = @{const_name "heap_mem_defs.checkmem"}
 
@@ -95,4 +110,3 @@ structure Transform_Const = struct
     | NONE => error("unrecognized monad: " ^ name ^ " , choices: " ^ commas (map fst monad_consts_dict));
 
 end
-
