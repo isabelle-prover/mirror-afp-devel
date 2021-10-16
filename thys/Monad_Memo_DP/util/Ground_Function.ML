@@ -18,9 +18,9 @@ fun add_function bind defs =
 end
 
 fun dest_hol_eq_prop t =
-  let
-    val Const ("HOL.Trueprop", _) $ (Const ("HOL.eq", _) $ a $ b) = t
+  let val \<^Const_>\<open>Trueprop for \<^Const_>\<open>HOL.eq _ for a b\<close>\<close> = t
   in (a, b) end
+
 fun get_fun_head t =
   let
     val (t, _) = dest_hol_eq_prop t
