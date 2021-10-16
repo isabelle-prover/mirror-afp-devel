@@ -54,7 +54,9 @@ fun do_monadify heap_name scope tm mem_locale_opt def_thms_opt lthy =
       SOME defs => defs
     | NONE => raise TERM("no definition", [tm])
 
-    val ((_, old_defs_imported), _) = Variable.import true old_defs lthy
+    val ((_, old_defs_imported), ctxt') = lthy
+      |> fold Variable.declare_thm old_defs
+      |> Variable.import true old_defs
 (*
     val new_bind = Binding.suffix_name "\<^sub>T'" scope
     val new_bindT = Binding.suffix_name "\<^sub>T" scope
@@ -64,7 +66,7 @@ fun do_monadify heap_name scope tm mem_locale_opt def_thms_opt lthy =
 
     fun dest_def (def, def_imported) =
       let
-        val def_imported_meta = def_imported |> Local_Defs.meta_rewrite_rule lthy
+        val def_imported_meta = def_imported |> Local_Defs.meta_rewrite_rule ctxt'
         val eqs = def_imported_meta |> Thm.full_prop_of
         val (head, _) = Logic.dest_equals eqs |> fst |> Transform_Misc.behead tm
 
@@ -74,18 +76,18 @@ fun do_monadify heap_name scope tm mem_locale_opt def_thms_opt lthy =
         val _ = @{assert} (t_name = Binding.name_of new_bind)
 
         (*val eqs' = Term.subst_atomic [(head, Free (Binding.name_of new_bind, fastype_of head))] eqs*)
-        val (rhs_conv, eqsT, n_args) = Transform_Term.lift_equation monad_consts lthy (Logic.dest_equals eqs') memoizer_opt
-        val def_meta' = def |> Local_Defs.meta_rewrite_rule lthy |> Conv.fconv_rule (Conv.arg_conv (rhs_conv lthy))
+        val (rhs_conv, eqsT, n_args) = Transform_Term.lift_equation monad_consts ctxt' (Logic.dest_equals eqs') memoizer_opt
+        val def_meta' = def |> Local_Defs.meta_rewrite_rule ctxt' |> Conv.fconv_rule (Conv.arg_conv (rhs_conv ctxt'))
 
         val def_meta_simped = def_meta'
           |> Conv.fconv_rule (
-               Transform_Term.repeat_sweep_conv (K Transform_Term.rewrite_pureapp_beta_conv) lthy
+               Transform_Term.repeat_sweep_conv (K Transform_Term.rewrite_pureapp_beta_conv) ctxt'
              )
 (*
         val eqsT_simped = eqsT
-          |> Syntax.check_term lthy
-          |> Thm.cterm_of lthy
-          |> Transform_Term.repeat_sweep_conv (K Transform_Term.rewrite_app_beta_conv) lthy
+          |> Syntax.check_term ctxt'
+          |> Thm.cterm_of ctxt'
+          |> Transform_Term.repeat_sweep_conv (K Transform_Term.rewrite_app_beta_conv) ctxt'
           |> Thm.full_prop_of |> Logic.dest_equals |> snd
 *)
 

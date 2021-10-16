@@ -20,7 +20,7 @@ fun eta_conv1 ctxt =
   (Thm.eta_long_conversion then_conv Conv.abs_conv (K Thm.eta_conversion) ctxt)
 
 fun eta_conv_n n =
-  funpow n (fn conv => fn ctxt => eta_conv1 ctxt then_conv Conv.abs_conv (fn (_, ctxt) => conv ctxt) ctxt) (K Conv.all_conv)
+  funpow n (fn conv => fn ctxt => eta_conv1 ctxt then_conv Conv.abs_conv (conv o #2) ctxt) (K Conv.all_conv)
 
 fun conv_changed conv ctm =
   let val eq = conv ctm
@@ -73,19 +73,18 @@ fun is_1st_term monad_consts ctxt tm =
 fun is_1st_atom monad_consts ctxt atom_name =
   is_1st_term monad_consts ctxt (orig_atom ctxt atom_name)
 
-fun wrap_1st_term monad_consts ctxt tm n_args_opt inner_wrap =
+fun wrap_1st_term monad_consts tm n_args_opt inner_wrap =
   let
     val n_args = the_default (term_nargs tm) n_args_opt
     val (vars_name_typ, body) = Term.strip_abs_eta n_args tm
-    fun wrap (name_typ, (conv, tm)) = (
-      eta_conv1 ctxt then_conv Conv.abs_conv (K conv) ctxt then_conv wrap_mark_conv,
-      #return monad_consts (Term.absfree name_typ tm)
-    )
+    fun wrap (name_typ, (conv, tm)) =
+      (fn ctxt => eta_conv1 ctxt then_conv Conv.abs_conv (conv o #2) ctxt then_conv wrap_mark_conv,
+       #return monad_consts (Term.absfree name_typ tm))
     val (conv, result) = Library.foldr wrap (vars_name_typ, (
-      if inner_wrap then (wrap_mark_conv, #return monad_consts body) else (Conv.all_conv, body)
+      if inner_wrap then (K wrap_mark_conv, #return monad_consts body) else (K Conv.all_conv, body)
     ))
   in
-    (K conv, result)
+    (conv, result)
   end
 
 fun lift_1st_atom monad_consts ctxt atom (name, tp) =
@@ -100,7 +99,7 @@ fun lift_1st_atom monad_consts ctxt atom (name, tp) =
 
     val tm' = atom (name, arg_typs' ---> body_typ') (* " *)
   in
-    wrap_1st_term monad_consts ctxt tm' (SOME n_args) true
+    wrap_1st_term monad_consts tm' (SOME n_args) true
   end
 
 fun fixed_args head_n_args tm =
@@ -128,7 +127,7 @@ fun lift_abs' monad_consts ctxt (name, typ) cont lift_dict body =
     val (conv_free, body_free) = (cont (lift_dict') body)
 
     val body' = lambda freeT' body_free
-    fun conv ctxt' = eta_conv1 ctxt then_conv Conv.abs_conv (conv_free o #2) ctxt'
+    fun conv ctxt' = eta_conv1 ctxt' then_conv Conv.abs_conv (conv_free o #2) ctxt'
   in (conv, body') end
 
 fun lift_arg monad_consts ctxt lift_dict tm =
@@ -254,7 +253,7 @@ and lift_term monad_consts ctxt lift_dict tm = let
     if tm |> exists_subterm (AList.defined (op aconv) lift_dict)
       orelse not (is_1st_term monad_consts ctxt tm)
       then NONE
-      else SOME (wrap_1st_term monad_consts ctxt tm NONE true)
+      else SOME (wrap_1st_term monad_consts tm NONE true)
 
   fun choke tm =
     raise TERM("cannot process term", [tm])
@@ -305,7 +304,7 @@ fun lift_head monad_consts ctxt head n_args =
     val head_typ' = arg_typs0' ---> arg_typs1T
     val head' = Free (head_name, head_typ')
 
-    val (head_conv, headT) = wrap_1st_term monad_consts ctxt head' (SOME n_args) false
+    val (head_conv, headT) = wrap_1st_term monad_consts head' (SOME n_args) false
   in
     (head', (head_conv, headT))
   end
