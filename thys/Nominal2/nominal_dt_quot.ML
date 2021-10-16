@@ -210,7 +210,7 @@ fun prove_supports_single ctxt perm_simps qtrm =
     val ctxt' = Proof_Context.augment goal ctxt
   in
     Goal.prove ctxt' [] [] goal
-      (K (HEADGOAL (supports_tac ctxt perm_simps)))
+      (fn {context = goal_ctxt, ...} => HEADGOAL (supports_tac goal_ctxt perm_simps))
     |> singleton (Proof_Context.export ctxt' ctxt)
   end
 
@@ -236,7 +236,8 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
                 addsimps @{thms finite_supp supp_Pair finite_Un}) ]
   in
     Goal.prove ctxt' [] [] goals
-      (K (HEADGOAL (resolve_tac ctxt' [qinduct] THEN_ALL_NEW tac)))
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (resolve_tac goal_ctxt [qinduct] THEN_ALL_NEW tac))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> Old_Datatype_Aux.split_conj_thm
     |> map zero_var_indexes
@@ -502,8 +503,9 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
       @ @{thms finite.intros finite_Un finite_set finite_fset}
   in
     Goal.prove ctxt [] [] goal
-      (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding1}
-          THEN_ALL_NEW (simp_tac (put_simpset HOL_ss ctxt addsimps ss)))))
+      (fn {context = ctxt', ...} =>
+        HEADGOAL (resolve_tac ctxt' @{thms at_set_avoiding1}
+          THEN_ALL_NEW (simp_tac (put_simpset HOL_ss ctxt' addsimps ss))))
   end
 
 
@@ -538,16 +540,17 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
           @ @{thms fresh_star_Un fresh_star_Pair fresh_star_list fresh_star_singleton fresh_star_fset
           fresh_star_set}
 
-        val tac1 =
+        fun tac1 ctxt' =
           if rec_flag
-          then resolve_tac ctxt @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
-          else resolve_tac ctxt @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
+          then resolve_tac ctxt' @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
+          else resolve_tac ctxt' @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
 
-        val tac2 =
-          EVERY' [simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss),
-            TRY o simp_tac (put_simpset HOL_ss ctxt)]
+        fun tac2 ctxt' =
+          EVERY' [simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss),
+            TRY o simp_tac (put_simpset HOL_ss ctxt')]
      in
-       [ Goal.prove ctxt [] [] goal (K (HEADGOAL (tac1 THEN_ALL_NEW tac2)))
+       [ Goal.prove ctxt [] [] goal (fn {context = ctxt', ...} =>
+           HEADGOAL (tac1 ctxt' THEN_ALL_NEW tac2 ctxt'))
          |> (if rec_flag
              then eqvt_rule ctxt (eqvt_strict_config addpres bn_eqvt)
              else eqvt_rule ctxt (eqvt_strict_config addpres permute_bns)) ]
@@ -556,32 +559,33 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
 
 val setify = @{lemma "xs = ys ==> set xs = set ys" by simp}
 
-fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
+fun case_tac goal_ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
   prems bclausess qexhaust_thm =
   let
     fun aux_tac prem bclauses =
       case (get_all_binders bclauses) of
-        [] => EVERY' [resolve_tac ctxt [prem], assume_tac ctxt]
-      | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>
+        [] => EVERY' [resolve_tac goal_ctxt [prem], assume_tac goal_ctxt]
+      | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = goal_ctxt1, ...} =>
           let
             val parms = map (Thm.term_of o snd) params
-            val fthm = fresh_thm ctxt c parms binders bn_finite_thms
+            val fthm = fresh_thm goal_ctxt1 c parms binders bn_finite_thms
 
             val ss = @{thms fresh_star_Pair union_eqvt fresh_star_Un}
             val (([(_, fperm)], fprops), ctxt') = Obtain.result
-              (fn ctxt' => EVERY1 [eresolve_tac ctxt [exE],
-                            full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss),
-                            REPEAT o (eresolve_tac ctxt @{thms conjE})]) [fthm] ctxt
+              (fn goal_ctxt2 =>
+                EVERY1 [eresolve_tac goal_ctxt2 [exE],
+                        full_simp_tac (put_simpset HOL_basic_ss goal_ctxt2 addsimps ss),
+                        REPEAT o (eresolve_tac goal_ctxt2 @{thms conjE})]) [fthm] goal_ctxt1
 
             val abs_eq_thms = flat
              (map (abs_eq_thm ctxt' fprops (Thm.term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
-              (fn ctxt'' => EVERY1
-                   [ REPEAT o (eresolve_tac ctxt @{thms exE}),
-                     REPEAT o (eresolve_tac ctxt @{thms conjE}),
-                     REPEAT o (dresolve_tac ctxt [setify]),
-                     full_simp_tac (put_simpset HOL_basic_ss ctxt''
+              (fn goal_ctxt3 => EVERY1
+                   [ REPEAT o (eresolve_tac goal_ctxt3 @{thms exE}),
+                     REPEAT o (eresolve_tac goal_ctxt3 @{thms conjE}),
+                     REPEAT o (dresolve_tac goal_ctxt3 [setify]),
+                     full_simp_tac (put_simpset HOL_basic_ss goal_ctxt3
                       addsimps @{thms set_append set_simps})]) abs_eq_thms ctxt'
 
             val (abs_eqs, peqs) = split_filter is_abs_eq eqs
@@ -591,27 +595,28 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
               @ map (eqvt_rule ctxt'' (eqvt_strict_config addpres bn_eqvt)) fprops
 
             (* for freshness conditions *)
-            val tac1 = SOLVED' (EVERY'
-              [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
-                rewrite_goal_tac ctxt'' (@{thms fresh_star_Un[THEN eq_reflection]}),
-                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' fprops') ])
+            fun tac1 ctxt = SOLVED' (EVERY'
+              [ simp_tac (put_simpset HOL_basic_ss ctxt addsimps peqs),
+                rewrite_goal_tac ctxt (@{thms fresh_star_Un[THEN eq_reflection]}),
+                conj_tac ctxt (DETERM o resolve_tac ctxt fprops') ])
 
             (* for equalities between constructors *)
-            val tac2 = SOLVED' (EVERY'
+            fun tac2 ctxt = SOLVED' (EVERY'
               [ resolve_tac ctxt [@{thm ssubst} OF prems],
-                rewrite_goal_tac ctxt'' (map safe_mk_equiv eq_iff_thms),
-                rewrite_goal_tac ctxt'' (map safe_mk_equiv abs_eqs),
-                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' (@{thms refl} @ perm_bn_alphas)) ])
+                rewrite_goal_tac ctxt (map safe_mk_equiv eq_iff_thms),
+                rewrite_goal_tac ctxt (map safe_mk_equiv abs_eqs),
+                conj_tac ctxt (DETERM o resolve_tac ctxt (@{thms refl} @ perm_bn_alphas)) ])
 
             (* proves goal "P" *)
             val side_thm = Goal.prove ctxt'' [] [] (Thm.term_of concl)
-              (K (EVERY1 [ resolve_tac ctxt'' [prem], RANGE [tac1, tac2] ]))
-              |> singleton (Proof_Context.export ctxt'' ctxt)
+              (fn {context = goal_ctxt4, ...} =>
+                EVERY1 [ resolve_tac goal_ctxt4 [prem], RANGE [tac1 goal_ctxt4, tac2 goal_ctxt4]])
+              |> singleton (Proof_Context.export ctxt'' goal_ctxt1)
           in
-            resolve_tac ctxt [side_thm] 1
-          end) ctxt
+            resolve_tac goal_ctxt1 [side_thm] 1
+          end) goal_ctxt
   in
-    EVERY1 [resolve_tac ctxt [qexhaust_thm], RANGE (map2 aux_tac prems bclausess)]
+    EVERY1 [resolve_tac goal_ctxt [qexhaust_thm], RANGE (map2 aux_tac prems bclausess)]
   end
 
 
@@ -632,12 +637,10 @@ fun prove_strong_exhausts lthy exhausts bclausesss bn_finite_thms eq_iff_thms bn
 
     val premss = (map2 o map2) (mk_ecase_prems lthy'' c) ecases' bclausesss
 
-    fun tac bclausess exhaust {prems, context} =
-      case_tac context c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
-        prems bclausess exhaust
-
     fun prove prems bclausess exhaust concl =
-      Goal.prove lthy'' [] prems concl (tac bclausess exhaust)
+      Goal.prove lthy'' [] prems concl (fn {prems, context = goal_ctxt} =>
+        case_tac goal_ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
+          prems bclausess exhaust)
   in
     map4 prove premss bclausesss exhausts' main_concls
     |> Proof_Context.export lthy'' lthy
@@ -702,9 +705,9 @@ fun prep_prem lthy c c_name c_ty bclauses (params, prems, concl) =
 
 fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
   let
-    val ((_, [induct']), lthy') = Variable.import true [induct] lthy
+    val ((_, [induct']), ctxt') = Variable.import true [induct] lthy
 
-    val ([c_name, a], lthy'') = Variable.variant_fixes ["c", "'a"] lthy'
+    val ([c_name, a], ctxt'') = Variable.variant_fixes ["c", "'a"] ctxt'
     val c_ty = TFree (a, @{sort fs})
     val c = Free (c_name, c_ty)
 
@@ -720,31 +723,31 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
 
     val prems' = prems
       |> map strip_full_horn
-      |> map2 (prep_prem lthy'' c c_name c_ty) (flat bclausesss)
+      |> map2 (prep_prem ctxt'' c c_name c_ty) (flat bclausesss)
 
-    fun pat_tac ctxt thm =
-      Subgoal.FOCUS (fn {params, context = ctxt', ...} =>
+    fun pat_tac goal_ctxt thm =
+      Subgoal.FOCUS (fn {params, context = goal_ctxt1, ...} =>
         let
           val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
           val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
           val assigns = map (lookup ty_parms) vs_tys
-          val thm' = infer_instantiate ctxt' (map #1 vs ~~ assigns) thm
+          val thm' = infer_instantiate goal_ctxt1 (map #1 vs ~~ assigns) thm
         in
-          resolve_tac ctxt' [thm'] 1
-        end) ctxt
-      THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
+          resolve_tac goal_ctxt1 [thm'] 1
+        end) goal_ctxt
+      THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss goal_ctxt)
 
     fun size_simp_tac ctxt =
       simp_tac (put_simpset size_ss ctxt addsimps (@{thms comp_def snd_conv} @ size_thms))
   in
-    Goal.prove_common lthy'' NONE [] prems' concls
-      (fn {prems, context = ctxt} =>
-        Induction_Schema.induction_schema_tac ctxt prems
-        THEN RANGE (map (pat_tac ctxt) exhausts) 1
-        THEN prove_termination_ind ctxt 1
-        THEN ALLGOALS (size_simp_tac ctxt))
-    |> Proof_Context.export lthy'' lthy
+    Goal.prove_common ctxt'' NONE [] prems' concls
+      (fn {prems, context = goal_ctxt} =>
+        Induction_Schema.induction_schema_tac goal_ctxt prems
+        THEN RANGE (map (pat_tac goal_ctxt) exhausts) 1
+        THEN prove_termination_ind goal_ctxt 1
+        THEN ALLGOALS (size_simp_tac goal_ctxt))
+    |> Proof_Context.export ctxt'' lthy
   end
 
 

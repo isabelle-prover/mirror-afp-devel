@@ -548,8 +548,8 @@ fun raw_prove_eqvt consts ind_thms simps ctxt =
       val insts = map (single o SOME) arg_names
       val const_names = map (fst o dest_Const) consts
     in
-      Goal.prove_common ctxt'' NONE [] [] goals (fn {context, ...} =>
-        prove_eqvt_tac insts ind_thms const_names simps context)
+      Goal.prove_common ctxt'' NONE [] [] goals (fn {context = goal_ctxt, ...} =>
+        prove_eqvt_tac insts ind_thms const_names simps goal_ctxt)
       |> Proof_Context.export ctxt'' ctxt
     end
 

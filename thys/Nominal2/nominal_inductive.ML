@@ -212,9 +212,10 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
     val simp = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
   in
     Goal.prove ctxt [] [] fresh_goal
-      (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding2}
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (resolve_tac goal_ctxt @{thms at_set_avoiding2}
           THEN_ALL_NEW EVERY' [cut_facts_tac user_thm, REPEAT o
-            eresolve_tac ctxt @{thms conjE}, simp])))
+            eresolve_tac goal_ctxt @{thms conjE}, simp]))
   end
 
 val supp_perm_eq' = @{lemma "fresh_star (supp (permute p x)) q ==> permute p x == permute (q + p) x"
@@ -260,23 +261,23 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val tac_fresh = simp_tac (put_simpset HOL_basic_ss ctxt' addsimps [fprop'])
 
       (* for inductive-premises*)
-      fun tac1 prm = helper_tac true prm (mk_cplus q p) ctxt'
+      fun tac1 goal_ctxt prm = helper_tac true prm (mk_cplus q p) goal_ctxt
 
       (* for non-inductive premises *)
-      fun tac2 prm =
-        EVERY' [ minus_permute_intro_tac ctxt' (mk_cplus q p),
-                 eqvt_stac ctxt',
-                 helper_tac false prm (mk_cplus q p) ctxt' ]
+      fun tac2 goal_ctxt prm =
+        EVERY' [ minus_permute_intro_tac goal_ctxt (mk_cplus q p),
+                 eqvt_stac goal_ctxt,
+                 helper_tac false prm (mk_cplus q p) goal_ctxt ]
 
-      fun select prm (t, i) =
-        (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
+      fun select goal_ctxt prm (t, i) =
+        (if member same_name Ps (real_head_of t) then tac1 goal_ctxt prm else tac2 goal_ctxt prm) i
 
       val side_thm = Goal.prove ctxt' [] [] (Thm.term_of concl)
-        (fn {context = ctxt'', ...} =>
-           EVERY1 [ CONVERSION (expand_conv_bot ctxt''),
-                    eqvt_stac ctxt'',
-                    resolve_tac ctxt'' [prem'],
-                    RANGE (tac_fresh :: map (SUBGOAL o select) prems) ])
+        (fn {context = goal_ctxt, ...} =>
+           EVERY1 [ CONVERSION (expand_conv_bot goal_ctxt),
+                    eqvt_stac goal_ctxt,
+                    resolve_tac goal_ctxt [prem'],
+                    RANGE (tac_fresh :: map (SUBGOAL o select goal_ctxt) prems) ])
         |> singleton (Proof_Context.export ctxt' ctxt)
     in
       resolve_tac ctxt [side_thm] 1
