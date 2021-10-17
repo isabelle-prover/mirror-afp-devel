@@ -619,7 +619,7 @@ fun prove_by_tac tac ctxt ths goal =
     let
       val goal' = Logic.list_implies (map Thm.prop_of ths, mk_Trueprop goal)
     in
-      ths MRS (Goal.prove ctxt [] [] goal' (K (tac ctxt 1)))
+      ths MRS (Goal.prove ctxt [] [] goal' (HEADGOAL o tac o #context))
     end
 
 fun contra_by_tac tac ctxt ths = prove_by_tac tac ctxt ths bFalse
