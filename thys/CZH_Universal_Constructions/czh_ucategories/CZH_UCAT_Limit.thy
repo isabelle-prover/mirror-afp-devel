@@ -27,14 +27,9 @@ to the base of a functor from a vertex, as defined in Chapter III-4 in
 \cite{mac_lane_categories_2010}; the concept of a cocone corresponds to that
 of a cone from the base of a functor to a vertex, as defined in Chapter III-3
 in \cite{mac_lane_categories_2010}.
-
-In this body of work, only limits and colimits of functors with tiny maps 
-are considered. The definitions of a cone and a cocone also reflect this.
-However, this restriction may be removed in the future.
 \<close>
 
-(*TODO: remove the size limitation; see TODO in the next subsection*)
-locale is_cat_cone = is_tm_ntcf \<alpha> \<JJ> \<CC> \<open>cf_const \<JJ> \<CC> c\<close> \<FF> \<NN> for \<alpha> c \<JJ> \<CC> \<FF> \<NN> +
+locale is_cat_cone = is_ntcf \<alpha> \<JJ> \<CC> \<open>cf_const \<JJ> \<CC> c\<close> \<FF> \<NN> for \<alpha> c \<JJ> \<CC> \<FF> \<NN> +
   assumes cat_cone_obj[cat_lim_cs_intros]: "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
 
 syntax "_is_cat_cone" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -42,7 +37,7 @@ syntax "_is_cat_cone" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Ri
 translations "\<NN> : c <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_cone \<alpha> c \<JJ> \<CC> \<FF> \<NN>"
 
-locale is_cat_cocone = is_tm_ntcf \<alpha> \<JJ> \<CC> \<FF> \<open>cf_const \<JJ> \<CC> c\<close> \<NN> for \<alpha> c \<JJ> \<CC> \<FF> \<NN> +
+locale is_cat_cocone = is_ntcf \<alpha> \<JJ> \<CC> \<FF> \<open>cf_const \<JJ> \<CC> c\<close> \<NN> for \<alpha> c \<JJ> \<CC> \<FF> \<NN> +
   assumes cat_cocone_obj[cat_lim_cs_intros]: "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
 
 syntax "_is_cat_cocone" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -65,8 +60,8 @@ mk_ide rf is_cat_cone_def[unfolded is_cat_cone_axioms_def]
 
 lemma (in is_cat_cone) is_cat_coneD'[cat_lim_cs_intros]:
   assumes "c' = cf_const \<JJ> \<CC> c"
-  shows "\<NN> : c' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-  unfolding assms by (cs_concl cs_intro: cat_small_cs_intros)
+  shows "\<NN> : c' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  unfolding assms by (cs_concl cs_intro: cat_cs_intros)
 
 lemmas [cat_lim_cs_intros] = is_cat_cone.is_cat_coneD'
 
@@ -82,8 +77,8 @@ mk_ide rf is_cat_cocone_def[unfolded is_cat_cocone_axioms_def]
 
 lemma (in is_cat_cocone) is_cat_coconeD'[cat_lim_cs_intros]:
   assumes "c' = cf_const \<JJ> \<CC> c"
-  shows "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m c' : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-  unfolding assms by (cs_concl cs_intro: cat_small_cs_intros)
+  shows "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F c' : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  unfolding assms by (cs_concl cs_intro: cat_cs_intros)
 
 lemmas [cat_lim_cs_intros] = is_cat_cocone.is_cat_coconeD'
 
@@ -296,10 +291,9 @@ The concept of a limit is introduced in Chapter III-4 in
 Chapter III-3 in \cite{mac_lane_categories_2010}.
 \<close>
 
-(*TODO: remove the size limitation*)
-locale is_cat_limit = is_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha> \<JJ> \<CC> \<FF> r u +
-  assumes cat_lim_ua_fo: 
-    "universal_arrow_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u)"
+locale is_cat_limit = is_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha> \<JJ> \<CC> \<FF> r u + 
+  assumes cat_lim_ua_fo: "\<And>u' r'. u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+    \<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
 
 syntax "_is_cat_limit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
@@ -307,8 +301,8 @@ translations "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<
   "CONST is_cat_limit \<alpha> \<JJ> \<CC> \<FF> r u"
 
 locale is_cat_colimit = is_cat_cocone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha> \<JJ> \<CC> \<FF> r u +
-  assumes cat_colim_ua_fo: "universal_arrow_fo 
-    (\<Delta>\<^sub>C \<alpha> (op_cat \<JJ>) (op_cat \<CC>)) (cf_map \<FF>) r (ntcf_arrow (op_ntcf u))"
+  assumes cat_colim_ua_of: "\<And>u' r'. u' : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e r' : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+    \<exists>!f'. f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r' \<and> u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
 
 syntax "_is_cat_colimit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
@@ -343,13 +337,371 @@ mk_ide rf is_cat_colimit_def[unfolded is_cat_colimit_axioms_def]
 lemmas [cat_lim_cs_intros] = is_cat_colimitD(1)
 
 
-text\<open>Duality\<close>
+text\<open>Limits, colimits and universal arrows.\<close>
+
+lemma (in is_cat_limit) cat_lim_is_universal_arrow_fo:
+  "universal_arrow_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u)"
+proof(intro is_functor.universal_arrow_foI)
+
+  define \<beta> where "\<beta> = \<alpha> + \<omega>"
+  have \<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    by (simp_all add: \<beta>_def \<Z>_Limit_\<alpha>\<omega> \<Z>_\<omega>_\<alpha>\<omega> \<Z>_def \<Z>_\<alpha>_\<alpha>\<omega>)
+  then interpret \<beta>: \<Z> \<beta> by simp 
+
+  show "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<JJ> \<CC>"
+    by 
+      (
+        intro 
+          \<beta> \<alpha>\<beta>
+          cf_diagonal_is_functor 
+          NTDom.HomDom.category_axioms 
+          NTDom.HomCod.category_axioms
+      )
+
+  show "r \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by (intro cat_cone_obj)
+  then show "ntcf_arrow u : \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
+    by 
+      (
+        cs_concl 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+      )
+
+  fix r' u' assume prems: 
+    "r' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "u' : \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
+  from prems(1) have [cat_cs_simps]: 
+    "cf_of_cf_map \<JJ> \<CC> (cf_map \<FF>) = \<FF>"
+    "cf_of_cf_map \<JJ> \<CC> (cf_map (cf_const \<JJ> \<CC> r')) = cf_const \<JJ> \<CC> r'"
+    by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)+
+  from prems(2,1) have
+    "u' : cf_map (cf_const \<JJ> \<CC> r') \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
+    by (cs_prems cs_simp: cat_cs_simps)
+  note u'[unfolded cat_cs_simps] = cat_FUNCT_is_arrD[OF this]
+
+  from cat_lim_ua_fo[OF is_cat_coneI[OF u'(1) prems(1)]] obtain f 
+    where f: "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
+      and [symmetric, cat_cs_simps]: 
+        "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
+      and f_unique: 
+        "\<lbrakk>
+          f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r;
+          ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'
+         \<rbrakk> \<Longrightarrow> f' = f"
+    for f'
+    by metis
+
+  show "\<exists>!f'.
+    f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and>
+    u' = umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+  proof(intro ex1I conjI; (elim conjE)?)
+    show "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" by (rule f)
+    with \<alpha>\<beta> cat_cone_obj show u'_def: 
+      "u' = umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+      by 
+        (
+          cs_concl 
+            cs_simp: u'(2)[symmetric] cat_cs_simps cat_FUNCT_cs_simps 
+            cs_intro:  cat_cs_intros cat_FUNCT_cs_intros
+        )
+    fix f' assume prems': 
+      "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
+      "u' = umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+    from prems'(2) \<alpha>\<beta> f prems' cat_cone_obj have u'_def':
+      "u' = ntcf_arrow (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')"
+      by
+        (
+          cs_prems 
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+    from prems'(1) have "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
+      by (cs_concl cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros)
+    from f_unique[OF prems'(1) this] show "f' = f" .
+
+  qed
+
+qed
+
+lemma (in is_cat_cone) cat_cone_is_cat_limit:
+  assumes "universal_arrow_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>)"
+  shows "\<NN> : c <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+
+  define \<beta> where "\<beta> = \<alpha> + \<omega>"
+  have \<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    by (simp_all add: \<beta>_def \<Z>_Limit_\<alpha>\<omega> \<Z>_\<omega>_\<alpha>\<omega> \<Z>_def \<Z>_\<alpha>_\<alpha>\<omega>)
+  then interpret \<beta>: \<Z> \<beta> by simp 
+
+  show ?thesis
+  proof(intro is_cat_limitI is_cat_cone_axioms)
+    fix u' c' assume prems: "u' : c' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+
+    interpret u': is_cat_cone \<alpha> c' \<JJ> \<CC> \<FF> u' by (rule prems)
+
+    from u'.cat_cone_obj have u'_is_arr:
+      "ntcf_arrow u' : \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>c'\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
+      by 
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+    
+    from is_functor.universal_arrow_foD(3)
+      [
+        OF
+          cf_diagonal_is_functor[
+            OF \<beta> \<alpha>\<beta> NTDom.HomDom.category_axioms NTDom.HomCod.category_axioms
+            ]
+          assms
+          u'.cat_cone_obj
+          u'_is_arr
+      ]
+    obtain f where f: "f : c' \<mapsto>\<^bsub>\<CC>\<^esub> c"
+      and u'_def': "ntcf_arrow u' =
+        umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+      and f'_unique:
+        "\<lbrakk>
+          f' : c' \<mapsto>\<^bsub>\<CC>\<^esub> c;
+          ntcf_arrow u' =
+            umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>
+         \<rbrakk> \<Longrightarrow> f' = f"
+      for f'
+      by metis
+
+    from u'_def' \<alpha>\<beta> f cat_cone_obj have u'_def: 
+      "u' = \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
+      by
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+    
+    show "\<exists>!f'. f' : c' \<mapsto>\<^bsub>\<CC>\<^esub> c \<and> u' = \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
+    proof(intro ex1I conjI; (elim conjE)?, (rule f)?, (rule u'_def)?)
+      fix f'' assume prems': 
+        "f'' : c' \<mapsto>\<^bsub>\<CC>\<^esub> c" "u' = \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f''"
+      from \<alpha>\<beta> prems' have 
+        "ntcf_arrow u' = 
+          umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"
+        by 
+          (
+            cs_concl 
+              cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
+              cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+          )
+      from f'_unique[OF prems'(1) this] show "f'' = f".
+    qed
+
+  qed
+  
+qed
+
+lemma (in is_cat_colimit) cat_colim_is_universal_arrow_of:
+  "universal_arrow_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u)"
+proof(intro is_functor.universal_arrow_ofI)
+
+  define \<beta> where "\<beta> = \<alpha> + \<omega>"
+  have \<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    by (simp_all add: \<beta>_def \<Z>_Limit_\<alpha>\<omega> \<Z>_\<omega>_\<alpha>\<omega> \<Z>_def \<Z>_\<alpha>_\<alpha>\<omega>)
+  then interpret \<beta>: \<Z> \<beta> by simp 
+
+  show "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<JJ> \<CC>"
+    by 
+      (
+        intro 
+          \<beta> \<alpha>\<beta>
+          cf_diagonal_is_functor 
+          NTDom.HomDom.category_axioms 
+          NTDom.HomCod.category_axioms
+      )
+
+  show "r \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by (intro cat_cocone_obj)
+
+  then show "ntcf_arrow u : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr>"
+    by 
+      (
+        cs_concl 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+      )
+
+  fix r' u' assume prems: 
+    "r' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "u' : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>"
+  from prems(1) have [cat_cs_simps]: 
+    "cf_of_cf_map \<JJ> \<CC> (cf_map \<FF>) = \<FF>"
+    "cf_of_cf_map \<JJ> \<CC> (cf_map (cf_const \<JJ> \<CC> r')) = cf_const \<JJ> \<CC> r'"
+    by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)+
+  from prems(2,1) have
+    "u' : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map (cf_const \<JJ> \<CC> r')"
+    by (cs_prems cs_simp: cat_cs_simps)
+  note u'[unfolded cat_cs_simps] = cat_FUNCT_is_arrD[OF this]
+
+  from cat_colim_ua_of[OF is_cat_coconeI[OF u'(1) prems(1)]] obtain f 
+    where f: "f : r \<mapsto>\<^bsub>\<CC>\<^esub> r'"
+      and [symmetric, cat_cs_simps]: 
+        "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
+      and f_unique: 
+        "\<lbrakk>
+          f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r';
+          ntcf_of_ntcf_arrow \<JJ> \<CC> u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u
+         \<rbrakk> \<Longrightarrow> f' = f"
+    for f'
+    by metis
+
+  show " \<exists>!f'. 
+    f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r' \<and> 
+    u' = umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+  proof(intro ex1I conjI; (elim conjE)?)
+  
+    show "f : r \<mapsto>\<^bsub>\<CC>\<^esub> r'" by (rule f)
+    with \<alpha>\<beta> cat_cocone_obj show u'_def: 
+      "u' = umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+      by 
+        (
+          cs_concl 
+            cs_simp: u'(2)[symmetric] cat_cs_simps cat_FUNCT_cs_simps 
+            cs_intro:  cat_cs_intros cat_FUNCT_cs_intros
+        )
+  
+    fix f' assume prems':
+      "f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r'"
+      "u' = umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+    from prems'(2) \<alpha>\<beta> f prems' cat_cocone_obj have u'_def':
+      "u' = ntcf_arrow (ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u)"
+      by
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+    from prems'(1) have "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
+      by (cs_concl cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros)
+    from f_unique[OF prems'(1) this] show "f' = f" .
+
+  qed
+
+qed
+
+lemma (in is_cat_cocone) cat_cocone_is_cat_colimit:
+  assumes "universal_arrow_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>)"
+  shows "\<NN> : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m c : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+
+  define \<beta> where "\<beta> = \<alpha> + \<omega>"
+  have \<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    by (simp_all add: \<beta>_def \<Z>_Limit_\<alpha>\<omega> \<Z>_\<omega>_\<alpha>\<omega> \<Z>_def \<Z>_\<alpha>_\<alpha>\<omega>)
+  then interpret \<beta>: \<Z> \<beta> by simp 
+
+  show ?thesis
+  proof(intro is_cat_colimitI is_cat_cocone_axioms)
+  
+    fix u' c' assume prems: "u' : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e c' : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+
+    interpret u': is_cat_cocone \<alpha> c' \<JJ> \<CC> \<FF> u' by (rule prems)
+
+    from u'.cat_cocone_obj have u'_is_arr:
+      "ntcf_arrow u' : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>c'\<rparr>"
+      by
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+
+    from is_functor.universal_arrow_ofD(3)
+      [
+        OF
+          cf_diagonal_is_functor[
+            OF \<beta> \<alpha>\<beta> NTDom.HomDom.category_axioms NTDom.HomCod.category_axioms
+            ]
+          assms
+          u'.cat_cocone_obj
+          u'_is_arr
+      ]
+    obtain f where f: "f : c \<mapsto>\<^bsub>\<CC>\<^esub> c'"
+      and u'_def': "ntcf_arrow u' =
+        umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+      and f'_unique:
+        "\<lbrakk>
+          f' : c \<mapsto>\<^bsub>\<CC>\<^esub> c';
+          ntcf_arrow u' =
+            umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>
+         \<rbrakk> \<Longrightarrow> f' = f"
+      for f'
+      by metis
+
+    from u'_def' \<alpha>\<beta> f cat_cocone_obj have u'_def: 
+      "u' = ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>"
+      by
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+        )
+    
+    show "\<exists>!f'. f' : c \<mapsto>\<^bsub>\<CC>\<^esub> c' \<and> u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>"
+    proof(intro ex1I conjI; (elim conjE)?, (rule f)?, (rule u'_def)?)
+      fix f'' assume prems': 
+        "f'' : c \<mapsto>\<^bsub>\<CC>\<^esub> c'" "u' = ntcf_const \<JJ> \<CC> f'' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>"
+      from \<alpha>\<beta> prems' have 
+        "ntcf_arrow u' = 
+          umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+              cs_intro: cat_cs_intros cat_FUNCT_cs_intros
+          )
+      from f'_unique[OF prems'(1) this] show "f'' = f".
+    qed
+
+  qed
+  
+qed
+
+
+text\<open>Duality.\<close>
 
 lemma (in is_cat_limit) is_cat_colimit_op:
   "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
-  using cat_lim_ua_fo
-  by (intro is_cat_colimitI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+proof(intro is_cat_colimitI)
+  show "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+    by (cs_concl cs_simp: cs_intro: cat_op_intros)
+  fix u' r' assume prems: 
+    "u' : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e r' : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  interpret u': is_cat_cocone \<alpha> r' \<open>op_cat \<JJ>\<close> \<open>op_cat \<CC>\<close> \<open>op_cf \<FF>\<close> u' 
+    by (rule prems)
+  from cat_lim_ua_fo[OF u'.is_cat_cone_op[unfolded cat_op_simps]] obtain f 
+    where f: "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
+      and op_u'_def: "op_ntcf u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
+      and f_unique: 
+        "\<lbrakk> f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r; op_ntcf u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f' \<rbrakk> \<Longrightarrow>
+          f' = f"
+    for f'
+    by metis
+  from op_u'_def have "op_ntcf (op_ntcf u') = op_ntcf (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f)"
+    by simp
+  from this f have u'_def: 
+    "u' = ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u"
+    by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+  show "\<exists>!f'. 
+    f' : r \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r' \<and> 
+    u' = ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u"
+  proof(intro ex1I conjI; (elim conjE)?, (unfold cat_op_simps)?)
+    fix f' assume prems': 
+      "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
+      "u' = ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u"
+    from prems'(2) have 
+      "op_ntcf u' = op_ntcf (ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u)"
+      by simp
+    from this prems'(1) have "op_ntcf u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
+      by 
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cat_op_simps 
+            cs_intro: cat_cs_intros cat_op_intros
+        )
+    from f_unique[OF prems'(1) this] show "f' = f". 
+  qed (intro u'_def f)+
+qed
 
 lemma (in is_cat_limit) is_cat_colimit_op'[cat_op_intros]:
   assumes "\<FF>' = op_cf \<FF>" and "\<JJ>' = op_cat \<JJ>" and "\<CC>' = op_cat \<CC>"
@@ -360,9 +712,46 @@ lemmas [cat_op_intros] = is_cat_limit.is_cat_colimit_op'
 
 lemma (in is_cat_colimit) is_cat_limit_op:
   "op_ntcf u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
-  using cat_colim_ua_fo
-  by (intro is_cat_limitI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+proof(intro is_cat_limitI)
+  show "op_ntcf u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+    by (cs_concl cs_simp: cs_intro: cat_op_intros)
+  fix u' r' assume prems: 
+    "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  interpret u': is_cat_cone \<alpha> r' \<open>op_cat \<JJ>\<close> \<open>op_cat \<CC>\<close> \<open>op_cf \<FF>\<close> u' 
+    by (rule prems)
+  from cat_colim_ua_of[OF u'.is_cat_cocone_op[unfolded cat_op_simps]] obtain f 
+    where f: "f : r \<mapsto>\<^bsub>\<CC>\<^esub> r'"
+      and op_u'_def: "op_ntcf u' = ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
+      and f_unique: 
+        "\<lbrakk> f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r'; op_ntcf u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u \<rbrakk> \<Longrightarrow>
+          f' = f"
+    for f'
+    by metis
+  from op_u'_def have "op_ntcf (op_ntcf u') = op_ntcf (ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u)"
+    by simp
+  from this f have u'_def: 
+    "u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f"
+    by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+  show "\<exists>!f'. 
+    f' : r' \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r \<and> 
+    u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f'"
+  proof(intro ex1I conjI; (elim conjE)?, (unfold cat_op_simps)?)
+    fix f' assume prems': 
+      "f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r'"
+      "u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f'"
+    from prems'(2) have 
+      "op_ntcf u' = op_ntcf (op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f')"
+      by simp
+    from this prems'(1) have "op_ntcf u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
+      by 
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cat_op_simps 
+            cs_intro: cat_cs_intros cat_op_intros
+        )
+    from f_unique[OF prems'(1) this] show "f' = f". 
+  qed (intro u'_def f)+
+qed
 
 lemma (in is_cat_colimit) is_cat_colimit_op'[cat_op_intros]:
   assumes "\<FF>' = op_cf \<FF>" and "\<JJ>' = op_cat \<JJ>" and "\<CC>' = op_cat \<CC>"
@@ -372,184 +761,19 @@ lemma (in is_cat_colimit) is_cat_colimit_op'[cat_op_intros]:
 lemmas [cat_op_intros] = is_cat_colimit.is_cat_colimit_op'
 
 
-text\<open>Elementary properties of limits and colimits.\<close>
-
-sublocale is_cat_limit \<subseteq> \<Delta>: is_functor \<alpha> \<CC> \<open>cat_Funct \<alpha> \<JJ> \<CC>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<close>
-  by (cs_concl cs_intro: cat_cs_intros cat_small_cs_intros)
-
-sublocale is_cat_colimit \<subseteq> \<Delta>: is_functor 
-  \<alpha> \<open>op_cat \<CC>\<close> \<open>cat_Funct \<alpha> (op_cat \<JJ>) (op_cat \<CC>)\<close> \<open>\<Delta>\<^sub>C \<alpha> (op_cat \<JJ>) (op_cat \<CC>)\<close>
-  by (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros cat_op_intros)
-
-
 subsubsection\<open>Universal property\<close>
-
-lemma is_cat_limitI':
-  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    and "\<And>u' r'. \<lbrakk> u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<rbrakk> \<Longrightarrow> 
-      \<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-  shows "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-proof(intro is_cat_limitI is_functor.universal_arrow_foI)
-  interpret u: is_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u by (rule assms(1))
-  show "r \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by (cs_concl cs_intro: cat_lim_cs_intros)
-  show "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Funct \<alpha> \<JJ> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros cat_small_cs_intros)
-  show "ntcf_arrow u : \<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr> \<mapsto>\<^bsub>cat_Funct \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
-    by 
-      (
-        cs_concl 
-          cs_simp: cat_cs_simps 
-          cs_intro: cat_lim_cs_intros cat_small_cs_intros cat_FUNCT_cs_intros
-      )
-  fix r' u' assume prems: 
-    "r' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "u' : \<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr> \<mapsto>\<^bsub>cat_Funct \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
-  note u' = cat_Funct_is_arrD[OF prems(2)]
-  from u'(1) prems(1) have u'_is_tm_ntcf:
-    "ntcf_of_ntcf_arrow \<JJ> \<CC> u' : cf_const \<JJ> \<CC> r' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    by 
-      (
-        cs_prems 
-          cs_simp: cat_cs_simps cat_small_cs_simps cat_FUNCT_cs_simps 
-          cs_intro: cat_cs_intros
-      )
-  from this prems(1) have u'_is_cat_cone: 
-    "ntcf_of_ntcf_arrow \<JJ> \<CC> u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (intro is_cat_coneI)
-  interpret u': is_cat_cone \<alpha> r' \<JJ> \<CC> \<FF> \<open>ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<close>
-    by (rule u'_is_cat_cone)
-  from assms(2)[OF u'_is_cat_cone] obtain f' where f': "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
-    and u'_def: "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-    and unique: "\<And>f''.
-      \<lbrakk>
-        f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r; 
-        ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f''
-      \<rbrakk> \<Longrightarrow> f'' = f'"
-    by (meson prems(1))
-  from u'_def have u'_NTMap_app:
-    "ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>\<lparr>j\<rparr>"
-    if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j 
-    by simp
-  have u'_NTMap_app: "u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = u\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
-    if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j 
-    using u'_NTMap_app[OF that] that f'
-    by (cs_prems cs_simp: cat_cs_simps cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
-  show "\<exists>!f'.
-    f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and>
-    u' = umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
-  proof(intro ex1I conjI; (elim conjE)?)
-    show "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" by (rule f')
-    have u'_def'[symmetric, cat_cs_simps]: 
-      "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-    proof(rule ntcf_eqI)
-      from u'_is_tm_ntcf show 
-        "ntcf_of_ntcf_arrow \<JJ> \<CC> u' : cf_const \<JJ> \<CC> r' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_intro: cat_small_cs_intros)
-      from f' show 
-        "u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f' : cf_const \<JJ> \<CC> r' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-      show 
-        "ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr> = (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>"
-      proof(rule vsv_eqI)
-        from f' show "\<D>\<^sub>\<circ> (ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr>) = 
-          \<D>\<^sub>\<circ> ((u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>)"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)    
-        show "ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = 
-          (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-          if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr>)" for a
-        proof-
-          from that have "a \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" by (cs_prems cs_simp: cat_cs_simps)    
-          with f' show 
-            "ntcf_of_ntcf_arrow \<JJ> \<CC> u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
-              (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-            by 
-              (
-                cs_concl 
-                  cs_simp: cat_cs_simps cat_FUNCT_cs_simps u'_NTMap_app 
-                  cs_intro: cat_cs_intros
-              )
-        qed
-      qed (auto intro: cat_cs_intros)
-    qed simp_all
-    from f' u'(1) show 
-      "u' = umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
-      by (subst u'(2))
-        (
-          cs_concl 
-            cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
-            cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
-        )
-    fix f'' assume prems': 
-      "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
-      "u' = umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"  
-    from prems'(2,1) u'(1) have 
-      "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f''"
-      by (subst (asm) u'(2))
-        (
-          cs_prems 
-            cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
-            cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
-        )
-    from unique[OF prems'(1) this] show "f'' = f'" .
-  qed
-qed (intro assms)+
-
-lemma (in is_cat_limit) cat_lim_unique_cone:
-  assumes "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-  shows "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-proof-
-  interpret u': is_cat_cone \<alpha> r' \<JJ> \<CC> \<FF> u' by (rule assms(1))
-  have "ntcf_arrow u' : \<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr> \<mapsto>\<^bsub>cat_Funct \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
-    by 
-      (
-        cs_concl 
-          cs_intro: cat_lim_cs_intros cat_FUNCT_cs_intros cs_simp: cat_cs_simps
-      )
-  from \<Delta>.universal_arrow_foD(3)[OF cat_lim_ua_fo u'.cat_cone_obj this] obtain f'
-    where f': "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" 
-      and u': "ntcf_arrow u' =
-      umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
-      and unique:
-        "\<lbrakk>
-          f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r;
-          ntcf_arrow u' =
-            umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>
-         \<rbrakk> \<Longrightarrow> f'' = f'"
-    for f''
-    by metis
-  show "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-  proof(intro ex1I conjI; (elim conjE)?)
-    show "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" by (rule f')
-    with u' show "u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-      by 
-        (
-          cs_prems 
-            cs_simp: cat_cs_simps cat_FUNCT_cs_simps
-            cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
-        )
-    fix f'' assume prems: "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"  "u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f''"
-    from prems(1) have "ntcf_arrow u' =
-      umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"
-      by 
-        (
-          cs_concl 
-            cs_simp: cat_cs_simps cat_FUNCT_cs_simps prems(2)[symmetric] 
-            cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
-        )
-    from prems(1) this show "f'' = f'" by (intro unique)
-  qed
-qed  
 
 lemma (in is_cat_limit) cat_lim_unique_cone':
   assumes "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows 
     "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> (\<forall>j\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = u\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f')"
   by (fold helper_cat_cone_Comp_ntcf_vcomp_iff[OF assms(1)])
-    (intro cat_lim_unique_cone assms)
+    (intro cat_lim_ua_fo assms)
 
 lemma (in is_cat_limit) cat_lim_unique:
   assumes "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-  by (intro cat_lim_unique_cone[OF is_cat_limitD(1)[OF assms]])
+  by (intro cat_lim_ua_fo[OF is_cat_limitD(1)[OF assms]])
 
 lemma (in is_cat_limit) cat_lim_unique':
   assumes "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
@@ -565,7 +789,7 @@ proof-
   from u'.cat_cocone_obj have op_r': "r' \<in>\<^sub>\<circ> op_cat \<CC>\<lparr>Obj\<rparr>"
     unfolding cat_op_simps by simp
   from 
-    is_cat_limit.cat_lim_unique_cone[
+    is_cat_limit.cat_lim_ua_fo[
       OF is_cat_limit_op u'.is_cat_cone_op, folded op_ntcf_ntcf_const
       ]
   obtain f' where f': "f' : r' \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r"
@@ -618,35 +842,45 @@ proof-
 qed
 
 lemma cat_lim_ex_is_arr_isomorphism:
-  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    and "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r" and "u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
 proof-
   interpret u: is_cat_limit \<alpha> \<JJ> \<CC> \<FF> r u by (rule assms(1))
   interpret u': is_cat_limit \<alpha> \<JJ> \<CC> \<FF> r' u' by (rule assms(2))
-  obtain f where f: "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r"
-    and u': "ntcf_arrow u' =
-    umap_fo (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+  define \<beta> where "\<beta> = \<alpha> + \<omega>"
+  have \<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    by (simp_all add: \<beta>_def u.\<Z>_Limit_\<alpha>\<omega> u.\<Z>_\<omega>_\<alpha>\<omega> \<Z>_def u.\<Z>_\<alpha>_\<alpha>\<omega>)
+  then interpret \<beta>: \<Z> \<beta> by simp 
+  have \<Delta>: "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<JJ> \<CC>"
     by 
       (
-        elim u.\<Delta>.cf_universal_arrow_fo_ex_is_arr_isomorphism[
-          OF u.cat_lim_ua_fo u'.cat_lim_ua_fo
-          ]
+        intro 
+          \<beta> \<alpha>\<beta>
+          cf_diagonal_is_functor 
+          u.NTDom.HomDom.category_axioms 
+          u.NTDom.HomCod.category_axioms
       )
+  then interpret \<Delta>: is_functor \<beta> \<CC> \<open>cat_FUNCT \<alpha> \<JJ> \<CC>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<close> by simp
+  from is_functor.cf_universal_arrow_fo_ex_is_arr_isomorphism[
+    OF \<Delta> u.cat_lim_is_universal_arrow_fo u'.cat_lim_is_universal_arrow_fo
+    ]
+  obtain f where f: "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r"
+    and u': "ntcf_arrow u' =
+    umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+    by auto
   from f have "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" by auto
   from u' this have "u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
     by
       (
-        cs_prems
-          cs_simp: cat_cs_simps cat_FUNCT_cs_simps cat_small_cs_simps
-          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
+        cs_prems 
+          cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
   with f that show ?thesis by simp
 qed
 
 lemma cat_lim_ex_is_arr_isomorphism':
-  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    and "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r" 
     and "\<And>j. j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr> \<Longrightarrow> u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = u\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
 proof-
@@ -761,7 +995,7 @@ mk_ide rf is_cat_finite_colimit_def[unfolded is_cat_colimit_axioms_def]
 lemmas [cat_lim_cs_intros] = is_cat_finite_colimitD
 
 
-text\<open>Duality\<close>
+text\<open>Duality.\<close>
 
 lemma (in is_cat_finite_limit) is_cat_finite_colimit_op:
   "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
@@ -1036,7 +1270,7 @@ sublocale is_cat_finite_obj_prod \<subseteq> I: finite_category \<alpha> \<open>
   by (intro finite_categoryI')
     (
       auto
-        simp: NTDom.HomDom.tiny_dg_category the_cat_discrete_components
+        simp: NTDom.HomDom.category_axioms the_cat_discrete_components
         intro!: cat_fin_obj_prod_index_vfinite
     )
 
@@ -1048,7 +1282,7 @@ sublocale is_cat_finite_obj_coprod \<subseteq> I: finite_category \<alpha> \<ope
   by (intro finite_categoryI')
     (
       auto 
-        simp: NTDom.HomDom.tiny_dg_category the_cat_discrete_components 
+        simp: NTDom.HomDom.category_axioms the_cat_discrete_components 
         intro!: cat_fin_obj_coprod_index_vfinite
     )
 
@@ -1538,7 +1772,7 @@ lemma is_cat_pullbackI':
           x'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f' \<and>
           x'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>S\<^sub>S\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>S\<^sub>S\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
   shows "x : X <\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>b \<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-proof(intro is_cat_pullbackI is_cat_limitI')
+proof(intro is_cat_pullbackI is_cat_limitI)
 
   show "x : X <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub> : \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     by (rule assms(1))
@@ -1687,7 +1921,7 @@ lemma (in is_cat_pullback) cat_pb_unique_cone:
 proof-
   interpret x': is_cat_cone \<alpha> X' \<open>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<close> \<CC> \<open>\<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<close> x' 
     by (rule assms)
-  from cat_lim_unique_cone[OF assms] obtain f'
+  from cat_lim_ua_fo[OF assms] obtain f'
     where f': "f' : X' \<mapsto>\<^bsub>\<CC>\<^esub> X" 
       and x'_def: "x' = x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f'"
       and unique_f': "\<And>f''.
@@ -2190,7 +2424,7 @@ proof-
   interpret \<CC>: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC>
     by (rule \<epsilon>.NTDom.HomCod.cat_cf_parallel_cat_equalizer[OF assms(2,3)])
   show ?thesis
-  proof(intro is_cat_equalizerI is_cat_limitI' assms(1-3))
+  proof(intro is_cat_equalizerI is_cat_limitI assms(1-3))
     fix u' r' assume prems: "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     interpret u': is_cat_cone \<alpha> r' ?II \<CC> ?II_II u' by (rule prems)
     from assms(4)[OF prems] obtain f'
@@ -2325,7 +2559,7 @@ lemma (in is_cat_equalizer) cat_eq_unique_cone:
   shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
 proof-
   interpret \<epsilon>': is_cat_cone \<alpha> E' ?II \<CC> ?II_II \<epsilon>' by (rule assms(1))
-  from cat_lim_unique_cone[OF assms(1)] obtain f' where f': "f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E"
+  from cat_lim_ua_fo[OF assms(1)] obtain f' where f': "f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E"
     and \<epsilon>'_def: "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'"
     and unique: 
       "\<lbrakk> f'' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E; \<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'' \<rbrakk> \<Longrightarrow> f'' = f'" 
@@ -2605,12 +2839,6 @@ proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
               cat_cs_intros cat_discrete_cs_intros
         )
   qed
-  from assms(1) show "cf_const (:\<^sub>C I) \<CC> P : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    by 
-      (
-        cs_concl cs_intro: 
-          cat_cs_intros cat_small_cs_intros cat_small_discrete_cs_intros
-      )
 qed 
   (
     auto simp: 
@@ -2632,7 +2860,7 @@ proof
   (
     intro 
       is_cat_obj_prodI 
-      is_cat_limitI' 
+      is_cat_limitI 
       tm_cf_discrete_ntcf_obj_prod_base_is_cat_cone[OF assms(1,2), simplified] 
       assms(1,3)
   )
@@ -2706,20 +2934,16 @@ proof-
     show "vcard (ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e) = 5\<^sub>\<nat>"
       unfolding ntcf_equalizer_base_def by (simp add: nat_omega_simps)
     from assms(2) show 
-      "cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+      "cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
       by 
         (
           cs_concl 
             cs_simp: cat_cs_simps 
             cs_intro: cat_small_cs_intros cat_parallel_cs_intros cat_cs_intros
         )
-    then show "cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_small_cs_intros)
     from assms show 
-      "\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_parallel_cs_intros)
-    then show "\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_small_cs_intros)
+      "\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      by (cs_concl cs_simp: cs_intro: cat_parallel_cs_intros cat_small_cs_intros)
     show 
       "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTMap\<rparr>\<lparr>i\<rparr> :
         cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E\<lparr>ObjMap\<rparr>\<lparr>i\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub>
@@ -3043,7 +3267,7 @@ proof-
     using that unfolding \<mu>_components by simp
 
   have "\<mu> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  proof(intro is_cat_limitI')
+  proof(intro is_cat_limitI)
 
     show \<mu>: "\<mu> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
@@ -3082,14 +3306,6 @@ proof-
                 \<epsilon>.cat_eq_Comp_eq(1) 
               cs_intro: cat_lim_cs_intros cat_cs_intros cat_parallel_cs_intros
           )
-      show "cf_const \<JJ> \<CC> E : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-        by 
-          (
-            cs_concl cs_simp: cs_intro: 
-              cat_lim_cs_intros cat_cs_intros cat_small_cs_intros
-          )
-      show "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cs_intro: cat_small_cs_intros)
 
     qed (auto simp: \<mu>_components cat_lim_cs_intros)
 
@@ -3115,16 +3331,33 @@ proof-
         show "tm_cf_discrete \<alpha> (\<JJ>\<lparr>Obj\<rparr>) ?R \<CC>"
         proof(intro tm_cf_discreteI)
           show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" if "i \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for i
-            using that 
-            by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            by (cs_concl cs_simp: cat_cs_simps cs_intro: that cat_cs_intros)
+          show "category \<alpha> \<CC>" by (auto intro: cat_cs_intros)
+          from \<FF>.tm_cf_ObjMap_in_Vset show "(\<lambda>x\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<FF>\<lparr>ObjMap\<rparr>\<lparr>x\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+            by (auto simp: \<FF>.cf_ObjMap_vdomain)
+          show "(\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+          proof(rule vbrelation.vbrelation_Limit_in_VsetI)
+            have "\<R>\<^sub>\<circ> (\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>\<rparr>) \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+            proof(intro vsubsetI)
+              fix x assume "x \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>\<rparr>)"
+              then obtain i where i: "i \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" 
+                and x_def: "x = \<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>\<rparr>"
+                by auto
+              from i have "x = \<FF>\<lparr>ArrMap\<rparr>\<lparr>\<JJ>\<lparr>CId\<rparr>\<lparr>i\<rparr>\<rparr>"
+                by (simp add: x_def \<FF>.cf_ObjMap_CId)
+              moreover from i have "\<JJ>\<lparr>CId\<rparr>\<lparr>i\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+                by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+              ultimately show "x \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+                by (auto intro: \<FF>.ArrMap.vsv_vimageI2)
+            qed
+            then show "\<R>\<^sub>\<circ> (\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"  
+              by
+                (
+                  auto simp: 
+                    \<FF>.tm_cf_ArrMap_in_Vset vrange_in_VsetI vsubset_in_VsetI
+                )
+          qed (auto intro: \<FF>.HomDom.tiny_cat_Obj_in_Vset)
         qed
-          (
-            auto intro: 
-              cat_cs_intros
-              P\<^sub>O 
-              \<pi>\<^sub>O.NTCod.tm_cf_ArrMap_in_Vset[unfolded the_cf_discrete_components]
-              \<pi>\<^sub>O.NTCod.tm_cf_ObjMap_in_Vset[unfolded the_cf_discrete_components]
-          )
         show "u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> : r' \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr>" if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j
           using that by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       qed (auto simp: cat_lim_cs_intros)

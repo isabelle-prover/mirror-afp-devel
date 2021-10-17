@@ -1912,7 +1912,7 @@ proof(intro cat_Set_is_arrI arr_SetI)
       (simp_all add: cat_Set_cs_simps assms)
 qed (auto simp: assms cat_Set_cs_simps intro: cat_Set_cs_intros)
 
-lemma (in \<Z>) pdg_dghm_comp_dghm_proj_dghm_up: 
+lemma (in \<Z>) cat_Set_cf_comp_proj_obj_prod_up: 
   assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" 
     and "VLambda I F \<in>\<^sub>\<circ> Vset \<alpha>"
     and "\<And>i. i \<in>\<^sub>\<circ> I \<Longrightarrow> \<phi> i : A \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> F i" 

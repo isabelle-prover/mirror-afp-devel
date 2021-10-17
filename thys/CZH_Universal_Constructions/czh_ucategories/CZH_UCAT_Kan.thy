@@ -257,7 +257,10 @@ proof-
           (
             cs_concl 
               cs_simp: 
-                \<epsilon>'_def'[symmetric] cat_cs_simps cat_FUNCT_cs_simps cat_Kan_cs_simps 
+                \<epsilon>'_def'[symmetric] 
+                cat_cs_simps 
+                cat_FUNCT_cs_simps 
+                cat_Kan_cs_simps 
               cs_intro: 
                 cat_small_cs_intros 
                 cat_cs_intros 
@@ -735,7 +738,7 @@ end
 end
 
 lemma the_cf_rKe_ArrMap_app_impl:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "g : c \<mapsto>\<^bsub>\<CC>\<^esub> c'"
     and "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -745,7 +748,7 @@ lemma the_cf_rKe_ArrMap_app_impl:
     u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> = u' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> f"
 proof-
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   interpret u: is_cat_limit \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> r u
     by (rule assms(4))
@@ -932,17 +935,13 @@ proof-
 
   from assms(1-3) have
     "u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c' \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-    by (intro is_cat_coneI is_tm_ntcfI')
+    by (intro is_cat_coneI)
       (
         cs_concl
-          cs_intro:
-            cat_cs_intros
-            cat_comma_cs_intros
-            cat_lim_cs_intros
-            cat_small_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_lim_cs_intros
           cs_simp: const_r_def \<TT>c'\<KK>
       )+
-  with u'.cat_lim_unique_cone show
+  with u'.cat_lim_ua_fo show
     "\<exists>!G.
       G : r \<mapsto>\<^bsub>\<AA>\<^esub> r' \<and>
       u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> = u' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> G"
@@ -951,7 +950,7 @@ proof-
 qed
 
 lemma the_cf_rKe_ArrMap_app:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "g : c \<mapsto>\<^bsub>\<CC>\<^esub> c'"
     and "lim_Obj c\<lparr>UArr\<rparr> :
@@ -972,7 +971,7 @@ lemma the_cf_rKe_ArrMap_app:
        \<rbrakk> \<Longrightarrow> f = the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
 proof-
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   interpret u: is_cat_limit 
     \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>lim_Obj c\<lparr>UObj\<rparr>\<close> \<open>lim_Obj c\<lparr>UArr\<rparr>\<close>
@@ -1007,7 +1006,7 @@ proof-
 qed
 
 lemma the_cf_rKe_ArrMap_is_arr'[cat_Kan_cs_intros]:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "g : c \<mapsto>\<^bsub>\<CC>\<^esub> c'"
     and "lim_Obj c\<lparr>UArr\<rparr> :
@@ -1020,7 +1019,7 @@ lemma the_cf_rKe_ArrMap_is_arr'[cat_Kan_cs_intros]:
   unfolding assms(6,7) by (rule the_cf_rKe_ArrMap_app[OF assms(1-5)])
 
 lemma lim_Obj_the_cf_rKe_commute:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "lim_Obj a\<lparr>UArr\<rparr> :
       lim_Obj a\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : a \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1034,7 +1033,7 @@ lemma lim_Obj_the_cf_rKe_commute:
         the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>" 
 proof-
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
   note f = \<KK>.HomCod.cat_is_arrD[OF assms(5)]
@@ -1077,11 +1076,7 @@ proof-
         (
           cs_prems
             cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
-            cs_intro:
-              cat_small_cs_intros
-              cat_cs_intros
-              cat_comma_cs_intros
-              cat_Kan_cs_intros
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_Kan_cs_intros
         )      
   qed
 
@@ -1112,7 +1107,7 @@ end
 subsubsection\<open>The Kan extension is a Kan extension\<close>
 
 lemma the_cf_rKe_is_functor:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "\<And>c. c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr> \<Longrightarrow> lim_Obj c\<lparr>UArr\<rparr> :
       lim_Obj c\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1124,7 +1119,7 @@ proof-
   let ?const_comma = \<open>\<lambda>a b. cf_const (a \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (?UObj b)\<close>
   let ?the_cf_rKe = \<open>the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<close>
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
   note [cat_lim_cs_intros] = is_cat_cone.cat_cone_obj
@@ -1160,8 +1155,7 @@ proof-
         (
           cs_concl
             cs_simp: cat_Kan_cs_simps 
-            cs_intro: 
-              assms(3) cat_small_cs_intros cat_cs_intros cat_Kan_cs_intros
+            cs_intro: assms(3) cat_cs_intros cat_Kan_cs_intros
         )
     then have [cat_Kan_cs_intros]: "?the_cf_rKe\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : A \<mapsto>\<^bsub>\<AA>\<^esub> B"
       if "A = ?the_cf_rKe\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" 
@@ -1452,11 +1446,12 @@ proof-
                cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (?UObj c) \<circ>\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F
                \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> :
                c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-            by 
+            by (*very slow*)
               (
                 cs_concl 
-                  cs_intro: cat_cs_intros cat_lim_cs_intros 
-                  cs_simp: \<KK>.cf_cf_arr_comma_CId cat_cs_simps
+                  cs_intro: cat_cs_intros 
+                  cs_simp: \<KK>.cf_cf_arr_comma_CId cat_cs_simps 
+                  cs_intro: cat_lim_cs_intros
               )
           from that have dom_lhs:
             "\<D>\<^sub>\<circ> ((?UArr c \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
@@ -1525,7 +1520,7 @@ proof-
 qed
 
 lemma the_ntcf_rKe_is_ntcf:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" 
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "\<And>c. c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr> \<Longrightarrow> lim_Obj c\<lparr>UArr\<rparr> : 
       lim_Obj c\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1539,7 +1534,7 @@ proof-
   let ?the_cf_rKe = \<open>the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<close>
   let ?the_ntcf_rKe = \<open>the_ntcf_rKe \<alpha> \<TT> \<KK> lim_Obj\<close>
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   interpret cf_rKe: is_functor \<alpha> \<CC> \<AA> \<open>?the_cf_rKe\<close>
     by (rule the_cf_rKe_is_functor[OF assms, simplified])
@@ -1632,7 +1627,7 @@ proof-
 qed
 
 lemma the_ntcf_rKe_is_cat_rKe:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "\<And>c. c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr> \<Longrightarrow> lim_Obj c\<lparr>UArr\<rparr> :
       lim_Obj c\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1645,13 +1640,13 @@ proof-
   let ?the_cf_rKe = \<open>the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<close>
   let ?the_ntcf_rKe = \<open>the_ntcf_rKe \<alpha> \<TT> \<KK> lim_Obj\<close>
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
   interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   interpret cf_rKe: is_functor \<alpha> \<CC> \<AA> ?the_cf_rKe
     by (rule the_cf_rKe_is_functor[OF assms, simplified])
   interpret ntcf_rKe: is_ntcf \<alpha> \<BB> \<AA> \<open>?the_cf_rKe \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<TT> ?the_ntcf_rKe
     by (intro the_ntcf_rKe_is_ntcf assms(3))
-      (cs_concl cs_intro: cat_cs_intros cat_small_cs_intros)+
+      (cs_concl cs_intro: cat_cs_intros)+
 
   show ?thesis
   proof(rule is_cat_rKeI')
@@ -1697,7 +1692,7 @@ proof-
         \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj c\<close> \<open>?UArr c\<close>
         by (rule assms(3)[OF that])
       show "\<epsilon>' c : \<GG>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
+      proof(intro is_cat_coneI is_ntcfI')
         show "vfsequence (\<epsilon>' c)" unfolding \<epsilon>'_def by simp
         show "vcard (\<epsilon>' c) = 5\<^sub>\<nat>" unfolding \<epsilon>'_def by (simp add: nat_omega_simps)
         show "vsv (\<epsilon>' c\<lparr>NTMap\<rparr>)" unfolding \<epsilon>'_components by simp 
@@ -1753,13 +1748,9 @@ proof-
       qed
         (
           use c that in
-            \<open>
-              cs_concl
-                cs_simp: cat_Kan_cs_simps
-                cs_intro: cat_small_cs_intros cat_cs_intros
-            \<close>
+            \<open>cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros\<close>
         )+
-      from is_cat_limit.cat_lim_unique_cone[OF assms(3)[OF that] this] show 
+      from is_cat_limit.cat_lim_ua_fo[OF assms(3)[OF that] this] show 
         "\<exists>!f'.
           f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> ?UObj c \<and>
           \<epsilon>' c = ?UArr c \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> f'"  
@@ -1921,7 +1912,7 @@ proof-
         from f have a: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and b: "b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
 
         show ?thesis
-        proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
+        proof(intro is_cat_coneI is_ntcfI')
 
           show "vfsequence (\<tau> a b f)" unfolding \<tau>_def by simp
           show "vcard (\<tau> a b f) = 5\<^sub>\<nat>" 
@@ -1998,8 +1989,7 @@ proof-
             use that f_is_arr in
               \<open>
                 cs_concl
-                  cs_simp: cat_cs_simps cat_Kan_cs_simps
-                  cs_intro: cat_small_cs_intros cat_cs_intros
+                  cs_simp: cat_cs_simps cat_Kan_cs_simps cs_intro: cat_cs_intros
               \<close>
           )+
       qed
@@ -2578,12 +2568,12 @@ lemma cat_rKe_is_cat_limit:
     Theorem 1 in Chapter X-7 in \cite{mac_lane_categories_2010}
     or Proposition 6.5.1 in \cite{riehl_category_2016}.\<close>
   assumes "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C cat_1 \<aa> \<ff> \<mapsto>\<^sub>C \<AA>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   shows "\<epsilon> : \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
 proof-
 
   interpret \<epsilon>: is_cat_rKe \<alpha> \<BB> \<open>cat_1 \<aa> \<ff>\<close> \<AA> \<KK> \<TT> \<GG> \<epsilon> by (rule assms(1))  
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   
   from cat_1_components(1) have \<aa>: "\<aa> \<in>\<^sub>\<circ> Vset \<alpha>" 
     by (auto simp: \<epsilon>.AG.HomCod.cat_in_Obj_in_Vset)
@@ -2601,25 +2591,14 @@ proof-
           cs_intro: V_cs_intros cat_cs_intros
       )
 
-  interpret \<epsilon>: is_tm_ntcf \<alpha> \<BB> \<AA> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<TT> \<epsilon> 
-    by 
-      (
-        intro is_tm_ntcfI' assms(2) \<epsilon>.ntcf_rKe.is_ntcf_axioms, 
-        unfold \<GG>\<KK>_def
-      )
-      (
-        cs_concl 
-          cs_simp: cat_cs_simps cs_intro: cat_small_cs_intros cat_cs_intros
-      )
+  interpret \<epsilon>: is_ntcf \<alpha> \<BB> \<AA> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<TT> \<epsilon> 
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
   show "\<epsilon> : \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-  proof(intro is_cat_limitI' is_cat_coneI)
+  proof(intro is_cat_limitI is_cat_coneI)
 
-    show "\<epsilon> : cf_const \<BB> \<AA> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
-    proof(intro is_tm_ntcfI' \<epsilon>.ntcf_rKe.is_ntcf_axioms[unfolded \<GG>\<KK>_def])
-      from assms(2) show "cf_const \<BB> \<AA> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>) : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
-        by (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros)
-    qed (rule assms(2))
+    show "\<epsilon> : cf_const \<BB> \<AA> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>) \<mapsto>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+      by (rule \<epsilon>.ntcf_rKe.is_ntcf_axioms[unfolded \<GG>\<KK>_def])
 
     fix u' r' assume prems: "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
 
@@ -2686,11 +2665,10 @@ qed
 
 lemma cat_lKe_is_cat_colimit:
   assumes "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C cat_1 \<aa> \<ff> \<mapsto>\<^sub>C \<AA>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   shows "\<eta> : \<TT> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m \<FF>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
 proof-
-  interpret \<eta>: is_cat_lKe \<alpha> \<BB> \<open>cat_1 \<aa> \<ff>\<close> \<AA> \<KK> \<TT> \<FF> \<eta> by (rule assms(1))  
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<eta>: is_cat_lKe \<alpha> \<BB> \<open>cat_1 \<aa> \<ff>\<close> \<AA> \<KK> \<TT> \<FF> \<eta> by (rule assms(1))
   from cat_1_components(1) have \<aa>: "\<aa> \<in>\<^sub>\<circ> Vset \<alpha>" 
     by (auto simp: \<eta>.AG.HomCod.cat_in_Obj_in_Vset)
   from cat_1_components(2) have \<ff>: "\<ff> \<in>\<^sub>\<circ> Vset \<alpha>" 
@@ -2701,8 +2679,9 @@ proof-
         rule is_cat_limit.is_cat_colimit_op
           [
             OF cat_rKe_is_cat_limit[
-              OF \<eta>.is_cat_rKe_op[unfolded \<eta>.AG.cat_1_op[OF \<aa> \<ff>]] 
-              \<TT>.is_tm_functor_op
+              OF 
+                \<eta>.is_cat_rKe_op[unfolded \<eta>.AG.cat_1_op[OF \<aa> \<ff>]] 
+                \<eta>.ntcf_lKe.NTDom.is_functor_op
               ], 
             unfolded cat_op_simps
           ]
@@ -2735,6 +2714,7 @@ proof-
 
     show "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
       by (cs_concl cs_simp: cat_cs_simps \<GG>\<KK>_def cs_intro: cat_cs_intros)
+
     fix \<GG>' \<epsilon>' assume prems: 
       "\<GG>' : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       "\<epsilon>' : \<GG>' \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -2749,10 +2729,9 @@ proof-
       by (subst (asm) \<GG>'_def)
         (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from prems(2) have "\<epsilon>' : \<GG>'\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (intro is_cat_coneI is_tm_ntcfI' \<epsilon>')
-        (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros)+
+      by (intro is_cat_coneI \<epsilon>') (cs_concl cs_intro: cat_cs_intros)+
 
-    from \<epsilon>.cat_lim_unique_cone[OF this] obtain f'
+    from \<epsilon>.cat_lim_ua_fo[OF this] obtain f'
       where f': "f' : \<GG>'\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>"
         and \<epsilon>_def: "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<AA> f'"
         and unique_f':
@@ -2805,6 +2784,7 @@ proof-
         qed (auto intro: cat_cs_intros)
       qed (simp_all add: prems)
     qed
+
   qed (auto simp: assms)
 
 qed
@@ -2919,7 +2899,6 @@ proof-
               \<DD>\<eta>.NT.iso_ntcf_is_arr_isomorphism''
               cat_op_intros
               adj_cs_intros
-              cat_small_cs_intros
               cat_cs_intros
               cat_FUNCT_cs_intros
               cat_prod_cs_intros

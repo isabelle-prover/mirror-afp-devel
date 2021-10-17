@@ -326,7 +326,7 @@ lemma (in \<Z>) tm_cf_discrete_ntcf_obj_prod_base_is_cat_obj_prod:
   \<comment>\<open>See Theorem 5.2 in Chapter Introduction in \cite{hungerford_algebra_2003}.\<close>
   assumes "VLambda I F \<in>\<^sub>\<circ> Vset \<alpha>"
   shows "ntcf_Set_obj_prod \<alpha> I F : (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. F i) <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> F : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-proof(intro is_cat_obj_prodI is_cat_limitI')
+proof(intro is_cat_obj_prodI is_cat_limitI)
 
   interpret Set: tm_cf_discrete \<alpha> I F \<open>cat_Set \<alpha>\<close> 
     by (rule tm_cf_discrete_cat_Set_if_VLambda_in_Vset[OF assms])
@@ -420,7 +420,7 @@ proof(intro is_cat_obj_prodI is_cat_limitI')
           "vprojection_arrow I F i \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?up' = \<pi>'\<lparr>NTMap\<rparr>\<lparr>i\<rparr>"
           by 
             (
-              rule pdg_dghm_comp_dghm_proj_dghm_up[
+              rule cat_Set_cf_comp_proj_obj_prod_up[
                 OF P' assms \<pi>'i_i i, symmetric
                 ]
             ) 
@@ -567,7 +567,7 @@ lemma (in \<Z>) ntcf_Set_equalizer_2_is_cat_equalizer_2:
   assumes "\<gg> : \<aa> \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> \<bb>" and "\<ff> : \<aa> \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> \<bb>" 
   shows "ntcf_Set_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> :
     vequalizer \<aa> \<gg> \<ff> <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-proof(intro is_cat_equalizerI is_cat_equalizerI is_cat_limitI')
+proof(intro is_cat_equalizerI is_cat_equalizerI is_cat_limitI)
   
   let ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> (cat_Set \<alpha>) \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
     and ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close>

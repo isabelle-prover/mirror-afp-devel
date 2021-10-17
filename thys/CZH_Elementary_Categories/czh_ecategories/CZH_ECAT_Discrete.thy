@@ -603,7 +603,7 @@ lemma tiny_cat_discreteI':
   shows "tiny_cat_discrete \<alpha> \<CC>"
 proof(intro tiny_cat_discreteI cat_discreteI)
   interpret tiny_category \<alpha> \<CC> by (rule assms(1))
-  show "category \<alpha> \<CC>" by (auto intro: tiny_dg_category)
+  show "category \<alpha> \<CC>" by (auto intro: tiny_cat_category)
   show "f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<CC>\<lparr>CId\<rparr>)" if "f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>" for f using that by (rule assms(2))
 qed (auto intro: assms(1))
 

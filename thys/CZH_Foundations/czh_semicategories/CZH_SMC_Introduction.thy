@@ -15,9 +15,9 @@ subsection\<open>Background\<close>
 text\<open>
 Many concepts that are normally associated with category theory can be 
 generalized to semicategories. It is the goal of 
-this chapter to expose these generalized concepts and provide the 
-relevant foundations for the development of the notion of a category
-in the next chapter.
+this chapter to expose these generalized concepts and provide a 
+foundation for the development of the notion of a category
+in \cite{milehins_category_2021}.
 \<close>
 
 

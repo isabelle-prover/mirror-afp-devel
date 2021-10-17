@@ -175,8 +175,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 definition cf_Cone :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "cf_Cone \<alpha> \<beta> \<FF> = 
-    Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_Funct \<alpha> (\<FF>\<lparr>HomDom\<rparr>) (\<FF>\<lparr>HomCod\<rparr>)(-,cf_map \<FF>) \<circ>\<^sub>C\<^sub>F
-    op_cf (\<Delta>\<^sub>C \<alpha> (\<FF>\<lparr>HomDom\<rparr>) (\<FF>\<lparr>HomCod\<rparr>))"
+    Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_FUNCT \<alpha> (\<FF>\<lparr>HomDom\<rparr>) (\<FF>\<lparr>HomCod\<rparr>)(-,cf_map \<FF>) \<circ>\<^sub>C\<^sub>F
+    op_cf (\<Delta>\<^sub>C\<^sub>F \<alpha> (\<FF>\<lparr>HomDom\<rparr>) (\<FF>\<lparr>HomCod\<rparr>))"
 
 
 text\<open>An alternative form of the definition.\<close>
@@ -185,7 +185,7 @@ context is_functor
 begin
 
 lemma cf_Cone_def': 
-  "cf_Cone \<alpha> \<beta> \<FF> = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_Funct \<alpha> \<AA> \<BB>(-,cf_map \<FF>) \<circ>\<^sub>C\<^sub>F op_cf (\<Delta>\<^sub>C \<alpha> \<AA> \<BB>)"
+  "cf_Cone \<alpha> \<beta> \<FF> = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_FUNCT \<alpha> \<AA> \<BB>(-,cf_map \<FF>) \<circ>\<^sub>C\<^sub>F op_cf (\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>)"
   unfolding cf_Cone_def cat_cs_simps by simp
 
 end
@@ -193,228 +193,151 @@ end
 
 subsubsection\<open>Object map\<close>
 
-lemma (in is_tm_functor) cf_Cone_ObjMap_vsv[cat_Kan_cs_intros]:
+lemma (in is_functor) cf_Cone_ObjMap_vsv[cat_Kan_cs_intros]:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" 
   shows "vsv (cf_Cone \<alpha> \<beta> \<FF>\<lparr>ObjMap\<rparr>)"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from assms(2) show ?thesis
     unfolding cf_Cone_def
     by
       (
         cs_concl 
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps 
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps 
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_intros] = is_tm_functor.cf_Cone_ObjMap_vsv
+lemmas [cat_Kan_cs_intros] = is_functor.cf_Cone_ObjMap_vsv
 
-lemma (in is_tm_functor) cf_Cone_ObjMap_vdomain[cat_Kan_cs_simps]:
+lemma (in is_functor) cf_Cone_ObjMap_vdomain[cat_Kan_cs_simps]:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   shows "\<D>\<^sub>\<circ> (cf_Cone \<alpha> \<beta> \<FF>\<lparr>ObjMap\<rparr>) = \<BB>\<lparr>Obj\<rparr>"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
-  from assms(2) show ?thesis
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+  from assms show ?thesis
     unfolding cf_Cone_def'
     by
       (
         cs_concl 
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_simps] = is_tm_functor.cf_Cone_ObjMap_vdomain
+lemmas [cat_Kan_cs_simps] = is_functor.cf_Cone_ObjMap_vdomain
 
-lemma (in is_tm_functor) cf_Cone_ObjMap_app[cat_Kan_cs_simps]:
-  assumes "\<Z> \<beta>"
-    and "\<alpha> \<in>\<^sub>\<circ> \<beta>" 
-    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+lemma (in is_functor) cf_Cone_ObjMap_app[cat_Kan_cs_simps]:
+  assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   shows "cf_Cone \<alpha> \<beta> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> =
-    Hom (cat_Funct \<alpha> \<AA> \<BB>) (cf_map (cf_const \<AA> \<BB> b)) (cf_map \<FF>)"
+    Hom (cat_FUNCT \<alpha> \<AA> \<BB>) (cf_map (cf_const \<AA> \<BB> b)) (cf_map \<FF>)"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from assms(2,3) show ?thesis
     unfolding cf_Cone_def
     by
       (
         cs_concl
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_simps] = is_tm_functor.cf_Cone_ObjMap_app
+lemmas [cat_Kan_cs_simps] = is_functor.cf_Cone_ObjMap_app
 
 
 subsubsection\<open>Arrow map\<close>
 
-lemma (in is_tm_functor) cf_Cone_ArrMap_vsv[cat_Kan_cs_intros]:
+lemma (in is_functor) cf_Cone_ArrMap_vsv[cat_Kan_cs_intros]:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" 
   shows "vsv (cf_Cone \<alpha> \<beta> \<FF>\<lparr>ArrMap\<rparr>)"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from assms(2) show ?thesis
     unfolding cf_Cone_def
     by
       (
-        cs_concl 
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps 
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+        cs_concl
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps 
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_intros] = is_tm_functor.cf_Cone_ArrMap_vsv
+lemmas [cat_Kan_cs_intros] = is_functor.cf_Cone_ArrMap_vsv
 
-lemma (in is_tm_functor) cf_Cone_ArrMap_vdomain[cat_Kan_cs_simps]:
+lemma (in is_functor) cf_Cone_ArrMap_vdomain[cat_Kan_cs_simps]:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   shows "\<D>\<^sub>\<circ> (cf_Cone \<alpha> \<beta> \<FF>\<lparr>ArrMap\<rparr>) = \<BB>\<lparr>Arr\<rparr>"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from assms(2) show ?thesis
     unfolding cf_Cone_def'
     by
       (
         cs_concl 
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_simps] = is_tm_functor.cf_Cone_ArrMap_vdomain
+lemmas [cat_Kan_cs_simps] = is_functor.cf_Cone_ArrMap_vdomain
 
-lemma (in is_tm_functor) cf_Cone_ArrMap_app[cat_Kan_cs_simps]:
+lemma (in is_functor) cf_Cone_ArrMap_app[cat_Kan_cs_simps]:
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>" 
     and "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b"
   shows "cf_Cone \<alpha> \<beta> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = cf_hom
-    (cat_Funct \<alpha> \<AA> \<BB>)
-    [ntcf_arrow (ntcf_const \<AA> \<BB> f), cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<FF>\<rparr>]\<^sub>\<circ>"
+    (cat_FUNCT \<alpha> \<AA> \<BB>)
+    [ntcf_arrow (ntcf_const \<AA> \<BB> f), cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<FF>\<rparr>]\<^sub>\<circ>"
 proof-
   from assms interpret \<beta>: \<Z> \<beta> by simp 
-  from assms interpret \<Delta>: is_functor \<alpha> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<BB> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C \<alpha> \<AA> \<BB>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from assms interpret \<Delta>: is_functor \<beta> \<BB> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from assms(2,3) show ?thesis
     unfolding cf_Cone_def
     by
       (
         cs_concl
-          cs_simp: cat_cs_simps cat_Funct_components(1) cat_op_simps 
-          cs_intro:
-            cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
+          cs_simp: cat_cs_simps cat_FUNCT_components(1) cat_op_simps 
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_op_intros
       )
 qed
 
-lemmas [cat_Kan_cs_simps] = is_tm_functor.cf_Cone_ArrMap_app
+lemmas [cat_Kan_cs_simps] = is_functor.cf_Cone_ArrMap_app
 
 
 subsubsection\<open>The cone functor is a functor\<close>
 
-lemma (in is_tm_functor) tm_cf_cf_Cone_is_functor:
-  "cf_Cone \<alpha> \<alpha> \<FF> : op_cat \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-  unfolding cf_Cone_def'
-  by
-    (
-      cs_concl
-        cs_simp: cat_op_simps cat_Funct_components(1)
-        cs_intro:
-          cat_small_cs_intros
-          cat_cs_intros
-          cat_FUNCT_cs_intros
-          cat_op_intros
-    )
-
-lemma (in is_tm_functor) tm_cf_cf_Cone_is_functor_if_ge_Limit:
+lemma (in is_functor) tm_cf_cf_Cone_is_functor_if_ge_Limit:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
   shows "cf_Cone \<alpha> \<beta> \<FF> : op_cat \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>"
 proof-
-  from assms interpret \<AA>\<BB>: category \<alpha> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close>
+  from assms interpret \<AA>\<BB>: category \<beta> \<open>cat_FUNCT \<alpha> \<AA> \<BB>\<close>
     by
       (
         cs_concl cs_intro:
           cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
-  interpret \<beta>_\<AA>\<BB>: category \<beta> \<open>cat_Funct \<alpha> \<AA> \<BB>\<close>
-    by (rule \<AA>\<BB>.cat_category_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros assms)+
   from assms interpret op_\<Delta>: 
-    is_tiny_functor \<beta> \<open>op_cat \<BB>\<close> \<open>op_cat (cat_Funct \<alpha> \<AA> \<BB>)\<close> \<open>op_cf (\<Delta>\<^sub>C \<alpha> \<AA> \<BB>)\<close>
-    by (intro is_functor.cf_is_tiny_functor_if_ge_Limit)
-      (
-        cs_concl cs_intro:
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  have "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_Funct \<alpha> \<AA> \<BB>(-,cf_map \<FF>) :
-    op_cat (cat_Funct \<alpha> \<AA> \<BB>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>"
+    is_functor \<beta> \<open>op_cat \<BB>\<close> \<open>op_cat (cat_FUNCT \<alpha> \<AA> \<BB>)\<close> \<open>op_cf (\<Delta>\<^sub>C\<^sub>F \<alpha> \<AA> \<BB>)\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+  have "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<beta>\<^esub>cat_FUNCT \<alpha> \<AA> \<BB>(-,cf_map \<FF>) :
+    op_cat (cat_FUNCT \<alpha> \<AA> \<BB>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>"
     by
       (
         cs_concl
-          cs_simp: cat_Funct_components(1)
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
+          cs_simp: cat_FUNCT_cs_simps 
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
   then show "cf_Cone \<alpha> \<beta> \<FF> : op_cat \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>"
     unfolding cf_Cone_def'
@@ -530,8 +453,8 @@ subsubsection\<open>\<open>L_10_5_N\<close> is a functor\<close>
 lemma L_10_5_N_is_functor: 
   assumes "\<Z> \<beta>" 
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "L_10_5_N \<alpha> \<beta> \<TT> \<KK> c : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>"
 proof-
@@ -540,8 +463,8 @@ proof-
 
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
 
   from assms(2) interpret FUNCT_\<BB>: tiny_category \<beta> \<open>?FUNCT \<BB>\<close>
     by (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
@@ -663,8 +586,8 @@ qed
 lemma L_10_5_N_is_functor'[cat_Kan_cs_intros]: 
   assumes "\<Z> \<beta>" 
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "\<AA>' = op_cat \<AA>"
     and "\<BB>' = cat_Set \<beta>"
@@ -899,7 +822,7 @@ proof-
       unfolding F_def A_def B_def a'_def a''_def g'_def 
       by (*slow*)
         (
-          cs_prems 1
+          cs_prems
             cs_simp: cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -1037,8 +960,8 @@ lemma L_10_5_\<tau>_NTMap_app[cat_Kan_cs_simps]:
 subsubsection\<open>\<open>L_10_5_\<tau>\<close> is a cone\<close>
 
 lemma L_10_5_\<tau>_is_cat_cone[cat_cs_intros]:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and \<upsilon>'_def: "\<upsilon>' = ntcf_arrow \<upsilon>"
     and \<upsilon>: "\<upsilon> :
@@ -1050,29 +973,29 @@ proof-
   let ?H_\<CC> = \<open>\<lambda>c. Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(c,-)\<close> 
   let ?H_\<AA> = \<open>\<lambda>a. Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-)\<close>
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
-  from assms(3) interpret c\<KK>: tiny_category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
+  from assms(3) interpret c\<KK>: category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
-  from assms(3) interpret \<Pi>c: is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
+  from assms(3) interpret \<Pi>c: is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by
       (
         cs_concl
           cs_simp: cat_comma_cs_simps 
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_comma_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   interpret \<upsilon>: is_ntcf \<alpha> \<BB> \<open>cat_Set \<alpha>\<close> \<open>?H_\<CC> c \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<open>?H_\<AA> a \<circ>\<^sub>C\<^sub>F \<TT>\<close> \<upsilon>
     by (rule \<upsilon>)
 
   show ?thesis
-  proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
+  proof(intro is_cat_coneI is_ntcfI')
     show "vfsequence (L_10_5_\<tau> \<TT> \<KK> c \<upsilon>' a)" unfolding L_10_5_\<tau>_def by simp
     show "vcard (L_10_5_\<tau> \<TT> \<KK> c \<upsilon>' a) = 5\<^sub>\<nat>" 
       unfolding L_10_5_\<tau>_def by (simp add: nat_omega_simps)
     from a interpret cf_const:
-      is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a\<close> 
-      by (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros)
+      is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a\<close> 
+      by (cs_concl cs_intro: cat_cs_intros)
     show "L_10_5_\<tau> \<TT> \<KK> c \<upsilon>' a\<lparr>NTMap\<rparr>\<lparr>bf\<rparr> :
       cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a\<lparr>ObjMap\<rparr>\<lparr>bf\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>\<lparr>bf\<rparr>"
       if "bf \<in>\<^sub>\<circ> c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>" for bf
@@ -1156,15 +1079,15 @@ proof-
         \<open>
           cs_concl
             cs_simp: cat_cs_simps cat_Kan_cs_simps 
-            cs_intro: cat_small_cs_intros cat_cs_intros cat_Kan_cs_intros a
+            cs_intro: cat_cs_intros cat_Kan_cs_intros a
         \<close>
     )+
 
 qed
 
 lemma L_10_5_\<tau>_is_cat_cone'[cat_Kan_cs_intros]:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "\<upsilon>' = ntcf_arrow \<upsilon>"
     and "\<FF>' = \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>"
@@ -1209,8 +1132,7 @@ lemma L_10_5_\<upsilon>_components:
 
 context
   fixes \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT>
-  assumes \<KK>: "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and \<TT>: "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes \<KK>: "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and \<TT>: "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
 begin
 
 interpretation \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule \<KK>)
@@ -1249,8 +1171,8 @@ end
 subsubsection\<open>\<open>L_10_5_\<upsilon>\<close> is a natural transformation\<close>
 
 lemma L_10_5_\<upsilon>_is_ntcf:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and \<tau>'_def: "\<tau>' = ntcf_arrow \<tau>"
     and \<tau>: "\<tau> : a <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1260,20 +1182,20 @@ lemma L_10_5_\<upsilon>_is_ntcf:
     (is \<open>?L_10_5_\<upsilon> : ?H_\<CC> c \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F ?H_\<AA> a \<circ>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>\<close>)
 proof-
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
   interpret \<tau>: is_cat_cone \<alpha> a \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<tau>  
     by (rule assms(5))
 
-  from assms(3) interpret c\<KK>: tiny_category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
+  from assms(3) interpret c\<KK>: category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
-  from assms(3) interpret \<Pi>c: is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
+  from assms(3) interpret \<Pi>c: is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by
       (
         cs_concl
           cs_simp: cat_comma_cs_simps 
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_comma_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros
       )
 
   show "?L_10_5_\<upsilon> : ?H_\<CC> c \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F ?H_\<AA> a \<circ>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -1325,8 +1247,8 @@ proof-
 qed
 
 lemma L_10_5_\<upsilon>_is_ntcf'[cat_Kan_cs_intros]:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "\<tau>' = ntcf_arrow \<tau>"
     and "\<FF>' = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(c,-) \<circ>\<^sub>C\<^sub>F \<KK>"
@@ -1417,8 +1339,8 @@ lemma L_10_5_\<chi>_arrow_app'[cat_Kan_cs_simps]:
     )
 
 lemma \<upsilon>\<tau>a_def:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and \<upsilon>\<tau>a'_def: "\<upsilon>\<tau>a' = ntcf_arrow \<upsilon>\<tau>a"
     and \<upsilon>\<tau>a: "\<upsilon>\<tau>a :
@@ -1429,8 +1351,8 @@ lemma \<upsilon>\<tau>a_def:
   (is \<open>\<upsilon>\<tau>a = ?L_10_5_\<upsilon> (ntcf_arrow ?L_10_5_\<tau>) a\<close>)
 proof-
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
   interpret \<upsilon>\<tau>a: is_ntcf 
     \<alpha> \<BB> \<open>cat_Set \<alpha>\<close> \<open>Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(c,-) \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<open>Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>\<close> \<upsilon>\<tau>a
@@ -1474,7 +1396,7 @@ proof-
           (
             cs_concl 
               cs_simp: cat_Kan_cs_simps 
-              cs_intro: cat_small_cs_intros cat_Kan_cs_intros cat_cs_intros
+              cs_intro: cat_Kan_cs_intros cat_cs_intros
           )
 
       then have dom_rhs: 
@@ -1568,17 +1490,17 @@ lemma L_10_5_\<chi>'_arrow_ArrVal_vdomain'[cat_Kan_cs_simps]:
     and \<tau>: "\<tau> : a <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
   shows "\<D>\<^sub>\<circ> (L_10_5_\<chi>'_arrow \<alpha> \<beta> \<TT> \<KK> c a\<lparr>ArrVal\<rparr>) = Hom
-    (cat_Funct \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>)
+    (cat_FUNCT \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>)
     (cf_map (cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a)) 
     (cf_map (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>))"
 proof-
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   interpret \<tau>: is_cat_cone \<alpha> a \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<tau>
     by (rule assms(3))
-  from assms(2,4) show ?thesis
+  from assms(1,2,4) show ?thesis
     by 
       (
-        cs_concl 
+        cs_concl
           cs_simp: cat_Kan_cs_simps L_10_5_\<chi>'_arrow_ArrVal_vdomain 
           cs_intro: cat_cs_intros
       )
@@ -1602,7 +1524,7 @@ proof-
       (
         cs_concl
           cs_simp: cat_Kan_cs_simps cat_Funct_components(1)
-          cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros cat_cs_intros
+          cs_intro: cat_FUNCT_cs_intros cat_cs_intros
       )
   then show
     "L_10_5_\<chi>'_arrow \<alpha> \<beta> \<TT> \<KK> c a\<lparr>ArrVal\<rparr>\<lparr>\<tau>'\<rparr> =
@@ -1616,8 +1538,8 @@ subsubsection\<open>\<open>L_10_5_\<chi>'_arrow\<close> is an isomorphism in the
 lemma L_10_5_\<chi>'_arrow_is_arr_isomorphism: 
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
   shows "L_10_5_\<chi>'_arrow \<alpha> \<beta> \<TT> \<KK> c a :
@@ -1634,25 +1556,25 @@ lemma L_10_5_\<chi>'_arrow_is_arr_isomorphism:
 proof-
 
   let ?FUNCT = \<open>\<lambda>\<AA>. cat_FUNCT \<alpha> \<AA> (cat_Set \<alpha>)\<close>
-  let ?c\<KK>_\<AA> = \<open>cat_Funct \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
+  let ?c\<KK>_\<AA> = \<open>cat_FUNCT \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?H_\<CC> = \<open>\<lambda>c. Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(c,-)\<close>
   let ?H_\<AA> = \<open>\<lambda>c. Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-)\<close>
 
   from assms(1,2) interpret \<beta>: \<Z> \<beta> by simp 
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
 
-  from \<KK>.vempty_is_zet assms interpret c\<KK>: tiny_category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
+  from \<KK>.vempty_is_zet assms interpret c\<KK>: category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
-  from assms(2,6) interpret c\<KK>_\<AA>: category \<alpha> ?c\<KK>_\<AA>
+  from assms(2,6) interpret c\<KK>_\<AA>: category \<beta> ?c\<KK>_\<AA>
     by
       (
         cs_concl cs_intro:
           cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
   from \<KK>.vempty_is_zet assms interpret \<Pi>c: 
-    is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
+    is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
 
   from assms(2) interpret FUNCT_\<AA>: tiny_category \<beta> \<open>?FUNCT \<AA>\<close>
@@ -1662,8 +1584,8 @@ proof-
   from assms(2) interpret FUNCT_\<CC>: tiny_category \<beta> \<open>?FUNCT \<CC>\<close>
     by (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
   
-  have \<TT>\<Pi>: "\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
-    by (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros)
+  have \<TT>\<Pi>: "\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros)
 
   from assms(5,6) have [cat_cs_simps]: 
     "cf_of_cf_map (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (cf_map (cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a)) =
@@ -1675,7 +1597,7 @@ proof-
       Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>"
     by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)+
 
-  note cf_Cone_ObjMap_app = is_tm_functor.cf_Cone_ObjMap_app[OF \<TT>\<Pi> assms(1,2,6)]
+  note cf_Cone_ObjMap_app = is_functor.cf_Cone_ObjMap_app[OF \<TT>\<Pi> assms(1,2,6)]
 
   show ?thesis
   proof
@@ -1702,10 +1624,10 @@ proof-
         by
           (
             cs_prems
-              cs_simp: cat_cs_simps cat_Kan_cs_simps cat_Funct_components(1)
-              cs_intro: cat_small_cs_intros
+              cs_simp: cat_cs_simps cat_Kan_cs_simps cat_FUNCT_components(1)
+              cs_intro: cat_cs_intros
           )
-      note \<tau> = cat_Funct_is_arrD(1,2)[OF \<tau>_is_arr, unfolded cat_cs_simps]
+      note \<tau> = cat_FUNCT_is_arrD(1,2)[OF \<tau>_is_arr, unfolded cat_cs_simps]
       have "cf_of_cf_map (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (cf_map (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)) = \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>"
         by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
       from prems assms \<tau>(1) show 
@@ -1748,7 +1670,7 @@ proof-
             (
               cs_concl
                 cs_simp: cat_Kan_cs_simps 
-                cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
+                cs_intro: cat_cs_intros cat_FUNCT_cs_intros
             )
         from assms \<upsilon>\<tau>a(1,2) show 
           "\<upsilon>\<tau>a = ?L_10_5_\<chi>'_arrow\<lparr>ArrVal\<rparr>\<lparr>ntcf_arrow (L_10_5_\<tau> \<TT> \<KK> c \<upsilon>\<tau>a a)\<rparr>"
@@ -1762,15 +1684,11 @@ proof-
     qed
 
     from assms show "?L_10_5_\<chi>'_arrow\<lparr>ArrDom\<rparr> \<in>\<^sub>\<circ> Vset \<beta>"
-      by (intro Vset_trans[OF _ Vset_in_mono[OF assms(2)]])
+      by 
         (
           cs_concl 
-            cs_simp: cat_Kan_cs_simps cat_Funct_components(1) cf_Cone_ObjMap_app
-            cs_intro: 
-              cat_small_cs_intros
-              cat_cs_intros
-              cat_FUNCT_cs_intros 
-              c\<KK>_\<AA>.cat_Hom_in_Vset
+            cs_simp: cat_Kan_cs_simps cat_FUNCT_components(1) cf_Cone_ObjMap_app
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros c\<KK>_\<AA>.cat_Hom_in_Vset
         )
     with assms(2) have "?L_10_5_\<chi>'_arrow\<lparr>ArrDom\<rparr> \<in>\<^sub>\<circ> Vset \<beta>"
       by (meson Vset_in_mono Vset_trans)
@@ -1793,8 +1711,8 @@ proof-
         "\<tau>' : cf_map (cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a) \<mapsto>\<^bsub>?c\<KK>_\<AA>\<^esub> cf_map (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)"
         "\<tau>'' : cf_map (cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> a) \<mapsto>\<^bsub>?c\<KK>_\<AA>\<^esub> cf_map (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)"
         "?L_10_5_\<chi>'_arrow\<lparr>ArrVal\<rparr>\<lparr>\<tau>'\<rparr> = ?L_10_5_\<chi>'_arrow\<lparr>ArrVal\<rparr>\<lparr>\<tau>''\<rparr>"
-      note \<tau>' = cat_Funct_is_arrD[OF prems(1), unfolded cat_cs_simps]
-        and \<tau>'' = cat_Funct_is_arrD[OF prems(2), unfolded cat_cs_simps]
+      note \<tau>' = cat_FUNCT_is_arrD[OF prems(1), unfolded cat_cs_simps]
+        and \<tau>'' = cat_FUNCT_is_arrD[OF prems(2), unfolded cat_cs_simps]
       interpret \<tau>': is_cat_cone 
         \<alpha> a \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>ntcf_of_ntcf_arrow (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> \<tau>'\<close>
         by (rule is_cat_coneI[OF \<tau>'(1) assms(6)])
@@ -1884,8 +1802,8 @@ qed
 lemma L_10_5_\<chi>'_arrow_is_arr_isomorphism'[cat_Kan_cs_intros]: 
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     and "A = cf_Cone \<alpha> \<beta> (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
@@ -1899,8 +1817,8 @@ lemma L_10_5_\<chi>'_arrow_is_arr_isomorphism'[cat_Kan_cs_intros]:
 lemma L_10_5_\<chi>'_arrow_is_arr: 
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
   shows "L_10_5_\<chi>'_arrow \<alpha> \<beta> \<TT> \<KK> c a :
@@ -1916,8 +1834,8 @@ lemma L_10_5_\<chi>'_arrow_is_arr:
 lemma L_10_5_\<chi>'_arrow_is_arr'[cat_Kan_cs_intros]: 
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     and "A = cf_Cone \<alpha> \<beta> (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
@@ -1997,8 +1915,8 @@ lemma L_10_5_\<chi>_is_iso_ntcf:
   \<comment>\<open>See lemma on page 245 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
-    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "L_10_5_\<chi> \<alpha> \<beta> \<TT> \<KK> c :
     cf_Cone \<alpha> \<beta> (\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o L_10_5_N \<alpha> \<beta> \<TT> \<KK> c :
@@ -2007,7 +1925,7 @@ lemma L_10_5_\<chi>_is_iso_ntcf:
 proof-
 
   let ?FUNCT = \<open>\<lambda>\<AA>. cat_FUNCT \<alpha> \<AA> (cat_Set \<alpha>)\<close>
-  let ?c\<KK>_\<AA> = \<open>cat_Funct \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
+  let ?c\<KK>_\<AA> = \<open>cat_FUNCT \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?ntcf_c\<KK>_\<AA> = \<open>ntcf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?\<TT>_c\<KK> = \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
   let ?H_\<CC> = \<open>\<lambda>c. Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(c,-)\<close>
@@ -2019,37 +1937,28 @@ proof-
 
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(3))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(4))
 
-  from \<KK>.vempty_is_zet assms(5) interpret c\<KK>: tiny_category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
+  from \<KK>.vempty_is_zet assms(5) interpret c\<KK>: category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
-  from assms(2,5) interpret c\<KK>_\<AA>: category \<alpha> ?c\<KK>_\<AA>
+  from assms(1,2,5) interpret c\<KK>_\<AA>: category \<beta> ?c\<KK>_\<AA>
     by
       (
         cs_concl cs_intro:
           cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
   interpret \<beta>_c\<KK>_\<AA>: category \<beta> ?c\<KK>_\<AA>
-    by (rule c\<KK>_\<AA>.cat_category_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros assms(2))+
-  from assms(2,5) interpret \<Delta>: is_functor \<alpha> \<AA> ?c\<KK>_\<AA> \<open>\<Delta>\<^sub>C \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms assms(2) interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<AA> ?c\<KK>_\<AA> \<open>\<Delta>\<^sub>C \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+    by (cs_concl cs_intro: cat_cs_intros assms(2))+
+  from assms(2,5) interpret \<Delta>: is_functor \<beta> \<AA> ?c\<KK>_\<AA> \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from \<KK>.vempty_is_zet assms(5) interpret \<Pi>c: 
-    is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
+    is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by
       (
         cs_concl
           cs_simp: cat_comma_cs_simps 
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_comma_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   interpret \<beta>\<Pi>c: is_tiny_functor \<beta> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by (rule \<Pi>c.cf_is_tiny_functor_if_ge_Limit[OF assms(1,2)])
@@ -2091,8 +2000,8 @@ proof-
     show "vcard (?L_10_5_\<chi>) = 5\<^sub>\<nat>" 
       unfolding L_10_5_\<chi>_def by (simp add: nat_omega_simps)
     from assms(2) show "?cf_Cone : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>" 
-      by (intro is_tm_functor.tm_cf_cf_Cone_is_functor_if_ge_Limit)
-        (cs_concl cs_intro: cat_small_cs_intros cat_cs_intros)+
+      by (intro is_functor.tm_cf_cf_Cone_is_functor_if_ge_Limit)
+        (cs_concl cs_intro: cat_cs_intros)+
 
     from assms show "?L_10_5_N : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_Set \<beta>" 
       by (cs_concl cs_intro: cat_Kan_cs_intros)
@@ -2127,7 +2036,7 @@ proof-
       if "f : b \<mapsto>\<^bsub>\<AA>\<^esub> a" for a b f
     proof-
       let ?H_f = \<open>Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(f,-)\<close>
-      from that assms \<beta>_c\<KK>_\<AA>.category_axioms c\<KK>_\<AA>.category_axioms have lhs:
+      from that assms c\<KK>_\<AA>.category_axioms c\<KK>_\<AA>.category_axioms have lhs:
         "?L_10_5_\<chi>'_arrow b \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> ?cf_hom_lhs :
           Hom ?c\<KK>_\<AA> (cf_map (?cf_c\<KK>_\<AA> a)) (cf_map ?\<TT>_c\<KK>) \<mapsto>\<^bsub>cat_Set \<beta>\<^esub>
           ?L_10_5_N\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -2138,11 +2047,10 @@ proof-
                 cat_Kan_cs_simps
                 cat_cs_simps
                 cat_FUNCT_cs_simps
-                cat_Funct_components(1)
+                cat_FUNCT_components(1)
                 cat_op_simps
               cs_intro:
                 cat_Kan_cs_intros
-                cat_small_cs_intros
                 cat_FUNCT_cs_intros
                 cat_cs_intros
                 cat_prod_cs_intros
@@ -2152,7 +2060,7 @@ proof-
         "\<D>\<^sub>\<circ> ((?L_10_5_\<chi>'_arrow b \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> ?cf_hom_lhs)\<lparr>ArrVal\<rparr>) =
           Hom ?c\<KK>_\<AA> (cf_map (?cf_c\<KK>_\<AA> a)) (cf_map ?\<TT>_c\<KK>)"
         by (cs_concl cs_simp: cat_cs_simps)
-      from that assms \<beta>_c\<KK>_\<AA>.category_axioms c\<KK>_\<AA>.category_axioms have rhs:
+      from that assms c\<KK>_\<AA>.category_axioms c\<KK>_\<AA>.category_axioms have rhs:
         "?cf_hom_rhs \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> ?L_10_5_\<chi>'_arrow a :
           Hom ?c\<KK>_\<AA> (cf_map (?cf_c\<KK>_\<AA> a)) (cf_map ?\<TT>_c\<KK>) \<mapsto>\<^bsub>cat_Set \<beta>\<^esub>
           ?L_10_5_N\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -2162,11 +2070,10 @@ proof-
               cs_simp: 
                 cat_Kan_cs_simps 
                 cat_cs_simps
-                cat_Funct_components(1)
+                cat_FUNCT_components(1)
                 cat_op_simps
               cs_intro:
                 cat_Kan_cs_intros
-                cat_small_cs_intros
                 cat_cs_intros
                 cat_prod_cs_intros
                 cat_FUNCT_cs_intros
@@ -2195,14 +2102,13 @@ proof-
             "cf_of_cf_map (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (cf_map (?cf_c\<KK>_\<AA> a)) = ?cf_c\<KK>_\<AA> a"
             "cf_of_cf_map (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (cf_map (?\<TT>_c\<KK>)) = ?\<TT>_c\<KK>"
             by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
-          note F = cat_Funct_is_arrD[OF prems, unfolded cat_cs_simps]
+          note F = cat_FUNCT_is_arrD[OF prems, unfolded cat_cs_simps]
           from that F(1) have F_const_is_cat_cone:
             "?F \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?ntcf_c\<KK>_\<AA> f : b <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?\<TT>_c\<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
             by
               (
                 cs_concl
-                  cs_simp: cat_cs_simps
-                  cs_intro: cat_small_cs_intros is_cat_coneI cat_cs_intros
+                  cs_simp: cat_cs_simps cs_intro: is_cat_coneI cat_cs_intros
               )
           have [cat_cs_simps]:
             "?L_10_5_\<upsilon> (ntcf_arrow (?F \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?ntcf_c\<KK>_\<AA> f)) b =
@@ -2214,10 +2120,7 @@ proof-
               by
                 (
                   cs_concl cs_intro:
-                    cat_small_cs_intros 
-                    cat_Kan_cs_intros 
-                    cat_cs_intros 
-                    is_cat_coneI
+                    cat_Kan_cs_intros cat_cs_intros is_cat_coneI
                 )
             then have dom_\<upsilon>: 
               "\<D>\<^sub>\<circ> (?L_10_5_\<upsilon> (ntcf_arrow (?F \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?ntcf_c\<KK>_\<AA> f)) b\<lparr>NTMap\<rparr>) = 
@@ -2300,7 +2203,6 @@ proof-
                               cat_comma_cs_intros
                               cat_op_intros 
                             cs_simp: cat_FUNCT_cs_simps
-                            cs_intro: cat_small_cs_intros
                         )
                   qed (use arr_Set_\<upsilon>_Ffbb' arr_Set_Y\<upsilon> in auto)
                 qed (use \<upsilon>_Ffbb' Y\<upsilon> in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
@@ -2325,7 +2227,7 @@ proof-
           from
             assms(2-) prems F(1) that
             \<TT>.HomCod.cat_ntcf_Hom_snd_is_ntcf[OF that] (*speedup*)
-            \<beta>_c\<KK>_\<AA>.category_axioms (*speedup*)
+            c\<KK>_\<AA>.category_axioms (*speedup*)
           show 
             "(?L_10_5_\<chi>'_arrow b \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> ?cf_hom_lhs)\<lparr>ArrVal\<rparr>\<lparr>F\<rparr> =
               (?cf_hom_rhs \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> ?L_10_5_\<chi>'_arrow a)\<lparr>ArrVal\<rparr>\<lparr>F\<rparr>"
@@ -2336,10 +2238,9 @@ proof-
                   cat_cs_simps 
                   cat_Kan_cs_simps
                   cat_FUNCT_cs_simps 
-                  cat_Funct_components(1) 
+                  cat_FUNCT_components(1) 
                   cat_op_simps 
                 cs_intro: 
-                  cat_small_cs_intros 
                   is_cat_coneI 
                   cat_Kan_cs_intros
                   cat_cs_intros 
@@ -2364,11 +2265,10 @@ proof-
             cs_simp:
               cat_cs_simps
               cat_Kan_cs_simps
-              cat_Funct_components(1)
+              cat_FUNCT_components(1)
               cat_FUNCT_cs_simps
               cat_op_simps
             cs_intro: 
-              cat_small_cs_intros
               cat_Kan_cs_intros
               cat_cs_intros
               cat_FUNCT_cs_intros
@@ -2395,8 +2295,8 @@ lemma (in is_cat_pw_rKe) cat_pw_rKe_ex_cat_limit:
     The size conditions for the functors \<open>\<KK>\<close> and \<open>\<TT>\<close> are related to the
     choice of the definition of the limit in this work (by definition,
     all limits are small).\<close>
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   obtains UA 
     where "UA : \<GG>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -2421,7 +2321,7 @@ proof-
   let ?ua_NTDGDom = \<open>op_cat (?FUNCT \<CC>)\<close>
   let ?ua_NTDom = \<open>\<lambda>a. ?H_FUNCT \<CC> (?H_\<AA>\<GG> a)\<close>
   let ?ua_NTCod = \<open>\<lambda>a. ?H_FUNCT \<BB> (?H_\<AA>\<TT> a) \<circ>\<^sub>C\<^sub>F op_cf ?SET_\<KK>\<close>
-  let ?c\<KK>_\<AA> = \<open>cat_Funct \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
+  let ?c\<KK>_\<AA> = \<open>cat_FUNCT \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?ua = 
     \<open>
       \<lambda>a. ntcf_ua_fo
@@ -2436,7 +2336,7 @@ proof-
   let ?\<TT>_c\<KK> = \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
   let ?cf_c\<KK>_\<AA> = \<open>cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?\<GG>c = \<open>\<GG>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<close>
-  let ?\<Delta> = \<open>\<Delta>\<^sub>C \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
+  let ?\<Delta> = \<open>\<Delta>\<^sub>C\<^sub>F \<alpha> (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA>\<close>
   let ?ntcf_ua_fo = 
     \<open>
       \<lambda>a. ntcf_ua_fo
@@ -2456,38 +2356,28 @@ proof-
         (cf_map (?H_\<CC> c))
     \<close>
 
-  interpret \<KK>: is_tm_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
 
-  from AG.vempty_is_zet assms(3) interpret c\<KK>: tiny_category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
+  from AG.vempty_is_zet assms(3) interpret c\<KK>: category \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
-  from \<alpha>\<beta> assms(3) interpret c\<KK>_\<AA>: category \<alpha> ?c\<KK>_\<AA>
+  from \<alpha>\<beta> assms(3) interpret c\<KK>_\<AA>: category \<beta> ?c\<KK>_\<AA>
     by
       (
         cs_concl cs_intro:
           cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
-  interpret \<beta>_c\<KK>_\<AA>: category \<beta> ?c\<KK>_\<AA>
-    by (rule c\<KK>_\<AA>.cat_category_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros \<alpha>\<beta>)+
-  from \<alpha>\<beta> assms(3) interpret \<Delta>: is_functor \<alpha> \<AA> ?c\<KK>_\<AA> ?\<Delta>
-    by
-      (
-        cs_concl cs_intro: 
-          cat_small_cs_intros cat_cs_intros cat_op_intros
-      )+
-  from \<Delta>.is_functor_axioms \<alpha>\<beta> interpret \<beta>\<Delta>: 
-    is_functor \<beta> \<AA> \<open>?c\<KK>_\<AA>\<close> \<open>?\<Delta>\<close>
-    by (cs_intro_step is_functor.cf_is_functor_if_ge_Limit)
-      (cs_concl cs_intro: cat_cs_intros)+
+  from \<alpha>\<beta> assms(3) interpret \<Delta>: is_functor \<beta> \<AA> ?c\<KK>_\<AA> ?\<Delta>
+    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
   from AG.vempty_is_zet assms(3) interpret \<Pi>c: 
-    is_tm_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
+    is_functor \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by
       (
         cs_concl
           cs_simp: cat_comma_cs_simps 
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_comma_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros
       )
+
   interpret \<beta>\<Pi>c: is_tiny_functor \<beta> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<BB> \<open>c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close>
     by (rule \<Pi>c.cf_is_tiny_functor_if_ge_Limit[OF \<beta> \<alpha>\<beta>])
   
@@ -2612,7 +2502,6 @@ proof-
           (
             cs_concl
               cs_intro:
-                cat_small_cs_intros
                 cat_cs_intros
                 cat_prod_cs_intros
                 cat_FUNCT_cs_intros 
@@ -3155,7 +3044,6 @@ proof-
                 cs_concl
                   cs_simp: cat_cs_simps cat_FUNCT_cs_simps
                   cs_intro: 
-                    cat_small_cs_intros
                     cat_cs_intros
                     cat_FUNCT_cs_intros
                     cat_prod_cs_intros
@@ -3187,7 +3075,6 @@ proof-
                 cs_concl
                   cs_simp: cat_cs_simps cat_FUNCT_cs_simps
                   cs_intro:
-                    cat_small_cs_intros 
                     cat_cs_intros 
                     cat_FUNCT_cs_intros 
                     cat_prod_cs_intros 
@@ -3288,30 +3175,30 @@ proof-
                       )
                   then have dom_rhs_Set: "\<D>\<^sub>\<circ> (?rhs_Set\<lparr>ArrVal\<rparr>) = Hom \<CC> c ?\<KK>b'" 
                     by (cs_concl cs_simp: cat_cs_simps)
-                show ?thesis
-                proof(rule arr_Set_eqI)
-                  from lhs_Set_is_arr show arr_Set_lhs_Set: "arr_Set \<alpha> ?lhs_Set" 
-                    by (auto dest: cat_Set_is_arrD(1))
-                  from rhs_Set_is_arr show arr_Set_rhs_Set: "arr_Set \<alpha> ?rhs_Set"
-                    by (auto dest: cat_Set_is_arrD(1))
-                  show "?lhs_Set\<lparr>ArrVal\<rparr> = ?rhs_Set\<lparr>ArrVal\<rparr>"
-                  proof(rule vsv_eqI, unfold dom_lhs_Set dom_rhs_Set in_Hom_iff)
-                    fix h assume "h : c \<mapsto>\<^bsub>\<CC>\<^esub> ?\<KK>b'"
-                    with \<HH>(1) f that assms Ran.HomCod.category_axioms show 
-                      "?lhs_Set\<lparr>ArrVal\<rparr>\<lparr>h\<rparr> = ?rhs_Set\<lparr>ArrVal\<rparr>\<lparr>h\<rparr>"
-                      by (*exceptionally slow*) 
-                        (
-                          cs_concl 
-                            cs_simp: cat_cs_simps cat_op_simps 
-                            cs_intro: 
-                              cat_cs_intros cat_prod_cs_intros cat_op_intros
-                        )
-                  qed (use arr_Set_lhs_Set arr_Set_rhs_Set in auto)
-                qed
-                  (
-                    use lhs_Set_is_arr rhs_Set_is_arr in
-                      \<open>cs_concl cs_simp: cat_cs_simps\<close>
-                  )+
+                  show ?thesis
+                  proof(rule arr_Set_eqI)
+                    from lhs_Set_is_arr show arr_Set_lhs_Set: "arr_Set \<alpha> ?lhs_Set" 
+                      by (auto dest: cat_Set_is_arrD(1))
+                    from rhs_Set_is_arr show arr_Set_rhs_Set: "arr_Set \<alpha> ?rhs_Set"
+                      by (auto dest: cat_Set_is_arrD(1))
+                    show "?lhs_Set\<lparr>ArrVal\<rparr> = ?rhs_Set\<lparr>ArrVal\<rparr>"
+                    proof(rule vsv_eqI, unfold dom_lhs_Set dom_rhs_Set in_Hom_iff)
+                      fix h assume "h : c \<mapsto>\<^bsub>\<CC>\<^esub> ?\<KK>b'"
+                      with \<HH>(1) f that assms Ran.HomCod.category_axioms show 
+                        "?lhs_Set\<lparr>ArrVal\<rparr>\<lparr>h\<rparr> = ?rhs_Set\<lparr>ArrVal\<rparr>\<lparr>h\<rparr>"
+                        by (*exceptionally slow*) 
+                          (
+                            cs_concl 
+                              cs_simp: cat_cs_simps cat_op_simps 
+                              cs_intro: 
+                                cat_cs_intros cat_prod_cs_intros cat_op_intros
+                          )
+                    qed (use arr_Set_lhs_Set arr_Set_rhs_Set in auto)
+                  qed
+                    (
+                      use lhs_Set_is_arr rhs_Set_is_arr in
+                        \<open>cs_concl cs_simp: cat_cs_simps\<close>
+                    )+
 
               qed
 
@@ -3403,12 +3290,12 @@ proof-
   let ?\<phi>_\<GG>c_CId = \<open>\<phi>\<lparr>NTMap\<rparr>\<lparr>?\<GG>c\<rparr>\<lparr>ArrVal\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>?\<GG>c\<rparr>\<rparr>\<close>
   let ?ntcf_\<phi>_\<GG>c_CId = \<open>ntcf_of_ntcf_arrow (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> ?\<phi>_\<GG>c_CId\<close>
 
-  from AG.vempty_is_zet assms(3) have \<Delta>: "?\<Delta> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> ?c\<KK>_\<AA>"
+  from AG.vempty_is_zet assms(3) have \<Delta>: "?\<Delta> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> ?c\<KK>_\<AA>"
     by
       (
         cs_concl
           cs_simp: cat_comma_cs_simps 
-          cs_intro: cat_small_cs_intros cat_cs_intros cat_comma_cs_intros
+          cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms(3) have \<GG>c: "?\<GG>c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     by (cs_concl cs_intro: cat_cs_intros)
@@ -3416,8 +3303,8 @@ proof-
     by
       (
         cs_concl
-          cs_simp: cat_Funct_components(1) 
-          cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros
+          cs_simp: cat_FUNCT_components(1) 
+          cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
 
   from
@@ -3437,36 +3324,34 @@ proof-
             cat_Kan_cs_simps
             cat_comma_cs_simps 
             cat_op_simps 
-            cat_Funct_components(1) 
+            cat_FUNCT_components(1) 
           cs_intro: 
-            cat_small_cs_intros
             cat_Kan_cs_intros
             cat_comma_cs_intros 
             cat_cs_intros 
             cat_FUNCT_cs_intros 
             cat_op_intros 
-            category.cat_category_if_ge_Limit[where \<alpha>=\<alpha> and \<beta>=\<beta>]
-            is_functor.cf_is_functor_if_ge_Limit[where \<alpha>=\<alpha> and \<beta>=\<beta>]
       )
 
   with assms(3) have \<phi>_\<GG>c_CId: 
     "?\<phi>_\<GG>c_CId : cf_map (?cf_c\<KK>_\<AA> ?\<GG>c) \<mapsto>\<^bsub>?c\<KK>_\<AA>\<^esub> cf_map ?\<TT>_c\<KK>"
     by (cs_concl cs_intro: cat_cs_intros)
   have ntcf_arrow_\<phi>_\<GG>c_CId: "ntcf_arrow ?ntcf_\<phi>_\<GG>c_CId = ?\<phi>_\<GG>c_CId"
-    by (rule cat_Funct_is_arrD(2)[OF \<phi>_\<GG>c_CId, symmetric])
+    by (rule cat_FUNCT_is_arrD(2)[OF \<phi>_\<GG>c_CId, symmetric])
+
   have ua: "universal_arrow_fo ?\<Delta> (cf_map (?\<TT>_c\<KK>)) ?\<GG>c ?\<phi>_\<GG>c_CId"
     by 
       (
-        rule is_functor.cf_universal_arrow_fo_if_is_iso_ntcf_if_ge_Limit[
-          OF \<Delta> \<beta> \<alpha>\<beta> \<GG>c \<TT>_c\<KK> \<phi>[unfolded cf_Cone_def cat_cs_simps]
+        rule is_functor.cf_universal_arrow_fo_if_is_iso_ntcf[
+          OF \<Delta> \<GG>c \<TT>_c\<KK> \<phi>[unfolded cf_Cone_def cat_cs_simps]
           ]
       )
   moreover have ntcf_\<phi>_\<GG>c_CId: 
     "?ntcf_\<phi>_\<GG>c_CId : ?\<GG>c <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?\<TT>_c\<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   proof(intro is_cat_coneI)
-    from cat_Funct_is_arrD(1)[OF \<phi>_\<GG>c_CId] assms(3) AG.vempty_is_zet show 
+    from cat_FUNCT_is_arrD(1)[OF \<phi>_\<GG>c_CId] assms(3) AG.vempty_is_zet show 
       "ntcf_of_ntcf_arrow (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> ?\<phi>_\<GG>c_CId :
-        ?cf_c\<KK>_\<AA> ?\<GG>c \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m ?\<TT>_c\<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+        ?cf_c\<KK>_\<AA> ?\<GG>c \<mapsto>\<^sub>C\<^sub>F ?\<TT>_c\<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by
         (
           cs_prems
@@ -3475,12 +3360,8 @@ proof-
         )
   qed (rule \<GG>c)
   ultimately have "?ntcf_\<phi>_\<GG>c_CId : ?\<GG>c <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m ?\<TT>_c\<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-    by 
-      (
-        intro is_cat_limitI[
-          where u=\<open>?ntcf_\<phi>_\<GG>c_CId\<close>, unfolded ntcf_arrow_\<phi>_\<GG>c_CId
-          ]
-      )
+    by (intro is_cat_cone.cat_cone_is_cat_limit) 
+      (simp_all add: ntcf_arrow_\<phi>_\<GG>c_CId)
   then show ?thesis using that by auto
 
 qed
@@ -3530,9 +3411,7 @@ end
 subsubsection\<open>The limit for the pointwise Kan extension is a limit\<close>
 
 lemma (in is_cat_pw_rKe) cat_pw_rKe_the_pw_cat_rKe_limit_is_limit:
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
-    and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG> c\<lparr>UArr\<rparr> :
     the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG> c\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> :
     c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -3546,13 +3425,12 @@ proof-
 qed
 
 lemma (in is_cat_pw_rKe) cat_pw_rKe_the_ntcf_rKe_is_cat_rKe: 
-  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   shows "the_ntcf_rKe \<alpha> \<TT> \<KK> (the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG>) :
     the_cf_rKe \<alpha> \<TT> \<KK> (the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG>) \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> :
     \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>"
 proof-
-  interpret \<TT>: is_tm_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
   show "the_ntcf_rKe \<alpha> \<TT> \<KK> (the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG>) :
     the_cf_rKe \<alpha> \<TT> \<KK> (the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG>) \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> :
     \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>"

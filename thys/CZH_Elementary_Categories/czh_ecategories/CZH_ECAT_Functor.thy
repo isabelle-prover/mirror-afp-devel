@@ -1342,8 +1342,9 @@ lemma cf_const_is_functor'[cat_cs_intros]:
     and "a \<in>\<^sub>\<circ> \<DD>\<lparr>Obj\<rparr>" 
     and "\<AA> = \<CC>"
     and "\<BB> = \<DD>"
-  shows "cf_const \<CC> \<DD> a : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-  using assms(1-3) unfolding assms(4,5) by (rule cf_const_is_functor)
+    and "f = (\<DD>\<lparr>CId\<rparr>\<lparr>a\<rparr>)"
+  shows "dghm_const \<CC> \<DD> a f : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+  using assms(1-3) unfolding assms(4-6) by (rule cf_const_is_functor)
 
 
 

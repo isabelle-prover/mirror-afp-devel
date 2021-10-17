@@ -14,13 +14,15 @@ subsection\<open>Background\<close>
 
 text\<open>
 The application example presented in this section is based on 
-Exercise 6.1.ii in \cite{riehl_category_2016}.
+Exercise 6.1.ii in \cite{riehl_category_2016}. The primary purpose
+of this section is the instantiation of the locales associated
+with the pointwise Kan extensions.
 \<close>
 
 (*TODO: is the explicit elimination rule necessary?*)
 lemma cat_ordinal_2_is_arrE:
   assumes "f : a \<mapsto>\<^bsub>cat_ordinal (2\<^sub>\<nat>)\<^esub> b"
-  obtains "f = [0, 0]\<^sub>\<circ>" and " a = 0" and "b = 0" 
+  obtains "f = [0, 0]\<^sub>\<circ>" and "a = 0" and "b = 0" 
     | "f = [0, 1\<^sub>\<nat>]\<^sub>\<circ>" and "a = 0" and "b = 1\<^sub>\<nat>"
     | "f = [1\<^sub>\<nat>, 1\<^sub>\<nat>]\<^sub>\<circ>" and "a = 1\<^sub>\<nat>" and "b = 1\<^sub>\<nat>"
   using cat_ordinal_is_arrD[OF assms] unfolding two by auto
@@ -1783,19 +1785,20 @@ proof-
                   ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F 
                   (RK_\<sigma>23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>) \<epsilon>' \<GG>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23)
                 )\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
-                by (cases; use nothing in \<open>simp_all only:\<close>)
+                by (cases; use nothing in \<open>simp_all only:\<close>) 
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp: 
                         cat_Kan_cs_simps 
-                        cat_ordinal_cs_simps 
-                        cat_cs_simps
-                        cat_op_simps
+                        cat_ordinal_cs_simps
+                        cat_cs_simps 
+                        cat_op_simps 
+                        RK_\<sigma>23_NTMap_app_0 
                         cat_Set_components(1)
-                      cs_intro:
-                        cat_Kan_cs_intros
-                        cat_cs_intros
-                        cat_prod_cs_intros
+                      cs_intro: 
+                        cat_Kan_cs_intros 
+                        cat_cs_intros 
+                        cat_prod_cs_intros 
                         \<TT>.HomCod.cat_Hom_in_Vset
                   )+
             qed (cs_concl cs_simp: cs_intro: cat_cs_intros V_cs_intros)+
@@ -1893,7 +1896,7 @@ proof-
             "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> \<GG>'\<lparr>ArrMap\<rparr>\<lparr>1\<^sub>\<nat>, 2\<^sub>\<nat>\<rparr>\<^sub>\<bullet> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>"
             by (*slow*)
               (
-                cs_prems 1
+                cs_prems
                   cs_simp:
                     cat_cs_simps
                     cat_Kan_cs_simps

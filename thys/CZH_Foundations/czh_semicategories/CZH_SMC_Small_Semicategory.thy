@@ -125,9 +125,9 @@ sublocale tiny_semicategory \<subseteq> semicategory
         intro: smc_cs_intros smc_cs_simps 
     )
 
-lemmas (in tiny_semicategory) tiny_dg_semicategory = semicategory_axioms
+lemmas (in tiny_semicategory) tiny_smc_semicategory = semicategory_axioms
 
-lemmas [smc_small_cs_intros] = tiny_semicategory.tiny_dg_semicategory
+lemmas [smc_small_cs_intros] = tiny_semicategory.tiny_smc_semicategory
 
 
 text\<open>Size.\<close>

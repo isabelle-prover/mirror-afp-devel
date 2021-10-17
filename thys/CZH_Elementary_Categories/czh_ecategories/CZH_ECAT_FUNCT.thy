@@ -747,23 +747,23 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
 
-definition cf_diagonal :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Delta>\<^sub>C\<close>) 
-  where "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC> = 
+definition cf_diagonal :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Delta>\<^sub>C\<^sub>F\<close>)
+  where "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> =
     [
       (\<lambda>a\<in>\<^sub>\<circ>\<CC>\<lparr>Obj\<rparr>. cf_map (cf_const \<JJ> \<CC> a)),
       (\<lambda>f\<in>\<^sub>\<circ>\<CC>\<lparr>Arr\<rparr>. ntcf_arrow (ntcf_const \<JJ> \<CC> f)), 
       \<CC>,
-      cat_Funct \<alpha> \<JJ> \<CC>
+      cat_FUNCT \<alpha> \<JJ> \<CC>
     ]\<^sub>\<circ>"
 
 
 text\<open>Components.\<close>
 
 lemma cf_diagonal_components:
-  shows "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr> = (\<lambda>a\<in>\<^sub>\<circ>\<CC>\<lparr>Obj\<rparr>. cf_map (cf_const \<JJ> \<CC> a))"
-    and "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ArrMap\<rparr> = (\<lambda>f\<in>\<^sub>\<circ>\<CC>\<lparr>Arr\<rparr>. ntcf_arrow (ntcf_const \<JJ> \<CC> f))"
-    and "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>HomDom\<rparr> = \<CC>"
-    and "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>HomCod\<rparr> = cat_Funct \<alpha> \<JJ> \<CC>"
+  shows "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr> = (\<lambda>a\<in>\<^sub>\<circ>\<CC>\<lparr>Obj\<rparr>. cf_map (cf_const \<JJ> \<CC> a))"
+    and "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ArrMap\<rparr> = (\<lambda>f\<in>\<^sub>\<circ>\<CC>\<lparr>Arr\<rparr>. ntcf_arrow (ntcf_const \<JJ> \<CC> f))"
+    and "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>HomDom\<rparr> = \<CC>"
+    and "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>HomCod\<rparr> = cat_FUNCT \<alpha> \<JJ> \<CC>"
   unfolding cf_diagonal_def dghm_field_simps by (simp_all add: nat_omega_simps)
 
 
@@ -775,15 +775,18 @@ mk_VLambda cf_diagonal_components(1)
   |app cf_diagonal_ObjMap_app[cat_cs_simps]|
 
 lemma cf_diagonal_ObjMap_vrange:
-  assumes "tiny_category \<alpha> \<JJ>" and "category \<alpha> \<CC>"
-  shows "\<R>\<^sub>\<circ> (\<Delta>\<^sub>C \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> cat_Funct \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
+  assumes "\<Z> \<beta>"and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "category \<alpha> \<JJ>" and "category \<alpha> \<CC>"
+  shows "\<R>\<^sub>\<circ> (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> cat_FUNCT \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
   unfolding cf_diagonal_components 
 proof(rule vrange_VLambda_vsubset)
-  fix x assume "x \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" 
-  with assms category_cat_Funct[OF assms] show 
-    "cf_map (cf_const \<JJ> \<CC> x) \<in>\<^sub>\<circ> cat_Funct \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
-    unfolding cat_Funct_components(1)
-    by (cs_concl cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros)
+  interpret \<beta>: \<Z> \<beta> by (rule assms(1))
+  interpret category \<alpha> \<JJ> by (rule assms(3))
+  interpret FUNCT: tiny_category \<beta> \<open>(cat_FUNCT \<alpha> \<JJ> \<CC>)\<close>
+    by (rule \<Z>.tiny_category_cat_FUNCT[OF \<Z>_axioms assms(1,2)])
+  fix x assume prems: "x \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  from prems assms show "cf_map (cf_const \<JJ> \<CC> x) \<in>\<^sub>\<circ> cat_FUNCT \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
+    unfolding cat_FUNCT_components(1)
+    by (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
 qed
 
 
@@ -798,8 +801,134 @@ mk_VLambda cf_diagonal_components(2)
 subsubsection\<open>Diagonal functor is a functor\<close>
 
 lemma cf_diagonal_is_functor[cat_cs_intros]:
+  assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "category \<alpha> \<JJ>" and "category \<alpha> \<CC>"
+  shows "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<JJ> \<CC>" (is \<open>?\<Delta> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> ?FUNCT\<close>)
+proof-
+
+  interpret \<beta>: \<Z> \<beta> by (rule assms(1))
+  interpret \<JJ>: category \<alpha> \<JJ> by (rule assms(3))
+  interpret \<CC>: category \<alpha> \<CC> by (rule assms(4))
+  interpret FUNCT: tiny_category \<beta> \<open>(cat_FUNCT \<alpha> \<JJ> \<CC>)\<close>
+    by (rule \<Z>.tiny_category_cat_FUNCT[OF \<JJ>.\<Z>_axioms assms(1,2)])
+
+  show ?thesis
+  proof(intro is_functorI')
+    show "vfsequence ?\<Delta>" 
+      unfolding cf_diagonal_def by (simp add: nat_omega_simps)
+    show "category \<beta> \<CC>" by (rule \<CC>.cat_category_if_ge_Limit[OF assms(1,2)])
+    from assms show "category \<beta> (cat_FUNCT \<alpha> \<JJ> \<CC>)" 
+      by (cs_concl cs_intro: cat_cs_intros)
+    show "vcard ?\<Delta> = 4\<^sub>\<nat>"
+      unfolding cf_diagonal_def by (simp add: nat_omega_simps)
+    show "vsv (?\<Delta>\<lparr>ObjMap\<rparr>)" unfolding cf_diagonal_components by simp
+    from assms show "\<R>\<^sub>\<circ> (?\<Delta>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> ?FUNCT\<lparr>Obj\<rparr>"
+      by (rule cf_diagonal_ObjMap_vrange)
+    show "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : ?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>?FUNCT\<^esub> ?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+      if "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" for f a b
+      using that
+      by 
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps 
+            cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
+        )
+    show "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<rparr> = ?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>?FUNCT\<^esub> ?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+      if "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" for g b c f a
+      using that \<JJ>.category_axioms \<CC>.category_axioms
+      by 
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
+            cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
+        )
+    fix c assume "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+    with \<JJ>.category_axioms \<CC>.category_axioms show 
+      "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = ?FUNCT\<lparr>CId\<rparr>\<lparr>?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
+      by 
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_FUNCT_cs_simps
+            cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
+        )
+  qed (auto simp: cf_diagonal_components cat_smc_FUNCT)
+
+qed
+
+lemma cf_diagonal_is_functor'[cat_cs_intros]:
+  assumes "\<Z> \<beta>" 
+    and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
+    and "category \<alpha> \<JJ>" 
+    and "category \<alpha> \<CC>"
+    and "\<AA>' = \<CC>"
+    and "\<BB>' = cat_FUNCT \<alpha> \<JJ> \<CC>"
+  shows "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> \<BB>'"
+  using assms(1-4) unfolding assms(5-6) by (rule cf_diagonal_is_functor)
+
+
+
+(*TODO: functor codomain substitution*)
+subsection\<open>Diagonal functor for functors with tiny maps\<close>
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+
+text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+
+definition tm_cf_diagonal :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<close>) 
+  where "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC> =
+    [
+      (\<lambda>a\<in>\<^sub>\<circ>\<CC>\<lparr>Obj\<rparr>. cf_map (cf_const \<JJ> \<CC> a)),
+      (\<lambda>f\<in>\<^sub>\<circ>\<CC>\<lparr>Arr\<rparr>. ntcf_arrow (ntcf_const \<JJ> \<CC> f)), 
+      \<CC>,
+      cat_Funct \<alpha> \<JJ> \<CC>
+    ]\<^sub>\<circ>"
+
+
+text\<open>Components.\<close>
+
+lemma tm_cf_diagonal_components:
+  shows "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr> = (\<lambda>a\<in>\<^sub>\<circ>\<CC>\<lparr>Obj\<rparr>. cf_map (cf_const \<JJ> \<CC> a))"
+    and "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC>\<lparr>ArrMap\<rparr> = (\<lambda>f\<in>\<^sub>\<circ>\<CC>\<lparr>Arr\<rparr>. ntcf_arrow (ntcf_const \<JJ> \<CC> f))"
+    and "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC>\<lparr>HomDom\<rparr> = \<CC>"
+    and "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC>\<lparr>HomCod\<rparr> = cat_Funct \<alpha> \<JJ> \<CC>"
+  unfolding tm_cf_diagonal_def dghm_field_simps by (simp_all add: nat_omega_simps)
+
+
+subsubsection\<open>Object map\<close>
+
+mk_VLambda tm_cf_diagonal_components(1)
+  |vsv tm_cf_diagonal_ObjMap_vsv[cat_cs_intros]|
+  |vdomain tm_cf_diagonal_ObjMap_vdomain[cat_cs_simps]|
+  |app tm_cf_diagonal_ObjMap_app[cat_cs_simps]|
+
+lemma tm_cf_diagonal_ObjMap_vrange:
   assumes "tiny_category \<alpha> \<JJ>" and "category \<alpha> \<CC>"
-  shows "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Funct \<alpha> \<JJ> \<CC>" (is \<open>?\<Delta> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> ?Funct\<close>)
+  shows "\<R>\<^sub>\<circ> (\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> cat_Funct \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
+  unfolding tm_cf_diagonal_components 
+proof(rule vrange_VLambda_vsubset)
+  fix x assume "x \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" 
+  with assms category_cat_Funct[OF assms] show 
+    "cf_map (cf_const \<JJ> \<CC> x) \<in>\<^sub>\<circ> cat_Funct \<alpha> \<JJ> \<CC>\<lparr>Obj\<rparr>"
+    unfolding cat_Funct_components(1)
+    by (cs_concl cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros)
+qed
+
+
+subsubsection\<open>Arrow map\<close>
+
+mk_VLambda tm_cf_diagonal_components(2)
+  |vsv tm_cf_diagonal_ArrMap_vsv[cat_cs_intros]|
+  |vdomain tm_cf_diagonal_ArrMap_vdomain[cat_cs_simps]|
+  |app tm_cf_diagonal_ArrMap_app[cat_cs_simps]|
+
+
+subsubsection\<open>Diagonal functor for functors with tiny maps is a functor\<close>
+
+lemma tm_cf_diagonal_is_functor[cat_cs_intros]:
+  assumes "tiny_category \<alpha> \<JJ>" and "category \<alpha> \<CC>"
+  shows "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Funct \<alpha> \<JJ> \<CC>" 
+    (is \<open>?\<Delta> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> ?Funct\<close>)
 proof-
 
   interpret \<JJ>: tiny_category \<alpha> \<JJ> by (rule assms(1))
@@ -808,16 +937,16 @@ proof-
   show ?thesis
   proof(intro is_functorI')
     show "vfsequence ?\<Delta>"
-      unfolding cf_diagonal_def by (simp add: nat_omega_simps)
+      unfolding tm_cf_diagonal_def by (simp add: nat_omega_simps)
     from assms(2) show "category \<alpha> \<CC>" 
       by (cs_concl cs_intro: cat_cs_intros)
     from assms show "category \<alpha> ?Funct" 
       by (cs_concl cs_intro: cat_cs_intros category_cat_Funct)
     show "vcard ?\<Delta> = 4\<^sub>\<nat>"
-      unfolding cf_diagonal_def by (simp add: nat_omega_simps)
-    show "vsv (?\<Delta>\<lparr>ObjMap\<rparr>)" unfolding cf_diagonal_components by simp
+      unfolding tm_cf_diagonal_def by (simp add: nat_omega_simps)
+    show "vsv (?\<Delta>\<lparr>ObjMap\<rparr>)" unfolding tm_cf_diagonal_components by simp
     from assms show "\<R>\<^sub>\<circ> (?\<Delta>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> ?Funct\<lparr>Obj\<rparr>"
-      by (rule cf_diagonal_ObjMap_vrange)
+      by (rule tm_cf_diagonal_ObjMap_vrange)
     show "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : ?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>?Funct\<^esub> ?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       if "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" for f a b
       using that
@@ -845,18 +974,18 @@ proof-
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
-  qed (auto simp: cf_diagonal_components cat_smc_FUNCT)
+  qed (auto simp: tm_cf_diagonal_components cat_smc_FUNCT)
 
 qed
 
-lemma cf_diagonal_is_functor'[cat_cs_intros]:
+lemma tm_cf_diagonal_is_functor'[cat_cs_intros]:
   assumes "tiny_category \<alpha> \<JJ>" 
     and "category \<alpha> \<CC>"
     and "\<alpha>' = \<alpha>"
     and "\<AA> = \<CC>"
     and "\<BB> = cat_Funct \<alpha> \<JJ> \<CC>"
-  shows "\<Delta>\<^sub>C \<alpha> \<JJ> \<CC> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<BB>"
-  using assms(1-2) unfolding assms(3-5) by (rule cf_diagonal_is_functor)
+  shows "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<BB>"
+  using assms(1-2) unfolding assms(3-5) by (rule tm_cf_diagonal_is_functor)
 
 
 

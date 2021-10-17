@@ -123,9 +123,9 @@ sublocale tiny_category \<subseteq> category
         vfsequence_axioms tiny_cat_semicategory cat_cs_intros cat_cs_simps
     )
 
-lemmas (in tiny_category) tiny_dg_category = category_axioms
+lemmas (in tiny_category) tiny_cat_category = category_axioms
 
-lemmas [cat_small_cs_intros] = tiny_category.tiny_dg_category
+lemmas [cat_small_cs_intros] = tiny_category.tiny_cat_category
 
 
 text\<open>Size.\<close>

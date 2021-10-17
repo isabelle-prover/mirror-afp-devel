@@ -13,10 +13,9 @@ begin
 subsection\<open>Background\<close>
 
 text\<open>
-The methodology for the exposition 
-of \<open>GRPH\<close> as a semicategory is analogous to the 
-one used in the previous chapter
-for the exposition of \<open>GRPH\<close> as a digraph.
+The methodology for the exposition of \<open>GRPH\<close> as a semicategory is analogous 
+to the one used in the previous chapter for the exposition of \<open>GRPH\<close> 
+as a digraph.
 \<close>
 
 named_theorems smc_GRPH_cs_simps
