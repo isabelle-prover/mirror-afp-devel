@@ -115,9 +115,8 @@ ML \<open>
 
       fun monadify_conv_aux ctxt ct = case Thm.term_of ct of
         @{mpat "EVAL$_"} => let
-          val ss = put_simpset HOL_basic_ss ctxt
-          val ss = (ss addsimps @{thms monadify_simps SP_def})
-          val tac = (simp_tac ss 1)
+          fun tac goal_ctxt =
+            simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms monadify_simps SP_def}) 1
         in (*Refine_Util.monitor_conv "monadify"*) (
           Refine_Util.f_tac_conv ctxt (dest_comb #> #2 #> monadify) tac) ct
         end
@@ -166,7 +165,7 @@ ML \<open>
     in  
     fun mark_params_conv ctxt = Refine_Util.f_tac_conv ctxt 
       (mark_params) 
-      (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms PASS_def}) 1)
+      (fn goal_ctxt => simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms PASS_def}) 1)
 
     end  
 
@@ -200,7 +199,8 @@ ML \<open>
 
       fun dp_conv ctxt = Refine_Util.f_tac_conv ctxt 
         (#1 o dp ctxt) 
-        (ALLGOALS (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms RET_COPY_PASS_eq}))) 
+        (fn goal_ctxt =>
+          ALLGOALS (simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms RET_COPY_PASS_eq})))
 
 
     in

@@ -163,14 +163,14 @@ ML \<open>
       val prereq = [Autoref_Fix_Rel.thm_pairsD_init]
     )
 
-    fun REMOVE_INTERNAL_conv ctxt = 
+    val REMOVE_INTERNAL_conv = 
       Conv.top_sweep_conv (
-        fn _ => fn ct => (case Thm.term_of ct of
+        fn ctxt => fn ct => (case Thm.term_of ct of
           @{mpat "REMOVE_INTERNAL _"} => 
             Conv.rewr_conv @{thm REMOVE_INTERNAL_def}
             then_conv Autoref_Tagging.untag_conv ctxt
           | _ => Conv.no_conv) ct
-      ) ctxt
+      )
 
     fun REMOVE_INTERNAL_tac ctxt = CONVERSION (REMOVE_INTERNAL_conv ctxt)
 

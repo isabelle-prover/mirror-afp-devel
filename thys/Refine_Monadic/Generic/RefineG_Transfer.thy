@@ -78,7 +78,7 @@ structure RefineG_Transfer = struct
 
   fun post_subst_tac ctxt = let
     val s_thms = post_subst.get ctxt
-    val dis_tac = (ALLGOALS (Tagged_Solver.solve_tac ctxt))
+    fun dis_tac goal_ctxt = ALLGOALS (Tagged_Solver.solve_tac goal_ctxt)
     val cnv = Cond_Rewr_Conv.cond_rewrs_conv dis_tac s_thms
     val ts_conv = Conv.top_sweep_conv cnv ctxt
     val ss = get_post_ss ctxt

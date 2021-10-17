@@ -20,17 +20,18 @@ end
 
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal
-     (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN TypeCheck.typecheck_tac ctxt)
+    (fn {context = ctxt', ...} =>
+      rewrite_goal_tac ctxt' thms 1
+      THEN TypeCheck.typecheck_tac ctxt')
 
 fun prove_sats goal thms thm_auto ctxt =
-  let val ctxt' = ctxt |> Simplifier.add_simp (thm_auto |> hd)
-  in
   Goal.prove ctxt [] [] goal
-     (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN PARALLEL_ALLGOALS (asm_simp_tac ctxt')
-              THEN TypeCheck.typecheck_tac ctxt')
-  end
+    (fn {context = ctxt', ...} =>
+      let val ctxt'' = ctxt' |> Simplifier.add_simp (thm_auto |> hd) in
+        rewrite_goal_tac ctxt'' thms 1
+        THEN PARALLEL_ALLGOALS (asm_simp_tac ctxt'')
+        THEN TypeCheck.typecheck_tac ctxt''
+      end)
 
 fun is_mem \<^Const_>\<open>mem for _ _\<close> = true
   | is_mem _ = false

@@ -120,10 +120,11 @@ end
 
 fun derive_is_c_dots_lemma ty const_name defs base_name thy  = let
       val is_c_dots = HOLogic.mk_Trueprop (mk_is_c_dots ty const_name)
-      val thm = Goal.prove_future (Proof_Context.init_global thy) [] [] is_c_dots (fn {prems = _, context = ctxt} => 
-        unfold_tac ctxt (defs @ @{thms ID_Some option.simps})
-        THEN blast_tac ctxt 1
-      )
+      val thm = Goal.prove_future (Proof_Context.init_global thy) [] [] is_c_dots
+        (fn {prems = _, context = ctxt} => 
+          unfold_tac ctxt (defs @ @{thms ID_Some option.simps})
+          THEN blast_tac ctxt 1
+        )
     in register_is_c_dots_lemma const_name base_name thm thy
 end
 

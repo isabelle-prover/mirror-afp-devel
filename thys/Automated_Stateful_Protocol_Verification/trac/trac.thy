@@ -279,7 +279,7 @@ structure ml_isar_wrapper = struct
 
    fun prove_simple name stmt tactic lthy = 
      let
-       val thm = Goal.prove lthy [] [] stmt (fn {context, ...} => tactic context) 
+       val thm = Goal.prove lthy [] [] stmt (tactic o #context)
                  |> Goal.norm_result lthy
                  |> Goal.check_finished lthy
      in 
