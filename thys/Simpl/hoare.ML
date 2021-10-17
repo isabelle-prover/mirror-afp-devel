@@ -609,62 +609,62 @@ val get_data = Hoare_Data.get o Context.Proof;
 
 (* access 'params' *)
 
-fun mk_free ctxt name =
+fun mk_free context name =
   let
-    val ctxt' = Context.proof_of ctxt;
-    val n' = Variable.intern_fixed ctxt' name |> perhaps Long_Name.dest_hidden;
-    val T' = Proof_Context.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
+    val ctxt = Context.proof_of context;
+    val n' = Variable.intern_fixed ctxt name |> perhaps Long_Name.dest_hidden;
+    val T' = Proof_Context.infer_type ctxt (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
 
-fun morph_name ctxt phi name =
-  (case Morphism.term phi (mk_free ctxt name) of
+fun morph_name context phi name =
+  (case Morphism.term phi (mk_free context name) of
      Free (x,_) => x
    | _ => name);
 
 
 datatype 'a bodykind = BodyTyp of 'a | BodyTerm of 'a
 
-fun set_default_state_kind sk ctxt =
+fun set_default_state_kind sk context =
   let
     val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = Hoare_Data.get ctxt;
+            = Hoare_Data.get context;
       val data = make_hoare_data proc_info active_procs sk
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 val get_default_state_kind = #default_state_kind o get_data;
 
-fun add_active_procs phi ps ctxt =
+fun add_active_procs phi ps context =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = Hoare_Data.get ctxt;
+            = Hoare_Data.get context;
       val data = make_hoare_data proc_info
-                   ((map (morph_name ctxt phi) ps)::active_procs)
+                   ((map (morph_name context phi) ps)::active_procs)
                    default_state_kind
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 
-fun add_hoare_tacs tacs ctxt =
+fun add_hoare_tacs tacs context =
   let
       val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = Hoare_Data.get ctxt;
+            = Hoare_Data.get context;
       val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
                    wp_tacs (hoare_tacs@tacs) vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
-fun map_vcg_simps f ctxt =
+fun map_vcg_simps f context =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = Hoare_Data.get ctxt;
+            = Hoare_Data.get context;
       val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
                    wp_tacs hoare_tacs (f vcg_simps);
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 fun thy_attrib f = Thm.declaration_attribute (fn thm => map_vcg_simps (f thm));
 
@@ -690,61 +690,61 @@ fun map_proc_info_state_kind f {params,recursive,state_kind} =
 
 
 
-fun add_params phi name frmls ctxt =
+fun add_params phi name frmls context =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = Hoare_Data.get ctxt;
-      val params = map (apsnd (morph_name ctxt phi)) frmls;
+            = Hoare_Data.get context;
+      val params = map (apsnd (morph_name context phi)) frmls;
       val f = map_proc_info_params (K params);
       val default = f empty_proc_info;
-      val proc_info' = Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
+      val proc_info' = Symtab.map_default (morph_name context phi name,default) f proc_info;
       val data = make_hoare_data proc_info' active_procs default_state_kind
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 fun get_params name ctxt =
   Option.map #params (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
 
-fun add_recursive phi name ctxt =
+fun add_recursive phi name context =
   let
      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
           vcg_simps,...}
-          = Hoare_Data.get ctxt;
+          = Hoare_Data.get context;
      val f = map_proc_info_recursive (K true);
      val default = f empty_proc_info;
-     val proc_info'= Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
+     val proc_info'= Symtab.map_default (morph_name context phi name,default) f proc_info;
      val data = make_hoare_data proc_info' active_procs default_state_kind
                   generate_guard wp_tacs hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 fun get_recursive name ctxt =
   Option.map #recursive (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
-fun add_state_kind phi name sk ctxt =
+fun add_state_kind phi name sk context =
   let
      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
           vcg_simps,...}
-          = Hoare_Data.get ctxt;
+          = Hoare_Data.get context;
      val f = map_proc_info_state_kind (K sk);
      val default = f empty_proc_info;
-     val proc_info'= Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
+     val proc_info'= Symtab.map_default (morph_name context phi name,default) f proc_info;
      val data = make_hoare_data proc_info' active_procs default_state_kind
                   generate_guard wp_tacs hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 fun get_state_kind name ctxt =
   Option.map #state_kind (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
-fun install_generate_guard f ctxt =
+fun install_generate_guard f context =
   let
     val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
          vcg_simps,...} =
-         Hoare_Data.get ctxt;
+         Hoare_Data.get context;
     val data = make_hoare_data proc_info active_procs default_state_kind (stamp (), f)
                 wp_tacs hoare_tacs vcg_simps
-  in Hoare_Data.put data ctxt end;
+  in Hoare_Data.put data context end;
 
 fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 
@@ -783,15 +783,14 @@ fun check_procedures_definition procs thy =
     end;
 
 
-fun add_parameter_info phi cname (name,(inpars,outpars,state_kind)) ctxt =
+fun add_parameter_info phi cname (name,(inpars,outpars,state_kind)) context =
     let fun par_deco' T = if T = "" then deco else par_deco (cname name);
         val pars = map (fn (par,T) => (In,suffix (par_deco' T) par)) inpars@
                    map (fn (par,T) => (Out,suffix (par_deco' T) par)) outpars;
-
-        val ctxt_decl = ctxt
-              |> add_params phi name pars
-              |> add_state_kind phi name state_kind
-    in ctxt_decl
+    in
+      context
+      |> add_params phi name pars
+      |> add_state_kind phi name state_kind
     end;
 
 fun mk_loc_exp xs =
@@ -939,13 +938,13 @@ fun procedures_definition locname procs thy =
 
     val (all_callss,cliques,is_recursive,has_body) =
       let
-        val ctxt =
+        val context =
           Context.Theory thy
           |> fold (add_parameter_info  Morphism.identity (unsuffix proc_deco)) name_pars
           |> StateSpace.set_silent true
 
         fun read_body (_, body) =
-          Syntax.read_term (Context.proof_of ctxt) body;
+          Syntax.read_term (Context.proof_of context) body;
 
         val bodies = map read_body name_body;
         fun dcall t =
@@ -1114,8 +1113,8 @@ fun procedures_definition locname procs thy =
         fun add_recursive_info phi name =
             if is_recursive name then (add_recursive phi name) else I;
         fun proc_declaration phi = add_active_procs phi clique;
-        fun recursive_declaration phi ctxt =
-            ctxt |> fold (add_recursive_info phi) clique;
+        fun recursive_declaration phi context =
+            context |> fold (add_recursive_info phi) clique;
 
 
         fun add_impl_locale name thy =
@@ -1436,8 +1435,8 @@ fun mk_split_thms ctxt (vars as _::_)  =
       let val ([prop'], _) = Variable.importT_terms [prop] ctxt  (* FIXME continue context!? *)
       in
         Goal.prove_global thy [] [] prop'
-          (fn {context = ctxt, ...} =>
-            ALLGOALS (simp_tac (put_simpset HOL_basic_ss ctxt addsimps simps)))
+          (fn {context = goal_ctxt, ...} =>
+            ALLGOALS (simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps simps)))
       end;
 
     val split_meta   = prove_simp [@{thm split_paired_all}] split_meta_prop;
@@ -2482,7 +2481,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
       | dest_name (Free (x,_)) = x
       | dest_name t = raise TERM ("dest_name",[t]);
 
-    fun dest_lemAnno ctxt (Const (@{const_name Language.lem},_)$n$c) =
+    fun dest_lemAnno (Const (@{const_name Language.lem},_)$n$c) =
       let val x = Long_Name.base_name (dest_name n);
       in
          (case try (Proof_Context.get_thm ctxt) x of
@@ -2490,9 +2489,9 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
           | SOME spec => (strip_qnt_vars @{const_name All}
                            (HOLogic.dest_Trueprop (Thm.concl_of spec)),spec))
       end
-      | dest_lemAnno _ t = raise TERM ("dest_lemAnno",[t]);
+      | dest_lemAnno t = raise TERM ("dest_lemAnno",[t]);
 
-    val (vars,spec) = dest_lemAnno ctxt (#2 (dest_hoare t));
+    val (vars,spec) = dest_lemAnno (#2 (dest_hoare t));
     val rules = [LemAnnoNoAbrupt mode,LemAnno mode];
     val rules' = (case vars of
                     [] => rules
@@ -2922,7 +2921,7 @@ fun abstract_vars vars s t =
     val dummy = Bound 0;
   in fold_state_prop var app abs other 0 s dummy t end;
 
-fun sort_vars ctxt vars =
+fun sort_vars _ vars =
   let
     val fld_idx = idx (fn s1:string => fn s2 => s1 = s2);
     fun compare (_$_$n$(Const (s1,_)$_),_$_$m$(Const (s2,_)$_)) =
