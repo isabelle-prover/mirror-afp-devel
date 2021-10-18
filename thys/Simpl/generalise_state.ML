@@ -156,7 +156,7 @@ fun eta_expand ctxt ct =
 
 fun split_abs ctxt ct =
   (case Thm.term_of ct of
-     Abs x => (x, Thm.dest_abs ct)
+     Abs x => (x, Thm.dest_abs_global ct)
    | _ => split_abs ctxt (eta_expand ctxt ct))
 
 fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =

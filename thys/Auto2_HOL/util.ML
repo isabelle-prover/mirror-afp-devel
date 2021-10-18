@@ -525,13 +525,12 @@ fun normalize_meta_horn ctxt ct =
 (* Deconstruct a horn clause !!v_i. A_i ==> B into (v_i, (A_i, B)). *)
 fun strip_meta_horn t =
     case t of
-        Const (@{const_name Pure.all}, _) $ Abs (abs as (_, T, _)) =>
+        Const (@{const_name Pure.all}, _) $ (u as Abs _) =>
         let
-          val (x, body) = Term.dest_abs abs
-          val var = Free (x, T)
+          val (v, body) = Term.dest_abs_global u
           val (vars, (assums, concl)) = strip_meta_horn body
         in
-          (var :: vars, (assums, concl))
+          (Free v :: vars, (assums, concl))
         end
       | @{const Pure.imp} $ P $ Q =>
         let

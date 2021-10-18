@@ -197,9 +197,9 @@ and lift_term monad_consts ctxt lift_dict tm = let
 
   fun check_abs tm =
     case tm of
-      Abs (name, typ, body) =>
+      Abs _ =>
         let
-          val (name', body') = Term.dest_abs (name, typ, body)
+          val ((name', typ), body') = Term.dest_abs_global tm
           val (conv, tm') = lift_abs' monad_consts ctxt (name', typ) check_cont lift_dict body'
           fun convT ctxt' = conv ctxt' then_conv wrap_mark_conv
           val tmT = #return monad_consts tm'

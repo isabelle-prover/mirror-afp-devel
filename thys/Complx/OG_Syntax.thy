@@ -310,7 +310,7 @@ print_translation \<open> let
                  (Const (@{const_syntax map}, _) $
                   Abs (_, _, c) $ _) :: ts) =
         let val _ = if syntax_debug then writeln "prg_scheme" else ()
-            fun dest_abs body = snd (Term.dest_abs (i, T, body)) in
+            fun dest_abs body = snd (Term.dest_abs_global (Abs (i, T, body))) in
           Syntax.const @{syntax_const "_PAR"} $
             list_comb (Syntax.const @{syntax_const "_prg_scheme"} $
               j $ Free (i, T) $ k, prgs_tr' dest_abs p c)

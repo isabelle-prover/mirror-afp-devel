@@ -71,8 +71,8 @@ fun do_monadify heap_name scope tm mem_locale_opt def_thms_opt lthy =
         val (head, _) = Logic.dest_equals eqs |> fst |> Transform_Misc.behead tm
 
         (*val _ = if Term.aconv_untyped (head, tm) then () else raise THM("invalid definition", 0, [def])*)
-        val Abs t = Term.lambda_name (Binding.name_of new_bind, head) eqs
-        val (t_name, eqs') = Term.dest_abs t
+        val t = Term.lambda_name (Binding.name_of new_bind, head) eqs
+        val ((t_name, _), eqs') = Term.dest_abs_global t
         val _ = @{assert} (t_name = Binding.name_of new_bind)
 
         (*val eqs' = Term.subst_atomic [(head, Free (Binding.name_of new_bind, fastype_of head))] eqs*)
