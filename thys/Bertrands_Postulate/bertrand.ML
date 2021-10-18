@@ -79,7 +79,6 @@ fun prove_primepow ctxt cache t =
   let
     val (_, n) = HOLogic.dest_number t
     fun inst xs = Drule.infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt o mk_nat) xs)
-    val prove = Goal.prove ctxt [] []
     fun prove_prime' p = the (fst (Pratt.prove_prime cache p ctxt))
   in
     if n <= 0 then
@@ -91,7 +90,7 @@ fun prove_primepow ctxt cache t =
         Primepow (p, k) =>
           let
             val thm = prove_prime' p RS inst [p, k, n] @{thm primepowI}
-            val thm' = prove (Thm.concl_of thm) (fn {context = ctxt, ...} =>
+            val thm' = Goal.prove ctxt [] [] (Thm.concl_of thm) (fn {context = ctxt, ...} =>
               HEADGOAL (resolve_tac ctxt [thm]) THEN ALLGOALS (Simplifier.simp_tac ctxt))
           in
             PrimepowThm (thm' RS @{thm conjunct1}, thm' RS @{thm conjunct2})
@@ -99,7 +98,7 @@ fun prove_primepow ctxt cache t =
       | NotPrimepow (p, q) =>
           let
             val thm = inst [p, q, n] @{thm not_primepowI} OF (map prove_prime' [p, q])
-            val thm' = prove (Thm.concl_of thm) (fn {context = ctxt, ...} =>
+            val thm' = Goal.prove ctxt [] [] (Thm.concl_of thm) (fn {context = ctxt, ...} =>
               HEADGOAL (resolve_tac ctxt [thm]) THEN ALLGOALS (Simplifier.simp_tac ctxt))
           in
             NotPrimepowThm thm'
@@ -125,11 +124,10 @@ val nat_eq_ss =
 fun prove_nat_eq ctxt (t1, t2) =
   let
     val goal = HOLogic.mk_eq (t1, t2) |> HOLogic.mk_Trueprop
-    fun tac {context = ctxt, ...} =
-      HEADGOAL (resolve_tac ctxt @{thms mult_1_left mult_1_right})
-      ORELSE HEADGOAL (Simplifier.simp_tac (put_simpset nat_eq_ss ctxt))
   in
-    Goal.prove ctxt [] [] goal tac
+    Goal.prove ctxt [] [] goal (fn {context = goal_ctxt, ...} =>
+      HEADGOAL (resolve_tac goal_ctxt @{thms mult_1_left mult_1_right})
+      ORELSE HEADGOAL (Simplifier.simp_tac (put_simpset nat_eq_ss goal_ctxt)))
   end
 
 fun prove_psi ctxt n =

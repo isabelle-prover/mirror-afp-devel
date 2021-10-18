@@ -313,7 +313,7 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
          THEN_ALL_NEW
            (REPEAT_ALL_NEW (FIRST' [resolve_tac ctxt @{thms TrueI conjI}, cases_tac ctxt])))
   in
-    Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
+    Goal.prove ctxt' [] [] goals (tac o #context)
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> Old_Datatype_Aux.split_conj_thm
     |> map Old_Datatype_Aux.split_conj_thm
@@ -359,7 +359,7 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
         (DETERM o (resolve_tac ctxt [alpha_induct_thm])
          THEN_ALL_NEW FIRST' [resolve_tac ctxt @{thms TrueI}, cases_tac ctxt])
   in
-    Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
+    Goal.prove ctxt' [] [] goals (tac o #context)
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> Old_Datatype_Aux.split_conj_thm
     |> map (fn th => th RS mp)
@@ -403,7 +403,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
         val goal = mk_distinct_goal ty_trm_assoc raw_distinct_trm
     in
       Goal.prove ctxt [] [] goal
-        (K (distinct_tac ctxt alpha_cases raw_distinct_thms 1))
+        (fn {context = ctxt', ...} => distinct_tac ctxt' alpha_cases raw_distinct_thms 1)
     end
   in
     map (mk_alpha_distinct o Thm.prop_of) raw_distinct_thms
@@ -445,8 +445,9 @@ fun raw_prove_alpha_eq_iff ctxt alpha_result raw_dt_info =
 
     val ((_, thms_imp), ctxt') = Variable.import false alpha_intros ctxt;
     val goals = map mk_alpha_eq_iff_goal thms_imp;
-    val tac = alpha_eq_iff_tac ctxt (raw_distinct_thms @ raw_inject_thms) alpha_intros alpha_cases 1;
-    val thms = map (fn goal => Goal.prove ctxt' [] [] goal (K tac)) goals;
+    fun tac goal_ctxt =
+      alpha_eq_iff_tac goal_ctxt (raw_distinct_thms @ raw_inject_thms) alpha_intros alpha_cases 1;
+    val thms = map (fn goal => Goal.prove ctxt' [] [] goal (tac o #context)) goals;
   in
     Variable.export ctxt' ctxt thms
     |> map mk_simp_rule
@@ -632,8 +633,9 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
     fun prep_goal t = \<^Const>\<open>Trueprop for \<^Const>\<open>equivp \<open>domain_type (fastype_of t)\<close> for t\<close>\<close>
   in
     Goal.prove_common ctxt NONE [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
-    (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt @{thms equivpI} THEN'
-       RANGE [resolve_tac ctxt refl', resolve_tac ctxt symm', resolve_tac ctxt trans']))))
+    (fn {context = ctxt', ...} =>
+      HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt' @{thms equivpI} THEN'
+       RANGE [resolve_tac ctxt' refl', resolve_tac ctxt' symm', resolve_tac ctxt' trans'])))
     |> chop (length alpha_trms)
   end
 
@@ -754,8 +756,9 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
   in
     map (fn constrs =>
     Goal.prove_common ctxt NONE [] [] (map prep_goal constrs)
-      (K (HEADGOAL
-        (Goal.conjunction_tac THEN_ALL_NEW raw_constr_rsp_tac ctxt alpha_intros simps)))) constrs
+      (fn {context = ctxt', ...} =>
+        HEADGOAL
+          (Goal.conjunction_tac THEN_ALL_NEW raw_constr_rsp_tac ctxt' alpha_intros simps))) constrs
   end
 
 

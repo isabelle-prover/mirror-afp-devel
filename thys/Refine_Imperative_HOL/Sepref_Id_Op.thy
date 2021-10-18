@@ -197,8 +197,8 @@ ML \<open>
 
     fun protect_conv ctxt = Refine_Util.f_tac_conv ctxt
       (protect []) 
-      (simp_tac 
-        (put_simpset HOL_basic_ss ctxt addsimps @{thms PROTECT2_def APP_def}) 1)
+      (fn goal_ctxt =>
+        simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms PROTECT2_def APP_def}) 1)
 
     fun unprotect_conv ctxt
       = Simplifier.rewrite (put_simpset HOL_basic_ss ctxt 

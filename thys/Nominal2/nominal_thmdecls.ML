@@ -197,7 +197,7 @@ fun thm_4_of_1 ctxt thm =
     val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p c, c))
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
   in
-    Goal.prove ctxt [] [] goal' (fn {context, ...} => tac context thm 1)
+    Goal.prove ctxt [] [] goal' (fn {context = goal_ctxt, ...} => tac goal_ctxt thm 1)
       |> singleton (Proof_Context.export ctxt' ctxt)
       |> (fn th => th RS @{thm "eq_reflection"})
       |> zero_var_indexes
@@ -239,7 +239,7 @@ fun thm_1_of_2 ctxt thm =
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
     val thm' = infer_instantiate ctxt' [(#1 (dest_Var p), Thm.cterm_of ctxt' (mk_minus p'))] thm
   in
-    Goal.prove ctxt' [] [] goal' (fn {context = ctxt'', ...} => tac ctxt'' thm thm' 1)
+    Goal.prove ctxt' [] [] goal' (fn {context = goal_ctxt, ...} => tac goal_ctxt thm thm' 1)
       |> singleton (Proof_Context.export ctxt' ctxt)
   end
   handle TERM _ =>

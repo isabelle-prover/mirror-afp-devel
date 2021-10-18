@@ -1,6 +1,22 @@
-structure Transform_Tactic = struct
+signature TRANSFORM_TACTIC =
+sig
+  val my_print_tac: string -> tactic
+  val totality_resolve_tac: thm -> thm -> thm -> Proof.context -> tactic
+  val totality_replay_tac: Function.info -> Function.info -> Proof.context -> tactic
+  val solve_relator_tac: Proof.context -> int -> tactic
+  val transfer_raw_tac: Proof.context -> int -> tactic
+  val step_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+  val prepare_case_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+  val prepare_consistentDP_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+  val solve_consistentDP_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+  val prepare_combinator_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+  val dp_unfold_defs_tac: Proof.context -> Transform_Data.cmd_info -> int -> tactic
+end
+
+structure Transform_Tactic : TRANSFORM_TACTIC =
+struct
   fun my_print_tac msg st = (tracing msg; all_tac st)
-  
+
   fun totality_resolve_tac totality0 def0 def1 ctxt =
     let
       val totality0_unfolded = totality0 |> Local_Defs.unfold ctxt [def0]
@@ -17,7 +33,7 @@ structure Transform_Tactic = struct
           in (*print_tac ctxt msg THEN*) no_tac end
         else HEADGOAL (resolve_tac ctxt [totality1])
     end
-  
+
   fun totality_blast_tac totality0 def0 def1 ctxt =
     HEADGOAL (
       (resolve_tac ctxt [totality0 RS @{thm rev_iffD1}])
@@ -26,7 +42,7 @@ structure Transform_Tactic = struct
       THEN' (resolve_tac ctxt [@{thm arg_cong[where f=Wellfounded.accp]}])
       THEN' (Blast.depth_tac ctxt 2)
     )
-  
+
   fun totality_replay_tac old_info new_info ctxt =
     let
       val totality0 = Transform_Misc.totality_of old_info
@@ -70,10 +86,10 @@ structure Transform_Tactic = struct
   fun dp_unfold_def_tac ctxt (cmd_info: Transform_Data.cmd_info) sel =
     cmd_info |> #dp_info |> the |> sel
     |> map (Local_Defs.meta_rewrite_rule ctxt)
-    |> Conv.rewrs_conv 
+    |> Conv.rewrs_conv
     |> Conv.try_conv
     |> Conv.binop_conv
-    |> HOLogic.Trueprop_conv 
+    |> HOLogic.Trueprop_conv
     |> Conv.concl_conv ~1
     |> (fn cv => Conv.params_conv ~1 (K cv) ctxt)
     |> CONVERSION

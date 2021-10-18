@@ -103,22 +103,26 @@ fun sum_action_goal ren rho rho' ctxt =
     val dom_goal =  mk_dom_lemma r e
     val tc_goal = ren_tc_goal false r e e'
     val (action_goal,fvs) = ren_action_goal r e e' ctxt
-    val fin_tc_lemma = Goal.prove ctxt [] [] fin_tc_goal (fn _ => fin_fun_tac ctxt)
-    val dom_lemma = Goal.prove ctxt [] [] dom_goal (fn _ => blast_tac ctxt 1) 
-    val tc_lemma =  Goal.prove ctxt [] [] tc_goal
-            (fn _ =>  EqSubst.eqsubst_tac ctxt [1] [dom_lemma] 1
-              THEN resolve_tac ctxt [@{thm FiniteFun_is_fun}] 1
-              THEN resolve_tac ctxt [fin_tc_lemma] 1)
-    val action_lemma = Goal.prove ctxt [] [] action_goal
-              (fn _ => 
-                  forward_tac ctxt [@{thm le_natI}] 1
-                  THEN fin ctxt
-                  THEN REPEAT (resolve_tac ctxt [@{thm natE}] 1
-                               THEN step ctxt tc_lemma)
-                  THEN (step ctxt tc_lemma)
-              )
+    val fin_tc_lemma =
+      Goal.prove ctxt [] [] fin_tc_goal (fin_fun_tac o #context)
+    val dom_lemma =
+      Goal.prove ctxt [] [] dom_goal
+        (fn {context = ctxt', ...} => blast_tac ctxt' 1)
+    val tc_lemma =
+      Goal.prove ctxt [] [] tc_goal
+        (fn {context = ctxt', ...} =>
+          EqSubst.eqsubst_tac ctxt' [1] [dom_lemma] 1
+          THEN resolve_tac ctxt' [@{thm FiniteFun_is_fun}] 1
+          THEN resolve_tac ctxt' [fin_tc_lemma] 1)
+    val action_lemma =
+      Goal.prove ctxt [] [] action_goal
+        (fn {context = ctxt', ...} =>
+          forward_tac ctxt' [@{thm le_natI}] 1
+          THEN fin ctxt'
+          THEN REPEAT (resolve_tac ctxt' [@{thm natE}] 1 THEN step ctxt' tc_lemma)
+          THEN (step ctxt' tc_lemma))
     in (action_lemma, tc_lemma, fvs, r)
-  end
+   end
 
 (* 
 Returns the sum renaming, the goal for type_checking, and the actual lemmas 
@@ -141,38 +145,40 @@ fun sum_tc_lemma rho rho' ctxt =
   let val (sum_ren, envVar, tc_goal, left_tc_lemma, left_action_lemma) = sum_ren_aux rho rho' ctxt
       val (goal,fvs) = sum_action_goal sum_ren rho rho' ctxt
       val r = mk_ren rho rho' ctxt
-  in (sum_ren, goal,envVar, r,left_tc_lemma, left_action_lemma ,fvs, Goal.prove ctxt [] [] tc_goal
-               (fn _ =>
-            resolve_tac ctxt [@{thm sum_type_id_aux2}] 1
-            THEN asm_simp_tac ctxt 4
-            THEN simp_tac ctxt 1
-            THEN resolve_tac ctxt [left_tc_lemma] 1            
-            THEN (fin ctxt)
-            THEN (fin ctxt)
-  ))
+  in
+    (sum_ren, goal,envVar, r,left_tc_lemma, left_action_lemma, fvs,
+      Goal.prove ctxt [] [] tc_goal
+        (fn {context = ctxt', ...} =>
+          resolve_tac ctxt' [@{thm sum_type_id_aux2}] 1
+          THEN asm_simp_tac ctxt' 4
+          THEN simp_tac ctxt' 1
+          THEN resolve_tac ctxt' [left_tc_lemma] 1            
+          THEN (fin ctxt')
+          THEN (fin ctxt')))
   end
 
 fun sum_rename rho rho' ctxt = 
   let
     val (_, goal, _, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho' ctxt
     val action_lemma = fix_vars left_action_lemma fvs ctxt
-  in (sum_tc_lemma, Goal.prove ctxt [] [] goal
-    (fn _ => resolve_tac ctxt [@{thm sum_action_id_aux}] 1
-            THEN (simp_tac ctxt 4)
-            THEN (simp_tac ctxt 1)
-            THEN (resolve_tac ctxt [left_tc_lemma]  1)
-            THEN (asm_full_simp_tac ctxt 1) 
-            THEN (asm_full_simp_tac ctxt 1)
-            THEN (simp_tac ctxt 1)
-            THEN (simp_tac ctxt 1)
-            THEN (simp_tac ctxt 1)
-            THEN (full_simp_tac ctxt 1)
-            THEN (resolve_tac ctxt [action_lemma] 1)
-            THEN (blast_tac ctxt  1)
-            THEN (full_simp_tac ctxt  1)
-            THEN (full_simp_tac ctxt  1)
-    
-   ), fvs, left_rename
-   )
-end ;
+  in
+    (sum_tc_lemma,
+      Goal.prove ctxt [] [] goal
+        (fn {context = ctxt', ...} =>
+          resolve_tac ctxt' [@{thm sum_action_id_aux}] 1
+          THEN (simp_tac ctxt' 4)
+          THEN (simp_tac ctxt' 1)
+          THEN (resolve_tac ctxt' [left_tc_lemma]  1)
+          THEN (asm_full_simp_tac ctxt' 1) 
+          THEN (asm_full_simp_tac ctxt' 1)
+          THEN (simp_tac ctxt' 1)
+          THEN (simp_tac ctxt' 1)
+          THEN (simp_tac ctxt' 1)
+          THEN (full_simp_tac ctxt' 1)
+          THEN (resolve_tac ctxt' [action_lemma] 1)
+          THEN (blast_tac ctxt' 1)
+          THEN (full_simp_tac ctxt' 1)
+          THEN (full_simp_tac ctxt' 1)),
+      fvs, left_rename)
+  end;
 end

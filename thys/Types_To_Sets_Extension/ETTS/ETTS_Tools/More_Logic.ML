@@ -21,10 +21,10 @@ open Logic;
 (*forall elimination*)
 fun forall_elim_all t =
   let
-    fun forall_elim_all_impl t ftv_specs = 
-      let val (ftv_spec, t) = Logic.dest_all t 
-      in forall_elim_all_impl t (ftv_spec::ftv_specs) end
-      handle TERM ("dest_all", _) => (t, ftv_specs)
+    fun forall_elim_all_impl t ftv_specs =
+      (case \<^try>\<open>Logic.dest_all_global t\<close> of
+        SOME (ftv_spec, t) => forall_elim_all_impl t (ftv_spec::ftv_specs)
+      | NONE => (t, ftv_specs))
   in forall_elim_all_impl t [] ||> rev end;
 
 (*indices of the universally quantified variables with respect to the 

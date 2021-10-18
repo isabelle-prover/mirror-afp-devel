@@ -204,10 +204,10 @@ fun strip_disj t =
 fun strip_all_disj t =
     if is_obj_all t then
       case t of
-          _ $ Abs (abs as (_, T, _)) =>
+          _ $ (u as Abs _) =>
           let
-            val (x, body) = Term.dest_abs abs
-            val var = Free (x, T)
+            val (v, body) = Term.dest_abs_global u
+            val var = Free v
             val (vars, disjs) = strip_all_disj body
           in
             if exists (Util.occurs_free var) disjs then (var :: vars, disjs)
@@ -217,10 +217,10 @@ fun strip_all_disj t =
         | _ => raise Fail "strip_all_disj"
     else if is_ball t then
       case t of
-          _ $ S $ Abs (abs as (_, T, _)) =>
+          _ $ S $ (u as Abs _) =>
           let
-            val (x, body) = Term.dest_abs abs
-            val var = Free (x, T)
+            val (v, body) = Term.dest_abs_global u
+            val var = Free v
             val mem = mk_mem (var, S)
             val (vars, disjs) = strip_all_disj body
           in
@@ -230,10 +230,10 @@ fun strip_all_disj t =
         | _ => raise Fail "strip_all_disj"
     else if is_neg t andalso is_ex (dest_not t) then
       case dest_not t of
-          _ $ Abs (abs as (_, T, _)) =>
+          _ $ (u as Abs _) =>
           let
-            val (x, body) = Term.dest_abs abs
-            val var = Free (x, T)
+            val (v, body) = Term.dest_abs_global u
+            val var = Free v
             val (vars, disjs) = strip_all_disj (get_neg body)
           in
             if exists (Util.occurs_free var) disjs then (var :: vars, disjs)
@@ -243,10 +243,10 @@ fun strip_all_disj t =
         | _ => raise Fail "strip_all_disj"
     else if is_neg t andalso is_bex (dest_not t) then
       case dest_not t of
-          _ $ S $ Abs (abs as (_, T, _)) =>
+          _ $ S $ (u as Abs _) =>
           let
-            val (x, body) = Term.dest_abs abs
-            val var = Free (x, T)
+            val (v, body) = Term.dest_abs_global u
+            val var = Free v
             val mem = mk_mem (var, S)
             val (vars, disjs) = strip_all_disj (get_neg body)
           in
@@ -560,7 +560,7 @@ fun get_disj_head t =
     else if is_neg t andalso is_conj (dest_not t) then conj
     else if is_obj_all t orelse is_ball t then
       case dest_arg t of
-          Abs (x, T, body) => get_disj_head (snd (Term.dest_abs (x, T, body)))
+          u as Abs _ => get_disj_head (snd (Term.dest_abs_global u))
         | _ => imp
     else if is_neg t andalso is_ex (dest_not t) then conj
     else if is_neg t andalso is_bex (dest_not t) then conj

@@ -489,7 +489,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
     end
 
   in
-    fun align_goal_conv ctxt = f_tac_conv ctxt (align_goal_conv_aux ctxt) (star_permute_tac ctxt)
+    fun align_goal_conv ctxt = f_tac_conv ctxt (align_goal_conv_aux ctxt) star_permute_tac
 
     fun norm_goal_pre_conv ctxt = let
       open Conv
@@ -504,7 +504,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
       open Conv
       val nr_conv = normrel_conv ctxt
     in
-      HOL_concl_conv (fn ctxt => f_tac_conv ctxt (align_rl_conv_aux ctxt) (star_permute_tac ctxt)) ctxt
+      HOL_concl_conv (fn ctxt => f_tac_conv ctxt (align_rl_conv_aux ctxt) star_permute_tac) ctxt
       then_conv HOL_concl_conv (K (hn_refine_conv nr_conv all_conv nr_conv nr_conv all_conv)) ctxt
     end
 

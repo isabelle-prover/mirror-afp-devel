@@ -32,10 +32,12 @@ let
   val induct_tac_to = (Induct_Tacs.induct_tac lthy [[SOME "b"]] (SOME [to_induct]) 2)
   val induct_tac_from = (Induct_Tacs.induct_tac lthy [[SOME "a"]] (SOME [from_induct]) 1)
 
-  val iso_thm_proved = Goal.prove lthy [] [] iso_thm
-                        (fn _ => (resolve_tac lthy [@{thm Derive.iso_intro}] 1) THEN
-                                 induct_tac_to THEN induct_tac_from THEN
-                                 (ALLGOALS (asm_full_simp_tac lthy)))
+  val iso_thm_proved =
+    Goal.prove lthy [] [] iso_thm
+      (fn {context = ctxt, ...} =>
+        resolve_tac ctxt [@{thm Derive.iso_intro}] 1 THEN
+        induct_tac_to THEN induct_tac_from THEN
+        ALLGOALS (asm_full_simp_tac ctxt))
 
   val ((_,thms),lthy') = Local_Theory.note ((Binding.name ("conversion_iso_" ^ tname_short),[]), [iso_thm_proved]) lthy
   val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy')
@@ -65,9 +67,10 @@ let
   val t = list_comb (class_law_const_dummy,ops) |> HOLogic.mk_Trueprop |> Syntax.check_term ctxt
 in
   Goal.prove ctxt [] [] t
-  (fn _ => (Local_Defs.unfold_tac ctxt [class_law])
-           THEN (HEADGOAL (Method.insert_tac ctxt (axioms_thms@superclass_laws)))
-           THEN (HEADGOAL (asm_full_simp_tac ctxt)))
+    (fn {context = ctxt', ...} =>
+      Local_Defs.unfold_tac ctxt' [class_law]
+      THEN (HEADGOAL (Method.insert_tac ctxt' (axioms_thms @ superclass_laws)))
+      THEN (HEADGOAL (asm_full_simp_tac ctxt')))
 end  
 
 fun prove_instance_tac T cl_info inst_info ty_info ctxt =
@@ -91,9 +94,11 @@ let
 
   val transfer_thm_inst = (hd transfer_thms) OF [iso_thm,equivalence_thm]
   
-  val class_law_inst_proved = Goal.prove ctxt [] [] class_law_inst
-                              (fn _ => (Local_Defs.unfold_tac ctxt op_defs)
-                                       THEN (Proof_Context.fact_tac ctxt [transfer_thm_inst] 1))
+  val class_law_inst_proved =
+    Goal.prove ctxt [] [] class_law_inst
+      (fn {context = ctxt', ...} =>
+        Local_Defs.unfold_tac ctxt' op_defs
+        THEN (Proof_Context.fact_tac ctxt' [transfer_thm_inst] 1))
 
   val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of ctxt)
   val class_law_inst_def = singleton (Proof_Context.export ctxt ctxt_thy) class_law_inst_proved

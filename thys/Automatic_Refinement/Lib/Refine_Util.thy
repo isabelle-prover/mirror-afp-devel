@@ -195,7 +195,7 @@ ML \<open>
     val ite_conv: conv -> conv -> conv -> conv
 
     val cfg_trace_f_tac_conv: bool Config.T
-    val f_tac_conv: Proof.context -> (term -> term) -> tactic -> conv
+    val f_tac_conv: Proof.context -> (term -> term) -> (Proof.context -> tactic) -> conv
 
     (* Conversion combinators to choose first matching position *)
     (* Try argument, then function *)
@@ -592,10 +592,11 @@ ML \<open>
         val (tym,tm) = Thm.first_order_match (pat,ct);
         val tm' = Vars.map (fn ((name, _), _) => tag_ct ctxt name) tm;
         val ct' = Thm.instantiate_cterm (tym, tm') pat;
+        val goal = Logic.mk_equals (apply2 Thm.term_of (ct, ct'))
+        val goal_ctxt = Variable.declare_term goal ctxt
         val rthm =
-          Goal.prove_internal ctxt []
-            (Thm.cterm_of ctxt (Logic.mk_equals (apply2 Thm.term_of (ct, ct'))))
-            (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
+          Goal.prove_internal goal_ctxt [] (Thm.cterm_of ctxt goal)
+            (K (simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms conv_tag_def}) 1))
         |> Goal.norm_result ctxt
       in 
         fixup_vars ct rthm 
@@ -668,9 +669,8 @@ ML \<open>
           tracing (Syntax.string_of_term ctxt goal)
         else ()
 
-        val goal = Thm.cterm_of ctxt goal
-
-        val thm = Goal.prove_internal ctxt [] goal (K tac)
+        val goal_ctxt = Variable.declare_term goal ctxt
+        val thm = Goal.prove_internal ctxt [] (Thm.cterm_of ctxt goal) (K (tac goal_ctxt))
       in
         thm
       end
