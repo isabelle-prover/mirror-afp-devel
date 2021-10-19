@@ -1,6 +1,6 @@
 (*
   File:     Quick_Sort_Average_Case.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
 
   Definition and average-case analysis of the standard deterministic QuickSort algorithm
 *)

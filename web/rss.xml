@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 Sep 2021 00:00:00 +0000</pubDate>
+    <pubDate>02 Oct 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+              <link>https://www.isa-afp.org/entries/Virtual_Substitution.html</link>
+       <guid>https://www.isa-afp.org/entries/Virtual_Substitution.html</guid>
+       <dc:creator> Matias Scharager, Katherine Cordwell, Stefan Mitsch, André Platzer       </dc:creator>
+       <pubDate>02 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+This paper presents a formally verified quantifier elimination (QE)
+algorithm for first-order real arithmetic by linear and quadratic
+virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
+theorem established that the first-order logic of real arithmetic is
+decidable by QE. However, in practice, QE algorithms are highly
+complicated and often combine multiple methods for performance. VS is
+a practically successful method for QE that targets formulas with
+low-degree polynomials. To our knowledge, this is the first work to
+formalize VS for quadratic real arithmetic including inequalities. The
+proofs necessitate various contributions to the existing multivariate
+polynomial libraries in Isabelle/HOL. Our framework is modularized and
+easily expandable (to facilitate integrating future optimizations),
+and could serve as a basis for developing practical general-purpose QE
+algorithms. Further, as our formalization is designed with
+practicality in mind, we export our development to SML and test the
+resulting code on 378 benchmarks from the literature, comparing to
+Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
+inconsistencies in some tools, underscoring the significance of a
+verified approach for the intricacies of real arithmetic.</description>
+    </item>
     <item>
        <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
               <link>https://www.isa-afp.org/entries/FOL_Axiomatic.html</link>
@@ -530,19 +557,6 @@ particular the concepts of the longest Lyndon suffix and the Lyndon
 factorization. Most of the work assumes a fixed lexicographical order.
 Nevertheless we also define the smallest relation guaranteeing
 lexicographical minimality of a given word (in its conjugacy class).</description>
-    </item>
-    <item>
-       <title>Graph Lemma</title>
-              <link>https://www.isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</link>
-       <guid>https://www.isa-afp.org/entries/Combinatorics_Words_Graph_Lemma.html</guid>
-       <dc:creator> Štěpán Holub, Štěpán Starosta       </dc:creator>
-       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
-       <description>
-Graph lemma quantifies the defect effect of a system of word
-equations. That is, it provides an upper bound on the rank of the
-system. We formalize the proof based on the decomposition of a
-solution into its free basis. A direct application is an alternative
-proof of the fact that two noncommuting words form a code.</description>
     </item>
   </channel>
 </rss>

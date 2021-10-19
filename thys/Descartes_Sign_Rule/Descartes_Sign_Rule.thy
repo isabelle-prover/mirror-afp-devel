@@ -1,6 +1,6 @@
 (*
   File:    Descartes_Sign_Rule.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   Descartes' Rule of Signs, which relates the number of positive real roots of a polynomial
   with the number of sign changes in its coefficient list.

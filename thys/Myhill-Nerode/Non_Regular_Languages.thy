@@ -1,6 +1,6 @@
 (* 
   File:     Non_Regular_Languages.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
   
   This file provides some tools for showing the non-regularity of a language, either 
   via an infinite set of equivalence classes or via the Pumping Lemma.

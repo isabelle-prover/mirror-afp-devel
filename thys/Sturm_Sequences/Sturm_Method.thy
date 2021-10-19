@@ -1,6 +1,6 @@
 section \<open>The ``sturm'' proof method\<close>
 
-(* Author: Manuel Eberl <eberlm@in.tum.de> *)
+(* Author: Manuel Eberl <manuel@pruvisto.org> *)
 theory Sturm_Method
 imports Sturm_Theorem
 begin

@@ -160,10 +160,10 @@ extra-history =
 
 [Pell]
 title = Pell's Equation
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2018-06-23
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p> This article gives the basic theory of Pell's equation
   <em>x</em><sup>2</sup> = 1 +
@@ -226,10 +226,10 @@ abstract =
 
 [Minkowskis_Theorem]
 title = Minkowski's Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Geometry, Mathematics/Number theory
 date = 2017-07-13
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>Minkowski's theorem relates a subset of
   &#8477;<sup>n</sup>, the Lebesgue measure, and the
@@ -447,7 +447,7 @@ extra-history =
 
 [Monad_Normalisation]
 title = Monad normalisation
-author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
+author = Joshua Schneider <>, Manuel Eberl <https://pruvisto.org>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
 topic = Tools, Computer science/Functional programming, Logic/Rewriting
 date = 2017-05-05
 notify = mail@andreas-lochbihler.de
@@ -570,10 +570,10 @@ abstract =
 
 [Comparison_Sort_Lower_Bound]
 title = Lower bound on comparison-based sorting algorithms
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Algorithms
 date = 2017-03-15
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article contains a formal proof of the well-known fact
   that number of comparisons that a comparison-based sorting algorithm
@@ -590,10 +590,10 @@ abstract =
 
 [Quick_Sort_Cost]
 title = The number of comparisons in QuickSort
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Algorithms
 date = 2017-03-15
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>We give a formal proof of the well-known results about the
   number of comparisons performed by two variants of QuickSort: first,
@@ -607,10 +607,10 @@ abstract =
 
 [Random_BSTs]
 title = Expected Shape of Random Binary Search Trees
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Data structures
 date = 2017-04-04
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry contains proofs for the textbook results about the
   distributions of the height and internal path length of random binary
@@ -624,10 +624,10 @@ abstract =
 
 [Randomised_BSTs]
 title = Randomised Binary Search Trees
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Data structures
 date = 2018-10-19
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This work is a formalisation of the Randomised Binary Search
   Trees introduced by Martínez and Roura, including definitions and
@@ -639,10 +639,10 @@ abstract =
 
 [E_Transcendental]
 title = The Transcendence of e
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis, Mathematics/Number theory
 date = 2017-01-12
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This work contains a proof that Euler's number e is transcendental. The
   proof follows the standard approach of assuming that e is algebraic and
@@ -652,10 +652,10 @@ abstract =
 
 [Pi_Transcendental]
 title = The Transcendence of π
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2018-09-28
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry shows the transcendence of &pi; based on the
   classic proof using the fundamental theorem of symmetric polynomials
@@ -666,10 +666,10 @@ abstract =
 
 [Hermite_Lindemann]
 title = The Hermite–Lindemann–Weierstraß Transcendence Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2021-03-03
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides a formalisation of the
   Hermite-Lindemann-Weierstraß Theorem (also known as simply
@@ -1075,7 +1075,7 @@ extra-history =
 
 [Liouville_Numbers]
 title = Liouville numbers
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-28
 topic = Mathematics/Analysis, Mathematics/Number theory
 abstract =
@@ -1093,11 +1093,11 @@ abstract =
 	Value Theorem for polynomials, and the boundedness of polynomials on compact
 	intervals.
 	</p>
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Triangle]
 title = Basic Geometric Properties of Triangles
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-28
 topic = Mathematics/Geometry
 abstract =
@@ -1112,11 +1112,11 @@ abstract =
 	HOL Light. However, due to Isabelle's type class system, all definitions and
 	theorems in the Isabelle formalisation hold for all real inner product spaces.
 	</p>
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Prime_Harmonic_Series]
 title = The Divergence of the Prime Harmonic Series
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-28
 topic = Mathematics/Number theory
 abstract =
@@ -1133,11 +1133,11 @@ abstract =
 	by Paul Erdős, is that it provides a relatively good lower bound for the partial
 	sums.
 	</p>
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Descartes_Sign_Rule]
 title = Descartes' Rule of Signs
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-28
 topic = Mathematics/Analysis
 abstract =
@@ -1151,14 +1151,14 @@ abstract =
 	rationals, reals); the main result, however, requires the intermediate value
 	theorem and was therefore only proven for real polynomials.
 	</p>
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Euler_MacLaurin]
 title = The Euler–MacLaurin Formula
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis
 date = 2017-03-10
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>The Euler-MacLaurin formula relates the value of a
   discrete sum to that of the corresponding integral in terms of the
@@ -2165,7 +2165,7 @@ notify = immler@in.tum.de
 [Regular-Sets]
 title = Regular Sets and Expressions
 author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
-contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+contributors = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Automata and formal languages
 date = 2010-05-12
 abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
@@ -2246,7 +2246,7 @@ notify = traytel@in.tum.de
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
-contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+contributors = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Automata and formal languages
 date = 2011-08-26
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
@@ -4178,10 +4178,10 @@ notify = nipkow@in.tum.de
 
 [Finitely_Generated_Abelian_Groups]
 title = Finitely Generated Abelian Groups
-author = Joseph Thommes<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Joseph Thommes<>, Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Algebra
 date = 2021-07-07
-notify = joseph-thommes@gmx.de, eberlm@in.tum.de
+notify = joseph-thommes@gmx.de, manuel@pruvisto.org
 abstract =
   This article deals with the formalisation of some group-theoretic
   results including the fundamental theorem of finitely generated
@@ -4364,7 +4364,7 @@ notify = rene.thiemann@uibk.ac.at
 
 [Sturm_Sequences]
 title = Sturm's Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2014-01-11
 topic = Mathematics/Analysis
 abstract = Sturm's Theorem states that polynomial sequences with certain
@@ -4375,7 +4375,7 @@ abstract = Sturm's Theorem states that polynomial sequences with certain
 	statements about the roots of real polynomials, such as “the polynomial
 	P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
 	&#8712; &#8477;”.
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Sturm_Tarski]
 title = The Sturm-Tarski Theorem
@@ -4421,7 +4421,7 @@ notify = traytel@in.tum.de
 
 [Density_Compiler]
 title = A Verified Compiler for Probability Density Functions
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Johannes Hölzl <http://in.tum.de/~hoelzl>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+author = Manuel Eberl <https://pruvisto.org>, Johannes Hölzl <http://in.tum.de/~hoelzl>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-10-09
 topic = Mathematics/Probability theory, Computer science/Programming languages/Compiling
 abstract =
@@ -5464,18 +5464,18 @@ notify = lp15@cam.ac.uk
 
 [Landau_Symbols]
 title = Landau Symbols
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-07-14
 topic = Mathematics/Analysis
 abstract = This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Error_Function]
 title = The Error Function
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis
 date = 2018-02-06
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p> This entry provides the definitions and basic properties of
   the complex and real error function erf and the complementary error
@@ -5484,7 +5484,7 @@ abstract =
 
 [Akra_Bazzi]
 title = The Akra-Bazzi theorem and the Master theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 date = 2015-07-14
 topic = Mathematics/Analysis
 abstract = This article contains a formalisation of the Akra-Bazzi method
@@ -5497,14 +5497,14 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
 	Some proof methods that facilitate applying the Master theorem are also
 	included. For a more detailed explanation of the formalisation and the
 	proof methods, see the accompanying paper (publication forthcoming).
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Dirichlet_Series]
 title = Dirichlet Series
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2017-10-12
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   This entry is a formalisation of much of Chapters 2, 3, and 11 of
   Apostol's &ldquo;Introduction to Analytic Number
@@ -5527,7 +5527,7 @@ abstract =
 
 [Gauss_Sums]
 title = Gauss Sums and the Pólya–Vinogradov Inequality
-author = Rodrigo Raya <https://people.epfl.ch/rodrigo.raya>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Rodrigo Raya <https://people.epfl.ch/rodrigo.raya>, Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2019-12-10
 notify = manuel.eberl@tum.de
@@ -5545,10 +5545,10 @@ abstract =
 
 [Zeta_Function]
 title = The Hurwitz and Riemann ζ Functions
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory, Mathematics/Analysis
 date = 2017-10-12
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry builds upon the results about formal and analytic Dirichlet
   series to define the Hurwitz &zeta; function &zeta;(<em>a</em>,<em>s</em>) and,
@@ -5574,10 +5574,10 @@ abstract =
 
 [Linear_Recurrences]
 title = Linear Recurrences
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis
 date = 2017-10-12
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p> Linear recurrences with constant coefficients are an
   interesting class of recurrence equations that can be solved
@@ -5599,10 +5599,10 @@ abstract =
 
 [Van_der_Waerden]
 title = Van der Waerden's Theorem
-author = Katharina Kreuzer <https://www21.in.tum.de/team/kreuzer/>, Manuel Eberl <https://www21.in.tum.de/~eberlm/>
+author = Katharina Kreuzer <https://www21.in.tum.de/team/kreuzer/>, Manuel Eberl <https://pruvisto.org/>
 topic = Mathematics/Combinatorics
 date = 2021-06-22
-notify = kreuzerk@in.tum.de, eberlm@in.tum.de
+notify = kreuzerk@in.tum.de, manuel@pruvisto.org
 abstract =
   This article formalises the proof of Van der Waerden's Theorem
   from Ramsey theory.  Van der Waerden's Theorem states that for
@@ -5617,10 +5617,10 @@ abstract =
 
 [Lambert_W]
 title = The Lambert W Function on the Reals
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis
 date = 2020-04-24
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>The Lambert <em>W</em> function is a multi-valued
   function defined as the inverse function of <em>x</em>
@@ -5853,7 +5853,7 @@ notify =
 [Ergodic_Theory]
 title = Ergodic Theory
 author = Sebastien Gouezel <mailto:sebastien.gouezel@univ-rennes1.fr>
-contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+contributors = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-01
 topic = Mathematics/Probability theory
 abstract = Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
@@ -5959,7 +5959,7 @@ notify = mail@andreas-lochbihler.de
 title = Algebraic Numbers in Isabelle/HOL
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>, Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>
-contributors = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+contributors = Manuel Eberl <https://pruvisto.org>
 date = 2015-12-22
 abstract = Based on existing libraries for matrices, factorization of rational polynomials, and Sturm's theorem, we formalized algebraic numbers in Isabelle/HOL. Our development serves as an implementation for real and complex numbers, and it admits to compute roots and completely factorize real and complex polynomials, provided that all coefficients are rational numbers. Moreover, we provide two implementations to display algebraic numbers, an injective and expensive one, or a faster but approximative version.
 	</p><p>
@@ -6400,7 +6400,7 @@ notify = lukas.bulwahn@gmail.com
 
 [Randomised_Social_Choice]
 title = Randomised Social Choice Theory
-author = Manuel Eberl <mailto:eberlm@in.tum.de>
+author = Manuel Eberl <mailto:manuel@pruvisto.org>
 date = 2016-05-05
 topic = Mathematics/Games and economics
 abstract =
@@ -6420,11 +6420,11 @@ abstract =
 	Stochastic Dominance, but it should be easy to extend it to other
 	domains – such as strict preferences – or other lottery extensions –
 	such as Bilinear Dominance or Pairwise Comparison.
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [SDS_Impossibility]
 title = The Incompatibility of SD-Efficiency and SD-Strategy-Proofness
-author = Manuel Eberl <mailto:eberlm@in.tum.de>
+author = Manuel Eberl <mailto:manuel@pruvisto.org>
 date = 2016-05-04
 topic = Mathematics/Games and economics
 abstract =
@@ -6441,14 +6441,14 @@ abstract =
 	proven and machine-checked. This is particularly important seeing as a
 	previously published informal proof of a weaker statement contained a
 	mistake in precisely this lifting step.
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 
 [Median_Of_Medians_Selection]
 title = The Median-of-Medians Selection Algorithm
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Algorithms
 date = 2017-12-21
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry provides an executable functional implementation
   of the Median-of-Medians algorithm for selecting the
@@ -6459,10 +6459,10 @@ abstract =
 
 [Mason_Stothers]
 title = The Mason–Stothers Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Algebra
 date = 2017-12-21
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides a formalisation of Snyder’s simple and
   elegant proof of the Mason&ndash;Stothers theorem, which is the
@@ -6555,8 +6555,8 @@ abstract =
 
 [Catalan_Numbers]
 title = Catalan Numbers
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
-notify = eberlm@in.tum.de
+author = Manuel Eberl <https://pruvisto.org>
+notify = manuel@pruvisto.org
 date = 2016-06-21
 topic = Mathematics/Combinatorics
 abstract =
@@ -6576,8 +6576,8 @@ abstract =
 
 [Fisher_Yates]
 title = Fisher–Yates shuffle
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
-notify = eberlm@in.tum.de
+author = Manuel Eberl <https://pruvisto.org>
+notify = manuel@pruvisto.org
 date = 2016-09-30
 topic = Computer science/Algorithms
 abstract =
@@ -6589,11 +6589,11 @@ abstract =
 
 [Bertrands_Postulate]
 title = Bertrand's postulate
-author = Julian Biendarra<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Julian Biendarra<>, Manuel Eberl <https://pruvisto.org>
 contributors = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Number theory
 date = 2017-01-17
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>Bertrand's postulate is an early result on the
   distribution of prime numbers: For every positive integer n, there
@@ -6731,8 +6731,8 @@ abstract =
 
 [Stirling_Formula]
 title = Stirling's formula
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
-notify = eberlm@in.tum.de
+author = Manuel Eberl <https://pruvisto.org>
+notify = manuel@pruvisto.org
 date = 2016-09-01
 topic = Mathematics/Analysis
 abstract =
@@ -6817,10 +6817,10 @@ abstract =
 
 [Buffons_Needle]
 title = Buffon's Needle Problem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Probability theory, Mathematics/Geometry
 date = 2017-06-06
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
   later solved the following problem, which is often called the first
@@ -7061,10 +7061,10 @@ extra-history =
 
 [Bernoulli]
 title = Bernoulli Numbers
-author = Lukas Bulwahn<mailto:lukas.bulwahn@gmail.com>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Lukas Bulwahn<mailto:lukas.bulwahn@gmail.com>, Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Analysis, Mathematics/Number theory
 date = 2017-01-24
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>Bernoulli numbers were first discovered in the closed-form
   expansion of the sum 1<sup>m</sup> +
@@ -7665,10 +7665,10 @@ abstract =
 
 [Dirichlet_L]
 title = Dirichlet L-Functions and Dirichlet's Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory, Mathematics/Algebra
 date = 2017-12-21
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides a formalisation of Dirichlet characters
   and Dirichlet <em>L</em>-functions including proofs of
@@ -7686,10 +7686,10 @@ abstract =
 
 [Symmetric_Polynomials]
 title = Symmetric Polynomials
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Algebra
 date = 2018-09-25
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>A symmetric polynomial is a polynomial in variables
   <em>X</em><sub>1</sub>,&hellip;,<em>X</em><sub>n</sub>
@@ -7906,7 +7906,7 @@ title = Treaps
 author = Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
 topic = Computer science/Data structures
 date = 2018-02-06
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p> A Treap is a binary tree whose nodes contain pairs
   consisting of some payload and an associated priority. It must have
@@ -7927,7 +7927,7 @@ abstract =
 
 [Skip_Lists]
 title = Skip Lists
-author = Max W. Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www21.in.tum.de/~eberlm/>
+author = Max W. Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://pruvisto.org/>
 topic = Computer science/Data structures
 date = 2020-01-09
 notify = max.haslbeck@gmx.de
@@ -7944,10 +7944,10 @@ abstract =
 
 [Mersenne_Primes]
 title = Mersenne primes and the Lucas–Lehmer test
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2020-01-17
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides formal proofs of basic properties of
   Mersenne numbers, i. e. numbers of the form
@@ -8020,10 +8020,10 @@ abstract =
 
 [Fishburn_Impossibility]
 title = The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency
-author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
+author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://pruvisto.org>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
 topic = Mathematics/Games and economics
 date = 2018-03-22
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This formalisation contains the proof that there is no
   anonymous Social Choice Function for at least three agents and
@@ -8312,10 +8312,10 @@ extra-history =
 
 [Prime_Number_Theorem]
 title = The Prime Number Theorem
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+author = Manuel Eberl <https://pruvisto.org>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Number theory
 date = 2018-09-19
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides a short proof of the Prime Number
   Theorem in several equivalent forms, most notably
@@ -8422,7 +8422,7 @@ title = Matroids
 author = Jonas Keinholz<>
 topic = Mathematics/Combinatorics
 date = 2018-11-16
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article defines the combinatorial structures known as
   <em>Independence Systems</em> and
@@ -8765,10 +8765,10 @@ abstract =
 
 [Probabilistic_Prime_Tests]
 title = Probabilistic Primality Testing
-author = Daniel Stüwe<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Daniel Stüwe<>, Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2019-02-11
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>The most efficient known primality tests are
   <em>probabilistic</em> in the sense that they use
@@ -8800,10 +8800,10 @@ abstract =
 
 [List_Inversions]
 title = The Inversions of a List
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Computer science/Algorithms
 date = 2019-02-01
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry defines the set of <em>inversions</em>
   of a list, i.e. the pairs of indices that violate sortedness. It also
@@ -8814,10 +8814,10 @@ abstract =
 
 [Prime_Distribution_Elementary]
 title = Elementary Facts About the Distribution of Primes
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2019-02-21
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry is a formalisation of Chapter 4 (and parts of
   Chapter 3) of Apostol's <a
@@ -9224,10 +9224,10 @@ abstract =
 
 [IMO2019]
 title = Selected Problems from the International Mathematical Olympiad 2019
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Misc
 date = 2019-08-05
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This entry contains formalisations of the answers to three of
   the six problem of the International Mathematical Olympiad 2019,
@@ -9470,7 +9470,7 @@ abstract =
 
 [Zeta_3_Irrational]
 title = The Irrationality of ζ(3)
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2019-12-27
 notify = manuel.eberl@tum.de
@@ -9627,7 +9627,7 @@ abstract =
 
 [Furstenberg_Topology]
 title = Furstenberg's topology and his proof of the infinitude of primes
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2020-03-22
 notify = manuel.eberl@tum.de
@@ -9784,10 +9784,10 @@ abstract =
 
 [Power_Sum_Polynomials]
 title = Power Sum Polynomials
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Algebra
 date = 2020-04-24
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>This article provides a formalisation of the symmetric
   multivariate polynomials known as <em>power sum
@@ -9831,10 +9831,10 @@ abstract =
 
 [Formal_Puiseux_Series]
 title = Formal Puiseux Series
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Algebra
 date = 2021-02-17
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>Formal Puiseux series are generalisations of formal power
   series and formal Laurent series that also allow for fractional
@@ -9848,10 +9848,10 @@ abstract =
 
 [Gaussian_Integers]
 title = Gaussian Integers
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Number theory
 date = 2020-04-24
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>The Gaussian integers are the subring &#8484;[i] of the
   complex numbers, i. e. the ring of all complex numbers with integral
@@ -10434,10 +10434,10 @@ abstract =
 
 [Laws_of_Large_Numbers]
 title = The Laws of Large Numbers
-author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Manuel Eberl <https://pruvisto.org>
 topic = Mathematics/Probability theory
 date = 2021-02-10
-notify = eberlm@in.tum.de
+notify = manuel@pruvisto.org
 abstract =
   <p>The Law of Large Numbers states that, informally, if one
   performs a random experiment $X$ many times and takes the average of
@@ -11200,3 +11200,32 @@ abstract =
   witnesses are added during the construction to ensure saturation as
   well. The resulting set is a Hintikka set which, by the model
   existence theorem, is satisfiable in the Herbrand universe.
+  
+  
+[Virtual_Substitution]
+title = Verified Quadratic Virtual Substitution for Real Arithmetic
+author = Matias Scharager <mailto:mscharag@cs.cmu.edu>, Katherine Cordwell <mailto:kcordwel@cs.cmu.edu>, Stefan Mitsch <mailto:smitsch@cs.cmu.edu>, André Platzer <mailto:aplatzer@cs.cmu.edu>
+topic = Computer science/Algorithms/Mathematical
+date = 2021-10-02
+notify = mscharag@cs.cmu.edu, kcordwel@cs.cmu.edu, smitsch@cs.cmu.edu, aplatzer@cs.cmu.edu
+abstract = 
+  This paper presents a formally verified quantifier elimination (QE)
+  algorithm for first-order real arithmetic by linear and quadratic
+  virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
+  theorem established that the first-order logic of real arithmetic is
+  decidable by QE. However, in practice, QE algorithms are highly
+  complicated and often combine multiple methods for performance. VS is
+  a practically successful method for QE that targets formulas with
+  low-degree polynomials. To our knowledge, this is the first work to
+  formalize VS for quadratic real arithmetic including inequalities. The
+  proofs necessitate various contributions to the existing multivariate
+  polynomial libraries in Isabelle/HOL. Our framework is modularized and
+  easily expandable (to facilitate integrating future optimizations),
+  and could serve as a basis for developing practical general-purpose QE
+  algorithms. Further, as our formalization is designed with
+  practicality in mind, we export our development to SML and test the
+  resulting code on 378 benchmarks from the literature, comparing to
+  Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
+  inconsistencies in some tools, underscoring the significance of a
+  verified approach for the intricacies of real arithmetic.
+

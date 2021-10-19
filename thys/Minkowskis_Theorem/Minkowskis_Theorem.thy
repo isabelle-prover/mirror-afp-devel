@@ -1,6 +1,6 @@
 (*
   File:    Minkowskis_Theorem.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   A proof of Blichfeldt's and Minkowski's theorem about the relation between
   subsets of the Euclidean space, the Lebesgue measure, and the integer lattice.

@@ -1,6 +1,6 @@
 (*
   File:   Landau_Library.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Auxiliary lemmas that should be merged into HOL.
 *)

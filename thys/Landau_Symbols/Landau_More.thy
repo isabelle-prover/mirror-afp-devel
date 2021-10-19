@@ -1,6 +1,6 @@
 (*
   File:   Landau_More.thy
-  Author: Andreas Lochbihler, Manuel Eberl <eberlm@in.tum.de>
+  Author: Andreas Lochbihler, Manuel Eberl <manuel@pruvisto.org>
 
   Some more facts about Landau symbols.
 *)

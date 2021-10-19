@@ -1,6 +1,6 @@
 (* 
   File:    Liouville_Numbers.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   The definition of Liouville numbers and their standard construction, plus the proof
   that any Liouville number is transcendental.

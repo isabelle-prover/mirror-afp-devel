@@ -1,6 +1,6 @@
 (*
   File:     Comparison_Sort_Lower_Bound.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
 
   Proof of the lower-bound on worst-case comparisons in a comparison-based sorting algorithm.
 *)

@@ -1,6 +1,6 @@
 (*
   File:    Angles.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   Definition of angles between vectors and between three points.
 *)

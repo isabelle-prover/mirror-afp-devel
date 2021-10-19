@@ -1,5 +1,5 @@
 (* File:   Akra_Bazzi_Asymptotics.thy
-   Author: Manuel Eberl <eberlm@in.tum.de>
+   Author: Manuel Eberl <manuel@pruvisto.org>
 
    Proofs for the four(ish) asymptotic inequalities required for proving the
    Akra Bazzi theorem with variation functions in the recursive calls.
