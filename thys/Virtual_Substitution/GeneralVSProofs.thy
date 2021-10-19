@@ -917,7 +917,7 @@ proof(cases A)
       by (metis MPoly_Type.insertion_one insertion_add one_add_one)  
     then have h8 : "\<forall>xa. insertion (nth_default 0 ((xs' @ x # xs)[var := xa])) (2 * isolate_variable_sparse p var 2) = 2 * a"
       unfolding insertion_mult a_def apply auto using assms
-      by (metis (no_types, hide_lams) MPoly_Type.insertion_one add.inverse_inverse add_uminus_conv_diff arith_special(3) insertion_isovarspars_free insertion_neg insertion_sub list_update_id) 
+      by (metis (no_types, opaque_lifting) MPoly_Type.insertion_one add.inverse_inverse add_uminus_conv_diff arith_special(3) insertion_isovarspars_free insertion_neg insertion_sub list_update_id) 
     have h9 : "var\<notin>vars(- isolate_variable_sparse p var (Suc 0))"
       by (simp add: not_in_isovarspar not_in_neg)
     have h10 : "var\<notin>vars(- 1::real mpoly)"

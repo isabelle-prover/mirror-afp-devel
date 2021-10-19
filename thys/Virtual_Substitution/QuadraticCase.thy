@@ -141,8 +141,8 @@ lemma sum_over_sqrt :
   assumes detGreater0 : "SQ \<ge> 0"
   shows "(\<Sum>i\<in>{0..<n+1}. ((f i::real) * (SQ^(i div 2)) * real (i mod 2) * sqrt SQ +f i * SQ ^ (i div 2) * (1 - real (i mod 2))))
         =(\<Sum>i\<in>{0..<n+1}. ((f i::real) * ((sqrt SQ)^i)))"
-  using sqrt_case detGreater0
-  by (metis (no_types, hide_lams) distrib_left mult.assoc) 
+  apply (intro sum.cong refl)
+  using sqrt_case[OF detGreater0] distrib_left mult.assoc by metis
 
 lemma quad_part_2_eq :
   assumes lLength : "length L > var"
@@ -802,7 +802,7 @@ next
   then have "insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z a) = Av"
     using lift_minus by blast
   then have a1 : "\<forall>x. insertion (nth_default 0 (L[var + z := x])) (liftPoly 0 z a) = Av"
-    unfolding L_def 
+    unfolding L_def
     by (metis (no_types, lifting) Atom.prems(5) L1_def add.right_neutral add_diff_cancel_right' append_eq_append_conv append_eq_append_conv2 length_append lengthl2 lift_insertion list.size(3) list_update_append not_add_less2) 
   have "eval (Atom(Eq (b-Const Bv))) ([] @ L1) = eval (liftFm 0 z (Atom(Eq (b- Const Bv)))) ([] @ L2 @ L1)"
     by (metis eval_liftFm_helper lengthl2 list.size(3))

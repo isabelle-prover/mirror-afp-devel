@@ -173,8 +173,8 @@ fun get_if_const :: "real mpoly \<Rightarrow> real option" where
 term "coeff p 0"
 
 
-lemma insertionNegative : "insertion f p = - insertion f (-p)"
-  by (metis (no_types, hide_lams) add_eq_0_iff cancel_comm_monoid_add_class.diff_cancel insertion_add insertion_zero uminus_add_conv_diff)  
+lemma insertionNegative : "insertion f p = - insertion f (-p)" try
+  by (metis add.right_inverse eq_neg_iff_add_eq_0 insertion_add insertion_zero)
 
 
 definition derivative :: "nat \<Rightarrow> real mpoly \<Rightarrow> real mpoly" where

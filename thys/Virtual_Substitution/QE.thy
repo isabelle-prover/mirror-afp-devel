@@ -238,7 +238,7 @@ proof -
         by (meson linorder_neqE_linordered_idom)
     qed
     then show ?thesis
-      by (metis (no_types, hide_lams) \<open>\<not> (\<exists>x>r. poly [:c, b, a:] x = 0)\<close> \<open>poly [:c, b, a:] r < 0\<close> greaterThanAtMost_iff linorder_neqE_linordered_idom linordered_field_no_ub poly_IVT_pos) 
+      by (metis greaterThanAtMost_iff less_add_one less_eq_real_def linorder_not_le no_zer poly_IVT_pos r_ltz)
   next
     case False
     then have len_nonz: "length (sorted_list_of_set {x. r < x \<and> poly [:c, b, a:] x = 0}) \<noteq> 0"
@@ -277,8 +277,8 @@ lemma continuity_lem_gt0:
 proof -
   assume r_gtz: "poly [:c, b, a:] r > 0 "
   let ?p = "[:-c, -b, -a:]"
-  have revpoly: "\<forall>x. -1*(poly [:c, b, a:] x) = poly [:-c, -b, -a:] x"
-    by (metis (no_types, hide_lams) Polynomial.poly_minus add.inverse_neutral minus_pCons mult_minus1)
+  have revpoly: "\<forall>x. -1*(poly [:c, b, a:] x) = poly [:-c, -b, -a:] x"    
+    by (metis (no_types, opaque_lifting) Polynomial.poly_minus minus_pCons mult_minus1 neg_equal_0_iff_equal)
   then have "poly ?p r < 0" using r_gtz
     by (metis mult_minus1 neg_less_0_iff_less)
   then have "\<exists>y'> r. \<forall>x\<in>{r<..y'}. poly ?p x < 0" using continuity_lem_lt0
@@ -406,7 +406,7 @@ proof -
   let ?mn = "min w (-1)"
   have "\<forall>(y::real). (y < ?mn \<longrightarrow> y^2 > -b*y + c)" using w_prop by auto
   then have "\<forall>(y::real). (y > (-1*?mn) \<longrightarrow> y^2 > b*y + c)"
-    by (metis (no_types, hide_lams) add.inverse_inverse minus_less_iff mult_minus1 mult_minus_left mult_minus_right power2_eq_square) 
+    by (metis (no_types, opaque_lifting) minus_less_iff minus_mult_commute mult_1 power2_eq_iff)
   then show ?thesis by auto
 qed
 
@@ -693,7 +693,7 @@ proof clarsimp
   qed
   have nex: "\<not> (\<exists>k> x. k < y \<and> poly [:c, b, a:] k = 0)"
     using discriminant_iff agt
-    by (metis (no_types, hide_lams) discrim_def order_less_irrefl quadratic_poly_eval xandy) 
+    by (metis discrim_def less_irrefl quadratic_poly_eval xandy)
   have nor2: "\<not> (\<exists>x>z. x < - b / (2 * a) \<and> poly [:c, b, a:] x = 0)"
     using nex xlt ylt zgt zlt by auto
   have nor: "\<not> (\<exists>x>- b / (2 * a). x < z \<and> poly [:c, b, a:] x = 0)"
@@ -1576,7 +1576,7 @@ proof -
             using azer x_prop k_prop 
             by auto 
           then have "k = -c/b" using k_prop azer
-            by (metis (no_types, hide_lams) add.commute add.left_neutral add_uminus_conv_diff diff_le_0_iff_le divide_non_zero less_eq_real_def mult_zero_left neg_less_iff_less order_less_irrefl real_add_less_0_iff)
+            by (smt (verit, best) mult_eq_0_iff nonzero_mult_div_cancel_left)
           then have " (\<exists>(a', b', c')\<in>set les.
            a' = 0 \<and> b' \<noteq> 0 \<and> (\<forall>(d, e, f)\<in>set les. \<exists>y'>- (c' / b'). \<forall>x\<in>{- (c' / b')<..y'}. d * x\<^sup>2 + e * x + f < 0))"
             using k_prop azer bnonz by auto
@@ -4759,7 +4759,7 @@ proof -
                (length (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d)) - Suc 0)<..y'}.
              t1 * x\<^sup>2 + u1 * x + v1 \<le> 0"
             using less_add_one One_nat_def
-            by (metis (no_types, hide_lams))        
+            by metis
         qed
         have allpropd: "(\<forall>(d, e, f)\<in>set d.
               \<forall>y'>?bgrt. \<forall>x\<in>{?bgrt<..y'}. d * x\<^sup>2 + e * x + f \<noteq> 0)" 
@@ -4792,8 +4792,7 @@ proof -
           \<forall>x\<in>{sorted_nonzero_root_list_set (set b \<union> set c \<union> set d) !
                (length (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d)) - Suc 0)<..y'}.
              t1 * x\<^sup>2 + u1 * x + v1 \<noteq> 0"
-            using less_add_one
-            by (metis (no_types, hide_lams) One_nat_def)     
+            using less_add_one by force
         qed
         have "\<forall>x. (\<forall>(d, e, f)\<in>set a.
              d * x\<^sup>2 + e * x + f = 0)" using alleqsetvar
@@ -5131,7 +5130,7 @@ proof -
                     by (simp add: sorted_nonzero_root_list_set_def) 
                   then have nlteq: "n \<le> k \<Longrightarrow> ?srl ! n \<le> ?srl ! k" using nprop k_prop sorted_iff_nth_mono
                     using sorted_nth_mono
-                    by (metis (no_types, hide_lams) Suc_1 \<open>q \<in> set (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d))\<close> diff_Suc_less length_pos_if_in_set sup.absorb_iff2 sup.strict_boundedE) 
+                    by (metis Suc_1 \<open>q \<in> set (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d))\<close> diff_less length_pos_if_in_set sup.absorb_iff2 sup.strict_boundedE zero_less_Suc)
                   have "?srl ! n > ?srl ! k" using nprop qgt by auto
                   then show ?thesis
                     using nlteq
@@ -5259,7 +5258,7 @@ proof -
               using ins x1inbtw samesign
               by blast 
             then show "t1 * x1\<^sup>2 + u1 * x1 + v1 \<le> 0" using xsn unfolding sign_num_def
-              by (metis (no_types, hide_lams) equal_neg_zero less_eq_real_def linorder_not_less zero_neq_one) 
+              by (smt (verit, del_insts))
           qed
           have allpropcvar: "(\<forall>(d, e, f)\<in>set c.
               \<exists>y'>?bgrt. \<forall>x\<in>{?bgrt<..y'}. d * x\<^sup>2 + e * x + f \<le> 0)" 

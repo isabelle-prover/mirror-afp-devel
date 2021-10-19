@@ -440,7 +440,7 @@ proof-
       using ysq_dom_y_plus_coeff[where b = "-b/a", where c = "-c/a"]
       by blast 
     then have hyp:"\<exists>(w::real). \<forall>(y::real). (y < w \<longrightarrow> a*y^2 \<le> a*(-b/a)*y + a*(-c/a))"
-      by (metis (no_types, hide_lams) \<open>a < 0\<close> distrib_left less_eq_real_def linorder_not_le mult.assoc mult_less_cancel_left)
+      by (metis (no_types, opaque_lifting) \<open>a < 0\<close> distrib_left less_eq_real_def linorder_not_le mult.assoc mult_less_cancel_left)
     have "\<forall>y. a*(-b/a)*y + a*(-c/a) = -b*y -c"
       using \<open>a < 0\<close> by auto
     then have "\<exists>(w::real). \<forall>(y::real). (y < w \<longrightarrow> a*y^2 \<le> -b*y - c)"

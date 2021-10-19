@@ -964,6 +964,7 @@ proof -
     using degree_var_i by auto
   have h1c1 : "\<forall>i. (Var(x)^(i)::real mpoly)\<noteq>0"
     by (metis MPoly_Type.degree_zero h1b power_0 zero_neq_one)
+  fix i
   have h1c1var: "((Var x)^i:: real mpoly) \<noteq> 0" using h1c1 by blast
   have h1c2 : "((Const ((i::nat) + 1))::real mpoly)\<noteq>0"
     using nonzero_const_is_nonzero
@@ -995,7 +996,7 @@ proof -
     by (simp add: mult.commute)
   have h4: "(isolate_variable_sparse p x (i+1) \<noteq> 0) \<longrightarrow> (MPoly_Type.degree (f i) x) = i"
     using h4a1 f_def degh2 h1a
-    by (metis (no_types, hide_lams) add.left_neutral mult.commute mult.left_commute of_nat_1 of_nat_add) 
+    by (metis (no_types, lifting) degh1 degree_const h1b mult.commute mult.left_commute of_nat_1 of_nat_add)
   have h5: "(MPoly_Type.degree (f i) x) \<le> i" using h3 h4 by auto
   have h6: "(MPoly_Type.degree (f n) x) = n" using h1c3 h4
     by (smt One_nat_def add.right_neutral add_Suc_right degree_const degree_mult divisors_zero f_def h1a h1b h1c1 mult.commute nonzero_const_is_nonzero of_nat_1 of_nat_add of_nat_neq_0) 

@@ -350,7 +350,7 @@ proof(cases p')
         apply (simp add: degree_isovarspar mult_one_right) defer
         apply simp
         using degree_mult[OF a b, of var]
-        by (metis (no_types, hide_lams) ExecutiblePolyProps.degree_one add.left_neutral b degree_const degree_isovarspar degree_mult mult.commute mult_zero_class.mult_zero_right)
+        by (metis (no_types, opaque_lifting) ExecutiblePolyProps.degree_one add.left_neutral b degree_const degree_isovarspar degree_mult mult.commute mult_zero_class.mult_zero_right)
       have simp : "(convertDerivative var p) = Or (fm.Atom (Less p))
      (And (fm.Atom (Eq p))
        (Or (fm.Atom (Less (derivative var p)))
@@ -752,7 +752,7 @@ proof(cases p')
     apply (meson assms(1) degree_convert_eq)
     apply (metis degree_derivative less_Suc_eq less_add_one not_less_eq numeral_3_eq_3)
     apply (meson assms(1) degree_convert_eq)
-    apply (metis (no_types, hide_lams) Suc_1 Suc_eq_plus1 degree_derivative less_2_cases less_Suc_eq numeral_3_eq_3)
+    apply (metis (no_types, opaque_lifting) Suc_1 Suc_eq_plus1 degree_derivative less_2_cases less_Suc_eq numeral_3_eq_3)
     using assms(1) degree_convert_eq by blast
   have c'_insertion : "insertion (nth_default 0 (xs'@x#xs)) (isolate_variable_sparse p var 0) = c'"
     using assms fields unfolding convert_poly.simps apply(cases "MPoly_Type.degree p var < 3") by auto
@@ -1044,7 +1044,7 @@ proof(cases "At = LessUni p")
             assume agteq: "\<not> a < 0 "
             assume y_prop: "(A + B * sqrt C) / D < y'"
             have beq_var: "b = 2 * a * (- A - B * sqrt C) / D" using beq
-              by (metis (no_types, hide_lams) ab_group_add_class.ab_diff_conv_add_uminus add.left_neutral add_diff_cancel_left' divide_inverse mult.commute mult_minus_right)             
+              by (metis (no_types, opaque_lifting) ab_group_add_class.ab_diff_conv_add_uminus add.left_neutral add_diff_cancel_left' divide_inverse mult.commute mult_minus_right)             
             have root_var: " a * ((- A - B * sqrt C) / D)\<^sup>2 - 2 * a * (- A - B * sqrt C) * (- A - B * sqrt C) / (D * D) + c =  0"
               using root
             proof -
