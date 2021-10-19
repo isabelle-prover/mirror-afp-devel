@@ -11064,7 +11064,7 @@ abstract =
   
 [Virtual_Substitution]
 title = Verified Quadratic Virtual Substitution for Real Arithmetic
-author = Matias Scharager <mailto:mscharag@cs.cmu.edu>, Katherine Cordwell <mailto:kcordwel@cs.cmu.edu>, Stefan Mitsch <mailto:smitsch@cs.cmu.edu>, and André Platzer <mailto:aplatzer@cs.cmu.edu>
+author = Matias Scharager <mailto:mscharag@cs.cmu.edu>, Katherine Cordwell <mailto:kcordwel@cs.cmu.edu>, Stefan Mitsch <mailto:smitsch@cs.cmu.edu>, André Platzer <mailto:aplatzer@cs.cmu.edu>
 topic = Computer science/Algorithms/Mathematical
 date = 2021-10-02
 notify = mscharag@cs.cmu.edu, kcordwel@cs.cmu.edu, smitsch@cs.cmu.edu, aplatzer@cs.cmu.edu

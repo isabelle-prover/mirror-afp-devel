@@ -14,7 +14,7 @@
        <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
               <link>https://www.isa-afp.org/entries/Virtual_Substitution.html</link>
        <guid>https://www.isa-afp.org/entries/Virtual_Substitution.html</guid>
-       <dc:creator> Matias Scharager, Katherine Cordwell, Stefan Mitsch, and André Platzer       </dc:creator>
+       <dc:creator> Matias Scharager, Katherine Cordwell, Stefan Mitsch, André Platzer       </dc:creator>
        <pubDate>02 Oct 2021 00:00:00 +0000</pubDate>
        <description>
 This paper presents a formally verified quantifier elimination (QE)
