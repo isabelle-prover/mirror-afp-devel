@@ -115,10 +115,15 @@ lemma err_le_unfold [iff]:
   
 
 subsection \<open>Semilattice\<close>
+lemma order_sup_state_opt' [intro, simp]:
+  "wf_prog wf_mb P \<Longrightarrow> 
+      order (sup_state_opt P) (opt ((\<Union> {list n (types P) |n. n \<le> mxs} ) \<times> list (Suc (length Ts + mxl\<^sub>0)) (err (types P))))"   
+(*<*) 
+  apply (unfold sup_state_opt_def sup_state_def sup_ty_opt_def  ) 
+  apply (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>
+  done 
+(*<*) 
 
-lemma order_sup_state_opt [intro, simp]: 
-  "wf_prog wf_mb P \<Longrightarrow> order (sup_state_opt P)"   
-(*<*) by (unfold sup_state_opt_def sup_state_def sup_ty_opt_def) blast (*>*)
 
 lemma semilat_JVM [intro?]:
   "wf_prog wf_mb P \<Longrightarrow> semilat (JVM_SemiType.sl P mxs mxl)"
@@ -129,14 +134,9 @@ lemma semilat_JVM [intro?]:
   done
 (*>*)
 
-lemma acc_JVM [intro]:
-  "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"
-(*<*) by (unfold JVM_le_unfold) blast (*>*)
-
-
 subsection \<open>Widening with \<open>\<top>\<close>\<close>
 
-lemma subtype_refl[iff]: "subtype P t t" (*<*) by (simp add: fun_of_def) (*>*)
+lemma subtype_refl: "subtype P t t" (*<*) by (simp add: fun_of_def) (*>*)
 
 lemma sup_ty_opt_refl [iff]: "P \<turnstile> T \<le>\<^sub>\<top> T"
 (*<*)
@@ -252,5 +252,124 @@ lemma sup_state_opt_trans [intro?, trans]:
   apply (rule sup_state_trans, assumption+)
   done
 (*>*)
+
+lemma sup_state_opt_err  : "(Err.le (sup_state_opt P)) s s"
+  apply (unfold JVM_le_unfold Product.le_def Opt.le_def Err.le_def lesssub_def lesub_def Listn.le_def)
+  apply (auto split: err.splits)
+  done
+
+lemma Cons_less_Conss1 [simp]:
+  "x#xs [\<sqsubset>\<^bsub>subtype P\<^esub>] y#ys = (x \<sqsubset>\<^bsub>subtype P\<^esub> y \<and> xs [\<sqsubseteq>\<^bsub>subtype P\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^bsub>subtype P\<^esub>] ys)"
+  apply (unfold lesssub_def )
+  apply auto
+  apply (simp add:lesssub_def lesub_def) \<comment>\<open>widen_refl, subtype_refl \<close>
+  done
+
+lemma Cons_less_Conss2 [simp]:
+  "x#xs [\<sqsubset>\<^bsub>Err.le (subtype P)\<^esub>] y#ys = (x \<sqsubset>\<^bsub>Err.le (subtype P)\<^esub> y \<and> xs [\<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^bsub>Err.le (subtype P)\<^esub>] ys)"
+  apply (unfold lesssub_def )
+  apply auto
+  apply (simp add:lesssub_def lesub_def Err.le_def split: err.splits)
+  done
+
+lemma acc_le_listI1 [intro!]:
+  " acc (subtype P) \<Longrightarrow> acc (Listn.le (subtype P))"
+  (*<*) 
+apply (unfold acc_def)
+apply (subgoal_tac
+ "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le (subtype P)) ys})")
+   apply (erule wf_subset)
+
+ apply (blast intro: lesssub_lengthD)
+apply (rule wf_UN)
+ prefer 2
+ apply (rename_tac m n)
+ apply (case_tac "m=n")
+  apply simp
+ apply (fast intro!: equals0I dest: not_sym)
+apply (rename_tac n)
+apply (induct_tac n)
+ apply (simp add: lesssub_def cong: conj_cong)
+apply (rename_tac k)
+apply (simp add: wf_eq_minimal)
+apply (simp (no_asm) add: length_Suc_conv cong: conj_cong)
+apply clarify
+apply (rename_tac M m)
+apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
+ prefer 2
+ apply (erule thin_rl)
+ apply (erule thin_rl)
+ apply blast
+apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
+apply (erule impE)
+ apply blast
+apply (thin_tac "\<exists>x xs. P x xs" for P)
+apply clarify
+apply (rename_tac maxA xs)
+apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
+apply (erule impE)
+ apply blast
+apply clarify
+apply (thin_tac "m \<in> M")
+apply (thin_tac "maxA#xs \<in> M")
+apply (rule bexI)
+ prefer 2
+ apply assumption
+apply clarify
+apply simp
+apply blast
+  done
+
+lemma acc_le_listI2 [intro!]:
+  " acc (Err.le (subtype P)) \<Longrightarrow> acc (Listn.le (Err.le (subtype P)))"
+    (*<*) 
+apply (unfold acc_def)
+apply (subgoal_tac
+ "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le (Err.le (subtype P))) ys})")
+   apply (erule wf_subset)
+
+ apply (blast intro: lesssub_lengthD)
+apply (rule wf_UN)
+ prefer 2
+ apply (rename_tac m n)
+ apply (case_tac "m=n")
+  apply simp
+ apply (fast intro!: equals0I dest: not_sym)
+apply (rename_tac n)
+apply (induct_tac n)
+ apply (simp add: lesssub_def cong: conj_cong)
+apply (rename_tac k)
+apply (simp add: wf_eq_minimal)
+apply (simp (no_asm) add: length_Suc_conv cong: conj_cong)
+apply clarify
+apply (rename_tac M m)
+apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
+ prefer 2
+ apply (erule thin_rl)
+ apply (erule thin_rl)
+ apply blast
+apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
+apply (erule impE)
+ apply blast
+apply (thin_tac "\<exists>x xs. P x xs" for P)
+apply clarify
+apply (rename_tac maxA xs)
+apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
+apply (erule impE)
+ apply blast
+apply clarify
+apply (thin_tac "m \<in> M")
+apply (thin_tac "maxA#xs \<in> M")
+apply (rule bexI)
+ prefer 2
+ apply assumption
+apply clarify
+apply simp
+apply blast
+  done
+
+lemma acc_JVM [intro]:
+  "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"
+(*<*) by (unfold JVM_le_unfold) blast (*>*)  \<comment>\<open> use acc_listI1, acc_listI2 \<close>
 
 end

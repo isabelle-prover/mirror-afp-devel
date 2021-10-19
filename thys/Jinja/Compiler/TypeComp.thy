@@ -1184,9 +1184,18 @@ next
   also
   let ?n\<^sub>e = "size(compE\<^sub>2 e)"  let ?n\<^sub>c = "size(compE\<^sub>2 c)"
   let ?if = "IfFalse (int ?n\<^sub>c + 3)"
-  have "\<turnstile> [?if],[] [::] ?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']"
-    by(simp add: wt_instr_Cons wt_instr_append wt_IfFalse
-                 nat_add_distrib split: nat_diff_split)
+  have "\<turnstile> [?if],[] [::] ?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']" 
+  proof-{
+      show ?thesis
+        apply (rule wt_IfFalse)
+          apply simp
+         apply simp
+        apply (subgoal_tac "length (compE\<^sub>2 c) = length (compT E (A \<squnion> \<A> e) ST c) + 1" 
+                           "nat (int (length (compE\<^sub>2 c)) + 3 - 2) > length (compT E (A \<squnion> \<A> e) ST c)")
+          apply simp+
+        done
+    }
+  qed
   also
   have "(?\<tau> # ?\<tau>s\<^sub>e) @ (?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']) = ?\<tau>s" by simp
   also
@@ -1198,8 +1207,33 @@ next
   also have "(?\<tau> # ?\<tau>s\<^sub>e @ [?\<tau>\<^sub>e,?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>c) @ [?\<tau>\<^sub>c,?\<tau>\<^sub>2,?\<tau>\<^sub>1,?\<tau>'] = ?\<tau>s" by simp
   also let ?go = "Goto (-int(?n\<^sub>c+?n\<^sub>e+2))"
   have "P \<turnstile> ?\<tau>\<^sub>2 \<le>' ?\<tau>" by(fastforce intro: ty\<^sub>i'_antimono simp: hyperset_defs)
-  hence "P,T\<^sub>r,mxs,size ?\<tau>s,[] \<turnstile> ?go,?n\<^sub>e+?n\<^sub>c+2 :: ?\<tau>s"
-    by(simp add: wt_Goto split: nat_diff_split)
+  hence "P,T\<^sub>r,mxs,size ?\<tau>s,[] \<turnstile> ?go,?n\<^sub>e+?n\<^sub>c+2 :: ?\<tau>s" 
+  proof-{
+      let ?t1 = "ty\<^sub>i' ST E A" let ?t2 = "ty\<^sub>i' (Boolean # ST) E (A \<squnion> \<A> e)" let ?t3 = "ty\<^sub>i' ST E (A \<squnion> \<A> e)"
+      let ?t4 = "[ty\<^sub>i' (Tc # ST) E (A \<squnion> \<A> e \<squnion> \<A> c), ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c), ty\<^sub>i' ST E (A \<squnion> \<A> e), ty\<^sub>i' (Void # ST) E (A \<squnion> \<A> e)]"
+      let ?c = " compT E (A \<squnion> \<A> e) ST c" let ?e = "compT E A ST e" 
+      assume ass: "P \<turnstile> ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c) \<le>' ?t1"      
+      show ?thesis
+        apply (rule wt_Goto)
+        apply simp
+          apply simp
+         apply simp
+      proof-{
+          let ?s1 = "((?t1 # ?e @ [?t2]) @ ?t3 # ?c)"          
+          have "length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2 > length ?s1" by auto
+          hence "(?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) =
+                     ?t4 ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2 - length ?s1)" 
+            by (auto simp only:nth_append split: if_splits)
+          hence "(?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) = ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c)" 
+            using compT_sizes by auto 
+          hence "P \<turnstile> (?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) \<le>' ty\<^sub>i' ST E A" 
+            using ass by simp
+          thus "P \<turnstile> ((?t1 # ?e @ [?t2]) @ ?t3 # ?c @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) \<le>'
+                    ((?t1 # ?e @ [?t2]) @ ?t3 # ?c @ ?t4) ! nat (int (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) +
+                      - int (length (compE\<^sub>2 c) + length (compE\<^sub>2 e) + 2))"
+            by simp
+        }qed
+    }qed
   also have "?\<tau>s = (?\<tau> # ?\<tau>s\<^sub>e @ [?\<tau>\<^sub>e,?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2]) @ [?\<tau>\<^sub>1, ?\<tau>']"
     by simp
   also have "\<turnstile> [Push Unit],[] [::] [?\<tau>\<^sub>1,?\<tau>']"
@@ -1238,8 +1272,18 @@ next
   let ?\<tau>\<^sub>1 = "ty\<^sub>i' (Boolean#ST) E ?A\<^sub>0"
   let ?g\<^sub>1 = "IfFalse(int (size (compE\<^sub>2 e\<^sub>1) + 2))"
   let ?code = "compE\<^sub>2 e\<^sub>1 @ ?g\<^sub>2 # compE\<^sub>2 e\<^sub>2"
-  have "\<turnstile> [?g\<^sub>1],[] [::] [?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2"
-    by(simp add: wt_IfFalse nat_add_distrib split:nat_diff_split)
+  have "\<turnstile> [?g\<^sub>1],[] [::] [?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2"  
+  proof-{
+    show ?thesis 
+      apply clarsimp
+      apply (rule wt_IfFalse)
+        apply (simp only:nat_add_distrib)
+       apply simp
+      apply (auto simp only:nth_append split:if_splits)     
+      apply (simp only:compT_sizes)
+      apply simp
+      done
+  }qed
   also (wt_instrs_ext2) have "[?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2 = ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>1\<^sub>2" by simp also
   let ?\<tau> = "ty\<^sub>i' ST E A"
   have "PROP ?P e E Boolean A ST" by fact

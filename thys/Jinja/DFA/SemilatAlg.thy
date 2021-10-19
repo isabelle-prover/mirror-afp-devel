@@ -6,7 +6,7 @@
 section \<open>More on Semilattices\<close>
 
 theory SemilatAlg
-imports Typing_Framework
+imports Typing_Framework_1
 begin
 
 definition lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
@@ -95,21 +95,32 @@ proof (induct x)
 qed
 (*>*)
 
+
 lemma (in Semilat) pp_ub2:
  "\<And>y. \<lbrakk> set x \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> x \<Squnion>\<^bsub>f\<^esub> y"
 (*<*)
+  
 proof (induct x)
-  from semilat show "\<And>y. y \<sqsubseteq>\<^bsub>r\<^esub> [] \<Squnion>\<^bsub>f\<^esub> y" by simp
+  thm plusplus_closed[OF Semilat.intro, OF semilat]
+  thm semilat_Def
+  thm Semilat.intro
+  fix y assume "y \<in> A" 
+  with semilat show "y\<sqsubseteq>\<^bsub>r\<^esub> [] \<Squnion>\<^bsub>f\<^esub> y" by simp
   
   fix y a l assume y:  "y \<in> A" and "set (a#l) \<subseteq> A"
   then obtain a: "a \<in> A" and x: "set l \<subseteq> A" by simp
+
+  from semilat x y have l_y_inA: "l \<Squnion>\<^bsub>f\<^esub> y \<in> A" by (auto dest: plusplus_closed[OF Semilat.intro, OF semilat])
   assume "\<And>y. \<lbrakk>set l \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> y"
   from this and x have IH: "\<And>y. y \<in> A \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> y" .
 
+  from a y have "a \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
+  then have l_ay_inA: "l \<Squnion>\<^bsub>f\<^esub> ( a \<squnion>\<^bsub>f\<^esub> y) \<in> A" using plusplus_closed[OF Semilat.intro, OF semilat] x  by auto 
+    
   from a y have "y \<sqsubseteq>\<^bsub>r\<^esub> a \<squnion>\<^bsub>f\<^esub> y" ..
-  also from a y have "a \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
+  also from a y have a_y_inA: "a \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
   hence "(a \<squnion>\<^bsub>f\<^esub> y) \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> (a \<squnion>\<^bsub>f\<^esub> y)" by (rule IH)
-  finally have "y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> (a \<squnion>\<^bsub>f\<^esub> y)" .
+  finally have "y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> (a \<squnion>\<^bsub>f\<^esub> y)" using y a_y_inA l_ay_inA .
   thus "y \<sqsubseteq>\<^bsub>r\<^esub> (a#l) \<Squnion>\<^bsub>f\<^esub> y" by simp
 qed
 (*>*)
@@ -129,14 +140,16 @@ proof (induct ls)
   assume "\<And>y. \<lbrakk>set ls \<subseteq> A; y \<in> A; x \<in> set ls\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y"
   from this and ls have IH: "\<And>y. x \<in> set ls \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y" .
 
+  from s y have s_y_inA: "s \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
+  then have ls_sy_inA: "ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y) \<in> A"using plusplus_closed[OF Semilat.intro, OF semilat] ls  by auto 
+  
   assume "x \<in> set (s#ls)"
   then obtain xls: "x = s \<or> x \<in> set ls" by simp
   moreover {
     assume xs: "x = s"
     from s y have "s \<sqsubseteq>\<^bsub>r\<^esub> s \<squnion>\<^bsub>f\<^esub> y" ..
-    also from s y have "s \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
-    with ls have "(s \<squnion>\<^bsub>f\<^esub> y) \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y)" by (rule pp_ub2)
-    finally have "s \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y)" .
+    also from ls s_y_inA have "(s \<squnion>\<^bsub>f\<^esub> y) \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y)" by (rule pp_ub2)
+    finally have "s \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y)" using s s_y_inA ls_sy_inA .
     with xs have "x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> (s \<squnion>\<^bsub>f\<^esub> y)" by simp
   } 
   moreover {

@@ -43,21 +43,34 @@ lemma less_prod_Pair_conv:
   "((a\<^sub>1,b\<^sub>1) \<sqsubset>\<^bsub>Product.le r\<^sub>A r\<^sub>B\<^esub> (a\<^sub>2,b\<^sub>2)) = 
   (a\<^sub>1 \<sqsubset>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 & b\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2 | a\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 & b\<^sub>1 \<sqsubset>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2)"
 (*<*)
-apply (unfold lesssub_def)
-apply simp
-apply blast
-done
+  apply (unfold lesssub_def)
+  apply simp
+  apply blast
+  done
 (*>*)
 
-lemma order_le_prod [iff]: "order(Product.le r\<^sub>A r\<^sub>B) = (order r\<^sub>A & order r\<^sub>B)"
-(*<*)
-apply (unfold order_def)
-apply simp
-apply safe
-apply blast+
+lemma order_le_prodI [iff]: "(order r\<^sub>A  A & order r\<^sub>B B) \<Longrightarrow> order (Product.le r\<^sub>A r\<^sub>B) (A \<times> B)"
+  apply (unfold order_def)
+  apply safe
+       apply blast+
 done 
-(*>*)
 
+lemma order_le_prodE: "A \<noteq> {} \<Longrightarrow> B \<noteq> {} \<Longrightarrow> order (Product.le r\<^sub>A r\<^sub>B) (A \<times> B) \<Longrightarrow> (order r\<^sub>A  A & order r\<^sub>B B)"
+  apply (unfold order_def)
+  apply simp
+  apply safe
+       apply blast+
+  done
+
+lemma order_le_prod [iff]: "A \<noteq> {} \<Longrightarrow> B \<noteq> {} \<Longrightarrow> order(Product.le r\<^sub>A r\<^sub>B) (A \<times> B) = (order r\<^sub>A A & order r\<^sub>B B)"
+(*<*)
+  apply (unfold order_def)
+  apply simp
+  apply safe
+             apply blast+
+  done 
+
+(*>*)
 
 lemma acc_le_prodI [intro!]:
   "\<lbrakk> acc r\<^sub>A; acc r\<^sub>B \<rbrakk> \<Longrightarrow> acc(Product.le r\<^sub>A r\<^sub>B)"
@@ -135,6 +148,8 @@ apply (simp (no_asm_simp) only: Semilat.closedI [OF Semilat.intro] closed_lift2_
 apply (simp (no_asm) only: unfold_lesub_err Err.le_def unfold_plussub_lift2 sup_def)
 apply (auto elim: semilat_le_err_OK1 semilat_le_err_OK2
             simp add: lift2_def  split: err.split)
+    apply(rule order_le_prodI)
+    apply (rule conjI)
 apply (blast dest: Semilat.orderI [OF Semilat.intro])
 apply (blast dest: Semilat.orderI [OF Semilat.intro])
 

@@ -3,7 +3,7 @@
 section \<open>A semilattice of reversed-ordered list\<close>
 
 theory Dom_Semi_List
-imports Main Semilat Sorted_List_Operations2 Sorted_Less2 Cfg
+imports Main  "Jinja.Semilat" Sorted_List_Operations2 Sorted_Less2 Cfg
 begin
 
 type_synonym node = nat
@@ -209,8 +209,10 @@ lemma acc_nodes_le2: "acc (fst (snd nodes_semi))"
   apply (auto simp add: lesssub_def lesub_def intro: acc_nodes_le)
   done
 
-lemma "top nodes_le [] (fst nodes_semi)"
-  by(auto simp add: top_def nodes_semi_def nodes_le_def lesssub_def lesub_def sorted_less_sorted_list_of_set)
+lemma nodes_le_refl [iff] : "nodes_le s s"
+  apply (unfold nodes_le_def lesssub_def lesub_def)
+  apply (auto)
+  done
 
 end 
 

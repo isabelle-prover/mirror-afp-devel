@@ -99,13 +99,13 @@ lemma Cons_le_Cons [iff]: "x#xs [\<sqsubseteq>\<^bsub>r\<^esub>] y#ys = (x \<sqs
 by (simp add: lesub_def Listn.le_def)
 (*>*)
 
-lemma Cons_less_Conss [simp]:
-  "order r \<Longrightarrow>  x#xs [\<sqsubset>\<^sub>r] y#ys = (x \<sqsubset>\<^sub>r y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^sub>r] ys)"
-(*<*)
-apply (unfold lesssub_def)
-apply blast
-done
-(*>*)
+
+
+
+
+
+
+
 
 lemma list_update_le_cong:
   "\<lbrakk> i<size xs; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; x \<sqsubseteq>\<^sub>r y \<rbrakk> \<Longrightarrow> xs[i:=x] [\<sqsubseteq>\<^bsub>r\<^esub>] ys[i:=y]"
@@ -128,33 +128,184 @@ apply (simp add: unfold_lesub_list lesub_def Listn.le_def list_all2_refl)
 done
 (*>*)
 
-lemma le_list_trans: "\<lbrakk> order r; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs \<rbrakk> \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
+
+lemma le_list_trans: 
+  assumes ord: "order r A"
+      and xs:  "xs \<in> list n A" and ys: "ys \<in> list n A" and zs: "zs \<in> list n A"
+      and      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
+    shows      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
 (*<*)
+  using assms
+proof (unfold le_def lesssub_def lesub_def)
+  assume "list_all2 r xs ys" and "list_all2 r ys zs"
+  hence xs_ys_zs:  "\<forall>i < length xs. r (xs!i) (ys!i) \<and> r (ys!i) (zs!i)" 
+        and len_xs_zs: "length xs = length zs" by (auto simp add: list_all2_conv_all_nth)
+  from xs ys zs have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A \<and> zs!i \<in> A" by (unfold list_def) auto
+  
+  from ord have "\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z" by (unfold order_def) blast
+  hence "\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. r x y \<and> r y z \<longrightarrow> r x z" by (unfold lesssub_def lesub_def)
+  with xs_ys_zs inA have "\<forall>i<length xs. r (xs!i) (zs!i)" by blast
+  with len_xs_zs show "list_all2 r xs zs" by (simp add:list_all2_conv_all_nth)
+qed
+(*
+  apply (unfold lesssub_def lesub_def)
+  apply (unfold Listn.le_def)  
+  apply (frule list_all2_trans)
+    apply simp
+  apply blast
+  apply (simp add:list_all2_conv_all_nth)
+  apply (intro strip)
+  apply (erule order_trans) 
+  apply (unfold list_def)
+  apply (auto)
+*)
+
+lemma le_list_antisym: 
+  assumes ord: "order r A"
+      and xs:  "xs \<in> list n A" and ys: "ys \<in> list n A"
+      and      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
+    shows      "xs = ys"
+(*<*)
+  using assms
+proof (simp add: le_def lesssub_def lesub_def)
+  assume "list_all2 r xs ys" and "list_all2 r ys xs"
+  hence xs_ys:  "\<forall>i < length xs. r (xs!i) (ys!i) \<and> r (ys!i) (xs!i)" 
+        and len_xs_ys: "length xs = length ys" by (auto simp add: list_all2_conv_all_nth)
+  from xs ys have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A" by (unfold list_def) auto
+  
+  from ord have "\<forall>x\<in>A. \<forall>y\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x = y" by (unfold order_def) blast
+  hence "\<forall>x\<in>A. \<forall>y\<in>A. r x y \<and> r y x \<longrightarrow> x = y" by (unfold lesssub_def lesub_def)
+  with xs_ys inA have "\<forall>i<length xs. xs!i = ys!i" by blast
+  with len_xs_ys show "xs = ys" by (simp add:list_eq_iff_nth_eq)
+qed
+(*
 apply (unfold unfold_lesub_list)
-apply (unfold Listn.le_def)
-apply (rule list_all2_trans)
-apply (erule order_trans)
-apply assumption+
+  apply (unfold Listn.le_def)
+  apply (auto simp add: list_eq_iff_nth_eq list_def list_all2_conv_all_nth)
+  apply (rule order_antisym)     
+ apply (auto simp add: list_def)
+done
+*)
+(*>*)
+
+lemma listE_set [simp]: "xs \<in> list n A \<Longrightarrow> set xs \<subseteq> A"
+(*<*)
+apply (unfold list_def)
+apply blast
 done
 (*>*)
 
-lemma le_list_antisym: "\<lbrakk> order r; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs \<rbrakk> \<Longrightarrow> xs = ys"
+
+lemma nth_in [rule_format, simp]:
+  "\<forall>i n. size xs = n \<longrightarrow> set xs \<subseteq> A \<longrightarrow> i < n \<longrightarrow> (xs!i) \<in> A"
 (*<*)
-apply (unfold unfold_lesub_list)
-apply (unfold Listn.le_def)
-apply (rule list_all2_antisym)
-apply (rule order_antisym)
-apply assumption+
+apply (induct "xs")
+ apply simp
+apply (simp add: nth_Cons split: nat.split)
 done
 (*>*)
 
-lemma order_listI [simp, intro!]: "order r \<Longrightarrow> order(Listn.le r)"
+(* FIXME: remove simp *)
+lemma listE_length [simp]: "xs \<in> list n A \<Longrightarrow> size xs = n"
 (*<*)
-apply (subst order_def)
-apply (blast intro: le_list_refl le_list_trans le_list_antisym
-             dest: order_refl)
+apply (unfold list_def)
+apply blast
 done
 (*>*)
+
+lemma listE_nth_in: "\<lbrakk> xs \<in> list n A; i < n \<rbrakk> \<Longrightarrow> xs!i \<in> A"
+(*<*) by auto (*>*)
+
+
+lemma le_list_refl': "order r A \<Longrightarrow> xs \<in> list n A \<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
+  apply (unfold le_def lesssub_def lesub_def list_all2_conv_all_nth)
+  apply auto  
+  apply (subgoal_tac "xs ! i \<in> A")  
+   apply (subgoal_tac "(xs ! i) \<sqsubseteq>\<^sub>r (xs ! i)")
+    apply (simp only: lesssub_def lesub_def)
+   apply (fastforce dest: listE_nth_in)
+   apply (fastforce dest: order_refl)
+  done
+
+lemma order_listI [simp, intro!]: "order r A \<Longrightarrow> order(Listn.le r) (list n A)"  
+(*<*)
+proof-
+  assume ord: "order r A"
+  let ?r = "Listn.le r"
+  let ?A = "list n A" 
+  have "\<forall>x\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> x" using ord le_list_refl' by auto
+  moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub>  x \<longrightarrow> x=y" using ord le_list_antisym by auto
+  moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. \<forall>z\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub>y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>?r\<^esub> z" using ord le_list_trans by auto
+  ultimately show ?thesis by (auto simp only: order_def)
+qed
+(*>*)
+
+lemma le_list_refl2': "order r A \<Longrightarrow> xs \<in> (\<Union>{list n A |n. n \<le> mxs})\<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
+  by (auto simp add:le_list_refl')
+lemma le_list_trans2: 
+  assumes "order r A"
+      and "xs \<in> (\<Union>{list n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{list n A |n. n \<le> mxs})" and "zs \<in>(\<Union>{list n A |n. n \<le> mxs})"
+      and "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
+    shows "xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
+(*<*)using assms
+proof(auto simp only:list_def le_def lesssub_def lesub_def)
+  assume xA: "set xs \<subseteq> A" and "length xs \<le> mxs " and " length ys \<le> mxs "
+     and yA: "set ys \<subseteq> A" and len_zs: "length zs \<le> mxs" 
+     and zA: "set zs \<subseteq> A" and xy: "list_all2 r xs ys" and yz: "list_all2 r ys zs"
+     and ord: "order r A" 
+  from xy yz have xs_ys: "length xs = length ys" and ys_zs: "length ys = length zs" by (auto simp add:list_all2_conv_all_nth)
+  from ord have "\<forall>x\<in>A.  \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z" by (unfold order_def) blast
+  hence trans: "\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. r x y \<and> r y z \<longrightarrow> r x z" by (simp only:lesssub_def lesub_def)
+
+  from xA yA zA have x_inA: "\<forall>i<length xs. xs!i \<in> A"
+                 and y_inA: "\<forall>i<length xs. ys!i \<in> A" 
+                 and z_inA: "\<forall>i<length xs. zs!i \<in> A"  using xs_ys ys_zs  by auto
+  
+  from xy yz have "\<forall>i < length xs. r (xs!i) (ys!i)" 
+              and "\<forall>i < length ys. r (ys!i) (zs!i)" by (auto simp add:list_all2_conv_all_nth)
+  hence "\<forall>i < length xs. r (xs!i) (ys!i) \<and> r (ys!i) (zs!i)" using xs_ys ys_zs by auto
+
+  with x_inA y_inA z_inA
+  have "\<forall>i<length xs. r (xs!i)  (zs!i)" using trans  xs_ys ys_zs by blast
+  thus "list_all2 r xs zs" using xs_ys ys_zs by (simp add:list_all2_conv_all_nth)
+qed
+
+
+lemma le_list_antisym2: 
+  assumes "order r A"
+      and "xs \<in>(\<Union>{list n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{list n A |n. n \<le> mxs})" 
+      and "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
+    shows " xs = ys"
+(*<*)
+  using assms
+proof(auto simp only:list_def le_def lesssub_def lesub_def)
+  assume xA: "set xs \<subseteq> A" and len_ys: "length ys \<le> mxs" and len_xs: "length xs \<le> mxs" 
+     and yA: "set ys \<subseteq> A" and xy: "list_all2 r xs ys" and yx: "list_all2 r ys xs" 
+     and ord: "order r A"
+  from xy have len_eq_xs_ys: "length xs = length ys" by (simp add:list_all2_conv_all_nth)
+  
+  from ord have antisymm:"\<forall>x\<in>A. \<forall>y\<in>A. r x y \<and> r y x\<longrightarrow> x=y " by (auto simp only:lesssub_def lesub_def order_def)
+  from xA yA have x_inA: "\<forall>i<length xs. xs!i \<in> A" and y_inA: "\<forall>i<length ys. ys!i \<in> A" by auto
+  from xy yx have "\<forall>i < length xs. r (xs!i) (ys!i)" and "\<forall>i < length ys. r (ys!i) (xs!i)" by (auto simp add:list_all2_conv_all_nth)
+  with x_inA y_inA
+  have "\<forall>i<length xs. xs!i = ys!i" using antisymm len_eq_xs_ys by auto
+  then show "xs = ys" using len_eq_xs_ys by (simp add:list_eq_iff_nth_eq)
+qed
+(*<*)
+
+
+lemma order_listI2[intro!] : "order r A \<Longrightarrow> order(Listn.le r) (\<Union>{list n A |n. n \<le> mxs})"
+(*<*)
+proof-
+  assume ord: "order r A"  
+  let ?r = "Listn.le r"
+  let ?A = "(\<Union>{list n A |n. n \<le> mxs})" 
+  have "\<forall>x\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> x" using ord le_list_refl2' by auto  \<comment>\<open> use order_listI \<close>
+  moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub>  x \<longrightarrow> x=y" using ord le_list_antisym2 by blast
+  moreover have "\<forall>x\<in>?A.  \<forall>y\<in>?A. \<forall>z\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub>y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>?r\<^esub> z" using ord le_list_trans2 by blast
+  ultimately show ?thesis by (auto simp only: order_def)
+qed
+
 
 lemma lesub_list_impl_same_size [simp]: "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<Longrightarrow> size ys = size xs"
 (*<*)
@@ -169,6 +320,7 @@ apply (unfold lesssub_def)
 apply auto
 done
 (*>*)
+
 
 lemma le_list_appendI: "a [\<sqsubseteq>\<^bsub>r\<^esub>] b \<Longrightarrow> c [\<sqsubseteq>\<^bsub>r\<^esub>] d \<Longrightarrow> a@c [\<sqsubseteq>\<^bsub>r\<^esub>] b@d"
 (*<*)
@@ -196,23 +348,8 @@ apply blast
 done
 (*>*)
 
-(* FIXME: remove simp *)
-lemma listE_length [simp]: "xs \<in> list n A \<Longrightarrow> size xs = n"
-(*<*)
-apply (unfold list_def)
-apply blast
-done
-(*>*)
-
 lemma less_lengthI: "\<lbrakk> xs \<in> list n A; p < n \<rbrakk> \<Longrightarrow> p < size xs"
 (*<*) by simp (*>*)
-
-lemma listE_set [simp]: "xs \<in> list n A \<Longrightarrow> set xs \<subseteq> A"
-(*<*)
-apply (unfold list_def)
-apply blast
-done
-(*>*)
 
 lemma list_0 [simp]: "list 0 A = {[]}"
 (*<*)
@@ -230,6 +367,7 @@ apply auto
 done
 (*>*)
 
+
 lemma Cons_in_list_Suc [iff]:
   "(x#xs \<in> list (Suc n) A) = (x\<in>A \<and> xs \<in> list n A)"
 (*<*)
@@ -246,19 +384,6 @@ apply (simp add: in_list_Suc_iff)
 apply blast
 done
 (*>*)
-
-
-lemma nth_in [rule_format, simp]:
-  "\<forall>i n. size xs = n \<longrightarrow> set xs \<subseteq> A \<longrightarrow> i < n \<longrightarrow> (xs!i) \<in> A"
-(*<*)
-apply (induct "xs")
- apply simp
-apply (simp add: nth_Cons split: nat.split)
-done
-(*>*)
-
-lemma listE_nth_in: "\<lbrakk> xs \<in> list n A; i < n \<rbrakk> \<Longrightarrow> xs!i \<in> A"
-(*<*) by auto (*>*)
 
 lemma listn_Cons_Suc [elim!]:
   "l#xs \<in> list n A \<Longrightarrow> (\<And>n'. n = Suc n' \<Longrightarrow> l \<in> A \<Longrightarrow> xs \<in> list n' A \<Longrightarrow> P) \<Longrightarrow> P"
@@ -385,53 +510,6 @@ apply (simp add: nth_Cons split: nat.split)
 done
 (*>*)
 
-lemma acc_le_listI [intro!]:
-  "\<lbrakk> order r; acc r \<rbrakk> \<Longrightarrow> acc(Listn.le r)"
-(*<*)
-apply (unfold acc_def)
-apply (subgoal_tac
- "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys})")
- apply (erule wf_subset)
- apply (blast intro: lesssub_lengthD)
-apply (rule wf_UN)
- prefer 2
- apply (rename_tac m n)
- apply (case_tac "m=n")
-  apply simp
- apply (fast intro!: equals0I dest: not_sym)
-apply (rename_tac n)
-apply (induct_tac n)
- apply (simp add: lesssub_def cong: conj_cong)
-apply (rename_tac k)
-apply (simp add: wf_eq_minimal)
-apply (simp (no_asm) add: length_Suc_conv cong: conj_cong)
-apply clarify
-apply (rename_tac M m)
-apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
- prefer 2
- apply (erule thin_rl)
- apply (erule thin_rl)
- apply blast
-apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
-apply (erule impE)
- apply blast
-apply (thin_tac "\<exists>x xs. P x xs" for P)
-apply clarify
-apply (rename_tac maxA xs)
-apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
-apply (erule impE)
- apply blast
-apply clarify
-apply (thin_tac "m \<in> M")
-apply (thin_tac "maxA#xs \<in> M")
-apply (rule bexI)
- prefer 2
- apply assumption
-apply clarify
-apply simp
-apply blast
-done
-(*>*)
 
 lemma closed_listI:
   "closed S f \<Longrightarrow> closed (list n S) (map2 f)"

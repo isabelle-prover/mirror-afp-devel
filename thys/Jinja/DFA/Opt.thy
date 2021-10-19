@@ -40,26 +40,26 @@ apply (rule refl)
 done
 (*>*)
 
-lemma le_opt_refl: "order r \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> x"
-(*<*) by (simp add: unfold_le_opt split: option.split) (*<*)
+lemma le_opt_refl: "order r A \<Longrightarrow>  x \<in> opt A \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> x"
+(*<*) by (auto simp add: unfold_le_opt opt_def split: option.split) (*<*)
 
 lemma le_opt_trans [rule_format]:
-  "order r \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> y \<longrightarrow> y \<sqsubseteq>\<^bsub>le r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> z"
+  "order r A \<Longrightarrow> x \<in> opt A \<Longrightarrow> y \<in> opt A \<Longrightarrow> z \<in> opt A \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> y \<longrightarrow> y \<sqsubseteq>\<^bsub>le r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> z"
 (*<*)
-apply (simp add: unfold_le_opt split: option.split)
+apply (simp add: unfold_le_opt opt_def split: option.split)
 apply (blast intro: order_trans)
 done
 (*>*)
 
 lemma le_opt_antisym [rule_format]:
-  "order r \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> y \<longrightarrow> y \<sqsubseteq>\<^bsub>le r\<^esub> x \<longrightarrow> x=y"
+  "order r A \<Longrightarrow> x \<in> opt A \<Longrightarrow> y \<in> opt A \<Longrightarrow> z \<in> opt A \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> y \<longrightarrow> y \<sqsubseteq>\<^bsub>le r\<^esub> x \<longrightarrow> x=y"
 (*<*)
-apply (simp add: unfold_le_opt split: option.split)
+apply (simp add: unfold_le_opt opt_def split: option.split)
 apply (blast intro: order_antisym)
 done
 (*>*)
 
-lemma order_le_opt [intro!,simp]: "order r \<Longrightarrow> order(le r)"
+lemma order_le_opt [intro!,simp]: "order r A \<Longrightarrow> order(le r) (opt A)"
 (*<*)
 apply (subst order_def)
 apply (blast intro: le_opt_refl le_opt_trans le_opt_antisym)
@@ -110,7 +110,7 @@ proof -
   obtain A r f where [simp]: "L = (A,r,f)" by (cases L)
   let ?A0 = "err A" and ?r0 = "Err.le r" and ?f0 = "lift2 f"
   from s obtain
-    ord: "order ?r0" and
+    ord: "order ?r0 ?A" and
     clo: "closed ?A0 ?f0" and
     ub1: "\<forall>x\<in>?A0. \<forall>y\<in>?A0. x \<sqsubseteq>\<^bsub>?r0\<^esub> x \<squnion>\<^bsub>?f0\<^esub> y" and
     ub2: "\<forall>x\<in>?A0. \<forall>y\<in>?A0. y \<sqsubseteq>\<^bsub>?r0\<^esub> x \<squnion>\<^bsub>?f0\<^esub> y" and
@@ -119,7 +119,7 @@ proof -
 
   let ?A = "err (opt A)" and ?r = "Err.le (Opt.le r)" and ?f = "lift2 (Opt.sup f)"
 
-  from ord have "order ?r" by simp
+  from ord have "order ?r ?A" by simp
   moreover
   have "closed ?A ?f"
   proof (unfold closed_def, intro strip)
@@ -148,7 +148,7 @@ proof -
   qed
   moreover
   { fix a b c assume "a \<in> opt A" and "b \<in> opt A" and "a \<squnion>\<^bsub>sup f\<^esub> b = OK c" 
-    moreover from ord have "order r" by simp
+    moreover from ord have "order r A" by simp
     moreover
     { fix x y z assume "x \<in> A" and "y \<in> A" 
       hence "OK x \<in> err A \<and> OK y \<in> err A" by simp
@@ -204,7 +204,7 @@ apply simp+
 done 
 (*>*)
 
-lemma Top_le_conv:  "\<lbrakk> order r; top r T \<rbrakk> \<Longrightarrow> (T \<sqsubseteq>\<^sub>r x) = (x = T)"
+lemma Top_le_conv:  "\<lbrakk> order r A; top r T; x \<in> A; T \<in> A \<rbrakk> \<Longrightarrow> (T \<sqsubseteq>\<^sub>r x) = (x = T)"
 (*<*)
 apply (unfold top_def)
 apply (blast intro: order_antisym)

@@ -53,9 +53,9 @@ definition ord :: "('a \<times> 'a) set \<Rightarrow> 'a ord"
 where
   "ord r = (\<lambda>x y. (x,y) \<in> r)"
 
-definition order :: "'a ord \<Rightarrow> bool"
+definition order :: "'a ord \<Rightarrow> 'a set \<Rightarrow> bool"
 where
-  "order r \<longleftrightarrow> (\<forall>x. x \<sqsubseteq>\<^sub>r x) \<and> (\<forall>x y. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x=y) \<and> (\<forall>x y z. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z)"
+  "order r A \<longleftrightarrow> (\<forall>x\<in>A. x \<sqsubseteq>\<^sub>r x) \<and> (\<forall>x\<in>A. \<forall>y\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x=y) \<and> (\<forall>x\<in>A.  \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z)"
 
 definition top :: "'a ord \<Rightarrow> 'a \<Rightarrow> bool"
 where
@@ -71,7 +71,7 @@ where
 
 definition semilat :: "'a sl \<Rightarrow> bool"
 where
-  "semilat = (\<lambda>(A,r,f). order r \<and> closed A f \<and> 
+  "semilat = (\<lambda>(A,r,f). order r A \<and> closed A f \<and> 
                        (\<forall>x\<in>A. \<forall>y\<in>A. x \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y) \<and>
                        (\<forall>x\<in>A. \<forall>y\<in>A. y \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y) \<and>
                        (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z))"
@@ -94,35 +94,35 @@ locale Semilat =
   fixes f :: "'a binop"
   assumes semilat: "semilat (A, r, f)"
 
-lemma order_refl [simp, intro]: "order r \<Longrightarrow> x \<sqsubseteq>\<^sub>r x"
+lemma order_refl [simp, intro]: "order r A \<Longrightarrow> x \<in> A \<Longrightarrow> x \<sqsubseteq>\<^sub>r x"
   (*<*) by (unfold order_def) (simp (no_asm_simp)) (*>*)
 
-lemma order_antisym: "\<lbrakk> order r; x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x \<rbrakk> \<Longrightarrow> x = y"
-  (*<*) by (unfold order_def) (simp (no_asm_simp)) (*>*)
+lemma order_antisym: "\<lbrakk> order r A; x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow>  x = y"
+  (*<*) by (unfold order_def) ( simp (no_asm_simp)) (*>*)
 
-lemma order_trans: "\<lbrakk> order r; x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r z \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
+lemma order_trans: "\<lbrakk> order r A;  x \<sqsubseteq>\<^sub>r y;  y \<sqsubseteq>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
   (*<*) by (unfold order_def) blast (*>*)
 
-lemma order_less_irrefl [intro, simp]: "order r \<Longrightarrow> \<not> x \<sqsubset>\<^sub>r x"
+lemma order_less_irrefl [intro, simp]: "order r A \<Longrightarrow> x \<in> A \<Longrightarrow> \<not> x \<sqsubset>\<^sub>r x"
   (*<*) by (unfold order_def lesssub_def) blast (*>*)
 
-lemma order_less_trans: "\<lbrakk> order r; x \<sqsubset>\<^sub>r y; y \<sqsubset>\<^sub>r z \<rbrakk> \<Longrightarrow> x \<sqsubset>\<^sub>r z"
+lemma order_less_trans: "\<lbrakk> order r A; x \<sqsubset>\<^sub>r y; y \<sqsubset>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubset>\<^sub>r z"
   (*<*) by (unfold order_def lesssub_def) blast (*>*)
 
 lemma topD [simp, intro]: "top r T \<Longrightarrow> x \<sqsubseteq>\<^sub>r T"
   (*<*) by (simp add: top_def) (*>*)
 
-lemma top_le_conv [simp]: "\<lbrakk> order r; top r T \<rbrakk> \<Longrightarrow> (T \<sqsubseteq>\<^sub>r x) = (x = T)"
+lemma top_le_conv [simp]: "\<lbrakk> order r A; top r T; x \<in> A; T \<in> A\<rbrakk> \<Longrightarrow> (T \<sqsubseteq>\<^sub>r x) = (x = T)"
   (*<*) by (blast intro: order_antisym) (*>*)
 
 lemma semilat_Def:
-"semilat(A,r,f) \<longleftrightarrow> order r \<and> closed A f \<and> 
+"semilat(A,r,f) \<longleftrightarrow> order r A \<and> closed A f \<and> 
                  (\<forall>x\<in>A. \<forall>y\<in>A. x \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y) \<and> 
                  (\<forall>x\<in>A. \<forall>y\<in>A. y \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y) \<and> 
                  (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z)"
   (*<*) by (unfold semilat_def) clarsimp (*>*)
 
-lemma (in Semilat) orderI [simp, intro]: "order r"
+lemma (in Semilat) orderI [simp, intro]: "order r A"
   (*<*) using semilat by (simp add: semilat_Def) (*>*)
 
 lemma (in Semilat) closedI [simp, intro]: "closed A f"
@@ -137,12 +137,12 @@ lemma closed_UNIV [simp]: "closed UNIV f"
 lemma (in Semilat) closed_f [simp, intro]: "\<lbrakk>x \<in> A; y \<in> A\<rbrakk>  \<Longrightarrow> x \<squnion>\<^sub>f y \<in> A"
   (*<*) by (simp add: closedD [OF closedI]) (*>*)
 
-lemma (in Semilat) refl_r [intro, simp]: "x \<sqsubseteq>\<^sub>r x" by simp
+lemma (in Semilat) refl_r [intro, simp]: "x \<in> A \<Longrightarrow> x \<sqsubseteq>\<^sub>r x" by auto
 
-lemma (in Semilat) antisym_r [intro?]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x \<rbrakk> \<Longrightarrow> x = y"
+lemma (in Semilat) antisym_r [intro?]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x = y"
   (*<*) by (rule order_antisym) auto (*>*)
-  
-lemma (in Semilat) trans_r [trans, intro?]: "\<lbrakk>x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r z\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
+
+lemma (in Semilat) trans_r [trans, intro?]: "\<lbrakk>x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
   (*<*) by (auto intro: order_trans) (*>*)
   
 lemma (in Semilat) ub1 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y"
@@ -203,28 +203,30 @@ proof -
   proof    
     show "a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c) \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c"
     proof -
-      from a b have "a \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f b" .. 
-      also from ab c have "\<dots> \<sqsubseteq>\<^sub>r \<dots> \<squnion>\<^sub>f c" ..
-      finally have "a<": "a \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" .
-      from a b have "b \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f b" ..
-      also from ab c have "\<dots> \<sqsubseteq>\<^sub>r \<dots> \<squnion>\<^sub>f c" ..
-      finally have "b<": "b \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" .
+      from a b have 1: "a \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f b" .. 
+      from ab c have 2: "\<dots> \<sqsubseteq>\<^sub>r \<dots> \<squnion>\<^sub>f c" ..
+      with 1  have "a<": "a \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" using a ab abc by (rule trans_r)
+      from a b have 11: "b \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f b" ..
+      hence "b<": "b \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" using 2 b ab abc by (rule trans_r)
       from ab c have "c<": "c \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" ..    
       from "b<" "c<" b c abc have "b \<squnion>\<^sub>f c \<sqsubseteq>\<^sub>r (a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c" ..
       from "a<" this a bc abc show ?thesis ..
     qed
     show "(a \<squnion>\<^sub>f b) \<squnion>\<^sub>f c \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)" 
     proof -
-      from b c have "b \<sqsubseteq>\<^sub>r b \<squnion>\<^sub>f c" .. 
-      also from a bc have "\<dots> \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f \<dots>" ..
-      finally have "b<": "b \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)" .
-      from b c have "c \<sqsubseteq>\<^sub>r b \<squnion>\<^sub>f c" ..
-      also from a bc have "\<dots> \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f \<dots>" ..
-      finally have "c<": "c \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)" .
+      from b c have 3:"b \<sqsubseteq>\<^sub>r b \<squnion>\<^sub>f c" .. 
+      from a bc have bc_abc: "\<dots> \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f \<dots>" ..
+      with 3 have "b<": "b \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)"using b bc abc' by (rule trans_r)
+      from b c have 4: "c \<sqsubseteq>\<^sub>r b \<squnion>\<^sub>f c" ..      
+      hence "c<": "c \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)"using bc_abc c bc abc' by (rule trans_r)
       from a bc have "a<": "a \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)" ..
       from "a<" "b<" a b abc' have "a \<squnion>\<^sub>f b \<sqsubseteq>\<^sub>r a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c)" ..
       from this "c<" ab c abc' show ?thesis ..
     qed
+  next
+    show "a \<squnion>\<^bsub>f\<^esub> (b \<squnion>\<^bsub>f\<^esub> c) \<in> A" using abc' by auto
+  next
+    show "a \<squnion>\<^bsub>f\<^esub> b \<squnion>\<^bsub>f\<^esub> c \<in> A" using abc by auto
   qed
 qed
 (*>*)

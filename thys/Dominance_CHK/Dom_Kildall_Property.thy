@@ -4,7 +4,7 @@
 section \<open>Properties of the kildall's algorithm on the semilattice \<close>
 
 theory Dom_Kildall_Property
-imports Dom_Kildall  
+imports Dom_Kildall "Jinja.Listn" "Jinja.Kildall_1"
 begin
 
 lemma sorted_list_len_lt: "x \<subset> y \<Longrightarrow> finite y \<Longrightarrow> length (sorted_list_of_set x) < length (sorted_list_of_set y)" 
@@ -42,11 +42,6 @@ proof(intro strip, simp add:image_iff)
     by auto  
 qed
 
-primrec merges :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> 's list"
-where
-  "merges f []      \<tau>s = \<tau>s"
-| "merges f (p'#ps) \<tau>s = (let (p,\<tau>) = p' in merges f ps (\<tau>s[p := \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!p]))"
-
 locale dom_sl = cfg_doms +
   fixes A and r and f and step and start and n 
   defines "A  \<equiv> ((rev \<circ> sorted_list_of_set) ` (Pow (set (nodes))))" 
@@ -64,42 +59,11 @@ lemma is_semi: "semilat(A,r,f)"
 \<comment>\<open>used by acc\_le\_listI\<close>
 lemma Cons_less_Conss [simp]:
   "x#xs [\<sqsubset>\<^sub>r] y#ys = (x \<sqsubset>\<^sub>r y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^sub>r] ys)"
-proof(unfold lesssub_def, rule iffI)
-  assume "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys \<and> x # xs \<noteq> y # ys " 
-  then have ass1: "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys" and ass2:"x # xs \<noteq> y # ys " by auto
-  from ass1 have g1: "x \<sqsubseteq>\<^bsub>r\<^esub> y" and g2: "xs [\<sqsubseteq>\<^bsub>r\<^esub>]  ys" by auto
-
-  from ass2 have "x \<noteq> y \<or> x = y \<and> xs \<noteq> ys" by auto
-  then show "(x \<sqsubseteq>\<^bsub>r\<^esub> y \<and> x \<noteq> y) \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<or> x = y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<and> xs \<noteq> ys"
-  proof
-    assume "x \<noteq> y" 
-    with g1 g2 have "(x \<sqsubseteq>\<^bsub>r\<^esub> y \<and> x \<noteq> y) \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys " by auto
-    then show ?thesis by auto
-  next
-    assume "x = y \<and> xs \<noteq> ys " 
-    then have "x = y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<and> xs \<noteq> ys" using  g2 by auto
-    then show ?thesis by auto
-  qed
-next
-  assume  ass:"((x \<sqsubseteq>\<^bsub>r\<^esub> y \<and> x \<noteq> y) \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys) \<or> (x = y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<and> xs \<noteq> ys)"
-  from ass show "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys \<and> x # xs \<noteq> y # ys"
-  proof
-    assume "(x \<sqsubseteq>\<^bsub>r\<^esub> y \<and> x \<noteq> y) \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys " 
-    then have "x \<sqsubseteq>\<^bsub>r\<^esub> y \<and> x \<noteq> y" and ass1: "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys " by auto
-    then have ass2: "x \<sqsubseteq>\<^bsub>r\<^esub> y" and ass3: " x \<noteq> y" by auto
-    from ass3 have g2: "x # xs \<noteq> y # ys" by auto
-    from ass1 ass2 have g1: "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys" by auto
-    with g2 show "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys \<and> x # xs \<noteq> y # ys" by auto
-  next
-    assume "x = y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<and> xs \<noteq> ys "
-    then have "x = y" and "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys " and " xs \<noteq> ys " by auto
-    then have g2: "x # xs \<noteq> y # ys" by auto
-   
-    from `x = y` have "x \<sqsubseteq>\<^bsub>r\<^esub> y"  by(simp add: lesssub_def lesub_def r_def nodes_le_def )
-    with `xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys` have g1: "x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys" by auto
-   with g2 show " x # xs [\<sqsubseteq>\<^bsub>r\<^esub>] y # ys \<and> x # xs \<noteq> y # ys" by auto
-  qed
-qed
+  apply (unfold lesssub_def)
+  apply auto
+  apply (unfold lesssub_def lesub_def r_def)
+  apply (simp only: nodes_le_refl)
+  done
 
 lemma acc_le_listI [intro!]:
   "acc r \<Longrightarrow> acc (Listn.le r) "
@@ -267,60 +231,14 @@ lemma unstable_start: "unstables r step start = sorted_list_of_set ({p. succs p 
   by (subgoal_tac "{p. p < length start \<and> \<not> stable r step start p} = {p. succs p \<noteq> {} \<and> p < length start}")
      (auto simp add: unstables_def stable_def step_def exec_def)
 
-lemma nth_merges:
- "\<And>ss. \<lbrakk>p < length ss; ss \<in> list n A; \<forall>(p,t)\<in>set ps. p<n \<and> t\<in>A \<rbrakk> \<Longrightarrow>
-  (merges f ps ss)!p = map snd [(p',t') \<leftarrow> ps. p'=p] \<Squnion>\<^bsub>f\<^esub> ss!p"
-  (is "\<And>ss. \<lbrakk>_; _; ?steptype ps\<rbrakk> \<Longrightarrow> ?P ss ps")
-(*<*)
-proof (induct ps)
-  show "\<And>ss. ?P ss []" by simp
-
-  fix ss p' ps'
-  assume ss: "ss \<in> list n A"
-  assume l:  "p < length ss"
-  assume "?steptype (p'#ps')"
-  then obtain a b where
-    p': "p'=(a,b)" and ab: "a<n" "b\<in>A" and ps': "?steptype ps'"
-    by (cases p') auto
-  assume "\<And>ss. p< length ss \<Longrightarrow> ss \<in> list n A \<Longrightarrow> ?steptype ps' \<Longrightarrow> ?P ss ps'"
-  hence IH: "\<And>ss. ss \<in> list n A \<Longrightarrow> p < length ss \<Longrightarrow> ?P ss ps'" using ps' by iprover
-
-  from is_semi have "closed  A f" by (simp add:semilat_def)
-  with ss ab
-  have "ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a] \<in> list n A" by (simp add:closedD)
-  moreover
-  with l have "p < length (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a])" by simp
-  ultimately
-  have "?P (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a]) ps'" by (rule IH)
-  with p' l
-  show "?P ss (p'#ps')" by simp
-qed
-
-lemma length_merges [simp]:
-  "\<And>ss. size(merges f ps ss) = size ss"
-(*<*) by (induct ps, auto) (*>*)
-
-lemma merges_preserves_type_lemma:
-shows "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A) \<longrightarrow> merges f ps xs \<in> list n A"
-  apply(insert is_semi)
-  apply (unfold semilat_def)
-  apply (unfold closed_def)
-  apply (induct ps)
-   apply simp
-  apply clarsimp  
-  done
-
-lemma merges_preserves_type [simp]:
- "\<lbrakk> xs \<in> list n A; \<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A \<rbrakk> \<Longrightarrow> merges f ps xs \<in> list n A"
-by (simp only: merges_preserves_type_lemma)
-
-declare sorted_list_of_set_insert[simp del]                                      
-
-lemmas [simp] = Let_def Semilat.le_iff_plus_unchanged [OF Semilat.intro, symmetric]
+end
 
 declare sorted_list_of_set_insert_remove[simp del]
 
-lemma decomp_propa: "\<And>ss w. 
+context dom_sl
+begin 
+
+lemma (in dom_sl) decomp_propa: "\<And>ss w. 
    (\<forall>(q,t)\<in>set qs. q < size ss \<and> t \<in> A ) \<Longrightarrow> 
    sorted w \<Longrightarrow> 
    set ss \<subseteq> A \<Longrightarrow> 
@@ -383,7 +301,7 @@ proof
   from dist have \<tau>: "\<forall>(q, \<tau>) \<in> set qs. (map snd (filter (\<lambda>(x,y). x = q) qs)) = [\<tau>]" using distinct_pair_filter' by fastforce  
   from len_ss_n subset_ss_A have "ss \<in> list n A" by (rule listI)
   with step_bounded_pres have merge_nth: "\<forall>(q, \<tau>) \<in> set qs. (merges f qs ss)!q = map snd [(p',t') \<leftarrow> qs. p'=q] \<Squnion>\<^bsub>f\<^esub> ss!q" 
-    by (fastforce intro:nth_merges) \<comment> \<open>use lemma:  listE_length\<close>
+    by (fastforce intro:Semilat.nth_merges[OF Semilat.intro, OF is_semi]) \<comment> \<open>use lemma:  listE_length\<close>
   with \<tau> have "\<forall>(q, \<tau>) \<in> set qs. (merges f qs ss)!q = [\<tau>]\<Squnion>\<^bsub>f\<^esub> ss!q" by fastforce
   then show "case x of (q, \<tau>) \<Rightarrow> merges f qs ss ! q = \<tau> \<squnion>\<^bsub>f\<^esub> ss ! q" using `x \<in> set qs` by auto  
 qed
@@ -412,7 +330,8 @@ lemma merges_property2:
     shows "(merges f qs ss)!q = ss!q" 
 proof- 
   from len_ss_n subset_ss_A have "ss \<in> list n A" by (rule listI)
-  with step_bounded_pres q_lt_len_ss have merge_nth: "(merges f qs ss)!q = map snd [(p',t') \<leftarrow> qs. p'=q] \<Squnion>\<^bsub>f\<^esub> ss!q" by (fastforce intro:nth_merges)
+  with step_bounded_pres q_lt_len_ss have merge_nth: "(merges f qs ss)!q = map snd [(p',t') \<leftarrow> qs. p'=q] \<Squnion>\<^bsub>f\<^esub> ss!q" 
+    by (fastforce intro:Semilat.nth_merges[OF Semilat.intro, OF is_semi])
   from dist have "q \<notin> set(map fst qs) \<Longrightarrow> (map snd (filter (\<lambda>(x,y). x = q) qs)) = []" using distinct_pair_filter_n by fastforce
   with merge_nth q_nin have "(merges f qs ss)!q = []\<Squnion>\<^bsub>f\<^esub> ss!q" by fastforce
   then show "(merges f qs ss)!q =  ss ! q" by auto  
@@ -433,7 +352,7 @@ lemma propa_property2:
    apply(simp add: merges_property2) 
   by (auto dest:decomp_propa)
 
-lemma merges_incr_lemma:
+lemma merges_incr_lemma_dom:
  "\<forall>xs. xs \<in> list n A \<longrightarrow> distinct (map fst ps) \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
 proof(intro strip)
   fix xs
@@ -476,11 +395,11 @@ proof(intro strip)
     by (auto simp only:list_all2_conv_all_nth Listn.le_def lesssub_def lesub_def) 
 qed
    
-lemma merges_incr:
+lemma merges_incr_dom:
  "\<lbrakk> xs \<in> list n A; distinct (map fst ps); \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
-  by (simp add: merges_incr_lemma)
+  by (simp add: merges_incr_lemma_dom)
 
-lemma merges_same_conv [rule_format]:
+lemma merges_same_conv_dom [rule_format]:
  "(\<forall>xs. xs \<in> list n A \<longrightarrow> distinct (map fst ps) \<longrightarrow>
         (\<forall>(p,x)\<in>set ps. p<size xs \<and> x\<in>A) \<longrightarrow> 
         (merges f ps xs = xs) = (\<forall>(p,x)\<in>set ps. x \<sqsubseteq>\<^bsub>r\<^esub> xs!p))"
@@ -497,7 +416,7 @@ lemma merges_same_conv [rule_format]:
                       Semilat.ub2[OF Semilat.intro,OF is_semi]
 Semilat.lub[OF Semilat.intro,OF is_semi] 
  )
-    apply (erule subst, rule merges_incr)
+    apply (erule subst, rule merges_incr_dom)
       apply (blast intro!: listE_set intro: closedD listE_length [THEN nth_in]
                             Semilat.closed_f[OF Semilat.intro, OF is_semi])
      apply clarify
@@ -514,16 +433,17 @@ Semilat.lub[OF Semilat.intro,OF is_semi]
   done
 (*>*)
 
-lemma list_update_le_listI [rule_format]:
+lemma  (in Semilat)list_update_le_listI [rule_format]:
   "set xs \<subseteq> A \<longrightarrow> set ys \<subseteq> A \<longrightarrow> xs [\<sqsubseteq>\<^sub>r] ys \<longrightarrow> p < size xs \<longrightarrow>  
-   x \<sqsubseteq>\<^sub>r ys!p \<longrightarrow> semilat(A,r,f) \<longrightarrow> x\<in>A \<longrightarrow> 
+   x \<sqsubseteq>\<^sub>r ys!p \<longrightarrow> x\<in>A \<longrightarrow> 
    xs[p := x \<squnion>\<^sub>f xs!p] [\<sqsubseteq>\<^sub>r] ys"
 (*<*)
+  apply (insert semilat)
   apply (simp only: Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
   done
 
-lemma merges_pres_le_ub:
+lemma (in Semilat) merges_pres_le_ub:
   assumes "set ts \<subseteq> A"  
           "set ss \<subseteq> A"
           "\<forall>(p,t)\<in>set ps. t \<sqsubseteq>\<^bsub>r\<^esub> ts!p \<and> t \<in> A \<and> p < size ts"  
@@ -542,13 +462,11 @@ proof -
     apply simp
     apply (erule allE, erule impE, erule_tac [2] mp)
        apply (drule bspec, assumption)
-     apply (simp add: closedD  Semilat.closed_f[OF Semilat.intro, OF is_semi])
+     apply (simp add: closedD  Semilat.closed_f)
     apply (drule bspec, assumption)
       apply (simp ) 
       apply(rule list_update_le_listI)
             apply auto
-      apply(insert is_semi)
-      apply auto
 done 
   } note this [dest]  
   from assms show ?thesis by blast
@@ -563,9 +481,9 @@ shows "\<lbrakk>ss \<in> list n A; distinct (map fst qs); \<forall>(q,t)\<in>set
        (\<lambda>x. case x of (x, y) \<Rightarrow> (sorted_list_of_set x, sorted_list_of_set y)) ` {(A, B). A \<subset> B \<and> finite B}"
   apply(insert is_semi)
   apply (unfold lesssub_def)
-  apply (simp (no_asm_simp) add: merges_incr)
+  apply (simp (no_asm_simp) add: merges_incr_dom)
   apply (rule impI)
-  apply (rule merges_same_conv [THEN iffD1, elim_format]) 
+  apply (rule merges_same_conv_dom [THEN iffD1, elim_format]) 
       apply assumption+
     defer
     apply (rule sym, assumption)
@@ -823,7 +741,8 @@ proof-
 
   from step_pres_bounded sorted_tl_b set_a propa have ss_merge: "ss = merges f ?qs_a a" by (auto dest: decomp_propa)
   from step_pres_bounded a_in_list_nA have "\<forall>(q, \<tau>)\<in>set (step (hd b) (a ! hd b)). q < n \<and> \<tau> \<in> A" using len_eq by simp
-  with a_in_list_nA have "merges f ?qs_a a  \<in> list n A"  by (rule merges_preserves_type)
+  with a_in_list_nA have "merges f ?qs_a a  \<in> list n A"  
+    by (rule Semilat.merges_preserves_type[OF Semilat.intro, OF is_semi])
   with ss_merge have ss_in_A: "ss \<in> list n A" by simp
   then have len_ss_n: "length ss = n"  using  len_eq by simp
   with len_eq  have len_ss_n: "length ss = n" by auto
@@ -1943,7 +1862,7 @@ proof(intro strip)
    and stas: "stables r step ss" 
    and start_le_ss: "start [\<sqsubseteq>\<^sub>r] ss" 
    and ss_inA: "ss \<in> list n A" by auto
-  then have len_ss_n: "length ss = n" by auto
+  then have len_ss_n: "length ss = n" by (auto simp only:list_def)
 
   from start_le_ss have "start!0 \<sqsubseteq>\<^sub>r ss!0" using start_len_gt_0
     by (unfold Listn.le_def lesssub_def lesub_def) (auto simp add:lesssub_def lesub_def intro:list_all2_nthD)

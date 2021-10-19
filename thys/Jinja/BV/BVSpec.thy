@@ -97,6 +97,6 @@ proof -
   show ?thesis using sees_wf_mdecl[OF wfm sees]
     by (simp add: wf_mdecl_def wt_method_def)
 qed
-(*>*)
+
 
 end

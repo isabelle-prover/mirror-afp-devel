@@ -89,19 +89,25 @@ apply (simp split: err.split)
 done 
 (*>*)
 
-lemma le_err_trans [rule_format]:
-  "order r \<Longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<longrightarrow> e2 \<sqsubseteq>\<^bsub>le r\<^esub> e3 \<longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e3"
+lemma le_err_refl': "(\<forall>x\<in>A. x \<sqsubseteq>\<^sub>r x) \<Longrightarrow> e \<in> err A \<Longrightarrow>  e \<sqsubseteq>\<^bsub>le r\<^esub> e"
 (*<*)
-apply (unfold unfold_lesub_err le_def)
+apply (unfold lesub_def le_def err_def)
+apply (auto  split: err.split)
+done 
+
+lemma le_err_trans [rule_format]:
+  "order r A \<Longrightarrow> e1 \<in> err A \<Longrightarrow> e2 \<in> err A \<Longrightarrow> e3 \<in> err  A \<Longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<longrightarrow> e2 \<sqsubseteq>\<^bsub>le r\<^esub> e3 \<longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e3"
+(*<*)
+apply (unfold unfold_lesub_err le_def err_def)
 apply (simp split: err.split)
 apply (blast intro: order_trans)
 done
 (*>*)
 
 lemma le_err_antisym [rule_format]:
-  "order r \<Longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<longrightarrow> e2 \<sqsubseteq>\<^bsub>le r\<^esub> e1 \<longrightarrow> e1=e2"
+  "order r A \<Longrightarrow> e1 \<in> err A \<Longrightarrow> e2 \<in> err A \<Longrightarrow> e3 \<in> err A \<Longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<longrightarrow> e2 \<sqsubseteq>\<^bsub>le r\<^esub> e1 \<longrightarrow> e1=e2"
 (*<*)
-apply (unfold unfold_lesub_err le_def)
+apply (unfold unfold_lesub_err le_def err_def)
 apply (simp split: err.split)
 apply (blast intro: order_antisym)
 done 
@@ -110,14 +116,15 @@ done
 lemma OK_le_err_OK: "(OK x \<sqsubseteq>\<^bsub>le r\<^esub> OK y) = (x \<sqsubseteq>\<^sub>r y)"
 (*<*) by (simp add: unfold_lesub_err le_def) (*>*)
 
-lemma order_le_err [iff]: "order(le r) = order r"
+lemma order_le_err [iff]: "order (le r) (err A) = order r A"
 (*<*)
 apply (rule iffI)
- apply (subst order_def)
+   apply (subst order_def)
+  apply (simp only: err_def)
  apply (blast dest: order_antisym OK_le_err_OK [THEN iffD2]
               intro: order_trans OK_le_err_OK [THEN iffD1])
-apply (subst order_def)
-apply (blast intro: le_err_refl le_err_trans le_err_antisym
+ apply (subst order_def)
+apply (blast intro: le_err_refl' le_err_trans le_err_antisym
              dest: order_refl)
 done 
 (*>*)
@@ -153,6 +160,8 @@ proof -
     apply(insert semilat)
     apply (simp only: semilat_Def closed_def plussub_def lesub_def 
               lift2_def le_def)
+    apply(rule conjI)
+    apply simp
     apply (simp add: err_def' split: err.split)
     done
 qed
@@ -280,7 +289,7 @@ done
 (*>*)
 
 lemma eq_order_le:
-  "\<lbrakk> x=y; order r \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r y"
+  "\<lbrakk> x=y; order r A; x \<in>A ; y \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r y"
 (*<*)
 apply (unfold order_def)
 apply blast
@@ -297,27 +306,29 @@ proof -
     \<Longrightarrow> x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z"
 (*<*) by (rule Semilat.plus_le_conv [OF Semilat.intro, THEN iffD1]) (*>*)
   from assms show ?thesis
-  apply (rule_tac iffI)
-   apply clarify
-   apply (drule OK_le_err_OK [THEN iffD2])
-   apply (drule OK_le_err_OK [THEN iffD2])
-   apply (drule Semilat.lub[OF Semilat.intro, of _ _ _ "OK x" _ "OK y"])
-        apply assumption
-       apply assumption
+    apply (rule_tac iffI)
+     apply clarify
+     apply (drule OK_le_err_OK [THEN iffD2])
+     apply (drule OK_le_err_OK [THEN iffD2])
+     apply (drule Semilat.lub[OF Semilat.intro, of _ _ _ "OK x" _ "OK y"])
+          apply assumption
+         apply assumption
+        apply simp
+       apply simp
       apply simp
      apply simp
-    apply simp
-   apply simp
-  apply (case_tac "OK x \<squnion>\<^bsub>fe\<^esub> OK y")
-   apply assumption
-  apply (rename_tac z)
-  apply (subgoal_tac "OK z\<in> err A")
-  apply (drule eq_order_le)
-    apply (erule Semilat.orderI [OF Semilat.intro])
-   apply (blast dest: plus_le_conv3) 
-  apply (erule subst)
-  apply (blast intro: Semilat.closedI [OF Semilat.intro] closedD)
-  done 
+    apply (case_tac "OK x \<squnion>\<^bsub>fe\<^esub> OK y")
+     apply assumption
+    apply (rename_tac z)
+    apply (subgoal_tac "OK z\<in> err A")
+     apply (drule eq_order_le)
+        apply (erule Semilat.orderI [OF Semilat.intro])
+       apply (blast intro: Semilat.closedI [OF Semilat.intro] closedD)
+      apply simp    
+      apply (blast dest: plus_le_conv3) 
+    apply (erule subst)
+    apply (blast intro: Semilat.closedI [OF Semilat.intro] closedD)
+    done 
 qed
 (*>*)
 
@@ -343,9 +354,25 @@ done
 
 text \<open>
   If @{term "AS = {}"} the thm collapses to
-  @{prop "order r \<and> closed {Err} f \<and> Err \<squnion>\<^sub>f Err = Err"}
+  @{prop "order r A \<and> closed {Err} f \<and> Err \<squnion>\<^sub>f Err = Err"}
   which may not hold 
 \<close>
+
+lemma err_semilat_UnionI_auxi: 
+  assumes "\<forall>A\<in>AS. order r A "
+      and "\<forall>A\<in>AS. \<forall>B\<in>AS. A \<noteq> B \<longrightarrow> (\<forall>a\<in>A. \<forall>b\<in>B. \<not> a \<sqsubseteq>\<^bsub>r\<^esub> b \<and> a \<squnion>\<^bsub>f\<^esub> b = Err)"
+    shows "order r (\<Union> AS)"  
+proof-
+  from assms(1) have "\<And>A. A \<in> AS \<Longrightarrow> order r A" by auto
+  then have "\<And>A x. A \<in> AS \<Longrightarrow> x \<in> A \<Longrightarrow> x \<sqsubseteq>\<^sub>r x" 
+        and g1: "\<And>A x y. A \<in> AS \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow>x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x=y"  
+        and g2: "\<And>A x y z. A \<in> AS \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow>z \<in> A \<Longrightarrow>x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z"  by (auto dest:order_antisym order_trans)
+  then have "\<forall>x\<in>(\<Union> AS). x \<sqsubseteq>\<^sub>r x" by blast
+  moreover from g1 have "\<forall>x\<in>(\<Union> AS). \<forall>y\<in>(\<Union> AS). x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x=y" using assms(2) by blast  
+  moreover from g2 have "\<forall>x\<in>(\<Union> AS). \<forall>y\<in>(\<Union> AS). \<forall>z\<in>(\<Union> AS). x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z" using assms(2) by blast
+  ultimately show "order r (\<Union> AS)" using order_def by blast
+qed
+
 lemma err_semilat_UnionI:
   "\<lbrakk> \<forall>A\<in>AS. err_semilat(A, r, f); AS \<noteq> {}; 
       \<forall>A\<in>AS.\<forall>B\<in>AS. A\<noteq>B \<longrightarrow> (\<forall>a\<in>A.\<forall>b\<in>B. \<not>a \<sqsubseteq>\<^sub>r b \<and> a \<squnion>\<^sub>f b = Err) \<rbrakk> 
@@ -354,7 +381,7 @@ lemma err_semilat_UnionI:
 apply (unfold semilat_def sl_def)
 apply (simp add: closed_err_Union_lift2I)
 apply (rule conjI)
- apply blast
+ apply (blast intro: err_semilat_UnionI_auxi) 
 apply (simp add: err_def')
 apply (rule conjI)
  apply clarify
