@@ -901,7 +901,7 @@ fun derive_combinator_red ctxt af_inst red_thms (base_thm, eq_thm) =
     val ([lhs', rhs'], ctxt') = generalize_lift_terms af_inst [lhs, rhs] ctxt_Ts;
     val lifted_prop = (lhs', rhs') |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
     val unfold_comb_conv = HOLogic.Trueprop_conv
-      (HOLogic.eq_conv (Conv.top_sweep_conv (K (Conv.rewr_conv eq_thm)) ctxt') Conv.all_conv);
+      (HOLogic.eq_conv (Conv.top_sweep_rewrs_conv [eq_thm] ctxt') Conv.all_conv);
     fun tac goal_ctxt =
       HEADGOAL (CONVERSION unfold_comb_conv THEN'
       Raw_Simplifier.rewrite_goal_tac goal_ctxt red_thms THEN'
