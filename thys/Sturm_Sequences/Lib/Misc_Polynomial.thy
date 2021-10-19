@@ -1,4 +1,4 @@
-(* Author: Manuel Eberl <eberlm@in.tum.de> *)
+(* Author: Manuel Eberl <manuel@pruvisto.org> *)
 theory Misc_Polynomial
 imports "HOL-Computational_Algebra.Polynomial" "HOL-Computational_Algebra.Polynomial_Factorial" "Pure-ex.Guess"
 begin

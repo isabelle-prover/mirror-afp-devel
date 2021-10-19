@@ -1,6 +1,6 @@
 (*
   File:   Akra_Bazzi_Method.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Provides the "master_theorem" and "akra_bazzi_termination" proof methods.
 *)

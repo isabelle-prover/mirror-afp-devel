@@ -1,5 +1,5 @@
 section \<open>Proof of Sturm's Theorem\<close>
-(* Author: Manuel Eberl <eberlm@in.tum.de> *)
+(* Author: Manuel Eberl <manuel@pruvisto.org> *)
 theory Sturm_Theorem
   imports "HOL-Computational_Algebra.Polynomial"
     "Lib/Sturm_Library" "HOL-Computational_Algebra.Field_as_Ring"

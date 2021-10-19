@@ -1,6 +1,6 @@
 (*
   File: Group_Sort.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   A sorting algorithm that sorts values according to a key function and groups equivalent 
   elements using a commutative and associative binary operation.

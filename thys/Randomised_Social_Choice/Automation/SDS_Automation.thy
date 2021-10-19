@@ -1,6 +1,6 @@
 (*
   File:    SDS_Automation.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   This theory provides a number of commands to automatically derive restrictions on the 
   results of Social Decision Schemes fulfilling properties like Anonymity, Neutrality, 

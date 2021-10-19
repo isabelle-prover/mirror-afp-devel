@@ -1,6 +1,6 @@
 (*
   File:   Master_Theorem.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The Master theorem in a generalised form as derived from the Akra-Bazzi theorem.
 *)

@@ -1,6 +1,6 @@
 (*
   File:   Akra_Bazzi_Library.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Lemma bucket for the Akra-Bazzi theorem.
 *)

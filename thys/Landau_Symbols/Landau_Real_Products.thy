@@ -1,6 +1,6 @@
 (*
   File:   Landau_Real_Products.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Mathematical background and reification for a decision procedure for Landau symbols of
   products of powers of real functions (currently the identity and the natural logarithm)

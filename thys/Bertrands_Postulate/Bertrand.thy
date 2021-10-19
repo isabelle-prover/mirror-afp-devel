@@ -1,6 +1,6 @@
 (*
   File:     Bertrand.thy
-  Authors:  Julian Biendarra, Manuel Eberl <eberlm@in.tum.de>, Larry Paulson
+  Authors:  Julian Biendarra, Manuel Eberl <manuel@pruvisto.org>, Larry Paulson
 
   A proof of Bertrand's postulate (based on John Harrison's HOL Light proof).
   Uses reflection and the approximation tactic.

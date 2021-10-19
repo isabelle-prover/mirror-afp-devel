@@ -1,6 +1,6 @@
 (*
   File:     Randomised_Quick_Sort.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
 
   Definition and cost analysis of randomised QuickSort (i.e. pivot chosen uniformly at random).
 *)

@@ -1,6 +1,6 @@
 (*
   File:   Prime_Harmonic_Misc.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
 *)
 
