@@ -9713,6 +9713,10 @@ abstract =
   href="https://www.isa-afp.org/entries/Generic_Join.html">multi-way
   joins</a> and a specialized sliding window algorithm to further
   optimize the monitor.
+extra-history =
+  Change history:
+  [2021-10-19]: corrected a mistake in the calculation of median aggregations
+  (reported by Nicolas Kaletsch, revision 02b14c9bf3da)<br>
 
 [Sliding_Window_Algorithm]
 title = Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows
