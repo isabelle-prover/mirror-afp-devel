@@ -1,6 +1,6 @@
 (*
   File:    Triangle.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   Sine and cosine laws, angle sum in a triangle, congruence theorems,
   Isosceles Triangle Theorem

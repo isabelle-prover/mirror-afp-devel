@@ -1,6 +1,6 @@
 (*
   File:     Random_BSTs.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
 
   Expected shape of random Binary Search Trees
 *)

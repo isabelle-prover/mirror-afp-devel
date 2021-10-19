@@ -1,6 +1,6 @@
 (*
   File:       E_Transcendental.thy
-  Author:     Manuel Eberl <eberlm@in.tum.de>
+  Author:     Manuel Eberl <manuel@pruvisto.org>
 
   A proof that e (Euler's number) is transcendental.
   Could possibly be extended to a transcendence proof for pi or

@@ -1,6 +1,6 @@
 (*
   File:   Master_Theorem_Examples.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Examples for the application of the Master theorem and related proof methods.
 *)

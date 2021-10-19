@@ -1,6 +1,6 @@
 (*
   File:     Partial_Fraction_Decomposition.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
   
   Partial fraction decomposition on Euclidean rings, i.e. decomposing a quotient into a 
   sum of quotients where each denominator is a power of an irreducible element. (and possibly 

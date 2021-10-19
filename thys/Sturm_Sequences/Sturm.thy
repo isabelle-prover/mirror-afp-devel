@@ -1,7 +1,7 @@
 (*
   Title: A Formalisation of Sturm's Theorem 
-  Author: Manuel Eberl <eberlm@in.tum.de> 
-  Maintainer: Manuel Eberl <eberlm@in.tum.de> 
+  Author: Manuel Eberl <manuel@pruvisto.org> 
+  Maintainer: Manuel Eberl <manuel@pruvisto.org> 
 *)
 theory Sturm
 imports Sturm_Method

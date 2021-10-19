@@ -1,7 +1,7 @@
 (*  
   File:       Bernoulli.thy
   Author:     Lukas Bulwahn <lukas.bulwahn-at-gmail.com> 
-  Author:     Manuel Eberl <eberlm@in.tum.de> 
+  Author:     Manuel Eberl <manuel@pruvisto.org> 
 *)
 section \<open>Bernoulli numbers\<close>
 
