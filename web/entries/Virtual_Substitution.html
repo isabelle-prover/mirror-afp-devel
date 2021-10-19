@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The BKR Decision Procedure for Univariate Real Arithmetic - Archive of Formal Proofs
+<title>Verified Quadratic Virtual Substitution for Real Arithmetic - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">V</font>erified
   
-          <font class="first">B</font>KR
+          <font class="first">Q</font>uadratic
   
-          <font class="first">D</font>ecision
+          <font class="first">V</font>irtual
   
-          <font class="first">P</font>rocedure
+          <font class="first">S</font>ubstitution
   
           for
-  
-          <font class="first">U</font>nivariate
   
           <font class="first">R</font>eal
   
@@ -97,7 +95,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The BKR Decision Procedure for Univariate Real Arithmetic</td>
+  <td class="data" width="80%">Verified Quadratic Virtual Substitution for Real Arithmetic</td>
 </tr>
 
 <tr>
@@ -105,8 +103,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      Katherine Cordwell (kcordwel /at/ cs /dot/ cmu /dot/ edu),
-                <a href="https://www.cs.cmu.edu/~yongkiat/">Yong Kiam Tan</a> and
+                      Matias Scharager (mscharag /at/ cs /dot/ cmu /dot/ edu),
+                  Katherine Cordwell (kcordwel /at/ cs /dot/ cmu /dot/ edu),
+                Stefan Mitsch (smitsch /at/ cs /dot/ cmu /dot/ edu) and
           André Platzer (aplatzer /at/ cs /dot/ cmu /dot/ edu)
       </td>
 </tr>
@@ -115,36 +114,44 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-04-24</td>
+  <td class="data">2021-10-02</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize the univariate case of Ben-Or, Kozen, and Reif's
-decision procedure for first-order real arithmetic (the BKR
-algorithm). We also formalize the univariate case of Renegar's
-variation of the BKR algorithm. The two formalizations differ
-mathematically in minor ways (that have significant impact on the
-multivariate case), but are quite similar in proof structure.  Both
-rely on sign-determination (finding the set of consistent sign
-assignments for a set of polynomials).  The method used for
-sign-determination is similar to Tarski's original quantifier
-elimination algorithm (it stores key information in a matrix
-equation), but with a reduction step to keep complexity low.</td>
+This paper presents a formally verified quantifier elimination (QE)
+algorithm for first-order real arithmetic by linear and quadratic
+virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
+theorem established that the first-order logic of real arithmetic is
+decidable by QE. However, in practice, QE algorithms are highly
+complicated and often combine multiple methods for performance. VS is
+a practically successful method for QE that targets formulas with
+low-degree polynomials. To our knowledge, this is the first work to
+formalize VS for quadratic real arithmetic including inequalities. The
+proofs necessitate various contributions to the existing multivariate
+polynomial libraries in Isabelle/HOL. Our framework is modularized and
+easily expandable (to facilitate integrating future optimizations),
+and could serve as a basis for developing practical general-purpose QE
+algorithms. Further, as our formalization is designed with
+practicality in mind, we export our development to SML and test the
+resulting code on 378 benchmarks from the literature, comparing to
+Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
+inconsistencies in some tools, underscoring the significance of a
+verified approach for the intricacies of real arithmetic.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{BenOr_Kozen_Reif-AFP,
-  author  = {Katherine Cordwell and Yong Kiam Tan and André Platzer},
-  title   = {The BKR Decision Procedure for Univariate Real Arithmetic},
+        <pre>@article{Virtual_Substitution-AFP,
+  author  = {Matias Scharager and Katherine Cordwell and Stefan Mitsch and André Platzer},
+  title   = {Verified Quadratic Virtual Substitution for Real Arithmetic},
   journal = {Archive of Formal Proofs},
-  month   = apr,
+  month   = oct,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/BenOr_Kozen_Reif.html},
+  note    = {\url{https://isa-afp.org/entries/Virtual_Substitution.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -156,7 +163,7 @@ equation), but with a reduction step to keep complexity low.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Sturm_Tarski.html">Sturm_Tarski</a>      </td></tr>
+          <td class="data"><a href="Polynomials.html">Polynomials</a>      </td></tr>
           
                     
 
@@ -170,17 +177,17 @@ equation), but with a reduction step to keep complexity low.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BenOr_Kozen_Reif/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/BenOr_Kozen_Reif/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Virtual_Substitution/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Virtual_Substitution/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BenOr_Kozen_Reif/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Virtual_Substitution/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-BenOr_Kozen_Reif-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Virtual_Substitution-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
