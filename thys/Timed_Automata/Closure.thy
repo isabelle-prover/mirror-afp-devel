@@ -668,9 +668,9 @@ next
   case (2 A l Z l' Z' l'' Z'')
   with step_z_V[OF this(1,5)] obtain Z''' where "A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l'',Z'''\<rangle>" "Z'' \<subseteq> Z'''" by blast
   with steps_z_alpha_mono[OF this(1) closure_subs[OF step_z_V[OF 2(1,5)]] closure_V]
-  obtain W' where "A \<turnstile> \<langle>l', Closure\<^sub>\<alpha> Z'\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l'',W'\<rangle>" " Z'' \<subseteq> W'" by auto
-  moreover with 2(1) have "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l'',W'\<rangle>" by (auto intro: steps_z_alpha_alt)
-  ultimately show ?case by auto
+  obtain W' where W': "A \<turnstile> \<langle>l', Closure\<^sub>\<alpha> Z'\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l'',W'\<rangle>" " Z'' \<subseteq> W'" by auto
+  with 2(1) have "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l'',W'\<rangle>" by (auto intro: steps_z_alpha_alt)
+  with W' show ?case by auto
 qed
 
 lemma steps_z_alpha_complete':

@@ -1,5 +1,7 @@
+(* FIXME dead code!? *)
+
 theory DP_CRelVS_Ext
-  imports "transform/Transform_Cmd"
+  imports "Transform_Cmd"
 begin
 
 notation fun_app_lifted (infixl "." 999)

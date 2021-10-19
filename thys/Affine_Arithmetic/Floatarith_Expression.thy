@@ -1007,8 +1007,9 @@ fun mk_congeq ctxt fs th =
     val cong =
       (Goal.prove ctxt'' [] (map mk_def env)
         (HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, replace_fterms rhs)))
-        (fn {context, prems, ...} =>
-          Local_Defs.unfold0_tac context (map tryext prems) THEN resolve_tac ctxt'' [th'] 1)) RS sym;
+        (fn {context = goal_ctxt, prems} =>
+          Local_Defs.unfold0_tac goal_ctxt (map tryext prems) THEN resolve_tac goal_ctxt [th'] 1))
+        RS sym;
     val (cong' :: vars') =
       Variable.export ctxt'' ctxt (cong :: map (Drule.mk_term o Thm.cterm_of ctxt'') vs);
     val vs' = map (fst o fst o Term.dest_Var o Thm.term_of o Drule.dest_term) vars';

@@ -214,7 +214,7 @@ ML \<open>
       val g = Logic.list_implies (ps,c)
     in
       Goal.prove ctxt [] [] g
-        (K (resolve_tac ctxt @{thms CONSTRAINTI} 1))
+        (fn {context = goal_ctxt, ...} => resolve_tac goal_ctxt @{thms CONSTRAINTI} 1)
     end;
 
     (* Internal use for hom-patterns, f and R are unified *)

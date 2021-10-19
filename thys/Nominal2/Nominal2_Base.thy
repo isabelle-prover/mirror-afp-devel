@@ -3347,8 +3347,8 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = \<open>
          val goal1 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) h)
          val goal2 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) (h $ atm))
 
-         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ctxt 1))
-         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ctxt 1))
+         val thm1 = Goal.prove ctxt [] [] goal1 (fn {context = ctxt', ...} => asm_simp_tac ctxt' 1)
+         val thm2 = Goal.prove ctxt [] [] goal2 (fn {context = ctxt', ...} => asm_simp_tac ctxt' 1)
        in
          SOME (@{thm Fresh_apply'} OF [thm1, thm2] RS eq_reflection)
        end handle ERROR _ => NONE

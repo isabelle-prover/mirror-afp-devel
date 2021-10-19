@@ -131,7 +131,7 @@ simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = \<open>fn _ => fn ctxt =
        let
          val goal = HOLogic.mk_Trueprop (mk_fresh atm (HOLogic.mk_tuple [A, i, j, t]))
        in
-         SOME ((Goal.prove ctxt [] [] goal (K (asm_full_simp_tac ctxt 1)))
+         SOME ((Goal.prove ctxt [] [] goal (fn {context = ctxt', ...} => asm_full_simp_tac ctxt' 1))
            RS @{thm subst_fm_Ex_with_renaming} RS eq_reflection)
          handle ERROR _ => NONE
        end

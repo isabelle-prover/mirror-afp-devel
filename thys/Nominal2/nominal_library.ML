@@ -424,7 +424,7 @@ fun map_thm_tac ctxt tac thm =
   in
     EVERY [cut_facts_tac [thm] 1, eresolve_tac ctxt [rev_mp] 1,
       REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac ctxt monos)),
-      REPEAT_DETERM (resolve_tac ctxt [impI] 1 THEN (assume_tac ctxt 1 ORELSE tac))]
+      REPEAT_DETERM (resolve_tac ctxt [impI] 1 THEN (assume_tac ctxt 1 ORELSE tac ctxt))]
   end
 
 fun map_thm ctxt f tac thm =
@@ -434,7 +434,7 @@ fun map_thm ctxt f tac thm =
     case opt_goal_trm of
       NONE => thm
     | SOME goal =>
-        Goal.prove ctxt [] [] goal (fn _ => map_thm_tac ctxt tac thm)
+        Goal.prove ctxt [] [] goal (fn {context = ctxt', ...} => map_thm_tac ctxt' tac thm)
   end
 
 (*
@@ -457,10 +457,10 @@ fun split_conj2 names \<^Const_>\<open>conj for f1 f2\<close> =
 | split_conj2 _ _ = NONE;
 
 fun transform_prem1 ctxt names thm =
-  map_thm ctxt (split_conj1 names) (eresolve_tac ctxt [conjunct1] 1) thm
+  map_thm ctxt (split_conj1 names) (fn ctxt' => eresolve_tac ctxt' [conjunct1] 1) thm
 
 fun transform_prem2 ctxt names thm =
-  map_thm ctxt (split_conj2 names) (eresolve_tac ctxt [conjunct2] 1) thm
+  map_thm ctxt (split_conj2 names) (fn ctxt' => eresolve_tac ctxt' [conjunct2] 1) thm
 
 
 (* transforms a theorem into one of the object logic *)

@@ -1,4 +1,19 @@
-structure Transform_Misc = struct
+signature TRANSFORM_MISC =
+sig
+  val get_const_pat: Proof.context -> string -> term
+  val totality_of: Function.info -> thm
+  val rel_of: Function.info -> Proof.context -> thm
+  val the_element: int list -> int
+  val add_function: binding -> term list -> local_theory -> Function.info * local_theory
+  val behead: term -> term -> term * term list
+  val term_name: term -> string
+  val locale_term: Proof.context -> string -> string -> term
+  val locale_thms: Proof.context -> string -> string -> thm list
+  val uncurry: term -> term
+end
+
+structure Transform_Misc : TRANSFORM_MISC =
+struct
   fun import_function_info term_opt ctxt =
     case term_opt of
       SOME tm => (case Function_Common.import_function_data tm ctxt of
@@ -30,11 +45,9 @@ structure Transform_Misc = struct
     let
       val fixes = [(bind, NONE, NoSyn)];
       val specs = map (fn def => (((Binding.empty, []), def), [], [])) defs
-      val pat_completeness_auto = fn ctxt =>
-        Pat_Completeness.pat_completeness_tac ctxt 1
-        THEN auto_tac ctxt
     in
-      Function.add_function fixes specs Function_Fun.fun_config pat_completeness_auto
+      Function.add_function fixes specs Function_Fun.fun_config
+        (fn ctxt => Pat_Completeness.pat_completeness_tac ctxt 1 THEN auto_tac ctxt)
     end
 
   fun behead head tm =
@@ -54,11 +67,11 @@ structure Transform_Misc = struct
       then Term.term_name tm
       else raise TERM("not an atom, explicit name required", [tm])
 
-  fun locale_term lthy locale_name term_name =
-    Syntax.read_term lthy (Long_Name.qualify locale_name term_name)
+  fun locale_term ctxt locale_name term_name =
+    Syntax.read_term ctxt (Long_Name.qualify locale_name term_name)
 
-  fun locale_thms lthy locale_name thms_name =
-    Proof_Context.get_thms lthy (Long_Name.qualify locale_name thms_name)
+  fun locale_thms ctxt locale_name thms_name =
+    Proof_Context.get_thms ctxt (Long_Name.qualify locale_name thms_name)
 
   fun uncurry tm =
     let
