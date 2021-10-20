@@ -66,9 +66,9 @@ locale imp_map_iterate = imp_map +
   assumes it_next_rule[sep_heap_rules]: "m'\<noteq>Map.empty \<Longrightarrow> 
     <is_it m p m' it> 
       it_next it 
-    <\<lambda>((k,v),it'). is_it m p (m' |` (-{k})) it' * \<up>(m' k = Some v)>"
+    <\<lambda>((k,v),it'). is_it m p (m' |` (-{k})) it' * \<up>(m' k = Some v)>\<^sub>t"
   assumes it_has_next_rule[sep_heap_rules]: 
-    "<is_it m p m' it> it_has_next it <\<lambda>r. is_it m p m' it * \<up>(r\<longleftrightarrow>m'\<noteq>Map.empty)>"
+    "<is_it m p m' it> it_has_next it <\<lambda>r. is_it m p m' it * \<up>(r\<longleftrightarrow>m'\<noteq>Map.empty)>\<^sub>t"
   assumes quit_iteration:
     "is_it m p m' it \<Longrightarrow>\<^sub>A is_map m p * true"
 

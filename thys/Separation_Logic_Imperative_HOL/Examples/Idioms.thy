@@ -203,7 +203,7 @@ text_raw\<open>\label{thy:ex:idioms}\<close>
       apply (subst os_sum'.simps)
       txt \<open>\<open>sep_auto\<close> accepts all the section parameters that 
         \<open>auto\<close> does, eg. \<open>intro:\<close>\<close>
-      apply (sep_auto intro: os.quit_iteration)
+      apply (sep_auto intro: os.quit_iteration ent_true_drop)
       done
   next
     case (Cons x l')
