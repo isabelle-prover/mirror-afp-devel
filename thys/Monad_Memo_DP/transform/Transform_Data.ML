@@ -60,8 +60,6 @@ structure Data = Generic_Data (
     last_cmd_info = NONE
   }
 
-  val extend = I
-
   fun merge (
     {monadified_terms = m0, ...},
     {monadified_terms = m1, ...}

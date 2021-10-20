@@ -157,10 +157,10 @@ struct
 
   (* Theory Data *)
 
-  structure Undecl_Data = Theory_Data (
+  structure Undecl_Data = Theory_Data
+  (
     type T = undecl_item Ord_List.T;
     val empty = [];
-    val extend = I;
     val merge = uncurry (Ord_List.union undecl_item_ord);
   );
 

@@ -272,7 +272,6 @@ fun join_infos (
 structure Data = Theory_Data (
   type T = item_io_info Symtab.table
   val empty = Symtab.empty
-  val extend = I;
   val merge = Symtab.join (fn _ => join_infos)
 )
 

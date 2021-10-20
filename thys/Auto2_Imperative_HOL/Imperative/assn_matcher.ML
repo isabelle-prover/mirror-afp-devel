@@ -38,8 +38,7 @@ end
 structure MatchData = Theory_Data (
   type T = assn_matcher list
   val empty = []
-  val extend = I;
-  val merge = merge (op pointer_eq)
+  val merge = merge (op pointer_eq)   (* FIXME !? *)
 )
 
 functor AssnMatcher(SepUtil: SEP_UTIL): ASSN_MATCHER =

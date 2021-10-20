@@ -505,7 +505,6 @@ struct
 structure Data = Theory_Data (
   type T = proofstep list;
   val empty = [];
-  val extend = I;
   fun merge (ps1, ps2) = Library.merge ProofStep.eq_prfstep (ps1, ps2)
 )
 

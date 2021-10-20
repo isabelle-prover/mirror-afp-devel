@@ -62,10 +62,10 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
     gen_tac: local_theory -> tactic' (* Solves remaining premises of gen_thm *)
   }
 
-  structure extractions = Generic_Data (
+  structure extractions = Generic_Data
+  (
     type T = extraction list Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge_list ((op =) o apply2 #pattern)
   )
 
@@ -310,10 +310,10 @@ end;
 
   val cd_pat_eq = apply2 (Thm.term_of #> Refine_Util.anorm_term) #> (op aconv)
 
-  structure cd_patterns = Generic_Data (
+  structure cd_patterns = Generic_Data
+  (
     type T = cterm list
     val empty = []
-    val extend = I
     val merge = merge cd_pat_eq
   ) 
 

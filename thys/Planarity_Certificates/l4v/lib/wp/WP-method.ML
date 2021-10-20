@@ -109,14 +109,12 @@ fun rules_merge (wp_rules, wp_rules') = let
         unsafe_rules = Thm.merge_thms (#unsafe_rules wp_rules, #unsafe_rules wp_rules')} end
 
 structure WPData = Generic_Data
-(struct
-    type T = wp_rules;
-    val empty = {trips = ([], K I), rules = no_rules,
-      splits = [], combs = [], unsafe_rules = []};
-    val extend = I;
-
-    val merge = rules_merge;
-end);
+(
+  type T = wp_rules;
+  val empty = {trips = ([], K I), rules = no_rules,
+    splits = [], combs = [], unsafe_rules = []};
+  val merge = rules_merge;
+);
 
 fun derived_rule rule combinator =
   [rule RSN (1, combinator)] handle THM _ => [];

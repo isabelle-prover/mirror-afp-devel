@@ -38,7 +38,6 @@ structure RelatorData = Generic_Data
   (
     type T = term Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge (K true)
   );
  

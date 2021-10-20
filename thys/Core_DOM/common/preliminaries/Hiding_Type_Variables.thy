@@ -100,7 +100,6 @@ structure Hide_Tvar : HIDE_TVAR = struct
   (
     type T = hide_tvar_tab
     val empty  = Symtab.empty:hide_tvar_tab
-    val extend = I
     fun merge(t1,t2)  = merge_tvar_tab (t1, t2)
   );
 

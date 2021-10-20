@@ -115,7 +115,6 @@ structure Data = Theory_Data
 (
   type T = (string * string) Symtab.table
   val empty = initial_content
-  val extend = I
   fun merge data : T = Symtab.merge (K true) data
 )
 

@@ -307,7 +307,6 @@ subsection \<open>Parser for IMP Programs\<close>
         type T = op_decl list Inttab.table
         val empty = Inttab.empty
         val merge = Inttab.merge_list name_eq_op_decl
-        val extend = I
       )
   
       fun tab_add_unop (p,n,f) = Inttab.insert_list name_eq_op_decl (p,(Unop,(n,f)))

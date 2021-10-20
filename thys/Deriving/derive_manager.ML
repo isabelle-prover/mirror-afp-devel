@@ -18,7 +18,6 @@ structure Derive_Data = Theory_Data
       (string * (string -> string -> theory -> theory)) Symtab.table  (* descr * derive-fun *)
 
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge (K true)
   )
 

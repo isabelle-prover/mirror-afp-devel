@@ -305,7 +305,6 @@ ML \<open>
       type T = Rel_Prio_List.T
       val empty = Rel_Prio_List.empty
       val merge = Rel_Prio_List.merge
-      val extend = I
     )
 
     fun pretty_rel_prio ctxt (s,t) = Pretty.block [

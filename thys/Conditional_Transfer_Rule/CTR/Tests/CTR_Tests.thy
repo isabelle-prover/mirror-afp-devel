@@ -33,7 +33,6 @@ structure CTRTestData = Generic_Data
   (
     type T = ctr_test_data Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge (K true)
   );
 

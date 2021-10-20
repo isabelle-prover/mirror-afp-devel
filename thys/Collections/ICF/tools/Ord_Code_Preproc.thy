@@ -23,7 +23,6 @@ ML \<open>
     structure Data = Theory_Data (
       type T = (int * string * (theory -> thm -> thm)) list
       val empty = []
-      val extend = I
       val merge = (op @) #> do_sort #> distinct ((=) o apply2 #2)
     );
 
@@ -85,7 +84,6 @@ ML \<open>
     structure Data = Theory_Data (
       type T = simpset
       val empty = empty_ss
-      val extend = I
       val merge = Raw_Simplifier.merge_ss
     );
 

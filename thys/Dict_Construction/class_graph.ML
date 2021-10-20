@@ -143,7 +143,6 @@ structure Classes = Generic_Data
       Symtab.empty
     else
       error "merging not supported"
-  val extend = I
 )
 
 fun node lthy class =

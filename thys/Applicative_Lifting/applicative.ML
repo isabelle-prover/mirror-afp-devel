@@ -302,7 +302,6 @@ structure Data = Generic_Data
     afuns = Name_Space.empty_table "applicative functor",
     patterns = Item_Net.init (op = o apply2 #1) #2
   };
-  val extend = I;
   fun merge ({combinators = (cd1, cr1), afuns = a1, patterns = p1},
              {combinators = (cd2, cr2), afuns = a2, patterns = p2}) =
     {combinators = (Symtab.merge (K true) (cd1, cd2), Library.merge eq_combinator_rule (cr1, cr2)),

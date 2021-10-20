@@ -21,7 +21,6 @@ structure Data = Generic_Data
   val empty = ([], [], Symtab.empty)
   fun merge ((ts1, unfolds1, s1), (ts2, unfolds2, s2)) =
     (ts1 @ ts2, unfolds1 @ unfolds2, Symtab.merge op = (s1, s2))
-  val extend = I
 )
 
 fun lenient_unvarify t =

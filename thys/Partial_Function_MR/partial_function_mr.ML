@@ -46,7 +46,6 @@ structure Modes = Generic_Data
 (
   type T = setup_data Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   fun merge data = Symtab.merge (K true) data;
 )
 
