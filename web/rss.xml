@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>02 Oct 2021 00:00:00 +0000</pubDate>
+    <pubDate>12 Oct 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
+              <link>https://www.isa-afp.org/entries/Correctness_Algebras.html</link>
+       <guid>https://www.isa-afp.org/entries/Correctness_Algebras.html</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>12 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+We study models of state-based non-deterministic sequential
+computations and describe them using algebras. We propose algebras
+that describe iteration for strict and non-strict computations. They
+unify computation models which differ in the fixpoints used to
+represent iteration. We propose algebras that describe the infinite
+executions of a computation. They lead to a unified approximation
+order and results that connect fixpoints in the approximation and
+refinement orders. This unifies the semantics of recursion for a range
+of computation models. We propose algebras that describe preconditions
+and the effect of while-programs under postconditions. They unify
+correctness statements in two dimensions: one statement applies in
+various computation models to various correctness claims.</description>
+    </item>
     <item>
        <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
               <link>https://www.isa-afp.org/entries/Virtual_Substitution.html</link>
@@ -522,22 +542,6 @@ to collect information during execution. As the RTS definition
 mandates safety, these instantiations include proofs of safety.  This
 work is described in Mansky and Gunter&#39;s LSFA 2020 paper and
 Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
-    </item>
-    <item>
-       <title>Isabelle's Metalogic: Formalization and Proof Checker</title>
-              <link>https://www.isa-afp.org/entries/Metalogic_ProofChecker.html</link>
-       <guid>https://www.isa-afp.org/entries/Metalogic_ProofChecker.html</guid>
-       <dc:creator> Tobias Nipkow, Simon Roßkopf       </dc:creator>
-       <pubDate>27 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-In this entry we formalize Isabelle&#39;s metalogic in Isabelle/HOL.
-Furthermore, we define a language of proof terms and an executable
-proof checker and prove its soundness wrt. the metalogic.  The
-formalization is intentionally kept close to the Isabelle
-implementation(for example using de Brujin indices) to enable easy
-integration of generated code with the Isabelle system without a
-complicated translation layer.  The formalization is described in our
-&lt;a href=&#34;https://arxiv.org/pdf/2104.12224.pdf&#34;&gt;CADE 28 paper&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
