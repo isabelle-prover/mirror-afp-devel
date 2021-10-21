@@ -393,7 +393,7 @@ setup Refine_Automation.setup
 setup \<open>
   let
     fun parse_cpat cxt = let 
-      val (t, (context, tks)) = Scan.lift Args.embedded_inner_syntax cxt 
+      val (t, (context, tks)) = Scan.lift Parse.embedded_inner_syntax cxt 
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
     in
@@ -425,7 +425,7 @@ ML \<open>Outer_Syntax.local_theory
     -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
     --| @{keyword "uses"} -- Parse.thm
-    -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.embedded_inner_syntax) []
+    -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Parse.embedded_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
       case Attrib.eval_thms lthy [raw_thm] of
