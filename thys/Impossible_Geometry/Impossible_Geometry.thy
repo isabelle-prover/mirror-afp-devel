@@ -308,10 +308,8 @@ unique).\<close>
 
 lemma radical_sqrt_correct_expr:
   "x \<in> radical_sqrt \<Longrightarrow> (\<exists> e. \<lbrace>e\<rbrace> = x)"
-  apply (rule radical_sqrt.induct)
-  apply auto
-  apply (erule Rats_induct)
-  apply (metis translation.simps(1))
+  apply (erule radical_sqrt.induct)
+  apply (metis Rats_cases translation.simps(1))
   apply (metis translation.simps(2))
   apply (metis translation.simps(3))
   apply (metis translation.simps(4))
@@ -403,7 +401,7 @@ radicals of @{term e} is not empty and is also finite.\<close>
 lemma finite_order_radicals:
   "radicals e \<noteq> {} \<Longrightarrow> finite (radicals e) \<Longrightarrow>
    order_radicals (radicals e) \<noteq> {} \<and> finite (order_radicals (radicals e))"
-  by simp (metis equals0I)
+  by auto
 
 text \<open>The following lemma states that given an expression @{term e},
 if the set @{term "order_radicals"} of the set @{term "radicals e"} is
@@ -438,8 +436,7 @@ upmost radicals in this expression are Addition (Const @{term a})
 lemma upmost_radical_sqrt2:
   "radicals e \<noteq> {} \<Longrightarrow>
    \<exists> r \<in> radicals e. \<forall> s \<in> radicals e. r \<notin> radicals s"
-  using in_radicals_smaller_order_contrap [of r s]  finite_radicals [of e]
-  by (metis finite_order_radicals finite_order_radicals_has_max in_radicals_smaller_order_contrap)
+  by (meson finite_order_radicals finite_order_radicals_has_max finite_radicals in_radicals_smaller_order leD)
 
 
 text \<open>The following 7 lemmas are used to prove the main lemma @{term
@@ -1248,15 +1245,22 @@ subsection \<open>An important property about constructible points: their
 coordinates are radicals\<close>
 
 lemma constructible_radical_sqrt:
-  assumes h: "M \<in> constructible"
+  assumes "M \<in> constructible"
   shows "(abscissa M) \<in> radical_sqrt & (ordinate M) \<in> radical_sqrt"
-  apply (rule constructible.induct)
-  apply (metis assms)
-  apply (metis radical_sqrt.intros(1))
-  apply (metis radical_sqrt_line_line_intersection)
-  apply (metis radical_sqrt_line_circle_intersection)
-  apply (metis radical_sqrt_circle_circle_intersection)
-  done
+  using assms
+proof (induction rule: constructible.induct)
+  case (1 M)
+  then show ?case by (metis radical_sqrt.intros(1))
+next
+  case (2 A B C D M)
+  then show ?case by (metis radical_sqrt_line_line_intersection)
+next
+  case (3 A B C D E M)
+  then show ?case by (metis radical_sqrt_line_circle_intersection)
+next
+  case (4 A B C D E F M)
+  then show ?case by (metis radical_sqrt_circle_circle_intersection)
+qed
 
 subsection \<open>Proving the impossibility of duplicating the cube\<close>
 
