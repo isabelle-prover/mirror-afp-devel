@@ -1,0 +1,9 @@
+title = AFP/Tools
+module = $ISABELLE_HOME/lib/classes/afp_tools.jar
+requirements = \
+  env:ISABELLE_SCALA_JAR
+sources = \
+  tools/afp_check_roots.scala \
+  tools/afp_dependencies.scala \
+  tools/afp_tool.scala
+services = afp.Tools
