@@ -931,6 +931,10 @@ extra-history =
 	Minor modifications and extensions made in conjunction with the addition
 	of new material to Bicategory.
 	(revision 472cb2268826)<br>
+	[2021-07-22]:
+	Minor changes to sublocale declarations related to functor/natural transformation to
+	avoid issues with global interpretations reported 2/2/2021 by Filip Smola.
+	(revision 49d3aa43c180)<br>
 
 [MonoidalCategory]
 title = Monoidal Categories
@@ -9550,6 +9554,9 @@ extra-history =
 	[2020-11-04]:
 	Added new material on equivalence of bicategories, with associated changes.
 	(revision 472cb2268826)<br>
+	[2021-07-22]:
+	Added new material: "concrete bicategories" and "bicategory of categories".
+	(revision 49d3aa43c180)<br>
 
 [Subset_Boolean_Algebras]
 title = A Hierarchy of Algebras for Boolean Subsets
