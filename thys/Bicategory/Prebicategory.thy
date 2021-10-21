@@ -703,9 +703,8 @@ begin
           by (elim R.seqE) metis
         have \<nu>: "\<guillemotleft>\<nu> : R.cod \<mu> \<rightarrow> R.cod \<nu>\<guillemotright> \<and> arr \<nu> \<and>
                  right a \<nu> \<and> H \<nu> a \<noteq> null \<and> right a' \<nu> \<and> H \<nu> a' \<noteq> null"
-          using assms \<mu>\<nu> right_def right_respects_isomorphic isomorphic_implies_equicomposable
-                R.hom_char R.dom_char R.cod_char R.inclusion in_homI R.arrE
-          by (elim R.seqE R.arrE) auto
+          by (metis "*" R.cod_simp R.comp_def R.inclusion R.not_arr_null R.null_char R.seqE
+              \<mu>\<nu> in_homI preserves_arr right_def)
         show "H\<^sub>R a' (R.comp \<nu> \<mu>) = R.comp (H\<^sub>R a' \<nu>) (H\<^sub>R a' \<mu>)"
         proof -
           have 1: "R.arr (H\<^sub>R a' \<nu>)"
@@ -767,9 +766,8 @@ begin
           by metis
         have \<nu>: "\<guillemotleft>\<nu> : L.cod \<mu> \<Rightarrow> L.cod \<nu>\<guillemotright> \<and> arr \<nu> \<and>
                  left a \<nu> \<and> a \<star> \<nu> \<noteq> null \<and> left a' \<nu> \<and> a' \<star> \<nu> \<noteq> null"
-          using assms \<mu>\<nu> left_def left_respects_isomorphic isomorphic_implies_equicomposable
-                L.hom_char L.dom_char L.cod_char L.inclusion in_homI L.arrE
-          by (elim L.seqE L.arrE) auto
+          by (metis (mono_tags, opaque_lifting) L.arrE L.cod_simp L.seq_char \<mu>\<nu> assms(2)
+              in_homI seqE left_def left_respects_isomorphic)
         show "H\<^sub>L a' (L.comp \<nu> \<mu>) = L.comp (H\<^sub>L a' \<nu>) (H\<^sub>L a' \<mu>)"
         proof -
           have 1: "L.arr (H\<^sub>L a' \<nu>)"
@@ -1571,11 +1569,7 @@ begin
     proof -
       have \<mu>: "arr \<mu>" using assms composable_implies_arr by auto
       have "\<And>f. \<lbrakk> ide f; b \<in> targets f; b' \<in> targets f \<rbrakk> \<Longrightarrow> b \<cong> b'"
-        using \<mu> assms(1) comp_ide_source comp_target_ide [of b b']
-              weak_unit_self_composable(1) [of b] weak_unit_self_composable(1) [of b']
-              isomorphic_transitive isomorphic_symmetric
-              sources_determine_composability targetsD(2-3)
-        by (metis (full_types) connected_if_composable)
+        by (metis connected_if_composable sources_are_isomorphic targetsD(3))
       moreover have "ide (dom \<mu>) \<and> b \<in> targets (dom \<mu>) \<and> b' \<in> targets (dom \<mu>)"
         using assms \<mu> targets_dom [of \<mu>] by auto
       ultimately show ?thesis by auto
@@ -1608,9 +1602,10 @@ begin
         apply unfold_locales by auto
       have a': "ide a' \<and> a \<star> a' \<noteq> null \<and> a' \<star> a \<noteq> null \<and> a' \<star> a' \<noteq> null \<and>
                 \<phi> \<star> a' \<noteq> null \<and> Left_a.ide a'"
-        using assms \<phi> weak_unit_self_composable hom_connected weak_unit_self_composable(3)
-              Left_a.ide_char Left_a.arr_char left_def in_homE
-        by auto metis+
+        by (metis (no_types, lifting) Left_a.left_hom_axioms Right_a.weak_unit_a \<phi> assms(2)
+            ide_cod hom_connected(1) in_homE isomorphic_implies_equicomposable(1)
+            left_def left_hom_def subcategory.ideI isomorphic_implies_equicomposable(2)
+            weak_unit_self_composable(3))
       have iso: "a' \<star> a' \<cong> a'"
       proof -
         have 1: "Right a' = Right a"
@@ -1756,10 +1751,9 @@ begin
         proof -
           have "naturally_isomorphic (Left a) (Left a) (H\<^sub>L a')
                                      (identity_functor.map (Left a))"
-            using assms Left_a.natural_isomorphism_\<ll> naturally_isomorphic_def
-                  \<Phi>.natural_isomorphism_axioms naturally_isomorphic_symmetric
-                  naturally_isomorphic_transitive
-            by blast
+            by (meson Left_a.natural_isomorphism_\<ll> \<Phi>.natural_isomorphism_axioms
+                naturally_isomorphic_def naturally_isomorphic_symmetric
+                naturally_isomorphic_transitive)
           thus ?thesis
             using 1 by auto
         qed
@@ -1879,15 +1873,11 @@ begin
       proof -
         have "naturally_isomorphic (Right a') (Right a') (H\<^sub>R a')
                                    (identity_functor.map (Right a'))"
-            using assms Right_a.natural_isomorphism_\<rr> naturally_isomorphic_def
-                  \<Psi>.natural_isomorphism_axioms naturally_isomorphic_symmetric
-                  naturally_isomorphic_transitive
         proof -
           have "naturally_isomorphic (Right a) (Right a) (H\<^sub>R a') Right_a.map"
-            using assms Right_a.natural_isomorphism_\<rr> naturally_isomorphic_def
-                  \<Psi>.natural_isomorphism_axioms naturally_isomorphic_symmetric
-                  naturally_isomorphic_transitive
-            by blast
+            by (meson Right_a.natural_isomorphism_\<rr> \<Psi>.natural_isomorphism_axioms
+                naturally_isomorphic_def naturally_isomorphic_symmetric
+                naturally_isomorphic_transitive)
           thus ?thesis
             using 1 by auto
         qed
@@ -2388,7 +2378,7 @@ begin
     lemma targets_char':
     assumes "arr \<mu>"
     shows "a \<in> targets \<mu> \<longleftrightarrow> some_trg \<mu> \<cong> a"
-      using assms some_trg_in_targets targets_iso_closed targets_are_isomorphic by blast
+      using assms some_trg_in_targets targets_iso_closed targets_are_isomorphic by meson
 
     text \<open>
       An arbitrary choice of sources and targets in a prebicategory results in a notion of

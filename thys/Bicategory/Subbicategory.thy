@@ -323,7 +323,7 @@ begin
           using 3 inclusion B.assoc_is_natural_2 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
           by (simp add: \<mu>\<nu>\<tau>)
         also have "... = \<a>\<^sub>B (cod (fst \<mu>\<nu>\<tau>)) (cod (fst (snd \<mu>\<nu>\<tau>))) (cod (snd (snd \<mu>\<nu>\<tau>))) \<cdot>
-                           ((fst \<mu>\<nu>\<tau> \<star> fst (snd \<mu>\<nu>\<tau>)) \<star> snd (snd \<mu>\<nu>\<tau>)) "
+                           ((fst \<mu>\<nu>\<tau> \<star> fst (snd \<mu>\<nu>\<tau>)) \<star> snd (snd \<mu>\<nu>\<tau>))"
           using 1 3 \<mu>\<nu>\<tau> hcomp_closed assoc_closed cod_closed hcomp_def comp_def inclusion
             comp_char cod_char VVV.arr_char VV.arr_char
           by auto
@@ -503,10 +503,8 @@ begin
           have "\<guillemotleft>?\<mu> : f \<Rightarrow>\<^sub>B f'\<guillemotright>"
             using f f' \<nu> 2 B.\<rr>_ide_simp runit'_closed runit_closed' ide_char by auto
           thus ?thesis
-            using f f' \<nu> in_hom_char [of ?\<mu> f f'] arr_char comp_closed ide_char
-                  runit'_closed runit_closed
-            apply auto
-            by fastforce
+            by (metis (no_types, lifting) B.arrI B.seqE \<nu> arrE arrI comp_closed f f'
+                ide_char in_hom_char runit'_closed runit_closed')
         qed
         have \<mu>_eq: "?\<mu> = B.\<rr> f' \<cdot> \<nu> \<cdot> B.inv (B.\<rr> f)"
         proof -

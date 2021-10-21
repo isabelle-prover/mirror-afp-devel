@@ -403,7 +403,8 @@ begin
     shows "equivalence_map f\<^sup>~" and "ide f\<^sup>~"
     and "src f\<^sup>~ = trg f" and "trg f\<^sup>~ = src f"
     and "dom f\<^sup>~ = f\<^sup>~" and "cod f\<^sup>~ = f\<^sup>~"
-      using assms equivalence_mapE quasi_inverse_in_hom quasi_inverses_some_quasi_inverse equivalence_map_is_ide
+      using assms equivalence_mapE quasi_inverse_in_hom quasi_inverses_some_quasi_inverse
+            equivalence_map_is_ide
            apply auto
       by (meson equivalence_mapI)
 

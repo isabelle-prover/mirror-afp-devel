@@ -380,8 +380,7 @@ begin
             fix a
             assume a: "C.ide a"
             show "\<eta>'GoG\<epsilon>'.map a = G a"
-              using a \<eta>'GoG\<epsilon>'.map_simp_ide triangle_G'
-                    \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
+              using a \<eta>'GoG\<epsilon>'.map_simp_ide triangle_G' G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components
                     D.inverse_unique G.preserves_inverse_arrows G\<epsilon>o\<eta>G.map_simp_ide
                     D.inverse_arrows_sym triangle_G
@@ -400,7 +399,6 @@ begin
             assume b: "D.ide b"
             show "F\<eta>'o\<epsilon>'F.map b = F b"
               using b F\<eta>'o\<epsilon>'F.map_simp_ide \<epsilon>FoF\<eta>.map_simp_ide triangle_F triangle_F'
-                    \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components F.preserves_ide
                     C.inverse_unique F.preserves_inverse_arrows C.inverse_arrows_sym
               by (metis o_apply)

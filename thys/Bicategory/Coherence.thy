@@ -3573,10 +3573,10 @@ begin
           using vw Nml_HcompD(7) by simp
         have X: "Nml (Dom v \<^bold>\<star> (Dom w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom u))"
           using u u' v w w' wu vw is_Hcomp_HcompNml Nml_HcompNml Nml_Dom
-          by (cases v) auto
+          by (metis Dom.simps(3) Nml.simps(3) term.distinct_disc(3))
         have Y: "Nml (Cod v \<^bold>\<star> (Cod w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod u))"
           using u u' w w' wu vw is_Hcomp_HcompNml Nml_HcompNml Src_Cod Trg_Cod
-          by (cases v) auto
+          by (metis Cod.simps(3) Nml.simps(3) Nml_Cod term.distinct_disc(3) v)
         show "\<lbrace>(Cod v \<^bold>\<star> Cod w) \<^bold>\<Down> Cod u\<rbrace> \<cdot> ((\<lbrace>v\<rbrace> \<star> \<lbrace>w\<rbrace>) \<star> \<lbrace>u\<rbrace>)
                 = \<lbrace>(v \<^bold>\<star> w) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>(Dom v \<^bold>\<star> Dom w) \<^bold>\<Down> Dom u\<rbrace>"
         proof -

@@ -36,10 +36,10 @@ text \<open>
 
   locale bicategory_of_spans =
     bicategory + chosen_right_adjoints +
-  assumes BS1: "\<And>r. ide r \<Longrightarrow> \<exists>f g. is_left_adjoint f \<and> is_left_adjoint g \<and> isomorphic r (g \<star> f\<^sup>*)"
-  and BS2: "\<And>f g. \<lbrakk> is_left_adjoint f; is_left_adjoint g; src f = src g \<rbrakk>
+  assumes BS1: "ide r \<Longrightarrow> \<exists>f g. is_left_adjoint f \<and> is_left_adjoint g \<and> isomorphic r (g \<star> f\<^sup>*)"
+  and BS2: "\<lbrakk> is_left_adjoint f; is_left_adjoint g; src f = src g \<rbrakk>
                       \<Longrightarrow> \<exists>r \<rho>. tabulation V H \<a> \<i> src trg r \<rho> f g"
-  and BS3: "\<And>f f' \<mu> \<mu>'. \<lbrakk> is_left_adjoint f; is_left_adjoint f'; \<guillemotleft>\<mu> : f \<Rightarrow> f'\<guillemotright>; \<guillemotleft>\<mu>' : f \<Rightarrow> f'\<guillemotright> \<rbrakk>
+  and BS3: "\<lbrakk> is_left_adjoint f; is_left_adjoint f'; \<guillemotleft>\<mu> : f \<Rightarrow> f'\<guillemotright>; \<guillemotleft>\<mu>' : f \<Rightarrow> f'\<guillemotright> \<rbrakk>
                              \<Longrightarrow> iso \<mu> \<and> iso \<mu>' \<and> \<mu> = \<mu>'"
 
   text \<open>
