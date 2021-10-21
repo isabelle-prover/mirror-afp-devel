@@ -1370,7 +1370,7 @@ $$\xymatrix{
         using \<iota>_in_hom iso_assoc tensor_preserves_ide assoc_in_hom tensor_in_hom
               assoc_naturality lunit_naturality runit_naturality lunit_in_hom runit_in_hom
               iso_lunit iso_runit interchange pentagon triangle
-        apply unfold_locales by auto
+        by unfold_locales auto
 
   end
 
@@ -2918,16 +2918,7 @@ $$\xymatrix{
     shows "\<^bold>\<lfloor>t \<^bold>\<cdot> Dom t\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor>"
     proof -
       have "Arr t \<Longrightarrow> \<^bold>\<lfloor>t \<^bold>\<cdot> Dom t\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor>"
-        using C.comp_arr_dom
-        apply (induct t, simp_all)
-        using CompDiag_TensorDiag Arr_implies_Ide_Dom Ide_in_Hom Diag_Diagonalize
-              Diagonalize_in_Hom
-           apply simp
-        using CompDiag_preserves_Diag CompDiag_Diag_Dom Diag_Diagonalize
-          apply (metis (no_types))
-        using CompDiag_TensorDiag Arr_implies_Ide_Dom Ide_in_Hom TensorDiag_in_Hom
-              TensorDiag_preserves_Diag Diag_Diagonalize Diagonalize_in_Hom
-        by simp_all
+        by (metis CompDiag_Diag_Dom Diag_Diagonalize(1-2) Diagonalize.simps(4))
       thus ?thesis using assms by blast
     qed
 

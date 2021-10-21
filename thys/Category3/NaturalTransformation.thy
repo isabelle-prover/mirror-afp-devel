@@ -108,7 +108,7 @@ begin
       fix f
       show "G f = \<tau> f"
         using assms
-        by (metis A.cod_dom B.comp_arr_dom F.preserves_arr G.is_extensional G.preserves_arr
+        by (metis A.cod_dom B.comp_arr_dom G.is_extensional G.preserves_arr
             G.preserves_dom B.cod_dom functor_implies_equals_dom is_extensional
             is_natural_1 preserves_cod preserves_dom)
     qed
@@ -490,19 +490,10 @@ begin
         obtain f' where f': "\<guillemotleft>f' : a' \<rightarrow>\<^sub>A a\<guillemotright> \<and> F f' = ?g'"
           using a a' g' \<phi>.F.is_full [of a a' ?g'] by blast
         moreover have "G f' = g"
-        proof -
-          have "G f' = \<phi> a \<cdot>\<^sub>B ?g' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-            using a a' f' \<phi>.naturality [of f'] \<phi>.components_are_iso \<phi>.is_natural_2
-            by (metis \<phi>.A.in_homE \<phi>.B.comp_assoc \<phi>.B.invert_side_of_triangle(2)
-                \<phi>.preserves_reflects_arr)
-          also have "... = (\<phi> a \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a)) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-            using \<phi>.B.comp_assoc by auto
-          also have "... = g"
-            using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv
-                  \<phi>.B.inv_is_inverse
-            by auto
-          finally show ?thesis by blast
-        qed
+          by (metis f' \<phi>.A.arrI \<phi>.B.arrI \<phi>.B.inv_inv \<phi>.B.invert_side_of_triangle(1-2)
+              \<phi>.B.iso_inv_iso \<phi>.G.as_nat_trans.natural_transformation_axioms
+              \<phi>.components_are_iso \<phi>.naturality a a' category.in_homE f' g'
+              natural_transformation.axioms(1))
         ultimately show ?thesis by auto
       qed
     qed

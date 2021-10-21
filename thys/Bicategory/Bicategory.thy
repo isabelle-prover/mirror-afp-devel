@@ -993,7 +993,8 @@ begin
       show "\<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
         using assms unit_in_vhom by simp
       thus "\<guillemotleft>\<i>[a] : a \<rightarrow> a\<guillemotright>"
-        using assms src_cod trg_cod by fastforce
+        using assms
+        by (metis arrI in_hhom_def obj_simps(2-3) vconn_implies_hpar(1-4))
     qed
 
     interpretation weak_composition V H
@@ -1736,7 +1737,7 @@ begin
       show "\<guillemotleft>\<l>[f] : trg f \<star> f \<Rightarrow> f\<guillemotright>"
         using assms lunit_char by auto
       thus "\<guillemotleft>\<l>[f] : src f \<rightarrow> trg f\<guillemotright>"
-        using src_cod trg_cod by fastforce
+        by (metis arrI in_hhomI vconn_implies_hpar(1-4))
     qed
 
     lemma lunit_in_vhom [simp]:
@@ -1792,7 +1793,7 @@ begin
       show "\<guillemotleft>\<r>[f] : f \<star> src f \<Rightarrow> f\<guillemotright>"
         using assms runit_char by auto
       thus "\<guillemotleft>\<r>[f] : src f \<rightarrow> trg f\<guillemotright>"
-        using src_cod trg_cod by fastforce
+        by (metis arrI in_hhom_def vconn_implies_hpar(1-4))
     qed
 
     lemma runit_in_vhom [simp]:

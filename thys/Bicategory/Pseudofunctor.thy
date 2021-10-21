@@ -312,7 +312,7 @@ begin
         by auto
       show "\<guillemotleft>\<Phi> (\<mu>, \<nu>) : map\<^sub>0 (src\<^sub>C \<nu>) \<rightarrow>\<^sub>D map\<^sub>0 (trg\<^sub>C \<mu>)\<guillemotright>"
         using assms 1 D.src_dom [of "\<Phi> (\<mu>, \<nu>)"] D.trg_dom [of "\<Phi> (\<mu>, \<nu>)"]
-              C.VV.dom_simp C.VV.cod_simp
+              C.VV.dom_simp C.VV.cod_simp D.vconn_implies_hpar(1-2)
         by auto
     qed
 
@@ -459,11 +459,11 @@ begin
       show "src\<^sub>D (unit a) = map\<^sub>0 a"
         using assms 1 D.src_dom
         unfolding map\<^sub>0_def
-        by (metis C.obj_def D.arr_dom_iff_arr D.src.preserves_reflects_arr D.src_src preserves_arr)
+        by (metis C.obj_def D.src_src preserves_arr)
       show "trg\<^sub>D (unit a) = map\<^sub>0 a"
         unfolding map\<^sub>0_def
         using assms 2 unit_char
-        by (metis "1" D.trg_dom map\<^sub>0_def map\<^sub>0_simps(3) \<open>D.arr (unit a)\<close>)
+        by (metis 1 D.trg_dom map\<^sub>0_def map\<^sub>0_simps(3))
     qed
 
     lemma unit_in_hom [intro]:
@@ -559,19 +559,13 @@ begin
     shows "D.arr (lF f)"
     and "src\<^sub>D (lF f) = map\<^sub>0 (src\<^sub>C f)" and "trg\<^sub>D (lF f) = map\<^sub>0 (trg\<^sub>C f)"
     and "D.dom (lF f) = F (trg\<^sub>C f) \<star>\<^sub>D F f" and "D.cod (lF f) = F f"
-    proof -
-      show "D.arr (lF f)"
-        using assms lF_char(1) by auto
-      show "D.dom (lF f) = F (trg\<^sub>C f) \<star>\<^sub>D F f"
-        using assms lF_char(1) by auto
-      show "D.cod (lF f) = F f"
-        using assms lF_char(1) by auto
-      show "src\<^sub>D (lF f) = map\<^sub>0 (src\<^sub>C f)"
-        unfolding map\<^sub>0_def
-        using assms \<open>D.arr (lF f)\<close> \<open>D.cod (lF f) = F f\<close> D.src_cod by fastforce
-      show "trg\<^sub>D (lF f) = map\<^sub>0 (trg\<^sub>C f)"
-        using assms \<open>D.arr (lF f)\<close> \<open>D.cod (lF f) = F f\<close> D.trg_cod by fastforce
-    qed
+      using assms lF_char(1)
+          apply auto[5]
+      unfolding map\<^sub>0_def
+      using assms
+       apply (metis C.ideD(1) D.vconn_implies_hpar(1,3) map\<^sub>0_def preserves_src)
+      by (metis C.ideD(1) C.src_trg C.trg.preserves_arr D.in_homE D.trg_cod
+          preserves_src preserves_trg)
 
     text \<open>
       \sloppypar
@@ -971,7 +965,7 @@ begin
           using \<mu>\<nu>\<tau> VVV_arr_char B.VV.arr_char B.VVV.arr_char B.arr_dom_iff_arr src_dom
                 trg_dom
           apply simp
-          by (metis (no_types, lifting) src_dom trg_dom VV.arrE VVV.arrE)
+          by (metis (no_types, lifting) VV.arrE VVV.arrE)
         also have "... = UP (B.VVV.dom (DN \<mu>\<nu>\<tau>))"
           using \<mu>\<nu>\<tau> B.VVV.dom_char B.VVV.arr_char B.VV.arr_char VVV.arr_char VV.arr_char
           by simp
@@ -994,7 +988,7 @@ begin
         also have "... = UP (B.cod (snd (snd \<mu>\<nu>\<tau>)), B.cod (fst (snd \<mu>\<nu>\<tau>)), B.cod (fst \<mu>\<nu>\<tau>))"
           using \<mu>\<nu>\<tau> VVV_arr_char B.VV.arr_char B.VVV.arr_char
           apply simp
-          by (metis (no_types, lifting) B.arr_cod_iff_arr src_cod trg_cod VV.arrE VVV.arrE)
+          by (metis (no_types, lifting) B.arr_cod_iff_arr VV.arrE VVV.arrE)
         also have "... = UP (B.VVV.cod (DN \<mu>\<nu>\<tau>))"
           using \<mu>\<nu>\<tau> B.VVV.cod_char B.VVV.arr_char B.VV.arr_char VVV.arr_char VV.arr_char
           by simp
@@ -1631,8 +1625,7 @@ begin
         using \<mu>\<nu> 1 cmp_def S.VV.arr_char S.VV.cod_char FF_def S.arr_cod S.cod_simp
               S.src_def S.trg_def map_def
         apply simp
-        by (metis (no_types, lifting) B.comp_cod_arr B.hcomp_simps(4) B.hseqE B.src_cod
-            B.trg_cod cmp_simps(1) \<mu>\<nu>)
+        by (metis (no_types, lifting) B.comp_cod_arr B.hcomp_simps(4) cmp_simps(1) \<mu>\<nu>)
       show "FoH.map \<mu>\<nu> \<cdot>\<^sub>B cmp (S.VV.dom \<mu>\<nu>) = cmp \<mu>\<nu>"
         unfolding cmp_def map_def
         using \<mu>\<nu> S.VV.arr_char B.VV.arr_char S.VV.dom_char S.VV.cod_char B.comp_arr_dom

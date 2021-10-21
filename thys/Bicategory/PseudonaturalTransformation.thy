@@ -475,7 +475,7 @@ begin
           also have "... = ((\<rho>\<^sub>0 a \<star>\<^sub>D G.unit a) \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D (\<r>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 a] \<cdot>\<^sub>D \<l>\<^sub>D[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a)"
             using a C.obj_simps D.whisker_right
             by (metis C.objE D.hcomp_simps(4) D.hseqI' D.ideD(1) D.ideD(3) D.seqI D.trg_cod
-                H.unit_simps(1-2,5) H.\<i>_simps(1,3,5) \<rho>.ide_map\<^sub>0_obj \<rho>.map\<^sub>0_simps(3)
+                H.unit_simps(1-2,5) H.\<i>_simps(3,5) \<rho>.ide_map\<^sub>0_obj \<rho>.map\<^sub>0_simps(3)
                 \<rho>.map\<^sub>1_simps(1,4) \<rho>.respects_unit \<sigma>.ide_map\<^sub>0_obj)
           finally have "(\<rho>\<^sub>1 a \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D ((H.unit a \<star>\<^sub>D \<rho>\<^sub>0 a) \<star>\<^sub>D \<sigma>\<^sub>0 a) =
                         ((\<rho>\<^sub>0 a \<star>\<^sub>D G.unit a) \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D (\<r>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 a] \<cdot>\<^sub>D \<l>\<^sub>D[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a)"

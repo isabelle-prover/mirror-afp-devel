@@ -2050,48 +2050,40 @@ begin
       using assms by auto
 
     lemma src_dom [simp]:
-    assumes "arr \<mu>"
     shows "src (dom \<mu>) = src \<mu>"
-      using assms src.preserves_dom [of \<mu>] by simp
+      by (metis arr_dom_iff_arr obj_simps(4) obj_src src.is_extensional src.preserves_dom)
 
     lemma src_cod [simp]:
-    assumes "arr \<mu>"
     shows "src (cod \<mu>) = src \<mu>"
-      using assms src.preserves_cod [of \<mu>] by simp
+      by (metis arr_cod_iff_arr obj_simps(5) obj_src src.is_extensional src.preserves_cod)
 
     lemma trg_dom [simp]:
-    assumes "arr \<mu>"
     shows "trg (dom \<mu>) = trg \<mu>"
-      using assms trg.preserves_dom [of \<mu>] by simp
+      by (metis arr_dom_iff_arr ide_char ide_trg trg.is_extensional trg.preserves_dom)
 
     lemma trg_cod [simp]:
-    assumes "arr \<mu>"
     shows "trg (cod \<mu>) = trg \<mu>"
-      using assms trg.preserves_cod [of \<mu>] by simp
+      by (metis arr_cod_iff_arr ide_char ide_trg trg.is_extensional trg.preserves_cod)
 
     (*
      * TODO: In theory, the following simps should already be available from the fact
      * that src and trg are endofunctors.  But they seem not to get used.
      *)
     lemma dom_src [simp]:
-    assumes "arr \<mu>"
     shows "dom (src \<mu>) = src \<mu>"
-      using assms by simp
+      by (metis dom_null ideD(2) ide_src src.is_extensional)
 
     lemma cod_src [simp]:
-    assumes "arr \<mu>"
     shows "cod (src \<mu>) = src \<mu>"
-      using assms by simp
+      by (metis cod_null ideD(3) ide_src src.is_extensional)
 
     lemma dom_trg [simp]:
-    assumes "arr \<mu>"
     shows "dom (trg \<mu>) = trg \<mu>"
-      using assms by simp
+      by (metis dom_null ideD(2) ide_trg trg.is_extensional)
 
     lemma cod_trg [simp]:
-    assumes "arr \<mu>"
     shows "cod (trg \<mu>) = trg \<mu>"
-      using assms by simp
+      by (metis cod_null ideD(3) ide_trg trg.is_extensional)
 
     lemma vcomp_in_hhom [intro, simp]:
     assumes "seq \<nu> \<mu>" and "src \<nu> = a" and "trg \<nu> = b"
@@ -2143,7 +2135,7 @@ begin
     assumes "obj a" and "obj b" and "a \<cong> b"
     shows "a = b"
       using assms isomorphic_def
-      by (metis arr_inv dom_inv in_homE objE src_dom src_inv)
+      by (metis dom_inv in_homE objE src_dom src_inv)
 
 
     text \<open>

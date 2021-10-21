@@ -101,8 +101,8 @@ begin
         qed
         also have "... = fst (VV.dom f) \<star> snd (VV.dom f)"
            using f VV.arr_char VV.dom_char arr_char hcomp_def B.seq_if_composable dom_closed
-                 dom_simp
-           by (simp, metis)
+           apply simp
+           by (metis (no_types, lifting) dom_char)
         finally show ?thesis by simp
       qed
       show "cod (fst f \<star> snd f) = fst (VV.cod f) \<star> snd (VV.cod f)"
@@ -113,8 +113,8 @@ begin
           by auto
         also have "... = fst (VV.cod f) \<star> snd (VV.cod f)"
            using f VV.arr_char VV.cod_char arr_char hcomp_def B.seq_if_composable cod_closed
-                 cod_simp
-           by (simp, metis)
+           apply simp
+           by (metis (no_types, lifting) cod_char)
         finally show ?thesis by simp
       qed
       next
@@ -167,10 +167,11 @@ begin
       proof -
         have "Arr (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) =
               Arr ((fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)) \<cdot>\<^sub>B \<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>))"
-          using assms B.\<alpha>_def 1 B.VVV.arr_char B.VV.arr_char B.VVV.dom_char B.VV.dom_char
-                B.assoc_is_natural_1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
-                VV.arr_char VVV.arr_char arr_dom src_dom trg_dom dom_simp
-          by auto
+          using assms 1 B.\<alpha>_def B.assoc_is_natural_1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
+                VV.arr_char VVV.arr_char B.VVV.arr_char B.VV.arr_char B.VVV.dom_char B.VV.dom_char
+          apply simp
+          by (metis (no_types, lifting) arr_char dom_char dom_closed src.preserves_dom
+              trg.preserves_dom)
         also have "..."
         proof (intro comp_closed)
           show "Arr (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
@@ -433,7 +434,16 @@ begin
             have "B.inv (B.\<ll> f) \<cdot>\<^sub>B B.\<ll> f = trg\<^sub>B f \<star>\<^sub>B f"
               using f ide_char B.comp_inv_arr B.inv_is_inverse by auto
             moreover have "B.dom (trg\<^sub>B ?\<mu> \<star>\<^sub>B ?\<mu>) = trg\<^sub>B f \<star>\<^sub>B f"
-              using f \<mu> \<mu>_eq ide_char arr_char B.trg_dom [of ?\<mu>] by fastforce
+            proof -
+              have "B.dom (trg\<^sub>B ?\<mu>) = trg\<^sub>B f"
+                using f \<mu> B.vconn_implies_hpar(2) by force
+              moreover have "B.dom ?\<mu> = f"
+                using \<mu> by blast
+              ultimately show ?thesis
+                using B.hcomp_simps [of "trg\<^sub>B ?\<mu>" ?\<mu>]
+                by (metis (no_types, lifting) B.hseqI' B.ideD(1) B.src_trg
+                    B.trg.preserves_reflects_arr B.trg_dom f ide_char)
+            qed
             ultimately show ?thesis
               using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char by auto
           qed
@@ -519,7 +529,9 @@ begin
             have "B.inv (B.\<rr> f) \<cdot>\<^sub>B B.\<rr> f = f \<star>\<^sub>B src\<^sub>B f"
               using f ide_char B.comp_inv_arr B.inv_is_inverse by auto
             moreover have "B.dom (?\<mu> \<star>\<^sub>B src\<^sub>B ?\<mu>) = f \<star>\<^sub>B src\<^sub>B f"
-              using f \<mu> \<mu>_eq ide_char arr_char B.src_dom [of ?\<mu>] by fastforce
+              using f \<mu> \<mu>_eq ide_char arr_char B.src_dom [of ?\<mu>]
+              by (metis (no_types, lifting) B.R.as_nat_trans.preserves_comp_2 B.R.preserves_seq
+                  B.dom_src B.hcomp_simps(3) B.in_homE)
             ultimately show ?thesis
               using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char by auto
           qed

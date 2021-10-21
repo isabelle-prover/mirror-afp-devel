@@ -514,7 +514,8 @@ $$
       show "\<guillemotleft>\<theta> : f \<star> w \<Rightarrow> u\<guillemotright>"
         using uw\<theta> by simp
       show "\<guillemotleft>\<theta> : src u \<rightarrow> src r\<guillemotright>"
-        using uw\<theta> src_dom trg_dom hcomp_simps(1-2) by fastforce
+        using uw\<theta> hcomp_simps(1-2)
+        by (metis arrI in_hhomI u_simps(3) vconn_implies_hpar(1-4))
     qed
 
     lemma \<theta>_simps [simp]:
@@ -566,19 +567,17 @@ $$
           using uw\<theta>\<omega>\<nu> by auto
         show "src \<nu> = src u"
         proof -
-          have "src \<nu> = src (cod \<nu>)"
-            using 1 uw\<theta>\<omega>\<nu> src_cod [of \<nu>] by simp
-          also have "... = src u"
-            using uw\<theta>\<omega>\<nu> by auto
-          finally show ?thesis by simp
+          have "src (cod \<nu>) = src u"
+            using uw\<theta>\<omega>\<nu>
+            by (metis arr_cod hcomp_simps(1) in_homE w_simps(3))
+          thus ?thesis by simp
         qed
         show "trg \<nu> = trg r"
         proof -
-          have "trg \<nu> = trg (cod \<nu>)"
-            using 1 uw\<theta>\<omega>\<nu> src_cod [of \<nu>] by simp
-          also have "... = trg r"
-            using uw\<theta>\<omega>\<nu> by auto
-          finally show ?thesis by simp
+          have "trg (cod \<nu>) = trg r"
+            using uw\<theta>\<omega>\<nu>
+            by (metis arr_cod hcomp_simps(2) in_homE leg1_simps(4))
+          thus ?thesis by simp
         qed
       qed
     qed
@@ -734,7 +733,8 @@ $$
         using f\<^sub>a by force
       have \<epsilon>: "\<guillemotleft>\<epsilon> : f \<star> f\<^sub>a \<Rightarrow> trg f\<guillemotright> \<and> \<guillemotleft>\<epsilon> : trg f \<rightarrow> trg f\<guillemotright> \<and>
                arr \<epsilon> \<and> src \<epsilon> = trg f \<and> trg \<epsilon> = trg f \<and> dom \<epsilon> = f \<star> f\<^sub>a \<and> cod \<epsilon> = trg f"
-        using f\<^sub>a src_cod [of \<epsilon>] trg_cod [of \<epsilon>] 1 2 by fastforce
+        using f\<^sub>a 1 2
+        by (metis in_hhomI in_homE leg0_simps(3) src_src trg_src vconn_implies_hpar(1-4))
       have \<nu>: "\<guillemotleft>\<nu> : r \<Rightarrow> g \<star> f\<^sub>a\<guillemotright> \<and> \<guillemotleft>\<nu> : trg f \<rightarrow> trg g\<guillemotright> \<and>
                arr \<nu> \<and> src \<nu> = trg f \<and> trg \<nu> = trg g \<and> dom \<nu> = r \<and> cod \<nu> = g \<star> f\<^sub>a"
         using f\<^sub>a by force
@@ -2811,7 +2811,7 @@ $$
           using the1_equality [of ?P] by blast
       qed
       hence \<gamma>: "\<guillemotleft>?\<gamma> : src f \<rightarrow> src f\<guillemotright> \<and> ?P ?\<gamma>"
-        using src_dom trg_dom by fastforce
+        using vconn_implies_hpar(1-2) by auto
 
       let ?P' = "\<lambda>\<gamma>. \<guillemotleft>\<gamma> : w' \<star> w \<Rightarrow> src f\<guillemotright> \<and> inv (?\<nu>'\<nu> \<cdot> \<r>[g]) = g \<star> \<gamma> \<and> ?\<theta>\<theta>' = \<r>[f] \<cdot> (f \<star> \<gamma>)"
       let ?\<gamma>' = "THE \<gamma>. ?P' \<gamma>"
@@ -2825,7 +2825,7 @@ $$
           using the1_equality [of ?P'] by blast
       qed
       hence \<gamma>': "\<guillemotleft>?\<gamma>' : src f \<rightarrow> src f\<guillemotright> \<and> ?P' ?\<gamma>'"
-        using src_dom trg_dom by fastforce
+        using vconn_implies_hpar(1-2) by auto
 
       have "inverse_arrows ?\<gamma> ?\<gamma>'"
       proof

@@ -2206,12 +2206,10 @@ begin
         proof -
           have "src (\<ll> \<lbrace>t\<rbrace>) = \<lbrace>Src t\<rbrace>"
             using t 1
-            by (metis (no_types, lifting) \<ll>.preserves_cod \<ll>.preserves_reflects_arr arr_cod
-                in_hhomE map_simp src_cod)
+            by (metis (no_types, lifting) \<ll>.preserves_cod arr_cod in_hhomE map_simp src_cod)
           moreover have "trg (\<ll> \<lbrace>t\<rbrace>) = \<lbrace>Trg t\<rbrace>"
             using t 1
-            by (metis (no_types, lifting) \<ll>.preserves_cod \<ll>.preserves_reflects_arr arr_cod
-                in_hhomE map_simp trg_cod)
+            by (metis (no_types, lifting) \<ll>.preserves_cod arr_cod in_hhomE map_simp trg_cod)
           moreover have "\<guillemotleft>\<ll> \<lbrace>t\<rbrace> : \<lbrace>Trg t\<rbrace> \<star> \<lbrace>Dom t\<rbrace> \<Rightarrow> \<lbrace>Cod t\<rbrace>\<guillemotright>"
             using t 1
             apply (elim conjE in_hhomE)
@@ -2342,7 +2340,7 @@ begin
               also have "... = src \<lbrace>Dom v\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
-                using v by auto
+                using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
                 using v by auto
               finally show ?thesis by auto
@@ -2354,7 +2352,7 @@ begin
               also have "... = trg \<lbrace>Dom t\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
-                using t by auto
+                using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
                 using t by auto
               finally show ?thesis by auto
@@ -2403,11 +2401,11 @@ begin
             show "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = \<lbrace>Src v\<rbrace>"
             proof -
               have "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
-                using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
+                using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = src \<lbrace>Dom v\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
-                using v by auto
+                using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
                 using v by auto
               finally show ?thesis by auto
@@ -2415,11 +2413,11 @@ begin
             show "trg (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = \<lbrace>Trg t\<rbrace>"
             proof -
               have "trg (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = trg (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
-                using 2 trg_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
+                using 2 trg_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = trg \<lbrace>Dom t\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char hseqI' by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
-                using t by auto
+                using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
                 using t by auto
               finally show ?thesis by auto
