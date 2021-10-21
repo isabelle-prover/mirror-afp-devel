@@ -174,7 +174,7 @@ val _ =
   Outer_Syntax.local_theory
     @{command_keyword "constructor_funs"}
     "defines constructor functions for a datatype and sets up the code generator"
-    (Scan.repeat1 Args.embedded_inner_syntax >> fold mk_funs_cmd)
+    (Scan.repeat1 Parse.embedded_inner_syntax >> fold mk_funs_cmd)
 
 val setup =
   Code_Preproc.add_functrans ("constructor_funs", code_functrans)

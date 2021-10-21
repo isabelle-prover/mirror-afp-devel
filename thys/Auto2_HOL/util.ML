@@ -864,7 +864,7 @@ fun test_conv ctxt cv err_str (str1, str2) =
 (* term_pat and typ_pat, from Isabelle Cookbook. *)
 val term_pat_setup =
     let
-      val parser = Args.context -- Scan.lift Args.embedded_inner_syntax
+      val parser = Args.context -- Scan.lift Parse.embedded_inner_syntax
       fun term_pat (ctxt, str) =
           str |> Proof_Context.read_term_pattern ctxt
               |> ML_Syntax.print_term
@@ -875,7 +875,7 @@ val term_pat_setup =
 
 val cterm_pat_setup =
     let
-      val parser = Args.context -- Scan.lift Args.embedded_inner_syntax
+      val parser = Args.context -- Scan.lift Parse.embedded_inner_syntax
       fun cterm_pat (ctxt, str) =
           str |> Proof_Context.read_term_pattern ctxt
               |> ML_Syntax.print_term
@@ -887,7 +887,7 @@ val cterm_pat_setup =
 
 val type_pat_setup =
     let
-      val parser = Args.context -- Scan.lift Args.embedded_inner_syntax
+      val parser = Args.context -- Scan.lift Parse.embedded_inner_syntax
       fun typ_pat (ctxt, str) =
           let
             val ctxt' = Proof_Context.set_mode Proof_Context.mode_schematic ctxt

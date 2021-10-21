@@ -185,7 +185,7 @@ val _ =
   Outer_Syntax.local_theory
     @{command_keyword "lazify"}
     "defines a lazy case constant and sets up the code generator"
-    (Scan.repeat1 Args.embedded_inner_syntax >> fold lazify_cmd)
+    (Scan.repeat1 Parse.embedded_inner_syntax >> fold lazify_cmd)
 
 val setup = Ctr_Sugar.ctr_sugar_interpretation lazy_case_plugin (lazify_typ o #T)
 
