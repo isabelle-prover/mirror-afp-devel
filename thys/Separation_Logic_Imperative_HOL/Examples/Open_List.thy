@@ -248,6 +248,7 @@ lemma os_iterate_impl:
   apply (rule ent_frame_fwd[OF lseg_append])
     apply frame_inference
     apply simp
+  apply (sep_auto)
 
   unfolding os_it_has_next_def
   apply (sep_auto elim!: neq_NilE)
@@ -280,7 +281,7 @@ lemma os_sum'_rule[sep_heap_rules]:
 proof (induct l' arbitrary: it s)
   case Nil thus ?case
     apply (subst os_sum'.simps)
-    apply (sep_auto intro: os.quit_iteration)
+    apply (sep_auto intro: os.quit_iteration ent_true_drop(1))
     done
 next
   case (Cons x l')

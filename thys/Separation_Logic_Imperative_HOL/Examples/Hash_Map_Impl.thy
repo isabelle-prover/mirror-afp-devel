@@ -50,8 +50,8 @@ lemma hm_iterate_impl:
   "imp_map_iterate is_hashmap hm_is_it hm_it_init hm_it_has_next hm_it_next"
   apply unfold_locales
   apply (rule hm_it_init_rule)
-  apply (erule hm_it_next_rule)
-  apply (rule hm_it_has_next_rule)
+  apply (sep_auto heap add: hm_it_next_rule)
+  apply (sep_auto heap add: hm_it_has_next_rule)
   apply (rule ent_frame_fwd[OF hm_it_finish])
   apply (frame_inference)
   apply solve_entails
