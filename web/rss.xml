@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>12 Oct 2021 00:00:00 +0000</pubDate>
+    <pubDate>19 Oct 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Belief Revision Theory</title>
+              <link>https://www.isa-afp.org/entries/Belief_Revision.html</link>
+       <guid>https://www.isa-afp.org/entries/Belief_Revision.html</guid>
+       <dc:creator> Valentin Fouillard, Safouan Taha, Frédéric Boulanger, Nicolas Sabouret       </dc:creator>
+       <pubDate>19 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+The 1985 paper by Carlos Alchourrón, Peter Gärdenfors, and David
+Makinson (AGM), “On the Logic of Theory Change: Partial Meet
+Contraction and Revision Functions” launches a large and rapidly
+growing literature that employs formal models and logics to handle
+changing beliefs of a rational agent and to take into account new
+piece of information observed by this agent. In 2011, a review book
+titled &#34;AGM 25 Years: Twenty-Five Years of Research in Belief
+Change&#34; was edited to summarize the first twenty five years of
+works based on AGM.  This  HOL-based  AFP entry is a faithful
+formalization of the AGM operators (e.g. contraction, revision,
+remainder ...) axiomatized in the original paper. It also contains the
+proofs of all the theorems stated in the paper that show how these
+operators combine. Both proofs of Harper and Levi identities are
+established.</description>
+    </item>
     <item>
        <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
               <link>https://www.isa-afp.org/entries/Correctness_Algebras.html</link>
@@ -522,26 +544,6 @@ Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
 words. We support the algebraic point of view which sees words as
 generators of submonoids of a free monoid. This leads to the concepts
 of the (free) hull, the (free) basis (or code).</description>
-    </item>
-    <item>
-       <title>Regression Test Selection</title>
-              <link>https://www.isa-afp.org/entries/Regression_Test_Selection.html</link>
-       <guid>https://www.isa-afp.org/entries/Regression_Test_Selection.html</guid>
-       <dc:creator> Susannah Mansky       </dc:creator>
-       <pubDate>30 Apr 2021 00:00:00 +0000</pubDate>
-       <description>
-This development provides a general definition for safe Regression
-Test Selection (RTS) algorithms. RTS algorithms select which tests to
-rerun on revised code, reducing the time required to check for newly
-introduced errors. An RTS algorithm is considered safe if and only if
-all deselected tests would have unchanged results.  This definition is
-instantiated with two class-collection-based RTS algorithms run over
-the JVM as modeled by JinjaDCI. This is achieved with a general
-definition for Collection Semantics, small-step semantics instrumented
-to collect information during execution. As the RTS definition
-mandates safety, these instantiations include proofs of safety.  This
-work is described in Mansky and Gunter&#39;s LSFA 2020 paper and
-Mansky&#39;s doctoral thesis (UIUC, 2020).</description>
     </item>
   </channel>
 </rss>
