@@ -1,6 +1,6 @@
 (*
   File:   Akra_Bazzi_Real.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The continuous version of the Akra-Bazzi theorem for functions on the reals.
 *)

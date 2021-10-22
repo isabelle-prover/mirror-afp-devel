@@ -792,8 +792,7 @@ subsection "Spans"
         show "a = mkObj (Chn a)"
           using a 1 obj_def src_def ide_char
           apply simp
-          by (metis arrow_of_spans_data.select_convs(1) arrow_of_spans_def category.dom_cod
-              span_in_category.is_span)
+          by (metis arrow_of_spans_data.select_convs(1) arrow_of_spans_def category.dom_cod)
       qed
       show "V.ide a \<and> a = mkObj (Chn a) \<Longrightarrow> obj a"
       proof -
@@ -1220,9 +1219,13 @@ $$\xymatrix{
                          Leg1 = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rparr>,
                   Cod = \<lparr>Leg0 = \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1],
                          Leg1 = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rparr>\<rparr>"
-        using assms src_dom trg_dom ide_dom dom_char chine_hcomp_ide_ide by auto
+        using assms src_dom trg_dom ide_dom dom_char chine_hcomp_ide_ide
+        apply auto
+        by (metis (no_types, lifting) arrow_of_spans_data.select_convs(2))
       also have "... = dom \<nu> \<star> dom \<mu>"
-        using assms src_dom trg_dom arr_dom dom_char hcomp_def by auto
+        using assms src_dom trg_dom arr_dom dom_char hcomp_def
+        apply auto
+        by (metis (no_types, lifting))
       finally show ?thesis by blast
     qed
 
@@ -1253,9 +1256,13 @@ $$\xymatrix{
                        Leg1 = \<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1]\<rparr>,
                 Cod = \<lparr>Leg0 = \<mu>.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1],
                        Leg1 = \<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1]\<rparr>\<rparr>"
-        using assms src_cod trg_cod ide_cod cod_char chine_hcomp_ide_ide by auto
+        using assms src_cod trg_cod ide_cod cod_char chine_hcomp_ide_ide
+        apply auto
+        by (metis (no_types, lifting) arrow_of_spans_data.select_convs(2))
       also have "... = cod \<nu> \<star> cod \<mu>"
-        using assms src_cod trg_cod arr_cod cod_char hcomp_def by auto
+        using assms src_cod trg_cod arr_cod cod_char hcomp_def
+        apply auto
+        by (metis (no_types, lifting))
       finally show ?thesis by simp
     qed
 

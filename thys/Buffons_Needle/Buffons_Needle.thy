@@ -1,6 +1,6 @@
 (*
   File:    Buffons_Needle.thy
-  Author:  Manuel Eberl <eberlm@in.tum.de>
+  Author:  Manuel Eberl <manuel@pruvisto.org>
 
   A formal solution of Buffon's needle problem.
 *)

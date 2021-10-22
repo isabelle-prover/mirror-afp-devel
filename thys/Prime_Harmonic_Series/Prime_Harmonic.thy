@@ -1,6 +1,6 @@
 (*
   File:   Prime_Harmonic.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   A lower bound for the partial sums of the prime harmonic series, and a proof of its divergence.
   (#81 on the list of 100 mathematical theorems)

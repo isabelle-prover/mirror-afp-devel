@@ -2206,12 +2206,10 @@ begin
         proof -
           have "src (\<ll> \<lbrace>t\<rbrace>) = \<lbrace>Src t\<rbrace>"
             using t 1
-            by (metis (no_types, lifting) \<ll>.preserves_cod \<ll>.preserves_reflects_arr arr_cod
-                in_hhomE map_simp src_cod)
+            by (metis (no_types, lifting) \<ll>.preserves_cod arr_cod in_hhomE map_simp src_cod)
           moreover have "trg (\<ll> \<lbrace>t\<rbrace>) = \<lbrace>Trg t\<rbrace>"
             using t 1
-            by (metis (no_types, lifting) \<ll>.preserves_cod \<ll>.preserves_reflects_arr arr_cod
-                in_hhomE map_simp trg_cod)
+            by (metis (no_types, lifting) \<ll>.preserves_cod arr_cod in_hhomE map_simp trg_cod)
           moreover have "\<guillemotleft>\<ll> \<lbrace>t\<rbrace> : \<lbrace>Trg t\<rbrace> \<star> \<lbrace>Dom t\<rbrace> \<Rightarrow> \<lbrace>Cod t\<rbrace>\<guillemotright>"
             using t 1
             apply (elim conjE in_hhomE)
@@ -2342,7 +2340,7 @@ begin
               also have "... = src \<lbrace>Dom v\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
-                using v by auto
+                using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
                 using v by auto
               finally show ?thesis by auto
@@ -2354,7 +2352,7 @@ begin
               also have "... = trg \<lbrace>Dom t\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
-                using t by auto
+                using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
                 using t by auto
               finally show ?thesis by auto
@@ -2403,11 +2401,11 @@ begin
             show "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = \<lbrace>Src v\<rbrace>"
             proof -
               have "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
-                using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
+                using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = src \<lbrace>Dom v\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
-                using v by auto
+                using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
                 using v by auto
               finally show ?thesis by auto
@@ -2415,11 +2413,11 @@ begin
             show "trg (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = \<lbrace>Trg t\<rbrace>"
             proof -
               have "trg (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = trg (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
-                using 2 trg_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
+                using 2 trg_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = trg \<lbrace>Dom t\<rbrace>"
                 using 4 VVV.arr_char VV.arr_char hseqI' by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
-                using t by auto
+                using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
                 using t by auto
               finally show ?thesis by auto
@@ -3575,10 +3573,10 @@ begin
           using vw Nml_HcompD(7) by simp
         have X: "Nml (Dom v \<^bold>\<star> (Dom w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom u))"
           using u u' v w w' wu vw is_Hcomp_HcompNml Nml_HcompNml Nml_Dom
-          by (cases v) auto
+          by (metis Dom.simps(3) Nml.simps(3) term.distinct_disc(3))
         have Y: "Nml (Cod v \<^bold>\<star> (Cod w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod u))"
           using u u' w w' wu vw is_Hcomp_HcompNml Nml_HcompNml Src_Cod Trg_Cod
-          by (cases v) auto
+          by (metis Cod.simps(3) Nml.simps(3) Nml_Cod term.distinct_disc(3) v)
         show "\<lbrace>(Cod v \<^bold>\<star> Cod w) \<^bold>\<Down> Cod u\<rbrace> \<cdot> ((\<lbrace>v\<rbrace> \<star> \<lbrace>w\<rbrace>) \<star> \<lbrace>u\<rbrace>)
                 = \<lbrace>(v \<^bold>\<star> w) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>(Dom v \<^bold>\<star> Dom w) \<^bold>\<Down> Dom u\<rbrace>"
         proof -

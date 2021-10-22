@@ -162,9 +162,7 @@ begin
       assume gf: "CopxC.arr gf"
       thus arr: "S.arr (map gf)" using gf arr_map by blast
       show "S.dom (map gf) = map (CopxC.dom gf)"
-        using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
-              arr map_ide
-        by auto
+        using arr gf local.map_def map_ide by auto
       show "S.cod (map gf) = map (CopxC.cod gf)"
         using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
               arr map_ide
@@ -200,7 +198,7 @@ begin
           fix x
           assume "x \<in> set (CopxC.dom gf)"
           hence x: "x \<in> set (C.cod (fst gf), C.dom (snd gf))"
-            using gf' CopxC.seqE by (elim CopxC.seqE, fastforce)
+            by (simp add: seq)
           show "(\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf)) \<circ>
                  \<psi> (CopxC.dom gf)) x =
                 (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>

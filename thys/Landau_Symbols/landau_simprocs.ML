@@ -1,6 +1,6 @@
 (*
   File:   landau_simprocs.ML
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Simprocs for Landau symbols. 
 *)

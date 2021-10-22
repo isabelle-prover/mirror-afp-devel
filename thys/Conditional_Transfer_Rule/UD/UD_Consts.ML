@@ -25,7 +25,6 @@ structure ConstsData = Theory_Data
   (
     type T = term Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge (K true)
   )
 val const_of_key = Symtab.lookup o ConstsData.get

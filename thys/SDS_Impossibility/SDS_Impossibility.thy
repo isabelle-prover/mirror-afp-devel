@@ -1,6 +1,6 @@
 (*
   File:   SDS_Impossibility.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The proof that there exists no anonymous and neutral SDS for at least 
   four voters and alternatives that satisfies SD-Efficiency and 

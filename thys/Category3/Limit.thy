@@ -1137,7 +1137,7 @@ begin
         using Ya.ide_a \<iota>\<chi> S.Fun_mapsto [of "\<Phi> a"] Hom.\<phi>_mapsto Hom.set_map
               Cones_SET_eq_\<iota>_img_cones by fastforce
       thus "D.cone a \<chi>"
-        by (metis S.\<o>_\<iota> UNIV_I imageE mem_Collect_eq)
+        by (metis (no_types, lifting) S.\<o>_\<iota> UNIV_I f_inv_into_f inv_into_into mem_Collect_eq)
     qed
 
     lemma cone_\<chi>:
@@ -4482,9 +4482,8 @@ begin
           have 1: "\<pi> \<in> PiE' I (set o D) \<rightarrow> set ?\<Pi>D \<and> inj_on \<pi> (PiE' I (set o D))"
           proof -
             have "PiE' I (set o D) \<subseteq> PiE' I (\<lambda>x. Univ)"
-              using set_subset_Univ elem_set_implies_incl_in elem_set_implies_set_eq_singleton
-                    incl_in_def PiE'_mono
-              by (metis comp_apply subsetI)
+              by (metis PiE'_mono comp_apply elem_set_implies_incl_in incl_in_def
+                  set_subset_Univ subsetI)
             thus ?thesis using \<pi> subset_inj_on set_\<Pi>D Pi_I' imageI by fastforce
           qed
           have 2: "inv_into (PiE' I (set o D)) \<pi> \<in> set ?\<Pi>D \<rightarrow> PiE' I (set o D)"
@@ -6049,8 +6048,7 @@ $$\xymatrix{
               proof
                 fix e
                 have "e \<notin> S.set x \<Longrightarrow> S.Fun f' e = S.Fun ?f e"
-                  using f f' x S.Fun_mapsto extensional_arb S.Fun_in_terms_of_comp
-                  by fastforce
+                  using f f' S.Fun_in_terms_of_comp by fastforce
                 moreover have "e \<in> S.set x \<Longrightarrow> S.Fun f' e = S.Fun ?f e"
                 proof -
                   assume e: "e \<in> S.set x"

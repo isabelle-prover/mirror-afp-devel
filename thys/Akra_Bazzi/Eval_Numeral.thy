@@ -1,6 +1,6 @@
 (*
   File:   Eval_Numeral.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Evaluation of terms involving rational numerals with the simplifier.
 *)

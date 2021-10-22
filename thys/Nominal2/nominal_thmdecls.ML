@@ -72,20 +72,22 @@ structure Nominal_ThmDecls: NOMINAL_THMDECLS =
 struct
 
 structure EqvtData = Generic_Data
-( type T = thm Item_Net.T;
+(
+  type T = thm Item_Net.T;
   val empty = Thm.item_net;
-  val extend = I;
-  val merge = Item_Net.merge);
+  val merge = Item_Net.merge
+);
 
 (* EqvtRawData is implemented with a Termtab (rather than an
    Item_Net) so that we can efficiently decide whether a given
    constant has a corresponding equivariance theorem stored, cf.
    the function is_eqvt. *)
 structure EqvtRawData = Generic_Data
-( type T = thm Termtab.table;
+(
+  type T = thm Termtab.table;
   val empty = Termtab.empty;
-  val extend = I;
-  val merge = Termtab.merge (K true));
+  val merge = Termtab.merge (K true)
+);
 
 val eqvts = Item_Net.content o EqvtData.get
 val eqvts_raw = map snd o Termtab.dest o EqvtRawData.get

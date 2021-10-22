@@ -57,10 +57,11 @@ structure Data_Lang =
 struct
 val empty' = ([], C_Env.empty_env_lang)
 structure Data_Lang = Generic_Data
-  (type T = (stack_data * C_Env.env_lang) option
-   val empty = NONE
-   val extend = I
-   val merge = K empty)
+(
+  type T = (stack_data * C_Env.env_lang) option
+  val empty = NONE
+  val merge = K empty
+)
 open Data_Lang
 fun get' context = case get context of NONE => empty' | SOME data => data
 fun setmp data f context = put (get context) (f (put data context))
@@ -70,7 +71,6 @@ structure Data_Tree_Args : GENERIC_DATA_ARGS =
 struct
   type T = C_Position.reports_text * C_Env.error_lines
   val empty = ([], [])
-  val extend = I
   fun merge ((l11, l12), (l21, l22)) = (l11 @ l21, l12 @ l22)
 end
 
@@ -119,7 +119,6 @@ structure Directives = Generic_Data
                  (C_Lex.token_kind_directive -> C_Env.env_propagation_directive)))
             Symtab.table
    val empty = Symtab.empty
-   val extend = I
    val merge = Symtab.join (K #2));
 end
 \<close>

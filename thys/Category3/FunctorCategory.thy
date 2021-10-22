@@ -119,12 +119,7 @@ begin
         using assms(1) arr_char seq_char by force 
       interpret t'ot: vertical_composite A B \<open>Dom t\<close> \<open>Cod t\<close> \<open>Cod t'\<close> \<open>Map t\<close> \<open>Map t'\<close> ..
       show ?thesis
-      proof -
-        have "Map (t' \<cdot> t) = t'ot.map"
-          using assms(1) seq_char t'ot.natural_transformation_axioms by simp
-        thus ?thesis
-          using assms(2) t'ot.map_simp_2 t'.preserves_comp_2 B.comp_assoc by auto
-      qed
+        using B.comp_assoc assms seq_char t'.preserves_comp_2 t'ot.map_simp_2 by auto
     qed
 
     lemma Map_comp':
@@ -237,7 +232,7 @@ begin
 
     lemma map_simp:
     assumes "A_BxA.arr Fg"
-    shows "map Fg = A_B.Map(fst Fg) (snd Fg)"
+    shows "map Fg = A_B.Map (fst Fg) (snd Fg)"
       using assms map_def by auto
 
     lemma is_functor:

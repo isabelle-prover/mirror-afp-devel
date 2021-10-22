@@ -25,7 +25,6 @@ struct
 structure Data = Theory_Data (
   type T = (term -> bool) Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   val merge = Symtab.merge pointer_eq
 )
 

@@ -582,8 +582,6 @@ structure Hoare_Data = Generic_Data
                ([]:(string * hoare_tac) list)
                ([]:thm list);
 
-  val extend = I;
-
   (* FIXME exponential blowup due to append !? *)
   fun merge ({proc_info = proc_info1, active_procs = active_procs1,
                  default_state_kind = _,
@@ -1539,9 +1537,6 @@ structure FoldCongData = Theory_Data
 (
   type T = simpset;
   val empty = HOL_basic_ss;
-
-  val copy = I;
-  val extend = I;
   val merge = merge_ss;
 )
 

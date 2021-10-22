@@ -36,7 +36,6 @@ structure Record_Intf: RECORD_INTF = struct
     type T = simpset;
     val empty = HOL_basic_ss (*addsimprocs 
       [Record.simproc, Record.upd_simproc]*);
-    val extend = I;
     val merge = Raw_Simplifier.merge_ss;
   );
 

@@ -551,24 +551,21 @@ begin
       using ide_dom ide_cod ide_char by metis
 
     lemma dom_dom:
-    assumes "arr f"
     shows "dom (dom f) = dom f"
-      using assms by simp
+      by (metis dom_null domains_char ideD(2) ide_dom dom_def)
 
     lemma cod_cod:
-    assumes "arr f"
     shows "cod (cod f) = cod f"
-      using assms by simp
+      by (metis arr_cod_iff_arr cod_def has_codomain_iff_arr ideD(3) ide_cod)
 
     lemma dom_cod:
-    assumes "arr f"
     shows "dom (cod f) = cod f"
-      using assms by simp
+      by (metis arr_cod_iff_arr cod_def has_codomain_iff_arr has_domain_iff_arr ideD(2)
+          ide_cod dom_def)
 
     lemma cod_dom:
-    assumes "arr f"
     shows "cod (dom f) = dom f"
-      using assms by simp
+      by (metis cod_null has_domain_iff_arr ideD(3) ide_dom dom_def)
 
     lemma dom_comp [simp]:
     assumes "seq g f"

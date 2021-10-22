@@ -249,8 +249,9 @@ begin
         show "CCC.comp g f = VVV.comp g f"
         proof -
           have "CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
-            using VVV.comp_char VVV.arr_char CCC.seq_char VV.arr_char
-            by (elim CCC.seqE CC.seqE seqE, simp)
+            by (metis (no_types, lifting) CC.arrE CCC.seqE CC_eq_VV I.map_simp
+                I.preserves_reflects_arr VV.seq_char VVV.arrI VVV.comp_simp VVV.seq_char
+                trg_vcomp vseq_implies_hpar(1))
           moreover have "\<not> CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
             using VVV.seq_char VVV.ext VVV.null_char CCC.ext
             by (metis (no_types, lifting))
@@ -993,7 +994,8 @@ begin
       show "\<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
         using assms unit_in_vhom by simp
       thus "\<guillemotleft>\<i>[a] : a \<rightarrow> a\<guillemotright>"
-        using assms src_cod trg_cod by fastforce
+        using assms
+        by (metis arrI in_hhom_def obj_simps(2-3) vconn_implies_hpar(1-4))
     qed
 
     interpretation weak_composition V H
@@ -1658,7 +1660,7 @@ begin
     proof -
       let ?P = "\<lambda>a \<phi>. iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> a \<Rightarrow> a\<guillemotright> \<and> (obj a \<longrightarrow> \<phi> = \<i>[a])"
       have "\<exists>\<phi>. ?P a \<phi>"
-        using assms unit_in_hom iso_unit weak_unit_def isomorphic_def by blast
+        by (metis assms iso_some_unit(1) iso_some_unit(2) iso_unit unit_in_vhom)
       hence 1: "?P a (\<i>' a)"
         using \<i>'_def someI_ex [of "?P a"] by simp
       show "iso (\<i>' a)" using 1 by simp
@@ -1736,7 +1738,7 @@ begin
       show "\<guillemotleft>\<l>[f] : trg f \<star> f \<Rightarrow> f\<guillemotright>"
         using assms lunit_char by auto
       thus "\<guillemotleft>\<l>[f] : src f \<rightarrow> trg f\<guillemotright>"
-        using src_cod trg_cod by fastforce
+        by (metis arrI in_hhomI vconn_implies_hpar(1-4))
     qed
 
     lemma lunit_in_vhom [simp]:
@@ -1792,7 +1794,7 @@ begin
       show "\<guillemotleft>\<r>[f] : f \<star> src f \<Rightarrow> f\<guillemotright>"
         using assms runit_char by auto
       thus "\<guillemotleft>\<r>[f] : src f \<rightarrow> trg f\<guillemotright>"
-        using src_cod trg_cod by fastforce
+        by (metis arrI in_hhom_def vconn_implies_hpar(1-4))
     qed
 
     lemma runit_in_vhom [simp]:

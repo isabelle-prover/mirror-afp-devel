@@ -21,7 +21,6 @@ structure Data = Generic_Data
   val empty = ([], [], Symtab.empty)
   fun merge ((ts1, unfolds1, s1), (ts2, unfolds2, s2)) =
     (ts1 @ ts2, unfolds1 @ unfolds2, Symtab.merge op = (s1, s2))
-  val extend = I
 )
 
 fun lenient_unvarify t =
@@ -175,7 +174,7 @@ val _ =
   Outer_Syntax.local_theory
     @{command_keyword "constructor_funs"}
     "defines constructor functions for a datatype and sets up the code generator"
-    (Scan.repeat1 Args.embedded_inner_syntax >> fold mk_funs_cmd)
+    (Scan.repeat1 Parse.embedded_inner_syntax >> fold mk_funs_cmd)
 
 val setup =
   Code_Preproc.add_functrans ("constructor_funs", code_functrans)

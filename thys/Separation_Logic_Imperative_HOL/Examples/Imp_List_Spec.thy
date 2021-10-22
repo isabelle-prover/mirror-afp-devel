@@ -74,11 +74,11 @@ locale imp_list_iterate = imp_list +
   assumes it_next_rule[sep_heap_rules]: "l'\<noteq>[] \<Longrightarrow> 
     <is_it l p l' it> 
       it_next it 
-    <\<lambda>(a,it'). is_it l p (tl l') it' * \<up>(a=hd l')>"
+    <\<lambda>(a,it'). is_it l p (tl l') it' * \<up>(a=hd l')>\<^sub>t"
   assumes it_has_next_rule[sep_heap_rules]: 
     "<is_it l p l' it> 
        it_has_next it 
-     <\<lambda>r. is_it l p l' it * \<up>(r\<longleftrightarrow>l'\<noteq>[])>"
+     <\<lambda>r. is_it l p l' it * \<up>(r\<longleftrightarrow>l'\<noteq>[])>\<^sub>t"
   assumes quit_iteration:
     "is_it l p l' it \<Longrightarrow>\<^sub>A is_list l p * true"
 

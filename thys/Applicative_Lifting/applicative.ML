@@ -302,7 +302,6 @@ structure Data = Generic_Data
     afuns = Name_Space.empty_table "applicative functor",
     patterns = Item_Net.init (op = o apply2 #1) #2
   };
-  val extend = I;
   fun merge ({combinators = (cd1, cr1), afuns = a1, patterns = p1},
              {combinators = (cd2, cr2), afuns = a2, patterns = p2}) =
     {combinators = (Symtab.merge (K true) (cd1, cd2), Library.merge eq_combinator_rule (cr1, cr2)),
@@ -901,7 +900,7 @@ fun derive_combinator_red ctxt af_inst red_thms (base_thm, eq_thm) =
     val ([lhs', rhs'], ctxt') = generalize_lift_terms af_inst [lhs, rhs] ctxt_Ts;
     val lifted_prop = (lhs', rhs') |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
     val unfold_comb_conv = HOLogic.Trueprop_conv
-      (HOLogic.eq_conv (Conv.top_sweep_conv (K (Conv.rewr_conv eq_thm)) ctxt') Conv.all_conv);
+      (HOLogic.eq_conv (Conv.top_sweep_rewrs_conv [eq_thm] ctxt') Conv.all_conv);
     fun tac goal_ctxt =
       HEADGOAL (CONVERSION unfold_comb_conv THEN'
       Raw_Simplifier.rewrite_goal_tac goal_ctxt red_thms THEN'

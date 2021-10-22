@@ -67,10 +67,11 @@ type info =
    show_law_intro : thm}
 
 structure Data = Generic_Data
-  (type T = info Symtab.table
-   val empty = Symtab.empty
-   val extend = I
-   val merge = Symtab.merge (fn (info1, info2) => #pshowsp info1 = #pshowsp info2))
+(
+  type T = info Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.merge (fn (info1, info2) => #pshowsp info1 = #pshowsp info2)
+)
 
 fun add_info tyco info = Data.map (Symtab.update_new (tyco, info))
 val get_info = Context.Proof #> Data.get #> Symtab.lookup

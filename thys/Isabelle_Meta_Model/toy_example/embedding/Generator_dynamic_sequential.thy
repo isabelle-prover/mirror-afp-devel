@@ -954,10 +954,11 @@ datatype 'a generation_mode = Gen_deep of unit META.compiler_env_config_ext
                             | Gen_syntax_print of int option
 
 structure Data_gen = Theory_Data
-  (type T = theory generation_mode list Symtab.table
-   val empty = Symtab.empty
-   val extend = I
-   val merge = Symtab.merge (K true))
+(
+  type T = theory generation_mode list Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.merge (K true)
+)
 
 val code_expr_argsP = Scan.optional (@{keyword "("} |-- Parse.args --| @{keyword ")"}) []
 

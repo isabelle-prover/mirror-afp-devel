@@ -34,7 +34,6 @@ struct
 structure Data = Theory_Data (
   type T = normalizer Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   val merge = Symtab.merge pointer_eq
 )
 
@@ -109,7 +108,6 @@ fun normalize_keep ctxt ritem =
 structure InjStructData = Theory_Data (
   type T = thm Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   val merge = Symtab.merge pointer_eq
 )
 

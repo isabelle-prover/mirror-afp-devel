@@ -1646,7 +1646,6 @@ structure trac = struct
   (
     type T = hide_tvar_tab
     val empty  = Symtab.empty:hide_tvar_tab
-    val extend = I
     fun merge(t1,t2)  = merge_trac_tab (t1, t2)
   );
 

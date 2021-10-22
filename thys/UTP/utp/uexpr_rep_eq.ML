@@ -20,10 +20,10 @@ structure uexpr_rep_eq : UEXPR_REP_EQ =
 struct
   (* Theory Data to store the relevant transfer laws. *)
 
-  structure UTP_Tactics_Data = Theory_Data (
+  structure UTP_Tactics_Data = Theory_Data
+  (
     type T = thm list;
     val empty = [];
-    val extend = I;
     val merge = Thm.merge_thms;
   );
 

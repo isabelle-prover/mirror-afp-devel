@@ -57,7 +57,6 @@ ML \<open>
       type T = (string * int * phase) list
       val empty = []
       val merge = Ord_List.merge phase_order
-      val extend = I
     )
 
     val cfg_debug = Attrib.setup_config_bool @{binding autoref_dbg} (K false)

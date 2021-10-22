@@ -152,7 +152,6 @@ structure Data = Generic_Data(
     distribs: thm Symtab.table
   };
   val empty = {monads = Symtab.empty, distribs = Symtab.empty};
-  val extend = I;
   fun merge ({monads = m1, distribs = d1}, {monads = m2, distribs = d2}) =
    {monads = Symtab.join (K merge_info) (m1, m2),
     distribs = Symtab.merge (K true) (d1, d2)};

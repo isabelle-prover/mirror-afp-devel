@@ -220,7 +220,6 @@ begin
       structure dflt_rules = Generic_Data (
         type T = param_net
         val empty = net_empty
-        val extend = I
         val merge = Item_Net.merge
       )
         

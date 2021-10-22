@@ -29,7 +29,6 @@ structure Data = Generic_Data
 (
   type T = strategy Symtab.table;
   val empty  = Symtab.empty : T;
-  val extend = I;
   val merge  = Symtab.merge (K true);
 );
 

@@ -107,7 +107,6 @@ type info =
 structure Data = Generic_Data (
   type T = info Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   val merge = Symtab.merge (fn (info1 : info, info2 : info) => #hash info1 = #hash info2);
 );
 

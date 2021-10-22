@@ -349,7 +349,6 @@ structure Definitions = Generic_Data
 (
   type T = definitions
   val empty = {instantiations = Symreltab.empty, constants = Symtab.empty}
-  val extend = I
   fun merge ({instantiations = i1, constants = c1}, {instantiations = i2, constants = c2}) =
     if Symreltab.is_empty i1 andalso Symtab.is_empty c1 andalso
        Symreltab.is_empty i2 andalso Symtab.is_empty c2 then

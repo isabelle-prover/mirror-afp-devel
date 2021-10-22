@@ -585,7 +585,8 @@ begin
                        Comp (Trg \<mu>) (Trg \<nu>) (Src \<nu>) (Hom_\<mu>.dom (Map \<mu>)) (Hom_\<nu>.dom (Map \<nu>))"
           using 2 Comp.preserves_dom \<open>Comp.A1xA2.arr (Map \<mu>, Map \<nu>)\<close> by force
         ultimately show ?thesis
-          using assms dom_char hcomp_def H.src_dom H.trg_dom arr_dom by auto
+          using assms 2 dom_char hcomp_def arr_dom
+          by auto metis
       qed
       show "cod (hcomp \<mu> \<nu>) = hcomp (cod \<mu>) (cod \<nu>)"
       proof -
@@ -597,7 +598,8 @@ begin
                        Comp (Trg \<mu>) (Trg \<nu>) (Src \<nu>) (Hom_\<mu>.cod (Map \<mu>)) (Hom_\<nu>.cod (Map \<nu>))"
           using 2 Comp.preserves_cod \<open>Comp.A1xA2.arr (Map \<mu>, Map \<nu>)\<close> by force
         ultimately show "cod (hcomp \<mu> \<nu>) = hcomp (cod \<mu>) (cod \<nu>)"
-          using assms cod_char hcomp_def H.src_cod H.trg_cod arr_cod by auto
+          using assms 2 cod_char hcomp_def arr_cod
+          by auto metis
       qed
     qed
 

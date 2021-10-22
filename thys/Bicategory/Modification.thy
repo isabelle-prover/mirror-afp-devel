@@ -260,7 +260,7 @@ begin
                          ((\<eta> b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' a) \<cdot>\<^sub>D
                          (\<l>\<^sub>D\<^sup>-\<^sup>1[F f] \<star>\<^sub>D \<tau>\<^sub>0' a))"
               using a b f ide_f \<tau>.iso_map\<^sub>1_ide
-              by (intro D.seqI) auto
+              by (metis (no_types, lifting) C.in_hhomE map\<^sub>1_def map\<^sub>1_simps(1))
             thus ?thesis
               using a b f D.whisker_right [of "\<tau>\<^sub>0 a"] by fastforce
           qed

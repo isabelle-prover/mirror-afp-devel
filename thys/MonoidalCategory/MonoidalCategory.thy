@@ -60,9 +60,9 @@ begin
       fix f g
       assume gf: "CCC.seq g f"
       show "ToTC (CCC.comp g f) = ToTC g \<cdot> ToTC f"
-        using gf unfolding CCC.seq_char CC.seq_char ToTC_def apply auto
-        apply (elim C.seqE, auto)
-        by (metis C.seqI CC.comp_simp CC.seqI fst_conv preserves_comp preserves_seq snd_conv)
+        using gf unfolding CCC.seq_char CC.seq_char ToTC_def
+        apply auto
+        by (metis CC.comp_simp CC.seqI fst_conv preserves_comp preserves_seq snd_conv)
     qed
 
     lemma ToTC_simp [simp]:
@@ -81,9 +81,10 @@ begin
       fix f g
       assume gf: "CCC.seq g f"
       show "ToCT (CCC.comp g f) = ToCT g \<cdot> ToCT f"
-        using gf unfolding CCC.seq_char CC.seq_char ToCT_def apply auto
-        apply (elim C.seqE, auto)
-      by (metis C.seqI CC.comp_simp CC.seqI fst_conv preserves_comp preserves_seq snd_conv)
+        using gf unfolding CCC.seq_char CC.seq_char ToCT_def
+        apply auto
+        by (metis CC.comp_simp CC.seq_char as_nat_trans.preserves_comp_2 fst_conv
+                  preserves_reflects_arr snd_conv)
     qed
 
     lemma ToCT_simp [simp]:
@@ -1370,7 +1371,7 @@ $$\xymatrix{
         using \<iota>_in_hom iso_assoc tensor_preserves_ide assoc_in_hom tensor_in_hom
               assoc_naturality lunit_naturality runit_naturality lunit_in_hom runit_in_hom
               iso_lunit iso_runit interchange pentagon triangle
-        apply unfold_locales by auto
+        by unfold_locales auto
 
   end
 
@@ -2918,16 +2919,7 @@ $$\xymatrix{
     shows "\<^bold>\<lfloor>t \<^bold>\<cdot> Dom t\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor>"
     proof -
       have "Arr t \<Longrightarrow> \<^bold>\<lfloor>t \<^bold>\<cdot> Dom t\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor>"
-        using C.comp_arr_dom
-        apply (induct t, simp_all)
-        using CompDiag_TensorDiag Arr_implies_Ide_Dom Ide_in_Hom Diag_Diagonalize
-              Diagonalize_in_Hom
-           apply simp
-        using CompDiag_preserves_Diag CompDiag_Diag_Dom Diag_Diagonalize
-          apply (metis (no_types))
-        using CompDiag_TensorDiag Arr_implies_Ide_Dom Ide_in_Hom TensorDiag_in_Hom
-              TensorDiag_preserves_Diag Diag_Diagonalize Diagonalize_in_Hom
-        by simp_all
+        by (metis CompDiag_Diag_Dom Diag_Diagonalize(1-2) Diagonalize.simps(4))
       thus ?thesis using assms by blast
     qed
 
@@ -2957,11 +2949,8 @@ $$\xymatrix{
                 TensorDiag_preserves_Diag TensorDiag_preserves_Can TensorDiag_assoc
           by simp
         show "(Inv \<^bold>\<lfloor>u\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Inv \<^bold>\<lfloor>v\<^bold>\<rfloor>) \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Inv \<^bold>\<lfloor>w\<^bold>\<rfloor> = Inv (\<^bold>\<lfloor>u\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> (\<^bold>\<lfloor>v\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>w\<^bold>\<rfloor>))"
-          using uvw I1 I2 I3
-                Inv_TensorDiag Diag_Diagonalize Can_implies_Arr Diagonalize_preserves_Can
-                TensorDiag_preserves_Diag TensorDiag_preserves_Can
-          apply simp
-          using TensorDiag_assoc [of "\<^bold>\<lfloor>u\<^bold>\<rfloor>" "\<^bold>\<lfloor>v\<^bold>\<rfloor>" "\<^bold>\<lfloor>w\<^bold>\<rfloor>"] by metis
+          by (simp add: Can_implies_Arr Ide_Diagonalize_Can TensorDiag_assoc
+              TensorDiag_preserves_Diag(1) TensorDiag_preserves_Ide Diag_Diagonalize(1) uvw)
       qed
       thus ?thesis using assms by blast
     qed
@@ -3134,7 +3123,7 @@ $$\xymatrix{
                                             Cod \<^bold>\<a>\<^bold>[a, b, c\<^bold>] = a \<^bold>\<otimes> (b \<^bold>\<otimes> c)"
               using ab c Ide_implies_Can Ide_in_Hom by auto
             ultimately show ?thesis
-              using ab c 2 3 4 Diag_implies_Arr Diagonalize_Diagonalize Ide_implies_Can
+              using c 2 3 4 Diagonalize_Diagonalize Ide_implies_Can
                     Diagonalize_Diag Arr_implies_Ide_Dom Can_implies_Arr
               by (metis Can.simps(4) Cod.simps(4) Dom.simps(4) Diagonalize.simps(3))
           qed
@@ -3174,11 +3163,9 @@ $$\xymatrix{
           show "\<not> Diag (b \<^bold>\<otimes> c) \<longrightarrow>
                   Can (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>) \<and> Dom (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>) = \<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<otimes> \<^bold>\<lfloor>c\<^bold>\<rfloor> \<and> Arr (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>) \<and>
                                     Dom (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>) = \<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<otimes> \<^bold>\<lfloor>c\<^bold>\<rfloor> \<and> Cod (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>) = \<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>c\<^bold>\<rfloor>"
-            using b c bc Ide_in_Hom Ide_implies_Can Diagonalize_Diag Can_red2 Diag_Diagonalize
-                  Ide_implies_Arr Diagonalize_Tensor Diagonalize_preserves_Ide
-                  TensorDiag_preserves_Diag TensorDiag_preserves_Ide
-                  TensorDiag_preserves_Can
-            by (cases b) simp_all
+            using b c bc Ide_in_Hom Ide_implies_Can Can_red2 Diag_Diagonalize
+                  Diagonalize_preserves_Ide TensorDiag_preserves_Diag TensorDiag_preserves_Ide
+            by force
         qed
       qed
       show "Can (a\<^bold>\<down>)" using assms 0 by blast
@@ -3416,8 +3403,8 @@ $$\xymatrix{
 
     lemma iso_eval_Can:
     shows "Can t \<Longrightarrow> iso \<lbrace>t\<rbrace>"
-      using Can_implies_Arr iso_is_arr \<ll>'.preserves_iso \<rho>'.preserves_iso
-            \<alpha>.preserves_iso \<alpha>'.preserves_iso Arr_implies_Ide_Dom Arr_implies_Ide_Cod
+      using Can_implies_Arr \<ll>'.preserves_iso \<rho>'.preserves_iso \<alpha>.preserves_iso \<alpha>'.preserves_iso
+            Arr_implies_Ide_Dom
       by (induct t) auto
 
     lemma eval_Inv_Can:
@@ -3870,8 +3857,8 @@ $$\xymatrix{
                     using c d 1 by (cases c) simp_all
                   also have "... = (d \<^bold>\<otimes> ((e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)) \<^bold>\<cdot> (d \<^bold>\<otimes> ((e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<Down> c)) \<^bold>\<cdot>
                                    \<^bold>\<a>\<^bold>[d, e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b, c\<^bold>]"
-                    using b c d e 1 TensorDiag_preserves_Diag red2_Diag TensorDiag_assoc
-                    by (cases d) auto
+                    by (metis 1 Diagonalize_Diag TensorDiag_assoc TensorDiag_preserves_Diag(1)
+                              b c d e is_Tensor_def red2.simps(4))
                   finally show ?thesis
                     using b c d e TensorDiag_in_Hom red2_in_Hom TensorDiag_preserves_Diag
                           TensorDiag_preserves_Ide
@@ -3885,7 +3872,7 @@ $$\xymatrix{
                       by (cases b) simp_all
                   also have "... = (d \<^bold>\<otimes> (e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b)) \<^bold>\<cdot> (d \<^bold>\<otimes> (e \<^bold>\<Down> b)) \<^bold>\<cdot> \<^bold>\<a>\<^bold>[d, e, b\<^bold>]"
                     using b d e 1 TensorDiag_preserves_Diag red2_Diag
-                    by (cases d) auto
+                    by (metis Diag.simps(3) de term.disc(12))
                   finally have "(d \<^bold>\<otimes> e) \<^bold>\<Down> b = (d \<^bold>\<otimes> (e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b)) \<^bold>\<cdot> (d \<^bold>\<otimes> (e \<^bold>\<Down> b)) \<^bold>\<cdot> \<^bold>\<a>\<^bold>[d, e, b\<^bold>]"
                     by simp
                   thus ?thesis using b d e eval_in_hom TensorDiag_in_Hom red2_in_Hom by simp
@@ -3929,9 +3916,8 @@ $$\xymatrix{
               also have "... = (((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<Down> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot>
                                  \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>]) \<cdot> ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>) \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
-                using b c d e 1 red2_in_Hom TensorDiag_preserves_Ide
-                      TensorDiag_preserves_Diag assoc_naturality [of "\<lbrace>d\<rbrace>" "\<lbrace>e\<rbrace>" "\<lbrace>b \<^bold>\<Down> c\<rbrace>"]
-                      comp_cod_arr comp_assoc
+                using b c d e red2_in_Hom TensorDiag_preserves_Ide TensorDiag_preserves_Diag
+                      assoc_naturality [of "\<lbrace>d\<rbrace>" "\<lbrace>e\<rbrace>" "\<lbrace>b \<^bold>\<Down> c\<rbrace>"] comp_cod_arr comp_assoc
                 by simp
               also have "... = (\<lbrace>(d \<^bold>\<otimes> e) \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)\<rbrace> \<cdot> ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>) \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -3950,7 +3936,7 @@ $$\xymatrix{
                   also have "... = (d \<^bold>\<otimes> (e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c))) \<^bold>\<cdot> (d \<^bold>\<otimes> (e \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c))) \<^bold>\<cdot>
                                    \<^bold>\<a>\<^bold>[d, e, b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<^bold>]"
                     using b c d e 1 TensorDiag_preserves_Diag(1) red2_Diag
-                    by (cases d) auto
+                    by (metis Diag.simps(3) de not_is_Tensor_Unity)
                   finally have "(d \<^bold>\<otimes> e) \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)
                                   = (d \<^bold>\<otimes> (e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c))) \<^bold>\<cdot> (d \<^bold>\<otimes> (e \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c))) \<^bold>\<cdot>
                                     \<^bold>\<a>\<^bold>[d, e, b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<^bold>]"

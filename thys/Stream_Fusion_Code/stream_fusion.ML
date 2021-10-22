@@ -54,7 +54,6 @@ structure Fusion_Rules = Generic_Data
   val empty = {rules = Thm.item_net,
                conspats = Item_Net.init (Thm.eq_thm_prop o apply2 snd) (single o fst),
                unstream = []};
-  val extend = I;
   fun merge 
     ({rules = r, conspats = cp, unstream = u},
      {rules = r', conspats = cp', unstream = u'}) =

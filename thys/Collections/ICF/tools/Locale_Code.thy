@@ -73,7 +73,6 @@ structure Locale_Code :LOCALE_CODE = struct
   structure BlockData = Theory_Data (
     type T = block_data
     val empty = (closed_block)
-    val extend = I
     val merge = merge_bd
   );
 

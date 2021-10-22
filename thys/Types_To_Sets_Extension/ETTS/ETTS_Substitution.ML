@@ -38,7 +38,6 @@ structure SBTData_Args =
 struct
   type T = thm Ctermtab.table
   val empty = Ctermtab.empty
-  val extend = I
   val merge : (T * T -> T) = Ctermtab.merge (K true)
   fun init _ = Ctermtab.empty
 end;
