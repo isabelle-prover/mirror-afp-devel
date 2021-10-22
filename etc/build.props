@@ -3,7 +3,9 @@ module = $ISABELLE_HOME/lib/classes/afp_tools.jar
 requirements = \
   env:ISABELLE_SCALA_JAR
 sources = \
+  tools/migration/afp_migrate_metadata.scala \
   tools/afp_check_roots.scala \
   tools/afp_dependencies.scala \
-  tools/afp_tool.scala
+  tools/afp_tool.scala \
+  tools/metadata.scala
 services = afp.Tools

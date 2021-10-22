@@ -1,0 +1,415 @@
+package afp.migration
+
+
+import isabelle._
+
+import afp._
+import afp.Metadata._
+
+import java.text.Normalizer
+import java.time.LocalDate
+
+
+object AFP_Migrate_Metadata
+{
+  private class Context(names_mapping: Map[String, String], email_names: Map[String, String])
+  {
+    /* mappings */
+
+    def transform_name(name: String): String =
+      names_mapping.getOrElse(name, name)
+
+    def name(address: String): String =
+      email_names.getOrElse(address, error("No name for address " + address))
+
+    /* seen */
+
+    private var seen_ids = Set.empty[Author.ID]
+    private var seen_authors = Map.empty[String, Author]
+
+    def seen_id(id: Author.ID): Boolean = seen_ids.contains(id)
+
+    def author(name: String): Option[Author] = seen_authors.get(name)
+    def authors: List[Author] = seen_authors.values.toList
+
+    def update_author(author: Author): Unit = {
+      seen_ids += author.id
+      seen_authors = seen_authors.updated(author.name, author)
+    }
+  }
+
+  private def is_email(url: String) = url.contains("@")
+
+  private def as_ascii(str: String) =
+  {
+    var res: String = str
+    List("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss").foreach {
+      case (c, rep) => res = res.replace(c, rep)
+    }
+    res = Normalizer.normalize(res, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "")
+    if (res.exists(_ > 127)) error("Contained non convertible non-ascii character: " + str)
+    res
+  }
+
+  def make_author_id(name: String, context: Context): String =
+  {
+    val normalized = as_ascii(name)
+    val Suffix = """^.*?([a-zA-Z]*)$""".r
+    val suffix = normalized match {
+      case Suffix(suffix) => suffix
+      case _ => ""
+    }
+    val Prefix = """^([a-zA-Z]*).*$""".r
+    val prefix = normalized.stripSuffix(suffix) match {
+      case Prefix(prefix) => prefix
+      case _ => ""
+    }
+    var ident = suffix.toLowerCase
+    for {
+      c <- prefix.toLowerCase
+    } if (context.seen_id(ident)) {
+      ident += c.toString
+    } else return ident
+    var num = 1
+    while (context.seen_id(ident + num)) { num += 1 }
+    ident
+  }
+
+  def author_urls(name_urls: String, context: Context): (String, List[String]) =
+  {
+    val name = AFP.trim_mail(name_urls)
+    val urls = name_urls.stripPrefix(name).split(Array('<', '>')).toList.filterNot(_.isBlank)
+    (context.transform_name(name), urls)
+  }
+
+  def add_email(author: Author, address: String, context: Context): (Author, Email) =
+  {
+    val email = Email(author = author.id, id = author.emails.length, address = address)
+    val update_author = author.copy(emails = author.emails :+ email)
+    context.update_author(update_author)
+    (update_author, email)
+  }
+
+  def get_affiliations(name_url: String, context: Context): List[Affiliation] =
+  {
+    val (name, urls) = author_urls(name_url, context)
+    val author = context.author(name).getOrElse(error("Author not found: " + name))
+
+    urls.map { url =>
+      if (is_email(url)) {
+        val address = url.stripPrefix("mailto:")
+
+        author.emails.find(_.address == address) getOrElse
+          error("Email not found: " + (author, address))
+      }
+      else if (url.isEmpty) {
+        Unaffiliated(author.id)
+      }
+      else {
+        author.homepages.find(_.url == url) getOrElse
+          error("Url not found for: " + (author, url))
+      }
+    }
+  }
+
+  def get_email_affiliation(address: String, context: Context, progress: Progress): Email =
+  {
+    context.authors.flatMap(_.emails).find(_.address == address) match {
+      case Some(email) => email
+      case None =>
+        val name = context.name(address)
+        val author = context.author(name) match {
+          case Some(author) => author
+          case None =>
+            progress.echo_warning("New author: " + name)
+            Author(make_author_id(name, context), name, Nil, Nil)
+        }
+        add_email(author, address, context)._2
+    }
+  }
+
+  def update_author(name_urls: String, context: Context): Unit =
+  {
+    val (name, urls) = author_urls(name_urls, context)
+    var author = context.author(name) match {
+      case Some(author) => author
+      case None => Author(make_author_id(name, context), name, Nil, Nil)
+    }
+
+    urls.foreach { url =>
+      if (is_email(url)) {
+        val address = url.stripPrefix("mailto:")
+
+        if (!author.emails.exists(_.address == address)) {
+          author = add_email(author, address, context)._1
+        }
+      }
+      else if (url.nonEmpty && !author.homepages.exists(_.url == url)) {
+        val homepage = Homepage(author = author.id, id = author.homepages.length, url = url)
+
+        author = author.copy(homepages = author.homepages :+ homepage)
+      }
+    }
+
+    context.update_author(author)
+  }
+
+  def map_metadata(entry: AFP.Entry, context: Context, progress: Progress): Entry =
+  {
+    val author_affiliations = entry.authors.flatMap(get_affiliations(_, context))
+    val contributor_affiliations = entry.contributors.flatMap(get_affiliations(_, context))
+    val notify_emails = entry.get_strings("notify").map(get_email_affiliation(_, context, progress))
+
+    Entry(
+      short_name = entry.name,
+      title = entry.title,
+      authors = author_affiliations,
+      date = LocalDate.from(entry.date.rep).toString,
+      topics = entry.topics,
+      `abstract` = entry.`abstract`,
+      notifies = notify_emails,
+      contributors = contributor_affiliations,
+      license = entry.license,
+      note = entry.get_string("note"),
+      change_history = entry.get_string("extra-history")
+    )
+  }
+
+  def migrate_metadata(
+    base_dir: Path,
+    overwrite: Boolean,
+    context: Context,
+    options: Options = Options.init(),
+    progress: Progress = new Progress()): Unit = {
+    /* dirs */
+
+    val metadata_dir = base_dir + Path.basic("metadata")
+    val metadata = AFP.init(options, base_dir)
+
+    /* collect authors (without notify affiliations) */
+
+    for {
+      entry <- metadata.entries
+      name_url <- entry.authors ++ entry.contributors
+    } update_author(name_url, context)
+
+    /* entries */
+
+    val entry_metadata_dir = metadata_dir + Path.basic("entries")
+    entry_metadata_dir.file.mkdir()
+    for (entry <- metadata.entries) {
+      val new_metadata = map_metadata(entry, context, progress)
+
+      val content = JSON.Format(Metadata.JSON(new_metadata))
+
+      val metadata_file = metadata_dir + Path.make(List("entries", entry.name + ".json"))
+      if (!overwrite && metadata_file.file.exists()) error("Entry metadata file exists")
+      File.write(metadata_file, content)
+    }
+
+    /* authors */
+
+    val authors = JSON.Format(Metadata.JSON.authors(context.authors))
+
+    val authors_file = metadata_dir + Path.basic("authors.json")
+    if (!overwrite && authors_file.file.exists()) error("Authors file exists")
+    File.write(authors_file, authors)
+  }
+
+  val isabelle_tool =
+    Isabelle_Tool(
+      "afp_migrate_metadata",
+      "migrates old sitegen metadata to new format",
+      Scala_Project.here,
+      args => {
+        var base_dir = Path.explode("$AFP_BASE")
+
+        var names = List(
+          "Lawrence C Paulson" -> "Lawrence C. Paulson",
+          "Lawrence Paulson" -> "Lawrence C. Paulson",
+          "Florian Kammueller" -> "Florian Kammüller",
+          "Jasmin Blanchette" -> "Jasmin Christian Blanchette",
+          "Ognjen Maric" -> "Ognjen Marić",
+          "Maximilian P.L. Haslbeck" -> "Maximilian P. L. Haslbeck")
+
+        var emails = List(
+          "a.bentkamp@vu.nl" -> "Alexander Bentkamp",
+          "a.popescu@mdx.ac.uk" -> "Andrei Popescu",
+          "a.popescu@sheffield.ac.uk" -> "Andrei Popescu",
+          "afp@liftm.de" -> "Julius Michaelis",
+          "ahfrom@dtu.dk" -> "Asta Halkjær From",
+          "ak2110@cam.ac.uk" -> "Angeliki Koutsoukou-Argyraki",
+          "akihisayamada@nii.ac.jp" -> "Akihisa Yamada",
+          "aleje@dtu.dk" -> "Alexander Birch Jensen",
+          "alexander.katovsky@cantab.net" -> "Alexander Katovsky",
+          "alexander.maletzky@risc-software.at" -> "Alexander Maletzky",
+          "alexander.maletzky@risc.jku.at" -> "Alexander Maletzky",
+          "andreas.lochbihler@digitalasset.com" -> "Andreas Lochbihler",
+          "andreasvhess@gmail.com" -> "Andreas V. Hess",
+          "andschl@dtu.dk" -> "Anders Schlichtkrull",
+          "apdb3@cam.ac.uk" -> "Anthony Bordg",
+          "avigad@cmu.edu" -> "Jeremy Avigad",
+          "ballarin@in.tum.de" -> "Clemens Ballarin",
+          "bdd@liftm.de" -> "Julius Michaelis",
+          "benblumson@gmail.com" -> "Ben Blumson",
+          "berghofe@in.tum.de" -> "Stefan Berghofer",
+          "bjbohrer@gmail.com" -> "Brandon Bohrer",
+          "boehmes@in.tum.de" -> "Sascha Böhme",
+          "brianh@cs.pdx.edu" -> "Brian Huffman",
+          "brunnerj@in.tum.de" -> "Julian Brunner",
+          "bzhan@ios.ac.cn" -> "Bohua Zhan",
+          "c.benzmueller@fu-berlin.de" -> "Christoph Benzmüller",
+          "c.benzmueller@gmail.com" -> "Christoph Benzmüller",
+          "caw77@cam.ac.uk" -> "Conrad Watt",
+          "cezary.kaliszyk@uibk.ac.at" -> "Cezary Kaliszyk",
+          "christian.sternagel@uibk.ac.at" -> "Christian Sternagel",
+          "christian.urban@kcl.ac.uk" -> "Christian Urban",
+          "coglio@kestrel.edu" -> "Alessandro Coglio",
+          "corey.lewis@data61.csiro.au" -> "Corey Lewis",
+          "danijela@matf.bg.ac.rs" -> "Danijela Simić",
+          "denis.lohner@kit.edu" -> "Denis Lohner",
+          "denis.nikif@gmail.com" -> "Denis Nikiforov",
+          "diego.marmsoler@tum.de" -> "Diego Marmsoler",
+          "diekmann@net.in.tum.de" -> "Cornelius Diekmann",
+          "dubut@nii.ac.jp" -> "Jérémy Dubut",
+          "eminkarayel@google.com" -> "Emin Karayel",
+          "fadouaghourabi@gmail.com" -> "Fadoua Ghourabi",
+          "fimmler@andrew.cmu.edu" -> "Fabian Immler",
+          "fimmler@cs.cmu.edu" -> "Fabian Immler",
+          "florian.haftmann@informatik.tu-muenchen.de" -> "Florian Haftmann",
+          "florian.kammuller@gmail.com" -> "Florian Kammüller",
+          "friedrich.kurz@tum.de" -> "Friedrich Kurz",
+          "ftuong@lri.fr" -> "Frédéric Tuong",
+          "g.struth@dcs.shef.ac.uk" -> "Georg Struth",
+          "ggrov@inf.ed.ac.uk" -> "Gudmund Grov",
+          "giamp@dmi.unict.it" -> "Giampaolo Bella",
+          "giuliano@losa.fr" -> "Giuliano Losa",
+          "Harald.Zankl@uibk.ac.at" -> "Harald Zankl",
+          "haslbecm@in.tum.de" -> "Maximilian Haslbeck",
+          "haslbema@in.tum.de" -> "Maximilian P. L. Haslbeck",
+          "heimesl@student.ethz.ch" -> "Lukas Heimes",
+          "hetzl@logic.at" -> "Stefan Hetzl",
+          "holub@karlin.mff.cuni.cz" -> "Štěpán Holub",
+          "Ian.Hayes@itee.uq.edu.au" -> "Ian J. Hayes",
+          "isabelleopenflow@liftm.de" -> "Julius Michaelis",
+          "jason.jaskolka@carleton.ca" -> "Jason Jaskolka",
+          "jeremy.sylvestre@ualberta.ca" -> "Jeremy Sylvestre",
+          "jesus-maria.aransay@unirioja.es" -> "Jesús Aransay",
+          "jonjulian23@gmail.com" -> "Jonathan Julian Huerta y Munive",
+          "jose.divason@unirioja.es" -> "Jose Divasón",
+          "jose.divasonm@unirioja.es" -> "Jose Divasón",
+          "joseph-thommes@gmx.de" -> "Joseph Thommes",
+          "jovi@dtu.dk" -> "Jørgen Villadsen",
+          "jsiek@indiana.edu" -> "Jeremy Siek",
+          "jsylvest@ualberta.ca" -> "Jeremy Sylvestre",
+          "julian.nagele@uibk.ac.at" -> "Julian Nagele",
+          "julian.parsert@uibk.ac.at" -> "Julian Parsert",
+          "kevin.kappelmann@tum.de" -> "Kevin Kappelmann",
+          "kkz@mit.edu" -> "Karen Zee",
+          "kleing@unsw.edu.au" -> "Gerwin Klein",
+          "krauss@in.tum.de" -> "Alexander Krauss",
+          "kreuzerk@in.tum.de" -> "Katharina Kreuzer",
+          "lars@hupel.info" -> "Lars Hupel",
+          "lcp@cl.cam.ac.uk" -> "Lawrence C. Paulson",
+          "lennart.beringer@ifi.lmu.de" -> "Lennart Beringer",
+          "liwenda1990@hotmail.com" -> "Wenda Li",
+          "mail@andreas-lochbihler.de" -> "Andreas Lochbihler",
+          "mail@michael-herzberg.de" -> "Michael Herzberg",
+          "maintainafpppt@liftm.de" -> "Julius Michaelis",
+          "maksym.bortin@nicta.com.au" -> "Maksym Bortin",
+          "manuel.eberl@tum.de" -> "Manuel Eberl",
+          "martin.desharnais@unibw.de" -> "Martin Desharnais",
+          "mathias.fleury@jku.at" -> "Mathias Fleury",
+          "matthias.brun@inf.ethz.ch" -> "Matthias Brun",
+          "max.haslbeck@gmx.de" -> "Max W. Haslbeck",
+          "maximilian.haslbeck@uibk.ac.at" -> "Maximilian Haslbeck",
+          "me@eminkarayel.de" -> "Emin Karayel",
+          "MichaelNedzelsky@yandex.ru" -> "Michael Nedzelsky",
+          "mihailsmilehins@gmail.com" -> "Mihails Milehins",
+          "mnacho.echenim@univ-grenoble-alpes.fr" -> "Mnacho Echenim",
+          "mnfrd.krbr@gmail.com" -> "Manfred Kerber",
+          "mohammad.abdulaziz8@gmail.com" -> "Mohammad Abdulaziz",
+          "mohammad.abdulaziz@in.tum.de" -> "Mohammad Abdulaziz",
+          "mr644@cam.ac.uk" -> "Michael Rawson",
+          "mrtnrau@googlemail.com" -> "Martin Rau",
+          "nanjiang@whu.edu.cn" -> "Nan Jiang",
+          "Nicolas.Peltier@imag.fr" -> "Nicolas Peltier",
+          "nipkow@in.tum.de" -> "Tobias Nipkow",
+          "noschinl@gmail.com" -> "Lars Noschinski",
+          "pagano@famaf.unc.edu.ar" -> "Miguel Pagano",
+          "pc@cs.st-andrews.ac.uk" -> "Peter Chapman",
+          "peter.lammich@uni-muenster.de" -> "Peter Lammich",
+          "peter@hoefner-online.de" -> "Peter Höfner",
+          "ralph.bottesch@uibk.ac.at" -> "Ralph Bottesch",
+          "reza.sefidgar@inf.ethz.ch" -> "S. Reza Sefidgar",
+          "richter@informatik.rwth-aachen.de" -> "Stefan Richter",
+          "roelofoosterhuis@gmail.com" -> "Roelof Oosterhuis",
+          "rok@strnisa.com" -> "Rok Strniša",
+          "rosskops@in.tum.de" -> "Simon Roßkopf",
+          "s.griebel@tum.de" -> "Simon Griebel",
+          "s.j.c.joosten@utwente.nl" -> "Sebastiaan Joosten",
+          "samo@dtu.dk" -> "Sebastian Mödersheim",
+          "schirmer@in.tum.de" -> "Norbert Schirmer",
+          "sidney.amani@data61.csiro.au" -> "Sidney Amani",
+          "sjcjoosten@gmail.com" -> "Sebastiaan Joosten",
+          "stepan.starosta@fit.cvut.cz" -> "Štěpán Starosta",
+          "Stephan.Merz@loria.fr" -> "Stephan Merz",
+          "sterraf@famaf.unc.edu.ar" -> "Pedro Sánchez Terraf",
+          "stourret@mpi-inf.mpg.de" -> "Sophie Tourret",
+          "stvienna@gmail.com" -> "Stephan Adelsberger",
+          "susannahej@gmail.com" -> "Susannah Mansky",
+          "tdardini@student.ethz.ch" -> "Thibault Dardinier",
+          "tim@tbrk.org" -> "Timothy Bourke",
+          "toby.murray@unimelb.edu.au" -> "Toby Murray",
+          "traytel@di.ku.dk" -> "Dmitriy Traytel",
+          "traytel@in.tum.de" -> "Dmitriy Traytel",
+          "traytel@inf.ethz.ch" -> "Dmitriy Traytel",
+          "uuomul@yahoo.com" -> "Andrei Popescu",
+          "walter.guttman@canterbury.ac.nz" -> "Walter Guttmann",
+          "walter.guttmann@canterbury.ac.nz" -> "Walter Guttmann",
+          "wimmers@in.tum.de" -> "Simon Wimmer",
+          "wl302@cam.ac.uk" -> "Wenda Li",
+          "yongkiat@cs.cmu.edu" -> "Yong Kiam Tan",
+          "Yutaka.Nagashima@data61.csiro.au" -> "Yutaka Nagashima")
+
+        var overwrite = false
+
+        val getopts = Getopts(
+          """
+Usage: isabelle afp_migrate_metadata [OPTIONS]
+
+  Options are:
+    -B DIR            afp base dir (default "$AFP_BASE")
+    -n FROM,TO        names to convert (default:
+                      """ + names.mkString("\n                      ") +
+                      """)
+    -e EMAIL,AUTHOR   emails to associate (default:
+                      """ + emails.mkString("\n                      ") +
+                      """)
+    -f                overwrite existing
+
+  Migrates old sitegen metadata to new format.
+""",
+          "B:" -> (arg => base_dir = Path.explode(arg)),
+          "n:" -> (arg => names ::= arg.splitAt(arg.indexOf(","))),
+          "e:" -> (arg => emails ::= arg.splitAt(arg.indexOf(","))),
+          "f" -> (_ => overwrite = true)
+        )
+
+        getopts(args)
+
+        val progress = new Console_Progress()
+
+        val context = new Context(names.toMap, emails.toMap)
+
+        val options = Options.init()
+
+        migrate_metadata(
+          base_dir = base_dir,
+          context = context,
+          overwrite = overwrite,
+          options = options,
+          progress = progress)
+      }
+    )
+}
