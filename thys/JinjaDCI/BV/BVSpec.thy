@@ -49,7 +49,7 @@ case b of NonStatic \<Rightarrow> P \<turnstile> Some ([],OK (Class C)#map OK Ts
 definition wt_method :: "['m prog,cname,staticb,ty list,ty,nat,nat,instr list,
                  ex_table,ty\<^sub>m] \<Rightarrow> bool"
 where
-  "wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s \<equiv>
+  "wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s \<equiv> (b = Static \<or> b = NonStatic) \<and>
   0 < size is \<and> size \<tau>s = size is \<and>
   check_types P mxs ((case b of Static \<Rightarrow> 0 | NonStatic \<Rightarrow> 1)+size Ts+mxl\<^sub>0) (map OK \<tau>s) \<and>
   wt_start P C b Ts mxl\<^sub>0 \<tau>s \<and>

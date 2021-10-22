@@ -19,7 +19,7 @@ where
                      (\<lambda>pc. eff (bs!pc) G pc et)"
 
 locale JVM_sl =
-  fixes P :: jvm_prog and mxs and mxl\<^sub>0
+  fixes P :: jvm_prog and mxs and mxl\<^sub>0 and n
   fixes b and Ts :: "ty list" and "is" and xt and T\<^sub>r
 
   fixes mxl and A and r and f and app and eff and step
@@ -32,22 +32,40 @@ locale JVM_sl =
   defines [simp]: "eff \<equiv> \<lambda>pc. Effect.eff (is!pc) P pc xt"
   defines [simp]: "step \<equiv> err_step (size is) app eff"
 
+  defines [simp]: "n \<equiv> size is"
+  assumes staticb: "b = Static \<or> b = NonStatic" 
 
 locale start_context = JVM_sl +
   fixes p and C
+
   assumes wf: "wf_prog p P"
   assumes C:  "is_class P C"
   assumes Ts: "set Ts \<subseteq> types P"
 
+ 
   fixes first :: ty\<^sub>i' and start
   defines [simp]: 
   "first \<equiv> Some ([],(case b of Static \<Rightarrow> [] | NonStatic \<Rightarrow> [OK (Class C)]) @ map OK Ts @ replicate mxl\<^sub>0 Err)"
   defines [simp]:
   "start \<equiv> (OK first) #  replicate (size is - 1) (OK None)"
+thm start_context.intro
 
-
+lemma start_context_intro_auxi: 
+  fixes  P b Ts p C
+  assumes "b = Static \<or> b = NonStatic " 
+      and "wf_prog p P"
+      and "is_class P C"
+      and "set Ts \<subseteq> types P"
+    shows " start_context P b Ts p C"
+  using start_context.intro[OF JVM_sl.intro] start_context_axioms_def assms  by auto
 
 subsection \<open> Connecting JVM and Framework \<close>
+
+lemma (in start_context) semi: "semilat (A, r, f)"
+  apply (insert semilat_JVM[OF wf])
+  apply (unfold A_def r_def f_def JVM_SemiType.le_def JVM_SemiType.sup_def states_def)
+  apply auto
+  done
 
 
 lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^sub>r xt is" 
@@ -277,13 +295,29 @@ lemma (in JVM_sl) bounded_step: "bounded step (size is)"
 theorem (in JVM_sl) step_mono:
   "wf_prog wf_mb P \<Longrightarrow> mono r step (size is) A"
 (*<*)
+ apply (simp add: JVM_le_Err_conv)  
+  apply (insert bounded_step)
+  apply (unfold JVM_states_unfold)
+  apply (rule mono_lift)    
+  apply (subgoal_tac "b = Static \<or> b = NonStatic") 
+      apply (fastforce split:if_splits)\<comment>\<open> order_sup_state_opt' order_sup_state_opt'' \<close>
+     apply (simp only:staticb)
+     apply (unfold app_mono_def lesub_def)
+    apply clarsimp
+    apply (erule (2) app_mono)
+   apply simp
+  apply clarify
+  apply (drule eff_mono)
+      apply (auto simp add: lesub_def)
+  done
+(*
 proof -
   assume wf: "wf_prog wf_mb P"
   let ?r = "sup_state_opt P" and ?n = "length is" and ?app = app and ?step = eff
   let ?A = "opt (\<Union> {list n (types P) |n. n \<le> mxs} \<times>
                 list ((case b of Static \<Rightarrow> 0 | NonStatic \<Rightarrow> 1) + length Ts + mxl\<^sub>0)
                  (err (types P)))"
-  have "order ?r" using wf by simp
+  have "order ?r ?A" using wf by simp
   moreover have "app_mono ?r ?app ?n ?A" using app_mono[OF wf]
     by (clarsimp simp: app_mono_def lesub_def)
   moreover have "bounded (err_step ?n ?app ?step) ?n" using bounded_step
@@ -296,6 +330,7 @@ proof -
   then show "mono r step (size is) A" using bounded_step
     by (simp add: JVM_le_Err_conv JVM_states_unfold)
 qed
+*)
 (*>*)
 
 
@@ -306,11 +341,12 @@ lemma (in start_context) first_in_A [iff]: "OK first \<in> A"
 lemma (in JVM_sl) wt_method_def2:
   "wt_method P C' b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s =
   (is \<noteq> [] \<and> 
+   (b = Static \<or> b = NonStatic) \<and>
    size \<tau>s = size is \<and>
    OK ` set \<tau>s \<subseteq> states P mxs mxl \<and>
    wt_start P C' b Ts mxl\<^sub>0 \<tau>s \<and> 
    wt_app_eff (sup_state_opt P) app eff \<tau>s)"
-(*<*)
+(*<*)using staticb
   by (unfold wt_method_def wt_app_eff_def wt_instr_def lesub_def
              check_types_def) auto
 (*>*)
