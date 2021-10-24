@@ -3,7 +3,7 @@
 *)
 section \<open>More useful lemmas related polynomials\<close>
 
-theory More_Polynomials imports 
+theory CC_Polynomials_Extra imports 
   Winding_Number_Eval.Missing_Algebraic
   Winding_Number_Eval.Missing_Transcendental
   Sturm_Tarski.PolyMisc

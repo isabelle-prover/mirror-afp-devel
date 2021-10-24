@@ -28,10 +28,6 @@ lemma is_unit_pCons_ex_iff:
   fixes p::"'a::field poly"
   shows "is_unit p \<longleftrightarrow> (\<exists>a. a\<noteq>0 \<and> p=[:a:])"
   using is_unit_poly_iff is_unit_triv by auto
-
-lemma poly_gcd_iff: 
-  "poly (gcd p q) x=0 \<longleftrightarrow> poly p x=0 \<and> poly q x=0 "
-  by (simp add: poly_eq_0_iff_dvd)
   
 lemma eventually_poly_nz_at_within:
   fixes x :: "'a::{idom,euclidean_space} "
@@ -922,7 +918,7 @@ next
     apply (rule cindex_eq_cindexE_divide)
     subgoal using \<open>a<b\<close> .
     subgoal using False poly_roots_finite pq_f(1) pq_f(2) by fastforce
-    subgoal using \<open>coprime p' q'\<close> poly_gcd_iff by force
+    subgoal using \<open>coprime p' q'\<close> poly_gcd_0_iff by force
     subgoal by (auto intro:continuous_intros)
     subgoal by (auto intro:continuous_intros)
     done
