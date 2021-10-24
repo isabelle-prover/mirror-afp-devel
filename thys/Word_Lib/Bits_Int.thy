@@ -146,7 +146,7 @@ lemma bintrunc_Suc_numeral:
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (numeral (Num.Bit1 w)) = 1 + 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (numeral w)"
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (- numeral (Num.Bit0 w)) = 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- numeral w)"
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (- numeral (Num.Bit1 w)) = 1 + 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- numeral (w + Num.One))"
-  by (simp_all add: take_bit_Suc)
+  by (simp_all add: take_bit_Suc del: take_bit_minus_one_eq_mask)
 
 lemma sbintrunc_0_numeral [simp]:
   "(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) 0 1 = -1"
@@ -187,10 +187,10 @@ lemma bin_nth_Bit1:
   by auto
 
 lemma bintrunc_bintrunc_l: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: min.absorb2)
+  by simp
 
 lemma sbintrunc_sbintrunc_l: "n \<le> m \<Longrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: min.absorb2)
+  by simp
 
 lemma bintrunc_bintrunc_ge: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
   by (rule bin_eqI) (auto simp: nth_bintr)
@@ -358,7 +358,7 @@ lemma bintr_lt2p: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w < 2
   by (simp add: bintrunc_mod2p)
 
 lemma bintr_Min: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- 1) = 2 ^ n - 1"
-  by (simp add: stable_imp_take_bit_eq)
+  by (simp add: stable_imp_take_bit_eq mask_eq_exp_minus_1)
 
 lemma sbintr_ge: "- (2 ^ n) \<le> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
   by (fact signed_take_bit_int_greater_eq_minus_exp)
@@ -1301,7 +1301,7 @@ by(simp_all add: numeral_eq_Suc shiftl_int_def)
 lemma int_shiftl_One_numeral [simp]:
   "push_bit (numeral w) (1::int) = push_bit (pred_numeral w) 2"
   using int_shiftl_numeral [of Num.One w]
-  by (simp add: numeral_eq_Suc) 
+  by (simp only: numeral_eq_Suc push_bit_Suc) simp
 
 lemma shiftl_ge_0: fixes i :: int shows "push_bit n i \<ge> 0 \<longleftrightarrow> i \<ge> 0"
   by (fact push_bit_nonnegative_int_iff)
@@ -1390,7 +1390,7 @@ lemma msb_conv_bin_sign:
   "msb x \<longleftrightarrow> bin_sign x = -1"
   by (simp add: bin_sign_def not_le msb_int_def)
 
-lemma msb_bin_sc [simp]:
+lemma msb_bin_sc:
   "msb (bin_sc n b x) \<longleftrightarrow> msb x"
   by (simp add: msb_conv_bin_sign)
 
@@ -1544,13 +1544,13 @@ proof -
     using P[unfolded range_sbintrunc] abs_ab le
     apply clarsimp
     apply (transfer fixing: r s)
-    apply (auto simp add: signed_take_bit_int_eq_self min.absorb2 simp flip: signed_take_bit_eq_iff_take_bit_eq)
+    apply (auto simp add: signed_take_bit_int_eq_self simp flip: signed_take_bit_eq_iff_take_bit_eq)
     done
 qed
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
-  by (simp add: take_bit_int_eq_self_iff le_less_trans less_exp)
+  by (simp add: take_bit_int_eq_self_iff le_less_trans)
 
 lemma bin_cat_cong: "concat_bit n b a = concat_bit m d c"
   if "n = m" "a = c" "take_bit m b = take_bit m d"

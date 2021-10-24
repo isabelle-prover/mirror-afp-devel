@@ -236,7 +236,7 @@ next
     by (cases z) (simp cong: map_cong, simp add: map_replicate_const cong: map_cong)
 
   have shiftl: "of_bl xs * 2 * y = (of_bl xs * y) << 1" for xs
-    by (simp add: push_bit_eq_mult)
+    by (simp add: push_bit_eq_mult shiftl_def)
 
   have zip_take_triv: "\<And>xs ys n. n = length ys \<Longrightarrow> zip (take n xs) ys = zip xs ys"
     by (rule nth_equalityI) simp_all
@@ -247,7 +247,7 @@ next
     apply (simp add: takefill_alt word_size rev_map take_rbl_plus min_def)
     apply (simp add: rbl_plus_def)
     apply (simp add: zip_take_triv)
-    apply (simp only: mult.commute [of _ 2] mult.assoc to_bl_double_eq)
+    apply (simp only: mult.commute [of _ 2] to_bl_double_eq)
     apply (simp flip: butlast_rev add: take_butlast)
     done
 qed

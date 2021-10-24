@@ -134,4 +134,10 @@ proof -
     by simp
 qed
 
+lemma msrevs:
+  "0 < n \<Longrightarrow> (k * n + m) div n = m div n + k"
+  "(k * n + m) mod n = m mod n"
+  for n :: nat
+  by simp_all
+
 end

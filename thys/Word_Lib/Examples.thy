@@ -16,14 +16,6 @@ begin
 section \<open>\<^typ>\<open>nat\<close>\<close>
 
 lemma
-  \<open>\<not> bit (1 :: nat) (Suc (Suc (Suc 0)))\<close>
-  by simp
-
-lemma
-  \<open>\<not> bit (1 :: nat) 3\<close>
-  by simp
-
-lemma
   \<open>bit (1705 :: nat) (Suc (Suc (Suc 0)))\<close>
   by simp
 
@@ -32,7 +24,19 @@ lemma
   by simp
 
 lemma
+  \<open>\<not> bit (1 :: nat) (Suc (Suc (Suc 0)))\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (1 :: nat) 3\<close>
+  by simp
+
+lemma
   \<open>(1705 :: nat) AND 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) AND Suc 0 = 1\<close>
   by simp
 
 lemma
@@ -40,7 +44,15 @@ lemma
   by simp
 
 lemma
+  \<open>(1705 :: nat) OR Suc 0 = 1705\<close>
+  by simp
+
+lemma
   \<open>(1705 :: nat) XOR 42 = 1667\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) XOR 1 = 1704\<close>
   by simp
 
 lemma
@@ -52,11 +64,59 @@ lemma
   by simp
 
 lemma
+  \<open>push_bit 3 (Suc 0) = 8\<close>
+  by simp
+
+lemma
+  \<open>push_bit (Suc (Suc (Suc 0))) (Suc 0) = 8\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) << 3 = 13640\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) << Suc (Suc (Suc 0)) = 13640\<close>
+  by simp
+
+lemma
+  \<open>Suc 0 << 3 = 8\<close>
+  by simp
+
+lemma
+  \<open>Suc 0 << Suc (Suc (Suc 0)) = 8\<close>
+  by simp
+
+lemma
   \<open>drop_bit 3 (1705 :: nat) = 213\<close>
   by simp
 
 lemma
   \<open>drop_bit (Suc (Suc (Suc 0))) (1705 :: nat) = 213\<close>
+  by simp
+
+lemma
+  \<open>drop_bit 3 (Suc 0) = 0\<close>
+  by simp
+
+lemma
+  \<open>drop_bit (Suc (Suc (Suc 0))) (Suc 0) = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) >> 3 = 213\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: nat) >> Suc (Suc (Suc 0)) = 213\<close>
+  by simp
+
+lemma
+  \<open>Suc 0 >> 3 = 0\<close>
+  by simp
+
+lemma
+  \<open>Suc 0 >> Suc (Suc (Suc 0)) = 0\<close>
   by simp
 
 lemma
@@ -67,15 +127,16 @@ lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: nat) = 1\<close>
   by simp
 
+lemma
+  \<open>take_bit 3 (Suc 0) = 1\<close>
+  by simp
+
+lemma
+  \<open>take_bit (Suc (Suc (Suc 0))) (Suc 0) = 1\<close>
+  by simp
+
+
 section \<open>\<^typ>\<open>int\<close>\<close>
-
-lemma
-  \<open>\<not> bit (1 :: int) (Suc (Suc (Suc 0)))\<close>
-  by simp
-
-lemma
-  \<open>\<not> bit (1 :: int) 3\<close>
-  by simp
 
 lemma
   \<open>bit (1705 :: int) (Suc (Suc (Suc 0)))\<close>
@@ -83,6 +144,22 @@ lemma
 
 lemma
   \<open>bit (1705 :: int) 3\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (- 1705 :: int) (Suc (Suc (Suc 0)))\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (- 1705 :: int) 3\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (1 :: int) (Suc (Suc (Suc 0)))\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (1 :: int) 3\<close>
   by simp
 
 lemma
@@ -94,11 +171,19 @@ lemma
   by simp
 
 lemma
+  \<open>(NOT 1 :: int) = - 2\<close>
+  by simp
+
+lemma
   \<open>(1705 :: int) AND 42 = 40\<close>
   by simp
 
 lemma
   \<open>(1705 :: int) AND - 42 = 1664\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) AND 1 = 1\<close>
   by simp
 
 lemma
@@ -110,11 +195,19 @@ lemma
   by simp
 
 lemma
+  \<open>- (1705 :: int) AND 1 = 1\<close>
+  by simp
+
+lemma
   \<open>(1705 :: int) OR 42 = 1707\<close>
   by simp
 
 lemma
   \<open>(1705 :: int) OR - 42 = - 1\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) OR 1 = 1705\<close>
   by simp
 
 lemma
@@ -126,6 +219,10 @@ lemma
   by simp
 
 lemma
+  \<open>- (1705 :: int) OR 1 = - 1705\<close>
+  by simp
+
+lemma
   \<open>(1705 :: int) XOR 42 = 1667\<close>
   by simp
 
@@ -134,11 +231,19 @@ lemma
   by simp
 
 lemma
+  \<open>(1705 :: int) XOR 1 = 1704\<close>
+  by simp
+
+lemma
   \<open>- (1705 :: int) XOR 42 = - 1667\<close>
   by simp
 
 lemma
   \<open>- (1705 :: int) XOR - 42 = 1665\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: int) XOR 1 = - 1706\<close>
   by simp
 
 lemma
@@ -158,6 +263,54 @@ lemma
   by simp
 
 lemma
+  \<open>push_bit 3 (1 :: int) = 8\<close>
+  by simp
+
+lemma
+  \<open>push_bit (Suc (Suc (Suc 0))) (1 :: int) = 8\<close>
+  by simp
+
+lemma
+  \<open>push_bit 3 (- 1 :: int) = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>push_bit (Suc (Suc (Suc 0))) (- 1 :: int) = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>(1705 :: int) << 3  = 13640\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) << Suc (Suc (Suc 0)) = 13640\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: int) << 3 = - 13640\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: int) << Suc (Suc (Suc 0)) = - 13640\<close>
+  by simp
+
+lemma
+  \<open>(1 :: int) << 3 = 8\<close>
+  by simp
+
+lemma
+  \<open>(1 :: int) << Suc (Suc (Suc 0)) = 8\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: int) << 3 = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>(- 1 :: int) << Suc (Suc (Suc 0)) = - 8\<close>
+  by simp
+
+lemma
   \<open>drop_bit 3 (1705 :: int) = 213\<close>
   by simp
 
@@ -171,6 +324,38 @@ lemma
 
 lemma
   \<open>drop_bit (Suc (Suc (Suc 0))) (- 1705 :: int) = - 214\<close>
+  by simp
+
+lemma
+  \<open>drop_bit 3 (1 :: int) = 0\<close>
+  by simp
+
+lemma
+  \<open>drop_bit (Suc (Suc (Suc 0))) (1 :: int) = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) >> 3 = 213\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: int) >> Suc (Suc (Suc 0)) = 213\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: int) >> 3 = - 214\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: int) >> Suc (Suc (Suc 0)) = - 214\<close>
+  by simp
+
+lemma
+  \<open>(1 :: int) >> 3 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1 :: int) >> Suc (Suc (Suc 0)) = 0\<close>
   by simp
 
 lemma
@@ -190,6 +375,22 @@ lemma
   by simp
 
 lemma
+  \<open>take_bit 3 (1 :: int) = 1\<close>
+  by simp
+
+lemma
+  \<open>take_bit (Suc (Suc (Suc 0))) (1 :: int) = 1\<close>
+  by simp
+
+lemma
+  \<open>take_bit 3 (- 1 :: int) = 7\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>take_bit (Suc (Suc (Suc 0))) (- 1 :: int) = 7\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
   \<open>signed_take_bit 3 (1705 :: int) = - 7\<close>
   by simp
 
@@ -205,14 +406,115 @@ lemma
   \<open>signed_take_bit (Suc (Suc (Suc 0))) (- 1705 :: int) = 7\<close>
   by simp
 
-section \<open>\<^typ>\<open>'a word\<close>\<close>
-
 lemma
-  \<open>\<not> bit (1 :: 'a::len word) (Suc (Suc (Suc 0)))\<close>
+  \<open>signed_take_bit 3 (1 :: int) = 1\<close>
   by simp
 
 lemma
-  \<open>\<not> bit (1 :: 'a::len word) 3\<close>
+  \<open>signed_take_bit (Suc (Suc (Suc 0))) (1 :: int) = 1\<close>
+  by simp
+
+
+section \<open>\<^typ>\<open>'a word\<close>\<close>
+
+lemma
+  \<open>(1705 :: 8 word) = 169\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 8 word) = 87\<close>
+  by simp
+
+lemma
+  \<open>(257 :: 8 word) = 1\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) \<le> 1705\<close>
+  by simp
+
+lemma
+  \<open>(- 42 :: 8 word) \<le> 230\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) \<le> - 1705\<close>
+  by simp
+
+lemma
+  \<open>- (42 :: 8 word) \<le> 235\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 8 word) \<le> 1705\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 8 word) \<le> 65535\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) < 1705\<close>
+  by simp
+
+lemma
+  \<open>(- 42 :: 8 word) < 230\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) < - 1705\<close>
+  by simp
+
+lemma
+  \<open>- (42 :: 8 word) < 230\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 8 word) < 1705\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 8 word) < - 1\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) \<le>s 1333\<close>
+  by simp
+
+lemma
+  \<open>(- 42 :: 8 word) \<le>s 230\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) \<le>s - 1705\<close>
+  by simp
+
+lemma
+  \<open>- (42 :: 8 word) \<le>s - 1705\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 8 word) \<le>s 42\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) <s 1333\<close>
+  by simp
+
+lemma
+  \<open>(- 42 :: 8 word) <s 230\<close>
+  by simp
+
+lemma
+  \<open>(42 :: 8 word) <s - 1705\<close>
+  by simp
+
+lemma
+  \<open>- (42 :: 8 word) <s - 1705\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 8 word) <s 42\<close>
   by simp
 
 lemma
@@ -224,11 +526,31 @@ lemma
   by simp
 
 lemma
+  \<open>\<not> bit (- 1705 :: 16 word) (Suc (Suc (Suc 0)))\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (- 1705 :: 16 word) 3\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (1 :: 'a::len word) (Suc (Suc (Suc 0)))\<close>
+  by simp
+
+lemma
+  \<open>\<not> bit (1 :: 'a::len word) 3\<close>
+  by simp
+
+lemma
   \<open>(NOT 1705 :: 'a::len word) = - 1706\<close>
   by simp
 
 lemma
   \<open>(NOT (- 42 :: 'a::len word)) = 41\<close>
+  by simp
+
+lemma
+  \<open>(NOT 1 :: 'a::len word) = - 2\<close>
   by simp
 
 lemma
@@ -240,11 +562,19 @@ lemma
   by simp
 
 lemma
+  \<open>(1705 :: 'a::len word) AND 1 = 1\<close>
+  by simp
+
+lemma
   \<open>- (1705 :: 'a::len word) AND 42 = 2\<close>
   by simp
 
 lemma
   \<open>- (1705 :: 'a::len word) AND - 42 = - 1706\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: 'a::len word) AND 1 = 1\<close>
   by simp
 
 lemma
@@ -256,11 +586,19 @@ lemma
   by simp
 
 lemma
+  \<open>(1705 :: 'a::len word) OR 1 = 1705\<close>
+  by simp
+
+lemma
   \<open>- (1705 :: 'a::len word) OR 42 = - 1665\<close>
   by simp
 
 lemma
   \<open>- (1705 :: 'a::len word) OR - 42 = - 41\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: 'a::len word) OR 1 = - 1705\<close>
   by simp
 
 lemma
@@ -272,11 +610,19 @@ lemma
   by simp
 
 lemma
+  \<open>(1705 :: 'a::len word) XOR 1 = 1704\<close>
+  by simp
+
+lemma
   \<open>- (1705 :: 'a::len word) XOR 42 = - 1667\<close>
   by simp
 
 lemma
   \<open>- (1705 :: 'a::len word) XOR - 42 = 1665\<close>
+  by simp
+
+lemma
+  \<open>- (1705 :: 'a::len word) XOR 1 = - 1706\<close>
   by simp
 
 lemma
@@ -296,6 +642,54 @@ lemma
   by simp
 
 lemma
+  \<open>push_bit 3 (1 :: 'a::len word) = 8\<close>
+  by simp
+
+lemma
+  \<open>push_bit (Suc (Suc (Suc 0))) (1 :: 'a::len word) = 8\<close>
+  by simp
+
+lemma
+  \<open>push_bit 3 (- 1 :: 'a::len word) = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>push_bit (Suc (Suc (Suc 0))) (- 1 :: 'a::len word) = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>(1705 :: 'a::len word) << 3 = 13640\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 'a::len word) << Suc (Suc (Suc 0)) = 13640\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 'a::len word) << 3 = - 13640\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 'a::len word) << Suc (Suc (Suc 0)) = - 13640\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 'a::len word) << 3 = 8\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 'a::len word) << Suc (Suc (Suc 0)) = 8\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 'a::len word) << 3 = - 8\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>(- 1 :: 'a::len word) << Suc (Suc (Suc 0)) = - 8\<close>
+  by simp
+
+lemma
   \<open>drop_bit 3 (1705 :: 16 word) = 213\<close>
   by simp
 
@@ -309,6 +703,38 @@ lemma
 
 lemma
   \<open>drop_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7978\<close>
+  by simp
+
+lemma
+  \<open>drop_bit 3 (1 :: 16 word) = 0\<close>
+  by simp
+
+lemma
+  \<open>drop_bit (Suc (Suc (Suc 0))) (1 :: 16 word) = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) >> 3 = 213\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) >> Suc (Suc (Suc 0)) = 213\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) >> 3 = 7978\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) >> Suc (Suc (Suc 0)) = 7978\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) >> 3 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) >> Suc (Suc (Suc 0)) = 0\<close>
   by simp
 
 lemma
@@ -328,6 +754,38 @@ lemma
   by simp
 
 lemma
+  \<open>signed_drop_bit 3 (1 :: 16 word) = 0\<close>
+  by simp
+
+lemma
+  \<open>signed_drop_bit (Suc (Suc (Suc 0))) (1 :: 16 word) = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) >>> 3 = 213\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) >>> Suc (Suc (Suc 0)) = 213\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) >>> 3 = - 214\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) >>> Suc (Suc (Suc 0)) = - 214\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) >>> 3 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) >>> Suc (Suc (Suc 0)) = 0\<close>
+  by simp
+
+lemma
   \<open>take_bit 3 (1705 :: 16 word) = 1\<close>
   by simp
 
@@ -344,6 +802,22 @@ lemma
   by simp
 
 lemma
+  \<open>take_bit 3 (1 :: 16 word) = 1\<close>
+  by simp
+
+lemma
+  \<open>take_bit (Suc (Suc (Suc 0))) (1 :: 16 word) = 1\<close>
+  by simp
+
+lemma
+  \<open>take_bit 3 (- 1 :: 16 word) = 7\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
+  \<open>take_bit (Suc (Suc (Suc 0))) (- 1 :: 16 word) = 7\<close>
+  by (simp add: mask_eq_exp_minus_1)
+
+lemma
   \<open>signed_take_bit 3 (1705 :: 16 word) = - 7\<close>
   by simp
 
@@ -357,6 +831,142 @@ lemma
 
 lemma
   \<open>signed_take_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7\<close>
+  by simp
+
+lemma
+  \<open>signed_take_bit 3 (1 :: 16 word) = 1\<close>
+  by simp
+
+lemma
+  \<open>signed_take_bit (Suc (Suc (Suc 0))) (1 :: 16 word) = 1\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) div 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) div 42 = 1519\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) div - 42 = 0\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) div - 42 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) div 1 = 1705\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) div - 1 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) div 42 = 0\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 16 word) div 42 = 1560\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) mod 42 = 25\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) mod 42 = 33\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) mod - 42 = 1705\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) mod - 42 = 63831\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) mod 1 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) mod - 1 = 1705\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) mod 42 = 1\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 16 word) mod 42 = 15\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) sdiv 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) sdiv 42 = 65496\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) sdiv - 42 = 65496\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) sdiv - 42 = 40\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) sdiv 1 = 1705\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) sdiv - 1 = 63831\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) sdiv 42 = 0\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 16 word) sdiv 42 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) smod 42 = 25\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) smod 42 = 65511\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) smod - 42 = 25\<close>
+  by simp
+
+lemma
+  \<open>(- 1705 :: 16 word) smod - 42 = 65511\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) smod 1 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1705 :: 16 word) smod - 1 = 0\<close>
+  by simp
+
+lemma
+  \<open>(1 :: 16 word) smod 42 = 1\<close>
+  by simp
+
+lemma
+  \<open>(- 1 :: 16 word) smod 42 = 65535\<close>
   by simp
 
 text "modulus"

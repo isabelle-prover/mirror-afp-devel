@@ -14,6 +14,7 @@ theory More_Word_Operations
     More_Misc
     Signed_Words
     Word_Lemmas
+    Word_EqI
 begin
 
 context
@@ -680,13 +681,11 @@ lemma limited_and_eq_id:
 
 lemma lshift_limited_and:
   "limited_and x z \<Longrightarrow> limited_and (x << n) (z << n)"
-  unfolding limited_and_def
-  by (metis push_bit_and)
+  using push_bit_and [of n x z] by (simp add: limited_and_def shiftl_def)
 
 lemma rshift_limited_and:
   "limited_and x z \<Longrightarrow> limited_and (x >> n) (z >> n)"
-  unfolding limited_and_def
-  by (metis drop_bit_and)
+  using drop_bit_and [of n x z] by (simp add: limited_and_def shiftr_def)
 
 lemmas limited_and_simps1 = limited_and_eq_0 limited_and_eq_id
 
@@ -918,7 +917,9 @@ lemma aligned_mask_ranges_disjoint2:
   apply (simp only: flip: neg_mask_in_mask_range)
   apply (drule_tac x="x AND mask n >> m" in spec)
   apply (erule notE[OF mp])
-   apply (rule shiftr_less_t2n)
+   apply (simp flip: take_bit_eq_mask add: shiftr_def drop_bit_take_bit)
+   apply transfer
+  apply simp
    apply (simp add: word_size and_mask_less_size)
   apply (subst disjunctive_add)
    apply (auto simp add: bit_simps word_size intro!: bit_eqI)
@@ -955,56 +956,6 @@ lemma mask_range_subsetD:
   "\<lbrakk> p' \<in> mask_range p n; x' \<in> mask_range p' n'; n' \<le> n; is_aligned p n; is_aligned p' n' \<rbrakk> \<Longrightarrow>
    x' \<in> mask_range p n"
   using aligned_mask_step by fastforce
-
-lemma nasty_split_lt:
-  "\<lbrakk> (x :: 'a:: len word) < 2 ^ (m - n); n \<le> m; m < LENGTH('a::len) \<rbrakk>
-     \<Longrightarrow> x * 2 ^ n + (2 ^ n - 1) \<le> 2 ^ m - 1"
-  apply (simp only: add_diff_eq)
-  apply (subst mult_1[symmetric], subst distrib_right[symmetric])
-  apply (rule word_sub_mono)
-     apply (rule order_trans)
-      apply (rule word_mult_le_mono1)
-        apply (rule inc_le)
-        apply assumption
-       apply (subst word_neq_0_conv[symmetric])
-       apply (rule power_not_zero)
-       apply simp
-      apply (subst unat_power_lower, simp)+
-      apply (subst power_add[symmetric])
-      apply (rule power_strict_increasing)
-       apply simp
-      apply simp
-     apply (subst power_add[symmetric])
-     apply simp
-    apply simp
-   apply (rule word_sub_1_le)
-   apply (subst mult.commute)
-   apply (subst shiftl_t2n[symmetric])
-   apply (rule word_shift_nonzero)
-     apply (erule inc_le)
-    apply simp
-   apply (unat_arith)
-  apply (drule word_power_less_1)
-  apply simp
-  done
-
-lemma nasty_split_less:
-  "\<lbrakk>m \<le> n; n \<le> nm; nm < LENGTH('a::len); x < 2 ^ (nm - n)\<rbrakk>
-   \<Longrightarrow> (x :: 'a word) * 2 ^ n + (2 ^ m - 1) < 2 ^ nm"
-  apply (simp only: word_less_sub_le[symmetric])
-  apply (rule order_trans [OF _ nasty_split_lt])
-     apply (rule word_plus_mono_right)
-      apply (rule word_sub_mono)
-         apply (simp add: word_le_nat_alt)
-        apply simp
-       apply (simp add: word_sub_1_le[OF power_not_zero])
-      apply (simp add: word_sub_1_le[OF power_not_zero])
-     apply (rule is_aligned_no_wrap')
-      apply (rule is_aligned_mult_triv2)
-     apply simp
-    apply (erule order_le_less_trans, simp)
-   apply simp+
-  done
 
 lemma add_mult_in_mask_range:
   "\<lbrakk> is_aligned (base :: 'a :: len word) n; n < LENGTH('a); bits \<le> n; x < 2 ^ (n - bits) \<rbrakk>

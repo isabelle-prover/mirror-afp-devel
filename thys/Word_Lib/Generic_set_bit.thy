@@ -113,11 +113,12 @@ lemma set_bit_beyond:
   "size x \<le> n \<Longrightarrow> set_bit x n b = x" for x :: "'a :: len word"
   by (simp add: word_set_nth_iff)
 
-lemma one_bit_shiftl: "set_bit 0 n True = push_bit n (1 :: 'a :: len word)"
+lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
   apply (rule word_eqI)
   apply (auto simp add: word_size bit_simps)
   done
 
-lemmas one_bit_pow = trans [OF one_bit_shiftl push_bit_of_1]
+lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
+  by (simp add: one_bit_shiftl shiftl_def)
 
 end
