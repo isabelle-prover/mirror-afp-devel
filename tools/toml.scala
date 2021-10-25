@@ -166,7 +166,7 @@ object TOML
               result ++= "\n[["
               keys(path)
               result ++= "]]\n"
-              table(path, map, true, skip_header = true)
+              table(path, map, is_table_entry = true)
             case _ => error("Array can only contain either all tables or all non-tables")
           }
         }
@@ -174,18 +174,11 @@ object TOML
 
       /* table */
 
-      def table(path: List[Key], map: T, is_collapsible: Boolean, skip_header: Boolean = false): Unit =
+      def table(path: List[Key], map: T, is_table_entry: Boolean = false): Unit =
       {
         val (values, nodes) = map.toList.partition(kv => is_inline(kv._2))
 
-        lazy val list_of_table_collapse = map.forall {
-          case (_, list: List[V]) => !is_inline(list)
-          case  _ => false
-        }
-        val force_header = !is_collapsible && !list_of_table_collapse
-        val make_header = values.nonEmpty || force_header
-
-        if (make_header && !skip_header && path.nonEmpty) {
+        if (!is_table_entry && path.nonEmpty) {
           result ++= "\n["
           keys(path)
           result ++= "]\n"
@@ -193,31 +186,14 @@ object TOML
 
         values.foreach { case (k, v) => inline_values(List(k), v) }
 
-        @tailrec
-        def is_single_path(v: V): Boolean =
-        {
-          v match {
-            case T(map) => map.toList match {
-              case (_, v1) :: Nil => is_single_path(v1)
-              case _ => false
-            }
-            case list: List[V] => is_inline(list)
-            case _ => true
-          }
-        }
-
-        var collapse = is_collapsible || make_header
         nodes.foreach {
-          case (k, v @ T(map1)) =>
-            collapse = collapse && is_single_path(v)
-            if (collapse) inline_values(List(k), v)
-            else table(k :: path, map1, false)
+          case (k, T(map1)) => table(k :: path, map1)
           case (k, list: List[V]) => array(k :: path, list)
           case (_, v) => error("Invalid TOML: " + v.toString)
         }
       }
 
-      table(Nil, toml, false)
+      table(Nil, toml)
       result.toString
     }
   }
