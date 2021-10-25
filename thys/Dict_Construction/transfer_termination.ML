@@ -12,13 +12,6 @@ fun termination_tac ({R = new_R, ...}: Function.info) (old_info: Function.info) 
       (if warn then warning "Falling back to another termination proof" else ();
         Seq.empty)
 
-    (*copied from BNF_Comp, in turn copied from Envir.expand_term_free*)
-    fun expand_term_const defs =
-      let
-        val eqs = map ((fn ((x, U), u) => (x, (U, u))) o apfst dest_Const) defs;
-        val get = fn Const (x, _) => AList.lookup (op =) eqs x | _ => NONE;
-      in Envir.expand_term get end
-
     fun map_comp_bnf typ =
       let
         (* we start from a fresh lthy to avoid local hyps interfering with BNF *)
@@ -38,7 +31,7 @@ fun termination_tac ({R = new_R, ...}: Function.info) (old_info: Function.info) 
         val subst = map (Logic.dest_equals o Thm.prop_of) map_unfolds
         val t = BNF_Def.map_of_bnf bnf
       in
-        (live_As, expand_term_const subst t)
+        (live_As, Envir.expand_term_defs dest_Const (map (apfst dest_Const) subst) t)
       end
 
       val tac = case old_info of
