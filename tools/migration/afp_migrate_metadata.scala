@@ -78,8 +78,13 @@ object AFP_Migrate_Metadata
   def author_urls(name_urls: String, context: Context): (String, List[String]) =
   {
     val name = AFP.trim_mail(name_urls)
-    val urls = name_urls.stripPrefix(name).split(Array('<', '>')).toList.filterNot(_.isBlank)
-    (context.transform_name(name), urls)
+    val urls_string = name_urls.stripPrefix(name).trim
+    val transformed = context.transform_name(name)
+    if (urls_string == "<>") {
+      (transformed, List(""))
+    } else {
+      (transformed, urls_string.split(Array('<', '>')).toList.filterNot(_.isBlank))
+    }
   }
 
   def add_email(author: Author, address: String, context: Context): (Author, Email) =

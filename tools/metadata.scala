@@ -90,7 +90,9 @@ object Metadata
     }
 
     def affiliations(affiliations: List[Affiliation]): T =
-      TOML(affiliations.map(affil => affil.author -> TOML(affil)))
+      affiliations.groupBy(_.author).view.mapValues { author_affiliations =>
+        Map("affiliations" -> author_affiliations.map(TOML.apply).filter(_.nonEmpty))
+      }.toMap
 
     def emails(emails: List[Email]): T =
       TOML(emails.map(email => email.author -> email.id))
