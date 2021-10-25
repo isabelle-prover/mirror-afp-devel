@@ -4,7 +4,7 @@ package afp.migration
 import isabelle._
 
 import afp._
-import afp.Metadata._
+import afp.Metadata.{TOML => _, _}
 
 import java.text.Normalizer
 import java.time.LocalDate
@@ -164,7 +164,7 @@ object AFP_Migrate_Metadata
       short_name = entry.name,
       title = entry.title,
       authors = author_affiliations,
-      date = LocalDate.from(entry.date.rep).toString,
+      date = LocalDate.from(entry.date.rep),
       topics = entry.topics,
       `abstract` = entry.`abstract`,
       notifies = notify_emails,
@@ -200,18 +200,18 @@ object AFP_Migrate_Metadata
     for (entry <- metadata.entries) {
       val new_metadata = map_metadata(entry, context, progress)
 
-      val content = JSON.Format(Metadata.JSON(new_metadata))
+      val content = TOML.Format(Metadata.TOML(new_metadata))
 
-      val metadata_file = metadata_dir + Path.make(List("entries", entry.name + ".json"))
+      val metadata_file = metadata_dir + Path.make(List("entries", entry.name + ".toml"))
       if (!overwrite && metadata_file.file.exists()) error("Entry metadata file exists")
       File.write(metadata_file, content)
     }
 
     /* authors */
 
-    val authors = JSON.Format(Metadata.JSON.authors(context.authors))
+    val authors = TOML.Format(Metadata.TOML.authors(context.authors))
 
-    val authors_file = metadata_dir + Path.basic("authors.json")
+    val authors_file = metadata_dir + Path.basic("authors.toml")
     if (!overwrite && authors_file.file.exists()) error("Authors file exists")
     File.write(authors_file, authors)
   }

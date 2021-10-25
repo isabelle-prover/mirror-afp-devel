@@ -7,5 +7,6 @@ sources = \
   tools/afp_check_roots.scala \
   tools/afp_dependencies.scala \
   tools/afp_tool.scala \
-  tools/metadata.scala
+  tools/metadata.scala \
+  tools/toml.scala
 services = afp.Tools

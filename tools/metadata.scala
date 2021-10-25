@@ -3,6 +3,8 @@ package afp
 
 import isabelle._
 
+import java.time.LocalDate
+
 
 object Metadata
 {
@@ -35,7 +37,7 @@ object Metadata
     type ID = String
   }
 
-  type Date = String
+  type Date = LocalDate
   type Topic = String
   type License = String
   type Change_History = String
@@ -61,43 +63,47 @@ object Metadata
 
   /* json */
 
-  object JSON
+  object TOML
   {
-    def apply(author: Author): isabelle.JSON.Object.T =
-      isabelle.JSON.Object(
-        author.id -> isabelle.JSON.Object(
-          "name" -> author.name,
-          "emails" -> author.emails.map(_.address),
-          "homepages" -> author.homepages.map(_.url),
-        )
+    type T = afp.TOML.T
+
+    def apply(entries: (afp.TOML.Key, afp.TOML.V)*): T = afp.TOML.T(entries: _*)
+    def apply(entries: List[(afp.TOML.Key, afp.TOML.V)]): T = afp.TOML.T(entries)
+
+    def authors(authors: List[Author]): T =
+      TOML(authors.map(author => author.id -> TOML(author)))
+
+    private def apply(author: Author): T =
+      TOML(
+        "name" -> author.name,
+        "emails" -> author.emails.map(_.address),
+        "homepages" -> author.homepages.map(_.url)
       )
 
-    def apply(affiliation: Affiliation): isabelle.JSON.Object.T =
+    private def apply(affiliation: Affiliation): T =
+    {
       affiliation match {
-        case Unaffiliated(author) =>
-          isabelle.JSON.Object("id" -> author)
-        case Email(author, id, _) =>
-          isabelle.JSON.Object(
-            "id" -> author,
-            "affiliation" -> id
-          )
-        case Homepage(author, id, _) =>
-          isabelle.JSON.Object(
-            "id" -> author,
-            "affiliation" -> id
-          )
+        case Unaffiliated(_) => TOML()
+        case Email(_, id, _) => TOML("email" -> id)
+        case Homepage(_, id, _) => TOML("homepage" -> id)
       }
+    }
 
+    def affiliations(affiliations: List[Affiliation]): T =
+      TOML(affiliations.map(affil => affil.author -> TOML(affil)))
 
-    def apply(entry: Entry): isabelle.JSON.Object.T =
-      isabelle.JSON.Object(
+    def emails(emails: List[Email]): T =
+      TOML(emails.map(email => email.author -> email.id))
+
+    def apply(entry: Entry): T =
+      TOML(
         "title" -> entry.title,
-        "authors" -> entry.authors.map(JSON.apply),
-        "contributors" -> entry.contributors.map(_.author),
+        "authors" -> affiliations(entry.authors),
+        "contributors" -> affiliations(entry.contributors),
         "date" -> entry.date,
         "topics" -> entry.topics,
         "abstract" -> entry.`abstract`,
-        "notify" -> entry.notifies.map(JSON.apply),
+        "notify" -> emails(entry.notifies),
         "license" -> entry.license
       )
   }
