@@ -88,7 +88,7 @@ lemma of_nat32_0:
 
 lemma unat_mask_2_less_4:
   "unat (p && mask 2 :: word32) < 4"
-  by (rule unat_less_helper) (simp flip: take_bit_eq_mask add: take_bit_eq_mod word_mod_less_divisor)
+  by (rule unat_less_helper) (simp only: take_bit_eq_mod word_mod_less_divisor flip: take_bit_eq_mask, simp add: word_mod_less_divisor)
 
 lemmas unat_of_nat32' = unat_of_nat_eq[where 'a=32]
 lemmas unat_of_nat32 = unat_of_nat32'[unfolded word_bits_len_of]

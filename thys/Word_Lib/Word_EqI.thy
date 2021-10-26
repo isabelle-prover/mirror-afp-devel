@@ -9,6 +9,7 @@ section "Solving Word Equalities"
 theory Word_EqI
   imports
     More_Word
+    Aligned
     "HOL-Eisbach.Eisbach_Tools"
 begin
 
@@ -35,6 +36,8 @@ lemmas [word_eqI_simps] =
   neg_test_bit
   is_up
   is_down
+  is_aligned_nth
+  neg_mask_le_high_bits
 
 lemmas word_eqI_rule = word_eqI [rule_format]
 

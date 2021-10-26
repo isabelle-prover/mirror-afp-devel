@@ -10,6 +10,7 @@ theory IP_Address
     WordInterval
 begin
 
+ 
 section \<open>Modelling IP Adresses\<close>
   text\<open>An IP address is basically an unsigned integer.
     We model IP addresses of arbitrary lengths.

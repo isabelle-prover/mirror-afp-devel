@@ -11,6 +11,7 @@ section \<open>Dedicated operation for the most significant bit\<close>
 theory Most_significant_bit
   imports
     "HOL-Library.Word"
+    Bit_Shifts_Infix_Syntax
     More_Word
     More_Arithmetic
 begin
@@ -49,11 +50,11 @@ by(simp add: msb_int_def not_less)
 
 end
 
-lemma msb_shiftl [simp]: "msb (push_bit n (x :: int)) \<longleftrightarrow> msb x"
-by(simp add: msb_int_def)
+lemma msb_shiftl [simp]: "msb ((x :: int) << n) \<longleftrightarrow> msb x"
+  by (simp add: msb_int_def shiftl_def)
 
-lemma msb_shiftr [simp]: "msb (drop_bit r (x :: int)) \<longleftrightarrow> msb x"
-by(simp add: msb_int_def)
+lemma msb_shiftr [simp]: "msb ((x :: int) >> r) \<longleftrightarrow> msb x"
+  by (simp add: msb_int_def shiftr_def)
 
 lemma msb_0 [simp]: "msb (0 :: int) = False"
 by(simp add: msb_int_def)
@@ -116,9 +117,9 @@ lemma msb_nth: "msb w = bit w (LENGTH('a) - 1)"
 lemma word_msb_n1 [simp]: "msb (-1::'a::len word)"
   by (simp add: msb_word_eq not_le)
 
-lemma msb_shift: "msb w \<longleftrightarrow> drop_bit (LENGTH('a) - 1) w \<noteq> 0"
+lemma msb_shift: "msb w \<longleftrightarrow> w >> LENGTH('a) - 1 \<noteq> 0"
   for w :: "'a::len word"
-  by (simp add: msb_word_eq bit_iff_odd_drop_bit drop_bit_eq_zero_iff_not_bit_last)
+  by (simp add: drop_bit_eq_zero_iff_not_bit_last msb_word_eq shiftr_def)
 
 lemmas word_ops_msb = msb1 [unfolded msb_nth [symmetric, unfolded One_nat_def]]
 

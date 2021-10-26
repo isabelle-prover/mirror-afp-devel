@@ -1,5 +1,7 @@
 theory Singleton_Bit_Shifts
-  imports "HOL-Library.Word"
+  imports
+    "HOL-Library.Word"
+    Bit_Shifts_Infix_Syntax
 begin
 
 definition shiftl1 :: \<open>'a::len word \<Rightarrow> 'a word\<close>
@@ -134,5 +136,13 @@ lemma le_shiftr1:
 lemma le_shiftr1':
   "\<lbrakk> shiftr1 u \<le> shiftr1 v ; shiftr1 u \<noteq> shiftr1 v \<rbrakk> \<Longrightarrow> u \<le> v"
   by (meson dual_order.antisym le_cases le_shiftr1)
+
+lemma sshiftr_eq_funpow_sshiftr1:
+  \<open>w >>> n = (sshiftr1 ^^ n) w\<close>
+  apply (rule sym)
+  apply (simp add: sshiftr1_def sshiftr_def)
+  apply (induction n)
+   apply simp_all
+  done
 
 end
