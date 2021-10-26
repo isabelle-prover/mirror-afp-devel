@@ -10,30 +10,6 @@ theory Signed_Division_Word
   imports "HOL-Library.Signed_Division" "HOL-Library.Word"
 begin
 
-lemma minus_sdiv_eq [simp]:
-  \<open>- k sdiv l = - (k sdiv l)\<close> for k l :: int
-  by (simp add: signed_divide_int_def)
-
-lemma sdiv_minus_eq [simp]:
-  \<open>k sdiv - l = - (k sdiv l)\<close> for k l :: int
-  by (simp add: signed_divide_int_def)
-
-lemma sdiv_int_numeral_numeral [simp]:
-  \<open>numeral m sdiv numeral n = numeral m div (numeral n :: int)\<close>
-  by (simp add: signed_divide_int_def)
-
-lemma minus_smod_eq [simp]:
-  \<open>- k smod l = - (k smod l)\<close> for k l :: int
-  by (simp add: smod_int_alt_def)
-
-lemma smod_minus_eq [simp]:
-  \<open>k smod - l = k smod l\<close> for k l :: int
-  by (simp add: smod_int_alt_def)
-
-lemma smod_int_numeral_numeral [simp]:
-  \<open>numeral m smod numeral n = numeral m mod (numeral n :: int)\<close>
-  by (simp add: smod_int_alt_def) 
-
 instantiation word :: (len) signed_division
 begin
 

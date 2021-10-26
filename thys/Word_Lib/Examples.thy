@@ -125,7 +125,7 @@ lemma
 
 lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: nat) = 1\<close>
-  by simp
+  by (simp flip: add_2_eq_Suc)
 
 lemma
   \<open>take_bit 3 (Suc 0) = 1\<close>
@@ -364,7 +364,7 @@ lemma
 
 lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: int) = 1\<close>
-  by simp
+  by (simp flip: add_2_eq_Suc)
 
 lemma
   \<open>take_bit 3 (- 1705 :: int) = 7\<close>
@@ -372,7 +372,7 @@ lemma
 
 lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (- 1705 :: int) = 7\<close>
-  by simp
+  by (simp flip: add_2_eq_Suc)
 
 lemma
   \<open>take_bit 3 (1 :: int) = 1\<close>
@@ -791,7 +791,7 @@ lemma
 
 lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (1705 :: 16 word) = 1\<close>
-  by simp
+  by (simp flip: add_2_eq_Suc)
 
 lemma
   \<open>take_bit 3 (- 1705 :: 16 word) = 7\<close>
@@ -799,7 +799,7 @@ lemma
 
 lemma
   \<open>take_bit (Suc (Suc (Suc 0))) (- 1705 :: 16 word) = 7\<close>
-  by simp
+  by (simp flip: add_2_eq_Suc)
 
 lemma
   \<open>take_bit 3 (1 :: 16 word) = 1\<close>
