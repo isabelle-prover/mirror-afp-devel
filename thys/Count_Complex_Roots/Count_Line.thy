@@ -347,6 +347,11 @@ next
     by auto
 qed
 
+lemma changes_itv_smods_ext_geq_0:
+  assumes "a<b" "poly p a\<noteq>0" "poly p b \<noteq>0"
+  shows "changes_itv_smods_ext a b p (pderiv p) \<ge>0"
+  using sturm_ext_interval[OF assms] by auto
+
 subsection \<open>Some useful conformal/@{term bij_betw} properties\<close>
 
 lemma bij_betw_plane_ball:"bij_betw (\<lambda>x. (\<i>-x)/(\<i>+x)) {x. Im x>0} (ball 0 1)"
@@ -552,69 +557,6 @@ proof -
   ultimately show "card (proots_within p (sphere z0 r)) = card (proots_within (p \<circ>\<^sub>p q) (sphere 0 1))" 
     by blast
 qed
-  
-subsection \<open>Combining two real polynomials into a complex one\<close>  
-
-definition cpoly_of:: "real poly \<Rightarrow> real poly \<Rightarrow> complex poly" where
-  "cpoly_of pR pI = map_poly of_real pR + smult \<i> (map_poly of_real pI)"
-
-lemma cpoly_of_eq_0_iff[iff]:
-  "cpoly_of pR pI = 0 \<longleftrightarrow> pR = 0 \<and> pI = 0"
-proof -
-  have "pR = 0 \<and> pI = 0" when "cpoly_of pR pI = 0"
-  proof -
-    have "complex_of_real (coeff pR n) + \<i> * complex_of_real (coeff pI n) = 0" for n
-      using that unfolding poly_eq_iff cpoly_of_def by (auto simp:coeff_map_poly)
-    then have "coeff pR n = 0 \<and> coeff pI n = 0" for n
-      by (metis Complex_eq Im_complex_of_real Re_complex_of_real complex.sel(1) complex.sel(2) 
-          of_real_0)
-    then show ?thesis unfolding poly_eq_iff by auto 
-  qed
-  then show ?thesis by (auto simp:cpoly_of_def)
-qed
-
-lemma cpoly_of_decompose:
-    "p = cpoly_of (map_poly Re p) (map_poly Im p)"
-  unfolding cpoly_of_def 
-  apply (induct p)
-  by (auto simp add:map_poly_pCons map_poly_map_poly complex_eq)
-
-lemma cpoly_of_dist_right:
-    "cpoly_of (pR*g) (pI*g) = cpoly_of pR pI * (map_poly of_real g)"
-  unfolding cpoly_of_def by (simp add: distrib_right)
-  
-lemma poly_cpoly_of_real:
-    "poly (cpoly_of pR pI) (of_real x) = Complex (poly pR x) (poly pI x)"
-  unfolding cpoly_of_def by (simp add: Complex_eq of_real_poly_map_poly)
-    
-lemma poly_cpoly_of_real_iff:
-  shows "poly (cpoly_of pR pI) (of_real t) =0 \<longleftrightarrow> poly pR t = 0 \<and> poly pI t=0 "  
-  unfolding  poly_cpoly_of_real using Complex_eq_0 by blast  
-
-lemma order_cpoly_gcd_eq:
-  assumes "pR\<noteq>0 \<or> pI\<noteq>0"
-  shows "order t (cpoly_of pR pI) = order t (gcd pR pI)"
-proof -
-  define g where "g = gcd pR pI"
-  have [simp]:"g\<noteq>0" unfolding g_def using assms by auto
-  obtain pr pi where pri: "pR = pr * g" "pI = pi * g" "coprime pr pi"
-    unfolding g_def using assms(1) gcd_coprime_exists \<open>g \<noteq> 0\<close> g_def by blast
-  then have "pr \<noteq>0 \<or> pi \<noteq>0" using assms mult_zero_left by blast
-
-  have "order t (cpoly_of pR pI) = order t (cpoly_of pr pi * (map_poly of_real g))"
-    unfolding pri cpoly_of_dist_right by simp
-  also have "... = order t (cpoly_of pr pi) + order t g" 
-    apply (subst order_mult)
-    using \<open>pr \<noteq>0 \<or> pi \<noteq>0\<close> by (auto simp:map_poly_order_of_real)
-  also have "... = order t g"
-  proof -
-    have "poly (cpoly_of pr pi) t \<noteq>0" unfolding poly_cpoly_of_real_iff
-      using \<open>coprime pr pi\<close> coprime_poly_0 by blast
-    then have "order t (cpoly_of pr pi) = 0" by (simp add: order_0I)
-    then show ?thesis by auto
-  qed
-  finally show ?thesis unfolding g_def .
-qed
 
 subsection \<open>Number of roots on a (bounded or unbounded) segment\<close>
 
@@ -780,6 +722,44 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma proots_count_gcd_eq:
+  fixes p::"complex poly" and st tt::complex
+    and g::"real poly"
+  defines "pc \<equiv> pcompose p [:st, tt - st:]"
+  defines "pR \<equiv> map_poly Re pc" and "pI \<equiv> map_poly Im pc"
+  defines "g  \<equiv> gcd pR pI"
+  assumes "st\<noteq>tt" "p\<noteq>0"
+      and s1_def:"s1 = (\<lambda>x. poly [:st, tt - st:] (of_real x)) ` s2"
+    shows "proots_count p s1 = proots_count g s2"
+proof -
+  have [simp]: "g\<noteq>0" "pc\<noteq>0"
+  proof -
+    show "pc\<noteq>0" using assms pc_def pcompose_eq_0 
+      by (metis cancel_comm_monoid_add_class.diff_cancel degree_pCons_eq_if 
+          diff_eq_diff_eq less_nat_zero_code pCons_eq_0_iff zero_less_Suc)
+    then have "pR\<noteq>0 \<or> pI\<noteq>0" unfolding pR_def pI_def by (metis cpoly_of_decompose map_poly_0)
+    then show "g\<noteq>0" unfolding g_def by simp
+  qed
+  have order_eq:"order t g = order t pc" for t
+    apply (subst order_cpoly_gcd_eq[of pR pI,folded g_def,symmetric])
+    subgoal using \<open>g\<noteq>0\<close> unfolding g_def by simp
+    subgoal unfolding pR_def pI_def by (simp add:cpoly_of_decompose[symmetric])
+    done
+
+  have "proots_count g s2 = proots_count (map_poly complex_of_real g) 
+            (of_real ` s2)"
+    apply (subst proots_count_of_real)
+    by auto
+  also have "... = proots_count pc (of_real ` s2)" 
+    apply (rule proots_count_cong)
+    by (auto simp add: map_poly_order_of_real order_eq)
+  also have "... = proots_count p s1"
+    unfolding pc_def s1_def
+    apply (subst proots_pcompose)
+    using \<open>st\<noteq>tt\<close> \<open>p\<noteq>0\<close> by (simp_all add:image_image) 
+  finally show ?thesis by simp
+qed
+
 lemma proots_unbounded_line:
   assumes "st\<noteq>tt" "p\<noteq>0"
   shows "(proots_count p (unbounded_line st tt)) = 
@@ -796,7 +776,9 @@ proof -
       "g  = gcd pR pI"
   have [simp]: "g\<noteq>0" "pc\<noteq>0"
   proof -
-    show "pc\<noteq>0" using assms(1) assms(2) pc_def pcompose_eq_0 by fastforce
+    show "pc\<noteq>0" using assms(1) assms(2) pc_def pcompose_eq_0 
+      by (metis cancel_comm_monoid_add_class.diff_cancel degree_pCons_eq_if 
+          diff_eq_diff_eq less_nat_zero_code pCons_eq_0_iff zero_less_Suc)
     then have "pR\<noteq>0 \<or> pI\<noteq>0" unfolding pR_def pI_def by (metis cpoly_of_decompose map_poly_0)
     then show "g\<noteq>0" unfolding g_def by simp
   qed
@@ -964,6 +946,112 @@ next
       by blast
   qed
   finally show ?thesis by simp
+qed
+
+subsection \<open>Number of roots on a bounded open segment\<close>
+
+definition proots_line:: "complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
+  "proots_line p st tt = proots_count p (open_segment st tt)"
+
+lemma proots_line_commute:
+  "proots_line p st tt = proots_line p tt st"
+  unfolding proots_line_def by (simp add: open_segment_commute)  
+
+lemma proots_line_smods:
+  assumes "poly p st \<noteq>0" "poly p tt \<noteq> 0" "st\<noteq>tt"
+  shows "proots_line p st tt = 
+                        (let pc = pcompose p [:st, tt - st:];
+                             pR = map_poly Re pc;
+                             pI = map_poly Im pc;
+                             g  = gcd pR pI
+                         in nat (changes_itv_smods_ext 0 1 g (pderiv g)))"
+  (is "_=?R")
+proof -
+  have "p\<noteq>0" using assms(2) poly_0 by blast
+
+  define pc pR pI g where 
+      "pc = pcompose p [:st, tt-st:]" and
+      "pR = map_poly Re pc" and
+      "pI = map_poly Im pc" and
+      "g  = gcd pR pI"
+  have [simp]: "g\<noteq>0" "pc\<noteq>0"
+  proof -
+    show "pc\<noteq>0" 
+      by (metis assms(1) coeff_pCons_0 pCons_0_0 pc_def pcompose_coeff_0)
+    then have "pR\<noteq>0 \<or> pI\<noteq>0" unfolding pR_def pI_def 
+      by (metis cpoly_of_decompose map_poly_0)
+    then show "g\<noteq>0" unfolding g_def by simp
+  qed
+  have order_eq:"order t g = order t pc" for t
+    apply (subst order_cpoly_gcd_eq[of pR pI,folded g_def,symmetric])
+    subgoal using \<open>g\<noteq>0\<close> unfolding g_def by simp
+    subgoal unfolding pR_def pI_def by (simp add:cpoly_of_decompose[symmetric])
+    done
+  have poly_iff:"poly g t=0 \<longleftrightarrow> poly pc t =0" for t
+    using order_eq by (simp add: order_root)
+  have "poly g 0 \<noteq> 0" "poly g 1 \<noteq>0"
+    unfolding poly_iff pc_def
+    using assms by (simp_all add:poly_pcompose)
+
+
+  have "?R = changes_itv_smods_ext 0 1 g (pderiv g)"
+    unfolding Let_def
+    apply (fold pc_def g_def pI_def pR_def)
+    using assms changes_itv_smods_ext_geq_0[OF _ \<open>poly g  0\<noteq>0\<close> \<open>poly g 1\<noteq>0\<close>]
+    by auto
+  also have "... = int (proots_count g {x. 0 < x \<and> x < 1})"
+    apply (rule sturm_ext_interval[symmetric])
+    by simp fact+
+  also have "... =  int (proots_count p (open_segment st tt))"
+  proof -
+    define f where "f = (\<lambda>x. poly [:st, tt - st:] (complex_of_real x))"
+    have "x\<in>f ` {x. 0 < x \<and> x < 1}"  if "x\<in>open_segment st tt" for x
+    proof -
+      obtain u where u:"u>0" "u < 1" "x = (1 - u) *\<^sub>R st + u *\<^sub>R tt"
+        using \<open>x\<in>open_segment st tt\<close> unfolding in_segment by auto
+      show ?thesis 
+        apply (rule rev_image_eqI[where x=u])
+        using u unfolding f_def 
+        by (auto simp:algebra_simps scaleR_conv_of_real)
+    qed
+    moreover have "x\<in>open_segment st tt" if "x\<in>f ` {x. 0 < x \<and> x < 1}" for x
+      using that \<open>st\<noteq>tt\<close> unfolding in_segment f_def 
+      by (auto simp:scaleR_conv_of_real algebra_simps)
+    ultimately have "open_segment st tt = f ` {x. 0 < x \<and> x < 1}" 
+      by auto
+    then have "proots_count p (open_segment st tt) 
+              = proots_count g {x. 0 < x \<and> x < 1}"
+      using proots_count_gcd_eq[OF \<open>st\<noteq>tt\<close> \<open>p\<noteq>0\<close>,
+              folded pc_def pR_def pI_def g_def] unfolding f_def
+      by auto
+    then show ?thesis by auto
+  qed
+  also have "... =proots_line p st tt"
+    unfolding proots_line_def by simp
+  finally show ?thesis by simp
+qed
+
+
+lemma proots_line_code[code]: 
+    "proots_line p st tt = 
+        (if poly p st \<noteq>0 \<and> poly p tt \<noteq> 0 then 
+            (if st\<noteq>tt then 
+                (let pc = pcompose p [:st, tt - st:];
+                     pR = map_poly Re pc;
+                     pI = map_poly Im pc;
+                     g  = gcd pR pI
+                 in nat (changes_itv_smods_ext 0 1 g (pderiv g)))
+            else 0)
+   else  Code.abort (STR ''prootsline does not handle vanishing endpoints for now'') 
+                      (\<lambda>_. proots_line p st tt))" (is "?L = ?R")
+proof (cases "poly p st \<noteq>0 \<and> poly p tt \<noteq> 0 \<and> st\<noteq>tt")
+  case False
+  moreover have ?thesis if "st=tt" "p\<noteq>0"
+    using that unfolding proots_line_def by auto
+  ultimately show ?thesis by fastforce
+next
+  case True
+  then show ?thesis using proots_line_smods by auto
 qed
 
 end

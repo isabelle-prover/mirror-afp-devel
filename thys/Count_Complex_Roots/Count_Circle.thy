@@ -33,7 +33,8 @@ proof (cases "p=0 \<or> r\<le>0")
   also have "... = proots_upper (fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:])"
     unfolding proots_upper_def
     apply (rule proots_ball_plane_eq[THEN arg_cong])
-    using False pcompose_eq_0[of p "[:z0, of_real r:]"] by auto
+    using False pcompose_eq_0[of p "[:z0, of_real r:]"] 
+    by (simp add: pcompose_eq_0)
   finally show ?thesis using False by auto
 qed (auto simp:proots_ball_def ball_empty)
 
@@ -66,7 +67,7 @@ next
   also have "... = proots_upper_card (fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:])"
     unfolding proots_upper_card_def
     apply (rule proots_card_ball_plane_eq[THEN arg_cong])
-    using False pcompose_eq_0[of p "[:z0, of_real r:]"] by auto
+    using False pcompose_eq_0[of p "[:z0, of_real r:]"] by (simp add: pcompose_eq_0)
   finally show ?thesis using False by auto
 qed
 
@@ -116,7 +117,8 @@ proof -
     define pp where "pp = p \<circ>\<^sub>p [:z0, of_real r:]" 
     define ppp where "ppp=fcompose pp [:\<i>, - 1:] [:\<i>, 1:]"
 
-    have "pp\<noteq>0" unfolding pp_def using that pcompose_eq_0 by fastforce
+    have "pp\<noteq>0" unfolding pp_def using that pcompose_eq_0 
+      by force
 
     have "proots_sphere_card p z0 r = card (proots_within pp (sphere 0 1))"
       unfolding proots_sphere_card_def pp_def

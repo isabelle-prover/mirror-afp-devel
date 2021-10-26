@@ -1425,7 +1425,7 @@ next
   case (root a p)
   then obtain q r where pqr:"p = q * r" and leadq:"lead_coeff q=1" 
                     and qball:"\<forall>a\<in>proots q. P a" and rball:"\<forall>x\<in>proots r. \<not> P x" 
-    using mult_zero_right by blast
+    using mult_zero_right by metis
   have ?case when "P a"
     apply (rule_tac x="[:- a, 1:] * q" in exI)
     apply (rule_tac x=r in exI)
@@ -1788,7 +1788,10 @@ proof -
       also have "... = order x (([:- c, 1:] * p) \<circ>\<^sub>p q)" 
         unfolding pcompose_mult
         apply (subst order_mult)
-        subgoal unfolding q_def using assms(1) pcompose_eq_0 root.prems by fastforce  
+        subgoal 
+          unfolding q_def using assms(1) pcompose_eq_0 root.prems 
+          by (metis One_nat_def degree_pCons_eq_if mult_eq_0_iff
+              one_neq_zero pCons_eq_0_iff right_minus_eq) 
         by simp
       finally show ?case .
     qed

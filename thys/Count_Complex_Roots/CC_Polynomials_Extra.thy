@@ -1,14 +1,45 @@
 (*
     Author:     Wenda Li <wl302@cam.ac.uk / liwenda1990@hotmail.com>
 *)
-section \<open>More useful lemmas related polynomials\<close>
+section \<open>Extra lemmas related to polynomials\<close>
 
 theory CC_Polynomials_Extra imports 
   Winding_Number_Eval.Missing_Algebraic
   Winding_Number_Eval.Missing_Transcendental
   Sturm_Tarski.PolyMisc
   Budan_Fourier.BF_Misc
+  "Polynomial_Interpolation.Ring_Hom_Poly" (*Move to the standard distribution?*)
 begin
+
+subsection \<open>Misc\<close>
+
+lemma poly_linepath_comp': 
+  fixes a::"'a::{real_normed_vector,comm_semiring_0,real_algebra_1}"
+  shows "poly p (linepath a b t) = poly (p \<circ>\<^sub>p [:a, b-a:]) (of_real t)"
+  by (auto simp add:poly_pcompose linepath_def scaleR_conv_of_real algebra_simps)
+
+lemma path_poly_comp[intro]:
+  fixes p::"'a::real_normed_field poly"
+  shows "path g \<Longrightarrow> path (poly p o g)"
+  apply (elim path_continuous_image)
+  by (auto intro:continuous_intros)
+
+lemma cindex_poly_noroot:
+  assumes "a<b" "\<forall>x. a<x \<and> x<b \<longrightarrow> poly p x\<noteq>0"
+  shows "cindex_poly a b q p = 0" 
+  unfolding cindex_poly_def
+  apply (rule sum.neutral)
+  using assms by (auto intro:jump_poly_not_root)
+
+subsection \<open>More polynomial homomorphism interpretations\<close>
+
+interpretation of_real_poly_hom:map_poly_inj_idom_hom of_real ..
+
+interpretation Re_poly_hom:map_poly_comm_monoid_add_hom Re 
+  by unfold_locales simp_all
+
+interpretation Im_poly_hom:map_poly_comm_monoid_add_hom Im
+  by unfold_locales simp_all
 
 subsection \<open>More about @{term order}\<close>
 
@@ -388,5 +419,93 @@ proof -
   qed
   finally show ?thesis .
 qed
+
+subsection \<open>Combining two real polynomials into a complex one\<close>  
+
+definition cpoly_of:: "real poly \<Rightarrow> real poly \<Rightarrow> complex poly" where
+  "cpoly_of pR pI = map_poly of_real pR + smult \<i> (map_poly of_real pI)"
+
+lemma cpoly_of_eq_0_iff[iff]:
+  "cpoly_of pR pI = 0 \<longleftrightarrow> pR = 0 \<and> pI = 0"
+proof -
+  have "pR = 0 \<and> pI = 0" when "cpoly_of pR pI = 0"
+  proof -
+    have "complex_of_real (coeff pR n) + \<i> * complex_of_real (coeff pI n) = 0" for n
+      using that unfolding poly_eq_iff cpoly_of_def by (auto simp:coeff_map_poly)
+    then have "coeff pR n = 0 \<and> coeff pI n = 0" for n
+      by (metis Complex_eq Im_complex_of_real Re_complex_of_real complex.sel(1) complex.sel(2) 
+          of_real_0)
+    then show ?thesis unfolding poly_eq_iff by auto 
+  qed
+  then show ?thesis by (auto simp:cpoly_of_def)
+qed
+
+lemma cpoly_of_decompose:
+    "p = cpoly_of (map_poly Re p) (map_poly Im p)"
+  unfolding cpoly_of_def 
+  apply (induct p)
+  by (auto simp add:map_poly_pCons map_poly_map_poly complex_eq)
+
+lemma cpoly_of_dist_right:
+    "cpoly_of (pR*g) (pI*g) = cpoly_of pR pI * (map_poly of_real g)"
+  unfolding cpoly_of_def by (simp add: distrib_right)
+  
+lemma poly_cpoly_of_real:
+    "poly (cpoly_of pR pI) (of_real x) = Complex (poly pR x) (poly pI x)"
+  unfolding cpoly_of_def by (simp add: Complex_eq)
+    
+lemma poly_cpoly_of_real_iff:
+  shows "poly (cpoly_of pR pI) (of_real t) =0 \<longleftrightarrow> poly pR t = 0 \<and> poly pI t=0 "  
+  unfolding  poly_cpoly_of_real using Complex_eq_0 by blast  
+
+lemma order_cpoly_gcd_eq:
+  assumes "pR\<noteq>0 \<or> pI\<noteq>0"
+  shows "order t (cpoly_of pR pI) = order t (gcd pR pI)"
+proof -
+  define g where "g = gcd pR pI"
+  have [simp]:"g\<noteq>0" unfolding g_def using assms by auto
+  obtain pr pi where pri: "pR = pr * g" "pI = pi * g" "coprime pr pi"
+    unfolding g_def using assms(1) gcd_coprime_exists \<open>g \<noteq> 0\<close> g_def by blast
+  then have "pr \<noteq>0 \<or> pi \<noteq>0" using assms mult_zero_left by blast
+
+  have "order t (cpoly_of pR pI) = order t (cpoly_of pr pi * (map_poly of_real g))"
+    unfolding pri cpoly_of_dist_right by simp
+  also have "... = order t (cpoly_of pr pi) + order t g" 
+    apply (subst order_mult)
+    using \<open>pr \<noteq>0 \<or> pi \<noteq>0\<close> by (auto simp:map_poly_order_of_real)
+  also have "... = order t g"
+  proof -
+    have "poly (cpoly_of pr pi) t \<noteq>0" unfolding poly_cpoly_of_real_iff
+      using \<open>coprime pr pi\<close> coprime_poly_0 by blast
+    then have "order t (cpoly_of pr pi) = 0" by (simp add: order_0I)
+    then show ?thesis by auto
+  qed
+  finally show ?thesis unfolding g_def .
+qed
+
+lemma cpoly_of_times:
+  shows "cpoly_of pR pI * cpoly_of qR qI = cpoly_of (pR * qR - pI * qI) (pI*qR+pR*qI)"
+proof -
+  define PR PI where "PR = map_poly complex_of_real pR"
+                 and "PI = map_poly complex_of_real pI"
+  define QR QI where "QR = map_poly complex_of_real qR"
+                 and "QI = map_poly complex_of_real qI"
+  show ?thesis 
+    unfolding cpoly_of_def  
+    by (simp add:algebra_simps of_real_poly_hom.hom_minus smult_add_right 
+          flip: PR_def PI_def QR_def QI_def)
+qed
+
+lemma map_poly_Re_cpoly[simp]:
+  "map_poly Re (cpoly_of pR pI) = pR"
+  unfolding cpoly_of_def smult_map_poly
+  apply (simp add:map_poly_map_poly Re_poly_hom.hom_add comp_def)
+  by (metis coeff_map_poly leading_coeff_0_iff)
+
+lemma map_poly_Im_cpoly[simp]:
+  "map_poly Im (cpoly_of pR pI) = pI"
+  unfolding cpoly_of_def smult_map_poly
+  apply (simp add:map_poly_map_poly Im_poly_hom.hom_add comp_def)
+  by (metis coeff_map_poly leading_coeff_0_iff)
 
 end
