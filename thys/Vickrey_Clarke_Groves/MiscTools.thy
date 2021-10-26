@@ -21,12 +21,14 @@ theory MiscTools
 
 imports 
 "HOL-Library.Discrete"
-RelationProperties
 "HOL-Library.Code_Target_Nat"
 "HOL-Library.Indicator_Function"
 Argmax
+RelationProperties
 
 begin
+
+lemmas restrict_def = RelationOperators.restrict_def
 
 subsection \<open>Facts and notations about relations, sets and functions.\<close>
 
@@ -121,7 +123,7 @@ lemma lm005:
 lemma graphIntersection: 
   "graph (X \<inter> Y) f \<subseteq> ((graph X f) || Y)" 
   unfolding graph_def 
-  using Int_iff mem_Collect_eq restrict_ext subrelI by auto
+  using Int_iff mem_Collect_eq RelationOperators.restrict_ext subrelI by auto
 
 definition runiqs 
   where "runiqs={f. runiq f}"
@@ -179,9 +181,8 @@ lemma lm014:
   using rightUniqueTrivialCartes trivial_singleton runiq_paste2 by metis
 
 lemma lm015: 
-  "(P || (X \<inter> Y)) \<subseteq> (P||X)    &    P outside (X \<union> Y) \<subseteq> P outside X" 
-  using Outside_def restrict_def Sigma_Un_distrib1 Un_upper1 inf_mono Diff_mono subset_refl 
-  by (metis (lifting) Sigma_mono inf_le1)
+  "(P || (X \<inter> Y)) \<subseteq> (P||X)    &    P outside (X \<union> Y) \<subseteq> P outside X"
+  by (metis doubleRestriction le_sup_iff outsideOutside outside_union_restrict subset_refl) 
 
 lemma lm016: 
   "P || X \<subseteq> (P||(X \<union> Y))       &    P outside X \<subseteq> P outside (X \<inter> Y)" 
@@ -386,7 +387,7 @@ lemma lm040:
 
 lemma lm041: 
   "P outside X    =    P || ((Domain P) - X)" 
-  using Outside_def restrict_def  lm037 by fast
+  using Outside_def restrict_def lm037 by fast
 
 lemma lm042: 
   "R``(X-Y) = (R||X)``(X-Y)" 
