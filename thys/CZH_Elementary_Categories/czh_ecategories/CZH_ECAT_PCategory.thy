@@ -1415,7 +1415,7 @@ lemma cat_prod_2_CId_app[cat_prod_cs_simps]:
   assumes "[a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
   shows "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = [\<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>]\<^sub>\<circ>"
 proof-
-  have "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr> \<lparr>a, b\<rparr>\<^sub>\<bullet> = 
+  have "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = 
     (\<lambda>i\<in>\<^sub>\<circ>2\<^sub>\<nat>. (if i = 0 then \<AA> else \<BB>)\<lparr>CId\<rparr>\<lparr>[a, b]\<^sub>\<circ>\<lparr>i\<rparr>\<rparr>)"
     by 
       (
@@ -3631,15 +3631,15 @@ proof-
     qed
   qed (auto simp: cf_array_components cat_cs_intros)
 
-  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr> \<lparr>b, c\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b, c\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     if "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for b c
     using that assms(1,2,3)
     by (cs_concl cs_simp: cat_cs_simps assms(6) cs_intro: cat_prod_cs_intros)
-  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr> \<lparr>b, c\<rparr>\<^sub>\<bullet> = \<GG> b\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>"
+  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b, c\<rparr>\<^sub>\<bullet> = \<GG> b\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>"
     if "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for b c 
     using that assms(1,2,3)
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
-  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr> \<lparr>f, \<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr>\<lparr>f, \<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
     if f: "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" and c: "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for a b f c
   proof-
     from f have "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
@@ -3648,7 +3648,7 @@ proof-
       by (cs_concl cs_simp: cat_cs_simps assms(6) cs_intro: cat_cs_intros)
   qed
 
-  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr> \<lparr>\<BB>\<lparr>CId\<rparr>\<lparr>c\<rparr>, g\<rparr>\<^sub>\<bullet> = \<GG> c\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
+  show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr>\<lparr>\<BB>\<lparr>CId\<rparr>\<lparr>c\<rparr>, g\<rparr>\<^sub>\<bullet> = \<GG> c\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
     if g: "g : a \<mapsto>\<^bsub>\<CC>\<^esub> b" and c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" for a b g c
   proof-
     from g have "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
@@ -5293,14 +5293,14 @@ proof-
               cs_concl 
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             ) 
-        also from assms(1-4) g f have "\<dots> = \<SS>'\<lparr>ArrMap\<rparr> \<lparr>g, f\<rparr>\<^sub>\<bullet>"
+        also from assms(1-4) g f have "\<dots> = \<SS>'\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
           by 
             (
               cs_concl 
                 cs_simp: cat_cs_simps cat_prod_cs_simps
                 cs_intro: cat_cs_intros cat_prod_cs_intros
             )
-        finally have \<SS>'_gf: "\<SS>'\<lparr>ArrMap\<rparr> \<lparr>g, f\<rparr>\<^sub>\<bullet> =
+        finally have \<SS>'_gf: "\<SS>'\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet> =
           \<SS>'\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>a'\<rparr>, f\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<SS>'\<lparr>ArrMap\<rparr>\<lparr>g, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rparr>\<^sub>\<bullet>"
           by simp
         from assms(1-4) g f have 
@@ -5311,7 +5311,7 @@ proof-
               cs_concl 
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             ) 
-        also from assms(1-4) g f have "\<dots> = \<SS>\<lparr>ArrMap\<rparr> \<lparr>g, f\<rparr>\<^sub>\<bullet>"
+        also from assms(1-4) g f have "\<dots> = \<SS>\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
           by 
             (
               cs_concl 

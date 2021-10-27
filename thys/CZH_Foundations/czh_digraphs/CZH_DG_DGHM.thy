@@ -1073,6 +1073,36 @@ lemma dghm_const_is_dghm'[dg_cs_intros]:
   using assms(1-3) unfolding assms(4,5) by (rule dghm_const_is_dghm)
 
 
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_dghm) dghm_dghm_comp_dghm_const[dg_cs_simps]:
+  assumes "digraph \<alpha> \<CC>" and "f : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
+  shows "dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> = dghm_const \<AA> \<CC> a f"
+proof(rule dghm_eqI)
+  interpret \<CC>: digraph \<alpha> \<CC> by (rule assms(1))
+  from assms(2) show "dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_intro: dg_cs_intros)
+  with assms(2) have ObjMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> ((dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: dg_cs_simps)+
+  from assms(2) show "dghm_const \<AA> \<CC> a f : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_intro: dg_cs_intros)
+  with assms(2) have ObjMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (dghm_const \<AA> \<CC> a f\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    and ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (dghm_const \<AA> \<CC> a f\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: dg_cs_simps)+
+  show "(dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr> = dghm_const \<AA> \<CC> a f\<lparr>ObjMap\<rparr>"
+    by (rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+      (use assms(2) in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
+  show "(dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> = dghm_const \<AA> \<CC> a f\<lparr>ArrMap\<rparr>"
+    by (rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+      (use assms(2) in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
+qed simp_all
+
+lemmas [dg_cs_simps] = is_dghm.dghm_dghm_comp_dghm_const
+
+
 
 subsection\<open>Faithful digraph homomorphism\<close>
 

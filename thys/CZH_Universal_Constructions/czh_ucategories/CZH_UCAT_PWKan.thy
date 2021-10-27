@@ -2286,15 +2286,12 @@ qed
 
 
 subsection\<open>
-The limit of \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> exists for every 
-pointwise right Kan extension of \<open>\<TT>\<close> along \<open>\<KK>\<close>
+The existence of a canonical limit or a canonical colimit for the
+pointwise Kan extensions
 \<close>
 
 lemma (in is_cat_pw_rKe) cat_pw_rKe_ex_cat_limit:
-  \<comment>\<open>Based on the elements of Chapter X-5 in \cite{mac_lane_categories_2010}.
-    The size conditions for the functors \<open>\<KK>\<close> and \<open>\<TT>\<close> are related to the
-    choice of the definition of the limit in this work (by definition,
-    all limits are small).\<close>
+  \<comment>\<open>Based on the elements of Chapter X-5 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
@@ -3366,9 +3363,73 @@ proof-
 
 qed
 
+lemma (in is_cat_pw_lKe) cat_pw_lKe_ex_cat_colimit:
+  \<comment>\<open>Based on the elements of Chapter X-5 in \cite{mac_lane_categories_2010}.\<close>
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  obtains UA 
+    where "UA : \<TT> \<circ>\<^sub>C\<^sub>F \<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m \<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> : \<KK> \<^sub>C\<^sub>F\<down> c \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+proof-
+  from 
+    is_cat_pw_rKe.cat_pw_rKe_ex_cat_limit
+      [
+        OF is_cat_pw_rKe_op AG.is_functor_op ntcf_lKe.NTDom.is_functor_op,
+        unfolded cat_op_simps, 
+        OF assms(3)
+      ]
+  obtain UA where UA: "UA :
+    \<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m op_cf \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>) : 
+    c \<down>\<^sub>C\<^sub>F (op_cf \<KK>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
+    by auto
+  from assms(3) have [cat_cs_simps]:
+    "op_cf \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<KK> c = 
+      op_cf \<TT> \<circ>\<^sub>C\<^sub>F op_cf (\<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c)"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps AG.op_cf_cf_obj_comma_proj[OF assms(3)] 
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+  from assms(3) have [cat_op_simps]:
+    "\<TT> \<circ>\<^sub>C\<^sub>F op_cf (c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>)) \<circ>\<^sub>C\<^sub>F op_cf (op_cf_obj_comma \<KK> c) = 
+      \<TT> \<circ>\<^sub>C\<^sub>F \<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c"
+    by
+      (
+        cs_concl
+          cs_simp:
+            cat_cs_simps cat_op_simps 
+            op_cf_cf_comp[symmetric] AG.op_cf_cf_obj_comma_proj[symmetric] 
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+  from assms(3) have [cat_op_simps]: "op_cat (op_cat (\<KK> \<^sub>C\<^sub>F\<down> c)) = \<KK> \<^sub>C\<^sub>F\<down> c"
+    by
+      (
+        cs_concl 
+          cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_comma_cs_intros 
+      )
+  note ntcf_cf_comp_is_cat_limit_if_is_iso_functor =
+    ntcf_cf_comp_is_cat_limit_if_is_iso_functor
+      [
+        OF UA AG.op_cf_obj_comma_is_iso_functor[OF assms(3)], 
+        unfolded cat_op_simps
+      ]
+  have "op_ntcf UA \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf (op_cf_obj_comma \<KK> c) : 
+    \<TT> \<circ>\<^sub>C\<^sub>F \<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m \<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> : \<KK> \<^sub>C\<^sub>F\<down> c \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by 
+      (
+        rule is_cat_limit.is_cat_colimit_op
+          [
+            OF ntcf_cf_comp_is_cat_limit_if_is_iso_functor, 
+            unfolded cat_op_simps
+          ]
+      )
+  then show ?thesis using that by auto
+qed
 
 
-subsection\<open>The limit for the pointwise Kan extension\<close>
+
+subsection\<open>The limit and the colimit for the pointwise Kan extensions\<close>
 
 
 subsubsection\<open>Definition and elementary properties\<close>
@@ -3386,6 +3447,17 @@ definition the_pw_cat_rKe_limit :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarr
       )
     ]\<^sub>\<circ>"
 
+definition the_pw_cat_lKe_colimit :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
+  where "the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c =
+    [
+      \<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>,
+      op_ntcf
+        (
+          the_pw_cat_rKe_limit \<alpha> (op_cf \<KK>) (op_cf \<TT>) (op_cf \<FF>) c\<lparr>UArr\<rparr> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F
+          op_cf_obj_comma \<KK> c
+        )
+    ]\<^sub>\<circ>"
+
 
 text\<open>Components.\<close>
 
@@ -3399,6 +3471,16 @@ lemma the_pw_cat_rKe_limit_components:
   unfolding the_pw_cat_rKe_limit_def ua_field_simps
   by (simp_all add: nat_omega_simps)
 
+lemma the_pw_cat_lKe_colimit_components:
+  shows "the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c\<lparr>UObj\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>"
+    and "the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c\<lparr>UArr\<rparr> = op_ntcf
+      (
+        the_pw_cat_rKe_limit \<alpha> (op_cf \<KK>) (op_cf \<TT>) (op_cf \<FF>) c\<lparr>UArr\<rparr> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F
+        op_cf_obj_comma \<KK> c
+      )"
+  unfolding the_pw_cat_lKe_colimit_def ua_field_simps
+  by (simp_all add: nat_omega_simps)
+
 context is_functor
 begin
 
@@ -3408,9 +3490,12 @@ lemmas the_pw_cat_rKe_limit_components' =
 end
 
 
-subsubsection\<open>The limit for the pointwise Kan extension is a limit\<close>
+subsubsection\<open>
+The limit for the pointwise right Kan extension is a limit,
+the colimit for the pointwise left Kan extension is a colimit
+\<close>
 
-lemma (in is_cat_pw_rKe) cat_pw_rKe_the_pw_cat_rKe_limit_is_limit:
+lemma (in is_cat_pw_rKe) cat_pw_rKe_the_pw_cat_rKe_limit_is_cat_limit:
   assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG> c\<lparr>UArr\<rparr> :
     the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG> c\<lparr>UObj\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> :
@@ -3422,6 +3507,72 @@ proof-
   show ?thesis
     unfolding the_pw_cat_rKe_limit_components
     by (rule someI2, unfold cat_cs_simps, rule UA)
+qed
+
+lemma (in is_cat_pw_lKe) cat_pw_lKe_the_pw_cat_lKe_colimit_is_cat_colimit:
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c\<lparr>UArr\<rparr> : 
+    \<TT> \<circ>\<^sub>C\<^sub>F \<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c\<lparr>UObj\<rparr> :
+    \<KK> \<^sub>C\<^sub>F\<down> c \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+proof-
+  interpret \<KK>: is_functor \<alpha> \<BB> \<CC> \<KK> by (rule assms(1))
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  note cat_pw_rKe_the_pw_cat_rKe_limit_is_cat_limit = 
+    is_cat_pw_rKe.cat_pw_rKe_the_pw_cat_rKe_limit_is_cat_limit
+      [
+        OF is_cat_pw_rKe_op AG.is_functor_op ntcf_lKe.NTDom.is_functor_op, 
+        unfolded cat_op_simps,
+        OF assms(3)
+      ]
+  from assms(3) have
+    "op_cf \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<KK> c = 
+      op_cf \<TT> \<circ>\<^sub>C\<^sub>F op_cf (\<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c)"
+    by
+      (
+        cs_concl
+          cs_simp:
+            cat_cs_simps cat_comma_cs_simps cat_op_simps
+            AG.op_cf_cf_obj_comma_proj[OF assms(3)] 
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+  note ntcf_cf_comp_is_cat_limit_if_is_iso_functor = 
+    ntcf_cf_comp_is_cat_limit_if_is_iso_functor
+      [
+        OF 
+          cat_pw_rKe_the_pw_cat_rKe_limit_is_cat_limit 
+          AG.op_cf_obj_comma_is_iso_functor[OF assms(3)],
+          unfolded this, folded op_cf_cf_comp
+      ]
+  from assms(3) have [cat_op_simps]: "op_cat (op_cat (\<KK> \<^sub>C\<^sub>F\<down> c)) = \<KK> \<^sub>C\<^sub>F\<down> c"
+    by 
+      (
+        cs_concl 
+          cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms(3) have [cat_op_simps]: "op_cf (op_cf (\<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c)) = \<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c"
+    by 
+      (
+        cs_concl 
+          cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  have [cat_op_simps]:
+    "the_pw_cat_rKe_limit \<alpha> (op_cf \<KK>) (op_cf \<TT>) (op_cf \<FF>) c\<lparr>UObj\<rparr> = 
+      the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF> c\<lparr>UObj\<rparr>"
+    unfolding 
+      the_pw_cat_lKe_colimit_components 
+      the_pw_cat_rKe_limit_components   
+      cat_op_simps
+    by simp
+  show ?thesis
+    by 
+      (
+        rule is_cat_limit.is_cat_colimit_op
+          [
+            OF ntcf_cf_comp_is_cat_limit_if_is_iso_functor, 
+            folded the_pw_cat_lKe_colimit_components,
+            unfolded cat_op_simps
+          ]
+      )
 qed
 
 lemma (in is_cat_pw_rKe) cat_pw_rKe_the_ntcf_rKe_is_cat_rKe: 
@@ -3442,8 +3593,28 @@ proof-
               OF
                 assms(1)
                 ntcf_rKe.NTCod.is_functor_axioms 
-                cat_pw_rKe_the_pw_cat_rKe_limit_is_limit[OF assms]
+                cat_pw_rKe_the_pw_cat_rKe_limit_is_cat_limit[OF assms]
             ]
+      )
+qed
+
+lemma (in is_cat_pw_lKe) cat_pw_lKe_the_ntcf_lKe_is_cat_lKe:
+  assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+  shows "the_ntcf_lKe \<alpha> \<TT> \<KK> (the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF>) :
+    \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> the_cf_lKe \<alpha> \<TT> \<KK> (the_pw_cat_lKe_colimit \<alpha> \<KK> \<TT> \<FF>) \<circ>\<^sub>C\<^sub>F \<KK> :
+    \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>"
+proof-
+  interpret \<TT>: is_functor \<alpha> \<BB> \<AA> \<TT> by (rule assms(2))
+  show ?thesis
+    by 
+      (
+        rule the_ntcf_lKe_is_cat_lKe
+          [
+            OF
+              assms(1,2) 
+              cat_pw_lKe_the_pw_cat_lKe_colimit_is_cat_colimit[OF assms], 
+            simplified
+          ]
       )
 qed
 

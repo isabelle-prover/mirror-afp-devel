@@ -1245,7 +1245,7 @@ proof-
   qed (auto simp: tdghm_dghm_comp_components(1) cat_cs_simps)
 qed
 
-lemma ntcf_cf_comp_is_functor'[cat_cs_intros]:
+lemma ntcf_cf_comp_is_ntcf'[cat_cs_intros]:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     and "\<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<FF>' = \<FF> \<circ>\<^sub>C\<^sub>F \<HH>"
@@ -1819,6 +1819,32 @@ proof-
     qed (cs_concl cs_intro: cat_cs_intros)
   qed simp_all
 qed
+
+lemma (in is_functor) cf_ntcf_cf_comp_ntcf_const[cat_cs_simps]:
+  assumes "category \<alpha> \<CC>" and "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
+  shows "ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF> = ntcf_const \<AA> \<CC> f"
+proof(rule ntcf_eqI)
+  interpret \<CC>: category \<alpha> \<CC> by (rule assms(1))
+  from assms(2) show "ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF> : 
+    cf_const \<AA> \<CC> a \<mapsto>\<^sub>C\<^sub>F cf_const \<AA> \<CC> b : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  then have dom_lhs: "\<D>\<^sub>\<circ> ((ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  from assms(2) show 
+    "ntcf_const \<AA> \<CC> f : cf_const \<AA> \<CC> a \<mapsto>\<^sub>C\<^sub>F cf_const \<AA> \<CC> b : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  then have dom_rhs: "\<D>\<^sub>\<circ> (ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  show "(ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr> = ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>"
+  proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
+    fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    then show 
+      "(ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+qed simp_all
+
+lemmas [cat_cs_simps] = is_functor.cf_ntcf_cf_comp_ntcf_const
 
 
 

@@ -233,6 +233,9 @@ proof(rule cat_eqI, unfold cat_op_simps)
     unfolding cat_1_components op_cat_components fflip_vsingleton ..
 qed (simp_all add: cat_1_components)
 
+lemma (in \<Z>) cat_1_op_0[cat_op_simps]: "op_cat (cat_1 0 0) = cat_1 0 0"
+  by (cs_concl cs_simp: cat_op_simps cs_intro: V_cs_intros cat_cs_intros)
+
 
 subsubsection\<open>Further properties\<close>
 

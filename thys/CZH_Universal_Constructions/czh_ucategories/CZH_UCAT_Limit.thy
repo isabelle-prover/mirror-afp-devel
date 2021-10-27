@@ -947,6 +947,86 @@ proof-
 qed
 
 
+subsubsection\<open>Further properties\<close>
+
+lemma ntcf_cf_comp_is_cat_limit_if_is_iso_functor:
+  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
+  shows "u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof(intro is_cat_limitI)
+  interpret u: is_cat_limit \<alpha> \<BB> \<CC> \<FF> r u by (rule assms(1)) 
+  interpret \<GG>: is_iso_functor \<alpha> \<AA> \<BB> \<GG> by (rule assms(2))
+  note [cf_cs_simps] = is_iso_functor_is_arr_isomorphism(2,3)
+  show u\<GG>: "u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (intro is_cat_coneI)
+      (
+        cs_concl 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_lim_cs_intros
+      )
+  fix u' r' assume prems: "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  then interpret u': is_cat_cone \<alpha> r' \<AA> \<CC> \<open>\<FF> \<circ>\<^sub>C\<^sub>F \<GG>\<close> u' by simp
+  have "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (intro is_cat_coneI)
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cf_cs_simps
+          cs_intro: cat_cs_intros cat_lim_cs_intros cf_cs_intros
+      )
+  from is_cat_limit.cat_lim_ua_fo[OF assms(1) this] obtain f 
+    where f: "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r"
+      and u'_\<GG>: "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<CC> f"
+      and f'f:
+        "\<lbrakk>
+          f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r; 
+          u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<CC> f' 
+         \<rbrakk> \<Longrightarrow> f' = f"
+    for f'
+    by metis
+  from u'_\<GG> have u'_inv\<GG>_\<GG>:
+    "(u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> = (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<CC> f) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>"
+    by simp
+  show "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r \<and> u' = u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<AA> \<CC> f'"
+  proof(intro ex1I conjI; (elim conjE)?)
+    show "f : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" by (rule f)
+    from u'_inv\<GG>_\<GG> f show "u' = u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<AA> \<CC> f"
+      by
+        (
+          cs_prems
+            cs_simp:
+              cf_cs_simps cat_cs_simps
+              ntcf_cf_comp_ntcf_cf_comp_assoc 
+              ntcf_vcomp_ntcf_cf_comp[symmetric]
+            cs_intro: cat_cs_intros cf_cs_intros
+        )
+    fix f' assume prems:
+      "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> r" "u' = u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<AA> \<CC> f'"
+    from prems(2) have 
+      "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> = 
+        (u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<AA> \<CC> f') \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG>"
+      by simp
+    from this f prems(1) have "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<CC> f'"
+      by
+        (
+          cs_prems
+            cs_simp:
+              cat_cs_simps cf_cs_simps
+              ntcf_vcomp_ntcf_cf_comp[symmetric]
+              ntcf_cf_comp_ntcf_cf_comp_assoc
+            cs_intro: cf_cs_intros cat_cs_intros
+        )
+    then show "f' = f" by (intro f'f prems(1))
+  qed
+qed
+
+lemma ntcf_cf_comp_is_cat_limit_if_is_iso_functor'[cat_lim_cs_intros]:
+  assumes "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<AA>' = \<FF> \<circ>\<^sub>C\<^sub>F \<GG>"
+  shows "u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<AA>' : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  using assms(1,2) 
+  unfolding assms(3)
+  by (rule ntcf_cf_comp_is_cat_limit_if_is_iso_functor)
+
+
 
 subsection\<open>Finite limit and finite colimit\<close>
 
@@ -1122,7 +1202,6 @@ lemmas [cat_op_intros] = is_cat_obj_coprod.is_cat_obj_prod_op'
 
 subsubsection\<open>Universal property\<close>
 
-(*cat_obj_prod_unique_cone already proven*)
 lemma (in is_cat_obj_prod) cat_obj_prod_unique_cone':
   assumes "\<pi>' : P' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e :\<rightarrow>: I A \<CC> : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<exists>!f'. f' : P' \<mapsto>\<^bsub>\<CC>\<^esub> P \<and> (\<forall>j\<in>\<^sub>\<circ>I. \<pi>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<pi>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f')"

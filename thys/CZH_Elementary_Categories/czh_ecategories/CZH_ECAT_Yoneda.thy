@@ -4707,8 +4707,8 @@ proof-
     by (rule assms)
 
   have comm[unfolded cat_op_simps]:
-    "(\<NN>\<lparr>NTMap\<rparr> \<lparr>c, d\<rparr>\<^sub>\<bullet>)\<lparr>ArrVal\<rparr>\<lparr>f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (q \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>)\<rparr> =
-      f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> ((\<NN>\<lparr>NTMap\<rparr> \<lparr>a, b\<rparr>\<^sub>\<bullet>)\<lparr>ArrVal\<rparr>\<lparr>q\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>)"
+    "(\<NN>\<lparr>NTMap\<rparr>\<lparr>c, d\<rparr>\<^sub>\<bullet>)\<lparr>ArrVal\<rparr>\<lparr>f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (q \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>)\<rparr> =
+      f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> ((\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>)\<lparr>ArrVal\<rparr>\<lparr>q\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>)"
     if "g : a \<mapsto>\<^bsub>op_cat \<BB>\<^esub> c" and "f : b \<mapsto>\<^bsub>\<CC>\<^esub> d" and "q : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> b" 
     for q g f a b c d
   proof-

@@ -1353,6 +1353,27 @@ lemma smcf_const_is_semifunctor'[smc_cs_intros]:
   using assms(1-4) unfolding assms(5,6) by (rule smcf_const_is_semifunctor)
 
 
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_semifunctor) smcf_smcf_comp_smcf_const[smc_cs_simps]:
+  assumes "semicategory \<alpha> \<CC>" and "f : a \<mapsto>\<^bsub>\<CC>\<^esub> a" and "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = f"
+  shows "smcf_const \<BB> \<CC> a f \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> = smcf_const \<AA> \<CC> a f"
+proof(rule smcf_dghm_eqI)
+  interpret \<CC>: semicategory \<alpha> \<CC> by (rule assms(1))
+  from assms(2) show "smcf_const \<BB> \<CC> a f \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros)
+  from assms(2) show "smcf_const \<AA> \<CC> a f : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros)
+  from is_dghm.dghm_dghm_comp_dghm_const[
+    OF smcf_is_dghm \<CC>.smc_digraph, unfolded slicing_simps, OF assms(2)
+    ]
+  show "smcf_dghm (smcf_const \<BB> \<CC> a f \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>) = smcf_dghm (smcf_const \<AA> \<CC> a f)"
+    by (cs_prems cs_simp: slicing_simps slicing_commute)
+qed simp_all
+
+lemmas [smc_cs_simps] = is_semifunctor.smcf_smcf_comp_smcf_const
+
+
 
 subsection\<open>Faithful semifunctor\<close>
 

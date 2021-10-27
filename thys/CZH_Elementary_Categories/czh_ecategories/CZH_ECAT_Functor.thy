@@ -1347,6 +1347,40 @@ lemma cf_const_is_functor'[cat_cs_intros]:
   using assms(1-3) unfolding assms(4-6) by (rule cf_const_is_functor)
 
 
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_functor) cf_cf_comp_cf_const:
+  assumes "category \<alpha> \<CC>" and "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "cf_const \<BB> \<CC> a \<circ>\<^sub>C\<^sub>F \<FF> = cf_const \<AA> \<CC> a"
+proof(rule cf_smcf_eqI)
+  interpret \<CC>: category \<alpha> \<CC> by (rule assms(1))
+  from assms(2) show "cf_const \<BB> \<CC> a \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_intro: cat_cs_intros)
+  from assms(2) show "cf_const \<AA> \<CC> a : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_intro: cat_cs_intros)
+  from assms(2) have CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
+    by (cs_concl cs_intro: cat_cs_intros)
+  from assms(2) have CId_CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from is_semifunctor.smcf_smcf_comp_smcf_const[
+    OF cf_is_semifunctor \<CC>.cat_semicategory, 
+    unfolded slicing_simps, 
+    OF CId_a CId_CId_a
+    ]
+  show "cf_smcf (cf_const \<BB> \<CC> a \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>) = cf_smcf (cf_const \<AA> \<CC> a)"
+    by (cs_prems cs_simp: slicing_simps slicing_commute)
+qed simp_all
+
+lemma (in is_functor) cf_cf_comp_cf_const'[cat_cs_simps]:
+  assumes "category \<alpha> \<CC>" 
+    and "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+    and "f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
+  shows "dghm_const \<BB> \<CC> a f \<circ>\<^sub>C\<^sub>F \<FF> = cf_const \<AA> \<CC> a"
+  using assms(1,2) unfolding assms(3) by (rule cf_cf_comp_cf_const)
+
+lemmas [cat_cs_simps] = is_functor.cf_cf_comp_cf_const'
+
+
 
 subsection\<open>Faithful functor\<close>
 

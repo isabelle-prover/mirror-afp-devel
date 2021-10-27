@@ -64,25 +64,25 @@ proof-
 qed
 
 definition cat_comma_Hom :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
-  where "cat_comma_Hom \<GG> \<HH> abf a'b'f' \<equiv> set
+  where "cat_comma_Hom \<GG> \<HH> A B \<equiv> set
     {
-      [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
-        abf \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-        a'b'f' \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-        g : abf\<lparr>0\<rparr> \<mapsto>\<^bsub>\<GG>\<lparr>HomDom\<rparr>\<^esub> a'b'f'\<lparr>0\<rparr> \<and>
-        h : abf\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<HH>\<lparr>HomDom\<rparr>\<^esub> a'b'f'\<lparr>1\<^sub>\<nat>\<rparr> \<and>
-        a'b'f'\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<GG>\<lparr>HomCod\<rparr>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> =
-         \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<GG>\<lparr>HomCod\<rparr>\<^esub> abf\<lparr>2\<^sub>\<nat>\<rparr>
+      [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
+        A \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+        B \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+        g : A\<lparr>0\<rparr> \<mapsto>\<^bsub>\<GG>\<lparr>HomDom\<rparr>\<^esub> B\<lparr>0\<rparr> \<and>
+        h : A\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<HH>\<lparr>HomDom\<rparr>\<^esub> B\<lparr>1\<^sub>\<nat>\<rparr> \<and>
+        B\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<GG>\<lparr>HomCod\<rparr>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> =
+         \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<GG>\<lparr>HomCod\<rparr>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>
     }"
 
 lemma small_cat_comma_Hom[simp]: "small
   {
-    [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
-      abf \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-      a'b'f' \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-      g : abf\<lparr>0\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> a'b'f'\<lparr>0\<rparr> \<and>
-      h : abf\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> a'b'f'\<lparr>1\<^sub>\<nat>\<rparr> \<and>
-      a'b'f'\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> abf\<lparr>2\<^sub>\<nat>\<rparr>
+    [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
+      A \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+      B \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+      g : A\<lparr>0\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> B\<lparr>0\<rparr> \<and>
+      h : A\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> B\<lparr>1\<^sub>\<nat>\<rparr> \<and>
+      B\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>
   }"
   (is \<open>small ?abf_a'b'f'_gh\<close>)
 proof-
@@ -113,26 +113,22 @@ qed
 definition cat_comma_Arr :: "V \<Rightarrow> V \<Rightarrow> V"
   where "cat_comma_Arr \<GG> \<HH> \<equiv>
     (
-      \<Union>\<^sub>\<circ>abf\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>. \<Union>\<^sub>\<circ>a'b'f'\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
-        cat_comma_Hom \<GG> \<HH> abf a'b'f'
+      \<Union>\<^sub>\<circ>A\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>. \<Union>\<^sub>\<circ>B\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
+        cat_comma_Hom \<GG> \<HH> A B
     )"
 
 definition cat_comma_composable :: "V \<Rightarrow> V \<Rightarrow> V"
   where "cat_comma_composable \<GG> \<HH> \<equiv> set
     {
-      [[a'b'f', a''b''f'', g'h']\<^sub>\<circ>, [abf, a'b'f', gh]\<^sub>\<circ>]\<^sub>\<circ> |
-        abf a'b'f' a''b''f'' g'h' gh.
-          [a'b'f', a''b''f'', g'h']\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH> \<and>
-          [abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>
+      [[B, C, G]\<^sub>\<circ>, [A, B, F]\<^sub>\<circ>]\<^sub>\<circ> | A B C G F.
+        [B, C, G]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH> \<and> [A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>
     }"
 
 lemma small_cat_comma_composable[simp]:
   shows "small
     {
-      [[a'b'f', a''b''f'', g'h']\<^sub>\<circ>, [abf, a'b'f', gh]\<^sub>\<circ>]\<^sub>\<circ> |
-        abf a'b'f' a''b''f'' g'h' gh.
-          [a'b'f', a''b''f'', g'h']\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH> \<and>
-          [abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>
+      [[B, C, G]\<^sub>\<circ>, [A, B, F]\<^sub>\<circ>]\<^sub>\<circ> | A B C G F.
+        [B, C, G]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH> \<and> [A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>
     }"
   (is \<open>small ?S\<close>)
 proof(rule down)
@@ -158,8 +154,8 @@ definition cat_comma :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>(_ \<^sub>C\
           ]\<^sub>\<circ>
       ),
       (
-        \<lambda>abf\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
-          [abf, abf, [\<GG>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>abf\<lparr>0\<rparr>\<rparr>, \<HH>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>abf\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>
+        \<lambda>A\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
+          [A, A, [\<GG>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>A\<lparr>0\<rparr>\<rparr>, \<HH>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>A\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>
       )
     ]\<^sub>\<circ>"
 
@@ -185,8 +181,8 @@ lemma cat_comma_components:
       )"
     and "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr> =
       (
-        \<lambda>abf\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
-          [abf, abf, [\<GG>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>abf\<lparr>0\<rparr>\<rparr>, \<HH>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>abf\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>
+        \<lambda>A\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>.
+          [A, A, [\<GG>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>A\<lparr>0\<rparr>\<rparr>, \<HH>\<lparr>HomDom\<rparr>\<lparr>CId\<rparr>\<lparr>A\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>
       )"
   unfolding cat_comma_def dg_field_simps by (simp_all add: nat_omega_simps)
 
@@ -208,14 +204,14 @@ lemma cat_comma_Obj_def':
   unfolding cat_comma_Obj_def cat_cs_simps by simp
 
 lemma cat_comma_Hom_def':
-  "cat_comma_Hom \<GG> \<HH> abf a'b'f' \<equiv> set
+  "cat_comma_Hom \<GG> \<HH> A B \<equiv> set
     {
-      [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
-        abf \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-        a'b'f' \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
-        g : abf\<lparr>0\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> a'b'f'\<lparr>0\<rparr> \<and>
-        h : abf\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> a'b'f'\<lparr>1\<^sub>\<nat>\<rparr> \<and>
-        a'b'f'\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> abf\<lparr>2\<^sub>\<nat>\<rparr>
+      [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> | g h.
+        A \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+        B \<in>\<^sub>\<circ> cat_comma_Obj \<GG> \<HH> \<and>
+        g : A\<lparr>0\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> B\<lparr>0\<rparr> \<and>
+        h : A\<lparr>1\<^sub>\<nat>\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> B\<lparr>1\<^sub>\<nat>\<rparr> \<and>
+        B\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>
     }"
   unfolding cat_comma_Hom_def cat_cs_simps by simp
 
@@ -237,7 +233,7 @@ lemma cat_comma_components':
           ]\<^sub>\<circ>
       )"
     and "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr> =
-      (\<lambda>abf\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>. [abf, abf, [\<AA>\<lparr>CId\<rparr>\<lparr>abf\<lparr>0\<rparr>\<rparr>, \<BB>\<lparr>CId\<rparr>\<lparr>abf\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>)"
+      (\<lambda>A\<in>\<^sub>\<circ>cat_comma_Obj \<GG> \<HH>. [A, A, [\<AA>\<lparr>CId\<rparr>\<lparr>A\<lparr>0\<rparr>\<rparr>, \<BB>\<lparr>CId\<rparr>\<lparr>A\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>]\<^sub>\<circ>]\<^sub>\<circ>)"
   unfolding cat_comma_components cat_cs_simps by simp_all
 
 end
@@ -288,15 +284,15 @@ subsubsection\<open>Arrows\<close>
 lemma cat_comma_HomI[cat_comma_cs_intros]:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "abf = [a, b, f]\<^sub>\<circ>"
-    and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    and "F = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "A = [a, b, f]\<^sub>\<circ>"
+    and "B = [a', b', f']\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
     and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     and "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
     and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
-  shows "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
+  shows "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
   using assms(1,2,6-10)
   unfolding cat_comma_Hom_def'[OF assms(1,2)] assms(3-5)
   by 
@@ -312,13 +308,13 @@ lemma cat_comma_HomI[cat_comma_cs_intros]:
     (clarsimp simp: nat_omega_simps)+
 
 lemma cat_comma_HomE[elim]:
-  assumes "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
+  assumes "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
     and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains a b f a' b' f' g h
-    where "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where "F = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, b, f]\<^sub>\<circ>"
+      and "B = [a', b', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -340,7 +336,7 @@ lemma cat_comma_HomE[elim]:
     (auto simp: nat_omega_simps)
 
 lemma cat_comma_HomD[dest]:
-  assumes "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
+  assumes "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
     and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
@@ -351,9 +347,9 @@ lemma cat_comma_HomD[dest]:
   using assms(1) by (force elim!: cat_comma_HomE[OF _ assms(2,3)])+
 
 lemma cat_comma_ArrI[cat_comma_cs_intros]: 
-  assumes "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-    and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  assumes "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+    and "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    and "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
   shows "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
   using assms 
   unfolding cat_comma_components cat_comma_Arr_def 
@@ -361,31 +357,30 @@ lemma cat_comma_ArrI[cat_comma_cs_intros]:
 
 lemma cat_comma_ArrE[elim]:
   assumes "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  obtains abf a'b'f' 
-    where "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-      and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-      and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  obtains A B 
+    where "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+      and "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
   using assms unfolding cat_comma_components cat_comma_Arr_def by auto
 
 lemma cat_comma_ArrD[dest]: 
-  assumes "[abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  assumes "[A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
     and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  shows "[abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-    and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  shows "[A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+    and "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    and "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
 proof-
-  from assms obtain abf' a'b'f'' 
-    where "[abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf' a'b'f''"
-      and "abf' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-      and "a'b'f'' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  from assms obtain C D 
+    where "[A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> C D"
+      and "C \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and "D \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by (elim cat_comma_ArrE)
-  moreover from cat_comma_HomE[OF this(1) assms(2,3)] have 
-    "abf = abf'" and "a'b'f' = a'b'f''"
+  moreover from cat_comma_HomE[OF this(1) assms(2,3)] have "A = C" and "B = D"
     by auto
-  ultimately show "[abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-    and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  ultimately show "[A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+    and "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    and "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by auto
 qed
 
@@ -400,32 +395,32 @@ lemma cat_comma_Dom_vdomain[cat_comma_cs_simps]:
   unfolding cat_comma_components by simp
 
 lemma cat_comma_Dom_app[cat_comma_cs_simps]:
-  assumes "F = [abf, a'b'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  shows "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>F\<rparr> = abf"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  shows "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A"
   using assms(2) unfolding assms(1) cat_comma_components by simp
 
 lemma cat_comma_Dom_vrange:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>) \<subseteq>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset)
-  fix F assume "F \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>)"
-  then have "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
-  then obtain abf a'b'f' 
-    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-      and abf: "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-      and a'b'f': "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  fix ABF assume "ABF \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>)"
+  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
+  then obtain A B 
+    where ABF: "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+      and A: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and B: "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by auto
   from this(1) obtain a b f a' b' f' g h
-    where "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, b, f]\<^sub>\<circ>"
+      and "B = [a', b', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       and "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
       and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by (elim cat_comma_HomE[OF _ assms(1,2)])
-  from F this abf a'b'f' show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>F\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  from ABF this A B show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
 qed (auto intro: cat_comma_cs_intros)
 
@@ -440,8 +435,8 @@ lemma cat_comma_Cod_vdomain[cat_comma_cs_simps]:
   unfolding cat_comma_components by simp
 
 lemma cat_comma_Cod_app[cat_comma_cs_simps]:
-  assumes "F = [abf, a'b'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  shows "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>F\<rparr> = a'b'f'"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  shows "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
   using assms(2)
   unfolding assms(1) cat_comma_components
   by (simp add: nat_omega_simps)
@@ -450,24 +445,24 @@ lemma cat_comma_Cod_vrange:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>) \<subseteq>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset)
-  fix F assume "F \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>)"
-  then have "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
-  then obtain abf a'b'f' 
-    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-      and abf: "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-      and a'b'f': "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  fix ABF assume "ABF \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>)"
+  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
+  then obtain A B 
+    where F: "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+      and A: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and B: "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by auto
   from this(1) obtain a b f a' b' f' g h
-    where "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, b, f]\<^sub>\<circ>"
+      and "B = [a', b', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       and "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
       and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by (elim cat_comma_HomE[OF _ assms(1,2)])
-  from F this abf a'b'f' show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>F\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  from F this A B show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
 qed (auto intro: cat_comma_cs_intros)
 
@@ -477,20 +472,20 @@ subsubsection\<open>Arrow with a domain and a codomain\<close>
 lemma cat_comma_is_arrI[cat_comma_cs_intros]:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "F = [abf, a'b'f', gh]\<^sub>\<circ>"
-    and "abf = [a, b, f]\<^sub>\<circ>"
-    and "a'b'f' = [a', b', f']\<^sub>\<circ>"
-    and "gh = [g, h]\<^sub>\<circ>"
+    and "ABF = [A, B, F]\<^sub>\<circ>"
+    and "A = [a, b, f]\<^sub>\<circ>"
+    and "B = [a', b', f']\<^sub>\<circ>"
+    and "F = [g, h]\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
     and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     and "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
     and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
-  shows "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
+  shows "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
 proof(intro is_arrI)
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
-  from assms(7-11) show "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  from assms(7-11) show "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
     unfolding assms(3-6)
     by 
       (
@@ -498,8 +493,7 @@ proof(intro is_arrI)
           cs_simp: cat_comma_cs_simps 
           cs_intro: cat_cs_intros cat_comma_cs_intros
       )
-  with assms(7-11) show 
-    "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>F\<rparr> = abf" "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>F\<rparr> = a'b'f'"
+  with assms(7-11) show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
     unfolding assms(3-6) by (cs_concl cs_simp: cat_comma_cs_simps)+
 qed
 
@@ -525,13 +519,13 @@ proof-
 qed
 
 lemma cat_comma_is_arrE[elim]:
-  assumes "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
+  assumes "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
     and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains a b f a' b' f' g h
-    where "F = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, b, f]\<^sub>\<circ>"
+      and "B = [a', b', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -539,15 +533,15 @@ lemma cat_comma_is_arrE[elim]:
       and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
 proof-
   note F_is_arrD = is_arrD[OF assms(1)]
-  from F_is_arrD(1) obtain abf a'b'f' 
-    where "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-      and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" 
-      and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  from F_is_arrD(1) obtain C D 
+    where "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> C D"
+      and "C \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" 
+      and "D \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
     by auto
   from this(1) obtain a b f a' b' f' g h
-    where F_def: "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where F_def: "ABF = [C, D, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "C = [a, b, f]\<^sub>\<circ>"
+      and "D = [a', b', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -564,52 +558,52 @@ subsubsection\<open>Composition\<close>
 lemma cat_comma_composableI:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "GF = [G, F]\<^sub>\<circ>"
-    and "G : a'b'f' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''"
-    and "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
-  shows "GF \<in>\<^sub>\<circ> cat_comma_composable \<GG> \<HH>"
+    and "ABCGF = [BCG, ABF]\<^sub>\<circ>"
+    and "BCG : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
+    and "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+  shows "ABCGF \<in>\<^sub>\<circ> cat_comma_composable \<GG> \<HH>"
 proof-
   from assms(1,2,5) obtain a b f a' b' f' gh 
-    where F_def: "F = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, gh]\<^sub>\<circ>"
-      and "abf = [a, b, f]\<^sub>\<circ>"
-      and  "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, gh]\<^sub>\<circ>"
+      and "A = [a, b, f]\<^sub>\<circ>"
+      and  "B = [a', b', f']\<^sub>\<circ>"
     by auto
   with assms(1,2,4) obtain a'' b'' f'' g'h' 
-    where G_def: "G = [[a', b', f']\<^sub>\<circ>, [a'', b'', f'']\<^sub>\<circ>, g'h']\<^sub>\<circ>"
-      and "a'b'f' = [a', b', f']\<^sub>\<circ>"
-      and "a''b''f'' = [a'', b'', f'']\<^sub>\<circ>"
+    where BCG_def: "BCG = [[a', b', f']\<^sub>\<circ>, [a'', b'', f'']\<^sub>\<circ>, g'h']\<^sub>\<circ>"
+      and "B = [a', b', f']\<^sub>\<circ>"
+      and "C = [a'', b'', f'']\<^sub>\<circ>"
     by auto
-  from is_arrD(1)[OF assms(4)] have "G \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>"
+  from is_arrD(1)[OF assms(4)] have "BCG \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>"
     unfolding cat_comma_components'(2)[OF assms(1,2)].
-  moreover from is_arrD(1)[OF assms(5)] have "F \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>"
+  moreover from is_arrD(1)[OF assms(5)] have "ABF \<in>\<^sub>\<circ> cat_comma_Arr \<GG> \<HH>"
     unfolding cat_comma_components'(2)[OF assms(1,2)].
   ultimately show ?thesis 
-    unfolding assms(3) F_def G_def cat_comma_composable_def 
+    unfolding assms(3) ABF_def BCG_def cat_comma_composable_def 
     by simp
 qed
 
 lemma cat_comma_composableE[elim]:
-  assumes "GF \<in>\<^sub>\<circ> cat_comma_composable \<GG> \<HH>"
+  assumes "ABCGF \<in>\<^sub>\<circ> cat_comma_composable \<GG> \<HH>"
     and "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  obtains G F abf a'b'f' a''b''f'' 
-    where "GF = [G, F]\<^sub>\<circ>"
-      and "G : a'b'f' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''"
-      and "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
+  obtains BCG ABF A B C
+    where "ABCGF = [BCG, ABF]\<^sub>\<circ>"
+      and "BCG : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
+      and "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
 proof-
-  from assms(1) obtain abf a'b'f' a''b''f'' g'h' gh 
-    where GF_def: "GF = [[a'b'f', a''b''f'', g'h']\<^sub>\<circ>, [abf, a'b'f', gh]\<^sub>\<circ>]\<^sub>\<circ>"
-      and g'h': "[a'b'f', a''b''f'', g'h']\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-      and gh: "[abf, a'b'f', gh]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  from assms(1) obtain A B C G F 
+    where ABCGF_def: "ABCGF = [[B, C, G]\<^sub>\<circ>, [A, B, F]\<^sub>\<circ>]\<^sub>\<circ>"
+      and BCG: "[B, C, G]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      and ABF: "[A, B, F]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
     unfolding cat_comma_composable_def
     by (auto simp: cat_comma_components'[OF assms(2,3)])  
-  note g'h' = cat_comma_ArrD[OF g'h' assms(2,3)]
-    and gh = cat_comma_ArrD[OF gh assms(2,3)]
-  from gh(1) assms(2,3) obtain a b f a' b' f' g h
-    where "[abf, a'b'f', gh]\<^sub>\<circ> = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and abf_def: "abf = [a, b, f]\<^sub>\<circ>"
-      and a'b'f'_def: "a'b'f' = [a', b', f']\<^sub>\<circ>"
-      and gh_def: "gh = [g, h]\<^sub>\<circ>"
+  note BCG = cat_comma_ArrD[OF BCG assms(2,3)]
+    and ABF = cat_comma_ArrD[OF ABF assms(2,3)]
+  from ABF(1) assms(2,3) obtain a b f a' b' f' g h
+    where "[A, B, F]\<^sub>\<circ> = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [a, b, f]\<^sub>\<circ>"
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
+      and F_def: "F = [g, h]\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -617,26 +611,27 @@ proof-
       and [cat_comma_cs_simps]: 
         "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by auto
-  with g'h'(1) assms(2,3) obtain a'' b'' f'' g' h'
-    where g'h'_def: "[a'b'f', a''b''f'', g'h']\<^sub>\<circ> = [a'b'f', a''b''f'', [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
-      and a''b''f''_def: "a''b''f'' = [a'', b'', f'']\<^sub>\<circ>"
-      and g'h'_def: "g'h' = [g', h']\<^sub>\<circ>"
+  with BCG(1) assms(2,3) obtain a'' b'' f'' g' h'
+    where g'h'_def: "[B, C, G]\<^sub>\<circ> = [B, C, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+      and C_def: "C = [a'', b'', f'']\<^sub>\<circ>"
+      and G_def: "G = [g', h']\<^sub>\<circ>"
       and g': "g' : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
       and h': "h' : b' \<mapsto>\<^bsub>\<BB>\<^esub> b''"
       and f'': "f'' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
       and [cat_comma_cs_simps]: 
         "f'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
     by auto  
-  from gh_def have "gh = [g, h]\<^sub>\<circ>" by simp
-  from assms(2,3) GF_def g h f f' g' h' f'' have 
-    "[a'b'f', a''b''f'', g'h']\<^sub>\<circ> : a'b'f' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''"
-    unfolding GF_def gh_def g'h'_def abf_def a'b'f'_def a''b''f''_def
+  from F_def have "F = [g, h]\<^sub>\<circ>" by simp
+  from assms(2,3) g h f f' g' h' f'' have 
+    "[B, C, G]\<^sub>\<circ> : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
+    unfolding ABCGF_def F_def G_def A_def B_def C_def
     by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI)+
-  moreover from assms(2,3) GF_def g h f f' g' h' f'' have 
-    "[abf, a'b'f', gh]\<^sub>\<circ> : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
-    unfolding GF_def gh_def g'h'_def abf_def a'b'f'_def a''b''f''_def
+  moreover from assms(2,3) g h f f' g' h' f'' have 
+    "[A, B, F]\<^sub>\<circ> : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+    unfolding ABCGF_def F_def G_def A_def B_def C_def
     by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI)+
-  ultimately show ?thesis using that GF_def by auto
+  thm that
+  ultimately show ?thesis using that ABCGF_def by auto
 qed
 
 lemma cat_comma_Comp_vsv[cat_comma_cs_intros]: "vsv (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Comp\<rparr>)"
@@ -649,11 +644,11 @@ lemma cat_comma_Comp_vdomain[cat_comma_cs_simps]:
 lemma cat_comma_Comp_app[cat_comma_cs_simps]:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "G = [a'b'f', a''b''f'', [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
-    and "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "G : a'b'f' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''" 
-    and "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F = [abf, a''b''f'', [g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g, h' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> h]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "G = [B, C, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+    and "F = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "G : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C" 
+    and "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+  shows "G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F = [A, C, [g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g, h' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> h]\<^sub>\<circ>]\<^sub>\<circ>"
   using assms(1,2,5,6)
   unfolding cat_comma_components'[OF assms(1,2)] assms(3,4)
   by (*slow*)
@@ -666,16 +661,16 @@ lemma cat_comma_Comp_app[cat_comma_cs_simps]:
 lemma cat_comma_Comp_is_arr[cat_comma_cs_intros]:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "G : a'b'f' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''" 
-    and "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a''b''f''"
+    and "BCG : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C" 
+    and "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+  shows "BCG \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
 proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   from assms(1,2,4) obtain a b f a' b' f' g h
-    where F_def: "F = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and abf_def: "abf = [a, b, f]\<^sub>\<circ>"
-      and a'b'f'_def: "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [a, b, f]\<^sub>\<circ>"
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
       and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
@@ -684,11 +679,10 @@ proof-
         "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by auto
   with assms(1,2,3) obtain a'' b'' f'' g' h'
-    where G_def: "G = [[a', b', f']\<^sub>\<circ>, [a'', b'', f'']\<^sub>\<circ>, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
-      and a''b''f''_def: "a''b''f'' = [a'', b'', f'']\<^sub>\<circ>"
+    where BCG_def: "BCG = [[a', b', f']\<^sub>\<circ>, [a'', b'', f'']\<^sub>\<circ>, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+      and C_def: "C = [a'', b'', f'']\<^sub>\<circ>"
       and g': "g' : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
       and h': "h' : b' \<mapsto>\<^bsub>\<BB>\<^esub> b''"
-      and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
       and f'': "f'' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
       and [cat_cs_simps]: "f'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
     by auto (*slow*)
@@ -702,10 +696,10 @@ proof-
       where \<CC>=\<CC> and h=f and g=\<open>\<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr>\<close> and q=\<open>f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>\<close>
       ]
   from assms(1,2,3,4) g h f f' g' h' f'' show ?thesis
-    unfolding F_def G_def abf_def a'b'f'_def a''b''f''_def
+    unfolding ABF_def BCG_def A_def B_def C_def
     by (intro cat_comma_is_arrI[OF assms(1,2)])
       (
-        cs_concl 
+        cs_concl
           cs_simp: cat_cs_simps cat_comma_cs_simps cs_intro: cat_cs_intros
       )+
 qed
@@ -741,16 +735,16 @@ subsubsection\<open>\<open>Hom\<close>-set\<close>
 lemma cat_comma_Hom:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    and "a'b'f' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-  shows "Hom (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) abf a'b'f' = cat_comma_Hom \<GG> \<HH> abf a'b'f'"
+    and "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    and "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+  shows "Hom (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) A B = cat_comma_Hom \<GG> \<HH> A B"
 proof(intro vsubset_antisym vsubsetI, unfold in_Hom_iff)
-  fix F assume "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
-  with assms(1,2) show "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
+  fix ABF assume "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+  with assms(1,2) show "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
     by (elim cat_comma_is_arrE[OF _ assms(1,2)], intro cat_comma_HomI) force+
 next
-  fix F assume "F \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> abf a'b'f'"
-  with assms(1,2) show "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'"
+  fix ABF assume "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
+  with assms(1,2) show "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
     by (elim cat_comma_HomE[OF _ assms(1,2)], intro cat_comma_is_arrI) force+
 qed
 
@@ -791,9 +785,9 @@ proof-
     qed (use assms in \<open>cs_concl cs_intro: cat_comma_composableI\<close>)
     from assms show "\<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
       by (cs_concl cs_simp: cat_comma_cs_simps)
-    from assms show "g \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> f : a \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> c"
-      if "g : b \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> b"
-      for b c g a f
+    from assms show "G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
+      if "G : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C" and "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+      for B C G A F
       using that by (cs_concl cs_intro: cat_comma_cs_intros)
     from assms show 
       "H \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F =
@@ -832,17 +826,17 @@ proof-
           and [cat_cs_simps]: 
             "f''' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g''\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h''\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
         by auto (*slow*)      
-      note [cat_cs_simps] = 
+      note [cat_cs_simps] =
         category.cat_assoc_helper[
-          where \<CC>=\<CC> 
-            and h=f'' 
-            and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close> 
+          where \<CC>=\<CC>
+            and h=f''
+            and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close>
             and q=\<open>\<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'\<close>
           ]
         category.cat_assoc_helper[
-          where \<CC>=\<CC> 
-            and h=f'' 
-            and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close> 
+          where \<CC>=\<CC>
+            and h=f''
+            and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close>
             and q=\<open>\<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'\<close>
           ]
         category.cat_assoc_helper[
@@ -861,8 +855,8 @@ proof-
           )
     qed
 
-    show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a"
-      if "a \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" for a
+    show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>A\<rparr> : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> A"
+      if "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" for A
       using that
       by (elim cat_comma_ObjE[OF _ assms(1)]; (simp only:)?) 
         (
@@ -871,8 +865,8 @@ proof-
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
 
-    show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> f = f"
-      if "f : a \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> b" for a b f
+    show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>B\<rparr> \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F = F"
+      if "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" for A B F
       using that 
       by (elim cat_comma_is_arrE[OF _ assms]; (simp only:)?)
         (
@@ -881,8 +875,8 @@ proof-
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
 
-    show "f \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>b\<rparr> = f"
-      if "f : b \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> c" for b c f
+    show "F \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>\<lparr>B\<rparr> = F"
+      if "F : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C" for B C F
       using that 
       by (elim cat_comma_is_arrE[OF _ assms]; (simp only:)?)
         (
@@ -1212,6 +1206,461 @@ qed
 
 
 
+subsection\<open>Opposite comma category functor\<close>
+
+
+subsubsection\<open>Background\<close>
+
+
+text\<open>
+See \cite{noauthor_wikipedia_2001}\footnote{
+\url{https://en.wikipedia.org/wiki/Opposite_category}
+} for background information.
+\<close>
+
+
+subsubsection\<open>Object flip\<close>
+
+definition op_cf_commma_obj_flip :: "V \<Rightarrow> V \<Rightarrow> V"
+  where "op_cf_commma_obj_flip \<GG> \<HH> =
+    (\<lambda>A\<in>\<^sub>\<circ>(\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>. [A\<lparr>1\<^sub>\<nat>\<rparr>, A\<lparr>0\<rparr>, A\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>)"
+
+
+text\<open>Elementary properties.\<close>
+
+mk_VLambda op_cf_commma_obj_flip_def
+  |vsv op_cf_commma_obj_flip_vsv[cat_comma_cs_intros]|
+  |vdomain op_cf_commma_obj_flip_vdomain[cat_comma_cs_simps]|
+  |app op_cf_commma_obj_flip_app'|
+
+lemma op_cf_commma_obj_flip_app[cat_comma_cs_simps]:
+  assumes "A = [a, b, f]\<^sub>\<circ>" and "A \<in>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>"
+  shows "op_cf_commma_obj_flip \<GG> \<HH>\<lparr>A\<rparr> = [b, a, f]\<^sub>\<circ>"
+  using assms unfolding op_cf_commma_obj_flip_def by (simp add: nat_omega_simps)
+
+lemma op_cf_commma_obj_flip_v11[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "v11 (op_cf_commma_obj_flip \<GG> \<HH>)"
+proof(rule vsv.vsv_valeq_v11I, unfold op_cf_commma_obj_flip_vdomain)
+  fix A B assume prems:
+    "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    "B \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    "op_cf_commma_obj_flip \<GG> \<HH>\<lparr>A\<rparr> = op_cf_commma_obj_flip \<GG> \<HH>\<lparr>B\<rparr>"
+  from prems(1,2) assms obtain a b f a' b' f' 
+    where A_def: "A = [a, b, f]\<^sub>\<circ>" 
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
+    by (elim cat_comma_ObjE[OF _ assms])
+  from prems(3,1,2) show "A = B"
+    by (simp_all add: A_def B_def op_cf_commma_obj_flip_app nat_omega_simps)
+qed (auto intro: op_cf_commma_obj_flip_vsv)
+
+lemma op_cf_commma_obj_flip_vrange[cat_comma_cs_simps]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<R>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>) = (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Obj\<rparr>"
+proof(intro vsubset_antisym)
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  show "\<R>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>) \<subseteq>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Obj\<rparr>"
+  proof
+    (
+      intro vsv.vsv_vrange_vsubset op_cf_commma_obj_flip_vsv, 
+      unfold cat_comma_cs_simps
+    )
+    fix A assume "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+    then obtain a b f
+      where A_def: "A = [a, b, f]\<^sub>\<circ>"
+        and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+        and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+        and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+      by (elim cat_comma_ObjE[OF _ assms])
+    from a b f show 
+      "op_cf_commma_obj_flip \<GG> \<HH>\<lparr>A\<rparr> \<in>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Obj\<rparr>"
+      unfolding A_def
+      by 
+        (
+          cs_concl 
+            cs_simp: cat_comma_cs_simps cat_op_simps 
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+        )
+  qed
+  show "(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Obj\<rparr> \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>)"
+  proof(intro vsubsetI)
+    fix B assume "B \<in>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Obj\<rparr>"
+    then obtain a b f
+      where B_def: "B = [b, a, f]\<^sub>\<circ>"
+        and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+        and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+        and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+      by 
+        (
+          elim cat_comma_ObjE[
+            OF _ \<HH>.is_functor_op \<GG>.is_functor_op, unfolded cat_op_simps
+            ]
+        )
+    from a b f have B_def: "B = op_cf_commma_obj_flip \<GG> \<HH>\<lparr>a, b, f\<rparr>\<^sub>\<bullet>"
+      by 
+        (
+          cs_concl 
+            cs_simp: cat_comma_cs_simps B_def
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+    from a b f have "[a, b, f]\<^sub>\<circ> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>)"
+      by 
+        (
+          cs_concl
+            cs_simp: cat_comma_cs_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+    with op_cf_commma_obj_flip_vsv show "B \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>)"
+      unfolding B_def by auto
+  qed
+qed
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+definition op_cf_comma :: "V \<Rightarrow> V \<Rightarrow> V"
+  where "op_cf_comma \<GG> \<HH> =
+    [
+      op_cf_commma_obj_flip \<GG> \<HH>,
+      (
+        \<lambda>ABF\<in>\<^sub>\<circ>(\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Arr\<rparr>.
+          [
+            op_cf_commma_obj_flip \<GG> \<HH>\<lparr>ABF\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>,
+            op_cf_commma_obj_flip \<GG> \<HH>\<lparr>ABF\<lparr>0\<rparr>\<rparr>,
+            [ABF\<lparr>2\<^sub>\<nat>\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>, ABF\<lparr>2\<^sub>\<nat>\<rparr>\<lparr>0\<^sub>\<nat>\<rparr>]\<^sub>\<circ>
+          ]\<^sub>\<circ>
+      ),
+      op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>),
+      (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)
+    ]\<^sub>\<circ>"
+
+
+text\<open>Components.\<close>
+
+lemma op_cf_comma_components:
+  shows [cat_comma_cs_simps]: 
+      "op_cf_comma \<GG> \<HH>\<lparr>ObjMap\<rparr> = op_cf_commma_obj_flip \<GG> \<HH>"
+    and "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr> =
+      (
+        \<lambda>ABF\<in>\<^sub>\<circ>(\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Arr\<rparr>.
+          [
+            op_cf_commma_obj_flip \<GG> \<HH>\<lparr>ABF\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>,
+            op_cf_commma_obj_flip \<GG> \<HH>\<lparr>ABF\<lparr>0\<rparr>\<rparr>,
+            [ABF\<lparr>2\<^sub>\<nat>\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>, ABF\<lparr>2\<^sub>\<nat>\<rparr>\<lparr>0\<^sub>\<nat>\<rparr>]\<^sub>\<circ>
+          ]\<^sub>\<circ>
+      )"
+    and [cat_comma_cs_simps]: 
+      "op_cf_comma \<GG> \<HH>\<lparr>HomDom\<rparr> = op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)"
+    and [cat_comma_cs_simps]: 
+      "op_cf_comma \<GG> \<HH>\<lparr>HomCod\<rparr> = (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)"
+  unfolding op_cf_comma_def dghm_field_simps by (simp_all add: nat_omega_simps)
+
+
+subsubsection\<open>Arrow map\<close>
+
+mk_VLambda op_cf_comma_components(2)
+  |vsv op_cf_comma_ArrMap_vsv[cat_comma_cs_intros]|
+  |vdomain op_cf_comma_ArrMap_vdomain[cat_comma_cs_simps]|
+  |app op_cf_comma_ArrMap_app'|
+
+lemma op_cf_comma_ArrMap_app[cat_comma_cs_simps]:
+  assumes "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  shows "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> =
+    [
+      op_cf_commma_obj_flip \<GG> \<HH>\<lparr>a', b', f'\<rparr>\<^sub>\<bullet>,
+      op_cf_commma_obj_flip \<GG> \<HH>\<lparr>a, b, f\<rparr>\<^sub>\<bullet>,
+      [h, g]\<^sub>\<circ>
+    ]\<^sub>\<circ>"
+  using assms(2) by (simp add: assms(1) op_cf_comma_ArrMap_app' nat_omega_simps)
+
+lemma op_cf_comma_ArrMap_v11[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "v11 (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>)"
+proof
+  (
+    rule vsv.vsv_valeq_v11I, 
+    unfold op_cf_comma_ArrMap_vdomain,
+    intro op_cf_comma_ArrMap_vsv
+  )
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  fix ABF ABF' assume prems:
+    "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+    "ABF' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+    "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF'\<rparr>"
+  from prems(1) obtain A B where ABF: "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+  from prems(2) obtain A' B' where ABF': "ABF' : A' \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B'" by auto
+  from ABF obtain a b f a' b' f' g h 
+    where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [a, b, f]\<^sub>\<circ>"
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
+      and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+      and "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
+      and "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+      and "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+      and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    by (elim cat_comma_is_arrE[OF _ assms])
+  from ABF' obtain a'' b'' f'' a''' b''' f''' g' h' 
+    where ABF'_def: "ABF' = [[a'', b'', f'']\<^sub>\<circ>, [a''', b''', f''']\<^sub>\<circ>, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+      and A'_def: "A' = [a'', b'', f'']\<^sub>\<circ>"
+      and B'_def: "B' = [a''', b''', f''']\<^sub>\<circ>"
+      and "g' : a'' \<mapsto>\<^bsub>\<AA>\<^esub> a'''"
+      and "h' : b'' \<mapsto>\<^bsub>\<BB>\<^esub> b'''"
+      and "f'' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
+      and "f''' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'''\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'''\<rparr>"
+      and "f''' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
+    by (elim cat_comma_is_arrE[OF _ assms])
+  from ABF ABF' have abf:
+    "[a, b, f]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>"
+    "[a', b', f']\<^sub>\<circ> \<in>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>"
+    "[a'', b'', f'']\<^sub>\<circ> \<in>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>"
+    "[a''', b''', f''']\<^sub>\<circ> \<in>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>"
+    unfolding ABF_def ABF'_def A_def B_def A'_def B'_def by auto
+  note v11_injective = v11.v11_injective[
+      OF op_cf_commma_obj_flip_v11, OF assms, unfolded cat_comma_cs_simps
+      ]
+  from 
+    prems(3,1,2) assms 
+    op_cf_commma_obj_flip_v11 
+    v11_injective[OF abf(1,3)] 
+    v11_injective[OF abf(2,4)] 
+  show "ABF = ABF'"
+    by 
+      (
+        simp_all add: 
+          ABF_def ABF'_def op_cf_comma_ArrMap_app' nat_omega_simps 
+      )
+qed
+
+lemma op_cf_comma_ArrMap_is_arr:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+  shows "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> :
+    op_cf_commma_obj_flip \<GG> \<HH>\<lparr>B\<rparr> \<mapsto>\<^bsub>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<^esub> 
+    op_cf_commma_obj_flip \<GG> \<HH>\<lparr>A\<rparr>"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> 
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms(3) obtain a b f a' b' f' g h
+    where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [a, b, f]\<^sub>\<circ>"
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
+      and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+      and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
+      and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+      and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+      and f'g_hf: "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    by (elim cat_comma_is_arrE[OF _ assms(1,2)])
+  from g h f f' f'g_hf show ?thesis
+    unfolding ABF_def A_def B_def
+    by 
+      (
+        cs_concl 
+          cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+qed
+
+lemma op_cf_comma_ArrMap_is_arr':
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
+    and "A' = op_cf_commma_obj_flip \<GG> \<HH>\<lparr>B\<rparr>"
+    and "B' = op_cf_commma_obj_flip \<GG> \<HH>\<lparr>A\<rparr>"
+  shows "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> : A' \<mapsto>\<^bsub>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<^esub> B'"
+  using assms(1-3) unfolding assms(4,5) by (intro op_cf_comma_ArrMap_is_arr)
+
+lemma op_cf_comma_ArrMap_vrange[cat_comma_cs_simps]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<R>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>) = (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr>"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  interpret op_\<GG>\<HH>: category \<alpha> \<open>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<close>
+    by (cs_concl cs_intro: cat_comma_cs_intros cat_op_intros)
+  show ?thesis
+  proof(intro vsubset_antisym)
+    show "\<R>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr>"
+    proof
+      (
+        intro vsv.vsv_vrange_vsubset op_cf_comma_ArrMap_vsv, 
+        unfold cat_comma_cs_simps
+      )
+      fix ABF assume prems: "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      then obtain A B where ABF: "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+      from op_cf_comma_ArrMap_is_arr[OF assms this] show 
+        "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> \<in>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr>"
+        by auto
+    qed
+    show "(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr> \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>)"
+    proof(intro vsubsetI)
+      fix ABF assume prems: "ABF \<in>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr>"
+      then obtain A B where ABF: "ABF : A \<mapsto>\<^bsub>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<^esub> B" 
+        by auto
+      then obtain a b f a' b' f' g h
+        where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          and A_def: "A = [a, b, f]\<^sub>\<circ>"
+          and B_def: "B = [a', b', f']\<^sub>\<circ>"
+          and g: "g : a' \<mapsto>\<^bsub>\<BB>\<^esub> a"
+          and h: "h : b' \<mapsto>\<^bsub>\<AA>\<^esub> b"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+          and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>" 
+          and f'g_hf: "f' \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> \<HH>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<GG>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f"
+        by 
+          (
+            elim cat_comma_is_arrE[
+              OF _ \<HH>.is_functor_op \<GG>.is_functor_op, unfolded cat_op_simps
+              ]
+          )
+      from f'g_hf g h f f' have gf'_fh:
+        "\<HH>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f' = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr>"
+        by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+      with g h f f' have 
+        "[[b', a', f']\<^sub>\<circ>, [b, a, f]\<^sub>\<circ>, [h, g]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>)"
+        "ABF = op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>[b', a', f']\<^sub>\<circ>, [b, a, f]\<^sub>\<circ>, [h, g]\<^sub>\<circ>\<rparr>\<^sub>\<bullet>"
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps ABF_def
+              cs_intro: cat_cs_intros cat_comma_cs_intros
+          )+
+      with op_cf_comma_ArrMap_vsv show "ABF \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>)"
+        by auto
+    qed
+  qed
+qed
+
+
+subsubsection\<open>Opposite comma category functor is an isomorphism of categories\<close>
+
+lemma op_cf_comma_is_iso_functor:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "op_cf_comma \<GG> \<HH> : 
+    op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  show ?thesis
+  proof(intro is_iso_functorI' is_functorI')
+    show "vfsequence (op_cf_comma \<GG> \<HH>)"
+      unfolding op_cf_comma_def by simp
+    show "vcard (op_cf_comma \<GG> \<HH>) = 4\<^sub>\<nat>"
+      unfolding op_cf_comma_def by (simp add: nat_omega_simps)
+    from assms show "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> :
+      op_cf_comma \<GG> \<HH>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<mapsto>\<^bsub>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<^esub>
+      op_cf_comma \<GG> \<HH>\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
+      if "ABF : A \<mapsto>\<^bsub>op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<^esub> B" for A B ABF
+      using that
+      unfolding cat_op_simps
+      by 
+        (
+          cs_concl
+            cs_intro: op_cf_comma_ArrMap_is_arr' cs_simp: cat_comma_cs_simps
+        )
+    show
+      "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<^esub> F\<rparr> =
+        op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<^esub>
+          op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      if "G : B \<mapsto>\<^bsub>op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<^esub> C" 
+        and "F : A \<mapsto>\<^bsub>op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<^esub> B"
+      for B C G A F
+    proof-
+      note G = that(1)[unfolded cat_op_simps]
+      note F = that(2)[unfolded cat_op_simps]
+      from assms G obtain a b f a' b' f' g h
+        where G_def: "G = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          and C_def: "C = [a, b, f]\<^sub>\<circ>"
+          and B_def: "B = [a', b', f']\<^sub>\<circ>"
+          and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+          and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+          and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+          and [symmetric, cat_comma_cs_simps]: 
+            "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+        by auto
+      with assms F obtain a'' b'' f'' g' h'
+        where F_def: "F = [[a', b', f']\<^sub>\<circ>, [a'', b'', f'']\<^sub>\<circ>, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+          and A_def: "A = [a'', b'', f'']\<^sub>\<circ>"
+          and g': "g' : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
+          and h': "h' : b' \<mapsto>\<^bsub>\<BB>\<^esub> b''"
+          and f'': "f'' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
+          and [cat_comma_cs_simps]: 
+            "f'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+        by auto (*slow*)
+      note [cat_comma_cs_simps] = 
+        category.cat_assoc_helper[
+          where \<CC>=\<CC> and h=f'' and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close> and q=\<open>\<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'\<close>
+          ]
+      from assms that g h f f' g' h' f' f'' show ?thesis
+        unfolding cat_op_simps G_def C_def B_def F_def A_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed
+    show 
+      "op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> =
+        (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>CId\<rparr>\<lparr>op_cf_comma \<GG> \<HH>\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
+      if "C \<in>\<^sub>\<circ> op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)\<lparr>Obj\<rparr>" for C
+    proof-
+      from that[unfolded cat_op_simps] assms obtain a b f 
+        where C_def: "C = [a, b, f]\<^sub>\<circ>"
+          and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+          and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+        by auto
+      from a b f that show ?thesis
+        unfolding cat_op_simps C_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed
+  qed
+    (
+      cs_concl
+        cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+        cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_op_intros
+    )+
+qed
+
+lemma op_cf_comma_is_iso_functor'[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<AA>' = op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)"
+    and "\<BB>' = (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)"
+  shows "op_cf_comma \<GG> \<HH> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1,2) unfolding assms(3,4) by (rule op_cf_comma_is_iso_functor)
+
+lemma op_cf_comma_is_functor:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "op_cf_comma \<GG> \<HH> :
+    op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)"
+  by (rule is_iso_functorD(1)[OF op_cf_comma_is_iso_functor[OF assms]])
+
+lemma op_cf_comma_is_functor'[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<AA>' = op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>)"
+    and "\<BB>' = (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)"
+  shows "op_cf_comma \<GG> \<HH> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1,2) unfolding assms(3,4) by (rule op_cf_comma_is_functor)
+
+
+
 subsection\<open>Projections for a comma category\<close>
 
 
@@ -1335,17 +1784,16 @@ mk_VLambda cf_comma_proj_right_components(2)
   |vdomain cf_comma_proj_right_ArrMap_vdomain[cat_comma_cs_simps]|
 
 lemma cf_comma_proj_left_ArrMap_app[cat_comma_cs_simps]:
-  assumes "A = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
-    and "[abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  shows "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr>\<lparr>A\<rparr> = g"
+  assumes "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>" and "[A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  shows "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = g"
   using assms(2)
   unfolding assms(1) cf_comma_proj_left_components 
   by (simp add: nat_omega_simps)
 
 lemma cf_comma_proj_right_ArrMap_app[cat_comma_cs_simps]:
-  assumes "A = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
-    and "[abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  shows "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr>\<lparr>A\<rparr> = h"
+  assumes "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
+    and "[A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+  shows "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = h"
   using assms(2)
   unfolding assms(1) cf_comma_proj_right_components 
   by (simp add: nat_omega_simps)
@@ -1357,7 +1805,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   from assms interpret category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
   fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  then obtain abf a'b'f' where "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'" by auto
+  then obtain A B where "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
   with assms obtain a b f a' b' f' g h
     where F_def: "F = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
@@ -1374,7 +1822,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   from assms interpret category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
     by (cs_concl cs_intro: cat_comma_cs_intros)
   fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-  then obtain abf a'b'f' where F: "F : abf \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> a'b'f'" by auto
+  then obtain A B where F: "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
   with assms obtain a b f a' b' f' g h
     where F_def: "F = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
       and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
@@ -1614,6 +2062,191 @@ lemma cf_comma_proj_right_is_functor'[cat_comma_cs_intros]:
   using assms(1,2) unfolding assms(3) by (rule cf_comma_proj_right_is_functor)
 
 
+subsubsection\<open>Opposite projections for a comma category\<close>
+
+lemma op_cf_comma_proj_left: 
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>) = (op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  show "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>) = (op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
+  proof(rule cf_eqI)
+    show "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>) : op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
+      by 
+        (
+          cs_concl cs_simp: cs_intro: 
+            cat_cs_intros cat_comma_cs_intros cat_op_intros
+        )
+    then have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ObjMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ArrMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      by (cs_concl cs_simp: cat_comma_cs_simps cat_op_simps)+
+    show "(op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH> :
+      op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
+      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros)
+    then have ObjMap_dom_rhs:
+      "\<D>\<^sub>\<circ> (((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>) =
+        \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and ArrMap_dom_rhs: 
+        "\<D>\<^sub>\<circ> (((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>) =
+          \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cat_op_simps)+
+    show
+      "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ObjMap\<rparr> =
+        ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>"
+    proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+      fix A assume "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      with assms obtain a b f 
+        where A_def: "A = [a, b, f]\<^sub>\<circ>"
+          and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+          and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+        by auto
+      from a b f show 
+        "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> =
+          ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+        unfolding A_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed
+      (
+        cs_concl
+          cs_simp: cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )+
+    show 
+      "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ArrMap\<rparr> =
+        ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
+    proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+      fix ABF assume "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      then obtain A B where "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+      with assms obtain a b f a' b' f' g h
+        where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          and A_def: "A = [a, b, f]\<^sub>\<circ>"
+          and B_def: "B = [a', b', f']\<^sub>\<circ>"
+          and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+          and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+          and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+          and [symmetric, cat_cs_simps]: 
+            "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+        by auto
+      from g h f f' show "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> =
+        ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr>"
+        unfolding ABF_def A_def B_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed 
+      (
+        cs_concl
+          cs_simp: cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )+
+  qed simp_all
+qed
+
+lemma op_cf_comma_proj_right:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>) = (op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  show "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>) = (op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
+  proof(rule cf_eqI)
+    show "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>) : op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
+      by 
+        (
+          cs_concl cs_simp: cs_intro: 
+            cat_cs_intros cat_comma_cs_intros cat_op_intros
+        )
+    then have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ArrMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      by (cs_concl cs_simp: cat_comma_cs_simps cat_op_simps)+
+    show "(op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH> :
+      op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
+      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros)
+    then have ObjMap_dom_rhs:
+      "\<D>\<^sub>\<circ> (((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>) =
+        \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      and ArrMap_dom_rhs:
+        "\<D>\<^sub>\<circ> (((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>) =
+          \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cat_op_simps)+
+    show
+      "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr> =
+        ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>"
+    proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+      fix A assume prems: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
+      with assms obtain a b f 
+        where A_def: "A = [a, b, f]\<^sub>\<circ>"
+          and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+          and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+        by auto
+      from a b f show
+        "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> =
+          ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+        unfolding A_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed
+      (
+        cs_concl
+          cs_simp: cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )+
+    show 
+      "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ArrMap\<rparr> =
+        ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
+    proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+      fix ABF assume prems: "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
+      then obtain A B where ABF: "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+      with assms obtain a b f a' b' f' g h
+        where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          and A_def: "A = [a, b, f]\<^sub>\<circ>"
+          and B_def: "B = [a', b', f']\<^sub>\<circ>"
+          and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+          and h: "h : b \<mapsto>\<^bsub>\<BB>\<^esub> b'"
+          and f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+          and f': "f' : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+          and [symmetric, cat_cs_simps]: 
+            "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+        by auto
+      from g h f f' show "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> =
+        ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr>"
+        unfolding ABF_def A_def B_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+          )
+    qed 
+      (
+        cs_concl
+          cs_simp: cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )+
+  qed simp_all
+qed
+
+
 subsubsection\<open>Projections for a tiny comma category\<close>
 
 lemma cf_comma_proj_left_is_tm_functor:
@@ -1766,9 +2399,7 @@ lemmas [cat_comma_cs_intros] = is_functor.cat_obj_cf_comma_ObjI
 
 lemma (in is_functor) cat_cf_obj_comma_ObjD[dest]:
   assumes "[a, b', f]\<^sub>\<circ> \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  shows "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-    and "b' = 0" 
-    and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+  shows "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and "b' = 0" and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
 proof-
   from assms(2) have "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -1786,9 +2417,7 @@ lemmas [dest] = is_functor.cat_cf_obj_comma_ObjD[rotated 1]
 
 lemma (in is_functor) cat_obj_cf_comma_ObjD[dest]:
   assumes "[b', a, f]\<^sub>\<circ> \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  shows "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-    and "b' = 0" 
-    and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+  shows "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and "b' = 0" and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
 proof-
   from assms(2) have "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -1806,9 +2435,10 @@ lemmas [dest] = is_functor.cat_obj_cf_comma_ObjD[rotated 1]
 
 lemma (in is_functor) cat_cf_obj_comma_ObjE[elim]:
   assumes "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  obtains a f where "A = [a, 0, f]\<^sub>\<circ>" 
-    and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-    and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+  obtains a f 
+    where "A = [a, 0, f]\<^sub>\<circ>" 
+      and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+      and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
 proof-
   from assms(2) have "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -1830,9 +2460,10 @@ lemmas [elim] = is_functor.cat_cf_obj_comma_ObjE[rotated 1]
 
 lemma (in is_functor) cat_obj_cf_comma_ObjE[elim]:
   assumes "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  obtains a f where "A = [0, a, f]\<^sub>\<circ>"
-    and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-    and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+  obtains a f 
+    where "A = [0, a, f]\<^sub>\<circ>"
+      and "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+      and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
 proof-
   from assms(2) have "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -1857,9 +2488,9 @@ subsubsection\<open>Arrows\<close>
 
 lemma (in is_functor) cat_cf_obj_comma_ArrI[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-    and "F = [abf, a'b'f', [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "abf = [a, 0, f]\<^sub>\<circ>"
-    and "a'b'f' = [a', 0, f']\<^sub>\<circ>"
+    and "F = [A, B, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "A = [a, 0, f]\<^sub>\<circ>"
+    and "B = [a', 0, f']\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     and "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
@@ -1881,12 +2512,10 @@ proof(intro cat_comma_ArrI cat_comma_HomI)
   from 0 assms(6) show 
     "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>0\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
     by (cs_concl cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros)
-  from const assms(5,6) show 
-    "abf \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (dghm_const (cat_1 []\<^sub>\<circ> []\<^sub>\<circ>) \<BB> b (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>))\<lparr>Obj\<rparr>"
+  from const assms(5,6) show "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
     by (fold cat_cf_obj_comma_def)
       (cs_concl cs_simp: assms(3) cs_intro: cat_cs_intros cat_comma_cs_intros)
-  from const assms(5,7) show 
-    "a'b'f' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (dghm_const (cat_1 []\<^sub>\<circ> []\<^sub>\<circ>) \<BB> b (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>))\<lparr>Obj\<rparr>"
+  from const assms(5,7) show "B \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
     by (fold cat_cf_obj_comma_def)
       (cs_concl cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros)
 qed (intro assms)+
@@ -1895,9 +2524,9 @@ lemmas [cat_comma_cs_intros] = is_functor.cat_cf_obj_comma_ArrI
 
 lemma (in is_functor) cat_obj_cf_comma_ArrI[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-    and "F = [abf, a'b'f', [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "abf = [0, a, f]\<^sub>\<circ>"
-    and "a'b'f' = [0, a', f']\<^sub>\<circ>"
+    and "F = [A, B, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "A = [0, a, f]\<^sub>\<circ>"
+    and "B = [0, a', f']\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     and "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> "
@@ -1919,12 +2548,10 @@ proof(intro cat_comma_ArrI cat_comma_HomI)
   from 0 assms(7) show 
     "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>0\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
     by (cs_concl cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros)
-  from const assms(5,6) show 
-    "abf \<in>\<^sub>\<circ> (dghm_const (cat_1 0 0) \<BB> b (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+  from const assms(5,6) show "A \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by (fold cat_obj_cf_comma_def)
       (cs_concl cs_simp: assms(3) cs_intro: cat_cs_intros cat_comma_cs_intros)
-  from const assms(5,7) show 
-    "a'b'f' \<in>\<^sub>\<circ> (dghm_const (cat_1 []\<^sub>\<circ> []\<^sub>\<circ>) \<BB> b (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+  from const assms(5,7) show "B \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by (fold cat_obj_cf_comma_def)
       (cs_concl cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros)
 qed (intro assms)+
@@ -1933,29 +2560,29 @@ lemmas [cat_comma_cs_intros] = is_functor.cat_obj_cf_comma_ArrI
 
 lemma (in is_functor) cat_cf_obj_comma_ArrE[elim]:
   assumes "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  obtains abf a'b'f' a f a' f' g
-    where "F = [abf, a'b'f', [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, 0, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', 0, f']\<^sub>\<circ>"
+  obtains A B a f a' f' g
+    where "F = [A, B, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, 0, f]\<^sub>\<circ>"
+      and "B = [a', 0, f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
-      and "abf \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
-      and "a'b'f' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+      and "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+      and "B \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
 proof-
   from cat_comma_ArrE[OF assms(1)[unfolded cat_cf_obj_comma_def]] 
-  obtain abf a'b'f' 
-    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom \<FF> (cf_const (cat_1 0 0) \<BB> b) abf a'b'f'"
-      and abf: "abf \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
-      and a'b'f': "a'b'f' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
+  obtain A B 
+    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom \<FF> (cf_const (cat_1 0 0) \<BB> b) A B"
+      and A: "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
+      and B: "B \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
     by auto
   from assms(2) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from F obtain a b'' f a' b' f' g h
-    where F_def: "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-      and abf_def: "abf = [a, b'', f]\<^sub>\<circ>"
-      and a'b'f'_def: "a'b'f' = [a', b', f']\<^sub>\<circ>"
+    where F_def: "F = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [a, b'', f]\<^sub>\<circ>"
+      and B_def: "B = [a', b', f']\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and h: "h : b'' \<mapsto>\<^bsub>cat_1 0 0\<^esub> b'"
       and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
@@ -1964,11 +2591,11 @@ proof-
         "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
     by (elim cat_comma_HomE[OF _ is_functor_axioms const]) blast
   note hb'b'' = cat_1_is_arrD[OF h]
-  from F_def have F_def: "F = [abf, a'b'f', [g, 0]\<^sub>\<circ>]\<^sub>\<circ>" 
+  from F_def have F_def: "F = [A, B, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>" 
     unfolding hb'b'' by simp
-  from abf_def have abf_def: "abf = [a, 0, f]\<^sub>\<circ>"
+  from A_def have A_def: "A = [a, 0, f]\<^sub>\<circ>"
     unfolding hb'b'' by simp
-  from a'b'f'_def have a'b'f'_def: "a'b'f' = [a', 0, f']\<^sub>\<circ>"
+  from B_def have B_def: "B = [a', 0, f']\<^sub>\<circ>"
     unfolding hb'b'' by simp
   from f have f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
@@ -1977,8 +2604,8 @@ proof-
   from f_def f f' g h have f_def: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
     unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 
-    that F_def abf_def a'b'f'_def g f f' f_def  
-    a'b'f'[folded cat_cf_obj_comma_def] abf[folded cat_cf_obj_comma_def]
+    that F_def A_def B_def g f f' f_def  
+    B[folded cat_cf_obj_comma_def] A[folded cat_cf_obj_comma_def]
   show ?thesis
     by blast
 qed
@@ -1987,29 +2614,29 @@ lemmas [elim] = is_functor.cat_cf_obj_comma_ArrE[rotated 1]
 
 lemma (in is_functor) cat_obj_cf_comma_ArrE[elim]:
   assumes "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  obtains baf b'a'f' a f a' f' g
-    where "F = [baf, b'a'f', [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "baf = [0, a, f]\<^sub>\<circ>"
-      and "b'a'f' = [0, a', f']\<^sub>\<circ>"
+  obtains A B a f a' f' g
+    where "F = [A, B, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [0, a, f]\<^sub>\<circ>"
+      and "B = [0, a', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       and "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
       and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
-      and "baf \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      and "b'a'f' \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and "B \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
 proof-
   from cat_comma_ArrE[OF assms(1)[unfolded cat_obj_cf_comma_def]] 
-  obtain baf b'a'f' 
-    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom (cf_const (cat_1 0 0) \<BB> b) \<FF> baf b'a'f'"
-      and baf: "baf \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      and b'a'f': "b'a'f' \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+  obtain A B 
+    where F: "F \<in>\<^sub>\<circ> cat_comma_Hom (cf_const (cat_1 0 0) \<BB> b) \<FF> A B"
+      and A: "A \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and B: "B \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by auto
   from assms(2) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from F obtain a b'' f a' b' f' h g 
-    where F_def: "F = [baf, b'a'f', [h, g]\<^sub>\<circ>]\<^sub>\<circ>"
-      and baf_def: "baf = [b', a, f]\<^sub>\<circ>"
-      and b'a'f'_def: "b'a'f' = [b'', a', f']\<^sub>\<circ>"
+    where F_def: "F = [A, B, [h, g]\<^sub>\<circ>]\<^sub>\<circ>"
+      and A_def: "A = [b', a, f]\<^sub>\<circ>"
+      and B_def: "B = [b'', a', f']\<^sub>\<circ>"
       and h: "h : b' \<mapsto>\<^bsub>cat_1 0 0\<^esub> b''"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and f: "f : cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
@@ -2018,12 +2645,10 @@ proof-
         "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
     by (elim cat_comma_HomE[OF _ const is_functor_axioms]) blast
   note hb'b'' = cat_1_is_arrD[OF h]
-  from F_def have F_def: "F = [baf, b'a'f', [0, g]\<^sub>\<circ>]\<^sub>\<circ>" 
+  from F_def have F_def: "F = [A, B, [0, g]\<^sub>\<circ>]\<^sub>\<circ>" 
     unfolding hb'b'' by simp
-  from baf_def have baf_def: "baf = [0, a, f]\<^sub>\<circ>" 
-    unfolding hb'b'' by simp
-  from b'a'f'_def have b'a'f'_def: "b'a'f' = [0, a', f']\<^sub>\<circ>"
-    unfolding hb'b'' by simp
+  from A_def have A_def: "A = [0, a, f]\<^sub>\<circ>" unfolding hb'b'' by simp
+  from B_def have B_def: "B = [0, a', f']\<^sub>\<circ>" unfolding hb'b'' by simp
   from f have f: "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from f' have f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
@@ -2031,8 +2656,8 @@ proof-
   from f'_def f f' g h have f'_def[symmetric]: "f' = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
     unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 
-    that F_def baf_def b'a'f'_def g f f' f'_def  
-    baf[folded cat_obj_cf_comma_def] b'a'f'[folded cat_obj_cf_comma_def] 
+    that F_def A_def B_def g f f' f'_def  
+    A[folded cat_obj_cf_comma_def] B[folded cat_obj_cf_comma_def] 
   show ?thesis
     by blast
 qed
@@ -2082,8 +2707,8 @@ lemma cat_cf_obj_comma_Dom_vdomain[cat_comma_cs_simps]:
   unfolding cat_cf_obj_comma_def cat_comma_components by simp
 
 lemma cat_cf_obj_comma_Dom_app[cat_comma_cs_simps]:
-  assumes "F = [abf, a'b'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
-  shows "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Dom\<rparr>\<lparr>F\<rparr> = abf"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  shows "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A"
   using assms(2) 
   unfolding assms(1) cat_cf_obj_comma_def cat_comma_components 
   by simp
@@ -2111,8 +2736,8 @@ lemma cat_obj_cf_comma_Dom_vdomain[cat_comma_cs_simps]:
   unfolding cat_obj_cf_comma_def cat_comma_components by simp
 
 lemma cat_obj_cf_comma_Dom_app[cat_comma_cs_simps]:
-  assumes "F = [baf, b'a'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-  shows "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Dom\<rparr>\<lparr>F\<rparr> = baf"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  shows "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A"
   using assms(2)
   unfolding assms(1) cat_obj_cf_comma_def cat_comma_components 
   by simp
@@ -2143,8 +2768,8 @@ lemma cat_cf_obj_comma_Cod_vdomain[cat_comma_cs_simps]:
   unfolding cat_cf_obj_comma_def cat_comma_components by simp
 
 lemma cat_cf_obj_comma_Cod_app[cat_comma_cs_simps]:
-  assumes "F = [abf, a'b'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
-  shows "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Cod\<rparr>\<lparr>F\<rparr> = a'b'f'"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  shows "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
   using assms(2) 
   unfolding assms(1) cat_cf_obj_comma_def cat_comma_components 
   by (simp add: nat_omega_simps)
@@ -2172,8 +2797,8 @@ lemma cat_obj_cf_comma_Cod_vdomain[cat_comma_cs_simps]:
   unfolding cat_obj_cf_comma_def cat_comma_components by simp
 
 lemma cat_obj_cf_comma_Cod_app[cat_comma_cs_simps]:
-  assumes "F = [baf, b'a'f', gh]\<^sub>\<circ>" and "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-  shows "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Cod\<rparr>\<lparr>F\<rparr> = b'a'f'"
+  assumes "ABF = [A, B, F]\<^sub>\<circ>" and "ABF \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  shows "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
   using assms(2)
   unfolding assms(1) cat_obj_cf_comma_def cat_comma_components 
   by (simp add: nat_omega_simps)
@@ -2198,19 +2823,19 @@ subsubsection\<open>Arrow with a domain and a codomain\<close>
 
 lemma (in is_functor) cat_cf_obj_comma_is_arrI[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-    and "F = [abf, a'b'f', gh]\<^sub>\<circ>"
-    and "abf = [a, 0, f]\<^sub>\<circ>"
-    and "a'b'f' = [a', 0, f']\<^sub>\<circ>"
-    and "gh = [g, 0]\<^sub>\<circ>"
+    and "ABF = [A, B, F]\<^sub>\<circ>"
+    and "A = [a, 0, f]\<^sub>\<circ>"
+    and "B = [a', 0, f']\<^sub>\<circ>"
+    and "F = [g, 0]\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     and "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     and "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
-  shows "F : abf \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a'b'f'"
+  shows "ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B"
 proof(intro is_arrI)
-  from assms(1,6,7,8) show "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  from assms(1,6,7,8) show "ABF \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
     by (cs_concl cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros)
-  with assms(2) show "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Dom\<rparr>\<lparr>F\<rparr> = abf" "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Cod\<rparr>\<lparr>F\<rparr> = a'b'f'"
+  with assms(2) show "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
     by (cs_concl cs_simp: cat_comma_cs_simps)+
 qed
 
@@ -2218,19 +2843,19 @@ lemmas [cat_comma_cs_intros] = is_functor.cat_cf_obj_comma_is_arrI
 
 lemma (in is_functor) cat_obj_cf_comma_is_arrI[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-    and "F = [baf, b'a'f', gh]\<^sub>\<circ>"
-    and "baf = [0, a, f]\<^sub>\<circ>"
-    and "b'a'f' = [0, a', f']\<^sub>\<circ>"
-    and "gh = [0, g]\<^sub>\<circ>"
+    and "ABF = [A, B, F]\<^sub>\<circ>"
+    and "A = [0, a, f]\<^sub>\<circ>"
+    and "B = [0, a', f']\<^sub>\<circ>"
+    and "F = [0, g]\<^sub>\<circ>"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     and "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
     and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
-  shows "F : baf \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b'a'f'"
+  shows "ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
 proof(intro is_arrI)
-  from assms(1,6,7,8) show "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  from assms(1,6,7,8) show "ABF \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
     by (cs_concl cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros)
-  with assms(2) show "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Dom\<rparr>\<lparr>F\<rparr> = baf" "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Cod\<rparr>\<lparr>F\<rparr> = b'a'f'"
+  with assms(2) show "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
     by (cs_concl cs_simp: cat_comma_cs_simps)+
 qed
 
@@ -2240,9 +2865,9 @@ lemma (in is_functor) cat_cf_obj_comma_is_arrD[dest]:
   assumes "[[a, b', f]\<^sub>\<circ>, [a', b'', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ> :
     [a, b', f]\<^sub>\<circ> \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> [a', b'', f']\<^sub>\<circ>"
     and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  shows "b' = []\<^sub>\<circ>"
-    and "b'' = []\<^sub>\<circ>"
-    and "h = []\<^sub>\<circ>"
+  shows "b' = 0"
+    and "b'' = 0"
+    and "h = 0"
     and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
     and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     and "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
@@ -2269,76 +2894,73 @@ lemma (in is_functor) cat_obj_cf_comma_is_arrD[dest]:
 lemmas [dest] = is_functor.cat_obj_cf_comma_is_arrD
 
 lemma (in is_functor) cat_cf_obj_comma_is_arrE[elim]:
-  assumes "F : abf \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a'b'f'" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  assumes "ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   obtains a f a' f' g 
-    where "F = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "abf = [a, 0, f]\<^sub>\<circ>"
-      and "a'b'f' = [a', 0, f']\<^sub>\<circ>"
+    where "ABF = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [a, 0, f]\<^sub>\<circ>"
+      and "B = [a', 0, f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
-      and "abf \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
-      and "a'b'f' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+      and "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+      and "B \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
 proof-
-  note F = is_arrD[OF assms(1)]
-  from F(1) obtain abf' a'b'f'' a f a' f' g 
-    where F_def: "F = [abf', a'b'f'', [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
-      and abf'_def: "abf' = [a, 0, f]\<^sub>\<circ>"
-      and a'b'f''_def: "a'b'f'' = [a', 0, f']\<^sub>\<circ>"
+  note ABF = is_arrD[OF assms(1)]
+  from ABF(1) obtain C D a f a' f' g 
+    where ABF_def: "ABF = [C, D, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+      and C_def: "C = [a, 0, f]\<^sub>\<circ>"
+      and D_def: "D = [a', 0, f']\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
       and f_def: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f" 
-      and abf': "abf' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>" 
-      and a'b'f'': "a'b'f'' \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+      and C: "C \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>" 
+      and D: "D \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
     by (elim cat_cf_obj_comma_ArrE[OF _ assms(2)])
-  from F(2) assms(2) abf'_def a'b'f''_def g f f' f_def have "abf' = abf"
-    unfolding F_def 
+  from ABF(2) assms(2) C_def D_def g f f' f_def have [simp]: "C = A"
+    unfolding ABF_def 
     by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
-  from F(3) assms(2) abf'_def a'b'f''_def g f f' f_def have "a'b'f'' = a'b'f'"
-    unfolding F_def 
+  from ABF(3) assms(2) C_def D_def g f f' f_def have [simp]: "D = B"
+    unfolding ABF_def 
     by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
-  from that F_def abf'_def a'b'f''_def g f f' f_def abf' a'b'f'' show ?thesis
-    unfolding \<open>abf' = abf\<close> \<open>a'b'f'' = a'b'f'\<close> by auto
+  from that ABF_def C_def D_def g f f' f_def C D show ?thesis by auto
 qed
 
 lemmas [elim] = is_functor.cat_cf_obj_comma_is_arrE
 
 lemma (in is_functor) cat_obj_cf_comma_is_arrE[elim]:
-  assumes "F : baf \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b'a'f'"
-    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  assumes "ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   obtains a f a' f' g
-    where "F = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
-      and "baf = [0, a, f]\<^sub>\<circ>"
-      and "b'a'f' = [0, a', f']\<^sub>\<circ>"
+    where "ABF = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+      and "A = [0, a, f]\<^sub>\<circ>"
+      and "B = [0, a', f']\<^sub>\<circ>"
       and "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       and "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
       and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
-      and "baf \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      and "b'a'f' \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and "B \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
 proof-
-  note F = is_arrD[OF assms(1)]
-  from F(1) obtain baf' b'a'f'' a f a' f' g 
-    where F_def: "F = [baf', b'a'f'', [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
-      and baf'_def: "baf' = [0, a, f]\<^sub>\<circ>"
-      and b'a'f''_def: "b'a'f'' = [0, a', f']\<^sub>\<circ>"
+  note ABF = is_arrD[OF assms(1)]
+  from ABF(1) obtain C D a f a' f' g 
+    where ABF_def: "ABF = [C, D, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+      and C_def: "C = [0, a, f]\<^sub>\<circ>"
+      and D_def: "D = [0, a', f']\<^sub>\<circ>"
       and g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
       and f: "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
       and f'_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'" 
-      and baf': "baf' \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" 
-      and b'a'f'': "b'a'f'' \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+      and C: "C \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" 
+      and D: "D \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by (elim cat_obj_cf_comma_ArrE[OF _ assms(2)])
-  from F(2) assms(2) baf'_def b'a'f''_def g f f' f'_def have "baf' = baf"
-    unfolding F_def 
+  from ABF(2) assms(2) C_def D_def g f f' f'_def have [simp]: "C = A"
+    unfolding ABF_def 
     by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
-  from F(3) assms(2) baf'_def b'a'f''_def g f f' f'_def have "b'a'f'' = b'a'f'"
-    unfolding F_def 
+  from ABF(3) assms(2) C_def D_def g f f' f'_def have [simp]: "D = B"
+    unfolding ABF_def 
     by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
-  from that F_def baf'_def b'a'f''_def g f f' f'_def baf' b'a'f'' show ?thesis
-    unfolding \<open>baf' = baf\<close> \<open>b'a'f'' = b'a'f'\<close> by auto
+  from that ABF_def C_def D_def g f f' f'_def C D show ?thesis by auto
 qed
 
 lemmas [elim] = is_functor.cat_obj_cf_comma_is_arrE
@@ -2354,21 +2976,21 @@ lemma cat_obj_cf_comma_Comp_vsv[cat_comma_cs_intros]: "vsv (b \<down>\<^sub>C\<^
 
 lemma (in is_functor) cat_cf_obj_comma_Comp_app[cat_comma_cs_simps]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-    and "G = [a'b'f', a''b''f'', [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
-    and "F = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "G : a'b'f' \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a''b''f''" 
-    and "F : abf \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a'b'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> F = [abf, a''b''f'', [g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "BCG = [B, C, [g', h']\<^sub>\<circ>]\<^sub>\<circ>"
+    and "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "BCG : B \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> C" 
+    and "ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B"
+  shows "BCG \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> ABF = [A, C, [g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
 proof-
   from assms(1) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from assms(4) obtain a f a' f' g
-    where G_def: "G = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+    where BCG_def: "BCG = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
     by (elim cat_cf_obj_comma_is_arrE[OF _ assms(1)])
   from assms(5) obtain a f a' f' g
-    where F_def: "F = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+    where ABF_def: "ABF = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>"
     by (elim cat_cf_obj_comma_is_arrE[OF _ assms(1)])
-  from assms(2)[unfolded G_def] assms(3)[unfolded F_def] have [cat_cs_simps]:
+  from assms(2)[unfolded BCG_def] assms(3)[unfolded ABF_def] have [cat_cs_simps]:
     "h' = 0" "h = 0"
     by simp_all
   have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_simp: cat_cs_simps)
@@ -2391,21 +3013,21 @@ qed
 
 lemma (in is_functor) cat_obj_cf_comma_Comp_app[cat_comma_cs_simps]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-    and "G = [b'a'f', b''a''f'', [h', g']\<^sub>\<circ>]\<^sub>\<circ>"
-    and "F = [baf, b'a'f', [h, g]\<^sub>\<circ>]\<^sub>\<circ>"
-    and "G : b'a'f' \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b''a''f''" 
-    and "F : baf \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b'a'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> F = [baf, b''a''f'', [0, g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "BCG = [B, C, [h', g']\<^sub>\<circ>]\<^sub>\<circ>"
+    and "ABF = [A, B, [h, g]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "BCG : B \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> C" 
+    and "ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
+  shows "BCG \<circ>\<^sub>A\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> ABF = [A, C, [0, g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g]\<^sub>\<circ>]\<^sub>\<circ>"
 proof-
   from assms(1) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_simp: cs_intro: vempty_is_zet cat_cs_intros)
   from assms(4) obtain a f a' f' g
-    where G_def: "G = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+    where BCG_def: "BCG = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
     by (elim cat_obj_cf_comma_is_arrE[OF _ assms(1)])
   from assms(5) obtain a f a' f' g
-    where F_def: "F = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+    where ABF_def: "ABF = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
     by (elim cat_obj_cf_comma_is_arrE[OF _ assms(1)])
-  from assms(2)[unfolded G_def] assms(3)[unfolded F_def] have [cat_cs_simps]:
+  from assms(2)[unfolded BCG_def] assms(3)[unfolded ABF_def] have [cat_cs_simps]:
     "h' = 0" "h = 0"
     by simp_all
   have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_simp: cat_cs_simps) show ?thesis
@@ -2427,9 +3049,9 @@ qed
 
 lemma (in is_functor) cat_cf_obj_comma_Comp_is_arr[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-    and "G : a'b'f' \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a''b''f''" 
-    and "F : abf \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a'b'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> F : abf \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> a''b''f''"
+    and "BCG : B \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> C" 
+    and "ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B"
+  shows "BCG \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> C"
 proof-
   from assms(1) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -2450,9 +3072,9 @@ qed
 
 lemma (in is_functor) cat_obj_cf_comma_Comp_is_arr[cat_comma_cs_intros]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-    and "G : b'a'f' \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b''a''f''" 
-    and "F : baf \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b'a'f'"
-  shows "G \<circ>\<^sub>A\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> F : baf \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> b''a''f''"
+    and "BCG : B \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> C" 
+    and "ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
+  shows "BCG \<circ>\<^sub>A\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> C"
 proof-
   from assms(1) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
@@ -2643,6 +3265,261 @@ qed
 
 
 subsection\<open>
+Opposite comma category functors for the comma categories
+constructed from a functor and an object
+\<close>
+
+
+subsubsection\<open>Definitions and elementary properties\<close>
+
+definition op_cf_obj_comma :: "V \<Rightarrow> V \<Rightarrow> V"
+  where "op_cf_obj_comma \<FF> b =
+    op_cf_comma \<FF> (cf_const (cat_1 0 0) (\<FF>\<lparr>HomCod\<rparr>) b)"
+
+definition op_obj_cf_comma :: "V \<Rightarrow> V \<Rightarrow> V"
+  where "op_obj_cf_comma b \<FF> =
+    op_cf_comma (cf_const (cat_1 0 0) (\<FF>\<lparr>HomCod\<rparr>) b) \<FF>"
+
+
+text\<open>Alternative forms of the definitions.\<close>
+
+lemma (in is_functor) op_cf_obj_comma_def: 
+  "op_cf_obj_comma \<FF> b = op_cf_comma \<FF> (cf_const (cat_1 0 0) \<BB> b)"
+  unfolding op_cf_obj_comma_def cat_cs_simps by simp
+
+lemma (in is_functor) op_obj_cf_comma_def:
+  "op_obj_cf_comma b \<FF> = op_cf_comma (cf_const (cat_1 0 0) \<BB> b) \<FF>"
+  unfolding op_obj_cf_comma_def cat_cs_simps by simp
+
+
+subsubsection\<open>Object map\<close>
+
+lemma op_cf_obj_comma_ObjMap_vsv[cat_comma_cs_intros]:
+  "vsv (op_cf_obj_comma \<FF> b\<lparr>ObjMap\<rparr>)"
+  unfolding op_cf_obj_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+
+lemma op_obj_cf_comma_ObjMap_vsv[cat_comma_cs_intros]:
+  "vsv (op_obj_cf_comma b \<FF>\<lparr>ObjMap\<rparr>)"
+  unfolding op_obj_cf_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+
+lemma (in is_functor) op_cf_obj_comma_ObjMap_vdomain[cat_comma_cs_simps]:
+  "\<D>\<^sub>\<circ> (op_cf_obj_comma \<FF> b\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+  unfolding op_cf_obj_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric])
+
+lemma (in is_functor) op_obj_cf_comma_ObjMap_vdomain[cat_comma_cs_simps]:
+  "\<D>\<^sub>\<circ> (op_obj_cf_comma b \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+  unfolding op_obj_cf_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric])
+
+lemma (in is_functor) op_cf_obj_comma_ObjMap_app[cat_comma_cs_simps]:
+  assumes "A = [a, 0, f]\<^sub>\<circ>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+  shows "op_cf_obj_comma \<FF> b\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = [0, a, f]\<^sub>\<circ>"
+proof-
+  have a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+    by (intro cat_cf_obj_comma_ObjD[OF assms(3)[unfolded assms(1)] assms(2)])+
+  from assms(2) a f show ?thesis
+    using assms(2)
+    unfolding assms(1) op_cf_obj_comma_def
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_comma_cs_simps
+          cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros
+      )
+qed
+
+lemma (in is_functor) op_obj_cf_comma_ObjMap_app[cat_comma_cs_simps]:
+  assumes "A = [0, a, f]\<^sub>\<circ>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+  shows "op_obj_cf_comma b \<FF> \<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = [a, 0, f]\<^sub>\<circ>"
+proof-
+  have a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and f: "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+    by (intro cat_obj_cf_comma_ObjD[OF assms(3)[unfolded assms(1)] assms(2)])+
+  from assms(2) a f show ?thesis
+    using assms(2)
+    unfolding assms(1) op_obj_cf_comma_def
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_comma_cs_simps
+          cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros
+      )
+qed
+
+
+subsubsection\<open>Arrow map\<close>
+
+lemma op_cf_obj_comma_ArrMap_vsv[cat_comma_cs_intros]:
+  "vsv (op_cf_obj_comma \<FF> b\<lparr>ArrMap\<rparr>)"
+  unfolding op_cf_obj_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+
+lemma op_obj_cf_comma_ArrMap_vsv[cat_comma_cs_intros]:
+  "vsv (op_obj_cf_comma b \<FF>\<lparr>ArrMap\<rparr>)"
+  unfolding op_obj_cf_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+
+lemma (in is_functor) op_cf_obj_comma_ArrMap_vdomain[cat_comma_cs_simps]:
+  "\<D>\<^sub>\<circ> (op_cf_obj_comma \<FF> b\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  unfolding op_cf_obj_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric])
+
+lemmas [cat_comma_cs_simps] = is_functor.op_cf_obj_comma_ArrMap_vdomain
+
+lemma (in is_functor) op_obj_cf_comma_ArrMap_vdomain[cat_comma_cs_simps]:
+  "\<D>\<^sub>\<circ> (op_obj_cf_comma b \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  unfolding op_obj_cf_comma_def
+  by (cs_concl cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric])
+
+lemmas [cat_comma_cs_simps] = is_functor.op_obj_cf_comma_ArrMap_vdomain
+
+lemma (in is_functor) op_cf_obj_comma_ArrMap_app[cat_comma_cs_simps]:
+  assumes "ABF = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [g, 0]\<^sub>\<circ>]\<^sub>\<circ>" 
+    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
+    and "ABF \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  shows "op_cf_obj_comma \<FF> b\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = [[0, a', f']\<^sub>\<circ>, [0, a, f]\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
+proof-
+  from assms(3) have g: "g : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+    and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+    and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+    and [cat_comma_cs_simps]: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
+    by (intro cat_cf_obj_comma_ArrD[OF assms(3)[unfolded assms(1)] assms(2)])+
+  from assms(2) g f f' show ?thesis
+    unfolding assms(1) op_cf_obj_comma_def
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_comma_cs_simps cat_1_CId_app
+          cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_1_is_arrI
+      )
+qed
+
+lemmas [cat_comma_cs_simps] = is_functor.op_cf_obj_comma_ArrMap_app
+
+lemma (in is_functor) op_obj_cf_comma_ArrMap_app[cat_comma_cs_simps]:
+  assumes "ABF = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, h]\<^sub>\<circ>]\<^sub>\<circ>" 
+    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
+    and "ABF \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  shows "op_obj_cf_comma b \<FF>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = [[a', 0, f']\<^sub>\<circ>, [a, 0, f]\<^sub>\<circ>, [h, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+proof-
+  from assms(3) have h: "h : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+    and f: "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+    and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
+    and [cat_comma_cs_simps]: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
+    by (intro cat_obj_cf_comma_ArrD[OF assms(3)[unfolded assms(1)] assms(2)])+
+  from assms(2) h f f' show ?thesis
+    unfolding assms(1) op_obj_cf_comma_def
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_comma_cs_simps cat_1_CId_app
+          cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_1_is_arrI
+      )
+qed
+
+lemmas [cat_comma_cs_simps] = is_functor.op_obj_cf_comma_ArrMap_app
+
+
+subsubsection\<open>
+Opposite comma category functors for the comma categories
+constructed from a functor and an object are isomorphisms of categories
+\<close>
+
+lemma (in is_functor) op_cf_obj_comma_is_iso_functor:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_cf_obj_comma \<FF> b : op_cat (\<FF> \<^sub>C\<^sub>F\<down> b) \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+proof-
+  from assms have cf_const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  note cat_obj_cf_comma_def = 
+    is_functor.cat_obj_cf_comma_def[
+      OF is_functor_op, unfolded cat_op_simps
+      ]
+  show ?thesis
+    by 
+      (
+        rule op_cf_comma_is_iso_functor
+          [
+            OF is_functor_axioms cf_const, 
+            folded cat_cf_obj_comma_def op_cf_obj_comma_def,
+            unfolded cat_op_simps, 
+            folded cat_obj_cf_comma_def
+          ]
+      )
+qed
+
+lemma (in is_functor) op_cf_obj_comma_is_iso_functor'[cat_comma_cs_intros]:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+    and "\<AA>' = op_cat (\<FF> \<^sub>C\<^sub>F\<down> b)"
+    and "\<BB>' = b \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+  shows "op_cf_obj_comma \<FF> b : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1) unfolding assms(2,3) by (rule op_cf_obj_comma_is_iso_functor)
+
+lemmas [cat_comma_cs_intros] = is_functor.op_cf_obj_comma_is_iso_functor'
+
+lemma (in is_functor) op_cf_obj_comma_is_functor:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_cf_obj_comma \<FF> b : op_cat (\<FF> \<^sub>C\<^sub>F\<down> b) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+  by (rule is_iso_functorD(1)[OF op_cf_obj_comma_is_iso_functor[OF assms]])
+
+lemma (in is_functor) op_cf_obj_comma_is_functor'[cat_comma_cs_intros]:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+    and "\<AA>' = op_cat (\<FF> \<^sub>C\<^sub>F\<down> b)"
+    and "\<BB>' = b \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+  shows "op_cf_obj_comma \<FF> b : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1) unfolding assms(2,3) by (rule op_cf_obj_comma_is_functor)
+
+lemmas [cat_comma_cs_intros] = is_functor.op_cf_obj_comma_is_functor'
+
+lemma (in is_functor) op_obj_cf_comma_is_iso_functor:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_obj_cf_comma b \<FF> : op_cat (b \<down>\<^sub>C\<^sub>F \<FF>) \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> (op_cf \<FF>) \<^sub>C\<^sub>F\<down> b"
+proof-
+  from assms have cf_const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  note cat_cf_obj_comma_def = 
+    is_functor.cat_cf_obj_comma_def[
+      OF is_functor_op, unfolded cat_op_simps
+      ]
+  show ?thesis
+    by
+      (
+        rule op_cf_comma_is_iso_functor
+          [
+            OF cf_const is_functor_axioms,
+            folded cat_obj_cf_comma_def op_obj_cf_comma_def,
+            unfolded cat_op_simps,
+            folded cat_cf_obj_comma_def
+          ]
+      )
+qed
+
+lemma (in is_functor) op_obj_cf_comma_is_iso_functor'[cat_comma_cs_intros]:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+    and "\<AA>' = op_cat (b \<down>\<^sub>C\<^sub>F \<FF>)"
+    and "\<BB>' = (op_cf \<FF>) \<^sub>C\<^sub>F\<down> b"
+  shows "op_obj_cf_comma b \<FF> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1) unfolding assms(2,3) by (rule op_obj_cf_comma_is_iso_functor)
+  
+lemmas [cat_comma_cs_intros] = is_functor.op_obj_cf_comma_is_iso_functor'
+
+lemma (in is_functor) op_obj_cf_comma_is_functor:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_obj_cf_comma b \<FF> : op_cat (b \<down>\<^sub>C\<^sub>F \<FF>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> (op_cf \<FF>) \<^sub>C\<^sub>F\<down> b"
+  by (rule is_iso_functorD(1)[OF op_obj_cf_comma_is_iso_functor[OF assms]])
+
+lemma (in is_functor) op_obj_cf_comma_is_functor'[cat_comma_cs_intros]:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+    and "\<AA>' = op_cat (b \<down>\<^sub>C\<^sub>F \<FF>)"
+    and "\<BB>' = (op_cf \<FF>) \<^sub>C\<^sub>F\<down> b"
+  shows "op_obj_cf_comma b \<FF> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1) unfolding assms(2,3) by (rule op_obj_cf_comma_is_functor)
+
+
+
+subsection\<open>
 Projections for comma categories constructed from a functor and an object
 \<close>
 
@@ -2790,9 +3667,9 @@ lemma (in is_functor) cf_obj_cf_comma_proj_ArrMap_vdomain[cat_comma_cs_simps]:
 lemmas [cat_comma_cs_simps] = is_functor.cf_obj_cf_comma_proj_ArrMap_vdomain
 
 lemma (in is_functor) cf_cf_obj_comma_proj_ArrMap_app[cat_comma_cs_simps]:
-  assumes "A = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
-    and "[abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
-  shows "\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ArrMap\<rparr>\<lparr>A\<rparr> = g"
+  assumes "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
+    and "[A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+  shows "\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = g"
   by 
     (
       rule cf_comma_proj_left_ArrMap_app[
@@ -2804,9 +3681,9 @@ lemma (in is_functor) cf_cf_obj_comma_proj_ArrMap_app[cat_comma_cs_simps]:
 lemmas [cat_comma_cs_simps] = is_functor.cf_cf_obj_comma_proj_ArrMap_app
 
 lemma (in is_functor) cf_obj_cf_comma_proj_ArrMap_app[cat_comma_cs_simps]:
-  assumes "A = [abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
-    and "[abf, a'b'f', [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-  shows "b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>A\<rparr> = h"
+  assumes "ABF = [A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ>" 
+    and "[A, B, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+  shows "b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = h"
   by 
     (
       rule cf_comma_proj_right_ArrMap_app[
@@ -2867,6 +3744,58 @@ lemma (in is_functor) cf_obj_cf_comma_proj_is_functor'[cat_comma_cs_intros]:
 lemmas [cat_comma_cs_intros] = is_functor.cf_obj_cf_comma_proj_is_functor'
 
 
+subsubsection\<open>
+Opposite projections for comma categories constructed from a functor 
+and an object
+\<close>
+
+lemma (in is_functor) op_cf_cf_obj_comma_proj: 
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_cf (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b) = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> b"
+proof-
+  from assms have cf_const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  show ?thesis
+    by
+      (
+        rule op_cf_comma_proj_left
+          [
+            OF is_functor_axioms cf_const,
+            unfolded cat_op_simps,
+            folded 
+              cf_cf_obj_comma_proj_def
+              op_cf_obj_comma_def
+              is_functor.cf_obj_cf_comma_proj_def[
+                OF is_functor_op, unfolded cat_op_simps
+                ]
+          ]
+      )
+qed
+
+lemma (in is_functor) op_cf_obj_cf_comma_proj:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "op_cf (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>) = (op_cf \<FF>) \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F op_obj_cf_comma b \<FF>"
+proof-
+  from assms have cf_const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  show ?thesis
+    by 
+      (
+        rule op_cf_comma_proj_right
+          [
+            OF cf_const is_functor_axioms,
+            unfolded cat_op_simps,
+            folded
+              cf_obj_cf_comma_proj_def
+              op_obj_cf_comma_def
+              is_functor.cf_cf_obj_comma_proj_def[
+                OF is_functor_op, unfolded cat_op_simps
+                ]
+          ]
+      )
+qed
+
+
 subsubsection\<open>Projections for a tiny comma category\<close>
 
 lemma (in is_tm_functor) cf_cf_obj_comma_proj_is_tm_functor:
@@ -2925,7 +3854,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>See Theorem 1 in Chapter X-3 in \cite{mac_lane_categories_2010}.\<close>
 
-definition cf_cf_arr_comma :: "V \<Rightarrow> V \<Rightarrow> V" 
+definition cf_arr_cf_comma :: "V \<Rightarrow> V \<Rightarrow> V" 
   (\<open>(_ \<^sub>A\<down>\<^sub>C\<^sub>F _)\<close> [1000, 1000] 999)
   where "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> =
     [
@@ -2942,10 +3871,27 @@ definition cf_cf_arr_comma :: "V \<Rightarrow> V \<Rightarrow> V"
       (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>) \<down>\<^sub>C\<^sub>F \<FF>
     ]\<^sub>\<circ>"
 
+definition cf_cf_arr_comma :: "V \<Rightarrow> V \<Rightarrow> V" 
+  (\<open>(_ \<^sub>C\<^sub>F\<down>\<^sub>A _)\<close> [1000, 1000] 999)
+  where "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g =
+    [
+      (\<lambda>A\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>)\<lparr>Obj\<rparr>. [A\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>),
+      (
+        \<lambda>F\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>)\<lparr>Arr\<rparr>.
+          [
+            [F\<lparr>0\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> F\<lparr>0\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            [F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            F\<lparr>2\<^sub>\<nat>\<rparr>
+          ]\<^sub>\<circ>
+      ),
+      \<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>),
+      \<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Cod\<rparr>\<lparr>g\<rparr>)
+    ]\<^sub>\<circ>"
+
 
 text\<open>Components.\<close>
 
-lemma cf_cf_arr_comma_components:
+lemma cf_arr_cf_comma_components:
   shows "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr> =
     (\<lambda>A\<in>\<^sub>\<circ>(\<FF>\<lparr>HomCod\<rparr>\<lparr>Cod\<rparr>\<lparr>g\<rparr>) \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>. [0, A\<lparr>1\<^sub>\<nat>\<rparr>, A\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> g]\<^sub>\<circ>)"
     and "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr> =
@@ -2959,13 +3905,30 @@ lemma cf_cf_arr_comma_components:
       )"
     and "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>HomDom\<rparr> = (\<FF>\<lparr>HomCod\<rparr>\<lparr>Cod\<rparr>\<lparr>g\<rparr>) \<down>\<^sub>C\<^sub>F \<FF>"
     and "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>HomCod\<rparr> = (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>) \<down>\<^sub>C\<^sub>F \<FF>"
+  unfolding cf_arr_cf_comma_def dghm_field_simps 
+  by (simp_all add: nat_omega_simps)
+
+lemma cf_cf_arr_comma_components:
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr> =
+    (\<lambda>A\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>)\<lparr>Obj\<rparr>. [A\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>)"
+    and "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr> =
+      (
+        \<lambda>F\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>)\<lparr>Arr\<rparr>.
+          [
+            [F\<lparr>0\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> F\<lparr>0\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            [F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<FF>\<lparr>HomCod\<rparr>\<^esub> F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            F\<lparr>2\<^sub>\<nat>\<rparr>
+          ]\<^sub>\<circ>
+      )"
+    and "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>HomDom\<rparr> = \<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Dom\<rparr>\<lparr>g\<rparr>)"
+    and "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>HomCod\<rparr> = \<FF> \<^sub>C\<^sub>F\<down> (\<FF>\<lparr>HomCod\<rparr>\<lparr>Cod\<rparr>\<lparr>g\<rparr>)"
   unfolding cf_cf_arr_comma_def dghm_field_simps 
   by (simp_all add: nat_omega_simps)
 
 context is_functor
 begin
 
-lemma cf_cf_arr_comma_components':
+lemma cf_arr_cf_comma_components':
   assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
   shows "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr> = (\<lambda>A\<in>\<^sub>\<circ>c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>. [0, A\<lparr>1\<^sub>\<nat>\<rparr>, A\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> g]\<^sub>\<circ>)"
     and "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr> =
@@ -2980,15 +3943,37 @@ lemma cf_cf_arr_comma_components':
     and [cat_comma_cs_simps]: "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>HomDom\<rparr> = c' \<down>\<^sub>C\<^sub>F \<FF>"
     and [cat_comma_cs_simps]: "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>HomCod\<rparr> = c \<down>\<^sub>C\<^sub>F \<FF>"
   using assms
+  unfolding cf_arr_cf_comma_components
+  by (simp_all add: cat_cs_simps)
+
+lemma cf_cf_arr_comma_components':
+  assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr> = (\<lambda>A\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Obj\<rparr>. [A\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> A\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>)"
+    and "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr> =
+      (
+        \<lambda>F\<in>\<^sub>\<circ>\<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Arr\<rparr>.
+          [
+            [F\<lparr>0\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> F\<lparr>0\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            [F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>0\<rparr>, 0, g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> F\<lparr>1\<^sub>\<nat>\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>]\<^sub>\<circ>,
+            F\<lparr>2\<^sub>\<nat>\<rparr>
+          ]\<^sub>\<circ>
+      )"
+    and [cat_comma_cs_simps]: "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>HomDom\<rparr> = \<FF> \<^sub>C\<^sub>F\<down> c"
+    and [cat_comma_cs_simps]: "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>HomCod\<rparr> = \<FF> \<^sub>C\<^sub>F\<down> c'"
+  using assms
   unfolding cf_cf_arr_comma_components
   by (simp_all add: cat_cs_simps)
 
 end
 
+lemmas [cat_comma_cs_simps] = is_functor.cf_arr_cf_comma_components'(3,4)
 lemmas [cat_comma_cs_simps] = is_functor.cf_cf_arr_comma_components'(3,4)
 
 
 subsubsection\<open>Object map\<close>
+
+mk_VLambda cf_arr_cf_comma_components(1)[unfolded VLambda_vid_on[symmetric]]
+  |vsv cf_arr_cf_comma_ObjMap_vsv[cat_comma_cs_intros]|
 
 mk_VLambda cf_cf_arr_comma_components(1)[unfolded VLambda_vid_on[symmetric]]
   |vsv cf_cf_arr_comma_ObjMap_vsv[cat_comma_cs_intros]|
@@ -3002,6 +3987,10 @@ context
 begin
 
 mk_VLambda 
+  cf_arr_cf_comma_components'(1)[OF g, unfolded VLambda_vid_on[symmetric]]
+  |vdomain cf_arr_cf_comma_ObjMap_vdomain[cat_comma_cs_simps]|
+
+mk_VLambda
   cf_cf_arr_comma_components'(1)[OF g, unfolded VLambda_vid_on[symmetric]]
   |vdomain cf_cf_arr_comma_ObjMap_vdomain[cat_comma_cs_simps]|
 
@@ -3009,9 +3998,10 @@ end
 
 end
 
+lemmas [cat_comma_cs_simps] = is_functor.cf_arr_cf_comma_ObjMap_vdomain
 lemmas [cat_comma_cs_simps] = is_functor.cf_cf_arr_comma_ObjMap_vdomain
 
-lemma (in is_functor) cf_cf_arr_comma_ObjMap_app[cat_comma_cs_simps]:
+lemma (in is_functor) cf_arr_cf_comma_ObjMap_app[cat_comma_cs_simps]:
   assumes "A = [a', b', f']\<^sub>\<circ>" and "A \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" and "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
   shows "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = [a', b', f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> g]\<^sub>\<circ>"
 proof-
@@ -3020,21 +4010,37 @@ proof-
     and a'_def: "a' = 0"
     by auto
   from assms(2) show ?thesis
-    unfolding cf_cf_arr_comma_components'[OF assms(3)] assms(1)
+    unfolding cf_arr_cf_comma_components'[OF assms(3)] assms(1)
     by (simp add: nat_omega_simps a'_def)
 qed
 
-lemma (in is_functor) cf_cf_arr_comma_ObjMap_vrange: 
+lemma (in is_functor) cf_cf_arr_comma_ObjMap_app[cat_comma_cs_simps]:
+  assumes "A = [a', b', f']\<^sub>\<circ>" and "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Obj\<rparr>" and "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = [a', b', g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f']\<^sub>\<circ>"
+proof-
+  from assms have b'_def: "b' = 0"
+    and f: "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+    and a': "a' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    by auto
+  from assms(2) show ?thesis
+    unfolding cf_cf_arr_comma_components'[OF assms(3)] assms(1)
+    by (simp add: nat_omega_simps b'_def)
+qed
+
+lemmas [cat_comma_cs_simps] = is_functor.cf_arr_cf_comma_ObjMap_app
+lemmas [cat_comma_cs_simps] = is_functor.cf_cf_arr_comma_ObjMap_app
+
+lemma (in is_functor) cf_arr_cf_comma_ObjMap_vrange: 
   assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
   shows "\<R>\<^sub>\<circ> (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
 proof
   (
     rule vsv.vsv_vrange_vsubset, 
-    unfold cf_cf_arr_comma_ObjMap_vdomain[OF assms]
+    unfold cf_arr_cf_comma_ObjMap_vdomain[OF assms]
   )
   fix A assume "A \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
   with assms is_functor_axioms obtain a f 
-    where A_def: "A = [[]\<^sub>\<circ>, a, f]\<^sub>\<circ>"
+    where A_def: "A = [0, a, f]\<^sub>\<circ>"
       and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
       and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" 
     by auto
@@ -3047,8 +4053,34 @@ proof
       )
 qed (cs_concl cs_intro: cat_comma_cs_intros)
 
+lemma (in is_functor) cf_cf_arr_comma_ObjMap_vrange: 
+  assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows "\<R>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c'\<lparr>Obj\<rparr>"
+proof
+  (
+    rule vsv.vsv_vrange_vsubset, 
+    unfold cf_cf_arr_comma_ObjMap_vdomain[OF assms]
+  )
+  fix A assume "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Obj\<rparr>"
+  with assms is_functor_axioms obtain a f 
+    where A_def: "A = [a, 0, f]\<^sub>\<circ>"
+      and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+      and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c" 
+    by auto
+  from assms a f show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c'\<lparr>Obj\<rparr>"
+    by
+      (
+        cs_concl
+          cs_simp: cat_comma_cs_simps A_def
+          cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+qed (cs_concl cs_intro: cat_comma_cs_intros)
+
 
 subsubsection\<open>Arrow map\<close>
+
+mk_VLambda cf_arr_cf_comma_components(2)
+  |vsv cf_arr_cf_comma_ArrMap_vsv[cat_comma_cs_intros]|
 
 mk_VLambda cf_cf_arr_comma_components(2)
   |vsv cf_cf_arr_comma_ArrMap_vsv[cat_comma_cs_intros]|
@@ -3062,6 +4094,10 @@ context
 begin
 
 mk_VLambda 
+  cf_arr_cf_comma_components'(2)[OF g, unfolded VLambda_vid_on[symmetric]]
+  |vdomain cf_arr_cf_comma_ArrMap_vdomain[cat_comma_cs_simps]|
+
+mk_VLambda 
   cf_cf_arr_comma_components'(2)[OF g, unfolded VLambda_vid_on[symmetric]]
   |vdomain cf_cf_arr_comma_ArrMap_vdomain[cat_comma_cs_simps]|
 
@@ -3069,9 +4105,10 @@ end
 
 end
 
+lemmas [cat_comma_cs_simps] = is_functor.cf_arr_cf_comma_ArrMap_vdomain
 lemmas [cat_comma_cs_simps] = is_functor.cf_cf_arr_comma_ArrMap_vdomain
 
-lemma (in is_functor) cf_cf_arr_comma_ArrMap_app[cat_comma_cs_simps]:
+lemma (in is_functor) cf_arr_cf_comma_ArrMap_app[cat_comma_cs_simps]:
   assumes "A = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [h, k]\<^sub>\<circ>]\<^sub>\<circ>"
     and "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [h, k]\<^sub>\<circ>]\<^sub>\<circ> :
     [a, b, f]\<^sub>\<circ> \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> [a', b', f']\<^sub>\<circ>" 
@@ -3084,287 +4121,642 @@ proof-
     cat_obj_cf_comma_is_arrD(1,2)[OF assms(2)[unfolded cat_comma_cs_simps] c'] 
     is_arrD(1)[OF assms(2)] 
   show ?thesis
+    unfolding assms(1) cf_arr_cf_comma_components'[OF assms(3)]
+    by (simp_all add: nat_omega_simps)
+qed
+
+lemmas [cat_comma_cs_simps] = is_functor.cf_arr_cf_comma_ArrMap_app
+
+lemma (in is_functor) cf_cf_arr_comma_ArrMap_app[cat_comma_cs_simps]:
+  assumes "A = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [h, k]\<^sub>\<circ>]\<^sub>\<circ>"
+    and "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [h, k]\<^sub>\<circ>]\<^sub>\<circ> :
+      [a, b, f]\<^sub>\<circ> \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> [a', b', f']\<^sub>\<circ>" 
+    and "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>A\<rparr> =
+    [[a, b, g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f]\<^sub>\<circ>, [a', b', g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f']\<^sub>\<circ>, [h, k]\<^sub>\<circ>]\<^sub>\<circ>"
+proof-
+  from assms(3) have c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
+  from 
+    cat_cf_obj_comma_is_arrD(1,2)[OF assms(2)[unfolded cat_comma_cs_simps] c] 
+    is_arrD(1)[OF assms(2)] 
+  show ?thesis
     unfolding assms(1) cf_cf_arr_comma_components'[OF assms(3)]
     by (simp_all add: nat_omega_simps)
 qed
 
+lemmas [cat_comma_cs_simps] = is_functor.cf_cf_arr_comma_ArrMap_app
+
 
 subsubsection\<open>Comma functors are functors\<close>
 
-lemma (in is_functor) cf_cf_arr_comma_is_functor:
+lemma (in is_functor) cf_arr_cf_comma_is_functor:
   assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
   shows "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : c' \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> c \<down>\<^sub>C\<^sub>F \<FF>"
-proof-
-  show ?thesis
-  proof(rule is_functorI')
-    show "vfsequence (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)" unfolding cf_cf_arr_comma_def by simp
-    from assms show "category \<alpha> (c' \<down>\<^sub>C\<^sub>F \<FF>)"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    from assms show "category \<alpha> (c \<down>\<^sub>C\<^sub>F \<FF>)"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    show "vcard (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>) = 4\<^sub>\<nat>"
-      unfolding  cf_cf_arr_comma_def by (simp_all add: nat_omega_simps)
-    from assms show "\<R>\<^sub>\<circ> (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by (intro cf_cf_arr_comma_ObjMap_vrange)
-    show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> :
-      g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<mapsto>\<^bsub>c \<down>\<^sub>C\<^sub>F \<FF>\<^esub> g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
-      if "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" for A B F
-    proof-
-      from assms that obtain b f b' f' k 
-        where F_def: "F = [[0, b, f]\<^sub>\<circ>, [0, b', f']\<^sub>\<circ>, [0, k]\<^sub>\<circ>]\<^sub>\<circ>"
-          and A_def: "A = [0, b, f]\<^sub>\<circ>"
-          and B_def: "B = [0, b', f']\<^sub>\<circ>"
-          and k: "k : b \<mapsto>\<^bsub>\<AA>\<^esub> b'"
-          and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
-          and f': "f' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
-          and f'_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
-        by auto
-      from assms that k f f' show ?thesis
-        unfolding F_def A_def B_def
-        by 
-          (
-            cs_concl
-              cs_simp: cat_cs_simps cat_comma_cs_simps f'_def[symmetric]
-              cs_intro: cat_cs_intros cat_comma_cs_intros
-          )
-    qed
-    show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> F\<rparr> =
-      g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>c \<down>\<^sub>C\<^sub>F \<FF>\<^esub> g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
-      if "G : B \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> C" and "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" for B C G A F
-    proof-
-      from that(2) assms obtain b f b' f' k 
-        where F_def: "F = [[0, b, f]\<^sub>\<circ>, [0, b', f']\<^sub>\<circ>, [0, k]\<^sub>\<circ>]\<^sub>\<circ>"
-          and A_def: "A = [0, b, f]\<^sub>\<circ>"
-          and B_def: "B = [0, b', f']\<^sub>\<circ>"
-          and k: "k : b \<mapsto>\<^bsub>\<AA>\<^esub> b'"
-          and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
-          and f': "f' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
-          and f'_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
-        by auto
-      with that(1) assms obtain b'' f'' k' 
-        where G_def: "G = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, k']\<^sub>\<circ>]\<^sub>\<circ>"
-          and C_def: "C = [0, b'', f'']\<^sub>\<circ>"
-          and k': "k' : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
-          and f'': "f'' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
-          and f''_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
-        by auto (*slow*)
-      from assms that k f f' f'' k' show ?thesis
-        unfolding F_def G_def A_def B_def C_def 
-        by (*slow*)
-          (
-            cs_concl
-              cs_simp:
-                cat_cs_simps cat_comma_cs_simps
-                f''_def[symmetric] f'_def[symmetric]
-              cs_intro: cat_cs_intros cat_comma_cs_intros
-          )
-    qed
-    show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> = c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
-      if "C \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" for C
-    proof-
-      from that assms obtain a f 
-        where C_def: "C = [0, a, f]\<^sub>\<circ>"
-          and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-          and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-        by auto
-      from a assms f show
-        "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> = c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
-        unfolding C_def 
-        by
-          (
-            cs_concl
-              cs_simp: cat_cs_simps cat_comma_cs_simps
-              cs_intro: cat_cs_intros cat_comma_cs_intros
-          )
-    qed
-  qed
-    (
-      use assms in
-        \<open>
+proof(rule is_functorI')
+  show "vfsequence (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)" unfolding cf_arr_cf_comma_def by simp
+  from assms show "category \<alpha> (c' \<down>\<^sub>C\<^sub>F \<FF>)"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms show "category \<alpha> (c \<down>\<^sub>C\<^sub>F \<FF>)"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  show "vcard (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>) = 4\<^sub>\<nat>"
+    unfolding cf_arr_cf_comma_def by (simp_all add: nat_omega_simps)
+  from assms show "\<R>\<^sub>\<circ> (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by (intro cf_arr_cf_comma_ObjMap_vrange)
+  show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> :
+    g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<mapsto>\<^bsub>c \<down>\<^sub>C\<^sub>F \<FF>\<^esub> g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
+    if "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" for A B F
+  proof-
+    from assms that obtain b f b' f' k 
+      where F_def: "F = [[0, b, f]\<^sub>\<circ>, [0, b', f']\<^sub>\<circ>, [0, k]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [0, b, f]\<^sub>\<circ>"
+        and B_def: "B = [0, b', f']\<^sub>\<circ>"
+        and k: "k : b \<mapsto>\<^bsub>\<AA>\<^esub> b'"
+        and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+        and f': "f' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+        and f'_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
+      by auto
+    from assms that k f f' show ?thesis
+      unfolding F_def A_def B_def
+      by 
+        (
           cs_concl
-            cs_simp: cat_comma_cs_simps
+            cs_simp: cat_cs_simps cat_comma_cs_simps f'_def[symmetric]
             cs_intro: cat_cs_intros cat_comma_cs_intros
-        \<close>
-    )+
+        )
+  qed
+  show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> F\<rparr> =
+    g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>c \<down>\<^sub>C\<^sub>F \<FF>\<^esub> g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+    if "G : B \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> C" and "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" for B C G A F
+  proof-
+    from that(2) assms obtain b f b' f' k 
+      where F_def: "F = [[0, b, f]\<^sub>\<circ>, [0, b', f']\<^sub>\<circ>, [0, k]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [0, b, f]\<^sub>\<circ>"
+        and B_def: "B = [0, b', f']\<^sub>\<circ>"
+        and k: "k : b \<mapsto>\<^bsub>\<AA>\<^esub> b'"
+        and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+        and f': "f' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+        and f'_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = f'"
+      by auto
+    with that(1) assms obtain b'' f'' k' 
+      where G_def: "G = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, k']\<^sub>\<circ>]\<^sub>\<circ>"
+        and C_def: "C = [0, b'', f'']\<^sub>\<circ>"
+        and k': "k' : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
+        and f'': "f'' : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
+        and f''_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
+      by auto (*slow*)
+    from assms that k f f' f'' k' show ?thesis
+      unfolding F_def G_def A_def B_def C_def 
+      by (*slow*)
+        (
+          cs_concl
+            cs_simp:
+              cat_cs_simps cat_comma_cs_simps
+              f''_def[symmetric] f'_def[symmetric]
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
+  show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> = c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
+    if "C \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>" for C
+  proof-
+    from that assms obtain a f 
+      where C_def: "C = [0, a, f]\<^sub>\<circ>"
+        and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f: "f : c' \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+      by auto
+    from a assms f show
+      "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>c' \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> = c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>\<lparr>g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
+      unfolding C_def 
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
 qed
+  (
+    use assms in
+      \<open>
+        cs_concl
+          cs_simp: cat_comma_cs_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros
+      \<close>
+  )+
 
-lemma (in is_functor) cf_cf_arr_comma_is_functor'[cat_comma_cs_intros]:
+lemma (in is_functor) cf_cf_arr_comma_is_functor:
+  assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g : \<FF> \<^sub>C\<^sub>F\<down> c \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<FF> \<^sub>C\<^sub>F\<down> c'"
+proof(rule is_functorI')
+  from assms have c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
+  show "vfsequence (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g)" unfolding cf_cf_arr_comma_def by simp
+  from assms show "category \<alpha> (\<FF> \<^sub>C\<^sub>F\<down> c')"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms show "category \<alpha> (\<FF> \<^sub>C\<^sub>F\<down> c)"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  show "vcard (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g) = 4\<^sub>\<nat>"
+    unfolding cf_cf_arr_comma_def by (simp_all add: nat_omega_simps)
+  from assms show "\<R>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c'\<lparr>Obj\<rparr>"
+    by (intro cf_cf_arr_comma_ObjMap_vrange)
+  show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> :
+    \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c'\<^esub> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
+    if "F : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> B" for A B F
+  proof-
+    from assms that obtain a f a' f' h 
+      where F_def: "F = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [h, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [a, 0, f]\<^sub>\<circ>"
+        and B_def: "B = [a', 0, f']\<^sub>\<circ>"
+        and h: "h : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+        and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and f'_def: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> = f"
+      by auto
+    from assms that h f f' show ?thesis
+      unfolding F_def A_def B_def
+      by 
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps f'_def
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
+  show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> F\<rparr> =
+    \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c'\<^esub> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+    if "G : B \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> C" and "F : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> B" for B C G A F
+  proof-
+    from that(2) assms obtain a f a' f' h 
+      where F_def: "F = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [h, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [a, 0, f]\<^sub>\<circ>"
+        and B_def: "B = [a', 0, f']\<^sub>\<circ>"
+        and h: "h : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+        and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and [cat_cs_simps]: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> = f"
+      by auto
+    with that(1) assms obtain a'' f'' h' 
+      where G_def: "G = [[a', 0, f']\<^sub>\<circ>, [a'', 0, f'']\<^sub>\<circ>, [h', 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and C_def: "C = [a'', 0, f'']\<^sub>\<circ>"
+        and h': "h' : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
+        and f'': "f'' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and [cat_cs_simps]: "f'' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> = f'"
+      by auto (*slow*)
+    note [cat_cs_simps] = category.cat_assoc_helper[
+        where \<CC>=\<BB>, where h=f'' and g=\<open>\<FF>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr>\<close> and q=f'
+        ]
+    from assms that c h f f' f'' h' show ?thesis
+      unfolding F_def G_def A_def B_def C_def
+      by
+        (
+          cs_concl
+             cs_simp: cat_cs_simps cat_comma_cs_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
+  show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ArrMap\<rparr>\<lparr>\<FF> \<^sub>C\<^sub>F\<down> c\<lparr>CId\<rparr>\<lparr>C\<rparr>\<rparr> = \<FF> \<^sub>C\<^sub>F\<down> c'\<lparr>CId\<rparr>\<lparr>\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>C\<rparr>\<rparr>"
+    if "C \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Obj\<rparr>" for C
+  proof-
+    from that assms obtain a f 
+      where C_def: "C = [a, 0, f]\<^sub>\<circ>"
+        and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+      by auto
+    from a c assms f show ?thesis
+      unfolding C_def 
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
+qed
+  (
+    use assms in
+      \<open>
+        cs_concl
+          cs_simp: cat_comma_cs_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros
+      \<close>
+  )+
+
+lemma (in is_functor) cf_arr_cf_comma_is_functor'[cat_comma_cs_intros]:
   assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'" and "\<AA>' = c' \<down>\<^sub>C\<^sub>F \<FF>" and "\<BB>' = c \<down>\<^sub>C\<^sub>F \<FF>"
   shows "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  using assms(1) unfolding assms(2,3) by (rule cf_arr_cf_comma_is_functor(1))
+
+lemmas [cat_comma_cs_intros] = is_functor.cf_arr_cf_comma_is_functor'
+
+lemma (in is_functor) cf_cf_arr_comma_is_functor'[cat_comma_cs_intros]:
+  assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'" and "\<AA>' = \<FF> \<^sub>C\<^sub>F\<down> c" and "\<BB>' = \<FF> \<^sub>C\<^sub>F\<down> c'"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
   using assms(1) unfolding assms(2,3) by (rule cf_cf_arr_comma_is_functor(1))
 
 lemmas [cat_comma_cs_intros] = is_functor.cf_cf_arr_comma_is_functor'
 
-lemma (in is_functor) cf_cf_arr_comma_CId:
+lemma (in is_functor) cf_arr_cf_comma_CId:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   shows "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)"
-proof-
+proof(rule cf_eqI)
+  from vempty_is_zet assms show "cf_id (b \<down>\<^sub>C\<^sub>F \<FF>) : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from vempty_is_zet assms show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms have ObjMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+  from assms have ObjMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+    fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    with assms obtain a' f' 
+      where A_def: "A = [0, a', f']\<^sub>\<circ>"
+        and a': "a' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
+      by auto
+    from prems assms vempty_is_zet a' f' show 
+      "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      unfolding A_def
+      by 
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps 
+            cs_intro: cat_cs_intros
+        )
+  qed (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)+
+  from assms have ArrMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+  from assms have ArrMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+    fix F assume prems: "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    then obtain A B where F: "F : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" by (auto dest: is_arrI)
+    from assms F obtain b' f' b'' f'' h
+      where F_def: "F = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, h]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [0, b', f']\<^sub>\<circ>"
+        and B_def: "B = [0, b'', f'']\<^sub>\<circ>"
+        and h: "h : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
+        and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+        and f'': "f'' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
+        and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
+      by auto
+    from assms prems F h f' f'' show 
+      "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      unfolding F_def A_def B_def
+      by 
+        (
+          cs_concl
+            cs_simp: cat_comma_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+        )
+  qed (cs_concl cs_intro: cat_comma_cs_intros cat_cs_intros)+
+qed simp_all
 
-  show ?thesis
-  proof(rule cf_eqI)
-    from vempty_is_zet assms show "cf_id (b \<down>\<^sub>C\<^sub>F \<FF>) : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    from vempty_is_zet assms show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    from assms have ObjMap_dom_lhs: 
-      "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
-    from assms have ObjMap_dom_rhs: 
-      "\<D>\<^sub>\<circ> (dghm_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-    show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>"
-    proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
-      fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      with assms obtain a' f' 
-        where A_def: "A = [0, a', f']\<^sub>\<circ>"
-          and a': "a' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-          and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
-        by auto
-      from prems assms vempty_is_zet a' f' show 
-        "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
-        unfolding A_def
-        by 
-          (
-            cs_concl
-              cs_simp: cat_cs_simps cat_comma_cs_simps 
-              cs_intro: cat_cs_intros
-          )
-    qed (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)+
-
-    from assms have ArrMap_dom_lhs: 
-      "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
-    from assms have ArrMap_dom_rhs: 
-      "\<D>\<^sub>\<circ> (dghm_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-
-    show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>"
-    proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
-      fix F assume prems: "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      then obtain A B where F: "F : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B" by (auto dest: is_arrI)
-      from assms F obtain b' f' b'' f'' h
-        where F_def: "F = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, h]\<^sub>\<circ>]\<^sub>\<circ>"
-          and A_def: "A = [0, b', f']\<^sub>\<circ>"
-          and B_def: "B = [0, b'', f'']\<^sub>\<circ>"
-          and h: "h : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
-          and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
-          and f'': "f'' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
-          and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
-        by auto
-      from assms prems F h f' f'' show 
-        "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
-        unfolding F_def A_def B_def
-        by 
-          (
-            cs_concl
-              cs_simp: cat_comma_cs_simps cat_cs_simps cs_intro: cat_cs_intros
-          )
-    qed (cs_concl cs_intro: cat_comma_cs_intros cat_cs_intros)+
-
-  qed simp_all
-
-qed
+lemma (in is_functor) cf_cf_arr_comma_CId:
+  assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)"
+proof(rule cf_eqI)
+  from vempty_is_zet assms show "cf_id (\<FF> \<^sub>C\<^sub>F\<down> b) : \<FF> \<^sub>C\<^sub>F\<down> b \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<FF> \<^sub>C\<^sub>F\<down> b"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from vempty_is_zet assms show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) : \<FF> \<^sub>C\<^sub>F\<down> b \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<FF> \<^sub>C\<^sub>F\<down> b"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms have ObjMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+  from assms have ObjMap_dom_rhs:
+    "\<D>\<^sub>\<circ> (cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+    fix A assume prems: "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
+    with assms obtain a' f' 
+      where A_def: "A = [a', 0, f']\<^sub>\<circ>"
+        and a': "a' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+      by auto
+    from prems assms vempty_is_zet a' f' show 
+      "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      unfolding A_def
+      by 
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps cs_intro: cat_cs_intros
+        )
+  qed (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)+
+  from assms have ArrMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+  from assms have ArrMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (cf_id (\<FF> \<down>\<^sub>C\<^sub>F b)\<lparr>ArrMap\<rparr>) = \<FF> \<down>\<^sub>C\<^sub>F b\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+    fix F assume prems: "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
+    then obtain A B where F: "F : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B" by (auto dest: is_arrI)
+    from assms F obtain a' f' a'' f'' k
+      where F_def: "F = [[a', 0, f']\<^sub>\<circ>, [a'', 0, f'']\<^sub>\<circ>, [k, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [a', 0, f']\<^sub>\<circ>"
+        and B_def: "B = [a'', 0, f'']\<^sub>\<circ>"
+        and k: "k : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+        and f'': "f'' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
+        and [cat_cs_simps]: "f'' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> = f'"
+      by auto
+    from assms prems F k f' f'' show 
+      "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      unfolding F_def A_def B_def
+      by 
+        (
+          cs_concl
+            cs_simp: cat_comma_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+        )
+  qed
+    (
+      cs_concl
+        cs_simp: cat_cs_simps cs_intro: cat_comma_cs_intros cat_cs_intros
+    )+
+qed simp_all
 
 
 subsubsection\<open>Comma functors and projections\<close>
 
 lemma (in is_functor) 
-  cf_cf_comp_cf_obj_cf_comma_proj_cf_cf_arr_comma[cat_comma_cs_simps]: 
+  cf_cf_comp_cf_obj_cf_comma_proj_cf_arr_cf_comma[cat_comma_cs_simps]: 
   assumes "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b"
   shows "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>"
-proof-
-
-  show ?thesis
-  proof(rule cf_eqI)
-    from assms vempty_is_zet show "b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    from assms show 
-      "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-    from assms have ObjMap_dom_lhs:
-      "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+proof(rule cf_eqI)
+  from assms vempty_is_zet show "b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms show 
+    "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms have ObjMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by 
+      ( 
+        cs_concl 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps)
+  show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+    from assms show "vsv (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>)"
+      by (cs_concl cs_intro: cat_comma_cs_intros)
+    fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    with assms obtain b' f' 
+      where A_def: "A = [0, b', f']\<^sub>\<circ>"
+        and b': "b' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+      by auto
+    from prems assms b' f' show 
+      "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      unfolding A_def
       by 
-        ( 
+        (
           cs_concl 
-            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+            cs_simp: cat_cs_simps cat_comma_cs_simps 
+            cs_intro: cat_cs_intros cat_comma_cs_intros
         )
-    from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps)
-    show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>"
-    proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
-      from assms show "vsv (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>)"
-        by (cs_concl cs_intro: cat_comma_cs_intros)
-      fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      with assms obtain b' f' 
-        where A_def: "A = [0, b', f']\<^sub>\<circ>"
-          and b': "b' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
-          and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
-        by auto
-      from prems assms b' f' show 
-        "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
-        unfolding A_def
-        by 
-          (
-            cs_concl 
-              cs_simp: cat_cs_simps cat_comma_cs_simps 
-              cs_intro: cat_cs_intros cat_comma_cs_intros
-          )
-    qed
+  qed
+    (
+      use assms vempty_is_zet in
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+    )
+  from assms have ArrMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by
       (
-        use assms vempty_is_zet in
-          \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
-    from assms have ArrMap_dom_lhs:
-      "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by
+  from assms vempty_is_zet have ArrMap_dom_rhs:
+    "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps)
+  from assms vempty_is_zet have ArrMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps)
+  show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+    fix F assume "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
+    then obtain A B where F: "F : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
+      by (auto dest: is_arrI)
+    with assms obtain b' f' b'' f'' h
+      where F_def: "F = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, h]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [0, b', f']\<^sub>\<circ>"
+        and B_def: "B = [0, b'', f'']\<^sub>\<circ>"
+        and h: "h : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
+        and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
+        and f'': "f'' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
+        and f''_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
+      by auto
+    from vempty_is_zet h assms f' f'' F show
+      "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      unfolding F_def A_def B_def 
+      by (*slow*)
         (
           cs_concl
-            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
-        )
-    from assms vempty_is_zet have ArrMap_dom_rhs:
-      "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps)
-    from assms vempty_is_zet have ArrMap_dom_lhs:
-      "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      by
-        (
-          cs_concl
-            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
-        )
-    from assms have ArrMap_dom_rhs:
-      "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps)
-    show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>"
-    proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
-      fix F assume "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-      then obtain A B where F: "F : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
-        by (auto dest: is_arrI)
-      with assms obtain b' f' b'' f'' h
-        where F_def: "F = [[0, b', f']\<^sub>\<circ>, [0, b'', f'']\<^sub>\<circ>, [0, h]\<^sub>\<circ>]\<^sub>\<circ>"
-          and A_def: "A = [0, b', f']\<^sub>\<circ>"
-          and B_def: "B = [0, b'', f'']\<^sub>\<circ>"
-          and h: "h : b' \<mapsto>\<^bsub>\<AA>\<^esub> b''"
-          and f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
-          and f'': "f'' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b''\<rparr>"
-          and f''_def: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f' = f''"
-        by auto
-      from vempty_is_zet h assms f' f'' F show
-        "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
-        unfolding F_def A_def B_def 
-        by (*slow*)
-          (
-            cs_concl
-              cs_simp: cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
-              cs_intro: cat_cs_intros cat_comma_cs_intros
-          )+
-    qed
-      (
-        use assms vempty_is_zet in
-          \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
-      )
-  qed simp_all
+            cs_simp: cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )+
+  qed
+    (
+      use assms vempty_is_zet in
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+    )
+qed simp_all
 
-qed
+lemma (in is_functor) 
+  cf_cf_comp_cf_cf_obj_comma_proj_cf_cf_arr_comma[cat_comma_cs_simps]: 
+  assumes "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b"
+  shows "\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a"
+proof(rule cf_eqI)
+  from assms vempty_is_zet show "\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a : \<FF> \<^sub>C\<^sub>F\<down> a \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms show "\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f : \<FF> \<^sub>C\<^sub>F\<down> a \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms have ObjMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
+    by 
+      ( 
+        cs_concl 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps)
+  show "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ObjMap\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+    from assms show "vsv (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>)"
+      by (cs_concl cs_intro: cat_comma_cs_intros)
+    fix A assume prems: "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
+    with assms obtain a' f' 
+      where A_def: "A = [a', 0, f']\<^sub>\<circ>"
+        and b': "a' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> a"
+      by auto
+    from prems assms b' f' show
+      "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      unfolding A_def
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps 
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )
+  qed
+    (
+      use assms vempty_is_zet in
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+    )
+  from assms vempty_is_zet have ArrMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_comma_cs_simps)
+  show "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+    fix F assume "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
+    then obtain A B where F: "F : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> a\<^esub> B" by (auto dest: is_arrI)
+    with assms obtain a' f' a'' f'' k
+      where F_def: "F = [[a', 0, f']\<^sub>\<circ>, [a'', 0, f'']\<^sub>\<circ>, [k, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [a', 0, f']\<^sub>\<circ>"
+        and B_def: "B = [a'', 0, f'']\<^sub>\<circ>"
+        and k: "k : a' \<mapsto>\<^bsub>\<AA>\<^esub> a''"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> a"
+        and f'': "f'' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> a"
+        and f'_def: "f'' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> = f'"
+      by auto
+    from vempty_is_zet k assms f' f'' F show
+      "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      unfolding F_def A_def B_def 
+      by (*slow*)
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps f'_def
+            cs_intro: cat_cs_intros cat_comma_cs_intros
+        )+
+  qed
+    (
+      use assms vempty_is_zet in
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+    )
+qed simp_all
+
+
+subsubsection\<open>Opposite comma functors\<close>
+
+lemma (in is_functor) cf_op_cf_obj_comma_cf_arr_cf_comma:
+  assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
+  shows 
+    "op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g) =
+      g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c"
+proof(rule cf_eqI)
+  from assms interpret \<FF>c: category \<alpha> \<open>\<FF> \<^sub>C\<^sub>F\<down> c\<close>
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
+  from assms have c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
+  from assms show "op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g) :
+    op_cat (\<FF> \<^sub>C\<^sub>F\<down> c) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> c' \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+  then have ObjMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ObjMap\<rparr>) =
+      (op_cat (\<FF> \<^sub>C\<^sub>F\<down> c))\<lparr>Obj\<rparr>"
+    and ArrMap_dom_lhs:
+    "\<D>\<^sub>\<circ> ((op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ArrMap\<rparr>) =
+      (op_cat (\<FF> \<^sub>C\<^sub>F\<down> c))\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)+
+  from assms show 
+    "g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c :
+      op_cat (\<FF> \<^sub>C\<^sub>F\<down> c) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> c' \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_op_simps
+          cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+      )
+  then have ObjMap_dom_rhs:
+    "\<D>\<^sub>\<circ> ((g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ObjMap\<rparr>) =
+      (op_cat (\<FF> \<^sub>C\<^sub>F\<down> c))\<lparr>Obj\<rparr>"
+    and ArrMap_dom_rhs:
+    "\<D>\<^sub>\<circ> ((g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ArrMap\<rparr>) =
+      (op_cat (\<FF> \<^sub>C\<^sub>F\<down> c))\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)+
+  show
+    "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ObjMap\<rparr> =
+      (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs cat_op_simps)
+    fix A assume "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Obj\<rparr>"
+    with assms obtain a f
+      where A_def: "A = [a, 0, f]\<^sub>\<circ>" 
+        and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
+        and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+      by auto
+    from assms a f show 
+      "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> =
+        (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_obj_comma \<FF> c)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      unfolding A_def 
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+        )
+  qed 
+    (
+      use assms in 
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros\<close>
+    )+
+  show 
+    "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ArrMap\<rparr> =
+      (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs cat_op_simps)
+    fix F assume "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c\<lparr>Arr\<rparr>"
+    then obtain A B where F: "F : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> c\<^esub> B" by auto
+    with assms c obtain a f a' f' h
+      where F_def: "F = [[a, 0, f]\<^sub>\<circ>, [a', 0, f']\<^sub>\<circ>, [h, 0]\<^sub>\<circ>]\<^sub>\<circ>"
+        and A_def: "A = [a, 0, f]\<^sub>\<circ>"
+        and B_def: "B = [a', 0, f']\<^sub>\<circ>"
+        and h: "h : a \<mapsto>\<^bsub>\<AA>\<^esub> a'"
+        and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
+        and [cat_comma_cs_simps]: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> = f"
+      by auto
+    from F assms h f f' c show 
+      "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> =
+        (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
+      unfolding F_def A_def B_def
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
+        )
+  qed
+    (
+      use assms in
+        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros\<close>
+    )+
+qed simp_all
 
 text\<open>\newpage\<close>
 
