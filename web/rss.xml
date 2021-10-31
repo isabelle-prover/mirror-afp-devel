@@ -33,6 +33,39 @@ operators combine. Both proofs of Harper and Levi identities are
 established.</description>
     </item>
     <item>
+       <title>X86 instruction semantics and basic block symbolic execution</title>
+              <link>https://www.isa-afp.org/entries/X86_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/X86_Semantics.html</guid>
+       <dc:creator> Freek Verbeek, Abhijith Bharadwaj, Joshua Bockenek, Ian Roessle, Timmy Weerwag, Binoy Ravindran       </dc:creator>
+       <pubDate>13 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+This AFP entry provides semantics for roughly 120 different X86-64
+assembly instructions. These instructions include various moves,
+arithmetic/logical operations, jumps, call/return, SIMD extensions and
+others. External functions are supported by allowing a user to provide
+custom semantics for these calls. Floating-point operations are mapped
+to uninterpreted functions. The model provides semantics for register
+aliasing and a byte-level little-endian memory model. The semantics
+are purposefully incomplete, but overapproximative. For example, the
+precise effect of flags may be undefined for certain instructions, or
+instructions may simply have no semantics at all. In those cases, the
+semantics are mapped to universally quantified uninterpreted terms
+from a locale. Second, this entry provides a method to symbolic
+execution of basic blocks. The method, called
+&#39;&#39;se_step&#39;&#39; (for: symbolic execution step) fetches
+an instruction and updates the current symbolic state while keeping
+track of assumptions made over the memory model. A key component is a
+set of theorems that prove how reads from memory resolve after writes
+have occurred. Thirdly, this entry provides a parser that allows the
+user to copy-paste the output of the standard disassembly tool objdump
+into Isabelle/HOL. A couple small and explanatory examples are
+included, including functions from the word count program. Several
+examples can be supplied upon request (they are not included due to
+the running time of verification): functions from the floating-point
+modulo function from FDLIBM, the GLIBC strlen function and the
+CoreUtils SHA256 implementation.</description>
+    </item>
+    <item>
        <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
               <link>https://www.isa-afp.org/entries/Correctness_Algebras.html</link>
        <guid>https://www.isa-afp.org/entries/Correctness_Algebras.html</guid>
@@ -524,26 +557,6 @@ equations. That is, it provides an upper bound on the rank of the
 system. We formalize the proof based on the decomposition of a
 solution into its free basis. A direct application is an alternative
 proof of the fact that two noncommuting words form a code.</description>
-    </item>
-    <item>
-       <title>Combinatorics on Words Basics</title>
-              <link>https://www.isa-afp.org/entries/Combinatorics_Words.html</link>
-       <guid>https://www.isa-afp.org/entries/Combinatorics_Words.html</guid>
-       <dc:creator> Štěpán Holub, Martin Raška, Štěpán Starosta       </dc:creator>
-       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalize basics of Combinatorics on Words. This is an extension of
-existing theories on lists. We provide additional properties related
-to prefix, suffix, factor, length and rotation. The topics include
-prefix and suffix comparability, mismatch, word power, total and
-reversed morphisms, border, periods, primitivity and roots. We also
-formalize basic, mostly folklore results related to word equations:
-equidivisibility, commutation and conjugation. Slightly advanced
-properties include the Periodicity lemma (often cited as the Fine and
-Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
-words. We support the algebraic point of view which sees words as
-generators of submonoids of a free monoid. This leads to the concepts
-of the (free) hull, the (free) basis (or code).</description>
     </item>
   </channel>
 </rss>

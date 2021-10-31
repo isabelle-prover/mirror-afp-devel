@@ -11002,14 +11002,14 @@ abstract =
   by Fabian Immler and Bohua Zhan and published in the proceedings of
   the <i>International Conference on Certified Programs and
   Proofs</i> in 2019.
-  
+
 [Complex_Bounded_Operators]
 title = Complex Bounded Operators
 author = Jose Manuel Rodriguez Caballero <https://josephcmac.github.io/>, Dominique Unruh <https://www.ut.ee/~unruh/>
 topic = Mathematics/Analysis
 date = 2021-09-18
 notify = unruh@ut.ee
-abstract = 
+abstract =
   We present a formalization of bounded operators on complex vector
   spaces.  Our formalization contains material on complex vector spaces
   (normed spaces, Banach spaces, Hilbert spaces) that complements and
@@ -11029,7 +11029,7 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 topic = Logic/Rewriting
 date = 2021-09-16
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We define the weighted path order (WPO) and formalize several
   properties such as strong normalization, the subterm property, and
   closure properties under substitutions and contexts. Our definition of
@@ -11060,15 +11060,15 @@ abstract =
   witnesses are added during the construction to ensure saturation as
   well. The resulting set is a Hintikka set which, by the model
   existence theorem, is satisfiable in the Herbrand universe.
-  
-  
+
+
 [Virtual_Substitution]
 title = Verified Quadratic Virtual Substitution for Real Arithmetic
 author = Matias Scharager <mailto:mscharag@cs.cmu.edu>, Katherine Cordwell <mailto:kcordwel@cs.cmu.edu>, Stefan Mitsch <mailto:smitsch@cs.cmu.edu>, André Platzer <mailto:aplatzer@cs.cmu.edu>
 topic = Computer science/Algorithms/Mathematical
 date = 2021-10-02
 notify = mscharag@cs.cmu.edu, kcordwel@cs.cmu.edu, smitsch@cs.cmu.edu, aplatzer@cs.cmu.edu
-abstract = 
+abstract =
   This paper presents a formally verified quantifier elimination (QE)
   algorithm for first-order real arithmetic by linear and quadratic
   virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
@@ -11095,7 +11095,7 @@ author = Walter Guttmann <https://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Computer science/Programming languages/Logics
 date = 2021-10-12
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We study models of state-based non-deterministic sequential
   computations and describe them using algebras. We propose algebras
   that describe iteration for strict and non-strict computations. They
@@ -11115,7 +11115,7 @@ author = Valentin Fouillard <mailto:valentin.fouillard@limsi.fr>, Safouan Taha <
 topic = Logic/General logic/Logics of knowledge and belief
 date = 2021-10-19
 notify = safouan.taha@lri.fr, valentin.fouillard@limsi.fr
-abstract = 
+abstract =
   The 1985 paper by Carlos Alchourrón, Peter Gärdenfors, and David
   Makinson (AGM), “On the Logic of Theory Change: Partial Meet
   Contraction and Revision Functions” launches a large and rapidly
@@ -11131,4 +11131,36 @@ abstract =
   operators combine. Both proofs of Harper and Levi identities are
   established.
 
+[X86_Semantics]
+title = X86 instruction semantics and basic block symbolic execution
+author = Freek Verbeek <mailto:freek@vt.edu>, Abhijith Bharadwaj <>, Joshua Bockenek <>, Ian Roessle <>, Timmy Weerwag <>, Binoy Ravindran <>
+topic = Computer science/Hardware, Computer science/Semantics
+date = 2021-10-13
+notify = freek@vt.edu
+abstract =
+  This AFP entry provides semantics for roughly 120 different X86-64
+  assembly instructions. These instructions include various moves,
+  arithmetic/logical operations, jumps, call/return, SIMD extensions and
+  others. External functions are supported by allowing a user to provide
+  custom semantics for these calls. Floating-point operations are mapped
+  to uninterpreted functions. The model provides semantics for register
+  aliasing and a byte-level little-endian memory model. The semantics
+  are purposefully incomplete, but overapproximative. For example, the
+  precise effect of flags may be undefined for certain instructions, or
+  instructions may simply have no semantics at all. In those cases, the
+  semantics are mapped to universally quantified uninterpreted terms
+  from a locale. Second, this entry provides a method to symbolic
+  execution of basic blocks. The method, called
+  ''se_step'' (for: symbolic execution step) fetches
+  an instruction and updates the current symbolic state while keeping
+  track of assumptions made over the memory model. A key component is a
+  set of theorems that prove how reads from memory resolve after writes
+  have occurred. Thirdly, this entry provides a parser that allows the
+  user to copy-paste the output of the standard disassembly tool objdump
+  into Isabelle/HOL. A couple small and explanatory examples are
+  included, including functions from the word count program. Several
+  examples can be supplied upon request (they are not included due to
+  the running time of verification): functions from the floating-point
+  modulo function from FDLIBM, the GLIBC strlen function and the
+  CoreUtils SHA256 implementation.
 
