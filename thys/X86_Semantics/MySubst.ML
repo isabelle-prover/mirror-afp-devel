@@ -326,56 +326,6 @@ fun eqsubst_tac ctxt butlast thms i st =
   end;
 
 
-(* apply a substitution inside assumption j, keeps asm in the same place *)
-fun apply_subst_in_asm ctxt i st rule ((cfvs, j, _, pth),m) =
-  let
-    val st2 = Thm.rotate_rule (j - 1) i st; (* put premice first *)
-    val preelimrule =
-      RW_Inst.rw ctxt m rule pth
-      |> (Seq.hd o prune_params_tac ctxt)
-      |> Thm.permute_prems 0 ~1 (* put old asm first *)
-      |> unfix_frees cfvs (* unfix any global params *)
-      |> Conv.fconv_rule Drule.beta_eta_conversion; (* normal form *)
-  in
-    (* ~j because new asm starts at back, thus we subtract 1 *)
-    Seq.map (Thm.rotate_rule (~ j) (Thm.nprems_of rule + i))
-      (dresolve_tac ctxt [preelimrule] i st2)
-  end;
-
-
-(* prepare to substitute within the j'th premise of subgoal i of gth,
-using a meta-level equation. Note that we assume rule has var indicies
-zero'd. Note that we also assume that premt is the j'th premice of
-subgoal i of gth. Note the repetition of work done for each
-assumption, i.e. this can be made more efficient for search over
-multiple assumptions.  *)
-fun prep_subst_in_asm ctxt i gth j =
-  let
-    val th = Thm.incr_indexes 1 gth;
-    val tgt_term = Thm.prop_of th;
-
-    val (fixedbody, fvs) = IsaND.fix_alls_term ctxt i tgt_term;
-    val cfvs = rev (map (Thm.cterm_of ctxt) fvs);
-
-    val asmt = nth (Logic.strip_imp_prems fixedbody) (j - 1);
-    val asm_nprems = length (Logic.strip_imp_prems asmt);
-
-    val pth = Thm.trivial ((Thm.cterm_of ctxt) asmt);
-    val maxidx = Thm.maxidx_of th;
-
-    val ft =
-      (Zipper.move_down_right (* trueprop *)
-         o Zipper.mktop
-         o Thm.prop_of) pth
-  in ((cfvs, j, asm_nprems, pth), (ctxt, maxidx, ft)) end;
-
-(* prepare subst in every possible assumption *)
-fun prep_subst_in_asms ctxt i gth =
-  map (prep_subst_in_asm ctxt i gth)
-    ((fn l => Library.upto (1, length l))
-      (Logic.prems_of_goal (Thm.prop_of gth) i));
-
-
 fun skip_first_asm_occs_search searchf sinfo occ lhs =
   skipto_skipseq occ (searchf sinfo lhs);
 
