@@ -47,9 +47,9 @@ sig
   (* Normalizers *)
   val split_not_imp_th: thm -> thm list
   val split_conj_gen_th: Proof.context -> thm -> thm list
-  val eq_normalizer: normalizer
-  val property_normalizer: normalizer
-  val disj_normalizer: normalizer
+  val eq_normalizer: Normalizer.normalizer
+  val property_normalizer: Normalizer.normalizer
+  val disj_normalizer: Normalizer.normalizer
   val logic_thm_update: Proof.context -> box_id * thm -> raw_update
   val add_disj_normalizers: theory -> theory
 end;
