@@ -356,8 +356,8 @@ next
   show \<open>Cn({}) \<subseteq> Cn({p}) \<inter> Cn({.\<not> p})\<close> by (simp add: monotonicity_L)
 qed
 
-lemma Cn_notnot: \<open>Cn({.\<not> (.\<not> \<phi>)}) = Cn({\<phi>})\<close> 
-  by (metis (no_types, hide_lams) notnot_PL valid_Cn_equiv valid_equiv_PL) 
+lemma Cn_notnot: \<open>Cn({.\<not> (.\<not> \<phi>)}) = Cn({\<phi>})\<close>
+  by (metis (no_types, opaque_lifting) notnot_PL valid_Cn_equiv valid_equiv_PL)
 
 lemma conj_com: \<open>A \<turnstile> p .\<and>. q \<longleftrightarrow> A \<turnstile> q .\<and>. p\<close>
   using conj_PL by auto

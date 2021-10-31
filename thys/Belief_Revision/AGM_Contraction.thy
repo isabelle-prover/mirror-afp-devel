@@ -482,8 +482,8 @@ proof -
     by (metis b emptyrem2taut is_selection pmc_tautology rem_closure subset_iff validD_L valid_conj_PL)
   hence \<open>B \<in> (K .\<bottom>. \<phi>)\<close>
     using remainder_recovery_bis[OF a _ d, of \<open>\<phi> .\<and>. \<psi>\<close>]
-    by (metis (no_types, hide_lams) a conj_PL emptyrem2taut insert_not_empty is_selection 
-                                    nonconsequence_remainder subsetD taut2emptyrem)
+    by (metis (no_types, opaque_lifting) a conj_PL emptyrem2taut insert_not_empty is_selection 
+                                         nonconsequence_remainder subsetD taut2emptyrem)
   with c have e:\<open>\<gamma>\<^sub>T\<^sub>R K (\<phi> .\<and>. \<psi>) \<inter> (K .\<bottom>. \<phi>) \<noteq> {}\<close> by blast
   then show \<open>((K \<div>\<^bsub>\<gamma>\<^sub>T\<^sub>R\<^esub> (\<phi> .\<and>. \<psi>) \<subseteq> (K \<div>\<^bsub>\<gamma>\<^sub>T\<^sub>R\<^esub> \<phi>)))\<close> 
     unfolding mc using rel_sel_conj_inclusion[OF a e] by blast
