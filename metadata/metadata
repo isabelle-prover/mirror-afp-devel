@@ -10870,7 +10870,7 @@ author = Andrei Popescu <https://www.andreipopescu.uk>, Peter Lammich <mailto:la
 topic = Computer science/Security
 date = 2021-08-16
 notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
-abstract = 
+abstract =
   This entry contains the confidentiality verification of the
   (functional kernel of) the CoCon conference management system [<a
   href="https://doi.org/10.1007/978-3-319-08867-9_11">1</a>,
@@ -10889,7 +10889,7 @@ author = Thomas Bauereiss <mailto:thomas@bauereiss.name>, Andrei Popescu <https:
 topic = Computer science/Security
 date = 2021-08-16
 notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
-abstract = 
+abstract =
   Building on a previous <a
   href="https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html">AFP
   entry</a> that formalizes the Bounded-Deducibility Security (BD
@@ -10913,7 +10913,7 @@ author = Thomas Bauereiss <mailto:thomas@bauereiss.name>, Andrei Popescu <https:
 topic = Computer science/Security
 date = 2021-08-16
 notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
-abstract = 
+abstract =
   This entry contains the confidentiality verification of the
   (functional kernel of) the CoSMed  social media platform. The
   confidentiality properties are formalized as instances of BD Security
@@ -10933,7 +10933,7 @@ author = Thomas Bauereiss <mailto:thomas@bauereiss.name>, Andrei Popescu <https:
 topic = Computer science/Security
 date = 2021-08-16
 notify = thomas@bauereiss.name, a.popescu@sheffield.ac.uk
-abstract = 
+abstract =
   This entry contains the confidentiality verification of the
   (functional kernel of) the CoSMeDis  distributed social media platform
   presented in [<a href="https://doi.org/10.1109/SP.2017.24">1</a>].
@@ -11152,14 +11152,14 @@ abstract =
   by Fabian Immler and Bohua Zhan and published in the proceedings of
   the <i>International Conference on Certified Programs and
   Proofs</i> in 2019.
-  
+
 [Complex_Bounded_Operators]
 title = Complex Bounded Operators
 author = Jose Manuel Rodriguez Caballero <https://josephcmac.github.io/>, Dominique Unruh <https://www.ut.ee/~unruh/>
 topic = Mathematics/Analysis
 date = 2021-09-18
 notify = unruh@ut.ee
-abstract = 
+abstract =
   We present a formalization of bounded operators on complex vector
   spaces.  Our formalization contains material on complex vector spaces
   (normed spaces, Banach spaces, Hilbert spaces) that complements and
@@ -11179,7 +11179,7 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 topic = Logic/Rewriting
 date = 2021-09-16
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We define the weighted path order (WPO) and formalize several
   properties such as strong normalization, the subterm property, and
   closure properties under substitutions and contexts. Our definition of
@@ -11210,15 +11210,15 @@ abstract =
   witnesses are added during the construction to ensure saturation as
   well. The resulting set is a Hintikka set which, by the model
   existence theorem, is satisfiable in the Herbrand universe.
-  
-  
+
+
 [Virtual_Substitution]
 title = Verified Quadratic Virtual Substitution for Real Arithmetic
 author = Matias Scharager <mailto:mscharag@cs.cmu.edu>, Katherine Cordwell <mailto:kcordwel@cs.cmu.edu>, Stefan Mitsch <mailto:smitsch@cs.cmu.edu>, André Platzer <mailto:aplatzer@cs.cmu.edu>
 topic = Computer science/Algorithms/Mathematical
 date = 2021-10-02
 notify = mscharag@cs.cmu.edu, kcordwel@cs.cmu.edu, smitsch@cs.cmu.edu, aplatzer@cs.cmu.edu
-abstract = 
+abstract =
   This paper presents a formally verified quantifier elimination (QE)
   algorithm for first-order real arithmetic by linear and quadratic
   virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
@@ -11238,4 +11238,47 @@ abstract =
   Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
   inconsistencies in some tools, underscoring the significance of a
   verified approach for the intricacies of real arithmetic.
+
+[Correctness_Algebras]
+title = Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations
+author = Walter Guttmann <https://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Computer science/Programming languages/Logics
+date = 2021-10-12
+notify = walter.guttmann@canterbury.ac.nz
+abstract =
+  We study models of state-based non-deterministic sequential
+  computations and describe them using algebras. We propose algebras
+  that describe iteration for strict and non-strict computations. They
+  unify computation models which differ in the fixpoints used to
+  represent iteration. We propose algebras that describe the infinite
+  executions of a computation. They lead to a unified approximation
+  order and results that connect fixpoints in the approximation and
+  refinement orders. This unifies the semantics of recursion for a range
+  of computation models. We propose algebras that describe preconditions
+  and the effect of while-programs under postconditions. They unify
+  correctness statements in two dimensions: one statement applies in
+  various computation models to various correctness claims.
+
+[Belief_Revision]
+title = Belief Revision Theory
+author = Valentin Fouillard <mailto:valentin.fouillard@limsi.fr>, Safouan Taha <mailto:safouan.taha@lri.fr>, Frédéric Boulanger <mailto:frederic.boulanger@centralesupelec.fr>, Nicolas Sabouret <>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-10-19
+notify = safouan.taha@lri.fr, valentin.fouillard@limsi.fr
+abstract =
+  The 1985 paper by Carlos Alchourrón, Peter Gärdenfors, and David
+  Makinson (AGM), “On the Logic of Theory Change: Partial Meet
+  Contraction and Revision Functions” launches a large and rapidly
+  growing literature that employs formal models and logics to handle
+  changing beliefs of a rational agent and to take into account new
+  piece of information observed by this agent. In 2011, a review book
+  titled "AGM 25 Years: Twenty-Five Years of Research in Belief
+  Change" was edited to summarize the first twenty five years of
+  works based on AGM.  This  HOL-based  AFP entry is a faithful
+  formalization of the AGM operators (e.g. contraction, revision,
+  remainder ...) axiomatized in the original paper. It also contains the
+  proofs of all the theorems stated in the paper that show how these
+  operators combine. Both proofs of Harper and Levi identities are
+  established.
+
 

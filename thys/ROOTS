@@ -38,6 +38,7 @@ BNF_CC
 BNF_Operations
 BTree
 Banach_Steinhaus
+Belief_Revision
 Bell_Numbers_Spivey
 BenOr_Kozen_Reif
 Berlekamp_Zassenhaus
@@ -121,6 +122,7 @@ Containers
 CoreC++
 Core_DOM
 Core_SC_DOM
+Correctness_Algebras
 CoSMed
 CoSMeDis
 Count_Complex_Roots
