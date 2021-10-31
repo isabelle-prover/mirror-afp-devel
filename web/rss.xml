@@ -33,6 +33,39 @@ operators combine. Both proofs of Harper and Levi identities are
 established.</description>
     </item>
     <item>
+       <title>X86 instruction semantics and basic block symbolic execution</title>
+              <link>https://www.isa-afp.org/entries/X86_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/X86_Semantics.html</guid>
+       <dc:creator> Freek Verbeek, Abhijith Bharadwaj, Joshua Bockenek, Ian Roessle, Timmy Weerwag, Binoy Ravindran       </dc:creator>
+       <pubDate>13 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+This AFP entry provides semantics for roughly 120 different X86-64
+assembly instructions. These instructions include various moves,
+arithmetic/logical operations, jumps, call/return, SIMD extensions and
+others. External functions are supported by allowing a user to provide
+custom semantics for these calls. Floating-point operations are mapped
+to uninterpreted functions. The model provides semantics for register
+aliasing and a byte-level little-endian memory model. The semantics
+are purposefully incomplete, but overapproximative. For example, the
+precise effect of flags may be undefined for certain instructions, or
+instructions may simply have no semantics at all. In those cases, the
+semantics are mapped to universally quantified uninterpreted terms
+from a locale. Second, this entry provides a method to symbolic
+execution of basic blocks. The method, called
+&#39;&#39;se_step&#39;&#39; (for: symbolic execution step) fetches
+an instruction and updates the current symbolic state while keeping
+track of assumptions made over the memory model. A key component is a
+set of theorems that prove how reads from memory resolve after writes
+have occurred. Thirdly, this entry provides a parser that allows the
+user to copy-paste the output of the standard disassembly tool objdump
+into Isabelle/HOL. A couple small and explanatory examples are
+included, including functions from the word count program. Several
+examples can be supplied upon request (they are not included due to
+the running time of verification): functions from the floating-point
+modulo function from FDLIBM, the GLIBC strlen function and the
+CoreUtils SHA256 implementation.</description>
+    </item>
+    <item>
        <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
               <link>https://www.isa-afp.org/entries/Correctness_Algebras.html</link>
        <guid>https://www.isa-afp.org/entries/Correctness_Algebras.html</guid>
@@ -552,18 +585,6 @@ to capture the key and novel features of Sail in terms of their
 syntax, typing rules and operational semantics, and to confirm that
 they work together by proving progress and preservation lemmas. We use
 the Nominal2 library to handle binding.</description>
-    </item>
-    <item>
-       <title>Public Announcement Logic</title>
-              <link>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>17 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of public announcement logic with
-countably many agents. It includes proofs of soundness and
-completeness for a variant of the axiom system PA + DIST! + NEC!. The
-completeness proof builds on the Epistemic Logic theory.</description>
     </item>
   </channel>
 </rss>
