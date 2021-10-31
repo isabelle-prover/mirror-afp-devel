@@ -11111,7 +11111,7 @@ abstract =
 
 [Belief_Revision]
 title = Belief Revision Theory
-author = Valentin Fouillard <mailto:valentin.fouillard@limsi.fr>, Safouan Taha <mailto:safouan.taha@lri.fr>, Frédéric Boulanger <mailto:frederic.boulanger@centralesupelec.fr>, Nicolas Sabouret
+author = Valentin Fouillard <mailto:valentin.fouillard@limsi.fr>, Safouan Taha <mailto:safouan.taha@lri.fr>, Frédéric Boulanger <mailto:frederic.boulanger@centralesupelec.fr>, Nicolas Sabouret <>
 topic = Logic/General logic/Logics of knowledge and belief
 date = 2021-10-19
 notify = safouan.taha@lri.fr, valentin.fouillard@limsi.fr
