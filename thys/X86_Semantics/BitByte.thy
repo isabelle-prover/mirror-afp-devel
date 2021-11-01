@@ -7,9 +7,13 @@
 section "Bit and byte-level theorems"
 
 theory BitByte
-  imports Main Word_Lib.Bitwise
+  imports Main "Word_Lib.Syntax_Bundles" "Word_Lib.Bit_Shifts_Infix_Syntax" "Word_Lib.Bitwise"
 begin
 
+subsection \<open>Basics\<close>
+
+unbundle bit_operations_syntax
+unbundle bit_projection_infix_syntax
 
 definition take_bits :: "nat \<Rightarrow> nat \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word" ("\<langle>_,_\<rangle>_" 51) \<comment> \<open>little-endian\<close>
   where "take_bits l h w \<equiv> (w >> l) AND mask (h-l)"
@@ -40,27 +44,39 @@ text \<open>
 text \<open>We prove some theorems about taking the nth bit/byte of an operation. These are useful to prove
       equaltiy between different words, by first applying rule @{thm word_eqI}.\<close>
 
+lemma bit_take_bits_iff [bit_simps]:
+  \<open>(\<langle>l,h\<rangle>w) !! n \<longleftrightarrow> n < LENGTH('a) \<and> n < h - l \<and> w !! (n + l)\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: take_bits_def bit_simps ac_simps)
+
+lemma bit_take_byte_iff [bit_simps]:
+  \<open>take_byte m w !! n \<longleftrightarrow> n < LENGTH('a) \<and> n < 8 \<and> w !! (n + m * 8)\<close> for w :: \<open>'a::len word\<close>
+  by (auto simp add: take_byte_def bit_simps)
+
+lemma bit_overwrite_iff [bit_simps]:
+  \<open>overwrite l h w0 w1 !! n \<longleftrightarrow> n < LENGTH('a) \<and>
+    (if l \<le> n \<and> n < h then w1 else w0) !! n\<close>
+    for w0 w1 :: \<open>'a::len word\<close>
+  by (auto simp add: overwrite_def bit_simps)
+
 lemma nth_takebits:
   fixes w :: "'a::len word"
   shows "(\<langle>l,h\<rangle>w) !! n = (if n < LENGTH('a) \<and> n < h - l then w !! (n + l) else False)"
-  by (auto simp add: take_bits_def word_ao_nth word_size nth_shiftr)
+  by (auto simp add: bit_simps)
 
 lemma nth_takebyte:
   fixes w :: "'a::len word"
   shows "take_byte (n div 8) w !! (n mod 8) = (if n mod 8 < LENGTH('a) then w!!n else False )"
-  by (auto simp add: take_byte_def nth_ucast nth_takebits split: if_split_asm)
+  by (simp add: bit_simps)
 
 lemma nth_take_byte_overwrite:
   fixes v v' :: "'a::len word"
   shows "take_byte n (overwrite l h v v') !! i = (if i + n * 8 < l \<or> i + n * 8 \<ge> h then take_byte n v !! i else take_byte n v' !! i)"
-  by (auto simp add: take_byte_def overwrite_def nth_ucast nth_takebits word_ao_nth nth_shiftl)
-     (metis test_bit_bin)+
+  by (auto simp add: bit_simps dest: bit_imp_le_length)
 
 lemma nth_bitNOT:
   fixes a :: "'a::len word"
   shows "(NOT a) !! n \<longleftrightarrow> (if n < LENGTH('a)  then \<not>(a !! n) else False)"
-  apply (auto simp add: word_ops_nth_size word_size)
-  by (simp add: bin_nth_uint word_test_bit_def)
+  by (simp add: bit_simps)
 
 
 text \<open>Various simplification rules\<close>
@@ -69,46 +85,51 @@ lemma ucast_take_bits:
   fixes w :: "'a::len word"
   assumes "h = LENGTH('b)"
       and "LENGTH('b) \<le> LENGTH('a)"
-  shows "ucast (\<langle>0,h\<rangle>w) = (ucast w ::'b :: len word)"
-  apply (rule word_eqI)
+    shows "ucast (\<langle>0,h\<rangle>w) = (ucast w ::'b :: len word)"
+  apply (rule bit_word_eqI)
   using assms
-  by (auto simp add: word_size nth_ucast nth_takebits)
+  apply (simp add: bit_simps)
+  done
 
 lemma take_bits_ucast:
   fixes w :: "'b::len word"
   assumes "h = LENGTH('b)"
   shows "(\<langle>0,h\<rangle> (ucast w ::'a :: len word)) = (ucast w ::'a :: len word)"
-  apply (rule word_eqI)
-  by (metis Traditional_Infix_Syntax.nth_ucast add.right_neutral assms(1) diff_zero nth_takebits test_bit_size word_size)
+  apply (rule bit_word_eqI)
+  using assms
+  apply (auto simp add: bit_simps dest: bit_imp_le_length)
+  done
 
 lemma take_bits_take_bits:
   fixes w :: "'a::len word"
   shows "(\<langle>l,h\<rangle>(\<langle>l',h'\<rangle>w)) = (if min LENGTH('a) h \<ge> h' - l' then \<langle>l+l',h'\<rangle>w else (\<langle>l+l',l'+min LENGTH('a) h\<rangle>w))"
-  apply (rule word_eqI)
-  by (auto simp add: word_size nth_takebits word_ao_nth nth_shiftl min_def)
-     (metis semiring_normalization_rules(25))+
+  apply (rule bit_word_eqI)
+  apply (simp add: bit_simps ac_simps)
+  apply auto
+  done
 
 lemma take_bits_overwrite:
   shows "\<langle>l,h\<rangle>(overwrite l h w0 w1) = \<langle>l,h\<rangle>w1"
-  apply (auto simp add: overwrite_def)
-  apply (rule word_eqI)
-  by (auto simp add: word_size nth_takebits word_ao_nth nth_shiftl)
-     (simp add: bin_nth_uint_imp word_test_bit_def)
+  apply (rule bit_word_eqI)
+  apply (simp add: bit_simps ac_simps)
+  apply (auto dest: bit_imp_le_length)
+  done
 
 lemma overwrite_0_take_bits_0:
   shows "overwrite 0 h (\<langle>0,h\<rangle>w0) w1 = \<langle>0,h\<rangle>w1"
-  apply (auto simp add: overwrite_def)
-  apply (rule word_eqI)
-  by (auto simp add: word_size nth_takebits word_ao_nth nth_shiftl)
+  apply (rule bit_word_eqI)
+  apply (simp add: bit_simps ac_simps)
+  done
 
 lemma take_byte_shiftlr_256:
-fixes v :: "256 word"
+  fixes v :: "256 word"
   assumes "m \<le> n"
   shows "take_byte n (v << m*8) = (if (n+1)*8 \<le> 256 then take_byte (n-m) v else 0)"
-  apply (rule word_eqI)
+  apply (rule bit_word_eqI)
   using assms
-  by (auto simp add: take_byte_def nth_ucast nth_takebits word_size nth_shiftl diff_mult_distrib)
-
+  apply (simp add: bit_simps)
+  apply (simp add: algebra_simps)
+  done
 
 
 subsection \<open> Take\_Bits and arithmetic\<close>
@@ -207,8 +228,6 @@ lemma ucast_minus:
   using ucast_plus[OF assms,of a "-b"] ucast_uminus[OF assms,of b]
   by auto
 
-
-
 lemma to_bl_takebits:
   fixes a :: "'a::len word"
   shows "to_bl (\<langle>0,h\<rangle>a) = replicate (LENGTH('a) - h) False @ drop (LENGTH('a) - h) (to_bl a)"
@@ -216,13 +235,11 @@ lemma to_bl_takebits:
   apply (rule nth_equalityI)
   by (auto simp add: min_def nth_append)
 
+
 text \<open> All simplification rules that are used during symbolic execution.\<close>
 lemmas BitByte_simps = ucast_plus ucast_minus ucast_uminus take_bits_overwrite take_bits_take_bits
-  ucast_take_bits overwrite_0_take_bits_0 mask_eq
+  ucast_take_bits overwrite_0_take_bits_0 mask_eq_exp_minus_1
   ucast_down_ucast_id is_down take_bits_ucast ucast_up_ucast_id is_up
-
-
-
 
 text \<open>Simplification for immediate (numeral) values.\<close>
 lemmas take_bits_numeral[simp] = take_bits_def[of _ _ "numeral n"] for n
@@ -232,15 +249,5 @@ lemmas overwrite_numeral_numeral[simp] = overwrite_def[of _ _ "numeral n" "numer
 lemmas overwrite_num0_numeral[simp] = overwrite_def[of _ _ 0 "numeral m"] for n m
 lemmas overwrite_numeral_num0[simp] = overwrite_def[of _ _ "numeral m" 0] for n m
 lemmas overwrite_numeral_00[simp] = overwrite_def[of _ _ 0 0]
-
-lemmas shiftr_def_numeral[simp] = shiftr_def[of "- numeral n" "numeral m"] for n m
-lemmas shiftr1_def_numeral[simp] = shiftr1_eq[of "- numeral n"] for n
-lemmas bintrunc_numeral_minus_1[simp] = bintrunc_numeral[of k "-1"] for k
-
-lemmas word_less_minus_numeral_numeral [simp] = word_less_def [of "- numeral a" "numeral b"] for a b
-
-lemmas ucast_minus_numeral[simp] = ucast_eq[of "- numeral w"] for w
-lemmas mask_numeral[simp] = mask_eq[of "numeral w"] for w
-
 
 end

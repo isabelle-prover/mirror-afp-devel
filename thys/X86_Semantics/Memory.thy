@@ -45,7 +45,7 @@ text \<open>A region is separate from another if they do not overlap.\<close>
 
 
 lemma region_addresses_iff: "a' \<in> region_addresses a si \<longleftrightarrow> unat (a' - a) < si"
-  apply (auto simp add: region_addresses_def)
+  apply (auto simp add: region_addresses_def unsigned_of_nat)
    apply (metis diff_Suc_less le_less_trans less_imp_Suc_add take_bit_nat_less_eq_self zero_less_Suc)
   by (smt (z3) add.commute add_Suc_right add_diff_cancel_left' diff_add_cancel less_add_Suc2 less_imp_Suc_add word_unat.Rep_inverse)
 
