@@ -56,12 +56,10 @@ lemma pre_pc_Z:
   "x\<guillemotleft>1 = 1 \<longleftrightarrow> x * bot \<le> Z"
   by (simp add: a_strict box_x_1 pre_def)
 
-(*
-lemma pre_sub_promote: "(x\<guillemotleft>-q) * x \<le> (x\<guillemotleft>-q) * x * -q \<squnion> Z" nitpick [expect=genuine,card=6] oops
-lemma pre_promote: "(x\<guillemotleft>-q) * x \<squnion> Z = (x\<guillemotleft>-q) * x * -q \<squnion> Z" nitpick [expect=genuine,card=6] oops
-lemma pre_mult_sub_promote: "(x*y\<guillemotleft>-q) * x \<le> (x*y\<guillemotleft>-q) * x * (y\<guillemotleft>-q) \<squnion> Z" nitpick [expect=genuine,card=6] oops
-lemma pre_mult_promote: "(x*y\<guillemotleft>-q) * x * (y\<guillemotleft>-q) \<squnion> Z = (x*y\<guillemotleft>-q) * x \<squnion> Z" nitpick [expect=genuine,card=6] oops
-*)
+proposition pre_sub_promote: "(x\<guillemotleft>-q) * x \<le> (x\<guillemotleft>-q) * x * -q \<squnion> Z" nitpick [expect=genuine,card=6] oops
+proposition pre_promote: "(x\<guillemotleft>-q) * x \<squnion> Z = (x\<guillemotleft>-q) * x * -q \<squnion> Z" nitpick [expect=genuine,card=6] oops
+proposition pre_mult_sub_promote: "(x*y\<guillemotleft>-q) * x \<le> (x*y\<guillemotleft>-q) * x * (y\<guillemotleft>-q) \<squnion> Z" nitpick [expect=genuine,card=6] oops
+proposition pre_mult_promote: "(x*y\<guillemotleft>-q) * x * (y\<guillemotleft>-q) \<squnion> Z = (x*y\<guillemotleft>-q) * x \<squnion> Z" nitpick [expect=genuine,card=6] oops
 
 end
 

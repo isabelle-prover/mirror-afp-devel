@@ -55,12 +55,10 @@ lemma while_mult_1_assoc:
   "(x \<star> 1) * y = x \<star> y"
   by (simp add: while_def)
 
-(*
-lemma "y \<star> (x \<star> 1) \<le> x \<star> (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
-lemma "y * x \<le> (1 \<squnion> x) * (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
-lemma while_square_1: "x \<star> 1 = (x * x) \<star> (x \<squnion> 1)" oops
-lemma while_absorb_below_one: "y * x \<le> x \<Longrightarrow> y \<star> x \<le> 1 \<star> x" oops
-*)
+proposition "y \<star> (x \<star> 1) \<le> x \<star> (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
+proposition "y * x \<le> (1 \<squnion> x) * (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
+proposition while_square_1: "x \<star> 1 = (x * x) \<star> (x \<squnion> 1)" oops
+proposition while_absorb_below_one: "y * x \<le> x \<Longrightarrow> y \<star> x \<le> 1 \<star> x" oops
 
 end
 
@@ -83,37 +81,35 @@ lemma while_mult_top_2:
 
 text \<open>Theorem 13 counterexamples\<close>
 
-(*
-lemma while_one_top: "1 \<star> x = top" nitpick [expect=genuine,card=2] oops
-lemma while_top: "top \<star> x = top" nitpick [expect=genuine,card=2] oops
-lemma while_sub_mult_one: "x * (1 \<star> y) \<le> 1 \<star> x" oops
-lemma while_unfold_below_1: "x = y * x \<Longrightarrow> x \<le> y \<star> 1" oops
-lemma while_unfold_below: "x = z \<squnion> y * x \<Longrightarrow> x \<le> y \<star> z" nitpick [expect=genuine,card=2] oops
-lemma while_unfold_below: "x \<le> z \<squnion> y * x \<Longrightarrow> x \<le> y \<star> z" nitpick [expect=genuine,card=2] oops
-lemma while_mult_top: "(x * top) \<star> z = z \<squnion> x * top" nitpick [expect=genuine,card=2] oops
-lemma tarski_mult_top_idempotent: "x * top = x * top * x * top" oops
+proposition while_one_top: "1 \<star> x = top" nitpick [expect=genuine,card=2] oops
+proposition while_top: "top \<star> x = top" nitpick [expect=genuine,card=2] oops
+proposition while_sub_mult_one: "x * (1 \<star> y) \<le> 1 \<star> x" oops
+proposition while_unfold_below_1: "x = y * x \<Longrightarrow> x \<le> y \<star> 1" oops
+proposition while_unfold_below: "x = z \<squnion> y * x \<Longrightarrow> x \<le> y \<star> z" nitpick [expect=genuine,card=2] oops
+proposition while_unfold_below: "x \<le> z \<squnion> y * x \<Longrightarrow> x \<le> y \<star> z" nitpick [expect=genuine,card=2] oops
+proposition while_mult_top: "(x * top) \<star> z = z \<squnion> x * top" nitpick [expect=genuine,card=2] oops
+proposition tarski_mult_top_idempotent: "x * top = x * top * x * top" oops
 
-lemma while_loop_is_greatest_postfixpoint: "is_greatest_postfixpoint (\<lambda>x . y * x \<squnion> z) (y \<star> z)" nitpick [expect=genuine,card=2] oops
-lemma while_loop_is_greatest_fixpoint: "is_greatest_fixpoint (\<lambda>x . y * x \<squnion> z) (y \<star> z)" nitpick [expect=genuine,card=2] oops
-lemma while_sub_while_zero: "x \<star> z \<le> (x \<star> y) \<star> z" oops
-lemma while_while_sub_associative: "x \<star> (y \<star> z) \<le> (x \<star> y) \<star> z" oops
-lemma tarski: "x \<le> x * top * x * top" oops
-lemma tarski_top_omega_below: "x * top \<le> (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
-lemma tarski_top_omega: "x * top = (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
-lemma tarski_below_top_omega: "x \<le> (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
-lemma tarski: "x = bot \<or> top * x * top = top" oops
-lemma "1 = (x * bot) \<star> 1" oops
-lemma "1 \<squnion> x * bot = x \<star> 1" oops
-lemma "x = x * (x \<star> 1)" oops
-lemma "x * (x \<star> 1) = x \<star> 1" oops
-lemma "x \<star> 1 = x \<star> (1 \<star> 1)" oops
-lemma "(x \<squnion> y) \<star> 1 = (x \<star> (y \<star> 1)) \<star> 1" oops
-lemma "z \<squnion> y * x = x \<Longrightarrow> y \<star> z \<le> x" oops
-lemma "y * x = x \<Longrightarrow> y \<star> x \<le> x" oops
-lemma "z \<squnion> x * y = x \<Longrightarrow> z * (y \<star> 1) \<le> x" oops
-lemma "x * y = x \<Longrightarrow> x * (y \<star> 1) \<le> x" oops
-lemma "x * z = z * y \<Longrightarrow> x \<star> z \<le> z * (y \<star> 1)" oops
-*)
+proposition while_loop_is_greatest_postfixpoint: "is_greatest_postfixpoint (\<lambda>x . y * x \<squnion> z) (y \<star> z)" nitpick [expect=genuine,card=2] oops
+proposition while_loop_is_greatest_fixpoint: "is_greatest_fixpoint (\<lambda>x . y * x \<squnion> z) (y \<star> z)" nitpick [expect=genuine,card=2] oops
+proposition while_sub_while_zero: "x \<star> z \<le> (x \<star> y) \<star> z" oops
+proposition while_while_sub_associative: "x \<star> (y \<star> z) \<le> (x \<star> y) \<star> z" oops
+proposition tarski: "x \<le> x * top * x * top" oops
+proposition tarski_top_omega_below: "x * top \<le> (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
+proposition tarski_top_omega: "x * top = (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
+proposition tarski_below_top_omega: "x \<le> (x * top) \<star> bot" nitpick [expect=genuine,card=2] oops
+proposition tarski: "x = bot \<or> top * x * top = top" oops
+proposition "1 = (x * bot) \<star> 1" oops
+proposition "1 \<squnion> x * bot = x \<star> 1" oops
+proposition "x = x * (x \<star> 1)" oops
+proposition "x * (x \<star> 1) = x \<star> 1" oops
+proposition "x \<star> 1 = x \<star> (1 \<star> 1)" oops
+proposition "(x \<squnion> y) \<star> 1 = (x \<star> (y \<star> 1)) \<star> 1" oops
+proposition "z \<squnion> y * x = x \<Longrightarrow> y \<star> z \<le> x" oops
+proposition "y * x = x \<Longrightarrow> y \<star> x \<le> x" oops
+proposition "z \<squnion> x * y = x \<Longrightarrow> z * (y \<star> 1) \<le> x" oops
+proposition "x * y = x \<Longrightarrow> x * (y \<star> 1) \<le> x" oops
+proposition "x * z = z * y \<Longrightarrow> x \<star> z \<le> z * (y \<star> 1)" oops
 
 end
 

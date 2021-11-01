@@ -759,10 +759,8 @@ subclass multirelation_algebra_5
   apply unfold_locales
   by (metis dual_sub_dist_comp dual_sub_dist_comp_one order.eq_iff mult_one_associative)
 
-(*
-lemma "dense_rel x \<and> coreflexive x \<longrightarrow> up_closed x" nitpick [expect=genuine,card=5] oops
-lemma "x * top \<sqinter> y * z \<le> (x * top \<sqinter> y) * z" nitpick [expect=genuine,card=8] oops
-*)
+proposition "dense_rel x \<and> coreflexive x \<longrightarrow> up_closed x" nitpick [expect=genuine,card=5] oops
+proposition "x * top \<sqinter> y * z \<le> (x * top \<sqinter> y) * z" nitpick [expect=genuine,card=8] oops
 
 end
 
@@ -844,11 +842,9 @@ lemma comp_inf_distributive:
   "inf_distributive x \<Longrightarrow> inf_distributive y \<Longrightarrow> inf_distributive (x * y)"
   by (simp add: inf_distributive_def mult.assoc)
 
-(*
-lemma "co_total x \<and> transitive x \<and> up_closed x \<longrightarrow> coreflexive x" nitpick [expect=genuine,card=5] oops
-lemma "total x \<and> dense_rel x \<and> up_closed x \<longrightarrow> reflexive x" nitpick [expect=genuine,card=5] oops
-lemma "x * top \<sqinter> x\<^sup>d * bot = bot" nitpick [expect=genuine,card=6] oops
-*)
+proposition "co_total x \<and> transitive x \<and> up_closed x \<longrightarrow> coreflexive x" nitpick [expect=genuine,card=5] oops
+proposition "total x \<and> dense_rel x \<and> up_closed x \<longrightarrow> reflexive x" nitpick [expect=genuine,card=5] oops
+proposition "x * top \<sqinter> x\<^sup>d * bot = bot" nitpick [expect=genuine,card=6] oops
 
 end
 

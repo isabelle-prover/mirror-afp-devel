@@ -513,13 +513,11 @@ lemma box_import_shunting:
   "-p * -q \<le> |x](-r) \<longleftrightarrow> -q \<le> |-p * x](-r)"
   by (smt box_demodalisation_2 mult_assoc sub_comm sub_mult_closed)
 
-(*
-lemma box_dist_mult: "|x](d(y) * d(z)) = |x](d(y)) * |x](d(z))" nitpick [expect=genuine,card=6] oops
-lemma box_demodalisation_3: "d(x) \<le> |y]d(z) \<longrightarrow> d(x) * y \<le> y * d(z) \<squnion> Z" nitpick [expect=genuine,card=6] oops
-lemma fbox_diff: "|x](d(y) \<squnion> a(z)) \<le> |x]y \<squnion> a( |x]z)" nitpick [expect=genuine,card=6] oops
-lemma diamond_diff: "|x>y * a( |x>z) \<le> |x>(d(y) * a(z))" nitpick [expect=genuine,card=6] oops
-lemma diamond_diff_var: "|x>d(y) \<le> |x>(d(y) * a(z)) \<squnion> |x>d(z)" nitpick [expect=genuine,card=6] oops
-*)
+proposition box_dist_mult: "|x](d(y) * d(z)) = |x](d(y)) * |x](d(z))" nitpick [expect=genuine,card=6] oops
+proposition box_demodalisation_3: "d(x) \<le> |y]d(z) \<longrightarrow> d(x) * y \<le> y * d(z) \<squnion> Z" nitpick [expect=genuine,card=6] oops
+proposition fbox_diff: "|x](d(y) \<squnion> a(z)) \<le> |x]y \<squnion> a( |x]z)" nitpick [expect=genuine,card=6] oops
+proposition diamond_diff: "|x>y * a( |x>z) \<le> |x>(d(y) * a(z))" nitpick [expect=genuine,card=6] oops
+proposition diamond_diff_var: "|x>d(y) \<le> |x>(d(y) * a(z)) \<squnion> |x>d(z)" nitpick [expect=genuine,card=6] oops
 
 end
 

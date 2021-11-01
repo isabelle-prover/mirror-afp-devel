@@ -174,12 +174,10 @@ proof -
     using 1 by (simp add: order.antisym)
 qed
 
-(*
-lemma mult_L_omega: "(x * L)\<^sup>\<omega> = x * L" nitpick [expect=genuine,card=5] oops
-lemma mult_L_sup_omega: "(x * L \<squnion> y)\<^sup>\<omega> = y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * x * L" nitpick [expect=genuine,card=5] oops
-lemma d_Omega_circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=4] oops
-lemma d_Omega_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<Omega> \<squnion> w \<Longrightarrow> x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>" nitpick [expect=genuine,card=3] oops
-*)
+proposition mult_L_omega: "(x * L)\<^sup>\<omega> = x * L" nitpick [expect=genuine,card=5] oops
+proposition mult_L_sup_omega: "(x * L \<squnion> y)\<^sup>\<omega> = y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * x * L" nitpick [expect=genuine,card=5] oops
+proposition d_Omega_circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=4] oops
+proposition d_Omega_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<Omega> \<squnion> w \<Longrightarrow> x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>" nitpick [expect=genuine,card=3] oops
 
 end
 

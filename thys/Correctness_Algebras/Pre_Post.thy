@@ -130,9 +130,7 @@ lemma post_pre_left_dist_sup:
   apply (metis mult_isotone pre_closed sup_commute tests_dual.sup_idempotent pre_left_sub_dist)
   by (smt (z3) order.refl pre_closed pre_post_galois sup.boundedI tests_dual.sba_dual.greatest_lower_bound tests_dual.sub_sup_closed)
 
-(*
-lemma pre_post_right_dist_sup: "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" nitpick [expect=genuine,card=4] oops
-*)
+proposition pre_post_right_dist_sup: "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" nitpick [expect=genuine,card=4] oops
 
 end
 
@@ -217,9 +215,7 @@ proof -
     using 1 mult_right_isotone order_lesseq_imp by blast
 qed
 
-(*
-lemma pre_post_right_dist_sup: "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" oops
-*)
+proposition pre_post_right_dist_sup: "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" oops
 
 end
 
@@ -271,9 +267,7 @@ lemma T_split_H:
   "top * bot \<squnion> H = top"
   by (simp add: H_split order.antisym)
 
-(*
-lemma "H * (x \<squnion> y) = H * x \<squnion> H * y" nitpick [expect=genuine,card=6] oops
-*)
+proposition "H * (x \<squnion> y) = H * x \<squnion> H * y" nitpick [expect=genuine,card=6] oops
 
 end
 
@@ -454,18 +448,16 @@ subclass precondition_test_diamond
   apply unfold_locales
   using tests_dual.sba_dual.sub_inf_def pre_one_right pre_pre_one by auto
 
-(*
-lemma pre_post_shunting: "x \<le> -p*-q\<stileturn>-r \<longleftrightarrow> -p*x \<le> -q\<stileturn>-r" nitpick [expect=genuine,card=3] oops
-lemma "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q\<squnion>-r)*-r" nitpick [expect=genuine,card=3] oops
-lemma "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q\<squnion>--r)*-r" nitpick [expect=genuine,card=3] oops
-lemma "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q*-r)*-r" nitpick [expect=genuine,card=3] oops
-lemma "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q*--r)*-r" nitpick [expect=genuine,card=3] oops
-lemma "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" nitpick [expect=genuine,card=3] oops
-lemma "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) * (-p\<stileturn>-r)" nitpick [expect=genuine,card=3] oops
-lemma pre_post_right_dist_mult: "-p\<stileturn>-q*-r = (-p\<stileturn>-q) * (-p\<stileturn>-r)" oops
-lemma pre_post_right_dist_mult: "-p\<stileturn>-q*-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" oops
-lemma post_pre_left_dist_sup: "x\<squnion>y\<guillemotleft>-q = (x\<guillemotleft>-q) \<squnion> (y\<guillemotleft>-q)" oops
-*)
+proposition pre_post_shunting: "x \<le> -p*-q\<stileturn>-r \<longleftrightarrow> -p*x \<le> -q\<stileturn>-r" nitpick [expect=genuine,card=3] oops
+proposition "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q\<squnion>-r)*-r" nitpick [expect=genuine,card=3] oops
+proposition "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q\<squnion>--r)*-r" nitpick [expect=genuine,card=3] oops
+proposition "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q*-r)*-r" nitpick [expect=genuine,card=3] oops
+proposition "(-p\<stileturn>-q)*-r = (-p\<stileturn>-q*--r)*-r" nitpick [expect=genuine,card=3] oops
+proposition "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" nitpick [expect=genuine,card=3] oops
+proposition "-p\<stileturn>-q\<squnion>-r = (-p\<stileturn>-q) * (-p\<stileturn>-r)" nitpick [expect=genuine,card=3] oops
+proposition pre_post_right_dist_mult: "-p\<stileturn>-q*-r = (-p\<stileturn>-q) * (-p\<stileturn>-r)" oops
+proposition pre_post_right_dist_mult: "-p\<stileturn>-q*-r = (-p\<stileturn>-q) \<squnion> (-p\<stileturn>-r)" oops
+proposition post_pre_left_dist_sup: "x\<squnion>y\<guillemotleft>-q = (x\<guillemotleft>-q) \<squnion> (y\<guillemotleft>-q)" oops
 
 end
 

@@ -181,14 +181,13 @@ lemma d_restrict_iff_1:
   "d(x) * y \<le> z \<longleftrightarrow> d(x) * y \<le> d(x) * z"
   by (smt (verit, del_insts) d_below_one d_idempotent mult_assoc mult_left_isotone mult_left_one mult_right_isotone order_trans)
 
-(* independence of axioms, checked in relative_domain_semiring without the respective axiom:
-lemma d_restrict : "x \<le> d(x) * x \<squnion> Z" nitpick [expect=genuine,card=2] oops
-lemma d_mult_d   : "d(x * y) = d(x * d(y))" nitpick [expect=genuine,card=3] oops
-lemma d_below_one: "d(x) \<le> 1" nitpick [expect=genuine,card=3] oops
-lemma d_Z        : "d(Z) = bot" nitpick [expect=genuine,card=2] oops
-lemma d_dist_sup : "d(x \<squnion> y) = d(x) \<squnion> d(y)" nitpick [expect=genuine,card=3] oops
-lemma d_export   : "d(d(x) * y) = d(x) * d(y)" nitpick [expect=genuine,card=5] oops
-*)
+(* independence of axioms, checked in relative_domain_semiring without the respective axiom: *)
+proposition d_restrict : "x \<le> d(x) * x \<squnion> Z" (* nitpick [expect=genuine,card=2] *) oops
+proposition d_mult_d   : "d(x * y) = d(x * d(y))" (* nitpick [expect=genuine,card=3] *) oops
+proposition d_below_one: "d(x) \<le> 1" (* nitpick [expect=genuine,card=3] *) oops
+proposition d_Z        : "d(Z) = bot" (* nitpick [expect=genuine,card=2] *) oops
+proposition d_dist_sup : "d(x \<squnion> y) = d(x) \<squnion> d(y)" (* nitpick [expect=genuine,card=3] *) oops
+proposition d_export   : "d(d(x) * y) = d(x) * d(y)" (* nitpick [expect=genuine,card=5] *) oops
 
 end
 
@@ -251,9 +250,7 @@ lemma d_restrict_top:
   "x \<le> d(x) * top \<squnion> Z"
   by (metis sup_left_isotone d_restrict mult_right_isotone order_trans top_greatest)
 
-(*
-lemma d_one_one: "d(1) = 1" nitpick [expect=genuine,card=2] oops
-*)
+proposition d_one_one: "d(1) = 1" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -510,15 +507,14 @@ lemma test_mult_left_dist_shunt:
   "-p * (--p * x \<squnion> Z) = -p * Z"
   by (smt (verit, ccfv_SIG) order.antisym mult_left_sub_dist_sup_right sup.orderE tests_dual.sba_dual.sup_idempotent mult_assoc test_mult_left_sub_dist_shunt tests_dual.sup_absorb)
 
-(* independence of axioms, checked in relative_antidomain_semiring without the respective axiom:
-lemma a_restrict  : "-x * x \<le> Z" nitpick [expect=genuine,card=3] oops
-lemma a_mult_d    : "-(x * y) = -(x * --y)" nitpick [expect=genuine,card=3] oops
-lemma a_complement: "-x * --x = bot" nitpick [expect=genuine,card=2] oops
-lemma a_Z         : "-Z = 1" nitpick [expect=genuine,card=2] oops
-lemma a_export    : "-(--x * y) = -x \<squnion> -y" nitpick [expect=genuine,card=5] oops
-lemma a_dist_sup  : "-(x \<squnion> y) = -x * -y" nitpick [expect=genuine,card=3] oops
-lemma d_def       : "d(x) = --x" nitpick [expect=genuine,card=2] oops
-*)
+(* independence of axioms, checked in relative_antidomain_semiring without the respective axiom: *)
+proposition a_restrict  : "-x * x \<le> Z" (* nitpick [expect=genuine,card=3] *) oops
+proposition a_mult_d    : "-(x * y) = -(x * --y)" (* nitpick [expect=genuine,card=3] *) oops
+proposition a_complement: "-x * --x = bot" (* nitpick [expect=genuine,card=2] *) oops
+proposition a_Z         : "-Z = 1" (* nitpick [expect=genuine,card=2] *) oops
+proposition a_export    : "-(--x * y) = -x \<squnion> -y" (* nitpick [expect=genuine,card=5] *) oops
+proposition a_dist_sup  : "-(x \<squnion> y) = -x * -y" (* nitpick [expect=genuine,card=3] *) oops
+proposition d_def       : "d(x) = --x" (* nitpick [expect=genuine,card=2] *) oops
 
 end
 
@@ -602,10 +598,8 @@ lemma shunting_Z:
   apply (simp add: shunting_top_1)
   by (smt a_top a_Z a_antitone a_dist_sup a_export a_greatest_left_absorber sup_commute sup_bot_right mult_left_one)
 
-(*
-lemma a_left_dist_sup: "-p * (y \<squnion> z) = -p * y \<squnion> -p * z" nitpick [expect=genuine,card=7] oops
-lemma shunting_top: "-p * x \<le> y \<longleftrightarrow> x \<le> --p * top \<squnion> y" nitpick [expect=genuine,card=7] oops
-*)
+proposition a_left_dist_sup: "-p * (y \<squnion> z) = -p * y \<squnion> -p * z" nitpick [expect=genuine,card=7] oops
+proposition shunting_top: "-p * x \<le> y \<longleftrightarrow> x \<le> --p * top \<squnion> y" nitpick [expect=genuine,card=7] oops
 
 end
 

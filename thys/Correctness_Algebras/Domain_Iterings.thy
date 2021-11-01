@@ -42,9 +42,7 @@ lemma meet_domain_top:
   "x \<sqinter> d(y) * top = d(y) * x"
   by (simp add: meet_domain)
 
-(*
-lemma "d(x) = x * top \<sqinter> 1" nitpick [expect=genuine,card=3] oops
-*)
+proposition "d(x) = x * top \<sqinter> 1" nitpick [expect=genuine,card=3] oops
 
 lemma d_galois:
   "d(x) \<le> d(y) \<longleftrightarrow> x \<le> d(y) * top"
@@ -345,10 +343,8 @@ lemma omega_meet_L:
   "x\<^sup>\<omega> \<sqinter> L = d(x\<^sup>\<omega>) * L"
   by (metis l23 omega_vector)
 
-(*
-lemma d_star_mult: "d(x * y) \<le> d(y) \<Longrightarrow> d(x\<^sup>\<star> * y) = d(x\<^sup>\<star> * bot) \<squnion> d(y)" oops
-lemma d0_split_omega_omega: "x\<^sup>\<omega> \<le> x\<^sup>\<omega> * bot \<squnion> d(x\<^sup>\<omega> \<sqinter> L) * top" nitpick [expect=genuine,card=2] oops
-*)
+proposition d_star_mult: "d(x * y) \<le> d(y) \<Longrightarrow> d(x\<^sup>\<star> * y) = d(x\<^sup>\<star> * bot) \<squnion> d(y)" oops
+proposition d0_split_omega_omega: "x\<^sup>\<omega> \<le> x\<^sup>\<omega> * bot \<squnion> d(x\<^sup>\<omega> \<sqinter> L) * top" nitpick [expect=genuine,card=2] oops
 
 end
 

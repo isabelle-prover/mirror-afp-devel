@@ -511,9 +511,7 @@ lemma kappa_mu_nu_L_nu_below_mu_nu_L:
   "has_least_fixpoint f \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> kappa_mu_nu_L f \<Longrightarrow> nu_below_mu_nu_L f"
   by (simp add: kappa_mu_nu_L_mu_nu_apx_nu_L mu_nu_apx_nu_L_nu_below_mu_nu_L)
 
-(*
-lemma nu_below_mu_nu_nu_below_mu_nu_L: "nu_below_mu_nu f \<longrightarrow> nu_below_mu_nu_L f" nitpick [expect=genuine,card=3] oops
-*)
+proposition nu_below_mu_nu_nu_below_mu_nu_L: "nu_below_mu_nu f \<longrightarrow> nu_below_mu_nu_L f" nitpick [expect=genuine,card=3] oops
 
 lemma unfold_fold_1:
   "isotone f \<Longrightarrow> has_least_prefixpoint f \<Longrightarrow> apx.has_least_fixpoint f \<Longrightarrow> f(x) \<le> x \<Longrightarrow> \<kappa> f \<le> x \<squnion> L"

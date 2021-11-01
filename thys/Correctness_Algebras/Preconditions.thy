@@ -61,14 +61,12 @@ lemma pre_compose:
   "-p \<le> x\<guillemotleft>-q \<Longrightarrow> -q \<le> y\<guillemotleft>-r \<Longrightarrow> -p \<le> x*y\<guillemotleft>-r"
   by (metis pre_closed pre_iso tests_dual.transitive pre_seq)
 
-(*
-lemma pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -96,13 +94,11 @@ lemma pre_import_equiv_mult:
   "-p*-q \<le> x\<guillemotleft>-s \<longleftrightarrow> -p*-q \<le> -q*x\<guillemotleft>-s"
   by (smt leq_def pre_closed sub_assoc sub_mult_closed pre_import)
 
-(*
-lemma pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -114,13 +110,11 @@ lemma pre_mult_test_promote:
   "x*-p\<guillemotleft>-q = x*-p\<guillemotleft>-p*-q"
   by (metis pre_seq pre_test_promote sub_mult_closed)
 
-(*
-lemma pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -176,11 +170,9 @@ subclass precondition_promote
   apply unfold_locales
   by (metis pre_test tests_dual.sba_dual.sub_commutative tests_dual.sub_sup_closed tests_dual.inf_complement_intro)
 
-(*
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -236,11 +228,9 @@ subclass precondition_promote
   apply unfold_locales
   by (metis pre_seq pre_test tests_dual.sup_idempotent)
 
-(*
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=6] oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=6] oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -248,13 +238,11 @@ class precondition_distr_mult = precondition +
   assumes pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)"
 begin
 
-(*
-lemma pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
-*)
+proposition pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=2] oops
 
 end
 
@@ -262,13 +250,11 @@ class precondition_distr_plus = precondition +
   assumes pre_distr_plus: "x\<guillemotleft>-p\<squnion>-q = (x\<guillemotleft>-p)\<squnion>(x\<guillemotleft>-q)"
 begin
 
-(*
-lemma pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
-lemma pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
-lemma pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
-*)
+proposition pre_test_test: "-p*(-p\<guillemotleft>-q) = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops
+proposition pre_test: "-p\<guillemotleft>-q = -p*-q" nitpick [expect=genuine,card=2] oops
+proposition pre_distr_mult: "x\<guillemotleft>-p*-q = (x\<guillemotleft>-p)*(x\<guillemotleft>-q)" nitpick [expect=genuine,card=4] oops
 
 end
 

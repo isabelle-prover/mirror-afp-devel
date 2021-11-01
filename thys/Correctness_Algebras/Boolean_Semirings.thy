@@ -208,9 +208,7 @@ lemma vector_zero_vector_one_vector:
   "vector x \<longleftrightarrow> zero_vector x \<and> one_vector x"
   by (simp add: co_vector_zero_vector_one_vector vector_co_vector)
 
-(*
-lemma "(x * bot \<sqinter> y) * 1 = x * bot \<sqinter> y * 1" nitpick [expect=genuine,card=7] oops
-*)
+proposition "(x * bot \<sqinter> y) * 1 = x * bot \<sqinter> y * 1" nitpick [expect=genuine,card=7] oops
 
 end
 
@@ -342,9 +340,7 @@ lemma down_closed_one_vector_vector:
   "down_closed x \<Longrightarrow> one_vector x \<Longrightarrow> vector x"
   by (simp add: down_closed_zero_vector zero_vector_one_vector_vector)
 
-(*
-lemma complement_vector: "vector x \<longrightarrow> vector (-x)" nitpick [expect=genuine,card=8] oops
-*)
+proposition complement_vector: "vector x \<longrightarrow> vector (-x)" nitpick [expect=genuine,card=8] oops
 
 end
 
@@ -408,11 +404,10 @@ next
     by (metis inf.bounded_iff mult_left_top mult_right_sub_dist_inf_left mult_right_sub_dist_inf_right mult_semi_associative order_lesseq_imp)
 qed
 
-(*
-lemma dedekind_top_left:
+(* The following proof is based on \<open>vector_inf_comp\<close>, so the latter could serve as axiom instead. *)
+lemma dedekind_top_left_var:
   "x * top \<sqinter> y \<le> (x \<sqinter> y * top) * top"
   by (metis inf.commute top_right_mult_increasing vector_inf_comp)
-*)
 
 text \<open>Theorem 7.7\<close>
 
@@ -534,9 +529,7 @@ lemma one_vector_b0:
   "one_vector x \<longleftrightarrow> (\<forall>y z . -x * y = -x * z)"
   by (simp add: complement_one_vector_zero_vector_iff zero_vector_0)
 
-(*
-lemma schroeder_one: "x * -1 \<le> y \<longleftrightarrow> -y * -1 \<le> -x" nitpick [expect=genuine,card=8] oops
-*)
+proposition schroeder_one: "x * -1 \<le> y \<longleftrightarrow> -y * -1 \<le> -x" nitpick [expect=genuine,card=8] oops
 
 end
 
@@ -545,9 +538,7 @@ begin
 
 subclass multirelation_algebra_1b ..
 
-(*
-lemma "-x * bot \<le> -(x * bot)" nitpick [expect=genuine,card=8] oops
-*)
+proposition "-x * bot \<le> -(x * bot)" nitpick [expect=genuine,card=8] oops
 
 end
 
@@ -588,10 +579,8 @@ lemma complement_mult_zero_below:
   "-x * bot \<le> -(x * bot)"
   by (simp add: comp_zero_inf_2 shunting_1)
 
-(*
-lemma "x * 1 \<sqinter> y * 1 \<le> (x \<sqinter> y) * 1" nitpick [expect=genuine,card=4] oops
-lemma "x * 1 \<sqinter> (y * 1) \<le> (x * 1 \<sqinter> y) * 1" nitpick [expect=genuine,card=4] oops
-*)
+proposition "x * 1 \<sqinter> y * 1 \<le> (x \<sqinter> y) * 1" nitpick [expect=genuine,card=4] oops
+proposition "x * 1 \<sqinter> (y * 1) \<le> (x * 1 \<sqinter> y) * 1" nitpick [expect=genuine,card=4] oops
 
 end
 

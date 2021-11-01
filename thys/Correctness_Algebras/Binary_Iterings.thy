@@ -743,20 +743,18 @@ lemma while_induct:
   "x * z \<le> z \<and> y \<le> z \<and> x \<star> 1 \<le> z \<Longrightarrow> x \<star> y \<le> z"
   by (metis le_supI1 sup_commute sup_bot_left le_iff_sup while_right_isotone while_simulate_absorb)
 
-(*
-lemma while_sumstar_4_below: "(x \<star> y) \<star> ((x \<star> 1) * z) \<le> x \<star> ((y * (x \<star> 1)) \<star> z)" oops
-lemma while_sumstar_2: "(x \<squnion> y) \<star> z = x \<star> ((y * (x \<star> 1)) \<star> z)" oops
-lemma while_sumstar_3: "(x \<squnion> y) \<star> z = ((x \<star> 1) * y) \<star> (x \<star> z)" oops
-lemma while_decompose_6: "x \<star> ((y * (x \<star> 1)) \<star> z) = y \<star> ((x * (y \<star> 1)) \<star> z)" oops
-lemma while_finite_associative: "x \<star> bot = bot \<Longrightarrow> (x \<star> y) * z = x \<star> (y * z)" oops
-lemma atomicity_refinement: "s = s * q \<Longrightarrow> x = q * x \<Longrightarrow> q * b = bot \<Longrightarrow> r * b \<le> b * r \<Longrightarrow> r * l \<le> l * r \<Longrightarrow> x * l \<le> l * x \<Longrightarrow> b * l \<le> l * b \<Longrightarrow> q * l \<le> l * q \<Longrightarrow> r \<star> q \<le> q * (r \<star> 1) \<Longrightarrow> q \<le> 1 \<Longrightarrow> s * ((x \<squnion> b \<squnion> r \<squnion> l) \<star> (q * z)) \<le> s * ((x * (b \<star> q) \<squnion> r \<squnion> l) \<star> z)" oops
+proposition while_sumstar_4_below: "(x \<star> y) \<star> ((x \<star> 1) * z) \<le> x \<star> ((y * (x \<star> 1)) \<star> z)" oops
+proposition while_sumstar_2: "(x \<squnion> y) \<star> z = x \<star> ((y * (x \<star> 1)) \<star> z)" oops
+proposition while_sumstar_3: "(x \<squnion> y) \<star> z = ((x \<star> 1) * y) \<star> (x \<star> z)" oops
+proposition while_decompose_6: "x \<star> ((y * (x \<star> 1)) \<star> z) = y \<star> ((x * (y \<star> 1)) \<star> z)" oops
+proposition while_finite_associative: "x \<star> bot = bot \<Longrightarrow> (x \<star> y) * z = x \<star> (y * z)" oops
+proposition atomicity_refinement: "s = s * q \<Longrightarrow> x = q * x \<Longrightarrow> q * b = bot \<Longrightarrow> r * b \<le> b * r \<Longrightarrow> r * l \<le> l * r \<Longrightarrow> x * l \<le> l * x \<Longrightarrow> b * l \<le> l * b \<Longrightarrow> q * l \<le> l * q \<Longrightarrow> r \<star> q \<le> q * (r \<star> 1) \<Longrightarrow> q \<le> 1 \<Longrightarrow> s * ((x \<squnion> b \<squnion> r \<squnion> l) \<star> (q * z)) \<le> s * ((x * (b \<star> q) \<squnion> r \<squnion> l) \<star> z)" oops
 
-lemma while_separate_right_plus: "y * x \<le> x * (x \<star> (1 \<squnion> y)) \<squnion> 1 \<Longrightarrow> y \<star> (x \<star> z) \<le> x \<star> (y \<star> z)" oops
-lemma while_square_1: "x \<star> 1 = (x * x) \<star> (x \<squnion> 1)" oops
-lemma while_absorb_below_one: "y * x \<le> x \<Longrightarrow> y \<star> x \<le> 1 \<star> x" oops
-lemma "y \<star> (x \<star> 1) \<le> x \<star> (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
-lemma "y * x \<le> (1 \<squnion> x) * (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
-*)
+proposition while_separate_right_plus: "y * x \<le> x * (x \<star> (1 \<squnion> y)) \<squnion> 1 \<Longrightarrow> y \<star> (x \<star> z) \<le> x \<star> (y \<star> z)" oops
+proposition while_square_1: "x \<star> 1 = (x * x) \<star> (x \<squnion> 1)" oops
+proposition while_absorb_below_one: "y * x \<le> x \<Longrightarrow> y \<star> x \<le> 1 \<star> x" oops
+proposition "y \<star> (x \<star> 1) \<le> x \<star> (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
+proposition "y * x \<le> (1 \<squnion> x) * (y \<star> 1) \<Longrightarrow> (x \<squnion> y) \<star> 1 = x \<star> (y \<star> 1)" oops
 
 end
 

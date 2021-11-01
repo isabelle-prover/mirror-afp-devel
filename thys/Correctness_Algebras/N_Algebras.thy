@@ -442,18 +442,17 @@ end
 class n_algebra = left_n_algebra + idempotent_left_zero_semiring
 begin
 
-(* independence of axioms, checked in n_algebra without the respective axiom:
-  lemma n_dist_n_add            : "n(x) \<squnion> n(y) = n(n(x) * top \<squnion> y)" nitpick [expect=genuine,card=5] oops
-  lemma n_export                : "n(x) * n(y) = n(n(x) * y)" nitpick [expect=genuine,card=4] oops
-  lemma n_left_upper_bound      : "n(x) \<le> n(x \<squnion> y)" nitpick [expect=genuine,card=5] oops
-  lemma n_nL_meet_L_nL0         : "n(L) * x = (x \<sqinter> L) \<squnion> n(L * bot) * x" nitpick [expect=genuine,card=2] oops
-  lemma n_n_L_split_n_n_L_L     : "x * n(y) * L = x * bot \<squnion> n(x * n(y) * L) * L" nitpick [expect=genuine,card=6] oops
-  lemma n_sub_nL                : "n(x) \<le> n(L)" nitpick [expect=genuine,card=2] oops
-  lemma n_L_decreasing          : "n(x) * L \<le> x" nitpick [expect=genuine,card=3] oops
-  lemma n_L_T_meet_mult_combined: "C (x * y) * z \<le> C x * y * C z" nitpick [expect=genuine,card=4] oops
-  lemma n_n_top_split_n_top     : "x * n(y) * top \<le> x * bot \<squnion> n(x * y) * top" nitpick [expect=genuine,card=4] oops
-  lemma n_top_meet_L_below_L    : "x * top * y \<sqinter> L \<le> x * L * y" nitpick [expect=genuine,card=5] oops
-*)
+(* independence of axioms, checked in n_algebra without the respective axiom: *)
+proposition n_dist_n_add            : "n(x) \<squnion> n(y) = n(n(x) * top \<squnion> y)" (* nitpick [expect=genuine,card=5] *) oops
+proposition n_export                : "n(x) * n(y) = n(n(x) * y)" (* nitpick [expect=genuine,card=4] *) oops
+proposition n_left_upper_bound      : "n(x) \<le> n(x \<squnion> y)" (* nitpick [expect=genuine,card=5] *) oops
+proposition n_nL_meet_L_nL0         : "n(L) * x = (x \<sqinter> L) \<squnion> n(L * bot) * x" (* nitpick [expect=genuine,card=2] *) oops
+proposition n_n_L_split_n_n_L_L     : "x * n(y) * L = x * bot \<squnion> n(x * n(y) * L) * L" (* nitpick [expect=genuine,card=6] *) oops
+proposition n_sub_nL                : "n(x) \<le> n(L)" (* nitpick [expect=genuine,card=2] *) oops
+proposition n_L_decreasing          : "n(x) * L \<le> x" (* nitpick [expect=genuine,card=3] *) oops
+proposition n_L_T_meet_mult_combined: "C (x * y) * z \<le> C x * y * C z" (* nitpick [expect=genuine,card=4] *) oops
+proposition n_n_top_split_n_top     : "x * n(y) * top \<le> x * bot \<squnion> n(x * y) * top" (* nitpick [expect=genuine,card=4] *) oops
+proposition n_top_meet_L_below_L    : "x * top * y \<sqinter> L \<le> x * L * y" (* nitpick [expect=genuine,card=5] *) oops
 
 text \<open>AACP Theorem 3.25\<close>
 
@@ -484,58 +483,56 @@ lemma n_top_split:
   "n(x) * top * y \<le> x * y \<squnion> n(x * y) * top"
   by (metis order.trans sup_bot_right mult_assoc sup_right_isotone mult_left_isotone mult_left_sub_dist_sup_right n_isotone n_top_split_0)
 
-(*
-lemma n_zero: "n(bot) = bot" nitpick [expect=genuine,card=2] oops
-lemma n_one: "n(1) = bot" nitpick [expect=genuine,card=2] oops
-lemma n_nL_one: "n(L) = 1" nitpick [expect=genuine,card=2] oops
-lemma n_nT_one: "n(top) = 1" nitpick [expect=genuine,card=2] oops
-lemma n_n_zero: "n(x) = n(x * bot)" nitpick [expect=genuine,card=2] oops
-lemma n_dist_add: "n(x) \<squnion> n(y) = n(x \<squnion> y)" nitpick [expect=genuine,card=4] oops
-lemma n_L_split: "x * n(y) * L = x * bot \<squnion> n(x * y) * L" nitpick [expect=genuine,card=3] oops
-lemma n_split: "x \<le> x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
-lemma n_mult_top_1: "n(x * y) \<le> n(x * n(y) * top)" nitpick [expect=genuine,card=3] oops
-lemma l91_1: "n(L) * x \<le> n(x * top) * top" nitpick [expect=genuine,card=3] oops
-lemma meet_domain_top: "x \<sqinter> n(y) * top = n(y) * x" nitpick [expect=genuine,card=3] oops
-lemma meet_domain_2: "x \<sqinter> n(y) * top \<le> n(L) * x" nitpick [expect=genuine,card=4] oops
-lemma n_nL_top_n_top_meet_L_top_2: "n(L) * x * top \<le> n(x * top \<sqinter> L) * top" nitpick [expect=genuine,card=3] oops
-lemma n_nL_top_n_top_meet_L_top_1: "n(x * top \<sqinter> L) * top \<le> n(L) * x * top" nitpick [expect=genuine,card=2] oops
-lemma l9: "x * bot \<sqinter> L \<le> n(x * L) * L" nitpick [expect=genuine,card=4] oops
-lemma l18_2: "n(x * L) * L \<le> n(x) * L" nitpick [expect=genuine,card=3] oops
-lemma l51_1: "n(x) * L \<le> (x \<sqinter> L) * bot" nitpick [expect=genuine,card=2] oops
-lemma l51_2: "(x \<sqinter> L) * bot \<le> n(x) * L" nitpick [expect=genuine,card=4] oops
+proposition n_zero: "n(bot) = bot" nitpick [expect=genuine,card=2] oops
+proposition n_one: "n(1) = bot" nitpick [expect=genuine,card=2] oops
+proposition n_nL_one: "n(L) = 1" nitpick [expect=genuine,card=2] oops
+proposition n_nT_one: "n(top) = 1" nitpick [expect=genuine,card=2] oops
+proposition n_n_zero: "n(x) = n(x * bot)" nitpick [expect=genuine,card=2] oops
+proposition n_dist_add: "n(x) \<squnion> n(y) = n(x \<squnion> y)" nitpick [expect=genuine,card=4] oops
+proposition n_L_split: "x * n(y) * L = x * bot \<squnion> n(x * y) * L" nitpick [expect=genuine,card=3] oops
+proposition n_split: "x \<le> x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
+proposition n_mult_top_1: "n(x * y) \<le> n(x * n(y) * top)" nitpick [expect=genuine,card=3] oops
+proposition l91_1: "n(L) * x \<le> n(x * top) * top" nitpick [expect=genuine,card=3] oops
+proposition meet_domain_top: "x \<sqinter> n(y) * top = n(y) * x" nitpick [expect=genuine,card=3] oops
+proposition meet_domain_2: "x \<sqinter> n(y) * top \<le> n(L) * x" nitpick [expect=genuine,card=4] oops
+proposition n_nL_top_n_top_meet_L_top_2: "n(L) * x * top \<le> n(x * top \<sqinter> L) * top" nitpick [expect=genuine,card=3] oops
+proposition n_nL_top_n_top_meet_L_top_1: "n(x * top \<sqinter> L) * top \<le> n(L) * x * top" nitpick [expect=genuine,card=2] oops
+proposition l9: "x * bot \<sqinter> L \<le> n(x * L) * L" nitpick [expect=genuine,card=4] oops
+proposition l18_2: "n(x * L) * L \<le> n(x) * L" nitpick [expect=genuine,card=3] oops
+proposition l51_1: "n(x) * L \<le> (x \<sqinter> L) * bot" nitpick [expect=genuine,card=2] oops
+proposition l51_2: "(x \<sqinter> L) * bot \<le> n(x) * L" nitpick [expect=genuine,card=4] oops
 
-lemma n_split_equal: "x \<squnion> n(x * L) * top = x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
-lemma n_split_top: "x * top \<le> x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
-lemma n_mult: "n(x * n(y) * L) = n(x * y)" nitpick [expect=genuine,card=3] oops
-lemma n_mult_1: "n(x * y) \<le> n(x * n(y) * L)" nitpick [expect=genuine,card=3] oops
-lemma n_mult_top: "n(x * n(y) * top) = n(x * y)" nitpick [expect=genuine,card=3] oops
-lemma n_mult_right_upper_bound: "n(x * y) \<le> n(z) \<longleftrightarrow> n(x) \<le> n(z) \<and> x * n(y) * L \<le> x * bot \<squnion> n(z) * L" nitpick [expect=genuine,card=2] oops
-lemma meet_domain: "x \<sqinter> n(y) * z = n(y) * (x \<sqinter> z)" nitpick [expect=genuine,card=3] oops
-lemma meet_domain_1: "x \<sqinter> n(y) * z \<le> n(y) * x" nitpick [expect=genuine,card=3] oops
-lemma meet_domain_top_3: "x \<sqinter> n(y) * top \<le> n(y) * x" nitpick [expect=genuine,card=3] oops
-lemma n_n_top_n_top_split_n_n_top_top: "n(x) * top \<squnion> x * n(y) * top = x * bot \<squnion> n(x * n(y) * top) * top" nitpick [expect=genuine,card=2] oops
-lemma n_n_top_n_top_split_n_n_top_top_1: "x * bot \<squnion> n(x * n(y) * top) * top \<le> n(x) * top \<squnion> x * n(y) * top" nitpick [expect=genuine,card=5] oops
-lemma n_n_top_n_top_split_n_n_top_top_2: "n(x) * top \<squnion> x * n(y) * top \<le> x * bot \<squnion> n(x * n(y) * top) * top" nitpick [expect=genuine,card=2] oops
-lemma n_nL_top_n_top_meet_L_top: "n(L) * x * top = n(x * top \<sqinter> L) * top" nitpick [expect=genuine,card=2] oops
-lemma l18: "n(x) * L = n(x * L) * L" nitpick [expect=genuine,card=3] oops
-lemma l22: "x * bot \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=2] oops
-lemma l22_1: "x * bot \<sqinter> L = n(x * L) * L" nitpick [expect=genuine,card=2] oops
-lemma l22_2: "x \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=3] oops
-lemma l22_3: "x \<sqinter> L = n(x * L) * L" nitpick [expect=genuine,card=3] oops
-lemma l22_4: "x \<sqinter> L \<le> n(x) * L" nitpick [expect=genuine,card=3] oops
-lemma l22_5: "x * bot \<sqinter> L \<le> n(x) * L" nitpick [expect=genuine,card=4] oops
-lemma l23: "x * top \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=3] oops
-lemma l51: "n(x) * L = (x \<sqinter> L) * bot" nitpick [expect=genuine,card=2] oops
-lemma l91: "x = x * top \<longrightarrow> n(L) * x \<le> n(x) * top" nitpick [expect=genuine,card=3] oops
-lemma l92: "x = x * top \<longrightarrow> n(L) * x \<le> n(x \<sqinter> L) * top" nitpick [expect=genuine,card=3] oops
-lemma "x \<sqinter> L \<le> n(x) * top" nitpick [expect=genuine,card=3] oops
-lemma n_meet_comp: "n(x) \<sqinter> n(y) \<le> n(x) * n(y)" nitpick [expect=genuine,card=3] oops
+proposition n_split_equal: "x \<squnion> n(x * L) * top = x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
+proposition n_split_top: "x * top \<le> x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=2] oops
+proposition n_mult: "n(x * n(y) * L) = n(x * y)" nitpick [expect=genuine,card=3] oops
+proposition n_mult_1: "n(x * y) \<le> n(x * n(y) * L)" nitpick [expect=genuine,card=3] oops
+proposition n_mult_top: "n(x * n(y) * top) = n(x * y)" nitpick [expect=genuine,card=3] oops
+proposition n_mult_right_upper_bound: "n(x * y) \<le> n(z) \<longleftrightarrow> n(x) \<le> n(z) \<and> x * n(y) * L \<le> x * bot \<squnion> n(z) * L" nitpick [expect=genuine,card=2] oops
+proposition meet_domain: "x \<sqinter> n(y) * z = n(y) * (x \<sqinter> z)" nitpick [expect=genuine,card=3] oops
+proposition meet_domain_1: "x \<sqinter> n(y) * z \<le> n(y) * x" nitpick [expect=genuine,card=3] oops
+proposition meet_domain_top_3: "x \<sqinter> n(y) * top \<le> n(y) * x" nitpick [expect=genuine,card=3] oops
+proposition n_n_top_n_top_split_n_n_top_top: "n(x) * top \<squnion> x * n(y) * top = x * bot \<squnion> n(x * n(y) * top) * top" nitpick [expect=genuine,card=2] oops
+proposition n_n_top_n_top_split_n_n_top_top_1: "x * bot \<squnion> n(x * n(y) * top) * top \<le> n(x) * top \<squnion> x * n(y) * top" nitpick [expect=genuine,card=5] oops
+proposition n_n_top_n_top_split_n_n_top_top_2: "n(x) * top \<squnion> x * n(y) * top \<le> x * bot \<squnion> n(x * n(y) * top) * top" nitpick [expect=genuine,card=2] oops
+proposition n_nL_top_n_top_meet_L_top: "n(L) * x * top = n(x * top \<sqinter> L) * top" nitpick [expect=genuine,card=2] oops
+proposition l18: "n(x) * L = n(x * L) * L" nitpick [expect=genuine,card=3] oops
+proposition l22: "x * bot \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=2] oops
+proposition l22_1: "x * bot \<sqinter> L = n(x * L) * L" nitpick [expect=genuine,card=2] oops
+proposition l22_2: "x \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=3] oops
+proposition l22_3: "x \<sqinter> L = n(x * L) * L" nitpick [expect=genuine,card=3] oops
+proposition l22_4: "x \<sqinter> L \<le> n(x) * L" nitpick [expect=genuine,card=3] oops
+proposition l22_5: "x * bot \<sqinter> L \<le> n(x) * L" nitpick [expect=genuine,card=4] oops
+proposition l23: "x * top \<sqinter> L = n(x) * L" nitpick [expect=genuine,card=3] oops
+proposition l51: "n(x) * L = (x \<sqinter> L) * bot" nitpick [expect=genuine,card=2] oops
+proposition l91: "x = x * top \<longrightarrow> n(L) * x \<le> n(x) * top" nitpick [expect=genuine,card=3] oops
+proposition l92: "x = x * top \<longrightarrow> n(L) * x \<le> n(x \<sqinter> L) * top" nitpick [expect=genuine,card=3] oops
+proposition "x \<sqinter> L \<le> n(x) * top" nitpick [expect=genuine,card=3] oops
+proposition n_meet_comp: "n(x) \<sqinter> n(y) \<le> n(x) * n(y)" nitpick [expect=genuine,card=3] oops
 
-lemma n_n_meet_L_n_zero: "n(x) = (n(x) \<sqinter> L) \<squnion> n(x * bot)" oops
-lemma n_below_n_zero: "n(x) \<le> x \<squnion> n(x * bot)" oops
-lemma n_n_top_split_n_L_n_zero_top: "n(x) * top = n(x) * L \<squnion> n(x * bot) * top" oops
-lemma n_meet_L_0_0_meet_L: "(x \<sqinter> L) * bot = x * bot \<sqinter> L" oops
-*)
+proposition n_n_meet_L_n_zero: "n(x) = (n(x) \<sqinter> L) \<squnion> n(x * bot)" oops
+proposition n_below_n_zero: "n(x) \<le> x \<squnion> n(x * bot)" oops
+proposition n_n_top_split_n_L_n_zero_top: "n(x) * top = n(x) * L \<squnion> n(x * bot) * top" oops
+proposition n_meet_L_0_0_meet_L: "(x \<sqinter> L) * bot = x * bot \<sqinter> L" oops
 
 end
 

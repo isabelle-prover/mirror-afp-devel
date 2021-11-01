@@ -64,18 +64,16 @@ lemma greatest_left_zero:
   "1\<^sup>\<Omega> * x = 1\<^sup>\<Omega>"
   by (simp add: Omega_one_greatest Omega_induct order.antisym)
 
-(*
-lemma circ_right_unfold: "1 \<squnion> x\<^sup>\<Omega> * x = x\<^sup>\<Omega>" nitpick [expect=genuine,card=8] oops
-lemma circ_slide: "(x * y)\<^sup>\<Omega> * x = x * (y * x)\<^sup>\<Omega>" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate_right: "z * x \<le> y * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate_right_1: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate_right_plus_1: "z * x \<le> y * y\<^sup>\<Omega> * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
-lemma circ_simulate_left_1: "x * z \<le> z * y \<Longrightarrow> x\<^sup>\<Omega> * z \<le> z * y\<^sup>\<Omega> \<squnion> x\<^sup>\<Omega> * bot" oops (* holds in LKA, counterexample exists in GRA *)
-lemma circ_simulate_left_plus_1: "x * z \<le> z * y\<^sup>\<Omega> \<Longrightarrow> x\<^sup>\<Omega> * z \<le> z * y\<^sup>\<Omega> \<squnion> x\<^sup>\<Omega> * bot" oops (* holds in LKA, counterexample exists in GRA *)
-lemma circ_simulate_absorb: "y * x \<le> x \<Longrightarrow> y\<^sup>\<Omega> * x \<le> x \<squnion> y\<^sup>\<Omega> * bot" nitpick [expect=genuine,card=8] oops (* holds in LKA, counterexample exists in GRA *)
-*)
+proposition circ_right_unfold: "1 \<squnion> x\<^sup>\<Omega> * x = x\<^sup>\<Omega>" nitpick [expect=genuine,card=8] oops
+proposition circ_slide: "(x * y)\<^sup>\<Omega> * x = x * (y * x)\<^sup>\<Omega>" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate_right: "z * x \<le> y * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate_right_1: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate_right_plus_1: "z * x \<le> y * y\<^sup>\<Omega> * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
+proposition circ_simulate_left_1: "x * z \<le> z * y \<Longrightarrow> x\<^sup>\<Omega> * z \<le> z * y\<^sup>\<Omega> \<squnion> x\<^sup>\<Omega> * bot" oops (* holds in LKA, counterexample exists in GRA *)
+proposition circ_simulate_left_plus_1: "x * z \<le> z * y\<^sup>\<Omega> \<Longrightarrow> x\<^sup>\<Omega> * z \<le> z * y\<^sup>\<Omega> \<squnion> x\<^sup>\<Omega> * bot" oops (* holds in LKA, counterexample exists in GRA *)
+proposition circ_simulate_absorb: "y * x \<le> x \<Longrightarrow> y\<^sup>\<Omega> * x \<le> x \<squnion> y\<^sup>\<Omega> * bot" nitpick [expect=genuine,card=8] oops (* holds in LKA, counterexample exists in GRA *)
 
 end
 
@@ -102,24 +100,20 @@ lemma Omega_isolate_equal:
   "y\<^sup>\<Omega> = y\<^sup>\<Omega> * bot \<squnion> y\<^sup>\<star>"
   using Omega_isolate order.antisym le_sup_iff star_below_Omega zero_right_mult_decreasing by auto
 
-(*
-lemma Omega_sum_unfold_1: "(x \<squnion> y)\<^sup>\<Omega> = y\<^sup>\<Omega> \<squnion> y\<^sup>\<star> * x * (x \<squnion> y)\<^sup>\<Omega>" oops
-lemma Omega_sup_3: "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<star> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>" oops
-*)
+proposition Omega_sum_unfold_1: "(x \<squnion> y)\<^sup>\<Omega> = y\<^sup>\<Omega> \<squnion> y\<^sup>\<star> * x * (x \<squnion> y)\<^sup>\<Omega>" oops
+proposition Omega_sup_3: "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<star> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>" oops
 
 end
 
 class bounded_left_demonic_refinement_algebra = left_demonic_refinement_algebra + bounded_left_kleene_algebra
 begin
 
-(*
-lemma Omega_mult: "(x * y)\<^sup>\<Omega> = 1 \<squnion> x * (y * x)\<^sup>\<Omega> * y" oops
-lemma Omega_sup: "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>" oops
-lemma Omega_simulate: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
-lemma Omega_separate_2: "y * x \<le> x * (x \<squnion> y) \<Longrightarrow> (x \<squnion> y)\<^sup>\<Omega> = x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops
-lemma Omega_circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
-lemma Omega_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<Omega> \<squnion> w \<Longrightarrow> x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>" oops
-*)
+proposition Omega_mult: "(x * y)\<^sup>\<Omega> = 1 \<squnion> x * (y * x)\<^sup>\<Omega> * y" oops
+proposition Omega_sup: "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>" oops
+proposition Omega_simulate: "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z" nitpick [expect=genuine,card=6] oops
+proposition Omega_separate_2: "y * x \<le> x * (x \<squnion> y) \<Longrightarrow> (x \<squnion> y)\<^sup>\<Omega> = x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops
+proposition Omega_circ_simulate_right_plus: "z * x \<le> y * y\<^sup>\<Omega> * z \<squnion> w \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)" nitpick [expect=genuine,card=6] oops
+proposition Omega_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<Omega> \<squnion> w \<Longrightarrow> x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>" oops
 
 end
 
@@ -291,21 +285,19 @@ subclass demonic_refinement_algebra ..
 
 end
 
-(*
-text hold in GRA and LKA
-lemma circ_circ_mult: "1\<^sup>\<Omega> * x\<^sup>\<Omega> = x\<^sup>\<Omega>\<^sup>\<Omega>" oops
-lemma sub_mult_one_circ: "x * 1\<^sup>\<Omega> \<le> 1\<^sup>\<Omega> * x" oops
-lemma circ_circ_mult_1: "x\<^sup>\<Omega> * 1\<^sup>\<Omega> = x\<^sup>\<Omega>\<^sup>\<Omega>" oops
-lemma "y * x \<le> x \<Longrightarrow> y\<^sup>\<circ> * x \<le> 1\<^sup>\<circ> * x" oops
+(* hold in GRA and LKA *)
+proposition circ_circ_mult: "1\<^sup>\<Omega> * x\<^sup>\<Omega> = x\<^sup>\<Omega>\<^sup>\<Omega>" oops
+proposition sub_mult_one_circ: "x * 1\<^sup>\<Omega> \<le> 1\<^sup>\<Omega> * x" oops
+proposition circ_circ_mult_1: "x\<^sup>\<Omega> * 1\<^sup>\<Omega> = x\<^sup>\<Omega>\<^sup>\<Omega>" oops
+proposition "y * x \<le> x \<Longrightarrow> y\<^sup>\<circ> * x \<le> 1\<^sup>\<circ> * x" oops
 
-text unknown
-lemma circ_simulate_2: "y * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega> \<longleftrightarrow> y\<^sup>\<Omega> * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops (* holds in LKA *)
-lemma circ_simulate_3: "y * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> \<Longrightarrow> y\<^sup>\<Omega> * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops (* holds in LKA *)
-lemma circ_separate_mult_1: "y * x \<le> x * y \<Longrightarrow> (x * y)\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops
-lemma "x\<^sup>\<circ> = (x * x)\<^sup>\<circ> * (x \<squnion> 1)" oops
-lemma "y\<^sup>\<circ> * x\<^sup>\<circ> \<le> x\<^sup>\<circ> * y\<^sup>\<circ> \<Longrightarrow> (x \<squnion> y)\<^sup>\<circ> = x\<^sup>\<circ> * y\<^sup>\<circ>" oops
-lemma "y * x \<le> (1 \<squnion> x) * y\<^sup>\<circ> \<Longrightarrow> (x \<squnion> y)\<^sup>\<circ> = x\<^sup>\<circ> * y\<^sup>\<circ>" oops
-*)
+(* unknown *)
+proposition circ_simulate_2: "y * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega> \<longleftrightarrow> y\<^sup>\<Omega> * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops (* holds in LKA *)
+proposition circ_simulate_3: "y * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> \<Longrightarrow> y\<^sup>\<Omega> * x\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops (* holds in LKA *)
+proposition circ_separate_mult_1: "y * x \<le> x * y \<Longrightarrow> (x * y)\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * y\<^sup>\<Omega>" oops
+proposition "x\<^sup>\<circ> = (x * x)\<^sup>\<circ> * (x \<squnion> 1)" oops
+proposition "y\<^sup>\<circ> * x\<^sup>\<circ> \<le> x\<^sup>\<circ> * y\<^sup>\<circ> \<Longrightarrow> (x \<squnion> y)\<^sup>\<circ> = x\<^sup>\<circ> * y\<^sup>\<circ>" oops
+proposition "y * x \<le> (1 \<squnion> x) * y\<^sup>\<circ> \<Longrightarrow> (x \<squnion> y)\<^sup>\<circ> = x\<^sup>\<circ> * y\<^sup>\<circ>" oops
 
 end
 

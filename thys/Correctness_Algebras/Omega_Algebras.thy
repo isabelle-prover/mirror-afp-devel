@@ -265,10 +265,8 @@ proof -
     by (metis assms(2) sup_left_divisibility order.antisym mult_right_isotone omega_induct_mult omega_slide omega_sub_dist)
 qed
 
-(*
-lemma omega_circ_simulate_right_plus: "z * x \<le> y * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) * z \<squnion> w \<longrightarrow> z * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) \<le> (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) * (z \<squnion> w * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>))" nitpick [expect=genuine,card=4] oops
-lemma omega_circ_simulate_left_plus: "x * z \<le> z * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) \<squnion> w \<longrightarrow> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * z \<le> (z \<squnion> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * w) * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>)" nitpick [expect=genuine,card=5] oops
-*)
+proposition omega_circ_simulate_right_plus: "z * x \<le> y * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) * z \<squnion> w \<longrightarrow> z * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) \<le> (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) * (z \<squnion> w * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>))" nitpick [expect=genuine,card=4] oops
+proposition omega_circ_simulate_left_plus: "x * z \<le> z * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) \<squnion> w \<longrightarrow> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * z \<le> (z \<squnion> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * w) * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>)" nitpick [expect=genuine,card=5] oops
 
 end
 

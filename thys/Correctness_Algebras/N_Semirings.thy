@@ -308,15 +308,14 @@ lemma ni_n_L:
   "ni(x) = L \<longleftrightarrow> n(x) = 1"
   using n_L ni_L ni_n_equal by force
 
-(* independence of axioms, checked in n_semiring without the respective axiom:
-lemma n_bot         : "n(bot) = bot" nitpick [expect=genuine,card=2] oops
-lemma n_top         : "n(top) = 1" nitpick [expect=genuine,card=3] oops
-lemma n_dist_sup    : "n(x \<squnion> y) = n(x) \<squnion> n(y)" nitpick [expect=genuine,card=5] oops
-lemma n_export      : "n(n(x) * y) = n(x) * n(y)" nitpick [expect=genuine,card=6] oops
-lemma n_sub_mult_bot: "n(x) = n(x * bot) * n(x)" nitpick [expect=genuine,card=2] oops
-lemma n_L_split     : "x * n(y) * L = x * bot \<squnion> n(x * y) * L" nitpick [expect=genuine,card=4] oops
-lemma n_split       : "x \<le> x * bot \<squnion> n(x * L) * top" nitpick [expect=genuine,card=3] oops
-*)
+(* independence of axioms, checked in n_semiring without the respective axiom: *)
+proposition n_bot         : "n(bot) = bot" (* nitpick [expect=genuine,card=2] *) oops
+proposition n_top         : "n(top) = 1" (* nitpick [expect=genuine,card=3] *) oops
+proposition n_dist_sup    : "n(x \<squnion> y) = n(x) \<squnion> n(y)" (* nitpick [expect=genuine,card=5] *) oops
+proposition n_export      : "n(n(x) * y) = n(x) * n(y)" (* nitpick [expect=genuine,card=6] *) oops
+proposition n_sub_mult_bot: "n(x) = n(x * bot) * n(x)" (* nitpick [expect=genuine,card=2] *) oops
+proposition n_L_split     : "x * n(y) * L = x * bot \<squnion> n(x * y) * L" (* nitpick [expect=genuine,card=4] *) oops
+proposition n_split       : "x \<le> x * bot \<squnion> n(x * L) * top" (* nitpick [expect=genuine,card=3] *) oops
 
 end
 
@@ -766,9 +765,7 @@ lemma star_n_omega_top:
   "x\<^sup>\<star> * n(x\<^sup>\<omega>) * top = x\<^sup>\<star> * bot \<squnion> n(x\<^sup>\<omega>) * top"
   by (smt (verit, del_insts) le_supI le_sup_iff sup_right_divisibility order.antisym mult_assoc nL_star.circ_mult_omega nL_star.star_zero_below_circ_mult n_top_split star.circ_loop_fixpoint)
 
-(*
-lemma n_star_induct_sup: "n(z \<squnion> x * y) \<le> n(y) \<Longrightarrow> n(x\<^sup>\<star> * z) \<le> n(y)" oops
-*)
+proposition n_star_induct_sup: "n(z \<squnion> x * y) \<le> n(y) \<Longrightarrow> n(x\<^sup>\<star> * z) \<le> n(y)" oops
 
 end
 
