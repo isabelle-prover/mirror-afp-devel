@@ -542,7 +542,7 @@ fun prove_stuff ctxt
       \<^Const>\<open>Pure.all domT for \<open>Abs ("z", domT,
         Logic.mk_implies
          (HOLogic.mk_Trueprop (R $ Bound 0 $ x),
-          HOLogic.mk_Trueprop \<^Const>\<open>Ex1 ranT for \<open>Abs ("y", ranT, G $ Bound 1 $ Bound 0)\<close>\<close>\<close>\<close>))
+          HOLogic.mk_Trueprop \<^Const>\<open>Ex1 ranT for \<open>Abs ("y", ranT, G $ Bound 1 $ Bound 0)\<close>\<close>))\<close>\<close>
       |> Thm.cterm_of ctxt
 
     val ihyp_thm = Thm.assume ihyp |> Thm.forall_elim_vars 0
