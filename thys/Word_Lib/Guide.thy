@@ -6,7 +6,7 @@
 
 (*<*)
 theory Guide
-  imports Word_Lib_Sumo Word_64 Ancient_Numeral
+  imports Word_Lib_Sumo Machine_Word_32 Machine_Word_64 Ancient_Numeral
 begin
 
 context semiring_bit_operations
@@ -311,9 +311,13 @@ text \<open>
 
       \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>]
 
-          for 64-bit words. This theory is not part of \<^text>\<open>Word_Lib_Sumo\<close>, because it shadows
-          names from \<^theory>\<open>Word_Lib.Word_32\<close>. They can be used together, but then require
-          to use qualified names in applications.
+          for 64-bit words.
+
+      \<^descr>[\<^theory>\<open>Word_Lib.Machine_Word_32\<close> and \<^theory>\<open>Word_Lib.Machine_Word_64\<close>]
+
+          provide lemmas for 32-bit words and 64-bit words under the same name,
+          which can help to organize applications relying on some form
+          of genericity.
 \<close>
 
 
