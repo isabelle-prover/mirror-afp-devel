@@ -412,8 +412,8 @@ struct
 val lexer_trace = Attrib.setup_config_bool @{binding C_lexer_trace} (K false);
 val parser_trace = Attrib.setup_config_bool @{binding C_parser_trace} (K false);
 val ML_verbose = Attrib.setup_config_bool @{binding C_ML_verbose} (K true);
-val starting_env = Attrib.setup_config_string @{binding C_starting_env} (K "empty");
-val starting_rule = Attrib.setup_config_string @{binding C_starting_rule} (K "translation_unit");
+val starting_env = Attrib.setup_config_string @{binding C\<^sub>e\<^sub>n\<^sub>v\<^sub>0} (K "empty");
+val starting_rule = Attrib.setup_config_string @{binding C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0} (K "translation_unit");
 
 end
 \<close>

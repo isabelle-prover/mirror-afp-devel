@@ -833,8 +833,11 @@ type 'a c_context_parser = 'a C_Token.context_parser;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/Isar/parse.ML
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    parsers for C syntax. A partial copy is unfortunately necessary due to signature restrictions.
+ *)
+(*  based on:
+    Title:      Pure/Isar/parse.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Generic parsers for Isabelle/Isar outer syntax.

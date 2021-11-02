@@ -74,7 +74,7 @@ ML \<comment> \<open>\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>\<
 \<open>
 signature C_GRAMMAR_RULE_LIB =
 sig
-  type arg = C_Env.T
+  type arg = (C_Antiquote.antiq * C_Env.antiq_language list) C_Env.T
   type 'a monad = arg -> 'a * arg
 
   (* type aliases *)
@@ -256,7 +256,7 @@ end
 structure C_Grammar_Rule_Lib : C_GRAMMAR_RULE_LIB =
 struct
   open C_Ast
-  type arg = C_Env.T
+  type arg = (C_Antiquote.antiq * C_Env.antiq_language list) C_Env.T
   type 'a monad = arg -> 'a * arg
 
   (**)
@@ -584,7 +584,7 @@ struct
                    env
   fun shadowTypedef (i, params, ret) env =
     shadowTypedef0 (C_Env.Parsed ret) (List.null (C_Env_Ext.get_scopes env)) (K I) (i, params) env
-  fun isTypeIdent s0 = Symtab.exists (fn (s1, _) => s0 = s1) o C_Env_Ext.get_tyidents_typedef
+  fun isTypeIdent s0 arg = (Symtab.exists (fn (s1, _) => s0 = s1) o C_Env_Ext.get_tyidents_typedef) arg
   fun enterScope env =
     ((), C_Env_Ext.map_scopes (cons (NONE, C_Env_Ext.get_var_table env)) env)
   fun leaveScope env = 

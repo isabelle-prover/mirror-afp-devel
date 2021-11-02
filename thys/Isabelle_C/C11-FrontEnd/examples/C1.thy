@@ -41,13 +41,12 @@ theory C1
           "HOL-ex.Cartouche_Examples"
 begin
 
-text \<open> Operationally, the \<^theory_text>\<open>C\<close> command can be thought of as
-behaving as \<^theory_text>\<open>ML\<close>, where it is for example possible to recursively nest C
-code in C. Generally, the present chapter assumes a familiarity with all advance concepts of ML as
-described in \<^file>\<open>~~/src/HOL/Examples/ML.thy\<close>, as well as the concept of ML
-antiquotations (\<^file>\<open>~~/src/Doc/Implementation/ML.thy\<close>). However, even if
-\<^theory_text>\<open>C\<close> might resemble to \<^theory_text>\<open>ML\<close>, we will now see
-in detail that there are actually subtle differences between the two commands.\<close>
+text \<open> Operationally, the \<^theory_text>\<open>C\<close> command can be thought of as behaving as the \<^theory_text>\<open>ML\<close> command, 
+where it is for example possible to recursively nest C code in C. Generally, the present 
+chapter assumes a familiarity with all advance concepts of ML as described in
+ \<^file>\<open>~~/src/HOL/Examples/ML.thy\<close>, as well as the concept of ML antiquotations 
+(\<^file>\<open>~~/src/Doc/Implementation/ML.thy\<close>). However, even if\<^theory_text>\<open>C\<close> might resemble to \<^theory_text>\<open>ML\<close>, 
+we will now see in detail that there are actually subtle differences between the two commands.\<close>
 
 section \<open>Setup of ML Antiquotations Displaying the Environment (For Debugging) \<close>
 
@@ -345,7 +344,7 @@ subsection \<open>Continuation Calculus with the C Environment: Presentation in 
 declare [[C_parser_trace = false]]
 
 ML\<open>
-val C = tap o C_Module.C
+val C  = C_Module.C
 val C' = C_Module.C'
 \<close>
 
@@ -470,7 +469,7 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put (fn _ => fn _ => I))\<
 
 subsection \<open>Reporting: Scope of Recursive Functions\<close>
 
-declare [[C_starting_env = last]]
+declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
 
 C \<comment> \<open>Propagation of Updates\<close> \<open>
 int a = 0;
@@ -488,7 +487,7 @@ C \<open>
 int main3 () { main2 (); }
 \<close>
 
-declare [[C_starting_env = empty]]
+declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = empty]]
 
 subsection \<open>Reporting: Extensions to Function Types, Array Types\<close>
 
@@ -569,10 +568,10 @@ subsection \<open>Basics\<close>
 
 C \<comment> \<open>Parameterizing starting rule\<close> \<open>
 /*@
-declare [[C_starting_rule = "statement"]]
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "statement"]]
 C \<open>while (a) {}\<close>
 C \<open>a = 2;\<close>
-declare [[C_starting_rule = "expression"]]
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
 C \<open>2 + 3\<close>
 C \<open>a = 2\<close>
 C \<open>a[1]\<close>
@@ -589,7 +588,7 @@ term \<open>\<^C>\<^sub>d\<^sub>e\<^sub>c\<^sub>l \<comment> \<open>force the ex
 term \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r \<comment> \<open>force the explicit parsing\<close> \<open>a\<close>\<close>
 term \<open>\<^C>\<^sub>s\<^sub>t\<^sub>m\<^sub>t \<comment> \<open>force the explicit parsing\<close> \<open>while (a) {}\<close>\<close>
 
-declare [[C_starting_rule = "translation_unit"]]
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 term \<open>\<^C> \<comment> \<open>default behavior of parsing depending on the current option\<close> \<open>int a = 0;\<close>\<close>
 
@@ -609,11 +608,14 @@ subsection \<open>Validity of Context for Annotations\<close>
 
 ML \<open>fun fac x = if x = 0 then 1 else x * fac (x - 1)\<close>
 
-ML \<comment> \<open>Execution of annotations in term possible in (the outermost) \<^theory_text>\<open>ML\<close>\<close> \<open>
+ML \<comment> \<open>Execution of annotations in term possible in (the outermost) \<^theory_text>\<open>ML\<close>\<close> 
+\<open>
 \<^term>\<open> \<^C> \<open>int c = 0; /*@ ML \<open>fac 100\<close> */\<close> \<close>
 \<close>
 
-definition \<comment> \<open>Execution of annotations in term possible in \<^ML_type>\<open>local_theory\<close> commands (such as \<^theory_text>\<open>definition\<close>)\<close> \<open>
+definition \<comment> \<open>Execution of annotations in term possible in \<^ML_type>\<open>local_theory\<close>
+               commands (such as \<^theory_text>\<open>definition\<close>)\<close> 
+\<open>
 term = \<^C> \<open>int c = 0; /*@ ML \<open>fac 100\<close> */\<close>
 \<close>
 
@@ -649,15 +651,9 @@ val _ =
 end
 \<close>
 
-C \<open>
-int z = z;
- /*@ C  \<open>//@ term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
-     C' \<open>//@ term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
-             term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
-     C  \<open>//@ term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
-     C' \<open>//@ term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
-             term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close> */\<close>
-term(*outer*) \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
+ML\<open>val _ = @{term \<open>3::nat\<close>}\<close>
+ML\<open> ML_Antiquotation.inline_embedded;
+\<close>
 
 C \<open>
 int z = z;
@@ -669,7 +665,17 @@ int z = z;
              term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close> */\<close>
 term(*outer*) \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
 
-declare [[C_starting_env = last]]
+C \<open>
+int z = z;
+ /*@ C  \<open>//@ term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
+     C' \<open>//@ term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
+             term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
+     C  \<open>//@ term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
+     C' \<open>//@ term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>\<close>
+             term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close> */\<close>
+term(*outer*) \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
+
+declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
 
 C \<open>
 int z = z;
@@ -681,7 +687,7 @@ int z = z;
              term\<^sub>i\<^sub>n\<^sub>n\<^sub>e\<^sub>r \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close> */\<close>
 term(*outer*) \<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r\<open>z\<close>\<close>
 
-declare [[C_starting_env = empty]]
+declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = empty]]
 
 C \<comment> \<open>Propagation of report environment while manually composing at ML level\<close> \<open>
 int a;
@@ -860,5 +866,32 @@ int main () {
   printf ("%s", ó\<^url>ò);
 }
 \<close>
+
+\<comment>\<open>The core lexer ...\<close>
+ML\<open> C_Parse.ML_source \<close>
+
+declare[[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
+ML\<open>@{C\<^sub>e\<^sub>n\<^sub>v}\<close>
+
+ML\<open>C_Stack.Data_Lang.get' :
+   Context.generic ->  
+     (LALR_Table.state, C_Grammar_Rule.svalue0, Position.T) C_Env.stack_elem0 list * C_Env.env_lang;
+   C_Parse.C_source: Input.source C_Parse.parser ;
+   C_Inner_Syntax.command0 ;
+   C';
+   ;
+
+\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+
+ML\<open>
+val src = \<open>a + b\<close>;
+val ctxt = (Context.Proof @{context});
+val ctxt' = C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
+C_Module.Data_In_Env.get ctxt'
+\<close>
+
+(* and from where do I get the result ? *)
 
 end

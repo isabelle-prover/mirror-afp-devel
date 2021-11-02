@@ -44,7 +44,6 @@ section \<open>A Simplistic Setup: Parse and Store\<close>
 
 text\<open>The following setup just stores the result of the parsed values in the environment.\<close>
 
-
 ML\<open>
 structure Data_Out = Generic_Data
   (type T = (C_Grammar_Rule.start_happy * C_Antiquote.antiq C_Env.stream) list
@@ -63,8 +62,17 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put
                             (fn ast => fn env_lang =>
                               Data_Out.map (cons (ast, #stream_ignored env_lang |> rev))))\<close>
 
+ML\<open>
+val _ = Theory.setup(
+  ML_Antiquotation.value_embedded \<^binding>\<open>C11_PARSES\<close>
+    (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+      (warning"arg variant not implemented";"get_module (Context.the_global_context())"))
+    || Scan.succeed "get_module (Context.the_global_context())"))
 
-section \<open>Example of a Possible Semantics for \<open>#include\<close>\<close>
+\<close>
+
+
+section \<open>Example: A Possible Semantics for \<open>#include\<close>\<close>
 
 subsection \<open>Implementation\<close>
 
@@ -202,7 +210,7 @@ C\<open>
 
 
 text\<open>In the following, we retrieve the C11 AST parsed above. \<close>
-ML\<open> val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) = get_module @{theory};
+ML\<open> val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) =  @{C11_PARSES};
     val u = C_Grammar_Rule_Lib.decode u; 
     C_Ast.CTypeSpec0; \<close>
 
@@ -482,15 +490,23 @@ text\<open>Accessing the underlying C11-AST's via the ML Interface.\<close>
 ML\<open>
 local open C_Ast in
 val _ = CTranslUnit0
-val ((CTranslUnit0 (t,u), v)::_, _) = get_module @{theory};
-val u = C_Grammar_Rule_Lib.decode u
-val _ = case u of Left (p1,p2) => writeln (Position.here p1 ^ " " ^ Position.here p2)
-                | Right _ => error "Not expecting that value"
+val (A::R, _) = @{C11_PARSES};
+val (CTranslUnit0 (t,u), v) = A
+fun rule_trans (CTranslUnit0 (t,u), v) = case C_Grammar_Rule_Lib.decode u of 
+                  Left (p1,p2) => writeln (Position.here p1 ^ " " ^ Position.here p2)
+                | Right S => warning ("Not expecting that value:"^S)
+val bb = rule_trans A
 val CDeclExt0(x1)::_ = t;
 val _ = CDecl0
 end
 \<close>
 
+ML\<open>
+get_module;
+val (R, env_final) = @{C11_PARSES};
+val rules = map rule_trans R;
+@{C\<^sub>e\<^sub>n\<^sub>v}
+\<close>
 section \<open>C Code: Floats Exist\<close>
 
 C\<open>
