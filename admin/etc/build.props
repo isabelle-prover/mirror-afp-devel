@@ -1,5 +1,5 @@
 title = Afp/Admin
-module = $ISABELLE_HOME/lib/classes/afp_admin.jar
+module = $AFP_BASE/tools/lib/classes/afp_admin.jar
 requirements = \
   env:ISABELLE_SCALA_JAR
 services = afp.Admin_Tools

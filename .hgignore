@@ -67,3 +67,5 @@ thys/Verified_SAT_Based_AI_Planning/code/generated
 
 admin/py-bootstrap
 admin/venv
+
+tools/**.jar

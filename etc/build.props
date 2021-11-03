@@ -1,5 +1,5 @@
 title = AFP/Tools
-module = $ISABELLE_HOME/lib/classes/afp_tools.jar
+module = $AFP_BASE/tools/lib/classes/afp_tools.jar
 requirements = \
   env:ISABELLE_SCALA_JAR
 sources = \
