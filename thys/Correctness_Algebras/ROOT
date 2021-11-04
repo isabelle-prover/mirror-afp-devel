@@ -2,7 +2,7 @@ chapter AFP
 
 session Correctness_Algebras (AFP) = HOL +
 
-  options [timeout = 600]
+  options [timeout = 3600]
 
   sessions
     Stone_Kleene_Relation_Algebras
