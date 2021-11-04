@@ -19,13 +19,17 @@ among other things.
   * `seed` is the initial seed for the generator.
 
 You can also choose to omit the show method for rapid testing or add a shrinking method à la
-QuickCheck to get better counterexamples. See `speccheck.ML`.
+QuickCheck to get better counterexamples.
+If you want to write unit tests, use `check_list` instead of `check`.
+A somewhat extensive example application can be found
+[here](https://github.com/kappelmann/e-unification-isabelle/blob/master/Tests/first_order_unification_tests.ML).
+For more information see `speccheck.ML`.
 
 An experimental alternative allows you to specify tests using strings:
 1. Import `SpecCheck_Dynamic.Dynamic` into your environment.
 2. `check_property "ALL x. P x"` where `P x` is some ML code evaluating to a boolean
 
-## Notes
+## Implementation Notes
 
 SpecCheck is based on [QCheck](https://github.com/league/qcheck), a testing framework for Standard ML by
 [Christopher League](https://contrapunctus.net/league/).
