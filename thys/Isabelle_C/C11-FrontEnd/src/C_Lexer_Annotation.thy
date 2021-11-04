@@ -806,7 +806,7 @@ fun syntax' f =
           explode
             ((case kind of
                 Token.Keyword => Keyword.add_keywords [((x, Position.none), Keyword.no_spec)]
-              | Token.Command => Keyword.add_keywords [( (x, Position.none), (Keyword.thy_decl, []))]
+              | Token.Command => Keyword.add_keywords [( (x, Position.none), Keyword.command_spec (Keyword.thy_decl, []))]
               | _ => I)
                Keyword.empty_keywords)
             pos1
