@@ -89,10 +89,10 @@ object Metadata
   object TOML
   {
     private def by_id[A](elems: List[A], id: Int): A =
-      elems.applyOrElse(id, error("Elem " + id + " not found in " + quote(elems.mkString(","))))
+      elems.lift(id).getOrElse(error("Elem " + id + " not found in " + commas_quote(elems.map(_.toString))))
 
     private def by_id[A](elems: Map[String, A], id: String): A =
-      elems.getOrElse(id, error("Elem " + id + " not found in " + quote(elems.mkString(","))))
+      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
 
 
     /* author */
@@ -140,7 +140,7 @@ object Metadata
       def to_topics_rec(topics: T, root: Topic.ID): List[Topic] =
         split_as[T](topics).map {
           case (name, sub_topics) =>
-            val id = root + "/" + name
+            val id = (if (root.nonEmpty) root + "/" else "") + name
             Topic(id, name, to_topics_rec(sub_topics, id))
         }
 
@@ -166,20 +166,10 @@ object Metadata
     /* affiliation */
 
     def from_affiliations(affiliations: List[Affiliation]): T =
-    {
-      def from_affiliation(affiliation: Affiliation): T =
-      {
-        affiliation match {
-          case Unaffiliated(_) => afp.TOML.T()
-          case Email(_, id, _) => afp.TOML.T("email" -> id)
-          case Homepage(_, id, _) => afp.TOML.T("homepage" -> id)
-        }
-      }
-
-      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues { author_affiliations =>
-        Map("affiliations" -> author_affiliations.map(from_affiliation).filter(_.nonEmpty))
-      }.toMap
-    }
+      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(_.collect {
+        case Email(_, id, _) => "email" -> id
+        case Homepage(_, id, _) => "homepage" -> id
+      }.toMap).toMap
 
     def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] =
     {
@@ -195,9 +185,8 @@ object Metadata
       split_as[T](affiliations).flatMap {
         case (id, author_affiliations) =>
           val author = by_id(authors, id)
-          val m = get_as[Map[String, Int]](author_affiliations, "affiliations")
-          if (m.isEmpty) List(Unaffiliated(author.id))
-          else m.toList.map(to_affiliation(_, author))
+          if (author_affiliations.isEmpty) List(Unaffiliated(author.id))
+          else split_as[Int](author_affiliations).map(to_affiliation(_, author))
       }
     }
 
@@ -242,18 +231,18 @@ object Metadata
 
     def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic], releases: List[Release]): Entry =
       Entry(
-        short_name = get_as(entry, "short_name"),
-        title = get_as(entry, "title"),
-        authors = to_affiliations(get_as(entry, "authors"), authors),
-        date = get_as(entry, "date"),
+        short_name = get_as[String](entry, "short_name"),
+        title = get_as[String](entry, "title"),
+        authors = to_affiliations(get_as[T](entry, "authors"), authors),
+        date = get_as[Date](entry, "date"),
         topics = get_as[List[String]](entry, "topics").map(by_id(topics, _)),
-        `abstract` = get_as(entry, "abstract"),
-        notifies = to_emails(get_as(entry, "notify"), authors),
-        contributors = to_affiliations(get_as(entry, "contributors"), authors),
-        license = get_as(entry, "license"),
-        note = get_as(entry, "note"),
-        change_history = to_change_history(get_as(entry, "history")),
-        extra = get_as(entry, "extra"),
+        `abstract` = get_as[String](entry, "abstract"),
+        notifies = to_emails(get_as[T](entry, "notify"), authors),
+        contributors = to_affiliations(get_as[T](entry, "contributors"), authors),
+        license = get_as[License](entry, "license"),
+        note = get_as[String](entry, "note"),
+        change_history = to_change_history(get_as[T](entry, "history")),
+        extra = get_as[Extra](entry, "extra"),
         releases = releases)
   }
 }
