@@ -6,18 +6,26 @@ import isabelle._
 import afp._
 import afp.Metadata.{TOML => _, _}
 
+import scala.collection.BufferedIterator
+
 import java.text.Normalizer
 import java.time.LocalDate
 
 
 object AFP_Migrate_Metadata
 {
-  private class Context(names_mapping: Map[String, String], email_names: Map[String, String])
+  private class Context(
+    names_mapping: Map[String, String],
+    email_names: Map[String, String],
+    dates_mapping: Map[String, String])
   {
     /* mappings */
 
     def transform_name(name: String): String =
       names_mapping.getOrElse(name, name)
+
+    def parse_date(date: String): Metadata.Date =
+      LocalDate.parse(dates_mapping.getOrElse(date, date))
 
     def name(address: String): String =
       email_names.getOrElse(address, error("No name for address " + address))
@@ -30,9 +38,11 @@ object AFP_Migrate_Metadata
     def seen_id(id: Author.ID): Boolean = seen_ids.contains(id)
 
     def author(name: String): Option[Author] = seen_authors.get(name)
+
     def authors: List[Author] = seen_authors.values.toList
 
-    def update_author(author: Author): Unit = {
+    def update_author(author: Author): Unit =
+    {
       seen_ids += author.id
       seen_authors = seen_authors.updated(author.name, author)
     }
@@ -67,9 +77,11 @@ object AFP_Migrate_Metadata
     var ident = suffix.toLowerCase
     for {
       c <- prefix.toLowerCase
-    } if (context.seen_id(ident)) {
-      ident += c.toString
-    } else return ident
+    } {
+      if (context.seen_id(ident)) {
+        ident += c.toString
+      } else return ident
+    }
     var num = 1
     while (context.seen_id(ident + num)) { num += 1 }
     ident
@@ -159,25 +171,97 @@ object AFP_Migrate_Metadata
     context.update_author(author)
   }
 
-  def map_metadata(entry: AFP.Entry, context: Context, progress: Progress): Entry =
+  def map_entry(
+    entry: AFP.Entry,
+    releases: Map[Entry.Name, List[Release]],
+    topics: Map[Topic.ID, Topic],
+    context: Context,
+    progress: Progress): Entry =
   {
     val author_affiliations = entry.authors.flatMap(get_affiliations(_, context))
     val contributor_affiliations = entry.contributors.flatMap(get_affiliations(_, context))
     val notify_emails = entry.get_strings("notify").map(get_email_affiliation(_, context, progress))
+    val change_history = parse_change_history(entry.get_string("extra-history"), context)
+    val extra = entry.metadata.filter { case (k, _) => k.startsWith("extra-") && k != "extra-history" }
 
     Entry(
       short_name = entry.name,
       title = entry.title,
       authors = author_affiliations,
       date = LocalDate.from(entry.date.rep),
-      topics = entry.topics,
+      topics = entry.topics.map(topics),
       `abstract` = entry.`abstract`,
       notifies = notify_emails,
       contributors = contributor_affiliations,
       license = entry.license,
       note = entry.get_string("note"),
-      change_history = entry.get_string("extra-history")
+      change_history = change_history,
+      extra = extra.toMap,
+      releases = releases(entry.name)
     )
+  }
+
+  def parse_change_history(history: String, context: Context): Change_History =
+  {
+    val matches = """\[(\d{4}-\d{2}-\d{2})]: ([^\[]+)""".r.findAllMatchIn(history.stripPrefix("Change history:"))
+    matches.toList.map(_.subgroups match {
+      case date :: content :: Nil => context.parse_date(date) -> content
+      case _ => error("Could not parse change history: " + quote(history))
+    }).toMap
+  }
+
+  def parse_topics(lines: List[String]): List[Topic] =
+  {
+    val lines_iterator: BufferedIterator[String] = lines.filterNot(_.isBlank).iterator.buffered
+
+    def get_indent(line: String) = line.takeWhile(_.isWhitespace).length
+
+    def parse_level(level: Int, root: Option[Topic.ID]): List[Topic] =
+    {
+      val name = lines_iterator.next().trim
+      val id = root.map(_ + "/").getOrElse("") + name
+      val (sub_topics, next_topics) = lines_iterator.headOption match {
+        case Some(next) if get_indent(next) == level + 2 =>
+          val sub = parse_level(level + 2, Some(id))
+          val next = lines_iterator.headOption match {
+            case Some(next1) if get_indent(next1) == level => parse_level(level, root)
+            case _ => Nil
+          }
+          (sub, next)
+        case Some(next) if get_indent(next) == level =>
+          (Nil, parse_level(level, root))
+        case _ => (Nil, Nil)
+      }
+      Topic(id = id, name = name, sub_topics = sub_topics) :: next_topics
+    }
+
+    parse_level(0, None)
+  }
+
+  def parse_releases(
+    releases: List[String],
+    isabelle_releases: List[String],
+    all_entries: List[Entry.Name],
+    context: Context): List[Release] =
+  {
+    val Isa_Release = """(.+) = (.+)""".r
+    val release_dates = isabelle_releases.filterNot(_.isBlank).map {
+      case Isa_Release(isabelle_version, date) => context.parse_date(date) -> isabelle_version
+      case line => error("Could not parse: " + quote(line))
+    }
+    val current = release_dates.last
+
+    def to_release(entry: Entry.Name, release_date: LocalDate): Release =
+      Release(entry, release_date, release_dates.findLast { case (date, _) => date.isBefore(release_date) }.get._2)
+
+    val Entry_Release = """afp-([a-zA-Z0-9_+-]+)-(\d{4}-\d{2}-\d{2})\.tar\.gz""".r
+    val entry_releases = releases.filterNot(_.isBlank).map {
+      case Entry_Release(entry, date_string) =>
+        val date = context.parse_date(date_string)
+        entry -> to_release(entry, date)
+      case line => error("Could not parse: " + quote(line))
+    }.groupBy(_._1)
+    all_entries.flatMap(e => entry_releases.getOrElse(e, Nil).map(_._2) :+ to_release(e, current._1))
   }
 
   def migrate_metadata(
@@ -185,13 +269,53 @@ object AFP_Migrate_Metadata
     overwrite: Boolean,
     context: Context,
     options: Options = Options.init(),
-    progress: Progress = new Progress()): Unit = {
-    /* dirs */
-
-    val metadata_dir = base_dir + Path.basic("metadata")
+    progress: Progress = new Progress()): Unit =
+  {
     val metadata = AFP.init(options, base_dir)
+    val metadata_dir = base_dir + Path.basic("metadata")
+
+    def read(file: Path): String =
+      File.read(metadata_dir + file)
+
+    def write(toml: TOML.T, file: Path) =
+    {
+      val path = metadata_dir + file
+      if (!overwrite && path.file.exists) error("File already exists: " + path.file_name)
+      else path.dir.file.mkdirs()
+      File.write(path, TOML.Format(toml))
+    }
+
+
+    /* topics */
+
+    progress.echo("Parsing topics...")
+
+    val root_topics = parse_topics(split_lines(read(Path.basic("topics"))))
+
+    def sub_topics(topic: Topic): List[Topic] =
+      topic :: topic.sub_topics.flatMap(sub_topics)
+
+    val topic_map = root_topics.flatMap(sub_topics).map(topic => topic.id -> topic).toMap
+
+    write(Metadata.TOML.from_topics(root_topics), Path.basic("topics.toml"))
+
+
+    /* releases */
+
+    progress.echo("Parsing releases...")
+
+    val releases = parse_releases(
+      split_lines(read(Path.basic("releases"))),
+      split_lines(read(Path.basic("release-dates"))),
+      metadata.entries.map(_.name), context)
+    val releases_map = releases.groupBy(_.entry)
+
+    write(Metadata.TOML.from_releases(releases), Path.basic("releases.toml"))
+
 
     /* collect authors (without notify affiliations) */
+
+    progress.echo("Collecting authors...")
 
     for {
       entry <- metadata.entries
@@ -200,25 +324,18 @@ object AFP_Migrate_Metadata
 
     /* entries */
 
-    val entry_metadata_dir = metadata_dir + Path.basic("entries")
-    entry_metadata_dir.file.mkdir()
-    for (entry <- metadata.entries) {
-      val new_metadata = map_metadata(entry, context, progress)
+    progress.echo("Parsing entries...")
 
-      val content = TOML.Format(Metadata.TOML(new_metadata))
+    for (entry_metadata <- metadata.entries) {
+      val entry = map_entry(entry_metadata, releases_map, topic_map, context, progress)
 
-      val metadata_file = metadata_dir + Path.make(List("entries", entry.name + ".toml"))
-      if (!overwrite && metadata_file.file.exists()) error("Entry metadata file exists")
-      File.write(metadata_file, content)
+      write(Metadata.TOML.from_entry(entry), Path.make(List("entries", entry.short_name + ".toml")))
     }
+
 
     /* authors */
 
-    val authors = TOML.Format(Metadata.TOML.authors(context.authors))
-
-    val authors_file = metadata_dir + Path.basic("authors.toml")
-    if (!overwrite && authors_file.file.exists()) error("Authors file exists")
-    File.write(authors_file, authors)
+    write(Metadata.TOML.from_authors(context.authors), Path.basic("authors.toml"))
   }
 
   val isabelle_tool =
@@ -377,6 +494,10 @@ object AFP_Migrate_Metadata
           "yongkiat@cs.cmu.edu" -> "Yong Kiam Tan",
           "Yutaka.Nagashima@data61.csiro.au" -> "Yutaka Nagashima")
 
+        var dates = List(
+          "2020-14-04" -> "2020-04-14",
+          "2020-15-04" -> "2020-04-15")
+
         var overwrite = false
 
         val getopts = Getopts(
@@ -387,10 +508,13 @@ Usage: isabelle afp_migrate_metadata [OPTIONS]
     -B DIR            afp base dir (default "$AFP_BASE")
     -n FROM,TO        names to convert (default:
                       """ + names.mkString("\n                      ") +
-                      """)
+            """)
     -e EMAIL,AUTHOR   emails to associate (default:
                       """ + emails.mkString("\n                      ") +
-                      """)
+            """)
+    -d FROM,TO        date strings to convert (default:
+                      """ + dates.mkString("\n                       ") +
+            """)
     -f                overwrite existing
 
   Migrates old sitegen metadata to new format.
@@ -398,6 +522,7 @@ Usage: isabelle afp_migrate_metadata [OPTIONS]
           "B:" -> (arg => base_dir = Path.explode(arg)),
           "n:" -> (arg => names ::= arg.splitAt(arg.indexOf(","))),
           "e:" -> (arg => emails ::= arg.splitAt(arg.indexOf(","))),
+          "d:" -> (arg => dates ::= arg.splitAt(arg.indexOf(","))),
           "f" -> (_ => overwrite = true)
         )
 
@@ -405,7 +530,7 @@ Usage: isabelle afp_migrate_metadata [OPTIONS]
 
         val progress = new Console_Progress()
 
-        val context = new Context(names.toMap, emails.toMap)
+        val context = new Context(names.toMap, emails.toMap, dates.toMap)
 
         val options = Options.init()
 

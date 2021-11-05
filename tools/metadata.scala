@@ -3,6 +3,8 @@ package afp
 
 import isabelle._
 
+import afp.TOML._
+
 import java.time.LocalDate
 
 
@@ -15,6 +17,7 @@ object Metadata
 
   case class Email(override val author: Author.ID, id: Email.ID, address: String)
     extends Affiliation(author)
+
   object Email
   {
     type ID = Int
@@ -22,7 +25,9 @@ object Metadata
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
     extends Affiliation(author)
-  object Homepage {
+
+  object Homepage
+  {
     type ID = Int
   }
 
@@ -32,17 +37,31 @@ object Metadata
     emails: List[Email],
     homepages: List[Homepage]
   )
+
   object Author
   {
     type ID = String
   }
 
+  case class Topic(id: Topic.ID, name: String, sub_topics: List[Topic])
+
+  object Topic
+  {
+    type ID = String
+  }
+
   type Date = LocalDate
-  type Topic = String
+
+  object Isabelle
+  {
+    type Version = String
+  }
+
+  case class Release(entry: Entry.Name, date: Date, isabelle: Isabelle.Version)
+
   type License = String
-  type Change_History = String
-  type Release = String
-  type Release_History = List[Date]
+  type Change_History = Map[Date, String]
+  type Extra = Map[String, String]
 
   case class Entry(
     short_name: Entry.Name,
@@ -56,57 +75,185 @@ object Metadata
     license: License,
     note: String,
     change_history: Change_History,
-  )
-  object Entry {
+    extra: Extra,
+    releases: List[Release])
+
+  object Entry
+  {
     type Name = String
   }
 
-  /* json */
+
+  /* toml */
 
   object TOML
   {
-    type T = afp.TOML.T
+    private def by_id[A](elems: List[A], id: Int): A =
+      elems.applyOrElse(id, error("Elem " + id + " not found in " + quote(elems.mkString(","))))
 
-    def apply(entries: (afp.TOML.Key, afp.TOML.V)*): T = afp.TOML.T(entries: _*)
-    def apply(entries: List[(afp.TOML.Key, afp.TOML.V)]): T = afp.TOML.T(entries)
+    private def by_id[A](elems: Map[String, A], id: String): A =
+      elems.getOrElse(id, error("Elem " + id + " not found in " + quote(elems.mkString(","))))
 
-    def authors(authors: List[Author]): T =
-      TOML(authors.map(author => author.id -> TOML(author)))
 
-    private def apply(author: Author): T =
-      TOML(
-        "name" -> author.name,
-        "emails" -> author.emails.map(_.address),
-        "homepages" -> author.homepages.map(_.url)
-      )
+    /* author */
 
-    private def apply(affiliation: Affiliation): T =
+    def from_authors(authors: List[Author]): T =
     {
-      affiliation match {
-        case Unaffiliated(_) => TOML()
-        case Email(_, id, _) => TOML("email" -> id)
-        case Homepage(_, id, _) => TOML("homepage" -> id)
+      def from_author(author: Author): T =
+        afp.TOML.T(
+          "name" -> author.name,
+          "emails" -> author.emails.map(_.address),
+          "homepages" -> author.homepages.map(_.url))
+
+      afp.TOML.T(authors.map(author => author.id -> from_author(author)))
+    }
+
+    def to_authors(authors: T): List[Author] =
+    {
+      def to_author(id: Author.ID, author: T): Author =
+      {
+        val emails = get_as[List[String]](author, "emails").zipWithIndex.map {
+          case (address, idx) => Email(author = id, id = idx, address = address)
+        }
+        val homepages = get_as[List[String]](author, "homepages").zipWithIndex.map {
+          case (url, idx) => Homepage(author = id, id = idx, url = url)
+        }
+        Author(
+          id = id,
+          name = get_as[String](author, "name"),
+          emails = emails,
+          homepages = homepages
+        )
+      }
+
+      split_as[T](authors).map { case (id, author) => to_author(id, author) }
+    }
+
+
+    /* topics */
+
+    def from_topics(root_topics: List[Topic]): T =
+      afp.TOML.T(root_topics.map(t => t.name -> from_topics(t.sub_topics)))
+
+    def to_topics(root_topics: T): List[Topic] =
+    {
+      def to_topics_rec(topics: T, root: Topic.ID): List[Topic] =
+        split_as[T](topics).map {
+          case (name, sub_topics) =>
+            val id = root + "/" + name
+            Topic(id, name, to_topics_rec(sub_topics, id))
+        }
+
+      to_topics_rec(root_topics, "")
+    }
+
+
+    /* releases */
+
+    def from_releases(releases: List[Release]): T =
+      Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
+        entry_releases.map(r => r.isabelle -> r.date).toMap
+      }.toMap
+
+    def to_releases(map: T): List[Release] =
+      split_as[T](map).flatMap {
+        case (entry, releases) => split_as[Date](releases).map {
+          case (version, date) => Release(entry = entry, date = date, isabelle = version)
+        }
+      }
+
+
+    /* affiliation */
+
+    def from_affiliations(affiliations: List[Affiliation]): T =
+    {
+      def from_affiliation(affiliation: Affiliation): T =
+      {
+        affiliation match {
+          case Unaffiliated(_) => afp.TOML.T()
+          case Email(_, id, _) => afp.TOML.T("email" -> id)
+          case Homepage(_, id, _) => afp.TOML.T("homepage" -> id)
+        }
+      }
+
+      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues { author_affiliations =>
+        Map("affiliations" -> author_affiliations.map(from_affiliation).filter(_.nonEmpty))
+      }.toMap
+    }
+
+    def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] =
+    {
+      def to_affiliation(affiliation: (String, Int), author: Author): Affiliation =
+      {
+        affiliation match {
+          case ("email", id: Int) => by_id(author.emails, id)
+          case ("homepage", id: Int) => by_id(author.homepages, id)
+          case e => error("Unknown affiliation type: " + e)
+        }
+      }
+
+      split_as[T](affiliations).flatMap {
+        case (id, author_affiliations) =>
+          val author = by_id(authors, id)
+          val m = get_as[Map[String, Int]](author_affiliations, "affiliations")
+          if (m.isEmpty) List(Unaffiliated(author.id))
+          else m.toList.map(to_affiliation(_, author))
       }
     }
 
-    def affiliations(affiliations: List[Affiliation]): T =
-      affiliations.groupBy(_.author).view.mapValues { author_affiliations =>
-        Map("affiliations" -> author_affiliations.map(TOML.apply).filter(_.nonEmpty))
-      }.toMap
+    def from_emails(emails: List[Email]): T =
+      afp.TOML.T(emails.map(email => email.author -> email.id))
 
-    def emails(emails: List[Email]): T =
-      TOML(emails.map(email => email.author -> email.id))
+    def to_emails(emails: T, authors: Map[Author.ID, Author]): List[Email] =
+      emails.toList.map {
+        case (author, id: Int) => by_id(by_id(authors, author).emails, id)
+        case e => error("Unknown email: " + quote(e.toString))
+      }
 
-    def apply(entry: Entry): T =
-      TOML(
+
+    /* history */
+
+    def from_change_history(change_history: Change_History): T =
+      change_history.map { case (date, str) => date.toString -> str }
+
+    def to_change_history(change_history: T): Change_History =
+      change_history.map {
+        case (date, entry: String) => LocalDate.parse(date) -> entry
+        case e => error("Unknown history entry: " + quote(e.toString))
+      }
+
+
+    /* entry */
+
+    def from_entry(entry: Entry): T =
+      afp.TOML.T(
         "title" -> entry.title,
-        "authors" -> affiliations(entry.authors),
-        "contributors" -> affiliations(entry.contributors),
+        "authors" -> from_affiliations(entry.authors),
+        "contributors" -> from_affiliations(entry.contributors),
         "date" -> entry.date,
-        "topics" -> entry.topics,
+        "topics" -> entry.topics.map(_.id),
         "abstract" -> entry.`abstract`,
-        "notify" -> emails(entry.notifies),
-        "license" -> entry.license
+        "notify" -> from_emails(entry.notifies),
+        "license" -> entry.license,
+        "note" -> entry.note,
+        "history" -> from_change_history(entry.change_history),
+        "extra" -> entry.extra,
       )
+
+    def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic], releases: List[Release]): Entry =
+      Entry(
+        short_name = get_as(entry, "short_name"),
+        title = get_as(entry, "title"),
+        authors = to_affiliations(get_as(entry, "authors"), authors),
+        date = get_as(entry, "date"),
+        topics = get_as[List[String]](entry, "topics").map(by_id(topics, _)),
+        `abstract` = get_as(entry, "abstract"),
+        notifies = to_emails(get_as(entry, "notify"), authors),
+        contributors = to_affiliations(get_as(entry, "contributors"), authors),
+        license = get_as(entry, "license"),
+        note = get_as(entry, "note"),
+        change_history = to_change_history(get_as(entry, "history")),
+        extra = get_as(entry, "extra"),
+        releases = releases)
   }
 }

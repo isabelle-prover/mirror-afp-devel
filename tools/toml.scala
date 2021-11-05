@@ -4,6 +4,7 @@ package afp
 import isabelle._
 
 import scala.collection.immutable.ListMap
+import scala.reflect.{ClassTag, classTag}
 import scala.util.matching.Regex
 import scala.util.parsing.combinator.Parsers
 import scala.util.parsing.combinator.lexical.Scanners
@@ -18,15 +19,29 @@ object TOML
   type V = Any
 
   type T = Map[Key, V]
+
   object T
   {
     def apply(entries: (Key, V)*): T = ListMap(entries: _*)
+
     def apply(entries: List[(Key, V)]): T = ListMap(entries: _*)
 
-    def unapply(t: Map[_, V]): Option[T] = {
+    def unapply(t: Map[_, V]): Option[T] =
+    {
       if (t.keys.forall(_.isInstanceOf[Key])) Some(t.asInstanceOf[T])
       else None
     }
+  }
+
+
+  /* typed access */
+
+  def split_as[A: ClassTag](map: T): List[(Key, A)] = map.keys.toList.map(k => k -> get_as[A](map, k))
+
+  def get_as[A: ClassTag](map: T, name: String): A = map.get(name) match {
+    case Some(value: A) => value
+    case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
+    case None => error("Field " + name + " not in " + map)
   }
 
 
@@ -40,11 +55,17 @@ object TOML
   sealed case class Token(kind: Kind.Value, text: String)
   {
     def is_ident: Boolean = kind == Kind.IDENT
+
     def is_keyword(name: String): Boolean = kind == Kind.KEYWORD && text == name
+
     def is_string: Boolean = kind == Kind.STRING
+
     def is_integer: Boolean = kind == Kind.INTEGER
+
     def is_float: Boolean = kind == Kind.FLOAT
+
     def is_date: Boolean = kind == Kind.DATE
+
     def is_error: Boolean = kind == Kind.ERROR
   }
 
@@ -57,13 +78,16 @@ object TOML
 
     val white_space: String = " \t\n\r"
     override val whiteSpace: Regex = ("[" + white_space + "]+").r
+
     def whitespace: Parser[Any] = many(character(white_space.contains(_)))
 
     val letter: Parser[String] = one(character(Symbol.is_ascii_letter))
     val letters1: Parser[String] = many1(character(Symbol.is_ascii_letter))
 
     def digits: Parser[String] = many(character(Symbol.is_ascii_digit))
+
     def digits1: Parser[String] = many1(character(Symbol.is_ascii_digit))
+
     def digitsn(n: Int): Parser[String] = repeated(character(Symbol.is_ascii_digit), n, n)
 
     def chars(chars: String, num: Int = 1, rep_min: Int = 1, rep_max: Int = 1): Parser[String] =
@@ -125,6 +149,7 @@ object TOML
       { case a ~ b ~ c => a.getOrElse("") + b + c }
 
     def zero: Parser[String] = one(character(c => c == '0'))
+
     def nonzero: Parser[String] = one(character(c => c != '0' && Symbol.is_ascii_digit(c)))
 
     def float: Parser[Token] = integer_body ~ opt(number_fract) ~ opt(number_exp) ^^
@@ -160,7 +185,8 @@ object TOML
 
     private object T
     {
-      def unapply(table: List[(List[Key], V)]): Option[T] = {
+      def unapply(table: List[(List[Key], V)]): Option[T] =
+      {
         val by_first_key = table.foldLeft(ListMap.empty[Key, List[(List[Key], V)]]) {
           case (map, (k :: ks, v)) => map.updatedWith(k) {
             case Some(value) => Some(value :+ (ks, v))
@@ -182,10 +208,15 @@ object TOML
 
 
     def $$$(name: String): Parser[Token] = elem(name, _.is_keyword(name))
+
     def ident: Parser[String] = elem("ident", _.is_ident) ^^ (_.text)
+
     def string: Parser[String] = elem("string", _.is_string) ^^ (_.text)
+
     def date: Parser[LocalDate] = elem("date", _.is_date) ^^ (tok => LocalDate.parse(tok.text))
+
     def integer: Parser[Int] = elem("integer", _.is_integer) ^^ (tok => tok.text.toInt)
+
     def float: Parser[Double] = elem("float", _.is_float) ^^ (tok => tok.text.toDouble)
 
     def boolean: Parser[Boolean] = $$$("false") ^^^ false | $$$("true") ^^^ true
@@ -196,7 +227,9 @@ object TOML
     /* inline values */
 
     def inline_array: Parser[V] = $$$("[") ~>! rep(toml_value <~ $$$(",")) <~ $$$("]")
+
     def inline_table: Parser[V] = $$$("{") ~>! (content ^? to_map) <~ $$$("}")
+
     def toml_value: Parser[V] = date | integer | float | string | boolean | inline_array | inline_table
 
     /* non-inline arrays */
@@ -229,9 +262,10 @@ object TOML
               }
               case None => k2 -> v2
             }
-          }
+        }
         Some(map1.filter { case (k, _) => !map2.contains(k) } ++ res2)
       }
+
       def unapply(maps: List[T]): Option[T] = Some(maps.fold(Map.empty)(merge(_, _).getOrElse(return None)))
     }
 
@@ -268,7 +302,7 @@ object TOML
 
       def key(k: Key): Unit =
       {
-        val Bare_Key = """[A-Za-z0-9_-].+""".r
+        val Bare_Key = """[A-Za-z0-9_-]+""".r
         k match {
           case Bare_Key() => result ++= k
           case _ =>
@@ -296,7 +330,7 @@ object TOML
             case '\n' => "\\n"
             case '\f' => "\\f"
             case '\r' => "\\r"
-            case '"'  => "\\\""
+            case '"' => "\\\""
             case '\\' => "\\\\"
             case c =>
               if (c <= '\u001f' || c == '\u007f') "\\u%04x".format(c.toInt)
@@ -315,7 +349,7 @@ object TOML
             case '\n' => "\n"
             case '\f' => "\\f"
             case '\r' => "\r"
-            case '"'  => "\\\""
+            case '"' => "\\\""
             case '\\' => "\\\\"
             case c =>
               if (c <= '\u001f' || c == '\u007f') "\\u%04x".format(c.toInt)
