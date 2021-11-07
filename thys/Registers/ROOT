@@ -1,0 +1,13 @@
+chapter AFP
+
+session Registers (AFP) = Complex_Bounded_Operators +
+  options [timeout = 1200]
+  theories
+    Laws_Complement
+    Classical_Extra
+    Teleport
+    Laws_Complement_Quantum
+    Pure_States
+  document_files 
+    root.tex
+    root.bib
