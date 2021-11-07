@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Complex Bounded Operators - Archive of Formal Proofs
+<title>Quantum and Classical Registers - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,13 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>omplex
+  <h1>          <font class="first">Q</font>uantum
   
-          <font class="first">B</font>ounded
+          and
   
-          <font class="first">O</font>perators
+          <font class="first">C</font>lassical
+  
+          <font class="first">R</font>egisters
   
 </h1>
   <p>&nbsp;</p>
@@ -87,16 +89,15 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Complex Bounded Operators</td>
+  <td class="data" width="80%">Quantum and Classical Registers</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    <a href="https://josephcmac.github.io/">Jose Manuel Rodriguez Caballero</a> and
-          <a href="https://www.ut.ee/~unruh/">Dominique Unruh</a>
+              <a href="https://www.ut.ee/~unruh/">Dominique Unruh</a>
       </td>
 </tr>
 
@@ -104,37 +105,32 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-18</td>
+  <td class="data">2021-10-28</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We present a formalization of bounded operators on complex vector
-spaces.  Our formalization contains material on complex vector spaces
-(normed spaces, Banach spaces, Hilbert spaces) that complements and
-goes beyond the developments of real vectors spaces in the
-Isabelle/HOL standard library.  We define the type of bounded
-operators between complex vector spaces
-(<em>cblinfun</em>) and develop the theory of unitaries,
-projectors, extension of bounded linear functions (BLT theorem),
-adjoints, Loewner order, closed subspaces and more.  For the
-finite-dimensional case, we provide code generation support by
-identifying finite-dimensional operators with matrices as formalized
-in the <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a> AFP entry.</td>
+A formalization of the theory of quantum and classical registers as
+developed by (Unruh, Quantum and Classical Registers). In a nutshell,
+a register refers to a part of a larger memory or system that can be
+accessed independently.  Registers can be constructed from other
+registers and several (compatible) registers can be composed. This
+formalization develops both the generic theory of registers as well as
+specific instantiations for classical and quantum registers.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Complex_Bounded_Operators-AFP,
-  author  = {Jose Manuel Rodriguez Caballero and Dominique Unruh},
-  title   = {Complex Bounded Operators},
+        <pre>@article{Registers-AFP,
+  author  = {Dominique Unruh},
+  title   = {Quantum and Classical Registers},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = oct,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Complex_Bounded_Operators.html},
+  note    = {\url{https://isa-afp.org/entries/Registers.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -146,11 +142,9 @@ in the <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a> AFP entry.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Banach_Steinhaus.html">Banach_Steinhaus</a>, <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a>, <a href="Real_Impl.html">Real_Impl</a>      </td></tr>
+          <td class="data"><a href="Complex_Bounded_Operators.html">Complex_Bounded_Operators</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Registers.html">Registers</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -162,17 +156,17 @@ in the <a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a> AFP entry.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Complex_Bounded_Operators/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Complex_Bounded_Operators/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Registers/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Registers/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Complex_Bounded_Operators/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Registers/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Complex_Bounded_Operators-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Registers-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

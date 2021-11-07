@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>19 Oct 2021 00:00:00 +0000</pubDate>
+    <pubDate>28 Oct 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Quantum and Classical Registers</title>
+              <link>https://www.isa-afp.org/entries/Registers.html</link>
+       <guid>https://www.isa-afp.org/entries/Registers.html</guid>
+       <dc:creator> Dominique Unruh       </dc:creator>
+       <pubDate>28 Oct 2021 00:00:00 +0000</pubDate>
+       <description>
+A formalization of the theory of quantum and classical registers as
+developed by (Unruh, Quantum and Classical Registers). In a nutshell,
+a register refers to a part of a larger memory or system that can be
+accessed independently.  Registers can be constructed from other
+registers and several (compatible) registers can be composed. This
+formalization develops both the generic theory of registers as well as
+specific instantiations for classical and quantum registers.</description>
+    </item>
     <item>
        <title>Belief Revision Theory</title>
               <link>https://www.isa-afp.org/entries/Belief_Revision.html</link>
@@ -376,94 +391,6 @@ infinite type, as well as executable instantiations for natural
 numbers and strings.</description>
     </item>
     <item>
-       <title>CoSMed: A confidentiality-verified social media platform</title>
-              <link>https://www.isa-afp.org/entries/CoSMed.html</link>
-       <guid>https://www.isa-afp.org/entries/CoSMed.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the confidentiality verification of the
-(functional kernel of) the CoSMed  social media platform. The
-confidentiality properties are formalized as instances of BD Security
-[&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;1&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;2&lt;/a&gt;].
-An innovation in the deployment of BD Security compared to previous
-work is the use of dynamic declassification triggers, incorporated as
-part of inductive bounds, for providing stronger guarantees that
-account for the repeated opening and closing of access windows. To
-further strengthen the confidentiality guarantees, we also prove
-&#34;traceback&#34; properties about the accessibility decisions
-affecting the information managed by the system.</description>
-    </item>
-    <item>
-       <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
-              <link>https://www.isa-afp.org/entries/CoSMeDis.html</link>
-       <guid>https://www.isa-afp.org/entries/CoSMeDis.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the confidentiality verification of the
-(functional kernel of) the CoSMeDis  distributed social media platform
-presented in [&lt;a href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;1&lt;/a&gt;].
-CoSMeDis is a multi-node extension the CoSMed prototype social media
-platform [&lt;a href=&#34;https://doi.org/10.1007/978-3-319-43144-4_6&#34;&gt;2&lt;/a&gt;,
-&lt;a href=&#34;https://doi.org/10.1007/s10817-017-9443-3&#34;&gt;3&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/CoSMed.html&#34;&gt;4&lt;/a&gt;].
-The confidentiality properties are formalized as instances of BD
-Security [&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;5&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;6&lt;/a&gt;].
-The lifting of confidentiality properties from single nodes to the
-entire CoSMeDis network is performed using compositionality and
-transport theorems for BD Security, which are described in [&lt;a
-href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;1&lt;/a&gt;]
-and formalized in a separate &lt;a
-href=&#34;https://www.isa-afp.org/entries/BD_Security_Compositional.html&#34;&gt;AFP
-entry&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>CoCon: A Confidentiality-Verified Conference Management System</title>
-              <link>https://www.isa-afp.org/entries/CoCon.html</link>
-       <guid>https://www.isa-afp.org/entries/CoCon.html</guid>
-       <dc:creator> Andrei Popescu, Peter Lammich, Thomas Bauereiss       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the confidentiality verification of the
-(functional kernel of) the CoCon conference management system [&lt;a
-href=&#34;https://doi.org/10.1007/978-3-319-08867-9_11&#34;&gt;1&lt;/a&gt;,
-&lt;a href=&#34;https://doi.org/10.1007/s10817-020-09566-9&#34;&gt;2&lt;/a&gt;].
-The confidentiality properties refer to the documents managed by the
-system, namely papers, reviews, discussion logs and
-acceptance/rejection decisions, and also to the assignment of
-reviewers to papers. They have all been formulated as instances of BD
-Security [&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;3&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;4&lt;/a&gt;]
-and verified using the BD Security unwinding technique.</description>
-    </item>
-    <item>
-       <title>Compositional BD Security</title>
-              <link>https://www.isa-afp.org/entries/BD_Security_Compositional.html</link>
-       <guid>https://www.isa-afp.org/entries/BD_Security_Compositional.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-Building on a previous &lt;a
-href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;AFP
-entry&lt;/a&gt; that formalizes the Bounded-Deducibility Security (BD
-Security) framework &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
-we formalize compositionality and transport theorems for information
-flow security. These results allow lifting BD Security properties from
-individual components specified as transition systems, to a
-composition of systems specified as communicating products of
-transition systems. The underlying ideas of these results are
-presented in the papers &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;
-and &lt;a href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;[2]&lt;/a&gt;.
-The latter paper also describes a major case study where these results
-have been used: on verifying the CoSMeDis distributed social media
-platform (itself formalized as an &lt;a
-href=&#34;https://www.isa-afp.org/entries/CoSMeDis.html&#34;&gt;AFP
-entry&lt;/a&gt; that builds on this entry).</description>
-    </item>
-    <item>
        <title>Combinatorial Design Theory</title>
               <link>https://www.isa-afp.org/entries/Design_Theory.html</link>
        <guid>https://www.isa-afp.org/entries/Design_Theory.html</guid>
@@ -585,6 +512,53 @@ to capture the key and novel features of Sail in terms of their
 syntax, typing rules and operational semantics, and to confirm that
 they work together by proving progress and preservation lemmas. We use
 the Nominal2 library to handle binding.</description>
+    </item>
+    <item>
+       <title>Public Announcement Logic</title>
+              <link>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>17 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of public announcement logic with
+countably many agents. It includes proofs of soundness and
+completeness for a variant of the axiom system PA + DIST! + NEC!. The
+completeness proof builds on the Epistemic Logic theory.</description>
+    </item>
+    <item>
+       <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+              <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP_Compiler.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
+       <description>
+This paper presents a compiler correctness proof for the didactic
+imperative programming language IMP, introduced in Nipkow and
+Klein&#39;s book on formal programming language semantics (version of
+March 2021), whose size is just two thirds of the book&#39;s proof in
+the number of formal text lines. As such, it promises to constitute a
+further enhanced reference for the formal verification of compilers
+meant for larger, real-world programming languages.  The presented
+proof does not depend on language determinism, so that the proposed
+approach can be applied to non-deterministic languages as well. As a
+confirmation, this paper extends IMP with an additional
+non-deterministic choice command, and proves compiler correctness,
+viz. the simulation of compiled code execution by source code, for
+such extended language.</description>
+    </item>
+    <item>
+       <title>Lyndon words</title>
+              <link>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</link>
+       <guid>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</guid>
+       <dc:creator> Štěpán Holub, Štěpán Starosta       </dc:creator>
+       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
+       <description>
+Lyndon words are words lexicographically minimal in their conjugacy
+class. We formalize their basic properties and characterizations, in
+particular the concepts of the longest Lyndon suffix and the Lyndon
+factorization. Most of the work assumes a fixed lexicographical order.
+Nevertheless we also define the smallest relation guaranteeing
+lexicographical minimality of a given word (in its conjugacy class).</description>
     </item>
   </channel>
 </rss>

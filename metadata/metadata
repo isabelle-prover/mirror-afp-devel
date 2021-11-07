@@ -11314,3 +11314,17 @@ abstract =
   modulo function from FDLIBM, the GLIBC strlen function and the
   CoreUtils SHA256 implementation.
 
+[Registers]
+title = Quantum and Classical Registers
+author = Dominique Unruh <https://www.ut.ee/~unruh/>
+topic = Computer science/Algorithms/Quantum computing, Computer science/Programming languages/Logics, Computer science/Semantics
+date = 2021-10-28
+notify = unruh@ut.ee
+abstract = 
+  A formalization of the theory of quantum and classical registers as
+  developed by (Unruh, Quantum and Classical Registers). In a nutshell,
+  a register refers to a part of a larger memory or system that can be
+  accessed independently.  Registers can be constructed from other
+  registers and several (compatible) registers can be composed. This
+  formalization develops both the generic theory of registers as well as
+  specific instantiations for classical and quantum registers.
