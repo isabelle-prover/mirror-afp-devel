@@ -28,8 +28,8 @@ subsection\<open>Dagger category\<close>
 
 named_theorems dag_field_simps
 
-named_theorems catdag_cs_simps
-named_theorems catdag_cs_intros
+named_theorems dagcat_cs_simps
+named_theorems dagcat_cs_intros
 
 definition DagCat :: V where [dag_field_simps]: "DagCat = 0"
 definition DagDag :: V where [dag_field_simps]: "DagDag = 1\<^sub>\<nat>"
@@ -54,20 +54,20 @@ locale dagger_category =
   DagCat: category \<alpha> \<open>\<CC>\<lparr>DagCat\<rparr>\<close> +
   DagDag: is_functor \<alpha> \<open>op_cat (\<CC>\<lparr>DagCat\<rparr>)\<close> \<open>\<CC>\<lparr>DagCat\<rparr>\<close> \<open>\<dagger>\<^sub>C \<CC>\<close> 
   for \<alpha> \<CC> +
-  assumes catdag_length: "vcard \<CC> = 2\<^sub>\<nat>"
-    and catdag_ObjMap_identity[catdag_cs_simps]: 
+  assumes dagcat_length: "vcard \<CC> = 2\<^sub>\<nat>"
+    and dagcat_ObjMap_identity[dagcat_cs_simps]: 
       "a \<in>\<^sub>\<circ> \<CC>\<lparr>DagCat\<rparr>\<lparr>Obj\<rparr> \<Longrightarrow> (\<dagger>\<^sub>C \<CC>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = a"
-    and catdag_DagCat_idem[catdag_cs_simps]: 
+    and dagcat_DagCat_idem[dagcat_cs_simps]: 
       "\<dagger>\<^sub>C \<CC> \<^sub>C\<^sub>F\<circ> \<dagger>\<^sub>C \<CC> = cf_id (\<CC>\<lparr>DagCat\<rparr>)"
 
-lemmas [catdag_cs_simps] =
-  dagger_category.catdag_ObjMap_identity
-  dagger_category.catdag_DagCat_idem
+lemmas [dagcat_cs_simps] =
+  dagger_category.dagcat_ObjMap_identity
+  dagger_category.dagcat_DagCat_idem
 
 
 text\<open>Rules.\<close>
 
-lemma (in dagger_category) dagger_category_axioms'[cat_cs_intros]:
+lemma (in dagger_category) dagger_category_axioms'[dagcat_cs_intros]:
   assumes "\<alpha>' = \<alpha>"
   shows "dagger_category \<alpha>' \<CC>"
   unfolding assms by (rule dagger_category_axioms)
@@ -77,17 +77,17 @@ mk_ide rf dagger_category_def[unfolded dagger_category_axioms_def]
   |dest dagger_categoryD[dest]|
   |elim dagger_categoryE[elim]|
 
-lemma category_if_dagger_category[catdag_cs_intros]:
+lemma category_if_dagger_category[dagcat_cs_intros]:
   assumes "\<CC>' = (\<CC>\<lparr>DagCat\<rparr>)" and "dagger_category \<alpha> \<CC>"
   shows "category \<alpha> \<CC>'"
   unfolding assms(1) using assms(2) by (rule dagger_categoryD(3))
 
-lemma (in dagger_category) catdag_is_functor'[catdag_cs_intros]:
+lemma (in dagger_category) dagcat_is_functor'[dagcat_cs_intros]:
   assumes "\<AA>' = op_cat (\<CC>\<lparr>DagCat\<rparr>)" and "\<BB>' = \<CC>\<lparr>DagCat\<rparr>"
   shows "\<dagger>\<^sub>C \<CC> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
   unfolding assms by (rule DagDag.is_functor_axioms)
 
-lemmas [catdag_cs_intros] = dagger_category.catdag_is_functor'
+lemmas [dagcat_cs_intros] = dagger_category.dagcat_is_functor'
 
 
 
@@ -118,7 +118,7 @@ lemma dagcat_Rel_components:
 
 subsubsection\<open>\<open>Rel\<close> is a dagger category\<close>
 
-lemma (in \<Z>) "dagger_category \<alpha> (dagcat_Rel \<alpha>)"
+lemma (in \<Z>) dagger_category_dagcat_Rel: "dagger_category \<alpha> (dagcat_Rel \<alpha>)"
 proof(intro dagger_categoryI)
   show "category \<alpha> (dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>)" 
     by (cs_concl cs_simp: dagcat_Rel_components cs_intro: cat_Rel_cs_intros)
@@ -214,7 +214,7 @@ lemmas [mcat_cs_simps] = monoidal_category.mcat_triangle
 
 text\<open>Rules.\<close>
 
-lemma (in monoidal_category) monoidal_category_axioms'[cat_cs_intros]:
+lemma (in monoidal_category) monoidal_category_axioms'[mcat_cs_intros]:
   assumes "\<alpha>' = \<alpha>"
   shows "monoidal_category \<alpha>' \<CC>"
   unfolding assms by (rule monoidal_category_axioms)
@@ -583,7 +583,9 @@ lemma (in \<Z>) M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr'[cat_cs_simps]:
   shows 
     "M\<alpha>_Rel_arrow_rl A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_lr A B C = 
       cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>(A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C\<rparr>"
-  using assms unfolding cat_Set_components(1) by (rule M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr)
+  using assms 
+  unfolding cat_Set_components(1) 
+  by (rule M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr)
 
 lemmas [cat_cs_simps] = \<Z>.M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr'
 
@@ -1467,7 +1469,7 @@ lemma (in \<Z>) Ml_Rel_is_iso_ntcf'[cat_cs_intros]:
     and "\<AA>' = cat_Rel \<alpha>"
     and "\<BB>' = cat_Rel \<alpha>"
     and "\<alpha>' = \<alpha>"
-  shows "Ml_Rel (cat_Rel \<alpha>) a : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  shows "Ml_Rel (cat_Rel \<alpha>) a : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<BB>'"
   using assms(1) unfolding assms(2-6) by (rule Ml_Rel_is_iso_ntcf)
 
 lemmas [cat_cs_intros] = \<Z>.Ml_Rel_is_iso_ntcf'
@@ -1649,7 +1651,7 @@ lemma (in \<Z>) Mr_Rel_is_iso_ntcf'[cat_cs_intros]:
     and "\<AA>' = cat_Rel \<alpha>"
     and "\<BB>' = cat_Rel \<alpha>"
     and "\<alpha>' = \<alpha>"
-  shows "Mr_Rel (cat_Rel \<alpha>) b : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
+  shows "Mr_Rel (cat_Rel \<alpha>) b : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<BB>'"
   using assms(1) unfolding assms(2-6) by (rule Mr_Rel_is_iso_ntcf)
 
 lemmas [cat_cs_intros] = \<Z>.Mr_Rel_is_iso_ntcf'
@@ -1695,7 +1697,7 @@ lemma mcat_Rel_components:
 
 subsubsection\<open>\<open>Rel\<close> is a monoidal category\<close>
 
-lemma (in \<Z>) 
+lemma (in \<Z>) monoidal_category_mcat_Rel:
   assumes "a \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
   shows "monoidal_category \<alpha> (mcat_Rel \<alpha> a)"
 proof-
@@ -1983,6 +1985,361 @@ proof-
   
   qed auto
 
+qed
+
+
+
+subsection\<open>Dagger monoidal categories\<close>
+
+
+subsubsection\<open>Background\<close>
+
+
+text\<open>See \cite{coecke_survey_2010} for further information.\<close>
+
+
+named_theorems dmcat_field_simps
+
+named_theorems dmcat_cs_simps
+named_theorems dmcat_cs_intros
+
+definition DMcat :: V where [dmcat_field_simps]: "DMcat = 0"
+definition DMdag :: V where [dmcat_field_simps]: "DMdag = 1\<^sub>\<nat>"
+definition DMcf :: V where [dmcat_field_simps]: "DMcf = 2\<^sub>\<nat>"
+definition DMe :: V where [dmcat_field_simps]: "DMe = 3\<^sub>\<nat>"
+definition DM\<alpha> :: V where [dmcat_field_simps]: "DM\<alpha> = 4\<^sub>\<nat>"
+definition DMl :: V where [dmcat_field_simps]: "DMl = 5\<^sub>\<nat>"
+definition DMr :: V where [dmcat_field_simps]: "DMr = 6\<^sub>\<nat>"
+
+abbreviation DMDag_app :: "V \<Rightarrow> V" (\<open>\<dagger>\<^sub>M\<^sub>C\<close>)
+  where "\<dagger>\<^sub>M\<^sub>C \<CC> \<equiv> \<CC>\<lparr>DMdag\<rparr>"
+
+
+subsubsection\<open>Slicing\<close>
+
+
+text\<open>Dagger category.\<close>
+
+definition dmcat_dagcat :: "V \<Rightarrow> V"
+  where "dmcat_dagcat \<CC> = [\<CC>\<lparr>DMcat\<rparr>, \<CC>\<lparr>DMdag\<rparr>]\<^sub>\<circ>"
+
+lemma dmcat_dagcat_components[slicing_simps]:
+  shows "dmcat_dagcat \<CC>\<lparr>DagCat\<rparr> = \<CC>\<lparr>DMcat\<rparr>"
+    and "dmcat_dagcat \<CC>\<lparr>DagDag\<rparr> = \<CC>\<lparr>DMdag\<rparr>"
+  unfolding dmcat_dagcat_def dmcat_field_simps dag_field_simps 
+  by (auto simp: nat_omega_simps)
+
+
+text\<open>Monoidal category.\<close>
+
+definition dmcat_mcat :: "V \<Rightarrow> V"
+  where "dmcat_mcat \<CC> = [\<CC>\<lparr>DMcat\<rparr>, \<CC>\<lparr>DMcf\<rparr>, \<CC>\<lparr>DMe\<rparr>, \<CC>\<lparr>DM\<alpha>\<rparr>, \<CC>\<lparr>DMl\<rparr>, \<CC>\<lparr>DMr\<rparr>]\<^sub>\<circ>"
+
+lemma dmcat_mcat_components[slicing_simps]:
+  shows "dmcat_mcat \<CC>\<lparr>Mcat\<rparr> = \<CC>\<lparr>DMcat\<rparr>"
+    and "dmcat_mcat \<CC>\<lparr>Mcf\<rparr> = \<CC>\<lparr>DMcf\<rparr>"
+    and "dmcat_mcat \<CC>\<lparr>Me\<rparr> = \<CC>\<lparr>DMe\<rparr>"
+    and "dmcat_mcat \<CC>\<lparr>M\<alpha>\<rparr> = \<CC>\<lparr>DM\<alpha>\<rparr>"
+    and "dmcat_mcat \<CC>\<lparr>Ml\<rparr> = \<CC>\<lparr>DMl\<rparr>"
+    and "dmcat_mcat \<CC>\<lparr>Mr\<rparr> = \<CC>\<lparr>DMr\<rparr>"
+  unfolding dmcat_mcat_def dmcat_field_simps mcat_field_simps 
+  by (auto simp: nat_omega_simps)
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+locale dagger_monoidal_category = \<Z> \<alpha> + vfsequence \<CC> for \<alpha> \<CC> + 
+  assumes dmcat_length[dmcat_cs_simps]: "vcard \<CC> = 7\<^sub>\<nat>"
+    and dmcat_dagger_category: "dagger_category \<alpha> (dmcat_dagcat \<CC>)"
+    and dmcat_monoidal_category: "monoidal_category \<alpha> (dmcat_mcat \<CC>)"
+    and dmcat_compatibility:
+      "\<lbrakk> g : c \<mapsto>\<^bsub>\<CC>\<lparr>DMcat\<rparr>\<^esub> d; f : a \<mapsto>\<^bsub>\<CC>\<lparr>DMcat\<rparr>\<^esub> b \<rbrakk> \<Longrightarrow>
+        \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>g \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<^bsub>\<CC>\<lparr>DMcf\<rparr>\<^esub> f\<rparr> =
+          \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<^bsub>\<CC>\<lparr>DMcf\<rparr>\<^esub> \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+    and dmcat_M\<alpha>_unital: "A \<in>\<^sub>\<circ> (\<CC>\<lparr>DMcat\<rparr>^\<^sub>C\<^sub>3)\<lparr>Obj\<rparr> \<Longrightarrow>
+      \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>DM\<alpha>\<rparr>\<lparr>NTMap\<rparr>\<lparr>A\<rparr>\<rparr> = (\<CC>\<lparr>DM\<alpha>\<rparr>\<lparr>NTMap\<rparr>\<lparr>A\<rparr>)\<inverse>\<^sub>C\<^bsub>\<CC>\<lparr>DMcat\<rparr>\<^esub>"
+    and dmcat_Ml_unital: "a \<in>\<^sub>\<circ> \<CC>\<lparr>DMcat\<rparr>\<lparr>Obj\<rparr> \<Longrightarrow>
+      \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>DMl\<rparr>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>\<rparr> = (\<CC>\<lparr>DMl\<rparr>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)\<inverse>\<^sub>C\<^bsub>\<CC>\<lparr>DMcat\<rparr>\<^esub>"
+    and dmcat_Mr_unital: "a \<in>\<^sub>\<circ> \<CC>\<lparr>DMcat\<rparr>\<lparr>Obj\<rparr> \<Longrightarrow>
+      \<dagger>\<^sub>M\<^sub>C \<CC>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>DMr\<rparr>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>\<rparr> = (\<CC>\<lparr>DMr\<rparr>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)\<inverse>\<^sub>C\<^bsub>\<CC>\<lparr>DMcat\<rparr>\<^esub>"
+
+
+text\<open>Rules.\<close>
+
+lemma (in dagger_monoidal_category) 
+  dagger_monoidal_category_axioms'[dmcat_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+  shows "dagger_monoidal_category \<alpha>' \<CC>"
+  unfolding assms by (rule dagger_monoidal_category_axioms)
+
+mk_ide rf 
+  dagger_monoidal_category_def[unfolded dagger_monoidal_category_axioms_def]
+  |intro dagger_monoidal_categoryI[intro]|
+  |dest dagger_monoidal_categoryD[dest]|
+  |elim dagger_monoidal_categoryE[elim]|
+
+
+text\<open>Elementary properties.\<close>
+
+lemma dmcat_eqI:
+  assumes "dagger_monoidal_category \<alpha> \<AA>" 
+    and "dagger_monoidal_category \<alpha> \<BB>"
+    and "\<AA>\<lparr>DMcat\<rparr> = \<BB>\<lparr>DMcat\<rparr>"
+    and "\<AA>\<lparr>DMdag\<rparr> = \<BB>\<lparr>DMdag\<rparr>"
+    and "\<AA>\<lparr>DMcf\<rparr> = \<BB>\<lparr>DMcf\<rparr>"
+    and "\<AA>\<lparr>DMe\<rparr> = \<BB>\<lparr>DMe\<rparr>"
+    and "\<AA>\<lparr>DM\<alpha>\<rparr> = \<BB>\<lparr>DM\<alpha>\<rparr>"
+    and "\<AA>\<lparr>DMl\<rparr> = \<BB>\<lparr>DMl\<rparr>"
+    and "\<AA>\<lparr>DMr\<rparr> = \<BB>\<lparr>DMr\<rparr>"
+  shows "\<AA> = \<BB>"
+proof-
+  interpret \<AA>: dagger_monoidal_category \<alpha> \<AA> by (rule assms(1))
+  interpret \<BB>: dagger_monoidal_category \<alpha> \<BB> by (rule assms(2))
+  show ?thesis
+  proof(rule vsv_eqI)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 7\<^sub>\<nat>" by (cs_concl cs_simp: dmcat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: dmcat_cs_simps V_cs_simps)
+    show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
+      by (unfold dom, elim_in_numeral, insert assms) 
+        (auto simp: dmcat_field_simps)
+  qed auto
+qed
+
+
+text\<open>Slicing.\<close>
+
+context dagger_monoidal_category
+begin
+
+interpretation dagcat: dagger_category \<alpha> \<open>dmcat_dagcat \<CC>\<close> 
+  by (rule dmcat_dagger_category)
+
+sublocale DMCat: category \<alpha> \<open>\<CC>\<lparr>DMcat\<rparr>\<close>
+  by (rule dagcat.DagCat.category_axioms[unfolded slicing_simps])
+
+sublocale DMDag: is_functor \<alpha> \<open>op_cat (\<CC>\<lparr>DMcat\<rparr>)\<close> \<open>\<CC>\<lparr>DMcat\<rparr>\<close> \<open>\<dagger>\<^sub>M\<^sub>C \<CC>\<close>
+  by (rule dagcat.DagDag.is_functor_axioms[unfolded slicing_simps])
+
+lemmas_with [unfolded slicing_simps]:
+  dmcat_Dom_vdomain[dmcat_cs_simps] = dagcat.dagcat_ObjMap_identity
+  and dmcat_DagCat_idem[dmcat_cs_simps] = dagcat.dagcat_DagCat_idem
+  and dmcat_is_functor'[dmcat_cs_intros] = dagcat.dagcat_is_functor'
+
+end
+
+lemmas [dmcat_cs_simps] =
+  dagger_monoidal_category.dmcat_Dom_vdomain
+  dagger_monoidal_category.dmcat_DagCat_idem
+
+lemmas [dmcat_cs_intros] = dagger_monoidal_category.dmcat_is_functor'
+
+context dagger_monoidal_category
+begin
+
+interpretation mcat: monoidal_category \<alpha> \<open>dmcat_mcat \<CC>\<close> 
+  by (rule dmcat_monoidal_category)
+
+sublocale DMcf: is_functor \<alpha> \<open>\<CC>\<lparr>DMcat\<rparr> \<times>\<^sub>C \<CC>\<lparr>DMcat\<rparr>\<close> \<open>\<CC>\<lparr>DMcat\<rparr>\<close> \<open>\<CC>\<lparr>DMcf\<rparr>\<close>
+  by (rule mcat.Mcf.is_functor_axioms[unfolded slicing_simps])
+
+sublocale DM\<alpha>: is_iso_ntcf
+  \<alpha> \<open>\<CC>\<lparr>DMcat\<rparr>^\<^sub>C\<^sub>3\<close> \<open>\<CC>\<lparr>DMcat\<rparr>\<close> \<open>cf_blcomp (\<CC>\<lparr>DMcf\<rparr>)\<close> \<open>cf_brcomp (\<CC>\<lparr>DMcf\<rparr>)\<close> \<open>\<CC>\<lparr>DM\<alpha>\<rparr>\<close>
+  by (rule mcat.M\<alpha>.is_iso_ntcf_axioms[unfolded slicing_simps])
+
+sublocale DMl: is_iso_ntcf
+  \<alpha> 
+  \<open>\<CC>\<lparr>DMcat\<rparr>\<close>
+  \<open>\<CC>\<lparr>DMcat\<rparr>\<close>
+  \<open>\<CC>\<lparr>DMcf\<rparr>\<^bsub>\<CC>\<lparr>DMcat\<rparr>,\<CC>\<lparr>DMcat\<rparr>\<^esub>(\<CC>\<lparr>DMe\<rparr>,-)\<^sub>C\<^sub>F\<close>
+  \<open>cf_id (\<CC>\<lparr>DMcat\<rparr>)\<close>
+  \<open>\<CC>\<lparr>DMl\<rparr>\<close>
+  by (rule mcat.Ml.is_iso_ntcf_axioms[unfolded slicing_simps])
+
+sublocale DMr: is_iso_ntcf
+  \<alpha>
+  \<open>\<CC>\<lparr>DMcat\<rparr>\<close>
+  \<open>\<CC>\<lparr>DMcat\<rparr>\<close>
+  \<open>\<CC>\<lparr>DMcf\<rparr>\<^bsub>\<CC>\<lparr>DMcat\<rparr>,\<CC>\<lparr>DMcat\<rparr>\<^esub>(-,\<CC>\<lparr>DMe\<rparr>)\<^sub>C\<^sub>F\<close>
+  \<open>cf_id (\<CC>\<lparr>DMcat\<rparr>)\<close>
+  \<open>\<CC>\<lparr>DMr\<rparr>\<close>
+  by (rule mcat.Mr.is_iso_ntcf_axioms[unfolded slicing_simps])
+
+lemmas_with [unfolded slicing_simps]:
+  dmcat_Me_is_obj[dmcat_cs_intros] = mcat.mcat_Me_is_obj
+  and dmcat_pentagon = mcat.mcat_pentagon
+  and dmcat_triangle[dmcat_cs_simps] = mcat.mcat_triangle
+  
+end
+
+lemmas [dmcat_cs_intros] = dagger_monoidal_category.dmcat_Me_is_obj
+lemmas [dmcat_cs_simps] = dagger_monoidal_category.dmcat_triangle
+
+
+
+subsection\<open>\<open>Rel\<close> as a dagger monoidal category\<close>
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+definition dmcat_Rel :: "V \<Rightarrow> V \<Rightarrow> V"
+  where "dmcat_Rel \<alpha> a =
+    [
+      cat_Rel \<alpha>,
+      \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>,
+      cf_prod_2_Rel (cat_Rel \<alpha>),
+      set {a},
+      M\<alpha>_Rel (cat_Rel \<alpha>),
+      Ml_Rel (cat_Rel \<alpha>) a,
+      Mr_Rel (cat_Rel \<alpha>) a
+    ]\<^sub>\<circ>"
+
+
+text\<open>Components.\<close>
+
+lemma dmcat_Rel_components:
+  shows "dmcat_Rel \<alpha> a\<lparr>DMcat\<rparr> = cat_Rel \<alpha>"
+    and "dmcat_Rel \<alpha> a\<lparr>DMdag\<rparr> = \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>"
+    and "dmcat_Rel \<alpha> a\<lparr>DMcf\<rparr> = cf_prod_2_Rel (cat_Rel \<alpha>)"
+    and "dmcat_Rel \<alpha> a\<lparr>DMe\<rparr> = set {a}"
+    and "dmcat_Rel \<alpha> a\<lparr>DM\<alpha>\<rparr> = M\<alpha>_Rel (cat_Rel \<alpha>)"
+    and "dmcat_Rel \<alpha> a\<lparr>DMl\<rparr> = Ml_Rel (cat_Rel \<alpha>) a"
+    and "dmcat_Rel \<alpha> a\<lparr>DMr\<rparr> = Mr_Rel (cat_Rel \<alpha>) a"
+  unfolding dmcat_Rel_def dmcat_field_simps by (simp_all add: nat_omega_simps)
+
+
+text\<open>Slicing.\<close>
+
+lemma dmcat_dagcat_dmcat_Rel: "dmcat_dagcat (dmcat_Rel \<alpha> a) = dagcat_Rel \<alpha>"
+proof(rule vsv_eqI)
+  have dom_lhs: "\<D>\<^sub>\<circ> (dmcat_dagcat (dmcat_Rel \<alpha> a)) = 2\<^sub>\<nat>" 
+    unfolding dmcat_dagcat_def by (simp add: nat_omega_simps)
+  have dom_rhs: "\<D>\<^sub>\<circ> (dagcat_Rel \<alpha>) = 2\<^sub>\<nat>"
+    unfolding dagcat_Rel_def by (simp add: nat_omega_simps)
+  show "\<D>\<^sub>\<circ> (dmcat_dagcat (dmcat_Rel \<alpha> a)) = \<D>\<^sub>\<circ> (dagcat_Rel \<alpha>)"
+    unfolding dom_lhs dom_rhs by simp
+  show "A \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (dmcat_dagcat (dmcat_Rel \<alpha> a)) \<Longrightarrow>
+    dmcat_dagcat (dmcat_Rel \<alpha> a)\<lparr>A\<rparr> = dagcat_Rel \<alpha>\<lparr>A\<rparr>"
+    for A
+    by
+      (
+        unfold dom_lhs,
+        elim_in_numeral,
+        unfold dmcat_dagcat_def dmcat_field_simps dmcat_Rel_def dagcat_Rel_def
+      )
+      (auto simp: nat_omega_simps)
+qed (auto simp: dmcat_dagcat_def dagcat_Rel_def)
+
+lemma dmcat_mcat_dmcat_Rel: "dmcat_mcat (dmcat_Rel \<alpha> a) = mcat_Rel \<alpha> a"
+proof(rule vsv_eqI)
+  have dom_lhs: "\<D>\<^sub>\<circ> (dmcat_mcat (dmcat_Rel \<alpha> a)) = 6\<^sub>\<nat>" 
+    unfolding dmcat_mcat_def by (simp add: nat_omega_simps)
+  have dom_rhs: "\<D>\<^sub>\<circ> (mcat_Rel \<alpha> a) = 6\<^sub>\<nat>"
+    unfolding mcat_Rel_def by (simp add: nat_omega_simps)
+  show "\<D>\<^sub>\<circ> (dmcat_mcat (dmcat_Rel \<alpha> a)) = \<D>\<^sub>\<circ> (mcat_Rel \<alpha> a)"
+    unfolding dom_lhs dom_rhs by simp
+  show "A \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (dmcat_mcat (dmcat_Rel \<alpha> a)) \<Longrightarrow>
+    dmcat_mcat (dmcat_Rel \<alpha> a)\<lparr>A\<rparr> = mcat_Rel \<alpha> a\<lparr>A\<rparr>"
+    for A
+    by
+      (
+        unfold dom_lhs,
+        elim_in_numeral,
+        unfold dmcat_mcat_def dmcat_field_simps dmcat_Rel_def mcat_Rel_def
+      )
+      (auto simp: nat_omega_simps)
+qed (auto simp: dmcat_mcat_def mcat_Rel_def)
+
+
+subsubsection\<open>\<open>Rel\<close> is a dagger monoidal category\<close>
+
+lemma (in \<Z>) dagger_monoidal_category_dmcat_Rel:
+  assumes "A \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
+  shows "dagger_monoidal_category \<alpha> (dmcat_Rel \<alpha> A)"
+proof-
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule category_cat_Rel)
+  interpret dag_Rel: is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
+    by (rule cf_dag_Rel_is_iso_functor)
+  show ?thesis
+  proof(rule dagger_monoidal_categoryI)
+    show "\<Z> \<alpha>" by auto
+    show "vfsequence (dmcat_Rel \<alpha> A)" unfolding dmcat_Rel_def by simp
+    show "vcard (dmcat_Rel \<alpha> A) = 7\<^sub>\<nat>"
+      unfolding dmcat_Rel_def by (simp add: nat_omega_simps)
+    show "dagger_category \<alpha> (dmcat_dagcat (dmcat_Rel \<alpha> A))"
+      unfolding dmcat_dagcat_dmcat_Rel by (rule dagger_category_dagcat_Rel)
+    show "monoidal_category \<alpha> (dmcat_mcat (dmcat_Rel \<alpha> A))"
+      unfolding dmcat_mcat_dmcat_Rel by (intro monoidal_category_mcat_Rel assms)
+    show
+      "\<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>g \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcf\<rparr>\<^esub> f\<rparr> =
+        \<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcf\<rparr>\<^esub>
+          \<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+      if "g : c \<mapsto>\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<^esub> d" and "f : a \<mapsto>\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<^esub> b"
+      for c d g a b f
+      using that
+      unfolding dmcat_Rel_components
+      by
+        (
+          cs_concl
+            cs_simp: cf_dag_Rel_ArrMap_app_prod_2_Rel cat_cs_simps cat_op_simps
+            cs_intro: cat_cs_intros cat_prod_cs_intros cat_op_intros
+        )
+    show
+      "\<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>dmcat_Rel \<alpha> A\<lparr>DM\<alpha>\<rparr>\<lparr>NTMap\<rparr>\<lparr>BCD\<rparr>\<rparr> =
+        (dmcat_Rel \<alpha> A\<lparr>DM\<alpha>\<rparr>\<lparr>NTMap\<rparr>\<lparr>BCD\<rparr>)\<inverse>\<^sub>C\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<^esub>"
+      if "BCD \<in>\<^sub>\<circ> (dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>^\<^sub>C\<^sub>3)\<lparr>Obj\<rparr>" for BCD
+    proof-
+      from that obtain B C D 
+        where BCD_def: "BCD = [B, C, D]\<^sub>\<circ>"
+          and B: "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
+          and C: "C \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
+          and D: "D \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
+        unfolding dmcat_Rel_components
+        by 
+          (
+            elim cat_prod_3_ObjE
+              [
+                unfolded dmcat_Rel_components, 
+                OF Rel.category_axioms Rel.category_axioms Rel.category_axioms
+              ]
+          )
+      from B C D show ?thesis
+        unfolding dmcat_Rel_components BCD_def
+        by
+          (
+            cs_concl
+              cs_simp: cat_Rel_cs_simps cat_cs_simps
+              cs_intro: 
+                cat_Rel_is_arrD
+                cat_cs_intros
+                cat_Rel_par_set_cs_intros
+                cat_prod_cs_intros
+          )
+    qed
+    show
+      "\<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>dmcat_Rel \<alpha> A\<lparr>DMl\<rparr>\<lparr>NTMap\<rparr>\<lparr>B\<rparr>\<rparr> =
+        (dmcat_Rel \<alpha> A\<lparr>DMl\<rparr>\<lparr>NTMap\<rparr>\<lparr>B\<rparr>)\<inverse>\<^sub>C\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<^esub>"
+      if "B \<in>\<^sub>\<circ> dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<lparr>Obj\<rparr>" for B
+      using assms that 
+      unfolding dmcat_Rel_components
+      by
+        (
+          cs_concl
+            cs_simp: cat_Rel_cs_simps
+            cs_intro: cat_Rel_is_arrD cat_cs_intros cat_arrow_cs_intros
+        )+
+    show
+      "\<dagger>\<^sub>M\<^sub>C (dmcat_Rel \<alpha> A)\<lparr>ArrMap\<rparr>\<lparr>dmcat_Rel \<alpha> A\<lparr>DMr\<rparr>\<lparr>NTMap\<rparr>\<lparr>B\<rparr>\<rparr> =
+        (dmcat_Rel \<alpha> A\<lparr>DMr\<rparr>\<lparr>NTMap\<rparr>\<lparr>B\<rparr>)\<inverse>\<^sub>C\<^bsub>dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<^esub>"
+      if "B \<in>\<^sub>\<circ> dmcat_Rel \<alpha> A\<lparr>DMcat\<rparr>\<lparr>Obj\<rparr>" for B
+      using assms that
+      unfolding dmcat_Rel_components
+      by
+        (
+          cs_concl
+            cs_simp: cat_Rel_cs_simps
+            cs_intro: cat_Rel_is_arrD cat_cs_intros cat_arrow_cs_intros
+        )+
+  qed
 qed
 
 text\<open>\newpage\<close>

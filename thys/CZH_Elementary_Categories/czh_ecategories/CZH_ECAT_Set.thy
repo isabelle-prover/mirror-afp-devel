@@ -1620,6 +1620,122 @@ proof-
     )+
 qed
 
+lemma (in \<Z>) cf_dag_Rel_ArrMap_app_prod_2_Rel:
+  assumes "S : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" and "T : C \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> D"
+  shows
+    "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr> =
+      prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)"
+proof-
+
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule category_cat_Rel)
+  interpret dag_Rel: is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
+    by (rule cf_dag_Rel_is_iso_functor)
+
+  note ST = prod_2_Rel_is_cat_Rel_arr[OF assms]
+
+  from assms have dag_S: "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr> : B \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A"
+    and dag_T: "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : D \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> C"
+    by
+      (
+        cs_concl
+          cs_simp: cat_Rel_cs_simps cat_op_simps cs_intro: cat_cs_intros 
+      )+
+  from assms have dag_prod:
+    "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr> : B \<times>\<^sub>\<circ> D \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A \<times>\<^sub>\<circ> C"
+    by
+      (
+        cs_concl
+          cs_simp: cat_Rel_cs_simps cat_op_simps 
+          cs_intro: V_cs_intros cat_cs_intros cat_Rel_par_set_cs_intros 
+      )
+  from dag_S dag_T have prod_dag:
+    "prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>) :
+      B \<times>\<^sub>\<circ> D \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A \<times>\<^sub>\<circ> C" 
+    by (cs_concl cs_intro: cat_Rel_par_set_cs_intros)
+
+  note [cat_cs_simps] = 
+    prod_2_Rel_ArrVal_vdomain prod_2_Rel_ArrVal_vrange prod_2_Rel_components
+  from dag_prod ST have [cat_cs_simps]:
+    "\<D>\<^sub>\<circ> (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<lparr>ArrVal\<rparr>) =
+      \<R>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>) \<times>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+    "\<R>\<^sub>\<circ> (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<lparr>ArrVal\<rparr>) =
+      \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>) \<times>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+    by (cs_concl cs_simp: cat_cs_simps)+
+
+ show
+    "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr> =
+      prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)"
+  proof(rule arr_Rel_eqI)
+    from dag_prod show arr_Rel_dag_prod: 
+      "arr_Rel \<alpha> (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>)"
+      by (auto dest: cat_Rel_is_arrD)
+    then interpret dag_prod: arr_Rel \<alpha> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<close> by simp
+    from prod_dag show arr_Rel_prod_dag:
+      "arr_Rel \<alpha> (prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>))"
+      by (auto dest: cat_Rel_is_arrD)
+    then interpret prod_dag: 
+      arr_Rel \<alpha> \<open>prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)\<close> 
+      by simp
+    from ST have arr_Rel_ST: "arr_Rel \<alpha> (prod_2_Rel S T)" 
+      by (auto dest: cat_Rel_is_arrD)
+    show
+      "\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<lparr>ArrVal\<rparr> =
+        prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)\<lparr>ArrVal\<rparr>"
+    proof(intro vsubset_antisym vsubsetI)
+      fix bd_ac assume prems: "bd_ac \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<lparr>ArrVal\<rparr>"
+      then obtain bd ac 
+        where bd_ac_def: "bd_ac = \<langle>bd, ac\<rangle>" 
+          and bd: "bd \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>) \<times>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)" 
+          and ac: "ac \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>) \<times>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+        by (elim cat_Rel_is_arr_ArrValE[OF dag_prod prems, unfolded cat_cs_simps])
+      have "\<langle>ac, bd\<rangle> \<in>\<^sub>\<circ> prod_2_Rel_ArrVal (S\<lparr>ArrVal\<rparr>) (T\<lparr>ArrVal\<rparr>)"
+        by 
+          (
+            rule prems[
+              unfolded
+                bd_ac_def
+                cf_dag_Rel_ArrMap_app_iff[OF ST] 
+                prod_2_Rel_components
+              ]
+          )
+      then obtain a b c d 
+        where ab: "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>"
+          and cd: "\<langle>c, d\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
+          and bd_def: "bd = \<langle>b, d\<rangle>" 
+          and ac_def: "ac = \<langle>a, c\<rangle>"
+        by auto
+      show "bd_ac \<in>\<^sub>\<circ> prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)\<lparr>ArrVal\<rparr>"
+        unfolding prod_2_Rel_components
+      proof(intro prod_2_Rel_ArrValI)
+        show "bd_ac = \<langle>\<langle>b, d\<rangle>, \<langle>a, c\<rangle>\<rangle>" unfolding bd_ac_def bd_def ac_def by simp
+        from assms ab cd show 
+          "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>\<lparr>ArrVal\<rparr>"
+          "\<langle>d, c\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>"
+          by (cs_concl cs_simp: cat_cs_simps)+
+      qed
+    next
+      fix bd_ac assume prems:
+        "bd_ac \<in>\<^sub>\<circ> prod_2_Rel (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>) (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)\<lparr>ArrVal\<rparr>"
+      then obtain a b c d 
+        where bd_ac_def: "bd_ac = \<langle>\<langle>b, d\<rangle>, a, c\<rangle>"
+          and ba: "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>\<lparr>ArrVal\<rparr>"
+          and dc: "\<langle>d, c\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>"
+        by (elim prod_2_Rel_ArrValE[OF prems[unfolded prod_2_Rel_components]])
+      then have ab: "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>" and cd: "\<langle>c, d\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
+        unfolding assms[THEN cf_dag_Rel_ArrMap_app_iff] by simp_all
+      from ST ab cd show "bd_ac \<in>\<^sub>\<circ> \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>prod_2_Rel S T\<rparr>\<lparr>ArrVal\<rparr>"
+        unfolding bd_ac_def 
+        by
+          (
+            cs_concl
+              cs_simp: prod_2_Rel_components cat_cs_simps 
+              cs_intro: prod_2_Rel_ArrValI cat_cs_intros 
+          )
+    qed
+  qed (use dag_prod prod_dag in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
+
+qed
+
 
 
 subsection\<open>Product functor for \<open>Rel\<close>\<close>

@@ -130,6 +130,7 @@ lemmas_with (in \<Z>) [folded cat_smc_cat_Rel, unfolded slicing_simps]:
   cat_Rel_Hom_vifunion_in_Vset = smc_Rel_Hom_vifunion_in_Vset
   and cat_Rel_incl_Rel_is_arr = smc_Rel_incl_Rel_is_arr
   and cat_Rel_incl_Rel_is_arr'[cat_Rel_cs_intros] = smc_Rel_incl_Rel_is_arr'
+  and cat_Rel_is_arr_ArrValE = smc_Rel_is_arr_ArrValE
   and cat_CAT_Comp_vrange = smc_CAT_Comp_vrange
   and cat_Rel_is_monic_arrI = smc_Rel_is_monic_arrI
   and cat_Rel_is_monic_arrD = smc_Rel_is_monic_arrD
@@ -285,8 +286,18 @@ lemmas_with (in \<Z>) [
   folded cat_smc_cat_Rel cf_smcf_cf_dag_Rel, unfolded slicing_simps
   ]: 
   cf_dag_Rel_app_is_arr[cat_Rel_cs_intros] = smcf_dag_Rel_app_is_arr
+  and cf_dag_Rel_ArrMap_app_vdomain[cat_cs_simps] =
+    smcf_dag_Rel_ArrMap_app_vdomain
+  and cf_dag_Rel_ArrMap_app_vrange[cat_cs_simps] =
+    smcf_dag_Rel_ArrMap_app_vrange
+  and cf_dag_Rel_ArrMap_app_iff[cat_cs_simps] = smcf_dag_Rel_ArrMap_app_iff
   and cf_dag_Rel_ArrMap_smc_Rel_Comp[cat_Rel_cs_simps] = 
     smcf_dag_Rel_ArrMap_smc_Rel_Comp
+
+lemmas [cat_cs_simps] = 
+  \<Z>.cf_dag_Rel_ArrMap_app_vdomain
+  \<Z>.cf_dag_Rel_ArrMap_app_vrange
+  \<Z>.cf_dag_Rel_ArrMap_app_iff
 
 
 subsubsection\<open>Canonical dagger is a contravariant isomorphism of \<open>Rel\<close>\<close>

@@ -119,6 +119,7 @@ lemmas_with (in \<Z>) [folded smc_dg_smc_Rel, unfolded slicing_simps]:
   smc_Rel_Hom_vifunion_in_Vset = dg_Rel_Hom_vifunion_in_Vset
   and smc_Rel_incl_Rel_is_arr = dg_Rel_incl_Rel_is_arr
   and smc_Rel_incl_Rel_is_arr'[smc_Rel_cs_intros] = dg_Rel_incl_Rel_is_arr'
+  and smc_Rel_is_arr_ArrValE = dg_Rel_is_arr_ArrValE
 
 lemmas [smc_Rel_cs_intros] = \<Z>.smc_Rel_incl_Rel_is_arr'
 
@@ -292,6 +293,16 @@ lemmas_with (in \<Z>) [
     folded smc_dg_smc_Rel smcf_dghm_smcf_dag_Rel, unfolded slicing_simps
     ]: 
   smcf_dag_Rel_app_is_arr = dghm_dag_Rel_ArrMap_app_is_arr
+  and smcf_dag_Rel_ArrMap_app_vdomain[smc_cs_simps] = 
+    dghm_dag_Rel_ArrMap_app_vdomain
+  and smcf_dag_Rel_ArrMap_app_vrange[smc_cs_simps] = 
+    dghm_dag_Rel_ArrMap_app_vrange
+  and smcf_dag_Rel_ArrMap_app_iff[smc_cs_simps] = dghm_dag_Rel_ArrMap_app_iff
+
+lemmas [smc_cs_simps] = 
+  \<Z>.smcf_dag_Rel_ArrMap_app_vdomain
+  \<Z>.smcf_dag_Rel_ArrMap_app_vrange
+  \<Z>.smcf_dag_Rel_ArrMap_app_iff
 
 
 subsubsection\<open>Canonical dagger is a contravariant isomorphism of \<open>Rel\<close>\<close>

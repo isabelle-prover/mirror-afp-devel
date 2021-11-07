@@ -600,6 +600,21 @@ lemma (in \<Z>) dg_Rel_incl_Rel_is_arr'[dg_Rel_cs_intros]:
 
 lemmas [dg_Rel_cs_intros] = \<Z>.dg_Rel_incl_Rel_is_arr'
 
+lemma dg_Rel_is_arr_ArrValE:
+  assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B" and "ab \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
+  obtains a b 
+    where "ab = \<langle>a, b\<rangle>" and "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)" and "b \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+proof-
+  note T = dg_Rel_is_arrD[OF assms(1)]
+  then interpret T: arr_Rel \<alpha> T 
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
+    by simp_all
+  from assms(2) obtain a b
+    where "ab = \<langle>a, b\<rangle>" and "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)" and "b \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+    by (blast elim: T.ArrVal.vbrelation_vinE)
+  with that show ?thesis by simp
+qed
+
 
 subsubsection\<open>\<open>Rel\<close> is a digraph\<close>
 
@@ -735,6 +750,54 @@ mk_VLambda dghm_dag_Rel_components(2)
   |vsv dghm_dag_Rel_ArrMap_vsv[dg_Rel_cs_intros]|
   |vdomain dghm_dag_Rel_ArrMap_vdomain[dg_Rel_cs_simps]|
   |app dghm_dag_Rel_ArrMap_app[unfolded dg_Rel_cs_simps, dg_Rel_cs_simps]|
+
+lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_vdomain[dg_cs_simps]:
+  assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B"
+  shows "\<D>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>) = \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+proof-
+  from assms interpret T: arr_Rel \<alpha> T by (simp add: dg_Rel_is_arrD)
+  from dg_Rel_is_arrD(1)[OF assms] show ?thesis
+    by (cs_concl cs_simp: dg_Rel_cs_simps V_cs_simps converse_Rel_components(1))
+qed
+
+lemmas [dg_cs_simps] = \<Z>.dghm_dag_Rel_ArrMap_app_vdomain
+
+lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_vrange[dg_cs_simps]:
+  assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B"
+  shows "\<R>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>) = \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+proof-
+  from assms interpret T: arr_Rel \<alpha> T by (simp add: dg_Rel_is_arrD)
+  from dg_Rel_is_arrD(1)[OF assms] show ?thesis
+    by (cs_concl cs_simp: dg_Rel_cs_simps V_cs_simps converse_Rel_components(1))
+qed
+
+lemmas [dg_cs_simps] = \<Z>.dghm_dag_Rel_ArrMap_app_vrange
+
+lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_iff[dg_cs_simps]:
+  assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B" 
+  shows "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr> \<longleftrightarrow> \<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
+proof-
+  from assms interpret T: arr_Rel \<alpha> T by (simp add: dg_Rel_is_arrD)
+  note T = dg_Rel_is_arrD[OF assms]
+  note [dg_Rel_cs_simps] = converse_Rel_components
+  show ?thesis
+  proof(intro iffI)
+    assume prems: "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>"
+    then have a: "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>)"
+      and b: "b \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>)"
+      by auto
+    with assms have a: "a \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)" and b: "b \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+      by (simp_all add: dg_cs_simps)
+    from prems T(1) have "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>"
+      by (cs_prems cs_simp: dg_Rel_cs_simps)
+    then show "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>" by clarsimp
+  next
+    assume "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
+    then have "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>" by auto
+    with T(1) show "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>"
+      by (cs_concl cs_simp: dg_Rel_cs_simps)
+  qed
+qed
 
 
 subsubsection\<open>Further properties\<close>
