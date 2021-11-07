@@ -45,6 +45,16 @@ lemma [simp, code]: "mat_of_cblinfun pauliX = matrix_pauliX"
   apply (subst cblinfun_of_mat_inverse)
   by (auto)
 
+derive (eq) ceq bit
+
+instantiation bit :: ccompare begin
+definition "CCOMPARE(bit) = Some (\<lambda>b1 b2. case (b1, b2) of (0, 0) \<Rightarrow> order.Eq | (0, 1) \<Rightarrow> order.Lt | (1, 0) \<Rightarrow> order.Gt | (1, 1) \<Rightarrow> order.Eq)"
+instance 
+  by intro_classes(unfold_locales; auto simp add: ccompare_bit_def split!: bit.splits)
+end
+
+derive (dlist) set_impl bit
+
 lemma pauliX_adjoint[simp]: "pauliX* = pauliX"
   by eval
 lemma pauliXX[simp]: "pauliX o\<^sub>C\<^sub>L pauliX = id_cblinfun"

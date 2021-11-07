@@ -17,7 +17,7 @@ proof intro_classes
   moreover have \<open>finite (range Rep_complement_domain)\<close>
     by (metis finite_lessThan type_definition.Rep_range type_definition_complement_domain)
   ultimately show \<open>finite (UNIV :: ('a,'b) complement_domain set)\<close>
-    using Missing_Permutations.inj_on_finite by blast
+    using finite_image_iff by blast
 qed
 
 lemma CARD_complement_domain: 
@@ -395,7 +395,7 @@ proof -
     apply (rule fun_cong[where x=a])
     apply (rule clinear_eq_butterfly_ketI)
       apply auto
-    by (metis (no_types, hide_lams) Misc.sandwich_def T \<gamma> \<open>\<gamma> = 1\<close> adj_cblinfun_compose butterfly_adjoint cblinfun_comp_butterfly scaleC_one tensor_butterfly)
+    by (metis (no_types, opaque_lifting) Misc.sandwich_def T \<gamma> \<open>\<gamma> = 1\<close> adj_cblinfun_compose butterfly_adjoint cblinfun_comp_butterfly scaleC_one tensor_butterfly)
 
   have \<open>F (butterfly x y) = V o\<^sub>C\<^sub>L (butterfly x y \<otimes>\<^sub>o ?ida) o\<^sub>C\<^sub>L V*\<close> for x y
     by (simp add: Misc.sandwich_def FV)
@@ -436,7 +436,7 @@ proof -
     also from 1 have \<open>\<dots> \<le> ccspan (range ((*\<^sub>V) T))\<close>
       by (auto intro!: ccspan_mono)
     also have \<open>\<dots> = T *\<^sub>S \<top>\<close>
-      by (metis (mono_tags, hide_lams) calculation cblinfun_image_ccspan cblinfun_image_mono eq_iff top_greatest)
+      by (metis (mono_tags, opaque_lifting) calculation cblinfun_image_ccspan cblinfun_image_mono eq_iff top_greatest)
     finally show \<open>T *\<^sub>S \<top> = \<top>\<close>
       using top.extremum_uniqueI by blast
   qed
@@ -487,7 +487,7 @@ proof -
       by (simp add: I_def unitary_sandwich_register)
     have \<open>I o (F;G) = id\<close> and FGI: \<open>(F;G) o I = id\<close>
        apply (auto intro!:ext simp: I_def[abs_def] FG sandwich_def)
-       apply (metis (no_types, hide_lams) \<open>unitary U\<close> isometryD cblinfun_assoc_left(1) cblinfun_compose_id_right cblinfun_compose_id_left unitary_isometry)
+       apply (metis (no_types, opaque_lifting) \<open>unitary U\<close> isometryD cblinfun_assoc_left(1) cblinfun_compose_id_right cblinfun_compose_id_left unitary_isometry)
       by (metis (no_types, lifting) \<open>unitary U\<close> cblinfun_assoc_left(1) cblinfun_compose_id_left cblinfun_compose_id_right unitaryD2)
     then show \<open>iso_register (F;G)\<close>
       by (auto intro!: iso_registerI)
@@ -512,13 +512,13 @@ proof (rule Set.set_eqI)
   have \<open>x \<in> commutant (F ` X) \<longleftrightarrow> (\<forall>y \<in> F ` X. x o\<^sub>C\<^sub>L y = y o\<^sub>C\<^sub>L x)\<close>
     by (simp add: commutant_def)
   also have \<open>\<dots> \<longleftrightarrow> (\<forall>y \<in> F ` X. G x o\<^sub>C\<^sub>L G y = G y o\<^sub>C\<^sub>L G x)\<close>
-    by (metis (no_types, hide_lams) \<open>F \<circ> G = id\<close> \<open>G o F = id\<close> \<open>register G\<close> comp_def eq_id_iff register_def)
+    by (metis (no_types, opaque_lifting) \<open>F \<circ> G = id\<close> \<open>G o F = id\<close> \<open>register G\<close> comp_def eq_id_iff register_def)
   also have \<open>\<dots> \<longleftrightarrow> (\<forall>y \<in> X. G x o\<^sub>C\<^sub>L y = y o\<^sub>C\<^sub>L G x)\<close>
     by (simp add: \<open>G \<circ> F = id\<close> pointfree_idE)
   also have \<open>\<dots> \<longleftrightarrow> G x \<in> commutant X\<close>
     by (simp add: commutant_def)
   also have \<open>\<dots> \<longleftrightarrow> x \<in> F ` commutant X\<close>
-    by (metis (no_types, hide_lams) \<open>G \<circ> F = id\<close> \<open>F \<circ> G = id\<close> image_iff pointfree_idE)
+    by (metis (no_types, opaque_lifting) \<open>G \<circ> F = id\<close> \<open>F \<circ> G = id\<close> image_iff pointfree_idE)
   finally show \<open>x \<in> commutant (F ` X) \<longleftrightarrow> x \<in> F ` commutant X\<close>
     by -
 qed

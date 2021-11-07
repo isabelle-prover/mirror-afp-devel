@@ -50,7 +50,8 @@ definition "enum_ex_bit P \<longleftrightarrow> P (0::bit) \<or> P 1"
 instance
   apply intro_classes
      apply (auto simp: enum_bit_def enum_all_bit_def enum_ex_bit_def)
-  by (metis bit_not_one_imp)+
+   apply (metis bit_not_one_iff)
+  by (metis bit_not_zero_iff)
 end
 
 lemma card_bit[simp]: "CARD(bit) = 2"

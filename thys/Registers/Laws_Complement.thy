@@ -25,7 +25,7 @@ proof (rule complementsI)
   moreover have \<open>(G;F) o (swap o I) = id\<close>
     by (simp add: \<open>(F;G) \<circ> I = id\<close> rewriteL_comp_comp)
   moreover have \<open>(swap o I) o (G;F) = id\<close>
-    by (metis (no_types, hide_lams) swap_swap \<open>I \<circ> (F;G) = id\<close> calculation(2) comp_def eq_id_iff)
+    by (metis (no_types, opaque_lifting) swap_swap \<open>I \<circ> (F;G) = id\<close> calculation(2) comp_def eq_id_iff)
   ultimately show \<open>iso_register (G;F)\<close>
     using \<open>compatible G F\<close> iso_register_def pair_is_register by blast
 qed
@@ -136,9 +136,9 @@ proof -
     using assms(2) complement_is_complement complements_def equivalent_registers_def id_comp register_id by blast
   also have \<open>equivalent_registers \<dots> ((A o U; A o id); complement A)\<close>
     apply auto
-    by (metis (no_types, hide_lams) compat assms(1) assms(2) compatible_comp_left compatible_def compatible_register1 complement_is_complement complements_def equivalent_registers_assoc id_apply register_unit_register)
+    by (metis (no_types, opaque_lifting) compat assms(1) assms(2) compatible_comp_left compatible_def compatible_register1 complement_is_complement complements_def equivalent_registers_assoc id_apply register_unit_register)
   also have \<open>equivalent_registers \<dots> (A o (U; id); complement A)\<close>
-    by (metis (no_types, hide_lams) assms(1) assms(2) calculation complements_def equivalent_registers_sym equivalent_registers_trans is_unit_register_def register_comp_pair)
+    by (metis (no_types, opaque_lifting) assms(1) assms(2) calculation complements_def equivalent_registers_sym equivalent_registers_trans is_unit_register_def register_comp_pair)
   also have \<open>equivalent_registers \<dots> (A o id; complement A)\<close>
     apply (intro equivalent_registers_pair_left equivalent_registers_comp)
       apply (auto simp: assms)

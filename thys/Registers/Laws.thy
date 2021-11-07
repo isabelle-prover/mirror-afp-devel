@@ -411,7 +411,7 @@ lemma pair_o_swap[simp]:
   shows "(A; B) o swap = (B; A)"
 proof (rule tensor_extensionality)
   have [simp]: "preregister A" "preregister B"
-     apply (metis (no_types, hide_lams) assms compatible_register1 register_preregister)
+     apply (metis (no_types, opaque_lifting) assms compatible_register1 register_preregister)
     by (metis (full_types) assms compatible_register2 register_preregister)
   then show \<open>preregister ((A; B) \<circ> swap)\<close>
     by simp

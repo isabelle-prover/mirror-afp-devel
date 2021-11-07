@@ -369,7 +369,7 @@ proof -
   have \<open>butterfly (pure_state H h) (ket default) = butterfly (H (butterfly h (ket default)) *\<^sub>V ket default) (ket default)\<close>
     by (simp add: pure_state'_def 1)
   also have \<open>\<dots> = H (butterfly h (ket default)) o\<^sub>C\<^sub>L selfbutterket default\<close>
-    by (metis (no_types, hide_lams) adj_cblinfun_compose butterfly_adjoint butterfly_comp_cblinfun double_adj)
+    by (metis (no_types, opaque_lifting) adj_cblinfun_compose butterfly_adjoint butterfly_comp_cblinfun double_adj)
   also have \<open>\<dots> = H (butterfly h (ket default)) o\<^sub>C\<^sub>L H (selfbutterket default)\<close>
     by simp
   also have \<open>\<dots> = H (butterfly h (ket default) o\<^sub>C\<^sub>L selfbutterket default)\<close>
@@ -539,7 +539,9 @@ proof -
     also have \<open>\<dots> = ((F;G) (ket g \<otimes>\<^sub>s ket (g+f)) \<otimes>\<^sub>p Z ket z)\<close>
       by pure_state_eq
     also have \<open>(F;G) CNOT *\<^sub>V \<dots> = ((F;G) ket g \<otimes>\<^sub>s ket f \<otimes>\<^sub>p Z ket z)\<close>
-      apply (subst state_apply1) by auto
+      apply (subst state_apply1)
+      apply simp
+      using add_right_imp_eq by fastforce
     also have \<open>\<dots> = (F(ket g) \<otimes>\<^sub>p G(ket f) \<otimes>\<^sub>p Z(ket z))\<close>
       by pure_state_eq
     finally have 1: \<open>((F;G) CNOT o\<^sub>C\<^sub>L (G;F) CNOT o\<^sub>C\<^sub>L (F;G) CNOT) *\<^sub>V (F(ket f) \<otimes>\<^sub>p G(ket g) \<otimes>\<^sub>p Z(ket z)) = (F(ket g) \<otimes>\<^sub>p G(ket f) \<otimes>\<^sub>p Z(ket z))\<close>
