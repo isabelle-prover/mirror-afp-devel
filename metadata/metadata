@@ -11178,3 +11178,24 @@ abstract =
   registers and several (compatible) registers can be composed. This
   formalization develops both the generic theory of registers as well as
   specific instantiations for classical and quantum registers.
+
+[Szemeredi_Regularity]
+title = Szemerédi's Regularity Lemma
+author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>, Angeliki Koutsoukou-Argyraki <https://www.cst.cam.ac.uk/people/ak2110>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Graph theory, Mathematics/Combinatorics
+date = 2021-11-05
+notify = lp15@cam.ac.uk
+abstract = 
+  <a
+  href="https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma">Szemerédi's
+  regularity lemma</a> is a key result in the study of large
+  graphs. It asserts the existence an upper bound on the number of parts
+  the vertices of a graph need to be partitioned into such that the
+  edges between the parts are random in a certain sense. This bound
+  depends only on the desired precision and not on the graph itself, in
+  the spirit of Ramsey's theorem. The formalisation follows online
+  course notes by <a
+  href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Tim
+  Gowers</a> and <a
+  href="https://yufeizhao.com/gtac/gtac.pdf">Yufei
+  Zhao</a>.

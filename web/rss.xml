@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Oct 2021 00:00:00 +0000</pubDate>
+    <pubDate>05 Nov 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Szemerédi's Regularity Lemma</title>
+              <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
+       <guid>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</guid>
+       <dc:creator> Chelsea Edmonds, Angeliki Koutsoukou-Argyraki, Lawrence C. Paulson       </dc:creator>
+       <pubDate>05 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;a
+href=&#34;https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma&#34;&gt;Szemerédi&#39;s
+regularity lemma&lt;/a&gt; is a key result in the study of large
+graphs. It asserts the existence an upper bound on the number of parts
+the vertices of a graph need to be partitioned into such that the
+edges between the parts are random in a certain sense. This bound
+depends only on the desired precision and not on the graph itself, in
+the spirit of Ramsey&#39;s theorem. The formalisation follows online
+course notes by &lt;a
+href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
+Gowers&lt;/a&gt; and &lt;a
+href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Yufei
+Zhao&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Quantum and Classical Registers</title>
               <link>https://www.isa-afp.org/entries/Registers.html</link>
@@ -545,20 +566,6 @@ confirmation, this paper extends IMP with an additional
 non-deterministic choice command, and proves compiler correctness,
 viz. the simulation of compiled code execution by source code, for
 such extended language.</description>
-    </item>
-    <item>
-       <title>Lyndon words</title>
-              <link>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</link>
-       <guid>https://www.isa-afp.org/entries/Combinatorics_Words_Lyndon.html</guid>
-       <dc:creator> Štěpán Holub, Štěpán Starosta       </dc:creator>
-       <pubDate>24 May 2021 00:00:00 +0000</pubDate>
-       <description>
-Lyndon words are words lexicographically minimal in their conjugacy
-class. We formalize their basic properties and characterizations, in
-particular the concepts of the longest Lyndon suffix and the Lyndon
-factorization. Most of the work assumes a fixed lexicographical order.
-Nevertheless we also define the smallest relation guaranteeing
-lexicographical minimality of a given word (in its conjugacy class).</description>
     </item>
   </channel>
 </rss>
