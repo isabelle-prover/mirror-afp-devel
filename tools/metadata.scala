@@ -100,12 +100,12 @@ object Metadata
     def from_authors(authors: List[Author]): T =
     {
       def from_author(author: Author): T =
-        afp.TOML.T(
+        T(
           "name" -> author.name,
           "emails" -> author.emails.map(_.address),
           "homepages" -> author.homepages.map(_.url))
 
-      afp.TOML.T(authors.map(author => author.id -> from_author(author)))
+      T(authors.map(author => author.id -> from_author(author)))
     }
 
     def to_authors(authors: T): List[Author] =
@@ -133,7 +133,7 @@ object Metadata
     /* topics */
 
     def from_topics(root_topics: List[Topic]): T =
-      afp.TOML.T(root_topics.map(t => t.name -> from_topics(t.sub_topics)))
+      T(root_topics.map(t => t.name -> from_topics(t.sub_topics)))
 
     def to_topics(root_topics: T): List[Topic] =
     {
@@ -151,9 +151,9 @@ object Metadata
     /* releases */
 
     def from_releases(releases: List[Release]): T =
-      Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
-        entry_releases.map(r => r.isabelle -> r.date).toMap
-      }.toMap
+      T(Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
+        T(entry_releases.map(r => r.isabelle -> r.date))
+      }.toList)
 
     def to_releases(map: T): List[Release] =
       split_as[T](map).flatMap {
@@ -166,10 +166,11 @@ object Metadata
     /* affiliation */
 
     def from_affiliations(affiliations: List[Affiliation]): T =
-      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(_.collect {
-        case Email(_, id, _) => "email" -> id
-        case Homepage(_, id, _) => "homepage" -> id
-      }.toMap).toMap
+      T(Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(vs =>
+        T(vs.collect {
+          case Email(_, id, _) => "email" -> id
+          case Homepage(_, id, _) => "homepage" -> id
+        })).toList)
 
     def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] =
     {
@@ -191,7 +192,7 @@ object Metadata
     }
 
     def from_emails(emails: List[Email]): T =
-      afp.TOML.T(emails.map(email => email.author -> email.id))
+      T(emails.map(email => email.author -> email.id))
 
     def to_emails(emails: T, authors: Map[Author.ID, Author]): List[Email] =
       emails.toList.map {
@@ -215,7 +216,7 @@ object Metadata
     /* entry */
 
     def from_entry(entry: Entry): T =
-      afp.TOML.T(
+      T(
         "title" -> entry.title,
         "authors" -> from_affiliations(entry.authors),
         "contributors" -> from_affiliations(entry.contributors),
@@ -226,8 +227,7 @@ object Metadata
         "license" -> entry.license,
         "note" -> entry.note,
         "history" -> from_change_history(entry.change_history),
-        "extra" -> entry.extra,
-      )
+        "extra" -> entry.extra)
 
     def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic], releases: List[Release]): Entry =
       Entry(

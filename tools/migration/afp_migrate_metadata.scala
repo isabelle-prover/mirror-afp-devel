@@ -255,12 +255,13 @@ object AFP_Migrate_Metadata
       Release(entry, release_date, release_dates.findLast { case (date, _) => date.isBefore(release_date) }.get._2)
 
     val Entry_Release = """afp-([a-zA-Z0-9_+-]+)-(\d{4}-\d{2}-\d{2})\.tar\.gz""".r
-    val entry_releases = releases.filterNot(_.isBlank).map {
-      case Entry_Release(entry, date_string) =>
-        val date = context.parse_date(date_string)
-        entry -> to_release(entry, date)
-      case line => error("Could not parse: " + quote(line))
-    }.groupBy(_._1)
+    val entry_releases = Utils.group_sorted(
+      releases.filterNot(_.isBlank).map {
+        case Entry_Release(entry, date_string) =>
+          val date = context.parse_date(date_string)
+          entry -> to_release(entry, date)
+        case line => error("Could not parse: " + quote(line))
+      }, (e: (Entry.Name, Release)) => e._1)
     all_entries.flatMap(e => entry_releases.getOrElse(e, Nil).map(_._2) :+ to_release(e, current._1))
   }
 
