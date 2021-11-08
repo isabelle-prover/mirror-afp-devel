@@ -11,6 +11,8 @@ imports Stone_Relation_Algebras.Semirings
 
 begin
 
+nitpick_params [timeout = 600]
+
 text \<open>Many results in this theory are taken from a joint paper with Rudolf Berghammer.\<close>
 
 text \<open>M0-algebra\<close>

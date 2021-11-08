@@ -11,6 +11,8 @@ imports Stone_Relation_Algebras.Semirings
 
 begin
 
+nitpick_params [timeout = 600]
+
 class while =
   fixes while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<star>" 59)
 

@@ -11,6 +11,8 @@ imports Stone_Kleene_Relation_Algebras.Kleene_Algebras
 
 begin
 
+nitpick_params [timeout = 600]
+
 class omega =
   fixes omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [100] 100)
 

@@ -11,6 +11,8 @@ imports Stone_Kleene_Relation_Algebras.Iterings
 
 begin
 
+nitpick_params [timeout = 600]
+
 class apx =
   fixes apx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
 
