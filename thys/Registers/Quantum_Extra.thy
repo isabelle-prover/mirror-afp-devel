@@ -12,6 +12,17 @@ no_notation Order.top ("\<top>\<index>")
 unbundle register_notation
 unbundle cblinfun_notation
 
+lemma zero_not_register[simp]: \<open>~ register (\<lambda>_. 0)\<close>
+  unfolding register_def by simp
+
+lemma register_pair_is_register_converse:
+  \<open>register (F;G) \<Longrightarrow> register F\<close> \<open>register (F;G) \<Longrightarrow> register G\<close>
+  using [[simproc del: Laws_Quantum.compatibility_warn]]
+   apply (cases \<open>register F\<close>)
+    apply (auto simp: register_pair_def)[2]
+  apply (cases \<open>register G\<close>)
+  by (auto simp: register_pair_def)[2]
+
 lemma register_id'[simp]: \<open>register (\<lambda>x. x)\<close>
   using register_id by (simp add: id_def)
 

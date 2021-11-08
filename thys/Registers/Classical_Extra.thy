@@ -138,4 +138,7 @@ lemma registerY[simp]: \<open>register Y\<close>
 lemma compatibleXY[simp]: \<open>compatible X Y\<close>
   unfolding X_def Y_def by auto
 
+(* Avoiding namespace pollution *)
+hide_const (open) x y x_update y_update X Y
+
 end

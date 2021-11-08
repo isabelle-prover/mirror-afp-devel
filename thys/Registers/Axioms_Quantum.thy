@@ -77,25 +77,23 @@ lemma register_tensor_left: \<open>register (\<lambda>a. tensor_op a id_cblinfun
 lemma register_tensor_right: \<open>register (\<lambda>a. tensor_op id_cblinfun a)\<close>
   by (simp add: comp_tensor_op register_def tensor_op_cbilinear tensor_op_adjoint)
 
-
 definition register_pair ::
   \<open>('a::finite update \<Rightarrow> 'c::finite update) \<Rightarrow> ('b::finite update \<Rightarrow> 'c update)
          \<Rightarrow> (('a\<times>'b) update \<Rightarrow> 'c update)\<close> where
-  \<open>register_pair F G = tensor_lift (\<lambda>a b. F a o\<^sub>C\<^sub>L G b)\<close>
+  \<open>register_pair F G = (if register F \<and> register G \<and> (\<forall>a b. F a o\<^sub>C\<^sub>L G b = G b o\<^sub>C\<^sub>L F a) then 
+                        tensor_lift (\<lambda>a b. F a o\<^sub>C\<^sub>L G b) else (\<lambda>_. 0))\<close>
 
 lemma cbilinear_F_comp_G[simp]: \<open>clinear F \<Longrightarrow> clinear G \<Longrightarrow> cbilinear (\<lambda>a b. F a o\<^sub>C\<^sub>L G b)\<close>
   unfolding cbilinear_def
   by (auto simp add: clinear_iff bounded_cbilinear.add_left bounded_cbilinear_cblinfun_compose bounded_cbilinear.add_right)
 
 lemma register_pair_apply: 
-  assumes \<open>register F\<close> and \<open>register G\<close>
+  assumes [simp]: \<open>register F\<close> \<open>register G\<close>
   assumes \<open>\<And>a b. F a o\<^sub>C\<^sub>L G b = G b o\<^sub>C\<^sub>L F a\<close>
   shows \<open>(register_pair F G) (tensor_op a b) = F a o\<^sub>C\<^sub>L G b\<close>
   unfolding register_pair_def
-  apply (subst tensor_lift_correct[THEN fun_cong, THEN fun_cong])
-   apply (rule cbilinear_F_comp_G)
-  using assms apply (auto intro!: cbilinear_F_comp_G)
-  using register_def by auto
+  apply (simp flip: assms(3))
+  by (metis assms(1) assms(2) cbilinear_F_comp_G register_preregister tensor_lift_correct)
 
 lemma register_pair_is_register:
   fixes F :: \<open>'a::finite update \<Rightarrow> 'c::finite update\<close> and G
@@ -108,8 +106,10 @@ proof (unfold register_def, intro conjI allI)
   have [simp]: \<open>F id_cblinfun = id_cblinfun\<close> \<open>G id_cblinfun = id_cblinfun\<close>
     using assms(1,2) register_def by blast+
   show [simp]: \<open>clinear (register_pair F G)\<close>
-    unfolding register_pair_def apply (rule tensor_lift_clinear)
-    by simp
+    unfolding register_pair_def 
+    using assms apply auto
+    apply (rule tensor_lift_clinear)
+    by (simp flip: assms(3))
   show \<open>register_pair F G id_cblinfun = id_cblinfun\<close>
     apply (simp flip: tensor_id)
     apply (subst register_pair_apply)
