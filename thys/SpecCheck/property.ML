@@ -21,6 +21,7 @@ sig
   val implies : 'a pred -> 'a prop -> 'a prop
   (*convenient notation for `implies` working on predicates*)
   val ==> : 'a pred * 'a pred -> 'a prop
+  val expect_failure : exn -> ('a -> 'b) -> 'a prop
 
 end
 
@@ -42,5 +43,12 @@ fun implies cond prop x =
   else SpecCheck_Base.Discard
 
 fun ==> (p1, p2) = implies p1 (prop p2)
+
+fun eq_exn (exn, exn') = exnName exn = exnName exn' andalso exnMessage exn = exnMessage exn'
+
+fun expect_failure exp_exn f = prop (fn x =>
+    (f x; false)
+    handle exn => if Exn.is_interrupt exn then Exn.reraise exn else eq_exn (exn, exp_exn)
+  )
 
 end
