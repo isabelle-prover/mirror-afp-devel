@@ -36,7 +36,7 @@
 
 chapter \<open>Example: A Simple C Program with Directives and Annotations\<close>
 
-theory C2
+theory C4
   imports "../C_Main"
 begin
 
