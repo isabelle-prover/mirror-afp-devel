@@ -36,7 +36,7 @@
 
 chapter \<open>Example: Annotation Navigation and Context Serialization\<close>
 
-theory C1
+theory C2
   imports "../C_Main"
           "HOL-ex.Cartouche_Examples"
 begin
