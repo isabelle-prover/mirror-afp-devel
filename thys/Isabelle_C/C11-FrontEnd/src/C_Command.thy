@@ -165,7 +165,7 @@ signature C_MODULE =
         val key_external_declaration: Input.source
         val key_statement: Input.source
         val key_translation_unit: Input.source
-        val map_default: (C_Grammar_Rule.start_happy -> C_Env.env_lang -> local_theory -> term) -> theory -> theory
+        val map_default: (C_Grammar_Rule.ast_generic -> C_Env.env_lang -> local_theory -> term) -> theory -> theory
         val map_expression: (C_Grammar_Rule_Lib.CExpr -> C_Env.env_lang -> local_theory -> term) -> theory -> theory
         val map_external_declaration:
            (C_Grammar_Rule_Lib.CExtDecl -> C_Env.env_lang -> local_theory -> term) -> theory -> theory
@@ -189,7 +189,7 @@ signature C_MODULE =
              (Input.source * (Position.range -> (C_Grammar.Tokens.svalue, Position.T) LALR_Parser_Eval.Token.token)) option ->
                (Input.source -> Context.generic -> (C_Grammar.Tokens.svalue, Position.T) LALR_Parser_Eval.Token.token) *
                (Data_In_Env.T ->
-                  'a * (C_Grammar_Rule.start_happy * 'b * 'c) ->
+                  'a * (C_Grammar_Rule.ast_generic * 'b * 'c) ->
                     {context: Context.generic, error_lines: 'd, reports_text: 'e} ->
                       term * {context: Context.generic, error_lines: 'd, reports_text: 'e})
         val err:
@@ -211,20 +211,14 @@ signature C_MODULE =
              -> ('a * (Proof.context -> term list -> term)) list
       end
 
-    val C: Input.source -> Context.generic -> generic_theory
-    val C': C_Env.env_lang -> Input.source -> Context.generic -> Context.generic
-
-    val C_export_boot: Input.source -> Context.generic -> generic_theory
-    val C_export_file: Position.T * 'a -> Proof.context -> Proof.context
-    val C_prf: Input.source -> Proof.state -> Proof.state
     val accept:
        Data_In_Env.T ->
-         'a * (C_Grammar_Rule.start_happy * 'b * 'c) ->
+         'a * (C_Grammar_Rule.ast_generic * 'b * 'c) ->
            {context: Context.generic, error_lines: 'd, reports_text: 'e} ->
              unit * {context: Context.generic, error_lines: 'd, reports_text: 'e}
     val accept0:
-       (Context.generic -> C_Grammar_Rule.start_happy -> Data_In_Env.T -> Context.generic -> 'a) ->
-         Data_In_Env.T -> C_Grammar_Rule.start_happy -> Context.generic -> 'a
+       (Context.generic -> C_Grammar_Rule.ast_generic -> Data_In_Env.T -> Context.generic -> 'a) ->
+         Data_In_Env.T -> C_Grammar_Rule.ast_generic -> Context.generic -> 'a
     val c_enclose: string -> string -> Input.source -> C_Lex.token list * (string list -> string list)
     val env: Context.generic -> Data_In_Env.T
     val env0: Proof.context -> Data_In_Env.T
@@ -244,6 +238,15 @@ signature C_MODULE =
     val eval_source: Input.source -> unit
     val exec_eval: Input.source -> Context.generic -> Context.generic
     val start: Input.source -> Context.generic -> (C_Grammar.Tokens.svalue, Position.T) LALR_Parser_Eval.Token.token
+
+
+    (* toplevel command semantics of Isabelle_C *)
+    val C: Input.source -> Context.generic -> Context.generic
+    val C': C_Env.env_lang -> Input.source -> Context.generic -> Context.generic
+    val C_export_boot: Input.source -> Context.generic -> generic_theory
+    val C_export_file: Position.T * 'a -> Proof.context -> Proof.context
+    val C_prf: Input.source -> Proof.state -> Proof.state
+
   end
 
 structure C_Module : C_MODULE =
@@ -262,17 +265,19 @@ structure Data_In_Env = Generic_Data
    val merge = K empty)
 
 structure Data_Accept = Generic_Data
-  (type T = C_Grammar_Rule.start_happy -> C_Env.env_lang -> Context.generic -> Context.generic
+  (type T = C_Grammar_Rule.ast_generic -> C_Env.env_lang -> Context.generic -> Context.generic
    fun empty _ _ = I
    val extend = I
    val merge = #2)
 
 structure Data_Term = Generic_Data
-  (type T = (C_Grammar_Rule.start_happy -> C_Env.env_lang -> local_theory -> term) Symtab.table
+  (type T = (C_Grammar_Rule.ast_generic -> C_Env.env_lang -> local_theory -> term) Symtab.table
    val empty = Symtab.empty
    val extend = I
    val merge = #2)
 
+
+(* keys for token-classes *)
 
 structure C_Term =
 struct
@@ -313,10 +318,10 @@ local
 fun map_upd0 key v = Context.theory_map (Data_Term.map (Symtab.update (key, v)))
 fun map_upd key start f = map_upd0 key (f o the o start)
 in
-val map_translation_unit = map_upd key0_translation_unit C_Grammar_Rule.start_happy1
-val map_external_declaration = map_upd key0_external_declaration C_Grammar_Rule.start_happy2
-val map_statement = map_upd key0_statement C_Grammar_Rule.start_happy3
-val map_expression = map_upd key0_expression C_Grammar_Rule.start_happy4
+val map_translation_unit = map_upd key0_translation_unit C_Grammar_Rule.get_CTranslUnit
+val map_external_declaration = map_upd key0_external_declaration C_Grammar_Rule.get_CExtDecl
+val map_statement = map_upd key0_statement C_Grammar_Rule.get_CStat
+val map_expression = map_upd key0_expression C_Grammar_Rule.get_CExpr
 val map_default = map_upd0 key0_default
 end
 

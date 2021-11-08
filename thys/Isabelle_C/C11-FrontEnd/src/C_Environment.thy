@@ -46,40 +46,46 @@ utilities. \<close>
 ML\<open>
 signature C_ENV = 
   sig
-    datatype stream_lang_state  =
-         Stream_atomic
-       | Stream_ident of Position.range * string
-       | Stream_regular
-       | Stream_string of (Position.range * string) list
-    type ('a, 'b, 'c) stack_elem0 = 'a * ('b * 'c * 'c)
-    type 'a stream = ('a, C_Lex.token) C_Scan.either list
-    datatype 'a parse_status = Parsed of 'a | Previous_in_stack
-    eqtype markup_global
-    type markup_ident = {global: markup_global, params: C_Ast.CDerivedDeclr list, 
-                         ret: C_Ast.CDeclSpec list parse_status}
-    type 'a markup_store = Position.T list * serial * 'a
     val namespace_enum: string
     val namespace_tag: string
     val namespace_typedef: string
-    type var_table = {idents: markup_ident markup_store Symtab.table, 
-                      tyidents: markup_global markup_store Symtab.table Symtab.table}
-    type env_directives =
-       ((string * Position.range -> Context.generic 
-       -> C_Lex.token list * Context.generic, C_Lex.token list) C_Scan.either *
-        (string * Position.range -> Context.generic -> Context.generic)
-       )
-       markup_store
-       Symtab.table
-    type env_lang =  {env_directives: env_directives,
-                      namesupply: int,
-                      scopes: (C_Ast.ident option * var_table) list, 
-                      stream_ignored: C_Antiquote.antiq stream, var_table: var_table}
     type error_lines = string list
-    type env_tree = {context: Context.generic, error_lines: error_lines, reports_text: C_Position.reports_text}
-    type rule_static = (env_tree -> env_lang * env_tree) option
-    type 'a rule_output0' = {output_env: rule_static, output_pos: 'a option, output_vacuous: bool}
-    type ('a, 'b, 'c) stack0 = ('a, 'b, 'c) stack_elem0 list
-    type rule_output = C_Ast.class_Pos rule_output0'
+
+    datatype stream_lang_state  = Stream_atomic
+                                | Stream_ident of Position.range * string
+                                | Stream_regular
+                                | Stream_string of (Position.range * string) list
+    type ('a, 'b, 'c) stack_elem0 = 'a * ('b * 'c * 'c)
+    type 'a stream = ('a, C_Lex.token) C_Scan.either list
+    datatype 'a parse_status = Parsed of 'a | Previous_in_stack
+
+    eqtype markup_global
+
+    type markup_ident = {global         : markup_global,
+                         params         : C_Ast.CDerivedDeclr list, 
+                         ret            : C_Ast.CDeclSpec list parse_status}
+    type 'a markup_store = Position.T list * serial * 'a
+
+    type var_table =    {idents         : markup_ident markup_store Symtab.table,
+                         tyidents       : markup_global markup_store Symtab.table Symtab.table}
+
+    type env_directives = ( (string * Position.range 
+                                  -> Context.generic
+                                     -> C_Lex.token list * Context.generic, 
+                            C_Lex.token list) C_Scan.either 
+                          * (string * Position.range -> Context.generic -> Context.generic))
+                          markup_store
+                           Symtab.table
+
+    type env_lang =     {env_directives : env_directives,
+                         namesupply     : int,
+                         scopes         : (C_Ast.ident option * var_table) list, 
+                         stream_ignored : C_Antiquote.antiq stream, var_table: var_table}
+
+    type env_tree =     {context        : Context.generic, 
+                         error_lines    : error_lines, 
+                         reports_text   : C_Position.reports_text}
+
     type env_propagation_reduce    = int option
     type env_propagation_ctxt      = env_propagation_reduce -> Context.generic -> Context.generic
     type env_propagation_directive = env_propagation_reduce -> env_directives 
@@ -88,6 +94,11 @@ signature C_ENV =
                                        | Exec_directive of env_propagation_directive
     datatype env_propagation = Bottom_up of env_propagation_bottom_up 
                              | Top_down of env_propagation_ctxt
+
+    type rule_static = (env_tree -> env_lang * env_tree) option
+    type 'a rule_output0' = {output_env: rule_static, output_pos: 'a option, output_vacuous: bool}
+    type ('a, 'b, 'c) stack0 = ('a, 'b, 'c) stack_elem0 list
+    type rule_output = C_Ast.class_Pos rule_output0'
     type eval_node = Position.range * env_propagation * env_directives * bool
     type ('a, 'b, 'c) rule_reduce = int * ('a, 'b, 'c) stack0 * eval_node list list
     type ('a, 'b, 'c) rule_reduce0 = (('a, 'b, 'c) stack0 * env_lang * eval_node) list
@@ -97,21 +108,25 @@ signature C_ENV =
     type ('a, 'b, 'c) rule_output0 = eval_node list list * ('a, 'b, 'c) rule_reduce0 * ('c * 'c) rule_output0'
     datatype 'a tree = Tree of 'a * 'a tree list
     type ('a, 'b, 'c) stack' = ('a, 'b, 'c) stack0 * eval_node list list * ('c * 'c) list * ('a, 'b, 'c) rule_ml tree list
+
     datatype comment_style = Comment_directive | Comment_language
+
     datatype eval_time =
-         Lexing of Position.range * (comment_style -> Context.generic -> Context.generic)
-       | Never
+         Never
+       | Lexing of Position.range * (comment_style -> Context.generic -> Context.generic)
        | Parsing of (Symbol_Pos.T list * Symbol_Pos.T list) * eval_node
-    datatype antiq_language = Antiq_none of C_Lex.token | Antiq_stack of C_Position.reports_text * eval_time
 
-    type 'a T =  {env_lang: env_lang,
-                   env_tree: env_tree,
-                   rule_input: C_Ast.class_Pos list * int,
-                   rule_output: rule_output,
-                   stream_hook: (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list,
-                   stream_lang: stream_lang_state * 'a stream}
+    datatype antiq_language = Antiq_none of C_Lex.token 
+                            | Antiq_stack of C_Position.reports_text * eval_time
 
-(*    type T =  (C_Antiquote.antiq * antiq_language list) T0 *)
+    type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
+
+    type 'a T =   {env_lang    : env_lang,
+                   env_tree    : env_tree,
+                   rule_input  : C_Ast.class_Pos list * int,
+                   rule_output : rule_output,
+                   stream_hook : stream_hook,
+                   stream_lang : stream_lang_state * 'a stream}
 
     val decode_positions: string -> Position.T list
     val empty_env_lang: env_lang
@@ -120,7 +135,6 @@ signature C_ENV =
     val encode_positions: Position.T list -> string
     val get_scopes: env_lang -> (C_Ast.ident option * var_table) list
     val make: env_lang -> 'a stream -> env_tree -> 'a T
-    (* why is this not just  "T" *)
     val map_context: (Context.generic -> Context.generic) 
                      -> {context: Context.generic, error_lines: 'c, reports_text: 'd} 
                      -> {context: Context.generic, error_lines: 'c, reports_text: 'd}
@@ -129,52 +143,40 @@ signature C_ENV =
                       -> {context: Context.generic, error_lines: 'd, reports_text: 'e} 
                       -> 'b * {context: Context.generic, error_lines: 'd, reports_text: 'e}
     (* why not just "env_tree" *)
-    val map_env_directives: (env_directives -> env_directives) -> env_lang -> env_lang
-    val map_env_lang: (env_lang -> env_lang) -> 'a T -> 'a T
-    val map_env_lang_tree: (env_lang -> env_tree -> env_lang * env_tree) -> 'a T -> 'a T
-    val map_env_lang_tree': (env_lang -> env_tree -> 'c * (env_lang * env_tree)) -> 'a T -> 'c * 'a T
-    val map_env_tree: (env_tree -> env_tree) -> 'a T -> 'a T
-    val map_env_tree': (env_tree -> 'b * env_tree) -> 'a T -> 'b * 'a T
+    val map_reports_text:(C_Position.reports_text -> C_Position.reports_text) -> env_tree -> env_tree
     val map_error_lines: (error_lines -> error_lines) 
                          -> {context: 'c, error_lines: error_lines, reports_text: 'd} 
                          -> {context: 'c, error_lines: error_lines, reports_text: 'd}
                          (* why not just : "env_tree" *)
+    val map_namesupply: (int -> int) -> env_lang -> env_lang
+    val map_env_directives: (env_directives -> env_directives) -> env_lang -> env_lang
+    val map_scopes     : ((C_Ast.ident option * var_table) list 
+                         -> (C_Ast.ident option * var_table) list) 
+                          -> env_lang -> env_lang       
+    val map_stream_ignored: (C_Antiquote.antiq stream->C_Antiquote.antiq stream) -> env_lang -> env_lang
+    val map_var_table: (var_table -> var_table) -> env_lang -> env_lang
+
+    val map_env_lang      : (env_lang -> env_lang) -> 'a T -> 'a T
+    val map_env_lang_tree : (env_lang -> env_tree -> env_lang * env_tree) -> 'a T -> 'a T
+    val map_env_lang_tree': (env_lang -> env_tree -> 'c * (env_lang * env_tree)) -> 'a T -> 'c * 'a T
+    val map_env_tree   : (env_tree -> env_tree) -> 'a T -> 'a T
+    val map_env_tree'  : (env_tree -> 'b * env_tree) -> 'a T -> 'b * 'a T
+    val map_rule_output: (rule_output -> rule_output) -> 'a T -> 'a T
+    val map_stream_hook: (stream_hook -> stream_hook) -> 'a T -> 'a T
+    val map_rule_input : (C_Ast.class_Pos list * int -> C_Ast.class_Pos list * int) -> 'a T -> 'a T
+    val map_stream_lang: (stream_lang_state*'a stream -> stream_lang_state*'a stream)-> 'a T -> 'a T
+
+ 
+    val map_output_env     : (rule_static -> rule_static) -> 'a rule_output0' -> 'a rule_output0'
+    val map_output_pos     : ('a option -> 'a option) -> 'a rule_output0' -> 'a rule_output0'
+    val map_output_vacuous : (bool -> bool) -> 'a rule_output0' -> 'a rule_output0'
+
     val map_idents: (markup_ident markup_store Symtab.table -> markup_ident markup_store Symtab.table) 
                     -> var_table -> var_table
-    val map_namesupply: (int -> int) -> env_lang -> env_lang
-    val map_output_env: (rule_static -> rule_static) -> 'a rule_output0' -> 'a rule_output0'
-    val map_output_pos: ('a option -> 'a option) -> 'a rule_output0' -> 'a rule_output0'
-    val map_output_vacuous: (bool -> bool) -> 'a rule_output0' -> 'a rule_output0'
-    val map_reports_text:(C_Position.reports_text -> C_Position.reports_text) -> env_tree -> env_tree
-    val map_rule_input:
-       ('a -> 'a) ->
-         {env_lang: 'c, env_tree: 'd, rule_input: 'a, rule_output: 'e, stream_hook: 'f, stream_lang: 'g} ->
-           {env_lang: 'c, env_tree: 'd, rule_input: 'a, rule_output: 'e, stream_hook: 'f, stream_lang: 'g}
-    val map_rule_output:
-       ('a -> 'a) ->
-         {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'a, stream_hook: 'f, stream_lang: 'g} ->
-           {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'a, stream_hook: 'f, stream_lang: 'g}
-    val map_scopes:
-       ('a -> 'a) ->
-         {env_directives: 'c, namesupply: 'd, scopes: 'a, stream_ignored: 'e, var_table: 'f} ->
-           {env_directives: 'c, namesupply: 'd, scopes: 'a, stream_ignored: 'e, var_table: 'f}
-    val map_stream_hook:
-       ('a -> 'b) ->
-         {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'f, stream_hook: 'a, stream_lang: 'g} ->
-           {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'f, stream_hook: 'b, stream_lang: 'g}
-    val map_stream_ignored:
-       ('a -> 'b) ->
-         {env_directives: 'c, namesupply: 'd, scopes: 'e, stream_ignored: 'a, var_table: 'f} ->
-           {env_directives: 'c, namesupply: 'd, scopes: 'e, stream_ignored: 'b, var_table: 'f}
-    val map_stream_lang:
-       ('a -> 'b) ->
-         {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'f, stream_hook: 'g, stream_lang: 'a} ->
-           {env_lang: 'c, env_tree: 'd, rule_input: 'e, rule_output: 'f, stream_hook: 'g, stream_lang: 'b}
-    val map_tyidents: ('a -> 'b) -> {idents: 'c, tyidents: 'a} -> {idents: 'c, tyidents: 'b}
-    val map_var_table:
-       ('a -> 'b) ->
-         {env_directives: 'c, namesupply: 'd, scopes: 'e, stream_ignored: 'f, var_table: 'a} ->
-           {env_directives: 'c, namesupply: 'd, scopes: 'e, stream_ignored: 'f, var_table: 'b}
+    val map_tyidents: (markup_global markup_store Symtab.table Symtab.table 
+                        -> markup_global markup_store Symtab.table Symtab.table ) 
+                        -> var_table -> var_table
+
     val string_of: env_lang -> string
   end
 
@@ -296,6 +298,8 @@ type ('LrTable_state, 'svalue0, 'pos) rule_output0 =
                                        * ('pos * 'pos) rule_output0'
 
 type rule_output = C_Ast.class_Pos rule_output0'
+
+type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
 
 (**)
 

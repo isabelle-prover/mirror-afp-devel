@@ -46,28 +46,43 @@ text\<open>The following setup just stores the result of the parsed values in th
 
 ML\<open>
 structure Data_Out = Generic_Data
-  (type T = (C_Grammar_Rule.start_happy * C_Antiquote.antiq C_Env.stream) list
+  (type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
    val empty = []
    val extend = I
    val merge = K empty)
 
-fun get_module thy =
+fun get_CTranslUnit thy =
   let val context = Context.Theory thy
   in (Data_Out.get context 
-      |> map (apfst (C_Grammar_Rule.start_happy1 #> the)), C_Module.Data_In_Env.get context)
+      |> map (apfst (C_Grammar_Rule.get_CTranslUnit #> the)), C_Module.Data_In_Env.get context)
   end
+
+fun get_CExpr thy =
+  let val context = Context.Theory thy
+  in (Data_Out.get context 
+      |> map (apfst (C_Grammar_Rule.get_CExpr #> the)), C_Module.Data_In_Env.get context)
+  end
+
 \<close>
 
+text\<open>Und hier setzen wir per callback die Petze:\<close>
+
+ML\<open> Data_Out.map: (   (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list 
+                   -> (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list) 
+                  -> Context.generic -> Context.generic \<close>
+
+ML\<open>val SPY = Unsynchronized.ref([]:C_Grammar_Rule.ast_generic list)\<close>
 setup \<open>Context.theory_map (C_Module.Data_Accept.put
-                            (fn ast => fn env_lang =>
-                              Data_Out.map (cons (ast, #stream_ignored env_lang |> rev))))\<close>
+                            (fn ast => fn env_lang => let val _ = (SPY:= ast:: !SPY) in
+                              Data_Out.map (cons (ast, #stream_ignored env_lang |> rev)) 
+                                  end))\<close>
 
 ML\<open>
 val _ = Theory.setup(
-  ML_Antiquotation.value_embedded \<^binding>\<open>C11_PARSES\<close>
+  ML_Antiquotation.value_embedded \<^binding>\<open>C11_AST_CTranslUnit\<close>
     (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
-      (warning"arg variant not implemented";"get_module (Context.the_global_context())"))
-    || Scan.succeed "get_module (Context.the_global_context())"))
+      (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
+    || Scan.succeed "get_CTranslUnit (Context.the_global_context())"))
 
 \<close>
 
@@ -210,7 +225,7 @@ C\<open>
 
 
 text\<open>In the following, we retrieve the C11 AST parsed above. \<close>
-ML\<open> val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) =  @{C11_PARSES};
+ML\<open> val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) =  @{C11_AST_CTranslUnit};
     val u = C_Grammar_Rule_Lib.decode u; 
     C_Ast.CTypeSpec0; \<close>
 
@@ -257,7 +272,7 @@ int max(int x, int y) {
 \<close>
 
 ML\<open> 
-val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) = get_module @{theory};
+val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) = get_CTranslUnit @{theory};
 val u = C_Grammar_Rule_Lib.decode u
 \<close>
 
@@ -490,7 +505,7 @@ text\<open>Accessing the underlying C11-AST's via the ML Interface.\<close>
 ML\<open>
 local open C_Ast in
 val _ = CTranslUnit0
-val (A::R, _) = @{C11_PARSES};
+val (A::R, _) = @{C11_AST_CTranslUnit};
 val (CTranslUnit0 (t,u), v) = A
 fun rule_trans (CTranslUnit0 (t,u), v) = case C_Grammar_Rule_Lib.decode u of 
                   Left (p1,p2) => writeln (Position.here p1 ^ " " ^ Position.here p2)
@@ -502,12 +517,122 @@ end
 \<close>
 
 ML\<open>
-get_module;
-val (R, env_final) = @{C11_PARSES};
+get_CTranslUnit;
+val (R, env_final) = @{C11_AST_CTranslUnit};
 val rules = map rule_trans R;
 @{C\<^sub>e\<^sub>n\<^sub>v}
 \<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+
+ML\<open>
+val src = \<open>a + d\<close>;
+val ctxt = (Context.Theory @{theory});
+val ctxt' = C_Module.C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
+val tt  = Context.the_theory ctxt';
+(*get_CExpr (Context.the_theory ctxt');
+C_Module.Data_In_Env.get ctxt' *)
+\<close>
+ML\<open>val Expr = hd(map_filter C_Grammar_Rule.get_CExpr (!SPY));\<close>
+
+ML\<open>Symtab.map_entry\<close>
+
+ML\<open> Context.theory_long_name @{theory}\<close>
+ML\<open> fun insert_K_ast key ast = Symtab.map_default (key,[]) (cons ast)
+     \<close>
+
+ML\<open>
+structure Root_Ast_Store = Generic_Data
+  (type T = C_Grammar_Rule.ast_generic list Symtab.table
+   val empty = Symtab.empty
+   val extend = I
+   val merge = K empty);
+
+
+Root_Ast_Store.map: (   C_Grammar_Rule.ast_generic list Symtab.table 
+                            -> C_Grammar_Rule.ast_generic list Symtab.table) 
+                        -> Context.generic -> Context.generic;
+
+
+fun update_Root_Ast filter ast _ ctxt =
+    let val theory_id = Context.theory_long_name(Context.theory_of ctxt)
+        val insert_K_ast  = Symtab.map_default (theory_id,[]) (cons ast)
+    in  case filter ast of 
+         NONE => (warning "No appropriate c11 ast found - store unchanged."; ctxt)
+        |SOME _ => (Root_Ast_Store.map insert_K_ast) ctxt
+    end;
+
+
+fun get_Root_Ast filter thy =
+  let val ctxt = Context.Theory thy
+      val thid = Context.theory_long_name(Context.theory_of ctxt)
+      val ast = case Symtab.lookup (Root_Ast_Store.get ctxt) (thid) of
+                SOME (a::_) => (case filter a of 
+                                 NONE => error "Last C command is not of appropriate AST-class."
+                               | SOME x => x)
+              | _ => error"No C command in the current theory."
+  in ast
+  end
+
+val get_CExpr  = get_Root_Ast C_Grammar_Rule.get_CExpr;
+val get_CStat  = get_Root_Ast C_Grammar_Rule.get_CStat;
+val get_CExtDecl  = get_Root_Ast C_Grammar_Rule.get_CExtDecl;
+val get_CTranslUnit  = get_Root_Ast C_Grammar_Rule.get_CTranslUnit;
+\<close>
+
+setup \<open>Context.theory_map (C_Module.Data_Accept.put (update_Root_Ast SOME))\<close>
+
+
+ML\<open>
+val _ = Theory.setup(
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CTranslUnit\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
+          || Scan.succeed "get_CTranslUnit (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExtDecl\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CExtDecl (Context.the_global_context())"))
+          || Scan.succeed "get_CExtDecl (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CStat\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CStat (Context.the_global_context())"))
+          || Scan.succeed "get_CStat (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExpr\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CExpr (Context.the_global_context())"))
+          || Scan.succeed "get_CExpr (Context.the_global_context())")
+       )
+\<close>
+
+text\<open>For the parsing root key's, c.f. ~ \<^verbatim>\<open>C_Command.thy\<close>\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+C\<open>a + b\<close>
+ML\<open>val ast = @{C11_CExpr}\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "statement"]]
+C\<open>a = a + b;\<close>
+ML\<open>val ast = @{C11_CStat}\<close>
+
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "external_declaration"]]
+C\<open>int  m ();\<close>
+ML\<open>val ast = @{C11_CExtDecl}\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
+C\<open>int a = a + b;\<close>
+ML\<open>val ast = @{C11_CTranslUnit}\<close>
+
+
+
+
+
 section \<open>C Code: Floats Exist\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 C\<open>
 int a;

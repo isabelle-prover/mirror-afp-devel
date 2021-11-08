@@ -651,9 +651,6 @@ val _ =
 end
 \<close>
 
-ML\<open>val _ = @{term \<open>3::nat\<close>}\<close>
-ML\<open> ML_Antiquotation.inline_embedded;
-\<close>
 
 C \<open>
 int z = z;
@@ -873,13 +870,14 @@ ML\<open> C_Parse.ML_source \<close>
 declare[[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
 ML\<open>@{C\<^sub>e\<^sub>n\<^sub>v}\<close>
 
+
 ML\<open>C_Stack.Data_Lang.get' :
    Context.generic ->  
      (LALR_Table.state, C_Grammar_Rule.svalue0, Position.T) C_Env.stack_elem0 list * C_Env.env_lang;
    C_Parse.C_source: Input.source C_Parse.parser ;
    C_Inner_Syntax.command0 ;
    C';
-   ;
+   C;
 
 \<close>
 
@@ -892,6 +890,9 @@ val ctxt' = C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
 C_Module.Data_In_Env.get ctxt'
 \<close>
 
+ML\<open>val _ = @{term \<open>3::nat\<close>}\<close>
+ML\<open> ML_Antiquotation.inline_embedded;
+\<close>
 (* and from where do I get the result ? *)
 
 end
