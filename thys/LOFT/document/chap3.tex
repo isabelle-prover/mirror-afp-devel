@@ -108,7 +108,7 @@ We then tested reachability for TCP 22 and 80 and ICMP.
 The connectivity between all pairs of hosts (H1,H2,S1 and S2) remained the same compared to before the conversion.
 This shows that the concept can be made to work.
 
-However, the example also reveals a flaw: When substituting the more complete model of a linux firewall with the simple one in Section \ref{sec:lfw}, we assumed that the check whether the correct MAC address is set and the packets are destined for the modelled device would never fail — we assumed that all traffic arriving at a device is actually destined for it.
+However, the example also reveals a flaw: When substituting the more complete model of a linux firewall with the simple one in Section \ref{sec:lfw}, we assumed that the check whether the correct MAC address is set and the packets are destined for the modelled device would never fail --- we assumed that all traffic arriving at a device is actually destined for it.
 Obviously, this network violates this assumption.
 We can trigger this in many ways, for example by sending an ICMP ping from H1 to H2.
 This will cause the generated rule \texttt{priority=7, \!icmp, \!nw\_dst=10.0.1.0/24 actions=output:1} (where port 1 is the port facing H1 and H2) to be activated twice.

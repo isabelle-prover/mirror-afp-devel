@@ -2597,8 +2597,8 @@ qed
 \<comment> \<open> NOTE This is a more abstract formulation of the proposition in 
 \<open>sas_plus_equivalent_to_strips_i\<close> which is better suited for induction proofs. We essentially claim 
 that given a plan the execution in STRIPS semantics of which solves the problem of reaching a 
-transformed goal state \<open>\<phi>\<^sub>S \<Psi> G\<close> from a transformed initial state \<open>\<phi>\<^sub>S \<Psi> I\<close>—such as 
-the goal and initial state of an induced STRIPS problem for a SAS+ problem—is equivalent to an
+transformed goal state \<open>\<phi>\<^sub>S \<Psi> G\<close> from a transformed initial state \<open>\<phi>\<^sub>S \<Psi> I\<close>---such as 
+the goal and initial state of an induced STRIPS problem for a SAS+ problem---is equivalent to an
 execution in SAS+ semantics of the transformed plan \<open>\<phi>\<^sub>P\<inverse> (\<phi> \<Psi>) \<pi>\<close> w.r.t to the original 
 initial state \<open>I\<close> and original goal state \<open>G\<close>. \<close> 
 lemma sas_plus_equivalent_to_strips_i_a:
@@ -2811,7 +2811,7 @@ Note that in the context of the SAS+ problem solving pipeline, we
   \item convert the given valid SAS+ @{text "\<Psi>"} problem to the corresponding STRIPS problem 
 @{text "\<Pi>"} (this is implicitely also valid by lemma 
 @{text "is_valid_problem_sas_plus_then_strips_transformation_too"}); then,
-  \item get a solution @{text "\<pi>"}—if it exists—for the induced STRIPS problem by executing 
+  \item get a solution @{text "\<pi>"}---if it exists---for the induced STRIPS problem by executing 
 SATPlan; and finally,
   \item convert @{text "\<pi>"} back to a solution @{text "\<psi>"} for the SAS+ problem.
 \end{enumerate} \<close>

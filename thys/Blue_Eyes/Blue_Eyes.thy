@@ -47,7 +47,7 @@ text \<open>We begin by fixing two type variables: @{typ "'color"} and @{typ "'p
 The puzzle doesn't specify how many eye colors are possible, but four are mentioned.
 Crucially, we must assume they are distinct. We specify the existence of colors other
 than blue and brown, even though we don't mention them later, because when blue and brown
-are the only possible colors, the puzzle has a different solution — the brown-eyed logicians
+are the only possible colors, the puzzle has a different solution --- the brown-eyed logicians
 may leave one day after the blue-eyed ones.
 
 We refrain from specifying the exact population of the island, choosing to only assume

@@ -131,7 +131,7 @@ using the command @{command tts_lemma}.
 new (unnamed) tts context.
     \<^descr> \<^theory_text>\<open>tts\<close>~\<open>:\<close>~\<open>(?a\<^sub>1\<close> \<^theory_text>\<open>to\<close> \<open>U\<^sub>1)\<close> \<^theory_text>\<open>and\<close> \<open>\<dots>\<close> \<^theory_text>\<open>and\<close> 
 \<open>(?a\<^sub>n\<close> \<^theory_text>\<open>to\<close> \<open>U\<^sub>n)\<close> provides means for the declaration of the RI specification. 
-For each \<open>i\<close> (\<open>1\<le>i\<le>n\<close>, \<open>n\<close> — positive integer), \<open>?a\<^sub>i\<close> must be a schematic type variable that
+For each \<open>i\<close> (\<open>1\<le>i\<le>n\<close>, \<open>n\<close> --- positive integer), \<open>?a\<^sub>i\<close> must be a schematic type variable that
 occurs in each theorem provided as an input to the commands
 @{command tts_lemmas} and @{command tts_lemma} invoked inside the tts context
 and \<open>U\<^sub>i\<close> can be any term of the type \<^typ>\<open>'a set\<close>, where \<^typ>\<open>'a\<close> 
@@ -148,13 +148,13 @@ sbt-database.
     \<^descr> \<^theory_text>\<open>rewriting\<close> \<open>thm\<close> provides means for the declaration
 of the rewrite rules for the set-based theorem.
     \<^descr> \<^theory_text>\<open>substituting\<close> \<open>thm\<^sub>1\<close> \<^theory_text>\<open>and\<close> \<open>\<dots>\<close> \<^theory_text>\<open>and\<close> \<open>thm\<^sub>n\<close> 
-(\<open>n\<close> — non-negative integer) provides means for the declaration of the 
+(\<open>n\<close> --- non-negative integer) provides means for the declaration of the 
 known premises for the set-based theorem.
     \<^descr> \<^theory_text>\<open>eliminating\<close> \<open>term\<^sub>1\<close> \<^theory_text>\<open>and\<close> \<open>\<dots>\<close> \<^theory_text>\<open>and\<close> \<open>term\<^sub>n\<close> 
-\<^theory_text>\<open>through\<close> \<open>method\<close> (\<open>n\<close> — non-negative integer) provides means for the 
+\<^theory_text>\<open>through\<close> \<open>method\<close> (\<open>n\<close> --- non-negative integer) provides means for the 
 declaration of the specification of the elimination of premises in the 
 set-based theorem.
-    \<^descr> \<^theory_text>\<open>applying\<close> \<open>[attr\<^sub>1, \<dots>, attr\<^sub>n]\<close> (\<open>n\<close> — non-negative integer) 
+    \<^descr> \<^theory_text>\<open>applying\<close> \<open>[attr\<^sub>1, \<dots>, attr\<^sub>n]\<close> (\<open>n\<close> --- non-negative integer) 
 provides means for the declaration of the attributes for the set-based theorem.
 
   \<^descr> \<^theory_text>\<open>tts_lemmas\<close> applies the ERA to a list 

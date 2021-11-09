@@ -1789,7 +1789,7 @@ lemma trace_parallel_plan_step_effect_is:
 
 \<comment> \<open> Show that every state in a plan execution trace of a valid problem description is defined
 for all problem variables. This is true because the initial state is defined for all problem
-variables—by definition of @{text "is_valid_problem_strips \<Pi>"}—and no operator can remove a
+variables---by definition of @{text "is_valid_problem_strips \<Pi>"}---and no operator can remove a
 previously defined variable (only positive and negative effects are possible). \<close>
 (* TODO refactor \<open>STRIPS_Semantics\<close> + abstract/concretize first two assumptions (e.g. second one
 only needs all operators are problem operators)? *)
