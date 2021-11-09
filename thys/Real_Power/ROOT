@@ -1,0 +1,8 @@
+chapter AFP
+
+session "Real_Power" (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    Log
+  document_files
+    "root.tex"
