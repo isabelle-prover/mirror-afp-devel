@@ -25,12 +25,12 @@ If a user is a PC member in a conference, then the user either must have been th
 have been appointed by a chair.
 %
 \item{\bf Being a reviewer. }
-If a user is a paper’s reviewer, then the user must have been appointed by a chair (from
+If a user is a paper's reviewer, then the user must have been appointed by a chair (from
 among the PC members who have not declared a conflict with the paper).
 %
 \item{\bf Having conflict. }
 If a user has conflict with a paper, then the user is either an author of the paper or the
-conflict has been declared by that user or by a paper’s author, in such a way that between
+conflict has been declared by that user or by a paper's author, in such a way that between
 the moment when the conflict has been last declared and the current moment there is no
 transition that successfully removes the conflict.
 %

@@ -516,7 +516,7 @@ lemma bounded_cardinal_selection:
   shows
     "\<exists>S. S : \<gamma> \<rightarrow> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
 proof -
-  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" \<comment> \<open>“cardinal less than \<^term>\<open>\<gamma>\<close>”\<close>
+  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" \<comment> \<open>``cardinal less than \<^term>\<open>\<gamma>\<close>''\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
   from assms
   have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"

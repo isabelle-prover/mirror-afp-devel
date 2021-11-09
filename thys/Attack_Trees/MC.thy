@@ -242,7 +242,7 @@ qed
 subsection \<open>Generic type of state with state transition and CTL operators\<close>
 text \<open>The system states and their transition relation are defined as a class called
  @{text \<open>state\<close>} containing an abstract constant@{text \<open>state_transition\<close>}. It introduces the 
-syntactic infix notation @{text \<open>I \<rightarrow>\<^sub>i I'\<close>} to denote that system state @{text \<open>I\<close>} and @{text \<open>I’\<close>} 
+syntactic infix notation @{text \<open>I \<rightarrow>\<^sub>i I'\<close>} to denote that system state @{text \<open>I\<close>} and @{text \<open>I'\<close>} 
 are in this relation over an arbitrary (polymorphic) type @{text \<open>'a\<close>}.\<close>
 class state =
   fixes state_transition :: "['a :: type, 'a] \<Rightarrow> bool"  (infixr "\<rightarrow>\<^sub>i" 50)
@@ -259,7 +259,7 @@ definition AX where "AX f \<equiv> {s. {f0. s \<rightarrow>\<^sub>i f0} \<subset
 definition EX' where "EX' f \<equiv> {s . \<exists> f0 \<in> f. s \<rightarrow>\<^sub>i f0 }"
 
 text \<open>The CTL formula @{text \<open>AG f\<close>} means that on all paths branching from a state @{text \<open>s\<close>} 
-the formula @{text \<open>f\<close>} is always true (@{text \<open>G\<close>} stands for ‘globally’). It can be defined 
+the formula @{text \<open>f\<close>} is always true (@{text \<open>G\<close>} stands for `globally'). It can be defined 
 using the Tarski fixpoint theory by applying the greatest fixpoint operator. In a similar way, 
 the other CTL operators are defined.\<close>
 definition AF where "AF f \<equiv> lfp (\<lambda> Z. f \<union> AX Z)"

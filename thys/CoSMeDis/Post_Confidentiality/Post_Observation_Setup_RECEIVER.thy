@@ -9,7 +9,7 @@ can learn nothing about the updates to the content of a post
 \<open>PID\<close> located at a different node \<open>i\<close> beyond the
 existence of an update unless \<open>PID\<close> is being shared between
 the two nodes and one of the users is the admin at node \<open>j\<close> or becomes
-a remote friend of \<open>PID\<close>’s owner, or \<open>PID\<close> is marked as public.
+a remote friend of \<open>PID\<close>'s owner, or \<open>PID\<close> is marked as public.
 This is formulated as a BD Security
 property and is proved by unwinding.
 

@@ -238,7 +238,7 @@ text\<open>A.K.-A. was supported by the ERC Advanced Grant ALEXANDRIA (Project 7
  at the University of Cambridge, UK. Thanks to Wenda Li.\<close>
 
 subsection\<open>Bibliography\<close>
-text\<open>Smith, Robin, "Aristotle’s Logic", 
+text\<open>Smith, Robin, "Aristotle's Logic", 
 The Stanford Encyclopedia of Philosophy (Summer 2019 Edition),
 Edward N. Zalta (ed.), URL = @{url "https://plato.stanford.edu/archives/sum2019/entries/aristotle-logic/"}
 \<close>

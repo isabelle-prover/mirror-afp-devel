@@ -12,7 +12,7 @@ If, at some point \<open>t\<close> on a system trace, the visibility of a post \
 has a value \<open>VIS\<close>, then one of the following holds:
 \begin{itemize}
 \item Either \<open>VIS\<close> is \<open>FriendV\<close> (i.e., friends-only) which is the default at post creation
-\item Or the post’s owner had issued a successful ``update visibility'' action setting the visibility to \<open>VIS\<close>,
+\item Or the post's owner had issued a successful ``update visibility'' action setting the visibility to \<open>VIS\<close>,
 and no other successful update actions to \<open>PID\<close>'s visibility occur
 between the time of that action and \<open>t\<close>.
 \end{itemize}

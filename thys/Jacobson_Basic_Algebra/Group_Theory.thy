@@ -263,7 +263,7 @@ proof (rule subgroupI)
   have "(inverse u2 \<cdot> inverse u1) \<cdot> (u1 \<cdot> u2) = (inverse u2 \<cdot> (inverse u1 \<cdot> u1)) \<cdot> u2"
     by (simp add: associative del: invertible_left_inverse invertible_right_inverse)
   also have "\<dots> = \<one>" by simp
-  finally have inv2: "(inverse u2 \<cdot> inverse u1) \<cdot> (u1 \<cdot> u2) = \<one>" by simp  \<comment> \<open>l 9, “and similarly”\<close>
+  finally have inv2: "(inverse u2 \<cdot> inverse u1) \<cdot> (u1 \<cdot> u2) = \<one>" by simp  \<comment> \<open>l 9, ``and similarly''\<close>
   show "u1 \<cdot> u2 \<in> Units" using inv1 inv2 invertibleI mem_UnitsI by auto
 qed (auto simp: Units_def)
 

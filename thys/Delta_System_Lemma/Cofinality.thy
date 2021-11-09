@@ -9,8 +9,8 @@ begin
 subsection\<open>Basic results and definitions\<close>
 
 text\<open>A set \<^term>\<open>X\<close> is \<^emph>\<open>cofinal\<close> in \<^term>\<open>A\<close> (with respect to the relation
-    \<^term>\<open>r\<close>) if every element of \<^term>\<open>A\<close> is “bounded
-    above” by some element of \<^term>\<open>X\<close>. Note that \<^term>\<open>X\<close> does not need 
+    \<^term>\<open>r\<close>) if every element of \<^term>\<open>A\<close> is ``bounded
+    above'' by some element of \<^term>\<open>X\<close>. Note that \<^term>\<open>X\<close> does not need 
     to be a subset of \<^term>\<open>A\<close>.\<close>
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
@@ -408,7 +408,7 @@ subsection\<open>The factorization lemma\<close>
 
 text\<open>In this subsection we prove a factorization lemma for cofinal functions
 into ordinals, which shows that any cofinal function between ordinals can be
-“decomposed” in such a way that a commutative triangle of strictly increasing
+``decomposed'' in such a way that a commutative triangle of strictly increasing
 maps arises.
 
 The factorization lemma has a kind of
@@ -550,7 +550,7 @@ lemma factor_type [TC]: "Ord(factor(\<alpha>))"
   unfolding factor_rec_def by simp
 
 text\<open>The value \<^term>\<open>\<delta>\<close> in \<^term>\<open>factor_body\<close> (and therefore, in
-\<^term>\<open>factor\<close>) is meant to be a “default value”. Whenever it is not 
+\<^term>\<open>factor\<close>) is meant to be a ``default value''. Whenever it is not 
 attained, the factor function behaves as expected: It is increasing
 and its composition with \<^term>\<open>f\<close> also is.\<close>
 

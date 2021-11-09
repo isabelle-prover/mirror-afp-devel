@@ -23,8 +23,8 @@ section \<open>Introduction\<close>
 
 text\<open>
 The 1985 paper by Carlos Alchourrón, Peter Gärdenfors,
-and David Makinson (AGM), “On the Logic of Theory Change: Partial Meet
-Contraction and Revision Functions” @{cite "alchourron1985logic"} launches a large and
+and David Makinson (AGM), ``On the Logic of Theory Change: Partial Meet
+Contraction and Revision Functions'' @{cite "alchourron1985logic"} launches a large and
 rapidly growing literature that employs formal models and logics to handle changing beliefs of a rational agent
 and to take into account new piece of information observed by this agent. 
 In 2011, a review book titled "AGM 25 Years: Twenty-Five Years of Research in Belief Change"
