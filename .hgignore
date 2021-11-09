@@ -69,3 +69,4 @@ admin/py-bootstrap
 admin/venv
 
 tools/**.jar
+web/hugo
