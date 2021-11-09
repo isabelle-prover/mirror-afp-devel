@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>05 Nov 2021 00:00:00 +0000</pubDate>
+    <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
+              <link>https://www.isa-afp.org/entries/Real_Power.html</link>
+       <guid>https://www.isa-afp.org/entries/Real_Power.html</guid>
+       <dc:creator> Jacques D. Fleuriot       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+In this formalisation, we  construct real exponents as the limits of
+sequences of rational exponents. In particular, if $a \ge 1$ and $x
+\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
+that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
+increasing and if $r$ is any rational number such that $r &gt; x$,
+$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
+monotone sequences, $a^{r_n}$ converges. We define $a^ x =
+\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
+properties (for $a \ge 0$).  This particular construction of real
+exponents is needed instead of the usual one using the natural
+logarithm and exponential functions (which already exists in Isabelle)
+to support our mechanical derivation of Euler&#39;s exponential
+series as an ``infinite polynomial&#34;. Aside from helping us avoid
+circular reasoning, this is, as far as we are aware, the first time
+real exponents are mechanised in this way within a proof assistant.</description>
+    </item>
     <item>
        <title>Szemerédi's Regularity Lemma</title>
               <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
@@ -545,27 +568,6 @@ This work is a formalization of public announcement logic with
 countably many agents. It includes proofs of soundness and
 completeness for a variant of the axiom system PA + DIST! + NEC!. The
 completeness proof builds on the Epistemic Logic theory.</description>
-    </item>
-    <item>
-       <title>A Shorter Compiler Correctness Proof for Language IMP</title>
-              <link>https://www.isa-afp.org/entries/IMP_Compiler.html</link>
-       <guid>https://www.isa-afp.org/entries/IMP_Compiler.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>04 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-This paper presents a compiler correctness proof for the didactic
-imperative programming language IMP, introduced in Nipkow and
-Klein&#39;s book on formal programming language semantics (version of
-March 2021), whose size is just two thirds of the book&#39;s proof in
-the number of formal text lines. As such, it promises to constitute a
-further enhanced reference for the formal verification of compilers
-meant for larger, real-world programming languages.  The presented
-proof does not depend on language determinism, so that the proposed
-approach can be applied to non-deterministic languages as well. As a
-confirmation, this paper extends IMP with an additional
-non-deterministic choice command, and proves compiler correctness,
-viz. the simulation of compiled code execution by source code, for
-such extended language.</description>
     </item>
   </channel>
 </rss>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Schutz' Independent Axioms for Minkowski Spacetime - Archive of Formal Proofs
+<title>Real Exponents as the Limits of Sequences of Rational Exponents - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,25 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>chutz'
+  <h1>          <font class="first">R</font>eal
   
-          <font class="first">I</font>ndependent
+          <font class="first">E</font>xponents
   
-          <font class="first">A</font>xioms
+          as
   
-          for
+          the
   
-          <font class="first">M</font>inkowski
+          <font class="first">L</font>imits
   
-          <font class="first">S</font>pacetime
+          of
+  
+          <font class="first">S</font>equences
+  
+          of
+  
+          <font class="first">R</font>ational
+  
+          <font class="first">E</font>xponents
   
 </h1>
   <p>&nbsp;</p>
@@ -93,17 +101,15 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Schutz' Independent Axioms for Minkowski Spacetime</td>
+  <td class="data" width="80%">Real Exponents as the Limits of Sequences of Rational Exponents</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                      Richard Schmoetten (s1311325 /at/ sms /dot/ ed /dot/ ac /dot/ uk),
-                Jake Palmer (jake /dot/ palmer /at/ ed /dot/ ac /dot/ uk) and
-          <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">Jacques Fleuriot</a>
+              <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">Jacques D. Fleuriot</a>
       </td>
 </tr>
 
@@ -111,32 +117,40 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-07-27</td>
+  <td class="data">2021-11-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This is a formalisation of Schutz' system of axioms for Minkowski
-spacetime published under the name "Independent axioms for
-Minkowski space-time" in 1997, as well as most of the results in
-the third chapter ("Temporal Order on a Path") of the above
-monograph. Many results are proven here that cannot be found in
-Schutz, either preceding the theorem they are needed for, or within
-their own thematic section.</td>
+In this formalisation, we  construct real exponents as the limits of
+sequences of rational exponents. In particular, if $a \ge 1$ and $x
+\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
+that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
+increasing and if $r$ is any rational number such that $r > x$,
+$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
+monotone sequences, $a^{r_n}$ converges. We define $a^ x =
+\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
+properties (for $a \ge 0$).  This particular construction of real
+exponents is needed instead of the usual one using the natural
+logarithm and exponential functions (which already exists in Isabelle)
+to support our mechanical derivation of Euler's exponential
+series as an ``infinite polynomial". Aside from helping us avoid
+circular reasoning, this is, as far as we are aware, the first time
+real exponents are mechanised in this way within a proof assistant.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Schutz_Spacetime-AFP,
-  author  = {Richard Schmoetten and Jake Palmer and Jacques Fleuriot},
-  title   = {Schutz' Independent Axioms for Minkowski Spacetime},
+        <pre>@article{Real_Power-AFP,
+  author  = {Jacques D. Fleuriot},
+  title   = {Real Exponents as the Limits of Sequences of Rational Exponents},
   journal = {Archive of Formal Proofs},
-  month   = jul,
+  month   = nov,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Schutz_Spacetime.html},
+  note    = {\url{https://isa-afp.org/entries/Real_Power.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -160,17 +174,17 @@ their own thematic section.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Schutz_Spacetime/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Schutz_Spacetime/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Real_Power/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Real_Power/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Schutz_Spacetime/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Real_Power/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Schutz_Spacetime-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Real_Power-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
