@@ -4,6 +4,7 @@
  * Copyright (c) 2018-2019 Université Paris-Saclay, Univ. Paris-Sud, France
  *
  * All rights reserved.
+ * Author:     Frédéric Tuong, Burkhart Wolff, Université Paris-Saclay 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -48,13 +49,9 @@ begin
 
 subsection \<open>Parsing Entry-Point: Error and Acceptance Cases\<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Tools/ghc.ML\<close>\<close>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Tools/ghc.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/Tools/ghc.ML
-    Author:     Makarius
 
-Support for GHC: Glasgow Haskell Compiler.
-*)
 \<open>
 structure C_Serialize =
 struct
@@ -91,13 +88,9 @@ val print_string = quote o implode o map print_symbol o Symbol.explode;
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Tools/generated_files.ML\<close>\<close>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Tools/generated_files.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/Tools/generated_files.ML
-    Author:     Makarius
 
-Generated source files for other languages: with antiquotations, without Isabelle symbols.
-*)
 \<open>
 structure C_Generated_Files =
 struct
@@ -276,9 +269,7 @@ structure Data_Term = Generic_Data
    val extend = I
    val merge = #2)
 
-
-(* keys for token-classes *)
-
+(* keys for major syntactic categories *)
 structure C_Term =
 struct
    val key_translation_unit     = \<open>translation_unit\<close>
@@ -501,11 +492,11 @@ fun C_export_file (pos, _) lthy =
 end
 \<close>
 
-subsection \<open>Definitions of Inner Directive Commands\<close>
+subsection \<open>Definitions of C11 Directives as C-commands\<close>
 
 subsubsection \<open>Initialization\<close>
 
-ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^theory>\<open>Pure\<close>\<close> \<open>
 structure C_Directive :
  sig
     val setup_define:
@@ -598,10 +589,10 @@ end
 end
 \<close>
 
-subsection \<open>Definitions of Inner Annotation Commands\<close>
+subsection \<open>Definitions of C Annotation Commands\<close>
 subsubsection \<open>Library\<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/toplevel.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Isar/toplevel.ML\<close>\<close> \<open>
 structure C_Inner_Toplevel =
 struct
 val theory = Context.map_theory
@@ -618,7 +609,7 @@ fun keep'' f = tap (f o Context.proof_of)
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/isar_cmd.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Isar/isar_cmd.ML\<close>\<close> \<open>
 structure C_Inner_Isar_Cmd = 
 struct
 
@@ -692,7 +683,7 @@ end;
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close> \<open>
 structure C_Inner_Syntax =
 struct
 val drop1 = fn C_Scan.Left f => C_Scan.Left (K o f)
@@ -792,7 +783,7 @@ fun command0' f kind scan =
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_file.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/ML/ml_file.ML\<close>\<close> \<open>
 structure C_Inner_File =
 struct
 
@@ -825,7 +816,7 @@ end;
 
 subsubsection \<open>Initialization\<close>
 
-setup \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
+setup \<comment> \<open>analogous to \<^theory>\<open>Pure\<close>\<close> \<open>
 C_Thy_Header.add_keywords_minor
   (maps (fn ((name, pos_lex, pos_bot, pos_top), ty) =>
           [ ((C_Inner_Syntax.pref_lex name, pos_lex), ty)
@@ -836,7 +827,7 @@ C_Thy_Header.add_keywords_minor
         , (("done", \<^here>, \<^here>, \<^here>), ((Keyword.qed_script, []), ["proof"])) ])
 \<close>
 
-ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
+ML \<comment> \<open>analogous to \<^theory>\<open>Pure\<close>\<close> \<open>
 local
 val semi = Scan.option (C_Parse.$$$ ";");
 
@@ -955,20 +946,15 @@ in end
 subsection \<open>Definitions of Outer Classical Commands\<close>
 subsubsection \<open>Library\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/Pure.thy
-    Author:     Makarius
 
-The Pure theory, with definitions of Isar commands and some lemmas.
-*)
-
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogously to \<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close> \<open>
 structure C_Outer_Parse =
 struct
   val C_source = Parse.input (Parse.group (fn () => "C source") Parse.text)
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogously to \<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close> \<open>
 structure C_Outer_Syntax =
 struct
 val _ =
@@ -977,7 +963,7 @@ val _ =
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/isar_cmd.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogously to \<^file>\<open>~~/src/Pure/Isar/isar_cmd.ML\<close>\<close> \<open>
 structure C_Outer_Isar_Cmd =
 struct
 (* diagnostic ML evaluation *)
@@ -1012,7 +998,7 @@ val _ = Theory.setup
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_file.ML\<close>\<close> \<open>
+ML \<comment> \<open>analogously to \<^file>\<open>~~/src/Pure/ML/ml_file.ML\<close>\<close> \<open>
 structure C_Outer_File =
 struct
 
@@ -1030,9 +1016,9 @@ fun C files gthy =
 end;
 \<close>
 
-subsubsection \<open>Initialization\<close>
+subsubsection \<open>Setup for  \<^verbatim>\<open>C\<close> and \<^verbatim>\<open>C_file\<close> Command Syntax\<close>
 
-ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
+ML \<open>
 local
 
 val semi = Scan.option \<^keyword>\<open>;\<close>;
@@ -1059,7 +1045,7 @@ val _ =
     (Scan.succeed () >> K (C_Module.C_export_file Position.no_range));
 in end\<close>
 
-subsection \<open>Syntax for Pure Term\<close>
+subsection \<open>Term-Cartouches for C Syntax\<close>
 
 syntax "_C_translation_unit" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>u\<^sub>n\<^sub>i\<^sub>t _")
 syntax "_C_external_declaration" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>d\<^sub>e\<^sub>c\<^sub>l _")
@@ -1075,15 +1061,12 @@ C_Module.C_Term'.parse_translation
   , (\<^syntax_const>\<open>_C_statement\<close>, SOME C_Module.C_Term.tok_statement)
   , (\<^syntax_const>\<open>_C\<close>, NONE) ]
 \<close>
-ML\<open> Context.the_generic_context()\<close>
-ML\<open>@{context}\<close>
-ML\<open>C_Module.env (Context.the_generic_context())\<close>
-ML\<open>
-ML_Antiquotation.value_embedded;
-Theory.check;
-\<close>
 
-subsection\<open>ML-Antiquotations as Programming Support\<close>
+(*test*)
+ML\<open>C_Module.env (Context.the_generic_context())\<close>
+
+
+subsection\<open>C-env related ML-Antiquotations as Programming Support\<close>
 
 ML\<open>
 val _ = Theory.setup(
@@ -1102,5 +1085,73 @@ ML\<open>@{C\<^sub>e\<^sub>n\<^sub>v}\<close>
 declare[[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = empty]]
 ML\<open>@{C\<^sub>e\<^sub>n\<^sub>v}\<close>
 
+subsection\<open>The Standard Store C11-AST's generated from C-commands\<close>
+text\<open>Each call of the C command will register the parsed root AST in this theory-name indexed table.\<close>
+
+ML\<open>
+structure Root_Ast_Store = Generic_Data
+  (type T = C_Grammar_Rule.ast_generic list Symtab.table
+   val empty = Symtab.empty
+   val extend = I
+   val merge = K empty);
+
+
+Root_Ast_Store.map: (   C_Grammar_Rule.ast_generic list Symtab.table 
+                            -> C_Grammar_Rule.ast_generic list Symtab.table) 
+                        -> Context.generic -> Context.generic;
+
+
+fun update_Root_Ast filter ast _ ctxt =
+    let val theory_id = Context.theory_long_name(Context.theory_of ctxt)
+        val insert_K_ast  = Symtab.map_default (theory_id,[]) (cons ast)
+    in  case filter ast of 
+         NONE => (warning "No appropriate c11 ast found - store unchanged."; ctxt)
+        |SOME _ => (Root_Ast_Store.map insert_K_ast) ctxt
+    end;
+
+
+fun get_Root_Ast filter thy =
+  let val ctxt = Context.Theory thy
+      val thid = Context.theory_long_name(Context.theory_of ctxt)
+      val ast = case Symtab.lookup (Root_Ast_Store.get ctxt) (thid) of
+                SOME (a::_) => (case filter a of 
+                                 NONE => error "Last C command is not of appropriate AST-class."
+                               | SOME x => x)
+              | _ => error"No C command in the current theory."
+  in ast
+  end
+
+val get_CExpr  = get_Root_Ast C_Grammar_Rule.get_CExpr;
+val get_CStat  = get_Root_Ast C_Grammar_Rule.get_CStat;
+val get_CExtDecl  = get_Root_Ast C_Grammar_Rule.get_CExtDecl;
+val get_CTranslUnit  = get_Root_Ast C_Grammar_Rule.get_CTranslUnit;
+\<close>
+
+setup \<open>Context.theory_map (C_Module.Data_Accept.put (update_Root_Ast SOME))\<close>
+
+
+ML\<open>
+val _ = Theory.setup(
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CTranslUnit\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
+          || Scan.succeed "get_CTranslUnit (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExtDecl\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CExtDecl (Context.the_global_context())"))
+          || Scan.succeed "get_CExtDecl (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CStat\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CStat (Context.the_global_context())"))
+          || Scan.succeed "get_CStat (Context.the_global_context())")
+        #> 
+        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExpr\<close>
+          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+            (warning"arg variant not implemented";"get_CExpr (Context.the_global_context())"))
+          || Scan.succeed "get_CExpr (Context.the_global_context())")
+       )
+\<close>
 
 end

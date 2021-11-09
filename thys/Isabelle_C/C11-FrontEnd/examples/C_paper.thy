@@ -40,8 +40,7 @@ theory C_paper
   imports "../C_Main"
 begin
 
-text \<open> This theory contains the examples presented in F-IDE
-2019~\cite{Tuong-IsabelleC:2019}. \<close>
+text \<open> This theory contains the examples presented in F-IDE 2019 paper~\cite{Tuong-IsabelleC:2019}. \<close>
 
 section \<open>Setup\<close>
 
@@ -137,7 +136,7 @@ int a (int b) { return &a + b + c; }
             C (SOME env) \<open>int c = &a + b + c;\<close>\<close>
     \<simeq>setup \<open>fn stack_top => fn env =>
             C  NONE      \<open>int c = &a + b + c;\<close>\<close>
-    declare [[C_starting_env = last]]
+    declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
     C        (*SOME*)    \<open>int c = &a + b + c;\<close>
 */\<close>
 
