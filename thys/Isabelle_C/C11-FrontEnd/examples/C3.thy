@@ -38,7 +38,7 @@ chapter \<open>Example: Annotation Navigation and Context Serialization\<close>
 
 theory C3
   imports "../C_Main"
-          "HOL-ex.Cartouche_Examples"
+          "HOL-ex.Cartouche_Examples" (* This dependency should be erliminated.*)
 begin
 
 text \<open> Operationally, the \<^theory_text>\<open>C\<close> command can be thought of as
@@ -860,5 +860,6 @@ int main () {
   printf ("%s", ó\<^url>ò);
 }
 \<close>
+
 
 end

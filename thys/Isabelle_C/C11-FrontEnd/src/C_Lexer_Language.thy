@@ -418,13 +418,8 @@ val starting_rule = Attrib.setup_config_string @{binding C\<^sub>r\<^sub>u\<^sub
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_lex.ML\<close>\<close>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/ML/ml_lex.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/ML/ml_lex.ML
-    Author:     Makarius
-
-Lexical syntax for Isabelle/ML and Standard ML.
-*)
 \<open>
 structure C_Lex =
 struct

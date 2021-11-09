@@ -34,19 +34,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section \<open>Interface: Ontology Document\<close>
+section \<open>Support for Document Preparation: Text-Antioquotations.\<close>
 
 theory C_Document
   imports C_Command
 begin
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Title:      Pure/Thy/thy_output.ML
-    Author:     Makarius
-
-Theory document output.
-*)
+(*  Text Antiquotations and Theory document output. *)
 \<open>
 structure C_Document_Output =
 struct
