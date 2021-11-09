@@ -318,7 +318,7 @@ subsection \<open>General Data Protection Regulation (GDPR)\<close>
 text \<open>Since 26th May 2018, the GDPR has become mandatory within the European Union and hence 
 also for any supplier of IT products. Breaches of the regulation will be fined with penalties 
 of 20 Million EUR. Despite the relatively large size of the document of 209 pages, the technically 
-relevant portion for us is only about 30 pages (Pages 81–111, Chapters I to Chapter III, Section 3). 
+relevant portion for us is only about 30 pages (Pages 81--111, Chapters I to Chapter III, Section 3). 
 In summary, Chapter III specifies that the controller must give the data subject read access (1) 
 to any information, communications, and “meta-data” of the data, e.g., retention time and purpose. 
 In addition, the system must enable deletion of data (2) and restriction of processing.

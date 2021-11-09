@@ -2,7 +2,7 @@ section \<open>An ordinal partition theorem by Jean A. Larson\<close>
 
 text \<open>Jean A. Larson,
      A short proof of a partition theorem for the ordinal $\omega^\omega$.
-     \emph{Annals of Mathematical Logic}, 6:129–145, 1973.\<close>
+     \emph{Annals of Mathematical Logic}, 6:129--145, 1973.\<close>
 
 theory Omega_Omega
   imports "HOL-Library.Product_Lexorder" Erdos_Milner
@@ -1215,7 +1215,7 @@ subsection \<open>Larson's Lemma 3.11\<close>
 
 text \<open>Again from Jean A. Larson,
      A short proof of a partition theorem for the ordinal $\omega^\omega$.
-     \emph{Annals of Mathematical Logic}, 6:129–145, 1973.\<close>
+     \emph{Annals of Mathematical Logic}, 6:129--145, 1973.\<close>
 
 lemma lemma_3_11:
   assumes "l > 0"

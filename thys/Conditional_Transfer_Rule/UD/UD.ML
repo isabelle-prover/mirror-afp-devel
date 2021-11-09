@@ -15,7 +15,7 @@ Andreas Schropp [1].
 
 [1] Krauss A, Schropp A. A Mechanized Translation from Higher-Order Logic
 to Set Theory. In: Kaufmann M, Paulson LC, editors. Interactive Theorem
-Proving. Berlin: Springer; 2010. p. 323–38. 
+Proving. Berlin: Springer; 2010. p. 323--38. 
 (Lecture Notes in Computer Science; vol. 6172).
 *)
 

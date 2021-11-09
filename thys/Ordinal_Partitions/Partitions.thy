@@ -2,7 +2,7 @@ section \<open>Ordinal Partitions\<close>
 
 text \<open>Material from Jean A. Larson,
      A short proof of a partition theorem for the ordinal $\omega^\omega$.
-     \emph{Annals of Mathematical Logic}, 6:129–-145, 1973.
+     \emph{Annals of Mathematical Logic}, 6:129--145, 1973.
 Also from ``Partition Relations'' by A. Hajnal and J. A. Larson,
 in \emph{Handbook of Set Theory}, edited by Matthew Foreman and Akihiro Kanamori
 (Springer, 2010).\<close>
@@ -488,7 +488,7 @@ lemma ordertype_UU_\<omega>2: "ordertype UU pair_less = \<omega>\<up>2"
 
 text \<open>Lemma 2.3 of Jean A. Larson,
      A short proof of a partition theorem for the ordinal $\omega^\omega$.
-     \emph{Annals of Mathematical Logic}, 6:129–-145, 1973.\<close>
+     \emph{Annals of Mathematical Logic}, 6:129--145, 1973.\<close>
 lemma lemma_2_3:
   fixes f :: "(nat \<times> nat) set \<Rightarrow> nat"
   assumes "f \<in> [UU]\<^bsup>2\<^esup> \<rightarrow> {..<Suc (Suc 0)}"
