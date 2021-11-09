@@ -1382,16 +1382,16 @@ proof
   next
     case True
       (*
-    Problem detected: at this point, we don't know if j < dim_col A. 
-    That is, upper_triangular definition only works for matrices \<in> carrier_mat m n with n\<ge>m.
-    The definition is: 
-       - upper_triangular A \<equiv> \<forall>i < dim_row A. \<forall> j < i. A $$ (i,j) = 0
-     But we need here:
-       - upper_triangular A \<equiv> \<forall>i < dim_row A. \<forall> j < dim_col A. j < i  \<longrightarrow> A $$ (i,j) = 0
-  
-    Anyway, the existing definition makes sense since upper triangular is usually 
-    restricted to square matrices.
-  *)
+        Problem detected: at this point, we don't know if j < dim_col A.
+        That is, upper_triangular definition only works for matrices \<in> carrier_mat m n with n\<ge>m.
+        The definition is:
+           - upper_triangular A \<equiv> \<forall>i < dim_row A. \<forall> j < i. A $$ (i,j) = 0
+        But we need here:
+           - upper_triangular A \<equiv> \<forall>i < dim_row A. \<forall> j < dim_col A. j < i  \<longrightarrow> A $$ (i,j) = 0
+
+        Anyway, the existing definition makes sense since upper triangular is usually
+        restricted to square matrices.
+      *)
     then show ?thesis unfolding is_zero_row_JNF_def oops
 
 
