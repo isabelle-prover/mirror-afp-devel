@@ -295,7 +295,7 @@ lemma Red_F_eq_Red_F_diff_Red_F: "Red_F N = Red_F (N - Red_F N)"
   by (simp add: Red_F_of_subset Red_F_subs_Red_F_diff_Red_F set_eq_subset)
 
 text \<open>
-The following results correspond to Lemma 4.6. It also uses \<open>wlog_non_Red_F\<close>.
+The following results correspond to Lemma 4.6. It also uses @{thm wlog_non_Red_F}.
 \<close>
 
 lemma Red_I_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_I N \<subseteq> Red_I N'"
@@ -392,8 +392,8 @@ definition Red_F :: "'f set \<Rightarrow> 'f set" where
   "Red_F N = {C. \<exists>DD \<subseteq> N. DD \<Turnstile> {C} \<and> (\<forall>D \<in> DD. D < C)}"
 
 text \<open>
-Compactness of @{term entails} implies that Red_I and Red_F are equivalent to their finitary
-counterparts.
+Compactness of @{term entails} implies that @{const Red_I} and @{const Red_F} are equivalent to
+their finitary counterparts.
 \<close>
 
 interpretation fin_std_red: calculus_with_finitary_standard_redundancy Inf Bot "(\<Turnstile>)"
