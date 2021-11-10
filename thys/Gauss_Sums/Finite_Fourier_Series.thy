@@ -271,7 +271,7 @@ proof -
     degree (finite_fourier_poly ws) \<le> k - 1 \<and>
     (\<forall>x y. (x, y) \<in> set ?zs_ws \<longrightarrow> poly (finite_fourier_poly ws) x = y) \<Longrightarrow>
     p = (finite_fourier_poly ws)"
-    using l3 by fastforce
+    using l3 by metis
   from assms degree interp interp_p l3
   show "p = (finite_fourier_poly ws)" using l by blast  
 qed
