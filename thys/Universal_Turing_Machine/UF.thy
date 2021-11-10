@@ -1203,13 +1203,10 @@ lemma embranch_exec_0: "\<lbrakk>rec_exec aa xs = 0; zip rgs list \<noteq> [];
   by force
 
 lemma zip_null_iff: "\<lbrakk>length xs = k; length ys = k; zip xs ys = []\<rbrakk> \<Longrightarrow> xs = [] \<and> ys = []"
-  apply(cases xs, simp, simp)
-  apply(cases ys, simp, simp)
-  done
+by(cases xs, simp, simp)
 
 lemma zip_null_gr: "\<lbrakk>length xs = k; length ys = k; zip xs ys \<noteq> []\<rbrakk> \<Longrightarrow> 0 < k"
-  apply(cases xs, simp, simp)
-  done
+by(cases xs, simp, simp)
 
 lemma Embranch_0:  
   "\<lbrakk>length rgs = k; length rcs = k; k > 0; 
@@ -1271,11 +1268,10 @@ proof(induct rgs arbitrary: rcs n, simp)
       list_all (\<lambda>rf. primerec rf (length xs)) list"
       "rec_exec (hd rcs) xs = 0" "rcs = aa # list" "zip rgs (tl rcs) \<noteq> []"
     hence "rec_exec aa xs = 0" "zip rgs list \<noteq> []" by auto
-    note g = g(1,2,3,4,6) this
-    have "rec_exec (rec_embranch ((a, aa) # zip rgs list)) xs
+    note g = g(1,2,3,4,6,7) this
+    hence "rec_exec (rec_embranch ((a, aa) # zip rgs list)) xs
         = rec_exec (rec_embranch (zip rgs list)) xs"
-      apply(rule embranch_exec_0, simp_all add: g)
-      done
+      by(simp add: embranch_exec_0)
     from g and this show "rec_exec (rec_embranch ((a, aa) # zip rgs list)) xs =
          Embranch ((rec_exec a, \<lambda>args. 0 < rec_exec aa args) # 
            zip (map rec_exec rgs) (map (\<lambda>r args. 0 < rec_exec r args) list)) xs"
