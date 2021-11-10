@@ -2,6 +2,7 @@
  * Isabelle/C
  *
  * Copyright (c) 2018-2019 Université Paris-Saclay, Univ. Paris-Sud, France
+ * Author: Frederic Tuong
  *
  * All rights reserved.
  *
@@ -46,6 +47,8 @@ section \<open>Regular C Code\<close>
 
 subsection \<open>Comments, Keywords and Pragmas\<close>
 
+text\<open>This section tests and presents the numerous intricacies of the C11-Standard Lexis for C.\<close>
+
 C \<comment> \<open>Nesting of comments following the example suite of
       \<^url>\<open>https://gcc.gnu.org/onlinedocs/cpp/Initial-processing.html\<close>\<close> \<open>
 /* inside /* inside */ int a = "outside";
@@ -68,7 +71,8 @@ fff */\
 ";
 \<close>
 
-C \<comment> \<open>Backslash newline, Directive \<^url>\<open>https://gcc.gnu.org/onlinedocs/cpp/Initial-processing.html\<close>\<close> \<open>
+C \<comment> \<open>Backslash newline may interupt keywords and even preprocessor  directives.
+      Cf.  \<^url>\<open>https://gcc.gnu.org/onlinedocs/cpp/Initial-processing.html\<close>\<close> \<open>
 /\
 *
 */ # /*
@@ -108,7 +112,9 @@ C \<comment> \<open>Directive: macro\<close> \<open>
 
 subsection \<open>Scala/jEdit Latency on Multiple Bindings\<close>
 
-C \<comment> \<open>Example of obfuscated code \<^url>\<open>https://en.wikipedia.org/wiki/International_Obfuscated_C_Code_Contest\<close>\<close> \<open>
+C \<comment> \<open>Example of obfuscated code 
+      \<^url>\<open>https://en.wikipedia.org/wiki/International_Obfuscated_C_Code_Contest\<close>\<close> 
+\<open>
 #define _ -F<00||--F-OO--;
 int F=00,OO=00;main(){F_OO();printf("%1.3f\n",4.*-F/OO/OO);}F_OO()
 {
@@ -131,12 +137,12 @@ _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 }
 \<close>
 
-text \<open> Select inside the ball, experience the latency.
-A special keyboard combination ``Ctrl-like key\<^footnote>\<open>on Apple: Cmd\<close> + Shift +
-Enter'' lets Isabelle/Scala/jEdit enter in a mode where the selected bound occurrences can be all
-simultaneously replaced by new input characters typed on the keyboard. (The ``select-entity'' action
-exists since Isabelle2016-1, see the respective section ``Prover IDE -- Isabelle/Scala/jEdit'' in
-the NEWS.)\<close>
+text \<open> You may select inside the ball, and experience the latency of Isabelle/C <-> Isabelle/jedit..
+A special keyboard combination ``Ctrl-like key\<^footnote>\<open>on Apple: Cmd\<close> + Shift + Enter'' lets 
+Isabelle/Scala/jEdit enter in a mode where the selected bound occurrences can be all
+simultaneously replaced by new input characters typed on the keyboard. (The ``select-entity'' 
+action exists since Isabelle2016-1, see the respective section ``Prover IDE -- Isabelle/Scala/jEdit'' 
+in the NEWS.)\<close>
 
 subsection \<open>Lexing and Parsing Obfuscated Sources\<close>
 
@@ -176,7 +182,10 @@ section \<open>Experiments with \<^dir>\<open>../../src_ext/parser_menhir\<close
 
 declare[[C_lexer_trace = false]]
 
-subsection \<open>Expecting to succeed\<close>
+subsection \<open>Testing the C11 Parser on realistic sources.\<close>
+
+text\<open>The following is expecting to succeed in less than a second parsing and reporting time to 
+     Isabelle/jedit. The loaded C code from the Menhir test-suite is about 450 lines long.\<close>
 
 \<^cancel>\<open>C_file \<open>../../src_ext/parser_menhir/tests/aligned_struct_c18.c\<close>\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/argument_scope.c\<close>
@@ -220,8 +229,9 @@ C_file \<open>../../src_ext/parser_menhir/tests/typedef_star.c\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/types.c\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/variable_star.c\<close>
 
-subsection \<open>Expecting to fail\<close>
+subsection \<open>Testing the C11 Parser on realistic sources (2)\<close>
 
+text\<open>Expecting to fail:\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/bitfield_declaration_ambiguity.fail.c\<close>
 \<^cancel>\<open>C_file \<open>../../src_ext/parser_menhir/tests/dangling_else_misleading.fail.c\<close>\<close>
 
