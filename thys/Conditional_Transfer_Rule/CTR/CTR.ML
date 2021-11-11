@@ -138,7 +138,6 @@ end;
 
 
 
-
 (**** User input analysis ****)
 
 fun mk_msg_ctr msg = "ctr: " ^ msg;
@@ -277,6 +276,7 @@ fun preprocess_thm_spec ctxt type_specs thm_spec =
   in ((thm_spec, type_specs), ctxt'''') end;
 
 
+
 (*** Preprocessing of the keyword synthesis ***)
 
 fun preprocess_synthesis (synthesis : (string * thm list option) option) = 
@@ -362,7 +362,6 @@ fun process_relativization synthesis elems type_specs thm_spec lthy =
     val lthy'' = process_definition
       lthy' relativization synthesis assms type_specs thm_spec lthy
   in lthy'' end;
-
 
 
 

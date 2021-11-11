@@ -5,18 +5,21 @@
 
 signature ETTS_TEST_AMEND_CTXT_DATA =
 sig
-
-val execute_test_suite_amend_context_data : 
-  Proof.context -> 
-  (
-    ETTS_Context.amend_ctxt_data_input_type * Proof.context, 
-    ETTS_Context.ctxt_def_type * Proof.context
-  ) UT_Test_Suite.test_results_suite
-
+val test_suite : Proof.context -> unit -> unit
 end;
 
 structure etts_test_amend_ctxt_data : ETTS_TEST_AMEND_CTXT_DATA =
 struct
+
+
+
+
+(**** Background ****)
+
+open SpecCheck;
+structure Prop = SpecCheck_Property;
+structure Show = SpecCheck_Show;
+
 
 
 
@@ -111,13 +114,36 @@ fun eq_tts_ctxt_data
 
 
 
+(**** Visualization ****)
+
+fun show_amend_context_in (args, ctxt) = 
+  let 
+    val c =
+      "ctxt : unknown context\n" ^ 
+      ETTS_Context.string_of_amend_context_data_args ctxt args
+  in Pretty.str c end;
+
+fun show_amend_context_out (ctxt_data, ctxt) = 
+  Pretty.str (ETTS_Context.string_of_tts_ctxt_data ctxt ctxt_data)
+
+val show_amend_context = Show.zip show_amend_context_in show_amend_context_out
+
+
+
+
 (**** Tests ****)
+
+
+
+(*** Wrapper ***)
+
+val test_amend_context_data = uncurry ETTS_Context.amend_context_data;
 
 
 
 (*** Valid inputs ***)
 
-fun test_eq_tts_context (ctxt : Proof.context) = 
+fun test_eq_tts_context (ctxt : Proof.context) _ = 
   let
     
     (*input*)
@@ -169,11 +195,17 @@ fun test_eq_tts_context (ctxt : Proof.context) =
       }
 
   in
-    UT_Test_Suite.assert_brel 
+    check_list_unit 
+      show_amend_context
+      [((args, ctxt), (tts_ctxt_data_out, ctxt))]
       "equality"
-      (eq_fst eq_tts_ctxt_data) 
-      (tts_ctxt_data_out, ctxt)
-      (args, ctxt)
+      (
+        Prop.prop 
+          (
+            fn (val_in, val_out) => 
+              eq_fst eq_tts_ctxt_data (test_amend_context_data val_in, val_out)
+          )
+       )
   end;
 
 
@@ -183,7 +215,7 @@ fun test_eq_tts_context (ctxt : Proof.context) =
 
 (** General **)
 
-fun test_exc_tts_context_tts_context thy = 
+fun test_exc_tts_context_tts_context thy _ = 
   let
 
     val ctxt = Proof_Context.init_global thy;
@@ -203,24 +235,34 @@ fun test_exc_tts_context_tts_context thy =
 
     val err_msg = mk_msg_tts_ctxt_error "nested tts contexts"
 
-  in 
-    UT_Test_Suite.assert_exception 
-      "nested tts contexts" (args2, ctxt') (ERROR err_msg)
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
+
+  in
+    check_list_unit
+      (show_amend_context_in) 
+      [(args2, ctxt')]
+      "nested tts contexts"
+      exn_prop 
   end;
 
 
 (** tts **)
 
-fun test_exc_rispec_empty thy = 
+fun test_exc_rispec_empty thy _ = 
   let 
     val ctxt = Proof_Context.init_global thy;
     val args = ((((([], []), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error "rispec must not be empty"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in 
-    UT_Test_Suite.assert_exception "rispec empty" (args, ctxt) (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "rispec empty"
+      exn_prop 
   end;
 
-fun test_exc_rispec_not_set thy = 
+fun test_exc_rispec_not_set thy _ = 
   let 
     val ctxt = Proof_Context.init_global thy;
     val risstv1_c = "?'a"
@@ -231,12 +273,16 @@ fun test_exc_rispec_not_set thy =
     val args = (((((rispec, []), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error 
       "risset must be terms of the type of the form ?'a set or 'a set"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in 
-    UT_Test_Suite.assert_exception 
-      "risset are not all sets" (args, ctxt) (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "risset are not all sets"
+      exn_prop 
   end;
 
-fun test_exc_rispec_duplicate_risstvs thy = 
+fun test_exc_rispec_duplicate_risstvs thy _ = 
   let 
     val ctxt = Proof_Context.init_global thy;
     val risstv1_c = "?'a"
@@ -247,14 +293,17 @@ fun test_exc_rispec_duplicate_risstvs thy =
     val U3_c = "U3::'c set"
     val rispec = [(risstv1_c, U1_c), (risstv2_c, U2_c), (risstv3_c, U3_c)]
     val args = (((((rispec, []), NONE), []), NONE), [])
+    val err_msg = "tts_context: risstvs must be distinct"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
       "duplicate risstvs"
-      (args, ctxt)
-      (ERROR "tts_context: risstvs must be distinct")
+      exn_prop 
   end;
 
-fun test_exc_rispec_not_ds_dtv thy = 
+fun test_exc_rispec_not_ds_dtv thy _ = 
   let 
     val ctxt = Proof_Context.init_global thy;
     val risstv1_c = "?'a"
@@ -270,14 +319,16 @@ fun test_exc_rispec_not_ds_dtv thy =
     val args = (((((rispec, []), NONE), []), NONE), [])
     val err_msg = 
       "tts_context: risset: type variables with distinct sorts must be distinct"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception
-      "not distinct sorts \<longrightarrow> distinct types variables" 
-      (args, ctxt) 
-      (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "not distinct sorts \<longrightarrow> distinct types variables"
+      exn_prop 
   end;
 
-fun test_exc_rispec_not_dt_dv thy = 
+fun test_exc_rispec_not_dt_dv thy _ = 
   let 
     val ctxt = Proof_Context.init_global thy;
     val risstv1_c = "?'a"
@@ -298,15 +349,19 @@ fun test_exc_rispec_not_dt_dv thy =
     val args = (((((rispec, []), NONE), []), NONE), [])
     val err_msg = 
       "tts_context: risset: variables with distinct types must be distinct"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception
-      "not distinct types \<longrightarrow> distinct variables" (args, ctxt) (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "not distinct types \<longrightarrow> distinct variables"
+      exn_prop 
   end;
 
 
 (** sbterms **)
 
-fun test_exc_distinct_sorts ctxt = 
+fun test_exc_distinct_sorts ctxt _ = 
   let 
     val risstv1_c = "?'a"
     val U1_c = "UA::'ao set"
@@ -321,12 +376,16 @@ fun test_exc_distinct_sorts ctxt =
     val args = (((((rispec, sbtspec), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error 
       "tbts: a single stv should not have two distinct sorts associated with it"
-  in 
-    UT_Test_Suite.assert_exception 
-      "tbts: an stv with distinct sorts" (args, ctxt) (ERROR err_msg)
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
+  in
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "tbts: an stv with distinct sorts"
+      exn_prop 
   end;
 
-fun test_exc_sbts_no_tis ctxt = 
+fun test_exc_sbts_no_tis ctxt _ = 
   let 
     val risstv1_c = "?'a"
     val U1_c = "UA::'ao set"
@@ -345,12 +404,16 @@ fun test_exc_sbts_no_tis ctxt =
       "\t-to each type variable that occurs among the tbts must correspond " ^ 
       "exactly one type variable among all type " ^
       "variables that occur among all of the sbts"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in 
-    UT_Test_Suite.assert_exception 
-      "sbts are not type instances of tbts" (args, ctxt) (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "sbts are not type instances of tbts"
+      exn_prop 
   end;
 
-fun test_exc_tbt_fixed ctxt = 
+fun test_exc_tbt_fixed ctxt _ = 
   let 
     val risstv1_c = "?'a"
     val U1_c = "UA::'ao set"
@@ -365,14 +428,16 @@ fun test_exc_tbt_fixed ctxt =
     val args = (((((rispec, sbtspec), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error 
       "tbts must consist of constants and schematic variables"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in 
-    UT_Test_Suite.assert_exception 
-      "tbts are not constants and schematic variables" 
-      (args, ctxt) 
-      (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "tbts are not constants and schematic variables"
+      exn_prop 
   end;
 
-fun test_exc_sbts_not_registered ctxt = 
+fun test_exc_sbts_not_registered ctxt _ = 
   let 
     val risstv1_c = "?'a"
     val U1_c = "UA::'ao set"
@@ -387,12 +452,16 @@ fun test_exc_sbts_not_registered ctxt =
     val args = (((((rispec, sbtspec), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error
       "sbts must be registered using the command tts_register_sbts"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception
-      "sbts must be registered" (args, ctxt) (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "sbts must be registered"
+      exn_prop 
   end;
 
-fun test_exc_tbts_not_distinct ctxt = 
+fun test_exc_tbts_not_distinct ctxt _ = 
   let 
     val risstv1_c = "?'a"
     val U1_c = "UA::'ao set"
@@ -406,14 +475,16 @@ fun test_exc_tbts_not_distinct ctxt =
     val sbtspec = [(tbt_1, sbt_1), (tbt_2, sbt_2)]
     val args = (((((rispec, sbtspec), NONE), []), NONE), [])
     val err_msg = mk_msg_tts_ctxt_error "tbts must be distinct"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception 
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
       "tbts must be distinct" 
-      (args, ctxt) 
-      (ERROR err_msg)
+      exn_prop 
   end;
 
-fun test_exc_sbterms_subset_rispec (ctxt : Proof.context) = 
+fun test_exc_sbterms_subset_rispec (ctxt : Proof.context) _ = 
   let
     (* input *)
     val risstv1_c = "?'a"
@@ -432,64 +503,39 @@ fun test_exc_sbterms_subset_rispec (ctxt : Proof.context) =
       "associated with the RI specification, provided that only the pairs " ^
       "(stv, ftv) associated with the sbterms such that ftv occurs in a " ^
       "premise of a theorem associated with an sbterm are taken into account"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) test_amend_context_data
   in
-    UT_Test_Suite.assert_exception 
-      "tbts " 
-      (args, ctxt) 
-      (ERROR err_msg)
+    check_list_unit
+      (show_amend_context_in) 
+      [(args, ctxt)]
+      "stv-ftv subset"
+      exn_prop 
   end;
 
 
 
-(**** Test suite ****)
 
-local
+(**** Test Suite ****)
 
-val test_amend_context_data = uncurry ETTS_Context.amend_context_data;
-
-fun test_amend_context_string_of_input (args, ctxt) = 
-  let 
-    val c =
-      "ctxt : unknown context\n" ^ 
-      ETTS_Context.string_of_amend_context_data_args ctxt args
-  in c end;
-
-in
-
-fun mk_test_suite_amend_context_data ctxt = 
-  let
-    fun string_of_tts_ctxt_data (ctxt_data, ctxt) = 
-      ETTS_Context.string_of_tts_ctxt_data ctxt ctxt_data
-    val test_suite_amend_context_data = UT_Test_Suite.init
-      "amend_context_data"
-      test_amend_context_data
-      test_amend_context_string_of_input
-      string_of_tts_ctxt_data
-    val thy = Proof_Context.theory_of ctxt
+fun test_suite ctxt s = 
+  let val thy = Proof_Context.theory_of ctxt
   in
-    test_suite_amend_context_data
-    (*valid inputs*)
-    |> test_eq_tts_context ctxt
-    (*exceptions: general*)
-    |> test_exc_tts_context_tts_context thy
-    (*exceptions: rispec*)
-    |> test_exc_rispec_empty thy
-    |> test_exc_rispec_not_set thy
-    |> test_exc_rispec_duplicate_risstvs thy
-    |> test_exc_rispec_not_ds_dtv thy
-    |> test_exc_rispec_not_dt_dv thy
-    (*exceptions: sbtspec*)
-    |> test_exc_distinct_sorts ctxt
-    |> test_exc_sbts_no_tis ctxt
-    |> test_exc_tbt_fixed ctxt
-    |> test_exc_sbts_not_registered ctxt
-    |> test_exc_tbts_not_distinct ctxt
-    |> test_exc_sbterms_subset_rispec ctxt
+    [
+      test_eq_tts_context ctxt s,
+      test_exc_tts_context_tts_context thy s,
+      test_exc_rispec_empty thy s,
+      test_exc_rispec_not_set thy s,
+      test_exc_rispec_duplicate_risstvs thy s,
+      test_exc_rispec_not_ds_dtv thy s,
+      test_exc_rispec_not_dt_dv thy s,
+      test_exc_distinct_sorts ctxt s,
+      test_exc_sbts_no_tis ctxt s,
+      test_exc_tbt_fixed ctxt s,
+      test_exc_sbts_not_registered ctxt s,
+      test_exc_tbts_not_distinct ctxt s,
+      test_exc_sbterms_subset_rispec ctxt s
+    ]
+    |> Lecker.test_group ctxt s
   end;
-
-fun execute_test_suite_amend_context_data ctxt = 
-  UT_Test_Suite.execute (mk_test_suite_amend_context_data ctxt)
-
-end;
 
 end;

@@ -6,6 +6,7 @@ session Types_To_Sets_Extension (AFP) = Conditional_Transfer_Rule +
     "HOL-Types_To_Sets"
     "HOL-Eisbach"
     "HOL-Analysis"
+    SpecCheck
   directories
     "ETTS"
     "ETTS/ETTS_Tools"

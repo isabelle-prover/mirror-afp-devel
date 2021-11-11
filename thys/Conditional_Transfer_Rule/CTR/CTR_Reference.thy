@@ -93,7 +93,9 @@ commands can be integrated.
 
 It should also be mentioned that the Isabelle/ML code from the main 
 distribution of Isabelle was frequently reused during the 
-development of CTR.
+development of CTR. Lastly, it should be mentioned that the 
+framework SpecCheck \cite{kappelmann_speccheck_2021} was used for unit 
+testing the framework CTR.
 \<close>
 
 

@@ -4,6 +4,7 @@ session Conditional_Transfer_Rule (AFP) = HOL +
   options [timeout=600]
   sessions
     "HOL-Library"
+    SpecCheck
   directories
     CTR_Tools
     IML_UT

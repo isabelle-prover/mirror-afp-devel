@@ -5,17 +5,21 @@
 
 signature ETTS_TEST_TTS_REGISTER_SBTS =
 sig
-
 type tts_register_sbts_in_type
-val execute_test_suite_tts_register_sbts : 
-  Proof.context ->
-  (tts_register_sbts_in_type, Proof.state) 
-    UT_Test_Suite.test_results_suite
-
+val test_suite : Proof.context -> unit -> unit
 end;
 
 structure etts_test_tts_register_sbts : ETTS_TEST_TTS_REGISTER_SBTS =
 struct
+
+
+
+
+(**** Background ****)
+
+open SpecCheck;
+structure Prop = SpecCheck_Property;
+structure Show = SpecCheck_Show;
 
 
 
@@ -33,9 +37,37 @@ type tts_register_sbts_in_type =
 
 
 
+
+(**** Visualization ****)
+
+fun show_tts_register_sbts_in 
+  (tts_register_sbts_in : tts_register_sbts_in_type) = 
+  let
+    val ((sbt, risset), _) = tts_register_sbts_in
+    val ctxt_c = "ctxt: unknown context" 
+    val sbt_c = "sbt: " ^ sbt
+    val risset_c = "risset: " ^ ML_Syntax.print_list I risset
+    val out_c = [ctxt_c, sbt_c, risset_c] |> String.concatWith "\n"
+  in Pretty.str out_c end;
+
+
+
+
+
+(**** Tests ****)
+
+
+
+(*** Wrapper ***)
+
+fun tts_register_sbts ((args, ctxt) : tts_register_sbts_in_type) = 
+  ETTS_Substitution.process_tts_register_sbts args ctxt;
+
+
+
 (*** Exceptions ***)
 
-fun test_exc_fvs ctxt = 
+fun test_exc_fvs ctxt _ = 
   let
     
     val sbt = "g::'q"
@@ -50,14 +82,17 @@ fun test_exc_fvs ctxt =
       "all fixed variables that occur in the sbterm " ^
       "must be fixed in the context"
 
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_register_sbts
+
   in
-    UT_Test_Suite.assert_exception
+    check_list_unit
+      (show_tts_register_sbts_in) 
+      [tts_register_sbts_in]
       "variables not fixed in the context"
-      tts_register_sbts_in
-      (ERROR err_msg)
+      exn_prop 
   end;
 
-fun test_exc_repeated_risset ctxt = 
+fun test_exc_repeated_risset ctxt _ = 
   let
     
     val sbt = "f"
@@ -71,56 +106,22 @@ fun test_exc_repeated_risset ctxt =
     val err_msg = mk_msg_tts_register_sbts_error
       "the type variables associated with the risset must be distinct"
 
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_register_sbts
+
   in
-    UT_Test_Suite.assert_exception
+    check_list_unit 
+      show_tts_register_sbts_in 
+      [tts_register_sbts_in]
       "repeated risset"
-      tts_register_sbts_in
-      (ERROR err_msg)
+      exn_prop
   end;
 
 
 
 
-(**** Test suite ****)
+(**** Test Suite ****)
 
-local
-
-fun tts_register_sbts_string_of_input 
-  (tts_register_sbts_in : tts_register_sbts_in_type) = 
-  let
-    val ((sbt, risset), _) = tts_register_sbts_in
-    val ctxt_c = "ctxt: unknown context" 
-    val sbt_c = "sbt: " ^ sbt
-    val risset_c = "risset: " ^ ML_Syntax.print_list I risset
-    val out_c = [ctxt_c, sbt_c, risset_c]
-      |> String.concatWith "\n"
-  in out_c end;
-
-fun tts_register_sbts_string_of_output (_ : Proof.state) = 
-  let val st_c = "st: unknown state" 
-  in st_c end;
-
-fun tts_register_sbts ((args, ctxt) : tts_register_sbts_in_type) = 
-  ETTS_Substitution.process_tts_register_sbts args ctxt;
-
-in
-
-fun mk_test_suite_tts_register_sbts ctxt =
-  let
-    val test_suite_tts_register_sbts = UT_Test_Suite.init
-      "tts_register_sbts"
-      tts_register_sbts
-      tts_register_sbts_string_of_input
-      tts_register_sbts_string_of_output
-  in
-    test_suite_tts_register_sbts
-    |> test_exc_fvs ctxt
-    |> test_exc_repeated_risset ctxt
-  end;
-
-end;
-
-fun execute_test_suite_tts_register_sbts ctxt = 
-  UT_Test_Suite.execute (mk_test_suite_tts_register_sbts ctxt);
+fun test_suite ctxt s = [test_exc_fvs ctxt s, test_exc_repeated_risset ctxt s]
+  |> Lecker.test_group ctxt s;
 
 end;

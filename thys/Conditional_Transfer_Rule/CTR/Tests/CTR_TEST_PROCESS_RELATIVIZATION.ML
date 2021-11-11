@@ -6,13 +6,20 @@
 signature CTR_TEST_PROCESS_RELATIVIZATION =
 sig
 type process_relativization_in_type
-val execute_test_suite_process_relativization : 
-  Proof.context -> (process_relativization_in_type, ctr_pp_out)
-    UT_Test_Suite.test_results_suite
+val test_suite : Proof.context -> unit -> unit
 end;
 
 structure ctr_test_process_relativization : CTR_TEST_PROCESS_RELATIVIZATION =
 struct
+
+
+
+
+(**** Background ****)
+
+open SpecCheck;
+structure Prop = SpecCheck_Property;
+structure Show = SpecCheck_Show;
 
 
 
@@ -84,119 +91,7 @@ end;
 
 
 
-
-(**** Tests ****)
-
-
-
-(*** Valid inputs ***)
-
-fun test_eq_trivial ctxt = 
-  let
-    (*input*)
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "mono_with" |> the
-    val process_relativization_in = 
-      ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    (*output*)
-    val process_relativization_out = 
-      PPRelativization ((@{thm mono_ow_def}, @{thm mono_ow_transfer'}), ctxt)
-  in
-    UT_Test_Suite.assert_brel 
-      "output equivalence"
-      process_relativization_test_eq 
-      process_relativization_out
-      process_relativization_in
-  end;
-
-
-
-(*** Exceptions ***)
-
-fun test_exc_def ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "exI" |> the
-    val args = 
-      ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error 
-      (
-        Syntax.string_of_term ctxt (Thm.full_prop_of @{thm exI}) ^ 
-        " is not a definition"
-      )
-  in UT_Test_Suite.assert_exception "not a definition" args (ERROR err_msg) end;
-
-fun test_exc_binrel ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "binrel" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error 
-      "trp: trp must consist of (stv, binary relation) pairs"
-  in UT_Test_Suite.assert_exception "binary relation" args (ERROR err_msg) end;
-
-fun test_exc_binrel_ftv ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "binrel_ftv" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error 
-      "trp: the user-specified binary relations must " ^
-      "be defined over type variables"
-  in 
-    UT_Test_Suite.assert_exception "binary relation ftv" args (ERROR err_msg) 
-  end;
-
-fun test_exc_dup_stvs ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "dup_stvs" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error "trp: duplicate stvs"
-  in UT_Test_Suite.assert_exception "duplicate stv" args (ERROR err_msg) end;
-
-fun test_exc_dup_binrel_ftvs ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "dup_binrel_ftvs" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error
-      "trp: duplicate ftvs in the specification of the binary relations"
-  in
-    UT_Test_Suite.assert_exception "duplicate binrel ftvs" args (ERROR err_msg) 
-  end;
-
-fun test_exc_no_relator ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "no_relator" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error
-      "no relator found for the type constructor CTR_Tests.K"
-  in
-    UT_Test_Suite.assert_exception "no relator" args (ERROR err_msg) 
-  end;
-
-fun test_exc_invalid_relator ctxt = 
-  let
-    val {synthesis, elems, type_specs, thm_specs, ...} = 
-      ctr_test_data_of_proof ctxt "invalid_relator" |> the
-    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
-    val err_msg = mk_msg_ctr_error
-      (
-        "the relator found for the type constructor CTR_Tests.L " ^
-        "is not suitable (is there is a mismatch of type variables?)" 
-      )
-  in
-    UT_Test_Suite.assert_exception "no relator" args (ERROR err_msg) 
-  end;
-
-
-
-
-(**** Test suite ****)
-
-local
+(**** Visualization ****)
 
 fun string_of_elem_ctxt_fixes args = "fixes: " ^
   (
@@ -234,7 +129,8 @@ fun string_of_elem_ctxt _ (Element.Fixes args : Element.context) =
   | string_of_elem_ctxt _ (Element.Lazy_Notes args) = 
       string_of_elem_ctxt_lazy_notes args
 
-fun process_relativization_string_of_input ctxt 
+fun show_relativization_in 
+  ctxt
   (process_relativization_in : process_relativization_in_type) = 
   let
     val ((synthesis_opt, elems, type_specs, thm_spec), lthy) =
@@ -270,7 +166,19 @@ fun process_relativization_string_of_input ctxt
     val lthy_c = "lthy: unknown local theory" 
     val out_c = [synthesis_opt_c, elems_c, type_specs_c, thm_spec_c, lthy_c] 
       |> String.concatWith "\n"
-  in out_c end;
+  in Pretty.str out_c end;
+
+fun show_relativization ctxt = 
+  Show.zip (show_relativization_in ctxt) (Pretty.str o string_of_pp_out)
+
+
+
+
+(**** Tests ****)
+
+
+
+(*** Wrapper ***)
 
 fun process_relativization 
   (
@@ -278,30 +186,119 @@ fun process_relativization
       process_relativization_in_type
   ) = CTR.process_relativization synthesis assms type_specs thm_spec lthy;
 
-in
 
-fun mk_test_suite_process_relativization ctxt =
+
+(*** Valid inputs ***)
+
+fun test_eq_trivial ctxt _ = 
   let
-    val test_suite_process_relativization = UT_Test_Suite.init
-      "process_relativization"
-      process_relativization
-      (process_relativization_string_of_input ctxt)
-      string_of_pp_out
+    (*input*)
+    val {synthesis, elems, type_specs, thm_specs, ...} = 
+      ctr_test_data_of_proof ctxt "mono_with" |> the
+    val process_relativization_in : process_relativization_in_type = 
+      ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
+    (*output*)
+    val process_relativization_out = 
+      PPRelativization ((@{thm mono_ow_def}, @{thm mono_ow_transfer'}), ctxt)
   in
-    test_suite_process_relativization
-    |> test_eq_trivial ctxt
-    |> test_exc_def ctxt
-    |> test_exc_binrel ctxt
-    |> test_exc_binrel_ftv ctxt
-    |> test_exc_dup_stvs ctxt
-    |> test_exc_dup_binrel_ftvs ctxt
-    |> test_exc_no_relator ctxt
-    |> test_exc_invalid_relator ctxt
+    check_list_unit
+      (show_relativization ctxt)
+      [(process_relativization_in, process_relativization_out)]
+      "equality"
+      (
+        Prop.prop 
+          (
+            fn (val_in, exp_out) => 
+              process_relativization_test_eq
+                (process_relativization val_in, exp_out)
+          )
+       )
   end;
 
-end;
 
-fun execute_test_suite_process_relativization ctxt = 
-  UT_Test_Suite.execute (mk_test_suite_process_relativization ctxt)
+
+(*** Exceptions ***)
+
+fun test_exc_template ctxt input_name_c err_msg_end_c test_name_c = 
+  let
+    val {synthesis, elems, type_specs, thm_specs, ...} = 
+      ctr_test_data_of_proof ctxt input_name_c |> the
+    val args = ((synthesis, elems, type_specs, the_single thm_specs), ctxt)
+    val err_msg = mk_msg_ctr_error err_msg_end_c
+    val exn_prop = Prop.expect_failure (ERROR err_msg) process_relativization
+  in 
+    check_list_unit
+      (show_relativization_in ctxt) 
+      [args]
+      test_name_c
+      exn_prop 
+  end;
+
+fun test_exc_def ctxt _ = 
+  let
+    val err_msg_end_c = 
+      (
+        Syntax.string_of_term ctxt (Thm.full_prop_of @{thm exI}) ^ 
+        " is not a definition"
+      )
+  in test_exc_template ctxt "exI" err_msg_end_c "not a definition" end;
+
+fun test_exc_binrel ctxt _ = 
+  let val err_msg_end_c = "trp: trp must consist of (stv, binary relation) pairs"
+  in test_exc_template ctxt "binrel" err_msg_end_c "binary relation" end;
+
+fun test_exc_binrel_ftv ctxt _ = 
+  let 
+    val err_msg_end_c = 
+      "trp: the user-specified binary relations must " ^
+      "be defined over type variables"
+  in test_exc_template ctxt "binrel_ftv" err_msg_end_c "binary relation ftv" end;
+
+fun test_exc_dup_stvs ctxt _ = 
+  let val err_msg_end_c = "trp: duplicate stvs"
+  in test_exc_template ctxt "dup_stvs" err_msg_end_c "duplicate stv" end;
+
+fun test_exc_dup_binrel_ftvs ctxt _ = 
+  let 
+    val err_msg_end_c = 
+      "trp: duplicate ftvs in the specification of the binary relations"
+  in 
+    test_exc_template 
+      ctxt "dup_binrel_ftvs" err_msg_end_c "duplicate binrel ftvs" 
+  end;
+
+fun test_exc_no_relator ctxt _ = 
+  let val err_msg_end_c = "no relator found for the type constructor CTR_Tests.K"
+  in test_exc_template ctxt "no_relator" err_msg_end_c "no relator" end;
+
+fun test_exc_invalid_relator ctxt _ = 
+  let
+    val err_msg_end_c = 
+      (
+        "the relator found for the type constructor CTR_Tests.L " ^
+        "is not suitable (is there is a mismatch of type variables?)" 
+      )
+  in
+    test_exc_template ctxt "invalid_relator" err_msg_end_c "invalid relator" 
+  end;
+
+
+
+
+(**** Test Suite ****)
+
+fun test_suite ctxt s = 
+  [
+    test_eq_trivial,
+    test_exc_def,
+    test_exc_binrel,
+    test_exc_binrel_ftv,
+    test_exc_dup_stvs,
+    test_exc_dup_binrel_ftvs,
+    test_exc_no_relator,
+    test_exc_invalid_relator
+  ]
+  |> map (fn f => f ctxt s) 
+  |> Lecker.test_group ctxt s;
 
 end;

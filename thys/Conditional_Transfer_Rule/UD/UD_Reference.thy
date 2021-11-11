@@ -72,7 +72,9 @@ the \textit{axiomatic type classes}
 
 It should also be mentioned that the Isabelle/ML code from the main 
 distribution of Isabelle was frequently reused during the 
-development of the UD.
+development of the UD. Lastly, it should be mentioned that the
+framework SpecCheck \cite{kappelmann_speccheck_2021} was used for unit 
+testing the framework UD.
 \<close>
 
 

@@ -10,6 +10,7 @@ theory ETTS_Tests
   imports
     "../ETTS_Auxiliary"
     Conditional_Transfer_Rule.IML_UT
+    SpecCheck.SpecCheck_Dynamic
 begin
 
 
@@ -23,7 +24,7 @@ locale test_amend_ctxt_data =
     and le :: "['ao, 'ao] \<Rightarrow> bool" (infix \<open>\<le>\<^sub>o\<^sub>w\<close> 50) 
     and ls :: "['bo, 'bo] \<Rightarrow> bool" (infix \<open><\<^sub>o\<^sub>w\<close> 50)
     and f :: "['ao, 'bo] \<Rightarrow> 'co"
-  assumes closed_f: "a \<in> UA \<Longrightarrow> b \<in> UB \<Longrightarrow> f a b \<in> UC"
+  assumes closed_f: "\<lbrakk> a \<in> UA; b \<in> UB \<rbrakk> \<Longrightarrow> f a b \<in> UC"
 begin
 
 notation le (\<open>'(\<le>\<^sub>o\<^sub>w')\<close>)
@@ -56,16 +57,9 @@ end
 
 context test_amend_ctxt_data
 begin
-
 ML\<open>
-val tts_test_amend_ctxt_data_test_results =
-  etts_test_amend_ctxt_data.execute_test_suite_amend_context_data @{context}
+Lecker.test_group @{context} () [etts_test_amend_ctxt_data.test_suite]
 \<close>
-ML\<open>
-val _ = tts_test_amend_ctxt_data_test_results
-  |> UT_Test_Suite.output_test_results true
-\<close>
-
 end
 
 
@@ -324,6 +318,7 @@ qed
 
 end
 
+
 context semigroup_mult_hom_ow
 begin
 
@@ -347,16 +342,9 @@ tts_context
   eliminating \<open>UA \<noteq> {}\<close> and \<open>UB \<noteq> {}\<close> 
     through (auto simp only: left_ideal_ow_def)
 begin
-
 ML\<open>
-val tts_test_amend_ctxt_data_test_results =
-  etts_test_tts_algorithm.execute_test_suite_tts_algorithm @{context}
+Lecker.test_group @{context} () [etts_test_tts_algorithm.test_suite]
 \<close>
-ML\<open>
-val _ = tts_test_amend_ctxt_data_test_results
-  |> UT_Test_Suite.output_test_results true
-\<close>
-
 end
 
 end
@@ -365,21 +353,14 @@ end
 
 subsection\<open>\<open>tts_register_sbts\<close>\<close>
 
-context 
+context
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
     and UA :: "'a set"
 begin
-
 ML_file\<open>ETTS_TEST_TTS_REGISTER_SBTS.ML\<close>
 ML\<open>
-val tts_test_tts_register_sbts_test_results =
-  etts_test_tts_register_sbts.execute_test_suite_tts_register_sbts @{context}
+Lecker.test_group @{context} () [etts_test_tts_register_sbts.test_suite]
 \<close>
-ML\<open>
-val _ = tts_test_tts_register_sbts_test_results
-  |> UT_Test_Suite.output_test_results true
-\<close>
-
 end
 
 end

@@ -5,18 +5,22 @@
 
 signature ETTS_TEST_TTS_ALGORITHM =
 sig
-
 type tts_algorithm_in_type
-val execute_test_suite_tts_algorithm : 
-  Proof.context ->
-  (tts_algorithm_in_type,
-  (thm * int list) * Proof.context)
-  UT_Test_Suite.test_results_suite
-
+val test_suite : Proof.context -> unit -> unit
 end;
 
 structure etts_test_tts_algorithm : ETTS_TEST_TTS_ALGORITHM =
 struct
+
+
+
+
+(**** Background ****)
+
+open SpecCheck;
+structure Prop = SpecCheck_Property;
+structure Show = SpecCheck_Show;
+
 
 
 
@@ -70,205 +74,7 @@ fun rel_tts_algorithm_out
 
 
 
-(**** Tests ****)
-
-
-
-(*** Valid inputs ***)
-
-fun test_eq_tts_algorithm (ctxt : Proof.context) = 
-  let
-
-    (*input*)
-    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
-    val rispec = #rispec tts_ctxt_data
-    val sbtspec = #sbtspec tts_ctxt_data
-    val sbrr_opt = #sbrr_opt tts_ctxt_data
-    val subst_thms = #subst_thms tts_ctxt_data
-    val mpespc_opt = #mpespc_opt tts_ctxt_data
-    val attrbs = #attrbs tts_ctxt_data
-    val tts_output_type = ETTS_Algorithm.default
-    val writer_in = [1, 1, 1, 1]
-    val in_thm = @{thm tta_semigroup_hom.tta_left_ideal_closed}
-    val tts_algorithm_in : tts_algorithm_in_type = 
-      (
-        ctxt,
-        tts_output_type, 
-        writer_in, 
-        rispec,
-        sbtspec, 
-        sbrr_opt, 
-        subst_thms, 
-        mpespc_opt,
-        attrbs,
-        in_thm
-      )
-
-    (*output*)
-    val writer_out = [1, 3, 1, 1]
-    val exp_tts_algorithm_out = 
-      ((@{thm tta_left_ideal_ow_closed}, writer_out), ctxt)
-
-  in
-    UT_Test_Suite.assert_brel
-      "equality"
-      rel_tts_algorithm_out
-      exp_tts_algorithm_out
-      tts_algorithm_in
-  end;
-
-
-
-(*** Exceptions ***)
-
-fun test_exc_ftvs ctxt = 
-  let
-    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
-    val rispec = #rispec tts_ctxt_data
-    val sbtspec = #sbtspec tts_ctxt_data
-    val sbrr_opt = #sbrr_opt tts_ctxt_data
-    val subst_thms = #subst_thms tts_ctxt_data
-    val mpespc_opt = #mpespc_opt tts_ctxt_data
-    val attrbs = #attrbs tts_ctxt_data
-    val tts_output_type = ETTS_Algorithm.default
-    val writer_in = [1, 1, 1, 1]
-    val in_thm = @{thm exI'[where 'a='a]}
-    val tts_algorithm_in : tts_algorithm_in_type = 
-      (
-        ctxt,
-        tts_output_type, 
-        writer_in, 
-        rispec,
-        sbtspec, 
-        sbrr_opt, 
-        subst_thms, 
-        mpespc_opt,
-        attrbs,
-        in_thm
-      )
-    val err_msg = mk_msg_tts_algorithm_error
-      "fixed type variables must not occur in the type-based theorems"
-  in
-    UT_Test_Suite.assert_exception 
-      "fixed type variables" 
-      tts_algorithm_in
-      (ERROR err_msg)
-  end;
-
-fun test_exc_fvs ctxt = 
-  let
-    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
-    val rispec = #rispec tts_ctxt_data
-    val sbtspec = #sbtspec tts_ctxt_data
-    val sbrr_opt = #sbrr_opt tts_ctxt_data
-    val subst_thms = #subst_thms tts_ctxt_data
-    val mpespc_opt = #mpespc_opt tts_ctxt_data
-    val attrbs = #attrbs tts_ctxt_data
-    val tts_output_type = ETTS_Algorithm.default
-    val writer_in = [1, 1, 1, 1]
-    val aT = TVar (("'a", 0), \<^sort>\<open>type\<close>)
-    val xv = ("x", 0)
-    val xt = Free ("x", aT) |> Thm.cterm_of ctxt
-    val in_thm = Drule.instantiate_normalize 
-      (TVars.empty, Vars.make [((xv, aT), xt)]) @{thm exI'}
-    val tts_algorithm_in : tts_algorithm_in_type = 
-      (
-        ctxt,
-        tts_output_type,
-        writer_in,
-        rispec,
-        sbtspec,
-        sbrr_opt,
-        subst_thms,
-        mpespc_opt,
-        attrbs,
-        in_thm
-      )
-    val err_msg = mk_msg_tts_algorithm_error
-      "fixed variables must not occur in the type-based theorems"
-  in
-    UT_Test_Suite.assert_exception 
-      "fixed variables" 
-      tts_algorithm_in
-      (ERROR err_msg)
-  end;
-
-fun test_exc_not_risstv_subset ctxt = 
-  let
-    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
-    val rispec = #rispec tts_ctxt_data
-    val sbtspec = #sbtspec tts_ctxt_data
-    val sbrr_opt = #sbrr_opt tts_ctxt_data
-    val subst_thms = #subst_thms tts_ctxt_data
-    val mpespc_opt = #mpespc_opt tts_ctxt_data
-    val attrbs = #attrbs tts_ctxt_data
-    val tts_output_type = ETTS_Algorithm.default
-    val writer_in = [1, 1, 1, 1]
-    val in_thm = @{thm tta_semigroup.tta_assoc}
-    val tts_algorithm_in : tts_algorithm_in_type = 
-      (
-        ctxt,
-        tts_output_type,
-        writer_in,
-        rispec,
-        sbtspec,
-        sbrr_opt,
-        subst_thms,
-        mpespc_opt,
-        attrbs,
-        in_thm
-      )
-    val err_msg = mk_msg_tts_algorithm_error
-      "risstv must be a subset of the schematic type " ^
-      "variables that occur in the type-based theorems"
-  in
-    UT_Test_Suite.assert_exception
-      "risstv is not a subset of the stvs of the type-based theorems" 
-      tts_algorithm_in
-      (ERROR err_msg)
-  end;
-
-fun test_not_tts_context thy = 
-  let
-    val ctxt = Proof_Context.init_global thy                    
-    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
-    val rispec = #rispec tts_ctxt_data
-    val sbtspec = #sbtspec tts_ctxt_data
-    val sbrr_opt = #sbrr_opt tts_ctxt_data
-    val subst_thms = #subst_thms tts_ctxt_data
-    val mpespc_opt = #mpespc_opt tts_ctxt_data
-    val attrbs = #attrbs tts_ctxt_data
-    val tts_output_type = ETTS_Algorithm.default
-    val writer_in = [1, 1, 1, 1]
-    val in_thm = @{thm tta_semigroup_hom.tta_left_ideal_closed}
-    val tts_algorithm_in : tts_algorithm_in_type = 
-      (
-        ctxt,
-        tts_output_type, 
-        writer_in, 
-        rispec,
-        sbtspec, 
-        sbrr_opt, 
-        subst_thms, 
-        mpespc_opt,
-        attrbs,
-        in_thm
-      )
-    val err_msg = mk_msg_tts_algorithm_error
-      "ERA can only be invoked from an appropriately parameterized tts context"
-  in
-    UT_Test_Suite.assert_exception 
-      "not tts context" 
-      tts_algorithm_in
-      (ERROR err_msg)
-  end;
-
-
-
-
-(**** Test suite ****)
-
-local
+(**** Visualization ****)
 
 fun string_of_rispec ctxt = 
   ML_Syntax.print_pair (Term.string_of_vname) (Syntax.string_of_term ctxt)
@@ -281,7 +87,7 @@ fun string_of_sbtspec ctxt =
     |> ML_Syntax.print_list
   end;
 
-fun tts_algorithm_string_of_input (tts_algorithm_in : tts_algorithm_in_type) = 
+fun show_tts_algorithm_in (tts_algorithm_in : tts_algorithm_in_type) = 
   let
     val 
       (
@@ -327,16 +133,27 @@ fun tts_algorithm_string_of_input (tts_algorithm_in : tts_algorithm_in_type) =
         thm_c
       ]
       |> String.concatWith "\n"
-  in out_c end;
+  in Pretty.str out_c end;
 
-fun tts_algorithm_string_of_output 
+fun show_tts_algorithm_out
   (((thm, writer), ctxt) : (thm * int list) * Proof.context) = 
   let
     val ctxt_c = "ctxt: unknown context" 
     val thm_c = Thm.string_of_thm ctxt thm
     val writer_c = ML_Syntax.print_list Int.toString writer
     val out_c = [ctxt_c, thm_c, writer_c] |> String.concatWith "\n"
-  in out_c end;
+  in Pretty.str out_c end;
+
+val show_tts_algorithm = Show.zip show_tts_algorithm_in show_tts_algorithm_out
+
+
+
+
+(**** Tests ****)
+
+
+
+(*** Wrapper ***)
 
 fun tts_algorithm (tts_algorithm_in : tts_algorithm_in_type) =
   let
@@ -363,31 +180,231 @@ fun tts_algorithm (tts_algorithm_in : tts_algorithm_in_type) =
         sbrr_opt 
         subst_thms 
         mpespc_opt 
-        attrbs 
+        attrbs
         thm
   in tts_algorithm_out end;
 
-in
 
-fun mk_test_suite_tts_algorithm ctxt =
+
+(*** Valid inputs ***)
+
+fun test_eq_tts_algorithm (ctxt : Proof.context) _ = 
   let
-    val test_suite_tts_algorithm = UT_Test_Suite.init
-      "tts_algorithm"
-      tts_algorithm
-      tts_algorithm_string_of_input
-      tts_algorithm_string_of_output
+
+    (*input*)
+    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
+    val rispec = #rispec tts_ctxt_data
+    val sbtspec = #sbtspec tts_ctxt_data
+    val sbrr_opt = #sbrr_opt tts_ctxt_data
+    val subst_thms = #subst_thms tts_ctxt_data
+    val mpespc_opt = #mpespc_opt tts_ctxt_data
+    val attrbs = #attrbs tts_ctxt_data
+    val tts_output_type = ETTS_Algorithm.default
+    val writer_in = [1, 1, 1, 1]
+    val in_thm = @{thm tta_semigroup_hom.tta_left_ideal_closed}
+    val tts_algorithm_in : tts_algorithm_in_type = 
+      (
+        ctxt,
+        tts_output_type, 
+        writer_in, 
+        rispec,
+        sbtspec,
+        sbrr_opt, 
+        subst_thms, 
+        mpespc_opt,
+        attrbs,
+        in_thm
+      )
+
+    (*output*)
+    val writer_out = [1, 3, 1, 1]
+    val exp_tts_algorithm_out = 
+      ((@{thm tta_left_ideal_ow_closed}, writer_out), ctxt)
+
   in
-    test_suite_tts_algorithm
-    |> test_eq_tts_algorithm ctxt
-    |> test_exc_ftvs ctxt
-    |> test_exc_fvs ctxt
-    |> test_exc_not_risstv_subset ctxt
-    |> test_not_tts_context (Proof_Context.theory_of ctxt)
+    check_list_unit
+      show_tts_algorithm
+      [(tts_algorithm_in, exp_tts_algorithm_out)]
+      "equality"
+      (
+        Prop.prop 
+          (
+            fn (val_in, val_out) => 
+              rel_tts_algorithm_out (tts_algorithm val_in, val_out)
+          )
+       )
   end;
 
-end;
 
-fun execute_test_suite_tts_algorithm ctxt = 
-  UT_Test_Suite.execute (mk_test_suite_tts_algorithm ctxt);
+
+(*** Exceptions ***)
+
+fun test_exc_ftvs ctxt _ = 
+  let
+    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
+    val rispec = #rispec tts_ctxt_data
+    val sbtspec = #sbtspec tts_ctxt_data
+    val sbrr_opt = #sbrr_opt tts_ctxt_data
+    val subst_thms = #subst_thms tts_ctxt_data
+    val mpespc_opt = #mpespc_opt tts_ctxt_data
+    val attrbs = #attrbs tts_ctxt_data
+    val tts_output_type = ETTS_Algorithm.default
+    val writer_in = [1, 1, 1, 1]
+    val in_thm = @{thm exI'[where 'a='a]}
+    val tts_algorithm_in : tts_algorithm_in_type = 
+      (
+        ctxt,
+        tts_output_type, 
+        writer_in, 
+        rispec,
+        sbtspec, 
+        sbrr_opt, 
+        subst_thms, 
+        mpespc_opt,
+        attrbs,
+        in_thm
+      )
+    val err_msg = mk_msg_tts_algorithm_error
+      "fixed type variables must not occur in the type-based theorems"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_algorithm
+  in
+    check_list_unit
+      show_tts_algorithm_in
+      [tts_algorithm_in]
+      "fixed type variables"
+      exn_prop 
+  end;
+
+fun test_exc_fvs ctxt _ = 
+  let
+    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
+    val rispec = #rispec tts_ctxt_data
+    val sbtspec = #sbtspec tts_ctxt_data
+    val sbrr_opt = #sbrr_opt tts_ctxt_data
+    val subst_thms = #subst_thms tts_ctxt_data
+    val mpespc_opt = #mpespc_opt tts_ctxt_data
+    val attrbs = #attrbs tts_ctxt_data
+    val tts_output_type = ETTS_Algorithm.default
+    val writer_in = [1, 1, 1, 1]
+    val aT = TVar (("'a", 0), \<^sort>\<open>type\<close>)
+    val xv = ("x", 0)
+    val xt = Free ("x", aT) |> Thm.cterm_of ctxt
+    val in_thm = Drule.instantiate_normalize 
+      (TVars.empty, Vars.make [((xv, aT), xt)]) @{thm exI'}
+    val tts_algorithm_in : tts_algorithm_in_type = 
+      (
+        ctxt,
+        tts_output_type,
+        writer_in,
+        rispec,
+        sbtspec,
+        sbrr_opt,
+        subst_thms,
+        mpespc_opt,
+        attrbs,
+        in_thm
+      )
+    val err_msg = mk_msg_tts_algorithm_error
+      "fixed variables must not occur in the type-based theorems"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_algorithm
+  in
+    check_list_unit
+      show_tts_algorithm_in
+      [tts_algorithm_in]
+      "fixed variables"
+      exn_prop 
+  end;
+
+fun test_exc_not_risstv_subset ctxt _ = 
+  let
+    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
+    val rispec = #rispec tts_ctxt_data
+    val sbtspec = #sbtspec tts_ctxt_data
+    val sbrr_opt = #sbrr_opt tts_ctxt_data
+    val subst_thms = #subst_thms tts_ctxt_data
+    val mpespc_opt = #mpespc_opt tts_ctxt_data
+    val attrbs = #attrbs tts_ctxt_data
+    val tts_output_type = ETTS_Algorithm.default
+    val writer_in = [1, 1, 1, 1]
+    val in_thm = @{thm tta_semigroup.tta_assoc}
+    val tts_algorithm_in : tts_algorithm_in_type = 
+      (
+        ctxt,
+        tts_output_type,
+        writer_in,
+        rispec,
+        sbtspec,
+        sbrr_opt,
+        subst_thms,
+        mpespc_opt,
+        attrbs,
+        in_thm
+      )
+    val err_msg = mk_msg_tts_algorithm_error
+      "risstv must be a subset of the schematic type " ^
+      "variables that occur in the type-based theorems"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_algorithm
+  in
+    check_list_unit
+      show_tts_algorithm_in
+      [tts_algorithm_in]
+      "risstv is not a subset of the stvs of the type-based theorems"
+      exn_prop 
+  end;
+
+fun test_not_tts_context thy _ = 
+  let
+    val ctxt = Proof_Context.init_global thy                    
+    val tts_ctxt_data = ETTS_Context.get_tts_ctxt_data ctxt
+    val rispec = #rispec tts_ctxt_data
+    val sbtspec = #sbtspec tts_ctxt_data
+    val sbrr_opt = #sbrr_opt tts_ctxt_data
+    val subst_thms = #subst_thms tts_ctxt_data
+    val mpespc_opt = #mpespc_opt tts_ctxt_data
+    val attrbs = #attrbs tts_ctxt_data
+    val tts_output_type = ETTS_Algorithm.default
+    val writer_in = [1, 1, 1, 1]
+    val in_thm = @{thm tta_semigroup_hom.tta_left_ideal_closed}
+    val tts_algorithm_in : tts_algorithm_in_type = 
+      (
+        ctxt,
+        tts_output_type, 
+        writer_in, 
+        rispec,
+        sbtspec, 
+        sbrr_opt, 
+        subst_thms, 
+        mpespc_opt,
+        attrbs,
+        in_thm
+      )
+    val err_msg = mk_msg_tts_algorithm_error
+      "ERA can only be invoked from an appropriately parameterized tts context"
+    val exn_prop = Prop.expect_failure (ERROR err_msg) tts_algorithm
+  in
+    check_list_unit
+      show_tts_algorithm_in 
+      [tts_algorithm_in] 
+      "not tts context"
+      exn_prop 
+  end;
+
+
+
+
+(**** Test Suite ****)
+
+fun test_suite ctxt s = 
+  let val thy = Proof_Context.theory_of ctxt
+  in
+    [
+      test_eq_tts_algorithm ctxt s,
+      test_exc_ftvs ctxt s,
+      test_exc_fvs ctxt s,
+      test_exc_not_risstv_subset ctxt s,
+      test_not_tts_context thy s
+    ]
+    |> Lecker.test_group ctxt s
+  end;
 
 end;

@@ -10,6 +10,7 @@ theory UD_Tests
   imports
     "../UD"
     "../../IML_UT/IML_UT"
+    SpecCheck.SpecCheck_Dynamic
     Complex_Main
 begin
 
@@ -46,13 +47,7 @@ subsection\<open>Tests\<close>
 ML_file\<open>UD_TEST_UNOVERLOAD_DEFINITION.ML\<close>
 
 ML\<open>
-val ud_test_unoverload_definition_test_results =
-  ud_test_unoverload_definition.execute_test_suite_unoverload_definition
-    @{theory}
-\<close>
-ML\<open>
-val _ = ud_test_unoverload_definition_test_results
-  |> UT_Test_Suite.output_test_results true
+Lecker.test_group @{context} () [ud_test_unoverload_definition.test_suite]
 \<close>
 
 end
