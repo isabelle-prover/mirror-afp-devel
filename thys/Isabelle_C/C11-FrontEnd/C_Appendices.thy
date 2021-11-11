@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Isabelle/C Commands, Control Attributes and Programming Infrastructure\<close>
+chapter \<open>A Resume on Isabelle/C: Commands, Control Attributes and Programming Infrastructure\<close>
 
 theory C_Appendices
   imports   "examples/C1" 
@@ -390,7 +390,7 @@ file-system in the left window. Selecting and opening a generated file in the la
 display it in a new buffer, which gives the possibility to export this file via ``\<open>File
 \<rightarrow> Save As\<dots>\<close>'' into the real file-system. \<close>
 
-section \<open>Case Study: Mapping on the Parsed AST\<close>
+section \<open>Case Study: Mapping on the Parsed AST via C99 ASTs\<close>
 
 text \<open> In this section, we give a concrete example of a situation where one is interested to
 do some automated transformations on the parsed AST, such as changing the type of every encountered
@@ -633,8 +633,72 @@ sequence of Shift Reduce actions associated to the \<^theory_text>\<open>C\<clos
 interest.
 \<close>
 
+text\<open>\<^bold>\<open>NOTE\<close> :the C99 library is part of the configuration with AutoCorres, which is
+currently only available for Isabelle2019.\<close>
+
+section \<open>Case Study: Mapping on the Parsed AST via the \<^ML_structure>\<open>C11_Ast_Lib\<close>\<close>
+
+text\<open>A simpler alternative for connecting Isabelle/C to a semantic backend is the use of the
+\<^ML_structure>\<open>C11_Ast_Lib\<close>, an API for the C11 abstract syntax. Among a number of utilities, 
+it provides a family of iterators (or: hylomorphisms, generalized fold operators, or whatever
+terminology you prefer). There is a fold-operator for each C11 Ast-category :
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cArraySize: 'a -> (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                      -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cCompoundBlockItem: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                    -> 'a C_Ast.cCompoundBlockItem -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cArraySize: 'a -> (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                      -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cDeclaration: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                      -> 'a C_Ast.cDeclaration -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cExpression: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                       -> 'a C_Ast.cExpression -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cStatement: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                       -> 'a C_Ast.cStatement -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cExternalDeclaration: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                       -> 'a C_Ast.cExternalDeclaration -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cTranslationUnit: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
+                                       -> 'a C_Ast.cTranslationUnit -> 'b -> 'b\<close>
+\<^enum> etc.
+\<close>
+text\<open>Here, \<^ML_type>\<open>C11_Ast_Lib.node_content\<close>  is a data-structure providing untyped and uniform 
+information on which rule has been applied, and what kind of particular decoration appears in the
+C11-Ast. \<close>
+
+text\<open> This allows for a simple programming of queries like "get the list of identifiers" 
+directly on the C11-Ast. Moreover, it is pretty straight-forward to program a compiler to 
+\<open>\<lambda>\<close>-terms for a specific semantic interpretation in Isabelle/HOL. A simple example is here:\<close>
+
+text\<open>
+@{theory_text [display]
+\<open>declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+ C\<open>a + b * c - a / b\<close>
+ ML\<open>val ast_expr = @{C11_CExpr}\<close>\<close>}
+
+@{verbatim [display]\<open>
+fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content) 
+                       (b:  C_Ast.nodeInfo ) 
+                       (c : term list)=  
+    case tag of
+      "Ident0" => (node_content_2_free a)::c
+     |"CBinary0" => (case (drop_dark_matter sub_tag, c) of 
+                      ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
+                    | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
+                    | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)
+                    | ("CSubOp0",b::a::R) => (Const("Groups.minus_class.minus",dummyT) $ a $ b :: R)
+                    | _ => (writeln ("sub_tag all " ^sub_tag^" :>> "^ @{make_string} c);c ))
+     | _ => c;
+
+
+val S =  (C11_Ast_Lib.fold_cExpression selectIdent0Binary ast_expr []);
+(* gives the (untyped) equivalent of : *)
+val S' = @{term "a + b * c - a / b"};
+\<close>}
+\<close>
+
+text\<open>This snippet is drawn from the C1-Example shown in Appendix IV.\<close>
+
 section \<open>Known Limitations, Troubleshooting\<close>
-subsection \<open>The Document Model of the Isabelle/PIDE (applying for Isabelle 2019)\<close>
+subsection \<open>The Document Model of the Isabelle/PIDE\<close>
 subsubsection \<open>Introduction\<close>
 
 text \<open> Embedding C directives in C code is an act of common practice in numerous applications,
