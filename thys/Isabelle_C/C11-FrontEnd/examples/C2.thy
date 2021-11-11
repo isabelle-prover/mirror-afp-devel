@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Example: Annotation Navigation and Context Serialization\<close>
+chapter \<open>Annex III:  Navigation and Context Serialization\<close>
 
 theory C2
   imports "../C_Main"
@@ -42,8 +42,8 @@ theory C2
 begin
 
 text \<open> Operationally, the \<^theory_text>\<open>C\<close> command can be thought of as behaving as the \<^theory_text>\<open>ML\<close> command, 
-where it is for example possible to recursively nest C code in C. Generally, the present 
-chapter assumes a familiarity with all advance concepts of ML as described in
+where it is for example possible to recursively nest C code in C. Generally, the current 
+section assumes a familiarity with all advanced concepts of ML as described in
  \<^file>\<open>~~/src/HOL/Examples/ML.thy\<close>, as well as the concept of ML antiquotations 
 (\<^file>\<open>~~/src/Doc/Implementation/ML.thy\<close>). However, even if\<^theory_text>\<open>C\<close> might resemble to \<^theory_text>\<open>ML\<close>, 
 we will now see in detail that there are actually subtle differences between the two commands.\<close>

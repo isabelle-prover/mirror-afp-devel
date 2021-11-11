@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Isabelle/C\<close>
+chapter \<open>Annex I: The Commented Sources of Isabelle/C\<close>
 
 section \<open>Core Language: An Abstract Syntax Tree Definition (C Language without Annotations)\<close>
 

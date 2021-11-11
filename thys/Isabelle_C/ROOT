@@ -37,7 +37,10 @@
 chapter AFP
 
 session Isabelle_C (AFP) = HOL +
-  options [timeout = 600]
+  options [timeout = 600,
+           document = pdf,
+           document_output = "output",
+           document_variants="document:outline=/proof"]
   sessions
     "HOL-ex"
     "Isar_Ref"
@@ -47,10 +50,12 @@ session Isabelle_C (AFP) = HOL +
     "C11-FrontEnd/examples"
   theories [document = false]
     "HOL-ex.Cartouche_Examples" (* LaTeX error in Isabelle2019 *)
-  theories (* a standard test suite *)
+  theories [document = true]
     "C11-FrontEnd/examples/C0"
     "C11-FrontEnd/examples/C1"
     "C11-FrontEnd/examples/C2"
+    "C11-FrontEnd/examples/C3"
+    "C11-FrontEnd/examples/C4"
     "C11-FrontEnd/examples/C_paper"
   theories (* document *)
     "C11-FrontEnd/C_Appendices"

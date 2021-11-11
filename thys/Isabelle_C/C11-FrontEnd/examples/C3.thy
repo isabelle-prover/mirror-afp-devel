@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Example: Annotation Navigation and Context Serialization\<close>
+chapter \<open>Annex IV: Examples for Navigation and Context Serialization\<close>
 
 theory C3
   imports "../C_Main"

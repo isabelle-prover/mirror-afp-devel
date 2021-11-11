@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Example: A Simple C Program with Directives and Annotations\<close>
+chapter \<open>Annex V: Examples for Simple C Programs with Directives and Annotations\<close>
 
 theory C4
   imports "../C_Main"

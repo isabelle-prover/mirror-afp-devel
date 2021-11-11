@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Annexes\<close>
+chapter \<open>Isabelle/C Commands, Control Attributes and Programming Infrastructure\<close>
 
 theory C_Appendices
   imports "examples/C1"
@@ -137,8 +137,9 @@ end;
 
 section \<open>Syntax Commands for Isabelle/C\<close>
 
-subsection \<open>Outer Classical Commands\<close>
+subsection \<open>Toplevel Commands and Control Attributes\<close>
 
+(* @{attribute_def C\<^sub>e\<^sub>n\<^sub>v\<^sub>0} cases LaTeX error *)
 text \<open>
   \begin{matharray}{rcl}
     @{command_def "C_file"} & : & \<open>local_theory \<rightarrow> local_theory\<close> \\
@@ -152,8 +153,8 @@ text \<open>
     @{attribute_def C_lexer_trace} & : & \<open>attribute\<close> & default \<open>false\<close> \\
     @{attribute_def C_parser_trace} & : & \<open>attribute\<close> & default \<open>false\<close> \\
     @{attribute_def C_ML_verbose} & : & \<open>attribute\<close> & default \<open>true\<close> \\
-    @{attribute_def C_starting_env} & : & \<open>attribute\<close> & default \<open>empty\<close> \\
-    @{attribute_def C_starting_rule} & : & \<open>attribute\<close> & default \<open>translation_unit\<close> \\
+    \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close> & : & \<open>attribute\<close> & default \<open>empty\<close> \\
+    \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> & : & \<open>attribute\<close> & default \<open>translation_unit\<close> \\
   \end{tabular}
 
   \<^rail>\<open>
@@ -169,9 +170,9 @@ text \<open>
   \<^descr> \<^theory_text>\<open>C_file name\<close> reads the given C file, and let any attached
   semantic back-ends to proceed for further subsequent evaluation. Top-level C bindings are stored
   within the (global or local) theory context; the initial environment is set by default to be an
-  empty one, or the one returned by a previous \<^theory_text>\<open>C_file\<close> (depending on
-  @{attribute_def C_starting_env}). The entry-point of the grammar taken as initial starting parser
-  is read from @{attribute_def C_starting_rule} (see
+  empty one, or the one returned by a previous \<^theory_text>\<open>C_file\<close> (depending on attribute
+  \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close>). The entry-point of the grammar taken as initial starting point of the parser
+  is read from attribute \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> (see
   \<^url>\<open>https://www.haskell.org/happy/doc/html/sec-directives.html#sec-parser-name\<close>).
   Multiple \<^theory_text>\<open>C_file\<close> commands may be used to build larger C projects if
   they are all written in a single theory file (existing parent theories are ignored, and not
@@ -205,6 +206,7 @@ text \<open>
     \<^item> and any ML antiquotations in \<open>code\<close> are not analyzed by
     \<^theory_text>\<open>generate_file\<close> (in contrast with its default behavior). \<close>
 
+(* again,  @{attribute C\<^sub>e\<^sub>n\<^sub>v\<^sub>0}  and  @{attribute C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0} cause LaTeX errors... *)
 text \<open>
 
   \<^descr> @{attribute C_lexer_trace} indicates whether the list of C
@@ -220,16 +222,20 @@ text \<open>
   \<^theory_text>\<open>ML\<close> commands are acting similarly as
   their default verbose configuration in top-level.
 
-  \<^descr> @{attribute C_starting_env} makes the start of a C
+  \<^descr> \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close> makes the start of a C
   command (e.g., \<^theory_text>\<open>C_file\<close>,
   \<^theory_text>\<open>C\<close>) initialized with the environment of
   the previous C command if existing.
 
-  \<^descr> @{attribute C_starting_rule} sets which parsing function will be used to parse the next
-  C commands (e.g., \<^theory_text>\<open>C_file\<close>, \<^theory_text>\<open>C\<close>).
+  \<^descr> \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> sets the root syntactic category in which the parser starts.
+  C commands (e.g., \<^theory_text>\<open>C_file\<close>, \<^theory_text>\<open>C\<close>). Possible  values are:
+      \<^descr>  \<open>"expression"\<close>, 
+      \<^descr>  \<open>"statement"\<close>,
+      \<^descr>  \<open>"external_declaration"\<close> and 
+      \<^descr>  \<open>"translation_unit"\<close> (the default)
 \<close>
 
-subsection \<open>Inner Annotation Commands\<close>
+subsection \<open>Predefined Annotation Commands inside the C context (C Annotation commands)\<close>
 
 text \<open>
   \<^rail>\<open>

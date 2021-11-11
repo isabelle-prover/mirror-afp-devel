@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>C11 Lexis and Syntax; and Isabelle/C User-Interaction\<close>
+chapter \<open>Annex III: Examples for C11 Lexis and Syntax; and Isabelle/C User-Interaction\<close>
 
 theory C0
   imports "../C_Main"
