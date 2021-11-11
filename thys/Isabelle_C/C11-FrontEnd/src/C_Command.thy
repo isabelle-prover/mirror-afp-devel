@@ -77,12 +77,15 @@ fun print_codepoint c =
       else error "Not yet implemented");
 
 fun print_symbol sym =
-  (case Symbol.decode sym of
-    Symbol.Char s => print_codepoint (ord s)
-  | Symbol.UTF8 s => UTF8.decode_permissive s |> map print_codepoint |> implode
-  | Symbol.Sym s => "\\092<" ^ s ^ ">"
-  | Symbol.Control s => "\\092<^" ^ s ^ ">"
-  | _ => translate_string (print_codepoint o ord) sym);
+  let val ord = SML90.ord; (* copied from ML_init in Isabelle2020. *)
+  in
+     (case Symbol.decode sym of
+       Symbol.Char s => print_codepoint (ord s)
+     | Symbol.UTF8 s => UTF8.decode_permissive s |> map print_codepoint |> implode
+     | Symbol.Sym s => "\\092<" ^ s ^ ">"
+     | Symbol.Control s => "\\092<^" ^ s ^ ">"
+     | _ => translate_string (print_codepoint o ord) sym)
+  end;
 
 val print_string = quote o implode o map print_symbol o Symbol.explode;
 end
@@ -1065,13 +1068,35 @@ C_Module.C_Term'.parse_translation
 (*test*)
 ML\<open>C_Module.env (Context.the_generic_context())\<close>
 
-
+ML\<open>open Args\<close>
 subsection\<open>C-env related ML-Antiquotations as Programming Support\<close>
 
 ML\<open>
+
+(*
+was in Isabelle2020: 
+    (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+
+with:
+
+val embedded_token = ident || string || cartouche;
+val embedded_inner_syntax = embedded_token >> Token.inner_syntax_of;
+val embedded_input = embedded_token >> Token.input_of;
+val embedded = embedded_token >> Token.content_of;
+val embedded_position = embedded_input >> Input.source_content;
+
+defined in args.
+
+Setting it to :
+
+    (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
+
+makes this syntactically more restrictive. 
+*)
+
 val _ = Theory.setup(
   ML_Antiquotation.value_embedded \<^binding>\<open>C\<^sub>e\<^sub>n\<^sub>v\<close>
-    (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+    (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
       (warning"arg variant not implemented";"C_Module.env (Context.the_generic_context())"))
     || Scan.succeed "C_Module.env (Context.the_generic_context())"))
 
@@ -1131,24 +1156,26 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put (update_Root_Ast SOME)
 
 
 ML\<open>
+(* Was : Args.embedded_position changed to : Args.name_position.
+  See comment above. *)
 val _ = Theory.setup(
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CTranslUnit\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
           || Scan.succeed "get_CTranslUnit (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExtDecl\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CExtDecl (Context.the_global_context())"))
           || Scan.succeed "get_CExtDecl (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CStat\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CStat (Context.the_global_context())"))
           || Scan.succeed "get_CStat (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExpr\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CExpr (Context.the_global_context())"))
           || Scan.succeed "get_CExpr (Context.the_global_context())")
        )

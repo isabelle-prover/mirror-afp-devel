@@ -80,7 +80,7 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put
 ML\<open>
 val _ = Theory.setup(
   ML_Antiquotation.value_embedded \<^binding>\<open>C11_AST_CTranslUnit\<close>
-    (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+    (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
       (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
     || Scan.succeed "get_CTranslUnit (Context.the_global_context())"))
 

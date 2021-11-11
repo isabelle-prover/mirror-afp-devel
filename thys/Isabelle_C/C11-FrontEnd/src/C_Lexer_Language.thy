@@ -718,7 +718,7 @@ val range_list_of0 =
   | toks as tok1 :: _ => Position.range (pos_of tok1, end_pos_of (List.last toks))
     (* WARNING the use of:
        \<comment>\<open>\<^ML>\<open>fn content_of => fn pos_of => fn tok2 =>
-             List.last (Symbol_Pos.explode (content_of tok2, pos_of tok2)) |-> Position.advance\<close>\<close>
+             List.last (Symbol_Pos.explode (content_of tok2, pos_of tok2)) |-> Position.symbol\<close>\<close>
        would not return an accurate position if for example several
        "backslash newlines" are present in the symbol *)
 
@@ -1440,8 +1440,8 @@ fun reader scan syms =
       if null syms then []
       else
         let
-          val pos1 = List.last syms |-> Position.advance;
-          val pos2 = Position.advance Symbol.space pos1;
+          val pos1 = List.last syms |-> Position.symbol;
+          val pos2 = Position.symbol Symbol.space pos1;
         in [Token (Position.range (pos1, pos2), (Space, Symbol.space))] end;
 
     val backslash1 =

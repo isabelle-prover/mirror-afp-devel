@@ -152,10 +152,17 @@ fun dest_commands (Keywords {commands, ...}) = Symtab.keys commands;
 fun lookup_command (Keywords {commands, ...}) = Symtab.lookup commands;
 
 fun command_markup keywords name =
-  lookup_command keywords name
-  |> Option.map (fn {pos, id, ...} =>
-      Markup.properties (Position.entity_properties_of false id pos)
-        (Markup.entity Markup.command_keywordN name));
+  let       (* PATCH: copied as such from Isabelle2020 *)
+       fun entity_properties_of def serial pos =
+           if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
+           else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
+
+    in
+       lookup_command keywords name
+       |> Option.map (fn {pos, id, ...} =>
+           Markup.properties (entity_properties_of false id pos)
+             (Markup.entity Markup.command_keywordN name))
+    end;
 
 
 fun command_files keywords name path =
@@ -453,7 +460,7 @@ fun reports keywords tok =
     let
       val pos = pos_of tok;
       val (m, text) = token_kind_markup (kind_of tok);
-      val delete = #2 (Symbol_Pos.explode_delete (source_of tok, pos));
+      val delete = (Symbol_Pos.explode_deleted (source_of tok, pos));
     in ((pos, m), text) :: map (fn p => ((p, Markup.delete), "")) delete end;
 
 fun markups keywords = map (#2 o #1) o reports keywords;
@@ -470,7 +477,7 @@ fun unparse' (Token ((source0, _), (kind, x), _)) =
           taking into account consecutive \<^ML>\<open>Symbol.DEL\<close> symbols potentially appearing
           at the beginning, or at the end of the string.
 
-          As remark, \<^ML>\<open>Symbol_Pos.explode_delete\<close>
+          As remark, \<^ML>\<open>Symbol_Pos.explode_deleted\<close>
           will remove any potentially consecutive \<^ML>\<open>Symbol.DEL\<close> symbols.
           This is why it is not used here.\<close>
       case Symbol.explode source0 of
@@ -513,7 +520,7 @@ fun text_of tok =
 fun file_source (file: Token.file) =
   let
     val text = cat_lines (#lines file);
-    val end_pos = fold Position.advance (Symbol.explode text) (#pos file);
+    val end_pos = fold Position.symbol (Symbol.explode text) (#pos file);
   in Input.source true text (Position.range (#pos file, end_pos)) end;
 
 fun get_files (Token (_, _, Value (SOME (Files files)))) = files
@@ -807,7 +814,8 @@ fun syntax' f =
           explode
             ((case kind of
                 Token.Keyword => Keyword.add_keywords [((x, Position.none), Keyword.no_spec)]
-              | Token.Command => Keyword.add_keywords [( (x, Position.none), (Keyword.thy_decl, []))]
+              | Token.Command => Keyword.add_keywords [( (x, Position.none), 
+                                                         Keyword.command_spec(Keyword.thy_decl, []))]
               | _ => I)
                Keyword.empty_keywords)
             pos1
@@ -1410,5 +1418,6 @@ val get_keywords' = get_keywords o Proof_Context.theory_of;
 
 end
 \<close>
+
 
 end

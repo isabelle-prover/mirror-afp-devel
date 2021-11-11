@@ -82,8 +82,14 @@ fun new_command comment command_parser pos =
 fun command_pos (Command {pos, ...}) = pos;
 
 fun command_markup def (name, Command {pos, id, ...}) =
-  Markup.properties (Position.entity_properties_of def id pos)
-    (Markup.entity Markup.commandN name);
+    let   (* PATCH: copied as such from Isabelle2020 *)
+        fun entity_properties_of def serial pos =
+            if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
+            else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
+
+    in  Markup.properties (entity_properties_of def id pos)
+            (Markup.entity Markup.commandN name)
+    end;
 
 
 

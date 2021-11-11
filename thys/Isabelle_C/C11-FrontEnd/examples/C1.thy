@@ -80,7 +80,7 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put
 ML\<open>
 val _ = Theory.setup(
   ML_Antiquotation.value_embedded \<^binding>\<open>C11_AST_CTranslUnit\<close>
-    (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+    (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
       (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
     || Scan.succeed "get_CTranslUnit (Context.the_global_context())"))
 
@@ -586,22 +586,22 @@ setup \<open>Context.theory_map (C_Module.Data_Accept.put (update_Root_Ast SOME)
 ML\<open>
 val _ = Theory.setup(
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CTranslUnit\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
           || Scan.succeed "get_CTranslUnit (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExtDecl\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CExtDecl (Context.the_global_context())"))
           || Scan.succeed "get_CExtDecl (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CStat\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CStat (Context.the_global_context())"))
           || Scan.succeed "get_CStat (Context.the_global_context())")
         #> 
         ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExpr\<close>
-          (Args.context -- Scan.lift Args.embedded_position >> (fn (ctxt, (name, pos)) =>
+          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
             (warning"arg variant not implemented";"get_CExpr (Context.the_global_context())"))
           || Scan.succeed "get_CExpr (Context.the_global_context())")
        )
