@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Annex VI: Examples from the F-IDE Paper\<close>
+chapter \<open>Examples from the F-IDE Paper\<close>
 
 theory C_paper
   imports "../C_Main"

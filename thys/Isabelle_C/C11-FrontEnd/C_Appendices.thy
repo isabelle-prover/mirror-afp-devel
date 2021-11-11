@@ -37,7 +37,7 @@
 chapter \<open>Isabelle/C Commands, Control Attributes and Programming Infrastructure\<close>
 
 theory C_Appendices
-  imports "examples/C1"
+  imports   "examples/C1" 
           Isar_Ref.Base
 begin
 

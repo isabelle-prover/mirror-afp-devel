@@ -34,14 +34,115 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>Annex II: Examples for Simple C Programs with Directives and Annotations\<close>
+chapter \<open>Appendix III: Examples for the SML Interfaces to Generic and Specific C11 ASTs\<close>
 
 theory C1
   imports "../C_Main"
 begin
 
-section \<open>A Simplistic Setup: Parse and Store\<close>
+section\<open>Access to Main C11 AST Categories via the Standard Interface \<close>
 
+text\<open>For the parsing root key's, c.f. ~ \<^verbatim>\<open>C_Command.thy\<close>\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+C\<open>a + b * c - a / b\<close>
+ML\<open>val ast_expr = @{C11_CExpr}\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "statement"]]
+C\<open>a = a + b;\<close>
+ML\<open>val ast_stmt = @{C11_CStat}\<close>
+
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "external_declaration"]]
+C\<open>int  m ();\<close>
+ML\<open>val ast_ext_decl = @{C11_CExtDecl}\<close>
+
+declare [[C\<^sub>e\<^sub>n\<^sub>v\<^sub>0 = last]]
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
+C\<open>int b; int a = a + b;\<close>
+ML\<open>val ast_unit = @{C11_CTranslUnit}
+   val env_unit = @{C\<^sub>e\<^sub>n\<^sub>v}
+  \<close>
+
+
+
+text\<open>... and completely low-level in ML:\<close>
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
+ML\<open>
+val src = \<open>a + d\<close>;
+val ctxt = (Context.Theory @{theory});
+val ctxt' = C_Module.C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
+val tt  = Context.the_theory ctxt';
+\<close>
+
+subsection\<open>Queries on C11-Asts via the iterator\<close>
+
+ML\<open>
+
+fun selectIdent0 (a:C11_Ast_Lib.node_content) b c=  if #tag a = "Ident0" then a::c else c;
+
+(* and here comes the hic >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> *)
+
+val S =  (C11_Ast_Lib.fold_cTranslationUnit selectIdent0 ast_unit []);
+
+(* ... end of hic *)
+
+fun print ({args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::[], 
+           sub_tag = STAG, tag = TAG}
+          :C11_Ast_Lib.node_content)
+         = let fun dark_matter (x:bstring) = XML.content_of (YXML.parse_body x) 
+           in writeln (":>"^dark_matter(S)^"<:>"^(S')^"<:>"^STAG^"<:>"^TAG^"<:") end;
+
+app print S; (* these strings are representations for C_Ast.abr_string, 
+                where the main constructor is C_Ast.SS_base. *)
+map (YXML.parse_body o (fn {args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::[], 
+           sub_tag = _, tag = _} =>S)) S ;
+\<close>
+
+subsection\<open>A small compiler to Isabelle term's.\<close>
+
+ML\<open>
+
+fun drop_dark_matter x = (XML.content_of o YXML.parse_body) x 
+
+
+fun node_content_2_free (x : C11_Ast_Lib.node_content) =
+    let  val C11_Ast_Lib.data_string a_markup = hd(#args(x));
+         val id = hd(tl(String.tokens (fn x => x = #"\"")(drop_dark_matter a_markup)))
+    in Free(id,dummyT) end  (* no type inference *);
+
+
+
+fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content) 
+                       (b:  C_Ast.nodeInfo ) 
+                       (c : term list)=  
+    case tag of
+      "Ident0" => (node_content_2_free a)::c
+     |"CBinary0" => (case (drop_dark_matter sub_tag, c) of 
+                      ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
+                    | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
+                    | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)
+                    | ("CSubOp0",b::a::R) => (Const("Groups.minus_class.minus",dummyT) $ a $ b :: R)
+                    | _ => (writeln ("sub_tag all " ^sub_tag^" :>> "^ @{make_string} c);c ))
+     | _ => c;
+
+
+\<close>
+
+text\<open>
+And here comes the ultra-hic: direct compilation of C11 expressions into (untyped) \<open>\<lambda>\<close>-terms in Isabelle.
+The term-list of the @{ML \<open>C11_Ast_Lib.fold_cExpression\<close>} - iterator serves as term-stack in which
+sub-expressions were stored in reversed polish notation. The example shows that the resulting term is
+structurally equivalent.    
+\<close>
+ML\<open>
+val S =  (C11_Ast_Lib.fold_cExpression selectIdent0Binary ast_expr []);
+val S' = @{term "a + b * c - a / b"};
+\<close>
+
+section \<open>Late-binding a Simplistic Post-Processor for ASTs and ENVs\<close>
+
+subsection\<open>Definition of Core Data Structures\<close>
 text\<open>The following setup just stores the result of the parsed values in the environment.\<close>
 
 ML\<open>
@@ -65,18 +166,21 @@ fun get_CExpr thy =
 
 \<close>
 
-text\<open>Und hier setzen wir per callback die Petze:\<close>
+text\<open>... this gives :\<close>
 
 ML\<open> Data_Out.map: (   (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list 
                    -> (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list) 
                   -> Context.generic -> Context.generic \<close>
 
-ML\<open>val SPY = Unsynchronized.ref([]:C_Grammar_Rule.ast_generic list)\<close>
-setup \<open>Context.theory_map (C_Module.Data_Accept.put
-                            (fn ast => fn env_lang => let val _ = (SPY:= ast:: !SPY) in
-                              Data_Out.map (cons (ast, #stream_ignored env_lang |> rev)) 
-                                  end))\<close>
+subsection\<open>Registering A Store-Function in \<^ML>\<open>C_Module.Data_Accept.put\<close>\<close>
 
+text\<open>... as C-method call-back. \<close> 
+setup \<open>Context.theory_map (C_Module.Data_Accept.put
+                            (fn ast => fn env_lang =>
+                              Data_Out.map (cons (ast, #stream_ignored env_lang |> rev))))\<close>
+
+
+subsection\<open>Registering an ML-Antiquotation with an Access-Function \<close>
 ML\<open>
 val _ = Theory.setup(
   ML_Antiquotation.value_embedded \<^binding>\<open>C11_AST_CTranslUnit\<close>
@@ -86,10 +190,40 @@ val _ = Theory.setup(
 
 \<close>
 
+subsection\<open>Accessing the underlying C11-AST's via the ML Interface.\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
+C\<open>
+void swap(int *x,int *y)
+{
+    int temp;
+ 
+    temp = *x;
+    *x = *y;
+    *y = temp;
+}
+\<close>
+
+ML\<open>
+local open C_Ast in
+val _ = CTranslUnit0
+val (A::R, _) = @{C11_AST_CTranslUnit};
+val (CTranslUnit0 (t,u), v) = A
+fun rule_trans (CTranslUnit0 (t,u), v) = case C_Grammar_Rule_Lib.decode u of 
+                  Left (p1,p2) => writeln (Position.here p1 ^ " " ^ Position.here p2)
+                | Right S => warning ("Not expecting that value:"^S)
+val bb = rule_trans A
+end
+
+val (R, env_final) = @{C11_AST_CTranslUnit};
+val rules = map rule_trans R;
+@{C\<^sub>e\<^sub>n\<^sub>v}
+\<close>
+
 
 section \<open>Example: A Possible Semantics for \<open>#include\<close>\<close>
 
-subsection \<open>Implementation\<close>
+subsubsection \<open>Implementation\<close>
 
 text \<open> The CPP directive \<^C>\<open>#include _\<close> is used to import signatures of
 modules in C. This has the effect that imported identifiers are included in the C environment and,
@@ -188,7 +322,7 @@ end
 
 setup \<open>Include.append "stdio.h" [\<open>printf\<close>, \<open>scanf\<close>]\<close>
 
-subsection \<open>Tests\<close>
+subsubsection \<open>Tests\<close>
 
 C \<open>
 //@ setup \<open>Include.append "tmp" [\<open>b\<close>]\<close>
@@ -213,7 +347,6 @@ int a = b + c;
 //@ setup \<open>Include.show\<close>
 \<close>
 
-section \<open>Working with Pragmas\<close>
 C\<open>
 
 #include <stdio.h>
@@ -231,7 +364,7 @@ ML\<open> val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) =  @{C11_AST_CTranslUnit};
 
 
 
-section \<open>Working with Annotation Commands\<close>
+section \<open>Defining a C-Annotation Commands Language \<close>
 
 ML \<comment> \<open>\<^theory>\<open>Isabelle_C.C_Command\<close>\<close> \<open>
 \<comment> \<open>setup for a dummy ensures : the "Hello World" of Annotation Commands\<close>
@@ -271,13 +404,14 @@ int max(int x, int y) {
 }
 \<close>
 
+text\<open>What happens on C11 AST level:\<close>
 ML\<open> 
 val ((C_Ast.CTranslUnit0 (t,u), v)::R, env) = get_CTranslUnit @{theory};
 val u = C_Grammar_Rule_Lib.decode u
 \<close>
 
 
-section \<open>C Code: Various Examples\<close>
+subsection \<open>C Code: Various Annotated Examples\<close>
 
 text\<open>This example suite is drawn from Frama-C and used in our GLA - TPs. \<close>
 
@@ -388,7 +522,7 @@ int linearsearch(int x, int t[], int n) {
 \<close>
 
 
-section \<open>C Code: A Sorting Algorithm\<close>
+subsection \<open>Example: An Annotated Sorting Algorithm\<close>
 
 C\<open>
 #include <stdio.h>
@@ -500,144 +634,16 @@ void display(int a[],const int size)
 }
 \<close>
 
-text\<open>Accessing the underlying C11-AST's via the ML Interface.\<close>
-
-ML\<open>
-local open C_Ast in
-val _ = CTranslUnit0
-val (A::R, _) = @{C11_AST_CTranslUnit};
-val (CTranslUnit0 (t,u), v) = A
-fun rule_trans (CTranslUnit0 (t,u), v) = case C_Grammar_Rule_Lib.decode u of 
-                  Left (p1,p2) => writeln (Position.here p1 ^ " " ^ Position.here p2)
-                | Right S => warning ("Not expecting that value:"^S)
-val bb = rule_trans A
-val CDeclExt0(x1)::_ = t;
-val _ = CDecl0
-end
-\<close>
-
-ML\<open>
-get_CTranslUnit;
-val (R, env_final) = @{C11_AST_CTranslUnit};
-val rules = map rule_trans R;
-@{C\<^sub>e\<^sub>n\<^sub>v}
-\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
-
-ML\<open>
-val src = \<open>a + d\<close>;
-val ctxt = (Context.Theory @{theory});
-val ctxt' = C_Module.C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
-val tt  = Context.the_theory ctxt';
-(*get_CExpr (Context.the_theory ctxt');
-C_Module.Data_In_Env.get ctxt' *)
-\<close>
-ML\<open>val Expr = hd(map_filter C_Grammar_Rule.get_CExpr (!SPY));\<close>
-
-ML\<open>Symtab.map_entry\<close>
-
-ML\<open> Context.theory_long_name @{theory}\<close>
-ML\<open> fun insert_K_ast key ast = Symtab.map_default (key,[]) (cons ast)
-     \<close>
-
-ML\<open>
-structure Root_Ast_Store = Generic_Data
-  (type T = C_Grammar_Rule.ast_generic list Symtab.table
-   val empty = Symtab.empty
-   val extend = I
-   val merge = K empty);
 
 
-Root_Ast_Store.map: (   C_Grammar_Rule.ast_generic list Symtab.table 
-                            -> C_Grammar_Rule.ast_generic list Symtab.table) 
-                        -> Context.generic -> Context.generic;
-
-
-fun update_Root_Ast filter ast _ ctxt =
-    let val theory_id = Context.theory_long_name(Context.theory_of ctxt)
-        val insert_K_ast  = Symtab.map_default (theory_id,[]) (cons ast)
-    in  case filter ast of 
-         NONE => (warning "No appropriate c11 ast found - store unchanged."; ctxt)
-        |SOME _ => (Root_Ast_Store.map insert_K_ast) ctxt
-    end;
-
-
-fun get_Root_Ast filter thy =
-  let val ctxt = Context.Theory thy
-      val thid = Context.theory_long_name(Context.theory_of ctxt)
-      val ast = case Symtab.lookup (Root_Ast_Store.get ctxt) (thid) of
-                SOME (a::_) => (case filter a of 
-                                 NONE => error "Last C command is not of appropriate AST-class."
-                               | SOME x => x)
-              | _ => error"No C command in the current theory."
-  in ast
-  end
-
-val get_CExpr  = get_Root_Ast C_Grammar_Rule.get_CExpr;
-val get_CStat  = get_Root_Ast C_Grammar_Rule.get_CStat;
-val get_CExtDecl  = get_Root_Ast C_Grammar_Rule.get_CExtDecl;
-val get_CTranslUnit  = get_Root_Ast C_Grammar_Rule.get_CTranslUnit;
-\<close>
-
-setup \<open>Context.theory_map (C_Module.Data_Accept.put (update_Root_Ast SOME))\<close>
-
-
-ML\<open>
-val _ = Theory.setup(
-        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CTranslUnit\<close>
-          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
-            (warning"arg variant not implemented";"get_CTranslUnit (Context.the_global_context())"))
-          || Scan.succeed "get_CTranslUnit (Context.the_global_context())")
-        #> 
-        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExtDecl\<close>
-          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
-            (warning"arg variant not implemented";"get_CExtDecl (Context.the_global_context())"))
-          || Scan.succeed "get_CExtDecl (Context.the_global_context())")
-        #> 
-        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CStat\<close>
-          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
-            (warning"arg variant not implemented";"get_CStat (Context.the_global_context())"))
-          || Scan.succeed "get_CStat (Context.the_global_context())")
-        #> 
-        ML_Antiquotation.value_embedded \<^binding>\<open>C11_CExpr\<close>
-          (Args.context -- Scan.lift Args.name_position >> (fn (ctxt, (name, pos)) =>
-            (warning"arg variant not implemented";"get_CExpr (Context.the_global_context())"))
-          || Scan.succeed "get_CExpr (Context.the_global_context())")
-       )
-\<close>
-
-text\<open>For the parsing root key's, c.f. ~ \<^verbatim>\<open>C_Command.thy\<close>\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
-C\<open>a + b\<close>
-ML\<open>val ast = @{C11_CExpr}\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "statement"]]
-C\<open>a = a + b;\<close>
-ML\<open>val ast = @{C11_CStat}\<close>
-
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "external_declaration"]]
-C\<open>int  m ();\<close>
-ML\<open>val ast = @{C11_CExtDecl}\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
-C\<open>int a = a + b;\<close>
-ML\<open>val ast = @{C11_CTranslUnit}\<close>
-
-
-
-
-
-section \<open>C11 Code: Floats Exist\<close>
+section \<open>C Code: Floats Exist\<close>
 
 declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 C\<open>
 int a;
 float b;
-float m() {return a+b;}
+int m() {return 0;}
 \<close>
 
 end
