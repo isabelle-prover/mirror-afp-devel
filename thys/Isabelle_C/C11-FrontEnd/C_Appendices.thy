@@ -638,29 +638,22 @@ currently only available for Isabelle2019.\<close>
 
 section \<open>Case Study: Mapping on the Parsed AST via the \<^ML_structure>\<open>C11_Ast_Lib\<close>\<close>
 
+ML\<open>open C11_Ast_Lib\<close>
 text\<open>A simpler alternative for connecting Isabelle/C to a semantic backend is the use of the
 \<^ML_structure>\<open>C11_Ast_Lib\<close>, an API for the C11 abstract syntax. Among a number of utilities, 
 it provides a family of iterators (or: hylomorphisms, generalized fold operators, or whatever
 terminology you prefer). There is a fold-operator for each C11 Ast-category :
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cArraySize: 'a -> (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                      -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cCompoundBlockItem: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                    -> 'a C_Ast.cCompoundBlockItem -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cArraySize: 'a -> (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                      -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cDeclaration: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                      -> 'a C_Ast.cDeclaration -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cExpression: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                       -> 'a C_Ast.cExpression -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cStatement: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                       -> 'a C_Ast.cStatement -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cExternalDeclaration: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                       -> 'a C_Ast.cExternalDeclaration -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>C11_Ast_Lib.fold_cTranslationUnit: (C11_Ast_Lib.node_content -> 'a -> 'b -> 'b) 
-                                       -> 'a C_Ast.cTranslationUnit -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cArraySize: 'a -> (node_content->'a->'b->'b) -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cCompoundBlockItem: (node_content->'a->'b->'b) -> 'a C_Ast.cCompoundBlockItem->'b->'b\<close>
+\<^enum> \<^ML>\<open>fold_cArraySize: 'a -> (node_content->'a->'b->'b) -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cDeclaration: (node_content->'a->'b->'b) -> 'a C_Ast.cDeclaration -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cExpression: (node_content->'a->'b->'b) -> 'a C_Ast.cExpression -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cStatement: (node_content->'a->'b->'b)  -> 'a C_Ast.cStatement -> 'b -> 'b\<close>
+\<^enum> \<^ML>\<open>fold_cExternalDeclaration: (node_content->'a->'b->'b) -> 'a C_Ast.cExternalDeclaration->'b->'b\<close>
+\<^enum> \<^ML>\<open>fold_cTranslationUnit: (node_content->'a->'b->'b) -> 'a C_Ast.cTranslationUnit -> 'b -> 'b\<close>
 \<^enum> etc.
 \<close>
-text\<open>Here, \<^ML_type>\<open>C11_Ast_Lib.node_content\<close>  is a data-structure providing untyped and uniform 
+text\<open>Here, \<^ML_type>\<open>node_content\<close>  is a data-structure providing untyped and uniform 
 information on which rule has been applied, and what kind of particular decoration appears in the
 C11-Ast. \<close>
 
@@ -695,7 +688,7 @@ val S' = @{term "a + b * c - a / b"};
 \<close>}
 \<close>
 
-text\<open>This snippet is drawn from the C1-Example shown in Appendix IV.\<close>
+text\<open>This snippet is drawn from the C11-Example shown in Appendix III.\<close>
 
 section \<open>Known Limitations, Troubleshooting\<close>
 subsection \<open>The Document Model of the Isabelle/PIDE\<close>
