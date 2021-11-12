@@ -49,13 +49,16 @@ object Hugo
     Path.explode(proper_string(hugo_home).getOrElse(error("No hugo component found"))) + Path.basic("hugo")
 
   def build(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web")): Process_Result =
-    Isabelle_System.bash(exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.implode))
+  {
+    Isabelle_System.bash(
+      exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.absolute.implode))
+  }
 
   def watch(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web"),
     progress: Progress = new Progress()): Process_Result =
   {
     Isabelle_System.bash(
-      exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.implode),
+      exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.absolute.implode),
       progress_stdout = progress.echo,
       progress_stderr = progress.echo_warning)
   }
