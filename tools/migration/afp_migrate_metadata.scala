@@ -185,7 +185,7 @@ object AFP_Migrate_Metadata
     val extra = entry.metadata.filter { case (k, _) => k.startsWith("extra-") && k != "extra-history" }
 
     Entry(
-      short_name = entry.name,
+      name = entry.name,
       title = entry.title,
       authors = author_affiliations,
       date = LocalDate.from(entry.date.rep),
@@ -330,7 +330,7 @@ object AFP_Migrate_Metadata
     for (entry_metadata <- metadata.entries) {
       val entry = map_entry(entry_metadata, releases_map, topic_map, context, progress)
 
-      write(Metadata.TOML.from_entry(entry), Path.make(List("entries", entry.short_name + ".toml")))
+      write(Metadata.TOML.from_entry(entry), Path.make(List("entries", entry.name + ".toml")))
     }
 
 

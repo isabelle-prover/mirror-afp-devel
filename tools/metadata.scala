@@ -64,7 +64,7 @@ object Metadata
   type Extra = Map[String, String]
 
   case class Entry(
-    short_name: Entry.Name,
+    name: Entry.Name,
     title: String,
     authors: List[Affiliation],
     date: Date,
@@ -231,7 +231,7 @@ object Metadata
 
     def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic], releases: List[Release]): Entry =
       Entry(
-        short_name = get_as[String](entry, "short_name"),
+        name = get_as[String](entry, "name"),
         title = get_as[String](entry, "title"),
         authors = to_affiliations(get_as[T](entry, "authors"), authors),
         date = get_as[Date](entry, "date"),
