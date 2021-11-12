@@ -1,20 +1,33 @@
 package afp
 
 
+import Metadata.Entry
+
+
 import isabelle._
 
 
 object AFP_Dependencies
 {
-  def as_json(entry: String, distrib_deps: List[String], afp_deps: List[String]): String =
-    s"""
-      {"$entry":
-        {"distrib_deps": [${commas_quote(distrib_deps)}],
-         "afp_deps": [${commas_quote(afp_deps)}]
-        }
-      }"""
+  case class Dependency(entry: Entry.Name,  distrib_deps: List[Entry.Name], afp_deps: List[Entry.Name])
 
-  def afp_dependencies(afp_dir: Path): String =
+  object JSON
+  {
+    private def from_dep(dependency: Dependency): (String, isabelle.JSON.T) =
+      dependency.entry ->
+        isabelle.JSON.Object(
+          "distrib_deps" -> dependency.distrib_deps,
+          "afp_deps" -> dependency.afp_deps
+        )
+
+    def from_dependency(dep: Dependency): isabelle.JSON.T =
+      isabelle.JSON.Object(from_dep(dep))
+
+    def from_dependencies(deps: List[Dependency]): isabelle.JSON.T =
+      deps.map(from_dep).toMap
+  }
+
+  def afp_dependencies(afp_dir: Path): List[Dependency] =
   {
     val tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
     val selected = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil))
@@ -31,16 +44,14 @@ object AFP_Dependencies
         Some(dir.base.implode)
     }
 
-    val result = selected.groupBy(get_entry).collect {
+    selected.groupBy(get_entry).toList.map {
       case (Some(e), sessions) =>
         val dependencies = sessions.flatMap(tree.imports_graph.imm_preds)
           .map(d => (d, get_entry(d)))
         val distrib_deps = dependencies.collect { case (d, None) => d }.distinct
         val afp_deps = dependencies.collect { case (_, Some(d)) if d != e => d }.distinct
-        as_json(e, distrib_deps, afp_deps)
+        Dependency(e, distrib_deps, afp_deps)
     }
-
-    "[" + commas(result) + "]"
   }
 
   val isabelle_tool =
@@ -68,10 +79,12 @@ Usage: isabelle afp_dependencies [OPTIONS]
 
         val progress = new Console_Progress()
 
-        val res = afp_dependencies(afp_dir)
+        val res = afp_dependencies(afp_dir).map(JSON.from_dependency)
+        val json = isabelle.JSON.Format(res)
+
         output_file match {
-          case Some(file) => File.write(file, res)
-          case None => progress.echo(res)
+          case Some(file) => File.write(file, json)
+          case None => progress.echo(json)
         }
       }
     )
