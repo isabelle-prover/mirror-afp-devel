@@ -3,11 +3,10 @@ package afp
 
 import isabelle._
 
-import afp.Metadata.Author
-
 
 object AFP_Build_Site
 {
+  /* json */
 
   object JSON
   {
@@ -18,7 +17,7 @@ object AFP_Build_Site
       type T = isabelle.JSON.Object.T
     }
 
-    def from_authors(authors: List[Author]): T =
+    def from_authors(authors: List[Metadata.Author]): T =
       Metadata.TOML.from_authors(authors)
 
     def from_affiliations(
@@ -48,7 +47,7 @@ object AFP_Build_Site
       }
     }
 
-    def from_entry(entry: Metadata.Entry, authors: Map[Metadata.Author.ID, Author]): T =
+    def from_entry(entry: Metadata.Entry, authors: Map[Metadata.Author.ID, Metadata.Author]): JSON.Object.T =
       isabelle.JSON.Object(
         ("title" -> entry.title) ::
           ("authors" -> from_affiliations(entry.authors, authors)) ::
@@ -67,96 +66,149 @@ object AFP_Build_Site
            else Nil): _*)
   }
 
-  private val gen_dir = Path.explode("$AFP_BASE/web/hugo")
 
-  private def write_gen(file: Path, content: JSON.T): Unit =
+  /* site generation */
+
+  def afp_build_site(
+    html_dir: Path,
+    afp_structure: AFP_Structure,
+    layout: Hugo.Layout,
+    progress: Progress = new Progress()): Unit =
   {
-    val path = gen_dir + file
-    path.dir.file.mkdirs()
-    File.write(path, isabelle.JSON.Format(content))
-  }
-
-  def afp_build_site(progress: Progress = new Progress()): Unit =
-  {
-    val metadata_dir = Path.explode("$AFP_BASE") + Path.basic("metadata")
-
-
-    /* authors */
+    /* add authors */
 
     progress.echo("Preparing authors...")
 
-    val authors_toml = TOML.parse(File.read(metadata_dir + Path.basic("authors.toml")))
-    val authors = Metadata.TOML.to_authors(authors_toml)
+    val authors = afp_structure.load_authors
     val authors_by_id = Utils.grouped_sorted(authors, (a: Metadata.Author) => a.id)
 
-    write_gen(Path.make(List("data", "authors.json")), JSON.from_authors(authors))
+    layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors))
 
 
-    /* topics */
+    /* add topics */
 
     progress.echo("Preparing topics...")
 
-    val topics_toml = TOML.parse(File.read(metadata_dir + Path.basic("topics.toml")))
-    val topics = Metadata.TOML.to_topics(topics_toml)
-
+    val topics = afp_structure.load_topics
     def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] = topic :: topic.sub_topics.flatMap(sub_topics)
 
-    val all_topics_by_id = Utils.grouped_sorted(topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
+    val topics_by_id = Utils.grouped_sorted(topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
 
 
-    /* releases */
+    /* add releases */
 
     progress.echo("Preparing releases...")
 
-    val toml_releases = TOML.parse(File.read(metadata_dir + Path.basic("releases.toml")))
-    val all_releases = Metadata.TOML.to_releases(toml_releases).groupBy(_.entry)
+    val releases_by_entry = afp_structure.load_releases.groupBy(_.entry)
 
 
-    /* entries */
+    /* add entries and theory listings */
 
-    val Entry = """([a-zA-Z0-9_+-]+)\.toml""".r
-    val entries_dir = metadata_dir + Path.basic("entries")
-    for (file <- File.read_dir(entries_dir)) {
-      val short_name = file match {
-        case Entry(short_name) => short_name
-        case _ => error("Unrecognized file in entries: " + file)
-      }
+    progress.echo("Preparing entries...")
 
-      progress.echo("Preparing entry " + short_name + "...")
+    val sessions_structure = afp_structure.sessions_structure
+    val deps = Sessions.deps(sessions_structure)
 
-      val content = File.read(entries_dir + Path.basic(file))
-      val toml = TOML.parse(content) ++ TOML.T("short_name" -> short_name)
-      val releases = all_releases.getOrElse(short_name, error("No releases for entry: " + quote(short_name)))
-      val metadata = Metadata.TOML.to_entry(toml, authors_by_id, all_topics_by_id, releases)
+    for (name <- afp_structure.entries) {
+      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
 
-      write_gen(Path.make(List("entries", short_name + ".json")), JSON.from_entry(metadata, authors_by_id))
+      val topo_theories =
+        for {
+          session <- afp_structure.entry_sessions(name)
+          base = deps(session.name)
+          node <- base.session_theories
+        } yield node.theory_base_name
+
+      val entry_json = JSON.from_entry(entry, authors_by_id) ++ Map("theories" -> topo_theories)
+
+      layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
+
+      val entry_html = """<a href="""" + (html_dir + Path.basic(name + ".html")).implode + "\">dynamic</a>"
+
+      layout.write_asset(Path.make(List("theories", name + ".html")), entry_html)
     }
+
+
+    /* add dependencies */
+
+    progress.echo("Preparing dependencies...")
+
+    val afp_dependencies = AFP_Dependencies.afp_dependencies(Path.explode("$AFP"))
+    val dep_json = AFP_Dependencies.JSON.from_dependencies(afp_dependencies)
+
+    layout.write_data(Path.basic("dependencies.json"), dep_json)
+
+    val entries_dir = layout.content_dir + Path.basic("entries")
+    val dep_file = layout.data_dir + Path.basic("dependencies.json")
+    val dependencies_cmd = "from dependencies import *; add_dependencies(" +
+      commas_quote(List(entries_dir.implode, dep_file.implode)) + ")"
+    Python.run(dependencies_cmd).check
+
+
+    /* add related entries */
+
+    progress.echo("Preparing related entries...")
+
+    val related_cmd = "from related import *; add_related(" + quote(entries_dir.implode) + ")"
+    Python.run(related_cmd).check
+
+
+    /* add statistics */
+
+    progress.echo("Preparing statistics...")
+
+    val statistics_cmd = "from statistics import *; add_statistics(" +
+      commas_quote(
+        List(
+          Path.explode("$AFP_BASE").absolute.implode,
+          Path.explode("$AFP").absolute.implode,
+          layout.data_dir.implode)) +
+      ")"
+    Python.run(statistics_cmd).check
+    (layout.data_dir + Path.basic("statistics.html")).file.delete()
+
+    progress.echo("Finished sitegen preparation.")
+
+
+    /* hugo */
+
+    progress.echo("Generating site...")
+
+    layout.write_static()
+    layout.build().check
+
+    progress.echo("Finished sitegen")
   }
 
-  val isabelle_tool =
-    Isabelle_Tool(
-      "afp_build_site",
-      "generates afp website",
-      Scala_Project.here,
-      args => {
-        val getopts = Getopts(
-          """
-Usage: isabelle afp_build_site [OPTIONS]
+  val isabelle_tool = Isabelle_Tool("afp_build_site", "generates afp website", Scala_Project.here, args =>
+  {
+    var base_dir = Path.explode("$AFP_BASE")
+    var hugo_dir = base_dir + Path.make(List("web", "hugo"))
+    var out_dir = base_dir + Path.basic("web")
+
+    val getopts = Getopts("""
+Usage: isabelle afp_build_site [OPTIONS] HTML_DIR
 
   Options are:
     -B DIR       afp base dir (default "$AFP_BASE")
-    -H DIR       afp browser info dir (default "$AFP_BASE/web/browser_info")
-    -R DIR       afp release dir (default "$AFP_BASE/web/release")
+    -H DIR       generated hugo project dir (default "$AFP_BASE/web/hugo")
+    -O DIR       output dir (default "$AFP_BASE/web")
 
-  Generates the AFP website.
-"""
-        )
+  Generates the AFP website. HTML files of entries are dynamically loaded.
+""",
+      "B:" -> (arg => base_dir = Path.explode(arg)),
+      "H:" -> (arg => hugo_dir = Path.explode(arg)),
+      "O:" -> (arg => out_dir = Path.explode(arg)))
 
-        getopts(args)
+    val html_dir = getopts(args) match {
+      case dir :: Nil => Path.explode(dir)
+      case _ => getopts.usage()
+    }
 
-        val progress = new Console_Progress()
+    val afp_structure = AFP_Structure(base_dir)
+    val layout = Hugo.Layout(hugo_dir, out_dir)
+    val progress = new Console_Progress()
 
-        afp_build_site(progress)
-      }
-    )
+    afp_build_site(html_dir = html_dir, afp_structure = afp_structure, layout = layout, progress = progress)
+  })
 }
