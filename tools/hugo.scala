@@ -11,25 +11,32 @@ object Hugo
 
   class Layout private(src_dir: Path, out_dir: Path)
   {
-    private def write(file: Path, content: JSON.T): Unit =
+    private def write(file: Path, content: String): Unit =
     {
       val path = src_dir + file
       path.dir.file.mkdirs()
-      File.write(path, isabelle.JSON.Format(content))
+      File.write(path, content)
     }
 
     val data_dir = src_dir + Path.basic("data")
 
     def write_data(file: Path, content: JSON.T): Unit =
-      write(Path.basic("data") + file, content)
+      write(Path.basic("data") + file, isabelle.JSON.Format(content))
 
     val content_dir = src_dir + Path.basic("content")
 
     def write_content(file: Path, content: JSON.T): Unit =
-      write(Path.basic("content") + file, content)
+      write(Path.basic("content") + file, isabelle.JSON.Format(content))
+
+    def write_asset(file: Path, content: String): Unit =
+      write(Path.basic("assets") + file, content)
 
     def write_static(): Unit =
-      Isabelle_System.copy_dir(hugo_static, out_dir)
+    {
+      for (name <- File.read_dir(hugo_static)) {
+        Isabelle_System.copy_dir(hugo_static + Path.basic(name), src_dir)
+      }
+    }
 
     def build(): Process_Result =
     {
