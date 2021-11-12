@@ -3,6 +3,7 @@ module = $AFP_BASE/tools/lib/classes/afp_tools.jar
 requirements = \
   env:ISABELLE_SCALA_JAR
 sources = \
+  tools/admin/afp_build_hugo.scala \
   tools/admin/afp_build_python.scala \
   tools/migration/afp_migrate_metadata.scala \
   tools/afp_build_site.scala \
