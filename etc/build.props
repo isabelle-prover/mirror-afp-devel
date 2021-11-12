@@ -11,6 +11,7 @@ sources = \
   tools/afp_dependencies.scala \
   tools/afp_tool.scala \
   tools/metadata.scala \
+  tools/python.scala \
   tools/toml.scala \
   tools/utils.scala
 services = afp.Tools
