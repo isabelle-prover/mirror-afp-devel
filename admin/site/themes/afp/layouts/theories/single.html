@@ -1,0 +1,16 @@
+    {{- define "main" -}}
+    {{- $site := . -}}
+    <main>
+      {{ $file := printf "assets/theories/%s.html" $site.File.TranslationBaseName}}
+      {{ if fileExists $file -}}
+        {{ readFile $file | safeHTML }}
+      {{ else }}
+        {{- range .Params.theories }}
+        <iframe src="https://www.isa-afp.org/browser_info/current/AFP/{{ $site.File.TranslationBaseName }}/{{ . }}.html"
+          frameborder="0" id="{{ . }}">
+        </iframe>
+        {{- end }}
+      {{- end }}
+    </main>
+
+    {{- end -}}

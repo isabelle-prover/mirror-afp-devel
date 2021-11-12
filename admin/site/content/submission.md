@@ -1,0 +1,5 @@
+---
+title: AFP Submission
+---
+
+{{< submission >}}

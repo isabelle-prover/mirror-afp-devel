@@ -1,0 +1,20 @@
+<div>
+  <div>
+    <a href="{{- .Site.BaseURL -}}">
+      <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs'
+        class="logo">
+    </a>
+    {{ $currentPage := . -}}
+    <ul>
+      {{- range .Site.Menus.main }}
+      <li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}><a href="{{- .URL -}}">{{- .Name -}}
+      </a></li>
+      {{- end }}
+    </ul>
+  </div>
+  <ul>
+    {{- range .Site.Menus.bottom }}
+    <li {{ if $currentPage.IsMenuCurrent "bottom" . }}class="active" {{ end }}><a href="{{- .URL -}}">{{- .Name -}}</a></li>
+    {{- end }}
+  </ul>
+</div>

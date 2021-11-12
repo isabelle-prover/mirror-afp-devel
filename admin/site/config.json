@@ -1,0 +1,40 @@
+{
+    "baseURL": "/",
+    "languageCode": "en-gb",
+    "title": "Archive of Formal Proofs",
+    "theme": "afp",
+    "publishDir": "..",
+    "taxonomies": {
+        "author": "authors",
+        "topic": "topics",
+        "dependency": "dependencies" 
+    },
+    "params": {
+        "description": "A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle.",
+        "images": [
+            "/images/afp.png"
+        ],
+        "title": "Archive of Formal Proofs",
+        "mainSections": ["entries"]
+    },
+    "markup": {
+        "goldmark": {
+            "renderer": {
+                "unsafe": true
+            }
+        }
+    },
+    "menu": {
+        "main": [
+           {
+              "name": "Topics",
+              "url": "/topics/",
+              "weight": 2
+           }
+        ]
+    },
+    "outputs": {
+        "home": ["html", "rss", "json"],
+        "taxonomyTerm": ["html", "json"]
+    }
+}

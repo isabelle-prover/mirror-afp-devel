@@ -1,0 +1,66 @@
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {{- $siteTitle := ( .Site.Title ) -}}
+  {{- if or .IsHome (not .Params.title) -}}
+  <title>{{- $siteTitle -}} </title>
+  {{- else -}}
+  <title>{{- .Params.title }} - {{ $siteTitle -}}</title>
+  {{- end -}}
+
+  {{- if (eq .Section "entries") -}}
+  <meta name="description" content="{{ .Params.abstract | plainify | truncate "155" "..." }}">
+  {{- else -}}
+  <meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle.">
+  {{- end -}}
+
+  {{- with .OutputFormats.Get "rss" -}}
+  {{- printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML -}}
+  {{- end -}}
+
+  {{- template "_internal/opengraph.html" . -}}
+  {{- template "_internal/twitter_cards.html" . -}}
+
+  {{ $options := (dict "targetPath" "css/front.css") }}
+  {{ $style := resources.Get "sass/main.scss" | toCSS $options | minify }}
+  <link rel="stylesheet" type="text/css" href="{{ $style.Permalink }}">
+  {{- if (eq .Section "theories") -}}
+  <link rel="stylesheet" type="text/css" href="{{- .Site.BaseURL -}}css/isabelle.css">
+  {{ end }}
+
+  <link rel="icon" href="{{- .Site.BaseURL -}}images/favicon.ico" type="image/icon">
+
+  {{- if or (eq .Section "entries") (eq .File.TranslationBaseName "search") -}}
+    {{/*
+      The following is the MathJax configuration.
+      This means that formulae can be enclosed in either $ … $ or \( … \)
+    */}}
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="{{- .Site.BaseURL -}}js/mathjax/es5/tex-mml-chtml.js"></script>
+  {{ end }}
+
+  {{- if eq .Section "entries" -}}
+  <script src="{{- .Site.BaseURL -}}js/entries.js"></script>
+  {{- end -}}
+  
+  <script src="{{- .Site.BaseURL -}}js/flexsearch.min.js"></script>
+  <script src="{{- .Site.BaseURL -}}js/banner.js"></script>
+  
+  {{- if (eq .File.TranslationBaseName "search") -}}
+    <script src="{{- .Site.BaseURL -}}js/search.js"></script>
+  {{- else -}}
+    <script src="{{- .Site.BaseURL -}}js/header-search.js"></script>
+  {{- end -}}
+</head>

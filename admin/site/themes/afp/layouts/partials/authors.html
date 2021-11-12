@@ -1,0 +1,10 @@
+{{- $Scratch := newScratch -}}
+
+{{- range .authors -}}
+
+{{- $author := printf "[%s](%s%s)" . ("/authors/" | relLangURL) (. | urlize) -}}
+{{- $Scratch.Add "authors" (slice $author) -}}
+
+{{- end -}}
+
+{{- delimit ($Scratch.Get "authors")  ", " | replaceRE "(, )([^,]+$)" " and $2" | .site.RenderString -}}

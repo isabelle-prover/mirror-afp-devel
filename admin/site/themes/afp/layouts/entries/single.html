@@ -1,0 +1,132 @@
+{{- define "main" -}}
+{{- $site := . -}}
+{{- $entryName := .File.TranslationBaseName -}}
+<main>
+  <h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
+  {{- if (eq .Params.licence "BSD") -}}
+  <a href="http://isa-afp.org/LICENSE">BSD License</a>
+  {{- else -}}
+  <a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+  {{- end -}}
+
+  {{- with .Params.extra -}}
+  {{- range $key, $value := . -}}
+  <h3>{{- humanize $key -}}</h3>
+
+  <p>{{- $value | safeHTML -}}</p>
+  {{- end -}}
+  {{- end -}}
+
+  {{- $Scratch := newScratch -}}
+  
+  {{- with .Params.dependencies -}}
+    <h3>Depends On</h3><ul>
+      {{- range . -}}
+      <li>{{- printf "[%s](/entries/%s)" . (urlize .) | $.Page.RenderString -}}</li>
+      {{- end -}}
+    </ul>
+  {{- end -}}
+
+  {{- with (index .Site.Taxonomies.dependencies (urlize $entryName)) -}}
+    <h3>Used by</h3>
+    <ul>
+      {{- range . -}}
+      <li>{{- printf "[%s](%s)" .File.TranslationBaseName .RelPermalink | $.Page.RenderString -}}</li>
+      {{- end -}}
+    </ul>
+  {{- end -}}
+
+  {{- with .Params.topics -}}
+  <h3>Topics</h3>
+  <ul>
+    {{- range . -}}
+    <li>{{- printf "[%s](/topics/%s)" . (urlize .) | $.Page.RenderString -}}</li>
+    {{- end -}}
+  </ul>
+  {{- end -}}
+
+  {{- with .Params.relatedEntries -}}
+  <h3>Related Entries</h3>
+  <ul>
+    {{- range . -}}
+    <li>{{- printf "[%s](/entries/%s)" . (urlize .) | $.Page.RenderString -}}</li>
+    {{- end -}}
+  </ul>
+  {{- end -}}
+
+<h3>Theories</h3>
+<ul>
+  {{ $file := printf "assets/theories/%s.html" $entryName}}
+  {{ if fileExists $file -}}
+  {{- with .Params.theories -}}
+  {{- range . -}}
+  <li>{{- printf "[%s](theories/#%s)" . . | $.Page.RenderString -}}</li>
+  {{- end -}}
+  {{- end -}}
+  {{ else }}
+  <li>{{- printf "[Browse theories](https://www.isa-afp.org/browser_info/current/AFP/%s/index.html)" $entryName |
+    $.Page.RenderString -}}</li>
+  {{- end -}}
+</ul>
+
+</main>
+
+<nav class='links'>
+  <a class='popUpButton' href="#citePopUp">Cite</a>
+  <a class='popUpButton' href="#downloadPopUp">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/session_graph.pdf">Dependencies</a>
+</nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">{{- $entryName -}}-AFP</p>
+      <pre id="copyText">@article{{- "{" -}}{{- $entryName -}}-AFP,
+  author  = {{ "{" -}}{{- delimit .Params.authors ", " | replaceRE "(, )([^,]+$)" " and $2" -}}},
+  title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
+  journal = {Archive of Formal Proofs},
+  month   = {{ dateFormat "January" .Params.date -}},
+  year    = {{ dateFormat "2006" .Params.date -}},
+  note    = {\url{http://isa-afp.org/entries/{{- $entryName -}}.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="downloadPopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-{{- $entryName -}}-current.tar.gz" download>Download latest</a>
+    {{ with .Params.olderReleases -}}
+    <p>Older releases:</p>
+    <ul>
+      {{- range $map := . -}}
+      {{- range $key, $value := $map -}}
+      <li>Isabelle {{- $key -}}:
+        <a href="https://isa-afp.org/release/afp-{{- $entryName -}}-{{- $value -}}.tar.gz">
+          afp-{{- $entryName -}}-{{- $value -}}.tar.gz
+        </a>
+      </li>
+      {{- end -}}
+      {{- end -}}
+    </ul>
+    {{- end }}
+  </div>
+</div>
+
+{{- end -}}

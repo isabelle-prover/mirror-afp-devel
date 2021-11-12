@@ -1,0 +1,38 @@
+{{- define "main" -}}
+<p>
+  The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific
+  developments,
+  mechanically checked in the theorem prover <a href="http://isabelle.in.tum.de/">Isabelle</a>. It
+  is organized in the way
+  of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an
+  ISSN:
+  2150-914x. Submissions are refereed and we encourage companion AFP submissions to conference and journal
+  publications. To cite an entry, please use the <a href="/help/#citing-entries">preferred citation style</a>.
+</p>
+
+<form action="{{ " search" | absURL }}">
+  <div class='form-container'>
+    <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="searchButton" type="button">Search</button>
+    <datalist id="autocomplete">
+    </datalist>
+  </div>
+</form>
+
+{{- range (where site.RegularPages "Type" "in" site.Params.mainSections).GroupByDate "2006" -}}
+<div>
+  <h2 class="year">{{- .Key -}}</h2>
+  {{- range .Pages }}
+  <article class="entry">
+    <div class="item-text">
+      <h5><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a></h5> <br>
+        by {{ partial "authors.html" (dict "site" . "authors" .Params.authors) -}}
+    </div>
+    <span class="date">
+      {{ .Date.Format "Jan 02" }}
+    </span>
+  </article>
+  {{- end -}}
+</div>
+{{- end -}}
+{{- end -}}

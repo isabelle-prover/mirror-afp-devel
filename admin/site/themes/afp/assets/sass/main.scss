@@ -1,0 +1,778 @@
+//colors
+$theme: hsl(242, 27%, 24%);
+$theme-hover: hsl(241, 26%, 36%);
+$theme-lightest: hsl(261, 36%, 86%);
+$theme-focus: #acabcf;
+$link:#0645ad;
+$link-hover: #0000ee;
+$link-visited: #42047c;
+$white: #fff;
+$lightest-grey: #f2f2f2;
+$lighter-grey: #ddd;
+$light-grey: #bbb;
+$dark-grey: #777;
+$darker-grey: #555;
+$darkest-grey: #303030;
+$black: #000;
+$black_15: rgba(0, 0, 0, 0.15);
+
+//fonts
+$sans-serif: "Open Sans", sans-serif;
+$monospace: "Consolas", monospace;
+$OpenSans: "Open Sans";
+
+$light: 300;
+$normal: 400;
+$bold: 700;
+
+$border-bottom: 2px $darker-grey solid;
+
+%code {
+    font-family: $monospace;
+    background-color: $lightest-grey;
+    color: $darkest-grey;
+}
+
+%button {
+    border: 1px solid $dark-grey;
+    font-size: 1rem;
+    vertical-align: middle;
+    background-color: $white;
+    color: $black;
+    line-height: 0;
+    font-family: $sans-serif;
+}
+
+%button-image {
+    position: relative;
+    top: 0.12em;
+    left: 5px;
+    padding-right: 5px;
+}
+
+@font-face {
+    font-family: $OpenSans;
+    font-display: swap;
+    font-style: normal;
+    font-weight: 300;
+    src: local(""), url("/font/open-sans-v18-latin-300.woff2") format("woff2"),
+        url("/font/open-sans-v18-latin-300.woff") format("woff");
+}
+
+@font-face {
+    font-family: $OpenSans;
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
+    src: local(""), url("/font/open-sans-v18-latin-regular.woff2") format("woff2"),
+        url("/font/open-sans-v18-latin-regular.woff") format("woff");
+}
+
+@font-face {
+    font-family: $OpenSans;
+    font-display: swap;
+    font-style: italic;
+    font-weight: 400;
+    src: local(""), url("/font/open-sans-v18-latin-italic.woff2") format("woff2"),
+        url("/font/open-sans-v18-latin-italic.woff") format("woff");
+}
+
+@font-face {
+    font-family: $OpenSans;
+    font-display: swap;
+    font-style: normal;
+    font-weight: 700;
+    src: local(""), url("/font/open-sans-v18-latin-700.woff2") format("woff2"),
+        url("/font/open-sans-v18-latin-700.woff") format("woff");
+}
+
+@font-face {
+    font-family: $OpenSans;
+    font-display: swap;
+    font-style: italic;
+    font-weight: 700;
+    src: local(""), url("/font/open-sans-v18-latin-700italic.woff2") format("woff2"),
+        url("/font/open-sans-v18-latin-700italic.woff") format("woff");
+}
+
+*::selection {
+    background-color: $theme;
+    color: $white;
+}
+
+body {
+    color: $black;
+    background: $white;
+    font-family: $sans-serif;
+    display: grid;
+    grid-template-columns: #{"max(20%, 200px)"} 1fr;
+    grid-template-areas: "sidebar content";
+    justify-items: center;
+    margin: 0;
+}
+
+aside {
+    grid-area: sidebar;
+    background-color: $theme;
+    width: 20vw;
+    margin: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 200px;
+    word-break: break-all;
+    overflow-y: auto;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100vh;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 0.5em 2rem;
+
+        li {
+            padding-left: 1rem;
+            padding-right: 0;
+        }
+
+        &:hover {
+            background-color: $theme-hover;
+        }
+    }
+
+    .active {
+        background-color: $theme-hover;
+    }
+
+    div > a {
+        display: block;
+        text-align: center;
+    }
+
+    a {
+        &:link,
+        &:visited {
+            color: $white;
+        }
+
+        &:focus {
+            outline: 1px $theme-focus solid;
+            outline-offset: 3.5px;
+        }
+    }
+
+    hr {
+        margin: 0 40px;
+        border: none;
+        border-top: 2px solid $dark-grey;
+    }
+}
+
+.logo {
+    width: 40%;
+    height: auto;
+    padding: 10%;
+    max-width: 160px;
+}
+
+li {
+    margin: 0.25em 0;
+}
+
+header {
+    border-bottom: $border-bottom;
+    margin-bottom: 20px;
+    padding: 0.5rem 0;
+
+    > div {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    form {
+        padding: 0.5rem 0;
+        float: right;
+    }
+
+    h1 {
+        padding: 0.5rem 0;
+        margin: 0;
+        clear: both;
+        line-height: 2.75rem;
+    }
+
+    #searchInput {
+        height: 2rem;
+        padding: 7px;
+        width: 175px;
+    }
+
+    #searchButton {
+        height: 2rem;
+        padding: 7px;
+        width: 2rem;
+
+        &:hover {
+            background-color: $lighter-grey;
+        }
+
+        &:active {
+            background-color: $light-grey;
+        }
+    }
+
+    div p {
+        margin: 0;
+    }
+}
+
+.content {
+    grid-area: content;
+    margin: 0 auto 2rem;
+    width: 50vw;
+    min-width: 400px;
+
+    div {
+        line-height: 1.35em;
+        width: 100%;
+
+        h1 {
+            border-bottom: $border-bottom;
+        }
+    }
+
+    > div {
+        form {
+            margin: 2rem auto 0;
+            width: 50%;
+            min-width: 290px;
+            padding: 1rem 0;
+        }
+
+        #searchButton {
+            height: 2.5rem;
+            width: 25%;
+            min-width: 70px;
+            background: $theme;
+            color: $white;
+            border: 1px $theme solid;
+        }
+
+        #searchInput {
+            height: 2.5rem;
+            width: 75%;
+        }
+    }
+
+    .popup {
+        background: $white;
+        box-shadow: 0 0 8px 0 $black_15, 0 4px 10px 0 $black_15;
+        padding: 2.5rem;
+        display: block;
+        width: auto;
+        min-width: 300px;
+        max-width: 90vw;
+        max-height: 75vh;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        overflow-y: auto;
+    }
+
+    .chart {
+        min-width: 400px;
+        width: 100%;
+        min-height: 400px;
+        max-height: 50vh;
+        background: $white;
+        margin: 20px auto 40px;
+        border: 1px solid $black;
+        position: relative;
+    }
+
+    .statsnumber {
+        text-align: right;
+        padding-right: 1rem;
+    }
+
+    ul {
+        list-style-type: none;
+    }
+
+    li {
+        word-break: break-all;
+    }
+
+    li::before {
+        content: "–";
+        position: absolute;
+        margin-left: -1.3em;
+    }
+}
+
+.entries {
+    >div {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+    }
+
+    main {
+        padding-right: 2%;
+        max-width: 90ch;
+
+        div {
+            margin: 1rem 0;
+        }
+    }
+
+    nav {
+        width: 130px;
+        margin-left: auto;
+
+        h4 {
+            color: $darker-grey;
+            font-weight: $normal;
+        }
+    }
+}
+
+.theories {
+    width: 60vw;
+}
+
+.links {
+    button {
+        display: inline-block;
+        margin: 0.5rem 0;
+    }
+
+    a {
+        display: inline-block;
+        margin: 0.5rem 0;
+    }
+}
+
+.popUpButton {
+    &:visited {
+        color: $white;
+    }
+
+    &:link {
+        border: none;
+        padding: 0.75rem 0;
+        background-color: $theme;
+        color: $white;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 200ms ease, transform 150ms ease;
+        font-weight: $bold;
+        font-size: 0.9rem;
+        width: 130px;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+a {
+    &:link {
+        color: $link;
+        text-decoration: none;
+        font-weight: $bold;
+    }
+
+    &:visited {
+        color: $link-visited;
+    }
+
+    &:hover {
+        color: $link-hover;
+    }
+}
+
+h1 {
+    margin: 1.5em 0 0 0;
+    font-size: 2em;
+    padding-bottom: 20px;
+
+    span.first {
+        font-size: 2.3rem;
+    }
+}
+
+h2 {
+    margin: 1.5em 0 0 0;
+    padding: 0;
+}
+
+h3 {
+    margin: 1.5em 0 0 0;
+    font-stretch: normal;
+    font-size: larger;
+    padding: 0;
+    font-weight: $light;
+
+    &:first-child {
+        margin: 0.5rem 0 0 0;
+    }
+}
+
+h4 {
+    margin: 1.5em 0 0 0;
+    margin-bottom: 0.5ex;
+    font-weight: $bold;
+}
+
+.popup {
+    h2 {
+        margin-top: 0;
+    }
+
+    .close {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 2rem;
+        right: 2rem;
+        transition: all 200ms;
+        font-size: 24px;
+        font-weight: $bold;
+        color: $darker-grey;
+        text-align: center;
+
+        &:hover {
+            color: $darkest-grey;
+        }
+    }
+}
+
+#downloadPopUp {
+    a[download] {
+        display: block;
+        width: 154px;
+        margin: 2.5rem auto 0;
+    }
+}
+
+.year {
+    position: sticky;
+    top: 0;
+    background-color: $white;
+    margin: 0;
+    padding-top: 2rem;
+    padding-bottom: 0.5em;
+    border-bottom: $border-bottom;
+}
+
+img {
+    max-width: 90%;
+}
+
+pre {
+    @extend %code;
+    padding: 1rem;
+    overflow: auto;
+
+    &.bibtex {
+        white-space: pre;
+        border-width: thin;
+        border-style: solid;
+    }
+
+    &.code {
+        white-space: pre;
+        padding: 10px 2px;
+    }
+}
+
+code {
+    padding: 1px 2px 2px;
+    @extend %code;
+}
+
+blockquote {
+    border: 2px solid $lighter-grey;
+    padding: 1rem 2rem;
+    margin: auto 0;
+}
+
+tr:nth-child(even) {
+    background-color: $lightest-grey;
+}
+
+.nobr {
+    white-space: nowrap;
+}
+
+.searchPage {
+    >div {
+        display: grid;
+        grid-template-columns: 3fr #{"max(25%, 175px)"};
+        grid-template-rows: 150px 1fr;
+        grid-template-areas: "search search"
+        "entries sidebar";
+        min-width: 560px;
+    }
+
+    form {
+        grid-area: search;
+    }
+
+    #search-main {
+        grid-area: entries;
+        padding-right: 2rem;
+        box-sizing: border-box;
+    }
+
+    #search-results {
+
+        >div {
+            position: relative;
+            margin: 1.5rem 0;
+            border-bottom: 2px $lighter-grey solid;
+            padding-bottom: 1.5rem;
+        }
+
+        div+div {
+            margin-top: 1rem;
+        }
+
+        .title,
+        .subtitle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subtitle {
+            color: $dark-grey;
+            font-size: 0.875em;
+
+            >p {
+                margin: 0;
+            }
+        }
+
+        a[download] {
+            padding: 5px 7.5px;
+            flex-shrink: 0;
+            margin-left: 1em;
+        }
+    }
+
+    #search-sidebar {
+        grid-area: sidebar;
+    }
+}
+
+a[download] {
+    display: inline-block;
+    color: $black;
+    height: 22px;
+    padding: 4px 7px;
+    @extend %button;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c5c4ddbb;
+    }
+
+    &:hover,
+    &:active {
+        background-color: $light-grey;
+        color: $black;
+    }
+    &:after {
+        content: url("/images/download.svg");
+        @extend %button-image
+    }
+}
+
+.entry {
+    display: flex;
+    align-items: center;
+    margin-top: 1.35rem;
+
+    a[download] {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .date {
+        text-align: right;
+        width: 15%;
+        font-family: $monospace;
+    }
+
+    h5 {
+        font-size: initial;
+        display: initial;
+    }
+}
+
+.form-container {
+    width: 290px;
+    text-align: left;
+}
+
+#searchInput {
+    @extend %button;
+    border-right: none;
+    font-family: $sans-serif;
+    padding: 0.5em;
+}
+
+#searchButton {
+    @extend %button;
+    cursor: pointer;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c5c4ddbb;
+    }
+
+    img {
+        max-width: 1rem;
+    }
+}
+
+button {
+    @extend %button;
+    height: 2rem;
+    padding: 7px;
+    font-weight: $bold;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $lighter-grey;
+    }
+
+    &:active {
+        background-color: $light-grey;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c5c4ddbb;
+    }
+}
+
+button[copy] {
+    &:after {
+        content: url("/images/copy.svg");
+        @extend %button-image
+    }
+}
+
+#searchInputautocomplete-list {
+    width: 214px;
+    position: absolute;
+    margin-bottom: 24px;
+    padding: 8px 0;
+    background-color: $white;
+    border: 1px solid $lighter-grey;
+    box-shadow: 0 2px 4px $black_15;
+    z-index: 1;
+
+    div {
+        width: auto;
+        padding: 8px 12px;
+        line-height: 16px;
+        cursor: pointer;
+
+        &:hover {
+            background: $lighter-grey;
+        }
+    }
+}
+
+.autocomplete-active {
+    background: $lighter-grey;
+}
+
+.item-text {
+    width: 85%;
+}
+
+.date {
+    color: $darker-grey;
+    font-size: 14px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: $black_15;
+    transition: opacity 200ms;
+    visibility: hidden;
+    opacity: 0;
+
+    .cancel {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    &:target {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+iframe {
+    width: 100%;
+    height: 90vh;
+}
+
+#banner {
+    display: block;
+    background-color: $theme-lightest;
+    height: 3rem;
+    width: 80vw;
+    position: fixed;
+    bottom: 0;
+    left: 20vw;
+    text-align: center;
+    z-index: 1;
+
+    p {
+        line-height: 1rem;
+    }
+
+    button {
+        height: 1.5rem;
+        width: 1.5rem;
+        position: absolute;
+        right: 2rem;
+        bottom: 0.75rem;
+        padding: 0.3rem;
+    }
+
+    svg {
+        height: 0.75rem;
+        width: 0.75rem;
+        fill: $black;
+    }
+
+    @media (max-width: 1000px) {
+        left: 200px;
+        width: calc(100vw - 200px);
+    }
+}

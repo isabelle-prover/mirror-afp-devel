@@ -1,0 +1,42 @@
+{{ define "main" }}
+  {{ $topics := .Site.Taxonomies.topics }}
+  {{ range $firstLevel, $secondLevelTaxonomy := .Site.Data.topics }}
+    <h2>{{ $firstLevel }}</h2>
+    {{ with (index $topics (urlize $firstLevel)) }}
+      <div class="list">
+        {{ range $key := .Pages.ByDate }}
+          <a href="{{- .Site.BaseURL -}}entries/{{ .File.TranslationBaseName | urlize }}">{{ .File.TranslationBaseName }}</a> &nbsp;
+        {{ end }}
+      </div>
+    {{ end }}
+    {{ with $secondLevelTaxonomy }}
+      {{ range $secondLevel, $thirdLevelTaxonomy := . }}
+        <h3>{{ $secondLevel }}</h3>
+        <div class="list">
+          {{ with (index $topics (printf "%s/%s" (urlize $firstLevel) (urlize $secondLevel))) }}
+            {{ range $key := .Pages.ByDate }}
+              <a href="{{- .Site.BaseURL -}}entries/{{ .File.TranslationBaseName | urlize }}">{{ .File.TranslationBaseName }}</a> &nbsp;
+            {{ end }}
+          {{ end }}
+          {{ with $thirdLevelTaxonomy }}
+            <table>
+              <tbody>
+                {{ range $thirdLevel, $ignore := . }}
+                  <tr>
+                    <td><i>{{ $thirdLevel }}</i></td>
+                    <td>{{ with (index $topics (printf "%s/%s/%s" (urlize $firstLevel) (urlize $secondLevel) (urlize $thirdLevel))) }}
+                      {{ range $key := uniq .Pages.ByDate }}
+                      <a href="{{- .Site.BaseURL -}}entries/{{ .File.TranslationBaseName | urlize }}">{{ .File.TranslationBaseName }}</a> &nbsp;
+                      {{ end }}
+                    {{ end }}
+                    </td>
+                  </tr>         
+                {{ end }}
+              </tbody>
+            </table>
+          {{ end }}
+        </div>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
