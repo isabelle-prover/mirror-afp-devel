@@ -120,16 +120,14 @@ AFP packages are installed.
 
   /* Isabelle tool wrapper */
 
-  val isabelle_tool =
-    Isabelle_Tool("afp_build_python", "build afp python environment", Scala_Project.here,
-    args => {
-      var target_dir = Path.current
-      var requirements_file = Path.explode("$AFP_BASE/admin/sitegen-req.txt")
-      var mirror = default_mirror
-      var verbose = false
+  val isabelle_tool = Isabelle_Tool("afp_build_python", "build afp python environment", Scala_Project.here, args =>
+  {
+    var target_dir = Path.current
+    var requirements_file = Path.explode("$AFP_BASE/admin/sitegen-req.txt")
+    var mirror = default_mirror
+    var verbose = false
 
-      val getopts = Getopts(
-        """
+    val getopts = Getopts("""
 Usage: isabelle afp_build_python [OPTIONS]
 
   Options are:
@@ -141,16 +139,15 @@ Usage: isabelle afp_build_python [OPTIONS]
 
   Build python component with virtual environment.
 """,
-        "D:" -> (arg => target_dir = Path.explode(arg)),
-        "R:" -> (arg => requirements_file = Path.explode(arg)),
-        "U:" -> (arg => mirror = arg),
-        "v" -> (_ => verbose = true)
-      )
+      "D:" -> (arg => target_dir = Path.explode(arg)),
+      "R:" -> (arg => requirements_file = Path.explode(arg)),
+      "U:" -> (arg => mirror = arg),
+      "v" -> (_ => verbose = true))
 
-      getopts(args)
+    getopts(args)
 
-      val progress = new Console_Progress()
+    val progress = new Console_Progress()
 
-      build_python(requirements_file, progress, mirror, target_dir, verbose)
-    })
+    build_python(requirements_file, progress, mirror, target_dir, verbose)
+  })
 }

@@ -93,17 +93,12 @@ ISABELLE_HUGO="$COMPONENT/$ISABELLE_PLATFORM64"
     }
   }
 
-  val isabelle_tool =
-    Isabelle_Tool(
-      "afp_build_hugo",
-      "build afp hugo component",
-      Scala_Project.here,
-      args => {
-        var target_dir = Path.current
-        var mirror = default_mirror
+  val isabelle_tool = Isabelle_Tool("afp_build_hugo", "build afp hugo component", Scala_Project.here, args =>
+  {
+    var target_dir = Path.current
+    var mirror = default_mirror
 
-        val getopts = Getopts(
-          """
+    val getopts = Getopts("""
 Usage: isabelle afp_build_hugo [OPTIONS]
 
   Options are:
@@ -113,15 +108,13 @@ Usage: isabelle afp_build_hugo [OPTIONS]
 
   Build extended hugo component.
 """,
-          "D:" -> (arg => target_dir = Path.explode(arg)),
-          "U:" -> (arg => mirror = arg)
-        )
+      "D:" -> (arg => target_dir = Path.explode(arg)),
+      "U:" -> (arg => mirror = arg))
 
-        getopts(args)
+    getopts(args)
 
-        val progress = new Console_Progress()
+    val progress = new Console_Progress()
 
-        build_hugo(progress = progress, mirror = mirror, target_dir = target_dir)
-      }
-    )
+    build_hugo(progress = progress, mirror = mirror, target_dir = target_dir)
+  })
 }
