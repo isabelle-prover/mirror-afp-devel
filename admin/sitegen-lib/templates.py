@@ -212,6 +212,7 @@ class Builder():
         template = self.j2_env.get_template("statistics.tpl")
         self.write_file("statistics.html", template, data)
         terminal.success("Generated statistics.html")
+        return data
 
     def generate_status(self, build_data):
         template = self.j2_env.get_template("status.tpl")
