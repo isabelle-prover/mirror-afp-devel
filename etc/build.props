@@ -9,6 +9,7 @@ sources = \
   tools/afp_build_site.scala \
   tools/afp_check_roots.scala \
   tools/afp_dependencies.scala \
+  tools/afp_site_gen.scala \
   tools/afp_structure.scala \
   tools/afp_tool.scala \
   tools/hugo.scala \
