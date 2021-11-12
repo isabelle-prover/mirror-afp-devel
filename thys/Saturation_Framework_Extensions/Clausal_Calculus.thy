@@ -172,7 +172,8 @@ locale clausal_counterex_reducing_calculus_with_standard_redundancy =
     J_of :: "'a clause set \<Rightarrow> 'a set"
 begin
 
-sublocale counterex_reducing_calculus_with_standard_redundancy "{{#}}" "(\<TTurnstile>e)" I_of
+sublocale counterex_reducing_calculus_with_standard_inferance_redundancy "{{#}}" Inf "(\<TTurnstile>e)" Red_I
+  Red_F I_of
   by unfold_locales
 
 lemma clausal_saturated_model: "saturated N \<Longrightarrow> {#} \<notin> N \<Longrightarrow> J_of N \<TTurnstile>s N"

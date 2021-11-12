@@ -13,6 +13,23 @@ theory Standard_Redundancy_Criterion
     "HOL-Library.Multiset_Order"
 begin
 
+subsection \<open>Extra Lemmas About Multisets and Ordering\<close>
+
+lemma (in wellorder) wfP_less_wellorder[simp]: "wfP (<)"
+  by (simp add: wf wfP_def)
+
+lemma wfP_less_multiset_strong[simp]:
+  assumes wfP_less: "wfP ((<) :: ('a :: preorder) \<Rightarrow> 'a \<Rightarrow> bool)"
+  shows "wfP ((<) :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> bool)"
+proof (rule wfPUNIVI[rule_format])
+  fix P :: "('a :: preorder) multiset \<Rightarrow> bool" and x
+  assume IH: "\<And>x. (\<And>y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x"
+  show "P x"
+    using IH[unfolded less_multiset_def, simplified]
+    using wf_mult[OF wfP_less[unfolded wfP_def]]
+    by (metis wf_induct)
+qed
+
 text \<open>
 The standard redundancy criterion can be defined uniformly for all inference systems equipped with
 a compact consequence relation. The essence of the refutational completeness argument can be carried
@@ -146,10 +163,11 @@ subsection \<open>The Finitary Standard Redundancy Criterion\<close>
 locale calculus_with_finitary_standard_redundancy =
   inference_system Inf + consequence_relation Bot entails
   for
-    Inf :: "('f :: wellorder) inference set" and
+    Inf :: "('f :: preorder) inference set" and
     Bot :: "'f set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
   assumes
+    wfP_less: "wfP ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool)" and
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> < main_prem_of \<iota>"
 begin
@@ -191,15 +209,14 @@ proof -
     using assms by (metis finite_set_mset_mset_set)
   hence dd2: "DD2 \<in> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD. D' < D)}"
     by blast
-  have "\<exists>DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in># DD. D' < D) \<and>
-    (\<forall>DDa. set_mset DDa \<subseteq> N \<and> set_mset DDa \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in># DDa. D' < D) \<longrightarrow> DD \<le> DDa)"
-    using wf_eq_minimal[THEN iffD1, rule_format, OF wf_less_multiset, OF dd2]
-    unfolding not_le[symmetric] by blast
-  then obtain DD :: "'f multiset" where
+  note wf_less_multiset_strong = wfP_less_multiset_strong[OF wfP_less, unfolded wfP_def]
+  obtain DD :: "'f multiset" where
     dd_subs_n: "set_mset DD \<subseteq> N" and
     ddcc_ent_e: "set_mset DD \<union> CC \<Turnstile> {E}" and
     dd_lt_d: "\<forall>D' \<in># DD. D' < D" and
-    d_min: "\<forall>DDa. set_mset DDa \<subseteq> N \<and> set_mset DDa \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in># DDa. D' < D) \<longrightarrow> DD \<le> DDa"
+    d_min: "\<forall>y. (y, DD) \<in> {(M, N). M < N} \<longrightarrow>
+      y \<notin> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D'\<in>#DD. D' < D)}"
+    using wf_eq_minimal[THEN iffD1, rule_format, OF wf_less_multiset_strong, OF dd2]
     by blast
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"
@@ -246,7 +263,8 @@ proof -
       by (metis insert_DiffM2 order.strict_trans union_iff)
     moreover have "DDa < DD"
       unfolding DDa_def
-      by (meson da_in_dd dda1_lt_da mset_lt_single_right_iff single_subset_iff union_le_diff_plus)
+      by (metis da_in_dd dda1_lt_da less_multiset\<^sub>D\<^sub>M mset_subset_eq_single
+          multi_self_add_other_not_self union_single_eq_member)
     ultimately show False
       using d_min unfolding less_eq_multiset_def by (auto intro!: antisym)
   qed
@@ -373,10 +391,11 @@ subsection \<open>The Standard Redundancy Criterion\<close>
 locale calculus_with_standard_redundancy =
   inference_system Inf + concl_compact_consequence_relation Bot entails
   for
-    Inf :: "('f :: wellorder) inference set" and
+    Inf :: "('f :: preorder) inference set" and
     Bot :: "'f set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
   assumes
+    wfP_less: "wfP ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool)" and
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> < main_prem_of \<iota>"
 begin
@@ -397,7 +416,7 @@ their finitary counterparts.
 \<close>
 
 interpretation fin_std_red: calculus_with_finitary_standard_redundancy Inf Bot "(\<Turnstile>)"
-  using Inf_has_prem Inf_reductive by unfold_locales
+  using wfP_less Inf_has_prem Inf_reductive by unfold_locales
 
 lemma redundant_infer_conv: "redundant_infer = fin_std_red.redundant_infer"
 proof (intro ext)
@@ -500,7 +519,7 @@ end
 subsection \<open>Refutational Completeness\<close>
 
 locale calculus_with_standard_inference_redundancy = calculus Bot Inf "(\<Turnstile>)" Red_I Red_F
-  for Bot :: "('f :: wellorder) set" and Inf and entails (infix "\<Turnstile>" 50) and Red_I and Red_F +
+  for Bot :: "('f :: preorder) set" and Inf and entails (infix "\<Turnstile>" 50) and Red_I and Red_F +
   assumes
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Red_I_imp_redundant_infer: "\<iota> \<in> Red_I N \<Longrightarrow>
@@ -517,13 +536,15 @@ sublocale calculus_with_standard_redundancy \<subseteq>
   by (unfold_locales) (simp_all add: Red_I_def redundant_infer_def)
 
 locale counterex_reducing_calculus_with_standard_inferance_redundancy =
-  calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F + counterex_reducing_inference_system Bot "(\<Turnstile>)" Inf
+  calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F +
+  counterex_reducing_inference_system Bot "(\<Turnstile>)" Inf I_of
   for
     Bot :: "('f :: wellorder) set" and
     Inf :: "'f inference set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
     Red_I :: "'f set \<Rightarrow> 'f inference set" and
-    Red_F :: "'f set \<Rightarrow> 'f set"
+    Red_F :: "'f set \<Rightarrow> 'f set" and
+    I_of :: "'f set \<Rightarrow> 'f set"
 begin
 
 text \<open>

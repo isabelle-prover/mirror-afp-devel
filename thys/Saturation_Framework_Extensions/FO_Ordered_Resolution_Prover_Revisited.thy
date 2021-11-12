@@ -132,7 +132,8 @@ qed
 
 interpretation G: clausal_counterex_reducing_calculus_with_standard_redundancy "G_Inf M"
   "gr.INTERP M"
-  by (unfold_locales, fact G_Inf_have_prems, fact G_Inf_reductive)
+  using G_Inf_have_prems G_Inf_reductive
+  by (unfold_locales) simp_all
 
 interpretation G: statically_complete_calculus "{{#}}" "G_Inf M" "(\<TTurnstile>e)" "G.Red_I M" G.Red_F
   by unfold_locales (use G.clausal_saturated_complete in blast)
