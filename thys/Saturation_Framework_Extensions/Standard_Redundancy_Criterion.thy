@@ -496,13 +496,35 @@ sublocale calculus Bot Inf "(\<Turnstile>)" Red_I Red_F
 
 end
 
-locale counterex_reducing_calculus_with_standard_redundancy =
-  calculus_with_standard_redundancy Inf + counterex_reducing_inference_system _ _ Inf
-  for Inf :: "('f :: wellorder) inference set"
-begin
-
 
 subsection \<open>Refutational Completeness\<close>
+
+locale calculus_with_standard_inference_redundancy = calculus Bot Inf "(\<Turnstile>)" Red_I Red_F
+  for Bot :: "('f :: wellorder) set" and Inf and entails (infix "\<Turnstile>" 50) and Red_I and Red_F +
+  assumes
+    Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
+    Red_I_imp_redundant_infer: "\<iota> \<in> Red_I N \<Longrightarrow>
+      (\<exists>DD\<subseteq>N. DD \<union> set (side_prems_of \<iota>) \<Turnstile> {concl_of \<iota>} \<and> (\<forall>C\<in>DD. C < main_prem_of \<iota>))"
+
+sublocale calculus_with_finitary_standard_redundancy \<subseteq>
+  calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F
+  using Inf_has_prem
+  by (unfold_locales) (auto simp: Red_I_def redundant_infer_def)
+
+sublocale calculus_with_standard_redundancy \<subseteq>
+  calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F
+  using Inf_has_prem
+  by (unfold_locales) (simp_all add: Red_I_def redundant_infer_def)
+
+locale counterex_reducing_calculus_with_standard_inferance_redundancy =
+  calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F + counterex_reducing_inference_system Bot "(\<Turnstile>)" Inf
+  for
+    Bot :: "('f :: wellorder) set" and
+    Inf :: "'f inference set" and
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
+    Red_I :: "'f set \<Rightarrow> 'f inference set" and
+    Red_F :: "'f set \<Rightarrow> 'f set"
+begin
 
 text \<open>
 The following result loosely corresponds to Theorem 4.9.
@@ -538,7 +560,7 @@ proof (rule ccontr)
     dd_subs_n: "DD \<subseteq> N" and
     dd_cc_ent_d: "DD \<union> set (side_prems_of \<iota>) \<Turnstile> {concl_of \<iota>}" and
     dd_lt_d: "\<forall>C \<in> DD. C < D"
-    unfolding Red_I_def redundant_infer_def \<iota>_mprem by blast
+    unfolding \<iota>_mprem using Red_I_imp_redundant_infer by meson
   from dd_subs_n dd_lt_d have "I_of N \<Turnstile> DD"
     using d_min by (meson ex_min_counterex subset_iff)
   then have "I_of N \<Turnstile> {concl_of \<iota>}"
