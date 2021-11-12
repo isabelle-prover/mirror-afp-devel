@@ -20,6 +20,9 @@ object AFP_Site_Gen
     def from_authors(authors: List[Metadata.Author]): T =
       Metadata.TOML.from_authors(authors)
 
+    def from_topics(topics: List[Metadata.Topic]): T =
+      Metadata.TOML.from_topics(topics)
+
     def from_affiliations(
       affiliations: List[Metadata.Affiliation],
       authors: Map[Metadata.Author.ID, Metadata.Author]): T =
@@ -94,6 +97,8 @@ object AFP_Site_Gen
     def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] = topic :: topic.sub_topics.flatMap(sub_topics)
 
     val topics_by_id = Utils.grouped_sorted(topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
+
+    layout.write_data(Path.basic("topics.json"), JSON.from_topics(topics))
 
 
     /* add releases */
