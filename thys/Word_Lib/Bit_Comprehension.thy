@@ -101,7 +101,7 @@ proof (cases \<open>\<exists>n. \<forall>m\<ge>n. f m \<longleftrightarrow> f n\
   then have n: \<open>\<And>m. n \<le> m \<Longrightarrow> f m \<longleftrightarrow> f n\<close>
     by blast
   from n_def have n_eq: \<open>(LEAST q. \<forall>m\<ge>q. f m \<longleftrightarrow> f n) = n\<close>
-    by (smt Least_equality Least_le \<open>\<forall>m\<ge>n. f m = f n\<close> dual_order.refl le_refl n order_refl)
+    by (smt (verit, best) Least_le \<open>\<forall>m\<ge>n. f m = f n\<close> dual_order.antisym wellorder_Least_lemma(1))
   show ?thesis
   proof (cases \<open>f n\<close>)
     case False
