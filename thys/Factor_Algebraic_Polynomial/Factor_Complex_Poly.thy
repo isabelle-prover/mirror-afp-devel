@@ -12,6 +12,30 @@ definition factor_complex_main :: "complex poly \<Rightarrow> complex \<times> (
   "factor_complex_main p \<equiv> let (c,pis) = yun_rf (yun_polys p) in
     (c, concat (map (\<lambda> (p,i). map (\<lambda> r. (r,i)) (roots_of_complex_rf_poly p)) pis))"
 
+lemma roots_of_complex_poly_via_factor_complex_main: 
+  "map fst (snd (factor_complex_main p)) = roots_of_complex_poly p"
+proof (cases "p = 0")
+  case True
+  have [simp]: "yun_rf (yun_polys 0) = (0,[])"
+    by (transfer, simp)
+  show ?thesis 
+    unfolding factor_complex_main_def Let_def roots_of_complex_poly_def True
+    by simp
+next
+  case False
+  hence p: "(p = 0) = False" by simp
+  obtain c rts where yun: "yun_rf (yun_polys p) = (c,rts)" by force
+  show ?thesis 
+    unfolding factor_complex_main_def Let_def roots_of_complex_poly_def p if_False
+      roots_of_complex_rf_polys_def polys_rf_def o_def yun split snd_conv map_map
+    by (induct rts, auto simp: o_def)
+qed
+
+lemma distinct_factor_complex_main:
+  "distinct (map fst (snd (factor_complex_main p)))" 
+  unfolding roots_of_complex_poly_via_factor_complex_main
+  by (rule distinct_roots_of_complex_poly)
+    
 lemma factor_complex_main: assumes rt: "factor_complex_main p = (c,xis)"
   shows "p = smult c (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)"
 proof -
@@ -86,6 +110,16 @@ qed
 definition factor_complex_poly :: "complex poly \<Rightarrow> complex \<times> (complex poly \<times> nat) list" where
   "factor_complex_poly p = (case factor_complex_main p of
      (c,ris) \<Rightarrow> (c, map (\<lambda> (r,i). ([:-r,1:],Suc i)) ris))"
+
+lemma distinct_factor_complex_poly:
+  "distinct (map fst (snd (factor_complex_poly p)))" 
+proof -
+  obtain c ris where main: "factor_complex_main p = (c,ris)" by force
+  show ?thesis unfolding factor_complex_poly_def main split
+    using distinct_factor_complex_main[of p, unfolded main]
+    unfolding snd_conv o_def
+    unfolding distinct_map by (force simp: inj_on_def)
+qed
 
 
 theorem factor_complex_poly: assumes fp: "factor_complex_poly p = (c,qis)"
