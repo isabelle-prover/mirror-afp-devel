@@ -1,7 +1,7 @@
 section \<open>Szemerédi's Regularity Lemma\<close>
 
 theory Szemeredi
-  imports Roth_Library "Girth_Chromatic.Ugraphs"
+  imports Complex_Main "HOL-Library.Disjoint_Sets" "Girth_Chromatic.Ugraphs"
 
 begin
 
