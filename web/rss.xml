@@ -34,6 +34,24 @@ circular reasoning, this is, as far as we are aware, the first time
 real exponents are mechanised in this way within a proof assistant.</description>
     </item>
     <item>
+       <title>Factorization of Polynomials with Algebraic Coefficients</title>
+              <link>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
+       <guid>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
+       <dc:creator> Manuel Eberl, René Thiemann       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+The AFP already contains a verified implementation of algebraic
+numbers. However, it is has a severe limitation in its factorization
+algorithm of real and complex polynomials: the factorization is only
+guaranteed to succeed if the coefficients of the polynomial are
+rational numbers. In this work, we verify an algorithm to factor all
+real and complex polynomials whose coefficients are algebraic. The
+existence of such an algorithm proves in a constructive way that the
+set of complex algebraic numbers is algebraically closed. Internally,
+the algorithm is based on resultants of multivariate polynomials and
+an approximation algorithm using interval arithmetic.</description>
+    </item>
+    <item>
        <title>Szemerédi's Regularity Lemma</title>
               <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
        <guid>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</guid>
@@ -556,18 +574,6 @@ to capture the key and novel features of Sail in terms of their
 syntax, typing rules and operational semantics, and to confirm that
 they work together by proving progress and preservation lemmas. We use
 the Nominal2 library to handle binding.</description>
-    </item>
-    <item>
-       <title>Public Announcement Logic</title>
-              <link>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Public_Announcement_Logic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>17 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of public announcement logic with
-countably many agents. It includes proofs of soundness and
-completeness for a variant of the axiom system PA + DIST! + NEC!. The
-completeness proof builds on the Epistemic Logic theory.</description>
     </item>
   </channel>
 </rss>

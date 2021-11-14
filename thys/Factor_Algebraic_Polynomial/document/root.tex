@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{isabelle,isabellesym}
+\usepackage{url}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\newcommand\rats{\mathbb{Q}}
+\newcommand\ints{\mathbb{Z}}
+\newcommand\reals{\mathbb{R}}
+\newcommand\complex{\mathbb{C}}
+
+\begin{document}
+
+\title{Factorization of Polynomials with Algebraic Coefficients\footnote{Supported by FWF (Austrian Science Fund) project Y757.}}
+\author{Manuel Eberl \and Ren\'e Thiemann}
+\maketitle
+
+\begin{abstract}
+The AFP already contains a verified implementation of algebraic numbers.
+However, it is has a severe limitation in its 
+factorization algorithm of real and complex polynomials: the factorization is only
+guaranteed to succeed if the coefficients of the polynomial are rational numbers. 
+In this work, we verify an algorithm to factor all real and complex polynomials
+whose coefficients are algebraic. 
+The existence of such an algorithm proves in a constructive way that the set of complex algebraic numbers
+is algebraically closed.
+Internally, the algorithm is based on resultants of multivariate 
+polynomials and an approximation algorithm using interval arithmetic.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The formalization of algebraic numbers \cite{Algebraic_Numbers,Algebraic_Numbers-AFP}
+includes an algorithm that given
+a univariate polynomial $f$ over $\ints$ or $\rats$, it computes all roots of $f$ within
+$\reals$ or $\complex$. In this AFP entry we verify a generalized algorithm that also allows
+polynomials as input whose coefficients are complex or real algebraic numbers, following 
+\cite[Section~3]{jsc}. 
+
+The verified algorithm internally computes resultants of
+multivariate polynomials, where we utilize Braun and Traub's subresultant algorithm in our
+verified implementation \cite{Brown,BrownTraub,Subresultants-AFP}. In this way we achieve an
+efficient implementation with minimal effort: only a division algorithm for multivariate polynomials
+is required, but no algorithm for computing greatest common divisors of these polynomials.
+
+\paragraph{Acknowledgments}
+We thank Dmitriy Traytel for help with code generation for functions defined via 
+\isacommand{lift{\isacharunderscore}{\kern0pt}definition}. 
+ 
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
