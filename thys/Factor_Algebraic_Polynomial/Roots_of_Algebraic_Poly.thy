@@ -8,7 +8,7 @@ text \<open>We provide an algorithm to compute a non-zero integer polynomial $q$
 
 theory Roots_of_Algebraic_Poly
   imports 
-    Cubic_Quartic_Equations.Min_Int_Poly_Impl
+    Cubic_Quartic_Equations.Min_Int_Poly_Complex_Impl
     Multivariate_Resultant
     Is_Int_To_Int
 begin

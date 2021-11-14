@@ -8,7 +8,7 @@ text \<open>We define a conversion of multivariate polynomials into univariate p
 theory Poly_Connection
   imports 
     Polynomials.MPoly_Type_Univariate
-    Jordan_Normal_Form.Missing_Permutations
+    Jordan_Normal_Form.Missing_Misc
     Polynomial_Interpolation.Ring_Hom_Poly
     Hermite_Lindemann.More_Multivariate_Polynomial_HLW
     Polynomials.MPoly_Type_Class
@@ -160,7 +160,7 @@ lemma MPoly_Type_monom_0_iff[simp]: "MPoly_Type.monom m x = 0 \<longleftrightarr
   by (metis (full_types) MPoly_Type_monom_zero More_MPoly_Type.coeff_monom when_def) 
 
 lemma vars_signof[simp]: "vars (signof x) = {}" 
-  by (simp add: signof_def)
+  by (simp add: sign_def)
 
 lemma prod_mset_Const: "prod_mset (image_mset Const A) = Const (prod_mset A)"
   by (induction A) (auto simp: mpoly_Const_mult)

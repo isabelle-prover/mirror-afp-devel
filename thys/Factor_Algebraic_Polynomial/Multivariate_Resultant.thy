@@ -124,16 +124,7 @@ text \<open>For resultants, we manually have to select the implementation that
   works on integral domains, because there is no factorial ring instance for @{typ "int mpoly"}.\<close>
 
 lemma resultant_mpoly_poly_code[code]:
-  "resultant_mpoly_poly x p q = resultant_impl_idom_divide (mpoly_to_mpoly_poly x p) (map_poly Const q)"
-  unfolding resultant_mpoly_poly_def by simp
-
-text \<open>Make the idom-divide-resultant algorithm executable. The following
-  three lines have to be removed when switching to the development version of AFP,
-  where the code-setup for @{const resultant_impl_idom_divide} is already integrated.\<close>
-declare resultant_impl_main_def[code]
-declare subresultant_prs_def[code]
-declare subresultant_prs_main.simps[code]
-
-
+  "resultant_mpoly_poly x p q = resultant_impl_basic (mpoly_to_mpoly_poly x p) (map_poly Const q)"
+  unfolding resultant_mpoly_poly_def div_exp_basic.resultant_impl by simp
 
 end
