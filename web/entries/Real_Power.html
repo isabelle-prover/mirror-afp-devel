@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>SpecCheck - Specification-Based Testing for Isabelle/ML - Archive of Formal Proofs
+<title>Real Exponents as the Limits of Sequences of Rational Exponents - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,25 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>pecCheck
+  <h1>          <font class="first">R</font>eal
   
-          <font class="first">-</font>
+          <font class="first">E</font>xponents
   
-          <font class="first">S</font>pecification-Based
+          as
   
-          <font class="first">T</font>esting
+          the
   
-          for
+          <font class="first">L</font>imits
   
-          <font class="first">I</font>sabelle/ML
+          of
+  
+          <font class="first">S</font>equences
+  
+          of
+  
+          <font class="first">R</font>ational
+  
+          <font class="first">E</font>xponents
   
 </h1>
   <p>&nbsp;</p>
@@ -93,17 +101,15 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">SpecCheck - Specification-Based Testing for Isabelle/ML</td>
+  <td class="data" width="80%">Real Exponents as the Limits of Sequences of Rational Exponents</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                      <a href="https://www21.in.tum.de/team/kappelmk/">Kevin Kappelmann</a>,
-                Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com) and
-          Sebastian Willenbrink (sebastian /dot/ willenbrink /at/ tum /dot/ de)
+              <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">Jacques D. Fleuriot</a>
       </td>
 </tr>
 
@@ -111,35 +117,40 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-07-01</td>
+  <td class="data">2021-11-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-SpecCheck is a <a
-href="https://en.wikipedia.org/wiki/QuickCheck">QuickCheck</a>-like
-testing framework for Isabelle/ML. You can use it to write
-specifications for ML functions. SpecCheck then checks whether your
-specification holds by testing your function against a given number of
-generated inputs. It helps you to identify bugs by printing
-counterexamples on failure and provides you timing information.
-SpecCheck is customisable and allows you to specify your own input
-generators, test output formats, as well as pretty printers and
-shrinking functions for counterexamples among other things.</td>
+In this formalisation, we  construct real exponents as the limits of
+sequences of rational exponents. In particular, if $a \ge 1$ and $x
+\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
+that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
+increasing and if $r$ is any rational number such that $r > x$,
+$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
+monotone sequences, $a^{r_n}$ converges. We define $a^ x =
+\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
+properties (for $a \ge 0$).  This particular construction of real
+exponents is needed instead of the usual one using the natural
+logarithm and exponential functions (which already exists in Isabelle)
+to support our mechanical derivation of Euler's exponential
+series as an ``infinite polynomial". Aside from helping us avoid
+circular reasoning, this is, as far as we are aware, the first time
+real exponents are mechanised in this way within a proof assistant.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{SpecCheck-AFP,
-  author  = {Kevin Kappelmann and Lukas Bulwahn and Sebastian Willenbrink},
-  title   = {SpecCheck - Specification-Based Testing for Isabelle/ML},
+        <pre>@article{Real_Power-AFP,
+  author  = {Jacques D. Fleuriot},
+  title   = {Real Exponents as the Limits of Sequences of Rational Exponents},
   journal = {Archive of Formal Proofs},
-  month   = jul,
+  month   = nov,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/SpecCheck.html},
+  note    = {\url{https://isa-afp.org/entries/Real_Power.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -151,9 +162,7 @@ shrinking functions for counterexamples among other things.</td>
 
     
                     
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Conditional_Transfer_Rule.html">Conditional_Transfer_Rule</a>, <a href="Regex_Equivalence.html">Regex_Equivalence</a>, <a href="Types_To_Sets_Extension.html">Types_To_Sets_Extension</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -165,17 +174,17 @@ shrinking functions for counterexamples among other things.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/SpecCheck/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/SpecCheck/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Real_Power/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Real_Power/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/SpecCheck/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Real_Power/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-SpecCheck-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Real_Power-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

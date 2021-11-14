@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>SpecCheck - Specification-Based Testing for Isabelle/ML - Archive of Formal Proofs
+<title>Szemerédi's Regularity Lemma - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,11 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>pecCheck
+  <h1>          <font class="first">S</font>zemerédi's
   
-          <font class="first">-</font>
+          <font class="first">R</font>egularity
   
-          <font class="first">S</font>pecification-Based
-  
-          <font class="first">T</font>esting
-  
-          for
-  
-          <font class="first">I</font>sabelle/ML
+          <font class="first">L</font>emma
   
 </h1>
   <p>&nbsp;</p>
@@ -93,7 +87,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">SpecCheck - Specification-Based Testing for Isabelle/ML</td>
+  <td class="data" width="80%">Szemerédi's Regularity Lemma</td>
 </tr>
 
 <tr>
@@ -101,9 +95,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      <a href="https://www21.in.tum.de/team/kappelmk/">Kevin Kappelmann</a>,
-                Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com) and
-          Sebastian Willenbrink (sebastian /dot/ willenbrink /at/ tum /dot/ de)
+                      <a href="https://www.cst.cam.ac.uk/people/cle47">Chelsea Edmonds</a>,
+                <a href="https://www.cst.cam.ac.uk/people/ak2110">Angeliki Koutsoukou-Argyraki</a> and
+          <a href="https://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
       </td>
 </tr>
 
@@ -111,35 +105,38 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-07-01</td>
+  <td class="data">2021-11-05</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-SpecCheck is a <a
-href="https://en.wikipedia.org/wiki/QuickCheck">QuickCheck</a>-like
-testing framework for Isabelle/ML. You can use it to write
-specifications for ML functions. SpecCheck then checks whether your
-specification holds by testing your function against a given number of
-generated inputs. It helps you to identify bugs by printing
-counterexamples on failure and provides you timing information.
-SpecCheck is customisable and allows you to specify your own input
-generators, test output formats, as well as pretty printers and
-shrinking functions for counterexamples among other things.</td>
+<a
+href="https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma">Szemerédi's
+regularity lemma</a> is a key result in the study of large
+graphs. It asserts the existence an upper bound on the number of parts
+the vertices of a graph need to be partitioned into such that the
+edges between the parts are random in a certain sense. This bound
+depends only on the desired precision and not on the graph itself, in
+the spirit of Ramsey's theorem. The formalisation follows online
+course notes by <a
+href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Tim
+Gowers</a> and <a
+href="https://yufeizhao.com/gtac/gtac.pdf">Yufei
+Zhao</a>.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{SpecCheck-AFP,
-  author  = {Kevin Kappelmann and Lukas Bulwahn and Sebastian Willenbrink},
-  title   = {SpecCheck - Specification-Based Testing for Isabelle/ML},
+        <pre>@article{Szemeredi_Regularity-AFP,
+  author  = {Chelsea Edmonds and Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson},
+  title   = {Szemerédi's Regularity Lemma},
   journal = {Archive of Formal Proofs},
-  month   = jul,
+  month   = nov,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/SpecCheck.html},
+  note    = {\url{https://isa-afp.org/entries/Szemeredi_Regularity.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,10 +147,10 @@ shrinking functions for counterexamples among other things.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Conditional_Transfer_Rule.html">Conditional_Transfer_Rule</a>, <a href="Regex_Equivalence.html">Regex_Equivalence</a>, <a href="Types_To_Sets_Extension.html">Types_To_Sets_Extension</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Girth_Chromatic.html">Girth_Chromatic</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -165,17 +162,17 @@ shrinking functions for counterexamples among other things.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/SpecCheck/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/SpecCheck/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Szemeredi_Regularity/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Szemeredi_Regularity/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/SpecCheck/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Szemeredi_Regularity/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-SpecCheck-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Szemeredi_Regularity-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
