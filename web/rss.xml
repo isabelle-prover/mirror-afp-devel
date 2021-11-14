@@ -34,6 +34,18 @@ circular reasoning, this is, as far as we are aware, the first time
 real exponents are mechanised in this way within a proof assistant.</description>
     </item>
     <item>
+       <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/PAL.html</link>
+       <guid>https://www.isa-afp.org/entries/PAL.html</guid>
+       <dc:creator> Christoph Benzmüller, Sebastian Reiche       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+We present a shallow embedding of public announcement logic (PAL) with
+relativized general knowledge in HOL. We then use PAL to obtain an
+elegant encoding of the wise men puzzle, which we solve automatically
+using sledgehammer.</description>
+    </item>
+    <item>
        <title>Factorization of Polynomials with Algebraic Coefficients</title>
               <link>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
        <guid>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
@@ -556,24 +568,6 @@ of the same colour in said interval. The proof goes along the lines of
 Waerden&#39;s Theorem is then called the Van der Waerden Number.
 Finding the Van der Waerden Number is still an open problem for most
 values of $k$ and $l$.</description>
-    </item>
-    <item>
-       <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
-              <link>https://www.isa-afp.org/entries/MiniSail.html</link>
-       <guid>https://www.isa-afp.org/entries/MiniSail.html</guid>
-       <dc:creator> Mark Wassell       </dc:creator>
-       <pubDate>18 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-MiniSail is a kernel language for Sail, an instruction set
-architecture (ISA) specification language. Sail is an imperative
-language with a light-weight dependent type system similar to
-refinement type systems. From an ISA specification, the Sail compiler
-can generate theorem prover code and C (or OCaml) to give an
-executable emulator for an architecture. The idea behind MiniSail is
-to capture the key and novel features of Sail in terms of their
-syntax, typing rules and operational semantics, and to confirm that
-they work together by proving progress and preservation lemmas. We use
-the Nominal2 library to handle binding.</description>
     </item>
   </channel>
 </rss>

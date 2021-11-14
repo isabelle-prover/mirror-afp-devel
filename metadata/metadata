@@ -11240,3 +11240,15 @@ abstract =
   set of complex algebraic numbers is algebraically closed. Internally,
   the algorithm is based on resultants of multivariate polynomials and
   an approximation algorithm using interval arithmetic.
+
+[PAL]
+title = Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL
+author = Christoph Benzmüller <http://christoph-benzmueller.de>, Sebastian Reiche  <https://www.linkedin.com/in/sebastian-reiche-0b2093178>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-11-08
+notify = c.benzmueller@gmail.com
+abstract =
+  We present a shallow embedding of public announcement logic (PAL) with
+  relativized general knowledge in HOL. We then use PAL to obtain an
+  elegant encoding of the wise men puzzle, which we solve automatically
+  using sledgehammer.
