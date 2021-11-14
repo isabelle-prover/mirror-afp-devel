@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Solving Cubic and Quartic Equations - Archive of Formal Proofs
+<title>Factorization of Polynomials with Algebraic Coefficients - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,17 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>olving
+  <h1>          <font class="first">F</font>actorization
   
-          <font class="first">C</font>ubic
+          of
   
-          and
+          <font class="first">P</font>olynomials
   
-          <font class="first">Q</font>uartic
+          with
   
-          <font class="first">E</font>quations
+          <font class="first">A</font>lgebraic
+  
+          <font class="first">C</font>oefficients
   
 </h1>
   <p>&nbsp;</p>
@@ -91,15 +93,16 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Solving Cubic and Quartic Equations</td>
+  <td class="data" width="80%">Factorization of Polynomials with Algebraic Coefficients</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
+                    <a href="https://pruvisto.org">Manuel Eberl</a> and
+          René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
       </td>
 </tr>
 
@@ -107,33 +110,35 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-03</td>
+  <td class="data">2021-11-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-<p>We formalize Cardano's formula to solve a cubic equation
-$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari's formula to
-solve a quartic equation. We further turn both formulas into
-executable algorithms based on the algebraic number implementation in
-the AFP. To this end we also slightly extended this library, namely by
-making the minimal polynomial of an algebraic number executable, and
-by defining and implementing $n$-th roots of complex
-numbers.</p></td>
+The AFP already contains a verified implementation of algebraic
+numbers. However, it is has a severe limitation in its factorization
+algorithm of real and complex polynomials: the factorization is only
+guaranteed to succeed if the coefficients of the polynomial are
+rational numbers. In this work, we verify an algorithm to factor all
+real and complex polynomials whose coefficients are algebraic. The
+existence of such an algorithm proves in a constructive way that the
+set of complex algebraic numbers is algebraically closed. Internally,
+the algorithm is based on resultants of multivariate polynomials and
+an approximation algorithm using interval arithmetic.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Cubic_Quartic_Equations-AFP,
-  author  = {René Thiemann},
-  title   = {Solving Cubic and Quartic Equations},
+        <pre>@article{Factor_Algebraic_Polynomial-AFP,
+  author  = {Manuel Eberl and René Thiemann},
+  title   = {Factorization of Polynomials with Algebraic Coefficients},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = nov,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Cubic_Quartic_Equations.html},
+  note    = {\url{https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -145,11 +150,9 @@ numbers.</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Complex_Geometry.html">Complex_Geometry</a>      </td></tr>
+          <td class="data"><a href="Cubic_Quartic_Equations.html">Cubic_Quartic_Equations</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Factor_Algebraic_Polynomial.html">Factor_Algebraic_Polynomial</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -161,17 +164,17 @@ numbers.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Factor_Algebraic_Polynomial/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Factor_Algebraic_Polynomial/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Factor_Algebraic_Polynomial/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Cubic_Quartic_Equations-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Factor_Algebraic_Polynomial-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

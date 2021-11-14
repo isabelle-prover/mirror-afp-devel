@@ -1,0 +1,33 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{stmaryrd}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Automating Public Announcement Logic and the Wise Men Puzzle in
+Isabelle/HOL}
+\author{Christoph Benzm\"uller and Sebastian Reiche}
+\maketitle
+
+\begin{abstract}
+We present a shallow embedding of public announcement logic (PAL) with relativized general knowledge in HOL. We then use PAL to obtain an elegant encoding of the wise men puzzle, which we solve automatically using sledgehammer.
+\end{abstract}
+
+\tableofcontents
+
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

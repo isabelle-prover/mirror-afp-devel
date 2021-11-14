@@ -180,6 +180,7 @@ FOL-Fitting
 FOL_Axiomatic
 FOL_Harrison
 FOL_Seq_Calc1
+Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
 Falling_Factorial_Sum
 Farkas
@@ -416,6 +417,7 @@ Ordinal_Partitions
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
 PAC_Checker
+PAL
 PCF
 PLM
 POPLmark-deBruijn

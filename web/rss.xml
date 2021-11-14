@@ -34,6 +34,36 @@ circular reasoning, this is, as far as we are aware, the first time
 real exponents are mechanised in this way within a proof assistant.</description>
     </item>
     <item>
+       <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/PAL.html</link>
+       <guid>https://www.isa-afp.org/entries/PAL.html</guid>
+       <dc:creator> Christoph Benzmüller, Sebastian Reiche       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+We present a shallow embedding of public announcement logic (PAL) with
+relativized general knowledge in HOL. We then use PAL to obtain an
+elegant encoding of the wise men puzzle, which we solve automatically
+using sledgehammer.</description>
+    </item>
+    <item>
+       <title>Factorization of Polynomials with Algebraic Coefficients</title>
+              <link>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
+       <guid>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
+       <dc:creator> Manuel Eberl, René Thiemann       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+The AFP already contains a verified implementation of algebraic
+numbers. However, it is has a severe limitation in its factorization
+algorithm of real and complex polynomials: the factorization is only
+guaranteed to succeed if the coefficients of the polynomial are
+rational numbers. In this work, we verify an algorithm to factor all
+real and complex polynomials whose coefficients are algebraic. The
+existence of such an algorithm proves in a constructive way that the
+set of complex algebraic numbers is algebraically closed. Internally,
+the algorithm is based on resultants of multivariate polynomials and
+an approximation algorithm using interval arithmetic.</description>
+    </item>
+    <item>
        <title>Szemerédi's Regularity Lemma</title>
               <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
        <guid>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</guid>
@@ -560,36 +590,6 @@ quantification over elements of the base set. We formalise the
 property of undirected graphs being acyclic this way. This involves a
 study of various kinds of orientation of graphs. We also verify basic
 algorithms to constructively prove several second-order properties.</description>
-    </item>
-    <item>
-       <title>Schutz' Independent Axioms for Minkowski Spacetime</title>
-              <link>https://www.isa-afp.org/entries/Schutz_Spacetime.html</link>
-       <guid>https://www.isa-afp.org/entries/Schutz_Spacetime.html</guid>
-       <dc:creator> Richard Schmoetten, Jake Palmer, Jacques Fleuriot       </dc:creator>
-       <pubDate>27 Jul 2021 00:00:00 +0000</pubDate>
-       <description>
-This is a formalisation of Schutz&#39; system of axioms for Minkowski
-spacetime published under the name &#34;Independent axioms for
-Minkowski space-time&#34; in 1997, as well as most of the results in
-the third chapter (&#34;Temporal Order on a Path&#34;) of the above
-monograph. Many results are proven here that cannot be found in
-Schutz, either preceding the theorem they are needed for, or within
-their own thematic section.</description>
-    </item>
-    <item>
-       <title>Finitely Generated Abelian Groups</title>
-              <link>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
-       <guid>https://www.isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</guid>
-       <dc:creator> Joseph Thommes, Manuel Eberl       </dc:creator>
-       <pubDate>07 Jul 2021 00:00:00 +0000</pubDate>
-       <description>
-This article deals with the formalisation of some group-theoretic
-results including the fundamental theorem of finitely generated
-abelian groups characterising the structure of these groups as a
-uniquely determined product of cyclic groups. Both the invariant
-factor decomposition and the primary decomposition are covered.
-Additional work includes results about the direct product, the
-internal direct product and more group-theoretic lemmas.</description>
     </item>
   </channel>
 </rss>

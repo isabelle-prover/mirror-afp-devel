@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Solving Cubic and Quartic Equations - Archive of Formal Proofs
+<title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,27 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>olving
+  <h1>          <font class="first">A</font>utomating
   
-          <font class="first">C</font>ubic
+          <font class="first">P</font>ublic
+  
+          <font class="first">A</font>nnouncement
+  
+          <font class="first">L</font>ogic
   
           and
   
-          <font class="first">Q</font>uartic
+          the
   
-          <font class="first">E</font>quations
+          <font class="first">W</font>ise
+  
+          <font class="first">M</font>en
+  
+          <font class="first">P</font>uzzle
+  
+          in
+  
+          <font class="first">I</font>sabelle/HOL
   
 </h1>
   <p>&nbsp;</p>
@@ -91,15 +103,16 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Solving Cubic and Quartic Equations</td>
+  <td class="data" width="80%">Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
+                    <a href="http://christoph-benzmueller.de">Christoph Benzmüller</a> and
+          <a href="https://www.linkedin.com/in/sebastian-reiche-0b2093178">Sebastian Reiche</a>
       </td>
 </tr>
 
@@ -107,33 +120,29 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-03</td>
+  <td class="data">2021-11-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-<p>We formalize Cardano's formula to solve a cubic equation
-$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari's formula to
-solve a quartic equation. We further turn both formulas into
-executable algorithms based on the algebraic number implementation in
-the AFP. To this end we also slightly extended this library, namely by
-making the minimal polynomial of an algebraic number executable, and
-by defining and implementing $n$-th roots of complex
-numbers.</p></td>
+We present a shallow embedding of public announcement logic (PAL) with
+relativized general knowledge in HOL. We then use PAL to obtain an
+elegant encoding of the wise men puzzle, which we solve automatically
+using sledgehammer.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Cubic_Quartic_Equations-AFP,
-  author  = {René Thiemann},
-  title   = {Solving Cubic and Quartic Equations},
+        <pre>@article{PAL-AFP,
+  author  = {Christoph Benzmüller and Sebastian Reiche},
+  title   = {Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = nov,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Cubic_Quartic_Equations.html},
+  note    = {\url{https://isa-afp.org/entries/PAL.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -144,12 +153,8 @@ numbers.</p></td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Complex_Geometry.html">Complex_Geometry</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Factor_Algebraic_Polynomial.html">Factor_Algebraic_Polynomial</a>      </td></tr>
-          
+                    
+                    
 
         
   </tbody>
@@ -161,17 +166,17 @@ numbers.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/PAL/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/PAL/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Cubic_Quartic_Equations/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/PAL/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Cubic_Quartic_Equations-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-PAL-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
