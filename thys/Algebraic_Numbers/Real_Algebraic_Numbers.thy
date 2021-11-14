@@ -3571,6 +3571,22 @@ lemma to_rat_real_alg: "to_rat (real_of x) = (to_rat_real_alg x)"
   unfolding to_rat to_rat_real_alg_def to_rat_real_alg_main by auto
 
 
+definition algebraic_real :: "real \<Rightarrow> bool" where 
+  [simp]: "algebraic_real = algebraic" 
+
+lemma algebraic_real_iff[code_unfold]: "algebraic = algebraic_real" by simp
+
+lemma algebraic_real_code[code]: "algebraic_real (real_of x) = True" 
+proof (cases "info_real_alg x")
+  case (Inl r)
+  show ?thesis using info_real_alg(2)[OF Inl] by (auto simp: algebraic_of_rat)
+next
+  case (Inr pair)
+  then obtain p n where Inr: "info_real_alg x = Inr (p,n)" by (cases pair, auto)
+  from info_real_alg(1)[OF Inr] have "p represents (real_of x)" by auto
+  thus ?thesis by (auto simp: algebraic_altdef_ipoly)
+qed
+
 subsection \<open>Real Algebraic Numbers as Implementation for Real Numbers\<close>
 
 lemmas real_alg_code_eqns =  

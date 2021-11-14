@@ -1,12 +1,11 @@
 chapter AFP
 
-session Factor_Algebraic_Polynomial(AFP) = Cubic_Quartic_Equations +
+session Factor_Algebraic_Polynomial(AFP) = Algebraic_Numbers +
   options [timeout = 600]
   sessions
     Polynomials
     Hermite_Lindemann
   theories 
-    Complex_Roots_IA_Code 
     Poly_Connection
     Multivariate_Resultant
     Factor_Real_Poly

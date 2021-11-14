@@ -43,10 +43,5 @@ lemma representative_poly_code_unfold[code_unfold]:
   "representative_poly = representative_poly_complex" 
   "representative_poly = representative_poly_real" 
   by (intro ext, simp)+
-
-text \<open>TODO: after merging with AFP devel, this code equation can be removed as it is already present there.\<close>
-lemma algebraic_complex_fun[code_unfold]: "algebraic = (\<lambda> y. let x = y in algebraic (Re x) \<and> algebraic (Im x))"
-  by (intro ext, rule algebraic_complex_iff)
-
  
 end
