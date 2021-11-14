@@ -22,7 +22,7 @@ type_synonym machine_word = \<open>machine_word_len word\<close>
 
 lemma word_bits_len_of:
   \<open>LENGTH(machine_word_len) = word_bits\<close>
-  by (simp add: word_bits_conv)  
+  by (simp add: word_bits_conv)
 
 lemma word_bits_size:
   "size (w :: machine_word) = word_bits"

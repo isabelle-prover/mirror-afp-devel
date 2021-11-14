@@ -1566,6 +1566,10 @@ lemma bin_cat_eqD2: "concat_bit n b a = concat_bit n d c \<Longrightarrow> take_
 lemma bin_cat_inj: "(concat_bit n b a) = concat_bit n d c \<longleftrightarrow> a = c \<and> take_bit n b = take_bit n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
 
+lemma bin_sc_pos:
+  "0 \<le> i \<Longrightarrow> 0 \<le> bin_sc n b i"
+  by (metis bin_sign_sc sign_Pls_ge_0)
+
 code_identifier
   code_module Bits_Int \<rightharpoonup>
   (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
