@@ -46,7 +46,7 @@ lemma scast_of_nat [simp]:
 
 lemma scast_ucast_id [simp]:
   "scast (ucast (x :: 'a::len word) :: 'a signed word) = x"
-  by transfer (simp add: take_bit_signed_take_bit) 
+  by transfer (simp add: take_bit_signed_take_bit)
 
 lemma scast_eq_scast_id [simp]:
   "((scast (a :: 'a::len signed word) :: 'a word) = scast b) = (a = b)"
@@ -81,7 +81,7 @@ lemma word_le_ucast_sless:
   apply simp_all
   apply transfer
   apply (simp add: signed_take_bit_take_bit)
-  apply (metis add.commute mask_eq_exp_minus_1 mask_eq_take_bit_minus_one take_bit_incr_eq zle_add1_eq_le)
+  apply (metis add.commute mask_eq_exp_minus_1 take_bit_incr_eq zle_add1_eq_le)
   done
 
 lemma zero_sle_ucast:
@@ -100,7 +100,7 @@ lemma nth_w2p_scast:
 
 lemma scast_nop1 [simp]:
   "((scast ((of_int x)::('a::len) word))::'a signed word) = of_int x"
-  by transfer (simp add: take_bit_signed_take_bit) 
+  by transfer (simp add: take_bit_signed_take_bit)
 
 lemma scast_nop2 [simp]:
   "((scast ((of_int x)::('a::len) signed word))::'a word) = of_int x"

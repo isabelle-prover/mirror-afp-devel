@@ -40,7 +40,6 @@ imports
   Word_8
   Word_16
   Word_32
-  Word_64
   Word_Syntax
   Signed_Division_Word
   Singleton_Bit_Shifts

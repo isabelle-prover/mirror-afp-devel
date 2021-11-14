@@ -101,7 +101,7 @@ text \<open>
     \<^item> (Bounded) conversion from and to a list of bits:
         @{thm [display] horner_sum_bit_eq_take_bit [where ?'a = int, no_vars]}
 
-  Bit concatenation on \<^typ>\<open>int\<close> as given by 
+  Bit concatenation on \<^typ>\<open>int\<close> as given by
     @{thm [display] concat_bit_def [no_vars]}
   appears quite
   technical but is the logical foundation for the quite natural bit concatenation
@@ -311,7 +311,9 @@ text \<open>
 
       \<^descr>[\<^theory>\<open>Word_Lib.Word_64\<close>]
 
-          for 64-bit words.
+          for 64-bit words. This theory is not part of  \<^text>\<open>Word_Lib_Sumo\<close>, because it shadows
+          names from \<^theory>\<open>Word_Lib.Word_32\<close>. They can be used together, but then will have
+          to use qualified names in applications.
 
       \<^descr>[\<^theory>\<open>Word_Lib.Machine_Word_32\<close> and \<^theory>\<open>Word_Lib.Machine_Word_64\<close>]
 
@@ -388,7 +390,7 @@ section \<open>Changelog\<close>
 text \<open>
   \<^descr>[Changes since AFP 2021] ~
 
-    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is no part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
+    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is not part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
       any longer.
 
     \<^item> Infix syntax for \<^term>\<open>(AND)\<close>, \<^term>\<open>(OR)\<close>, \<^term>\<open>(XOR)\<close> organized in
