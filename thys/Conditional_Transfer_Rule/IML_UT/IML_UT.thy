@@ -7,7 +7,7 @@ A minor extension of SpecCheck: courtesy of Kevin Kappelmann.
 
 section\<open>\<open>IML_UT\<close>\<close>
 theory IML_UT
-  imports SpecCheck.SpecCheck_Dynamic
+  imports SpecCheck.SpecCheck
 begin
 
 ML\<open>

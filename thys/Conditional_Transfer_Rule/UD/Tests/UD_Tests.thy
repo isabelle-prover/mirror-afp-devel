@@ -10,7 +10,6 @@ theory UD_Tests
   imports
     "../UD"
     "../../IML_UT/IML_UT"
-    SpecCheck.SpecCheck_Dynamic
     Complex_Main
 begin
 

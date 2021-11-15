@@ -39,6 +39,8 @@ type process_ctr_relator_in_type = string * Proof.context;
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun show_ctr_relator_in (process_ctr_relator_in : process_ctr_relator_in_type) = 
   let
     val (c, _) = process_ctr_relator_in

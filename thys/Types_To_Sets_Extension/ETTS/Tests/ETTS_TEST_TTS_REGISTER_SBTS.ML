@@ -40,6 +40,8 @@ type tts_register_sbts_in_type =
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun show_tts_register_sbts_in 
   (tts_register_sbts_in : tts_register_sbts_in_type) = 
   let

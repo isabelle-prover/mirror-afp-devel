@@ -72,6 +72,8 @@ fun ud_test_eq_thm thy (act_c, exp_c) (act_ud_out, exp_ud_out) =
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun show_unoverload_definition_in 
   (unoverload_definition_in : unoverload_definition_in_type) = 
   let

@@ -93,6 +93,8 @@ end;
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun string_of_elem_ctxt_fixes args = "fixes: " ^
   (
     args

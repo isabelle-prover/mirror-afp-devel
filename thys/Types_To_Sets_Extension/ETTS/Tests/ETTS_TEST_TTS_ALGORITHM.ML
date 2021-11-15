@@ -76,6 +76,8 @@ fun rel_tts_algorithm_out
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun string_of_rispec ctxt = 
   ML_Syntax.print_pair (Term.string_of_vname) (Syntax.string_of_term ctxt)
   |> ML_Syntax.print_list;

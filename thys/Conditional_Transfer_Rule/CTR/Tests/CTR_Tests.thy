@@ -10,7 +10,6 @@ theory CTR_Tests
   imports
     "../CTR"
     "../../IML_UT/IML_UT"
-    SpecCheck.SpecCheck_Dynamic
     Complex_Main
   keywords "ctr_test" :: thy_defn
 begin

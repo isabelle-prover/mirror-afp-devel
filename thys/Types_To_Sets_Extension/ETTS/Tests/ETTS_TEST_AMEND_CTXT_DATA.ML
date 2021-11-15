@@ -116,6 +116,8 @@ fun eq_tts_ctxt_data
 
 (**** Visualization ****)
 
+(*FIXME: complete the migration to SpecCheck.Show*)
+
 fun show_amend_context_in (args, ctxt) = 
   let 
     val c =

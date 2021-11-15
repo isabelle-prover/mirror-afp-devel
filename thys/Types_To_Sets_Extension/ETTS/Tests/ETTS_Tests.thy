@@ -10,7 +10,6 @@ theory ETTS_Tests
   imports
     "../ETTS_Auxiliary"
     Conditional_Transfer_Rule.IML_UT
-    SpecCheck.SpecCheck_Dynamic
 begin
 
 
