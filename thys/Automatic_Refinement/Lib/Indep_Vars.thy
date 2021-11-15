@@ -37,7 +37,7 @@ ML \<open>
           |> distinct ((op =) o apply2 #1)
           |> map inst_of
 
-        val st' = Drule.instantiate_normalize ([],inst) st
+        val st' = Drule.instantiate_normalize (TVars.empty, Vars.make inst) st
           |> Conv.fconv_rule (Thm.beta_conversion true)
       in
         Seq.single st'

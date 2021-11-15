@@ -7,14 +7,18 @@ imports IP_Address
         (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
-lemma take_bit_word_beyond_length_eq:
-  \<open>take_bit n w = w\<close> if \<open>LENGTH('a) \<le> n\<close> for w :: \<open>'a::len word\<close>
-  using that by transfer simp
-
-
 section \<open>IPv4 Adresses\<close>
   text\<open>An IPv4 address is basically a 32 bit unsigned integer.\<close>
   type_synonym ipv4addr = "32 word"
+
+  lemma ipv4addr_and_mask_eq_self [simp]:
+    \<open>a && 4294967295 = a\<close> for a :: ipv4addr
+  proof -
+    have \<open>take_bit 32 a = a\<close>
+      by (rule take_bit_word_eq_self) simp
+    then show ?thesis
+      by (simp add: take_bit_eq_mask mask_numeral)
+  qed
 
   text\<open>Conversion between natural numbers and IPv4 adresses\<close>
   definition nat_of_ipv4addr :: "ipv4addr \<Rightarrow> nat" where
@@ -46,7 +50,12 @@ section \<open>IPv4 Adresses\<close>
   lemma ipv4addr_of_nat_nat_of_ipv4addr: "ipv4addr_of_nat (nat_of_ipv4addr addr) = addr"
     by(simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
 
-subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
+  subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   fun ipv4addr_of_dotdecimal :: "nat \<times> nat \<times> nat \<times> nat \<Rightarrow> ipv4addr" where
     "ipv4addr_of_dotdecimal (a,b,c,d) = ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a )"
 
@@ -102,6 +111,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     assume  "a < 256" and "b < 256" and "c < 256" and "d < 256"
     note assms= \<open>a < 256\<close> \<open>b < 256\<close> \<open>c < 256\<close> \<open>d < 256\<close>
     hence a:  "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 24) AND mask 8) = a"
+      apply (simp only: flip: take_bit_eq_mask)
       apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
       apply transfer
       apply (simp add: drop_bit_take_bit nat_take_bit_eq flip: take_bit_eq_mask)
@@ -109,6 +119,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       done
     have ipv4addr_of_nat_AND_mask8: "(ipv4addr_of_nat a) AND mask 8 = (ipv4addr_of_nat (a mod 256))"
       for a
+      apply (simp only: flip: take_bit_eq_mask)
       apply (simp add: ipv4addr_of_nat_def)
       apply transfer
       apply (simp flip: take_bit_eq_mask)
@@ -116,6 +127,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       done
     from assms have b:
       "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 16) AND mask 8) = b"
+      apply (simp only: flip: take_bit_eq_mask)
       apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
       apply transfer
       apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
@@ -124,6 +136,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       done
     from assms have c:
       "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 8) AND mask 8) = c"
+      apply (simp only: flip: take_bit_eq_mask)
       apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
       apply transfer
       apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
@@ -131,14 +144,14 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply (simp add: drop_bit_eq_div take_bit_eq_mod)
       done
     from \<open>d < 256\<close> have d: "nat_of_ipv4addr (ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) AND mask 8) = d"
+      apply (simp only: flip: take_bit_eq_mask)
       apply (simp add: ipv4addr_of_nat_AND_mask8 ipv4addr_of_nat_def nat_of_ipv4addr_def)
       apply transfer
       apply (simp flip: take_bit_eq_mask)
       apply (simp add: take_bit_eq_mod nat_mod_distrib nat_add_distrib nat_mult_distrib mod256)
       done
     from a b c d show ?thesis
-      apply (simp add: ipv4addr_of_dotdecimal.simps dotdecimal_of_ipv4addr.simps)
-      apply (simp add: mask_eq push_bit_of_1)
+      apply (simp add: ipv4addr_of_dotdecimal.simps dotdecimal_of_ipv4addr.simps mask_numeral)
       done
   qed
 
@@ -151,19 +164,14 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       for x :: "'a list" and n by(simp add: List.rev_drop)
     have and_mask_bl_take: "length x \<ge> n \<Longrightarrow> ((of_bl x) AND mask n) = (of_bl (rev (take n (rev (x)))))"
       for x n by(simp add: List_rev_drop_geqn of_bl_drop)
-    have ipv4addr_and_255: "x AND 255 = x AND mask 8" for x :: ipv4addr
-      by (simp add: mask_eq push_bit_of_1)
+    have ipv4addr_and_255: "x AND 255 = take_bit 8 x" for x :: ipv4addr
+      by (simp add: take_bit_eq_mask mask_numeral)
     have bit_equality:
       "((ip >> 24) AND 0xFF << 24) + ((ip >> 16) AND 0xFF << 16) + ((ip >> 8) AND 0xFF << 8) + (ip AND 0xFF) =
        of_bl (take 8 (to_bl ip) @ take 8 (drop 8 (to_bl ip)) @ take 8 (drop 16 (to_bl ip)) @ drop 24 (to_bl ip))"
-      apply(simp add: ipv4addr_and_255)
-      apply(simp add: shiftr_slice)
-      apply(simp add: slice_take' size_ipv4addr and_mask_bl_take flip: push_bit_and)
-      apply(simp add: List_rev_drop_geqn)
-      apply(simp add: drop_take)
-      apply(simp add: shiftl_of_bl)
-      apply(simp add: of_bl_append)
-      apply(simp add: ip_and_mask8_bl_drop24)
+      apply (simp add: ipv4addr_and_255 shiftl_def shiftr_def rev_drop rev_take drop_take)
+      apply (simp only: of_bl_append mult.commute [of \<open>2 ^ n\<close> for n] flip: push_bit_eq_mult)
+      apply (simp add: of_bl_drop_eq_take_bit take_drop of_bl_take_to_bl_eq_drop_bit take_bit_drop_bit take_bit_word_eq_self)
       done
     have blip_split: "\<And> blip. length blip = 32 \<Longrightarrow>
       blip = (take 8 blip) @ (take 8 (drop 8 blip)) @ (take 8 (drop 16 blip)) @ (take 8 (drop 24 blip))"
@@ -207,16 +215,16 @@ subsection\<open>IP Ranges: Examples\<close>
 
   lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,42)) 16 =
           {ipv4addr_of_dotdecimal (192,168,0,0) .. ipv4addr_of_dotdecimal (192,168,255,255)}"
-   by(simp add: ipset_from_cidr_alt mask_eq ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def push_bit_of_1)
+   by(simp add: ipset_from_cidr_alt mask_eq ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
 
   lemma "ip \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (0, 0, 0, 0)) 0)"
     by(simp add: ipset_from_cidr_0)
 
   lemma ipv4set_from_cidr_32: fixes addr :: ipv4addr
     shows "ipset_from_cidr addr 32 = {addr}"
-    by (simp add: ipset_from_cidr_alt take_bit_word_beyond_length_eq flip: take_bit_eq_mask)
+    by (simp add: ipset_from_cidr_alt mask_numeral)
 
-  lemma  fixes pre :: ipv4addr
+  lemma fixes pre :: ipv4addr
     shows "ipset_from_cidr pre len = {(pre AND ((mask len) << (32 - len))) .. pre OR (mask (32 - len))}"
     by (simp add: ipset_from_cidr_alt ipset_from_cidr_def)
 
@@ -233,9 +241,9 @@ subsection\<open>IP Ranges: Examples\<close>
     by(simp add: addr_in_ipset_from_cidr_code)
 
   (*small numbers because we didn't load Code_Target_Nat. Should work by eval*)
-lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,0)) 16)"
-  by (simp add: ipv4addr_of_nat_def ipset_from_cidr_def ipv4addr_of_dotdecimal.simps
-    ipset_from_netmask_def mask_eq_exp_minus_1 word_le_def take_bit_minus_one_eq_mask)
+  lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,0)) 16)"
+    by (simp add: ipv4addr_of_nat_def ipset_from_cidr_def ipv4addr_of_dotdecimal.simps
+      ipset_from_netmask_def mask_eq_exp_minus_1 word_le_def)
 
   definition ipv4range_UNIV :: "32 wordinterval" where "ipv4range_UNIV \<equiv> wordinterval_UNIV"
 
@@ -256,5 +264,7 @@ lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of
           network_prefix = (pre AND netmask)
       in (network_prefix, network_prefix OR (NOT netmask)))"
   by(simp add: ipcidr_to_interval_def Let_def ipcidr_to_interval_start.simps ipcidr_to_interval_end.simps)
+
+  end
 
 end

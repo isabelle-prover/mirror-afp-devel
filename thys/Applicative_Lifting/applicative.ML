@@ -165,10 +165,10 @@ fun import_poly_terms pt ctxt =
         | _ => I)) t;
     val paramTs = rev (fold insert_paramTs (unpack_poly_terms pt) []);
     val (tfrees, ctxt') = Variable.invent_types (map #2 paramTs) ctxt;
-    val instT = paramTs ~~ map TFree tfrees;
+    val instT = TVars.make (paramTs ~~ map TFree tfrees);
     val params = map (apsnd (Term_Subst.instantiateT instT)) (rev (Term.add_vars pt []));
     val (frees, ctxt'') = Variable.variant_fixes (map (Name.clean o #1 o #1) params) ctxt';
-    val inst = params ~~ map Free (frees ~~ map #2 params);
+    val inst = Vars.make (params ~~ map Free (frees ~~ map #2 params));
     val pt' = Term_Subst.instantiate (instT, inst) pt;
   in (unpack_poly_terms pt', ctxt'') end;
 
@@ -218,12 +218,12 @@ val red_of_afun = Symtab.lookup o #reds o thms_of_afun;
 val has_red_afun = is_some oo red_of_afun;
 
 fun mk_afun name terms rel thms =
-  AFun {name = name, terms = terms, rel = rel, thms = thms, unfolds = Thm.full_rules};
+  AFun {name = name, terms = terms, rel = rel, thms = thms, unfolds = Thm.item_net};
 
 fun map_afun f1 f2 f3 f4 f5 (AFun {name, terms, rel, thms, unfolds}) =
   AFun {name = f1 name, terms = f2 terms, rel = f3 rel, thms = f4 thms, unfolds = f5 unfolds};
 
-fun map_unfolds f thms = fold Item_Net.update (map f (Item_Net.content thms)) Thm.full_rules;
+fun map_unfolds f thms = fold Item_Net.update (map f (Item_Net.content thms)) Thm.item_net;
 
 fun morph_afun phi =
   let
@@ -302,7 +302,6 @@ structure Data = Generic_Data
     afuns = Name_Space.empty_table "applicative functor",
     patterns = Item_Net.init (op = o apply2 #1) #2
   };
-  val extend = I;
   fun merge ({combinators = (cd1, cr1), afuns = a1, patterns = p1},
              {combinators = (cd2, cr2), afuns = a2, patterns = p2}) =
     {combinators = (Symtab.merge (K true) (cd1, cd2), Library.merge eq_combinator_rule (cr1, cr2)),
@@ -896,16 +895,19 @@ fun derive_combinator_red ctxt af_inst red_thms (base_thm, eq_thm) =
     val base_prop = Thm.prop_of base_thm;
     val tvars = Term.add_tvars base_prop [];
     val (Ts, ctxt_Ts) = mk_TFrees_of (length tvars) (inner_sort_of af_inst) ctxt;
-    val base_prop' = Term_Subst.instantiate (tvars ~~ Ts, []) base_prop;
+    val base_prop' = base_prop |> Term_Subst.instantiate (TVars.make (tvars ~~ Ts), Vars.empty);
     val (lhs, rhs) = Logic.dest_equals base_prop';
     val ([lhs', rhs'], ctxt') = generalize_lift_terms af_inst [lhs, rhs] ctxt_Ts;
     val lifted_prop = (lhs', rhs') |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
     val unfold_comb_conv = HOLogic.Trueprop_conv
-      (HOLogic.eq_conv (Conv.top_sweep_conv (K (Conv.rewr_conv eq_thm)) ctxt') Conv.all_conv);
-    val tac = HEADGOAL (CONVERSION unfold_comb_conv THEN'
-      Raw_Simplifier.rewrite_goal_tac ctxt' red_thms THEN'
-      resolve_tac ctxt' [@{thm refl}]);
-  in singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] lifted_prop (K tac)) end;
+      (HOLogic.eq_conv (Conv.top_sweep_rewrs_conv [eq_thm] ctxt') Conv.all_conv);
+    fun tac goal_ctxt =
+      HEADGOAL (CONVERSION unfold_comb_conv THEN'
+      Raw_Simplifier.rewrite_goal_tac goal_ctxt red_thms THEN'
+      resolve_tac goal_ctxt [@{thm refl}]);
+  in
+    singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] lifted_prop (tac o #context))
+  end;
 
 (*derive all instantiations with pure terms which can be simplified by homomorphism*)
 (*FIXME: more of a workaround than a sensible solution*)
@@ -925,7 +927,7 @@ fun weak_red_closure ctxt (af_inst, merge_thm) strong_red =
                 | SOME T => (T, ctxt));
               val (v', ctxt'') = mk_Free (#1 v) T ctxt';
               val pure_v = Thm.cterm_of ctxt'' (lift_term af_inst v');
-              val next = Drule.instantiate_normalize ([], [((v, af_T), pure_v)]) prev;
+              val next = Drule.instantiate_normalize (TVars.empty, Vars.make [((v, af_T), pure_v)]) prev;
               val next' = Raw_Simplifier.rewrite_rule ctxt'' [merge_thm] next;
               val next'' = singleton (Variable.export ctxt'' ctxt) next';
             in closure vs next'' (prev::thms) end);
@@ -988,7 +990,7 @@ fun mk_terms ctxt (raw_pure, raw_ap, raw_rel, raw_set) =
     fun unify_ap_type T (tyenv, maxidx) =
       let
         val argT = TVar ((Name.aT, maxidx + 1), []);
-        val T1' = Term_Subst.instantiateT [(tvar, argT)] T1;
+        val T1' = Term_Subst.instantiateT (TVars.make [(tvar, argT)]) T1;
         val (tyenv', maxidx') = Sign.typ_unify thy (T1', T) (tyenv, maxidx + 1)
           handle Type.TUNIFY => no_unifier (T1', T);
       in (argT, (tyenv', maxidx')) end;
@@ -1070,10 +1072,12 @@ fun mk_afun_thms ctxt af_inst (hom_thm, ichng_thm, reds, rel_axioms) =
 
         val merge_rule = mk_meta_eq hom_thm;
         val B_intro = the (Symtab.lookup reds "B") |> mk_meta_eq |> Thm.symmetric;
-        val tac =
-          HEADGOAL (Raw_Simplifier.rewrite_goal_tac ctxt' [B_intro, merge_rule] THEN'
-          resolve_tac ctxt' [@{thm refl}]);
-      in singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] prop (K tac)) end;
+        fun tac goal_ctxt =
+          HEADGOAL (Raw_Simplifier.rewrite_goal_tac goal_ctxt [B_intro, merge_rule] THEN'
+          resolve_tac goal_ctxt [@{thm refl}]);
+      in
+        singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] prop (tac o #context))
+      end;
 
     val eq_intros =
       let
@@ -1116,7 +1120,8 @@ fun mk_comb_prop lift_pos thm af_inst ctxt_Ts =
     val base = Thm.prop_of thm;
     val tvars = Term.add_tvars base [];
     val (Ts, (ctxt', Ts')) = reuse_TFrees (length tvars) (inner_sort_of af_inst) ctxt_Ts;
-    val base' = Term_Subst.instantiate (tvars ~~ Ts, []) base;
+    val base' = base
+      |> Term_Subst.instantiate (TVars.make (tvars ~~ Ts), Vars.empty);
     val (lhs, rhs) = Logic.dest_equals base';
     val (_, lhs_args) = strip_comb lhs;
     val lift_var = Var o apsnd (mk_type af_inst) o dest_Var;
@@ -1179,10 +1184,11 @@ fun mk_interchange ctxt ((comb_defs, _), comb_unfolds) (af_inst, merge_thm) reds
     val T_def = the (Symtab.lookup comb_defs "T");
     val T_red = the (Symtab.lookup reds "T");
     val (weak_prop, (ctxt', _)) = mk_comb_prop [0] T_def af_inst (ctxt, []);
-    fun tac {context, ...} =
-      HEADGOAL (Raw_Simplifier.rewrite_goal_tac context [Thm.symmetric merge_thm] THEN'
-      resolve_tac context [T_red]);
-    val weak_red = singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] weak_prop tac);
+    fun tac goal_ctxt =
+      HEADGOAL (Raw_Simplifier.rewrite_goal_tac goal_ctxt [Thm.symmetric merge_thm] THEN'
+      resolve_tac goal_ctxt [T_red]);
+    val weak_red =
+      singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] weak_prop (tac o #context));
   in Raw_Simplifier.rewrite_rule ctxt (comb_unfolds) weak_red RS sym end;
 
 fun mk_weak_reds ctxt ((comb_defs, _), comb_unfolds) af_inst (hom_thm, ichng_thm, reds) =
@@ -1192,14 +1198,16 @@ fun mk_weak_reds ctxt ((comb_defs, _), comb_unfolds) af_inst (hom_thm, ichng_thm
     val af_thms = mk_afun_thms ctxt af_inst (hom_thm, ichng_thm, unfolded_reds, NONE);
     val af = mk_afun Binding.empty (pack_afun_inst af_inst) NONE af_thms;
 
-    fun tac {context, ...} = HEADGOAL (normalize_wrapper_tac context (SOME af) THEN'
-      Raw_Simplifier.rewrite_goal_tac context comb_unfolds THEN'
-      resolve_tac context [refl]);
+    fun tac goal_ctxt =
+      HEADGOAL (normalize_wrapper_tac goal_ctxt (SOME af) THEN'
+      Raw_Simplifier.rewrite_goal_tac goal_ctxt comb_unfolds THEN'
+      resolve_tac goal_ctxt [refl]);
     fun mk comb lift_pos =
       let
         val def = the (Symtab.lookup comb_defs comb);
         val (prop, (ctxt', _)) = mk_comb_prop lift_pos def af_inst (ctxt, []);
-        val hol_thm = singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] prop tac);
+        val hol_thm =
+          singleton (Variable.export ctxt' ctxt) (Goal.prove ctxt' [] [] prop (tac o #context));
       in mk_meta_eq hol_thm end;
 
     val uncurry_thm = mk_meta_eq (forward_lift_rule ctxt af @{thm uncurry_pair});

@@ -1,6 +1,6 @@
 signature COND_REWR_CONV = sig
-  val cond_rewr_conv: tactic -> thm -> Proof.context -> conv
-  val cond_rewrs_conv: tactic -> thm list -> Proof.context -> conv
+  val cond_rewr_conv: (Proof.context -> tactic) -> thm -> Proof.context -> conv
+  val cond_rewrs_conv: (Proof.context -> tactic) -> thm list -> Proof.context -> conv
 end
 
 structure Cond_Rewr_Conv :COND_REWR_CONV = struct
@@ -14,7 +14,7 @@ structure Cond_Rewr_Conv :COND_REWR_CONV = struct
     val thm' = Thm.instantiate inst thm
     val dprems = Thm.prems_of thm' 
     val dthms = map (fn t => 
-      (Goal.prove ctxt [] [] t (K tac)) handle ERROR s 
+      (Goal.prove ctxt [] [] t (tac o #context)) handle ERROR s 
         => raise TERM ("dis_rew_conv: "^ s,[t])) dprems
     val res = thm' OF dthms
   in res end;

@@ -1,6 +1,6 @@
 (*
   File:     Bertrand.thy
-  Authors:  Julian Biendarra, Manuel Eberl <eberlm@in.tum.de>, Larry Paulson
+  Authors:  Julian Biendarra, Manuel Eberl <manuel@pruvisto.org>, Larry Paulson
 
   A proof of Bertrand's postulate (based on John Harrison's HOL Light proof).
   Uses reflection and the approximation tactic.
@@ -744,20 +744,21 @@ lemma not_primepow_1_nat: "\<not>primepow (1 :: nat)" by auto
 ML_file \<open>bertrand.ML\<close>
 
 (* This should not take more than 1 minute *)
-local_setup \<open>fn ctxt =>
+local_setup \<open>fn lthy =>
 let
-  fun tac {context = ctxt, ...} =
+  fun tac ctxt =
     let
       val psi_cache = Bertrand.prove_psi ctxt 129
       fun prove_psi_ineqs ctxt =
         let
-          fun tac {context = ctxt, ...} = 
-            HEADGOAL (resolve_tac ctxt @{thms eval_psi_ineq_aux2} THEN' Simplifier.simp_tac ctxt)
+          fun tac goal_ctxt = 
+            HEADGOAL (resolve_tac goal_ctxt @{thms eval_psi_ineq_aux2} THEN'
+              Simplifier.simp_tac goal_ctxt)
           fun prove_by_approx n thm =
             let
               val thm = thm RS @{thm eval_psi_ineq_aux}
               val [prem] = Thm.prems_of thm
-              val prem = Goal.prove ctxt [] [] prem tac
+              val prem = Goal.prove ctxt [] [] prem (tac o #context)
             in
               prem RS thm
             end
@@ -765,7 +766,9 @@ let
             let
               val thm = @{thm eval_psi_ineq_aux_mono} OF [last_thm, thm, last_thm']
               val [prem] = Thm.prems_of thm
-              val prem = Goal.prove ctxt [] [] prem (K (HEADGOAL (Simplifier.simp_tac ctxt)))
+              val prem =
+                Goal.prove ctxt [] [] prem (fn {context = goal_ctxt, ...} =>
+                  HEADGOAL (Simplifier.simp_tac goal_ctxt))
             in
               prem RS thm
             end
@@ -793,8 +796,10 @@ let
               val thm = @{thm Ball_atLeast0AtMost_doubleton} OF [thm1, thm2]
               fun solve_prem thm =
                 let
-                  fun tac {context = ctxt, ...} = HEADGOAL (Simplifier.simp_tac ctxt)
-                  val thm' = Goal.prove ctxt [] [] (Thm.cprem_of thm 1 |> Thm.term_of) tac
+                  val thm' =
+                    Goal.prove ctxt [] [] (Thm.cprem_of thm 1 |> Thm.term_of)
+                      (fn {context = goal_ctxt, ...} =>
+                        HEADGOAL (Simplifier.simp_tac goal_ctxt))
                 in
                   thm' RS thm
                 end
@@ -806,9 +811,9 @@ let
     in
       HEADGOAL (resolve_tac ctxt [prove_ball ctxt psi_ineqs])
     end
-  val thm = Goal.prove @{context} [] [] @{prop "\<forall>n\<in>{0..128}. psi n \<le> 3 / 2 * ln 2 * n"} tac
+  val thm = Goal.prove lthy [] [] @{prop "\<forall>n\<in>{0..128}. psi n \<le> 3 / 2 * ln 2 * n"} (tac o #context)
 in
-  Local_Theory.note ((@{binding psi_ubound_log_128}, []), [thm]) ctxt |> snd
+  Local_Theory.note ((@{binding psi_ubound_log_128}, []), [thm]) lthy |> snd
 end
 \<close>
 
@@ -1528,7 +1533,8 @@ proof -
     by (subst sum.union_disjoint [symmetric]) (auto simp: ivl_disj_un)
   also note assms(1)
   finally have "(\<Sum>p\<in>{m<..n}. if prime p then ln (real p) else 0) \<noteq> 0" by simp
-  from sum.not_neutral_contains_not_neutral [OF this] guess p .
+  then obtain p where "p \<in> {m<..n}" "(if prime p then ln (real p) else 0) \<noteq> 0"
+    by (rule sum.not_neutral_contains_not_neutral)
   thus ?thesis using that[of p] by (auto intro!: exI[of _ p] split: if_splits)
 qed
 

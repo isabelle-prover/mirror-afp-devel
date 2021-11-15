@@ -132,7 +132,7 @@ proof (induction fl arbitrary: ls thesis)
   case (Cons x xs)
     then obtain l ls' where [simp]: "ls = l#ls'" "f l = x" by force
     with Cons.prems(2) have "map f ls' = xs @ fl'" by simp
-    from Cons.IH[OF _ this] guess ll ll' .
+    from Cons.IH[OF _ this] obtain ll ll' where "ls' = ll @ ll'" "map f ll = xs" "map f ll' = fl'" .
     with Cons.prems(1)[of "l#ll" ll'] show thesis by simp
 qed simp
 
@@ -250,23 +250,7 @@ lemma acyclic_union:
   "acyclic (A\<union>B) \<Longrightarrow> acyclic B"
   by (metis Un_upper1 Un_upper2 acyclic_subset)+
     
-    
-    
-subsubsection \<open>Lattice Syntax\<close>    
-(* Providing the syntax in a locale makes it more usable, without polluting the global namespace*)    
-locale Lattice_Syntax begin
-  notation
-    bot ("\<bottom>") and
-    top ("\<top>") and
-    inf  (infixl "\<sqinter>" 70) and
-    sup  (infixl "\<squnion>" 65) and
-    Inf  ("\<Sqinter>_" [900] 900) and
-    Sup  ("\<Squnion>_" [900] 900)
-
-end
-    
-    
-    
+   
 text \<open>Here we provide a collection of miscellaneous definitions and helper lemmas\<close>
 
 subsection "Miscellaneous (1)"

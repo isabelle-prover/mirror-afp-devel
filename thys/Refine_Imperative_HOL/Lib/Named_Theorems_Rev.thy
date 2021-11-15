@@ -26,7 +26,6 @@ structure Data = Generic_Data
 (
   type T = thm Item_Net.T Symtab.table;
   val empty: T = Symtab.empty;
-  val extend = I;
   val merge : T * T -> T = Symtab.join (K Item_Net.merge);
 );
 
@@ -34,7 +33,7 @@ fun new_entry name =
   Data.map (fn data =>
     if Symtab.defined data name
     then error ("Duplicate declaration of named theorems: " ^ quote name)
-    else Symtab.update (name, Thm.full_rules) data);
+    else Symtab.update (name, Thm.item_net) data);
 
 fun undeclared name = "Undeclared named theorems " ^ quote name;
 

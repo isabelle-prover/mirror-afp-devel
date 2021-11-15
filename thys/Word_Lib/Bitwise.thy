@@ -102,7 +102,7 @@ lemma rbl_succ2_simps:
   "rbl_succ2 b (x # xs) = (b \<noteq> x) # rbl_succ2 (x \<and> b) xs"
   by (simp_all add: rbl_succ2_def)
 
-lemma twos_complement: "- x = word_succ (NOT x)"
+lemma twos_complement: "- x = word_succ (not x)"
   using arg_cong[OF word_add_not[where x=x], where f="\<lambda>a. a - x + 1"]
   by (simp add: word_succ_p1 word_sp_01[unfolded word_succ_p1] del: word_add_not)
 
@@ -236,7 +236,7 @@ next
     by (cases z) (simp cong: map_cong, simp add: map_replicate_const cong: map_cong)
 
   have shiftl: "of_bl xs * 2 * y = (of_bl xs * y) << 1" for xs
-    by (simp add: push_bit_eq_mult)
+    by (simp add: push_bit_eq_mult shiftl_def)
 
   have zip_take_triv: "\<And>xs ys n. n = length ys \<Longrightarrow> zip (take n xs) ys = zip xs ys"
     by (rule nth_equalityI) simp_all
@@ -247,7 +247,7 @@ next
     apply (simp add: takefill_alt word_size rev_map take_rbl_plus min_def)
     apply (simp add: rbl_plus_def)
     apply (simp add: zip_take_triv)
-    apply (simp only: mult.commute [of _ 2] mult.assoc bl_shiftl1)
+    apply (simp only: mult.commute [of _ 2] to_bl_double_eq)
     apply (simp flip: butlast_rev add: take_butlast)
     done
 qed
@@ -384,7 +384,7 @@ fun mk_nat_clist ns =
 
 fun upt_conv ctxt ct =
   case Thm.term_of ct of
-    (\<^const>\<open>upt\<close> $ n $ m) =>
+    \<^Const_>\<open>upt for n m\<close> =>
       let
         val (i, j) = apply2 (snd o HOLogic.dest_number) (n, m);
         val ns = map (Numeral.mk_cnumber \<^ctyp>\<open>nat\<close>) (i upto (j - 1))
@@ -406,7 +406,7 @@ val expand_upt_simproc =
 
 fun word_len_simproc_fn ctxt ct =
   (case Thm.term_of ct of
-    Const (\<^const_name>\<open>len_of\<close>, _) $ t =>
+    \<^Const_>\<open>len_of _ for t\<close> =>
      (let
         val T = fastype_of t |> dest_Type |> snd |> the_single
         val n = Numeral.mk_cnumber \<^ctyp>\<open>nat\<close> (Word_Lib.dest_binT T);

@@ -301,10 +301,10 @@ corollary compact_to_formula:
   obtains \<Gamma>' where "set \<Gamma>' \<subseteq> \<Gamma>" "\<Turnstile> (\<^bold>\<And>\<Gamma>') \<^bold>\<rightarrow> F"
 proof goal_cases
   case 1
-  note compact_entailment[OF assms]
-  then guess \<Gamma>' ..
-  moreover then obtain \<Gamma>'' where "\<Gamma>' = set \<Gamma>''" using finite_list by auto
-  ultimately show thesis by(intro 1)  (blast, simp add: entailment_def)
+  from compact_entailment[OF assms]
+  obtain \<Gamma>' where \<Gamma>': "finite \<Gamma>' \<and> \<Gamma>' \<subseteq> \<Gamma> \<and> \<Gamma>' \<TTurnstile> F" ..
+  then obtain \<Gamma>'' where "\<Gamma>' = set \<Gamma>''" using finite_list by auto
+  with \<Gamma>' show thesis by(intro 1)  (blast, simp add: entailment_def)
 qed
 
 end

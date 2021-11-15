@@ -108,7 +108,7 @@ begin
       fix f
       show "G f = \<tau> f"
         using assms
-        by (metis A.cod_dom B.comp_arr_dom F.preserves_arr G.is_extensional G.preserves_arr
+        by (metis A.cod_dom B.comp_arr_dom G.is_extensional G.preserves_arr
             G.preserves_dom B.cod_dom functor_implies_equals_dom is_extensional
             is_natural_1 preserves_cod preserves_dom)
     qed
@@ -210,7 +210,7 @@ begin
       by (unfold_locales, simp_all)
   qed
 
-  sublocale "functor" \<subseteq> natural_transformation A B F F F
+  sublocale "functor" \<subseteq> as_nat_trans: natural_transformation A B F F F
     by (simp add: functor_axioms)
 
   section "Constant Natural Transformations"
@@ -455,7 +455,7 @@ begin
     @{locale natural_isomorphism} locale.
 \<close>
 
-  sublocale "functor" \<subseteq> natural_isomorphism A B F F F
+  sublocale "functor" \<subseteq> as_nat_iso: natural_isomorphism A B F F F
     apply unfold_locales
     using preserves_ide B.ide_is_iso by simp
 
@@ -490,19 +490,10 @@ begin
         obtain f' where f': "\<guillemotleft>f' : a' \<rightarrow>\<^sub>A a\<guillemotright> \<and> F f' = ?g'"
           using a a' g' \<phi>.F.is_full [of a a' ?g'] by blast
         moreover have "G f' = g"
-        proof -
-          have "G f' = \<phi> a \<cdot>\<^sub>B ?g' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-            using a a' f' \<phi>.naturality [of f'] \<phi>.components_are_iso \<phi>.is_natural_2
-            by (metis \<phi>.A.in_homE \<phi>.B.comp_assoc \<phi>.B.invert_side_of_triangle(2)
-                \<phi>.preserves_reflects_arr)
-          also have "... = (\<phi> a \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a)) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-            using \<phi>.B.comp_assoc by auto
-          also have "... = g"
-            using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv
-                  \<phi>.B.inv_is_inverse
-            by auto
-          finally show ?thesis by blast
-        qed
+          by (metis f' \<phi>.A.arrI \<phi>.B.arrI \<phi>.B.inv_inv \<phi>.B.invert_side_of_triangle(1-2)
+              \<phi>.B.iso_inv_iso \<phi>.G.as_nat_trans.natural_transformation_axioms
+              \<phi>.components_are_iso \<phi>.naturality a a' category.in_homE f' g'
+              natural_transformation.axioms(1))
         ultimately show ?thesis by auto
       qed
     qed
@@ -634,14 +625,14 @@ begin
     interpret inv: inverse_transformations A B F G \<sigma> \<sigma>' using assms by auto
     interpret \<sigma>\<sigma>': vertical_composite A B F G F \<sigma> \<sigma>' ..
     show "vertical_composite.map A B \<sigma> \<sigma>' = F"
-      using \<sigma>\<sigma>'.is_natural_transformation inv.F.natural_transformation_axioms
+      using \<sigma>\<sigma>'.is_natural_transformation inv.F.as_nat_trans.natural_transformation_axioms
             \<sigma>\<sigma>'.map_simp_ide inv.B.comp_inv_arr inv.inv
       by (intro eqI, simp_all)
     interpret inv': inverse_transformations A B G F \<sigma>' \<sigma>
       using assms inverse_transformations_sym by blast
     interpret \<sigma>'\<sigma>: vertical_composite A B G F G \<sigma>' \<sigma> ..
     show "vertical_composite.map A B \<sigma>' \<sigma> = G"
-      using \<sigma>'\<sigma>.is_natural_transformation inv.G.natural_transformation_axioms
+      using \<sigma>'\<sigma>.is_natural_transformation inv.G.as_nat_trans.natural_transformation_axioms
             \<sigma>'\<sigma>.map_simp_ide inv'.inv inv.B.comp_inv_arr
       by (intro eqI, simp_all)
   qed
@@ -671,8 +662,8 @@ begin
     interpret \<tau>': inverse_transformation A B F G \<tau> ..
     interpret \<tau>\<tau>': vertical_composite A B F G F \<tau> \<tau>'.map ..
     show ?thesis
-      using \<tau>\<tau>'.is_natural_transformation \<tau>.F.natural_transformation_axioms \<tau>'.inverts_components
-            \<tau>.B.comp_inv_arr \<tau>\<tau>'.map_simp_ide
+      using \<tau>\<tau>'.is_natural_transformation \<tau>.F.as_nat_trans.natural_transformation_axioms
+            \<tau>'.inverts_components \<tau>.B.comp_inv_arr \<tau>\<tau>'.map_simp_ide
       by (intro eqI, auto)
   qed
 
@@ -684,8 +675,8 @@ begin
     interpret \<tau>': inverse_transformation A B F G \<tau> ..
     interpret \<tau>'\<tau>: vertical_composite A B G F G \<tau>'.map \<tau> ..    
     show ?thesis
-      using \<tau>'\<tau>.is_natural_transformation \<tau>.G.natural_transformation_axioms \<tau>'.inverts_components
-            \<tau>'\<tau>.map_simp_ide \<tau>.B.comp_arr_inv
+      using \<tau>'\<tau>.is_natural_transformation \<tau>.G.as_nat_trans.natural_transformation_axioms
+            \<tau>'.inverts_components \<tau>'\<tau>.map_simp_ide \<tau>.B.comp_arr_inv
       by (intro eqI, auto)
   qed
 
@@ -810,16 +801,16 @@ begin
     interpret \<tau>: natural_transformation B C H K \<tau> using assms(2) by auto
     interpret \<tau>': natural_transformation B C K L \<tau>' using assms(3) by auto
     interpret \<tau>oF: natural_transformation A C \<open>H o F\<close> \<open>K o F\<close> \<open>\<tau> o F\<close>
-      using \<tau>.natural_transformation_axioms F.natural_transformation_axioms
+      using \<tau>.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret \<tau>'oF: natural_transformation A C \<open>K o F\<close> \<open>L o F\<close> \<open>\<tau>' o F\<close>
-      using \<tau>'.natural_transformation_axioms F.natural_transformation_axioms
+      using \<tau>'.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret \<tau>'\<tau>: vertical_composite B C H K L \<tau> \<tau>' ..
     interpret \<tau>'\<tau>oF: natural_transformation A C \<open>H o F\<close> \<open>L o F\<close> \<open>\<tau>'\<tau>.map o F\<close>
-      using \<tau>'\<tau>.natural_transformation_axioms F.natural_transformation_axioms
+      using \<tau>'\<tau>.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret \<tau>'oF_\<tau>oF: vertical_composite A C \<open>H o F\<close> \<open>K o F\<close> \<open>L o F\<close> \<open>\<tau> o F\<close> \<open>\<tau>' o F\<close> ..
@@ -841,15 +832,15 @@ begin
     interpret \<tau>': natural_transformation A B G H \<tau>' using assms(3) by auto
     interpret \<tau>'\<tau>: vertical_composite A B F G H \<tau> \<tau>' ..
     interpret Ko\<tau>: natural_transformation A C \<open>K o F\<close> \<open>K o G\<close> \<open>K o \<tau>\<close>
-      using \<tau>.natural_transformation_axioms K.natural_transformation_axioms
+      using \<tau>.natural_transformation_axioms K.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret Ko\<tau>': natural_transformation A C \<open>K o G\<close> \<open>K o H\<close> \<open>K o \<tau>'\<close>
-      using \<tau>'.natural_transformation_axioms K.natural_transformation_axioms
+      using \<tau>'.natural_transformation_axioms K.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret Ko\<tau>'\<tau>: natural_transformation A C \<open>K o F\<close> \<open>K o H\<close> \<open>K o \<tau>'\<tau>.map\<close>
-      using \<tau>'\<tau>.natural_transformation_axioms K.natural_transformation_axioms
+      using \<tau>'\<tau>.natural_transformation_axioms K.as_nat_trans.natural_transformation_axioms
             horizontal_composite
       by blast
     interpret Ko\<tau>'_Ko\<tau>: vertical_composite A C \<open>K o F\<close> \<open>K o G\<close> \<open>K o H\<close> \<open>K o \<tau>\<close> \<open>K o \<tau>'\<close> ..

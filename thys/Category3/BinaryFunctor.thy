@@ -154,7 +154,7 @@ begin
       using is_extensional
           apply auto[4]
       by (metis A1.ideD(1) A1.comp_ide_self A1xA2.comp_simp A1xA2.seq_char fst_conv
-          preserves_comp_2 snd_conv)
+          as_nat_trans.preserves_comp_2 snd_conv)
 
     lemma fixing_ide_gives_functor_2:
     assumes "A2.ide a2"
@@ -164,7 +164,7 @@ begin
       using is_extensional
           apply auto[4]
       by (metis A1xA2.comp_simp A1xA2.seq_char A2.ideD(1) A2.comp_ide_self fst_conv
-          preserves_comp_2 snd_conv)
+          as_nat_trans.preserves_comp_2 snd_conv)
 
     text\<open>
       Fixing one or the other argument of a binary functor to be an arrow
@@ -230,15 +230,9 @@ begin
         have "\<not>A2.arr f2 \<Longrightarrow> F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2"
           using \<tau>'o\<tau>.is_extensional is_extensional by simp
         moreover have "A2.arr f2 \<Longrightarrow> F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2"
-        proof -
-          assume f2: "A2.arr f2"
-          have "F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = B (F (f1', f2)) (F (f1, A2.dom f2))"
-            using assms f2 preserves_comp A1xA2.arr_char A1xA2.comp_char A2.comp_arr_dom
-            by (metis fst_conv snd_conv)
-          also have "... = \<tau>'o\<tau>.map f2"
-            using f2 \<tau>'o\<tau>.map_simp_2 by simp
-          finally show "F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2" by auto
-        qed
+          using \<tau>'o\<tau>.map_simp_1 assms fixing_arr_gives_natural_transformation_2
+                natural_transformation.preserves_comp_1
+          by fastforce
         ultimately show "F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2" by blast
       qed
     qed

@@ -1,6 +1,6 @@
 (*
   File:   Akra_Bazzi.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The Akra-Bazzi theorem for functions on the naturals.
 *)

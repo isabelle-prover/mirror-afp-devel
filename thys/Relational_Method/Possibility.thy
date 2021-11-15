@@ -986,5 +986,4 @@ theorem pwd_compromised:
 by (rule exI [of _ "fst (pwd_spy_id_pwd n)"], rule conjI, erule pwd_spy_id_pwd_rel,
  drule pwd_spy_id_pwd_msg, simp add: split_def)
 
-
 end

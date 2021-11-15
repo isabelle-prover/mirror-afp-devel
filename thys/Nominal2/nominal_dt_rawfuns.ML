@@ -56,14 +56,14 @@ fun strip_bn_fun ctxt args t =
 let
   fun aux t =
     case t of
-      Const (@{const_name sup}, _) $ l $ r => aux l @ aux r
-    | Const (@{const_name append}, _) $ l $ r => aux l @ aux r
-    | Const (@{const_name insert}, _) $ (Const (@{const_name atom}, _) $ (x as Var _)) $ y =>
+      \<^Const_>\<open>sup _ for l r\<close> => aux l @ aux r
+    | \<^Const_>\<open>append _ for l r\<close> => aux l @ aux r
+    | \<^Const_>\<open>insert _ for \<^Const_>\<open>atom _ for \<open>x as Var _\<close>\<close> y\<close> =>
         (find_index (equal x) args, NONE) :: aux y
-    | Const (@{const_name Cons}, _) $ (Const (@{const_name atom}, _) $ (x as Var _)) $ y =>
+    | \<^Const>\<open>Cons _ for \<^Const_>\<open>atom _ for \<open>x as Var _\<close>\<close> y\<close> =>
         (find_index (equal x) args, NONE) :: aux y
-    | Const (@{const_name bot}, _) => []
-    | Const (@{const_name Nil}, _) => []
+    | \<^Const_>\<open>bot _\<close> => []
+    | \<^Const_>\<open>Nil _\<close> => []
     | (f as Const _) $ (x as Var _) => [(find_index (equal x) args, SOME f)]
     | _ => error ("Unsupported binding function: " ^ (Syntax.string_of_term ctxt t))
 in
@@ -295,7 +295,7 @@ fun mk_perm_bn_eq_rhs p perm_bn_map bn_args (i, arg) =
 
 fun mk_perm_bn_eq lthy bn_trm perm_bn_map bn_args (constr, _, arg_tys, _) =
   let
-    val p = Free ("p", @{typ perm})
+    val p = Free ("p", \<^Type>\<open>perm\<close>)
     val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val args = map Free (arg_names ~~ arg_tys)
     val perm_bn = lookup perm_bn_map bn_trm
@@ -386,8 +386,8 @@ fun prove_permute_zero induct bnfs perm_defs perm_fns ctxt =
 
 fun prove_permute_plus induct bnfs perm_defs perm_fns ctxt =
   let
-    val p = Free ("p", @{typ perm})
-    val q = Free ("q", @{typ perm})
+    val p = Free ("p", \<^Type>\<open>perm\<close>)
+    val q = Free ("q", \<^Type>\<open>perm\<close>)
     val perm_types = map (body_type o fastype_of) perm_fns
     val perm_indnames = Old_Datatype_Prop.make_tnames perm_types
 
@@ -450,7 +450,7 @@ fun mk_perm_eq lthy ty_perm_assoc cnstr =
 
     fun lookup_perm p (ty, arg) = fst (mk_perm p ty) $ arg
 
-    val p = Free ("p", @{typ perm})
+    val p = Free ("p", \<^Type>\<open>perm\<close>)
     val (arg_tys, ty) = strip_type (fastype_of cnstr)
 
     val arg_names = Name.variant_list ["p"] (Old_Datatype_Prop.make_tnames arg_tys)
@@ -536,7 +536,7 @@ fun raw_prove_eqvt consts ind_thms simps ctxt =
   else
     let
       val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
-      val p = Free (p, @{typ perm})
+      val p = Free (p, \<^Type>\<open>perm\<close>)
       val arg_tys =
         consts
         |> map fastype_of
@@ -548,8 +548,8 @@ fun raw_prove_eqvt consts ind_thms simps ctxt =
       val insts = map (single o SOME) arg_names
       val const_names = map (fst o dest_Const) consts
     in
-      Goal.prove_common ctxt'' NONE [] [] goals (fn {context, ...} =>
-        prove_eqvt_tac insts ind_thms const_names simps context)
+      Goal.prove_common ctxt'' NONE [] [] goals (fn {context = goal_ctxt, ...} =>
+        prove_eqvt_tac insts ind_thms const_names simps goal_ctxt)
       |> Proof_Context.export ctxt'' ctxt
     end
 

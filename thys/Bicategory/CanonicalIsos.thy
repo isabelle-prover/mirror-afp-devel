@@ -405,7 +405,7 @@ begin
           show "VPar (Inv (f\<^bold>\<down>) \<^bold>\<cdot> (\<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>) \<^bold>\<cdot> (f\<^bold>\<down> \<^bold>\<star> Src f\<^bold>\<down>)) \<^bold>\<r>\<^bold>[f\<^bold>]"
             using assms Nmlize_in_Hom red_in_Hom red2_in_Hom Inv_in_Hom Can_red Can_implies_Arr
                   Nml_Nmlize(1) Ide_implies_Can Nml_Src Nml_implies_Arr
-                  HcompNml_Nml_Src Ide_Cod
+                  HcompNml_Nml_Src Ide_Cod Obj_implies_Ide
             apply (simp add: Dom_Ide Cod_Ide)
             apply (intro conjI)
           proof -
@@ -413,25 +413,25 @@ begin
             have 1: "Nml (Src f)"
             proof -
               have "Ide (Src f)"
-                using f by simp
+                using f Obj_implies_Ide by simp
               thus ?thesis
                 using f Obj_Src Nml_Nmlize(1) Nmlize_Src(2) Ide_implies_Arr
                 by metis
             qed
             show "Arr (\<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>)"
-              using f 1 Can_red2 Ide_Nmlize_Ide Nml_Nmlize by simp
+              using f 1 Can_red2 Ide_Nmlize_Ide Nml_Nmlize Obj_implies_Ide by simp
             show "Dom (\<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>) = \<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<star> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>"
-              using f 1 Nml_Nmlize red2_in_Hom Ide_Nmlize_Ide by auto
+              using f 1 Nml_Nmlize red2_in_Hom Ide_Nmlize_Ide Obj_implies_Ide by auto
             show "\<^bold>\<lfloor>f\<^bold>\<rfloor> = Cod (\<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>)"
             proof -
               have "Src \<^bold>\<lfloor>f\<^bold>\<rfloor> = Trg \<^bold>\<lfloor>Src f\<^bold>\<rfloor>"
-                using f Nml_Nmlize by simp
+                using f Nml_Nmlize Obj_implies_Ide by simp
               moreover have "\<^bold>\<lfloor>\<^bold>\<lfloor>f\<^bold>\<rfloor> \<^bold>\<star> \<^bold>\<lfloor>Src f\<^bold>\<rfloor>\<^bold>\<rfloor> = \<^bold>\<lfloor>f\<^bold>\<rfloor>"
                 using f 1 Nml_Nmlize Nmlize_Src HcompNml_Nml_Src Nml_Src
                 by (auto simp add: HcompNml_Nml_Obj)
               thus ?thesis
                 using f 1 Obj_Src red2_in_Hom [of "\<^bold>\<lfloor>f\<^bold>\<rfloor>" "\<^bold>\<lfloor>Src f\<^bold>\<rfloor>"] HcompNml_Nml_Src
-                      Nml_Nmlize Ide_Nmlize_Ide
+                      Nml_Nmlize Ide_Nmlize_Ide Obj_implies_Ide
                 by auto
             qed
           qed
@@ -471,7 +471,7 @@ begin
           show "VPar (Inv (f\<^bold>\<down>) \<^bold>\<cdot> (\<^bold>\<lfloor>Trg f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>f\<^bold>\<rfloor>) \<^bold>\<cdot> (Trg f\<^bold>\<down> \<^bold>\<star> f\<^bold>\<down>)) \<^bold>\<l>\<^bold>[f\<^bold>]"
             using assms Nmlize_in_Hom red_in_Hom red2_in_Hom Inv_in_Hom Can_red Can_implies_Arr
                   Nml_Nmlize(1) Ide_implies_Can Nml_Trg Nml_implies_Arr
-                  HcompNml_Trg_Nml Ide_Cod Nmlize_Trg(1)
+                  HcompNml_Trg_Nml Ide_Cod Nmlize_Trg(1) Obj_implies_Ide
             apply (simp add: Dom_Ide Cod_Ide)
             apply (intro conjI)
           proof -
@@ -479,21 +479,22 @@ begin
             have 1: "Nml (Trg f)"
             proof -
               have "Ide (Trg f)"
-                using f by simp
+                using f Obj_implies_Ide by simp
               thus ?thesis
                 using f Obj_Trg Nml_Nmlize(1) Nmlize_Trg(2) Ide_implies_Arr
                 by metis
             qed
             show "Arr (Trg f \<^bold>\<Down> \<^bold>\<lfloor>f\<^bold>\<rfloor>)"
-              using f 1 Can_red2 Ide_Nmlize_Ide Nml_Nmlize(1,3) by simp
+              using f 1 Can_red2 Ide_Nmlize_Ide Nml_Nmlize(1,3) Obj_implies_Ide by simp
             show "Dom (Trg f \<^bold>\<Down> \<^bold>\<lfloor>f\<^bold>\<rfloor>) = Trg f \<^bold>\<star> \<^bold>\<lfloor>f\<^bold>\<rfloor>"
-              using f Obj_Trg 1 Nml_Nmlize(1,3) red2_in_Hom Ide_Nmlize_Ide by auto
+              using f Obj_Trg 1 Nml_Nmlize(1,3) red2_in_Hom Ide_Nmlize_Ide Obj_implies_Ide by auto
             show "\<^bold>\<lfloor>f\<^bold>\<rfloor> = Cod (Trg f \<^bold>\<Down> \<^bold>\<lfloor>f\<^bold>\<rfloor>)"
             proof -
               have "Src (Trg f) = Trg \<^bold>\<lfloor>f\<^bold>\<rfloor>"
                 using f Nml_Nmlize(3) by simp
               thus ?thesis
-                using f 1 Obj_Trg HcompNml_Trg_Nml Nml_Nmlize(1) Ide_Nmlize_Ide by auto
+                using f 1 Obj_Trg HcompNml_Trg_Nml Nml_Nmlize(1) Ide_Nmlize_Ide Obj_implies_Ide
+                by auto
             qed
           qed
           show "\<^bold>\<lfloor>Inv (f\<^bold>\<down>) \<^bold>\<cdot> (\<^bold>\<lfloor>Trg f\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>f\<^bold>\<rfloor>) \<^bold>\<cdot> (Trg f\<^bold>\<down> \<^bold>\<star> f\<^bold>\<down>)\<^bold>\<rfloor> = \<^bold>\<lfloor>\<^bold>\<l>\<^bold>[f\<^bold>]\<^bold>\<rfloor>"

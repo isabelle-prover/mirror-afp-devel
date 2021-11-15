@@ -26,8 +26,8 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <h2>Editors</h2>
 <p><a name="editors">The editors of the archive are</a></p>
 <ul>
-<li><a href="http://www.in.tum.de/~eberlm/">Manuel Eberl</a>,
-    <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
+<li><a href="http://pruvisto.org/">Manuel Eberl</a>,
+    <a href="https://www.uibk.ac.at/">University of Innsbruck</a></li>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
     <a href="https://proofcraft.systems">Proofcraft</a> &amp; <a href="https://unsw.edu.au">UNSW</a></li>
 <li><a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a>,

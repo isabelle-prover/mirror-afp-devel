@@ -107,9 +107,11 @@ lemma (in lbv) sup_top [simp, elim]:
   shows "x \<squnion>\<^sub>f \<top> = \<top>"
 (*<*)
 proof -
-  from top have "x \<squnion>\<^sub>f \<top> \<sqsubseteq>\<^sub>r \<top>" ..
-  moreover from x T_A have "\<top> \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f \<top>" ..
-  ultimately show ?thesis ..
+  from semilat have "order r A" by auto
+  moreover from x T_A have xfT_inA: "x \<squnion>\<^sub>f \<top> \<in> A" by auto
+  with T_A top have xfT: "x \<squnion>\<^sub>f \<top> \<sqsubseteq>\<^sub>r \<top>"  by (simp add:top_def)
+  moreover from x T_A have "\<top> \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f \<top>" ..   
+  ultimately show ?thesis using xfT_inA T_A  by (rule order_antisym) 
 qed
 (*>*)
   
@@ -132,8 +134,8 @@ qed
 lemma (in lbv) bottom_le [simp, intro!]: "\<bottom> \<sqsubseteq>\<^sub>r x"
   by (insert bot) (simp add: bottom_def)
 
-lemma (in lbv) le_bottom [simp]: "x \<sqsubseteq>\<^sub>r \<bottom> = (x = \<bottom>)"
-  by (blast intro: antisym_r)
+lemma (in lbv) le_bottom [simp]: "x \<in> A \<Longrightarrow> x \<sqsubseteq>\<^sub>r \<bottom> = (x = \<bottom>)"
+  using B_A by (blast intro: antisym_r)
 
 
 subsection "merge"

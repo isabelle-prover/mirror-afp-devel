@@ -423,7 +423,8 @@ lemma open_contains_box:
   assumes "open A" "x \<in> A"
   obtains a b where "box a b \<subseteq> A" "x \<in> box a b" "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
 proof -
-  from open_contains_cbox[OF assms] guess a b .
+  from assms obtain a b where "cbox a b \<subseteq> A" "x \<in> box a b" "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
+    by (rule open_contains_cbox)
   with that[of a b] box_subset_cbox[of a b] show ?thesis by auto
 qed
 

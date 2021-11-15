@@ -75,15 +75,6 @@ lemma dist_lemmas:
 lemma radius_max_prop: "(\<forall>s \<in> S. distance C s \<le> r) \<Longrightarrow> (radius C \<le> r)"
   by (metis image_iff radius_contained)
 
-lemma someI_ex_extended: "\<forall>a \<in> A. \<exists>b. P a b \<Longrightarrow> \<forall>a \<in> A. P a (SOME b. P a b)" 
-proof 
-  fix a
-  assume "\<forall>a \<in> A. \<exists>b. P a b" "a \<in> A"
-  then have "\<exists>b. P a b" by auto
-  then show "P a (SOME b. P a b)" 
-    by (meson someI)
-qed
-
 lemma dist_ins:
 assumes "\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> x < dist c\<^sub>1 c\<^sub>2"
 and "distance C s > x"
@@ -228,51 +219,42 @@ lemma inv_last_1:
   assumes "\<forall>s \<in> (S - S'). distance C s \<le> 2*r"
     and "S' = {}"
   shows "radius C \<le> 2*r"
-  by (metis Diff_empty assms(1) assms(2) image_iff radius_contained)
+  by (metis Diff_empty assms image_iff radius_contained)
 
 lemma inv_last_2: 
   assumes "finite C"
   and "card C > n"
   and "C \<subseteq> S"
   and "\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> dist c\<^sub>1 c\<^sub>2 > 2*r"
-  shows "\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r"
+  shows "\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r" (is ?P)
 proof (rule ccontr)
-  assume "\<not>(\<forall>C'. card C' \<le> n \<and> card C' > 0 \<longrightarrow> radius C' > r)"
-  then have "\<exists>C'. card C' \<le> n \<and> card C' > 0 \<and> radius C' \<le> r" by auto
+  assume "\<not> ?P"
   then obtain C' where card_C': "card C' \<le> n \<and> card C' > 0" and radius_C': "radius C' \<le> r" by auto
-  have key_lemma: "\<forall>c \<in> C. (\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r)"
+  have "\<forall>c \<in> C. (\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r)"
   proof
     fix c
     assume "c \<in> C"
     then have "c \<in> S" using assms(3) by blast
-    then have "distance C' c \<le> radius C'" using finite_distances Max.coboundedI by (simp add: radius_def)
+    then have "distance C' c \<le> radius C'" using finite_distances by (simp add: radius_def)
     then have "distance C' c \<le> r" using radius_C' by simp
     then show "\<exists>c'. c' \<in> C' \<and> dist c c' \<le> r" using dist_lemmas
       by (metis card_C' card_gt_0_iff)
   qed
-  let ?f = "(\<lambda>c. (SOME c'. c' \<in> C' \<and> dist c c' \<le> r))" 
-  have f_props: "\<forall>c \<in> C. ?f c \<in> C' \<and> dist c (?f c) \<le> r  "
-    using key_lemma someI_ex_extended[of C "\<lambda>c c'. c' \<in> C' \<and> dist c c' \<le> r"] by simp
-  have "inj_on ?f C \<or> \<not>inj_on ?f C" by simp
-  then show False
-  proof (elim disjE)
-    assume local_assm: "inj_on ?f C"
-    then have "?f ` C \<subseteq> C' " using f_props by auto
-    then have "card C' \<ge> card C" using local_assm card_inj_on_le card_ge_0_finite card_C' by blast
-    then have "card C' > n" using assms by simp
-    then show False using card_C' by simp
-  next
-    assume "\<not>inj_on ?f C"
-    then have "\<exists>c1 \<in> C. \<exists>c2 \<in> C. c1 \<noteq> c2 \<and> ?f c1 = ?f c2" using inj_on_def by blast
-    then obtain c1 c2 where defs: "c1 \<in> C \<and> c2 \<in> C \<and> c1 \<noteq> c2 \<and> ?f c1 = ?f c2" by blast
-    then have *: "dist c1 (?f c1) \<le> r \<and> dist c2 (?f c1) \<le> r" using f_props by auto
-
-    have "2 * r < dist c1 c2" using assms defs by simp
-    also have " ... \<le> dist c1 (?f c1) + dist (?f c1) c2" using dist_triangle by auto
-    also have " ... = dist c1 (?f c1) + dist c2 (?f c1)" using dist_commute by auto
-    also have " ... \<le> 2 * r" using * by simp
-    finally show False by simp
+  then obtain f where f: "\<forall>c\<in>C. f c \<in> C' \<and> dist c (f c) \<le> r" by metis
+  have "\<not>inj_on f C"
+  proof
+    assume "inj_on f C"
+    then have "card C' \<ge> card C" using \<open>inj_on f C\<close> card_inj_on_le card_ge_0_finite card_C' f by blast
+    then show False using card_C' \<open>n < card C\<close> by linarith
   qed
+  then obtain c1 c2 where defs: "c1 \<in> C \<and> c2 \<in> C \<and> c1 \<noteq> c2 \<and> f c1 = f c2" using inj_on_def by blast
+  then have *: "dist c1 (f c1) \<le> r \<and> dist c2 (f c1) \<le> r" using f by auto
+
+  have "2 * r < dist c1 c2" using assms defs by simp
+  also have " ... \<le> dist c1 (f c1) + dist (f c1) c2" by(rule dist_triangle)
+  also have " ... = dist c1 (f c1) + dist c2 (f c1)" using dist_commute by simp
+  also have " ... \<le> 2 * r" using * by simp
+  finally show False by simp
 qed
 
 lemma inv_last:
@@ -397,72 +379,59 @@ proof -
 qed
 
 lemma invar_last:
-assumes "invar C"
-and "\<not>card C < k"
-shows "card C = k"
-and "card C' > 0 \<and> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C'"
+assumes "invar C" and "\<not>card C < k"
+shows "card C = k" and "card C' > 0 \<and> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C'"
 proof -
   show "card C = k" using assms(1, 2) unfolding invar_def by simp
 next
-  have C_props: "finite C \<and> C \<noteq> {}"
-    using finite_sites assms(1) unfolding invar_def by (meson finite_subset)
-
-  have "(\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * radius C' < dist c\<^sub>1 c\<^sub>2) \<or> (\<forall>s \<in> S. distance C s \<le> 2 * radius C')"
-    using assms(1) unfolding invar_def by simp
-
-  moreover
-
-  have "(\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * radius C' < dist c\<^sub>1 c\<^sub>2)
-        \<longrightarrow> (finite C' \<longrightarrow> card C' > 0 \<longrightarrow> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C')"
-  proof (rule ccontr)
-    assume "\<not> ((\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * radius C' < dist c\<^sub>1 c\<^sub>2)
-               \<longrightarrow> finite C' \<longrightarrow> card C' > 0 \<longrightarrow> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C')"
-    then have C'_def: "(\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * radius C' < dist c\<^sub>1 c\<^sub>2)
-                    \<and> finite C' \<and> card C' > 0 \<and> card C' \<le> k \<and> radius C > 2 * radius C'"
-      by force
-    obtain s where s_def: "radius C = distance C s \<and> s \<in> S" using radius_def2 by metis
-    then have Key: "distance C s > 2 * radius C'" using C'_def by simp
-    let ?Cs = "C \<union> {s}"
-    have "\<forall>c\<^sub>1 \<in> ?Cs. \<forall>c\<^sub>2 \<in> ?Cs. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> dist c\<^sub>1 c\<^sub>2 > 2 * radius C'"
-      using C_props dist_ins Key C'_def assms(1) unfolding invar_def by blast
-    moreover
-    {
-      have "s \<notin> C"
+  have C_props: "finite C \<and> C \<noteq> {}" using finite_sites assms(1) unfolding invar_def by (meson finite_subset)
+  show "card C' > 0 \<and> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C'"
+  proof (rule impI)
+    assume C'_assms: "0 < card (C' :: 'a set) \<and> card C' \<le> k"
+    let ?r = "radius C'"
+    have "(\<forall>c\<^sub>1 \<in> C. \<forall>c\<^sub>2 \<in> C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * ?r < dist c\<^sub>1 c\<^sub>2) \<or> (\<forall>s \<in> S. distance C s \<le> 2 * ?r)"
+      using assms(1) unfolding invar_def by simp
+    then show "radius C \<le> 2 * ?r"
+    proof
+      assume case_assm: "\<forall>c\<^sub>1\<in>C. \<forall>c\<^sub>2\<in>C. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> 2 * ?r < dist c\<^sub>1 c\<^sub>2"
+      obtain s where s_def: "radius C = distance C s \<and> s \<in> S" using radius_def2 by metis
+      show ?thesis
       proof (rule ccontr)
-        assume ss_in_C: "\<not>(s \<notin> C)"
-        then have "distance C s \<le> dist s s" using Min.coboundedI[of "distance C ` S" "dist s s"] 
-          by (simp add: distance_def C_props)
-        also have " ... = 0" by simp
-        finally have "distance C s = 0" using dist_lemmas(4) by (smt C_props)
-        then have radius_le_zero: "2 * radius C' < 0" using C'_def s_def by simp
-        obtain x where x_def: "radius C' = distance C' x" using radius_def2 by metis
-        obtain l where l_def: "distance C' x = dist x l" using dist_lemmas(3) by (metis C'_def card_gt_0_iff)
-        then have "dist x l = radius C'" by (simp add: x_def)
-        also have "...  < 0" using C'_def radius_le_zero by simp
-        finally show False by simp
+        assume contr_assm: "\<not> radius C \<le> 2 * ?r"
+        then have s_prop: "distance C s > 2 * ?r" using s_def by simp
+        then have \<open>\<forall>c\<^sub>1 \<in> C \<union> {s}. \<forall>c\<^sub>2 \<in> C \<union> {s}. c\<^sub>1 \<noteq> c\<^sub>2 \<longrightarrow> dist c\<^sub>1 c\<^sub>2 > 2 * ?r\<close>
+          using C_props dist_ins[of "C" "2*?r" "s"] case_assm by blast
+        moreover
+        {
+          have "s \<notin> C"
+          proof
+            assume "s \<in> C"
+            then have "distance C s \<le> dist s s" using Min.coboundedI[of "distance C ` S" "dist s s"] 
+              by (simp add: distance_def C_props)
+            also have " ... = 0" by simp
+            finally have "distance C s = 0" using dist_lemmas(4) by (smt C_props)
+            then have radius_le_zero: "2 * ?r < 0" using contr_assm s_def by simp
+            obtain x where x_def: "?r = distance C' x" using radius_def2 by metis
+            obtain l where l_def: "distance C' x = dist x l" using dist_lemmas(3) by (metis C'_assms card_gt_0_iff)
+            then have "dist x l = ?r" by (simp add: x_def)
+            also have "...  < 0" using C'_assms radius_le_zero by simp
+            finally show False by simp
+          qed
+          then have "card (C \<union> {s}) > k" using assms(1,2) C_props unfolding invar_def by simp
+        }
+        moreover
+          have "C \<union> {s} \<subseteq> S" using assms(1) s_def unfolding invar_def by simp
+        moreover
+          have "finite (C \<union> {s})" using calculation(3) finite_subset finite_sites by auto
+        ultimately have "\<forall>C. card C \<le> k \<and> card C > 0 \<longrightarrow> radius C > ?r" using inv_last_2 by metis
+        then have "?r > ?r" using C'_assms by blast
+        then show False by simp
       qed
-      then have "card ?Cs = card C + 1" using assms(1) C_props unfolding invar_def by simp
-      then have "card ?Cs > k" using assms(1, 2) unfolding invar_def by linarith
-    }
-    moreover
-
-    have "?Cs \<subseteq> S" using assms(1) s_def unfolding invar_def by simp
-
-    moreover
-
-    have "finite ?Cs" using calculation(3) finite_subset finite_sites by auto
-
-    ultimately have "\<forall>C. card C \<le> k \<and> card C > 0 \<longrightarrow> radius C > radius C'" using inv_last_2 by metis
-    then have "radius C' > radius C'" using C'_def by blast
-    then show False by simp
+    next
+      assume "\<forall>s\<in>S. distance C s \<le> 2 * radius C'"
+      then show ?thesis by (metis image_iff radius_contained)
+    qed
   qed
-
-  moreover
-
-  have "(\<forall>s \<in> S. distance C s \<le> 2 * radius C') \<longrightarrow> (card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C')"
-    by (metis image_iff radius_contained)
-
-  ultimately show "card C' > 0 \<and> card C' \<le> k \<longrightarrow> radius C \<le> 2 * radius C'" by (metis card_ge_0_finite)
 qed
 
 theorem Center_Selection: 

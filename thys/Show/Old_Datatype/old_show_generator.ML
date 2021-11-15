@@ -30,8 +30,6 @@ struct
 
 open Derive_Aux
 
-val shows_prec_name = @{const_name "shows_prec"}
-
 val shows_ty = @{typ "shows"}
 val string_ty = @{typ "string"}
 val nat_ty = @{typ "nat"}
@@ -70,7 +68,7 @@ fun mk_shows_idx thy info =
                   let
                     val xi = x i
                     val ty = Term.type_of xi
-                    val shows = Const (shows_prec_name, nat_ty --> ty --> shows_ty) $ default_prec $ xi
+                    val shows = \<^Const>\<open>shows_prec ty for default_prec xi\<close>
                   in shows |> parenthise end
             val pre_rhs = map_index shows_of_dty dtysi
               |> map_index I
@@ -91,12 +89,7 @@ fun mk_shows_idx thy info =
   in (mk_rec, nrec_args) end
 
 fun mk_shows_list ty =
-  let
-    val list_ty = Type (@{type_name "list"}, [ty])
-    val shows = Abs ("x", ty, Const (shows_prec_name, nat_ty --> ty --> shows_ty) $ default_prec $ Bound 0) 
-    val shows_list_aux = Const (@{const_name shows_list_aux}, (ty --> shows_ty) --> list_ty --> shows_ty)
-    val rhs = shows_list_aux $ shows
-  in rhs end
+  \<^Const>\<open>shows_list_aux ty for \<open>Abs ("x", ty, \<^Const>\<open>shows_prec ty for default_prec \<open>Bound 0\<close>\<close>)\<close>\<close>
 
 fun mk_prop_trm thy info 
   (gen : (int -> term) -> (term -> term) -> term list * term list) = 
@@ -180,7 +173,7 @@ fun derive dtyp_name _ thy =
     val shows_list_rhs = mk_shows_list ty
     
     val shows_prec_def = mk_def (nat_ty --> ty --> shows_ty) @{const_name shows_prec} shows_prec_rhs
-    val shows_list_def = mk_def (Type (@{type_name list}, [ty]) --> shows_ty) @{const_name shows_list} shows_list_rhs
+    val shows_list_def = mk_def (\<^Type>\<open>list ty\<close> --> shows_ty) @{const_name shows_list} shows_list_rhs
     val ((shows_prec_thm, shows_list_thm), lthy) = Class.instantiation ([tyco], vs, sort) thy
       |> define_overloaded ("shows_prec_" ^ base_name ^ "_def", shows_prec_def)
       ||>> define_overloaded ("shows_list_" ^ base_name ^ "_def", shows_list_def) 

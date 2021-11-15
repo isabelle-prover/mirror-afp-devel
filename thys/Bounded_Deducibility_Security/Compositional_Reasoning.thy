@@ -1,13 +1,15 @@
-section \<open>Compositional Reasoning\<close>
-
 (*<*)
 theory Compositional_Reasoning
-imports BD_Security
+imports BD_Security_Unwinding
 begin
 (*>*)
 
+section \<open>Compositional Reasoning\<close>
 
-context BD_Security begin
+text \<open>This section formalizes the compositional unwinding method discussed in
+@{cite \<open>Section 5.2\<close> "cocon-CAV2014"}\<close>
+
+context BD_Security_IO begin
 
 
 subsection\<open>Preliminaries\<close>
@@ -19,33 +21,21 @@ lemma disjAll_simps[simp]:
   "disjAll (insert \<Delta> \<Delta>s) \<equiv> \<lambda>s vl s1 vl1. \<Delta> s vl s1 vl1 \<or> disjAll \<Delta>s s vl s1 vl1"
   unfolding disjAll_def[abs_def] by auto
 
+lemma disjAll_mono:
+assumes "disjAll \<Delta>s s vl s1 vl1"
+and "\<Delta>s \<subseteq> \<Delta>s'"
+shows "disjAll \<Delta>s' s vl s1 vl1"
+using assms unfolding disjAll_def by auto
 
 lemma iaction_mono:
 assumes 1: "iaction \<Delta> s vl s1 vl1" and 2: "\<And> s vl s1 vl1. \<Delta> s vl s1 vl1 \<Longrightarrow> \<Delta>' s vl s1 vl1"
 shows "iaction \<Delta>' s vl s1 vl1"
-proof-
-  obtain a1 ou1 s1' vl1'
-  where "step s1 a1 = (ou1, s1')" and "\<phi> (Trans s1 a1 ou1 s1')"
-  and "consume (Trans s1 a1 ou1 s1') vl1 vl1'" and "\<not> \<gamma> (Trans s1 a1 ou1 s1')"
-  and "\<Delta> s vl s1' vl1'" using 1 unfolding iaction_def by auto
-  thus ?thesis unfolding iaction_def using 2 apply -
-  by (rule exI[of _ a1], rule exI[of _ ou1], rule exI[of _ s1'], rule exI[of _ vl1']) auto
-qed
+using assms unfolding iaction_def by fastforce
 
 lemma match_mono:
 assumes 1: "match \<Delta> s s1 vl1 a ou s' vl'" and 2: "\<And> s vl s1 vl1. \<Delta> s vl s1 vl1 \<Longrightarrow> \<Delta>' s vl s1 vl1"
 shows "match \<Delta>' s s1 vl1 a ou s' vl'"
-proof-
-  obtain a1 ou1 s1' vl1'
-  where "\<Delta> s' vl' s1' vl1'"
-  and "step s1 a1 = (ou1, s1')"
-  and "consume (Trans s1 a1 ou1 s1') vl1 vl1'"
-  and "\<gamma> (Trans s a ou s') = \<gamma> (Trans s1 a1 ou1 s1')"
-  and "(\<gamma> (Trans s a ou s') \<longrightarrow> g (Trans s a ou s') = g (Trans s1 a1 ou1 s1'))"
-  using 1 unfolding match_def by auto
-  thus ?thesis unfolding match_def using 2 apply -
-  by (rule exI[of _ a1], rule exI[of _ ou1], rule exI[of _ s1'], rule exI[of _ vl1']) auto
-qed
+using assms unfolding match_def by fastforce
 
 lemma ignore_mono:
 assumes 1: "ignore \<Delta> s s1 vl1 a ou s' vl'" and 2: "\<And> s vl s1 vl1. \<Delta> s vl s1 vl1 \<Longrightarrow> \<Delta>' s vl s1 vl1"
@@ -173,6 +163,14 @@ assumes
 shows "unwind_exit \<Delta>e"
 using assms unfolding unwind_exit_def by auto
 
+lemma unwind_cont_mono:
+assumes \<Delta>s: "unwind_cont \<Delta> \<Delta>s"
+and \<Delta>s': "\<Delta>s \<subseteq> \<Delta>s'"
+shows "unwind_cont \<Delta> \<Delta>s'"
+using \<Delta>s disjAll_mono[OF _ \<Delta>s'] unfolding unwind_cont_def
+by (auto intro!: iaction_mono[where \<Delta> = "disjAll \<Delta>s" and \<Delta>' = "disjAll \<Delta>s'"]
+                 reaction_mono[where \<Delta> = "disjAll \<Delta>s" and \<Delta>' = "disjAll \<Delta>s'"])
+
 fun allConsec :: "'a list \<Rightarrow> ('a * 'a) set" where
   "allConsec [] = {}"
 | "allConsec [a] = {}"
@@ -292,11 +290,38 @@ using assms by auto
 
 
 
+subsection \<open>A graph alternative presentation\<close>
+
+(* This is more flexible for instantiation. *)
+
+theorem unwind_decomp_secure_graph:
+  assumes n: "\<forall> \<Delta> \<in> Domain Gr. \<exists> \<Delta>s. \<Delta>s \<subseteq> Domain Gr \<and> (\<Delta>,\<Delta>s) \<in> Gr"
+  and i: "\<Delta>0 \<in> Domain Gr" "\<And> vl vl1. B vl vl1 \<Longrightarrow> \<Delta>0 istate vl istate vl1"
+  and c: "\<And> \<Delta>. unwind_exit \<Delta> \<or> (\<forall> \<Delta>s. (\<Delta>,\<Delta>s) \<in> Gr \<longrightarrow> unwind_cont \<Delta> \<Delta>s)"
+  shows secure
+proof -
+  let ?pr = "\<lambda> \<Delta> \<Delta>s. \<Delta>s \<subseteq> Domain Gr \<and> (\<Delta>,\<Delta>s) \<in> Gr"
+  define "next" where "next \<Delta> = (SOME \<Delta>s. ?pr \<Delta> \<Delta>s)" for \<Delta>
+  let ?\<Delta>s = "Domain Gr"
+  show ?thesis
+  proof(rule unwind_dec_secure)
+    show "\<Delta>0 \<in> ?\<Delta>s" using i by auto
+    fix vl vl1 assume "B vl vl1"
+    thus "\<Delta>0 istate vl istate vl1" by fact
+  next
+    fix \<Delta>
+    assume "\<Delta> \<in> ?\<Delta>s"
+    hence "?pr \<Delta> (next \<Delta>)" using n someI_ex[of "?pr \<Delta>"] unfolding next_def by auto
+    hence "next \<Delta> \<subseteq> ?\<Delta>s \<and> (unwind_cont \<Delta> (next \<Delta>) \<or> unwind_exit \<Delta>)" using c by auto
+    thus "next \<Delta> \<subseteq> ?\<Delta>s \<and> unwind_to \<Delta> (next \<Delta>)"
+      unfolding unwind_to_def unwind_exit_def unwind_cont_def
+      by blast
+  qed
+qed
 
 (*<*)
 
-end (* context BD_Security *)
-
+end (* context BD_Security_IO_Aut *)
 
 end
 

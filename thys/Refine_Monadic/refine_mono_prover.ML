@@ -106,7 +106,7 @@ structure Refine_Mono_Prover : REFINE_MONO_PROVER = struct
 
   fun split_meta_conjunction thm = 
     case Thm.prop_of thm of
-      @{const "Pure.conjunction"}$_$_ => let 
+      \<^Const_>\<open>Pure.conjunction for _ _\<close> => let
         val (t1,t2) = Conjunction.elim thm
       in split_meta_conjunction t1 @ split_meta_conjunction t2 end
       | _ => [thm]

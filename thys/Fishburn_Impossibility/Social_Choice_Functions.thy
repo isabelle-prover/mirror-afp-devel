@@ -117,7 +117,8 @@ lemma anonymity_prefs_from_table:
   assumes "mset (map snd xs) = mset (map snd ys)"
   shows   "scf (prefs_from_table xs) = scf (prefs_from_table ys)"
 proof -
-  from prefs_from_table_agent_permutation[OF assms] guess \<pi> .
+  from assms obtain \<pi> where "\<pi> permutes agents" "prefs_from_table xs \<circ> \<pi> = prefs_from_table ys"
+    by (rule prefs_from_table_agent_permutation)
   with anonymous[of \<pi>, of "prefs_from_table xs"] assms(1) show ?thesis 
     by (simp add: pref_profile_from_tableI)
 qed

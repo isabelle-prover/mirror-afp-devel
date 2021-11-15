@@ -15,7 +15,7 @@ section \<open>Related work\<close>
 (* ---------------------------------------------------------------------------- *)
 
 text\<open>During the last decade, there have been many results in formalizing
-geometry in proof-assistants. Parts of Hilbert’s seminal book
+geometry in proof-assistants. Parts of Hilbert's seminal book
 ,,Foundations of Geometry'' \cite{hilbert} have been formalized both
 in Coq and Isabelle/Isar.  Formalization of first two groups of axioms
 in Coq, in an intuitionistic setting was done by Dehlinger et
@@ -24,7 +24,7 @@ by Fleuriot and Meikele \cite{hilbert-isabelle}, and some further
 developments were made in master thesis of Scott \cite{hilbert-scott}.
 Large fragments of Tarski's geometry \cite{tarski} have been
 formalized in Coq by Narboux et al. \cite{narboux-tarski}. Within Coq,
-there are also formalizations of von Plato’s constructive geometry by
+there are also formalizations of von Plato's constructive geometry by
 Kahn \cite{vonPlato,von-plato-formalization}, French high school
 geometry by Guilhot \cite{guilhot} and ruler and compass geometry by
 Duprat \cite{duprat2008}, etc.

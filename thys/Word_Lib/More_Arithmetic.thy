@@ -7,7 +7,7 @@
 section \<open>Arithmetic lemmas\<close>
 
 theory More_Arithmetic
-  imports Main "HOL-Library.Type_Length" "HOL-Library.Bit_Operations"
+  imports Main "HOL-Library.Type_Length"
 begin
 
 lemma n_less_equal_power_2:
@@ -133,5 +133,11 @@ proof -
   ultimately show ?thesis
     by simp
 qed
+
+lemma msrevs:
+  "0 < n \<Longrightarrow> (k * n + m) div n = m div n + k"
+  "(k * n + m) mod n = m mod n"
+  for n :: nat
+  by simp_all
 
 end

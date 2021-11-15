@@ -19,8 +19,7 @@ ML \<open>
 
     val parse_cpat: cterm context_parser
 
-    val rename_cterm: (cterm * cterm) ->
-      ((indexname * sort) * ctyp) list * ((indexname * typ) * cterm) list
+    val rename_cterm: (cterm * cterm) -> ctyp TVars.table * cterm Vars.table
     val renames_cterm: (cterm * cterm) -> bool
 
     val import_cterm: cterm -> Proof.context -> cterm * Proof.context
@@ -89,7 +88,7 @@ ML \<open>
 
     val parse_cpat =
       Args.context --
-        Scan.lift Args.embedded_inner_syntax >> (fn (ctxt, str) => 
+        Scan.lift Parse.embedded_inner_syntax >> (fn (ctxt, str) => 
           Proof_Context.read_term_pattern ctxt str
           |> Thm.cterm_of ctxt 
         );

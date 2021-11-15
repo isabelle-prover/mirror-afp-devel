@@ -3526,9 +3526,7 @@ proof -
     case Nil then show ?case by auto
   next
     case (Cons x xs) then show ?case
-      apply (cases a) apply auto
-      apply (cases i) apply auto
-      apply (cases i) by auto
+      by (auto simp: less_Suc_eq_0_disj)
   qed
   ultimately show ?thesis by simp
 qed

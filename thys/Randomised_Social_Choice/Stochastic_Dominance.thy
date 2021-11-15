@@ -265,16 +265,23 @@ lemma SD_efficient_singleton_iff:
   shows   "SD_efficient R (return_pmf x) \<longleftrightarrow> x \<notin> pareto_losers R"
 proof -
   {
-    assume x: "x \<in> pareto_losers R"
-    from pareto_losersE[OF x] guess y . note y = this
-    from y have "\<not>SD_efficient R (return_pmf x)"
+    assume "x \<in> pareto_losers R"
+    then obtain y where "y \<in> alts" "x \<prec>[Pareto R] y"
+      by (rule pareto_losersE)
+    then have "\<not>SD_efficient R (return_pmf x)"
       by (intro SD_inefficientI'[of "return_pmf y"]) (force simp: Pareto_strict_iff)+
   } moreover {
     assume "\<not>SD_efficient R (return_pmf x)"
-    from SD_inefficientE[OF this] guess q i . note q = this
-    moreover from q obtain y where "y \<in> set_pmf q" "y \<succ>[R i] x"
+    from SD_inefficientE[OF this] obtain q i
+      where q:
+        "q \<in> lotteries_on alts"
+        "\<And>i. i \<in> agents \<Longrightarrow> SD (R i) (return_pmf x) q"
+        "i \<in> agents"
+        "return_pmf x \<prec>[SD (R i)] q"
+      by blast
+    from q obtain y where "y \<in> set_pmf q" "y \<succ>[R i] x"
       by (auto simp: SD_strict_singleton_left)
-    ultimately have "y \<succ>[Pareto(R)] x"
+    with q have "y \<succ>[Pareto(R)] x"
       by (fastforce simp: Pareto_strict_iff SD_singleton_left)
     hence "x \<in> pareto_losers R" by simp
   }
@@ -506,7 +513,7 @@ proof
 
     have "\<exists>\<epsilon>>0. is_vnm_utility (\<lambda>x. u x - \<epsilon> * u' x)"
       by (intro u.diff_epsilon antisym u'.utility_le)
-    then guess \<epsilon> by (elim exE conjE) note \<epsilon> = this
+    then obtain \<epsilon> where \<epsilon>: "\<epsilon> > 0" "is_vnm_utility (\<lambda>x. u x - \<epsilon> * u' x)" by auto
     define u'' where "u'' x = u x - \<epsilon> * u' x" for x
     interpret u'': vnm_utility carrier le u'' unfolding u''_def by fact
     have exp_u'': "?E p u'' = ?E p u - \<epsilon> * ?E p u'" if "p \<in> lotteries_on carrier" for p using that

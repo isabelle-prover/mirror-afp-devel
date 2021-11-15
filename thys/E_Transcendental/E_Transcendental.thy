@@ -1,6 +1,6 @@
 (*
   File:       E_Transcendental.thy
-  Author:     Manuel Eberl <eberlm@in.tum.de>
+  Author:     Manuel Eberl <manuel@pruvisto.org>
 
   A proof that e (Euler's number) is transcendental.
   Could possibly be extended to a transcendence proof for pi or
@@ -570,7 +570,7 @@ proof
                             power_minus' power_add del: of_nat_Suc)
       finally show ?thesis by (simp add: mult_ac M_def)
     qed
-    also have "\<exists>N. (\<Sum>(k, n)\<in>idxs. coeff q k * poly ((pderiv ^^ n) f) (int k)) = fact p * N"
+    also obtain N where "(\<Sum>(k, n)\<in>idxs. coeff q k * poly ((pderiv ^^ n) f) (int k)) = fact p * N"
     proof -
       have "\<forall>(k, n)\<in>idxs. fact p dvd poly ((pderiv ^^ n) f) (of_nat k)"
       proof clarify
@@ -599,9 +599,9 @@ proof
       qed
       hence "fact p dvd (\<Sum>(k, n)\<in>idxs. coeff q k * poly ((pderiv ^^ n) f) (int k))"
         by (auto intro!: dvd_sum dvd_mult simp del: of_int_fact)
-      thus ?thesis by (blast elim: dvdE)
+      with that show thesis
+        by blast
     qed
-    then guess N .. note N = this
     also from p have "- (coeff q 0 * M * fact (p - 1)) - fact p * N =
                         - fact (p - 1) * (coeff q 0 * M + p * N)"
       by (subst fact_reduce[of p]) (simp_all add: algebra_simps)

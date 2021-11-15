@@ -84,10 +84,11 @@ type info =
     strong_exhaust : thm list}
 
 structure NominalData = Generic_Data
- (type T = info Symtab.table
+(
+  type T = info Symtab.table
   val empty = Symtab.empty
-  val extend = I
-  val merge = Symtab.merge (K true))
+  val merge = Symtab.merge (K true)
+)
 
 val get_all_info = Symtab.dest o NominalData.get o Context.Proof
 val get_info = Symtab.lookup o NominalData.get o Context.Proof

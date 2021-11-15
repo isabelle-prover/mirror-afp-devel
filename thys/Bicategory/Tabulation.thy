@@ -514,7 +514,8 @@ $$
       show "\<guillemotleft>\<theta> : f \<star> w \<Rightarrow> u\<guillemotright>"
         using uw\<theta> by simp
       show "\<guillemotleft>\<theta> : src u \<rightarrow> src r\<guillemotright>"
-        using uw\<theta> src_dom trg_dom hcomp_simps(1-2) by fastforce
+        using uw\<theta> hcomp_simps(1-2)
+        by (metis arrI in_hhomI u_simps(3) vconn_implies_hpar(1-4))
     qed
 
     lemma \<theta>_simps [simp]:
@@ -566,19 +567,17 @@ $$
           using uw\<theta>\<omega>\<nu> by auto
         show "src \<nu> = src u"
         proof -
-          have "src \<nu> = src (cod \<nu>)"
-            using 1 uw\<theta>\<omega>\<nu> src_cod [of \<nu>] by simp
-          also have "... = src u"
-            using uw\<theta>\<omega>\<nu> by auto
-          finally show ?thesis by simp
+          have "src (cod \<nu>) = src u"
+            using uw\<theta>\<omega>\<nu>
+            by (metis arr_cod hcomp_simps(1) in_homE w_simps(3))
+          thus ?thesis by simp
         qed
         show "trg \<nu> = trg r"
         proof -
-          have "trg \<nu> = trg (cod \<nu>)"
-            using 1 uw\<theta>\<omega>\<nu> src_cod [of \<nu>] by simp
-          also have "... = trg r"
-            using uw\<theta>\<omega>\<nu> by auto
-          finally show ?thesis by simp
+          have "trg (cod \<nu>) = trg r"
+            using uw\<theta>\<omega>\<nu>
+            by (metis arr_cod hcomp_simps(2) in_homE leg1_simps(4))
+          thus ?thesis by simp
         qed
       qed
     qed
@@ -734,7 +733,8 @@ $$
         using f\<^sub>a by force
       have \<epsilon>: "\<guillemotleft>\<epsilon> : f \<star> f\<^sub>a \<Rightarrow> trg f\<guillemotright> \<and> \<guillemotleft>\<epsilon> : trg f \<rightarrow> trg f\<guillemotright> \<and>
                arr \<epsilon> \<and> src \<epsilon> = trg f \<and> trg \<epsilon> = trg f \<and> dom \<epsilon> = f \<star> f\<^sub>a \<and> cod \<epsilon> = trg f"
-        using f\<^sub>a src_cod [of \<epsilon>] trg_cod [of \<epsilon>] 1 2 by fastforce
+        using f\<^sub>a 1 2
+        by (metis in_hhomI in_homE leg0_simps(3) src_src trg_src vconn_implies_hpar(1-4))
       have \<nu>: "\<guillemotleft>\<nu> : r \<Rightarrow> g \<star> f\<^sub>a\<guillemotright> \<and> \<guillemotleft>\<nu> : trg f \<rightarrow> trg g\<guillemotright> \<and>
                arr \<nu> \<and> src \<nu> = trg f \<and> trg \<nu> = trg g \<and> dom \<nu> = r \<and> cod \<nu> = g \<star> f\<^sub>a"
         using f\<^sub>a by force
@@ -2811,7 +2811,7 @@ $$
           using the1_equality [of ?P] by blast
       qed
       hence \<gamma>: "\<guillemotleft>?\<gamma> : src f \<rightarrow> src f\<guillemotright> \<and> ?P ?\<gamma>"
-        using src_dom trg_dom by fastforce
+        using vconn_implies_hpar(1-2) by auto
 
       let ?P' = "\<lambda>\<gamma>. \<guillemotleft>\<gamma> : w' \<star> w \<Rightarrow> src f\<guillemotright> \<and> inv (?\<nu>'\<nu> \<cdot> \<r>[g]) = g \<star> \<gamma> \<and> ?\<theta>\<theta>' = \<r>[f] \<cdot> (f \<star> \<gamma>)"
       let ?\<gamma>' = "THE \<gamma>. ?P' \<gamma>"
@@ -2825,7 +2825,7 @@ $$
           using the1_equality [of ?P'] by blast
       qed
       hence \<gamma>': "\<guillemotleft>?\<gamma>' : src f \<rightarrow> src f\<guillemotright> \<and> ?P' ?\<gamma>'"
-        using src_dom trg_dom by fastforce
+        using vconn_implies_hpar(1-2) by auto
 
       have "inverse_arrows ?\<gamma> ?\<gamma>'"
       proof
@@ -2838,7 +2838,7 @@ $$
           moreover have "(\<rho> \<star> src f) \<cdot> (dom \<rho> \<star> src f) = \<rho> \<star> src f"
           proof -
             have "(\<rho> \<star> src \<rho>) \<cdot> (dom \<rho> \<star> src (dom \<rho>)) = \<rho> \<star> src \<rho>"
-              using R.is_natural_1 arr_dom tab_simps(1) by presburger
+              using R.as_nat_trans.is_natural_1 arr_dom tab_simps(1) by presburger
             thus ?thesis
               by simp
           qed
@@ -3253,7 +3253,8 @@ $$
             have "F (T.composite_cell w \<theta> \<cdot>\<^sub>C \<nu>) = F ((r \<star>\<^sub>C \<theta>) \<cdot>\<^sub>C \<a>\<^sub>C[r, f, w] \<cdot>\<^sub>C (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>C \<nu>)"
               using C.comp_assoc by simp
             also have "... = F (r \<star>\<^sub>C \<theta>) \<cdot>\<^sub>D F \<a>\<^sub>C[r, f, w] \<cdot>\<^sub>D F (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>D F \<nu>"
-              by (metis C.arr_dom_iff_arr C.comp_assoc C.in_homE C.seqE preserves_comp_2 w\<theta>\<nu>)
+              by (metis C.arr_dom_iff_arr C.comp_assoc C.in_homE C.seqE
+                        as_nat_trans.preserves_comp_2 w\<theta>\<nu>)
             also have "... =
                        F (r \<star>\<^sub>C \<theta>) \<cdot>\<^sub>D (\<Phi> (r, f \<star>\<^sub>C w) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w)) \<cdot>\<^sub>D \<a>\<^sub>D[F r, F f, F w] \<cdot>\<^sub>D
                          (D.inv (\<Phi> (r, f)) \<star>\<^sub>D F w) \<cdot>\<^sub>D D.inv (\<Phi> (r \<star>\<^sub>C f, w))) \<cdot>\<^sub>D F (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>D F \<nu>"
@@ -5846,8 +5847,8 @@ $$
                   using w\<theta>\<nu> D.comp_assoc by simp
                 also have "... = F \<omega>"
                   using u \<omega> cmp_in_hom D.comp_arr_inv'
-                  by (metis C.in_homE cmp_components_are_iso cmp_simps(5) \<rho>.ide_base is_natural_1
-                      naturality hseq_ru)
+                  by (metis C.in_homE cmp_components_are_iso cmp_simps(5) \<rho>.ide_base
+                      as_nat_trans.is_natural_1 as_nat_trans.naturality hseq_ru)
                 finally show ?thesis by blast
               qed
               ultimately show ?thesis
@@ -6045,7 +6046,7 @@ $$
                 have "F \<theta> = F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>') \<cdot>\<^sub>D D.inv (\<Phi> (f, w))"
                   using w' \<theta>' \<gamma>' preserves_hcomp hseq_fw D.comp_assoc D.invert_side_of_triangle
                   by (metis C.in_homE D.comp_arr_inv' cmp_components_are_iso cmp_simps(5)
-                      \<rho>.ide_leg0 \<theta> is_natural_1 w)
+                      \<rho>.ide_leg0 \<theta> as_nat_trans.is_natural_1 w)
                 also have "... = F \<theta>' \<cdot>\<^sub>D F (f \<star>\<^sub>C \<gamma>)"
                   using w' D.comp_assoc hseq_fw preserves_hcomp cmp_components_are_iso
                         D.comp_arr_inv'
@@ -6065,8 +6066,8 @@ $$
               proof -
                 have "F \<beta> = \<Phi> (g, w') \<cdot>\<^sub>D (F g \<star>\<^sub>D \<gamma>') \<cdot>\<^sub>D D.inv (\<Phi> (g, w))"
                   by (metis (no_types) C.in_homE D.comp_arr_inv' D.comp_assoc
-                      cmp_components_are_iso cmp_simps(5) \<beta> \<gamma>' \<rho>.ide_leg1 hseq_gw is_natural_1
-                      naturality w w')
+                      cmp_components_are_iso cmp_simps(5) \<beta> \<gamma>' \<rho>.ide_leg1 hseq_gw
+                      as_nat_trans.is_natural_1 as_nat_trans.naturality w w')
                 also have "... = F (g \<star>\<^sub>C \<gamma>)"
                   using w \<gamma> \<gamma>' preserves_hcomp hseq_gw
                   by (metis C.hseqE C.hseqI' C.in_homE C.seqE \<open>\<theta> = \<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>)\<close>

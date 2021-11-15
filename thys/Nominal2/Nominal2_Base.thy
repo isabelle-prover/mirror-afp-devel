@@ -830,7 +830,7 @@ simproc_setup perm_simproc ("p \<bullet> t") = \<open>fn _ => fn ctxt => fn ctrm
   case Thm.term_of (Thm.dest_arg ctrm) of
     Free _ => NONE
   | Var _ => NONE
-  | Const (@{const_name permute}, _) $ _ $ _ => NONE
+  | \<^Const_>\<open>permute _ for _ _\<close> => NONE
   | _ =>
       let
         val thm = Nominal_Permeq.eqvt_conv ctxt Nominal_Permeq.eqvt_strict_config ctrm
@@ -1453,7 +1453,7 @@ instance pure < fs
   by standard (simp add: pure_supp)
 
 
-subsection  \<open>Type @{typ atom} is finitely-supported.\<close>
+subsection  \<open>Type \<^typ>\<open>atom\<close> is finitely-supported.\<close>
 
 lemma supp_atom:
   shows "supp a = {a}"
@@ -1471,7 +1471,7 @@ instance atom :: fs
   by standard (simp add: supp_atom)
 
 
-section \<open>Type @{typ perm} is finitely-supported.\<close>
+section \<open>Type \<^typ>\<open>perm\<close> is finitely-supported.\<close>
 
 lemma perm_swap_eq:
   shows "(a \<rightleftharpoons> b) \<bullet> p = p \<longleftrightarrow> (p \<bullet> (a \<rightleftharpoons> b)) = (a \<rightleftharpoons> b)"
@@ -2934,12 +2934,12 @@ by (simp_all add: fresh_at_base)
 
 
 simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = \<open>fn _ => fn ctxt => fn ctrm =>
-  case Thm.term_of ctrm of @{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ lhs $ rhs) =>
+  case Thm.term_of ctrm of \<^Const_>\<open>Not for \<^Const_>\<open>HOL.eq _ for lhs rhs\<close>\<close> =>
     let
-      fun first_is_neg lhs rhs [] = NONE
+      fun first_is_neg lhs rhs [] = NONE  
         | first_is_neg lhs rhs (thm::thms) =
           (case Thm.prop_of thm of
-             _ $ (@{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ l $ r)) =>
+             _ $ \<^Const_>\<open>Not for \<^Const_>\<open>HOL.eq _ for l r\<close>\<close> =>
                (if l = lhs andalso r = rhs then SOME(thm)
                 else if r = lhs andalso l = rhs then SOME(thm RS @{thm not_sym})
                 else first_is_neg lhs rhs thms)
@@ -2948,11 +2948,11 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = \<open>fn _ => fn ctx
       val simp_thms = @{thms fresh_Pair fresh_at_base atom_eq_iff}
       val prems = Simplifier.prems_of ctxt
          |> filter (fn thm => case Thm.prop_of thm of
-            _ $ (Const (@{const_name fresh}, ty) $ (_ $ a) $ b) =>
+            _ $ \<^Const_>\<open>fresh _ for \<open>_ $ a\<close> b\<close> =>
             (let
                val atms = a :: HOLogic.strip_tuple b
              in
-               member ((=)) atms lhs andalso member ((=)) atms rhs
+               member (op =) atms lhs andalso member (op =) atms rhs
              end)
             | _ => false)
          |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
@@ -3145,7 +3145,7 @@ setup \<open>Sign.add_const_constraint (@{const_name "permute"}, NONE)\<close>
 setup \<open>Sign.add_const_constraint (@{const_name "atom"}, NONE)\<close>
 
 text \<open>
-  New atom types are defined as subtypes of @{typ atom}.
+  New atom types are defined as subtypes of \<^typ>\<open>atom\<close>.
 \<close>
 
 lemma exists_eq_simple_sort:
@@ -3337,21 +3337,18 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = \<open>
   let
      val _ $ h = Thm.term_of ctrm
 
-     val cfresh = @{const_name fresh}
-     val catom  = @{const_name atom}
-
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of
-           _ $ (Const (cfresh, _) $ (Const (catom, _) $ atm) $ _) => SOME (atm) | _ => NONE)
-      |> distinct ((=))
+           _ $ \<^Const_>\<open>fresh _ for \<^Const_>\<open>atom _ for atm\<close> _\<close> => SOME atm | _ => NONE)
+      |> distinct (op =)
 
      fun get_thm atm =
        let
          val goal1 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) h)
          val goal2 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) (h $ atm))
 
-         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ctxt 1))
-         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ctxt 1))
+         val thm1 = Goal.prove ctxt [] [] goal1 (fn {context = ctxt', ...} => asm_simp_tac ctxt' 1)
+         val thm2 = Goal.prove ctxt [] [] goal2 (fn {context = ctxt', ...} => asm_simp_tac ctxt' 1)
        in
          SOME (@{thm Fresh_apply'} OF [thm1, thm2] RS eq_reflection)
        end handle ERROR _ => NONE

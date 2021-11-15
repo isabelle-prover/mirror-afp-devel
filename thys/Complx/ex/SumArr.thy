@@ -15,6 +15,8 @@ imports
   Word_Lib.Word_32
 begin
 
+unbundle bit_operations_syntax
+
 type_synonym routine = nat
 type_synonym word32 = "32 word"
 type_synonym funcs = "string \<times> nat"
@@ -294,7 +296,6 @@ proof -
     apply (simp add: **)
     apply (simp add: *)
     apply (simp add: local_sum_def array_nat_sum_def ac_simps)
-    find_theorems \<open>min _ (_ + _)\<close>
     apply (rule word_unat.Rep_inverse')
     apply (rule min_absorb1[symmetric])
     apply (subst (asm) word_le_nat_alt)
@@ -302,11 +303,12 @@ proof -
      apply (rule word_add_le_mono2[where i=0, simplified])
      apply (clarsimp simp: MAXSUM_def)
      apply unat_arith
-    apply simp_all
     apply (rule le_trans, assumption)
     apply (rule add_mono)
      apply simp_all
-    apply (meson min.bounded_iff take_bit_nat_less_eq_self trans_le_add1)
+    apply (subst le_unat_uoi)
+    apply (rule min.cobounded1)
+     apply simp
     done
 qed
 

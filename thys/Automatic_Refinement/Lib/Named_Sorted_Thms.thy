@@ -26,8 +26,7 @@ ML \<open>
     structure Data = Generic_Data
     (
       type T = thm Item_Net.T;
-      val empty = Thm.full_rules;
-      val extend = I;
+      val empty = Thm.item_net;
       val merge = Item_Net.merge;
     );
 

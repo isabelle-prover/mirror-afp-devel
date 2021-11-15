@@ -240,15 +240,22 @@ begin
     shows "map f = f"
       using assms map_def by simp
 
-    lemma is_functor:
-    shows "functor C C map"
+    sublocale "functor" C C map
       using C.arr_dom_iff_arr C.arr_cod_iff_arr
       by (unfold_locales; auto simp add: map_def)
 
-  end
+    lemma is_functor:
+    shows "functor C C map"
+      ..
 
-  sublocale identity_functor \<subseteq> "functor" C C map
-    using is_functor by auto
+    sublocale fully_faithful_functor C C map
+      using C.arrI by unfold_locales auto
+
+    lemma is_fully_faithful:
+    shows "fully_faithful_functor C C map"
+      ..
+
+  end
 
   text \<open>
     It is convenient to have an easy way to obtain from a category the identity functor
@@ -289,10 +296,14 @@ begin
     abbreviation map
     where "map \<equiv> G o F"
 
-  end
+    sublocale "functor" A C \<open>G o F\<close>
+      using functor_comp F.functor_axioms G.functor_axioms by blast
 
-  sublocale composite_functor \<subseteq> "functor" A C \<open>G o F\<close>
-    using functor_comp F.functor_axioms G.functor_axioms by blast
+    lemma is_functor:
+    shows "functor A C (G o F)"
+      ..
+
+  end
 
   lemma comp_functor_identity [simp]:
   assumes "functor A B F"
@@ -516,6 +527,40 @@ begin
     lemma inv_is_inverse:
     shows "inverse_functors A B inv G" ..
   
+    sublocale fully_faithful_functor A B G
+    proof -
+      obtain F where F: "inverse_functors A B F G"
+        using invertible by auto
+      interpret FG: inverse_functors A B F G
+        using F by simp
+      show "fully_faithful_functor A B G"
+      proof
+        fix f f'
+        assume par: "A.par f f'" and eq: "G f = G f'"
+        show "f = f'"
+          using par eq FG.inv'
+          by (metis A.map_simp comp_apply)
+        next
+        fix a a' g
+        assume a: "A.ide a" and a': "A.ide a'" and g: "\<guillemotleft>g : G a \<rightarrow>\<^sub>B G a'\<guillemotright>"
+        show "\<exists>f. \<guillemotleft>f : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G f = g"
+        proof
+          have "\<guillemotleft>F g : F (G a) \<rightarrow>\<^sub>A F (G a')\<guillemotright> \<and> G (F g) = g"
+            using a a' g FG.inv FG.inv' comp_apply
+            by (metis B.arrI B.map_simp FG.F.preserves_hom)
+          moreover have "F (G a) = a \<and> F (G a') = a'"
+            using a a' FG.inv' comp_apply
+            by (metis A.ideD(1) A.map_simp)
+          ultimately show "\<guillemotleft>F g : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G (F g) = g"
+            by simp
+        qed
+      qed
+    qed
+
+    lemma is_fully_faithful:
+    shows "fully_faithful_functor A B G"
+      ..
+
     lemma preserves_terminal:
     assumes "A.terminal a"
     shows "B.terminal (G a)"
@@ -555,6 +600,34 @@ begin
 
   sublocale invertible_functor \<subseteq> inverse_functors A B inv G
     using inv_is_inverse by simp
+
+  locale dual_functor =
+    F: "functor" A B F +
+    Aop: dual_category A +
+    Bop: dual_category B
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  and F :: "'a \<Rightarrow> 'b"
+  begin
+
+    notation Aop.comp     (infixr "\<cdot>\<^sub>A\<^sup>o\<^sup>p" 55)
+    notation Bop.comp     (infixr "\<cdot>\<^sub>B\<^sup>o\<^sup>p" 55)
+
+    definition map
+    where "map \<equiv> F"
+
+    lemma map_simp [simp]:
+    shows "map f = F f"
+      by (simp add: map_def)
+
+    lemma is_functor:
+    shows "functor Aop.comp Bop.comp map"
+      using F.is_extensional by (unfold_locales, auto)
+
+  end
+
+  sublocale dual_functor \<subseteq> "functor" Aop.comp Bop.comp map
+    using is_functor by auto
 
   text \<open>
     A bijection from a set \<open>S\<close> to the set of arrows of a category \<open>C\<close> induces an isomorphic
@@ -643,45 +716,11 @@ begin
         fix i
         assume i: "i \<in> S"
         have 1: "C'.ide (\<psi> (dom (\<phi> i)))"
-        proof (unfold C'.ide_def, intro conjI allI impI)
-          show "C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
-          proof -
-            have "C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) = \<psi> (dom (\<phi> i))"
-              using C'_def i assms(1-2) \<psi> \<psi>_\<phi> \<psi>_def bij_betw_def
-              by (metis (no_types, lifting) C'.ide_def \<phi>_\<psi> ide_char ide_dom image_eqI
-                  mem_Collect_eq)
-            moreover have "\<psi> (dom (\<phi> i)) \<noteq> C'.null"
-              using i null_char assms(1-2) bij_betw_def
-              by (metis \<psi> arr_dom_iff_arr image_iff mem_Collect_eq)
-            ultimately show ?thesis
-              by simp
-          qed
-          show "\<And>j. C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (dom (\<phi> i))) = j"
-          proof -
-            fix j
-            assume j: "C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
-            show "C' j (\<psi> (dom (\<phi> i))) = j"
-              using j \<phi>_\<psi> \<psi>_def ide_char null_char
-              by (metis C'.comp_null(2) C'.ide_def C'_def
-                  \<open>C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null\<close>
-                  arr_dom_iff_arr ide_dom)
-          qed
-          show "\<And>j. C' (\<psi> (dom (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (dom (\<phi> i))) j = j"
-          proof -
-            fix j
-            assume j: "C' (\<psi> (dom (\<phi> i))) j \<noteq> C'.null"
-            show "C' (\<psi> (dom (\<phi> i))) j = j"
-              using j
-              by (metis C'.ide_def C'_def
-                  \<open>C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null\<close>
-                  \<open>\<And>j. C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (dom (\<phi> i))) = j\<close>
-                  \<phi>_\<psi> \<psi>_def arr_dom_iff_arr ide_char ide_dom null_char)
-          qed
-        qed
+          by (metis \<phi>_\<psi> \<psi> \<psi>_\<phi> \<psi>_def arr_dom assms(2) bij_betw_def i ide_char ide_dom
+              image_eqI mem_Collect_eq)
         moreover have "C' i (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
-          using i 1 assms(1-2) C'_def null_char ide_char \<phi>_\<psi> \<psi>_\<phi> \<psi>_def comp_arr_dom
-          apply simp
-          by (metis (no_types, lifting))
+          by (metis C'_def \<phi>_\<psi> \<psi>_\<phi> \<psi>_def assms(2) calculation comp_arr_dom i ide_char
+              null_char)
         ultimately show "\<psi> (dom (\<phi> i)) \<in> C'.domains i"
           using C'.domains_def by simp
       qed
@@ -690,52 +729,10 @@ begin
         fix i
         assume i: "i \<in> S"
         have 1: "C'.ide (\<psi> (cod (\<phi> i)))"
-        proof (unfold C'.ide_def, intro conjI allI impI)
-          show "C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null"
-          proof -
-            have "C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) = \<psi> (cod (\<phi> i))"
-            proof -
-              have "\<phi> (\<psi> (cod (\<phi> i))) = cod (\<phi> i)"
-                using i assms(1-2) \<phi>_\<psi> \<psi>_\<phi> \<psi>_def arr_cod_iff_arr by force
-              moreover have "cod (\<phi> i) \<cdot> cod (\<phi> i) = cod (\<phi> i)"
-                using i assms(1-2) comp_ide_self ide_cod [of "\<phi> i"] \<psi>_\<phi> \<psi>_def by fastforce
-              ultimately show ?thesis
-                using C'_def i assms(1)
-                apply simp
-                by (metis (no_types, lifting) \<psi> \<psi>_def bij_betw_def image_eqI mem_Collect_eq)
-            qed
-            moreover have "\<psi> (cod (\<phi> i)) \<noteq> C'.null"
-              using i null_char assms(1-2)
-              by (metis \<psi> bij_betw_def category.arr_cod_iff_arr category_axioms
-                  image_eqI mem_Collect_eq)
-            ultimately show ?thesis
-              by simp
-          qed
-          show "\<And>j. C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (cod (\<phi> i))) j = j"
-          proof -
-            fix j
-            assume j: "C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null"
-            show "C' (\<psi> (cod (\<phi> i))) j = j"
-              using j
-              by (metis C'.comp_null(2) C'.ide_def C'_def
-                  \<open>C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null\<close>
-                  \<phi>_\<psi> \<psi>_def arr_cod_iff_arr category.ide_cod category_axioms ide_char null_char)
-          qed
-          show "\<And>j. C' j (\<psi> (cod (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (cod (\<phi> i))) = j"
-          proof -
-            fix j
-            assume j: "C' j (\<psi> (cod (\<phi> i))) \<noteq> C'.null"
-            show "C' j (\<psi> (cod (\<phi> i))) = j"
-              using j
-              by (metis C'.ide_def C'_def \<open>C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null\<close>
-                  \<open>\<And>j. C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (cod (\<phi> i))) j = j\<close>
-                  \<phi>_\<psi> \<psi>_def arr_cod_iff_arr category.ide_cod category_axioms ide_char null_char)
-          qed
-        qed
+          by (metis \<phi>_\<psi> \<psi> \<psi>_\<phi> \<psi>_def arr_cod assms(2) bij_betw_def i ide_char ide_cod
+              image_eqI mem_Collect_eq)
         moreover have "C' (\<psi> (cod (\<phi> i))) i \<noteq> C'.null"
-          using i assms(1-2) C'_def null_char \<phi>_\<psi> \<psi>_\<phi> \<psi>_def comp_cod_arr ide_char
-          apply simp
-          by (metis (no_types, lifting) \<psi>_def 1)
+          by (metis 1 C'_def \<phi>_\<psi> \<psi>_\<phi> \<psi>_def assms(2) comp_cod_arr i ide_char null_char)
         ultimately show "\<psi> (cod (\<phi> i)) \<in> C'.codomains i"
           using C'.codomains_def by simp
       qed
@@ -784,10 +781,7 @@ begin
               C'.arr_dom C'.arr_cod
         apply unfold_locales
             apply simp_all
-           apply (metis (full_types))
-          apply force
-         apply force
-        by metis
+        by metis+
       interpret \<psi>: "functor" C C' \<psi>
         using \<psi>_def null_char arr_char
         apply unfold_locales
@@ -836,7 +830,7 @@ begin
   context category
   begin
 
-    interpretation CC: concrete_category \<open>Collect ide\<close> hom id \<open>\<lambda>C B A g f. g \<cdot> f\<close>
+    interpretation CC: concrete_category \<open>Collect ide\<close> hom id \<open>\<lambda>_ _ _ g f. g \<cdot> f\<close>
       using comp_arr_dom comp_cod_arr comp_assoc
       by (unfold_locales, auto)
 
@@ -864,44 +858,11 @@ begin
         by auto
     qed
 
-    interpretation isomorphic_categories C CC.COMP ..
-
     theorem is_isomorphic_to_concrete_category:
     shows "isomorphic_categories C CC.COMP"
       ..
 
   end
-
-  locale dual_functor =
-    F: "functor" A B F +
-    Aop: dual_category A +
-    Bop: dual_category B
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
-  and F :: "'a \<Rightarrow> 'b"
-  begin
-
-    notation Aop.comp     (infixr "\<cdot>\<^sub>A\<^sup>o\<^sup>p" 55)
-    notation Bop.comp     (infixr "\<cdot>\<^sub>B\<^sup>o\<^sup>p" 55)
-
-    definition map
-    where "map \<equiv> F"
-
-    lemma map_simp [simp]:
-    shows "map f = F f"
-      by (simp add: map_def)
-
-    lemma is_functor:
-    shows "functor Aop.comp Bop.comp map"
-      using F.is_extensional by (unfold_locales, auto)
-
-  end
-
-  sublocale invertible_functor \<subseteq> inverse_functors A B inv G
-    using inv_is_inverse by simp
-
-   sublocale dual_functor \<subseteq> "functor" Aop.comp Bop.comp map
-    using is_functor by auto
 
 end
 

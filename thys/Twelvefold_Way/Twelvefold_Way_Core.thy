@@ -76,9 +76,9 @@ proof -
     from this show "\<exists>bij. bij_betw bij {a \<in> A. f a = b} {a \<in> A'. f' a = b}"
       by (intro finite_same_card_bij) simp_all
   qed
-  hence "\<exists>bij. \<forall>b\<in>f ` A. bij_betw (bij b) {a \<in> A. f a = b} {a \<in> A'. f' a = b}"
-    by (rule bchoice)
-  then guess bij .. note bij = this
+  from bchoice [OF this]
+  obtain bij where bij: "\<forall>b\<in>f ` A. bij_betw (bij b) {a \<in> A. f a = b} {a \<in> A'. f' a = b}"
+    by auto
   define bij' where "bij' = (\<lambda>a. bij (f a) a)"
   have "bij_betw bij' A A'"
   proof -

@@ -358,7 +358,7 @@ fun solve_program prog =
     val esolver_path = getenv "QSOPT_EXACT_PATH"
     val esolver = if esolver_path = "" then "esolver" else esolver_path
     val command =  wrap esolver ^ " -O " ^ wrap resultname ^ " " ^ wrap lpname
-    val res = Isabelle_System.bash_process command
+    val res = Isabelle_System.bash_process (Bash.script command)
     in
       if not (Process_Result.ok res) then
         raise Fail ("QSopt_exact returned with an error (return code " ^ 

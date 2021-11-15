@@ -63,6 +63,10 @@ subsection\<open>IPv4 Addresses in IPTables Notation (how we parse it)\<close>
     done
   
   text\<open>maybe this is necessary as code equation?\<close>
+  context
+    includes bit_operations_syntax
+  begin
+
   lemma element_ipt_iprange_to_set[code_unfold]: "(addr::'i::len word) \<in> ipt_iprange_to_set X = (
     case X of (IpAddrNetmask pre len) \<Rightarrow>
                   (pre AND ((mask len) << (len_of (TYPE('i)) - len))) \<le> addr \<and>
@@ -75,6 +79,7 @@ subsection\<open>IPv4 Addresses in IPTables Notation (how we parse it)\<close>
   apply(simp; fail)
   done
 
+  end
   
   lemma ipt_iprange_to_set_uncurry_IpAddrNetmask:
     "ipt_iprange_to_set (uncurry IpAddrNetmask a) = uncurry ipset_from_cidr a"

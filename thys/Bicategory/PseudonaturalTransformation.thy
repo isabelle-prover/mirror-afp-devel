@@ -475,7 +475,7 @@ begin
           also have "... = ((\<rho>\<^sub>0 a \<star>\<^sub>D G.unit a) \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D (\<r>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 a] \<cdot>\<^sub>D \<l>\<^sub>D[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a)"
             using a C.obj_simps D.whisker_right
             by (metis C.objE D.hcomp_simps(4) D.hseqI' D.ideD(1) D.ideD(3) D.seqI D.trg_cod
-                H.unit_simps(1-2,5) H.\<i>_simps(1,3,5) \<rho>.ide_map\<^sub>0_obj \<rho>.map\<^sub>0_simps(3)
+                H.unit_simps(1-2,5) H.\<i>_simps(3,5) \<rho>.ide_map\<^sub>0_obj \<rho>.map\<^sub>0_simps(3)
                 \<rho>.map\<^sub>1_simps(1,4) \<rho>.respects_unit \<sigma>.ide_map\<^sub>0_obj)
           finally have "(\<rho>\<^sub>1 a \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D ((H.unit a \<star>\<^sub>D \<rho>\<^sub>0 a) \<star>\<^sub>D \<sigma>\<^sub>0 a) =
                         ((\<rho>\<^sub>0 a \<star>\<^sub>D G.unit a) \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D (\<r>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 a] \<cdot>\<^sub>D \<l>\<^sub>D[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a)"
@@ -551,7 +551,7 @@ begin
            by (metis D.runit'_simps(1) D.runit'_simps(5) G.map\<^sub>0_def \<rho>.ide_map\<^sub>0_obj
                \<rho>.map\<^sub>0_simps(2) \<sigma>.ide_map\<^sub>0_obj)
          moreover have "(\<r>\<^sub>D[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D (\<r>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 a] \<star>\<^sub>D \<sigma>\<^sub>0 a) = \<rho>\<^sub>0 a \<star>\<^sub>D \<sigma>\<^sub>0 a"
-           using a D.whisker_right D.comp_arr_inv' D.R.components_are_iso
+           using a D.whisker_right D.comp_arr_inv' D.R.as_nat_iso.components_are_iso
            by (metis D.ideD(1) D.iso_runit D.runit_simps(5) \<rho>.ide_map\<^sub>0_obj \<sigma>.ide_map\<^sub>0_obj)
          moreover have "(\<rho>\<^sub>0 a \<star>\<^sub>D \<sigma>\<^sub>0 a) \<cdot>\<^sub>D \<l>\<^sub>D[\<rho>\<^sub>0 a \<star>\<^sub>D \<sigma>\<^sub>0 a] = \<l>\<^sub>D[\<rho>\<^sub>0 a \<star>\<^sub>D \<sigma>\<^sub>0 a]"
            using a D.comp_cod_arr \<open>\<And>a. C.obj a \<Longrightarrow> D.ide (map\<^sub>0 a)\<close> map\<^sub>0_def by auto
@@ -8032,7 +8032,8 @@ begin
           using par \<tau>.ide_map\<^sub>0_obj \<tau>.iso_map\<^sub>1_ide D.comp_arr_dom D.comp_arr_inv'
                 \<tau>.map\<^sub>1_in_hom [of \<mu>]
           by (metis C.dom_trg C.ide_dom C.obj_trg C.trg.preserves_dom D.whisker_left
-              F.is_natural_2 F.naturality F.preserves_arr \<tau>.map\<^sub>1_simps(5))
+              F.as_nat_trans.is_natural_2 F.as_nat_trans.naturality F.preserves_arr
+              \<tau>.map\<^sub>1_simps(5))
         also have "... = ((\<tau>\<^sub>0 ?a' \<star>\<^sub>D F \<mu>) \<cdot>\<^sub>D \<tau>\<^sub>1 ?f) \<cdot>\<^sub>D D.inv (\<tau>\<^sub>1 ?f)"
           using D.comp_assoc by simp
         also have "... = ((\<tau>\<^sub>0 ?a' \<star>\<^sub>D F \<mu>') \<cdot>\<^sub>D \<tau>\<^sub>1 ?f) \<cdot>\<^sub>D D.inv (\<tau>\<^sub>1 ?f)"

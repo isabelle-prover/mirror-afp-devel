@@ -283,6 +283,10 @@ where
   else state1
 "
 
+context
+  includes bit_operations_syntax
+begin
+
 text \<open>Given an ASI (word8), an address (word32) addr, 
         read the 32bit value from the memory addresses 
         starting from address addr' where addr' = addr 
@@ -1002,6 +1006,8 @@ where "raise_trap t \<equiv>
     modify (\<lambda>s. (add_trap_set t s));
     return ()
   od"
+
+end
 
 end
 

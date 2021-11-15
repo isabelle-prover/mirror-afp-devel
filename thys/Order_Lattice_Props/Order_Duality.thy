@@ -313,8 +313,3 @@ subclass bounded_lattice_with_dual..
 end
 
 end
-
-
-
-
-

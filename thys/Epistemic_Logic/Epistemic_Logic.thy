@@ -35,7 +35,8 @@ abbreviation \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
 
 section \<open>Semantics\<close>
 
-datatype ('i, 'w) kripke = Kripke (\<pi>: \<open>'w \<Rightarrow> id \<Rightarrow> bool\<close>) (\<K>: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>)
+datatype ('i, 'w) kripke =
+  Kripke (\<W>: \<open>'w set\<close>) (\<pi>: \<open>'w \<Rightarrow> id \<Rightarrow> bool\<close>) (\<K>: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>)
 
 primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
   ("_, _ \<Turnstile> _" [50, 50] 50) where
@@ -44,18 +45,19 @@ primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm
 | \<open>(M, w \<Turnstile> (p \<^bold>\<or> q)) = ((M, w \<Turnstile> p) \<or> (M, w \<Turnstile> q))\<close>
 | \<open>(M, w \<Turnstile> (p \<^bold>\<and> q)) = ((M, w \<Turnstile> p) \<and> (M, w \<Turnstile> q))\<close>
 | \<open>(M, w \<Turnstile> (p \<^bold>\<longrightarrow> q)) = ((M, w \<Turnstile> p) \<longrightarrow> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> K i p) = (\<forall>v \<in> \<K> M i w. M, v \<Turnstile> p)\<close>
+| \<open>(M, w \<Turnstile> K i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p)\<close>
 
 section \<open>S5 Axioms\<close>
 
 definition reflexive :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
-  \<open>reflexive M \<equiv> \<forall>i w. w \<in> \<K> M i w\<close>
+  \<open>reflexive M \<equiv> \<forall>i. \<forall>w \<in> \<W> M. w \<in> \<K> M i w\<close>
 
 definition symmetric :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
-  \<open>symmetric M \<equiv> \<forall>i v w. v \<in> \<K> M i w \<longleftrightarrow> w \<in> \<K> M i v\<close>
+  \<open>symmetric M \<equiv> \<forall>i. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M. v \<in> \<K> M i w \<longleftrightarrow> w \<in> \<K> M i v\<close>
 
 definition transitive :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
-  \<open>transitive M \<equiv> \<forall>i v w u. w \<in> \<K> M i v \<and> u \<in> \<K> M i w \<longrightarrow> u \<in> \<K> M i v\<close>
+  \<open>transitive M \<equiv> \<forall>i. \<forall>u \<in> \<W> M. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M.
+    w \<in> \<K> M i v \<and> u \<in> \<K> M i w \<longrightarrow> u \<in> \<K> M i v\<close>
 
 abbreviation equivalence :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
   \<open>equivalence M \<equiv> reflexive M \<and> symmetric M \<and> transitive M\<close>
@@ -68,9 +70,9 @@ proof
   assume \<open>M, w \<Turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q))\<close>
   then have \<open>M, w \<Turnstile> K i p\<close> \<open>M, w \<Turnstile> K i (p \<^bold>\<longrightarrow> q)\<close>
     by simp_all
-  then have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> p\<close> \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close> \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
     by simp_all
-  then have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> q\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> q\<close>
     by simp
   then show \<open>M, w \<Turnstile> K i q\<close>
     by simp
@@ -87,58 +89,47 @@ proof -
 qed
 
 theorem truth:
-  assumes \<open>reflexive M\<close>
+  assumes \<open>reflexive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>M, w \<Turnstile> (K i p \<^bold>\<longrightarrow> p)\<close>
 proof
   assume \<open>M, w \<Turnstile> K i p\<close>
-  then have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> p\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close>
     by simp
   moreover have \<open>w \<in> \<K> M i w\<close>
-    using \<open>reflexive M\<close> unfolding reflexive_def by blast
+    using \<open>reflexive M\<close> \<open>w \<in> \<W> M\<close> unfolding reflexive_def by blast
   ultimately show \<open>M, w \<Turnstile> p\<close>
-    by simp
+    using \<open>w \<in> \<W> M\<close> by simp
 qed
 
 theorem pos_introspection:
-  assumes \<open>transitive M\<close>
+  assumes \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>M, w \<Turnstile> (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
 proof
   assume \<open>M, w \<Turnstile> K i p\<close>
-  then have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> p\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close>
     by simp
-  then have \<open>\<forall>v \<in> \<K> M i w. \<forall>u \<in> \<K> M i v. M, u \<Turnstile> p\<close>
-    using \<open>transitive M\<close> unfolding transitive_def by blast
-  then have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> K i p\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. \<forall>u \<in> \<W> M \<inter> \<K> M i v. M, u \<Turnstile> p\<close>
+    using \<open>transitive M\<close> \<open>w \<in> \<W> M\<close> unfolding transitive_def by blast
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> K i p\<close>
     by simp
   then show \<open>M, w \<Turnstile> K i (K i p)\<close>
     by simp
 qed
 
 theorem neg_introspection:
-  assumes \<open>symmetric M\<close> \<open>transitive M\<close>
+  assumes \<open>symmetric M\<close> \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>M, w \<Turnstile> (\<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p))\<close>
 proof
   assume \<open>M, w \<Turnstile> \<^bold>\<not> (K i p)\<close>
-  then obtain u where \<open>u \<in> \<K> M i w\<close> \<open>\<not> (M, u \<Turnstile> p)\<close>
+  then obtain u where \<open>u \<in> \<K> M i w\<close> \<open>\<not> (M, u \<Turnstile> p)\<close> \<open>u \<in> \<W> M\<close>
     by auto
-  moreover have \<open>\<forall>v \<in> \<K> M i w. u \<in> \<K> M i v\<close>
-    using \<open>u \<in> \<K> M i w\<close> \<open>symmetric M\<close> \<open>transitive M\<close>
+  moreover have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. u \<in> \<W> M \<inter> \<K> M i v\<close>
+    using \<open>u \<in> \<K> M i w\<close> \<open>symmetric M\<close> \<open>transitive M\<close> \<open>u \<in> \<W> M\<close> \<open>w \<in> \<W> M\<close>
     unfolding symmetric_def transitive_def by blast
-  ultimately have \<open>\<forall>v \<in> \<K> M i w. M, v \<Turnstile> \<^bold>\<not> K i p\<close>
+  ultimately have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> \<^bold>\<not> K i p\<close>
     by auto
   then show \<open>M, w \<Turnstile> K i (\<^bold>\<not> K i p)\<close>
     by simp
-qed
-
-lemma ex_equiv_model: \<open>\<exists>M. reflexive M \<and> symmetric M \<and> transitive M\<close>
-proof (intro exI conjI)
-  let ?M = \<open>(Kripke undefined (\<lambda>_ w. {w}))\<close>
-  show \<open>reflexive ?M\<close>
-    unfolding reflexive_def by simp
-  show \<open>symmetric ?M\<close>
-    unfolding symmetric_def by auto
-  show \<open>transitive ?M\<close>
-    unfolding transitive_def by simp
 qed
 
 section \<open>Normal Modal Logic\<close>
@@ -163,16 +154,16 @@ inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarr
 
 section \<open>Soundness\<close>
 
-lemma eval_semantics: \<open>eval (pi w) (\<lambda>q. Kripke pi r, w \<Turnstile> q) p = (Kripke pi r, w \<Turnstile> p)\<close>
+lemma eval_semantics: \<open>eval (pi w) (\<lambda>q. Kripke W pi r, w \<Turnstile> q) p = (Kripke W pi r, w \<Turnstile> p)\<close>
   by (induct p) simp_all
 
 lemma tautology:
   assumes \<open>tautology p\<close>
   shows \<open>M, w \<Turnstile> p\<close>
 proof -
-  from assms have \<open>eval (g w) (\<lambda>q. Kripke g r, w \<Turnstile> q) p\<close> for g r
+  from assms have \<open>eval (g w) (\<lambda>q. Kripke W g r, w \<Turnstile> q) p\<close> for W g r
     by simp
-  then have \<open>Kripke g r, w \<Turnstile> p\<close> for g r
+  then have \<open>Kripke W g r, w \<Turnstile> p\<close> for W g r
     using eval_semantics by fast
   then show \<open>M, w \<Turnstile> p\<close>
     by (metis kripke.collapse)
@@ -180,9 +171,9 @@ qed
 
 theorem soundness:
   fixes M :: \<open>('i, 'w) kripke\<close>
-  assumes \<open>\<And>(M :: ('i, 'w) kripke) w p. A p \<Longrightarrow> P M \<Longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>A \<turnstile> p \<Longrightarrow> P M \<Longrightarrow> M, w \<Turnstile> p\<close>
-  by (induct p arbitrary: w rule: AK.induct) (simp_all add: assms tautology)
+  assumes \<open>\<And>(M :: ('i, 'w) kripke) w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>A \<turnstile> p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
+  by (induct p arbitrary: w rule: AK.induct) (auto simp: assms tautology)
 
 section \<open>Derived rules\<close>
 
@@ -491,19 +482,6 @@ lemma inconsistent_imply:
   using assms K_Boole K_imply_weaken unfolding consistent_def
   by (metis insert_is_Un list.simps(15))
 
-lemma consistent_axioms:
-  assumes \<open>\<And>(M :: ('i :: countable, 'w) kripke) w p. A p \<Longrightarrow> P M \<Longrightarrow> M, w \<Turnstile> p\<close> \<open>\<exists>M. P M\<close>
-  shows \<open>consistent A {}\<close>
-proof (rule ccontr)
-  assume \<open>\<not> ?thesis\<close>
-  then have \<open>A \<turnstile> \<^bold>\<bottom>\<close>
-    unfolding consistent_def by simp
-  then have \<open>M, w \<Turnstile> \<^bold>\<bottom>\<close> for M :: \<open>('i, 'w) kripke\<close> and w
-    using soundness assms by (metis semantics.simps(1))
-  then show False
-    by simp
-qed
-
 subsection \<open>Maximal consistent sets\<close>
 
 definition maximal :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> bool\<close> where
@@ -556,7 +534,7 @@ theorem ax_in_maximal:
   using assms deriv_in_maximal Ax by blast
 
 theorem mcs_properties:
-  assumes \<open>consistent A V\<close> \<open>maximal A V\<close>
+  assumes \<open>consistent A V\<close> and \<open>maximal A V\<close>
   shows \<open>A \<turnstile> p \<Longrightarrow> p \<in> V\<close>
     and \<open>p \<in> V \<longleftrightarrow> (\<^bold>\<not> p) \<notin> V\<close>
     and \<open>p \<in> V \<Longrightarrow> (p \<^bold>\<longrightarrow> q) \<in> V \<Longrightarrow> q \<in> V\<close>
@@ -661,25 +639,6 @@ proof -
     using that by blast
 qed
 
-lemma ex_mcs:
-  assumes \<open>\<And>(M :: ('i :: countable, 'w) kripke) w p. A p \<Longrightarrow> P M \<Longrightarrow> M, w \<Turnstile> p\<close> \<open>\<exists>M. P M\<close>
-  shows \<open>\<exists>x. x \<in> {V. consistent A V \<and> maximal A V}\<close>
-proof
-  let ?V = \<open>Extend A {\<^bold>\<top>} from_nat\<close>
-  have \<open>consistent A {}\<close>
-    using assms consistent_axioms by blast
-  moreover have \<open>A \<turnstile> \<^bold>\<top>\<close>
-    by (simp add: A1)
-  ultimately have \<open>consistent A {\<^bold>\<top>}\<close>
-    using consistent_deriv by auto
-  then have \<open>consistent A ?V\<close>
-    using consistent_Extend by blast
-  moreover have \<open>maximal A ?V\<close>
-    using maximal_Extend surj_from_nat by blast
-  ultimately show \<open>?V \<in> {V. consistent A V \<and> maximal A V}\<close>
-    by blast
-qed
-
 subsection \<open>Canonical model\<close>
 
 abbreviation pi :: \<open>'i fm set \<Rightarrow> id \<Rightarrow> bool\<close> where
@@ -689,12 +648,15 @@ abbreviation known :: \<open>'i fm set \<Rightarrow> 'i \<Rightarrow> 'i fm set\
   \<open>known V i \<equiv> {p. K i p \<in> V}\<close>
 
 abbreviation reach :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i \<Rightarrow> 'i fm set \<Rightarrow> 'i fm set set\<close> where
-  \<open>reach A i V \<equiv> {W. known V i \<subseteq> W \<and> consistent A W \<and> maximal A W}\<close>
+  \<open>reach A i V \<equiv> {W. known V i \<subseteq> W}\<close>
+
+abbreviation mcss :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set set\<close> where
+  \<open>mcss A \<equiv> {W. consistent A W \<and> maximal A W}\<close>
 
 lemma truth_lemma:
   fixes A and p :: \<open>('i :: countable) fm\<close>
-  defines \<open>M \<equiv> Kripke pi (reach A)\<close>
-  assumes \<open>consistent A V\<close> \<open>maximal A V\<close>
+  defines \<open>M \<equiv> Kripke (mcss A) pi (reach A)\<close>
+  assumes \<open>consistent A V\<close> and \<open>maximal A V\<close>
   shows \<open>(p \<in> V \<longleftrightarrow> M, V \<Turnstile> p) \<and> ((\<^bold>\<not> p) \<in> V \<longleftrightarrow> M, V \<Turnstile> \<^bold>\<not> p)\<close>
   using assms unfolding M_def
 proof (induct p arbitrary: V)
@@ -705,9 +667,9 @@ proof (induct p arbitrary: V)
     then have False
       using \<open>consistent A V\<close> K_imply_head unfolding consistent_def
       by (metis bot.extremum insert_subset list.set(1) list.simps(15))
-    then show \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<bottom>\<close> ..
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<bottom>\<close> ..
   next
-    assume \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
+    assume \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
     then show \<open>(\<^bold>\<not> \<^bold>\<bottom>) \<in> V\<close>
       using \<open>consistent A V\<close> \<open>maximal A V\<close> unfolding maximal_def
       by (meson K_Boole inconsistent_subset consistent_def)
@@ -717,50 +679,50 @@ next
   then show ?case
   proof (intro conjI impI iffI)
     assume \<open>(\<^bold>\<not> Pro x) \<in> V\<close>
-    then show \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> Pro x\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> Pro x\<close>
       using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal by auto
   next
-    assume \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> Pro x\<close>
+    assume \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> Pro x\<close>
     then show \<open>(\<^bold>\<not> Pro x) \<in> V\<close>
       using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal by auto
   qed (simp_all add: \<open>maximal A V\<close> maximal_def)
 next
   case (Dis p q)
-  have \<open>(p \<^bold>\<or> q) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<or> q)\<close>
+  have \<open>(p \<^bold>\<or> q) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<or> q)\<close>
   proof
     assume \<open>(p \<^bold>\<or> q) \<in> V\<close>
     then have \<open>consistent A ({p} \<union> V) \<or> consistent A ({q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_disjuncts by blast
     then have \<open>p \<in> V \<or> q \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast
-    then show \<open>Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<or> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<or> q)\<close>
       using Dis by simp
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
   proof
     assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V\<close>
     then have \<open>consistent A ({\<^bold>\<not> q} \<union> V)\<close> \<open>consistent A ({\<^bold>\<not> p} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_consequent' by fastforce+
     then have \<open>(\<^bold>\<not> p) \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast+
-    then show \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
       using Dis by simp
   qed
   ultimately show ?case
     using exactly_one_in_maximal Dis by auto
 next
   case (Con p q)
-  have \<open>(p \<^bold>\<and> q) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<and> q)\<close>
+  have \<open>(p \<^bold>\<and> q) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<and> q)\<close>
   proof
     assume \<open>(p \<^bold>\<and> q) \<in> V\<close>
     then have \<open>consistent A ({p} \<union> V)\<close> \<open>consistent A ({q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_consequent' by fastforce+
     then have \<open>p \<in> V\<close> \<open>q \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast+
-    then show \<open>Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<and> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<and> q)\<close>
       using Con by simp
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
   proof
     assume \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
     then have \<open>consistent A ({\<^bold>\<not> p \<^bold>\<or> \<^bold>\<not> q} \<union> V)\<close>
@@ -769,14 +731,14 @@ next
       using \<open>consistent A V\<close> \<open>maximal A V\<close> consistent_disjuncts unfolding maximal_def by blast
     then have \<open>(\<^bold>\<not> p) \<in> V \<or> (\<^bold>\<not> q) \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast
-    then show \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
       using Con by simp
   qed
   ultimately show ?case
     using exactly_one_in_maximal Con by auto
 next
   case (Imp p q)
-  have \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  have \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
   proof
     assume \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
     then have \<open>consistent A ({\<^bold>\<not> p \<^bold>\<or> q} \<union> V)\<close>
@@ -785,42 +747,42 @@ next
       using \<open>consistent A V\<close> \<open>maximal A V\<close> consistent_disjuncts unfolding maximal_def by blast
     then have \<open>(\<^bold>\<not> p) \<in> V \<or> q \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast
-    then show \<open>Kripke pi (reach A), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
       using Imp by simp
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
+  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
   proof
     assume \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V\<close>
     then have \<open>consistent A ({p} \<union> V)\<close> \<open>consistent A ({\<^bold>\<not> q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_consequent' by fastforce+
     then have \<open>p \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast+
-    then show \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
+    then show \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
       using Imp by simp
   qed
   ultimately show ?case
     using exactly_one_in_maximal Imp \<open>consistent A V\<close> by auto
 next
   case (K i p)
-  then have \<open>K i p \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> K i p\<close>
+  then have \<open>K i p \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> K i p\<close>
     by auto
-  moreover have \<open>(Kripke pi (reach A), V \<Turnstile> K i p) \<longrightarrow> K i p \<in> V\<close>
+  moreover have \<open>(Kripke (mcss A) pi (reach A), V \<Turnstile> K i p) \<longrightarrow> K i p \<in> V\<close>
   proof (intro allI impI)
-    assume \<open>Kripke pi (reach A), V \<Turnstile> K i p\<close>
+    assume \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> K i p\<close>
 
     have \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> known V i)\<close>
     proof
       assume \<open>consistent A ({\<^bold>\<not> p} \<union> known V i)\<close>
       then obtain W where W: \<open>{\<^bold>\<not> p} \<union> known V i \<subseteq> W\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
         using \<open>consistent A V\<close> maximal_extension by blast
-      then have \<open>Kripke pi (reach A), W \<Turnstile> \<^bold>\<not> p\<close>
+      then have \<open>Kripke (mcss A) pi (reach A), W \<Turnstile> \<^bold>\<not> p\<close>
         using K \<open>consistent A V\<close> by blast
-      moreover have \<open>W \<in> reach A i V\<close>
-        using W by simp
-      ultimately have \<open>Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> K i p\<close>
+      moreover have \<open>W \<in> reach A i V\<close> \<open>W \<in> mcss A\<close>
+        using W by simp_all
+      ultimately have \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> K i p\<close>
         by auto
       then show False
-        using \<open>Kripke pi (reach A), V \<Turnstile> K i p\<close> by auto
+        using \<open>Kripke (mcss A) pi (reach A), V \<Turnstile> K i p\<close> by auto
     qed
 
     then obtain W where W:
@@ -850,19 +812,19 @@ next
         using Cons by auto
     qed simp
   qed
-  moreover have \<open>(Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> K i p) \<longrightarrow> (\<^bold>\<not> K i p) \<in> V\<close>
+  moreover have \<open>(Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> K i p) \<longrightarrow> (\<^bold>\<not> K i p) \<in> V\<close>
     using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal calculation(1)
     by (metis (no_types, lifting) semantics.simps(1, 5))
-  moreover have \<open>(\<^bold>\<not> K i p) \<in> V \<longrightarrow> Kripke pi (reach A), V \<Turnstile> \<^bold>\<not> K i p\<close>
+  moreover have \<open>(\<^bold>\<not> K i p) \<in> V \<longrightarrow> Kripke (mcss A) pi (reach A), V \<Turnstile> \<^bold>\<not> K i p\<close>
     using \<open>consistent A V\<close> \<open>maximal A V\<close> calculation(2) exactly_one_in_maximal by auto
   ultimately show ?case
     by blast
 qed
 
 lemma canonical_model:
-  assumes \<open>consistent A S\<close> \<open>p \<in> S\<close>
-  defines \<open>V \<equiv> Extend A S from_nat\<close> and \<open>M \<equiv> Kripke pi (reach A)\<close>
-  shows \<open>M, V \<Turnstile> p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close>
+  assumes \<open>consistent A S\<close> and \<open>p \<in> S\<close>
+  defines \<open>V \<equiv> Extend A S from_nat\<close> and \<open>M \<equiv> Kripke (mcss A) pi (reach A)\<close>
+  shows \<open>M, V \<Turnstile> p\<close> and \<open>consistent A V\<close> and \<open>maximal A V\<close>
 proof -
   have \<open>consistent A V\<close>
     using \<open>consistent A S\<close> unfolding V_def using consistent_Extend by blast
@@ -884,40 +846,44 @@ qed
 subsection \<open>Completeness\<close>
 
 lemma imply_completeness:
-  assumes valid: \<open>\<forall>(M :: ('i, ('i :: countable) fm set) kripke) w.
-    list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>A \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> A \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> A \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> A \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend A ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach A)\<close>
+  let ?M = \<open>Kripke (mcss A) pi (reach A)\<close>
 
   have \<open>consistent A ?S\<close>
-    unfolding consistent_def using \<open>\<not> A \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
-  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close>
-    unfolding list_all_def using canonical_model by fastforce+
-  then have \<open>?M, ?V \<Turnstile> p\<close>
-    using valid by blast
+    using * by (metis K_imply_Cons consistent_def inconsistent_subset)
+  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close>
+    using canonical_model by fastforce+
+  moreover have \<open>?V \<in> mcss A\<close>
+    using \<open>consistent A ?S\<close> consistent_Extend maximal_Extend surj_from_nat by blast
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by simp
   then show False
     using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 theorem completeness:
-  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke) w. M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. M, w \<Turnstile> p\<close>
   shows \<open>A \<turnstile> p\<close>
-  using assms imply_completeness[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness[where G=\<open>{}\<close>] by auto
 
 section \<open>System K\<close>
 
 abbreviation SystemK :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K _" [50] 50) where
   \<open>\<turnstile>\<^sub>K p \<equiv> (\<lambda>_. False) \<turnstile> p\<close>
 
-lemma soundness\<^sub>K: \<open>\<turnstile>\<^sub>K p \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>K: \<open>\<turnstile>\<^sub>K p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness by metis
 
-abbreviation \<open>valid\<^sub>K p \<equiv> \<forall>(M :: (nat, nat fm set) kripke) w. M, w \<Turnstile> p\<close>
+abbreviation \<open>valid\<^sub>K p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M. M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>K: \<open>valid\<^sub>K p \<longleftrightarrow> \<turnstile>\<^sub>K p\<close>
 proof
@@ -927,15 +893,16 @@ proof
 next
   assume \<open>\<turnstile>\<^sub>K p\<close>
   with soundness\<^sub>K show \<open>valid\<^sub>K p\<close>
-    by (intro allI)
+    by fast
 qed
 
-corollary \<open>valid\<^sub>K p \<longrightarrow> M, w \<Turnstile> p\<close>
-proof
-  assume \<open>valid\<^sub>K p\<close>
-  then have \<open>\<turnstile>\<^sub>K p\<close>
-    unfolding main\<^sub>K .
-  with soundness\<^sub>K show \<open>M, w \<Turnstile> p\<close> .
+corollary
+  assumes \<open>valid\<^sub>K p\<close> and \<open>w \<in> \<W> M\<close>
+  shows \<open>M, w \<Turnstile> p\<close>
+proof -
+  have \<open>\<turnstile>\<^sub>K p\<close>
+    using assms(1) unfolding main\<^sub>K .
+  with soundness\<^sub>K assms(2) show \<open>M, w \<Turnstile> p\<close> by fast
 qed
 
 section \<open>System T\<close>
@@ -948,25 +915,14 @@ inductive AxT :: \<open>'i fm \<Rightarrow> bool\<close> where
 abbreviation SystemT :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>T _" [50] 50) where
   \<open>\<turnstile>\<^sub>T p \<equiv> AxT \<turnstile> p\<close>
 
-lemma soundness_AxT: \<open>AxT p \<Longrightarrow> reflexive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness_AxT: \<open>AxT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: AxT.induct) (meson truth)
 
-lemma soundness\<^sub>T: \<open>\<turnstile>\<^sub>T p \<Longrightarrow> reflexive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>T: \<open>\<turnstile>\<^sub>T p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness soundness_AxT .
 
-typedef 'i mcs\<^sub>T = \<open>{V :: ('i :: countable) fm set. consistent AxT V \<and> maximal AxT V}\<close>
-  using ex_mcs[where A=AxT and P=reflexive] soundness_AxT ex_equiv_model by fast
-
-abbreviation \<open>pi\<^sub>T \<equiv> pi o Rep_mcs\<^sub>T\<close>
-abbreviation \<open>reach\<^sub>T i V \<equiv> Abs_mcs\<^sub>T ` (reach AxT i (Rep_mcs\<^sub>T V))\<close>
-
-lemma mcs\<^sub>T_equiv:
-  assumes \<open>consistent AxT V\<close> \<open>maximal AxT V\<close>
-  shows \<open>(Kripke pi (reach AxT), V \<Turnstile> p) = (Kripke pi\<^sub>T reach\<^sub>T, Abs_mcs\<^sub>T V \<Turnstile> p)\<close>
-  using assms by (induct p arbitrary: V) (simp_all add: Abs_mcs\<^sub>T_inverse)
-
 lemma AxT_reflexive:
-  assumes \<open>\<And>p. AxT p \<Longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close>
+  assumes \<open>\<forall>p. AxT p \<longrightarrow> A p\<close> and \<open>consistent A V\<close> and \<open>maximal A V\<close>
   shows \<open>V \<in> reach A i V\<close>
 proof -
   have \<open>(K i p \<^bold>\<longrightarrow> p) \<in> V\<close> for p
@@ -977,60 +933,57 @@ proof -
     using assms by blast
 qed
 
-lemma mcs\<^sub>T_reflexive: \<open>reflexive (Kripke pi\<^sub>T reach\<^sub>T)\<close>
+lemma mcs\<^sub>T_reflexive:
+  assumes \<open>\<forall>p. AxT p \<longrightarrow> A p\<close>
+  shows \<open>reflexive (Kripke (mcss A) pi (reach A))\<close>
   unfolding reflexive_def
-proof (intro allI)
-  fix i :: \<open>'i :: countable\<close> and V :: \<open>'i mcs\<^sub>T\<close>
-  let ?V = \<open>Rep_mcs\<^sub>T V\<close>
-  have \<open>consistent AxT ?V\<close> \<open>maximal AxT ?V\<close>
-    using Rep_mcs\<^sub>T by blast+
-  then have \<open>?V \<in> reach AxT i ?V\<close>
-    using AxT_reflexive by fast
-  then have \<open>V \<in> reach\<^sub>T i V\<close>
-    using Rep_mcs\<^sub>T_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>V \<in> \<K> (Kripke pi\<^sub>T reach\<^sub>T) i V\<close>
+proof safe
+  fix i V
+  assume \<open>V \<in> \<W> (Kripke (mcss A) pi (reach A))\<close>
+  then have \<open>consistent A V\<close> \<open>maximal A V\<close>
+    by simp_all
+  with AxT_reflexive assms have \<open>V \<in> reach A i V\<close> .
+  then show \<open>V \<in> \<K> (Kripke (mcss A) pi (reach A)) i V\<close>
     by simp
 qed
 
 lemma imply_completeness_T:
-  assumes valid: \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>T) kripke) w.
-    reflexive M \<longrightarrow> list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>AxT \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> AxT \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    reflexive M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (AxT \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> AxT \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> AxT \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend AxT ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach AxT)\<close>
-  let ?V\<^sub>T = \<open>Abs_mcs\<^sub>T ?V\<close>
-  let ?M\<^sub>T = \<open>Kripke pi\<^sub>T reach\<^sub>T\<close>
+  let ?M = \<open>Kripke (mcss AxT) pi (reach AxT)\<close>
 
   have \<open>consistent AxT ?S\<close>
-    unfolding consistent_def using \<open>\<not> AxT \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
-  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close> \<open>consistent AxT ?V\<close> \<open>maximal AxT ?V\<close>
+    using * by (metis K_imply_Cons consistent_def inconsistent_subset)
+  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close> \<open>consistent AxT ?V\<close> \<open>maximal AxT ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
-  then have \<open>?M\<^sub>T, ?V\<^sub>T \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M\<^sub>T, ?V\<^sub>T \<Turnstile> p) G\<close>
-    using \<open>consistent AxT ?V\<close> \<open>maximal AxT ?V\<close> mcs\<^sub>T_equiv unfolding list_all_def by blast+
-  moreover have \<open>reflexive ?M\<^sub>T\<close>
+  moreover have \<open>reflexive ?M\<close>
     using mcs\<^sub>T_reflexive by fast
-  ultimately have \<open>?M\<^sub>T, ?V\<^sub>T \<Turnstile> p\<close>
-    using valid by blast
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by auto
   then show False
-    using \<open>?M\<^sub>T, ?V\<^sub>T \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 lemma completeness\<^sub>T:
-  assumes \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>T) kripke) w. reflexive M \<longrightarrow> M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. reflexive M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>T p\<close>
-  using assms imply_completeness_T[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness_T[where G=\<open>{}\<close>] by auto
 
-abbreviation \<open>valid\<^sub>T p \<equiv> \<forall>(M :: (nat, nat mcs\<^sub>T) kripke) w. reflexive M \<longrightarrow> M, w \<Turnstile> p\<close>
+abbreviation \<open>valid\<^sub>T p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M. reflexive M \<longrightarrow> M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>T: \<open>valid\<^sub>T p \<longleftrightarrow> \<turnstile>\<^sub>T p\<close>
   using soundness\<^sub>T completeness\<^sub>T by fast
 
 corollary
-  assumes \<open>reflexive M\<close>
+  assumes \<open>reflexive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>valid\<^sub>T p \<longrightarrow> M, w \<Turnstile> p\<close>
   using assms soundness\<^sub>T completeness\<^sub>T by fast
 
@@ -1042,25 +995,14 @@ inductive AxB :: \<open>'i fm \<Rightarrow> bool\<close> where
 abbreviation SystemKB :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K\<^sub>B _" [50] 50) where
   \<open>\<turnstile>\<^sub>K\<^sub>B p \<equiv> AxB \<turnstile> p\<close>
 
-lemma soundness_AxB: \<open>AxB p \<Longrightarrow> symmetric M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness_AxB: \<open>AxB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   unfolding symmetric_def by (induct p rule: AxB.induct) auto
 
-lemma soundness\<^sub>K\<^sub>B: \<open>\<turnstile>\<^sub>K\<^sub>B p \<Longrightarrow> symmetric M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>K\<^sub>B: \<open>\<turnstile>\<^sub>K\<^sub>B p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness soundness_AxB .
 
-typedef 'i mcs\<^sub>K\<^sub>B = \<open>{V :: ('i :: countable) fm set. consistent AxB V \<and> maximal AxB V}\<close>
-  using ex_mcs[where A=AxB and P=symmetric] soundness_AxB ex_equiv_model by fast
-
-abbreviation \<open>pi\<^sub>K\<^sub>B \<equiv> pi o Rep_mcs\<^sub>K\<^sub>B\<close>
-abbreviation \<open>reach\<^sub>K\<^sub>B i V \<equiv> Abs_mcs\<^sub>K\<^sub>B ` (reach AxB i (Rep_mcs\<^sub>K\<^sub>B V))\<close>
-
-lemma mcs\<^sub>K\<^sub>B_equiv:
-  assumes \<open>consistent AxB V\<close> \<open>maximal AxB V\<close>
-  shows \<open>(Kripke pi (reach AxB), V \<Turnstile> p) = (Kripke pi\<^sub>K\<^sub>B reach\<^sub>K\<^sub>B, Abs_mcs\<^sub>K\<^sub>B V \<Turnstile> p)\<close>
-  using assms by (induct p arbitrary: V) (simp_all add: Abs_mcs\<^sub>K\<^sub>B_inverse)
-
 lemma AxB_symmetric':
-  assumes \<open>\<And>p. AxB p \<Longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
+  assumes \<open>\<forall>p. AxB p \<longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
     and \<open>W \<in> reach A i V\<close>
   shows \<open>V \<in> reach A i W\<close>
 proof -
@@ -1086,68 +1028,63 @@ proof -
 qed
 
 lemma AxB_symmetric:
-  assumes \<open>\<And>p. AxB p \<Longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
+  assumes \<open>\<forall>p. AxB p \<longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
   shows \<open>W \<in> reach A i V \<longleftrightarrow> V \<in> reach A i W\<close>
   using assms AxB_symmetric'[where V=V and W=W] AxB_symmetric'[where V=W and W=V]
   by (intro iffI) blast+
 
-lemma mcs\<^sub>K\<^sub>B_symmetric: \<open>symmetric (Kripke pi\<^sub>K\<^sub>B reach\<^sub>K\<^sub>B)\<close>
+lemma mcs\<^sub>K\<^sub>B_symmetric:
+  assumes \<open>\<forall>p. AxB p \<longrightarrow> A p\<close>
+  shows \<open>symmetric (Kripke (mcss A) pi (reach A))\<close>
   unfolding symmetric_def
-proof (intro allI)
-  fix i :: \<open>'i :: countable\<close> and V W :: \<open>'i mcs\<^sub>K\<^sub>B\<close>
-  let ?V = \<open>Rep_mcs\<^sub>K\<^sub>B V\<close> and ?W = \<open>Rep_mcs\<^sub>K\<^sub>B W\<close>
-
-  have \<open>consistent AxB ?V\<close> \<open>maximal AxB ?V\<close>
-    \<open>consistent AxB ?W\<close> \<open>maximal AxB ?W\<close>
-    using Rep_mcs\<^sub>K\<^sub>B by blast+
-  then have \<open>?V \<in> reach AxB i ?W \<longleftrightarrow> ?W \<in> reach AxB i ?V\<close>
-    using AxB_symmetric' by fast
-  then have \<open>V \<in> reach\<^sub>K\<^sub>B i W \<longleftrightarrow> W \<in> reach\<^sub>K\<^sub>B i V\<close>
-    by (intro iffI)
-      (metis (no_types, lifting) Abs_mcs\<^sub>K\<^sub>B_inverse Rep_mcs\<^sub>K\<^sub>B_inverse image_iff mem_Collect_eq)+
-  then show \<open>(W \<in> \<K> (Kripke pi\<^sub>K\<^sub>B reach\<^sub>K\<^sub>B) i V) = (V \<in> \<K> (Kripke pi\<^sub>K\<^sub>B reach\<^sub>K\<^sub>B) i W)\<close>
+proof (intro allI ballI)
+  fix i V W
+  assume \<open>V \<in> \<W> (Kripke (mcss A) pi (reach A))\<close> \<open>W \<in> \<W> (Kripke (mcss A) pi (reach A))\<close>
+  then have \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
+    by simp_all
+  with AxB_symmetric assms have \<open>W \<in> reach A i V \<longleftrightarrow> V \<in> reach A i W\<close> .
+  then show
+    \<open>(W \<in> \<K> (Kripke (mcss A) pi (reach A)) i V) = (V \<in> \<K> (Kripke (mcss A) pi (reach A)) i W)\<close>
     by simp
 qed
 
 lemma imply_completeness_KB:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i mcs\<^sub>K\<^sub>B) kripke) w.
-    symmetric M \<longrightarrow> list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>AxB \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> AxB \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    symmetric M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (AxB \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> AxB \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> AxB \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend AxB ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach AxB)\<close>
-  let ?V\<^sub>K\<^sub>B = \<open>Abs_mcs\<^sub>K\<^sub>B ?V\<close>
-  let ?M\<^sub>K\<^sub>B = \<open>Kripke pi\<^sub>K\<^sub>B reach\<^sub>K\<^sub>B\<close>
+  let ?M = \<open>Kripke (mcss AxB) pi (reach AxB)\<close>
 
   have \<open>consistent AxB ?S\<close>
-    unfolding consistent_def using \<open>\<not> AxB \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
-  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close> \<open>consistent AxB ?V\<close> \<open>maximal AxB ?V\<close>
+    using * by (metis K_imply_Cons consistent_def inconsistent_subset)
+  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close> \<open>consistent AxB ?V\<close> \<open>maximal AxB ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
-  then have \<open>?M\<^sub>K\<^sub>B, ?V\<^sub>K\<^sub>B \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M\<^sub>K\<^sub>B, ?V\<^sub>K\<^sub>B \<Turnstile> p) G\<close>
-    using \<open>consistent AxB ?V\<close> \<open>maximal AxB ?V\<close> mcs\<^sub>K\<^sub>B_equiv unfolding list_all_def by blast+
-  moreover have \<open>symmetric ?M\<^sub>K\<^sub>B\<close>
+  moreover have \<open>symmetric ?M\<close>
     using mcs\<^sub>K\<^sub>B_symmetric by fast
-  ultimately have \<open>?M\<^sub>K\<^sub>B, ?V\<^sub>K\<^sub>B \<Turnstile> p\<close>
-    using valid by blast
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by auto
   then show False
-    using \<open>?M\<^sub>K\<^sub>B, ?V\<^sub>K\<^sub>B \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 lemma completeness\<^sub>K\<^sub>B:
-  assumes \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>K\<^sub>B) kripke) w. symmetric M \<longrightarrow> M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. symmetric M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>K\<^sub>B p\<close>
-  using assms imply_completeness_KB[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness_KB[where G=\<open>{}\<close>] by auto
 
-abbreviation \<open>valid\<^sub>K\<^sub>B p \<equiv> \<forall>(M :: (nat, nat mcs\<^sub>K\<^sub>B) kripke) w. symmetric M \<longrightarrow> M, w \<Turnstile> p\<close>
+abbreviation \<open>valid\<^sub>K\<^sub>B p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M. symmetric M \<longrightarrow> M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>K\<^sub>B: \<open>valid\<^sub>K\<^sub>B p \<longleftrightarrow> \<turnstile>\<^sub>K\<^sub>B p\<close>
   using soundness\<^sub>K\<^sub>B completeness\<^sub>K\<^sub>B by fast
 
 corollary
-  assumes \<open>symmetric M\<close>
+  assumes \<open>symmetric M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>valid\<^sub>K\<^sub>B p \<longrightarrow> M, w \<Turnstile> p\<close>
   using assms soundness\<^sub>K\<^sub>B completeness\<^sub>K\<^sub>B by fast
 
@@ -1159,25 +1096,14 @@ inductive Ax4 :: \<open>'i fm \<Rightarrow> bool\<close> where
 abbreviation SystemK4 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K\<^sub>4 _" [50] 50) where
   \<open>\<turnstile>\<^sub>K\<^sub>4 p \<equiv> Ax4 \<turnstile> p\<close>
 
-lemma soundness_Ax4: \<open>Ax4 p \<Longrightarrow> transitive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness_Ax4: \<open>Ax4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: Ax4.induct) (meson pos_introspection)
 
-lemma soundness\<^sub>K\<^sub>4: \<open>\<turnstile>\<^sub>K\<^sub>4 p \<Longrightarrow> transitive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>K\<^sub>4: \<open>\<turnstile>\<^sub>K\<^sub>4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness soundness_Ax4 .
 
-typedef 'i mcs\<^sub>K\<^sub>4 = \<open>{V :: ('i :: countable) fm set. consistent Ax4 V \<and> maximal Ax4 V}\<close>
-  using ex_mcs[where A=Ax4 and P=transitive] soundness_Ax4 ex_equiv_model by fast
-
-abbreviation \<open>pi\<^sub>K\<^sub>4 \<equiv> pi o Rep_mcs\<^sub>K\<^sub>4\<close>
-abbreviation \<open>reach\<^sub>K\<^sub>4 i V \<equiv> Abs_mcs\<^sub>K\<^sub>4 ` (reach Ax4 i (Rep_mcs\<^sub>K\<^sub>4 V))\<close>
-
-lemma mcs\<^sub>K\<^sub>4_equiv:
-  assumes \<open>consistent Ax4 V\<close> \<open>maximal Ax4 V\<close>
-  shows \<open>(Kripke pi (reach Ax4), V \<Turnstile> p) = (Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4, Abs_mcs\<^sub>K\<^sub>4 V \<Turnstile> p)\<close>
-  using assms by (induct p arbitrary: V) (simp_all add: Abs_mcs\<^sub>K\<^sub>4_inverse)
-
 lemma Ax4_transitive:
-  assumes \<open>\<And>p. Ax4 p \<Longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close>
+  assumes \<open>\<forall>p. Ax4 p \<longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close>
     and \<open>W \<in> reach A i V\<close> \<open>U \<in> reach A i W\<close>
   shows \<open>U \<in> reach A i V\<close>
 proof -
@@ -1189,64 +1115,61 @@ proof -
     using assms(4-5) by blast
 qed
 
-lemma mcs\<^sub>K\<^sub>4_transitive: \<open>transitive (Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4)\<close>
+lemma mcs\<^sub>K\<^sub>4_transitive:
+  assumes \<open>\<forall>p. Ax4 p \<longrightarrow> A p\<close>
+  shows \<open>transitive (Kripke (mcss A) pi (reach A))\<close>
   unfolding transitive_def
 proof safe
-  fix i :: \<open>'i :: countable\<close> and V W U :: \<open>'i mcs\<^sub>K\<^sub>4\<close>
-  let ?V = \<open>Rep_mcs\<^sub>K\<^sub>4 V\<close> and ?W = \<open>Rep_mcs\<^sub>K\<^sub>4 W\<close> and ?U = \<open>Rep_mcs\<^sub>K\<^sub>4 U\<close>
-
-  assume \<open>W \<in> \<K> (Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4) i V\<close> \<open>U \<in> \<K> (Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4) i W\<close>
-  then have \<open>?W \<in> reach Ax4 i ?V\<close> \<open>?U \<in> reach Ax4 i ?W\<close>
-    using Abs_mcs\<^sub>K\<^sub>4_inverse by auto
-  moreover have \<open>consistent Ax4 ?V\<close> \<open>maximal Ax4 ?V\<close>
-    using Rep_mcs\<^sub>K\<^sub>4 by blast+
-  ultimately have \<open>?U \<in> reach Ax4 i ?V\<close>
-    using Ax4_transitive[where V=\<open>?V\<close>] by blast
-  then have \<open>U \<in> reach\<^sub>K\<^sub>4 i V\<close>
-    using Rep_mcs\<^sub>K\<^sub>4_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>U \<in> \<K> (Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4) i V\<close>
+  fix i U V W
+  assume \<open>V \<in> \<W> (Kripke (mcss A) pi (reach A))\<close>
+  then have \<open>consistent A V\<close> \<open>maximal A V\<close>
+    by simp_all
+  moreover assume
+    \<open>W \<in> \<K> (Kripke (mcss A) pi (reach A)) i V\<close>
+    \<open>U \<in> \<K> (Kripke (mcss A) pi (reach A)) i W\<close>
+  ultimately have \<open>U \<in> reach A i V\<close>
+    using Ax4_transitive[where V=V and W=W and U=U] assms by simp
+  then show \<open>U \<in> \<K> (Kripke (mcss A) pi (reach A)) i V\<close>
     by simp
 qed
 
 lemma imply_completeness_K4:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i mcs\<^sub>K\<^sub>4) kripke) w.
-    transitive M \<longrightarrow> list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>Ax4 \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    transitive M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (Ax4 \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> Ax4 \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend Ax4 ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach Ax4)\<close>
-  let ?V\<^sub>K\<^sub>4 = \<open>Abs_mcs\<^sub>K\<^sub>4 ?V\<close>
-  let ?M\<^sub>K\<^sub>4 = \<open>Kripke pi\<^sub>K\<^sub>4 reach\<^sub>K\<^sub>4\<close>
+  let ?M = \<open>Kripke (mcss Ax4) pi (reach Ax4)\<close>
 
   have \<open>consistent Ax4 ?S\<close>
-    unfolding consistent_def using \<open>\<not> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
-  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close> \<open>consistent Ax4 ?V\<close> \<open>maximal Ax4 ?V\<close>
+    using * by (metis K_imply_Cons consistent_def inconsistent_subset)
+  then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close> \<open>consistent Ax4 ?V\<close> \<open>maximal Ax4 ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
-  then have \<open>?M\<^sub>K\<^sub>4, ?V\<^sub>K\<^sub>4 \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M\<^sub>K\<^sub>4, ?V\<^sub>K\<^sub>4 \<Turnstile> p) G\<close>
-    using \<open>consistent Ax4 ?V\<close> \<open>maximal Ax4 ?V\<close> mcs\<^sub>K\<^sub>4_equiv unfolding list_all_def by blast+
-  moreover have \<open>transitive ?M\<^sub>K\<^sub>4\<close>
+  moreover have \<open>transitive ?M\<close>
     using mcs\<^sub>K\<^sub>4_transitive by fast
-  ultimately have \<open>?M\<^sub>K\<^sub>4, ?V\<^sub>K\<^sub>4 \<Turnstile> p\<close>
-    using valid by blast
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by auto
   then show False
-    using \<open>?M\<^sub>K\<^sub>4, ?V\<^sub>K\<^sub>4 \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 lemma completeness\<^sub>K\<^sub>4:
-  assumes \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>K\<^sub>4) kripke) w. transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>K\<^sub>4 p\<close>
-  using assms imply_completeness_K4[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness_K4[where G=\<open>{}\<close>] by auto
 
-abbreviation \<open>valid\<^sub>K\<^sub>4 p \<equiv> \<forall>(M :: (nat, nat mcs\<^sub>K\<^sub>4) kripke) w. transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
+abbreviation \<open>valid\<^sub>K\<^sub>4 p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M. transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 p \<longleftrightarrow> \<turnstile>\<^sub>K\<^sub>4 p\<close>
   using soundness\<^sub>K\<^sub>4 completeness\<^sub>K\<^sub>4 by fast
 
 corollary
-  assumes \<open>transitive M\<close>
+  assumes \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>valid\<^sub>K\<^sub>4 p \<longrightarrow> M, w \<Turnstile> p\<close>
   using assms soundness\<^sub>K\<^sub>4 completeness\<^sub>K\<^sub>4 by fast
 
@@ -1258,103 +1181,53 @@ abbreviation Or :: \<open>('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow
 abbreviation SystemS4 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>4 _" [50] 50) where
   \<open>\<turnstile>\<^sub>S\<^sub>4 p \<equiv> AxT \<oplus> Ax4 \<turnstile> p\<close>
 
-lemma soundness_AxT4: \<open>(AxT \<oplus> Ax4) p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness_AxT4: \<open>(AxT \<oplus> Ax4) p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT soundness_Ax4 by fast
 
-lemma soundness\<^sub>S\<^sub>4: \<open>\<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>S\<^sub>4: \<open>\<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness soundness_AxT4 .
 
-typedef 'i mcs\<^sub>S\<^sub>4 =
-  \<open>{V :: ('i :: countable) fm set. consistent (AxT \<oplus> Ax4) V \<and> maximal (AxT \<oplus> Ax4) V}\<close>
-  using ex_mcs[where A=\<open>AxT \<oplus> Ax4\<close> and P=\<open>\<lambda>M. reflexive M \<and> transitive M\<close>]
-    soundness_AxT4 ex_equiv_model by fast
-
-abbreviation \<open>pi\<^sub>S\<^sub>4 \<equiv> pi o Rep_mcs\<^sub>S\<^sub>4\<close>
-abbreviation \<open>reach\<^sub>S\<^sub>4 i V \<equiv> Abs_mcs\<^sub>S\<^sub>4 ` (reach (AxT \<oplus> Ax4) i (Rep_mcs\<^sub>S\<^sub>4 V))\<close>
-
-lemma mcs\<^sub>S\<^sub>4_equiv:
-  assumes \<open>consistent (AxT \<oplus> Ax4) V\<close> \<open>maximal (AxT \<oplus> Ax4) V\<close>
-  shows \<open>(Kripke pi (reach (AxT \<oplus> Ax4)), V \<Turnstile> p) = (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4, Abs_mcs\<^sub>S\<^sub>4 V \<Turnstile> p)\<close>
-  using assms by (induct p arbitrary: V) (simp_all add: Abs_mcs\<^sub>S\<^sub>4_inverse)
-
-lemma mcs\<^sub>S\<^sub>4_reflexive: \<open>reflexive (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4)\<close>
-  unfolding reflexive_def
-proof (intro allI)
-  fix i :: \<open>'i :: countable\<close> and V :: \<open>'i mcs\<^sub>S\<^sub>4\<close>
-  let ?V = \<open>Rep_mcs\<^sub>S\<^sub>4 V\<close>
-  have \<open>consistent (AxT \<oplus> Ax4) ?V\<close> \<open>maximal (AxT \<oplus> Ax4) ?V\<close>
-    using Rep_mcs\<^sub>S\<^sub>4 by blast+
-  then have \<open>?V \<in> reach (AxT \<oplus> Ax4) i ?V\<close>
-    using AxT_reflexive[where V=\<open>?V\<close>] by presburger
-  then have \<open>V \<in> reach\<^sub>S\<^sub>4 i V\<close>
-    using Rep_mcs\<^sub>S\<^sub>4_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>V \<in> \<K> (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4) i V\<close>
-    by simp
-qed
-
-lemma mcs\<^sub>S\<^sub>4_transitive: \<open>transitive (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4)\<close>
-  unfolding transitive_def
-proof safe
-  fix i :: \<open>'i :: countable\<close> and V W U :: \<open>'i mcs\<^sub>S\<^sub>4\<close>
-  let ?V = \<open>Rep_mcs\<^sub>S\<^sub>4 V\<close> and ?W = \<open>Rep_mcs\<^sub>S\<^sub>4 W\<close> and ?U = \<open>Rep_mcs\<^sub>S\<^sub>4 U\<close>
-
-  assume \<open>W \<in> \<K> (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4) i V\<close> \<open>U \<in> \<K> (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4) i W\<close>
-  then have \<open>?W \<in> reach (AxT \<oplus> Ax4) i ?V\<close> \<open>?U \<in> reach (AxT \<oplus> Ax4) i ?W\<close>
-    using Abs_mcs\<^sub>S\<^sub>4_inverse by auto
-  moreover have \<open>consistent (AxT \<oplus> Ax4) ?V\<close> \<open>maximal (AxT \<oplus> Ax4) ?V\<close>
-    using Rep_mcs\<^sub>S\<^sub>4 by blast+
-  ultimately have \<open>?U \<in> reach (AxT \<oplus> Ax4) i ?V\<close>
-    using Ax4_transitive[where V=\<open>?V\<close>] by presburger
-  then have \<open>U \<in> reach\<^sub>S\<^sub>4 i V\<close>
-    using Rep_mcs\<^sub>S\<^sub>4_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>U \<in> \<K> (Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4) i V\<close>
-    by simp
-qed
-
 lemma imply_completeness_S4:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i mcs\<^sub>S\<^sub>4) kripke) w.
-    reflexive M \<longrightarrow> transitive M \<longrightarrow> list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>AxT \<oplus> Ax4 \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> AxT \<oplus> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    reflexive M \<longrightarrow> transitive M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (AxT \<oplus> Ax4 \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> AxT \<oplus> Ax4 \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> AxT \<oplus> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend (AxT \<oplus> Ax4) ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach (AxT \<oplus> Ax4))\<close>
-  let ?V\<^sub>S\<^sub>4 = \<open>Abs_mcs\<^sub>S\<^sub>4 ?V\<close>
-  let ?M\<^sub>S\<^sub>4 = \<open>Kripke pi\<^sub>S\<^sub>4 reach\<^sub>S\<^sub>4\<close>
+  let ?M = \<open>Kripke (mcss (AxT \<oplus> Ax4)) pi (reach (AxT \<oplus> Ax4))\<close>
 
   have \<open>consistent (AxT \<oplus> Ax4) ?S\<close>
-    unfolding consistent_def using \<open>\<not> AxT \<oplus> Ax4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
+    using * by (metis (no_types, lifting) K_imply_Cons consistent_def inconsistent_subset)
   then have
-    \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close>
+    \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close>
     \<open>consistent (AxT \<oplus> Ax4) ?V\<close> \<open>maximal (AxT \<oplus> Ax4) ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
-  then have \<open>?M\<^sub>S\<^sub>4, ?V\<^sub>S\<^sub>4 \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M\<^sub>S\<^sub>4, ?V\<^sub>S\<^sub>4 \<Turnstile> p) G\<close>
-    using \<open>consistent (AxT \<oplus> Ax4) ?V\<close> \<open>maximal (AxT \<oplus> Ax4) ?V\<close> mcs\<^sub>S\<^sub>4_equiv
-    unfolding list_all_def by blast+
-  moreover have \<open>reflexive ?M\<^sub>S\<^sub>4\<close> \<open>transitive ?M\<^sub>S\<^sub>4\<close>
-    using mcs\<^sub>S\<^sub>4_reflexive mcs\<^sub>S\<^sub>4_transitive by fast+
-  ultimately have \<open>?M\<^sub>S\<^sub>4, ?V\<^sub>S\<^sub>4 \<Turnstile> p\<close>
-    using valid by blast
+  moreover have \<open>reflexive ?M\<close> \<open>transitive ?M\<close>
+    by (simp_all add: mcs\<^sub>T_reflexive mcs\<^sub>K\<^sub>4_transitive)
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by auto
   then show False
-    using \<open>?M\<^sub>S\<^sub>4, ?V\<^sub>S\<^sub>4 \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 lemma completeness\<^sub>S\<^sub>4:
-  assumes \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>S\<^sub>4) kripke) w.
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
       reflexive M \<longrightarrow> transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>S\<^sub>4 p\<close>
-  using assms imply_completeness_S4[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness_S4[where G=\<open>{}\<close>] by auto
 
-abbreviation \<open>valid\<^sub>S\<^sub>4 p \<equiv> \<forall>(M :: (nat, nat mcs\<^sub>S\<^sub>4) kripke) w.
+abbreviation \<open>valid\<^sub>S\<^sub>4 p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M.
     reflexive M \<longrightarrow> transitive M \<longrightarrow> M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>S\<^sub>4: \<open>valid\<^sub>S\<^sub>4 p \<longleftrightarrow> \<turnstile>\<^sub>S\<^sub>4 p\<close>
   using soundness\<^sub>S\<^sub>4 completeness\<^sub>S\<^sub>4 by fast
 
 corollary
-  assumes \<open>reflexive M\<close> \<open>transitive M\<close>
+  assumes \<open>reflexive M\<close> \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>valid\<^sub>S\<^sub>4 p \<longrightarrow> M, w \<Turnstile> p\<close>
   using assms soundness\<^sub>S\<^sub>4 completeness\<^sub>S\<^sub>4 by fast
 
@@ -1366,118 +1239,51 @@ abbreviation SystemS5 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\
 abbreviation AxTB4 :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxTB4 \<equiv> AxT \<oplus> AxB \<oplus> Ax4\<close>
 
-lemma soundness_AxTB4: \<open>AxTB4 p \<Longrightarrow> equivalence M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness_AxTB4: \<open>AxTB4 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT soundness_AxB soundness_Ax4 by fast
 
-lemma soundness\<^sub>S\<^sub>5: \<open>\<turnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> equivalence M \<Longrightarrow> M, w \<Turnstile> p\<close>
+lemma soundness\<^sub>S\<^sub>5: \<open>\<turnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness soundness_AxTB4 .
 
-typedef 'i mcs\<^sub>S\<^sub>5 =
-  \<open>{V :: ('i :: countable) fm set. consistent AxTB4 V \<and> maximal AxTB4 V}\<close>
-  using ex_mcs[where A=AxTB4 and P=equivalence] soundness_AxTB4 ex_equiv_model by fast
-
-abbreviation \<open>pi\<^sub>S\<^sub>5 \<equiv> pi o Rep_mcs\<^sub>S\<^sub>5\<close>
-abbreviation \<open>reach\<^sub>S\<^sub>5 i V \<equiv> Abs_mcs\<^sub>S\<^sub>5 ` (reach AxTB4 i (Rep_mcs\<^sub>S\<^sub>5 V))\<close>
-
-lemma mcs\<^sub>S\<^sub>5_equiv:
-  assumes \<open>consistent AxTB4 V\<close> \<open>maximal AxTB4 V\<close>
-  shows \<open>(Kripke pi (reach AxTB4), V \<Turnstile> p) = (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5, Abs_mcs\<^sub>S\<^sub>5 V \<Turnstile> p)\<close>
-  using assms by (induct p arbitrary: V) (simp_all add: Abs_mcs\<^sub>S\<^sub>5_inverse)
-
-lemma mcs\<^sub>S\<^sub>5_reflexive: \<open>reflexive (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5)\<close>
-  unfolding reflexive_def
-proof (intro allI)
-  fix i :: \<open>'i :: countable\<close> and V :: \<open>'i mcs\<^sub>S\<^sub>5\<close>
-  let ?V = \<open>Rep_mcs\<^sub>S\<^sub>5 V\<close>
-  have \<open>consistent AxTB4 ?V\<close> \<open>maximal AxTB4 ?V\<close>
-    using Rep_mcs\<^sub>S\<^sub>5 by blast+
-  then have \<open>?V \<in> reach AxTB4 i ?V\<close>
-    using AxT_reflexive[where V=\<open>?V\<close>] by presburger
-  then have \<open>V \<in> reach\<^sub>S\<^sub>5 i V\<close>
-    using Rep_mcs\<^sub>S\<^sub>5_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>V \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i V\<close>
-    by simp
-qed
-
-lemma mcs\<^sub>S\<^sub>5_symmetric: \<open>symmetric (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5)\<close>
-  unfolding symmetric_def
-proof (intro allI)
-  fix i :: \<open>'i :: countable\<close> and V W :: \<open>'i mcs\<^sub>S\<^sub>5\<close>
-  let ?V = \<open>Rep_mcs\<^sub>S\<^sub>5 V\<close> and ?W = \<open>Rep_mcs\<^sub>S\<^sub>5 W\<close>
-
-  have \<open>consistent AxTB4 ?V\<close> \<open>maximal AxTB4 ?V\<close>
-    \<open>consistent AxTB4 ?W\<close> \<open>maximal AxTB4 ?W\<close>
-    using Rep_mcs\<^sub>S\<^sub>5 by blast+
-  then have \<open>?V \<in> reach AxTB4 i ?W \<longleftrightarrow> ?W \<in> reach AxTB4 i ?V\<close>
-    using AxB_symmetric[where V=\<open>?V\<close> and W=\<open>?W\<close>] by presburger
-  then have \<open>V \<in> reach\<^sub>S\<^sub>5 i W \<longleftrightarrow> W \<in> reach\<^sub>S\<^sub>5 i V\<close>
-    unfolding image_iff using Rep_mcs\<^sub>S\<^sub>5_cases Rep_mcs\<^sub>S\<^sub>5_inverse
-    by (metis (mono_tags, lifting) mem_Collect_eq)
-  then show \<open>(W \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i V) = (V \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i W)\<close>
-    by simp
-qed
-
-lemma mcs\<^sub>S\<^sub>5_transitive: \<open>transitive (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5)\<close>
-  unfolding transitive_def
-proof safe
-  fix i :: \<open>'i :: countable\<close> and V W U :: \<open>'i mcs\<^sub>S\<^sub>5\<close>
-  let ?V = \<open>Rep_mcs\<^sub>S\<^sub>5 V\<close> and ?W = \<open>Rep_mcs\<^sub>S\<^sub>5 W\<close> and ?U = \<open>Rep_mcs\<^sub>S\<^sub>5 U\<close>
-
-  assume \<open>W \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i V\<close> \<open>U \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i W\<close>
-  then have \<open>?W \<in> reach AxTB4 i ?V\<close> \<open>?U \<in> reach AxTB4 i ?W\<close>
-    using Abs_mcs\<^sub>S\<^sub>5_inverse by auto
-  moreover have \<open>consistent AxTB4 ?V\<close> \<open>maximal AxTB4 ?V\<close>
-    using Rep_mcs\<^sub>S\<^sub>5 by blast+
-  ultimately have \<open>?U \<in> reach AxTB4 i ?V\<close>
-    using Ax4_transitive[where V=\<open>?V\<close>] by presburger
-  then have \<open>U \<in> reach\<^sub>S\<^sub>5 i V\<close>
-    using Rep_mcs\<^sub>S\<^sub>5_inverse by (metis (no_types, lifting) image_iff)
-  then show \<open>U \<in> \<K> (Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5) i V\<close>
-    by simp
-qed
-
 lemma imply_completeness_S5:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i mcs\<^sub>S\<^sub>5) kripke) w.
-    equivalence M \<longrightarrow> list_all (\<lambda>q. M, w \<Turnstile> q) G \<longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>AxTB4 \<turnstile> imply G p\<close>
-proof (rule K_Boole, rule ccontr)
-  assume \<open>\<not> AxTB4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
+  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+    equivalence M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (AxTB4 \<turnstile> imply qs p)\<close>
+proof (rule ccontr)
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> AxTB4 \<turnstile> imply qs p\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> AxTB4 \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+    using K_Boole by blast
 
-  let ?S = \<open>set ((\<^bold>\<not> p) # G)\<close>
+  let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend AxTB4 ?S from_nat\<close>
-  let ?M = \<open>Kripke pi (reach AxTB4)\<close>
-  let ?V\<^sub>S\<^sub>5 = \<open>Abs_mcs\<^sub>S\<^sub>5 ?V\<close>
-  let ?M\<^sub>S\<^sub>5 = \<open>Kripke pi\<^sub>S\<^sub>5 reach\<^sub>S\<^sub>5\<close>
+  let ?M = \<open>Kripke (mcss AxTB4) pi (reach AxTB4)\<close>
 
   have \<open>consistent AxTB4 ?S\<close>
-    unfolding consistent_def using \<open>\<not> AxTB4 \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close> K_imply_weaken by blast
+    using * by (metis (no_types, lifting) K_imply_Cons consistent_def inconsistent_subset)
   then have
-    \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M, ?V \<Turnstile> p) G\<close>
+    \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close>
     \<open>consistent AxTB4 ?V\<close> \<open>maximal AxTB4 ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
-  then have \<open>?M\<^sub>S\<^sub>5, ?V\<^sub>S\<^sub>5 \<Turnstile> (\<^bold>\<not> p)\<close> \<open>list_all (\<lambda>p. ?M\<^sub>S\<^sub>5, ?V\<^sub>S\<^sub>5 \<Turnstile> p) G\<close>
-    using \<open>consistent AxTB4 ?V\<close> \<open>maximal AxTB4 ?V\<close> mcs\<^sub>S\<^sub>5_equiv
-    unfolding list_all_def by blast+
-  moreover have \<open>equivalence ?M\<^sub>S\<^sub>5\<close>
-    using mcs\<^sub>S\<^sub>5_reflexive mcs\<^sub>S\<^sub>5_symmetric mcs\<^sub>S\<^sub>5_transitive by fast
-  ultimately have \<open>?M\<^sub>S\<^sub>5, ?V\<^sub>S\<^sub>5 \<Turnstile> p\<close>
-    using valid by blast
+  moreover have \<open>equivalence ?M\<close>
+    by (simp add: mcs\<^sub>T_reflexive mcs\<^sub>K\<^sub>B_symmetric mcs\<^sub>K\<^sub>4_transitive)
+  ultimately have \<open>?M, ?V \<Turnstile> p\<close>
+    using valid by auto
   then show False
-    using \<open>?M\<^sub>S\<^sub>5, ?V\<^sub>S\<^sub>5 \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> by simp
 qed
 
 lemma completeness\<^sub>S\<^sub>5:
-  assumes \<open>\<forall>(M :: ('i, ('i :: countable) mcs\<^sub>S\<^sub>5) kripke) w. equivalence M \<longrightarrow> M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. equivalence M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>S\<^sub>5 p\<close>
-  using assms imply_completeness_S5[where G=\<open>[]\<close>] by auto
+  using assms imply_completeness_S5[where G=\<open>{}\<close>] by auto
 
-abbreviation \<open>valid\<^sub>S\<^sub>5 p \<equiv> \<forall>(M :: (nat, nat mcs\<^sub>S\<^sub>5) kripke) w. equivalence M \<longrightarrow> M, w \<Turnstile> p\<close>
+abbreviation \<open>valid\<^sub>S\<^sub>5 p \<equiv> \<forall>(M :: (nat, nat fm set) kripke). \<forall>w \<in> \<W> M. equivalence M \<longrightarrow> M, w \<Turnstile> p\<close>
 
 theorem main\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 p \<longleftrightarrow> \<turnstile>\<^sub>S\<^sub>5 p\<close>
   using soundness\<^sub>S\<^sub>5 completeness\<^sub>S\<^sub>5 by fast
 
 corollary
-  assumes \<open>equivalence M\<close>
+  assumes \<open>equivalence M\<close> \<open>w \<in> \<W> M\<close>
   shows \<open>valid\<^sub>S\<^sub>5 p \<longrightarrow> M, w \<Turnstile> p\<close>
   using assms soundness\<^sub>S\<^sub>5 completeness\<^sub>S\<^sub>5 by fast
 

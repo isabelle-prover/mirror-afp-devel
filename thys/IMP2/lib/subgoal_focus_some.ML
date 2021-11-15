@@ -9,7 +9,7 @@
 signature SUBGOAL_FOCUS_SOME = sig
   type focus =
    {context: Proof.context, params: (string * cterm) list, prems: thm list, asms: (bool * cterm) list,
-    concl: cterm, schematics: ((indexname * sort) * ctyp) list * ((indexname * typ) * cterm) list}
+    concl: cterm, schematics: ctyp TVars.table * cterm Vars.table}
 
   type prem_filter = Proof.context -> cterm -> bool  
     
@@ -35,7 +35,7 @@ structure Subgoal_Focus_Some : SUBGOAL_FOCUS_SOME = struct
 
   type focus =
    {context: Proof.context, params: (string * cterm) list, prems: thm list, asms: (bool * cterm) list,
-    concl: cterm, schematics: ((indexname * sort) * ctyp) list * ((indexname * typ) * cterm) list}
+    concl: cterm, schematics: ctyp TVars.table * cterm Vars.table}
 
   type prem_filter = Proof.context -> cterm -> bool  
     
@@ -60,10 +60,10 @@ fun gen_focus (do_prems, do_concl) ctxt i bindings raw_st =
     
     val text = fasms @ (if do_concl then [concl] else []);
 
-    val (inst, ctxt3) = Variable.import_inst true (map Thm.term_of text) ctxt2;
-    val schematic_terms = map (apsnd (Thm.cterm_of ctxt3)) (#2 inst);
+    val ((_, inst), ctxt3) = Variable.import_inst true (map Thm.term_of text) ctxt2;
+    val schematic_terms = Vars.fold (fn (v, t) => cons (v, Thm.cterm_of ctxt3 t)) inst [];
 
-    val schematics = (schematic_types, schematic_terms);
+    val schematics = (schematic_types, Vars.make schematic_terms);
     val asms' = map (apsnd (Thm.instantiate_cterm schematics)) asms;
     val fasms' = filter fst asms' |> map snd
     val concl' = Thm.instantiate_cterm schematics concl;
@@ -108,8 +108,8 @@ fun lift_import idx params th ctxt =
         in ((Var v, list_comb (u, args)), (u, Var ((x, i + idx), U))) end;
     val (inst1, inst2) =
       split_list (map (apply2 (apply2 (Thm.cterm_of ctxt))) (map2 var_inst vars ys));
-
-    val th'' = Thm.instantiate ([], map (apfst (Term.dest_Var o Thm.term_of)) inst1) th';
+    val inst = Vars.build (fold (Vars.add o apfst (Term.dest_Var o Thm.term_of)) inst1);
+    val th'' = Thm.instantiate (TVars.empty, inst) th';
   in ((inst2, th''), ctxt'') end;
   
   

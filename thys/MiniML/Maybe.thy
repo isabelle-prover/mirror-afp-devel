@@ -1,5 +1,4 @@
-(* Title:     HOL/MiniML/Maybe.thy
-
+(* Title:     MiniML/Maybe.thy
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -32,6 +31,11 @@ lemma split_option_bind: "P(option_bind res f) =
           ((res = None \<longrightarrow> P None) \<and> (\<forall>s. res = Some s \<longrightarrow> P(f s)))"
   unfolding option_bind_def
   by (rule option.split)
+
+lemma split_option_bind_asm: "P(option_bind res f) =  
+          (~ ((res = None \<and> \<not> P None) \<or> (\<exists>s. res = Some s \<and> \<not> P(f s))))"
+  unfolding option_bind_def
+  by (rule option.split_asm)
 
 lemma option_bind_eq_None [simp]:
     "((option_bind m f) = None) = ((m=None) | (\<exists>p. m = Some p \<and> f p = None))"

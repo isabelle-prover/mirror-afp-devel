@@ -8,7 +8,7 @@ imports
   Pi_Transcendental.Pi_Transcendental
   Algebraic_Numbers.Algebraic_Numbers
   Algebraic_Integer_Divisibility
-  Min_Int_Poly
+  More_Min_Int_Poly
   Complex_Lexorder
   More_Polynomial_HLW
   More_Multivariate_Polynomial_HLW

@@ -9,7 +9,7 @@
 section \<open> Kildall for the JVM \label{sec:JVM} \<close>
 
 theory BVExec
-imports Jinja.Abstract_BV TF_JVM
+imports Jinja.Abstract_BV TF_JVM Jinja.Typing_Framework_2
 begin
 
 definition kiljvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 
@@ -22,8 +22,8 @@ where
 definition wt_kildall :: "jvm_prog \<Rightarrow> cname \<Rightarrow> staticb \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
                  instr list \<Rightarrow> ex_table \<Rightarrow> bool"
 where
-  "wt_kildall P C' b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<equiv>
-   0 < size is \<and> 
+  "wt_kildall P C' b Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<equiv> (b = Static \<or> b = NonStatic) \<and>
+   0 < size is \<and>  
    (let first  = Some ([],(case b of Static \<Rightarrow> [] | NonStatic \<Rightarrow> [OK (Class C')])
                             @(map OK Ts)@(replicate mxl\<^sub>0 Err));
         start  = (OK first)#(replicate (size is - 1) (OK None));
@@ -38,9 +38,254 @@ where
   wf_prog (\<lambda>P C' (M,b,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)). wt_kildall P C' b Ts T\<^sub>r mxs mxl\<^sub>0 is xt) P"
 
 
+context start_context
+begin
+
+lemma Cons_less_Conss3 [simp]:
+  "x#xs [\<sqsubset>\<^bsub>r\<^esub>] y#ys = (x \<sqsubset>\<^bsub>r\<^esub> y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^bsub>r\<^esub>] ys)"
+  apply (unfold lesssub_def )
+  apply auto
+  apply (insert sup_state_opt_err)
+  apply (unfold lesssub_def lesub_def sup_state_opt_def sup_state_def sup_ty_opt_def)
+  apply (simp only: JVM_le_unfold )
+  apply fastforce
+  done
+
+lemma acc_le_listI3 [intro!]:
+  " acc r \<Longrightarrow> acc (Listn.le r)"
+apply (unfold acc_def)
+apply (subgoal_tac
+ "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys})")
+   apply (erule wf_subset)
+ apply (blast intro: lesssub_lengthD)
+apply (rule wf_UN)
+ prefer 2
+ apply (rename_tac m n)
+ apply (case_tac "m=n")
+  apply simp
+ apply (fast intro!: equals0I dest: not_sym)
+apply (rename_tac n)
+apply (induct_tac n)
+ apply (simp add: lesssub_def cong: conj_cong)
+apply (rename_tac k)
+apply (simp add: wf_eq_minimal del: r_def f_def step_def A_def)
+apply (simp (no_asm) add: length_Suc_conv cong: conj_cong del: r_def f_def step_def A_def)
+apply clarify
+apply (rename_tac M m)
+apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
+ prefer 2
+ apply (erule thin_rl)
+ apply (erule thin_rl)
+ apply blast
+apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
+apply (erule impE)
+ apply blast
+apply (thin_tac "\<exists>x xs. P x xs" for P)
+apply clarify
+apply (rename_tac maxA xs)
+apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
+apply (erule impE)
+ apply blast
+apply clarify
+apply (thin_tac "m \<in> M")
+apply (thin_tac "maxA#xs \<in> M")
+apply (rule bexI)
+ prefer 2
+ apply assumption
+apply clarify
+apply (simp del: r_def f_def step_def A_def)
+apply blast
+  done
+
+
+lemma wf_jvm: " wf {(ss', ss). ss [\<sqsubset>\<^bsub>r\<^esub>] ss'}"
+  apply (insert acc_le_listI3 acc_JVM [OF wf])
+  by (simp add: acc_def r_def) 
+
+lemma iter_properties_bv[rule_format]:
+shows "\<lbrakk> \<forall>p\<in>w0. p < n; ss0 \<in> list n A; \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
+         iter f step ss0 w0 = (ss',w') \<longrightarrow>
+         ss' \<in> list n A \<and> stables r step ss' \<and> ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
+         (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
+(*<*) (is "PROP ?P")
+
+proof -
+  show "PROP ?P"
+    apply (insert semi bounded_step exec_pres_type step_mono[OF wf])  
+    apply (unfold iter_def stables_def)
+
+    apply (rule_tac P = "\<lambda>(ss,w).
+                ss \<in> list n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
+   (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
+   (\<forall>p\<in>w. p < n)" and
+   r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
+         in while_rule)
+
+  \<comment> \<open>Invariant holds initially:\<close>  
+        apply (simp add:stables_def  semilat_Def   del: n_def A_def r_def f_def step_def)
+        apply (blast intro:le_list_refl')     
+   
+  \<comment> \<open>Invariant is preserved:\<close>
+       apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def n_def)
+       apply(rename_tac ss w)
+       apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
+        prefer 2 apply (fast intro: someI)
+       apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
+        prefer 2
+        apply clarify
+        apply (rule conjI)
+         apply(clarsimp, blast dest!: boundedD)
+        apply (subgoal_tac "(SOME p. p \<in> w) < n")
+         apply (subgoal_tac "(ss ! (SOME p. p \<in> w)) \<in> A")
+          apply (fastforce simp only:n_def dest:pres_typeD )   
+         apply simp
+        apply simp
+       apply (subst decomp_propa)
+        apply blast
+       apply (simp del:A_def r_def f_def step_def n_def)
+       apply (rule conjI)
+        apply (rule Semilat.merges_preserves_type[OF Semilat.intro, OF semi])
+         apply blast
+        apply clarify
+        apply (rule conjI)
+         apply(clarsimp, blast dest!: boundedD)
+        apply (erule pres_typeD)
+          prefer 3
+          apply assumption
+         apply (erule listE_nth_in)
+         apply blast
+        apply (simp only:n_def)
+       apply (rule conjI)
+        apply clarify
+        apply (subgoal_tac "ss \<in> list (length is) A" "\<forall>p\<in>w. p <  (length is) " "\<forall>p<(length is). p \<notin> w \<longrightarrow> stable r step ss p "
+ "p < length is")
+            apply (blast   intro!: Semilat.stable_pres_lemma[OF Semilat.intro, OF semi])
+           apply (simp only:n_def)
+          apply (simp only:n_def)
+         apply (simp only:n_def)
+        apply (simp only:n_def)
+       apply (rule conjI)
+        apply (subgoal_tac "ss \<in> list (length is) A" 
+               "\<forall>(q,t)\<in>set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length is \<and> t \<in> A"
+               "ss [\<sqsubseteq>\<^bsub>r\<^esub>] merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss" "ss0\<in> list (size is) A"
+               "merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss \<in> list (size is) A" 
+               "ss \<in>list (size is) A" "order r A" "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss ")
+                apply (blast dest: le_list_trans)
+               apply simp
+              apply (simp only:semilat_Def)
+             apply (simp only:n_def)
+            apply (fastforce simp only: n_def dest:Semilat.merges_preserves_type[OF Semilat.intro, OF semi] )
+           apply (simp only:n_def)
+          apply (blast intro:Semilat.merges_incr[OF Semilat.intro, OF semi])
+         apply (subgoal_tac "length ss = n")
+          apply (simp only:n_def)
+         apply (subgoal_tac "ss \<in>list n A")
+          defer
+          apply simp
+         apply (simp only:n_def)
+        prefer 5
+        apply (simp only:listE_length n_def)
+       apply(rule conjI)
+        apply (clarsimp simp del: A_def r_def f_def step_def)
+        apply (blast intro!: Semilat.merges_bounded_lemma[OF Semilat.intro, OF semi])       
+       apply (subgoal_tac "bounded step n")
+        apply (blast dest!: boundedD)
+       apply (simp only:n_def)
+
+  \<comment> \<open>Postcondition holds upon termination:\<close>
+      apply(clarsimp simp add: stables_def split_paired_all)
+  
+  \<comment> \<open>Well-foundedness of the termination relation:\<close>    
+      apply (rule wf_lex_prod)
+     apply (simp only:wf_jvm) 
+    apply (rule wf_finite_psubset) 
+
+  \<comment> \<open>Loop decreases along termination relation:\<close>
+     apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def)
+     apply(rename_tac ss w)
+     apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
+      prefer 2 apply (fast intro: someI)
+     apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
+      prefer 2
+      apply clarify
+      apply (rule conjI)
+       apply(clarsimp, blast dest!: boundedD)
+      apply (erule pres_typeD)
+        prefer 3
+        apply assumption
+       apply (erule listE_nth_in)
+       apply blast
+      apply blast
+     apply (subst decomp_propa)
+      apply blast
+     apply clarify
+  apply (simp del: listE_length  A_def r_def f_def step_def
+      add: lex_prod_def finite_psubset_def 
+           bounded_nat_set_is_finite)
+     apply (rule termination_lemma)
+        apply (insert Semilat.intro)
+        apply assumption+
+      defer
+      apply assumption
+     defer
+     apply clarsimp   
+    done
+qed
+
+(*>*)
+
+
+lemma kildall_properties_bv: 
+shows "\<lbrakk> ss0 \<in> list n A \<rbrakk> \<Longrightarrow>
+  kildall r f step ss0 \<in> list n A \<and>
+  stables r step (kildall r f step ss0) \<and>
+  ss0 [\<sqsubseteq>\<^sub>r] kildall r f step ss0 \<and>
+  (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow>
+                 kildall r f step ss0 [\<sqsubseteq>\<^sub>r] ts)"
+(*<*) (is "PROP ?P")
+proof -
+  show "PROP ?P"
+  apply (unfold kildall_def)
+    apply(case_tac "iter f step ss0 (unstables r step ss0)")
+    apply (simp del:r_def f_def n_def step_def A_def)
+    apply (rule iter_properties_bv)      
+     apply (simp_all add: unstables_def stable_def)
+    done
+qed
+
+end
+
 theorem (in start_context) is_bcv_kiljvm:
   "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
 (*<*)
+  apply (insert wf)
+  apply (unfold kiljvm_def)
+  apply (fold r_def f_def step_def_exec n_def)
+  apply(unfold is_bcv_def wt_step_def)
+  apply(insert semi  kildall_properties_bv)
+  apply(simp only:stables_def)
+  apply clarify
+  apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> list n A")
+   prefer 2
+   apply (fastforce intro: kildall_properties_bv)
+  apply (rule iffI)
+   apply (rule_tac x = "kildall r f step \<tau>s\<^sub>0" in bexI) 
+    apply (rule conjI)
+     apply (fastforce intro: kildall_properties_bv)
+  apply (force intro: kildall_properties_bv)
+   apply simp
+  apply clarify
+  apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0!pa <=_r \<tau>s!pa")
+   defer
+   apply (blast intro!: le_listD less_lengthI)
+  apply (subgoal_tac "\<tau>s!pa \<noteq> Err")
+   defer
+   apply simp
+  apply (rule ccontr)
+  apply (simp only:top_def r_def JVM_le_unfold)
+  apply fastforce
+  done
+(*
 proof -
   let ?n = "length is"
   have "Semilat A r f" using semilat_JVM[OF wf]
@@ -56,6 +301,7 @@ proof -
     using f_def kiljvm_def r_def step_def_exec by blast
   ultimately show ?thesis by simp
 qed
+*)
 (*>*)
 
 (* FIXME: move? *)
@@ -91,7 +337,8 @@ proof -
   from wtk obtain res where    
     result:   "res = kiljvm P mxs mxl T\<^sub>r is xt start" and
     success:  "\<forall>n < size is. res!n \<noteq> Err" and
-    instrs:   "0 < size is" 
+    instrs:   "0 < size is" and
+    stab:     "b = Static \<or> b = NonStatic" 
     by (unfold wt_kildall_def) simp
       
   have bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
@@ -136,7 +383,7 @@ proof -
     by (auto intro: wt_err_imp_wt_app_eff simp add: l)
   ultimately
   have "wt_method P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt (map ok_val \<tau>s')"
-    using instrs by (simp add: wt_method_def2 check_types_def del: map_map)
+    using instrs stab by (simp add: wt_method_def2 check_types_def del: map_map)
   thus ?thesis by blast
 qed
 (*>*)
@@ -152,8 +399,9 @@ proof -
     length:   "length \<tau>s = length is" and 
     ck_type:  "check_types P mxs mxl (map OK \<tau>s)" and
     wt_start: "wt_start P C b Ts mxl\<^sub>0 \<tau>s" and
-    app_eff:  "wt_app_eff (sup_state_opt P) app eff \<tau>s"
-    by (simp add: wt_method_def2 check_types_def)
+    app_eff:  "wt_app_eff (sup_state_opt P) app eff \<tau>s"  and
+    stab: "b = Static \<or> b = NonStatic" 
+    by (simp add: wt_method_def2 check_types_def )
 
   from ck_type
   have in_A: "set (map OK \<tau>s) \<subseteq> A" 
@@ -201,7 +449,8 @@ proof -
   have "\<forall>p. p < size is \<longrightarrow> kiljvm P  mxs mxl T\<^sub>r is xt start ! p \<noteq> Err" 
     by (unfold is_bcv_def) blast
   with instrs 
-  show "wt_kildall P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt" by (unfold wt_kildall_def) simp
+  show "wt_kildall P C b Ts T\<^sub>r mxs mxl\<^sub>0 is xt" 
+    using start_context_intro_auxi[OF staticb] using stab by (unfold wt_kildall_def) simp
 qed
 (*>*)
 
@@ -219,14 +468,16 @@ proof -
   show ?thesis proof(rule iffI)
     \<comment> \<open>soundness\<close>
     assume wt: "wf_jvm_prog\<^sub>k P"
-    then have "wf_prog ?A P" by(simp add: wf_jvm_prog\<^sub>k_def)
+    then have wt': "wf_prog ?A P" by(simp add: wf_jvm_prog\<^sub>k_def)
     moreover {
       fix wf_md C M b Ts Ca T m bd
-      assume "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
-             "set Ts \<subseteq> types P" and "bd = (M, b, Ts, T, m)" and
-             "?A P Ca bd"
-      then have "(?B\<^sub>\<Phi> ?\<Phi>) P Ca bd" using sees_method_is_class[OF sees]
-        by (auto dest!: start_context.wt_kil_correct [OF start_context.intro] 
+
+      assume ass1: "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
+             ass2: "set Ts \<subseteq> types P" and ass3: "bd = (M, b, Ts, T, m)" and
+             ass4: "?A P Ca bd" 
+      from ass3 ass4 have stab: "b = Static \<or> b = NonStatic" by (simp add:wt_kildall_def)
+      from ass1 sees ass2 ass3 ass4 have "(?B\<^sub>\<Phi> ?\<Phi>) P Ca bd" using sees_method_is_class[OF sees]
+        by (auto dest!: start_context.wt_kil_correct[OF start_context_intro_auxi[OF stab]]
                  intro: someI)
     }
     ultimately have "wf_prog (?B\<^sub>\<Phi> ?\<Phi>) P" by(rule wf_prog_lift)
@@ -234,15 +485,17 @@ proof -
     thus "wf_jvm_prog P" by (unfold wf_jvm_prog_def) fast
   next  
     \<comment> \<open>completeness\<close>
-    assume wt: "wf_jvm_prog P"
+    
+    assume wt: "wf_jvm_prog P" 
     then obtain \<Phi> where "wf_prog (?B\<^sub>\<Phi> \<Phi>) P" by(clarsimp simp: wf_jvm_prog_def wf_jvm_prog_phi_def)
     moreover {
       fix wf_md C M b Ts Ca T m bd
-      assume "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
-             "set Ts \<subseteq> types P" and "bd = (M, b, Ts, T, m)" and
-             "(?B\<^sub>\<Phi> \<Phi>) P Ca bd"
-      then have "?A P Ca bd" using sees_method_is_class[OF sees]
-        by (auto intro!: start_context.wt_kil_complete start_context.intro)
+      assume ass1: "wf_prog wf_md P" and sees: "P \<turnstile> Ca sees M, b :  Ts\<rightarrow>T = m in Ca" and
+             ass2: "set Ts \<subseteq> types P" and ass3: "bd = (M, b, Ts, T, m)" and
+             ass4: "(?B\<^sub>\<Phi> \<Phi>) P Ca bd"
+      from ass3 ass4 have stab: "b = Static \<or> b = NonStatic"  by (simp add:wt_method_def)
+      from ass1 sees ass2 ass3 ass4 have "?A P Ca bd" using sees_method_is_class[OF sees] using JVM_sl.staticb
+        by (auto intro!: start_context.wt_kil_complete start_context_intro_auxi[OF stab])
     }
     ultimately have "wf_prog ?A P" by(rule wf_prog_lift)
     thus "wf_jvm_prog\<^sub>k P" by (simp add: wf_jvm_prog\<^sub>k_def)

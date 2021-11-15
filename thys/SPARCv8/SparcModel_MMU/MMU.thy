@@ -157,6 +157,10 @@ where
   else r1
 "
 
+context
+  includes bit_operations_syntax
+begin
+
 text \<open>Given an ASI (word8), an address (word32) addr, 
         read the 32bit value from the memory addresses 
         starting from address addr' where addr' = addr 
@@ -308,5 +312,7 @@ where "MMU_registers_init r \<equiv> 0"
 
 definition mmu_setup :: "MMU_state"
 where "mmu_setup \<equiv> \<lparr>registers=MMU_registers_init\<rparr>"
+
+end
 
 end

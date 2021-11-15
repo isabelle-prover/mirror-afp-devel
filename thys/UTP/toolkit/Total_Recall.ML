@@ -157,10 +157,10 @@ struct
 
   (* Theory Data *)
 
-  structure Undecl_Data = Theory_Data (
+  structure Undecl_Data = Theory_Data
+  (
     type T = undecl_item Ord_List.T;
     val empty = [];
-    val extend = I;
     val merge = uncurry (Ord_List.union undecl_item_ord);
   );
 
@@ -196,10 +196,10 @@ struct
     (Output.writeln (string_of_undecl_item item);
     (case item of
       (no_syntax (mode, args)) =>
-        (Sign.del_syntax_cmd mode args)
+        (Sign.syntax_cmd false mode args)
     | (no_notation (mode, args)) =>
         (Named_Target.theory_map
-          (Specification.notation_cmd false mode args))));
+          (Local_Theory.notation_cmd false mode args))));
 
   fun execute_all thy =
     (Output.writeln "Restoring purged notations and syntax...\n";

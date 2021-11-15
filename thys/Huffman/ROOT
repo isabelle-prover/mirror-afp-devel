@@ -1,7 +1,7 @@
 chapter AFP
 
 session Huffman (AFP) = HOL +
-  options [timeout = 600, document_preprocessor = "preprocessor"]
+  options [timeout = 600]
   theories 
     Huffman
   document_files
@@ -26,7 +26,6 @@ session Huffman (AFP) = HOL +
     "forest-zigzag.eps"
     "forest-zigzag.pdf"
     "forest-zigzag.svg"
-    "preprocessor"
     "root.tex"
     "tree-abc-full.eps"
     "tree-abc-full.pdf"

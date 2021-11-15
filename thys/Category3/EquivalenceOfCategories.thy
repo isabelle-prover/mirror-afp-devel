@@ -215,6 +215,30 @@ begin
       using G_is_essentially_surjective by auto
   qed
 
+  lemma (in inverse_functors) induce_equivalence:
+  shows "equivalence_of_categories A B F G B.map A.map"
+    using inv inv' A.is_extensional B.is_extensional B.comp_arr_dom B.comp_cod_arr
+          A.comp_arr_dom A.comp_cod_arr
+    by unfold_locales auto
+
+  lemma (in invertible_functor) is_equivalence:
+  shows "equivalence_functor A B G"
+    using equivalence_functor_axioms.intro equivalence_functor_def equivalence_of_categories_def
+          induce_equivalence
+    by blast
+
+  lemma (in identity_functor) is_equivalence:
+  shows "equivalence_functor C C map"
+  proof -
+    interpret inverse_functors C C map map
+      using map_def by unfold_locales auto
+    interpret invertible_functor C C map
+      using inverse_functors_axioms
+      by unfold_locales blast
+    show ?thesis
+      using is_equivalence by blast
+  qed
+
   text \<open>
     A special case of an equivalence functor is an endofunctor \<open>F\<close> equipped with
     a natural isomorphism from \<open>F\<close> to the identity functor.
@@ -318,24 +342,24 @@ begin
       interpret G\<epsilon>': natural_transformation C D G \<open>G o F o G\<close> \<open>G o \<epsilon>'.map\<close>
       proof -
         have "natural_transformation C D G (G o (F o G)) (G o \<epsilon>'.map)"
-          using G.natural_transformation_axioms \<epsilon>'.natural_transformation_axioms
+          using G.as_nat_trans.natural_transformation_axioms \<epsilon>'.natural_transformation_axioms
                 horizontal_composite
           by fastforce
         thus "natural_transformation C D G (G o F o G) (G o \<epsilon>'.map)"
           using o_assoc by metis
       qed
       interpret \<eta>'G: natural_transformation C D \<open>G o F o G\<close> G \<open>\<eta>'.map o G\<close>
-        using \<eta>'.natural_transformation_axioms G.natural_transformation_axioms
+        using \<eta>'.natural_transformation_axioms G.as_nat_trans.natural_transformation_axioms
               horizontal_composite
         by fastforce
       interpret \<epsilon>'F: natural_transformation D C F \<open>F o G o F\<close> \<open>\<epsilon>'.map o F\<close>
-        using \<epsilon>'.natural_transformation_axioms F.natural_transformation_axioms
+        using \<epsilon>'.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
               horizontal_composite
         by fastforce
       interpret F\<eta>': natural_transformation D C \<open>F o G o F\<close> F \<open>F o \<eta>'.map\<close>
       proof -
         have "natural_transformation D C (F o (G o F)) F (F o \<eta>'.map)"
-          using \<eta>'.natural_transformation_axioms F.natural_transformation_axioms
+          using \<eta>'.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
                 horizontal_composite
           by fastforce
         thus "natural_transformation D C (F o G o F) F (F o \<eta>'.map)"
@@ -348,7 +372,7 @@ begin
         show "\<eta>'GoG\<epsilon>'.map = G"
         proof (intro NaturalTransformation.eqI)
           show "natural_transformation C D G G G"
-            using G.natural_transformation_axioms by auto
+            using G.as_nat_trans.natural_transformation_axioms by auto
           show "natural_transformation C D G G \<eta>'GoG\<epsilon>'.map"
             using \<eta>'GoG\<epsilon>'.natural_transformation_axioms by auto
           show "\<And>a. C.ide a \<Longrightarrow> \<eta>'GoG\<epsilon>'.map a = G a"
@@ -356,8 +380,7 @@ begin
             fix a
             assume a: "C.ide a"
             show "\<eta>'GoG\<epsilon>'.map a = G a"
-              using a \<eta>'GoG\<epsilon>'.map_simp_ide triangle_G'
-                    \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
+              using a \<eta>'GoG\<epsilon>'.map_simp_ide triangle_G' G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components
                     D.inverse_unique G.preserves_inverse_arrows G\<epsilon>o\<eta>G.map_simp_ide
                     D.inverse_arrows_sym triangle_G
@@ -367,7 +390,7 @@ begin
         show "F\<eta>'o\<epsilon>'F.map = F"
         proof (intro NaturalTransformation.eqI)
           show "natural_transformation D C F F F"
-            using F.natural_transformation_axioms by auto
+            using F.as_nat_trans.natural_transformation_axioms by auto
           show "natural_transformation D C F F F\<eta>'o\<epsilon>'F.map"
             using F\<eta>'o\<epsilon>'F.natural_transformation_axioms by auto
           show "\<And>b. D.ide b \<Longrightarrow> F\<eta>'o\<epsilon>'F.map b = F b"
@@ -376,7 +399,6 @@ begin
             assume b: "D.ide b"
             show "F\<eta>'o\<epsilon>'F.map b = F b"
               using b F\<eta>'o\<epsilon>'F.map_simp_ide \<epsilon>FoF\<eta>.map_simp_ide triangle_F triangle_F'
-                    \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components F.preserves_ide
                     C.inverse_unique F.preserves_inverse_arrows C.inverse_arrows_sym
               by (metis o_apply)
@@ -472,7 +494,8 @@ begin
                 have 2: "\<guillemotleft>g' : x' \<rightarrow>\<^sub>C ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>D F g' = f" using g' is_coext_def by simp
                 have 3: "\<guillemotleft>?g : x' \<rightarrow>\<^sub>C ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>D F ?g = f" using 1 is_coext_def by simp
                 have "F g' = F ?g"
-                  using e 2 3 D.iso_is_section D.section_is_mono D.monoE by blast
+                  using e f 2 3 D.iso_is_section D.section_is_mono D.monoE D.arrI
+                  by (metis (no_types, lifting) D.arrI)
                 moreover have "C.par g' ?g"
                   using 2 3 by fastforce
                 ultimately show "g' = ?g"
@@ -790,33 +813,33 @@ begin
     interpretation natural_transformation D C F FoGoF.map \<open>F \<circ> \<eta>\<close>
     proof -
       have "F \<circ> D.map = F"
-        using hcomp_ide_dom F.natural_transformation_axioms by blast
+        using hcomp_ide_dom F.as_nat_trans.natural_transformation_axioms by blast
       moreover have "F o (G o F) = FoGoF.map"
         by auto
       ultimately show "natural_transformation D C F FoGoF.map (F \<circ> \<eta>)"
-        using \<eta>.natural_transformation_axioms F.natural_transformation_axioms
+        using \<eta>.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
               horizontal_composite [of D D D.map "G o F" \<eta> C F F F]
         by simp
     qed
 
     interpretation natural_transformation C D G GoFoG.map \<open>\<eta> \<circ> G\<close>
-      using \<eta>.natural_transformation_axioms G.natural_transformation_axioms
+      using \<eta>.natural_transformation_axioms G.as_nat_trans.natural_transformation_axioms
             horizontal_composite [of C D G G G ]
       by fastforce
 
     interpretation natural_transformation D C FoGoF.map F \<open>\<epsilon>'.map \<circ> F\<close>
-      using \<epsilon>'.natural_transformation_axioms F.natural_transformation_axioms
+      using \<epsilon>'.natural_transformation_axioms F.as_nat_trans.natural_transformation_axioms
             horizontal_composite [of D C F F F]
       by fastforce
 
     interpretation natural_transformation C D GoFoG.map G \<open>G \<circ> \<epsilon>'.map\<close>
     proof -
       have "G o C.map = G"
-        using hcomp_ide_dom G.natural_transformation_axioms by blast
+        using hcomp_ide_dom G.as_nat_trans.natural_transformation_axioms by blast
       moreover have "G o (F o G) = GoFoG.map"
         by auto
       ultimately show "natural_transformation C D GoFoG.map G (G \<circ> \<epsilon>'.map)"
-        using G.natural_transformation_axioms \<epsilon>'.natural_transformation_axioms
+        using G.as_nat_trans.natural_transformation_axioms \<epsilon>'.natural_transformation_axioms
               horizontal_composite [of C C "F o G" C.map \<epsilon>'.map D G G G]
         by simp
     qed

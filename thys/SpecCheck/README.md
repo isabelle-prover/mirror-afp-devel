@@ -5,29 +5,30 @@ You can use it to write specifications for ML functions.
 SpecCheck then checks whether your specification holds by testing your function against a given number of generated inputs.
 It helps you to identify bugs by printing counterexamples on failure and provides you timing information.
 
-SpecCheck is customisable and allows you to specify your own input generators,
+SpecCheck is customisable and allows you to specify your own input generators, unit tests,
 test output formats, as well as pretty printers and shrinking functions for counterexamples
 among other things.
 
 ## Quick Usage
 1. Import `SpecCheck.SpecCheck` into your environment.
 2. Write specifications using the ML invocation: `check show gen name prop ctxt seed` where
-  * `show` converts values into `Pretty.T` types to show the failing inputs. See `show/`.
-  * `gen` is the value generator used for the test. See `generators/`.
+  * `show` converts values into `Pretty.T` types to show the failing inputs. See `Show/`.
+  * `gen` is the value generator used for the test. See `Generators/`.
   * `name` is the name of the test case
   * `prop` is the property to be tested. See `property.ML`
   * `seed` is the initial seed for the generator.
 
 You can also choose to omit the show method for rapid testing or add a shrinking method à la
-QuickCheck to get better counterexamples. See `speccheck.ML`.
+QuickCheck to get better counterexamples.
+You can find some simple examples in `Examples/` and a somewhat extensive example application
+[here](https://github.com/kappelmann/e-unification-isabelle/blob/master/Tests/first_order_unification_tests.ML).
+For more information see `speccheck.ML`.
 
 An experimental alternative allows you to specify tests using strings:
 1. Import `SpecCheck_Dynamic.Dynamic` into your environment.
 2. `check_property "ALL x. P x"` where `P x` is some ML code evaluating to a boolean
 
-Examples can be found in `examples/`.
-
-## Notes
+## Implementation Notes
 
 SpecCheck is based on [QCheck](https://github.com/league/qcheck), a testing framework for Standard ML by
 [Christopher League](https://contrapunctus.net/league/).

@@ -223,12 +223,12 @@ shows "domain_block x = 0" and "domain_block y = 0"
  apply metis
  by (metis add_nonneg_eq_0_iff assms domain_block_nonnegative)
 
-lemma domain_block_positive: assumes "domain_block y>0" or "domain_block y>0"
+lemma domain_block_positive: fixes or assumes "domain_block y>0" or "domain_block y>0"
 shows "(domain_block (x\<otimes>y)) > 0"
  apply (simp add: domain_additive)
  by (metis assms(1) domain_additive domain_block_nonnegative domain_zero_sum(2) less_le)
 
-lemma codomain_block_positive: assumes "codomain_block y>0" or "codomain_block y>0"
+lemma codomain_block_positive: fixes or assumes "codomain_block y>0" or "codomain_block y>0"
 shows "(codomain_block (x\<otimes>y)) > 0"
  apply (simp add: codomain_additive)
  using  assms(1) codomain_additive codomain_block_nonnegative eq_neg_iff_add_eq_0 

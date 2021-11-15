@@ -3,6 +3,7 @@ chapter AFP
 session "Minsky_Machines" (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
+    "Pure-ex"
     "Recursion-Theory-I"
   theories
     Recursive_Inseparability

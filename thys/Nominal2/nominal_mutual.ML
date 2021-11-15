@@ -193,9 +193,10 @@ fun recover_mutual_psimp all_orig_fdefs parts ctxt (fname, _, _, args, rhs)
   in
     Goal.prove ctxt' [] []
       (HOLogic.Trueprop $ HOLogic.mk_eq (list_comb (f, args), rhs))
-      (fn _ => (Local_Defs.unfold_tac ctxt' all_orig_fdefs)
-         THEN EqSubst.eqsubst_tac ctxt' [0] [simp] 1
-         THEN (simp_tac ctxt') 1)
+      (fn {context = goal_ctxt, ...} =>
+        (Local_Defs.unfold_tac goal_ctxt all_orig_fdefs)
+         THEN EqSubst.eqsubst_tac goal_ctxt [0] [simp] 1
+         THEN (simp_tac goal_ctxt) 1)
     |> restore_cond
     |> export
   end
@@ -220,7 +221,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
     val ([p], ctxt'') = ctxt'
       |> fold Variable.declare_term args
       |> Variable.variant_fixes ["p"]
-    val p = Free (p, @{typ perm})
+    val p = Free (p, \<^Type>\<open>perm\<close>)
 
     val simpset =
       put_simpset HOL_basic_ss ctxt'' addsimps
@@ -231,7 +232,8 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
     val goal_rhs = list_comb (f, map (mk_perm p) args)
   in
     Goal.prove ctxt'' [] [] (HOLogic.Trueprop $ HOLogic.mk_eq (goal_lhs, goal_rhs))
-      (fn _ => Local_Defs.unfold_tac ctxt'' all_orig_fdefs
+      (fn {context = goal_ctxt, ...} =>
+        Local_Defs.unfold_tac goal_ctxt all_orig_fdefs
          THEN (asm_full_simp_tac simpset 1))
     |> singleton (Proof_Context.export ctxt'' ctxt)
     |> restore_cond
@@ -288,7 +290,7 @@ fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   end
 
 
-fun forall_elim s (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = subst_bound (s, t)
+fun forall_elim s \<^Const_>\<open>Pure.all _ for \<open>Abs (_, _, t)\<close>\<close> = subst_bound (s, t)
   | forall_elim _ t = t
 
 val forall_elim_list = fold forall_elim
@@ -307,7 +309,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
     val insts = (map o map) SOME arg_namess
 
     val ([p_name], ctxt') = Variable.variant_fixes ["p"] ctxt
-    val p = Free (p_name, @{typ perm})
+    val p = Free (p_name, \<^Type>\<open>perm\<close>)
 
     (* extracting the acc-premises from the induction theorems *)
     val acc_prems =
@@ -344,9 +346,9 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
         THEN_ALL_NEW assume_tac ctxt
   in
     Goal.prove ctxt' (flat arg_namess) [] goal
-      (fn {context = ctxt'', ...} =>
-        HEADGOAL (DETERM o (resolve_tac ctxt'' [induct_thm]) THEN'
-          RANGE (map (tac ctxt'') eqvts_thms)))
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (DETERM o (resolve_tac goal_ctxt [induct_thm]) THEN'
+          RANGE (map (tac goal_ctxt) eqvts_thms)))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> split_conj_thm
     |> map (fn th => th RS mp)
@@ -414,10 +416,10 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val mutual as Mutual {fsum_var=(n, T), qglrs, ...} =
       analyze_eqs lthy defname (map fst fixes) (map Envir.beta_eta_contract eqss)
 
-    val ((fsum, G, GIntro_thms, G_induct, goalstate, cont), lthy') =
+    val ((fsum, G, GIntro_thms, G_induct, goalstate, cont), lthy1) =
       Nominal_Function_Core.prepare_nominal_function config defname [((n, T), NoSyn)] qglrs lthy
 
-    val (mutual' as Mutual {n', parts, ST, RST, ...}, lthy'') = define_projections fixes mutual fsum lthy'
+    val (mutual' as Mutual {n', parts, ST, RST, ...}, lthy2) = define_projections fixes mutual fsum lthy1
 
     (* defining the auxiliary graph *)
     fun mk_cases (MutualPart {i', fvar as (n, T), ...}) =
@@ -426,7 +428,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
         val fun_var = Free (n ^ "_aux", HOLogic.mk_tupleT tys --> ty)
         val inj_fun = absdummy dummyT (Sum_Tree.mk_inj RST n' i' (Bound 0))
       in
-        Syntax.check_term lthy'' (mk_comp_dummy inj_fun fun_var)
+        Syntax.check_term lthy2 (mk_comp_dummy inj_fun fun_var)
       end
 
     val case_sum_exp = map mk_cases parts
@@ -440,10 +442,10 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
       |> map (Term.subst_free subst)
       |> map (subst_all case_sum_exp)
 
-    val ((G_aux, GIntro_aux_thms, _, G_aux_induct), lthy''') =
-      Nominal_Function_Core.inductive_def ((Binding.name G_name_aux, G_type), NoSyn) GIntros_aux lthy''
+    val ((G_aux, GIntro_aux_thms, _, G_aux_induct), lthy3) =
+      Nominal_Function_Core.inductive_def ((Binding.name G_name_aux, G_type), NoSyn) GIntros_aux lthy2
 
-    fun mutual_cont ctxt = mk_partial_rules_mutual lthy''' (cont ctxt) mutual'
+    fun mutual_cont ctxt = mk_partial_rules_mutual lthy3 (cont ctxt) mutual'
 
     (* proof of equivalence between graph and auxiliary graph *)
     val x = Var(("x", 0), ST)
@@ -465,44 +467,48 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val goal_inj = Logic.mk_implies (G_aux_prem,
       HOLogic.mk_Trueprop (fold_conj (map mk_inj_goal parts)))
       |> all x |> all y
-      |> Syntax.check_term lthy'''
+      |> Syntax.check_term lthy3
     val goal_iff1 = Logic.mk_implies (G_aux_prem, G_prem)
       |> all x |> all y
     val goal_iff2 = Logic.mk_implies (G_prem, G_aux_prem)
       |> all x |> all y
 
     val simp_thms = @{thms sum.sel sum.inject sum.case sum.distinct o_apply}
-    val simpset0 = put_simpset HOL_basic_ss lthy''' addsimps simp_thms
-    val simpset1 = put_simpset HOL_ss lthy''' addsimps simp_thms
+    fun simpset0 goal_ctxt = put_simpset HOL_basic_ss goal_ctxt addsimps simp_thms
+    fun simpset1 goal_ctxt = put_simpset HOL_ss goal_ctxt addsimps simp_thms
 
-    val inj_thm = Goal.prove lthy''' [] [] goal_inj
-      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_aux_induct]
-        THEN_ALL_NEW asm_simp_tac simpset1)))
+    val inj_thm = Goal.prove lthy3 [] [] goal_inj
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (DETERM o eresolve_tac goal_ctxt [G_aux_induct]
+          THEN_ALL_NEW asm_simp_tac (simpset1 goal_ctxt)))
 
-    fun aux_tac thm =
-      resolve_tac lthy''' [Variable.gen_all lthy''' thm] THEN_ALL_NEW
-      asm_full_simp_tac (simpset1 addsimps [inj_thm])
+    fun aux_tac goal_ctxt thm =
+      resolve_tac goal_ctxt [Variable.gen_all goal_ctxt thm] THEN_ALL_NEW
+      asm_full_simp_tac (simpset1 goal_ctxt addsimps [inj_thm])
 
-    val iff1_thm = Goal.prove lthy''' [] [] goal_iff1
-      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_aux_induct]
-        THEN' RANGE (map aux_tac GIntro_thms))))
-      |> Variable.gen_all lthy'''
-    val iff2_thm = Goal.prove lthy''' [] [] goal_iff2
-      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_induct] THEN' RANGE
-        (map (aux_tac o simplify simpset0) GIntro_aux_thms))))
-      |> Variable.gen_all lthy'''
+    val iff1_thm = Goal.prove lthy3 [] [] goal_iff1
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (DETERM o eresolve_tac goal_ctxt [G_aux_induct]
+          THEN' RANGE (map (aux_tac goal_ctxt) GIntro_thms)))
+      |> Variable.gen_all lthy3
+    val iff2_thm = Goal.prove lthy3 [] [] goal_iff2
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (DETERM o eresolve_tac lthy3 [G_induct]
+          THEN' RANGE (map (aux_tac goal_ctxt o simplify (simpset0 goal_ctxt)) GIntro_aux_thms)))
+      |> Variable.gen_all lthy3
 
-    val iff_thm = Goal.prove lthy''' [] [] (HOLogic.mk_Trueprop (HOLogic.mk_eq (G, G_aux)))
-      (K (HEADGOAL (EVERY' ((map (resolve_tac lthy''' o single) @{thms ext ext iffI}) @
-        [eresolve_tac lthy''' [iff2_thm], eresolve_tac lthy''' [iff1_thm]]))))
+    val iff_thm = Goal.prove lthy3 [] [] (HOLogic.mk_Trueprop (HOLogic.mk_eq (G, G_aux)))
+      (fn {context = goal_ctxt, ...} =>
+        HEADGOAL (EVERY' ((map (resolve_tac goal_ctxt o single) @{thms ext ext iffI}) @
+          [eresolve_tac goal_ctxt [iff2_thm], eresolve_tac goal_ctxt [iff1_thm]])))
 
-    val tac = HEADGOAL (simp_tac (put_simpset HOL_basic_ss lthy''' addsimps [iff_thm]))
+    val tac = HEADGOAL (simp_tac (put_simpset HOL_basic_ss lthy3 addsimps [iff_thm]))
     val goalstate' =
       case (SINGLE tac) goalstate of
         NONE => error "auxiliary equivalence proof failed"
       | SOME st => st
   in
-    ((goalstate', mutual_cont), lthy''')
+    ((goalstate', mutual_cont), lthy3)
   end
 
 end

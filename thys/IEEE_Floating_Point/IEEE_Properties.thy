@@ -23,15 +23,13 @@ lemma valof_eq:
   unfolding Let_def
   by transfer (auto simp: bias_def divide_simps unat_eq_0)
 
-lemma exponent_le[simp]:
-  "exponent a \<le> unat (-1::'a word)" for a::"('a, _)float"
-  by transfer (auto intro!: unat_mono simp: word_le_nat_alt[symmetric])
+lemma exponent_le [simp]:
+  \<open>exponent a \<le> mask LENGTH('a)\<close> for a :: \<open>('a, _) float\<close>
+  by transfer (auto simp add: of_nat_mask_eq intro: word_unat_less_le split: prod.split)
 
-lemma
-  max_word_le_exponent_iff[simp]:
-  "unat (- 1::'a word) \<le> exponent a \<longleftrightarrow> unat (- 1::'a word) = exponent a"
-  for a::"('a, _)float"
-  using le_antisym by fastforce
+lemma exponent_not_less [simp]:
+  \<open>\<not> mask LENGTH('a) < IEEE.exponent a\<close> for a :: \<open>('a, _) float\<close>
+  by (simp add: not_less)
 
 lemma infinity_simps:
   "sign (plus_infinity::('e, 'f)float) = 0"
@@ -42,8 +40,8 @@ lemma infinity_simps:
   "fraction (minus_infinity::('e, 'f)float) = 0"
   subgoal by transfer auto
   subgoal by transfer auto
-  subgoal by transfer (auto simp: emax_def)
-  subgoal by transfer (auto simp: emax_def)
+  subgoal by transfer (simp add: emax_def mask_eq_exp_minus_1)
+  subgoal by transfer (simp add: emax_def mask_eq_exp_minus_1)
   subgoal by transfer auto
   subgoal by transfer auto
   done
@@ -63,26 +61,24 @@ lemma zero_simps:
   subgoal by transfer auto
   done
 
-lemma emax_eq: "emax x = 2^LENGTH('e) - 1"
+lemma emax_eq: "emax x = 2 ^ LENGTH('e) - 1"
   for x::"('e, 'f)float itself"
-  by (simp add: emax_def unat_minus_one_word)
+  by (simp add: emax_def unsigned_minus_1_eq_mask mask_eq_exp_minus_1)
 
 lemma topfloat_simps:
   "sign (topfloat::('e, 'f)float) = 0"
   "exponent (topfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
-  "fraction (topfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
+  "fraction (topfloat::('e, 'f)float) = 2 ^ (fracwidth TYPE(('e, 'f)float)) - 1"
   and bottomfloat_simps:
   "sign (bottomfloat::('e, 'f)float) = 1"
   "exponent (bottomfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
-  "fraction (bottomfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
+  "fraction (bottomfloat::('e, 'f)float) = 2 ^ (fracwidth TYPE(('e, 'f)float)) - 1"
   subgoal by transfer simp
-  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq
-    nat_diff_distrib nat_power_eq)
-  subgoal by transfer (simp add: unat_minus_one_word)
+  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq nat_diff_distrib nat_power_eq)
+  subgoal by transfer (simp add: unsigned_minus_1_eq_mask mask_eq_exp_minus_1)
   subgoal by transfer simp
-  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq
-    unat_minus_one_word nat_diff_distrib nat_power_eq)
-  subgoal by transfer (simp add: unat_minus_one_word)
+  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq nat_diff_distrib nat_power_eq)
+  subgoal by transfer (simp add: unsigned_minus_1_eq_mask mask_eq_exp_minus_1)
   done
 
 lemmas float_defs =
@@ -98,7 +94,7 @@ lemmas float_defs =
   float_eq_def
 
 lemma float_cases: "is_nan a \<or> is_infinity a \<or> is_normal a \<or> is_denormal a \<or> is_zero a"
-  by (auto simp: emax_def float_defs not_less)
+  by (auto simp add: float_defs not_less le_less emax_def unsigned_minus_1_eq_mask)
 
 lemma float_cases_finite: "is_nan a \<or> is_infinity a \<or> is_finite a"
   by (simp add: float_cases is_finite_def)
@@ -113,6 +109,7 @@ lemma float_zero2[simp]: "is_zero (- x) \<longleftrightarrow> is_zero x"
 
 lemma emax_pos[simp]: "0 < emax x" "emax x \<noteq> 0"
   by (auto simp: emax_def)
+
 
 text \<open>The types of floating-point numbers are mutually distinct.\<close>
 lemma float_distinct:
@@ -310,7 +307,7 @@ lemma float_le_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_
   by auto
 
 lemma zero_le_topfloat[simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
-  by (auto simp: float_defs field_simps power_gt1_lemma of_nat_diff)
+  by (auto simp: float_defs field_simps power_gt1_lemma of_nat_diff mask_eq_exp_minus_1)
 
 lemma LENGTH_contr:
   "Suc 0 < LENGTH('e) \<Longrightarrow> 2 ^ LENGTH('e::len) \<le> Suc (Suc 0) \<Longrightarrow> False"
@@ -320,7 +317,7 @@ lemma LENGTH_contr:
 lemma valof_topfloat: "valof (topfloat::('e, 'f)float) = largest TYPE(('e, 'f)float)"
   if "LENGTH('e) > 1"
   using that LENGTH_contr
-  by (auto simp add: emax_eq largest_def divide_simps float_defs of_nat_diff)
+  by (auto simp add: emax_eq largest_def divide_simps float_defs of_nat_diff mask_eq_exp_minus_1)
 
 lemma float_frac_le: "fraction a \<le> 2^LENGTH('f) - 1"
   for a::"('e, 'f)float"
@@ -395,14 +392,18 @@ lemma is_infinity_cases:
 proof (cases rule: sign_cases[of x])
   assume "sign x = 0"
   then have "x = plus_infinity" using assms
-    unfolding float_defs
-    by transfer (auto simp: emax_def unat_eq_0 simp flip: word_eq_iff_unsigned)
+    apply (unfold float_defs)
+    apply transfer
+    apply (auto simp add: unat_eq_of_nat emax_def of_nat_mask_eq)
+    done
   then show ?thesis ..
 next
   assume "sign x = 1"
   then have "x = minus_infinity" using assms
-    unfolding float_defs
-    by transfer (auto simp: emax_def unat_eq_of_nat)
+    apply (unfold float_defs)
+    apply transfer
+    apply (auto simp add: unat_eq_of_nat emax_def of_nat_mask_eq)
+    done
   then show ?thesis ..
 qed
 
@@ -461,10 +462,11 @@ lemma normal_exponent_bounds_int:
   if "is_normal x"
   for x::"('e, 'f)float"
   using that
-  unfolding normal_exponent_def is_normal_def emax_eq bias_def
-  by (auto simp del: zless_nat_conj intro!: less_int_natI
-      simp: of_nat_diff nat_add_distrib nat_mult_distrib nat_power_eq
-      power_Suc[symmetric])
+   apply (auto simp add: normal_exponent_def is_normal_def emax_eq bias_def diff_le_eq diff_less_eq
+    mask_eq_exp_minus_1 of_nat_diff simp flip: zless_nat_eq_int_zless power_Suc)
+  apply (simp flip: power_Suc mask_eq_exp_minus_1 add: nat_mask_eq)
+  apply (simp add: mask_eq_exp_minus_1)
+  done
 
 lemmas of_int_leI = of_int_le_iff[THEN iffD2]
 
@@ -510,7 +512,7 @@ proof -
     from hyps have "valof a = normal_mantissa a * 2 powr normal_exponent a"
       by (cases a rule: sign_cases)
         (auto simp: valof_eq normal_mantissa_def normal_exponent_def is_normal_def
-          powr_realpow[symmetric] powr_diff powr_add divide_simps algebra_simps)
+          powr_realpow[symmetric] powr_diff powr_add field_simps)
     from hyps this show ?thesis
       by (rule normal)
   next
@@ -518,7 +520,7 @@ proof -
     from hyps have "valof a = denormal_mantissa a * 2 powr denormal_exponent TYPE(('e, 'f)float)"
       by (cases a rule: sign_cases)
         (auto simp: valof_eq denormal_mantissa_def denormal_exponent_def is_denormal_def
-          powr_realpow[symmetric] powr_diff powr_add divide_simps algebra_simps)
+          powr_realpow[symmetric] powr_diff powr_add field_simps)
     from hyps this show ?thesis
       by (rule denormal)
   next
@@ -572,9 +574,8 @@ proof -
   then have "largest TYPE(('e, 'f)float) =
     (2 ^ (LENGTH('f) + 1) - 1) *
     2 powr (real (2 ^ LENGTH('e) - 2) + 1 - real (2 ^ (LENGTH('e) - 1)) - LENGTH('f))"
-    unfolding largest_def emax_eq bias_def
-    by (auto simp: largest_def powr_realpow[symmetric]
-        powr_minus divide_simps algebra_simps powr_diff powr_add of_nat_diff)
+    by (auto simp add: largest_def emax_eq bias_def powr_minus field_simps powr_diff powr_add of_nat_diff
+      mask_eq_exp_minus_1 simp flip: powr_realpow)
   also
   have "2 ^ LENGTH('e) \<ge> (2::nat)"
     by (simp add: self_le_power)
@@ -638,7 +639,7 @@ next
     (2 powr (LENGTH('f) + 1) - 1) * 2 powr (2 ^ (LENGTH('e) - 1) - int LENGTH('f) - 1)"
     using bitlen_denormal_mantissa[of x]
     by (auto intro!: mult_mono real_of_int_le_2_powr_bitlenI
-        simp: bitlen_normal_mantissa powr_realpow[symmetric] ge_one_powr_ge_zero
+        simp: bitlen_normal_mantissa powr_realpow[symmetric] ge_one_powr_ge_zero mask_eq_exp_minus_1
         denormal_exponent_def bias_def powr_mult_base of_nat_diff)
   also have "\<dots> \<le> largest TYPE(('e, 'f) IEEE.float)"
     unfolding largest_eq
@@ -1016,7 +1017,10 @@ proof -
   qed
 qed
 
-lemma valof_one[simp]: "valof (1::('e, 'f)float) = (if LENGTH('e) \<le> 1 then 0 else 1)"
-  by transfer (auto simp: bias_def unat_sub word_1_le_power p2_eq_1)
+lemma valof_one[simp]: "valof (1 :: ('e, 'f) float) = of_bool (LENGTH('e) > 1)"
+  apply transfer
+  apply (auto simp add: bias_def unat_mask_eq simp flip: mask_eq_exp_minus_1)
+  apply (simp add: mask_eq_exp_minus_1)
+  done
 
 end

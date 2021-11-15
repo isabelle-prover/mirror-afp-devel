@@ -75,7 +75,7 @@ However, it is always possible to add arbitrary observation instants, which allo
 and modular composition of systems. 
 As a consequence, the key concept of our setting is the notion of a clock-indexed Kripke model: 
 @{term \<open>\<Sigma>\<^sup>\<infinity> = \<nat> \<rightarrow> \<K> \<rightarrow> (\<bool> \<times> \<T>)\<close>}, where @{term \<open>\<K>\<close>} is an enumerable set of clocks, @{term \<open>\<bool>\<close>} 
-is the set of booleans – used to  indicate that a clock ticks at a given instant – and @{term \<open>\<T>\<close>} 
+is the set of booleans -- used to  indicate that a clock ticks at a given instant -- and @{term \<open>\<T>\<close>} 
 is a universal metric time space for which we only assume that it is large enough to contain all 
 individual time spaces of clocks and that it is ordered by some linear ordering @{term \<open>(\<le>\<^sub>\<T>)\<close>}.
 \<close>

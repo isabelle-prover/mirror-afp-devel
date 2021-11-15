@@ -1,6 +1,5 @@
 signature UTILS =
  sig
-    val binop : term -> term -> term -> term
     val add_: term -> term -> term
     val app_: term -> term -> term
     val concat_: term -> term -> term
@@ -19,7 +18,6 @@ signature UTILS =
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
-    val inList: ''a -> ''a list -> bool
     val isFree: term -> bool
     val length_: term -> term
     val list_: term -> term
@@ -33,7 +31,7 @@ signature UTILS =
     val nth_: term -> term -> term
     val subset_: term -> term -> term
     val thm_concl_tm :  Proof.context -> xstring -> 
-        ((indexname * typ) * cterm) list * term * Proof.context
+        cterm Vars.table * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
   end
@@ -42,79 +40,77 @@ structure Utils : UTILS =
 struct 
 (* Smart constructors for ZF-terms *)
 
-fun inList a = exists (fn b => a = b)
+fun mk_Pair t u = \<^Const>\<open>Pair for t u\<close>
 
-fun binop h t u = h $ t $ u
-val mk_Pair  = binop @{const Pair}
+fun mk_FinSet nil = \<^Const>\<open>zero\<close>
+  | mk_FinSet (e :: es) = \<^Const>\<open>cons for e \<open>mk_FinSet es\<close>\<close>
 
-fun mk_FinSet nil = @{const zero}
-  | mk_FinSet (e :: es) = @{const cons} $ e $ mk_FinSet es
+fun mk_ZFnat 0 = \<^Const>\<open>zero\<close>
+  | mk_ZFnat n = \<^Const>\<open>succ for \<open>mk_ZFnat (n-1)\<close>\<close>
 
-fun mk_ZFnat 0 = @{const zero}
-  | mk_ZFnat n = @{const succ} $ mk_ZFnat (n-1)
+fun mk_ZFlist _ nil = \<^Const>\<open>Nil\<close>
+  | mk_ZFlist f (t :: ts) = \<^Const>\<open>Cons for \<open>f t\<close> \<open>mk_ZFlist f ts\<close>\<close>
 
-fun mk_ZFlist _ nil = @{const "Nil"}
-  | mk_ZFlist f (t :: ts) = @{const "Cons"} $ f t $ mk_ZFlist f ts
+fun to_ML_list \<^Const_>\<open>Nil\<close> = []
+  | to_ML_list \<^Const_>\<open>Cons for t ts\<close> = t :: to_ML_list ts
+  | to_ML_list _ = []
 
-fun to_ML_list (@{const Nil}) = nil
-  | to_ML_list (@{const Cons} $ t $ ts) = t :: to_ML_list ts
-|   to_ML_list _ = nil
-
-fun isFree (Free (_,_)) = true
+fun isFree (Free _) = true
   | isFree _ = false
 
-fun freeName (Free (n,_)) = n
+fun freeName (Free (x, _)) = x
   | freeName _ = error "Not a free variable"
 
-val app_ = binop @{const apply}
+fun app_ t u = \<^Const>\<open>apply for t u\<close>
 
-fun tp x = @{const Trueprop} $ x
-fun length_ env = @{const length} $ env
-val nth_ = binop @{const nth}
-val add_ = binop @{const add}
-val mem_ = binop @{const mem}
-val subset_ = binop @{const Subset}
-val lt_ = binop @{const lt}
-val concat_ = binop @{const app}
-val eq_ = binop @{const IFOL.eq(i)}
+fun tp x = \<^Const>\<open>Trueprop for x\<close>
+fun length_ env = \<^Const>\<open>length for env\<close>
+fun nth_ t u = \<^Const>\<open>nth for t u\<close>
+fun add_ t u = \<^Const>\<open>add for t u\<close>
+fun mem_ t u = \<^Const>\<open>mem for t u\<close>
+fun subset_ t u = \<^Const>\<open>Subset for t u\<close>
+fun lt_ t u = \<^Const>\<open>lt for t u\<close>
+fun concat_ t u = \<^Const>\<open>app for t u\<close>
+fun eq_ t u = \<^Const>\<open>IFOL.eq \<^Type>\<open>i\<close> for t u\<close>
 
 (* Abbreviation for sets *)
-fun list_ set = @{const list} $ set
-val nat_ = @{const nat}
-val formula_ = @{const formula}
+fun list_ t = \<^Const>\<open>list for t\<close>
+val nat_ = \<^Const>\<open>nat\<close>
+val formula_ = \<^Const>\<open>formula\<close>
 
 (** Destructors of terms **)
-fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
+fun dest_eq_tms \<^Const_>\<open>IFOL.eq _ for t u\<close> = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
 
-fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ x $ _) = x
+fun dest_lhs_def \<^Const_>\<open>Pure.eq _ for x _\<close> = x
   | dest_lhs_def t = raise TERM ("dest_lhs_def", [t])
 
-fun dest_rhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
+fun dest_rhs_def \<^Const_>\<open>Pure.eq _ for _ y\<close> = y
   | dest_rhs_def t = raise TERM ("dest_rhs_def", [t])
 
 
-fun dest_apply (@{const apply} $ t $ u) = (t,u)
+fun dest_apply \<^Const_>\<open>apply for t u\<close> = (t,u)
   | dest_apply t = raise TERM ("dest_applies_op", [t])
 
-fun dest_satisfies_tms (@{const Formula.satisfies} $ A $ f) = (A,f)
+fun dest_satisfies_tms \<^Const_>\<open>Formula.satisfies for A f\<close> = (A,f)
   | dest_satisfies_tms t = raise TERM ("dest_satisfies_tms", [t]);
 
 val dest_satisfies_frm = #2 o dest_satisfies_tms
 
 fun dest_sats_frm t = t |> dest_eq_tms |> #1 |> dest_apply |>> dest_satisfies_tms ;
 
-fun dest_trueprop (@{const IFOL.Trueprop} $ t) = t
+fun dest_trueprop \<^Const_>\<open>Trueprop for t\<close> = t
   | dest_trueprop t = t
 
-fun dest_iff_tms (@{const IFOL.iff} $ t $ u) = (t, u)
+fun dest_iff_tms \<^Const_>\<open>iff for t u\<close> = (t, u)
   | dest_iff_tms t = raise TERM ("dest_iff_tms", [t])
 
 val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
 
 fun thm_concl_tm ctxt thm_ref =
-  let val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
+  let
+    val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
   in (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
 end
 
@@ -123,4 +119,4 @@ fun fix_vars thm vars ctxt = let
   in singleton (Proof_Context.export ctxt1 ctxt) thm
 end
 
-end ;
+end;

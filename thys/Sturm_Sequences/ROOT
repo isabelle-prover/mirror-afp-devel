@@ -3,6 +3,8 @@ chapter AFP
 session Sturm_Sequences (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600, document_logo = "_",
     document_variants = "document:outline=/proof,/ML:userguide"]
+  sessions
+    "Pure-ex"
   directories
     "Lib"
     "Examples"

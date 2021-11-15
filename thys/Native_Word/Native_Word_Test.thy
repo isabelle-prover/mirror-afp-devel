@@ -9,9 +9,22 @@ theory Native_Word_Test imports
   "HOL-Library.Code_Test" "Word_Lib.Bit_Shifts_Infix_Syntax"
 begin
 
+export_code
+  nat_of_uint8 uint8_of_nat
+  nat_of_uint16 uint16_of_nat
+  nat_of_uint32 uint32_of_nat
+  nat_of_uint64 uint64_of_nat
+  nat_of_uint uint_of_nat
+  in SML
+
 section \<open>Tests for @{typ uint32}\<close>
 
-notation sshiftr_uint32 (infixl ">>>" 55)
+context
+  includes bit_operations_syntax
+begin
+
+abbreviation (input) sshiftr_uint32 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint32 n w\<close>
 
 definition test_uint32 where
   "test_uint32 \<longleftrightarrow>
@@ -63,8 +76,6 @@ definition test_uint32 where
   =
    [0, 0x7FFFFFFF, 0x80000000, 0xAAAAAAAA])"
 
-no_notation sshiftr_uint32 (infixl ">>>" 55)
-
 export_code test_uint32 checking SML Haskell? OCaml? Scala
 
 notepad begin
@@ -90,9 +101,17 @@ lemma "(f :: uint32 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
+end
+
+
 section \<open>Tests for @{typ uint16}\<close>
 
-notation sshiftr_uint16 (infixl ">>>" 55)
+context
+  includes bit_operations_syntax
+begin
+
+abbreviation (input) sshiftr_uint16 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint16 n w\<close>
 
 definition test_uint16 where
   "test_uint16 \<longleftrightarrow>
@@ -144,10 +163,8 @@ definition test_uint16 where
   =
    [0, 0x7FFF, 0x8000, 0xAAAA])"
 
-no_notation sshiftr_uint16 (infixl ">>>" 55)
-
 export_code test_uint16 checking Haskell? Scala
-export_code test_uint16 in SML_word
+export_code test_uint16 checking SML_word
 
 notepad begin
 have test_uint16 by code_simp
@@ -162,9 +179,17 @@ lemma "(f :: uint16 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
+end
+
+
 section \<open>Tests for @{typ uint8}\<close>
 
-notation sshiftr_uint8 (infixl ">>>" 55)
+context
+  includes bit_operations_syntax
+begin
+
+abbreviation (input) sshiftr_uint8 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint8 n w\<close>
 
 definition test_uint8 where
   "test_uint8 \<longleftrightarrow> 
@@ -216,13 +241,10 @@ definition test_uint8 where
   =
    [0, 0x7F, 0x80, 0xAA])"
 
-no_notation sshiftr_uint8 (infixl ">>>" 55)
-
 export_code test_uint8 checking SML Haskell? Scala
 
-export_code test_uint8 in SML
-
 notepad begin
+
 have test_uint8 by eval
 have test_uint8 by code_simp
 have test_uint8 by normalization
@@ -246,9 +268,15 @@ lemma "(f :: uint8 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
+
 section \<open>Tests for @{typ "uint"}\<close>
 
-notation sshiftr_uint (infixl ">>>" 55)
+context
+  includes bit_operations_syntax
+begin
+
+abbreviation (input) sshiftr_uint (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint n w\<close>
 
 definition "test_uint \<equiv> let 
   test_list1 = (let
@@ -314,8 +342,6 @@ in
   test_list1 = map uint_of_int test_list2
 \<and> test_list_c1 = test_list_c2"
 
-no_notation sshiftr_uint (infixl ">>>" 55)
-
 export_code test_uint checking SML Haskell? OCaml? Scala
 
 lemma "test_uint"
@@ -335,9 +361,15 @@ lemma "(f :: uint \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
-section \<open> Tests for @{typ uint64} \<close>
 
-notation sshiftr_uint64 (infixl ">>>" 55)
+section \<open>Tests for @{typ uint64} \<close>
+
+context
+  includes bit_operations_syntax
+begin
+
+abbreviation (input) sshiftr_uint64 (infixl ">>>" 55)
+  where \<open>w >>> n \<equiv> signed_drop_bit_uint64 n w\<close>
 
 definition test_uint64 where
   "test_uint64 \<longleftrightarrow>
@@ -405,8 +437,6 @@ value [nbe] "[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFFFFFFF,
     , 100 >> 3, -100 >> 3, 100 >> 64, -100 >> 64
     , 100 >>> 3, -100 >>> 3, 100 >>> 64, -100 >>> 64] :: uint64 list"
 
-no_notation sshiftr_uint64 (infixl ">>>" 55)
-
 export_code test_uint64 checking SML Haskell? OCaml? Scala
 
 notepad begin
@@ -418,6 +448,9 @@ ML_val \<open>val true = @{code test_uint64}\<close>
 
 definition test_uint64' :: uint64
 where "test_uint64' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
+
+end
+
 
 section \<open>Tests for casts\<close>
 
@@ -481,5 +514,9 @@ definition test_casts_uint'' :: bool where
   "test_casts_uint'' \<longleftrightarrow>
   map uint_of_uint8 [0, 10, 0xFF] = [0, 10, 0xFF] \<and>
   map uint8_of_uint [0, 10, 0xFF] = [0, 10, 0xFF]"
+
+end
+
+end
 
 end

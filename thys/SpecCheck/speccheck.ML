@@ -20,14 +20,14 @@ sig
   val check_style : 'a SpecCheck_Output_Style_Types.output_style ->
     ('a SpecCheck_Show.show) option ->  'a SpecCheck_Shrink.shrink ->
     ('a, 's) SpecCheck_Generator.gen_state -> string -> 'a SpecCheck_Property.prop ->
-    Proof.context -> 's -> 's
+    (Proof.context, 's) Lecker.test_state
   val check_shrink : 'a SpecCheck_Show.show -> 'a SpecCheck_Shrink.shrink ->
     ('a, 's) SpecCheck_Generator.gen_state -> string -> 'a SpecCheck_Property.prop ->
-    Proof.context -> 's -> 's
+    (Proof.context, 's) Lecker.test_state
   val check : 'a SpecCheck_Show.show -> ('a, 's) SpecCheck_Generator.gen_state -> string ->
-    'a SpecCheck_Property.prop -> Proof.context -> 's -> 's
+    'a SpecCheck_Property.prop -> (Proof.context, 's) Lecker.test_state
   val check_base : ('a, 's) SpecCheck_Generator.gen_state -> string ->
-    'a SpecCheck_Property.prop -> Proof.context -> 's -> 's
+    'a SpecCheck_Property.prop -> (Proof.context, 's) Lecker.test_state
 
   (*returns all unprocessed elements of the sequence*)
   val check_seq_style : 'a SpecCheck_Output_Style_Types.output_style ->
@@ -38,7 +38,7 @@ sig
   val check_seq_base : 'a Seq.seq -> string -> 'a SpecCheck_Property.prop -> Proof.context ->
     'a Seq.seq
 
-  (*returns all unused elements of the list*)
+  (*returns all unused elements of the list; you can use this for unit tests*)
   val check_list_style : 'a SpecCheck_Output_Style_Types.output_style ->
     ('a SpecCheck_Show.show) option -> 'a list -> string -> 'a SpecCheck_Property.prop ->
     Proof.context -> 'a Seq.seq
@@ -46,6 +46,15 @@ sig
     Proof.context -> 'a Seq.seq
   val check_list_base : 'a list -> string -> 'a SpecCheck_Property.prop -> Proof.context ->
     'a Seq.seq
+
+  (*returns the untouched, passed seed; useful for composing unit tests with randomised tests*)
+  val check_unit_tests_style : 'a SpecCheck_Output_Style_Types.output_style ->
+    ('a SpecCheck_Show.show) option -> 'a list -> string -> 'a SpecCheck_Property.prop ->
+    (Proof.context, 's) Lecker.test_state
+  val check_unit_tests : 'a SpecCheck_Show.show -> 'a list -> string ->
+    'a SpecCheck_Property.prop -> (Proof.context, 's) Lecker.test_state
+  val check_unit_tests_base : 'a list -> string -> 'a SpecCheck_Property.prop ->
+    (Proof.context, 's) Lecker.test_state
 
 end
                                                                    
@@ -194,12 +203,16 @@ fun check_base gen =
 fun check_seq_style style show_opt xq name prop ctxt =
   test style empty_stats show_opt SpecCheck_Shrink.none SpecCheck_Generator.of_seq name prop ctxt
     xq
-
 fun check_seq show = check_seq_style SpecCheck_Default_Output_Style.default (SOME show)
 fun check_seq_base xq = check_seq_style SpecCheck_Default_Output_Style.default NONE xq
 
-fun check_list_style style show = check_seq_style style show o Seq.of_list
+fun check_list_style style show_opt = check_seq_style style show_opt o Seq.of_list
 fun check_list show = check_seq show o Seq.of_list
 fun check_list_base xs = check_seq_base (Seq.of_list xs)
+
+fun check_unit_tests_style style show_opt xs name prop ctxt seed =
+  check_list_style style show_opt xs name prop ctxt |> K seed
+fun check_unit_tests show xs name prop ctxt seed = check_list show xs name prop ctxt |> K seed
+fun check_unit_tests_base xs name prop ctxt seed = check_list_base xs name prop ctxt |> K seed
 
 end

@@ -1487,7 +1487,7 @@ begin
           proof -
             have "F ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>)) =
                   F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>)"
-              using 1 by auto
+              using 1 by (metis C.seqE preserves_comp)
             also have "... =
                        (F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f)) \<cdot>\<^sub>D
                          (\<Phi> (f, g) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, F g, F f] \<cdot>\<^sub>D (F f \<star>\<^sub>D D.inv (\<Phi> (g, f))) \<cdot>\<^sub>D
@@ -2191,7 +2191,8 @@ begin
       have a: "obj ?a" and b: "obj ?b"
         using f_in_hhom by auto
       have \<eta>_in_hhom: "\<guillemotleft>\<eta> : ?a \<rightarrow> ?a\<guillemotright>"
-        using a src_dom trg_dom \<eta>_in_hom by fastforce
+        using a \<eta>_in_hom
+        by (metis arrI in_hhom_def obj_simps(2-3) vconn_implies_hpar(1-2))
       text \<open>
         The following is quoted from \cite{nlab-adjoint-equivalence}:
         \begin{quotation}
@@ -2237,7 +2238,8 @@ begin
       have \<xi>_in_hom: "\<guillemotleft>\<xi> : f \<star> g \<Rightarrow> ?b\<guillemotright>" and iso_\<xi>: "iso \<xi>"
         using \<xi> by auto
       have \<xi>_in_hhom: "\<guillemotleft>\<xi> : ?b \<rightarrow> ?b\<guillemotright>"
-        using b src_cod trg_cod \<xi>_in_hom by fastforce
+        using b \<xi>_in_hom
+        by (metis \<xi> in_hhom_def iso_is_arr obj_simps(2-3) vconn_implies_hpar(1-4))
       text \<open>
         At the time of this writing, the definition of \<open>\<epsilon>\<close> given on nLab
         \cite{nlab-adjoint-equivalence} had an apparent typo:
@@ -2251,7 +2253,7 @@ begin
           have "\<guillemotleft>f \<star> inv \<eta> \<star> g : f \<star> (g \<star> f) \<star> g \<Rightarrow> f \<star> g\<guillemotright>"
           proof -
             have "\<guillemotleft>f \<star> inv \<eta> \<star> g : f \<star> (g \<star> f) \<star> g \<Rightarrow> f \<star> ?a \<star> g\<guillemotright>"
-              using assms \<eta>_in_hom iso_\<eta> by (intro hcomp_in_vhom, auto)
+              using assms \<eta>_in_hom iso_\<eta> by (intro hcomp_in_vhom) auto
             thus ?thesis
               using assms f_in_hhom hcomp_obj_arr by (metis in_hhomE)
           qed
@@ -2541,8 +2543,7 @@ begin
       have 3: "\<guillemotleft>?\<eta>' : UP.map\<^sub>0 ?a \<Rightarrow>\<^sub>S S.UP g \<star>\<^sub>S S.UP f\<guillemotright> \<and> S.iso ?\<eta>'"
       proof (intro S.comp_in_homI conjI)
         show "\<guillemotleft>S.inv (S.cmp\<^sub>U\<^sub>P (g, f)) : S.UP (g \<star> f) \<Rightarrow>\<^sub>S S.UP g \<star>\<^sub>S S.UP f\<guillemotright>"
-          using assms UP.cmp_components_are_iso UP.cmp_in_hom(2) [of g f] UP.FF_def
-          by auto
+          using assms UP.cmp_in_hom(2) by auto
         moreover show "\<guillemotleft>UP.unit ?a : UP.map\<^sub>0 ?a \<Rightarrow>\<^sub>S S.UP ?a\<guillemotright>" by auto
         moreover show "\<guillemotleft>S.UP \<eta> : S.UP ?a \<Rightarrow>\<^sub>S S.UP (g \<star> f)\<guillemotright>"
           using 2 by simp
@@ -2568,8 +2569,7 @@ begin
         using \<xi>' by auto
       let ?\<epsilon>' = "UP.unit ?b \<cdot>\<^sub>S \<xi>' \<cdot>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (f, g))"
       have \<epsilon>': "\<guillemotleft>?\<epsilon>' : S.UP (f \<star> g) \<Rightarrow>\<^sub>S S.UP ?b\<guillemotright>"
-        using assms(2-3) S.UP_map\<^sub>0_obj
-        by (intro S.in_homI) auto
+        using assms(2-3) by auto
       have ex_un_\<epsilon>: "\<exists>!\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
       proof -
         have "\<exists>\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
@@ -2608,9 +2608,7 @@ begin
           show "\<guillemotleft>UP.unit ?b : UP.map\<^sub>0 ?b \<Rightarrow>\<^sub>S S.UP ?b\<guillemotright>"
             using b UP.unit_char by simp
           show "\<guillemotleft>\<xi>' \<cdot>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (f, g)) : S.UP (f \<star> g) \<Rightarrow>\<^sub>S UP.map\<^sub>0 ?b\<guillemotright>"
-            using assms UP.cmp_components_are_iso VV.arr_char S.cmp\<^sub>U\<^sub>P_in_hom [of "(f, g)"]
-                  E'.counit_in_hom S.UP_map\<^sub>0_obj
-            by (intro S.comp_in_homI) auto
+            using assms by auto
         qed
         thus "S.seq \<xi>' (S.inv (S.cmp\<^sub>U\<^sub>P (f, g)))" by auto
       qed
@@ -2663,7 +2661,7 @@ begin
               using assms b UP.unit_char S.whisker_right S.UP_map\<^sub>0_obj by auto
             moreover have "S.UP f \<star>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (g, f)) \<cdot>\<^sub>S S.UP \<eta> =
                            (S.UP f \<star>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (g, f))) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S S.UP \<eta>)"
-              using assms S.whisker_left S.comp_assoc by auto
+              using assms S.whisker_left by auto
             ultimately show ?thesis
               using S.comp_assoc by simp
           qed
@@ -2686,7 +2684,7 @@ begin
                 proof -
                   have "\<guillemotleft>\<xi>' \<star>\<^sub>S S.UP f :
                           (S.UP f \<star>\<^sub>S S.UP g) \<star>\<^sub>S S.UP f \<Rightarrow>\<^sub>S S.trg (S.UP f) \<star>\<^sub>S S.UP f\<guillemotright>"
-                    using assms by (intro S.hcomp_in_vhom, auto)
+                    using assms by auto
                   moreover have "\<guillemotleft>S.\<a>' (S.UP f) (S.UP g) (S.UP f) :
                                     S.UP f \<star>\<^sub>S S.UP g \<star>\<^sub>S S.UP f \<Rightarrow>\<^sub>S (S.UP f \<star>\<^sub>S S.UP g) \<star>\<^sub>S S.UP f\<guillemotright>"
                     using assms S.assoc'_in_hom by auto
@@ -2799,7 +2797,7 @@ begin
                  using UP.runit_coherence [of f] S.strict_runit by simp
                moreover have "S.iso (S.cmp\<^sub>U\<^sub>P (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.unit (src f)))"
                  using UP.unit_char UP.cmp_components_are_iso VV.arr_char S.UP_map\<^sub>0_obj
-                 by (intro S.isos_compose S.seqI) auto
+                 by (intro S.isos_compose) auto
                ultimately have
                  "S.UP \<r>[f] = S.UP f \<cdot>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.unit (src f)))"
                  using S.invert_side_of_triangle(2)

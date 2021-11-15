@@ -140,7 +140,7 @@ subsection \<open>Parser for IMP Programs\<close>
       val mk_aexp_V' = mk_aexp_V o mk_var
       *)
 
-      fun mk_aexp_const i = @{const N} $ HOLogic.mk_number @{typ int} i
+      fun mk_aexp_const i = \<^Const>\<open>N\<close> $ HOLogic.mk_number @{typ int} i
                         
             
       fun mk_var_i x = Const (@{const_abbrev VARIABLEI}, dummyT) $ mk_varname x
@@ -157,10 +157,10 @@ subsection \<open>Parser for IMP Programs\<close>
 
       datatype rval = RV_AEXP of term | RV_VAR of string
       fun rv_t (RV_AEXP t) = t
-        | rv_t (RV_VAR x) = @{const Vidx} $ mk_var_i x $ mk_aexp_const 0
+        | rv_t (RV_VAR x) = \<^Const>\<open>Vidx\<close> $ mk_var_i x $ mk_aexp_const 0
 
       val rv_var = RV_VAR
-      fun rv_var_idx x i = RV_AEXP (@{const Vidx} $ mk_var_a x $ rv_t i)
+      fun rv_var_idx x i = RV_AEXP (\<^Const>\<open>Vidx\<close> $ mk_var_a x $ rv_t i)
       
       
       (*fun rv_int t = RV_AEXP (@{const N} $ (rv_t t))*)
@@ -169,34 +169,34 @@ subsection \<open>Parser for IMP Programs\<close>
       fun rv_unop f t = RV_AEXP (f $ rv_t t)
       fun rv_binop f a b = RV_AEXP (f $ rv_t a $ rv_t b)
       
-      fun rv_BC t = RV_AEXP (@{const Bc}$t)
-      fun rv_BC' true = rv_BC @{const True}
-        | rv_BC' false = rv_BC @{const False}
+      fun rv_BC t = RV_AEXP \<^Const>\<open>Bc for t\<close>
+      fun rv_BC' true = rv_BC \<^Const>\<open>True\<close>
+        | rv_BC' false = rv_BC \<^Const>\<open>False\<close>
 
-      fun rv_not t = RV_AEXP (@{const Not} $ rv_t t)
+      fun rv_not t = RV_AEXP \<^Const>\<open>Not for \<open>rv_t t\<close>\<close>
                       
       (* TODO: Add other constructors here *)
       
       (* TODO: Interface for variable tagging mk_var_xxx is not clear! *)
       
       (* Commands*)
-      val mk_Skip = @{const SKIP}
+      val mk_Skip = \<^Const>\<open>SKIP\<close>
       fun mk_Assign x t = antf(@{term Assign})$x$t
-      fun mk_AssignIdx x i t = @{const AssignIdx}$x$i$t
-      fun mk_ArrayCpy d s = @{const ArrayCpy}$d$s
-      fun mk_ArrayInit d = @{const ArrayClear}$d
-      fun mk_Scope c = @{const Scope}$c
-      fun mk_Seq c1 c2 = @{const Seq}$c1$c2
+      fun mk_AssignIdx x i t = @{Const AssignIdx}$x$i$t
+      fun mk_ArrayCpy d s = \<^Const>\<open>ArrayCpy for d s\<close>
+      fun mk_ArrayInit d = \<^Const>\<open>ArrayClear for d\<close>
+      fun mk_Scope c = \<^Const>\<open>Scope for c\<close>
+      fun mk_Seq c1 c2 = \<^Const>\<open>Seq for c1 c2\<close>
 
-      fun mk_Inline t = @{const Inline}$t
-      fun mk_Params t = @{const Params}$t
+      fun mk_Inline t = \<^Const>\<open>Inline for t\<close>
+      fun mk_Params t = \<^Const>\<open>Params for t\<close>
         
       val While_Annot_c = Const (@{const_abbrev While_Annot}, dummyT --> @{typ "bexp \<Rightarrow> com \<Rightarrow> com"})
         
-      fun mk_If b t e = @{const If} $ rv_t b $ t $ e
+      fun mk_If b t e = \<^Const>\<open>If for \<open>rv_t b\<close> t e\<close>
       fun mk_While_annot annots b c = While_Annot_c $ annots $ rv_t b $ c
 
-      fun mk_pcall name = @{const PCall} $ (HOLogic.mk_string name)
+      fun mk_pcall name = \<^Const>\<open>PCall for \<open>HOLogic.mk_string name\<close>\<close>
       
               
       
@@ -219,8 +219,8 @@ subsection \<open>Parser for IMP Programs\<close>
         | list_Seq (c::cs) = mk_Seq c (list_Seq cs)
 
         
-      fun mk_AssignIdx_retv x i y = @{const AssignIdx_retv}$x$i$y
-      fun mk_ArrayCpy_retv d s = @{const ArrayCpy_retv}$d$s
+      fun mk_AssignIdx_retv x i y = \<^Const>\<open>AssignIdx_retv for x i y\<close>
+      fun mk_ArrayCpy_retv d s = \<^Const>\<open>ArrayCpy_retv for d s\<close>
       fun mk_Assign_retv x t = antf(@{term Assign_retv})$x$t
       
 
@@ -307,7 +307,6 @@ subsection \<open>Parser for IMP Programs\<close>
         type T = op_decl list Inttab.table
         val empty = Inttab.empty
         val merge = Inttab.merge_list name_eq_op_decl
-        val extend = I
       )
   
       fun tab_add_unop (p,n,f) = Inttab.insert_list name_eq_op_decl (p,(Unop,(n,f)))

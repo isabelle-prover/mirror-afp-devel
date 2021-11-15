@@ -4,8 +4,10 @@ Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
 section \<open>Preliminaries\<close>
 theory Preliminaries
-imports Main "HOL-Library.Lattice_Syntax"
+imports Main
 begin
+
+unbundle lattice_syntax
 
 text \<open>Possible modes for variables:\<close>
 datatype Mode = AsmNoRead | AsmNoWrite | GuarNoRead | GuarNoWrite

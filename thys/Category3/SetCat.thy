@@ -657,8 +657,7 @@ begin
               ultimately have
                    3: "?f \<cdot> x =
                        MkArr {U} (Dom b) (compose {U} (Map ?f) (\<lambda>_ \<in> {U}. DOWN (IMG x)))"
-                using 1 x comp_char [of ?f "MkElem (IMG x) a"]
-                by (metis (mono_tags, lifting) in_homE seqI)
+                by (metis (no_types, lifting) "1" Map.simps(1) comp_MkArr in_homE x)
               have 4: "compose {U} (Map ?f) (\<lambda>_ \<in> {U}. DOWN (IMG x)) = Map (F x)"
               proof
                 fix y

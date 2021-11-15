@@ -2,7 +2,7 @@ chapter AFP
 
 session Relational_Method (AFP) = "HOL" +
   description \<open>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols\<close>
-  options [timeout = 300]
+  options [timeout = 600]
   theories
     Definitions
     Authentication

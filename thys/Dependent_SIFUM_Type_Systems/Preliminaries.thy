@@ -6,7 +6,7 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 *)
 section \<open>Preliminaries\<close>
 theory Preliminaries
-imports Main (* "HOL-Library.Lattice_Syntax" *)
+imports Main
 begin
 
 text \<open>Possible modes for variables:\<close>

@@ -318,16 +318,16 @@ subsection \<open>General Data Protection Regulation (GDPR)\<close>
 text \<open>Since 26th May 2018, the GDPR has become mandatory within the European Union and hence 
 also for any supplier of IT products. Breaches of the regulation will be fined with penalties 
 of 20 Million EUR. Despite the relatively large size of the document of 209 pages, the technically 
-relevant portion for us is only about 30 pages (Pages 81–111, Chapters I to Chapter III, Section 3). 
+relevant portion for us is only about 30 pages (Pages 81--111, Chapters I to Chapter III, Section 3). 
 In summary, Chapter III specifies that the controller must give the data subject read access (1) 
-to any information, communications, and “meta-data” of the data, e.g., retention time and purpose. 
+to any information, communications, and ``meta-data'' of the data, e.g., retention time and purpose. 
 In addition, the system must enable deletion of data (2) and restriction of processing.
 An invariant condition for data processing resulting from these Articles is that the system functions 
 must preserve any of the access rights of personal data (3).
 
 Using labeled data, we can now express the essence of Article 4 Paragraph (1): 
-’personal data’ means any information relating to an identified or identifiable natural 
-person (’data subject’).
+`personal data' means any information relating to an identified or identifiable natural 
+person (`data subject').
 
 The labels of data must not be changed by processing: we have identified this  as 
 an invariant (3) resulting from the GDPR above. This invariant is formalized in 
@@ -337,7 +337,7 @@ our Isabelle model by the type definition of functions on labeled data @{text \<
 subsection \<open>Policy enforcement and privacy preservation\<close>
 text \<open>We can now use the labeled data to encode the privacy constraints of the 
     GDPR in the rules. For example, the get data rule (see Section 4.3) has labelled data 
-    @{text \<open>((Actor a’, as), n)\<close>} and uses the labeling in the precondition to guarantee 
+    @{text \<open>((Actor a', as), n)\<close>} and uses the labeling in the precondition to guarantee 
     that only entitled users can get data.
 
 We can prove that processing preserves ownership as defined in the initial state for all paths 

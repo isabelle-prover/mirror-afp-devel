@@ -2,6 +2,8 @@ chapter AFP
 
 session LOFT (AFP) = Iptables_Semantics +
   options [timeout = 1200]
+  sessions
+    "Pure-ex"
   directories
     "Examples/OF_conv_test"
     "Examples/RFC2544"

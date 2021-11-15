@@ -1,4 +1,4 @@
-(* Title:     HOL/MiniML/Instance.thy
+(* Title:     MiniML/Instance.thy
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)

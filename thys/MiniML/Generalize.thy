@@ -1,4 +1,4 @@
-(* Title:     HOL/MiniML/Generalize.thy
+(* Title:     MiniML/Generalize.thy
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -45,11 +45,11 @@ lemma free_tv_gen_cons [simp]:
   by fastforce
 
 lemma bound_tv_gen [simp]: 
-  "bound_tv (gen A t1) = (free_tv t1) - (free_tv A)"
-  by (induct t1) auto
+  "bound_tv (gen A t) = free_tv t - free_tv A"
+by (induction t) auto
 
 lemma new_tv_compatible_gen: "new_tv n t \<Longrightarrow> new_tv n (gen A t)"
-  by (induct t) auto
+by (induction t) auto
 
 lemma gen_eq_gen_ML: "gen A t = gen_ML A t"
 apply (unfold gen_ML_def)
@@ -77,8 +77,8 @@ apply blast
 done
 
 lemma bound_typ_inst_gen [simp]:
-    "free_tv(t::typ) \<subseteq> free_tv(A) \<Longrightarrow> bound_typ_inst S (gen A t) = t"
-  by (induct t) simp_all
+  "free_tv(t::typ) \<subseteq> free_tv(A) \<Longrightarrow> bound_typ_inst S (gen A t) = t"
+by (induct t) simp_all
 
 lemma gen_bound_typ_instance: 
   "gen ($ S A) ($ S t) \<le> $ S (gen A t)"

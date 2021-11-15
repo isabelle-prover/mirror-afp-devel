@@ -1,7 +1,8 @@
 chapter AFP
 
-session Pre_BZ (AFP) in "Pre_BZ" = "Subresultants" +
-  options [timeout = 600]
+session Berlekamp_Zassenhaus (AFP) = Subresultants +
+  description "Berlekamp-Zassenhaus's Factorization Algorithm"
+  options [timeout = 1200]
   sessions
     "HOL-Number_Theory"
     "HOL-Types_To_Sets"
@@ -9,20 +10,6 @@ session Pre_BZ (AFP) in "Pre_BZ" = "Subresultants" +
     Polynomial_Interpolation
     "Efficient-Mergesort"
     Show
-  theories
-    Jordan_Normal_Form.Matrix_Kernel
-    Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
-    "Efficient-Mergesort.Efficient_Sort"
-    "HOL-Number_Theory.Residues"
-    "HOL-Types_To_Sets.Types_To_Sets"
-    Native_Word.Uint32
-    Native_Word.Uint64
-    Native_Word.Code_Target_Bits_Int
-    Polynomial_Factorization.Rational_Factorization 
-
-session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
-  description "Berlekamp-Zassenhaus's Factorization Algorithm"
-  options [timeout = 1200]
   theories
     (* Arithmetic for Finite Fields *)
     Finite_Field

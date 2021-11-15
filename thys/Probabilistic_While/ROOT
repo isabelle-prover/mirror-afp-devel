@@ -4,7 +4,7 @@ session Probabilistic_While (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
     MFMC_Countable
-    Pre_BZ
+    "HOL-Types_To_Sets" 
   theories
     While_SPMF
     Bernoulli

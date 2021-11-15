@@ -117,7 +117,7 @@ let
     let
       val lhs' = Code_Evaluation.dynamic_value_strict ctxt lhs;
       val clhs' = Thm.cterm_of ctxt lhs';
-      val inst = Thm.instantiate ([], [(var, clhs')]);
+      val inst = Thm.instantiate (TVars.empty, Vars.make [(var, clhs')]);
     in PRIMITIVE inst end;
   fun eval_schematic_rhs ctxt t = (case try (HOLogic.dest_eq o HOLogic.dest_Trueprop) t of
       SOME (lhs, Var var) => compute ctxt var lhs
@@ -2428,7 +2428,7 @@ fun using_master_directory_term ctxt s =
 fun real_in_approx_tac ctxt p =
   let
     val inst_approx =
-       ([], [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
+       (TVars.empty, Vars.make [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
     val approx_thm = Thm.instantiate inst_approx @{thm real_in_approxI}
   in
     resolve_tac ctxt [approx_thm]
@@ -2439,7 +2439,7 @@ fun real_in_approx_tac ctxt p =
 fun real_subset_approx_tac ctxt p =
   let
     val inst_approx =
-       ([], [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
+       (TVars.empty, Vars.make [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
     val approx_thm = Thm.instantiate inst_approx @{thm real_subset_approxI}
   in
     resolve_tac ctxt [approx_thm]
@@ -2456,7 +2456,7 @@ fun DIM_tac defs ctxt = (Simplifier.simp_tac (basic_nt_ss ctxt @{named_theorems 
 
 fun subset_approx_preconds_tac ctxt p thm =
   let
-    val inst_approx = ([], [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
+    val inst_approx = (TVars.empty, Vars.make [((("prec", 0), @{typ nat}), mk_nat p |> Thm.cterm_of ctxt)])
   in
             resolve_tac ctxt [Thm.instantiate inst_approx thm]
       THEN' SOLVED' (reify_floatariths_tac ctxt)
@@ -2573,8 +2573,8 @@ fun numeric_precond_step_tac defs thms p = Subgoal.FOCUS_PARAMS (fn {context, co
 fun integral_bnds_tac_gen_start sstep d p m N atol filename ctxt i =
   let
     val insts =
-       ([((("'i", 0), @{sort "{enum}"}), mk_numeralT (d + 1) |> Thm.ctyp_of ctxt)],
-        [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
+       (TVars.make [((("'i", 0), @{sort "{enum}"}), mk_numeralT (d + 1) |> Thm.ctyp_of ctxt)],
+        Vars.make [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
               (@{term num_options} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $
@@ -2601,16 +2601,16 @@ fun mk_proj_c1 (m, n, s, ds) = HOLogic.mk_tuple [mk_nat m, mk_nat n, HOLogic.mk_
 fun mk_projs_c1 projs = HOLogic.mk_list @{typ "nat \<times> nat \<times> string \<times> nat list"} (map mk_proj_c1 projs)
 
 fun TAG_optns_thm p sstep m N atol projs filename ctxt =
-  Thm.instantiate ([],
-          [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
+  Thm.instantiate (TVars.empty,
+          Vars.make [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
              @{term num_options} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs projs)
           |> Thm.cterm_of ctxt)]) @{thm TAG_optnsI}
 
 fun TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt =
-  Thm.instantiate ([],
-          [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
+  Thm.instantiate (TVars.empty,
+        Vars.make [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
              @{term num_options_c1} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs_c1 projs $

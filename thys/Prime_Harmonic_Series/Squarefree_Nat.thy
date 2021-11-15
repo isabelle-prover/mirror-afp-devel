@@ -1,6 +1,6 @@
 (*
   File:   Squarefree_Nat.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The unique decomposition of a natural number into a squarefree part and a square.
 *)

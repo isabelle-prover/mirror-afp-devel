@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/generators/gen_int.ML
+(*  Title:      SpecCheck/Generators/gen_int.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
     Author:     Christopher League
 

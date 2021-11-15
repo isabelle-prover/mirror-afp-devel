@@ -371,7 +371,8 @@ proof -
 
     from pq have "p \<in> lotteries_on alts" "q \<in> lotteries_on alts" 
       by (simp_all add: sd_chain_lottery)
-    from improve_lottery_support_subset[OF this less supp_eq] guess s . note s = this
+    from improve_lottery_support_subset[OF this less supp_eq]
+    obtain s where s: "s \<in> lotteries_on alts" "Pareto (SD \<circ> R) q s" "set_pmf s \<subset> set_pmf p" .
     from improve_lottery(2)[of r] r s have "s \<succ>[Pareto(SD\<circ>R)] r"
       by (auto intro: SD.Pareto.strict_weak_trans)
     from improve_lottery(3)[OF r(1) s(1) this] supp_eq r 

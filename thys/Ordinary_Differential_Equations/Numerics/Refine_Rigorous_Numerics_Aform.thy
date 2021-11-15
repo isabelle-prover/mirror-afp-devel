@@ -1608,8 +1608,12 @@ lemma inter_aform_plane_refine:
 lemma Joints_reduce_aforms: "x \<in> Joints X \<Longrightarrow> x \<in> Joints (reduce_aforms prec t X)"
 proof (auto simp: reduce_aforms_def summarize_threshold_def[abs_def] Joints_def valuate_def aform_val_def, goal_cases)
   case (1 e)
-  from summarize_aformsE[OF \<open>e \<in> _\<close> order_refl, of "X" "prec" t]
-  guess e' .
+  from summarize_aformsE[OF \<open>e \<in> _\<close> order_refl]
+  obtain e' where
+    "aform_vals e X = aform_vals e' (summarize_aforms prec t (degree_aforms X) X)"
+    "\<And>i. i < degree_aforms X \<Longrightarrow> e i = e' i"
+    "e' \<in> funcset UNIV {- 1..1}"
+    by blast
   thus ?case
     by (auto intro!: image_eqI[where x=e'] simp: aform_vals_def)
 qed

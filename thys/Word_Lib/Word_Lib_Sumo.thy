@@ -42,10 +42,12 @@ imports
   Word_32
   Word_Syntax
   Signed_Division_Word
+  Singleton_Bit_Shifts
   More_Word_Operations
   Many_More
 begin
 
+unbundle bit_operations_syntax
 unbundle bit_projection_infix_syntax
 
 declare word_induct2[induct type]
@@ -58,7 +60,7 @@ lemmas of_int_and_nat = unsigned_of_nat unsigned_of_int signed_of_int signed_of_
 
 bundle no_take_bit
 begin
-  declare of_int_and_nat[simp del]
+declare of_int_and_nat[simp del]
 end
 
 lemmas bshiftr1_def = bshiftr1_eq

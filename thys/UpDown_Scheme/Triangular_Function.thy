@@ -63,7 +63,7 @@ lemma ix_gt: "p \<in> sparsegrid dm lm \<Longrightarrow> d < dm \<Longrightarrow
 lemma \<Phi>_eq_0: assumes x: "\<exists>d<length p. x d < 0 \<or> 1 < x d" and p: "p \<in> sparsegrid dm lm" shows "\<Phi> p x = 0"
   unfolding \<Phi>_def
 proof (rule prod_zero)
-  from x guess d ..
+  from x obtain d where "d < length p \<and> (x d < 0 \<or> 1 < x d)" ..
   with p[THEN ix_lt, of d] p[THEN ix_gt, of d] p
   show "\<exists>a\<in>{..<length p}. \<phi> (p ! a) (x a) = 0"
     apply (cases "p!d")

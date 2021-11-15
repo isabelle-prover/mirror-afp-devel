@@ -1,6 +1,6 @@
 (* 
   File:     Non_Regular_Languages.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
   
   This file provides some tools for showing the non-regularity of a language, either 
   via an infinite set of equivalence classes or via the Pumping Lemma.
@@ -184,8 +184,11 @@ corollary pumping_lemma_not_regular_lang:
 proof
   assume "regular_lang A"
   then obtain r where r: "lang r = A" by blast
-  from pumping_lemma[of r] guess n .
-  from this[of "z n"] and assms[of n] obtain u v w 
+  from pumping_lemma[of r] obtain n
+    where "z n \<in> lang r \<Longrightarrow> n \<le> length (z n) \<Longrightarrow>
+      \<exists>u v w. z n = u @ v @ w \<and> length (u @ v) \<le> n \<and> v \<noteq> [] \<and> (\<forall>i. u @ repeat i v @ w \<in> lang r)"
+    by metis
+  from this and assms[of n] obtain u v w 
     where "z n = u @ v @ w" and "length (u @ v) \<le> n" and "v \<noteq> []" and 
           "\<And>i. u @ repeat i v @ w \<in> lang r" by (auto simp: r)
   with assms(3)[of n u v w] show False by (auto simp: r)

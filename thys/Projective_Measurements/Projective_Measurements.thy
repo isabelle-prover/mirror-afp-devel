@@ -177,7 +177,7 @@ proof
   finally show "Complex_Matrix.trace (complex_of_real ((1::real)/n) \<cdot>\<^sub>m 1\<^sub>m n) =  1" .
 next
   show "Complex_Matrix.positive (complex_of_real (1 / real n) \<cdot>\<^sub>m 1\<^sub>m n)" 
-    by (rule positive_smult, (auto simp add: positive_one))
+    by (rule positive_smult, (auto simp add: positive_one less_eq_complex_def))
 qed
   
 lemma (in cpx_sq_mat) max_mix_density_square:
@@ -230,13 +230,13 @@ next
       have "Complex_Matrix.positive R" using assms unfolding density_operator_def by simp
       hence "0 \<le> (Complex_Matrix.trace (R * P))" using  positive_proj_trace[of P R n] assms 
           False by auto
-      hence "0 \<le> Re (Complex_Matrix.trace (R * P))" by simp
+      hence "0 \<le> Re (Complex_Matrix.trace (R * P))" by (simp add: less_eq_complex_def)
       hence "0 \<le> 1/(Re (Complex_Matrix.trace (R * P)))" by simp
       have "Re (Complex_Matrix.trace (R * P)) = Complex_Matrix.trace (R * P)" 
         using assms \<open>Complex_Matrix.positive R\<close> trace_proj_pos_real by simp
       hence inv: "1/ (Complex_Matrix.trace (R * P)) = 1/(Re (Complex_Matrix.trace (R * P)))" by simp
       thus "0 \<le> 1/ (Complex_Matrix.trace (R * P))" 
-        using \<open>0 \<le> 1/(Re (Complex_Matrix.trace (R * P)))\<close> by (simp add: inv) 
+        using \<open>0 \<le> 1/(Re (Complex_Matrix.trace (R * P)))\<close> by (simp add: inv less_eq_complex_def) 
       show "Complex_Matrix.positive (P * R * P)" using assms 
           positive_close_under_left_right_mult_adjoint[of P n R]
         by (simp add: \<open>Complex_Matrix.positive R\<close> hermitian_def projector_def)

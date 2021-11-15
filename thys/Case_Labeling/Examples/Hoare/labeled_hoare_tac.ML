@@ -87,7 +87,7 @@ fun mk_bodyC [] = HOLogic.unit
 fun get_vars c =
   let
     val d = Logic.strip_assums_concl c;
-    val Const _ $ pre $ _ $ _ = HOLogic.dest_Trueprop d;
+    val Const _ $ pre $ _ $ _ $ _ = HOLogic.dest_Trueprop d;
   in mk_vars pre end;
 
 fun mk_CollectC tm =
@@ -112,7 +112,9 @@ fun Mset ctxt prop =
     val MsetT = fastype_of big_Collect;
     fun Mset_incl t = HOLogic.mk_Trueprop (inclt MsetT $ Free (Mset, MsetT) $ t);
     val impl = Logic.mk_implies (Mset_incl big_Collect, Mset_incl small_Collect);
-    val th = Goal.prove ctxt [Mset, P] [] impl (fn _ => blast_tac ctxt 1);
+    val th =
+      Goal.prove ctxt [Mset, P] [] impl
+        (fn {context = goal_ctxt, ...} => blast_tac goal_ctxt 1);
  in (vars, th) end;
 
 end;

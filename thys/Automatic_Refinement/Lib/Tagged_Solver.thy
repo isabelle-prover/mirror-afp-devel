@@ -59,7 +59,6 @@ ML \<open>
   
       fun merge ((n1,t1),(n2,t2)) 
         = (Item_Net.merge (n1,n2), Symtab.merge ((op =) o apply2 #2) (t1,t2))
-      val extend = I 
     )
 
     fun get_solvers ctxt = solvers.get (Context.Proof ctxt) 

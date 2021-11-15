@@ -79,9 +79,16 @@ lemma map_index'_Suc[simp]: "map_index' (Suc i) f xs = map_index' i (\<lambda>i.
 abbreviation (input) "zero n \<equiv> replicate n False"
 abbreviation (input) "SUC \<equiv> \<lambda>_::unit. Suc"
 definition "test_bit m n \<equiv> (m :: nat) div 2 ^ n mod 2 = 1"
+lemma test_bit_eq_iff: \<open>test_bit = bit\<close>
+  by (simp add: fun_eq_iff test_bit_def bit_iff_odd_drop_bit mod_2_eq_odd flip: drop_bit_eq_div)
 definition "downshift m \<equiv> (m :: nat) div 2"
 definition "upshift m \<equiv> (m :: nat) * 2"
-definition "set_bit n m \<equiv> m + (if \<not> test_bit m n then 2 ^ n else (0 :: nat))"
+lemma set_bit_def: "set_bit n m \<equiv> m + (if \<not> test_bit m n then 2 ^ n else (0 :: nat))"
+  apply (rule eq_reflection)
+  apply (rule bit_eqI)
+  apply (subst disjunctive_add)
+   apply (auto simp add: bit_simps test_bit_eq_iff)
+  done
 definition "cut_bits n m \<equiv> (m :: nat) mod 2 ^ n"
 
 typedef interp = "{(n :: nat, xs :: nat list). \<forall>x \<in> set xs. len x \<le> n}"
@@ -648,9 +655,11 @@ global_interpretation Presb: Formula
     (=)"
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
-  by standard (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
+  apply standard apply (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
     Formula_Operations.lformula.simps Formula_Operations.satisfies_gen.simps Formula_Operations.wf.simps
     dest: satisfies0_cong split: presb.splits if_splits)
+  apply (simp add: downshift_def)
+  done
 
 (*Workaround for code generation*)
 lemma check_eqv_code[code]: "check_eqv idx r s =

@@ -361,8 +361,10 @@ lemma less_imp_erf_real_less:
 proof -
   from assms have "\<exists>z. z > a \<and> z < b \<and> erf b - erf a = (b - a) * (2 / sqrt pi * exp (- z\<^sup>2))"
     by (intro MVT2) (auto intro!: derivative_eq_intros simp: field_simps)
-  then guess z by (elim exE conjE) note z = this
-  note z(3)
+  then obtain z where z: "a < z" "z < b"
+    and erf: "erf b - erf a = (b - a) * (2 / sqrt pi * exp (- z\<^sup>2))"
+    by blast
+  note erf
   also from assms have "(b - a) * (2 / sqrt pi * exp (- z\<^sup>2)) > 0"
     by (intro mult_pos_pos divide_pos_pos) simp_all
   finally show ?thesis by simp

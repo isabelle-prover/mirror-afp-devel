@@ -10,6 +10,7 @@ session Dirichlet_L (AFP) = "Zeta_Function" +
     "Dirichlet_Series"
     "Zeta_Function"
     "Bertrands_Postulate"
+    "Finitely_Generated_Abelian_Groups"
   theories [document = false]
     "HOL-Library.Landau_Symbols"
     "Zeta_Function.Zeta_Function"

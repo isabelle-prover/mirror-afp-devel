@@ -9,6 +9,8 @@ theory Residuated_Boolean_Algebras
   imports Residuated_Lattices
 begin
 
+unbundle lattice_syntax
+
 subsection \<open>Conjugation on Boolean Algebras\<close>
 
 text \<open>
@@ -413,10 +415,10 @@ lemma maddux2b: "x\<cdot>a \<sqinter> y \<le> (x \<sqinter> (y \<lhd> a))\<cdot>
 lemma maddux2c: "(a \<lhd> x) \<sqinter> y \<le> a \<lhd> (x \<sqinter> (y \<rhd> a))"
   by (insert maddux2 [of "\<lambda>x. a \<lhd> x"]) simp
   
-lemma maddux2d: "(a \<rhd> x) \<sqinter> y \<le> a \<rhd> (x \<sqinter> a\<cdot>y)"
+lemma maddux2d: "(a \<rhd> x) \<sqinter> y \<le> a \<rhd> (x \<sqinter> (a\<cdot>y))"
   by (insert maddux2 [of "\<lambda>x. a \<rhd> x"]) simp
 
-lemma maddux2e: "(x \<lhd> a) \<sqinter> y \<le> (x \<sqinter> y\<cdot>a) \<lhd> a"
+lemma maddux2e: "(x \<lhd> a) \<sqinter> y \<le> (x \<sqinter> (y\<cdot>a)) \<lhd> a"
   by (insert maddux2 [of "\<lambda>x. x \<lhd> a"]) simp
   
 lemma maddux2f: "(x \<rhd> a) \<sqinter> y \<le> (x \<sqinter> (a \<lhd> y)) \<rhd> a"
@@ -657,7 +659,7 @@ next
     by (metis conjugate_l_def double_compl resl3)
   also have "... = y\<cdot>(1 \<lhd> x)"
     by (metis assms jonsson1b jonsson1c jonsson3c mult_onel)
-  finally show "y \<lhd> x = y\<cdot>(1 \<lhd> x)".
+  finally show "y \<lhd> x = y\<cdot>(1 \<lhd> x)" .
 qed
 
 end (* residuated_boolean_monoid *)

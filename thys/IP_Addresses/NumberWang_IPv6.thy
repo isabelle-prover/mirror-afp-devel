@@ -39,6 +39,10 @@ proof -
   using assms by(simp)
 qed
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma length_drop_mask_outer: fixes ip::"'a::len word"
   shows "LENGTH('a) - n' = len \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> len"
   apply(subst word_and_mask_shiftl)
@@ -49,6 +53,7 @@ lemma length_drop_mask_outer: fixes ip::"'a::len word"
   apply(simp add: word_size)
   apply(simp add: length_drop_mask)
   done
+
 lemma length_drop_mask_inner: fixes ip::"'a::len word"
   shows "n \<le> LENGTH('a) - n' \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> n"
   apply(subst word_and_mask_shiftl)
@@ -60,9 +65,10 @@ lemma length_drop_mask_inner: fixes ip::"'a::len word"
   apply(simp add: length_drop_mask)
   done
 
+end
 
 lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = (mask 128 :: 'a::len word)"
-  by (simp add: mask_eq push_bit_of_1)
+  by (simp add: mask_numeral)
 
 
 (*-------------- things for ipv6 syntax round trip property two ------------------*)
@@ -104,18 +110,14 @@ proof -
      apply(rule word_less_two_pow_divI)
        using assms by(simp_all add: mnhelper2 p2_gt_0)
 
-  from assms show ?thesis
-    apply(subst ucast_bl)+
-    apply(subst shiftl_of_bl)
-    apply(subst of_bl_append)
-    apply simp
-    apply(subst word_and_mask_shiftl)
-    apply(subst shiftr_div_2n_w)
-     subgoal by(simp add: word_size; fail)
-    apply(subst word_div_less)
-     subgoal by(rule mnhelper3)
-    apply simp
-    done
+     show ?thesis
+       apply (rule bit_word_eqI)
+       apply (simp only: bit_simps)
+       using assms(1)
+       apply auto
+       apply (transfer fixing: m n)
+       apply auto
+       done
 qed
 
 
@@ -214,9 +216,10 @@ lemma helper_masked_ucast_equal_generic:
   shows "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b << n) && (mask 16 << n) >> n) = b"
 proof -
   have ucast_mask: "(ucast:: 16 word \<Rightarrow> 128 word) b && mask 16 = ucast b" 
-    by transfer (simp flip: take_bit_eq_mask)
+    by (simp only: flip: take_bit_eq_mask unsigned_take_bit_eq) (simp add: take_bit_word_eq_self)
   from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
-    by (auto simp add: bit_simps word_size intro!: bit_word_eqI)
+    by (simp only: take_bit_of_mask flip: take_bit_eq_mask unsigned_take_bit_eq)
+      (simp add: unsigned_ucast_eq take_bit_word_eq_self)
   thus ?thesis
   apply(subst word_and_mask_shiftl)
   apply(subst shiftl_shiftr3)

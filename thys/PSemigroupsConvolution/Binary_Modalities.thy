@@ -413,14 +413,14 @@ interpretation rel_fun2: quantale times_rel_fun Inf Sup inf less_eq less sup bot
     
 interpretation rel_fun2: distrib_quantale Inf Sup inf less_eq less sup bot "top::'a::rel_semigroup \<Rightarrow> 'b::distrib_quantale" times_rel_fun ..
 
-interpretation rel_fun2: bool_quantale Inf Sup inf less_eq less sup bot "top::'a::rel_semigroup \<Rightarrow> 'b::bool_quantale" minus uminus times_rel_fun ..
+interpretation rel_fun2: bool_quantale minus uminus inf less_eq less sup bot \<open>top::'a::rel_semigroup \<Rightarrow> 'b::bool_quantale\<close> Inf Sup times_rel_fun ..
 
 interpretation rel_fun2: unital_quantale pid times_rel_fun Inf Sup inf less_eq less sup bot "top::'a::rel_monoid \<Rightarrow> 'b::unital_quantale" 
   by (standard; simp)
     
 interpretation rel_fun2: distrib_unital_quantale Inf Sup inf less_eq less sup bot "top::'a::rel_monoid \<Rightarrow> 'b::distrib_unital_quantale" pid times_rel_fun ..
 
-interpretation rel_fun2: bool_unital_quantale Inf Sup inf less_eq less sup bot "top::'a::rel_monoid \<Rightarrow> 'b::bool_unital_quantale" minus uminus pid times_rel_fun ..
+interpretation rel_fun2: bool_unital_quantale minus uminus inf less_eq less sup bot \<open>top::'a::rel_monoid \<Rightarrow> 'b::bool_unital_quantale\<close> Inf Sup pid times_rel_fun ..
 
 interpretation rel_fun: ab_quantale times_rel_fun Inf Sup inf less_eq less sup bot "top::'a::rel_ab_semigroup \<Rightarrow> 'b::ab_quantale"
   by standard (simp add: rel_fun_comm)
@@ -432,7 +432,3 @@ interpretation rel_fun2: distrib_ab_unital_quantale Inf Sup inf less_eq less sup
 interpretation rel_fun2: bool_ab_unital_quantale times_rel_fun Inf Sup inf less_eq less sup bot "top::'a::rel_ab_monoid \<Rightarrow> 'b::bool_ab_unital_quantale" minus uminus pid ..
     
 end
-
-  
-  
-  

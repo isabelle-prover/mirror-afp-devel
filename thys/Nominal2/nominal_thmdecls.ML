@@ -72,20 +72,22 @@ structure Nominal_ThmDecls: NOMINAL_THMDECLS =
 struct
 
 structure EqvtData = Generic_Data
-( type T = thm Item_Net.T;
-  val empty = Thm.full_rules;
-  val extend = I;
-  val merge = Item_Net.merge);
+(
+  type T = thm Item_Net.T;
+  val empty = Thm.item_net;
+  val merge = Item_Net.merge
+);
 
 (* EqvtRawData is implemented with a Termtab (rather than an
    Item_Net) so that we can efficiently decide whether a given
    constant has a corresponding equivariance theorem stored, cf.
    the function is_eqvt. *)
 structure EqvtRawData = Generic_Data
-( type T = thm Termtab.table;
+(
+  type T = thm Termtab.table;
   val empty = Termtab.empty;
-  val extend = I;
-  val merge = Termtab.merge (K true));
+  val merge = Termtab.merge (K true)
+);
 
 val eqvts = Item_Net.content o EqvtData.get
 val eqvts_raw = map snd o Termtab.dest o EqvtRawData.get
@@ -116,7 +118,7 @@ fun key_of_raw_thm context thm =
          Syntax.string_of_term (Context.proof_of context) (Thm.prop_of thm))
   in
     case Thm.prop_of thm of
-      Const (@{const_name Pure.eq}, _) $ (Const (@{const_name "permute"}, _) $ p $ c) $ c' =>
+      \<^Const_>\<open>Pure.eq _ for \<^Const_>\<open>permute _ for p c\<close> c'\<close> =>
         if is_Var p andalso is_fixed (Context.proof_of context) c andalso c aconv c' then
           c
         else
@@ -197,7 +199,7 @@ fun thm_4_of_1 ctxt thm =
     val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p c, c))
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
   in
-    Goal.prove ctxt [] [] goal' (fn {context, ...} => tac context thm 1)
+    Goal.prove ctxt [] [] goal' (fn {context = goal_ctxt, ...} => tac goal_ctxt thm 1)
       |> singleton (Proof_Context.export ctxt' ctxt)
       |> (fn th => th RS @{thm "eq_reflection"})
       |> zero_var_indexes
@@ -230,8 +232,8 @@ fun thm_1_of_2 ctxt thm =
     val (prem, concl) = thm |> Thm.prop_of |> Logic.dest_implies |> apply2 HOLogic.dest_Trueprop
     (* since argument terms "?p \<bullet> ?x1" may actually be eta-expanded
        or tuples, we need the following function to find ?p *)
-    fun find_perm (Const (@{const_name "permute"}, _) $ (p as Var _) $ _) = p
-      | find_perm (Const (@{const_name "Pair"}, _) $ x $ _) = find_perm x
+    fun find_perm \<^Const_>\<open>permute _ for \<open>p as Var _\<close> _\<close> = p
+      | find_perm \<^Const_>\<open>Pair _ _ for x _\<close> = find_perm x
       | find_perm (Abs (_, _, body)) = find_perm body
       | find_perm _ = raise THM ("thm_3_of_2", 0, [thm])
     val p = concl |> dest_comb |> snd |> find_perm
@@ -239,7 +241,7 @@ fun thm_1_of_2 ctxt thm =
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
     val thm' = infer_instantiate ctxt' [(#1 (dest_Var p), Thm.cterm_of ctxt' (mk_minus p'))] thm
   in
-    Goal.prove ctxt' [] [] goal' (fn {context = ctxt'', ...} => tac ctxt'' thm thm' 1)
+    Goal.prove ctxt' [] [] goal' (fn {context = goal_ctxt, ...} => tac goal_ctxt thm thm' 1)
       |> singleton (Proof_Context.export ctxt' ctxt)
   end
   handle TERM _ =>
@@ -262,9 +264,9 @@ in
 
 (* Transforms a theorem of the form (1) or (2) into the form (4). *)
 fun eqvt_transform ctxt thm =
-  (case Thm.prop_of thm of @{const "Trueprop"} $ _ =>
+  (case Thm.prop_of thm of \<^Const_>\<open>Trueprop for _\<close> =>
     thm_4_of_1 ctxt thm
-  | @{const Pure.imp} $ _ $ _ =>
+  | \<^Const_>\<open>Pure.imp for _ _\<close> =>
     thm_4_of_1 ctxt (thm_1_of_2 ctxt thm)
   | _ =>
     error msg)
@@ -276,7 +278,7 @@ fun eqvt_transform ctxt thm =
    (3)) and (4); transforms a theorem of the form (2) into
    theorems of the form (3) and (4). *)
 fun eqvt_and_raw_transform ctxt thm =
-  (case Thm.prop_of thm of @{const "Trueprop"} $ (Const (@{const_name "HOL.eq"}, _) $ _ $ c_args) =>
+  (case Thm.prop_of thm of \<^Const_>\<open>Trueprop for \<^Const_>\<open>HOL.eq _ for _ c_args\<close>\<close> =>
     let
       val th' =
         if fastype_of c_args = @{typ "bool"}
@@ -287,7 +289,7 @@ fun eqvt_and_raw_transform ctxt thm =
     in
       (th', thm_4_of_1 ctxt thm)
     end
-  | @{const Pure.imp} $ _ $ _ =>
+  | \<^Const_>\<open>Pure.imp for _ _\<close> =>
     let
       val th1 = thm_1_of_2 ctxt thm
     in

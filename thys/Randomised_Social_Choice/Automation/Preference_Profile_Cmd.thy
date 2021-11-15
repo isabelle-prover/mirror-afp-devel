@@ -225,7 +225,6 @@ structure Data = Generic_Data
 (
   type T = (term * info) Item_Net.T
   val empty = Item_Net.init (op aconv o apply2 fst) (single o fst)
-  val extend = I
   val merge = Item_Net.merge
 );
 

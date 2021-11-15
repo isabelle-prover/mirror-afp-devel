@@ -107,7 +107,6 @@ type info =
 structure Data = Generic_Data (
   type T = info Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   val merge = Symtab.merge (fn (info1 : info, info2 : info) => #hash info1 = #hash info2);
 );
 
@@ -230,7 +229,9 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         val ((hash, (_, prethm)), lthy) =
           Local_Theory.define ((Binding.name name, NoSyn), (Binding.empty_atts, abs_def)) lthy
         val eq = Logic.mk_equals (list_comb (hash, args), rhs)
-        val thm = Goal.prove lthy (map (fst o dest_Free) args) [] eq (K (unfold_tac lthy [prethm]))
+        val thm =
+          Goal.prove lthy (map (fst o dest_Free) args) [] eq
+            (fn {context = ctxt, ...} => unfold_tac ctxt [prethm])
       in
         Local_Theory.note ((Binding.name (name ^ "_def"), []), [thm]) lthy
         |>> the_single o snd

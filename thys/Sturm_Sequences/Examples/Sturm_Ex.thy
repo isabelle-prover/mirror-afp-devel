@@ -1,5 +1,5 @@
 section \<open>Example usage of the ``sturm'' method\<close>
-(* Author: Manuel Eberl <eberlm@in.tum.de> *)
+(* Author: Manuel Eberl <manuel@pruvisto.org> *)
 theory Sturm_Ex
 imports "../Sturm"
 begin

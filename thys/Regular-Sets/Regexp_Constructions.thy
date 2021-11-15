@@ -1,6 +1,6 @@
 (*
   File:     Regexp_Constructions.thy
-  Author:   Manuel Eberl <eberlm@in.tum.de>
+  Author:   Manuel Eberl <manuel@pruvisto.org>
 
   Some simple constructions on regular expressions to illustrate closure properties of regular
   languages: reversal, substitution, prefixes, suffixes, subwords ("fragments")

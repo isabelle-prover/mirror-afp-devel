@@ -672,7 +672,7 @@ fun construct_update is_pop binding sty thy =
            val attrS = StateMgt_core.filter_attr_of long_name thy
        in  fold (map_to_update sty is_pop thy) (attrS) (Free("\<sigma>",sty)) end
 
-fun cmd (decl, spec, prems, params) = #2 oo Specification.definition' decl params prems spec
+fun cmd (decl, spec, prems, params) = #2 o Specification.definition decl params prems spec
 
 fun mk_push_name binding = Binding.prefix_name "push_" binding
 
@@ -693,7 +693,7 @@ fun mk_push_def binding sty lthy =
         val eq = push_eq binding  (Binding.name_of name_pushop) rty sty lthy
         val mty = StateMgt_core.MON_SE_T rty sty 
         val args = (SOME(name_pushop, SOME mty, NoSyn), (Binding.empty_atts,eq),[],[])
-    in cmd args true lthy  end;
+    in cmd args lthy  end;
 
 fun mk_pop_name binding = Binding.prefix_name "pop_"  binding
 
@@ -712,7 +712,7 @@ fun mk_pop_def binding rty sty lthy =
         val name_op =  mk_pop_name binding
         val eq = pop_eq binding (Binding.name_of name_op) rty sty lthy
         val args = (SOME(name_op, SOME mty, NoSyn),(Binding.empty_atts,eq),[],[])
-    in cmd args true lthy
+    in cmd args lthy
     end;
 
 
@@ -754,7 +754,7 @@ fun define_lense binding sty (attr_name,rty,_) lthy =
             val lens_ty = mk_lens_type rty sty
             val eq = mk_meta_eq (Free(Binding.name_of name_L, lens_ty), cr $ acc $ upd) 
             val args = (SOME(name_L, SOME lens_ty, NoSyn), (Binding.empty_atts,eq),[],[])
-    in cmd args true lthy  end
+    in cmd args lthy  end
 
 fun add_record_cmd0 read_fields overloaded is_global_kind raw_params binding raw_parent raw_fields thy =
   let
@@ -1068,7 +1068,7 @@ structure Function_Specification_Parser  =
            val bdg_ty = HOLogic.mk_tupleT(map (#2) params) --> f_sty HOLogic.boolT
            val eq =  mk_meta_eq(Free(Binding.name_of bdg, bdg_ty),src')
            val args = (SOME(bdg,NONE,NoSyn), (Binding.empty_atts,eq),[],[]) 
-       in  StateMgt.cmd args true ctxt end
+       in  StateMgt.cmd args ctxt end
 
    fun define_precond binding sty =
        define_cond binding (fn boolT => sty --> boolT) I check_absence_old "_pre" 
@@ -1086,7 +1086,7 @@ structure Function_Specification_Parser  =
            val eq = mk_meta_eq(Free (bdg_core_name, umty),mk_pat_tupleabs params' body)
            val args_core =(SOME (bdg_core, SOME umty, NoSyn), (Binding.empty_atts, eq), [], [])
 
-       in StateMgt.cmd args_core true
+       in StateMgt.cmd args_core
        end 
  
    fun define_body_main {recursive = x:bool} binding rty sty params read_variant_opt _ ctxt = 
@@ -1132,7 +1132,7 @@ structure Function_Specification_Parser  =
                                    $ Const(read_constname ctxt (Binding.name_of pop_name),rmty))))
            val eq_main = mk_meta_eq(lhs_main, if x then rhs_main_rec else rhs_main )
            val args_main = (SOME(binding,NONE,NoSyn), (Binding.empty_atts,eq_main),[],[]) 
-       in  ctxt |> StateMgt.cmd args_main true 
+       in  ctxt |> StateMgt.cmd args_main 
        end 
 
 val _ = Local_Theory.exit_result_global;

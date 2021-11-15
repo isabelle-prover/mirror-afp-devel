@@ -6,7 +6,7 @@
 section \<open>Correctness of the LBV\<close>
 
 theory LBVCorrect
-imports LBVSpec Typing_Framework
+imports LBVSpec Typing_Framework_1
 begin
 
 locale lbvs = lbv +
@@ -36,12 +36,13 @@ lemma (in lbvs) phi_len [simp]: "size \<tau>s = size ins"
 lemma (in lbvs) wtl_suc_pc:
   assumes all: "wtl ins c 0 s\<^sub>0 \<noteq> \<top>" 
   assumes pc:  "pc+1 < size ins"
+  assumes sA: "s\<^sub>0 \<in> A" 
   shows "wtl (take (pc+1) ins) c 0 s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!(pc+1)"
 (*<*)
 proof -
   from all pc
   have "wtc c (pc+1) (wtl (take (pc+1) ins) c 0 s\<^sub>0) \<noteq> T" by (rule wtl_all)
-  with pc show ?thesis by (simp add: phi_def wtc split: if_split_asm)
+  with pc show ?thesis using sA pres cert all wtl_pres by (simp add: phi_def wtc split: if_split_asm)
 qed
 (*>*)
 
@@ -74,6 +75,7 @@ proof (unfold stable_def, clarify)
   have "\<tau>s!pc \<in> A" by (cases "c!pc = \<bottom>") (auto dest: cert_okD1)
   with pc pres
   have step_in_A: "snd`set (?step pc) \<subseteq> A" by (auto dest: pres_typeD2)
+  then have inA1: "s' \<in> A" using step by auto
 
   show "s' \<sqsubseteq>\<^sub>r \<tau>s!pc'" 
   proof (cases "pc' = pc+1")
@@ -81,7 +83,14 @@ proof (unfold stable_def, clarify)
     with pc' cert
     have cert_in_A: "c!(pc+1) \<in> A" by (auto dest: cert_okD1)
     from True pc' have pc1: "pc+1 < size ins" by simp
-    with tkpc have "?s\<^sub>2 = wtc c pc ?s\<^sub>1" by - (rule wtl_Suc)
+    with pres cert s\<^sub>0 wtl have inA2: "wtl (take (pc + 1) ins) c 0 s\<^sub>0 \<in> A" by (auto dest:wtl_pres)
+
+    have c_None': "c!(pc +1)= \<bottom> \<Longrightarrow> \<tau>s!(pc + 1)= ?s\<^sub>2" using pc1 ..
+    have "?s\<^sub>2 \<in> A" using pres cert s\<^sub>0 wtl pc1 by (rule wtl_pres)
+    with pc1 c_Some cert c_None'
+    have inA3: "\<tau>s!(pc+1) \<in> A" by (cases "c!(pc+1) = \<bottom>") (auto dest: cert_okD1)
+
+    from pc1 tkpc have "?s\<^sub>2 = wtc c pc ?s\<^sub>1" by - (rule wtl_Suc)
     with inst 
     have merge: "?s\<^sub>2 = merge c pc (?step pc) (c!(pc+1))" by (simp add: wti)
     also from s\<^sub>2 merge have "\<dots> \<noteq> \<top>" (is "?merge \<noteq> _") by simp
@@ -90,9 +99,9 @@ proof (unfold stable_def, clarify)
       by (rule merge_not_top_s) 
     finally have "s' \<sqsubseteq>\<^sub>r ?s\<^sub>2" using step_in_A cert_in_A True step 
       by (auto intro: pp_ub1')
-    also from wtl pc1 have "?s\<^sub>2 \<sqsubseteq>\<^sub>r \<tau>s!(pc+1)" by (rule wtl_suc_pc)
+    also from wtl pc1 have "?s\<^sub>2 \<sqsubseteq>\<^sub>r \<tau>s!(pc+1)" using s\<^sub>0 by (auto dest: wtl_suc_pc)
     also note True [symmetric]
-    finally show ?thesis by simp    
+    finally show ?thesis  using inA1 inA2 inA3 by simp    
   next
     case False
     from wt_s\<^sub>1 inst 
@@ -100,7 +109,7 @@ proof (unfold stable_def, clarify)
     with step_in_A have "\<forall>(pc', s')\<in>set (?step pc). pc'\<noteq>pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'"
       by - (rule merge_not_top)
     with step False  have ok: "s' \<sqsubseteq>\<^sub>r c!pc'" by blast
-    moreover from ok have "c!pc' = \<bottom> \<Longrightarrow> s' = \<bottom>" by simp
+    moreover from ok have "c!pc' = \<bottom> \<Longrightarrow> s' = \<bottom>" using inA1 by simp
     moreover from c_Some pc'  have "c!pc' \<noteq> \<bottom> \<Longrightarrow> \<tau>s!pc' = c!pc'" by auto
     ultimately show ?thesis by (cases "c!pc' = \<bottom>") auto 
   qed
@@ -150,7 +159,7 @@ qed
 (*>*)
 
 lemma (in lbvs) phi0:
-  assumes wtl: "wtl ins c 0 s\<^sub>0 \<noteq> \<top>" and 0: "0 < size ins"
+  assumes wtl: "wtl ins c 0 s\<^sub>0 \<noteq> \<top>" and 0: "0 < size ins" and s\<^sub>0: "s\<^sub>0 \<in> A" 
   shows "s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!0"
 (*<*)
 proof (cases "c!0 = \<bottom>")
@@ -158,7 +167,7 @@ proof (cases "c!0 = \<bottom>")
   with 0 have "\<tau>s!0 = wtl (take 0 ins) c 0 s\<^sub>0" ..
   moreover have "wtl (take 0 ins) c 0 s\<^sub>0 = s\<^sub>0" by simp
   ultimately have "\<tau>s!0 = s\<^sub>0" by simp
-  thus ?thesis by simp
+  thus ?thesis using s\<^sub>0 by simp
 next
   case False
   with 0 have "\<tau>s!0 = c!0" ..
@@ -204,7 +213,7 @@ proof -
     with wtl show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
     from wtl s\<^sub>0 and pc show "stable r step \<tau>s pc" by (rule wtl_stable)
   qed
-  moreover from wtl ins have "s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!0" by (rule phi0)
+  moreover from wtl ins have "s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!0" using s\<^sub>0  by (rule phi0)
   ultimately show ?thesis by fast
 qed
 (*>*)

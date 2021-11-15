@@ -303,7 +303,6 @@ structure Type_Data = Theory_Data
 (
   type T = Derive_Util.type_info Symreltab.table;
   val empty = Symreltab.empty;
-  val extend = I;
   fun merge data : T = Symreltab.merge (K true) data;
 );
 
@@ -311,7 +310,6 @@ structure Class_Data = Theory_Data
 (
   type T = Derive_Util.class_info Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   fun merge data : T = Symtab.merge (K true) data;
 );
 
@@ -319,6 +317,5 @@ structure Instance_Data = Theory_Data
 (
   type T = Derive_Util.instance_info Symreltab.table;
   val empty = Symreltab.empty;
-  val extend = I;
   fun merge data : T = Symreltab.merge (K true) data;
 );

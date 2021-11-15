@@ -27,13 +27,13 @@ text\<open>\label{TAO_SanityTests_Intensionality}\<close>
     apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
     nitpick[expect = genuine, user_axioms=true, card i = 2,
             card j = 2, card \<omega> = 1, card \<sigma> = 1,
-            sat_solver = MiniSat_JNI, verbose, show_all]
+            sat_solver = MiniSat, verbose, show_all]
     oops \<comment> \<open>Countermodel by Nitpick\<close>
   lemma "[(\<^bold>\<lambda>y. (p \<^bold>\<or> q)) \<^bold>= (\<^bold>\<lambda>y. (q \<^bold>\<or> p)) in v]"
     unfolding identity_\<Pi>\<^sub>1_def
     apply (rule Eq\<^sub>1I) apply (simp add: meta_defs)
     nitpick[expect = genuine, user_axioms=true,
-            sat_solver = MiniSat_JNI, card i = 2,
+            sat_solver = MiniSat, card i = 2,
             card j = 2, card \<sigma> = 1, card \<omega> = 1,
             card \<upsilon> = 2, verbose, show_all]
     oops \<comment> \<open>Countermodel by Nitpick\<close>

@@ -78,7 +78,7 @@ done
 (*>*)
 
 lemma order_widen [intro,simp]: 
-  "wf_prog m P \<Longrightarrow> order (subtype P)"
+  "wf_prog m P \<Longrightarrow> order (subtype P)  (types P)"
 (*<*)
   apply (unfold Semilat.order_def lesub_def)
   apply (auto intro: widen_trans widen_antisym)
@@ -258,7 +258,7 @@ lemma err_semilat_JType_esl:
 (*<*)
 proof -
   assume wf_prog: "wf_prog wf_mb P"  
-  hence "order (subtype P)"..
+  hence "order (subtype P) (types P)"..
   moreover from wf_prog
   have "closed (err (types P)) (lift2 (sup P))"
     by (rule closed_err_types)

@@ -62,10 +62,10 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
     gen_tac: local_theory -> tactic' (* Solves remaining premises of gen_thm *)
   }
 
-  structure extractions = Generic_Data (
+  structure extractions = Generic_Data
+  (
     type T = extraction list Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.merge_list ((op =) o apply2 #pattern)
   )
 
@@ -259,7 +259,7 @@ fun define_concrete_fun gen_code fun_name attribs_raw param_names thm pats
   (orig_lthy:local_theory) = 
 let
   val lthy = orig_lthy;
-  val ((inst,thm'),lthy) = yield_singleton2 (Variable.import true) thm lthy;
+  val (((_,inst),thm'),lthy) = yield_singleton2 (Variable.import true) thm lthy;
 
   val concl = thm' |> Thm.concl_of
 
@@ -268,7 +268,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (apsnd Thm.term_of) 
+  val term_subst = build (inst |> Vars.fold (cons o apsnd Thm.term_of))
 
   val param_terms = map (fn name =>
     case AList.lookup (fn (n,v) => n = #1 v) term_subst name of
@@ -310,10 +310,10 @@ end;
 
   val cd_pat_eq = apply2 (Thm.term_of #> Refine_Util.anorm_term) #> (op aconv)
 
-  structure cd_patterns = Generic_Data (
+  structure cd_patterns = Generic_Data
+  (
     type T = cterm list
     val empty = []
-    val extend = I
     val merge = merge cd_pat_eq
   ) 
 
@@ -393,7 +393,7 @@ setup Refine_Automation.setup
 setup \<open>
   let
     fun parse_cpat cxt = let 
-      val (t, (context, tks)) = Scan.lift Args.embedded_inner_syntax cxt 
+      val (t, (context, tks)) = Scan.lift Parse.embedded_inner_syntax cxt 
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
     in
@@ -425,7 +425,7 @@ ML \<open>Outer_Syntax.local_theory
     -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
     --| @{keyword "uses"} -- Parse.thm
-    -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.embedded_inner_syntax) []
+    -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Parse.embedded_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
       case Attrib.eval_thms lthy [raw_thm] of

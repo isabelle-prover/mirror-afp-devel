@@ -55,7 +55,7 @@ lemma test_bit_rsplit:
    defer
    apply (rule map_ident [THEN fun_cong])
   apply (rule refl [THEN map_cong])
-  apply simp
+  apply (simp add: unsigned_of_int take_bit_int_eq_self_iff)
   using bin_rsplit_size_sign take_bit_int_eq_self_iff by blast
 
 lemma test_bit_rsplit_alt:
@@ -122,12 +122,6 @@ lemma size_word_rsplit_rcat_size:
   for ws :: "'a::len word list" and frcw :: "'b::len word"
   by (cases \<open>LENGTH('a)\<close>) (simp_all add: word_size length_word_rsplit_exp_size' div_nat_eqI)
 
-lemma msrevs:
-  "0 < n \<Longrightarrow> (k * n + m) div n = m div n + k"
-  "(k * n + m) mod n = m mod n"
-  for n :: nat
-  by (auto simp: add.commute)
-
 lemma word_rsplit_rcat_size [OF refl]:
   "word_rcat ws = frcw \<Longrightarrow>
     size frcw = length ws * LENGTH('a) \<Longrightarrow> word_rsplit frcw = ws"
@@ -154,15 +148,16 @@ lemma word_rsplit_rcat_size [OF refl]:
 
 lemma word_rsplit_upt:
   "\<lbrakk> size x = LENGTH('a :: len) * n; n \<noteq> 0 \<rbrakk>
-    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (drop_bit (i * LENGTH('a)) x) :: 'a word) (rev [0 ..< n])"
+    \<Longrightarrow> word_rsplit x = map (\<lambda>i. ucast (x >> (i * LENGTH('a))) :: 'a word) (rev [0 ..< n])"
   apply (subgoal_tac "length (word_rsplit x :: 'a word list) = n")
    apply (rule nth_equalityI, simp)
    apply (intro allI word_eqI impI)
    apply (simp add: test_bit_rsplit_alt word_size)
    apply (simp add: nth_ucast bit_simps rev_nth field_simps)
-  apply (simp add: length_word_rsplit_exp_size)
-  apply transfer
-  apply (metis (no_types, lifting) Nat.add_diff_assoc Suc_leI add_0_left diff_Suc_less div_less len_gt_0 msrevs(1) mult.commute)
+  apply (simp add: length_word_rsplit_exp_size word_size)
+  apply (subst diff_add_assoc)
+   apply (simp flip: less_eq_Suc_le)
+  apply simp
   done
 
 end

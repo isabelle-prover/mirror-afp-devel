@@ -8,9 +8,9 @@ section \<open>Duality Based on a Data Type\<close>
 
 theory Order_Lattice_Props_Wenzel
   imports Main 
-          "HOL-Library.Lattice_Syntax"
-
 begin
+
+unbundle lattice_syntax
 
 subsection \<open>Wenzel's Approach Revisited\<close>
 
@@ -278,12 +278,3 @@ lemma upset_set_downset_set_dual: "(`) \<partial> \<circ> \<Up> = \<Down> \<circ
   by (metis (mono_tags, lifting) dual.exhaust dual_anti_iff mem_Collect_eq rev_image_eqI)
 
 end
-
-
-
-
-
-
-
-
-

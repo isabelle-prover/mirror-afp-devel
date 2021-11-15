@@ -2,10 +2,11 @@ section \<open>Complementation Implementation\<close>
 
 theory Complementation_Implement
 imports
-  "HOL-Library.Lattice_Syntax"
   "Transition_Systems_and_Automata.NBA_Implement"
   "Complementation"
 begin
+
+  unbundle lattice_syntax
 
   type_synonym item = "nat \<times> bool"
   type_synonym 'state items = "'state \<rightharpoonup> item"

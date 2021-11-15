@@ -577,9 +577,9 @@ next
       have "(last (w # ws)) = last ws" 
         using fail_prop by simp
       moreover have "(target (butlast (w # ws || r1 # r1s)) p1) = (target (butlast (ws || r1s)) r1)" 
-        using fail_prop Cons.hyps(1) butlast_zip_cons by fastforce 
+        using fail_prop Cons.hyps(1) butlast_zip_cons by auto 
       moreover have "(target (butlast (w # ws || r2 # r2s)) p2) = (target (butlast (ws || r2s)) r2)" 
-        using fail_prop Cons.hyps(1) Cons.hyps(2) butlast_zip_cons by fastforce
+        using fail_prop Cons.hyps(1) Cons.hyps(2) butlast_zip_cons by auto
       ultimately have "succ A (last (w # ws)) (target (butlast (w # ws || r1 # r1s)) p1) = {} 
                         \<and> succ B (last (w # ws)) (target (butlast (w # ws || r2 # r2s)) p2) \<noteq> {}" 
         using fail_prop by auto

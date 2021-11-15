@@ -18,7 +18,7 @@ section \<open>IPv6 Addresses\<close>
   definition ipv6addr_of_nat :: "nat \<Rightarrow> ipv6addr" where
     "ipv6addr_of_nat n =  of_nat n"
 
-lemma "ipv6addr_of_nat n = word_of_int (int n)"
+  lemma "ipv6addr_of_nat n = word_of_int (int n)"
     by(simp add: ipv6addr_of_nat_def)
 
   text\<open>The maximum IPv6 address\<close>
@@ -45,7 +45,7 @@ lemma "ipv6addr_of_nat n = word_of_int (int n)"
   lemma ipv6addr_of_nat_nat_of_ipv6addr: "ipv6addr_of_nat (nat_of_ipv6addr addr) = addr"
     by(simp add: ipv6addr_of_nat_def nat_of_ipv6addr_def)
 
-subsection\<open>Syntax of IPv6 Adresses\<close>
+  subsection\<open>Syntax of IPv6 Adresses\<close>
   text\<open>RFC 4291, Section 2.2.: Text Representation of Addresses\<close>
 
   text\<open>Quoting the RFC (note: errata exists):\<close>
@@ -416,7 +416,12 @@ qed
   (*TODO*)
   (*TODO: oh boy, they can also be compressed*)
 
-subsection\<open>Semantics\<close>
+  subsection\<open>Semantics\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   fun ipv6preferred_to_int :: "ipv6addr_syntax \<Rightarrow> ipv6addr" where
     "ipv6preferred_to_int (IPv6AddrPreferred a b c d e f g h) = (ucast a << (16 * 7)) OR
                                                                 (ucast b << (16 * 6)) OR
@@ -434,7 +439,6 @@ subsection\<open>Semantics\<close>
           338958331222012082418099330867817087233" by eval
 
   declare ipv6preferred_to_int.simps[simp del]
-
 
   definition int_to_ipv6preferred :: "ipv6addr \<Rightarrow> ipv6addr_syntax" where
     "int_to_ipv6preferred i = IPv6AddrPreferred (ucast ((i AND 0xFFFF0000000000000000000000000000) >> 16*7))
@@ -458,10 +462,11 @@ subsection\<open>Semantics\<close>
     "(0xFFFF00000000::ipv6addr) = (mask 16) << 32"
     "(0xFFFF0000::ipv6addr) = (mask 16) << 16"
     "(0xFFFF::ipv6addr) = (mask 16)"
-    by (simp_all add: mask_eq push_bit_of_1)
+    by (simp_all add: mask_eq)
 
 
   text\<open>Correctness: round trip property one\<close>
+
   lemma ipv6preferred_to_int_int_to_ipv6preferred:
     "ipv6preferred_to_int (int_to_ipv6preferred ip) = ip"
   proof -
@@ -497,17 +502,15 @@ subsection\<open>Semantics\<close>
            ip AND 0xFFFF00000000"
       "(ucast ((ucast::ipv6addr \<Rightarrow> 16 word) (ip AND 0xFFFF0000 >> 16)) << 16) =
            ip AND 0xFFFF0000"
-            apply (simp_all add: word128_masks_ipv6pieces ucast_ipv6_piece and_mask2 word_size flip: take_bit_eq_mask)
-            apply (simp_all add: bit_eq_iff)
-            apply (auto simp add: bit_simps)
+            apply (simp_all only: word128_masks_ipv6pieces ucast_ipv6_piece and_mask2 word_size bit_eq_iff bit_simps comp_def)
+      apply auto
       done
 
     have ucast16_ucast128_masks_highest_bits0: 
       "(ucast ((ucast::ipv6addr \<Rightarrow> 16 word) (ip AND 0xFFFF))) = ip AND 0xFFFF"
-      apply(subst word128_masks_ipv6pieces)+
-      apply(subst ucast_short_ucast_long_ingoreLeadingZero)
-        apply simp_all
-      by (simp add: length_drop_mask)
+      apply (simp only: word128_masks_ipv6pieces flip: take_bit_eq_mask)
+      apply (simp add: unsigned_ucast_eq)
+      done
 
     have mask_len_word:"n = (LENGTH('a)) \<Longrightarrow> w AND mask n = w"
       for n and w::"'a::len word" by (simp add: mask_eq_iff) 
@@ -523,18 +526,19 @@ subsection\<open>Semantics\<close>
              ip && mask 16 =
              ip"
       apply(subst word_ao_dist2[symmetric])+
-      apply(simp add: mask_eq push_bit_of_1)
+      apply(simp add: mask_numeral)
       apply(subst mask128)
       apply(rule mask_len_word)
       apply simp
       done
 
     show ?thesis
-      apply (simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
-      apply (simp add: ucast16_ucast128_masks_highest_bits ucast16_ucast128_masks_highest_bits0)
-      apply (simp add: word128_masks_ipv6pieces ucast_ucast_mask)
+      apply (simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def shiftl_def shiftr_def)
+      apply (simp only: word128_masks_ipv6pieces flip: take_bit_eq_mask)
+      apply (simp add: unsigned_ucast_eq push_bit_take_bit)
       using ipv6addr_16word_pieces_compose_or
-      apply (simp flip: push_bit_and add: shiftr_and_eq_shiftl)
+      apply (simp add: take_bit_push_bit slice_eq_mask)
+      apply (simp add: take_bit_eq_mask shiftl_def push_bit_mask_eq)
       done
   qed
 
@@ -551,15 +555,6 @@ subsection\<open>Semantics\<close>
     apply (simp add: ipv6preferred_to_int.simps int_to_ipv6preferred_def)
     apply (simp add: word128_masks_ipv6pieces)
       apply (simp add: word_ao_dist ucast_shift_simps ucast_simps)
-      apply (simp add: unsigned_or_eq)
-      apply (simp flip: take_bit_eq_mask add: unsigned_take_bit_eq take_bit_word_eq_self)
-      apply (simp add: shiftl_shiftr1 shiftl_shiftr2)
-      apply (simp flip: take_bit_eq_mask push_bit_and add: word_size)
-      apply (simp add: unsigned_take_bit_eq take_bit_word_eq_self)
-      apply (simp flip: unsigned_take_bit_eq)
-      apply (simp add: unsigned_ucast_eq)
-      apply (simp add: unsigned_push_bit_eq take_bit_word_eq_self)
-      apply (simp flip: ucast_drop_bit_eq)
       done
   qed
 
@@ -665,7 +660,8 @@ definition ipv6_unparsed_compressed_to_preferred :: "((16 word) option) list \<R
    using parse_ipv6_address_compressed_identity2 apply presburger
   using ipv6_unparsed_compressed_to_preferred_identity1 apply blast
   done
-  
+
+  end
 
 subsection\<open>IPv6 Pretty Printing (converting to compressed format)\<close>
 text_raw\<open>
@@ -953,6 +949,7 @@ begin
       done
     from 1 2 ip show ?thesis by(elim exE conjE, simp)
   qed
+
 end
 
 end

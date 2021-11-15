@@ -7,6 +7,11 @@ begin
   subsection \<open>Basic operations\<close>
   text \<open>Attention: Silently overflows, using 2's complement.
     This should match Java-semantics. In C, signed overflow is undefined!\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
+
   primrec eval_bin_op :: "bin_op \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val" where
     "eval_bin_op bo_plus v1 v2 = v1+v2"
   | "eval_bin_op bo_minus v1 v2 = v1-v2"
@@ -23,7 +28,9 @@ begin
   primrec eval_un_op :: "un_op \<Rightarrow> val \<Rightarrow> val" where
     "eval_un_op uo_minus v = -v"  \<comment> \<open>Attention: Silently overflows. @{term "-min_int = min_int"}!\<close>
   | "eval_un_op uo_not v = NOT v"
-  
+
+  end
+
   subsection \<open>Expressions\<close>
   abbreviation exists_var :: "valuation \<Rightarrow> ident \<Rightarrow> bool" where
     "exists_var s x \<equiv> x \<in> dom s"

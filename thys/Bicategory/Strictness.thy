@@ -144,11 +144,58 @@ begin
     lemma ide_can:
     assumes "Ide f" and "Ide g" and "\<^bold>\<lfloor>f\<^bold>\<rfloor> = \<^bold>\<lfloor>g\<^bold>\<rfloor>"
     shows "ide (can g f)"
-    proof -
-      have "Can (Inv (g\<^bold>\<down>) \<^bold>\<cdot> f\<^bold>\<down>)"
-        using assms Can_red Can_Inv red_in_Hom Inv_in_Hom by simp
-      thus ?thesis
-        using assms can_def ide_eval_Can by presburger
+      using assms Can_red Can_Inv red_in_Hom Inv_in_Hom can_def ide_eval_Can
+            Can.simps(4) Dom_Inv red_simps(4)
+      by presburger
+
+  end
+
+  context bicategory
+  begin
+
+    text \<open>
+      The following result gives conditions for strictness of a bicategory that are typically
+      somewhat easier to verify than those used for the definition.
+    \<close>
+
+    lemma is_strict_if:
+    assumes "\<And>f. ide f \<Longrightarrow> f \<star> src f = f"
+    and "\<And>f. ide f \<Longrightarrow> trg f \<star> f = f"
+    and "\<And>a. obj a \<Longrightarrow> ide \<i>[a]"
+    and "\<And>f g h. \<lbrakk>ide f; ide g; ide h; src f = trg g; src g = trg h\<rbrakk> \<Longrightarrow> ide \<a>[f, g, h]"
+    shows "strict_bicategory V H \<a> \<i> src trg"
+    proof
+      show "\<And>f g h. \<lbrakk>ide f; ide g; ide h; src f = trg g; src g = trg h\<rbrakk> \<Longrightarrow> ide \<a>[f, g, h]"
+        by fact
+      fix f
+      assume f: "ide f"
+      show "\<l>[f] = f"
+      proof -
+        have "f = \<l>[f]"
+          using assms f unit_simps(5)
+          by (intro lunit_eqI) (auto simp add: comp_arr_ide)
+        thus ?thesis by simp
+      qed
+      show "\<r>[f] = f"
+      proof -
+        have "f = \<r>[f]"
+        proof (intro runit_eqI)
+          show "ide f" by fact
+          show "\<guillemotleft>f : f \<star> src f \<Rightarrow> f\<guillemotright>"
+            using f assms(1) by auto
+          show "f \<star> src f = (f \<star> \<i>[src f]) \<cdot> \<a>[f, src f, src f]"
+          proof -
+            have "(f \<star> \<i>[src f]) \<cdot> \<a>[f, src f, src f] = (f \<star> src f) \<cdot> \<a>[f, src f, src f]"
+              using f assms(2-3) unit_simps(5) by simp
+            also have "... = (f \<star> src f \<star> src f) \<cdot> \<a>[f, src f, src f]"
+              using f assms(1-2) ideD(1) trg_src src.preserves_ide by metis
+            also have "... = f \<star> src f"
+              using f comp_arr_ide assms(1,4) assoc_in_hom [of f "src f" "src f"] by auto
+            finally show ?thesis by simp
+          qed
+        qed
+        thus ?thesis by simp
+      qed
     qed
 
   end
@@ -301,24 +348,8 @@ begin
     assumes "ide F"
     shows "(\<lbrakk> arr F; Dom F = Cod F; B.ide (Map F); Map F = \<lbrace>Dom F\<rbrace>;
               Map F = \<lbrace>Cod F\<rbrace> \<rbrakk> \<Longrightarrow> T) \<Longrightarrow> T"
-    proof -
-      assume 1: "\<lbrakk> arr F; Dom F = Cod F; B.ide (Map F); Map F = \<lbrace>Dom F\<rbrace>;
-                   Map F = \<lbrace>Cod F\<rbrace> \<rbrakk> \<Longrightarrow> T"
-      show T
-      proof -
-        have "arr F"
-          using assms by auto
-        moreover have "Dom F = Cod F"
-          using assms ide_char dom_char cod_char
-          by (metis (no_types, lifting) Dom_cod calculation ideD(3))
-        moreover have "B.ide (Map F)"
-          using assms ide_char by blast
-        moreover have "Map F = \<lbrace>Dom F\<rbrace>"
-          using assms ide_char dom_char Map_ide(1) by blast
-        ultimately show T
-          using 1 by simp
-      qed
-    qed
+      using assms
+      by (metis (no_types, lifting) Map_ide(2) ide_char seq_char)
 
     text \<open>
       Source and target are defined by the corresponding syntactic operations on terms.
@@ -343,7 +374,7 @@ begin
       using assms trg_def arr_char by auto
 
     interpretation src: endofunctor vcomp src
-      using src_def comp_char
+      using src_def comp_char E.Obj_implies_Ide
       apply (unfold_locales)
           apply auto[4]
     proof -
@@ -356,7 +387,7 @@ begin
         also have "... = MkIde (E.Src (Dom f))"
           using gf by (simp add: seq_char)
         also have "... = MkIde (E.Src (Dom g)) \<cdot> MkIde (E.Src (Dom f))"
-          using gf seq_char by auto
+          using gf seq_char E.Obj_implies_Ide by auto
         also have "... = src g \<cdot> src f"
           using gf src_def comp_char by auto
         finally show "src (g \<cdot> f) = src g \<cdot> src f" by blast
@@ -364,7 +395,7 @@ begin
     qed
 
     interpretation trg: endofunctor vcomp trg
-      using trg_def comp_char
+      using trg_def comp_char E.Obj_implies_Ide
       apply (unfold_locales)
           apply auto[4]
     proof -
@@ -377,7 +408,7 @@ begin
         also have "... = MkIde (E.Trg (Dom f))"
           using gf by (simp add: seq_char)
         also have "... = MkIde (E.Trg (Dom g)) \<cdot> MkIde (E.Trg (Dom f))"
-          using gf seq_char by auto
+          using gf seq_char E.Obj_implies_Ide by auto
         also have "... = trg g \<cdot> trg f"
           using gf trg_def comp_char by auto
         finally show "trg (g \<cdot> f) = trg g \<cdot> trg f" by blast
@@ -385,7 +416,7 @@ begin
     qed
 
     interpretation horizontal_homs vcomp src trg
-      using src_def trg_def Cod_in_Obj Map_in_Hom
+      using src_def trg_def Cod_in_Obj Map_in_Hom E.Obj_implies_Ide
       by unfold_locales auto
 
     notation in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
@@ -503,16 +534,7 @@ begin
             have "(\<lbrace>Dom (fst f)\<rbrace> \<star>\<^sub>B \<lbrace>Dom (snd f)\<rbrace>) \<cdot>\<^sub>B
                     B.can (Dom (fst f) \<^bold>\<star> Dom (snd f)) (Dom (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd f)) =
                   B.can (Dom (fst f) \<^bold>\<star> Dom (snd f)) (Dom (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd f))"
-            proof -
-              have "B.in_hom (B.can (Dom (fst f) \<^bold>\<star> Dom (snd f))
-                             (Dom (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd f)))
-                             \<lbrace>Dom (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd f)\<rbrace> (\<lbrace>Dom (fst f)\<rbrace> \<star>\<^sub>B \<lbrace>Dom (snd f)\<rbrace>)"
-                using 1 2 3 f VV.arr_char arr_char
-                      B.can_in_hom [of "Dom (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd f)" "Dom (fst f) \<^bold>\<star> Dom (snd f)"]
-                by simp
-              thus ?thesis
-                using B.comp_cod_arr by auto
-            qed
+              using "1" "2" "3" B.comp_cod_arr by force
             thus ?thesis
               using 1 2 3 f VV.arr_char B.can_Ide_self B.vcomp_can by simp
           qed
@@ -556,17 +578,7 @@ begin
             have "(\<lbrace>Cod (fst f)\<rbrace> \<star>\<^sub>B \<lbrace>Cod (snd f)\<rbrace>) \<cdot>\<^sub>B
                     B.can (Cod (fst f) \<^bold>\<star> Cod (snd f)) (Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)) =
                   B.can (Cod (fst f) \<^bold>\<star> Cod (snd f)) (Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f))"
-            proof -
-              have "B.in_hom (B.can (Cod (fst f) \<^bold>\<star> Cod (snd f))
-                             (Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)))
-                             \<lbrace>Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)\<rbrace> (\<lbrace>Cod (fst f)\<rbrace> \<star>\<^sub>B \<lbrace>Cod (snd f)\<rbrace>)"
-                using 1 2 3 f VV.arr_char arr_char
-                      B.can_in_hom [of "Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)"
-                                       "Cod (fst f) \<^bold>\<star> Cod (snd f)"]
-                by simp
-              thus ?thesis
-                using B.comp_cod_arr by auto
-            qed
+              using "1" "2" "3" B.comp_cod_arr by force
             thus ?thesis
               using 1 2 3 f VV.arr_char B.can_Ide_self B.vcomp_can by simp
           qed
@@ -673,28 +685,19 @@ begin
                     proof -
                       have "E.Ide (Dom (fst g) \<^bold>\<star> Dom (snd g))"
                         using g arr_char
-                        apply simp
-                        by (metis (no_types, lifting) src_simps(1) trg_simps(1))
+                        by (metis (no_types, lifting) E.Ide.simps(3) src_simps(2) trg_simps(2))
                       moreover have "E.Ide (Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g))"
-                        using g arr_char
-                        apply simp
-                        by (metis (no_types, lifting) E.Ide_HcompNml src_simps(1) trg_simps(1))
+                        using 4 by auto
                       moreover have "E.Ide (Cod (fst f) \<^bold>\<star> Cod (snd f))"
                         using f arr_char
-                        apply simp
-                        by (metis (no_types, lifting) src_simps(1) trg_simps(1))
+                        by (metis (no_types, lifting) E.Ide.simps(3) src_simps(2) trg_simps(2))
                       moreover have
                         "\<^bold>\<lfloor>Dom (fst g) \<^bold>\<star> Dom (snd g)\<^bold>\<rfloor> = \<^bold>\<lfloor>Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g)\<^bold>\<rfloor>"
-                        using g
-                        apply simp
-                        by (metis (no_types, lifting) E.Nml_HcompNml(1) E.Nmlize_Nml
-                            arrE src_simps(1) trg_simps(1))
+                        using g E.Nml_HcompNml(1) calculation(1) by fastforce
                       moreover have
                         "\<^bold>\<lfloor>Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g)\<^bold>\<rfloor> = \<^bold>\<lfloor>Cod (fst f) \<^bold>\<star> Cod (snd f)\<^bold>\<rfloor>"
-                        using g
-                        apply simp
-                        by (metis (no_types, lifting) "0" "1" E.Nmlize.simps(3)
-                            calculation(4) fst_conv seq_char snd_conv)
+                        using g fg seq_char
+                        by (metis (no_types, lifting) VV.seq_char VxV.seqE calculation(4))
                       moreover have
                         "Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g) = Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)"
                         using 0 1 by (simp add: seq_char)
@@ -708,9 +711,8 @@ begin
                         by simp
                       thus ?thesis
                         using f B.can_Ide_self [of "Dom (fst f) \<^bold>\<star> Dom (snd f)"]
-                        apply simp
-                        by (metis (no_types, lifting) B.can_Ide_self E.eval.simps(3)
-                            E.Ide.simps(3) arr_char src_simps(2) trg_simps(2))
+                        by (metis (no_types, lifting) B.can_Ide_self E.Ide.simps(3)
+                            arrE src_simps(2) trg_simps(2))
                     qed
                     finally show ?thesis by simp
                   qed
@@ -730,14 +732,8 @@ begin
                     show ?thesis
                     proof -
                       have 2: "\<lbrace>Cod (snd f)\<rbrace> \<cdot>\<^sub>B Map (snd f) = Map (snd f)"
-                      proof -
-                        have "\<lbrace>Cod (snd f)\<rbrace> \<cdot>\<^sub>B Map (snd f) =
-                              Map (map (cod (snd f)) \<cdot> map (snd f))"
-                          by (simp add: f)
-                        moreover have "map (cod (snd f)) \<cdot> map (snd f) = snd f"
-                          using 1 f map_simp by simp
-                        ultimately show ?thesis by presburger
-                      qed
+                        using 1 f map_simp
+                        by (metis (no_types, lifting) Dom_cod Map_cod Map_comp arr_cod)
                       have "B.seq \<lbrace>Cod (snd f)\<rbrace> (Map (snd f))"
                         using f 2 by auto
                       moreover have "B.seq \<lbrace>Cod (fst f)\<rbrace> (Map (fst f))"
@@ -1145,36 +1141,7 @@ begin
         apply simp
         by (metis (no_types, lifting) Dom_hcomp ideE objE)
       show "Map (a \<star> a) = Map a"
-      proof -
-        have "Map (a \<star> a) = B.can (Cod a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod a) (Cod a \<^bold>\<star> Cod a) \<cdot>\<^sub>B
-                              (Map a \<star>\<^sub>B Map a) \<cdot>\<^sub>B
-                                B.can (Dom a \<^bold>\<star> Dom a) (Dom a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a)"
-          using assms Map_hcomp by auto
-        also have "... = B.can (Dom a) (Dom a \<^bold>\<star> Dom a) \<cdot>\<^sub>B
-                           (\<lbrace>Dom a\<rbrace> \<star>\<^sub>B \<lbrace>Dom a\<rbrace>) \<cdot>\<^sub>B
-                              B.can (Dom a \<^bold>\<star> Dom a) (Dom a)"
-        proof -
-          have "Dom a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a = Dom a"
-            using assms obj_char arr_char E.HcompNml_Trg_Nml
-            by (metis (no_types, lifting) ideE objE obj_def' trg_simps(2))
-          moreover have "Cod a = Dom a"
-            using assms obj_char arr_char dom_char cod_char objE ide_char'
-            by (metis (no_types, lifting) src_simps(1) src_simps(2))
-          moreover have "Map a = \<lbrace>Dom a\<rbrace>"
-            using assms by blast
-          ultimately show ?thesis by simp
-        qed
-        also have "... = B.can (Dom a) (Dom a \<^bold>\<star> Dom a) \<cdot>\<^sub>B B.can (Dom a \<^bold>\<star> Dom a) (Dom a)"
-          using assms obj_char arr_char B.comp_cod_arr E.ide_eval_Ide B.can_in_hom
-          by (metis (no_types, lifting) ide_hcomp obj_def obj_def'
-              calculation B.comp_ide_arr B.ide_hcomp B.hseqE B.ideD(1) ide_char B.seqE)
-        also have "... = \<lbrace>Dom a\<rbrace>"
-          using assms 1 2 obj_char arr_char B.vcomp_can calculation ide_hcomp ideE objE
-          by (metis (no_types, lifting))
-        also have "... = Map a"
-          using assms by force
-        finally show ?thesis by simp
-      qed
+        using "1" Map_ide(1) assms by fastforce
     qed
 
     lemma hcomp_ide_src:
@@ -1196,34 +1163,7 @@ begin
         using assms ide_char arr_char E.HcompNml_Nml_Src
         by (metis (no_types, lifting) ideD(1))
       show "Map (f \<star> src f) = Map f"
-      proof -
-        have "Map (f \<star> src f) = B.can (Cod f \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (src f)) (Cod f \<^bold>\<star> Cod (src f)) \<cdot>\<^sub>B
-                                  (Map f \<star>\<^sub>B Map (src f)) \<cdot>\<^sub>B
-                                    B.can (Dom f \<^bold>\<star> Dom (src f)) (Dom f \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (src f))"
-          unfolding hcomp_def
-          using assms by simp
-        also have "... = B.can (Dom f) (Dom f \<^bold>\<star> E.Src (Dom f)) \<cdot>\<^sub>B
-                           (\<lbrace>Dom f\<rbrace> \<star>\<^sub>B \<lbrace>E.Src (Dom f)\<rbrace>) \<cdot>\<^sub>B
-                             B.can (Dom f \<^bold>\<star> E.Src (Dom f)) (Dom f)"
-          using assms arr_char E.HcompNml_Nml_Src by fastforce
-        also have "... = B.can (Dom f) (Dom f \<^bold>\<star> E.Src (Dom f)) \<cdot>\<^sub>B
-                           B.can (Dom f \<^bold>\<star> E.Src (Dom f)) (Dom f)"
-        proof -
-          have "\<guillemotleft>B.can (Dom f \<^bold>\<star> E.Src (Dom f)) (Dom f) :
-                  \<lbrace>Dom f\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Dom f\<rbrace> \<star>\<^sub>B \<lbrace>E.Src (Dom f)\<rbrace>\<guillemotright>"
-            using assms ide_char arr_char B.can_in_hom
-            by (metis (no_types, lifting) B.canE_unitor(3) B.runit'_in_vhom E.eval_simps(2)
-                E.Ide_implies_Arr ideE)
-          thus ?thesis
-            using B.comp_cod_arr by auto
-        qed
-        also have "... = \<lbrace>Dom f\<rbrace>"
-          using assms 1 ide_char arr_char
-          by (metis (no_types, lifting) ide_hcomp calculation ideE ide_src obj_def' obj_src)
-        also have "... = Map f"
-          using assms by auto
-        finally show ?thesis by simp
-      qed
+        by (simp add: "1" Map_ide(1) assms)
     qed
 
     lemma hcomp_trg_ide:
@@ -1245,35 +1185,7 @@ begin
         using assms ide_char arr_char E.HcompNml_Trg_Nml
         by (metis (no_types, lifting)  ideD(1))
       show "Map (trg f \<star> f) = Map f"
-      proof -
-        have "Map (trg f \<star> f) = B.can (Cod (trg f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod f) (Cod (trg f) \<^bold>\<star> Cod f) \<cdot>\<^sub>B
-                                  (Map (trg f) \<star>\<^sub>B Map f) \<cdot>\<^sub>B
-                                    B.can (Dom (trg f) \<^bold>\<star> Dom f) (Dom (trg f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom f)"
-          unfolding hcomp_def
-          using assms by simp
-        also have "... = B.can (Dom f) (E.Trg (Dom f) \<^bold>\<star> Dom f) \<cdot>\<^sub>B
-                           (\<lbrace>E.Trg (Dom f)\<rbrace> \<star>\<^sub>B \<lbrace>Dom f\<rbrace>) \<cdot>\<^sub>B
-                             B.can (E.Trg (Dom f) \<^bold>\<star> Dom f) (Dom f)"
-          using assms arr_char E.HcompNml_Trg_Nml by fastforce
-        also have "... = B.can (Dom f) (E.Trg (Dom f) \<^bold>\<star> Dom f) \<cdot>\<^sub>B
-                           B.can (E.Trg (Dom f) \<^bold>\<star> Dom f) (Dom f)"
-        proof -
-          have "\<guillemotleft>B.can (E.Trg (Dom f) \<^bold>\<star> Dom f) (Dom f) :
-                  \<lbrace>Dom f\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>E.Trg (Dom f)\<rbrace> \<star>\<^sub>B \<lbrace>Dom f\<rbrace>\<guillemotright>"
-            using assms ide_char arr_char B.can_in_hom
-            by (metis (no_types, lifting) B.canE_unitor(4) B.lunit'_in_vhom E.Nml_implies_Arr
-                E.eval_simps'(3) ideE)
-          thus ?thesis
-            using B.comp_cod_arr by auto
-        qed
-        also have "... = \<lbrace>Dom f\<rbrace>"
-          using assms 1 ide_char arr_char
-          by (metis (no_types, lifting) ide_hcomp Map_ide(1) calculation ideD(1)
-              src_trg trg.preserves_ide)
-        also have "... = Map f"
-          using assms by auto
-        finally show ?thesis by simp
-      qed
+        by (simp add: "1" Map_ide(1) assms)
     qed
 
     interpretation L: full_functor vcomp vcomp L
@@ -1288,59 +1200,16 @@ begin
       have 1: "Cod g = Dom a"
       proof -
         have "Dom (L a) = Dom a"
-        proof -
-          have "Dom (L a) = E.Trg (Dom a) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a"
-            using a trg_def hcomp_def
-            apply simp
-            by (metis (no_types, lifting) ideE src_trg trg.preserves_reflects_arr)
-          also have "... = Dom a"
-            using a arr_char E.Trg_HcompNml
-            by (metis (no_types, lifting) E.HcompNml_Trg_Nml ideD(1))
-          finally show ?thesis by simp
-        qed
+          by (simp add: a hcomp_trg_ide)
         thus ?thesis
           using g cod_char [of g]
           by (metis (no_types, lifting) Dom_cod in_homE)
       qed
       have 2: "Dom g = Dom a'"
-      proof -
-        have "Dom (L a') = Dom a'"
-        proof -
-          have "Dom (L a') = E.Trg (Dom a') \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a'"
-            using a' trg_def hcomp_def
-            apply simp
-            by (metis (no_types, lifting) ideE src_trg trg.preserves_reflects_arr)
-          also have "... = Dom a'"
-            using a' arr_char E.Trg_HcompNml
-            by (metis (no_types, lifting) E.HcompNml_Trg_Nml ideD(1))
-          finally show ?thesis by simp
-        qed
-        thus ?thesis
-          using g dom_char [of g]
-          by (metis (no_types, lifting) Dom_dom in_homE)
-      qed
+        using a' g hcomp_trg_ide in_hom_char by auto
       let ?f = "MkArr (Dom a') (Cod a) (Map g)"
       have f: "in_hom ?f a' a"
-      proof (intro in_homI)
-        show 3: "arr (MkArr (Dom a') (Cod a) (Map g))"
-        proof (intro arr_MkArr [of "Dom a'" "Cod a" "Map g"])
-          show "Dom a' \<in> IDE"
-            using a' ide_char arr_char by blast
-          show "Cod a \<in> IDE"
-            using a ide_char arr_char by blast
-          show "Map g \<in> HOM (Dom a') (Cod a)"
-          proof
-            show "E.Src (Dom a') = E.Src (Cod a) \<and> E.Trg (Dom a') = E.Trg (Cod a) \<and>
-                  \<guillemotleft>Map g : \<lbrace>Dom a'\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Cod a\<rbrace>\<guillemotright>"
-              using a a' a_eq g 1 2 ide_char arr_char src_def trg_def trg_hcomp
-              by (metis (no_types, lifting) Cod.simps(1) in_homE)
-          qed
-        qed
-        show "dom (MkArr (Dom a') (Cod a) (Map g)) = a'"
-          using a a' 3 dom_char by auto
-        show "cod (MkArr (Dom a') (Cod a) (Map g)) = a"
-          using a a' 3 cod_char by auto
-      qed
+        by (metis (no_types, lifting) "1" "2" MkArr_Map a a' g ideE in_hom_char)
       moreover have "L ?f = g"
       proof -
         have "L ?f =
@@ -1430,56 +1299,14 @@ begin
       have a'_eq: "a' = MkIde (Dom a')"
         using a' dom_char [of a'] by simp
       have 1: "Cod g = Dom a"
-      proof -
-        have "Dom (R a) = Dom a"
-        proof -
-          have "Dom (R a) = Dom a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a)"
-            using a src_def hcomp_def
-            apply simp
-            by (metis (no_types, lifting) ideE trg_src src.preserves_reflects_arr)
-          also have "... = Dom a"
-            using a arr_char E.Src_HcompNml
-            by (metis (no_types, lifting) E.HcompNml_Nml_Src ideD(1))
-          finally show ?thesis by simp
-        qed
-        thus ?thesis
-          using g cod_char [of g]
-          by (metis (no_types, lifting) Dom_cod in_homE)
-      qed
+        using a g hcomp_ide_src in_hom_char by force
       have 2: "Dom g = Dom a'"
-      proof -
-        have "Dom (R a') = Dom a'"
-        proof -
-          have "Dom (R a') = Dom a' \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a')"
-            using a' src_def hcomp_def
-            apply simp
-            by (metis (no_types, lifting) ideE trg_src src.preserves_reflects_arr)
-          also have "... = Dom a'"
-            using a' arr_char E.Src_HcompNml
-            by (metis (no_types, lifting) E.HcompNml_Nml_Src ideD(1))
-          finally show ?thesis by simp
-        qed
-        thus ?thesis
-          using g dom_char [of g]
-          by (metis (no_types, lifting) Dom_dom in_homE)
-      qed
+        using a' g hcomp_ide_src by auto
       let ?f = "MkArr (Dom a') (Cod a) (Map g)"
       have f: "in_hom ?f a' a"
       proof (intro in_homI)
         show 3: "arr (MkArr (Dom a') (Cod a) (Map g))"
-        proof (intro arr_MkArr [of "Dom a'" "Cod a" "Map g"])
-          show "Dom a' \<in> IDE"
-            using a' ide_char arr_char by blast
-          show "Cod a \<in> IDE"
-            using a ide_char arr_char by blast
-          show "Map g \<in> HOM (Dom a') (Cod a)"
-          proof
-            show "E.Src (Dom a') = E.Src (Cod a) \<and> E.Trg (Dom a') = E.Trg (Cod a) \<and>
-                  \<guillemotleft>Map g : \<lbrace>Dom a'\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Cod a\<rbrace>\<guillemotright>"
-              using a a' a_eq g 1 2 ide_char arr_char src_def trg_def trg_hcomp
-              by (metis (no_types, lifting) Cod.simps(1) in_homE)
-          qed
-        qed
+          by (metis (no_types, lifting) "1" "2" Cod.simps(1) MkArr_Map a_eq g in_homE)
         show "dom (MkArr (Dom a') (Cod a) (Map g)) = a'"
           using a a' 3 dom_char by auto
         show "cod (MkArr (Dom a') (Cod a) (Map g)) = a"
@@ -1515,16 +1342,8 @@ begin
         qed
         also have "... = MkArr (Dom a') (Cod a)
                                (B.runit \<lbrace>Cod a\<rbrace> \<cdot>\<^sub>B (Map g \<star>\<^sub>B src\<^sub>B \<lbrace>Cod a\<rbrace>) \<cdot>\<^sub>B B.runit' \<lbrace>Dom a'\<rbrace>)"
-        proof -
-          have "E.Src (Cod a) = E.Src (Dom a')"
-            using a a' g arr_char
-            by (metis (no_types, lifting) 1 2 Cod.simps(1) a_eq in_hom_char)
-          moreover have "B.can (Cod a) (Cod a \<^bold>\<star> E.Src (Cod a)) = B.runit \<lbrace>Cod a\<rbrace>"
-            using a B.canE_unitor(1) by blast
-          moreover have "B.can (Dom a' \<^bold>\<star> E.Src (Dom a')) (Dom a') = B.runit' \<lbrace>Dom a'\<rbrace>"
-            using a' B.canE_unitor(3) by blast
-          ultimately show ?thesis by simp
-        qed
+          by (metis (no_types, lifting) B.canE_unitor(1) B.canE_unitor(3) a a' arrE f ideE
+              src_simps(1) vconn_implies_hpar(3))
         also have "... = MkArr (Dom g) (Cod g) (Map g)"
         proof -
           have "src\<^sub>B \<lbrace>Cod a\<rbrace> = src\<^sub>B (Map g)"
@@ -1809,7 +1628,7 @@ begin
                     \<a> (fst (VVV.dom \<tau>\<mu>\<nu>)) (fst (snd (VVV.dom \<tau>\<mu>\<nu>)))
                       (snd (snd (VVV.dom \<tau>\<mu>\<nu>))) =
                   \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-        using \<a>_def HoVH.is_natural_1 HoVH_def by auto
+        using \<a>_def HoVH.as_nat_trans.is_natural_1 HoVH_def by auto
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
                    \<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>)))
                      (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot> HoHV \<tau>\<mu>\<nu> =
@@ -1900,16 +1719,6 @@ begin
     shows "strict_bicategory vcomp hcomp \<a> \<i> src trg"
       ..
 
-    subsection "The Strictness Theorem"
-
-    text \<open>
-      The Strictness Theorem asserts: ``Every bicategory is biequivalent to a strict bicategory.''
-      This amounts to an equivalent (and perhaps more desirable) formulation of the
-      Coherence Theorem.
-      In this section we prove the Strictness Theorem by constructing an equivalence pseudofunctor
-      from a bicategory to its strictification.
-    \<close>
-
     lemma iso_char:
     shows "iso \<mu> \<longleftrightarrow> arr \<mu> \<and> B.iso (Map \<mu>)"
     and "iso \<mu> \<Longrightarrow> inv \<mu> = MkArr (Cod \<mu>) (Dom \<mu>) (B.inv (Map \<mu>))"
@@ -1977,8 +1786,18 @@ begin
         using 1 2 by blast
     qed
 
+    subsection "The Strictness Theorem"
+
     text \<open>
-      We next define a map \<open>UP\<close> from the given bicategory \<open>B\<close> to its strictification,
+      The Strictness Theorem asserts: ``Every bicategory is biequivalent to a strict bicategory.''
+      This amounts to an equivalent (and perhaps more desirable) formulation of the
+      Coherence Theorem.
+      In this section we prove the Strictness Theorem by constructing an equivalence pseudofunctor
+      from a bicategory to its strictification.
+    \<close>
+
+    text \<open>
+      We define a map \<open>UP\<close> from the given bicategory \<open>B\<close> to its strictification,
       and show that it is an equivalence pseudofunctor.
       The following auxiliary definition is not logically necessary, but it provides some
       terms that can be the targets of simplification rules and thereby enables some proofs
@@ -2049,11 +1868,8 @@ begin
       using assms arr_UP UP_in_hom by auto
 
     interpretation UP: "functor" V\<^sub>B vcomp UP
-      using UP_def arr_UP UP_simps(4-5)
-      apply unfold_locales
-          apply auto[4]
-      using arr_UP UP_def comp_char seq_char
-      by auto
+      using UP_def arr_UP UP_simps(4-5) arr_UP UP_def comp_char seq_char
+      by unfold_locales auto
 
     interpretation UP: weak_arrow_of_homs V\<^sub>B src\<^sub>B trg\<^sub>B vcomp src trg UP
     proof
@@ -2109,9 +1925,15 @@ begin
       fix fg
       assume fg: "B.VV.ide fg"
       show "\<guillemotleft>\<Phi>\<^sub>o fg : HoUP_UP.map fg \<Rightarrow> UPoH.map fg\<guillemotright>"
-        using fg arr_char dom_char cod_char B.VV.ide_char B.VV.arr_char
-              UP.FF_def UP_def hcomp_def B.can_Ide_self src_def trg_def
-        by (intro in_homI) auto
+      proof (intro in_homI)
+        show 1: "arr (\<Phi>\<^sub>o fg)"
+          using fg arr_char B.VV.ide_char B.VV.arr_char by auto
+        show "dom (\<Phi>\<^sub>o fg) = HoUP_UP.map fg"
+          using 1 fg UP.FF_def B.VV.arr_char B.VV.ide_char dom_char hcomp_def B.can_Ide_self
+          by simp
+        show "cod (\<Phi>\<^sub>o fg) = UPoH.map fg"
+          using fg arr_char cod_char B.VV.ide_char B.VV.arr_char UP_def by auto
+      qed
       next
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "B.VV.arr \<mu>\<nu>"
@@ -2277,12 +2099,10 @@ begin
             by simp
           moreover have
             "cmp\<^sub>U\<^sub>P (f \<star>\<^sub>B g, h) = MkArr (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>(f \<star>\<^sub>B g) \<star>\<^sub>B h\<^bold>\<rangle> ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>
-                             MkArr (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) ((f \<star>\<^sub>B g) \<star>\<^sub>B h)"
-            using f g h fg gh \<Phi>.map_simp_ide \<Phi>.map_def UP.FF_def UP_def hcomp_def
-                  B.VV.arr_char B.can_Ide_self B.comp_arr_dom B.comp_cod_arr src_def trg_def
-                  B.VV.cod_simp
-            apply simp
-            by (metis (no_types, lifting) B.ide_hcomp B.ide_char arr_UP)
+                                  MkArr (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) ((f \<star>\<^sub>B g) \<star>\<^sub>B h)"
+            using f g h fg gh \<Phi>.map_simp_ide \<Phi>.map_def B.VV.arr_char UP.FF_def B.VV.cod_simp
+                  hcomp_def B.can_Ide_self
+            by simp
           moreover have "cmp\<^sub>U\<^sub>P (f, g) \<star> UP h =
                          MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (B.inv \<a>\<^sub>B[f, g, h])"
           proof -
@@ -2293,15 +2113,8 @@ begin
             moreover have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot>
                              MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (f \<star>\<^sub>B g) =
                            MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
-            proof -
-              have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot>
-                      MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (f \<star>\<^sub>B g) =
-                    MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> ((f \<star>\<^sub>B g) \<cdot>\<^sub>B (f \<star>\<^sub>B g))"
-                using f g fg arr_MkArr by (intro comp_MkArr arr_MkArr) auto
-              also have "... = MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
-                using f g fg by simp
-              finally show ?thesis by blast
-            qed
+              by (metis (no_types, lifting) 2 B.ideD(1) E.eval.simps(2-3) cod_MkArr
+                  comp_arr_ide f g ide_char' seq_char)
             moreover have "B.can ((\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) = B.inv \<a>\<^sub>B[f, g, h]"
               using f g h fg gh B.canI_associator_0 B.inverse_arrows_can by simp
             ultimately show ?thesis
@@ -2353,13 +2166,10 @@ begin
               using f g h fg gh \<Phi>.map_simp_ide \<Phi>.map_def UP.FF_def UP_def hcomp_def
                     B.VV.arr_char B.can_Ide_self B.comp_arr_dom B.comp_cod_arr src_def trg_def
                     arr_char B.VV.cod_simp
-              apply simp_all
-              by blast
+              by auto
             moreover
             have "cmp\<^sub>U\<^sub>P (g, h) = MkArr (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle> (g \<star>\<^sub>B h)"
-              using f g h fg gh \<Phi>.map_def UP.FF_def UP_def hcomp_def B.VV.arr_char
-                    B.can_Ide_self src_def trg_def arr_char B.VV.cod_simp
-              by auto
+              using g h gh cmp\<^sub>U\<^sub>P_ide_simp by blast
             moreover have "MkIde \<^bold>\<langle>f\<^bold>\<rangle> \<star> MkArr (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle> (g \<star>\<^sub>B h) =
                            MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g \<star>\<^sub>B h\<^bold>\<rangle>) (f \<star>\<^sub>B g \<star>\<^sub>B h)"
               using f g h fg gh hcomp_def arr_char src_def trg_def B.can_Ide_self
@@ -2374,7 +2184,7 @@ begin
               thus ?thesis
                 using f g h fg gh hcomp_def arr_char src_def trg_def B.can_Ide_self
                       B.comp_arr_dom B.comp_cod_arr
-                by simp
+                by auto
             qed
             ultimately show ?thesis
               using comp_assoc by auto
@@ -2417,9 +2227,7 @@ begin
           have "\<mu> = MkArr (Dom \<mu>) (Cod \<mu>) (Map \<mu>)"
             using \<mu> MkArr_Map by auto
           also have "... = UP (Map \<mu>)"
-            using f g \<mu> 1 UP_def arr_char dom_char cod_char
-            apply simp
-            by (metis (no_types, lifting) B.in_homE Dom.simps(1) in_homE)
+            using "1" B.arrI UP.as_nat_trans.preserves_hom UP_def \<mu> in_hom_char by force
           finally show ?thesis by auto
         qed
         ultimately show ?thesis by blast
@@ -2525,15 +2333,7 @@ begin
         have \<phi>: "arr ?\<phi>"
         proof -
           have 2: "E.Obj (Dom b)"
-          proof -
-            have "Dom b = Dom (src b)"
-              using b obj_simps by simp
-            moreover have "Dom (src b) = E.Src (Dom b)"
-              using b obj_def src_def arr_char by simp
-            moreover have "E.Obj (E.Src (Dom b))"
-              using b obj_def src_def arr_char arr_def E.Obj_Src by simp
-            ultimately show ?thesis by simp
-          qed
+            using b obj_char by blast
           have "E.Nml \<^bold>\<langle>Map b\<^bold>\<rangle>\<^sub>0 \<and> E.Ide \<^bold>\<langle>Map b\<^bold>\<rangle>\<^sub>0"
             using 1 by auto
           moreover have "E.Nml (Dom b) \<and> E.Ide (Dom b)"
@@ -2622,24 +2422,7 @@ begin
             using arr_char by simp
         qed
         have "\<guillemotleft>?\<phi> : UP (Map g) \<Rightarrow> g\<guillemotright>"
-        proof
-          show "arr ?\<phi>"
-            using \<phi> by simp
-          show "dom ?\<phi> = UP (Map g)"
-            using \<phi> 1 dom_char UP_def by simp
-          show "cod ?\<phi> = g"
-          proof -
-            have "cod ?\<phi> = MkArr (Dom g) (Dom g) (Map g)"
-              using ide_g cod_char Map_g_eq \<phi> by auto
-            moreover have "Dom g = Cod g"
-              using ide_g Cod_ide by simp
-            ultimately have "cod ?\<phi> = MkArr (Dom g) (Cod g) (Map g)"
-              by simp
-            thus ?thesis
-              by (metis (no_types, lifting) "1" B.comp_ide_self
-                  \<open>Dom g = Cod g\<close> comp_cod_arr ideD(1) ideD(3) ide_g comp_char)
-          qed
-        qed
+          by (simp add: "1" \<phi> ide_g in_hom_char)
         moreover have "iso ?\<phi>"
           using \<phi> 1 iso_char by simp
         ultimately have "isomorphic (UP (Map g)) g"
@@ -2688,10 +2471,7 @@ begin
       show "B.isomorphic (DN (src \<mu>)) (src\<^sub>B (DN \<mu>))"
       proof -
         have "DN (src \<mu>) = src\<^sub>B (DN \<mu>)"
-          using \<mu> DN_def arr_char E.eval_simps(2) E.Ide_implies_Arr
-          apply simp
-          by (metis (no_types, lifting) B.vconn_implies_hpar(1) E.Nml_implies_Arr ideE
-              ide_src src_simps(3))
+          using B.src.is_extensional DN_def DN_simps(2) by auto
         moreover have "B.ide (DN (src \<mu>))"
           using \<mu> by simp
         ultimately show ?thesis
@@ -2700,10 +2480,7 @@ begin
       show "B.isomorphic (DN (trg \<mu>)) (trg\<^sub>B (DN \<mu>))"
       proof -
         have "DN (trg \<mu>) = trg\<^sub>B (DN \<mu>)"
-          using \<mu> DN_def arr_char E.eval_simps(3) E.Ide_implies_Arr
-          apply simp
-          by (metis (no_types, lifting) B.vconn_implies_hpar(2) E.Nml_implies_Arr ideE
-              ide_trg trg_simps(3))
+          using \<open>B.isomorphic (DN (src \<mu>)) (src\<^sub>B (DN \<mu>))\<close> by fastforce
         moreover have "B.ide (DN (trg \<mu>))"
           using \<mu> by simp
         ultimately show ?thesis
@@ -2818,12 +2595,7 @@ begin
         proof -
           have 1: "E.Ide (Dom (fst \<mu>\<nu>) \<^bold>\<star> Dom (snd \<mu>\<nu>))"
             unfolding E.Ide.simps(3)
-            apply (intro conjI)
-            using \<mu>\<nu> VV.ide_char VV.arr_char arr_char
-              apply simp
-            using VV.arr_char VV.ideD(1) \<mu>\<nu>
-             apply blast
-            by (metis (no_types, lifting) VV.arrE \<mu>\<nu> src_simps(1) trg_simps(1))
+            by (metis (no_types, lifting) VV.arrE \<mu>\<nu> arrE src_simps(2) trg_simps(2))
           have 2: "E.Ide (Dom (fst \<mu>\<nu>) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd \<mu>\<nu>))"
             using 1
             by (meson E.Ide.simps(3) E.Ide_HcompNml VV.arr_char VV.ideD(1) arr_char \<mu>\<nu>)
@@ -2832,12 +2604,7 @@ begin
                E.Nmlize_Nml VV.arr_char arr_char \<mu>\<nu> 1)
           have 4: "E.Ide (Cod (fst \<mu>\<nu>) \<^bold>\<star> Cod (snd \<mu>\<nu>))"
             unfolding E.Ide.simps(3)
-            apply (intro conjI)
-            using \<mu>\<nu> VV.ide_char VV.arr_char arr_char
-              apply simp
-            using VV.arr_char VV.ideD(1) \<mu>\<nu>
-             apply blast
-            by (metis (no_types, lifting) "1" E.Ide.simps(3) VV.arrE \<mu>\<nu> arrE)
+            by (metis (no_types, lifting) "1" E.Ide.simps(3) VV.arrE \<mu>\<nu> arr_char)
           have 5: "E.Ide (Cod (fst \<mu>\<nu>) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd \<mu>\<nu>))"
             using 4
             by (meson E.Ide.simps(3) E.Ide_HcompNml VV.arr_char VV.ideD(1) arr_char \<mu>\<nu>)
@@ -2911,8 +2678,8 @@ begin
           using assms 1 \<Psi>.preserves_hom by auto
       qed
       show "\<guillemotleft>cmp\<^sub>D\<^sub>N \<mu>\<nu> : DN (src (snd \<mu>\<nu>)) \<rightarrow>\<^sub>B DN (trg (fst \<mu>\<nu>))\<guillemotright>"
-       using assms 2 B.src_dom [of "cmp\<^sub>D\<^sub>N \<mu>\<nu>"] B.trg_dom [of "cmp\<^sub>D\<^sub>N \<mu>\<nu>"]
-       by (auto simp add: VV.dom_simp VV.cod_simp)
+        using assms 2 B.src_dom [of "cmp\<^sub>D\<^sub>N \<mu>\<nu>"] B.trg_dom [of "cmp\<^sub>D\<^sub>N \<mu>\<nu>"]
+        by (elim B.in_homE, intro B.in_hhomI) auto
     qed
 
     lemma cmp\<^sub>D\<^sub>N_simps [simp]:
@@ -3048,8 +2815,7 @@ begin
             using g h gh ide_char arr_char src_def trg_def E.Ide_HcompNml Cod_ide
             by (metis (no_types, lifting) ideD(1) src_simps(2) trg_simps(2))
           have 4: "E.Ide (Dom g \<^bold>\<star> Dom h)"
-            using g h gh ide_char arr_char src_def trg_def Cod_ide
-            by (metis (no_types, lifting) E.Ide.simps(3) arrE ideD(1) src_simps(2) trg_simps(2))
+            by (metis (no_types, lifting) E.Ide.simps(3) arrE g gh h ideE src_simps(1) trg_simps(1))
           have 5: "E.Nmlize (Dom g \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom h) = E.Nmlize (Dom g \<^bold>\<star> Dom h)"
             using g h gh ide_char arr_char src_def trg_def E.Nml_HcompNml
             by (metis (no_types, lifting) 4 E.Ide.simps(3) E.Nmlize.simps(3) E.Nmlize_Nml
@@ -3312,7 +3078,7 @@ begin
     interpretation faithful_functor vcomp V\<^sub>B DN
       using arr_char dom_char cod_char DN_def
       apply unfold_locales
-      by (intro arr_eqI) auto
+      by (metis (no_types, lifting) Cod_dom Dom_cod MkArr_Map)
 
     no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
 
@@ -3490,14 +3256,6 @@ begin
       It is not currently being used -- I originally proved it in order to establish something
       that I later proved in a more abstract setting -- but it might be useful at some point.
     \<close>
-
-    interpretation L: bicategorical_language V\<^sub>B src\<^sub>B trg\<^sub>B ..
-    interpretation E: evaluation_map V\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
-                        \<open>\<lambda>\<mu>. if B.arr \<mu> then \<mu> else B.null\<close>
-      using B.src.is_extensional B.trg.is_extensional
-      by (unfold_locales, auto)
-    notation E.eval ("\<lbrace>_\<rbrace>")
-
     interpretation UP: equivalence_pseudofunctor
                          V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B vcomp hcomp \<a> \<i> src trg UP cmp\<^sub>U\<^sub>P
       using UP_is_equivalence_pseudofunctor by auto
@@ -4046,11 +3804,10 @@ begin
             moreover have "S.iso (S.cmp\<^sub>U\<^sub>P (g, f \<star> g))"
               using antipar by simp
             ultimately show ?thesis
-              using antipar S.comp_assoc
-                    S.invert_side_of_triangle(2)
+              using S.invert_side_of_triangle(2)
                       [of "S.cmp\<^sub>U\<^sub>P (g, src g) \<cdot>\<^sub>S (S.UP g \<star>\<^sub>S S.UP \<epsilon>)" "S.UP (g \<star> \<epsilon>)"
-                          "S.cmp\<^sub>U\<^sub>P (g, f \<star> g)"]
-              by simp
+                          "S.cmp\<^sub>U\<^sub>P (g, f \<star> g)"] S.comp_assoc
+              by presburger
           qed
           moreover have "S.UP (\<eta> \<star> g) =
                          (S.cmp\<^sub>U\<^sub>P (g \<star> f, g) \<cdot>\<^sub>S (S.UP \<eta> \<star>\<^sub>S S.UP g)) \<cdot>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (trg g, g))"

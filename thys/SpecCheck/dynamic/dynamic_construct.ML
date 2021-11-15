@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/dynamic/dynamic_construct.ML
+(*  Title:      SpecCheck/Dynamic/dynamic_construct.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
 
 Dynamic construction of generators and show functions (returned as strings that need to be compiled)
@@ -115,7 +115,6 @@ structure Data = Theory_Data
 (
   type T = (string * string) Symtab.table
   val empty = initial_content
-  val extend = I
   fun merge data : T = Symtab.merge (K true) data
 )
 

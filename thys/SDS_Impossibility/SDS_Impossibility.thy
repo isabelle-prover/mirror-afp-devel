@@ -1,6 +1,6 @@
 (*
   File:   SDS_Impossibility.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   The proof that there exists no anonymous and neutral SDS for at least 
   four voters and alternatives that satisfies SD-Efficiency and 
@@ -784,10 +784,11 @@ lemma card_ge_4E:
   assumes "finite A" "card A \<ge> 4"
   obtains a b c d where "distinct [a,b,c,d]" "{a,b,c,d} \<subseteq> A"
 proof -
-  from finite_list_subset[OF assms] guess xs .
-  moreover then obtain a b c d where "xs = [a, b, c, d]" 
+  from assms obtain xs where xs: "set xs \<subseteq> A" "distinct xs" "length xs = 4"
+    by (rule finite_list_subset)
+  then obtain a b c d where "xs = [a, b, c, d]" 
     by (auto simp: eval_nat_numeral length_Suc_conv)
-  ultimately show ?thesis by (intro that[of a b c d]) simp_all
+  with xs show ?thesis by (intro that[of a b c d]) simp_all
 qed
 
 
@@ -796,10 +797,10 @@ begin
 
 lemma absurd: False
 proof -
-  from card_ge_4E[OF finite_agents agents_ge_4] guess A1 A2 A3 A4 .
-  note agents = this
-  from card_ge_4E[OF finite_alts alts_ge_4] guess a b c d .
-  note alts = this
+  from card_ge_4E[OF finite_agents agents_ge_4]
+  obtain A1 A2 A3 A4 where agents: "distinct [A1, A2, A3, A4]" "{A1, A2, A3, A4} \<subseteq> agents" .
+  from card_ge_4E[OF finite_alts alts_ge_4]
+  obtain a b c d where alts: "distinct [a, b, c, d]" "{a, b, c, d} \<subseteq> alts" .
   define agents' alts' where "agents' = {A1,A2,A3,A4}" and "alts' = {a,b,c,d}"
   from agents alts 
     interpret sds_lowering_anonymous_neutral_sdeff_stratproof agents alts sds agents' alts'

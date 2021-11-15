@@ -202,18 +202,18 @@ qed
 subsection \<open>The Greedy Approximation Algorithm\<close>
 
 text \<open>This function will perform a linear scan from \<open>k \<in> {1..m}\<close> and return the index of the machine with minimum load assuming \<open>m > 0\<close>\<close>
-fun min\<^sub>k :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat" where
-  "min\<^sub>k T 0 = 1"
-| "min\<^sub>k T (Suc x) =
-   (let k = min\<^sub>k T x
+fun min_arg :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat" where
+  "min_arg T 0 = 1"
+| "min_arg T (Suc x) =
+   (let k = min_arg T x
     in if T (Suc x) < T k then (Suc x) else k)"
 
 lemma min_correct:
-  "\<forall>x \<in> {1..m}. T (min\<^sub>k T m) \<le> T x"
+  "\<forall>x \<in> {1..m}. T (min_arg T m) \<le> T x"
   by (induction m) (auto simp: Let_def le_Suc_eq, force)
 
 lemma min_in_range:
-  "k > 0 \<Longrightarrow> (min\<^sub>k T k) \<in> {1..k}"
+  "k > 0 \<Longrightarrow> (min_arg T k) \<in> {1..k}"
   by (induction k) (auto simp: Let_def, force+)
 
 lemma add_job:
@@ -312,7 +312,7 @@ lemma greedy_makespan_no_jobs [simp]:
   "makespan (\<lambda>_. 0) = 0"
   using m_gt_0 by (simp add: makespan_def')
 
-lemma min_avg: "m * T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..m}. T i)"
+lemma min_avg: "m * T (min_arg T m) \<le> (\<Sum>i \<in> {1..m}. T i)"
            (is \<open>_ * ?T \<le> ?S\<close>)
 proof -
   have "(\<Sum>_ \<in> {1..m}. ?T) \<le> ?S"
@@ -336,8 +336,8 @@ lemma inv\<^sub>1I:
 
 lemma inv\<^sub>1_step:
   assumes "inv\<^sub>1 T A j" "j < n"
-  shows "inv\<^sub>1 (T ((min\<^sub>k T m) := T (min\<^sub>k T m) + t (Suc j)))
-              (A ((min\<^sub>k T m) := A (min\<^sub>k T m) \<union> {Suc j})) (Suc j)"
+  shows "inv\<^sub>1 (T ((min_arg T m) := T (min_arg T m) + t (Suc j)))
+              (A ((min_arg T m) := A (min_arg T m) \<union> {Suc j})) (Suc j)"
     (is \<open>inv\<^sub>1 ?T ?A _\<close>)
 proof -
   note invrules = inv\<^sub>1E[OF assms(1)]
@@ -353,15 +353,15 @@ proof -
     then have IH: "makespan T \<le> 2 * makespan T\<^sub>1"
       using invrules(3) by force
     show "makespan ?T \<le> 2 * makespan T\<^sub>1"
-    proof (cases \<open>makespan ?T = T (min\<^sub>k T m) + t (Suc j)\<close>)
+    proof (cases \<open>makespan ?T = T (min_arg T m) + t (Suc j)\<close>)
       case True
-      have "m * T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..m}. T i)" by (rule min_avg)
+      have "m * T (min_arg T m) \<le> (\<Sum>i \<in> {1..m}. T i)" by (rule min_avg)
       also have "... = (\<Sum>i \<in> {1..j}. t i)" by (rule lb_impl_job_sum[OF invrules(1)])
-      finally have "real m * T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..j}. t i)"
+      finally have "real m * T (min_arg T m) \<le> (\<Sum>i \<in> {1..j}. t i)"
         by (auto dest: of_nat_mono)
-      with m_gt_0 have "T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..j}. t i) / m"
+      with m_gt_0 have "T (min_arg T m) \<le> (\<Sum>i \<in> {1..j}. t i) / m"
         by (simp add: field_simps)
-      then have "T (min\<^sub>k T m) \<le> makespan T\<^sub>1"
+      then have "T (min_arg T m) \<le> makespan T\<^sub>1"
         using job_dist_lower_bound_makespan[OF \<open>lb T\<^sub>0 A\<^sub>0 j\<close>] 
           and \<open>makespan T\<^sub>0 \<le> makespan T\<^sub>1\<close> by linarith
       moreover have "t (Suc j) \<le> makespan T\<^sub>1"
@@ -381,7 +381,7 @@ T := (\<lambda>_. 0);
 A := (\<lambda>_. {});
 j := 0;
 WHILE j < n INV {inv\<^sub>1 T A j} DO
-  i := min\<^sub>k T m;
+  i := min_arg T m;
   j := (Suc j);
   A := A (i := A(i) \<union> {j});
   T := T (i := T(i) + t j)
@@ -462,7 +462,7 @@ qed
 
 lemma min_zero:
   assumes "x \<in> {1..k}" "T x = 0"
-  shows "T (min\<^sub>k T k) = 0"
+  shows "T (min_arg T k) = 0"
   using assms(1)
 proof (induction k)
   case (Suc k)
@@ -471,14 +471,14 @@ proof (induction k)
     then show ?thesis using assms(2) by (simp add: Let_def)
   next
     case False
-    with Suc have "T (min\<^sub>k T k) = 0" by simp
+    with Suc have "T (min_arg T k) = 0" by simp
     then show ?thesis by simp
   qed
 qed simp
 
 lemma min_zero_index:
   assumes "x \<in> {1..k}" "T x = 0"
-  shows "min\<^sub>k T k \<le> x"
+  shows "min_arg T k \<le> x"
   using assms(1)
 proof (induction k)
   case (Suc k)
@@ -516,8 +516,8 @@ lemma inv\<^sub>2I:
 
 lemma inv\<^sub>2_step:
   assumes "sorted n" "inv\<^sub>2 T A j" "j < n"
-  shows "inv\<^sub>2 (T (min\<^sub>k T m := T(min\<^sub>k T m) + t(Suc j)))
-              (A (min\<^sub>k T m := A(min\<^sub>k T m) \<union> {Suc j})) (Suc j)"
+  shows "inv\<^sub>2 (T (min_arg T m := T(min_arg T m) + t(Suc j)))
+              (A (min_arg T m := A(min_arg T m) \<union> {Suc j})) (Suc j)"
     (is \<open>inv\<^sub>2 ?T ?A _\<close>)
 proof (cases \<open>Suc j > m\<close>)
   case True note invrules = inv\<^sub>2E[OF assms(2)]
@@ -533,15 +533,15 @@ proof (cases \<open>Suc j > m\<close>)
     then have IH: "makespan T \<le> 3 / 2 * makespan T\<^sub>1"
       using invrules(3) by force
     show "makespan ?T \<le> 3 / 2 * makespan T\<^sub>1"
-    proof (cases \<open>makespan ?T = T (min\<^sub>k T m) + t (Suc j)\<close>)
+    proof (cases \<open>makespan ?T = T (min_arg T m) + t (Suc j)\<close>)
       case True
-      have "m * T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..m}. T i)" by (rule min_avg)
+      have "m * T (min_arg T m) \<le> (\<Sum>i \<in> {1..m}. T i)" by (rule min_avg)
       also have "... = (\<Sum>i \<in> {1..j}. t i)" by (rule lb_impl_job_sum[OF invrules(1)])
-      finally have "real m * T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..j}. t i)"
+      finally have "real m * T (min_arg T m) \<le> (\<Sum>i \<in> {1..j}. t i)"
         by (auto dest: of_nat_mono)
-      with m_gt_0 have "T (min\<^sub>k T m) \<le> (\<Sum>i \<in> {1..j}. t i) / m"
+      with m_gt_0 have "T (min_arg T m) \<le> (\<Sum>i \<in> {1..j}. t i) / m"
         by (simp add: field_simps)
-      then have "T (min\<^sub>k T m) \<le> makespan T\<^sub>1"
+      then have "T (min_arg T m) \<le> makespan T\<^sub>1"
         using job_dist_lower_bound_makespan[OF \<open>lb T\<^sub>0 A\<^sub>0 j\<close>] 
           and \<open>makespan T\<^sub>0 \<le> makespan T\<^sub>1\<close> by linarith
       moreover have "2 * t (Suc j) \<le> makespan T\<^sub>1"
@@ -566,10 +566,10 @@ next
     using add_job[OF invrules(1) min_in_range[OF m_gt_0]] by blast
 
   \<comment> \<open>Greedy is trivially optimal\<close>
-  from IN_RANGE \<open>T (Suc j) = 0\<close> have "min\<^sub>k T m \<le> Suc j"
+  from IN_RANGE \<open>T (Suc j) = 0\<close> have "min_arg T m \<le> Suc j"
     using min_zero_index by blast
   with invrules(4) have EMPTY: "\<forall>x > Suc j. ?T x = 0" by simp
-  from IN_RANGE \<open>T (Suc j) = 0\<close> have "T (min\<^sub>k T m) = 0"
+  from IN_RANGE \<open>T (Suc j) = 0\<close> have "T (min_arg T m) = 0"
     using min_zero by blast
   with fun_upd_f_Max\<^sub>0[OF min_in_range[OF m_gt_0]] invrules(5) False
   have TRIV: "makespan ?T = Max\<^sub>0 (t ` {1..Suc j})" unfolding f_Max\<^sub>0_equiv[symmetric] by simp
@@ -587,7 +587,7 @@ T := (\<lambda>_. 0);
 A := (\<lambda>_. {});
 j := 0;
 WHILE j < n INV {inv\<^sub>2 T A j} DO
-  i := min\<^sub>k T m;
+  i := min_arg T m;
   j := (Suc j);
   A := A (i := A(i) \<union> {j});
   T := T (i := T(i) + t j)

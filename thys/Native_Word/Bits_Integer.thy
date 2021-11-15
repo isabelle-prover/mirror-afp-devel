@@ -342,25 +342,25 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
 } /* object Bits_Integer */\<close>
 
 code_printing
-  constant "(AND) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+  constant "Bit_Operations.and :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.andb ((_),/ (_))" and
   (OCaml) "Z.logand" and
   (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 3 "&"
-| constant "(OR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.or :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.orb ((_),/ (_))" and
   (OCaml) "Z.logor" and
   (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 1 "|"
-| constant "(XOR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.xor :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.xorb ((_),/ (_))" and
   (OCaml) "Z.logxor" and
   (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 2 "^"
-| constant "NOT :: integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "Bit_Operations.not :: integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.notb" and
   (OCaml) "Z.lognot" and
   (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and
@@ -375,13 +375,13 @@ code_printing constant bin_rest_integer \<rightharpoonup>
   (Scala) "_ >> 1"
 
 context
-includes integer.lifting
+  includes integer.lifting bit_operations_syntax
 begin
 
 lemma bitNOT_integer_code [code]:
   fixes i :: integer shows
   "NOT i = - i - 1"
-by transfer(simp add: int_not_def)
+  by transfer (simp add: not_int_def)
 
 lemma bin_rest_integer_code [code nbe]:
   "bin_rest_integer i = i div 2"
@@ -389,15 +389,15 @@ lemma bin_rest_integer_code [code nbe]:
 
 lemma bin_last_integer_code [code]:
   "bin_last_integer i \<longleftrightarrow> i AND 1 \<noteq> 0"
-  by transfer (rule bin_last_conv_AND)
+  by transfer (simp add: and_one_eq odd_iff_mod_2_eq_one)
 
 lemma bin_last_integer_nbe [code nbe]:
   "bin_last_integer i \<longleftrightarrow> i mod 2 \<noteq> 0"
-by transfer(simp add: bin_last_def)
+  by transfer (simp add: odd_iff_mod_2_eq_one)
 
 lemma bitval_bin_last_integer [code_unfold]:
   "of_bool (bin_last_integer i) = i AND 1"
-by transfer(rule bitval_bin_last)
+  by transfer (simp add: and_one_eq mod_2_eq_odd)
 
 end
 
@@ -430,9 +430,7 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg n) (Code_Numeral.sub n' num.One)"
   "integer_test_bit (Code_Numeral.Neg (num.Bit1 n)) (Code_Numeral.Pos n') =
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
-                apply (simp_all add: integer_test_bit_def bit_integer_def)
-  using bin_nth_numeral_simps bit_numeral_int_simps(6)
-  by presburger
+  by (simp_all add: integer_test_bit_def bit_integer_def flip: bit_not_int_iff')
 
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Bits'_Integer.test'_bit" and
@@ -442,7 +440,7 @@ code_printing constant integer_test_bit \<rightharpoonup>
   (Scala) "Bits'_Integer.testBit"
 
 context
-includes integer.lifting
+  includes integer.lifting bit_operations_syntax
 begin
 
 lemma lsb_integer_code [code]:
@@ -474,12 +472,19 @@ text \<open>
   OCaml.Big\_int does not have a method for changing an individual bit, so we emulate that with masks.
   We prefer an Isabelle implementation, because this then takes care of the signs for AND and OR.
 \<close>
+
+context
+  includes bit_operations_syntax
+begin
+
 lemma integer_set_bit_code [code]:
   "integer_set_bit x n b =
   (if n < 0 then undefined x n b else
    if b then x OR (push_bit (nat_of_integer n) 1)
    else x AND NOT (push_bit (nat_of_integer n) 1))"
   by (auto simp add: integer_set_bit_def not_less set_bit_eq set_bit_def unset_bit_def)
+
+end
 
 definition integer_shiftl :: "integer \<Rightarrow> integer \<Rightarrow> integer"
 where [code del]: "integer_shiftl x n = (if n < 0 then undefined x n else push_bit (nat_of_integer n) x)"
@@ -569,17 +574,17 @@ begin
 
 lemma Bit_integer_code [code]:
   "Bit_integer i False = push_bit 1 i"
-  "Bit_integer i True = (push_bit 1 i) + 1"
-  by (transfer; simp add: shiftl_int_def)+
+  "Bit_integer i True = push_bit 1 i + 1"
+  by (transfer; simp)+
 
 lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"
-by transfer(simp add: msb_int_def)
+  by transfer (simp add: msb_int_def)
 
 end
 
 context
-includes integer.lifting natural.lifting
+  includes integer.lifting natural.lifting bit_operations_syntax
 begin
 
 lemma bitAND_integer_unfold [code]:
@@ -617,6 +622,10 @@ end
 
 
 section \<open>Test code generator setup\<close>
+
+context
+  includes bit_operations_syntax
+begin
 
 definition bit_integer_test :: "bool" where
   "bit_integer_test =
@@ -662,6 +671,8 @@ oops
 lemma "(f :: integer \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
+
+end
 
 hide_const bit_integer_test
 hide_fact bit_integer_test_def

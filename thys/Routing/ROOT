@@ -2,6 +2,8 @@ chapter AFP
 
 session Routing (AFP) = Simple_Firewall +
   options [timeout = 300]
+  sessions
+    "Pure-ex"
   theories
     Routing_Table
     Linux_Router

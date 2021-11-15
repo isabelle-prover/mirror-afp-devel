@@ -21,7 +21,7 @@ begin
 
 subsection \<open>Algorithm\<close>
 
-context
+locale div_exp_param =
   fixes div_exp :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
 begin
 partial_function(tailrec) subresultant_prs_main where
@@ -37,7 +37,7 @@ partial_function(tailrec) subresultant_prs_main where
      else subresultant_prs_main g (sdiv_poly h ((-1) ^ (\<delta> + 1) * lf * (c ^ \<delta>))) d)"
 
 definition subresultant_prs where
-  [code del]: "subresultant_prs f g = (let
+  "subresultant_prs f g = (let
     h = pseudo_mod f g;
     \<delta> = (degree f - degree g);
     d = lead_coeff g ^ \<delta>
@@ -45,36 +45,34 @@ definition subresultant_prs where
        else subresultant_prs_main g ((- 1) ^ (\<delta> + 1) * h) d)"
 
 definition resultant_impl_main where
-  [code del]: "resultant_impl_main G1 G2 = (if G2 = 0 then (if degree G1 = 0 then 1 else 0) else
+  "resultant_impl_main G1 G2 = (if G2 = 0 then (if degree G1 = 0 then 1 else 0) else
      case subresultant_prs G1 G2 of
      (Gk,hk) \<Rightarrow> (if degree Gk = 0 then hk else 0))"
 
-definition resultant_impl_generic where
-  "resultant_impl_generic f g =
+definition resultant_impl where
+  "resultant_impl f g =
      (if length (coeffs f) \<ge> length (coeffs g) then resultant_impl_main f g
      else let res = resultant_impl_main g f in
       if even (degree f) \<or> even (degree g) then res else - res)"
 end
 
+locale div_exp_sound = div_exp_param + 
+  assumes div_exp: "\<And> x y n.
+     (to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract
+     \<Longrightarrow> to_fract (div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
+
 definition basic_div_exp :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "basic_div_exp x y n = x^n div y^(n-1)"
 
-text \<open>Using @{const basic_div_exp} we obtain a more generic implementation, which is however
-  less efficient. It is currently not further developed, except for getting the raw soundness statement.\<close>
-definition resultant_impl_idom_divide :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: idom_divide" where
-  "resultant_impl_idom_divide = resultant_impl_generic basic_div_exp"
+text \<open>We have an instance for arbitrary integral domains.\<close>
+lemma basic_div_exp: "div_exp_sound basic_div_exp" 
+  by (unfold_locales, unfold basic_div_exp_def, rule sym, rule div_divide_to_fract, auto simp: hom_distribs)
 
-text \<open>The default variant uses the optimized computation @{const dichotomous_Lazard}.
-  For this variant, later on optimized code-equations are proven.
-  However, the implementation restricts to sort @{class factorial_ring_gcd}.\<close>
-definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: factorial_ring_gcd" where
-  [code del]: "resultant_impl = resultant_impl_generic dichotomous_Lazard"
+text \<open>Lazard's optimization is only proven for factorial rings.\<close>
+lemma dichotomous_Lazard: "div_exp_sound (dichotomous_Lazard :: 'a :: factorial_ring_gcd \<Rightarrow> _)" 
+  by (unfold_locales, rule dichotomous_Lazard)
 
-subsection \<open>Soundness Proof for @{term "resultant_impl = resultant"}\<close>
-
-lemma basic_div_exp: assumes "(to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract"
-  shows "to_fract (basic_div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
-  unfolding basic_div_exp_def by (rule sym, rule div_divide_to_fract[OF assms refl refl], auto simp: hom_distribs)
+subsection \<open>Soundness Proof for @{term "div_exp_param.resultant_impl div_exp = resultant"}\<close>
 
 abbreviation pdivmod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly"
 where
@@ -2150,11 +2148,12 @@ qed
 
 context
   fixes div_exp :: "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
-  assumes div_exp: "\<And> x y n.
-     (to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract
-     \<Longrightarrow> to_fract (div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
+  assumes div_exp_sound: "div_exp_sound div_exp"
 begin
-lemma subresultant_prs_main: assumes "subresultant_prs_main div_exp Gi_1 Gi hi_1 = (Gk, hk)"
+
+interpretation div_exp_sound div_exp by (rule div_exp_sound)
+
+lemma subresultant_prs_main: assumes "subresultant_prs_main Gi_1 Gi hi_1 = (Gk, hk)"
   and "F i = ffp Gi"
   and "F (i - 1) = ffp Gi_1"
   and "h (i - 1) = ff hi_1"
@@ -2179,7 +2178,7 @@ proof -
     obtain hi where hi: "hi = div_exp ?gi hi_1 ?d1" by auto
     obtain divisor where div: "divisor = (-1) ^ (?d1 + 1) * ?gi_1 * (hi_1 ^ ?d1)" by auto
     obtain G1_p1 where G1_p1: "G1_p1 = sdiv_poly ?pmod divisor" by auto
-    note res = res[unfolded subresultant_prs_main.simps[of div_exp Gi_1] Let_def,
+    note res = res[unfolded subresultant_prs_main.simps[of Gi_1] Let_def,
       folded hi, folded div, folded G1_p1]
     have h_i: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)" unfolding h.simps[of i] using i by simp
     have hi_ff: "h i \<in> range ff" using B_theorem_3[OF _ i(2)] i by auto
@@ -2211,7 +2210,7 @@ proof -
     next
       case False
       with res eq have res:
-         "subresultant_prs_main div_exp Gi G1_p1 hi = (Gk, hk)" by auto
+         "subresultant_prs_main Gi G1_p1 hi = (Gk, hk)" by auto
       from m False i have m: "m - 1 < m" "m - 1 = k - Suc i" by auto
       have si: "Suc i - 1 = i" and ii: "3 \<le> Suc i" "Suc i \<le> k" and iii: "3 \<le> Suc i" "Suc i \<le> Suc k"
         using False i by auto
@@ -2237,7 +2236,7 @@ proof -
   qed
 qed
 
-lemma subresultant_prs: assumes res: "subresultant_prs div_exp G1 G2 = (Gk, hk)"
+lemma subresultant_prs: assumes res: "subresultant_prs G1 G2 = (Gk, hk)"
   shows "F k = ffp Gk \<and> h k = ff hk \<and> (i \<noteq> 0 \<longrightarrow> F i \<in> range ffp) \<and> (3 \<le> i \<longrightarrow> i \<le> Suc k \<longrightarrow> \<beta> i \<in> range ff)"
 proof -
   let ?pmod = "pseudo_mod G1 G2"
@@ -2317,12 +2316,12 @@ proof -
   qed (insert main, auto)
 qed
 
-lemma resultant_impl_main: "resultant_impl_main div_exp G1 G2 = resultant G1 G2"
+lemma resultant_impl_main: "resultant_impl_main G1 G2 = resultant G1 G2"
 proof -
   from F0[of 2] F12(2) have k2: "k \<ge> 2" by auto
-  obtain Gk hk where sub: "subresultant_prs div_exp G1 G2 = (Gk, hk)" by force
+  obtain Gk hk where sub: "subresultant_prs G1 G2 = (Gk, hk)" by force
   from subresultant_prs[OF this] have *: "F k = ffp Gk" "h k = ff hk" by auto
-  have "resultant_impl_main div_exp G1 G2 = (if degree (F k) = 0 then hk else 0)"
+  have "resultant_impl_main G1 G2 = (if degree (F k) = 0 then hk else 0)"
     unfolding resultant_impl_main_def sub split * using F2 F12 by auto
   also have "\<dots> = resultant G1 G2"
   proof (cases "n k = 0")
@@ -2344,7 +2343,7 @@ proof -
       from F0[of 3, unfolded 2] have "F 3 = 0" by simp
       with pmod[of 3, unfolded 2] \<beta>0[of 3] have "pseudo_mod (F 1) (F 2) = 0" by auto
       hence pm: "pseudo_mod G1 G2 = 0" unfolding F1 F2 to_fract_hom.pseudo_mod_hom by simp
-      from subresultant_prs_def[of div_exp G1 G2, unfolded sub Let_def this]
+      from subresultant_prs_def[of G1 G2, unfolded sub Let_def this]
       have id: "Gk = G2" "hk = lead_coeff G2 ^ (degree G1 - degree G2)" by auto
       from F12 F1 F2 have "G1 \<noteq> 0" "G2 \<noteq> 0" by auto
       from resultant_pseudo_mod_0[OF pm deg_G12 this]
@@ -2523,51 +2522,39 @@ end
 
 text \<open>Now we obtain the soundness lemma outside the locale.\<close>
 
-context
-  fixes div_exp :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
-  assumes div_exp: "\<And> x y n.
-     (to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract
-     \<Longrightarrow> to_fract (div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
+context div_exp_sound
 begin
 
 lemma resultant_impl_main: assumes len: "length (coeffs G1) \<ge> length (coeffs G2)"
-  shows "resultant_impl_main div_exp G1 G2 = resultant G1 G2"
+  shows "resultant_impl_main G1 G2 = resultant G1 G2"
 proof (cases "G2 = 0")
   case G2: False
   from enter_subresultant_prs[OF len G2] obtain F n d f k b
     where "subresultant_prs_locale2 F n d f k b G1 G2" by auto
   interpret subresultant_prs_locale2 F n d f k b G1 G2 by fact
-  show ?thesis by (rule resultant_impl_main[OF div_exp])
+  show ?thesis by (rule resultant_impl_main, standard)
 next
   case G2: True
   show ?thesis unfolding G2
     resultant_impl_main_def using resultant_const(2)[of G1 0] by simp
 qed
 
-theorem resultant_impl_generic: "resultant_impl_generic div_exp = resultant"
+theorem resultant_impl: "resultant_impl = resultant"
 proof (intro ext)
   fix f g :: "'a poly"
-  show "resultant_impl_generic div_exp f g = resultant f g"
+  show "resultant_impl f g = resultant f g"
   proof (cases "length (coeffs f) \<ge> length (coeffs g)")
     case True
-    thus ?thesis unfolding resultant_impl_generic_def resultant_impl_main[OF True] by auto
+    thus ?thesis unfolding resultant_impl_def resultant_impl_main[OF True] by auto
   next
     case False
     hence "length (coeffs g) \<ge> length (coeffs f)" by auto
     from resultant_impl_main[OF this]
-    show ?thesis unfolding resultant_impl_generic_def resultant_swap[of f g] using False
+    show ?thesis unfolding resultant_impl_def resultant_swap[of f g] using False
       by (auto simp: Let_def)
   qed
 qed
 end
-
-lemma resultant_impl[simp]: "resultant_impl = resultant"
-  unfolding resultant_impl_def
-  by (rule resultant_impl_generic[OF dichotomous_Lazard])
-
-lemma resultant_impl_idom_divide[simp]: "resultant_impl_idom_divide = resultant"
-  unfolding resultant_impl_idom_divide_def
-  by (rule resultant_impl_generic[OF basic_div_exp])
 
 subsection \<open>Code Equations\<close>
 
@@ -2575,15 +2562,18 @@ text \<open>In the following code-equations, we only compute the required values
   is not required if $n_k > 0$, we compute $(-1)^{\ldots} * \ldots$ via a case-analysis,
   and we perform special cases for $\delta_i = 1$, which is the most frequent case.\<close>
 
+context div_exp_param
+begin
+
 partial_function(tailrec) subresultant_prs_main_impl where
   "subresultant_prs_main_impl f Gi_1 Gi ni_1 d1_1 hi_2 = (let
      gi_1 = lead_coeff Gi_1;
      ni = degree Gi;
-     hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
+     hi_1 = (if d1_1 = 1 then gi_1 else div_exp gi_1 hi_2 d1_1);
      d1 = ni_1 - ni;
      pmod = pseudo_mod Gi_1 Gi
     in (if pmod = 0 then f (Gi, (if d1 = 1 then lead_coeff Gi
-      else dichotomous_Lazard (lead_coeff Gi) hi_1 d1)) else
+      else div_exp (lead_coeff Gi) hi_1 d1)) else
     let
        gi = lead_coeff Gi;
        divisor = (-1) ^ (d1 + 1) * gi_1 * (hi_1 ^ d1) ;
@@ -2591,7 +2581,7 @@ partial_function(tailrec) subresultant_prs_main_impl where
        in subresultant_prs_main_impl f Gi Gi_p1 ni d1 hi_1))"
 
 definition subresultant_prs_impl where
-  [code del]: "subresultant_prs_impl f G1 G2 = (let
+  "subresultant_prs_impl f G1 G2 = (let
     pmod = pseudo_mod G1 G2;
     n2 = degree G2;
     delta_1 = (degree G1 - n2);
@@ -2603,12 +2593,19 @@ definition subresultant_prs_impl where
       n3 = degree G3;
       d2 = n2 - n3;
       pmod = pseudo_mod G2 G3
-    in if pmod = 0 then f (G3, if d2 = 1 then g3 else dichotomous_Lazard g3 h2 d2)
+    in if pmod = 0 then f (G3, if d2 = 1 then g3 else div_exp g3 h2 d2)
     else let divisor = (- 1) ^ (d2 + 1) * g2 * h2 ^ d2; G4 = sdiv_poly pmod divisor
          in subresultant_prs_main_impl f G3 G4 n3 d2 h2
     )"
+end
 
-lemma subresultant_prs_impl: "subresultant_prs_impl f G1 G2 = f (subresultant_prs dichotomous_Lazard G1 G2)"
+context div_exp_sound
+begin
+
+lemma div_exp_1: "div_exp g h (Suc 0) = g"
+  using div_exp[of g "Suc 0" h] by simp
+
+lemma subresultant_prs_impl: "subresultant_prs_impl f G1 G2 = f (subresultant_prs G1 G2)"
 proof -
   define h2 where "h2 = lead_coeff G2 ^ (degree G1 - degree G2)"
   define G3 where "G3 = ((- 1) ^ (degree G1 - degree G2 + 1) * pseudo_mod G1 G2)"
@@ -2616,17 +2613,17 @@ proof -
        ((- 1) ^ (degree G2 - degree G3 + 1) * lead_coeff G2 *
         h2 ^ (degree G2 - degree G3))"
   define d2 where "d2 = degree G2 - degree G3"
-  have dl1: "(if d = 1 then (g :: 'b) else dichotomous_Lazard g h d) = dichotomous_Lazard g h d" for d g h
-    by (cases "d = 1", auto simp: dichotomous_Lazard dichotomous_Lazard.simps)
+  have dl1: "(if d = 1 then (g :: 'a) else div_exp g h d) = div_exp g h d" for d g h
+    by (cases "d = 1", auto simp: div_exp_1)
   show ?thesis
     unfolding subresultant_prs_impl_def subresultant_prs_def Let_def
-      subresultant_prs_main.simps[of dichotomous_Lazard G2]
+      subresultant_prs_main.simps[of G2]
       if_distrib[of f] dl1
   proof (rule if_cong[OF refl refl if_cong[OF refl refl]], unfold h2_def[symmetric],
     unfold G3_def[symmetric], unfold G4_def[symmetric], unfold d2_def[symmetric])
-    note simp = subresultant_prs_main_impl.simps[of f] subresultant_prs_main.simps[of dichotomous_Lazard]
+    note simp = subresultant_prs_main_impl.simps[of f] subresultant_prs_main.simps
     show "subresultant_prs_main_impl f G3 G4 (degree G3) d2 h2 =
-      f (subresultant_prs_main dichotomous_Lazard G3 G4 (dichotomous_Lazard (lead_coeff G3) h2 d2))"
+      f (subresultant_prs_main G3 G4 (div_exp (lead_coeff G3) h2 d2))"
     proof (induct G4 arbitrary: G3 d2 h2 rule: wf_induct[OF wf_measure[of degree]])
       case (1 G4 G3 d2 h2)
       let ?M = "pseudo_mod G3 G4"
@@ -2638,7 +2635,7 @@ proof -
         case False
         hence id: "(?M = 0) = False" by auto
         let ?c = "((- 1) ^ (degree G3 - degree G4 + 1) * lead_coeff G3 *
-            (dichotomous_Lazard (lead_coeff G3) h2 d2) ^ (degree G3 - degree G4))"
+            (div_exp (lead_coeff G3) h2 d2) ^ (degree G3 - degree G4))"
         let ?N = "sdiv_poly ?M ?c"
         show ?thesis
         proof (cases "G4 = 0")
@@ -2657,14 +2654,12 @@ proof -
   qed
 qed
 
-definition [code del]:
+definition
   "resultant_impl_rec = subresultant_prs_main_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)"
-definition [code del]:
+definition 
   "resultant_impl_start = subresultant_prs_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)"
-definition [code del]:
-  "resultant_impl_Lazard = resultant_impl_main dichotomous_Lazard"
 
-lemma resultant_impl_start_code[code]:
+lemma resultant_impl_start_code:
   "resultant_impl_start G1 G2 =
      (let pmod = pseudo_mod G1 G2;
           n2 = degree G2;
@@ -2681,7 +2676,7 @@ lemma resultant_impl_start_code[code]:
                      let d2 = n2 - n3;
                          g3 = lead_coeff G3
                         in (if d2 = 1 then g3 else
-                            dichotomous_Lazard g3 (if d1 = 1 then g2 else g2 ^ d1) d2) else 0
+                            div_exp g3 (if d1 = 1 then g2 else g2 ^ d1) d2) else 0
                     else let
                            h2 = (if d1 = 1 then g2 else g2 ^ d1);
                            d2 = n2 - n3;
@@ -2702,7 +2697,7 @@ proof -
     by (rule if_cong[OF refl if_cong if_cong], auto simp: power2_eq_square)
 qed
 
-lemma resultant_impl_rec_code[code]:
+lemma resultant_impl_rec_code:
   "resultant_impl_rec Gi_1 Gi ni_1 d1_1 hi_2 = (
     let ni = degree Gi;
         pmod = pseudo_mod Gi_1 Gi
@@ -2715,13 +2710,13 @@ lemma resultant_impl_rec_code[code]:
               gi = lead_coeff Gi
             in if d1 = 1 then gi else
               let gi_1 = lead_coeff Gi_1;
-                  hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1) in
-                dichotomous_Lazard gi hi_1 d1
+                  hi_1 = (if d1_1 = 1 then gi_1 else div_exp gi_1 hi_2 d1_1) in
+                div_exp gi hi_1 d1
           else 0
         else let
            d1 = ni_1 - ni;
            gi_1 = lead_coeff Gi_1;
-           hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
+           hi_1 = (if d1_1 = 1 then gi_1 else div_exp gi_1 hi_2 d1_1);
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
            Gi_p1 = sdiv_poly pmod divisor
        in resultant_impl_rec Gi Gi_p1 ni d1 hi_1)"
@@ -2729,18 +2724,55 @@ lemma resultant_impl_rec_code[code]:
   unfolding resultant_impl_rec_def[symmetric]
   by (rule if_cong[OF _ if_cong _], auto)
 
-lemma resultant_impl_Lazard_code[code]: "resultant_impl_Lazard G1 G2 =
+lemma resultant_impl_main_code: "resultant_impl_main G1 G2 =
   (if G2 = 0 then if degree G1 = 0 then 1 else 0
      else resultant_impl_start G1 G2)"
-  unfolding resultant_impl_Lazard_def resultant_impl_main_def
+  unfolding resultant_impl_main_def
    resultant_impl_start_def subresultant_prs_impl by simp
 
-lemma resultant_impl_code[code]: "resultant_impl f g =
-  (if length (coeffs f) \<ge> length (coeffs g) then resultant_impl_Lazard f g
-     else let res = resultant_impl_Lazard g f in
+lemma resultant_impl_code: "resultant_impl f g =
+  (if length (coeffs f) \<ge> length (coeffs g) then resultant_impl_main f g
+     else let res = resultant_impl_main g f in
       if even (degree f) \<or> even (degree g) then res else - res)"
-  unfolding resultant_impl_def resultant_impl_generic_def resultant_impl_Lazard_def ..
+  unfolding resultant_impl_def resultant_impl_def ..
 
-lemma resultant_code[code]: "resultant f g = resultant_impl f g" by simp
+lemma resultant_code: "resultant = resultant_impl" 
+  using resultant_impl by fastforce
+
+lemmas resultant_code_lemmas = 
+  resultant_impl_code 
+  resultant_impl_main_code
+  resultant_impl_start_code
+  resultant_impl_rec_code
+end
+
+global_interpretation div_exp_Lazard: div_exp_sound "dichotomous_Lazard :: 'a :: factorial_ring_gcd \<Rightarrow> _" 
+  defines 
+    resultant_impl_Lazard = div_exp_Lazard.resultant_impl and
+    resultant_impl_main_Lazard = div_exp_Lazard.resultant_impl_main and
+    resultant_impl_start_Lazard = div_exp_Lazard.resultant_impl_start and
+    resultant_impl_rec_Lazard = div_exp_Lazard.resultant_impl_rec
+  by (rule dichotomous_Lazard)
+
+declare div_exp_Lazard.resultant_code_lemmas[code]
+
+text \<open>As default use Lazard-implementation, which implements
+  resultants on factorial rings.\<close>
+declare div_exp_Lazard.resultant_code[code]
+
+text \<open>We also provide a second implementation without Lazard's 
+  optimization, which works on integral domains.\<close>
+global_interpretation div_exp_basic: div_exp_sound basic_div_exp 
+  defines 
+    resultant_impl_basic = div_exp_basic.resultant_impl and
+    resultant_impl_main_basic = div_exp_basic.resultant_impl_main and
+    resultant_impl_start_basic = div_exp_basic.resultant_impl_start and
+    resultant_impl_rec_basic = div_exp_basic.resultant_impl_rec
+  by (rule basic_div_exp)
+
+declare div_exp_basic.resultant_code_lemmas[code]
+
+thm div_exp_basic.resultant_code
+
 
 end

@@ -58,9 +58,9 @@ locale imp_set_iterate = imp_set +
   assumes it_next_rule[sep_heap_rules]: "s'\<noteq>{} \<Longrightarrow> 
     <is_it s p s' it> 
       it_next it 
-    <\<lambda>(a,it'). is_it s p (s' - {a}) it' * \<up>(a \<in> s')>"
+    <\<lambda>(a,it'). is_it s p (s' - {a}) it' * \<up>(a \<in> s')>\<^sub>t"
   assumes it_has_next_rule[sep_heap_rules]: 
-    "<is_it s p s' it> it_has_next it <\<lambda>r. is_it s p s' it * \<up>(r\<longleftrightarrow>s'\<noteq>{})>"
+    "<is_it s p s' it> it_has_next it <\<lambda>r. is_it s p s' it * \<up>(r\<longleftrightarrow>s'\<noteq>{})>\<^sub>t"
   assumes quit_iteration:
     "is_it s p s' it \<Longrightarrow>\<^sub>A is_set s p * true"
 

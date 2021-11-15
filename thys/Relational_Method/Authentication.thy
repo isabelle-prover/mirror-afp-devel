@@ -133,9 +133,23 @@ proposition auth_pubkey_owner_ii [rule_format]:
 by (erule rtrancl_induct, simp add: image_def, drule auth_prikey_used [of _ n],
  auto simp add: rel_def)
 
+proposition auth_pubkey_owner_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Owner m, \<lbrace>Num 3, Auth_PubKey n\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, drule auth_prikey_used [of _ n],
+ auto simp add: rel_def)
+
 proposition auth_pubkey_asset_ii [rule_format]:
  "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
     (Asset m, \<lbrace>Num 2, Auth_PubKey n\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, drule auth_prikey_used [of _ n],
+ auto simp add: rel_def)
+
+proposition auth_pubkey_asset_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset m, \<lbrace>Num 4, Auth_PubKey n\<rbrace>) \<in> s \<longrightarrow>
   False"
 by (erule rtrancl_induct, simp add: image_def, drule auth_prikey_used [of _ n],
  auto simp add: rel_def)
@@ -148,6 +162,14 @@ proposition asset_i_owner_ii [rule_format]:
 by (erule rtrancl_induct, simp add: image_def, frule asset_i_used [of _ m A],
  drule owner_ii_used [of _ n A], auto simp add: rel_def)
 
+proposition asset_i_owner_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset m, Crypt (Auth_ShaKey m) (PriKey A)) \<in> s \<longrightarrow>
+    (Owner n, \<lbrace>Num 3, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, frule asset_i_used [of _ m A],
+ drule owner_iii_used [of _ n A], auto simp add: rel_def)
+
 proposition asset_i_asset_ii [rule_format]:
  "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
     (Asset m, Crypt (Auth_ShaKey m) (PriKey A)) \<in> s \<longrightarrow>
@@ -156,6 +178,14 @@ proposition asset_i_asset_ii [rule_format]:
 by (erule rtrancl_induct, simp add: image_def, frule asset_i_used [of _ m A],
  drule asset_ii_used [of _ n A], auto simp add: rel_def)
 
+proposition asset_i_asset_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset m, Crypt (Auth_ShaKey m) (PriKey A)) \<in> s \<longrightarrow>
+    (Asset n, \<lbrace>Num 4, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, frule asset_i_used [of _ m A],
+ drule asset_iii_used [of _ n A], auto simp add: rel_def)
+
 proposition asset_ii_owner_ii [rule_format]:
  "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
     (Asset m, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s \<longrightarrow>
@@ -163,6 +193,22 @@ proposition asset_ii_owner_ii [rule_format]:
   False"
 by (erule rtrancl_induct, simp add: image_def, frule asset_ii_used [of _ m A],
  drule owner_ii_used [of _ n A], auto simp add: rel_def)
+
+proposition asset_ii_owner_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset m, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+    (Owner n, \<lbrace>Num 3, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, frule asset_ii_used [of _ m A],
+ drule owner_iii_used [of _ n A], auto simp add: rel_def)
+
+proposition asset_ii_asset_iii [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset m, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+    (Asset n, \<lbrace>Num 4, PubKey A\<rbrace>) \<in> s \<longrightarrow>
+  False"
+by (erule rtrancl_induct, simp add: image_def, frule asset_ii_used [of _ m A],
+ drule asset_iii_used [of _ n A], auto simp add: rel_def)
 
 proposition asset_iii_owner_iii [rule_format]:
  "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
@@ -1899,5 +1945,214 @@ proof -
     using \<open>?R D'\<close> by simp
 qed
 
+
+proposition owner_iii_secret [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s \<longrightarrow>
+  PriKey C \<notin> spied s"
+proof (erule rtrancl_induct, simp add: image_def, rule impI)
+  fix s s'
+  assume
+    A: "s\<^sub>0 \<Turnstile> s" and
+    B: "s \<turnstile> s'" and
+    C: "(Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s \<longrightarrow> PriKey C \<notin> spied s" and
+    D: "(Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s'"
+  show "PriKey C \<notin> spied s'"
+  proof (insert B C D, auto simp add: rel_def)
+    assume "(Owner n, \<lbrace>Num 3, Key (PubK C)\<rbrace>) \<in> s"
+    hence "(Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s" by simp
+    hence "PriKey C \<in> used s"
+      by (rule owner_iii_used [OF A, THEN mp])
+    moreover assume "Key (PriK C) \<notin> used s"
+    ultimately show False by simp
+  next
+    fix K
+    assume "(Spy, Crypt K (Key (PriK C))) \<in> s"
+    hence "Crypt K (PriKey C) \<in> parts (used s)" by auto
+    hence "(\<exists>m. K = Auth_ShaKey m \<and>
+      (Asset m, Crypt (Auth_ShaKey m) (PriKey C)) \<in> s) \<or>
+      {PriKey C, Key K} \<subseteq> spied s"
+      (is "(\<exists>m. _ \<and> ?P m) \<or> _")
+      by (rule parts_crypt_prikey [OF A])
+    moreover assume "(Spy, Key (PriK C)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Owner n, \<lbrace>Num 3, Key (PubK C)\<rbrace>) \<in> s"
+    hence "(Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s" by simp
+    ultimately show False
+      by (rule asset_i_owner_iii [OF A])
+  next
+    fix A
+    assume "(Spy, C \<otimes> A) \<in> s"
+    hence "C \<otimes> A \<in> parts (used s)" by blast
+    hence "(\<exists>m. C = Auth_PriK m \<and> (Asset m, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s) \<or>
+      {PriKey C, PriKey A} \<subseteq> spied s"
+      (is "(\<exists>m. ?P m \<and> _) \<or> _")
+      by (rule parts_mult [OF A])
+    moreover assume "(Spy, Key (PriK C)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Owner n, \<lbrace>Num 3, Key (PubK C)\<rbrace>) \<in> s"
+    ultimately have "(Owner n, \<lbrace>Num 3, Auth_PubKey m\<rbrace>) \<in> s" by simp
+    thus False
+      by (rule auth_pubkey_owner_iii [OF A])
+  next
+    fix A
+    assume "(Spy, A \<otimes> C) \<in> s"
+    hence "A \<otimes> C \<in> parts (used s)" by blast
+    hence "(\<exists>m. A = Auth_PriK m \<and> (Asset m, \<lbrace>Num 2, PubKey C\<rbrace>) \<in> s) \<or>
+      {PriKey A, PriKey C} \<subseteq> spied s"
+      (is "(\<exists>m. _ \<and> ?P m) \<or> _")
+      by (rule parts_mult [OF A])
+    moreover assume "(Spy, Key (PriK C)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Owner n, \<lbrace>Num 3, Key (PubK C)\<rbrace>) \<in> s"
+    hence "(Owner n, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s" by simp
+    ultimately show False
+      by (rule asset_ii_owner_iii [OF A])
+  next
+    fix Y
+    assume "(Spy, \<lbrace>Key (PriK C), Y\<rbrace>) \<in> s"
+    hence "\<lbrace>PriKey C, Y\<rbrace> \<in> parts (used s)" by auto
+    hence "{PriKey C, Y} \<subseteq> spied s"
+      by (rule parts_mpair_key [OF A, where K = "PriK C"], simp)
+    moreover assume "(Spy, Key (PriK C)) \<notin> s"
+    ultimately show False by simp
+  next
+    fix X
+    assume "(Spy, \<lbrace>X, Key (PriK C)\<rbrace>) \<in> s"
+    hence "\<lbrace>X, PriKey C\<rbrace> \<in> parts (used s)" by auto
+    hence "{X, PriKey C} \<subseteq> spied s"
+      by (rule parts_mpair_key [OF A, where K = "PriK C"], simp add: image_def)
+    moreover assume "(Spy, Key (PriK C)) \<notin> s"
+    ultimately show False by simp
+  qed
+qed
+
+proposition asset_iii_secret [rule_format]:
+ "s\<^sub>0 \<Turnstile> s \<Longrightarrow>
+    (Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s \<longrightarrow>
+  PriKey D \<notin> spied s"
+proof (erule rtrancl_induct, simp add: image_def, rule impI)
+  fix s s'
+  assume
+    A: "s\<^sub>0 \<Turnstile> s" and
+    B: "s \<turnstile> s'" and
+    C: "(Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s \<longrightarrow> PriKey D \<notin> spied s" and
+    D: "(Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s'"
+  show "PriKey D \<notin> spied s'"
+  proof (insert B C D, auto simp add: rel_def)
+    assume "(Asset n, \<lbrace>Num 4, Key (PubK D)\<rbrace>) \<in> s"
+    hence "(Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s" by simp
+    hence "PriKey D \<in> used s"
+      by (rule asset_iii_used [OF A, THEN mp])
+    moreover assume "Key (PriK D) \<notin> used s"
+    ultimately show False by simp
+  next
+    fix K
+    assume "(Spy, Crypt K (Key (PriK D))) \<in> s"
+    hence "Crypt K (PriKey D) \<in> parts (used s)" by auto
+    hence "(\<exists>m. K = Auth_ShaKey m \<and>
+      (Asset m, Crypt (Auth_ShaKey m) (PriKey D)) \<in> s) \<or>
+      {PriKey D, Key K} \<subseteq> spied s"
+      (is "(\<exists>m. _ \<and> ?P m) \<or> _")
+      by (rule parts_crypt_prikey [OF A])
+    moreover assume "(Spy, Key (PriK D)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Asset n, \<lbrace>Num 4, Key (PubK D)\<rbrace>) \<in> s"
+    hence "(Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s" by simp
+    ultimately show False
+      by (rule asset_i_asset_iii [OF A])
+  next
+    fix A
+    assume "(Spy, D \<otimes> A) \<in> s"
+    hence "D \<otimes> A \<in> parts (used s)" by blast
+    hence "(\<exists>m. D = Auth_PriK m \<and> (Asset m, \<lbrace>Num 2, PubKey A\<rbrace>) \<in> s) \<or>
+      {PriKey D, PriKey A} \<subseteq> spied s"
+      (is "(\<exists>m. ?P m \<and> _) \<or> _")
+      by (rule parts_mult [OF A])
+    moreover assume "(Spy, Key (PriK D)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Asset n, \<lbrace>Num 4, Key (PubK D)\<rbrace>) \<in> s"
+    ultimately have "(Asset n, \<lbrace>Num 4, Auth_PubKey m\<rbrace>) \<in> s" by simp
+    thus False
+      by (rule auth_pubkey_asset_iii [OF A])
+  next
+    fix A
+    assume "(Spy, A \<otimes> D) \<in> s"
+    hence "A \<otimes> D \<in> parts (used s)" by blast
+    hence "(\<exists>m. A = Auth_PriK m \<and> (Asset m, \<lbrace>Num 2, PubKey D\<rbrace>) \<in> s) \<or>
+      {PriKey A, PriKey D} \<subseteq> spied s"
+      (is "(\<exists>m. _ \<and> ?P m) \<or> _")
+      by (rule parts_mult [OF A])
+    moreover assume "(Spy, Key (PriK D)) \<notin> s"
+    ultimately obtain m where "?P m" by auto
+    moreover assume "(Asset n, \<lbrace>Num 4, Key (PubK D)\<rbrace>) \<in> s"
+    hence "(Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s" by simp
+    ultimately show False
+      by (rule asset_ii_asset_iii [OF A])
+  next
+    fix Y
+    assume "(Spy, \<lbrace>Key (PriK D), Y\<rbrace>) \<in> s"
+    hence "\<lbrace>PriKey D, Y\<rbrace> \<in> parts (used s)" by auto
+    hence "{PriKey D, Y} \<subseteq> spied s"
+      by (rule parts_mpair_key [OF A, where K = "PriK D"], simp)
+    moreover assume "(Spy, Key (PriK D)) \<notin> s"
+    ultimately show False by simp
+  next
+    fix X
+    assume "(Spy, \<lbrace>X, Key (PriK D)\<rbrace>) \<in> s"
+    hence "\<lbrace>X, PriKey D\<rbrace> \<in> parts (used s)" by auto
+    hence "{X, PriKey D} \<subseteq> spied s"
+      by (rule parts_mpair_key [OF A, where K = "PriK D"], simp add: image_def)
+    moreover assume "(Spy, Key (PriK D)) \<notin> s"
+    ultimately show False by simp
+  qed
+qed
+
+
+theorem seskey_forward_secret:
+  assumes
+    A: "s\<^sub>0 \<Turnstile> s" and
+    B: "(Owner m, Crypt (SesK SK) (Pwd m)) \<in> s" and
+    C: "(Asset n, Crypt (SesK SK) (Num 0)) \<in> s"
+  shows "m = n \<and> SesKey SK \<notin> spied s"
+proof -
+  have "(Owner m, SesKey SK) \<in> s"
+    using A and B by (drule_tac owner_v_state, auto)
+  with A have "\<exists>C D. snd (snd SK) = {C, D} \<and>
+    (Owner m, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s"
+    by (drule_tac owner_seskey_other, auto)
+  then obtain C D where
+    D: "snd (snd SK) = {C, D} \<and> (Owner m, \<lbrace>Num 3, PubKey C\<rbrace>) \<in> s"
+    by blast
+  with A have "PriKey C \<notin> spied s"
+    by (erule_tac owner_iii_secret, simp)
+  moreover have "(Asset n, SesKey SK) \<in> s"
+    using A and C by (drule_tac asset_v_state, auto)
+  with A have "\<exists>D. D \<in> snd (snd SK) \<and> (Asset n, \<lbrace>Num 4, PubKey D\<rbrace>) \<in> s"
+    by (drule_tac asset_seskey_other, auto)
+  then obtain D' where
+    E: "D' \<in> snd (snd SK) \<and> (Asset n, \<lbrace>Num 4, PubKey D'\<rbrace>) \<in> s"
+    by blast
+  with A have "PriKey D' \<notin> spied s"
+    by (erule_tac asset_iii_secret, simp)
+  moreover have "C \<noteq> D'"
+    using A and D and E by (rule_tac notI, erule_tac asset_iii_owner_iii, auto)
+  ultimately have "\<not> (\<exists>A. A \<in> snd (snd SK) \<and> PriKey A \<in> spied s)"
+    using D and E by auto
+  hence F: "SesKey SK \<notin> spied s"
+    using A by (rule_tac notI, drule_tac seskey_spied, auto)
+  moreover have "Crypt (SesK SK) (Pwd n) \<in> used s"
+    using A and C by (drule_tac asset_v_state, auto)
+  hence "(\<exists>SK'. SesK SK = SesK SK' \<and>
+    (Owner n, Crypt (SesK SK') (Pwd n)) \<in> s) \<or>
+    {Pwd n, Key (SesK SK)} \<subseteq> spied s"
+    using A by (rule_tac parts_crypt_pwd, auto)
+  ultimately have "(Owner n, Crypt (SesK SK) (Pwd n)) \<in> s"
+    by simp
+  with A and B have "m = n"
+    by (rule owner_seskey_unique)
+  thus ?thesis
+    using F ..
+qed
 
 end

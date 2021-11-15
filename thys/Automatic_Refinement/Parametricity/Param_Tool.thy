@@ -220,7 +220,6 @@ begin
       structure dflt_rules = Generic_Data (
         type T = param_net
         val empty = net_empty
-        val extend = I
         val merge = Item_Net.merge
       )
         
@@ -330,8 +329,8 @@ begin
   
     fun to_relAPP_conv ctxt = Refine_Util.f_tac_conv ctxt 
       cnv_relAPP 
-      (ALLGOALS (simp_tac 
-        (put_simpset HOL_basic_ss ctxt addsimps @{thms relAPP_def})))
+      (fn goal_ctxt => ALLGOALS (simp_tac 
+        (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms relAPP_def})))
   
   
     val to_relAPP_attr = Thm.rule_attribute [] (fn context => let

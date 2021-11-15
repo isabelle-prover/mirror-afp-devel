@@ -6,7 +6,7 @@
 
 section \<open>Lifting the Typing Framework to err, app, and eff\<close>
 
-theory Typing_Framework_err imports Typing_Framework SemilatAlg begin
+theory Typing_Framework_err imports SemilatAlg begin
 
 definition wt_err_step :: "'s ord \<Rightarrow> 's err step_type \<Rightarrow> 's err list \<Rightarrow> bool"
 where
@@ -110,14 +110,14 @@ lemma map_snd_lessI:
 
 
 lemma mono_lift:
-  "\<lbrakk> order r; app_mono r app n A; bounded (err_step n app step) n;
+  "\<lbrakk> order r A; app_mono r app n A; bounded (err_step n app step) n;
     \<forall>s p t. s \<in> A \<and> p < n \<and> s \<sqsubseteq>\<^sub>r t \<longrightarrow> app p t \<longrightarrow> set (step p s) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step p t) \<rbrakk>
   \<Longrightarrow>  mono (Err.le r) (err_step n app step) n (err A)"
 (*<*)
 apply (simp only: app_mono_def SemilatAlg.mono_def err_step_def)
 apply clarify
 apply (case_tac \<tau>)
- apply simp 
+  defer
 apply simp
 apply (case_tac \<tau>')
  apply simp
@@ -150,6 +150,7 @@ apply clarify
 apply (drule bounded_err_stepD, assumption+)
 apply (rule exI [of _ Err])
 apply simp
+  apply (auto simp: lesubstep_type_def error_def)  
 done
 (*>*)
  

@@ -50,14 +50,14 @@ proof -
     by (smt len_gt_0 of_nat_0_less_iff zero_less_power)
   have ***: "2 ^ (LENGTH('e) - 1) + 1 =
     2 ^ LENGTH('e) - int (bias TYPE(('e, 'f) IEEE.float))"
-    by (simp add: bias_def power_Suc[symmetric] of_nat_diff)
+    by (simp add: bias_def power_Suc[symmetric] of_nat_diff mask_eq_exp_minus_1)
   have rewr: "x \<le> 2 ^ n - e \<longleftrightarrow> x + e < 2 ^ n + 1" for x::int and n e
     by auto
   show ?thesis
     unfolding *** rewr
     using * **
     unfolding is_finite_Float_def is_normal_Float_def is_denormal_Float_def
-    by (auto simp: Let_def bias_def mantissa_eq_zero_iff of_nat_diff
+    by (auto simp: Let_def bias_def mantissa_eq_zero_iff of_nat_diff mask_eq_exp_minus_1
         intro: le_less_trans[OF add_right_mono])
 qed
 
@@ -73,7 +73,7 @@ lemma sign_normal_of_Float:"sign (normal_of_Float x) = (if x > 0 then 0 else 1)"
 
 lemma uint_word_of_int_bitlen_eq:
   "uint (word_of_int x::'a::len word) = x" if "bitlen x \<le> LENGTH('a)" "x \<ge> 0"
-  using that by (simp add: bitlen_le_iff_power take_bit_int_eq_self) 
+  using that by (simp add: bitlen_le_iff_power take_bit_int_eq_self unsigned_of_int)
 
 lemma fraction_normal_of_Float:"fraction (normal_of_Float x::('e, 'f)float) =
   (nat \<bar>mantissa x\<bar> * 2 ^ (Suc LENGTH('f) - nat (bitlen \<bar>mantissa x\<bar>)) - 2 ^ LENGTH('f))"
@@ -151,7 +151,7 @@ proof -
     nat (Float.exponent x + (2 ^ (LENGTH('e) - Suc 0) + int LENGTH('f)) - 2)
     \<le> LENGTH('f)"
     using that
-    by (auto simp: is_denormal_Float_def nat_diff_distrib' le_diff_conv
+    by (auto simp: is_denormal_Float_def nat_diff_distrib' le_diff_conv mask_eq_exp_minus_1
         bitlen_nonneg nat_le_iff bias_def nat_add_distrib[symmetric] of_nat_diff)
   have "\<bar>mantissa x\<bar> *  2 ^ nat (Float.exponent x + int (bias TYPE(('e, 'f)float)) +
     LENGTH('f) - 1) < 2 ^ LENGTH('f)"
@@ -162,7 +162,7 @@ proof -
     apply (rule power_increasing)
      apply (auto simp: bias_def)
     using that *
-    by (auto simp: is_denormal_Float_def algebra_simps of_nat_diff)
+    by (auto simp: is_denormal_Float_def algebra_simps of_nat_diff mask_eq_exp_minus_1)
   then show ?thesis
     apply (transfer fixing: x)
     apply transfer
@@ -217,7 +217,7 @@ lemma valof_denormal_of_Float: "valof (denormal_of_Float x::('e, 'f)float) = x"
 proof -
   have less: "0 < Float.exponent x + (int (bias TYPE(('e, 'f) IEEE.float)) + int LENGTH('f))"
     using that
-    by (auto simp: is_denormal_Float_def bias_def of_nat_diff)
+    by (auto simp: is_denormal_Float_def bias_def of_nat_diff mask_eq_exp_minus_1)
   have "valof (denormal_of_Float x::('e, 'f)float) =
     ((- 1) ^ sign (denormal_of_Float x::('e, 'f)float) * \<bar>real_of_int (mantissa x)\<bar>) *
     (2 powr real (nat (Float.exponent x + int (bias TYPE(('e, 'f) IEEE.float)) + int LENGTH('f) - 1)) /
@@ -295,7 +295,7 @@ proof -
       2 ^ LENGTH('e) - bitlen \<bar>mantissa f\<bar> - int (bias TYPE(('e, 'f)float))"
     using normal_exponent_bounds_int[OF that]
     unfolding bitlen_mantissa_Float bitlen_normal_mantissa f_def
-    by (auto simp: bias_def algebra_simps power_Suc[symmetric] of_nat_diff
+    by (auto simp: bias_def algebra_simps power_Suc[symmetric] of_nat_diff mask_eq_exp_minus_1
         intro: le_less_trans[OF add_right_mono] normal_exponent_bounds_int[OF that])
   ultimately
   show ?thesis
@@ -329,7 +329,7 @@ proof -
   proof -
     have "?l \<le> denormal_exponent TYPE(('e, 'f)float) + i"
       using that
-      by (auto simp: is_denormal_def bias_def denormal_exponent_def of_nat_diff)
+      by (auto simp: is_denormal_def bias_def denormal_exponent_def of_nat_diff mask_eq_exp_minus_1)
     also have "\<dots> = Float.exponent f" unfolding i by auto
     finally show ?thesis .
   qed

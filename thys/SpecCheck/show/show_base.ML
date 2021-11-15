@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/show/show_base.ML
+(*  Title:      SpecCheck/Show/show_base.ML
     Author:     Kevin Kappelmann
 
 Basic utility functions to create and combine show functions.
@@ -20,6 +20,8 @@ sig
   val zip : 'a show -> 'b show -> ('a * 'b) show
   val zip3 : 'a show -> 'b show -> 'c show -> ('a * 'b * 'c) show
   val zip4 : 'a show -> 'b show -> 'c show -> 'd show -> ('a * 'b * 'c * 'd) show
+
+  val record : ((string * Pretty.T) list) show
 
 end
 
@@ -43,5 +45,9 @@ fun pretty_tuple ps = ps |> Pretty.commas |> Pretty.enclose "(" ")"
 fun zip showA showB (a, b) = pretty_tuple [showA a, showB b]
 fun zip3 showA showB showC (a, b, c) = pretty_tuple [showA a, showB b, showC c]
 fun zip4 showA showB showC showD (a, b, c, d) = pretty_tuple [showA a, showB b, showC c, showD d]
+
+val record =
+  map (fn (key, entry) => Pretty.block [Pretty.str key, Pretty.str "=", entry])
+  #> Pretty.enum "," "{" "}"
 
 end

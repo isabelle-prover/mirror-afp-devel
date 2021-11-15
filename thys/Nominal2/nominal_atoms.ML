@@ -19,11 +19,10 @@ val simp_attr = Attrib.internal (K Simplifier.simp_add)
 
 fun atom_decl_set (str : string) : term =
   let
-    val a = Free ("a", @{typ atom});
-    val s = Const (@{const_name "Sort"}, @{typ "string => atom_sort list => atom_sort"})
-              $ HOLogic.mk_string str $ HOLogic.nil_const @{typ "atom_sort"};
+    val a = Free ("a", \<^Type>\<open>atom\<close>);
+    val s = \<^Const>\<open>Sort for \<open>HOLogic.mk_string str\<close> \<^Const>\<open>Nil \<^Type>\<open>atom_sort\<close>\<close>\<close>;
   in
-    HOLogic.mk_Collect ("a", @{typ atom}, HOLogic.mk_eq (mk_sort_of a, s))
+    HOLogic.mk_Collect ("a", \<^Type>\<open>atom\<close>, HOLogic.mk_eq (mk_sort_of a, s))
   end
 
 fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
@@ -40,10 +39,10 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
 
     (* definition of atom and permute *)
     val newT = #abs_type (fst info);
-    val RepC = Const (Rep_name, newT --> @{typ atom});
-    val AbsC = Const (Abs_name, @{typ atom} --> newT);
+    val RepC = Const (Rep_name, newT --> \<^Type>\<open>atom\<close>);
+    val AbsC = Const (Abs_name, \<^Type>\<open>atom\<close> --> newT);
     val a = Free ("a", newT);
-    val p = Free ("p", @{typ perm});
+    val p = Free ("p", \<^Type>\<open>perm\<close>);
     val atom_eqn =
       HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_atom a, RepC $ a));
     val permute_eqn =

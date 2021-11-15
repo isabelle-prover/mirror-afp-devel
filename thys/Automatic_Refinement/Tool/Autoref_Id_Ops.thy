@@ -626,9 +626,10 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     val res = Syntax.check_term ctxt res
     val res = singleton (Variable.export_terms ctxt orig_ctxt) res
       |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of ctxt
-
-    val thm = Goal.prove_internal ctxt [] res (fn _ => resolve_tac ctxt @{thms REL_OF_INTF_I} 1)
+    val goal_ctxt = Variable.declare_term res ctxt
+    val thm =
+      Goal.prove_internal ctxt [] (Thm.cterm_of ctxt res)
+        (K (resolve_tac goal_ctxt @{thms REL_OF_INTF_I} 1))
   in thm end
 
 

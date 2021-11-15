@@ -6,6 +6,7 @@ session "MFMC_Countable" (AFP) = "HOL-Probability" +
   theories
     Max_Flow_Min_Cut_Countable
     Rel_PMF_Characterisation
+    Rel_PMF_Characterisation_MFMC
   document_files
     "root.tex"
     "root.bib"

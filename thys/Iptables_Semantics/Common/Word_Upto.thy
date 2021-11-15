@@ -186,17 +186,24 @@ lemma sorted_word_upto:
   shows "sorted (word_upto a b)"
 proof -
   define m and n where \<open>m = unat a\<close> and \<open>n = Suc (unat b)\<close>
-  moreover have \<open>sorted (map of_nat [m..<n] :: 'l word list)\<close>
-    apply (simp add: sorted_map)
-    apply (rule sorted_wrt_mono_rel [of _ \<open>(\<le>)\<close>])
-     apply simp_all
-    apply (simp add: le_unat_uoi less_Suc_eq_le n_def word_of_nat_le)
-    apply transfer
-    apply simp
-    apply (subst take_bit_int_eq_self)
-      apply (simp_all add: le_less_trans)
-    apply (metis le_unat_uoi of_int_of_nat_eq of_nat_mono uint_word_of_int_eq unat_eq_nat_uint unsigned_of_int)
-    done
+  moreover have \<open>sorted_wrt (\<lambda>x y. (word_of_nat x :: 'l word) \<le> word_of_nat y) [m..<n]\<close>
+  proof (rule sorted_wrt_mono_rel [of _ \<open>(\<le>)\<close>])
+    show \<open>sorted [m..<n]\<close>
+      by simp
+    fix r s
+    assume \<open>r \<in> set [m..<n]\<close> \<open>s \<in> set [m..<n]\<close> \<open>r \<le> s\<close>
+    then have \<open>m \<le> r\<close> \<open>s < n\<close>
+      by simp_all
+    then have \<open>take_bit LENGTH('l) s = s\<close>
+      by (auto simp add: m_def n_def less_Suc_eq_le unsigned_of_nat dest: le_unat_uoi)
+    with \<open>r \<le> s\<close> show \<open>(word_of_nat r :: 'l word) \<le> word_of_nat s\<close>
+      apply (simp add: of_nat_word_less_eq_iff)
+      using take_bit_nat_less_eq_self apply (rule order_trans)
+      apply assumption
+      done
+  qed
+  then have \<open>sorted (map word_of_nat [m..<n] :: 'l word list)\<close>
+    by (simp add: sorted_map)
   ultimately have \<open>sorted (map of_nat [unat a..<Suc (unat b)] :: 'l word list)\<close>
     by simp
   with assms show ?thesis

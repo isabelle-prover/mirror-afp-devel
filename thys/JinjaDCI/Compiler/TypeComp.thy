@@ -1255,10 +1255,24 @@ next
   have "[] @ ?\<tau>s = (?\<tau> # ?\<tau>s\<^sub>e) @ ?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c,?\<tau>\<^sub>2,?\<tau>\<^sub>1,?\<tau>']" by simp
   also
   let ?n\<^sub>e = "size(compE\<^sub>2 e)"  let ?n\<^sub>c = "size(compE\<^sub>2 c)"
+  thm compT_sizes(1)
   let ?if = "IfFalse (int ?n\<^sub>c + 3)"
-  have "\<turnstile> [?if],[] [::] ?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']" using wtc
-    by(simp add: wt_instr_Cons wt_instr_append wt_IfFalse
-                 nat_add_distrib split: nat_diff_split)
+  from wtc wte have "compE\<^sub>2 c \<noteq> []" and "compE\<^sub>2 e \<noteq> []" using WT\<^sub>1_nsub_RI by auto
+  then have compe2c: "length (compE\<^sub>2 c) > 0" and compe2e: "length (compE\<^sub>2 e) > 0" by auto 
+  have Suc_pred'_auxi: "\<And>n. 0 < n \<Longrightarrow> n = Suc (n - Suc 0)" using Suc_pred'[OF compe2c] by auto
+  have "\<turnstile> [?if],[] [::] ?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']" 
+   proof-{
+      show ?thesis
+        apply (rule wt_IfFalse)
+          apply simp
+         apply simp
+        apply (subgoal_tac "length (compE\<^sub>2 c) = length (compT E (A \<squnion> \<A> e) ST c) + 1" 
+                           "nat (int (length (compE\<^sub>2 c)) + 3 - 2) > length (compT E (A \<squnion> \<A> e) ST c)")
+           apply (insert Suc_pred'_auxi[OF compe2c])
+           apply (simp add:compT_sizes(1)[OF wtc] )+          
+        done
+    }
+  qed
   also
   have "(?\<tau> # ?\<tau>s\<^sub>e) @ (?\<tau>\<^sub>e # ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2, ?\<tau>\<^sub>1, ?\<tau>']) = ?\<tau>s" by simp
   also
@@ -1271,7 +1285,36 @@ next
   also let ?go = "Goto (-int(?n\<^sub>c+?n\<^sub>e+2))"
   have "P \<turnstile> ?\<tau>\<^sub>2 \<le>' ?\<tau>" by(fastforce intro: ty\<^sub>i'_antimono simp: hyperset_defs)
   hence "P,T\<^sub>r,mxs,size ?\<tau>s,[] \<turnstile> ?go,?n\<^sub>e+?n\<^sub>c+2 :: ?\<tau>s" using wte wtc
-    by(simp add: wt_Goto split: nat_diff_split)
+    proof-{
+      let ?t1 = "ty\<^sub>i' ST E A" let ?t2 = "ty\<^sub>i' (Boolean # ST) E (A \<squnion> \<A> e)" let ?t3 = "ty\<^sub>i' ST E (A \<squnion> \<A> e)"
+      let ?t4 = "[ty\<^sub>i' (Tc # ST) E (A \<squnion> \<A> e \<squnion> \<A> c), ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c), ty\<^sub>i' ST E (A \<squnion> \<A> e), ty\<^sub>i' (Void # ST) E (A \<squnion> \<A> e)]"
+      let ?c = " compT E (A \<squnion> \<A> e) ST c" let ?e = "compT E A ST e"     
+      
+      assume ass: "P \<turnstile> ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c) \<le>' ?t1"      
+      show ?thesis
+        apply (rule wt_Goto)
+        apply simp
+          apply simp
+         apply simp
+      proof-{
+          let ?s1 = "((?t1 # ?e @ [?t2]) @ ?t3 # ?c)"  
+          have len1: "length ?c = length (compE\<^sub>2 c) - 1" using compT_sizes(1)[OF wtc] by simp 
+          have len2: "length ?e = length (compE\<^sub>2 e) - 1" using compT_sizes(1)[OF wte] by simp 
+          hence "length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2 > length ?s1" 
+            using len1 compe2c compe2e by auto
+          hence "(?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) =
+                     ?t4 ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2 - length ?s1)" 
+            by (auto simp only:nth_append split: if_splits)
+          hence "(?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) = ty\<^sub>i' ST E (A \<squnion> \<A> e \<squnion> \<A> c)" 
+            using len1 len2 compe2c compe2e by auto 
+          hence "P \<turnstile> (?s1 @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) \<le>' ty\<^sub>i' ST E A" 
+            using ass by simp
+          thus "P \<turnstile> ((?t1 # ?e @ [?t2]) @ ?t3 # ?c @ ?t4) ! (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) \<le>'
+                    ((?t1 # ?e @ [?t2]) @ ?t3 # ?c @ ?t4) ! nat (int (length (compE\<^sub>2 e) + length (compE\<^sub>2 c) + 2) +
+                      - int (length (compE\<^sub>2 c) + length (compE\<^sub>2 e) + 2))"
+            by simp
+        }qed
+    }qed
   also have "?\<tau>s = (?\<tau> # ?\<tau>s\<^sub>e @ [?\<tau>\<^sub>e,?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>c @ [?\<tau>\<^sub>c, ?\<tau>\<^sub>2]) @ [?\<tau>\<^sub>1, ?\<tau>']"
     by simp
   also have "\<turnstile> [Push Unit],[] [::] [?\<tau>\<^sub>1,?\<tau>']"
@@ -1284,6 +1327,12 @@ next
     and wt\<^sub>1: "P,E \<turnstile>\<^sub>1 e\<^sub>1 :: T\<^sub>1" and wt\<^sub>2: "P,E \<turnstile>\<^sub>1 e\<^sub>2 :: T\<^sub>2"
     and sub\<^sub>1: "P \<turnstile> T\<^sub>1 \<le> T" and sub\<^sub>2: "P \<turnstile> T\<^sub>2 \<le> T"
     using Cond by auto
+  from wte wt\<^sub>1  wt\<^sub>2 have "compE\<^sub>2 e\<^sub>1 \<noteq> []" and "compE\<^sub>2 e\<^sub>2 \<noteq> []" and "compE\<^sub>2 e \<noteq> []" using WT\<^sub>1_nsub_RI by auto
+  then have compe: "length (compE\<^sub>2 e) > 0"  
+        and compe1: "length (compE\<^sub>2 e\<^sub>1) > 0" 
+        and compe2: "length (compE\<^sub>2 e\<^sub>2) > 0" by auto 
+
+
   have [simp]: "ty E (if (e) e\<^sub>1 else e\<^sub>2) = T" using Cond by simp
   let ?A\<^sub>0 = "A \<squnion> \<A> e" let ?A\<^sub>2 = "?A\<^sub>0 \<squnion> \<A> e\<^sub>2" let ?A\<^sub>1 = "?A\<^sub>0 \<squnion> \<A> e\<^sub>1"
   let ?A' = "?A\<^sub>0 \<squnion> \<A> e\<^sub>1 \<sqinter> \<A> e\<^sub>2"
@@ -1310,8 +1359,26 @@ next
   let ?\<tau>\<^sub>1 = "ty\<^sub>i' (Boolean#ST) E ?A\<^sub>0"
   let ?g\<^sub>1 = "IfFalse(int (size (compE\<^sub>2 e\<^sub>1) + 2))"
   let ?code = "compE\<^sub>2 e\<^sub>1 @ ?g\<^sub>2 # compE\<^sub>2 e\<^sub>2"
-  have "\<turnstile> [?g\<^sub>1],[] [::] [?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2" using wt\<^sub>1
-    by(simp add: wt_IfFalse nat_add_distrib split:nat_diff_split)
+
+  have len1: "length ?\<tau>s\<^sub>1 = length (compE\<^sub>2 e\<^sub>1) - 1" using compT_sizes(1)[OF wt\<^sub>1] by simp 
+  have len2: "length ?\<tau>s\<^sub>2 = length (compE\<^sub>2 e\<^sub>2) - 1" using compT_sizes(1)[OF wt\<^sub>2] by simp 
+  have len_auxi: "length (compE\<^sub>2 e\<^sub>1) - (length (compE\<^sub>2 e\<^sub>1) - Suc 0) = Suc 0" using compe1 
+    by (simp add:diff_Suc split:nat.split)
+  have "\<turnstile> [?g\<^sub>1],[] [::] [?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2" 
+    proof-{
+    show ?thesis 
+      apply clarsimp
+      apply (rule wt_IfFalse)
+        apply (simp only:nat_add_distrib)
+       apply simp
+      apply (auto simp only:nth_append split:if_splits)     
+        apply (simp add:len1)
+       apply (simp only: len1 compe1)
+      apply (simp add:len1 len2 compe1 compe2 )
+      apply (insert len_auxi)
+      apply simp
+      done
+  }qed
   also (wt_instrs_ext2) have "[?\<tau>\<^sub>1] @ ?\<tau>s\<^sub>1\<^sub>2 = ?\<tau>\<^sub>1 # ?\<tau>s\<^sub>1\<^sub>2" by simp also
   let ?\<tau> = "ty\<^sub>i' ST E A"
   have "PROP ?P e E Boolean A ST" by fact

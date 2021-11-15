@@ -1,4 +1,4 @@
-(*  Title:      SpecCheck/output_styles/output_style_perl.ML
+(*  Title:      SpecCheck/Output_Styles/output_style_perl.ML
     Author:     Lukas Bulwahn and Nicolai Schaffroth, TU Muenchen
     Author:     Christopher League
 

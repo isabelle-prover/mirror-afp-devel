@@ -49,12 +49,10 @@ begin
      *)
     lemma antipar (*[simp]*):
     shows "trg g = src f" and "src g = trg f"
-      apply (metis counit_in_vhom ideD(1) ide_right iso_is_arr not_arr_null
-                   seq_if_composable src.components_are_iso trg.is_extensional trg_src
-                   vconn_implies_hpar(4))
-      by (metis horizontal_homs.vconn_implies_hpar(4) horizontal_homs_axioms ideD(1)
-                ide_left iso_is_arr not_arr_null seq_if_composable src.components_are_iso
-                trg.is_extensional trg_src unit_in_vhom)
+       apply (metis counit_in_vhom hseqE ideD(1) ide_right src.preserves_reflects_arr
+                    vconn_implies_hpar(3))
+      by (metis arrI not_arr_null seq_if_composable src.preserves_reflects_arr
+                unit_in_vhom vconn_implies_hpar(1) vconn_implies_hpar(3))
 
     lemma counit_in_hom [intro]:
     shows "\<guillemotleft>\<epsilon> : trg f \<rightarrow> trg f\<guillemotright>" and "\<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> trg f\<guillemotright>"
@@ -405,7 +403,8 @@ begin
     shows "equivalence_map f\<^sup>~" and "ide f\<^sup>~"
     and "src f\<^sup>~ = trg f" and "trg f\<^sup>~ = src f"
     and "dom f\<^sup>~ = f\<^sup>~" and "cod f\<^sup>~ = f\<^sup>~"
-      using assms equivalence_mapE quasi_inverse_in_hom quasi_inverses_some_quasi_inverse equivalence_map_is_ide
+      using assms equivalence_mapE quasi_inverse_in_hom quasi_inverses_some_quasi_inverse
+            equivalence_map_is_ide
            apply auto
       by (meson equivalence_mapI)
 
@@ -1342,7 +1341,8 @@ begin
     shows "f \<cong> f'"
     proof -
       have ef': "src e = trg f'"
-        using assms R.components_are_iso iso_is_arr isomorphic_implies_hpar(2) by blast
+        using assms R.as_nat_iso.components_are_iso iso_is_arr isomorphic_implies_hpar(2)
+        by blast
       obtain d \<eta> \<epsilon> where e: "equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>"
         using assms equivalence_map_def by auto
       interpret e: equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>
@@ -1398,7 +1398,8 @@ begin
     shows "f \<cong> f'"
     proof -
       have f'e: "src f' = trg e"
-        using assms R.components_are_iso iso_is_arr isomorphic_implies_hpar(2) by blast
+        using assms R.as_nat_iso.components_are_iso iso_is_arr isomorphic_implies_hpar(2)
+        by blast
       obtain d \<eta> \<epsilon> where d\<eta>\<epsilon>: "equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>"
         using assms equivalence_map_def by auto
       interpret e: equivalence_in_bicategory V H \<a> \<i> src trg e d \<eta> \<epsilon>

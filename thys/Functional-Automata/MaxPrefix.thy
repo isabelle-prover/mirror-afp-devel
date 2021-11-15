@@ -37,15 +37,13 @@ next
   case (2 P res ps q qs)
   show ?case
   proof (cases "\<exists>us. prefix us qs \<and> P ((ps @ [q]) @ us)")
-    case True
-    note ex1 = this
-    then guess us by (elim exE conjE) note us = this
+    case ex1: True
+    then obtain us where "prefix us qs" "P ((ps @ [q]) @ us)" by blast
     hence ex2: "\<exists>us. prefix us (q # qs) \<and> P (ps @ us)"
       by (intro exI[of _ "q#us"]) auto
     with ex1 and 2 show ?thesis by simp
   next
-    case False
-    note ex1 = this
+    case ex1: False
     show ?thesis
     proof (cases "\<exists>us. prefix us (q#qs) \<and> P (ps @ us)")
       case False

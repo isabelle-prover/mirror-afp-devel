@@ -157,7 +157,8 @@ lemma Inf_counterex_reducing:
   using bot_ni_n clausal_Inf_counterex_reducing d_in_n d_min n_ent_d by auto
 
 sublocale counterex_reducing_inference_system "{{#}}" "(\<TTurnstile>e)" Inf I_of
-  by unfold_locales (fact Inf_counterex_reducing)
+  using Inf_counterex_reducing
+  by unfold_locales simp_all
 
 end
 
@@ -172,7 +173,8 @@ locale clausal_counterex_reducing_calculus_with_standard_redundancy =
     J_of :: "'a clause set \<Rightarrow> 'a set"
 begin
 
-sublocale counterex_reducing_calculus_with_standard_redundancy "{{#}}" "(\<TTurnstile>e)" I_of
+sublocale counterex_reducing_calculus_with_standard_inferance_redundancy "{{#}}" Inf "(\<TTurnstile>e)" Red_I
+  Red_F I_of
   by unfold_locales
 
 lemma clausal_saturated_model: "saturated N \<Longrightarrow> {#} \<notin> N \<Longrightarrow> J_of N \<TTurnstile>s N"

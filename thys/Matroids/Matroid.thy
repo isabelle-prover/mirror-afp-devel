@@ -744,7 +744,8 @@ proof -
       then have "\<E>.rank_of (X - {x}) = card (X - {x}) \<and> card (X - {x}) = \<E>.rank_of X \<longleftrightarrow> rank_of (X - {x}) = card (X - {x}) \<and> card (X - {x}) = rank_of X"
         by auto
     }
-    then show ?thesis by auto
+    then show ?thesis
+      by (auto simp: simp del: card_Diff_insert)
   qed
   finally show ?thesis .
 qed

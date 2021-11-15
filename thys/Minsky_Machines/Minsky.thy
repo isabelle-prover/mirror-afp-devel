@@ -1,7 +1,7 @@
 section \<open>Minsky machines\<close>
 
 theory Minsky
-  imports Recursive_Inseparability "Abstract-Rewriting.Abstract_Rewriting"
+  imports Recursive_Inseparability "Abstract-Rewriting.Abstract_Rewriting" "Pure-ex.Guess"
 begin
 
 text \<open>We formalize Minksy machines, and relate them to recursive functions. In our flavor of

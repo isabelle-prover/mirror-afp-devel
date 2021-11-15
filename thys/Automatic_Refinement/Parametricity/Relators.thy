@@ -493,7 +493,6 @@ ML \<open>
     structure natural_relators = Generic_Data (
       type T = string Symtab.table
       val empty = Symtab.empty
-      val extend = I
       val merge = Symtab.join (fn _ => fn (_,cn) => cn)
     )
 

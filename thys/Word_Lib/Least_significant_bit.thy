@@ -11,7 +11,6 @@ section \<open>Operation variant for the least significant bit\<close>
 theory Least_significant_bit
   imports
     "HOL-Library.Word"
-    Bits_Int
     More_Word
 begin
 

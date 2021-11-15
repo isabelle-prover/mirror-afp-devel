@@ -93,8 +93,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    <a href="https://www.andreipopescu.uk">Andrei Popescu</a> and
-          Peter Lammich
+                      <a href="https://www.andreipopescu.uk">Andrei Popescu</a>,
+                Peter Lammich (lammich /at/ in /dot/ tum /dot/ de) and
+          Thomas Bauereiss (thomas /at/ bauereiss /dot/ name)
       </td>
 </tr>
 
@@ -109,7 +110,7 @@ MathJax = {
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">This is a formalization of bounded-deducibility security (BD
 security), a flexible notion of information-flow security applicable
-to arbitrary input-output automata. It generalizes Sutherland's
+to arbitrary transition systems. It generalizes Sutherland's
 classic notion of nondeducibility by factoring in declassification
 bounds and trigger, whereas nondeducibility states that, in a
 system, information cannot flow between specified sources and sinks,
@@ -117,12 +118,23 @@ BD security indicates upper bounds for the flow and triggers under
 which these upper bounds are no longer guaranteed.</td>
 </tr>
 
+  <tr>
+    <td class="datahead" valign="top">Change history:</td>
+    <td class="abstract">[2021-08-12]:
+Generalised BD Security from I/O automata to nondeterministic
+transition systems, with the former retained as an instance of the
+latter (renaming locale BD_Security to BD_Security_IO).
+Generalise unwinding conditions to allow making more than one
+transition at a time when constructing alternative traces.
+Add results about the expressivity of declassification triggers vs.
+bounds, due to Thomas Bauereiss (added as author).</td>
+  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
         <pre>@article{Bounded_Deducibility_Security-AFP,
-  author  = {Andrei Popescu and Peter Lammich},
+  author  = {Andrei Popescu and Peter Lammich and Thomas Bauereiss},
   title   = {Bounded-Deducibility Security},
   journal = {Archive of Formal Proofs},
   month   = apr,
@@ -139,7 +151,9 @@ which these upper bounds are no longer guaranteed.</td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="BD_Security_Compositional.html">BD_Security_Compositional</a>, <a href="CoCon.html">CoCon</a>, <a href="CoSMed.html">CoSMed</a>      </td></tr>
+          
 
         
   </tbody>

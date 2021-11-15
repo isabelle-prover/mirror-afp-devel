@@ -2280,8 +2280,8 @@ proof -
     by blast+
   \<comment> \<open> Show that every clause in the CNF of the goal state encoding @{text "\<Phi>\<^sub>G"} is also in
   the CNF of the initial state encoding @{text "\<Phi>\<^sub>I"} thus making it a subset. We can conclude this
-  from the fact that both @{text "\<Phi>\<^sub>I"} and @{text "\<Phi>\<^sub>G"} contain singleton clauses—which must all
-  be evaluated to true by the given model \<open>\<A>\<close>—and the similar structure of the clauses in both
+  from the fact that both @{text "\<Phi>\<^sub>I"} and @{text "\<Phi>\<^sub>G"} contain singleton clauses---which must all
+  be evaluated to true by the given model \<open>\<A>\<close>---and the similar structure of the clauses in both
   partial encodings.
 
   By extension, if we decode the goal state @{text "G"} and the initial state @{text "I"} from a
@@ -2640,7 +2640,7 @@ proof -
 qed
 
 \<comment> \<open> In broad strokes, this lemma shows that the operator frame axioms ensure that state is
-propagated—i.e. the valuation of a variable does not change inbetween time steps—, if there is
+propagated---i.e. the valuation of a variable does not change inbetween time steps---, if there is
 no operator active which has an effect on a given variable a: i.e.
 
   \begin{align*}
@@ -2650,8 +2650,8 @@ no operator active which has an effect on a given variable a: i.e.
       \longrightarrow \bigvee\{op_i, k: op_i \text{ has delete effect } a\}
   \end{align*}
 
-Now, if the disjunctions are empty—i.e. if no operator which is activated at time step $k$ has
-either a positive or negative effect—, we have by simplification
+Now, if the disjunctions are empty---i.e. if no operator which is activated at time step $k$ has
+either a positive or negative effect---, we have by simplification
 
   \begin{align*}
     \mathcal A \vDash \lnot(\lnot a_i \land a_{i+1})
@@ -2712,8 +2712,8 @@ effect \<open>v\<close>, we have the following situation for the EPC (effect pre
     \item assuming \<open>op\<close> is in \<open>set ?ops\<close>, either \<open>op\<close> is in \<open>\<pi>\<^sub>k\<close> (then it doesn't have effect on \<open>v\<close>
       and therefore is not in either of the sets), or if is not, then
       \<open>\<A> (Operator k (index ?ops op) = \<bottom>\<close> by definition of \<open>decode_plan\<close>; moreover,
-    \item assuming \<open>op\<close> is not in \<open>set ?ops\<close>—this is implicitely encoded as \<open>Operator k
-      (length ?ops)\<close> and \<open>\<A> (Operator k (length ?ops))\<close> may or may not be true—, then it's not
+    \item assuming \<open>op\<close> is not in \<open>set ?ops\<close>---this is implicitely encoded as \<open>Operator k
+      (length ?ops)\<close> and \<open>\<A> (Operator k (length ?ops))\<close> may or may not be true---, then it's not
       in either of the sets.
   \end{itemize}.
 Altogether, we have the situation that the sets only have members \<open>Operator k (index ?ops op)\<close>
@@ -2960,7 +2960,7 @@ proof -
           ((\<Phi>\<inverse> \<Pi> \<A> t) ! k) v"}
     ---i.e. the state decoded at time \<open>k + 1\<close> is equivalent to the state obtained by executing the
     parallel operator \<open>(\<Phi>\<inverse> \<Pi> \<A> t) ! k\<close> on the previous state
-    \<open>\<Phi>\<^sub>S\<inverse> \<Pi> \<A> k\<close>—for all variables \<open>v\<close> given \<open>k < t\<close>, a model \<open>\<A>\<close>,
+    \<open>\<Phi>\<^sub>S\<inverse> \<Pi> \<A> k\<close>---for all variables \<open>v\<close> given \<open>k < t\<close>, a model \<open>\<A>\<close>,
     and makespan \<open>t\<close>. \<close>
   moreover {
     {
@@ -5400,8 +5400,8 @@ take up the indexes to \<^term>\<open>length \<pi> + 1\<close>.
 
 value  "stop" (* Tell document preparation to stop collecting for the last tag *)
 
-\<comment> \<open> To show completeness—i.e. every valid parallel plan \<open>\<pi>\<close> corresponds to a model
-for the SATPlan encoding \<open>\<Phi> \<Pi> (length \<pi>)\<close>—, we simply split the
+\<comment> \<open> To show completeness---i.e. every valid parallel plan \<open>\<pi>\<close> corresponds to a model
+for the SATPlan encoding \<open>\<Phi> \<Pi> (length \<pi>)\<close>---, we simply split the
 conjunction defined by the encoding into partial encodings and show that the model satisfies each
 of them. \<close>
 theorem

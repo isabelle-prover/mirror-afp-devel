@@ -60,7 +60,7 @@ proof -
   have "n div 2 div m < 2 ^ LENGTH('a)"
     using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    by (auto simp add: drop_bit_eq_div word_arith_nat_div uno_simps take_bit_nat_eq_self)
+    by (auto simp add: drop_bit_eq_div word_arith_nat_div uno_simps take_bit_nat_eq_self unsigned_of_nat)
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"
@@ -76,10 +76,10 @@ proof -
     using n m unfolding q
      apply (simp_all add: of_nat_diff)
     apply (subst of_nat_diff)
-    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths)
+    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths unsigned_of_nat)
     done
   then show ?thesis using n m div_half_nat [OF \<open>m \<noteq> 0\<close>, of n] unfolding q
-    by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self
+    by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self unsigned_of_nat
       flip: zdiv_int zmod_int
       split del: if_split split: if_split_asm)
 qed
@@ -89,6 +89,10 @@ lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftr
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
   by (rule word_eqI) (auto simp add: word_test_bit_set_bits bit_simps)
+
+context
+  includes bit_operations_syntax
+begin
 
 lemma word_and_mask_or_conv_and_mask:
   "bit n index \<Longrightarrow> (n AND mask index) OR (push_bit index 1) = n AND mask (index + 1)"
@@ -103,7 +107,7 @@ lemma uint_and_mask_or_full:
   shows "uint (n AND mask1) OR mask2 = uint n"
 proof -
   have "mask2 = uint (push_bit (LENGTH('a) - 1) 1 :: 'a word)" using assms
-    by (simp add: uint_shiftl word_size bintrunc_shiftl)
+    by transfer (simp add: take_bit_push_bit)
   hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (push_bit (LENGTH('a) - 1) 1 :: 'a word))"
     by(simp add: uint_or)
   also have "\<dots> = uint (n AND mask (LENGTH('a) - 1 + 1))"
@@ -111,6 +115,8 @@ proof -
   also have "\<dots> = uint n" by simp
   finally show ?thesis .
 qed
+
+end
 
 
 text \<open>Division on @{typ "'a word"} is unsigned, but Scala and OCaml only have signed division and modulus.\<close>
@@ -174,7 +180,7 @@ proof(cases "push_bit (LENGTH('a) - 1) 1 \<le> y")
     also have "\<dots> \<le> 2 * n" using y n
       by transfer (simp add: push_bit_of_1 take_bit_eq_mod)
     finally have div: "x div of_nat n = 1" using False n
-      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self)
+      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self unsigned_of_nat)
     moreover have "x mod y = x - x div y * y"
       by (simp add: minus_div_mult_eq_mod)
     with div n have "x mod y = x - y" by simp
@@ -189,12 +195,17 @@ next
     by (cases \<open>LENGTH('a)\<close>)
       (auto dest: less_imp_of_nat_less [where ?'a = int])
   with y n have "sint (drop_bit 1 x) = uint (drop_bit 1 x)"
-    by (simp add: sint_uint sbintrunc_mod2p drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib)
+    by (cases \<open>LENGTH('a)\<close>)
+      (auto simp add: sint_uint drop_bit_eq_div take_bit_nat_eq_self uint_div_distrib
+        signed_take_bit_int_eq_self_iff unsigned_of_nat)
   moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
     using y by (cases \<open>LENGTH('a)\<close>)
       (simp_all add: not_le push_bit_of_1 word_less_alt uint_power_lower)
   then have "sint y = uint y"
-    by (simp add: sint_uint sbintrunc_mod2p)
+    apply (cases \<open>LENGTH('a)\<close>)
+     apply (auto simp add: sint_uint signed_take_bit_int_eq_self_iff)
+    using uint_ge_0 [of y]
+    by linarith 
   ultimately show ?thesis using y
     apply (subst div_half_word [OF assms])
     apply (simp add: sdiv_word_def signed_divide_int_def flip: uint_div)
@@ -205,49 +216,58 @@ qed
 text \<open>More implementations tailored towards target-language implementations\<close>
 
 context
-includes integer.lifting
+  includes integer.lifting
 begin
+
 lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len word" is word_of_int .
 
 lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
-by(simp add: word_of_integer.rep_eq)
+  by(simp add: word_of_integer.rep_eq)
+
 end
+
+context
+  includes bit_operations_syntax
+begin
 
 lemma word_of_int_code:
   "uint (word_of_int x :: 'a word) = x AND mask (LENGTH('a :: len))"
-  by (simp add: take_bit_eq_mask)
+  by (simp add: unsigned_of_int take_bit_eq_mask)
 
-context fixes f :: "nat \<Rightarrow> bool" begin
+context
+  fixes f :: "nat \<Rightarrow> bool"
+begin
 
-definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word\<close>
-  where \<open>set_bits_aux w n = push_bit n w OR take_bit n (set_bits f)\<close>
+definition set_bits_aux :: \<open>nat \<Rightarrow> 'a word \<Rightarrow> 'a::len word\<close>
+  where \<open>set_bits_aux n w = push_bit n w OR take_bit n (set_bits f)\<close>
 
 lemma bit_set_bit_aux [bit_simps]:
-  \<open>bit (set_bits_aux w n) m \<longleftrightarrow> m < LENGTH('a) \<and>
+  \<open>bit (set_bits_aux n w) m \<longleftrightarrow> m < LENGTH('a) \<and>
     (if m < n then f m else bit w (m - n))\<close> for w :: \<open>'a::len word\<close>
   by (auto simp add: bit_simps set_bits_aux_def)
 
-lemma set_bits_aux_conv:
-  \<open>set_bits_aux w n = (push_bit n w) OR (set_bits f AND mask n)\<close>
-  for w :: \<open>'a::len word\<close>
+corollary set_bits_conv_set_bits_aux:
+  \<open>set_bits f = (set_bits_aux LENGTH('a) 0 :: 'a :: len word)\<close>
   by (rule bit_word_eqI) (simp add: bit_simps)
 
-corollary set_bits_conv_set_bits_aux:
-  \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
-  by (simp add: set_bits_aux_conv)
-
 lemma set_bits_aux_0 [simp]:
-  \<open>set_bits_aux w 0 = w\<close>
-  by (simp add: set_bits_aux_conv)
+  \<open>set_bits_aux 0 w = w\<close>
+  by (simp add: set_bits_aux_def)
 
 lemma set_bits_aux_Suc [simp]:
-  \<open>set_bits_aux w (Suc n) = set_bits_aux (push_bit 1 w OR (if f n then 1 else 0)) n\<close>
-  by (rule bit_word_eqI) (auto simp add: bit_simps not_less le_less_Suc_eq mult.commute [of _ 2])
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
+  by (rule bit_word_eqI) (auto simp add: bit_simps le_less_Suc_eq mult.commute [of _ 2])
 
 lemma set_bits_aux_simps [code]:
-  \<open>set_bits_aux w 0 = w\<close>
-  \<open>set_bits_aux w (Suc n) = set_bits_aux (push_bit 1 w OR (if f n then 1 else 0)) n\<close>
+  \<open>set_bits_aux 0 w = w\<close>
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
   by simp_all
+
+lemma set_bits_aux_rec:
+  \<open>set_bits_aux n w =
+  (if n = 0 then w 
+   else let n' = n - 1 in set_bits_aux n' (push_bit 1 w OR (if f n' then 1 else 0)))\<close>
+  by (cases n) simp_all
 
 end
 
@@ -266,8 +286,10 @@ lemma word_of_int_via_signed:
        else if i' < least \<or> overflow \<le> i' then arbitrary2 i' else word_of_int i')"
 proof -
   define i' where "i' = i AND mask"
-  have "shift = mask + 1" unfolding assms by(simp add: bin_mask_p1_conv_shift)
-  hence "i' < shift" by(simp add: mask_def i'_def int_and_le)
+  have "shift = mask + 1" unfolding assms
+    by (simp add: mask_eq_exp_minus_1 push_bit_of_1) 
+  hence "i' < shift"
+    by (simp add: mask_def i'_def)
   show ?thesis
   proof(cases "bit i' index")
     case True
@@ -276,7 +298,10 @@ proof -
       apply (rule bit_eqI)
       apply (auto simp add: bit_take_bit_iff bit_or_iff bit_exp_iff)
       done
-    have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
+    have \<open>overflow \<le> overflow OR i'\<close>
+      by (simp add: i'_def mask_def or_greater_eq)
+    then have "overflow \<le> i'"
+      by (subst unf)
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
       by(cases "LENGTH('a)")(simp_all add: not_less push_bit_of_1)
     moreover
@@ -288,11 +313,15 @@ proof -
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False
-    hence "i' = i AND Bit_Operations.mask (LENGTH('a) - 1)" unfolding assms i'_def
-      by(clarsimp simp add: i'_def bit_simps intro!: bin_eqI)(cases "LENGTH('a)", auto simp add: less_Suc_eq)
-    also have "\<dots> \<le> Bit_Operations.mask (LENGTH('a) - 1)" by(rule int_and_le) simp
-    also have "\<dots> < overflow" unfolding overflow_def
-      by(simp add: bin_mask_p1_conv_shift[symmetric])
+    have "i' = i AND Bit_Operations.mask (LENGTH('a) - 1)"
+      apply (rule bit_eqI)
+      apply (use False in \<open>auto simp add: bit_simps assms i'_def\<close>)
+      apply (auto simp add: less_le)
+      done
+    also have "\<dots> \<le> Bit_Operations.mask (LENGTH('a) - 1)"
+      using AND_upper2 mask_nonnegative_int by blast
+    also have "\<dots> < overflow"
+      by (simp add: mask_int_def push_bit_of_1 overflow_def)
     also
     have "least \<le> 0" unfolding least_def overflow_def by simp
     have "0 \<le> i'" by (simp add: i'_def mask_def)
@@ -304,6 +333,7 @@ proof -
   qed
 qed
 
+end
 
 
 text \<open>Quickcheck conversion functions\<close>

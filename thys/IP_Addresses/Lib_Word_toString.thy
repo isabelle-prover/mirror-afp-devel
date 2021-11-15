@@ -193,17 +193,15 @@ proof(induction True base zero w rule: string_of_word.induct)
      apply(subst(1) string_of_word.simps)
      apply(subst(1) string_of_nat.simps)
      apply(simp add: n_less_ten_unat)
-     by(simp add: not_wordlength_too_small ten_not_less_two string_of_word_single_atoi)
+       using lena apply(simp add: not_wordlength_too_small ten_not_less_two string_of_word_single_atoi)
+       done
     using sym[OF IH] apply(simp)
     apply(subst(1) string_of_word.simps)
     apply(simp)
     apply(subst(1) string_of_nat.simps)
     apply(simp)
-    apply(simp add: not_wordlength_too_small ten_not_less_two)
-    apply(subst string_of_word_single_atoi)
-     apply(rule Word.word_mod_less_divisor)
-     apply (auto simp add: not_less)
-    apply (metis \<open>10 \<le> n \<Longrightarrow> 10 \<le> unat n\<close> not_le string_of_nat.simps unat_div_ten unat_mod_ten)
+    apply (simp add: string_of_word_single_atoi Word.word_mod_less_divisor unat_div_ten unat_mod_ten)
+    using \<open>10 \<le> n \<Longrightarrow> 10 \<le> unat n\<close> not_wordlength_too_small apply (auto simp add: not_less)
     done
 qed
 

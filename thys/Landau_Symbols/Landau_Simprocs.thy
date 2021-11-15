@@ -1,6 +1,6 @@
 (*
   File:   Landau_Simprocs.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
+  Author: Manuel Eberl <manuel@pruvisto.org>
 
   Simplification procedures for Landau symbols, with a particular focus on functions into the reals.
 *)

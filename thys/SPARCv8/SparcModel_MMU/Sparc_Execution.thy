@@ -365,6 +365,10 @@ definition NEXT :: "('a::len)sparc_state \<Rightarrow> ('a)sparc_state option"
 where "NEXT s \<equiv> case execute_instruction () s of (_,True) \<Rightarrow> None
 | (s',False) \<Rightarrow> Some (snd s')"
 
+context
+  includes bit_operations_syntax
+begin
+
 definition good_context :: "('a::len) sparc_state \<Rightarrow> bool"
 where "good_context s \<equiv> 
   let traps = get_trap_set s;
@@ -407,6 +411,8 @@ where "good_context s \<equiv>
       )  
     )
 "
+
+end
 
 function (sequential) seq_exec:: "nat \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "seq_exec 0 = return ()"

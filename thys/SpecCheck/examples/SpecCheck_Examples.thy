@@ -4,8 +4,6 @@ theory SpecCheck_Examples
 imports SpecCheck_Dynamic
 begin
 
-subsection \<open>List examples\<close>
-
 ML \<open>
 open SpecCheck
 open SpecCheck_Dynamic
@@ -15,6 +13,45 @@ structure Show = SpecCheck_Show
 structure Shrink = SpecCheck_Shrink
 structure Random = SpecCheck_Random
 \<close>
+
+subsection \<open>Unit Tests and Exceptions\<close>
+
+ML \<open>
+  fun faulty_abs n =
+    if n < ~10000 then error "out of bounds"
+    else if n < 0 then ~n
+    else n
+\<close>
+
+ML_command \<open>
+let
+  val check_unit_int_pair = check_unit_tests (Show.zip Show.int Show.int)
+  fun correctness_tests ctxt s = Lecker.test_group ctxt s [
+      check_unit_int_pair  [(~10, 10), (0, 0), (10, 10)] "correctness small values"
+        (Prop.prop (fn (n, exp) => faulty_abs n = exp)),
+      check_unit_int_pair [(~999999999, 999999999), (999999999, 999999999)]
+        "correctness large values" (Prop.prop (fn (n, exp) => faulty_abs n = exp))
+    ]
+  fun exception_tests ctxt s =
+    let val exn_prop = Prop.expect_failure (ERROR "out of bounds") faulty_abs
+    in
+      Lecker.test_group ctxt s [
+        check_unit_tests Show.int [~10, 0, 10] "expect exception for small values" exn_prop,
+        check_unit_tests Show.int [~999999999, ~99999999999999] "expect exception for large values"
+          exn_prop
+      ]
+    end
+in
+  Lecker.test_group @{context} () [
+    check_unit_tests Show.int [~10, 0, 10] "is idempotent"
+      (Prop.prop (fn n => faulty_abs (faulty_abs n) = faulty_abs n)),
+    correctness_tests,
+    exception_tests
+  ]
+end
+\<close>
+
+subsection \<open>Randomised Tests\<close>
 
 ML_command \<open>
 let

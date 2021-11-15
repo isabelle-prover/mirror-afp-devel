@@ -871,4 +871,3 @@ proof -
 qed
 
 end
-

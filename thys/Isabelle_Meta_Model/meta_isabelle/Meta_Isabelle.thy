@@ -308,7 +308,7 @@ definition "subst_l = Method_subst_l"
 definition insert where "insert = Method_insert o L.map Thms_single"
 definition plus where "plus = Method_plus"
 definition "option = Method_option"
-definition "or = Method_or"
+definition or where "or = Method_or"
 definition "meth_gen_simp = Method_simp_add_del [] []"
 definition "meth_gen_simp_add2 l1 l2 = Method_simp_add_del (L.flatten [ L.map Thms_mult l1
                                                     , L.map (Thms_single o Thm_thm) l2])

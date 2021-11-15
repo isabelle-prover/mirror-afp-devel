@@ -12,8 +12,11 @@ begin
 
 subsection \<open>Algorithm\<close>
 
+locale div_exp_sound_gcd = div_exp_sound div_exp for 
+  div_exp :: "'a :: {semiring_gcd_mult_normalize,factorial_ring_gcd} \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" 
+begin
 definition gcd_impl_primitive where
-  [code del]: "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs dichotomous_Lazard G1 G2)))" 
+  [code del]: "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs G1 G2)))" 
 
 definition gcd_impl_main where
   [code del]: "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
@@ -24,6 +27,7 @@ definition gcd_impl where
   "gcd_impl f g = (if length (coeffs f) \<ge> length (coeffs g) then gcd_impl_main f g  else gcd_impl_main g f)"
 
 subsection \<open>Soundness Proof for @{term "gcd_impl = gcd"}\<close>
+end
 
 locale subresultant_prs_gcd = subresultant_prs_locale2 F n \<delta> f k \<beta> G1 G2 for
        F :: "nat \<Rightarrow> 'a ::  {factorial_ring_gcd,semiring_gcd_mult_normalize} fract poly"
@@ -36,10 +40,19 @@ locale subresultant_prs_gcd = subresultant_prs_locale2 F n \<delta> f k \<beta> 
 begin
 text \<open>The subresultant PRS computes the gcd up to a scalar multiple.\<close>
 
-lemma subresultant_prs_gcd: assumes "subresultant_prs dichotomous_Lazard G1 G2 = (Gk, hk)"
+context
+  fixes div_exp :: "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"
+  assumes div_exp_sound: "div_exp_sound div_exp"
+begin
+
+interpretation div_exp_sound_gcd div_exp 
+  using div_exp_sound by (rule div_exp_sound_gcd.intro)
+
+
+lemma subresultant_prs_gcd: assumes "subresultant_prs G1 G2 = (Gk, hk)"
   shows "\<exists> a b. a \<noteq> 0 \<and> b \<noteq> 0 \<and> smult a (gcd G1 G2) = smult b (normalize Gk)"
 proof -
-  from subresultant_prs[OF dichotomous_Lazard assms]
+  from subresultant_prs[OF div_exp_sound assms]
   have Fk: "F k = ffp Gk" and "\<forall> i. \<exists> H. i \<noteq> 0 \<longrightarrow> F i = ffp H"
     and "\<forall> i. \<exists> b. 3 \<le> i \<longrightarrow> i \<le> Suc k \<longrightarrow> \<beta> i = ff b" by auto
   from choice[OF this(2)] choice[OF this(3)] obtain H beta where
@@ -106,7 +119,7 @@ proof -
   let ?c = "content"
   let ?n = normalize
   from F2 F0[of 2] k2 have G2: "G2 \<noteq> 0" by auto
-  obtain Gk hk where sub: "subresultant_prs dichotomous_Lazard G1 G2 = (Gk, hk)" by force
+  obtain Gk hk where sub: "subresultant_prs G1 G2 = (Gk, hk)" by force
   have impl: "gcd_impl_primitive G1 G2 = ?n (?pp Gk)" unfolding gcd_impl_primitive_def sub by auto
   from subresultant_prs_gcd[OF sub]
   obtain a b where a: "a \<noteq> 0" and b: "b \<noteq> 0" and id: "smult a (gcd G1 G2) = smult b (?n Gk)"
@@ -128,7 +141,7 @@ proof -
   have a: "is_unit a" unfolding a_def using b e
     by (simp add: is_unit_smult_iff)
   define b where "b = unit_factor (?pp Gk)"
-  have "Gk \<noteq> 0" using subresultant_prs[OF dichotomous_Lazard sub] F0[OF k0] by auto
+  have "Gk \<noteq> 0" using subresultant_prs[OF div_exp_sound sub] F0[OF k0] by auto
   hence b: "is_unit b" unfolding b_def by auto
   from is_unitE[OF b]
   obtain c where c: "is_unit c" and bc: "b * c = 1" by metis
@@ -144,6 +157,10 @@ proof -
   finally show ?thesis unfolding impl ..
 qed
 end
+end
+
+context div_exp_sound_gcd
+begin
 
 lemma gcd_impl_main: assumes len: "length (coeffs G1) \<ge> length (coeffs G2)"
   shows "gcd_impl_main G1 G2 = gcd G1 G2"
@@ -160,7 +177,7 @@ proof (cases "G1 = 0")
     interpret subresultant_prs_locale2 F n d f k b "?pp G1" "?pp G2" by fact
     interpret subresultant_prs_gcd F n d f k b "?pp G1" "?pp G2" ..
     show ?thesis unfolding gcd_impl_main_def gcd_poly_decompose[of G1] id if_False using G1
-      by (subst gcd_impl_primitive, auto)
+      by (subst gcd_impl_primitive, auto intro: div_exp_sound_axioms)
   next
     case True
     thus ?thesis unfolding gcd_impl_main_def by simp
@@ -190,7 +207,7 @@ qed
 
 text \<open>The implementation also reveals an important connection between resultant and gcd.\<close>
 
-lemma resultant_0_gcd: "resultant f g = 0 \<longleftrightarrow> degree (gcd f g) \<noteq> 0"
+lemma resultant_0_gcd: "resultant (f :: 'a poly) g = 0 \<longleftrightarrow> degree (gcd f g) \<noteq> 0"
 proof -
   {
     fix f g :: "'a poly"
@@ -202,22 +219,22 @@ proof -
       let ?g = "primitive_part g"
       let ?c = "content"
       from len have len: "length (coeffs ?f) \<ge> length (coeffs ?g)" by simp
-      obtain Gk hk where sub: "subresultant_prs dichotomous_Lazard ?f ?g = (Gk,hk)" by force
+      obtain Gk hk where sub: "subresultant_prs ?f ?g = (Gk,hk)" by force
       have cf: "?c f \<noteq> 0" and cg: "?c g \<noteq> 0" using f g by auto
       {
         from g have "?g \<noteq> 0" by auto
         from enter_subresultant_prs[OF len this] obtain F n d f k b
           where "subresultant_prs_locale2 F n d f k b ?f ?g" by auto
         interpret subresultant_prs_locale2 F n d f k b ?f ?g by fact
-        from subresultant_prs[OF dichotomous_Lazard sub] have "h k = ff hk" by auto
+        from subresultant_prs[OF div_exp_sound_axioms sub] have "h k = ff hk" by auto
         with h0[OF le_refl] have "hk \<noteq> 0" by auto
       } note hk0 = this
       have "resultant f g = 0 \<longleftrightarrow> resultant (smult (?c f) ?f) (smult (?c g) ?g) = 0" by simp
       also have "\<dots> \<longleftrightarrow> resultant ?f ?g = 0" unfolding resultant_smult_left[OF cf] resultant_smult_right[OF cg]
         using cf cg by auto
-      also have "\<dots> \<longleftrightarrow> resultant_impl_main dichotomous_Lazard ?f ?g = 0" 
+      also have "\<dots> \<longleftrightarrow> resultant_impl_main ?f ?g = 0" 
         unfolding resultant_impl[symmetric] resultant_impl_def resultant_impl_main_def 
-        resultant_impl_generic_def using len by auto
+        using len by auto
       also have "\<dots> \<longleftrightarrow> (degree Gk \<noteq> 0)"
         unfolding resultant_impl_main_def sub split using g hk0 by auto
       also have "degree Gk = degree (gcd_impl_primitive ?f ?g)"
@@ -253,14 +270,13 @@ proof -
   qed
 qed
 
+
 subsection \<open>Code Equations\<close>
 
-definition [code del]:
-  "gcd_impl_rec = subresultant_prs_main_impl fst"
-definition [code del]:
-  "gcd_impl_start = subresultant_prs_impl fst"
+definition "gcd_impl_rec = subresultant_prs_main_impl fst"
+definition "gcd_impl_start = subresultant_prs_impl fst"
 
-lemma gcd_impl_rec_code[code]:
+lemma gcd_impl_rec_code:
   "gcd_impl_rec Gi_1 Gi ni_1 d1_1 hi_2 = (
     let pmod = pseudo_mod Gi_1 Gi
      in
@@ -269,7 +285,7 @@ lemma gcd_impl_rec_code[code]:
            ni = degree Gi;
            d1 = ni_1 - ni;
            gi_1 = lead_coeff Gi_1;
-           hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
+           hi_1 = (if d1_1 = 1 then gi_1 else div_exp gi_1 hi_2 d1_1);
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
            Gi_p1 = sdiv_poly pmod divisor
        in gcd_impl_rec Gi Gi_p1 ni d1 hi_1)"
@@ -277,7 +293,7 @@ lemma gcd_impl_rec_code[code]:
   unfolding gcd_impl_rec_def[symmetric]
   by (rule if_cong, auto)
 
-lemma gcd_impl_start_code[code]:
+lemma gcd_impl_start_code:
   "gcd_impl_start G1 G2 =
      (let pmod = pseudo_mod G1 G2
          in if pmod = 0 then G2
@@ -307,7 +323,7 @@ proof -
     by (rule if_cong, auto)
 qed
 
-lemma gcd_impl_main_code[code]:
+lemma gcd_impl_main_code:
   "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
     let c1 = content G1;
       c2 = content G2;
@@ -317,11 +333,32 @@ lemma gcd_impl_main_code[code]:
   unfolding gcd_impl_main_def Let_def primitive_part_def gcd_impl_start_def gcd_impl_primitive_def
     subresultant_prs_impl by simp
 
-corollary gcd_via_subresultant: "gcd f g = gcd_impl f g" by simp
+lemmas gcd_code_lemmas = 
+  gcd_impl_main_code
+  gcd_impl_start_code
+  gcd_impl_rec_code
+  gcd_impl_def
 
-text \<open>Note that we did not activate @{thm gcd_via_subresultant} as code-equation, since according to our experiments,
+corollary gcd_via_subresultant: "gcd = gcd_impl" by simp
+end
+
+global_interpretation div_exp_Lazard_gcd: div_exp_sound_gcd "dichotomous_Lazard :: 'a :: {semiring_gcd_mult_normalize,factorial_ring_gcd} \<Rightarrow> _" 
+  defines 
+    gcd_impl_Lazard = div_exp_Lazard_gcd.gcd_impl and
+    gcd_impl_main_Lazard = div_exp_Lazard_gcd.gcd_impl_main and
+    gcd_impl_start_Lazard = div_exp_Lazard_gcd.gcd_impl_start and
+    gcd_impl_rec_Lazard = div_exp_Lazard_gcd.gcd_impl_rec
+  by (simp add: Subresultant.dichotomous_Lazard div_exp_sound_gcd_def)
+
+declare div_exp_Lazard_gcd.gcd_code_lemmas[code]
+
+lemmas resultant_0_gcd = div_exp_Lazard_gcd.resultant_0_gcd
+
+thm div_exp_Lazard_gcd.gcd_via_subresultant
+
+text \<open>Note that we did not activate @{thm div_exp_Lazard_gcd.gcd_via_subresultant} as code-equation, since according to our experiments,
   the subresultant-gcd algorithm is not always more efficient than the currently active equation.
-  In particular, on @{typ "int poly"} @{const gcd_impl} performs worse, but on multi-variate polynomials,
-  e.g., @{typ "int poly poly poly"}, @{const gcd_impl} is preferable.\<close>
+  In particular, on @{typ "int poly"} @{const gcd_impl_Lazard} performs worse, but on multi-variate polynomials,
+  e.g., @{typ "int poly poly poly"}, @{const gcd_impl_Lazard} is preferable.\<close>
 
 end

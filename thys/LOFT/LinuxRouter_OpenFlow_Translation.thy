@@ -6,6 +6,7 @@ imports IP_Addresses.CIDR_Split
 	OpenFlow_Matches
 	OpenFlow_Action
 	Routing.Linux_Router
+	"Pure-ex.Guess"
 begin
 hide_const Misc.uncurry
 hide_fact Misc.uncurry_def
@@ -64,7 +65,7 @@ definition simple_match_to_of_match :: "32 simple_match \<Rightarrow> string lis
 "simple_match_to_of_match m ifs \<equiv> (let
 	npm = (\<lambda>p. fst p = 0 \<and> snd p = - 1);
 	sb = (\<lambda>p. (if npm p then [None] else if fst p \<le> snd p
-  then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, NOT (pfxm_mask pfx)))) (wordinterval_CIDR_split_prefixmatch (WordInterval (fst p) (snd p))) else []))
+  then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, Bit_Operations.not (pfxm_mask pfx)))) (wordinterval_CIDR_split_prefixmatch (WordInterval (fst p) (snd p))) else []))
 	in [simple_match_to_of_match_single m iif (proto m) sport dport.
 		iif \<leftarrow> (if iiface m = ifaceAny then [None] else [Some i. i \<leftarrow> ifs, match_iface (iiface m) i]),
 		sport \<leftarrow> sb (sports m),

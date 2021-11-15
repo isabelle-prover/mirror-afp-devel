@@ -16,7 +16,7 @@ imports
   "HOL-Library.Code_Target_Nat"
   "HOL-Library.Code_Target_Int"
   Berlekamp_Zassenhaus.Factorize_Rat_Poly 
-  Real_Factorization
+  Complex_Algebraic_Numbers
   Show_Real_Precise  
 begin
 
@@ -43,17 +43,10 @@ value [code] "show_lines (   real_roots_of_rat_poly testpoly)"
 value [code] "show_lines (complex_roots_of_rat_poly testpoly)"
 
 
-text \<open>Factorize polynomials over the rational, real, and complex numbers.\<close>
+text \<open>Compute real and complex roots of a polynomial with rational coefficients.\<close>
 
-value [code] "show_sf_factorization (factorize_rat_poly testpoly)" 
-value [code] "show_factorization (the (factorize_real_poly testpoly))"
-value [code] "show_factorization (the (factorize_complex_poly testpoly))"
-
-text \<open>If the input is not a rational polynomial, factorization can fail.\<close>
-
-value [code] "factorize_real_poly [:sqrt 2,1,3,1:]" text \<open>fails\\\<close>
-value [code] "factorize_real_poly [:sqrt 2,1,3:]" text \<open>does not fail, reveals internal representation\\\<close>
-value [code] "show (factorize_real_poly [:sqrt 2,1,3:])" text \<open>does not fail, pretty printed\<close>
+value [code] "show (complex_roots_of_rat_poly testpoly)"
+value [code] "show (real_roots_of_rat_poly testpoly)"
 
 
 text \<open>A sequence of calculations.\<close>

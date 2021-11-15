@@ -380,7 +380,7 @@ proof -
   interpret bounded_linear "\<lambda>x::'b. ((- 1) ^ Suc n / fact n) *\<^sub>R x"
     by (rule bounded_linear_scaleR_right)
 
-  from bounded_pbernpoly[of n] guess C . note C = this
+  from bounded_pbernpoly obtain C where C: "\<And>x. norm (pbernpoly n x) \<le> C" by auto
   from C[of 0] have [simp]: "C \<ge> 0" by simp
 
   show ?thesis unfolding EM_remainder'_def

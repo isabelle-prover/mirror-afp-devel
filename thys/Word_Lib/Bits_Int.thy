@@ -7,7 +7,11 @@
 section \<open>Bitwise Operations on integers\<close>
 
 theory Bits_Int
-  imports "HOL-Library.Word" "Word_Lib.Most_significant_bit" "Word_Lib.Generic_set_bit"
+  imports
+    "Word_Lib.Most_significant_bit"
+    "Word_Lib.Least_significant_bit"
+    "Word_Lib.Generic_set_bit"
+    "Word_Lib.Bit_Comprehension"
 begin
 
 subsection \<open>Implicit bit representation of \<^typ>\<open>int\<close>\<close>
@@ -60,7 +64,7 @@ lemma bin_eqI:
   using that by (rule bit_eqI)
 
 lemma bin_eq_iff: "x = y \<longleftrightarrow> (\<forall>n. (bit :: int \<Rightarrow> nat \<Rightarrow> bool) x n = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) y n)"
-  by (fact bit_eq_iff)
+  by (metis bit_eq_iff)
 
 lemma bin_nth_zero [simp]: "\<not> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) 0 n"
   by simp
@@ -142,7 +146,7 @@ lemma bintrunc_Suc_numeral:
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (numeral (Num.Bit1 w)) = 1 + 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (numeral w)"
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (- numeral (Num.Bit0 w)) = 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- numeral w)"
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) (- numeral (Num.Bit1 w)) = 1 + 2 * (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- numeral (w + Num.One))"
-  by (simp_all add: take_bit_Suc)
+  by (simp_all add: take_bit_Suc del: take_bit_minus_one_eq_mask)
 
 lemma sbintrunc_0_numeral [simp]:
   "(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) 0 1 = -1"
@@ -183,10 +187,10 @@ lemma bin_nth_Bit1:
   by auto
 
 lemma bintrunc_bintrunc_l: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: min.absorb2)
+  by simp
 
 lemma sbintrunc_sbintrunc_l: "n \<le> m \<Longrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: min.absorb2)
+  by simp
 
 lemma bintrunc_bintrunc_ge: "n \<le> m \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
   by (rule bin_eqI) (auto simp: nth_bintr)
@@ -354,7 +358,7 @@ lemma bintr_lt2p: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w < 2
   by (simp add: bintrunc_mod2p)
 
 lemma bintr_Min: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (- 1) = 2 ^ n - 1"
-  by (simp add: stable_imp_take_bit_eq)
+  by (simp add: stable_imp_take_bit_eq mask_eq_exp_minus_1)
 
 lemma sbintr_ge: "- (2 ^ n) \<le> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
   by (fact signed_take_bit_int_greater_eq_minus_exp)
@@ -784,17 +788,6 @@ lemma bin_rsplit_len_indep:
 
 subsection \<open>Logical operations\<close>
 
-instantiation int :: set_bit
-begin
-
-definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> int\<close>
-  where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
-
-instance
-  by standard (simp_all add: set_bit_int_def bit_simps)
-
-end
-
 abbreviation (input) bin_sc :: \<open>nat \<Rightarrow> bool \<Rightarrow> int \<Rightarrow> int\<close>
   where \<open>bin_sc n b i \<equiv> set_bit i n b\<close>
 
@@ -921,7 +914,7 @@ lemmas int_set_bit_numerals [simp] =
 
 lemma msb_set_bit [simp]:
   "msb (set_bit (x :: int) n b) \<longleftrightarrow> msb x"
-  by (smt (z3) Bits_Int.set_bit_int_def bin_sign_def bin_sign_sc msb_int_def)
+  by (simp add: msb_int_def set_bit_int_def)
 
 lemma word_set_bit_def:
   \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>
@@ -962,6 +955,10 @@ lemma shiftr_int_def:
 
 subsubsection \<open>Basic simplification rules\<close>
 
+context
+  includes bit_operations_syntax
+begin
+
 lemmas int_not_def = not_int_def
 
 lemma int_not_simps:
@@ -983,11 +980,11 @@ lemma int_and_0 [simp]: "0 AND x = 0"
 
 lemma int_and_m1 [simp]: "-1 AND x = x"
   for x :: int
-  by (fact bit.conj_one_left)
+  by (fact and.left_neutral)
 
 lemma int_or_zero [simp]: "0 OR x = x"
   for x :: int
-  by (fact bit.disj_zero_left)
+  by (fact or.left_neutral)
 
 lemma int_or_minus1 [simp]: "-1 OR x = -1"
   for x :: int
@@ -995,7 +992,7 @@ lemma int_or_minus1 [simp]: "-1 OR x = -1"
 
 lemma int_xor_zero [simp]: "0 XOR x = x"
   for x :: int
-  by (fact bit.xor_zero_left)
+  by (fact xor.left_neutral)
 
 
 subsubsection \<open>Binary destructors\<close>
@@ -1304,7 +1301,7 @@ by(simp_all add: numeral_eq_Suc shiftl_int_def)
 lemma int_shiftl_One_numeral [simp]:
   "push_bit (numeral w) (1::int) = push_bit (pred_numeral w) 2"
   using int_shiftl_numeral [of Num.One w]
-  by (simp add: numeral_eq_Suc) 
+  by (simp only: numeral_eq_Suc push_bit_Suc) simp
 
 lemma shiftl_ge_0: fixes i :: int shows "push_bit n i \<ge> 0 \<longleftrightarrow> i \<ge> 0"
   by (fact push_bit_nonnegative_int_iff)
@@ -1384,6 +1381,8 @@ lemma bin_set_conv_OR:
   "bin_sc n True i = i OR (push_bit n 1)"
   by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
 
+end
+
 
 subsection \<open>More lemmas on words\<close>
 
@@ -1391,7 +1390,7 @@ lemma msb_conv_bin_sign:
   "msb x \<longleftrightarrow> bin_sign x = -1"
   by (simp add: bin_sign_def not_le msb_int_def)
 
-lemma msb_bin_sc [simp]:
+lemma msb_bin_sc:
   "msb (bin_sc n b x) \<longleftrightarrow> msb x"
   by (simp add: msb_conv_bin_sign)
 
@@ -1466,9 +1465,15 @@ lemma bin_mask_conv_pow2:
 lemma bin_mask_ge0: "mask n \<ge> (0 :: int)"
   by (fact mask_nonnegative_int)
 
+context
+  includes bit_operations_syntax
+begin
+
 lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
   for x :: int
   by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
+
+end
 
 lemma bin_mask_numeral:
   "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"
@@ -1539,13 +1544,13 @@ proof -
     using P[unfolded range_sbintrunc] abs_ab le
     apply clarsimp
     apply (transfer fixing: r s)
-    apply (auto simp add: signed_take_bit_int_eq_self min.absorb2 simp flip: signed_take_bit_eq_iff_take_bit_eq)
+    apply (auto simp add: signed_take_bit_int_eq_self simp flip: signed_take_bit_eq_iff_take_bit_eq)
     done
 qed
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
-  by (simp add: take_bit_int_eq_self_iff le_less_trans less_exp)
+  by (simp add: take_bit_int_eq_self_iff le_less_trans)
 
 lemma bin_cat_cong: "concat_bit n b a = concat_bit m d c"
   if "n = m" "a = c" "take_bit m b = take_bit m d"
@@ -1560,6 +1565,10 @@ lemma bin_cat_eqD2: "concat_bit n b a = concat_bit n d c \<Longrightarrow> take_
 
 lemma bin_cat_inj: "(concat_bit n b a) = concat_bit n d c \<longleftrightarrow> a = c \<and> take_bit n b = take_bit n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
+
+lemma bin_sc_pos:
+  "0 \<le> i \<Longrightarrow> 0 \<le> bin_sc n b i"
+  by (metis bin_sign_sc sign_Pls_ge_0)
 
 code_identifier
   code_module Bits_Int \<rightharpoonup>

@@ -3,8 +3,9 @@ section \<open>Refinement Lattice \label{S:lattice}\<close>
 theory Refinement_Lattice
 imports
   Main
-  "HOL-Library.Lattice_Syntax"
 begin
+
+unbundle lattice_syntax
 
 text \<open>
   The underlying lattice of commands is complete and distributive.

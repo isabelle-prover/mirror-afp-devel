@@ -2,7 +2,7 @@ chapter AFP
 
 session "MiniSail" (AFP) = "HOL-Library" +
   description \<open>Formalisation of MiniSail\<close>
-  options [timeout = 1200]
+  options [timeout = 4800]
   sessions   
      "Nominal2"
      "HOL-Eisbach" 

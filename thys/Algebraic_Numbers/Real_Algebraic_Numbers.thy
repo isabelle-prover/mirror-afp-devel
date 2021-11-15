@@ -30,6 +30,7 @@ imports
   Algebraic_Numbers
   Sturm_Rat
   Factors_of_Int_Poly
+  Min_Int_Poly
 begin
 
 text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
@@ -641,33 +642,30 @@ context
   fixes p :: "int poly"
   and x :: "rat"
 begin
-  
-lemma gt_rat_sign_change:
+
+lemma gt_rat_sign_change_square_free:
   assumes ur: "unique_root plr"
   defines "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
-  assumes p: "poly_cond2 p" and in_interval: "l \<le> y" "y \<le> r"
+  assumes sf: "square_free p" and in_interval: "l \<le> y" "y \<le> r"
+  and py0: "ipoly p y \<noteq> 0" and pr0: "ipoly p r \<noteq> 0" 
 shows "(sgn (ipoly p y) = sgn (ipoly p r)) = (of_rat y > the_unique_root plr)" (is "?gt = _")
 proof (rule ccontr)
   have plr[simp]: "plr = (p,l,r)" by (cases plr, auto simp: p_def l_def r_def)
   assume "?gt \<noteq> (real_of_rat y > the_unique_root plr)"
   note a = this[unfolded plr]
-  from p have "irreducible p" by auto
-  note nz = poly_cond2_no_rat_root[OF p]
-  hence "p \<noteq> 0" unfolding irreducible_def by auto
+  from py0 have "p \<noteq> 0" unfolding irreducible_def by auto
   hence p0_real: "real_of_int_poly p \<noteq> (0::real poly)" by auto
   let ?p = "real_of_int_poly p"
   note urD = unique_rootD[OF ur, simplified]
   let ?ur = "the_unique_root (p, l, r)"
   let ?r = real_of_rat
-  from poly_cond2_no_rat_root p
-  have ru:"ipoly p y \<noteq> 0" by auto
   from in_interval have in':"?r l \<le> ?r y" "?r y \<le> ?r r" unfolding of_rat_less_eq by auto
-  from p square_free_of_int_poly[of p] square_free_rsquarefree
+  from sf square_free_of_int_poly[of p] square_free_rsquarefree
   have rsf:"rsquarefree ?p" by auto
   have ur3:"poly ?p ?ur = 0" using urD(3) by simp
   from ur have "?ur \<le> of_rat r" by (auto elim!: unique_rootE)
   moreover
-    from nz have "ipoly p (real_of_rat r) \<noteq> 0" by auto
+    from pr0 have "ipoly p (real_of_rat r) \<noteq> 0" by auto
     with ur3 have "real_of_rat r \<noteq> real_of_1 (p,l,r)" by force
   ultimately have "?ur < ?r r" by auto
   hence ur2: "0 < ?r r - ?ur" by linarith
@@ -717,7 +715,7 @@ proof (rule ccontr)
     case (1 x)
     {
       assume id: "the_unique_root (p,l,r) = ?r y" 
-      from nz[of y] id ur have False by (auto elim!: unique_rootE)
+      with unique_rootE[OF ur] ur py0 have False by auto
     } note neq = this
     have "root_cond (p, l, r) x" unfolding root_cond_def
       using 1 a ur by (auto elim!: unique_rootE)
@@ -745,7 +743,20 @@ proof (rule ccontr)
     have "?ur = x" using x lx ur by (intro the_unique_root_eqI, auto)
     then show ?thesis using False x by auto
   qed
-  thus False using diff_sign(1) a ru by(cases "ipoly p r = 0";auto simp:sgn_0_0)
+  thus False using diff_sign(1) a py0 by(cases "ipoly p r = 0";auto simp:sgn_0_0)
+qed
+
+lemma gt_rat_sign_change:
+  assumes ur: "unique_root plr"
+  defines "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
+  assumes p: "poly_cond2 p" and in_interval: "l \<le> y" "y \<le> r"
+  shows "(sgn (ipoly p y) = sgn (ipoly p r)) = (of_rat y > the_unique_root plr)" (is "?gt = _")
+proof (rule gt_rat_sign_change_square_free[of plr, folded p_def l_def r_def, OF ur _ in_interval])
+  note nz = poly_cond2_no_rat_root[OF p]
+  from nz[of y] show "ipoly p y \<noteq> 0" by auto
+  from nz[of r] show "ipoly p r \<noteq> 0" by auto
+  from p have "irreducible p" by auto
+  thus "square_free p" by (rule irreducible_imp_square_free)
 qed
   
 definition tighten_poly_bounds :: "rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rat \<times> rat \<times> rat" where
@@ -3469,6 +3480,71 @@ proof
 qed
 end
 
+instantiation real_alg ::
+  "{unique_euclidean_ring, normalization_euclidean_semiring, normalization_semidom_multiplicative}"
+begin
+
+definition [simp]: "normalize_real_alg = (normalize_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "unit_factor_real_alg = (unit_factor_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "modulo_real_alg = (mod_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "euclidean_size_real_alg = (euclidean_size_field :: real_alg \<Rightarrow> _)"
+definition [simp]: "division_segment (x :: real_alg) = 1"
+
+instance
+  by standard
+    (simp_all add: dvd_field_iff field_split_simps split: if_splits)
+
+end
+
+instantiation real_alg :: euclidean_ring_gcd
+begin
+
+definition gcd_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> real_alg" where
+  "gcd_real_alg = Euclidean_Algorithm.gcd"
+definition lcm_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> real_alg" where
+  "lcm_real_alg = Euclidean_Algorithm.lcm"
+definition Gcd_real_alg :: "real_alg set \<Rightarrow> real_alg" where
+ "Gcd_real_alg = Euclidean_Algorithm.Gcd"
+definition Lcm_real_alg :: "real_alg set \<Rightarrow> real_alg" where
+ "Lcm_real_alg = Euclidean_Algorithm.Lcm"
+
+instance by standard (simp_all add: gcd_real_alg_def lcm_real_alg_def Gcd_real_alg_def Lcm_real_alg_def)
+
+end
+
+instance real_alg :: field_gcd ..
+
+definition min_int_poly_real_alg :: "real_alg \<Rightarrow> int poly" where
+  "min_int_poly_real_alg x = (case info_real_alg x of Inl r \<Rightarrow> poly_rat r | Inr (p,_) \<Rightarrow> p)"
+
+lemma min_int_poly_real_alg_real_of: "min_int_poly_real_alg x = min_int_poly (real_of x)"
+proof (cases "info_real_alg x")
+  case (Inl r)
+  show ?thesis unfolding info_real_alg(2)[OF Inl] min_int_poly_real_alg_def Inl
+    by (simp add: min_int_poly_of_rat)
+next
+  case (Inr pair)
+  then obtain p n where Inr: "info_real_alg x = Inr (p,n)" by (cases pair, auto)
+  hence "poly_cond p" by (transfer, transfer, auto simp: info_2_card)
+  hence "min_int_poly (real_of x) = p" using info_real_alg(1)[OF Inr]
+    by (intro min_int_poly_unique, auto)
+  thus ?thesis unfolding min_int_poly_real_alg_def Inr by simp
+qed
+
+lemma min_int_poly_real_code: "min_int_poly_real (real_of x) = min_int_poly_real_alg x"
+  by (simp add: min_int_poly_real_alg_real_of)
+
+
+lemma min_int_poly_real_of: "min_int_poly (real_of x) = min_int_poly x" 
+proof (rule min_int_poly_unique[OF _ min_int_poly_irreducible lead_coeff_min_int_poly_pos]) 
+  show "min_int_poly x represents real_of x" oops (* TODO: this gives an implementation of min-int-poly 
+    on type real-alg
+qed
+
+lemma min_int_poly_real_alg_code_unfold [code_unfold]: "min_int_poly = min_int_poly_real_alg"
+  by (intro ext, unfold min_int_poly_real_alg_real_of, simp add: min_int_poly_real_of) *)
+
+
 definition real_alg_of_real :: "real \<Rightarrow> real_alg" where
   "real_alg_of_real x = (if (\<exists> y. x = real_of y) then (THE y. x = real_of y) else 0)" 
 
@@ -3495,6 +3571,22 @@ lemma to_rat_real_alg: "to_rat (real_of x) = (to_rat_real_alg x)"
   unfolding to_rat to_rat_real_alg_def to_rat_real_alg_main by auto
 
 
+definition algebraic_real :: "real \<Rightarrow> bool" where 
+  [simp]: "algebraic_real = algebraic" 
+
+lemma algebraic_real_iff[code_unfold]: "algebraic = algebraic_real" by simp
+
+lemma algebraic_real_code[code]: "algebraic_real (real_of x) = True" 
+proof (cases "info_real_alg x")
+  case (Inl r)
+  show ?thesis using info_real_alg(2)[OF Inl] by (auto simp: algebraic_of_rat)
+next
+  case (Inr pair)
+  then obtain p n where Inr: "info_real_alg x = Inr (p,n)" by (cases pair, auto)
+  from info_real_alg(1)[OF Inr] have "p represents (real_of x)" by auto
+  thus ?thesis by (auto simp: algebraic_altdef_ipoly)
+qed
+
 subsection \<open>Real Algebraic Numbers as Implementation for Real Numbers\<close>
 
 lemmas real_alg_code_eqns =  
@@ -3516,6 +3608,7 @@ lemmas real_alg_code_eqns =
   floor_real_alg
   is_rat_real_alg
   to_rat_real_alg
+  min_int_poly_real_code
 
 code_datatype real_of
 
@@ -3535,6 +3628,7 @@ declare [[code drop:
   "1 :: real"
   "sgn :: real \<Rightarrow> real"
   "abs :: real \<Rightarrow> real"
+  min_int_poly_real
   root]]
 
 declare real_alg_code_eqns [code equation]
@@ -3548,6 +3642,6 @@ proof (transfer)
   fix x
   show "real_of_3 (Real_Alg_Invariant (Rational x)) = real_of_rat x" 
     by (simp add: Real_Alg_Invariant_inverse real_of_3.rep_eq)
-qed
+qed  
 
 end

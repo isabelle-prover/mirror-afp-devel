@@ -64,27 +64,27 @@ fun time f x =
 \<close>
 
 ML \<open>
+  structure Generator = SpecCheck_Generator;
+
   fun list_n 0 _ r = ([], r)
     | list_n n g r =
       let
         val (x,r) = g r
         val (xs,r) = list_n (n - 1) g r
       in (x::xs, r) end;
-  fun join g r =
-    let val (g', r') = g r;
-    in g' r' end;
 
-  fun regex 0 = Generator.map Rexp.Atom Generator.flip
+  fun regex 0 = Generator.map Rexp.Atom (Generator.elementsL [true,false])
     | regex n =
     let
-      val m = Generator.selectL (0 upto n - 1);
-      val plus = join (Generator.map (fn m =>
-        Generator.map2 Rexp.Plus (regex m, regex (n - 1 - m))) m);
-      val times = join (Generator.map (fn m =>
-        Generator.map2 Rexp.Times (regex m, regex (n - 1 - m))) m);
-      val star = join (Generator.map (Generator.map Rexp.Star o regex) (Generator.lift (n - 1)));
+      val nonneg_gen = Generator.nonneg (n - 1);
+      val plus = Generator.join (Generator.map (fn m =>
+        Generator.map2 (curry Rexp.Plus) (regex m) (regex (n - 1 - m))) nonneg_gen);
+      val times = Generator.join (Generator.map (fn m =>
+        Generator.map2 (curry Rexp.Times) (regex m) (regex (n - 1 - m))) nonneg_gen);
+      val star = Generator.join (Generator.map (Generator.map Rexp.Star o regex)
+        (Generator.return (n - 1)));
     in
-      Generator.chooseL [plus, times, star]
+      Generator.one_ofL [plus, times, star]
     end;
 \<close>
 
@@ -125,7 +125,7 @@ fun round n ts =
 fun run checkers sizes =
   let
     val regexes = fst (fold_map (fn f => fn r => f r) (map (list_n 100 o regex) sizes)
-      (Generator.new ()));
+      (SpecCheck_Random.new ()));
     val _ = header checkers;
     val _ = map_index (fn (i, rs) =>
       let
@@ -518,7 +518,7 @@ ML \<open>
 fun runTO checker sizes =
   let
     val regexes = fst (fold_map (fn f => fn r => f r) (map (list_n 1000 o regex) sizes)
-      (Generator.new ()));
+      (SpecCheck_Random.new ()));
     val _ = map (fn rs =>
       let
         fun print (TO, i) = (warning (@{make_string} (nth rs i)); TO)

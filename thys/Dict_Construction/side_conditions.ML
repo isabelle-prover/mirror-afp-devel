@@ -42,7 +42,6 @@ structure Predicates = Generic_Data
   type T = predicate Item_Net.T
   val empty = Item_Net.init (op aconv o apply2 #f) (single o #f)
   val merge = Item_Net.merge
-  val extend = I
 )
 
 fun get_predicate ctxt t =

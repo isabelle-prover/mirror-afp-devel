@@ -39,7 +39,7 @@ fun change_compare_code const inst_names lthy =
     val map_types = maps (fn ty => if List.exists (fn tn => tn = (fst o fst) ty) inst_names then 
       [(ty, ctyp_of (apsnd (fn ss => filter filt ss @ @{sort compare_order}) ty))] else 
       []) types
-    val code_eqs = map (Thm.instantiate (map_types, [])) code_eqs 
+    val code_eqs = map (Thm.instantiate (TVars.make map_types, Vars.empty)) code_eqs 
 
     (* replace comparisons and register code eqns *)
     val new_code_eqs = map (Local_Defs.unfold lthy @{thms two_comparisons_into_compare}) code_eqs

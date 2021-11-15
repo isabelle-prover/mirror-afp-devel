@@ -47,7 +47,6 @@ begin
     structure HOLOption : sig
       val mk_None: typ -> term
       val mk_Some: term -> term
-      val mk_optionT: typ -> typ
       
       val mk_fun_upd: term * term -> term -> term
       
@@ -63,9 +62,8 @@ begin
         Const (@{const_name Fun.fun_upd}, (xT-->yT) --> xT --> yT --> (xT --> yT))$f$x$y
       end
     
-      fun mk_optionT T = Type(@{type_name option},[T])
-      fun mk_Some x = Const (@{const_name Option.Some},fastype_of x --> mk_optionT (fastype_of x))$x
-      fun mk_None T = Const (@{const_name Option.None}, mk_optionT T)
+      fun mk_Some x = \<^Const>\<open>Some \<open>fastype_of x\<close> for x\<close>
+      fun mk_None T = \<^Const>\<open>None T\<close>
       
       fun mk_map_upd (k,v) m = mk_fun_upd (k,mk_Some v) m
       fun mk_map_empty K V = Abs ("uu_",K,mk_None V)

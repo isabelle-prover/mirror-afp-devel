@@ -128,19 +128,14 @@ let
       fun get_base_type thm =
         let
            val lhs = thm |> Thm.prop_of |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst
-           fun get_ty (Const (@{const_name append}, _) $
-             (Const (@{const_name shows_prec}, _) $ _ $ x $ _) $ _) = dest_Var x |> snd
+           fun get_ty \<^Const_>\<open>append _ for \<^Const_>\<open>shows_prec _ for _ x _\<close> _\<close> = dest_Var x |> snd
              | get_ty t = raise TERM ("Expecting associativity lemma for 'shows_prec'", [t])
         in get_ty lhs end
       val base_ty = get_base_type assoc_thm
      
-      val list_ty = Type (@{type_name "list"}, [base_ty])
-      val shows_ty = @{typ "shows"}
-      val shows = Abs ("x", base_ty, Const (@{const_name "shows_prec"},
-        @{typ nat} --> base_ty --> shows_ty) $ @{term "0 :: nat"} $ Bound 0)
-      val shows_list_aux = Const (@{const_name shows_list_aux},
-        (base_ty --> shows_ty) --> list_ty --> shows_ty)
-      val shows_list = Const (@{const_name shows_list}, list_ty --> shows_ty)
+      val shows = Abs ("x", base_ty, \<^Const>\<open>shows_prec base_ty for \<^term>\<open>0 :: nat\<close> \<open>Bound 0\<close>\<close>)
+      val shows_list_aux = \<^Const>\<open>shows_list_aux base_ty\<close>
+      val shows_list = \<^Const>\<open>shows_list base_ty\<close>
       val rhs = shows_list_aux $ shows
       val shows_list_eq = Logic.mk_equals (shows_list, rhs)
      

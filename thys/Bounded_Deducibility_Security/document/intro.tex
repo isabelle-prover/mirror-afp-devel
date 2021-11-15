@@ -1,23 +1,21 @@
 
 \section{Introduction}
 
-This is a formalization of {\em bounded-deducibility security} ({\em BD security}), 
-a flexible notion of information-flow security applicable to arbitrary input--output automata.  
-It generalizes Sutherland's classic notion of 
-nondeducibility [1] by factoring in declassification bounds and triggers---whereas nondeducibility 
-states that, in a system, information cannot flow between specified sources and sinks, 
-BD security indicates upper bounds for the flow and triggers under which these upper bounds 
-are no longer guaranteed.  
+This is a formalization of {\em Bounded-Deducibility Security} ({\em BD Security}),
+a flexible notion of information-flow security applicable to arbitrary transition systems.
+It generalizes Sutherland's classic notion of
+nondeducibility~\cite{sutherland-modelOfInf} by factoring in declassification bounds and triggers---whereas nondeducibility
+states that, in a system, information cannot flow between specified sources and sinks,
+BD security indicates upper bounds for the flow and triggers under which these upper bounds
+are no longer guaranteed.
 
 \par \ \par
-BD security is introduced and discussed in detail in [2], where an application to the verification of a conference management 
-system is also presented. This formalization only contains the abstract notion and its associated unwinding proof method, 
-as discussed in Sections 4 and 5 from [2].    
+BD Security was introduced in~\cite{cocon-CAV2014}, where an application to the verification of a conference management called CoCon
+system is also presented.
+%
+The framework is further discussed in detail in \cite{cocon-JAR2021}
+and \cite{BDsecurity-ITP2021}.
 
+Other verification case studies of BD Security are discussed
+in \cite{cosmed-itp2016,cosmed-jar2018} and \cite{cosmedis-SandP2017}.
 
-\par \ \par
-[1] D. Sutherland. A model of information. In 9th National Security Conference, pp.\ 175--183, 1986.
-
-[2]  S.\ Kanav, P.\ Lammich and A.\ Popescu.  
-A Conference Management System with Verified Document Confidentiality. To appear in CAV 2014.  
-Preprint available at \url{http://www21.in.tum.de/~popescua/pdf/confsys.pdf}

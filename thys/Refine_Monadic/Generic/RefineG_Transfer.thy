@@ -25,10 +25,10 @@ lemma STOP_REFINEG_TRANSFER: "REFINEG_TRANSFER_POST_SIMP c c"
 ML \<open>
 structure RefineG_Transfer = struct
 
-  structure Post_Processors = Theory_Data (
+  structure Post_Processors = Theory_Data
+  (
     type T = (Proof.context -> tactic') Symtab.table
     val empty = Symtab.empty
-    val extend = I
     val merge = Symtab.join (K snd)
   )
 
@@ -47,11 +47,11 @@ structure RefineG_Transfer = struct
     tac
   end
 
-  structure Post_Simp = Generic_Data (
-      type T = simpset
-      val empty = HOL_basic_ss
-      val extend = I
-      val merge = Raw_Simplifier.merge_ss
+  structure Post_Simp = Generic_Data
+  (
+    type T = simpset
+    val empty = HOL_basic_ss
+    val merge = Raw_Simplifier.merge_ss
   )
 
   fun post_simps_op f a context = let
@@ -78,7 +78,7 @@ structure RefineG_Transfer = struct
 
   fun post_subst_tac ctxt = let
     val s_thms = post_subst.get ctxt
-    val dis_tac = (ALLGOALS (Tagged_Solver.solve_tac ctxt))
+    fun dis_tac goal_ctxt = ALLGOALS (Tagged_Solver.solve_tac goal_ctxt)
     val cnv = Cond_Rewr_Conv.cond_rewrs_conv dis_tac s_thms
     val ts_conv = Conv.top_sweep_conv cnv ctxt
     val ss = get_post_ss ctxt

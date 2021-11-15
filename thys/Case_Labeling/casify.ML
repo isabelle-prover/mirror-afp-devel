@@ -343,7 +343,8 @@ datatype options = Options of { simp_all_cases: bool, split_right_only: bool, pr
 
 fun casify_tac (Options { simp_all_cases, split_right_only, protect_subgoals }) (ctxt, st) =
   let
-    fun inst_disambig ct = Thm.instantiate ([], [((("n", 0), @{typ nat}), ct)]) @{thm DISAMBIG_I}
+    fun inst_disambig ct =
+      Thm.instantiate (TVars.empty, Vars.make [((("n", 0), @{typ nat}), ct)]) @{thm DISAMBIG_I}
     fun disambig_tac i =
       if protect_subgoals
       then match_tac ctxt [inst_disambig (Thm.cterm_of ctxt (HOLogic.mk_number @{typ nat} i))]

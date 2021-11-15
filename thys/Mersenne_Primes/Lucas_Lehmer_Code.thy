@@ -35,8 +35,8 @@ definition mersenne_mod :: "int \<Rightarrow> nat \<Rightarrow> int" where
   "mersenne_mod k n = k mod 2 ^ n + k div 2 ^ n"
 
 lemma mersenne_mod_code [code]:
-  "mersenne_mod k n = (k AND ((push_bit n 1) - 1)) + (drop_bit n k)"
-  by (simp add: mersenne_mod_def shiftr_int_def shiftl_int_def AND_mod)
+  "mersenne_mod k n = take_bit n k + drop_bit n k"
+  by (simp add: mersenne_mod_def flip: take_bit_eq_mod drop_bit_eq_div)
 
 lemma cong_mersenne_mod: "[mersenne_mod k n = k] (mod (2 ^ n - 1))"
   unfolding mersenne_mod_def by (rule cong_mersenne_number_int)
@@ -239,7 +239,7 @@ proof (rule conj_cong)
   qed auto
   finally show "(2 ^ p - 1 dvd gen_lucas_lehmer_sequence 4 (p - 2)) =
                 ((let x = x in x = 0 \<or> x = (push_bit p 1) - 1))"
-    by (simp add: shiftl_int_def Let_def)
+    by (simp add: Let_def push_bit_eq_mult)
 qed auto
 
 

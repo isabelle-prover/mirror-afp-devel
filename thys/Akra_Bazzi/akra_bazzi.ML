@@ -197,11 +197,11 @@ fun nat_numeral_conv ctxt ct =
 let 
   val t = Thm.term_of ct
   val prop = Logic.mk_equals (t, num_to_Suc (dest_nat_number t))
-  fun tac {context = ctxt, prems = _ } = 
-    SOLVE (Local_Defs.unfold_tac ctxt @{thms eval_nat_numeral BitM.simps One_nat_def} 
-    THEN resolve_tac ctxt @{thms Pure.reflexive} 1);
+  fun tac goal_ctxt =
+    SOLVE (Local_Defs.unfold_tac goal_ctxt @{thms eval_nat_numeral BitM.simps One_nat_def}
+    THEN resolve_tac goal_ctxt @{thms Pure.reflexive} 1);
 in  
-  case try (fn () => Goal.prove ctxt [] [] prop tac) () of
+  case \<^try>\<open>Goal.prove ctxt [] [] prop (tac o #context)\<close> of
     NONE => raise CTERM ("nat_numeral_conv", [ct])
   | SOME thm => thm
 end
@@ -398,13 +398,14 @@ fun eval_real_numeral_conv ctxt ct =
       let
         val t = Thm.term_of ct
         val prop = Logic.mk_equals (t, @{term "Trueprop True"})
-        val ctxt' = put_simpset (simpset_of @{context}) ctxt
-        fun tac ({context = ctxt, ...}) =
-          Local_Defs.unfold_tac ctxt @{thms greaterThanLessThan_iff}
-          THEN (SOLVE (Simplifier.full_simp_tac ctxt' 1) ORELSE code_simp_tac ctxt 1)
+        fun tac goal_ctxt =
+          let val ctxt' = put_simpset (simpset_of @{context}) goal_ctxt in
+            Local_Defs.unfold_tac ctxt' @{thms greaterThanLessThan_iff}
+            THEN (SOLVE (Simplifier.full_simp_tac ctxt' 1) ORELSE code_simp_tac ctxt' 1)
+          end
       in
         if contains_only_numerals t then
-          case try (fn () => Goal.prove ctxt [] [] prop tac) () of
+          case \<^try>\<open>Goal.prove ctxt [] [] prop (tac o #context)\<close> of
             SOME thm => thm
           | NONE => raise CTERM ("eval_real_numeral_conv", [ct]) 
         else
@@ -588,7 +589,7 @@ fun parse_assoc key scan = Scan.lift (Args.$$$ key -- Args.colon) -- scan >> snd
 val parse_param = 
   let 
     fun term_with_type T = 
-      Scan.peek (fn context => Args.embedded_inner_syntax >> 
+      Scan.peek (fn context => Parse.embedded_inner_syntax >> 
         read_term_with_type (Context.proof_of context) T);
   in 
     parse_assoc "recursion" Attrib.thm >> (fn x => (SOME x, NONE, NONE, NONE)) ||

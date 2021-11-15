@@ -6,7 +6,7 @@
 section \<open>Completeness of the LBV\<close>
 
 theory LBVComplete
-imports LBVSpec Typing_Framework
+imports LBVSpec Typing_Framework_1
 begin
 
 definition is_target :: "'s step_type \<Rightarrow> 's list \<Rightarrow> nat \<Rightarrow> bool" where
@@ -70,6 +70,8 @@ lemma (in lbv) merge_mono:
   assumes x:     "x \<in> A"
   assumes ss\<^sub>1:   "snd`set ss\<^sub>1 \<subseteq> A"
   assumes ss\<^sub>2:   "snd`set ss\<^sub>2 \<subseteq> A"
+  assumes boun:  "\<forall>x\<in>(fst`set ss\<^sub>1). x < size \<tau>s"
+  assumes cert:  "cert_ok c (size \<tau>s) T B A" 
   shows "merge c pc ss\<^sub>2 x \<sqsubseteq>\<^sub>r merge c pc ss\<^sub>1 x" (is "?s\<^sub>2 \<sqsubseteq>\<^sub>r ?s\<^sub>1")
 (*<*)
 proof-
@@ -86,7 +88,20 @@ proof-
       sum: "(map snd [(p',t') \<leftarrow> ss\<^sub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^sub>1" 
            (is "?map ss\<^sub>1 \<Squnion>\<^bsub>f\<^esub> x = _" is "?sum ss\<^sub>1 = _")
       by (simp split: if_split_asm)
-    from app less have "?app ss\<^sub>2" by (blast dest: trans_r lesub_step_typeD)
+
+    have "?app ss\<^sub>2"  
+    proof(intro strip, clarsimp )
+      fix a b
+      assume a_b: "(a, b) \<in> set ss\<^sub>2" and neq: "a \<noteq> Suc pc"       
+      from less a_b obtain y where y: "(a, y) \<in> set ss\<^sub>1 " and b_lt_y: "b \<sqsubseteq>\<^sub>r y" by (blast dest:lesub_step_typeD)
+      with app have "a \<noteq> pc + 1 \<longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> c!a" by auto
+      with neq have "y \<sqsubseteq>\<^bsub>r\<^esub> c!a" by auto
+      moreover from y ss\<^sub>1 have "y \<in> A" by auto
+      moreover from a_b ss\<^sub>2 have "b \<in> A" by auto
+      moreover from y boun cert have "c!a \<in> A" by (auto dest:cert_okD1)
+      ultimately show "b \<sqsubseteq>\<^bsub>r\<^esub> c!a" using b_lt_y by (auto intro:trans_r)        
+    qed    
+
     moreover {
       from ss\<^sub>1 have map1: "set (?map ss\<^sub>1) \<subseteq> A" by auto
       with x and semilat Semilat_axioms have "?sum ss\<^sub>1 \<in> A" by (auto intro!: plusplus_closed)
@@ -95,8 +110,18 @@ proof-
       have mapD: "\<And>x ss. x \<in> set (?map ss) \<Longrightarrow> \<exists>p. (p,x) \<in> set ss \<and> p=pc+1" by auto
       from x map1 have "\<forall>x \<in> set (?map ss\<^sub>1). x \<sqsubseteq>\<^sub>r ?sum ss\<^sub>1" by clarify (rule pp_ub1)
       with sum have "\<forall>x \<in> set (?map ss\<^sub>1). x \<sqsubseteq>\<^sub>r ?s\<^sub>1" by simp
-      with less have "\<forall>x \<in> set (?map ss\<^sub>2). x \<sqsubseteq>\<^sub>r ?s\<^sub>1"
-        by (fastforce dest!: mapD lesub_step_typeD intro: trans_r)
+      then have "\<forall>x \<in> set (?map ss\<^sub>2). x \<sqsubseteq>\<^sub>r ?s\<^sub>1"
+      proof(intro strip, clarsimp)
+        fix b
+        assume xa: "\<forall>xa. (Suc pc, xa) \<in>set ss\<^sub>1 \<longrightarrow> xa \<sqsubseteq>\<^bsub>r\<^esub> merge c pc ss\<^sub>1 x"
+           and b: "(Suc pc, b) \<in> set ss\<^sub>2"
+        from less b obtain y where y: "(Suc pc, y) \<in> set ss\<^sub>1 " and b_lt_y: "b \<sqsubseteq>\<^sub>r y" by (blast dest:lesub_step_typeD)
+        from y xa have "y \<sqsubseteq>\<^bsub>r\<^esub> merge c pc ss\<^sub>1 x" by auto
+        moreover from y ss\<^sub>1 have "y \<in> A" by auto
+        moreover from b ss\<^sub>2 have "b \<in> A" by auto
+        moreover from ss\<^sub>1 x have "merge c pc ss\<^sub>1 x \<in> A" by (auto intro:merge_pres)
+        ultimately show "b \<sqsubseteq>\<^bsub>r\<^esub> merge c pc ss\<^sub>1 x" using b_lt_y by (auto intro:trans_r) 
+      qed
       moreover from map1 x have "x \<sqsubseteq>\<^sub>r (?sum ss\<^sub>1)" by (rule pp_ub2)
       with sum have "x \<sqsubseteq>\<^sub>r ?s\<^sub>1" by simp
       moreover from ss\<^sub>2 have "set (?map ss\<^sub>2) \<subseteq> A" by auto
@@ -118,11 +143,13 @@ lemma (in lbvc) wti_mono:
   shows "wti c pc s\<^sub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^sub>1" (is "?s\<^sub>2' \<sqsubseteq>\<^sub>r ?s\<^sub>1'")
 (*<*)
 proof -
+  from bounded pc have "\<forall>(q,\<tau>) \<in> set(step pc s\<^sub>1). q < size \<tau>s" by (simp add:bounded_def)
+  then have u: "\<forall>q \<in> fst ` set (step pc s\<^sub>1). q < size \<tau>s" by auto
   from mono pc s\<^sub>2 less have "set (step pc s\<^sub>2) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step pc s\<^sub>1)" by (rule monoD)
   moreover from cert B_A pc have "c!Suc pc \<in> A" by (rule cert_okD3)
   moreover from pres s\<^sub>1 pc have "snd`set (step pc s\<^sub>1) \<subseteq> A" by (rule pres_typeD2)
   moreover from pres s\<^sub>2 pc have "snd`set (step pc s\<^sub>2) \<subseteq> A" by (rule pres_typeD2)
-  ultimately show ?thesis by (simp add: wti merge_mono)
+  ultimately show ?thesis using cert u by (simp add: wti merge_mono)
 qed 
 (*>*)
 
@@ -137,21 +164,33 @@ proof (cases "c!pc = \<bottom>")
   ultimately show ?thesis by (simp add: wtc)
 next
   case False
+  with pc have "c!pc = \<tau>s!pc" using cert_approx by auto
+  with \<tau>s pc have c_pc_inA: "c!pc \<in> A"  by auto
+  moreover from cert B_A pc have "c ! (pc + 1) \<in> A" by (auto dest: cert_okD3)
+  ultimately  have inA: "wtc c pc s\<^sub>2 \<in> A"  using pres wtc_pres pc s\<^sub>2 by auto
   have "?s\<^sub>1' = \<top> \<Longrightarrow> ?thesis" by simp
   moreover {
     assume "?s\<^sub>1' \<noteq> \<top>" 
     with False have c: "s\<^sub>1 \<sqsubseteq>\<^sub>r c!pc" by (simp add: wtc split: if_split_asm)
-    with less have "s\<^sub>2 \<sqsubseteq>\<^sub>r c!pc" ..
-    with False c have ?thesis by (simp add: wtc)
+    from semilat have "order r A" by auto
+    from this less c s\<^sub>2 s\<^sub>1 c_pc_inA have "s\<^sub>2 \<sqsubseteq>\<^sub>r c!pc" by (rule order_trans)
+    with False c have ?thesis using inA by (simp add: wtc)
   }
   ultimately show ?thesis by (cases "?s\<^sub>1' = \<top>") auto
 qed
 (*>*)
 
-lemma (in lbv) top_le_conv [simp]: "\<top> \<sqsubseteq>\<^sub>r x = (x = \<top>)"
-(*<*) by (insert semilat) (simp add: top top_le_conv)  (*>*)
+lemma (in lbv) top_le_conv [simp]: "x \<in> A \<Longrightarrow> \<top> \<sqsubseteq>\<^sub>r x = (x = \<top>)"
+(*<*)  
+  apply(subgoal_tac "order r A")
+   apply (insert semilat T_A top)
+   apply (rule top_le_conv)
+      apply assumption+
+  apply (simp add:semilat_def) 
+  done
+  (*>*)
 
-lemma (in lbv) neq_top [simp, elim]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<noteq> \<top> \<rbrakk> \<Longrightarrow> x \<noteq> \<top>"
+lemma (in lbv) neq_top [simp, elim]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<noteq> \<top>; y \<in> A \<rbrakk> \<Longrightarrow> x \<noteq> \<top>"
 (*<*) by (cases "x = T") auto (*>*)
 
 lemma (in lbvc) stable_wti:
@@ -192,16 +231,16 @@ proof -
     ultimately show ?thesis by (simp add: B_neq_T)
   next
     assume pc': "Suc pc < size \<tau>s"
-    from pc' \<tau>s have "\<tau>s!Suc pc \<in> A" by simp
+    from pc' \<tau>s have \<tau>s_inA: "\<tau>s!Suc pc \<in> A" by simp
     moreover note cert_suc
     moreover from stepA have "set ?map \<subseteq> A" by auto
     moreover have "\<And>s. s \<in> set ?map \<Longrightarrow> \<exists>t. (Suc pc, t) \<in> set ?step" by auto
     with less have "\<forall>s' \<in> set ?map. s' \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by auto
-    moreover from pc' have "c!Suc pc \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" 
+    moreover from pc' \<tau>s_inA have "c!Suc pc \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" 
       by (cases "c!Suc pc = \<bottom>") (auto dest: cert_approx)
     ultimately have "?map \<Squnion>\<^bsub>f\<^esub> c!Suc pc \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule pp_lub)
     moreover from pc' \<tau>s have "\<tau>s!Suc pc \<noteq> \<top>" by simp
-    ultimately show ?thesis by auto
+    ultimately show ?thesis using \<tau>s_inA by auto
   qed
   ultimately have "merge c pc ?step (c!Suc pc) \<noteq> \<top>" by simp
   thus ?thesis by (simp add: wti)  
@@ -229,12 +268,12 @@ proof -
     map snd [(p',t') \<leftarrow> ?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc" by (rule merge_not_top_s) 
   hence "?wti = \<dots>" (is "_ = (?map \<Squnion>\<^bsub>f\<^esub> _)" is "_ = ?sum") by (simp add: wti)
   also {
-    from suc_pc \<tau>s have "\<tau>s!Suc pc \<in> A" by simp
+    from suc_pc \<tau>s have \<tau>s_inA: "\<tau>s!Suc pc \<in> A" by simp
     moreover note cert_suc
     moreover from stepA have "set ?map \<subseteq> A" by auto
     moreover have "\<And>s. s \<in> set ?map \<Longrightarrow> \<exists>t. (Suc pc, t) \<in> set ?step" by auto
     with less have "\<forall>s' \<in> set ?map. s' \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by auto
-    moreover from suc_pc have "c!Suc pc \<sqsubseteq>\<^sub>r \<tau>s!Suc pc"
+    moreover from suc_pc \<tau>s_inA have "c!Suc pc \<sqsubseteq>\<^sub>r \<tau>s!Suc pc"
       by (cases "c!Suc pc = \<bottom>") (auto dest: cert_approx)
     ultimately have "?sum \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule pp_lub)
   }
@@ -254,7 +293,7 @@ proof -
   next
     case False
     with pc have "c!pc = \<tau>s!pc" ..    
-    with False wti show ?thesis by (simp add: wtc)
+    with False wti \<tau>s pc show ?thesis by (simp add: wtc)
   qed
 qed
 (*>*)
@@ -305,16 +344,23 @@ next
 
   assume s_\<tau>s: "s \<sqsubseteq>\<^sub>r \<tau>s!pc"
   assume sA: "s \<in> A"
-  from \<tau>s pc have \<tau>s_pc: "\<tau>s!pc \<in> A" by simp
+
+  from \<tau>s pc have \<tau>s_pc:"\<tau>s!pc \<in> A" by auto
+  moreover from cert pc have c1: "c!pc \<in> A" by (rule cert_okD1)  
+  moreover from cert B_A pc have c2: "c!Suc pc \<in> A" by (rule cert_okD3)
+  ultimately have wtc1: "wtc c pc (\<tau>s!pc) \<in> A" 
+              and wtc2: "wtc c pc s \<in> A" using pres sA pc by (auto intro:wtc_pres)
+
   from s_\<tau>s pc \<tau>s_pc sA have wt_s_\<tau>s: "wtc c pc s \<sqsubseteq>\<^sub>r wtc c pc (\<tau>s!pc)" by (rule wtc_mono)
-  with wt_\<tau>s have wt_s: "wtc c pc s \<noteq> \<top>" by simp
+  with wt_\<tau>s have wt_s: "wtc c pc s \<noteq> \<top>"  using wtc1 by simp
   moreover assume s: "s \<noteq> \<top>" 
   ultimately have "ls = [] \<Longrightarrow> ?wtl (i#ls) pc s \<noteq> \<top>" by simp
   moreover {
     assume "ls \<noteq> []" 
     with pc_l have suc_pc: "Suc pc < size \<tau>s" by (auto simp add: neq_Nil_conv)
-    with stable have "wtc c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wtc_less)
-    with wt_s_\<tau>s have "wtc c pc s \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule trans_r)      
+    with stable have t: "wtc c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wtc_less)
+    from suc_pc \<tau>s have "\<tau>s!Suc pc \<in> A" by auto    
+    with t wt_s_\<tau>s wtc1 wtc2 have "wtc c pc s \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (auto intro: trans_r)   
     moreover from cert suc_pc have "c!pc \<in> A" "c!(pc+1) \<in> A" 
       by (auto simp add: cert_ok_def)
     from pres this sA pc have "wtc c pc s \<in> A" by (rule wtc_pres)

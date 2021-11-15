@@ -25,7 +25,7 @@ fun atomize_conv ctxt =
 fun atomize_intr ctxt = Conv.fconv_rule (Conv.prems_conv ~1 (atomize_conv ctxt))
 
 fun atomize_induct ctxt = Conv.fconv_rule (Conv.prems_conv ~1
-  (Conv.params_conv ~1 (K (Conv.prems_conv ~1 (atomize_conv ctxt))) ctxt))
+  (Conv.params_conv ~1 (Conv.prems_conv ~1 o atomize_conv) ctxt))
 
 
 (** equivariance tactics **)
@@ -37,18 +37,18 @@ fun eqvt_rel_single_case_tac ctxt pred_names pi intro =
     val eqvt_sconfig = eqvt_strict_config addexcls pred_names
   in
     eqvt_tac ctxt eqvt_sconfig THEN'
-    SUBPROOF (fn {prems, context as ctxt, ...} =>
+    SUBPROOF (fn {prems, context = goal_ctxt, ...} =>
       let
         val simps1 =
-          put_simpset HOL_basic_ss ctxt addsimps @{thms permute_fun_def permute_self split_paired_all}
+          put_simpset HOL_basic_ss goal_ctxt addsimps @{thms permute_fun_def permute_self split_paired_all}
         val simps2 =
-          put_simpset HOL_basic_ss ctxt addsimps @{thms permute_bool_def permute_minus_cancel(2)}
-        val prems' = map (transform_prem2 ctxt pred_names) prems
-        val prems'' = map (fn thm => eqvt_rule ctxt eqvt_sconfig (thm RS pi_intro_rule)) prems'
+          put_simpset HOL_basic_ss goal_ctxt addsimps @{thms permute_bool_def permute_minus_cancel(2)}
+        val prems' = map (transform_prem2 goal_ctxt pred_names) prems
+        val prems'' = map (fn thm => eqvt_rule goal_ctxt eqvt_sconfig (thm RS pi_intro_rule)) prems'
         val prems''' = map (simplify simps2 o simplify simps1) prems''
       in
-        HEADGOAL (resolve_tac ctxt [intro] THEN_ALL_NEW
-          resolve_tac ctxt (prems' @ prems'' @ prems'''))
+        HEADGOAL (resolve_tac goal_ctxt [intro] THEN_ALL_NEW
+          resolve_tac goal_ctxt (prems' @ prems'' @ prems'''))
       end) ctxt
   end
 
@@ -94,7 +94,7 @@ fun raw_equivariance ctxt preds raw_induct intrs =
       ctxt
       |> Variable.import_terms false [Thm.concl_of raw_induct']
       ||>> Variable.variant_fixes ["p"]
-    val pi = Free (raw_pi, @{typ perm})
+    val pi = Free (raw_pi, \<^Type>\<open>perm\<close>)
 
     val preds_with_args = raw_concl
       |> HOLogic.dest_Trueprop
@@ -107,7 +107,7 @@ fun raw_equivariance ctxt preds raw_induct intrs =
       |> HOLogic.mk_Trueprop
   in
     Goal.prove ctxt' [] [] goal
-      (fn {context, ...} => eqvt_rel_tac context pred_names pi raw_induct' intrs' 1)
+      (fn {context = goal_ctxt, ...} => eqvt_rel_tac goal_ctxt pred_names pi raw_induct' intrs' 1)
       |> Old_Datatype_Aux.split_conj_thm
       |> Proof_Context.export ctxt' ctxt
       |> map (fn th => th RS mp)

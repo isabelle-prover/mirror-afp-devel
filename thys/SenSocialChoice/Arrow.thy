@@ -499,7 +499,7 @@ proof -
     let ?V1 = "{j}"
     let ?V2 = "V - ?V1"
     let ?V3 = "Is - V"
-    from jV card_Diff_singleton[OF Vfinite] Vcard
+    from jV card_Diff_singleton Vcard
     have V2card: "card ?V2 > 0" "card ?V2 < card V" by auto
     hence V2notempty: "{} \<noteq> ?V2" by auto
     from jV VIs

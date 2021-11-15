@@ -7,10 +7,10 @@
 section \<open>Sup-Lattices and Other Simplifications\<close>
 
 theory Sup_Lattice
-  imports  Main 
-           "HOL-Library.Lattice_Syntax"
-
+  imports Main
 begin
+
+unbundle lattice_syntax
 
 text \<open>Some definitions for orderings and lattices in Isabelle could be simpler. The strict order in 
 in ord could be defined instead of being axiomatised. The function mono could have been defined on ord

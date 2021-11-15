@@ -55,7 +55,7 @@ begin
   lemma lookup_single_bit[simp]: "lookup i ((single_bit n)::'a::len word list) \<longleftrightarrow> i = n"
     apply (induction n arbitrary: i rule: single_bit.induct)
     apply (subst single_bit.simps)
-    apply (auto simp: bin_nth_sc_gen bit_simps)
+    apply (auto simp add: bit_simps)
     done
 
   primrec set_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
@@ -85,6 +85,10 @@ begin
     done
 
   subsubsection \<open>Binary Operations\<close>
+
+  context
+    includes bit_operations_syntax
+  begin
 
   definition
     is_bin_op_impl
@@ -339,12 +343,13 @@ subsection \<open>Lifting to Uint\<close>
     subset.simps
     disjoint.simps
 
+  end
 
   hide_const (open) \<alpha> lookup empty single_bit set_bit reset_bit union inter diff zeroes
     equal subseteq subset disjoint
 
 
-subsection \<open>Autoref Setup\<close>
+  subsection \<open>Autoref Setup\<close>
 
   definition uv_set_rel_def_internal:
     "uv_set_rel Rk \<equiv>

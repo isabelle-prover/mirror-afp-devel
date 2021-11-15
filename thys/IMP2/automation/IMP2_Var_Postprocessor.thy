@@ -118,10 +118,10 @@ begin
       |> map (guess_renaming param_rename_tab)
       
       (* Naming hints go to hint-tab in #1, other premises go to list in #2 *)
-      fun add_naming_hint (@{const Trueprop}$(@{const NAMING_HINT}$s$x$n)) = (case try HOLogic.dest_string n of
+      fun add_naming_hint \<^Const>\<open>Trueprop for \<^Const>\<open>NAMING_HINT for s x n\<close>\<close> =
+        (case try HOLogic.dest_string n of
           SOME n => apfst (Candtab.update ((s,x),n))
-        | NONE => (warning "NAMING_HINT with non-string constant ignored"; I)
-        )
+        | NONE => (warning "NAMING_HINT with non-string constant ignored"; I))
       | add_naming_hint t = apsnd (cons t)
       
       

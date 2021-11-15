@@ -14,7 +14,7 @@ section~\ref{sec:cor-scp}.
 
 
 theory IFC
-imports Main
+  imports Main
 begin
 
 subsection \<open>Program Model\<close>
@@ -590,8 +590,7 @@ qed
 
 lemma LeastBI_ex: assumes \<open>\<exists>k \<le> n. P k\<close> shows \<open>P (LEAST k::'c::wellorder. P k)\<close> and \<open>(LEAST k. P k) \<le> n\<close> 
 proof -
-  from assms guess k .. 
-  hence k: \<open>k \<le> n\<close> \<open>P k\<close> by auto     
+  from assms obtain k where k: "k \<le> n" "P k" by blast
   thus \<open>P (LEAST k. P k)\<close> using LeastI[of \<open>P\<close> \<open>k\<close>] by simp
   show \<open>(LEAST k. P k) \<le> n\<close> using Least_le[of \<open>P\<close> \<open>k\<close>] k by auto
 qed
@@ -1762,7 +1761,7 @@ next
     fix l assume kcd: \<open>k cd\<^bsup>\<pi>\<^esup>\<rightarrow> l\<close> and nl: \<open>n \<le> l\<close>
     hence \<open>(k - n) cd\<^bsup>\<pi>\<guillemotleft>n\<^esup>\<rightarrow> (l - n)\<close> using cd_path_shift[OF nl path] by simp
     hence \<open>\<exists> l. (k - n) icd\<^bsup>\<pi>\<guillemotleft>n\<^esup>\<rightarrow> l\<close> using excd_impl_exicd by blast
-    then guess l' ..
+    then obtain l' where "k - n icd\<^bsup>\<pi> \<guillemotleft> n\<^esup>\<rightarrow> l'" ..
     hence \<open>k icd\<^bsup>\<pi>\<^esup>\<rightarrow> (l' + n)\<close> using icd_path_shift[of \<open>n\<close> \<open>l' + n\<close> \<open>\<pi>\<close> \<open>k\<close>] path by auto
     thus \<open>False\<close> using noicd by auto
   qed    
@@ -2305,8 +2304,7 @@ lemma cs_sorted_list_of_cd': \<open>cs\<^bsup>\<pi>\<^esup> k = map \<pi> (sorte
 proof (induction \<open>\<pi>\<close> \<open>k\<close> rule: cs.induct, cases)
   case (1 \<pi> k)
   assume \<open>\<exists> j. k icd\<^bsup>\<pi>\<^esup>\<rightarrow> j\<close>
-  then guess j ..
-  note j = this
+  then obtain j where j: "k icd\<^bsup>\<pi>\<^esup>\<rightarrow> j" ..
   hence csj: \<open>cs\<^bsup>\<pi>\<^esup> j = map \<pi> (sorted_list_of_set {i. j cd\<^bsup>\<pi>\<^esup>\<rightarrow> i}) @ [\<pi> j]\<close> by (metis "1.IH" icd_is_the_icd)
   have \<open>{i. k cd\<^bsup>\<pi>\<^esup>\<rightarrow> i} = insert j {i. j cd\<^bsup>\<pi>\<^esup>\<rightarrow> i}\<close> using cdi_is_cd_icdi[OF j] by auto
   moreover
@@ -3923,7 +3921,7 @@ and readv: \<open>v\<in>reads(path \<sigma> k)\<close> and vneq: \<open>(\<sigma
       
       have notin\<pi>: \<open>\<not> (\<exists>l. cs\<^bsup>\<pi>'\<^esup> l' = cs\<^bsup>\<pi>\<^esup> l)\<close> proof
         assume \<open>\<exists>l. cs\<^bsup>\<pi>'\<^esup> l' = cs\<^bsup>\<pi>\<^esup> l\<close>
-        then guess l ..
+        then obtain l where "cs\<^bsup>\<pi>'\<^esup> l' = cs\<^bsup>\<pi>\<^esup> l" ..
         note csl = \<open>cs\<^bsup>\<pi>'\<^esup> l' = cs\<^bsup>\<pi>\<^esup> l\<close>
         have lk: \<open>l < k\<close> using lk' cseq ip cs_order[of \<open>\<pi>'\<close> \<open>\<pi>\<close> \<open>l'\<close> \<open>l\<close> \<open>k'\<close> \<open>k\<close>] csl nret path by force
                   
@@ -3969,7 +3967,7 @@ and readv: \<open>v\<in>reads(path \<sigma> k)\<close> and vneq: \<open>(\<sigma
 
       have notin\<pi>': \<open>\<not> (\<exists>l'. cs\<^bsup>\<pi>\<^esup> l = cs\<^bsup>\<pi>'\<^esup> l')\<close> proof
         assume \<open>\<exists>l'. cs\<^bsup>\<pi>\<^esup> l = cs\<^bsup>\<pi>'\<^esup> l'\<close>
-        then guess l' ..
+        then obtain l' where "cs\<^bsup>\<pi>\<^esup> l = cs\<^bsup>\<pi>'\<^esup> l'" ..
         note csl = \<open>cs\<^bsup>\<pi>\<^esup> l = cs\<^bsup>\<pi>'\<^esup> l'\<close>
         have lk: \<open>l' < k'\<close> using lk cseq ip cs_order[of \<open>\<pi>\<close> \<open>\<pi>'\<close> \<open>l\<close> \<open>l'\<close> \<open>k\<close> \<open>k'\<close>] csl nret by metis
                   

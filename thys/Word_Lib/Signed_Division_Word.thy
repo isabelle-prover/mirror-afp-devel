@@ -52,6 +52,15 @@ lemma signed_mod_arith:
   apply simp
   done
 
+lemma word_sdiv_div0 [simp]:
+    "(a :: ('a::len) word) sdiv 0 = 0"
+  apply (auto simp: sdiv_word_def signed_divide_int_def sgn_if)
+  done
+
+lemma smod_word_zero [simp]:
+  \<open>w smod 0 = w\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: smod_word_def signed_modulo_int_def)
+
 lemma word_sdiv_div1 [simp]:
     "(a :: ('a::len) word) sdiv 1 = a"
   apply (cases \<open>LENGTH('a)\<close>)
@@ -63,10 +72,9 @@ lemma word_sdiv_div1 [simp]:
   apply (simp add: take_bit_signed_take_bit)
   done
 
-lemma word_sdiv_div0 [simp]:
-    "(a :: ('a::len) word) sdiv 0 = 0"
-  apply (auto simp: sdiv_word_def signed_divide_int_def sgn_if)
-  done
+lemma smod_word_one [simp]:
+  \<open>w smod 1 = 0\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: smod_word_def signed_modulo_int_def)
 
 lemma word_sdiv_div_minus1 [simp]:
     "(a :: ('a::len) word) sdiv -1 = -a"
@@ -75,6 +83,78 @@ lemma word_sdiv_div_minus1 [simp]:
   apply simp
   apply (metis Suc_pred len_gt_0 signed_take_bit_eq_iff_take_bit_eq signed_take_bit_of_0 take_bit_of_0)
   done
+
+lemma smod_word_minus_one [simp]:
+  \<open>w smod - 1 = 0\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: smod_word_def signed_modulo_int_def)
+
+lemma one_sdiv_word_eq [simp]:
+  \<open>1 sdiv w = of_bool (w = 1 \<or> w = - 1) * w\<close> for w :: \<open>'a::len word\<close>
+proof (cases \<open>1 < \<bar>sint w\<bar>\<close>)
+  case True
+  then show ?thesis
+    by (auto simp add: sdiv_word_def signed_divide_int_def split: if_splits)
+next
+  case False
+  then have \<open>\<bar>sint w\<bar> \<le> 1\<close>
+    by simp
+  then have \<open>sint w \<in> {- 1, 0, 1}\<close>
+    by auto
+  then have \<open>(word_of_int (sint w) :: 'a::len word) \<in> word_of_int ` {- 1, 0, 1}\<close>
+    by blast
+  then have \<open>w \<in> {- 1, 0, 1}\<close>
+    by simp
+  then show ?thesis by auto
+qed
+
+lemma one_smod_word_eq [simp]:
+  \<open>1 smod w = 1 - of_bool (w = 1 \<or> w = - 1)\<close> for w :: \<open>'a::len word\<close>
+  using sdiv_smod_id [of 1 w] by auto
+
+lemma minus_one_sdiv_word_eq [simp]:
+  \<open>- 1 sdiv w = - (1 sdiv w)\<close> for w :: \<open>'a::len word\<close>
+  apply (auto simp add: sdiv_word_def signed_divide_int_def)
+  apply transfer
+  apply simp
+  done
+
+lemma minus_one_smod_word_eq [simp]:
+  \<open>- 1 smod w = - (1 smod w)\<close> for w :: \<open>'a::len word\<close>
+  using sdiv_smod_id [of \<open>- 1\<close> w] by auto
+
+lemma smod_word_alt_def:
+  "(a :: ('a::len) word) smod b = a - (a sdiv b) * b"
+  apply (cases \<open>a \<noteq> - (2 ^ (LENGTH('a) - 1)) \<or> b \<noteq> - 1\<close>)
+   apply (clarsimp simp: smod_word_def sdiv_word_def signed_modulo_int_def
+     simp flip: wi_hom_sub wi_hom_mult)
+  apply (clarsimp simp: smod_word_def signed_modulo_int_def)
+  done
+
+lemmas sdiv_word_numeral_numeral [simp] =
+  sdiv_word_def [of \<open>numeral a\<close> \<open>numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas sdiv_word_minus_numeral_numeral [simp] =
+  sdiv_word_def [of \<open>- numeral a\<close> \<open>numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas sdiv_word_numeral_minus_numeral [simp] =
+  sdiv_word_def [of \<open>numeral a\<close> \<open>- numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas sdiv_word_minus_numeral_minus_numeral [simp] =
+  sdiv_word_def [of \<open>- numeral a\<close> \<open>- numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+
+lemmas smod_word_numeral_numeral [simp] =
+  smod_word_def [of \<open>numeral a\<close> \<open>numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas smod_word_minus_numeral_numeral [simp] =
+  smod_word_def [of \<open>- numeral a\<close> \<open>numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas smod_word_numeral_minus_numeral [simp] =
+  smod_word_def [of \<open>numeral a\<close> \<open>- numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
+lemmas smod_word_minus_numeral_minus_numeral [simp] =
+  smod_word_def [of \<open>- numeral a\<close> \<open>- numeral b\<close>, simplified sint_sbintrunc sint_sbintrunc_neg]
+  for a b
 
 lemmas word_sdiv_0 = word_sdiv_div0
 
@@ -118,9 +198,9 @@ lemmas word_sdiv_numerals_lhs = sdiv_word_def[where v="numeral x" for x]
 lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where w="numeral y" for y]
     word_sdiv_numerals_lhs[where w=0] word_sdiv_numerals_lhs[where w=1]
 
-lemma smod_word_mod_0 [simp]:
+lemma smod_word_mod_0:
   "x smod (0 :: ('a::len) word) = x"
-  by (clarsimp simp: smod_word_def)
+  by (fact smod_word_zero)
 
 lemma smod_word_0_mod [simp]:
   "0 smod (x :: ('a::len) word) = 0"
@@ -156,14 +236,6 @@ lemma smod_word_min:
   apply (auto simp add: algebra_simps abs_le_iff)
    apply (metis abs_zero add.left_neutral add_mono_thms_linordered_semiring(1) diff_Suc_1 le_cases linorder_not_less sint_lt zabs_less_one_iff)
   apply (metis abs_zero add.inverse_inverse add.left_neutral add_mono_thms_linordered_semiring(1) diff_Suc_1 le_cases le_minus_iff linorder_not_less sint_ge zabs_less_one_iff)
-  done
-
-lemma smod_word_alt_def:
-  "(a :: ('a::len) word) smod b = a - (a sdiv b) * b"
-  apply (cases \<open>a \<noteq> - (2 ^ (LENGTH('a) - 1)) \<or> b \<noteq> - 1\<close>)
-   apply (clarsimp simp: smod_word_def sdiv_word_def signed_modulo_int_def
-     simp flip: wi_hom_sub wi_hom_mult)
-  apply (clarsimp simp: smod_word_def signed_modulo_int_def)
   done
 
 lemmas word_smod_numerals_lhs = smod_word_def[where v="numeral x" for x]

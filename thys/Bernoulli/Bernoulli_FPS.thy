@@ -1,6 +1,6 @@
 (*  
   File:       Bernoulli_FPS.thy
-  Author:     Manuel Eberl <eberlm@in.tum.de> 
+  Author:     Manuel Eberl <manuel@pruvisto.org> 
 
   Connection of Bernoulli numbers to formal power series; proof B_n = 0 for odd n > 1;
   Akiyama-Tanigawa algorithm.

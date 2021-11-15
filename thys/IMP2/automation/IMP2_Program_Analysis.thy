@@ -83,8 +83,8 @@ begin
   ML \<open>
   
     val simp_modifies_tac = let
-      fun is_modifies _ ct = case Thm.term_of ct of _$(Const (@{const_name modifies},_)$_$_$_) => true | _ => false
-      fun dest_modifies (Const _ $ (Const (@{const_name modifies},_)$vs$s$d)) = (vs,s,d)
+      fun is_modifies _ ct = case Thm.term_of ct of _ $ \<^Const_>\<open>modifies for _ _ _\<close> => true | _ => false
+      fun dest_modifies (Const _ $ \<^Const_>\<open>modifies for vs s d\<close>) = (vs,s,d)
         | dest_modifies t = raise TERM("dest_modifies",[t])
         
         

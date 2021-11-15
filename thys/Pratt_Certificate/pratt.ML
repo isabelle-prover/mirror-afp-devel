@@ -358,7 +358,6 @@ structure Data = Generic_Data
 (
   type T = (Proof.context -> conv) option
   val empty : T = NONE
-  val extend = I
   fun merge (_, conv) = conv
 )
 
