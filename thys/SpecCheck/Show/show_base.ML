@@ -38,7 +38,10 @@ val real = Pretty.str o string_of_real
 fun bool b = Pretty.str (if b then "true" else "false")
 fun list show = Pretty.list "[" "]" o map show
 fun option _ NONE = Pretty.str "NONE"
-  | option show (SOME v) = Pretty.block [Pretty.str "SOME ", show v]
+  | option show (SOME v) = Pretty.block [
+      Pretty.str "SOME ",
+      Pretty.enclose "(" ")" [show v]
+    ]
 
 fun pretty_tuple ps = ps |> Pretty.commas |> Pretty.enclose "(" ")"
 
