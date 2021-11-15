@@ -157,7 +157,8 @@ lemma Inf_counterex_reducing:
   using bot_ni_n clausal_Inf_counterex_reducing d_in_n d_min n_ent_d by auto
 
 sublocale counterex_reducing_inference_system "{{#}}" "(\<TTurnstile>e)" Inf I_of
-  by unfold_locales (fact Inf_counterex_reducing)
+  using Inf_counterex_reducing
+  by unfold_locales simp_all
 
 end
 

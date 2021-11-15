@@ -52,17 +52,19 @@ lemma set_prems_of:
   by clarsimp (metis Un_insert_right append_Nil2 append_butlast_last_id list.set(2) set_append)
 
 locale counterex_reducing_inference_system = inference_system Inf + consequence_relation
-  for Inf :: "('f :: wellorder) inference set" +
+  for Inf :: "('f :: ord) inference set" +
   fixes I_of :: "'f set \<Rightarrow> 'f set"
-  assumes Inf_counterex_reducing:
-    "N \<inter> Bot = {} \<Longrightarrow> D \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {D} \<Longrightarrow> (\<And>C. C \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {C} \<Longrightarrow> D \<le> C) \<Longrightarrow>
-     \<exists>\<iota> \<in> Inf. prems_of \<iota> \<noteq> [] \<and> main_prem_of \<iota> = D \<and> set (side_prems_of \<iota>) \<subseteq> N \<and> I_of N
-         \<Turnstile> set (side_prems_of \<iota>)
-       \<and> \<not> I_of N \<Turnstile> {concl_of \<iota>} \<and> concl_of \<iota> < D"
+  assumes
+    wfP_less: "wfP ((<) :: 'f \<Rightarrow> 'f \<Rightarrow> bool)" and
+    Inf_counterex_reducing:
+      "N \<inter> Bot = {} \<Longrightarrow> D \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {D} \<Longrightarrow> (\<And>C. C \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {C} \<Longrightarrow> D \<le> C) \<Longrightarrow>
+      \<exists>\<iota> \<in> Inf. prems_of \<iota> \<noteq> [] \<and> main_prem_of \<iota> = D \<and> set (side_prems_of \<iota>) \<subseteq> N \<and>
+        I_of N \<Turnstile> set (side_prems_of \<iota>) \<and> \<not> I_of N \<Turnstile> {concl_of \<iota>} \<and> concl_of \<iota> < D"
+
 begin
 
 lemma ex_min_counterex:
-  fixes N :: "('f :: wellorder) set"
+  fixes N :: "('f :: ord) set"
   assumes "\<not> I \<Turnstile> N"
   shows "\<exists>C \<in> N. \<not> I \<Turnstile> {C} \<and> (\<forall>D \<in> N. D < C \<longrightarrow> I \<Turnstile> {D})"
 proof -
@@ -72,7 +74,7 @@ proof -
   then have c_in: "C \<in> {C \<in> N. \<not> I \<Turnstile> {C}}"
     by blast
   show ?thesis
-    using wf_eq_minimal[THEN iffD1, rule_format, OF wellorder_class.wf c_in] by blast
+    using wfP_eq_minimal[THEN iffD1, rule_format, OF wfP_less c_in] by blast
 qed
 
 end
@@ -83,7 +85,7 @@ Theorem 4.4 (generalizes Theorems 3.9 and 3.16):
 
 locale counterex_reducing_inference_system_with_trivial_redundancy =
   counterex_reducing_inference_system _ _ Inf + calculus _ Inf _ "\<lambda>_. {}" "\<lambda>_. {}"
-  for Inf :: "('f :: wellorder) inference set"
+  for Inf :: "('f :: linorder) inference set"
 begin
 
 theorem saturated_model:
@@ -313,7 +315,7 @@ lemma Red_F_eq_Red_F_diff_Red_F: "Red_F N = Red_F (N - Red_F N)"
   by (simp add: Red_F_of_subset Red_F_subs_Red_F_diff_Red_F set_eq_subset)
 
 text \<open>
-The following results correspond to Lemma 4.6. It also uses @{thm wlog_non_Red_F}.
+The following results correspond to Lemma 4.6. It also uses @{thm [source] wlog_non_Red_F}.
 \<close>
 
 lemma Red_I_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_I N \<subseteq> Red_I N'"
@@ -539,7 +541,7 @@ locale counterex_reducing_calculus_with_standard_inferance_redundancy =
   calculus_with_standard_inference_redundancy Bot Inf "(\<Turnstile>)" Red_I Red_F +
   counterex_reducing_inference_system Bot "(\<Turnstile>)" Inf I_of
   for
-    Bot :: "('f :: wellorder) set" and
+    Bot :: "('f :: linorder) set" and
     Inf :: "'f inference set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
     Red_I :: "'f set \<Rightarrow> 'f inference set" and
