@@ -16,6 +16,7 @@ theory Word_Lemmas
     Enumeration_Word
     Aligned
     Bit_Shifts_Infix_Syntax
+    Word_EqI
 begin
 
 context
@@ -120,7 +121,7 @@ lemma uint_sshiftr_eq:
 
 lemma sshiftr_0: "0 >>> n = 0"
   by (simp add: sshiftr_def)
-  
+
 lemma sshiftr_n1: "-1 >>> n = -1"
   by (simp add: sshiftr_def)
 
@@ -191,6 +192,10 @@ lemma shiftl_t2n: "shiftl w n = 2 ^ n * w"
 
 lemma word_shift_by_2:
   "x * 4 = (x::'a::len word) << 2"
+  by (simp add: shiftl_t2n)
+
+lemma word_shift_by_3:
+  "x * 8 = (x::'a::len word) << 3"
   by (simp add: shiftl_t2n)
 
 lemma slice_shiftr: "slice n w = ucast (w >> n)"
@@ -1313,8 +1318,8 @@ proof (cases \<open>n \<le> m\<close>)
   with that show ?thesis
     apply (transfer fixing: m n)
     apply (simp add: not_le take_bit_push_bit)
-    apply (metis diff_le_self order_le_less_trans push_bit_of_0 take_bit_0 take_bit_int_eq_self 
-      take_bit_int_less_exp take_bit_nonnegative take_bit_tightened)    
+    apply (metis diff_le_self order_le_less_trans push_bit_of_0 take_bit_0 take_bit_int_eq_self
+      take_bit_int_less_exp take_bit_nonnegative take_bit_tightened)
     done
 next
   case True
@@ -1438,6 +1443,10 @@ lemma toEnum_of_ucast:
   "LENGTH('b) \<le> LENGTH('a) \<Longrightarrow>
    (toEnum (unat (b::'b :: len word))::'a :: len word) = of_nat (unat b)"
   by (simp add: unat_pow_le_intro)
+
+lemma plus_mask_AND_NOT_mask_eq:
+  "x AND NOT(mask n) = x \<Longrightarrow> (x + mask n) AND NOT(mask n) = x" for x::\<open>'a::len word\<close>
+  by (subst word_plus_and_or_coroll; word_eqI_solve)
 
 lemmas unat_ucast_mask = unat_ucast_eq_unat_and_mask[where w=a for a]
 
@@ -1569,7 +1578,7 @@ lemma aligned_sub_aligned_simple:
 
 lemma minus_one_shift:
   "- (1 << n) = (-1 << n :: 'a::len word)"
-  by (simp add: shiftl_def minus_exp_eq_not_mask push_bit_minus_one_eq_not_mask)
+  by (simp add: shiftl_def minus_exp_eq_not_mask)
 
 lemma ucast_eq_mask:
   "(UCAST('a::len \<rightarrow> 'b::len) x = UCAST('a \<rightarrow> 'b) y) =

@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[english]{babel}  % for guillemots
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Szemerédi's Regularity Lemma}
+\author{Chelsea Edmonds, Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson\\
+Computer Laboratory, University of Cambridge CB3 0FD\\
+\texttt{\{cle47,ak2110,lp15\}@cam.ac.uk}}
+
+\maketitle
+
+\begin{abstract}
+Szemerédi's regularity lemma \cite{szemeredi-regular} is a key result in the study of large graphs. It asserts the existence an upper bound on the number of parts the vertices of a graph need to be partitioned into such that the edges between the parts are random in a certain sense. This bound depends only on the desired precision and not on the graph itself, in the spirit of Ramsey's theorem. The formalisation follows online course notes by Tim Gowers\footnote{\url{https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf}} 
+and Yufei Zhao\footnote{\url{https://yufeizhao.com/gtac/gtac.pdf} and \url{https://yufeizhao.com/gtac/gtac17.pdf} are successive drafts of a textbook in preparation.}. 
+Similar material is found in many textbooks \cite{diestel-graph}.
+\end{abstract}
+
+\tableofcontents
+
+\subsection*{Acknowledgements}
+The authors were supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\end{document}

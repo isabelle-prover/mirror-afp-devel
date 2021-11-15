@@ -113,7 +113,7 @@ lemma word_msb_nth: "msb w = bit (uint w) (LENGTH('a) - 1)"
 lemma msb_nth: "msb w = bit w (LENGTH('a) - 1)"
   for w :: "'a::len word"
   by (fact msb_word_eq)
-  
+
 lemma word_msb_n1 [simp]: "msb (-1::'a::len word)"
   by (simp add: msb_word_eq not_le)
 

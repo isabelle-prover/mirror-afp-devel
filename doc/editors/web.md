@@ -18,3 +18,8 @@ The script can be invoked without any arguments:
 
 Changing static content, e.g. the submission guidelines, works by editing the
 appropriate template file (see above) and re-running the `sitegen` script.
+
+To publish website changes without publishing a new entry, you can use the
+`publish` script with the `-` argument:
+
+    ./admin/publish -

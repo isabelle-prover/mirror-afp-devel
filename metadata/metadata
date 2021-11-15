@@ -6327,7 +6327,7 @@ notify = m.stannett@sheffield.ac.uk
 
 [Schutz_Spacetime]
 title = Schutz' Independent Axioms for Minkowski Spacetime
-author = Richard Schmoetten <mailto:s1311325@sms.ed.ac.uk>, Jake Palmer <mailto:jake.palmer@ed.ac.uk>, Jacques Fleuriot <mailto: jdf@ed.ac.uk>
+author = Richard Schmoetten <mailto:s1311325@sms.ed.ac.uk>, Jake Palmer <mailto:jake.palmer@ed.ac.uk>, Jacques Fleuriot <https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html>
 topic = Mathematics/Physics, Mathematics/Geometry
 date = 2021-07-27
 notify = s1311325@sms.ed.ac.uk
@@ -6339,6 +6339,29 @@ abstract =
   monograph. Many results are proven here that cannot be found in
   Schutz, either preceding the theorem they are needed for, or within
   their own thematic section.
+
+[Real_Power]
+title = Real Exponents as the Limits of Sequences of Rational Exponents
+author = Jacques D. Fleuriot <https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html>
+topic = Mathematics/Analysis
+date = 2021-11-08
+notify = jdf@ed.ac.uk
+abstract =
+  In this formalisation, we  construct real exponents as the limits of
+  sequences of rational exponents. In particular, if $a \ge 1$ and $x
+  \in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
+  that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
+  increasing and if $r$ is any rational number such that $r > x$,
+  $a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
+  monotone sequences, $a^{r_n}$ converges. We define $a^ x =
+  \lim_{n\to\infty} a^{r_n}$ and show that it has the expected
+  properties (for $a \ge 0$).  This particular construction of real
+  exponents is needed instead of the usual one using the natural
+  logarithm and exponential functions (which already exists in Isabelle)
+  to support our mechanical derivation of Euler's exponential
+  series as an ``infinite polynomial". Aside from helping us avoid
+  circular reasoning, this is, as far as we are aware, the first time
+  real exponents are mechanised in this way within a proof assistant.
 
 [Groebner_Bases]
 title = Gröbner Bases Theory
@@ -11320,7 +11343,7 @@ author = Dominique Unruh <https://www.ut.ee/~unruh/>
 topic = Computer science/Algorithms/Quantum computing, Computer science/Programming languages/Logics, Computer science/Semantics
 date = 2021-10-28
 notify = unruh@ut.ee
-abstract = 
+abstract =
   A formalization of the theory of quantum and classical registers as
   developed by (Unruh, Quantum and Classical Registers). In a nutshell,
   a register refers to a part of a larger memory or system that can be
@@ -11328,3 +11351,54 @@ abstract =
   registers and several (compatible) registers can be composed. This
   formalization develops both the generic theory of registers as well as
   specific instantiations for classical and quantum registers.
+
+[Szemeredi_Regularity]
+title = Szemerédi's Regularity Lemma
+author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>, Angeliki Koutsoukou-Argyraki <https://www.cst.cam.ac.uk/people/ak2110>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Graph theory, Mathematics/Combinatorics
+date = 2021-11-05
+notify = lp15@cam.ac.uk
+abstract =
+  <a
+  href="https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma">Szemerédi's
+  regularity lemma</a> is a key result in the study of large
+  graphs. It asserts the existence an upper bound on the number of parts
+  the vertices of a graph need to be partitioned into such that the
+  edges between the parts are random in a certain sense. This bound
+  depends only on the desired precision and not on the graph itself, in
+  the spirit of Ramsey's theorem. The formalisation follows online
+  course notes by <a
+  href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Tim
+  Gowers</a> and <a
+  href="https://yufeizhao.com/gtac/gtac.pdf">Yufei
+  Zhao</a>.
+
+[Factor_Algebraic_Polynomial]
+title = Factorization of Polynomials with Algebraic Coefficients
+author = Manuel Eberl <https://pruvisto.org>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Algebra
+date = 2021-11-08
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  The AFP already contains a verified implementation of algebraic
+  numbers. However, it is has a severe limitation in its factorization
+  algorithm of real and complex polynomials: the factorization is only
+  guaranteed to succeed if the coefficients of the polynomial are
+  rational numbers. In this work, we verify an algorithm to factor all
+  real and complex polynomials whose coefficients are algebraic. The
+  existence of such an algorithm proves in a constructive way that the
+  set of complex algebraic numbers is algebraically closed. Internally,
+  the algorithm is based on resultants of multivariate polynomials and
+  an approximation algorithm using interval arithmetic.
+
+[PAL]
+title = Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL
+author = Christoph Benzmüller <http://christoph-benzmueller.de>, Sebastian Reiche  <https://www.linkedin.com/in/sebastian-reiche-0b2093178>
+topic = Logic/General logic/Logics of knowledge and belief
+date = 2021-11-08
+notify = c.benzmueller@gmail.com
+abstract =
+  We present a shallow embedding of public announcement logic (PAL) with
+  relativized general knowledge in HOL. We then use PAL to obtain an
+  elegant encoding of the wise men puzzle, which we solve automatically
+  using sledgehammer.

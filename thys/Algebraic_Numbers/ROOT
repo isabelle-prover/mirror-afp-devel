@@ -6,7 +6,7 @@ session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
   sessions
     Sturm_Sequences
   theories
-    Real_Factorization
+    Complex_Algebraic_Numbers
     Show_Real_Approx
     Show_Real_Precise
     Algebraic_Number_Tests

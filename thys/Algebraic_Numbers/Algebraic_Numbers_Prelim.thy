@@ -713,6 +713,15 @@ proof (induct p)
   finally show ?case .
 qed simp
 
+lemma algebraic_0[simp]: "algebraic 0"
+  unfolding algebraic_altdef_ipoly
+  by (intro exI[of _ "[:0,1:]"], auto)
+
+lemma algebraic_1[simp]: "algebraic 1"
+  unfolding algebraic_altdef_ipoly
+  by (intro exI[of _ "[:-1,1:]"], auto)
+
+
 text \<open>Polynomial for unary minus.\<close>
 
 definition poly_uminus :: "'a :: ring_1 poly \<Rightarrow> 'a poly" where [code del]:

@@ -23,6 +23,7 @@ named_theorems word_eqI_simps
 
 lemmas [word_eqI_simps] =
   word_ops_nth_size
+  word_ao_nth
   bit_mask_iff
   word_size
   word_or_zero

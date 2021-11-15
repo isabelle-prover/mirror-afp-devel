@@ -6,9 +6,8 @@
 section \<open>Real Roots\<close>
 
 text \<open>This theory contains an algorithm to determine the set of real roots of a 
-  rational polynomial. It further contains an algorithm which tries to determine the
-  real roots of real-valued polynomial, which incorporates Yun-factorization and 
-  closed formulas for polynomials of degree 2.\<close>
+  rational polynomial. For polynomials with real coefficients, we refer to
+  the AFP entry "Factor-Algebraic-Polynomial".\<close>
 
 theory Real_Roots
 imports 
@@ -662,85 +661,6 @@ proof -
   show "set (real_roots_of_rat_poly p) = {x. rpoly p x = 0}" unfolding id
     unfolding real_roots_of_rat_poly_def cq snd_conv using roots_of_real_alg(1)[OF q]
     by auto
-qed
-
-text \<open>The upcoming functions no longer demand an integer or rational polynomial as input.\<close>
-
-definition roots_of_real_main :: "real poly \<Rightarrow> real list" where 
-  "roots_of_real_main p \<equiv> let n = degree p in 
-    if n = 0 then [] else if n = 1 then [roots1 p] else if n = 2 then rroots2 p
-    else (real_roots_of_rat_poly (map_poly to_rat p))"
-  
-definition roots_of_real_poly :: "real poly \<Rightarrow> real list option" where
-  "roots_of_real_poly p \<equiv> let (c,pis) = yun_factorization gcd p in
-    if (c \<noteq> 0 \<and> (\<forall> (p,i) \<in> set pis. degree p \<le> 2 \<or> (\<forall> x \<in> set (coeffs p). x \<in> \<rat>))) then 
-    Some (concat (map (roots_of_real_main o fst) pis)) else None"
-
-lemma roots_of_real_main: assumes p: "p \<noteq> 0" and deg: "degree p \<le> 2 \<or> set (coeffs p) \<subseteq> \<rat>"
-  shows "set (roots_of_real_main p) = {x. poly p x = 0}" (is "?l = ?r")
-proof -
-  note d = roots_of_real_main_def Let_def
-  show ?thesis 
-  proof (cases "degree p = 0")
-    case True
-    hence "?l = {}" unfolding d by auto
-    with roots0[OF p True] show ?thesis by auto
-  next
-    case False note 0 = this
-    show ?thesis
-    proof (cases "degree p = 1")
-      case True
-      hence "?l = {roots1 p}" unfolding d by auto
-      with roots1[OF True] show ?thesis by auto
-    next
-      case False note 1 = this
-      show ?thesis
-      proof (cases "degree p = 2")
-        case True
-        hence "?l = set (rroots2 p)" unfolding d by auto
-        with rroots2[OF True] show ?thesis by auto
-      next
-        case False note 2 = this
-        let ?q = "map_poly to_rat p"
-        from 0 1 2 have l: "?l = set (real_roots_of_rat_poly ?q)" unfolding d by auto
-        from deg 0 1 2 have rat: "set (coeffs p) \<subseteq> \<rat>" by auto
-        have "p = map_poly (of_rat o to_rat) p"
-          by (rule sym, rule map_poly_idI, insert rat, auto)
-        also have "\<dots> = real_of_rat_poly ?q"
-          by (subst map_poly_map_poly, auto simp: to_rat)
-        finally have id: "{x. poly p x = 0} = {x. poly (real_of_rat_poly ?q) x = 0}" and q: "?q \<noteq> 0" 
-          using p by auto
-        from real_roots_of_rat_poly(1)[OF q, folded id l] show ?thesis by simp
-      qed
-    qed
-  qed
-qed
-  
-lemma roots_of_real_poly: assumes rt: "roots_of_real_poly p = Some xs"
-  shows "set xs = {x. poly p x = 0}"
-proof -
-  obtain c pis where yun: "yun_factorization gcd p = (c,pis)" by force
-  from rt[unfolded roots_of_real_poly_def yun split Let_def]
-  have c: "c \<noteq> 0" and pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
-    and xs: "xs = concat (map (roots_of_real_main \<circ> fst) pis)"
-    by (auto split: if_splits)
-  note yun = square_free_factorizationD(1,2,4)[OF yun_factorization(1)[OF yun]]
-  from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" .
-  have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
-    unfolding p using c by auto
-  also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_prod_0, force+)
-  finally have r: "{x. poly p x = 0} = ?r" .
-  {
-    fix p i
-    assume p: "(p,i) \<in> set pis"
-    have "set (roots_of_real_main p) = {x. poly p x = 0}"
-      by (rule roots_of_real_main, insert yun(2)[OF p] pis[OF p], auto)
-  } note main = this
-  have "set xs = \<Union> ((\<lambda> (p, i). set (roots_of_real_main p)) ` set pis)" unfolding xs o_def
-    by auto
-  also have "\<dots> = ?r" using main by auto
-  finally show ?thesis unfolding r by simp
 qed
 
 end

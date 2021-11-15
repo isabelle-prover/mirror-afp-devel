@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\begin{document}
+
+\title{Real Exponents as the Limits of Sequences of Rational Exponents}
+\author{Jacques D. Fleuriot\\
+            University of Edinburgh}
+%\affil[1]{University of Edinburgh}
+\maketitle
+
+\begin{abstract}
+In this formalisation, we  construct real exponents as the limits of sequences of rational exponents. In particular, if $a \ge 1$ and $x \in \mathbb{R}$, we choose an increasing rational sequence  $r_n$ such that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is increasing and if $r$ is any rational number such that $r > x$, $a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for monotone sequences, $a^{r_n}$ converges. We define $a^ x = \lim_{n\to\infty} a^{r_n}$ and show that it has the expected properties (for $a \ge 0$).
+
+This particular construction of real exponents is needed instead of the usual one using the natural logarithm and exponential functions (which already exists in Isabelle) to support our mechanical derivation of Euler's exponential series as an ``infinite polynomial".\  Aside from helping us avoid circular reasoning, this is, as far as we are aware, the first time real exponents are mechanised in this way within a proof assistant.
+
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+%generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

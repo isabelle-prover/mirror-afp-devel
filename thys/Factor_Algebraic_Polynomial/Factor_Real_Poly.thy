@@ -1,13 +1,17 @@
-section \<open>Real Factorization\<close>
+(* Factorization of polynomials with real algebraic coefficients *)
 
-text \<open>This theory contains an algorithm to completely factorize real polynomials with rational
-  coefficients. It internally does a complex polynomial factorization, and then combines 
-  all non-real roots with their conjugates.\<close>
+subsection \<open>Real Algebraic Coefficients\<close>
 
-theory Real_Factorization
-imports 
-  Complex_Algebraic_Numbers
+text \<open>We basically perform a factorization via complex algebraic numbers,
+  take all real roots, and 
+  then merge each pair of conjugate roots into a quadratic factor.\<close>
+
+theory Factor_Real_Poly
+  imports
+    Factor_Complex_Poly
 begin
+
+hide_const (open) Coset.order
 
 fun delete_cnj :: "complex \<Rightarrow> nat \<Rightarrow> (complex \<times> nat) list \<Rightarrow> (complex \<times> nat) list" where
   "delete_cnj x i ((y,j) # yjs) = (if x = y then if Suc j = i then yjs else if Suc j > i then
@@ -24,10 +28,9 @@ fun complex_roots_to_real_factorization :: "(complex \<times> nat) list \<Righta
     let xx = cnj x; ys = delete_cnj xx (Suc i) xs; p = map_poly Re ([:-x,1:] * [:-xx,1:])
     in (p,Suc i) # complex_roots_to_real_factorization ys)"
 
-definition factorize_real_poly :: "real poly \<Rightarrow> (real \<times> (real poly \<times> nat) list) option" where
-  "factorize_real_poly p \<equiv> map_option 
-    (\<lambda> (c,ris). (Re c, complex_roots_to_real_factorization ris)) 
-    (factorize_complex_main (map_poly of_real p))"
+definition factor_real_poly :: "real poly \<Rightarrow> real \<times> (real poly \<times> nat) list" where
+  "factor_real_poly p \<equiv> case factor_complex_main (map_poly of_real p) of 
+    (c,ris) \<Rightarrow> (Re c, complex_roots_to_real_factorization ris) "
 
 
 lemma monic_imp_nonzero: "monic x \<Longrightarrow> x \<noteq> 0" for x :: "'a :: semiring_1 poly" by auto
@@ -101,17 +104,18 @@ next
 qed
 
 
-lemma factorize_real_poly: assumes fp: "factorize_real_poly p = Some (c,qis)"
-  shows 
-  "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
-  "(q,j) \<in> set qis \<Longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2}"
+theorem factor_real_poly: assumes fp: "factor_real_poly p = (c,qis)"
+  shows "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
+    "(q,j) \<in> set qis \<Longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2}"
 proof -
   interpret map_poly_inj_idom_hom of_real..
   have "(p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)) \<and> ((q,j) \<in> set qis \<longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2})"
   proof (cases "p = 0")
     case True
-    have "factorize_real_poly p = Some (0,[])" unfolding True
-      by (simp add: factorize_real_poly_def factorize_complex_main_def yun_factorization_def)
+    have yun: "yun_rf (yun_polys (0 :: complex poly)) = (0,[])" 
+      by (transfer, auto simp: yun_factorization_def)
+    have "factor_real_poly p = (0,[])" unfolding True
+      by (simp add: factor_real_poly_def factor_complex_main_def yun)
     with fp have id: "c = 0" "qis = []" by auto
     thus ?thesis unfolding True by simp
   next
@@ -120,10 +124,11 @@ proof -
     let ?rp = "map_poly Re"
     let ?cp = "map_poly ?c"
     let ?p = "?cp p"
-    from fp[unfolded factorize_real_poly_def]
-      obtain d xis where fp: "factorize_complex_main ?p = Some (d,xis)"
-      and c: "c = Re d" and qis: "qis = complex_roots_to_real_factorization xis" by auto
-    from factorize_complex_main[OF fp] have p: "?p = smult d (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)" 
+    from fp[unfolded factor_real_poly_def]
+      obtain d xis where fp: "factor_complex_main ?p = (d,xis)"
+      and c: "c = Re d" and qis: "qis = complex_roots_to_real_factorization xis" 
+        by (cases "factor_complex_main ?p", auto)
+    from factor_complex_main[OF fp] have p: "?p = smult d (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)" 
       (is "_ = smult d ?q") .
     from arg_cong[OF this, of "\<lambda> p. coeff p (degree p)"]
     have "coeff ?p (degree ?p) = coeff (smult d ?q) (degree (smult d ?q))" .
@@ -279,4 +284,5 @@ proof -
   thus "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
   "(q,j) \<in> set qis \<Longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2}" by blast+
 qed
+
 end

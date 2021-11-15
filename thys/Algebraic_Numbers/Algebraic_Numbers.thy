@@ -834,7 +834,6 @@ qed
 lemma algebraic_nth_root: "n \<noteq> 0 \<Longrightarrow> algebraic x \<Longrightarrow> y^n = x \<Longrightarrow> algebraic y"
   by (auto dest: algebraic_imp_represents_irreducible_cf_pos intro: algebraic_representsI represents_nth_root)
 
-
 subsection \<open>More on algebraic integers\<close>
 
 (* TODO: this is actually equal to @{term "(-1)^(m*n)"}, but we need a bit more theory on
