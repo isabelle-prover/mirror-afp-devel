@@ -7,7 +7,8 @@ section \<open>Missing results for the proof of Banach-Steinhaus theorem\<close>
 
 theory Banach_Steinhaus_Missing
   imports
-    "HOL-Analysis.Infinite_Set_Sum"
+    "HOL-Analysis.Bounded_Linear_Function"
+    "HOL-Analysis.Line_Segment"
 
 begin
 subsection \<open>Results missing for the proof of Banach-Steinhaus theorem\<close>
