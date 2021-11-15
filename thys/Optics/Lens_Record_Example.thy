@@ -52,4 +52,7 @@ thm indeps
 thm equivs
 thm sublenses
 
+alphabet 't::monoid_add mylens_4 = 
+  mn :: "'t"
+
 end

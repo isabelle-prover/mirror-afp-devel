@@ -1,8 +1,14 @@
 signature LENS_UTILS =
 sig
-  val add_alphabet_cmd : {overloaded: bool} ->
+  val add_alphabet :
+     (string * class list) list * binding ->
+       string option -> (binding * typ * mixfix) list -> theory -> theory
+
+  val add_alphabet_cmd :
      (string * string option) list * binding ->
        string option -> (binding * string * mixfix) list -> theory -> theory
+
+  val rename_alpha_vars : tactic
 end;
 
 structure Lens_Utils : LENS_UTILS =
@@ -35,7 +41,6 @@ val alpha_splits = [Token.make_src (alpha_splitsN, Position.none) []]
 val equivN = "equivs"
 val splits_suffix = ".splits"
 val defs_suffix = ".defs"
-val prod_case_eq_ifN = "prod.case_eq_if"
 val slens_view = "view"
 val slens_coview = "coview"
 
@@ -48,21 +53,14 @@ fun read_parent NONE ctxt = (NONE, ctxt)
         Type (name, Ts) => (SOME (Ts, name), fold Variable.declare_typ Ts ctxt)
       | T => error ("Bad parent record specification: " ^ Syntax.string_of_typ ctxt T));
 
-fun read_fields raw_fields ctxt =
-  let
-    val Ts = Syntax.read_typs ctxt (map (fn (_, raw_T, _) => raw_T) raw_fields);
-    val fields = map2 (fn (x, _, mx) => fn T => (x, T, mx)) raw_fields Ts;
-    val ctxt' = fold Variable.declare_typ Ts ctxt;
-  in (fields, ctxt') end;
 
-fun add_record_cmd overloaded (raw_params, binding) raw_parent raw_fields thy =
+fun add_record_cmd overloaded (params, binding) raw_parent fields thy =
   let
     val ctxt = Proof_Context.init_global thy;
-    val params = map (apsnd (Typedecl.read_constraint ctxt)) raw_params;
     val ctxt1 = fold (Variable.declare_typ o TFree) params ctxt;
-    val (parent, ctxt2) = read_parent raw_parent ctxt1;
-    val (fields, ctxt3) = read_fields raw_fields ctxt2;
-    val params' = map (Proof_Context.check_tfree ctxt3) params;
+    val (parent, ctxt2) = read_parent raw_parent ctxt1; 
+    val ctxt3 = fold Variable.declare_typ (map (fn (_, ty, _) => ty) fields) ctxt2
+    val params' = (map (Proof_Context.check_tfree ctxt3) params);
   in thy |> Record.add_record overloaded (params', binding) parent fields end;
 
 (* Construct a theorem and proof that a given field lens is very well-behaved *)
@@ -99,7 +97,7 @@ fun prove_lens_goal tname thy ctx =
   let open Simplifier; open Global_Theory in
   auto_tac (fold add_simp (get_thms thy lens_defsN @ 
                            get_thms thy (tname ^ splits_suffix) @ 
-                           [get_thm thy prod_case_eq_ifN]) ctx)
+                           [@{thm prod.case_eq_if}]) ctx)
 end
 
 fun prove_indep tname thy = 
@@ -143,7 +141,7 @@ fun lens_bij_proof tname thy =
                                     $ const (Context.theory_name thy ^ "." ^ tname ^ "." ^ child_lensN)))]))
       (fn {context = context, prems = _}
                            => EVERY [ Locale.intro_locales_tac {strict = true, eager = true} context []
-                                    , auto_tac (fold add_simp (get_thms thy lens_defsN @ [get_thm thy prod_case_eq_ifN])
+                                    , auto_tac (fold add_simp (get_thms thy lens_defsN @ [@{thm prod.case_eq_if}])
                                                                          context)])
   end
 
@@ -259,18 +257,18 @@ end
 (* Finally we have the function that actually constructs the record, lenses for each field,
    independence proofs, and also sublens proofs. *)
 
-fun add_alphabet_cmd _ (raw_params, binding) raw_parent raw_fields thy =
+fun add_alphabet (params, binding) raw_parent ty_fields thy =
   let
     open Simplifier; open Global_Theory
     val tname = Binding.name_of binding
-    val fields = map (fn (x, y, z) => (Binding.suffix_name lens_suffix x, y, z)) raw_fields
-    val lnames = map (fn (x, _, _) => Binding.name_of x) raw_fields
+    val fields = map (fn (x, y, z) => (Binding.suffix_name lens_suffix x, y, z)) ty_fields
+    val lnames = map (fn (x, _, _) => Binding.name_of x) ty_fields
     val (parent, _) = read_parent raw_parent (Proof_Context.init_global thy);
     fun ldef x = (x, x ^ " = " ^ FLDLENS ^ " " ^ x ^ lens_suffix)
     val pname = case parent of SOME (_,r) => r | NONE => "";
     val plchild =
-      case parent of
-        SOME (_, _) => child_lensN |
+      case raw_parent of
+        SOME _ => child_lensN |
         NONE => ""
     val bldef = (base_lensN, base_lensN ^ " = " ^ BASELENS ^ " " ^ tname);
     val mldef = (child_lensN, child_lensN ^ " = " ^ FLDLENS ^ " more"); 
@@ -278,8 +276,9 @@ fun add_alphabet_cmd _ (raw_params, binding) raw_parent raw_fields thy =
     val plnames = if (raw_parent = NONE) then [] else lnames  @ [child_lensN];
     fun pindeps thy = map (fn thm => @{thm sublens_pres_indep} OF [thm]) (get_thms thy sublensesN)
                     @ map (fn thm => @{thm sublens_pres_indep'} OF [thm]) (get_thms thy sublensesN)
+    val attrs = map (Attrib.attribute (Named_Target.theory_init thy)) @{attributes [simp, code_unfold]}
  in thy     (* Add a new record for the new alphabet lenses *)
-         |> add_record_cmd {overloaded = false} (raw_params, binding) raw_parent fields
+         |> add_record_cmd {overloaded = false} (params, binding) raw_parent fields
             (* Add the record definition theorems to lens_defs *)
          |> Named_Target.theory_map (snd o Specification.theorems_cmd "" [((Binding.empty, []), [(Facts.named (tname ^ defs_suffix), snd lens_defs)])] [] false)
             (* Add the record splitting theorems to the alpha_splits set for proof automation *)
@@ -292,31 +291,53 @@ fun add_alphabet_cmd _ (raw_params, binding) raw_parent raw_fields thy =
          |> Named_Target.theory_map
               (fold (fn (n, d) => Specification.abbreviation_cmd Syntax.mode_default (SOME (Binding.make (n, Position.none), NONE, NoSyn)) [] d true) [sldef])
             (* Add a vwb lens proof for each field lens *)
-         |> fold (fn x => fn thy => snd (add_thm ((Binding.make (x ^ vwb_lens_suffix, Position.none), lens_proof tname x thy), [Simplifier.simp_add]) thy)) (lnames @ [base_lensN, child_lensN])
+         |> fold (fn x => fn thy => snd (add_thm ((Binding.make (x ^ vwb_lens_suffix, Position.none), lens_proof tname x thy), attrs) thy)) (lnames @ [base_lensN, child_lensN])
             (* Add a bij lens proof for the base and more lenses *)
-         |> (fn thy => snd (add_thm ((Binding.make (base_moreN ^ bij_lens_suffix, Position.none), lens_bij_proof tname thy), [Simplifier.simp_add]) thy))
+         |> (fn thy => snd (add_thm ((Binding.make (base_moreN ^ bij_lens_suffix, Position.none), lens_bij_proof tname thy), attrs) thy))
             (* Add sublens proofs *)
-         |> (fn thy => snd (add_thmss [((Binding.make (sublensesN, Position.none), map (sublens_proof tname pname thy plchild) plnames @ map (sublens_proof tname (Context.theory_name thy ^ "." ^ tname) thy base_lensN) lnames), [Simplifier.simp_add])] thy))
+         |> (fn thy => snd (add_thmss [((Binding.make (sublensesN, Position.none), map (sublens_proof tname pname thy plchild) plnames @ map (sublens_proof tname (Context.theory_name thy ^ "." ^ tname) thy base_lensN) lnames), attrs)] thy))
             (* Add quotient proofs *)
-         |> (fn thy => snd (add_thmss [((Binding.make (quotientsN, Position.none), map (quotient_proof tname thy) lnames), [Simplifier.simp_add])] thy))
+         |> (fn thy => snd (add_thmss [((Binding.make (quotientsN, Position.none), map (quotient_proof tname thy) lnames), attrs)] thy))
             (* Add composition proofs *)
-         |> (fn thy => snd (add_thmss [((Binding.make (compositionsN, Position.none), map (composition_proof tname thy) lnames), [Simplifier.simp_add])] thy))
+         |> (fn thy => snd (add_thmss [((Binding.make (compositionsN, Position.none), map (composition_proof tname thy) lnames), attrs)] thy))
             (* Add independence proofs for each pairing of lenses *)
          |> (fn thy => snd (add_thmss
-              [((Binding.make (indepsN, Position.none), map (indep_proof tname thy) (pairings (lnames @ [child_lensN]) @ pairings [base_lensN, child_lensN]) (*@ map (parent_indep_proof_1 tname pname thy plchild) plnames @ map (parent_indep_proof_2 tname pname thy plchild) plnames *) @ pindeps thy), [Simplifier.simp_add])] thy))
+              [((Binding.make (indepsN, Position.none), map (indep_proof tname thy) (pairings (lnames @ [child_lensN]) @ pairings [base_lensN, child_lensN]) (*@ map (parent_indep_proof_1 tname pname thy plchild) plnames @ map (parent_indep_proof_2 tname pname thy plchild) plnames *) @ pindeps thy), attrs)] thy))
             (* Add equivalence properties *)
          |> (fn thy => snd (add_thmss
-              [((Binding.make (equivN, Position.none), (if (raw_parent = NONE) then [] else [equiv_more_proof tname pname thy lnames]) @ [equiv_base_proof tname parent thy lnames, equiv_partition_proof tname thy]), [Simplifier.simp_add])] thy))
+              [((Binding.make (equivN, Position.none), (if (raw_parent = NONE) then [] else [equiv_more_proof tname pname thy lnames]) @ [equiv_base_proof tname parent thy lnames, equiv_partition_proof tname thy]), attrs)] thy))
             (* Add a symmetric lens proof for the base and more lenses *)
-         |> (fn thy => snd (add_thm ((Binding.make (all_lensN ^ sym_lens_suffix, Position.none), lens_sym_proof tname thy), [Simplifier.simp_add]) thy)) 
+         |> (fn thy => snd (add_thm ((Binding.make (all_lensN ^ sym_lens_suffix, Position.none), lens_sym_proof tname thy), attrs) thy)) 
          |> Sign.parent_path
   end;
 
+
+fun add_alphabet_cmd (raw_params, binding) raw_parent raw_fields thy =
+  let val ctx = (Proof_Context.init_global thy)
+      val params = map (apsnd (Typedecl.read_constraint ctx)) raw_params;
+      val ctx1 = fold (Variable.declare_typ o TFree) params ctx;
+      val ty_fields = map (fn (x, y, z) => (x, Syntax.read_typ ctx1 y, z)) raw_fields
+  in add_alphabet (params, binding) raw_parent ty_fields thy
+  end
+
+fun remove_lens_suffixes i st =
+  let
+    val (_, _, Bi, _) = Thm.dest_state (st, i);
+    val params = (map #1 (Logic.strip_params Bi))
+    val params' = 
+      map (fn x => if (String.isSuffix lens_suffix x) 
+                   then String.substring (x, 0, (String.size x - String.size lens_suffix)) 
+                   else x) params ;
+  in if params = params' then Seq.empty else Seq.single (Thm.rename_params_rule (params', i) st)
+  end;
+
+val rename_alpha_vars = ALLGOALS (fn i => PRIMSEQ (remove_lens_suffixes i));
+
 val _ =
   Outer_Syntax.command @{command_keyword alphabet} "define record with lenses"
-    (Parse_Spec.overloaded -- (Parse.type_args_constrained -- Parse.binding) --
+    ((Parse.type_args_constrained -- Parse.binding) --
       (@{keyword "="} |-- Scan.option (Parse.typ --| @{keyword "+"}) --
         Scan.repeat1 Parse.const_binding)
-    >> (fn ((overloaded, x), (y, z)) =>
-        Toplevel.theory (add_alphabet_cmd {overloaded = overloaded} x y z)));
+    >> (fn (x, (y, z)) =>
+        Toplevel.theory (add_alphabet_cmd x y z)));
 end
