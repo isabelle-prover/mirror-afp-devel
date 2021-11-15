@@ -513,7 +513,7 @@ proof (rule iffI)
 next
   assume \<open>bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
   then show \<open>f abs_summable_on A\<close>
-    by (simp add: pos_summable_on)
+    by (simp add: nonneg_bdd_above_summable_on)
 qed
 
 lemma infsum_nonneg:
@@ -529,7 +529,7 @@ lemma abs_summable_product:
   assumes x2_sum: "(\<lambda>i. (x i) * (x i)) abs_summable_on A"
     and y2_sum: "(\<lambda>i. (y i) * (y i)) abs_summable_on A"
   shows "(\<lambda>i. x i * y i) abs_summable_on A"
-proof (rule pos_summable_on, simp, rule bdd_aboveI2, rename_tac F)
+proof (rule nonneg_bdd_above_summable_on, simp, rule bdd_aboveI2, rename_tac F)
   fix F assume \<open>F \<in> {F. F \<subseteq> A \<and> finite F}\<close>
   then have r1: "finite F" and b4: "F \<subseteq> A"
     by auto
