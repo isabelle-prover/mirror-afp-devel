@@ -4,24 +4,20 @@ theory Extra_General
   imports
     "HOL-Library.Cardinality"
     "HOL-Analysis.Elementary_Topology"
-    Jordan_Normal_Form.Conjugate
     "HOL-Analysis.Uniform_Limit"
     "HOL-Library.Set_Algebras"
     "HOL-Types_To_Sets.Types_To_Sets"
+    "HOL-Library.Complex_Order"
+    "HOL-Analysis.Infinite_Sum"
 begin
 
 subsection \<open>Misc\<close>
-
-lemma reals_zero_comparable_iff:
-  "(x::complex)\<in>\<real> \<longleftrightarrow> x \<le> 0 \<or> x \<ge> 0"
-  unfolding complex_is_Real_iff less_eq_complex_def
-  by auto
 
 lemma reals_zero_comparable:
   fixes x::complex
   assumes "x\<in>\<real>"
   shows "x \<le> 0 \<or> x \<ge> 0"
-  using assms unfolding reals_zero_comparable_iff by assumption
+  using assms unfolding complex_is_real_iff_compare0 by assumption
 
 lemma unique_choice: "\<forall>x. \<exists>!y. Q x y \<Longrightarrow> \<exists>!f. \<forall>x. Q x (f x)"
   apply (auto intro!: choice ext) by metis
@@ -43,13 +39,6 @@ consts heterogenous_identity :: \<open>'a \<Rightarrow> 'b\<close>
 overloading heterogenous_identity_id \<equiv> "heterogenous_identity :: 'a \<Rightarrow> 'a" begin
 definition heterogenous_identity_def[simp]: \<open>heterogenous_identity_id = id\<close>
 end
-
-lemma bdd_above_image_mono:
-  assumes \<open>\<And>x. x\<in>S \<Longrightarrow> f x \<le> g x\<close>
-  assumes \<open>bdd_above (g ` S)\<close>
-  shows \<open>bdd_above (f ` S)\<close>
-  by (smt (verit, ccfv_threshold) assms(1) assms(2) bdd_aboveI2 bdd_above_def order_trans rev_image_eqI)
-
 
 lemma L2_set_mono2:
   assumes a1: "finite L" and a2: "K \<le> L"
@@ -326,18 +315,13 @@ proof (cases x)
     if "x = Complex x1 x2"
     for x1 :: real
       and x2 :: real
-    using that   by (auto simp: complex_cnj complex_mult abs_complex_def 
+    using that
+    by (auto simp: complex_cnj complex_mult abs_complex_def
         complex_norm power2_eq_square complex_of_real_def)
 qed
 
-lemma cnj_x_x_geq0[simp]: "cnj x * x \<ge> 0"
-proof (cases x)
-  show "0 \<le> cnj x * x"
-    if "x = Complex x1 x2"
-    for x1 :: real
-      and x2 :: real
-    using that by (auto simp: complex_cnj complex_mult complex_of_real_def less_eq_complex_def)
-qed
+lemma cnj_x_x_geq0[simp]: \<open>cnj x * x \<ge> 0\<close>
+  by (simp add: less_eq_complex_def)
 
 
 subsection \<open>List indices and enum\<close>
@@ -513,6 +497,60 @@ proof (unfold inj_map_def, rule allI, rule allI, rule impI, erule conjE)
     using same by simp
   thus "x = y"
     by (meson inv_into_injective option.inject x_pi y_pi)
+qed
+
+lemma abs_summable_bdd_above:
+  fixes f :: \<open>'a \<Rightarrow> 'b::real_normed_vector\<close>
+  shows \<open>f abs_summable_on A \<longleftrightarrow> bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
+proof (rule iffI)
+  assume \<open>f abs_summable_on A\<close>
+  have \<open>(\<Sum>x\<in>F. norm (f x)) = (\<Sum>\<^sub>\<infinity>x\<in>F. norm (f x))\<close> if \<open>finite F\<close> for F
+    by (simp add: that)
+  also have \<open>(\<Sum>\<^sub>\<infinity>x\<in>F. norm (f x)) \<le> (\<Sum>\<^sub>\<infinity>x\<in>A. norm (f x))\<close> if \<open>F \<subseteq> A\<close> for F
+    by (smt (verit) Diff_subset \<open>f abs_summable_on A\<close> infsum_Diff infsum_nonneg norm_ge_zero summable_on_subset_banach that)
+  finally show \<open>bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F \<subseteq> A \<and> finite F})\<close>
+    by (auto intro!: bdd_aboveI)
+next
+  assume \<open>bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
+  then show \<open>f abs_summable_on A\<close>
+    by (simp add: pos_summable_on)
+qed
+
+lemma infsum_nonneg:
+  fixes f :: "'a \<Rightarrow> 'b::{ordered_comm_monoid_add,linorder_topology}"
+  assumes "\<And>x. x \<in> M \<Longrightarrow> 0 \<le> f x"
+  shows "infsum f M \<ge> 0" (is "?lhs \<ge> _")
+  apply (cases \<open>f summable_on M\<close>)
+   apply (rule infsum_nonneg)
+  using assms by (auto simp add: infsum_not_exists)
+
+lemma abs_summable_product:
+  fixes x :: "'a \<Rightarrow> 'b::{real_normed_div_algebra,banach,second_countable_topology}"
+  assumes x2_sum: "(\<lambda>i. (x i) * (x i)) abs_summable_on A"
+    and y2_sum: "(\<lambda>i. (y i) * (y i)) abs_summable_on A"
+  shows "(\<lambda>i. x i * y i) abs_summable_on A"
+proof (rule pos_summable_on, simp, rule bdd_aboveI2, rename_tac F)
+  fix F assume \<open>F \<in> {F. F \<subseteq> A \<and> finite F}\<close>
+  then have r1: "finite F" and b4: "F \<subseteq> A"
+    by auto
+
+  have a1: "(\<Sum>\<^sub>\<infinity>i\<in>F. norm (x i * x i)) \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i))"
+    apply (rule infsum_mono_neutral)
+    using b4 r1 x2_sum by auto
+
+  have "norm (x i * y i) \<le> norm (x i * x i) + norm (y i * y i)" for i
+    unfolding norm_mult
+    by (smt mult_left_mono mult_nonneg_nonneg mult_right_mono norm_ge_zero)
+  hence "(\<Sum>i\<in>F. norm (x i * y i)) \<le> (\<Sum>i\<in>F. norm (x i * x i) + norm (y i * y i))"
+    by (simp add: sum_mono)
+  also have "\<dots> = (\<Sum>i\<in>F. norm (x i * x i)) + (\<Sum>i\<in>F. norm (y i * y i))"
+    by (simp add: sum.distrib)
+  also have "\<dots> = (\<Sum>\<^sub>\<infinity>i\<in>F. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>F. norm (y i * y i))"
+    by (simp add: \<open>finite F\<close>)
+  also have "\<dots> \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>A. norm (y i * y i))" 
+    by (smt (verit, del_insts) a1 Diff_iff Infinite_Sum.infsum_nonneg assms(2) b4 infsum_def infsum_mono_neutral norm_ge_zero subset_eq)
+  finally show \<open>(\<Sum>xa\<in>F. norm (x xa * y xa)) \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>A. norm (y i * y i))\<close>
+    by simp
 qed
 
 end

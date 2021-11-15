@@ -264,7 +264,7 @@ lemma cnorm_eq_1: "norm x = 1 \<longleftrightarrow> cinner x x = 1"
 lemma cinner_divide_left:
   fixes a :: "'a :: {complex_inner,complex_div_algebra}"
   shows "cinner (a / of_complex m) b = (cinner a b) / cnj m"
-  by (metis cinner_mult_left' complex_cnj_inverse divide_inverse of_complex_inverse ordered_field_class.sign_simps(33))
+  by (metis cinner_mult_left' complex_cnj_inverse divide_inverse mult.commute of_complex_inverse)
 
 lemma cinner_divide_right:
   fixes a :: "'a :: {complex_inner,complex_div_algebra}"

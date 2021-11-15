@@ -5,12 +5,8 @@ section \<open>\<open>Complex_Vector_Spaces0\<close> -- Vector Spaces and Algebr
 
 theory Complex_Vector_Spaces0
   imports HOL.Real_Vector_Spaces HOL.Topological_Spaces HOL.Vector_Spaces
-    Complex_Main Jordan_Normal_Form.Conjugate
-begin
-
-(* Jordan_Normal_Form.Conjugate declares these as simps. Seems too aggressive to me. *)
-declare less_complex_def[simp del]
-declare less_eq_complex_def[simp del]
+    Complex_Main "HOL-Library.Complex_Order"
+begin                              
 
 subsection \<open>Complex vector spaces\<close>
 
@@ -603,7 +599,7 @@ lemma pos_minus_divideC_less_eq [field_simps]:
 
 lemma scaleC_image_atLeastAtMost: "c > 0 \<Longrightarrow> scaleC c ` {x..y} = {c *\<^sub>C x..c *\<^sub>C y}"
   apply (auto intro!: scaleC_left_mono simp: image_iff Bex_def)
-  by (meson order.eq_iff pos_divideC_le_eq pos_le_divideC_eq)
+  by (meson order.eq_iff local.order.refl pos_divideC_le_eq pos_le_divideC_eq)
 
 end (* class ordered_complex_vector *)
 

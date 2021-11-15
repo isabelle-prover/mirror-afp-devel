@@ -178,8 +178,7 @@ qed
 lemma norm_le_componentwise:
   "(\<And>b. b \<in> CBasis \<Longrightarrow> cmod(cinner x b) \<le> cmod(cinner y b)) \<Longrightarrow> norm x \<le> norm y"
   apply (auto simp: cnorm_le ceuclidean_cinner [of x x] ceuclidean_cinner [of y y] power2_eq_square intro!: sum_mono)
-   apply (smt (verit, best) mult.commute sum.cong)
-  done
+  by (smt (verit, best) mult.commute sum.cong)
 
 lemma CBasis_le_norm: "b \<in> CBasis \<Longrightarrow> cmod (cinner x b) \<le> norm x"
   by (rule order_trans [OF Cauchy_Schwarz_ineq2]) simp

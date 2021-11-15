@@ -152,8 +152,7 @@ lemma vec_of_basis_enum_uminus:
 
 lemma vec_of_basis_enum_minus:
   "vec_of_basis_enum (b1 - b2) = vec_of_basis_enum b1 - vec_of_basis_enum b2"
-  by (metis (mono_tags, opaque_lifting) carrier_vec_dim_vec diff_conv_add_uminus diff_zero
-      index_add_vec(2) minus_add_uminus_vec vec_of_basis_enum_add vec_of_basis_enum_uminus)
+  by (metis (mono_tags, opaque_lifting) carrier_vec_dim_vec diff_conv_add_uminus diff_zero index_add_vec(2) minus_add_uminus_vec vec_of_basis_enum_add vec_of_basis_enum_uminus)
 
 lemma cinner_basis_enum_of_vec:
   defines "n \<equiv> length (canonical_basis :: 'a::onb_enum list)"

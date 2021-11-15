@@ -10,9 +10,6 @@ section \<open>\<open>Complex_Inner_Product\<close> -- Complex Inner Product Spa
 
 theory Complex_Inner_Product
   imports
-    Complex_Vector_Spaces
-    "HOL-Analysis.Infinite_Set_Sum"
-
     Complex_Inner_Product0
 begin
 
@@ -28,7 +25,7 @@ no_notation cinner ("\<langle>_, _\<rangle>")
 end
 
 lemma cinner_real: "cinner x x \<in> \<real>"
-  by (meson cinner_ge_zero reals_zero_comparable_iff)
+  by (simp add: cdot_square_norm)
 
 lemmas cinner_commute' [simp] = cinner_commute[symmetric]
 

@@ -14,8 +14,7 @@ theory Complex_L2
 
     "HOL-Analysis.L2_Norm"
     "HOL-Library.Rewrite"
-    "HOL-Analysis.Infinite_Set_Sum"
-    "Complex_Bounded_Operators.Extra_Infinite_Set_Sum"
+    "HOL-Analysis.Infinite_Sum"
 begin
 
 unbundle cblinfun_notation
@@ -23,101 +22,46 @@ unbundle no_notation_blinfun_apply
 
 subsection \<open>l2 norm of functions\<close>
 
-definition "has_ell2_norm x = bdd_above (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite)"
+definition "has_ell2_norm (x::_\<Rightarrow>complex) \<longleftrightarrow> (\<lambda>i. (x i)\<^sup>2) abs_summable_on UNIV"
 
-lemma has_ell2_norm_infsetsum: "has_ell2_norm x \<longleftrightarrow> (\<lambda>i. (cmod (x i))\<^sup>2) abs_summable_on UNIV"
-proof
-  define f where "f i = (cmod (x i))\<^sup>2" for i
-  assume fsums: "f abs_summable_on UNIV"
-  define bound where "bound = infsetsum f UNIV"
-  have "sum f F \<le> bound" if "finite F" for F
-  proof -
-    have "sum f F = infsetsum f F"
-      using that by (rule infsetsum_finite[symmetric])
-    also have "infsetsum f F \<le> infsetsum f UNIV"
-    proof (rule infsetsum_mono_neutral_left)
-      show "f abs_summable_on F"
-        by (simp add: that)        
-      show "f abs_summable_on UNIV"
-        by (simp add: fsums)      
-      show "f x \<le> f x"
-        if "x \<in> F"
-        for x :: 'a
-        using that
-        by simp 
-      show "F \<subseteq> UNIV"
-        by simp        
-      show "0 \<le> f x"
-        if "x \<in> UNIV - F"
-        for x :: 'a
-        using that f_def by auto
-    qed
-    finally show ?thesis 
-      unfolding bound_def by assumption
-  qed
-  thus "has_ell2_norm x"
-    unfolding has_ell2_norm_def f_def
-    by (rule bdd_aboveI2[where M=bound], simp)
-next
-  have x1: "\<exists>B. \<forall>F. finite F \<longrightarrow> (\<Sum>s\<in>F. (cmod (x s))\<^sup>2) < B"
-    if "\<And>t. finite t \<Longrightarrow> (\<Sum>i\<in>t. (cmod (x i))\<^sup>2) \<le> M"
-    for M
-    using that by (meson gt_ex le_less_trans)
-  assume "has_ell2_norm x"
-  then obtain B where "(\<Sum>xa\<in>F. norm ((cmod (x xa))\<^sup>2)) < B" if "finite F" for F
-  proof atomize_elim    
-    show "\<exists>B. \<forall>F. finite F \<longrightarrow> (\<Sum>xa\<in>F. norm ((cmod (x xa))\<^sup>2)) < B"
-      if "has_ell2_norm x"
-      using that x1
-      unfolding has_ell2_norm_def unfolding bdd_above_def
-      by auto
-  qed 
-  thus "(\<lambda>i. (cmod (x i))\<^sup>2) abs_summable_on UNIV"
-  proof (rule_tac abs_summable_finiteI [where B = B])
-    show "(\<Sum>t\<in>F. norm ((cmod (x t))\<^sup>2)) \<le> B"
-      if "\<And>F. finite F \<Longrightarrow> (\<Sum>s\<in>F. norm ((cmod (x s))\<^sup>2)) < B"
-        and "finite F" and "F \<subseteq> UNIV"
-      for F :: "'a set"
-      using that by fastforce
-  qed     
-qed
+lemma has_ell2_norm_bdd_above: \<open>has_ell2_norm x \<longleftrightarrow> bdd_above (sum (\<lambda>xa. norm ((x xa)\<^sup>2)) ` Collect finite)\<close>
+  by (simp add: has_ell2_norm_def abs_summable_bdd_above)
 
 lemma has_ell2_norm_L2_set: "has_ell2_norm x = bdd_above (L2_set (norm o x) ` Collect finite)"
-proof-
-  have bdd_above_image_mono': "bdd_above (f`A)"
-    if "\<And>x y. x\<le>y \<Longrightarrow> x:A \<Longrightarrow> y:A \<Longrightarrow> f x \<le> f y"
-      and "\<exists>M\<in>A. \<forall>x \<in> A. x \<le> M"
-    for f::"'a set\<Rightarrow>real" and A
-    using that
-    unfolding bdd_above_def by auto
-  have t3: "bdd_above X \<Longrightarrow> bdd_above (sqrt ` X)" for X
-    by (meson bdd_aboveI2 bdd_above_def real_sqrt_le_iff)
-  moreover have t2: "bdd_above X" if bdd_sqrt: "bdd_above (sqrt ` X)" for X
-  proof-
-    obtain y where y:"y \<ge> sqrt x" if "x:X" for x 
-      using bdd_sqrt unfolding bdd_above_def by auto
-    have "y*y \<ge> x" if "x:X" for x
-      by (metis power2_eq_square sqrt_le_D that y)
-    thus "bdd_above X"
-      unfolding bdd_above_def by auto
-  qed
-  ultimately have bdd_sqrt: "bdd_above X \<longleftrightarrow> bdd_above (sqrt ` X)" for X
-    by rule
-  have t1: "bdd_above (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite) =
-            bdd_above ((\<lambda>A. sqrt (\<Sum>i\<in>A. ((cmod \<circ> x) i)\<^sup>2)) ` Collect finite)"
-  proof (rewrite asm_rl [of "(\<lambda>A. sqrt (sum (\<lambda>i. ((cmod \<circ> x) i)\<^sup>2) A)) ` Collect finite 
-                            = sqrt ` (\<lambda>A. (\<Sum>i\<in>A. (cmod (x i))\<^sup>2)) ` Collect finite"])
-    show "(\<lambda>A. sqrt (\<Sum>i\<in>A. ((cmod \<circ> x) i)\<^sup>2)) ` Collect finite = sqrt ` sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite"
-      by auto      
-    show "bdd_above (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite) = bdd_above (sqrt ` sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite)"
-      by (meson t2 t3)      
-  qed
-  show "has_ell2_norm x \<longleftrightarrow> bdd_above (L2_set (norm o x) ` Collect finite)"
-    unfolding has_ell2_norm_def L2_set_def
-    using t1.
+proof (rule iffI)
+  have \<open>mono sqrt\<close>
+    using monoI real_sqrt_le_mono by blast
+  assume \<open>has_ell2_norm x\<close>
+  then have *: \<open>bdd_above (sum (\<lambda>xa. norm ((x xa)\<^sup>2)) ` Collect finite)\<close>
+    by (subst (asm) has_ell2_norm_bdd_above)
+  have \<open>bdd_above ((\<lambda>F. sqrt (sum (\<lambda>xa. norm ((x xa)\<^sup>2)) F)) ` Collect finite)\<close>
+    using bdd_above_image_mono[OF \<open>mono sqrt\<close> *]
+    by (auto simp: image_image)
+  then show \<open>bdd_above (L2_set (norm o x) ` Collect finite)\<close>
+    by (auto simp: L2_set_def norm_power)
+next
+  define p2 where \<open>p2 x = (if x < 0 then 0 else x^2)\<close> for x :: real
+  have \<open>mono p2\<close>
+    by (simp add: monoI p2_def)
+  have [simp]: \<open>p2 (L2_set f F) = (\<Sum>i\<in>F. (f i)\<^sup>2)\<close> for f and F :: \<open>'a set\<close>
+    by (smt (verit) L2_set_def L2_set_nonneg p2_def power2_less_0 real_sqrt_pow2 sum.cong sum_nonneg)
+  assume *: \<open>bdd_above (L2_set (norm o x) ` Collect finite)\<close>
+  have \<open>bdd_above (p2 ` L2_set (norm o x) ` Collect finite)\<close>
+    using bdd_above_image_mono[OF \<open>mono p2\<close> *]
+    by auto
+  then show \<open>has_ell2_norm x\<close>
+    apply (simp add: image_image has_ell2_norm_def abs_summable_bdd_above)
+    by (simp add: norm_power)
 qed
 
-definition "ell2_norm x = sqrt (SUP F\<in>{F. finite F}. sum (\<lambda>i. norm (x i)^2) F)" for x :: \<open>'a \<Rightarrow> complex\<close>
+definition ell2_norm :: \<open>('a \<Rightarrow> complex) \<Rightarrow> real\<close> where \<open>ell2_norm x = sqrt (\<Sum>\<^sub>\<infinity>i. norm (x i)^2)\<close>
+
+lemma ell2_norm_SUP:
+  assumes \<open>has_ell2_norm x\<close>
+  shows "ell2_norm x = sqrt (SUP F\<in>{F. finite F}. sum (\<lambda>i. norm (x i)^2) F)"
+  using assms apply (auto simp add: ell2_norm_def has_ell2_norm_def)
+  apply (subst infsum_nonneg_is_SUPREMUM_real)
+  by (auto simp: norm_power)
 
 lemma ell2_norm_L2_set: 
   assumes "has_ell2_norm x"
@@ -133,32 +77,12 @@ proof-
     show "sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite \<noteq> {}"
       by auto      
     show "bdd_above (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite)"
-      by (metis assms has_ell2_norm_def)      
+      using has_ell2_norm_bdd_above[THEN iffD1, OF assms] by (auto simp: norm_power)
     show "\<Squnion> (sqrt ` sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite) = (SUP F\<in>Collect finite. sqrt (\<Sum>i\<in>F. (cmod (x i))\<^sup>2))"
       by (metis image_image)      
   qed  
   thus ?thesis 
-    unfolding ell2_norm_def L2_set_def o_def.
-qed
-
-lemma ell2_norm_infsetsum:
-  assumes "has_ell2_norm x"
-  shows "ell2_norm x = sqrt (infsetsum (\<lambda>i. (norm(x i))^2) UNIV)"
-proof-
-  have "ell2_norm x = sqrt (\<Sum>\<^sub>ai. (cmod (x i))\<^sup>2)"
-  proof (subst infsetsum_nonneg_is_SUPREMUM)
-    show "(\<lambda>i. (cmod (x i))\<^sup>2) abs_summable_on UNIV"
-      using assms has_ell2_norm_infsetsum by fastforce      
-    show "0 \<le> (cmod (x t))\<^sup>2"
-      if "t \<in> UNIV"
-      for t :: 'a
-      using that
-      by simp 
-    show "ell2_norm x = sqrt (\<Squnion> (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` {F. finite F \<and> F \<subseteq> UNIV}))"
-      unfolding ell2_norm_def by auto   
-  qed
-  thus ?thesis 
-    by auto
+    using assms by (auto simp: ell2_norm_SUP L2_set_def)
 qed
 
 lemma has_ell2_norm_finite[simp]: "has_ell2_norm (x::'a::finite\<Rightarrow>_)"
@@ -166,49 +90,10 @@ lemma has_ell2_norm_finite[simp]: "has_ell2_norm (x::'a::finite\<Rightarrow>_)"
 
 lemma ell2_norm_finite: 
   "ell2_norm (x::'a::finite\<Rightarrow>complex) = sqrt (sum (\<lambda>i. (norm(x i))^2) UNIV)"
-proof-    
-  have "(\<Sum>i\<in>t. (cmod (x i))\<^sup>2) \<le> (\<Sum>i\<in>y. (cmod (x i))\<^sup>2)"
-    if "t \<subseteq> y"
-    for t y
-  proof (subst sum_mono2)
-    show "finite y"
-      by simp      
-    show "t \<subseteq> y"
-      using that.
-    show "0 \<le> (cmod (x b))\<^sup>2"
-      if "b \<in> y - t"
-      for b :: 'a
-      using that
-      by simp 
-    show True by blast
-  qed
-  hence mono: "mono (sum (\<lambda>i. (cmod (x i))\<^sup>2))"
-    unfolding mono_def
-    by blast 
-  show ?thesis
-    unfolding ell2_norm_def apply (subst image_of_maximum[where m=UNIV])
-    using mono by auto
-qed
+  by (simp add: ell2_norm_def)
 
 lemma ell2_norm_finite_L2_set: "ell2_norm (x::'a::finite\<Rightarrow>complex) = L2_set (norm o x) UNIV"
-proof (subst ell2_norm_L2_set)
-  show "has_ell2_norm x"
-    by simp    
-  show "\<Squnion> (L2_set (cmod \<circ> x) ` Collect finite) = L2_set (cmod \<circ> x) UNIV"
-  proof (subst image_of_maximum[where m = UNIV])
-    show "mono (L2_set (cmod \<circ> x))"
-      by (auto simp: mono_def intro!: L2_set_mono2)
-    show "(x::'a set) \<subseteq> UNIV"
-      if "(x::'a set) \<in> Collect finite"
-      for x :: "'a set"
-      using that
-      by simp 
-    show "(UNIV::'a set) \<in> Collect finite"
-      by simp      
-    show "L2_set (cmod \<circ> x) UNIV = L2_set (cmod \<circ> x) UNIV"
-      by simp
-  qed
-qed 
+  by (simp add: ell2_norm_finite L2_set_def)
 
 lemma ell2_ket:
   fixes a
@@ -216,67 +101,42 @@ lemma ell2_ket:
   shows has_ell2_norm_ket: \<open>has_ell2_norm f\<close>
     and ell2_norm_ket: \<open>ell2_norm f = 1\<close>
 proof -
-  have finite_bound: \<open>(\<Sum>i\<in>F. (cmod (if a = i then 1 else 0))\<^sup>2) \<le> 1\<close> if \<open>finite F\<close> for F
-  proof - 
-    have "(\<Sum>i\<in>F. (cmod (if a = i then 1 else 0))\<^sup>2) = 0" if "a\<notin>F"
-    proof (subst sum.cong [where B = F and h = "\<lambda>_. 0"])
-      show "F = F"
-        by blast
-      show "(cmod (if a = x then 1 else 0))\<^sup>2 = 0"
-        if "x \<in> F"
-        for x :: 'a
-        using that \<open>a \<notin> F\<close> by auto 
-      show "(\<Sum>_\<in>F. (0::real)) = 0"
-        by simp
-    qed 
-    moreover have "(\<Sum>i\<in>F. (cmod (if a = i then 1 else 0))\<^sup>2) = 1" if "a\<in>F"
-    proof -
-      obtain F0 where "a\<notin>F0" and F_F0: "F=insert a F0"
-        by (meson \<open>a \<in> F\<close> mk_disjoint_insert) 
-      have "(\<Sum>i\<in>insert a F0. (cmod (if a = i then 1 else 0))\<^sup>2) = 1"
-      proof (subst sum.insert_remove)
-        show "finite F0"
-          using F_F0 \<open>finite F\<close> by auto
-        show "(cmod (if a = a then 1 else 0))\<^sup>2 + (\<Sum>i\<in>F0 - {a}. (cmod (if a = i then 1 else 0))\<^sup>2) = 1"
-          using sum.not_neutral_contains_not_neutral by fastforce        
-      qed
-      thus "(\<Sum>i\<in>F. (cmod (if a = i then 1 else 0))\<^sup>2) = 1"
-        unfolding F_F0.
-    qed
-    ultimately show "(\<Sum>i\<in>F. (cmod (if a = i then 1 else 0))\<^sup>2) \<le> 1"
-      unfolding f_def by linarith
-  qed
+  have \<open>(\<lambda>x. (f x)\<^sup>2) abs_summable_on {a}\<close>
+    apply (rule summable_on_finite) by simp
+  then show \<open>has_ell2_norm f\<close>
+    unfolding has_ell2_norm_def
+    apply (rule summable_on_cong_neutral[THEN iffD1, rotated -1])
+    unfolding f_def by auto
 
-  show \<open>has_ell2_norm f\<close>
-    using finite_bound
-    by (auto intro!: bdd_aboveI[where M=1] simp: f_def has_ell2_norm_def)
-
-  have \<open>(SUP F\<in>{F. finite F}. sum (\<lambda>i. norm (f i)^2) F) = 1\<close>
-    using finite_bound 
-    by (auto intro!: cSup_eq_maximum rev_image_eqI[where x=\<open>{a}\<close>]
-        simp: f_def)
+  have \<open>(\<Sum>\<^sub>\<infinity>x\<in>{a}. (f x)\<^sup>2) = 1\<close>
+    apply (subst infsum_finite)
+    by (auto simp: f_def)
   then show \<open>ell2_norm f = 1\<close>
-    unfolding ell2_norm_def by simp
+    unfolding ell2_norm_def
+    apply (subst infsum_cong_neutral[where T=\<open>{a}\<close> and g=\<open>\<lambda>x. (cmod (f x))\<^sup>2\<close>])
+    by (auto simp: f_def)
 qed
 
-lemma ell2_norm_geq0:
-  assumes \<open>has_ell2_norm x\<close>
-  shows \<open>ell2_norm x \<ge> 0\<close>
-  by (smt (verit, ccfv_SIG) assms cSUP_upper2 ell2_norm_def finite.intros(1) has_ell2_norm_def mem_Collect_eq real_sqrt_abs real_sqrt_le_iff sum.empty zero_power2)
+lemma ell2_norm_geq0: \<open>ell2_norm x \<ge> 0\<close>
+  by (auto simp: ell2_norm_def intro!: infsum_nonneg)
 
 lemma ell2_norm_point_bound:
   assumes \<open>has_ell2_norm x\<close>
   shows \<open>ell2_norm x \<ge> cmod (x i)\<close>
 proof -
-  have \<open>(cmod (x i))\<^sup>2 = sum (\<lambda>i. (cmod (x i))\<^sup>2) {i}\<close>
+  have \<open>(cmod (x i))\<^sup>2 = norm ((x i)\<^sup>2)\<close>
+    by (simp add: norm_power)
+  also have \<open>norm ((x i)\<^sup>2) = sum (\<lambda>i. (norm ((x i)\<^sup>2))) {i}\<close>
     by auto
-  also have "\<dots> \<le> (\<Squnion> (sum (\<lambda>i. (cmod (x i))\<^sup>2) ` Collect finite))" 
-    apply (rule cSUP_upper2[where x=\<open>{i}\<close>])
-      apply auto by (metis assms has_ell2_norm_def)
-  also have \<open>\<dots> = (ell2_norm x)^2\<close>
-    by (smt (verit, best) SUP_cong calculation ell2_norm_def norm_ge_zero norm_power_ineq real_sqrt_pow2 sum.cong)
+  also have \<open>\<dots> = infsum (\<lambda>i. (norm ((x i)\<^sup>2))) {i}\<close>
+    by (rule infsum_finite[symmetric], simp)
+  also have \<open>\<dots> \<le> infsum (\<lambda>i. (norm ((x i)\<^sup>2))) UNIV\<close>
+    apply (rule infsum_mono_neutral)
+    using assms by (auto simp: has_ell2_norm_def)
+  also have \<open>\<dots> = (ell2_norm x)\<^sup>2\<close>
+    by (metis (no_types, lifting) ell2_norm_def ell2_norm_geq0 infsum_cong norm_power real_sqrt_eq_iff real_sqrt_unique)
   finally show ?thesis
-    by (simp add: assms ell2_norm_geq0)
+    using ell2_norm_geq0 power2_le_imp_le by blast
 qed
 
 lemma ell2_norm_0:
@@ -530,75 +390,23 @@ lemma norm_point_bound_ell2: "norm (Rep_ell2 x i) \<le> norm x"
 lemma ell2_norm_finite_support:
   assumes \<open>finite S\<close> \<open>\<And> i. i \<notin> S \<Longrightarrow> Rep_ell2 x i = 0\<close>
   shows \<open>norm x = sqrt ((sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S)\<close>
-proof -
-  have \<open>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S \<le> (Sup (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite))\<close>
-  proof-
-    have \<open>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S \<in>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite)\<close>
-      using \<open>finite S\<close>
-      by simp
-    moreover have \<open>bdd_above (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite)\<close>
-      using Rep_ell2 unfolding has_ell2_norm_def
-      by auto
-    ultimately show ?thesis using cSup_upper by simp
-  qed
-  moreover have \<open>(Sup (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite)) \<le> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S\<close>
-  proof-
-    have \<open>t \<in> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite) \<Longrightarrow> t \<le> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S\<close>
-      for t
-    proof-
-      assume \<open>t \<in> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite)\<close>
-      hence \<open>\<exists> R \<in> (Collect finite). t = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) R\<close> 
-        by blast
-      then obtain R where \<open>R \<in> (Collect finite)\<close> and \<open>t = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) R\<close>
-        by blast
-      from \<open>R \<in> (Collect finite)\<close>
-      have \<open>finite R\<close>
-        by blast
-      have \<open>R = (R - S) \<union> (R \<inter> S)\<close>
-        by (simp add: Un_Diff_Int)
-      moreover have \<open>(R - S) \<inter> (R \<inter> S) = {}\<close>
-        by auto
-      ultimately have  \<open>t = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) (R - S)
-         + (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) (R \<inter> S)\<close>
-        using \<open>t = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) R\<close> and \<open>finite R\<close>
-        by (smt sum.Int_Diff)
-      moreover have \<open>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) (R - S) = 0\<close>
-      proof-
-        have \<open>r \<in> R - S \<Longrightarrow> (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) r = 0\<close>
-          for r
-          by (simp add: assms(2))        
-        thus ?thesis
-          by simp 
-      qed
-      ultimately have \<open>t = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) (R \<inter> S)\<close>
-        by simp
-      moreover have \<open>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) (R \<inter> S) \<le> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S\<close>
-      proof-
-        have \<open>R \<inter> S \<subseteq> S\<close>
-          by simp        
-        moreover have \<open>(\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) i \<ge> 0\<close>
-          for i
-          by auto        
-        ultimately show ?thesis
-          by (simp add: assms(1) sum_mono2) 
-      qed
-      ultimately show \<open>t \<le> (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S\<close> by simp
-    qed
-    moreover have \<open>(sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite) \<noteq> {}\<close>
-      by auto      
-    ultimately show ?thesis
-      by (simp add: cSup_least) 
-  qed
-  ultimately have \<open>(Sup (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2) ` Collect finite)) = (sum (\<lambda>i. (cmod (Rep_ell2 x i))\<^sup>2)) S\<close>
-    by simp
-  thus ?thesis
-    by (metis ell2_norm_def norm_ell2.rep_eq) 
+proof (insert assms(2), transfer fixing: S)
+  fix x :: \<open>'a \<Rightarrow> complex\<close>
+  assume zero: \<open>\<And>i. i \<notin> S \<Longrightarrow> x i = 0\<close>
+  have \<open>ell2_norm x = sqrt (\<Sum>\<^sub>\<infinity>i. (cmod (x i))\<^sup>2)\<close>
+    by (auto simp: ell2_norm_def)
+  also have \<open>\<dots> = sqrt (\<Sum>\<^sub>\<infinity>i\<in>S. (cmod (x i))\<^sup>2)\<close>
+    apply (subst infsum_cong_neutral[where g=\<open>\<lambda>i. (cmod (x i))\<^sup>2\<close> and S=UNIV and T=S])
+    using zero by auto
+  also have \<open>\<dots> = sqrt (\<Sum>i\<in>S. (cmod (x i))\<^sup>2)\<close>
+    using \<open>finite S\<close> by simp
+  finally show \<open>ell2_norm x = sqrt (\<Sum>i\<in>S. (cmod (x i))\<^sup>2)\<close>
+    by -
 qed
-
 
 instantiation ell2 :: (type) complex_inner begin
 lift_definition cinner_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> complex" is 
-  "\<lambda>x y. infsetsum (\<lambda>i. (cnj (x i) * y i)) UNIV" .
+  "\<lambda>x y. infsum (\<lambda>i. (cnj (x i) * y i)) UNIV" .
 declare cinner_ell2_def[code del]
 
 instance
@@ -607,11 +415,11 @@ proof standard
   show "cinner x y = cnj (cinner y x)"
   proof transfer
     fix x y :: "'a\<Rightarrow>complex" assume "has_ell2_norm x" and "has_ell2_norm y"
-    have "(\<Sum>\<^sub>ai. cnj (x i) * y i) = (\<Sum>\<^sub>ai. cnj (cnj (y i) * x i))"
+    have "(\<Sum>\<^sub>\<infinity>i. cnj (x i) * y i) = (\<Sum>\<^sub>\<infinity>i. cnj (cnj (y i) * x i))"
       by (metis complex_cnj_cnj complex_cnj_mult mult.commute)
-    also have "\<dots> = cnj (\<Sum>\<^sub>ai. cnj (y i) * x i)"
-      by (metis infsetsum_cnj) 
-    finally show "(\<Sum>\<^sub>ai. cnj (x i) * y i) = cnj (\<Sum>\<^sub>ai. cnj (y i) * x i)" .
+    also have "\<dots> = cnj (\<Sum>\<^sub>\<infinity>i. cnj (y i) * x i)"
+      by (metis infsum_cnj) 
+    finally show "(\<Sum>\<^sub>\<infinity>i. cnj (x i) * y i) = cnj (\<Sum>\<^sub>\<infinity>i. cnj (y i) * x i)" .
   qed
 
   show "cinner (x + y) z = cinner x z + cinner y z"
@@ -619,26 +427,21 @@ proof standard
     fix x y z :: "'a \<Rightarrow> complex"
     assume "has_ell2_norm x"
     hence cnj_x: "(\<lambda>i. cnj (x i) * cnj (x i)) abs_summable_on UNIV"
-      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_infsetsum power2_eq_square)
+      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_def power2_eq_square)
     assume "has_ell2_norm y"
     hence cnj_y: "(\<lambda>i. cnj (y i) * cnj (y i)) abs_summable_on UNIV"
-      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_infsetsum power2_eq_square)
+      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_def power2_eq_square)
     assume "has_ell2_norm z"
     hence z: "(\<lambda>i. z i * z i) abs_summable_on UNIV" 
-      by (simp add: norm_mult[symmetric] has_ell2_norm_infsetsum power2_eq_square)
+      by (simp add: norm_mult[symmetric] has_ell2_norm_def power2_eq_square)
     have cnj_x_z:"(\<lambda>i. cnj (x i) * z i) abs_summable_on UNIV"
       using cnj_x z by (rule abs_summable_product) 
     have cnj_y_z:"(\<lambda>i. cnj (y i) * z i) abs_summable_on UNIV"
       using cnj_y z by (rule abs_summable_product) 
-    show "(\<Sum>\<^sub>ai. cnj (x i + y i) * z i) = (\<Sum>\<^sub>ai. cnj (x i) * z i) + (\<Sum>\<^sub>ai. cnj (y i) * z i)"
-    proof (subst infsetsum_add [symmetric])
-      show "(\<lambda>i. cnj (x i) * z i) abs_summable_on UNIV"
-        by (simp add: cnj_x_z)        
-      show "(\<lambda>i. cnj (y i) * z i) abs_summable_on UNIV"
-        by (simp add: cnj_y_z)        
-      show "(\<Sum>\<^sub>ai. cnj (x i + y i) * z i) = (\<Sum>\<^sub>ai. cnj (x i) * z i + cnj (y i) * z i)"
-        by (metis complex_cnj_add distrib_right)
-    qed
+    show "(\<Sum>\<^sub>\<infinity>i. cnj (x i + y i) * z i) = (\<Sum>\<^sub>\<infinity>i. cnj (x i) * z i) + (\<Sum>\<^sub>\<infinity>i. cnj (y i) * z i)"
+      apply (subst infsum_add [symmetric])
+      using cnj_x_z cnj_y_z 
+      by (auto simp add: summable_on_iff_abs_summable_on_complex distrib_left mult.commute)
   qed
 
   show "cinner (c *\<^sub>C x) y = cnj c * cinner x y"
@@ -646,24 +449,14 @@ proof standard
     fix x y :: "'a \<Rightarrow> complex" and c :: complex
     assume "has_ell2_norm x"
     hence cnj_x: "(\<lambda>i. cnj (x i) * cnj (x i)) abs_summable_on UNIV"
-      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_infsetsum power2_eq_square)
+      by (simp del: complex_cnj_mult add: norm_mult[symmetric] complex_cnj_mult[symmetric] has_ell2_norm_def power2_eq_square)
     assume "has_ell2_norm y"
     hence y: "(\<lambda>i. y i * y i) abs_summable_on UNIV" 
-      by (simp add: norm_mult[symmetric] has_ell2_norm_infsetsum power2_eq_square)
+      by (simp add: norm_mult[symmetric] has_ell2_norm_def power2_eq_square)
     have cnj_x_y:"(\<lambda>i. cnj (x i) * y i) abs_summable_on UNIV"
       using cnj_x y by (rule abs_summable_product) 
-    thus "(\<Sum>\<^sub>ai. cnj (c * x i) * y i) = cnj c * (\<Sum>\<^sub>ai. cnj (x i) * y i)"
-    proof (subst infsetsum_cmult_right [symmetric])
-      show "(\<lambda>i. cnj (x i) * y i) abs_summable_on UNIV"
-        if "(\<lambda>i. cnj (x i) * y i) abs_summable_on UNIV"
-          and "cnj c \<noteq> 0"
-        using that
-        by simp 
-      show "(\<Sum>\<^sub>ai. cnj (c * x i) * y i) = (\<Sum>\<^sub>ai. cnj c * (cnj (x i) * y i))"
-        if "(\<lambda>i. cnj (x i) * y i) abs_summable_on UNIV"
-        using that
-        by (metis complex_cnj_mult vector_space_over_itself.scale_scale) 
-    qed
+    thus "(\<Sum>\<^sub>\<infinity>i. cnj (c * x i) * y i) = cnj c * (\<Sum>\<^sub>\<infinity>i. cnj (x i) * y i)"
+      by (auto simp flip: infsum_cmult_right simp add: abs_summable_summable mult.commute vector_space_over_itself.scale_left_commute)
   qed
 
   show "0 \<le> cinner x x"
@@ -671,25 +464,16 @@ proof standard
     fix x :: "'a \<Rightarrow> complex"
     assume "has_ell2_norm x"
     hence "(\<lambda>i. cmod (cnj (x i) * x i)) abs_summable_on UNIV"
-      by (simp del: abs_summable_on_norm_iff add: norm_mult has_ell2_norm_infsetsum power2_eq_square)
+      by (simp add: norm_mult has_ell2_norm_def power2_eq_square)
     hence "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-      by (subst abs_summable_on_norm_iff[symmetric])      
+      by auto
     hence sum: "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-      unfolding has_ell2_norm_infsetsum power2_eq_square.
-    have "0 = (\<Sum>\<^sub>ai::'a. 0)" by auto
-    also have "\<dots> \<le> (\<Sum>\<^sub>ai. cnj (x i) * x i)"
-    proof (rule infsetsum_mono_complex)
-      show "(\<lambda>i. 0::complex) abs_summable_on (UNIV::'a set)"
-        by simp        
-      show "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-        by (simp add: sum)        
-      show "0 \<le> cnj (f x) * f x"
-        if "x \<in> UNIV"
-        for x :: 'a and f :: "'a \<Rightarrow>_"
-        using that
-        by simp 
-    qed
-    finally show "0 \<le> (\<Sum>\<^sub>ai. cnj (x i) * x i)" by assumption
+      unfolding has_ell2_norm_def power2_eq_square.
+    have "0 = (\<Sum>\<^sub>\<infinity>i::'a. 0)" by auto
+    also have "\<dots> \<le> (\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i)"
+      apply (rule infsum_mono_complex)
+      by (auto simp add: abs_summable_summable sum)
+    finally show "0 \<le> (\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i)" by assumption
   qed
 
   show "(cinner x x = 0) = (x = 0)"
@@ -697,31 +481,21 @@ proof standard
     fix x :: "'a \<Rightarrow> complex"
     assume "has_ell2_norm x"
     hence "(\<lambda>i::'a. cmod (cnj (x i) * x i)) abs_summable_on UNIV"
-      unfolding has_ell2_norm_infsetsum power2_eq_square
-      by (metis (no_types, lifting) abs_summable_on_cong complex_mod_cnj norm_mult) 
+      by (smt (verit, del_insts) complex_mod_mult_cnj has_ell2_norm_def mult.commute norm_ge_zero norm_power real_norm_def summable_on_cong)
     hence cmod_x2: "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-      unfolding has_ell2_norm_infsetsum power2_eq_square
+      unfolding has_ell2_norm_def power2_eq_square
       by simp
-    assume eq0: "(\<Sum>\<^sub>ai. cnj (x i) * x i) = 0"
+    assume eq0: "(\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i) = 0"
     show "x = (\<lambda>_. 0)"
     proof (rule ccontr)
       assume "x \<noteq> (\<lambda>_. 0)"
       then obtain i where "x i \<noteq> 0" by auto
       hence "0 < cnj (x i) * x i"
         by (metis le_less cnj_x_x_geq0 complex_cnj_zero_iff vector_space_over_itself.scale_eq_0_iff)
-      also have "\<dots> = (\<Sum>\<^sub>ai\<in>{i}. cnj (x i) * x i)" by auto
-      also have "\<dots> \<le> (\<Sum>\<^sub>ai. cnj (x i) * x i)"
-      proof (rule infsetsum_subset_complex)
-        show "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-          by (simp add: cmod_x2)          
-        show "{i} \<subseteq> UNIV"
-          by simp          
-        show "0 \<le> cnj (f x) * f x"
-          if "x \<notin> {i}"
-          for x :: 'a and f::"'a \<Rightarrow> _"
-          using that
-          by simp 
-      qed
+      also have "\<dots> = (\<Sum>\<^sub>\<infinity>i\<in>{i}. cnj (x i) * x i)" by auto
+      also have "\<dots> \<le> (\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i)"
+        apply (rule infsum_mono_neutral_complex)
+        by (auto simp add: abs_summable_summable cmod_x2)
       also from eq0 have "\<dots> = 0" by assumption
       finally show False by simp
     qed
@@ -733,36 +507,16 @@ proof standard
     assume x: "has_ell2_norm x"
     have "(\<lambda>i::'a. cmod (x i) * cmod (x i)) abs_summable_on UNIV \<Longrightarrow>
     (\<lambda>i::'a. cmod (cnj (x i) * x i)) abs_summable_on UNIV"
-      by (simp del: abs_summable_on_norm_iff add: norm_mult has_ell2_norm_infsetsum power2_eq_square)
+      by (simp add: norm_mult has_ell2_norm_def power2_eq_square)
     hence sum: "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-      using x
-      unfolding has_ell2_norm_infsetsum power2_eq_square
-      by auto
-    from x have "ell2_norm x = sqrt (\<Sum>\<^sub>ai. (cmod (x i))\<^sup>2)"
-    proof (subst ell2_norm_infsetsum)
-      show "has_ell2_norm x"
-        if "has_ell2_norm x"
-        using that.
-      show "sqrt (\<Sum>\<^sub>ai. (cmod (x i))\<^sup>2) = sqrt (\<Sum>\<^sub>ai. (cmod (x i))\<^sup>2)"
-        if "has_ell2_norm x"
-        using that
-        by simp 
-    qed
-    also have "\<dots> = sqrt (\<Sum>\<^sub>ai. cmod (cnj (x i) * x i))"
+      by (metis (no_types, lifting) complex_mod_mult_cnj has_ell2_norm_def mult.commute norm_power summable_on_cong x)
+    from x have "ell2_norm x = sqrt (\<Sum>\<^sub>\<infinity>i. (cmod (x i))\<^sup>2)"
+      unfolding ell2_norm_def by simp
+    also have "\<dots> = sqrt (\<Sum>\<^sub>\<infinity>i. cmod (cnj (x i) * x i))"
       unfolding norm_complex_def power2_eq_square by auto
-    also have "\<dots> = sqrt (cmod (\<Sum>\<^sub>ai. cnj (x i) * x i))"
-    proof (subst infsetsum_cmod)
-      show "(\<lambda>i. cnj (x i) * x i) abs_summable_on UNIV"
-        by (simp add: sum)        
-      show "0 \<le> cnj (f x) * f x"
-        if "(x::'a) \<in> UNIV"
-        for x :: 'a and f::"'a \<Rightarrow> _"
-        using that
-        by simp 
-      show "sqrt (cmod (\<Sum>\<^sub>ai. cnj (x i) * x i)) = sqrt (cmod (\<Sum>\<^sub>ai. cnj (x i) * x i))"
-        by simp        
-    qed
-    finally show "ell2_norm x = sqrt (cmod (\<Sum>\<^sub>ai. cnj (x i) * x i))" by assumption
+    also have "\<dots> = sqrt (cmod (\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i))"
+      by (auto simp: infsum_cmod abs_summable_summable sum)
+    finally show "ell2_norm x = sqrt (cmod (\<Sum>\<^sub>\<infinity>i. cnj (x i) * x i))" by assumption
   qed
 qed
 end
@@ -858,8 +612,7 @@ proof
     using that by (auto intro!: cSUP_least simp: normF_def)
   have \<open>norm (X n - L) \<le> \<epsilon>\<close> if \<open>n \<ge> I \<epsilon>\<close> and \<open>\<epsilon> > 0\<close> for n \<epsilon>
     using ell2norm_xl[OF that]
-    apply (simp add: x_def norm_ell2.rep_eq \<open>l = Rep_ell2 L\<close>)
-    by (smt (verit, best) SUP_cong ell2_norm_def minus_ell2.rep_eq sum.cong)
+    by (simp add: x_def norm_ell2.rep_eq \<open>l = Rep_ell2 L\<close> minus_ell2.rep_eq)
   then have \<open>X \<longlonglongrightarrow> L\<close>
     unfolding tendsto_iff
     apply (auto simp: dist_norm eventually_sequentially)
@@ -929,16 +682,25 @@ lemma ell2_pointwise_ortho:
   assumes \<open>\<And> i. Rep_ell2 x i = 0 \<or> Rep_ell2 y i = 0\<close>
   shows \<open>is_orthogonal x y\<close>
   using assms apply transfer
-  by (simp add: infsetsum_all_0)
-
+  by (simp add: infsum_0)
 
 subsection \<open>Truncated vectors\<close>
 
 lift_definition trunc_ell2:: \<open>'a set \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2\<close>
   is \<open>\<lambda> S x. (\<lambda> i. (if i \<in> S then x i else 0))\<close>
-  unfolding has_ell2_norm_def
-  apply (rule bdd_above_image_mono)
-  by (auto intro!: sum_mono)
+proof (rename_tac S x)
+  fix x :: \<open>'a \<Rightarrow> complex\<close> and S :: \<open>'a set\<close>
+  assume \<open>has_ell2_norm x\<close>
+  then have \<open>(\<lambda>i. (x i)\<^sup>2) abs_summable_on UNIV\<close>
+    unfolding has_ell2_norm_def by -
+  then have \<open>(\<lambda>i. (x i)\<^sup>2) abs_summable_on S\<close>
+    using summable_on_subset_banach by blast
+  then have \<open>(\<lambda>xa. (if xa \<in> S then x xa else 0)\<^sup>2) abs_summable_on UNIV\<close>
+    apply (rule summable_on_cong_neutral[THEN iffD1, rotated -1])
+    by auto
+  then show \<open>has_ell2_norm (\<lambda>i. if i \<in> S then x i else 0)\<close>
+    unfolding has_ell2_norm_def by -
+qed
 
 lemma trunc_ell2_empty[simp]: \<open>trunc_ell2 {} x = 0\<close>
   apply transfer by simp
@@ -978,22 +740,21 @@ proof -
   have has: \<open>has_ell2_norm (Rep_ell2 \<psi>)\<close>
     using Rep_ell2 by blast
   then have summable: "f abs_summable_on UNIV"
-    using f_def has_ell2_norm_infsetsum by fastforce
+    by (smt (verit, del_insts) f_def has_ell2_norm_def norm_ge_zero norm_power real_norm_def summable_on_cong)
 
   have \<open>norm \<psi> = (ell2_norm (Rep_ell2 \<psi>))\<close>
     apply transfer by simp
-  also have \<open>\<dots> = sqrt (infsetsum' f UNIV)\<close>
-    unfolding ell2_norm_infsetsum[OF has] f_def[symmetric]
-    using summable by (simp add: infsetsum_infsetsum')
-  finally have norm\<psi>: \<open>norm \<psi> = sqrt (infsetsum' f UNIV)\<close>
+  also have \<open>\<dots> = sqrt (infsum f UNIV)\<close>
+    by (simp add: ell2_norm_def f_def[symmetric])
+  finally have norm\<psi>: \<open>norm \<psi> = sqrt (infsum f UNIV)\<close>
     by -
 
   have norm_trunc: \<open>norm (trunc_ell2 S \<psi>) = sqrt (sum f S)\<close> if \<open>finite S\<close> for S
     using f_def that norm_trunc_ell2_finite by fastforce
 
-  have \<open>(sum f \<longlongrightarrow> infsetsum' f UNIV) (finite_subsets_at_top UNIV)\<close>
-    by (simp add: abs_summable_infsetsum'_converges infsetsum'_tendsto summable)
-  then have \<open>((\<lambda>S. sqrt (sum f S)) \<longlongrightarrow> sqrt (infsetsum' f UNIV)) (finite_subsets_at_top UNIV)\<close>
+  have \<open>(sum f \<longlongrightarrow> infsum f UNIV) (finite_subsets_at_top UNIV)\<close>
+    using f_def[abs_def] infsum_tendsto local.summable by fastforce
+  then have \<open>((\<lambda>S. sqrt (sum f S)) \<longlongrightarrow> sqrt (infsum f UNIV)) (finite_subsets_at_top UNIV)\<close>
     using tendsto_real_sqrt by blast
   then have \<open>((\<lambda>S. norm (trunc_ell2 S \<psi>)) \<longlongrightarrow> norm \<psi>) (finite_subsets_at_top UNIV)\<close>
     apply (subst tendsto_cong[where g=\<open>\<lambda>S. sqrt (sum f S)\<close>])
@@ -1034,12 +795,12 @@ qed
 
 lemma cinner_ket_left: \<open>\<langle>ket i, \<psi>\<rangle> = Rep_ell2 \<psi> i\<close>
   apply (transfer fixing: i)
-  apply (subst infsetsum_cong_neutral[where B=\<open>{i}\<close>])
+  apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
 
 lemma cinner_ket_right: \<open>\<langle>\<psi>, ket i\<rangle> = cnj (Rep_ell2 \<psi> i)\<close>
   apply (transfer fixing: i)
-  apply (subst infsetsum_cong_neutral[where B=\<open>{i}\<close>])
+  apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
 
 lemma cinner_ket_eqI:
@@ -1370,328 +1131,83 @@ lemma classical_operator_existsI:
 lemma classical_operator_exists_inj:
   assumes "inj_map \<pi>"
   shows "classical_operator_exists \<pi>"
-    (* Probably a shorter proof is possible using cblinfun_extension_exists_bounded_dense *)
 proof -
-  define C0 where "C0 \<psi> = (\<lambda>b. case inv_map \<pi> b of None \<Rightarrow> 0 | Some x \<Rightarrow> \<psi> x)" for \<psi> :: "'a\<Rightarrow>complex"
-
-  have has_ell2_norm_C0: \<open>has_ell2_norm \<psi> \<Longrightarrow> has_ell2_norm (C0 \<psi>)\<close> for \<psi>
+  define f where \<open>f t = (case \<pi> (inv ket t) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x)\<close> for t
+  define g where \<open>g = cconstruct (range ket) f\<close>
+  have g_f: \<open>g (ket x) = f (ket x)\<close> for x
+    unfolding g_def apply (rule complex_vector.construct_basis)
+    using cindependent_ket by auto
+  have \<open>clinear g\<close>
+    unfolding g_def apply (rule complex_vector.linear_construct)
+    using cindependent_ket by blast
+  then have \<open>g (x + y) = g x + g y\<close> if \<open>x \<in> cspan (range ket)\<close> and \<open>y \<in> cspan (range ket)\<close> for x y
+    using clinear_iff by blast
+  moreover from \<open>clinear g\<close> have \<open>g (c *\<^sub>C x) = c *\<^sub>C g x\<close> if \<open>x \<in> cspan (range ket)\<close> for x c
+    by (simp add: complex_vector.linear_scale)
+  moreover have \<open>norm (g x) \<le> norm x\<close> if \<open>x \<in> cspan (range ket)\<close> for x
   proof -
-    assume \<open>has_ell2_norm \<psi>\<close>
-    hence \<open>bdd_above (sum (\<lambda>i. (cmod (\<psi> i))\<^sup>2) ` Collect finite)\<close>
-      unfolding has_ell2_norm_def
-      by blast
-    hence \<open>\<exists> M. \<forall> S. finite S \<longrightarrow> ( sum (\<lambda>i. (cmod (\<psi> i))\<^sup>2) S ) \<le> M\<close>
-      by (simp add: bdd_above_def)
-    then obtain M::real where \<open>\<And> S::'a set. finite S \<Longrightarrow> ( sum (\<lambda>i. (cmod (\<psi> i))\<^sup>2) S ) \<le> M\<close>
-      by blast
-    define \<phi>::\<open>'b \<Rightarrow> complex\<close> where
-      \<open>\<phi> b = (case inv_map \<pi> b of None \<Rightarrow> 0 | Some x \<Rightarrow> \<psi> x)\<close> for b
-    have \<open>\<lbrakk>finite R; \<forall>i\<in>R. \<phi> i \<noteq> 0\<rbrakk> \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> M\<close>
-      for R::\<open>'b set\<close>
-    proof-
-      assume \<open>finite R\<close> and \<open>\<forall>i\<in>R. \<phi> i \<noteq> 0\<close>
-      from  \<open>\<forall>i\<in>R. \<phi> i \<noteq> 0\<close>
-      have  \<open>\<forall>i\<in>R. \<exists> x. Some x = inv_map \<pi> i\<close>
-        unfolding \<phi>_def
-        by (metis option.case_eq_if option.collapse)
-      hence  \<open>\<exists> f. \<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close>
-        by metis
-      then obtain f::\<open>'b\<Rightarrow>'a\<close> where \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> 
-        by blast
-      define S::\<open>'a set\<close> where \<open>S = f ` R\<close>
-      have \<open>finite S\<close>
-        using \<open>finite R\<close>
-        by (simp add: S_def)
-      moreover have \<open>(\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) =  (\<Sum>i\<in>S. (cmod (\<psi> i))\<^sup>2)\<close>
-      proof-
-        have \<open>inj_on f R\<close>
-        proof(rule inj_onI)
-          fix x y :: 'b
-          assume \<open>x \<in> R\<close> and \<open>y \<in> R\<close> and \<open>f x = f y\<close>
-          from \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> 
-          have \<open>\<forall>i\<in>R. Some (f i) = Some (inv \<pi> (Some i))\<close>
-            by (metis inv_map_def option.distinct(1))
-          hence \<open>\<forall>i\<in>R. f i = inv \<pi> (Some i)\<close>
-            by blast
-          hence \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close>
-            by (metis \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> f_inv_into_f inv_map_def option.distinct(1)) 
-          have \<open>\<pi> (f x) = Some x\<close>
-            using \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close> \<open>x\<in>R\<close> by blast
-          moreover have \<open>\<pi> (f y) = Some y\<close>
-            using \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close> \<open>y\<in>R\<close> by blast
-          ultimately have \<open>Some x = Some y\<close>
-            using \<open>f x = f y\<close> by metis
-          thus \<open>x = y\<close> by simp
-        qed
-        moreover have \<open>i \<in> R \<Longrightarrow> (cmod (\<phi> i))\<^sup>2 = (cmod (\<psi> (f i)))\<^sup>2\<close>
-          for i
-        proof-
-          assume \<open>i \<in> R\<close>
-          hence \<open>\<phi> i = \<psi> (f i)\<close>
-            unfolding \<phi>_def
-            by (metis \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> option.simps(5))
-          thus ?thesis
-            by simp 
-        qed
-        ultimately show ?thesis unfolding S_def
-          by (metis (mono_tags, lifting) sum.reindex_cong)
-      qed
-      ultimately show ?thesis
-        by (simp add: \<open>\<And>S. finite S \<Longrightarrow> (\<Sum>i\<in>S. (cmod (\<psi> i))\<^sup>2) \<le> M\<close>) 
-    qed     
-    have \<open>finite R \<Longrightarrow> ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) \<le> M\<close>
-      for R::\<open>'b set\<close>
-    proof-
-      assume \<open>finite R\<close>
-      define U::\<open>'b set\<close> where \<open>U = {i | i::'b. i \<in> R \<and>  \<phi> i \<noteq> 0 }\<close>
-      define V::\<open>'b set\<close> where \<open>V = {i | i::'b. i \<in> R \<and>  \<phi> i = 0 }\<close>
-      have \<open>U \<inter> V = {}\<close>
-        unfolding U_def V_def by blast
-      moreover have \<open>U \<union> V = R\<close>
-        unfolding U_def V_def by blast
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U ) + 
-            ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) V )\<close>
-        using \<open>finite R\<close> sum.union_disjoint by auto
-      moreover have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) V ) = 0\<close>
-        unfolding V_def by auto
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U )\<close>
-        by simp
-      moreover have \<open>\<forall> i \<in> U. \<phi> i \<noteq> 0\<close>
-        by (simp add: U_def)
-      moreover have \<open>finite U\<close>
-        unfolding U_def using \<open>finite R\<close>
-        by simp
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U ) \<le> M\<close>
-        using \<open>\<And>R. \<lbrakk>finite R; \<forall>i\<in>R. \<phi> i \<noteq> 0\<rbrakk> \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> M\<close> by blast        
-      thus ?thesis using \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U )\<close>
-        by simp
-    qed
-    hence  \<open>bdd_above (sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) ` Collect finite)\<close>
-      unfolding bdd_above_def
-      by blast
-    thus ?thesis
-      unfolding \<phi>_def C0_def using has_ell2_norm_def by blast
+    from that obtain t r where x_sum: \<open>x = (\<Sum>a\<in>t. r a *\<^sub>C a)\<close> and \<open>finite t\<close> and \<open>t \<subseteq> range ket\<close>
+      unfolding complex_vector.span_explicit by auto
+    then obtain T where tT: \<open>t = ket ` T\<close> and [simp]: \<open>finite T\<close>
+      by (meson finite_subset_image)
+    define R where \<open>R i = r (ket i)\<close> for i
+    have x_sum: \<open>x = (\<Sum>i\<in>T. R i *\<^sub>C ket i)\<close>
+      unfolding R_def tT x_sum
+      apply (rule sum.reindex_cong)
+      by (auto simp add: inj_on_def)
+
+    define T' \<pi>' \<pi>T \<pi>R where \<open>T' = {i\<in>T. \<pi> i \<noteq> None}\<close> and \<open>\<pi>' = the o \<pi>\<close> and \<open>\<pi>T = \<pi>' ` T'\<close> and \<open>\<pi>R i = R (inv_into T' \<pi>' i)\<close> for i
+    have \<open>inj_on \<pi>' T'\<close>
+      by (smt (z3) T'_def \<pi>'_def assms comp_apply inj_map_def inj_on_def mem_Collect_eq option.expand)
+    have [simp]: \<open>finite \<pi>T\<close>
+      by (simp add: T'_def \<pi>T_def)
+
+    have \<open>g x = (\<Sum>i\<in>T. R i *\<^sub>C g (ket i))\<close>
+      by (smt (verit, ccfv_threshold) \<open>clinear g\<close> complex_vector.linear_scale complex_vector.linear_sum sum.cong x_sum)
+    also have \<open>\<dots> = (\<Sum>i\<in>T. R i *\<^sub>C f (ket i))\<close>
+      using g_f by presburger
+    also have \<open>\<dots> = (\<Sum>i\<in>T. R i *\<^sub>C (case \<pi> i of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x))\<close>
+      unfolding f_def by auto
+    also have \<open>\<dots> = (\<Sum>i\<in>T'. R i *\<^sub>C ket (\<pi>' i))\<close>
+      apply (rule sum.mono_neutral_cong_right)
+      unfolding T'_def \<pi>'_def
+      by auto
+    also have \<open>\<dots> = (\<Sum>i\<in>\<pi>' ` T'. R (inv_into T' \<pi>' i) *\<^sub>C ket i)\<close>
+      apply (subst sum.reindex)
+      using \<open>inj_on \<pi>' T'\<close> apply assumption
+      apply (rule sum.cong)
+      using \<open>inj_on \<pi>' T'\<close> by auto
+    finally have gx_sum: \<open>g x = (\<Sum>i\<in>\<pi>T. \<pi>R i *\<^sub>C ket i)\<close>
+      using \<pi>R_def \<pi>T_def by auto
+
+    have \<open>(norm (g x))\<^sup>2 = (\<Sum>a\<in>\<pi>T. (cmod (\<pi>R a))\<^sup>2)\<close>
+      unfolding gx_sum 
+      apply (subst pythagorean_theorem_sum)
+      by auto
+    also have \<open>\<dots> = (\<Sum>i\<in>T'. (cmod (R i))\<^sup>2)\<close>
+      unfolding \<pi>R_def \<pi>T_def
+      apply (subst sum.reindex)
+      using \<open>inj_on \<pi>' T'\<close> apply assumption
+      apply (rule sum.cong)
+      using \<open>inj_on \<pi>' T'\<close> by auto
+    also have \<open>\<dots> \<le> (\<Sum>a\<in>T. (cmod (R a))\<^sup>2)\<close>
+      apply (rule sum_mono2)
+      using T'_def by auto
+    also have \<open>\<dots> = (norm x)\<^sup>2\<close>
+      unfolding x_sum 
+      apply (subst pythagorean_theorem_sum)
+      using \<open>finite T\<close> by auto
+    finally show \<open>norm (g x) \<le> norm x\<close>
+      by auto
   qed
-
-  define C1 :: "('a ell2 \<Rightarrow> 'b ell2)"
-    where "C1 \<psi> = Abs_ell2 (C0 (Rep_ell2 \<psi>))" for \<psi>
-  have [transfer_rule]: "rel_fun (pcr_ell2 (=)) (pcr_ell2 (=)) C0 C1" 
-    apply (rule rel_funI)
-    unfolding ell2.pcr_cr_eq cr_ell2_def C1_def 
-    apply (subst Abs_ell2_inverse)
-    using has_ell2_norm_C0 Rep_ell2 by blast+
-
-  have add: "C1 (x + y) = C1 x + C1 y" for x y
-    apply transfer unfolding C0_def 
-    apply (rule ext, rename_tac b)
-    apply (case_tac "inv_map \<pi> b")
+  ultimately have \<open>cblinfun_extension_exists (cspan (range ket)) g\<close>
+    apply (rule_tac cblinfun_extension_exists_bounded_dense[where B=1])
     by auto
 
-  have scaleC: "C1 (c *\<^sub>C x) = c *\<^sub>C C1 x" for c x
-    apply transfer unfolding C0_def 
-    apply (rule ext, rename_tac b)
-    apply (case_tac "inv_map \<pi> b")
-    by auto
-
-  have "clinear C1"
-    using add scaleC by (rule clinearI)
-
-  have bounded_C0: \<open>ell2_norm (C0 \<psi>) \<le> ell2_norm \<psi>\<close> if \<open>has_ell2_norm \<psi>\<close> for \<psi>  
-  proof-
-    have \<open>\<forall> S. finite S \<longrightarrow> ( sum (\<lambda>i. (cmod (\<psi> i))\<^sup>2) S ) \<le> (ell2_norm \<psi>)^2\<close>
-      using \<open>has_ell2_norm \<psi>\<close> ell2_norm_def
-      by (smt cSUP_upper has_ell2_norm_def mem_Collect_eq sqrt_le_D sum.cong)
-    define \<phi>::\<open>'b \<Rightarrow> complex\<close> where
-      \<open>\<phi> b = (case inv_map \<pi> b of None \<Rightarrow> 0 | Some x \<Rightarrow> \<psi> x)\<close> for b
-    have \<open>\<lbrakk>finite R; \<forall>i\<in>R. \<phi> i \<noteq> 0\<rbrakk> \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le>  (ell2_norm \<psi>)^2\<close>
-      for R::\<open>'b set\<close>
-    proof-
-      assume \<open>finite R\<close> and \<open>\<forall>i\<in>R. \<phi> i \<noteq> 0\<close>
-      from  \<open>\<forall>i\<in>R. \<phi> i \<noteq> 0\<close>
-      have  \<open>\<forall>i\<in>R. \<exists> x. Some x = inv_map \<pi> i\<close>
-        unfolding \<phi>_def
-        by (metis option.case_eq_if option.collapse)
-      hence  \<open>\<exists> f. \<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close>
-        by metis
-      then obtain f::\<open>'b\<Rightarrow>'a\<close> where \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> 
-        by blast
-      define S::\<open>'a set\<close> where \<open>S = f ` R\<close>
-      have \<open>finite S\<close>
-        using \<open>finite R\<close>
-        by (simp add: S_def)
-      moreover have \<open>(\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) =  (\<Sum>i\<in>S. (cmod (\<psi> i))\<^sup>2)\<close>
-      proof-
-        have \<open>inj_on f R\<close>
-        proof(rule inj_onI)
-          fix x y :: 'b
-          assume \<open>x \<in> R\<close> and \<open>y \<in> R\<close> and \<open>f x = f y\<close>
-          from \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> 
-          have \<open>\<forall>i\<in>R. Some (f i) = Some (inv \<pi> (Some i))\<close>
-            by (metis inv_map_def option.distinct(1))
-          hence \<open>\<forall>i\<in>R. f i = inv \<pi> (Some i)\<close>
-            by blast
-          hence \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close>
-            by (metis \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> f_inv_into_f inv_map_def option.distinct(1)) 
-          have \<open>\<pi> (f x) = Some x\<close>
-            using \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close> \<open>x\<in>R\<close> by blast
-          moreover have \<open>\<pi> (f y) = Some y\<close>
-            using \<open>\<forall>i\<in>R. \<pi> (f i) = Some i\<close> \<open>y\<in>R\<close> by blast
-          ultimately have \<open>Some x = Some y\<close>
-            using \<open>f x = f y\<close> by metis
-          thus \<open>x = y\<close> by simp
-        qed
-        moreover have \<open>i \<in> R \<Longrightarrow> (cmod (\<phi> i))\<^sup>2 = (cmod (\<psi> (f i)))\<^sup>2\<close>
-          for i
-        proof-
-          assume \<open>i \<in> R\<close>
-          hence \<open>\<phi> i = \<psi> (f i)\<close>
-            unfolding \<phi>_def
-            by (metis \<open>\<forall>i\<in>R. Some (f i) = inv_map \<pi> i\<close> option.simps(5))
-          thus ?thesis
-            by simp 
-        qed
-        ultimately show ?thesis unfolding S_def
-          by (metis (mono_tags, lifting) sum.reindex_cong)
-      qed
-      ultimately show ?thesis
-        by (simp add: \<open>\<forall>S. finite S \<longrightarrow> (\<Sum>i\<in>S. (cmod (\<psi> i))\<^sup>2) \<le> (ell2_norm \<psi>)\<^sup>2\<close>)
-    qed     
-    have \<open>finite R \<Longrightarrow> ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) \<le> (ell2_norm \<psi>)\<^sup>2\<close>
-      for R::\<open>'b set\<close>
-    proof-
-      assume \<open>finite R\<close>
-      define U::\<open>'b set\<close> where \<open>U = {i | i::'b. i \<in> R \<and>  \<phi> i \<noteq> 0 }\<close>
-      define V::\<open>'b set\<close> where \<open>V = {i | i::'b. i \<in> R \<and>  \<phi> i = 0 }\<close>
-      have \<open>U \<inter> V = {}\<close>
-        unfolding U_def V_def by blast
-      moreover have \<open>U \<union> V = R\<close>
-        unfolding U_def V_def by blast
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U ) + 
-            ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) V )\<close>
-        using \<open>finite R\<close> sum.union_disjoint by auto
-      moreover have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) V ) = 0\<close>
-        unfolding V_def by auto
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U )\<close>
-        by simp
-      moreover have \<open>\<forall> i \<in> U. \<phi> i \<noteq> 0\<close>
-        by (simp add: U_def)
-      moreover have \<open>finite U\<close>
-        unfolding U_def using \<open>finite R\<close>
-        by simp
-      ultimately have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U ) \<le>  (ell2_norm \<psi>)\<^sup>2\<close>
-        using \<open>\<And>R. \<lbrakk>finite R; \<forall>i\<in>R. \<phi> i \<noteq> 0\<rbrakk> \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le>  (ell2_norm \<psi>)\<^sup>2\<close> by blast        
-      thus ?thesis using \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) U )\<close>
-        by simp
-    qed
-    hence \<open>finite R \<Longrightarrow> sqrt (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> ell2_norm \<psi>\<close>
-      for R
-    proof-
-      assume \<open>finite R\<close>
-      hence \<open>(\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> (ell2_norm \<psi>)^2\<close>
-        by (simp add: \<open>\<And>R. finite R \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> (ell2_norm \<psi>)\<^sup>2\<close>)
-      hence \<open>sqrt (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> sqrt ((ell2_norm \<psi>)^2)\<close>
-        using real_sqrt_le_iff by blast
-      moreover have \<open>sqrt ((ell2_norm \<psi>)^2) = ell2_norm \<psi>\<close>
-      proof-
-        have \<open>ell2_norm \<psi> \<ge> 0\<close>
-        proof-
-          obtain X where \<open>Rep_ell2 X = \<psi>\<close>
-            using Rep_ell2_cases \<open>has_ell2_norm \<psi>\<close> by auto
-          have \<open>norm X \<ge> 0\<close>
-            by simp
-          thus \<open>ell2_norm \<psi> \<ge> 0\<close> 
-            using \<open>Rep_ell2 X = \<psi>\<close>
-            by (simp add: norm_ell2.rep_eq) 
-        qed
-        thus ?thesis
-          by simp 
-      qed
-      ultimately show ?thesis
-        by linarith 
-    qed
-    hence \<open>\<forall> L \<in> { sqrt (sum (\<lambda>i. norm (\<phi> i)^2) F) | F. F\<in>{F. finite F} }. L \<le> ell2_norm \<psi>\<close>
-      by blast
-    moreover have \<open>{ sqrt (sum (\<lambda>i. norm (\<phi> i)^2) F) | F. F\<in>{F. finite F} } \<noteq> {}\<close>
-      by force
-    ultimately have \<open>Sup { sqrt (sum (\<lambda>i. norm (\<phi> i)^2) F) | F. F\<in>{F. finite F} } \<le> ell2_norm \<psi>\<close>
-      by (meson cSup_least)
-    moreover have \<open>sqrt ( Sup { sum (\<lambda>i. norm (\<phi> i)^2) F | F. F\<in>{F. finite F} } )
-          = Sup { sqrt (sum (\<lambda>i. norm (\<phi> i)^2) F) | F. F\<in>{F. finite F}  }\<close>
-    proof-
-      define T where \<open>T = { sum (\<lambda>i. norm (\<phi> i)^2) F | F. F\<in>{F. finite F} }\<close>
-      have \<open>mono sqrt\<close>
-        by (simp add: monoI)
-      moreover have \<open>continuous (at_left (Sup T)) sqrt\<close>
-        by (simp add: continuous_at_imp_continuous_at_within isCont_real_sqrt)      
-      moreover have \<open>T \<noteq> {}\<close>
-        unfolding T_def
-        by blast
-      moreover have \<open>bdd_above T\<close>
-      proof(rule bdd_aboveI)
-        fix x
-        assume \<open>x \<in> T\<close>
-        hence \<open>\<exists> R. finite R \<and> x = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R )\<close>
-          unfolding T_def
-          by blast
-        then obtain R where \<open>finite R\<close> and \<open>x = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R )\<close>
-          by blast
-        from  \<open>finite R\<close>
-        have \<open>( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R ) \<le>  (ell2_norm \<psi>)^2\<close>
-          by (simp add: \<open>\<And>R. finite R \<Longrightarrow> (\<Sum>i\<in>R. (cmod (\<phi> i))\<^sup>2) \<le> (ell2_norm \<psi>)\<^sup>2\<close>)
-        thus \<open>x \<le> (ell2_norm \<psi>)^2\<close>
-          using  \<open>x = ( sum (\<lambda>i. (cmod (\<phi> i))\<^sup>2) R )\<close> by simp
-      qed
-      ultimately have \<open>sqrt (Sup T) = Sup (sqrt ` T)\<close>
-        by (rule Topological_Spaces.continuous_at_Sup_mono)
-      moreover have \<open>sqrt ` {\<Sum>i\<in>F. (cmod (\<phi> i))\<^sup>2 |F. F \<in> Collect finite}
-             =  {sqrt (\<Sum>i\<in>F. (cmod (\<phi> i))\<^sup>2) |F. F \<in> Collect finite}\<close>
-        by auto
-      ultimately show ?thesis 
-        unfolding T_def
-        by simp
-    qed
-    ultimately have \<open>sqrt ( Sup { sum (\<lambda>i. norm (\<phi> i)^2) F | F. F\<in>{F. finite F} } ) \<le> ell2_norm \<psi>\<close>
-      by simp
-    moreover have \<open>ell2_norm \<phi> = sqrt ( Sup { sum (\<lambda>i. norm (\<phi> i)^2) F | F. F\<in>{F. finite F} } )\<close>
-      unfolding ell2_norm_def
-      by (metis Setcompr_eq_image)
-    ultimately have \<open>ell2_norm \<phi> \<le> ell2_norm \<psi>\<close>
-      by simp
-    thus ?thesis
-      unfolding C0_def \<phi>_def by simp
-  qed
-
-  hence bounded_C1: "\<exists>K. \<forall>x. norm (C1 x) \<le> norm x * K"
-    apply transfer apply (rule exI[of _ 1]) by auto
-
-  have "bounded_clinear C1"
-    using \<open>clinear C1\<close> bounded_C1
-    using add bounded_clinear_intro scaleC by blast
-
-  define C where "C = CBlinfun C1"
-  have [transfer_rule]: "pcr_cblinfun (=) (=) C1 C"
-    unfolding C_def unfolding cblinfun.pcr_cr_eq cr_cblinfun_def
-    apply (subst CBlinfun_inverse)
-    using \<open>bounded_clinear C1\<close> by auto
-
-  have C1_ket: "C1 (ket x) = (case \<pi> x of Some i \<Rightarrow> ket i | None \<Rightarrow> 0)" for x
-    apply (transfer fixing: \<pi> x) unfolding C0_def
-    apply (rule ext, rename_tac b)
-    apply (case_tac "inv_map \<pi> b"; cases "\<pi> x")
-       apply auto
-       apply (metis inv_map_def option.simps(3) range_eqI)
-      apply (metis f_inv_into_f inv_map_def option.distinct(1) option.sel)
-     apply (metis f_inv_into_f inv_map_def option.sel option.simps(3))
-    by (metis (no_types, lifting) assms f_inv_into_f inj_map_def inv_map_def option.sel option.simps(3))
-
-  have "C *\<^sub>V ket x = (case \<pi> x of None \<Rightarrow> 0 | Some i \<Rightarrow> ket i)" for x
-    using ket.transfer[transfer_rule del] zero_ell2.transfer[transfer_rule del] 
-    apply (tactic \<open>all_tac\<close>)
-    apply (transfer fixing: \<pi>)
-    by (fact C1_ket)
-
-  thus "classical_operator_exists \<pi>"
-    by (rule classical_operator_existsI[of C])
+  then have \<open>cblinfun_extension_exists (range ket) f\<close>
+    by (metis (mono_tags, opaque_lifting) g_f cblinfun_extension_apply cblinfun_extension_existsI complex_vector.span_base rangeE)
+  then show \<open>classical_operator_exists \<pi>\<close>
+    unfolding classical_operator_exists_def f_def by simp
 qed
 
 lemma classical_operator_exists_finite[simp]: "classical_operator_exists (\<pi> :: _::finite \<Rightarrow> _)"

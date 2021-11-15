@@ -1,8 +1,7 @@
 section \<open>\<open>Extra_Ordered_Fields\<close> -- Additional facts about ordered fields\<close>
 
 theory Extra_Ordered_Fields
-  imports Complex_Main
-    Jordan_Normal_Form.Conjugate (* Defines ordering for complex. We have to use theirs, otherwise there will be conflicts *)
+  imports Complex_Main "HOL-Library.Complex_Order"
 begin
 
 
@@ -626,7 +625,7 @@ proof-
     for a b c::'a
     by (meson local.nonzero_eq_divide_eq)
   have f6: "0 < z"
-    using a2 a1 by (meson local.order.ordering_axioms order.strict_trans2)
+    using a2 a1 less_le_trans by blast
   have "z \<noteq> 0"
     using a2 a1 by (meson local.leD)
   moreover have "x / z \<noteq> y / w"
@@ -870,6 +869,10 @@ end (* class nice_ordered_field *)
 
 code_identifier
   code_module Ordered_Fields \<rightharpoonup> (SML) Arith and (OCaml) Arith and (Haskell) Arith
+
+subsection\<open>Ordered Complex\<close>
+
+subsection\<open>Ordered Complex\<close>
 
 subsection \<open>Ordering on complex numbers\<close>
 

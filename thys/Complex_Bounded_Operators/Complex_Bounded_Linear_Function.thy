@@ -2268,7 +2268,7 @@ lemma positive_id_cblinfun[simp]: "id_cblinfun \<ge> 0"
 
 lemma positive_hermitianI: \<open>A = A*\<close> if \<open>A \<ge> 0\<close>
   apply (rule cinner_real_hermiteanI)
-  using that by (auto simp del: less_eq_complex_def simp: reals_zero_comparable_iff less_eq_cblinfun_def)
+  using that by (auto simp: complex_is_real_iff_compare0 less_eq_cblinfun_def)
 
 lemma positive_cblinfunI: \<open>A \<ge> 0\<close> if \<open>\<And>x. cinner x (A *\<^sub>V x) \<ge> 0\<close>
   unfolding less_eq_cblinfun_def using that by auto
