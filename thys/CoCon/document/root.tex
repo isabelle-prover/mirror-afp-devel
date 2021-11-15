@@ -1,0 +1,172 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{CoCon: A Confidentiality-Verified Conference Management System}
+\author{Andrei Popescu \and Peter Lammich \and Thomas Bauereiss}
+\maketitle
+
+\begin{abstract}
+	This entry contains the confidentiality verification of the (functional kernel of) the CoCon conference management system \cite{cocon-CAV2014,cocon-JAR2021}.
+	%
+	The confidentiality properties refer to the documents managed by the system, namely
+	papers, reviews, discussion logs and acceptance/rejection decisions, and also to the assignment of reviewers to papers. They have all been formulated as instances
+	of BD Security \cite{BDsecurity-ITP2021,BDSecurity-AFP} and verified using the BD Security unwinding technique.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction}
+
+
+This document presents the confidentiality verification of the (functional kernel of) the CoCon conference management system \cite{cocon-CAV2014,cocon-JAR2021}.
+%
+CoCon was the first case study of BD Security, a general framework for the specification and verification of information flow security.
+The framework works for any input/output (I/O) automata and allows the specification of flexible policies for information flow security by describing the observations, the secrets, a bound on information release (also known as ``declassification bound'') and a trigger for information release (also known as ``declassification trigger').
+
+In CoCon, a conference goes through several %successive
+phases:
+\begin{description}
+\item{\bf No-Phase}
+Any user can apply for a new conference, with the effect of registering it in the system as initially having ``no phase.''
+After approval from CoCon's superuser,\footnote{The superuser's powers are restricted to approving or rejecting new conference requests.}
+the conference moves to the setup phase, with the applicant
+%user
+becoming
+a conference chair.
+%
+\item{\bf Setup} A conference chair can add new chairs %\footnote{A conference is allowed to have multiple chairs.}
+and new regular PC members. %(with a chair also being a PC member).
+From here on, advancing the conference through its different phases can be done
+by the chairs.
+%
+\item{\bf Submission}
+Any user can list the conferences %currently
+awaiting submissions (i.e., being in the submission phase).
+A user can
+%then
+submit new papers, %and (immediately or later)
+upload new versions of their existing papers, or indicate other users as coauthors
+thereby granting them reading and editing rights.
+%Authors have reading and editing rights of their papers. %'s info and content.
+%
+\item{{\bf Bidding}}
+Authors are no longer allowed to upload or register new papers, and PC members are allowed to view the submitted papers.
+PC members can place bids, indicating for each paper one of the following preferences:
+``want to review'', ``would review'', ``no preference'', ``would not review'', and ``conflict''.
+If the preference is ``conflict'', the PC member cannot be assigned that paper, and will not see its discussion.
+%hereafter the PC member no longer sees that paper or the discussion around it.
+``Conflict'' is assigned automatically to papers authored by a PC member.
+%
+\item{{\bf Reviewing}}
+Chairs can assign reviewers to papers, which must be among the PC members who have no conflict with given paper.
+%
+The assigned reviewers can edit their reviews.
+%
+\item{{\bf Discussion}}
+All PC members having no conflict with a paper can see its reviews and can add comments.
+The reviewers can still edit their reviews, but in a transparent manner---so that the overwritten  versions are still visible to the non-conflict PC members.
+Also, chairs can edit the decision.
+%
+\item{{\bf Notification}}
+The authors can read the reviews and the accept/reject decision, which no one can edit any longer.
+\end{description}
+
+After this introduction and a section on technical preliminaries, this document presents the specification of the CoCon system, as an input/output (I/O) automaton.
+Following is a section on proved safety properties about the system (invariants) that are needed in the proofs of confidentiality.
+
+The confidentiality properties of CoCon are formalized as instances of BD Security.
+They cover confidentiality aspects about:
+\begin{itemize}
+	\item papers
+	\item reviews of papers
+	\item discussion logs consisting of comments from the PC members
+	\item decisions on the papers' acceptance or rejection
+	\item assignment of reviewers to papers
+\end{itemize}
+%
+Each of these types of confidentiality properties have dedicated sections (and corresponding folders in the formalization) with self-explanatory names.  BD Security is defined in terms of an observation infrastructure, a secrecy infrastructure,  a declassification trigger and a declassification bound. The observations are always given by an arbitrary set of users (which is fixed in the ``Observation Setup'' section).  The secrets (called ``values'' in this formalization) and the declassification bounds and triggers are specific to each property.
+The bounds and triggers are chosen in such a way that their interplay covers the entire spectrum of information flow through the system in relation to the given secrets. This is explained in \cite[Section 3.5]{cocon-JAR2021}.
+
+The proofs proceed using the method of BD Security unwinding, which
+is part of the AFP entry on BD Security \cite{BDSecurity-AFP} and
+is described in detail in \cite[Sections 4.1 and 4.2]{cocon-JAR2021} and \cite[Sections 2.5 and 2.6]{BDsecurity-ITP2021}.  For managing proof complexity, we take a modular approach, building several
+unwinding relations that are connected in a sequence and have an exit point into an error component. This approach is presented in \cite{cocon-JAR2021} as Corollary 6 (Sequential Unwinding Theorem)
+and in \cite{BDsecurity-ITP2021} as Theorem 4 (Sequential Multiplex Unwinding Theorem).
+
+The last section formalizes what we call \emph{traceback properties},\footnote{In previous work, we called
+	these types of properties  \emph{accountability properties}  \cite{cosmed-itp2016,cosmed-jar2018} or \emph{forensic properties} \cite{cocon-CAV2014}.
+	The  \emph{traceback properties} terminology is used in \cite{cocon-JAR2021}.}
+which  strengthen the confidentiality guarantees. Confidentiality formulated as BD security states properties of essentially the following form: ``Unless a user acquires such and such role and/or the conference reaches such and such phase, that user cannot learn such and such information.''
+Traceback properties show that it is not possible for a user to usurp such roles, and that the conference only progresses through different phases in a ``legal'' way. \cite[Section 3.6]{cocon-JAR2021} explains CoCon's traceback properties in detail.
+
+As a matter of notation, this formalization (similarly to all our AFP formalizations involving BD security)
+concurs with the original conference paper on CoCon \cite{cocon-CAV2014}
+and differs from the later journal paper \cite{cocon-JAR2021}
+in
+that the secrets are called ``values'' (and consequently the type of secrets is
+denoted by ``value''), and are ranged over by ``v'' rather than ``s''. On the other
+hand, we use ``s'' (rather than ``$\sigma$'') to range over states.
+%
+Moreover, the formalization uses the following notations for the various BD
+security components:
+\begin{itemize}
+	\item phi for the secret discriminator isSec
+	\item f for the secret selector getSec
+	\item gamma for the observation discriminator isObs
+	\item g  for the observation selector getObs
+\end{itemize}
+
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

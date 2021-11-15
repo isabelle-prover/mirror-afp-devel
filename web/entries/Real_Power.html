@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Real Exponents as the Limits of Sequences of Rational Exponents - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">R</font>eal
+  
+          <font class="first">E</font>xponents
+  
+          as
+  
+          the
+  
+          <font class="first">L</font>imits
+  
+          of
+  
+          <font class="first">S</font>equences
+  
+          of
+  
+          <font class="first">R</font>ational
+  
+          <font class="first">E</font>xponents
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Real Exponents as the Limits of Sequences of Rational Exponents</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">Jacques D. Fleuriot</a>
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2021-11-08</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+In this formalisation, we  construct real exponents as the limits of
+sequences of rational exponents. In particular, if $a \ge 1$ and $x
+\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
+that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
+increasing and if $r$ is any rational number such that $r > x$,
+$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
+monotone sequences, $a^{r_n}$ converges. We define $a^ x =
+\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
+properties (for $a \ge 0$).  This particular construction of real
+exponents is needed instead of the usual one using the natural
+logarithm and exponential functions (which already exists in Isabelle)
+to support our mechanical derivation of Euler's exponential
+series as an ``infinite polynomial". Aside from helping us avoid
+circular reasoning, this is, as far as we are aware, the first time
+real exponents are mechanised in this way within a proof assistant.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Real_Power-AFP,
+  author  = {Jacques D. Fleuriot},
+  title   = {Real Exponents as the Limits of Sequences of Rational Exponents},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Real_Power.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                    
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Real_Power/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Real_Power/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Real_Power/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-Real_Power-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

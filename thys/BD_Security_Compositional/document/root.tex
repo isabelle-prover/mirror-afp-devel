@@ -1,0 +1,118 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Compositional BD Security}
+\author{Thomas Bauereiss \and Andrei Popescu}
+\maketitle
+
+\begin{abstract}
+Building on a previous AFP entry \cite{BDSecurity-AFP} that formalizes
+the Bounded-Deducibility Security (BD Security) framework \cite{BDsecurity-ITP2021},
+we formalize compositionality and transport theorems for information flow security. These results allow lifting
+BD Security properties from individual components specified as transition systems,
+to a composition of systems specified as communicating products of transition systems.
+The underlying ideas of these results are presented in
+the papers \cite{BDsecurity-ITP2021} and \cite{cosmedis-SandP2017}. The latter paper also describes a major case study where these results have been used: on verifying the CoSMeDis distributed social media platform (itself formalized as an AFP entry \cite{cosmedis-AFP} that builds on this entry).
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+
+
+Bounded-Deducibility Security (BD Security) \cite{BDsecurity-ITP2021} is a general
+framework for stating and proving information flow security, in particular, confidentiality properties.  The framework works for any transition system and allows the specification of flexible policies for information flow security by describing the observations, the secrets, a bound on information release (also known as ``declassification bound'') and a trigger for information release (also known as ``declassification trigger').  The framework been deployed to verify the confidentiality of (the functional kernels of) several web-based multi-user systems:
+\begin{itemize}
+	\item the CoCon conference management system \cite{cocon-CAV2014,cocon-JAR2021} (also in the AFP \cite{cocon-AFP})
+	%
+	\item the CoSMed prototype social media platform
+	\cite{cosmed-itp2016,cosmed-jar2018}
+	(also in the AFP \cite{cosmed-AFP})
+	%
+	\item the CoSMeDis distributed extension of CoSMed
+	\cite{cosmedis-SandP2017}
+	(also in the AFP \cite{cosmedis-AFP})
+\end{itemize}
+
+This document presents some results that can help with the BD Security verification of large systems. They have been inspired by the challenges we faced when extending to CoSMeDis
+ the properties we had previously verified for CoSMed.
+ %
+  The details of how these results were conceived  are given in the CoSMeDis paper \cite{cosmedis-SandP2017}, while a more succinct presentation can be found in \cite{BDsecurity-ITP2021}. %The reader should consult these paper for understanding the limitations of these theorems.
+
+The main result is a compositionality theorem, allowing to compose
+	BD security policies for individual components specified as transition systems
+	into a policy for the composition of systems specified as communicating products of transition systems. The theorem guarantees that the compound system obeys the compound policy provided that each component obeys its policy.
+%
+There is a binary, as well as an N-ary version of the compositionality theorem, whose formalizations are presented in this document in sections with self-explanatory names.
+
+Often, the composed policy does not have the most natural formulation of the desired confidentiality property. To help with reformulating it as a natural property (with the price of perhaps slightly weakening it), we have formalized a BD Security transport theorem.
+%
+Moreover, we have a theorem that allows combining secret sources to form a stronger BD Security guarantee, which additionally excludes any leak arising from the collusion of the two sources; when this is possible, we call the secret sources \emph{independent}.
+%
+Finally, we have formalized some cases when BD security holds trivially, which
+are useful auxiliaries for the more complex results.
+%
+All these results (for transporting, combining independent secret sources, and establishing security trivially), are again presented in sections with self-explanatory names.
+
+As a matter of terminology and notation, this formalization (similarly to all our AFP formalizations involving BD security)
+differs from its main reference papers, namely \cite{cosmedis-SandP2017}  and \cite{BDsecurity-ITP2021}
+%(and on most papers on CoSMed, CoSMeDis and CoCon)
+in
+that the secrets are called ``values'' (and consequently the type of secrets is
+denoted by ``value''), and are ranged over by ``v'' rather than ``s''. On the other
+hand, we use ``s'' (rather than ``$\sigma$'') to range over states.
+
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

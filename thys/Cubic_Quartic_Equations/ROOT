@@ -1,0 +1,12 @@
+chapter AFP
+
+session Cubic_Quartic_Equations (AFP) = Algebraic_Numbers +
+  options [timeout = 600]
+  sessions
+    Complex_Geometry
+    Factor_Algebraic_Polynomial
+  theories 
+    Quartic_Polynomials
+  document_files
+    "root.tex"
+    "root.bib"

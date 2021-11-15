@@ -1,0 +1,21 @@
+chapter AFP
+
+session CoSMed (AFP) = Bounded_Deducibility_Security +
+  options [timeout = 1200]
+  sessions
+    Fresh_Identifiers
+  directories
+    Post_Confidentiality
+    Friend_Confidentiality
+    Friend_Request_Confidentiality
+    Traceback_Properties
+  theories
+    System_Specification
+    Post
+    Friend
+    Friend_Request
+    Post_Visibility_Traceback
+    Friend_Traceback
+  document_files
+    "root.tex"
+    "root.bib"

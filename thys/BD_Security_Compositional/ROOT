@@ -1,0 +1,13 @@
+chapter AFP
+
+session BD_Security_Compositional (AFP) = Bounded_Deducibility_Security +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    Composing_Security
+    Composing_Security_Network
+    Independent_Secrets
+  document_files
+    "root.tex"
+    "root.bib"

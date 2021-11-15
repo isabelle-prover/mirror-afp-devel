@@ -153,6 +153,14 @@ lemma list_augment_same_twice: "list_augment (list_augment xs k u) k v = list_au
 lemma nth'_list_augment_diff: "i \<noteq> j \<Longrightarrow> nth' (list_augment \<sigma> i v) j = nth' \<sigma> j"
   by (auto simp add: list_augment_def list_pad_out_def nth_append nth'_def)
 
+text \<open>The definition of @{const list_augment} is not good for code generation,
+      since it produces undefined values even when padding out is not required.
+      Here, we defined a code equation that avoids this.\<close>
+
+lemma list_augment_code [code]:
+  "list_augment xs k v = (if (k < length xs) then list_update xs k v else list_update (list_pad_out xs k) k v)"
+  by (simp add:list_pad_out_def list_augment_def)
+
 text \<open>Finally we can create the list lenses, of which there are three varieties. One that allows
   us to view an index, one that allows us to view the head, and one that allows us to view the tail.
   They are all mainly well-behaved lenses.\<close>
@@ -253,6 +261,11 @@ text \<open>The following theorem attribute stores splitting theorems for alphab
   for proof automation.\<close>
 
 named_theorems alpha_splits
+
+text \<open> We supply a helpful tactic to remove the subscripted v characters from subgoals. These
+  exist because the internal names of record fields have them. \<close>
+
+method rename_alpha_vars = tactic \<open> Lens_Utils.rename_alpha_vars \<close>
 
 subsection \<open>Locale State Spaces \<close>
 

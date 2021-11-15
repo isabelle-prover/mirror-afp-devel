@@ -1,0 +1,14 @@
+chapter AFP
+
+session Factor_Algebraic_Polynomial(AFP) = Algebraic_Numbers +
+  options [timeout = 600]
+  sessions
+    Polynomials
+    Hermite_Lindemann
+  theories 
+    Poly_Connection
+    Multivariate_Resultant
+    Factor_Real_Poly
+  document_files
+    "root.tex"
+    "root.bib"

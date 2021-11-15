@@ -67,7 +67,7 @@ fun compile_chantype (name, chans) ctx =
         SOME loc => loc ^ "." |
         NONE => Context.theory_name (Local_Theory.exit_global ctx) ^ "."
     val prefix = thypfx ^ name ^ "."
-    val simp = Attrib.check_src @{context} (Token.make_src ("simp", Position.none) [])
+    val attrs = @{attributes [simp, code_unfold]}
     val dummy_disc = absdummy dummyT @{term True}
   in
   (co_datatype_cmd Least_FP construct_lfp 
@@ -87,8 +87,8 @@ fun compile_chantype (name, chans) ctx =
                          $ (if (length pnames = 1) then dummy_disc else const (prefix ^ is_prefix ^ x ^ ctor_suffix))
                          $ const (prefix ^ un_prefix ^ x ^ ctor_suffix)))
   #> (fn (thms, ctx) =>
-       (fold (fn x => fn thy => snd (note ((Binding.qualify false name (Binding.name (x ^ wb_prism_suffix)), [simp]), [wb_prism_proof x thms thy]) thy)) pnames
-       #> (snd o note ((Binding.qualify false name (Binding.name codepsN), [simp]), map (codep_proof thms ctx) (pairings pnames)))
+       (fold (fn x => fn thy => snd (note ((Binding.qualify false name (Binding.name (x ^ wb_prism_suffix)), attrs), [wb_prism_proof x thms thy]) thy)) pnames
+       #> (snd o note ((Binding.qualify false name (Binding.name codepsN), attrs), map (codep_proof thms ctx) (pairings pnames)))
        ) ctx))
   ctx
   end;
