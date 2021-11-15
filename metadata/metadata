@@ -304,13 +304,19 @@ extra-history =
         Several additional lens relations, including observational equivalence.
         Additional theorems throughout.
         Adaptations for Isabelle 2020.
-        (revision 44e2e5c)
+        (revision 44e2e5c)<br>
         [2021-01-27]
         Addition of new theorems throughout, particularly for prisms.
         New "chantype" command allows the definition of an algebraic datatype with generated prisms.
         New "dataspace" command allows the definition of a local-based state space, including lenses and prisms.
         Addition of various examples for the above.
-        (revision 89cf045a)
+        (revision 89cf045a)<br>
+        [2021-11-15]	
+	Improvement of alphabet and chantype commands to support code generation.
+	Addition of a tactic "rename_alpha_vars" that removes the subscript vs in proof goals.
+	Bug fixes and improvements to alphabet command ML implementation.
+	Additional laws for scenes.
+	(revisions 9f8bcd71c121 and c061bf9f46f3)<br>
 
 [Game_Based_Crypto]
 title = Game-based cryptography in HOL
