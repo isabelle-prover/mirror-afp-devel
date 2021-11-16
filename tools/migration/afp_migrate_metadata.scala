@@ -353,7 +353,8 @@ object AFP_Migrate_Metadata
           "Florian Kammueller" -> "Florian Kammüller",
           "Jasmin Blanchette" -> "Jasmin Christian Blanchette",
           "Ognjen Maric" -> "Ognjen Marić",
-          "Maximilian P.L. Haslbeck" -> "Maximilian P. L. Haslbeck")
+          "Maximilian P.L. Haslbeck" -> "Maximilian P. L. Haslbeck",
+          "Sebastiaan Joosten" -> "Sebastiaan J. C. Joosten")
 
         var emails = List(
           "a.bentkamp@vu.nl" -> "Alexander Bentkamp",
