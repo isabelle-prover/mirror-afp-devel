@@ -62,7 +62,7 @@ method word_eqI uses simp simp_del split split_del cong flip =
 method word_eqI_solve uses simp simp_del split split_del cong flip =
   solves \<open>word_eqI simp: simp simp_del: simp_del split: split split_del: split_del
                    cong: cong simp flip: flip;
-          (fastforce dest: test_bit_size simp: word_eqI_simps simp flip: flip
+          (fastforce simp: word_eqI_simps simp flip: flip
                      simp: simp simp del: simp_del split: split split del: split_del cong: cong)?\<close>
 
 end
