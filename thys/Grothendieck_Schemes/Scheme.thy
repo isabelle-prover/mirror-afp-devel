@@ -468,8 +468,8 @@ proof -
                   using iso.class_of_eq[OF fU] by auto
                 finally show ?thesis .
               qed
-              then show ?thesis unfolding ind_btw.induced_morphism_def
-                by (smt (z3) compose_def restrict_apply' restrict_ext)
+              then show ?thesis unfolding ind_btw.induced_morphism_def compose_def
+                by (smt (verit, best) restrict_apply' restrict_ext)
             qed
             ultimately show ?thesis unfolding is_local_def ind_btw.is_local_def
               by auto
@@ -746,7 +746,7 @@ proof -
         using cring0.sheaf_spec_is_presheaf by force
       show "presheaf_of_rings cring0.spectrum cring0.is_zariski_open im0.im_sheaf im0.im_sheaf_morphisms
  0 im0.add_im_sheaf im0.mult_im_sheaf im0.zero_im_sheaf im0.one_im_sheaf"
-        by (smt (z3) comm_ring.cring0_is_zariski_open cring0.comm_ring_axioms cring0.cring0_spectrum_eq im0.presheaf_of_rings_axioms)
+        by (simp add: im0.presheaf_of_rings_axioms)
       show "morphism_presheaves_of_rings_axioms cring0.is_zariski_open cring0.sheaf_spec cring0.sheaf_spec_morphisms 
                cring0.add_sheaf_spec cring0.mult_sheaf_spec cring0.zero_sheaf_spec cring0.one_sheaf_spec 
                im0.im_sheaf im0.im_sheaf_morphisms im0.add_im_sheaf im0.mult_im_sheaf im0.zero_im_sheaf im0.one_im_sheaf (\<lambda>U. \<lambda>s\<in>cring0.sheaf_spec U. 0)"
