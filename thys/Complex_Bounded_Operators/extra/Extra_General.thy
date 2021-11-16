@@ -499,7 +499,7 @@ proof (unfold inj_map_def, rule allI, rule allI, rule impI, erule conjE)
     by (meson inv_into_injective option.inject x_pi y_pi)
 qed
 
-lemma abs_summable_bdd_above:
+(* lemma abs_summable_bdd_above:
   fixes f :: \<open>'a \<Rightarrow> 'b::real_normed_vector\<close>
   shows \<open>f abs_summable_on A \<longleftrightarrow> bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
 proof (rule iffI)
@@ -551,6 +551,6 @@ proof (rule nonneg_bdd_above_summable_on, simp, rule bdd_aboveI2, rename_tac F)
     by (smt (verit, del_insts) a1 Diff_iff Infinite_Sum.infsum_nonneg assms(2) b4 infsum_def infsum_mono_neutral norm_ge_zero subset_eq)
   finally show \<open>(\<Sum>xa\<in>F. norm (x xa * y xa)) \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>A. norm (y i * y i))\<close>
     by simp
-qed
+qed *)
 
 end

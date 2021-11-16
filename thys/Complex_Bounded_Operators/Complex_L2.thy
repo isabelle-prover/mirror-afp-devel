@@ -25,7 +25,7 @@ subsection \<open>l2 norm of functions\<close>
 definition "has_ell2_norm (x::_\<Rightarrow>complex) \<longleftrightarrow> (\<lambda>i. (x i)\<^sup>2) abs_summable_on UNIV"
 
 lemma has_ell2_norm_bdd_above: \<open>has_ell2_norm x \<longleftrightarrow> bdd_above (sum (\<lambda>xa. norm ((x xa)\<^sup>2)) ` Collect finite)\<close>
-  by (simp add: has_ell2_norm_def abs_summable_bdd_above)
+  by (simp add: has_ell2_norm_def abs_summable_iff_bdd_above)
 
 lemma has_ell2_norm_L2_set: "has_ell2_norm x = bdd_above (L2_set (norm o x) ` Collect finite)"
 proof (rule iffI)
@@ -50,7 +50,7 @@ next
     using bdd_above_image_mono[OF \<open>mono p2\<close> *]
     by auto
   then show \<open>has_ell2_norm x\<close>
-    apply (simp add: image_image has_ell2_norm_def abs_summable_bdd_above)
+    apply (simp add: image_image has_ell2_norm_def abs_summable_iff_bdd_above)
     by (simp add: norm_power)
 qed
 
