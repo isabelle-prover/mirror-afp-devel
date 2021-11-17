@@ -25,17 +25,17 @@ object AFP_Site_Gen
 
     def from_affiliations(
       affiliations: List[Metadata.Affiliation],
-      authors: Map[Metadata.Author.ID, Metadata.Author]): T =
+      authors: Map[Metadata.Author.ID, Metadata.Author]): Object.T =
     {
-      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).toList.map {
-        case (author, author_affiliations) =>
+      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).map {
+        case (author_id, author_affiliations) =>
           val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
           val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
 
-          var res = Utils.the_entry(authors, author).name
-          homepage.foreach(url => res = "<a href=" + quote(url) + ">" + res + "</a>")
-          email.foreach(address => res += "<a href=" + quote("mailto:" + address) + ">" + "\uD83D\uDCE7</a>")
-          res
+          val author = Utils.the_entry(authors, author_id)
+          author_id -> isabelle.JSON.Object(
+            homepage.map(s => List("homepage" -> s)).getOrElse(Nil) :::
+            email.map(s => List("email" -> s)).getOrElse(Nil): _*)
       }
     }
 
@@ -52,14 +52,15 @@ object AFP_Site_Gen
 
     def from_entry(entry: Metadata.Entry, authors: Map[Metadata.Author.ID, Metadata.Author]): JSON.Object.T =
       isabelle.JSON.Object(
-        ("title" -> entry.title) ::
-          ("authors" -> from_affiliations(entry.authors, authors)) ::
+        "title" -> entry.title ::
+          "authors" -> entry.authors.map(_.author) ::
+          "affiliations" -> from_affiliations(entry.authors, authors) ::
           (if (entry.contributors.nonEmpty) "contributors" -> from_affiliations(entry.contributors, authors) :: Nil
           else Nil) :::
-          ("date" -> entry.date.toString) ::
-          ("topics" -> entry.topics.map(_.id)) ::
-          ("abstract" -> entry.`abstract`) ::
-          ("license" -> entry.license) ::
+          "date" -> entry.date.toString ::
+          "topics" -> entry.topics.map(_.id) ::
+          "abstract" -> entry.`abstract` ::
+          "license" -> entry.license ::
           (if (entry.releases.nonEmpty)
             "releases" -> entry.releases.map(r => r.isabelle -> r.date.toString).toMap :: Nil
           else Nil) :::
