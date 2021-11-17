@@ -14,7 +14,7 @@ object Hugo
     private def write(file: Path, content: String): Unit =
     {
       val path = src_dir + file
-      path.dir.file.mkdirs()
+      if (!path.dir.file.exists()) path.dir.file.mkdirs()
       File.write(path, content)
     }
 
@@ -33,8 +33,21 @@ object Hugo
 
     def write_static(): Unit =
     {
-      for (name <- File.read_dir(hugo_static)) {
-        Isabelle_System.copy_dir(hugo_static + Path.basic(name), src_dir)
+      if (hugo_static.canonical != src_dir) {
+        for {
+          file <- List(
+            List("content", "_index.md"),
+            List("content", "about.md"),
+            List("content", "contribution.md"),
+            List("content", "download.md"),
+            List("content", "help.md"),
+            List("content", "search.md"),
+            List("content", "statistics.md"),
+            List("content", "submission.md"),
+            List("themes"),
+            List("theories"),
+            List("config.json"))
+        } Isabelle_System.copy_dir(hugo_static + Path.make(file), src_dir)
       }
     }
   }
@@ -42,7 +55,7 @@ object Hugo
   object Layout
   {
     def apply(src_dir: Path = Path.explode("$AFP_BASE") + Path.make(List("web", "hugo"))): Layout =
-      new Layout(src_dir.absolute)
+      new Layout(src_dir.canonical)
   }
 
   private lazy val exec =
@@ -51,14 +64,14 @@ object Hugo
   def build(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web")): Process_Result =
   {
     Isabelle_System.bash(
-      exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.absolute.implode))
+      exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode))
   }
 
   def watch(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web"),
     progress: Progress = new Progress()): Process_Result =
   {
     Isabelle_System.bash(
-      exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.absolute.implode),
+      exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode),
       progress_stdout = progress.echo,
       progress_stderr = progress.echo_warning)
   }
