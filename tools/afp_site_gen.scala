@@ -23,20 +23,17 @@ object AFP_Site_Gen
     def from_topics(topics: List[Metadata.Topic]): T =
       Metadata.TOML.from_topics(topics)
 
-    def from_affiliations(
-      affiliations: List[Metadata.Affiliation],
-      authors: Map[Metadata.Author.ID, Metadata.Author]): Object.T =
+    def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T =
     {
-      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).map {
-        case (author_id, author_affiliations) =>
-          val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
-          val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
+      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).view.mapValues(author_affiliations =>
+      {
+        val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
+        val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
 
-          val author = Utils.the_entry(authors, author_id)
-          author_id -> isabelle.JSON.Object(
-            homepage.map(s => List("homepage" -> s)).getOrElse(Nil) :::
+        isabelle.JSON.Object(
+          homepage.map(s => List("homepage" -> s)).getOrElse(Nil) :::
             email.map(s => List("email" -> s)).getOrElse(Nil): _*)
-      }
+      }).toMap
     }
 
     def from_change_history(history: Metadata.Change_History): Object.T =
@@ -50,12 +47,12 @@ object AFP_Site_Gen
       }
     }
 
-    def from_entry(entry: Metadata.Entry, authors: Map[Metadata.Author.ID, Metadata.Author]): JSON.Object.T =
+    def from_entry(entry: Metadata.Entry): JSON.Object.T =
       isabelle.JSON.Object(
         "title" -> entry.title ::
           "authors" -> entry.authors.map(_.author) ::
-          "affiliations" -> from_affiliations(entry.authors, authors) ::
-          (if (entry.contributors.nonEmpty) "contributors" -> from_affiliations(entry.contributors, authors) :: Nil
+          "affiliations" -> from_affiliations(entry.authors) ::
+          (if (entry.contributors.nonEmpty) "contributors" -> from_affiliations(entry.contributors) :: Nil
           else Nil) :::
           "date" -> entry.date.toString ::
           "topics" -> entry.topics.map(_.id) ::
@@ -126,7 +123,7 @@ object AFP_Site_Gen
           node <- base.session_theories
         } yield node.theory_base_name
 
-      val entry_json = JSON.from_entry(entry, authors_by_id) ++ Map("theories" -> topo_theories)
+      val entry_json = JSON.from_entry(entry) ++ Map("theories" -> topo_theories)
 
       layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
 
