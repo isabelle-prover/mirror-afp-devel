@@ -208,7 +208,7 @@ function populateResults(results, searchQuery, indices, all = false) {
         var topics = [];
 
         result.topics.forEach((value, key) => {
-            topics[key] = "<a href=/topics/" + result.topicLinks[key] + ">" + value + "</a>";
+            topics[key] = "<a href=/topics/" + result.topic_links[key] + ">" + value + "</a>";
         });
 
         var topicString = niceList(topics);
@@ -218,7 +218,7 @@ function populateResults(results, searchQuery, indices, all = false) {
         var link = result.shortname.toLowerCase();
         var shortname = result.shortname;
         var abstract = result.abstract;
-        var usedBy = result.usedBy;
+        var used_by = result.used_by;
         var year = result.date.substring(0, 4);
 
         var output = `<div id="summary-${resultKey}">
@@ -231,8 +231,8 @@ function populateResults(results, searchQuery, indices, all = false) {
     ${year ? `<p>${year}</p>` : ""}
   </div>
   <div class="abstract mathjax_process">${abstract}</div>
-    ${ usedBy
-        ? `<div>Used by <a href="/dependencies/${link}">${usedBy}</a> | ${
+    ${ used_by
+        ? `<div>Used by <a href="/dependencies/${link}">${used_by}</a> | ${
                 topicString ? `${topicString} ` : ""
             }</div>`
         : topicString ? `<div>${topicString}</div>` : ""

@@ -3,7 +3,18 @@
 {{ else }}
 	{{- $.Scratch.Add "index" slice -}}
 	{{- range $index, $element := where .Site.RegularPages "Type" "eq"  "entries" -}}
-		{{- $.Scratch.Add "index" (dict "id" $index "title" $element.Title "abstract" (replaceRE "\n" " " $element.Params.abstract) "topics" $element.Params.topics "topicLinks" (apply $element.Params.topics "urlize" ".") "permalink" $element.Permalink "date" (.Date.Format "2006-01-02") "authors" $element.Params.authors "usedBy" (len (index .Site.Taxonomies.dependencies (urlize $element.File.TranslationBaseName))) "shortname" $element.File.TranslationBaseName ) -}}
+		{{- $.Scratch.Add "index" (dict
+          "id" $index
+          "title" $element.Title
+          "abstract" (replaceRE "\n" " " $element.Params.abstract)
+          "topics" $element.Params.topics
+          "topic_links" (apply $element.Params.topics "urlize" ".")
+          "permalink" $element.Permalink
+          "date" (.Date.Format "2006-01-02")
+          "authors" $element.Params.authors
+          "used_by" (len (index .Site.Taxonomies.dependencies (urlize $element.File.TranslationBaseName)))
+          "shortname" $element.File.TranslationBaseName )
+        -}}
 	{{- end -}}
 	{{- $.Scratch.Get "index" | jsonify -}}
 {{ end }}
