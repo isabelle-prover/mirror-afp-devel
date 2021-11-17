@@ -206,8 +206,8 @@ object AFP_Site_Gen
 Usage: isabelle afp_site_gen [OPTIONS] HTML_DIR
 
   Options are:
-    -B DIR       afp base dir (default "$AFP_BASE")
-    -H DIR       generated hugo project dir (default "$AFP_BASE/web/hugo")
+    -B DIR       afp base dir (default """" + base_dir.implode + """")
+    -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
     -O DIR       output dir (default none)
 
   Generates the AFP website source. HTML files of entries are dynamically loaded.

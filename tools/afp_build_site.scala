@@ -32,8 +32,8 @@ object AFP_Build_Site
 Usage: isabelle afp_build_site [OPTIONS]
 
   Options are:
-    -H DIR       generated sources dir (default "$AFP_BASE/web/hugo")
-    -O DIR       output dir (default "$AFP_BASE/web")
+    -H DIR       generated sources dir (default """" + hugo_dir.implode + """")
+    -O DIR       output dir (default """" + out_dir.implode + """")
     -w           watch sources and serve result
 
   Build the AFP website from generated sources.
