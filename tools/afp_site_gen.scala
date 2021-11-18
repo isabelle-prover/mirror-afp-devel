@@ -50,9 +50,9 @@ object AFP_Site_Gen
     def from_entry(entry: Metadata.Entry): JSON.Object.T =
       isabelle.JSON.Object(
         "title" -> entry.title ::
-          "authors" -> entry.authors.map(_.author) ::
-          "affiliations" -> from_affiliations(entry.authors) ::
-          (if (entry.contributors.nonEmpty) "contributors" -> from_affiliations(entry.contributors) :: Nil
+          "authors" -> entry.authors.map(_.author).distinct ::
+          "affiliations" -> from_affiliations(entry.authors ++ entry.contributors) ::
+          (if (entry.contributors.nonEmpty) "contributors" -> entry.contributors.map(_.author).distinct :: Nil
           else Nil) :::
           "date" -> entry.date.toString ::
           "topics" -> entry.topics.map(_.id) ::
