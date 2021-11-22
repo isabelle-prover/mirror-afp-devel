@@ -111,19 +111,29 @@ object AFP_Site_Gen
     progress.echo("Preparing entries...")
 
     val sessions_structure = afp_structure.sessions_structure
-    val deps = Sessions.deps(sessions_structure)
+    val sessions_deps = Sessions.deps(sessions_structure)
 
     for (name <- afp_structure.entries) {
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
 
+      val deps =
+        for {
+          session <- afp_structure.entry_sessions(name)
+          dep <- sessions_structure.imports_graph.imm_preds(session.name)
+          if session.name != dep  && sessions_structure(dep).groups.contains("afp")
+        } yield dep
+
       val topo_theories =
         for {
           session <- afp_structure.entry_sessions(name)
-          base = deps(session.name)
+          base = sessions_deps(session.name)
           node <- base.session_theories
         } yield node.theory_base_name
 
-      val entry_json = JSON.from_entry(entry) ++ Map("theories" -> topo_theories)
+      val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
+          "dependencies" -> deps.distinct,
+          "theories" -> topo_theories,
+          "aliases" -> List("/entries/" + name + ".html"))
 
       layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
 
@@ -133,26 +143,11 @@ object AFP_Site_Gen
     }
 
 
-    /* add dependencies */
-
-    progress.echo("Preparing dependencies...")
-
-    val afp_dependencies = AFP_Dependencies.afp_dependencies(Path.explode("$AFP"))
-    val dep_json = AFP_Dependencies.JSON.from_dependencies(afp_dependencies)
-
-    layout.write_data(Path.basic("dependencies.json"), dep_json)
-
-    val entries_dir = layout.content_dir + Path.basic("entries")
-    val dep_file = layout.data_dir + Path.basic("dependencies.json")
-    val dependencies_cmd = "from dependencies import *; add_dependencies(" +
-      commas_quote(List(entries_dir.implode, dep_file.implode)) + ")"
-    Python.run(dependencies_cmd).check
-
-
     /* add related entries */
 
     progress.echo("Preparing related entries...")
 
+    val entries_dir = layout.content_dir + Path.basic("entries")
     val related_cmd = "from related import *; add_related(" + quote(entries_dir.implode) + ")"
     Python.run(related_cmd).check
 
