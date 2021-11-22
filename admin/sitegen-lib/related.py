@@ -15,7 +15,7 @@ from keywords import generate_keywords
 from write_file import write_file
 
 
-def add_related(entries_dir):
+def add_related(entries_dir, keywords_file):
     """
     First three dictionaries are created as follows:
 
@@ -31,7 +31,11 @@ def add_related(entries_dir):
 
     keywords = {}
 
-    for obj in generate_keywords(entries_dir):
+    kws = generate_keywords(entries_dir)
+    with open(keywords_file, "w") as f:
+        json.dump(kws, f, ensure_ascii=False, separators=(",", ":"))
+
+    for obj in kws:
         keywords[obj["keyword"]] = []
 
 

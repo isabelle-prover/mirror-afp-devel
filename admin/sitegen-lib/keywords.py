@@ -44,7 +44,7 @@ def generate_keywords(entries_dir):
         text = unidecode.unidecode(text)
 
         rake_object.extract_keywords_from_text(text)
-        keywords = rake_object.get_ranked_phrases()
+        keywords.extend(rake_object.get_ranked_phrases())
 
     # keep keywords that appear in 2 or more abstracts
     keywords = [i for i, c in groupby(sorted(keywords)) if len(list(c)) > 1]

@@ -143,12 +143,16 @@ object AFP_Site_Gen
     }
 
 
-    /* add related entries */
+    /* add related entries and keywords */
 
     progress.echo("Preparing related entries...")
 
     val entries_dir = layout.content_dir + Path.basic("entries")
-    val related_cmd = "from related import *; add_related(" + quote(entries_dir.implode) + ")"
+    val keywords_file = layout.static_dir + Path.make(List("data", "keywords.json"))
+    keywords_file.dir.file.mkdirs()
+    val related_cmd = "from related import *; add_related(" +
+      commas_quote(List(entries_dir.implode, keywords_file.implode)) +
+      ")"
     Python.run(related_cmd).check
 
 
@@ -167,11 +171,11 @@ object AFP_Site_Gen
     (layout.data_dir + Path.basic("statistics.html")).file.delete()
 
 
-    /* static */
+    /* project */
 
-    progress.echo("Preparing static files")
+    progress.echo("Preparing project files")
 
-    layout.write_static()
+    layout.copy_project()
 
 
     /* hugo */

@@ -31,7 +31,9 @@ object Hugo
     def write_asset(file: Path, content: String): Unit =
       write(Path.basic("assets") + file, content)
 
-    def write_static(): Unit =
+    val static_dir = src_dir + Path.basic("static")
+
+    def copy_project(): Unit =
     {
       if (hugo_static.canonical != src_dir) {
         for {
