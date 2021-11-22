@@ -71,7 +71,6 @@ object AFP_Site_Gen
   /* site generation */
 
   def afp_site_gen(
-    html_dir: Path,
     out_dir: Option[Path],
     layout: Hugo.Layout,
     afp_structure: AFP_Structure,
@@ -135,11 +134,12 @@ object AFP_Site_Gen
           "theories" -> topo_theories,
           "aliases" -> List("/entries/" + name + ".html"))
 
+      val theories_json = isabelle.JSON.Object(
+        "url" -> ("/entries/" + name.toLowerCase + "/theories"),
+        "theories" -> topo_theories)
+
       layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
-
-      val entry_html = """<a href="""" + (html_dir + Path.basic(name + ".html")).implode + "\">dynamic</a>"
-
-      layout.write_asset(Path.make(List("theories", name + ".html")), entry_html)
+      layout.write_content(Path.make(List("theories", name + ".md")), theories_json)
     }
 
 
@@ -195,7 +195,7 @@ object AFP_Site_Gen
     var out_dir: Option[Path] = None
 
     val getopts = Getopts("""
-Usage: isabelle afp_site_gen [OPTIONS] HTML_DIR
+Usage: isabelle afp_site_gen [OPTIONS]
 
   Options are:
     -B DIR       afp base dir (default """" + base_dir.implode + """")
@@ -209,16 +209,14 @@ Usage: isabelle afp_site_gen [OPTIONS] HTML_DIR
       "H:" -> (arg => hugo_dir = Path.explode(arg)),
       "O:" -> (arg => out_dir = Some(Path.explode(arg))))
 
-    val html_dir = getopts(args) match {
-      case dir :: Nil => Path.explode(dir)
-      case _ => getopts.usage()
-    }
+    getopts(args)
 
     val afp_structure = AFP_Structure(base_dir)
     val layout = Hugo.Layout(hugo_dir)
     val progress = new Console_Progress()
 
-    afp_site_gen(html_dir = html_dir, out_dir = out_dir, layout = layout, afp_structure = afp_structure,
-      progress = progress)
+    progress.echo("Preparing site generation in " + hugo_dir.implode)
+
+    afp_site_gen(out_dir = out_dir, layout = layout, afp_structure = afp_structure, progress = progress)
   })
 }
