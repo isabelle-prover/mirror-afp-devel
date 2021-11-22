@@ -49,7 +49,7 @@
 {{- end }}
 
 {{- range (where site.RegularPages "Section" "entries").Reverse -}}
-{{- $Scratch.Add "all_articles" (slice (printf "'%s'" .File.TranslationBaseName )) -}}
+{{- $Scratch.Add "all_articles" (slice (printf "'%s'" .File.BaseFileName )) -}}
 {{- end }}
 
 <script>

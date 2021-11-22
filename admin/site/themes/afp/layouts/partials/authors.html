@@ -1,8 +1,9 @@
 {{- $Scratch := newScratch -}}
+{{ $site := .site}}
 
 {{- range .authors -}}
 
-{{- $author := printf "[%s](%s%s)" . ("/authors/" | relLangURL) (. | urlize) -}}
+{{- $author := printf "[%s](%s%s)" (index (index $site.Site.Data.authors .) "name") ("/authors/" | relLangURL) (. | urlize) -}}
 {{- $Scratch.Add "authors" (slice $author) -}}
 
 {{- end -}}

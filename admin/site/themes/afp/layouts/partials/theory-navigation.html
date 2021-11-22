@@ -1,4 +1,5 @@
-{{- $entryName := .File.TranslationBaseName -}}
+{{- $entry_name := .File.BaseFileName -}}
+{{- $site := . -}}
 <div>
   <div>
     <a href="{{- .Site.BaseURL -}}">
@@ -7,32 +8,20 @@
     </a>
     {{ $currentPage := . -}}
     <ul>
-      <li><a href="{{- .Site.BaseURL -}}entries/{{- $entryName | urlize -}}">Return to entry</a></li>
+      <li><a href="{{- .Site.BaseURL -}}entries/{{- $entry_name | urlize -}}">Return to entry</a></li>
     </ul>
     <hr>
     <ul>
-      {{- range $map := .Params.theories }}
-      {{- range $key, $value := $map -}}
-      <li><a href="#{{- $key -}}">{{- $key -}}</a>
-        {{ with $value}}
-        <ul>
-        {{- range $lemma := . }}
-        <li><a href="#{{- printf "%s-%s" $key $lemma -}}">
-          {{- $lemma -}}
-        </a></li>
-        {{- end }}
-        </ul>
-        {{ end }}
-      </li>
-      {{- end }}
+      {{- range .Params.theories }}
+      <li><a href="{{- $site.Site.Params.afpUrls.html -}}/{{ $entry_name }}/{{ . }}.html">{{ . }}</a></li>
       {{- end }}
     </ul>
   </div>
   <ul>
-    <li><a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/outline.pdf">Proof
+    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/outline.pdf">Proof
       outline</a></li>
-    <li><a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/document.pdf">Proof
+    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/document.pdf">Proof
       document</a></li>
-    <li><a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/session_graph.pdf">Theory dependencies</a></li>
+    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/session_graph.pdf">Session dependencies</a></li>
   </ul>
 </div>

@@ -7,7 +7,7 @@
       <td>
         <ul>
           {{ range .Data.Pages.ByTitle }}
-          <li><a href="{{ .Permalink }}">{{ .Name }}</a></li>
+          <li><a href="{{ .Permalink }}">{{ (index (index .Site.Data.authors .Name) "name") }}</a></li>
           {{ end }}
         </ul>
       </td>

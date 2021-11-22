@@ -12,8 +12,8 @@
           "permalink" $element.Permalink
           "date" (.Date.Format "2006-01-02")
           "authors" $element.Params.authors
-          "used_by" (len (index .Site.Taxonomies.dependencies (urlize $element.File.TranslationBaseName)))
-          "shortname" $element.File.TranslationBaseName )
+          "used_by" (len (index .Site.Taxonomies.dependencies (urlize $element.File.BaseFileName)))
+          "shortname" $element.File.BaseFileName )
         -}}
 	{{- end -}}
 	{{- $.Scratch.Get "index" | jsonify -}}

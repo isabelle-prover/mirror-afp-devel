@@ -12,16 +12,8 @@
   </aside>
 
   <div
-    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .Section "theories") }}theories{{- end -}} {{ if (eq .File.TranslationBaseName "search") }}searchPage{{- end -}}'>
+    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .Section "theories") }}theories{{- end -}} {{ if (eq .File.BaseFileName "search") }}searchPage{{- end -}}'>
     {{- partial "header.html" . -}}
-    <div id="banner" data-id="0">
-      <p>This is an unofficial reimagining of the <a href="https://isa-afp.org" target="_blank"
-          rel="noreferrer noopener">Archive of Formal Proofs</a></p><button style="display: none;" id="close" title="close"><svg
-          viewBox="0 0 6.718 6.718" aria-hidden="true" focusable="false">
-          <rect transform="rotate(45)" x="4" y="-4" width="1.5" height="8" />
-          <rect transform="rotate(45)" x=".75" y="-.75" width="8" height="1.5" />
-        </svg></button>
-    </div>
     <div>
       {{- block "main" . }}{{- end }}
       {{- block "footerfiles" . }}{{- end }}

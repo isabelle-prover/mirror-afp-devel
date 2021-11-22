@@ -7,7 +7,7 @@
     "taxonomies": {
         "author": "authors",
         "topic": "topics",
-        "dependency": "dependencies" 
+        "dependency": "dependencies"
     },
     "params": {
         "description": "A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle.",
@@ -15,7 +15,10 @@
             "/images/afp.png"
         ],
         "title": "Archive of Formal Proofs",
-        "mainSections": ["entries"]
+        "mainSections": ["entries"],
+        "afpUrls": {
+          "html": "https://www.isa-afp.org/browser_info/current/AFP"
+        }
     },
     "markup": {
         "goldmark": {

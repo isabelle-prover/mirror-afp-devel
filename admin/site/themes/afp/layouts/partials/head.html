@@ -32,7 +32,7 @@
 
   <link rel="icon" href="{{- .Site.BaseURL -}}images/favicon.ico" type="image/icon">
 
-  {{- if or (eq .Section "entries") (eq .File.TranslationBaseName "search") -}}
+  {{- if or (eq .Section "entries") (eq .File.BaseFileName "search") -}}
     {{/*
       The following is the MathJax configuration.
       This means that formulae can be enclosed in either $ … $ or \( … \)
@@ -58,7 +58,7 @@
   <script src="{{- .Site.BaseURL -}}js/flexsearch.min.js"></script>
   <script src="{{- .Site.BaseURL -}}js/banner.js"></script>
   
-  {{- if (eq .File.TranslationBaseName "search") -}}
+  {{- if (eq .File.BaseFileName "search") -}}
     <script src="{{- .Site.BaseURL -}}js/search.js"></script>
   {{- else -}}
     <script src="{{- .Site.BaseURL -}}js/header-search.js"></script>

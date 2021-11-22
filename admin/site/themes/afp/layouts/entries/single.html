@@ -1,14 +1,16 @@
 {{- define "main" -}}
 {{- $site := . -}}
-{{- $entryName := .File.TranslationBaseName -}}
+{{- $entry_name := .File.BaseFileName -}}
 <main>
   <h3>Abstract</h3>
 
   <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
   {{- if (eq .Params.licence "BSD") -}}
   <a href="http://isa-afp.org/LICENSE">BSD License</a>
-  {{- else -}}
+  {{- else if (eq .Params.license "LGPL") -}}
   <a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+  {{- else -}}
+    {{- printf "%s License" .Params.license -}}
   {{- end -}}
 
   {{- with .Params.extra -}}
@@ -29,11 +31,11 @@
     </ul>
   {{- end -}}
 
-  {{- with (index .Site.Taxonomies.dependencies (urlize $entryName)) -}}
+  {{- with (index .Site.Taxonomies.dependencies (urlize $entry_name)) -}}
     <h3>Used by</h3>
     <ul>
       {{- range . -}}
-      <li>{{- printf "[%s](%s)" .File.TranslationBaseName .RelPermalink | $.Page.RenderString -}}</li>
+      <li>{{- printf "[%s](%s)" .File.BaseFileName .RelPermalink | $.Page.RenderString -}}</li>
       {{- end -}}
     </ul>
   {{- end -}}
@@ -58,16 +60,11 @@
 
 <h3>Theories</h3>
 <ul>
-  {{ $file := printf "assets/theories/%s.html" $entryName}}
-  {{ if fileExists $file -}}
+  {{ $file := printf "assets/theories/%s.html" $entry_name}}
   {{- with .Params.theories -}}
   {{- range . -}}
-  <li>{{- printf "[%s](theories/#%s)" . . | $.Page.RenderString -}}</li>
+  <li>{{- printf "[%s](theories#%s)" . . | $.Page.RenderString -}}</li>
   {{- end -}}
-  {{- end -}}
-  {{ else }}
-  <li>{{- printf "[Browse theories](https://www.isa-afp.org/browser_info/current/AFP/%s/index.html)" $entryName |
-    $.Page.RenderString -}}</li>
   {{- end -}}
 </ul>
 
@@ -77,11 +74,11 @@
   <a class='popUpButton' href="#citePopUp">Cite</a>
   <a class='popUpButton' href="#downloadPopUp">Download</a>
   <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/outline.pdf">Proof
+  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/outline.pdf">Proof
     outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/document.pdf">Proof
+  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/document.pdf">Proof
     document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/{{- $entryName -}}/session_graph.pdf">Dependencies</a>
+  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
 </nav>
 
 <div id="citePopUp" class="overlay">
@@ -90,14 +87,14 @@
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">{{- $entryName -}}-AFP</p>
-      <pre id="copyText">@article{{- "{" -}}{{- $entryName -}}-AFP,
+      <p style="display:none;" id="bibtexFileName">{{- $entry_name -}}-AFP</p>
+      <pre id="copyText">@article{{- "{" -}}{{- $entry_name -}}-AFP,
   author  = {{ "{" -}}{{- delimit .Params.authors ", " | replaceRE "(, )([^,]+$)" " and $2" -}}},
   title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
   journal = {Archive of Formal Proofs},
   month   = {{ dateFormat "January" .Params.date -}},
   year    = {{ dateFormat "2006" .Params.date -}},
-  note    = {\url{http://isa-afp.org/entries/{{- $entryName -}}.html},
+  note    = {\url{http://isa-afp.org/entries/{{- $entry_name -}}.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -111,15 +108,15 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-{{- $entryName -}}-current.tar.gz" download>Download latest</a>
+    <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
     {{ with .Params.olderReleases -}}
     <p>Older releases:</p>
     <ul>
       {{- range $map := . -}}
       {{- range $key, $value := $map -}}
       <li>Isabelle {{- $key -}}:
-        <a href="https://isa-afp.org/release/afp-{{- $entryName -}}-{{- $value -}}.tar.gz">
-          afp-{{- $entryName -}}-{{- $value -}}.tar.gz
+        <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-{{- $value -}}.tar.gz">
+          afp-{{- $entry_name -}}-{{- $value -}}.tar.gz
         </a>
       </li>
       {{- end -}}
