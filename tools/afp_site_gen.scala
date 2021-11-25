@@ -72,7 +72,7 @@ object AFP_Site_Gen
 
   private val replacements = List(
     "<[^>]*>".r -> "",
-    "[^\\w\\s/.()',-]".r -> " ",
+    "[^\\w\\s()'.,;:-]".r -> " ",
     "\\s+".r -> " ")
 
   def extract_keywords(text: String): List[String] =
@@ -134,11 +134,16 @@ object AFP_Site_Gen
     {
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
 
-      val keywords = extract_keywords(entry.`abstract`)
-      seen_keywords ++= keywords
+      val Keyword = """\('([^']*)', ([^)]*)\)""".r
+      val scored_keywords = extract_keywords(entry.`abstract`).map {
+        case Keyword(keyword, score) => keyword -> score.toDouble
+        case s => error("Could not parse: " + s)
+      }
+      seen_keywords ++= scored_keywords.map(_._1)
 
-      name -> keywords
+      name -> scored_keywords.filter(_._2 > 1.0).map(_._1)
     }).toMap
+    
     seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
