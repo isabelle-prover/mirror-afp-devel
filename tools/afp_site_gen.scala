@@ -68,6 +68,26 @@ object AFP_Site_Gen
   }
 
 
+  /* keyword extraction */
+
+  private val replacements = List(
+    "<[^>]*>".r -> "",
+    "[^\\w\\s/.()',-]".r -> " ",
+    "\\s+".r -> " ")
+
+  def extract_keywords(text: String): List[String] =
+  {
+    val stripped_text =
+      replacements.foldLeft(text) { case (res, (regex, replacement)) => regex.replaceAllIn(res, replacement) }
+
+    val arg = quote(stripped_text.replaceAll("\"", "\\\""))
+
+    val keyword_cmd = "from keywords import *; print_keywords(" + arg + ")"
+
+    Python.run(keyword_cmd).check.out_lines
+  }
+
+
   /* site generation */
 
   def afp_site_gen(
@@ -105,6 +125,26 @@ object AFP_Site_Gen
     val releases_by_entry = afp_structure.load_releases.groupBy(_.entry)
 
 
+    /* extract keywords */
+
+    progress.echo("Extracting keywords...")
+
+    var seen_keywords = Set.empty[String]
+    val entry_keywords = afp_structure.entries.map(name =>
+    {
+      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
+
+      val keywords = extract_keywords(entry.`abstract`)
+      seen_keywords ++= keywords
+
+      name -> keywords
+    }).toMap
+    seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
+
+    def get_keywords(name: Metadata.Entry.Name): List[String] =
+      entry_keywords(name).filter(seen_keywords.contains).take(8)
+
+
     /* add entries and theory listings */
 
     progress.echo("Preparing entries...")
@@ -132,7 +172,8 @@ object AFP_Site_Gen
       val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
           "dependencies" -> deps.distinct,
           "theories" -> topo_theories,
-          "aliases" -> List("/entries/" + name + ".html"))
+          "aliases" -> List("/entries/" + name + ".html"),
+          "keywords" -> get_keywords(name))
 
       val theories_json = isabelle.JSON.Object(
         "url" -> ("/entries/" + name.toLowerCase + "/theories"),

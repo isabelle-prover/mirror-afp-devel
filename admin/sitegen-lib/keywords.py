@@ -55,3 +55,10 @@ def generate_keywords(entries_dir):
             keywords.remove(keyword + "s")
 
     return [{"id": i, "keyword": x} for i, x in enumerate(keywords)]
+
+
+def print_keywords(text):
+    r = Rake(max_length=2)
+    r.extract_keywords_from_text(text)
+    for keyword in r.get_ranked_phrases():
+        print(keyword)
