@@ -39,5 +39,20 @@
     "outputs": {
         "home": ["html", "rss", "json"],
         "taxonomyTerm": ["html", "json"]
+    },
+    "related": {
+        "includeNewer": true,
+        "indices": [
+            {
+              "name": "topics",
+              "weight": 1
+            },
+            {
+              "name": "keywords",
+              "weight": 3
+            }
+        ],
+        "threshold": 80,
+        "toLower": true
     }
 }

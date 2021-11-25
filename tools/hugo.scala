@@ -28,10 +28,10 @@ object Hugo
     def write_content(file: Path, content: JSON.T): Unit =
       write(Path.basic("content") + file, isabelle.JSON.Format(content))
 
-    def write_asset(file: Path, content: String): Unit =
-      write(Path.basic("assets") + file, content)
-
     val static_dir = src_dir + Path.basic("static")
+    
+    def write_static(file: Path, content: JSON.T): Unit =
+      write(Path.basic("static") + file, isabelle.JSON.Format(content))
 
     def copy_project(): Unit =
     {

@@ -49,26 +49,27 @@
   </ul>
   {{- end -}}
 
-  {{- with .Params.relatedEntries -}}
-  <h3>Related Entries</h3>
+  <h3>Theories</h3>
   <ul>
+    {{ $file := printf "assets/theories/%s.html" $entry_name}}
+    {{- with .Params.theories -}}
     {{- range . -}}
-    <li>{{- printf "[%s](/entries/%s)" . (urlize .) | $.Page.RenderString -}}</li>
+    <li>{{- printf "[%s](theories#%s)" . . | $.Page.RenderString -}}</li>
+    {{- end -}}
     {{- end -}}
   </ul>
-  {{- end -}}
 
-<h3>Theories</h3>
-<ul>
-  {{ $file := printf "assets/theories/%s.html" $entry_name}}
-  {{- with .Params.theories -}}
-  {{- range . -}}
-  <li>{{- printf "[%s](theories#%s)" . . | $.Page.RenderString -}}</li>
-  {{- end -}}
-  {{- end -}}
-</ul>
-
+  {{ $related := .Site.RegularPages.Related . | first 3 }}
+  {{ with $related }}
+  <h3>Related Entries</h3>
+  <ul>
+    {{ range . }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{ end }}
+  </ul>
+  {{ end }}
 </main>
+
 
 <nav class='links'>
   <a class='popUpButton' href="#citePopUp">Cite</a>

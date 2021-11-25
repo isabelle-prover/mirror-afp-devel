@@ -65,6 +65,10 @@ object AFP_Site_Gen
           (if (entry.change_history.nonEmpty || entry.extra.nonEmpty)
             "extra" -> (from_change_history(entry.change_history) ++ entry.extra) :: Nil
           else Nil): _*)
+
+    def from_keywords(keywords: List[String]): T =
+      keywords.zipWithIndex.map
+        { case (keyword, i) => isabelle.JSON.Object("id" -> i, "keyword" -> keyword) }
   }
 
 
@@ -145,6 +149,7 @@ object AFP_Site_Gen
     }).toMap
     
     seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
+    layout.write_static(Path.make(List("data", "keywords.json")), JSON.from_keywords(seen_keywords.toList))
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
       entry_keywords(name).filter(seen_keywords.contains).take(8)
@@ -187,19 +192,6 @@ object AFP_Site_Gen
       layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
       layout.write_content(Path.make(List("theories", name + ".md")), theories_json)
     }
-
-
-    /* add related entries and keywords */
-
-    progress.echo("Preparing related entries...")
-
-    val entries_dir = layout.content_dir + Path.basic("entries")
-    val keywords_file = layout.static_dir + Path.make(List("data", "keywords.json"))
-    keywords_file.dir.file.mkdirs()
-    val related_cmd = "from related import *; add_related(" +
-      commas_quote(List(entries_dir.implode, keywords_file.implode)) +
-      ")"
-    Python.run(related_cmd).check
 
 
     /* add statistics */
