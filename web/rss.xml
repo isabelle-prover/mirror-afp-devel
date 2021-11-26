@@ -11,6 +11,25 @@
     </description>
     <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
     <item>
+       <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</link>
+       <guid>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</guid>
+       <dc:creator> Christoph Benzmüller       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Simplified variants of Gödel&#39;s ontological argument are
+explored. Among those is a particularly interesting simplified
+argument which is (i) valid already in basic
+modal logics K or KT, (ii) which does not suffer from modal collapse,
+and (iii) which avoids the rather complex predicates of essence (Ess.)
+and necessary existence (NE) as used by Gödel.
+&lt;/p&gt;&lt;p&gt;
+Whether the presented variants increase or decrease the
+attractiveness and persuasiveness of the ontological argument is a
+question I would like to pass on to philosophy and theology.
+&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
               <link>https://www.isa-afp.org/entries/Real_Power.html</link>
        <guid>https://www.isa-afp.org/entries/Real_Power.html</guid>
@@ -550,24 +569,6 @@ counterexamples on failure and provides you timing information.
 SpecCheck is customisable and allows you to specify your own input
 generators, test output formats, as well as pretty printers and
 shrinking functions for counterexamples among other things.</description>
-    </item>
-    <item>
-       <title>Van der Waerden's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Van_der_Waerden.html</link>
-       <guid>https://www.isa-afp.org/entries/Van_der_Waerden.html</guid>
-       <dc:creator> Katharina Kreuzer, Manuel Eberl       </dc:creator>
-       <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-This article formalises the proof of Van der Waerden&#39;s Theorem
-from Ramsey theory.  Van der Waerden&#39;s Theorem states that for
-integers $k$ and $l$ there exists a number $N$ which guarantees that
-if an integer interval of length at least $N$ is coloured with $k$
-colours, there will always be an arithmetic progression of length $l$
-of the same colour in said interval. The proof goes along the lines of
-\cite{Swan}.  The smallest number $N_{k,l}$ fulfilling Van der
-Waerden&#39;s Theorem is then called the Van der Waerden Number.
-Finding the Van der Waerden Number is still an open problem for most
-values of $k$ and $l$.</description>
     </item>
   </channel>
 </rss>
