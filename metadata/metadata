@@ -11252,3 +11252,31 @@ abstract =
   relativized general knowledge in HOL. We then use PAL to obtain an
   elegant encoding of the wise men puzzle, which we solve automatically
   using sledgehammer.
+
+[Van_Emde_Boas_Trees]
+title = van Emde Boas Trees
+author = Thomas Ammer<>, Peter Lammich<>
+topic = Computer science/Data structures
+date = 2021-11-23
+notify = lammich@in.tum.de
+abstract = 
+  The <em>van Emde Boas tree</em> or <em>van Emde Boas
+  priority queue</em> is a data structure supporting membership
+  test, insertion, predecessor and successor search, minimum and maximum
+  determination and deletion in <em>O(log log U)</em> time, where <em>U =
+  0,...,2<sup>n-1</sup></em> is the overall range to be
+  considered. <p/> The presented formalization follows Chapter 20
+  of the popular <em>Introduction to Algorithms (3rd
+  ed.)</em> by Cormen, Leiserson, Rivest and Stein (CLRS),
+  extending the list of formally verified CLRS algorithms. Our current
+  formalization is based on the first author's bachelor's
+  thesis. <p/> First, we prove correct a
+  <em>functional</em> implementation, w.r.t. an abstract
+  data type for sets. Apart from functional correctness, we show a
+  resource bound, and runtime bounds w.r.t. manually defined timing
+  functions for the operations. <p/> Next, we refine the
+  operations to Imperative HOL with time, and show correctness and
+  complexity. This yields a practically more efficient implementation,
+  and eliminates the manually defined timing functions from the trusted
+  base of the proof.
+

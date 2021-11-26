@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+    <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>van Emde Boas Trees</title>
+              <link>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
+       <dc:creator> Thomas Ammer, Peter Lammich       </dc:creator>
+       <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+The &lt;em&gt;van Emde Boas tree&lt;/em&gt; or &lt;em&gt;van Emde Boas
+priority queue&lt;/em&gt; is a data structure supporting membership
+test, insertion, predecessor and successor search, minimum and maximum
+determination and deletion in &lt;em&gt;O(log log U)&lt;/em&gt; time, where &lt;em&gt;U =
+0,...,2&lt;sup&gt;n-1&lt;/sup&gt;&lt;/em&gt; is the overall range to be
+considered. &lt;p/&gt; The presented formalization follows Chapter 20
+of the popular &lt;em&gt;Introduction to Algorithms (3rd
+ed.)&lt;/em&gt; by Cormen, Leiserson, Rivest and Stein (CLRS),
+extending the list of formally verified CLRS algorithms. Our current
+formalization is based on the first author&#39;s bachelor&#39;s
+thesis. &lt;p/&gt; First, we prove correct a
+&lt;em&gt;functional&lt;/em&gt; implementation, w.r.t. an abstract
+data type for sets. Apart from functional correctness, we show a
+resource bound, and runtime bounds w.r.t. manually defined timing
+functions for the operations. &lt;p/&gt; Next, we refine the
+operations to Imperative HOL with time, and show correctness and
+complexity. This yields a practically more efficient implementation,
+and eliminates the manually defined timing functions from the trusted
+base of the proof.</description>
+    </item>
     <item>
        <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
               <link>https://www.isa-afp.org/entries/Real_Power.html</link>
@@ -550,24 +577,6 @@ counterexamples on failure and provides you timing information.
 SpecCheck is customisable and allows you to specify your own input
 generators, test output formats, as well as pretty printers and
 shrinking functions for counterexamples among other things.</description>
-    </item>
-    <item>
-       <title>Van der Waerden's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Van_der_Waerden.html</link>
-       <guid>https://www.isa-afp.org/entries/Van_der_Waerden.html</guid>
-       <dc:creator> Katharina Kreuzer, Manuel Eberl       </dc:creator>
-       <pubDate>22 Jun 2021 00:00:00 +0000</pubDate>
-       <description>
-This article formalises the proof of Van der Waerden&#39;s Theorem
-from Ramsey theory.  Van der Waerden&#39;s Theorem states that for
-integers $k$ and $l$ there exists a number $N$ which guarantees that
-if an integer interval of length at least $N$ is coloured with $k$
-colours, there will always be an arithmetic progression of length $l$
-of the same colour in said interval. The proof goes along the lines of
-\cite{Swan}.  The smallest number $N_{k,l}$ fulfilling Van der
-Waerden&#39;s Theorem is then called the Van der Waerden Number.
-Finding the Van der Waerden Number is still an open problem for most
-values of $k$ and $l$.</description>
     </item>
   </channel>
 </rss>
