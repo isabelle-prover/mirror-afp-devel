@@ -1,0 +1,21 @@
+chapter AFP
+
+session "SimplifiedOntologicalArgument" (AFP) = HOL +
+
+  options [timeout = 600] 
+
+  theories
+    SimplifiedOntologicalArgument
+    MFilter
+    BaseDefs
+    ScottVariant
+    UFilterVariant
+    SimpleVariant
+    SimpleVariantPG
+    SimpleVariantSE
+    SimpleVariantSEinT
+    SimpleVariantHF
+    KanckosLethenNo2Possibilist
+  document_files
+    "root.bib"
+    "root.tex"
