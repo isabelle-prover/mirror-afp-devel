@@ -1,0 +1,12 @@
+chapter AFP
+
+session Hahn_Jordan_Decomposition(AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories [document = false]
+    Extended_Reals_Sums_Compl
+    Hahn_Jordan_Prelims
+  theories
+    Hahn_Jordan_Decomposition
+  document_files
+    "root.bib"
+    "root.tex"
