@@ -238,7 +238,7 @@ ML \<open>
       Sepref_Basic.hn_refine_concl_conv_a monadify_conv ctxt)*)
 
     fun mark_params_tac ctxt = CONVERSION (
-      Refine_Util.HOL_concl_conv (K (mark_params_conv ctxt)) ctxt)
+      Refine_Util.HOL_concl_conv mark_params_conv ctxt)
 
     fun contains_eval @{mpat "Trueprop (hn_refine _ _ _ _ ?a)"} =   
       Term.exists_subterm (fn @{mpat EVAL} => true | _ => false) a
