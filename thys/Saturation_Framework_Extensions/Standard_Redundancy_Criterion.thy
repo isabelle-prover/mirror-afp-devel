@@ -26,8 +26,7 @@ proof (rule wfPUNIVI[rule_format])
   assume IH: "\<And>x. (\<And>y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x"
   show "P x"
     using IH[unfolded less_multiset_def, simplified]
-    using wf_mult[OF wfP_less[unfolded wfP_def]]
-    by (metis wf_induct)
+    by (induction rule: wfP_induct[OF wfP_multp[OF wfP_less]]) simp
 qed
 
 text \<open>
