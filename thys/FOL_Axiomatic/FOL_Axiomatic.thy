@@ -39,8 +39,8 @@ definition shift :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow
   \<open>E\<langle>n:x\<rangle> = (\<lambda>m. if m < n then E m else if m = n then x else E (m-1))\<close>
 
 primrec semantics_tm (\<open>\<lparr>_, _\<rparr>\<close>) where
-  \<open>\<lparr>E, F\<rparr>(\<^bold>#n) = E n\<close>
-| \<open>\<lparr>E, F\<rparr>(\<^bold>\<dagger>f ts) = F f (map \<lparr>E, F\<rparr> ts)\<close>
+  \<open>\<lparr>E, F\<rparr> (\<^bold>#n) = E n\<close>
+| \<open>\<lparr>E, F\<rparr> (\<^bold>\<dagger>f ts) = F f (map \<lparr>E, F\<rparr> ts)\<close>
 
 primrec semantics_fm (\<open>\<lbrakk>_, _, _\<rbrakk>\<close>) where
   \<open>\<lbrakk>_, _, _\<rbrakk> \<^bold>\<bottom> = False\<close>
