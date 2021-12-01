@@ -558,9 +558,7 @@ locale Hintikka =
 
 subsection \<open>Model Existence\<close>
 
-abbreviation (input) \<open>sat H P ts \<equiv> Pre P ts \<in> H\<close>
-
-abbreviation hmodel (\<open>\<lbrakk>_\<rbrakk>\<close>) where \<open>\<lbrakk>H\<rbrakk> \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, sat H\<rbrakk>\<close>
+abbreviation hmodel (\<open>\<lbrakk>_\<rbrakk>\<close>) where \<open>\<lbrakk>H\<rbrakk> \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, \<lambda>P ts. Pre P ts \<in> H\<rbrakk>\<close>
 
 lemma semantics_tm_id [simp]:
   \<open>\<lparr>\<^bold>#, \<^bold>\<dagger>\<rparr> t = t\<close>
@@ -598,8 +596,6 @@ next
   next
     case (Pre P ts)
     assume \<open>\<lbrakk>H\<rbrakk> (\<^bold>\<ddagger>P ts)\<close>
-    then have \<open>sat H P ts\<close>
-      by simp
     then show \<open>\<^bold>\<ddagger>P ts \<in> H\<close>
       by simp
   next
