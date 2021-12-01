@@ -20,6 +20,8 @@ datatype (params_tm: 'f) tm
   = Var nat (\<open>\<^bold>#\<close>)
   | Fun 'f \<open>'f tm list\<close> (\<open>\<^bold>\<dagger>\<close>)
 
+abbreviation Const (\<open>\<^bold>\<star>\<close>) where \<open>\<^bold>\<star>a \<equiv> \<^bold>\<dagger>a []\<close>
+
 datatype (params_fm: 'f, 'p) fm
   = Falsity (\<open>\<^bold>\<bottom>\<close>)
   | Pre 'p \<open>'f tm list\<close> (\<open>\<^bold>\<ddagger>\<close>)
@@ -46,7 +48,7 @@ primrec semantics_fm (\<open>\<lbrakk>_, _, _\<rbrakk>\<close>) where
 | \<open>\<lbrakk>E, F, G\<rbrakk> (p \<^bold>\<longrightarrow> q) = (\<lbrakk>E, F, G\<rbrakk> p \<longrightarrow> \<lbrakk>E, F, G\<rbrakk> q)\<close>
 | \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<forall> p) = (\<forall>x. \<lbrakk>E\<langle>0:x\<rangle>, F, G\<rbrakk> p)\<close>
 
-proposition \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<forall> (\<^bold>\<ddagger>P [\<^bold># 0]) \<^bold>\<longrightarrow> \<^bold>\<ddagger>P [\<^bold>\<dagger>a []])\<close>
+proposition \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<forall> (\<^bold>\<ddagger>P [\<^bold># 0]) \<^bold>\<longrightarrow> \<^bold>\<ddagger>P [\<^bold>\<star>a])\<close>
   by (simp add: shift_def)
 
 section \<open>Operations\<close>
@@ -158,7 +160,7 @@ inductive Axiomatic (\<open>\<turnstile> _\<close> [20] 20) where
   TA: \<open>tautology p \<Longrightarrow> \<turnstile> p\<close>
 | IA: \<open>\<turnstile> \<^bold>\<forall> p \<^bold>\<longrightarrow> p\<langle>t/0\<rangle>\<close>
 | MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close>
-| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<dagger>a []/0\<rangle> \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall> p\<close>
+| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle> \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall> p\<close>
 
 lemmas
   TA[simp]
@@ -180,7 +182,7 @@ theorem soundness: \<open>\<turnstile> p \<Longrightarrow> \<lbrakk>E, F, G\<rbr
 proof (induct p arbitrary: F rule: Axiomatic.induct)
   case (GR q p a)
   moreover from this
-  have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<dagger>a []/0\<rangle>)\<close> for x
+  have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle>)\<close> for x
     by blast
   ultimately show ?case
     by fastforce
@@ -205,12 +207,12 @@ lemma contraposition:
   \<open>\<turnstile> (\<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
   by (auto intro: TA)
 
-lemma GR': \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle> \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> \<^bold>\<forall> p \<^bold>\<longrightarrow> q\<close>
+lemma GR': \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> \<^bold>\<forall> p \<^bold>\<longrightarrow> q\<close>
 proof -
-  assume *: \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle> \<^bold>\<longrightarrow> q\<close> and a: \<open>a \<notin> params {p, q}\<close>
-  have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>\<close>
+  assume *: \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> q\<close> and a: \<open>a \<notin> params {p, q}\<close>
+  have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>\<close>
     using * contraposition(1) by fast
-  then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<dagger>a []/0\<rangle>\<close>
+  then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle>\<close>
     by (meson AK AS MP Neg)
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<forall> p\<close>
     using a by auto
@@ -332,13 +334,13 @@ qed
 
 lemma consistent_add_witness:
   assumes \<open>consistent S\<close> and \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> S\<close> and \<open>a \<notin> params S\<close>
-  shows \<open>consistent ({\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>} \<union> S)\<close>
+  shows \<open>consistent ({\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
-  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>(\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>) # S' \<turnstile> \<^bold>\<bottom>\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>(\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) # S' \<turnstile> \<^bold>\<bottom>\<close>
     using assms inconsistent_fm unfolding consistent_def by metis
-  then have \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle> \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
+  then have \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     by simp
   moreover have \<open>a \<notin> params_fm p\<close>
     using assms(2-3) by auto
@@ -412,7 +414,7 @@ proof (induct used p rule: witness.induct)
   case (1 used p)
   moreover have \<open>\<exists>a. a \<notin> used\<close>
     using 1(4-) ex_new_if_finite by blast
-  ultimately obtain a where a: \<open>witness used (\<^bold>\<not> \<^bold>\<forall> p) = {\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>}\<close> and \<open>a \<notin> used\<close>
+  ultimately obtain a where a: \<open>witness used (\<^bold>\<not> \<^bold>\<forall> p) = {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>}\<close> and \<open>a \<notin> used\<close>
     by (metis someI_ex witness.simps(1))
   then have \<open>a \<notin> params S\<close>
     using 1(3) by fast
@@ -479,14 +481,14 @@ qed
 
 section \<open>Saturation\<close>
 
-definition \<open>saturated S \<equiv> \<forall>p. (\<^bold>\<not> \<^bold>\<forall> p) \<in> S \<longrightarrow> (\<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>) \<in> S)\<close>
+definition \<open>saturated S \<equiv> \<forall>p. (\<^bold>\<not> \<^bold>\<forall> p) \<in> S \<longrightarrow> (\<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> S)\<close>
 
 lemma saturated_Extend:
   assumes \<open>consistent (Extend S f)\<close> and \<open>surj f\<close>
   shows \<open>saturated (Extend S f)\<close>
 proof (rule ccontr)
   assume \<open>\<not> saturated (Extend S f)\<close>
-  then obtain p where p: \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> Extend S f\<close> \<open>\<nexists>a. (\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>) \<in> Extend S f\<close>
+  then obtain p where p: \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> Extend S f\<close> \<open>\<nexists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> Extend S f\<close>
     unfolding saturated_def by blast
   obtain k where k: \<open>f k = (\<^bold>\<not> \<^bold>\<forall> p)\<close>
     using \<open>surj f\<close> unfolding surj_def by metis
@@ -495,7 +497,7 @@ proof (rule ccontr)
     unfolding Extend_def by auto
   then have \<open>consistent ({\<^bold>\<not> \<^bold>\<forall> p} \<union> extend S f k)\<close>
     using assms(1) p(1) unfolding consistent_def by blast
-  then have \<open>\<exists>a. extend S f (Suc k) = {\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>} \<union> {\<^bold>\<not> \<^bold>\<forall> p} \<union> extend S f k\<close>
+  then have \<open>\<exists>a. extend S f (Suc k) = {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> {\<^bold>\<not> \<^bold>\<forall> p} \<union> extend S f k\<close>
     using k by (auto simp: Let_def)
   moreover have \<open>extend S f (Suc k) \<subseteq> Extend S f\<close>
     unfolding Extend_def by blast
@@ -513,7 +515,7 @@ locale Hintikka =
     ImpP: \<open>(p \<^bold>\<longrightarrow> q) \<in> H \<Longrightarrow> (\<^bold>\<not> p) \<in> H \<or> q \<in> H\<close> and
     ImpN: \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> H \<Longrightarrow> p \<in> H \<and> (\<^bold>\<not> q) \<in> H\<close> and
     UniP: \<open>\<^bold>\<forall> p \<in> H \<Longrightarrow> \<forall>t. p\<langle>t/0\<rangle> \<in> H\<close> and
-    UniN: \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> H \<Longrightarrow> \<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>) \<in> H\<close>
+    UniN: \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> H \<Longrightarrow> \<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> H\<close>
 
 subsection \<open>Model Existence\<close>
 
@@ -707,7 +709,7 @@ next
 next
   fix p
   assume \<open>(\<^bold>\<not> \<^bold>\<forall> p) \<in> H\<close>
-  then show \<open>\<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<dagger>a []/0\<rangle>) \<in> H\<close>
+  then show \<open>\<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> H\<close>
     using \<open>saturated H\<close> unfolding saturated_def by fast
 qed
 
