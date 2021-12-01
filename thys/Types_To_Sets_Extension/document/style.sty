@@ -21,7 +21,7 @@
 \newenvironment{mldecls}{\par\noindent\begingroup\def\isanewline{\\}\begin{tabular}{ll}}{\end{tabular}\medskip\endgroup}
 
 \renewcommand{\isatagML}{\begingroup\isabellestyle{default}\isastyle\isadigitreset}
-\renewcommand{\endisatagML}{\endgroup}
+\def\endisatagML{\endgroup}
 
 %% math
 \newcommand{\isasymstrut}{\isamath{\mathstrut}}
