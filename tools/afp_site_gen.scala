@@ -169,7 +169,7 @@ object AFP_Site_Gen
         for {
           session <- afp_structure.entry_sessions(name)
           dep <- sessions_structure.imports_graph.imm_preds(session.name)
-          if session.name != dep  && sessions_structure(dep).groups.contains("afp")
+          if session.name != dep && sessions_structure(dep).groups.contains("AFP")
         } yield dep
 
       val topo_theories =
