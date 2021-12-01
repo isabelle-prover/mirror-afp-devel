@@ -1,10 +1,14 @@
 {{- define "main" -}}
 {{- $site := . -}}
+{{- $path := .Site.Params.afpUrls.html -}}
+{{- if eq .Site.Params.devel true -}}
+  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
+{{- end -}}
 <main>
   <ul id="html-theories">
     {{- range .Params.theories }}
     <li>
-      <a href="{{- $site.Site.Params.afpUrls.html -}}/{{ $site.File.BaseFileName }}/{{ . }}.html">{{ . }}</a>
+      <a href="{{ $path }}/{{ $site.File.BaseFileName }}/{{ . }}.html">{{ . }}</a>
     </li>
     {{- end -}}
   </ul>

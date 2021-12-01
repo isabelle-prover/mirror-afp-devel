@@ -1,5 +1,9 @@
 {{- define "main" -}}
 {{- $site := . -}}
+{{- $path := .Site.Params.afpUrls.html -}}
+{{- if eq .Site.Params.devel true -}}
+  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
+{{- end -}}
 {{- $entry_name := .File.BaseFileName -}}
 <main>
   <h3>Abstract</h3>
@@ -75,11 +79,11 @@
   <a class='popUpButton' href="#citePopUp">Cite</a>
   <a class='popUpButton' href="#downloadPopUp">Download</a>
   <h4>PDFs</h4>
-  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/outline.pdf">Proof
+  <a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
     outline</a>
-  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/document.pdf">Proof
+  <a href="{{- $path -}}/{{- $entry_name -}}/document.pdf">Proof
     document</a>
-  <a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
+  <a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
 </nav>
 
 <div id="citePopUp" class="overlay">

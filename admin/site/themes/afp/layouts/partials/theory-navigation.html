@@ -1,5 +1,9 @@
 {{- $entry_name := .File.BaseFileName -}}
 {{- $site := . -}}
+{{- $path := .Site.Params.afpUrls.html -}}
+{{- if eq .Site.Params.devel true -}}
+  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
+{{- end -}}
 <div>
   <div>
     <a href="{{- .Site.BaseURL -}}">
@@ -13,15 +17,15 @@
     <hr>
     <ul>
       {{- range .Params.theories }}
-      <li><a href="{{- $site.Site.Params.afpUrls.html -}}/{{ $entry_name }}/{{ . }}.html">{{ . }}</a></li>
+      <li><a href="{{- $path -}}/{{ $entry_name }}/{{ . }}.html">{{ . }}</a></li>
       {{- end }}
     </ul>
   </div>
   <ul>
-    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/outline.pdf">Proof
+    <li><a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
       outline</a></li>
-    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/document.pdf">Proof
+    <li><a href="{{- $path -}}/{{- $entry_name -}}/document.pdf">Proof
       document</a></li>
-    <li><a href="{{- .Site.Params.afpUrls.html -}}/{{- $entry_name -}}/session_graph.pdf">Session dependencies</a></li>
+    <li><a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Session dependencies</a></li>
   </ul>
 </div>
