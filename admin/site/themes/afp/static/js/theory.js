@@ -83,9 +83,14 @@ async function open_theory(thy_name) {
   else {
     const elem = document.getElementById(thy_name)
     if (elem && elem.className === "thy-collapsible") {
-      const content = parse_elem(`<div id="content" style="display: block"></div>`)
+      const content = parse_elem(`
+        <div style="display: block">
+          <div id=${thy_name + "#spinner"} class="loader"><div class="animation"></div></div>
+        </div>`)
       elem.appendChild(content)
       await load_theory(thy_name, elem.getAttribute('datasrc'))
+      const spinner = document.getElementById(thy_name + "#spinner")
+      spinner.parentNode.removeChild(spinner)
     }
   }
 }
@@ -138,7 +143,7 @@ const init = async function () {
       const thy_collapsible = parse_elem(`
         <div id=${thy_name} class="thy-collapsible" datasrc=${href}>
           <div class="head" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
-              <h1>${thy_name}</h1>
+              <h2>${thy_name}</h2>
           </div>
         </div>`)
       theory.replaceWith(thy_collapsible)

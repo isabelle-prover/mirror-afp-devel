@@ -776,3 +776,38 @@ iframe {
         width: calc(100vw - 200px);
     }
 }
+
+.loader {
+    margin: 24px 24px 0 0;
+    height: 6px;
+    position: relative;
+    display: block;
+    background-color: $theme;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .animation {
+        background-color: $light-grey;
+        &:before{
+            content:          '';
+            position:         absolute;
+            background-color: inherit;
+            top:              0;
+            left:             0;
+            bottom:           0;
+            will-change:      left, right;
+            animation:        loader 2s linear infinite;
+        }
+    }
+}
+
+@keyframes loader {
+    0% {
+        left: -20%;
+        right: 100%;
+    }
+    100% {
+        left: 100%;
+        right: -20%;
+    }
+}
