@@ -131,10 +131,10 @@ section \<open>Propositional Semantics\<close>
 primrec boolean where
   \<open>boolean _ _ \<^bold>\<bottom> = False\<close>
 | \<open>boolean G _ (\<^bold>\<ddagger>P ts) = G P ts\<close>
-| \<open>boolean G H (p \<^bold>\<longrightarrow> q) = (boolean G H p \<longrightarrow> boolean G H q)\<close>
-| \<open>boolean _ H (\<^bold>\<forall> p) = H (\<^bold>\<forall> p)\<close>
+| \<open>boolean G A (p \<^bold>\<longrightarrow> q) = (boolean G A p \<longrightarrow> boolean G A q)\<close>
+| \<open>boolean _ A (\<^bold>\<forall> p) = A (\<^bold>\<forall> p)\<close>
 
-abbreviation \<open>tautology p \<equiv> \<forall>G H. boolean G H p\<close>
+abbreviation \<open>tautology p \<equiv> \<forall>G A. boolean G A p\<close>
 
 proposition \<open>tautology (\<^bold>\<forall> (\<^bold>\<ddagger>P [\<^bold>#0]) \<^bold>\<longrightarrow> \<^bold>\<forall> (\<^bold>\<ddagger>P [\<^bold>#0]))\<close>
   by simp
