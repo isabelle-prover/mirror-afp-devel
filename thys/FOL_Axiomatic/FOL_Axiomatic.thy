@@ -458,43 +458,43 @@ section \<open>Maximal\<close>
 definition \<open>maximal S \<equiv> \<forall>p. p \<notin> S \<longrightarrow> \<not> consistent ({p} \<union> S)\<close>
 
 lemma maximal_exactly_one:
-  assumes \<open>consistent H\<close> and \<open>maximal H\<close>
-  shows \<open>p \<in> H \<longleftrightarrow> (\<^bold>\<not> p) \<notin> H\<close>
+  assumes \<open>consistent S\<close> and \<open>maximal S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> (\<^bold>\<not> p) \<notin> S\<close>
 proof
-  assume \<open>p \<in> H\<close>
-  show \<open>(\<^bold>\<not> p) \<notin> H\<close>
+  assume \<open>p \<in> S\<close>
+  show \<open>(\<^bold>\<not> p) \<notin> S\<close>
   proof
-    assume \<open>(\<^bold>\<not> p) \<in> H\<close>
-    then have \<open>set [p, \<^bold>\<not> p] \<subseteq> H\<close>
-      using \<open>p \<in> H\<close> by simp
+    assume \<open>(\<^bold>\<not> p) \<in> S\<close>
+    then have \<open>set [p, \<^bold>\<not> p] \<subseteq> S\<close>
+      using \<open>p \<in> S\<close> by simp
     moreover have \<open>[p, \<^bold>\<not> p] \<turnstile> \<^bold>\<bottom>\<close>
       by blast
     ultimately show False
-      using \<open>consistent H\<close> unfolding consistent_def by blast
+      using \<open>consistent S\<close> unfolding consistent_def by blast
   qed
 next
-  assume \<open>(\<^bold>\<not> p) \<notin> H\<close>
-  then have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> H)\<close>
-    using \<open>maximal H\<close> unfolding maximal_def by blast
-  then obtain S where \<open>set S \<subseteq> H\<close> \<open>(\<^bold>\<not> p) # S \<turnstile> \<^bold>\<bottom>\<close>
-    using \<open>consistent H\<close> inconsistent_fm by blast
-  then have \<open>S \<turnstile> p\<close>
+  assume \<open>(\<^bold>\<not> p) \<notin> S\<close>
+  then have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> S)\<close>
+    using \<open>maximal S\<close> unfolding maximal_def by blast
+  then obtain S' where \<open>set S' \<subseteq> S\<close> \<open>(\<^bold>\<not> p) # S' \<turnstile> \<^bold>\<bottom>\<close>
+    using \<open>consistent S\<close> inconsistent_fm by blast
+  then have \<open>S' \<turnstile> p\<close>
     using Boole by blast
-  have \<open>consistent ({p} \<union> H)\<close>
+  have \<open>consistent ({p} \<union> S)\<close>
     unfolding consistent_def
   proof
-    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> H \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
-    then obtain S' where \<open>set S' \<subseteq> H\<close> and \<open>p # S' \<turnstile> \<^bold>\<bottom>\<close>
+    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+    then obtain S'' where \<open>set S'' \<subseteq> S\<close> and \<open>p # S'' \<turnstile> \<^bold>\<bottom>\<close>
       using assms inconsistent_fm unfolding consistent_def by blast
-    then have \<open>S @ S' \<turnstile> \<^bold>\<bottom>\<close>
-      using \<open>S \<turnstile> p\<close> by (metis MP' add_imply imply.simps(2) imply_append)
-    moreover have \<open>set (S @ S') \<subseteq> H\<close>
-      using \<open>set S \<subseteq> H\<close> \<open>set S' \<subseteq> H\<close> by simp
+    then have \<open>S' @ S'' \<turnstile> \<^bold>\<bottom>\<close>
+      using \<open>S' \<turnstile> p\<close> by (metis MP' add_imply imply.simps(2) imply_append)
+    moreover have \<open>set (S' @ S'') \<subseteq> S\<close>
+      using \<open>set S' \<subseteq> S\<close> \<open>set S'' \<subseteq> S\<close> by simp
     ultimately show False
-      using \<open>consistent H\<close> unfolding consistent_def by blast
+      using \<open>consistent S\<close> unfolding consistent_def by blast
   qed
-  then show \<open>p \<in> H\<close>
-    using \<open>maximal H\<close> unfolding maximal_def by blast
+  then show \<open>p \<in> S\<close>
+    using \<open>maximal S\<close> unfolding maximal_def by blast
 qed
 
 lemma maximal_Extend:
