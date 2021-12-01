@@ -1,22 +1,48 @@
+
+
+/* url transform */
+
+function strip_suffix(str, suffix) {
+    if (str.endsWith(suffix)) {
+        return str.slice(0, -suffix.length)
+    } else {
+        return str
+    }
+}
+
+function strip_path_ending(path) {
+    const path_parts = path.split('#')
+    return [strip_suffix(path_parts[0], '.html'), ...path_parts.slice(1)].join('#')
+}
+
 function get_target(url, href) {
     const href_parts = href.split('/')
 
     if (href_parts.length === 1) {
-        return '#' + href_parts[0].slice(0, -('.html'.length))
+        return '#' + strip_path_ending(href_parts[0])
     } else if (href_parts.length === 3 && href_parts[0] === '..' && href_parts[1] !== '..') {
-        return '/entries/' + href_parts[1].toLowerCase() + '/theories#' + href_parts[2].slice(0, -('.html'.length))
+        return '/entries/' + href_parts[1].toLowerCase() + '/theories#' + strip_path_ending(href_parts[2])
     } else {
         return url.split('/').slice(0, -1).join('/') + '/' + href
     }
 }
 
-function translate(url, content) {
+function translate(thy_name, url, content) {
+    for (const span of content.getElementsByTagName('span')) {
+        let id = span.getAttribute('id')
+        if (id) {
+            span.setAttribute('id', thy_name + "#" + id)
+        }
+    }
     for (const link of content.getElementsByTagName('a')) {
         const href = link.getAttribute('href')
         let target = get_target(url, href)
         link.setAttribute('href', target)
     }
 }
+
+
+/* theory lazy-loading */
 
 async function fetch_theory(href) {
     return fetch(href).then((http_res) => {
@@ -37,10 +63,13 @@ async function fetch_theory_body(href) {
 
 async function load_theory(thy_name, href) {
     const thy_body = await fetch_theory_body(href)
-    translate(href, thy_body)
+    translate(thy_name, href, thy_body)
     const content = theory_content(thy_name)
     content.append(...Array(...thy_body.children).slice(1))
 }
+
+
+/* theory controls */
 
 function theory_content(thy_name) {
     const elem = document.getElementById(thy_name)
@@ -51,7 +80,7 @@ function theory_content(thy_name) {
     }
 }
 
-function open_theory(thy_name) {
+async function open_theory(thy_name) {
     const content = theory_content(thy_name)
     if (content) {
         if (content.style.display === 'none') {
@@ -64,33 +93,52 @@ function open_theory(thy_name) {
             template.innerHTML = `<div id="content" style="display: block"></div>`
             const content = template.content
             elem.appendChild(content)
-            load_theory(thy_name, elem.getAttribute('datasrc'))
+            await load_theory(thy_name, elem.getAttribute('datasrc'))
         }
     }
 }
 
-const toggle_theory = function (thy_name) {
+const toggle_theory = async function (thy_name) {
     const content = theory_content(thy_name)
     if (content && content.style.display === 'block') {
         content.style.display = 'none'
     } else {
         const hash = `#${thy_name}`
         if (window.location.hash === hash) {
-            open_theory(thy_name)
+            await open_theory(thy_name)
         } else {
             window.location.hash = hash
         }
     }
 }
 
-const follow_theory_hash = function() {
-    const hash = window.location.hash
-    if (hash.length > 1) {
-        open_theory(hash.substr(1))
+
+/* fragment controls */
+
+function follow_hash(hash) {
+    if (hash !== '') {
+        const elem = document.getElementById(hash)
+        if (elem) {
+            console.log("Scrolling into " + hash)
+            elem.scrollIntoView()
+        }
     }
 }
 
-const init = function() {
+const follow_theory_hash = async function() {
+    const hash = window.location.hash
+    if (hash.length > 1) {
+        const hashes = hash.split('#')
+        const thy_name = hashes[1]
+        await open_theory(thy_name)
+        follow_hash(hashes.slice(1).join('#'))
+    }
+}
+
+
+/* setup */
+
+const init = async function() {
     const theory_list = document.getElementById('html-theories')
     if (theory_list) {
         for (const theory of theory_list.children) {
@@ -109,7 +157,7 @@ const init = function() {
             theory.replaceWith(template.content)
         }
     }
-    follow_theory_hash()
+    await follow_theory_hash()
 }
 
 window.onload = init
