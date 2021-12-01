@@ -35,6 +35,11 @@ function translate(thy_name, url, content) {
 
 /* theory lazy-loading */
 
+function parse_doc(html_str) {
+  const parser = new DOMParser()
+  return parser.parseFromString(html_str, 'text/html')
+}
+
 async function fetch_theory(href) {
   return fetch(href).then((http_res) => {
     if (http_res.status !== 200) return Promise.resolve(`<body>${http_res.statusText}</body>`)
@@ -44,8 +49,7 @@ async function fetch_theory(href) {
 
 async function fetch_theory_body(href) {
   const html_str = await fetch_theory(href)
-  const parser = new DOMParser()
-  const html = parser.parseFromString(html_str, 'text/html')
+  const html = parse_doc(html_str)
   return html.getElementsByTagName('body')[0]
 }
 
@@ -58,6 +62,12 @@ async function load_theory(thy_name, href) {
 
 
 /* theory controls */
+
+function parse_elem(html_str) {
+  const template = document.createElement('template')
+  template.innerHTML = html_str
+  return template.content
+}
 
 function theory_content(thy_name) {
   const elem = document.getElementById(thy_name)
@@ -73,9 +83,7 @@ async function open_theory(thy_name) {
   else {
     const elem = document.getElementById(thy_name)
     if (elem && elem.className === "thy-collapsible") {
-      const template = document.createElement('template')
-      template.innerHTML = `<div id="content" style="display: block"></div>`
-      const content = template.content
+      const content = parse_elem(`<div id="content" style="display: block"></div>`)
       elem.appendChild(content)
       await load_theory(thy_name, elem.getAttribute('datasrc'))
     }
@@ -127,14 +135,13 @@ const init = async function () {
       const href = thy_link.getAttribute('href')
       const thy_name = thy_link.innerHTML
 
-      const template = document.createElement('template')
-      template.innerHTML = `
+      const thy_collapsible = parse_elem(`
         <div id=${thy_name} class="thy-collapsible" datasrc=${href}>
           <div class="head" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
               <h1>${thy_name}</h1>
           </div>
-        </div>`
-      theory.replaceWith(template.content)
+        </div>`)
+      theory.replaceWith(thy_collapsible)
     }
   }
   await follow_theory_hash()
