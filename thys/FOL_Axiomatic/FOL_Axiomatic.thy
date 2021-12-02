@@ -379,7 +379,7 @@ qed
 section \<open>Extension\<close>
 
 fun witness where
-  \<open>witness used (\<^bold>\<not> \<^bold>\<forall>p) = {\<^bold>\<not> p\<langle>\<^bold>\<dagger>(SOME a. a \<notin> used) []/0\<rangle>}\<close>
+  \<open>witness used (\<^bold>\<not> \<^bold>\<forall>p) = {\<^bold>\<not> p\<langle>\<^bold>\<star>(SOME a. a \<notin> used)/0\<rangle>}\<close>
 | \<open>witness _ _ = {}\<close>
 
 primrec extend where
