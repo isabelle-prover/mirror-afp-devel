@@ -56,7 +56,7 @@ fun add_rewrite id (str1, str2) ctxt =
       val thy = Proof_Context.theory_of ctxt
       val th = assume_eq thy (t1, t2)
     in
-      ctxt |> RewriteTable.add_rewrite (id, th) |> snd
+      ctxt |> Auto2_Setup.RewriteTable.add_rewrite (id, th) |> snd
     end
 
 (* Check th is actually t(env) == u. *)
@@ -87,7 +87,7 @@ fun assert_match_gen matcher ((str_t, str_u), info_str) ctxt =
       assert_eq_info (info, info'') "assert_match" ctxt
     end
 
-val assert_match = assert_match_gen Matcher.match
+val assert_match = assert_match_gen Auto2_Setup.Matcher.match
 
 fun assert_match_list (pairs_str, info_str) ctxt =
     let
@@ -97,7 +97,7 @@ fun assert_match_list (pairs_str, info_str) ctxt =
                              Thm.cterm_of ctxt (Syntax.read_term ctxt str_u))))
               pairs_str
       val info = map (apsnd (map (Syntax.read_term ctxt))) info_str
-      val info' = Matcher.rewrite_match_list ctxt pairs ([], fo_init)
+      val info' = Auto2_Setup.Matcher.rewrite_match_list ctxt pairs ([], fo_init)
       fun check_info_list (instsp, ths) =
           let
             fun check_pair ((t, cu), th) =
@@ -227,8 +227,8 @@ fun assert_pre_match_gen res at_head (str_t, str_u) ctxt =
     let
       val (t, cu) = (Proof_Context.read_term_pattern ctxt str_t,
                      Thm.cterm_of ctxt (Syntax.read_term ctxt str_u))
-      val pre_match_fn = if at_head then Matcher.pre_match_head
-                         else Matcher.pre_match
+      val pre_match_fn = if at_head then Auto2_Setup.Matcher.pre_match_head
+                         else Auto2_Setup.Matcher.pre_match
     in
       if pre_match_fn ctxt (t, cu) = res then ctxt
       else let

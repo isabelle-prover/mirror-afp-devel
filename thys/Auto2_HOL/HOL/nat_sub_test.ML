@@ -96,7 +96,7 @@ val test =
         ("(a - 1) * (a - 1)", "a * a + 1 - a * 2")
       ]
     in
-      map (WfTerm.test_wfconv ctxt NatSub.fheads NatSub.norm_minus "test") test_data @
+      map (Auto2_Setup.WfTerm.test_wfconv ctxt NatSub.fheads NatSub.norm_minus "test") test_data @
       map (test_term ctxt NatSub.norm_ring_term "test_t") test_data
     end
 

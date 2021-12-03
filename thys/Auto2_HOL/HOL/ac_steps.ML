@@ -21,7 +21,13 @@ sig
   val add_ac_proofsteps: theory -> theory
 end;
 
-structure AC_ProofSteps : AC_PROOFSTEPS =
+functor AC_ProofSteps(
+  structure ACUtil: ACUTIL;
+  structure Basic_UtilLogic: BASIC_UTIL_LOGIC;
+  structure ProofStepData: PROOFSTEP_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure Update: UPDATE;
+  ): AC_PROOFSTEPS =
 struct
 
 val max_ac = Attrib.setup_config_int @{binding "max_ac"} (K 20)
@@ -164,7 +170,7 @@ fun ac_expand_equiv_fn ctxt item1 item2 =
                       val eq = Util.transitive_list [
                             eq_th1, eq_th1', meta_sym eq_th2', meta_sym eq_th2]
                     in
-                      [(id', to_obj_eq eq)]
+                      [(id', Basic_UtilLogic.to_obj_eq eq)]
                     end
                   else []
                 end
@@ -204,7 +210,7 @@ fun ac_expand_unit_fn ctxt item =
                       val eq' = ACUtil.normalize_all_ac ac_info ct
                       val eq = Util.transitive_list [eq_th, eq']
                     in
-                      [(id', to_obj_eq eq)]
+                      [(id', Basic_UtilLogic.to_obj_eq eq)]
                     end
                   else []
                 end
@@ -221,10 +227,8 @@ val ac_expand_unit =
      func = OneStep ac_expand_unit_fn}
 
 val add_ac_proofsteps =
-    fold add_prfstep [
+    fold ProofStepData.add_prfstep [
       ac_expand_equiv, ac_expand_unit
    ]
 
 end  (* structure AC_ProofSteps. *)
-
-val _ = Theory.setup AC_ProofSteps.add_ac_proofsteps

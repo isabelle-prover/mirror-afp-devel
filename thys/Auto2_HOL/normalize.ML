@@ -5,9 +5,19 @@
   Normalization procedure for facts obtained during a proof.
 *)
 
-signature NORMALIZER =
+signature NORMALIZER_TYPE =
 sig
   type normalizer = Proof.context -> raw_item -> raw_item list
+end
+
+structure Normalizer_Type =
+struct
+type normalizer = Proof.context -> raw_item -> raw_item list;
+end
+
+signature NORMALIZER =
+sig
+  include NORMALIZER_TYPE
   val add_normalizer: string * normalizer -> theory -> theory
   val add_th_normalizer:
       string * (Proof.context -> thm -> thm list) -> theory -> theory
@@ -26,12 +36,17 @@ sig
   val def_subst: (term * term) list -> term -> term
 end;
 
-structure Normalizer : NORMALIZER =
+functor Normalizer(
+  structure BoxItem: BOXITEM;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  structure Update: UPDATE;
+  ): NORMALIZER =
 struct
 
 (* Keeps list of normalizers. *)
 
-type normalizer = Proof.context -> raw_item -> raw_item list;
+open Normalizer_Type
 
 structure Data = Theory_Data
 (
@@ -72,8 +87,8 @@ fun rewr_normalizer eq_th ctxt ritem =
               [ritem]
             else let
               (* Apply to right side *)
-              val th' = apply_to_thm' (Conv.arg_conv cv) th
-              val (lhs, rhs) = dest_eq (prop_of' th')
+              val th' = UtilLogic.apply_to_thm' (Conv.arg_conv cv) th
+              val (lhs, rhs) = UtilBase.dest_eq (UtilLogic.prop_of' th')
             in
               [Fact (TY_EQ, [lhs, rhs], th')]
             end
@@ -117,7 +132,7 @@ structure InjStructData = Theory_Data
 
 fun add_inj_struct_data th thy =
     let
-      val (lhs, _) = th |> prop_of' |> dest_eq |> fst |> dest_eq
+      val (lhs, _) = th |> UtilLogic.prop_of' |> UtilBase.dest_eq |> fst |> UtilBase.dest_eq
       val (f, _) = Term.strip_comb lhs
     in
       case f of
@@ -141,9 +156,9 @@ fun inj_args thy t =
     end
 
 fun is_def_eq thy t =
-    if not (is_eq_term t) then false
+    if not (UtilBase.is_eq_term t) then false
     else let
-      val (lhs, rhs) = dest_eq t
+      val (lhs, rhs) = UtilBase.dest_eq t
       val (l_args, r_args) = apply2 (inj_args thy) (lhs, rhs)
     in
       forall Term.is_Var l_args andalso
@@ -152,10 +167,10 @@ fun is_def_eq thy t =
     end
 
 fun is_def_eq' thy t =
-    is_Trueprop t andalso is_def_eq thy (dest_Trueprop t)
+    UtilLogic.is_Trueprop t andalso is_def_eq thy (UtilLogic.dest_Trueprop t)
 
 fun is_neg_def_eq thy t =
-    is_neg t andalso is_def_eq thy (dest_not t)
+    UtilLogic.is_neg t andalso is_def_eq thy (UtilLogic.dest_not t)
 
 (* Given t of the form A_1 ==> ... ==> A_n ==> C, swap all A_i of the
    form ?A = t to the front.
@@ -187,13 +202,13 @@ fun meta_use_vardef th =
       val prem = Thm.term_of cprem
       val thy = Thm.theory_of_thm th
     in
-      if is_conj prem then
-        th |> apply_to_thm (Conv.rewr_conv (meta_sym @{thm atomize_conjL}))
+      if UtilLogic.is_conj prem then
+        th |> apply_to_thm (Conv.rewr_conv (meta_sym UtilBase.atomize_conjL_th))
            |> meta_use_vardef
       else if is_def_eq thy prem then
         let
-          val (c_lhs, c_rhs) = cdest_eq cprem
-          val (lhs, rhs) = dest_eq prem
+          val (c_lhs, c_rhs) = UtilBase.cdest_eq cprem
+          val (lhs, rhs) = UtilBase.dest_eq prem
         in
           if Term.is_Var lhs then
             let
@@ -213,7 +228,7 @@ fun meta_use_vardef th =
                            handle Option.Option => raise Fail "meta_use_vardef"
             in
               th |> apply_to_thm (
-                Conv.arg1_conv (Conv.arg_conv (rewr_obj_eq inj_th)))
+                Conv.arg1_conv (Conv.arg_conv (UtilLogic.rewr_obj_eq inj_th)))
                  |> meta_use_vardef
             end
         end
@@ -222,27 +237,27 @@ fun meta_use_vardef th =
     end
 
 fun disj_ts t =
-    if is_disj t then dest_arg1 t :: disj_ts (dest_arg t)
+    if UtilLogic.is_disj t then dest_arg1 t :: disj_ts (dest_arg t)
     else [t]
 
 fun swap_disj ct =
-    Conv.every_conv [rewr_obj_eq (obj_sym UtilBase.disj_assoc_th),
-                     Conv.arg1_conv (rewr_obj_eq UtilBase.disj_commute_th),
-                     rewr_obj_eq UtilBase.disj_assoc_th] ct
+    Conv.every_conv [UtilLogic.rewr_obj_eq (UtilLogic.obj_sym UtilBase.disj_assoc_th),
+                     Conv.arg1_conv (UtilLogic.rewr_obj_eq UtilBase.disj_commute_th),
+                     UtilLogic.rewr_obj_eq UtilBase.disj_assoc_th] ct
 
 fun disj_swap_eq_to_front' ct =
     let
       val t = Thm.term_of ct
       val thy = Thm.theory_of_cterm ct
     in
-      if is_disj t then
+      if UtilLogic.is_disj t then
         if is_neg_def_eq thy (dest_arg1 t) then
           Conv.all_conv ct
-        else if is_disj (dest_arg t) then
+        else if UtilLogic.is_disj (dest_arg t) then
           Conv.every_conv [Conv.arg_conv disj_swap_eq_to_front',
                            swap_disj] ct
         else if is_neg_def_eq thy (dest_arg t) then
-          rewr_obj_eq UtilBase.disj_commute_th ct
+          UtilLogic.rewr_obj_eq UtilBase.disj_commute_th ct
         else
           Conv.no_conv ct
       else
@@ -251,8 +266,9 @@ fun disj_swap_eq_to_front' ct =
 
 fun disj_swap_eq_to_front ct =
     Conv.every_conv [
-      Trueprop_conv disj_swap_eq_to_front',
-      Trueprop_conv (rewr_obj_eq (obj_sym UtilBase.imp_conv_disj_th)),
+      UtilLogic.Trueprop_conv disj_swap_eq_to_front',
+      UtilLogic.Trueprop_conv
+        (UtilLogic.rewr_obj_eq (UtilLogic.obj_sym UtilBase.imp_conv_disj_th)),
       Conv.rewr_conv (meta_sym UtilBase.atomize_imp_th)
     ] ct
 
@@ -268,9 +284,9 @@ fun meta_use_vardefs th =
         in
           (pairs @ pairs', th'')
         end
-      else if is_Trueprop (Thm.prop_of th) then
+      else if UtilLogic.is_Trueprop (Thm.prop_of th) then
         let
-          val ts = disj_ts (prop_of' th)
+          val ts = disj_ts (UtilLogic.prop_of' th)
         in
           if length ts > 1 andalso exists (is_neg_def_eq thy) ts then
             let

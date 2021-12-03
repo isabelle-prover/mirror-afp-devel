@@ -10,7 +10,7 @@ session Auto2_HOL (AFP) = HOL +
   directories
     "HOL"
   theories [document = false]
-    (* Core setup *)
+    (* Core setup tests *)
     "HOL/Auto2_Test"
   theories
     (* Simple examples *)

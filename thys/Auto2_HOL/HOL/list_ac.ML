@@ -93,7 +93,7 @@ fun simp_list_expr ctxt T (id, cu) =
       val cus = dest_subs ctxt T cu
     in
       if null cus then [(id, Thm.reflexive cu)] else
-      cus |> map (RewriteTable.simplify_info ctxt)
+      cus |> map (Auto2_Setup.RewriteTable.simplify_info ctxt)
           |> BoxID.get_all_merges_info ctxt
           |> BoxID.merge_box_with_info ctxt id
           |> map (fn (id', eqs) => (id', rewrite_on_eqs T eqs cu))
@@ -109,7 +109,7 @@ fun get_list_head_equiv ctxt T (id, cu) =
             map (BoxID.merge_eq_infos ctxt (id', eq_th)) infos
           end
     in
-      cu |> RewriteTable.get_head_equiv ctxt
+      cu |> Auto2_Setup.RewriteTable.get_head_equiv ctxt
          |> BoxID.merge_box_with_info ctxt id
          |> maps process_head_equiv
          |> filter_out (Thm.is_reflexive o snd)
@@ -130,7 +130,7 @@ fun list_expand_once ctxt T (id, ct) =
 (* Find all ways to write ct, up to a certain limit. *)
 fun list_expand ctxt T (id, ct) =
     let
-      val max_ac = Config.get ctxt AC_ProofSteps.max_ac
+      val max_ac = Config.get ctxt Auto2_HOL_Extra_Setup.AC_ProofSteps.max_ac
 
       fun list_equiv_eq_better (id, th) (id', th') =
           let
@@ -200,7 +200,7 @@ fun list_expand_equiv_fn ctxt item1 item2 =
       val T = the (get_list_ty t1)
     in
       if Term_Ord.term_ord (t2, t1) = LESS then []
-      else if RewriteTable.is_equiv id ctxt (ct1, ct2) then []
+      else if Auto2_Setup.RewriteTable.is_equiv id ctxt (ct1, ct2) then []
       else if not (is_list_head T t1) orelse not (is_list_head T t2) then []
       else let
         val expand1 = list_expand ctxt T (id, ct1)
@@ -229,7 +229,7 @@ fun list_expand_equiv_fn ctxt item1 item2 =
         (maps get_equiv (Util.all_pairs (expand1, expand2)))
             |> filter (BoxID.has_incr_id o fst)
             |> Util.max_partial (BoxID.id_is_eq_ancestor ctxt)
-            |> map (fn (id, th) => Update.thm_update_sc 1 (id, th))
+            |> map (fn (id, th) => Auto2_Setup.Update.thm_update_sc 1 (id, th))
       end
     end
 
@@ -267,7 +267,7 @@ fun list_expand_unit_fn ctxt item =
       in
         (maps process_expand expand)
             |> filter (BoxID.has_incr_id o fst)
-            |> map (fn (id, th) => Update.thm_update_sc 1 (id, th))
+            |> map (fn (id, th) => Auto2_Setup.Update.thm_update_sc 1 (id, th))
       end
     end
 

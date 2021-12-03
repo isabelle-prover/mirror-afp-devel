@@ -32,8 +32,12 @@ sig
   val get_new_property: Proof.context -> (box_id * thm) list
 end;
 
-structure PropertyData : PROPERTY_DATA =
-
+functor PropertyData(
+  structure Basic_UtilBase: BASIC_UTIL_BASE
+  structure Property: PROPERTY;
+  structure RewriteTable: REWRITE_TABLE
+  structure UtilLogic: BASIC_UTIL_LOGIC
+  ) : PROPERTY_DATA =
 struct
 
 structure Data = Proof_Data
@@ -75,7 +79,7 @@ fun get_property_for_term ctxt t =
 (* Add a new property. Similar to add_equiv_raw. *)
 fun add_property_raw (cur_info as (_, th)) ctxt =
     let
-      val t = Property.get_property_arg (prop_of' th)
+      val t = Property.get_property_arg (UtilLogic.prop_of' th)
       val props = get_property_for_term ctxt t
     in
       if exists (fn info => BoxID.info_eq_better ctxt info cur_info) props then
@@ -94,14 +98,14 @@ fun add_property_raw (cur_info as (_, th)) ctxt =
  *)
 fun convert_property ctxt (id', eq_th) (id, th) =
     (BoxID.merge_boxes ctxt (id, id'),
-     th |> apply_to_thm' (Conv.arg_conv (Conv.rewr_conv eq_th)))
+     th |> UtilLogic.apply_to_thm' (Conv.arg_conv (Conv.rewr_conv eq_th)))
 
 fun get_property_raw ctxt (id, prop) =
     let
       val (P, t) = Term.dest_comb prop
     in
       (get_property_for_term ctxt t)
-          |> filter (fn (_, th) => Term.head_of (prop_of' th) aconv P)
+          |> filter (fn (_, th) => Term.head_of (UtilLogic.prop_of' th) aconv P)
           |> BoxID.merge_box_with_info ctxt id
           |> Util.max_partial (BoxID.id_is_eq_ancestor ctxt)
     end
@@ -148,7 +152,7 @@ fun apply_property_update_rule ctxt id th_opt =
         NONE => []
       | SOME th =>
         let
-          val prems = map dest_Trueprop (Thm.prems_of th)
+          val prems = map UtilLogic.dest_Trueprop (Thm.prems_of th)
         in
           if null prems then
             [(id, th)]
@@ -165,7 +169,7 @@ fun apply_property_update_rule ctxt id th_opt =
    properties.
  *)
 fun apply_property_update_on_term ctxt id t =
-    if fastype_of t = boolT then [] else
+    if fastype_of t = Basic_UtilBase.boolT then [] else
     case head_of t of
         Const (c, _) =>
         let
@@ -192,7 +196,7 @@ fun process_update_property inits ctxt =
 
       fun process_property (id, th) (to_process, ctxt) =
           let
-            val t = Property.get_property_arg (prop_of' th)
+            val t = Property.get_property_arg (UtilLogic.prop_of' th)
             val property_t = get_property_for_term ctxt t
           in
             if exists (fn info => BoxID.info_eq_better ctxt info (id, th))
@@ -208,7 +212,7 @@ fun process_update_property inits ctxt =
               [] => ([], ctxt)
             | (id, th) :: rest =>
               let
-                val t = Property.get_property_arg (prop_of' th)
+                val t = Property.get_property_arg (UtilLogic.prop_of' th)
 
                 (* Neighbors of t. Here th: P t, th': t = t', result: P t'. *)
                 fun process_neigh (id', eq_th) =
@@ -218,7 +222,7 @@ fun process_update_property inits ctxt =
 
                 (* Derived properties of t. *)
                 val ts = Property.strip_property_field thy t
-                val c = Property.get_property_name (prop_of' th)
+                val c = Property.get_property_name (UtilLogic.prop_of' th)
                 val updt_rules = Property.lookup_property_update thy c
                 fun process_updt_rule (t, th) =
                     th |> Property.instantiate_property_update ctxt t

@@ -17,13 +17,14 @@ val test_norm_all_disj =
             val (t1, t2) = (Proof_Context.read_term_pattern ctxt str1,
                             Proof_Context.read_term_pattern ctxt str2)
             val ct1 = Thm.cterm_of ctxt t1
-            val (vars, ts) = Logic_ProofSteps.strip_all_disj t1
-            val res_th = Logic_ProofSteps.norm_all_disj ctxt ct1
+            val (vars, ts) = Auto2_Setup.Logic_ProofSteps.strip_all_disj t1
+            val res_th = Auto2_Setup.Logic_ProofSteps.norm_all_disj ctxt ct1
           in
-            if not (Logic_ProofSteps.mk_all_disj (vars, ts) aconv t2) then
+            if not (Auto2_Setup.Logic_ProofSteps.mk_all_disj (vars, ts) aconv t2) then
               let
                 val _ = trace_t ctxt "Input" t1
-                val _ = trace_t ctxt "Output" (Logic_ProofSteps.mk_all_disj (vars, ts))
+                val _ = trace_t ctxt "Output"
+                  (Auto2_Setup.Logic_ProofSteps.mk_all_disj (vars, ts))
                 val _ = trace_t ctxt "Expected" t2
               in
                 raise Fail "test_strip_all_disj"
@@ -99,13 +100,13 @@ val test_disj_prop_match =
           let
             val (t, u) = (Proof_Context.read_term_pattern ctxt str1,
                           Syntax.read_term ctxt str2)
-            val (var_u, us) = Logic_ProofSteps.strip_all_disj u
+            val (var_u, us) = Auto2_Setup.Logic_ProofSteps.strip_all_disj u
             val var_u' = map free_to_var var_u
             val us' = map (subst_atomic (var_u ~~ var_u')) us
             val (cvar_u, cus) = (map Term.dest_Var var_u', map (Thm.cterm_of ctxt) us')
-            val (var_t, ts) = (Logic_ProofSteps.strip_all_disj t) |> Logic_ProofSteps.replace_disj_vars ctxt
-            val res = Logic_ProofSteps.disj_prop_match ctxt ([], fo_init) (t, (var_t, ts), (cvar_u, cus))
-            val u' = Logic_ProofSteps.mk_all_disj (var_u, us)
+            val (var_t, ts) = (Auto2_Setup.Logic_ProofSteps.strip_all_disj t) |> Auto2_Setup.Logic_ProofSteps.replace_disj_vars ctxt
+            val res = Auto2_Setup.Logic_ProofSteps.disj_prop_match ctxt ([], fo_init) (t, (var_t, ts), (cvar_u, cus))
+            val u' = Auto2_Setup.Logic_ProofSteps.mk_all_disj (var_u, us)
           in
             case res of
                 [(([], instsp), eq)] =>
@@ -169,12 +170,12 @@ val test_disj_prop_no_match =
           let
             val (t, u) = (Proof_Context.read_term_pattern ctxt str1,
                           Syntax.read_term ctxt str2)
-            val (var_u, us) = Logic_ProofSteps.strip_all_disj u
+            val (var_u, us) = Auto2_Setup.Logic_ProofSteps.strip_all_disj u
             val var_u' = map free_to_var var_u
             val us' = map (subst_atomic (var_u ~~ var_u')) us
             val (cvar_u, cus) = (map Term.dest_Var var_u', map (Thm.cterm_of ctxt) us')
-            val (var_t, ts) = (Logic_ProofSteps.strip_all_disj t) |> Logic_ProofSteps.replace_disj_vars ctxt
-            val res = Logic_ProofSteps.disj_prop_match ctxt ([], fo_init) (t, (var_t, ts), (cvar_u, cus))
+            val (var_t, ts) = (Auto2_Setup.Logic_ProofSteps.strip_all_disj t) |> Auto2_Setup.Logic_ProofSteps.replace_disj_vars ctxt
+            val res = Auto2_Setup.Logic_ProofSteps.disj_prop_match ctxt ([], fo_init) (t, (var_t, ts), (cvar_u, cus))
           in
             if null res then ()
             else let
@@ -201,13 +202,16 @@ val test_match_update =
       val B = Free ("B", natT --> boolT)
       val D = Free ("D", boolT)
       val ctxt' = ctxt |> fold Variable.declare_term [x, y, A, B, D]
-      val ctxt'' = ctxt' |> RewriteTable.add_rewrite ([], assume_eq thy (x, y)) |> snd
+      val ctxt'' =
+        ctxt'
+        |> Auto2_Setup.RewriteTable.add_rewrite ([], assume_eq thy (x, y))
+        |> snd
 
       fun disj_to_ritem th =
           let
             val subs = strip_disj (prop_of' th)
           in
-            Fact (TY_DISJ, bFalse :: disj :: subs, th)
+            Fact (Auto2_Setup.Logic_ProofSteps.TY_DISJ, bFalse :: disj :: subs, th)
           end
 
       fun read_prop str =
@@ -215,7 +219,7 @@ val test_match_update =
 
       fun updt_to_thm updt =
           case updt of
-              AddItems {raw_items, ...} => map BoxItem.get_thm_raw raw_items
+              AddItems {raw_items, ...} => map Auto2_Setup.BoxItem.get_thm_raw raw_items
             | ResolveBox {th, ...} => [th]
             | _ => []
 
@@ -224,10 +228,10 @@ val test_match_update =
             val disj_th = Util.assume_thm ctxt' (read_prop disj_str)
             val th = Util.assume_thm ctxt' (read_prop t_str)
             val res_ts = map read_prop res_strs
-            val mk_box_item = BoxItem.mk_box_item ctxt'
+            val mk_box_item = Auto2_Setup.BoxItem.mk_box_item ctxt'
             val items = [mk_box_item (0, [], 0, disj_to_ritem disj_th),
-                         mk_box_item (0, [0], 0, Update.thm_to_ritem th)]
-            val updts = ProofStep.apply_prfstep ctxt items Logic_ProofSteps.match_update_prfstep
+                         mk_box_item (0, [0], 0, Auto2_Setup.Update.thm_to_ritem th)]
+            val updts = Auto2_Setup.ProofStep.apply_prfstep ctxt items Auto2_Setup.Logic_ProofSteps.match_update_prfstep
             val res_ts' = maps updt_to_thm updts |> map Thm.prop_of
           in
             if eq_set (op aconv) (res_ts, res_ts') then ()

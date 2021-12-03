@@ -122,7 +122,7 @@ theorem prime_dvd_multiset [backward1]: "prime p \<Longrightarrow> p dvd (\<Prod
   @obtain M' m where "M = M' + {#m#}"
   @contradiction @apply_induct_hyp M'
 @qed
-  
+
 theorem factorization_unique_aux:
   "\<forall>p\<in>#M. prime p \<Longrightarrow> \<forall>p\<in>#N. prime p \<Longrightarrow> (\<Prod>i\<in>#M. i) dvd (\<Prod>i\<in>#N. i) \<Longrightarrow> M \<subseteq># N"
 @proof

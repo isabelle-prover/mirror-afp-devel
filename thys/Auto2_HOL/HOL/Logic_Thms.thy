@@ -6,7 +6,7 @@
 *)
 
 theory Logic_Thms
-imports Auto2_HOL
+imports Auto2_HOL_Setup
 begin
 
 (* Trivial contradictions. *)
@@ -17,7 +17,8 @@ theorem FalseD [resolve]: "\<not>False" by simp
 lemma exists_triv_eq [resolve]: "\<exists>x. x = x" by auto
 
 (* Not. *)
-setup \<open>add_forward_prfstep_cond @{thm HOL.not_sym} [with_filt (not_type_filter "s" boolT)]\<close>
+setup \<open>add_forward_prfstep_cond @{thm HOL.not_sym}
+  [with_filt (Auto2_Setup.ProofStep.not_type_filter "s" boolT)]\<close>
 
 (* Iff. *)
 setup \<open>add_gen_prfstep ("iff_intro1",
@@ -72,9 +73,9 @@ setup \<open>add_prfstep_custom ("ex_choice",
   [WithGoal @{term_pat "EX f. !x. ?Q f x"}],
   (fn ((id, _), ths) => fn _ => fn _ =>
     let
-      val choice = @{thm choice} |> apply_to_thm (Conv.rewr_conv UtilBase.backward_conv_th)
+      val choice = @{thm choice} |> apply_to_thm (Conv.rewr_conv Auto2_UtilBase.backward_conv_th)
     in
-      [Update.thm_update (id, (ths MRS choice))]
+      [Auto2_Setup.Update.thm_update (id, (ths MRS choice))]
     end
     handle THM _ => []))
 \<close>
@@ -85,18 +86,18 @@ theorem Least_equality' [backward1]:
 
 (* Pairs. *)
 lemma pair_inj: "(a,b) = c \<longleftrightarrow> a = fst c \<and> b = snd c" by auto
-setup \<open>Normalizer.add_inj_struct_data @{thm pair_inj}\<close>
+setup \<open>Auto2_Setup.Normalizer.add_inj_struct_data @{thm pair_inj}\<close>
 
 setup \<open>add_rewrite_rule @{thm fst_conv}\<close>
 setup \<open>add_rewrite_rule @{thm snd_conv}\<close>
 setup \<open>add_forward_prfstep (equiv_forward_th @{thm prod.simps(1)})\<close>
 setup \<open>add_rewrite_rule_cond @{thm surjective_pairing} [with_cond "?t \<noteq> (?a, ?b)"]\<close>
-setup \<open>Normalizer.add_rewr_normalizer ("rewr_case", (to_meta_eq @{thm case_prod_beta'}))\<close>
+setup \<open>Auto2_Setup.Normalizer.add_rewr_normalizer ("rewr_case", (to_meta_eq @{thm case_prod_beta'}))\<close>
 
 (* Let. *)
-setup \<open>Normalizer.add_rewr_normalizer ("rewr_let", @{thm Let_def})\<close>
+setup \<open>Auto2_Setup.Normalizer.add_rewr_normalizer ("rewr_let", @{thm Let_def})\<close>
 
-(* Equivalence relations *)  
+(* Equivalence relations *)
 setup \<open>add_forward_prfstep @{thm Relation.symD}\<close>
 setup \<open>add_backward_prfstep @{thm Relation.symI}\<close>
 setup \<open>add_forward_prfstep @{thm Relation.transD}\<close>

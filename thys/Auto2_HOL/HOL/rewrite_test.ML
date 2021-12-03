@@ -52,7 +52,7 @@ fun assert_rew_info str info_str ctxt =
       val ct = Thm.cterm_of ctxt t
       val info = map (apsnd (Syntax.read_term ctxt)) info_str
     in
-      assert_eq_info (info, RewriteTable.get_rewrite_info ctxt ct)
+      assert_eq_info (info, Auto2_Setup.RewriteTable.get_rewrite_info ctxt ct)
                      "assert_rew_info" ctxt
     end
 
@@ -62,7 +62,7 @@ fun assert_srew_info str info_str ctxt =
       val ct = Thm.cterm_of ctxt t
       val info = map (apsnd (Syntax.read_term ctxt)) info_str
     in
-      assert_eq_info (info, RewriteTable.get_subterm_rewrite_info ctxt ct)
+      assert_eq_info (info, Auto2_Setup.RewriteTable.get_subterm_rewrite_info ctxt ct)
                      "assert_srew_info" ctxt
     end
 
@@ -73,7 +73,7 @@ fun assert_head_rep (id, str) info_str ctxt =
       val info = map (apsnd (Syntax.read_term ctxt)) info_str
       val th = Thm.reflexive ct
     in
-      assert_eq_info (info, RewriteTable.get_head_rep_with_id_th ctxt (id, th))
+      assert_eq_info (info, Auto2_Setup.RewriteTable.get_head_rep_with_id_th ctxt (id, th))
                      "assert_head_rep" ctxt
     end
 
@@ -81,7 +81,7 @@ fun assert_equiv_gen exp_equiv id (str1, str2) ctxt =
     let
       val (t1, t2) = (Syntax.read_term ctxt str1, Syntax.read_term ctxt str2)
     in
-      if exp_equiv = RewriteTable.is_equiv_t id ctxt (t1, t2) then ctxt
+      if exp_equiv = Auto2_Setup.RewriteTable.is_equiv_t id ctxt (t1, t2) then ctxt
       else let
         val _ = tracing ("id: " ^ (BoxID.string_of_box_id id))
         val _ = trace_tlist ctxt "Input:" [t1, t2]
@@ -99,7 +99,7 @@ fun assert_simpl_info str info_str ctxt =
       val ct = Thm.cterm_of ctxt t
       val info = map (apsnd (Syntax.read_term ctxt)) info_str
     in
-      assert_eq_info (info, RewriteTable.simplify_info ctxt ct)
+      assert_eq_info (info, Auto2_Setup.RewriteTable.simplify_info ctxt ct)
                      "assert_simpl_info" ctxt
     end
 
@@ -107,7 +107,7 @@ fun assert_simpl id (str, str') ctxt =
     let
       val (t, t') = (Syntax.read_term ctxt str, Syntax.read_term ctxt str')
       val ct = Thm.cterm_of ctxt t
-      val res = Util.rhs_of (RewriteTable.simplify id ctxt ct)
+      val res = Util.rhs_of (Auto2_Setup.RewriteTable.simplify id ctxt ct)
     in
       if res aconv t' then ctxt
       else let
@@ -127,7 +127,7 @@ fun assert_head_equivs (id, str) info_str ctxt =
     let
       val cu = Thm.cterm_of ctxt (Syntax.read_term ctxt str)
       val info = map (apsnd (Syntax.read_term ctxt)) info_str
-      val res = (RewriteTable.get_head_equiv ctxt cu)
+      val res = (Auto2_Setup.RewriteTable.get_head_equiv ctxt cu)
                     |> BoxID.merge_box_with_info ctxt id
     in
       assert_eq_info (info, res) "assert_head_equivs" ctxt
@@ -136,10 +136,10 @@ fun assert_head_equivs (id, str) info_str ctxt =
 fun index_reps ctxt =
     let
       fun index_reps_t t =
-          fold RewriteTable.update_subsimp
-               (RewriteTable.get_subterm_rewrite_info ctxt t)
+          fold Auto2_Setup.RewriteTable.update_subsimp
+               (Auto2_Setup.RewriteTable.get_subterm_rewrite_info ctxt t)
     in
-      fold index_reps_t (RewriteTable.get_all_terms ctxt) ctxt
+      fold index_reps_t (Auto2_Setup.RewriteTable.get_all_terms ctxt) ctxt
     end
 
 fun declare_term str ctxt =
@@ -154,16 +154,16 @@ fun add_equiv id (str1, str2) ctxt =
       val thy = Proof_Context.theory_of ctxt
       val eq_th = Util.assume_meta_eq thy (t1, t2)
     in
-      ctxt |> RewriteTable.add_equiv (id, eq_th)
+      ctxt |> Auto2_Setup.RewriteTable.add_equiv (id, eq_th)
     end
 
 fun add_term str ctxt =
-    ctxt |> RewriteTable.add_term ([], Thm.cterm_of ctxt (Syntax.read_term ctxt str)) |> snd
+    ctxt |> Auto2_Setup.RewriteTable.add_term ([], Thm.cterm_of ctxt (Syntax.read_term ctxt str)) |> snd
 
 fun assert_eq_edges (str1, str2) ids ctxt =
     let
       val (t1, t2) = (Syntax.read_term ctxt str1, Syntax.read_term ctxt str2)
-      val ids' = (RewriteTable.equiv_neighs ctxt t1)
+      val ids' = (Auto2_Setup.RewriteTable.equiv_neighs ctxt t1)
                      |> map to_term_info
                      |> filter (fn (_, t2') => t2 aconv t2') |> map fst
     in
@@ -183,13 +183,13 @@ fun update_simp id (str1, str2) ctxt =
       val thy = Proof_Context.theory_of ctxt
       val eq_th = Util.assume_meta_eq thy (t1, t2)
     in
-      ctxt |> RewriteTable.update_simp (id, eq_th)
+      ctxt |> Auto2_Setup.RewriteTable.update_simp (id, eq_th)
     end
 
 fun assert_rewrite id (str, str') ctxt =
     let
       val (t, t') = (Syntax.read_term ctxt str, Syntax.read_term ctxt str')
-      val res = Util.rhs_of (RewriteTable.get_rewrite id ctxt (Thm.cterm_of ctxt t))
+      val res = Util.rhs_of (Auto2_Setup.RewriteTable.get_rewrite id ctxt (Thm.cterm_of ctxt t))
     in
       if res aconv t' then ctxt
       else let
@@ -207,7 +207,7 @@ fun add_rewrite id (str1, str2) ctxt =
       val thy = Proof_Context.theory_of ctxt
       val th = assume_eq thy (t1, t2)
     in
-      ctxt |> RewriteTable.add_rewrite (id, th) |> snd
+      ctxt |> Auto2_Setup.RewriteTable.add_rewrite (id, th) |> snd
     end
 
 in

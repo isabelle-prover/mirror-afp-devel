@@ -46,7 +46,10 @@ sig
   val norm_combine: ac_info -> (term -> bool) -> conv -> conv
 end;
 
-structure ACUtil : ACUTIL =
+functor ACUtil(
+  structure Basic_UtilBase: BASIC_UTIL_BASE
+  structure Basic_UtilLogic: BASIC_UTIL_LOGIC
+  ): ACUTIL =
 struct
 
 (* Register of generators of ac_inst_info. *)
@@ -63,12 +66,12 @@ fun inst_ac_info thy T {assoc_th, comm_th, unitl_th, unitr_th, ...} =
          change th to true_th.
        *)
       fun inst_th th =
-          if is_true_th th then true_th else
+          if Basic_UtilLogic.is_true_th th then Basic_UtilBase.true_th else
           let
             (* Extract the first argument of th, then the body type of
                that argument.
              *)
-            val arg_type = th |> prop_of' |> Util.dest_args |> hd
+            val arg_type = th |> Basic_UtilLogic.prop_of' |> Util.dest_args |> hd
                               |> Term.type_of |> Term.body_type
           in
             if arg_type = T then th else
@@ -77,16 +80,17 @@ fun inst_ac_info thy T {assoc_th, comm_th, unitl_th, unitr_th, ...} =
             in
               Util.subst_thm_thy thy (tenv, Vartab.empty) th
             end
-            handle Type.TYPE_MATCH => true_th
+            handle Type.TYPE_MATCH => Basic_UtilBase.true_th
           end
 
       val assoc_th' = inst_th assoc_th
       val unitl_th' = inst_th unitl_th
     in
-      if is_true_th assoc_th' then NONE else
-      SOME {cfhead = assoc_th' |> cprop_of' |> Thm.dest_arg1 |> Thm.dest_fun2,
-            unit = if is_true_th unitl_th' then NONE
-                   else SOME (unitl_th' |>  cprop_of' |> Thm.dest_arg1 |> Thm.dest_arg1),
+      if Basic_UtilLogic.is_true_th assoc_th' then NONE else
+      SOME {cfhead = assoc_th' |> Basic_UtilLogic.cprop_of' |> Thm.dest_arg1 |> Thm.dest_fun2,
+            unit = if Basic_UtilLogic.is_true_th unitl_th' then NONE
+                   else
+                    SOME (unitl_th' |>  Basic_UtilLogic.cprop_of' |> Thm.dest_arg1 |> Thm.dest_arg1),
             assoc_th = assoc_th',
             comm_th = inst_th comm_th,
             unitl_th = unitl_th',
@@ -102,7 +106,7 @@ fun eq_unit {unit, ...} t =
 fun add_ac_data info thy =
     let
       val {assoc_th, ...} = info
-      val f = assoc_th |> prop_of' |> dest_eq |> snd |> Term.head_of
+      val f = assoc_th |> Basic_UtilLogic.prop_of' |> Basic_UtilBase.dest_eq |> snd |> Term.head_of
     in
       case f of
           Const (c, _) =>
@@ -123,30 +127,30 @@ fun get_head_ac_info thy t =
            | SOME ac_info => inst_ac_info thy (fastype_of t) ac_info)
       | _ => NONE
 
-fun has_assoc_th {assoc_th, ...} = not (is_true_th assoc_th)
-fun has_comm_th {comm_th, ...} = not (is_true_th comm_th)
-fun has_unit_th {unitl_th, ...} = not (is_true_th unitl_th)
-fun comm_cv {comm_th, ...} = rewr_obj_eq comm_th
-fun assoc_cv {assoc_th, ...} = rewr_obj_eq assoc_th
-fun assoc_sym_cv {assoc_th, ...} = rewr_obj_eq (obj_sym assoc_th)
+fun has_assoc_th {assoc_th, ...} = not (Basic_UtilLogic.is_true_th assoc_th)
+fun has_comm_th {comm_th, ...} = not (Basic_UtilLogic.is_true_th comm_th)
+fun has_unit_th {unitl_th, ...} = not (Basic_UtilLogic.is_true_th unitl_th)
+fun comm_cv {comm_th, ...} = Basic_UtilLogic.rewr_obj_eq comm_th
+fun assoc_cv {assoc_th, ...} = Basic_UtilLogic.rewr_obj_eq assoc_th
+fun assoc_sym_cv {assoc_th, ...} = Basic_UtilLogic.rewr_obj_eq (Basic_UtilLogic.obj_sym assoc_th)
 
 (* (a . b) . c = (a . c) . b *)
 fun swap_cv (ac_info as {assoc_th, comm_th, ...}) ct =
     if head_agrees ac_info (dest_arg1 (Thm.term_of ct)) then
-      Conv.every_conv [rewr_obj_eq assoc_th,
-                       Conv.arg_conv (rewr_obj_eq comm_th),
-                       rewr_obj_eq (obj_sym assoc_th)] ct
+      Conv.every_conv [Basic_UtilLogic.rewr_obj_eq assoc_th,
+                       Conv.arg_conv (Basic_UtilLogic.rewr_obj_eq comm_th),
+                       Basic_UtilLogic.rewr_obj_eq (Basic_UtilLogic.obj_sym assoc_th)] ct
     else
-      rewr_obj_eq comm_th ct
+      Basic_UtilLogic.rewr_obj_eq comm_th ct
 
 (* a . (b . c) = b . (a . c) *)
 fun swap_r_cv (ac_info as {assoc_th, comm_th, ...}) ct =
     if head_agrees ac_info (dest_arg (Thm.term_of ct)) then
-      Conv.every_conv [rewr_obj_eq (obj_sym assoc_th),
-                       Conv.arg1_conv (rewr_obj_eq comm_th),
-                       rewr_obj_eq assoc_th] ct
+      Conv.every_conv [Basic_UtilLogic.rewr_obj_eq (Basic_UtilLogic.obj_sym assoc_th),
+                       Conv.arg1_conv (Basic_UtilLogic.rewr_obj_eq comm_th),
+                       Basic_UtilLogic.rewr_obj_eq assoc_th] ct
     else
-      rewr_obj_eq comm_th ct
+      Basic_UtilLogic.rewr_obj_eq comm_th ct
 
 (* Destruct t, assuming it is associated to the left. *)
 fun dest_ac ac_info t =
@@ -199,8 +203,9 @@ fun normalize_assoc ac_info ct =
        *)
       fun normalize ct =
           if head_agrees ac_info (Thm.term_of ct) then
-            Conv.every_conv [Conv.repeat_conv (rewr_obj_eq (obj_sym assoc_th)),
-                             Conv.arg1_conv normalize] ct
+            Conv.every_conv [
+              Conv.repeat_conv (Basic_UtilLogic.rewr_obj_eq (Basic_UtilLogic.obj_sym assoc_th)),
+              Conv.arg1_conv normalize] ct
           else
             Conv.all_conv ct
     in
@@ -224,7 +229,7 @@ fun move_outmost (ac_info as {comm_th, ...}) u ct =
         ((Conv.arg1_conv (move_outmost ac_info u))
              then_conv (swap_cv ac_info)) ct
       else if u aconv a then
-        rewr_obj_eq comm_th ct
+        Basic_UtilLogic.rewr_obj_eq comm_th ct
       else
         raise Fail "move_outmost: u not found in ct."
     end
@@ -236,8 +241,8 @@ fun normalize_unit (ac_info as {unitl_th, unitr_th, ...}) ct =
       fun normalize ct =
           if head_agrees ac_info (Thm.term_of ct) then
             Conv.every_conv [Conv.binop_conv normalize,
-                             Conv.try_conv (rewr_obj_eq unitl_th),
-                             Conv.try_conv (rewr_obj_eq unitr_th)] ct
+                             Conv.try_conv (Basic_UtilLogic.rewr_obj_eq unitl_th),
+                             Conv.try_conv (Basic_UtilLogic.rewr_obj_eq unitr_th)] ct
           else
             Conv.all_conv ct
     in
@@ -268,7 +273,7 @@ fun normalize_comm_gen (ac_info as {comm_th, ...}) termless ct =
                 else Conv.all_conv ct
               else
                 (* Structure of t is a1 . a2. *)
-                if termless (a2, a1) then rewr_obj_eq comm_th ct
+                if termless (a2, a1) then Basic_UtilLogic.rewr_obj_eq comm_th ct
                 else Conv.all_conv ct
             end
           else

@@ -38,7 +38,28 @@ sig
   val let_cmd: string list -> Proof.state -> Proof.state
 end;
 
-structure Auto2_Outer : AUTO2_OUTER =
+signature AUTO2_KEYWORDS =
+sig
+  val case': string * Position.T
+  val contradiction: string * Position.T
+  val end': string * Position.T
+  val endgoal: string * Position.T
+  val have: string * Position.T
+  val let': string * Position.T
+  val obtain: string * Position.T
+  val proof: string * Position.T
+  val qed: string * Position.T
+  val subgoal: string * Position.T
+  val rule: string parser
+  val with': string parser
+end;
+
+functor Auto2_Outer(
+  structure Auto2: AUTO2;
+  structure Auto2_Keywords: AUTO2_KEYWORDS;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  ) : AUTO2_OUTER =
 struct
 
 (* Use auto2 to solve the given statement *)
@@ -63,7 +84,7 @@ fun init_state state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@proof"} "begin auto2 proof"
+    Outer_Syntax.command Auto2_Keywords.proof "begin auto2 proof"
     (Scan.succeed (Toplevel.proof init_state))
 
 (* Given th of the form A ==> B, and prop of the form B ==> C, return
@@ -135,8 +156,8 @@ fun have_cmd (is_rule, t, is_with) state =
                               |> Util.strip_meta_horn
 
       (* Actual goal: strip vars, and add As as additional assumptions. *)
-      val stmt = Logic.list_implies (As @ map mk_Trueprop assums,
-                                     mk_Trueprop concl)
+      val stmt = Logic.list_implies (As @ map UtilLogic.mk_Trueprop assums,
+                                     UtilLogic.mk_Trueprop concl)
 
       (* Post-processing. We begin with th: As ==> As' ==> C, and want
          to create the theorem As ==> (!!x. As' ==> C), then use it to
@@ -186,13 +207,13 @@ fun have_cmd (is_rule, t, is_with) state =
     end
 
 val read_rule =
-    Scan.option (Parse.$$$ "(" --| @{keyword "@rule"} |-- Parse.$$$ ")")
+    Scan.option (Parse.$$$ "(" --| Auto2_Keywords.rule |-- Parse.$$$ ")")
 
 val read_with =
-    Scan.option @{keyword "@with"}
+    Scan.option Auto2_Keywords.with'
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@have"} "intermediate goal"
+    Outer_Syntax.command Auto2_Keywords.have "intermediate goal"
     (read_rule -- Parse.term -- read_with >>
         (fn ((rule_opt, t), with_opt) =>
             Toplevel.proof
@@ -221,7 +242,8 @@ fun subgoal_cmd s state =
     let
       val {context = ctxt, ...} = Proof.goal state
       val {goals, selected, ...} = Auto2_State.get_top_frame ctxt
-      val _ = assert (selected = NONE) "@subgoal: already selected a subgoal."
+      val _ = assert (selected = NONE)
+        ((fst Auto2_Keywords.subgoal) ^ ": already selected a subgoal.")
 
       (* Figure out which subgoal to select by matching *)
       val thy = Proof_Context.theory_of ctxt
@@ -229,12 +251,12 @@ fun subgoal_cmd s state =
       val res = get_first (match_subgoal_pat thy t) (tag_list 0 (map fst goals))
     in
       case res of
-          NONE => error "@subgoal: pattern not found"
+          NONE => error ((fst Auto2_Keywords.subgoal) ^ ": pattern not found")
         | SOME (i, ts) =>
           let
             val prop = snd (nth goals i)
             val _ = assert (not (is_goal_resolved prop))
-                           "@subgoal: goal already resolved."
+                      ((fst Auto2_Keywords.subgoal) ^ ": goal already resolved.")
 
             (* Use the matched variables ts to name the forall variables. *)
             val t' = case Thm.prop_of prop of
@@ -252,7 +274,7 @@ fun subgoal_cmd s state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@subgoal"} "select subgoal"
+    Outer_Syntax.command Auto2_Keywords.subgoal "select subgoal"
     (Parse.term >>
        (fn s => Toplevel.proof (fn state => subgoal_cmd s state)))
 
@@ -280,7 +302,7 @@ fun endgoal_cmd state =
       val {context = ctxt, ...} = Proof.goal state
       val {goals, selected, ...} = Auto2_State.get_top_frame ctxt
       val _ = assert (length goals > 1 andalso is_some selected)
-                     "@endgoal: called without a selection"
+                     ((fst Auto2_Keywords.endgoal) ^ ": called without a selection")
       val prop = snd (nth goals (the selected))
       val solved_prop = auto2_solve_goal ctxt prop
     in
@@ -289,7 +311,7 @@ fun endgoal_cmd state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@endgoal"} "endgoal of with block"
+    Outer_Syntax.command Auto2_Keywords.endgoal "endgoal of with block"
     (Scan.succeed (
         Toplevel.proof (fn state => endgoal_cmd state)))
 
@@ -306,10 +328,10 @@ fun end_cmd state =
       val {goals, selected, after_qed, ...} = Auto2_State.get_top_frame ctxt
       val _ = assert ((length goals = 1 andalso selected = SOME 0) orelse
                       (length goals > 1 andalso selected = NONE))
-                     "@end: cannot call within an selection."
+                     ((fst Auto2_Keywords.end') ^ ": cannot call within an selection.")
       val solved_props = map (auto2_solve_goal ctxt o snd) goals
       val _ = assert (forall is_goal_resolved solved_props)
-                     "@end: failed to resolve all goals"
+                     ((fst Auto2_Keywords.end') ^ ": failed to resolve all goals")
 
       (* List of new variables, and callback function. *)
       val (new_vars, f) = the after_qed
@@ -320,7 +342,7 @@ fun end_cmd state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@end"} "end of with block"
+    Outer_Syntax.command Auto2_Keywords.end' "end of with block"
     (Scan.succeed (
         Toplevel.proof (fn state => end_cmd state)))
 
@@ -348,7 +370,7 @@ fun qed_cmd state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@qed"} "end of proof"
+    Outer_Syntax.command Auto2_Keywords.qed "end of proof"
     (Scan.succeed (
         Toplevel.end_proof (K qed_cmd)))
 
@@ -365,9 +387,9 @@ fun obtain_resolve ctxt vars th concl =
       val cAs = map (Thm.cterm_of ctxt) As
       val c_vars = map (Thm.cterm_of ctxt) vars
 
-      val (new_vars, body) = UtilLogic.strip_exists (dest_Trueprop B)
+      val (new_vars, body) = UtilLogic.strip_exists (UtilLogic.dest_Trueprop B)
 
-      val As' = As @ [mk_Trueprop body]
+      val As' = As @ [UtilLogic.mk_Trueprop body]
       val stmt = (Util.list_meta_horn (vars @ new_vars, (As', concl)))
                      |> Thm.cterm_of ctxt
 
@@ -420,11 +442,12 @@ fun obtain_cmd (vars, conds, is_with) state =
          variable x and a condition x : A.
        *)
       val (vars, conds) =
-          (map (fn t => if is_mem t then dest_arg1 t else t) vars,
-           filter is_mem vars @ conds)
+          (map (fn t => if UtilLogic.is_mem t then dest_arg1 t else t) vars,
+           filter UtilLogic.is_mem vars @ conds)
 
       (* Goal: EX vars. conds *)
-      val C = conds |> list_conj |> fold mk_exists (rev vars) |> mk_Trueprop
+      val C = conds |> UtilLogic.list_conj |> fold UtilLogic.mk_exists (rev vars)
+        |> UtilLogic.mk_Trueprop
 
       (* Current subgoal *)
       val (_, (As, _)) = ctxt |> Auto2_State.get_subgoal
@@ -461,7 +484,7 @@ val obtain_param =
     read_with
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@obtain"} "obtain variables"
+  Outer_Syntax.command Auto2_Keywords.obtain "obtain variables"
     (obtain_param >>
        (fn ((vars, conds), with_opt) =>
            Toplevel.proof (
@@ -478,7 +501,7 @@ fun case_resolve ctxt vars th =
       val ((As, B), C) = prop |> Logic.strip_horn |> apfst split_last
       val cAs = map (Thm.cterm_of ctxt) As
       val c_vars = map (Thm.cterm_of ctxt) vars
-      val nB = mk_Trueprop (Not $ (dest_Trueprop B))
+      val nB = UtilLogic.mk_Trueprop (UtilLogic.Not $ (UtilLogic.dest_Trueprop B))
       val stmt = (Util.list_meta_horn (vars, (As @ [nB], C)))
                      |> Thm.cterm_of ctxt
 
@@ -490,8 +513,8 @@ fun case_resolve ctxt vars th =
 
       val th_bc = th |> fold Thm.elim_implies thAs
 
-      val inst = fo_init |> Util.update_env (("P",0), dest_Trueprop B)
-                         |> Util.update_env (("Q",0), dest_Trueprop C)
+      val inst = fo_init |> Util.update_env (("P",0), UtilLogic.dest_Trueprop B)
+                         |> Util.update_env (("Q",0), UtilLogic.dest_Trueprop C)
       val th_c = (Util.subst_thm ctxt inst UtilBase.case_split_th)
                      |> fold Thm.elim_implies [th_bc, th_nbc]
     in
@@ -520,7 +543,7 @@ fun case_cmd (t, is_with) state =
     let
       val {context = ctxt, ...} = Proof.goal state
 
-      val B = t |> Syntax.read_term ctxt |> mk_Trueprop
+      val B = t |> Syntax.read_term ctxt |> UtilLogic.mk_Trueprop
 
       val (_, (As, C)) = ctxt |> Auto2_State.get_subgoal
                               |> Util.strip_meta_horn
@@ -544,7 +567,7 @@ fun case_cmd (t, is_with) state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@case"} "intermediate case"
+    Outer_Syntax.command Auto2_Keywords.case' "intermediate case"
     (Parse.term -- read_with >>
         (fn (t, with_opt) =>
             Toplevel.proof (fn state => case_cmd (t, is_some with_opt) state)))
@@ -554,7 +577,7 @@ val _ =
  *)
 fun contra_resolve ctxt vars As C =
     let
-      val stmt = (Util.list_meta_horn (vars, (As @ [get_neg' C], pFalse)))
+      val stmt = (Util.list_meta_horn (vars, (As @ [UtilLogic.get_neg' C], UtilLogic.pFalse)))
                      |> Thm.cterm_of ctxt
       val cAs = map (Thm.cterm_of ctxt) As
       val c_vars = map (Thm.cterm_of ctxt) vars
@@ -593,7 +616,7 @@ fun contra_cmd state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@contradiction"}
+    Outer_Syntax.command Auto2_Keywords.contradiction
     "apply proof by contradiction"
     (Scan.succeed (
         Toplevel.proof (fn state => contra_cmd state)))
@@ -607,8 +630,8 @@ fun let_resolve ctxt vars eq As C =
       val thy = Proof_Context.theory_of ctxt
 
       (* Call obtain_resolve with th as A_i ==> EX y. y = t. *)
-      val (lhs, rhs) = dest_eq eq
-      val pat_a = case UtilBase.ex_vardef_th |> prop_of' |> dest_arg of
+      val (lhs, rhs) = UtilBase.dest_eq eq
+      val pat_a = case UtilBase.ex_vardef_th |> UtilLogic.prop_of' |> dest_arg of
                       Abs (_, _, b) => dest_arg b
                     | _ => raise Fail "ex_vardef_th"
       val (x, _) = Term.dest_Free lhs
@@ -649,7 +672,7 @@ fun let_cmd eqs state =
     let
       val {context = ctxt, ...} = Proof.goal state
       val eqs = Syntax.read_terms ctxt eqs
-      val vars = map (fst o dest_eq) eqs
+      val vars = map (fst o UtilBase.dest_eq) eqs
       val new_vars =
           filter_out (Variable.is_fixed ctxt o fst o Term.dest_Free) vars
 
@@ -660,7 +683,7 @@ fun let_cmd eqs state =
     end
 
 val _ =
-    Outer_Syntax.command @{command_keyword "@let"} "define a variable"
+    Outer_Syntax.command Auto2_Keywords.let' "define a variable"
     (Scan.repeat Parse.term >>
         (fn eqs => Toplevel.proof (fn state => let_cmd eqs state)))
 

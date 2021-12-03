@@ -137,8 +137,8 @@ val neg_ineq_back_cv =
         (map (rewr_obj_eq o obj_sym) [@{thm Orderings.linorder_not_less},
                                       @{thm Orderings.linorder_not_le}])
 
-val prove_by_arith = UtilLogic.prove_by_tac Arith_Data.arith_tac
-val contra_by_arith = UtilLogic.contra_by_tac Arith_Data.arith_tac
+val prove_by_arith = Auto2_Setup.UtilLogic.prove_by_tac Arith_Data.arith_tac
+val contra_by_arith = Auto2_Setup.UtilLogic.contra_by_tac Arith_Data.arith_tac
 
 end  (* structure UtilArith *)
 
