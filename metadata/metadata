@@ -4015,6 +4015,7 @@ abstract =
   The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs
   are based on the textbook "Modal Logic" by Blackburn, de Rijke and Venema
   (Cambridge University Press 2001).
+  Papers: <a href="https://doi.org/10.1007/978-3-030-88853-4_1">https://doi.org/10.1007/978-3-030-88853-4_1</a>, <a href="https://doi.org/10.1007/978-3-030-90138-7_2">https://doi.org/10.1007/978-3-030-90138-7_2</a>.
 extra-history =
   Change history:
   [2021-04-15]: Added completeness of modal logics T, KB, K4, S4 and S5.
@@ -9195,6 +9196,7 @@ abstract =
   which is based on the First-Order Logic According to Fitting theory.
   The calculi and proof techniques are taken from Ben-Ari's
   Mathematical Logic for Computer Science.
+  Paper: <a href="http://ceur-ws.org/Vol-3002/paper7.pdf">http://ceur-ws.org/Vol-3002/paper7.pdf</a>.
 
 [Szpilrajn]
 title = Order Extension and Szpilrajn's Extension Theorem
@@ -10828,6 +10830,7 @@ abstract =
   countably many agents. It includes proofs of soundness and
   completeness for a variant of the axiom system PA + DIST! + NEC!. The
   completeness proof builds on the Epistemic Logic theory.
+  Paper: <a href="https://doi.org/10.1007/978-3-030-90138-7_2">https://doi.org/10.1007/978-3-030-90138-7_2</a>.
 
 [MiniSail]
 title = MiniSail - A kernel language for the ISA specification language SAIL
