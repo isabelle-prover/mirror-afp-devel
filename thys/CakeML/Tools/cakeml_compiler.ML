@@ -162,7 +162,7 @@ fun cakeml_cmd ctxt mode source =
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>cakeml\<close> "evalute CakeML source"
-    (parse_mode -- Parse.input Parse.text >> (fn (mode, src) =>
+    (parse_mode -- Parse.embedded_input >> (fn (mode, src) =>
       Toplevel.keep (fn state => cakeml_cmd (Toplevel.context_of state) mode src)))
 
 end

@@ -920,7 +920,7 @@ As always in Isabelle, some intuition and knowledge about the library of lemmas 
   so they are added first to the simplifier's set of rewrite rules.
 \item The equations @{thm [source] exec_gpv_bind}, @{thm [source] try_bind_assert_gpv}, and @{thm [source] try_gpv_bind_lossless}
   ensure that the operator @{term exec_gpv}, which connects the @{term game\<^sub>0} with the random oracle, is distributed over the sequencing.
-  Together with @{thm [source] * }, this gives the adversary access to @{term oracle'} instead of the interceptor and the random oracle, 
+  Together with @{thm [source] *}, this gives the adversary access to @{term oracle'} instead of the interceptor and the random oracle, 
   and makes the call to the random oracle in the encryption of the chosen message explicit.
 \item The theorem @{thm [source] lcdh.nat_pow_pow} rewrites the iterated exponentiation @{term "(\<^bold>g [^] x) [^] y"} to @{term "\<^bold>g [^] (x * y)"}.
 \item The other theorems @{thm [source] bind_map_spmf}, @{thm [source] assert_spmf_def},

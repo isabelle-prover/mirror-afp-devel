@@ -824,7 +824,7 @@ struct
 local
 
 fun ml_text name ml =
-  Document_Output.antiquotation_raw_embedded name (Scan.lift Args.text_input \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
+  Document_Output.antiquotation_raw_embedded name (Scan.lift Parse.embedded_input \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
     (fn ctxt => fn text =>
       let val file_content =
             Token.file_source

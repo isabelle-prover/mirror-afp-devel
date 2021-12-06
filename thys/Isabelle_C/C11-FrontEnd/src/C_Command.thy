@@ -949,7 +949,7 @@ subsubsection \<open>Library\<close>
 ML \<comment> \<open>analogously to \<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close> \<open>
 structure C_Outer_Parse =
 struct
-  val C_source = Parse.input (Parse.group (fn () => "C source") Parse.text)
+  val C_source = Parse.input (Parse.group (fn () => "C source") Parse.embedded)
 end
 \<close>
 

@@ -147,7 +147,6 @@ fun output_token ctxt tok =
         else output false "" ""
     | Token.String => output false "{\\isachardoublequoteopen}" "{\\isachardoublequoteclose}"
     | Token.Alt_String => output false "{\\isacharbackquoteopen}" "{\\isacharbackquoteclose}"
-    | Token.Verbatim => output true "{\\isacharverbatimopen}" "{\\isacharverbatimclose}"
     | Token.Cartouche => output false "{\\isacartoucheopen}" "{\\isacartoucheclose}"
     | _ => output false "" "")
   end handle ERROR msg => error (msg ^ Position.here (C_Token.pos_of tok));
@@ -183,7 +182,7 @@ fun prepare_text ctxt =
   Input.source_content #> #1 #> Document_Antiquotation.prepare_lines ctxt;
 
 val theory_text_antiquotation =
-  Document_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Args.text_input)
+  Document_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Parse.embedded_input)
     (fn ctxt => fn text =>
       let
         val keywords = C_Thy_Header.get_keywords' ctxt;
@@ -213,7 +212,7 @@ end;
 local
 
 fun c_text name c =
-  Document_Output.antiquotation_verbatim_embedded name (Scan.lift Args.text_input)
+  Document_Output.antiquotation_verbatim_embedded name (Scan.lift Parse.embedded_input)
     (fn ctxt => fn text =>
       let val _ = C_Module.eval_in text (SOME (Context.Proof ctxt)) (c text)
       in #1 (Input.source_content text) end);
