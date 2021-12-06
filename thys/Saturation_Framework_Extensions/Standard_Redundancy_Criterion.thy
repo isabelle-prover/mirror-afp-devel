@@ -21,6 +21,11 @@ counterexample'' property. This material is partly based on Section 4.2 of Bachm
 \emph{Handbook} chapter, but adapted to the saturation framework of Waldmann et al.
 \<close>
 
+subsection \<open>Generic Lemmas about HOL\<close>
+
+lemma wfP_imp_asymp: "wfP R \<Longrightarrow> asymp R"
+  by (metis asymp.intros mem_Collect_eq prod.simps(2) wfP_def wf_asym)
+
 
 subsection \<open>Counterexample-Reducing Inference Systems\<close>
 
@@ -160,7 +165,6 @@ locale calculus_with_finitary_standard_redundancy =
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    asymp_less: "asymp (\<prec>)" and
     wfP_less: "wfP (\<prec>)" and
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
@@ -256,7 +260,7 @@ proof -
       using transp_less[THEN transpD]
       by (metis insert_DiffM2 union_iff)
     moreover have "multp (\<prec>) DDa DD"
-      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF asymp_less transp_less] multp\<^sub>D\<^sub>M_def
+      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfP_imp_asymp[OF wfP_less] transp_less] multp\<^sub>D\<^sub>M_def
       by (metis da_in_dd dda1_lt_da mset_subset_eq_single multi_self_add_other_not_self
           union_single_eq_member)
     ultimately show False
@@ -392,7 +396,6 @@ locale calculus_with_standard_redundancy =
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    asymp_less: "asymp (\<prec>)" and
     wfP_less: "wfP (\<prec>)" and
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
