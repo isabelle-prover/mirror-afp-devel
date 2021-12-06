@@ -48,7 +48,6 @@ ML\<open>
 structure Data_Out = Generic_Data
   (type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
    val empty = []
-   val extend = I
    val merge = K empty)
 
 fun get_CTranslUnit thy =
@@ -102,7 +101,6 @@ ML \<open>
 structure Directive_include = Generic_Data
   (type T = (Input.source * C_Env.markup_ident) list Symtab.table
    val empty = Symtab.empty
-   val extend = I
    val merge = K empty)
 \<close>
 
@@ -545,7 +543,6 @@ ML\<open>
 structure Root_Ast_Store = Generic_Data
   (type T = C_Grammar_Rule.ast_generic list Symtab.table
    val empty = Symtab.empty
-   val extend = I
    val merge = K empty);
 
 

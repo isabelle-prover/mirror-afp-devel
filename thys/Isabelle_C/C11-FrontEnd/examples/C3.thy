@@ -240,8 +240,7 @@ int a = 0;
 subsection \<open>Bottom-Up vs. Top-Down Evaluation\<close>
 
 ML\<open>
-structure Example_Data = Generic_Data (type T = string list
-                                       val empty = [] val extend = I val merge = K empty)
+structure Example_Data = Generic_Data (type T = string list val empty = [] val merge = K empty)
 fun add_ex s1 s2 =
   Example_Data.map (cons s2)
   #> (fn context => let val () = Output.information (s1 ^ s2)
@@ -434,7 +433,6 @@ ML\<open>
 structure Data_Out = Generic_Data
   (type T = int
    val empty = 0
-   val extend = I
    val merge = K empty)
 
 fun show_env0 make_string f msg context =
@@ -759,7 +757,6 @@ ML \<open>
 structure Directive_setup_define = Generic_Data
   (type T = int
    val empty = 0
-   val extend = I
    val merge = K empty)
 
 fun setup_define1 pos f =

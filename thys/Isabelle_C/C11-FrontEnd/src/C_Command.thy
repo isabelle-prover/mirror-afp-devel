@@ -251,25 +251,21 @@ struct
 structure Data_In_Source = Generic_Data
   (type T = Input.source list
    val empty = []
-   val extend = I
    val merge = K empty)
 
 structure Data_In_Env = Generic_Data
   (type T = C_Env.env_lang
    val empty = C_Env.empty_env_lang
-   val extend = I
    val merge = K empty)
 
 structure Data_Accept = Generic_Data
   (type T = C_Grammar_Rule.ast_generic -> C_Env.env_lang -> Context.generic -> Context.generic
    fun empty _ _ = I
-   val extend = I
    val merge = #2)
 
 structure Data_Term = Generic_Data
   (type T = (C_Grammar_Rule.ast_generic -> C_Env.env_lang -> local_theory -> term) Symtab.table
    val empty = Symtab.empty
-   val extend = I
    val merge = #2)
 
 (* keys for major syntactic categories *)
@@ -1117,7 +1113,6 @@ ML\<open>
 structure Root_Ast_Store = Generic_Data
   (type T = C_Grammar_Rule.ast_generic list Symtab.table
    val empty = Symtab.empty
-   val extend = I
    val merge = K empty);
 
 

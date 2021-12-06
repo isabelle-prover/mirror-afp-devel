@@ -1406,7 +1406,6 @@ structure Data = Theory_Data
 (
   type T = C_Keyword.keywords;
   val empty = bootstrap_keywords;
-  val extend = I;
   val merge = C_Keyword.merge_keywords;
 );
 
