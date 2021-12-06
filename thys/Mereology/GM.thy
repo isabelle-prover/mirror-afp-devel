@@ -38,11 +38,11 @@ proof -
       thus "O w a \<or> O w b"
       proof (rule disjE)
         assume "x = a"
-        hence "O w a" using `O w x` by (rule subst)
+        hence "O w a" using \<open>O w x\<close> by (rule subst)
         thus "O w a \<or> O w b"..
       next
         assume "x = b"
-        hence "O w b" using `O w x` by (rule subst)
+        hence "O w b" using \<open>O w x\<close> by (rule subst)
         thus "O w a \<or> O w b"..
       qed
     next
@@ -50,7 +50,7 @@ proof -
       hence "\<exists> x. (x = a \<or> x = b) \<and> O w x"
       proof (rule disjE)
         assume "O w a"
-        with `a = a \<or> a = b` have "(a = a \<or> a = b) \<and> O w a"..
+        with \<open>a = a \<or> a = b\<close> have "(a = a \<or> a = b) \<and> O w a"..
         thus "\<exists> x. (x = a \<or> x = b) \<and> O w x"..
       next
         have "b = b"..

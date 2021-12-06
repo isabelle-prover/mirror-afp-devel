@@ -1482,7 +1482,7 @@ lemma powreal_int:
 proof cases
   assume "i < 0" 
   have r: "x pow\<^sub>\<real> i = 1 / x  pow\<^sub>\<real> (-i)" by (simp add: assms powreal_minus divide_inverse)
-  show ?thesis using `i < 0` `x > 0` by (simp add: r field_simps powreal_power_eq [symmetric])  
+  show ?thesis using \<open>i < 0\<close> \<open>x > 0\<close> by (simp add: r field_simps powreal_power_eq [symmetric])  
 qed (simp add: assms powreal_power_eq[symmetric])
 
 lemma powreal_numeral: "0 \<le> x \<Longrightarrow> x pow\<^sub>\<real> numeral n = x^numeral n"

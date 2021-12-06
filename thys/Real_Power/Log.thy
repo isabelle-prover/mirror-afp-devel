@@ -145,11 +145,11 @@ proof (rule inj_onI, simp)
   show "x = y"
   proof (cases rule: linorder_cases)
     assume "x < y" hence "Log b x < Log b y"
-      using Log_less_cancel_iff[OF `1 < b`] pos by simp
+      using Log_less_cancel_iff[OF \<open>1 < b\<close>] pos by simp
     thus ?thesis using * by simp
   next
     assume "y < x" hence "Log b y < Log b x"
-      using Log_less_cancel_iff[OF `1 < b`] pos by simp
+      using Log_less_cancel_iff[OF \<open>1 < b\<close>] pos by simp
     thus ?thesis using * by simp
   qed simp
 qed

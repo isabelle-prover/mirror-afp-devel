@@ -847,7 +847,7 @@ proof -
           assume "\<not>(x=Q\<^sub>x \<or> x=Q\<^sub>z)"
           hence "x\<noteq>Q\<^sub>x" "x\<noteq>Q\<^sub>z" by linarith+
           have "i>0"
-            using X_def(2) `x\<noteq>Q\<^sub>x` \<open>f i = x\<close> gr_zeroI by force
+            using X_def(2) \<open>x\<noteq>Q\<^sub>x\<close> \<open>f i = x\<close> gr_zeroI by force
           have "i<card X - 1"
             using X_def(3) \<open>f i = x\<close> \<open>i < card X\<close> \<open>x \<noteq> Q\<^sub>z\<close> less_imp_diff_less less_SucE
             by (metis Suc_pred' cancel_comm_monoid_add_class.diff_cancel)
@@ -3176,7 +3176,7 @@ next
   proof
     fix x assume "x\<in>segment a b"
     hence "[[a x b]]" by (simp add: seg_betw)
-    have "\<not>[[a b x]]" by (meson `[[a x b]]` abc_only_cba)
+    have "\<not>[[a b x]]" by (meson \<open>[[a x b]]\<close> abc_only_cba)
     have "\<not>[[b x c]]"
       using \<open>\<not> [[a b x]]\<close> abd_bcd_abc assms by blast
     thus "x\<notin>segment b c"
@@ -4421,7 +4421,7 @@ proof
           using \<open>p \<in> s\<close> \<open>s = segment (f y) (f (y + 1))\<close> seg_betw
           by auto
         moreover have "[[a (f y) c]]"
-          using \<open>[[a (f y) c]] \<or> y = 0\<close> \<open>y = ?N - 2\<close> `?N\<ge>3`
+          using \<open>[[a (f y) c]] \<or> y = 0\<close> \<open>y = ?N - 2\<close> \<open>?N\<ge>3\<close>
           by linarith
         ultimately show "[[a p c]]"
           by (meson abc_acd_abd abc_sym)
@@ -4495,7 +4495,7 @@ proof -
       have "S = {segment (f i) (f(i+1)) | i. i<N-1}"
         using S_def by blast
       hence "x\<in>interval a c"
-        using int_split_to_segs [OF f_def(2)] assms `x\<in>\<Union>S`
+        using int_split_to_segs [OF f_def(2)] assms \<open>x\<in>\<Union>S\<close>
         by (simp add: UnCI)
       hence "[[a x c]] \<or> x=a \<or> x=c"
         using interval_def seg_betw by auto
@@ -4875,7 +4875,7 @@ proof -
   let ?P2 = "prolongation a b"
   have from_seg: "P = ((\<Union>?S) \<union> ?P1 \<union> ?P2 \<union> Q)" "(\<forall>x\<in>?S. is_segment x)"
           "disjoint (?S\<union>{?P1,?P2})" "?P1\<noteq>?P2" "?P1\<notin>?S" "?P2\<notin>?S"
-    using show_segmentation[OF path_P Q_def(2) `[f[a..b]Q]`]
+    using show_segmentation[OF path_P Q_def(2) \<open>[f[a..b]Q]\<close>]
     by force+
   thus ?thesis
     by blast
@@ -5569,7 +5569,7 @@ proof (rule ccontr)
     hence "(0<m \<and> m<n) \<or> (0<n \<and> n<m)"
       using \<open>m \<noteq> n\<close> by auto
     thus False
-      using `[[(f m)(f 0)(f n)]]` assms(1) index_order3 inf_chain_is_long by blast
+      using \<open>[[(f m)(f 0)(f n)]]\<close> assms(1) index_order3 inf_chain_is_long by blast
   next
     assume "x\<noteq>f 0"
 
@@ -5665,13 +5665,13 @@ proof -
             have "[[(g 0)(g 1)(g m')]]"
             proof -
               have "m' \<noteq> 1 \<and> m' \<noteq> 0"
-                using `[[(g 0)(g m')(g 1)]]` by (meson abc_abc_neq)
+                using \<open>[[(g 0)(g m')(g 1)]]\<close> by (meson abc_abc_neq)
               hence "m'>1" by auto
               thus "[[(g 0)(g 1)(g m')]]"
                 using \<open>[[(g 0)(g m')(g 1)]]\<close> assms(2) index_order3 inf_chain_is_long by blast
             qed
             thus False
-              using `[[(g 0)(g m')(g 1)]]` abc_only_cba(2) by blast
+              using \<open>[[(g 0)(g m')(g 1)]]\<close> abc_only_cba(2) by blast
           next
             assume "[[(f 0)(f i)(f ?i)]] \<and> [[(f 0)(g i)(g ?i)]]"
             have "[[(g 0)(f ?i)(g ?i)]]"
@@ -6225,13 +6225,13 @@ proof -
         } moreover {
           assume  "\<not>(x=b \<or> x=c)"
           hence "[[c x b]]"
-            using `x\<in>interval c b` unfolding interval_def segment_def by simp
+            using \<open>x\<in>interval c b\<close> unfolding interval_def segment_def by simp
           hence "[[a x b]]"
             by (meson \<open>betw4 a c b d\<close> abc_acd_abd abc_sym)
           have "[[c x d]]"
             using \<open>betw4 a c b d\<close> \<open>[[c x b]]\<close> abc_acd_abd by blast
           have "x\<in>I" "x\<in>J"
-            using \<open>I = interval a b\<close> `[[a x b]]` \<open>J = interval c d\<close> \<open>[[c x d]]\<close> 
+            using \<open>I = interval a b\<close> \<open>[[a x b]]\<close> \<open>J = interval c d\<close> \<open>[[c x d]]\<close> 
                   interval_def seg_betw by auto
         }
         ultimately show "x\<in>I" "x\<in>J" by blast+
@@ -6242,7 +6242,7 @@ proof -
         proof (cases)
           assume not_eq: "x\<noteq>a \<and> x\<noteq>b \<and> x\<noteq>c \<and> x\<noteq>d"
           have "[[a x b]]" "[[c x d]]"
-            using `x\<in>I` \<open>I = interval a b\<close>  `x\<in>J` \<open>J = interval c d\<close> 
+            using \<open>x\<in>I\<close> \<open>I = interval a b\<close>  \<open>x\<in>J\<close> \<open>J = interval c d\<close> 
                   not_eq unfolding interval_def segment_def by blast+
           hence "[[c x b]]"
             by (meson \<open>betw4 a c b d\<close> abc_bcd_acd betw4_weak)
@@ -6256,13 +6256,13 @@ proof -
               using \<open>betw4 a c b d\<close> abcd_dcba_only(9) by blast
             hence "a \<notin> interval c d" unfolding interval_def segment_def
               using abc_sym \<open>a \<noteq> b \<and> a \<noteq> c \<and> a \<noteq> d \<and> b \<noteq> c \<and> b \<noteq> d \<and> c \<noteq> d\<close> by blast
-            hence "False" using `x\<in>J` \<open>J = interval c d\<close> `x=a` by blast
+            hence "False" using \<open>x\<in>J\<close> \<open>J = interval c d\<close> \<open>x=a\<close> by blast
           } moreover {
             assume "x=d"
             have "\<not>[[a d b]]" using \<open>betw4 a c b d\<close> abc_sym abcd_dcba_only(9) by blast
             hence "d\<notin>interval a b" unfolding interval_def segment_def
               using \<open>a \<noteq> b \<and> a \<noteq> c \<and> a \<noteq> d \<and> b \<noteq> c \<and> b \<noteq> d \<and> c \<noteq> d\<close> by blast
-            hence "False" using `x\<in>I` `x=d` \<open>I = interval a b\<close> by blast
+            hence "False" using \<open>x\<in>I\<close> \<open>x=d\<close> \<open>I = interval a b\<close> by blast
           }
           ultimately show ?thesis
             using interval_def not_not_eq by auto
@@ -6503,7 +6503,7 @@ proof -
       then have "is_interval (\<Inter>S')"
       proof -
         have "m+2 = card S'"
-          using Suc.prems(4,6) `S = insert I S'` `I\<notin>S'` by auto
+          using Suc.prems(4,6) \<open>S = insert I S'\<close> \<open>I\<notin>S'\<close> by auto
         moreover have "\<forall>x\<in>S'. is_interval x \<and> x \<subseteq> P"
           by (simp add: Suc.prems(1) \<open>S = insert I S'\<close>)
         moreover have "\<Inter> S' \<noteq> {}"
@@ -7048,7 +7048,7 @@ proof -
         obtain c where "[f[Q\<^sub>x..c..Q\<^sub>z]X]"
           using X_def(1) \<open>N = card X\<close> \<open>N\<noteq>2\<close> \<open>[f[Q\<^sub>x..Q\<^sub>z]X]\<close> fin_chain_def short_ch_card_2 by auto
         have "interval Q\<^sub>x Q\<^sub>z = \<Union>?S \<union> X"
-          using int_split_to_segs [OF `[f[Q\<^sub>x..c..Q\<^sub>z]X]`] by auto
+          using int_split_to_segs [OF \<open>[f[Q\<^sub>x..c..Q\<^sub>z]X]\<close>] by auto
         thus ?thesis
           using \<open>Q\<^sub>y\<notin>X\<close> y_int by blast
       qed
@@ -7360,7 +7360,7 @@ proof -
       by (metis One_nat_def card_le_Suc0_iff_eq not_less)
     ultimately show ?thesis
       using union_of_bounded_sets_is_bounded [where Q=Q and A="\<emptyset> Q a" and B="\<emptyset> Q b"]
-      using get_bds assms `\<forall>x\<in>\<emptyset> Q a. [[la x ua]]` `\<forall>x\<in>\<emptyset> Q b. [[lb x ub]]`
+      using get_bds assms \<open>\<forall>x\<in>\<emptyset> Q a. [[la x ua]]\<close> \<open>\<forall>x\<in>\<emptyset> Q b. [[lb x ub]]\<close>
       by blast
   qed
 
@@ -7409,7 +7409,7 @@ proof -
     have "y\<notin>(\<emptyset> Q a)" "y\<notin>(\<emptyset> Q b)"
       using \<open>y \<notin> \<emptyset> Q a \<union> \<emptyset> Q b\<close> by blast+
     then obtain ay yb where "path ay a y" "path yb b y"
-      using `y\<in>Q` exist_ay events(1,2) reachable(1,2) by blast
+      using \<open>y\<in>Q\<close> exist_ay events(1,2) reachable(1,2) by blast
     have "?P y ay yb"
       using \<open>[[c d y]]\<close> \<open>path ay a y\<close> \<open>path yb b y\<close> \<open>y \<in> Q\<close> by blast
     thus ?thesis by blast
@@ -7418,7 +7418,7 @@ proof -
     have "z\<notin>(\<emptyset> Q a)" "z\<notin>(\<emptyset> Q b)"
       using \<open>z \<notin> \<emptyset> Q a \<union> \<emptyset> Q b\<close> by blast+ 
     then obtain az bz where "path az a z" "path bz b z"
-      using `z\<in>Q` exist_ay events(1,2) reachable(1,2) by blast
+      using \<open>z\<in>Q\<close> exist_ay events(1,2) reachable(1,2) by blast
     have "?P z az bz"
       using \<open>[[c d z]]\<close> \<open>path az a z\<close> \<open>path bz b z\<close> \<open>z \<in> Q\<close> by blast
     thus ?thesis by blast
@@ -7563,7 +7563,7 @@ proof -
     show "\<exists>ia. segment (f i) (f (i+1)) = segment (f ia) (f (ia+1)) \<and> ia<card Q - 1"
     proof
       have "i<?N-1"
-        using assms \<open>i\<in>{(0::nat)..?N-2}\<close> `?N\<ge>3`
+        using assms \<open>i\<in>{(0::nat)..?N-2}\<close> \<open>?N\<ge>3\<close>
         by (metis One_nat_def Suc_diff_Suc atLeastAtMost_iff le_less_trans lessI less_le_trans
             less_trans numeral_2_eq_2 numeral_3_eq_3)
       then show "segment (f i) (f (i + 1)) = segment (f i) (f (i + 1)) \<and> i<?N-1"
@@ -7593,7 +7593,7 @@ proof -
       proof (cases)
         assume "j=i+1"
         hence "[[(f i) (f j) (f (j+1))]]"
-          using asm(2) assms fin_long_chain_def order_finite_chain `?N\<ge>3`
+          using asm(2) assms fin_long_chain_def order_finite_chain \<open>?N\<ge>3\<close>
           by (metis (no_types, lifting) One_nat_def Suc_diff_Suc Suc_less_eq add.commute
               add_leD2 atLeastAtMost_iff card.remove card_Diff_singleton less_Suc_eq_le
               less_add_one numeral_2_eq_2 numeral_3_eq_3 plus_1_eq_Suc)
@@ -7609,7 +7609,7 @@ proof -
           by auto
       next assume "j\<noteq>i+1"
         have "i < card Q \<and> j < card Q \<and> (i+1) < card Q"
-          using add_mono_thms_linordered_field(3) asm(1,2) assms `?N\<ge>3` by auto
+          using add_mono_thms_linordered_field(3) asm(1,2) assms \<open>?N\<ge>3\<close> by auto
         hence "f i \<in> Q \<and> f j \<in> Q \<and> f (i+1) \<in> Q"
           using f_def unfolding fin_long_chain_def long_ch_by_ord_def ordering_def
           by blast
@@ -7661,7 +7661,7 @@ proof -
   ultimately have "bij_betw ?g {0..?N-2} ?S"
     using inj_on_imp_bij_betw by fastforce
   thus ?thesis
-    using assms(2) bij_betw_same_card numeral_2_eq_2 numeral_3_eq_3 `?N\<ge>3`
+    using assms(2) bij_betw_same_card numeral_2_eq_2 numeral_3_eq_3 \<open>?N\<ge>3\<close>
     by (metis (no_types, lifting) One_nat_def Suc_diff_Suc card_atLeastAtMost le_less_trans
         less_Suc_eq_le minus_nat.diff_0 not_less not_numeral_le_zero)
 qed
@@ -7707,7 +7707,7 @@ proof -
       using assms ch_by_ord_def fin_chain_def short_ch_card_2 \<open>2 \<le> card Q\<close> \<open>card Q \<noteq> 2\<close>
       by force
     show ?thesis
-      using number_of_segments [OF assms(1,2) `[f[a..c..b]Q]`]
+      using number_of_segments [OF assms(1,2) \<open>[f[a..c..b]Q]\<close>]
       using S_def \<open>card Q \<noteq> 2\<close> by presburger
   qed
   thus "card S = card Q - 1 \<and> Ball S is_segment"
