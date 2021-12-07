@@ -178,7 +178,7 @@ val () =
   Outer_Syntax.command @{command_keyword lazy_code_printing} "declare dedicated printing for code symbols"
     (Isabelle_Code_Target.parse_symbol_pragmas (Code_Printer.parse_const_syntax) (Code_Printer.parse_tyco_syntax)
       Parse.string (Parse.minus >> K ()) (Parse.minus >> K ())
-      (Parse.text -- Scan.optional (@{keyword "attach"} |-- Scan.repeat1 Parse.term >> map Code_Symbol.Constant) [])
+      (Parse.embedded -- Scan.optional (@{keyword "attach"} |-- Scan.repeat1 Parse.term >> map Code_Symbol.Constant) [])
       >> (fn code =>
             Toplevel.theory (Data_code.map (Symtab.map_default (code_empty, []) (fn l => Code_printing code :: l)))))
 

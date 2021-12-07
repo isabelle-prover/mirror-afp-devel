@@ -247,7 +247,6 @@ val immediate_kinds' = fn Token.Command => 0
 val delimited_kind =
   (fn Token.String => true
     | Token.Alt_String => true
-    | Token.Verbatim => true
     | Token.Cartouche => true
     | Token.Comment _ => true
     | _ => false);
@@ -415,7 +414,6 @@ val token_kind_markup =
   | Token.Type_Var => (Markup.tvar, "")
   | Token.String => (Markup.string, "")
   | Token.Alt_String => (Markup.alt_string, "")
-  | Token.Verbatim => (Markup.verbatim, "")
   | Token.Cartouche => (Markup.cartouche, "")
   | Token.Comment _ => (Markup.ML_comment, "")
   | Token.Error msg => (Markup.bad (), msg)
@@ -492,7 +490,6 @@ fun unparse' (Token ((source0, _), (kind, x), _)) =
     case kind of
       Token.String => Symbol_Pos.quote_string_qq source
     | Token.Alt_String => Symbol_Pos.quote_string_bq source
-    | Token.Verbatim => enclose "{*" "*}" source
     | Token.Cartouche => cartouche source
     | Token.Comment NONE => enclose "(*" "*)" source
     | Token.EOF => ""
@@ -623,22 +620,6 @@ fun ident_or_symbolic "begin" = false
   | ident_or_symbolic s = Symbol_Pos.is_identifier s orelse is_symid s;
 
 
-(* scan verbatim text *)
-
-val scan_verb =
-  $$$ "*" --| Scan.ahead (~$$ "}") ||
-  Scan.one (fn (s, _) => s <> "*" andalso Symbol.not_eof s) >> single;
-
-val scan_verbatim =
-  Scan.ahead ($$ "{" -- $$ "*") |--
-    !!! "unclosed verbatim text"
-      ((Symbol_Pos.scan_pos --| $$ "{" --| $$ "*") --
-        (Scan.repeats scan_verb -- ($$ "*" |-- $$ "}" |-- Symbol_Pos.scan_pos)));
-
-val recover_verbatim =
-  $$$ "{" @@@ $$$ "*" @@@ Scan.repeats scan_verb;
-
-
 (* scan cartouche *)
 
 val scan_cartouche =
@@ -689,7 +670,6 @@ fun token_range k (pos1, (ss, pos2)) =
 fun scan_token keywords = !!! "bad input"
   (Symbol_Pos.scan_string_qq err_prefix >> token_range Token.String ||
     Symbol_Pos.scan_string_bq err_prefix >> token_range Token.Alt_String ||
-    scan_verbatim >> token_range Token.Verbatim ||
     scan_cartouche >> token_range Token.Cartouche ||
     scan_comment >> token_range (Token.Comment NONE) ||
     Comment.scan_outer >> (fn (k, ss) => token (Token.Comment (SOME k)) ss) ||
@@ -716,7 +696,6 @@ fun scan_token keywords = !!! "bad input"
 fun recover msg =
   (Symbol_Pos.recover_string_qq ||
     Symbol_Pos.recover_string_bq ||
-    recover_verbatim ||
     Symbol_Pos.recover_cartouche ||
     Symbol_Pos.recover_comment ||
     Scan.one (Symbol.not_eof o Symbol_Pos.symbol) >> single)
@@ -885,7 +864,6 @@ sig
   val string: string parser
   val string_position: (string * Position.T) parser
   val alt_string: string parser
-  val verbatim: string parser
   val cartouche: string parser
   val eof: string parser
   val command_name: string -> string parser
@@ -923,7 +901,6 @@ sig
   val embedded: string parser
   val embedded_input: Input.source parser
   val embedded_position: (string * Position.T) parser
-  val text: string parser
   val path: string parser
   val path_binding: (string * Position.T) parser
   val session_name: (string * Position.T) parser
@@ -1056,7 +1033,6 @@ val number = kind Token.Nat;
 val float_number = kind Token.Float;
 val string = kind Token.String;
 val alt_string = kind Token.Alt_String;
-val verbatim = kind Token.Verbatim;
 val cartouche = kind Token.Cartouche;
 val eof = kind Token.EOF;
 
@@ -1142,8 +1118,6 @@ val embedded =
 
 val embedded_input = input embedded;
 val embedded_position = embedded_input >> Input.source_content;
-
-val text = group (fn () => "text") (embedded || verbatim);
 
 val path = group (fn () => "file name/path specification") embedded;
 val path_binding = group (fn () => "path binding (strict file name)") (position embedded);
@@ -1256,8 +1230,8 @@ val for_fixes = Scan.optional ($$$ "for" |-- !!! vars) [];
 
 (* embedded source text *)
 
-val ML_source = input (group (fn () => "ML source") text);
-val document_source = input (group (fn () => "document source") text);
+val ML_source = input (group (fn () => "ML source") embedded);
+val document_source = input (group (fn () => "document source") embedded);
 
 val document_marker =
   group (fn () => "document marker")
@@ -1297,7 +1271,7 @@ local
 
 val argument_kinds =
  [Token.Ident, Token.Long_Ident, Token.Sym_Ident, Token.Var, Token.Type_Ident, Token.Type_Var,
-  Token.Nat, Token.Float, Token.String, Token.Alt_String, Token.Cartouche, Token.Verbatim];
+  Token.Nat, Token.Float, Token.String, Token.Alt_String, Token.Cartouche];
 
 fun arguments is_symid =
   let
@@ -1362,7 +1336,7 @@ val options = $$$ "[" |-- list1 option --| $$$ "]";
 
 (* embedded source text *)
 
-val C_source = input (group (fn () => "C source") text);
+val C_source = input (group (fn () => "C source") embedded);
 
 (* AutoCorres (MODIFIES) *)
 
@@ -1379,7 +1353,7 @@ open Parse
 
 (* embedded source text *)
 
-val C_source = input (group (fn () => "C source") text);
+val C_source = input (group (fn () => "C source") embedded);
 
 (* AutoCorres (MODIFIES) *)
 
