@@ -155,27 +155,17 @@ end
 
 subsection \<open>The Finitary Standard Redundancy Criterion\<close>
 
-locale calculus_with_finitary_standard_redundancy =
-  inference_system Inf + consequence_relation Bot entails
+locale finitary_standard_formula_redundancy =
+  consequence_relation Bot "(\<Turnstile>)"
   for
-    Inf :: "'f inference set" and
     Bot :: "'f set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
   fixes
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    wfP_less: "wfP (\<prec>)" and
-    Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
-    Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
+    wfP_less: "wfP (\<prec>)"
 begin
-
-definition redundant_infer :: "'f set \<Rightarrow> 'f inference \<Rightarrow> bool" where
-  "redundant_infer N \<iota> \<longleftrightarrow>
-   (\<exists>DD \<subseteq> N. finite DD \<and> DD \<union> set (side_prems_of \<iota>) \<Turnstile> {concl_of \<iota>} \<and> (\<forall>D \<in> DD. D \<prec> main_prem_of \<iota>))"
-
-definition Red_I :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_I N = {\<iota> \<in> Inf. redundant_infer N \<iota>}"
 
 definition Red_F :: "'f set \<Rightarrow> 'f set" where
   "Red_F N = {C. \<exists>DD \<subseteq> N. finite DD \<and> DD \<Turnstile> {C} \<and> (\<forall>D \<in> DD. D \<prec> C)}"
@@ -311,6 +301,41 @@ lemma Red_F_eq_Red_F_diff_Red_F: "Red_F N = Red_F (N - Red_F N)"
   by (simp add: Red_F_of_subset Red_F_subs_Red_F_diff_Red_F set_eq_subset)
 
 text \<open>
+The following results correspond to Lemma 4.6.
+\<close>
+
+lemma Red_F_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')"
+  by (metis Diff_mono Red_F_eq_Red_F_diff_Red_F Red_F_of_subset order_refl)
+
+lemma Red_F_model: "M \<Turnstile> N - Red_F N \<Longrightarrow> M \<Turnstile> N"
+  by (metis (no_types) DiffI Red_F_imp_ex_non_Red_F entail_set_all_formulas entails_trans
+      subset_entailed)
+
+lemma Red_F_Bot: "B \<in> Bot \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> N - Red_F N \<Turnstile> {B}"
+  using Red_F_model entails_trans subset_entailed by blast
+
+end
+
+locale calculus_with_finitary_standard_redundancy =
+  inference_system Inf + finitary_standard_formula_redundancy Bot "(\<Turnstile>)" "(\<prec>)"
+  for
+    Inf :: "'f inference set" and
+    Bot :: "'f set" and
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50) +
+  assumes
+    Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
+    Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
+begin
+
+definition redundant_infer :: "'f set \<Rightarrow> 'f inference \<Rightarrow> bool" where
+  "redundant_infer N \<iota> \<longleftrightarrow>
+   (\<exists>DD \<subseteq> N. finite DD \<and> DD \<union> set (side_prems_of \<iota>) \<Turnstile> {concl_of \<iota>} \<and> (\<forall>D \<in> DD. D \<prec> main_prem_of \<iota>))"
+
+definition Red_I :: "'f set \<Rightarrow> 'f inference set" where
+  "Red_I N = {\<iota> \<in> Inf. redundant_infer N \<iota>}"
+
+text \<open>
 The following results correspond to Lemma 4.6. It also uses @{thm [source] wlog_non_Red_F}.
 \<close>
 
@@ -346,18 +371,8 @@ lemma Red_I_eq_Red_I_diff_Red_F: "Red_I N = Red_I (N - Red_F N)"
 lemma Red_I_to_Inf: "Red_I N \<subseteq> Inf"
   unfolding Red_I_def by blast
 
-lemma Red_F_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')"
-  by (metis Diff_mono Red_F_eq_Red_F_diff_Red_F Red_F_of_subset order_refl)
-
 lemma Red_I_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_I N \<subseteq> Red_I (N - N')"
   by (metis Diff_mono Red_I_eq_Red_I_diff_Red_F Red_I_of_subset order_refl)
-
-lemma Red_F_model: "M \<Turnstile> N - Red_F N \<Longrightarrow> M \<Turnstile> N"
-  by (metis (no_types) DiffI Red_F_imp_ex_non_Red_F entail_set_all_formulas entails_trans
-      subset_entailed)
-
-lemma Red_F_Bot: "B \<in> Bot \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> N - Red_F N \<Turnstile> {B}"
-  using Red_F_model entails_trans subset_entailed by blast
 
 lemma Red_I_of_Inf_to_N:
   assumes
@@ -365,11 +380,12 @@ lemma Red_I_of_Inf_to_N:
     concl_in: "concl_of \<iota> \<in> N"
   shows "\<iota> \<in> Red_I N"
 proof -
-  have "concl_of \<iota> \<in> N \<Longrightarrow> redundant_infer N \<iota>"
+  have "redundant_infer N \<iota>"
     unfolding redundant_infer_def
-    by (rule exI[where x = "{concl_of \<iota>}"]) (simp add: Inf_reductive[OF in_\<iota>] subset_entailed)
+    by (rule exI[where x = "{concl_of \<iota>}"])
+      (simp add: Inf_reductive[OF in_\<iota>] subset_entailed concl_in)
   then show "\<iota> \<in> Red_I N"
-    by (simp add: Red_I_def concl_in in_\<iota>)
+    by (simp add: Red_I_def in_\<iota>)
 qed
 
 text \<open>
@@ -386,17 +402,86 @@ end
 
 subsection \<open>The Standard Redundancy Criterion\<close>
 
-locale calculus_with_standard_redundancy =
-  inference_system Inf + concl_compact_consequence_relation Bot entails
+locale standard_formula_redundancy =
+  concl_compact_consequence_relation Bot "(\<Turnstile>)"
   for
-    Inf :: "'f inference set" and
     Bot :: "'f set" and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
   fixes
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    wfP_less: "wfP (\<prec>)" and
+    wfP_less: "wfP (\<prec>)"
+begin
+
+definition Red_F :: "'f set \<Rightarrow> 'f set" where
+  "Red_F N = {C. \<exists>DD \<subseteq> N. DD \<Turnstile> {C} \<and> (\<forall>D \<in> DD. D \<prec> C)}"
+
+text \<open>
+Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_F} is equivalent to its finitary
+  counterpart.
+\<close>
+
+interpretation fin_std_red_F: finitary_standard_formula_redundancy Bot "(\<Turnstile>)" "(\<prec>)"
+  using transp_less asymp_less wfP_less by unfold_locales
+
+lemma Red_F_conv: "Red_F = fin_std_red_F.Red_F"
+proof (intro ext)
+  fix N
+  show "Red_F N = fin_std_red_F.Red_F N"
+    unfolding Red_F_def fin_std_red_F.Red_F_def
+    using entails_concl_compact
+    by (smt (verit, best) Collect_cong finite.emptyI finite_insert subset_eq)
+qed
+
+text \<open>
+The results from @{locale finitary_standard_formula_redundancy} can now be lifted.
+
+The following results correspond to Lemma 4.5.
+\<close>
+
+lemma Red_F_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_F N \<subseteq> Red_F N'"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_of_subset)
+
+lemma Red_F_imp_ex_non_Red_F: "C \<in> Red_F N \<Longrightarrow> \<exists>CC \<subseteq> N - Red_F N. CC \<Turnstile> {C} \<and> (\<forall>C' \<in> CC. C' \<prec> C)"
+  unfolding Red_F_conv
+  using fin_std_red_F.Red_F_imp_ex_non_Red_F by meson
+
+lemma Red_F_subs_Red_F_diff_Red_F: "Red_F N \<subseteq> Red_F (N - Red_F N)"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_subs_Red_F_diff_Red_F)
+
+lemma Red_F_eq_Red_F_diff_Red_F: "Red_F N = Red_F (N - Red_F N)"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_eq_Red_F_diff_Red_F)
+
+text \<open>
+The following results correspond to Lemma 4.6.
+\<close>
+
+lemma Red_F_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_of_Red_F_subset)
+
+lemma Red_F_model: "M \<Turnstile> N - Red_F N \<Longrightarrow> M \<Turnstile> N"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_model)
+
+lemma Red_F_Bot: "B \<in> Bot \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> N - Red_F N \<Turnstile> {B}"
+  unfolding Red_F_conv
+  by (rule fin_std_red_F.Red_F_Bot)
+
+end
+
+locale calculus_with_standard_redundancy =
+  inference_system Inf + standard_formula_redundancy Bot "(\<Turnstile>)" "(\<prec>)"
+  for
+    Inf :: "'f inference set" and
+    Bot :: "'f set" and
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50) +
+  assumes
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
 begin
@@ -408,12 +493,8 @@ definition redundant_infer :: "'f set \<Rightarrow> 'f inference \<Rightarrow> b
 definition Red_I :: "'f set \<Rightarrow> 'f inference set" where
   "Red_I N = {\<iota> \<in> Inf. redundant_infer N \<iota>}"
 
-definition Red_F :: "'f set \<Rightarrow> 'f set" where
-  "Red_F N = {C. \<exists>DD \<subseteq> N. DD \<Turnstile> {C} \<and> (\<forall>D \<in> DD. D \<prec> C)}"
-
 text \<open>
-Compactness of @{term entails} implies that @{const Red_I} and @{const Red_F} are equivalent to
-their finitary counterparts.
+Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_I} is equivalent to its finitary counterpart.
 \<close>
 
 interpretation fin_std_red: calculus_with_finitary_standard_redundancy Inf Bot "(\<Turnstile>)"
@@ -433,38 +514,9 @@ lemma Red_I_conv: "Red_I = fin_std_red.Red_I"
   unfolding redundant_infer_conv
   by (rule refl)
 
-lemma Red_F_conv: "Red_F = fin_std_red.Red_F"
-proof (intro ext)
-  fix N
-  show "Red_F N = fin_std_red.Red_F N"
-    unfolding Red_F_def fin_std_red.Red_F_def
-    using entails_concl_compact
-    by (smt (verit, best) Collect_cong finite.emptyI finite_insert subset_eq)
-qed
-
 text \<open>
 The results from @{locale calculus_with_finitary_standard_redundancy} can now be lifted.
 
-The following results correspond to Lemma 4.5.
-\<close>
-
-lemma Red_F_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_F N \<subseteq> Red_F N'"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_of_subset)
-
-lemma Red_F_imp_ex_non_Red_F: "C \<in> Red_F N \<Longrightarrow> \<exists>CC \<subseteq> N - Red_F N. CC \<Turnstile> {C} \<and> (\<forall>C' \<in> CC. C' \<prec> C)"
-  unfolding Red_F_conv
-  using fin_std_red.Red_F_imp_ex_non_Red_F by meson
-
-lemma Red_F_subs_Red_F_diff_Red_F: "Red_F N \<subseteq> Red_F (N - Red_F N)"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_subs_Red_F_diff_Red_F)
-
-lemma Red_F_eq_Red_F_diff_Red_F: "Red_F N = Red_F (N - Red_F N)"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_eq_Red_F_diff_Red_F)
-
-text \<open>
 The following results correspond to Lemma 4.6.
 \<close>
 
@@ -484,21 +536,9 @@ lemma Red_I_to_Inf: "Red_I N \<subseteq> Inf"
   unfolding Red_I_conv
   by (rule fin_std_red.Red_I_to_Inf)
 
-lemma Red_F_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_of_Red_F_subset)
-
 lemma Red_I_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_I N \<subseteq> Red_I (N - N')"
   unfolding Red_F_conv Red_I_conv
   by (rule fin_std_red.Red_I_of_Red_F_subset)
-
-lemma Red_F_model: "M \<Turnstile> N - Red_F N \<Longrightarrow> M \<Turnstile> N"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_model)
-
-lemma Red_F_Bot: "B \<in> Bot \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> N - Red_F N \<Turnstile> {B}"
-  unfolding Red_F_conv
-  by (rule fin_std_red.Red_F_Bot)
 
 lemma Red_I_of_Inf_to_N:
   "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_I N"
