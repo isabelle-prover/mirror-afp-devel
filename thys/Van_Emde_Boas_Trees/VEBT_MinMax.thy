@@ -102,7 +102,7 @@ theorem maxt_corr:assumes "invar_vebt t n" and "vebt_maxt t = Some x" shows "max
   using assms(1) assms(2) maxt_corr_help maxt_member by blast
 
 theorem maxt_sound:assumes "invar_vebt t n" and  "max_in_set (set_vebt' t) x" shows "vebt_maxt t = Some x"
-  by (metis (no_types, hide_lams) assms(1) assms(2) empty_Collect_eq le_less max_in_set_def
+  by (metis (no_types, opaque_lifting) assms(1) assms(2) empty_Collect_eq le_less max_in_set_def
  maxt_corr_help maxt_corr_help_empty maxt_member mem_Collect_eq not_le option.exhaust set_vebt'_def)
 
 

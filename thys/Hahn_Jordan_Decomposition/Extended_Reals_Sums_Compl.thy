@@ -7,7 +7,7 @@ lemma real_ereal_leq:
   assumes "real_of_ereal a \<le> b"
     and "a \<noteq> \<infinity>"
   shows "a \<le> ereal b"
-  by (metis (mono_tags, hide_lams) MInfty_eq_minfinity assms eq_iff ereal_eq_0(2) ereal_le_real_iff 
+  by (metis (mono_tags, opaque_lifting) MInfty_eq_minfinity assms eq_iff ereal_eq_0(2) ereal_le_real_iff 
       ereal_less_eq(2) le_cases real_of_ereal.elims real_of_ereal.simps(1) zero_ereal_def) 
 
 lemma ereal_sums_Pinfty:

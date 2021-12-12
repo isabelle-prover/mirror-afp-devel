@@ -78,6 +78,10 @@ definition "listI_assn I A xs xsi \<equiv>
   * Finite_Set.fold (\<lambda>i a. a * A (xs!i) (xsi!i)) 1 I"
 
 
+lemmas comp_fun_commute_fold_insert =
+  comp_fun_commute_on.fold_insert[where S=UNIV, folded comp_fun_commute_def', simplified]
+
+
 lemma aux: "Finite_Set.fold (\<lambda>i aa. aa * P ((a # as) ! i) ((c # cs) ! i)) emp {0..<Suc (length as)}
   = P a c * Finite_Set.fold (\<lambda>i aa. aa * P (as ! i) (cs ! i)) emp {0..<length as}" 
 proof -
@@ -96,18 +100,20 @@ proof -
     using that
     apply (induction n arbitrary: a)
     subgoal by simp
-    apply (simp add: comp_fun_commute.fold_insert)
+    thm comp_fun_commute_on.fold_insert
+    apply (simp add: comp_fun_commute_fold_insert)
     apply (subst 2)
     apply (subst 3)
-    apply (simp add: comp_fun_commute.fold_insert)
+    apply (simp add: comp_fun_commute_fold_insert)
     done 
   show ?thesis
     apply (simp add: 1)
-    apply (subst comp_fun_commute.fold_insert_remove)
+    apply (subst comp_fun_commute_fold_insert)
     subgoal
       apply unfold_locales
       apply (auto simp: fun_eq_iff algebra_simps)
       done
+    subgoal by simp
     subgoal by simp
     apply simp
     apply (rewrite at "\<hole> = _*_" mult.commute)
@@ -156,7 +162,7 @@ lemma listI_assn_weak_cong:
   unfolding listI_assn_def
   apply (simp add: I)
   apply (cases "length xsi' = length xs' \<and> I' \<subseteq> {0..<length xs'}"; simp only:; simp)
-  apply (rule Finite_Set.fold_cong)
+  apply (rule Finite_Set.fold_cong[where S=UNIV, folded comp_fun_commute_def'])
        apply (simp_all add: mult_fun_commute)
   subgoal by (meson subset_eq_atLeast0_lessThan_finite)
   subgoal using A by (auto simp: fun_eq_iff I)
@@ -171,7 +177,7 @@ lemma listI_assn_cong:
   unfolding listI_assn_def
   apply (simp add: I)
   apply (cases "length xsi' = length xs' \<and> I' \<subseteq> {0..<length xs'}"; simp only:; simp)
-  apply (rule Finite_Set.fold_cong)
+  apply (rule Finite_Set.fold_cong[where S=UNIV, folded comp_fun_commute_def'])
        apply (simp_all add: mult_fun_commute)
   subgoal by (meson subset_eq_atLeast0_lessThan_finite)
   subgoal using A by (fastforce simp: fun_eq_iff I)
@@ -183,7 +189,7 @@ lemma listI_assn_insert: "i\<notin>I \<Longrightarrow> i<length xs \<Longrightar
        listI_assn (insert i I) A xs xsi = A (xs!i) (xsi!i) * listI_assn I A xs xsi"
   apply (cases "finite I"; simp?)
   unfolding listI_assn_def
-  apply (subst comp_fun_commute.fold_insert)
+  apply (subst comp_fun_commute_fold_insert)
   subgoal 
     apply unfold_locales
     apply (auto simp: fun_eq_iff algebra_simps)

@@ -286,7 +286,7 @@ proof (rule finite_subset)
   show "\<bar>\<mu> E\<bar> < \<infinity>" "A\<subseteq> E" using assms by auto
   show "\<mu> E = \<mu> A + \<mu> (E - A)" using assms 
       sgn_meas signed_measure_add[of M \<mu> A "E - A"]
-    by (simp add: \<open>A \<in> sets M\<close> \<open>E \<in> sets M\<close> sets.Diff sup.absorb_iff2) 
+    by (metis Diff_disjoint Diff_partition sets.Diff)
 qed
 
 lemma measure_space_e2ennreal :

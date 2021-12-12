@@ -224,7 +224,7 @@ lemma effect_makeE [effect_elims]:
   obtains "r = fst (alloc (map f [0 ..< n]) h)" "h' = snd (alloc (map f [0 ..< n]) h)" 
     "get h' r = map f [0 ..< n]" "present h' r" "\<not> present h r" "n+1=n'"
   using assms apply (rule effectE) using get_alloc  
-  by (metis (mono_tags, hide_lams) effectE effect_makeI not_present_alloc present_alloc prod.collapse)
+  by (metis (mono_tags, opaque_lifting) effectE effect_makeI not_present_alloc present_alloc prod.collapse)
   
   (* apply (si mp add: get_alloc execute_make) by (s imp add: case_prod_unfold) *)
 

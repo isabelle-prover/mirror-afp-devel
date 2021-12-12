@@ -232,7 +232,7 @@ next
                   next
                     case False
                     hence "vebt_member (treeList ! i) (low ma n)" 
-                      using "7" True \<open>high (max ma x) n = i\<close> \<open>i < 2 ^ m\<close> \<open>invar_vebt (treeList ! i) n\<close> both_member_options_equiv_member by auto
+                      by (metis "7" True \<open>high (max ma x) n = i\<close> \<open>invar_vebt (treeList ! i) n\<close> both_member_options_equiv_member highlowprop linorder_cases max.absorb3 max.absorb4 mimaxrel)
                     hence "vebt_member (?nextTreeList ! i) (low ma n) \<or> (low ma n = low x n)" 
                       using post_member_pre_member[of " (treeList ! i)" n "low x n" "low  ma n" ]
                       by (metis "2" "4.IH"(1) \<open>(take (high x n) treeList @ [VEBT_Insert.vebt_insert (treeList ! high x n) (low x n)] @ drop (high x n + 1) treeList) ! i = VEBT_Insert.vebt_insert (treeList ! i) (low x n)\<close> \<open>i < 2 ^ m\<close> both_member_options_equiv_member highlowprop member_bound nth_mem valid_insert_both_member_options_pres)
@@ -401,7 +401,7 @@ next
             hence " both_member_options (?nextTreeList ! high mi n) ?l"
               by (metis "0" "2" highlowprop nth_list_update_eq nth_mem valid_insert_both_member_options_add)
             then show ?thesis
-              by (metis (full_types, hide_lams) "4" False \<open>both_member_options summary (high mi n)\<close> \<open>i < 2 ^ m\<close> nth_list_update_neq)            
+              by (metis (full_types, opaque_lifting) "4" False \<open>both_member_options summary (high mi n)\<close> \<open>i < 2 ^ m\<close> nth_list_update_neq)            
           qed
         qed
       qed

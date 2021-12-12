@@ -356,7 +356,7 @@ next
       proof(cases  "naive_member  (Node (Some (mi, ma)) deg treeList summary) x")
         case True
         hence "high x n < length treeList \<and> naive_member (treeList ! (high x n)) (low x n)"
-          by (metis (no_types, hide_lams) "3" "4.hyps"(1) "4.hyps"(3) add_self_div_2 naive_member.simps(3) old.nat.exhaust valid_0_not zero_eq_add_iff_both_eq_0)
+          by (metis (no_types, opaque_lifting) "3" "4.hyps"(1) "4.hyps"(3) add_self_div_2 naive_member.simps(3) old.nat.exhaust valid_0_not zero_eq_add_iff_both_eq_0)
         then show ?thesis
           by (metis "5" \<open>mi = ma\<close> both_member_options_def in_set_member inthall)
       next
