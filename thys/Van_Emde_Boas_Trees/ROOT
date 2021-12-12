@@ -1,0 +1,42 @@
+chapter AFP
+
+session Van_Emde_Boas_Trees (AFP) = HOL +
+  (*descpription "Functional and imperative van Emde Boas Trees"*)
+  options [timeout = 900]
+  sessions
+    "HOL-Imperative_HOL"
+    "Automatic_Refinement"
+     Deriving
+directories
+    Imperative_HOL_Time
+    Separation_Logic_Imperative_HOL
+    "Separation_Logic_Imperative_HOL/Tools"
+    Time_Reasoning
+  (*suppression of some theories*)
+
+  theories [document = false]
+    "Imperative_HOL_Time/Array_Time"
+    "Imperative_HOL_Time/Heap"
+    "Imperative_HOL_Time/Heap_Time_Monad"
+    "Imperative_HOL_Time/Imperative_HOL_Time"
+    "Imperative_HOL_Time/Ref_Time"
+    "Separation_Logic_Imperative_HOL/Assertions"
+    "Separation_Logic_Imperative_HOL/Automation"
+    "Separation_Logic_Imperative_HOL/Hoare_Triple"
+    "Separation_Logic_Imperative_HOL/Refine_Imp_Hol"
+    "Separation_Logic_Imperative_HOL/Sep_Main"
+    "Separation_Logic_Imperative_HOL/Tools/Imperative_HOL_Add"
+    "Separation_Logic_Imperative_HOL/Tools/Syntax_Match"
+
+  theories [document = false]
+    VEBT_Example_Setup  
+    "Time_Reasoning/Simple_TBOUND_Cond"
+  
+  theories
+    VEBT_Intf_Imperative
+    VEBT_Example
+
+  document_files
+    "root.bib"
+    "root.tex"
+
