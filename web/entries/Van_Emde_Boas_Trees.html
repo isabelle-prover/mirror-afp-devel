@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>van Emde Boas Trees - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          van
+  
+          <font class="first">E</font>mde
+  
+          <font class="first">B</font>oas
+  
+          <font class="first">T</font>rees
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">van Emde Boas Trees</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                    Thomas Ammer and
+          Peter Lammich
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2021-11-23</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+The <em>van Emde Boas tree</em> or <em>van Emde Boas
+priority queue</em> is a data structure supporting membership
+test, insertion, predecessor and successor search, minimum and maximum
+determination and deletion in <em>O(log log U)</em> time, where <em>U =
+0,...,2<sup>n-1</sup></em> is the overall range to be
+considered. <p/> The presented formalization follows Chapter 20
+of the popular <em>Introduction to Algorithms (3rd
+ed.)</em> by Cormen, Leiserson, Rivest and Stein (CLRS),
+extending the list of formally verified CLRS algorithms. Our current
+formalization is based on the first author's bachelor's
+thesis. <p/> First, we prove correct a
+<em>functional</em> implementation, w.r.t. an abstract
+data type for sets. Apart from functional correctness, we show a
+resource bound, and runtime bounds w.r.t. manually defined timing
+functions for the operations. <p/> Next, we refine the
+operations to Imperative HOL with time, and show correctness and
+complexity. This yields a practically more efficient implementation,
+and eliminates the manually defined timing functions from the trusted
+base of the proof.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Van_Emde_Boas_Trees-AFP,
+  author  = {Thomas Ammer and Peter Lammich},
+  title   = {van Emde Boas Trees},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Van_Emde_Boas_Trees.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Automatic_Refinement.html">Automatic_Refinement</a>, <a href="Deriving.html">Deriving</a>      </td></tr>
+          
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Van_Emde_Boas_Trees/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Van_Emde_Boas_Trees/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Van_Emde_Boas_Trees/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-Van_Emde_Boas_Trees-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

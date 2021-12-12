@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{latexsym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{stmaryrd}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Exploring Simplified Variants of Gödel's Ontological Argument in Isabelle/HOL}
+\author{Christoph Benzm\"uller}
+\maketitle
+
+\begin{abstract}
+  Simplified variants of Gödel's ontological argument are
+  explored. Among those is a particularly interesting simplified
+  argument which is (i) valid already in basic
+  modal logics K or KT, (ii) which does not suffer from modal collapse,
+  and (iii) which avoids the rather complex predicates of essence (Ess.)
+  and necessary existence (NE) as used by Gödel.
+
+  Whether the presented variants increase or decrease the
+  attractiveness and persuasiveness of the ontological argument is a
+  question I would like to pass on to philosophy and theology.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\section{Background Reading}
+The selected simplified variants of Gödel's ontological argument
+\cite{GoedelNotes,ScottNotes} as presented in \S\ref{sec:selected} have first been
+extracted from the insights gained in \S6 of \cite{C85}. These variants are also influenced by the work
+presented in \cite{J52} and they significantly extend the findings
+from \cite{J28}. In \S\ref{sec:all} we additionally include the
+sources from \cite{C85}.
+
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

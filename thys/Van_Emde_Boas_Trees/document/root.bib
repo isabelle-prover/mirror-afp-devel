@@ -1,0 +1,141 @@
+@book{10.5555/1614191,
+author = {Cormen, Thomas H. and Leiserson, Charles E. and Rivest, Ronald L. and Stein, Clifford},
+title = {Introduction to Algorithms, Third Edition},
+year = {2009},
+isbn = {0262033844},
+publisher = {The MIT Press},
+edition = {3rd},
+abstract = {If you had to buy just one text on algorithms, Introduction to Algorithms is a magnificent choice. The book begins by considering the mathematical foundations of the analysis of algorithms and maintains this mathematical rigor throughout the work. The tools developed in these opening sections are then applied to sorting, data structures, graphs, and a variety of selected algorithms including computational geometry, string algorithms, parallel models of computation, fast Fourier transforms (FFTs), and more. This book's strength lies in its encyclopedic range, clear exposition, and powerful analysis. Pseudo-code explanation of the algorithms coupled with proof of their accuracy makes this book is a great resource on the basic tools used to analyze the performance of algorithms.}
+}
+
+@inproceedings{NipkowEH-ATVA20,
+author = {Tobias Nipkow and Manuel Eberl and Maximilian P. L. Haslbeck},
+title = {Verified Textbook Algorithms. {A} Biased Survey},
+booktitle = {ATVA 2020, Automated Technology for Verification and Analysis},
+editor = {Dang Van Hung and Oleg Sokolsky},
+publisher = {Springer},
+series = {LNCS},
+volume = {12302},
+pages = {25-53},
+year =2020,
+note = {Invited paper}
+}
+
+@INPROCEEDINGS{4567861,
+
+  author={van Emde Boas, P.},
+
+  booktitle={16th Annual Symposium on Foundations of Computer Science (sfcs 1975)}, 
+
+  title={Preserving order in a forest in less than logarithmic time}, 
+
+  year={1975},
+
+  volume={},
+
+  number={},
+
+  pages={75-84},
+
+  doi={10.1109/SFCS.1975.26}}
+  
+  @article{Emde_Boas_1976,
+	doi = {10.1007/bf01683268},
+	url = {https://doi.org/10.1007%2Fbf01683268},
+	year = 1976,
+	month = {dec},
+	publisher = {Springer Science and Business Media {LLC}},
+	volume = {10},
+	number = {1},
+	pages = {99--127},
+	author = {P. Emde Boas and R. Kaas and E. Zijlstra},
+	title = {Design and implementation of an efficient priority queue},
+	journal = {Mathematical Systems Theory}
+}
+
+
+@misc{funalgs,
+author = "{Tobias Nipkow, Jasmin Blanchette, Manuel Eberl, Alejandro Gómez-Londoño, Peter Lammich, Christian Sternagel, Simon Wimmer, Bohua Zhan}",
+title = {Functional Algorithms, Verified!},
+year = 2021,
+howpublished = {\url{https://functional-algorithms-verified.org/}}
+}
+
+@article{RefImp,
+author = {Lammich, Peter},
+year = {2019},
+month = {04},
+pages = {},
+title = {Refinement to Imperative HOL},
+volume = {62},
+journal = {Journal of Automated Reasoning},
+doi = {10.1007/s10817-017-9437-1}
+}
+
+@inproceedings{dynhash,
+author = {Dietzfelbinger, Martin and Karlin, Anna and Mehlhorn, Kurt and Meyer auf der Heide, Friedhelm and Rohnert, Hans and Tarjan, Robert},
+year = {1988},
+month = {01},
+pages = {524-531},
+title = {Dynamic Perfect Hashing: Upper and Lower Bounds},
+volume = {0},
+journal = {Foundations of Computer Science, IEEE Annual Symposium on},
+doi = {10.1109/SFCS.1988.21968}
+}
+
+@inproceedings{8f77891e4e7647feb9515038709bc165,
+title = "Generating Veriﬁed LLVM from Isabelle/HOL",
+abstract = "We present a framework to generate veriﬁed LLVM programs from Isabelle/HOL. It is based on a code generator that generates LLVM text from a simpliﬁed fragment of LLVM, shallowly embedded into Isabelle/HOL. On top, we have developed a separation logic, a veriﬁcation condition generator, and an LLVM backend to the Isabelle Reﬁnement Framework. As case studies, we have produced veriﬁed LLVM implementations of binary search and the Knuth-Morris-Pratt string search algorithm. These are one order of magnitude faster than the Standard-ML implementations produced with the original Reﬁnement Framework, and on par with unveriﬁed C implementations. Adoption of the original correctness proofs to the new LLVM backend was straightforward. The trusted code base of our approach is the shallow embedding of the LLVM fragment and the code generator, which is a pretty printer combined with some straightforward compilation steps",
+keywords = "Isabelle/HOL, LLVM, Separation Logic, Verification condition generator, Code generation",
+author = "Peter Lammich",
+year = "2019",
+month = jun,
+day = "1",
+language = "English",
+booktitle = "ITP 2019: Interactive Theorem Proving",
+note = "Interactive Theorem Proving, ITP 2019 ; Conference date: 08-09-2019 Through 13-09-2019",
+url = "https://itp19.cecs.pdx.edu/",
+
+}
+
+@InProceedings{llvm,
+author="Haslbeck, Maximilian P. L.
+and Lammich, Peter",
+editor="Yoshida, Nobuko",
+title="For a Few Dollars More",
+booktitle="Programming Languages and Systems",
+year="2021",
+publisher="Springer International Publishing",
+address="Cham",
+pages="292--319",
+abstract="We present a framework to verify both, functional correctness and worst-case complexity of practically efficient algorithms. We implemented a stepwise refinement approach, using the novel concept of resource currencies to naturally structure the resource analysis along the refinement chain, and allow a fine-grained analysis of operation counts. Our framework targets the LLVM intermediate representation. We extend its semantics from earlier work with a cost model. As case study, we verify the correctness and {\$}{\$}O(n{\backslash}log n){\$}{\$}O(nlogn)worst-case complexity of an implementation of the introsort algorithm, whose performance is on par with the state-of-the-art implementation found in the GNU C++ Library.",
+isbn="978-3-030-72019-3"
+}
+
+@article{Separation_Logic_Imperative_HOL-AFP,
+  author  = {Peter Lammich and Rene Meis},
+  title   = {A Separation Logic Framework for Imperative HOL},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2012,
+  note    = {\url{https://isa-afp.org/entries/Separation_Logic_Imperative_HOL.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}
+
+@misc{zhan2018verifying,
+      title={Verifying Asymptotic Time Complexity of Imperative Programs in Isabelle}, 
+      author={Bohua Zhan and Maximilian P. L. Haslbeck},
+      year={2018},
+      eprint={1802.01336},
+      archivePrefix={arXiv},
+      primaryClass={cs.LO}
+}
+
+@phdthesis{ funalgdata,
+author = {Milan Straka},
+title = {Functional Data Structures and Algorithms},
+school = {Charles University in Prague, Faculty of Mathematics and Physics},
+year = 2013,
+note =  {\url{https://ufal.mff.cuni.cz/~straka/theses/doctoral-functional_data_structures_and_algorithms.pdf}}
+}

@@ -11411,3 +11411,66 @@ abstract =
   relativized general knowledge in HOL. We then use PAL to obtain an
   elegant encoding of the wise men puzzle, which we solve automatically
   using sledgehammer.
+
+[SimplifiedOntologicalArgument]
+title = Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL
+author = Christoph Benzmüller <http://christoph-benzmueller.de>
+topic = Logic/Philosophical aspects, Logic/General logic/Modal logic
+date = 2021-11-08
+notify = c.benzmueller@gmail.com
+abstract = 
+  <p>Simplified variants of Gödel's ontological argument are
+  explored. Among those is a particularly interesting simplified
+  argument which is (i) valid already in basic
+  modal logics K or KT, (ii) which does not suffer from modal collapse,
+  and (iii) which avoids the rather complex predicates of essence (Ess.)
+  and necessary existence (NE) as used by Gödel.
+  </p><p>
+  Whether the presented variants increase or decrease the
+  attractiveness and persuasiveness of the ontological argument is a
+  question I would like to pass on to philosophy and theology.
+  </p>
+
+[Van_Emde_Boas_Trees]
+title = van Emde Boas Trees
+author = Thomas Ammer<>, Peter Lammich<>
+topic = Computer science/Data structures
+date = 2021-11-23
+notify = lammich@in.tum.de
+abstract = 
+  The <em>van Emde Boas tree</em> or <em>van Emde Boas
+  priority queue</em> is a data structure supporting membership
+  test, insertion, predecessor and successor search, minimum and maximum
+  determination and deletion in <em>O(log log U)</em> time, where <em>U =
+  0,...,2<sup>n-1</sup></em> is the overall range to be
+  considered. <p/> The presented formalization follows Chapter 20
+  of the popular <em>Introduction to Algorithms (3rd
+  ed.)</em> by Cormen, Leiserson, Rivest and Stein (CLRS),
+  extending the list of formally verified CLRS algorithms. Our current
+  formalization is based on the first author's bachelor's
+  thesis. <p/> First, we prove correct a
+  <em>functional</em> implementation, w.r.t. an abstract
+  data type for sets. Apart from functional correctness, we show a
+  resource bound, and runtime bounds w.r.t. manually defined timing
+  functions for the operations. <p/> Next, we refine the
+  operations to Imperative HOL with time, and show correctness and
+  complexity. This yields a practically more efficient implementation,
+  and eliminates the manually defined timing functions from the trusted
+  base of the proof.
+
+[Hahn_Jordan_Decomposition]
+title = The Hahn and Jordan Decomposition Theorems
+author = Marie Cousin <mailto:marie.cousin@grenoble-inp.org>, Mnacho Echenim <mailto:mnacho.echenim@univ-grenoble-alpes.fr>, Hervé Guiol <mailto:herve.guiol@univ-grenoble-alpes.fr>
+topic = Mathematics/Measure theory
+date = 2021-11-19
+notify = mnacho.echenim@univ-grenoble-alpes.fr
+abstract = 
+  In this work we formalize the Hahn decomposition theorem for signed
+  measures, namely that any measure space for a signed measure can be
+  decomposed into a positive and a negative set, where every measurable
+  subset of the positive one has a positive measure, and every
+  measurable subset of the negative one has a negative measure. We also
+  formalize the Jordan decomposition theorem as a corollary, which
+  states that the signed measure under consideration admits a unique
+  decomposition into a difference of two positive measures, at least one
+  of which is finite.

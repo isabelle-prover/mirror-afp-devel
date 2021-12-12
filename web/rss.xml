@@ -9,7 +9,70 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+    <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>van Emde Boas Trees</title>
+              <link>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
+       <dc:creator> Thomas Ammer, Peter Lammich       </dc:creator>
+       <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+The &lt;em&gt;van Emde Boas tree&lt;/em&gt; or &lt;em&gt;van Emde Boas
+priority queue&lt;/em&gt; is a data structure supporting membership
+test, insertion, predecessor and successor search, minimum and maximum
+determination and deletion in &lt;em&gt;O(log log U)&lt;/em&gt; time, where &lt;em&gt;U =
+0,...,2&lt;sup&gt;n-1&lt;/sup&gt;&lt;/em&gt; is the overall range to be
+considered. &lt;p/&gt; The presented formalization follows Chapter 20
+of the popular &lt;em&gt;Introduction to Algorithms (3rd
+ed.)&lt;/em&gt; by Cormen, Leiserson, Rivest and Stein (CLRS),
+extending the list of formally verified CLRS algorithms. Our current
+formalization is based on the first author&#39;s bachelor&#39;s
+thesis. &lt;p/&gt; First, we prove correct a
+&lt;em&gt;functional&lt;/em&gt; implementation, w.r.t. an abstract
+data type for sets. Apart from functional correctness, we show a
+resource bound, and runtime bounds w.r.t. manually defined timing
+functions for the operations. &lt;p/&gt; Next, we refine the
+operations to Imperative HOL with time, and show correctness and
+complexity. This yields a practically more efficient implementation,
+and eliminates the manually defined timing functions from the trusted
+base of the proof.</description>
+    </item>
+    <item>
+       <title>The Hahn and Jordan Decomposition Theorems</title>
+              <link>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
+       <guid>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</guid>
+       <dc:creator> Marie Cousin, Mnacho Echenim, Hervé Guiol       </dc:creator>
+       <pubDate>19 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+In this work we formalize the Hahn decomposition theorem for signed
+measures, namely that any measure space for a signed measure can be
+decomposed into a positive and a negative set, where every measurable
+subset of the positive one has a positive measure, and every
+measurable subset of the negative one has a negative measure. We also
+formalize the Jordan decomposition theorem as a corollary, which
+states that the signed measure under consideration admits a unique
+decomposition into a difference of two positive measures, at least one
+of which is finite.</description>
+    </item>
+    <item>
+       <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</link>
+       <guid>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</guid>
+       <dc:creator> Christoph Benzmüller       </dc:creator>
+       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Simplified variants of Gödel&#39;s ontological argument are
+explored. Among those is a particularly interesting simplified
+argument which is (i) valid already in basic
+modal logics K or KT, (ii) which does not suffer from modal collapse,
+and (iii) which avoids the rather complex predicates of essence (Ess.)
+and necessary existence (NE) as used by Gödel.
+&lt;/p&gt;&lt;p&gt;
+Whether the presented variants increase or decrease the
+attractiveness and persuasiveness of the ontological argument is a
+question I would like to pass on to philosophy and theology.
+&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
               <link>https://www.isa-afp.org/entries/Real_Power.html</link>
@@ -527,69 +590,6 @@ reviewers to papers. They have all been formulated as instances of BD
 Security [&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;3&lt;/a&gt;,
 &lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;4&lt;/a&gt;]
 and verified using the BD Security unwinding technique.</description>
-    </item>
-    <item>
-       <title>Compositional BD Security</title>
-              <link>https://www.isa-afp.org/entries/BD_Security_Compositional.html</link>
-       <guid>https://www.isa-afp.org/entries/BD_Security_Compositional.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-Building on a previous &lt;a
-href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;AFP
-entry&lt;/a&gt; that formalizes the Bounded-Deducibility Security (BD
-Security) framework &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;,
-we formalize compositionality and transport theorems for information
-flow security. These results allow lifting BD Security properties from
-individual components specified as transition systems, to a
-composition of systems specified as communicating products of
-transition systems. The underlying ideas of these results are
-presented in the papers &lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;[1]&lt;/a&gt;
-and &lt;a href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;[2]&lt;/a&gt;.
-The latter paper also describes a major case study where these results
-have been used: on verifying the CoSMeDis distributed social media
-platform (itself formalized as an &lt;a
-href=&#34;https://www.isa-afp.org/entries/CoSMeDis.html&#34;&gt;AFP
-entry&lt;/a&gt; that builds on this entry).</description>
-    </item>
-    <item>
-       <title>Combinatorial Design Theory</title>
-              <link>https://www.isa-afp.org/entries/Design_Theory.html</link>
-       <guid>https://www.isa-afp.org/entries/Design_Theory.html</guid>
-       <dc:creator> Chelsea Edmonds, Lawrence Paulson       </dc:creator>
-       <pubDate>13 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-Combinatorial design theory studies incidence set systems with certain
-balance and symmetry properties. It is closely related to hypergraph
-theory. This formalisation presents a general library for formal
-reasoning on incidence set systems, designs and their applications,
-including formal definitions and proofs for many key properties,
-operations, and theorems on the construction and existence of designs.
-Notably, this includes formalising t-designs, balanced incomplete
-block designs (BIBD), group divisible designs (GDD), pairwise balanced
-designs (PBD), design isomorphisms, and the relationship between
-graphs and designs. A locale-centric approach has been used to manage
-the relationships between the many different types of designs.
-Theorems of particular interest include the necessary conditions for
-existence of a BIBD, Wilson&#39;s construction on GDDs, and
-Bose&#39;s inequality on resolvable designs. Parts of this
-formalisation are explored in the paper &#34;A Modular First
-Formalisation of Combinatorial Design Theory&#34;, presented at CICM 2021.</description>
-    </item>
-    <item>
-       <title>Relational Forests</title>
-              <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>03 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-We study second-order formalisations of graph properties expressed as
-first-order formulas in relation algebras extended with a Kleene star.
-The formulas quantify over relations while still avoiding
-quantification over elements of the base set. We formalise the
-property of undirected graphs being acyclic this way. This involves a
-study of various kinds of orientation of graphs. We also verify basic
-algorithms to constructively prove several second-order properties.</description>
     </item>
   </channel>
 </rss>

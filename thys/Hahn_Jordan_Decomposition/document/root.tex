@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{xspace}
+\usepackage{amsmath}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+\begin{document}
+
+\title{The Hahn and Jordan Decomposition Theorems}
+\author{Marie Cousin \and Mnacho Echenim \and Herv\'e Guiol}
+\maketitle
+
+%\begin{abstract}
+%We present formalizations of both the Hahn and Jordan decomposition theorems for signed measures. 
+%\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Signed measures are a generalization of measures that can map measurable sets to negative values. In this work we formalize the Hahn decomposition theorem for signed measures, namely that if $(\Omega, \mathcal{A}, \mu)$ is a measure space for a signed measure $\mu$, then $\Omega$ can be decomposed as $\Omega^+ \cup \Omega^-$, where every measurable subset of $\Omega^+$ has a positive measure, and every measurable subset of $\Omega^-$ has a negative measure. We then prove that this decomposition is essentially unique, meaning that if $X^+ \cup X^-$ is another such decomposition, then any measurable subset in $(\Omega^+\triangle X^+) \cup (\Omega^- \triangle X^-)$ has a zero measure.
+
+We also formalize the Jordan decomposition theorem as a corollary, which states that the signed measure $\mu$ admits a unique decomposition into a difference $\mu = \mu^+ - \mu^-$ of two positive measures, at least one of which is finite, and such that for any Hahn decomposition $\Omega^+ \cup \Omega^-$ and measurable set $A$, if $A\subseteq \Omega^-$ then $\mu^+(A) = 0$ and if $A\subseteq \Omega^+$ then $\mu^-(A) = 0$.
+The formalization is mostly based on \cite{benedetto}, Section 16 of Chapter 4.
+
+\input{session}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

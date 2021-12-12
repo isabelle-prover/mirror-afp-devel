@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+%\usepackage{hyperref}
+\usepackage{amsmath, amssymb, wasysym}
+\usepackage[autostyle]{csquotes}
+\usepackage{stmaryrd}
+\usepackage[backend = bibtex,
+url=false,
+  citestyle=numeric,
+  bibstyle = numeric,
+  maxnames=4,
+  minnames=3,
+  maxbibnames=99,
+  giveninits,
+  sorting = none,
+  uniquename=init]{biblatex}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\addtolength{\hoffset}{-1,5cm}
+\addtolength{\textwidth}{3cm}
+\bibliography{root}
+\begin{document}
+
+\title{van Emde Boas Trees}
+\author{Thomas Ammer and Peter Lammich}
+\maketitle
+
+\begin{abstract}
+  \indent The \textit{van Emde Boas tree} or \textit{van Emde Boas priority queue}~\cite{4567861, Emde_Boas_1976} is a data structure supporting membership test, insertion, predecessor and successor search, minimum and maximum determination and deletion in $\mathcal{O}(\log \log \vert \mathcal{U}\vert)$ time, where $\mathcal{U} = \lbrace0, \, ...,\, 2^n-1 \rbrace$ is the overall range to be considered.
+  The presented formalization follows Chapter~20 of the popular \textit{Introduction to Algorithms (3rd ed.)}~\cite{10.5555/1614191} by Cormen, Leiserson, Rivest and Stein (CLRS), extending the list
+  of formally verified CLRS algorithms~\cite{NipkowEH-ATVA20}. Our current formalization is based on the first author's bachelor's thesis.\\
+  \indent First, we prove correct a \emph{functional} implementation, w.r.t.\ an abstract data type for sets.
+  Apart from functional correctness, we show a resource bound, and runtime bounds w.r.t.\ manually
+  defined timing functions~\cite{funalgs} for the operations.\\
+  \indent Next, we refine the operations to Imperative HOL~\cite{Separation_Logic_Imperative_HOL-AFP, refimp}
+  with time~\cite{zhan2018verifying}, and show correctness and complexity. This yields a practically more efficient implementation,
+  and eliminates the manually defined timing functions from the trusted base of the proof.
+  %   \indent Usually, data structures for representing dynamic sets map keys to satelite data. This may impede a proper invariant definition and thus we ommit the issue of storing associated values. This is also done in the popular~\cite{CLRS} textbook which is our main referrence. However, a future enahcement in order to store satelite values may completely reuse the current implementation without any adaptations necessary.\\
+\end{abstract}
+
+% \begin{small}
+% \textbf{Note} The present formalization is oriented towards Chapter 20 of the popular \textit{Introduction to Algorithms (3rd ed.)}~\cite{10.5555/1614191} by Cormen, Leiserson, Rivest and Stein.
+% Therefore, it does not support the treatment of associated satellite data.\\
+% \indent Our work extends a list~\cite{NipkowEH-ATVA20} of CLRS textbook algorithms already verified in Isabelle.
+% \end{small}
+
+\pagebreak
+
+\tableofcontents
+\pagebreak
+%\parindent 0pt\parskip 0.5ex
+\isabellestyle{it}
+% include generated text of all theories
+\input{session}
+\section{Conclusion}
+We have formalized van Emde Boas trees in Isabelle, proving correct a functional and an imperative version, together with space and run-time bounds.
+This work amends a list~\cite{NipkowEH-ATVA20} of formally verified CLRS algorithms~\cite{10.5555/1614191}.
+
+% \indent \indent Please note that this work extends a collection~\cite{NipkowEH-ATVA20} of CLRS textbook algorithms~\cite{10.5555/1614191} verified in Isabelle/HOL.\\
+Closing we sketch some enhancements of van Emde Boas trees in Isabelle.
+An examination of the data structure points out that there is probably a \textit{join} operation with the semantics $set\text{-}vebt \;(vebt\text{-}join\; s \; t) = set\text{-}vebt \;s\, \cup\, set\text{-}vebt\; t$.
+ We make the restriction of joining only valid trees with equal degree numbers. 
+ Obviously, the join of two leaves is trivial. 
+ If one tree is empty or singleton, a join is implemented by immediately returning the other tree or performing an insertion before.
+  Otherwise, summary and subtrees are to be joined recursively and afterwards we have to determine minimum and maximum. Certainly, this last step can be complicated, because argument trees may also coincide on minima or maxima.
+
+  One may also consider the treatment of associated satellite data.
+ Those are to be stored in ordinary subtrees, whereas the definition of summary trees does not have to be changed. 
+ We can transfer this to Isabelle by introducing another data type representing van Emde Boas trees.
+  The adapted $naive\text{-}member$ and $membermima$ still refer to integer keys, but we add an auxiliary function $assoc$ such that $assoc\; t \; x \; y$ holds iff the key $x$ is associated with the value $y$. 
+  A $both\text{-}member\text{-}options$ is also defined and can be used for specifying a suitable validness invariant.  We may show a conjecture like $both\text{-}member\text{-}options \; t \;x \longleftrightarrow \exists \, y. \; assoc \; t \; x \; y$. Besides, valid trees enforce keys to be associated with at most one value. 
+  All canonical functions $f$  are shifted to the new type and return a key-value pair $(x, \, y)$ or the modified tree. Proofs for being $x$ the desired successor etc. are obtained by reuse and adaptation of prior proofs. 
+  In addition, modified canonical functions $f'$ may only return the associated values $y$. We show the proposition $\exists \, x. \;f \; t \; i = (x, \, y) \longleftrightarrow f'\; t \; i = y$.
+  All writing operations require a reasoning regarding the proper (non-)modification of associations. The modified functions $f'$ are to be exposed to a user later on.
+
+Moreover, we did not consider lazy implementation.
+Currently, $vebt\text{-}buildup \; n$ generates a full van Emde Boas tree of degree $n$. A \textit{lazy implementation} would construct a subtree only if needed. 
+From this just a constant amount of additional effort per recursive step will arise. Thereby, proven running time bounds of $\mathcal{O}(\log \log u)$ will be preserved.
+ Beside this, a lazy implementation can also be obtained by exporting verified Isabelle code to Haskell, which heavily applies the lazy evaluation technique.
+
+Obviously, a lazy implementation would drastically reduce memory usage.
+Each insertion allocates $\mathcal{O}(\log \log u)$ space and hence an implementation that does not store empty subtrees gives us memory consumption in $\mathcal{O}(n \cdot \log \log u)$ where $n$ is the number of elements currently stored.
+ %\footnote{This proposition holds, because there is constant memory allocation per recursive step and recursion depth is bounded by tree heights.} 
+ Furthermore, one may replace ordinary arrays by \textit{dynamic perfect hashing}~\cite{dynhash} allowing treatment of elements in (amortized) constant time and linear space. 
+ Unfortunately, a linear memory consumption in $\mathcal{O}(n)$ is achieved at cost of some worst case runtime bounds~\cite{funalgdata}.
+  By this, $\mathcal{O}(\log \log u)$ is turned to an amortized bound for $vebt\text{-}insert$ and $vebt\text{-}delete$, since the complexity of those functions is indeed affected by the amortization. 
+  An implementation of this van Emde Boas tree variant requires verified dynamic perfect hashing and amortization in Isabelle to build on.
+
+  We used Imperative HOL due to its support of arrays and type reflexive references that are necessary for setting up a recursive tree data structure.
+ For generating verified code, however, there also exist other frameworks, e.g. Isabelle LLVM~\cite{8f77891e4e7647feb9515038709bc165}~\cite{llvm}. It supports refinement-based verification of correctness and worst-case time complexities. 
+ Additionally, verified programs can be exported to LLVM code, which itself is compiled to executable machine code. Strikingly, code of the introsort algorithm generated by this formalization stayed competitive with the GNU C++ library~\cite{llvm}. 
+\pagebreak
+\printbibliography{}
+\end{document}
