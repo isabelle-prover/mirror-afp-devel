@@ -21,8 +21,7 @@ lemma min_block_size_2: "\<k> \<ge> 2"
   using block_size_t by simp
 
 lemma points_index_pair: "y \<in> \<V> \<Longrightarrow> x \<in> \<V> \<Longrightarrow> x \<noteq> y \<Longrightarrow>  size ({# bl \<in># \<B> . {x, y} \<subseteq> bl#}) = \<Lambda>"
-  using balanced card_2_iff empty_subsetI insert_subset points_index_def
-  by (metis of_nat_numeral)
+  using balanced card_2_iff empty_subsetI insert_subset points_index_def by metis
 
 lemma index_one_empty_rm_blv [simp]:
   assumes "\<Lambda> = 1" and " blv \<in># \<B>" and "p \<subseteq> blv" and "card p = 2" 
@@ -61,19 +60,19 @@ proof -
   have b_contents: "\<And> bl. bl \<in># ?B \<Longrightarrow> x \<in> bl" using assms by auto
   have "\<And> y. y \<in># ?M \<Longrightarrow> y \<noteq> x" using assms
     by (simp add: finite_sets) 
-  then have "\<And> y .y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B . {x, y} \<subseteq> bl#}) = nat \<Lambda>" 
-    using points_index_pair filter_filter_mset_ss_member y_point assms finite_sets index_ge_zero 
-    by (metis nat_0_le nat_int_comparison(1))
-  then have  "\<And> y .y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B . x \<in> bl \<and> y \<in> bl#}) = nat \<Lambda>"
+  then have "\<And> y .y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B . {x, y} \<subseteq> bl#}) = \<Lambda>" 
+    using points_index_pair filter_filter_mset_ss_member y_point assms finite_sets
+    by metis
+  then have  "\<And> y .y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B . x \<in> bl \<and> y \<in> bl#}) = \<Lambda>"
     by auto
-  then have bl_set_size: "\<And> y . y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B .  y \<in> bl#}) = nat \<Lambda>" 
+  then have bl_set_size: "\<And> y . y \<in># ?M \<Longrightarrow> size ({# bl \<in># ?B .  y \<in> bl#}) = \<Lambda>" 
     using b_contents by (metis (no_types, lifting) filter_mset_cong) 
-  then have final_size: "size (\<Sum>p\<in>#?M . ({#p#} \<times># {#bl \<in># ?B. p \<in> bl#})) = size (?M) * (nat \<Lambda>)" 
-    using m_distinct size_Union_distinct_cart_prod_filter bl_set_size index_ge_zero by blast  
+  then have final_size: "size (\<Sum>p\<in>#?M . ({#p#} \<times># {#bl \<in># ?B. p \<in> bl#})) = size (?M) * \<Lambda>" 
+    using m_distinct size_Union_distinct_cart_prod_filter bl_set_size by blast  
   have "size ?M = \<v> - 1" using v_non_zero
     by (simp add: assms(1) finite_sets) 
   thus ?thesis using final_size 
-    by (simp add: set_break_down_left index_ge_zero) 
+    by (simp add: set_break_down_left) 
 qed
 
 lemma necess_cond_1_lhs: 
@@ -94,9 +93,9 @@ proof -
     by (simp add: set_filter_diff_card)
   then have "\<forall> bl \<in># ?B. card {p \<in> (\<V> - {x}) . p \<in> bl } = \<k> - 1" 
     using bl_size x_in_set card_Diff_subset finite_sets k_non_zero by auto
-  then have "\<And> bl . bl \<in># ?B \<Longrightarrow> size {#p \<in># ?M . p \<in> bl#} = nat (\<k> - 1)" 
+  then have "\<And> bl . bl \<in># ?B \<Longrightarrow> size {#p \<in># ?M . p \<in> bl#} = \<k> - 1" 
     using assms finite_M card_size_filter_eq by auto
-  then have "size (\<Sum>bl\<in>#?B. ( {# p \<in># ?M . p \<in> bl #} \<times># {#bl#})) = size (?B) * nat (\<k> - 1)" 
+  then have "size (\<Sum>bl\<in>#?B. ( {# p \<in># ?M . p \<in> bl #} \<times># {#bl#})) = size (?B) * (\<k> - 1)" 
     using distinct_m size_Union_distinct_cart_prod_filter2 by blast
   thus ?thesis using block_choices k_non_zero by (simp add: set_break_down_right)
 qed
@@ -107,8 +106,9 @@ lemma r_constant: "x \<in> \<V> \<Longrightarrow> (\<B> rep x) * (\<k> -1) = \<L
 lemma replication_number_value:
   assumes "x \<in> \<V>"
   shows "(\<B> rep x) = \<Lambda> * (\<v> - 1) div (\<k> - 1)"
-  using min_block_size_2 r_constant assms diff_gt_0_iff_gt diff_self zle_diff1_eq numeral_le_one_iff
-  by (metis less_int_code(1) linorder_neqE_linordered_idom nonzero_mult_div_cancel_right semiring_norm(69))
+  using min_block_size_2 r_constant assms
+  by (metis diff_is_0_eq diffs0_imp_equal div_by_1 k_non_zero nonzero_mult_div_cancel_right 
+      one_div_two_eq_zero one_le_numeral zero_neq_one)
   
 lemma r_constant_alt: "\<forall> x \<in> \<V>. \<B> rep x = \<Lambda> * (\<v> - 1) div (\<k> - 1)"
   using r_constant replication_number_value by blast 
@@ -150,9 +150,9 @@ qed
 lemma necess_cond_2_lhs: "size {# x \<in># (mset_set \<V> \<times># \<B>) . (fst x) \<in> (snd x)  #} = \<v> * \<r>" 
 proof -
   let ?M = "mset_set \<V>"
-  have "\<And> p . p \<in># ?M \<Longrightarrow> size ({# bl \<in># \<B> . p \<in> bl #}) = nat (\<r>)"
+  have "\<And> p . p \<in># ?M \<Longrightarrow> size ({# bl \<in># \<B> . p \<in> bl #}) = \<r>"
     using finite_sets rep_number_unfold_set r_gzero nat_eq_iff2 by auto 
-  then have "size (\<Sum>p\<in>#?M. ({#p#} \<times># {#bl \<in># \<B>. p \<in> bl#})) = size ?M * nat (\<r>)" 
+  then have "size (\<Sum>p\<in>#?M. ({#p#} \<times># {#bl \<in># \<B>. p \<in> bl#})) = size ?M * (\<r>)" 
     using mset_points_distinct size_Union_distinct_cart_prod_filter by blast
   thus ?thesis using r_gzero
     by (simp add: set_break_down_left)  
@@ -161,9 +161,9 @@ qed
 lemma necess_cond_2_rhs: "size {# x \<in># (mset_set \<V> \<times># \<B>) . (fst x) \<in> (snd x)  #} = \<b>*\<k>" 
   (is "size {# x \<in># (?M \<times># ?B). (fst x) \<in> (snd x)  #} = \<b>*\<k>")
 proof -
-  have "\<And> bl . bl \<in># ?B \<Longrightarrow> size ({# p \<in># ?M . p \<in> bl #}) = nat \<k>" 
+  have "\<And> bl . bl \<in># ?B \<Longrightarrow> size ({# p \<in># ?M . p \<in> bl #}) = \<k>" 
     using uniform k_non_zero uniform_unfold_point_set_mset by fastforce
-  then have "size (\<Sum>bl\<in>#?B. ( {# p \<in># ?M . p \<in> bl #} \<times># {#bl#})) = size (?B) * (nat \<k>)" 
+  then have "size (\<Sum>bl\<in>#?B. ( {# p \<in># ?M . p \<in> bl #} \<times># {#bl#})) = size (?B) * \<k>" 
     using mset_points_distinct size_Union_distinct_cart_prod_filter2 by blast
   thus ?thesis using k_non_zero by (simp add: set_break_down_right)
 qed
@@ -186,8 +186,9 @@ proof -
   then have "\<b> = (\<v> * \<r>) div \<k>" using necessary_condition_two min_block_size_2 by auto
   then have "\<b> = (\<v> * ((\<Lambda> * (\<v> - 1) div (\<k> - 1)))) div \<k>" by simp
   then have "\<b> = (\<v> * \<Lambda> * (\<v> - 1)) div ((\<k> - 1)* \<k>)" using necessary_condition_one 
-      necessary_condition_two dvd_div_div_eq_mult dvd_div_eq_0_iff
-    by (smt (z3) dvd_triv_right mult.assoc mult.commute mult.left_commute mult_eq_0_iff ) 
+      necessary_condition_two dvd_div_div_eq_mult dvd_div_eq_0_iff dvd_triv_right mult.assoc 
+      mult.commute mult.left_commute mult_eq_0_iff
+    by (smt (z3) b_non_zero) 
   then show ?thesis by (simp add: mult.commute) 
 qed
 
@@ -199,15 +200,15 @@ lemma index_lt_replication: "\<Lambda> < \<r>"
 proof -
   have 1: "\<r> * (\<k> - 1) = \<Lambda> * (\<v> - 1)" using admissability_conditions by simp
   have lhsnot0: "\<r> * (\<k> - 1) \<noteq> 0"
-    using no_zero_divisors rep_not_zero zdiv_eq_0_iff by blast 
-  then have rhsnot0: "\<Lambda> * (\<v> - 1) \<noteq> 0" using 1 by simp 
+    using no_zero_divisors rep_not_zero by (metis div_by_0) 
+  then have rhsnot0: "\<Lambda> * (\<v> - 1) \<noteq> 0" using 1 by presburger 
   have "\<k> - 1 < \<v> - 1" using incomplete b_non_zero bibd_block_number not_less_eq by fastforce 
-  thus ?thesis using 1 lhsnot0 rhsnot0
-    by (smt (verit, best) k_non_zero mult_le_less_imp_less r_gzero) 
+  thus ?thesis using 1 lhsnot0 rhsnot0 k_non_zero mult_le_less_imp_less r_gzero
+    by (metis div_greater_zero_iff less_or_eq_imp_le nat_less_le nat_neq_iff) 
 qed
 
 lemma index_not_zero: "\<Lambda> \<ge> 1"
-  using index_ge_zero index_lt_replication int_one_le_iff_zero_less by fastforce 
+  by (metis div_0 leI less_one mult_not_zero rep_not_zero) 
 
 lemma r_ge_two: "\<r> \<ge> 2"
   using index_lt_replication index_not_zero by linarith
@@ -226,15 +227,15 @@ lemma bibd_subset_occ:
   shows "size {# blk \<in># (\<B> - {#bl#}). x \<subseteq> blk #} = \<Lambda> - 1"
 proof - 
   have index: "size {# blk \<in># \<B>. x \<subseteq> blk #} = \<Lambda>" using points_index_def balanced assms
-    by (metis (full_types) of_nat_numeral subset_eq wf_invalid_point) 
+    by (metis (full_types) subset_eq wf_invalid_point) 
   then have "size {# blk \<in># (\<B> - {#bl#}). x \<subseteq> blk #} = size {# blk \<in># \<B>. x \<subseteq> blk #} - 1" 
     by (simp add: assms size_Diff_singleton) 
   then show ?thesis using assms index_not_zero index by simp
 qed
 
 lemma necess_cond_one_param_balance: "\<b> > \<v> \<Longrightarrow> \<r> > \<k>"
-  using necessary_condition_two
-  by (smt mult_nonneg_nonneg nonzero_mult_div_cancel_right of_nat_0_le_iff r_gzero zdiv_mono2)
+  using necessary_condition_two b_positive
+  by (metis div_le_mono2 div_mult_self1_is_m div_mult_self_is_m nat_less_le r_gzero v_non_zero)
 
 subsection \<open>Constructing New bibd's\<close>
 text \<open>There are many constructions on bibd's to establish new bibds (or other types of designs). 
@@ -249,22 +250,20 @@ proof -
   have xin: "x \<in> \<V>" and yin: "y \<in> \<V>" using assms by auto
   have ge: "2*\<r> \<ge> \<Lambda>" using index_lt_replication
     using r_gzero by linarith 
-  have "size {# b \<in># \<B> . x \<in> b \<and> y \<in> b#} =  \<Lambda>" using points_index_pair assms by simp
-  then have lambda: "size {# b \<in># \<B> . x \<in> b \<and> y \<in> b#} = nat \<Lambda>" 
-    using index_ge_zero by auto 
-  have "\<B>\<^sup>C index {x, y} = size {# b \<in># \<B> . x \<notin> b \<and> y \<notin> b #}" 
+  have lambda: "size {# b \<in># \<B> . x \<in> b \<and> y \<in> b#} = \<Lambda>" using points_index_pair assms by simp
+  have s1: "\<B>\<^sup>C index {x, y} = size {# b \<in># \<B> . x \<notin> b \<and> y \<notin> b #}" 
     using complement_index_2 assms by simp
-  also have "\<dots> = size \<B> - (size {# b \<in># \<B> . \<not> (x \<notin> b \<and> y \<notin> b) #})" 
+  also have s2: "... = size \<B> - (size {# b \<in># \<B> . \<not> (x \<notin> b \<and> y \<notin> b) #})" 
     using size_filter_neg by blast
   also have "... = size \<B> - (size {# b \<in># \<B> . x \<in> b \<or> y \<in> b#})" by auto
   also have "... = \<b> - (size {# b \<in># \<B> . x \<in> b \<or> y \<in> b#})" by (simp add: of_nat_diff)
-  also have "... = \<b> - (size {# b \<in># \<B> . x \<in> b#} +  
+  finally have "\<B>\<^sup>C index {x, y} = \<b> - (size {# b \<in># \<B> . x \<in> b#} +  
     size {# b \<in># \<B> . y \<in> b#} -  size {# b \<in># \<B> . x \<in> b \<and> y \<in> b#})" 
-    by (simp add: mset_size_partition_dep) 
-  also have "... = \<b> - (nat \<r> + nat \<r> - nat (\<Lambda>))" using rep_number_unfold_set lambda xin yin
-    by (metis (no_types, lifting) nat_int)
-  finally have "\<B>\<^sup>C index {x, y} = \<b> - (2*\<r> - \<Lambda>)"
-    using index_ge_zero index_lt_replication by linarith
+    by (simp add: mset_size_partition_dep s2 s1) 
+  then have "\<B>\<^sup>C index {x, y} = \<b> - (\<r> + \<r> - \<Lambda>)" using rep_number_unfold_set lambda xin yin
+    by presburger
+  then have "\<B>\<^sup>C index {x, y} = \<b> - (2*\<r> - \<Lambda>)"
+    using index_lt_replication by (metis mult_2) 
   thus ?thesis using ge diff_diff_right by simp  
 qed
 
@@ -289,7 +288,7 @@ proof -
   show ?thesis proof (unfold_locales, simp_all)
     show "2 \<le> des.\<v>" using assms block_size_t by linarith 
     show "\<And>ps. ps \<subseteq> \<V> \<Longrightarrow> card ps = 2 \<Longrightarrow> 
-      \<B>\<^sup>C index ps = \<b> + \<Lambda> - 2 * (\<Lambda> * (des.\<v> - 1) div (\<k> - 1))" 
+      \<B>\<^sup>C index ps = \<b> + \<Lambda> - 2 * (\<Lambda> * (des.\<v> - Suc 0) div (\<k> - Suc 0))" 
       using complement_bibd_index by simp
     show "2 \<le> des.\<v> - \<k>" using assms block_size_t by linarith 
   qed
@@ -331,8 +330,7 @@ lemma derived_points_order: "card bl = \<k>"
   using uniform valid_block by simp
 
 lemma derived_block_num: "bl \<in># \<B> \<Longrightarrow> size \<B>\<^sup>D = \<b> - 1"
-  apply (simp add: derived_blocks_def size_remove1_mset_If valid_block)
-  using valid_block int_ops(6) by fastforce
+  by (simp add: derived_blocks_def size_remove1_mset_If valid_block)
 
 lemma derived_is_wellformed:  "b \<in># \<B>\<^sup>D \<Longrightarrow> b \<subseteq> bl"
   by (simp add: derived_blocks_def valid_block) (auto)
@@ -391,8 +389,7 @@ definition residual_blocks :: "'a set multiset" ("(\<B>\<^sup>R)") where
 "\<B>\<^sup>R \<equiv> {# b - bl . b \<in># (\<B> - {#bl#}) #}" 
 
 lemma residual_order: "card (bl\<^sup>c) = \<v> - \<k>" 
-  apply (simp add: valid_block wellformed block_complement_size)
-  using block_size_lt_v derived_points_order by auto
+  by (simp add: valid_block wellformed block_complement_size)
 
 lemma residual_block_num: "size (\<B>\<^sup>R) = \<b> - 1"
   using b_positive by (simp add: residual_blocks_def size_remove1_mset_If valid_block int_ops(6))
@@ -436,7 +433,7 @@ proof -
   then have ne: "bl2 \<noteq> bl" using assms
     by (metis count_eq_zero_iff in_diff_count less_one union_single_eq_member)
   have "card bl2 = card bl" using uniform valid_block member
-    by (metis in_diffD of_nat_eq_iff)  
+    using in_diffD by fastforce
   then have "card (bl2 - bl) > 0" 
     using finite_blocks member uniform set_card_diff_ge_zero valid_block by (metis in_diffD ne) 
   thus ?thesis using inter by fastforce 
@@ -473,21 +470,29 @@ lemma sym_design_vk_gt_kl:
   assumes "\<k> \<ge> \<Lambda> + 2"
   shows "\<v> - \<k> > \<k> - \<Lambda>"
 proof (rule ccontr)
+  define k l v where kdef: "k \<equiv> int \<k>" and ldef: "l \<equiv> int \<Lambda>" and vdef: "v \<equiv> int \<v>"
   assume "\<not> (\<v> - \<k> > \<k> - \<Lambda>)"
-  then have "\<v> \<le> 2 * \<k> - \<Lambda>"
-    by linarith
-  then have "\<v> - 1 \<le> 2 * \<k> - \<Lambda> - 1" by linarith
-  then have "\<Lambda>* (\<v> - 1) \<le> \<Lambda>*( 2 * \<k> - \<Lambda> - 1)"
-    using index_ge_zero mult_le_cancel_left by fastforce 
-  then have "\<k> * (\<k> - 1) \<le> \<Lambda>*( 2 * \<k> - \<Lambda> - 1)"
-    by (simp add: symmetric_condition_2)
-  then have "\<k> * (\<k> - 1) - \<Lambda>*( 2 * \<k> - \<Lambda> - 1) \<le> 0" by linarith
-  then have "(\<k> - \<Lambda>)*(\<k> - \<Lambda> - 1) \<le> 0"
-    by (simp add: mult.commute right_diff_distrib')
-  then have "\<k> = \<Lambda> \<or> \<k> = \<Lambda> + 1"
+  then have a: "\<not> (v - k > k - l)" using kdef ldef vdef
+    by (metis block_size_lt_v index_lt_replication less_imp_le_nat of_nat_diff of_nat_less_imp_less 
+        rep_value_sym) 
+  have lge: "l \<ge> 0" using ldef by simp 
+  have sym: "l * (v- 1) = k * (k - 1)" 
+    using symmetric_condition_2 ldef vdef kdef
+    by (metis (mono_tags, lifting) block_size_lt_v int_ops(2) k_non_zero le_trans of_nat_diff of_nat_mult) 
+  then have "v \<le> 2 * k - l" using a by linarith
+  then have "v - 1 \<le> 2 * k - l - 1" by linarith
+  then have "l* (v - 1) \<le> l*( 2 * k - l - 1)"
+    using lge mult_le_cancel_left by fastforce 
+  then have "k * (k - 1) \<le> l*( 2 * k - l - 1)"
+    by (simp add: sym)
+  then have "k * (k - 1) - l*( 2 * k - l - 1) \<le> 0" by linarith
+  then have "k^2 - k - l* 2 * k + l^2 + l \<le> 0" using  mult.commute right_diff_distrib'
+    by (smt (z3) mult_cancel_left1 power2_diff ring_class.ring_distribs(2)) 
+  then have "(k - l)*(k - l - 1) \<le> 0" using  mult.commute right_diff_distrib'
+    by (smt (z3) \<open>k * (k - 1) \<le> l * (2 * k - l - 1)\<close> combine_common_factor) 
+  then have "k = l \<or> k = l + 1"
     using mult_le_0_iff by force
-  thus False using assms
-    by simp 
+  thus False using assms kdef ldef by auto
 qed
 
 end 
@@ -554,7 +559,7 @@ lemma intersect_mult_set_block_with_point_exists:
   shows "\<exists>x\<in>#remove1_mset blv \<B>. p \<in># mset_set {y. y \<subseteq> blv \<and> y \<subseteq> x \<and> card y = 2}"
 proof -
   have "size {#b \<in># \<B> . p \<subseteq> b#} = \<Lambda>" using points_index_def assms 
-    by (metis balanced_alt_def_all dual_order.trans of_nat_numeral wellformed) 
+    by (metis balanced_alt_def_all dual_order.trans wellformed) 
   then have "size {#bl \<in># (\<B> - {#blv#}) . p \<subseteq> bl#} \<ge> 1"  
     using assms by (simp add: size_Diff_singleton)
   then obtain bl where "bl \<in># (\<B> - {#blv#}) \<and> p \<subseteq> bl" using assms filter_mset_empty_conv
@@ -604,7 +609,7 @@ proof -
     by (simp add: assms)
   have "\<And> p. p \<in># (\<Sum>\<^sub>#?M) \<Longrightarrow> count (\<Sum>\<^sub>#?M) p = \<r> - 1" 
     using sym_sum_mset_inter_sets_count assms eq by blast 
-  thus ?thesis using k size_multiset_int_count by metis
+  thus ?thesis using k size_multiset_set_mset_const_count by metis
 qed
 
 lemma sym_sum_inter_num: 
@@ -621,13 +626,6 @@ proof -
     using sym_sum_mset_inter_sets_size assms by auto
   then show ?thesis by simp
 qed
-
-lemma choose_two_int: 
-  assumes " x \<ge> 0" 
-  shows "nat (x :: int) choose 2 = ((x ::int) * ( x - 1)) div 2 " 
-  using choose_two assms dvd_div_mult_self even_numeral int_nat_eq mult_cancel_right2 mult_eq_0_iff 
-    mult_nonneg_nonneg nat_diff_distrib' nat_mult_distrib nat_one_as_int 
-    numeral_Bit0_div_2 numerals(1) of_nat_numeral zdiv_int by (smt (verit)) (* Slow *)
 
 lemma sym_sum_mset_inter2_sets_count: 
   assumes "blv \<in># \<B>"
@@ -659,8 +657,8 @@ qed
 lemma sym_sum_mset_inter2_sets_size: 
   assumes "blv \<in># \<B>"
   shows "size (\<Sum>\<^sub>#{#mset_set {y .y \<subseteq> blv \<inter> b2 \<and> card y = 2}. b2 \<in># (\<B> - {#blv#})#}) = 
-    ((nat \<k>) choose 2) * (\<Lambda> -1)" 
-    (is "size (\<Sum>\<^sub>#?M) = ((nat \<k>) choose 2) * (\<Lambda> -1)")
+    ( \<k> choose 2) * (\<Lambda> -1)" 
+    (is "size (\<Sum>\<^sub>#?M) = (\<k> choose 2) * (\<Lambda> -1)")
 proof (cases "\<Lambda> = 1")
   case True
   have empty: "\<And> b2 . b2 \<in># remove1_mset blv \<B> \<Longrightarrow> {y .y \<subseteq> blv \<and> y \<subseteq> b2 \<and> card y = 2} = {}" 
@@ -685,28 +683,29 @@ next
     show "{bl . bl \<subseteq> blv \<and> card bl = 2} \<subseteq> set_mset (\<Sum>\<^sub>#?M)"
       using intersect_mult_set_block_subset_iff_2 assms index_min by blast
   qed
-  have "card blv = (nat \<k>)" using uniform assms by (metis nat_int) 
-  then have k: "card (set_mset (\<Sum>\<^sub>#?M)) = ((nat \<k>) choose 2)" using eq n_subsets
+  have "card blv =  \<k>" using uniform assms by simp
+  then have k: "card (set_mset (\<Sum>\<^sub>#?M)) = (\<k> choose 2)" using eq n_subsets
     by (simp add: n_subsets assms finite_blocks) 
-  thus ?thesis using k size_multiset_int_count sym_sum_mset_inter2_sets_count assms eq subset_card
-    by (metis (no_types, lifting) intersect_mult_set_block_subset_iff)
+  thus ?thesis using k size_multiset_set_mset_const_count sym_sum_mset_inter2_sets_count assms eq 
+    by (metis (no_types, lifting) intersect_mult_set_block_subset_iff subset_card)
 qed
 
 lemma sum_choose_two_inter_num: 
   assumes "b1 \<in># \<B>" 
-  shows "(\<Sum>b2 \<in># (\<B> - {#b1#}). (nat (b1 |\<inter>| b2) choose 2)) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)"
+  shows "(\<Sum>b2 \<in># (\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2)) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)"
 proof - 
-  have div_fact: "2 dvd (\<Lambda> * (\<Lambda> - 1))"by simp
-  have div_fact_2: "2 dvd (\<Lambda> * (\<v> - 1))" using symmetric_condition_2 by simp
-  have "(\<Sum>b2 \<in># (\<B> - {#b1#}). (nat (b1 |\<inter>| b2) choose 2)) = (\<Sum>b2 \<in># (\<B> - {#b1#}). nat (b1 |\<inter>|\<^sub>2 b2 ))" 
+  have div_fact: "2 dvd (\<Lambda> * (\<Lambda> - 1))"
+    by fastforce 
+  have div_fact_2: "2 dvd (\<Lambda> * (\<v> - 1))" using symmetric_condition_2 by fastforce
+  have "(\<Sum>b2 \<in># (\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2)) = (\<Sum>b2 \<in># (\<B> - {#b1#}). (b1 |\<inter>|\<^sub>2 b2 ))" 
     using n_inter_num_choose_design_inter assms by (simp add: in_diffD)
-  then have sum_fact: "(\<Sum>b2 \<in># (\<B> - {#b1#}).(nat (b1 |\<inter>| b2) choose 2)) 
-      = ((nat \<k>) choose 2) * (\<Lambda> -1)" 
+  then have sum_fact: "(\<Sum>b2 \<in># (\<B> - {#b1#}).((b1 |\<inter>| b2) choose 2)) 
+      = (\<k> choose 2) * (\<Lambda> -1)" 
     using assms sym_sum_mset_inter2_sets_size 
     by (auto simp add: size_big_union_sum n_intersect_num_subset_def)
-  have "((nat \<k>) choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<v> - 1) div 2)) * (\<Lambda> -1)" 
-    using choose_two_int symmetric_condition_2 k_non_zero by auto 
-  then have "((nat \<k>) choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)" 
+  have "(\<k> choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<v> - 1) div 2)) * (\<Lambda> -1)" 
+    using choose_two symmetric_condition_2 k_non_zero by auto 
+  then have "(\<k> choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)" 
     using div_fact div_fact_2 by (smt div_mult_swap mult.assoc mult.commute) 
   then show ?thesis using sum_fact by simp
 qed
@@ -715,53 +714,88 @@ lemma sym_sum_inter_num_sq:
   assumes "b1 \<in># \<B>" 
   shows "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = \<Lambda>^2 * ( \<v> - 1)"
 proof - 
-  have dvd: "2 dvd (( \<v> - 1) * (\<Lambda> * (\<Lambda> - 1)))" by simp
-  have a: "(\<Sum>b2 \<in>#(\<B> - {#b1#}). int (nat (b1 |\<inter>| b2) choose 2)) = 
+  have dvd: "2 dvd (( \<v> - 1) * (\<Lambda> * (\<Lambda> - 1)))" by fastforce
+  have inner_dvd: "\<forall> bl \<in># (remove1_mset b1 \<B>). 2 dvd ((b1 |\<inter>| bl) *  ((b1 |\<inter>| bl) - 1))"
+    by force
+  have diff_le: "\<And> bl . bl \<in># (remove1_mset b1 \<B>) \<Longrightarrow> (b1 |\<inter>| bl) \<le> (b1 |\<inter>| bl)^2"
+    by (simp add: power2_nat_le_imp_le)
+  have a: "(\<Sum>b2 \<in>#(\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2)) = 
             (\<Sum>bl \<in># (remove1_mset b1 \<B>).  ((b1 |\<inter>| bl) *  ((b1 |\<inter>| bl) - 1)) div 2)" 
-    using choose_two_int by (simp add: intersection_num_non_neg)
-  have b: "(\<Sum>b2 \<in>#(\<B> - {#b1#}). int (nat (b1 |\<inter>| b2) choose 2)) = 
-              (\<Sum>b2 \<in>#(\<B> - {#b1#}). (nat (b1 |\<inter>| b2) choose 2))" by simp
-  have "(\<Sum>b2 \<in>#(\<B> - {#b1#}). (nat (b1 |\<inter>| b2) choose 2)) = ((\<Lambda> * (\<Lambda> - 1)) div 2) * ( \<v> - 1)" 
+    using choose_two by (simp add: intersection_num_non_neg)
+  have b: "(\<Sum>b2 \<in>#(\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2)) = 
+              (\<Sum>b2 \<in>#(\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2))" by simp
+  have gtsq: "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) \<ge> (\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl))"
+    by (simp add: diff_le sum_mset_mono) 
+  have "(\<Sum>b2 \<in>#(\<B> - {#b1#}). ((b1 |\<inter>| b2) choose 2)) = ((\<Lambda> * (\<Lambda> - 1)) div 2) * ( \<v> - 1)" 
     using sum_choose_two_inter_num assms by blast 
   then have start: "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl) *  ((b1 |\<inter>| bl) - 1)) div 2) 
                         = ((\<Lambda> * (\<Lambda> - 1)) div 2) * (\<v> - 1)"
     using a b by linarith
   have sum_dvd: "2 dvd (\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl) *  ((b1 |\<inter>| bl) - 1))"
-    by (simp add: sum_mset_dvd) 
+    using sum_mset_dvd
+    by (metis (no_types, lifting) dvd_mult dvd_mult2 dvd_refl odd_two_times_div_two_nat) 
   then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl) * ((b1 |\<inter>| bl) - 1)) div 2 
-      = (\<v> - 1) * ((\<Lambda> * (\<Lambda> - 1)) div 2)" 
-    using start by (simp add: sum_mset_distrib_div_if_dvd)
+      =  ((\<Lambda> * (\<Lambda> - 1)) div 2) * (\<v> - 1)" 
+    using start sum_mset_distrib_div_if_dvd inner_dvd
+    by (metis (mono_tags, lifting) image_mset_cong2)
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl) * ((b1 |\<inter>| bl) - 1)) div 2 
+      =  (\<v> - 1) * ((\<Lambda> * (\<Lambda> - 1)) div 2)"
+    by simp 
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl) * ((b1 |\<inter>| bl) - 1))  
+      =  (\<v> - 1) * (\<Lambda> * (\<Lambda> - 1))"
+    by (metis (no_types, lifting) div_mult_swap dvdI dvd_div_eq_iff dvd_mult dvd_mult2 odd_two_times_div_two_nat sum_dvd) 
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2 - (b1 |\<inter>| bl))  
+      =  (\<v> - 1) * (\<Lambda> * (\<Lambda> - 1))"
+    using diff_mult_distrib2
+    by (metis (no_types, lifting) multiset.map_cong0 nat_mult_1_right power2_eq_square)  
   then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) 
-      - (\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)) = ((\<v> - 1) * (\<Lambda> * (\<Lambda> - 1)))"
-    using sum_dvd dvd 
-    by (simp add: dvd_div_eq_iff  div_mult_swap int_distrib(4) power2_eq_square sum_mset_add_diff)
-  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) - (\<Lambda> * (\<v> - 1)) = ((\<v> - 1) * (\<Lambda> * (\<Lambda> - 1)))" 
+      - (\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)) = (\<v> - 1) * (\<Lambda> * (\<Lambda> - 1))"
+    using sum_mset_add_diff_nat[of "(remove1_mset b1 \<B>)" "\<lambda> bl . (b1 |\<inter>| bl)" "\<lambda> bl . (b1 |\<inter>| bl)^2"]  
+      diff_le by presburger  
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) 
+      = (\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)) + (\<v> - 1) * (\<Lambda> * (\<Lambda> - 1))" using gtsq
+    by (metis le_add_diff_inverse) 
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) =  (\<Lambda> * (\<v> - 1)) + ((\<v> - 1) * (\<Lambda> * (\<Lambda> - 1)))" 
     using sym_sum_inter_num assms rep_value_sym symmetric_condition_2 by auto 
-  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = (\<Lambda> * (\<v> - 1)) * (\<Lambda> - 1) + (\<Lambda> * (\<v> - 1))"
-    using diff_eq_eq by fastforce 
-  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = (\<Lambda> * (\<v> - 1)) * (\<Lambda> - 1 + 1)" 
-    using int_distrib(2) by (metis mult_numeral_1_right numeral_One)
+  then have prev: "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = (\<Lambda> * (\<v> - 1)) * (\<Lambda> - 1) + (\<Lambda> * (\<v> - 1))"
+    by fastforce 
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = (\<Lambda> * (\<v> - 1)) * (\<Lambda>)"
+    by (metis Nat.le_imp_diff_is_add add_mult_distrib2 index_not_zero nat_mult_1_right) 
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (b1 |\<inter>| bl)^2) = \<Lambda> * \<Lambda> * (\<v> - 1)"
+    using mult.commute by simp 
   thus ?thesis by (simp add: power2_eq_square)
 qed
 
 lemma sym_sum_inter_num_to_zero: 
   assumes "b1 \<in># \<B>" 
-  shows "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl) - \<Lambda>)^2) = 0"
+  shows "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (int (b1 |\<inter>| bl) - (int \<Lambda>))^2) = 0"
 proof -
   have rm1_size: "size (remove1_mset b1 \<B>) = \<v> - 1" using assms b_non_zero int_ops(6) 
     by (auto simp add: symmetric size_remove1_mset_If)
-  have "\<And> bl . bl \<in># (remove1_mset b1 \<B>) \<Longrightarrow> ((b1 |\<inter>| bl) - \<Lambda>)^2 = 
-        (((b1 |\<inter>| bl)^2) - (2 * \<Lambda> * (b1 |\<inter>| bl)) + (\<Lambda>^2))"
+  have  "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((int (b1 |\<inter>| bl))^2)) = 
+    (\<Sum>bl \<in># (remove1_mset b1 \<B>). (((b1 |\<inter>| bl))^2))" by simp
+  then have ssi: "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((int (b1 |\<inter>| bl))^2)) = \<Lambda>^2 * (\<v> - 1)" 
+    using sym_sum_inter_num_sq assms by simp 
+  have "\<And> bl . bl \<in># (remove1_mset b1 \<B>) \<Longrightarrow> (int (b1 |\<inter>| bl) - (int \<Lambda>))^2 = 
+        (((int (b1 |\<inter>| bl))^2) - (2 * (int \<Lambda>) * (int (b1 |\<inter>| bl))) + ((int \<Lambda>)^2))"
     by (simp add: power2_diff)
-  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl) - \<Lambda>)^2) = 
-              (\<Sum>bl \<in># (remove1_mset b1 \<B>). (((b1 |\<inter>| bl)^2) - (2 * \<Lambda> * (b1 |\<inter>| bl)) + (\<Lambda>^2)))"
+  then have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (int (b1 |\<inter>| bl) - (int \<Lambda>))^2) = 
+              (\<Sum>bl \<in># (remove1_mset b1 \<B>). (((int (b1 |\<inter>| bl))^2) - (2 * (int \<Lambda>) * (int (b1 |\<inter>| bl))) + ((int \<Lambda>)^2)))"
     using sum_over_fun_eq by auto
-  also have "... = \<Lambda>^2 * (\<v> - 1) - 2 * \<Lambda> * (\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl))) 
-      + (\<v> - 1) * (\<Lambda>^2)"
-    using sym_sum_inter_num_sq rm1_size 
-    by (simp add: assms sum_mset.distrib  sum_mset_add_diff sum_mset_distrib_left) 
-  finally have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl) - \<Lambda>)^2) = 0"
-    using rep_value_sym symmetric_condition_2 sym_sum_inter_num assms 
+  also have "... = (\<Sum>bl \<in># (remove1_mset b1 \<B>). (((int (b1 |\<inter>| bl))^2) 
+      -  (2 * (int \<Lambda>) * (int (b1 |\<inter>| bl))))) + (\<Sum> bl \<in># (remove1_mset b1 \<B>) . ((int \<Lambda>)^2))" 
+    by (simp add: sum_mset.distrib) 
+  also have "... = (\<Sum>bl \<in># (remove1_mset b1 \<B>). ((int (b1 |\<inter>| bl))^2)) 
+      - (\<Sum>bl \<in># (remove1_mset b1 \<B>). (2 * (int \<Lambda>) * (int (b1 |\<inter>| bl)))) + (\<Sum> bl \<in># (remove1_mset b1 \<B>) . ((int \<Lambda>)^2))" 
+    using sum_mset_add_diff_int[of "(\<lambda> bl . ((int (b1 |\<inter>| bl))^2))" "(\<lambda> bl . (2 * (int \<Lambda>) * (int (b1 |\<inter>| bl))))" "(remove1_mset b1 \<B>)"] 
+    by simp
+  also have "... =  \<Lambda>^2 * (\<v> - 1) - 2 * (int \<Lambda>) *(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl))) 
+      + (\<v> - 1) * ((int \<Lambda>)^2)" using ssi rm1_size assms by (simp add: sum_mset_distrib_left)
+  also have "... =  2 * \<Lambda>^2 * (\<v> - 1) - 2 * (int \<Lambda>) *(\<k>* (\<r> - 1))" 
+    using  sym_sum_inter_num assms by simp
+  also have "... = 2 * \<Lambda>^2 * (\<v> - 1) - 2 * (int \<Lambda>) * (\<Lambda> * (\<v> - 1))" 
+    using rep_value_sym symmetric_condition_2 by simp
+  finally have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (int (b1 |\<inter>| bl) - int \<Lambda>)^2) = 0" 
     by (auto simp add: power2_eq_square)
   thus ?thesis by simp
 qed
@@ -771,13 +805,15 @@ theorem sym_block_intersections_index [simp]:
   assumes "b2 \<in># (\<B> - {#b1#})"
   shows "b1 |\<inter>| b2 = \<Lambda>"
 proof - 
-  have pos: "\<And> bl . ((b1 |\<inter>| bl) - \<Lambda>)^2 \<ge> 0" by simp
-  have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). ((b1 |\<inter>| bl) - \<Lambda>)^2) = 0" 
-    using sym_sum_inter_num_to_zero assms by simp
-  then have "\<And> bl.  bl \<in> set_mset (remove1_mset b1 \<B>) \<Longrightarrow> ((b1 |\<inter>| bl) - \<Lambda>)^2 = 0" 
+  define l where l_def: "l = int \<Lambda>" 
+  then have pos: "\<And> bl . (int (b1 |\<inter>| bl) - l)^2 \<ge> 0" by simp
+  have "(\<Sum>bl \<in># (remove1_mset b1 \<B>). (int (b1 |\<inter>| bl) - l)^2) = 0" 
+    using sym_sum_inter_num_to_zero assms l_def by simp
+  then have "\<And> bl.  bl \<in> set_mset (remove1_mset b1 \<B>) \<Longrightarrow> (int (b1 |\<inter>| bl) - l)^2 = 0" 
     using sum_mset_0_iff_ge_0 pos by (metis (no_types, lifting)) 
-  thus ?thesis
-    using assms(2) by auto 
+  then have "\<And> bl.  bl \<in> set_mset (remove1_mset b1 \<B>) \<Longrightarrow> int (b1 |\<inter>| bl) = l"
+    by auto 
+  thus ?thesis using assms(2) l_def of_nat_eq_iff by blast 
 qed
 
 subsubsection \<open>Symmetric BIBD is Simple\<close>
@@ -869,9 +905,7 @@ proof -
     using card_Diff_subset_Int valid_block finite_blocks
     by (simp add: card_Diff_subset_Int)  
   then have "card b = card bl2 - bl2 |\<inter>| bl" 
-    using intersection_number_def finite_blocks card_inter_lt_single
-    by (metis assms derived_fin_incidence_system.finite_sets finite_Diff2 of_nat_diff 
-        residual_fin_incidence_sys.finite_blocks sub)
+    using finite_blocks card_inter_lt_single by (simp add: intersection_number_def)
   thus ?thesis using sym_block_intersections_index uniform
     by (metis valid_block in_diffD intersect_num_commute mem)
 qed

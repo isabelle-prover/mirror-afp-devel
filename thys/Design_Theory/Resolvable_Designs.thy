@@ -110,7 +110,7 @@ proof -
     by presburger 
   have "(\<Sum>bl \<in># S . card bl) = (\<Sum>bl \<in># S . \<k>)" using resolution_class_blocks_constant_size assms 
     by auto
-  thus ?thesis using eqv by (metis mult.commute sum_mset_constant) 
+  thus ?thesis using eqv by auto
 qed
 
 lemma resolution_class_size2: 
@@ -161,43 +161,59 @@ of an alternate statement of the thm, which does not require a linear algebraic 
 taken directly from Stinson \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
 theorem bose_inequality_alternate: "\<b> \<ge> \<v> + \<r> - 1 \<longleftrightarrow> \<r> \<ge> \<k> + \<Lambda>"
 proof - 
-  have kdvd: "\<k> dvd (\<v> * (\<r> - \<k>))" 
-    using necessary_condition_two by (simp add: right_diff_distrib') 
-  have v_eq: "\<v> = (\<r> * (\<k> - 1) + \<Lambda> ) div \<Lambda>" 
-    using necessary_condition_one index_not_zero by auto
-  have ldvd: " \<And> x. \<Lambda> dvd (x * (\<r> * (\<k> - 1) + \<Lambda>))" 
-    using necessary_condition_one by auto
-  have "(\<b> \<ge> \<v> + \<r> - 1) \<longleftrightarrow> ((\<v> * \<r>) div \<k> \<ge> \<v> + \<r> - 1)"
-    using necessary_condition_two k_non_zero by auto
-  also have  "... \<longleftrightarrow> (((\<v> * \<r>) - (\<v> * \<k>)) div \<k> \<ge> \<r> - 1)"
-    using  k_non_zero div_mult_self3 k_non_zero necessary_condition_two by auto
-  also have f2: " ... \<longleftrightarrow> ((\<v> * ( \<r> - \<k>)) \<ge> \<k> * ( \<r> - 1))" 
-    using k_non_zero kdvd by (auto simp add: int_distrib(3) mult_of_nat_commute) 
-  also have "... \<longleftrightarrow> ((((\<r> * (\<k> - 1) + \<Lambda> ) div \<Lambda>) * (\<r> - \<k>)) \<ge> \<k> * (\<r> - 1))"
+  define k b v l r where intdefs: "k \<equiv> (int \<k>)" "b \<equiv> int \<b>" "v = int \<v>" "l \<equiv> int \<Lambda>" "r \<equiv> int \<r>"
+  have kdvd: "k dvd (v * (r - k))"
+    using intdefs
+    by (simp add: resolvable_necessary_cond_v)
+  have necess1_alt: "l * v - l = r * (k - 1)" using necessary_condition_one intdefs 
+    by (smt (verit) diff_diff_cancel int_ops(2) int_ops(6) k_non_zero nat_mult_1_right of_nat_0_less_iff 
+        of_nat_mult right_diff_distrib' v_non_zero)
+  then have v_eq: "v = (r * (k - 1) + l) div l" 
+    using necessary_condition_one index_not_zero intdefs
+    by (metis diff_add_cancel nonzero_mult_div_cancel_left not_one_le_zero of_nat_mult 
+        unique_euclidean_semiring_with_nat_class.of_nat_div) 
+  have ldvd: " \<And> x. l dvd (x * (r * (k - 1) + l))" 
+    by (metis necess1_alt diff_add_cancel dvd_mult dvd_triv_left) 
+  have "(b \<ge> v + r - 1) \<longleftrightarrow> ((\<v> * r) div k \<ge> v + r - 1)"
+    using necessary_condition_two k_non_zero intdefs
+    by (metis (no_types, lifting) nonzero_mult_div_cancel_right not_one_le_zero of_nat_eq_0_iff of_nat_mult)
+  also have  "... \<longleftrightarrow> (((v * r) - (v * k)) div k \<ge> r - 1)"
+    using  k_non_zero div_mult_self3 k_non_zero necessary_condition_two intdefs
+    by (smt (verit, ccfv_SIG) Euclidean_Division.div_eq_0_iff b_non_zero bibd_block_number mult_is_0 of_nat_eq_0_iff)
+  also have f2: " ... \<longleftrightarrow> ((v * ( r - k)) div k \<ge> ( r - 1))"
+    using int_distrib(3) by (simp add: mult.commute)
+  also have f2: " ... \<longleftrightarrow> ((v * ( r - k)) \<ge> k * ( r - 1))" 
+    using k_non_zero kdvd intdefs by auto
+  also have "... \<longleftrightarrow> ((((r * (k - 1) + l ) div l) * (r - k)) \<ge> k * (r - 1))"
     using v_eq by presburger 
-  also have "... \<longleftrightarrow> ( (\<r> - \<k>) * ((\<r> * (\<k> - 1) + \<Lambda> ) div \<Lambda>) \<ge> (\<k> * (\<r> - 1)))" 
+  also have "... \<longleftrightarrow> ( (r - k) * ((r * (k - 1) + l ) div l) \<ge> (k * (r - 1)))" 
     by (simp add: mult.commute)
-  also have " ... \<longleftrightarrow> ( ((\<r> - \<k>) * (\<r> * (\<k> - 1) + \<Lambda> )) div \<Lambda> \<ge> (\<k> * (\<r> - 1)))"
-    by (metis div_mult_swap dvd_add_triv_right_iff dvd_triv_left necessary_condition_one) 
-  also have " ... \<longleftrightarrow> (((\<r> - \<k>) * (\<r> * (\<k> - 1) + \<Lambda> ))  \<ge>  \<Lambda> * (\<k> * (\<r> - 1)))" 
-    using ldvd by (smt dvd_mult_div_cancel index_not_zero mult_strict_left_mono) 
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * (\<r> * (\<k> - 1))) + ((\<r> - \<k>) * \<Lambda> )  \<ge>  \<Lambda> * (\<k> * (\<r> - 1)))" 
+  also have " ... \<longleftrightarrow> ( ((r - k) * (r * (k - 1) + l )) div l \<ge> (k * (r - 1)))"
+    using div_mult_swap necessary_condition_one intdefs
+    by (metis diff_add_cancel dvd_triv_left necess1_alt) 
+  also have " ... \<longleftrightarrow> (((r - k) * (r * (k - 1) + l ))  \<ge>  l * (k * (r - 1)))" 
+    using ldvd[of "(r - k)"] dvd_mult_div_cancel index_not_zero mult_strict_left_mono intdefs
+    by (smt (verit) b_non_zero bibd_block_number bot_nat_0.extremum_strict div_0 less_eq_nat.simps(1) 
+mult_eq_0_iff mult_left_le_imp_le mult_left_mono of_nat_0 of_nat_le_0_iff of_nat_le_iff of_nat_less_iff)
+  also have 1: "... \<longleftrightarrow> (((r - k) * (r * (k - 1))) + ((r - k) * l )  \<ge>  l * (k * (r - 1)))" 
     by (simp add: distrib_left) 
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> \<Lambda> * \<k> * (\<r> - 1) - ((\<r> - \<k>) * \<Lambda> ))" 
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> l * k * (r - 1) - ((r - k) * l ))" 
     using mult.assoc by linarith 
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> (\<Lambda> * \<k> * \<r>) - (\<Lambda> * \<k>) - ((\<r> * \<Lambda>) -(\<k> * \<Lambda> )))" 
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> (l * k * r) - (l * k) - ((r * l) -(k * l )))" 
     using distrib_right by (simp add: distrib_left right_diff_distrib' left_diff_distrib') 
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> (\<Lambda> * \<k> * \<r>)  - ( \<Lambda> * \<r>))" 
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> (l * k * r)  - ( l * r))" 
     by (simp add: mult.commute) 
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> (\<Lambda>  * (\<k> * \<r>))  - ( \<Lambda> * \<r>))" 
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> (l  * (k * r))  - ( l * r))" 
     by linarith  
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> (\<Lambda>  * (\<r> * \<k>))  - ( \<Lambda> * \<r>))" 
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> (l  * (r * k))  - ( l * r))" 
     by (simp add: mult.commute)
-  also have "... \<longleftrightarrow> (((\<r> - \<k>) * \<r> * (\<k> - 1)) \<ge> \<Lambda> * \<r> * ( \<k> - 1))"
+  also have "... \<longleftrightarrow> (((r - k) * r * (k - 1)) \<ge> l * r * (k - 1))"
     by (simp add:  mult.assoc int_distrib(4)) 
-  finally have "(\<b> \<ge> \<v> + \<r> - 1) \<longleftrightarrow> (\<r> \<ge> \<k> + \<Lambda>)"
-    using index_lt_replication mult_right_le_imp_le r_gzero
-    by (smt mult_cancel_right k_non_zero) 
+  finally have "(b \<ge> v + r - 1) \<longleftrightarrow> (r \<ge> k + l)"
+    using index_lt_replication mult_right_le_imp_le r_gzero mult_cancel_right k_non_zero intdefs
+    by (smt (z3) of_nat_0_less_iff of_nat_1 of_nat_le_iff of_nat_less_iff)
+  then have "\<b> \<ge> \<v> + \<r> - 1 \<longleftrightarrow> \<r> \<ge> \<k> + \<Lambda>"
+    using k_non_zero le_add_diff_inverse of_nat_1 of_nat_le_iff intdefs by linarith 
   thus ?thesis by simp
 qed
 end
