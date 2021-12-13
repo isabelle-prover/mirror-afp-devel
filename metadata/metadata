@@ -11474,3 +11474,20 @@ abstract =
   states that the signed measure under consideration admits a unique
   decomposition into a difference of two positive measures, at least one
   of which is finite.
+
+[Simplicial_complexes_and_boolean_functions]
+title = Simplicial Complexes and Boolean functions
+author = Jesús Aransay <https://www.unirioja.es/cu/jearansa>, Alejandro del Campo <mailto:alejandro.del-campo@alum.unirioja.es>, Julius Michaelis <http://liftm.de/>
+topic = Mathematics/Topology
+date = 2021-11-29
+notify = jesus-maria.aransay@unirioja.es
+abstract =
+  In this work we formalise the isomorphism between simplicial complexes
+  of dimension $n$ and monotone Boolean functions in $n$ variables,
+  mainly following the definitions and results as introduced by N. A.
+  Scoville. We also take advantage of the AFP
+  representation of <a href="https://www.isa-afp.org/entries/ROBDD.html">ROBDD</a>
+  (Reduced Ordered Binary Decision Diagrams) to compute the ROBDD representation of a
+  given simplicial complex (by means of the isomorphism to Boolean
+  functions). Some examples of simplicial complexes and associated
+  Boolean functions are also presented.
