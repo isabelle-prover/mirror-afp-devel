@@ -239,9 +239,9 @@ definition bool_fun_threshold_2_3 :: "bool vec => bool"
 lemma set_list_four: shows "{0..<4} = set [0,1,2,3::nat]" by auto
 
 lemma comp_fun_commute_lambda:
-  "comp_fun_commute ((+)
+  "comp_fun_commute_on UNIV ((+)
   \<circ> (\<lambda>i. if vec 4 f $ i then 1 else (0::nat)))"
-  unfolding comp_fun_commute_def by auto
+  unfolding comp_fun_commute_on_def by auto
 
 lemma "bool_fun_threshold_2_3
           (vec 4 (\<lambda>i. if i = 0 \<or> i = 1 then True else False)) = True"
@@ -252,7 +252,7 @@ lemma "bool_fun_threshold_2_3
   using index_vec [of _ 4]
   apply auto
   unfolding set_list_four
-  unfolding comp_fun_commute.fold_set_fold_remdups [OF comp_fun_commute_lambda]
+  unfolding comp_fun_commute_on.fold_set_fold_remdups [OF comp_fun_commute_lambda, simplified]
   by simp
 
 lemma
@@ -271,7 +271,7 @@ lemma "bool_fun_threshold_2_3 (vec 4 (\<lambda>i. if i = 3 then True else False)
   using index_vec [of _ 4]
   apply auto
   unfolding set_list_four
-  unfolding comp_fun_commute.fold_set_fold_remdups [OF comp_fun_commute_lambda]
+  unfolding comp_fun_commute_on.fold_set_fold_remdups [OF comp_fun_commute_lambda, simplified]
   by simp
 
 lemma "bool_fun_threshold_2_3 (vec 4 (\<lambda>i. if i = 0 then False else True))"
@@ -282,7 +282,7 @@ lemma "bool_fun_threshold_2_3 (vec 4 (\<lambda>i. if i = 0 then False else True)
   using index_vec [of _ 4]
   apply auto
   unfolding set_list_four
-  unfolding comp_fun_commute.fold_set_fold_remdups [OF comp_fun_commute_lambda]
+  unfolding comp_fun_commute_on.fold_set_fold_remdups [OF comp_fun_commute_lambda, simplified]
   by simp
 
 section\<open>The simplicial complex induced by the threshold function\<close>
@@ -312,7 +312,7 @@ proof (unfold simplicial_complex_induced_by_monotone_boolean_function_def, rule,
     using index_vec [of _ 4]
     apply auto
     unfolding set_list_four
-    unfolding comp_fun_commute.fold_set_fold_remdups [OF comp_fun_commute_lambda]
+    unfolding comp_fun_commute_on.fold_set_fold_remdups [OF comp_fun_commute_lambda, simplified]
     by simp
   show "ceros_of_boolean_input (vec 4 (\<lambda>i. if i \<in> ?A then False else True)) = ?A"
     unfolding ceros_of_boolean_input_def using x by auto
@@ -334,7 +334,7 @@ proof (unfold simplicial_complex_induced_by_monotone_boolean_function_def, rule,
     using index_vec [of _ 4]
     apply auto
     unfolding set_list_four
-    unfolding comp_fun_commute.fold_set_fold_remdups [OF comp_fun_commute_lambda]
+    unfolding comp_fun_commute_on.fold_set_fold_remdups [OF comp_fun_commute_lambda, simplified]
     by simp
   show "ceros_of_boolean_input (vec 4 (\<lambda>i. if i \<in> ?A then False else True)) = ?A"
     unfolding ceros_of_boolean_input_def using x y by auto
