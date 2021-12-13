@@ -55,6 +55,21 @@ and eliminates the manually defined timing functions from the trusted
 base of the proof.</description>
     </item>
     <item>
+       <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
+              <link>https://www.isa-afp.org/entries/Foundation_of_geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Foundation_of_geometry.html</guid>
+       <dc:creator> Fumiya Iwama       </dc:creator>
+       <pubDate>22 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+&#34;Foundations of Geometry&#34; is a mathematical book written by
+Hilbert in 1899. This entry is a complete formalization of
+&#34;Incidence&#34; (excluding cubic axioms), &#34;Order&#34; and
+&#34;Congruence&#34; (excluding point sequences) of the axioms
+constructed in this book. In addition, the theorem of the problem
+about the part that is treated implicitly and is not clearly stated in
+it is being carried out in parallel.</description>
+    </item>
+    <item>
        <title>The Hahn and Jordan Decomposition Theorems</title>
               <link>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
        <guid>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</guid>
@@ -563,31 +578,6 @@ account for the repeated opening and closing of access windows. To
 further strengthen the confidentiality guarantees, we also prove
 &#34;traceback&#34; properties about the accessibility decisions
 affecting the information managed by the system.</description>
-    </item>
-    <item>
-       <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
-              <link>https://www.isa-afp.org/entries/CoSMeDis.html</link>
-       <guid>https://www.isa-afp.org/entries/CoSMeDis.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the confidentiality verification of the
-(functional kernel of) the CoSMeDis  distributed social media platform
-presented in [&lt;a href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;1&lt;/a&gt;].
-CoSMeDis is a multi-node extension the CoSMed prototype social media
-platform [&lt;a href=&#34;https://doi.org/10.1007/978-3-319-43144-4_6&#34;&gt;2&lt;/a&gt;,
-&lt;a href=&#34;https://doi.org/10.1007/s10817-017-9443-3&#34;&gt;3&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/CoSMed.html&#34;&gt;4&lt;/a&gt;].
-The confidentiality properties are formalized as instances of BD
-Security [&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;5&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;6&lt;/a&gt;].
-The lifting of confidentiality properties from single nodes to the
-entire CoSMeDis network is performed using compositionality and
-transport theorems for BD Security, which are described in [&lt;a
-href=&#34;https://doi.org/10.1109/SP.2017.24&#34;&gt;1&lt;/a&gt;]
-and formalized in a separate &lt;a
-href=&#34;https://www.isa-afp.org/entries/BD_Security_Compositional.html&#34;&gt;AFP
-entry&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

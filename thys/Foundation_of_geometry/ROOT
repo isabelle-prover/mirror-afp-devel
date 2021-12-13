@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Foundation_of_geometry" (AFP) = HOL +
+  options [timeout = 600]
+  theories
+    Incidence
+    Order
+    Congruence
+  document_files
+    "root.bib"
+    "root.tex"
