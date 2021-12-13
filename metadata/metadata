@@ -11332,3 +11332,18 @@ abstract =
   given simplicial complex (by means of the isomorphism to Boolean
   functions). Some examples of simplicial complexes and associated
   Boolean functions are also presented.
+
+[Foundation_of_geometry]
+title = Foundation of geometry in planes, and some complements: Excluding the parallel axioms
+author = Fumiya Iwama <>
+topic = Mathematics/Geometry
+date = 2021-11-22
+notify = d1623001@s.konan-u.ac.jp
+abstract =
+  "Foundations of Geometry" is a mathematical book written by
+  Hilbert in 1899. This entry is a complete formalization of
+  "Incidence" (excluding cubic axioms), "Order" and
+  "Congruence" (excluding point sequences) of the axioms
+  constructed in this book. In addition, the theorem of the problem
+  about the part that is treated implicitly and is not clearly stated in
+  it is being carried out in parallel.

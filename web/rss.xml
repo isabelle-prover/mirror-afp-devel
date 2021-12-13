@@ -55,6 +55,21 @@ and eliminates the manually defined timing functions from the trusted
 base of the proof.</description>
     </item>
     <item>
+       <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
+              <link>https://www.isa-afp.org/entries/Foundation_of_geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Foundation_of_geometry.html</guid>
+       <dc:creator> Fumiya Iwama       </dc:creator>
+       <pubDate>22 Nov 2021 00:00:00 +0000</pubDate>
+       <description>
+&#34;Foundations of Geometry&#34; is a mathematical book written by
+Hilbert in 1899. This entry is a complete formalization of
+&#34;Incidence&#34; (excluding cubic axioms), &#34;Order&#34; and
+&#34;Congruence&#34; (excluding point sequences) of the axioms
+constructed in this book. In addition, the theorem of the problem
+about the part that is treated implicitly and is not clearly stated in
+it is being carried out in parallel.</description>
+    </item>
+    <item>
        <title>The Hahn and Jordan Decomposition Theorems</title>
               <link>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
        <guid>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</guid>
@@ -567,21 +582,6 @@ existence of a BIBD, Wilson&#39;s construction on GDDs, and
 Bose&#39;s inequality on resolvable designs. Parts of this
 formalisation are explored in the paper &#34;A Modular First
 Formalisation of Combinatorial Design Theory&#34;, presented at CICM 2021.</description>
-    </item>
-    <item>
-       <title>Relational Forests</title>
-              <link>https://www.isa-afp.org/entries/Relational_Forests.html</link>
-       <guid>https://www.isa-afp.org/entries/Relational_Forests.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>03 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-We study second-order formalisations of graph properties expressed as
-first-order formulas in relation algebras extended with a Kleene star.
-The formulas quantify over relations while still avoiding
-quantification over elements of the base set. We formalise the
-property of undirected graphs being acyclic this way. This involves a
-study of various kinds of orientation of graphs. We also verify basic
-algorithms to constructively prove several second-order properties.</description>
     </item>
   </channel>
 </rss>

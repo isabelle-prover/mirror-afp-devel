@@ -1,0 +1,32 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{\bf Foundation of geometry in planes, and some complements : Excluding the parallel axioms}
+\author{Fumiya Iwama}
+\maketitle
+
+\begin{abstract}
+``Foundations of Geometry''\cite{1} is a mathematical book written by Hilbert in 1899.
+This entry is a complete formalization of ``Incidence" (excluding cubic axioms), ``Order" and ``Congruence" (excluding point sequences) of the axioms constructed in this book.
+In addition, the theorem of the problem about the part that is treated implicitly and is not clearly stated in it is being carried out in parallel.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
