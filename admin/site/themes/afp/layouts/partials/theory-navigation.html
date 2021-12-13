@@ -15,11 +15,7 @@
       <li><a href="{{- .Site.BaseURL -}}entries/{{- $entry_name | urlize -}}">Return to entry</a></li>
     </ul>
     <hr>
-    <ul>
-      {{- range .Params.theories }}
-      <li><a href="{{- $path -}}/{{ $entry_name }}/{{ . }}.html">{{ . }}</a></li>
-      {{- end }}
-    </ul>
+    <ul id="theory-navbar" class="list-group"></ul>
   </div>
   <ul>
     <li><a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
