@@ -1,0 +1,84 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+%\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\usepackage[english]{babel}
+% for \frqq (whatever that actually is)
+
+\begin{document}
+
+\title{Simplicial complexes and Boolean functions\thanks{This research was partially funded by 
+    Ministerio de Ciencia e Innovación (Spain),
+    grant number PID2020-116641GB-I00.}}
+\author{Jesús María Aransay Azofra, Alejandro del Campo López, Julius Michaelis}
+\maketitle
+
+\begin{abstract}
+  In this work we formalise the isomorphism between 
+  simplicial complexes of dimension $n$ and 
+  monotone Boolean functions in $n$ variables, 
+  mainly following the definitions and results
+  as introduced by N. A. Scoville~\cite[Ch. 6]{SC19}.
+  We also take advantage of the AFP representation
+  of ROBDD (Reduced Ordered Binary Decision 
+    Diagrams)~\cite{ROBDD-AFP}
+  to compute the ROBDD representation 
+  of a given simplicial complex (by means of the isomorphism
+  to Boolean functions). Some examples of simplicial complexes 
+  and associated Boolean functions are also presented.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
