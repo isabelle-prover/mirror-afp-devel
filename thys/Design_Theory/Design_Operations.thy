@@ -314,7 +314,7 @@ lemma del_point_order:
 proof -
   have vg0: "card \<V> > 0" using assms finite_sets card_gt_0_iff by auto 
   then have "card (del_point p) = card \<V> - 1" using assms del_point_def
-    by (metis card_Diff_singleton finite_sets)
+    by (metis card_Diff_singleton)
   thus ?thesis
     using vg0 by linarith 
 qed
@@ -522,7 +522,7 @@ lemma min_one_proper_design: "proper_design \<V> \<B> \<or> proper_design \<V>' 
 
 sublocale combine_proper_des: proper_design "\<V>\<^sup>+" "\<B>\<^sup>+"
   apply (unfold_locales)
-  by (metis blocks_nempty of_nat_0_eq_iff size_eq_0_iff_empty subset_mset.zero_eq_add_iff_both_eq_0)
+  by (metis blocks_nempty size_eq_0_iff_empty subset_mset.zero_eq_add_iff_both_eq_0)
 end
 
 end

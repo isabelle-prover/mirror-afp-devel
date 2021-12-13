@@ -29,9 +29,9 @@ definition incident :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" where
 "incident p b \<equiv> (p, b) \<in> \<I>"
 
 text \<open>Defines common notation used to indicate number of points ($v$) and number of blocks ($b$)\<close>
-abbreviation "\<v> \<equiv> int (card \<V>)"
+abbreviation "\<v> \<equiv> card \<V>"
 
-abbreviation "\<b> \<equiv> int (size \<B>)"
+abbreviation "\<b> \<equiv> size \<B>"
 
 text \<open>Basic incidence lemmas\<close>
 
@@ -158,7 +158,7 @@ subsubsection \<open>Replication Number\<close>
 
 text \<open>The replication number for a point is the number of blocks that point is incident with\<close>
 
-definition point_replication_number :: "'a set multiset \<Rightarrow> 'a \<Rightarrow> int" (infix "rep" 75) where
+definition point_replication_number :: "'a set multiset \<Rightarrow> 'a \<Rightarrow> nat" (infix "rep" 75) where
 "B rep x \<equiv> size {#b \<in># B . x \<in> b#}"
 
 lemma max_point_rep: "B rep x \<le> size B"
@@ -169,7 +169,7 @@ lemma rep_number_g0_exists:
   obtains b where "b \<in># B" and "x \<in> b"
 proof -
   have "size {#b \<in># B . x \<in> b#} > 0" using assms point_replication_number_def
-    by (metis of_nat_0_less_iff)
+    by metis
   thus ?thesis
     by (metis filter_mset_empty_conv nonempty_has_size that) 
 qed
@@ -356,7 +356,7 @@ subsubsection \<open>Intersection Number\<close>
 
 text \<open>The intersection number of two blocks is the size of the intersection of those blocks. i.e. 
 the number of points which occur in both blocks\<close>
-definition intersection_number :: "'a set \<Rightarrow> 'a set \<Rightarrow> int" (infix "|\<inter>|" 70) where
+definition intersection_number :: "'a set \<Rightarrow> 'a set \<Rightarrow> nat" (infix "|\<inter>|" 70) where
 "b1 |\<inter>| b2 \<equiv> card (b1 \<inter> b2)"
 
 lemma intersection_num_non_neg: "b1 |\<inter>| b2 \<ge> 0"
@@ -370,7 +370,7 @@ lemma intersection_number_empty_iff:
 lemma intersect_num_commute: "b1 |\<inter>| b2 = b2 |\<inter>| b1"
   by (simp add: inf_commute intersection_number_def) 
 
-definition n_intersect_number :: "'a set \<Rightarrow> nat\<Rightarrow> 'a set \<Rightarrow> int" where
+definition n_intersect_number :: "'a set \<Rightarrow> nat\<Rightarrow> 'a set \<Rightarrow> nat" where
 "n_intersect_number b1 n b2 \<equiv> card { x \<in> Pow (b1 \<inter> b2) . card x = n}"
 
 notation n_intersect_number ("(_ |\<inter>|\<^sub>_ _)" [52, 51, 52] 50)
@@ -418,7 +418,7 @@ context incidence_system
 begin
 
 text \<open>The set of replication numbers for all points of design\<close>
-definition replication_numbers :: "int set" where
+definition replication_numbers :: "nat set" where
 "replication_numbers \<equiv> {\<B> rep x | x . x \<in> \<V>}"
 
 lemma replication_numbers_non_empty: 
@@ -437,8 +437,8 @@ lemma (in finite_incidence_system) replication_numbers_finite: "finite replicati
 
 text \<open>The set of all block sizes in a system\<close>
 
-definition sys_block_sizes :: "int set" where
-"sys_block_sizes \<equiv> { (int (card bl)) | bl. bl \<in># \<B>}"
+definition sys_block_sizes :: "nat set" where
+"sys_block_sizes \<equiv> { card bl | bl. bl \<in># \<B>}"
 
 lemma block_sizes_non_empty_set: 
   assumes "\<B> \<noteq> {#}"
@@ -457,12 +457,12 @@ lemma block_sizes_non_empty:
 lemma sys_block_sizes_in: "bl \<in># \<B> \<Longrightarrow> card bl \<in> sys_block_sizes"
   unfolding sys_block_sizes_def by auto 
 
-lemma sys_block_sizes_obtain_bl: "x \<in> sys_block_sizes  \<Longrightarrow> (\<exists> bl \<in># \<B>. int (card bl) = x)"
+lemma sys_block_sizes_obtain_bl: "x \<in> sys_block_sizes  \<Longrightarrow> (\<exists> bl \<in># \<B>. card bl = x)"
   by (auto simp add: sys_block_sizes_def)
 
 text \<open>The set of all possible intersection numbers in a system.\<close>
 
-definition intersection_numbers :: "int set" where
+definition intersection_numbers :: "nat set" where
 "intersection_numbers \<equiv> { b1 |\<inter>| b2 | b1 b2 . b1 \<in># \<B> \<and> b2 \<in># (\<B> - {#b1#})}"
 
 lemma obtain_blocks_intersect_num: "n \<in> intersection_numbers \<Longrightarrow> 
@@ -473,13 +473,13 @@ lemma intersect_num_in_set: "b1 \<in># \<B> \<Longrightarrow> b2 \<in># (\<B> - 
   by (auto simp add: intersection_numbers_def)
 
 text \<open>The set of all possible point indices\<close>
-definition point_indices :: "int \<Rightarrow> int set" where
-"point_indices t \<equiv> {\<B> index ps | ps. int (card ps) = t \<and> ps \<subseteq> \<V>}"
+definition point_indices :: "nat \<Rightarrow> nat set" where
+"point_indices t \<equiv> {\<B> index ps | ps. card ps = t \<and> ps \<subseteq> \<V>}"
 
 lemma point_indices_elem_in: "ps \<subseteq> \<V> \<Longrightarrow> card ps = t \<Longrightarrow> \<B> index ps \<in> point_indices t"
   by (auto simp add: point_indices_def)
 
-lemma point_indices_alt_def: "point_indices t = { \<B> index ps | ps. int (card ps) = t \<and> ps \<subseteq> \<V>}"
+lemma point_indices_alt_def: "point_indices t = { \<B> index ps | ps. card ps = t \<and> ps \<subseteq> \<V>}"
   by (simp add: point_indices_def)
 
 end
@@ -659,7 +659,7 @@ next
   then have "multiple_blocks (Suc n) rep x = \<B> rep x * n + (\<B> rep x)"
     using Suc.IH Suc.prems by (simp add: union_commute point_replication_number_def)
   then show ?case
-    by (simp add: int_distrib(2)) 
+    by (simp)
 qed
 
 lemma multiple_point_index: "(multiple_blocks n) index ps = (\<B> index ps) * n"

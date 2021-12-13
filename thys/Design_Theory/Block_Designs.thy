@@ -16,8 +16,8 @@ subsubsection \<open>K Block Designs\<close>
 text \<open>An important generalisation of a typical block design is the $\mathcal{K}$ block design, 
 where all blocks must have a size $x$ where $x \in \mathcal{K}$\<close>
 locale K_block_design = proper_design +
-  fixes sizes :: "int set" ("\<K>")
-  assumes block_sizes: "bl \<in># \<B> \<Longrightarrow> (int (card bl)) \<in> \<K>"
+  fixes sizes :: "nat set" ("\<K>")
+  assumes block_sizes: "bl \<in># \<B> \<Longrightarrow> card bl \<in> \<K>"
   assumes positive_ints: "x \<in> \<K> \<Longrightarrow> x > 0"
 begin
 
@@ -29,7 +29,7 @@ end
 subsubsection\<open>Uniform Block Design\<close>
 text \<open>The typical uniform block design is defined below\<close>
 locale block_design = proper_design + 
-  fixes u_block_size :: int ("\<k>")
+  fixes u_block_size :: nat ("\<k>")
   assumes uniform [simp]: "bl \<in># \<B> \<Longrightarrow> card bl = \<k>"
 begin
 
@@ -37,8 +37,8 @@ lemma k_non_zero: "\<k> \<ge> 1"
 proof -
   obtain bl where bl_in: "bl \<in># \<B>"
     using design_blocks_nempty by auto 
-  then have "int (card bl) \<ge> 1" using block_size_gt_0
-    by (metis less_not_refl less_one not_le_imp_less of_nat_1 of_nat_less_iff) 
+  then have "card bl \<ge> 1" using block_size_gt_0
+    by (metis less_not_refl less_one not_le_imp_less) 
   thus ?thesis by (simp add: bl_in)
 qed
 
@@ -64,7 +64,8 @@ lemma sys_block_sizes_uniform_single: "is_singleton (sys_block_sizes)"
   by simp
 
 lemma uniform_size_incomp: "\<k> \<le> \<v> - 1 \<Longrightarrow> bl \<in># \<B> \<Longrightarrow> incomplete_block bl"
-  using uniform k_non_zero of_nat_less_iff zle_diff1_eq by metis
+  using uniform k_non_zero 
+  by (metis block_size_lt_v diff_diff_cancel diff_is_0_eq' less_numeral_extra(1) nat_less_le)
 
 lemma uniform_complement_block_size:
   assumes "bl \<in># \<B>\<^sup>C"
@@ -100,7 +101,7 @@ begin
 
 lemma block_design_multiple: "n > 0 \<Longrightarrow> block_design \<V> (multiple_blocks n) \<k>"
   using elem_in_repeat_in_original multiple_proper_design proper_design.block_designI 
-  by (metis block_set_nempty_imp_block_ex design_blocks_nempty int_int_eq uniform_alt_def_all) 
+  by (metis uniform_alt_def_all)
 
 end
 text \<open>A uniform block design is clearly a type of $K$\_block\_design with a singleton $K$ set\<close>
@@ -118,7 +119,7 @@ lemma incomplete_imp_incomp_block: "bl \<in># \<B> \<Longrightarrow> incomplete_
   using incomplete uniform uniform_size_incomp by fastforce  
 
 lemma incomplete_imp_proper_subset: "bl \<in># \<B> \<Longrightarrow> bl \<subset> \<V>"
-  by (simp add: incomplete_block_proper_subset incomplete_imp_incomp_block wellformed)
+  using incomplete_block_proper_subset incomplete_imp_incomp_block by auto
 end
 
 lemma (in block_design) incomplete_designI[intro]: "\<k> < \<v> \<Longrightarrow> incomplete_design \<V> \<B> \<k>"
@@ -144,11 +145,14 @@ text \<open>t-wise balance is a design with the property that all point subsets 
 $\lambda_t$ blocks\<close>
 
 locale t_wise_balance = proper_design + 
-  fixes grouping :: int ("\<t>") and index :: int ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat ("\<t>") and index :: nat ("\<Lambda>\<^sub>t")
   assumes t_non_zero: "\<t> \<ge> 1"
   assumes t_lt_order: "\<t> \<le> \<v>"
   assumes balanced [simp]: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps = \<Lambda>\<^sub>t"
 begin
+
+lemma t_non_zero_suc: "\<t> \<ge> Suc 0"
+  using t_non_zero by auto
 
 lemma balanced_alt_def_all: "\<forall> ps \<subseteq> \<V> . card ps = \<t> \<longrightarrow> \<B> index ps = \<Lambda>\<^sub>t"
   using balanced by auto
@@ -164,8 +168,7 @@ begin
 
 lemma obtain_t_subset_points:
   obtains T where "T \<subseteq> \<V>" "card T = \<t>" "finite T"
-  using obtain_subset_with_card_int_n design_points_nempty t_lt_order t_non_zero finite_sets
-  by (metis int_one_le_iff_zero_less less_eq_int_code(1) linorder_not_le verit_la_generic)
+  using obtain_subset_with_card_n design_points_nempty t_lt_order t_non_zero finite_sets by auto
 
 lemma multiple_t_wise_balance_index [simp]:
   assumes "ps \<subseteq> \<V>"
@@ -184,19 +187,11 @@ qed
 
 lemma twise_set_pair_index: "ps \<subseteq> \<V> \<Longrightarrow> ps2 \<subseteq> \<V> \<Longrightarrow> ps \<noteq> ps2 \<Longrightarrow> card ps = \<t> \<Longrightarrow> card ps2 = \<t> 
   \<Longrightarrow> \<B> index ps = \<B> index ps2"
-  using balanced by (metis of_nat_eq_iff) 
+  using balanced by simp 
 
 lemma t_wise_balance_alt: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps = l2 
   \<Longrightarrow> (\<And> ps . ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps = l2)"
   using twise_set_pair_index by blast
-
-lemma index_ge_zero: "\<Lambda>\<^sub>t \<ge> 0"
-proof -
-  obtain ps where "ps \<subseteq> \<V> \<and> card ps = \<t>" using t_non_zero t_lt_order obtain_subset_with_card_n
-    by (metis dual_order.trans of_nat_le_iff zero_le_imp_eq_int zero_le_one)
-  thus ?thesis
-    using balanced_alt_def_all of_nat_0_le_iff by blast
-qed
 
 lemma index_1_imp_mult_1 [simp]: 
   assumes "\<Lambda>\<^sub>t = 1"
@@ -210,12 +205,12 @@ proof (rule ccontr)
   then have m: "multiplicity bl \<ge> 2" using not by linarith
   obtain ps where ps: "ps \<subseteq> bl \<and> card ps = \<t>"
     using assms obtain_t_subset_points
-    by (metis obtain_subset_with_card_int_n of_nat_0_le_iff) 
+    by (metis obtain_subset_with_card_n) 
   then have "\<B> index ps \<ge> 2"
     using m points_index_count_min ps by blast
   then show False using balanced ps antisym_conv2 not_numeral_less_zero numeral_le_one_iff 
       points_index_ps_nin semiring_norm(69) zero_neq_numeral
-    by (metis assms(1) int_int_eq int_ops(2)) 
+    by (metis assms(1))
 qed
 
 end
@@ -269,8 +264,8 @@ are placed on the points index, instead of a strict equality\<close>
 text \<open>A t-covering design is a relaxed version of a tBD, where, for all point subsets of size t, 
 a lower bound is put on the points index\<close>
 locale t_covering_design = block_design +
-  fixes grouping :: int ("\<t>")
-  fixes min_index :: int ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat ("\<t>")
+  fixes min_index :: nat ("\<Lambda>\<^sub>t")
   assumes covering: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps \<ge> \<Lambda>\<^sub>t" 
   assumes block_size_t: "\<t> \<le> \<k>"
   assumes t_non_zero: "\<t> \<ge> 1"
@@ -288,8 +283,8 @@ lemma (in block_design) t_covering_designI [intro]: "t \<le> \<k> \<Longrightarr
 text \<open>A t-packing design is a relaxed version of a tBD, where, for all point subsets of size t, 
 an upper bound is put on the points index\<close>
 locale t_packing_design = block_design + 
-  fixes grouping :: int ("\<t>")
-  fixes min_index :: int ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat ("\<t>")
+  fixes min_index :: nat ("\<Lambda>\<^sub>t")
   assumes packing: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps \<le> \<Lambda>\<^sub>t"
   assumes block_size_t: "\<t> \<le> \<k>"
   assumes t_non_zero: "\<t> \<ge> 1"
@@ -313,7 +308,7 @@ proof -
     using block_design.axioms(1) t_covering_design.axioms(1) by blast
   show ?thesis 
   proof (unfold_locales)
-    show "1 \<le> t" using assms by (simp add: t_packing_design.t_non_zero)
+    show "1 \<le> t" using assms t_packing_design.t_non_zero by auto
     show "t \<le> des.\<v>" using block_design.block_size_lt_v t_packing_design.axioms(1) 
       by (metis assms(1) dual_order.trans t_packing_design.block_size_t)
     show "\<And>ps. ps \<subseteq> V \<Longrightarrow> card ps = t \<Longrightarrow> B index ps = \<Lambda>\<^sub>t" 
@@ -325,7 +320,7 @@ subsection \<open>Constant Replication Design\<close>
 text \<open>When the replication number for all points in a design is constant, it is the 
 design replication number.\<close>
 locale constant_rep_design = proper_design +
-  fixes design_rep_number :: int ("\<r>")
+  fixes design_rep_number :: nat ("\<r>")
   assumes rep_number [simp]: "x \<in> \<V> \<Longrightarrow>  \<B> rep x = \<r>" 
 
 begin
@@ -366,9 +361,7 @@ lemma rep_not_zero: "\<r> \<noteq> 0"
   using rep_number constant_rep_point_not_0 design_points_nempty by auto 
 
 lemma r_gzero: "\<r> > 0"
-  using point_replication_number_def rep_number constant_rep_design.rep_not_zero
-  by (metis constant_rep_design.intro constant_rep_design_axioms.intro leI of_nat_less_0_iff 
-      proper_design_axioms verit_la_disequality) 
+  using rep_not_zero by auto 
 
 lemma r_lt_eq_b: "\<r> \<le> \<b>"
   using rep_number max_point_rep
@@ -407,10 +400,10 @@ begin
 
 lemma point_indices_balanced: "point_indices \<t> = {\<Lambda>\<^sub>t}" 
 proof -
-  have "point_indices \<t> = {i . \<exists> ps . i = \<B> index ps \<and> int (card ps) = \<t> \<and> ps \<subseteq> \<V>}"
+  have "point_indices \<t> = {i . \<exists> ps . i = \<B> index ps \<and> card ps = \<t> \<and> ps \<subseteq> \<V>}"
     by (simp add: point_indices_def) 
   then have "point_indices  \<t> = {i . i = \<Lambda>\<^sub>t}" using balanced Collect_cong obtain_t_subset_points 
-     by smt 
+     by (smt (verit, best)) 
   thus ?thesis by auto
 qed
 
@@ -440,7 +433,7 @@ lemma t_design_pack_cov [intro]:
 proof -
   from assms interpret id: incomplete_design V B k
     using block_design.incomplete_designI t_packing_design.axioms(1)
-    by (metis of_nat_less_iff) 
+    by blast 
   from assms interpret balance: t_wise_balance V B t \<Lambda>\<^sub>t 
     using packing_covering_imp_balance by blast 
   show ?thesis using assms(3) 
@@ -496,7 +489,7 @@ lemma combine_t_wise_balance_index: "ps \<subseteq> \<V> \<Longrightarrow> card 
   using des1.balanced des2.balanced by (simp add: combine_points_index)
 
 lemma combine_t_wise_balance: "t_wise_balance \<V>\<^sup>+ \<B>\<^sup>+ \<t> (\<Lambda>\<^sub>t + \<Lambda>\<^sub>t')"
-proof (unfold_locales, simp add: des1.t_non_zero)
+proof (unfold_locales, simp add: des1.t_non_zero_suc)
   have "card \<V>\<^sup>+  \<ge> card \<V>" by simp 
   then show "\<t> \<le> card (\<V>\<^sup>+)" using des1.t_lt_order by linarith 
   show "\<And>ps. ps \<subseteq> \<V>\<^sup>+ \<Longrightarrow> card ps = \<t> \<Longrightarrow> (\<B>\<^sup>+ index ps) = \<Lambda>\<^sub>t + \<Lambda>\<^sub>t'" 

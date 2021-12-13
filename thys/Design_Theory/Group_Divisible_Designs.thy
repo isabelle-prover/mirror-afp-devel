@@ -538,9 +538,9 @@ proof -
   qed
   show ?thesis proof (unfold_locales)
     show "inc.\<b> \<noteq> 0" using b_positive by auto
-    show "(1 ::int) \<le> 2" by simp
+    show "(1 ::nat) \<le> 2" by simp
     show "2 \<le> inc.\<v>" by (simp add: gdd_min_v)
-    then show "\<And>ps. ps \<subseteq> \<V> \<Longrightarrow> int (card ps) = 2 \<Longrightarrow> int ((\<B> + mset_set \<G>) index ps) = 1" 
+    then show "\<And>ps. ps \<subseteq> \<V> \<Longrightarrow> card ps = 2 \<Longrightarrow> (\<B> + mset_set \<G>) index ps = 1" 
       using kgdd1_points_index_group_block by simp
   qed
 qed
@@ -613,7 +613,7 @@ proof -
   let ?B = "\<B> + mset_set { insert x g | g. g \<in> \<G>}"
   let ?V = "add_point x"
   have vdef: "?V = \<V> \<union> {x}" using add_point_def by simp
-  show ?thesis unfolding add_point_def using finite_sets b_positive 
+  show ?thesis unfolding add_point_def using finite_sets design_blocks_nempty 
   proof (unfold_locales, simp_all)
     have "\<And> G. G \<in> \<G> \<Longrightarrow> insert x G \<subseteq> ?V"
       by (simp add: point_in_group subsetI vdef)
@@ -632,7 +632,7 @@ proof -
     have "card \<V> \<ge> 2" using gdd_min_v by simp 
     then have "card (insert x \<V>) \<ge> 2"
       by (meson card_insert_le dual_order.trans finite_sets) 
-    then show "2 \<le> int (card (insert x \<V>))" by auto
+    then show "2 \<le> card (insert x \<V>)" by auto
   next
     show "\<And>ps. ps \<subseteq> insert x \<V> \<Longrightarrow>
           card ps = 2 \<Longrightarrow> (\<B> + mset_set {insert x g |g. g \<in> \<G>}) index ps = Suc 0" 
@@ -655,21 +655,21 @@ proof -
     have "\<And> bl . bl \<in># mset_set {insert x g |g. g \<in> \<G>} \<Longrightarrow> bl \<in> {insert x g | g . g \<in> \<G>}"
       by (simp add: groups_finite) 
     then have "\<And> bl . bl \<in># mset_set {insert x g |g. g \<in> \<G>} \<Longrightarrow> 
-      card bl \<in>  {int (card g + 1) |g. g \<in> \<G>}" 
+      card bl \<in>  {card g + 1 |g. g \<in> \<G>}" 
     proof -
       fix bl 
       assume "bl \<in># mset_set {insert x g |g. g \<in> \<G>}"
       then have "bl \<in> {insert x g | g . g \<in> \<G>}" by (simp add: groups_finite)
       then obtain g where gin: "g \<in> \<G>" and i: "bl = insert x g" by auto 
-      thus "card bl \<in>  {int (card g + 1) |g. g \<in> \<G>}"
+      thus "card bl \<in>  {(card g + 1) |g. g \<in> \<G>}"
         using gin group_elements_finite i xg by auto
     qed
     then show "\<And>bl. bl \<in># \<B> + mset_set {insert x g |g. g \<in> \<G>} \<Longrightarrow> 
-        int (card bl) \<in> \<K> \<union> {int (card g + 1) |g. g \<in> \<G>}"
-      using  UnI1 UnI2 block_sizes union_iff by (smt (z3) mem_Collect_eq)
-    show "\<And>x. x \<in> \<K> \<union> {int (card g + 1) |g. g \<in> \<G>} \<Longrightarrow> 0 < x" 
+        (card bl) \<in> \<K> \<union> {(card g + 1) |g. g \<in> \<G>}"
+      using UnI1 UnI2 block_sizes union_iff by (smt (z3) mem_Collect_eq)
+    show "\<And>x. x \<in> \<K> \<union> {card g + 1 |g. g \<in> \<G>} \<Longrightarrow> 0 < x" 
       using min_group_size positive_ints by auto
-    show "\<And>k.  k \<in> \<K> \<union> {int (card g + 1) |g. g \<in> \<G>} \<Longrightarrow> 2 \<le> k" 
+    show "\<And>k.  k \<in> \<K> \<union> {card g + 1 |g. g \<in> \<G>} \<Longrightarrow> 2 \<le> k" 
       using min_group_size positive_ints assms by fastforce
   qed
 qed
@@ -862,9 +862,9 @@ proof (cases "x \<in> \<V>")
     using delete_point_design assms by blast 
   show ?thesis using assms design_blocks_nempty del_point_def del_point_blocks_def
   proof (unfold_locales, simp_all)
-    show "2 < \<v> \<Longrightarrow> (\<And>bl. bl \<in># \<B> \<Longrightarrow> 2 \<le> card bl) \<Longrightarrow> 2 \<le> int (card (\<V> - {x}))"
+    show "2 < \<v> \<Longrightarrow> (\<And>bl. bl \<in># \<B> \<Longrightarrow> 2 \<le> card bl) \<Longrightarrow> 2 \<le> (card (\<V> - {x}))"
       using card_Diff_singleton_if diff_diff_cancel diff_le_mono2 finite_sets less_one
-      by (metis int_ops(3) less_nat_zero_code nat_le_linear verit_comp_simplify1(3) zle_int)
+      by (metis diff_is_0_eq neq0_conv t_lt_order zero_less_diff) 
     have "\<And> ps . ps  \<subseteq> \<V> - {x} \<Longrightarrow> ps \<subseteq> \<V>" by auto
     then show "\<And>ps. ps \<subseteq> \<V> - {x} \<Longrightarrow> card ps = 2  \<Longrightarrow> {#bl - {x}. bl \<in># \<B>#} index ps = \<Lambda>"
       using delete_point_index_eq del_point_def del_point_blocks_def by simp
@@ -885,11 +885,12 @@ lemma bibd_from_kGDD:
   assumes " x \<notin> \<V>"
   shows "bibd (add_point x) (\<B> + mset_set { insert x g | g. g \<in> \<G>}) (\<k>) 1"
 proof - 
-  have "({\<k>} \<union> {(card g) + 1 | g . g \<in> \<G>}) = {\<k>}"
-    using assms(2) by fastforce 
+  have "\<And> k . k\<in> {\<k>} \<Longrightarrow> k = \<k>" by blast 
+  then have kge: "\<And> k . k\<in> {\<k>} \<Longrightarrow> k \<ge> 2" using assms(1) by simp
+  have "\<And> g . g \<in> \<G> \<Longrightarrow> card g + 1 = \<k>" using assms k_non_zero by auto 
+  then have s: "({\<k>} \<union> {(card g) + 1 | g . g \<in> \<G>}) = {\<k>}" by auto
   then interpret pbd: PBD "(add_point x)" "\<B> + mset_set { insert x g | g. g \<in> \<G>}" "{\<k>}"
-    using PBD_by_adjoining_point assms sys_block_sizes_obtain_bl add_point_def
-    by (smt (verit, best) Collect_cong sys_block_sizes_uniform uniform_alt_def_all) 
+    using PBD_by_adjoining_point[of "x"] kge assms by (smt (z3) Collect_cong)
   show ?thesis using assms pbd.block_sizes block_size_lt_v finite_sets add_point_def
     by (unfold_locales) (simp_all)
 qed
@@ -900,7 +901,7 @@ context PBD
 begin
 
 lemma pbd_points_index1: "ps \<subseteq> \<V> \<Longrightarrow> card ps = 2 \<Longrightarrow> \<B> index ps = 1"
-  using balanced by (metis int_eq_iff_numeral of_nat_1_eq_iff) 
+  using balanced by simp 
 
 lemma pbd_index1_points_imply_unique_block: 
   assumes "b1 \<in># \<B>" and "b2 \<in># \<B>" and "b1 \<noteq> b2"
@@ -1053,7 +1054,7 @@ lemma card_singletons_eq: "card {{a} | a . a \<in> A} = card A"
 lemma KGDD_from_PBD: "K_GDD \<V> \<B> \<K> {{x} | x . x \<in> \<V>}"
 proof (unfold_locales,auto simp add: Setcompr_eq_image partition_on_singletons)
   have "card ((\<lambda>x. {x}) ` \<V>) \<ge> 2" using t_lt_order card_singletons_eq
-    by (metis Collect_mem_eq nat_leq_as_int of_nat_numeral setcompr_eq_image) 
+    by (metis Collect_mem_eq setcompr_eq_image) 
   then show "Suc 0 < card ((\<lambda>x. {x}) ` \<V>)" by linarith
   show "\<And>xa xb. xa \<in> \<V> \<Longrightarrow> xb \<in> \<V> \<Longrightarrow> \<B> index {xa, xb} \<noteq> Suc 0 \<Longrightarrow> xa = xb"
   proof (rule ccontr)
@@ -1062,7 +1063,7 @@ proof (unfold_locales,auto simp add: Setcompr_eq_image partition_on_singletons)
     assume "xa \<noteq> xb"
     then have "card {xa, xb} = 2" by auto
     then have "\<B> index {xa, xb} = 1"
-      by (simp add: ain bin pbd_points_index1) 
+      by (simp add: ain bin) 
     thus False using ne1 by linarith
   qed 
 qed
