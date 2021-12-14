@@ -65,5 +65,8 @@ thys/Tree-Automata/code/haskell/generated/Uint32.hs
 
 thys/Verified_SAT_Based_AI_Planning/code/generated
 
+thys/Simplicial_complexes_and_boolean_functions/BDD/*.hs
+thys/Simplicial_complexes_and_boolean_functions/SMLBDD
+
 admin/py-bootstrap
 admin/venv
