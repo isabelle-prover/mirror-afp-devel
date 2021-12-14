@@ -7581,6 +7581,12 @@ abstract =
   in existing proofs and improve the approximation ratio in one case.
   A detailed description of our work (excluding center selection) has been published in the proceedings of
   <a href="https://doi.org/10.1007/978-3-030-51054-1_17">IJCAR 2020</a>.
+extra-history =
+	Change history:
+	[2021-02-08]:
+	added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br>
+	[2021-06-29]:
+	added theory Center_Selection by Ujkan Sulejmani
 
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
