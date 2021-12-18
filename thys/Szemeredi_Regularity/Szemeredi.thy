@@ -157,11 +157,13 @@ definition "edge_density X Y G \<equiv> card(all_edges_between X Y G) / (card X 
 lemma edge_density_ge0: "edge_density X Y G \<ge> 0"
   by (auto simp: edge_density_def)
 
-lemma edge_density_le1:
-  assumes "finite X" "finite Y"
-  shows "edge_density X Y G \<le> 1"
-  using of_nat_mono [OF max_all_edges_between [OF assms]]
-  by (fastforce simp add: edge_density_def divide_simps)
+lemma edge_density_le1: "edge_density K Y G \<le> 1"
+proof (cases "finite K \<and> finite Y")
+  case True
+  then show ?thesis 
+    using of_nat_mono [OF max_all_edges_between, of K Y]
+    by (fastforce simp add: edge_density_def divide_simps)
+qed (auto simp: edge_density_def)
 
 lemma all_edges_between_swap:
   "all_edges_between X Y G = (\<lambda>(x,y). (y,x)) ` (all_edges_between Y X G)"
@@ -380,12 +382,9 @@ lemma mean_square_density_bounded:
   assumes "finite_graph_partition (uverts G) P k" "finite (uverts G)" 
   shows "mean_square_density G P \<le> 1"
 proof-
-  have \<section>: "edge_density R S G \<le> 1" for R S
-    using assms of_nat_mono [OF max_all_edges_between]
-    by (smt (verit) card.infinite divide_eq_0_iff edge_density_def edge_density_le1 mult_eq_0_iff of_nat_0)
   have "(\<Sum>R\<in>P. \<Sum>S\<in>P. real (card R * card S) * (edge_density R S G)\<^sup>2) 
      \<le> (\<Sum>R\<in>P. \<Sum>S\<in>P. real (card R * card S))"
-    by (intro sum_mono mult_right_le_one_le) (auto simp: abs_square_le_1 edge_density_ge0 \<section>)
+    by (intro sum_mono mult_right_le_one_le) (auto simp: abs_square_le_1 edge_density_ge0 edge_density_le1)
   also have "\<dots> \<le> (real(card (uverts G)))\<^sup>2"
     using sum_partition_le assms by blast 
   finally show ?thesis 
