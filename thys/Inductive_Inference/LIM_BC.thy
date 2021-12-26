@@ -385,7 +385,8 @@ next
       by (metis e_length_update gap_Suc(2) gap_gr0 on_1)
   next
     case neither
-    then show ?thesis using Suc block_Suc(3) length_block by simp
+    then show ?thesis 
+      by (metis Suc block_stable e_hd_nth0 gap_gr0 length_block not_gr0 zero_less_Suc)
   qed
 qed
 
