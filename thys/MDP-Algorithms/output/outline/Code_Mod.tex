@@ -1,0 +1,303 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Code{\isacharunderscore}{\kern0pt}Mod}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Code{\isacharunderscore}{\kern0pt}Mod\isanewline
+\ \ \isakeyword{imports}\ Code{\isacharunderscore}{\kern0pt}DP\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsection{Code Generation for Concrete Finite MDPs%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{locale}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}MDP\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \isakeyword{fixes}\ transition\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}s{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}{\isacharbraceleft}{\kern0pt}enum{\isacharcomma}{\kern0pt}\ mod{\isacharunderscore}{\kern0pt}type{\isacharbraceright}{\kern0pt}\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}{\isacharbraceleft}{\kern0pt}enum{\isacharcomma}{\kern0pt}\ mod{\isacharunderscore}{\kern0pt}type{\isacharbraceright}{\kern0pt}\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ pmf{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ A\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ reward\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}s\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ real{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ discount\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}real{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}\isanewline
+\isanewline
+\isacommand{sublocale}\isamarkupfalse%
+\ mdp{\isacharcolon}{\kern0pt}\ vi{\isacharunderscore}{\kern0pt}code\ \isanewline
+\ \ {\isachardoublequoteopen}{\isasymlambda}s{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}if\ Set{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}empty\ {\isacharparenleft}{\kern0pt}A\ s{\isacharparenright}{\kern0pt}\ then\ UNIV\ else\ A\ s{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ \isanewline
+\ \ transition\ \isanewline
+\ \ reward\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}if\ {\isadigit{1}}\ {\isasymle}\ discount\ {\isasymor}\ discount\ {\isacharless}{\kern0pt}\ {\isadigit{0}}\ then\ {\isadigit{0}}\ else\ discount{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{defines}\ {\isasymL}\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}{\isasymL}\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ L{\isacharunderscore}{\kern0pt}det\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}L{\isacharunderscore}{\kern0pt}det\isanewline
+\ \ \ \ \isakeyword{and}\ value{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ vi{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ find{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ find{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}impl\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}impl\isanewline
+\ \ \ \ \isakeyword{and}\ is{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}act\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}act\isanewline
+\ \ \ \ \isakeyword{and}\ value{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ is{\isacharunderscore}{\kern0pt}dec{\isacharunderscore}{\kern0pt}det\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}dec{\isacharunderscore}{\kern0pt}det\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}step\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}improvement\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}eval\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval\isanewline
+\ \ \ \ \isakeyword{and}\ mk{\isacharunderscore}{\kern0pt}markovian\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mk{\isacharunderscore}{\kern0pt}markovian\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ gs{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ gs{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\isanewline
+\ \ \ \ \isakeyword{and}\ vi{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}policy\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}policy\isanewline
+\ \ \ \ \isakeyword{and}\ opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs\isanewline
+\ \ \ \ \isakeyword{and}\ opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs{\isacharprime}{\kern0pt}{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs{\isacharprime}{\kern0pt}{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ P{\isacharunderscore}{\kern0pt}mat\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}P{\isacharunderscore}{\kern0pt}mat\isanewline
+\ \ \ \ \isakeyword{and}\ r{\isacharunderscore}{\kern0pt}vec{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}r{\isacharunderscore}{\kern0pt}vec{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ GS{\isacharunderscore}{\kern0pt}rec{\isacharunderscore}{\kern0pt}fun\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}rec{\isacharunderscore}{\kern0pt}fun\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ GS{\isacharunderscore}{\kern0pt}iter{\isacharunderscore}{\kern0pt}max\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter{\isacharunderscore}{\kern0pt}max\isanewline
+\ \ \ \ \isakeyword{and}\ GS{\isacharunderscore}{\kern0pt}iter\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter\isanewline
+\ \ \ \ \isakeyword{and}\ mpi{\isacharunderscore}{\kern0pt}user\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}user\isanewline
+\ \ \ \ \isakeyword{and}\ v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ mpi{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ L{\isacharunderscore}{\kern0pt}pow\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}L{\isacharunderscore}{\kern0pt}pow\isanewline
+\ \ \ \ \isakeyword{and}\ v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isanewline
+\ \ \ \ \isakeyword{and}\ r{\isacharunderscore}{\kern0pt}min\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}r{\isacharunderscore}{\kern0pt}min\isanewline
+\ \ \ \ \isakeyword{and}\ d{\isadigit{0}}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}d{\isadigit{0}}\isanewline
+\ \ \ \ \isakeyword{and}\ d{\isadigit{0}}{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}d{\isadigit{0}}{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ {\isasymnu}\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}{\isasymnu}\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ vi{\isacharunderscore}{\kern0pt}test\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}test\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{by}\isamarkupfalse%
+\ unfold{\isacharunderscore}{\kern0pt}locales\ {\isacharparenleft}{\kern0pt}auto\ simp\ add{\isacharcolon}{\kern0pt}\ Set{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}empty{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isacommand{end}\isamarkupfalse%
+\isanewline
+\isanewline
+\isacommand{global{\isacharunderscore}{\kern0pt}interpretation}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}MDP\ transition\ A\ reward\ discount\ \isanewline
+\ \ \isakeyword{for}\ transition\ A\ reward\ discount\ \isanewline
+\ \ \isakeyword{defines}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}{\isasymL}\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}{\isasymL}\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}{\isasymL}\isactrlsub b{\isacharunderscore}{\kern0pt}L{\isacharunderscore}{\kern0pt}det\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}L{\isacharunderscore}{\kern0pt}det\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}vi{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}impl\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}find{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}impl\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}act\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}act\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}value{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}dec{\isacharunderscore}{\kern0pt}det\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}is{\isacharunderscore}{\kern0pt}dec{\isacharunderscore}{\kern0pt}det\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}mk{\isacharunderscore}{\kern0pt}markovian\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mk{\isacharunderscore}{\kern0pt}markovian\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}step{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}eval{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}policy{\isacharunderscore}{\kern0pt}improvement{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}gs{\isacharunderscore}{\kern0pt}iteration{\isacharunderscore}{\kern0pt}partial\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}vi{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}policy\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}gs{\isacharunderscore}{\kern0pt}policy\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs{\isacharprime}{\kern0pt}{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}opt{\isacharunderscore}{\kern0pt}policy{\isacharunderscore}{\kern0pt}gs{\isacharprime}{\kern0pt}{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}P{\isacharunderscore}{\kern0pt}mat\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}P{\isacharunderscore}{\kern0pt}mat\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}r{\isacharunderscore}{\kern0pt}vec{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}r{\isacharunderscore}{\kern0pt}vec{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}GS{\isacharunderscore}{\kern0pt}rec{\isacharunderscore}{\kern0pt}fun\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}rec{\isacharunderscore}{\kern0pt}fun\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter{\isacharunderscore}{\kern0pt}max\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter{\isacharunderscore}{\kern0pt}max\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}GS{\isacharunderscore}{\kern0pt}iter\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}user\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}user\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}mpi{\isacharunderscore}{\kern0pt}partial{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}L{\isacharunderscore}{\kern0pt}pow\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}L{\isacharunderscore}{\kern0pt}pow\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}v{\isadigit{0}}{\isacharunderscore}{\kern0pt}mpi\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}r{\isacharunderscore}{\kern0pt}min\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}r{\isacharunderscore}{\kern0pt}min\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}d{\isadigit{0}}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}d{\isadigit{0}}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}d{\isadigit{0}}{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}d{\isadigit{0}}{\isacharprime}{\kern0pt}\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}{\isasymnu}\isactrlsub b\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}{\isasymnu}\isactrlsub b\isanewline
+\ \ \ \ \isakeyword{and}\ mod{\isacharunderscore}{\kern0pt}MDP{\isacharunderscore}{\kern0pt}vi{\isacharunderscore}{\kern0pt}test\ {\isacharequal}{\kern0pt}\ mdp{\isachardot}{\kern0pt}vi{\isacharunderscore}{\kern0pt}test\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{{\isachardot}{\kern0pt}}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=Code_Mod.tex%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%27=4%:%
+%:%37=6%:%
+%:%38=6%:%
+%:%39=7%:%
+%:%40=8%:%
+%:%41=9%:%
+%:%42=10%:%
+%:%43=11%:%
+%:%44=12%:%
+%:%45=13%:%
+%:%46=13%:%
+%:%47=14%:%
+%:%48=15%:%
+%:%49=16%:%
+%:%50=17%:%
+%:%51=18%:%
+%:%52=19%:%
+%:%53=20%:%
+%:%54=21%:%
+%:%55=22%:%
+%:%56=23%:%
+%:%57=24%:%
+%:%58=25%:%
+%:%59=26%:%
+%:%60=27%:%
+%:%61=28%:%
+%:%62=29%:%
+%:%63=30%:%
+%:%64=31%:%
+%:%65=32%:%
+%:%66=33%:%
+%:%67=34%:%
+%:%68=35%:%
+%:%69=36%:%
+%:%70=37%:%
+%:%71=38%:%
+%:%72=39%:%
+%:%73=40%:%
+%:%74=41%:%
+%:%75=42%:%
+%:%76=43%:%
+%:%77=44%:%
+%:%78=45%:%
+%:%79=46%:%
+%:%80=47%:%
+%:%81=48%:%
+%:%82=49%:%
+%:%83=50%:%
+%:%84=51%:%
+%:%85=52%:%
+%:%86=53%:%
+%:%87=54%:%
+%:%88=55%:%
+%:%89=56%:%
+%:%90=57%:%
+%:%93=58%:%
+%:%97=58%:%
+%:%98=58%:%
+%:%103=58%:%
+%:%106=59%:%
+%:%107=59%:%
+%:%108=60%:%
+%:%109=61%:%
+%:%110=61%:%
+%:%111=62%:%
+%:%112=63%:%
+%:%113=64%:%
+%:%114=65%:%
+%:%115=66%:%
+%:%116=67%:%
+%:%117=68%:%
+%:%118=69%:%
+%:%119=70%:%
+%:%120=71%:%
+%:%121=72%:%
+%:%122=73%:%
+%:%123=74%:%
+%:%124=75%:%
+%:%125=76%:%
+%:%126=77%:%
+%:%127=78%:%
+%:%128=79%:%
+%:%129=80%:%
+%:%130=81%:%
+%:%131=82%:%
+%:%132=83%:%
+%:%133=84%:%
+%:%134=85%:%
+%:%135=86%:%
+%:%136=87%:%
+%:%137=88%:%
+%:%138=89%:%
+%:%139=90%:%
+%:%140=91%:%
+%:%141=92%:%
+%:%142=93%:%
+%:%143=94%:%
+%:%144=95%:%
+%:%145=96%:%
+%:%146=97%:%
+%:%147=98%:%
+%:%148=99%:%
+%:%149=100%:%
+%:%150=101%:%
+%:%151=102%:%
+%:%154=103%:%
+%:%158=103%:%
+%:%164=103%:%
+%:%167=104%:%
+%:%168=107%:%
+%:%171=108%:%
+%:%176=109%:%
