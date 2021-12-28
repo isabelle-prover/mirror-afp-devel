@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Nov 2021 00:00:00 +0000</pubDate>
+    <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Markov Decision Processes with Rewards</title>
+              <link>https://www.isa-afp.org/entries/MDP-Rewards.html</link>
+       <guid>https://www.isa-afp.org/entries/MDP-Rewards.html</guid>
+       <dc:creator> Maximilian Schäffeler, Mohammad Abdulaziz       </dc:creator>
+       <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of Markov Decision Processes with rewards.
+In particular we first build on Hölzl&#39;s formalization  of MDPs
+(AFP entry: Markov_Models) and extend them with rewards. We proceed
+with an analysis of the expected total discounted reward criterion for
+infinite horizon MDPs. The central result is the construction of the
+iteration rule for the Bellman operator. We prove the optimality
+equations for this operator and show the existence of an optimal
+stationary deterministic solution. The analysis can be used to obtain
+dynamic programming algorithms such as value iteration and policy
+iteration to solve MDPs with formal guarantees. Our formalization is
+based on chapters 5 and 6 in Puterman&#39;s book &#34;Markov
+Decision Processes: Discrete Stochastic Dynamic Programming&#34;.</description>
+    </item>
     <item>
        <title>Simplicial Complexes and Boolean functions</title>
               <link>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
@@ -168,7 +188,7 @@ an approximation algorithm using interval arithmetic.</description>
 &lt;a
 href=&#34;https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma&#34;&gt;Szemerédi&#39;s
 regularity lemma&lt;/a&gt; is a key result in the study of large
-graphs. It asserts the existence an upper bound on the number of parts
+graphs. It asserts the existence of an upper bound on the number of parts
 the vertices of a graph need to be partitioned into such that the
 edges between the parts are random in a certain sense. This bound
 depends only on the desired precision and not on the graph itself, in
@@ -558,26 +578,6 @@ identifier, given a set of already used identifiers and a preferred
 identifier.  The entry provides a default instantiation for any
 infinite type, as well as executable instantiations for natural
 numbers and strings.</description>
-    </item>
-    <item>
-       <title>CoSMed: A confidentiality-verified social media platform</title>
-              <link>https://www.isa-afp.org/entries/CoSMed.html</link>
-       <guid>https://www.isa-afp.org/entries/CoSMed.html</guid>
-       <dc:creator> Thomas Bauereiss, Andrei Popescu       </dc:creator>
-       <pubDate>16 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the confidentiality verification of the
-(functional kernel of) the CoSMed  social media platform. The
-confidentiality properties are formalized as instances of BD Security
-[&lt;a href=&#34;https://doi.org/10.4230/LIPIcs.ITP.2021.3&#34;&gt;1&lt;/a&gt;,
-&lt;a href=&#34;https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html&#34;&gt;2&lt;/a&gt;].
-An innovation in the deployment of BD Security compared to previous
-work is the use of dynamic declassification triggers, incorporated as
-part of inductive bounds, for providing stronger guarantees that
-account for the repeated opening and closing of access windows. To
-further strengthen the confidentiality guarantees, we also prove
-&#34;traceback&#34; properties about the accessibility decisions
-affecting the information managed by the system.</description>
     </item>
   </channel>
 </rss>

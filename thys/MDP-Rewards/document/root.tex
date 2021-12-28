@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb, amsmath, amsfonts}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Markov Decision Processes with Rewards}
+\author{Maximilian Schäffeler and Mohammad Abdulaziz}
+\maketitle
+
+\abstract{
+We present a formalization of Markov Decision Processes with rewards. 
+In particular we first build on Hölzl's formalization \cite{Markov_Models-AFP} of MDPs and extend them with rewards.
+We proceed with an analysis of the expected total discounted reward criterion for infinite horizon MDPs.
+The central result is the construction of the iteration rule for the Bellman operator.
+We prove the optimality equations for this operator and show the existence of an optimal stationary deterministic solution.
+The analysis can be used to obtain dynamic programming algorithms such as value iteration and policy iteration to solve Markov Decision Processes with formal guarantees.
+Our formalization is based upon chapters 5 and 6 in Puterman's book \cite{Puterman}.
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

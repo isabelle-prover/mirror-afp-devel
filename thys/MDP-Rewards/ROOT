@@ -1,0 +1,8 @@
+chapter AFP
+session "MDP-Rewards" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories
+    MDP_reward
+  document_files
+    "root.bib"
+    "root.tex"

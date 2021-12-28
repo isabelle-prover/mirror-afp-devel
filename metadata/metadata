@@ -4412,6 +4412,26 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
 	<a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 notify = hoelzl@in.tum.de
 
+[MDP-Rewards]
+title = Markov Decision Processes with Rewards
+author = Maximilian Schäffeler <mailto:schaeffm@in.tum.de>, Mohammad Abdulaziz <mailto:mansour@in.tum.de>
+topic = Mathematics/Probability theory
+date = 2021-12-16
+notify = schaeffm@in.tum.de, mansour@in.tum.de
+abstract = 
+  We present a formalization of Markov Decision Processes with rewards.
+  In particular we first build on Hölzl's formalization  of MDPs
+  (AFP entry: Markov_Models) and extend them with rewards. We proceed
+  with an analysis of the expected total discounted reward criterion for
+  infinite horizon MDPs. The central result is the construction of the
+  iteration rule for the Bellman operator. We prove the optimality
+  equations for this operator and show the existence of an optimal
+  stationary deterministic solution. The analysis can be used to obtain
+  dynamic programming algorithms such as value iteration and policy
+  iteration to solve MDPs with formal guarantees. Our formalization is
+  based on chapters 5 and 6 in Puterman's book "Markov
+  Decision Processes: Discrete Stochastic Dynamic Programming".
+
 [Probabilistic_System_Zoo]
 title = A Zoo of Probabilistic Systems
 author = Johannes Hölzl <http://in.tum.de/~hoelzl>,
