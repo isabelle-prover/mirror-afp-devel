@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Markov Decision Processes with Rewards - Archive of Formal Proofs
+<title>Verified Algorithms for Solving Markov Decision Processes - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,19 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>arkov
+  <h1>          <font class="first">V</font>erified
+  
+          <font class="first">A</font>lgorithms
+  
+          for
+  
+          <font class="first">S</font>olving
+  
+          <font class="first">M</font>arkov
   
           <font class="first">D</font>ecision
   
           <font class="first">P</font>rocesses
-  
-          with
-  
-          <font class="first">R</font>ewards
   
 </h1>
   <p>&nbsp;</p>
@@ -91,7 +95,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Markov Decision Processes with Rewards</td>
+  <td class="data" width="80%">Verified Algorithms for Solving Markov Decision Processes</td>
 </tr>
 
 <tr>
@@ -114,31 +118,33 @@ MathJax = {
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We present a formalization of Markov Decision Processes with rewards.
-In particular we first build on Hölzl's formalization  of MDPs
-(AFP entry: Markov_Models) and extend them with rewards. We proceed
-with an analysis of the expected total discounted reward criterion for
-infinite horizon MDPs. The central result is the construction of the
-iteration rule for the Bellman operator. We prove the optimality
-equations for this operator and show the existence of an optimal
-stationary deterministic solution. The analysis can be used to obtain
-dynamic programming algorithms such as value iteration and policy
-iteration to solve MDPs with formal guarantees. Our formalization is
-based on chapters 5 and 6 in Puterman's book "Markov
-Decision Processes: Discrete Stochastic Dynamic Programming".</td>
+We present a formalization of algorithms for solving Markov Decision
+Processes (MDPs) with formal guarantees on the optimality of their
+solutions. In particular we build on our analysis of the Bellman
+operator for discounted infinite horizon MDPs. From the iterator rule
+on the Bellman operator we directly derive executable value iteration
+and policy iteration algorithms to iteratively solve finite MDPs. We
+also prove correct optimized versions of value iteration that use
+matrix splittings to improve the convergence rate. In particular, we
+formally verify Gauss-Seidel value iteration and modified policy
+iteration. The algorithms are evaluated on two standard examples from
+the literature, namely, inventory management and gridworld. Our
+formalization covers most of chapter 6 in Puterman's book
+"Markov Decision Processes: Discrete Stochastic Dynamic
+Programming".</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{MDP-Rewards-AFP,
+        <pre>@article{MDP-Algorithms-AFP,
   author  = {Maximilian Schäffeler and Mohammad Abdulaziz},
-  title   = {Markov Decision Processes with Rewards},
+  title   = {Verified Algorithms for Solving Markov Decision Processes},
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/MDP-Rewards.html},
+  note    = {\url{https://isa-afp.org/entries/MDP-Algorithms.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -149,10 +155,10 @@ Decision Processes: Discrete Stochastic Dynamic Programming".</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="MDP-Algorithms.html">MDP-Algorithms</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Gauss_Jordan.html">Gauss_Jordan</a>, <a href="MDP-Rewards.html">MDP-Rewards</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -164,17 +170,17 @@ Decision Processes: Discrete Stochastic Dynamic Programming".</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MDP-Rewards/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/MDP-Rewards/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/MDP-Algorithms/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/MDP-Algorithms/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MDP-Rewards/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/MDP-Algorithms/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-MDP-Rewards-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-MDP-Algorithms-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
