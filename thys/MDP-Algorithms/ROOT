@@ -1,6 +1,6 @@
 chapter AFP
 session "MDP-Algorithms" (AFP) = "MDP-Rewards" +
-  options [document = pdf, document_output = "output", timeout = 600]
+  options [timeout = 600]
   sessions
     Gauss_Jordan
   directories
