@@ -501,6 +501,7 @@ Registers
 Regression_Test_Selection
 Regular-Sets
 Regular_Algebras
+Regular_Tree_Relations
 Relation_Algebra
 Relational-Incorrectness-Logic
 Relational_Disjoint_Set_Forests

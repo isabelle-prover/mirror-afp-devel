@@ -53,6 +53,30 @@ formalization covers most of chapter 6 in Puterman&#39;s book
 Programming&#34;.</description>
     </item>
     <item>
+       <title>Regular Tree Relations</title>
+              <link>https://www.isa-afp.org/entries/Regular_Tree_Relations.html</link>
+       <guid>https://www.isa-afp.org/entries/Regular_Tree_Relations.html</guid>
+       <dc:creator> Alexander Lochmann, Bertram Felgenhauer, Christian Sternagel, René Thiemann, Thomas Sternagel       </dc:creator>
+       <pubDate>15 Dec 2021 00:00:00 +0000</pubDate>
+       <description>
+Tree automata have good closure properties and therefore a commonly
+used to prove/disprove properties. This formalization contains among
+other things the proofs of many closure properties of tree automata
+(anchored) ground tree transducers and regular relations. Additionally
+it includes the well known pumping lemma and a lifting of the Myhill
+Nerode theorem for regular languages to tree languages.  We want to
+mention the existence of a &lt;a
+href=&#34;https://www.isa-afp.org/entries/Tree-Automata.html&#34;&gt;tree
+automata APF-entry&lt;/a&gt; developed by Peter Lammich. His work is
+based on epsilon free top-down tree automata, while this entry builds
+on bottom-up tree auotamta with epsilon transitions. Moreover our
+formalization relies on the &lt;a
+href=&#34;https://www.isa-afp.org/entries/Collections.html&#34;&gt;Collections
+Framework&lt;/a&gt;, also by Peter Lammich, to obtain efficient code.
+All proven constructions of the closure properties are exportable
+using the Isabelle/HOL code generation facilities.</description>
+    </item>
+    <item>
        <title>Simplicial Complexes and Boolean functions</title>
               <link>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
        <guid>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</guid>
@@ -573,20 +597,6 @@ formal protocol verification by considering a real-world protocol,
 namely the Restricted Identification one by the BSI. This sample model
 is used to verify that the pseudonymous identifiers output by user
 identification tokens remain anonymous under the expected conditions.</description>
-    </item>
-    <item>
-       <title>The Theorem of Three Circles</title>
-              <link>https://www.isa-afp.org/entries/Three_Circles.html</link>
-       <guid>https://www.isa-afp.org/entries/Three_Circles.html</guid>
-       <dc:creator> Fox Thomson, Wenda Li       </dc:creator>
-       <pubDate>21 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-The Descartes test based on Bernstein coefficients and Descartes’ rule
-of signs effectively (over-)approximates the number of real roots of a
-univariate polynomial over an interval. In this entry we formalise the
-theorem of three circles, which gives sufficient conditions for when
-the Descartes test returns 0 or 1. This is the first step for
-efficient root isolation.</description>
     </item>
   </channel>
 </rss>

@@ -11554,3 +11554,28 @@ abstract =
   constructed in this book. In addition, the theorem of the problem
   about the part that is treated implicitly and is not clearly stated in
   it is being carried out in parallel.
+
+[Regular_Tree_Relations]
+title = Regular Tree Relations
+author = Alexander Lochmann <mailto:alexander.lochmann@uibk.ac.at>,  Bertram Felgenhauer<>, Christian Sternagel <http://cl-informatik.uibk.ac.at/users/griff/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Thomas Sternagel<>
+topic = Computer science/Automata and formal languages
+date = 2021-12-15
+notify = alexander.lochmann@uibk.ac.at
+abstract = 
+  Tree automata have good closure properties and therefore a commonly
+  used to prove/disprove properties. This formalization contains among
+  other things the proofs of many closure properties of tree automata
+  (anchored) ground tree transducers and regular relations. Additionally
+  it includes the well known pumping lemma and a lifting of the Myhill
+  Nerode theorem for regular languages to tree languages.  We want to
+  mention the existence of a <a
+  href="https://www.isa-afp.org/entries/Tree-Automata.html">tree
+  automata APF-entry</a> developed by Peter Lammich. His work is
+  based on epsilon free top-down tree automata, while this entry builds
+  on bottom-up tree auotamta with epsilon transitions. Moreover our
+  formalization relies on the <a
+  href="https://www.isa-afp.org/entries/Collections.html">Collections
+  Framework</a>, also by Peter Lammich, to obtain efficient code.
+  All proven constructions of the closure properties are exportable
+  using the Isabelle/HOL code generation facilities.
+
