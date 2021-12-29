@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Regular Tree Relations - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">R</font>egular
+  
+          <font class="first">T</font>ree
+  
+          <font class="first">R</font>elations
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Regular Tree Relations</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Alexander Lochmann (alexander /dot/ lochmann /at/ uibk /dot/ ac /dot/ at),
+                  Bertram Felgenhauer,
+                  <a href="http://cl-informatik.uibk.ac.at/users/griff/">Christian Sternagel</a>,
+                <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">René Thiemann</a> and
+          Thomas Sternagel
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2021-12-15</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+Tree automata have good closure properties and therefore a commonly
+used to prove/disprove properties. This formalization contains among
+other things the proofs of many closure properties of tree automata
+(anchored) ground tree transducers and regular relations. Additionally
+it includes the well known pumping lemma and a lifting of the Myhill
+Nerode theorem for regular languages to tree languages.  We want to
+mention the existence of a <a
+href="https://www.isa-afp.org/entries/Tree-Automata.html">tree
+automata APF-entry</a> developed by Peter Lammich. His work is
+based on epsilon free top-down tree automata, while this entry builds
+on bottom-up tree auotamta with epsilon transitions. Moreover our
+formalization relies on the <a
+href="https://www.isa-afp.org/entries/Collections.html">Collections
+Framework</a>, also by Peter Lammich, to obtain efficient code.
+All proven constructions of the closure properties are exportable
+using the Isabelle/HOL code generation facilities.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Regular_Tree_Relations-AFP,
+  author  = {Alexander Lochmann and Bertram Felgenhauer and Christian Sternagel and René Thiemann and Thomas Sternagel},
+  title   = {Regular Tree Relations},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Regular_Tree_Relations.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Knuth_Bendix_Order.html">Knuth_Bendix_Order</a>      </td></tr>
+          
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Regular_Tree_Relations/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Regular_Tree_Relations/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Regular_Tree_Relations/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-Regular_Tree_Relations-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

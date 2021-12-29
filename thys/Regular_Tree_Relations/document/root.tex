@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{xspace}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+\begin{document}
+
+
+\title{A Formalization of Tree Automaton, (Anchord) Ground Tree Transducers, and Regular Relations\footnote{Supported by FWF (Austrian Science Fund) projects P30301 and Y757.}}
+\author{Alexander Lochmann \and Bertram Felgenhauer \and Christian Sternagel \and Ren\'e Thiemann \and Thomas Sternagel}
+\maketitle
+
+\begin{abstract}
+Tree automata have good closure properties and therefore a commonly
+used to prove/disprove properties. This formalization contains
+among other things the proofs of many closure properties of tree automata
+(anchored) ground tree transducers and regular relations.
+Additionally it includes the well known pumping lemma and a lifting of
+the Myhill Nerode theorem for regular languages to tree languages.
+
+We want to mention the existence of a tree automata APF-entry developed by
+Peter Lammich. His work is based on epsilon free top-down tree automata,
+while this entry builds on bottom-up tree auotamta with epsilon transitions.
+Moreover our formalization relies on the Collections Framework also by Peter
+Lammich \cite{Collections-AFP} to obtain efficient code.
+All proven constructions of the closure properties are exportable using
+the Isabelle/HOL code generation facilities.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Tree automata characterize a computable subset of term languages
+which are called regular tree languages. These languages are closed
+under union, intersection, and complement. Due to their nice closure
+properties tree automata techniques are frequently used to prove/disprove
+properties.
+
+As an example consider the field of rewriting.
+Dauchet and Tison showed that the theory of ground rewrite systems is decidable \cite{DT90}.
+As another example, Kucherov et.al. proved that the regularity of the normal forms
+induced by a rewrite system is decidable \cite{KGTM}.
+
+In this formalization we also consider (anchored) ground tree transducers ((A)GTTs)
+and regular relations. The first allows to reason about relations on
+regular tree languages and the latter to reason about tuples of arbitrary size
+over regular tree languages. We distinguish them as they have different
+closure properties. While (anchored) ground tree transducers are closed
+under transitivity, regular relations are not. Additional information about
+these constructions and their closure properties can be found in \cite{LMMF21}.
+
+This APF-entry provides a formalization of the general tree automata theory, GTTs,
+and regular relations. Moreover it contains a newly developed theory on the topic of
+AGTTs (construction is equivalent to the definition of $Rec_2$ in TATA \cite[Chapter~3]{tata2007})
+and how they are related to regular GTTs.
+
+We want to mention the existence of a tree automata APF-entry developed by
+Peter Lammich \cite{Tree-Automata-AFP}. The main reason for developing
+a new tree automata theory instead of working on top of his work was
+the underlying tree automata definition. Whereas our formalization defines
+bottom-up tree automaton with epsilon transitions, Peter Lammichs defines
+top-down tree automaton without epsilon transitions. These definitions do not differ
+in expressibility (i.e. a language is recognized by a bottom-up tree automaton
+if and only if it is recognized by a top-down tree automaton), however the
+use of epsilon transitions simplifies many constructions.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
