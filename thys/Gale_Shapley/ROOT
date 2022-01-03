@@ -1,0 +1,13 @@
+chapter AFP
+
+session Gale_Shapley (AFP) = HOL +
+  sessions
+    "HOL-Library"
+    "HOL-Hoare"
+    "List-Index"
+    Collections
+  theories [timeout = 600]
+    "Gale_Shapley2"
+  document_files
+    "root.tex"
+    "root.bib"
