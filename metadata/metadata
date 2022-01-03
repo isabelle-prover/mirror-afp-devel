@@ -11602,3 +11602,18 @@ abstract =
   Georgia notes by Stephanie Bell and Will Grodzicki, 
   "<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327">Using Szemerédi's Regularity Lemma to Prove Roth's Theorem</a>".
 
+[Gale_Shapley]
+title = Gale-Shapley Algorithm
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+topic = Computer science/Algorithms, Mathematics/Games and economics
+date = 2021-12-29
+notify = nipkow@in.tum.de
+abstract = 
+  This is a stepwise refinement and proof of the Gale-Shapley stable
+  matching (or marriage) algorithm down to executable code. Both a
+  purely functional implementation based on lists and a functional
+  implementation based on efficient arrays (provided by the Collections
+  Framework in the AFP) are developed. The latter implementation runs in
+  time <i>O(n<sup>2</sup>)</i> where
+  <i>n</i> is the cardinality of the two sets to be matched.
+

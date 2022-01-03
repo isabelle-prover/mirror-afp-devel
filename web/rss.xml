@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Dec 2021 00:00:00 +0000</pubDate>
+    <pubDate>29 Dec 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Gale-Shapley Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Gale_Shapley.html</link>
+       <guid>https://www.isa-afp.org/entries/Gale_Shapley.html</guid>
+       <dc:creator> Tobias Nipkow       </dc:creator>
+       <pubDate>29 Dec 2021 00:00:00 +0000</pubDate>
+       <description>
+This is a stepwise refinement and proof of the Gale-Shapley stable
+matching (or marriage) algorithm down to executable code. Both a
+purely functional implementation based on lists and a functional
+implementation based on efficient arrays (provided by the Collections
+Framework in the AFP) are developed. The latter implementation runs in
+time &lt;i&gt;O(n&lt;sup&gt;2&lt;/sup&gt;)&lt;/i&gt; where
+&lt;i&gt;n&lt;/i&gt; is the cardinality of the two sets to be matched.</description>
+    </item>
     <item>
        <title>Roth's Theorem on Arithmetic Progressions</title>
               <link>https://www.isa-afp.org/entries/Roth_Arithmetic_Progressions.html</link>
@@ -583,22 +598,6 @@ semilattice of reversed-ordered list which represents dominators is
 built and a Kildall-style algorithm on the semilattice is defined for
 computing dominators. Finally the soundness and completeness of the
 algorithm are proved w.r.t. the specification.</description>
-    </item>
-    <item>
-       <title>Solving Cubic and Quartic Equations</title>
-              <link>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</link>
-       <guid>https://www.isa-afp.org/entries/Cubic_Quartic_Equations.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>03 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;We formalize Cardano&#39;s formula to solve a cubic equation
-$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari&#39;s formula to
-solve a quartic equation. We further turn both formulas into
-executable algorithms based on the algebraic number implementation in
-the AFP. To this end we also slightly extended this library, namely by
-making the minimal polynomial of an algebraic number executable, and
-by defining and implementing $n$-th roots of complex
-numbers.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -1,12 +1,13 @@
 chapter AFP
 
 session Gale_Shapley (AFP) = HOL +
+  options [timeout = 600]
   sessions
     "HOL-Library"
     "HOL-Hoare"
     "List-Index"
     Collections
-  theories [timeout = 600]
+  theories
     "Gale_Shapley2"
   document_files
     "root.tex"
