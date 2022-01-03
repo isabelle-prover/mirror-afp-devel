@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
+    <pubDate>28 Dec 2021 00:00:00 +0000</pubDate>
+    <item>
+       <title>Roth's Theorem on Arithmetic Progressions</title>
+              <link>https://www.isa-afp.org/entries/Roth_Arithmetic_Progressions.html</link>
+       <guid>https://www.isa-afp.org/entries/Roth_Arithmetic_Progressions.html</guid>
+       <dc:creator> Chelsea Edmonds, Angeliki Koutsoukou-Argyraki, Lawrence C. Paulson       </dc:creator>
+       <pubDate>28 Dec 2021 00:00:00 +0000</pubDate>
+       <description>
+We formalise a proof of Roth&#39;s Theorem on Arithmetic
+Progressions, a major result in additive combinatorics on the
+existence of 3-term arithmetic progressions in subsets of natural
+numbers. To this end, we follow a proof using graph regularity. We
+employ our recent formalisation of Szemerédi&#39;s Regularity Lemma,
+a major result in extremal graph theory, which we use here to prove
+the Triangle Counting Lemma and the Triangle Removal Lemma. Our
+sources are Yufei Zhao&#39;s MIT lecture notes
+&#34;&lt;a href=&#34;https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf&#34;&gt;Graph Theory and Additive Combinatorics&lt;/a&gt;&#34;
+(revised version &lt;a href=&#34;https://yufeizhao.com/gtac/gtac17.pdf&#34;&gt;here&lt;/a&gt;)
+and W.T. Gowers&#39;s Cambridge lecture notes
+&#34;&lt;a href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Topics in Combinatorics&lt;/a&gt;&#34;.
+We also refer to the University of
+Georgia notes by Stephanie Bell and Will Grodzicki,
+&#34;&lt;a href=&#34;http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327&#34;&gt;Using Szemerédi&#39;s Regularity Lemma to Prove Roth&#39;s Theorem&lt;/a&gt;&#34;.</description>
+    </item>
     <item>
        <title>Markov Decision Processes with Rewards</title>
               <link>https://www.isa-afp.org/entries/MDP-Rewards.html</link>
@@ -576,27 +599,6 @@ the AFP. To this end we also slightly extended this library, namely by
 making the minimal polynomial of an algebraic number executable, and
 by defining and implementing $n$-th roots of complex
 numbers.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Logging-independent Message Anonymity in the Relational Method</title>
-              <link>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</link>
-       <guid>https://www.isa-afp.org/entries/Logging_Independent_Anonymity.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>26 Aug 2021 00:00:00 +0000</pubDate>
-       <description>
-In the context of formal cryptographic protocol verification,
-logging-independent message anonymity is the property for a given
-message to remain anonymous despite the attacker&#39;s capability of
-mapping messages of that sort to agents based on some intrinsic
-feature of such messages, rather than by logging the messages
-exchanged by legitimate agents as with logging-dependent message
-anonymity.
-This paper illustrates how logging-independent message
-anonymity can be formalized according to the relational method for
-formal protocol verification by considering a real-world protocol,
-namely the Restricted Identification one by the BSI. This sample model
-is used to verify that the pseudonymous identifiers output by user
-identification tokens remain anonymous under the expected conditions.</description>
     </item>
   </channel>
 </rss>

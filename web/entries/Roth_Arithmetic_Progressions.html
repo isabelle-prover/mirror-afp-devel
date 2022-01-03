@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Transcendence of Certain Infinite Series - Archive of Formal Proofs
+<title>Roth's Theorem on Arithmetic Progressions - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,17 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">R</font>oth's
   
-          <font class="first">T</font>ranscendence
+          <font class="first">T</font>heorem
   
-          of
+          on
   
-          <font class="first">C</font>ertain
+          <font class="first">A</font>rithmetic
   
-          <font class="first">I</font>nfinite
-  
-          <font class="first">S</font>eries
+          <font class="first">P</font>rogressions
   
 </h1>
   <p>&nbsp;</p>
@@ -93,7 +91,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Transcendence of Certain Infinite Series</td>
+  <td class="data" width="80%">Roth's Theorem on Arithmetic Progressions</td>
 </tr>
 
 <tr>
@@ -101,8 +99,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    <a href="https://www.cl.cam.ac.uk/~ak2110/">Angeliki Koutsoukou-Argyraki</a> and
-          <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
+                      <a href="https://www.cst.cam.ac.uk/people/cle47">Chelsea Edmonds</a>,
+                <a href="https://www.cl.cam.ac.uk/~ak2110/">Angeliki Koutsoukou-Argyraki</a> and
+          <a href="https://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
       </td>
 </tr>
 
@@ -110,31 +109,40 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-03-27</td>
+  <td class="data">2021-12-28</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize the proofs of two transcendence criteria by J. Hančl
-and P. Rucki that assert the transcendence of the sums of certain
-infinite series built up by sequences that fulfil certain properties.
-Both proofs make use of Roth's celebrated theorem on diophantine
-approximations to algebraic numbers from 1955  which we implement as
-an assumption without having formalised its proof.</td>
+We formalise a proof of Roth's Theorem on Arithmetic
+Progressions, a major result in additive combinatorics on the
+existence of 3-term arithmetic progressions in subsets of natural
+numbers. To this end, we follow a proof using graph regularity. We
+employ our recent formalisation of Szemerédi's Regularity Lemma,
+a major result in extremal graph theory, which we use here to prove
+the Triangle Counting Lemma and the Triangle Removal Lemma. Our
+sources are Yufei Zhao's MIT lecture notes
+"<a href="https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf">Graph Theory and Additive Combinatorics</a>"
+(revised version <a href="https://yufeizhao.com/gtac/gtac17.pdf">here</a>)
+and W.T. Gowers's Cambridge lecture notes
+"<a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Topics in Combinatorics</a>".
+We also refer to the University of
+Georgia notes by Stephanie Bell and Will Grodzicki,
+"<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327">Using Szemerédi's Regularity Lemma to Prove Roth's Theorem</a>".</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Transcendence_Series_Hancl_Rucki-AFP,
-  author  = {Angeliki Koutsoukou-Argyraki and Wenda Li},
-  title   = {The Transcendence of Certain Infinite Series},
+        <pre>@article{Roth_Arithmetic_Progressions-AFP,
+  author  = {Chelsea Edmonds and Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson},
+  title   = {Roth's Theorem on Arithmetic Progressions},
   journal = {Archive of Formal Proofs},
-  month   = mar,
-  year    = 2019,
-  note    = {\url{https://isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html},
+  month   = dec,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Roth_Arithmetic_Progressions.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -146,7 +154,7 @@ an assumption without having formalised its proof.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Prime_Number_Theorem.html">Prime_Number_Theorem</a>      </td></tr>
+          <td class="data"><a href="Ergodic_Theory.html">Ergodic_Theory</a>, <a href="Girth_Chromatic.html">Girth_Chromatic</a>, <a href="Random_Graph_Subgraph_Threshold.html">Random_Graph_Subgraph_Threshold</a>, <a href="Szemeredi_Regularity.html">Szemeredi_Regularity</a>      </td></tr>
           
                     
 
@@ -160,44 +168,23 @@ an assumption without having formalised its proof.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transcendence_Series_Hancl_Rucki/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Transcendence_Series_Hancl_Rucki/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Roth_Arithmetic_Progressions/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Roth_Arithmetic_Progressions/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transcendence_Series_Hancl_Rucki/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Roth_Arithmetic_Progressions/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Transcendence_Series_Hancl_Rucki-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Roth_Arithmetic_Progressions-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Transcendence_Series_Hancl_Rucki-2021-02-23.tar.gz">
-              afp-Transcendence_Series_Hancl_Rucki-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Transcendence_Series_Hancl_Rucki-2020-04-20.tar.gz">
-              afp-Transcendence_Series_Hancl_Rucki-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Transcendence_Series_Hancl_Rucki-2019-06-11.tar.gz">
-              afp-Transcendence_Series_Hancl_Rucki-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Transcendence_Series_Hancl_Rucki-2019-03-28.tar.gz">
-              afp-Transcendence_Series_Hancl_Rucki-2019-03-28.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

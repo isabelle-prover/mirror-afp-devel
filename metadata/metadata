@@ -11579,3 +11579,26 @@ abstract =
   All proven constructions of the closure properties are exportable
   using the Isabelle/HOL code generation facilities.
 
+[Roth_Arithmetic_Progressions]
+title = Roth's Theorem on Arithmetic Progressions
+author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>, Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Graph theory, Mathematics/Combinatorics
+date = 2021-12-28
+notify = lp15@cam.ac.uk
+abstract = 
+  We formalise a proof of Roth's Theorem on Arithmetic
+  Progressions, a major result in additive combinatorics on the
+  existence of 3-term arithmetic progressions in subsets of natural
+  numbers. To this end, we follow a proof using graph regularity. We
+  employ our recent formalisation of Szemerédi's Regularity Lemma,
+  a major result in extremal graph theory, which we use here to prove
+  the Triangle Counting Lemma and the Triangle Removal Lemma. Our
+  sources are Yufei Zhao's MIT lecture notes 
+  "<a href="https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf">Graph Theory and Additive Combinatorics</a>"
+  (revised version <a href="https://yufeizhao.com/gtac/gtac17.pdf">here</a>)
+  and W.T. Gowers's Cambridge lecture notes 
+  "<a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Topics in Combinatorics</a>".
+  We also refer to the University of
+  Georgia notes by Stephanie Bell and Will Grodzicki, 
+  "<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327">Using Szemerédi's Regularity Lemma to Prove Roth's Theorem</a>".
+
