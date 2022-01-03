@@ -10264,7 +10264,7 @@ title = A Formal Model of Extended Finite State Machines
 author = Michael Foster <mailto:m.foster@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
-notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+notify = m.foster@sheffield.ac.uk, adbrucker@0x5f.org
 abstract =
   In this AFP entry, we provide a formalisation of extended finite state
   machines (EFSMs) where models are represented as finite sets of
@@ -10280,7 +10280,7 @@ title = Inference of Extended Finite State Machines
 author = Michael Foster <mailto:m.foster@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
-notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+notify = m.foster@sheffield.ac.uk, adbrucker@0x5f.org
 abstract =
   In this AFP entry, we provide a formal implementation of a
   state-merging technique to infer extended finite state machines
