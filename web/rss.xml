@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Dec 2021 00:00:00 +0000</pubDate>
+    <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Knight's Tour Revisited Revisited</title>
+              <link>https://www.isa-afp.org/entries/Knights_Tour.html</link>
+       <guid>https://www.isa-afp.org/entries/Knights_Tour.html</guid>
+       <dc:creator> Lukas Koller       </dc:creator>
+       <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+This is a formalization of the article &#34;Knight&#39;s Tour Revisited&#34; by
+Cull and De Curtins where they prove the existence of a Knight&#39;s
+path for arbitrary &lt;i&gt;n &amp;times; m&lt;/i&gt;-boards with &lt;i&gt;min(n,m) &amp;le;
+5&lt;/i&gt;. If &lt;i&gt;n &amp;middot; m&lt;/i&gt; is even, then there exists a Knight&#39;s
+circuit.  A Knight&#39;s Path is a sequence of moves of a Knight on a
+chessboard s.t. the Knight visits every square of a chessboard
+exactly once.  Finding a Knight&#39;s path is a an instance of the
+Hamiltonian path problem. A Knight&#39;s circuit is a Knight&#39;s path,
+where additionally the Knight can move from the last square to the
+first square of the path, forming a loop.  During the formalization
+two mistakes in the original proof were discovered. These mistakes
+are corrected in this formalization.</description>
+    </item>
     <item>
        <title>Gale-Shapley Algorithm</title>
               <link>https://www.isa-afp.org/entries/Gale_Shapley.html</link>
@@ -582,22 +602,6 @@ assistant Isabelle. The article builds upon the foundations that were
 established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
 I: Foundations: Design Patterns, Set Theory, Digraphs,
 Semicategories&lt;/i&gt;.</description>
-    </item>
-    <item>
-       <title>A data flow analysis algorithm for computing dominators</title>
-              <link>https://www.isa-afp.org/entries/Dominance_CHK.html</link>
-       <guid>https://www.isa-afp.org/entries/Dominance_CHK.html</guid>
-       <dc:creator> Nan Jiang       </dc:creator>
-       <pubDate>05 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This entry formalises the fast iterative algorithm for computing dominators
-due to Cooper, Harvey and Kennedy. It gives a specification of computing
-dominators on a control
-flow graph where each node refers to its reverse post order number. A
-semilattice of reversed-ordered list which represents dominators is
-built and a Kildall-style algorithm on the semilattice is defined for
-computing dominators. Finally the soundness and completeness of the
-algorithm are proved w.r.t. the specification.</description>
     </item>
   </channel>
 </rss>

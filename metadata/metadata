@@ -11617,3 +11617,23 @@ abstract =
   time <i>O(n<sup>2</sup>)</i> where
   <i>n</i> is the cardinality of the two sets to be matched.
 
+[Knights_Tour]
+title = Knight's Tour Revisited Revisited
+author = Lukas Koller <mailto:lukas.koller@tum.de>
+topic = Mathematics/Graph theory
+date = 2022-01-04
+notify = lukas.koller@tum.de
+abstract =
+  This is a formalization of the article "Knight's Tour Revisited" by
+  Cull and De Curtins where they prove the existence of a Knight's
+  path for arbitrary <i>n &times; m</i>-boards with <i>min(n,m) &le;
+  5</i>. If <i>n &middot; m</i> is even, then there exists a Knight's
+  circuit.  A Knight's Path is a sequence of moves of a Knight on a
+  chessboard s.t. the Knight visits every square of a chessboard
+  exactly once.  Finding a Knight's path is a an instance of the
+  Hamiltonian path problem. A Knight's circuit is a Knight's path,
+  where additionally the Knight can move from the last square to the
+  first square of the path, forming a loop.  During the formalization
+  two mistakes in the original proof were discovered. These mistakes
+  are corrected in this formalization.
+
