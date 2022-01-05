@@ -1,44 +1,10 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2018-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Stateful_Compositionality.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 
 section \<open>Stateful Protocol Compositionality\<close>
-text \<open>\label{Stateful-Compositionality}\<close>
 
 theory Stateful_Compositionality
 imports Stateful_Typing Parallel_Compositionality Labeled_Stateful_Strands
@@ -57,7 +23,7 @@ proof -
   proof
     fix \<tau> assume \<tau>: "\<tau> \<in> \<Gamma> ` Var ` fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
     then obtain x where x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "\<Gamma> (Var x) = \<tau>" by moura
-
+  
     show "\<tau> \<in> \<Gamma> ` Var ` fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a"
     proof (cases "x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a")
       case False
@@ -69,13 +35,13 @@ proof -
           using fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck(1)[of X "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>" "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>"]
                 fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck(1)[of X F G] False x(1)
           by fastforce+
-
+  
         obtain y where y: "y \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G" "x \<in> fv (rm_vars (set X) \<delta> y)"
           using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 *(1)
           by blast
-
+  
         have "fv (rm_vars (set X) \<delta> z) = {} \<or> (\<exists>u. rm_vars (set X) \<delta> z = Var u)" for z
           using assms(2) rm_vars_img_subset[of "set X" \<delta>] by blast
         hence "rm_vars (set X) \<delta> y = Var x" using y(2) by fastforce
@@ -95,7 +61,7 @@ proof -
   proof
     fix \<tau> assume \<tau>: "\<tau> \<in> \<Gamma> ` Var ` vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
     then obtain x where x: "x \<in> vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "\<Gamma> (Var x) = \<tau>" by moura
-
+  
     show "\<tau> \<in> \<Gamma> ` Var ` vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a"
     proof (cases "x \<in> vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a")
       case False
@@ -107,13 +73,13 @@ proof -
           using vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck[of X "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>" "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>"]
                 vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck[of X F G] False x(1)
           by (fastforce, blast)
-
+  
         obtain y where y: "y \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G" "x \<in> fv (rm_vars (set X) \<delta> y)"
           using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 *(1)
           by blast
-
+  
         have "fv (rm_vars (set X) \<delta> z) = {} \<or> (\<exists>u. rm_vars (set X) \<delta> z = Var u)" for z
           using assms(2) rm_vars_img_subset[of "set X" \<delta>] by blast
         hence "rm_vars (set X) \<delta> y = Var x" using y(2) by fastforce
@@ -166,7 +132,7 @@ proof -
   proof (induction A)
     case (Cons a A)
     obtain l b where a: "a = (l,b)" by (metis surj_pair)
-
+  
     show ?case
       using Cons.IH wt_subst_sstp_vars_type_subset[OF assms, of b] *[OF a, of A]
       by (metis Un_mono)
@@ -192,16 +158,17 @@ proof (induction D)
 
   have 1: "?R1 D"
   proof (cases "i = l")
-    case True thus ?thesis using Cons.prems(1) dl by (cases "dl \<in> set Di") auto
+    case True thus ?thesis
+      using Cons.prems(1) dl by (cases "dl \<in> set Di") (auto simp add: dbproj_def)
   next
-    case False thus ?thesis using Cons.prems(1) dl by auto
+    case False thus ?thesis using Cons.prems(1) dl by (auto simp add: dbproj_def)
   qed
 
   have "set D \<subseteq> set (dl#D)" by auto
   hence 2: "?R2 D" using Cons.prems(2) by blast
 
   have "i \<noteq> l \<or> dl \<in> set Di \<or> \<lbrakk>M; [\<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd dl))]\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d \<I>"
-    using Cons.prems(1) dl by (auto simp add: ineq_model_def)
+    using Cons.prems(1) dl by (auto simp add: ineq_model_def dbproj_def)
   moreover have "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair d) \<Longrightarrow> i = l"
     using Cons.prems(2) dl by force
   ultimately have 3: "dl \<in> set Di \<or> \<lbrakk>M; [\<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd dl))]\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d \<I>"
@@ -230,8 +197,8 @@ proof (induction D)
       using Cons.prems True by auto
     have 2: "dbproj i (di#D) = di#dbproj i D" using True dbproj_Cons(1) di by auto
     show ?thesis using 1 2 IH by auto
-  qed auto
-qed simp
+  qed (auto simp add: dbproj_def)
+qed (simp add: dbproj_def)
 
 lemma (in stateful_typed_model) labeled_sat_ineq_dbproj_sem_equiv:
   assumes "\<forall>(j,p) \<in> ((\<lambda>(t, s). (i, t, s)) ` set F') \<union> set D.
@@ -251,7 +218,7 @@ proof -
           "\<forall>(t, t') \<in> set (map snd (dbproj i D)). (fv t \<union> fv t') \<inter> set X = {}"
     using assms(2) dbproj_subset[of i D] unfolding unlabel_def by force+
 
-  have 2: "?B \<subseteq> ?A" by auto
+  have 2: "?B \<subseteq> ?A" unfolding dbproj_def by auto
 
   have 3: "\<not>Unifier \<delta> (pair f) (pair d)"
     when f: "f \<in> set F'" and d: "d \<in> set (map snd D) - set (map snd (dbproj i D))"
@@ -259,13 +226,13 @@ proof -
   proof -
     obtain k where k: "(k,d) \<in> set D - set (dbproj i D)"
       using d by force
-
+    
     have "(i,f) \<in> ((\<lambda>(t, s). (i, t, s)) ` set F') \<union> set D"
          "(k,d) \<in> ((\<lambda>(t, s). (i, t, s)) ` set F') \<union> set D"
       using f k by auto
     hence "i = k" when "Unifier \<delta> (pair f) (pair d)" for \<delta>
       using assms(1) that by blast
-    moreover have "k \<noteq> i" using k d by simp
+    moreover have "k \<noteq> i" using k d unfolding dbproj_def by simp
     ultimately show ?thesis by metis
   qed
 
@@ -311,12 +278,12 @@ proof (induction D rule: List.rev_induct)
   have "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>" using di snoc.prems(2) by auto
   hence "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair d)" by auto
   hence 1: "i = j" using snoc.prems(1) di by fastforce
-
+  
   have "set D \<subseteq> set (D@[di])" by auto
   hence 2: "?P D" using snoc.prems(1) by blast
 
   have 3: "?Q D" using snoc.prems(2) by auto
-
+  
   show ?case using di 1 snoc.IH[OF 2 3] by simp
 qed simp
 
@@ -332,7 +299,7 @@ proof -
   thus ?thesis using labeled_sat_eqs_list_all[OF _ assms(3)] subseqs_mem_dbproj[OF assms(1)] by simp
 qed
 
-lemma (in stateful_typed_model) dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
+lemma (in stateful_typing_result) dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
   assumes "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel S)"
   shows "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S))"
 using assms
@@ -381,8 +348,8 @@ definition lpair where
   "lpair lp \<equiv> case lp of (i,p) \<Rightarrow> (i,pair p)"
 
 lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_pair_image[simp]:
-  "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,send\<langle>t\<rangle>)) = {}"
-  "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,receive\<langle>t\<rangle>)) = {}"
+  "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,send\<langle>ts\<rangle>)) = {}"
+  "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,receive\<langle>ts\<rangle>)) = {}"
   "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,\<langle>ac: t \<doteq> t'\<rangle>)) = {}"
   "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,insert\<langle>t,s\<rangle>)) = {(i, pair (t,s))}"
   "lpair ` (setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (i,delete\<langle>t,s\<rangle>)) = {(i, pair (t,s))}"
@@ -391,26 +358,26 @@ lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_pair_image[simp]:
 unfolding lpair_def by force+
 
 definition par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
-  "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>::('fun,'var,'lbl) labeled_stateful_strand) (Secrets::('fun,'var) terms) \<equiv>
+  "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>::('fun,'var,'lbl) labeled_stateful_strand) (Secrets::('fun,'var) terms) \<equiv> 
     (\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
               GSMP_disjoint (trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                             (trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Secrets) \<and>
-    ground Secrets \<and> (\<forall>s \<in> Secrets. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> Secrets) \<and>
+    (\<forall>s \<in> Secrets. \<not>{} \<turnstile>\<^sub>c s) \<and> ground Secrets \<and>
     (\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>.
       (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> i = j)"
 
 definition declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
-  "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I> \<equiv> {t. \<langle>\<star>, receive\<langle>t\<rangle>\<rangle> \<in> set \<A>} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+  "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I> \<equiv> {s. \<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>)} \<turnstile> s}"
 
 definition strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t ("_ leaks _ under _") where
   "(\<A>::('fun,'var,'lbl) labeled_stateful_strand) leaks Secrets under \<I> \<equiv>
-    (\<exists>t \<in> Secrets - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>. \<exists>n. \<I> \<Turnstile>\<^sub>s (proj_unl n \<A>@[send\<langle>t\<rangle>]))"
-
-definition typing_cond\<^sub>s\<^sub>s\<^sub>t where
-  "typing_cond\<^sub>s\<^sub>s\<^sub>t \<A> \<equiv> wf\<^sub>s\<^sub>s\<^sub>t \<A> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>s\<^sub>t \<A>) \<and> tfr\<^sub>s\<^sub>s\<^sub>t \<A>"
+    (\<exists>t \<in> Secrets - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>. \<exists>n. \<I> \<Turnstile>\<^sub>s (proj_unl n \<A>@[send\<langle>[t]\<rangle>]))"
 
 type_synonym ('a,'b,'c) labeleddbstate = "('c strand_label \<times> (('a,'b) term \<times> ('a,'b) term)) set"
 type_synonym ('a,'b,'c) labeleddbstatelist = "('c strand_label \<times> (('a,'b) term \<times> ('a,'b) term)) list"
+
+definition typing_cond\<^sub>s\<^sub>s\<^sub>t where
+  "typing_cond\<^sub>s\<^sub>s\<^sub>t \<A> \<equiv> wf\<^sub>s\<^sub>s\<^sub>t \<A> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>s\<^sub>t \<A>) \<and> tfr\<^sub>s\<^sub>s\<^sub>t \<A>"
 
 text \<open>
   For proving the compositionality theorem for stateful constraints the idea is to first define a
@@ -423,8 +390,8 @@ fun tr\<^sub>p\<^sub>c::
    \<Rightarrow> ('fun,'var,'lbl) labeled_strand list"
 where
   "tr\<^sub>p\<^sub>c [] D = [[]]"
-| "tr\<^sub>p\<^sub>c ((i,send\<langle>t\<rangle>)#A) D = map ((#) (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>c A D)"
-| "tr\<^sub>p\<^sub>c ((i,receive\<langle>t\<rangle>)#A) D = map ((#) (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>c A D)"
+| "tr\<^sub>p\<^sub>c ((i,send\<langle>ts\<rangle>)#A) D = map ((#) (i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>c A D)"
+| "tr\<^sub>p\<^sub>c ((i,receive\<langle>ts\<rangle>)#A) D = map ((#) (i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>c A D)"
 | "tr\<^sub>p\<^sub>c ((i,\<langle>ac: t \<doteq> t'\<rangle>)#A) D = map ((#) (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>c A D)"
 | "tr\<^sub>p\<^sub>c ((i,insert\<langle>t,s\<rangle>)#A) D = tr\<^sub>p\<^sub>c A (List.insert (i,(t,s)) D)"
 | "tr\<^sub>p\<^sub>c ((i,delete\<langle>t,s\<rangle>)#A) D = (
@@ -438,10 +405,89 @@ where
 | "tr\<^sub>p\<^sub>c ((i,\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F' \<rangle>)#A) D =
     map ((@) (map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D))))) (tr\<^sub>p\<^sub>c A D)"
 
+end
+
+locale labeled_stateful_typing =
+  labeled_stateful_typed_model arity public Ana \<Gamma> Pair label_witness1 label_witness2
++ stateful_typing_result arity public Ana \<Gamma> Pair
+  for arity::"'fun \<Rightarrow> nat"
+  and public::"'fun \<Rightarrow> bool"
+  and Ana::"('fun,'var) term \<Rightarrow> (('fun,'var) term list \<times> ('fun,'var) term list)"
+  and \<Gamma>::"('fun,'var) term \<Rightarrow> ('fun,'atom::finite) term_type"
+  and Pair::"'fun"
+  and label_witness1::"'lbl"
+  and label_witness2::"'lbl"
+begin
+
+sublocale labeled_typing
+by unfold_locales
+
+end
+
 
 subsection \<open>Small Lemmata\<close>
+context labeled_stateful_typed_model
+begin
+
+lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def:
+  "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I> = {s. \<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set \<A>} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s}"
+proof -
+  have "(l, receive\<langle>ts\<rangle>) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>) = (\<exists>ts'. (l, receive\<langle>ts'\<rangle>) \<in> set \<A> \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
+    (is "?A \<A> = ?B \<A>")
+    for ts l
+  proof
+    show "?A \<A> \<Longrightarrow> ?B \<A>"
+    proof (induction \<A>)
+      case (Cons a \<A>)
+      obtain k b where a: "a = (k,b)" by (metis surj_pair)
+      show ?case
+      proof (cases "?A \<A>")
+        case False
+        hence "(l,receive\<langle>ts\<rangle>) = a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<I>" using Cons.prems subst_lsst_cons[of a \<A> \<I>] by auto
+        thus ?thesis unfolding a by (cases b) auto
+      qed (use Cons.IH in auto)
+    qed simp
+
+    show "?B \<A> \<Longrightarrow> ?A \<A>"
+    proof (induction \<A>)
+      case (Cons a \<A>)
+      obtain k b where a: "a = (k,b)" by (metis surj_pair)
+      show ?case
+      proof (cases "?B \<A>")
+        case False
+        hence "\<exists>ts'. a = (l, receive\<langle>ts'\<rangle>) \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>" using Cons.prems by auto
+        thus ?thesis using subst_lsst_cons[of a \<A> \<I>] unfolding a by (cases b) auto
+      qed (use Cons.IH subst_lsst_cons[of a \<A> \<I>] in auto)
+    qed simp
+  qed
+  thus ?thesis
+    unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def
+    by (smt Collect_cong image_Union list.set_map setcompr_eq_image)
+qed
+
+lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_prefix_subset:
+  assumes AB: "prefix A B"
+  shows "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I \<subseteq> declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B I"
+proof
+  fix t assume t: "t \<in> declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I"
+  obtain C where C: "B = A@C" using prefixE[OF AB] by metis
+  show "t \<in> declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B I"
+    using t ideduct_mono[of
+              "\<Union>{set ts |ts. (\<star>, receive\<langle>ts\<rangle>) \<in> set A} \<cdot>\<^sub>s\<^sub>e\<^sub>t I" t 
+              "\<Union>{set ts |ts. (\<star>, receive\<langle>ts\<rangle>) \<in> set B} \<cdot>\<^sub>s\<^sub>e\<^sub>t I"]
+    unfolding C declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def by auto
+qed
+
+lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_star_receive_supset:
+  "{t | t ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set \<A> \<and> t \<in> set ts} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>"
+unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def by (fastforce intro: intruder_deduct.Axiom)
+
+lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj_eq:
+  "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n A) I"
+using proj_mem_iff(2)[of _ A] unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def by simp
+
 lemma par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_nil:
-  assumes "ground Sec" "\<forall>s \<in> Sec. \<forall>s'\<in>subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> Sec"
+  assumes "ground Sec" "\<forall>s \<in> Sec. \<forall>s'\<in>subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> Sec" "\<forall>s \<in> Sec. \<not>{} \<turnstile>\<^sub>c s"
   shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] Sec"
 using assms unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by simp
 
@@ -477,7 +523,7 @@ lemma par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_dual\<^sub>l\<^sub>s\<^sub>s\<^su
   assumes A: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A S"
   shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) S"
 proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; intro conjI)
-  show "ground S" "\<forall>s \<in> S. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> S"
+  show "ground S" "\<forall>s \<in> S. \<not>{} \<turnstile>\<^sub>c s"
     using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by fast+
 
   let ?M = "\<lambda>l B. (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l B))"
@@ -496,7 +542,7 @@ lemma par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst:
     and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "subst_domain \<delta> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = {}"
   shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) S"
 proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; intro conjI)
-  show "ground S" "\<forall>s \<in> S. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> S"
+  show "ground S" "\<forall>s \<in> S. \<not>{} \<turnstile>\<^sub>c s"
     using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by fast+
 
   let ?N = "\<lambda>l B. trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l B)"
@@ -520,7 +566,7 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
     unfolding GSMP_disjoint_def by fastforce
   thus "?R (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" unfolding M_def by blast
 
-  have "?Q A" using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by force
+  have "?Q A" using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by force 
   thus "?Q (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" using \<delta>(3)
   proof (induction A)
     case (Cons a A)
@@ -532,7 +578,7 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
     have "?Q A" "subst_domain \<delta> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = {}"
       using Cons.prems 0 unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
     hence IH: "?Q (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" using Cons.IH unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by blast
-
+    
     have 1: "fst p = fst q"
       when p: "p \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
         and q: "q \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
@@ -547,12 +593,12 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
       for p q
     proof -
       obtain p' X where p':
-          "p' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst p'"
+          "p' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst p'" 
           "X \<subseteq> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (a#A)" "snd p = snd p' \<cdot>\<^sub>p rm_vars X \<delta>"
         using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_subst[OF p] 0 by blast
 
       obtain q' Y where q':
-          "q' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a" "fst q = fst q'"
+          "q' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a" "fst q = fst q'" 
           "Y \<subseteq> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (a#A)" "snd q = snd q' \<cdot>\<^sub>p rm_vars Y \<delta>"
         using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_in_subst[OF q] 0 by blast
 
@@ -593,9 +639,9 @@ proof -
   have 1: "wf\<^sub>s\<^sub>t X (unlabel (c2@A))"
     using wf_fun_pair_ineqs_map[OF assms(1)] ci_eqs(2) unlabel_append[of c2 A] c4
     by metis
-  have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<subseteq> X"
+  have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<subseteq> X" 
     using assms(3) subseqs_set_subset(1)[OF assms(2)]
-    unfolding unlabel_def
+    unfolding unlabel_def dbproj_def
     by fastforce
   { fix B::"('fun,'var) strand" assume "wf\<^sub>s\<^sub>t X B"
     hence "wf\<^sub>s\<^sub>t X (unlabel c1@B)" using 2 unfolding c1 unlabel_def by (induct Di) auto
@@ -648,7 +694,7 @@ proof
     using B by meson
   hence p: "p \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
     using b(2) unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def subst_apply_labeled_stateful_strand_def by auto
-
+  
   obtain X q where q:
       "q \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst q" "snd p = snd q \<cdot>\<^sub>p rm_vars X \<delta>"
     using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_subst[OF p] by blast
@@ -657,15 +703,123 @@ proof
     using q wt_subst_rm_vars[OF \<delta>(1)] wf_trms_subst_rm_vars'[OF \<delta>(2)] by blast
 qed
 
+lemma deduct_proj_priv_term_prefix_ex_stateful:
+  assumes A: "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l A) \<cdot>\<^sub>s\<^sub>e\<^sub>t I \<turnstile> t"
+    and t: "\<not>{} \<turnstile>\<^sub>c t"
+  shows "\<exists>B k s. (k = \<star> \<or> k = ln l) \<and> prefix (B@[(k,receive\<langle>s\<rangle>)]) A \<and>
+                 declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((B@[(k,receive\<langle>s\<rangle>)])) I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I \<and>
+                 ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l (B@[(k,receive\<langle>s\<rangle>)])) = ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l A)"
+using A
+proof (induction A rule: List.rev_induct)
+  case Nil
+  have "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l []) \<cdot>\<^sub>s\<^sub>e\<^sub>t I = {}" by auto
+  thus ?case using Nil t deducts_eq_if_empty_ik[of t] by argo
+next
+  case (snoc a A)
+  obtain k b where a: "a = (k,b)" by (metis surj_pair)
+  let ?P = "k = \<star> \<or> k = (ln l)"
+  let ?Q = "\<exists>s. b = receive\<langle>s\<rangle>"
+
+  have 0: "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l (A@[a])) = ik\<^sub>s\<^sub>s\<^sub>t (proj_unl l A)" when "?P \<Longrightarrow> \<not>?Q"
+    using that ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_eq[OF that, of I "proj_unl l A"]
+    unfolding ik\<^sub>s\<^sub>s\<^sub>t_def a by (cases "k = \<star> \<or> k = (ln l)") auto
+
+  have 1: "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A@[a]) I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I" when "?P \<Longrightarrow> \<not>?Q"
+    using that snoc.prems unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def a
+    by (metis (no_types, lifting) UnCI UnE empty_iff insert_iff list.set prod.inject set_append)
+
+  note 2 = snoc.prems snoc.IH 0 1
+
+  show ?case
+  proof (cases ?P)
+    case True
+    note T = this
+    thus ?thesis
+    proof (cases ?Q)
+      case True thus ?thesis using T unfolding a by blast
+    qed (use 2 in auto)
+  qed (use 2 in auto)
+qed
+
+lemma constr_sem_stateful_proj_priv_term_prefix_obtain:
+  assumes \<A>': "prefix \<A>' \<A>" "constr_sem_stateful \<I>\<^sub>\<tau> (proj_unl n \<A>'@[send\<langle>[t]\<rangle>])"
+    and t: "t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>" "\<not>{} \<turnstile>\<^sub>c t" "t \<cdot> \<I>\<^sub>\<tau> = t"
+  obtains B k' s where
+    "k' = \<star> \<or> k' = ln n" "prefix B \<A>'" "suffix [(k', receive\<langle>s\<rangle>)] B"
+    "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<I>\<^sub>\<tau> = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>"
+    "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n B) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n \<A>')"
+    "constr_sem_stateful \<I>\<^sub>\<tau> (proj_unl n B@[send\<langle>[t]\<rangle>])"
+    "prefix (proj n B) (proj n \<A>)" "suffix [(k', receive\<langle>s\<rangle>)] (proj n B)"
+    "t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n B) \<I>\<^sub>\<tau>"
+proof -
+  have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n \<A>') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> t"
+    using \<A>'(2) t(3) strand_sem_append_stateful[of "{}" "{}" "proj_unl n \<A>'" "[send\<langle>[t]\<rangle>]" \<I>\<^sub>\<tau>]
+    by simp
+  then obtain B k' s where B:
+      "k' = \<star> \<or> k' = ln n" "prefix B \<A>'" "suffix [(k', receive\<langle>s\<rangle>)] B"
+      "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<I>\<^sub>\<tau> = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>"
+      "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n B) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n \<A>')"
+    using deduct_proj_priv_term_prefix_ex_stateful[OF _ t(2), of \<I>\<^sub>\<tau> n \<A>']
+    unfolding suffix_def by blast
+
+  have B': "constr_sem_stateful \<I>\<^sub>\<tau> (proj_unl n B@[send\<langle>[t]\<rangle>])"
+    using B(5) \<A>'(2) strand_sem_append_stateful[of "{}" "{}" "proj_unl n \<A>'" "[send\<langle>[t]\<rangle>]" \<I>\<^sub>\<tau>]
+          strand_sem_append_stateful[of "{}" "{}" "proj_unl n B" _ \<I>\<^sub>\<tau>]
+          prefix_proj(2)[OF B(2), of n]
+    by (metis (no_types, lifting) append_Nil2 prefix_def strand_sem_stateful.simps(2))
+
+  have B'': "prefix (proj n B) (proj n \<A>)" "suffix [(k', receive\<langle>s\<rangle>)] (proj n B)"
+            "t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n B) \<I>\<^sub>\<tau>"
+    using \<A>' t B(1-4) declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj_eq[of B \<I>\<^sub>\<tau> n]
+    unfolding suffix_def prefix_def proj_def by auto
+
+  show ?thesis by (rule that[OF B B' B''])
+qed
+
+lemma constr_sem_stateful_star_proj_no_leakage:
+  fixes Sec P lbls k
+  defines "no_leakage \<equiv> \<lambda>\<A>. \<nexists>\<I>\<^sub>\<tau> \<B> s.
+      prefix \<B> \<A> \<and> s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<I>\<^sub>\<tau> \<and> \<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (unlabel \<B>@[send\<langle>[s]\<rangle>])"
+  assumes Sec: "ground Sec"
+    and \<A>: "\<forall>(l,a) \<in> set \<A>. l = \<star>"
+  shows "no_leakage \<A>"
+proof (rule ccontr)
+  assume "\<not>no_leakage \<A>"
+  then obtain I B s where B:
+      "prefix B \<A>" "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B I" "I \<Turnstile>\<^sub>s (unlabel B@[send\<langle>[s]\<rangle>])"
+    unfolding no_leakage_def by blast
+
+  have 1: "\<not>(\<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I)} \<turnstile> s)"
+    using B(2) unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by fast
+
+  have 2: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I) \<turnstile> s"
+    using B(2,3) Sec strand_sem_append_stateful[of "{}" "{}" "unlabel B" "[send\<langle>[s]\<rangle>]" I]
+          trm_subst_ident[of s I] unlabel_subst[of B] ik\<^sub>s\<^sub>s\<^sub>t_subst[of "unlabel B"]
+    by force
+
+  have "l = \<star>" when "(l,c) \<in> set B" for l c
+    using that \<A> B(1) set_mono_prefix by blast
+  hence "l = \<star>" when "(l,c) \<in> set (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I)" for l c
+    using that unfolding subst_apply_labeled_stateful_strand_def by auto
+  hence 3: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I) = (\<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I)})"
+    using in_ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_iff[of _ "B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I"] unfolding ik\<^sub>s\<^sub>s\<^sub>t_def unlabel_def by auto
+
+  show False using 1 2 3 by force
+qed
+
+end
 
 subsection \<open>Lemmata: Properties of the Constraint Translation Function\<close>
+context labeled_stateful_typed_model
+begin
+
 lemma tr_par_labeled_rcv_iff:
   "B \<in> set (tr\<^sub>p\<^sub>c A D) \<Longrightarrow> (i, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<in> set B \<longleftrightarrow> (i, receive\<langle>t\<rangle>) \<in> set A"
 by (induct A D arbitrary: B rule: tr\<^sub>p\<^sub>c.induct) auto
 
 lemma tr_par_declassified_eq:
   "B \<in> set (tr\<^sub>p\<^sub>c A D) \<Longrightarrow> declassified\<^sub>l\<^sub>s\<^sub>t B I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I"
-using tr_par_labeled_rcv_iff unfolding declassified\<^sub>l\<^sub>s\<^sub>t_def declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by simp
+using tr_par_labeled_rcv_iff unfolding declassified\<^sub>l\<^sub>s\<^sub>t_alt_def declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def by simp
 
 lemma tr_par_ik_eq:
   assumes "B \<in> set (tr\<^sub>p\<^sub>c A D)"
@@ -677,7 +831,7 @@ proof -
       "\<And>C. {t. \<exists>i. (i, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<in> set C} = {t. receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel C)}"
       "\<And>C. {t. \<exists>i. (i, receive\<langle>t\<rangle>) \<in> set C} = {t. receive\<langle>t\<rangle> \<in> set (unlabel C)}"
     unfolding unlabel_def by force+
-  ultimately show ?thesis by (metis ik\<^sub>s\<^sub>s\<^sub>t_def ik\<^sub>s\<^sub>t_is_rcv_set)
+  ultimately show ?thesis unfolding ik\<^sub>s\<^sub>s\<^sub>t_def ik\<^sub>s\<^sub>t_is_rcv_set by fast
 qed
 
 lemma tr_par_deduct_iff:
@@ -726,20 +880,20 @@ proof -
     hence 1: "fv\<^sub>l\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t AA \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)"
       using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_mono[of "unlabel (fltD1 Di)" "unlabel D"]
       unfolding unlabel_def fltD1_def by force
-
+    
     have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel (fltD1 Di)) \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)"
       using subseqs_set_subset(1)[OF *(1)]
-      unfolding fltD1_def unlabel_def
+      unfolding fltD1_def unlabel_def dbproj_def
       by auto
 
     have 5: "fv\<^sub>l\<^sub>s\<^sub>t A' = fv\<^sub>l\<^sub>s\<^sub>t (constr Di) \<union> fv\<^sub>l\<^sub>s\<^sub>t A''" using * unfolding unlabel_def by force
 
     have "fv\<^sub>l\<^sub>s\<^sub>t (constr Di) \<subseteq> fv t \<union> fv s \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel (fltD1 Di))"
-      unfolding unlabel_def constr_def fltD1_def fltD2_def pair_def by auto
+      unfolding unlabel_def constr_def fltD1_def fltD2_def pair_def dbproj_def by auto
     hence 3: "fv\<^sub>l\<^sub>s\<^sub>t (constr Di) \<subseteq> fv t \<union> fv s \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)" using 2 by blast
 
     have 4: "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) = fv t \<union> fv s \<union> fv\<^sub>s\<^sub>s\<^sub>t AA" using iB by auto
-
+    
     have "fv\<^sub>s\<^sub>t (unlabel A') \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)" using 1 3 4 5 by blast
     thus ?case by metis
   next
@@ -759,7 +913,7 @@ proof -
     have 1: "fv\<^sub>l\<^sub>s\<^sub>t constr \<subseteq> (D' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X"
       unfolding D'_def constr_def unlabel_def by auto
 
-    have "set (unlabel (dbproj i D)) \<subseteq> set (unlabel D)" unfolding unlabel_def by auto
+    have "set (unlabel (dbproj i D)) \<subseteq> set (unlabel D)" unfolding unlabel_def dbproj_def by auto
     hence 2: "D' \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)"
       using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset'[of F' "unlabel (dbproj i D)"] fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_mono
       unfolding D'_def by blast
@@ -839,7 +993,7 @@ next
     using setops\<^sub>s\<^sub>s\<^sub>t_cons_subset trms\<^sub>s\<^sub>s\<^sub>t_cons
     by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
   moreover have "set Di \<subseteq> set D" "set [d\<leftarrow>dbproj i D . d \<notin> set Di] \<subseteq> set D"
-    using subseqs_set_subset[OF A''(1)] by auto
+    using subseqs_set_subset[OF A''(1)] unfolding dbproj_def by auto
   hence "trms\<^sub>s\<^sub>t (unlabel B) \<subseteq> insert (pair (t, s)) (pair ` snd ` set D)"
         "trms\<^sub>s\<^sub>t (unlabel C) \<subseteq> insert (pair (t, s)) (pair ` snd ` set D)"
     using A''(4,5) unfolding unlabel_def by auto
@@ -860,7 +1014,7 @@ next
     by (metis "7.IH")
   moreover have "trms\<^sub>s\<^sub>t (unlabel A') = {pair (t,s), pair (snd d)} \<union> trms\<^sub>s\<^sub>t (unlabel A'')"
     using A''(1,3) by auto
-  ultimately show ?case using A''(1) by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+  ultimately show ?case using A''(1) unfolding dbproj_def by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
 next
   case (8 i X F F' A D)
   define constr where "constr = map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D)))"
@@ -877,7 +1031,7 @@ next
   ultimately have "trms\<^sub>s\<^sub>t (unlabel A') \<subseteq> B \<union> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union>
                                          pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` snd ` set D"
     using A'' unlabel_append[of constr A''] by auto
-  moreover have "set (dbproj i D) \<subseteq> set D" by auto
+  moreover have "set (dbproj i D) \<subseteq> set D" unfolding dbproj_def by auto
   hence "B \<subseteq> pair ` set F' \<union> pair ` snd ` set D"
     using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset'[of F' "map snd (dbproj i D)"]
     unfolding B_def by force
@@ -917,9 +1071,10 @@ proof -
     note IH = Cons.IH
     show ?case
     proof (cases s)
-      case (Receive t)
+      case (Receive ts)
       note si = Receive i
-      then obtain A'' where A'': "A' = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" "fv t \<subseteq> X"
+      then obtain A'' where A'':
+          "A' = (i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> X"
         using prems unlabel_Cons(1)[of i s A] by moura
       have *: "wf'\<^sub>s\<^sub>s\<^sub>t X (unlabel A)"
               "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<subseteq> X"
@@ -928,12 +1083,12 @@ proof -
         using prems(4) si unfolding P_def by fastforce
       show ?thesis using IH[OF A''(2) *] A''(1,3) by simp
     next
-      case (Send t)
+      case (Send ts)
       note si = Send i
-      then obtain A'' where A'': "A' = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
+      then obtain A'' where A'': "A' = (i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
         using prems by moura
-      have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv t) (unlabel A)"
-              "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<subseteq> X \<union> fv t"
+      have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)) (unlabel A)"
+              "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<subseteq> X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)"
               "P D A"
         using prems si apply (force, force)
         using prems(4) si unfolding P_def by fastforce
@@ -999,7 +1154,7 @@ proof -
           "A' = (i,\<langle>ac: (pair (t,t')) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#A''"
           "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
           "d \<in> set D"
-        using prems by moura
+        using prems by (auto simp add: dbproj_def)
       have *:
           "ac = Assign \<Longrightarrow> wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv t \<union> fv t') (unlabel A)"
           "ac = Check \<Longrightarrow> wf'\<^sub>s\<^sub>s\<^sub>t X (unlabel A)"
@@ -1024,12 +1179,12 @@ proof -
         using prems by moura
 
       have *: "wf'\<^sub>s\<^sub>s\<^sub>t X (unlabel A)" "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<subseteq> X" using prems si by auto
-
+      
       have "bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,\<forall>Y\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>)#A))"
            "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,\<forall>Y\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>)#A))"
         by auto
       hence **:  "P D A" using prems si unfolding P_def by blast
-
+  
       show ?thesis using IH[OF A''(2) * **] A''(1) wf_pair_negchecks_map' by simp
     qed
   qed
@@ -1047,276 +1202,6 @@ using tr_par_wf'[OF _ _ _ _ assms(1)]
       tr_par_vars_disj[OF assms(1)]
       assms(2)
 by fastforce+
-
-lemma tr_par_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
-  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A D)" "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)"
-  and "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}" (is "?P0 A D")
-  and "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}" (is "?P1 A D")
-  and "\<forall>t \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` snd ` set D.
-       \<forall>t' \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` snd ` set D.
-          (\<exists>\<delta>. Unifier \<delta> t t') \<longrightarrow> \<Gamma> t = \<Gamma> t'" (is "?P3 A D")
-  shows "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
-proof -
-  have sublmm: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" "?P0 A D" "?P1 A D" "?P3 A D"
-    when p: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (a#A))" "?P0 (a#A) D" "?P1 (a#A) D" "?P3 (a#A) D"
-    for a A D
-  proof -
-    show "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using p(1) by (simp add: unlabel_def tfr\<^sub>s\<^sub>s\<^sub>t_def)
-    show "?P0 A D" using p(2) fv\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by fastforce
-    show "?P1 A D" using p(3) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by fastforce
-    have "setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> setops\<^sub>s\<^sub>s\<^sub>t (unlabel (a#A))"
-      using setops\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by auto
-    thus "?P3 A D" using p(4) by blast
-  qed
-
-  show ?thesis using assms
-  proof (induction A D arbitrary: A' rule: tr\<^sub>p\<^sub>c.induct)
-    case 1 thus ?case by simp
-  next
-    case (2 i t A D)
-    note prems = "2.prems"
-    note IH = "2.IH"
-    from prems(1) obtain A'' where A'': "A' = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
-    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
-      by meson
-    thus ?case using A''(1) by simp
-  next
-    case (3 i t A D)
-    note prems = "3.prems"
-    note IH = "3.IH"
-    from prems(1) obtain A'' where A'': "A' = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
-    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
-      by meson
-    thus ?case using A''(1) by simp
-  next
-    case (4 i ac t t' A D)
-    note prems = "4.prems"
-    note IH = "4.IH"
-    from prems(1) obtain A'' where A'': "A' = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
-    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
-      by meson
-    thus ?case using A''(1) prems(2) by simp
-  next
-    case (5 i t s A D)
-    note prems = "5.prems"
-    note IH = "5.IH"
-    from prems(1) have A': "A' \<in> set (tr\<^sub>p\<^sub>c A (List.insert (i,t,s) D))" by simp
-
-    have 1: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using sublmm[OF prems(2,3,4,5)] by simp
-
-    have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,insert\<langle>t,s\<rangle>)#A)) \<union> pair`snd`set D =
-          pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair`snd`set (List.insert (i,t,s) D)"
-      by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-    hence 3: "?P3 A (List.insert (i,t,s) D)" using prems(5) by metis
-    moreover have "?P1 A (List.insert (i,t,s) D)"
-      using prems(3,4) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset[of "unlabel A" "insert\<langle>t,s\<rangle>"]
-      unfolding unlabel_def
-      by fastforce
-    ultimately have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
-      using IH[OF A' sublmm(1,2)[OF prems(2,3,4,5)] _ 3] by metis
-    thus ?case using A'(1) by auto
-  next
-    case (6 i t s A D)
-    note prems = "6.prems"
-    note IH = "6.IH"
-
-    define constr where constr: "constr \<equiv> (\<lambda>Di.
-      (map (\<lambda>d. (i,\<langle>check: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di)@
-      (map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t)) (filter (\<lambda>d. d \<notin> set Di) (dbproj i D))))"
-
-    from prems(1) obtain Di A'' where A'':
-        "A' = constr Di@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A (filter (\<lambda>d. d \<notin> set Di) D))"
-        "Di \<in> set (subseqs (dbproj i D))"
-      unfolding constr by fastforce
-
-    define Q1 where "Q1 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
-        \<forall>x \<in> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
-    define Q2 where "Q2 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
-        \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) \<longrightarrow> T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X))"
-
-    have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair`snd`set [d\<leftarrow>D. d \<notin> set Di]
-            \<subseteq> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,delete\<langle>t,s\<rangle>)#A)) \<union> pair`snd`set D"
-      using subseqs_set_subset[OF A''(3)] by (force simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-    moreover have "\<forall>a\<in>M. \<forall>b\<in>M. P a b"
-      when "M \<subseteq> N" "\<forall>a\<in>N. \<forall>b\<in>N. P a b"
-      for M N::"('fun, 'var) terms" and  P
-      using that by blast
-    ultimately have *: "?P3 A (filter (\<lambda>d. d \<notin> set Di) D)"
-      using prems(5) by presburger
-
-    have **: "?P1 A (filter (\<lambda>d. d \<notin> set Di) D)"
-      using prems(4) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset[of "unlabel A" "delete\<langle>t,s\<rangle>"]
-      unfolding unlabel_def by fastforce
-
-    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(3,2) sublmm(1,2)[OF prems(2,3,4,5)] ** *]
-      by metis
-
-    have 2: "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
-             (\<exists>d \<in> set Di. u = pair (t,s) \<and> u' = pair (snd d))"
-      when "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" for ac u u'
-      using that A''(1) unfolding constr unlabel_def by force
-    have 3:
-        "\<forall>X\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
-         (\<exists>d \<in> set (filter (\<lambda>d. d \<notin> set Di) D). u = [(pair (t,s), pair (snd d))] \<and> Q2 u X)"
-      when "\<forall>X\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" for X u
-      using that A''(1) unfolding Q2_def constr unlabel_def by force
-    have 4: "\<forall>d\<in>set D. (\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d)))
-                       \<longrightarrow> \<Gamma> (pair (t,s)) = \<Gamma> (pair (snd d))"
-      using prems(5) by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-
-    { fix ac u u'
-      assume a: "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" "\<exists>\<delta>. Unifier \<delta> u u'"
-      hence "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or> (\<exists>d \<in> set Di. u = pair (t,s) \<and> u' = pair (snd d))"
-        using 2 by metis
-      moreover {
-        assume "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'')"
-        hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t)"
-          using 1 Ball_set_list_all[of "unlabel A''" tfr\<^sub>s\<^sub>t\<^sub>p]
-          by fast
-      } moreover {
-        fix d assume "d \<in> set Di" "u = pair (t,s)" "u' = pair (snd d)"
-        hence "\<exists>\<delta>. Unifier \<delta> u u' \<Longrightarrow> \<Gamma> u = \<Gamma> u'"
-          using 4 dbproj_subseq_subset A''(3)
-          by fast
-        hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t)"
-          using Ball_set_list_all[of "unlabel A''" tfr\<^sub>s\<^sub>t\<^sub>p]
-          by simp
-        hence "\<Gamma> u = \<Gamma> u'" using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"]
-          using a(2) unfolding unlabel_def by auto
-      } ultimately have "\<Gamma> u = \<Gamma> u'"
-          using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"] a(2)
-          unfolding unlabel_def by auto
-    } moreover {
-      fix u U
-      assume "\<forall>U\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')"
-      hence "\<forall>U\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
-             (\<exists>d \<in> set (filter (\<lambda>d. d \<notin> set Di) D). u = [(pair (t,s), pair (snd d))] \<and> Q2 u U)"
-        using 3 by metis
-      hence "Q1 u U \<or> Q2 u U"
-        using 1 4 subseqs_set_subset[OF A''(3)] tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"]
-        unfolding Q1_def Q2_def
-        by blast
-    } ultimately show ?case
-      using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A'"] unfolding Q1_def Q2_def unlabel_def by blast
-  next
-    case (7 i ac t s A D)
-    note prems = "7.prems"
-    note IH = "7.IH"
-
-    from prems(1) obtain d A'' where A'':
-        "A' = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#A''"
-        "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
-        "d \<in> set (dbproj i D)"
-      by moura
-
-    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]]
-      by metis
-
-    have 2: "\<Gamma> (pair (t,s)) = \<Gamma> (pair (snd d))"
-      when "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d))"
-      using that prems(2,5) A''(3) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-
-    show ?case using A''(1) 1 2 by fastforce
-  next
-    case (8 i X F F' A D)
-    note prems = "8.prems"
-    note IH = "8.IH"
-
-    define constr where
-      "constr = map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D)))"
-
-    define Q1 where "Q1 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
-        \<forall>x \<in> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
-
-    define Q2 where "Q2 \<equiv> (\<lambda>(M::('fun,'var) terms) X.
-        \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<longrightarrow> T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X))"
-
-    have Q2_subset: "Q2 M' X" when "M' \<subseteq> M" "Q2 M X" for X M M'
-      using that unfolding Q2_def by auto
-
-    have Q2_supset: "Q2 (M \<union> M') X" when "Q2 M X" "Q2 M' X" for X M M'
-      using that unfolding Q2_def by auto
-
-    from prems obtain A'' where A'': "A' = constr@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
-      using constr_def by moura
-
-    have 0: "constr = [(i,\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)]" when "F' = []" using that unfolding constr_def by simp
-
-    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]]
-      by metis
-
-    have 2: "(F' = [] \<and> Q1 F X) \<or> Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X"
-      using prems(2) unfolding Q1_def Q2_def by simp
-
-    have 3: "F' = [] \<Longrightarrow> Q1 F X \<Longrightarrow> list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)"
-      using 0 2 tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel constr"] unfolding Q1_def by auto
-
-    { fix c assume "c \<in> set (unlabel constr)"
-      hence "\<exists>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D))). c = \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t"
-        unfolding constr_def unlabel_def by force
-    } moreover {
-      fix G
-      assume G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D)))"
-         and c: "\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel constr)"
-         and e: "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X"
-
-      have d_Q2: "Q2 (pair ` set (map snd D)) X" unfolding Q2_def
-      proof (intro allI impI)
-        fix f T assume "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (pair ` set (map snd D))"
-        then obtain d where d: "d \<in> set (map snd D)" "Fun f T \<in> subterms (pair d)" by force
-        hence "fv (pair d) \<inter> set X = {}"
-          using prems(4) unfolding pair_def by (force simp add: unlabel_def)
-        thus "T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)"
-          by (metis fv_disj_Fun_subterm_param_cases d(2))
-      qed
-
-      have "trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G) \<subseteq> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F' \<union> pair ` set (map snd D)"
-        using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset[OF G] by force
-      hence "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G)) X" using Q2_subset[OF _ Q2_supset[OF e d_Q2]] by metis
-      hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)" by (metis Q2_def tfr\<^sub>s\<^sub>t\<^sub>p.simps(2))
-    } ultimately have 4:
-        "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X \<Longrightarrow> list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)"
-      using Ball_set by blast
-
-    have 5: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)" using 2 3 4 by metis
-
-    show ?case using 1 5 A''(1) by (simp add: unlabel_def)
-  qed
-qed
-
-lemma tr_par_tfr:
-  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A [])" and "tfr\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
-    and "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}"
-  shows "tfr\<^sub>s\<^sub>t (unlabel A')"
-proof -
-  have *: "trms\<^sub>l\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
-    using tr_par_trms_subset[OF assms(1)] by simp
-  hence "SMP (trms\<^sub>l\<^sub>s\<^sub>t A') \<subseteq> SMP (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
-    using SMP_mono by simp
-  moreover have "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
-    using assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by fast
-  ultimately have 1: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>t A')" by (metis tfr_subset(2)[OF _ *])
-
-  have **: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by fast
-  have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq>
-        SMP (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)) - Var`\<V>"
-    using setops\<^sub>s\<^sub>s\<^sub>t_are_pairs unfolding pair_def by auto
-  hence "\<Gamma> t = \<Gamma> t'"
-    when "\<exists>\<delta>. Unifier \<delta> t t'" "t \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)" "t' \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
-    for t t'
-    using that assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
-  moreover have "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel []) = {}" "pair ` snd ` set [] = {}" by auto
-  ultimately have 2: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
-    using tr_par_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p[OF assms(1) ** assms(3)] by simp
-
-  show ?thesis by (metis 1 2 tfr\<^sub>s\<^sub>t_def)
-qed
 
 lemma tr_par_proj:
   assumes "B \<in> set (tr\<^sub>p\<^sub>c A D)"
@@ -1415,7 +1300,7 @@ next
 
   define constr where
     "constr = (\<lambda>D. map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D))))"
-
+  
   obtain B' where B':
       "B = constr D@B'"
       "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
@@ -1441,25 +1326,6 @@ next
   qed
 qed (force simp add: proj_def)+
 
-lemma tr_par_preserves_typing_cond:
-  assumes "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A Sec" "typing_cond\<^sub>s\<^sub>s\<^sub>t (unlabel A)" "A' \<in> set (tr\<^sub>p\<^sub>c A [])"
-  shows "typing_cond (unlabel A')"
-proof -
-  have "wf'\<^sub>s\<^sub>s\<^sub>t {} (unlabel A)"
-       "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}"
-       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
-    using assms(2) unfolding typing_cond\<^sub>s\<^sub>s\<^sub>t_def by simp_all
-  hence 1: "wf\<^sub>s\<^sub>t {} (unlabel A')"
-           "fv\<^sub>s\<^sub>t (unlabel A') \<inter> bvars\<^sub>s\<^sub>t (unlabel A') = {}"
-           "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t (unlabel A'))"
-           "Ana_invar_subst (ik\<^sub>s\<^sub>t (unlabel A') \<union> assignment_rhs\<^sub>s\<^sub>t (unlabel A'))"
-    using tr_par_wf[OF assms(3)] Ana_invar_subst' by metis+
-
-  have 2: "tfr\<^sub>s\<^sub>t (unlabel A')" by (metis tr_par_tfr assms(2,3) typing_cond\<^sub>s\<^sub>s\<^sub>t_def)
-
-  show ?thesis by (metis 1 2 typing_cond_def)
-qed
-
 lemma tr_par_preserves_par_comp:
   assumes "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A Sec" "A' \<in> set (tr\<^sub>p\<^sub>c A [])"
   shows "par_comp A' Sec"
@@ -1480,18 +1346,139 @@ proof -
   } hence 1: "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow> GSMP_disjoint (trms_proj\<^sub>l\<^sub>s\<^sub>t l1 A') (trms_proj\<^sub>l\<^sub>s\<^sub>t l2 A') Sec"
     using 0(1) by metis
 
-  have 2: "ground Sec" "\<forall>s \<in> Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> Sec"
+  have 2: "ground Sec" "\<forall>s \<in> Sec. \<not>{} \<turnstile>\<^sub>c s"
     using assms(1) unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by metis+
 
   show ?thesis using 1 2 unfolding par_comp_def by metis
 qed
 
+lemma tr_preserves_receives:
+  assumes "E \<in> set (tr\<^sub>p\<^sub>c F D)" "(l, receive\<langle>t\<rangle>) \<in> set F"
+  shows "(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<in> set E"
+using assms by (induct F D arbitrary: E rule: tr\<^sub>p\<^sub>c.induct) auto
+
+lemma tr_preserves_last_receive:
+  assumes "E \<in> set (tr\<^sub>p\<^sub>c F D)" "suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E"
+  shows "\<exists>G. suffix ((l, receive\<langle>t\<rangle>)#G) F \<and> list_all (Not \<circ> is_Receive \<circ> snd) G"
+    (is "\<exists>G. ?P G F \<and> ?Q G")
+using assms
+proof (induction F D arbitrary: E rule: tr\<^sub>p\<^sub>c.induct)
+  case (1 D) thus ?case by simp
+next
+  case (2 i t' S D)
+  note prems = "2.prems"
+  note IH = "2.IH"
+
+  obtain E' where E': "E = (i,send\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'" "E' \<in> set (tr\<^sub>p\<^sub>c S D)"
+    using prems(1) by auto
+
+  obtain G where G: "?P G S" "?Q G"
+    using suffix_Cons'[OF prems(2)[unfolded E'(1)]] IH[OF E'(2)] by blast
+
+  show ?case by (metis suffix_Cons G)
+next
+  case (3 i t' S D)
+  note prems = "3.prems"
+  note IH = "3.IH"
+
+  obtain E' where E': "E = (i,receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'" "E' \<in> set (tr\<^sub>p\<^sub>c S D)"
+    using prems(1) by auto
+
+  show ?case using suffix_Cons'[OF prems(2)[unfolded E'(1)]]
+  proof
+    assume "suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'"
+    then obtain G where G: "?P G S" "?Q G"
+      using IH[OF E'(2)] by blast
+    show ?thesis by (metis suffix_Cons G)
+  next
+    assume "(i, receive\<langle>t'\<rangle>\<^sub>s\<^sub>t) = (l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<and> E' = []"
+    hence *: "i = l" "t' = t" "E' = []" by simp_all
+    show ?thesis
+      using tr_preserves_receives[OF E'(2)]
+      unfolding * list_all_iff is_Receive_def by fastforce
+  qed
+next
+  case (4 i ac t' t'' S D)
+  note prems = "4.prems"
+  note IH = "4.IH"
+
+  obtain E' where E': "E = (i,\<langle>ac: t' \<doteq> t''\<rangle>\<^sub>s\<^sub>t)#E'" "E' \<in> set (tr\<^sub>p\<^sub>c S D)"
+    using prems(1) by auto
+
+  obtain G where G: "?P G S" "?Q G"
+    using suffix_Cons'[OF prems(2)[unfolded E'(1)]] IH[OF E'(2)] by blast
+
+  show ?case by (metis suffix_Cons G)
+next
+  case (5 i t' s S D)
+  note prems = "5.prems"
+  note IH = "5.IH"
+
+  have "E \<in> set (tr\<^sub>p\<^sub>c S (List.insert (i,t',s) D))" using prems(1) by auto
+  thus ?case by (metis IH[OF _ prems(2)] suffix_Cons)
+next
+  case (6 i t' s S D)
+  note prems = "6.prems"
+  note IH = "6.IH"
+
+  define constr where "constr = (\<lambda>Di.
+    (map (\<lambda>d. (i,\<langle>check: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di)@
+    (map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t',s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t))
+      (filter (\<lambda>d. d \<notin> set Di) (dbproj i D))))"
+
+  obtain E' Di where E':
+      "E = constr Di@E'" "E' \<in> set (tr\<^sub>p\<^sub>c S (filter (\<lambda>d. d \<notin> set Di) D))"
+      "Di \<in> set (subseqs (dbproj i D))"
+    using prems(1) unfolding constr_def by auto
+
+  have "receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<notin> snd ` set (constr Di)" unfolding constr_def by force
+  hence "\<not>suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] (constr Di)" unfolding suffix_def by auto
+  hence "1 \<le> length E'" using prems(2) E'(1) by (cases E') auto
+  hence "suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'"
+    using suffix_length_suffix[OF prems(2) suffixI[OF E'(1)]] by simp
+  thus ?case by (metis IH[OF E'(3,2)] suffix_Cons)
+next
+  case (7 i ac t' s S D)
+  note prems = "7.prems"
+  note IH = "7.IH"
+
+  define constr where "constr = (
+    \<lambda>d::(('lbl strand_label \<times> ('fun,'var) term \<times> ('fun,'var) term)).
+      (i,\<langle>ac: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t))"
+  
+  obtain E' d where E': "E = constr d#E'" "E' \<in> set (tr\<^sub>p\<^sub>c S D)" "d \<in> set (dbproj i D)"
+    using prems(1) unfolding constr_def by auto
+
+  have "receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<noteq> snd (constr d)" unfolding constr_def by force
+  hence "suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" using prems(2) E'(1) suffix_Cons' by fastforce
+  thus ?case by (metis IH[OF E'(2)] suffix_Cons)
+next
+  case (8 i X G G' S D)
+  note prems = "8.prems"
+  note IH = "8.IH"
+
+  define constr where
+    "constr = map (\<lambda>H. (i,\<forall>X\<langle>\<or>\<noteq>: (G@H)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G' (map snd (dbproj i D)))"
+  
+  obtain E' where E': "E = constr@E'" "E' \<in> set (tr\<^sub>p\<^sub>c S D)"
+    using prems(1) constr_def by auto
+
+  have "receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<notin> snd ` set constr" unfolding constr_def by force
+  hence "\<not>suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] constr" unfolding suffix_def by auto
+  hence "1 \<le> length E'" using prems(2) E'(1) by (cases E') auto
+  hence "suffix [(l, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'"
+    using suffix_length_suffix[OF prems(2) suffixI[OF E'(1)]] by simp
+  thus ?case by (metis IH[OF E'(2)] suffix_Cons)
+qed
+
 lemma tr_leaking_prefix_exists:
-  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A [])" "prefix B A'" "ik\<^sub>s\<^sub>t (proj_unl n B) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
-  shows "\<exists>C D. prefix C B \<and> prefix D A \<and> C \<in> set (tr\<^sub>p\<^sub>c D []) \<and> (ik\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>)"
+  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A [])" "prefix B A'" "ik\<^sub>s\<^sub>t (proj_unl n B) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t"
+  shows "\<exists>C D. prefix C B \<and> prefix D A \<and> C \<in> set (tr\<^sub>p\<^sub>c D []) \<and> (ik\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t) \<and>
+               (\<not>{} \<turnstile>\<^sub>c t \<longrightarrow> (\<exists>l s G. suffix ((l, receive\<langle>s\<rangle>)#G) D \<and> list_all (Not \<circ> is_Receive \<circ> snd) G))"
 proof -
   let ?P = "\<lambda>B C C'. B = C@C' \<and> (\<forall>n t. (n, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set C') \<and>
                      (C = [] \<or> (\<exists>n t. suffix [(n,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] C))"
+
   have "\<exists>C C'. ?P B C C'"
   proof (induction B)
     case (Cons b B)
@@ -1526,204 +1513,510 @@ proof -
   have "\<And>m t. (m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<in> set B \<Longrightarrow> (m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<in> set C" using C by auto
   hence "\<And>t. receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<in> set (proj_unl n B) \<Longrightarrow> receive\<langle>t\<rangle>\<^sub>s\<^sub>t \<in> set (proj_unl n C)"
     unfolding unlabel_def proj_def by force
-  hence "ik\<^sub>s\<^sub>t (proj_unl n B) \<subseteq> ik\<^sub>s\<^sub>t (proj_unl n C)" using ik\<^sub>s\<^sub>t_is_rcv_set by auto
-  hence 3: "ik\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" by (metis ideduct_mono[OF assms(3)] subst_all_mono)
+  hence "ik\<^sub>s\<^sub>t (proj_unl n B) \<subseteq> ik\<^sub>s\<^sub>t (proj_unl n C)" using ik\<^sub>s\<^sub>t_is_rcv_set by blast
+  hence 3: "ik\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t" by (metis ideduct_mono[OF assms(3)] subst_all_mono)
 
-  { fix D E m t assume  "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E" "prefix E A'" "A' \<in> set (tr\<^sub>p\<^sub>c A D)"
-    hence "\<exists>F. prefix F A \<and> E \<in> set (tr\<^sub>p\<^sub>c F D)"
-    proof (induction A D arbitrary: A' E rule: tr\<^sub>p\<^sub>c.induct)
-      case (1 D) thus ?case by simp
-    next
-      case (2 i t' S D)
-      note prems = "2.prems"
-      note IH = "2.IH"
-      obtain A'' where *: "A' = (i,send\<langle>t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
-        using prems(3) by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = (i,send\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'"
-        using *(1) prems(2) by (cases E) auto
-      hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-        using *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
-      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
-        using *(2) ** IH by metis
-      hence "prefix ((i,Send t')#F) ((i,Send t')#S)" "E \<in> set (tr\<^sub>p\<^sub>c ((i,Send t')#F) D)"
-        using ** by auto
-      thus ?case by metis
-    next
-      case (3 i t' S D)
-      note prems = "3.prems"
-      note IH = "3.IH"
-      obtain A'' where *: "A' = (i,receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
-        using prems(3) by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = (i,receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'"
-        using *(1) prems(2) by (cases E) auto
-      show ?case
-      proof (cases "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) = (i, receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)")
+  have "\<exists>F. prefix F A \<and> E \<in> set (tr\<^sub>p\<^sub>c F D)"
+    when "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E" "prefix E A'" "A' \<in> set (tr\<^sub>p\<^sub>c A D)" for D E m t
+    using that
+  proof (induction A D arbitrary: A' E rule: tr\<^sub>p\<^sub>c.induct)
+    case (1 D) thus ?case by simp
+  next
+    case (2 i t' S D)
+    note prems = "2.prems"
+    note IH = "2.IH"
+    obtain A'' where *: "A' = (i,send\<langle>t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
+      using prems(3) by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = (i,send\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'"
+      using *(1) prems(2) by (cases E) auto
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+      using *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
+    then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
+      using *(2) ** IH by metis
+    hence "prefix ((i,Send t')#F) ((i,Send t')#S)" "E \<in> set (tr\<^sub>p\<^sub>c ((i,Send t')#F) D)"
+      using ** by auto
+    thus ?case by metis
+  next
+    case (3 i t' S D)
+    note prems = "3.prems"
+    note IH = "3.IH"
+    obtain A'' where *: "A' = (i,receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
+      using prems(3) by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = (i,receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)#E'"
+      using *(1) prems(2) by (cases E) auto
+    show ?case
+    proof (cases "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) = (i, receive\<langle>t'\<rangle>\<^sub>s\<^sub>t)")
+      case True
+      note T = True
+      show ?thesis
+      proof (cases "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'")
         case True
-        note T = True
-        show ?thesis
-        proof (cases "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'")
-          case True
-          hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-            using ** *(1) prems(1,2) by auto
-          then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
-            using *(2) ** IH by metis
-          hence "prefix ((i,receive\<langle>t'\<rangle>)#F) ((i,receive\<langle>t'\<rangle>)#S)"
-                "E \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>t'\<rangle>)#F) D)"
-            using ** by auto
-          thus ?thesis by metis
-        next
-          case False
-          hence "E' = []"
-            using **(1) T prems(1)
-                  suffix_Cons[of "[(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)" E']
-            by auto
-          hence "prefix [(i,receive\<langle>t'\<rangle>)] ((i,receive\<langle>t'\<rangle>) # S) \<and> E \<in> set (tr\<^sub>p\<^sub>c [(i,receive\<langle>t'\<rangle>)] D)"
-            using * ** prems by auto
-          thus ?thesis by metis
-        qed
+        hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+          using ** *(1) prems(1,2) by auto
+        then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
+          using *(2) ** IH by metis
+        hence "prefix ((i,receive\<langle>t'\<rangle>)#F) ((i,receive\<langle>t'\<rangle>)#S)"
+              "E \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>t'\<rangle>)#F) D)"
+          using ** by auto
+        thus ?thesis by metis
       next
         case False
-        hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-          using ** *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
-        then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
-        hence "prefix ((i,receive\<langle>t'\<rangle>)#F) ((i,receive\<langle>t'\<rangle>)#S)" "E \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>t'\<rangle>)#F) D)"
-          using ** by auto
+        hence "E' = []"
+          using **(1) T prems(1)
+                suffix_Cons[of "[(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)" E']
+          by auto
+        hence "prefix [(i,receive\<langle>t'\<rangle>)] ((i,receive\<langle>t'\<rangle>) # S) \<and> E \<in> set (tr\<^sub>p\<^sub>c [(i,receive\<langle>t'\<rangle>)] D)"
+          using * ** prems by auto
         thus ?thesis by metis
       qed
     next
-      case (4 i ac t' t'' S D)
-      note prems = "4.prems"
-      note IH = "4.IH"
-      obtain A'' where *: "A' = (i,\<langle>ac: t' \<doteq> t''\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
-        using prems(3) by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = (i,\<langle>ac: t' \<doteq> t''\<rangle>\<^sub>s\<^sub>t)#E'"
-        using *(1) prems(2) by (cases E) auto
+      case False
       hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-        using *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
-      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
-        using *(2) ** IH by metis
-      hence "prefix ((i,Equality ac t' t'')#F) ((i,Equality ac t' t'')#S)"
-            "E \<in> set (tr\<^sub>p\<^sub>c ((i,Equality ac t' t'')#F) D)"
+        using ** *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
+      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
+      hence "prefix ((i,receive\<langle>t'\<rangle>)#F) ((i,receive\<langle>t'\<rangle>)#S)" "E \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>t'\<rangle>)#F) D)"
         using ** by auto
-      thus ?case by metis
-    next
-      case (5 i t' s S D)
-      note prems = "5.prems"
-      note IH = "5.IH"
-      have *: "A' \<in> set (tr\<^sub>p\<^sub>c S (List.insert (i,t',s) D))" using prems(3) by auto
-      have "E \<noteq> []" using prems(1) by auto
-      hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E" "prefix E A'"
-        using *(1) prems(1,2) suffix_Cons[of _ _ E] by auto
-      then obtain F where "prefix F S" "E \<in> set (tr\<^sub>p\<^sub>c F (List.insert (i,t',s) D))"
-        using * IH by metis
-      hence "prefix ((i,insert\<langle>t',s\<rangle>)#F) ((i,insert\<langle>t',s\<rangle>)#S)"
-            "E \<in> set (tr\<^sub>p\<^sub>c ((i,insert\<langle>t',s\<rangle>)#F) D)"
-        by auto
-      thus ?case by metis
-    next
-      case (6 i t' s S D)
-      note prems = "6.prems"
-      note IH = "6.IH"
-
-      define constr where "constr = (\<lambda>Di.
-        (map (\<lambda>d. (i,\<langle>check: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di)@
-        (map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t',s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t))
-          (filter (\<lambda>d. d \<notin> set Di) (dbproj i D))))"
-
-      obtain A'' Di where *:
-          "A' = constr Di@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S (filter (\<lambda>d. d \<notin> set Di) D))"
-          "Di \<in> set (subseqs (dbproj i D))"
-        using prems(3) constr_def by auto
-      have ***:  "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set (constr Di)" using constr_def by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = constr Di@E'"
-        using *(1) prems(1,2) ***
-        by (metis (mono_tags, lifting) Un_iff list.set_intros(1) prefixI prefix_def
-                                       prefix_same_cases set_append suffix_def)
-      hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-        using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "constr Di" E'] ***
-        by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
-                                        snoc_suffix_snoc suffix_appendD,
-            auto)
-      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F (filter (\<lambda>d. d \<notin> set Di) D))"
-        using *(2,3) ** IH by metis
-      hence "prefix ((i,delete\<langle>t',s\<rangle>)#F) ((i,delete\<langle>t',s\<rangle>)#S)"
-            "E \<in> set (tr\<^sub>p\<^sub>c ((i,delete\<langle>t',s\<rangle>)#F) D)"
-        using *(3) ** constr_def by auto
-      thus ?case by metis
-    next
-      case (7 i ac t' s S D)
-      note prems = "7.prems"
-      note IH = "7.IH"
-
-      define constr where "constr = (
-        \<lambda>d::(('lbl strand_label \<times> ('fun,'var) term \<times> ('fun,'var) term)).
-          (i,\<langle>ac: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t))"
-
-      obtain A'' d where *: "A' = constr d#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)" "d \<in> set (dbproj i D)"
-        using prems(3) constr_def by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = constr d#E'" using *(1) prems(2) by (cases E) auto
-      hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-        using *(1) prems(1,2) suffix_Cons[of _ _ E'] using constr_def by auto
-      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
-      hence "prefix ((i,InSet ac t' s)#F) ((i,InSet ac t' s)#S)"
-            "E \<in> set (tr\<^sub>p\<^sub>c ((i,InSet ac t' s)#F) D)"
-        using *(3) ** unfolding constr_def by auto
-      thus ?case by metis
-    next
-      case (8 i X G G' S D)
-      note prems = "8.prems"
-      note IH = "8.IH"
-
-      define constr where
-        "constr = map (\<lambda>H. (i,\<forall>X\<langle>\<or>\<noteq>: (G@H)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G' (map snd (dbproj i D)))"
-
-      obtain A'' where *: "A' = constr@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
-        using prems(3) constr_def by auto
-      have ***:  "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set constr" using constr_def by auto
-      have "E \<noteq> []" using prems(1) by auto
-      then obtain E' where **: "E = constr@E'"
-        using *(1) prems(1,2) ***
-        by (metis (mono_tags, lifting) Un_iff list.set_intros(1) prefixI prefix_def
-                                       prefix_same_cases set_append suffix_def)
-      hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
-        using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" constr E'] ***
-        by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
-                                        snoc_suffix_snoc suffix_appendD,
-            auto)
-      then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
-      hence "prefix ((i,NegChecks X G G')#F) ((i,NegChecks X G G')#S)"
-            "E \<in> set (tr\<^sub>p\<^sub>c ((i,NegChecks X G G')#F) D)"
-        using ** constr_def by auto
-      thus ?case by metis
+      thus ?thesis by metis
     qed
-  }
+  next
+    case (4 i ac t' t'' S D)
+    note prems = "4.prems"
+    note IH = "4.IH"
+    obtain A'' where *: "A' = (i,\<langle>ac: t' \<doteq> t''\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
+      using prems(3) by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = (i,\<langle>ac: t' \<doteq> t''\<rangle>\<^sub>s\<^sub>t)#E'"
+      using *(1) prems(2) by (cases E) auto
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+      using *(1) prems(1,2) suffix_Cons[of _ _ E'] by auto
+    then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)"
+      using *(2) ** IH by metis
+    hence "prefix ((i,Equality ac t' t'')#F) ((i,Equality ac t' t'')#S)"
+          "E \<in> set (tr\<^sub>p\<^sub>c ((i,Equality ac t' t'')#F) D)"
+      using ** by auto
+    thus ?case by metis
+  next
+    case (5 i t' s S D)
+    note prems = "5.prems"
+    note IH = "5.IH"
+    have *: "A' \<in> set (tr\<^sub>p\<^sub>c S (List.insert (i,t',s) D))" using prems(3) by auto
+    have "E \<noteq> []" using prems(1) by auto
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E" "prefix E A'"
+      using *(1) prems(1,2) suffix_Cons[of _ _ E] by auto
+    then obtain F where "prefix F S" "E \<in> set (tr\<^sub>p\<^sub>c F (List.insert (i,t',s) D))"
+      using * IH by metis
+    hence "prefix ((i,insert\<langle>t',s\<rangle>)#F) ((i,insert\<langle>t',s\<rangle>)#S)"
+          "E \<in> set (tr\<^sub>p\<^sub>c ((i,insert\<langle>t',s\<rangle>)#F) D)"
+      by auto
+    thus ?case by metis
+  next
+    case (6 i t' s S D)
+    note prems = "6.prems"
+    note IH = "6.IH"
+
+    define constr where "constr = (\<lambda>Di.
+      (map (\<lambda>d. (i,\<langle>check: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di)@
+      (map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t',s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t))
+        (filter (\<lambda>d. d \<notin> set Di) (dbproj i D))))"
+
+    obtain A'' Di where *:
+        "A' = constr Di@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S (filter (\<lambda>d. d \<notin> set Di) D))"
+        "Di \<in> set (subseqs (dbproj i D))"
+      using prems(3) constr_def by auto
+    have ***:  "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set (constr Di)" using constr_def by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = constr Di@E'"
+      using *(1) prems(1,2) ***
+      by (metis (mono_tags, lifting) Un_iff list.set_intros(1) prefixI prefix_def
+                                     prefix_same_cases set_append suffix_def)
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+      using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "constr Di" E'] ***
+      by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
+                                      snoc_suffix_snoc suffix_appendD,
+          auto)
+    then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F (filter (\<lambda>d. d \<notin> set Di) D))"
+      using *(2,3) ** IH by metis
+    hence "prefix ((i,delete\<langle>t',s\<rangle>)#F) ((i,delete\<langle>t',s\<rangle>)#S)"
+          "E \<in> set (tr\<^sub>p\<^sub>c ((i,delete\<langle>t',s\<rangle>)#F) D)"
+      using *(3) ** constr_def by auto
+    thus ?case by metis
+  next
+    case (7 i ac t' s S D)
+    note prems = "7.prems"
+    note IH = "7.IH"
+
+    define constr where "constr = (
+      \<lambda>d::(('lbl strand_label \<times> ('fun,'var) term \<times> ('fun,'var) term)).
+        (i,\<langle>ac: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t))"
+    
+    obtain A'' d where *: "A' = constr d#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)" "d \<in> set (dbproj i D)"
+      using prems(3) constr_def by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = constr d#E'" using *(1) prems(2) by (cases E) auto
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+      using *(1) prems(1,2) suffix_Cons[of _ _ E'] using constr_def by auto
+    then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
+    hence "prefix ((i,InSet ac t' s)#F) ((i,InSet ac t' s)#S)"
+          "E \<in> set (tr\<^sub>p\<^sub>c ((i,InSet ac t' s)#F) D)"
+      using *(3) ** unfolding constr_def by auto
+    thus ?case by metis
+  next
+    case (8 i X G G' S D)
+    note prems = "8.prems"
+    note IH = "8.IH"
+
+    define constr where
+      "constr = map (\<lambda>H. (i,\<forall>X\<langle>\<or>\<noteq>: (G@H)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G' (map snd (dbproj i D)))"
+    
+    obtain A'' where *: "A' = constr@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
+      using prems(3) constr_def by auto
+    have ***:  "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set constr" using constr_def by auto
+    have "E \<noteq> []" using prems(1) by auto
+    then obtain E' where **: "E = constr@E'"
+      using *(1) prems(1,2) ***
+      by (metis (mono_tags, lifting) Un_iff list.set_intros(1) prefixI prefix_def
+                                     prefix_same_cases set_append suffix_def)
+    hence "suffix [(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] E'" "prefix E' A''"
+      using *(1) prems(1,2) suffix_append[of "[(m,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]" constr E'] ***
+      by (metis (no_types, opaque_lifting) Nil_suffix append_Nil2 in_set_conv_decomp rev_exhaust
+                                      snoc_suffix_snoc suffix_appendD,
+          auto)
+    then obtain F where "prefix F S" "E' \<in> set (tr\<^sub>p\<^sub>c F D)" using *(2) ** IH by metis
+    hence "prefix ((i,NegChecks X G G')#F) ((i,NegChecks X G G')#S)"
+          "E \<in> set (tr\<^sub>p\<^sub>c ((i,NegChecks X G G')#F) D)"
+      using ** constr_def by auto
+    thus ?case by metis
+  qed
   moreover have "prefix [] A" "[] \<in> set (tr\<^sub>p\<^sub>c [] [])" by auto
-  ultimately have 4: "\<exists>D. prefix D A \<and> C \<in> set (tr\<^sub>p\<^sub>c D [])" using C(3) assms(1) 2 by blast
+  moreover have "{} \<turnstile>\<^sub>c t" when "C = []" using 3 by (simp add: deducts_eq_if_empty_ik that)
+  ultimately have 4:
+      "\<exists>D. prefix D A \<and> C \<in> set (tr\<^sub>p\<^sub>c D []) \<and>
+           (\<not>{} \<turnstile>\<^sub>c t \<longrightarrow> (\<exists>l s G. suffix ((l, receive\<langle>s\<rangle>)#G) D \<and>
+                                  list_all (Not \<circ> is_Receive \<circ> snd) G))"
+    using C(3) assms(1) 2 by (meson tr_preserves_last_receive)
 
   show ?thesis by (metis 1 3 4)
 qed
 
+end
+
+context labeled_stateful_typing
+begin
+
+
+lemma tr_par_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
+  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A D)" "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)"
+  and "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}" (is "?P0 A D")
+  and "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}" (is "?P1 A D")
+  and "\<forall>t \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` snd ` set D.
+       \<forall>t' \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` snd ` set D.
+          (\<exists>\<delta>. Unifier \<delta> t t') \<longrightarrow> \<Gamma> t = \<Gamma> t'" (is "?P3 A D")
+  shows "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
+proof -
+  have sublmm: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" "?P0 A D" "?P1 A D" "?P3 A D"
+    when p: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (a#A))" "?P0 (a#A) D" "?P1 (a#A) D" "?P3 (a#A) D"
+    for a A D
+  proof -
+    show "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using p(1) by (simp add: unlabel_def tfr\<^sub>s\<^sub>s\<^sub>t_def)
+    show "?P0 A D" using p(2) fv\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by fastforce
+    show "?P1 A D" using p(3) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by fastforce
+    have "setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> setops\<^sub>s\<^sub>s\<^sub>t (unlabel (a#A))"
+      using setops\<^sub>s\<^sub>s\<^sub>t_cons_subset unfolding unlabel_def by auto
+    thus "?P3 A D" using p(4) by blast
+  qed
+
+  show ?thesis using assms
+  proof (induction A D arbitrary: A' rule: tr\<^sub>p\<^sub>c.induct)
+    case 1 thus ?case by simp
+  next
+    case (2 i t A D)
+    note prems = "2.prems"
+    note IH = "2.IH"
+    from prems(1) obtain A'' where A'': "A' = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
+    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
+      by meson
+    thus ?case using A''(1) by simp
+  next
+    case (3 i t A D)
+    note prems = "3.prems"
+    note IH = "3.IH"
+    from prems(1) obtain A'' where A'': "A' = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
+    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
+      by meson
+    thus ?case using A''(1) by simp
+  next
+    case (4 i ac t t' A D)
+    note prems = "4.prems"
+    note IH = "4.IH"
+    from prems(1) obtain A'' where A'': "A' = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)" by moura
+    have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)]
+      by meson
+    thus ?case using A''(1) prems(2) by simp
+  next
+    case (5 i t s A D)
+    note prems = "5.prems"
+    note IH = "5.IH"
+    from prems(1) have A': "A' \<in> set (tr\<^sub>p\<^sub>c A (List.insert (i,t,s) D))" by simp
+
+    have 1: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using sublmm[OF prems(2,3,4,5)] by simp
+  
+    have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,insert\<langle>t,s\<rangle>)#A)) \<union> pair`snd`set D =
+          pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair`snd`set (List.insert (i,t,s) D)"
+      by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+    hence 3: "?P3 A (List.insert (i,t,s) D)" using prems(5) by metis
+    moreover have "?P1 A (List.insert (i,t,s) D)"
+      using prems(3,4) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset[of "unlabel A" "insert\<langle>t,s\<rangle>"]
+      unfolding unlabel_def
+      by fastforce
+    ultimately have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
+      using IH[OF A' sublmm(1,2)[OF prems(2,3,4,5)] _ 3] by metis
+    thus ?case using A'(1) by auto
+  next
+    case (6 i t s A D)
+    note prems = "6.prems"
+    note IH = "6.IH"
+
+    define constr where constr: "constr \<equiv> (\<lambda>Di.
+      (map (\<lambda>d. (i,\<langle>check: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di)@
+      (map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t)) (filter (\<lambda>d. d \<notin> set Di) (dbproj i D))))"
+
+    from prems(1) obtain Di A'' where A'':
+        "A' = constr Di@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A (filter (\<lambda>d. d \<notin> set Di) D))"
+        "Di \<in> set (subseqs (dbproj i D))"
+      unfolding constr by fastforce
+
+    define Q1 where "Q1 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
+        \<forall>x \<in> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
+    define Q2 where "Q2 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
+        \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) \<longrightarrow> T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X))"
+
+    have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair`snd`set [d\<leftarrow>D. d \<notin> set Di]
+            \<subseteq> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,delete\<langle>t,s\<rangle>)#A)) \<union> pair`snd`set D"
+      using subseqs_set_subset[OF A''(3)] by (force simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+    moreover have "\<forall>a\<in>M. \<forall>b\<in>M. P a b"
+      when "M \<subseteq> N" "\<forall>a\<in>N. \<forall>b\<in>N. P a b"
+      for M N::"('fun, 'var) terms" and  P
+      using that by blast
+    ultimately have *: "?P3 A (filter (\<lambda>d. d \<notin> set Di) D)"
+      using prems(5) by presburger
+
+    have **: "?P1 A (filter (\<lambda>d. d \<notin> set Di) D)"
+      using prems(4) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset[of "unlabel A" "delete\<langle>t,s\<rangle>"]
+      unfolding unlabel_def by fastforce
+      
+    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(3,2) sublmm(1,2)[OF prems(2,3,4,5)] ** *]
+      by metis
+
+    have 2: "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
+             (\<exists>d \<in> set Di. u = pair (t,s) \<and> u' = pair (snd d))"
+      when "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" for ac u u'
+      using that A''(1) unfolding constr unlabel_def by force
+    have 3:
+        "\<forall>X\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
+         (\<exists>d \<in> set (filter (\<lambda>d. d \<notin> set Di) D). u = [(pair (t,s), pair (snd d))] \<and> Q2 u X)"
+      when "\<forall>X\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" for X u
+      using that A''(1) unfolding Q2_def constr unlabel_def dbproj_def by force
+    have 4: "\<forall>d\<in>set D. (\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d)))
+                       \<longrightarrow> \<Gamma> (pair (t,s)) = \<Gamma> (pair (snd d))"
+      using prems(5) by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+
+    { fix ac u u'
+      assume a: "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')" "\<exists>\<delta>. Unifier \<delta> u u'"
+      hence "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or> (\<exists>d \<in> set Di. u = pair (t,s) \<and> u' = pair (snd d))"
+        using 2 by metis
+      moreover {
+        assume "\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'')"
+        hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t)"
+          using 1 Ball_set_list_all[of "unlabel A''" tfr\<^sub>s\<^sub>t\<^sub>p]
+          by fast
+      } moreover {
+        fix d assume "d \<in> set Di" "u = pair (t,s)" "u' = pair (snd d)"
+        hence "\<exists>\<delta>. Unifier \<delta> u u' \<Longrightarrow> \<Gamma> u = \<Gamma> u'"
+          using 4 dbproj_subseq_subset A''(3)
+          by fast
+        hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: u \<doteq> u'\<rangle>\<^sub>s\<^sub>t)"
+          using Ball_set_list_all[of "unlabel A''" tfr\<^sub>s\<^sub>t\<^sub>p]
+          by simp
+        hence "\<Gamma> u = \<Gamma> u'" using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"]
+          using a(2) unfolding unlabel_def by auto
+      } ultimately have "\<Gamma> u = \<Gamma> u'"
+          using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"] a(2)
+          unfolding unlabel_def by auto
+    } moreover {
+      fix u U
+      assume "\<forall>U\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A')"
+      hence "\<forall>U\<langle>\<or>\<noteq>: u\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel A'') \<or>
+             (\<exists>d \<in> set (filter (\<lambda>d. d \<notin> set Di) D). u = [(pair (t,s), pair (snd d))] \<and> Q2 u U)"
+        using 3 by metis
+      hence "Q1 u U \<or> Q2 u U"
+        using 1 4 subseqs_set_subset[OF A''(3)] tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A''"]
+        unfolding Q1_def Q2_def
+        by blast
+    } ultimately show ?case
+      using tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel A'"] unfolding Q1_def Q2_def unlabel_def by blast
+  next
+    case (7 i ac t s A D)
+    note prems = "7.prems"
+    note IH = "7.IH"
+
+    from prems(1) obtain d A'' where A'':
+        "A' = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#A''"
+        "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
+        "d \<in> set (dbproj i D)"
+      by moura
+
+    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]] 
+      by metis
+    
+    have 2: "\<Gamma> (pair (t,s)) = \<Gamma> (pair (snd d))"
+      when "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d))"
+      using that prems(2,5) A''(3) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def dbproj_def)
+    
+    show ?case using A''(1) 1 2 by fastforce
+  next
+    case (8 i X F F' A D)
+    note prems = "8.prems"
+    note IH = "8.IH"
+
+    define constr where
+      "constr = map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D)))"
+
+    define Q1 where "Q1 \<equiv> (\<lambda>(F::(('fun,'var) term \<times> ('fun,'var) term) list) X.
+        \<forall>x \<in> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
+
+    define Q2 where "Q2 \<equiv> (\<lambda>(M::('fun,'var) terms) X.
+        \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<longrightarrow> T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X))"
+
+    have Q2_subset: "Q2 M' X" when "M' \<subseteq> M" "Q2 M X" for X M M'
+      using that unfolding Q2_def by auto
+
+    have Q2_supset: "Q2 (M \<union> M') X" when "Q2 M X" "Q2 M' X" for X M M'
+      using that unfolding Q2_def by auto
+
+    from prems obtain A'' where A'': "A' = constr@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c A D)"
+      using constr_def by moura
+
+    have 0: "constr = [(i,\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)]" when "F' = []" using that unfolding constr_def by simp
+
+    have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
+      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]]
+      by metis
+
+    have 2: "(F' = [] \<and> Q1 F X) \<or> Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X"
+      using prems(2) unfolding Q1_def Q2_def by simp
+  
+    have 3: "F' = [] \<Longrightarrow> Q1 F X \<Longrightarrow> list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)"
+      using 0 2 tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel constr"] unfolding Q1_def by auto
+
+    { fix c assume "c \<in> set (unlabel constr)"
+      hence "\<exists>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D))). c = \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t"
+        unfolding constr_def unlabel_def by force
+    } moreover {
+      fix G
+      assume G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D)))"
+         and c: "\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t \<in> set (unlabel constr)"
+         and e: "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X"
+
+      have d_Q2: "Q2 (pair ` set (map snd D)) X" unfolding Q2_def
+      proof (intro allI impI)
+        fix f T assume "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (pair ` set (map snd D))"
+        then obtain d where d: "d \<in> set (map snd D)" "Fun f T \<in> subterms (pair d)" by force
+        hence "fv (pair d) \<inter> set X = {}"
+          using prems(4) unfolding pair_def by (force simp add: unlabel_def)
+        thus "T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)"
+          by (metis fv_disj_Fun_subterm_param_cases d(2))
+      qed
+
+      have "trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G) \<subseteq> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F' \<union> pair ` set (map snd D)"
+        using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset[OF G] unfolding dbproj_def by force
+      hence "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G)) X" using Q2_subset[OF _ Q2_supset[OF e d_Q2]] by metis
+      hence "tfr\<^sub>s\<^sub>t\<^sub>p (\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)" by (metis Q2_def tfr\<^sub>s\<^sub>t\<^sub>p.simps(2))
+    } ultimately have 4:
+        "Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X \<Longrightarrow> list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)"
+      using Ball_set by blast
+
+    have 5: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)" using 2 3 4 by metis
+
+    show ?case using 1 5 A''(1) by (simp add: unlabel_def)
+  qed
+qed
+
+lemma tr_par_tfr:
+  assumes "A' \<in> set (tr\<^sub>p\<^sub>c A [])" and "tfr\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
+    and "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}"
+  shows "tfr\<^sub>s\<^sub>t (unlabel A')"
+proof -
+  have *: "trms\<^sub>l\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
+    using tr_par_trms_subset[OF assms(1)] by simp
+  hence "SMP (trms\<^sub>l\<^sub>s\<^sub>t A') \<subseteq> SMP (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
+    using SMP_mono by simp
+  moreover have "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
+    using assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by fast
+  ultimately have 1: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>t A')" by (metis tfr_subset(2)[OF _ *])
+
+  have **: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by fast
+  have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq>
+        SMP (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)) - Var`\<V>"
+    using setops\<^sub>s\<^sub>s\<^sub>t_are_pairs unfolding pair_def by auto
+  hence "\<Gamma> t = \<Gamma> t'"
+    when "\<exists>\<delta>. Unifier \<delta> t t'" "t \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)" "t' \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A)"
+    for t t'
+    using that assms(2) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  moreover have "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel []) = {}" "pair ` snd ` set [] = {}" by auto
+  ultimately have 2: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A')"
+    using tr_par_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p[OF assms(1) ** assms(3)] by simp
+
+  show ?thesis by (metis 1 2 tfr\<^sub>s\<^sub>t_def)
+qed
+
+lemma tr_par_preserves_typing_cond:
+  assumes "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A Sec" "typing_cond\<^sub>s\<^sub>s\<^sub>t (unlabel A)" "A' \<in> set (tr\<^sub>p\<^sub>c A [])"
+  shows "typing_cond (unlabel A')"
+proof -
+  have "wf'\<^sub>s\<^sub>s\<^sub>t {} (unlabel A)"
+       "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) = {}"
+       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
+    using assms(2) unfolding typing_cond\<^sub>s\<^sub>s\<^sub>t_def by simp_all
+  hence 1: "wf\<^sub>s\<^sub>t {} (unlabel A')"
+           "fv\<^sub>s\<^sub>t (unlabel A') \<inter> bvars\<^sub>s\<^sub>t (unlabel A') = {}"
+           "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t (unlabel A'))"
+           "Ana_invar_subst (ik\<^sub>s\<^sub>t (unlabel A') \<union> assignment_rhs\<^sub>s\<^sub>t (unlabel A'))"
+    using tr_par_wf[OF assms(3)] Ana_invar_subst' by metis+
+
+  have 2: "tfr\<^sub>s\<^sub>t (unlabel A')" by (metis tr_par_tfr assms(2,3) typing_cond\<^sub>s\<^sub>s\<^sub>t_def)
+
+  show ?thesis by (metis 1 2 typing_cond_def)
+qed
+
+end
+
+
 
 subsection \<open>Theorem: Semantic Equivalence of Translation\<close>
+context labeled_stateful_typed_model
+begin
+
 context
 begin
 
 text \<open>
   An alternative version of the translation that does not perform database-state projections.
-  It is used as an intermediate step in the proof of semantic equivalence.
+  It is used as an intermediate step in the proof of semantic equivalence/correctness.
 \<close>
 private fun tr'\<^sub>p\<^sub>c::
   "('fun,'var,'lbl) labeled_stateful_strand \<Rightarrow> ('fun,'var,'lbl) labeleddbstatelist
    \<Rightarrow> ('fun,'var,'lbl) labeled_strand list"
 where
   "tr'\<^sub>p\<^sub>c [] D = [[]]"
-| "tr'\<^sub>p\<^sub>c ((i,send\<langle>t\<rangle>)#A) D = map ((#) (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr'\<^sub>p\<^sub>c A D)"
-| "tr'\<^sub>p\<^sub>c ((i,receive\<langle>t\<rangle>)#A) D = map ((#) (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr'\<^sub>p\<^sub>c A D)"
+| "tr'\<^sub>p\<^sub>c ((i,send\<langle>ts\<rangle>)#A) D = map ((#) (i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr'\<^sub>p\<^sub>c A D)"
+| "tr'\<^sub>p\<^sub>c ((i,receive\<langle>ts\<rangle>)#A) D = map ((#) (i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr'\<^sub>p\<^sub>c A D)"
 | "tr'\<^sub>p\<^sub>c ((i,\<langle>ac: t \<doteq> t'\<rangle>)#A) D = map ((#) (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)) (tr'\<^sub>p\<^sub>c A D)"
 | "tr'\<^sub>p\<^sub>c ((i,insert\<langle>t,s\<rangle>)#A) D = tr'\<^sub>p\<^sub>c A (List.insert (i,(t,s)) D)"
 | "tr'\<^sub>p\<^sub>c ((i,delete\<langle>t,s\<rangle>)#A) D = (
@@ -1764,16 +2057,16 @@ proof
       let ?g1 = "\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t"
       let ?f2 = "\<lambda>d. (i, ?f1 (snd d))"
       let ?g2 = "\<lambda>d. (i, ?g1 (snd d))"
-
+  
       define constr1 where "constr1 = (\<lambda>Di. (map ?f1 Di)@(map ?g1 [d\<leftarrow>unlabel D. d \<notin> set Di]))"
       define constr2 where "constr2 = (\<lambda>Di. (map ?f2 Di)@(map ?g2 [d\<leftarrow>D. d \<notin> set Di]))"
-
+  
       obtain C' Di where C':
           "Di \<in> set (subseqs D)"
           "C = constr2 Di@C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S [d\<leftarrow>D. d \<notin> set Di])"
         using "6.prems"(1) unfolding constr2_def by moura
-
+      
       have 0: "set [d\<leftarrow>D. d \<notin> set Di] \<subseteq> set D"
               "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i, delete\<langle>t,s\<rangle>)#S)"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
@@ -1782,12 +2075,12 @@ proof
            \<forall>(k, q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set [d\<leftarrow>D. d \<notin> set Di].
             p = q \<longrightarrow> j = k"
         using "6.prems"(2) by blast
-
+  
       have "\<forall>(i,p) \<in> set D \<union> set Di. \<forall>(j,q) \<in> set D \<union> set Di. p = q \<longrightarrow> i = j"
         using "6.prems"(2) subseqs_set_subset(1)[OF C'(1)] by blast
       hence 2: "unlabel [d\<leftarrow>D. d \<notin> set Di] = [d\<leftarrow>unlabel D. d \<notin> set (unlabel Di)]"
         using unlabel_filter_eq[of D "set Di"] unfolding unlabel_def by simp
-
+  
       have 3:
           "\<And>f g::('a \<times> 'a \<Rightarrow> 'c). \<And>A B::(('b \<times> 'a \<times> 'a) list).
               map snd ((map (\<lambda>d. (i, f (snd d))) A)@(map (\<lambda>d. (i, g (snd d))) B)) =
@@ -1798,12 +2091,12 @@ proof
         by (simp add: constr1_def constr2_def unlabel_def)
       hence 4: "unlabel C = constr1 (unlabel Di)@unlabel C'"
         using C'(2) unlabel_append by metis
-
+  
       have "unlabel Di \<in> set (map unlabel (subseqs D))"
         using C'(1) unfolding unlabel_def by simp
       hence 5: "unlabel Di \<in> set (subseqs (unlabel D))"
         using map_subseqs[of snd D] unfolding unlabel_def by simp
-
+  
       show ?case using "6.IH"[OF C'(1,3) 1] 2 4 5 unfolding constr1_def by auto
     next
       case (7 i ac t s S D)
@@ -1811,7 +2104,7 @@ proof
           "C = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" "d \<in> set D"
         using "7.prems"(1) by moura
-
+  
       have "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i,InSet ac t s)#S) \<union> set D"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       hence "\<forall>(j, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D.
@@ -1826,7 +2119,7 @@ proof
           "C = map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd D))@C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using "8.prems"(1) by moura
-
+  
       have "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i,NegChecks X F F')#S) \<union> set D"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       hence "\<forall>(j, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D.
@@ -1883,7 +2176,7 @@ proof
         hence "j = ia" using Cons.prems(2) a Insert by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
         hence "?P ia" using j(1) by metis
       } hence j: "?P ia" by metis
-
+      
       have 2: "\<forall>(k1, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<union> set (List.insert (ia,t,s) D).
                \<forall>(k2, q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<union> set (List.insert (ia,t,s) D).
                  p = q \<longrightarrow> k1 = k2"
@@ -1895,7 +2188,7 @@ proof
       define c where "c \<equiv> (\<lambda>(i::'lbl strand_label) Di.
         map (\<lambda>d. (i,\<langle>check: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di@
         map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t)) [d\<leftarrow>D. d \<notin> set Di])"
-
+      
       define d where "d \<equiv> (\<lambda>Di.
         map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di@
         map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>unlabel D. d \<notin> set Di])"
@@ -1920,14 +2213,14 @@ proof
         using Cons.prems(2) by blast
       hence 3: "[d\<leftarrow>unlabel D. d \<notin> set Di] = unlabel [d\<leftarrow>D. d \<notin> set Di']"
         using Di'(2) unlabel_filter_eq[of D "set Di'"] unfolding unlabel_def by auto
-
+      
       obtain C where C: "C \<in> set (tr'\<^sub>p\<^sub>c A [d\<leftarrow>D. d \<notin> set Di'])" "B' = unlabel C"
         using 3 Cons.IH[OF _ 2] B'(3) by auto
       hence 4: "c ia Di'@C \<in> set (tr'\<^sub>p\<^sub>c (a#A) D)" using Di'(1) a Delete unfolding c_def by auto
 
       have "unlabel (c ia Di') = d Di" using Di' 3 unfolding c_def d_def unlabel_def by auto
       hence 5: "B = unlabel (c ia Di'@C)" using B'(1) C(2) unlabel_append[of "c ia Di'" C] by simp
-
+      
       show ?thesis using 4 5 by blast
     next
       case (InSet ac t s)
@@ -1939,7 +2232,7 @@ proof
       thus ?thesis using Cons.IH[OF _ 1] a InSet unfolding unlabel_def by auto
     next
       case (NegChecks X F F')
-      then obtain B' where B':
+      then obtain B' where B': 
           "B = map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (unlabel D))@B'"
           "B' \<in> set (tr (unlabel A) (unlabel D))"
         using Cons.prems(1) a by auto
@@ -1963,41 +2256,41 @@ proof
     proof (induction A D arbitrary: B M rule: tr\<^sub>p\<^sub>c.induct)
       case (1 D) thus ?case by simp
     next
-      case (2 i t S D)
+      case (2 i ts S D)
       note prems = "2.prems"
       note IH = "2.IH"
 
-      obtain B' where B': "B = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
+      obtain B' where B': "B = (i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-
+          
       have 1: "\<lbrakk>M; unlabel B'\<rbrakk>\<^sub>d \<I>" using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
-      have 7: "M \<turnstile> t \<cdot> \<I>" using prems(2) B'(1) by simp
+      have 7: "\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>" using prems(2) B'(1) by simp
 
       obtain C where C: "C \<in> set (tr'\<^sub>p\<^sub>c S D)" "\<lbrakk>M; unlabel C\<rbrakk>\<^sub>d \<I>"
         using IH[OF B'(2) 1 4 5 6] by moura
-      hence "((i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#C) \<in> set (tr'\<^sub>p\<^sub>c ((i,Send t)#S) D)" "\<lbrakk>M; unlabel ((i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#C)\<rbrakk>\<^sub>d \<I>"
+      hence "((i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C) \<in> set (tr'\<^sub>p\<^sub>c ((i,Send ts)#S) D)" "\<lbrakk>M; unlabel ((i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C)\<rbrakk>\<^sub>d \<I>"
         using 7 by auto
       thus ?case by metis
     next
-      case (3 i t S D)
+      case (3 i ts S D)
       note prems = "3.prems"
       note IH = "3.IH"
 
-      obtain B' where B': "B = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)" using prems(1) by moura
-
-      have 1: "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel B'\<rbrakk>\<^sub>d \<I> " using prems(2) B'(1) by simp
+      obtain B' where B': "B = (i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)" using prems(1) by moura
+          
+      have 1: "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel B'\<rbrakk>\<^sub>d \<I> " using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
-      obtain C where C: "C \<in> set (tr'\<^sub>p\<^sub>c S D)" "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel C\<rbrakk>\<^sub>d \<I>"
+      obtain C where C: "C \<in> set (tr'\<^sub>p\<^sub>c S D)" "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel C\<rbrakk>\<^sub>d \<I>"
         using IH[OF B'(2) 1 4 5 6] by moura
-      hence "((i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#C) \<in> set (tr'\<^sub>p\<^sub>c ((i,receive\<langle>t\<rangle>)#S) D)"
-            "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel ((i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#C)\<rbrakk>\<^sub>d \<I>"
+      hence "((i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C) \<in> set (tr'\<^sub>p\<^sub>c ((i,receive\<langle>ts\<rangle>)#S) D)"
+            "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel ((i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C)\<rbrakk>\<^sub>d \<I>"
         by auto
       thus ?case by auto
     next
@@ -2007,7 +2300,7 @@ proof
 
       obtain B' where B': "B = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-
+          
       have 1: "\<lbrakk>M; unlabel B'\<rbrakk>\<^sub>d \<I> " using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2027,7 +2320,7 @@ proof
       note IH = "5.IH"
 
       have B: "B \<in> set (tr\<^sub>p\<^sub>c S (List.insert (i,t,s) D))" using prems(1) by simp
-
+          
       have 1: "\<lbrakk>M; unlabel B\<rbrakk>\<^sub>d \<I> " using prems(2) B(1) by simp
       have 4: "?R3 S (List.insert (i,t,s) D)" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S (List.insert (i,t,s) D)" using prems(4,5) by force
@@ -2071,7 +2364,7 @@ proof
           using dbproj_subseq_subset[OF B'(1)] by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
         hence "(\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<Longrightarrow> j = k" using prems(3) by blast
       } hence 4: "?R3 S [d\<leftarrow>D. d \<notin> set Di]" by blast
-
+      
       have 5: "?R4 S (filter (\<lambda>d. d \<notin> set Di) D)" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
@@ -2082,7 +2375,7 @@ proof
         using prems(2) B'(2) 0(1) strand_sem_split(3,4)[of M "unlabel (c Di)" "unlabel B'"]
         unfolding c unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto
+      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto 
       hence "\<lbrakk>M; ?cu2 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(4))
       moreover {
         fix j p k q
@@ -2137,7 +2430,7 @@ proof
         using IH[OF B'(2) 1 4 5 6] by moura
       hence "((i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C) \<in> set (tr'\<^sub>p\<^sub>c ((i,InSet ac t s)#S) D)"
             "\<lbrakk>M; unlabel ((i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C)\<rbrakk>\<^sub>d \<I>"
-        using 7 B'(3) by auto
+        using 7 B'(3) unfolding dbproj_def by auto
       thus ?case by metis
     next
       case (8 i X F F' S D)
@@ -2156,7 +2449,7 @@ proof
       obtain B' where B': "B = c@B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)" using prems(1) c by moura
 
       have 0: "ik\<^sub>s\<^sub>t (unlabel c) = {}" "ik\<^sub>s\<^sub>t (unlabel d) = {}"
-              "unlabel ?cl = ?cu" "unlabel ?dl = ?du"
+              "unlabel ?cl = ?cu" "unlabel ?dl = ?du" 
         unfolding c d unlabel_def by force+
 
       have "ik\<^sub>s\<^sub>t (unlabel c) = {}" unfolding c unlabel_def by force
@@ -2178,7 +2471,7 @@ proof
       have 8: "d@C \<in> set (tr'\<^sub>p\<^sub>c ((i,NegChecks X F F')#S) D)"
         using C(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
+      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
       hence "\<lbrakk>M; ?cu\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       moreover {
         fix j p k q
@@ -2208,43 +2501,43 @@ proof
     proof (induction A D arbitrary: C M rule: tr'\<^sub>p\<^sub>c.induct)
       case (1 D) thus ?case by simp
     next
-      case (2 i t S D)
+      case (2 i ts S D)
       note prems = "2.prems"
       note IH = "2.IH"
 
-      obtain C' where C': "C = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
+      obtain C' where C': "C = (i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-
+          
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
-      have 7: "M \<turnstile> t \<cdot> \<I>" using prems(2) C'(1) by simp
+      have 7: "\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>" using prems(2) C'(1) by simp
 
       obtain B where B: "B \<in> set (tr\<^sub>p\<^sub>c S D)" "\<lbrakk>M; unlabel B\<rbrakk>\<^sub>d \<I>"
         using IH[OF C'(2) 1 4 5 6] by moura
-      hence "((i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#B) \<in> set (tr\<^sub>p\<^sub>c ((i,Send t)#S) D)"
-            "\<lbrakk>M; unlabel ((i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#B)\<rbrakk>\<^sub>d \<I>"
+      hence "((i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B) \<in> set (tr\<^sub>p\<^sub>c ((i,Send ts)#S) D)"
+            "\<lbrakk>M; unlabel ((i,send\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B)\<rbrakk>\<^sub>d \<I>"
         using 7 by auto
       thus ?case by metis
     next
-      case (3 i t S D)
+      case (3 i ts S D)
       note prems = "3.prems"
       note IH = "3.IH"
 
-      obtain C' where C': "C = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
+      obtain C' where C': "C = (i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-
-      have 1: "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
+          
+      have 1: "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
-      obtain B where B: "B \<in> set (tr\<^sub>p\<^sub>c S D)" "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel B\<rbrakk>\<^sub>d \<I>"
+      obtain B where B: "B \<in> set (tr\<^sub>p\<^sub>c S D)" "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel B\<rbrakk>\<^sub>d \<I>"
         using IH[OF C'(2) 1 4 5 6] by moura
-      hence "((i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#B) \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>t\<rangle>)#S) D)"
-            "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel ((i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#B)\<rbrakk>\<^sub>d \<I>"
+      hence "((i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B) \<in> set (tr\<^sub>p\<^sub>c ((i,receive\<langle>ts\<rangle>)#S) D)"
+            "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; unlabel ((i,receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)#B)\<rbrakk>\<^sub>d \<I>"
         by auto
       thus ?case by auto
     next
@@ -2254,7 +2547,7 @@ proof
 
       obtain C' where C': "C = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-
+          
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2274,7 +2567,7 @@ proof
       note IH = "5.IH"
 
       have C: "C \<in> set (tr'\<^sub>p\<^sub>c S (List.insert (i,t,s) D))" using prems(1) by simp
-
+          
       have 1: "\<lbrakk>M; unlabel C\<rbrakk>\<^sub>d \<I> " using prems(2) C(1) by simp
       have 4: "?R3 S (List.insert (i,t,s) D)" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S (List.insert (i,t,s) D)" using prems(4,5) by force
@@ -2340,18 +2633,18 @@ proof
                \<forall>(k, q) \<in> {(i, t, s)} \<union> set D.
                 (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> j = k"
         by blast
-      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_append by auto
+      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_append by auto 
       hence "\<lbrakk>M; ?cu1 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       ultimately have *: "Di \<in> set (subseqs (dbproj i D))"
         using labeled_sat_eqs_subseqs[OF C'(1)] by simp
       hence 8: "d Di@B \<in> set (tr\<^sub>p\<^sub>c ((i,delete\<langle>t,s\<rangle>)#S) D)"
         using B(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto
+      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto 
       hence "\<lbrakk>M; ?cu2 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(4))
       hence "\<lbrakk>M; ?du2 Di\<rbrakk>\<^sub>d \<I>" by (metis labeled_sat_ineq_dbproj)
       hence "\<lbrakk>M; unlabel (?dl2 Di)\<rbrakk>\<^sub>d \<I>" by (metis 0(6))
-      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
+      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
       hence "\<lbrakk>M; unlabel (?dl1 Di)\<rbrakk>\<^sub>d \<I>" by (metis 0(3,5))
       ultimately have "\<lbrakk>M; unlabel (d Di)\<rbrakk>\<^sub>d \<I>" using 0(2) unfolding c d unlabel_def by force
       hence 9: "\<lbrakk>M; unlabel (d Di@B)\<rbrakk>\<^sub>d \<I>" using 0(2) B(2) unfolding unlabel_def by auto
@@ -2366,7 +2659,7 @@ proof
           "C = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" "d \<in> set D"
         using prems(1) by moura
-
+          
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
 
       { fix j p k q
@@ -2392,7 +2685,7 @@ proof
       hence "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d)) \<Longrightarrow> i = fst d"
         using prems(3) by blast
       hence "fst d = i" using 7 by auto
-      hence 8: "d \<in> set (dbproj i D)" using C'(3) by auto
+      hence 8: "d \<in> set (dbproj i D)" using C'(3) unfolding dbproj_def by auto
 
       have 9: "((i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#B) \<in> set (tr\<^sub>p\<^sub>c ((i,InSet ac t s)#S) D)"
         using B 8 by auto
@@ -2417,7 +2710,7 @@ proof
       obtain C' where C': "C = c@C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" using prems(1) c by moura
 
       have 0: "ik\<^sub>s\<^sub>t (unlabel c) = {}" "ik\<^sub>s\<^sub>t (unlabel d) = {}"
-              "unlabel ?cl = ?cu" "unlabel ?dl = ?du"
+              "unlabel ?cl = ?cu" "unlabel ?dl = ?du" 
         unfolding c d unlabel_def by force+
 
       have "ik\<^sub>s\<^sub>t (unlabel c) = {}" unfolding c unlabel_def by force
@@ -2439,7 +2732,7 @@ proof
       have 8: "d@B \<in> set (tr\<^sub>p\<^sub>c ((i,NegChecks X F F')#S) D)"
         using B(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
+      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
       hence "\<lbrakk>M; ?cu\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       moreover {
         fix j p k q
@@ -2499,13 +2792,159 @@ using tr_par_iff_tr'_par[OF assms(4,1,2), of M \<I>] tr'_par_sem_equiv[OF assms]
 
 end
 
+end
+
 
 subsection \<open>Theorem: The Stateful Compositionality Result, on the Constraint Level\<close>
-theorem par_comp_constr_stateful:
+theorem (in labeled_stateful_typed_model) par_comp_constr_stateful_typed:
+  assumes \<A>: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> Sec" "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}"
+  and \<I>: "\<I> \<Turnstile>\<^sub>s unlabel \<A>" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>)"
+  shows "(\<forall>n. \<I> \<Turnstile>\<^sub>s proj_unl n \<A>) \<or>
+         (\<exists>\<A>' l' ts. prefix \<A>' \<A> \<and> suffix [(l', receive\<langle>ts\<rangle>)] \<A>' \<and> (\<A>' leaks Sec under \<I>))"
+proof -
+  let ?P = "\<lambda>n A D.
+       \<forall>(i, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n A) \<union> set D.
+       \<forall>(j, q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n A) \<union> set D.
+          (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> i = j"
+
+  have 1: "\<forall>(l, t, t')\<in>set []. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) = {}"
+          "fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) = {}" "ground {}"
+    using \<A>(2) by simp_all
+
+  have 2: "\<And>n. \<forall>(l, t, t')\<in>set []. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n \<A>) = {}"
+          "\<And>n. fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n \<A>) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n \<A>) = {}"
+    using 1 sst_vars_proj_subset[of _ \<A>] by fast+
+
+  note 3 = par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj[OF \<A>(1)]
+
+  have 4:
+      "\<lbrakk>{}; set (unlabel []) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>'; unlabel \<A>\<rbrakk>\<^sub>s \<I>' \<longleftrightarrow>
+        (\<exists>B\<in>set (tr\<^sub>p\<^sub>c \<A> []). \<lbrakk>{}; unlabel B\<rbrakk>\<^sub>d \<I>')"
+    when \<I>': "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>'" for \<I>'
+    using tr_par_sem_equiv[OF 1 _ \<I>'] \<A>(1)
+    unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def constr_sem_d_def by auto
+
+  obtain \<A>' where \<A>': "\<A>' \<in> set (tr\<^sub>p\<^sub>c \<A> [])" "\<I> \<Turnstile> \<langle>unlabel \<A>'\<rangle>"
+    using 4[OF \<I>(2)] \<I>(1) unfolding constr_sem_d_def by moura
+
+  have \<I>':
+      "(\<forall>n. (\<I> \<Turnstile> \<langle>proj_unl n \<A>'\<rangle>)) \<or>
+        (\<exists>\<A>'' l' ts. prefix \<A>'' \<A>' \<and> suffix [(l', receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)] \<A>'' \<and>
+                    (strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>'' Sec \<I>))"
+    using par_comp_constr_typed[OF tr_par_preserves_par_comp[OF \<A>(1) \<A>'(1)] \<A>'(2) \<I>(2-)] by blast
+
+  show ?thesis
+  proof (cases "\<forall>n. (\<I> \<Turnstile> \<langle>proj_unl n \<A>'\<rangle>)")
+    case True
+    { fix n assume "\<I> \<Turnstile> \<langle>proj_unl n \<A>'\<rangle>"
+      hence "\<lbrakk>{}; {}; unlabel (proj n \<A>)\<rbrakk>\<^sub>s \<I>"
+        using tr_par_proj[OF \<A>'(1), of n]
+              tr_par_sem_equiv[OF 2(1,2) 1(3) _ \<I>(2), of n] 3(1)
+        unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def proj_def constr_sem_d_def by force
+    } thus ?thesis using True \<I>(1,2,3) \<I>(1) by metis
+  next
+    case False
+    then obtain \<A>''::"('fun,'var,'lbl) labeled_strand" where \<A>'':
+        "prefix \<A>'' \<A>'" "strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>'' Sec \<I>"
+      using \<I>' by blast
+    
+    have "\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>'' \<I>. \<exists>l.
+            (\<I> \<Turnstile> \<langle>unlabel (proj l \<A>'')\<rangle>) \<and> ik\<^sub>s\<^sub>t (unlabel (proj l \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
+    proof -
+      obtain s m where sm:
+          "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>'' \<I>" "\<lbrakk>{}; proj_unl m \<A>''@[send\<langle>[s]\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d \<I>"
+        using \<A>'' unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>t_def constr_sem_d_def by blast
+
+      show ?thesis using strand_sem_split(3,4)[OF sm(2)] sm(1) unfolding constr_sem_d_def by auto
+    qed
+    then obtain s m where sm:
+        "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>'' \<I>"
+        "\<I> \<Turnstile> \<langle>unlabel (proj m \<A>'')\<rangle>"
+        "ik\<^sub>s\<^sub>t (unlabel (proj m \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s \<cdot> \<I>"
+      by moura
+    hence s': "\<not>{} \<turnstile>\<^sub>c s \<cdot> \<I>" "s \<cdot> \<I> = s"
+      using \<A>(1) subst_ground_ident[of s \<I>] unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
+
+    \<comment> \<open>
+      We now need to show that there is some prefix \<open>B\<close> of \<open>\<A>''\<close> that also leaks
+      and where \<open>B \<in> set (tr C D)\<close> for some prefix \<open>C\<close> of \<open>\<A>\<close>
+    \<close>
+    obtain B::"('fun,'var,'lbl) labeled_strand"
+        and C G::"('fun,'var,'lbl) labeled_stateful_strand"
+      where BC:
+        "prefix B \<A>'" "prefix C \<A>" "B \<in> set (tr\<^sub>p\<^sub>c C [])"
+        "ik\<^sub>s\<^sub>t (unlabel (proj m B)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s \<cdot> \<I>"
+        "prefix B \<A>''" "\<exists>l t. suffix ((l, receive\<langle>t\<rangle>)#G) C"
+      and G: "list_all (Not \<circ> is_Receive \<circ> snd) G"
+      using tr_leaking_prefix_exists[OF \<A>'(1) \<A>''(1) sm(3)]
+            prefix_order.order_trans[OF _ \<A>''(1)] s'
+      by blast
+    
+    obtain C' where C': "C = C'@G" "\<exists>l t. suffix [(l, receive\<langle>t\<rangle>)] C'"
+      using BC(6) unfolding suffix_def by (metis append_Cons append_assoc append_self_conv2)
+
+    have "\<lbrakk>{}; unlabel (proj m B)\<rbrakk>\<^sub>d \<I>"
+      using sm(2) BC(5) unfolding prefix_def unlabel_def proj_def constr_sem_d_def by auto
+    hence BC': "\<I> \<Turnstile> \<langle>proj_unl m B@[send\<langle>[s]\<rangle>\<^sub>s\<^sub>t]\<rangle>"
+      using BC(4) unfolding constr_sem_d_def by auto
+    have BC'': "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t B \<I>"
+      using BC(5) sm(1) declassified_prefix_subset by auto
+
+    have "\<exists>n. \<I> \<Turnstile>\<^sub>s (proj_unl n C'@[Send [s]])"
+    proof -
+      have 5: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n C) Sec" for n
+        using \<A>(1) BC(2) par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_split(1)[THEN par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj]
+        unfolding prefix_def by auto
+
+      have "fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) = {}"
+           "fv\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
+           "bvars\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
+        using \<A>(2) BC(2) sst_vars_append_subset(1,2)[of "unlabel C"]
+        unfolding prefix_def unlabel_def by auto
+      hence "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}" for n
+        using sst_vars_proj_subset[of _ C] sst_vars_proj_subset[of _ \<A>]
+        by blast
+      hence 6:
+          "\<forall>(l, t, t')\<in>set []. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
+          "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
+          "ground {}"
+        for n
+      using 2 by auto
+
+      have 7: "?P n C []" for n using 5 unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by simp
+
+      obtain n where n: "\<I> \<Turnstile>\<^sub>s proj_unl n C" "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s \<cdot> \<I>"
+        using s'(2) tr_par_proj[OF BC(3), of m] BC'(1)
+              tr_par_sem_equiv[OF 6 7 \<I>(2), of m]
+              tr_par_deduct_iff[OF tr_par_proj(1)[OF BC(3)], of \<I> m s]
+        unfolding proj_def constr_sem_d_def by auto
+
+      have "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C')"
+        using C'(1) G unfolding ik\<^sub>s\<^sub>s\<^sub>t_def unlabel_def proj_def list_all_iff by fastforce
+      hence 8: "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s \<cdot> \<I>" using n(2) by simp
+
+      have 9: "\<I> \<Turnstile>\<^sub>s proj_unl n C'"
+        using n(1) C'(1) strand_sem_append_stateful by simp
+
+      show ?thesis using 8 9 strand_sem_append_stateful by auto
+    qed
+    moreover have "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t C \<I>" by (metis tr_par_declassified_eq BC(3) BC'')
+    hence "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t C' \<I>"
+      using ideduct_mono[of
+              "\<Union>{set ts |ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set C'} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" _
+              "\<Union>{set ts |ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (C'@G)} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"]
+      unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def C'(1) by auto
+    moreover have "prefix C' \<A>" using BC(2) C' unfolding prefix_def by auto
+    ultimately show ?thesis using C'(2) unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by meson
+  qed
+qed
+
+theorem (in labeled_stateful_typing) par_comp_constr_stateful:
   assumes \<A>: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> Sec" "typing_cond\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
   and \<I>: "\<I> \<Turnstile>\<^sub>s unlabel \<A>" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
   shows "\<exists>\<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<and> (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s unlabel \<A>) \<and>
-              ((\<forall>n. \<I>\<^sub>\<tau> \<Turnstile>\<^sub>s proj_unl n \<A>) \<or> (\<exists>\<A>'. prefix \<A>' \<A> \<and> (\<A>' leaks Sec under \<I>\<^sub>\<tau>)))"
+              ((\<forall>n. \<I>\<^sub>\<tau> \<Turnstile>\<^sub>s proj_unl n \<A>) \<or>
+               (\<exists>\<A>' l' ts. prefix \<A>' \<A> \<and> suffix [(l', receive\<langle>ts\<rangle>)] \<A>' \<and> (\<A>' leaks Sec under \<I>\<^sub>\<tau>)))"
 proof -
   let ?P = "\<lambda>n A D.
        \<forall>(i, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n A) \<union> set D.
@@ -2535,7 +2974,9 @@ proof -
 
   obtain \<I>\<^sub>\<tau> where \<I>\<^sub>\<tau>:
       "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)" "\<I>\<^sub>\<tau> \<Turnstile> \<langle>unlabel \<A>'\<rangle>"
-      "(\<forall>n. (\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>'\<rangle>)) \<or> (\<exists>\<A>''. prefix \<A>'' \<A>' \<and> (strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>'' Sec \<I>\<^sub>\<tau>))"
+      "(\<forall>n. (\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>'\<rangle>)) \<or>
+        (\<exists>\<A>'' l' ts. prefix \<A>'' \<A>' \<and> suffix [(l', receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)] \<A>'' \<and>
+                    (strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>'' Sec \<I>\<^sub>\<tau>))"
     using par_comp_constr[OF tr_par_preserves_par_comp[OF \<A>(1) \<A>'(1)]
                              tr_par_preserves_typing_cond[OF \<A> \<A>'(1)]
                              \<A>'(2) \<I>(2)]
@@ -2558,69 +2999,260 @@ proof -
         "prefix \<A>'' \<A>'" "strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>'' Sec \<I>\<^sub>\<tau>"
       using \<I>\<^sub>\<tau> by blast
     moreover {
-      fix t l assume *: "\<lbrakk>{}; unlabel (proj l \<A>'')@[send\<langle>t\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d \<I>\<^sub>\<tau>"
-      have "\<I>\<^sub>\<tau> \<Turnstile> \<langle>unlabel (proj l \<A>'')\<rangle>" "ik\<^sub>s\<^sub>t (unlabel (proj l \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> t \<cdot> \<I>\<^sub>\<tau>"
+      fix ts l assume *: "\<lbrakk>{}; unlabel (proj l \<A>'')@[send\<langle>ts\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d \<I>\<^sub>\<tau>"
+      have "\<I>\<^sub>\<tau> \<Turnstile> \<langle>unlabel (proj l \<A>'')\<rangle>"
+           "\<forall>t \<in> set ts. ik\<^sub>s\<^sub>t (unlabel (proj l \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> t \<cdot> \<I>\<^sub>\<tau>"
         using strand_sem_split(3,4)[OF *] unfolding constr_sem_d_def by auto
     } ultimately have "\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>'' \<I>\<^sub>\<tau>. \<exists>l.
             (\<I>\<^sub>\<tau> \<Turnstile> \<langle>unlabel (proj l \<A>'')\<rangle>) \<and> ik\<^sub>s\<^sub>t (unlabel (proj l \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> t \<cdot> \<I>\<^sub>\<tau>"
-      unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>t_def constr_sem_d_def by metis
+      unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>t_def constr_sem_d_def by force
     then obtain s m where sm:
         "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>'' \<I>\<^sub>\<tau>"
         "\<I>\<^sub>\<tau> \<Turnstile> \<langle>unlabel (proj m \<A>'')\<rangle>"
         "ik\<^sub>s\<^sub>t (unlabel (proj m \<A>'')) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> s \<cdot> \<I>\<^sub>\<tau>"
       by moura
+    hence s': "\<not>{} \<turnstile>\<^sub>c s \<cdot> \<I>\<^sub>\<tau>" "s \<cdot> \<I>\<^sub>\<tau> = s"
+      using \<A>(1) subst_ground_ident[of s \<I>\<^sub>\<tau>] unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
 
     \<comment> \<open>
       We now need to show that there is some prefix \<open>B\<close> of \<open>\<A>''\<close> that also leaks
       and where \<open>B \<in> set (tr C D)\<close> for some prefix \<open>C\<close> of \<open>\<A>\<close>
     \<close>
     obtain B::"('fun,'var,'lbl) labeled_strand"
-        and C::"('fun,'var,'lbl) labeled_stateful_strand"
+        and C G::"('fun,'var,'lbl) labeled_stateful_strand"
       where BC:
         "prefix B \<A>'" "prefix C \<A>" "B \<in> set (tr\<^sub>p\<^sub>c C [])"
         "ik\<^sub>s\<^sub>t (unlabel (proj m B)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> s \<cdot> \<I>\<^sub>\<tau>"
-        "prefix B \<A>''"
-      using tr_leaking_prefix_exists[OF \<A>'(1) \<A>''(1) sm(3)] prefix_order.order_trans[OF _ \<A>''(1)]
-      by auto
+        "prefix B \<A>''" "\<exists>l t. suffix ((l, receive\<langle>t\<rangle>)#G) C"
+      and G: "list_all (Not \<circ> is_Receive \<circ> snd) G"
+      using tr_leaking_prefix_exists[OF \<A>'(1) \<A>''(1) sm(3)]
+            prefix_order.order_trans[OF _ \<A>''(1)] s'
+      by blast
+    
+    obtain C' where C': "C = C'@G" "\<exists>l t. suffix [(l, receive\<langle>t\<rangle>)] C'"
+      using BC(6) unfolding suffix_def by (metis append_Cons append_assoc append_self_conv2)
+
     have "\<lbrakk>{}; unlabel (proj m B)\<rbrakk>\<^sub>d \<I>\<^sub>\<tau>"
       using sm(2) BC(5) unfolding prefix_def unlabel_def proj_def constr_sem_d_def by auto
-    hence BC': "\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl m B@[send\<langle>s\<rangle>\<^sub>s\<^sub>t]\<rangle>"
+    hence BC': "\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl m B@[send\<langle>[s]\<rangle>\<^sub>s\<^sub>t]\<rangle>"
       using BC(4) unfolding constr_sem_d_def by auto
     have BC'': "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t B \<I>\<^sub>\<tau>"
-      using BC(5) sm(1) unfolding prefix_def declassified\<^sub>l\<^sub>s\<^sub>t_def by auto
-    have 5: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n C) Sec" for n
-      using \<A>(1) BC(2) par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_split(1)[THEN par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj]
-      unfolding prefix_def by auto
-    have "fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
-         "bvars\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
-      using \<A>(2) BC(2) sst_vars_append_subset(1,2)[of "unlabel C"]
-      unfolding typing_cond\<^sub>s\<^sub>s\<^sub>t_def prefix_def unlabel_def by auto
-    hence "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}" for n
-      using sst_vars_proj_subset[of _ C] sst_vars_proj_subset[of _ \<A>]
-      by blast
-    hence 6:
-        "\<forall>(l, t, t')\<in>set []. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
-        "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
-        "ground {}"
-      for n
+      using BC(5) sm(1) declassified_prefix_subset by auto
+
+    have "\<exists>n. \<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n C'@[Send [s]])"
+    proof -
+      have 5: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n C) Sec" for n
+        using \<A>(1) BC(2) par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_split(1)[THEN par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj]
+        unfolding prefix_def by auto
+
+      have "fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) = {}"
+           "fv\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
+           "bvars\<^sub>s\<^sub>s\<^sub>t (unlabel C) \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
+        using \<A>(2) BC(2) sst_vars_append_subset(1,2)[of "unlabel C"]
+        unfolding typing_cond\<^sub>s\<^sub>s\<^sub>t_def prefix_def unlabel_def by auto
+      hence "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}" for n
+        using sst_vars_proj_subset[of _ C] sst_vars_proj_subset[of _ \<A>]
+        by blast
+      hence 6:
+          "\<forall>(l, t, t')\<in>set []. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
+          "fv\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = {}"
+          "ground {}"
+        for n
       using 2 by auto
-    have 7: "?P n C []" for n using 5 unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by simp
-    have "s \<cdot> \<I>\<^sub>\<tau> = s" using \<I>\<^sub>\<tau>(1) BC'' \<A>(1) unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
-    hence "\<exists>n. (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s proj_unl n C) \<and> ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> s \<cdot> \<I>\<^sub>\<tau>"
-      using tr_par_proj[OF BC(3), of m] BC'(1)
-            tr_par_sem_equiv[OF 6 7 \<I>\<^sub>\<tau>(1), of m]
-            tr_par_deduct_iff[OF tr_par_proj(1)[OF BC(3)], of \<I>\<^sub>\<tau> m s]
-      unfolding proj_def constr_sem_d_def by auto
-    hence "\<exists>n. \<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n C@[Send s])" using strand_sem_append_stateful by simp
+
+      have 7: "?P n C []" for n using 5 unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by simp
+
+      obtain n where n: "\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s proj_unl n C" "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> s \<cdot> \<I>\<^sub>\<tau>"
+        using s'(2) tr_par_proj[OF BC(3), of m] BC'(1)
+              tr_par_sem_equiv[OF 6 7 \<I>\<^sub>\<tau>(1), of m]
+              tr_par_deduct_iff[OF tr_par_proj(1)[OF BC(3)], of \<I>\<^sub>\<tau> m s]
+        unfolding proj_def constr_sem_d_def by auto
+
+      have "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C) = ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C')"
+        using C'(1) G unfolding ik\<^sub>s\<^sub>s\<^sub>t_def unlabel_def proj_def list_all_iff by fastforce
+      hence 8: "ik\<^sub>s\<^sub>s\<^sub>t (proj_unl n C') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau> \<turnstile> s \<cdot> \<I>\<^sub>\<tau>" using n(2) by simp
+
+      have 9: "\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s proj_unl n C'"
+        using n(1) C'(1) strand_sem_append_stateful by simp
+
+      show ?thesis using 8 9 strand_sem_append_stateful by auto
+    qed
     moreover have "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t C \<I>\<^sub>\<tau>" by (metis tr_par_declassified_eq BC(3) BC'')
-    ultimately show ?thesis using \<I>\<^sub>\<tau>(1,2,3) \<I>\<^sub>\<tau>' BC(2) unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by metis
+    hence "s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t C' \<I>\<^sub>\<tau>"
+      using ideduct_mono[of
+              "\<Union>{set ts |ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set C'} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau>" _
+              "\<Union>{set ts |ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (C'@G)} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>\<^sub>\<tau>"]
+      unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def C'(1) by auto
+    moreover have "prefix C' \<A>" using BC(2) C' unfolding prefix_def by auto
+    ultimately show ?thesis
+      using \<I>\<^sub>\<tau>(1,2,3) \<I>\<^sub>\<tau>' C'(2) unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by meson
   qed
 qed
 
 
 subsection \<open>Theorem: The Stateful Compositionality Result, on the Protocol Level\<close>
-abbreviation wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
+context labeled_stateful_typing
+begin
+
+context
+begin
+
+subsubsection \<open>Definitions: Labeled Protocols\<close>
+text \<open>
+  We state our result on the level of protocol traces (i.e., the constraints reachable in a
+  symbolic execution of the actual protocol). Hence, we do not need to convert protocol strands
+  to intruder constraints in the following well-formedness definitions.
+\<close>
+private definition wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s::"('fun,'var,'lbl) labeled_strand set \<Rightarrow> bool" where
+  "wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s \<S> \<equiv> (\<forall>\<A> \<in> \<S>. wf\<^sub>l\<^sub>s\<^sub>t {} \<A>) \<and> (\<forall>\<A> \<in> \<S>. \<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>t \<A>' = {})"
+
+private definition wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s'::
+  "('fun,'var,'lbl) labeled_strand set \<Rightarrow> ('fun,'var,'lbl) labeled_strand \<Rightarrow> bool"
+where
+  "wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s' \<S> \<A> \<equiv> (\<forall>\<A>' \<in> \<S>. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>l\<^sub>s\<^sub>t \<A>) (unlabel \<A>')) \<and>
+                 (\<forall>\<A>' \<in> \<S>. \<forall>\<A>'' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>t \<A>' \<inter> bvars\<^sub>l\<^sub>s\<^sub>t \<A>'' = {}) \<and>
+                 (\<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>t \<A>' \<inter> bvars\<^sub>l\<^sub>s\<^sub>t \<A> = {}) \<and>
+                 (\<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>t \<A>' = {})"
+
+private definition typing_cond_prot where
+  "typing_cond_prot \<P> \<equiv>
+    wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s \<P> \<and>
+    tfr\<^sub>s\<^sub>e\<^sub>t (\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>)) \<and>
+    wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>)) \<and>
+    (\<forall>\<A> \<in> \<P>. list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel \<A>)) \<and>
+    Ana_invar_subst (\<Union>(ik\<^sub>s\<^sub>t ` unlabel ` \<P>) \<union> \<Union>(assignment_rhs\<^sub>s\<^sub>t ` unlabel ` \<P>))"
+
+private definition par_comp_prot where
+  "par_comp_prot \<P> Sec \<equiv>
+    (\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
+      GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l1 \<A>) (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l2 \<A>) Sec) \<and>
+    ground Sec \<and> (\<forall>s \<in> Sec. \<not>{} \<turnstile>\<^sub>c s) \<and>
+    typing_cond_prot \<P>"
+
+
+subsubsection \<open>Lemmata: Labeled Protocols\<close>
+private lemma wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s_eqs_wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s': "wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s S = wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s' S []"
+unfolding wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s_def wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s'_def unlabel_def by auto
+
+private lemma par_comp_prot_impl_par_comp:
+  assumes "par_comp_prot \<P> Sec" "\<A> \<in> \<P>"
+  shows "par_comp \<A> Sec"
+proof -
+  have *: "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
+              GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l1 \<A>) (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l2 \<A>) Sec"
+    using assms(1) unfolding par_comp_prot_def by metis
+  { fix l1 l2::'lbl assume **: "l1 \<noteq> l2"
+    hence ***: "GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l1 \<A>) (\<Union>\<A> \<in> \<P>. trms_proj\<^sub>l\<^sub>s\<^sub>t l2 \<A>) Sec"
+      using * by auto
+    have "GSMP_disjoint (trms_proj\<^sub>l\<^sub>s\<^sub>t l1 \<A>) (trms_proj\<^sub>l\<^sub>s\<^sub>t l2 \<A>) Sec"
+      using GSMP_disjoint_subset[OF ***] assms(2) by auto
+  } hence "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow> GSMP_disjoint (trms_proj\<^sub>l\<^sub>s\<^sub>t l1 \<A>) (trms_proj\<^sub>l\<^sub>s\<^sub>t l2 \<A>) Sec" by metis
+  thus ?thesis using assms unfolding par_comp_prot_def par_comp_def by metis
+qed
+
+private lemma typing_cond_prot_impl_typing_cond:
+  assumes "typing_cond_prot \<P>" "\<A> \<in> \<P>"
+  shows "typing_cond (unlabel \<A>)"
+proof -
+  have 1: "wf\<^sub>s\<^sub>t {} (unlabel \<A>)" "fv\<^sub>l\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>t \<A> = {}"
+    using assms unfolding typing_cond_prot_def wf\<^sub>l\<^sub>s\<^sub>t\<^sub>s_def by auto
+
+  have "tfr\<^sub>s\<^sub>e\<^sub>t (\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>))"
+       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>))"
+       "trms\<^sub>l\<^sub>s\<^sub>t \<A> \<subseteq> \<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>)"
+       "SMP (trms\<^sub>l\<^sub>s\<^sub>t \<A>) - Var`\<V> \<subseteq> SMP (\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>)) - Var`\<V>"
+    using assms SMP_mono[of "trms\<^sub>l\<^sub>s\<^sub>t \<A>" "\<Union>(trms\<^sub>l\<^sub>s\<^sub>t ` \<P>)"]
+    unfolding typing_cond_prot_def
+    by (metis, metis, auto)
+  hence 2: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>t \<A>)" and 3: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>t \<A>)"
+    unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by (meson subsetD)+
+
+  have 4: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel \<A>)" using assms unfolding typing_cond_prot_def by auto
+
+  have "subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>s\<^sub>t (unlabel \<A>) \<union> assignment_rhs\<^sub>s\<^sub>t (unlabel \<A>)) \<subseteq>
+        subterms\<^sub>s\<^sub>e\<^sub>t (\<Union>(ik\<^sub>s\<^sub>t ` unlabel ` \<P>) \<union> \<Union>(assignment_rhs\<^sub>s\<^sub>t ` unlabel ` \<P>))"
+    using assms(2) by auto
+  hence 5: "Ana_invar_subst (ik\<^sub>s\<^sub>t (unlabel \<A>) \<union> assignment_rhs\<^sub>s\<^sub>t (unlabel \<A>))"
+    using assms SMP_mono unfolding typing_cond_prot_def Ana_invar_subst_def by (meson subsetD)
+
+  show ?thesis using 1 2 3 4 5 unfolding typing_cond_def tfr\<^sub>s\<^sub>t_def by blast
+qed
+
+
+subsubsection \<open>Theorem: Parallel Compositionality for Labeled Protocols\<close>
+private definition component_prot where
+  "component_prot n P \<equiv> (\<forall>l \<in> P. \<forall>s \<in> set l. has_LabelN n s \<or> has_LabelS s)"
+
+private definition composed_prot where
+  "composed_prot \<P>\<^sub>i \<equiv> {\<A>. \<forall>n. proj n \<A> \<in> \<P>\<^sub>i n}"
+
+private definition component_secure_prot where
+  "component_secure_prot n P Sec attack \<equiv> (\<forall>\<A> \<in> P. suffix [(ln n, Send1 (Fun attack []))] \<A> \<longrightarrow> 
+     (\<forall>\<I>\<^sub>\<tau>. (interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)) \<longrightarrow>
+            \<not>(\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>\<rangle>) \<and>
+            (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
+                    (\<forall>t \<in> Sec-declassified\<^sub>l\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>'@[Send1 t]\<rangle>)))))"
+
+private definition component_leaks where
+  "component_leaks n \<A> Sec \<equiv> (\<exists>\<A>' \<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<and>
+      prefix \<A>' \<A> \<and> (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. (\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>'@[Send1 t]\<rangle>)))"
+
+private definition unsat where
+  "unsat \<A> \<equiv> (\<forall>\<I>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I> \<longrightarrow> \<not>(\<I> \<Turnstile> \<langle>unlabel \<A>\<rangle>))"
+
+private theorem par_comp_constr_prot:
+  assumes P: "P = composed_prot Pi" "par_comp_prot P Sec" "\<forall>n. component_prot n (Pi n)"
+  and left_secure: "component_secure_prot n (Pi n) Sec attack"
+  shows "\<forall>\<A> \<in> P. suffix [(ln n, Send1 (Fun attack []))] \<A> \<longrightarrow>
+                  unsat \<A> \<or> (\<exists>m. n \<noteq> m \<and> component_leaks m \<A> Sec)"
+proof -
+  { fix \<A> \<A>' assume \<A>: "\<A> = \<A>'@[(ln n, Send1 (Fun attack []))]" "\<A> \<in> P"
+    let ?P = "\<exists>\<A>' \<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<and> prefix \<A>' \<A> \<and>
+                   (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<exists>m. n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl m \<A>'@[Send1 t]\<rangle>))"
+    have tcp: "typing_cond_prot P" using P(2) unfolding par_comp_prot_def by simp
+    have par_comp: "par_comp \<A> Sec" "typing_cond (unlabel \<A>)"
+      using par_comp_prot_impl_par_comp[OF P(2) \<A>(2)]
+            typing_cond_prot_impl_typing_cond[OF tcp \<A>(2)]
+      by metis+
+  
+    have "unlabel (proj n \<A>) = proj_unl n \<A>" "proj_unl n \<A> = proj_unl n (proj n \<A>)"
+         "\<And>A. A \<in> Pi n \<Longrightarrow> proj n A = A" 
+         "proj n \<A> = (proj n \<A>')@[(ln n, Send1 (Fun attack []))]"
+      using P(1,3) \<A> by (auto simp add: proj_def unlabel_def component_prot_def composed_prot_def)
+    moreover have "proj n \<A> \<in> Pi n"
+      using P(1) \<A> unfolding composed_prot_def by blast
+    moreover {
+      fix A assume "prefix A \<A>"
+      hence *: "prefix (proj n A) (proj n \<A>)" unfolding proj_def prefix_def by force
+      hence "proj_unl n A = proj_unl n (proj n A)"
+            "\<forall>I. declassified\<^sub>l\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>t (proj n A) I"
+        unfolding proj_def declassified\<^sub>l\<^sub>s\<^sub>t_alt_def by auto
+      hence "\<exists>B. prefix B (proj n \<A>) \<and> proj_unl n A = proj_unl n B \<and>
+                 (\<forall>I. declassified\<^sub>l\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>t B I)"
+        using * by metis
+        
+    }
+    ultimately have *: 
+        "\<forall>\<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<longrightarrow>
+                  \<not>(\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>\<rangle>) \<and> (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
+                        (\<forall>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl n \<A>'@[Send1 t]\<rangle>)))"
+      using left_secure unfolding component_secure_prot_def composed_prot_def suffix_def by metis
+    { fix \<I> assume \<I>: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "\<I> \<Turnstile> \<langle>unlabel \<A>\<rangle>"
+      obtain \<I>\<^sub>\<tau> where \<I>\<^sub>\<tau>:
+          "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)"
+          "\<exists>\<A>'. prefix \<A>' \<A> \<and> (strand_leaks\<^sub>l\<^sub>s\<^sub>t \<A>' Sec \<I>\<^sub>\<tau>)"
+        using par_comp_constr[OF par_comp \<I>(2,1)] * by moura
+      hence "\<exists>\<A>'. prefix \<A>' \<A> \<and> (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<exists>m.
+                  n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile> \<langle>proj_unl m \<A>'@[Send1 t]\<rangle>))"
+        using \<I>\<^sub>\<tau>(4) * unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>t_def by metis
+      hence ?P using \<I>\<^sub>\<tau>(1,2,3) by auto
+    } hence "unsat \<A> \<or> (\<exists>m. n \<noteq> m \<and> component_leaks m \<A> Sec)"
+      by (metis unsat_def component_leaks_def)
+  } thus ?thesis unfolding suffix_def by metis
+qed
+
+subsubsection \<open>Theorem: Parallel Compositionality for Stateful Protocols\<close>
+private abbreviation wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
   "wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t V \<A> \<equiv> wf'\<^sub>s\<^sub>s\<^sub>t V (unlabel \<A>)"
 
 text \<open>
@@ -2628,10 +3260,10 @@ text \<open>
   symbolic execution of the actual protocol). Hence, we do not need to convert protocol strands
   to intruder constraints in the following well-formedness definitions.
 \<close>
-definition wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s::"('fun,'var,'lbl) labeled_stateful_strand set \<Rightarrow> bool" where
+private definition wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s::"('fun,'var,'lbl) labeled_stateful_strand set \<Rightarrow> bool" where
   "wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s \<S> \<equiv> (\<forall>\<A> \<in> \<S>. wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t {} \<A>) \<and> (\<forall>\<A> \<in> \<S>. \<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' = {})"
 
-definition wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s'::
+private definition wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s'::
   "('fun,'var,'lbl) labeled_stateful_strand set \<Rightarrow> ('fun,'var,'lbl) labeled_stateful_strand \<Rightarrow> bool"
 where
   "wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s' \<S> \<A> \<equiv> (\<forall>\<A>' \<in> \<S>. wf'\<^sub>s\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>) (unlabel \<A>')) \<and>
@@ -2639,53 +3271,53 @@ where
                  (\<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}) \<and>
                  (\<forall>\<A>' \<in> \<S>. fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' = {})"
 
-definition typing_cond_prot_stateful where
+private definition typing_cond_prot_stateful where
   "typing_cond_prot_stateful \<P> \<equiv>
     wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s \<P> \<and>
     tfr\<^sub>s\<^sub>e\<^sub>t (\<Union>(trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t ` \<P>) \<union> pair ` \<Union>(setops\<^sub>s\<^sub>s\<^sub>t ` unlabel ` \<P>)) \<and>
     wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>(trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t ` \<P>)) \<and>
     (\<forall>S \<in> \<P>. list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel S))"
 
-definition par_comp_prot_stateful where
+private definition par_comp_prot_stateful where
   "par_comp_prot_stateful \<P> Sec \<equiv>
     (\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
       GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                     (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Sec) \<and>
-    ground Sec \<and> (\<forall>s \<in> Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> Sec) \<and>
+    ground Sec \<and> (\<forall>s \<in> Sec. \<not>{} \<turnstile>\<^sub>c s) \<and>
     (\<forall>(i,p) \<in> \<Union>\<A> \<in> \<P>. setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<forall>(j,q) \<in> \<Union>\<A> \<in> \<P>. setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>.
       (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> i = j) \<and>
     typing_cond_prot_stateful \<P>"
 
-definition component_secure_prot_stateful where
+private definition component_secure_prot_stateful where
   "component_secure_prot_stateful n P Sec attack \<equiv>
-    (\<forall>\<A> \<in> P. suffix [(ln n, Send (Fun attack []))] \<A> \<longrightarrow>
+    (\<forall>\<A> \<in> P. suffix [(ln n, Send [Fun attack []])] \<A> \<longrightarrow> 
      (\<forall>\<I>\<^sub>\<tau>. (interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)) \<longrightarrow>
             \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>)) \<and>
             (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
-                    (\<forall>t \<in> Sec-declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send t]))))))"
+                    (\<forall>t \<in> Sec-declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send [t]]))))))"
 
-definition component_leaks_stateful where
+private definition component_leaks_stateful where
   "component_leaks_stateful n \<A> Sec \<equiv>
     (\<exists>\<A>' \<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<and> prefix \<A>' \<A> \<and>
-             (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send t]))))"
+             (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send [t]]))))"
 
-definition unsat_stateful where
+private definition unsat_stateful where
   "unsat_stateful \<A> \<equiv> (\<forall>\<I>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I> \<longrightarrow> \<not>(\<I> \<Turnstile>\<^sub>s unlabel \<A>))"
 
-lemma wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s_eqs_wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s'[simp]: "wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s S = wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s' S []"
+private lemma wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s_eqs_wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s': "wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s S = wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s' S []"
 unfolding wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s_def wf\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>s'_def unlabel_def wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by simp
 
-lemma par_comp_prot_impl_par_comp_stateful:
+private lemma par_comp_prot_impl_par_comp_stateful:
   assumes "par_comp_prot_stateful \<P> Sec" "\<A> \<in> \<P>"
   shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> Sec"
 proof -
-  have *:
+  have *: 
       "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
           GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                         (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Sec"
     using assms(1) unfolding par_comp_prot_stateful_def by argo
   { fix l1 l2::'lbl assume **: "l1 \<noteq> l2"
-    hence ***:
+    hence ***: 
         "GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                        (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Sec"
       using * by auto
@@ -2705,7 +3337,7 @@ proof -
     by fast
 qed
 
-lemma typing_cond_prot_impl_typing_cond_stateful:
+private lemma typing_cond_prot_impl_typing_cond_stateful:
   assumes "typing_cond_prot_stateful \<P>" "\<A> \<in> \<P>"
   shows "typing_cond\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
 proof -
@@ -2729,24 +3361,24 @@ proof -
   show ?thesis using 1 2 3 4 unfolding typing_cond\<^sub>s\<^sub>s\<^sub>t_def tfr\<^sub>s\<^sub>s\<^sub>t_def by blast
 qed
 
-theorem par_comp_constr_prot_stateful:
+private theorem par_comp_constr_prot_stateful:
   assumes P: "P = composed_prot Pi" "par_comp_prot_stateful P Sec" "\<forall>n. component_prot n (Pi n)"
   and left_secure: "component_secure_prot_stateful n (Pi n) Sec attack"
-  shows "\<forall>\<A> \<in> P. suffix [(ln n, Send (Fun attack []))] \<A> \<longrightarrow>
+  shows "\<forall>\<A> \<in> P. suffix [(ln n, Send [Fun attack []])] \<A> \<longrightarrow>
                   unsat_stateful \<A> \<or> (\<exists>m. n \<noteq> m \<and> component_leaks_stateful m \<A> Sec)"
 proof -
-  { fix \<A> \<A>' assume \<A>: "\<A> = \<A>'@[(ln n, Send (Fun attack []))]" "\<A> \<in> P"
+  { fix \<A> \<A>' assume \<A>: "\<A> = \<A>'@[(ln n, Send [Fun attack []])]" "\<A> \<in> P"
     let ?P = "\<exists>\<A>' \<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<and> prefix \<A>' \<A> \<and>
-                   (\<exists>t \<in> Sec-declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<exists>m. n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl m \<A>'@[Send t])))"
+                   (\<exists>t \<in> Sec-declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<exists>m. n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl m \<A>'@[Send [t]])))"
     have tcp: "typing_cond_prot_stateful P" using P(2) unfolding par_comp_prot_stateful_def by simp
     have par_comp: "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> Sec" "typing_cond\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>)"
       using par_comp_prot_impl_par_comp_stateful[OF P(2) \<A>(2)]
             typing_cond_prot_impl_typing_cond_stateful[OF tcp \<A>(2)]
       by metis+
-
+  
     have "unlabel (proj n \<A>) = proj_unl n \<A>" "proj_unl n \<A> = proj_unl n (proj n \<A>)"
-         "\<And>A. A \<in> Pi n \<Longrightarrow> proj n A = A"
-         "proj n \<A> = (proj n \<A>')@[(ln n, Send (Fun attack []))]"
+         "\<And>A. A \<in> Pi n \<Longrightarrow> proj n A = A" 
+         "proj n \<A> = (proj n \<A>')@[(ln n, Send [Fun attack []])]"
       using P(1,3) \<A> by (auto simp add: proj_def unlabel_def component_prot_def composed_prot_def)
     moreover have "proj n \<A> \<in> Pi n"
       using P(1) \<A> unfolding composed_prot_def by blast
@@ -2755,15 +3387,15 @@ proof -
       hence *: "prefix (proj n A) (proj n \<A>)" unfolding proj_def prefix_def by force
       hence "proj_unl n A = proj_unl n (proj n A)"
             "\<forall>I. declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj n A) I"
-        unfolding proj_def declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
+        by (simp, metis declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj_eq)
       hence "\<exists>B. prefix B (proj n \<A>) \<and> proj_unl n A = proj_unl n B \<and>
                  (\<forall>I. declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B I)"
         using * by metis
     }
-    ultimately have *:
+    ultimately have *: 
         "\<forall>\<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<longrightarrow>
                   \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>)) \<and> (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
-                        (\<forall>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send t]))))"
+                        (\<forall>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send [t]]))))"
       using left_secure
       unfolding component_secure_prot_stateful_def composed_prot_def suffix_def
       by metis
@@ -2773,7 +3405,7 @@ proof -
           "\<exists>\<A>'. prefix \<A>' \<A> \<and> (\<A>' leaks Sec under \<I>\<^sub>\<tau>)"
         using par_comp_constr_stateful[OF par_comp \<I>(2,1)] * by moura
       hence "\<exists>\<A>'. prefix \<A>' \<A> \<and> (\<exists>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<exists>m.
-                  n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl m \<A>'@[Send t])))"
+                  n \<noteq> m \<and> (\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl m \<A>'@[Send [t]])))"
         using \<I>\<^sub>\<tau>(4) * unfolding strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by metis
       hence ?P using \<I>\<^sub>\<tau>(1,2,3) by auto
     } hence "unsat_stateful \<A> \<or> (\<exists>m. n \<noteq> m \<and> component_leaks_stateful m \<A> Sec)"
@@ -2783,37 +3415,69 @@ qed
 
 end
 
+end
+
 subsection \<open>Automated Compositionality Conditions\<close>
 definition comp_GSMP_disjoint where
   "comp_GSMP_disjoint public arity Ana \<Gamma> A' B' A B C \<equiv>
-    let B\<delta> = B \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t (set A)))
-    in has_all_wt_instances_of \<Gamma> (set A') (set A) \<and>
-       has_all_wt_instances_of \<Gamma> (set B') (set B\<delta>) \<and>
+    let B\<delta> = B \<cdot>\<^sub>s\<^sub>e\<^sub>t var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t A))
+    in has_all_wt_instances_of \<Gamma> A' A \<and>
+       has_all_wt_instances_of \<Gamma> B' B\<delta> \<and>
        finite_SMP_representation arity Ana \<Gamma> A \<and>
        finite_SMP_representation arity Ana \<Gamma> B\<delta> \<and>
-       (\<forall>t \<in> set A. \<forall>s \<in> set B\<delta>. \<Gamma> t = \<Gamma> s \<and> mgu t s \<noteq> None \<longrightarrow>
-         (intruder_synth' public arity {} t \<and> intruder_synth' public arity {} s) \<or>
-         (\<exists>u \<in> set C. is_wt_instance_of_cond \<Gamma> t u) \<and> (\<exists>u \<in> set C. is_wt_instance_of_cond \<Gamma> s u))"
+       (\<forall>t \<in> A. \<forall>s \<in> B\<delta>. \<Gamma> t = \<Gamma> s \<and> mgu t s \<noteq> None \<longrightarrow>
+         (intruder_synth' public arity {} t) \<or> (\<exists>u \<in> C. is_wt_instance_of_cond \<Gamma> t u))"
+
+definition comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
+  "comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> pair_fun A M C \<equiv>
+    wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity C \<and>
+    (\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. if i = j then True else
+      (let s = pair' pair_fun p; t = pair' pair_fun q
+       in mgu s (t \<cdot> var_rename (max_var s)) = None))"
 
 definition comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
   "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> pair_fun A M C \<equiv>
-  let L = remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> is_LabelS) A));
-      MP0 = \<lambda>B. remdups (trms_list\<^sub>s\<^sub>s\<^sub>t B@map (pair' pair_fun) (setops_list\<^sub>s\<^sub>s\<^sub>t B));
+  let L = remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> has_LabelS) A));
+      MP0 = \<lambda>B. trms\<^sub>s\<^sub>s\<^sub>t B \<union> (pair' pair_fun) ` setops\<^sub>s\<^sub>s\<^sub>t B;
       pr = \<lambda>l. MP0 (proj_unl l A)
   in length L > 1 \<and>
-     list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (MP0 (unlabel A)) \<and>
-     list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) C \<and>
-     has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set C)) (set C) \<and>
-     is_TComp_var_instance_closed \<Gamma> C \<and>
-     (\<forall>i \<in> set L. \<forall>j \<in> set L. i \<noteq> j \<longrightarrow>
-        comp_GSMP_disjoint public arity Ana \<Gamma> (pr i) (pr j) (M i) (M j) C) \<and>
-     (\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. i \<noteq> j \<longrightarrow>
-        (let s = pair' pair_fun p; t = pair' pair_fun q
-         in mgu s (t \<cdot> var_rename (max_var s)) = None))"
+     comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> pair_fun A M C \<and>
+     wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (MP0 (unlabel A)) \<and>
+     (\<forall>i \<in> set L. \<forall>j \<in> set L. if i = j then True else
+        comp_GSMP_disjoint public arity Ana \<Gamma> (pr i) (pr j) (M i) (M j) C)"
+
+lemma comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>tI:
+  fixes pair_fun A MP0 pr
+  defines "MP0 \<equiv> \<lambda>B. trms\<^sub>s\<^sub>s\<^sub>t B \<union> (pair' pair_fun) ` setops\<^sub>s\<^sub>s\<^sub>t B"
+    and "pr \<equiv> \<lambda>l. MP0 (proj_unl l A)"
+  assumes L_def: "L = remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> has_LabelS) A))"
+    and L_gt: "length L > 1"
+    and cpc': "comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> pair_fun A M C"
+    and MP0_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (MP0 (unlabel A))"
+    and GSMP_disj: "\<forall>i \<in> set L. \<forall>j \<in> set L. if i = j then True else
+                      comp_GSMP_disjoint public arity Ana \<Gamma> (pr i) (pr j) (M i) (M j) C"
+  shows "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t  public arity Ana \<Gamma> pair_fun A M C"
+using assms unfolding comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by presburger
+
+lemma comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>tI':
+  fixes pair_fun A MP0 pr Ms
+  defines "MP0 \<equiv> \<lambda>B. trms\<^sub>s\<^sub>s\<^sub>t B \<union> (pair' pair_fun) ` setops\<^sub>s\<^sub>s\<^sub>t B"
+    and "pr \<equiv> \<lambda>l. MP0 (proj_unl l A)"
+    and "M \<equiv> \<lambda>l. case find ((=) l \<circ> fst) Ms of Some M \<Rightarrow> set (snd M) | None \<Rightarrow> {}"
+  assumes L_def: "map fst Ms = remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> has_LabelS) A))"
+    and L_gt: "length (map fst Ms) > 1"
+    and cpc': "comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> pair_fun A M C"
+    and MP0_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (MP0 (unlabel A))"
+    and GSMP_disj: "\<forall>i \<in> set (map fst Ms). \<forall>j \<in> set (map fst Ms). if i = j then True else
+                      comp_GSMP_disjoint public arity Ana \<Gamma> (pr i) (pr j) (M i) (M j) C"
+  shows "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t  public arity Ana \<Gamma> pair_fun A M C"
+by (rule comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>tI[OF L_def L_gt cpc' MP0_wf[unfolded MP0_def]
+                              GSMP_disj[unfolded pr_def MP0_def]])
+
 
 locale labeled_stateful_typed_model' =
-  stateful_typed_model' arity public Ana \<Gamma> Pair
-+ labeled_typed_model' arity public Ana \<Gamma> label_witness1 label_witness2
+  labeled_typed_model' arity public Ana \<Gamma> label_witness1 label_witness2
++ stateful_typed_model' arity public Ana \<Gamma> Pair
   for arity::"'fun \<Rightarrow> nat"
   and public::"'fun \<Rightarrow> bool"
   and Ana::"('fun,(('fun,'atom::finite) term_type \<times> nat)) term
@@ -2830,51 +3494,52 @@ by unfold_locales
 
 lemma GSMP_disjoint_if_comp_GSMP_disjoint:
   defines "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
-  assumes AB'_wf: "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) A'" "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) B'"
-    and C_wf: "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) C"
+  assumes AB'_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity A'" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity B'"
+    and C_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity C"
     and AB'_disj: "comp_GSMP_disjoint public arity Ana \<Gamma> A' B' A B C"
-  shows "GSMP_disjoint (set A') (set B') ((f (set C)) - {m. {} \<turnstile>\<^sub>c m})"
+  shows "GSMP_disjoint A' B' (f C - {m. {} \<turnstile>\<^sub>c m})"
 using GSMP_disjointI[of A' B' A B] AB'_wf AB'_disj C_wf
-unfolding comp_GSMP_disjoint_def f_def wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff Let_def by fast
+unfolding wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def comp_GSMP_disjoint_def f_def wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff Let_def by blast 
 
 lemma par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_if_comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t:
   defines "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
   assumes A: "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> Pair A M C"
-  shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A ((f (set C)) - {m. {} \<turnstile>\<^sub>c m})"
+  shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t A (f C - {m. {} \<turnstile>\<^sub>c m})"
 proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
-  let ?Sec = "(f (set C)) - {m. {} \<turnstile>\<^sub>c m}"
-  let ?L = "remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> is_LabelS) A))"
-  let ?N1 = "\<lambda>B. remdups (trms_list\<^sub>s\<^sub>s\<^sub>t B@map (pair' Pair) (setops_list\<^sub>s\<^sub>s\<^sub>t B))"
+  let ?Sec = "f C - {m. {} \<turnstile>\<^sub>c m}"
+  let ?L = "remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> has_LabelS) A))"
+  let ?N1 = "\<lambda>B. trms\<^sub>s\<^sub>s\<^sub>t B \<union> (pair' Pair) ` setops\<^sub>s\<^sub>s\<^sub>t B"
   let ?N2 = "\<lambda>B. trms\<^sub>s\<^sub>s\<^sub>t B \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t B"
   let ?pr = "\<lambda>l. ?N1 (proj_unl l A)"
   let ?\<alpha> = "\<lambda>p. var_rename (max_var (pair p))"
 
+  note defs = pair_code wf\<^sub>t\<^sub>r\<^sub>m_code wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def list_all_iff
+              trms_list\<^sub>s\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>s\<^sub>t setops_list\<^sub>s\<^sub>s\<^sub>t_is_setops\<^sub>s\<^sub>s\<^sub>t
+
   have 0:
       "length ?L > 1"
-      "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (?N1 (unlabel A))"
-      "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) C"
-      "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set C)) (set C)"
-      "is_TComp_var_instance_closed \<Gamma> C"
+      "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (?N1 (unlabel A))"
+      "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity C"
+      (* "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t C) C" *)
+      (* "is_TComp_var_instance_closed \<Gamma> C" *)
       "\<forall>i \<in> set ?L. \<forall>j \<in> set ?L. i \<noteq> j \<longrightarrow>
         comp_GSMP_disjoint public arity Ana \<Gamma> (?pr i) (?pr j) (M i) (M j) C"
       "\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. i \<noteq> j \<longrightarrow> mgu (pair p) (pair q \<cdot> ?\<alpha> p) = None"
-    using A unfolding comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def pair_code by meson+
+    using A unfolding comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def pair_code
+    by meson+
 
-  have L_in_iff: "l \<in> set ?L \<longleftrightarrow> (\<exists>a \<in> set A. is_LabelN l a)" for l by force
+  have L_in_iff: "l \<in> set ?L \<longleftrightarrow> (\<exists>a \<in> set A. has_LabelN l a)" for l by force
 
   have A_wf_trms: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A))"
-    using 0(2)
-    unfolding pair_code wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff trms_list\<^sub>s\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>s\<^sub>t setops_list\<^sub>s\<^sub>s\<^sub>t_is_setops\<^sub>s\<^sub>s\<^sub>t
-    by auto
+    using 0(2) unfolding defs by auto
   hence A_proj_wf_trms: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l A))" for l
     using trms\<^sub>s\<^sub>s\<^sub>t_proj_subset(1)[of l A] setops\<^sub>s\<^sub>s\<^sub>t_proj_subset(1)[of l A] by blast
-  hence A_proj_wf_trms': "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (?N1 (proj_unl l A))" for l
-    unfolding pair_code wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff trms_list\<^sub>s\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>s\<^sub>t setops_list\<^sub>s\<^sub>s\<^sub>t_is_setops\<^sub>s\<^sub>s\<^sub>t
-    by auto
+  hence A_proj_wf_trms': "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (?N1 (proj_unl l A))" for l
+    unfolding defs by auto
 
-  note C_wf_trms = 0(3)[unfolded list_all_iff wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric]]
+  note C_wf_trms = 0(3)[unfolded list_all_iff wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric]]
 
-  note 1 = has_all_wt_instances_ofD'[OF wf_trms_subterms[OF C_wf_trms] C_wf_trms 0(4)]
+(*   note 1 = has_all_wt_instances_ofD'[OF wf_trms_subterms[OF C_wf_trms] C_wf_trms 0(4)] *)
 
   have 2: "GSMP (?N2 (proj_unl l A)) \<subseteq> GSMP (?N2 (proj_unl l' A))" when "l \<notin> set ?L" for l l'
     using that L_in_iff GSMP_mono[of "?N2 (proj_unl l A)" "?N2 (proj_unl l' A)"]
@@ -2885,8 +3550,8 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
   have 3: "GSMP_disjoint (?N2 (proj_unl l1 A)) (?N2 (proj_unl l2 A)) ?Sec"
     when "l1 \<in> set ?L" "l2 \<in> set ?L" "l1 \<noteq> l2" for l1 l2
   proof -
-    have "GSMP_disjoint (set (?N1 (proj_unl l1 A))) (set (?N1 (proj_unl l2 A))) ?Sec"
-      using 0(6) that
+    have "GSMP_disjoint (?N1 (proj_unl l1 A)) (?N1 (proj_unl l2 A)) ?Sec"
+      using 0(4) that
             GSMP_disjoint_if_comp_GSMP_disjoint[
               OF A_proj_wf_trms'[of l1] A_proj_wf_trms'[of l2] 0(3),
               of "M l1" "M l2"]
@@ -2908,73 +3573,95 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
     have "\<exists>\<delta>. Unifier \<delta> (pair p) (pair q \<cdot> ?\<alpha> p)"
       using pq vars_term_disjoint_imp_unifier[OF var_rename_fv_disjoint[of "pair p"], of _ "pair q"]
       by (metis (no_types, lifting) subst_subst_compose var_rename_inv_comp)
-    hence "i = j" using 0(7) mgu_None_is_subst_neq[of "pair p" "pair q \<cdot> ?\<alpha> p"] p q by fast
+    hence "i = j" using 0(5) mgu_None_is_subst_neq[of "pair p" "pair q \<cdot> ?\<alpha> p"] p q by fast
   } thus "\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> i = j"
     by blast
 
   show "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow> GSMP_disjoint (?N2 (proj_unl l1 A)) (?N2 (proj_unl l2 A)) ?Sec"
     using 2 3 3[OF a] unfolding GSMP_disjoint_def by blast
 
-  show "\<forall>s \<in> ?Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
+(*   show "\<forall>s \<in> ?Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
   proof (intro ballI)
     fix s s'
     assume s: "s \<in> ?Sec" and s': "s' \<sqsubseteq> s"
-    then obtain t \<delta> where t: "t \<in> set C" "s = t \<cdot> \<delta>" "fv s = {}" "\<not>{} \<turnstile>\<^sub>c s"
+    then obtain t \<delta> where t: "t \<in> C" "s = t \<cdot> \<delta>" "fv s = {}" "\<not>{} \<turnstile>\<^sub>c s"
         and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
       unfolding f_def by blast
 
-    obtain m \<theta> where m: "m \<in> set C" "s' = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+    obtain m \<theta> where m: "m \<in> C" "s' = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
       using TComp_var_and_subterm_instance_closed_has_subterms_instances[
               OF 0(5,4) C_wf_trms in_subterms_Union[OF t(1)] s'[unfolded t(2)] \<delta>]
       by blast
     thus "{} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
       using ground_subterm[OF t(3) s']
       unfolding f_def by blast
-  qed
+  qed *)
+
+  show "\<forall>s \<in> ?Sec. \<not>{} \<turnstile>\<^sub>c s" by simp
 qed
+
+end
+
+locale labeled_stateful_typing' =
+  labeled_stateful_typed_model' arity public Ana \<Gamma> Pair label_witness1 label_witness2
++ stateful_typing_result' arity public Ana \<Gamma> Pair
+  for arity::"'fun \<Rightarrow> nat"
+  and public::"'fun \<Rightarrow> bool"
+  and Ana::"('fun,(('fun,'atom::finite) term_type \<times> nat)) term
+            \<Rightarrow> (('fun,(('fun,'atom) term_type \<times> nat)) term list
+               \<times> ('fun,(('fun,'atom) term_type \<times> nat)) term list)"
+  and \<Gamma>::"('fun,(('fun,'atom) term_type \<times> nat)) term \<Rightarrow> ('fun,'atom) term_type"
+  and Pair::"'fun"
+  and label_witness1::"'lbl"
+  and label_witness2::"'lbl"
+begin
+
+sublocale labeled_stateful_typing
+by unfold_locales
 
 lemma par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_if_comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t':
   defines "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
   assumes a: "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> Pair A M C"
     and B: "\<forall>b \<in> set B. \<exists>a \<in> set A. \<exists>\<delta>. b = a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
       (is "\<forall>b \<in> set B. \<exists>a \<in> set A. \<exists>\<delta>. b = a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<and> ?D \<delta>")
-  shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t B ((f (set C)) - {m. {} \<turnstile>\<^sub>c m})"
+  shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t B (f C - {m. {} \<turnstile>\<^sub>c m})"
 proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
   define N1 where "N1 \<equiv> \<lambda>B::('fun, ('fun,'atom) term_type \<times> nat) stateful_strand.
-    remdups (trms_list\<^sub>s\<^sub>s\<^sub>t B@map (pair' Pair) (setops_list\<^sub>s\<^sub>s\<^sub>t B))"
+    trms\<^sub>s\<^sub>s\<^sub>t B \<union> (pair' Pair) ` setops\<^sub>s\<^sub>s\<^sub>t B"
 
   define N2 where "N2 \<equiv> \<lambda>B::('fun, ('fun,'atom) term_type \<times> nat) stateful_strand.
     trms\<^sub>s\<^sub>s\<^sub>t B \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t B"
 
   define L where "L \<equiv> \<lambda>A::('fun, ('fun,'atom) term_type \<times> nat, 'lbl) labeled_stateful_strand.
-    remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> is_LabelS) A))"
+    remdups (map (the_LabelN \<circ> fst) (filter (Not \<circ> has_LabelS) A))"
 
   define \<alpha> where "\<alpha> \<equiv> \<lambda>p. var_rename (max_var (pair p::('fun, ('fun,'atom) term_type \<times> nat) term))
     ::('fun, ('fun,'atom) term_type \<times> nat) subst"
 
-  let ?Sec = "(f (set C)) - {m. {} \<turnstile>\<^sub>c m}"
+  let ?Sec = "f C - {m. {} \<turnstile>\<^sub>c m}"
 
   have 0:
       "length (L A) > 1"
-      "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (N1 (unlabel A))"
-      "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) C"
-      "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set C)) (set C)"
-      "is_TComp_var_instance_closed \<Gamma> C"
+      "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (N1 (unlabel A))"
+      "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity C"
+     (*  "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t C) C" *)
+      (* "is_TComp_var_instance_closed \<Gamma> C" *)
       "\<forall>i \<in> set (L A). \<forall>j \<in> set (L A). i \<noteq> j \<longrightarrow>
         comp_GSMP_disjoint public arity Ana \<Gamma> (N1 (proj_unl i A)) (N1 (proj_unl j A)) (M i) (M j) C"
       "\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. i \<noteq> j \<longrightarrow> mgu (pair p) (pair q \<cdot> \<alpha> p) = None"
-    using a unfolding comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def pair_code L_def N1_def \<alpha>_def by meson+
+    using a unfolding comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def comp_par_comp'\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def pair_code L_def N1_def \<alpha>_def
+    by meson+
 
   note 1 = trms\<^sub>s\<^sub>s\<^sub>t_proj_subset(1) setops\<^sub>s\<^sub>s\<^sub>t_proj_subset(1)
 
-  have N1_iff_N2: "set (N1 A) = N2 A" for A
+  have N1_iff_N2: "N1 A = N2 A" for A
     unfolding pair_code trms_list\<^sub>s\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>s\<^sub>t setops_list\<^sub>s\<^sub>s\<^sub>t_is_setops\<^sub>s\<^sub>s\<^sub>t N1_def N2_def by simp
 
   have N2_proj_subset: "N2 (proj_unl l A) \<subseteq> N2 (unlabel A)"
     for l::'lbl and A::"('fun, ('fun,'atom) term_type \<times> nat, 'lbl) labeled_stateful_strand"
     using 1(1)[of l A] image_mono[OF 1(2)[of l A], of pair] unfolding N2_def by blast
 
-  have L_in_iff: "l \<in> set (L A) \<longleftrightarrow> (\<exists>a \<in> set A. is_LabelN l a)" for l A
+  have L_in_iff: "l \<in> set (L A) \<longleftrightarrow> (\<exists>a \<in> set A. has_LabelN l a)" for l A
     unfolding L_def by force
 
   have L_B_subset_A: "l \<in> set (L A)" when l: "l \<in> set (L B)" for l
@@ -2992,13 +3679,13 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
     using trms\<^sub>s\<^sub>s\<^sub>t_setops\<^sub>s\<^sub>s\<^sub>t_wt_instance_ex[OF B_proj] unfolding N2_def by presburger
 
   have A_wf_trms: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (N2 (unlabel A))"
-    using N1_iff_N2[of "unlabel A"] 0(2) unfolding wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff by auto
+    using N1_iff_N2[of "unlabel A"] 0(2) unfolding wf\<^sub>t\<^sub>r\<^sub>m_code wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def list_all_iff by auto
   hence A_proj_wf_trms: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (N2 (proj_unl l A))" for l
     using 1[of l] unfolding N2_def by blast
-  hence A_proj_wf_trms': "list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (N1 (proj_unl l A))" for l
-    using N1_iff_N2[of "proj_unl l A"] unfolding wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff by presburger
+  hence A_proj_wf_trms': "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity (N1 (proj_unl l A))" for l
+    using N1_iff_N2[of "proj_unl l A"] unfolding wf\<^sub>t\<^sub>r\<^sub>m_code wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def list_all_iff by presburger
 
-  note C_wf_trms = 0(3)[unfolded list_all_iff wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric]]
+  note C_wf_trms = 0(3)[unfolded list_all_iff wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric]]
 
   have 2: "GSMP (N2 (proj_unl l A)) \<subseteq> GSMP (N2 (proj_unl l' A))"
     when "l \<notin> set (L A)" for l l'
@@ -3021,8 +3708,8 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
   have "GSMP_disjoint (N2 (proj_unl l1 A)) (N2 (proj_unl l2 A)) ?Sec"
     when "l1 \<in> set (L A)" "l2 \<in> set (L A)" "l1 \<noteq> l2" for l1 l2
   proof -
-    have "GSMP_disjoint (set (N1 (proj_unl l1 A))) (set (N1 (proj_unl l2 A))) ?Sec"
-      using 0(6) that
+    have "GSMP_disjoint (N1 (proj_unl l1 A)) (N1 (proj_unl l2 A)) ?Sec"
+      using 0(4) that
             GSMP_disjoint_if_comp_GSMP_disjoint[
               OF A_proj_wf_trms'[of l1] A_proj_wf_trms'[of l2] 0(3),
               of "M l1" "M l2"]
@@ -3051,7 +3738,7 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
               of "\<delta>p \<circ>\<^sub>s \<theta>" "pair q'" "var_rename_inv (max_var_set (fv (pair p'))) \<circ>\<^sub>s \<delta>q \<circ>\<^sub>s \<theta>"]
       unfolding \<alpha>_def by fastforce
     hence "i = j"
-      using mgu_None_is_subst_neq[of "pair p'" "pair q' \<cdot> \<alpha> p'"] p'(1) q'(1) 0(7)
+      using mgu_None_is_subst_neq[of "pair p'" "pair q' \<cdot> \<alpha> p'"] p'(1) q'(1) 0(5)
       unfolding \<alpha>_def by fast
   } thus "\<forall>(i,p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t B. \<forall>(j,q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t B. (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> i = j"
     by blast
@@ -3064,22 +3751,24 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def; intro conjI)
 
   show "ground ?Sec" unfolding f_def by fastforce
 
-  show "\<forall>s \<in> ?Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
+(*   show "\<forall>s \<in> ?Sec. \<forall>s' \<in> subterms s. {} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
   proof (intro ballI)
     fix s s'
     assume s: "s \<in> ?Sec" and s': "s' \<sqsubseteq> s"
-    then obtain t \<delta> where t: "t \<in> set C" "s = t \<cdot> \<delta>" "fv s = {}" "\<not>{} \<turnstile>\<^sub>c s"
+    then obtain t \<delta> where t: "t \<in> C" "s = t \<cdot> \<delta>" "fv s = {}" "\<not>{} \<turnstile>\<^sub>c s"
         and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
       unfolding f_def by blast
 
-    obtain m \<theta> where m: "m \<in> set C" "s' = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+    obtain m \<theta> where m: "m \<in> C" "s' = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
       using TComp_var_and_subterm_instance_closed_has_subterms_instances[
               OF 0(5,4) C_wf_trms in_subterms_Union[OF t(1)] s'[unfolded t(2)] \<delta>]
       by blast
     thus "{} \<turnstile>\<^sub>c s' \<or> s' \<in> ?Sec"
       using ground_subterm[OF t(3) s']
       unfolding f_def by blast
-  qed
+  qed *)
+
+  show "\<forall>s \<in> ?Sec. \<not>{} \<turnstile>\<^sub>c s" by simp
 qed
 
 end

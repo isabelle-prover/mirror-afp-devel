@@ -1,68 +1,55 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      trac.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, University of Exeter
     Author:     Anders Schlichtkrull, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section\<open>Support for the Trac Format\<close>
 theory
   "trac"
-  imports
+imports
   trac_fp_parser
   trac_protocol_parser
 keywords
       "trac" :: thy_decl
   and "trac_import" :: thy_decl
-  and "trac_trac" :: thy_decl
-  and "trac_import_trac" :: thy_decl
+  and "print_transaction_strand" :: thy_decl
+  and "print_transaction_strand_list" :: thy_decl
+  and "print_attack_trace" :: thy_decl
+  and "print_fixpoint" :: thy_decl
+  and "save_fixpoint" :: thy_decl
+  and "load_fixpoint" :: thy_decl
   and "protocol_model_setup" :: thy_decl
   and "protocol_security_proof" :: thy_decl
+  and "protocol_composition_proof" :: thy_decl
   and "manual_protocol_model_setup" :: thy_decl
   and "manual_protocol_security_proof" :: thy_decl
+  and "manual_protocol_composition_proof" :: thy_decl
   and "compute_fixpoint" :: thy_decl
   and "compute_SMP" :: thy_decl
-  and "setup_protocol_model'" :: thy_decl
-  and "protocol_security_proof'" :: thy_decl
+  and "compute_shared_secrets" :: thy_decl
   and "setup_protocol_checks" :: thy_decl
 begin
+
+ML\<open>
+val pspsp_timing = let
+  val (pspsp_timing_config, pspsp_timing_setup) =
+      Attrib.config_bool (Binding.name "pspsp_timing") (K false)
+in
+  Context.>>(Context.map_theory pspsp_timing_setup);
+  pspsp_timing_config
+end
+
+structure trac_time = struct
+  fun ap_thy thy msg f x = if Config.get_global thy pspsp_timing 
+                               then Timing.timeap_msg ("PSPSP Timing: "^msg) f x  
+                               else f x  
+  fun ap_lthy lthy = ap_thy (Proof_Context.theory_of lthy)
+end
+\<close>
+
 
 ML \<open>
 (* Some of this is based on code from the following files distributed with Isabelle 2018:
@@ -70,6 +57,17 @@ ML \<open>
     * HOL/Code_Evaluation.thy
     * Pure.thy
 *)
+
+fun assert_nonempty_name n =
+  if n = "" then error "Error: No name given" else n
+
+fun is_defined lthy name = 
+  let
+    val full_name = Local_Theory.full_name lthy (Binding.name name)
+    val thy = Proof_Context.theory_of lthy
+  in
+    Sign.const_type thy full_name <> NONE
+  end
 
 fun protocol_model_interpretation_defs name = 
   let
@@ -81,19 +79,56 @@ fun protocol_model_interpretation_defs name =
       "analyzed_closed_mod_timpls", "timpls_transformable_to'", "intruder_synth_mod_timpls'",
       "analyzed_closed_mod_timpls'", "admissible_transaction_terms", "admissible_transaction",
       "abs_substs_set", "abs_substs_fun", "in_trancl", "transaction_poschecks_comp",
-      "transaction_negchecks_comp", "transaction_check_comp", "transaction_check",
-      "transaction_check_pre", "transaction_check_post", "compute_fixpoint_fun'",
-      "compute_fixpoint_fun", "attack_notin_fixpoint", "protocol_covered_by_fixpoint",
-      "analyzed_fixpoint", "wellformed_protocol'", "wellformed_protocol", "wellformed_fixpoint",
-      "wellformed_composable_protocols", "composable_protocols"
+      "transaction_negchecks_comp", "transaction_check_comp", "transaction_check'",
+      "transaction_check", "transaction_check_pre", "transaction_check_post",
+      "compute_fixpoint_fun'", "compute_fixpoint_fun", "compute_fixpoint_with_trace",
+      "compute_fixpoint_from_trace", "compute_reduced_attack_trace", "attack_notin_fixpoint",
+      "protocol_covered_by_fixpoint", "analyzed_fixpoint", "wellformed_protocol",
+      "wellformed_protocol'", "wellformed_protocol_SMP_set", "wellformed_fixpoint",
+      "wellformed_fixpoint'", "wellformed_term_implication_graph",
+      "wellformed_composable_protocols", "composable_protocols",
+      "welltyped_leakage_free_invkey_conditions'", "welltyped_leakage_free_invkey_conditions",
+      "fun_point_inter", "fun_point_Inter", "fun_point_union", "fun_point_Union",
+      "ticl_abs", "ticl_abss", "match_abss'", "match_abss",
+      "synth_abs_substs_constrs_aux", "synth_abs_substs_constrs",
+      "transaction_check_alt1", "protocol_covered_by_fixpoint_alt1"
     ]):string Interpretation.defines
  end
 
-fun protocol_model_interpretation_params name =
+fun assert_defined lthy def =
+  if is_defined lthy def then ()
+  else error ("Error: The constant " ^ def ^ " is not defined.")
+
+fun assert_not_defined lthy def =
+  if not (is_defined lthy def) then ()
+  else error ("Error: The constant " ^ def ^ " has already been defined.")
+
+fun assert_all_defined lthy name defs =
+  let
+    fun errmsg s =
+      "Error: The following constants were expected to be defined, but are not:\n" ^
+      String.concatWith ", " s ^
+      "\n\nProbable causes:\n" ^
+      "1. The trac command failed to parse the protocol specification.\n" ^
+      "2. The provided protocol-specification name (" ^ name ^ ") " ^
+      "does not match the name given in the trac specification.\n" ^
+      "3. Manually provided parameters (e.g., " ^ name ^ "_fixpoint, " ^ name ^ "_SMP) " ^
+      "may have been misspelled.\n" ^
+      "4. Any of the following commands were used before a call to the (manual_)" ^
+      "protocol_model_setup command:\n" ^
+      "   compute_fixpoint, compute_SMP, protocol_security_proof, manual_protocol_security_proof"
+    val undefs = filter (not o is_defined lthy) defs
+  in
+    if null undefs then defs else error (errmsg undefs)
+  end
+
+fun protocol_model_interpretation_params name lthy =
   let
     fun f s = name ^ "_" ^ s
+    val defs = [f "arity", f "sets_arity", f "public", f "Ana", f "\<Gamma>"]
+    val _ = assert_all_defined lthy name defs
   in
-    map SOME  [f "arity", "\<lambda>_. 0", f "public", f "Ana", f "\<Gamma>", "0::nat", "1::nat"]
+    map SOME (defs@["0::nat", "1::nat"])
   end
 
 fun declare_thm_attr attribute name print lthy =
@@ -113,107 +148,39 @@ val declare_protocol_check = declare_def_attr "protocol_checks"
 fun declare_protocol_checks print =
   declare_protocol_check "attack_notin_fixpoint" print #>
   declare_protocol_check "protocol_covered_by_fixpoint" print #>
+  declare_protocol_check "protocol_covered_by_fixpoint_alt1" print #>
   declare_protocol_check "analyzed_fixpoint" print #>
   declare_protocol_check "wellformed_protocol'" print #>
   declare_protocol_check "wellformed_protocol" print #>
   declare_protocol_check "wellformed_fixpoint" print #>
   declare_protocol_check "compute_fixpoint_fun" print
 
-fun eval_define (name, raw_t) lthy = 
+fun eval_term lthy t =
+  Code_Evaluation.dynamic_value_strict lthy t
+
+fun eval_define (name, t) lthy = 
   let 
-    val t = Code_Evaluation.dynamic_value_strict lthy (Syntax.read_term lthy raw_t)
-    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),[]), t))
+    val t' = eval_term lthy t
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),[]), t'))
     val (_, lthy') = Local_Theory.define arg lthy
   in
-    (t, lthy')
+    (t', lthy')
   end
 
-fun eval_define_declare (name, raw_t) print =
-  eval_define (name, raw_t) ##> declare_code_eqn name print
+fun eval_define_declare (name, t) print =
+  eval_define (name, t) ##> declare_code_eqn name print
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"} 
-        "evaluate and define protocol fixpoint"
-        (Parse.name -- Parse.name >> (fn (protocol, fixpoint) => fn print =>
-          snd o eval_define_declare (fixpoint, "compute_fixpoint_fun " ^ protocol) print));
+fun eval_define_nbe (name, t) lthy = 
+  let 
+    val t' = Nbe.dynamic_value lthy t
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),[]), t'))
+    val (_, lthy') = Local_Theory.define arg lthy
+  in
+    (t', lthy')
+  end
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "compute_SMP"} 
-        "evaluate and define a finite representation of the sub-message patterns of a protocol"
-        ((Scan.optional (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>) "no_optimizations") --
-          Parse.name -- Parse.name >> (fn ((opt,protocol), smp) => fn print =>
-          let
-            val rmd = "List.remdups"
-            val f = "Stateful_Strands.trms_list\<^sub>s\<^sub>s\<^sub>t"
-            val g =
-              "(\<lambda>T. " ^ f ^ " T@map (pair' prot_fun.Pair) (Stateful_Strands.setops_list\<^sub>s\<^sub>s\<^sub>t T))"
-            fun s trms =
-              "(" ^ rmd ^ " (List.concat (List.map (" ^ trms ^
-              " \<circ> Labeled_Strands.unlabel \<circ> transaction_strand) " ^ protocol ^ ")))"
-            val opt1 = "remove_superfluous_terms \<Gamma>"
-            val opt2 = "generalize_terms \<Gamma> is_Var"
-            val gsmp_opt =
-              "generalize_terms \<Gamma> (\<lambda>t. is_Var t \<and> t \<noteq> TAtom AttackType \<and> " ^
-              "t \<noteq> TAtom SetType \<and> t \<noteq> TAtom OccursSecType \<and> \<not>is_Atom (the_Var t))"
-            val smp_fun = "SMP0 Ana \<Gamma>"
-            fun smp_fun' opts =
-              "(\<lambda>T. let T' = (" ^ rmd ^ " \<circ> " ^ opts ^ " \<circ> " ^ smp_fun ^
-              ") T in List.map (\<lambda>t. t \<cdot> Typed_Model.var_rename (Typed_Model.max_var_set " ^
-              "(Messages.fv\<^sub>s\<^sub>e\<^sub>t (set (T@T'))))) T')"
-            val cmd =
-              if opt = "no_optimizations" then smp_fun ^ " " ^ s f
-              else if opt = "optimized"
-              then smp_fun' (opt1 ^ " \<circ> " ^ opt2) ^ " " ^ s f
-              else if opt = "GSMP"
-              then smp_fun' (opt1 ^ " \<circ> " ^ gsmp_opt) ^ " " ^ s g
-              else error ("Invalid option: " ^ opt)
-          in
-            snd o eval_define_declare (smp, cmd) print
-          end));
-
-val _ = Outer_Syntax.local_theory' @{command_keyword "setup_protocol_checks"}
-        "setup protocol checks"
-        (Parse.name -- Parse.name >> (fn (protocol_model, protocol_name) => fn print =>
-          let
-            val a1 = "coverage_check_intro_lemmata"
-            val a2 = "coverage_check_unfold_lemmata"
-            val a3 = "coverage_check_unfold_protocol_lemma"
-          in
-            declare_protocol_checks print #>
-            declare_thm_attr a1 (protocol_model ^ ".protocol_covered_by_fixpoint_intros") print #>
-            declare_def_attr a2 (protocol_model ^ ".protocol_covered_by_fixpoint") print #>
-            declare_def_attr a3 protocol_name print
-          end
-        ));
-
-val _ =
-  Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>setup_protocol_model'\<close>
-    "prove interpretation of protocol model locale into global theory"
-    (Parse.!!! (Parse.name -- Parse_Spec.locale_expression) >> (fn (prefix,expr) => fn lthy =>
-    let
-      fun f x y z = ([(x,(y,(Expression.Positional z,[])))],[])
-      val (a,(b,c)) = nth (fst expr) 0
-      val name = fst b
-      val _ = case c of (Expression.Named [],[]) => () | _ => error "Invalid arguments"
-      val pexpr = f a b (protocol_model_interpretation_params prefix)
-      val pdefs = protocol_model_interpretation_defs name
-    in
-      if name = ""
-      then error "No name given"
-      else Interpretation.global_interpretation_cmd pexpr pdefs lthy
-  end));
-
-val _ =
-  Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>protocol_security_proof'\<close>
-    "prove interpretation of secure protocol locale into global theory"
-    (Parse.!!! (Parse.name -- Parse_Spec.locale_expression) >> (fn (prefix,expr) => fn print =>
-    let
-      fun f x y z = ([(x,(y,(Expression.Positional z,[])))],[])
-      val (a,(b,c)) = nth (fst expr) 0
-      val d = case c of (Expression.Positional ps,[]) => ps | _ => error "Invalid arguments"
-      val pexpr = f a b (protocol_model_interpretation_params prefix@d)
-    in
-      declare_protocol_checks print #> Interpretation.global_interpretation_cmd pexpr []
-    end
-    ));
+fun eval_define_declare_nbe (name, t) print =
+  eval_define_nbe (name, t) ##> declare_code_eqn name print
 \<close>
 
 ML\<open>
@@ -279,7 +246,7 @@ structure ml_isar_wrapper = struct
 
    fun prove_simple name stmt tactic lthy = 
      let
-       val thm = Goal.prove lthy [] [] stmt (tactic o #context)
+       val thm = Goal.prove lthy [] [] stmt (fn {context, ...} => tactic context) 
                  |> Goal.norm_result lthy
                  |> Goal.check_finished lthy
      in 
@@ -297,6 +264,24 @@ end
 ML\<open>
 
 structure trac_definitorial_package = struct
+  type hide_tvar_tab = (TracProtocol.protocol) Symtab.table
+  fun trac_eq (a, a') = (#name a) = (#name a')
+  fun merge_trac_tab (tab,tab') = Symtab.merge trac_eq (tab,tab')
+  structure Data = Generic_Data
+  (
+    type T = hide_tvar_tab
+    val empty  = Symtab.empty:hide_tvar_tab
+    val extend = I
+    fun merge(t1,t2)  = merge_trac_tab (t1, t2)
+  );
+
+  fun update  p thy = Context.theory_of 
+                        ((Data.map (fn tab => Symtab.update (#name p, p) tab) (Context.Theory thy)))
+  fun lookup name thy = (Symtab.lookup ((Data.get o Context.Theory) thy) name,thy)
+
+  fun lookup_trac (pname:string) lthy =
+    Option.valOf (fst (lookup pname (Proof_Context.theory_of lthy)))
+
   (* constant names *)
   open Trac_Utils
   val enum_constsN="enum_consts"
@@ -304,20 +289,10 @@ structure trac_definitorial_package = struct
   val funN="fun"
   val atomN="atom"
   val arityN="arity"
+  val set_arityN=setsN^"_"^arityN
   val publicN = "public"
   val gammaN = "\<Gamma>"
   val anaN = "Ana"
-  val valN = "val"
-  val timpliesN = "timplies"
-  val occursN = "occurs"
-  val enumN = "enum"
-  val priv_fun_secN = "PrivFunSec"
-  val secret_typeN = "SecretType"
-  val enum_typeN = "EnumType"
-  val other_pubconsts_typeN = "PubConstType"
-
-  val types = [enum_typeN, secret_typeN]
-  val special_funs = ["occurs", "zero", valN, priv_fun_secN]
 
   fun mk_listT T =  Type ("List.list", [T])
   val mk_setT = HOLogic.mk_setT
@@ -338,21 +313,12 @@ structure trac_definitorial_package = struct
 
   val info = Output.information
 
-  fun rm_special_funs sel l = list_minus (list_rm_pair sel) l special_funs
-
-  fun is_priv_fun (trac:TracProtocol.protocol) f = let
-    val funs = #private (Option.valOf (#function_spec trac))
-    in
-      (* not (List.find (fn g => fst g = f) funs = NONE) *)
-      List.exists (fn (g,n) => f = g andalso n <> "0") funs
-    end
-
   fun full_name name lthy =
     Local_Theory.full_name lthy (Binding.name name)
 
-  fun full_name' n (trac:TracProtocol.protocol) lthy = full_name (mkN (#name trac, n)) lthy
+  fun full_name' n (trac:TracProtocolCert.cProtocol) lthy = full_name (mkN (#name trac, n)) lthy
 
-  fun mk_prot_type name targs (trac:TracProtocol.protocol) lthy =
+  fun mk_prot_type name targs (trac:TracProtocolCert.cProtocol) lthy =
     Term.Type (full_name' name trac lthy, targs)
 
   val enum_constsT = mk_prot_type enum_constsN []
@@ -360,40 +326,44 @@ structure trac_definitorial_package = struct
   fun mk_enum_const a trac lthy =
     Term.Const (full_name' enum_constsN trac lthy ^ "." ^ a, enum_constsT trac lthy)
 
-  val databaseT = mk_prot_type setsN []
+  val setexprT = mk_prot_type setsN []
 
   val funT = mk_prot_type funN []
 
   val atomT = mk_prot_type atomN []
 
-  fun messageT (trac:TracProtocol.protocol) lthy =
-    Term.Type ("Transactions.prot_term", [funT trac lthy, atomT trac lthy, databaseT trac lthy])
+  fun messageT (trac:TracProtocolCert.cProtocol) lthy =
+    Term.Type ("Transactions.prot_term", [funT trac lthy, atomT trac lthy, setexprT trac lthy, natT])
 
-  fun message_funT (trac:TracProtocol.protocol) lthy =
-    Term.Type ("Transactions.prot_fun", [funT trac lthy, atomT trac lthy, databaseT trac lthy])
+  fun message_funT (trac:TracProtocolCert.cProtocol) lthy =
+    Term.Type ("Transactions.prot_fun", [funT trac lthy, atomT trac lthy, setexprT trac lthy, natT])
 
-  fun message_varT (trac:TracProtocol.protocol) lthy =
-    Term.Type ("Transactions.prot_var", [funT trac lthy, atomT trac lthy, databaseT trac lthy])
+  fun message_varT (trac:TracProtocolCert.cProtocol) lthy =
+    Term.Type ("Transactions.prot_var", [funT trac lthy, atomT trac lthy, setexprT trac lthy, natT])
 
-  fun message_term_typeT (trc:TracProtocol.protocol) lthy =
-    Term.Type ("Transactions.prot_term_type", [funT trc lthy, atomT trc lthy, databaseT trc lthy])
+  fun message_term_typeT (trac:TracProtocolCert.cProtocol) lthy =
+    Term.Type ("Transactions.prot_term_type",
+               [funT trac lthy, atomT trac lthy, setexprT trac lthy, natT])
 
-  fun message_atomT (trac:TracProtocol.protocol) lthy =
+  fun message_term_type_listT (trac:TracProtocolCert.cProtocol) lthy =
+    mk_listT (message_term_typeT trac lthy)
+
+  fun message_atomT (trac:TracProtocolCert.cProtocol) lthy =
     Term.Type ("Transactions.prot_atom", [atomT trac lthy])
 
-  fun messageT' varT (trac:TracProtocol.protocol) lthy =
+  fun messageT' varT (trac:TracProtocolCert.cProtocol) lthy =
     Term.Type ("Term.term", [message_funT trac lthy, varT])
 
-  fun message_listT (trac:TracProtocol.protocol) lthy =
+  fun message_listT (trac:TracProtocolCert.cProtocol) lthy =
     mk_listT (messageT trac lthy)
 
-  fun message_listT' varT (trac:TracProtocol.protocol) lthy =
+  fun message_listT' varT (trac:TracProtocolCert.cProtocol) lthy =
     mk_listT (messageT' varT trac lthy)
 
-  fun absT (trac:TracProtocol.protocol) lthy =
-    mk_setT (databaseT trac lthy)
+  fun absT (trac:TracProtocolCert.cProtocol) lthy =
+    mk_setT (setexprT trac lthy)
 
-  fun abssT (trac:TracProtocol.protocol) lthy =
+  fun abssT (trac:TracProtocolCert.cProtocol) lthy =
     mk_setT (absT trac lthy)
 
   val poscheckvariantT =
@@ -402,19 +372,19 @@ structure trac_definitorial_package = struct
   val strand_labelT =
     Term.Type ("Labeled_Strands.strand_label", [natT])
 
-  fun strand_stepT (trac:TracProtocol.protocol) lthy =
+  fun strand_stepT (trac:TracProtocolCert.cProtocol) lthy =
     Term.Type ("Stateful_Strands.stateful_strand_step",
                [message_funT trac lthy, message_varT trac lthy])
 
-  fun labeled_strand_stepT (trac:TracProtocol.protocol) lthy =
+  fun labeled_strand_stepT (trac:TracProtocolCert.cProtocol) lthy =
     mk_prodT (strand_labelT, strand_stepT trac lthy)
 
-  fun prot_strandT (trac:TracProtocol.protocol) lthy =
+  fun prot_strandT (trac:TracProtocolCert.cProtocol) lthy =
     mk_listT (labeled_strand_stepT trac lthy)
 
-  fun prot_transactionT (trac:TracProtocol.protocol) lthy =
+  fun prot_transactionT (trac:TracProtocolCert.cProtocol) lthy =
     Term.Type ("Transactions.prot_transaction",
-               [funT trac lthy, atomT trac lthy, databaseT trac lthy, natT])
+               [funT trac lthy, atomT trac lthy, setexprT trac lthy, natT])
 
   val mk_star_label =
     Term.Const ("Labeled_Strands.strand_label.LabelS", strand_labelT)
@@ -426,29 +396,35 @@ structure trac_definitorial_package = struct
   fun mk_labeled_step (label:term) (step:term) =
     mk_prod (label, step)
 
-  fun mk_Send_step (trac:TracProtocol.protocol) lthy (label:term) (msg:term) =
+  fun mk_Send_step (trac:TracProtocolCert.cProtocol) lthy (label:term) (msgs:term list) =
     mk_labeled_step label
       (Term.Const ("Stateful_Strands.stateful_strand_step.Send",
-                   messageT trac lthy --> strand_stepT trac lthy) $ msg)
+                   mk_listT (messageT trac lthy) --> strand_stepT trac lthy) $
+                    mk_list (messageT trac lthy) msgs)
 
-  fun mk_Receive_step (trac:TracProtocol.protocol) lthy (label:term) (msg:term) =
+  fun mk_Receive_step (trac:TracProtocolCert.cProtocol) lthy (label:term) (msgs:term list) =
     mk_labeled_step label
       (Term.Const ("Stateful_Strands.stateful_strand_step.Receive",
-                   messageT trac lthy --> strand_stepT trac lthy) $ msg)
+                   mk_listT (messageT trac lthy) --> strand_stepT trac lthy) $
+                    mk_list (messageT trac lthy) msgs)
 
-  fun mk_InSet_step (trac:TracProtocol.protocol) lthy (label:term) (elem:term) (set:term) =
+  fun mk_InSet_step (trac:TracProtocolCert.cProtocol) lthy psv (label:term) (elem:term) (set:term) =
     let
       val psT = [poscheckvariantT, messageT trac lthy, messageT trac lthy]
+      val psvN =
+        case psv of TracProtocolCert.cCheck => "Check" | TracProtocolCert.cAssignment => "Assign"
     in
       mk_labeled_step label
         (Term.Const ("Stateful_Strands.stateful_strand_step.InSet",
                      psT ---> strand_stepT trac lthy) $
-         Term.Const ("Strands_and_Constraints.poscheckvariant.Check", poscheckvariantT) $
+         Term.Const ("Strands_and_Constraints.poscheckvariant." ^ psvN, poscheckvariantT) $
          elem $ set)
     end
 
-  fun mk_NotInSet_step (trac:TracProtocol.protocol) lthy (label:term) (elem:term) (set:term) =
+  fun mk_NegChecks_step (trac:TracProtocolCert.cProtocol) lthy (label:term)
+                        (bvars:term list) (ineqs:(term*term) list) (notins:(term*term) list) =
     let
+      val msgT = messageT trac lthy
       val varT = message_varT trac lthy
       val trm_prodT = mk_prodT (messageT trac lthy, messageT trac lthy)
       val psT = [mk_listT varT, mk_listT trm_prodT, mk_listT trm_prodT]
@@ -456,165 +432,179 @@ structure trac_definitorial_package = struct
       mk_labeled_step label
         (Term.Const ("Stateful_Strands.stateful_strand_step.NegChecks",
                      psT ---> strand_stepT trac lthy) $
-         mk_list varT [] $
-         mk_list trm_prodT [] $
-         mk_list trm_prodT [mk_prod (elem,set)])
+         (case bvars of
+            [] => mk_list varT []
+          | [x] => mk_list varT [Term.Const (@{const_name "the_Var"}, msgT --> varT) $ x]
+          | xs =>
+              Term.Const (@{const_name "map"}, [msgT --> varT, mk_listT msgT] ---> mk_listT varT) $
+              Term.Const (@{const_name "the_Var"}, msgT --> varT) $
+              mk_list msgT xs) $
+         mk_list trm_prodT (map mk_prod ineqs) $
+         mk_list trm_prodT (map mk_prod notins))
     end
 
-  fun mk_Inequality_step (trac:TracProtocol.protocol) lthy (label:term) (t1:term) (t2:term) =
+  fun mk_NotInSet_step (trac:TracProtocolCert.cProtocol) lthy (label:term) (elem:term) (set:term) =
+    mk_NegChecks_step trac lthy label [] [] [(elem,set)]
+
+  fun mk_Equality_step (trac:TracProtocolCert.cProtocol) lthy psv (label:term) (t1:term) (t2:term) =
     let
-      val varT = message_varT trac lthy
-      val trm_prodT = mk_prodT (messageT trac lthy, messageT trac lthy)
-      val psT = [mk_listT varT, mk_listT trm_prodT, mk_listT trm_prodT]
+      val psT = [poscheckvariantT, messageT trac lthy, messageT trac lthy]
+      val psvN =
+        case psv of TracProtocolCert.cCheck => "Check" | TracProtocolCert.cAssignment => "Assign"
     in
       mk_labeled_step label
-        (Term.Const ("Stateful_Strands.stateful_strand_step.NegChecks",
+        (Term.Const ("Stateful_Strands.stateful_strand_step.Equality",
                      psT ---> strand_stepT trac lthy) $
-         mk_list varT [] $
-         mk_list trm_prodT [mk_prod (t1,t2)] $
-         mk_list trm_prodT [])
+         Term.Const ("Strands_and_Constraints.poscheckvariant." ^ psvN, poscheckvariantT) $ t1 $ t2)
     end
 
-  fun mk_Insert_step (trac:TracProtocol.protocol) lthy (label:term) (elem:term) (set:term) =
+  fun mk_Insert_step (trac:TracProtocolCert.cProtocol) lthy (label:term) (elem:term) (set:term) =
     mk_labeled_step label
       (Term.Const ("Stateful_Strands.stateful_strand_step.Insert",
                    [messageT trac lthy, messageT trac lthy] ---> strand_stepT trac lthy) $
        elem $ set)
 
-  fun mk_Delete_step (trac:TracProtocol.protocol) lthy (label:term) (elem:term) (set:term) =
+  fun mk_Delete_step (trac:TracProtocolCert.cProtocol) lthy (label:term) (elem:term) (set:term) =
     mk_labeled_step label
       (Term.Const ("Stateful_Strands.stateful_strand_step.Delete",
                    [messageT trac lthy, messageT trac lthy] ---> strand_stepT trac lthy) $
        elem $ set)
 
-  fun mk_Transaction (trac:TracProtocol.protocol) lthy S1 S2 S3 S4 S5 S6 =
+  fun mk_Transaction (trac:TracProtocolCert.cProtocol) lthy S0 S1 S2 S3 S4 S5 S6 =
     let
       val varT = message_varT trac lthy
       val msgT = messageT trac lthy
       val var_listT = mk_listT varT
       val msg_listT = mk_listT msgT
+      val fun_setT = mk_setT (funT trac lthy)
       val trT = prot_transactionT trac lthy
-      (* val decl_elemT = mk_prodT (varT, mk_listT msgT)
-      val declT = mk_listT decl_elemT *)
+      val declT = mk_prodT (varT, fun_setT)
+      val decl_listT = mk_listT declT
+      val decl_list_funT = HOLogic.unitT --> decl_listT
       val stepT = labeled_strand_stepT trac lthy
       val strandT = prot_strandT trac lthy
       val strandsT = mk_listT strandT
-      val paramsT = [(* declT,  *)var_listT, strandT, strandT, strandT, strandT, strandT]
+      val paramsT = [decl_list_funT, var_listT, strandT, strandT, strandT, strandT]
     in
       Term.Const ("Transactions.prot_transaction.Transaction", paramsT ---> trT) $
-      (* mk_list decl_elemT [] $ *)
+      (Term.Const ("Product_Type.unit.case_unit", decl_listT --> decl_list_funT) $
+       mk_list declT S0) $
       (if null S4 then mk_list varT []
-       else (Term.Const (@{const_name "map"}, [msgT --> varT, msg_listT] ---> var_listT) $
-             Term.Const (@{const_name "the_Var"}, msgT --> varT) $
-             mk_list msgT S4)) $
+       else Term.Const (@{const_name "map"}, [msgT --> varT, msg_listT] ---> var_listT) $
+            Term.Const (@{const_name "the_Var"}, msgT --> varT) $
+            mk_list msgT S4) $
       mk_list stepT S1 $
-      mk_list stepT [] $
       (if null S3 then mk_list stepT S2
-       else (Term.Const (@{const_name "append"}, [strandT,strandT] ---> strandT) $
-             mk_list stepT S2 $
-            (Term.Const (@{const_name "concat"}, strandsT --> strandT) $ mk_list strandT S3))) $
+       else Term.Const (@{const_name "append"}, [strandT,strandT] ---> strandT) $
+            mk_list stepT S2 $
+            (Term.Const (@{const_name "concat"}, strandsT --> strandT) $ mk_list strandT S3)) $
       mk_list stepT S5 $
       mk_list stepT S6
     end
 
-  fun get_funs (trac:TracProtocol.protocol) =
-      let
-        fun append_sec fs = fs@[(priv_fun_secN, "0")]
-        val filter_funs = filter (fn (_,n) => n <> "0")
-        val filter_consts = filter (fn (_,n) => n = "0")
-        fun inc_ar (s,n) = (s, Int.toString (1+Option.valOf (Int.fromString n)))
-      in
-        case (#function_spec trac) of 
-             NONE => ([],[],[])
-           | SOME ({public=pub, private=priv}) =>
-              let
-                val pub_symbols = rm_special_funs fst (pub@map inc_ar (filter_funs priv))
-                val pub_funs = filter_funs pub_symbols
-                val pub_consts = filter_consts pub_symbols
-                val priv_consts = append_sec (rm_special_funs fst (filter_consts priv))
-              in
-                (pub_funs, pub_consts, priv_consts)
-              end
-      end 
+  fun get_funs (trac:TracProtocolCert.cProtocol) =
+      case #function_spec trac of
+        NONE => ([],[],[])
+      | SOME ({public_funs=pub_funs, public_consts=pub_consts, private_consts=priv_consts}) =>
+          (pub_funs, pub_consts, priv_consts)
 
-  fun get_set_spec (trac:TracProtocol.protocol) =
-    mk_unique (map (fn (s,n) => (s,Option.valOf (Int.fromString n))) (#set_spec trac))
+  (* TODO: consider differentiating between "/" sets and "//" sets *)
+  fun get_set_spec (trac:TracProtocolCert.cProtocol) =
+    distinct (op =) (map (fn (s,n,_) => (s,n)) (#set_spec trac))
 
-  fun set_arity (trac:TracProtocol.protocol) s =
+  fun get_general_set_family_set_spec (trac:TracProtocolCert.cProtocol) =
+    distinct (op =) (map_filter (fn (s,n,b) => if b then SOME (s,n) else NONE) (#set_spec trac))
+
+  fun is_general_set_family (trac:TracProtocolCert.cProtocol) s =
+    List.exists (fn (s',_) => s = s') (get_general_set_family_set_spec trac)
+
+  fun set_arity (trac:TracProtocolCert.cProtocol) s =
     case List.find (fn x => fst x = s) (get_set_spec trac) of
       SOME (_,n) => SOME n
     | NONE => NONE
 
-  fun get_enums (trac:TracProtocol.protocol) =
-    mk_unique (TracProtocol.extract_Consts (#type_spec trac))
+  fun get_enum_consts (trac:TracProtocolCert.cProtocol) =
+    distinct (op =) (List.concat (map #2 (#enum_spec trac)))
 
-  fun flatten_type_spec (trac:TracProtocol.protocol) =
-    let
-      fun find_type taus tau =
-        case List.find (fn x => fst x = tau) taus of
-          SOME x => snd x
-        | NONE => error ("Type " ^ tau ^ " has not been declared")
-      fun step taus (s,e) =
-        case e of
-          TracProtocol.Union ts =>
-            let
-              val es = map (find_type taus) ts
-              fun f es' = mk_unique (List.concat (map TracProtocol.the_Consts es'))
-            in
-              if List.all TracProtocol.is_Consts es
-              then (s,TracProtocol.Consts (f es))
-              else (s,TracProtocol.Union ts)
-            end
-        | c => (s,c)
-      fun loop taus =
-        let
-          val taus' = map (step taus) taus
-        in
-          if taus = taus'
-          then taus
-          else loop taus'
-        end
-      val flat_type_spec =
-        let
-          val x = loop (#type_spec trac)
-          val errpre = "Couldn't flatten the enumeration types: "
-        in
-          if List.all (fn (_,e) => TracProtocol.is_Consts e) x
-          then
-            let
-              val y = map (fn (s,e) => (s,TracProtocol.the_Consts e)) x
-            in
-              if List.all (not o List.null o snd) y
-              then y
-              else error (errpre ^ "does every type have at least one value?")
-            end
-          else error (errpre ^ "have all types been declared?")
-        end
-    in
-      flat_type_spec
-    end
+  fun get_finite_enum_spec (trac:TracProtocolCert.cProtocol) =
+    filter (null o #3) (#enum_spec trac)
 
-  fun is_attack_transaction (tr:TracProtocol.cTransaction) =
+  fun get_infinite_enum_spec (trac:TracProtocolCert.cProtocol) =
+    filter_out (null o #3) (#enum_spec trac)
+
+  fun get_nonunion_infinite_enum_spec (trac:TracProtocolCert.cProtocol) =
+    filter (fn (e,cs,ies) => null cs andalso ies = [e])
+           (get_infinite_enum_spec trac)
+
+  fun get_typed_constants_in_function_spec (trac:TracProtocolCert.cProtocol) =
+    case #function_spec trac of
+      SOME {private_consts=priv, public_consts=pub, ...} =>
+        map_filter (fn (c,t) => Option.map (fn a => (c,a)) t) (priv@pub)
+    | NONE => []
+
+  fun get_user_atom_spec_pre (trac:TracProtocolCert.cProtocol) =
+    map (fn s => (s,([boolT,natT],s^"_constant"))) (#type_spec trac)
+
+  fun get_user_atom_spec (trac:TracProtocolCert.cProtocol) =
+    map (fn (c,a) => (a,([],c))) (get_typed_constants_in_function_spec trac)@
+    get_user_atom_spec_pre trac
+
+  fun is_attack_transaction (tr:TracProtocolCert.cTransaction) =
     not (null (#attack_actions tr))
 
-  fun get_transaction_name (tr:TracProtocol.cTransaction) =
+  fun get_transaction_name (tr:TracProtocolCert.cTransaction) =
     #1 (#transaction tr)
 
-  fun get_fresh_value_variables (tr:TracProtocol.cTransaction) =
-    map_filter (TracProtocol.maybe_the_Fresh o snd) (#fresh_actions tr)
+  fun get_transaction_head_variables (tr:TracProtocolCert.cTransaction) =
+    #2 (#transaction tr)
 
-  fun get_nonfresh_value_variables (tr:TracProtocol.cTransaction) =
-    map fst (filter (fn x => snd x = "value") (#2 (#transaction tr)))
+  fun get_bound_variables (tr:TracProtocolCert.cTransaction) =
+    let
+      val a = map_filter (TracProtocolCert.maybe_the_NegChecks o snd) (#checksingle_actions tr)
+    in
+      distinct (op =) (List.concat (map fst a))
+    end
 
-  fun get_value_variables (tr:TracProtocol.cTransaction) =
+  fun get_fresh_variables (tr:TracProtocolCert.cTransaction) =
+    List.concat (map_filter (TracProtocolCert.maybe_the_Fresh o snd) (#fresh_actions tr))
+
+  fun get_fresh_value_variables (tr:TracProtocolCert.cTransaction) =
+    map_filter (fn (x,tau) => case tau of Trac_Term.ValueType => SOME x | _ => NONE)
+               (get_fresh_variables tr)
+
+  fun get_nonfresh_value_variables (tr:TracProtocolCert.cTransaction) =
+    map fst (filter (fn x => snd x = Trac_Term.ValueType) (get_transaction_head_variables tr))
+
+  fun get_value_variables (tr:TracProtocolCert.cTransaction) =
     get_nonfresh_value_variables tr@get_fresh_value_variables tr
 
-  fun get_enum_variables (tr:TracProtocol.cTransaction) =
-    mk_unique (filter (fn x => snd x <> "value") (#2 (#transaction tr)))
+  fun get_finite_enum_variables (tr:TracProtocolCert.cTransaction) =
+    distinct (op =) (filter (fn (_,tau) => case tau of
+                                              Trac_Term.Enumeration _ => true
+                                            | _ => false)
+                            (get_transaction_head_variables tr))
 
-  fun get_variable_restrictions (tr:TracProtocol.cTransaction) =
+  fun get_infinite_enum_variables (tr:TracProtocolCert.cTransaction) =
+    distinct (op =) (filter (fn (_,tau) => case tau of
+                                              Trac_Term.InfiniteEnumeration _ => true
+                                            | _ => false)
+                            (get_transaction_head_variables tr))
+
+
+  fun get_enumtype_variables (tr:TracProtocolCert.cTransaction) =
+    distinct (op =) (filter (fn (_,tau) => tau = Trac_Term.EnumType)
+                            (get_transaction_head_variables tr))
+
+  fun get_nonenum_variables (tr:TracProtocolCert.cTransaction) =
+    map_filter (fn (x,tau) => case tau of
+                    Trac_Term.Enumeration _ => NONE
+                  | Trac_Term.InfiniteEnumeration _ => NONE
+                  | _ => SOME (x,tau))
+               (get_transaction_head_variables tr@get_fresh_variables tr)
+
+  fun get_variable_restrictions (tr:TracProtocolCert.cTransaction) =
     let
-      val enum_vars = get_enum_variables tr
+      val enum_vars = get_finite_enum_variables tr
       val value_vars = get_value_variables tr
       fun enum_member x = List.exists (fn y => x = fst y)
       fun value_member x = List.exists (fn y => x = y)
@@ -624,214 +614,75 @@ structure trac_definitorial_package = struct
             then let val (es,vs) = aux rs in ((a,b)::es,vs) end
             else if value_member a value_vars andalso value_member b value_vars
             then let val (es,vs) = aux rs in (es,(a,b)::vs) end
-            else error ("Ill-formed or ill-typed variable restriction: " ^ a ^ " != " ^ b)
+            else error ("Error: Ill-formed or ill-typed variable restriction: " ^ a ^ " != " ^ b)
     in
       aux (#3 (#transaction tr))
     end
 
-  fun conv_enum_consts trac (t:Trac_Term.cMsg) = 
+  fun setexpr_to_hol (db:string * Trac_Term.cMsg list) (trac:TracProtocolCert.cProtocol) lthy =
     let
       open Trac_Term
-      val enums = get_enums trac
-      fun aux (cFun (f,ts)) =
-            if List.exists (fn x => x = f) enums
-            then if null ts
-                 then cEnum f
-                 else error ("Enum constant " ^ f ^ " should not have a parameter list")
-            else
-              cFun (f,map aux ts)
-        | aux (cConst c) =
-            if List.exists (fn x => x = c) enums
-            then cEnum c
-            else cConst c
-        | aux (cSet (s,ts)) = cSet (s,map aux ts)
-        | aux (cOccursFact bs) = cOccursFact (aux bs)
-        | aux t = t
-    in
-      aux t
-    end
-
-  fun val_to_abs_list vs =
-    let
-      open Trac_Term
-      fun aux t = case t of cEnum b => b | _ => error "Invalid val parameter list"
-    in
-      case vs of
-        [] => []
-      | (cConst "0"::ts) => val_to_abs_list ts
-      | (cFun (s,ps)::ts) => (s, map aux ps)::val_to_abs_list ts
-      | (cSet (s,ps)::ts) => (s, map aux ps)::val_to_abs_list ts
-      | _ => error "Invalid val parameter list"
-    end
-
-  fun val_to_abs (t:Trac_Term.cMsg) =
-    let
-      open Trac_Term
-      fun aux t = case t of cEnum b => b | _ => error "Invalid val parameter list"
-
-      fun val_to_abs_list [] = []
-      | val_to_abs_list (cConst "0"::ts) = val_to_abs_list ts
-      | val_to_abs_list (cFun (s,ps)::ts) = (s, map aux ps)::val_to_abs_list ts
-      | val_to_abs_list (cSet (s,ps)::ts) = (s, map aux ps)::val_to_abs_list ts
-      | val_to_abs_list _ = error "Invalid val parameter list"
-    in
-      case t of
-        cFun (f,ts) =>
-          if f = valN
-          then cAbs (val_to_abs_list ts)
-          else cFun (f,map val_to_abs ts)
-      | cSet (s,ts) =>
-          cSet (s,map val_to_abs ts)
-      | cOccursFact bs =>
-          cOccursFact (val_to_abs bs)
-      | t => t
-    end
-
-  fun occurs_enc t =
-    let
-      open Trac_Term
-      fun aux [cVar x] = cVar x
-        | aux [cAbs bs] = cAbs bs
-        | aux _ = error "Invalid occurs parameter list"
-      fun enc (cFun (f,ts)) = (
-            if f = occursN
-            then cOccursFact (aux ts)
-            else cFun (f,map enc ts))
-        | enc (cSet (s,ts)) =
-            cSet (s,map enc ts)
-        | enc (cOccursFact bs) =
-            cOccursFact (enc bs)
-        | enc t = t
-    in
-      enc t
-    end
-
-  fun priv_fun_enc trac (Trac_Term.cFun (f,ts)) = (
-        if is_priv_fun trac f andalso
-           (case ts of Trac_Term.cPrivFunSec::_ => false | _ => true)
-        then Trac_Term.cFun (f,Trac_Term.cPrivFunSec::map (priv_fun_enc trac) ts)
-        else Trac_Term.cFun (f,map (priv_fun_enc trac) ts))
-    | priv_fun_enc _ t = t
-
-  fun transform_cMsg trac =
-    priv_fun_enc trac o occurs_enc o val_to_abs o conv_enum_consts trac
-
-  fun check_no_vars_and_consts (fp:Trac_Term.cMsg list) =
-    let
-      open Trac_Term
-      fun aux (cVar _) = false
-        | aux (cConst _) = false
-        | aux (cFun (_,ts)) = List.all aux ts
-        | aux (cSet (_,ts)) = List.all aux ts
-        | aux (cOccursFact bs) = aux bs
-        | aux _ = true
-    in
-      if List.all aux fp
-      then fp
-      else error "There shouldn't be any cVars and cConsts at this point in the fixpoint translation"
-    end
-
-  fun split_fp (fp:Trac_Term.cMsg list) =
-    let
-      open Trac_Term
-      fun fa t = case t of cFun (s,_) => s <> timpliesN | _ => true
-      fun fb (t,ts) = case t of cOccursFact (cAbs bs) => bs::ts | _ => ts
-      fun fc (cFun (s, [cAbs bs, cAbs cs]),ts) =
-          if s = timpliesN
-          then (bs,cs)::ts
-          else ts
-        | fc (_,ts) = ts
-
-      val eq = eq_set (fn ((s,xs),(t,ys)) => s = t andalso eq_set (op =) (xs,ys))
-      fun eq_pairs ((a,b),(c,d)) = eq (a,c) andalso eq (b,d)
-
-      val timplies_trancl =
-        let
-          fun trans_step ts =
-            let
-              fun aux (s,t) = map (fn (_,u) => (s,u)) (filter (fn (v,_) => eq (t,v)) ts)
-            in
-              distinct eq_pairs (filter (not o eq) (ts@List.concat (map aux ts)))
-            end
-          fun loop ts =
-            let
-              val ts' = trans_step ts
-            in
-              if eq_set eq_pairs (ts,ts')
-              then ts
-              else loop ts'
-            end
-        in
-          loop
-        end
-
-      val ti = List.foldl fc [] fp
-    in
-      (filter fa fp, distinct eq (List.foldl fb [] fp@map snd ti), timplies_trancl ti)
-    end
-
-  fun mk_enum_substs trac (vars:(string * Trac_Term.VarType) list) =
-    let
-      open Trac_Term
-      val flat_type_spec = flatten_type_spec trac
-      val deltas =
-        let
-          fun f (s,EnumType tau) = (
-              case List.find (fn x => fst x = tau) flat_type_spec of
-                SOME x => map (fn c => (s,c)) (snd x)
-              | NONE => error ("Type " ^ tau ^ " was not found in the type specification"))
-            | f (s,_) = error ("Variable " ^ s ^ " is not of enum type")
-        in
-          list_product (map f vars)
-        end
-    in
-      map (fn d => map (fn (x,t) => (x,cEnum t)) d) deltas
-    end
-
-  fun ground_enum_variables trac (fp:Trac_Term.cMsg list) =
-    let
-      open Trac_Term
-      fun do_grounding t = map (fn d => subst_apply d t) (mk_enum_substs trac (fv_cMsg t))
-    in
-      List.concat (map do_grounding fp)
-    end
-
-  fun transform_fp trac (fp:Trac_Term.cMsg list) =
-    fp |> ground_enum_variables trac
-       |> map (transform_cMsg trac)
-       |> check_no_vars_and_consts
-       |> split_fp
-
-  fun database_to_hol (db:string * Trac_Term.cMsg list) (trac:TracProtocol.protocol) lthy =
-    let
-      open Trac_Term
-      val errmsg = "Invalid database parameter"
       fun mkN' n = mkN (#name trac, n)
       val s_prefix = full_name (mkN' setsN) lthy ^ "."
       val e_prefix = full_name (mkN' enum_constsN) lthy ^ "."
       val (s,es) = db
       val tau = enum_constsT trac lthy
-      val databaseT = databaseT trac lthy
-      val a = Term.Const (s_prefix ^ s, map (fn _ => tau) es ---> databaseT)
-      fun param_to_hol (cVar (x,EnumType _)) = Term.Free (x, tau)
-        | param_to_hol (cVar (x,Untyped)) = Term.Free (x, tau)
+      val setexprT = setexprT trac lthy
+      val a = Term.Const (s_prefix ^ s, map (fn _ => tau) es ---> setexprT)
+      fun param_to_hol (cVar (x,Enumeration _)) = Term.Free (x, tau)
+        | param_to_hol (cVar (x,EnumType)) = Term.Free (x, tau)
         | param_to_hol (cEnum e) = Term.Const (e_prefix ^ e, tau)
-        | param_to_hol (cConst c) = error (errmsg ^ ": cConst " ^ c)
-        | param_to_hol (cVar (x,ValueType)) = error (errmsg ^ ": cVar (" ^ x ^ ",ValueType)")
-        | param_to_hol _ = error errmsg
+        | param_to_hol t = error ("Error: Invalid set parameter: " ^ cMsg_str t)
     in
       fold (fn e => fn b => b $ param_to_hol e) es a
     end
 
-  fun abs_to_hol (bs:(string * string list) list) (trac:TracProtocol.protocol) lthy =
+  fun abs_to_hol (bs:(string * string list) list) (trac:TracProtocolCert.cProtocol) lthy =
+    mk_set (setexprT trac lthy)
+           (map (fn (s,cs) => setexpr_to_hol (s, map Trac_Term.cEnum cs) trac lthy) bs)
+
+  fun cType_to_hol (t:Trac_Term.cType) trac lthy =
     let
-      val databaseT = databaseT trac lthy
-      fun db_params_to_cEnum (a,cs) = (a, map Trac_Term.cEnum cs)
+      open Trac_Term
+      val atomT = atomT trac lthy
+      val prot_atomT = message_atomT trac lthy
+      val tT = message_term_typeT trac lthy
+      val fT = message_funT trac lthy
+      val tsT = message_term_type_listT trac lthy
+      val TAtomT = prot_atomT --> tT
+      val TCompT = [fT, tsT] ---> tT
+      val funT = funT trac lthy
+      val setexprT = setexprT trac lthy
+      val SetT = setexprT --> fT
+      val FuT = funT --> fT
+      val TAtomC = Term.Const (@{const_name "Var"}, TAtomT)
+      val TCompC = Term.Const (@{const_name "Fun"}, TCompT)
+      val AtomC = Term.Const ("Transactions.prot_atom.Atom", atomT --> prot_atomT)
+      fun full_name'' n = full_name' n trac lthy
+      fun mk_prot_fun_trm f tau = Term.Const ("Transactions.prot_fun." ^ f, tau)
+      fun mk_Fu_trm f =
+            mk_prot_fun_trm "Fu" FuT $ Term.Const (full_name'' funN ^ "." ^ f, funT)
+      fun mk_Set_trm (s,ts) = (* TODO: use? *)
+            mk_prot_fun_trm "Set" SetT $ setexpr_to_hol (s,ts) trac lthy
+      fun c_to_h s = cType_to_hol s trac lthy
+      fun c_list_to_h ts = mk_list tT (map c_to_h ts)
+
+      fun mk_atom_trm n = Term.Const (full_name'' atomN ^ "." ^ n, atomT)
+      val EnumType_trm = TAtomC $ (AtomC $ mk_atom_trm enum_typeN)
+      val ValueType_trm = TAtomC $ Term.Const ("Transactions.prot_atom.Value", prot_atomT)
     in
-      mk_set databaseT (map (fn db => database_to_hol (db_params_to_cEnum db) trac lthy) bs)
+      case t of
+        Enumeration _ => EnumType_trm
+      | InfiniteEnumeration _ => EnumType_trm
+      | EnumType => EnumType_trm
+      | ValueType => ValueType_trm
+      | PrivFunSecType => TAtomC $ (AtomC $ mk_atom_trm secret_typeN)
+      | AtomicType s => TAtomC $ (AtomC $ mk_atom_trm s)
+      | ComposedType (f,ts) => TCompC $ mk_Fu_trm f $ c_list_to_h ts
+      | Untyped => error "Error: Expected a type but got untyped"
     end
 
-  fun cMsg_to_hol (t:Trac_Term.cMsg) lbl varT var_map free_enum_var trac lthy =
+  fun cMsg_to_hol (t:Trac_Term.cMsg) lbl varT var_map free_enum_var free_message_var trac lthy =
     let
       open Trac_Term
       val tT = messageT' varT trac lthy
@@ -841,30 +692,36 @@ structure trac_definitorial_package = struct
       val VarT = varT --> tT
       val FunT = [fT, tsT] ---> tT
       val absT = absT trac lthy
-      val databaseT = databaseT trac lthy
+      val setexprT = setexprT trac lthy
       val AbsT = absT --> fT
       val funT = funT trac lthy
       val FuT = funT --> fT
-      val SetT = databaseT --> fT
+      val SetT = setexprT --> fT
       val enumT = enum_constsT --> funT
       val VarC = Term.Const (@{const_name "Var"}, VarT)
       val FunC = Term.Const (@{const_name "Fun"}, FunT)
       val NilC = Term.Const (@{const_name "Nil"}, tsT)
-      val prot_label = mk_nat lbl
+      val prot_label = mk_prot_label lbl
       fun full_name'' n = full_name' n trac lthy
       fun mk_enum_const' a = mk_enum_const a trac lthy
       fun mk_prot_fun_trm f tau = Term.Const ("Transactions.prot_fun." ^ f, tau)
       fun mk_enum_trm etrm =
-            mk_prot_fun_trm "Fu" FuT $ (Term.Const (full_name'' funN ^ "." ^ enumN, enumT) $ etrm)
+        mk_prot_fun_trm "Fu" FuT $ (Term.Const (full_name'' funN ^ "." ^ enumN, enumT) $ etrm)
       fun mk_Fu_trm f =
-            mk_prot_fun_trm "Fu" FuT $ Term.Const (full_name'' funN ^ "." ^ f, funT)
-      fun c_to_h s = cMsg_to_hol s lbl varT var_map free_enum_var trac lthy
+        mk_prot_fun_trm "Fu" FuT $ Term.Const (full_name'' funN ^ "." ^ f, funT)
+      fun c_to_h s = cMsg_to_hol s lbl varT var_map free_enum_var free_message_var trac lthy
       fun c_list_to_h ts = mk_list tT (map c_to_h ts)
     in
       case t of
         cVar x =>
           if free_enum_var x
           then FunC $ mk_enum_trm (Term.Free (fst x, enum_constsT)) $ NilC
+          else if free_message_var x
+          then (* Term.Free (fst x, tT) *) (* TODO: somehow Isabelle doesn't realize that tT is the
+                                                    same as messageT when varT is the right type
+                                                    - maybe it's the type synonym in messageT which
+                                                    is to blame *)
+               Term.Free (fst x, messageT trac lthy)
           else VarC $ var_map x
       | cConst f =>
           FunC $
@@ -875,12 +732,16 @@ structure trac_definitorial_package = struct
           mk_Fu_trm f $
           c_list_to_h ts
       | cSet (s,ts) =>
-          FunC $
-          (mk_prot_fun_trm "Set" SetT $ database_to_hol (s,ts) trac lthy) $
-          NilC
+          if is_general_set_family trac s
+          then FunC $
+               (mk_prot_fun_trm "Set" SetT $ setexpr_to_hol (s,[]) trac lthy) $
+               mk_list tT (map c_to_h (cPrivFunSec::ts))
+          else FunC $
+               (mk_prot_fun_trm "Set" SetT $ setexpr_to_hol (s,ts) trac lthy) $
+               NilC
       | cAttack =>
           FunC $
-          (mk_prot_fun_trm "Attack" (natT --> fT) $ prot_label) $
+          (mk_prot_fun_trm "Attack" (strand_labelT --> fT) $ prot_label) $
           NilC
       | cAbs bs =>
           FunC $
@@ -903,8 +764,8 @@ structure trac_definitorial_package = struct
   end
 
   fun ground_cMsg_to_hol t lbl trac lthy =
-    cMsg_to_hol t lbl (message_varT trac lthy) (fn _ => error "Term not ground")
-                (fn _ => false) trac lthy
+    cMsg_to_hol t lbl (message_varT trac lthy) (fn _ => error "Error: Term not ground")
+                (fn _ => false) (fn _ => false) trac lthy
 
   fun ana_cMsg_to_hol inc_vars t (ana_var_map:string list) =
     let
@@ -912,39 +773,25 @@ structure trac_definitorial_package = struct
       fun var_map (x,Untyped) = (
             case list_find (fn y => x = y) ana_var_map of
               SOME (_,n) => if inc_vars then mk_nat (1+n) else mk_nat n
-            | NONE => error ("Analysis variable " ^ x ^ " not found"))
-        | var_map _ = error "Analysis variables must be untyped"
+            | NONE => error ("Error: Analysis variable " ^ x ^ " not found"))
+        | var_map _ = error "Error: Analysis variables must be untyped"
       val lbl = 0 (* There's no constants in analysis messages requiring labels anyway *)
     in
-      cMsg_to_hol t lbl natT var_map (fn _ => false)
+      cMsg_to_hol t lbl natT var_map (fn _ => false) (fn _ => false)
     end
 
-  fun transaction_cMsg_to_hol t lbl (transaction_var_map:string list) trac lthy =
+  fun transaction_cMsg_to_hol t lbl transaction_var_map free_vars trac lthy =
     let
       open Trac_Term
       val varT = message_varT trac lthy
-      val atomT = message_atomT trac lthy
-      val term_typeT = message_term_typeT trac lthy
-      fun TAtom_Value_var n =
-        let
-          val a = Term.Const (@{const_name "Var"}, atomT --> term_typeT) $
-                  Term.Const ("Transactions.prot_atom.Value", atomT)
-        in
-          HOLogic.mk_prod (a, mk_nat n)
-        end
-
-      fun var_map_err_prefix x =
-        "Transaction variable " ^ x ^ " should be value typed but is actually "
-
-      fun var_map (x,ValueType) = (
-            case list_find (fn y => x = y) transaction_var_map of
-              SOME (_,n) => TAtom_Value_var n
-            | NONE => error ("Transaction variable " ^ x ^ " not found"))
-        | var_map (x,EnumType e) = error (var_map_err_prefix x ^ "of enum type " ^ e)
-        | var_map (x,Untyped) = error (var_map_err_prefix x ^ "untyped")
+      fun var_map (x,tau) =
+            case list_find (fn y => (x,tau) = y) transaction_var_map of
+              SOME (_,n) => HOLogic.mk_prod (cType_to_hol tau trac lthy, mk_nat n)
+            | NONE => error ("Error: Transaction variable " ^ cMsg_str (cVar (x,tau)) ^ " not found")
+      fun free_enum_var (_,Enumeration _) = true
+        | free_enum_var _ = false
     in
-      cMsg_to_hol t lbl varT var_map (fn (_,t) => case t of EnumType _ => true | _ => false)
-                  trac lthy
+      cMsg_to_hol t lbl varT var_map free_enum_var (fn _ => free_vars) trac lthy
     end
 
   fun fp_triple_to_hol (fp,occ,ti) trac lthy =
@@ -963,28 +810,31 @@ structure trac_definitorial_package = struct
       mk_tuple [fp', occ', ti']
     end
 
-  fun abstract_over_enum_vars enum_vars enum_ineqs trm flat_type_spec trac lthy =
+  fun absfreeprod tau xs trm =
+    let
+      val tau_out = Term.fastype_of trm
+      fun absfree' x = absfree (x,tau)
+      fun aux _ [] = trm
+        | aux _ [x] = absfree' x trm
+        | aux len (x::y::xs) =
+            Term.Const (@{const_name "case_prod"},
+                   [[tau,mk_tupleT (replicate (len-1) tau)] ---> tau_out,
+                    mk_tupleT (replicate len tau)] ---> tau_out) $
+            absfree' x (aux (len-1) (y::xs))
+    in
+      aux (length xs) xs
+    end
+
+  fun abstract_over_finite_enum_vars enum_vars enum_ineqs trm trac lthy =
     let
       val enum_constsT = enum_constsT trac lthy
+      val absfreeprod' = absfreeprod enum_constsT
+
       fun enumlistelemT n = mk_tupleT (replicate n enum_constsT)
       fun enumlistT n = mk_listT (enumlistelemT n)
       fun mk_enum_const' a = mk_enum_const a trac lthy
 
-      fun absfreeprod xs trm =
-        let
-          val tau = enum_constsT
-          val tau_out = Term.fastype_of trm
-          fun absfree' x = absfree (x,enum_constsT)
-          fun aux _ [] = trm
-            | aux _ [x] = absfree' x trm
-            | aux len (x::y::xs) =
-                Term.Const (@{const_name "case_prod"},
-                       [[tau,mk_tupleT (replicate (len-1) tau)] ---> tau_out,
-                        mk_tupleT (replicate len tau)] ---> tau_out) $
-                absfree' x (aux (len-1) (y::xs))
-        in
-          aux (length xs) xs
-        end
+      fun mk_enumlist ns = mk_list enum_constsT (map mk_enum_const' ns)
 
       fun mk_enum_neq (a,b) = (HOLogic.mk_not o HOLogic.mk_eq)
         (Term.Free (a, enum_constsT), Term.Free (b, enum_constsT))
@@ -995,47 +845,61 @@ structure trac_definitorial_package = struct
 
       val enum_types =
         let
-          fun aux t =
-            if t = ""
-            then get_enums trac
-            else case List.find (fn (s,_) => t = s) flat_type_spec of
-                SOME (_,cs) => cs
-              | NONE => error ("Not an enum type: " ^ t ^ "?")
+          open Trac_Term
+
+          val flat_enum_spec = map (fn (a,b,_) => (a,b)) (get_finite_enum_spec trac)
+          val err_pre = "Error: Expected a finite enumeration, but got "
+          fun aux (Enumeration t) = (
+                case List.find (fn (s,_) => t = s) flat_enum_spec of
+                  SOME (_,cs) => (t,cs)
+                | NONE => error ("Error: " ^ t ^ " has not been declared as an enumeration"))
+            | aux Untyped = (enum_constsN,get_enum_consts trac)
+            | aux (InfiniteEnumeration t) = error (err_pre ^ "an infinite enumeration: " ^ t)
+            | aux tau = error (err_pre ^ "type " ^ cType_str tau)
         in
           map (aux o snd) enum_vars
         end
 
-      val enumlist_product =
+      fun enumlist_product f nil_case =
         let
-          fun mk_enumlist ns = mk_list enum_constsT (map mk_enum_const' ns)
-
-          fun aux _ [] = mk_enumlist []
-            | aux _ [ns] = mk_enumlist ns
+          fun aux _ [] = nil_case ()
+            | aux _ [ns] = f ns
             | aux len (ns::ms::elists) =
                 Term.Const ("List.product", [enumlistT 1, enumlistT (len-1)] ---> enumlistT len) $
-                mk_enumlist ns $ aux (len-1) (ms::elists)
+                f ns $ aux (len-1) (ms::elists)
         in
           aux (length enum_types) enum_types
         end
 
-      val absfp = absfreeprod (map fst enum_vars) trm
-      val eptrm = enumlist_product
+      val enable_let_bindings = false
+
+      val absfp = absfreeprod' (map fst enum_vars) trm
+      val eptrm = if length enum_vars > 1 andalso enable_let_bindings
+                  then enumlist_product
+                        (fn (x,_) => Term.Free (x, mk_listT enum_constsT))
+                        (fn () => error "Error: Nil in enumlist_product")
+                  else enumlist_product (mk_enumlist o snd) (fn () => mk_enumlist [])
       val typof = Term.fastype_of
       val evseT = enumlistelemT (length enum_vars)
       val evslT = enumlistT (length enum_vars)
-      val eneqs = absfreeprod (map fst enum_vars) (mk_enum_neqs_list enum_ineqs)
+      val eneqs = absfreeprod' (map fst enum_vars) (mk_enum_neqs_list enum_ineqs)
     in
       if null enum_vars
       then mk_list (typof trm) [trm]
-      else if null enum_ineqs
-      then Term.Const(@{const_name "map"},
-                      [typof absfp, typof eptrm] ---> mk_listT (typof trm)) $
-           absfp $ eptrm
-      else Term.Const(@{const_name "map"},
-                      [typof absfp, typof eptrm] ---> mk_listT (typof trm)) $
-           absfp $ (Term.Const(@{const_name "filter"},
-                               [evseT --> HOLogic.boolT, evslT] ---> evslT) $
-                    eneqs $ eptrm)
+      else let
+        val a = Term.Const(@{const_name "map"},
+                  [typof absfp, typof eptrm] ---> mk_listT (typof trm)) $
+                absfp
+        val b = if null enum_ineqs
+                then eptrm
+                else Term.Const (@{const_name "filter"},
+                        [evseT --> HOLogic.boolT, evslT] ---> evslT) $
+                     eneqs $ eptrm
+        val c = absfreeprod (mk_listT enum_constsT) (distinct (op =) (map fst enum_types)) (a$b)
+        val d = mk_tuple (map mk_enumlist (distinct (op =) (map snd enum_types)))
+        val e = Term.Const (@{const_name "Let"}, [typof d, typof c] ---> typof (c$d))$d$c
+      in if length enum_vars > 1 andalso enable_let_bindings then e else a $ b
+      end
     end
 
   fun mk_type_of_name lthy pname name ty_args
@@ -1114,45 +978,50 @@ structure trac_definitorial_package = struct
       |> Local_Theory.raw_theory inst_and_prove_enum  
     end
 
-  fun def_types (trac:TracProtocol.protocol) lthy = 
+  fun def_enum_consts (trac:TracProtocolCert.cProtocol) lthy = 
     let 
       val pname = #name trac
       val defname = mkN(pname, enum_constsN)
       val _ = info("  Defining "^defname)
-      val tnames = get_enums trac
-      val types = map (fn x => ([],x)) tnames
+      val enames = get_enum_consts trac
+      val econsts = map (fn x => ([],x)) enames
     in 
-      ([defname], ml_isar_wrapper.define_simple_datatype ([], defname) types lthy)
+      ([defname], ml_isar_wrapper.define_simple_datatype ([], defname) econsts lthy)
     end
 
-  fun def_sets (trac:TracProtocol.protocol) lthy = 
+  fun def_sets (trac:TracProtocolCert.cProtocol) lthy = 
     let 
       val pname = #name trac
       val defname = mkN(pname, setsN)
       val _ = info ("  Defining "^defname)
 
       val sspec = get_set_spec trac
-      val tfqn = Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN)))
+      val gsspec = get_general_set_family_set_spec trac
+      val tfqn = full_name' enum_constsN trac lthy
       val ttyp = Type(tfqn, [])
-      val types = map (fn (x,n) => (replicate n ttyp,x)) sspec
+      val eqs =
+        map (fn (x,n) => if member (op =) gsspec (x,n) then ([],x) else (replicate n ttyp,x)) sspec
     in
       lthy
-      |> ml_isar_wrapper.define_simple_datatype ([], defname) types
+      |> ml_isar_wrapper.define_simple_datatype ([], defname) eqs
     end
 
-  fun def_funs (trac:TracProtocol.protocol) lthy = 
+  fun def_funs (trac:TracProtocolCert.cProtocol) lthy = 
     let 
       val pname = #name trac
-      val (pub_f, pub_c, priv) = get_funs trac
-      val pub = pub_f@pub_c
+      val (pub_f, pub_c, priv_c) = get_funs trac
+      val pub = (map (fn (f,n) => (f,n,NONE)) pub_f)@(map (fn (f,a) => (f,0,a)) pub_c)
+      val priv = map (fn (f,a) => (f,0,a)) priv_c
+      val declared_types = #type_spec trac
 
       fun def_atom lthy = 
         let 
           val def_atomname = mkN(pname, atomN) 
-          val types =
+          val extra_types =
             if null pub_c
-            then types
-            else types@[other_pubconsts_typeN]
+            then default_extra_types
+            else extended_extra_types
+          val types = declared_types@extra_types
           fun define_atom_dt lthy = 
             let
               val _ = info("  Defining "^def_atomname)
@@ -1164,7 +1033,7 @@ structure trac_definitorial_package = struct
             let
               val _ = info ("    Proving "^def_atomname^"_UNIV")
               val thmsN = [def_atomname^".exhaust"]
-              val fqn = Local_Theory.full_name lthy (Binding.name (mkN(pname, atomN)))
+              val fqn = full_name (mkN(pname, atomN)) lthy
               val typ = Type(fqn, [])  
             in
               lthy 
@@ -1179,49 +1048,107 @@ structure trac_definitorial_package = struct
       fun def_fun_dt lthy = 
         let
           val def_funname = mkN(pname, funN)
-          val _ = info("  Defining "^def_funname) 
-          val types = map (fn x => ([],x)) (map fst (pub@priv))
-          val ctyp = Type(Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN))), [])
+          val _ = info("  Defining "^def_funname)
+          val decl_funs = map (fn x => ([],x)) (map #1 (pub@priv))
+          val enum_fun = ([Type (full_name (mkN(pname, enum_constsN)) lthy, [])],enumN)
+
+          val all_funs = decl_funs@enum_fun::map snd (get_user_atom_spec_pre trac)@
+                         map (fn (e,_,_) => ([natT],infenumN e))
+                             (get_nonunion_infinite_enum_spec trac)
         in
-          ml_isar_wrapper.define_simple_datatype ([], def_funname) (types@[([ctyp],enumN)]) lthy
+          ml_isar_wrapper.define_simple_datatype ([], def_funname) all_funs lthy
         end
 
       fun def_fun_arity lthy = 
         let 
-          val fqn_name = Local_Theory.full_name lthy (Binding.name (mkN(pname, funN)))
-          val ctyp = Type(fqn_name, [])
-
-          fun mk_rec_eq name (fname,arity) = (Free(name,ctyp --> natT)
-                                               $Const(fqn_name^"."^fname,ctyp),
-                                                mk_nat((Option.valOf o Int.fromString) arity))
+          val fqn_name = full_name (mkN(pname, funN)) lthy
+          val ctyp = Type (fqn_name, [])
+          val ctyp' = Type (full_name (mkN(pname, enum_constsN)) lthy, [])
           val name = mkN(pname, arityN)
-          val _ = info("  Defining "^name) 
-          val ctyp' = Type(Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN))), [])
+
+          fun mk_rec_eq typs (fname,arity,_) =
+            let
+              val a = Const(fqn_name^"."^fname, typs ---> ctyp)
+              val b = fold (fn t => fn p => p$(Term.dummy_pattern t)) typs a
+            in
+              (Free(name,ctyp --> natT)$b, mk_nat(arity))
+            end
+
+          val _ = info("  Defining "^name)
         in
           ml_isar_wrapper.define_simple_fun name
-              ((map (mk_rec_eq name) (pub@priv))@[
-                      (Free(name, ctyp --> natT)
-                           $(Const(fqn_name^"."^enumN, ctyp' --> ctyp)$(Term.dummy_pattern ctyp')),
-                             mk_nat(0))]) lthy
+              (map (mk_rec_eq []) (pub@priv)@
+               mk_rec_eq [ctyp'] (enumN,0,NONE)::
+               map (fn (_,(ts,f)) => mk_rec_eq ts (f,0,NONE)) (get_user_atom_spec_pre trac)@
+               map (fn (e,_,_) => mk_rec_eq [natT] (infenumN e,1,NONE))
+                   (get_nonunion_infinite_enum_spec trac))
+              lthy
+        end
+
+      fun def_set_arity lthy = 
+        let
+          val fqn_name = full_name' setsN trac lthy
+          val ctyp = Type (fqn_name, [])
+          val ctyp' = Type (full_name' enum_constsN trac lthy, [])
+          val name = mkN(pname, set_arityN)
+
+          val sspec = get_set_spec trac
+          val gsspec = get_general_set_family_set_spec trac
+
+          val sspec' =
+            map (fn (x,n) => if member (op =) gsspec (x,n)
+                             then (x,n+1,[])
+                             else (x,0,replicate n ctyp'))
+                sspec
+
+          fun mk_rec_eq (fname,arity,typs) =
+            let
+              val a = Const(fqn_name^"."^fname, typs ---> ctyp)
+              val b = fold (fn t => fn p => p$(Term.dummy_pattern t)) typs a
+            in
+              (Free(name,ctyp --> natT)$b, mk_nat(arity))
+            end
+
+          val _ = info("  Defining "^name)
+        in
+          ml_isar_wrapper.define_simple_fun name
+              (map mk_rec_eq sspec')
+              lthy
         end
 
       fun def_public lthy = 
         let 
-          val fqn_name = Local_Theory.full_name lthy (Binding.name (mkN(pname, funN)))
-          val ctyp = Type(fqn_name, [])
-
-          fun mk_rec_eq name t fname = (Free(name, ctyp --> boolT)
-                                               $Const(fqn_name^"."^fname,ctyp), t)
+          val fqn_name = full_name (mkN(pname, funN)) lthy
+          val ctyp = Type (fqn_name, [])
+          val ctyp' = Type (full_name (mkN(pname, enum_constsN)) lthy, [])
           val name = mkN(pname, publicN)
+
+          fun mk_rec_eq bool_trm typs fname =
+            let
+              val a = Const(fqn_name^"."^fname, typs ---> ctyp)
+              val b = fold (fn t => fn p => p$(Term.dummy_pattern t)) typs a
+            in
+              (Free(name,ctyp --> boolT)$b, bool_trm)
+            end
+
+          fun mk_rec_eq' fname =
+            let
+              val a = Const(fqn_name^"."^fname, [boolT,natT] ---> ctyp)
+              val b = a$Term.Free ("b", boolT)$Term.dummy_pattern natT
+            in
+              (Free(name,ctyp --> boolT)$b, Term.Free ("b", boolT))
+            end
+
           val _ = info("  Defining "^name) 
-          val ctyp' = Type(Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN))), [])
         in
           ml_isar_wrapper.define_simple_fun name
-              ((map (mk_rec_eq name (@{term "False"})) (map fst priv))
-              @(map (mk_rec_eq name (@{term "True"})) (map fst pub))
-              @[(Free(name, ctyp --> boolT)
-                          $(Const(fqn_name^"."^enumN, ctyp' --> ctyp)$(Term.dummy_pattern ctyp')),
-                             @{term "True"})]) lthy
+              ((map (mk_rec_eq (@{term "False"}) []) (map #1 priv))
+              @(map (mk_rec_eq (@{term "True"}) []) (map #1 pub))
+              @mk_rec_eq (@{term "True"}) [ctyp'] enumN
+              ::map (mk_rec_eq' o snd o snd) (get_user_atom_spec_pre trac)
+              @map (fn (e,_,_) => mk_rec_eq (@{term "True"}) [natT] (infenumN e))
+                   (get_nonunion_infinite_enum_spec trac)
+              ) lthy
         end
 
       fun def_gamma lthy = 
@@ -1230,143 +1157,152 @@ structure trac_definitorial_package = struct
           fun mk_Some t = Const (@{const_name "Some"}, t --> optionT t)
           fun mk_None t = Const (@{const_name "None"},  optionT t)
 
-          val fqn_name = Local_Theory.full_name lthy (Binding.name (mkN(pname, funN)))
-          val ctyp = Type(fqn_name, [])
-          val atomFQN = Local_Theory.full_name lthy (Binding.name (mkN(pname, atomN)))
-          val atomT = Type(atomFQN, [])
-
-          fun mk_rec_eq name t fname = (Free(name, ctyp --> optionT atomT)
-                                               $Const(fqn_name^"."^fname,ctyp), t)
+          val fqn_name = full_name (mkN(pname, funN)) lthy
+          val ctyp = Type (fqn_name, [])
+          val atomFQN = full_name (mkN(pname, atomN)) lthy
+          val atomT = Type (atomFQN, [])
+          val ctyp' = Type (full_name (mkN(pname, enum_constsN)) lthy, [])
           val name = mkN(pname, gammaN)
-          val _ = info("  Defining "^name) 
-          val ctyp' = Type(Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN))), [])
+
+          fun mk_atomT_trm tau = mk_Some atomT$Const(atomFQN^"."^tau, atomT)
+
+          fun mk_rec_eq' (typname,(typs,fname)) =
+            let
+              val typtrm = case typname of NONE => mk_None atomT | SOME tau => mk_atomT_trm tau
+              val a = Const(fqn_name^"."^fname, typs ---> ctyp)
+              val b = fold (fn t => fn p => p$(Term.dummy_pattern t)) typs a
+            in
+              (Free(name,ctyp --> optionT atomT)$b, typtrm)
+            end
+
+          fun mk_rec_eq typname fname = mk_rec_eq' (typname,([],fname))
+
+          val user_atom_spec = get_user_atom_spec trac
+          val priv_rest = filter_out (member (op =) (map (snd o snd) user_atom_spec) o #1) priv
+          val pub_c_rest = filter_out (member (op =) (map (snd o snd) user_atom_spec) o #1) pub_c
+
+          val _ = info("  Defining "^name)
         in
           ml_isar_wrapper.define_simple_fun name
-              ((map (mk_rec_eq name ((mk_Some atomT)$(Const(atomFQN^"."^secret_typeN, atomT)))) (map fst priv))
-               @(map (mk_rec_eq name ((mk_Some atomT)$(Const(atomFQN^"."^other_pubconsts_typeN, atomT)))) (map fst pub_c))
-               @[(Free(name, ctyp --> optionT atomT)
-                           $(Const(fqn_name^"."^enumN, ctyp' --> ctyp)$(Term.dummy_pattern ctyp')),
-                              (mk_Some atomT)$(Const(atomFQN^"."^enum_typeN,atomT)))]
-               @(map (mk_rec_eq name (mk_None atomT)) (map fst pub_f)) ) lthy
+              (map (fn (s,p) => mk_rec_eq' (SOME s,p)) user_atom_spec
+              @map (mk_rec_eq (SOME secret_typeN) o #1) priv_rest
+              @map (mk_rec_eq (SOME other_pubconsts_typeN) o #1) pub_c_rest
+              @mk_rec_eq' (SOME enum_typeN,([ctyp'],enumN))
+              ::map (mk_rec_eq NONE o #1) pub_f
+              @map (fn (e,_,_) => mk_rec_eq' (SOME enum_typeN,([natT],infenumN e)))
+                   (get_nonunion_infinite_enum_spec trac)
+              ) lthy
         end
 
       fun def_ana lthy = let
         val pname = #name trac
-        val (pub_f, pub_c, priv) = get_funs trac
-        val pub = pub_f@pub_c
+        val (pub_f, pub_c, priv_c) = get_funs trac
+        val pub = (map (fn (f,n) => (f,n,NONE)) pub_f)@(map (fn (f,a) => (f,0,a)) pub_c)
+        val priv = map (fn (f,a) => (f,0,a)) priv_c
   
         val keyT = messageT' natT trac lthy
   
-        val fqn_name = Local_Theory.full_name lthy (Binding.name (mkN(pname, funN)))
-        val ctyp = Type(fqn_name, [])
-    
+        val fqn_name = full_name (mkN(pname, funN)) lthy
+        val ctyp = Type (fqn_name, [])
+        val ctyp' = Type (full_name (mkN(pname, enum_constsN)) lthy, [])
+        val name = mkN(pname, anaN)
+
         val ana_outputT = mk_prodT (mk_listT keyT, mk_listT natT)
   
         val default_output = mk_prod (mk_list keyT [], mk_list natT [])
   
         fun mk_ana_output ks rs = mk_prod (mk_list keyT ks, mk_list natT rs)
-  
-        fun mk_rec_eq name t fname = (Free(name, ctyp --> ana_outputT)
-                                             $Term.Const(fqn_name^"."^fname,ctyp), t)
-        val name = mkN(pname, anaN)
+
+        fun mk_rec_eq ana_output_trm typs fname =
+          let
+            val a = Const(fqn_name^"."^fname, typs ---> ctyp)
+            val b = fold (fn t => fn p => p$(Term.dummy_pattern t)) typs a
+          in
+            (Free(name,ctyp --> ana_outputT)$b, ana_output_trm)
+          end
+
         val _ = info("  Defining "^name) 
-        val ctyp' = Type(Local_Theory.full_name lthy (Binding.name (mkN(pname, enum_constsN))), [])
-    
+
         val ana_spec =
           let
-            val toInt = Option.valOf o Int.fromString
-            fun ana_arity (f,n) = (if is_priv_fun trac f then (toInt n)-1 else toInt n)
-            fun check_valid_arity ((f,ps),ks,rs) =
-              case List.find (fn g => f = fst g) pub_f of
-                SOME (f',n) =>
-                  if length ps <> ana_arity (f',n)
-                  then error ("Invalid number of parameters in the analysis rule for " ^ f ^
-                              " (expected " ^ Int.toString (ana_arity (f',n)) ^
-                              " but got " ^ Int.toString (length ps) ^ ")")
-                  else ((f,ps),ks,rs)
-              | NONE => error (f ^ " is not a declared function symbol of arity greater than zero")
-            val transform_cMsg = transform_cMsg trac
-            val rm_special_funs = rm_special_funs (fn ((f,_),_,_) => f)
-            fun var_to_nat f xs x =
+            fun var_to_nat is_priv_fun f xs x =
               let
                 val n = snd (Option.valOf ((list_find (fn y => y = x) xs)))
               in
-                if is_priv_fun trac f then mk_nat (1+n) else mk_nat n
+                if is_priv_fun then mk_nat (1+n) else mk_nat n
               end
-            fun c_to_h f xs t = ana_cMsg_to_hol (is_priv_fun trac f) t xs trac lthy
-            fun keys f ps ks = map (c_to_h f ps o transform_cMsg o Trac_Term.certifyMsg [] []) ks
-            fun results f ps rs = map (var_to_nat f ps) rs
-            fun aux ((f,ps),ks,rs) = (f, mk_ana_output (keys f ps ks) (results f ps rs))
+            fun c_to_h is_priv_fun f xs t = ana_cMsg_to_hol is_priv_fun t xs trac lthy
+            fun keys is_priv_fun f ps ks = map (c_to_h is_priv_fun f ps) ks
+            fun results is_priv_fun f ps rs = map (var_to_nat is_priv_fun f ps) rs
+            fun aux ({head=(f,ps), keys=ks, results=rs, is_priv_fun=b}:TracProtocolCert.cAnaRule) =
+              (f, mk_ana_output (keys b f ps ks) (results b f ps rs))
           in
-            map (aux o check_valid_arity) (rm_special_funs (#analysis_spec trac))
+            map aux (#analysis_spec trac)
           end
 
         val other_funs =
-          filter (fn f => not (List.exists (fn g => f = g) (map fst ana_spec))) (map fst (pub@priv))
+          filter (fn f => not (List.exists (fn g => f = g) (map fst ana_spec))) (map #1 (pub@priv))
       in
         ml_isar_wrapper.define_simple_fun name
-            ((map (fn (f,out) => mk_rec_eq name out f) ana_spec)
-            @(map (mk_rec_eq name default_output) other_funs)
-            @[(Free(name, ctyp --> ana_outputT)
-                      $(Term.Const(fqn_name^"."^enumN, ctyp' --> ctyp)$(Term.dummy_pattern ctyp')),
-                         default_output)]) lthy
+            (map (fn (f,out) => mk_rec_eq out [] f) ana_spec
+            @map (mk_rec_eq default_output []) other_funs
+            @mk_rec_eq default_output [ctyp'] enumN
+            ::map (fn (_,(typs,f)) => mk_rec_eq default_output typs f) (get_user_atom_spec_pre trac)
+            @map (fn (e,_,_) => mk_rec_eq default_output [natT] (infenumN e))
+                 (get_nonunion_infinite_enum_spec trac)
+          )
+          lthy
       end
 
     in
-      lthy |> def_atom 
+      lthy |> def_atom
            |> def_fun_dt
            |> def_fun_arity
+           |> def_set_arity
            |> def_public
            |> def_gamma
            |> def_ana
     end
 
-  fun define_term_model (trac:TracProtocol.protocol) lthy =
+  fun define_term_model (trac:TracProtocolCert.cProtocol) lthy =
     let 
       val _ = info("Defining term model")
     in
-      lthy |> snd o def_types trac 
+      lthy |> snd o def_enum_consts trac 
            |> def_sets trac
            |> def_funs trac
     end
   
-  fun define_fixpoint fp trac print lthy =
+  fun define_fixpoint fp_triple trac print lthy =
     let
       val fp_name = mkN (#name trac, "fixpoint")
       val _ = info("Defining fixpoint")
       val _ = info("  Defining "^fp_name)
-      val fp_triple = transform_fp trac fp
       val fp_triple_trm = fp_triple_to_hol fp_triple trac lthy
-      val trac = TracProtocol.update_fixed_point trac (SOME fp_triple)
     in
       (trac, #2 (ml_isar_wrapper.define_constant_definition' (fp_name, fp_triple_trm) print lthy))
     end
 
-  fun define_protocol print ((trac:TracProtocol.protocol), lthy) = let
+  fun define_protocol print ((trac:TracProtocolCert.cProtocol), lthy) = let
       val _ =
         if length (#transaction_spec trac) > 1
         then info("Defining protocols")
         else info("Defining protocol")
       val pname = #name trac
 
-      val flat_type_spec = flatten_type_spec trac
-
-      val mk_Transaction = mk_Transaction trac lthy
-
       val mk_Send = mk_Send_step trac lthy
       val mk_Receive = mk_Receive_step trac lthy
       val mk_InSet = mk_InSet_step trac lthy
       val mk_NotInSet = mk_NotInSet_step trac lthy
-      val mk_Inequality = mk_Inequality_step trac lthy
+      val mk_NegChecks = mk_NegChecks_step trac lthy
+      val mk_Equality = mk_Equality_step trac lthy
       val mk_Insert = mk_Insert_step trac lthy
       val mk_Delete = mk_Delete_step trac lthy
 
       val star_label = mk_star_label
       val prot_label = mk_prot_label
 
-      val certify_transation = TracProtocol.certifyTransaction
-
-      fun mk_tname i (tr:TracProtocol.transaction_name) =
+      fun mk_tname i tr =
         let
           val x = #1 tr
           val y = case i of NONE => x | SOME n => mkN(n, x)
@@ -1374,52 +1310,114 @@ structure trac_definitorial_package = struct
         in mkN(pname, z)
         end
 
-      fun def_transaction name_prefix prot_num (transaction:TracProtocol.cTransaction) lthy = let
+      fun def_transaction name_prefix prot_num (transaction:TracProtocolCert.cTransaction) lthy = let
         val defname = mk_tname name_prefix (#transaction transaction)
         val _ = info("  Defining "^defname)
 
-        val receives     = #receive_actions     transaction
-        val checkssingle = #checksingle_actions transaction
-        val checksall    = #checkall_actions    transaction
-        val updates      = #update_actions      transaction
-        val sends        = #send_actions        transaction
-        val fresh        = get_fresh_value_variables transaction
-        val attack_signals = #attack_actions transaction
+        val receives       = #receive_actions     transaction
+        val checkssingle   = #checksingle_actions transaction
+        val checksall      = #checkall_actions    transaction
+        val updates        = #update_actions      transaction
+        val sends          = #send_actions        transaction
+        val fresh          = get_fresh_variables  transaction
+        val attack_signals = #attack_actions      transaction
 
-        val nonfresh_value_vars = get_nonfresh_value_variables transaction
-        val value_vars = get_value_variables transaction
-        val enum_vars  = get_enum_variables  transaction
+        val fresh_vars          = get_fresh_variables            transaction
+        val nonfresh_value_vars = get_nonfresh_value_variables   transaction
+        val finenum_vars        = get_finite_enum_variables      transaction
+        val enumtype_vars       = get_enumtype_variables         transaction
+        val nonenum_vars        = get_nonenum_variables          transaction
+        val infenum_vars        = get_infinite_enum_variables    transaction
+        val all_decl_vars       = get_transaction_head_variables transaction
+        val bvars               = get_bound_variables            transaction
+
+        val nonfinenum_vars =
+          filter (member (op =) (nonenum_vars@infenum_vars)) (all_decl_vars@fresh_vars)
+
+        val infenum_enumtype_vars =
+          filter (member (op =) (enumtype_vars@infenum_vars)) (all_decl_vars@fresh_vars)
 
         val (enum_ineqs, value_ineqs) = get_variable_restrictions transaction
 
-        val transform_cMsg = transform_cMsg trac
+        val enable_let_bindings = true
 
-        fun c_to_h trm = transaction_cMsg_to_hol (transform_cMsg trm) prot_num value_vars trac lthy
+        fun c_to_h' b trm = transaction_cMsg_to_hol
+          trm prot_num
+          (nonfinenum_vars@bvars)
+          b trac lthy
+
+        val c_to_h = c_to_h' enable_let_bindings
 
         val abstract_over_enum_vars = fn x => fn y => fn z =>
-          abstract_over_enum_vars x y z flat_type_spec trac lthy
+          abstract_over_finite_enum_vars x y z trac lthy
 
         fun mk_transaction_term (rcvs, chcksingle, chckall, upds, snds, frsh, atcks) =
           let
-            open Trac_Term
+            open Trac_Term TracProtocolCert
             fun action_filter f (lbl,a) = case f a of SOME x => SOME (lbl,x) | NONE => NONE
 
-            fun lbl_to_h (TracProtocol.LabelS) = star_label
-              | lbl_to_h (TracProtocol.LabelN) = prot_label prot_num
+            fun lbl_to_h LabelS = star_label
+              | lbl_to_h LabelN = prot_label prot_num
 
-            fun lbl_trm_to_h f (lbl,t) = f (lbl_to_h lbl) (c_to_h t)
+            fun lbl_trms_to_h f (lbl,ts) = f (lbl_to_h lbl) (map c_to_h ts)
 
-            val S1 = map (lbl_trm_to_h mk_Receive)
-                         (map_filter (action_filter TracProtocol.maybe_the_Receive) rcvs)
+            val S0 =
+              let
+                val msgT = messageT trac lthy
+                val varT = message_varT trac lthy
+                val funN = full_name' funN trac lthy
+                val funT = funT trac lthy
+                val enum_constsT = enum_constsT trac lthy
+                val infenumspec = get_infinite_enum_spec trac
+                val botinfenums = map #1 (get_nonunion_infinite_enum_spec trac)
+                val enum_constructor = Term.Const (funN ^ "." ^ enumN, enum_constsT --> funT)
+                fun mk_enum_const' a = mk_enum_const a trac lthy
+                fun mk_union typ [] = Term.Const ("Set.empty", mk_setT typ)
+                  | mk_union typ (t::ts) =
+                      fold (fn s => fn u =>
+                        Term.Const ("Set.union", [mk_setT typ, mk_setT typ] ---> mk_setT typ) $
+                        u $ s) ts t
+                val ran_trm_finenums =
+                  Term.Const ("Set.range", (enum_constsT --> funT) --> mk_setT funT) $
+                  enum_constructor
+                fun ran_trm_botinfenum e =
+                  Term.Const ("Set.range", (natT --> funT) --> mk_setT funT) $
+                  Term.Const (funN ^ "." ^ infenumN e, natT --> funT)
+                fun ran_trm_infenums e =
+                  case List.find (fn (a,_,_) => a = e) infenumspec of
+                    SOME (_,cs,es) => mk_union funT (map ran_trm_botinfenum es@
+                      (if null cs then []
+                       else [mk_set funT (map (fn c => enum_constructor $ mk_enum_const' c) cs)]))
+                  | NONE => error ("Couldn't find enumeration " ^ e)
+                fun consts (_,EnumType) =
+                      mk_union funT (ran_trm_finenums::map ran_trm_botinfenum botinfenums)
+                  | consts (_,InfiniteEnumeration e) = ran_trm_infenums e
+                  | consts x = error ("Error: Expected an enumeration variable or a variable of " ^
+                                      "type " ^ enum_typeN ^ ", but got " ^ cMsg_str (cVar x))
+                fun var_trm x =
+                  Term.Const (@{const_name "the_Var"}, msgT --> varT) $ c_to_h (cVar x)
+              in
+                map (fn x => mk_prod (var_trm x, consts x)) infenum_enumtype_vars
+              end
+
+            val S1 = map (lbl_trms_to_h mk_Receive)
+                         (map_filter (action_filter maybe_the_Receive) rcvs)
 
             val S2 =
               let
-                fun aux (lbl,TracProtocol.cInequality (x,y)) =
-                      SOME (mk_Inequality (lbl_to_h lbl) (c_to_h x) (c_to_h y))
-                  | aux (lbl,TracProtocol.cInSet (e,s)) =
-                      SOME (mk_InSet (lbl_to_h lbl) (c_to_h e) (c_to_h s))
-                  | aux (lbl,TracProtocol.cNotInSet (e,s)) =
-                      SOME (mk_NotInSet (lbl_to_h lbl) (c_to_h e) (c_to_h s))
+                fun aux (lbl,cEquality (pcv,(x,y))) =
+                      SOME (mk_Equality pcv (lbl_to_h lbl) (c_to_h x) (c_to_h y))
+                  | aux (lbl,cInSet (pcv,(e,s))) =
+                      SOME (mk_InSet pcv (lbl_to_h lbl) (c_to_h e) (c_to_h s))
+                  | aux (lbl,cNegChecks (xs,ns)) =
+                      let
+                        fun f (a,b) = (c_to_h a, c_to_h b)
+                        val ineqs = map f (map_filter maybe_the_Inequality ns)
+                        val notins = map f (map_filter maybe_the_NotInSet ns)
+                        val bvars = map (c_to_h o cVar) xs
+                      in
+                        SOME (mk_NegChecks (lbl_to_h lbl) bvars ineqs notins)
+                      end
                   | aux _ = NONE
               in
                 map_filter aux chcksingle
@@ -1429,13 +1427,14 @@ structure trac_definitorial_package = struct
               let
                 fun arity s = case set_arity trac s of
                     SOME n => n
-                  | NONE => error ("Not a set family: " ^ s)
+                  | NONE => error ("Error: Not a set family: " ^ s)
 
-                fun mk_evs s = map (fn n => ("X" ^ Int.toString n, "")) (0 upto ((arity s) -1))
+                fun mk_evs s =
+                  map (fn n => ("X" ^ Int.toString n, Untyped)) (0 upto ((arity s) -1))
 
                 fun mk_trm (lbl,e,s) =
                   let
-                    val ps = map (fn x => cVar (x,Untyped)) (map fst (mk_evs s))
+                    val ps = map (fn x => cVar (x,EnumType)) (map fst (mk_evs s))
                   in
                     mk_NotInSet (lbl_to_h lbl) (c_to_h e) (c_to_h (cSet (s,ps)))
                   end
@@ -1443,27 +1442,36 @@ structure trac_definitorial_package = struct
                 fun mk_trms (lbl,(e,s)) =
                   abstract_over_enum_vars (mk_evs s) [] (mk_trm (lbl,e,s))
               in
-                map mk_trms (map_filter (action_filter TracProtocol.maybe_the_NotInAny) chckall)
+                map mk_trms (map_filter (action_filter maybe_the_NotInAny) chckall)
               end
 
-            val S4 = map (c_to_h o mk_Value_cVar) frsh
+            val S4 = map (c_to_h o cVar) frsh
 
             val S5 =
               let
-                fun aux (lbl,TracProtocol.cInsert (e,s)) =
-                      SOME (mk_Insert (lbl_to_h lbl) (c_to_h e) (c_to_h s))
-                  | aux (lbl,TracProtocol.cDelete (e,s)) =
-                      SOME (mk_Delete (lbl_to_h lbl) (c_to_h e) (c_to_h s))
+                fun aux (lbl,cInsert (e,s)) = SOME (mk_Insert (lbl_to_h lbl) (c_to_h e) (c_to_h s))
+                  | aux (lbl,cDelete (e,s)) = SOME (mk_Delete (lbl_to_h lbl) (c_to_h e) (c_to_h s))
                   | aux _ = NONE
               in
                 map_filter aux upds
               end
 
             val S6 =
-              let val snds' = map_filter (action_filter TracProtocol.maybe_the_Send) snds
-              in map (lbl_trm_to_h mk_Send) (snds'@map (fn (lbl,_) => (lbl,cAttack)) atcks) end
+              let val snds' = map_filter (action_filter maybe_the_Send) snds
+              in map (lbl_trms_to_h mk_Send) (snds'@map (fn (lbl,_) => (lbl,[cAttack])) atcks) end
           in
-            abstract_over_enum_vars enum_vars enum_ineqs (mk_Transaction S1 S2 S3 S4 S5 S6)
+            mk_Transaction trac lthy S0 S1 S2 S3 S4 S5 S6
+              |> abstract_over_enum_vars finenum_vars enum_ineqs
+              |> (fn trm =>
+                    if not (null nonenum_vars) andalso enable_let_bindings
+                    then let
+                      val typof = Term.fastype_of
+                      val xs = nonfinenum_vars@bvars
+                      val a = absfreeprod (messageT trac lthy) (map fst xs) trm
+                      val b = mk_tuple (map (c_to_h' false o cVar) xs)
+                      val c = Term.Const (@{const_name "Let"}, [typof b, typof a] ---> typof (a$b))
+                    in c$b$a end
+                    else trm)
           end
 
         fun def_trm trm print lthy =
@@ -1471,10 +1479,11 @@ structure trac_definitorial_package = struct
 
         val additional_value_ineqs =
           let
-            open Trac_Term
-            open TracProtocol
+            open Trac_Term TracProtocolCert
             val poschecks = map_filter (maybe_the_InSet o snd) checkssingle
-            val negchecks_single = map_filter (maybe_the_NotInSet o snd) checkssingle
+            val negchecks_single = List.concat (map (map_filter maybe_the_NotInSet o snd)
+                                                    (map_filter (maybe_the_NegChecks o snd)
+                                                                checkssingle))
             val negchecks_all = map_filter (maybe_the_NotInAny o snd) checksall
 
             fun aux' (cVar (x,ValueType),s) (cVar (y,ValueType),t) =
@@ -1490,7 +1499,7 @@ structure trac_definitorial_package = struct
             List.concat (map_filter aux poschecks)
           end
 
-        val all_value_ineqs = mk_unique (value_ineqs@additional_value_ineqs)
+        val all_value_ineqs = distinct (op =) (value_ineqs@additional_value_ineqs)
 
         val valvarsprod =
               filter (fn p => not (List.exists (fn q => p = q orelse swap p = q) all_value_ineqs))
@@ -1502,12 +1511,12 @@ structure trac_definitorial_package = struct
         if null valvarsprod
         then def_trm transaction_trm0 print lthy
         else let
+          open Trac_Term TracProtocolCert
           val partitions = list_partitions nonfresh_value_vars all_value_ineqs
           val ps = filter (not o null) (map (filter (fn x => length x > 1)) partitions)
 
           fun mk_subst ps =
             let 
-              open Trac_Term
               fun aux [] = NONE
                 | aux (x::xs) = SOME (map (fn y => (y,cVar (x,ValueType))) xs)
             in
@@ -1516,10 +1525,12 @@ structure trac_definitorial_package = struct
 
           fun apply d =
             let
-              val ap = TracProtocol.subst_apply_actions d
-              fun f (TracProtocol.cInequality (x,y)) = x <> y
-                | f _ = true
-              val checksingle' = filter (f o snd) (ap checkssingle)
+              val ap = subst_apply_cActions d
+              val checksingle' =
+                filter (fn (_,a) => case a of
+                                      cNegChecks ([],[cInequality (x,y)]) => x <> y
+                                    | _ => true)
+                       (ap checkssingle)
             in
               (ap receives, checksingle', ap checksall, ap updates, ap sends, fresh, attack_signals)
             end
@@ -1539,7 +1550,7 @@ structure trac_definitorial_package = struct
           val prots = map (fn (n,pr) => map (fn tr => (n,tr)) pr) (#transaction_spec trac)
           val lbls = list_upto (length prots)
           val lbl_prots = List.concat (map (fn i => map (fn tr => (i,tr)) (nth prots i)) lbls)
-          val f = fold (fn (i,(n,tr)) => def_transaction n i (certify_transation tr))
+          val f = fold (fn (i,(n,tr)) => def_transaction n i tr)
         in 
           f lbl_prots
         end
@@ -1600,11 +1611,27 @@ structure trac_definitorial_package = struct
               mk_list trstyp (map f (list_upto num_prots))
             end
 
+          fun mk_star_prot_trm () =
+            let
+              fun f j =
+                (Term.Const (@{const_name "map"}, [trtyp --> trtyp, trstyp] ---> trstyp) $
+                 Term.Const ("Transactions.transaction_star_proj", trtyp --> trtyp) $
+                 Term.Const (nth pnames' j, trstyp))
+            in
+              Term.Const (@{const_name "concat"}, mk_listT trstyp --> trstyp) $
+              mk_list trstyp (map f (list_upto num_prots))
+            end
+
           val lthy =
             if num_prots > 1
             then fold (fn (i,pname) => mk_prot_def (pname, mk_prot_trm_with_star i))
-                      (map (fn i => (i, nth pnames i ^ "_with_star")) (list_upto num_prots))
+                      (map (fn i => (i, nth pnames i ^ "_with_star_projs")) (list_upto num_prots))
                       lthy
+            else lthy
+
+          val lthy =
+            if num_prots > 1
+            then mk_prot_def (pdefname ^ "_star_projs", mk_star_prot_trm ()) lthy
             else lthy
       in
         mk_prot_def (pdefname, mk_prot_trm (if num_prots > 1 then pnames' else tnames)) lthy
@@ -1616,42 +1643,11 @@ end
 \<close>
 
 ML\<open>
+
 structure trac = struct
   open Trac_Term
-
+  
   val info = Output.information
-  (* Define global configuration option "trac" *)
-  (* val trac_fp_compute_binary_cfg = 
-      let
-        val (trac_fp_compute_path_config, trac_fp_compute_path_setup) =
-          Attrib.config_string (Binding.name "trac_fp_compute") (K "trac_fp_compute")
-      in
-        Context.>>(Context.map_theory trac_fp_compute_path_setup);
-        trac_fp_compute_path_config
-      end
-
-  val trac_eval_cfg =
-      let
-        val (trac_fp_compute_eval_config, trac_fp_compute_eval) =
-          Attrib.config_bool (Binding.name "trac_fp_compute_eval") (K false)
-      in
-        Context.>>(Context.map_theory trac_fp_compute_eval);
-        trac_fp_compute_eval_config
-      end *)
-
-  type hide_tvar_tab = (TracProtocol.protocol) Symtab.table
-  fun trac_eq (a, a') = (#name a) = (#name a')
-  fun merge_trac_tab (tab,tab') = Symtab.merge trac_eq (tab,tab')
-  structure Data = Generic_Data
-  (
-    type T = hide_tvar_tab
-    val empty  = Symtab.empty:hide_tvar_tab
-    fun merge(t1,t2)  = merge_trac_tab (t1, t2)
-  );
-
-  fun update  p thy = Context.theory_of 
-                        ((Data.map (fn tab => Symtab.update (#name p, p) tab) (Context.Theory thy)))
-  fun lookup name thy = (Symtab.lookup ((Data.get o Context.Theory) thy) name,thy)
 
   fun mk_abs_filename thy filename =  
       let
@@ -1660,135 +1656,80 @@ structure trac = struct
       in
         Path.implode (if (Path.is_absolute filename)
                       then filename
-                      else master_dir + filename)
+                      else Path.append master_dir filename)   
       end
 
-  (* fun exec {trac_path, error_detail}  filename = let 
-        open OS.FileSys OS.Process
- 
-        val tmpname = tmpName()
-        val err_tmpname = tmpName()      
-        fun plural 1 = "" | plural _ = "s"
-        val trac = case trac_path of 
-                         SOME s => s
-                       | NONE   => raise error ("trac_fp_compute_path not specified")
-        val cmdline = trac ^ " \"" ^ filename ^ "\" > " ^ tmpname ^ " 2> " ^ err_tmpname
-      in
-        if isSuccess (system cmdline) then (OS.FileSys.remove err_tmpname; tmpname)
-        else let val _ = OS.FileSys.remove tmpname
-                 val (msg, rest) = File.read_lines (Path.explode err_tmpname) |> chop error_detail
-                 val _ = OS.FileSys.remove err_tmpname
-                 val _ = warning ("trac failed on " ^ filename ^ "\nCommand: " ^ cmdline ^
-                                  "\n\nOutput:\n" ^
-                                  cat_lines (msg @ (if null rest then [] else
-                                                    ["(... " ^ string_of_int (length rest) ^
-                                                     " more line" ^ plural (length rest) ^ ")"])))
-             in raise error ("trac failed on " ^ filename) end
-      end *)
-
-  fun lookup_trac (pname:string) lthy =
-    Option.valOf (fst (lookup pname (Proof_Context.theory_of lthy)))
-
-  fun def_fp fp_str print (trac, lthy) =
-    let
+  fun def_fp print (trac:TracProtocolCert.cProtocol, lthy) =
+    case #fixed_point trac of
+      SOME fp => trac_definitorial_package.define_fixpoint fp trac print lthy
+    | NONE => (trac, lthy)
+    (* let
       val fp = TracFpParser.parse_str fp_str
       val (trac,lthy) = trac_definitorial_package.define_fixpoint fp trac print lthy
       val lthy = Local_Theory.raw_theory (update trac) lthy
     in
       (trac, lthy)
+    end *)
+
+  fun def_trac_term_model trac lthy =
+    let
+      val lthy:local_theory = trac_definitorial_package.define_term_model trac lthy
+    in
+      (trac, lthy)
     end
-
-  fun def_fp_file filename print (trac, lthy) = let
-        val thy = Proof_Context.theory_of lthy
-        val abs_filename = mk_abs_filename thy filename
-        val fp = TracFpParser.parse_file abs_filename
-        val (trac,lthy) = trac_definitorial_package.define_fixpoint fp trac print lthy
-        val lthy = Local_Theory.raw_theory (update trac) lthy
-      in
-        (trac, lthy)
-      end
-
-  fun def_fp_trac fp_filename print (trac, lthy) = let
-        open OS.FileSys OS.Process
-        val _ = info("Checking protocol specification with trac.")
-        val thy = Proof_Context.theory_of lthy
-        (* val trac =  Config.get_global thy trac_binary_cfg *)
-        val abs_filename = mk_abs_filename thy fp_filename
-        (* val fp_file = exec {error_detail=10, trac_path = SOME trac} abs_filename *)
-        (* val fp_raw = File.read (Path.explode fp_file) *)
-        val fp_raw = File.read (Path.explode abs_filename)
-        val fp = TracFpParser.parse_str fp_raw
-        (* val _ = OS.FileSys.remove fp_file *)
-        val _ = if TracFpParser.attack fp 
-                then 
-                  error ("  ATTACK found, skipping generating of Isabelle/HOL definitions.\n\n")
-                else 
-                  info("  No attack found, continue with generating Isabelle/HOL definitions.")
-        val (trac,lthy) = trac_definitorial_package.define_fixpoint fp trac print lthy
-        val lthy = Local_Theory.raw_theory (update trac) lthy
-      in
-        (trac, lthy)
-      end
-
-  fun def_trac_term_model str lthy = let
-        val trac = TracProtocolParser.parse_str str
-        val lthy = Local_Theory.raw_theory (update trac) lthy
-        val lthy = trac_definitorial_package.define_term_model trac lthy
-      in
-        (trac, lthy)
-      end
 
   val def_trac_protocol = trac_definitorial_package.define_protocol
 
-  fun def_trac str print = def_trac_protocol print o def_trac_term_model str
+  fun def_trac trac_str opt_fp_str print lthy =
+    let
+      val trac = TracProtocolParser.parse_str trac_str
+      val trac = case opt_fp_str of
+                    SOME fp_str =>
+                      TracProtocol.update_fixed_point trac (SOME (TracFpParser.parse_str fp_str))
+                  | NONE => trac
+      val lthy = Local_Theory.raw_theory (trac_definitorial_package.update trac) lthy
+      val ctrac = TracProtocolCert.certifyProtocol trac
+    in
+      (def_fp print o def_trac_protocol print o def_trac_term_model ctrac) lthy
+    end
 
-  fun def_trac_file filename print lthy = let
-        val trac_raw = File.read (Path.explode filename)
-        val (trac,lthy) = def_trac trac_raw print lthy
-        val lthy = Local_Theory.raw_theory (update trac) lthy
+  fun def_trac_file trac_filename opt_fp_filename print lthy = let
+        fun read_file filename =
+          File.read (Path.explode (mk_abs_filename (Proof_Context.theory_of lthy) filename))
+        val trac_str = read_file trac_filename
+        val opt_fp_str = Option.map (fn fp_filename => read_file fp_filename) opt_fp_filename
+        val (trac,lthy) = def_trac trac_str opt_fp_str print lthy
       in
         (trac, lthy)
       end
-
-  fun def_trac_fp_trac trac_str print lthy = let
-        open OS.FileSys OS.Process
-        val (trac,lthy) = def_trac trac_str print lthy
-        val tmpname = tmpName()
-        val _ = File.write (Path.explode tmpname) trac_str
-        val (trac,lthy) = def_fp_trac tmpname print (trac, lthy)
-        val _ = OS.FileSys.remove tmpname
-        val lthy = Local_Theory.raw_theory (update trac) lthy
-      in
-        lthy
-      end
-
 end
 \<close>
+
 
 ML\<open>
   val fileNameP = Parse.name -- Parse.name
 
-  val _ = Outer_Syntax.local_theory' @{command_keyword "trac_import"} 
-          "Import protocol and fixpoint from trac files." 
-          (fileNameP >> (fn (trac_filename, fp_filename) => fn print =>
-             trac.def_trac_file trac_filename print #>
-             trac.def_fp_file fp_filename print #> snd));
-
-  val _ = Outer_Syntax.local_theory' @{command_keyword "trac_import_trac"}
-          "Import protocol from trac file and compute fixpoint with trac." 
-          (fileNameP >> (fn (trac_filename, fp_filename) => fn print =>
-              trac.def_trac trac_filename print #> trac.def_fp_trac fp_filename print #> snd));
-
-  val _ = Outer_Syntax.local_theory' @{command_keyword "trac_trac"}
-          "Define protocol using trac format and compute fixpoint with trac."
-          (Parse.cartouche >> (fn trac => fn print => trac.def_trac_fp_trac trac print));
-
   val _ = Outer_Syntax.local_theory' @{command_keyword "trac"}
           "Define protocol and (optionally) fixpoint using trac format."
-          (Parse.cartouche -- Scan.optional Parse.cartouche "" >> (fn (trac,fp) => fn print =>
-            if fp = ""
-            then trac.def_trac trac print #> snd
-            else trac.def_trac trac print #> trac.def_fp fp print #> snd));
+          ((Parse.cartouche -- Scan.optional Parse.cartouche "" >> (
+            fn (trac,fp) => fn print => fn lthy =>
+          let
+            val opt_fp = if fp = "" then NONE else SOME fp
+            val trac = trac.def_trac trac opt_fp print #> snd
+          in
+            trac_time.ap_lthy lthy ("trac") trac lthy 
+          end)));
+
+  val _ = Outer_Syntax.local_theory' @{command_keyword "trac_import"} 
+          "Import protocol and (optionally) fixpoint from trac files." 
+          ((Parse.name -- Scan.optional Parse.name "" >> (
+            fn (trac_filename, fp_filename) => fn print => fn lthy =>
+          let
+            val opt_fp_filename = if fp_filename = "" then NONE else SOME fp_filename
+            val trac = trac.def_trac_file trac_filename opt_fp_filename print #> snd
+          in
+            trac_time.ap_lthy lthy ("trac_import") trac lthy 
+          end)));
 \<close>
 
 ML\<open>
@@ -1799,35 +1740,52 @@ val opt_proof_method_choice =
   Scan.optional (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>) "safe";
 
 (* Original definition (locale_expression) copied from parse_spec.ML *)
-val opt_defs_list = Scan.optional
+val security_proof_locale_opt_defs_list = Scan.optional
   (\<^keyword>\<open>for\<close> |-- Scan.repeat1 Parse.name >>
       (fn xs => if length xs > 3 then error "Too many optional arguments" else xs))
   [];
 
+val composed_protocol_locale_defs_list =
+  (\<^keyword>\<open>for\<close> |-- Parse.!!! (
+                      Parse.name --   (* The composed protocol *)
+                      Parse.name --   (* Its SMP set *)
+                      Parse.name)) -- (* The (symbolic) list of shared secrets *)
+  (\<^keyword>\<open>and\<close> |-- Scan.repeat1 Parse.name >> (* The component protocols *)
+      (fn xs => if length xs < 2 then error "Too few arguments" else xs)) --
+  (\<^keyword>\<open>and\<close> |-- Scan.repeat1 Parse.name >> (* The component protocols with star projections *)
+      (fn xs => if length xs < 2 then error "Too few arguments" else xs)) --
+  (\<^keyword>\<open>and\<close> |-- Scan.repeat1 Parse.name >> (* Their GSMPs *)
+      (fn xs => if length xs < 2 then error "Too few arguments" else xs));
+
 val security_proof_locale_parser =
-  name_prefix_parser -- opt_defs_list
+  name_prefix_parser -- security_proof_locale_opt_defs_list
 
 val security_proof_locale_parser_with_method_choice =
-  opt_proof_method_choice -- name_prefix_parser -- opt_defs_list
+  opt_proof_method_choice -- name_prefix_parser -- security_proof_locale_opt_defs_list
 
+val composed_protocol_locale_parser =
+  name_prefix_parser -- composed_protocol_locale_defs_list
+
+val composed_protocol_locale_parser_with_method_choice =
+  opt_proof_method_choice -- name_prefix_parser -- composed_protocol_locale_defs_list
 
 fun protocol_model_setup_proof_state name prefix lthy =
   let
     fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
-    val _ = if name = "" then error "No name given" else ()
-    val pexpr = f "stateful_protocol_model" name (protocol_model_interpretation_params prefix)
+    val _ = assert_nonempty_name name
+    val pexpr = f "stateful_protocol_model" name (protocol_model_interpretation_params prefix lthy)
     val pdefs = protocol_model_interpretation_defs name
     val proof_state = Interpretation.global_interpretation_cmd pexpr pdefs lthy
   in
     proof_state
   end
 
-fun protocol_security_proof_proof_state manual_proof name prefix opt_defs print lthy =
+fun protocol_security_proof_defs manual_proof name prefix opt_defs lthy =
   let
     fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
-    val _ = if name = "" then error "No name given" else ()
+    val _ = assert_nonempty_name name
     val num_defs = length opt_defs
-    val pparams = protocol_model_interpretation_params prefix
+    val pparams = protocol_model_interpretation_params prefix lthy
     val default_defs = [prefix ^ "_" ^ "protocol", prefix ^ "_" ^ "fixpoint"]
     fun g locale_name extra_params = f locale_name name (pparams@map SOME extra_params)
     val (prot_fp_smp_names, pexpr) = if manual_proof
@@ -1841,29 +1799,82 @@ fun protocol_security_proof_proof_state manual_proof name prefix opt_defs print 
       | 1 => (opt_defs, g "secure_stateful_protocol''" opt_defs)
       | 2 => (opt_defs, g "secure_stateful_protocol''''" opt_defs)
       | _ => (opt_defs, g "secure_stateful_protocol'''" opt_defs))
+    val _ = assert_all_defined lthy prefix prot_fp_smp_names
+  in
+    (prot_fp_smp_names, pexpr)
+  end
+
+fun protocol_security_proof_proof_state manual_proof name prefix opt_defs print lthy =
+  let
+    val (prot_fp_smp_names, pexpr) =
+      protocol_security_proof_defs manual_proof name prefix opt_defs lthy
     val proof_state = lthy |> declare_protocol_checks print
                            |> Interpretation.global_interpretation_cmd pexpr []
   in
     (prot_fp_smp_names, proof_state)
   end
 
+fun protocol_composition_proof_defs name prefix remaining_params lthy =
+  let
+    fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
+    fun g xs = "[" ^ String.concatWith ", " xs ^ "]"
+    fun h xs = g (map_index (fn (i,x) => "(" ^ Int.toString i ^ ", " ^ x ^ ")") xs)
+    val _ = assert_nonempty_name name
+    val (((((pc,smp),sec),ps),psstarprojs),gsmps) = remaining_params
+    val _ = assert_all_defined lthy prefix ([pc,smp,sec]@ps@psstarprojs@gsmps)
+    val _ = if length ps = length psstarprojs andalso length ps = length gsmps then ()
+            else error "Missing arguments"
+    val pparams = protocol_model_interpretation_params prefix lthy
+    val params = [pc, g ps, g psstarprojs, smp, sec, h gsmps]
+    val pexpr = f "composable_stateful_protocols" name (pparams@map SOME params)
+  in
+    pexpr
+  end
+
+fun protocol_composition_proof_proof_state name prefix params print lthy =
+  let
+    val pexpr = protocol_composition_proof_defs name prefix params lthy
+    val state = lthy |> (declare_protocol_check "wellformed_composable_protocols" print #>
+                         declare_protocol_check "composable_protocols" print)
+                     |> Interpretation.global_interpretation_cmd pexpr []
+  in
+    state
+  end
+
+val select_proof_method_error_prefix =
+  "Error: Invalid option: "
+
+fun select_proof_method _ "safe" = "check_protocol"
+  | select_proof_method _ "nbe" = "check_protocol_nbe"
+  | select_proof_method _ "unsafe" = "check_protocol_unsafe"
+  | select_proof_method msg opt_meth_level = error (
+          select_proof_method_error_prefix ^ opt_meth_level ^ "\n\nValid options:\n" ^
+          "1. safe: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
+          "(this is the default setting).\n" ^
+          "2. nbe: Instructs Isabelle to use \"normalization\" instead of \"code_simp\".\n" ^
+          "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".")
+
 val _ =
   Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_model_setup\<close>
     "prove interpretation of protocol model locale into global theory"
     (name_prefix_parser >> (fn (name,prefix) => fn lthy =>
-    let
-      val proof_state = protocol_model_setup_proof_state name prefix lthy
-      val meth =
-        let
-          val m = "protocol_model_interpretation"
-          val _ = Output.information (
-                    "Proving protocol model locale instance with proof method " ^ m)
-        in
-          Method.Source (Token.make_src (m, Position.none) [])
-        end
-    in
-      ml_isar_wrapper.prove_state_simple meth proof_state
-  end));
+    let fun protocol_model_setup ((name,prefix),lthy) = 
+      let
+        val proof_state = protocol_model_setup_proof_state name prefix lthy
+        val meth =
+          let
+            val m = "protocol_model_interpretation"
+            val _ = Output.information (
+                      "Proving protocol model locale instance with proof method " ^ m)
+          in
+            Method.Source (Token.make_src (m, Position.none) [])
+          end
+      in
+        ml_isar_wrapper.prove_state_simple meth proof_state
+      end
+    in 
+      trac_time.ap_lthy lthy ("protocol_model_setup ("^name^")") protocol_model_setup ((name,prefix),lthy)
+    end));
 
 val _ =
   Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>manual_protocol_model_setup\<close>
@@ -1887,29 +1898,79 @@ val _ =
 val _ =
   Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof\<close>
     "prove interpretation of secure protocol locale into global theory"
-    (security_proof_locale_parser_with_method_choice >> (fn params => fn print => fn lthy =>
-    let
-      val ((opt_meth_level,(name,prefix)),opt_defs) = params
-      val (defs, proof_state) =
-        protocol_security_proof_proof_state false name prefix opt_defs print lthy
-      val num_defs = length defs
-      val meth =
+    (security_proof_locale_parser_with_method_choice >> 
+    (fn params => fn print => fn lthy =>
+    let 
+        val ((_,(name,prefix)),opt_defs) = params
+        fun protocol_security_proof (params, print, lthy) = 
         let
-          val m = case opt_meth_level of
-              "safe" => "check_protocol" ^ "'" (* (if num_defs = 1 then "'" else "") *)
-            | "unsafe" => "check_protocol_unsafe" ^ "'" (* (if num_defs = 1 then "'" else "") *)
-            | _ => error ("Invalid option: " ^ opt_meth_level)
-          val _ = Output.information (
-                    "Proving security of protocol " ^ nth defs 0 ^ " with proof method " ^ m)
-          val _ = if num_defs > 1 then Output.information ("Using fixpoint " ^ nth defs 1) else ()
-          val _ = if num_defs > 2 then Output.information ("Using SMP set " ^ nth defs 2) else ()
+          val ((opt_meth_level,(name,prefix)),opt_defs) = params
+          val (defs, proof_state) =
+                protocol_security_proof_proof_state false name prefix opt_defs print lthy
+          val num_defs = length defs
+          val meth =
+              let
+                val m = select_proof_method "prove the protocol secure" opt_meth_level
+                val info = Output.information
+                val _ = info ("Proving security of protocol " ^ nth defs 0 ^
+                              " with proof method " ^ m)
+                val _ = if num_defs > 1 then info ("Using fixed point " ^ nth defs 1) else ()
+                val _ = if num_defs > 2 then info ("Using SMP set " ^ nth defs 2) else ()
+              in
+                Method.Source (Token.make_src (m, Position.none) [])
+              end
         in
-          Method.Source (Token.make_src (m, Position.none) [])
+           ml_isar_wrapper.prove_state_simple meth proof_state
         end
-    in
-      ml_isar_wrapper.prove_state_simple meth proof_state
-    end
-    ));
+      fun protocol_security_proof_with_error_messages (params, print, lthy) =
+        protocol_security_proof (params, print, lthy)
+        handle
+          ERROR msg =>
+            if String.isPrefix "Duplicate fact declaration" msg
+            then error (
+              "Failed to finalize proof because of duplicate fact declarations.\n" ^
+              "This might happen if \"" ^ name ^ "\" was used previously.\n" ^
+              "\n\nOriginal error message:\n" ^ msg)
+            else if String.isPrefix select_proof_method_error_prefix msg
+            then error msg
+            else (* if String.isPrefix "Wellsortedness error" msg orelse
+                    String.isPrefix "Failed to finish proof" msg orelse
+                    String.isPrefix "error in proof state" msg
+            then *)
+            let
+              val (def_names,_) = protocol_security_proof_defs false name prefix opt_defs lthy
+              val (prot_name,fp_name,smp_name) = case length def_names of
+                  0 => (prefix^"_protocol", prefix^"_fixpoint", prefix^"_SMP")
+                | 1 => (nth def_names 0,    prefix^"_fixpoint", prefix^"_SMP")
+                | 2 => (nth def_names 0,    nth def_names 1,    prefix^"_SMP")
+                | _ => (nth def_names 0,    nth def_names 1,    nth def_names 2)
+            in error (
+              "Failed to prove the protocol secure.\n" ^
+              "Click on the following to inspect which parts of the proof failed:\n" ^
+              Active.sendback_markup_command (
+                (if length def_names < 2
+                 then "\<comment> \<open>First compute a fixed-point\<close>\n" ^
+                      "compute_fixpoint "^prot_name^" "^fp_name^"\n\n"
+                 else "")^
+                "\<comment> \<open>Is the fixed point free of attack signals?\<close>\n" ^
+                "value \"attack_notin_fixpoint "^fp_name^"\"\n\n" ^
+                "\<comment> \<open>Is the protocol covered by the fixed point?\<close>\n" ^
+                "value \"protocol_covered_by_fixpoint "^fp_name^" "^prot_name^"\"\n\n" ^
+                "\<comment> \<open>Is the fixed point analyzed?\<close>\n" ^
+                "value \"analyzed_fixpoint "^fp_name^"\"\n\n" ^
+                "\<comment> \<open>Is the protocol well-formed?\<close>\n" ^
+                (if length def_names < 3
+                 then "value \"wellformed_protocol "^prot_name^"\"\n\n"
+                 else "value \"wellformed_protocol' "^prot_name^" "^smp_name^"\"\n\n")^
+                "\<comment> \<open>Is the fixed point well-formed?\<close>\n" ^
+                "value \"wellformed_fixpoint "^fp_name^"\"") ^
+              "\n\nOriginal error message:\n" ^ msg)
+            end
+            (* else error msg *)
+    in 
+      trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
+                        protocol_security_proof_with_error_messages (params, print, lthy)
+    end));
 
 val _ =
   Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>manual_protocol_security_proof\<close>
@@ -1923,6 +1984,7 @@ val _ =
         let
           val m = "code_simp" (* case opt_meth_level of
               "safe" => "code_simp"
+            | "nbe" => "normalization"
             | "unsafe" => "eval"
             | _ => error ("Invalid option: " ^ opt_meth_level) *)
         in
@@ -1936,11 +1998,638 @@ val _ =
                                                       subgoal_proof^
                                                       subgoal_proof^
                                                       subgoal_proof)^
+                                                 "  done\n"))
+    in
+      proof_state
+    end
+    ));
+
+val _ =
+  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_composition_proof\<close>
+    "prove interpretation of composed protocol locale into global theory"
+    (composed_protocol_locale_parser_with_method_choice >> (fn params => fn print => fn lthy =>
+    let val ((_,(name,_)),_) = params
+        fun protocol_composition_proof (params,lthy) = 
+      let
+        val ((opt_meth_level,(name,prefix)),remaining_params) = params
+        val proof_state =
+              protocol_composition_proof_proof_state name prefix remaining_params print lthy
+        val meth =
+          let
+            val m = select_proof_method "use" opt_meth_level
+            val _ = Output.information (
+                      "Proving composability of protocol " ^ name ^ " with proof method " ^ m)
+          in
+            Method.Source (Token.make_src (m, Position.none) [])
+          end
+      in
+        ml_isar_wrapper.prove_state_simple meth proof_state
+      end
+    in 
+      trac_time.ap_lthy lthy
+        ("protocol_composition_proof ("^name^")")
+        protocol_composition_proof (params,lthy)
+    end));
+
+val _ =
+  Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>manual_protocol_composition_proof\<close>
+    "prove interpretation of composed protocol locale into global theory"
+    (composed_protocol_locale_parser >> (fn params => fn print => fn lthy =>
+    let
+      val ((name,prefix),remaining_params) = params
+      val proof_state =
+            protocol_composition_proof_proof_state name prefix remaining_params print lthy
+      val subgoal_proof = "  subgoal by code_simp\n"
+      val _ = Output.information ("Example proof:\n" ^
+                Active.sendback_markup_command ("  apply check_protocol_intro\n"^
+                                                subgoal_proof^
+                                                subgoal_proof^
+                                                subgoal_proof^
+                                                subgoal_proof^
+                                                subgoal_proof^
                                                 "  done\n"))
     in
       proof_state
     end
     ));
+\<close>
+
+ML\<open>
+fun listterm_to_list _    (Const ("List.list.Nil",_)) = []
+  | listterm_to_list lthy ((Const ("List.list.Cons",_) $ t1) $ t2) = t1::listterm_to_list lthy t2
+  | listterm_to_list lthy t =
+      error ("Unexpected term (expected a list constructor): " ^ Syntax.string_of_term lthy t)
+
+fun pairterm_to_pair _    ((Const ("Product_Type.Pair",_) $ x) $ y) = (x,y)
+  | pairterm_to_pair lthy t = error ("Error: Expected a pair term but got " ^
+                                     Syntax.string_of_term lthy t)
+
+fun constrexpr_to_string lthy protocol t = let
+  val trac = trac_definitorial_package.lookup_trac protocol lthy
+  val trac_name = #name trac
+
+  val sets_type_name = Local_Theory.full_name lthy (Binding.name (trac_name ^ "_sets"))
+  val enum_type_name = Local_Theory.full_name lthy (Binding.name (trac_name ^ "_enum_consts"))
+  val fun_type_name = Local_Theory.full_name lthy (Binding.name (trac_name ^ "_fun"))
+  val atom_type_name = Local_Theory.full_name lthy (Binding.name (trac_name ^ "_atom"))
+
+  fun print_const_expr x =
+        if String.isPrefix sets_type_name x
+        then String.extract (x,size sets_type_name+1,NONE)
+        else if String.isPrefix enum_type_name x
+        then String.extract (x,size enum_type_name+1,NONE)
+        else if String.isPrefix fun_type_name x
+        then String.extract (x,size fun_type_name+1,NONE)
+        else if String.isPrefix atom_type_name x
+        then String.extract (x,size atom_type_name+1,NONE)
+        else error ("Unexpected constant expression: " ^ x)
+in print_const_expr t end
+
+fun setexpr_to_string lthy protocol t = let
+  fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+
+  fun print_set_expr' (Const (x,_)) = [constrexpr_to_string lthy protocol x]
+    | print_set_expr' (t1 $ t2) = print_set_expr' t1@print_set_expr' t2
+    | print_set_expr' t = err "Unexpected set expression subterm" t
+
+  fun print_set_expr t =
+    case print_set_expr' t of
+      [x] => x
+    | x::xs => x ^ "(" ^ String.concatWith "," xs ^ ")"
+    | _ => err "Unexpected set expression" t
+in print_set_expr t end
+
+fun abstractionexpr_to_list lthy protocol t = let
+  fun print_abs (Const ("Orderings.bot_class.bot",_)) = []
+    | print_abs (t $ Const ("Orderings.bot_class.bot",_)) = print_abs t
+    | print_abs (Const ("Set.insert",_) $ t) = [setexpr_to_string lthy protocol t]
+    | print_abs (t1 $ t2) = print_abs t1@print_abs t2
+    | print_abs t = error ("Unexpected abstract value expression: " ^ Syntax.string_of_term lthy t)
+in print_abs t end
+
+fun protterm_to_string_no_eval var_printer protocol protterm lthy = let
+  fun print_raw (Const (x,_)) = "Const (" ^ x ^ ",_)"
+    | print_raw (t $ s) = "(" ^ print_raw t ^  " $ " ^ print_raw s ^ ")"
+    | print_raw _ = "_"
+
+  fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t ^ "\n" ^ print_raw t)
+  val trac = trac_definitorial_package.lookup_trac protocol lthy
+  val trac_name = #name trac
+  val trac_fun_spec = Option.getOpt (#function_spec trac, {private = [], public = []})
+  val is_priv_fun = member (fn (s,t) => s = #1 t) (#private trac_fun_spec)
+  
+  val fun_type_name = Local_Theory.full_name lthy (Binding.name (trac_name ^ "_fun"))
+
+  val print_list = listterm_to_list lthy
+  val print_const_expr = constrexpr_to_string lthy protocol
+  val print_set_expr = setexpr_to_string lthy protocol
+
+  fun print_abs t =
+      let val a = abstractionexpr_to_list lthy protocol t
+      in "val(" ^ (if a = [] then "0" else String.concatWith "," a) ^ ")" end
+
+  fun print_trm (Const ("Term.term.Var",_) $ t
+        ) = (case t of
+               ((Const ("Product_Type.Pair",_) $ _) $ _) => var_printer (pairterm_to_pair lthy t)
+             | _ => print_trm t)
+    | print_trm ((Const ("Term.term.Fun",_) $ (Const ("Transactions.prot_fun.Abs",_) $ t)) $
+                   Const ("List.list.Nil",_)
+        ) = print_abs t
+    | print_trm (
+          (Const ("Term.term.Fun",_)$Const ("Transactions.prot_fun.OccursFact",_))
+          $((Const ("List.list.Cons",_)
+            $((Const ("Term.term.Fun",_)$Const ("Transactions.prot_fun.OccursSec",_))
+             $Const ("List.list.Nil",_)))
+           $((Const ("List.list.Cons",_) $ t) $ Const ("List.list.Nil",_)))
+        ) = "occurs(" ^ print_trm t ^ ")"
+    | print_trm (
+          (Const ("Term.term.Fun",_) $ (Const ("Transactions.prot_fun.Attack",_) $ _)) $ _
+        ) = "attack"
+    | print_trm (
+          (Const ("Term.term.Fun",_) $ (Const ("Transactions.prot_fun.Set",_) $ f)) $ ts
+        ) = let val gs = map print_trm (print_list ts)
+            in (case gs of
+                  [] => print_set_expr f
+                | xs => print_trm f ^ "(" ^ String.concatWith "," xs ^ ")")
+            end
+    | print_trm (
+          (Const ("Term.term.Fun",_) $ (Const ("Transactions.prot_fun.Fu",_) $ f)) $ ts
+        ) = let val g = print_trm f; val gs = map print_trm (print_list ts)
+            in (case (if is_priv_fun g then (case gs of [] => [] | _::gs' => gs') else gs) of
+                  [] => g
+                | xs => g ^ "(" ^ String.concatWith "," xs ^ ")")
+            end
+    | print_trm (
+          (Const ("Transactions.prot_atom.Atom",_) $ Const (t,_))
+        ) = print_const_expr t
+    | print_trm ((Const ("Product_Type.Pair",_) $ t1) $ t2) =
+        "(" ^ print_abs t1 ^ "," ^ print_abs t2 ^ ")"
+    | print_trm (Const (x,tx) $ Const (y,ty)) =
+        if x = fun_type_name ^ ".enum"
+        then print_const_expr y
+        else err "Unexpected protocol/fixpoint term" (Const (x,tx) $ Const (y,ty))
+    | print_trm (Const (x,_)) =
+        if String.isPrefix "Transactions.prot_atom" x
+        then String.extract (x,size "Transactions.prot_atom"+1,NONE)
+        else print_const_expr x
+    | print_trm t = err "Unexpected protocol/fixpoint term" t;
+in
+  print_trm protterm
+end
+
+fun prottermtype_to_string_no_eval var_printer protocol protterm lthy =
+  protterm_to_string_no_eval var_printer protocol protterm lthy
+
+fun fixpoint_to_string protocol fixpoint lthy = let
+  fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+  val fpterm = "let (FP,_,TI) = (" ^ fixpoint ^ ") in (FP,TI)"
+
+  fun print_fp' s = protterm_to_string_no_eval
+          (fn _ => error "Unexpected term variable in fixpoint")
+          protocol s lthy
+
+  fun print_fp ((Const ("Product_Type.Pair",_) $ t1) $ t2) =
+        String.concatWith "\n" (map print_fp' (listterm_to_list lthy t1)@
+                                map (fn x => "timplies" ^ print_fp' x) (listterm_to_list lthy t2))
+    | print_fp t = err "Unexpected fixpoint term pair" t;
+in
+  (print_fp o eval_term lthy o Syntax.read_term lthy) fpterm
+end
+
+fun transaction_label_to_string t lthy = let
+    fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+  
+    fun print_label (Const ("Labeled_Strands.strand_label.LabelN",_) $ _) = " "
+          (* Syntax.string_of_term lthy t *)
+      | print_label (Const ("Labeled_Strands.strand_label.LabelS",_)) = "*"
+      | print_label t = err "Unexpected action label term" t
+  in print_label t end
+
+fun transaction_action_to_string var_printer protocol t lthy = let
+    fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+    fun print_trm s = protterm_to_string_no_eval var_printer protocol s lthy
+
+    fun print_action (Const ("Stateful_Strands.stateful_strand_step.Send",_) $ ts
+          ) = "send " ^ String.concatWith ", " (map print_trm (listterm_to_list lthy ts))
+      | print_action (Const ("Stateful_Strands.stateful_strand_step.Receive",_) $ ts
+          ) = "receive " ^ String.concatWith ", " (map print_trm (listterm_to_list lthy ts))
+      | print_action (((Const ("Stateful_Strands.stateful_strand_step.Equality",_) $ _) $ t1) $ t2
+          ) = print_trm t1 ^ " == " ^ print_trm t2
+      | print_action (((Const ("Stateful_Strands.stateful_strand_step.InSet",_) $ _) $ t1) $ t2
+          ) = print_trm t1 ^ " in " ^ print_trm t2
+      | print_action ((Const ("Stateful_Strands.stateful_strand_step.Insert",_) $ t1) $ t2
+          ) = "insert " ^ print_trm t1 ^ " " ^ print_trm t2
+      | print_action ((Const ("Stateful_Strands.stateful_strand_step.Delete",_) $ t1) $ t2
+          ) = "delete " ^ print_trm t1 ^ " " ^ print_trm t2
+      | print_action (((Const ("Stateful_Strands.stateful_strand_step.NegChecks",_) $ xs) $ ts1) $ ts2
+          ) = let fun f (a,b) = print_trm a ^ " != " ^ print_trm b
+                  fun g (a,b) = print_trm a ^ " notin " ^ print_trm b
+                  val ys = map print_trm (listterm_to_list lthy xs)
+                  val ss1 = map (f o pairterm_to_pair lthy) (listterm_to_list lthy ts1)
+                  val ss2 = map (g o pairterm_to_pair lthy) (listterm_to_list lthy ts2)
+              in (if ys = [] then "" else "forall " ^ String.concatWith ", " ys ^ " ") ^
+                 String.concatWith " or " (ss1@ss2)
+              end
+      | print_action t = err "Unexpected transaction action term" t
+  in print_action t end
+
+fun transaction_labeled_action_to_string var_printer protocol t lthy = let
+    fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+
+    fun print_laction ((Const ("Product_Type.Pair",_) $ t1) $ t2) =
+          transaction_label_to_string t1 lthy ^ " " ^
+          transaction_action_to_string var_printer protocol t2 lthy
+      | print_laction t = err "Unexpected labeled transaction action term" t
+  in print_laction t end
+
+fun transaction_to_string var_printer protocol transactionterm lthy = let
+  val evaltrm = eval_term lthy o Syntax.read_term lthy
+
+  val trfresh   = "Transactions.transaction_fresh (" ^ transactionterm ^ ")"
+  val trreceive = "Transactions.transaction_receive (" ^ transactionterm ^ ")"
+  val trchecks  = "Transactions.transaction_checks (" ^ transactionterm ^ ")"
+  val trupdates = "Transactions.transaction_updates (" ^ transactionterm ^ ")"
+  val trsend    = "Transactions.transaction_send (" ^ transactionterm ^ ")"
+
+  fun print_fresh xs =
+        if xs = [] then []
+        else ["  new " ^ String.concatWith ", " (map (var_printer o pairterm_to_pair lthy) xs)]
+
+  fun print_tr' s = transaction_labeled_action_to_string var_printer protocol s lthy
+
+  val print_tr =
+    String.concatWith "\n" (
+      (map print_tr' o listterm_to_list lthy o evaltrm) trreceive@
+      (map print_tr' o listterm_to_list lthy o evaltrm) trchecks@
+      (print_fresh   o listterm_to_list lthy o evaltrm) trfresh@
+      (map print_tr' o listterm_to_list lthy o evaltrm) trupdates@
+      (map print_tr' o listterm_to_list lthy o evaltrm) trsend)
+in
+  print_tr
+end
+
+fun transaction_list_to_string var_printer protocol transactionlistterm lthy = let
+  fun err msg t = error (msg ^ ": " ^ Syntax.string_of_term lthy t)
+  val evaltrm = eval_term lthy o Syntax.read_term lthy
+
+  fun print_fresh i xs =
+        if xs = [] then []
+        else ["  new " ^ String.concatWith ", " (map (var_printer i o pairterm_to_pair lthy) xs)]
+
+  fun print_tr' i s = transaction_labeled_action_to_string (var_printer i) protocol s lthy
+
+  fun print_tr i ((Const ("Product_Type.Pair",_) $ trfresh) $
+                  ((Const ("Product_Type.Pair",_) $ trreceive) $
+                   ((Const ("Product_Type.Pair",_) $ trchecks) $
+                    ((Const ("Product_Type.Pair",_) $ trupdates) $ trsend)))
+        ) = String.concatWith "\n" (
+          (map (print_tr' i) o listterm_to_list lthy) trreceive@
+          (map (print_tr' i) o listterm_to_list lthy) trchecks@
+          (print_fresh i     o listterm_to_list lthy) trfresh@
+          (map (print_tr' i) o listterm_to_list lthy) trupdates@
+          (map (print_tr' i) o listterm_to_list lthy) trsend)
+    | print_tr _ t = err "Unexpected term" t
+
+  fun print_trs trs = String.concatWith "\n\n" (map_index (fn (i,x) => print_tr i x) trs)
+
+  fun trfresh s   = "Transactions.transaction_fresh (" ^ s ^ ")"
+  fun trreceive s = "Transactions.transaction_receive (" ^ s ^ ")"
+  fun trchecks s  = "Transactions.transaction_checks (" ^ s ^ ")"
+  fun trupdates s = "Transactions.transaction_updates (" ^ s ^ ")"
+  fun trsend s    = "Transactions.transaction_send (" ^ s ^ ")"
+
+  val f = "let f = \<lambda>X. (" ^ trfresh "X" ^ ", " ^ trreceive "X" ^ ", " ^ trchecks "X" ^ ", "
+                                  ^ trupdates "X" ^ ", " ^ trsend "X" ^ ")" ^
+          "in map f (" ^ transactionlistterm ^ ")"
+
+  val transactiontermlist = listterm_to_list lthy (evaltrm f)
+in
+  print_trs transactiontermlist
+end
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand"}
+        "print protocol transaction as transaction strand"
+        (Parse.name -- Parse.name >>
+        (fn (protocol, transaction) => fn print => fn lthy =>
+          let fun print_tr ((protocol,transaction), _, lthy) = 
+            let
+              val _ = assert_defined lthy transaction
+              fun f a = protterm_to_string_no_eval (fn _ => error "Unexpected variable")
+                                                   protocol a lthy
+              fun g (a,b) =
+                  if f a = "Value" orelse f a = "value"
+                  then "X" ^ Syntax.string_of_term lthy b
+                  else "Y[" ^ f a ^ ", " ^ Syntax.string_of_term lthy b ^ "]"
+              val _ = Output.information (transaction_to_string g protocol transaction lthy)
+            in
+              lthy
+            end
+          in 
+            trac_time.ap_lthy lthy
+              ("print_transaction_strand ("^protocol^")")
+              print_tr
+              ((protocol,transaction), print, lthy)
+          end ));
+
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand_list"}
+        "print protocol transaction list as transaction strand list"
+        (Parse.name -- Parse.name >>
+        (fn (protocol, transaction_list) => fn print => fn lthy =>
+          let fun print_tr ((protocol,transaction_list), _, lthy) = 
+            let
+              val _ = assert_defined lthy transaction_list
+              fun f a = protterm_to_string_no_eval (fn _ => error "Unexpected variable")
+                                                   protocol a lthy
+              fun g i (a,b) =
+                  if f a = "Value" orelse f a = "value"
+                  then "X" ^ Syntax.string_of_term lthy b ^ "_" ^ Int.toString i
+                  else "Y[" ^ f a ^ ", " ^ Syntax.string_of_term lthy b ^ "_" ^ Int.toString i ^ "]"
+              val _ = Output.information (transaction_list_to_string g protocol transaction_list lthy)
+            in
+              lthy
+            end
+          in 
+            trac_time.ap_lthy lthy
+              ("print_transaction_strand_list ("^protocol^")")
+              print_tr
+              ((protocol,transaction_list), print, lthy)
+          end ));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "print_attack_trace"}
+        "print attack trace"
+        (Parse.name -- Parse.name -- Parse.name >>
+        (fn ((protocol, protocol_def), attack_trace) => fn print => fn lthy =>
+          let fun print_tr ((protocol,protocol_def,attack_trace), _, lthy) = 
+            let
+              val evaltrm = eval_term lthy o Syntax.read_term lthy
+              val _ = assert_defined lthy protocol_def
+              val _ = assert_defined lthy attack_trace
+              fun f i b = "X" ^ b ^ "_" ^ Int.toString i
+              fun g i (_,b) = f i (Syntax.string_of_term lthy b)
+              val t1 = "map (\<lambda>(i,_). " ^ protocol_def ^ " ! i) " ^ attack_trace
+              val t2 = "map (map (\<lambda>((_,i),xs). (i,xs))) (map snd " ^ attack_trace ^ ")"
+              val s = t2 |> evaltrm
+                         |> listterm_to_list lthy
+                         |> map (listterm_to_list lthy)
+                         |> map (map (pairterm_to_pair lthy))
+                         |> map (map (fn (a,b) => (Syntax.string_of_term lthy a,
+                                                   abstractionexpr_to_list lthy protocol b)))
+                         |> map_index (fn (i,ts) =>
+                              map (fn (a,xs) => f i a ^ ": {" ^ String.concatWith ", " xs ^ "}") ts)
+                         |> List.concat
+              val u = transaction_list_to_string g protocol t1 lthy
+              val _ = Output.information (
+                        (if s <> []
+                         then "Abstractions:\n" ^ String.concatWith "\n" s ^ "\n\n"
+                         else "") ^
+                        ("Attack trace:\n" ^ u))
+            in
+              lthy
+            end
+          in 
+            trac_time.ap_lthy lthy
+              ("print_attack_trace ("^protocol^","^protocol_def^","^attack_trace^")")
+              print_tr
+              ((protocol,protocol_def,attack_trace), print, lthy)
+          end ));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"} 
+        "print protocol fixpoint"
+        (Parse.name -- Parse.name >>
+        (fn (protocol, fixpoint) => fn print => fn lthy =>
+          let fun print_fixpoint ((protocol,fixpoint), _, lthy) = 
+            let
+              val _ = assert_defined lthy fixpoint
+              val _ = Output.information (fixpoint_to_string protocol fixpoint lthy)
+            in
+              lthy
+            end
+          in 
+            trac_time.ap_lthy lthy ("print_fixpoint ("^protocol^")") print_fixpoint ((protocol,fixpoint), print, lthy) 
+          end ));
+
+  val _ = Outer_Syntax.local_theory' @{command_keyword "save_fixpoint"} 
+          "Write fixpoint to file." 
+          ((Parse.name -- Parse.name -- Parse.name >> (
+            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn _ => fn lthy =>
+          let
+            fun save_fixpoint ((protocol_name, fixpoint_name), fixpoint_filename, lthy) =
+              let
+                val _ = assert_defined lthy fixpoint_name
+                fun write f s =
+                      if File.exists f
+                      then error ("Error: Cannot write to file: File already exists")
+                      else File.write f s
+                val filename =
+                      Path.explode (
+                        trac.mk_abs_filename (Proof_Context.theory_of lthy) fixpoint_filename)
+                val _ = Output.information ("Evaluation fixed-point term " ^ fixpoint_name)
+                val fp_str = fixpoint_to_string protocol_name fixpoint_name lthy
+                val _ = Output.information (
+                          "Writing fixed point to file " ^ Path.print filename)
+                val _ = write filename fp_str
+              in
+                lthy
+              end
+          in
+            trac_time.ap_lthy lthy ("save_fixpoint") save_fixpoint ((protocol_name, fixpoint_name), fixpoint_filename, lthy)
+          end)));
+
+  val _ = Outer_Syntax.local_theory' @{command_keyword "load_fixpoint"} 
+          "Import fixpoint from file." 
+          ((Parse.name -- Parse.name -- Parse.name >> (
+            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn print => fn lthy =>
+          let
+            fun load_fixpoint ((protocol_name, fixpoint_filename), fixpoint_name, lthy) =
+              let
+                val _ = assert_not_defined lthy fixpoint_name
+                val filename =
+                      Path.explode (
+                        trac.mk_abs_filename (Proof_Context.theory_of lthy) fixpoint_filename)
+                val _ = Output.information (
+                          "Reading fixed point from file " ^ Path.print filename)
+                fun read f =
+                      if File.exists f
+                      then File.read f
+                      else error ("Error: Cannot read file: File does not exist")
+                val fp_str = TracFpParser.parse_str (read filename)
+                val trac = trac_definitorial_package.lookup_trac protocol_name lthy
+                val cert_fp = TracProtocolCert.certify_fixpoint trac fp_str
+                val cert_trac = TracProtocolCert.certifyProtocol trac
+                val fp_trm = trac_definitorial_package.fp_triple_to_hol cert_fp cert_trac lthy
+              in
+                #2 (ml_isar_wrapper.define_constant_definition' (fixpoint_name, fp_trm) print lthy)
+              end
+          in
+            trac_time.ap_lthy lthy ("load_fixpoint") load_fixpoint ((protocol_name, fixpoint_filename), fixpoint_name, lthy)
+          end)));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"} 
+        "evaluate and define protocol fixpoint"
+        (Parse.name -- Parse.name -- Scan.option Parse.name >>
+        (fn ((protocol, fixpoint), opt_trace) => fn print => fn lthy =>
+          let fun compute_fixpoint (((protocol,fixpoint),opt_trace), print, lthy) = 
+            let
+              val _ = assert_defined lthy protocol
+              val _ = assert_not_defined lthy fixpoint
+              val _ = Option.app (assert_not_defined lthy) opt_trace
+              val _ = Output.information ("Computing a fixed point for protocol " ^ protocol)
+              val fp = (fixpoint, Syntax.read_term lthy ("compute_fixpoint_fun " ^ protocol))
+              val opt_tr = Option.map (* TODO: don't compute the fixpoint twice *)
+                            (fn trace =>
+                              (trace, Syntax.read_term lthy
+                                        ("(compute_reduced_attack_trace " ^ protocol ^
+                                         " \<circ> snd \<circ> compute_fixpoint_with_trace) " ^ protocol)))
+                            opt_trace
+            in
+              ((snd o eval_define_declare fp print) lthy |>
+               (fn lthy => case opt_tr of
+                              SOME tr => (snd o eval_define_declare tr print) lthy
+                            | NONE => lthy))
+              handle
+                ERROR msg =>
+                  let
+                    val _ = warning ("Failed to compute the set with eval. Retrying with NBE.\n" ^
+                                     "Original error message:\n" ^ msg)
+                  in
+                    ((snd o eval_define_declare_nbe fp print) lthy |>
+                     (fn lthy => case opt_tr of
+                                    SOME tr => (snd o eval_define_declare_nbe tr print) lthy
+                                  | NONE => lthy))
+                  end
+              
+            end
+          in 
+            trac_time.ap_lthy lthy ("compute_fixpoint ("^protocol^")") compute_fixpoint (((protocol,fixpoint),opt_trace), print, lthy)  
+          end ));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "compute_SMP"} 
+        "evaluate and define a finite representation of the sub-message patterns of a protocol"
+        ((Scan.optional (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>) "no_optimizations") --
+          Parse.name -- Parse.name >> (fn ((opt,prot), smp) => fn print => fn lthy =>
+          let fun compute_smp (((opt, prot), smp), print, lthy) = 
+          let
+            val prot' = prot
+            val rmd = "List.remdups"
+            val f = "Stateful_Strands.trms_list\<^sub>s\<^sub>s\<^sub>t"
+            val g =
+              "(\<lambda>T. " ^ f ^ " T@map (pair' prot_fun.Pair) (Stateful_Strands.setops_list\<^sub>s\<^sub>s\<^sub>t T))"
+            fun s trms =
+              "(" ^ rmd ^ " (List.concat (List.map (" ^ trms ^
+              " \<circ> Labeled_Strands.unlabel \<circ> transaction_strand) " ^ prot' ^ ")))"
+            val opt1 = "remove_superfluous_terms \<Gamma>"
+            val opt2 = "generalize_terms \<Gamma> is_Var"
+            val gsmp_opt =
+              "generalize_terms \<Gamma> (\<lambda>t. is_Var t \<and> t \<noteq> TAtom AttackType \<and> " ^
+              "t \<noteq> TAtom SetType \<and> t \<noteq> TAtom OccursSecType \<and> \<not>is_Atom (the_Var t))"
+            val smp_fun = "SMP0 Ana \<Gamma>"
+            fun smp_fun' opts =
+              "(\<lambda>T. let T' = (" ^ rmd ^ " \<circ> " ^ opts ^ " \<circ> " ^ smp_fun ^
+              ") T in List.map (\<lambda>t. t \<cdot> Typed_Model.var_rename (Typed_Model.max_var_set " ^
+              "(Messages.fv\<^sub>s\<^sub>e\<^sub>t (set (T@T'))))) T')"
+            val cmd =
+              if opt = "no_optimizations" then smp_fun ^ " " ^ s f
+              else if opt = "optimized"
+              then smp_fun' (opt1 ^ " \<circ> " ^ opt2) ^ " " ^ s f
+              else if opt = "GSMP"
+              then smp_fun' (opt1 ^ " \<circ> " ^ gsmp_opt) ^ " " ^ s g
+              else if opt = "composition"
+              then smp_fun ^ " " ^ s g
+              else if opt = "composition_optimized"
+              then smp_fun' (opt1 ^ " \<circ> " ^ opt2) ^ " " ^ s g
+              else error ("Error: Invalid option: " ^ opt ^ "\n\nValid options:\n" ^
+                    "1. no_optimizations: Computes the finite SMP representation set " ^
+                    "without any optimizations (this is the default setting).\n" ^
+                    "2. optimized: Applies optimizations to reduce the size of the computed " ^
+                    "set, but this might not be sound.\n" ^
+                    "3. GSMP: Computes a set suitable for use in checking GSMP disjointness.\n" ^
+                    "4. composition: Computes a set suitable for checking type-flaw resistance " ^
+                    "of composed protocols.\n" ^
+                    "5. composition_optimized: An optimized variant of the previous setting.")
+            val _ = assert_defined lthy prot
+            val _ = assert_not_defined lthy smp
+            val _ = Output.information (
+                      "Computing a finite SMP representation set for protocol " ^ prot)
+          in
+            (snd o eval_define_declare (smp, Syntax.read_term lthy cmd) print) lthy
+            handle
+              ERROR msg =>
+                let
+                  val _ = warning ("Failed to compute the set with eval. Retrying with NBE.\n" ^
+                                   "Original error message:\n" ^ msg)
+                in
+                  (snd o eval_define_declare_nbe (smp, Syntax.read_term lthy cmd) print) lthy
+                end
+          end 
+        in
+         trac_time.ap_lthy lthy ("compute_SMP ("^prot^")") compute_smp (((opt, prot), smp), print, lthy)
+        end));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "compute_shared_secrets"} 
+        "evaluate and define a finite representation of shared secrets as the intersection of GSMP sets"
+        (Scan.repeat1 Parse.name >> (fn params => fn print => fn lthy =>
+          let fun compute_shared_secrets (params, print, lthy) = 
+          let
+            val _ = if length params < 3 then error "Not enough arguments" else ()
+            val (gsmps, sec) = split_last params
+            val xs = "xs"
+            val cmd =
+              "let " ^ xs ^ " = [" ^ String.concatWith ", " gsmps ^ "] in " ^
+              "(" ^
+                (* "remove_superfluous_terms \<Gamma> \<circ> generalize_terms \<Gamma> ((=) (TAtom SetType)) \<circ> " ^ *)
+                "remove_superfluous_terms \<Gamma> \<circ> " ^
+                "(" ^
+                  "concat \<circ> map " ^
+                  "(\<lambda>p. filter " ^
+                    "(\<lambda>t. list_ex (\<lambda>s. \<Gamma> t = \<Gamma> s \<and> mgu t s \<noteq> None) (" ^ xs ^ " ! snd p))" ^
+                    "(" ^ xs ^ " ! fst p)" ^
+                  ")" ^
+                ")" ^
+              ") (" ^
+                "filter (\<lambda>p. fst p \<noteq> snd p) ((\<lambda>p. List.product p p) [0..<length " ^ xs ^ "])" ^
+              ")"
+
+            val _ = map (assert_defined lthy) gsmps
+            val _ = assert_not_defined lthy sec
+            val _ = Output.information (
+                      "Computing a finite representation of the shared secrets for the " ^
+                      "protocols with GSMP sets " ^ String.concatWith ", " gsmps)
+          in
+            (snd o eval_define_declare (sec, Syntax.read_term lthy cmd) print) lthy
+          end 
+        in
+         trac_time.ap_lthy lthy
+          ("compute_shared_secrets (["^String.concatWith ", " params^"])")
+          compute_shared_secrets (params, print, lthy)
+        end));
+
+val _ = Outer_Syntax.local_theory' @{command_keyword "setup_protocol_checks"}
+        "setup protocol checks"
+        (Parse.name -- Scan.repeat Parse.name >>
+        (fn params => fn print => fn lthy =>
+        let fun setup_protocol_checks ((protocol_model, protocol_names), print, lthy) =
+          let
+            fun f s = protocol_model ^ "." ^ s
+            val a1 = "protocol_check_intro_lemmata"
+            val a2 = "coverage_check_unfold_lemmata"
+            val a3 = "coverage_check_unfold_protocol_lemma"
+            val a4 = "protocol_checks'"
+          in
+            (declare_protocol_checks print #>
+             declare_thm_attr a1 (f "protocol_covered_by_fixpoint_intros") print #>
+             declare_def_attr a2 (f "protocol_covered_by_fixpoint") print #>
+             fold (fn s => declare_def_attr a3 s print) protocol_names #>
+             declare_def_attr a4 (f "wellformed_fixpoint") print #>
+             declare_def_attr a4 (f "wellformed_protocol") print #>
+             declare_def_attr a4 (f "wellformed_protocol'") print #>
+             declare_def_attr a4 (f "composable_protocols") print) lthy
+          end
+        in 
+          trac_time.ap_lthy lthy
+            ("setup_protocol_checks (("^fst params^",["^String.concatWith "," (snd params)^"]))")
+            setup_protocol_checks (params, print, lthy)
+        end ));
 \<close>
 
 end

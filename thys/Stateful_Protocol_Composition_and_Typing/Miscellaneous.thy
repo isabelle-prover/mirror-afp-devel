@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Miscellaneous.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Miscellaneous Lemmata\<close>
@@ -68,6 +35,9 @@ proof -
   thus ?thesis using nth_append_length[of xs1 x xs2] nth_append_length[of ys1 y ys2] that by simp
 qed
 
+lemma in_set_zip_swap: "(x,y) \<in> set (zip xs ys) \<longleftrightarrow> (y,x) \<in> set (zip ys xs)"
+unfolding in_set_zip by auto
+
 lemma filter_nth: "i < length (filter P xs) \<Longrightarrow> P (filter P xs ! i)"
 using nth_mem by force
 
@@ -82,6 +52,34 @@ using assms by (induct xs) simp_all
 
 lemma list_all_concat: "list_all (list_all f) P \<longleftrightarrow> list_all f (concat P)"
 by (induct P) auto
+
+lemma list_all2_in_set_ex:
+  assumes P: "list_all2 P xs ys"
+    and x: "x \<in> set xs"
+  shows "\<exists>y \<in> set ys. P x y"
+proof -
+  obtain i where i: "i < length xs" "xs ! i = x" by (meson x in_set_conv_nth)
+  have "i < length ys" "P (xs ! i) (ys ! i)"
+    using P i(1) by (simp_all add: list_all2_iff list_all2_nthD)
+  thus ?thesis using i(2) by auto
+qed
+
+lemma list_all2_in_set_ex':
+  assumes P: "list_all2 P xs ys"
+    and y: "y \<in> set ys"
+  shows "\<exists>x \<in> set xs. P x y"
+proof -
+  obtain i where i: "i < length ys" "ys ! i = y" by (meson y in_set_conv_nth)
+  have "i < length xs" "P (xs ! i) (ys ! i)"
+    using P i(1) by (simp_all add: list_all2_iff list_all2_nthD)
+  thus ?thesis using i(2) by auto
+qed
+
+lemma list_all2_sym:
+  assumes "\<And>x y. P x y \<Longrightarrow> P y x"
+    and "list_all2 P xs ys"
+  shows "list_all2 P ys xs"
+using assms(2) by (induct rule: list_all2_induct) (simp_all add: assms(1))
 
 lemma map_upt_index_eq:
   assumes "j < length xs"
@@ -136,6 +134,76 @@ proof (induction xs arbitrary: ys zs)
   qed (use prems in simp)
 qed simp
 
+lemma map2_those_Some_case:
+  assumes "those (map2 f xs ys) = Some zs"
+    and "(x,y) \<in> set (zip xs ys)"
+  shows "\<exists>z. f x y = Some z"
+  using assms 
+proof (induction xs arbitrary: ys zs)
+  case (Cons x' xs')
+  obtain y' ys' where ys: "ys = y'#ys'" using Cons.prems(2) by (cases ys) simp_all
+  obtain z where z: "f x' y' = Some z" using Cons.prems(1) ys by fastforce
+  obtain zs' where zs: "those (map2 f xs' ys') = Some zs'" using z Cons.prems(1) ys by auto
+
+  show ?case
+  proof (cases "(x,y) = (x',y')")
+    case False
+    hence "(x,y) \<in> set (zip xs' ys')" using Cons.prems(2) unfolding ys by force
+    thus ?thesis using Cons.IH[OF zs] by blast
+  qed (use ys z in fast)
+qed simp
+
+lemma those_Some_Cons_ex:
+  assumes "those (x#xs) = Some ys"
+  shows "\<exists>y ys'. ys = y#ys' \<and> those xs = Some ys' \<and> x = Some y"
+using assms by (cases x) auto
+
+lemma those_Some_iff:
+  "those xs = Some ys \<longleftrightarrow> ((\<forall>x' \<in> set xs. \<exists>x. x' = Some x) \<and> ys = map the xs)"
+  (is "?A xs ys \<longleftrightarrow> ?B xs ys")
+proof
+  show "?A xs ys \<Longrightarrow> ?B xs ys"
+  proof (induction xs arbitrary: ys)
+    case (Cons x' xs')
+    obtain y' ys' where ys: "ys = y'#ys'" "those xs' = Some ys'" and x: "x' = Some y'"
+      using Cons.prems those_Some_Cons_ex by blast
+    show ?case using Cons.IH[OF ys(2)] unfolding x ys by simp
+  qed simp
+
+  show "?B xs ys \<Longrightarrow> ?A xs ys"
+    by (induct xs arbitrary: ys) (simp, fastforce)
+qed
+
+lemma those_map2_SomeD:
+  assumes "those (map2 f ts ss) = Some \<theta>"
+    and "\<sigma> \<in> set \<theta>"
+  shows "\<exists>(t,s) \<in> set (zip ts ss). f t s = Some \<sigma>"
+using those_Some_iff[of "map2 f ts ss" \<theta>] assms by fastforce
+
+lemma those_map2_SomeI:
+  assumes "\<And>i. i < length xs \<Longrightarrow> f (xs ! i) (ys ! i) = Some (g i)"
+    and "length xs = length ys"
+  shows "those (map2 f xs ys) = Some (map g [0..<length xs])"
+proof -
+  have "\<forall>z \<in> set (map2 f xs ys). \<exists>z'. z = Some z'"
+  proof
+    fix z assume z: "z \<in> set (map2 f xs ys)"
+    then obtain i where i: "i < length xs" "i < length ys" "z = f (xs ! i) (ys ! i)"
+      using in_set_conv_nth[of z "map2 f xs ys"] by auto
+    thus "\<exists>z'. z = Some z'"
+      using assms(1) by blast
+  qed
+  moreover have "map Some (map g [0..<length xs]) = map (\<lambda>i. f (xs ! i) (ys ! i)) [0..<length xs]"
+    using assms by auto
+  hence "map Some (map g [0..<length xs]) = map2 f xs ys"
+    using assms by (smt map2_map_map map_eq_conv map_nth)
+  hence "map (the \<circ> Some) (map g [0..<length xs]) = map the (map2 f xs ys)"
+    by (metis map_map)
+  hence "map g [0..<length xs] = map the (map2 f xs ys)"
+    by simp
+  ultimately show ?thesis using those_Some_iff by blast
+qed
+
 
 subsection \<open>List: subsequences\<close>
 lemma subseqs_set_subset:
@@ -178,6 +246,12 @@ by simp
 lemma prefix_map: "prefix xs (map f ys) \<Longrightarrow> \<exists>zs. prefix zs ys \<and> map f zs = xs"
 using map_append_inv unfolding prefix_def by fast
 
+lemma concat_mono_prefix: "prefix xs ys \<Longrightarrow> prefix (concat xs) (concat ys)"
+unfolding prefix_def by fastforce
+
+lemma concat_map_mono_prefix: "prefix xs ys \<Longrightarrow> prefix (concat (map f xs)) (concat (map f ys))"
+by (rule map_mono_prefix[THEN concat_mono_prefix])
+
 lemma length_prefix_ex:
   assumes "n \<le> length xs"
   shows "\<exists>ys zs. xs = ys@zs \<and> length ys = n"
@@ -207,6 +281,44 @@ lemma length_prefix_ex2:
   shows "\<exists>ys zs vs. xs = ys@xs ! i#zs@xs ! j#vs \<and> length ys = i \<and> length zs = j - i - 1"
 by (smt assms length_prefix_ex' nth_append append.assoc append.simps(2) add_diff_cancel_left'
         diff_Suc_1 length_Cons length_append)
+
+lemma prefix_prefix_inv:
+  assumes xs: "prefix xs (ys@zs)"
+    and x: "suffix [x] xs"
+  shows "prefix xs ys \<or> x \<in> set zs"
+proof -
+  have "prefix xs ys" when "x \<notin> set zs" using that xs
+  proof (induction zs rule: rev_induct)
+    case (snoc z zs) show ?case
+    proof (rule snoc.IH)
+      have "x \<noteq> z" using snoc.prems(1) by simp
+      thus "prefix xs (ys@zs)"
+        using snoc.prems(2) x by (metis append1_eq_conv append_assoc prefix_snoc suffixE) 
+    qed (use snoc.prems(1) in simp)
+  qed simp
+  thus ?thesis by blast
+qed
+
+lemma prefix_snoc_obtain:
+  assumes xs: "prefix (xs@[x]) (ys@zs)"
+    and ys: "\<not>prefix (xs@[x]) ys"
+  obtains vs where "xs@[x] = ys@vs@[x]" "prefix (vs@[x]) zs"
+proof -
+  have "\<exists>vs. xs@[x] = ys@vs@[x] \<and> prefix (vs@[x]) zs" using xs
+  proof (induction zs rule: List.rev_induct)
+    case (snoc z zs)
+    show ?case
+    proof (cases "xs@[x] = ys@zs@[z]")
+      case False
+      hence "prefix (xs@[x]) (ys@zs)" using snoc.prems by (metis append_assoc prefix_snoc)
+      thus ?thesis using snoc.IH by auto
+    qed simp
+  qed (simp add: ys)
+  thus ?thesis using that by blast
+qed
+
+lemma prefix_snoc_in_iff: "x \<in> set xs \<longleftrightarrow> (\<exists>B. prefix (B@[x]) xs)"
+by (induct xs rule: List.rev_induct) auto
 
 
 subsection \<open>List: products\<close>
@@ -245,6 +357,14 @@ qed simp
 
 
 subsection \<open>Other Lemmata\<close>
+lemma finite_ballI:
+  "\<forall>l \<in> {}. P l" "P x \<Longrightarrow> \<forall>l \<in> xs. P l \<Longrightarrow> \<forall>l \<in> insert x xs. P l"
+by (blast, blast)
+
+lemma list_set_ballI:
+  "\<forall>l \<in> set []. P l" "P x \<Longrightarrow> \<forall>l \<in> set xs. P l \<Longrightarrow> \<forall>l \<in> set (x#xs). P l"
+by (simp, simp)
+
 lemma inv_set_fset: "finite M \<Longrightarrow> set (inv set M) = M"
 unfolding inv_def by (metis (mono_tags) finite_list someI_ex)
 
@@ -429,6 +549,44 @@ proof -
 
   show ?thesis using 1 2 by blast
 qed
+
+lemma ex_list_obtain:
+  assumes ts: "\<And>t. t \<in> set ts \<Longrightarrow> \<exists>s. P t s"
+  obtains ss where "length ss = length ts" "\<forall>i < length ss. P (ts ! i) (ss ! i)"
+proof -
+  have "\<exists>ss. length ss = length ts \<and> (\<forall>i < length ss. P (ts ! i) (ss ! i))" using ts
+  proof (induction ts rule: List.rev_induct)
+    case (snoc t ts)
+    obtain s ss where s: "length ss = length ts" "\<forall>i < length ss. P (ts ! i) (ss ! i)" "P t s"
+      using snoc.IH snoc.prems by force
+    have *: "length (ss@[s]) = length (ts@[t])" using s(1) by simp
+    hence "P ((ts@[t]) ! i) ((ss@[s]) ! i)" when i: "i < length (ss@[s])" for i
+      using s(2,3) i nth_append[of ts "[t]"] nth_append[of ss "[s]"] by force
+    thus ?case using * by blast
+  qed simp
+  thus thesis using that by blast
+qed
+
+lemma length_1_conv[iff]:
+  "(length ts = 1) = (\<exists>a. ts = [a])"
+by (cases ts) simp_all
+
+lemma length_2_conv[iff]:
+  "(length ts = 2) = (\<exists>a b. ts = [a,b])"
+proof (cases ts)
+  case (Cons a ts') thus ?thesis by (cases ts') simp_all
+qed simp
+
+lemma length_3_conv[iff]:
+  "(length ts = 3) \<longleftrightarrow> (\<exists>a b c. ts = [a,b,c])"
+proof (cases ts)
+  case (Cons a ts')
+  note * = this
+  thus ?thesis
+  proof (cases ts')
+    case (Cons b ts'') thus ?thesis using * by (cases ts'') simp_all
+  qed simp
+qed simp
 
 
 subsection \<open>Infinite Paths in Relations as Mappings from Naturals to States\<close>

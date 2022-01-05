@@ -1,50 +1,175 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Typing_Result.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>The Typing Result\<close>
-text \<open>\label{sec:Typing-Result}\<close>
 
 theory Typing_Result
 imports Typed_Model
 begin
 
+subsection \<open>Locale Setup\<close>
+locale typing_result = typed_model arity public Ana \<Gamma>
+  for arity::"'fun \<Rightarrow> nat"
+    and public::"'fun \<Rightarrow> bool"
+    and Ana::"('fun,'var) term \<Rightarrow> (('fun,'var) term list \<times> ('fun,'var) term list)"
+    and \<Gamma>::"('fun,'var) term \<Rightarrow> ('fun,'atom::finite) term_type"
+  +
+  assumes infinite_typed_consts: "\<And>a. infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
+    and no_private_funs[simp]: "\<And>f. arity f > 0 \<Longrightarrow> public f"
+begin
+
+subsubsection \<open>Minor Lemmata\<close>
+
+lemma fun_type_inv': assumes "\<Gamma> t = TComp f T" shows "arity f > 0" "public f"
+using assms fun_type_inv by simp_all
+
+lemma infinite_public_consts[simp]: "infinite {c. public c \<and> arity c = 0}"
+proof -
+  fix a::'atom
+  define A where "A \<equiv> {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
+  define B where "B \<equiv> {c. public c \<and> arity c = 0}"
+
+  have "arity c = 0" when c: "c \<in> A" for c
+    using c const_type_inv unfolding A_def by blast
+  hence "A \<subseteq> B" unfolding A_def B_def by blast
+  hence "infinite B"
+    using infinite_typed_consts[of a, unfolded A_def[symmetric]]
+    by (metis infinite_super)
+  thus ?thesis unfolding B_def by blast
+qed
+
+lemma infinite_fun_syms[simp]:
+  "infinite {c. public c \<and> arity c > 0} \<Longrightarrow> infinite \<Sigma>\<^sub>f"
+  "infinite \<C>" "infinite \<C>\<^sub>p\<^sub>u\<^sub>b" "infinite (UNIV::'fun set)"
+by (metis \<Sigma>\<^sub>f_unfold finite_Collect_conjI,
+    metis infinite_public_consts finite_Collect_conjI,
+    use infinite_public_consts \<C>pub_unfold in \<open>force simp add: Collect_conj_eq\<close>,
+    metis UNIV_I finite_subset subsetI infinite_public_consts(1))
+
+lemma id_univ_proper_subset[simp]: "\<Sigma>\<^sub>f \<subset> UNIV" "(\<exists>f. arity f > 0) \<Longrightarrow> \<C> \<subset> UNIV"
+by (metis finite.emptyI inf_top.right_neutral top.not_eq_extremum disjoint_fun_syms
+          infinite_fun_syms(2) inf_commute)
+   (metis top.not_eq_extremum UNIV_I const_arity_eq_zero less_irrefl)
+
+lemma exists_fun_notin_funs_term: "\<exists>f::'fun. f \<notin> funs_term t"
+by (metis UNIV_eq_I finite_fun_symbols infinite_fun_syms(4))
+
+lemma exists_fun_notin_funs_terms:
+  assumes "finite M" shows "\<exists>f::'fun. f \<notin> \<Union>(funs_term ` M)"
+by (metis assms finite_fun_symbols infinite_fun_syms(4) ex_new_if_finite finite_UN)
+
+lemma exists_notin_funs\<^sub>s\<^sub>t: "\<exists>f. f \<notin> funs\<^sub>s\<^sub>t (S::('fun,'var) strand)"
+by (metis UNIV_eq_I finite_funs\<^sub>s\<^sub>t infinite_fun_syms(4))
+
+lemma infinite_typed_consts': "infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0}"
+proof -
+  { fix c assume "\<Gamma> (Fun c []) = TAtom a" "public c"
+    hence "arity c = 0" using const_type[of c] fun_type[of c "[]"] by auto
+  } hence "{c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0} =
+           {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
+    by auto
+  thus "infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0}"
+    using infinite_typed_consts[of a] by metis
+qed
+
+lemma atypes_inhabited: "\<exists>c. \<Gamma> (Fun c []) = TAtom a \<and> wf\<^sub>t\<^sub>r\<^sub>m (Fun c []) \<and> public c \<and> arity c = 0"
+proof -
+  obtain c where "\<Gamma> (Fun c []) = TAtom a" "public c" "arity c = 0"
+    using infinite_typed_consts'(1)[of a] not_finite_existsD by blast
+  thus ?thesis using const_type_inv[OF \<open>\<Gamma> (Fun c []) = TAtom a\<close>] unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
+qed
+
+lemma atype_ground_term_ex: "\<exists>t. fv t = {} \<and> \<Gamma> t = TAtom a \<and> wf\<^sub>t\<^sub>r\<^sub>m t"
+using atypes_inhabited[of a] by force
+
+lemma type_ground_inhabited: "\<exists>t'. fv t' = {} \<and> \<Gamma> t = \<Gamma> t'"
+proof -
+  { fix \<tau>::"('fun, 'atom) term_type" assume "\<And>f T. Fun f T \<sqsubseteq> \<tau> \<Longrightarrow> 0 < arity f"
+    hence "\<exists>t'. fv t' = {} \<and> \<tau> = \<Gamma> t'"
+    proof (induction \<tau>)
+      case (Fun f T)
+      hence "arity f > 0" by auto
+    
+      from Fun.IH Fun.prems(1) have "\<exists>Y. map \<Gamma> Y = T \<and> (\<forall>x \<in> set Y. fv x = {})"
+      proof (induction T)
+        case (Cons x X)
+        hence "\<And>g Y. Fun g Y \<sqsubseteq> Fun f X \<Longrightarrow> 0 < arity g" by auto
+        hence "\<exists>Y. map \<Gamma> Y = X \<and> (\<forall>x\<in>set Y. fv x = {})" using Cons by auto
+        moreover have "\<exists>t'. fv t' = {} \<and> x = \<Gamma> t'" using Cons by auto
+        ultimately obtain y Y where
+            "fv y = {}" "\<Gamma> y = x" "map \<Gamma> Y = X" "\<forall>x\<in>set Y. fv x = {}" 
+          using Cons by moura
+        hence "map \<Gamma> (y#Y) = x#X \<and> (\<forall>x\<in>set (y#Y). fv x = {})" by auto
+        thus ?case by meson 
+      qed simp
+      then obtain Y where "map \<Gamma> Y = T" "\<forall>x \<in> set Y. fv x = {}" by metis
+      hence "fv (Fun f Y) = {}" "\<Gamma> (Fun f Y) = TComp f T" using fun_type[OF \<open>arity f > 0\<close>] by auto
+      thus ?case by (metis exI[of "\<lambda>t. fv t = {} \<and> \<Gamma> t = TComp f T" "Fun f Y"])
+    qed (metis atype_ground_term_ex)
+  }
+  thus ?thesis by (metis \<Gamma>_wf'')
+qed
+
+lemma type_wfttype_inhabited:
+  assumes "\<And>f T. Fun f T \<sqsubseteq> \<tau> \<Longrightarrow> 0 < arity f" "wf\<^sub>t\<^sub>r\<^sub>m \<tau>"
+  shows "\<exists>t. \<Gamma> t = \<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m t"
+using assms
+proof (induction \<tau>)
+  case (Fun f Y)
+  have IH: "\<exists>t. \<Gamma> t = y \<and> wf\<^sub>t\<^sub>r\<^sub>m t" when y: "y \<in> set Y " for y
+  proof -
+    have "wf\<^sub>t\<^sub>r\<^sub>m y"
+      using Fun y unfolding wf\<^sub>t\<^sub>r\<^sub>m_def
+      by (metis Fun_param_is_subterm term.le_less_trans) 
+    moreover have "Fun g Z \<sqsubseteq> y \<Longrightarrow> 0 < arity g" for g Z
+      using Fun y by auto
+    ultimately show ?thesis using Fun.IH[OF y] by auto
+  qed
+
+  from Fun have "arity f = length Y" "arity f > 0" unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by force+
+  moreover from IH have "\<exists>X. map \<Gamma> X = Y \<and> (\<forall>x \<in> set X. wf\<^sub>t\<^sub>r\<^sub>m x)"
+    by (induct Y, simp_all, metis list.simps(9) set_ConsD)
+  ultimately show ?case by (metis fun_type length_map wf_trmI)
+qed (use atypes_inhabited wf\<^sub>t\<^sub>r\<^sub>m_def in blast)
+
+lemma type_pgwt_inhabited: "wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<exists>t'. \<Gamma> t = \<Gamma> t' \<and> public_ground_wf_term t'"
+proof -
+  assume "wf\<^sub>t\<^sub>r\<^sub>m t"
+  { fix \<tau> assume "\<Gamma> t = \<tau>"
+    hence "\<exists>t'. \<Gamma> t = \<Gamma> t' \<and> public_ground_wf_term t'" using \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>
+    proof (induction \<tau> arbitrary: t)
+      case (Var a t)
+      then obtain c where "\<Gamma> t = \<Gamma> (Fun c [])" "arity c = 0" "public c"
+        using const_type_inv[of _ "[]" a] infinite_typed_consts(1)[of a]  not_finite_existsD
+        by force
+      thus ?case using PGWT[OF \<open>public c\<close>, of "[]"] by auto
+    next
+      case (Fun f Y t)
+      have *: "arity f > 0" "public f" "arity f = length Y"
+        using fun_type_inv[OF \<open>\<Gamma> t = TComp f Y\<close>] fun_type_inv_wf[OF \<open>\<Gamma> t = TComp f Y\<close> \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>]
+        by auto
+      have "\<And>y. y \<in> set Y \<Longrightarrow> \<exists>t'. y = \<Gamma> t' \<and> public_ground_wf_term t'"
+        using Fun.prems(1) Fun.IH \<Gamma>_wf''[of _ _ t] \<Gamma>_wf'[OF \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>] type_wfttype_inhabited
+        by (metis Fun_param_is_subterm term.order_trans wf_trm_subtermeq) 
+      hence "\<exists>X. map \<Gamma> X = Y \<and> (\<forall>x \<in> set X. public_ground_wf_term x)"
+        by (induct Y, simp_all, metis list.simps(9) set_ConsD)
+      then obtain X where X: "map \<Gamma> X = Y" "\<And>x. x \<in> set X \<Longrightarrow> public_ground_wf_term x" by moura
+      hence "arity f = length X" using *(3) by auto
+      have "\<Gamma> t = \<Gamma> (Fun f X)" "public_ground_wf_term (Fun f X)"
+        using fun_type[OF *(1), of X] Fun.prems(1) X(1) apply simp
+        using PGWT[OF *(2) \<open>arity f = length X\<close> X(2)] by metis
+      thus ?case by metis
+    qed
+  }
+  thus ?thesis using \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close> by auto
+qed
+
+end
+
 subsection \<open>The Typing Result for the Composition-Only Intruder\<close>
-context typed_model
+context typing_result
 begin
 
 subsubsection \<open>Well-typedness and Type-Flaw Resistance Preservation\<close>
@@ -59,16 +184,16 @@ using assms
 proof (induction rule: LI_rel.induct)
   case (Compose S X f S' \<theta>)
   hence "list_all tfr\<^sub>s\<^sub>t\<^sub>p S" "list_all tfr\<^sub>s\<^sub>t\<^sub>p S'" by simp_all
-  moreover have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (map Send X)" by (induct X) auto
+  moreover have "list_all tfr\<^sub>s\<^sub>t\<^sub>p (map Send1 X)" by (induct X) auto
   ultimately show ?case by simp
 next
   case (Unify S f Y \<delta> X S' \<theta>)
   hence "list_all tfr\<^sub>s\<^sub>t\<^sub>p (S@S')" by simp
 
-  have "fv\<^sub>s\<^sub>t (S@Send (Fun f X)#S') \<inter> bvars\<^sub>s\<^sub>t (S@S') = {}"
+  have "fv\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S') \<inter> bvars\<^sub>s\<^sub>t (S@S') = {}"
     using Unify.prems(1) by (auto simp add: wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
-  moreover have "fv (Fun f X) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f X)#S')" by auto
-  moreover have "fv (Fun f Y) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f X)#S')"
+  moreover have "fv (Fun f X) \<subseteq> fv\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S')" by auto
+  moreover have "fv (Fun f Y) \<subseteq> fv\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S')"
     using Unify.hyps(2) fv_subset_if_in_strand_ik'[of "Fun f Y" S] by force
   ultimately have bvars_disj:
       "bvars\<^sub>s\<^sub>t (S@S') \<inter> fv (Fun f X) = {}" "bvars\<^sub>s\<^sub>t (S@S') \<inter> fv (Fun f Y) = {}"
@@ -82,8 +207,9 @@ next
     thus ?thesis using wf_trm_subterm by auto
   qed
   moreover have
-      "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))" "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
-    using SMP_append[of S "Send (Fun f X)#S'"] SMP_Cons[of "Send (Fun f X)" S']
+      "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
+      "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
+    using SMP_append[of S "Send1 (Fun f X)#S'"] SMP_Cons[of "Send1 (Fun f X)" S']
           SMP_ikI[OF Unify.hyps(2)]
     by auto
   hence "\<Gamma> (Fun f X) = \<Gamma> (Fun f Y)"
@@ -127,33 +253,33 @@ private lemma LI_in_SMP_subset_single:
 using assms
 proof (induction rule: LI_rel.induct)
   case (Compose S X f S' \<theta>)
-  hence "SMP (trms\<^sub>s\<^sub>t [Send (Fun f X)]) \<subseteq> SMP M"
+  hence "SMP (trms\<^sub>s\<^sub>t [Send1 (Fun f X)]) \<subseteq> SMP M"
   proof -
-    have "SMP (trms\<^sub>s\<^sub>t [Send (Fun f X)]) \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
+    have "SMP (trms\<^sub>s\<^sub>t [Send1 (Fun f X)]) \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
       using trms\<^sub>s\<^sub>t_append SMP_mono by auto
     thus ?thesis
-      using SMP_union[of "trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S')" M]
+      using SMP_union[of "trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S')" M]
             SMP_subset_union_eq[OF Compose.prems(6)]
       by auto
   qed
   thus ?case using Compose.prems(6) by auto
 next
   case (Unify S f Y \<delta> X S' \<theta>)
-  have "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))" by auto
+  have "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))" by auto
   moreover have "MGU \<delta> (Fun f X) (Fun f Y)"
     by (metis mgu_gives_MGU[OF Unify.hyps(3)[symmetric]])
   moreover have
         "\<And>x. x \<in> set S \<Longrightarrow> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t\<^sub>p x)" "wf\<^sub>t\<^sub>r\<^sub>m (Fun f X)"
     using Unify.prems(4) by force+
-  moreover have "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
+  moreover have "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
     by (meson SMP_ikI Unify.hyps(2) contra_subsetD ik_append_subset(1))
   ultimately have "wf\<^sub>t\<^sub>r\<^sub>m (Fun f Y)" "\<Gamma> (Fun f X) = \<Gamma> (Fun f Y)"
-    using ik\<^sub>s\<^sub>t_subterm_exD[OF \<open>Fun f Y \<in> ik\<^sub>s\<^sub>t S\<close>] \<open>tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))\<close>
+    using ik\<^sub>s\<^sub>t_subterm_exD[OF \<open>Fun f Y \<in> ik\<^sub>s\<^sub>t S\<close>] \<open>tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))\<close>
     unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by (metis (full_types) SMP_wf_trm Unify.prems(4), blast)
   hence "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" by (metis mgu_wt_if_same_type[OF Unify.hyps(3)[symmetric] \<open>wf\<^sub>t\<^sub>r\<^sub>m (Fun f X)\<close>])
   moreover have "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
     using mgu_wf_trm[OF Unify.hyps(3)[symmetric] \<open>wf\<^sub>t\<^sub>r\<^sub>m (Fun f X)\<close> \<open>wf\<^sub>t\<^sub>r\<^sub>m (Fun f Y)\<close>] by simp
-  ultimately have "trms\<^sub>s\<^sub>t ((S@Send (Fun f X)#S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> SMP M"
+  ultimately have "trms\<^sub>s\<^sub>t ((S@Send1 (Fun f X)#S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> SMP M"
     using SMP.Substitution Unify.prems(6) wt_subst_SMP_subset by metis
   thus ?case by auto
 next
@@ -182,11 +308,11 @@ private lemma LI_preserves_tfr_single:
 using assms
 proof (induction rule: LI_rel.induct)
   case (Compose S X f S' \<theta>)
-  let ?SMPmap = "SMP (trms\<^sub>s\<^sub>t (S@map Send X@S')) - (Var`\<V>)"
-  have "?SMPmap \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S')) - (Var`\<V>)"
+  let ?SMPmap = "SMP (trms\<^sub>s\<^sub>t (S@map Send1 X@S')) - (Var`\<V>)"
+  have "?SMPmap \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S')) - (Var`\<V>)"
     using SMP_fun_map_snd_subset[of X f]
-          SMP_append[of "map Send X" S'] SMP_Cons[of "Send (Fun f X)" S']
-          SMP_append[of S "Send (Fun f X)#S'"] SMP_append[of S "map Send X@S'"]
+          SMP_append[of "map Send1 X" S'] SMP_Cons[of "Send1 (Fun f X)" S']
+          SMP_append[of S "Send1 (Fun f X)#S'"] SMP_append[of S "map Send1 X@S'"]
     by auto
   hence "\<forall>s \<in> ?SMPmap. \<forall>t \<in> ?SMPmap. (\<exists>\<delta>. Unifier \<delta> s t) \<longrightarrow> \<Gamma> s = \<Gamma> t"
     using Compose unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by (meson subsetCE)
@@ -198,12 +324,12 @@ next
   case (Unify S f Y \<delta> X S' \<theta>)
   let ?SMP\<delta> = "SMP (trms\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>)) - (Var`\<V>)"
 
-  have "SMP (trms\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>)) \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
+  have "SMP (trms\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>)) \<subseteq> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
   proof
-    fix s assume "s \<in> SMP (trms\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>))" thus "s \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
+    fix s assume "s \<in> SMP (trms\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>))" thus "s \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
       using LI_in_SMP_subset_single[
               OF LI_rel.Unify[OF Unify.hyps] Unify.prems(1,2,4,5,6)
-                 MP_subset_SMP(2)[of "S@Send (Fun f X)#S'"]]
+                 MP_subset_SMP(2)[of "S@Send1 (Fun f X)#S'"]]
       by (metis SMP_union SMP_subset_union_eq Un_iff)
   qed
   hence "\<forall>s \<in> ?SMP\<delta>. \<forall>t \<in> ?SMP\<delta>. (\<exists>\<delta>. Unifier \<delta> s t) \<longrightarrow> \<Gamma> s = \<Gamma> t"
@@ -247,8 +373,8 @@ proof (induction rule: LI_rel.induct)
     thus ?thesis using wf_trm_subterm by auto
   qed
   moreover have
-      "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))" "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send (Fun f X)#S'))"
-    using SMP_append[of S "Send (Fun f X)#S'"] SMP_Cons[of "Send (Fun f X)" S']
+      "Fun f X \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))" "Fun f Y \<in> SMP (trms\<^sub>s\<^sub>t (S@Send1 (Fun f X)#S'))"
+    using SMP_append[of S "Send1 (Fun f X)#S'"] SMP_Cons[of "Send1 (Fun f X)" S']
           SMP_ikI[OF Unify.hyps(2)]
     by auto
   hence "\<Gamma> (Fun f X) = \<Gamma> (Fun f Y)"
@@ -326,13 +452,33 @@ proof -
   qed blast
   thus "?A S'" "?B S'" "?C S'" by simp_all
 qed
+
+lemma LI_preproc_preserves_tfr:
+  assumes "tfr\<^sub>s\<^sub>t S"
+  shows "tfr\<^sub>s\<^sub>t (LI_preproc S)"
+unfolding tfr\<^sub>s\<^sub>t_def
+proof
+  have S: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t S)" "list_all tfr\<^sub>s\<^sub>t\<^sub>p S" using assms unfolding tfr\<^sub>s\<^sub>t_def by metis+
+
+  show "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t (LI_preproc S))" by (metis S(1) LI_preproc_trms_eq)
+
+  show "list_all tfr\<^sub>s\<^sub>t\<^sub>p (LI_preproc S)" using S(2)
+  proof (induction S)
+    case (Cons x S)
+    have IH: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (LI_preproc S)" using Cons by simp
+    have x: "tfr\<^sub>s\<^sub>t\<^sub>p x" using Cons.prems by simp
+
+    show ?case using x IH unfolding list_all_iff by (cases x) auto
+  qed simp
+qed
 end
 
 subsubsection \<open>Simple Constraints are Well-typed Satisfiable\<close>
 text \<open>Proving the existence of a well-typed interpretation\<close>
 context
 begin
-lemma wt_interpretation_exists:
+
+lemma wt_interpretation_exists: 
   obtains \<I>::"('fun,'var) subst"
   where "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "subst_range \<I> \<subseteq> public_ground_wf_terms"
 proof
@@ -345,7 +491,7 @@ proof
       unfolding \<I>_def wf\<^sub>t\<^sub>r\<^sub>m_def by simp
   } hence props: "\<I> v = t \<Longrightarrow> \<Gamma> (Var v) = \<Gamma> t \<and> public_ground_wf_term t" for v t by metis
 
-  have "\<I> v \<noteq> Var v" for v using props pgwt_ground by (simp add: empty_fv_not_var)
+  have "\<I> v \<noteq> Var v" for v using props pgwt_ground by fastforce
   hence "subst_domain \<I> = UNIV" by auto
   moreover have "ground (subst_range \<I>)" by (simp add: props pgwt_ground)
   ultimately show "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" by metis
@@ -378,7 +524,7 @@ proof -
       let ?Q = "\<lambda>c. \<Gamma> (Fun c []) = Var a \<and> public c"
       have " {c. ?Q c} - S = {c. ?P c}" by auto
       hence "infinite {c. ?P c}"
-        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]]
+        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]] 
         by metis
       hence "\<exists>c. ?P c" using not_finite_existsD by blast
       thus ?case using someI_ex[of ?P] by auto
@@ -392,7 +538,7 @@ proof -
       hence "map \<Gamma> (map (fresh_pgwt S) T) = T"  by (induct T) auto
       thus ?case using fun_type[OF f] by simp
     qed
-  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf(1) by auto
+  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf'' by auto
 qed
 
 private lemma fresh_pgwt_empty_synth:
@@ -407,7 +553,7 @@ proof -
       let ?Q = "\<lambda>c. \<Gamma> (Fun c []) = Var a \<and> public c"
       have " {c. ?Q c} - S = {c. ?P c}" by auto
       hence "infinite {c. ?P c}"
-        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]]
+        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]] 
         by metis
       hence "\<exists>c. ?P c" using not_finite_existsD by blast
       thus ?case
@@ -415,7 +561,7 @@ proof -
         by auto
     next
       case (Fun f T)
-      have f: "0 < arity f" "length T = arity f" "public f"
+      have f: "0 < arity f" "length T = arity f" "public f" 
         using Fun.prems fun_type_inv unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
       have "\<And>t. t \<in> set T \<Longrightarrow> ?P t"
         using Fun.prems wf_trm_subtermeq term.le_less_trans Fun_param_is_subterm
@@ -424,7 +570,7 @@ proof -
       moreover have "length (map (fresh_pgwt S) T) = arity f" using f(2) by auto
       ultimately show ?case using intruder_synth.ComposeC[of "map (fresh_pgwt S) T" f] f by auto
     qed
-  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf(1) by auto
+  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf'' by auto
 qed
 
 private lemma fresh_pgwt_has_fresh_const:
@@ -439,7 +585,7 @@ proof -
       let ?Q = "\<lambda>c. \<Gamma> (Fun c []) = Var a \<and> public c"
       have " {c. ?Q c} - S = {c. ?P c}" by auto
       hence "infinite {c. ?P c}"
-        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]]
+        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]] 
         by metis
       hence "\<exists>c. ?P c" using not_finite_existsD by blast
       thus ?case using someI_ex[of ?P] by auto
@@ -447,7 +593,7 @@ proof -
       case (Fun f T)
       have f: "0 < arity f" "length T = arity f" "public f" "T \<noteq> []"
         using Fun.prems fun_type_inv unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
-      obtain t' where t': "t' \<in> set T" by (meson all_not_in_conv f(4) set_empty)
+      obtain t' where t': "t' \<in> set T" by (meson all_not_in_conv f(4) set_empty) 
       have "\<And>t. t \<in> set T \<Longrightarrow> ?P t"
         using Fun.prems wf_trm_subtermeq term.le_less_trans Fun_param_is_subterm
         by metis
@@ -456,7 +602,7 @@ proof -
       then obtain c where c: "Fun c [] \<sqsubseteq> fresh_pgwt S t'" "c \<notin> S" using t' by metis
       thus ?case using t' by auto
     qed
-  } thus ?thesis using that assms \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf(1) by blast
+  } thus ?thesis using that assms \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf'' by blast 
 qed
 
 private lemma fresh_pgwt_subterm_fresh:
@@ -471,13 +617,13 @@ proof -
       let ?Q = "\<lambda>c. \<Gamma> (Fun c []) = Var a \<and> public c"
       have " {c. ?Q c} - S = {c. ?P c}" by auto
       hence "infinite {c. ?P c}"
-        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]]
+        using Diff_infinite_finite[OF assms(1) infinite_typed_consts[of a]] 
         by metis
       hence "\<exists>c. ?P c" using not_finite_existsD by blast
       thus ?case using someI_ex[of ?P] assms(4) by auto
     next
       case (Fun f T)
-      have f: "0 < arity f" "length T = arity f" "public f"
+      have f: "0 < arity f" "length T = arity f" "public f" 
         using Fun.prems fun_type_inv unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
       have "\<And>t. t \<in> set T \<Longrightarrow> ?P t"
         using Fun.prems wf_trm_subtermeq term.le_less_trans Fun_param_is_subterm
@@ -493,7 +639,7 @@ proof -
       qed
       ultimately show ?case by auto
     qed
-  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf(1) by auto
+  } thus ?thesis using assms(1) \<Gamma>_wf'[OF assms(2)] \<Gamma>_wf'' by auto
 qed
 
 private lemma wt_fresh_pgwt_term_exists:
@@ -612,7 +758,7 @@ next
       proof (cases "\<theta> y \<in> subst_range \<sigma> \<and> \<theta> z \<in> subst_range \<sigma>")
         case True
         hence **: "y \<in> subst_domain \<sigma>" "z \<in> subst_domain \<sigma>"
-          using \<theta> \<theta>_dom True * t(3) by (metis Un_iff term.order_refl insertE)+
+          using \<theta> \<theta>_dom True * t(3) by (metis Un_iff term.order_refl insertE)+ 
         hence "y \<noteq> x" "z \<noteq> x" using x_dom by auto
         hence "\<theta> y = \<sigma> y" "\<theta> z = \<sigma> z" using \<theta> by auto
         thus ?thesis using \<open>\<theta> y = \<theta> z\<close> \<sigma>(2) ** unfolding bij_betw_def inj_on_def by auto
@@ -628,9 +774,9 @@ next
   proof -
     { fix s assume "s \<sqsubseteq> t"
       hence "s \<in> {t. {} \<turnstile>\<^sub>c t}  - T"
-        using t(2,3)
+        using t(2,3) 
         by (metis Diff_eq_empty_iff Diff_iff Un_upper1 term.order_refl
-                  deduct_synth_subterm mem_Collect_eq)
+                  deduct_synth_subterm mem_Collect_eq) 
     } thus ?thesis using \<sigma>(3) \<theta> \<theta>_img by auto
   qed
   moreover have "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" using \<theta> t(1) \<sigma>(5) unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by auto
@@ -803,7 +949,7 @@ theorem wt_sat_if_simple:
 proof -
   from \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S \<theta>\<close> have "wf\<^sub>s\<^sub>t {} S" "subst_idem \<theta>" and S_\<theta>_disj: "\<forall>v \<in> vars\<^sub>s\<^sub>t S. \<theta> v = Var v"
     using subst_idemI[of \<theta>] unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def wf\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by force+
-
+  
   obtain \<I>::"('fun,'var) subst"
     where \<I>: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "subst_range \<I> \<subseteq> public_ground_wf_terms"
     using wt_interpretation_exists by blast
@@ -858,8 +1004,8 @@ proof -
     by (metis \<sigma>_subterm_inj subst_inj_on_is_bij_betw subterm_inj_on_alt_def)
 
   have "finite (subst_domain \<sigma>)" by(metis \<sigma>_fv_dom finite_vars(1))
-  hence \<sigma>_finite_img: "finite (subst_range \<sigma>)" using \<sigma>_bij_dom_img bij_betw_finite by blast
-
+  hence \<sigma>_finite_img: "finite (subst_range \<sigma>)" using \<sigma>_bij_dom_img bij_betw_finite by blast 
+  
   have \<sigma>_img_subterms: "\<forall>s \<in> subst_range \<sigma>. \<forall>u \<in> subst_range \<sigma>. (\<exists>v. v \<sqsubseteq> s \<and> v \<sqsubseteq> u) \<longrightarrow> s = u"
     by (metis \<sigma>_subterm_inj subterm_inj_on_alt_def')
 
@@ -880,13 +1026,13 @@ proof -
 
   have \<sigma>_dom_bvars_disj: "\<forall>X F. Inequality X F \<in> set S \<longrightarrow> subst_domain \<sigma> \<inter> set X = {}"
     using ineqs_vars_not_bound \<sigma>_fv_dom by fastforce
-
+  
   have \<I>'1: "\<forall>X F \<delta>. Inequality X F \<in> set S \<longrightarrow> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X \<subseteq> subst_domain \<I>'"
     using \<I>'(3) ineqs_vars_not_bound by fastforce
-
+  
   have \<I>'2: "\<forall>X F. Inequality X F \<in> set S \<longrightarrow> subst_domain \<I>' \<inter> set X = {}"
     using \<I>'(3) ineqs_vars_not_bound by blast
-
+  
   have doms_eq: "subst_domain \<I>' = subst_domain \<sigma>" using \<I>'(3) \<sigma>_fv_dom by simp
 
   have \<sigma>_ineqs_neq: "ineq_model \<sigma> X F" when "Inequality X F \<in> set S" for X F
@@ -912,13 +1058,13 @@ proof -
     have "t \<cdot> \<delta> \<cdot> \<sigma> \<noteq> t' \<cdot> \<delta> \<cdot> \<sigma>" when "?P \<delta> X" for \<delta>
     proof -
       have tfr_assms: "Q1 F X \<or> Q2 F X" using tfr_ineq F_in by metis
-
+  
       have "Q1 F X \<Longrightarrow> \<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X. \<exists>c. \<sigma> x = Fun c []"
       proof
         fix x assume "Q1 F X" and x: "x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X"
         then obtain a where "\<Gamma> (Var x) = TAtom a" unfolding Q1_def by moura
         hence a: "\<Gamma> (\<sigma> x) = TAtom a" using \<sigma>_wt unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by simp
-
+        
         have "x \<in> subst_domain \<sigma>" using \<sigma>_ineqs_fv_dom x F_in by auto
         then obtain f T where fT: "\<sigma> x = Fun f T" by (meson \<sigma>_img_ground ground_img_obtain_fun)
         hence "T = []" using \<sigma>_wf_trm a TAtom_term_cases by fastforce
@@ -926,9 +1072,9 @@ proof -
       qed
       hence 1: "Q1 F X \<Longrightarrow> \<forall>x \<in> (fv t \<union> fv t') - set X. \<exists>c. \<sigma> x = Fun c []"
         using t_fv by auto
-
+  
       have 2: "\<not>Q1 F X \<Longrightarrow> Q2 F X" by (metis tfr_assms)
-
+  
       have 3: "subst_domain \<sigma> \<inter> set X = {}" using \<sigma>_dom_bvars_disj F_in by auto
 
       have 4: "subterms\<^sub>s\<^sub>e\<^sub>t (subst_range \<sigma>) \<inter> (subterms t \<union> subterms t') = {}"
@@ -950,16 +1096,16 @@ proof -
           by blast+
         thus ?thesis using * by blast
       qed
-
+  
       have 5: "(fv t \<union> fv t') - subst_domain \<sigma> \<subseteq> set X"
         using \<sigma>_ineqs_fv_dom[OF F_in] t_fv
         by auto
-
+  
       have 6: "\<forall>\<delta>. ?P \<delta> X \<longrightarrow> t \<cdot> \<delta> \<cdot> \<I>' \<noteq> t' \<cdot> \<delta> \<cdot> \<I>'"
         by (metis t_def t'_def \<I>'(1) F_in ineq_model_singleE ineq_model_single_iff)
-
+  
       have 7: "fv t \<union> fv t' - set X \<subseteq> subst_domain \<I>'" using \<I>'1 F_in t_fv by force
-
+  
       have 8: "subst_domain \<I>' \<inter> set X = {}" using \<I>'2 F_in by auto
 
       have 9: "Q1' t t' X" when "Q1 F X"
@@ -985,11 +1131,11 @@ proof -
       qed
 
       note 11 = \<sigma>_subterm_inj \<sigma>_img_ground 3 4 5
-
+  
       note 12 = 6 7 8 \<I>'(2) doms_eq
-
+  
       show "t \<cdot> \<delta> \<cdot> \<sigma> \<noteq> t' \<cdot> \<delta> \<cdot> \<sigma>"
-        using 1 2 9 10 that sat_ineq_subterm_inj_subst[OF 11 _ 12]
+        using 1 2 9 10 that sat_ineq_subterm_inj_subst[OF 11 _ 12] 
         unfolding Q1'_def Q2'_def by metis
     qed
     thus ?thesis by (metis t_def t'_def ineq_model_singleI ineq_model_single_iff)
@@ -1022,7 +1168,7 @@ proof -
       using subst_fv_dom_ground_if_ground_img[OF _ \<sigma>_img_ground] by metis+
     thus ?case using g Cons by (auto simp add: subst_apply_pairs_def)
   qed (simp add: subst_apply_pairs_def)
-
+ 
   from \<sigma>_pgwt_img \<sigma>_ineqs_neq have \<sigma>_deduct: "M \<turnstile>\<^sub>c \<sigma> x" when "x \<in> subst_domain \<sigma>" for x M
     using that pgwt_deducible by fastforce
 
@@ -1032,11 +1178,18 @@ proof -
     proof (induction S arbitrary: M rule: wf\<^sub>s\<^sub>t_simple_induct)
       case (ConsSnd v S)
       hence S_sat: "\<lbrakk>M; S\<rbrakk>\<^sub>c (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)" and "\<theta> v = Var v" by auto
-      hence "\<And>M. M \<turnstile>\<^sub>c Var v \<cdot> (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)"
+      hence *: "\<And>M. M \<turnstile>\<^sub>c Var v \<cdot> (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)"
         using \<I>_deduct \<sigma>_deduct
         by (metis ideduct_synth_subst_apply subst_apply_term.simps(1)
                   subst_subst_compose trm_subst_ident')
-      thus ?case using strand_sem_append(1)[OF S_sat] by (metis strand_sem_c.simps(1,2))
+
+      define M' where "M' \<equiv> M \<union> (ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)"
+
+      have "\<forall>t \<in> set [Var v]. M' \<turnstile>\<^sub>c t \<cdot> (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)" using *[of M'] by simp
+      thus ?case
+        using strand_sem_append(1)[OF S_sat, of "[Send1 (Var v)]", unfolded M'_def[symmetric]]
+              strand_sem_c.simps(1)[of M'] strand_sem_c.simps(2)[of M' "[Var v]" "[]"]
+        by presburger
     next
       case (ConsIneq X F S)
       have dom_disj: "subst_domain \<theta> \<inter> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F = {}"
@@ -1095,15 +1248,18 @@ theorem wt_attack_if_tfr_attack:
     and "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau>"
     and "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)"
 proof -
-  have tfr: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t S)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t S)" "list_all tfr\<^sub>s\<^sub>t\<^sub>p S"
-    using assms(5,6) unfolding tfr\<^sub>s\<^sub>t_def by metis+
-  obtain S' \<theta>' where *: "simple S'" "(S,\<theta>) \<leadsto>\<^sup>* (S',\<theta>')" "\<lbrakk>{}; S'\<rbrakk>\<^sub>c \<I>"
+  have tfr: "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>t (LI_preproc S))" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t (LI_preproc S))"
+            "list_all tfr\<^sub>s\<^sub>t\<^sub>p (LI_preproc S)"
+    using assms(5,6) LI_preproc_preserves_tfr 
+    unfolding tfr\<^sub>s\<^sub>t_def by (metis, metis LI_preproc_trms_eq, metis)
+  have wf_constr: "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r (LI_preproc S) \<theta>" by (metis LI_preproc_preserves_wellformedness assms(3))
+  obtain S' \<theta>' where *: "simple S'" "(LI_preproc S,\<theta>) \<leadsto>\<^sup>* (S',\<theta>')" "\<lbrakk>{}; S'\<rbrakk>\<^sub>c \<I>"
     using LI_completeness[OF assms(3,2)] unfolding constr_sem_c_def
     by (meson term.order_refl)
-  have **: "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S' \<theta>'" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>'" "list_all tfr\<^sub>s\<^sub>t\<^sub>p S'" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t S')" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>')"
-    using LI_preserves_welltypedness[OF *(2) assms(3,4,7) tfr]
-          LI_preserves_wellformedness[OF *(2) assms(3)]
-          LI_preserves_tfr[OF *(2) assms(3,4,7) tfr]
+  have **: "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S' \<theta>'" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>'" "list_all tfr\<^sub>s\<^sub>t\<^sub>p S'" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t S')" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>')" 
+    using LI_preserves_welltypedness[OF *(2) wf_constr assms(4,7) tfr]
+          LI_preserves_wellformedness[OF *(2) wf_constr]
+          LI_preserves_tfr[OF *(2) wf_constr assms(4,7) tfr]
     by metis+
 
   define A where "A \<equiv> {x \<in> vars\<^sub>s\<^sub>t S'. \<exists>X F. Inequality X F \<in> set S' \<and> x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<and> x \<notin> set X}"
@@ -1132,7 +1288,7 @@ proof -
             using Cons Unifier_ground_rm_vars[OF gr\<I>(1), of "t \<cdot> \<delta>" B "t' \<cdot> \<delta>"]
             by auto
         qed simp
-      } thus ?thesis using * unfolding ineq_model_def by simp
+      } thus ?thesis using * unfolding ineq_model_def list_ex_iff case_prod_unfold by simp
     qed
   } moreover have "subst_domain \<I> = UNIV" using assms(1) by metis
   hence "subst_domain ?\<I> = A" using rm_vars_dom[of B \<I>] B_def by blast
@@ -1158,7 +1314,7 @@ end
 
 
 subsection \<open>Lifting the Composition-Only Typing Result to the Full Intruder Model\<close>
-context typed_model
+context typing_result
 begin
 
 subsubsection \<open>Analysis Invariance\<close>
@@ -1187,7 +1343,7 @@ datatype (funs\<^sub>e\<^sub>s\<^sub>t\<^sub>p: 'a, vars\<^sub>e\<^sub>s\<^sub>t
   Step   "('a,'b) strand_step"
 | Decomp "('a,'b) term"
 
-context typed_model
+context typing_result
 begin
 
 context
@@ -1202,7 +1358,7 @@ private type_synonym ('a,'b) extstrand = "('a,'b) extstrand_step list"
 private type_synonym ('a,'b) extstrands = "('a,'b) extstrand set"
 
 private definition decomp::"('fun,'var) term \<Rightarrow> ('fun,'var) strand" where
-  "decomp t \<equiv> (case (Ana t) of (K,T) \<Rightarrow> send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive T)"
+  "decomp t \<equiv> (case (Ana t) of (K,T) \<Rightarrow> [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>T\<rangle>\<^sub>s\<^sub>t])"
 
 private fun to_st where
   "to_st [] = []"
@@ -1242,15 +1398,15 @@ private fun subst_apply_extstrandstep (infix "\<cdot>\<^sub>e\<^sub>s\<^sub>t\<^
 | "subst_apply_extstrandstep (Decomp t) \<theta> = Decomp (t \<cdot> \<theta>)"
 
 private lemma subst_apply_extstrandstep'_simps[simp]:
-  "(Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (send\<langle>t \<cdot> \<theta>\<rangle>\<^sub>s\<^sub>t)"
-  "(Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (receive\<langle>t \<cdot> \<theta>\<rangle>\<^sub>s\<^sub>t)"
+  "(Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (send\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<^sub>s\<^sub>t)"
+  "(Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<^sub>s\<^sub>t)"
   "(Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (\<langle>a: (t \<cdot> \<theta>) \<doteq> (t' \<cdot> \<theta>)\<rangle>\<^sub>s\<^sub>t)"
   "(Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta> = Step (\<forall>X\<langle>\<or>\<noteq>: (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<theta>)\<rangle>\<^sub>s\<^sub>t)"
 by simp_all
 
 private lemma vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p_subst_apply_simps[simp]:
-  "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv (t \<cdot> \<theta>)"
-  "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv (t \<cdot> \<theta>)"
+  "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+  "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>)"
   "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv (t \<cdot> \<theta>) \<union> fv (t' \<cdot> \<theta>)"
   "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = set X \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<theta>)"
 by auto
@@ -1282,7 +1438,8 @@ private fun decomp_rm\<^sub>e\<^sub>s\<^sub>t::"('fun,'var) extstrand \<Rightarr
 private inductive sem\<^sub>e\<^sub>s\<^sub>t_d::"('fun,'var) terms \<Rightarrow> ('fun,'var) subst \<Rightarrow> ('fun,'var) extstrand \<Rightarrow> bool"
 where
   Nil[simp]: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> []"
-| Send: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> S \<Longrightarrow> (ik\<^sub>e\<^sub>s\<^sub>t S \<union> M\<^sub>0) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I> \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> (S@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+| Send: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> S \<Longrightarrow> \<forall>t \<in> set ts. (ik\<^sub>e\<^sub>s\<^sub>t S \<union> M\<^sub>0) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>
+          \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> (S@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
 | Receive: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> S \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> (S@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
 | Equality: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> S \<Longrightarrow> t \<cdot> \<I> = t' \<cdot> \<I> \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> (S@[Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)])"
 | Inequality: "sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> S
@@ -1294,7 +1451,8 @@ where
 private inductive sem\<^sub>e\<^sub>s\<^sub>t_c::"('fun,'var) terms \<Rightarrow> ('fun,'var) subst \<Rightarrow> ('fun,'var) extstrand \<Rightarrow> bool"
 where
   Nil[simp]: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> []"
-| Send: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> S \<Longrightarrow> (ik\<^sub>e\<^sub>s\<^sub>t S \<union> M\<^sub>0) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I> \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> (S@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+| Send: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> S \<Longrightarrow> \<forall>t \<in> set ts. (ik\<^sub>e\<^sub>s\<^sub>t S \<union> M\<^sub>0) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>
+          \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> (S@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
 | Receive: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> S \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> (S@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
 | Equality: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> S \<Longrightarrow> t \<cdot> \<I> = t' \<cdot> \<I> \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> (S@[Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)])"
 | Inequality: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> S
@@ -1312,7 +1470,7 @@ by (simp add: wf\<^sub>s\<^sub>t\<^sub>s_def wf\<^sub>s\<^sub>t\<^sub>s'_def)
 private lemma decomp_ik:
   assumes "Ana t = (K,M)"
   shows "ik\<^sub>s\<^sub>t (decomp t) = set M"
-using ik_rcv_map[of _ M] ik_rcv_map'[of _ M]
+using ik_rcv_map ik_rcv_map'
 by (auto simp add: decomp_def inv_def assms)
 
 private lemma decomp_assignment_rhs_empty:
@@ -1373,8 +1531,8 @@ private lemma subst_apply_extstrand_nil[simp]:
 by (simp add: subst_apply_extstrand_def)
 
 private lemma subst_apply_extstrand_singleton[simp]:
-  "[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Step (Receive (t \<cdot> \<theta>))]"
-  "[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Step (Send (t \<cdot> \<theta>))]"
+  "[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Step (Receive (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>))]"
+  "[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Step (Send (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>))]"
   "[Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Step (Equality a (t \<cdot> \<theta>) (t' \<cdot> \<theta>))]"
   "[Decomp t] \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> = [Decomp (t \<cdot> \<theta>)]"
 unfolding subst_apply_extstrand_def by auto
@@ -1388,7 +1546,7 @@ private lemma decomp_vars:
   "fv\<^sub>s\<^sub>t (decomp t) = fv t"
 proof -
   obtain K M where Ana: "Ana t = (K,M)" by (metis surj_pair)
-  hence "decomp t = send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive M"
+  hence "decomp t = [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,Send K,Receive M]"
     unfolding decomp_def by simp
   moreover have "\<Union>(set (map fv K)) = fv\<^sub>s\<^sub>e\<^sub>t (set K)" "\<Union>(set (map fv M)) = fv\<^sub>s\<^sub>e\<^sub>t (set M)" by auto
   moreover have "fv\<^sub>s\<^sub>e\<^sub>t (set K) \<subseteq> fv t" "fv\<^sub>s\<^sub>e\<^sub>t (set M) \<subseteq> fv t"
@@ -1446,7 +1604,7 @@ by simp
 
 private lemma decomp_set_unfold:
   assumes "Ana t = (K, M)"
-  shows "set (decomp t) = {send\<langle>t\<rangle>\<^sub>s\<^sub>t} \<union> (Send ` set K) \<union> (Receive ` set M)"
+  shows "set (decomp t) = {send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>M\<rangle>\<^sub>s\<^sub>t}"
 using assms unfolding decomp_def by auto
 
 private lemma ik\<^sub>e\<^sub>s\<^sub>t_finite: "finite (ik\<^sub>e\<^sub>s\<^sub>t A)"
@@ -1480,7 +1638,7 @@ private lemma assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append:
 by (metis assignment_rhs_append to_st_append)
 
 private lemma ik\<^sub>e\<^sub>s\<^sub>t_cons: "ik\<^sub>e\<^sub>s\<^sub>t (a#A) = ik\<^sub>e\<^sub>s\<^sub>t [a] \<union> ik\<^sub>e\<^sub>s\<^sub>t A"
-by (metis ik_append to_st_cons)
+by (metis ik_append to_st_cons) 
 
 private lemma ik\<^sub>e\<^sub>s\<^sub>t_append_subst:
   "ik\<^sub>e\<^sub>s\<^sub>t (A@B \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta>) = ik\<^sub>e\<^sub>s\<^sub>t (A \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta>) \<union> ik\<^sub>e\<^sub>s\<^sub>t (B \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta>)"
@@ -1501,8 +1659,8 @@ private lemma decomp_rm\<^sub>e\<^sub>s\<^sub>t_append: "decomp_rm\<^sub>e\<^sub
 by (induct S rule: decomp_rm\<^sub>e\<^sub>s\<^sub>t.induct) auto
 
 private lemma decomp_rm\<^sub>e\<^sub>s\<^sub>t_single[simp]:
-  "decomp_rm\<^sub>e\<^sub>s\<^sub>t [Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)] = [Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
-  "decomp_rm\<^sub>e\<^sub>s\<^sub>t [Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)] = [Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  "decomp_rm\<^sub>e\<^sub>s\<^sub>t [Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)] = [Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
+  "decomp_rm\<^sub>e\<^sub>s\<^sub>t [Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)] = [Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
   "decomp_rm\<^sub>e\<^sub>s\<^sub>t [Decomp t] = []"
 by auto
 
@@ -1566,7 +1724,7 @@ private lemma decomps\<^sub>e\<^sub>s\<^sub>t_assignment_rhs_empty:
   shows "assignment_rhs\<^sub>e\<^sub>s\<^sub>t A' = {}"
 using assms
 by (induction A' rule: decomps\<^sub>e\<^sub>s\<^sub>t.induct)
-   (simp_all add: decomp_assignment_rhs_empty assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append)
+   (simp_all add: decomp_assignment_rhs_empty assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append) 
 
 private lemma decomps\<^sub>e\<^sub>s\<^sub>t_finite_ik_append:
   assumes "finite M" "M \<subseteq> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>"
@@ -1583,7 +1741,7 @@ next
   ultimately show ?case using decomps\<^sub>e\<^sub>s\<^sub>t_append[of D A N \<I> m] ik\<^sub>e\<^sub>s\<^sub>t_append[of D m] by blast
 qed
 
-private lemma decomp_snd_exists[simp]: "\<exists>D. decomp t = send\<langle>t\<rangle>\<^sub>s\<^sub>t#D"
+private lemma decomp_snd_exists[simp]: "\<exists>D. decomp t = send\<langle>[t]\<rangle>\<^sub>s\<^sub>t#D"
 by (metis (mono_tags, lifting) decomp_def prod.case surj_pair)
 
 private lemma decomp_nonnil[simp]: "decomp t \<noteq> []"
@@ -1629,11 +1787,11 @@ next
 qed simp_all
 
 private lemma well_analyzed_singleton:
-  "well_analyzed [Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  "well_analyzed [Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
   "well_analyzed [Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)]"
   "\<not>well_analyzed [Decomp t]"
 proof -
-  show "well_analyzed [Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  show "well_analyzed [Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
        "well_analyzed [Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)]" "well_analyzed [Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)]"
     using well_analyzed.Step[OF well_analyzed.Nil]
     by simp_all
@@ -1683,13 +1841,14 @@ proof
       case (Decomp t)
       obtain K M where Ana: "Ana t = (K,M)" by moura
       have "to_st [a] = decomp t" using Decomp by auto
-      hence "to_st [a] = send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive M"
+      hence "to_st [a] = [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,Send K,Receive M]"
         using Ana unfolding decomp_def by auto
-      hence **: "ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" and "\<lbrakk>ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0; map Send K\<rbrakk>\<^sub>d' \<I>"
+      hence **: "ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" and "\<lbrakk>ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0; [Send K]\<rbrakk>\<^sub>d' \<I>"
         using * by auto
       hence "\<And>k. k \<in> set K \<Longrightarrow> ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> k \<cdot> \<I>"
-        using *
-        by (metis (full_types) strand_sem_d.simps(2) strand_sem_eq_defs(2) strand_sem_Send_split(2))
+        using * strand_sem_Send_split(2) strand_sem_d.simps(2)
+        unfolding strand_sem_eq_defs(2) list_all_iff
+        by meson
       thus ?thesis using Decomp sem\<^sub>e\<^sub>s\<^sub>t_d.Decompose[OF IH ** Ana] by metis
     qed
   qed
@@ -1698,14 +1857,14 @@ proof
   proof (induction rule: sem\<^sub>e\<^sub>s\<^sub>t_d.induct)
     case Nil thus ?case by simp
   next
-    case (Send M\<^sub>0 \<I> \<A> t) thus ?case
-      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[send\<langle>t\<rangle>\<^sub>s\<^sub>t]"]
-            to_st_append[of \<A> "[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]"]
+    case (Send M\<^sub>0 \<I> \<A> ts) thus ?case
+      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[send\<langle>ts\<rangle>\<^sub>s\<^sub>t]"]
+            to_st_append[of \<A> "[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"]
       by (simp add: sup.commute)
   next
-    case (Receive M\<^sub>0 \<I> \<A> t) thus ?case
-      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[receive\<langle>t\<rangle>\<^sub>s\<^sub>t]"]
-            to_st_append[of \<A> "[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"]
+    case (Receive M\<^sub>0 \<I> \<A> ts) thus ?case
+      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[receive\<langle>ts\<rangle>\<^sub>s\<^sub>t]"]
+            to_st_append[of \<A> "[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"]
       by (simp add: sup.commute)
   next
     case (Equality M\<^sub>0 \<I> \<A> t t' a) thus ?case
@@ -1721,18 +1880,18 @@ proof
     case (Decompose M\<^sub>0 \<I> \<A> t K M)
     have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); decomp t\<rbrakk>\<^sub>d' \<I>"
     proof -
-      have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>t\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d' \<I>"
+      have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d' \<I>"
         using Decompose.hyps(2) by (auto simp add: sup.commute)
       moreover have "\<And>k. k \<in> set K \<Longrightarrow> M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> k \<cdot> \<I>"
         using Decompose by (metis sup.commute)
-      hence "\<And>k. k \<in> set K \<Longrightarrow> \<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send k]\<rbrakk>\<^sub>d' \<I>" by auto
-      hence "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); map Send K\<rbrakk>\<^sub>d' \<I>"
-        using strand_sem_Send_map(2)[of K, of "M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" \<I>] strand_sem_eq_defs(2)
-        by auto
-      moreover have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); map Receive M\<rbrakk>\<^sub>d' \<I>"
-        by (metis strand_sem_Receive_map(2) strand_sem_eq_defs(2))
+      hence "\<And>k. k \<in> set K \<Longrightarrow> \<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send1 k]\<rbrakk>\<^sub>d' \<I>" by auto
+      hence "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send K]\<rbrakk>\<^sub>d' \<I>"
+        using strand_sem_Send_map(4)[of _ "M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" \<I>] strand_sem_Send_map(6)
+        unfolding strand_sem_eq_defs(2) by auto
+      moreover have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Receive M]\<rbrakk>\<^sub>d' \<I>"
+        by (metis strand_sem_Receive_map(6) strand_sem_eq_defs(2))
       ultimately have
-          "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive M\<rbrakk>\<^sub>d' \<I>"
+          "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>M\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>d' \<I>"
         by auto
       thus ?thesis using Decompose.hyps(3) unfolding decomp_def by auto
     qed
@@ -1769,13 +1928,13 @@ proof
       case (Decomp t)
       obtain K M where Ana: "Ana t = (K,M)" by moura
       have "to_st [a] = decomp t" using Decomp by auto
-      hence "to_st [a] = send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive M"
+      hence "to_st [a] = [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>M\<rangle>\<^sub>s\<^sub>t]"
         using Ana unfolding decomp_def by auto
-      hence **: "ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>" and "\<lbrakk>ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0; map Send K\<rbrakk>\<^sub>c' \<I>"
+      hence **: "ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>" and "\<lbrakk>ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0; [send\<langle>K\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>c' \<I>"
         using * by auto
-      hence "\<And>k. k \<in> set K \<Longrightarrow> ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c k \<cdot> \<I>"
-        using * strand_sem_Send_split(1) strand_sem_eq_defs(1)
-        by auto
+      hence "ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c k \<cdot> \<I>" when k: "k \<in> set K" for k
+        using * strand_sem_Send_split(5)[OF _ k] strand_sem_Send_map(5)
+        unfolding strand_sem_eq_defs(1) by auto
       thus ?thesis using Decomp sem\<^sub>e\<^sub>s\<^sub>t_c.Decompose[OF IH ** Ana] by metis
     qed
   qed
@@ -1784,14 +1943,14 @@ proof
   proof (induction rule: sem\<^sub>e\<^sub>s\<^sub>t_c.induct)
     case Nil thus ?case by simp
   next
-    case (Send M\<^sub>0 \<I> \<A> t) thus ?case
-      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[send\<langle>t\<rangle>\<^sub>s\<^sub>t]"]
-            to_st_append[of \<A> "[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]"]
+    case (Send M\<^sub>0 \<I> \<A> ts) thus ?case
+      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[send\<langle>ts\<rangle>\<^sub>s\<^sub>t]"]
+            to_st_append[of \<A> "[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"]
       by (simp add: sup.commute)
   next
-    case (Receive M\<^sub>0 \<I> \<A> t) thus ?case
-      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[receive\<langle>t\<rangle>\<^sub>s\<^sub>t]"]
-            to_st_append[of \<A> "[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"]
+    case (Receive M\<^sub>0 \<I> \<A> ts) thus ?case
+      using strand_sem_append'[of M\<^sub>0 "to_st \<A>" \<I> "[receive\<langle>ts\<rangle>\<^sub>s\<^sub>t]"]
+            to_st_append[of \<A> "[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"]
       by (simp add: sup.commute)
   next
     case (Equality M\<^sub>0 \<I> \<A> t t' a) thus ?case
@@ -1807,19 +1966,20 @@ proof
     case (Decompose M\<^sub>0 \<I> \<A> t K M)
     have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); decomp t\<rbrakk>\<^sub>c' \<I>"
     proof -
-      have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>t\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>c' \<I>"
+      have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>c' \<I>"
         using Decompose.hyps(2) by (auto simp add: sup.commute)
       moreover have "\<And>k. k \<in> set K \<Longrightarrow> M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c k \<cdot> \<I>"
         using Decompose by (metis sup.commute)
-      hence "\<And>k. k \<in> set K \<Longrightarrow> \<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send k]\<rbrakk>\<^sub>c' \<I>" by auto
-      hence "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); map Send K\<rbrakk>\<^sub>c' \<I>"
-        using strand_sem_Send_map(1)[of K, of "M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" \<I>]
-              strand_sem_eq_defs(1)
+      hence "\<And>k. k \<in> set K \<Longrightarrow> \<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send1 k]\<rbrakk>\<^sub>c' \<I>" by auto
+      hence "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Send K]\<rbrakk>\<^sub>c' \<I>"
+        using strand_sem_Send_map(3)[of K, of "M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" \<I>]
+              strand_sem_Send_map(5)
+        unfolding strand_sem_eq_defs(1)
         by auto
-      moreover have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); map Receive M\<rbrakk>\<^sub>c' \<I>"
-        by (metis strand_sem_Receive_map(1) strand_sem_eq_defs(1))
+      moreover have "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [Receive M]\<rbrakk>\<^sub>c' \<I>"
+        by (metis strand_sem_Receive_map(5) strand_sem_eq_defs(1))
       ultimately have
-          "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); send\<langle>t\<rangle>\<^sub>s\<^sub>t#map Send K@map Receive M\<rbrakk>\<^sub>c' \<I>"
+          "\<lbrakk>M\<^sub>0 \<union> ik\<^sub>s\<^sub>t (to_st \<A>); [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>M\<rangle>\<^sub>s\<^sub>t]\<rbrakk>\<^sub>c' \<I>"
         by auto
       thus ?thesis using Decompose.hyps(3) unfolding decomp_def by auto
     qed
@@ -1841,7 +2001,9 @@ next
   hence "t \<in> ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "t \<notin> ik\<^sub>e\<^sub>s\<^sub>t (decomp_rm\<^sub>e\<^sub>s\<^sub>t A) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
     using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append ik\<^sub>e\<^sub>s\<^sub>t_append by auto
   hence IH: "ik\<^sub>e\<^sub>s\<^sub>t (decomp_rm\<^sub>e\<^sub>s\<^sub>t A) \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t" using Receive.IH by auto
-  show ?case using ideduct_mono[OF IH] decomp_rm\<^sub>e\<^sub>s\<^sub>t_append ik\<^sub>e\<^sub>s\<^sub>t_append by auto
+  show ?case
+    using ideduct_mono[OF IH] decomp_rm\<^sub>e\<^sub>s\<^sub>t_append ik\<^sub>e\<^sub>s\<^sub>t_append
+    by (metis Un_subset_iff Un_upper1 Un_upper2 image_mono)
 next
   case (Equality M\<^sub>0 \<I> A t') thus ?case using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append ik\<^sub>e\<^sub>s\<^sub>t_append by auto
 next
@@ -1857,7 +2019,7 @@ next
     }
     ultimately show ?case by force
   qed simp
-
+  
   { fix k assume "k \<in> set K"
     hence "ik\<^sub>e\<^sub>s\<^sub>t A \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c k \<cdot> \<I>" using Decompose.hyps by auto
     hence "ik\<^sub>e\<^sub>s\<^sub>t (decomp_rm\<^sub>e\<^sub>s\<^sub>t A) \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> k \<cdot> \<I>"
@@ -1871,7 +2033,7 @@ next
     qed simp
   }
   hence **: "\<And>k. k \<in> set (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>) \<Longrightarrow> ik\<^sub>e\<^sub>s\<^sub>t (decomp_rm\<^sub>e\<^sub>s\<^sub>t A) \<union> M\<^sub>0 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> k" by auto
-
+  
   show ?case
   proof (cases "t \<in> ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>")
     case True thus ?thesis using Decompose.IH Decompose.prems(2) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append by auto
@@ -1908,7 +2070,9 @@ qed simp
 private lemma sem\<^sub>e\<^sub>s\<^sub>t_d_decomp_rm\<^sub>e\<^sub>s\<^sub>t_if_sem\<^sub>e\<^sub>s\<^sub>t_c: "sem\<^sub>e\<^sub>s\<^sub>t_c M\<^sub>0 \<I> A \<Longrightarrow> sem\<^sub>e\<^sub>s\<^sub>t_d M\<^sub>0 \<I> (decomp_rm\<^sub>e\<^sub>s\<^sub>t A)"
 proof (induction M\<^sub>0 \<I> A rule: sem\<^sub>e\<^sub>s\<^sub>t_c.induct)
   case (Send M\<^sub>0 \<I> A t)
-  thus ?case using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append sem\<^sub>e\<^sub>s\<^sub>t_d.Send[OF Send.IH] sem\<^sub>e\<^sub>s\<^sub>t_c_decomp_rm\<^sub>e\<^sub>s\<^sub>t_deduct by auto
+  thus ?case
+    using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append sem\<^sub>e\<^sub>s\<^sub>t_d.Send[OF Send.IH] sem\<^sub>e\<^sub>s\<^sub>t_c_decomp_rm\<^sub>e\<^sub>s\<^sub>t_deduct
+    unfolding list_all_iff by auto
 next
   case (Receive t) thus ?case using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append sem\<^sub>e\<^sub>s\<^sub>t_d.Receive by auto
 next
@@ -1964,7 +2128,7 @@ proof (induction D rule: decomps\<^sub>e\<^sub>s\<^sub>t.induct)
   case (Decomp D f T K M) show ?case
     using sem\<^sub>e\<^sub>s\<^sub>t_c.Decompose[OF Decomp.IH[OF Decomp.prems] _ Decomp.hyps(3)]
           Decomp.hyps(5,6) ideduct_synth_mono ik\<^sub>e\<^sub>s\<^sub>t_append
-    by (metis (mono_tags, lifting) List.append_assoc image_Un sup_ge1)
+    by (metis (mono_tags, lifting) List.append_assoc image_Un sup_ge1) 
 qed auto
 
 private lemma decomps\<^sub>e\<^sub>s\<^sub>t_exist_aux:
@@ -2004,7 +2168,7 @@ proof -
     obtain D'' where D'': "D'' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "M \<union> ik\<^sub>e\<^sub>s\<^sub>t D'' \<turnstile>\<^sub>c t" by (metis Decompose.IH(1))
     obtain f X where fX: "t = Fun f X" "t\<^sub>i \<in> set X"
       using Decompose.hyps(2,4) by (cases t) (auto dest: Ana_fun_subterm)
-
+  
     from decomps\<^sub>e\<^sub>s\<^sub>t_append[OF D'(1) D''(1)] D'(2) D''(2) have *:
         "D'@D'' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "\<And>k. k \<in> set K \<Longrightarrow> M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c k"
         "M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c t"
@@ -2071,9 +2235,9 @@ qed
 
 private lemma decomps\<^sub>e\<^sub>s\<^sub>t_exist_subst:
   assumes "ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
-  and "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> A" "wf\<^sub>e\<^sub>s\<^sub>t {} A" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
-  and "Ana_invar_subst (ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A)"
-  and "well_analyzed A"
+    and "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> A" "wf\<^sub>e\<^sub>s\<^sub>t {} A" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+    and "Ana_invar_subst (ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A)"
+    and "well_analyzed A"
   shows "\<exists>D \<in> decomps\<^sub>e\<^sub>s\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t A) (assignment_rhs\<^sub>e\<^sub>s\<^sub>t A) \<I>. ik\<^sub>e\<^sub>s\<^sub>t (A@D) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
 proof -
   have ik_eq: "ik\<^sub>e\<^sub>s\<^sub>t (A \<cdot>\<^sub>e\<^sub>s\<^sub>t \<I>) = ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" using assms(5,6)
@@ -2087,7 +2251,7 @@ proof -
         "ik\<^sub>e\<^sub>s\<^sub>t (A@[a]) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = (ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> (ik\<^sub>e\<^sub>s\<^sub>t [a] \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>)"
       using well_analyzed_split_left[OF snoc.prems(2)]
       by (auto simp add: to_st_append ik\<^sub>e\<^sub>s\<^sub>t_append_subst)
-
+      
     have "ik\<^sub>e\<^sub>s\<^sub>t [a \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<I>] = ik\<^sub>e\<^sub>s\<^sub>t [a] \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
     proof (cases a)
       case (Step b) thus ?thesis by (cases b) auto
@@ -2099,8 +2263,7 @@ proof -
         using t Decomp snoc.prems(2)
         by (auto dest: well_analyzed_inv simp add: ik\<^sub>e\<^sub>s\<^sub>t_append assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append)
       hence "Ana (Fun f T \<cdot> \<I>) = (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>, M \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
-        using Ana_t snoc.prems(1)
-        unfolding Ana_invar_subst_def by blast
+        using Ana_t snoc.prems(1) unfolding Ana_invar_subst_def by blast 
       ultimately show ?thesis using Decomp t by (auto simp add: decomp_ik)
     qed
     thus ?case using IH unfolding subst_apply_extstrand_def by simp
@@ -2197,7 +2360,7 @@ proof -
           have *: "(ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> ik\<^sub>e\<^sub>s\<^sub>t (D@[Decomp (Fun f T)]) = (ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> ik\<^sub>e\<^sub>s\<^sub>t D \<union> set M"
             using decomp_ik[OF \<open>Ana (Fun f T) = (K,M)\<close>] ik\<^sub>e\<^sub>s\<^sub>t_append[of D "[Decomp (Fun f T)]"]
             by auto
-
+          
           { fix t' assume "(ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> ik\<^sub>e\<^sub>s\<^sub>t D \<union> set M \<turnstile>\<^sub>c t'"
             hence "(ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> (ik\<^sub>e\<^sub>s\<^sub>t D' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<turnstile>\<^sub>c t'"
             proof (induction t' rule: intruder_synth_induct)
@@ -2312,7 +2475,7 @@ proof -
       have *: "\<And>m. m \<in> set M \<Longrightarrow> (ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> (ik\<^sub>e\<^sub>s\<^sub>t D' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<turnstile>\<^sub>c m"
         using Ana_fun_subterm[OF \<open>Ana (Fun f T) = (K, M)\<close>] ComposeC.hyps(3)
         by auto
-
+      
       have **: "ik\<^sub>e\<^sub>s\<^sub>t (D@[Decomp (Fun f T)]) = ik\<^sub>e\<^sub>s\<^sub>t D \<union> set M"
         using decomp_ik[OF \<open>Ana (Fun f T) = (K, M)\<close>] ik\<^sub>e\<^sub>s\<^sub>t_append by auto
 
@@ -2326,21 +2489,55 @@ proof -
   thus ?thesis using D(2) assms(1) by (auto simp add: ik\<^sub>e\<^sub>s\<^sub>t_append_subst(2))
 qed
 
+private lemma decomps\<^sub>e\<^sub>s\<^sub>t_exist_subst_list:
+  assumes "\<forall>t \<in> set ts. ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
+    and "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> A" "wf\<^sub>e\<^sub>s\<^sub>t {} A" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+    and "Ana_invar_subst (ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A)"
+    and "well_analyzed A"
+  shows "\<exists>D \<in> decomps\<^sub>e\<^sub>s\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t A) (assignment_rhs\<^sub>e\<^sub>s\<^sub>t A) \<I>.
+          \<forall>t \<in> set ts. ik\<^sub>e\<^sub>s\<^sub>t (A@D) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
+    (is "\<exists>D \<in> ?A. ?B D ts")
+proof -
+  note 0 = decomps\<^sub>e\<^sub>s\<^sub>t_exist_subst[OF _ assms(2-6)]
+
+  show ?thesis using assms(1)
+  proof (induction ts)
+    case (Cons t ts)
+    have 1: "ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" and 2: "\<forall>t \<in> set ts. ik\<^sub>e\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
+      using Cons.prems by auto
+
+    obtain D where D: "D \<in> ?A" "ik\<^sub>e\<^sub>s\<^sub>t (A@D) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
+      using 0[OF 1] by blast
+
+    obtain D' where D': "D' \<in> ?A" "?B D' ts"
+      using Cons.IH[OF 2] by auto
+
+    have "ik\<^sub>e\<^sub>s\<^sub>t (A@D@D') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
+      using ideduct_synth_mono[OF D(2)] ik\<^sub>e\<^sub>s\<^sub>t_append_subst(2)[of \<I> "A@D" D'] by fastforce
+    hence "?B (D@D') (t#ts)"
+      using D'(2) ideduct_synth_mono[of "ik\<^sub>e\<^sub>s\<^sub>t (A@D') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" _ "ik\<^sub>e\<^sub>s\<^sub>t (A@D@D') \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"]
+            ik\<^sub>e\<^sub>s\<^sub>t_append_subst(2)[of \<I>]
+      by auto
+    thus ?case
+      using decomps\<^sub>e\<^sub>s\<^sub>t_append[OF D(1) D'(1)] by blast
+  qed (fastforce intro: decomps\<^sub>e\<^sub>s\<^sub>t.Nil)
+qed
+
 private lemma wf\<^sub>s\<^sub>t\<^sub>s'_update\<^sub>s\<^sub>t_nil: assumes "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>" shows "wf\<^sub>s\<^sub>t\<^sub>s' (update\<^sub>s\<^sub>t \<S> []) \<A>"
 using assms unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by auto
 
 private lemma wf\<^sub>s\<^sub>t\<^sub>s'_update\<^sub>s\<^sub>t_snd:
-  assumes "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>" "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
-  shows "wf\<^sub>s\<^sub>t\<^sub>s' (update\<^sub>s\<^sub>t \<S> (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S)) (\<A>@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+  assumes "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>" "send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
+  shows "wf\<^sub>s\<^sub>t\<^sub>s' (update\<^sub>s\<^sub>t \<S> (send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S)) (\<A>@[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
 unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def
 proof (intro conjI)
-  let ?S = "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S"
-  let ?A = "\<A>@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  let ?S = "send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S"
+  let ?A = "\<A>@[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
 
   have \<S>: "\<And>S'. S' \<in> update\<^sub>s\<^sub>t \<S> ?S \<Longrightarrow> S' = S \<or> S' \<in> \<S>" by auto
 
   have 1: "\<forall>S \<in> \<S>. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A>) (dual\<^sub>s\<^sub>t S)" using assms unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by auto
-  moreover have 2: "wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A = wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv t"
+  moreover have 2: "wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A = wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)"
     using wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t_split(2) by (auto simp add: Un_assoc)
   ultimately have 3: "\<forall>S \<in> \<S>. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A) (dual\<^sub>s\<^sub>t S)" by (metis wf_vars_mono)
 
@@ -2348,7 +2545,7 @@ proof (intro conjI)
 
   have "wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A) (dual\<^sub>s\<^sub>t S)" using 1 2 3 assms(2) by auto
   thus "\<forall>S \<in> update\<^sub>s\<^sub>t \<S> ?S. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A) (dual\<^sub>s\<^sub>t S)" by (metis 3 \<S>)
-
+  
   have "fv\<^sub>s\<^sub>t S \<inter> bvars\<^sub>s\<^sub>t S = {}"
        "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t S \<inter> bvars\<^sub>s\<^sub>t S' = {}"
        "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t S' \<inter> bvars\<^sub>s\<^sub>t S = {}"
@@ -2357,7 +2554,8 @@ proof (intro conjI)
 
   have "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t ?S \<inter> bvars\<^sub>s\<^sub>t S' = {}" "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t S' \<inter> bvars\<^sub>s\<^sub>t ?S = {}"
     using assms unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by metis+
-  hence 5: "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv t" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = bvars\<^sub>e\<^sub>s\<^sub>t \<A>" "\<forall>S' \<in> \<S>. fv t \<inter> bvars\<^sub>s\<^sub>t S' = {}"
+  hence 5: "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = bvars\<^sub>e\<^sub>s\<^sub>t \<A>"
+           "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<inter> bvars\<^sub>s\<^sub>t S' = {}"
     using to_st_append by fastforce+
 
   have *: "\<forall>S \<in> \<S>. fv\<^sub>s\<^sub>t S \<inter> bvars\<^sub>e\<^sub>s\<^sub>t ?A = {}"
@@ -2374,17 +2572,17 @@ proof (intro conjI)
 qed
 
 private lemma wf\<^sub>s\<^sub>t\<^sub>s'_update\<^sub>s\<^sub>t_rcv:
-  assumes "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>" "receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
-  shows "wf\<^sub>s\<^sub>t\<^sub>s' (update\<^sub>s\<^sub>t \<S> (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S)) (\<A>@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+  assumes "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>" "receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
+  shows "wf\<^sub>s\<^sub>t\<^sub>s' (update\<^sub>s\<^sub>t \<S> (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S)) (\<A>@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
 unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def
 proof (intro conjI)
-  let ?S = "receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S"
-  let ?A = "\<A>@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  let ?S = "receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S"
+  let ?A = "\<A>@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
 
   have \<S>: "\<And>S'. S' \<in> update\<^sub>s\<^sub>t \<S> ?S \<Longrightarrow> S' = S \<or> S' \<in> \<S>" by auto
 
   have 1: "\<forall>S \<in> \<S>. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A>) (dual\<^sub>s\<^sub>t S)" using assms unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by auto
-  moreover have 2: "wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A = wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv t"
+  moreover have 2: "wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A = wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)"
     using wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t_split(2) by (auto simp add: Un_assoc)
   ultimately have 3: "\<forall>S \<in> \<S>. wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t ?A) (dual\<^sub>s\<^sub>t S)" by (metis wf_vars_mono)
 
@@ -2401,7 +2599,8 @@ proof (intro conjI)
 
   have "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t ?S \<inter> bvars\<^sub>s\<^sub>t S' = {}" "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>t S' \<inter> bvars\<^sub>s\<^sub>t ?S = {}"
     using assms unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by metis+
-  hence 5: "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv t" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = bvars\<^sub>e\<^sub>s\<^sub>t \<A>" "\<forall>S' \<in> \<S>. fv t \<inter> bvars\<^sub>s\<^sub>t S' = {}"
+  hence 5: "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = bvars\<^sub>e\<^sub>s\<^sub>t \<A>"
+            "\<forall>S' \<in> \<S>. fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<inter> bvars\<^sub>s\<^sub>t S' = {}"
     using to_st_append by fastforce+
 
   have *: "\<forall>S \<in> \<S>. fv\<^sub>s\<^sub>t S \<inter> bvars\<^sub>e\<^sub>s\<^sub>t ?A = {}"
@@ -2496,7 +2695,7 @@ proof (intro conjI)
   moreover have "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X \<subseteq> fv\<^sub>s\<^sub>t (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t # S)" by auto
   ultimately have 5:
       "\<forall>S' \<in> \<S>. (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X) \<inter> bvars\<^sub>s\<^sub>t S' = {}"
-      "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X)" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = set X \<union> bvars\<^sub>e\<^sub>s\<^sub>t \<A>"
+      "fv\<^sub>e\<^sub>s\<^sub>t ?A = fv\<^sub>e\<^sub>s\<^sub>t \<A> \<union> (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X)" "bvars\<^sub>e\<^sub>s\<^sub>t ?A = set X \<union> bvars\<^sub>e\<^sub>s\<^sub>t \<A>" 
       "\<forall>S \<in> \<S>. fv\<^sub>s\<^sub>t S \<inter> set X = {}"
     using to_st_append
     by (blast, force, force, force)
@@ -2551,23 +2750,23 @@ proof
 qed
 
 private lemma trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_snd:
-  assumes "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>" "\<S>' = update\<^sub>s\<^sub>t \<S> (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S)" "\<A>' = \<A>@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  assumes "send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>" "\<S>' = update\<^sub>s\<^sub>t \<S> (send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S)" "\<A>' = \<A>@[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
   shows "(\<Union>(trms\<^sub>s\<^sub>t ` \<S>)) \<union> (trms\<^sub>e\<^sub>s\<^sub>t \<A>) = (\<Union>(trms\<^sub>s\<^sub>t ` \<S>')) \<union> (trms\<^sub>e\<^sub>s\<^sub>t \<A>')"
 proof -
-  have "(trms\<^sub>e\<^sub>s\<^sub>t \<A>') = (trms\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> {t}" "\<Union>(trms\<^sub>s\<^sub>t ` \<S>') \<union> {t} = \<Union>(trms\<^sub>s\<^sub>t ` \<S>)"
+  have "(trms\<^sub>e\<^sub>s\<^sub>t \<A>') = (trms\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> set ts" "\<Union>(trms\<^sub>s\<^sub>t ` \<S>') \<union> set ts = \<Union>(trms\<^sub>s\<^sub>t ` \<S>)"
     using to_st_append trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq[OF assms(1)] assms(2,3) by auto
   thus ?thesis
-    by (metis (no_types, lifting) Un_insert_left Un_insert_right sup_bot.right_neutral)
+    by (metis (no_types, lifting) Un_commute Un_left_commute)
 qed
 
 private lemma trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_rcv:
-  assumes "receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>" "\<S>' = update\<^sub>s\<^sub>t \<S> (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S)" "\<A>' = \<A>@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  assumes "receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>" "\<S>' = update\<^sub>s\<^sub>t \<S> (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S)" "\<A>' = \<A>@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
   shows "(\<Union>(trms\<^sub>s\<^sub>t ` \<S>)) \<union> (trms\<^sub>e\<^sub>s\<^sub>t \<A>) = (\<Union>(trms\<^sub>s\<^sub>t ` \<S>')) \<union> (trms\<^sub>e\<^sub>s\<^sub>t \<A>')"
 proof -
-  have "(trms\<^sub>e\<^sub>s\<^sub>t \<A>') = (trms\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> {t}" "\<Union>(trms\<^sub>s\<^sub>t ` \<S>') \<union> {t} = \<Union>(trms\<^sub>s\<^sub>t ` \<S>)"
+  have "(trms\<^sub>e\<^sub>s\<^sub>t \<A>') = (trms\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> set ts" "\<Union>(trms\<^sub>s\<^sub>t ` \<S>') \<union> set ts = \<Union>(trms\<^sub>s\<^sub>t ` \<S>)"
     using to_st_append trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq[OF assms(1)] assms(2,3) by auto
   thus ?thesis
-    by (metis (no_types, lifting) Un_insert_left Un_insert_right sup_bot.right_neutral)
+    by (metis (no_types, lifting) Un_commute Un_left_commute)
 qed
 
 private lemma trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_eq:
@@ -2596,11 +2795,11 @@ private lemma ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset:
 proof -
   { fix t assume "t \<in> \<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` (update\<^sub>s\<^sub>t \<S> (x#S)))"
     then obtain S' where S': "S' \<in> update\<^sub>s\<^sub>t \<S> (x#S)" "t \<in> ik\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t S')" by auto
-
+  
     have *: "ik\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t S) \<subseteq> ik\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t (x#S))"
       using ik_append[of "dual\<^sub>s\<^sub>t [x]" "dual\<^sub>s\<^sub>t S"] dual\<^sub>s\<^sub>t_append[of "[x]" S]
       by auto
-
+  
     hence "t \<in> \<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>)"
     proof (cases "S' = S")
       case True thus ?thesis using * assms S' by auto
@@ -2611,7 +2810,7 @@ proof -
   moreover
   { fix t assume "t \<in> \<Union>(assignment_rhs\<^sub>s\<^sub>t ` (update\<^sub>s\<^sub>t \<S> (x#S)))"
     then obtain S' where S': "S' \<in> update\<^sub>s\<^sub>t \<S> (x#S)" "t \<in> assignment_rhs\<^sub>s\<^sub>t S'" by auto
-
+  
     have "assignment_rhs\<^sub>s\<^sub>t S \<subseteq> assignment_rhs\<^sub>s\<^sub>t (x#S)"
       using assignment_rhs_append[of "[x]" S] by simp
     hence "t \<in> \<Union>(assignment_rhs\<^sub>s\<^sub>t ` \<S>)"
@@ -2621,17 +2820,17 @@ proof -
 qed
 
 private lemma ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset_snd:
-  assumes "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
-          "\<S>' = update\<^sub>s\<^sub>t \<S> (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S)"
-          "\<A>' = \<A>@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)]"
+  assumes "send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S \<in> \<S>"
+          "\<S>' = update\<^sub>s\<^sub>t \<S> (send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S)"
+          "\<A>' = \<A>@[Step (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)]"
   shows "(\<Union>(ik\<^sub>s\<^sub>t ` dual\<^sub>s\<^sub>t ` \<S>')) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>') \<subseteq>
          (\<Union>(ik\<^sub>s\<^sub>t ` dual\<^sub>s\<^sub>t ` \<S>)) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>)" (is ?A)
         "(\<Union>(assignment_rhs\<^sub>s\<^sub>t ` \<S>')) \<union> (assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>') \<subseteq>
          (\<Union>(assignment_rhs\<^sub>s\<^sub>t ` \<S>)) \<union> (assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>)" (is ?B)
 proof -
   { fix t' assume t'_in: "t' \<in> (\<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>')) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>')"
-    hence "t' \<in> (\<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>')) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> {t}" using assms ik\<^sub>e\<^sub>s\<^sub>t_append by auto
-    moreover have "t \<in> \<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>)" using assms(1) by force
+    hence "t' \<in> (\<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>')) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>) \<union> set ts" using assms ik\<^sub>e\<^sub>s\<^sub>t_append by auto
+    moreover have "set ts \<subseteq> \<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>)" using assms(1) by force
     ultimately have "t' \<in> (\<Union>(ik\<^sub>s\<^sub>t`dual\<^sub>s\<^sub>t ` \<S>)) \<union> (ik\<^sub>e\<^sub>s\<^sub>t \<A>)"
       using ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset[OF assms(1)] assms(2) by auto
   }
@@ -2701,7 +2900,7 @@ proof -
     when "a = Check"
   proof -
     show ?C using that assms(2,3) by (simp add: assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append)
-    show ?D using assms(1,2,3) ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset(2) by auto
+    show ?D using assms(1,2,3) ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset(2) by auto 
   qed
 
   show ?A using 1 2 by (metis subsetI)
@@ -2815,14 +3014,14 @@ proof (induction rule: rtranclp_induct2)
   proof (induction rule: pts_symbolic_c_induct)
     case Nil thus ?case by auto
   next
-    case (Send t S)
-    hence "wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A>1) (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#(dual\<^sub>s\<^sub>t S))"
+    case (Send ts S)
+    hence "wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A>1) (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#(dual\<^sub>s\<^sub>t S))"
       using *(1) unfolding wf\<^sub>s\<^sub>t\<^sub>s'_def by fastforce
-    hence "fv t \<subseteq> wfrestrictedvars\<^sub>s\<^sub>t (to_st \<A>1) \<union> V"
+    hence "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> wfrestrictedvars\<^sub>s\<^sub>t (to_st \<A>1) \<union> V"
       using wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t_eq_wfrestrictedvars\<^sub>s\<^sub>t by auto
     thus ?case using Send wf_rcv_append''' to_st_append by simp
   next
-    case (Receive t) thus ?case using wf_snd_append to_st_append by simp
+    case (Receive ts) thus ?case using wf_snd_append to_st_append by simp
   next
     case (Equality a t t' S)
     hence "wf\<^sub>s\<^sub>t (wfrestrictedvars\<^sub>e\<^sub>s\<^sub>t \<A>1) (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#(dual\<^sub>s\<^sub>t S))"
@@ -2870,7 +3069,7 @@ proof (induction rule: rtranclp_induct2)
       by (metis UN_E Un_iff)
     have "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>e\<^sub>s\<^sub>t \<A>1)" using trms\<^sub>e\<^sub>s\<^sub>t_ik_assignment_rhsI t by auto
     hence "Fun f T \<in> SMP (trms\<^sub>e\<^sub>s\<^sub>t \<A>1)"
-      by (metis (no_types) SMP.MP SMP.Subterm UN_E t(2))
+      by (metis (no_types) SMP.MP SMP.Subterm UN_E t(2)) 
     hence "{Fun f T} \<subseteq> SMP (trms\<^sub>e\<^sub>s\<^sub>t \<A>1)" using SMP.Subterm[of "Fun f T"] by auto
     moreover have "trms\<^sub>e\<^sub>s\<^sub>t \<A>2 = insert (Fun f T) (trms\<^sub>e\<^sub>s\<^sub>t \<A>1)"
       using Decompose.hyps(3) by auto
@@ -2881,10 +3080,10 @@ proof (induction rule: rtranclp_induct2)
       using Decompose.hyps(2) SMP_union by auto
     moreover have "\<forall>t \<in> trms\<^sub>e\<^sub>s\<^sub>t \<A>1. wf\<^sub>t\<^sub>r\<^sub>m t" "wf\<^sub>t\<^sub>r\<^sub>m (Fun f T)"
       using Decompose.prems wf_trm_subterm t(2) t_wf unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by auto
-    hence "\<forall>t \<in> trms\<^sub>e\<^sub>s\<^sub>t \<A>2. wf\<^sub>t\<^sub>r\<^sub>m t" by (metis * SMP.MP SMP_wf_trm)
+    hence "\<forall>t \<in> trms\<^sub>e\<^sub>s\<^sub>t \<A>2. wf\<^sub>t\<^sub>r\<^sub>m t" by (metis * SMP.MP SMP_wf_trm) 
     hence "\<forall>t \<in> (\<Union>(trms\<^sub>s\<^sub>t ` \<S>2)) \<union> (trms\<^sub>e\<^sub>s\<^sub>t \<A>2). wf\<^sub>t\<^sub>r\<^sub>m t"
       using Decompose.prems Decompose.hyps(2) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by force
-    ultimately show ?thesis using Decompose.prems unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by presburger
+    ultimately show ?thesis using Decompose.prems unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by presburger 
   qed (metis trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_snd, metis trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_rcv,
        metis trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_eq, metis trms\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_eq_ineq)
 qed metis
@@ -2942,7 +3141,7 @@ proof (induction rule: rtranclp_induct2)
     hence 4: "\<forall>S \<in> {to_st \<A>2}. list_all tfr\<^sub>s\<^sub>t\<^sub>p S" using Equality by simp
     have 5: "\<S>2 = insert S (\<S>1 - {\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#S})" "\<forall>S \<in> \<S>1. list_all tfr\<^sub>s\<^sub>t\<^sub>p S"
       using Equality by simp_all
-    have 6: "\<forall>S \<in> \<S>2. list_all tfr\<^sub>s\<^sub>t\<^sub>p S"
+    have 6: "\<forall>S \<in> \<S>2. list_all tfr\<^sub>s\<^sub>t\<^sub>p S" 
     proof
       fix S' assume "S' \<in> \<S>2"
       hence "S' \<in> \<S>1 \<or> S' = S" using 5(1) by auto
@@ -3022,7 +3221,7 @@ proof (induction rule: rtranclp_induct2)
           "\<Union>(assignment_rhs\<^sub>s\<^sub>t ` \<S>1) = \<Union>(assignment_rhs\<^sub>s\<^sub>t ` \<S>2)"
       by force+
     thus ?case using Nil by metis
-  next
+  next 
     case Send show ?case
       using ik\<^sub>s\<^sub>t_update\<^sub>s\<^sub>t_subset_snd[OF Send.hyps]
             Ana_invar_subst_subset[OF Send.prems]
@@ -3061,7 +3260,7 @@ proof (induction rule: rtranclp_induct2)
             \<or> Fun g S \<in> subterms\<^sub>s\<^sub>e\<^sub>t (assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1)"
         using Decompose * Ana_fun_subterm[OF Ana] by auto
       moreover have "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1)"
-        using trms\<^sub>e\<^sub>s\<^sub>t_ik_subtermsI Decompose.hyps(1) by auto
+        using trms\<^sub>e\<^sub>s\<^sub>t_ik_subtermsI Decompose.hyps(1) by auto 
       hence "subterms (Fun f T) \<subseteq> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1)"
         by (metis in_subterms_subset_Union)
       hence "subterms\<^sub>s\<^sub>e\<^sub>t (set M) \<subseteq> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1)"
@@ -3086,16 +3285,16 @@ proof (induction rule: rtranclp_induct2)
   show ?case
   proof (induction rule: pts_symbolic_c_induct)
     case Nil thus ?case by auto
-  next
-    case (Send t S)
-    hence "fv\<^sub>e\<^sub>s\<^sub>t \<A>2 = fv\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> fv t" "bvars\<^sub>e\<^sub>s\<^sub>t \<A>2 = bvars\<^sub>e\<^sub>s\<^sub>t \<A>1"
-          "fv\<^sub>s\<^sub>t (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S) = fv t \<union> fv\<^sub>s\<^sub>t S"
+  next 
+    case (Send ts S)
+    hence "fv\<^sub>e\<^sub>s\<^sub>t \<A>2 = fv\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "bvars\<^sub>e\<^sub>s\<^sub>t \<A>2 = bvars\<^sub>e\<^sub>s\<^sub>t \<A>1"
+          "fv\<^sub>s\<^sub>t (send\<langle>ts\<rangle>\<^sub>s\<^sub>t#S) = fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<union> fv\<^sub>s\<^sub>t S"
       using fv\<^sub>e\<^sub>s\<^sub>t_append bvars\<^sub>e\<^sub>s\<^sub>t_append by simp+
     thus ?case using *(1)[OF Send(1)] Send(4) by auto
   next
-    case (Receive t S)
-    hence "fv\<^sub>e\<^sub>s\<^sub>t \<A>2 = fv\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> fv t" "bvars\<^sub>e\<^sub>s\<^sub>t \<A>2 = bvars\<^sub>e\<^sub>s\<^sub>t \<A>1"
-          "fv\<^sub>s\<^sub>t (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S) = fv t \<union> fv\<^sub>s\<^sub>t S"
+    case (Receive ts S)
+    hence "fv\<^sub>e\<^sub>s\<^sub>t \<A>2 = fv\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "bvars\<^sub>e\<^sub>s\<^sub>t \<A>2 = bvars\<^sub>e\<^sub>s\<^sub>t \<A>1"
+          "fv\<^sub>s\<^sub>t (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#S) = fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<union> fv\<^sub>s\<^sub>t S"
       using fv\<^sub>e\<^sub>s\<^sub>t_append bvars\<^sub>e\<^sub>s\<^sub>t_append by simp+
     thus ?case using *(1)[OF Receive(1)] Receive(4) by auto
   next
@@ -3186,8 +3385,8 @@ next
     moreover have "(\<S>1, \<A>1d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (\<S>2, \<A>1d@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
       using Send.hyps(2) pts_symbolic_c.Send[OF Send.hyps(1), of \<A>1d] by simp
     moreover have "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t (\<A>1d@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])) = \<A>2"
-      using Send.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append)
-    ultimately show ?case using \<A>1d(2) by auto
+      using Send.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append) 
+    ultimately show ?case using \<A>1d(2) by auto      
   next
     case (Equality a t t' S)
     hence "t \<cdot> \<I> = t' \<cdot> \<I>"
@@ -3198,7 +3397,7 @@ next
     moreover have "(\<S>1, \<A>1d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (\<S>2, \<A>1d@[Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)])"
       using Equality.hyps(2) pts_symbolic_c.Equality[OF Equality.hyps(1), of \<A>1d] by simp
     moreover have "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t (\<A>1d@[Step (\<langle>a: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)])) = \<A>2"
-      using Equality.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append)
+      using Equality.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append) 
     ultimately show ?case using \<A>1d(2) by auto
   next
     case (Inequality X F S)
@@ -3210,17 +3409,18 @@ next
     moreover have "(\<S>1, \<A>1d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (\<S>2, \<A>1d@[Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)])"
       using Inequality.hyps(2) pts_symbolic_c.Inequality[OF Inequality.hyps(1), of \<A>1d] by simp
     moreover have "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t (\<A>1d@[Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)])) = \<A>2"
-      using Inequality.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append)
+      using Inequality.hyps(3) decomp_rm\<^sub>e\<^sub>s\<^sub>t_append \<A>1d(1) by (simp add: to_st_append) 
     ultimately show ?case using \<A>1d(2) by auto
   next
-    case (Receive t S)
-    hence "ik\<^sub>s\<^sub>t \<A>1 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
+    case (Receive ts S)
+    hence "\<forall>t \<in> set ts. ik\<^sub>s\<^sub>t \<A>1 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
       using step.prems sem\<^sub>e\<^sub>s\<^sub>t_d_eq_sem_st[of "{}" \<I> "to_est \<A>2"]
-            strand_sem_split(4)[of "{}" \<A>1 "[send\<langle>t\<rangle>\<^sub>s\<^sub>t]" \<I>]
+            strand_sem_split(4)[of "{}" \<A>1 "[send\<langle>ts\<rangle>\<^sub>s\<^sub>t]" \<I>]
             to_st_append to_est_append to_st_to_est_inv
       by auto
     moreover have "ik\<^sub>s\<^sub>t \<A>1 \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> ik\<^sub>e\<^sub>s\<^sub>t \<A>1d \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" using \<A>1d(1) decomp_rm\<^sub>e\<^sub>s\<^sub>t_ik_subset by auto
-    ultimately have *: "ik\<^sub>e\<^sub>s\<^sub>t \<A>1d \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" using ideduct_mono by auto
+    ultimately have *: "\<forall>t \<in> set ts. ik\<^sub>e\<^sub>s\<^sub>t \<A>1d \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>"
+      using ideduct_mono by auto
 
     have "wf\<^sub>s\<^sub>t\<^sub>s' \<S> \<A>\<^sub>d" by (rule wf\<^sub>s\<^sub>t\<^sub>s'_decomp_rm[OF wa assms(4)])
     hence **: "wf\<^sub>e\<^sub>s\<^sub>t {} \<A>1d" by (rule pts_symbolic_c_preserves_wf_is[OF \<A>1d(2) _ assms(5)])
@@ -3234,17 +3434,18 @@ next
       using pts_symbolic_c_preserves_well_analyzed[OF \<A>1d(2) wa] by metis
     ultimately obtain D where D:
         "D \<in> decomps\<^sub>e\<^sub>s\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t \<A>1d) (assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1d) \<I>"
-        "ik\<^sub>e\<^sub>s\<^sub>t (\<A>1d@D) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
-      using decomps\<^sub>e\<^sub>s\<^sub>t_exist_subst[OF * \<A>1d(3) ** assms(8)] unfolding Ana_invar_subst_def by auto
-
+        "\<forall>t \<in> set ts. ik\<^sub>e\<^sub>s\<^sub>t (\<A>1d@D) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
+      using decomps\<^sub>e\<^sub>s\<^sub>t_exist_subst_list[OF * \<A>1d(3) ** assms(8)]
+      unfolding Ana_invar_subst_def by auto
+    
     have "(\<S>, \<A>\<^sub>d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* (\<S>1, \<A>1d@D)" using \<A>1d(2) decomps\<^sub>e\<^sub>s\<^sub>t_pts_symbolic_c[OF D(1), of \<S>1] by auto
-    hence "(\<S>, \<A>\<^sub>d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* (\<S>2, \<A>1d@D@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+    hence "(\<S>, \<A>\<^sub>d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* (\<S>2, \<A>1d@D@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
       using Receive(2) pts_symbolic_c.Receive[OF Receive.hyps(1), of "\<A>1d@D"] by auto
-    moreover have "\<A>2 = to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t (\<A>1d@D@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)]))"
+    moreover have "\<A>2 = to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t (\<A>1d@D@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)]))"
       using Receive.hyps(3) \<A>1d(1) decomps\<^sub>e\<^sub>s\<^sub>t_decomp_rm\<^sub>e\<^sub>s\<^sub>t_empty[OF D(1)]
             decomp_rm\<^sub>e\<^sub>s\<^sub>t_append to_st_append
       by auto
-    moreover have "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> (\<A>1d@D@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
+    moreover have "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> (\<A>1d@D@[Step (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)])"
       using D(2) sem\<^sub>e\<^sub>s\<^sub>t_c.Send[OF sem\<^sub>e\<^sub>s\<^sub>t_c_decomps\<^sub>e\<^sub>s\<^sub>t_append[OF \<A>1d(3) D(1)]] by simp
     ultimately show ?case by auto
   qed
@@ -3267,15 +3468,15 @@ proof -
         by (simp add: decomp_rm\<^sub>e\<^sub>s\<^sub>t_append to_st_append)
     next
       case (Receive t S) thus ?case
-        using pts_symbolic.Receive[OF Receive.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"]
+        using pts_symbolic.Receive[OF Receive.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"] 
         by (simp add: decomp_rm\<^sub>e\<^sub>s\<^sub>t_append to_st_append)
     next
       case (Equality a t t' S) thus ?case
-        using pts_symbolic.Equality[OF Equality.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"]
+        using pts_symbolic.Equality[OF Equality.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"] 
         by (simp add: decomp_rm\<^sub>e\<^sub>s\<^sub>t_append to_st_append)
     next
       case (Inequality t t' S) thus ?case
-        using pts_symbolic.Inequality[OF Inequality.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"]
+        using pts_symbolic.Inequality[OF Inequality.hyps(1), of "to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1)"] 
         by (simp add: decomp_rm\<^sub>e\<^sub>s\<^sub>t_append to_st_append)
     next
       case (Decompose t) thus ?case using decomp_rm\<^sub>e\<^sub>s\<^sub>t_append by simp
@@ -3346,7 +3547,7 @@ proof
         { assume "t \<in> set T" "t \<noteq> t'"
           hence "t \<sqsubset> t'" using Ana_subterm[OF Ana_t'] by blast
           hence ?thesis using SMP.Subterm[OF SMP.MP[OF ****(2)]] by auto
-        }
+        } 
         ultimately show ?thesis using Decomp by auto
       qed auto
     qed
@@ -3437,7 +3638,7 @@ proof -
 
   have "fv\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t \<A>) \<inter> bvars\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t \<A>) = {}" using assms(2) dual\<^sub>s\<^sub>t_fv dual\<^sub>s\<^sub>t_bvars by metis+
   hence 1: "wf\<^sub>s\<^sub>t\<^sub>s {dual\<^sub>s\<^sub>t \<A>}" using assms(1,2) dual\<^sub>s\<^sub>t_self_inverse[of \<A>] unfolding wf\<^sub>s\<^sub>t\<^sub>s_def by auto
-
+  
   have "\<Union>(trms\<^sub>s\<^sub>t ` {\<A>}) = trms\<^sub>s\<^sub>t \<A>" "\<Union>(trms\<^sub>s\<^sub>t ` {dual\<^sub>s\<^sub>t \<A>}) = trms\<^sub>s\<^sub>t (dual\<^sub>s\<^sub>t \<A>)" by auto
   hence "tfr\<^sub>s\<^sub>e\<^sub>t (\<Union>(trms\<^sub>s\<^sub>t ` {\<A>}))" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>(trms\<^sub>s\<^sub>t ` {\<A>}))"
         "(\<Union>(trms\<^sub>s\<^sub>t ` {\<A>})) = \<Union>(trms\<^sub>s\<^sub>t ` {dual\<^sub>s\<^sub>t \<A>})"

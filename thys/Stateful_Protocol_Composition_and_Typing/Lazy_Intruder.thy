@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Lazy_Intruder.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>The Lazy Intruder\<close>
@@ -58,23 +25,130 @@ where
 | "A \<leadsto>\<^sup>* B \<equiv> (A,B) \<in> LI_rel\<^sup>*"
 
 | Compose: "\<lbrakk>simple S; length T = arity f; public f\<rbrakk>
-            \<Longrightarrow> (S@Send (Fun f T)#S',\<theta>) \<leadsto> (S@(map Send T)@S',\<theta>)"
+            \<Longrightarrow> (S@Send [Fun f T]#S',\<theta>) \<leadsto> (S@(map Send1 T)@S',\<theta>)"
 | Unify: "\<lbrakk>simple S; Fun f T' \<in> ik\<^sub>s\<^sub>t S; Some \<delta> = mgu (Fun f T) (Fun f T')\<rbrakk>
-          \<Longrightarrow> (S@Send (Fun f T)#S',\<theta>) \<leadsto> ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>)"
+          \<Longrightarrow> (S@Send [Fun f T]#S',\<theta>) \<leadsto> ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>)"
 | Equality: "\<lbrakk>simple S; Some \<delta> = mgu t t'\<rbrakk>
           \<Longrightarrow> (S@Equality _ t t'#S',\<theta>) \<leadsto> ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>)"
 
 
+text \<open>A "pre-processing step" to be applied before constraint reduction. It transforms constraints
+such that exactly one message is transmitted in each message transmission step. It is sound and
+complete and preserves the various well-formedness properties required by the lazy intruder.\<close>
+fun LI_preproc where
+  "LI_preproc [] = []"
+| "LI_preproc (Send ts#S) = map Send1 ts@LI_preproc S"
+| "LI_preproc (Receive ts#S) = map Receive1 ts@LI_preproc S"
+| "LI_preproc (x#S) = x#LI_preproc S"
+
+definition LI_preproc_prop where
+  "LI_preproc_prop S \<equiv> \<forall>ts. Send ts \<in> set S \<or> Receive ts \<in> set S \<longrightarrow> (\<exists>t. ts = [t])" 
+
+
+subsection \<open>Lemmata: Preprocessing \<close>
+lemma LI_preproc_preproc_prop:
+  "LI_preproc_prop (LI_preproc S)"
+by (induct S rule: LI_preproc.induct) (auto simp add: LI_preproc_prop_def)
+
+lemma LI_preproc_sem_eq:
+  "\<lbrakk>M; S\<rbrakk>\<^sub>c \<I> \<longleftrightarrow> \<lbrakk>M; LI_preproc S\<rbrakk>\<^sub>c \<I>" (is "?A \<longleftrightarrow> ?B")
+proof
+  show "?A \<Longrightarrow> ?B"
+  proof (induction S rule: strand_sem_induct)
+    case (ConsSnd M ts S)
+    hence "\<lbrakk>M; LI_preproc S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>M; map Send1 ts\<rbrakk>\<^sub>c \<I>" using strand_sem_Send_map(5) by auto
+    moreover have "ik\<^sub>s\<^sub>t (map Send1 ts) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = {}" unfolding ik\<^sub>s\<^sub>t_is_rcv_set by fastforce
+    ultimately show ?case using strand_sem_append(1) by simp
+  next
+    case (ConsRcv M ts S)
+    hence "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; LI_preproc S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>M; map Receive1 ts\<rbrakk>\<^sub>c \<I>"
+      using strand_sem_Receive_map(3) by auto
+    moreover have "ik\<^sub>s\<^sub>t (map Receive1 ts) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" unfolding ik\<^sub>s\<^sub>t_is_rcv_set by force
+    ultimately show ?case using strand_sem_append(1) by (simp add: Un_commute)
+  qed simp_all
+
+  show "?B \<Longrightarrow> ?A"
+  proof (induction S arbitrary: M rule: LI_preproc.induct)
+    case (2 ts S)
+    have "ik\<^sub>s\<^sub>t (map Send1 ts) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = {}" unfolding ik\<^sub>s\<^sub>t_is_rcv_set by fastforce
+    hence "\<lbrakk>M; S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>M; map Send1 ts\<rbrakk>\<^sub>c \<I>" using 2 strand_sem_append(1) by auto
+    thus ?case using strand_sem_Send_map(5) by simp
+  next
+    case (3 ts S)
+    have "ik\<^sub>s\<^sub>t (map Receive1 ts) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" unfolding ik\<^sub>s\<^sub>t_is_rcv_set by force
+    hence "\<lbrakk>M \<union> (set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>); S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>M; map Receive1 ts\<rbrakk>\<^sub>c \<I>"
+      using 3 strand_sem_append(1) by auto
+    thus ?case using strand_sem_Receive_map(3) by (simp add: Un_commute)
+  qed simp_all
+qed
+
+lemma LI_preproc_sem_eq':
+  "(\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<rangle>) \<longleftrightarrow> (\<I> \<Turnstile>\<^sub>c \<langle>LI_preproc S, \<theta>\<rangle>)"
+using LI_preproc_sem_eq unfolding constr_sem_c_def by simp
+
+lemma LI_preproc_vars_eq:
+  "fv\<^sub>s\<^sub>t (LI_preproc S) = fv\<^sub>s\<^sub>t S"
+  "bvars\<^sub>s\<^sub>t (LI_preproc S) = bvars\<^sub>s\<^sub>t S"
+  "vars\<^sub>s\<^sub>t (LI_preproc S) = vars\<^sub>s\<^sub>t S"
+by (induct S rule: LI_preproc.induct) auto
+
+lemma LI_preproc_trms_eq:
+  "trms\<^sub>s\<^sub>t (LI_preproc S) = trms\<^sub>s\<^sub>t S"
+by (induct S rule: LI_preproc.induct) auto
+
+lemma LI_preproc_wf\<^sub>s\<^sub>t:
+  assumes "wf\<^sub>s\<^sub>t X S"
+  shows "wf\<^sub>s\<^sub>t X (LI_preproc S)"
+  using assms
+proof (induction S arbitrary: X rule: wf\<^sub>s\<^sub>t_induct)
+  case (ConsRcv X ts S)
+  hence "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> X" "wf\<^sub>s\<^sub>t X (LI_preproc S)" by auto
+  thus ?case using wf_Receive1_prefix by simp
+next
+  case (ConsSnd X ts S)
+  hence "wf\<^sub>s\<^sub>t (X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)) (LI_preproc S)" by simp
+  thus ?case using wf_Send1_prefix by simp
+qed simp_all
+
+lemma LI_preproc_preserves_wellformedness:
+  assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S \<theta>"
+  shows "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r (LI_preproc S) \<theta>"
+using assms LI_preproc_vars_eq[of S] LI_preproc_wf\<^sub>s\<^sub>t[of "{}" S] unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def by argo
+
+lemma LI_preproc_prop_SendE:
+  assumes "LI_preproc_prop S"
+    and "Send ts \<in> set S"
+  shows "(\<exists>x. ts = [Var x]) \<or> (\<exists>f T. ts = [Fun f T])"
+proof -
+  obtain t where "ts = [t]" using assms unfolding LI_preproc_prop_def by auto
+  thus ?thesis by (cases t) auto
+qed
+
+lemma LI_preproc_prop_split:
+  "LI_preproc_prop (S@S') \<longleftrightarrow> LI_preproc_prop S \<and> LI_preproc_prop S'" (is "?A \<longleftrightarrow> ?B")
+proof
+  show "?A \<Longrightarrow> ?B"
+  proof (induction S)
+    case (Cons x S) thus ?case unfolding LI_preproc_prop_def by (cases x) auto
+  qed (simp add: LI_preproc_prop_def)
+
+  show "?B \<Longrightarrow> ?A"
+  proof (induction S)
+    case (Cons x S) thus ?case unfolding LI_preproc_prop_def by (cases x) auto
+  qed (simp add: LI_preproc_prop_def)
+qed
+
 subsection \<open>Lemma: The Lazy Intruder is Well-founded\<close>
 context
 begin
-private lemma LI_compose_measure_lt: "((S@(map Send T)@S',\<theta>\<^sub>1), (S@Send (Fun f T)#S',\<theta>\<^sub>2)) \<in> measure\<^sub>s\<^sub>t"
-using strand_fv_card_map_fun_eq[of S f T S'] strand_size_map_fun_lt(2)[of T f]
+private lemma LI_compose_measure_lt:
+  "((S@(map Send1 T)@S',\<theta>\<^sub>1), (S@Send [Fun f T]#S',\<theta>\<^sub>2)) \<in> measure\<^sub>s\<^sub>t"
+using strand_fv_card_map_fun_eq[of S f T S'] strand_size_map_fun_lt[of T f]
 by (simp add: measure\<^sub>s\<^sub>t_def size\<^sub>s\<^sub>t_def)
 
 private lemma LI_unify_measure_lt:
   assumes "Some \<delta> = mgu (Fun f T) t" "fv t \<subseteq> fv\<^sub>s\<^sub>t S"
-  shows "(((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta>\<^sub>1), (S@Send (Fun f T)#S',\<theta>\<^sub>2)) \<in> measure\<^sub>s\<^sub>t"
+  shows "(((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta>\<^sub>1), (S@Send [Fun f T]#S',\<theta>\<^sub>2)) \<in> measure\<^sub>s\<^sub>t"
 proof (cases "\<delta> = Var")
   assume "\<delta> = Var"
   hence "(S@S') \<cdot>\<^sub>s\<^sub>t \<delta> = S@S'" by blast
@@ -85,23 +159,23 @@ next
   assume "\<delta> \<noteq> Var"
   then obtain v where "v \<in> fv (Fun f T) \<union> fv t" "subst_elim \<delta> v"
     using mgu_eliminates[OF assms(1)[symmetric]] by metis
-  hence v_in: "v \<in> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  hence v_in: "v \<in> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using assms(2) by (auto simp add: measure\<^sub>s\<^sub>t_def size\<^sub>s\<^sub>t_def)
   
   have "range_vars \<delta> \<subseteq> fv (Fun f T) \<union> fv\<^sub>s\<^sub>t S"
     using assms(2) mgu_vars_bounded[OF assms(1)[symmetric]] by auto
-  hence img_bound: "range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" by auto
+  hence img_bound: "range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" by auto
 
-  have finite_fv: "finite (fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S'))" by auto
+  have finite_fv: "finite (fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S'))" by auto
 
-  have "v \<notin> fv\<^sub>s\<^sub>t ((S@Send (Fun f T)#S') \<cdot>\<^sub>s\<^sub>t \<delta>)"
+  have "v \<notin> fv\<^sub>s\<^sub>t ((S@Send [Fun f T]#S') \<cdot>\<^sub>s\<^sub>t \<delta>)"
     using strand_fv_subst_subset_if_subst_elim[OF \<open>subst_elim \<delta> v\<close>] v_in by metis
   hence v_not_in: "v \<notin> fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>)" by auto
   
-  have "fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  have "fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using strand_subst_fv_bounded_if_img_bounded[OF img_bound] by simp
-  hence "fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subset> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" using v_in v_not_in by blast
-  hence "card (fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>)) < card (fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S'))"
+  hence "fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>) \<subset> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" using v_in v_not_in by blast
+  hence "card (fv\<^sub>s\<^sub>t ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>)) < card (fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S'))"
     using psubset_card_mono[OF finite_fv] by simp
   thus ?thesis by (auto simp add: measure\<^sub>s\<^sub>t_def size\<^sub>s\<^sub>t_def)
 qed
@@ -174,14 +248,14 @@ qed
 
 private lemma LI_unify_finite:
   assumes "finite M"
-  shows "finite {((S@Send (Fun f T)#S',\<theta>), ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>)) | \<delta> T'. 
+  shows "finite {((S@Send [Fun f T]#S',\<theta>), ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>)) | \<delta> T'. 
                    simple S \<and> Fun f T' \<in> M \<and> Some \<delta> = mgu (Fun f T) (Fun f T')}"
 using assms
 proof (induction M rule: finite_induct)
   case (insert m M) thus ?case
   proof (cases m)
     case (Fun g U)
-    let ?a = "\<lambda>\<delta>. ((S@Send (Fun f T)#S',\<theta>), ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>))"
+    let ?a = "\<lambda>\<delta>. ((S@Send [Fun f T]#S',\<theta>), ((S@S') \<cdot>\<^sub>s\<^sub>t \<delta>,\<theta> \<circ>\<^sub>s \<delta>))"
     let ?A = "\<lambda>B. {?a \<delta> | \<delta> T'. simple S \<and> Fun f T' \<in> B \<and> Some \<delta> = mgu (Fun f T) (Fun f T')}"
 
     have "?A (insert m M) = (?A M) \<union> (?A {m})" by auto
@@ -246,14 +320,14 @@ proof (induction rule: LI_rel.induct)
 next
   case (Unify S f U \<delta> T S' \<theta>)
   hence "fv (Fun f U) \<subseteq> fv\<^sub>s\<^sub>t S" using fv_subset_if_in_strand_ik' by blast
-  hence *: "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  hence *: "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using mgu_vars_bounded[OF Unify.hyps(3)[symmetric]]
     unfolding range_vars_alt_def by (fastforce simp del: subst_range.simps)
 
-  have "fv\<^sub>s\<^sub>t (S@S') \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" "vars\<^sub>s\<^sub>t (S@S') \<subseteq> vars\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  have "fv\<^sub>s\<^sub>t (S@S') \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" "vars\<^sub>s\<^sub>t (S@S') \<subseteq> vars\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     by auto
-  hence **: "fv\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
-            "vars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> vars\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  hence **: "fv\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
+            "vars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) \<subseteq> vars\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using subst_sends_strand_fv_to_img[of "S@S'" \<delta>]
           strand_subst_vars_union_bound[of "S@S'" \<delta>] *
     by blast+
@@ -261,7 +335,7 @@ next
   have "wf\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" by (fact mgu_gives_wellformed_subst[OF Unify.hyps(3)[symmetric]])
   
   { case 1
-    have "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+    have "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
       using bvars_subst_ident[of "S@S'" \<delta>] by auto
     thus ?case using 1 ** by blast
   }
@@ -272,13 +346,13 @@ next
   }
   { case 3
     hence "subst_domain \<theta> \<inter> vars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = {}" using ** by blast
-    moreover have "v \<in> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" when "v \<in> subst_domain \<delta>" for v
+    moreover have "v \<in> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" when "v \<in> subst_domain \<delta>" for v
       using * that by blast
     hence "subst_domain \<delta> \<inter> fv\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = {}"
       using mgu_eliminates_dom[OF Unify.hyps(3)[symmetric],
-                THEN strand_fv_subst_subset_if_subst_elim, of _ "S@Send (Fun f T)#S'"]
+                THEN strand_fv_subst_subset_if_subst_elim, of _ "S@Send [Fun f T]#S'"]
       unfolding subst_elim_def by auto
-    moreover have "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+    moreover have "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
       using bvars_subst_ident[of "S@S'" \<delta>] by auto
     hence "subst_domain \<delta> \<inter> bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = {}" using 3(1) * by blast
     ultimately show ?case
@@ -286,7 +360,7 @@ next
       by blast
   }
   { case 4
-    have ***: "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+    have ***: "bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = bvars\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
       using bvars_subst_ident[of "S@S'" \<delta>] by auto
     hence "range_vars \<delta> \<inter> bvars\<^sub>s\<^sub>t (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>) = {}" using 4(1) * by blast
     thus ?case using subst_img_comp_subset[of \<theta> \<delta>] 4(4) *** by blast
@@ -362,11 +436,13 @@ proof -
     when "(S\<^sub>i, \<theta>\<^sub>i) \<leadsto> (S\<^sub>j, \<theta>\<^sub>j)" "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>i \<theta>\<^sub>i" for S\<^sub>i \<theta>\<^sub>i S\<^sub>j \<theta>\<^sub>j
     using that
   proof (induction rule: LI_rel.induct)
+    case (Compose S T f S' \<theta>) thus ?case by (metis wf_send_compose wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
+  next
     case (Unify S f U \<delta> T S' \<theta>)
-    have "fv (Fun f T) \<union> fv (Fun f U) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" using Unify.hyps(2) by force
-    hence "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+    have "fv (Fun f T) \<union> fv (Fun f U) \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" using Unify.hyps(2) by force
+    hence "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
       using mgu_vars_bounded[OF Unify.hyps(3)[symmetric]] by (metis subset_trans)
-    hence "(subst_domain \<delta> \<union> range_vars \<delta>) \<inter> bvars\<^sub>s\<^sub>t (S@Send (Fun f T)#S') = {}"
+    hence "(subst_domain \<delta> \<union> range_vars \<delta>) \<inter> bvars\<^sub>s\<^sub>t (S@Send [Fun f T]#S') = {}"
       using Unify.prems unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def by blast
     thus ?case
       using wf_unify[OF _ Unify.hyps(2) MGU_is_Unifier[OF mgu_gives_MGU], of "{}",
@@ -382,7 +458,7 @@ proof -
     thus ?case
       using wf_equality[OF _ Equality.hyps(2)[symmetric], of "{}" S a S'] Equality.prems(1)
       by (auto simp add: wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
-  qed (metis wf_send_compose wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
+  qed
 
   show ?thesis using assms
   proof (induction rule: rtrancl_induct2)
@@ -405,7 +481,7 @@ proof -
         and *: "t \<in> set S \<Longrightarrow> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t\<^sub>p t)" "t \<in> set S' \<Longrightarrow> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t\<^sub>p t)" for t
         by auto
       hence "wf\<^sub>t\<^sub>r\<^sub>m t" when "t \<in> set T" for t using that unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
-      hence "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t\<^sub>p t)" when "t \<in> set (map Send T)" for t
+      hence "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t\<^sub>p t)" when "t \<in> set (map Send1 T)" for t
         using that unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
       thus ?case using * by force
     next
@@ -458,6 +534,32 @@ proof -
   }
   with assms show ?thesis by (induction rule: rtrancl_induct2) metis+
 qed
+
+lemma LI_preproc_prop_subst:
+  "LI_preproc_prop S \<longleftrightarrow> LI_preproc_prop (S \<cdot>\<^sub>s\<^sub>t \<delta>)"
+proof (induction S)
+  case (Cons x S) thus ?case unfolding LI_preproc_prop_def by (cases x) auto
+qed (simp add: LI_preproc_prop_def)
+
+lemma LI_preserves_LI_preproc_prop:
+  assumes "(S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2)" "LI_preproc_prop S\<^sub>1"
+  shows "LI_preproc_prop S\<^sub>2"
+using assms
+proof (induction rule: rtrancl_induct2)
+  case (step S\<^sub>i \<theta>\<^sub>i S\<^sub>j \<theta>\<^sub>j)
+  hence "LI_preproc_prop S\<^sub>i" by metis
+  with step.hyps(2) show ?case 
+  proof (induction rule: LI_rel.induct)
+    case (Unify S f T' \<delta> T S' \<theta>) thus ?case
+      using LI_preproc_prop_subst LI_preproc_prop_split
+      by (metis append.left_neutral append_Cons)
+  next
+    case (Equality S \<delta> t t' uu S' \<theta>) thus ?case
+      using LI_preproc_prop_subst LI_preproc_prop_split
+      by (metis append.left_neutral append_Cons)
+  qed (auto simp add: LI_preproc_prop_def)
+qed simp
+
 end
 
 subsection \<open>Theorem: Soundness of the Lazy Intruder\<close>
@@ -469,14 +571,16 @@ private lemma LI_soundness_single:
 using assms(2,1,3)
 proof (induction rule: LI_rel.induct)
   case (Compose S T f S' \<theta>)
-  hence *: "\<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; map Send T\<rbrakk>\<^sub>c \<I>" "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>"
-    unfolding constr_sem_c_def by force+
+  have "ik\<^sub>s\<^sub>t (map Send1 T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta> = {}" by fastforce
+  hence *: "\<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; map Send1 T\<rbrakk>\<^sub>c \<I>" "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>"
+    using Compose unfolding constr_sem_c_def
+    by (force, force, fastforce)
 
   have "ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c Fun f T \<cdot> \<I>"
     using *(2) Compose.hyps(2) ComposeC[OF _ Compose.hyps(3), of "map (\<lambda>x. x \<cdot> \<I>) T"]
     unfolding subst_compose_def by force
-  thus "\<I> \<Turnstile>\<^sub>c \<langle>S@Send (Fun f T)#S',\<theta>\<rangle>"
-    using *(1,3) \<open>\<I> \<Turnstile>\<^sub>c \<langle>S@map Send T@S',\<theta>\<rangle>\<close>
+  thus "\<I> \<Turnstile>\<^sub>c \<langle>S@Send [Fun f T]#S',\<theta>\<rangle>"
+    using *(1,3) \<open>\<I> \<Turnstile>\<^sub>c \<langle>S@map Send1 T@S',\<theta>\<rangle>\<close>
     by (auto simp add: constr_sem_c_def)
 next
   case (Unify S f U \<delta> T S' \<theta>)
@@ -488,7 +592,7 @@ next
     using Unify.prems(1) trm_subst_ident[of "Fun f U" \<theta>]
           fv_subset_if_in_strand_ik[of "Fun f U" S] Unify.hyps(2)
           fv_snd_rcv_strand_subset(2)[of S]
-          strand_vars_split(1)[of S "Send (Fun f T)#S'"]
+          strand_vars_split(1)[of S "Send [Fun f T]#S'"]
     unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def apply blast
     using Unify.prems(1) trm_subst_ident[of "Fun f T" \<theta>]
     unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def by fastforce
@@ -501,12 +605,12 @@ next
   hence \<theta>\<delta>_support: "\<theta> supports \<I>" "\<delta> supports \<I>"
     by (simp_all add: subst_support_comp_split[OF \<open>(\<theta> \<circ>\<^sub>s \<delta>) supports \<I>\<close>])
 
-  have "fv (Fun f T) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')" "fv (Fun f U) \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  have "fv (Fun f T) \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')" "fv (Fun f U) \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using Unify.hyps(2) by force+
-  hence \<delta>_vars_bound: "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send (Fun f T)#S')"
+  hence \<delta>_vars_bound: "subst_domain \<delta> \<union> range_vars \<delta> \<subseteq> fv\<^sub>s\<^sub>t (S@Send [Fun f T]#S')"
     using mgu_vars_bounded[OF Unify.hyps(3)[symmetric]] by blast
 
-  have "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send (Fun f T)]\<rbrakk>\<^sub>c \<I>"
+  have "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send [Fun f T]]\<rbrakk>\<^sub>c \<I>"
   proof -
     from Unify.hyps(2) have "Fun f U \<cdot> \<I> \<in> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" by blast
     hence "Fun f U \<cdot> \<I> \<in> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" by blast
@@ -546,8 +650,8 @@ next
     thus "\<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>" "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>" by auto
   qed
   
-  show "\<I> \<Turnstile>\<^sub>c \<langle>S@Send (Fun f T)#S',\<theta>\<rangle>"
-    using \<theta>\<delta>_support(1) \<open>\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send (Fun f T)]\<rbrakk>\<^sub>c \<I>\<close> \<open>\<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>\<close> \<open>\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>\<close>
+  show "\<I> \<Turnstile>\<^sub>c \<langle>S@Send [Fun f T]#S',\<theta>\<rangle>"
+    using \<theta>\<delta>_support(1) \<open>\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send [Fun f T]]\<rbrakk>\<^sub>c \<I>\<close> \<open>\<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>\<close> \<open>\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>\<close>
     by (auto simp add: constr_sem_c_def)
 next
   case (Equality S \<delta> t t' a S' \<theta>)
@@ -622,23 +726,23 @@ next
 qed
 
 theorem LI_soundness:
-  assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1" "(S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2)" "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>"
+  assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1" "(LI_preproc S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2)" "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>"
   shows "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>"
 using assms(2,1,3)
 proof (induction S\<^sub>2 \<theta>\<^sub>2 rule: rtrancl_induct2)
   case (step S\<^sub>i \<theta>\<^sub>i S\<^sub>j \<theta>\<^sub>j) thus ?case
-    using LI_preserves_wellformedness[OF \<open>(S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>i, \<theta>\<^sub>i)\<close> \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>]
+    using LI_preproc_preserves_wellformedness[OF \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>]
+          LI_preserves_wellformedness[OF \<open>(LI_preproc S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>i, \<theta>\<^sub>i)\<close>]
           LI_soundness_single[OF _ \<open>(S\<^sub>i, \<theta>\<^sub>i) \<leadsto> (S\<^sub>j, \<theta>\<^sub>j)\<close> \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>j, \<theta>\<^sub>j\<rangle>\<close>]
-          step.IH[OF \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>]
     by metis
-qed metis
+qed (metis LI_preproc_sem_eq')
 end
 
 subsection \<open>Theorem: Completeness of the Lazy Intruder\<close>
 context
 begin
 private lemma LI_completeness_single:
-  assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1" "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>" "\<not>simple S\<^sub>1"
+  assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1" "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>" "\<not>simple S\<^sub>1" "LI_preproc_prop S\<^sub>1"
   shows "\<exists>S\<^sub>2 \<theta>\<^sub>2. (S\<^sub>1,\<theta>\<^sub>1) \<leadsto> (S\<^sub>2,\<theta>\<^sub>2) \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>)"
 using not_simple_elim[OF \<open>\<not>simple S\<^sub>1\<close>]
 proof -
@@ -680,23 +784,29 @@ proof -
   } moreover {
     \<comment> \<open>In this case \<open>S\<^sub>1\<close> isn't simple because it contains a deduction constraint for a composed
         term, so we must look at how this composed term is derived under the interpretation \<open>\<I>\<close>\<close>
-    assume "\<exists>S' S'' f T. S\<^sub>1 = S'@Send (Fun f T)#S'' \<and> simple S'"
-    with assms obtain S f T S' where S\<^sub>1: "S\<^sub>1 = S@Send (Fun f T)#S'" "simple S" by moura
+    assume "\<exists>S' S'' ts. S\<^sub>1 = S'@Send ts#S'' \<and> (\<nexists>x. ts = [Var x]) \<and> simple S'"
+    hence "\<exists>S' S'' f T. S\<^sub>1 = S'@Send [Fun f T]#S'' \<and> simple S'"
+      using LI_preproc_prop_SendE[OF \<open>LI_preproc_prop S\<^sub>1\<close>]
+      by fastforce
+    with assms obtain S f T S' where S\<^sub>1: "S\<^sub>1 = S@Send [Fun f T]#S'" "simple S" by moura
     hence "wf\<^sub>s\<^sub>t {} S" "\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<^sub>1\<rangle>" "\<theta>\<^sub>1 supports \<I>"
       using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>
       by (auto simp add: constr_sem_c_def wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
   
     \<comment> \<open>Lemma for a common subcase\<close>
-    have fun_sat: "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send T)@S', \<theta>\<^sub>1\<rangle>" when T: "\<And>t. t \<in> set T \<Longrightarrow> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
+    have fun_sat: "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send1 T)@S', \<theta>\<^sub>1\<rangle>"
+      when T: "\<And>t. t \<in> set T \<Longrightarrow> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
     proof -
-      have "\<And>t. t \<in> set T \<Longrightarrow> \<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send t]\<rbrakk>\<^sub>c \<I>" using T by simp
-      hence "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; map Send T\<rbrakk>\<^sub>c \<I>" using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> strand_sem_Send_map by metis
-      moreover have "\<lbrakk>ik\<^sub>s\<^sub>t (S@(map Send T)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>"
-        using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> S\<^sub>1
-        by (auto simp add: constr_sem_c_def)
+      have "\<And>t. t \<in> set T \<Longrightarrow> \<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; [Send1 t]\<rbrakk>\<^sub>c \<I>" using T by simp
+      hence "\<lbrakk>ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; map Send1 T\<rbrakk>\<^sub>c \<I>"
+        using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> strand_sem_Send_map by blast 
+      moreover have "ik\<^sub>s\<^sub>t (S@[Send1 (Fun f T)]) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = ik\<^sub>s\<^sub>t (S@(map Send1 T)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" by auto
+      hence "\<lbrakk>ik\<^sub>s\<^sub>t (S@(map Send1 T)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; S'\<rbrakk>\<^sub>c \<I>"
+        using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> unfolding S\<^sub>1(1) constr_sem_c_def by force
       ultimately show ?thesis
-        using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<^sub>1\<rangle>\<close> \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close>
-        by (force simp add: constr_sem_c_def)
+        using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<^sub>1\<rangle>\<close> strand_sem_append(1)[of "{}" S \<I> "map Send1 T"]
+              strand_sem_append(1)[of "{}" "S@map Send1 T" \<I> S']
+        unfolding constr_sem_c_def by simp
     qed
   
     from S\<^sub>1 \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> have "ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c Fun f T \<cdot> \<I>" by (auto simp add: constr_sem_c_def)
@@ -725,11 +835,11 @@ proof -
         hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>t S. Fun f T \<cdot> \<I> = \<I> v"
           using vars_subset_if_in_strand_ik2[of _ S] by fastforce
         then obtain v S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f
-          where S: "S = S\<^sub>p\<^sub>r\<^sub>e@Send (Var v)#S\<^sub>s\<^sub>u\<^sub>f" "Fun f T \<cdot> \<I> = \<I> v"
+          where S: "S = S\<^sub>p\<^sub>r\<^sub>e@Send [Var v]#S\<^sub>s\<^sub>u\<^sub>f" "Fun f T \<cdot> \<I> = \<I> v"
                    "\<not>(\<exists>w \<in> wfrestrictedvars\<^sub>s\<^sub>t S\<^sub>p\<^sub>r\<^sub>e. Fun f T \<cdot> \<I> = \<I> w)"
           using \<open>wf\<^sub>s\<^sub>t {} S\<close> wf_simple_strand_first_Send_var_split[OF _ \<open>simple S\<close>, of "Fun f T" \<I>]
           by auto
-        hence "\<forall>w. Var w \<in> ik\<^sub>s\<^sub>t S\<^sub>p\<^sub>r\<^sub>e \<longrightarrow> \<I> v \<noteq> Var w \<cdot> \<I>" by auto
+        hence "\<forall>w. Var w \<in> ik\<^sub>s\<^sub>t S\<^sub>p\<^sub>r\<^sub>e \<longrightarrow> \<I> v \<noteq> Var w \<cdot> \<I>" by force
         moreover have "\<forall>T'. Fun f T' \<in> ik\<^sub>s\<^sub>t S\<^sub>p\<^sub>r\<^sub>e \<longrightarrow> Fun f T \<cdot> \<I> \<noteq> Fun f T' \<cdot> \<I>"
           using \<open>\<forall>T'. Fun f T' \<in> ik\<^sub>s\<^sub>t S \<longrightarrow> Fun f T \<cdot> \<I> \<noteq> Fun f T' \<cdot> \<I>\<close> S(1)
           by (meson contra_subsetD ik_append_subset(1))
@@ -747,8 +857,8 @@ proof -
           by auto
         hence *: "\<And>t. t \<in> set T \<Longrightarrow> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>"
           using S(1) by (auto intro: ideduct_synth_mono)
-        hence "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send T)@S', \<theta>\<^sub>1\<rangle>" by (metis fun_sat)
-        moreover have "(S@Send (Fun f T)#S', \<theta>\<^sub>1) \<leadsto> (S@map Send T@S', \<theta>\<^sub>1)"
+        hence "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send1 T)@S', \<theta>\<^sub>1\<rangle>" by (metis fun_sat)
+        moreover have "(S@Send [Fun f T]#S', \<theta>\<^sub>1) \<leadsto> (S@map Send1 T@S', \<theta>\<^sub>1)"
           by (metis LI_rel.Compose[OF \<open>simple S\<close> \<open>length T = arity f\<close> \<open>public f\<close>])
         ultimately show ?thesis using S\<^sub>1 by auto
       next
@@ -785,7 +895,7 @@ proof -
             by (metis (no_types) subst_compose_assoc)
           thus "\<lbrakk>{}; S@S' \<cdot>\<^sub>s\<^sub>t \<delta>\<rbrakk>\<^sub>c \<I>" using S\<^sub>1(1) by force
         qed
-        moreover have "(S@Send (Fun f T)#S', \<theta>\<^sub>1) \<leadsto> (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>, \<theta>\<^sub>1 \<circ>\<^sub>s \<delta>)"
+        moreover have "(S@Send [Fun f T]#S', \<theta>\<^sub>1) \<leadsto> (S@S' \<cdot>\<^sub>s\<^sub>t \<delta>, \<theta>\<^sub>1 \<circ>\<^sub>s \<delta>)"
           using LI_rel.Unify[OF \<open>simple S\<close> t(1) \<delta>(1)] S\<^sub>1 by metis
         ultimately show ?thesis
           using S\<^sub>1(1) \<open>(\<theta>\<^sub>1 \<circ>\<^sub>s \<delta>) supports \<I>\<close>
@@ -798,8 +908,8 @@ proof -
       hence "f = g" "length T = arity f" "public f"
         and "\<And>x. x \<in> set T \<Longrightarrow> ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c x \<cdot> \<I>"
         by auto
-      hence "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send T)@S', \<theta>\<^sub>1\<rangle>" using fun_sat by metis
-      moreover have "(S\<^sub>1, \<theta>\<^sub>1) \<leadsto> (S@(map Send T)@S', \<theta>\<^sub>1)"
+      hence "\<I> \<Turnstile>\<^sub>c \<langle>S@(map Send1 T)@S', \<theta>\<^sub>1\<rangle>" using fun_sat by metis
+      moreover have "(S\<^sub>1, \<theta>\<^sub>1) \<leadsto> (S@(map Send1 T)@S', \<theta>\<^sub>1)"
         using S\<^sub>1 LI_rel.Compose[OF \<open>simple S\<close> \<open>length T = arity f\<close> \<open>public f\<close>]
         by metis
       ultimately show ?thesis by metis
@@ -811,22 +921,24 @@ qed
 
 theorem LI_completeness:
   assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1" "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>"
-  shows "\<exists>S\<^sub>2 \<theta>\<^sub>2. (S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>)"
-proof (cases "simple S\<^sub>1")
+  shows "\<exists>S\<^sub>2 \<theta>\<^sub>2. (LI_preproc S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>)"
+proof (cases "simple (LI_preproc S\<^sub>1)")
   case False
   let ?Stuck = "\<lambda>S\<^sub>2 \<theta>\<^sub>2. \<not>(\<exists>S\<^sub>3 \<theta>\<^sub>3. (S\<^sub>2,\<theta>\<^sub>2) \<leadsto> (S\<^sub>3,\<theta>\<^sub>3) \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>3, \<theta>\<^sub>3\<rangle>))"
   let ?Sats = "{((S,\<theta>),(S',\<theta>')). (S,\<theta>) \<leadsto> (S',\<theta>') \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<rangle>) \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S', \<theta>'\<rangle>)}"
 
   have simple_if_stuck:
-      "\<And>S\<^sub>2 \<theta>\<^sub>2. \<lbrakk>(S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>+ (S\<^sub>2,\<theta>\<^sub>2); \<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>; ?Stuck S\<^sub>2 \<theta>\<^sub>2\<rbrakk> \<Longrightarrow> simple S\<^sub>2"
-    using LI_completeness_single
-          LI_preserves_wellformedness
-          \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>
+      "\<And>S\<^sub>2 \<theta>\<^sub>2. \<lbrakk>(LI_preproc S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>+ (S\<^sub>2,\<theta>\<^sub>2); \<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>; ?Stuck S\<^sub>2 \<theta>\<^sub>2\<rbrakk> \<Longrightarrow> simple S\<^sub>2"
+    using LI_preproc_preserves_wellformedness[OF \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>]
+          LI_preserves_LI_preproc_prop[OF _ LI_preproc_preproc_prop]
+          LI_completeness_single[OF LI_preserves_wellformedness]
           trancl_into_rtrancl
     by metis
 
-  have base: "\<exists>b. ((S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats"
-    using LI_completeness_single[OF assms False] assms(2)
+  have base: "\<exists>b. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats"
+    using LI_preproc_preserves_wellformedness[OF \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>]
+          LI_completeness_single[OF _ _ False LI_preproc_preproc_prop]
+          LI_preproc_sem_eq' \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close>
     by auto
 
   have *: "\<And>S \<theta> S' \<theta>'. ((S,\<theta>),(S',\<theta>')) \<in> ?Sats\<^sup>+ \<Longrightarrow> (S,\<theta>) \<leadsto>\<^sup>+ (S',\<theta>') \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S', \<theta>'\<rangle>)"
@@ -837,25 +949,25 @@ proof (cases "simple S\<^sub>1")
       by (induct rule: trancl_induct2) auto
   qed
 
-  have "\<exists>S\<^sub>2 \<theta>\<^sub>2. ((S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<and> ?Stuck S\<^sub>2 \<theta>\<^sub>2"
+  have "\<exists>S\<^sub>2 \<theta>\<^sub>2. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<and> ?Stuck S\<^sub>2 \<theta>\<^sub>2"
   proof (rule ccontr)
-    assume "\<not>(\<exists>S\<^sub>2 \<theta>\<^sub>2. ((S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<and> ?Stuck S\<^sub>2 \<theta>\<^sub>2)"
-    hence sat_not_stuck: "\<And>S\<^sub>2 \<theta>\<^sub>2. ((S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<Longrightarrow> \<not>?Stuck S\<^sub>2 \<theta>\<^sub>2" by blast
+    assume "\<not>(\<exists>S\<^sub>2 \<theta>\<^sub>2. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<and> ?Stuck S\<^sub>2 \<theta>\<^sub>2)"
+    hence sat_not_stuck: "\<And>S\<^sub>2 \<theta>\<^sub>2. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S\<^sub>2,\<theta>\<^sub>2)) \<in> ?Sats\<^sup>+ \<Longrightarrow> \<not>?Stuck S\<^sub>2 \<theta>\<^sub>2" by blast
 
-    have "\<forall>S \<theta>. ((S\<^sub>1,\<theta>\<^sub>1),(S,\<theta>)) \<in> ?Sats\<^sup>+ \<longrightarrow> (\<exists>b. ((S,\<theta>),b) \<in> ?Sats)"
+    have "\<forall>S \<theta>. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S,\<theta>)) \<in> ?Sats\<^sup>+ \<longrightarrow> (\<exists>b. ((S,\<theta>),b) \<in> ?Sats)"
     proof (intro allI impI)
-      fix S \<theta> assume a: "((S\<^sub>1,\<theta>\<^sub>1),(S,\<theta>)) \<in> ?Sats\<^sup>+"
-      have "\<And>b. ((S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats\<^sup>+ \<Longrightarrow> \<exists>c. b \<leadsto> c \<and> ((S\<^sub>1,\<theta>\<^sub>1),c) \<in> ?Sats\<^sup>+"
+      fix S \<theta> assume a: "((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S,\<theta>)) \<in> ?Sats\<^sup>+"
+      have "\<And>b. ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats\<^sup>+ \<Longrightarrow> \<exists>c. b \<leadsto> c \<and> ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),c) \<in> ?Sats\<^sup>+"
       proof -
-        fix b assume in_sat: "((S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats\<^sup>+"
+        fix b assume in_sat: "((LI_preproc S\<^sub>1,\<theta>\<^sub>1),b) \<in> ?Sats\<^sup>+"
         hence "\<exists>c. (b,c) \<in> ?Sats" using * sat_not_stuck by (cases b) blast
-        thus "\<exists>c. b \<leadsto> c \<and> ((S\<^sub>1,\<theta>\<^sub>1),c) \<in> ?Sats\<^sup>+"
+        thus "\<exists>c. b \<leadsto> c \<and> ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),c) \<in> ?Sats\<^sup>+"
           using trancl_into_trancl[OF in_sat] by blast
       qed
-      hence "\<exists>S' \<theta>'. (S,\<theta>) \<leadsto> (S',\<theta>') \<and> ((S\<^sub>1,\<theta>\<^sub>1),(S',\<theta>')) \<in> ?Sats\<^sup>+" using a by auto
-      then obtain S' \<theta>' where S'\<theta>': "(S,\<theta>) \<leadsto> (S',\<theta>')" "((S\<^sub>1,\<theta>\<^sub>1),(S',\<theta>')) \<in> ?Sats\<^sup>+" by auto
+      hence "\<exists>S' \<theta>'. (S,\<theta>) \<leadsto> (S',\<theta>') \<and> ((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S',\<theta>')) \<in> ?Sats\<^sup>+" using a by auto
+      then obtain S' \<theta>' where S'\<theta>': "(S,\<theta>) \<leadsto> (S',\<theta>')" "((LI_preproc S\<^sub>1,\<theta>\<^sub>1),(S',\<theta>')) \<in> ?Sats\<^sup>+" by auto
       hence "\<I> \<Turnstile>\<^sub>c \<langle>S', \<theta>'\<rangle>" using * by blast
-      moreover have "(S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>+ (S,\<theta>)" using a trancl_mono by blast
+      moreover have "(LI_preproc S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>+ (S,\<theta>)" using a trancl_mono by blast
       ultimately have "((S,\<theta>),(S',\<theta>')) \<in> ?Sats" using S'\<theta>'(1) * a by blast
       thus "\<exists>b. ((S,\<theta>),b) \<in> ?Sats" using S'\<theta>'(2) by blast 
     qed
@@ -866,17 +978,17 @@ proof (cases "simple S\<^sub>1")
       using LI_no_infinite_chain infinite_chain_mono by blast
     ultimately show False by auto
   qed
-  hence "\<exists>S\<^sub>2 \<theta>\<^sub>2. (S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>+ (S\<^sub>2, \<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>)"
+  hence "\<exists>S\<^sub>2 \<theta>\<^sub>2. (LI_preproc S\<^sub>1, \<theta>\<^sub>1) \<leadsto>\<^sup>+ (S\<^sub>2, \<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>)"
     using simple_if_stuck * by blast
   thus ?thesis by (meson trancl_into_rtrancl)
-qed (blast intro: \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close>)
+qed (use LI_preproc_sem_eq' \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> in blast) 
 end
 
 
 subsection \<open>Corollary: Soundness and Completeness as a Single Theorem\<close>
 corollary LI_soundness_and_completeness:
   assumes "wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1"
-  shows "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle> \<longleftrightarrow> (\<exists>S\<^sub>2 \<theta>\<^sub>2. (S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>))"
+  shows "\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle> \<longleftrightarrow> (\<exists>S\<^sub>2 \<theta>\<^sub>2. (LI_preproc S\<^sub>1,\<theta>\<^sub>1) \<leadsto>\<^sup>* (S\<^sub>2,\<theta>\<^sub>2) \<and> simple S\<^sub>2 \<and> (\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>2, \<theta>\<^sub>2\<rangle>))"
 by (metis LI_soundness[OF assms] LI_completeness[OF assms])
 
 end

@@ -1,45 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Keyserver_Composition.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, University of Exeter
     Author:     Anders Schlichtkrull, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section\<open>The Composition of the Two Keyserver Protocols\<close>
@@ -47,12 +11,12 @@ theory Keyserver_Composition
   imports "../PSPSP"
 begin
 
-declare [[code_timing]]
+declare [[pspsp_timing]]
 
 trac\<open>
 Protocol: kscomp
 
-Types:
+Enumerations:
 honest = {a,b,c}
 dishonest = {i}
 agent = honest ++ dishonest
@@ -72,21 +36,25 @@ scrypt(X,Y) ? X -> Y
 pair(X,Y) -> X,Y
 update(X,Y,Z) -> X,Y,Z
 
-Transactions:
+
 ### The signature-based keyserver protocol
-p1_outOfBand(A:honest)
+Transactions of p1:
+intruderGen()
+  new PK
+* send PK, inv(PK).
+
+outOfBand(A:honest)
   new PK
   insert PK ring(A)
 * insert PK valid(A)
-  send PK.
+* send PK.
 
-p1_oufOfBandD(A:dishonest)
+oufOfBandD(A:dishonest)
   new PK
 * insert PK valid(A)
-  send PK
-  send inv(PK).
+* send PK, inv(PK).
 
-p1_updateKey(A:honest,PK:value)
+updateKey(A:honest,PK:value)
   PK in ring(A)
   new NPK
   delete PK ring(A)
@@ -94,7 +62,7 @@ p1_updateKey(A:honest,PK:value)
   insert NPK ring(A)
   send sign(inv(PK),pair(A,NPK)).
 
-p1_updateKeyServer(A:agent,PK:value,NPK:value)
+updateKeyServer(A:agent,PK:value,NPK:value)
   receive sign(inv(PK),pair(A,NPK))
 * PK in valid(A)
 * NPK notin valid(_)
@@ -102,23 +70,29 @@ p1_updateKeyServer(A:agent,PK:value,NPK:value)
 * delete PK valid(A)
   insert PK revoked(A)
 * insert NPK valid(A)
-  send inv(PK).
+* send inv(PK).
 
-p1_authAttack(A:honest,PK:value)
+authAttack(A:honest,PK:value)
   receive inv(PK)
 * PK in valid(A)
   attack.
 
+
 ### The password-based keyserver protocol
-p2_passwordGenD(A:dishonest)
+Transactions of p2:
+intruderGen'()
+  new PK
+* send PK, inv(PK).
+
+passwordGenD(A:dishonest)
   send pw(A).
 
-p2_pubkeysGen()
+pubkeysGen()
   new PK
   insert PK pubkeys
-  send PK.
+* send PK.
 
-p2_updateKeyPw(A:honest,PK:value)
+updateKeyPw(A:honest,PK:value)
   PK in pubkeys
   new NPK
 # NOTE: The ring' sets are not used elsewhere, but we have to avoid that the fresh keys generated
@@ -128,140 +102,52 @@ p2_updateKeyPw(A:honest,PK:value)
 #       because the term implication graphs of the two protocols then become 'linked' through the
 #       empty abstraction)
   insert NPK ring'(A)
-  send NPK
+* send NPK
   send crypt(PK,update(A,NPK,pw(A))).
 
-#Transactions of p2:
-p2_updateKeyServerPw(A:agent,PK:value,NPK:value)
-receive crypt(PK,update(A,NPK,pw(A)))
+updateKeyServerPw(A:agent,PK:value,NPK:value)
+  receive crypt(PK,update(A,NPK,pw(A)))
   PK in pubkeys
   NPK notin pubkeys
   NPK notin seen(_)
 * insert NPK valid(A)
   insert NPK seen(A).
 
-p2_authAttack2(A:honest,PK:value)
+authAttack2(A:honest,PK:value)
   receive inv(PK)
 * PK in valid(A)
   attack.
-\<close> \<open>
-sign(inv(val(deleted(A))),pair(A,val(ring(A)))) where A:honest
-sign(inv(val(deleted(A),valid(B))),pair(A,val(ring(A)))) where A:honest B:dishonest
-sign(inv(val(deleted(A),seen(B),valid(B))),pair(A,val(ring(A)))) where A:honest B:dishonest
-sign(inv(val(deleted(A),valid(A))),pair(A,val(ring(A)))) where A:honest B:dishonest
-sign(inv(val(deleted(A),seen(B),valid(B),valid(A))),pair(A,val(ring(A)))) where A:honest B:dishonest
-pair(A,val(ring(A))) where A:honest
-inv(val(deleted(A),revoked(A))) where A:honest
-inv(val(valid(A))) where A:dishonest
-inv(val(revoked(A))) where A:dishonest
-inv(val(revoked(A),seen(A))) where A:dishonest
-inv(val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-inv(val(revoked(A),deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-occurs(val(ring(A))) where A:honest
-occurs(val(valid(A))) where A:dishonest
-occurs(val(ring'(A))) where A:honest
-occurs(val(pubkeys))
-occurs(val(valid(A),ring(A))) where A:honest
-pw(A) where A:dishonest
-crypt(val(pubkeys),update(A,val(ring'(A)),pw(A))) where A:honest
-val(ring(A)) where A:honest
-val(valid(A)) where A:dishonest
-val(ring'(A)) where A:honest
-val(pubkeys)
-val(valid(A),ring(A)) where A:honest
-
-timplies(val(pubkeys),val(valid(A),pubkeys)) where A:dishonest
-
-timplies(val(ring'(A)),val(ring'(A),valid(B))) where A:honest B:dishonest
-timplies(val(ring'(A)),val(ring'(A),valid(A),seen(A))) where A:honest
-timplies(val(ring'(A)),val(ring'(A),valid(A),seen(A),valid(B))) where A:honest B:dishonest
-timplies(val(ring'(A)),val(seen(B),valid(B),ring'(A))) where A:honest B:dishonest
-
-timplies(val(ring'(A),valid(B)),val(ring'(A),valid(A),seen(A),valid(B))) where A:honest B:dishonest
-timplies(val(ring'(A),valid(B)),val(seen(B),valid(B),ring'(A))) where A:honest B:dishonest
-
-timplies(val(ring(A)),val(ring(A),valid(A))) where A:honest
-timplies(val(ring(A)),val(ring(A),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(deleted(A))) where A:honest
-timplies(val(ring(A)),val(revoked(A),deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(revoked(A),deleted(A),seen(B),revoked(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(ring(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(valid(A),deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A)),val(valid(A),ring(A),seen(B),valid(B))) where A:honest B:dishonest
-
-timplies(val(ring(A),valid(A)),val(deleted(A),valid(A))) where A:honest
-timplies(val(ring(A),valid(B)),val(deleted(A),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A),valid(A)),val(deleted(A),revoked(A))) where A:honest
-
-timplies(val(deleted(A)),val(deleted(A),valid(A))) where A:honest
-timplies(val(deleted(A)),val(deleted(A),valid(B))) where A:honest B:dishonest
-timplies(val(deleted(A)),val(revoked(A),seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(deleted(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(deleted(A)),val(seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(deleted(A)),val(seen(B),valid(B),valid(A),deleted(A))) where A:honest B:dishonest
-
-timplies(val(revoked(A)),val(seen(A),revoked(A))) where A:dishonest
-timplies(val(revoked(A)),val(seen(A),revoked(A),valid(A))) where A:dishonest
-
-timplies(val(revoked(A),deleted(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(revoked(A),deleted(A)),val(seen(B),valid(B),revoked(A),deleted(A))) where A:honest B:dishonest
-
-timplies(val(seen(B),valid(B),deleted(A),valid(A)),val(revoked(A),seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(seen(B),valid(B),deleted(A),valid(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(seen(B),valid(B),revoked(A),deleted(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(seen(A),valid(A)),val(revoked(A),seen(A))) where A:dishonest
-timplies(val(seen(A),valid(A),revoked(A)),val(seen(A),revoked(A))) where A:dishonest
-timplies(val(seen(B),valid(B),ring(A)),val(deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(seen(B),valid(B),valid(A),ring(A)),val(deleted(A),seen(B),valid(B),valid(A))) where A:honest B:dishonest
-timplies(val(seen(B),valid(B),valid(A),ring(A)),val(revoked(A),seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(seen(B),valid(B),valid(A),ring(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-
-timplies(val(valid(A)),val(revoked(A))) where A:dishonest
-
-timplies(val(valid(A),deleted(A)),val(deleted(A),revoked(A))) where A:honest
-timplies(val(valid(A),deleted(A)),val(revoked(A),seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(valid(A),deleted(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(valid(A),deleted(A)),val(seen(B),valid(B),valid(A),deleted(A))) where A:honest B:dishonest
-
-timplies(val(ring(A),valid(A)),val(deleted(A),seen(B),valid(B),valid(A))) where A:honest B:dishonest
-timplies(val(ring(A),valid(A)),val(revoked(B),seen(B),revoked(A),deleted(A))) where A:honest B:dishonest
-timplies(val(ring(A),valid(A)),val(seen(B),valid(B),valid(A),ring(A))) where A:honest B:dishonest
-timplies(val(valid(B),deleted(A)),val(seen(B),valid(B),deleted(A))) where A:honest B:dishonest
-timplies(val(ring(A),valid(B)),val(deleted(A),seen(B),valid(B))) where A:honest B:dishonest
-timplies(val(ring(A),valid(B)),val(seen(B),valid(B),ring(A))) where A:honest B:dishonest
-
-timplies(val(valid(A)),val(seen(A),valid(A))) where A:dishonest
 \<close>
 
 subsection \<open>Proof: The composition of the two keyserver protocols is secure\<close>
 protocol_model_setup spm: kscomp
-setup_protocol_checks spm kscomp_protocol
+setup_protocol_checks spm kscomp_protocol kscomp_protocol_p1 kscomp_protocol_p2
+compute_fixpoint kscomp_protocol kscomp_fixpoint
 manual_protocol_security_proof ssp: kscomp
+  for kscomp_protocol kscomp_fixpoint
   apply check_protocol_intro
-  subgoal by code_simp
+  subgoal by (timeit code_simp)
   subgoal
     apply coverage_check_intro
-    subgoal by code_simp
-    subgoal by code_simp
-    subgoal by eval
-    subgoal by eval
-    subgoal by eval
-    subgoal by code_simp
-    subgoal by code_simp
-    subgoal by eval
-    subgoal by eval
-    subgoal by eval
+    subgoal by (timeit code_simp)
+    subgoal by (timeit code_simp)
+    subgoal by (timeit code_simp)
+    subgoal by (timeit normalization)
+    subgoal by (timeit eval)
+    subgoal by (timeit eval)
+    subgoal by (timeit code_simp)
+    subgoal by (timeit code_simp)
+    subgoal by (timeit code_simp)
+    subgoal by (timeit normalization)
+    subgoal by (timeit eval)
+    subgoal by (timeit eval)
     done
-  subgoal by eval
-  subgoal by eval
+  subgoal by (timeit eval)
+  subgoal by (timeit eval)
   subgoal
     apply (unfold spm.wellformed_fixpoint_def Let_def case_prod_unfold; intro conjI)
-    subgoal by code_simp
-    subgoal by code_simp
-    subgoal by eval
-    subgoal by code_simp
-    subgoal by code_simp
+    subgoal by (timeit code_simp)
+    subgoal by (timeit eval)
     done
   done
 
