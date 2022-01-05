@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Hyperdual Numbers and Forward Differentiation}
+\author{Filip Smola, Jacques Fleuriot}
+\maketitle
+
+\begin{abstract}
+  Hyperdual numbers are ones with a real component and a number of infinitesimal components, usually written as $a_0 + a_1 \cdot \epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
+  They have been proposed by Fike and Alonso~\cite{fike_alonso-2011} in an approach to automatic differentiation.
+
+  In this entry we formalise hyperdual numbers and their application to forward differentiation.
+  We show them to be an instance of multiple algebraic structures and then, along with facts about twice-differentiability, we define what we call the hyperdual extensions of functions on real-normed fields.
+  This extension formally represents the proposed way that the first and second derivatives of a function can be automatically calculated.
+  We demonstrate it on the standard logistic function $f(x) = \frac{1}{1 + e^{-x}}$ and also reproduce the example analytic function $f(x) = \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike and Alonso.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
