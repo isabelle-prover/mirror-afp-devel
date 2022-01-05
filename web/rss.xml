@@ -31,6 +31,31 @@ two mistakes in the original proof were discovered. These mistakes
 are corrected in this formalization.</description>
     </item>
     <item>
+       <title>Hyperdual Numbers and Forward Differentiation</title>
+              <link>https://www.isa-afp.org/entries/Hyperdual.html</link>
+       <guid>https://www.isa-afp.org/entries/Hyperdual.html</guid>
+       <dc:creator> Filip Smola, Jacques Fleuriot       </dc:creator>
+       <pubDate>31 Dec 2021 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Hyperdual numbers are ones with a real component and a number
+of infinitesimal components, usually written as $a_0 + a_1 \cdot
+\epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
+They have been proposed by &lt;a
+href=&#34;https://doi.org/10.2514/6.2011-886&#34;&gt;Fike and
+Alonso&lt;/a&gt; in an approach to automatic
+differentiation.&lt;/p&gt; &lt;p&gt;In this entry we formalise
+hyperdual numbers and their application to forward differentiation. We
+show them to be an instance of multiple algebraic structures and then,
+along with facts about twice-differentiability, we define what we call
+the hyperdual extensions of functions on real-normed fields. This
+extension formally represents the proposed way that the first and
+second derivatives of a function can be automatically calculated. We
+demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
+e^{-x}}$ and also reproduce the example analytic function $f(x) =
+\frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
+and Alonso.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Gale-Shapley Algorithm</title>
               <link>https://www.isa-afp.org/entries/Gale_Shapley.html</link>
        <guid>https://www.isa-afp.org/entries/Gale_Shapley.html</guid>
@@ -588,20 +613,6 @@ Kreisel. Thus, in the context of this work, each of the aforementioned
 mathematical structures is represented as a term of the type
 &lt;i&gt;V&lt;/i&gt; embedded into a stage of the von Neumann
 hierarchy.</description>
-    </item>
-    <item>
-       <title>Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories</title>
-              <link>https://www.isa-afp.org/entries/CZH_Elementary_Categories.html</link>
-       <guid>https://www.isa-afp.org/entries/CZH_Elementary_Categories.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This article provides a formalization of the foundations of the theory
-of 1-categories in the object logic ZFC in HOL of the formal proof
-assistant Isabelle. The article builds upon the foundations that were
-established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
-I: Foundations: Design Patterns, Set Theory, Digraphs,
-Semicategories&lt;/i&gt;.</description>
     </item>
   </channel>
 </rss>

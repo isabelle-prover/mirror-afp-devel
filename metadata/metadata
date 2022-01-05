@@ -11637,3 +11637,28 @@ abstract =
   two mistakes in the original proof were discovered. These mistakes
   are corrected in this formalization.
 
+[Hyperdual]
+title = Hyperdual Numbers and Forward Differentiation
+author = Filip Smola <>, Jacques Fleuriot <https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html>
+topic = Mathematics/Algebra, Mathematics/Analysis
+date = 2021-12-31
+notify = f.smola@sms.ed.ac.uk, Jacques.Fleuriot@ed.ac.uk
+abstract = 
+  <p>Hyperdual numbers are ones with a real component and a number
+  of infinitesimal components, usually written as $a_0 + a_1 \cdot
+  \epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
+  They have been proposed by <a
+  href="https://doi.org/10.2514/6.2011-886">Fike and
+  Alonso</a> in an approach to automatic
+  differentiation.</p> <p>In this entry we formalise
+  hyperdual numbers and their application to forward differentiation. We
+  show them to be an instance of multiple algebraic structures and then,
+  along with facts about twice-differentiability, we define what we call
+  the hyperdual extensions of functions on real-normed fields. This
+  extension formally represents the proposed way that the first and
+  second derivatives of a function can be automatically calculated. We
+  demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
+  e^{-x}}$ and also reproduce the example analytic function $f(x) =
+  \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
+  and Alonso.</p>
+
