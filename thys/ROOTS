@@ -93,6 +93,8 @@ Clean
 ClockSynchInst
 Closest_Pair_Points
 CoCon
+CoSMeDis
+CoSMed
 CofGroups
 Coinductive
 Coinductive_Languages
@@ -123,8 +125,6 @@ CoreC++
 Core_DOM
 Core_SC_DOM
 Correctness_Algebras
-CoSMed
-CoSMeDis
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
@@ -217,8 +217,8 @@ Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
 GPU_Kernel_PL
 Gabow_SCC
-Gale_Shapley
 GaleStewart_Games
+Gale_Shapley
 Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
@@ -591,8 +591,8 @@ SuperCalc
 Surprise_Paradox
 Symmetric_Polynomials
 Syntax_Independent_Logic
-Szpilrajn
 Szemeredi_Regularity
+Szpilrajn
 TESL_Language
 TLA
 Tail_Recursive_Functions
@@ -637,8 +637,8 @@ VolpanoSmith
 WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
-Weighted_Path_Order
 Weight_Balanced_Trees
+Weighted_Path_Order
 Well_Quasi_Orders
 Winding_Number_Eval
 Word_Lib
