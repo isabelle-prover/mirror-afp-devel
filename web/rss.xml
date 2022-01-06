@@ -17,9 +17,9 @@
        <dc:creator> Lukas Koller       </dc:creator>
        <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
        <description>
-This is a formalization of the article &#34;Knight&#39;s Tour Revisited&#34; by
+This is a formalization of the article &lt;i&gt;Knight&#39;s Tour Revisited&lt;/i&gt; by
 Cull and De Curtins where they prove the existence of a Knight&#39;s
-path for arbitrary &lt;i&gt;n &amp;times; m&lt;/i&gt;-boards with &lt;i&gt;min(n,m) &amp;le;
+path for arbitrary &lt;i&gt;n &amp;times; m&lt;/i&gt;-boards with &lt;i&gt;min(n,m) &amp;ge;
 5&lt;/i&gt;. If &lt;i&gt;n &amp;middot; m&lt;/i&gt; is even, then there exists a Knight&#39;s
 circuit.  A Knight&#39;s Path is a sequence of moves of a Knight on a
 chessboard s.t. the Knight visits every square of a chessboard
