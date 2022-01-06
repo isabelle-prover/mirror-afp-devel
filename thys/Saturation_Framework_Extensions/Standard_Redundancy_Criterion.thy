@@ -186,13 +186,7 @@ lemma wlog_non_Red_F:
     dd0_lt: "\<forall>D' \<in> DD0. D' \<prec> D"
   shows "\<exists>DD \<subseteq> N - Red_F N. finite DD \<and> DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> DD. D' \<prec> D)"
 proof -
-  obtain DD1 where
-    "finite DD1" and
-    "DD1 \<subseteq> N" and
-    "DD1 \<union> CC \<Turnstile> {E}" and
-    "\<forall>D' \<in> DD1. D' \<prec> D"
-    using dd0_fin dd0_sub dd0_ent dd0_lt by blast
-  then obtain DD2 :: "'f multiset" where
+  obtain DD2 :: "'f multiset" where
     "set_mset DD2 \<subseteq> N \<and> set_mset DD2 \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD2. D' \<prec> D)"
     using assms by (metis finite_set_mset_mset_set)
   hence dd2: "DD2 \<in> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD. D' \<prec> D)}"
@@ -208,12 +202,12 @@ proof -
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"
   proof clarify
-    fix Da
+    fix Da :: 'f
     assume
       da_in_dd: "Da \<in># DD" and
       da_rf: "Da \<in> Red_F N"
 
-    obtain DDa0 where
+    obtain DDa0 :: "'f set" where
       "DDa0 \<subseteq> N"
       "finite DDa0"
       "DDa0 \<Turnstile> {Da}"
