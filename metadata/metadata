@@ -11624,9 +11624,9 @@ topic = Mathematics/Graph theory
 date = 2022-01-04
 notify = lukas.koller@tum.de
 abstract =
-  This is a formalization of the article "Knight's Tour Revisited" by
+  This is a formalization of the article <i>Knight's Tour Revisited</i> by
   Cull and De Curtins where they prove the existence of a Knight's
-  path for arbitrary <i>n &times; m</i>-boards with <i>min(n,m) &le;
+  path for arbitrary <i>n &times; m</i>-boards with <i>min(n,m) &ge;
   5</i>. If <i>n &middot; m</i> is even, then there exists a Knight's
   circuit.  A Knight's Path is a sequence of moves of a Knight on a
   chessboard s.t. the Knight visits every square of a chessboard
