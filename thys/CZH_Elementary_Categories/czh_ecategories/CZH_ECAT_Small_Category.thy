@@ -149,7 +149,8 @@ proof-
     tiny_cat_Cod_in_Vset
     tiny_cat_Comp_in_Vset
     tiny_cat_CId_in_Vset
-  show ?thesis by (subst cat_def) (cs_concl cs_intro: cat_cs_intros V_cs_intros)
+  show ?thesis 
+    by (subst cat_def) (cs_concl cs_shallow cs_intro: cat_cs_intros V_cs_intros)
 qed
 
 lemma tiny_category[simp]: "small {\<CC>. tiny_category \<alpha> \<CC>}"

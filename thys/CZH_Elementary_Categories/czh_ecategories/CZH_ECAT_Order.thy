@@ -119,7 +119,8 @@ lemma (in cat_preorder) is_le_refl:
   assumes "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "a \<le>\<^sub>O\<^bsub>\<CC>\<^esub> a"
 proof(intro is_leI)
-  from assms have "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> Hom \<CC> a a" by (cs_concl cs_intro: cat_cs_intros)
+  from assms have "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> Hom \<CC> a a" 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   then show "Hom \<CC> a a \<noteq> 0" by force
 qed
 
@@ -134,7 +135,7 @@ proof(intro is_leI)
   from assms obtain f where f: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" by auto
   from assms obtain g where g: "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c" by auto
   from f g have "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^bsub>\<CC>\<^esub> c"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   then show "Hom \<CC> a c \<noteq> 0" by force
 qed
 
@@ -241,7 +242,7 @@ proof(intro is_ft_functorI')
     fix g f assume "g : a \<mapsto>\<^bsub>\<AA>\<^esub> b" "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"  
     then show "g = f" by (auto simp: HomDom.cat_peo_is_thin_category)
   qed simp
-qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 
 lemmas (in is_preorder_functor) is_preorder_functor_is_ft_functor = 
@@ -265,7 +266,7 @@ proof-
   then have "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     by (simp add: cf_ArrMap_is_arr)
   then show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<le>\<^sub>O\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
-    by (cs_concl cs_intro: cat_order_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_order_cs_intros)
 qed
 
 

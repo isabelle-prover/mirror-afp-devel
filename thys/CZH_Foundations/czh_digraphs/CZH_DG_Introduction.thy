@@ -202,6 +202,7 @@ lemmas [V_cs_simps] =
   vpair_app
   vsv.vlrestriction_app
   vsv_vcomp_at
+  vid_on_atI
 
 lemmas (in vsv) [V_cs_intros] = vsv_vimageI2'
 

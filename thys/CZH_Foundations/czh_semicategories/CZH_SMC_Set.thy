@@ -238,7 +238,7 @@ proof(rule semicategoryI, unfold smc_dg_smc_Set)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_cs_simps smc_Set_cs_simps 
             cs_intro: smc_Set_cs_intros
         )
@@ -255,7 +255,7 @@ proof(rule semicategoryI, unfold smc_dg_smc_Set)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_cs_simps smc_Set_cs_simps 
             cs_intro: smc_Set_cs_intros
         )      
@@ -286,13 +286,17 @@ proof-
       if "g : b \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> c" and "f : a \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> b" for g b c f a
     proof-
       from that have "g : b \<mapsto>\<^bsub>dg_Set \<alpha>\<^esub> c" and "f : a \<mapsto>\<^bsub>dg_Set \<alpha>\<^esub> b" 
-        by (cs_concl cs_simp: smc_dg_smc_Set[symmetric] cs_intro: slicing_intros)+
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: smc_dg_smc_Set[symmetric] cs_intro: slicing_intros
+          )+
       then have "g : b \<mapsto>\<^bsub>dg_Par \<alpha>\<^esub> c" and "f : a \<mapsto>\<^bsub>dg_Par \<alpha>\<^esub> b" 
-        by (cs_concl cs_intro: dg_sub_fw_cs_intros)+
+        by (cs_concl cs_shallow cs_intro: dg_sub_fw_cs_intros)+
       then have "g : b \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> c" and "f : a \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> b" 
         unfolding smc_dg_smc_Par[symmetric] slicing_simps by simp_all
       from that this show "g \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> f = g \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> f"
-        by (cs_concl cs_simp: smc_Set_cs_simps smc_Par_cs_simps)
+        by (cs_concl cs_shallow cs_simp: smc_Set_cs_simps smc_Par_cs_simps)
     qed
   qed (auto simp: smc_cs_intros)
 qed
@@ -318,9 +322,9 @@ proof(rule is_monic_arrI)
     by (intro smc_Par_is_monic_arrI) 
       (auto simp: v11_axioms dest: subsmc_is_arrD)
   moreover from S subsemicategory_axioms have "S : A' \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> A" 
-    by (cs_concl cs_intro: smc_sub_fw_cs_intros)
+    by (cs_concl cs_shallow cs_intro: smc_sub_fw_cs_intros)
   moreover from R subsemicategory_axioms have "R : A' \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> A" 
-    by (cs_concl cs_intro: smc_sub_fw_cs_intros)
+    by (cs_concl cs_shallow cs_intro: smc_sub_fw_cs_intros)
   moreover from T S R TS_TR subsemicategory_axioms have 
     "T \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> S = T \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> R" 
     by (auto simp: smc_sub_bw_cs_simps)
@@ -471,9 +475,9 @@ proof-
       "g : B \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> a"
       "f \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T = g \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T" 
     from prems(1) subsemicategory_axioms have "f : B \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> a" 
-      by (cs_concl cs_intro: smc_sub_fw_cs_intros)
+      by (cs_concl cs_shallow cs_intro: smc_sub_fw_cs_intros)
     moreover from prems(2) subsemicategory_axioms have "g : B \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> a" 
-      by (cs_concl cs_intro: smc_sub_fw_cs_intros)
+      by (cs_concl cs_shallow cs_intro: smc_sub_fw_cs_intros)
     moreover from prems T subsemicategory_axioms have 
       "f \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> T = g \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> T"
       by (auto simp: smc_sub_bw_cs_simps)

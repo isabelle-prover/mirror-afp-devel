@@ -3,7 +3,7 @@
 section\<open>\<open>IHOL_CS\<close>\<close>
 theory IHOL_CS
   imports "CS_Tools/CS_Tools"
-  keywords "cs_full" "cs_ist_simple" "cs_simp" "cs_intro"  
+  keywords "cs_shallow" "cs_full" "cs_ist_simple" "cs_simp" "cs_intro"  
 begin
 
 ML_file "CS_TimeIt.ML"

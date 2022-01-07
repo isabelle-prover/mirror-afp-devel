@@ -194,7 +194,7 @@ proof(rule semicategoryI, unfold smc_dg_smc_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_cs_simps smc_Rel_cs_simps cs_intro: smc_Rel_cs_intros
         )
   qed
@@ -209,7 +209,7 @@ proof(rule semicategoryI, unfold smc_dg_smc_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_cs_simps smc_Rel_cs_simps 
             cs_intro: smc_Rel_cs_intros
         )
@@ -339,7 +339,7 @@ proof(rule is_iso_semifunctorI)
       with that show ?thesis
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: smc_cs_simps smc_Rel_cs_simps 
               cs_intro: smc_Rel_cs_intros
           )
@@ -393,7 +393,7 @@ proof-
   with assms show ?thesis
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: smc_cs_simps smc_Rel_cs_simps cs_intro: smc_Rel_cs_intros
       )
 qed
@@ -680,7 +680,7 @@ proof(rule is_monic_arrI)
     by (cs_concl cs_intro: smc_cs_intros cs_simp: smc_Rel_cs_simps)
   from prems(2) have "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> : 
     \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>B\<rparr> \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_intro: smc_cs_intros cs_simp:)
+    by (cs_concl cs_shallow cs_intro: smc_cs_intros cs_simp:)
   with prems(2) have dag_g: "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> : B \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> a" 
     by (cs_concl cs_intro: smc_cs_intros cs_simp: smc_Rel_cs_simps)
   from T dag have 
@@ -688,7 +688,7 @@ proof(rule is_monic_arrI)
       (\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>)\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>"
     by
       (
-        cs_concl
+        cs_concl 
           cs_intro: smc_cs_intros 
           cs_simp: smc_Rel_cs_simps smc_cn_cs_simps smc_cs_simps
       )
@@ -718,7 +718,7 @@ proof-
   proof(rule smc_Rel_is_monic_arrI)
     from assms(1) have "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> :
       \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>B\<rparr> \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
-      by (cs_concl cs_intro: smc_cs_intros)
+      by (cs_concl cs_shallow cs_intro: smc_cs_intros)
     with assms(1) show "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : B \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> A"
       by (cs_concl cs_intro: smc_cs_intros cs_simp: smc_Rel_cs_simps)
     fix y z X

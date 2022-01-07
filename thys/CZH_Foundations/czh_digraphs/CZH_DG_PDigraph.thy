@@ -88,14 +88,14 @@ proof(rule Vset_trans)
       intro dg_cs_intros
     )
     show "Vset (succ \<alpha>) \<in>\<^sub>\<circ> Vset (succ (succ \<alpha>))" 
-      by (cs_concl cs_intro: V_cs_intros)
-    fix i assume prems: "i \<in>\<^sub>\<circ> I"
-    interpret digraph \<alpha> \<open>\<AA> i\<close>
-      using prems by (cs_concl cs_intro: dg_cs_intros dg_prod_cs_intros)
+      by (cs_concl cs_shallow cs_intro: V_cs_intros)
+    fix i assume "i \<in>\<^sub>\<circ> I"
+    then interpret digraph \<alpha> \<open>\<AA> i\<close>
+      by (cs_concl cs_shallow cs_intro: dg_cs_intros dg_prod_cs_intros)
     show "\<AA> i\<lparr>Obj\<rparr> \<subseteq>\<^sub>\<circ> Vset \<alpha>" by (rule dg_Obj_vsubset_Vset)
   qed
   from assms(2) show "Vset (succ (succ \<alpha>)) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros succ_in_Limit_iff[THEN iffD2])
+    by (cs_concl cs_shallow cs_intro: V_cs_intros succ_in_Limit_iff[THEN iffD2])
 qed
 
 lemma (in pdigraph_base) pdg_Arr_in_Vset: 
@@ -113,11 +113,11 @@ proof(rule Vset_trans)
     )
     fix i assume "i \<in>\<^sub>\<circ> I"
     then interpret digraph \<alpha> \<open>\<AA> i\<close> 
-      by (cs_concl cs_intro: dg_prod_cs_intros)
+      by (cs_concl cs_shallow cs_intro: dg_prod_cs_intros)
     show "\<AA> i\<lparr>Arr\<rparr> \<subseteq>\<^sub>\<circ> Vset \<alpha>" by (rule dg_Arr_vsubset_Vset)
-  qed (cs_concl cs_intro: V_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: V_cs_intros)
   from assms(2) show "Vset (succ (succ \<alpha>)) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros succ_in_Limit_iff[THEN iffD2])
+    by (cs_concl cs_shallow cs_intro: V_cs_intros succ_in_Limit_iff[THEN iffD2])
 qed
 
 lemmas_with (in pdigraph_base) [folded dg_prod_components]:
@@ -501,7 +501,7 @@ proof(intro pdigraphI)
     unfolding dg_prod_components
   proof-
     from that fin_pdg_index_vfinite have J: "vfinite J"
-      by (cs_concl cs_intro: vfinite_vsubset)
+      by (cs_concl cs_shallow cs_intro: vfinite_vsubset)
     show "(\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>J. \<AA> i\<lparr>Obj\<rparr>) \<subseteq>\<^sub>\<circ> Vset \<alpha>"
     proof(intro vsubsetI)
       fix A assume prems: "A \<in>\<^sub>\<circ> (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>J. \<AA> i\<lparr>Obj\<rparr>)"
@@ -515,7 +515,7 @@ proof(intro pdigraphI)
           fix i assume prems': "i \<in>\<^sub>\<circ> J"
           with that have i: "i \<in>\<^sub>\<circ> I" by auto
           interpret digraph \<alpha> \<open>\<AA> i\<close>
-            by (cs_concl cs_intro: dg_prod_cs_intros i)
+            by (cs_concl cs_shallow cs_intro: dg_prod_cs_intros i)
           have "A\<lparr>i\<rparr> \<in>\<^sub>\<circ> \<AA> i\<lparr>Obj\<rparr>" by (rule A(3)[OF prems'])
           then show "A\<lparr>i\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" by (cs_concl cs_intro: dg_cs_intros)
         qed (intro A(1))
@@ -1125,7 +1125,7 @@ proof(rule dghm_eqI[of \<alpha> \<CC> \<open>\<AA> i\<close> _ \<CC> \<open>\<AA
     then have a: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by (simp add: dg_cs_simps) 
     with dghm_up dghm_proj assms(3) show 
       "\<phi> i\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = (\<pi>\<^sub>D\<^sub>G I \<AA> i \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_up I \<AA> \<CC> \<phi>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed auto
 
   show "\<phi> i\<lparr>ArrMap\<rparr> = (\<pi>\<^sub>D\<^sub>G I \<AA> i \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_up I \<AA> \<CC> \<phi>)\<lparr>ArrMap\<rparr>"
@@ -1146,7 +1146,7 @@ proof(rule dghm_eqI[of \<alpha> \<CC> \<open>\<AA> i\<close> _ \<CC> \<open>\<AA
     then have a: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>" by (simp add: dg_cs_simps)
     with dghm_up dghm_proj assms(3) show 
       "\<phi> i\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> = (\<pi>\<^sub>D\<^sub>G I \<AA> i \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_up I \<AA> \<CC> \<phi>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed auto
 
 qed simp_all
@@ -1176,7 +1176,11 @@ proof(rule dghm_eqI)
       fix i assume prems': "i \<in>\<^sub>\<circ> I"
       with pdg_dghm_proj_is_dghm[OF prems'] \<FF>.is_dghm_axioms prems show 
         "dghm_up I \<AA> \<CC> \<phi>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<lparr>i\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<lparr>i\<rparr>"
-        by (cs_concl cs_simp: dg_cs_simps assms(2) cs_intro: dg_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: dg_cs_simps assms(2) cs_intro: dg_cs_intros
+          )
     qed 
       (
         use \<FF>.dghm_ObjMap_app_in_HomCod_Obj prems in 
@@ -1192,7 +1196,11 @@ proof(rule dghm_eqI)
       fix i assume prems': "i \<in>\<^sub>\<circ> I"
       with pdg_dghm_proj_is_dghm[OF prems'] \<FF>.is_dghm_axioms prems show 
         "dghm_up I \<AA> \<CC> \<phi>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>\<lparr>i\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>\<lparr>i\<rparr>"
-        by (cs_concl cs_simp: dg_cs_simps assms(2) cs_intro: dg_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: dg_cs_simps assms(2) cs_intro: dg_cs_intros
+          )
     qed 
       (
         use \<FF>.dghm_ArrMap_app_in_HomCod_Arr prems in 
@@ -1430,7 +1438,7 @@ proof-
           )
     qed 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: V_cs_simps dg_prod_cs_simps 
           cs_intro: V_cs_intros dg_cs_intros
       )+
@@ -1739,7 +1747,11 @@ proof(rule vsv.vsv_vrange_vsubset, unfold dg_cs_simps)
     by (auto intro!: is_arrI)
   from \<AA> \<BB> g f show "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>\<lparr>gf\<rparr> \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Obj\<rparr>"
     unfolding gf_def dg_prod_2_Cod_app[OF prems[unfolded gf_def]]
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_prod_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_prod_cs_intros
+      )
 qed
 
 end
@@ -1766,12 +1778,16 @@ proof
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Obj\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
 next
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (op_dg \<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Obj\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_op_intros dg_prod_cs_intros)  
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_op_intros dg_prod_cs_intros
+      )
 qed
 
 lemma dg_prod_2_dg_op_dg_Obj[dg_op_simps]: 
@@ -1785,12 +1801,16 @@ proof
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Obj\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
 next
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Obj\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros) 
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros
+      ) 
 qed
 
 lemma dg_prod_2_op_dg_dg_Arr[dg_op_simps]: 
@@ -1804,12 +1824,16 @@ proof
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
 next
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (op_dg \<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros) 
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros
+      ) 
 qed
 
 lemma dg_prod_2_dg_op_dg_Arr[dg_op_simps]: 
@@ -1823,12 +1847,16 @@ proof
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros)
 next
   fix ab a b assume prems: "ab = [a, b]\<^sub>\<circ>" "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "b \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
   from \<AA> \<BB> prems(2,3) show "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Arr\<rparr>"
     unfolding prems(1) dg_op_simps
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros) 
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_prod_cs_intros dg_op_intros
+      ) 
 qed
 
 end
@@ -1852,12 +1880,16 @@ proof(rule vsv_eqI)
   proof(rule vsv_eqI)
     from \<AA> \<BB> show "vsv ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>)" by (rule dg_prod_2_Cod_vsv)
     from \<AA> \<BB> show "vsv ((op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Dom\<rparr>)"
-      by (cs_concl cs_intro: dg_prod_2_Dom_vsv dg_op_intros)+
+      by (cs_concl cs_shallow cs_intro: dg_prod_2_Dom_vsv dg_op_intros)+
     from \<AA> \<BB> have dom_lhs: "\<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>) = (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps)
     from \<AA> \<BB> show "\<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>) = \<D>\<^sub>\<circ> ((op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Dom\<rparr>)"
       unfolding dom_lhs
-      by (cs_concl cs_simp: dg_cs_simps dg_op_simps cs_intro: dg_op_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: dg_cs_simps dg_op_simps cs_intro: dg_op_intros
+        )
     show "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>\<lparr>gf\<rparr> = (op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Dom\<rparr>\<lparr>gf\<rparr>"
       if "gf \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Cod\<rparr>)" for gf
       using that unfolding dom_lhs
@@ -1872,7 +1904,7 @@ proof(rule vsv_eqI)
         unfolding gf_def
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: dg_prod_cs_simps dg_op_simps 
               cs_intro: dg_prod_cs_intros dg_op_intros
           )
@@ -1882,12 +1914,16 @@ proof(rule vsv_eqI)
   have Dom_Cod: "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Dom\<rparr> = (op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Cod\<rparr>"
   proof(rule vsv_eqI)
     from \<AA> \<BB> show "vsv ((op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Cod\<rparr>)"
-      by (cs_concl cs_intro: dg_prod_2_Cod_vsv dg_op_intros)+
+      by (cs_concl cs_shallow cs_intro: dg_prod_2_Cod_vsv dg_op_intros)+
     from \<AA> \<BB> have dom_lhs: "\<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Dom\<rparr>) = (\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps)
     from \<AA> \<BB> show "\<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Dom\<rparr>) = \<D>\<^sub>\<circ> ((op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Cod\<rparr>)"
       unfolding dom_lhs
-      by (cs_concl cs_simp: dg_cs_simps dg_op_simps cs_intro: dg_op_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: dg_cs_simps dg_op_simps cs_intro: dg_op_intros
+        )
     show "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Dom\<rparr>\<lparr>gf\<rparr> = (op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Cod\<rparr>\<lparr>gf\<rparr>"
       if "gf \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Dom\<rparr>)" for gf
       using that unfolding dom_lhs
@@ -1902,7 +1938,7 @@ proof(rule vsv_eqI)
         unfolding gf_def
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: dg_cs_simps dg_prod_cs_simps dg_op_simps 
               cs_intro: dg_op_intros dg_prod_cs_intros
           )
@@ -1920,9 +1956,9 @@ proof(rule vsv_eqI)
       unfold op_dg_components
     )
     from \<AA> \<BB> show "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Obj\<rparr> = (op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: dg_op_simps cs_intro: dg_op_intros) 
+      by (cs_concl cs_shallow cs_simp: dg_op_simps cs_intro: dg_op_intros) 
     from \<AA> \<BB> show "(\<AA> \<times>\<^sub>D\<^sub>G \<BB>)\<lparr>Arr\<rparr> = (op_dg \<AA> \<times>\<^sub>D\<^sub>G op_dg \<BB>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: dg_op_simps cs_intro: dg_op_intros) 
+      by (cs_concl cs_shallow cs_simp: dg_op_simps cs_intro: dg_op_intros) 
   qed (auto simp: \<AA> \<BB> Cod_Dom Dom_Cod)
 
 qed
@@ -2401,7 +2437,11 @@ proof(rule vsv.vsv_vrange_vsubset, unfold dg_cs_simps)
   from \<AA> \<BB> \<CC> f f' f'' show 
     "(\<AA> \<times>\<^sub>D\<^sub>G\<^sub>3 \<BB> \<times>\<^sub>D\<^sub>G\<^sub>3 \<CC>)\<lparr>Cod\<rparr>\<lparr>F\<rparr> \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>D\<^sub>G\<^sub>3 \<BB> \<times>\<^sub>D\<^sub>G\<^sub>3 \<CC>)\<lparr>Obj\<rparr>"
     unfolding F_def dg_prod_3_Cod_app[OF prems[unfolded F_def]]
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_prod_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_prod_cs_intros
+      )
 qed
 
 end

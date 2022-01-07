@@ -142,7 +142,7 @@ proof-
     arr_Rel_ArrVal_in_Vset arr_Rel_ArrDom_in_Vset arr_Rel_ArrCod_in_Vset
   show ?thesis
     by (subst arr_Rel_def)
-      (cs_concl cs_intro: dg_Rel_cs_intros V_cs_intros) 
+      (cs_concl cs_shallow cs_intro: dg_Rel_cs_intros V_cs_intros) 
 qed
 
 lemma small_arr_Rel[simp]: "small {T. arr_Rel \<alpha> T}"
@@ -422,7 +422,7 @@ lemma arr_Rel_converse_Rel_comp_Rel[dg_Rel_cs_simps]:
   shows "(F \<circ>\<^sub>R\<^sub>e\<^sub>l G)\<inverse>\<^sub>R\<^sub>e\<^sub>l = G\<inverse>\<^sub>R\<^sub>e\<^sub>l \<circ>\<^sub>R\<^sub>e\<^sub>l F\<inverse>\<^sub>R\<^sub>e\<^sub>l"
 proof(rule arr_Rel_eqI, unfold converse_Rel_components comp_Rel_components)
   from assms show "arr_Rel \<alpha> (G\<inverse>\<^sub>R\<^sub>e\<^sub>l \<circ>\<^sub>R\<^sub>e\<^sub>l F\<inverse>\<^sub>R\<^sub>e\<^sub>l)"
-    by (cs_concl cs_intro: dg_Rel_cs_intros)
+    by (cs_concl cs_shallow cs_intro: dg_Rel_cs_intros)
   from assms show "arr_Rel \<alpha> ((F \<circ>\<^sub>R\<^sub>e\<^sub>l G)\<inverse>\<^sub>R\<^sub>e\<^sub>l)"
     by (cs_intro_step dg_Rel_cs_intros)+
 qed (simp_all add: vconverse_vcomp)
@@ -431,7 +431,7 @@ lemma (in \<Z>) arr_Rel_converse_Rel_id_Rel:
   assumes "c \<in>\<^sub>\<circ> Vset \<alpha>"
   shows "arr_Rel \<alpha> ((id_Rel c)\<inverse>\<^sub>R\<^sub>e\<^sub>l)"
   using assms \<Z>_axioms 
-  by (cs_concl cs_intro: dg_Rel_cs_intros arr_Rel_id_RelI)+
+  by (cs_concl cs_shallow cs_intro: dg_Rel_cs_intros arr_Rel_id_RelI)+
 
 lemma (in \<Z>) arr_Rel_converse_Rel_id_Rel_eq_id_Rel[
     dg_Rel_shared_cs_simps, dg_Rel_cs_simps
@@ -789,13 +789,13 @@ proof-
     with assms have a: "a \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)" and b: "b \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
       by (simp_all add: dg_cs_simps)
     from prems T(1) have "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>"
-      by (cs_prems cs_simp: dg_Rel_cs_simps)
+      by (cs_prems cs_shallow cs_simp: dg_Rel_cs_simps)
     then show "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>" by clarsimp
   next
     assume "\<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
     then have "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>" by auto
     with T(1) show "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>"
-      by (cs_concl cs_simp: dg_Rel_cs_simps)
+      by (cs_concl cs_shallow cs_simp: dg_Rel_cs_simps)
   qed
 qed
 
@@ -845,11 +845,19 @@ proof(intro is_arrI)
     unfolding dg_Rel_components by (fastforce simp: dg_Rel_components)+
   from assms have T: "arr_Rel \<alpha> T" by (auto simp: dg_Rel_is_arrD(1))
   then show dag_T: "\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> \<in>\<^sub>\<circ> dg_Rel \<alpha>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros)
   from a assms T show "dg_Rel \<alpha>\<lparr>Dom\<rparr>\<lparr>\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<rparr> = \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_simp: dg_cs_simps dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros
+      )
   from b assms T show "dg_Rel \<alpha>\<lparr>Cod\<rparr>\<lparr>\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<rparr> = \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
-    by (cs_concl cs_simp: dg_cs_simps dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps dg_Rel_cs_simps cs_intro: dg_Rel_cs_intros
+      )
 qed
 
 
@@ -916,7 +924,7 @@ proof-
         "(\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> = dghm_id (dg_Rel \<alpha>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: dg_Rel_cs_simps dg_cs_simps dg_cn_cs_simps 
               cs_intro: dg_Rel_cs_intros dghm_cs_intros 
           )

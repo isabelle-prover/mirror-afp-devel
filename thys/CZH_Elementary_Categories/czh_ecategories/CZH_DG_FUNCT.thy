@@ -66,7 +66,7 @@ lemma cf_map_vdomain[cat_map_cs_simps]: "\<D>\<^sub>\<circ> (cf_map \<FF>) = 2\<
 
 lemma (in is_functor) cf_map_vsubset_cf: "cf_map \<FF> \<subseteq>\<^sub>\<circ> \<FF>"
   by (unfold cf_map_def, subst (3) cf_def)
-    (cs_concl cs_intro: vcons_vsubset' V_cs_intros)
+    (cs_concl cs_shallow cs_intro: vcons_vsubset' V_cs_intros)
 
 
 text\<open>Size.\<close>
@@ -103,7 +103,7 @@ qed
 
 lemma (in is_tm_functor) tm_cf_map_in_Vset: "cf_map \<FF> \<in>\<^sub>\<circ> Vset \<alpha>"
   using tm_cf_ObjMap_in_Vset tm_cf_ArrMap_in_Vset unfolding cf_map_def
-  by (cs_concl cs_intro: V_cs_intros)
+  by (cs_concl cs_shallow cs_intro: V_cs_intros)
 
 lemma (in is_functor) cf_map_in_Vset: 
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>"  
@@ -149,7 +149,7 @@ proof(rule vsubset_in_VsetI)
     show "\<FF> \<in>\<^sub>\<circ> Vset (\<alpha> + 4\<^sub>\<nat>)" unfolding \<FF>_def by (rule cf_map_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma (in \<Z>) tm_cf_maps_vsubset_Vset: "tm_cf_maps \<alpha> \<AA> \<BB> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
@@ -309,7 +309,7 @@ proof(rule is_functorI')
     if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f 
     unfolding cf_of_cf_map_components cf_map_components
     using is_functor_axioms that 
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show 
     "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr> =
       cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub>
@@ -317,14 +317,14 @@ proof(rule is_functorI')
     if "g : b \<mapsto>\<^bsub>\<AA>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for b c g a f
     using is_functor_axioms that 
     unfolding cf_of_cf_map_components cf_map_components
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show 
     "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = 
       \<BB>\<lparr>CId\<rparr>\<lparr>cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
     if "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for c
     using is_functor_axioms that 
     unfolding cf_of_cf_map_components cf_map_components
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 qed 
   (
     auto simp: 
@@ -363,7 +363,7 @@ proof(rule cf_eqI)
       if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f 
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show 
       "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr> =
         cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub>
@@ -371,14 +371,14 @@ proof(rule cf_eqI)
       if "g : b \<mapsto>\<^bsub>\<AA>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for b c g a f
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     show 
       "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> =
         \<BB>\<lparr>CId\<rparr>\<lparr>cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       if "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for c
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   qed 
     (
       auto simp: 
@@ -581,10 +581,12 @@ proof-
     ntcf_NTMap_vsubset_Vset 
   from NTDom.cf_map_in_Vset_4 have [cat_cs_intros]:
     "cf_map \<FF> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by succ_of_numeral (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by succ_of_numeral 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   from NTCod.cf_map_in_Vset_4 have [cat_cs_intros]:
     "cf_map \<GG> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by succ_of_numeral (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by succ_of_numeral 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   show ?thesis
     by (subst ntcf_arrow_def, succ_of_numeral, unfold cat_cs_simps)
       (
@@ -610,7 +612,7 @@ proof(rule vsubset_in_VsetI)
     show "\<NN> \<in>\<^sub>\<circ> Vset (\<alpha> + 7\<^sub>\<nat>)" unfolding \<NN>_def by (rule ntcf_arrow_in_Vset_7)
   qed
   from assms(2) show "Vset (\<alpha> + 7\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
   
 lemma (in \<Z>) tm_ntcf_arrows_vsubset_Vset: "tm_ntcf_arrows \<alpha> \<AA> \<BB> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
@@ -781,14 +783,14 @@ proof(rule is_ntcfI')
     \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
     using is_ntcf_axioms that
-    by (cs_concl cs_simp: cat_map_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_map_cs_simps cs_intro: cat_cs_intros)
   show "ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
     \<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
     if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f
     using is_ntcf_axioms that
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: ntcf_Comp_commute cat_map_cs_simps cs_intro: cat_cs_intros
       )
 qed (use is_ntcf_axioms in \<open>auto simp: cat_cs_simps cat_map_cs_simps\<close>)
@@ -849,7 +851,7 @@ lemma ntcf_arrow_vcomp_ntcf_vcomp[cat_map_cs_simps]:
   shows "ntcf_arrow \<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^bsub>\<AA>,\<BB>\<^esub> ntcf_arrow \<NN> = ntcf_arrow (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)"
   by (rule ntcf_arrow_eqI, insert assms)
     (
-      cs_concl
+      cs_concl 
         cs_simp: ntcf_arrow_vcomp_def cat_map_cs_simps cat_cs_simps
         cs_intro: cat_map_cs_intros cat_cs_intros
     )+
@@ -939,7 +941,11 @@ proof-
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"  
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
     unfolding dg_FUNCT_components 
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps V_cs_simps cs_intro: dg_FUNCT_cs_intros)+
+    by 
+      ( 
+        cs_concl 
+          cs_simp: dg_FUNCT_cs_simps V_cs_simps cs_intro: dg_FUNCT_cs_intros
+      )+
 qed
 
 lemma (in is_ntcf)
@@ -964,7 +970,11 @@ proof(all\<open>intro vrange_VLambda_vsubset\<close>)
   from \<MM> show "\<NN>\<lparr>NTDom\<rparr> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>"
     by (cs_concl cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros)
   from \<MM> show "\<NN>\<lparr>NTCod\<rparr> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros
+      )
 qed
 
 
@@ -1003,7 +1013,7 @@ proof(intro is_arrI, unfold dg_FUNCT_components(1,2))
   from assms show 
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)+
 qed
 
 lemma dg_FUNCT_is_arrI':
@@ -1033,7 +1043,7 @@ proof-
   from \<NN>(3) \<NN>' have \<GG>_def: "\<GG> = cf_map \<GG>'"
     by (cs_prems cs_simp: \<NN>_def dg_FUNCT_cs_simps) simp
   from \<NN>' have \<NN>'_def: "\<NN>' = ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>"
-    unfolding \<NN>_def by (cs_concl cs_simp: dg_FUNCT_cs_simps)
+    unfolding \<NN>_def by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)
   from \<NN>' have \<FF>'_def: "\<FF>' = cf_of_cf_map \<AA> \<BB> \<FF>"
     and \<GG>'_def: "\<GG>' = cf_of_cf_map \<AA> \<BB> \<GG>"
     unfolding \<FF>_def \<GG>_def 
@@ -1108,7 +1118,7 @@ proof-
     unfolding dg_Funct_components 
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: dg_FUNCT_cs_simps V_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_cs_intros
       )+
@@ -1136,14 +1146,14 @@ proof(all\<open>intro vrange_VLambda_vsubset\<close>)
   from \<MM> show "\<NN>\<lparr>NTDom\<rparr> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>"
     by 
       ( 
-        cs_concl 
+        cs_concl  
           cs_simp: dg_FUNCT_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros
       )
   from \<MM> show "\<NN>\<lparr>NTCod\<rparr> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: dg_FUNCT_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros
       )
@@ -1161,7 +1171,7 @@ proof(intro is_arrI, unfold dg_Funct_components(1,2))
   from assms show 
     "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"
     "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)+
 qed
 
 lemma dg_Funct_is_arrI':
@@ -1194,7 +1204,7 @@ proof-
     unfolding \<NN>_def 
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: dg_FUNCT_cs_simps cs_intro: cat_small_cs_intros cat_cs_intros
       )
   from \<NN>' have \<FF>'_def: "\<FF>' = cf_of_cf_map \<AA> \<BB> \<FF>"
@@ -1328,7 +1338,7 @@ proof(intro digraphI)
         )
     moreover have "\<AA>\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" by (intro tiny_cat_Obj_in_Vset)
     ultimately have "VPow (\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB) \<in>\<^sub>\<circ> Vset \<alpha>"
-      by (cs_concl cs_intro: V_cs_intros)
+      by (cs_concl cs_shallow cs_intro: V_cs_intros)
     with prems(3,4) show "Q i \<in>\<^sub>\<circ> Vset \<alpha>" if "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" for i
       unfolding Q_def by (simp_all add: nat_omega_simps)
   qed auto
@@ -1412,16 +1422,17 @@ proof(intro subdigraphI, unfold dg_FUNCT_components(1) dg_Funct_components(1))
   show "digraph \<beta> (dg_Funct \<alpha> \<AA> \<BB>)"
     by (intro digraph.dg_digraph_if_ge_Limit[OF digraph_dg_Funct] assms)
   from assms show "digraph \<beta> (dg_FUNCT \<alpha> \<AA> \<BB>)"    
-    by (cs_concl cs_intro: dg_small_cs_intros tiny_digraph_dg_FUNCT)
+    by (cs_concl cs_shallow cs_intro: dg_small_cs_intros tiny_digraph_dg_FUNCT)
   show "\<FF> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>" if "\<FF> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>" for \<FF>
-    using that by (cs_concl cs_intro: dg_FUNCT_cs_intros tm_cf_maps_in_cf_maps)
+    using that 
+    by (cs_concl cs_shallow cs_intro: dg_FUNCT_cs_intros tm_cf_maps_in_cf_maps)
   show "\<NN> : \<FF> \<mapsto>\<^bsub>dg_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<GG>" if "\<NN> : \<FF> \<mapsto>\<^bsub>dg_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" 
     for \<NN> \<FF> \<GG>
   proof-
     note f = dg_Funct_is_arrD[OF that]
     from f(1) show ?thesis
       by (subst f(2), use nothing in \<open>subst f(3), subst f(4)\<close>)
-        (cs_concl cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros)
+        (cs_concl cs_shallow cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros)
   qed
 qed
 

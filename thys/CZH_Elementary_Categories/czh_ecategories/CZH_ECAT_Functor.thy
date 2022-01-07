@@ -287,8 +287,9 @@ proof(rule vsv_eqI)
   interpret R: is_functor \<alpha> \<CC> \<DD> \<FF> by (rule assms(2))
   from assms(1) show "vsv \<GG>" by auto
   from assms(2) show "vsv \<FF>" by auto
-  have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
-  show "\<D>\<^sub>\<circ> \<GG> = \<D>\<^sub>\<circ> \<FF>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+  have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
+  show "\<D>\<^sub>\<circ> \<GG> = \<D>\<^sub>\<circ> \<FF>" by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
   from assms(5,6) have sup: "\<GG>\<lparr>HomDom\<rparr> = \<FF>\<lparr>HomDom\<rparr>" "\<GG>\<lparr>HomCod\<rparr> = \<FF>\<lparr>HomCod\<rparr>" 
     by (simp_all add: cat_cs_simps)
   show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<GG> \<Longrightarrow> \<GG>\<lparr>a\<rparr> = \<FF>\<lparr>a\<rparr>" for a 
@@ -314,7 +315,8 @@ qed (auto intro: assms(1,2) simp: assms(3-5))
 
 lemma (in is_functor) cf_def: "\<FF> = [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<FF>\<lparr>Obj\<rparr>, \<FF>\<lparr>Arr\<rparr>, \<FF>\<lparr>Dom\<rparr>, \<FF>\<lparr>Cod\<rparr>]\<^sub>\<circ> = 4\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<FF> = \<D>\<^sub>\<circ> [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
@@ -340,7 +342,10 @@ proof-
     HomCod.cat_in_Vset
   from assms(2) show ?thesis
     by (subst cf_def) 
-      (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_functor) cf_is_functor_if_ge_Limit:
@@ -377,10 +382,12 @@ proof-
     cf_ArrMap_vsubset_Vset
   from HomDom.cat_category_in_Vset_4 have [cat_cs_intros]:
     "\<AA> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   from HomCod.cat_category_in_Vset_4 have [cat_cs_intros]:
     "\<BB> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   show ?thesis
     by (subst cf_def, succ_of_numeral)
       (
@@ -403,7 +410,7 @@ proof(rule vsubset_in_VsetI)
     show "\<FF> \<in>\<^sub>\<circ> Vset (\<alpha> + 7\<^sub>\<nat>)" by (rule cf_in_Vset_7)
   qed
   from assms(2) show "Vset (\<alpha> + 7\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma small_cfs[simp]: "small {\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>}"
@@ -702,11 +709,14 @@ proof-
       unfolding dghm_comp_def by (simp add: nat_omega_simps)
     show "cf_smcf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
       unfolding cf_smcf_smcf_comp[symmetric] 
-      by (cs_concl cs_intro: smc_cs_intros slicing_intros cat_cs_intros)
+      by 
+        (
+          cs_concl  
+            cs_intro: smc_cs_intros slicing_intros cat_cs_intros
+        )
     fix c assume "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
-    with assms show 
-      "(\<GG> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>(\<GG> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    with assms show "(\<GG> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>(\<GG> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: cat_cs_simps intro: cat_cs_intros)
 qed
 
@@ -1107,15 +1117,15 @@ proof-
       unfolding cf_smcf_cf_cn_comp[symmetric] 
       by 
         (
-          cs_concl cs_intro: 
-            cat_cs_intros slicing_intros smc_cn_cs_intros
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros slicing_intros smc_cn_cs_intros
         )
     fix c assume "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     with assms show 
       "(\<GG> \<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>(\<GG> \<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_op_simps cat_cn_cs_simps cs_intro: cat_cs_intros
         )
   qed (auto simp: cat_cs_simps cat_cs_intros cat_op_simps)
@@ -1141,7 +1151,11 @@ proof-
       unfolding cf_cn_comp_def by (auto simp: nat_omega_simps)
     from L.cf_is_semifunctor show 
       "cf_smcf \<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> cf_smcf \<FF> : op_smc (cat_smc \<AA>) \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
-      by (cs_concl cs_intro: cat_cs_intros slicing_intros smc_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros slicing_intros smc_cs_intros
+        )
     fix c assume "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     with assms show "(\<GG> \<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>(\<GG> \<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       by 
@@ -1325,14 +1339,14 @@ proof-
     from assms show "cf_smcf (cf_const \<CC> \<DD> a) : cat_smc \<CC> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<DD>"
       by 
         ( 
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps slicing_simps slicing_commute[symmetric] 
             cs_intro: smc_cs_intros cat_cs_intros slicing_intros
         )
     fix c assume "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     with assms show 
       "cf_const \<CC> \<DD> a\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<DD>\<lparr>CId\<rparr>\<lparr>cf_const \<CC> \<DD> a\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: dghm_const_components assms)
 qed 
 
@@ -1355,20 +1369,22 @@ lemma (in is_functor) cf_cf_comp_cf_const:
 proof(rule cf_smcf_eqI)
   interpret \<CC>: category \<alpha> \<CC> by (rule assms(1))
   from assms(2) show "cf_const \<BB> \<CC> a \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms(2) show "cf_const \<AA> \<CC> a : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms(2) have CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms(2) have CId_CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  from is_semifunctor.smcf_smcf_comp_smcf_const[
-    OF cf_is_semifunctor \<CC>.cat_semicategory, 
-    unfolded slicing_simps, 
-    OF CId_a CId_CId_a
-    ]
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from 
+    is_semifunctor.smcf_smcf_comp_smcf_const
+      [
+        OF cf_is_semifunctor \<CC>.cat_semicategory, 
+        unfolded slicing_simps, 
+        OF CId_a CId_CId_a
+      ]
   show "cf_smcf (cf_const \<BB> \<CC> a \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>) = cf_smcf (cf_const \<AA> \<CC> a)"
-    by (cs_prems cs_simp: slicing_simps slicing_commute)
+    by (cs_prems cs_shallow cs_simp: slicing_simps slicing_commute)
 qed simp_all
 
 lemma (in is_functor) cf_cf_comp_cf_const'[cat_cs_simps]:
@@ -1496,7 +1512,7 @@ proof(intro is_ft_functorI)
   interpret \<GG>: is_ft_functor \<alpha> \<BB> \<CC> \<GG> by (simp add: assms(1))
   interpret \<FF>: is_ft_functor \<alpha> \<AA> \<BB> \<FF> by (simp add: assms(2))
   from \<FF>.is_functor_axioms \<GG>.is_functor_axioms show "\<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   then interpret is_functor \<alpha> \<AA> \<CC> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<FF>\<close> .
   show "cf_smcf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>" 
     by 
@@ -1617,7 +1633,7 @@ proof(intro is_fl_functorI)
   interpret \<FF>: is_fl_functor \<alpha> \<AA> \<BB> \<FF> using assms(2) by simp
   interpret \<GG>: is_fl_functor \<alpha> \<BB> \<CC> \<GG> using assms(1) by simp
   from \<FF>.is_functor_axioms \<GG>.is_functor_axioms show "\<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "cf_smcf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>" 
     by 
       (
@@ -1845,10 +1861,10 @@ proof(intro is_iso_functorI)
   interpret \<FF>: is_iso_functor \<alpha> \<AA> \<BB> \<FF> using assms by auto
   interpret \<GG>: is_iso_functor \<alpha> \<BB> \<CC> \<GG> using assms by auto
   from \<FF>.is_functor_axioms \<GG>.is_functor_axioms show "\<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "cf_smcf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
     unfolding slicing_commute[symmetric] 
-    by (cs_concl cs_intro: smcf_cs_intros slicing_intros)
+    by (cs_concl cs_shallow cs_intro: smcf_cs_intros slicing_intros)
 qed
 
 
@@ -1953,7 +1969,7 @@ proof-
     from prems show "(\<FF>\<lparr>ArrMap\<rparr>)\<inverse>\<^sub>\<circ>\<lparr>\<BB>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<AA>\<lparr>CId\<rparr>\<lparr>(\<FF>\<lparr>ObjMap\<rparr>)\<inverse>\<^sub>\<circ>\<lparr>c\<rparr>\<rparr>"
       by (intro v11.v11_vconverse_app)
         (
-           cs_concl 
+           cs_concl cs_shallow
             cs_intro: cat_cs_intros V_cs_intros
             cs_simp: V_cs_simps cat_cs_simps
          )+

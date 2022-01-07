@@ -7,6 +7,7 @@ begin
 
 
 
+
 section\<open>Background\<close>
 
 
@@ -57,6 +58,7 @@ It is likely that none of the content that is formalized in this work
 is original in nature. However, explicit citations
 are not provided for many results that were deemed to be trivial.
 \<close>
+
 
 
 

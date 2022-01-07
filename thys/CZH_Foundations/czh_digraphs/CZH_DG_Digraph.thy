@@ -102,7 +102,7 @@ proof(intro vdisjntI, unfold in_Hom_iff)
     and "\<CC>\<lparr>Cod\<rparr>\<lparr>g\<rparr> = b"
     and "\<CC>\<lparr>Dom\<rparr>\<lparr>f\<rparr> = a'"
     and "\<CC>\<lparr>Cod\<rparr>\<lparr>f\<rparr> = b'"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
   with assms(1) have "\<CC>\<lparr>Dom\<rparr>\<lparr>g\<rparr> \<noteq> \<CC>\<lparr>Dom\<rparr>\<lparr>f\<rparr> \<or> \<CC>\<lparr>Cod\<rparr>\<lparr>g\<rparr> \<noteq> \<CC>\<lparr>Cod\<rparr>\<lparr>f\<rparr>" by auto
   then show "g \<noteq> f" by clarsimp
 qed
@@ -209,16 +209,22 @@ proof-
   interpret \<BB>: digraph \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom_lhs: "\<D>\<^sub>\<circ> \<AA> = 4\<^sub>\<nat>" by (cs_concl cs_simp: V_cs_simps dg_cs_simps)
+    have dom_lhs: "\<D>\<^sub>\<circ> \<AA> = 4\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: V_cs_simps dg_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom_lhs, elim_in_numeral, insert assms)
         (auto simp: dg_field_simps)
-  qed (cs_concl cs_simp: V_cs_simps dg_cs_simps cs_intro: V_cs_intros)+
+  qed 
+    (
+      cs_concl cs_shallow 
+        cs_simp: V_cs_simps dg_cs_simps cs_intro: V_cs_intros
+    )+
 qed
 
 lemma (in digraph) dg_def: "\<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 4\<^sub>\<nat>" by (cs_concl cs_simp: V_cs_simps dg_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 4\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: V_cs_simps dg_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>]\<^sub>\<circ> = 4\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<CC> = \<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>]\<^sub>\<circ>"
@@ -249,9 +255,9 @@ proof-
   from assms show prems: "f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>" 
     and fa[symmetric]: "\<CC>\<lparr>Dom\<rparr>\<lparr>f\<rparr> = a"
     and fb[symmetric]: "\<CC>\<lparr>Cod\<rparr>\<lparr>f\<rparr> = b"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
   from digraph_axioms prems have "f \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<CC>\<lparr>Dom\<rparr>)" "f \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<CC>\<lparr>Cod\<rparr>)"
-    by (cs_concl cs_simp: dg_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps)+
   with assms show "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"  
     by 
       (
@@ -376,7 +382,8 @@ proof-
   note [dg_cs_intros] = 
     dg_Obj_in_Vset dg_Arr_in_Vset dg_Dom_in_Vset dg_Cod_in_Vset 
   from assms(2) show ?thesis
-     by (subst dg_def) (cs_concl cs_intro: dg_cs_intros V_cs_intros)
+    by (subst dg_def) 
+      (cs_concl cs_shallow cs_intro: dg_cs_intros V_cs_intros)
  qed
 
 lemma (in digraph) dg_digraph_if_ge_Limit:
@@ -419,7 +426,7 @@ proof(rule vsubset_in_VsetI)
       unfolding VPow_iff by (rule dg_digraph_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma digraph_if_digraph:

@@ -102,7 +102,7 @@ lemma \<KK>23_ObjMap_app_1[cat_Kan_cs_simps]:
   shows "\<KK>23\<lparr>ObjMap\<rparr>\<lparr>x\<rparr> = 2\<^sub>\<nat>"
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: 
           cat_ordinal_cs_simps V_cs_simps omega_of_set \<KK>23_ObjMap_app assms
         cs_intro: nat_omega_intros V_cs_intros
@@ -122,7 +122,7 @@ lemma \<KK>23_ArrMap_app_00[cat_Kan_cs_simps]:
   unfolding assms
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: \<KK>23_ArrMap_app cat_ordinal_cs_simps V_cs_simps 
         cs_intro: cat_ordinal_cs_intros nat_omega_intros
     )
@@ -134,7 +134,7 @@ proof-
   have "[0, 1\<^sub>\<nat>]\<^sub>\<circ> \<in>\<^sub>\<circ> ordinal_arrs (2\<^sub>\<nat>)"
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: omega_of_set 
           cs_intro: cat_ordinal_cs_intros V_cs_intros nat_omega_intros
       )
@@ -149,7 +149,7 @@ proof-
   have "[1\<^sub>\<nat>, 1\<^sub>\<nat>]\<^sub>\<circ> \<in>\<^sub>\<circ> ordinal_arrs (2\<^sub>\<nat>)"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: omega_of_set 
           cs_intro: cat_ordinal_cs_intros V_cs_intros nat_omega_intros
       )
@@ -164,9 +164,9 @@ lemma (in \<Z>) \<KK>23_is_functor: "\<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<ma
 proof-
 
   from ord_of_nat_\<omega> interpret cat_ordinal_2: finite_category \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   from ord_of_nat_\<omega> interpret cat_ordinal_3: finite_category \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
 
   show ?thesis
   proof(intro is_tiny_functorI' is_functorI')
@@ -196,7 +196,7 @@ proof-
       using that 
       by (elim cat_ordinal_2_is_arrE; simp only:) 
         (
-          cs_concl
+          cs_concl 
             cs_simp: omega_of_set cat_Kan_cs_simps
             cs_intro: nat_omega_intros V_cs_intros cat_ordinal_cs_intros
         )
@@ -212,7 +212,7 @@ proof-
         using that
         by (elim cat_ordinal_2_is_arrE; simp only:)
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_ordinal_cs_simps cat_Kan_cs_simps  
               cs_intro: V_cs_intros cat_ordinal_cs_intros
           )+    
@@ -228,7 +228,7 @@ proof-
       then show ?thesis
         by (cases, use nothing in \<open>simp_all only:\<close>) 
           (
-            cs_concl
+            cs_concl 
               cs_simp: omega_of_set cat_Kan_cs_simps cat_ordinal_cs_simps  
               cs_intro: nat_omega_intros cat_ordinal_cs_intros
           )
@@ -250,9 +250,9 @@ lemma (in \<Z>) \<KK>23_is_tiny_functor:
   "\<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> cat_ordinal (3\<^sub>\<nat>)"
 proof-
   from ord_of_nat_\<omega> interpret cat_ordinal_2: finite_category \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   from ord_of_nat_\<omega> interpret cat_ordinal_3: finite_category \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   show ?thesis
     by (intro is_tiny_functorI' \<KK>23_is_functor)
       (auto intro!: cat_small_cs_intros)
@@ -375,8 +375,8 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
-          V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
+        cs_concl cs_shallow 
+          cs_intro: V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding LK23_components assms by auto
 qed
@@ -388,8 +388,8 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
-          V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
+        cs_concl cs_shallow 
+          cs_intro: V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding LK23_components assms by auto
 qed
@@ -401,8 +401,8 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
-          V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
+        cs_concl cs_shallow 
+          cs_intro: V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding LK23_components assms by auto
 qed
@@ -414,8 +414,8 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
-          V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
+        cs_concl cs_shallow 
+          cs_intro: V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding LK23_components assms by auto
 qed
@@ -441,8 +441,8 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro: 
-          nat_omega_intros cat_ordinal_cs_intros cat_cs_intros assms
+        cs_concl cs_shallow
+          cs_intro: nat_omega_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding LK23_components assms by simp
 qed
@@ -458,9 +458,9 @@ proof-
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms(1))
 
   from ord_of_nat_\<omega> interpret cat_ordinal_2: finite_category \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   from ord_of_nat_\<omega> interpret cat_ordinal_3: finite_category \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
 
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms)
 
@@ -480,14 +480,14 @@ proof-
               cs_simp: cat_Kan_cs_simps cat_ordinal_cs_simps omega_of_set 
               cs_intro: cat_cs_intros nat_omega_intros
           )+
-    qed (cs_concl cs_intro: cat_Kan_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: cat_Kan_cs_intros)
     show "LK23 \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : LK23 \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> LK23 \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       if "f : a \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> b" for a b f
     proof-
       from 0123 that show ?thesis
         by (elim cat_ordinal_3_is_arrE; simp only:)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_Kan_cs_simps
               cs_intro: V_cs_intros cat_cs_intros cat_ordinal_cs_intros
           )+
@@ -501,7 +501,7 @@ proof-
       from 0123 that show ?thesis
         by (elim cat_ordinal_3_is_arrE; simp only:; (solves\<open>simp\<close>)?) (*slow*)
           (
-            cs_concl 
+            cs_concl  
               cs_simp: 
                 cat_ordinal_cs_simps 
                 cat_Kan_cs_simps 
@@ -528,7 +528,7 @@ proof-
     qed
   qed 
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -550,9 +550,9 @@ proof-
 
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms(1))
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret LK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<CC> \<open>LK23 \<FF>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
   show ?thesis
   proof(rule cf_eqI)
@@ -560,11 +560,11 @@ proof-
     have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> ((LK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr>) = 2\<^sub>\<nat>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_ordinal_cs_simps cs_intro: cat_cs_intros
         )
     have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) = 2\<^sub>\<nat>"
-      by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
     show "(LK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr> = \<FF>\<lparr>ObjMap\<rparr>"
     proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
       fix a assume prems: "a \<in>\<^sub>\<circ> 2\<^sub>\<nat>"
@@ -572,16 +572,16 @@ proof-
       then show "(LK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         by (cases, use nothing in \<open>simp_all only:\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp:
                 omega_of_set cat_cs_simps cat_ordinal_cs_simps cat_Kan_cs_simps
               cs_intro: cat_cs_intros nat_omega_intros
           )+
-    qed (cs_concl cs_simp: cs_intro: cat_cs_intros V_cs_intros)+
+    qed (cs_concl cs_intro: cat_cs_intros V_cs_intros)+
     have ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((LK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ArrMap\<rparr>) = cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show "(LK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
     proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
       fix f assume prems: "f \<in>\<^sub>\<circ> cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
@@ -593,7 +593,7 @@ proof-
               cs_simp: cat_cs_simps cat_Kan_cs_simps cs_intro: cat_cs_intros
           )+
     qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)+
-  qed (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+  qed (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
 qed
 
@@ -706,7 +706,7 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
+        cs_concl cs_shallow cs_intro:
           V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding RK23_components assms by auto
@@ -719,7 +719,7 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
+        cs_concl cs_shallow cs_intro:
           V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding RK23_components assms by auto
@@ -732,7 +732,7 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
+        cs_concl cs_shallow cs_intro:
           V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding RK23_components assms by auto
@@ -745,7 +745,7 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro:
+        cs_concl cs_shallow cs_intro:
           V_cs_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding RK23_components assms by auto
@@ -772,7 +772,7 @@ proof-
   from 0123 have f: "f \<in>\<^sub>\<circ> cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
     by 
       (
-        cs_concl cs_simp: cs_intro: 
+        cs_concl cs_shallow cs_intro: 
           nat_omega_intros cat_ordinal_cs_intros cat_cs_intros assms
       )
   then show ?thesis unfolding RK23_components assms by simp
@@ -789,9 +789,9 @@ proof-
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms(1))
 
   from ord_of_nat_\<omega> interpret cat_ordinal_2: finite_category \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   from ord_of_nat_\<omega> interpret cat_ordinal_3: finite_category \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
 
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms)
 
@@ -811,14 +811,14 @@ proof-
               cs_simp: cat_Kan_cs_simps cat_ordinal_cs_simps omega_of_set 
               cs_intro: cat_cs_intros nat_omega_intros
           )+
-    qed (cs_concl cs_intro: cat_Kan_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: cat_Kan_cs_intros)
     show "RK23 \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : RK23 \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> RK23 \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       if "f : a \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> b" for a b f
     proof-
       from 0123 that show ?thesis
         by (elim cat_ordinal_3_is_arrE; simp only:)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_Kan_cs_simps
               cs_intro: V_cs_intros cat_cs_intros cat_ordinal_cs_intros
           )+
@@ -846,7 +846,7 @@ proof-
       then show ?thesis
         by (cases, use 0123 in \<open>simp_all only:\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp: 
                 cat_ordinal_cs_simps 
                 cat_Kan_cs_simps 
@@ -856,7 +856,7 @@ proof-
     qed
   qed 
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -878,9 +878,9 @@ proof-
 
   interpret \<FF>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<CC> \<FF> by (rule assms(1))
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret RK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<CC> \<open>RK23 \<FF>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
   show ?thesis
   proof(rule cf_eqI)
@@ -888,11 +888,11 @@ proof-
     have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> ((RK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr>) = 2\<^sub>\<nat>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_ordinal_cs_simps cs_intro: cat_cs_intros
         )
     have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) = 2\<^sub>\<nat>"
-      by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
     show "(RK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr> = \<FF>\<lparr>ObjMap\<rparr>"
     proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
       fix a assume prems: "a \<in>\<^sub>\<circ> 2\<^sub>\<nat>"
@@ -900,16 +900,16 @@ proof-
       then show "(RK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         by (cases, use nothing in \<open>simp_all only:\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp:
                 omega_of_set cat_cs_simps cat_ordinal_cs_simps cat_Kan_cs_simps
               cs_intro: cat_cs_intros nat_omega_intros
           )+
-    qed (cs_concl cs_simp: cs_intro: cat_cs_intros V_cs_intros)+
+    qed (cs_concl cs_intro: cat_cs_intros V_cs_intros)+
     have ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((RK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ArrMap\<rparr>) = cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show "(RK23 \<FF> \<circ>\<^sub>C\<^sub>F \<KK>23)\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
     proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
       fix f assume prems: "f \<in>\<^sub>\<circ> cat_ordinal (2\<^sub>\<nat>)\<lparr>Arr\<rparr>"
@@ -921,7 +921,7 @@ proof-
               cs_simp: cat_cs_simps cat_Kan_cs_simps cs_intro: cat_cs_intros
           )+
     qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)+
-  qed (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+  qed (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
 qed
 
@@ -1027,14 +1027,14 @@ proof-
     by (rule assms(3))
 
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret RK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<AA> \<open>RK23 \<TT>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
   from 0123 have [cat_cs_simps]: "\<TT>\<lparr>ArrMap\<rparr>\<lparr>1\<^sub>\<nat>, 1\<^sub>\<nat>\<rparr>\<^sub>\<bullet> = \<AA>\<lparr>CId\<rparr>\<lparr>\<TT>\<lparr>ObjMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_ordinal_cs_simps is_functor.cf_ObjMap_CId[symmetric] 
           cs_intro: cat_cs_intros
       )
@@ -1052,7 +1052,7 @@ proof-
       from this 0123 show ?thesis
         by (cases, use nothing in \<open>simp_all only:\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_ordinal_cs_simps cat_Kan_cs_simps
               cs_intro:
                 cat_cs_intros
@@ -1066,7 +1066,7 @@ proof-
         RK23 \<TT>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> RK_\<sigma>23 \<TT> \<epsilon>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
       if "f : a \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> b" for a b f
       using that 0123
-      by  (elim cat_ordinal_3_is_arrE, use nothing in \<open>simp_all only:\<close>) (*slow*)
+      by (elim cat_ordinal_3_is_arrE, use nothing in \<open>simp_all only:\<close>) (*slow*)
         (
           cs_concl
             cs_simp:
@@ -1080,7 +1080,7 @@ proof-
         )+
   qed
     (
-      cs_concl
+      cs_concl  
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -1108,14 +1108,14 @@ proof-
 
   interpret \<TT>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<AA> \<TT> by (rule assms(1))
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret RK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<AA> \<open>RK23 \<TT>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
   from 0123 have [cat_cs_simps]: "\<TT>\<lparr>ArrMap\<rparr>\<lparr>1\<^sub>\<nat>, 1\<^sub>\<nat>\<rparr>\<^sub>\<bullet> = \<AA>\<lparr>CId\<rparr>\<lparr>\<TT>\<lparr>ObjMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>\<rparr>"
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_ordinal_cs_simps is_functor.cf_ObjMap_CId[symmetric]
           cs_intro: cat_cs_intros
       )
@@ -1144,13 +1144,13 @@ proof-
         show "\<epsilon>' : \<FF>' \<circ>\<^sub>C\<^sub>F \<KK>23 \<mapsto>\<^sub>C\<^sub>F \<TT> : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
           by (intro prems)
         then have dom_lhs: "\<D>\<^sub>\<circ> (\<epsilon>'\<lparr>NTMap\<rparr>) = 2\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
         show rhs:
           "ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (RK_\<sigma>23 \<TT> \<epsilon>' \<FF>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23) :
             \<FF>' \<circ>\<^sub>C\<^sub>F \<KK>23 \<mapsto>\<^sub>C\<^sub>F \<TT> : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
           by
             (
-              cs_concl 
+              cs_concl cs_shallow 
                 cs_simp: cat_Kan_cs_simps cat_cs_simps 
                 cs_intro: cat_Kan_cs_intros cat_cs_intros
             )
@@ -1166,7 +1166,7 @@ proof-
               (ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (RK_\<sigma>23 \<TT> \<epsilon>' \<FF>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             by (cases; use nothing in \<open>simp_all only:\<close>)
               (
-                cs_concl
+                cs_concl 
                   cs_simp:
                     omega_of_set
                     cat_Kan_cs_simps
@@ -1174,7 +1174,11 @@ proof-
                     cat_ordinal_cs_simps
                   cs_intro: cat_Kan_cs_intros cat_cs_intros nat_omega_intros
               )+
-        qed (use rhs in \<open>cs_concl cs_simp: cs_intro: V_cs_intros cat_cs_intros\<close>)+
+        qed 
+          (
+            use rhs in
+              \<open>cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros\<close>
+          )+
       qed simp_all
 
       fix \<sigma> assume prems': 
@@ -1190,7 +1194,7 @@ proof-
       then have [cat_cs_simps]: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>0\<rparr> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>0\<rparr>"
         by
           (
-            cs_prems
+            cs_prems cs_shallow
               cs_simp: cat_Kan_cs_simps cat_cs_simps cat_ordinal_cs_simps 
               cs_intro: cat_cs_intros nat_omega_intros
           )
@@ -1200,7 +1204,7 @@ proof-
       then have [cat_cs_simps]: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>"
         by
           (
-            cs_prems
+            cs_prems cs_shallow
               cs_simp:
                 omega_of_set cat_Kan_cs_simps cat_cs_simps cat_ordinal_cs_simps
               cs_intro: cat_cs_intros nat_omega_intros
@@ -1211,22 +1215,22 @@ proof-
         show "\<sigma> : \<FF>' \<mapsto>\<^sub>C\<^sub>F RK23 \<TT> : cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
           by (rule prems'(1))
         then have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
         show "RK_\<sigma>23 \<TT> \<epsilon>' \<FF>' : \<FF>' \<mapsto>\<^sub>C\<^sub>F RK23 \<TT> : cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-          by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+          by (cs_concl cs_intro: cat_cs_intros cat_Kan_cs_intros)
         then have dom_rhs: "\<D>\<^sub>\<circ> (RK_\<sigma>23 \<TT> \<epsilon>' \<FF>'\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
         from 0123 have 013: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
-          by (cs_concl cs_simp: cs_intro: cat_ordinal_cs_intros nat_omega_intros)
+          by (cs_concl cs_intro: cat_ordinal_cs_intros nat_omega_intros)
         from 0123 have 123: "[1\<^sub>\<nat>, 2\<^sub>\<nat>]\<^sub>\<circ> : 1\<^sub>\<nat> \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 2\<^sub>\<nat>"
-          by (cs_concl cs_simp: cs_intro: cat_ordinal_cs_intros nat_omega_intros)
+          by (cs_concl cs_intro: cat_ordinal_cs_intros nat_omega_intros)
 
         from \<sigma>.ntcf_Comp_commute[OF 123] 013 0123 
         have [symmetric, cat_Kan_cs_simps]:
           "\<sigma>\<lparr>NTMap\<rparr>\<lparr>2\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> \<FF>'\<lparr>ArrMap\<rparr> \<lparr>1\<^sub>\<nat>, 2\<^sub>\<nat>\<rparr>\<^sub>\<bullet> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>"
           by
             (
-              cs_prems 
+              cs_prems  
                 cs_simp: cat_cs_simps cat_Kan_cs_simps RK23_ArrMap_app_12 
                 cs_intro: cat_cs_intros
             )
@@ -1242,7 +1246,7 @@ proof-
 
     qed
 
-  qed (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)+
 
 qed
 
@@ -1346,9 +1350,9 @@ proof-
     by (rule assms(3))
 
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret LK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<AA> \<open>LK23 \<TT>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
  
   show ?thesis
   proof(rule is_ntcfI')
@@ -1364,7 +1368,7 @@ proof-
         "LK_\<sigma>23 \<TT> \<eta>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : LK23 \<TT>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> \<FF>'\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         by (cases, use nothing in \<open>simp_all only:\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_ordinal_cs_simps cat_Kan_cs_simps
               cs_intro:
                 cat_cs_intros 
@@ -1380,7 +1384,7 @@ proof-
       using that 0123 
       by (elim cat_ordinal_3_is_arrE, use nothing in \<open>simp_all only:\<close>) (*slow*)
         (
-          cs_concl
+          cs_concl 
             cs_simp:
               cat_cs_simps
               cat_ordinal_cs_simps
@@ -1392,7 +1396,7 @@ proof-
         )+
   qed
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -1420,9 +1424,9 @@ proof-
 
   interpret \<TT>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<AA> \<TT> by (rule assms(1))
   interpret \<KK>23: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>\<KK>23\<close>
-    by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Kan_cs_intros)
   interpret LK23: is_functor \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<AA> \<open>LK23 \<TT>\<close>
-    by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+    by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
 
   show ?thesis
   proof(intro is_cat_lKeI')
@@ -1447,13 +1451,13 @@ proof-
         show "\<eta>' : \<TT> \<mapsto>\<^sub>C\<^sub>F \<FF>' \<circ>\<^sub>C\<^sub>F \<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
           by (intro prems)
         then have dom_lhs: "\<D>\<^sub>\<circ> (\<eta>'\<lparr>NTMap\<rparr>) = 2\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
         show rhs:
           "LK_\<sigma>23 \<TT> \<eta>' \<FF>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23 \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> :
             \<TT> \<mapsto>\<^sub>C\<^sub>F \<FF>' \<circ>\<^sub>C\<^sub>F \<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
           by 
             (
-              cs_concl 
+              cs_concl cs_shallow
                 cs_simp: cat_Kan_cs_simps cat_cs_simps 
                 cs_intro: cat_Kan_cs_intros cat_cs_intros
             )
@@ -1465,7 +1469,7 @@ proof-
           fix a assume prems: "a \<in>\<^sub>\<circ> 2\<^sub>\<nat>"
           then consider \<open>a = 0\<close> | \<open>a = 1\<^sub>\<nat>\<close> unfolding two by auto
           then show 
-            "\<eta>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
+            "\<eta>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = 
               (LK_\<sigma>23 \<TT> \<eta>' \<FF>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23 \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             by (cases; use nothing in \<open>simp_all only:\<close>)
               (
@@ -1477,7 +1481,11 @@ proof-
                     cat_ordinal_cs_simps 
                   cs_intro: cat_Kan_cs_intros cat_cs_intros nat_omega_intros
               )+
-        qed (use rhs in \<open>cs_concl cs_simp: cs_intro: V_cs_intros cat_cs_intros\<close>)+
+        qed 
+          (
+            use rhs in 
+              \<open>cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros\<close>
+          )+
       qed simp_all
 
       fix \<sigma> assume prems': 
@@ -1493,7 +1501,7 @@ proof-
       then have [cat_cs_simps]: "\<eta>'\<lparr>NTMap\<rparr>\<lparr>0\<rparr> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>0\<rparr>"
         by 
           (
-            cs_prems 
+            cs_prems cs_shallow
               cs_simp: cat_Kan_cs_simps cat_cs_simps cat_ordinal_cs_simps 
               cs_intro: cat_cs_intros nat_omega_intros
           )
@@ -1503,7 +1511,7 @@ proof-
       then have [cat_cs_simps]: "\<eta>'\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>2\<^sub>\<nat>\<rparr>"
         by
           (
-            cs_prems
+            cs_prems cs_shallow
               cs_simp:
                 omega_of_set cat_Kan_cs_simps cat_cs_simps cat_ordinal_cs_simps
               cs_intro: cat_cs_intros nat_omega_intros
@@ -1515,23 +1523,23 @@ proof-
         show "\<sigma> : LK23 \<TT> \<mapsto>\<^sub>C\<^sub>F \<FF>' : cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
           by (rule prems'(1))
         then have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
         show "LK_\<sigma>23 \<TT> \<eta>' \<FF>' : LK23 \<TT> \<mapsto>\<^sub>C\<^sub>F \<FF>' : cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-          by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+          by (cs_concl cs_intro: cat_cs_intros cat_Kan_cs_intros)
         then have dom_rhs: "\<D>\<^sub>\<circ> (LK_\<sigma>23 \<TT> \<eta>' \<FF>'\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-          by (cs_concl cs_simp: cat_cs_simps cat_ordinal_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_ordinal_cs_simps)
         from 0123 have 012: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (2\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
-          by (cs_concl cs_simp: cs_intro: cat_ordinal_cs_intros nat_omega_intros)
+          by (cs_concl cs_intro: cat_ordinal_cs_intros nat_omega_intros)
         from 0123 have 013: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
-          by (cs_concl cs_simp: cs_intro: cat_ordinal_cs_intros nat_omega_intros)
+          by (cs_concl cs_intro: cat_ordinal_cs_intros nat_omega_intros)
         from 0123 have 00: "[0, 0]\<^sub>\<circ> = (cat_ordinal (2\<^sub>\<nat>))\<lparr>CId\<rparr>\<lparr>0\<rparr>"
-          by (cs_concl cs_simp: cat_ordinal_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps)
         from \<sigma>.ntcf_Comp_commute[OF 013] 013 0123 
         have [symmetric, cat_Kan_cs_simps]:
           "\<sigma>\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> = \<FF>'\<lparr>ArrMap\<rparr>\<lparr>0, 1\<^sub>\<nat>\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> \<sigma>\<lparr>NTMap\<rparr>\<lparr>0\<rparr>"
           by
             (
-              cs_prems
+              cs_prems 
                 cs_simp: cat_cs_simps cat_Kan_cs_simps 00 LK23_ArrMap_app_01
                 cs_intro: cat_cs_intros cat_ordinal_cs_intros nat_omega_intros
             )
@@ -1543,7 +1551,7 @@ proof-
           then show "\<sigma>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = LK_\<sigma>23 \<TT> \<eta>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             by (cases; use nothing in \<open>simp_all only:\<close>) 
               (
-                cs_concl 
+                cs_concl  
                   cs_simp: cat_ordinal_cs_simps cat_cs_simps cat_Kan_cs_simps 
                   cs_intro: cat_cs_intros
               )+
@@ -1552,7 +1560,7 @@ proof-
 
     qed
 
-  qed (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)+
 
 qed
 
@@ -1582,23 +1590,23 @@ proof-
         (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) : \<AA> \<mapsto>\<mapsto>\<^sub>C cat_Set \<alpha>)"
     proof(intro is_cat_rKe_preservesI \<epsilon>23_is_cat_rKe[OF assms])
       from prems show "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       show "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> :
         (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT>) \<circ>\<^sub>C\<^sub>F \<KK>23 \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT> :
         cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<^sub>C cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<^sub>C cat_Set \<alpha>"
       proof(intro is_cat_rKeI')
         show "\<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_ordinal (3\<^sub>\<nat>)"
-          by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros)
+          by (cs_concl cs_shallow cs_intro: cat_Kan_cs_intros)
         from prems show
           "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT> : cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-          by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_Kan_cs_intros)
+          by (cs_concl cs_intro: cat_cs_intros cat_Kan_cs_intros)
         from prems show 
           "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> :
             Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT> \<circ>\<^sub>C\<^sub>F \<KK>23 \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT> :
             cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_cs_simps cat_Kan_cs_simps
                 cs_intro: cat_cs_intros cat_Kan_cs_intros
             )
@@ -1633,7 +1641,7 @@ proof-
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_cs_simps
                     cs_intro: cat_cs_intros cat_Kan_cs_intros
                 )
@@ -1649,7 +1657,7 @@ proof-
               "\<D>\<^sub>\<circ> ((Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT>)\<lparr>ObjMap\<rparr>) = 3\<^sub>\<nat>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
@@ -1657,7 +1665,7 @@ proof-
               "\<D>\<^sub>\<circ> ((RK23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>))\<lparr>ObjMap\<rparr>) = 3\<^sub>\<nat>"
               by 
                 (
-                  cs_concl 
+                  cs_concl cs_shallow 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps 
                     cs_intro: cat_Kan_cs_intros 
                 )
@@ -1672,7 +1680,7 @@ proof-
                   RK23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>"
                 by (cases; use nothing in \<open>simp_all only:\<close>)
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp:
                         cat_ordinal_cs_simps
                         cat_cs_simps
@@ -1683,7 +1691,7 @@ proof-
             qed 
               (
                 use prems in \<open>
-                  cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros
+                  cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros
                   \<close>
               )+
             from lhs prems have ArrMap_dom_lhs: 
@@ -1691,7 +1699,7 @@ proof-
                 cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
@@ -1700,7 +1708,7 @@ proof-
                 cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
               by 
                 (
-                  cs_concl 
+                  cs_concl cs_shallow 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps 
                     cs_intro: cat_Kan_cs_intros 
                 )
@@ -1730,7 +1738,7 @@ proof-
             qed 
               (
                 use prems in 
-                  \<open>cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros\<close>
+                  \<open>cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros\<close>
               )+
           qed simp_all
 
@@ -1738,7 +1746,10 @@ proof-
             \<GG>' \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT> : 
             cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
             by (intro RK_\<sigma>23_is_ntcf')
-              (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)+
+              (
+                cs_concl cs_shallow 
+                  cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros
+              )+
           show "\<epsilon>' = 
             Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F 
             ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F 
@@ -1749,7 +1760,7 @@ proof-
               cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
               by (intro prems')
             then have dom_lhs: "\<D>\<^sub>\<circ> (\<epsilon>'\<lparr>NTMap\<rparr>) = 2\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
             from prems show 
               "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F 
                 ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F 
@@ -1758,7 +1769,7 @@ proof-
               cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_Kan_cs_simps
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
@@ -1787,7 +1798,7 @@ proof-
                 )\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
                 by (cases; use nothing in \<open>simp_all only:\<close>) 
                   (
-                    cs_concl 
+                    cs_concl
                       cs_simp: 
                         cat_Kan_cs_simps 
                         cat_ordinal_cs_simps
@@ -1801,7 +1812,7 @@ proof-
                         cat_prod_cs_intros 
                         \<TT>.HomCod.cat_Hom_in_Vset
                   )+
-            qed (cs_concl cs_simp: cs_intro: cat_cs_intros V_cs_intros)+
+            qed (cs_concl cs_intro: cat_cs_intros V_cs_intros)+
 
           qed simp_all
 
@@ -1809,8 +1820,7 @@ proof-
             "\<sigma> :
               \<GG>' \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT> :
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-            "\<epsilon>' =
-              Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23)"
+            "\<epsilon>' = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23)"
 
           interpret \<sigma>: is_ntcf 
             \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close> \<open>cat_Set \<alpha>\<close> \<GG>' \<open>Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT>\<close> \<sigma>
@@ -1822,7 +1832,7 @@ proof-
           from this prems 0123 have \<epsilon>'_NTMap_app_0: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>0\<rparr> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>0\<rparr>"
             by
               (
-                cs_prems
+                cs_prems  
                   cs_simp:
                     cat_ordinal_cs_simps
                     cat_cs_simps
@@ -1846,9 +1856,7 @@ proof-
           from prems''(2) have 
             "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> =
               (
-                Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F
-                ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F
-                (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23)
+                Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>23)
               )\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>"
             by auto
           from this prems 0123 have \<epsilon>'_NTMap_app_1:  
@@ -1873,30 +1881,30 @@ proof-
           from 0123 have 012: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (2\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
             by 
               (
-                cs_concl cs_simp: cs_intro:
+                cs_concl cs_intro:
                   cat_ordinal_cs_intros nat_omega_intros
               )
           from 0123 have 013: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
             by 
               ( 
-                cs_concl cs_simp: cs_intro: 
+                cs_concl cs_intro: 
                   cat_ordinal_cs_intros nat_omega_intros
               )
           from 0123 have 123: "[1\<^sub>\<nat>, 2\<^sub>\<nat>]\<^sub>\<circ> : 1\<^sub>\<nat> \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 2\<^sub>\<nat>"
             by 
               (
-                cs_concl cs_simp: cs_intro:
+                cs_concl cs_intro:
                   cat_ordinal_cs_intros nat_omega_intros
               )
           from 0123 have 11: "[1\<^sub>\<nat>, 1\<^sub>\<nat>]\<^sub>\<circ> = (cat_ordinal (2\<^sub>\<nat>))\<lparr>CId\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>"
-            by (cs_concl cs_simp: cat_ordinal_cs_simps)
+            by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps)
 
           from \<sigma>.ntcf_Comp_commute[OF 123] prems 012 013 
           have [cat_Kan_cs_simps]:
             "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> \<GG>'\<lparr>ArrMap\<rparr>\<lparr>1\<^sub>\<nat>, 2\<^sub>\<nat>\<rparr>\<^sub>\<bullet> = \<sigma>\<lparr>NTMap\<rparr>\<lparr>1\<^sub>\<nat>\<rparr>"
             by (*slow*)
               (
-                cs_prems
+                cs_prems 
                   cs_simp:
                     cat_cs_simps
                     cat_Kan_cs_simps
@@ -1915,19 +1923,19 @@ proof-
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
               by (rule prems''(1))
             then have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
             show "RK_\<sigma>23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>) \<epsilon>' \<GG>' :
               \<GG>' \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F RK23 \<TT> : 
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
               by 
                 (
-                  cs_concl 
+                  cs_concl cs_shallow
                     cs_simp: cat_Kan_cs_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
             then have dom_rhs: 
               "\<D>\<^sub>\<circ> (RK_\<sigma>23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>) \<epsilon>' \<GG>'\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
             show "\<sigma>\<lparr>NTMap\<rparr> = RK_\<sigma>23 (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(a,-) \<circ>\<^sub>C\<^sub>F \<TT>) \<epsilon>' \<GG>'\<lparr>NTMap\<rparr>"
             proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
               fix c assume "c \<in>\<^sub>\<circ> 3\<^sub>\<nat>"
@@ -1940,7 +1948,7 @@ proof-
                     cs_concl cs_simp:
                       cat_Kan_cs_simps \<epsilon>'_NTMap_app_1 \<epsilon>'_NTMap_app_0
                   )+
-            qed (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros V_cs_intros)+
+            qed (cs_concl  cs_intro: cat_Kan_cs_intros V_cs_intros)+
 
           qed simp_all
 
@@ -1964,10 +1972,14 @@ proof-
   interpret \<TT>: is_functor \<alpha> \<open>cat_ordinal (2\<^sub>\<nat>)\<close> \<AA> \<TT> by (rule assms(1))
 
   from ord_of_nat_\<omega> interpret cat_ordinal_3: finite_category \<alpha> \<open>cat_ordinal (3\<^sub>\<nat>)\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
 
   from 0123 have 002: "[0, 0]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (2\<^sub>\<nat>)\<^esub> 0"
-    by (cs_concl cs_simp: cat_ordinal_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_ordinal_cs_simps cs_intro: cat_cs_intros
+      )
 
   show ?thesis
   proof(intro is_cat_pw_lKeI \<eta>23_is_cat_rKe assms, unfold cat_op_simps)
@@ -1989,7 +2001,7 @@ proof-
           by (intro \<eta>23_is_cat_rKe assms)
       qed simp_all
       from prems show "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-        by (cs_concl cs_simp: cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
       have 
         "op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<TT> :
@@ -1998,7 +2010,7 @@ proof-
           cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<^sub>C cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<^sub>C op_cat (cat_Set \<alpha>)"
       proof(intro is_cat_lKeI')
         show "\<KK>23 : cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_ordinal (3\<^sub>\<nat>)"
-          by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros)
+          by (cs_concl cs_shallow cs_intro: cat_Kan_cs_intros)
         from prems show "op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F LK23 \<TT> :
           cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
           by 
@@ -2054,24 +2066,28 @@ proof-
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_op_simps
                     cs_intro: cat_Kan_cs_intros cat_cs_intros cat_op_intros
                 )
             from prems show rhs: "LK23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>) :
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
-              by (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros cat_cs_intros)
+              by (cs_concl cs_intro: cat_Kan_cs_intros cat_cs_intros)
             from lhs prems have ObjMap_dom_lhs:
               "\<D>\<^sub>\<circ> ((op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F LK23 \<TT>)\<lparr>ObjMap\<rparr>) = 3\<^sub>\<nat>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps cat_op_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
             from rhs prems have ObjMap_dom_rhs:
               "\<D>\<^sub>\<circ> (LK23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>)\<lparr>ObjMap\<rparr>) = 3\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by 
+                (
+                  cs_concl cs_shallow 
+                    cs_simp: cat_ordinal_cs_simps cat_cs_simps
+                )
             show
               "(op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F LK23 \<TT>)\<lparr>ObjMap\<rparr> =
                 LK23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>)\<lparr>ObjMap\<rparr>"
@@ -2107,14 +2123,14 @@ proof-
                 cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_ordinal_cs_simps cat_cs_simps cat_op_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
             from rhs prems have ArrMap_dom_rhs:
               "\<D>\<^sub>\<circ> (LK23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>)\<lparr>ArrMap\<rparr>) =
                 cat_ordinal (3\<^sub>\<nat>)\<lparr>Arr\<rparr>"
-              by (cs_concl cs_simp: cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 
             show
               "(op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F LK23 \<TT>)\<lparr>ArrMap\<rparr> =
@@ -2128,7 +2144,7 @@ proof-
                   LK23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
                 by (elim cat_ordinal_3_is_arrE, (simp_all only:)?)
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp: cat_cs_simps cat_Kan_cs_simps cat_op_simps 
                       cs_intro: 
                         cat_ordinal_cs_intros 
@@ -2153,7 +2169,7 @@ proof-
             cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
             by
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps cat_Kan_cs_simps cat_op_simps 
                   cs_intro: cat_Kan_cs_intros cat_cs_intros cat_op_intros
               )
@@ -2171,7 +2187,7 @@ proof-
               cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
               by (rule prems'(2))
             from lhs have "\<D>\<^sub>\<circ> (\<eta>'\<lparr>NTMap\<rparr>) = cat_ordinal (2\<^sub>\<nat>)\<lparr>Obj\<rparr>"
-              by (cs_concl cs_simp: cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_cs_simps)
             from prems show rhs: 
               "LK_\<sigma>23
                 (
@@ -2183,12 +2199,16 @@ proof-
               cat_ordinal (2\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
               by 
                 (
-                  cs_concl 
+                  cs_concl
                     cs_simp: cat_Kan_cs_simps cat_op_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros cat_op_intros
                 )
             from lhs have dom_lhs: "\<D>\<^sub>\<circ> (\<eta>'\<lparr>NTMap\<rparr>) = 2\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by 
+                (
+                  cs_concl cs_shallow 
+                    cs_simp: cat_ordinal_cs_simps cat_cs_simps
+                )
             from rhs have dom_rhs: "\<D>\<^sub>\<circ> ((LK_\<sigma>23
               (
                 op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>) \<eta>' \<FF>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F 
@@ -2217,7 +2237,7 @@ proof-
                   )\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
                 by (cases, use nothing in \<open>simp_all only:\<close>)
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp: 
                         cat_ordinal_cs_simps 
                         cat_Kan_cs_simps 
@@ -2234,7 +2254,7 @@ proof-
                         cat_op_intros 
                         \<TT>.HomCod.cat_Hom_in_Vset
                   )+
-            qed (cs_concl cs_simp: cs_intro: V_cs_intros cat_cs_intros)+
+            qed (cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros)+
           qed simp_all
 
           fix \<sigma> assume prems'':
@@ -2306,9 +2326,9 @@ proof-
               )+
 
           from 0123 have 013: "[0, 1\<^sub>\<nat>]\<^sub>\<circ> : 0 \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> 1\<^sub>\<nat>"
-            by (cs_concl cs_simp: cs_intro: cat_ordinal_cs_intros nat_omega_intros)
+            by (cs_concl cs_intro: cat_ordinal_cs_intros nat_omega_intros)
           from 0123 have 00: "[0, 0]\<^sub>\<circ> = (cat_ordinal (2\<^sub>\<nat>))\<lparr>CId\<rparr>\<lparr>0\<rparr>"
-            by (cs_concl cs_simp: cat_ordinal_cs_simps)
+            by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps)
 
           from \<sigma>.ntcf_Comp_commute[OF 013] prems 0123 013
           have [cat_Kan_cs_simps]:
@@ -2343,15 +2363,15 @@ proof-
               cat_ordinal (3\<^sub>\<nat>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat (cat_Set \<alpha>)"
               by
                 (
-                  cs_concl
+                  cs_concl cs_shallow
                     cs_simp: cat_Kan_cs_simps 
                     cs_intro: cat_Kan_cs_intros cat_cs_intros
                 )
             from lhs have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
             from rhs have dom_rhs:
               "\<D>\<^sub>\<circ> (LK_\<sigma>23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>) \<eta>' \<FF>'\<lparr>NTMap\<rparr>) = 3\<^sub>\<nat>"
-              by (cs_concl cs_simp: cat_ordinal_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_ordinal_cs_simps cat_cs_simps)
 
             show "\<sigma>\<lparr>NTMap\<rparr> = LK_\<sigma>23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>) \<eta>' \<FF>'\<lparr>NTMap\<rparr>"
             proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
@@ -2363,7 +2383,7 @@ proof-
                   LK_\<sigma>23 (op_cf Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(-,a) \<circ>\<^sub>C\<^sub>F \<TT>) \<eta>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
                 by (cases, use nothing in \<open>simp_all only:\<close>)
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp:
                         cat_ordinal_cs_simps
                         cat_cs_simps
@@ -2379,7 +2399,7 @@ proof-
                         cat_op_intros
                         nat_omega_intros
                   )+
-            qed (cs_concl cs_simp: cs_intro: cat_Kan_cs_intros V_cs_intros)+
+            qed (cs_concl cs_intro: cat_Kan_cs_intros V_cs_intros)+
 
           qed simp_all
 
@@ -2396,7 +2416,7 @@ proof-
           op_cat (cat_Set \<alpha>)"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_op_simps 
               cs_intro: cat_cs_intros cat_Kan_cs_intros cat_op_intros
           )

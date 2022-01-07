@@ -90,6 +90,9 @@ text\<open>Special properties.\<close>
 
 lemma vid_on_vsubset_vtimes: "vid_on A \<subseteq>\<^sub>\<circ> A \<times>\<^sub>\<circ> A" by clarsimp
 
+lemma VLambda_id[simp]: "VLambda A id = vid_on A"  
+  by (simp add: id_def vid_on_def Setcompr_eq_image VLambda_def)
+
 
 subsubsection\<open>Constant function\<close>
 

@@ -678,6 +678,18 @@ text\<open>Auxiliary results.\<close>
 lemma vempty_in_Vset_succ[simp, intro]: "0 \<in>\<^sub>\<circ> Vfrom a (succ b)"
   unfolding Vfrom_succ by force
 
+lemma Limit_vid_on_in_Vset:
+  assumes "Limit \<alpha>" and "A \<in>\<^sub>\<circ> Vset \<alpha>"
+  shows "vid_on A \<in>\<^sub>\<circ> Vset \<alpha>"
+  by
+    (
+      rule vbrelation.vbrelation_Limit_in_VsetI
+        [
+          OF vbrelation_vid_on assms(1) ,
+          unfolded vdomain_vid_on vrange_vid_on, OF assms(2,2)
+        ]
+    )
+
 lemma Ord_vpair_in_Vset_succI[intro]:
   assumes "Ord \<alpha>" and "a \<in>\<^sub>\<circ> Vset \<alpha>" and "b \<in>\<^sub>\<circ> Vset \<alpha>"
   shows "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> Vset (succ (succ \<alpha>))"

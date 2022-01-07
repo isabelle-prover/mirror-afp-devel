@@ -95,7 +95,7 @@ lemma cn_dghm_comp_is_dghm:
   shows "smcf_dghm \<FF> : op_dg (smc_dg \<AA>) \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> smc_dg \<BB>"
   using assms 
   unfolding slicing_simps slicing_commute
-  by (cs_concl cs_intro: slicing_intros)
+  by (cs_concl cs_shallow cs_intro: slicing_intros)
 
 lemma cn_dghm_comp_is_dghm'[slicing_intros]: 
   assumes "\<FF> : op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
@@ -253,7 +253,7 @@ proof-
           simp: slicing_simps smc_op_simps
       )
   from assms show ?thesis
-    unfolding gf by (cs_concl cs_simp: smc_op_simps) 
+    unfolding gf by (cs_concl cs_shallow cs_simp: smc_op_simps) 
 qed
 
 lemma smcf_eqI:
@@ -269,8 +269,10 @@ proof-
   interpret R: is_semifunctor \<alpha> \<CC> \<DD> \<FF> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<GG> = \<D>\<^sub>\<circ> \<FF>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<GG> = \<D>\<^sub>\<circ> \<FF>" 
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
     from assms(5,6) have sup: "\<GG>\<lparr>HomDom\<rparr> = \<FF>\<lparr>HomDom\<rparr>" "\<GG>\<lparr>HomCod\<rparr> = \<FF>\<lparr>HomCod\<rparr>" 
       by (simp_all add: smc_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<GG> \<Longrightarrow> \<GG>\<lparr>a\<rparr> = \<FF>\<lparr>a\<rparr>" for a 
@@ -298,7 +300,8 @@ qed (auto intro: assms(1,2) simp: assms)
 lemma (in is_semifunctor) smcf_def: 
   "\<FF> = [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<FF>\<lparr>Obj\<rparr>, \<FF>\<lparr>Arr\<rparr>, \<FF>\<lparr>Dom\<rparr>, \<FF>\<lparr>Cod\<rparr>]\<^sub>\<circ> = 4\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<FF> = \<D>\<^sub>\<circ> [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
@@ -321,7 +324,10 @@ proof-
     HomCod.smc_in_Vset
   from assms(2) show ?thesis
     by (subst smcf_def) 
-      (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_semifunctor) smcf_is_semifunctor_if_ge_Limit:
@@ -357,10 +363,12 @@ proof-
     smcf_ArrMap_vsubset_Vset
   from HomDom.smc_semicategory_in_Vset_4 have [smc_cs_intros]:
     "\<AA> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   from HomCod.smc_semicategory_in_Vset_4 have [smc_cs_intros]:
     "\<BB> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   show ?thesis
     by (subst smcf_def, succ_of_numeral)
       (
@@ -383,7 +391,7 @@ proof(rule vsubset_in_VsetI)
     show "\<FF> \<in>\<^sub>\<circ> Vset (\<alpha> + 7\<^sub>\<nat>)" by (rule smcf_in_Vset_7)
   qed
   from assms(2) show "Vset (\<alpha> + 7\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma small_smcfs[simp]: "small {\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>}"
@@ -696,7 +704,7 @@ proof-
     fix g b c f a assume "g : b \<mapsto>\<^bsub>\<AA>\<^esub> c" "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
     with assms show "(\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr> = 
       (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
-      by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   qed 
     (
       auto 
@@ -1110,7 +1118,7 @@ proof-
     from assms show "smcf_dghm (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>) : smc_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: slicing_commute[symmetric] 
             cs_intro: dg_cn_cs_intros slicing_intros
         )
@@ -1119,7 +1127,7 @@ proof-
       (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_cs_simps smc_cn_cs_simps smc_op_simps 
             cs_intro: smc_cs_intros
         )
@@ -1149,7 +1157,7 @@ proof-
       "smcf_dghm (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>) : smc_dg (op_smc \<AA>) \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: slicing_commute[symmetric]
             cs_intro: dg_cn_cs_intros slicing_intros
         )
@@ -1164,7 +1172,7 @@ proof-
         (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: smc_cs_simps smc_cn_cs_simps smc_op_simps 
             cs_intro: smc_cs_intros
         )
@@ -1328,7 +1336,7 @@ proof-
       "smcf_dghm (dghm_const \<CC> \<DD> a f) : smc_dg \<CC> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> smc_dg \<DD>"
       by 
         ( 
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: slicing_commute[symmetric] 
             cs_intro: dg_cs_intros slicing_intros
         )
@@ -1361,14 +1369,22 @@ lemma (in is_semifunctor) smcf_smcf_comp_smcf_const[smc_cs_simps]:
 proof(rule smcf_dghm_eqI)
   interpret \<CC>: semicategory \<alpha> \<CC> by (rule assms(1))
   from assms(2) show "smcf_const \<BB> \<CC> a f \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros
+      )
   from assms(2) show "smcf_const \<AA> \<CC> a f : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps assms(3) cs_intro: smc_cs_intros
+      )
   from is_dghm.dghm_dghm_comp_dghm_const[
     OF smcf_is_dghm \<CC>.smc_digraph, unfolded slicing_simps, OF assms(2)
     ]
   show "smcf_dghm (smcf_const \<BB> \<CC> a f \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>) = smcf_dghm (smcf_const \<AA> \<CC> a f)"
-    by (cs_prems cs_simp: slicing_simps slicing_commute)
+    by (cs_prems cs_shallow cs_simp: slicing_simps slicing_commute)
 qed simp_all
 
 lemmas [smc_cs_simps] = is_semifunctor.smcf_smcf_comp_smcf_const
@@ -1984,7 +2000,7 @@ proof-
        unfolding inv_dghm_components
        by (intro v11.v11_vconverse_app)
          (
-           cs_concl 
+           cs_concl cs_shallow 
             cs_intro: smc_cs_intros V_cs_intros
             cs_simp: V_cs_simps smc_cs_simps
          )+

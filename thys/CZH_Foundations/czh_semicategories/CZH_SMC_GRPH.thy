@@ -168,7 +168,7 @@ proof
   show "\<exists>!f. f : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>"
   proof
     show dghm_0: "dghm_0 \<AA> : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (simp add: dghm_0_is_dghm digraph_axioms is_ft_dghm.axioms(1))
+      by (simp add: dghm_0_is_ft_dghm digraph_axioms is_ft_dghm.axioms(1))
     fix \<FF> assume prems: "\<FF> : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>" 
     then interpret \<FF>: is_dghm \<alpha> dg_0 \<AA> \<FF> .
     show "\<FF> = dghm_0 \<AA>"

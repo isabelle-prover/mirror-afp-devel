@@ -556,6 +556,8 @@ definition fflip :: "V \<Rightarrow> V"
 
 text\<open>Elementary properties.\<close>
 
+lemma fflip_vempty[simp]: "fflip 0 = 0" unfolding fflip_def by auto
+
 lemma fflip_vsv: "vsv (fflip f)"
   by (intro vsvI) (auto simp: fflip_def)
 

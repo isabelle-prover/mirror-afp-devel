@@ -1,6 +1,6 @@
 signature CS_COND_SIMP =
 sig
-datatype match = mdefault | mfull;
+datatype match = mdefault | mshallow | mfull;
 datatype ist = ist_simple | ist_compound;
 datatype is_thm = cs_simp of thm list | cs_intro of thm list;
 val concl_simp_of_simp : thm -> thm
@@ -9,8 +9,10 @@ val remdups_tac : Proof.context -> int -> tactic
 val cs_concl_step_tac :
   Proof.context -> bool -> match -> thm list -> int -> tactic
 val cs_concl_step : Proof.context -> bool -> match -> thm list -> Method.method
-val cs_intro_step_tac : Proof.context -> bool -> thm list -> int -> tactic
-val cs_intro_search_tac : Proof.context -> bool -> thm list -> int -> tactic
+val cs_intro_step_tac : 
+  Proof.context -> bool -> match -> thm list -> int -> tactic
+val cs_intro_search_tac : 
+  Proof.context -> bool -> match -> thm list -> int -> tactic
 val cs_concl_tac :
   Proof.context -> bool -> match -> ist -> is_thm list -> int -> tactic
 val cs_concl :
@@ -28,8 +30,6 @@ val cs_prems_step_tac :
   int ->
   thm ->
   thm Seq.seq
-val cs_prems_step: 
-  Proof.context -> bool -> match -> ist -> is_thm list -> Method.method
 val cs_prems_tac :
   Proof.context -> bool -> match -> ist -> thm list -> is_thm list -> tactic
 val cs_prems: 
@@ -93,16 +93,25 @@ val _ = Theory.setup
 
 (** Match function selector **)
 
-datatype match = mdefault | mfull;
+datatype match = mdefault | mshallow | mfull;
 
 fun fun_of_match mdefault = CS_UM.match_inst_rec
+  | fun_of_match mshallow = CS_UM.match_inst_rec
   | fun_of_match mfull = CS_UM.match_inst_list;
 
 fun match_of_cs_match "cs_default" = mdefault
+  | match_of_cs_match "cs_shallow" = mshallow
   | match_of_cs_match "cs_full" = mfull
   | match_of_cs_match _ = error "match_of_cs_match: invalid keyword";
 
-val cs_match_parser = Scan.lift (Scan.optional (\<^keyword>\<open>cs_full\<close>) "cs_default");
+val cs_shallow_parser =
+  Scan.lift (Scan.optional \<^keyword>\<open>cs_shallow\<close> "cs_default");
+
+val cs_match_parser = 
+  Scan.lift 
+    (
+      Scan.optional (\<^keyword>\<open>cs_full\<close> || \<^keyword>\<open>cs_shallow\<close>) "cs_default"
+    );
 
 
 (** Introduction step selector **)
@@ -182,10 +191,50 @@ fun match_concl_tac ctxt m rwr =
     )
     ctxt;
 
+fun match_concl_tac' ctxt m rwr_thms i st =
+  let
+    val sts = 
+      Subgoal.FOCUS
+        (
+          fn {context = ctxt', concl = concl_ct, params = params, ...} =>
+            let
+              
+              val t = concl_ct |> Thm.term_of |> Logic.strip_imp_concl
+              val thm_opt = find_first 
+                (
+                  fn rwr_thm => t 
+                    |> concl_match_inst m ctxt' rwr_thm  
+                    |> null 
+                    |> not
+                ) 
+                rwr_thms
+              val thms = case thm_opt of SOME thm => single thm | NONE => []
+            in 
+              ONLY_IF_NULL params
+                (
+                  HEADGOAL (Classical.rule_tac ctxt' (only_if_not_null thms) [])
+                  handle
+                      Empty => no_tac
+                    | Pattern.MATCH => no_tac
+                )
+            end
+        )
+        ctxt
+        i 
+        st
+  in
+    case sts |> Seq.pull of 
+        NONE => Seq.empty 
+      | SOME sts => sts |> fst |> Seq.single
+  end;
+
 fun cs_concl_step_tac ctxt verbose m rwr_thms i st =
   let
     val _ = if verbose then print_state ctxt "simp: " st else ()
-    val tacs = map (match_concl_tac ctxt m) rwr_thms
+    val comp_tac = case m of 
+        mdefault => FIRST_APPEND' (map (match_concl_tac ctxt mdefault) rwr_thms)
+      | mshallow => (match_concl_tac' ctxt mshallow rwr_thms)
+      | mfull => FIRST_APPEND' (map (match_concl_tac ctxt mdefault) rwr_thms)
   in 
     Subgoal.FOCUS_PARAMS
       (
@@ -195,7 +244,7 @@ fun cs_concl_step_tac ctxt verbose m rwr_thms i st =
             APPEND
               (
                 CONVERSION Thm.eta_conversion 1
-                THEN FIRST_APPEND' tacs 1
+                THEN comp_tac 1
                 THEN TRY (remdups_tac ctxt' 1)
               )
           )
@@ -214,7 +263,7 @@ val _ = Theory.setup
     Method.setup
       \<^binding>\<open>cs_concl_step\<close>
       (
-        cs_match_parser -- Attrib.thms >>
+        cs_shallow_parser -- Attrib.thms >>
           (
             fn (csm, thms) => fn ctxt =>
               cs_concl_step ctxt false (match_of_cs_match csm) (rev thms)
@@ -226,6 +275,10 @@ val _ = Theory.setup
 
 
 (*** Introduction for conditional simplification ***)
+
+fun cs_intro_thms_of_cs_match mdefault thms = thms
+  | cs_intro_thms_of_cs_match mshallow thms = thms |> rev
+  | cs_intro_thms_of_cs_match mfull thms = thms
 
 val default_intro_thms = [@{thm TrueI}];
 
@@ -241,9 +294,8 @@ fun is_sc_match ctxt (sc_rule, t) =
     |> not
   end;
 
-fun cs_intro_step_tac ctxt verbose all_rwrs i =
+fun cs_intro_step_tac ctxt verbose m all_rwrs i =
   let
-    val all_rwrs' = all_rwrs @ default_intro_thms
     fun get_hd_goal_concl_t st = st
       |> Thm.prems_of
       |> hd
@@ -251,6 +303,25 @@ fun cs_intro_step_tac ctxt verbose all_rwrs i =
       handle
           Empty => Thm.full_prop_of st
         | Pattern.MATCH => Thm.full_prop_of st
+    fun get_rwrs ctxt st m all_rwrs = 
+      let 
+        fun get_rwrs_filter all_rwrs = filter
+          (fn rwr => is_sc_match ctxt (rwr, get_hd_goal_concl_t st))
+          all_rwrs
+        fun get_rwrs_fst all_rwrs = 
+          let
+            val rwr_opt = find_first
+              (fn rwr => is_sc_match ctxt (rwr, get_hd_goal_concl_t st))
+              all_rwrs 
+          in 
+            case rwr_opt of 
+                SOME rwr => single rwr 
+              | NONE => [] 
+          end
+        fun get_rwrs_impl mdefault all_rwrs = get_rwrs_filter all_rwrs
+          | get_rwrs_impl mshallow all_rwrs = get_rwrs_fst all_rwrs
+          | get_rwrs_impl mfull all_rwrs = get_rwrs_filter all_rwrs
+      in get_rwrs_impl m all_rwrs end
     fun side_cond_impl_tac ctxt verbose all_rwrs i st =
       let
         val _ = if verbose then print_state ctxt "intro: " st else ()
@@ -259,13 +330,11 @@ fun cs_intro_step_tac ctxt verbose all_rwrs i =
             SOME _ => sts
           | NONE =>
               let
-                val rwrs = filter
-                  (fn rwr => is_sc_match ctxt (rwr, get_hd_goal_concl_t st)) 
-                  all_rwrs
+                val rwrs = get_rwrs ctxt st m all_rwrs
                 val scrs = rwrs
                   |> map
                     (
-                      fn rwr => 
+                      fn rwr =>
                         (fn thm => thm |> single |> match_tac ctxt) rwr i st
                     )
               in fold Seq.append scrs Seq.empty end
@@ -275,35 +344,55 @@ fun cs_intro_step_tac ctxt verbose all_rwrs i =
       (
         fn {context = ctxt', ...} =>
           CONVERSION Thm.eta_conversion 1
-          THEN side_cond_impl_tac ctxt' verbose all_rwrs' 1 
+          THEN side_cond_impl_tac ctxt' verbose all_rwrs 1 
           THEN TRY (remdups_tac ctxt' 1)
       )
       ctxt
       i
   end;
 
-fun cs_intro_step ctxt verbose thms = 
-  SIMPLE_METHOD' (cs_intro_step_tac ctxt verbose thms);
+
+fun cs_intro_step ctxt verbose m thms = 
+  SIMPLE_METHOD' (cs_intro_step_tac ctxt verbose m (thms @ default_intro_thms));
 
 val _ = Theory.setup
   (
     Method.setup
       \<^binding>\<open>cs_intro_step\<close>
-      (Attrib.thms >> (fn thms => fn ctxt => cs_intro_step ctxt false thms))
+      (
+        cs_shallow_parser -- Attrib.thms >> 
+          (
+            fn (csm, thms) => fn ctxt =>  
+              let val m = match_of_cs_match csm
+              in
+                cs_intro_step ctxt false m (cs_intro_thms_of_cs_match m thms) 
+              end
+          )
+      )
       "apply side condition introduction rules once"
   );
 
-fun cs_intro_search_tac ctxt verbose all_rwrs i =
-  DEPTH_SOLVE_1 (cs_intro_step_tac ctxt verbose all_rwrs i);
+fun cs_intro_search_tac ctxt verbose m thms i =
+  DEPTH_SOLVE_1 (cs_intro_step_tac ctxt verbose m thms i);
 
-fun cs_intro_search ctxt verbose thms = 
-  SIMPLE_METHOD' (cs_intro_search_tac ctxt verbose thms);
+fun cs_intro_search ctxt verbose m thms = 
+  let val thms' = thms @ default_intro_thms
+  in SIMPLE_METHOD' (cs_intro_search_tac ctxt verbose m thms') end;
 
 val _ = Theory.setup
   (
     Method.setup
       \<^binding>\<open>cs_intro_search\<close>
-      (Attrib.thms >> (fn thms => fn ctxt => cs_intro_search ctxt false thms))
+      (
+        cs_shallow_parser -- Attrib.thms >> 
+          (
+            fn (csm, thms) => fn ctxt => 
+              let val m = match_of_cs_match csm
+              in
+                cs_intro_search ctxt false m (cs_intro_thms_of_cs_match m thms)
+              end 
+          )
+      )
       "repeated application of the side condition introduction rules"
   );
 
@@ -332,24 +421,34 @@ fun process_cs_simps _ [] = []
 
 (*** Combined simplification and introduction solver ***)
 
+fun preprocess_cs_is_thms m (cs_intro thms) = 
+      thms |> cs_intro_thms_of_cs_match m |> cs_intro
+  | preprocess_cs_is_thms _ (cs_simp thms) = 
+      thms |> rev |> cs_simp
+
 fun cs_concl_tac ctxt verbose m ist is_thms i =
   let
     fun concl_step_impl_compound_tac ctxt verbose m (cs_simp thms) =
-        cs_concl_step_tac ctxt verbose m (rev thms)
+          cs_concl_step_tac ctxt verbose m thms
       | concl_step_impl_compound_tac ctxt verbose _ (cs_intro thms) =
-        (
-          cs_intro_search_tac ctxt verbose thms 
-          APPEND' cs_intro_step_tac ctxt verbose thms
-        )
+          let val thms' = thms @ default_intro_thms
+          in
+            (
+              cs_intro_search_tac ctxt verbose m thms'
+              APPEND' cs_intro_step_tac ctxt verbose m thms' 
+            )
+          end
     fun concl_step_impl_simple_tac ctxt verbose m (cs_simp thms) =
-        cs_concl_step_tac ctxt verbose m (rev thms)
-      | concl_step_impl_simple_tac ctxt verbose _ (cs_intro thms) =
-        cs_intro_step_tac ctxt verbose thms
-    val conc_step_impl_tac = case ist of
+          cs_concl_step_tac ctxt verbose m thms
+      | concl_step_impl_simple_tac ctxt verbose m (cs_intro thms) =
+          let val thms' = thms @ default_intro_thms
+          in cs_intro_step_tac ctxt verbose m thms' end
+    val is_thms' = map (preprocess_cs_is_thms m) is_thms
+    val concl_step_impl_tac = case ist of
         ist_simple => concl_step_impl_simple_tac
       | ist_compound => concl_step_impl_compound_tac
   in 
-    (FIRST_APPEND' (map (conc_step_impl_tac ctxt verbose m) is_thms) i)
+    (FIRST_APPEND' (map (concl_step_impl_tac ctxt verbose m) is_thms') i)
     |> DEPTH_SOLVE_1
   end;
 
@@ -483,7 +582,7 @@ val _ = Theory.setup
     Method.setup
       \<^binding>\<open>cs_prems_atom_step\<close>
       (
-        cs_match_parser -- Attrib.thms >>
+        cs_shallow_parser -- Attrib.thms >>
           (
             fn (csm, thms) => fn ctxt =>
               cs_prems_atom_step ctxt (match_of_cs_match csm) (rev thms)
@@ -523,36 +622,6 @@ fun mk_prem_thms is_thms =
       |> flat
     val concl_is_thms = process_cs_simps (map_concl_simp_of_simp) is_thms
   in (prem_rwr_thms, concl_is_thms) end;
-
-fun cs_prems_step ctxt verbose m ist is_thms = 
-  let val (prem_rwr_thms, concl_is_thms) = mk_prem_thms is_thms
-  in 
-    SIMPLE_METHOD' (
-      cs_prems_step_tac ctxt verbose m ist prem_rwr_thms concl_is_thms
-      )
-  end;
-
-val _ = Theory.setup
-  (
-    Method.setup
-      \<^binding>\<open>cs_prems_step\<close>
-      (
-        Scan.option (Scan.lift Args.bang) --
-        cs_match_parser --
-        cs_ist_parser --
-        Scan.repeat cs_simp_intro_parser >>
-        (
-          fn (((verbose, csm), ist), is_thms) => fn ctxt =>
-            cs_prems_step 
-              ctxt 
-              (case verbose of SOME _ => true | NONE => false)
-              (match_of_cs_match csm)
-              (ist_of_cs_ist ist) 
-              is_thms
-        )
-      )
-      "conditional simplification of premises: single step"
-  );
 
 fun cs_prems_tac ctxt verbose m ist prem_rwr_thms concl_is_thms =
   REPEAT_SOME (cs_prems_step_tac ctxt verbose m ist prem_rwr_thms concl_is_thms);

@@ -404,7 +404,8 @@ lemma cat_comma_Dom_vrange:
   shows "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>) \<subseteq>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset)
   fix ABF assume "ABF \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>)"
-  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
+  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" 
+    by (cs_prems cs_shallow cs_simp: cat_comma_cs_simps)
   then obtain A B 
     where ABF: "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
       and A: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
@@ -421,7 +422,11 @@ proof(rule vsv.vsv_vrange_vsubset)
       and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by (elim cat_comma_HomE[OF _ assms(1,2)])
   from ABF this A B show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
 qed (auto intro: cat_comma_cs_intros)
 
 
@@ -446,7 +451,8 @@ lemma cat_comma_Cod_vrange:
   shows "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>) \<subseteq>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset)
   fix ABF assume "ABF \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>)"
-  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" by (cs_prems cs_simp: cat_comma_cs_simps)
+  then have "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" 
+    by (cs_prems cs_shallow cs_simp: cat_comma_cs_simps)
   then obtain A B 
     where F: "ABF \<in>\<^sub>\<circ> cat_comma_Hom \<GG> \<HH> A B"
       and A: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
@@ -463,7 +469,11 @@ proof(rule vsv.vsv_vrange_vsubset)
       and "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by (elim cat_comma_HomE[OF _ assms(1,2)])
   from F this A B show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
 qed (auto intro: cat_comma_cs_intros)
 
 
@@ -489,12 +499,12 @@ proof(intro is_arrI)
     unfolding assms(3-6)
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_comma_cs_simps 
           cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   with assms(7-11) show "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
-    unfolding assms(3-6) by (cs_concl cs_simp: cat_comma_cs_simps)+
+    unfolding assms(3-6) by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)+
 qed
 
 lemma cat_comma_is_arrD[dest]:
@@ -625,12 +635,19 @@ proof-
   from assms(2,3) g h f f' g' h' f'' have 
     "[B, C, G]\<^sub>\<circ> : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
     unfolding ABCGF_def F_def G_def A_def B_def C_def
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI)+
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI
+      )+
   moreover from assms(2,3) g h f f' g' h' f'' have 
     "[A, B, F]\<^sub>\<circ> : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
     unfolding ABCGF_def F_def G_def A_def B_def C_def
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI)+
-  thm that
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_is_arrI
+      )+
   ultimately show ?thesis using that ABCGF_def by auto
 qed
 
@@ -653,7 +670,7 @@ lemma cat_comma_Comp_app[cat_comma_cs_simps]:
   unfolding cat_comma_components'[OF assms(1,2)] assms(3,4)
   by (*slow*)
     (
-      cs_concl
+      cs_concl 
         cs_simp: omega_of_set V_cs_simps vfsequence_simps
         cs_intro: nat_omega_intros V_cs_intros cat_comma_composableI TrueI
     )
@@ -687,7 +704,7 @@ proof-
       and [cat_cs_simps]: "f'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> = \<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
     by auto (*slow*)
   from g' have \<GG>g': "\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr> : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a''\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   note [cat_cs_simps] = 
     category.cat_assoc_helper[
       where \<CC>=\<CC> and h=f'' and g=\<open>\<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>\<close> and q=\<open>\<HH>\<lparr>ArrMap\<rparr>\<lparr>h'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'\<close>
@@ -699,7 +716,7 @@ proof-
     unfolding ABF_def BCG_def A_def B_def C_def
     by (intro cat_comma_is_arrI[OF assms(1,2)])
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_comma_cs_simps cs_intro: cat_cs_intros
       )+
 qed
@@ -782,13 +799,13 @@ proof-
       with assms show "\<exists>g f b c a.
         GF = [g, f]\<^sub>\<circ> \<and> g : b \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> c \<and> f : a \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> b"
         by auto
-    qed (use assms in \<open>cs_concl cs_intro: cat_comma_composableI\<close>)
+    qed (use assms in \<open>cs_concl cs_shallow cs_intro: cat_comma_composableI\<close>)
     from assms show "\<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>CId\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
     from assms show "G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C"
       if "G : B \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> C" and "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B"
       for B C G A F
-      using that by (cs_concl cs_intro: cat_comma_cs_intros)
+      using that by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
     from assms show 
       "H \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F =
         H \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> (G \<circ>\<^sub>A\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> F)"
@@ -849,7 +866,7 @@ proof-
         unfolding F_def G_def H_def A_def B_def C_def D_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps 
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )
@@ -860,7 +877,7 @@ proof-
       using that
       by (elim cat_comma_ObjE[OF _ assms(1)]; (simp only:)?) 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps 
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
@@ -870,7 +887,7 @@ proof-
       using that 
       by (elim cat_comma_is_arrE[OF _ assms]; (simp only:)?)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps 
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
@@ -880,7 +897,7 @@ proof-
       using that 
       by (elim cat_comma_is_arrE[OF _ assms]; (simp only:)?)
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_comma_cs_simps 
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
@@ -1043,7 +1060,8 @@ proof-
       qed
       moreover have "(\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i) \<in>\<^sub>\<circ> Vset \<alpha>"
       proof(rule Limit_vproduct_in_VsetI)
-        show "set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>} \<in>\<^sub>\<circ> Vset \<alpha>" by (cs_concl cs_intro: V_cs_intros)
+        show "set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>} \<in>\<^sub>\<circ> Vset \<alpha>" 
+          by (cs_concl cs_shallow cs_intro: V_cs_intros)
         from A0B0 A1B1 assms(1,2) that(3,4) show 
           "Q i \<in>\<^sub>\<circ> Vset \<alpha>" if "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" 
           for i 
@@ -1068,7 +1086,7 @@ proof-
   note \<GG> = \<GG>.is_functor_axioms 
     and \<HH> = \<HH>.is_functor_axioms
   interpret category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
 
   show ?thesis
   proof(intro tiny_categoryI' category_cat_comma)
@@ -1278,7 +1296,7 @@ proof(intro vsubset_antisym)
       unfolding A_def
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
         )
@@ -1300,14 +1318,14 @@ proof(intro vsubset_antisym)
     from a b f have B_def: "B = op_cf_commma_obj_flip \<GG> \<HH>\<lparr>a, b, f\<rparr>\<^sub>\<bullet>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_comma_cs_simps B_def
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
     from a b f have "[a, b, f]\<^sub>\<circ> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (op_cf_commma_obj_flip \<GG> \<HH>)"
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -1387,7 +1405,7 @@ proof
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   fix ABF ABF' assume prems:
     "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
     "ABF' \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
@@ -1447,7 +1465,7 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> 
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms(3) obtain a b f a' b' f' g h
     where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
       and A_def: "A = [a, b, f]\<^sub>\<circ>"
@@ -1484,9 +1502,9 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   interpret op_\<GG>\<HH>: category \<alpha> \<open>(op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<close>
-    by (cs_concl cs_intro: cat_comma_cs_intros cat_op_intros)
+    by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros cat_op_intros)
   show ?thesis
   proof(intro vsubset_antisym)
     show "\<R>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> (op_cf \<HH>) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (op_cf \<GG>)\<lparr>Arr\<rparr>"
@@ -1523,13 +1541,17 @@ proof-
           )
       from f'g_hf g h f f' have gf'_fh:
         "\<HH>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f' = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>h\<rparr>"
-        by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+        by 
+          (
+            cs_prems cs_shallow 
+              cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
+          )
       with g h f f' have 
         "[[b', a', f']\<^sub>\<circ>, [b, a, f]\<^sub>\<circ>, [h, g]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>)"
         "ABF = op_cf_comma \<GG> \<HH>\<lparr>ArrMap\<rparr>\<lparr>[b', a', f']\<^sub>\<circ>, [b, a, f]\<^sub>\<circ>, [h, g]\<^sub>\<circ>\<rparr>\<^sub>\<bullet>"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps ABF_def
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )+
@@ -1563,7 +1585,7 @@ proof-
       unfolding cat_op_simps
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_intro: op_cf_comma_ArrMap_is_arr' cs_simp: cat_comma_cs_simps
         )
     show
@@ -1604,7 +1626,7 @@ proof-
         unfolding cat_op_simps G_def C_def B_def F_def A_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
@@ -1624,14 +1646,14 @@ proof-
         unfolding cat_op_simps C_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
     qed
   qed
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
         cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_op_intros
     )+
@@ -1758,7 +1780,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   with assms obtain a b f where A_def: "A = [a, b, f]\<^sub>\<circ>" and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     by auto
   from assms prems a show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
-    unfolding A_def by (cs_concl cs_simp: cat_comma_cs_simps)
+    unfolding A_def by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
 qed (auto intro: cat_comma_cs_intros)  
 
 lemma cf_comma_proj_right_ObjMap_vrange:
@@ -1769,7 +1791,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   with assms obtain a b f where A_def: "A = [a, b, f]\<^sub>\<circ>" and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
     by auto
   from assms prems b show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-    unfolding A_def by (cs_concl cs_simp: cat_comma_cs_simps)
+    unfolding A_def by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
 qed (auto intro: cat_comma_cs_intros)  
 
 
@@ -1803,7 +1825,7 @@ lemma cf_comma_proj_left_ArrMap_vrange:
   shows "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   from assms interpret category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
   fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
   then obtain A B where "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
   with assms obtain a b f a' b' f' g h
@@ -1812,7 +1834,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
     by auto
   from assms prems g show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
     unfolding F_def 
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
 qed (auto intro: cat_comma_cs_intros)  
 
 lemma cf_comma_proj_right_ArrMap_vrange:
@@ -1820,7 +1842,7 @@ lemma cf_comma_proj_right_ArrMap_vrange:
   shows "\<R>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
 proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
   from assms interpret category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
   fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
   then obtain A B where F: "F : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
   with assms obtain a b f a' b' f' g h
@@ -1829,7 +1851,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_comma_cs_simps)
     by auto
   from assms prems h show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
     unfolding F_def 
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
 qed (auto intro: cat_comma_cs_intros)  
 
 
@@ -1842,7 +1864,7 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   from assms interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
   show ?thesis
   proof(rule is_functorI')
     show "vfsequence (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)"
@@ -1907,7 +1929,7 @@ proof-
         unfolding F_def G_def A_def B_def C_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_comma_cs_intros cat_cs_intros
           )
@@ -1925,7 +1947,7 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps 
               cs_intro: cat_comma_cs_intros cat_cs_intros
           )
@@ -1934,7 +1956,7 @@ proof-
     (
       use assms in 
         \<open>
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         \<close>
@@ -1955,7 +1977,7 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   from assms interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
   show ?thesis
   proof(rule is_functorI')
     show "vfsequence (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)"
@@ -2020,8 +2042,8 @@ proof-
         unfolding F_def G_def A_def B_def C_def
         by 
           (
-            cs_concl
-              cs_simp: cat_cs_simps cat_comma_cs_simps 
+            cs_concl cs_shallow
+              cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_comma_cs_intros cat_cs_intros
           )
     qed
@@ -2038,7 +2060,7 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_comma_cs_intros cat_cs_intros
           )
@@ -2047,7 +2069,7 @@ proof-
     (
       use assms in
         \<open>
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         \<close>
@@ -2071,18 +2093,18 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   show "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>) = (op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
   proof(rule cf_eqI)
     show "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>) : op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
       by 
         (
-          cs_concl cs_simp: cs_intro: 
-            cat_cs_intros cat_comma_cs_intros cat_op_intros
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
         )
     then have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ObjMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
       and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ArrMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps cat_op_simps)+
+      by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cat_op_simps)+
     show "(op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH> :
       op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
       by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros)
@@ -2110,13 +2132,13 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
     qed
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )+
@@ -2142,13 +2164,13 @@ proof-
         unfolding ABF_def A_def B_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
     qed 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )+
@@ -2162,18 +2184,18 @@ proof-
   interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
   interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
   interpret \<GG>\<HH>: category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   show "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>) = (op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>"
   proof(rule cf_eqI)
     show "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>) : op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
       by 
         (
-          cs_concl cs_simp: cs_intro: 
-            cat_cs_intros cat_comma_cs_intros cat_op_intros
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
         )
     then have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>"
       and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> (op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ArrMap\<rparr>) = \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_comma_cs_simps cat_op_simps)+
+      by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cat_op_simps)+
     show "(op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH> :
       op_cat (\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
       by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros)
@@ -2201,13 +2223,13 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
     qed
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )+
@@ -2233,13 +2255,13 @@ proof-
         unfolding ABF_def A_def B_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
           )
     qed 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )+
@@ -2258,12 +2280,12 @@ proof(intro is_tm_functorI')
   interpret \<HH>: is_tm_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
 
   show \<Pi>_\<GG>\<HH>: "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> : \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
 
   interpret \<Pi>_\<GG>\<HH>: is_functor \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<AA> \<open>\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<close>
     by (rule \<Pi>_\<GG>\<HH>)
   interpret \<GG>\<HH>: tiny_category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> 
-    by (cs_concl cs_intro: cat_small_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_small_cs_intros cat_comma_cs_intros)
 
   show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
   proof(rule vbrelation.vbrelation_Limit_in_VsetI)
@@ -2303,12 +2325,12 @@ proof(intro is_tm_functorI')
   interpret \<HH>: is_tm_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
 
   show \<Pi>_\<GG>\<HH>: "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH> : \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
 
   interpret \<Pi>_\<GG>\<HH>: is_functor \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<BB> \<open>\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<close>
     by (rule \<Pi>_\<GG>\<HH>)
   interpret \<GG>\<HH>: tiny_category \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> 
-    by (cs_concl cs_intro: cat_small_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_small_cs_intros cat_comma_cs_intros)
 
   show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
   proof(rule vbrelation.vbrelation_Limit_in_VsetI)
@@ -2408,7 +2430,7 @@ proof-
       ]
   from obj[unfolded cat_1_components] have [cat_cs_simps]: "b' = 0" by simp
   moreover have "cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> = b"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   ultimately show "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b' = 0" "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
     using obj by auto
 qed
@@ -2426,7 +2448,7 @@ proof-
       ]
   from obj[unfolded cat_1_components] have [cat_cs_simps]: "b' = 0" by simp
   moreover have "cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> = b"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   ultimately show "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b' = 0" "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     using obj by auto
 qed
@@ -2452,7 +2474,7 @@ proof-
   moreover from b' have [cat_cs_simps]: "b' = 0"
     unfolding cat_1_components by auto
   moreover have "cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> = b"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   ultimately show ?thesis using that by auto
 qed
 
@@ -2477,7 +2499,7 @@ proof-
   moreover from b' have [cat_cs_simps]: "b' = 0" 
     unfolding cat_1_components by auto
   moreover have "cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr> = b"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   ultimately show ?thesis using that by auto
 qed
 
@@ -2498,26 +2520,37 @@ lemma (in is_functor) cat_cf_obj_comma_ArrI[cat_comma_cs_intros]:
   shows "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
   unfolding cat_cf_obj_comma_def
 proof(intro cat_comma_ArrI cat_comma_HomI)
-  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_intro: cat_cs_intros)
+  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms(1) show const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from vempty_is_zet show 0: "0 : 0 \<mapsto>\<^bsub>cat_1 0 0\<^esub> 0"
-    by (cs_concl cs_simp: cat_cs_simps cat_1_CId_app cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cat_1_CId_app cs_intro: cat_cs_intros
+      )
   from assms(6) show 
     "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>0\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms(7) show 
     "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>0\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 0 assms(6) show 
     "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>0\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
-    by (cs_concl cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros
+      )
   from const assms(5,6) show "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
     by (fold cat_cf_obj_comma_def)
       (cs_concl cs_simp: assms(3) cs_intro: cat_cs_intros cat_comma_cs_intros)
   from const assms(5,7) show "B \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) \<BB> b)\<lparr>Obj\<rparr>"
     by (fold cat_cf_obj_comma_def)
-      (cs_concl cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
 qed (intro assms)+
 
 lemmas [cat_comma_cs_intros] = is_functor.cat_cf_obj_comma_ArrI
@@ -2534,26 +2567,33 @@ lemma (in is_functor) cat_obj_cf_comma_ArrI[cat_comma_cs_intros]:
   shows "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
   unfolding cat_obj_cf_comma_def
 proof(intro cat_comma_ArrI cat_comma_HomI)
-  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_intro: cat_cs_intros)
+  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms(1) show const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from vempty_is_zet show 0: "0 : 0 \<mapsto>\<^bsub>cat_1 0 0\<^esub> 0"
-    by (cs_concl cs_simp: cat_1_CId_app cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_1_CId_app cs_intro: cat_cs_intros)
   from assms(6) show 
     "f : cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>0\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms(7) show 
     "f' : cf_const (cat_1 0 0) \<BB> b\<lparr>ObjMap\<rparr>\<lparr>0\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 0 assms(7) show 
     "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> cf_const (cat_1 0 0) \<BB> b\<lparr>ArrMap\<rparr>\<lparr>0\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
-    by (cs_concl cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps assms(8) cs_intro: cat_cs_intros
+      )
   from const assms(5,6) show "A \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by (fold cat_obj_cf_comma_def)
       (cs_concl cs_simp: assms(3) cs_intro: cat_cs_intros cat_comma_cs_intros)
   from const assms(5,7) show "B \<in>\<^sub>\<circ> (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by (fold cat_obj_cf_comma_def)
-      (cs_concl cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: assms(4) cs_intro: cat_cs_intros cat_comma_cs_intros
+      )
 qed (intro assms)+
 
 lemmas [cat_comma_cs_intros] = is_functor.cat_obj_cf_comma_ArrI
@@ -2598,11 +2638,14 @@ proof-
   from B_def have B_def: "B = [a', 0, f']\<^sub>\<circ>"
     unfolding hb'b'' by simp
   from f have f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from f' have f': "f' : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> b"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from f_def f f' g h have f_def: "f' \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 
     that F_def A_def B_def g f f' f_def  
     B[folded cat_cf_obj_comma_def] A[folded cat_cf_obj_comma_def]
@@ -2650,11 +2693,14 @@ proof-
   from A_def have A_def: "A = [0, a, f]\<^sub>\<circ>" unfolding hb'b'' by simp
   from B_def have B_def: "B = [0, a', f']\<^sub>\<circ>" unfolding hb'b'' by simp
   from f have f: "f : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from f' have f': "f' : b \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from f'_def f f' g h have f'_def[symmetric]: "f' = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f"
-    unfolding hb'b'' by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding hb'b'' 
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from 
     that F_def A_def B_def g f f' f'_def  
     A[folded cat_obj_cf_comma_def] B[folded cat_obj_cf_comma_def] 
@@ -2834,9 +2880,13 @@ lemma (in is_functor) cat_cf_obj_comma_is_arrI[cat_comma_cs_intros]:
   shows "ABF : A \<mapsto>\<^bsub>\<FF> \<^sub>C\<^sub>F\<down> b\<^esub> B"
 proof(intro is_arrI)
   from assms(1,6,7,8) show "ABF \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros
+      )
   with assms(2) show "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
-    by (cs_concl cs_simp: cat_comma_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)+
 qed
 
 lemmas [cat_comma_cs_intros] = is_functor.cat_cf_obj_comma_is_arrI
@@ -2854,9 +2904,13 @@ lemma (in is_functor) cat_obj_cf_comma_is_arrI[cat_comma_cs_intros]:
   shows "ABF : A \<mapsto>\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> B"
 proof(intro is_arrI)
   from assms(1,6,7,8) show "ABF \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: assms(2,3,4,5,9) cs_intro: cat_comma_cs_intros
+      )
   with assms(2) show "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Dom\<rparr>\<lparr>ABF\<rparr> = A" "b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Cod\<rparr>\<lparr>ABF\<rparr> = B"
-    by (cs_concl cs_simp: cat_comma_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)+
 qed
 
 lemmas [cat_comma_cs_intros] = is_functor.cat_obj_cf_comma_is_arrI
@@ -2920,10 +2974,18 @@ proof-
     by (elim cat_cf_obj_comma_ArrE[OF _ assms(2)])
   from ABF(2) assms(2) C_def D_def g f f' f_def have [simp]: "C = A"
     unfolding ABF_def 
-    by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      ( 
+        cs_prems cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
   from ABF(3) assms(2) C_def D_def g f f' f_def have [simp]: "D = B"
     unfolding ABF_def 
-    by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
   from that ABF_def C_def D_def g f f' f_def C D show ?thesis by auto
 qed
 
@@ -2956,10 +3018,18 @@ proof-
     by (elim cat_obj_cf_comma_ArrE[OF _ assms(2)])
   from ABF(2) assms(2) C_def D_def g f f' f'_def have [simp]: "C = A"
     unfolding ABF_def 
-    by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
   from ABF(3) assms(2) C_def D_def g f f' f'_def have [simp]: "D = B"
     unfolding ABF_def 
-    by (cs_prems cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+      )
   from that ABF_def C_def D_def g f f' f'_def C D show ?thesis by auto
 qed
 
@@ -2969,10 +3039,12 @@ lemmas [elim] = is_functor.cat_obj_cf_comma_is_arrE
 subsubsection\<open>Composition\<close>
 
 lemma cat_cf_obj_comma_Comp_vsv[cat_comma_cs_intros]: "vsv (\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Comp\<rparr>)"
-  unfolding cat_cf_obj_comma_def by (cs_concl cs_intro: cat_comma_cs_intros)
+  unfolding cat_cf_obj_comma_def 
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma cat_obj_cf_comma_Comp_vsv[cat_comma_cs_intros]: "vsv (b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Comp\<rparr>)"
-  unfolding cat_obj_cf_comma_def by (cs_concl cs_intro: cat_comma_cs_intros)
+  unfolding cat_obj_cf_comma_def 
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma (in is_functor) cat_cf_obj_comma_Comp_app[cat_comma_cs_simps]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
@@ -2993,7 +3065,7 @@ proof-
   from assms(2)[unfolded BCG_def] assms(3)[unfolded ABF_def] have [cat_cs_simps]:
     "h' = 0" "h = 0"
     by simp_all
-  have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_simp: cat_cs_simps)
+  have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show ?thesis
     by 
       (
@@ -3020,7 +3092,7 @@ lemma (in is_functor) cat_obj_cf_comma_Comp_app[cat_comma_cs_simps]:
   shows "BCG \<circ>\<^sub>A\<^bsub>b \<down>\<^sub>C\<^sub>F \<FF>\<^esub> ABF = [A, C, [0, g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> g]\<^sub>\<circ>]\<^sub>\<circ>"
 proof-
   from assms(1) have const: "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_simp: cs_intro: vempty_is_zet cat_cs_intros)
+    by (cs_concl cs_intro: vempty_is_zet cat_cs_intros)
   from assms(4) obtain a f a' f' g
     where BCG_def: "BCG = [[0, a, f]\<^sub>\<circ>, [0, a', f']\<^sub>\<circ>, [0, g]\<^sub>\<circ>]\<^sub>\<circ>"
     by (elim cat_obj_cf_comma_is_arrE[OF _ assms(1)])
@@ -3030,7 +3102,8 @@ proof-
   from assms(2)[unfolded BCG_def] assms(3)[unfolded ABF_def] have [cat_cs_simps]:
     "h' = 0" "h = 0"
     by simp_all
-  have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_simp: cat_cs_simps) show ?thesis
+  have "h' \<circ>\<^sub>A\<^bsub>cat_1 0 0\<^esub> h = 0" by (cs_concl cs_shallow cs_simp: cat_cs_simps) 
+  show ?thesis
     by 
       (
         rule cat_comma_Comp_app
@@ -3097,10 +3170,12 @@ qed
 subsubsection\<open>Identity\<close>
 
 lemma cat_cf_obj_comma_CId_vsv[cat_comma_cs_intros]: "vsv (\<FF> \<^sub>C\<^sub>F\<down> b\<lparr>CId\<rparr>)"
-  unfolding cat_cf_obj_comma_def by (cs_concl cs_intro: cat_comma_cs_intros)
+  unfolding cat_cf_obj_comma_def 
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma cat_obj_cf_comma_CId_vsv[cat_comma_cs_intros]: "vsv (b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>CId\<rparr>)"
-  unfolding cat_obj_cf_comma_def by (cs_concl cs_intro: cat_comma_cs_intros)
+  unfolding cat_obj_cf_comma_def 
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma (in is_functor) cat_cf_obj_comma_CId_vdomain[cat_comma_cs_simps]:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
@@ -3228,11 +3303,7 @@ lemma (in is_tm_functor) tiny_category_cat_cf_obj_comma[cat_comma_cs_intros]:
 proof-
   from assms(1) have const: 
     "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
-    by 
-      (
-        cs_concl cs_intro: 
-          vempty_is_zet cat_small_cs_intros cat_cs_intros
-      )
+    by (cs_concl cs_intro: vempty_is_zet cat_small_cs_intros cat_cs_intros)
   show ?thesis
     by 
       (
@@ -3248,11 +3319,7 @@ lemma (in is_tm_functor) tiny_category_cat_obj_cf_comma[cat_comma_cs_intros]:
 proof-
   from assms(1) have const: 
     "cf_const (cat_1 0 0) \<BB> b : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
-    by 
-      (
-        cs_concl cs_intro: 
-          vempty_is_zet cat_small_cs_intros cat_cs_intros
-      )
+    by (cs_concl cs_intro: vempty_is_zet cat_small_cs_intros cat_cs_intros)
   show ?thesis
     by 
       (
@@ -3297,22 +3364,38 @@ subsubsection\<open>Object map\<close>
 lemma op_cf_obj_comma_ObjMap_vsv[cat_comma_cs_intros]:
   "vsv (op_cf_obj_comma \<FF> b\<lparr>ObjMap\<rparr>)"
   unfolding op_cf_obj_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+    )
 
 lemma op_obj_cf_comma_ObjMap_vsv[cat_comma_cs_intros]:
   "vsv (op_obj_cf_comma b \<FF>\<lparr>ObjMap\<rparr>)"
   unfolding op_obj_cf_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+  by
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+    )
 
 lemma (in is_functor) op_cf_obj_comma_ObjMap_vdomain[cat_comma_cs_simps]:
   "\<D>\<^sub>\<circ> (op_cf_obj_comma \<FF> b\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
   unfolding op_cf_obj_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric])
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric]
+    )
 
 lemma (in is_functor) op_obj_cf_comma_ObjMap_vdomain[cat_comma_cs_simps]:
   "\<D>\<^sub>\<circ> (op_obj_cf_comma b \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
   unfolding op_obj_cf_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric])
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric]
+    )
 
 lemma (in is_functor) op_cf_obj_comma_ObjMap_app[cat_comma_cs_simps]:
   assumes "A = [a, 0, f]\<^sub>\<circ>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
@@ -3325,7 +3408,7 @@ proof-
     unfolding assms(1) op_cf_obj_comma_def
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_comma_cs_simps
           cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros
       )
@@ -3342,7 +3425,7 @@ proof-
     unfolding assms(1) op_obj_cf_comma_def
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_comma_cs_simps
           cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros
       )
@@ -3354,24 +3437,40 @@ subsubsection\<open>Arrow map\<close>
 lemma op_cf_obj_comma_ArrMap_vsv[cat_comma_cs_intros]:
   "vsv (op_cf_obj_comma \<FF> b\<lparr>ArrMap\<rparr>)"
   unfolding op_cf_obj_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+    )
 
 lemma op_obj_cf_comma_ArrMap_vsv[cat_comma_cs_intros]:
   "vsv (op_obj_cf_comma b \<FF>\<lparr>ArrMap\<rparr>)"
   unfolding op_obj_cf_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
+    )
 
 lemma (in is_functor) op_cf_obj_comma_ArrMap_vdomain[cat_comma_cs_simps]:
   "\<D>\<^sub>\<circ> (op_cf_obj_comma \<FF> b\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
   unfolding op_cf_obj_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric])
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cat_cf_obj_comma_def[symmetric]
+    )
 
 lemmas [cat_comma_cs_simps] = is_functor.op_cf_obj_comma_ArrMap_vdomain
 
 lemma (in is_functor) op_obj_cf_comma_ArrMap_vdomain[cat_comma_cs_simps]:
   "\<D>\<^sub>\<circ> (op_obj_cf_comma b \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
   unfolding op_obj_cf_comma_def
-  by (cs_concl cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric])
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_comma_cs_simps cat_obj_cf_comma_def[symmetric] 
+    )
 
 lemmas [cat_comma_cs_simps] = is_functor.op_obj_cf_comma_ArrMap_vdomain
 
@@ -3390,7 +3489,7 @@ proof-
     unfolding assms(1) op_cf_obj_comma_def
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_comma_cs_simps cat_1_CId_app
           cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_1_is_arrI
       )
@@ -3413,7 +3512,7 @@ proof-
     unfolding assms(1) op_obj_cf_comma_def
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_comma_cs_simps cat_1_CId_app
           cs_intro: V_cs_intros cat_cs_intros cat_comma_cs_intros cat_1_is_arrI
       )
@@ -3576,12 +3675,12 @@ subsubsection\<open>Object map\<close>
 lemma cf_cf_obj_comma_proj_ObjMap_vsv[cat_comma_cs_intros]: 
   "vsv (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ObjMap\<rparr>)"
   unfolding cf_cf_obj_comma_proj_def
-  by (cs_concl cs_intro: cat_comma_cs_intros)
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma cf_obj_cf_comma_proj_ObjMap_vsv[cat_comma_cs_intros]: 
   "vsv (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>)"
   unfolding cf_obj_cf_comma_proj_def
-  by (cs_concl cs_intro: cat_comma_cs_intros)
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma (in is_functor) cf_cf_obj_comma_proj_ObjMap_vdomain[cat_comma_cs_simps]: 
   "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
@@ -3637,12 +3736,12 @@ subsubsection\<open>Arrow map\<close>
 lemma cf_cf_obj_comma_proj_ArrMap_vsv[cat_comma_cs_intros]: 
   "vsv (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ArrMap\<rparr>)"
   unfolding cf_cf_obj_comma_proj_def
-  by (cs_concl cs_intro: cat_comma_cs_intros)
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma cf_obj_cf_comma_proj_ArrMap_vsv[cat_comma_cs_intros]: 
   "vsv (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>)"
   unfolding cf_obj_cf_comma_proj_def
-  by (cs_concl cs_intro: cat_comma_cs_intros)
+  by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma (in is_functor) cf_cf_obj_comma_proj_ArrMap_vdomain[cat_comma_cs_simps]: 
   "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
@@ -4047,11 +4146,11 @@ proof
   from assms a f show "g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> c \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_comma_cs_simps A_def
           cs_intro: cat_cs_intros cat_comma_cs_intros
       )
-qed (cs_concl cs_intro: cat_comma_cs_intros)
+qed (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 lemma (in is_functor) cf_cf_arr_comma_ObjMap_vrange: 
   assumes "g : c \<mapsto>\<^bsub>\<BB>\<^esub> c'"
@@ -4070,11 +4169,11 @@ proof
   from assms a f show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> c'\<lparr>Obj\<rparr>"
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_comma_cs_simps A_def
           cs_intro: cat_cs_intros cat_comma_cs_intros
       )
-qed (cs_concl cs_intro: cat_comma_cs_intros)
+qed (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
 
 
 subsubsection\<open>Arrow map\<close>
@@ -4155,7 +4254,7 @@ lemma (in is_functor) cf_arr_cf_comma_is_functor:
 proof(rule is_functorI')
   show "vfsequence (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)" unfolding cf_arr_cf_comma_def by simp
   from assms show "category \<alpha> (c' \<down>\<^sub>C\<^sub>F \<FF>)"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms show "category \<alpha> (c \<down>\<^sub>C\<^sub>F \<FF>)"
     by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
   show "vcard (g \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>) = 4\<^sub>\<nat>"
@@ -4179,7 +4278,7 @@ proof(rule is_functorI')
       unfolding F_def A_def B_def
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_comma_cs_simps f'_def[symmetric]
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -4208,7 +4307,7 @@ proof(rule is_functorI')
       unfolding F_def G_def A_def B_def C_def 
       by (*slow*)
         (
-          cs_concl
+          cs_concl 
             cs_simp:
               cat_cs_simps cat_comma_cs_simps
               f''_def[symmetric] f'_def[symmetric]
@@ -4228,7 +4327,7 @@ proof(rule is_functorI')
       unfolding C_def 
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -4237,7 +4336,7 @@ qed
   (
     use assms in
       \<open>
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_comma_cs_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros
       \<close>
@@ -4250,7 +4349,7 @@ proof(rule is_functorI')
   from assms have c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
   show "vfsequence (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g)" unfolding cf_cf_arr_comma_def by simp
   from assms show "category \<alpha> (\<FF> \<^sub>C\<^sub>F\<down> c')"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms show "category \<alpha> (\<FF> \<^sub>C\<^sub>F\<down> c)"
     by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
   show "vcard (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g) = 4\<^sub>\<nat>"
@@ -4274,7 +4373,7 @@ proof(rule is_functorI')
       unfolding F_def A_def B_def
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_comma_cs_simps f'_def
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -4306,7 +4405,7 @@ proof(rule is_functorI')
       unfolding F_def G_def A_def B_def C_def
       by
         (
-          cs_concl
+          cs_concl cs_shallow
              cs_simp: cat_cs_simps cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -4323,7 +4422,7 @@ proof(rule is_functorI')
       unfolding C_def 
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
@@ -4332,7 +4431,7 @@ qed
   (
     use assms in
       \<open>
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_comma_cs_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros
       \<close>
@@ -4359,13 +4458,13 @@ proof(rule cf_eqI)
   from vempty_is_zet assms show "cf_id (b \<down>\<^sub>C\<^sub>F \<FF>) : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
     by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
   from vempty_is_zet assms show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> b \<down>\<^sub>C\<^sub>F \<FF>"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms have ObjMap_dom_lhs: 
     "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
   from assms have ObjMap_dom_rhs: 
     "\<D>\<^sub>\<circ> (cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
     fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
@@ -4379,17 +4478,17 @@ proof(rule cf_eqI)
       unfolding A_def
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps 
             cs_intro: cat_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)+
   from assms have ArrMap_dom_lhs: 
     "\<D>\<^sub>\<circ> ((\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
   from assms have ArrMap_dom_rhs: 
     "\<D>\<^sub>\<circ> (cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "(\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr> = cf_id (b \<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
     fix F assume prems: "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
@@ -4408,10 +4507,10 @@ proof(rule cf_eqI)
       unfolding F_def A_def B_def
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps cat_cs_simps cs_intro: cat_cs_intros
         )
-  qed (cs_concl cs_intro: cat_comma_cs_intros cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_comma_cs_intros cat_cs_intros)+
 qed simp_all
 
 lemma (in is_functor) cf_cf_arr_comma_CId:
@@ -4421,13 +4520,13 @@ proof(rule cf_eqI)
   from vempty_is_zet assms show "cf_id (\<FF> \<^sub>C\<^sub>F\<down> b) : \<FF> \<^sub>C\<^sub>F\<down> b \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<FF> \<^sub>C\<^sub>F\<down> b"
     by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
   from vempty_is_zet assms show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>) : \<FF> \<^sub>C\<^sub>F\<down> b \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<FF> \<^sub>C\<^sub>F\<down> b"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms have ObjMap_dom_lhs: 
     "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
   from assms have ObjMap_dom_rhs:
     "\<D>\<^sub>\<circ> (cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
     fix A assume prems: "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Obj\<rparr>"
@@ -4441,16 +4540,16 @@ proof(rule cf_eqI)
       unfolding A_def
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps cs_intro: cat_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)+
   from assms have ArrMap_dom_lhs: 
     "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cs_intro: cat_cs_intros)
   from assms have ArrMap_dom_rhs: 
     "\<D>\<^sub>\<circ> (cf_id (\<FF> \<down>\<^sub>C\<^sub>F b)\<lparr>ArrMap\<rparr>) = \<FF> \<down>\<^sub>C\<^sub>F b\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A (\<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr> = cf_id (\<FF> \<^sub>C\<^sub>F\<down> b)\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
     fix F assume prems: "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> b\<lparr>Arr\<rparr>"
@@ -4469,12 +4568,12 @@ proof(rule cf_eqI)
       unfolding F_def A_def B_def
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_comma_cs_simps cat_cs_simps cs_intro: cat_cs_intros
         )
   qed
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: cat_cs_simps cs_intro: cat_comma_cs_intros cat_cs_intros
     )+
 qed simp_all
@@ -4488,9 +4587,8 @@ lemma (in is_functor)
   shows "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>"
 proof(rule cf_eqI)
   from assms vempty_is_zet show "b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
-  from assms show 
-    "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
+  from assms show "a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF> : b \<down>\<^sub>C\<^sub>F \<FF> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
   from assms have ObjMap_dom_lhs:
     "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
@@ -4500,11 +4598,11 @@ proof(rule cf_eqI)
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
   show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
     from assms show "vsv (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>)"
-      by (cs_concl cs_intro: cat_comma_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
     fix A assume prems: "A \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     with assms obtain b' f' 
       where A_def: "A = [0, b', f']\<^sub>\<circ>"
@@ -4529,21 +4627,21 @@ proof(rule cf_eqI)
     "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms vempty_is_zet have ArrMap_dom_rhs:
     "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ObjMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
   from assms vempty_is_zet have ArrMap_dom_lhs:
     "\<D>\<^sub>\<circ> ((a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>) = b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
   show "(a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F f \<^sub>A\<down>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr> = b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<FF>\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
     fix F assume "F \<in>\<^sub>\<circ> b \<down>\<^sub>C\<^sub>F \<FF>\<lparr>Arr\<rparr>"
@@ -4563,7 +4661,7 @@ proof(rule cf_eqI)
       unfolding F_def A_def B_def 
       by (*slow*)
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
@@ -4587,15 +4685,15 @@ proof(rule cf_eqI)
     "\<D>\<^sub>\<circ> ((\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
     by 
       ( 
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
   show "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ObjMap\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
     from assms show "vsv (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ObjMap\<rparr>)"
-      by (cs_concl cs_intro: cat_comma_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_comma_cs_intros)
     fix A assume prems: "A \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Obj\<rparr>"
     with assms obtain a' f' 
       where A_def: "A = [a', 0, f']\<^sub>\<circ>"
@@ -4607,24 +4705,24 @@ proof(rule cf_eqI)
       unfolding A_def
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps 
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )
   qed
     (
       use assms vempty_is_zet in
-        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+        \<open>cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
     )
   from assms vempty_is_zet have ArrMap_dom_lhs:
     "\<D>\<^sub>\<circ> ((\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>) = \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_comma_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
   show "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
     fix F assume "F \<in>\<^sub>\<circ> \<FF> \<^sub>C\<^sub>F\<down> a\<lparr>Arr\<rparr>"
@@ -4641,16 +4739,16 @@ proof(rule cf_eqI)
     from vempty_is_zet k assms f' f'' F show
       "(\<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O b \<circ>\<^sub>C\<^sub>F \<FF> \<^sub>C\<^sub>F\<down>\<^sub>A f)\<lparr>ArrMap\<rparr>\<lparr>F\<rparr> = \<FF> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O a\<lparr>ArrMap\<rparr>\<lparr>F\<rparr>"
       unfolding F_def A_def B_def 
-      by (*slow*)
+      by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps f'_def
             cs_intro: cat_cs_intros cat_comma_cs_intros
         )+
   qed
     (
       use assms vempty_is_zet in
-        \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+        \<open>cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
     )
 qed simp_all
 
@@ -4666,7 +4764,7 @@ proof(rule cf_eqI)
   from assms interpret \<FF>c: category \<alpha> \<open>\<FF> \<^sub>C\<^sub>F\<down> c\<close>
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_comma_cs_intros
       )
   from assms have c: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
@@ -4674,7 +4772,7 @@ proof(rule cf_eqI)
     op_cat (\<FF> \<^sub>C\<^sub>F\<down> c) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> c' \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )
@@ -4690,7 +4788,7 @@ proof(rule cf_eqI)
       op_cat (\<FF> \<^sub>C\<^sub>F\<down> c) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> c' \<down>\<^sub>C\<^sub>F (op_cf \<FF>)"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cat_op_simps
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
       )
@@ -4717,7 +4815,7 @@ proof(rule cf_eqI)
       unfolding A_def 
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
         )
@@ -4747,7 +4845,7 @@ proof(rule cf_eqI)
       unfolding F_def A_def B_def
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_comma_cs_simps cat_op_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros cat_op_intros
         )

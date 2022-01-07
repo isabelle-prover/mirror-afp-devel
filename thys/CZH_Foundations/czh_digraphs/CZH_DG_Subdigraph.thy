@@ -96,7 +96,7 @@ lemma (in subdigraph) subdg_arrD[dg_sub_fw_cs_intros]:
 proof-
   from assms obtain a b where "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" by auto
   then show "f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_intro: subdg_is_arr_vsubset dg_cs_intros)
+    by (cs_concl cs_shallow cs_intro: subdg_is_arr_vsubset dg_cs_intros)
 qed
 
 lemmas [dg_sub_fw_cs_intros] = subdigraph.subdg_arrD
@@ -177,7 +177,7 @@ proof-
       by (rule vsv_eqI) (auto simp: \<AA>\<BB>.subdg_dom_simp Arr dg_cs_simps)
     show "\<AA>\<lparr>Cod\<rparr> = \<BB>\<lparr>Cod\<rparr>" 
       by (rule vsv_eqI) (auto simp: \<AA>\<BB>.subdg_cod_simp Arr dg_cs_simps)
-  qed (cs_concl cs_intro: dg_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: dg_cs_intros)+
 qed
 
 
@@ -239,7 +239,7 @@ proof(intro is_ft_dghmI is_dghmI)
   show "v11 (dghm_inc \<BB> \<CC>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<BB> a b)"
     if "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" for a b
     using that unfolding dghm_inc_components by simp
-qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+qed (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 
 lemmas (in subdigraph) subdg_dghm_inc_is_ft_dghm = inc.is_ft_dghm_axioms
 
@@ -390,7 +390,7 @@ proof-
   interpret \<AA>\<BB>: wide_subdigraph \<alpha> \<AA> \<BB> by (rule assms(1))
   interpret \<BB>\<CC>: wide_subdigraph \<alpha> \<BB> \<CC> by (rule assms(2))
   interpret \<AA>\<CC>: subdigraph \<alpha> \<AA> \<CC> 
-    by (rule subdg_trans) (cs_concl cs_intro: dg_cs_intros)+
+    by (rule subdg_trans) (cs_concl cs_shallow cs_intro: dg_cs_intros)+
   show ?thesis
     by (cs_concl cs_intro: dg_sub_bw_cs_intros dg_cs_intros wide_subdigraphI)
 qed

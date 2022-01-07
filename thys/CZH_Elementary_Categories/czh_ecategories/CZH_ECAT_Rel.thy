@@ -176,7 +176,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     unfolding cat_Rel_Obj_iff
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Rel_cs_simps cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI 
       )
   show "cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr> \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> F = F"
@@ -187,7 +187,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Rel_cs_simps 
             cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI
         )
@@ -201,7 +201,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Rel_cs_simps
             cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI
         )
@@ -342,7 +342,7 @@ proof
       with that show ?thesis
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_Rel_cs_simps cs_intro: cat_cs_intros arr_Rel_id_RelI
           )
     qed

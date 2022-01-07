@@ -194,7 +194,7 @@ proof(intro is_arr_isomorphismI)
   from subcategory_axioms is_arr_isomorphismD(1)[OF assms] show "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_sub_bw_cs_simps[symmetric] cs_intro: cat_sub_fw_cs_intros
       )
   from assms have "is_inverse \<BB> (f\<inverse>\<^sub>C\<^bsub>\<BB>\<^esub>) f"
@@ -232,7 +232,7 @@ lemma (in subcategory) subcat_obj_isoD:
   using assms subcategory_axioms
   by (elim obj_isoE) 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_sub_bw_cs_simps cs_intro: obj_isoI cat_sub_fw_cs_intros
     )
 
@@ -564,10 +564,10 @@ proof(intro is_arr_isomorphismI is_inverseI)
   show "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" by (rule f)
   from dg.category_axioms assms have [cat_sub_bw_cs_simps]: 
     "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from dg.category_axioms assms have [cat_sub_bw_cs_simps]: 
     "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from subcategory_axioms f inv_f show "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = \<BB>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
     by (cs_concl cs_simp: cat_sub_bw_cs_simps cs_intro: cat_cs_intros)
   from subcategory_axioms f inv_f show "f \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
@@ -588,7 +588,7 @@ proof-
   moreover from replete_subcategory_axioms assms inv_f have "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<BB>\<^esub> = f"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_sub_bw_cs_simps cat_cs_simps cs_intro: cat_cs_intros 
       )
   ultimately show ?thesis by simp
@@ -714,7 +714,7 @@ proof(rule iffI)
 qed 
   (
     use wide_replete_subcategory_axioms in
-      \<open>cs_concl cs_intro: cat_sub_fw_cs_intros \<close>
+      \<open>cs_concl cs_shallow cs_intro: cat_sub_fw_cs_intros \<close>
   )
 
 lemmas [cat_sub_bw_cs_simps] = 

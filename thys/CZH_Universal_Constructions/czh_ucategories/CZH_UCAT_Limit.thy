@@ -61,7 +61,7 @@ mk_ide rf is_cat_cone_def[unfolded is_cat_cone_axioms_def]
 lemma (in is_cat_cone) is_cat_coneD'[cat_lim_cs_intros]:
   assumes "c' = cf_const \<JJ> \<CC> c"
   shows "\<NN> : c' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  unfolding assms by (cs_concl cs_intro: cat_cs_intros)
+  unfolding assms by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemmas [cat_lim_cs_intros] = is_cat_cone.is_cat_coneD'
 
@@ -78,7 +78,7 @@ mk_ide rf is_cat_cocone_def[unfolded is_cat_cocone_axioms_def]
 lemma (in is_cat_cocone) is_cat_coconeD'[cat_lim_cs_intros]:
   assumes "c' = cf_const \<JJ> \<CC> c"
   shows "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F c' : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  unfolding assms by (cs_concl cs_intro: cat_cs_intros)
+  unfolding assms by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemmas [cat_lim_cs_intros] = is_cat_cocone.is_cat_coconeD'
 
@@ -88,7 +88,10 @@ text\<open>Duality.\<close>
 lemma (in is_cat_cone) is_cat_cocone_op:
   "op_ntcf \<NN> : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e c : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_coconeI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_lim_cs_intros cat_op_intros)+
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_op_simps cs_intro: cat_lim_cs_intros cat_op_intros
+    )+
 
 lemma (in is_cat_cone) is_cat_cocone_op'[cat_op_intros]:
   assumes "\<alpha>' = \<alpha>" and "\<JJ>' = op_cat \<JJ>" and "\<CC>' = op_cat \<CC>" and "\<FF>' = op_cf \<FF>"
@@ -100,7 +103,10 @@ lemmas [cat_op_intros] = is_cat_cone.is_cat_cocone_op'
 lemma (in is_cat_cocone) is_cat_cone_op:
   "op_ntcf \<NN> : c <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_coneI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_lim_cs_intros cat_op_intros)
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_op_simps cs_intro: cat_lim_cs_intros cat_op_intros
+    )
 
 lemma (in is_cat_cocone) is_cat_cone_op'[cat_op_intros]:
   assumes "\<alpha>' = \<alpha>" and "\<JJ>' = op_cat \<JJ>" and "\<CC>' = op_cat \<CC>" and "\<FF>' = op_cf \<FF>"
@@ -117,7 +123,7 @@ lemma (in is_cat_cone) cat_cone_LArr_app_is_arr:
   shows "\<NN>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> : c \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr>"
 proof-
   from assms have [simp]: "cf_const \<JJ> \<CC> c\<lparr>ObjMap\<rparr>\<lparr>j\<rparr> = c"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from ntcf_NTMap_is_arr[OF assms] show ?thesis by simp 
 qed
 
@@ -133,7 +139,7 @@ lemma (in is_cat_cocone) cat_cocone_LArr_app_is_arr:
   shows "\<NN>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> c"
 proof-
   from assms have [simp]: "cf_const \<JJ> \<CC> c\<lparr>ObjMap\<rparr>\<lparr>j\<rparr> = c"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from ntcf_NTMap_is_arr[OF assms] show ?thesis by simp 
 qed
 
@@ -148,7 +154,7 @@ lemma (in is_cat_cone) cat_cone_Comp_commute[cat_lim_cs_simps]:
   assumes "f : a \<mapsto>\<^bsub>\<JJ>\<^esub> b"
   shows "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
   using ntcf_Comp_commute[symmetric, OF assms] assms 
-  by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 lemmas [cat_lim_cs_simps] = is_cat_cone.cat_cone_Comp_commute
 
@@ -173,7 +179,7 @@ proof-
   from assms(3) have "\<NN>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = (\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>\<lparr>j\<rparr>"
     by simp
   from this assms(1,2,4) show "\<NN>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
-    by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed
 
 lemma (in is_cat_cone) helper_cat_cone_Comp_ntcf_vcomp:
@@ -187,16 +193,20 @@ proof-
   proof(rule ntcf_eqI[OF \<NN>'.is_ntcf_axioms])
     from assms(2) show 
       "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f' : cf_const \<JJ> \<CC> c' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show "\<NN>'\<lparr>NTMap\<rparr> = (\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>"
     proof(rule vsv_eqI, unfold cat_cs_simps)
       show "vsv ((\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>)"
-        by (cs_concl cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros)
       from assms show "\<JJ>\<lparr>Obj\<rparr> = \<D>\<^sub>\<circ> ((\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>)"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       fix j assume prems': "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>"
       with assms(1,2) show "\<NN>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = (\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')\<lparr>NTMap\<rparr>\<lparr>j\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps assms(3) cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_cs_simps assms(3) cs_intro: cat_cs_intros
+          )
     qed auto
   qed simp_all
 qed
@@ -221,7 +231,11 @@ proof-
   from assms(3) have "op_ntcf \<NN>' = op_ntcf (ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)" by simp
   from this assms(2) have op_\<NN>':
     "op_ntcf \<NN>' = op_ntcf \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f'"
-    by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
+      )
   have "\<NN>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f'"
     by 
       (
@@ -232,7 +246,11 @@ proof-
           ]
       )
   from this assms(2,4) show "\<NN>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>j\<rparr>"
-    by (cs_prems cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+      )
 qed
 
 lemma (in is_cat_cocone) helper_cat_cocone_Comp_ntcf_vcomp:
@@ -246,7 +264,11 @@ proof-
     if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j
     using that
     unfolding assms(3)[OF that] 
-    by (cs_concl cs_simp: cat_op_simps cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_op_simps cat_cs_simps cs_intro: cat_cs_intros
+      )
   have op_\<NN>': 
     "op_ntcf \<NN>' = op_ntcf \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f'"
     by 
@@ -261,7 +283,7 @@ proof-
   from assms(2) show "\<NN>' = (ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: 
             cat_op_simps op_\<NN>' eq_op_ntcf_iff[symmetric, OF \<NN>'.is_ntcf_axioms]
           cs_intro: cat_cs_intros
@@ -362,7 +384,7 @@ proof(intro is_functor.universal_arrow_foI)
   then show "ntcf_arrow u : \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
 
@@ -374,7 +396,7 @@ proof(intro is_functor.universal_arrow_foI)
     by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)+
   from prems(2,1) have
     "u' : cf_map (cf_const \<JJ> \<CC> r') \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
-    by (cs_prems cs_simp: cat_cs_simps)
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps)
   note u'[unfolded cat_cs_simps] = cat_FUNCT_is_arrD[OF this]
 
   from cat_lim_ua_fo[OF is_cat_coneI[OF u'(1) prems(1)]] obtain f 
@@ -398,7 +420,7 @@ proof(intro is_functor.universal_arrow_foI)
       "u' = umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: u'(2)[symmetric] cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro:  cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -409,12 +431,16 @@ proof(intro is_functor.universal_arrow_foI)
       "u' = ntcf_arrow (u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f')"
       by
         (
-          cs_prems 
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     from prems'(1) have "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros
+        )
     from f_unique[OF prems'(1) this] show "f' = f" .
 
   qed
@@ -441,7 +467,7 @@ proof-
       "ntcf_arrow u' : \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>c'\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map \<FF>"
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     
@@ -471,7 +497,7 @@ proof-
       "u' = \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
       by
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -485,7 +511,7 @@ proof-
           umap_fo (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
               cs_intro: cat_cs_intros cat_FUNCT_cs_intros
           )
@@ -520,7 +546,7 @@ proof(intro is_functor.universal_arrow_ofI)
   then show "ntcf_arrow u : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
 
@@ -532,7 +558,7 @@ proof(intro is_functor.universal_arrow_ofI)
     by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)+
   from prems(2,1) have
     "u' : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> cf_map (cf_const \<JJ> \<CC> r')"
-    by (cs_prems cs_simp: cat_cs_simps)
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps)
   note u'[unfolded cat_cs_simps] = cat_FUNCT_is_arrD[OF this]
 
   from cat_colim_ua_of[OF is_cat_coconeI[OF u'(1) prems(1)]] obtain f 
@@ -557,7 +583,7 @@ proof(intro is_functor.universal_arrow_ofI)
       "u' = umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) r (ntcf_arrow u) r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: u'(2)[symmetric] cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro:  cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -569,12 +595,16 @@ proof(intro is_functor.universal_arrow_ofI)
       "u' = ntcf_arrow (ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u)"
       by
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     from prems'(1) have "ntcf_of_ntcf_arrow \<JJ> \<CC> u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_FUNCT_cs_simps u'_def' cs_intro: cat_cs_intros
+        )
     from f_unique[OF prems'(1) this] show "f' = f" .
 
   qed
@@ -602,7 +632,7 @@ proof-
       "ntcf_arrow u' : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<JJ> \<CC>\<^esub> \<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>\<lparr>ObjMap\<rparr>\<lparr>c'\<rparr>"
       by
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
 
@@ -632,7 +662,7 @@ proof-
       "u' = ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>"
       by
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -646,7 +676,7 @@ proof-
           umap_of (\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC>) (cf_map \<FF>) c (ntcf_arrow \<NN>) c'\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr>"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps
               cs_intro: cat_cs_intros cat_FUNCT_cs_intros
           )
@@ -664,7 +694,7 @@ lemma (in is_cat_limit) is_cat_colimit_op:
   "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
 proof(intro is_cat_colimitI)
   show "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
-    by (cs_concl cs_simp: cs_intro: cat_op_intros)
+    by (cs_concl cs_shallow cs_simp: cs_intro: cat_op_intros)
   fix u' r' assume prems: 
     "u' : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e r' : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   interpret u': is_cat_cocone \<alpha> r' \<open>op_cat \<JJ>\<close> \<open>op_cat \<CC>\<close> \<open>op_cf \<FF>\<close> u' 
@@ -681,7 +711,7 @@ proof(intro is_cat_colimitI)
     by simp
   from this f have u'_def: 
     "u' = ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u"
-    by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+    by (cs_prems cs_shallow cs_simp: cat_op_simps cs_intro: cat_cs_intros)
   show "\<exists>!f'. 
     f' : r \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r' \<and> 
     u' = ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf u"
@@ -695,7 +725,7 @@ proof(intro is_cat_colimitI)
     from this prems'(1) have "op_ntcf u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f'"
       by 
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros
         )
@@ -714,7 +744,7 @@ lemma (in is_cat_colimit) is_cat_limit_op:
   "op_ntcf u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
 proof(intro is_cat_limitI)
   show "op_ntcf u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
-    by (cs_concl cs_simp: cs_intro: cat_op_intros)
+    by (cs_concl cs_shallow cs_simp: cs_intro: cat_op_intros)
   fix u' r' assume prems: 
     "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   interpret u': is_cat_cone \<alpha> r' \<open>op_cat \<JJ>\<close> \<open>op_cat \<CC>\<close> \<open>op_cf \<FF>\<close> u' 
@@ -731,7 +761,7 @@ proof(intro is_cat_limitI)
     by simp
   from this f have u'_def: 
     "u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f"
-    by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+    by (cs_prems cs_shallow cs_simp: cat_op_simps cs_intro: cat_cs_intros)
   show "\<exists>!f'. 
     f' : r' \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r \<and> 
     u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (op_cat \<JJ>) (op_cat \<CC>) f'"
@@ -745,7 +775,7 @@ proof(intro is_cat_limitI)
     from this prems'(1) have "op_ntcf u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
       by 
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros
         )
@@ -807,13 +837,20 @@ proof-
     from f' show f': "f' : r \<mapsto>\<^bsub>\<CC>\<^esub> r'" unfolding cat_op_simps by simp
     show "u' = ntcf_const \<JJ> \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
       by (rule eq_op_ntcf_iff[THEN iffD1], insert f')
-        (cs_concl cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps)+
+        (
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps
+        )+
     fix f'' assume prems: "f'' : r \<mapsto>\<^bsub>\<CC>\<^esub> r'" "u' = ntcf_const \<JJ> \<CC> f'' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
     from prems(1) have "f'' : r' \<mapsto>\<^bsub>op_cat \<CC>\<^esub> r" unfolding cat_op_simps by simp
     moreover from prems(1) have 
       "op_ntcf u' = op_ntcf u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F op_ntcf (ntcf_const \<JJ> \<CC> f'')"
       unfolding prems(2)
-      by (cs_concl cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps
+        )
     ultimately show "f'' = f'" by (rule unique)
   qed
 qed
@@ -872,7 +909,7 @@ proof-
   from u' this have "u' = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> f"
     by
       (
-        cs_prems 
+        cs_prems  
           cs_simp: cat_cs_simps cat_FUNCT_cs_simps
           cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
@@ -920,7 +957,10 @@ proof-
   then have f: "f : r \<mapsto>\<^bsub>\<CC>\<^esub> r'" by auto
   have "u' = ntcf_const \<JJ> \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F u"
     by (rule eq_op_ntcf_iff[THEN iffD1], insert f)
-      (cs_concl cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps)+
+      (
+        cs_concl cs_shallow 
+          cs_intro: cat_cs_intros cs_simp: cat_cs_simps cat_op_simps
+      )+
   from iso_f this that show ?thesis by simp
 qed
 
@@ -967,7 +1007,7 @@ proof(intro is_cat_limitI)
   have "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by (intro is_cat_coneI)
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps cf_cs_simps
           cs_intro: cat_cs_intros cat_lim_cs_intros cf_cs_intros
       )
@@ -990,7 +1030,7 @@ proof(intro is_cat_limitI)
     from u'_inv\<GG>_\<GG> f show "u' = u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<AA> \<CC> f"
       by
         (
-          cs_prems
+          cs_prems cs_shallow
             cs_simp:
               cf_cs_simps cat_cs_simps
               ntcf_cf_comp_ntcf_cf_comp_assoc 
@@ -1006,7 +1046,7 @@ proof(intro is_cat_limitI)
     from this f prems(1) have "u' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F inv_cf \<GG> = u \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<CC> f'"
       by
         (
-          cs_prems
+          cs_prems 
             cs_simp:
               cat_cs_simps cf_cs_simps
               ntcf_vcomp_ntcf_cf_comp[symmetric]
@@ -1081,8 +1121,8 @@ lemma (in is_cat_finite_limit) is_cat_finite_colimit_op:
   "op_ntcf u : op_cf \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n r : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by 
     (
-      cs_concl cs_intro:
-        is_cat_finite_colimitI cat_op_intros cat_small_cs_intros
+      cs_concl cs_shallow 
+        cs_intro: is_cat_finite_colimitI cat_op_intros cat_small_cs_intros
     )
 
 lemma (in is_cat_finite_limit) is_cat_finite_colimit_op'[cat_op_intros]:
@@ -1096,8 +1136,8 @@ lemma (in is_cat_finite_colimit) is_cat_finite_limit_op:
   "op_ntcf u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n op_cf \<FF> : op_cat \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by 
     (
-      cs_concl cs_intro: 
-        is_cat_finite_limitI cat_op_intros cat_small_cs_intros
+      cs_concl cs_shallow 
+        cs_intro: is_cat_finite_limitI cat_op_intros cat_small_cs_intros
     )
 
 lemma (in is_cat_finite_colimit) is_cat_finite_colimit_op'[cat_op_intros]:
@@ -1177,7 +1217,10 @@ lemma (in is_cat_obj_prod) is_cat_obj_coprod_op:
   "op_ntcf \<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod> P : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   using cf_discrete_vdomain_vsubset_Vset
   by (intro is_cat_obj_coprodI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemma (in is_cat_obj_prod) is_cat_obj_coprod_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
@@ -1190,7 +1233,10 @@ lemma (in is_cat_obj_coprod) is_cat_obj_prod_op:
   "op_ntcf \<pi> : U <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> A : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   using cf_discrete_vdomain_vsubset_Vset
   by (intro is_cat_obj_prodI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemma (in is_cat_obj_coprod) is_cat_obj_prod_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
@@ -1403,7 +1449,7 @@ lemma (in is_cat_finite_obj_prod) is_cat_finite_obj_coprod_op:
   "op_ntcf \<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n P : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_finite_obj_coprodI)
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_op_simps 
         cs_intro: cat_fin_obj_prod_index_in_\<omega> cat_cs_intros cat_op_intros
     )
@@ -1419,7 +1465,7 @@ lemma (in is_cat_finite_obj_coprod) is_cat_finite_obj_prod_op:
   "op_ntcf \<pi> : U <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n A : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_finite_obj_prodI)
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_op_simps 
         cs_intro: cat_fin_obj_coprod_index_in_\<omega> cat_cs_intros cat_op_intros
     )
@@ -1515,12 +1561,12 @@ text\<open>Product/coproduct of two objects is a finite product/coproduct.\<clos
 sublocale is_cat_obj_prod_2 \<subseteq> is_cat_finite_obj_prod \<alpha> \<open>2\<^sub>\<nat>\<close> \<open>if2 a b\<close> \<CC> P \<pi>
 proof(intro is_cat_finite_obj_prodI)
   show "2\<^sub>\<nat> \<in>\<^sub>\<circ> \<omega>" by simp
-qed (cs_concl cs_simp: two[symmetric] cs_intro: cat_lim_cs_intros)
+qed (cs_concl cs_shallow cs_simp: two[symmetric] cs_intro: cat_lim_cs_intros)
 
 sublocale is_cat_obj_coprod_2 \<subseteq> is_cat_finite_obj_coprod \<alpha> \<open>2\<^sub>\<nat>\<close> \<open>if2 a b\<close> \<CC> P \<pi>
 proof(intro is_cat_finite_obj_coprodI)
   show "2\<^sub>\<nat> \<in>\<^sub>\<circ> \<omega>" by simp
-qed (cs_concl cs_simp: two[symmetric] cs_intro: cat_lim_cs_intros)
+qed (cs_concl cs_shallow cs_simp: two[symmetric] cs_intro: cat_lim_cs_intros)
 
 
 text\<open>Elementary properties.\<close>
@@ -1746,7 +1792,7 @@ text\<open>Duality.\<close>
 lemma (in is_cat_pullback) is_cat_pushout_op:
   "op_ntcf x : \<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb> >\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>o X \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_pushoutI) 
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+    (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_pullback) is_cat_pushout_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
@@ -1758,7 +1804,7 @@ lemmas [cat_op_intros] = is_cat_pullback.is_cat_pushout_op'
 lemma (in is_cat_pushout) is_cat_pullback_op:
   "op_ntcf x : X <\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>b \<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_pullbackI) 
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+    (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_pushout) is_cat_pullback_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
@@ -1781,13 +1827,21 @@ proof-
     by (rule assms(1))
   interpret cospan: cf_scospan \<alpha> \<aa> \<gg> \<oo> \<ff> \<bb> \<CC> by (rule assms(2))
   have \<gg>\<^sub>S\<^sub>S: "\<gg>\<^sub>S\<^sub>S : \<aa>\<^sub>S\<^sub>S \<mapsto>\<^bsub>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<^esub> \<oo>\<^sub>S\<^sub>S" and \<ff>\<^sub>S\<^sub>S: "\<ff>\<^sub>S\<^sub>S : \<bb>\<^sub>S\<^sub>S \<mapsto>\<^bsub>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<^esub> \<oo>\<^sub>S\<^sub>S" 
-    by (cs_concl cs_simp: cs_intro: cat_ss_cs_intros)+
+    by (cs_concl cs_intro: cat_ss_cs_intros)+
   from x.ntcf_Comp_commute[OF \<gg>\<^sub>S\<^sub>S] \<gg>\<^sub>S\<^sub>S \<ff>\<^sub>S\<^sub>S show
     "x\<lparr>NTMap\<rparr>\<lparr>\<oo>\<^sub>S\<^sub>S\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> x\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr>"
-    by (cs_prems cs_simp: cat_ss_cs_simps cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow
+          cs_simp: cat_ss_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+      )
   moreover from x.ntcf_Comp_commute[OF \<ff>\<^sub>S\<^sub>S] \<gg>\<^sub>S\<^sub>S \<ff>\<^sub>S\<^sub>S show 
     "x\<lparr>NTMap\<rparr>\<lparr>\<oo>\<^sub>S\<^sub>S\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> x\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>S\<^sub>S\<rparr>"
-    by (cs_prems cs_simp: cat_ss_cs_simps cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: cat_ss_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+      )
   ultimately show "\<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> x\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> x\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>S\<^sub>S\<rparr>" by simp
 qed
 
@@ -1818,7 +1872,7 @@ proof-
   from op(1) show "x\<lparr>NTMap\<rparr>\<lparr>\<oo>\<^sub>S\<^sub>S\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
     by 
       (
-        cs_prems 
+        cs_prems  
           cs_simp: cat_ss_cs_simps cat_op_simps 
           cs_intro: cat_cs_intros cat_ss_cs_intros
       )
@@ -1889,10 +1943,10 @@ proof(intro is_cat_pullbackI is_cat_limitI)
         "x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f' :
           cf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> r' \<mapsto>\<^sub>C\<^sub>F \<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub> :
           \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       from f' have dom_rhs: 
         "\<D>\<^sub>\<circ> ((x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f')\<lparr>NTMap\<rparr>) = \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       show "u'\<lparr>NTMap\<rparr> = (x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f')\<lparr>NTMap\<rparr>"
       proof(rule vsv_eqI, unfold cat_cs_simps dom_rhs)
         fix a assume prems': "a \<in>\<^sub>\<circ> \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>"
@@ -1900,7 +1954,7 @@ proof(intro is_cat_pullbackI is_cat_limitI)
           "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
           by (elim the_cat_scospan_ObjE; simp only:)
             (
-              cs_concl
+              cs_concl 
                 cs_simp:
                   cat_cs_simps cat_ss_cs_simps 
                   u'_\<bb>\<^sub>S\<^sub>S u'_\<aa>\<^sub>S\<^sub>S 
@@ -1908,20 +1962,20 @@ proof(intro is_cat_pullbackI is_cat_limitI)
                   cat_cone_cospan(1)[OF prems assms(2)] 
                 cs_intro: cat_cs_intros cat_ss_cs_intros
             )+
-      qed (cs_concl cs_intro: cat_cs_intros | auto)+
+      qed (cs_concl cs_shallow cs_intro: cat_cs_intros | auto)+
     qed simp_all
 
     fix f'' assume prems: 
       "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> X" "u' = x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f''"
     have \<aa>\<^sub>S\<^sub>S: "\<aa>\<^sub>S\<^sub>S \<in>\<^sub>\<circ> \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>" and \<bb>\<^sub>S\<^sub>S: "\<bb>\<^sub>S\<^sub>S \<in>\<^sub>\<circ> \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>" 
-      by (cs_concl cs_simp: cs_intro: cat_ss_cs_intros)+
+      by (cs_concl cs_intro: cat_ss_cs_intros)+
     have "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''" if "a \<in>\<^sub>\<circ> \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>" for a
     proof-
       from prems(2) have 
         "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f'')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by simp
       from this that prems(1) show "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
-        by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     qed
     from unique_f'[OF prems(1) this[OF \<aa>\<^sub>S\<^sub>S] this[OF \<bb>\<^sub>S\<^sub>S]] show "f'' = f'".
 
@@ -2018,7 +2072,7 @@ proof-
         "x'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by simp
       from this that f' show "x'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
-        by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     qed
     from this[OF \<aa>\<^sub>S\<^sub>S] this[OF \<bb>\<^sub>S\<^sub>S] show 
       "x'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> = x\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>S\<^sub>S\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
@@ -2036,12 +2090,12 @@ proof-
         "x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f'' :
           cf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> X' \<mapsto>\<^sub>C\<^sub>F \<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub> :
           \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       have dom_lhs: "\<D>\<^sub>\<circ> (x'\<lparr>NTMap\<rparr>) = \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>" 
-        by (cs_concl cs_simp: cat_cs_simps)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps)
       from prems'(1) have dom_rhs:
         "\<D>\<^sub>\<circ> ((x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f'')\<lparr>NTMap\<rparr>) = \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       show "x'\<lparr>NTMap\<rparr> = (x \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<rightarrow>\<bullet>\<leftarrow>\<^sub>C \<CC> f'')\<lparr>NTMap\<rparr>"
       proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
         fix a assume prems'': "a \<in>\<^sub>\<circ> \<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Obj\<rparr>"
@@ -2225,26 +2279,32 @@ See \cite{noauthor_wikipedia_2001}\footnote{
 \<close>
 
 locale is_cat_equalizer =
-  is_cat_limit \<alpha> \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> \<CC> \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close> E \<epsilon> 
-  for \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> +
-  assumes cat_eq_\<gg>[cat_lim_cs_intros]: "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-    and cat_eq_\<ff>[cat_lim_cs_intros]: "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+  is_cat_limit \<alpha> \<open>\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<close> \<CC> \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F'\<close> E \<epsilon> +
+  F': vsv F'
+  for \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> +
+  assumes cat_eq_F_in_Vset[cat_lim_cs_intros]: "F \<in>\<^sub>\<circ> Vset \<alpha>"
+    and cat_eq_F_ne[cat_lim_cs_intros]: "F \<noteq> 0"
+    and cat_eq_F'_vdomain[cat_lim_cs_simps]: "\<D>\<^sub>\<circ> F' = F"
+    and cat_eq_F'_app_is_arr[cat_lim_cs_intros]: "\<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
 
 syntax "_is_cat_equalizer" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
-  (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q '(_,_,_,_') :/ \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
-  "CONST is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
+  (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q '(_,_,_,_') :/ \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
+translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon>"
 
 locale is_cat_coequalizer =
-  is_cat_colimit \<alpha> \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> \<CC> \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close> E \<epsilon> 
-  for \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> +
-  assumes cat_coeq_\<gg>[cat_lim_cs_intros]: "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-    and cat_coeq_\<ff>[cat_lim_cs_intros]: "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+  is_cat_colimit \<alpha> \<open>\<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F\<close> \<CC> \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F'\<close> E \<epsilon> +
+  F': vsv F'
+  for \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> +
+  assumes cat_coeq_F_in_Vset[cat_lim_cs_intros]: "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and cat_coeq_F_ne[cat_lim_cs_intros]: "F \<noteq> 0"
+    and cat_coeq_F'_vdomain[cat_lim_cs_simps]: "\<D>\<^sub>\<circ> F' = F"
+    and cat_coeq_F'_app_is_arr[cat_lim_cs_intros]: "\<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
 
 syntax "_is_cat_coequalizer" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
-  (\<open>(_ :/ '(_,_,_,_') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q _ :/ \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
-  "CONST is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
+  (\<open>(_ :/ '(_,_,_,_') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q _ :/ \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
+translations "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon>"
 
 
 text\<open>Rules.\<close>
@@ -2254,10 +2314,10 @@ lemma (in is_cat_equalizer) is_cat_equalizer_axioms'[cat_lim_cs_intros]:
     and "E' = E"
     and "\<aa>' = \<aa>"
     and "\<bb>' = \<bb>"
-    and "\<gg>' = \<gg>"
-    and "\<ff>' = \<ff>"
+    and "F'' = F"
+    and "F''' = F'"
     and "\<CC>' = \<CC>"
-  shows "\<epsilon> : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>',\<bb>',\<gg>',\<ff>') : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  shows "\<epsilon> : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>',\<bb>',F'',F''') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
   unfolding assms by (rule is_cat_equalizer_axioms)
 
 mk_ide rf is_cat_equalizer_def[unfolded is_cat_equalizer_axioms_def]
@@ -2272,10 +2332,10 @@ lemma (in is_cat_coequalizer) is_cat_coequalizer_axioms'[cat_lim_cs_intros]:
     and "E' = E"
     and "\<aa>' = \<aa>"
     and "\<bb>' = \<bb>"
-    and "\<gg>' = \<gg>"
-    and "\<ff>' = \<ff>"
+    and "F'' = F"
+    and "F''' = F'"
     and "\<CC>' = \<CC>"
-  shows "\<epsilon> : (\<aa>',\<bb>',\<gg>',\<ff>') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  shows "\<epsilon> : (\<aa>',\<bb>',F'',F''') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
   unfolding assms by (rule is_cat_coequalizer_axioms)
 
 mk_ide rf is_cat_coequalizer_def[unfolded is_cat_coequalizer_axioms_def]
@@ -2288,62 +2348,88 @@ lemmas [cat_lim_cs_intros] = is_cat_coequalizerD(1)
 
 text\<open>Elementary properties.\<close>
 
-sublocale is_cat_equalizer \<subseteq> cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC> 
-  by (intro cf_parallelI cat_parallelI)
-    (simp_all add: cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros)
+lemma (in is_cat_equalizer) 
+  cat_eq_\<aa>[cat_lim_cs_intros]: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  and cat_eq_\<bb>[cat_lim_cs_intros]: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+proof-
+  from cat_eq_F_ne obtain \<ff> where \<ff>: "\<ff> \<in>\<^sub>\<circ> F" by force
+  have "F'\<lparr>\<ff>\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" by (rule cat_eq_F'_app_is_arr[OF \<ff>])
+  then show "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+qed
 
-sublocale is_cat_coequalizer \<subseteq> cf_parallel \<alpha> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>
+lemma (in is_cat_coequalizer) 
+  cat_coeq_\<aa>[cat_lim_cs_intros]: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  and cat_coeq_\<bb>[cat_lim_cs_intros]: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+proof-
+  from cat_coeq_F_ne obtain \<ff> where \<ff>: "\<ff> \<in>\<^sub>\<circ> F" by force
+  have "F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" by (rule cat_coeq_F'_app_is_arr[OF \<ff>])
+  then show "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+qed
+
+sublocale is_cat_equalizer \<subseteq> cf_parallel \<alpha> \<open>\<aa>\<^sub>P\<^sub>L F\<close> \<open>\<bb>\<^sub>P\<^sub>L F\<close> F \<aa> \<bb> F' \<CC>
   by (intro cf_parallelI cat_parallelI)
     (
-      simp_all add: 
-        cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros 
-        cat_PL_ineq[symmetric]
+      auto simp:
+        cat_lim_cs_simps cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros
+    )
+
+sublocale is_cat_coequalizer \<subseteq> cf_parallel \<alpha> \<open>\<bb>\<^sub>P\<^sub>L F\<close> \<open>\<aa>\<^sub>P\<^sub>L F\<close> F \<bb> \<aa> F' \<CC>
+  by (intro cf_parallelI cat_parallelI)
+    (
+      auto simp:
+        cat_lim_cs_simps cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros
     )
 
 
 text\<open>Duality.\<close>
 
 lemma (in is_cat_equalizer) is_cat_coequalizer_op:
-  "op_ntcf \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  "op_ntcf \<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_coequalizerI)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros cat_lim_cs_intros)+
+    (
+      cs_concl 
+        cs_simp: cat_lim_cs_simps cat_op_simps 
+        cs_intro: V_cs_intros cat_op_intros cat_lim_cs_intros
+    )+
 
 lemma (in is_cat_equalizer) is_cat_coequalizer_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
-  shows "op_ntcf \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  shows "op_ntcf \<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
   unfolding assms by (rule is_cat_coequalizer_op)
 
 lemmas [cat_op_intros] = is_cat_equalizer.is_cat_coequalizer_op'
 
 lemma (in is_cat_coequalizer) is_cat_equalizer_op:
-  "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
   by (intro is_cat_equalizerI)
     (
-      cs_concl
-        cs_simp: cat_op_simps
-        cs_intro: cat_cs_intros cat_op_intros cat_lim_cs_intros
+      cs_concl 
+        cs_simp: cat_lim_cs_simps cat_op_simps
+        cs_intro: V_cs_intros cat_op_intros cat_lim_cs_intros
     )+
 
 lemma (in is_cat_coequalizer) is_cat_equalizer_op'[cat_op_intros]:
   assumes "\<CC>' = op_cat \<CC>"
-  shows "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  shows "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
   unfolding assms by (rule is_cat_equalizer_op)
 
 lemmas [cat_op_intros] = is_cat_coequalizer.is_cat_equalizer_op'
 
 
-text\<open>Elementary properties.\<close>
+text\<open>Further elementary properties.\<close>
 
-lemma cf_parallel_if_is_cat_cone:
-  assumes "\<epsilon> :
-    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-    and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-  shows "cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC>"
+lemma (in category) cat_cf_parallel_\<aa>\<bb>:
+  assumes "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+    and "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "cf_parallel \<alpha> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' \<CC>"
 proof-
-  let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
-  interpret is_cat_cone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
-  show ?thesis
+  have "\<aa>\<^sub>P\<^sub>L F \<in>\<^sub>\<circ> Vset \<alpha>" "\<bb>\<^sub>P\<^sub>L F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (simp_all add: Axiom_of_Pairing \<bb>\<^sub>P\<^sub>L_def \<aa>\<^sub>P\<^sub>L_def assms(2))
+  then show ?thesis
     by (intro cf_parallelI cat_parallelI)
       (
         simp_all add: 
@@ -2351,73 +2437,48 @@ proof-
       )
 qed
 
-lemma cf_parallel_if_is_cat_cocone:
-  assumes "\<epsilon>' :
-    \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-    and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-  shows "cf_parallel \<alpha> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>"
+lemma (in category) cat_cf_parallel_\<bb>\<aa>:
+  assumes "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+    and "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "cf_parallel \<alpha> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F' \<CC>"
 proof-
-  let ?II = \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close>
-  interpret is_cat_cocone \<alpha> E' ?II \<CC> ?II_II \<epsilon>' by (rule assms(1))
-  show ?thesis
+  have "\<aa>\<^sub>P\<^sub>L F \<in>\<^sub>\<circ> Vset \<alpha>" "\<bb>\<^sub>P\<^sub>L F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (simp_all add: Axiom_of_Pairing \<bb>\<^sub>P\<^sub>L_def \<aa>\<^sub>P\<^sub>L_def assms(2))
+  then show ?thesis
     by (intro cf_parallelI cat_parallelI)
       (
         simp_all add: 
-          assms 
-          cat_parallel_cs_intros 
-          cat_lim_cs_intros 
-          cat_cs_intros
-          cat_PL_ineq[symmetric]
+          assms cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros
       )
 qed
 
-lemma (in category) cat_cf_parallel_cat_equalizer: 
-  assumes "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-  shows "cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC>"
-  using assms 
-  by (intro cf_parallelI cat_parallelI)
-    (auto simp: cat_parallel_cs_intros cat_cs_intros)
-
-lemma (in category) cat_cf_parallel_cat_coequalizer: 
-  assumes "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-  shows "cf_parallel \<alpha> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>"
-  using assms 
-  by (intro cf_parallelI cat_parallelI)
-    (simp_all add: cat_parallel_cs_intros cat_cs_intros cat_PL_ineq[symmetric])
-
 lemma cat_cone_cf_par_eps_NTMap_app:
   assumes "\<epsilon> :
-    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" 
-    and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-  shows 
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>" 
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' :
+    \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "\<ff> \<in>\<^sub>\<circ> F"
+  shows "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = F'\<lparr>\<ff>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>" 
 proof-
-  let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
+  let ?II = \<open>\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<close> 
+    and ?II_II = \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F'\<close>
   interpret \<epsilon>: is_cat_cone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
-  from assms(2,3) have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
-  interpret par: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC> 
-    by (intro cf_parallel_if_is_cat_cone, rule assms) (auto intro: assms \<aa> \<bb>)
-  have \<gg>\<^sub>P\<^sub>L: "\<gg>\<^sub>P\<^sub>L : \<aa>\<^sub>P\<^sub>L \<mapsto>\<^bsub>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<^esub> \<bb>\<^sub>P\<^sub>L" 
-    and \<ff>\<^sub>P\<^sub>L: "\<ff>\<^sub>P\<^sub>L : \<aa>\<^sub>P\<^sub>L \<mapsto>\<^bsub>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<^esub> \<bb>\<^sub>P\<^sub>L"
-    by 
+  from assms(5,6) have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+  interpret par: cf_parallel \<alpha> \<open>\<aa>\<^sub>P\<^sub>L F\<close> \<open>\<bb>\<^sub>P\<^sub>L F\<close> F \<aa> \<bb> F' \<CC> 
+    by (intro \<epsilon>.NTDom.HomCod.cat_cf_parallel_\<aa>\<bb> assms \<aa> \<bb>)
+  from assms(6) have \<ff>: "\<ff> : \<aa>\<^sub>P\<^sub>L F \<mapsto>\<^bsub>\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<^esub> \<bb>\<^sub>P\<^sub>L F" 
+    by (simp_all add: par.the_cat_parallel_is_arr_\<aa>\<bb>F)
+  from \<epsilon>.ntcf_Comp_commute[OF \<ff>] assms(6) show ?thesis
+    by
       (
-        simp_all add: 
-          par.the_cat_parallel_is_arr_\<aa>\<bb>\<gg> par.the_cat_parallel_is_arr_\<aa>\<bb>\<ff>
-      )
-  from \<epsilon>.ntcf_Comp_commute[OF \<gg>\<^sub>P\<^sub>L] show "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-    by (*slow*)
-      (
-        cs_prems 
-          cs_simp: cat_parallel_cs_simps cat_cs_simps 
-          cs_intro: cat_cs_intros cat_parallel_cs_intros 
-      )
-  from \<epsilon>.ntcf_Comp_commute[OF \<ff>\<^sub>P\<^sub>L] show "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-    by (*slow*)
-      (
-        cs_prems 
+        cs_prems cs_shallow
           cs_simp: cat_parallel_cs_simps cat_cs_simps 
           cs_intro: cat_cs_intros cat_parallel_cs_intros 
       )
@@ -2425,95 +2486,120 @@ qed
 
 lemma cat_cocone_cf_par_eps_NTMap_app:
   assumes "\<epsilon> :
-    \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E : \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" 
-    and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-  shows 
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>" 
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"    
+    \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F' >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E :
+    \<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>"
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "\<ff> \<in>\<^sub>\<circ> F"
+  shows "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> F'\<lparr>\<ff>\<rparr>"
 proof-
-  let ?II = \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close>
+  let ?II = \<open>\<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F\<close> 
+    and ?II_II = \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F'\<close>
   interpret \<epsilon>: is_cat_cocone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
-  from assms(2,3) have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
-  interpret par: cf_parallel \<alpha> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC> 
-    by (intro cf_parallel_if_is_cat_cocone, rule assms) (auto intro: assms \<aa> \<bb>)
+  from assms(5,6) 
+  have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and F'\<ff>: "F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" 
+    by auto
+  interpret par: cf_parallel \<alpha> \<open>\<bb>\<^sub>P\<^sub>L F\<close> \<open>\<aa>\<^sub>P\<^sub>L F\<close> F \<bb> \<aa> F' \<CC>
+    by (intro \<epsilon>.NTDom.HomCod.cat_cf_parallel_\<bb>\<aa> assms \<aa> \<bb>)
   note \<epsilon>_NTMap_app = 
     cat_cone_cf_par_eps_NTMap_app[
       OF \<epsilon>.is_cat_cone_op[unfolded cat_op_simps],
       unfolded cat_op_simps,  
-      OF assms(2,3)
+      OF assms(2-6),
+      simplified
       ]
-  from \<epsilon>_NTMap_app show \<epsilon>_NTMap_app:
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
-    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
-    by 
+  from \<epsilon>_NTMap_app F'\<ff> show ?thesis
+    by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_parallel_cs_simps category.op_cat_Comp[symmetric] 
           cs_intro: cat_cs_intros cat_parallel_cs_intros
-      )+
+      )
 qed
 
-lemma (in is_cat_equalizer) cat_eq_2_eps_NTMap_app:
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>" 
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+lemma (in is_cat_equalizer) cat_eq_eps_NTMap_app:
+  assumes "\<ff> \<in>\<^sub>\<circ> F"
+  shows "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = F'\<lparr>\<ff>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>" 
   by 
     (
       intro cat_cone_cf_par_eps_NTMap_app[
-        OF is_cat_cone_axioms cat_eq_\<gg> cat_eq_\<ff>
+        OF 
+          is_cat_cone_axioms 
+          F'.vsv_axioms 
+          cat_eq_F_in_Vset 
+          cat_eq_F'_vdomain
+          cat_eq_F'_app_is_arr
+          assms
         ]
     )+
 
-lemma (in is_cat_coequalizer) cat_coeq_2_eps_NTMap_app:
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>" 
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
+lemma (in is_cat_coequalizer) cat_coeq_eps_NTMap_app:
+  assumes "\<ff> \<in>\<^sub>\<circ> F"
+  shows "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> F'\<lparr>\<ff>\<rparr>" 
   by 
     (
       intro cat_cocone_cf_par_eps_NTMap_app[
-        OF is_cat_cocone_axioms cat_coeq_\<gg> cat_coeq_\<ff>
+        OF is_cat_cocone_axioms
+          F'.vsv_axioms 
+          cat_coeq_F_in_Vset 
+          cat_coeq_F'_vdomain
+          cat_coeq_F'_app_is_arr
+          assms
         ]
     )+
 
 lemma (in is_cat_equalizer) cat_eq_Comp_eq: 
-  "\<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-  "\<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-  unfolding cat_eq_2_eps_NTMap_app[symmetric] by simp_all
+  assumes "\<gg> \<in>\<^sub>\<circ> F" and "\<ff> \<in>\<^sub>\<circ> F"
+  shows "F'\<lparr>\<gg>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = F'\<lparr>\<ff>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
+  using 
+    cat_eq_eps_NTMap_app[OF assms(1)] cat_eq_eps_NTMap_app[OF assms(2)]
+  by auto
 
 lemma (in is_cat_coequalizer) cat_coeq_Comp_eq: 
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
-  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
-  unfolding cat_coeq_2_eps_NTMap_app[symmetric] by simp_all
+  assumes "\<gg> \<in>\<^sub>\<circ> F" and "\<ff> \<in>\<^sub>\<circ> F"
+  shows "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> F'\<lparr>\<gg>\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> F'\<lparr>\<ff>\<rparr>"
+  using cat_coeq_eps_NTMap_app[OF assms(1)] cat_coeq_eps_NTMap_app[OF assms(2)]
+  by auto
 
 
 subsubsection\<open>Universal property\<close>
 
 lemma is_cat_equalizerI':
   assumes "\<epsilon> :
-    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-    and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' :
+    \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "\<ff> \<in>\<^sub>\<circ> F" 
     and "\<And>\<epsilon>' E'. \<epsilon>' :
-      E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : 
-      \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
-      \<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
-  shows "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' :
+      \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+      \<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+  shows "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
 proof-
-  let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
+
+  let ?II = \<open>\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<close> and ?II_II = \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F'\<close>
   interpret \<epsilon>: is_cat_cone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
-  interpret \<CC>: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC>
-    by (rule \<epsilon>.NTDom.HomCod.cat_cf_parallel_cat_equalizer[OF assms(2,3)])
+  from assms(5,6) have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+  interpret par: cf_parallel \<alpha> \<open>\<aa>\<^sub>P\<^sub>L F\<close> \<open>\<bb>\<^sub>P\<^sub>L F\<close> F \<aa> \<bb> F' \<CC>
+    by (intro \<epsilon>.NTDom.HomCod.cat_cf_parallel_\<aa>\<bb> assms \<aa> \<bb>) simp
+  
   show ?thesis
   proof(intro is_cat_equalizerI is_cat_limitI assms(1-3))
     fix u' r' assume prems: "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     interpret u': is_cat_cone \<alpha> r' ?II \<CC> ?II_II u' by (rule prems)
-    from assms(4)[OF prems] obtain f'
+    from assms(7)[OF prems] obtain f'
       where f': "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E"
-        and u'_NTMap_app_\<aa>: "u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+        and u'_NTMap_app_\<aa>: "u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
         and unique_f': 
           "\<And>f''.
             \<lbrakk>
               f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E; 
-              u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''
+              u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''
             \<rbrakk> \<Longrightarrow> f'' = f'"
       by metis
     show "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> u' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'"
@@ -2526,7 +2612,7 @@ proof-
           cf_const ?II \<CC> r' \<mapsto>\<^sub>C\<^sub>F ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cat_ss_cs_simps 
                 cs_intro: cat_cs_intros cat_ss_cs_intros
             )
@@ -2534,15 +2620,21 @@ proof-
           unfolding cat_cs_simps by simp
         from f' have dom_rhs:
           "\<D>\<^sub>\<circ> ((\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f')\<lparr>NTMap\<rparr>) = ?II\<lparr>Obj\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by 
+            (
+              cs_concl cs_shallow 
+                cs_simp: cat_cs_simps cs_intro: cat_cs_intros
+            )
         show "u'\<lparr>NTMap\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f')\<lparr>NTMap\<rparr>"
         proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
           fix a assume prems': "a \<in>\<^sub>\<circ> ?II\<lparr>Obj\<rparr>"
           note [cat_parallel_cs_simps] = 
-            cat_cone_cf_par_eps_NTMap_app[OF u'.is_cat_cone_axioms assms(2-3)]
-            cat_cone_cf_par_eps_NTMap_app[OF assms(1-3)]
+            cat_cone_cf_par_eps_NTMap_app[
+              OF u'.is_cat_cone_axioms assms(2-5), simplified
+              ]
+            cat_cone_cf_par_eps_NTMap_app[OF assms(1-5), simplified]
             u'_NTMap_app_\<aa>
-          from prems' f' assms(2,3) show 
+          from prems' f' assms(6) show 
             "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             by (elim the_cat_parallel_ObjE; simp only:)
               (
@@ -2550,7 +2642,7 @@ proof-
                   cs_simp: cat_parallel_cs_simps cat_cs_simps
                   cs_intro: cat_cs_intros cat_parallel_cs_intros
               )
-        qed (cs_concl cs_intro: V_cs_intros cat_cs_intros)+
+        qed (cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros)+
       qed simp_all
       fix f'' assume prems'': 
         "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E" "u' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f''"
@@ -2558,8 +2650,8 @@ proof-
         "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         for a 
         by simp
-      have "u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"  
-        using u'_NTMap_a[of \<aa>\<^sub>P\<^sub>L] prems''(1) 
+      have "u'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"  
+        using u'_NTMap_a[of \<open>\<aa>\<^sub>P\<^sub>L F\<close>] prems''(1) 
         by 
           (
             cs_prems 
@@ -2568,41 +2660,48 @@ proof-
           )
       from unique_f'[OF prems''(1) this] show "f'' = f'".
     qed (rule f')
-  qed
+  qed (use assms in fastforce)+
+
 qed
 
 lemma is_cat_coequalizerI':
   assumes "\<epsilon> :
-    \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E : 
-    \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-    and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F' >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E : 
+    \<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "vsv F'"
+    and "F \<in>\<^sub>\<circ> Vset \<alpha>" 
+    and "\<D>\<^sub>\<circ> F' = F"
+    and "\<And>\<ff>. \<ff> \<in>\<^sub>\<circ> F \<Longrightarrow> F'\<lparr>\<ff>\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "\<ff> \<in>\<^sub>\<circ> F" 
     and "\<And>\<epsilon>' E'. \<epsilon>' :
-      \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : 
-      \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
-      \<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-  shows "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F' >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : 
+      \<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+      \<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
+  shows "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
 proof-
-  let ?op_II = \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> 
-    and ?op_II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close>
-    and ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close>
-    and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> (op_cat \<CC>) \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
+
+  let ?op_II = \<open>\<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F\<close> 
+    and ?op_II_II = \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F'\<close>
+    and ?II = \<open>\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<close>
+    and ?II_II = \<open>\<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F (op_cat \<CC>) (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F'\<close>
   interpret \<epsilon>: is_cat_cocone \<alpha> E ?op_II \<CC> ?op_II_II \<epsilon> by (rule assms(1))
-  interpret par: cf_parallel \<alpha> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L  \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>
-    by (rule \<epsilon>.NTDom.HomCod.cat_cf_parallel_cat_coequalizer[OF assms(2,3)])
-  interpret op_par: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<open>op_cat \<CC>\<close>
+  from assms(5,6) have \<aa>: "\<aa> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and \<bb>: "\<bb> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+  interpret par: cf_parallel \<alpha> \<open>\<bb>\<^sub>P\<^sub>L F\<close> \<open>\<aa>\<^sub>P\<^sub>L F\<close> F \<bb> \<aa> F' \<CC>
+    by (intro \<epsilon>.NTDom.HomCod.cat_cf_parallel_\<bb>\<aa> assms \<aa> \<bb>) simp
+
+  interpret op_par: cf_parallel \<alpha> \<open>\<aa>\<^sub>P\<^sub>L F\<close> \<open>\<bb>\<^sub>P\<^sub>L F\<close> F \<aa> \<bb> F' \<open>op_cat \<CC>\<close>
     by (rule par.cf_parallel_op)
-  have assms_4': 
-    "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f'"
+  have assms_4':
+    "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f'"
     if "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>" for \<epsilon>' E'
   proof-
     have [cat_op_simps]:
-      "f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f' \<longleftrightarrow>
-        f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+      "f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f' \<longleftrightarrow>
+        f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
       for f'
       by (intro iffI conjI; (elim conjE)?)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: category.op_cat_Comp[symmetric] cat_op_simps cat_cs_simps 
             cs_intro: cat_cs_intros cat_parallel_cs_intros
         )+
@@ -2611,13 +2710,13 @@ proof-
       unfolding cat_op_simps
       by 
         (
-          rule assms(4)[
+          rule assms(7)[
             OF \<epsilon>'.is_cat_cocone_op[unfolded cat_op_simps], 
             unfolded cat_op_simps
             ]
         )
   qed
-  interpret op_\<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<open>op_cat \<CC>\<close> E \<open>op_ntcf \<epsilon>\<close> 
+  interpret op_\<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<open>op_cat \<CC>\<close> E \<open>op_ntcf \<epsilon>\<close> 
     by 
       (
         rule 
@@ -2625,18 +2724,21 @@ proof-
             [
               OF \<epsilon>.is_cat_cone_op[unfolded cat_op_simps], 
               unfolded cat_op_simps, 
-              OF assms(2,3) assms_4'
+              OF assms(2-6) assms_4',
+              simplified
             ]
       )
   show ?thesis by (rule op_\<epsilon>.is_cat_coequalizer_op[unfolded cat_op_simps])
+
 qed
 
 lemma (in is_cat_equalizer) cat_eq_unique_cone:
   assumes "\<epsilon>' :
-    E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' : \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     (is \<open>\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>\<close>)
-  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
 proof-
+
   interpret \<epsilon>': is_cat_cone \<alpha> E' ?II \<CC> ?II_II \<epsilon>' by (rule assms(1))
   from cat_lim_ua_fo[OF assms(1)] obtain f' where f': "f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E"
     and \<epsilon>'_def: "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'"
@@ -2644,40 +2746,49 @@ proof-
       "\<lbrakk> f'' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E; \<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'' \<rbrakk> \<Longrightarrow> f'' = f'" 
     for f''
     by auto
+  from cat_eq_F_ne obtain \<ff> where \<ff>: "\<ff> \<in>\<^sub>\<circ> F" by force
+
   show ?thesis
   proof(intro ex1I conjI; (elim conjE)?)
     show f': "f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E" by (rule f')
-    from \<epsilon>'_def have "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f')\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+    from \<epsilon>'_def have "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f')\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
       by simp
-    from this f' show \<epsilon>'_NTMap_app_I: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+    from this f' show \<epsilon>'_NTMap_app_I: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
       by 
         (
           cs_prems 
             cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_parallel_cs_intros
         )
     fix f'' assume prems: 
-      "f'' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E" "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
+      "f'' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E" "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
     have "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f''"
     proof(rule ntcf_eqI[OF ])
       show "\<epsilon>' : cf_const ?II \<CC> E' \<mapsto>\<^sub>C\<^sub>F ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
         by (rule \<epsilon>'.is_ntcf_axioms)
       from f' prems(1) show "\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'' :
         cf_const ?II \<CC> E' \<mapsto>\<^sub>C\<^sub>F ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       show "\<epsilon>'\<lparr>NTMap\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'')\<lparr>NTMap\<rparr>"
       proof(rule vsv_eqI, unfold cat_cs_simps)
         show "vsv ((\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'')\<lparr>NTMap\<rparr>)"
-          by (cs_concl cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_intro: cat_cs_intros)
         from prems(1) show 
           "?II\<lparr>Obj\<rparr> = \<D>\<^sub>\<circ> ((\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'')\<lparr>NTMap\<rparr>)"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
         fix a assume prems': "a \<in>\<^sub>\<circ> ?II\<lparr>Obj\<rparr>"
         note [cat_cs_simps] = 
-          cat_eq_2_eps_NTMap_app
-          cat_cone_cf_par_eps_NTMap_app[
-            OF \<epsilon>'.is_cat_cone_axioms cf_parallel_\<gg>' cf_parallel_\<ff>'
+          cat_eq_eps_NTMap_app[OF \<ff>]
+          cat_cone_cf_par_eps_NTMap_app
+            [
+              OF 
+                \<epsilon>'.is_cat_cone_axioms 
+                F'.vsv_axioms 
+                cat_eq_F_in_Vset 
+                cat_eq_F'_vdomain 
+                cat_eq_F'_app_is_arr \<ff>, 
+              simplified
             ]
-        from prems' prems(1) have [cat_cs_simps]: 
+        from prems' prems(1) \<ff> have [cat_cs_simps]: 
           "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f''"
           by (elim the_cat_parallel_ObjE; simp only:)
             (
@@ -2687,41 +2798,42 @@ proof-
             )+
         from prems' prems show 
           "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const ?II \<CC> f'')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       qed auto
     qed simp_all
-    from unique[OF prems(1) this] show "f'' = f'" .      
+    from unique[OF prems(1) this] show "f'' = f'" .
   qed
+
 qed
 
 lemma (in is_cat_equalizer) cat_eq_unique:
-  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows 
-    "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> f'"
+    "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F) \<CC> f'"
   by (rule cat_lim_unique[OF is_cat_equalizerD(1)[OF assms]])
 
 lemma (in is_cat_equalizer) cat_eq_unique':
-  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
 proof-
-  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(1))
+  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(1))
   show ?thesis by (rule cat_eq_unique_cone[OF \<epsilon>'.is_cat_cone_axioms])
 qed
 
 lemma (in is_cat_coequalizer) cat_coeq_unique_cocone:
   assumes "\<epsilon>' :
-    \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<bb> \<aa> F' >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : \<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     (is \<open>\<epsilon>' : ?II_II >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>\<close>)
-  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
 proof-
   interpret \<epsilon>': is_cat_cocone \<alpha> E' ?II \<CC> ?II_II \<epsilon>' by (rule assms(1))
   have [cat_op_simps]:
-    "f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f' \<longleftrightarrow>
-      f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>" 
+    "f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f' \<longleftrightarrow>
+      f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>" 
     for f'
     by (intro iffI conjI; (elim conjE)?)
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: category.op_cat_Comp[symmetric] cat_op_simps cat_cs_simps 
           cs_intro: cat_cs_intros cat_parallel_cs_intros
       )+
@@ -2736,28 +2848,27 @@ proof-
 qed
 
 lemma (in is_cat_coequalizer) cat_coeq_unique:
-  assumes "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  assumes "\<epsilon>' : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<exists>!f'.
-    f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and>
-    \<epsilon>' = ntcf_const (\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L) \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
+    f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>' = ntcf_const (\<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F) \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
   by (rule cat_colim_unique[OF is_cat_coequalizerD(1)[OF assms]])
 
 lemma (in is_cat_coequalizer) cat_coeq_unique':
-  assumes "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
+  assumes "\<epsilon>' : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
 proof-
-  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(1))
+  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(1))
   show ?thesis by (rule cat_coeq_unique_cocone[OF \<epsilon>'.is_cat_cocone_axioms])
 qed
 
-lemma cat_equalizer_2_ex_is_arr_isomorphism:
-  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+lemma cat_equalizer_ex_is_arr_isomorphism:
+  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : E' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E"
-    and "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> f"
+    and "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F) \<CC> f"
 proof-
-  interpret \<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
-  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  interpret \<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(2))
   from that show ?thesis
     by 
       (
@@ -2767,17 +2878,17 @@ proof-
       )
 qed
 
-lemma cat_equalizer_2_ex_is_arr_isomorphism':
-  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
-    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+lemma cat_equalizer_ex_is_arr_isomorphism':
+  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : E' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E"
-    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
-    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
 proof-
-  interpret \<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
-  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  interpret \<epsilon>: is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(2))
   obtain f where f: "f : E' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E"
-    and "j \<in>\<^sub>\<circ> \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr> \<Longrightarrow> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f" for j
+    and "j \<in>\<^sub>\<circ> \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F\<lparr>Obj\<rparr> \<Longrightarrow> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f" for j
     by 
       (
         elim cat_lim_ex_is_arr_isomorphism'[
@@ -2785,20 +2896,20 @@ proof-
           ]
       )
   then have 
-    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
-    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     unfolding the_cat_parallel_components by auto
   with f show ?thesis using that by simp
 qed
 
-lemma cat_coequalizer_2_ex_is_arr_isomorphism:
-  assumes "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+lemma cat_coequalizer_ex_is_arr_isomorphism:
+  assumes "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<epsilon>' : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : E \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E'" 
-    and "\<epsilon>' = ntcf_const (\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L)  \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
+    and "\<epsilon>' = ntcf_const (\<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F)  \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
 proof-
-  interpret \<epsilon>: is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
-  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  interpret \<epsilon>: is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(2))
   from that show ?thesis
     by 
       (
@@ -2808,29 +2919,1015 @@ proof-
       )
 qed
 
-lemma cat_coequalizer_2_ex_is_arr_isomorphism':
-  assumes "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+lemma cat_coequalizer_ex_is_arr_isomorphism':
+  assumes "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<epsilon>' : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   obtains f where "f : E \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E'" 
-    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr>"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr>"
 proof-
-  interpret \<epsilon>: is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
-  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  interpret \<epsilon>: is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E' \<epsilon>' by (rule assms(2))
   obtain f where f: "f : E \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E'"
-    and "j \<in>\<^sub>\<circ> \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L \<aa>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<lparr>Obj\<rparr> \<Longrightarrow> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>j\<rparr>" for j
-    by 
+    and "j \<in>\<^sub>\<circ> \<Up>\<^sub>C (\<bb>\<^sub>P\<^sub>L F) (\<aa>\<^sub>P\<^sub>L F) F\<lparr>Obj\<rparr> \<Longrightarrow> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>j\<rparr>" for j
+    by
       (
         elim cat_colim_ex_is_arr_isomorphism'[
           OF \<epsilon>.is_cat_colimit_axioms \<epsilon>'.is_cat_colimit_axioms
           ]
       )
   then have 
-    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>"
-    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<rparr>"
+    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr>"
+    "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L F\<rparr>"
     unfolding the_cat_parallel_components by auto
   with f show ?thesis using that by simp
 qed
+
+
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_cat_equalizer) cat_eq_is_monic_arr: 
+  \<comment>\<open>See subsection 3.3 in \cite{awodey_category_2010}.\<close>
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> : E \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> \<aa>"
+proof(intro is_monic_arrI)
+  show "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> : E \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cat_parallel_cs_simps 
+          cs_intro: cat_cs_intros cat_parallel_cs_intros
+      )
+  fix f g a
+  assume prems:
+    "f : a \<mapsto>\<^bsub>\<CC>\<^esub> E"
+    "g : a \<mapsto>\<^bsub>\<CC>\<^esub> E"
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g"
+  define \<epsilon>' where "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F) \<CC> f"
+  from prems(1) have "\<epsilon>' :
+    a <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<Up>\<rightarrow>\<Up>\<^sub>C\<^sub>F \<CC> (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<aa> \<bb> F' :
+    \<Up>\<^sub>C (\<aa>\<^sub>P\<^sub>L F) (\<bb>\<^sub>P\<^sub>L F) F \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    unfolding \<epsilon>'_def by (cs_concl cs_intro: is_cat_coneI cat_cs_intros)
+  from cat_eq_unique_cone[OF this] obtain f' 
+    where f': "f' : a \<mapsto>\<^bsub>\<CC>\<^esub> E"
+      and \<epsilon>'_\<aa>: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+      and unique_f': "\<And>f''.
+        \<lbrakk> f'' : a \<mapsto>\<^bsub>\<CC>\<^esub> E; \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'' \<rbrakk> \<Longrightarrow>
+          f'' = f'"
+    by meson
+  from prems(1) have unique_f: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    unfolding \<epsilon>'_def
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_parallel_cs_intros
+      )
+  from prems(1) have unique_g: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g"
+    unfolding \<epsilon>'_def
+    by
+      (
+        cs_concl
+          cs_simp: prems(3) cat_cs_simps
+          cs_intro: cat_cs_intros cat_parallel_cs_intros
+      )
+  show "f = g"
+    by 
+      (
+        rule unique_f'
+          [
+            OF prems(1) unique_f,
+            unfolded unique_f'[OF prems(2) unique_g, symmetric]
+          ]
+      )
+qed
+
+lemma (in is_cat_coequalizer) cat_coeq_is_epic_arr: 
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L F\<rparr> : \<aa> \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> E"
+  by
+    (
+      rule is_cat_equalizer.cat_eq_is_monic_arr[
+        OF is_cat_equalizer_op, unfolded cat_op_simps
+        ]
+    )
+
+
+
+subsection\<open>Equalizers and coequalizers for two arrows\<close>
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+
+text\<open>
+See \cite{noauthor_wikipedia_2001}\footnote{
+\url{https://en.wikipedia.org/wiki/Equaliser_(mathematics)}
+}.
+\<close>
+
+locale is_cat_equalizer_2 =
+  is_cat_limit \<alpha> \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> \<CC> \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close> E \<epsilon> 
+  for \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> +
+  assumes cat_eq_\<gg>[cat_lim_cs_intros]: "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and cat_eq_\<ff>[cat_lim_cs_intros]: "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+
+syntax "_is_cat_equalizer_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+  (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q '(_,_,_,_') :/ \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
+translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
+
+locale is_cat_coequalizer_2 =
+  is_cat_colimit 
+    \<alpha> \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> \<CC> \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close> E \<epsilon> 
+  for \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> +
+  assumes cat_coeq_\<gg>[cat_lim_cs_intros]: "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and cat_coeq_\<ff>[cat_lim_cs_intros]: "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+
+syntax "_is_cat_coequalizer_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+  (\<open>(_ :/ '(_,_,_,_') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q _ :/ \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
+translations "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
+
+
+text\<open>Rules.\<close>
+
+lemma (in is_cat_equalizer_2) is_cat_equalizer_2_axioms'[cat_lim_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+    and "E' = E"
+    and "\<aa>' = \<aa>"
+    and "\<bb>' = \<bb>"
+    and "\<gg>' = \<gg>"
+    and "\<ff>' = \<ff>"
+    and "\<CC>' = \<CC>"
+  shows "\<epsilon> : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>',\<bb>',\<gg>',\<ff>') : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_equalizer_2_axioms)
+
+mk_ide rf is_cat_equalizer_2_def[unfolded is_cat_equalizer_2_axioms_def]
+  |intro is_cat_equalizer_2I|
+  |dest is_cat_equalizer_2D[dest]|
+  |elim is_cat_equalizer_2E[elim]|
+
+lemmas [cat_lim_cs_intros] = is_cat_equalizer_2D(1)
+
+lemma (in is_cat_coequalizer_2) is_cat_coequalizer_2_axioms'[cat_lim_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+    and "E' = E"
+    and "\<aa>' = \<aa>"
+    and "\<bb>' = \<bb>"
+    and "\<gg>' = \<gg>"
+    and "\<ff>' = \<ff>"
+    and "\<CC>' = \<CC>"
+  shows "\<epsilon> : (\<aa>',\<bb>',\<gg>',\<ff>') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_coequalizer_2_axioms)
+
+mk_ide rf is_cat_coequalizer_2_def[unfolded is_cat_coequalizer_2_axioms_def]
+  |intro is_cat_coequalizer_2I|
+  |dest is_cat_coequalizer_2D[dest]|
+  |elim is_cat_coequalizer_2E[elim]|
+
+lemmas [cat_lim_cs_intros] = is_cat_coequalizer_2D(1)
+
+
+text\<open>Helper lemmas.\<close>
+
+(*FIXME*)
+lemma cat_eq_F'_helper:
+  "(\<lambda>f\<in>\<^sub>\<circ>set {\<ff>\<^sub>P\<^sub>L, \<gg>\<^sub>P\<^sub>L}. (f = \<gg>\<^sub>P\<^sub>L ? \<gg> : \<ff>)) =
+    (\<lambda>f\<in>\<^sub>\<circ>set {\<ff>\<^sub>P\<^sub>L, \<gg>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))"
+  using cat_PL2_\<gg>\<ff> by (simp add: VLambda_vdoubleton)
+
+
+text\<open>Elementary properties.\<close>
+
+sublocale is_cat_equalizer_2 \<subseteq> cf_parallel_2 \<alpha> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC> 
+  by (intro cf_parallel_2I cat_parallel_2I)
+    (simp_all add: cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros)
+
+sublocale is_cat_coequalizer_2 \<subseteq> cf_parallel_2 \<alpha> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>
+  by (intro cf_parallel_2I cat_parallel_2I)
+    (
+      auto simp: 
+        cat_parallel_cs_intros cat_lim_cs_intros cat_cs_intros 
+        cat_PL2_ineq[symmetric]
+    )
+
+lemma (in is_cat_equalizer_2) cat_equalizer_2_is_cat_equalizer:
+  "\<epsilon> :
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L},(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))) : 
+    \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  by 
+    (
+      intro is_cat_equalizerI, 
+      rule is_cat_limit_axioms[
+        unfolded the_cf_parallel_2_def the_cat_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+        ]
+    ) 
+    (auto simp: Limit_vdoubleton_in_VsetI cat_parallel_cs_intros)
+
+lemma (in is_cat_coequalizer_2) cat_coequalizer_2_is_cat_coequalizer:
+  "\<epsilon> :
+    (\<aa>,\<bb>,set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L},(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E :
+    \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof
+  (
+    intro is_cat_coequalizerI, 
+    fold the_cf_parallel_2_def the_cat_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+  )
+  show "\<epsilon> :
+    \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<bb> \<aa> \<gg> \<ff> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m E :
+    \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by 
+      (
+        subst the_cat_parallel_2_commute, 
+        subst cf_parallel_2_the_cf_parallel_2_commute[symmetric]
+      )
+      (intro is_cat_colimit_axioms)
+qed (auto simp: Limit_vdoubleton_in_VsetI cat_parallel_cs_intros)
+
+lemma cat_equalizer_is_cat_equalizer_2:
+  assumes "\<epsilon> :
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L},(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))) :
+    \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+  interpret \<epsilon>: is_cat_equalizer 
+    \<alpha> \<aa> \<bb> \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close> \<open>(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))\<close> \<CC> E \<epsilon>
+    by (rule assms)
+  have \<ff>\<^sub>P\<^sub>L: "\<ff>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" and \<gg>\<^sub>P\<^sub>L: "\<gg>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" by auto
+  show ?thesis
+    using \<epsilon>.cat_eq_F'_app_is_arr[OF \<gg>\<^sub>P\<^sub>L] \<epsilon>.cat_eq_F'_app_is_arr[OF \<ff>\<^sub>P\<^sub>L] 
+    by 
+      (
+        intro 
+          is_cat_equalizer_2I 
+          \<epsilon>.is_cat_limit_axioms
+            [
+              folded 
+                the_cf_parallel_2_def the_cat_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+            ]
+      )
+      (auto simp: cat_PL2_\<gg>\<ff>)
+qed
+
+lemma cat_coequalizer_is_cat_coequalizer_2:
+  assumes "\<epsilon> :
+    (\<aa>,\<bb>,set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L},(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E :
+    \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+  interpret is_cat_coequalizer 
+    \<alpha> \<aa> \<bb> \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close> \<open>(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))\<close> \<CC> E \<epsilon>
+    by (rule assms)
+  interpret cf_parallel_2 \<alpha> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<bb> \<aa> \<gg> \<ff> \<CC>
+    by 
+      (
+        rule cf_parallel_is_cf_parallel_2[
+          OF cf_parallel_axioms cat_PL2_\<gg>\<ff>, folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+          ]
+      )
+  show "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by
+      (
+        intro is_cat_coequalizer_2I, 
+        subst the_cat_parallel_2_commute, 
+        subst cf_parallel_2_the_cf_parallel_2_commute[symmetric], 
+        rule is_cat_colimit_axioms[
+          folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def the_cat_parallel_2_def the_cf_parallel_2_def
+          ]
+      )
+      (simp_all add: cf_parallel_\<ff>' cf_parallel_\<gg>')
+qed
+
+
+text\<open>Duality.\<close>
+
+lemma (in is_cat_equalizer_2) is_cat_coequalizer_2_op:
+  "op_ntcf \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  unfolding is_cat_equalizer_def
+  by 
+    (
+      rule cat_coequalizer_is_cat_coequalizer_2
+        [
+          OF is_cat_equalizer.is_cat_coequalizer_op[
+            OF cat_equalizer_2_is_cat_equalizer
+          ]
+        ]
+    )
+
+lemma (in is_cat_equalizer_2) is_cat_coequalizer_2_op'[cat_op_intros]:
+  assumes "\<CC>' = op_cat \<CC>"
+  shows "op_ntcf \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_coequalizer_2_op)
+
+lemmas [cat_op_intros] = is_cat_equalizer_2.is_cat_coequalizer_2_op'
+
+lemma (in is_cat_coequalizer_2) is_cat_equalizer_2_op:
+  "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  unfolding is_cat_coequalizer_def
+  by 
+    (
+      rule cat_equalizer_is_cat_equalizer_2
+        [
+          OF is_cat_coequalizer.is_cat_equalizer_op[
+            OF cat_coequalizer_2_is_cat_coequalizer
+          ]
+        ]
+    )
+
+lemma (in is_cat_coequalizer_2) is_cat_equalizer_2_op'[cat_op_intros]:
+  assumes "\<CC>' = op_cat \<CC>"
+  shows "op_ntcf \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_equalizer_2_op)
+
+lemmas [cat_op_intros] = is_cat_coequalizer_2.is_cat_equalizer_2_op'
+
+
+text\<open>Further elementary properties.\<close>
+
+lemma (in category) cat_cf_parallel_2_cat_equalizer: 
+  assumes "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+  shows "cf_parallel_2 \<alpha> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC>"
+  using assms 
+  by (intro cf_parallel_2I cat_parallel_2I)
+    (auto simp: cat_parallel_cs_intros cat_cs_intros)
+
+lemma (in category) cat_cf_parallel_2_cat_coequalizer: 
+  assumes "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+  shows "cf_parallel_2 \<alpha> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> \<CC>"
+  using assms 
+  by (intro cf_parallel_2I cat_parallel_2I)
+    (simp_all add: cat_parallel_cs_intros cat_cs_intros cat_PL2_ineq[symmetric])
+
+lemma cat_cone_cf_par_2_eps_NTMap_app:
+  assumes "\<epsilon> :
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" 
+    and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+  shows 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>" 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+proof-
+  let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> 
+    and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
+    and ?F = \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close>
+  interpret \<epsilon>: is_cat_cone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
+  from \<epsilon>.cat_PL2_\<ff> \<epsilon>.cat_PL2_\<gg> have \<gg>\<ff>: "?F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_vdoubleton_in_VsetI)  auto
+  from assms(2,3) have
+    "(\<And>\<ff>'. \<ff>' \<in>\<^sub>\<circ> ?F \<Longrightarrow> (\<lambda>f\<in>\<^sub>\<circ>?F. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))\<lparr>\<ff>'\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>)"
+    by auto
+  note cat_cone_cf_par_eps_NTMap_app = cat_cone_cf_par_eps_NTMap_app
+      [
+        OF 
+          assms(1)[
+            unfolded 
+              the_cat_parallel_2_def the_cf_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+            ], 
+        folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def, OF _ \<gg>\<ff> _ this,
+        simplified
+      ]
+  from
+    cat_cone_cf_par_eps_NTMap_app[of \<gg>\<^sub>P\<^sub>L, simplified]
+    cat_cone_cf_par_eps_NTMap_app[of \<ff>\<^sub>P\<^sub>L, simplified]
+    cat_PL2_\<gg>\<ff>
+  show 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>" 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+    by fastforce+
+qed
+
+lemma cat_cocone_cf_par_2_eps_NTMap_app:
+  assumes "\<epsilon> :
+    \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E :
+    \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" 
+    and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+  shows 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>" 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"    
+proof-
+  let ?II = \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> 
+    and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close>
+    and ?F = \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close>
+  have \<ff>\<gg>_\<gg>\<ff>: "{\<ff>\<^sub>P\<^sub>L, \<gg>\<^sub>P\<^sub>L} = {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" by auto
+  interpret \<epsilon>: is_cat_cocone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
+  from \<epsilon>.cat_PL2_\<ff> \<epsilon>.cat_PL2_\<gg> have \<gg>\<ff>: "?F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_vdoubleton_in_VsetI) auto
+  from assms(2,3) have
+    "(\<And>\<ff>'. \<ff>' \<in>\<^sub>\<circ> ?F \<Longrightarrow> (\<lambda>f\<in>\<^sub>\<circ>?F. (f = \<gg>\<^sub>P\<^sub>L ? \<gg> : \<ff>))\<lparr>\<ff>'\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>)"
+    by auto
+  note cat_cocone_cf_par_eps_NTMap_app = cat_cocone_cf_par_eps_NTMap_app
+    [
+      OF assms(1)
+        [
+          unfolded 
+            the_cat_parallel_2_def 
+            the_cf_parallel_2_def 
+            \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def 
+            insert_commute,
+          unfolded \<ff>\<gg>_\<gg>\<ff>
+        ],
+      folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+      OF _ \<gg>\<ff> _ this,
+      simplified
+    ]
+  from
+    cat_cocone_cf_par_eps_NTMap_app[of \<gg>\<^sub>P\<^sub>L, simplified]
+    cat_cocone_cf_par_eps_NTMap_app[of \<ff>\<^sub>P\<^sub>L, simplified]
+    cat_PL2_\<gg>\<ff>
+  show
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>" 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
+    by fastforce+
+qed
+
+lemma (in is_cat_equalizer_2) cat_eq_2_eps_NTMap_app:
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+proof-
+  have \<gg>\<^sub>P\<^sub>L: "\<gg>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" and \<ff>\<^sub>P\<^sub>L: "\<ff>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" by auto
+  note cat_eq_eps_NTMap_app = is_cat_equalizer.cat_eq_eps_NTMap_app
+    [
+      OF cat_equalizer_2_is_cat_equalizer,
+      folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+    ]
+  from cat_eq_eps_NTMap_app[OF \<gg>\<^sub>P\<^sub>L] cat_eq_eps_NTMap_app[OF \<ff>\<^sub>P\<^sub>L] cat_PL2_\<gg>\<ff> show 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+    by auto
+qed
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_eps_NTMap_app:
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
+proof-
+  have \<gg>\<^sub>P\<^sub>L: "\<gg>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" and \<ff>\<^sub>P\<^sub>L: "\<ff>\<^sub>P\<^sub>L \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" by auto
+  note cat_eq_eps_NTMap_app = is_cat_coequalizer.cat_coeq_eps_NTMap_app
+    [
+      OF cat_coequalizer_2_is_cat_coequalizer,
+      folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+    ]
+  from cat_eq_eps_NTMap_app[OF \<gg>\<^sub>P\<^sub>L] cat_eq_eps_NTMap_app[OF \<ff>\<^sub>P\<^sub>L] cat_PL2_\<gg>\<ff> show 
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
+    "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
+    by auto
+qed
+
+lemma (in is_cat_equalizer_2) cat_eq_2_Comp_eq: 
+  "\<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+  "\<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+  unfolding cat_eq_2_eps_NTMap_app[symmetric] by simp_all
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_Comp_eq: 
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff>"
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<ff> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<gg>"
+  unfolding cat_coeq_2_eps_NTMap_app[symmetric] by simp_all
+
+
+subsubsection\<open>Universal property\<close>
+
+lemma is_cat_equalizer_2I':
+  assumes "\<epsilon> :
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "\<And>\<epsilon>' E'. \<epsilon>' :
+      E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> :
+      \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+      \<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+  shows "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+  let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> 
+    and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<close>
+    and ?F = \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close>
+  interpret \<epsilon>: is_cat_cone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
+  from \<epsilon>.cat_PL2_\<ff> \<epsilon>.cat_PL2_\<gg> have \<gg>\<ff>: "?F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_vdoubleton_in_VsetI) auto
+  from assms(2,3) have "(\<lambda>f\<in>\<^sub>\<circ>?F. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))\<lparr>\<ff>'\<rparr> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>" 
+    if "\<ff>' \<in>\<^sub>\<circ> ?F" for \<ff>'
+    using that by simp
+  note is_cat_equalizerI' = is_cat_equalizerI'
+      [
+        OF 
+          assms(1)[
+            unfolded 
+              the_cat_parallel_2_def the_cf_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def
+            ], 
+        folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def, 
+        OF 
+          _ 
+          \<gg>\<ff> 
+          _ 
+          this 
+          _ 
+          assms(4)[unfolded the_cf_parallel_2_def the_cat_parallel_2_def], 
+        of \<gg>\<^sub>P\<^sub>L,
+        simplified
+      ]
+  show ?thesis by (rule cat_equalizer_is_cat_equalizer_2[OF is_cat_equalizerI'])
+qed
+
+lemma is_cat_coequalizer_2I':
+  assumes "\<epsilon> :
+    \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E :
+    \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "\<And>\<epsilon>' E'. \<epsilon>' :
+      \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' :
+      \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<Longrightarrow>
+      \<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+  shows "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+  let ?II = \<open>\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L\<close> 
+    and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg>\<close>
+    and ?F = \<open>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}\<close>
+  have \<ff>\<gg>_\<gg>\<ff>: "{\<ff>\<^sub>P\<^sub>L, \<gg>\<^sub>P\<^sub>L} = {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" by auto
+  interpret \<epsilon>: is_cat_cocone \<alpha> E ?II \<CC> ?II_II \<epsilon> by (rule assms(1))
+  from \<epsilon>.cat_PL2_\<ff> \<epsilon>.cat_PL2_\<gg> have \<gg>\<ff>: "?F \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_vdoubleton_in_VsetI) auto
+  from assms(2,3) have "(\<lambda>f\<in>\<^sub>\<circ>set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}. (f = \<gg>\<^sub>P\<^sub>L ? \<gg> : \<ff>))\<lparr>\<ff>'\<rparr> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    if "\<ff>' \<in>\<^sub>\<circ> set {\<gg>\<^sub>P\<^sub>L, \<ff>\<^sub>P\<^sub>L}" for \<ff>'
+    using that by simp
+  note is_cat_coequalizerI'
+    [
+      OF assms(1)[
+        unfolded 
+          the_cat_parallel_2_def the_cf_parallel_2_def \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def \<ff>\<gg>_\<gg>\<ff>
+          ],
+      folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+      OF 
+        _ 
+        \<gg>\<ff>
+        _ 
+        this
+        _
+        assms(4)[unfolded the_cf_parallel_2_def the_cat_parallel_2_def \<ff>\<gg>_\<gg>\<ff>],
+      of \<gg>\<^sub>P\<^sub>L,
+      simplified
+    ]
+  with cat_PL2_\<gg>\<ff> have
+    "\<epsilon> : (\<aa>,\<bb>,?F,(\<lambda>f\<in>\<^sub>\<circ>?F. (f = \<ff>\<^sub>P\<^sub>L ? \<ff> : \<gg>))) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (auto simp: VLambda_vdoubleton)
+  from cat_coequalizer_is_cat_coequalizer_2[OF this] show ?thesis by simp
+qed
+
+lemma (in is_cat_equalizer_2) cat_eq_2_unique_cone:
+  assumes "\<epsilon>' :
+    E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : 
+    \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+  by 
+    (
+      rule is_cat_equalizer.cat_eq_unique_cone
+        [
+          OF cat_equalizer_2_is_cat_equalizer, 
+          folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+          OF assms[unfolded the_cf_parallel_2_def the_cat_parallel_2_def]
+        ]
+    )
+
+lemma (in is_cat_equalizer_2) cat_eq_2_unique:
+  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows
+    "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> f'"
+proof-  
+  interpret \<epsilon>': is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms)
+  show ?thesis
+    by 
+      (
+        rule is_cat_equalizer.cat_eq_unique
+          [
+            OF cat_equalizer_2_is_cat_equalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+            OF \<epsilon>'.cat_equalizer_2_is_cat_equalizer,
+            folded the_cat_parallel_2_def
+          ]
+      )
+qed
+
+lemma (in is_cat_equalizer_2) cat_eq_2_unique':
+  assumes "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E' \<mapsto>\<^bsub>\<CC>\<^esub> E \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f'"
+proof-
+  interpret \<epsilon>': is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms)
+  show ?thesis
+    by 
+      (
+        rule is_cat_equalizer.cat_eq_unique'
+          [
+            OF cat_equalizer_2_is_cat_equalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+            OF \<epsilon>'.cat_equalizer_2_is_cat_equalizer,
+            folded the_cat_parallel_2_def
+          ]
+      )
+qed
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_unique_cocone:
+  assumes "\<epsilon>' :
+    \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<bb> \<aa> \<ff> \<gg> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e E' :
+    \<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+  by 
+    (
+      rule is_cat_coequalizer.cat_coeq_unique_cocone
+        [
+          OF cat_coequalizer_2_is_cat_coequalizer,
+          folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def insert_commute,
+          OF assms[
+            unfolded 
+              the_cf_parallel_2_def the_cat_parallel_2_def cat_eq_F'_helper
+            ]
+        ]
+    )
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_unique:
+  assumes "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'.
+    f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and>
+    \<epsilon>' = ntcf_const (\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L) \<CC> f' \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
+proof-
+  interpret \<epsilon>': is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms)
+  show ?thesis  
+    by 
+      (
+        rule is_cat_coequalizer.cat_coeq_unique
+          [
+            OF cat_coequalizer_2_is_cat_coequalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+            OF \<epsilon>'.cat_coequalizer_2_is_cat_coequalizer,
+            folded the_cat_parallel_2_def the_cat_parallel_2_commute
+          ]
+      )
+qed
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_unique':
+  assumes "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  shows "\<exists>!f'. f' : E \<mapsto>\<^bsub>\<CC>\<^esub> E' \<and> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+proof-
+  interpret \<epsilon>': is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms)
+  show ?thesis
+    by 
+      (
+        rule is_cat_coequalizer.cat_coeq_unique'
+          [
+            OF cat_coequalizer_2_is_cat_coequalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def,
+            OF \<epsilon>'.cat_coequalizer_2_is_cat_coequalizer,
+            folded the_cat_parallel_2_def
+          ]
+      )
+qed
+
+lemma cat_equalizer_2_ex_is_arr_isomorphism:
+  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  obtains f where "f : E' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E"
+    and "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> f"
+proof-
+  interpret \<epsilon>: is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  show ?thesis
+    using that 
+    by 
+      (
+        rule cat_equalizer_ex_is_arr_isomorphism
+          [
+            OF 
+              \<epsilon>.cat_equalizer_2_is_cat_equalizer 
+              \<epsilon>'.cat_equalizer_2_is_cat_equalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def the_cat_parallel_2_def
+          ]
+      )  
+qed
+
+lemma cat_equalizer_2_ex_is_arr_isomorphism':
+  assumes "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<epsilon>' : E' <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  obtains f where "f : E' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+proof-
+  interpret \<epsilon>: is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  show ?thesis
+    using that 
+    by 
+      (
+        rule cat_equalizer_ex_is_arr_isomorphism'
+          [
+            OF 
+              \<epsilon>.cat_equalizer_2_is_cat_equalizer 
+              \<epsilon>'.cat_equalizer_2_is_cat_equalizer,
+            folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def the_cat_parallel_2_def
+          ]
+      )
+qed
+
+lemma cat_coequalizer_2_ex_is_arr_isomorphism:
+  assumes "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  obtains f where "f : E \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E'" 
+    and "\<epsilon>' = ntcf_const (\<up>\<up>\<^sub>C \<bb>\<^sub>P\<^sub>L\<^sub>2 \<aa>\<^sub>P\<^sub>L\<^sub>2 \<ff>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L) \<CC> f \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon>"
+proof-
+  interpret \<epsilon>: is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  show ?thesis
+    using that 
+    by 
+      (
+        rule cat_coequalizer_ex_is_arr_isomorphism
+          [
+            OF 
+              \<epsilon>.cat_coequalizer_2_is_cat_coequalizer 
+              \<epsilon>'.cat_coequalizer_2_is_cat_coequalizer,
+            folded 
+              \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def the_cat_parallel_2_def the_cat_parallel_2_commute
+          ]
+      )
+qed
+
+lemma cat_coequalizer_2_ex_is_arr_isomorphism':
+  assumes "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<epsilon>' : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E' : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  obtains f where "f : E \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> E'" 
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+    and "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<bb>\<^sub>P\<^sub>L\<^sub>2\<rparr>"
+proof-
+  interpret \<epsilon>: is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule assms(1))
+  interpret \<epsilon>': is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E' \<epsilon>' by (rule assms(2))
+  show ?thesis
+    using that 
+    by 
+      (
+        rule cat_coequalizer_ex_is_arr_isomorphism'
+          [
+            OF
+              \<epsilon>.cat_coequalizer_2_is_cat_coequalizer
+              \<epsilon>'.cat_coequalizer_2_is_cat_coequalizer,
+            folded 
+              \<aa>\<^sub>P\<^sub>L\<^sub>2_def \<bb>\<^sub>P\<^sub>L\<^sub>2_def the_cat_parallel_2_def the_cat_parallel_2_commute
+          ]
+      )
+qed
+
+
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_cat_equalizer_2) cat_eq_2_is_monic_arr: 
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> : E \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> \<aa>"
+  by
+    (
+      rule is_cat_equalizer.cat_eq_is_monic_arr[
+        OF cat_equalizer_2_is_cat_equalizer, folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def
+        ]
+    )
+
+lemma (in is_cat_coequalizer_2) cat_coeq_2_is_epic_arr: 
+  "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> : \<aa> \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> E"
+  by
+    (
+      rule is_cat_coequalizer.cat_coeq_is_epic_arr[
+        OF cat_coequalizer_2_is_cat_coequalizer, folded \<aa>\<^sub>P\<^sub>L\<^sub>2_def
+        ]
+    )
+
+
+
+subsection\<open>Initial and terminal objects as limits/colimits of an empty diagram\<close>
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+text\<open>
+See 
+\cite{noauthor_nlab_nodate}\footnote{
+\url{https://ncatlab.org/nlab/show/initial+object}
+}, \cite{noauthor_nlab_nodate}\footnote{
+\url{https://ncatlab.org/nlab/show/terminal+object}
+} and Chapter X-1 in \cite{mac_lane_categories_2010}.
+\<close>
+
+locale is_cat_obj_empty_terminal = is_cat_limit \<alpha> cat_0 \<CC> \<open>cf_0 \<CC>\<close> z \<ZZ> 
+  for \<alpha> \<CC> z \<ZZ>
+
+syntax "_is_cat_obj_empty_terminal" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+  (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F :/ 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51] 51)
+translations "\<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_obj_empty_terminal \<alpha> \<CC> z \<ZZ>"
+
+locale is_cat_obj_empty_initial = is_cat_colimit \<alpha> cat_0 \<CC> \<open>cf_0 \<CC>\<close> z \<ZZ> 
+  for \<alpha> \<CC> z \<ZZ>
+
+syntax "_is_cat_obj_empty_initial" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+  (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F :/ 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51] 51)
+translations "\<ZZ> : z >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+  "CONST is_cat_obj_empty_initial \<alpha> \<CC> z \<ZZ>"
+
+
+text\<open>Rules.\<close>
+
+lemma (in is_cat_obj_empty_terminal) 
+  is_cat_obj_empty_terminal_axioms'[cat_lim_cs_intros]:
+  assumes "\<alpha>' = \<alpha>" and "z' = z" and "\<CC>' = \<CC>" 
+  shows "\<ZZ> : z' <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_obj_empty_terminal_axioms)
+
+mk_ide rf is_cat_obj_empty_terminal_def
+  |intro is_cat_obj_empty_terminalI|
+  |dest is_cat_obj_empty_terminalD[dest]|
+  |elim is_cat_obj_empty_terminalE[elim]|
+
+lemmas [cat_lim_cs_intros] = is_cat_obj_empty_terminalD
+
+lemma (in is_cat_obj_empty_initial) 
+  is_cat_obj_empty_initial_axioms'[cat_lim_cs_intros]:
+  assumes "\<alpha>' = \<alpha>" and "z' = z" and "\<CC>' = \<CC>" 
+  shows "\<ZZ> : z' >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>'\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_obj_empty_initial_axioms)
+
+mk_ide rf is_cat_obj_empty_initial_def
+  |intro is_cat_obj_empty_initialI|
+  |dest is_cat_obj_empty_initialD[dest]|
+  |elim is_cat_obj_empty_initialE[elim]|
+
+lemmas [cat_lim_cs_intros] = is_cat_obj_empty_initialD
+
+
+text\<open>Duality.\<close>
+
+lemma (in is_cat_obj_empty_terminal) is_cat_obj_empty_initial_op:
+  "op_ntcf \<ZZ> : z >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  by (intro is_cat_obj_empty_initialI)
+    (
+      cs_concl cs_shallow
+        cs_simp: cat_op_simps op_cf_cf_0 cs_intro: cat_cs_intros cat_op_intros
+    )
+
+lemma (in is_cat_obj_empty_terminal) is_cat_obj_empty_initial_op'[cat_op_intros]:
+  assumes "\<CC>' = op_cat \<CC>"
+  shows "op_ntcf \<ZZ> : z >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_obj_empty_initial_op)
+
+lemmas [cat_op_intros] = is_cat_obj_empty_terminal.is_cat_obj_empty_initial_op'
+
+lemma (in is_cat_obj_empty_initial) is_cat_obj_empty_terminal_op:
+  "op_ntcf \<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  by (intro is_cat_obj_empty_terminalI)
+    (
+      cs_concl cs_shallow
+        cs_simp: cat_op_simps op_cf_cf_0 cs_intro: cat_cs_intros cat_op_intros
+    )
+
+lemma (in is_cat_obj_empty_initial) is_cat_obj_empty_terminal_op'[cat_op_intros]:
+  assumes "\<CC>' = op_cat \<CC>"
+  shows "op_ntcf \<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>'"
+  unfolding assms by (rule is_cat_obj_empty_terminal_op)
+
+lemmas [cat_op_intros] = is_cat_obj_empty_initial.is_cat_obj_empty_terminal_op'
+
+
+text\<open>Elementary properties.\<close>
+
+lemma (in is_cat_obj_empty_terminal) cat_oet_ntcf_0: "\<ZZ> = ntcf_0 \<CC>"
+  by (rule is_ntcf_is_ntcf_0_if_cat_0)
+    (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+
+lemma (in is_cat_obj_empty_initial) cat_oei_ntcf_0: "\<ZZ> = ntcf_0 \<CC>"
+  by (rule is_ntcf_is_ntcf_0_if_cat_0)
+    (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+
+
+subsubsection\<open>
+Initial and terminal objects as limits are initial and terminal objects
+\<close>
+
+lemma (in category) cat_obj_terminal_is_cat_obj_empty_terminal:
+  assumes "obj_terminal \<CC> z"
+  shows "ntcf_0 \<CC> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+
+  from assms have z: "z \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
+  from z have [cat_cs_simps]: "cf_const cat_0 \<CC> z = cf_0 \<CC>"
+    by (intro is_functor_is_cf_0_if_cat_0) (cs_concl cs_intro: cat_cs_intros)
+  note obj_terminalD = obj_terminalD[OF assms]
+
+  show ?thesis
+  proof
+    (
+      intro is_cat_obj_empty_terminalI is_cat_limitI is_cat_coneI, 
+      unfold cat_cs_simps
+    )
+    show "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> z \<and> u' = ntcf_0 \<CC> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f'"
+      if "u' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e cf_0 \<CC> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" for u' r'
+    proof-
+      interpret u': is_cat_cone \<alpha> r' cat_0 \<CC> \<open>cf_0 \<CC>\<close> u' by (rule that)
+      from z have [cat_cs_simps]: "cf_const cat_0 \<CC> r' = cf_0 \<CC>"
+        by (intro is_functor_is_cf_0_if_cat_0) 
+          (cs_concl cs_shallow cs_intro: cat_cs_intros)
+      have u'_def: "u' = ntcf_0 \<CC>"
+        by 
+          (
+            rule is_ntcf_is_ntcf_0_if_cat_0[
+              OF u'.is_ntcf_axioms, unfolded cat_cs_simps
+              ]
+          )
+      from obj_terminalD(2)[OF u'.cat_cone_obj] obtain f' 
+        where f': "f' : r' \<mapsto>\<^bsub>\<CC>\<^esub> z"
+          and f'_unique: "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> z \<Longrightarrow> f'' = f'" 
+        for f''
+        by auto
+      from f' have [cat_cs_simps]: "ntcf_const cat_0 \<CC> f' = ntcf_0 \<CC>"
+        by (intro is_ntcf_is_ntcf_0_if_cat_0(1)) 
+          (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      show ?thesis
+      proof(intro ex1I conjI; (elim conjE)?)
+        show "u' = ntcf_0 \<CC> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f'"
+          by
+            (
+              cs_concl cs_shallow
+                cs_simp: u'_def cat_cs_simps cs_intro: cat_cs_intros
+            )
+        fix f'' assume prems: 
+          "f'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> z" "u' = ntcf_0 \<CC> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f''"
+        show "f'' = f'" by (rule f'_unique[OF prems(1)])          
+      qed (rule f')
+    qed
+  qed (cs_concl cs_simp: cat_cs_simps cs_intro: z cat_cs_intros)
+
+qed
+
+lemma (in category) cat_obj_initial_is_cat_obj_empty_initial:
+  assumes "obj_initial \<CC> z"
+  shows "ntcf_0 \<CC> : z >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof-
+  have z: "obj_terminal (op_cat \<CC>) z" unfolding cat_op_simps by (rule assms)
+  show ?thesis
+    by 
+      (
+        rule is_cat_obj_empty_terminal.is_cat_obj_empty_initial_op
+          [
+            OF category.cat_obj_terminal_is_cat_obj_empty_terminal[
+              OF category_op z, folded op_ntcf_ntcf_0
+              ], 
+            unfolded cat_op_simps op_ntcf_ntcf_0
+          ]
+      )
+qed
+
+lemma (in is_cat_obj_empty_terminal) cat_oet_obj_terminal: "obj_terminal \<CC> z"
+proof-
+  show "obj_terminal \<CC> z"
+  proof(rule obj_terminalI)
+    fix a assume prems: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+    have [cat_cs_simps]: "cf_const cat_0 \<CC> a = cf_0 \<CC>"
+      by (rule is_functor_is_cf_0_if_cat_0)
+        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros prems)
+    from prems have "ntcf_0 \<CC> : a <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e cf_0 \<CC> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      by (intro is_cat_coneI)
+        (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    from cat_lim_ua_fo[OF this] obtain f' 
+      where f': "f' : a \<mapsto>\<^bsub>\<CC>\<^esub> z"
+        and "ntcf_0 \<CC> = \<ZZ> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f'"
+        and f'_unique: 
+          "\<lbrakk> f'' : a \<mapsto>\<^bsub>\<CC>\<^esub> z; ntcf_0 \<CC> = \<ZZ> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f'' \<rbrakk> \<Longrightarrow>
+            f'' = f'"
+      for f''
+      by metis
+    show "\<exists>!f'. f' : a \<mapsto>\<^bsub>\<CC>\<^esub> z"
+    proof(intro ex1I)
+      fix f'' assume prems': "f'' : a \<mapsto>\<^bsub>\<CC>\<^esub> z"
+      from prems' have "ntcf_0 \<CC> = ntcf_0 \<CC> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const cat_0 \<CC> f''"
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      from f'_unique[OF prems', unfolded cat_oet_ntcf_0, OF this] 
+      show "f'' = f'".
+    qed (rule f')
+  qed (rule cat_cone_obj)
+qed
+
+lemma (in is_cat_obj_empty_initial) cat_oei_obj_initial: "obj_initial \<CC> z"
+  by 
+    (
+      rule is_cat_obj_empty_terminal.cat_oet_obj_terminal[
+        OF is_cat_obj_empty_initial.is_cat_obj_empty_terminal_op[
+          OF is_cat_obj_empty_initial_axioms
+          ],
+        unfolded cat_op_simps
+        ]
+    )
+
+lemma (in category) cat_is_cat_obj_empty_terminal_obj_terminal_iff:
+  "(ntcf_0 \<CC> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>) \<longleftrightarrow> obj_terminal \<CC> z"
+  using 
+    cat_obj_terminal_is_cat_obj_empty_terminal
+    is_cat_obj_empty_terminal.cat_oet_obj_terminal
+  by auto
+
+lemma (in category) cat_is_cat_obj_empty_initial_obj_initial_iff:
+  "(ntcf_0 \<CC> : z >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>) \<longleftrightarrow> obj_initial \<CC> z"
+  using 
+    cat_obj_initial_is_cat_obj_empty_initial
+    is_cat_obj_empty_initial.cat_oei_obj_initial
+  by auto
 
 
 
@@ -2880,14 +3977,14 @@ proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
   from assms show "cf_const (:\<^sub>C I) \<CC> P : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by 
       (
-        cs_concl
+        cs_concl 
           cs_intro: 
             cf_discrete_vdomain_vsubset_Vset 
             cat_discrete_cs_intros 
             cat_cs_intros
       )
   show ":\<rightarrow>: I F \<CC> : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_discrete_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_discrete_cs_intros)
   show "ntcf_obj_prod_base \<CC> I F P f\<lparr>NTMap\<rparr>\<lparr>a\<rparr> :
     cf_const (:\<^sub>C I) \<CC> P\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> :\<rightarrow>: I F \<CC>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     if "a \<in>\<^sub>\<circ> :\<^sub>C I\<lparr>Obj\<rparr>" for a
@@ -2896,7 +3993,7 @@ proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
     from that this show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_discrete_cs_simps cs_intro: cat_cs_intros
         )
   qed
@@ -2944,7 +4041,7 @@ proof
       assms(1,3)
   )
   show "cf_discrete \<alpha> I F \<CC>"
-    by (cs_concl cs_intro: cat_small_discrete_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_small_discrete_cs_intros)
 qed
 
 
@@ -2957,10 +4054,10 @@ subsubsection\<open>Definition and elementary properties\<close>
 definition ntcf_equalizer_base :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
   where "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e =
     [
-      (\<lambda>x\<in>\<^sub>\<circ>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>. e x),
-      cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E,
-      \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>,
-      \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L,
+      (\<lambda>x\<in>\<^sub>\<circ>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>. e x),
+      cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E,
+      \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>,
+      \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L,
       \<CC>
     ]\<^sub>\<circ>"
 
@@ -2969,13 +4066,13 @@ text\<open>Components.\<close>
 
 lemma ntcf_equalizer_base_components:
   shows "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTMap\<rparr> =
-    (\<lambda>x\<in>\<^sub>\<circ>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>. e x)"
+    (\<lambda>x\<in>\<^sub>\<circ>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>. e x)"
     and [cat_lim_cs_simps]: "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTDom\<rparr> =
-      cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E"
+      cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E"
     and [cat_lim_cs_simps]: "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTCod\<rparr> =
-      \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>"
+      \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>"
     and [cat_lim_cs_simps]: 
-      "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTDGDom\<rparr> = \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L"
+      "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTDGDom\<rparr> = \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L"
     and [cat_lim_cs_simps]: 
       "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTDGCod\<rparr> = \<CC>"
   unfolding ntcf_equalizer_base_def nt_field_simps 
@@ -2993,18 +4090,18 @@ mk_VLambda ntcf_equalizer_base_components(1)
 subsubsection\<open>Equalizer cone is a cone\<close>
 
 lemma (in category) cat_ntcf_equalizer_base_is_cat_cone:
-  assumes "e \<aa>\<^sub>P\<^sub>L : E \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
-    and "e \<bb>\<^sub>P\<^sub>L : E \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
-    and "e \<bb>\<^sub>P\<^sub>L = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e \<aa>\<^sub>P\<^sub>L"
-    and "e \<bb>\<^sub>P\<^sub>L = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e \<aa>\<^sub>P\<^sub>L"
+  assumes "e \<aa>\<^sub>P\<^sub>L\<^sub>2 : E \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>"
+    and "e \<bb>\<^sub>P\<^sub>L\<^sub>2 : E \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
+    and "e \<bb>\<^sub>P\<^sub>L\<^sub>2 = \<gg> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e \<aa>\<^sub>P\<^sub>L\<^sub>2"
+    and "e \<bb>\<^sub>P\<^sub>L\<^sub>2 = \<ff> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e \<aa>\<^sub>P\<^sub>L\<^sub>2"
     and "\<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
     and "\<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>"
   shows "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e :
-    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> :
-    \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    E <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> :
+    \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
 proof-
-  interpret par: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC> 
-    by (intro cf_parallelI cat_parallelI assms(5,6))
+  interpret par: cf_parallel_2 \<alpha> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> \<CC> 
+    by (intro cf_parallel_2I cat_parallel_2I assms(5,6))
       (simp_all add: cat_parallel_cs_intros cat_cs_intros)
   show ?thesis
   proof(intro is_cat_coneI is_tm_ntcfI' is_ntcfI')
@@ -3013,7 +4110,7 @@ proof-
     show "vcard (ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e) = 5\<^sub>\<nat>"
       unfolding ntcf_equalizer_base_def by (simp add: nat_omega_simps)
     from assms(2) show 
-      "cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      "cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
       by 
         (
           cs_concl 
@@ -3021,16 +4118,16 @@ proof-
             cs_intro: cat_small_cs_intros cat_parallel_cs_intros cat_cs_intros
         )
     from assms show 
-      "\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cs_intro: cat_parallel_cs_intros cat_small_cs_intros)
+      "\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff> : \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      by (cs_concl cs_intro: cat_parallel_cs_intros cat_small_cs_intros)
     show 
       "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTMap\<rparr>\<lparr>i\<rparr> :
-        cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E\<lparr>ObjMap\<rparr>\<lparr>i\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub>
-        \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>"
-      if "i \<in>\<^sub>\<circ> \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>" for i 
+        cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E\<lparr>ObjMap\<rparr>\<lparr>i\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub>
+        \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr>"
+      if "i \<in>\<^sub>\<circ> \<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<lparr>Obj\<rparr>" for i 
     proof-
       from that assms(1,2,5,6) show ?thesis
-        by (elim the_cat_parallel_ObjE; simp only:)
+        by (elim the_cat_parallel_2_ObjE; simp only:)
           ( 
             cs_concl 
               cs_simp: cat_lim_cs_simps cat_cs_simps cat_parallel_cs_simps 
@@ -3039,12 +4136,12 @@ proof-
     qed
     show 
       "ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTMap\<rparr>\<lparr>b'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub>
-        cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> =
-          \<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub>
+        cf_const (\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L) \<CC> E\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> =
+          \<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L \<aa> \<bb> \<gg> \<ff>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub>
           ntcf_equalizer_base \<CC> \<aa> \<bb> \<gg> \<ff> E e\<lparr>NTMap\<rparr>\<lparr>a'\<rparr>"
-      if "f' : a' \<mapsto>\<^bsub>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<^esub> b'" for a' b' f'
+      if "f' : a' \<mapsto>\<^bsub>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<^esub> b'" for a' b' f'
       using that assms(1,2,5,6)
-      by (elim par.the_cat_parallel_is_arrE; simp only:)
+      by (elim par.the_cat_parallel_2_is_arrE; simp only:)
         (
           cs_concl 
             cs_simp: 
@@ -3058,7 +4155,7 @@ proof-
     (
       use assms(2) in 
         \<open>
-          cs_concl
+          cs_concl 
             cs_intro: cat_lim_cs_intros cat_cs_intros 
             cs_simp: cat_lim_cs_simps
         \<close>
@@ -3073,7 +4170,7 @@ lemma cat_limit_of_cat_prod_obj_and_cat_equalizer:
   \<comment>\<open>See Theorem 1 in Chapter V-2 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>\<aa> \<bb> \<gg> \<ff>. \<lbrakk> \<ff> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb>; \<gg> : \<aa> \<mapsto>\<^bsub>\<CC>\<^esub> \<bb> \<rbrakk> \<Longrightarrow>
-      \<exists>E \<epsilon>. \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      \<exists>E \<epsilon>. \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>A. tm_cf_discrete \<alpha> (\<JJ>\<lparr>Obj\<rparr>) A \<CC> \<Longrightarrow>
       \<exists>P \<pi>. \<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> A : \<JJ>\<lparr>Obj\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>A. tm_cf_discrete \<alpha> (\<JJ>\<lparr>Arr\<rparr>) A \<CC> \<Longrightarrow>
@@ -3086,12 +4183,12 @@ proof-
   interpret \<FF>: is_tm_functor \<alpha> \<JJ> \<CC> \<FF> by (rule assms(1))
 
   have "?R j \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j
-    by (cs_concl cs_intro: cat_cs_intros that)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros that)
 
   have "tm_cf_discrete \<alpha> (\<JJ>\<lparr>Obj\<rparr>) ?R \<CC>"
   proof(intro tm_cf_discreteI)
     show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>i\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" if "i \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for i
-      by (cs_concl cs_intro: cat_cs_intros that)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros that)
     show "VLambda (\<JJ>\<lparr>Obj\<rparr>) ?R \<in>\<^sub>\<circ> Vset \<alpha>"
     proof(rule vbrelation.vbrelation_Limit_in_VsetI)
       show "\<R>\<^sub>\<circ> (VLambda (\<JJ>\<lparr>Obj\<rparr>) ?R) \<in>\<^sub>\<circ> Vset \<alpha>"
@@ -3113,7 +4210,7 @@ proof-
           then have "\<JJ>\<lparr>CId\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
             by (auto intro: cat_cs_intros simp: cat_cs_simps)
           moreover from x have "\<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>x\<rparr>\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>\<JJ>\<lparr>CId\<rparr>\<lparr>x\<rparr>\<rparr>"
-            by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
           ultimately show "\<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>x\<rparr>\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
             by (simp add: \<FF>.ArrMap.vsv_vimageI2)
         qed
@@ -3135,7 +4232,8 @@ proof-
   have "?L u \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" if "u \<in>\<^sub>\<circ> \<JJ>\<lparr>Arr\<rparr>" for u
   proof-
     from that obtain a b where "u : a \<mapsto>\<^bsub>\<JJ>\<^esub> b" by auto
-    then show ?thesis by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    then show ?thesis 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed
 
   have tm_cf_discrete: "tm_cf_discrete \<alpha> (\<JJ>\<lparr>Arr\<rparr>) ?L \<CC>"
@@ -3144,7 +4242,7 @@ proof-
     proof-
       from that obtain a b where "f : a \<mapsto>\<^bsub>\<JJ>\<^esub> b" by auto
       then show ?thesis 
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     qed
  
     show "(\<lambda>u\<in>\<^sub>\<circ>\<JJ>\<lparr>Arr\<rparr>. \<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>u\<rparr>\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
@@ -3158,7 +4256,7 @@ proof-
           then show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
             by 
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros
               )
         qed
@@ -3180,7 +4278,7 @@ proof-
             by (auto intro: cat_cs_intros simp: cat_cs_simps)
           moreover from f have 
             "\<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr>\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>\<JJ>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rparr>"
-            by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
           ultimately show "\<CC>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr>\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
             by (simp add: \<FF>.ArrMap.vsv_vimageI2)
         qed
@@ -3215,7 +4313,7 @@ proof-
     then show "\<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr> : P\<^sub>O \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp:
               the_cat_discrete_components(1) cat_discrete_cs_simps cat_cs_simps
             cs_intro: cat_cs_intros
@@ -3241,7 +4339,7 @@ proof-
     from \<pi>\<^sub>O'_NTMap_app[OF this] that show ?thesis
       by 
         (
-          cs_prems 
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps the_cat_discrete_components(1)
             cs_intro: cat_cs_intros
         )
@@ -3253,7 +4351,7 @@ proof-
     using that f'
     by (intro \<FF>.HomCod.cat_assoc_helper)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: 
             cat_cs_simps cat_discrete_cs_simps the_cat_discrete_components(1)
           cs_intro: cat_cs_intros
@@ -3305,7 +4403,7 @@ proof-
     from \<pi>\<^sub>O''_NTMap_app[OF this] that show ?thesis
       by 
         (
-          cs_prems 
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps the_cat_discrete_components(1)
             cs_intro: cat_cs_intros
         )
@@ -3324,16 +4422,16 @@ proof-
       )
 
   from assms(2)[OF f' g'] obtain E \<epsilon> where \<epsilon>: 
-    "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (P\<^sub>O,P\<^sub>A,g',f') : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (P\<^sub>O,P\<^sub>A,g',f') : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by clarsimp
 
-  interpret \<epsilon>: is_cat_equalizer \<alpha> P\<^sub>O P\<^sub>A g' f' \<CC> E \<epsilon> by (rule \<epsilon>)
+  interpret \<epsilon>: is_cat_equalizer_2 \<alpha> P\<^sub>O P\<^sub>A g' f' \<CC> E \<epsilon> by (rule \<epsilon>)
 
   define \<mu> where "\<mu> =
-    [(\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>), cf_const \<JJ> \<CC> E, \<FF>, \<JJ>, \<CC>]\<^sub>\<circ>"
+    [(\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>), cf_const \<JJ> \<CC> E, \<FF>, \<JJ>, \<CC>]\<^sub>\<circ>"
 
   have \<mu>_components:
-    "\<mu>\<lparr>NTMap\<rparr> = (\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>)"
+    "\<mu>\<lparr>NTMap\<rparr> = (\<lambda>i\<in>\<^sub>\<circ>\<JJ>\<lparr>Obj\<rparr>. \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>)"
     "\<mu>\<lparr>NTDom\<rparr> = cf_const \<JJ> \<CC> E"
     "\<mu>\<lparr>NTCod\<rparr> = \<FF>"
     "\<mu>\<lparr>NTDGDom\<rparr> = \<JJ>"
@@ -3341,7 +4439,7 @@ proof-
     unfolding \<mu>_def nt_field_simps by (simp_all add: nat_omega_simps)
 
   have [cat_cs_simps]: 
-    "\<mu>\<lparr>NTMap\<rparr>\<lparr>i\<rparr> = \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr>" if "i \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" 
+    "\<mu>\<lparr>NTMap\<rparr>\<lparr>i\<rparr> = \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>i\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr>" if "i \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" 
     for i
     using that unfolding \<mu>_components by simp
 
@@ -3354,7 +4452,7 @@ proof-
       show "vcard \<mu> = 5\<^sub>\<nat>" unfolding \<mu>_def by (simp add: nat_omega_simps)
       show "cf_const \<JJ> \<CC> E : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
         by (cs_concl cs_intro: cat_cs_intros cat_lim_cs_intros)
-      show "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" by (cs_concl cs_intro: cat_cs_intros)
+      show "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" by (cs_concl cs_shallow cs_intro: cat_cs_intros)
       show "\<mu>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : cf_const \<JJ> \<CC> E\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         if "a \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for a
         using that
@@ -3375,14 +4473,14 @@ proof-
         using that \<epsilon> g' f' 
         by 
           (
-            cs_concl
+            cs_concl 
               cs_simp:
                 cat_parallel_cs_simps
                 cat_cs_simps 
                 the_cat_discrete_components(1) 
                 \<pi>\<^sub>O_NTMap_app_Cod 
                 \<pi>\<^sub>O_NTMap_app_Dom 
-                \<epsilon>.cat_eq_Comp_eq(1) 
+                \<epsilon>.cat_eq_2_Comp_eq(1) 
               cs_intro: cat_lim_cs_intros cat_cs_intros cat_parallel_cs_intros
           )
 
@@ -3425,7 +4523,11 @@ proof-
               from i have "x = \<FF>\<lparr>ArrMap\<rparr>\<lparr>\<JJ>\<lparr>CId\<rparr>\<lparr>i\<rparr>\<rparr>"
                 by (simp add: x_def \<FF>.cf_ObjMap_CId)
               moreover from i have "\<JJ>\<lparr>CId\<rparr>\<lparr>i\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
-                by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+                by 
+                  (
+                    cs_concl cs_shallow 
+                      cs_simp: cat_cs_simps cs_intro: cat_cs_intros
+                  )
               ultimately show "x \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
                 by (auto intro: \<FF>.ArrMap.vsv_vimageI2)
             qed
@@ -3438,7 +4540,8 @@ proof-
           qed (auto intro: \<FF>.HomDom.tiny_cat_Obj_in_Vset)
         qed
         show "u'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> : r' \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr>" if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j
-          using that by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          using that 
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       qed (auto simp: cat_lim_cs_intros)
 
       from \<pi>\<^sub>O.cat_obj_prod_unique_cone'[OF this] obtain h' 
@@ -3463,7 +4566,11 @@ proof-
         if "f : a \<mapsto>\<^bsub>\<JJ>\<^esub> b" for f a b 
         using that 
         unfolding ntcf_obj_prod_base_components the_cat_discrete_components 
-        by (cs_concl cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow
+              cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+          )
       
       have \<pi>'': "?\<pi>'' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e :\<rightarrow>: (\<JJ>\<lparr>Arr\<rparr>) ?L \<CC> : :\<^sub>C (\<JJ>\<lparr>Arr\<rparr>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
         unfolding the_cat_discrete_components(1)
@@ -3476,7 +4583,11 @@ proof-
         fix f assume "f \<in>\<^sub>\<circ> \<JJ>\<lparr>Arr\<rparr>"
         then obtain a b where "f : a \<mapsto>\<^bsub>\<JJ>\<^esub> b" by auto
         then show "u'\<lparr>NTMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr> : r' \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>\<JJ>\<lparr>Cod\<rparr>\<lparr>f\<rparr>\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by 
+            (
+              cs_concl cs_shallow
+                cs_simp: cat_cs_simps cs_intro: cat_cs_intros
+            )
       qed (simp add: cat_lim_cs_intros)
 
       from \<pi>\<^sub>A.cat_obj_prod_unique_cone'[OF this] obtain h'' 
@@ -3497,9 +4608,9 @@ proof-
       proof-
 
         from g' h' have g'h': "g' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h' : r' \<mapsto>\<^bsub>\<CC>\<^esub> P\<^sub>A"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
         from f' h' have f'h': "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h' : r' \<mapsto>\<^bsub>\<CC>\<^esub> P\<^sub>A"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
         have "?\<pi>''\<lparr>NTMap\<rparr>\<lparr>f\<rparr> = \<pi>\<^sub>A\<lparr>NTMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h')"
           if "f \<in>\<^sub>\<circ> \<JJ>\<lparr>Arr\<rparr>" for f
@@ -3510,13 +4621,13 @@ proof-
           also from f have "\<dots> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> ?\<pi>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             by 
               (
-                cs_concl 
+                cs_concl  
                   cs_simp: \<pi>'_NTMap_app cat_lim_cs_simps cs_intro: cat_cs_intros
               )
           also from f g' h' have "\<dots> = \<pi>\<^sub>A\<lparr>NTMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h')" 
             by 
               (
-                cs_concl
+                cs_concl 
                   cs_simp: 
                     cat_cs_simps 
                     cat_discrete_cs_simps
@@ -3537,15 +4648,27 @@ proof-
           then have "?\<pi>''\<lparr>NTMap\<rparr>\<lparr>f\<rparr> = u'\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
             by (cs_concl cs_simp: \<pi>''_NTMap_app cat_cs_simps)
           also from f have "\<dots> = ?\<pi>'\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
-            by (cs_concl cs_simp: \<pi>'_NTMap_app cs_intro: cat_cs_intros)
+            by 
+              (
+                cs_concl cs_shallow 
+                  cs_simp: \<pi>'_NTMap_app cs_intro: cat_cs_intros
+              )
           also from f have "\<dots> = \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'"
-            by (cs_concl cs_simp: \<pi>'_NTMap_app' cs_intro: cat_cs_intros)
+            by 
+              (
+                cs_concl cs_shallow 
+                  cs_simp: \<pi>'_NTMap_app' cs_intro: cat_cs_intros
+              )
           also from f g' h' have "\<dots> = (\<pi>\<^sub>A\<lparr>NTMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f') \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'"
-            by (cs_concl cs_simp: \<pi>\<^sub>O_NTMap_app_Cod cs_intro: cat_cs_intros)
+            by 
+              (
+                cs_concl cs_shallow 
+                  cs_simp: \<pi>\<^sub>O_NTMap_app_Cod cs_intro: cat_cs_intros
+              )
           also from that f' h' have "\<dots> = \<pi>\<^sub>A\<lparr>NTMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h')"
             by 
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps the_cat_discrete_components(1) 
                   cs_intro: cat_cs_intros
                )
@@ -3556,12 +4679,12 @@ proof-
         from g'h'_h'' f'h'_h'' show ?thesis by simp
       qed
 
-      let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> 
-        and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up> \<CC> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L P\<^sub>O P\<^sub>A g' f'\<close>
+      let ?II = \<open>\<up>\<up>\<^sub>C \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L\<close> 
+        and ?II_II = \<open>\<up>\<up>\<rightarrow>\<up>\<up>\<^sub>C\<^sub>F \<CC> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L P\<^sub>O P\<^sub>A g' f'\<close>
 
     define \<epsilon>' where "\<epsilon>' =
       [
-        (\<lambda>f\<in>\<^sub>\<circ>?II\<lparr>Obj\<rparr>. (f = \<aa>\<^sub>P\<^sub>L ? h' : (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'))),
+        (\<lambda>f\<in>\<^sub>\<circ>?II\<lparr>Obj\<rparr>. (f = \<aa>\<^sub>P\<^sub>L\<^sub>2 ? h' : (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'))),
         cf_const ?II \<CC> r',
         ?II_II,
         ?II,
@@ -3569,33 +4692,33 @@ proof-
       ]\<^sub>\<circ>"
 
     have \<epsilon>'_components: 
-      "\<epsilon>'\<lparr>NTMap\<rparr> = (\<lambda>f\<in>\<^sub>\<circ>?II\<lparr>Obj\<rparr>. (f = \<aa>\<^sub>P\<^sub>L ? h' : (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h')))"
+      "\<epsilon>'\<lparr>NTMap\<rparr> = (\<lambda>f\<in>\<^sub>\<circ>?II\<lparr>Obj\<rparr>. (f = \<aa>\<^sub>P\<^sub>L\<^sub>2 ? h' : (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h')))"
       "\<epsilon>'\<lparr>NTDom\<rparr> = cf_const ?II \<CC> r'"
       "\<epsilon>'\<lparr>NTCod\<rparr> = ?II_II"
       "\<epsilon>'\<lparr>NTDGDom\<rparr> = ?II"
       "\<epsilon>'\<lparr>NTDGCod\<rparr> = \<CC>"
       unfolding \<epsilon>'_def nt_field_simps by (simp_all add: nat_omega_simps)
 
-    have \<epsilon>'_NTMap_app_I2: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>x\<rparr> = h'" if "x = \<aa>\<^sub>P\<^sub>L" for x 
+    have \<epsilon>'_NTMap_app_I2: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>x\<rparr> = h'" if "x = \<aa>\<^sub>P\<^sub>L\<^sub>2" for x 
     proof-
       have "x \<in>\<^sub>\<circ> ?II\<lparr>Obj\<rparr>"
         unfolding that by (cs_concl cs_intro: cat_parallel_cs_intros)
       then show ?thesis unfolding \<epsilon>'_components that by simp
     qed
 
-    have \<epsilon>'_NTMap_app_sI2: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>x\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'" if "x = \<bb>\<^sub>P\<^sub>L" for x 
-    proof-      
+    have \<epsilon>'_NTMap_app_sI2: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>x\<rparr> = f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h'" if "x = \<bb>\<^sub>P\<^sub>L\<^sub>2" for x 
+    proof-
       have "x \<in>\<^sub>\<circ> ?II\<lparr>Obj\<rparr>"
-        unfolding that by (cs_concl cs_intro: cat_parallel_cs_intros)
+        unfolding that by (cs_concl cs_shallow cs_intro: cat_parallel_cs_intros)
       with \<epsilon>.cat_parallel_\<aa>\<bb> show ?thesis
         unfolding \<epsilon>'_components by (cs_concl cs_simp: V_cs_simps that)
     qed
 
-    interpret par: cf_parallel \<alpha> \<aa>\<^sub>P\<^sub>L \<bb>\<^sub>P\<^sub>L \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L P\<^sub>O P\<^sub>A g' f' \<CC>
-      by (intro cf_parallelI cat_parallelI)
+    interpret par: cf_parallel_2 \<alpha> \<aa>\<^sub>P\<^sub>L\<^sub>2 \<bb>\<^sub>P\<^sub>L\<^sub>2 \<gg>\<^sub>P\<^sub>L \<ff>\<^sub>P\<^sub>L P\<^sub>O P\<^sub>A g' f' \<CC>
+      by (intro cf_parallel_2I cat_parallel_2I)
         (
           simp_all add: 
-            cat_cs_intros cat_parallel_cs_intros cat_PL_ineq[symmetric]
+            cat_cs_intros cat_parallel_cs_intros cat_PL2_ineq[symmetric]
         )
 
     have "\<epsilon>' : r' <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e ?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
@@ -3605,12 +4728,16 @@ proof-
       from h' show "cf_const (?II) \<CC> r' : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
         by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       show "?II_II : ?II \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-        by (cs_concl cs_simp: cat_parallel_cs_simps cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_parallel_cs_simps cs_intro: cat_cs_intros
+          )
       from h' show "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : 
         cf_const ?II \<CC> r'\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> ?II_II\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         if "a \<in>\<^sub>\<circ> ?II\<lparr>Obj\<rparr>" for a 
         using that
-        by (elim the_cat_parallel_ObjE; simp only:)
+        by (elim the_cat_parallel_2_ObjE; simp only:)
           (
             cs_concl 
               cs_simp: 
@@ -3623,7 +4750,7 @@ proof-
           ?II_II\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
           if "f : a \<mapsto>\<^bsub>?II\<^esub> b" for a b f
           using that
-          by (elim \<epsilon>.the_cat_parallel_is_arrE; simp only:)
+          by (elim \<epsilon>.the_cat_parallel_2_is_arrE; simp only:)
             (
               cs_concl 
                 cs_intro: cat_cs_intros cat_parallel_cs_intros 
@@ -3640,11 +4767,11 @@ proof-
             cs_simp: cat_cs_simps 
             cs_intro: cat_lim_cs_intros cat_cs_intros cat_small_cs_intros 
         )+
-    from \<epsilon>.cat_eq_unique_cone[OF this] obtain t'
+    from \<epsilon>.cat_eq_2_unique_cone[OF this] obtain t'
       where t': "t' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E"
-        and \<epsilon>'_NTMap_app: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'"
+        and \<epsilon>'_NTMap_app: "\<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'"
         and unique_t':
-          "\<lbrakk> t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E; \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t''\<rbrakk> \<Longrightarrow> 
+          "\<lbrakk> t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E; \<epsilon>'\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> = \<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t''\<rbrakk> \<Longrightarrow> 
             t'' = t'" 
         for t''
       by metis
@@ -3655,22 +4782,27 @@ proof-
       proof(rule ntcf_eqI[OF u'.is_ntcf_axioms])
         from t' show 
           "\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t' : cf_const \<JJ> \<CC> r' \<mapsto>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
         show "u'\<lparr>NTMap\<rparr> = (\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t')\<lparr>NTMap\<rparr>"
         proof(rule vsv_eqI)
           show "vsv ((\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t')\<lparr>NTMap\<rparr>)"
-            by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
           from t' show 
             "\<D>\<^sub>\<circ> (u'\<lparr>NTMap\<rparr>) = \<D>\<^sub>\<circ> ((\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t')\<lparr>NTMap\<rparr>)"
-            by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            by 
+              (
+                cs_concl cs_shallow 
+                  cs_simp: cat_cs_simps cs_intro: cat_cs_intros
+              )
           show "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
             if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (u'\<lparr>NTMap\<rparr>)" for a
           proof-
-            from that have "a \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" by (cs_prems cs_simp: cat_cs_simps)
+            from that have "a \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" 
+              by (cs_prems cs_shallow cs_simp: cat_cs_simps)
             with t' show "u'\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t')\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
               by 
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp:
                       cat_cs_simps 
                       \<pi>'_NTMap_app
@@ -3685,13 +4817,12 @@ proof-
         qed auto
       qed simp_all
 
-      fix t'' assume prems': 
-        "t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E" "u' = \<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t''"
+      fix t'' assume prems': "t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> E" "u' = \<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t''"
       then have u'_NTMap_app_x:
         "u'\<lparr>NTMap\<rparr>\<lparr>x\<rparr> = (\<mu> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<CC> t'')\<lparr>NTMap\<rparr>\<lparr>x\<rparr>"
         for x 
         by simp
-      have "?\<pi>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'')" 
+      have "?\<pi>'\<lparr>NTMap\<rparr>\<lparr>j\<rparr> = \<pi>\<^sub>O\<lparr>NTMap\<rparr>\<lparr>j\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'')" 
         if "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" for j
         using u'_NTMap_app_x[of j] prems'(1) that
         by 
@@ -3705,19 +4836,18 @@ proof-
               cs_intro: cat_cs_intros cat_parallel_cs_intros
           ) 
           (simp add: \<pi>'_NTMap_app[OF that, symmetric])
-      moreover from prems'(1) have "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> P\<^sub>O"
+      moreover from prems'(1) have "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'' : r' \<mapsto>\<^bsub>\<CC>\<^esub> P\<^sub>O"
         by 
           (
             cs_concl 
               cs_simp: cat_cs_simps cat_parallel_cs_simps 
               cs_intro: cat_cs_intros cat_parallel_cs_intros
           )
-      ultimately have [cat_cs_simps]: 
-        "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'' = h'" 
+      ultimately have [cat_cs_simps]: "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<^sub>P\<^sub>L\<^sub>2\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> t'' = h'" 
         by (intro unique_h') simp
       show "t'' = t'"
         by (rule unique_t', intro prems'(1)) 
-          (cs_concl cs_simp: \<epsilon>'_NTMap_app_I2 cat_cs_simps)
+          (cs_concl cs_shallow cs_simp: \<epsilon>'_NTMap_app_I2 cat_cs_simps)
       qed
     qed
  
@@ -3731,7 +4861,7 @@ lemma cat_colimit_of_cat_prod_obj_and_cat_coequalizer:
   \<comment>\<open>See Theorem 1 in Chapter V-2 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>\<aa> \<bb> \<gg> \<ff>. \<lbrakk> \<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>; \<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa> \<rbrakk> \<Longrightarrow>
-      \<exists>E \<epsilon>. \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      \<exists>E \<epsilon>. \<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>A. tm_cf_discrete \<alpha> (\<JJ>\<lparr>Obj\<rparr>) A \<CC> \<Longrightarrow>
       \<exists>P \<pi>. \<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod> P : \<JJ>\<lparr>Obj\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<And>A. tm_cf_discrete \<alpha> (\<JJ>\<lparr>Arr\<rparr>) A \<CC> \<Longrightarrow>
@@ -3739,14 +4869,14 @@ lemma cat_colimit_of_cat_prod_obj_and_cat_coequalizer:
   obtains r u where "u : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
 proof-
   interpret \<FF>: is_tm_functor \<alpha> \<JJ> \<CC> \<FF> by (rule assms(1))
-  have "\<exists>E \<epsilon>. \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
+  have "\<exists>E \<epsilon>. \<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
     if "\<ff> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" "\<gg> : \<bb> \<mapsto>\<^bsub>\<CC>\<^esub> \<aa>" for \<aa> \<bb> \<gg> \<ff>
   proof-
     from assms(2)[OF that(1,2)] obtain E \<epsilon> 
-      where \<epsilon>: "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sup>2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+      where \<epsilon>: "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
       by clarsimp
-    interpret \<epsilon>: is_cat_coequalizer \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule \<epsilon>)
-    from \<epsilon>.is_cat_equalizer_op[unfolded cat_op_simps] show ?thesis by auto
+    interpret \<epsilon>: is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon> by (rule \<epsilon>)
+    from \<epsilon>.is_cat_equalizer_2_op[unfolded cat_op_simps] show ?thesis by auto
   qed
   moreover have "\<exists>P \<pi>. \<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> A : \<JJ>\<lparr>Obj\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
     if "tm_cf_discrete \<alpha> (\<JJ>\<lparr>Obj\<rparr>) A (op_cat \<CC>)" for A

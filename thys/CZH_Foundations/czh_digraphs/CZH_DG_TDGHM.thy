@@ -122,8 +122,10 @@ proof-
   interpret R: is_tdghm \<alpha> \<AA>' \<BB>' \<FF>' \<GG>' \<NN>' by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: dg_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'" by (cs_concl cs_simp: dg_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'"
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps)
     from assms(4-7) have sup: 
       "\<NN>\<lparr>NTDom\<rparr> = \<NN>'\<lparr>NTDom\<rparr>" "\<NN>\<lparr>NTCod\<rparr> = \<NN>'\<lparr>NTCod\<rparr>" 
       "\<NN>\<lparr>NTDGDom\<rparr> = \<NN>'\<lparr>NTDGDom\<rparr>" "\<NN>\<lparr>NTDGCod\<rparr> = \<NN>'\<lparr>NTDGCod\<rparr>" 
@@ -137,7 +139,8 @@ qed
 lemma (in is_tdghm) tdghm_def:
   "\<NN> = [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: dg_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps)
   have dom_rhs:
     "\<D>\<^sub>\<circ> [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>]\<^sub>\<circ> = 5\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
@@ -176,7 +179,7 @@ lemma (in is_tdghm) tdghm_NTMap_vrange: "\<R>\<^sub>\<circ> (\<NN>\<lparr>NTMap\
 proof(intro NTMap.vsv_vrange_vsubset)
   fix x assume "x \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
   with is_tdghm_axioms show "\<NN>\<lparr>NTMap\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
 qed
 
 
@@ -211,7 +214,10 @@ proof-
     NTDom.HomCod.dg_in_Vset
   from assms(2) show ?thesis
     by (subst tdghm_def) 
-      (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_tdghm) tdghm_is_tdghm_if_ge_Limit:
@@ -219,16 +225,14 @@ lemma (in is_tdghm) tdghm_is_tdghm_if_ge_Limit:
   shows "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<beta>\<^esub> \<BB>"
 proof(rule is_tdghmI)
   show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-    using that by (cs_concl cs_intro: dg_cs_intros)
+    using that by (cs_concl cs_shallow cs_intro: dg_cs_intros)
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow 
       cs_simp: dg_cs_simps 
       cs_intro:
         V_cs_intros
-        assms 
-        NTDom.dghm_is_dghm_if_ge_Limit 
-        NTCod.dghm_is_dghm_if_ge_Limit  
+        assms NTDom.dghm_is_dghm_if_ge_Limit NTCod.dghm_is_dghm_if_ge_Limit  
    )+
 
 lemma small_all_tdghms[simp]: 
@@ -299,10 +303,10 @@ proof(rule is_tdghmI, unfold dg_op_simps)
   show "vfsequence (op_tdghm \<NN>)" by (simp add: op_tdghm_def)
   show "vcard (op_tdghm \<NN>) = 5\<^sub>\<nat>" by (simp add: op_tdghm_def nat_omega_simps)
   show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-    using that by (cs_concl cs_intro: dg_cs_intros)
+    using that by (cs_concl cs_shallow cs_intro: dg_cs_intros)
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow
       cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_op_intros V_cs_intros
   )+
 
@@ -416,7 +420,7 @@ proof-
   proof(rule vrange_VLambda_vsubset, unfold dg_cs_simps)
     fix x assume "x \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     then show "\<NN>\<lparr>NTMap\<rparr>\<lparr>\<HH>\<lparr>ObjMap\<rparr>\<lparr>x\<rparr>\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_intro: dg_cs_intros)
   qed
 qed
 
@@ -458,8 +462,12 @@ proof-
       unfolding tdghm_dghm_comp_def by (simp add: nat_omega_simps)
     show "(\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> :
       (\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-      if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-      using that by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+      if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a 
+      by 
+        (
+          use that in 
+            \<open>cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>
+        )
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 qed
 
@@ -489,7 +497,7 @@ proof-
       "(\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> :
         \<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH>' \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> :
         \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<DD>"
-      by (cs_concl cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_intro: dg_cs_intros)
     then have dom_lhs: "\<D>\<^sub>\<circ> (((\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
       by (cs_concl cs_simp: dg_cs_simps)
     show "\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>) :
@@ -507,7 +515,7 @@ proof-
         "((\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
           (\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-    qed (cs_concl cs_intro: dg_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: dg_cs_intros)
   qed simp_all
 qed
 
@@ -517,7 +525,7 @@ proof(rule tdghm_eqI)
   show "\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   show "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   have dom_lhs: "\<D>\<^sub>\<circ> ((\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   show "(\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA>)\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
@@ -593,7 +601,7 @@ proof-
   proof(rule vrange_VLambda_vsubset, unfold dg_cs_simps)
     fix x assume "x \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     then show "\<HH>\<lparr>ArrMap\<rparr>\<lparr>\<NN>\<lparr>NTMap\<rparr>\<lparr>x\<rparr>\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_intro: dg_cs_intros)
   qed
 qed
 
@@ -636,8 +644,8 @@ proof-
       unfolding dghm_tdghm_comp_def  by (simp add: nat_omega_simps)
     show "(\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : 
       (\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-      if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-      using that by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+      if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a 
+      by (use that in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 qed
 
@@ -668,7 +676,7 @@ proof(rule tdghm_eqI)
     by (cs_concl cs_simp: dg_cs_simps)
   from assms show "\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>) :
     \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<HH>' : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<DD>"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   then have dom_rhs: 
     "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>))\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: dg_cs_simps)
@@ -680,8 +688,8 @@ proof(rule tdghm_eqI)
     then show 
       "(\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
         (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-  qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+  qed (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 qed simp_all
 
 lemma (in is_tdghm) tdghm_dghm_tdghm_comp_dghm_id[dg_cs_simps]:
@@ -692,14 +700,14 @@ proof(rule tdghm_eqI)
   then have dom_lhs: "\<D>\<^sub>\<circ> ((dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: dg_cs_simps)
   show "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   show "(dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>)\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dg_cs_simps)
     show "vsv (\<NN>\<lparr>NTMap\<rparr>)" by auto
     fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     then show "(dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-  qed (cs_concl cs_intro: dg_cs_intros)+
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: dg_cs_intros)+
 qed simp_all
 
 lemmas [dg_cs_simps] = is_tdghm.tdghm_dghm_tdghm_comp_dghm_id
@@ -717,10 +725,10 @@ proof-
   proof(rule tdghm_eqI)
     from assms have dom_lhs: 
       "\<D>\<^sub>\<circ> (((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps)
     from assms have dom_rhs: 
       "\<D>\<^sub>\<circ> ((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>))\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
     show 
       "((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>)\<lparr>NTMap\<rparr> =
         (\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>))\<lparr>NTMap\<rparr>"
@@ -729,9 +737,9 @@ proof-
       then show 
         "((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>) \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
           ((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<NN> \<circ>\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<KK>)))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-        by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-    qed (cs_concl cs_intro: dg_cs_intros)
-  qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+        by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: dg_cs_intros)
+  qed (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 qed
 
 text\<open>\newpage\<close>

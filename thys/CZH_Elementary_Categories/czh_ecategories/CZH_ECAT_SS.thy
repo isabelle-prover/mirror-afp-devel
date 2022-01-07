@@ -721,7 +721,7 @@ lemma the_cat_scospan_is_arr_\<bb>\<oo>\<ff>[cat_ss_cs_intros]:
   shows "f : a' \<mapsto>\<^bsub>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<^esub> b'"
 proof(intro is_arrI, unfold assms)
   show "\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Dom\<rparr>\<lparr>\<ff>\<^sub>S\<^sub>S\<rparr> = \<bb>\<^sub>S\<^sub>S" "\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Cod\<rparr>\<lparr>\<ff>\<^sub>S\<^sub>S\<rparr> = \<oo>\<^sub>S\<^sub>S"
-    by (cs_concl cs_simp: cat_ss_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_ss_cs_simps)+
 qed (auto simp: the_cat_scospan_components)
 
 lemma the_cat_scospan_is_arrE:
@@ -838,7 +838,7 @@ proof(intro finite_categoryI'' tiny_categoryI'')
     by (elim the_cat_scospan_ObjE) 
       (
         all\<open>
-          cs_concl
+          cs_concl 
             cs_simp: V_cs_simps cat_ss_cs_simps
             cs_intro: V_cs_intros cat_ss_cs_intros
         \<close>
@@ -855,13 +855,13 @@ proof(intro finite_categoryI'' tiny_categoryI'')
     using that 
     by (elim the_cat_scospan_is_arrE)
       (
-        cs_concl
+        cs_concl 
           cs_simp: V_cs_simps cat_ss_cs_simps 
           cs_intro: V_cs_intros cat_ss_cs_intros
       )+
 qed 
   (
-    cs_concl
+    cs_concl 
       cs_simp: V_cs_simps cat_ss_cs_simps the_cat_scospan_components(1,2) 
       cs_intro: cat_cs_intros cat_ss_cs_intros V_cs_intros 
   )+
@@ -900,7 +900,8 @@ proof-
             (cs_concl cs_simp: cat_ss_cs_simps cs_intro: cat_ss_cs_intros)+
         from fg show 
           "\<leftarrow>\<bullet>\<rightarrow>\<^sub>C\<lparr>Comp\<rparr>\<lparr>gf\<rparr> = fflip (\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<lparr>Comp\<rparr>)\<lparr>gf\<rparr>"
-          unfolding gf_def by (cs_concl cs_simp: cat_ss_cs_simps fflip_app)
+          unfolding gf_def 
+          by (cs_concl cs_shallow cs_simp: cat_ss_cs_simps fflip_app)
       qed (auto intro: fflip_vsv cat_ss_cs_intros)
     qed (unfold the_cat_sspan_components the_cat_scospan_components, simp_all)
   qed (auto intro: cat_op_intros cat_ss_cs_intros)
@@ -912,8 +913,9 @@ proof-
     by (rule finite_category_the_cat_scospan)
   interpret sspan: finite_category \<alpha> \<open>\<leftarrow>\<bullet>\<rightarrow>\<^sub>C\<close>
     by (rule scospan.finite_category_op[unfolded cat_op_simps])
-  from the_cat_scospan_op have "op_cat (\<leftarrow>\<bullet>\<rightarrow>\<^sub>C) = op_cat (op_cat (\<rightarrow>\<bullet>\<leftarrow>\<^sub>C))" by simp
-  also have "\<dots> = \<rightarrow>\<bullet>\<leftarrow>\<^sub>C" by (cs_concl cs_simp: cat_op_simps)
+  from the_cat_scospan_op have "op_cat (\<leftarrow>\<bullet>\<rightarrow>\<^sub>C) = op_cat (op_cat (\<rightarrow>\<bullet>\<leftarrow>\<^sub>C))" 
+    by simp
+  also have "\<dots> = \<rightarrow>\<bullet>\<leftarrow>\<^sub>C" by (cs_concl cs_shallow cs_simp: cat_op_simps)
   finally show ?thesis by auto
 qed
 
@@ -1178,7 +1180,7 @@ lemma (in cf_scospan) the_cf_scospan_ObjMap_app_\<bb>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_scospan_ObjMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1189,7 +1191,7 @@ lemma (in cf_scospan) the_cf_scospan_ObjMap_app_\<oo>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_scospan_ObjMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1208,7 +1210,7 @@ proof
   then show "\<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     by cases 
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_ss_cs_simps cs_intro: cat_cs_intros cat_ss_cs_intros
       )+
 qed
@@ -1223,7 +1225,7 @@ lemma the_cf_sspan_ObjMap_app_\<aa>[cat_ss_cs_simps]:
   shows "\<langle>\<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ObjMap\<rparr>\<lparr>x\<rparr> = \<aa>"
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: the_cf_sspan_ObjMap_app V_cs_simps assms
         cs_intro: cat_ss_cs_intros
     )
@@ -1234,7 +1236,7 @@ lemma (in cf_sspan) the_cf_sspan_ObjMap_app_\<bb>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ObjMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1245,7 +1247,7 @@ lemma (in cf_sspan) the_cf_sspan_ObjMap_app_\<oo>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ObjMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1264,7 +1266,7 @@ proof
   then show "\<langle>\<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     by cases 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_ss_cs_simps cs_intro: cat_cs_intros cat_ss_cs_intros
       )+
 qed
@@ -1283,7 +1285,7 @@ lemma (in cf_scospan) the_cf_scospan_ArrMap_app_\<oo>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_scospan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1294,7 +1296,7 @@ lemma (in cf_scospan) the_cf_scospan_ArrMap_app_\<aa>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl
         cs_simp: V_cs_simps the_cf_scospan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1305,7 +1307,7 @@ lemma (in cf_scospan) the_cf_scospan_ArrMap_app_\<bb>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_scospan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1327,7 +1329,7 @@ lemma (in cf_scospan) the_cf_scospan_ArrMap_app_\<ff>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_scospan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1346,7 +1348,7 @@ proof
   then show "\<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
     by cases 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_ss_cs_simps cs_intro: cat_cs_intros cat_ss_cs_intros
       )+
 qed
@@ -1362,7 +1364,7 @@ lemma (in cf_sspan) the_cf_sspan_ArrMap_app_\<oo>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1384,7 +1386,7 @@ lemma (in cf_sspan) the_cf_sspan_ArrMap_app_\<bb>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1395,7 +1397,7 @@ lemma (in cf_sspan) the_cf_sspan_ArrMap_app_\<gg>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1406,7 +1408,7 @@ lemma (in cf_sspan) the_cf_sspan_ArrMap_app_\<ff>[cat_ss_cs_simps]:
   using cat_ss_ineq
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: V_cs_simps the_cf_sspan_ArrMap_app assms 
         cs_intro: cat_ss_cs_intros
     )
@@ -1425,7 +1427,7 @@ proof
   then show "\<langle>\<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
     by cases
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_ss_cs_simps cs_intro: cat_cs_intros cat_ss_cs_intros
       )+
 qed
@@ -1446,7 +1448,7 @@ proof(intro is_functor.cf_is_tm_functor_if_HomDom_finite_category is_functorI')
     using that
     by (cases rule: the_cat_scospan_is_arrE; simp only:)
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_ss_cs_simps cs_intro: cat_cs_intros cat_ss_cs_intros
       )+
   show "\<langle>\<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb>\<rangle>\<^sub>C\<^sub>F\<^bsub>\<CC>\<^esub>\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<^esub> f\<rparr> =
@@ -1458,7 +1460,7 @@ proof(intro is_functor.cf_is_tm_functor_if_HomDom_finite_category is_functorI')
         all\<open>simp only:\<close>, 
         all\<open>
           solves\<open>simp add: cat_ss_ineq cat_ss_ineq[symmetric]\<close> | 
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps cat_ss_cs_simps 
             cs_intro: cat_cs_intros cat_ss_cs_intros
           \<close>
@@ -1477,7 +1479,7 @@ proof(intro is_functor.cf_is_tm_functor_if_HomDom_finite_category is_functorI')
 
 qed
   (
-    cs_concl
+    cs_concl 
       cs_simp: cat_ss_cs_simps
       cs_intro: 
         the_cf_scospan_ObjMap_vrange

@@ -111,7 +111,7 @@ lemma (in is_cat_rKe) is_cat_lKe_op:
     op_cf \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> op_cf \<GG> \<circ>\<^sub>C\<^sub>F op_cf \<KK> :
     op_cat \<BB> \<mapsto>\<^sub>C op_cat \<CC> \<mapsto>\<^sub>C op_cat \<AA>"
   by (intro is_cat_lKeI, unfold cat_op_simps; (intro cat_rKe_ua_fo)?)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+    (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_rKe) is_cat_lKe_op'[cat_op_intros]:
   assumes "\<TT>' = op_cf \<TT>"
@@ -130,7 +130,7 @@ lemma (in is_cat_lKe) is_cat_rKe_op:
     op_cf \<FF> \<circ>\<^sub>C\<^sub>F op_cf \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> op_cf \<TT> :
     op_cat \<BB> \<mapsto>\<^sub>C op_cat \<CC> \<mapsto>\<^sub>C op_cat \<AA>"
   by (intro is_cat_rKeI, unfold cat_op_simps; (intro cat_lKe_ua_fo)?)
-    (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+    (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_lKe) is_cat_lKe_op'[cat_op_intros]:
   assumes "\<TT>' = op_cf \<TT>"
@@ -202,7 +202,7 @@ proof-
     show "?\<AA>\<KK> : cat_FUNCT \<alpha> \<CC> \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<BB> \<AA>"
       by 
         ( 
-          cs_concl cs_intro: 
+          cs_concl cs_shallow cs_intro: 
             cat_small_cs_intros 
             exp_cat_cf_is_tiny_functor[
               OF \<beta>.\<Z>_axioms \<alpha>\<beta> \<GG>.HomCod.category_axioms assms(1)
@@ -210,12 +210,12 @@ proof-
         )
     from \<alpha>\<beta> assms(2) show "cf_map \<GG> \<in>\<^sub>\<circ> cat_FUNCT \<alpha> \<CC> \<AA>\<lparr>Obj\<rparr>"
       unfolding cat_FUNCT_components
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_FUNCT_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_FUNCT_cs_intros)
     from assms(1-3) show "ntcf_arrow \<epsilon> :
       ?\<AA>\<KK>\<lparr>ObjMap\<rparr>\<lparr>?\<GG>\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<BB> \<AA>\<^esub> ?\<TT>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_Kan_cs_simps cat_FUNCT_cs_simps cat_FUNCT_components(1) 
             cs_intro: cat_FUNCT_cs_intros
         )
@@ -231,7 +231,7 @@ proof-
       "ntcf_of_ntcf_arrow \<BB> \<AA> \<epsilon>' : \<FF> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by 
         ( 
-          cs_prems 
+          cs_prems  
             cs_simp: \<FF>'_def cat_Kan_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -249,10 +249,9 @@ proof-
       \<epsilon>' = umap_fo ?\<AA>\<KK> ?\<TT> ?\<GG> (ntcf_arrow \<epsilon>) \<FF>'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
     proof(intro ex1I conjI; (elim conjE)?, unfold \<FF>'_def)
       from \<sigma> show "ntcf_arrow \<sigma> : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<CC> \<AA>\<^esub> ?\<GG>"
-        by (cs_concl cs_intro: cat_FUNCT_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_FUNCT_cs_intros)
       from \<alpha>\<beta> assms(1-3) \<sigma> \<epsilon>'(1) show 
-        "\<epsilon>' = umap_fo
-          ?\<AA>\<KK> ?\<TT> ?\<GG> (ntcf_arrow \<epsilon>) (cf_map \<FF>)\<lparr>ArrVal\<rparr>\<lparr>ntcf_arrow \<sigma>\<rparr>"
+        "\<epsilon>' = umap_fo ?\<AA>\<KK> ?\<TT> ?\<GG> (ntcf_arrow \<epsilon>) (cf_map \<FF>)\<lparr>ArrVal\<rparr>\<lparr>ntcf_arrow \<sigma>\<rparr>"
         by (subst \<epsilon>')
           (
             cs_concl 
@@ -272,7 +271,11 @@ proof-
         "\<epsilon>' = umap_fo ?\<AA>\<KK> ?\<TT> ?\<GG> (ntcf_arrow \<epsilon>) (cf_map \<FF>)\<lparr>ArrVal\<rparr>\<lparr>\<sigma>'\<rparr>"
       note \<sigma>' = cat_FUNCT_is_arrD[OF prems(1)]
       from \<sigma>'(1) \<FF> have "ntcf_of_ntcf_arrow \<CC> \<AA> \<sigma>' : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-        by (cs_prems cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_prems cs_shallow 
+              cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros
+          )
       moreover from prems(2) prems(1) \<alpha>\<beta> assms(1-3) this \<epsilon>'(1) have 
         "ntcf_of_ntcf_arrow \<BB> \<AA> \<epsilon>' =
           \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (ntcf_of_ntcf_arrow \<CC> \<AA> \<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
@@ -290,7 +293,7 @@ proof-
         by (rule unique_\<sigma>[symmetric])
       show "\<sigma>' = ntcf_arrow \<sigma>"
         by (subst \<sigma>'(2), use nothing in \<open>subst \<sigma>_def\<close>)
-          (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     qed
   qed
 qed
@@ -341,7 +344,7 @@ proof-
         by simp
       from this \<sigma> assms(1-3) show \<eta>'_def:
         "\<eta>' = op_ntcf \<eta> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (op_ntcf \<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf \<KK>)"
-        by (cs_prems cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+        by (cs_prems cs_shallow cs_simp: cat_op_simps cs_intro: cat_cs_intros)
       fix \<sigma>' assume prems:
         "\<sigma>' : \<GG>' \<mapsto>\<^sub>C\<^sub>F op_cf \<FF> : op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
         "\<eta>' = op_ntcf \<eta> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf \<KK>)"
@@ -353,7 +356,7 @@ proof-
       also have "\<dots> = op_ntcf \<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"   
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_op_intros
           )
@@ -408,12 +411,16 @@ proof-
     by (rule cat_rKe_exp_cat_cf_cat_FUNCT_is_arr[OF \<beta>.\<Z>_axioms \<alpha>\<beta>])
 
   from assms(1) have \<GG>': "?\<GG>' \<in>\<^sub>\<circ> cat_FUNCT \<alpha> \<CC> \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_FUNCT_components(1) cs_intro: cat_FUNCT_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_FUNCT_components(1) cs_intro: cat_FUNCT_cs_intros
+      )
   with assms(2) have
     "?\<epsilon>' : exp_cat_cf \<alpha> \<AA> \<KK>\<lparr>ObjMap\<rparr>\<lparr>?\<GG>'\<rparr> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<BB> \<AA>\<^esub> ?\<TT>"
     by 
       ( 
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_Kan_cs_simps cat_FUNCT_cs_simps 
           cs_intro: cat_cs_intros cat_FUNCT_cs_intros
       )
@@ -438,30 +445,38 @@ proof-
       "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (ntcf_of_ntcf_arrow \<CC> \<AA> f' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
       by (subst (asm) cat_FUNCT_is_arrD(2)[OF f']) (*slow*)
         (
-          cs_prems 
+          cs_prems cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps cat_Kan_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     from cat_FUNCT_is_arrD(1)[OF f'] show f'_is_arr:
       "ntcf_of_ntcf_arrow \<CC> \<AA> f' : \<GG>' \<mapsto>\<^sub>C\<^sub>F \<GG> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (cs_prems cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_prems cs_shallow 
+            cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros
+        )
     fix \<sigma> assume prems: 
       "\<sigma> : \<GG>' \<mapsto>\<^sub>C\<^sub>F \<GG> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
     interpret \<sigma>: is_ntcf \<alpha> \<CC> \<AA> \<GG>' \<GG> \<sigma> by (rule prems(1))
     from prems(1) have \<sigma>: 
       "ntcf_arrow \<sigma> : cf_map \<GG>' \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<CC> \<AA>\<^esub> cf_map \<GG>"
-      by (cs_concl cs_intro: cat_FUNCT_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_FUNCT_cs_intros)
     from prems have \<epsilon>'_def: "ntcf_arrow \<epsilon>' =
       umap_fo (exp_cat_cf \<alpha> \<AA> \<KK>) ?\<TT> ?\<GG> ?\<epsilon> ?\<GG>'\<lparr>ArrVal\<rparr>\<lparr>ntcf_arrow \<sigma>\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: prems(2) cat_Kan_cs_simps cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     show "\<sigma> = ntcf_of_ntcf_arrow \<CC> \<AA> f'"
       unfolding f'_unique[OF \<sigma> \<epsilon>'_def, symmetric]
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_FUNCT_cs_simps cs_intro: cat_cs_intros
+        )
   qed
 
 qed
@@ -494,11 +509,12 @@ proof-
   proof(intro ex1I conjI; (elim conjE)?)
     show "op_ntcf \<sigma> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<FF>' : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by (rule \<sigma>.is_ntcf_op[unfolded cat_op_simps])
-    have "\<eta>' = op_ntcf (op_ntcf \<eta>')" by (cs_concl cs_simp: cat_op_simps)
+    have "\<eta>' = op_ntcf (op_ntcf \<eta>')" 
+      by (cs_concl cs_shallow cs_simp: cat_op_simps)
     also from \<eta>'_def have "\<dots> = op_ntcf (op_ntcf \<eta> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf \<KK>))"
       by simp
     also have "\<dots> = op_ntcf \<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
-      by (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_cs_intros)
     finally show "\<eta>' = op_ntcf \<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>" by simp
     fix \<sigma>' assume prems: 
       "\<sigma>' : \<FF> \<mapsto>\<^sub>C\<^sub>F \<FF>' : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -507,7 +523,7 @@ proof-
     from prems(2) have "op_ntcf \<eta>' = op_ntcf (\<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>)"
       by simp
     also have "\<dots> = op_ntcf \<eta> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (op_ntcf \<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf \<KK>)"
-      by (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_cs_intros)
     finally have "op_ntcf \<eta>' = op_ntcf \<eta> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (op_ntcf \<sigma>' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F op_cf \<KK>)"
       by simp
     from unique_\<sigma>'[OF \<sigma>'.is_ntcf_op this] show "\<sigma>' = op_ntcf \<sigma>"
@@ -634,7 +650,7 @@ proof-
     "op_cf (\<KK> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c) \<circ>\<^sub>C\<^sub>F inv_cf (?op_\<KK> c) = c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>)"
     by
       (
-        cs_prems
+        cs_prems 
           cs_simp: cat_cs_simps cat_comma_cs_simps cf_cs_simps cat_op_simps 
           cs_intro: cf_cs_intros cat_cs_intros cat_comma_cs_intros cat_op_intros
       )
@@ -867,7 +883,7 @@ proof-
       "cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> : c' \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
     have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> (cf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r\<lparr>ObjMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms(3) have ObjMap_dom_rhs: 
       "\<D>\<^sub>\<circ> ((cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
       by 
@@ -877,12 +893,12 @@ proof-
             cs_intro: cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
         )
     have ArrMap_dom_lhs: "\<D>\<^sub>\<circ> (cf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r\<lparr>ArrMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms(3) have ArrMap_dom_rhs: 
       "\<D>\<^sub>\<circ> ((cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps 
             cs_intro: cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
         )
@@ -902,19 +918,23 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps 
               cs_intro: cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
           )
-    qed (use assms(3) in \<open>cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros\<close>)+
+    qed 
+      (
+        use assms(3) in 
+          \<open>cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros\<close>
+      )+
     show
       "cf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r\<lparr>ArrMap\<rparr> =
         (cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>"
     proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
       show "vsv (cf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r\<lparr>ArrMap\<rparr>)"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       from assms(3) show "vsv ((cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> r \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>)"
-        by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
       fix F assume prems: "F \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
       with prems obtain A B where F: "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<KK>\<^esub> B"
         by (auto intro: is_arrI)
@@ -933,7 +953,7 @@ proof-
         unfolding F_def A_def B_def
         by (*slow*)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_comma_cs_simps cat_cs_simps f'_def[symmetric]
               cs_intro: cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
           )
@@ -943,16 +963,16 @@ proof-
   have \<TT>c'\<KK>: "\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> = \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>"
   proof(rule cf_eqI)
     show "\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c' \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show " \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> : c' \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps 
             cs_intro: cat_comma_cs_intros cat_cs_intros
         )
     have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> ((\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms have ObjMap_dom_rhs: 
       "\<D>\<^sub>\<circ> ((\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
       by
@@ -966,12 +986,12 @@ proof-
       from assms show "vsv ((\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>)"
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_comma_cs_simps 
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )
       from assms show "vsv ((\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>)"
-        by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
       fix A assume prems: "A \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
       from assms(3) prems obtain b f
         where A_def: "A = [0, b, f]\<^sub>\<circ>"
@@ -984,19 +1004,19 @@ proof-
         unfolding A_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )
     qed simp
 
     have ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms have ArrMap_dom_rhs:
       "\<D>\<^sub>\<circ> ((\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>) = c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps
             cs_intro: cat_comma_cs_intros cat_cs_intros
         )
@@ -1006,12 +1026,16 @@ proof-
       from assms show "vsv ((\<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>)"
         by
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_comma_cs_simps 
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )
       from assms show "vsv ((\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>)"
-        by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_comma_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cs_intro: cat_cs_intros cat_comma_cs_intros
+          )
 
       fix F assume prems: "F \<in>\<^sub>\<circ> c' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
       with prems obtain A B where F: "F : A \<mapsto>\<^bsub>c' \<down>\<^sub>C\<^sub>F \<KK>\<^esub> B"
@@ -1031,7 +1055,7 @@ proof-
         unfolding F_def A_def B_def
         by (*slow*)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_comma_cs_simps cat_cs_simps f'_def[symmetric]
               cs_intro: cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
           )
@@ -1042,7 +1066,7 @@ proof-
     "u \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<TT> \<circ>\<^sub>C\<^sub>F c' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> : c' \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
     by (intro is_cat_coneI)
       (
-        cs_concl
+        cs_concl 
           cs_intro: cat_cs_intros cat_comma_cs_intros cat_lim_cs_intros
           cs_simp: const_r_def \<TT>c'\<KK>
       )+
@@ -1096,12 +1120,20 @@ proof-
   from assms(3) the_f_is_arr show
     "the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> :
       lim_Obj c\<lparr>UObj\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> lim_Obj c'\<lparr>UObj\<rparr>"
-    by (cs_concl cs_simp: the_cf_rKe_ArrMap_app' cs_intro: cat_cs_intros)
+    by
+      (
+        cs_concl cs_shallow
+          cs_simp: the_cf_rKe_ArrMap_app' cs_intro: cat_cs_intros
+      )
   moreover from assms(3) the_f_commutes show
     "lim_Obj c\<lparr>UArr\<rparr> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> =
       lim_Obj c'\<lparr>UArr\<rparr> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F
         ntcf_const (c' \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>)"
-    by (cs_concl cs_simp: the_cf_rKe_ArrMap_app' cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: the_cf_rKe_ArrMap_app' cs_intro: cat_cs_intros
+      )
   ultimately show "f = the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
     if "f : lim_Obj c\<lparr>UObj\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> lim_Obj c'\<lparr>UObj\<rparr>"
       and "lim_Obj c\<lparr>UArr\<rparr> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F g \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> =
@@ -1175,11 +1207,11 @@ proof-
       "lim_Obj a\<lparr>UArr\<rparr>\<lparr>NTMap\<rparr>\<lparr>a', b', f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<rparr>\<^sub>\<bullet> =
         lim_Obj b\<lparr>UArr\<rparr>\<lparr>NTMap\<rparr>\<lparr>a', b', f'\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub>
           the_cf_rKe \<alpha> \<TT> \<KK> lim_Obj\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
-      using lim_a_f\<KK>_NTMap_app[OF assms(6)] f' assms(3,4,5,6) 
+      using lim_a_f\<KK>_NTMap_app[OF assms(6)] f' assms(3-6) 
       unfolding a'_def
       by
         (
-          cs_prems
+          cs_prems 
             cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
             cs_intro: cat_cs_intros cat_comma_cs_intros cat_Kan_cs_intros
         )      
@@ -1235,18 +1267,19 @@ proof-
     show "vfsequence ?the_cf_rKe" unfolding the_cf_rKe_def by simp
     show "vcard ?the_cf_rKe = 4\<^sub>\<nat>" 
       unfolding the_cf_rKe_def by (simp add: nat_omega_simps)
-    show "vsv (?the_cf_rKe\<lparr>ObjMap\<rparr>)" by (cs_concl cs_intro: cat_Kan_cs_intros)
+    show "vsv (?the_cf_rKe\<lparr>ObjMap\<rparr>)" 
+      by (cs_concl cs_shallow cs_intro: cat_Kan_cs_intros)
     moreover show "\<D>\<^sub>\<circ> (?the_cf_rKe\<lparr>ObjMap\<rparr>) = \<CC>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)
     moreover show "\<R>\<^sub>\<circ> (?the_cf_rKe\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     proof
       (
         intro the_cf_rKe_ObjMap_vrange; 
-        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)?
+        (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)?
       )
       fix c assume "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
       with assms(3)[OF this] show "?UObj c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_lim_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_lim_cs_intros)
     qed
     ultimately have [cat_Kan_cs_intros]: 
       "?the_cf_rKe\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" if \<open>c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>\<close> for c
@@ -1258,7 +1291,7 @@ proof-
       using assms(2) that
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_Kan_cs_simps 
             cs_intro: assms(3) cat_cs_intros cat_Kan_cs_intros
         )
@@ -1284,7 +1317,7 @@ proof-
         and lim_b = assms(3)[OF g(2)]
         and lim_c = assms(3)[OF g(3)]
       from that have gf: "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^bsub>\<CC>\<^esub> c" 
-        by (cs_concl cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
       interpret lim_a: is_cat_limit
         \<alpha> \<open>a \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj a\<close> \<open>?UArr a\<close>
@@ -1304,7 +1337,7 @@ proof-
           "?the_rKe_g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> ?the_rKe_f : ?UObj a \<mapsto>\<^bsub>\<AA>\<^esub> ?UObj c"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
             )
       
@@ -1324,7 +1357,7 @@ proof-
               cf_const (a \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (?UObj a) \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F
               \<TT> \<circ>\<^sub>C\<^sub>F a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F ((g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>) :
               c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-            by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+            by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
           have [cat_comma_cs_simps]: 
             "?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> = ?const_comma c a"
           proof(rule cf_eqI)
@@ -1332,7 +1365,7 @@ proof-
               "?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
               by
                 (
-                  cs_concl
+                  cs_concl  
                     cs_simp: cat_comma_cs_simps cat_cs_simps
                     cs_intro: 
                       cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1340,7 +1373,7 @@ proof-
             from g_is_arr f_is_arr show "?const_comma c a : c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_comma_cs_simps cat_cs_simps
                     cs_intro: 
                       cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1350,14 +1383,14 @@ proof-
                 c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_comma_cs_simps cat_cs_simps 
                     cs_intro: 
                       cat_comma_cs_intros cat_lim_cs_intros cat_cs_intros
                 )
             from g_is_arr f_is_arr have ObjMap_dom_rhs:
               "\<D>\<^sub>\<circ> (?const_comma c a\<lparr>ObjMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
-              by (cs_concl cs_simp: cat_comma_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cat_cs_simps)
 
             show
               "(?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr> =
@@ -1367,7 +1400,7 @@ proof-
                 "vsv ((?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>)"
                 by
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: cat_comma_cs_simps cat_cs_simps 
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1384,26 +1417,26 @@ proof-
                 unfolding A_def
                 by
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: cat_comma_cs_simps cat_cs_simps 
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
                   )
-            qed (cs_concl cs_intro: cat_cs_intros)
+            qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
             from g_is_arr f_is_arr have ArrMap_dom_lhs:
               "\<D>\<^sub>\<circ> ((?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>) = 
                 c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_comma_cs_simps cat_cs_simps 
                     cs_intro: 
                       cat_comma_cs_intros cat_lim_cs_intros cat_cs_intros
                 )
             from g_is_arr f_is_arr have ArrMap_dom_rhs:
               "\<D>\<^sub>\<circ> (?const_comma c a\<lparr>ArrMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Arr\<rparr>"
-              by (cs_concl cs_simp: cat_comma_cs_simps cat_cs_simps)
+              by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps cat_cs_simps)
 
             show 
               "(?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr> =
@@ -1413,7 +1446,7 @@ proof-
                 "vsv ((?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>)"
                 by
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: cat_comma_cs_simps cat_cs_simps
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1436,13 +1469,13 @@ proof-
                 unfolding F_def A_def B_def
                 by
                   (
-                    cs_concl
+                    cs_concl 
                       cs_intro:
                         cat_lim_cs_intros cat_cs_intros cat_comma_cs_intros
                       cs_simp: 
                         cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
                   )
-            qed (cs_concl cs_intro: cat_cs_intros)
+            qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
           qed simp_all
 
           from that show
@@ -1452,7 +1485,7 @@ proof-
               c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
             by
               (
-                cs_concl
+                cs_concl 
                   cs_simp: cat_Kan_cs_simps cat_comma_cs_simps cat_cs_simps
                   cs_intro: 
                     cat_lim_cs_intros
@@ -1464,7 +1497,7 @@ proof-
             "\<D>\<^sub>\<circ> ((?UArr a \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
             by
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_intro: cat_cs_intros cat_comma_cs_intros
                   cs_simp: cat_cs_simps cat_comma_cs_simps
               )
@@ -1506,7 +1539,7 @@ proof-
                     cs_intro: 
                       cat_cs_intros cat_Kan_cs_intros cat_comma_cs_intros
                 )+
-          qed (cs_concl cs_simp: cs_intro: cat_cs_intros)+
+          qed (cs_concl cs_shallow cs_simp: cs_intro: cat_cs_intros)+
         qed simp_all
       qed
     qed
@@ -1520,7 +1553,7 @@ proof-
       note lim_c = assms(3)[OF that]
 
       from that have CId_c: "\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr> : c \<mapsto>\<^bsub>\<CC>\<^esub> c" 
-        by (cs_concl cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
       interpret lim_c: is_cat_limit 
         \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj c\<close> \<open>?UArr c\<close>
@@ -1538,7 +1571,7 @@ proof-
           "\<AA>\<lparr>CId\<rparr>\<lparr>?the_cf_rKe\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr> : ?UObj c \<mapsto>\<^bsub>\<AA>\<^esub> ?UObj c"
           by 
             (
-              cs_concl
+              cs_concl cs_shallow
                 cs_simp: cat_Kan_cs_simps
                 cs_intro: cat_cs_intros cat_lim_cs_intros
             )
@@ -1549,7 +1582,7 @@ proof-
               cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (?UObj c) \<circ>\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F
               \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK> \<circ>\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> :
               c \<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-            by (cs_concl cs_simp: cs_intro: cat_cs_intros cat_comma_cs_intros)
+            by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_comma_cs_intros)
           from lim_c that show 
             "?UArr c \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?ntcf_const_c :
                cf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (?UObj c) \<circ>\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F
@@ -1566,7 +1599,7 @@ proof-
             "\<D>\<^sub>\<circ> ((?UArr c \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
             by 
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps 
                   cs_intro: cat_cs_intros cat_comma_cs_intros
               )
@@ -1575,7 +1608,7 @@ proof-
             "\<D>\<^sub>\<circ> ((?UArr c \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?ntcf_const_c)\<lparr>NTMap\<rparr>) = c \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
             by
               (
-                cs_concl
+                cs_concl 
                   cs_intro: cat_lim_cs_intros cat_cs_intros 
                   cs_simp: cat_cs_simps
               )
@@ -1594,7 +1627,7 @@ proof-
               unfolding A_def
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_cs_simps cat_comma_cs_simps 
                     cs_intro: cat_comma_cs_intros cat_cs_intros
                 )
@@ -1604,18 +1637,22 @@ proof-
               unfolding A_def 
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp: cat_cs_simps cat_comma_cs_simps
                     cs_intro: 
                       cat_lim_cs_intros cat_comma_cs_intros cat_cs_intros
                 )
-          qed (cs_concl cs_intro: cat_cs_intros)
+          qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
         qed simp_all
 
         with that show 
           "?UArr c \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK> = 
             ?UArr c \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (\<AA>\<lparr>CId\<rparr>\<lparr>?the_cf_rKe\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>)"
-          by (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)
+          by 
+            (
+              cs_concl cs_shallow 
+                cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros
+            )
 
       qed
 
@@ -1623,7 +1660,7 @@ proof-
 
   qed
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -1702,7 +1739,7 @@ proof-
     proof-
       let ?\<KK>b = \<open>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>\<close>
       from that have \<KK>b: "\<KK>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
-        by (cs_concl cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_cs_intros)
       note lim_\<KK>b = assms(3)[OF \<KK>b]
       interpret lim_\<KK>b: is_cat_limit 
         \<alpha> \<open>?\<KK>b \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F ?\<KK>b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj ?\<KK>b\<close> \<open>?UArr ?\<KK>b\<close>
@@ -1710,7 +1747,7 @@ proof-
       from that lim_\<KK>b show ?thesis
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros cat_Kan_cs_intros
           )+
@@ -1737,7 +1774,7 @@ proof-
       have [cat_Kan_cs_simps]:
         "?UArr ?\<KK>b\<lparr>NTMap\<rparr>\<lparr>0, b, \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>b\<rparr>\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> ?the_cf_rKe\<lparr>ArrMap\<rparr>\<lparr>?\<KK>f\<rparr> =
           ?UArr ?\<KK>a\<lparr>NTMap\<rparr>\<lparr>0, b, ?\<KK>f\<rparr>\<^sub>\<bullet>"
-        by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       interpret lim_\<KK>a: is_cat_limit
         \<alpha> \<open>?\<KK>a \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F ?\<KK>a \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj ?\<KK>a\<close> \<open>?UArr ?\<KK>a\<close>
         by (rule lim_\<KK>a)
@@ -1749,7 +1786,7 @@ proof-
           [0, a, \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>a\<rparr>]\<^sub>\<circ> \<mapsto>\<^bsub>(?\<KK>a) \<down>\<^sub>C\<^sub>F \<KK>\<^esub> [0, b, ?\<KK>f]\<^sub>\<circ>"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros
           )
@@ -1759,7 +1796,7 @@ proof-
           ?UArr ?\<KK>a\<lparr>NTMap\<rparr>\<lparr>0, b, ?\<KK>f\<rparr>\<^sub>\<bullet>"
         by
           (
-            cs_prems
+            cs_prems 
               cs_simp: cat_cs_simps cat_comma_cs_simps
               cs_intro: cat_cs_intros cat_comma_cs_intros \<Z>.cat_1_is_arrI
           )
@@ -1772,7 +1809,7 @@ proof-
     qed
   qed
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros cat_Kan_cs_intros
     )+
 
@@ -1841,7 +1878,7 @@ proof-
     by (rule the_cf_rKe_is_functor[OF assms, simplified])
   interpret ntcf_rKe: is_ntcf \<alpha> \<BB> \<AA> \<open>?the_cf_rKe \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<TT> ?the_ntcf_rKe
     by (intro the_ntcf_rKe_is_ntcf assms(3))
-      (cs_concl cs_intro: cat_cs_intros)+
+      (cs_concl cs_shallow cs_intro: cat_cs_intros)+
 
   show ?thesis
   proof(rule is_cat_rKeI')
@@ -1882,7 +1919,11 @@ proof-
       if c: "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for c
     proof-
       from that have "?the_cf_rKe\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> = ?UObj c"
-        by (cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros
+          )
       interpret lim_c: is_cat_limit 
         \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj c\<close> \<open>?UArr c\<close>
         by (rule assms(3)[OF that])
@@ -1906,7 +1947,7 @@ proof-
             unfolding A_def
             by
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps cat_Kan_cs_simps cat_comma_cs_simps
                   cs_intro: cat_cs_intros cat_comma_cs_intros
               )
@@ -1930,7 +1971,7 @@ proof-
             unfolding F_def A_def B_def
             by (*slow*)
               (
-                cs_concl
+                cs_concl 
                   cs_simp:
                     cat_cs_simps
                     cat_comma_cs_simps
@@ -2005,7 +2046,7 @@ proof-
         \<epsilon>' c = ?UArr c \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const (c \<down>\<^sub>C\<^sub>F \<KK>) \<AA> (\<sigma>\<lparr>NTMap\<rparr>\<lparr>c\<rparr>)"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_Kan_cs_simps \<sigma>_NTMap_app_def 
               cs_intro: theI' \<epsilon>'_unique that
           )
@@ -2049,7 +2090,7 @@ proof-
         unfolding that(1)
         by
           (
-            cs_prems
+            cs_prems cs_shallow
               cs_simp: cat_cs_simps cat_Kan_cs_simps
               cs_intro: cat_cs_intros cat_Kan_cs_intros
           )
@@ -2128,7 +2169,7 @@ proof-
               unfolding A_def
               by
                 (
-                  cs_concl
+                  cs_concl cs_shallow
                     cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
                     cs_intro: cat_cs_intros cat_comma_cs_intros cat_Kan_cs_intros
                 )   
@@ -2159,7 +2200,7 @@ proof-
               unfolding F_def A_def B_def
               by
                 (
-                  cs_prems
+                  cs_prems cs_shallow
                     cs_simp: 
                       cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
                     cs_intro: cat_cs_intros cat_comma_cs_intros
@@ -2168,7 +2209,7 @@ proof-
               unfolding F_def A_def B_def (*very slow*)
               by
                 (
-                  cs_concl
+                  cs_concl 
                     cs_simp:
                       cat_cs_simps 
                       cat_Kan_cs_simps 
@@ -2183,7 +2224,7 @@ proof-
           (
             use that f_is_arr in
               \<open>
-                cs_concl
+                cs_concl 
                   cs_simp: cat_cs_simps cat_Kan_cs_simps cs_intro: cat_cs_intros
               \<close>
           )+
@@ -2201,7 +2242,7 @@ proof-
           using that 
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_cs_simps cat_Kan_cs_simps
                 cs_intro: cat_cs_intros cat_Kan_cs_intros
             )
@@ -2298,7 +2339,7 @@ proof-
                 unfolding A_def
                 by
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp: cat_cs_simps cat_Kan_cs_simps
                       cs_intro: cat_cs_intros cat_Kan_cs_intros
                   )
@@ -2326,12 +2367,12 @@ proof-
                 \<epsilon>b_\<GG>f[symmetric]
               from f_is_arr prems' b' f' show 
                 "\<tau> a b f\<lparr>NTMap\<rparr>\<lparr>A\<rparr> =
-                  ?UArr b\<lparr>NTMap\<rparr>\<lparr>A\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub>
+                  ?UArr b\<lparr>NTMap\<rparr>\<lparr>A\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> 
                     (?the_cf_rKe\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> \<sigma>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)"
                 unfolding A_def
                 by
                   (
-                    cs_concl 
+                    cs_concl
                       cs_simp: 
                         cat_cs_simps 
                         cat_Kan_cs_simps 
@@ -2347,7 +2388,7 @@ proof-
               (
                 use that in
                   \<open>
-                    cs_concl
+                    cs_concl 
                       cs_simp: cat_Kan_cs_simps
                       cs_intro: cat_cs_intros cat_Kan_cs_intros
                   \<close>
@@ -2356,7 +2397,7 @@ proof-
         qed
       qed
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Kan_cs_simps
             cs_intro: cat_cs_intros
         )+
@@ -2365,9 +2406,9 @@ proof-
       show "\<epsilon> = ?the_ntcf_rKe \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
       proof(rule ntcf_eqI)
         have dom_lhs: "\<D>\<^sub>\<circ> (\<epsilon>\<lparr>NTMap\<rparr>) = \<BB>\<lparr>Obj\<rparr>" 
-          by (cs_concl cs_simp: cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps)
         have dom_rhs: "\<D>\<^sub>\<circ> ((?the_ntcf_rKe \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr>) = \<BB>\<lparr>Obj\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
         show "\<epsilon>\<lparr>NTMap\<rparr> = (?the_ntcf_rKe \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr>"
         proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
           fix b assume prems': "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
@@ -2378,12 +2419,12 @@ proof-
             "\<epsilon>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> = (?the_ntcf_rKe \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<sigma> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
             by
               (
-                cs_concl
+                cs_concl 
                   cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps 
                   cs_intro: cat_cs_intros cat_comma_cs_intros cat_Kan_cs_intros
               )
         qed (cs_concl cs_intro: cat_cs_intros V_cs_intros)
-      qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
+      qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
 
       fix \<sigma>' assume prems':
         "\<sigma>' : \<GG> \<mapsto>\<^sub>C\<^sub>F ?the_cf_rKe : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -2406,7 +2447,7 @@ proof-
           unfolding that(2)
           by
             (
-              cs_prems
+              cs_prems cs_shallow
                 cs_simp: cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
                 cs_intro: cat_cs_intros cat_comma_cs_intros
             )
@@ -2415,8 +2456,7 @@ proof-
         fix a' b' f' A
         note \<TT>.HomCod.cat_assoc_helper
           [
-            where h=
-              \<open>?UArr (\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>)\<lparr>NTMap\<rparr>\<lparr>a', b', \<CC>\<lparr>CId\<rparr>\<lparr>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>\<rparr>\<rparr>\<^sub>\<bullet>\<close>
+            where h= \<open>?UArr (\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>)\<lparr>NTMap\<rparr>\<lparr>a', b', \<CC>\<lparr>CId\<rparr>\<lparr>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>\<rparr>\<rparr>\<^sub>\<bullet>\<close>
               and g=\<open>\<sigma>'\<lparr>NTMap\<rparr>\<lparr>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>\<rparr>\<close>
               and q=\<open>\<epsilon>\<lparr>NTMap\<rparr>\<lparr>b'\<rparr>\<close>
           ]
@@ -2441,9 +2481,9 @@ proof-
         show "\<sigma> : \<GG> \<mapsto>\<^sub>C\<^sub>F ?the_cf_rKe : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" by (rule \<sigma>)
 
         have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = \<CC>\<lparr>Obj\<rparr>" 
-          by (cs_concl cs_simp: cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps)
         have dom_rhs: "\<D>\<^sub>\<circ> (\<sigma>'\<lparr>NTMap\<rparr>) = \<CC>\<lparr>Obj\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 
         show "\<sigma>'\<lparr>NTMap\<rparr> = \<sigma>\<lparr>NTMap\<rparr>"
         proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
@@ -2455,7 +2495,7 @@ proof-
             \<alpha> \<open>c \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj c\<close> \<open>?UArr c\<close>
             by (rule lim_c)
           from prems' have CId_c: "\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr> : c \<mapsto>\<^bsub>\<CC>\<^esub> c"
-            by (cs_concl cs_intro: cat_cs_intros)
+            by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
           from lim_c.cat_lim_unique_cone'[OF \<tau>[OF CId_c]] obtain f 
             where f: "f : \<GG>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> \<mapsto>\<^bsub>\<AA>\<^esub> ?UObj c"
@@ -2490,7 +2530,7 @@ proof-
               let ?\<KK>b' = \<open>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>\<close>
 
               from b' have \<KK>b': "?\<KK>b' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
-                by (cs_concl cs_intro: cat_cs_intros)
+                by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
               interpret lim_\<KK>b': is_cat_limit
                 \<alpha> \<open>?\<KK>b' \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F ?\<KK>b' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj ?\<KK>b'\<close> \<open>?UArr ?\<KK>b'\<close>
@@ -2502,7 +2542,7 @@ proof-
                 "[0, b', \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>b'\<rparr>]\<^sub>\<circ> \<in>\<^sub>\<circ> ?\<KK>b' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
                 by
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: cat_cs_simps cat_comma_cs_simps
                       cs_intro: cat_cs_intros cat_comma_cs_intros
                   )
@@ -2516,14 +2556,14 @@ proof-
                 "?UArr c\<lparr>NTMap\<rparr>\<lparr>0, b', f'\<rparr>\<^sub>\<bullet> =
                   ?UArr ?\<KK>b'\<lparr>NTMap\<rparr>\<lparr>0, b', \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>b'\<rparr>\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> 
                     ?the_cf_rKe\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr>"
-                by (cs_prems cs_simp: cat_cs_simps)
+                by (cs_prems cs_shallow cs_simp: cat_cs_simps)
 
               from prems' prems'' b' f' show
                 "\<tau> c c (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>)\<lparr>NTMap\<rparr>\<lparr>A\<rparr> = ?UArr c\<lparr>NTMap\<rparr>\<lparr>A\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> \<sigma>'\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
                 unfolding A_def (*very slow*)
                 by
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp:
                         cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps
                       cs_intro:
@@ -2532,11 +2572,13 @@ proof-
                         cat_comma_cs_intros   
                         cat_Kan_cs_intros
                   )
-
             qed
               (
                 use prems' in
-                  \<open>cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros\<close>
+                  \<open>
+                    cs_concl cs_shallow 
+                      cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros
+                  \<close>
               )
 
             show "\<sigma>\<lparr>NTMap\<rparr>\<lparr>c\<rparr> = f"
@@ -2549,7 +2591,7 @@ proof-
                 by auto
               let ?\<KK>b' = \<open>\<KK>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>\<close>
               from b' have \<KK>b': "?\<KK>b' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
-                by (cs_concl cs_intro: cat_cs_intros)
+                by (cs_concl cs_shallow cs_intro: cat_cs_intros)
               interpret lim_\<KK>b': is_cat_limit
                 \<alpha> \<open>?\<KK>b' \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F ?\<KK>b' \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj ?\<KK>b'\<close> \<open>?UArr ?\<KK>b'\<close>
                 by (rule assms(3)[OF \<KK>b'])
@@ -2559,7 +2601,7 @@ proof-
                 "[0, b', \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>b'\<rparr>]\<^sub>\<circ> \<in>\<^sub>\<circ> ?\<KK>b' \<down>\<^sub>C\<^sub>F \<KK>\<lparr>Obj\<rparr>"
                 by
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: cat_cs_simps cat_comma_cs_simps
                       cs_intro: cat_cs_intros cat_comma_cs_intros
                   )
@@ -2575,13 +2617,13 @@ proof-
                 "?UArr c\<lparr>NTMap\<rparr>\<lparr>0, b', f'\<rparr>\<^sub>\<bullet> =
                   ?UArr (?\<KK>b')\<lparr>NTMap\<rparr>\<lparr>0, b', \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>b'\<rparr>\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub>
                     ?the_cf_rKe\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr>"
-                by (cs_prems cs_simp: cat_cs_simps)
+                by (cs_prems cs_shallow cs_simp: cat_cs_simps)
               from prems' prems'' b' f' show
                 "\<tau> c c (\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>)\<lparr>NTMap\<rparr>\<lparr>A\<rparr> = ?UArr c\<lparr>NTMap\<rparr>\<lparr>A\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> \<sigma>\<lparr>NTMap\<rparr>\<lparr>c\<rparr>"
                 unfolding A_def (*very slow*)
                 by
                   (
-                    cs_concl
+                    cs_concl 
                       cs_simp:
                         cat_cs_simps cat_comma_cs_simps cat_Kan_cs_simps 
                       cs_intro:
@@ -2593,7 +2635,10 @@ proof-
             qed
               (
                 use prems' in
-                  \<open>cs_concl cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros\<close>
+                  \<open>
+                    cs_concl cs_shallow
+                      cs_simp: cat_Kan_cs_simps cs_intro: cat_cs_intros
+                  \<close>
               )
           qed
 
@@ -2603,7 +2648,7 @@ proof-
 
     qed
 
-  qed (cs_concl cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros)+
 
 qed
 
@@ -2745,8 +2790,8 @@ proof(intro is_cat_lKe_preservesI)
     op_cf \<HH> \<circ>\<^sub>C\<^sub>F op_cf \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> (op_cf \<HH> \<circ>\<^sub>C\<^sub>F op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf \<KK> :
     op_cat \<BB> \<mapsto>\<^sub>C op_cat \<CC> \<mapsto>\<^sub>C op_cat \<DD>"
     by (cs_concl_step op_ntcf_cf_ntcf_comp[symmetric])
-      (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)
-qed (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+      (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)
+qed (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_rKe_preserves) is_cat_lKe_preserves_op'[cat_op_intros]:
   assumes "\<TT>' = op_cf \<TT>"
@@ -2772,8 +2817,8 @@ proof(intro is_cat_rKe_preservesI)
     (op_cf \<HH> \<circ>\<^sub>C\<^sub>F op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> op_cf \<HH> \<circ>\<^sub>C\<^sub>F op_cf \<TT> :
     op_cat \<BB> \<mapsto>\<^sub>C op_cat \<CC> \<mapsto>\<^sub>C op_cat \<DD>"
     by (cs_concl_step op_ntcf_cf_ntcf_comp[symmetric])
-      (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)
-qed (cs_concl cs_simp: cat_op_simps cs_intro: cat_op_intros)+
+      (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)
+qed (cs_concl cs_shallow cs_simp: cat_op_simps cs_intro: cat_op_intros)+
 
 lemma (in is_cat_lKe_preserves) is_cat_rKe_preserves_op'[cat_op_intros]:
   assumes "\<TT>' = op_cf \<TT>"
@@ -2824,17 +2869,17 @@ proof-
 
   have \<KK>_def: "\<KK> = cf_const \<BB> (cat_1 \<aa> \<ff>) \<aa>"
     by (rule cf_const_if_HomCod_is_cat_1) 
-      (cs_concl cs_intro: cat_cs_intros)
+      (cs_concl cs_shallow cs_intro: cat_cs_intros)
   have \<GG>\<KK>_def: "\<GG> \<circ>\<^sub>C\<^sub>F \<KK> = cf_const \<BB> \<AA> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)"
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_1_components(1) \<KK>_def cat_cs_simps 
           cs_intro: V_cs_intros cat_cs_intros
       )
 
   interpret \<epsilon>: is_ntcf \<alpha> \<BB> \<AA> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<KK>\<close> \<TT> \<epsilon> 
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
   show "\<epsilon> : \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr> <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   proof(intro is_cat_limitI is_cat_coneI)
@@ -2852,7 +2897,7 @@ proof-
     from prems have const_r': "cf_const (cat_1 \<aa> \<ff>) \<AA> r' : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cs_intro: cat_lim_cs_intros cat_cs_intros
         )
 
@@ -2860,7 +2905,7 @@ proof-
       "cf_const (cat_1 \<aa> \<ff>) \<AA> r' \<circ>\<^sub>C\<^sub>F \<KK> = cf_const \<BB> \<AA> r'"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps \<KK>_def
             cs_intro: cat_cs_intros cat_lim_cs_intros
         )
@@ -2888,7 +2933,7 @@ proof-
       from prems'(1) have "ntcf_const (cat_1 \<aa> \<ff>) \<AA> f' :
         cf_const (cat_1 \<aa> \<ff>) \<AA> r' \<mapsto>\<^sub>C\<^sub>F \<GG> : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
         by (subst \<GG>_def) 
-          (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       moreover with prems'(1) have "u' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (ntcf_const (cat_1 \<aa> \<ff>) \<AA> f' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
         by 
           (
@@ -2955,7 +3000,11 @@ proof-
         (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
     show "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F \<TT> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
-      by (cs_concl cs_simp: cat_cs_simps \<GG>\<KK>_def cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_cs_simps \<GG>\<KK>_def cs_intro: cat_cs_intros
+        )
 
     fix \<GG>' \<epsilon>' assume prems: 
       "\<GG>' : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -2990,7 +3039,7 @@ proof-
       from f' show 
         "ntcf_const (cat_1 \<aa> \<ff>) \<AA> f' : \<GG>' \<mapsto>\<^sub>C\<^sub>F \<GG> : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
         by (subst \<GG>'_def, use nothing in \<open>subst \<GG>_def\<close>) 
-          (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+          (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       with f' show "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (ntcf_const (cat_1 \<aa> \<ff>) \<AA> f' \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
         by (cs_concl cs_simp: cat_cs_simps \<epsilon>_def \<KK>_def cs_intro: cat_cs_intros)
       fix \<sigma> assume prems:
@@ -3002,7 +3051,7 @@ proof-
       moreover have "\<epsilon>' = \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<BB> \<AA> (\<sigma>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<rparr>)"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps prems(2) \<KK>_def cs_intro: cat_cs_intros
           )
       ultimately have \<sigma>\<aa>: "\<sigma>\<lparr>NTMap\<rparr>\<lparr>\<aa>\<rparr> = f'" by (rule unique_f')
@@ -3011,11 +3060,11 @@ proof-
         from f' show 
           "ntcf_const (cat_1 \<aa> \<ff>) \<AA> f' : \<GG>' \<mapsto>\<^sub>C\<^sub>F \<GG> : cat_1 \<aa> \<ff> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
           by (subst \<GG>'_def, use nothing in \<open>subst \<GG>_def\<close>)
-            (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+            (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
         have dom_lhs: "\<D>\<^sub>\<circ> (\<sigma>\<lparr>NTMap\<rparr>) = cat_1 \<aa> \<ff>\<lparr>Obj\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro:cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro:cat_cs_intros)
         have dom_rhs: "\<D>\<^sub>\<circ> (ntcf_const (cat_1 \<aa> \<ff>) \<AA> f'\<lparr>NTMap\<rparr>) = cat_1 \<aa> \<ff>\<lparr>Obj\<rparr>"
-          by (cs_concl cs_simp: cat_cs_simps cs_intro:cat_cs_intros)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro:cat_cs_intros)
         show "\<sigma>\<lparr>NTMap\<rparr> = ntcf_const (cat_1 \<aa> \<ff>) \<AA> f'\<lparr>NTMap\<rparr>"
         proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
           fix a assume prems: "a \<in>\<^sub>\<circ> cat_1 \<aa> \<ff>\<lparr>Obj\<rparr>"
@@ -3098,7 +3147,7 @@ proof-
     have id_\<DD>: "cf_map (cf_id \<DD>) \<in>\<^sub>\<circ> cat_FUNCT \<alpha> \<DD> \<DD>\<lparr>Obj\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_FUNCT_components(1)
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -3112,25 +3161,25 @@ proof-
     have \<FF>: "cf_map \<FF> \<in>\<^sub>\<circ> cat_FUNCT \<alpha> \<CC> \<DD>\<lparr>Obj\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_FUNCT_components(1)
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
     have \<epsilon>: "ntcf_arrow (\<epsilon>\<^sub>C \<Phi>) \<in>\<^sub>\<circ> ntcf_arrows \<alpha> \<DD> \<DD>"
       by (cs_concl cs_intro: cat_FUNCT_cs_intros adj_cs_intros)
     have \<DD>\<DD>: "category \<beta> (cat_FUNCT \<alpha> \<DD> \<DD>)"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     have \<CC>\<DD>: "category \<beta> (cat_FUNCT \<alpha> \<CC> \<DD>)"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
     from 
       \<epsilon> \<FF> \<alpha>\<beta> id_\<DD> 
       \<DD>\<DD> \<CC>\<DD> LR.is_functor_axioms RL.is_functor_axioms R.cat_cf_id_is_functor
       NT.is_iso_ntcf_axioms 
     have \<epsilon>_id_\<DD>: "\<epsilon>\<^sub>C ?adj_\<DD>\<eta>\<lparr>NTMap\<rparr>\<lparr>cf_map (cf_id \<DD>)\<rparr> = ntcf_arrow ?\<epsilon>"
-      by
+      by (*slow*)
         (
-          cs_concl
+          cs_concl 
             cs_simp:
               cat_Set_the_inverse[symmetric]
               cat_op_simps
@@ -3185,7 +3234,7 @@ proof-
 
   from \<eta>.cat_lKe_preserves interpret \<GG>\<eta>:
     is_cat_lKe \<alpha> \<DD> \<CC> \<CC> \<GG> \<GG> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<FF>\<close> \<open>\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>\<close>
-    by (cs_prems cs_simp: cat_cs_simps)
+    by (cs_prems cs_shallow cs_simp: cat_cs_simps)
 
   from 
     \<GG>\<eta>.cat_lKe_unique
@@ -3208,7 +3257,7 @@ proof-
     have \<eta>_def: "\<eta> = (ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps ntcf_id_cf_comp[symmetric] 
             cs_intro: cat_cs_intros
         )
@@ -3221,9 +3270,9 @@ proof-
     have "(?\<FF>\<epsilon>\<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?\<eta>\<FF>\<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta> = (?\<FF>\<epsilon>\<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?\<FF>\<GG>\<eta>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
     proof(rule ntcf_eqI)
       have dom_lhs: "\<D>\<^sub>\<circ> (((?\<FF>\<epsilon>\<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?\<eta>\<FF>\<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>)\<lparr>NTMap\<rparr>) = \<DD>\<lparr>Obj\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       have dom_rhs: "\<D>\<^sub>\<circ> (((?\<FF>\<epsilon>\<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?\<FF>\<GG>\<eta>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>)\<lparr>NTMap\<rparr>) = \<DD>\<lparr>Obj\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
       note is_ntcf.ntcf_Comp_commute[cat_cs_simps del]
       note category.cat_Comp_assoc[cat_cs_simps del]
       show
@@ -3240,12 +3289,12 @@ proof-
                 cs_simp: cat_cs_simps \<eta>.ntcf_lKe.ntcf_Comp_commute[symmetric]
                 cs_intro: cat_cs_intros
             )
-      qed (cs_concl cs_intro: cat_cs_intros)+
-    qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
+      qed (cs_concl cs_shallow cs_intro: cat_cs_intros)+
+    qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
     also have "\<dots> = (ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp:
               cat_cs_simps
               cf_comp_cf_ntcf_comp_assoc
@@ -3255,18 +3304,16 @@ proof-
         )
     also have "\<dots> = \<eta>" by (cs_concl cs_simp: cat_cs_simps)
     finally have "(?\<FF>\<epsilon>\<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ?\<eta>\<FF>\<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta> = \<eta>" by simp
-    then have \<eta>_def':
-      "\<eta> = (\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
+    then have \<eta>_def': "\<eta> = (\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
       by 
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps ntcf_vcomp_ntcf_cf_comp[symmetric] 
             cs_intro: cat_cs_intros
         )+
   
-    have \<FF>\<epsilon>\<eta>\<FF>:
-      "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) : \<FF> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    have \<FF>\<epsilon>\<eta>\<FF>: "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) : \<FF> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
     from \<eta>.cat_lKe_unique[OF \<eta>.Lan.is_functor_axioms \<eta>.ntcf_lKe.is_ntcf_axioms]
     obtain \<sigma> where
@@ -3278,7 +3325,7 @@ proof-
       "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) = ntcf_id \<FF>"
       by simp
 
-  qed (cs_concl cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros)+
 
 qed
 

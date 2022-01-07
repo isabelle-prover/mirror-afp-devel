@@ -159,7 +159,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     unfolding cat_Par_Obj_iff
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Par_cs_simps cs_intro: cat_Par_cs_intros arr_Par_id_ParI
       )
 
@@ -171,7 +171,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     with that \<Z>_axioms show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Par_cs_simps
             cs_intro: cat_Par_cs_intros arr_Par_id_ParI
         )
@@ -185,7 +185,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Par_cs_simps
             cs_intro: cat_Par_cs_intros arr_Par_id_ParI
         )
@@ -247,7 +247,7 @@ proof-
     by (cs_concl cs_intro: cat_cs_intros cat_sub_cs_intros cat_sub_fw_cs_intros)
   with wide_replete_subcategory_cat_Par_cat_Rel assms show 
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B"
-    by (cs_concl cs_simp: cat_sub_bw_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_sub_bw_cs_simps)
 qed
 
 lemma (in \<Z>) cat_Par_is_arr_isomorphismD[dest]:
@@ -259,7 +259,7 @@ lemma (in \<Z>) cat_Par_is_arr_isomorphismD[dest]:
 proof-
   from wide_replete_subcategory_cat_Par_cat_Rel assms have T: 
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-    by (cs_concl cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
   show "v11 (T\<lparr>ArrVal\<rparr>)" "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A" "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
     by (intro cat_Rel_is_arr_isomorphismD[OF T])+
 qed (rule is_arr_isomorphismD(1)[OF assms])
@@ -285,12 +285,20 @@ lemma (in \<Z>) cat_Par_the_inverse:
 proof-
   from wide_replete_subcategory_cat_Par_cat_Rel assms have T:
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-    by (cs_concl cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
-  from wide_replete_subcategory_cat_Par_cat_Rel assms have [cat_cs_simps]:
-    "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>C\<^bsub>cat_Rel \<alpha>\<^esub>"
-    by (cs_concl cs_full cs_simp: cat_sub_bw_cs_simps cs_intro: cat_sub_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
+  from wide_replete_subcategory_cat_Par_cat_Rel assms 
+  have [symmetric, cat_cs_simps]: "T\<inverse>\<^sub>C\<^bsub>cat_Rel \<alpha>\<^esub> = T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub>"
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_sub_bw_cs_simps cs_intro: cat_sub_cs_intros
+      )
   from T show "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>R\<^sub>e\<^sub>l"
-    by (cs_concl cs_simp: cat_Rel_cs_simps cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_Rel_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+      )
 qed
 
 lemmas [cat_Par_cs_simps] = \<Z>.cat_Par_the_inverse

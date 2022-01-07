@@ -182,7 +182,7 @@ next
   fix \<MM> assume "\<MM> \<in>\<^sub>\<circ> ntcfs \<alpha> \<AA> \<BB>"
   then obtain \<FF> \<GG> where \<MM>: "\<MM> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by clarsimp
   then have "\<MM> = ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<MM>)" 
-    by (cs_concl cs_simp: cat_FUNCT_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_FUNCT_cs_simps)
   moreover from \<MM> have "ntcf_arrow \<MM> \<in>\<^sub>\<circ> ntcf_arrows \<alpha> \<AA> \<BB>"
     by (cs_concl cs_intro: cat_FUNCT_cs_intros)
   ultimately show "\<MM> \<in> ntcf_of_ntcf_arrow \<AA> \<BB> ` elts (ntcf_arrows \<alpha> \<AA> \<BB>)"
@@ -203,7 +203,7 @@ proof-
   from assms have [cat_cs_simps]:
     "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>) = \<FF>"
     "cf_of_cf_map \<AA> \<BB> (cf_map \<GG>) = \<GG>"
-    by (cs_concl cs_simp: cat_FUNCT_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_FUNCT_cs_simps)+
 
   show ?thesis
   proof
@@ -232,10 +232,10 @@ proof-
     fix \<NN> assume "\<NN> \<in>\<^sub>\<circ> these_ntcfs \<alpha> \<AA> \<BB> \<FF> \<GG>"
     then have \<NN>: "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by simp
     then have "\<NN> = ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>)"
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps)  
+      by (cs_concl cs_shallow cs_simp: cat_FUNCT_cs_simps)  
     moreover from \<NN> have
       "ntcf_arrow \<NN> \<in>\<^sub>\<circ> Hom (cat_FUNCT \<alpha> \<AA> \<BB>) (cf_map \<FF>) (cf_map \<GG>)"
-      unfolding in_Hom_iff by (cs_concl cs_intro: cat_FUNCT_cs_intros)
+      unfolding in_Hom_iff by (cs_concl cs_shallow cs_intro: cat_FUNCT_cs_intros)
     ultimately show 
       "\<NN> \<in> ntcf_of_ntcf_arrow \<AA> \<BB> `
         elts (Hom (cat_FUNCT \<alpha> \<AA> \<BB>) (cf_map \<FF>) (cf_map \<GG>))"
@@ -266,7 +266,7 @@ proof(intro tiny_categoryI)
       unfolding cat_FUNCT_components(1) \<FF>'_def
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -282,7 +282,7 @@ proof(intro tiny_categoryI)
     from \<NN>' show "cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>\<GG>\<rparr> \<circ>\<^sub>A\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<NN> = \<NN>"
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_FUNCT_cs_simps cat_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -319,11 +319,11 @@ proof(intro is_arr_isomorphismI is_inverseI)
     "ntcf_arrow (inv_ntcf \<NN>) : cf_map \<GG> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<FF>"
     by 
       (
-        cs_concl cs_intro:
+        cs_concl cs_shallow cs_intro:
           ntcf_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
   from assms show "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>" 
-    by (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
   from assms show 
     "ntcf_arrow (inv_ntcf \<NN>) \<circ>\<^sub>A\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> ntcf_arrow \<NN> = 
       cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<FF>\<rparr>"
@@ -331,7 +331,7 @@ proof(intro is_arr_isomorphismI is_inverseI)
       cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<GG>\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: iso_ntcf_is_arr_isomorphism(2,3) cat_FUNCT_cs_simps
           cs_intro: ntcf_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )+
@@ -385,7 +385,7 @@ proof-
         use nothing in \<open>subst (asm) (2) \<NN>_is_arr(2), subst (asm) \<NN>_is_arr(3)\<close>
       )
       (
-        cs_prems
+        cs_prems cs_shallow
           cs_simp: cat_FUNCT_cs_simps
           cs_intro: cat_FUNCT_cs_intros cat_cs_intros
       )
@@ -397,7 +397,7 @@ proof-
         use nothing in \<open>subst (asm) \<NN>_is_arr(2), subst (asm) \<NN>_is_arr(4)\<close>
       )
       (
-        cs_prems 
+        cs_prems cs_shallow
           cs_simp: cat_FUNCT_cs_simps 
           cs_intro: cat_FUNCT_cs_intros cat_cs_intros
       )
@@ -516,7 +516,7 @@ proof(rule vrange_VLambda_vsubset)
   then show "ntcf_arrow_id \<AA> \<BB> \<FF>' \<in>\<^sub>\<circ> ntcf_arrows \<alpha> \<AA> \<BB>"
     by 
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_FUNCT_cs_simps \<FF>'_def
           cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros
       )
@@ -538,7 +538,7 @@ proof-
     from assms show "semicategory \<alpha> (cat_smc (cat_Funct \<alpha> \<AA> \<BB>))"
       unfolding cat_smc_Funct by (rule semicategory_smc_Funct)
     show "\<D>\<^sub>\<circ> (cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>) = cat_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_Funct_components cat_FUNCT_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_Funct_components cat_FUNCT_cs_simps)
     show "cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>\<FF>\<rparr> : \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> \<FF>"
       if "\<FF> \<in>\<^sub>\<circ> cat_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>" for \<FF>
     proof-
@@ -550,7 +550,7 @@ proof-
       from assms \<FF>' show "cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>\<FF>\<rparr> : \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> \<FF>"
         by 
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_FUNCT_cs_simps \<FF>_def
               cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros
           )
@@ -576,7 +576,7 @@ proof-
         "\<NN> \<circ>\<^sub>A\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>\<GG>\<rparr> = \<NN>"
         by (subst (1 2) \<NN>(2), use nothing in \<open>subst \<NN>(3)\<close>)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
               cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros
           )
@@ -621,7 +621,7 @@ proof
     from that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_FUNCT_cs_simps 
             cs_intro: cat_FUNCT_cs_intros tm_cf_maps_in_cf_maps
         )
@@ -637,15 +637,15 @@ lemma (in is_tm_iso_ntcf) cat_Funct_is_arr_isomorphismI:
 proof(intro is_arr_isomorphismI is_inverseI)
   from is_tm_iso_ntcf_axioms show 
     "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
-    by (cs_concl cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
+    by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
   interpret inv_\<NN>: is_tm_iso_ntcf \<alpha> \<AA> \<BB> \<GG> \<FF> \<open>inv_ntcf \<NN>\<close> 
     by (rule iso_tm_ntcf_is_arr_isomorphism(1)[OF assms is_tm_iso_ntcf_axioms]) 
   from inv_\<NN>.is_tm_iso_ntcf_axioms show 
     "ntcf_arrow (inv_ntcf \<NN>) : cf_map \<GG> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<FF>"
-    by (cs_concl cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
+    by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
   from is_tm_iso_ntcf_axioms show 
     "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>" 
-    by (cs_concl cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
+    by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
   from assms is_tm_iso_ntcf_axioms show 
     "ntcf_arrow (inv_ntcf \<NN>) \<circ>\<^sub>A\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> ntcf_arrow \<NN> =
       cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<FF>\<rparr>"
@@ -653,7 +653,7 @@ proof(intro is_arr_isomorphismI is_inverseI)
       cat_Funct \<alpha> \<AA> \<BB>\<lparr>CId\<rparr>\<lparr>cf_map \<GG>\<rparr>"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: iso_tm_ntcf_is_arr_isomorphism(2,3) cat_FUNCT_cs_simps
           cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
       )+
@@ -719,7 +719,7 @@ proof-
         use nothing in \<open>subst (asm) \<NN>_is_arr(2), subst (asm) \<NN>_is_arr(4)\<close>
       )
       (
-        cs_prems
+        cs_prems 
           cs_simp: cat_FUNCT_cs_simps
           cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros
       )
@@ -817,7 +817,7 @@ proof-
       unfolding cf_diagonal_def by (simp add: nat_omega_simps)
     show "category \<beta> \<CC>" by (rule \<CC>.cat_category_if_ge_Limit[OF assms(1,2)])
     from assms show "category \<beta> (cat_FUNCT \<alpha> \<JJ> \<CC>)" 
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "vcard ?\<Delta> = 4\<^sub>\<nat>"
       unfolding cf_diagonal_def by (simp add: nat_omega_simps)
     show "vsv (?\<Delta>\<lparr>ObjMap\<rparr>)" unfolding cf_diagonal_components by simp
@@ -828,7 +828,7 @@ proof-
       using that
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
         )
@@ -837,7 +837,7 @@ proof-
       using that \<JJ>.category_axioms \<CC>.category_axioms
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -846,7 +846,7 @@ proof-
       "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = ?FUNCT\<lparr>CId\<rparr>\<lparr>?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -939,9 +939,9 @@ proof-
     show "vfsequence ?\<Delta>"
       unfolding tm_cf_diagonal_def by (simp add: nat_omega_simps)
     from assms(2) show "category \<alpha> \<CC>" 
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "category \<alpha> ?Funct" 
-      by (cs_concl cs_intro: cat_cs_intros category_cat_Funct)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros category_cat_Funct)
     show "vcard ?\<Delta> = 4\<^sub>\<nat>"
       unfolding tm_cf_diagonal_def by (simp add: nat_omega_simps)
     show "vsv (?\<Delta>\<lparr>ObjMap\<rparr>)" unfolding tm_cf_diagonal_components by simp
@@ -952,7 +952,7 @@ proof-
       using that
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
         )
@@ -961,7 +961,7 @@ proof-
       using that \<JJ>.category_axioms \<CC>.category_axioms
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -970,7 +970,7 @@ proof-
       "?\<Delta>\<lparr>ArrMap\<rparr>\<lparr>\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = ?Funct\<lparr>CId\<rparr>\<lparr>?\<Delta>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -1134,7 +1134,7 @@ proof-
       from \<NN>(1,3,4) assms(2-4) show ?thesis
       by (subst \<NN>(2), use nothing in \<open>subst \<NN>(3), subst \<NN>(4)\<close>) 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -1151,7 +1151,7 @@ proof-
       from \<MM>(1,3,4) \<NN>(1,3,4) assms(2-4) show ?thesis  
         by (subst (1 2) \<MM>(2), use nothing in \<open>subst (1 2) \<NN>(2)\<close>)
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps cf_ntcf_comp_ntcf_vcomp 
               cs_intro: cat_cs_intros cat_FUNCT_cs_intros
           )
@@ -1178,7 +1178,7 @@ proof-
     (
       use assms(1,2) in
         \<open>
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_FUNCT_cs_simps 
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         \<close>
@@ -1242,7 +1242,7 @@ proof(rule cf_eqI)
       cat_FUNCT \<alpha> \<DD> \<AA>\<lparr>Obj\<rparr>"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps 
           cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
@@ -1251,7 +1251,7 @@ proof(rule cf_eqI)
       (exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
     show "vsv (exp_cf_cat \<alpha> (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) \<DD>\<lparr>ObjMap\<rparr>)"
-      by (cs_concl cs_intro: cat_FUNCT_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_FUNCT_cs_intros)
     from \<alpha>\<beta> show "vsv ((exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ObjMap\<rparr>)"
       by 
         (
@@ -1267,7 +1267,7 @@ proof(rule cf_eqI)
         (exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ObjMap\<rparr>\<lparr>\<HH>\<rparr>"
       by (subst (1 2) \<HH>_def)
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps 
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -1285,7 +1285,7 @@ proof(rule cf_eqI)
       cat_FUNCT \<alpha> \<DD> \<AA>\<lparr>Arr\<rparr>"
     by
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_cs_simps 
           cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )
@@ -1294,7 +1294,7 @@ proof(rule cf_eqI)
       (exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
     show "vsv (exp_cf_cat \<alpha> (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) \<DD>\<lparr>ArrMap\<rparr>)"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_FUNCT_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_FUNCT_cs_intros)
     from \<alpha>\<beta> show "vsv ((exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ArrMap\<rparr>)"
       by 
         (
@@ -1310,7 +1310,7 @@ proof(rule cf_eqI)
         (exp_cf_cat \<alpha> \<GG> \<DD> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> \<FF> \<DD>)\<lparr>ArrMap\<rparr>\<lparr>\<NN>\<rparr>"
       by (subst (1 2) \<NN>(2))
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps cf_comp_cf_ntcf_comp_assoc
             cs_intro: cat_small_cs_intros cat_cs_intros cat_FUNCT_cs_intros
         )
@@ -1342,7 +1342,7 @@ proof(rule cf_eqI)
     "exp_cf_cat \<alpha> (cf_id \<CC>) \<DD> : cat_FUNCT \<alpha> \<DD> \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<DD> \<CC>"
     by 
       (
-        cs_concl
+        cs_concl 
           cs_simp: cat_cs_simps 
           cs_intro: cat_cs_intros cat_small_cs_intros cat_FUNCT_cs_intros
       )
@@ -1365,11 +1365,11 @@ proof(rule cf_eqI)
       "exp_cf_cat \<alpha> (cf_id \<CC>) \<DD>\<lparr>ObjMap\<rparr>\<lparr>\<HH>\<rparr> = cf_id (cat_FUNCT \<alpha> \<DD> \<CC>)\<lparr>ObjMap\<rparr>\<lparr>\<HH>\<rparr>"
       by (subst (1 2) \<HH>_def)
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros cat_FUNCT_cs_intros)+
   from \<alpha>\<beta> have ArrMap_dom_lhs:
     "\<D>\<^sub>\<circ> (cf_id (cat_FUNCT \<alpha> \<DD> \<CC>)\<lparr>ArrMap\<rparr>) = cat_FUNCT \<alpha> \<DD> \<CC>\<lparr>Arr\<rparr>"
     by (cs_concl cs_simp: cat_cs_simps)
@@ -1387,11 +1387,11 @@ proof(rule cf_eqI)
         cf_id (cat_FUNCT \<alpha> \<DD> \<CC>)\<lparr>ArrMap\<rparr>\<lparr>\<NN>\<rparr>"
       by (subst (1 2) \<NN>(2))
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_FUNCT_cs_simps
             cs_intro: cat_cs_intros cat_FUNCT_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros cat_FUNCT_cs_intros)
 
 qed simp_all
 
@@ -1413,7 +1413,7 @@ proof-
   proof(rule cf_eqI)
     from assms \<alpha>\<beta> \<beta> show \<FF>\<AA>:
       "exp_cf_cat \<alpha> \<FF> \<AA> : cat_FUNCT \<alpha> \<AA> \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<AA> \<CC>"
-      by (cs_concl cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_small_cs_intros cat_FUNCT_cs_intros)
     with assms \<alpha>\<beta> show 
       "exp_cf_cat \<alpha> \<FF> \<AA> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> (cf_id \<BB>) \<AA> :
         cat_FUNCT \<alpha> \<AA> \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> cat_FUNCT \<alpha> \<AA> \<CC>"
@@ -1433,19 +1433,19 @@ proof-
         )
     from assms have ObjMap_dom_rhs: 
       "\<D>\<^sub>\<circ> (exp_cf_cat \<alpha> \<FF> \<AA>\<lparr>ObjMap\<rparr>) = cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_FUNCT_cs_simps)
     from assms \<alpha>\<beta> have ArrMap_dom_lhs:
       "\<D>\<^sub>\<circ> ((exp_cf_cat \<alpha> \<FF> \<AA> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> (cf_id \<BB>) \<AA>)\<lparr>ArrMap\<rparr>) =
         cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>Arr\<rparr>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps
             cs_intro: cat_cs_intros cat_small_cs_intros cat_FUNCT_cs_intros
         )
     from assms have ArrMap_dom_rhs: 
       "\<D>\<^sub>\<circ> (exp_cf_cat \<alpha> \<FF> \<AA>\<lparr>ArrMap\<rparr>) = cat_FUNCT \<alpha> \<AA> \<BB>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_FUNCT_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_FUNCT_cs_simps)
     show 
       "(exp_cf_cat \<alpha> \<FF> \<AA> \<circ>\<^sub>C\<^sub>F exp_cf_cat \<alpha> (cf_id \<BB>) \<AA>)\<lparr>ObjMap\<rparr> =
         exp_cf_cat \<alpha> \<FF> \<AA>\<lparr>ObjMap\<rparr>"
@@ -1463,7 +1463,7 @@ proof-
         unfolding \<HH>_def
         by 
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps
               cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros cat_cs_intros
           )
@@ -1471,7 +1471,7 @@ proof-
       (
         use assms \<FF>\<AA> \<alpha>\<beta> in
           \<open>
-            cs_concl
+            cs_concl 
               cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros cat_cs_intros
           \<close>
       )
@@ -1488,7 +1488,7 @@ proof-
           exp_cf_cat \<alpha> \<FF> \<AA>\<lparr>ArrMap\<rparr>\<lparr>\<MM>\<rparr>"
         by (subst (1 2) \<MM>(2))
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_FUNCT_cs_simps
               cs_intro: cat_FUNCT_cs_intros cat_small_cs_intros cat_cs_intros
           )

@@ -227,6 +227,8 @@ method elim_in_numeral = (succ_of_numeral, use nothing in \<open>elim_in_succ\<c
 
 subsection\<open>Auxiliary\<close>
 
+lemma one: "1\<^sub>\<nat> = set {0}" by auto
+
 lemma two: "2\<^sub>\<nat> = set {0, 1\<^sub>\<nat>}" by force
 
 lemma three: "3\<^sub>\<nat> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" by force

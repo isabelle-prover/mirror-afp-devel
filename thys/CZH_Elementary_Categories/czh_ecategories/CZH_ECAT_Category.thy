@@ -132,7 +132,9 @@ lemmas [cat_cs_intros] = category.cat_CId_is_arr'
 lemma (in category) cat_CId_is_arr''[cat_cs_intros]:
   assumes "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and "f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
   shows "f : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
-  using assms(1) unfolding assms(2) by (cs_concl cs_intro: cat_cs_intros)
+  using assms(1) 
+  unfolding assms(2) 
+  by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemmas [cat_cs_intros] = category.cat_CId_is_arr''
 
@@ -367,8 +369,10 @@ proof-
   interpret \<BB>: category \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms) (auto simp: dg_field_simps)
   qed auto
@@ -400,7 +404,8 @@ qed (auto simp: assms)
 lemma (in category) cat_def: 
   "\<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ> = 6\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<CC> = \<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ>"
@@ -467,7 +472,8 @@ proof-
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show ?thesis
   proof(rule vsv.vsv_Limit_vsv_in_VsetI)
-    have dom: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
     from assms show "\<D>\<^sub>\<circ> \<CC> \<in>\<^sub>\<circ> Vset \<beta>"
       unfolding dom by (simp add: \<Z>.ord_of_nat_in_Vset)
     have "n \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<CC> \<Longrightarrow> \<CC>\<lparr>n\<rparr> \<in>\<^sub>\<circ> Vset \<beta>" for n
@@ -527,7 +533,7 @@ proof(rule vsubset_in_VsetI)
       unfolding VPow_iff by (rule cat_category_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma category_if_category:
@@ -690,7 +696,11 @@ next
 next
   fix f b c assume "f : c \<mapsto>\<^bsub>\<CC>\<^esub> b" 
   with category_axioms show "f \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr> = f"
-    by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+      )
 qed 
   (
     auto simp:
@@ -926,7 +936,11 @@ proof(elim is_inverseE)
   from prems(1) have "h = (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h" 
     unfolding gf by (simp add: cat_cs_simps)
   also with category_axioms prems(1,2) g have "\<dots> = g"
-    by (cs_concl cs_simp: prems(4) cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: prems(4) cat_cs_simps cs_intro: cat_cs_intros
+      )
   finally show "h = g" by simp
 qed
 
@@ -1010,7 +1024,11 @@ proof(elim is_right_inverseE is_left_inverseE)
   then have dbca: "d = b" "c = a" by auto
   note [cat_cs_simps] = prems(3,6)[unfolded dbca]
   from prems(1,2) show "is_inverse \<CC> g f"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros is_inverseI)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros is_inverseI
+      )
 qed
 
 
@@ -1059,7 +1077,7 @@ proof-
     and fg: "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
     by auto
   then have g: "g : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a" 
-    by (cs_concl cs_intro: is_inverseI is_arr_isomorphismI)
+    by (cs_concl cs_shallow cs_intro: is_inverseI is_arr_isomorphismI)
   from that f g gf fg show ?thesis by simp
 qed
 
@@ -1141,7 +1159,7 @@ lemma (in category) cat_CId_is_arr_isomorphism:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_intro: cat_cs_intros is_inverseI cat_is_inverse_is_arr_isomorphism 
         cs_simp: cat_cs_simps
     )
@@ -1171,11 +1189,11 @@ proof(intro is_monic_arrI)
       and [cat_cs_simps]: "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>" 
     by (auto elim: is_arr_isomorphismE')
   from category_axioms assms prems(1,2) have "h = (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   also from category_axioms assms prems(1,2) f' have "\<dots> = (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g"
     by (cs_concl cs_simp: prems(3) cat_cs_simps cs_intro: cat_cs_intros)
   also from category_axioms assms prems(1,2) f' have "\<dots> = g"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   finally show "h = g" by simp
 qed
 
@@ -1194,6 +1212,50 @@ lemma (in category) cat_is_arr_isomorphism_is_epic_arr:
     )
 
 lemmas [cat_arrow_cs_intros] = category.cat_is_arr_isomorphism_is_epic_arr
+
+lemma (in category) cat_is_arr_isomorphism_if_is_monic_arr_is_right_inverse:
+  assumes "f : a \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> b" and "is_right_inverse \<CC> g f"
+  shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
+proof-
+  note f_is_monic_arrD = is_monic_arrD[OF assms(1)]
+  from is_right_inverseD[OF assms(2)] f_is_monic_arrD(1) 
+  have g: "g : b \<mapsto>\<^bsub>\<CC>\<^esub> a" and fg: "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
+    by auto
+  from f_is_monic_arrD(1) g have gf: "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
+  from g have CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>\<CC>\<^esub> a" 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
+  show ?thesis
+  proof
+    (
+      intro 
+        is_arr_isomorphismI 
+        cat_is_right_left_inverse_is_inverse 
+        is_left_inverseI, 
+      rule f_is_monic_arrD(1), 
+      rule assms(2),
+      rule g,
+      rule f_is_monic_arrD(1)
+    )
+    from f_is_monic_arrD(1) g have "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    also from f_is_monic_arrD(1) g have "\<dots> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps fg cs_intro: cat_cs_intros)
+    finally have "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>" by simp
+    from f_is_monic_arrD(2)[OF gf CId_a this] show "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>".
+  qed
+qed
+
+lemma (in category) cat_is_arr_isomorphism_if_is_epic_arr_is_left_inverse:
+  assumes "f : a \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> b" and "is_left_inverse \<CC> g f"
+  shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
+  using assms
+  by 
+    (
+      rule category.cat_is_arr_isomorphism_if_is_monic_arr_is_right_inverse[
+        OF category_op, unfolded cat_op_simps
+        ]
+    )
 
 
 
@@ -1275,14 +1337,14 @@ lemma (in category) cat_Comp_the_inverse:
   shows "(g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>"
 proof-
   from assms have "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> c" 
-    by (cs_concl cs_intro: cat_arrow_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_arrow_cs_intros)
   then have inv_gf: "is_inverse \<CC> ((g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)"
     by (intro cat_the_inverse_is_inverse)
   from assms have "is_inverse \<CC> (g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) g" "is_inverse \<CC> (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) f"
     by (auto intro: cat_the_inverse_is_inverse)
   with category_axioms assms have 
     "is_inverse \<CC> (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)"
-    by (cs_concl cs_intro: cat_cs_intros cat_arrow_cs_intros) 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_arrow_cs_intros) 
   from inv_gf this show "(g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>"
     by (meson cat_is_inverse_eq)
 qed
@@ -1326,7 +1388,7 @@ proof-
   also from assms have "\<dots> = f"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_arrow_cs_intros
       )
   finally show ?thesis .
@@ -1423,7 +1485,8 @@ proof-
   from f f' cat_obj_terminal_CId cat_Comp_is_arr 
   have f'f: "is_inverse \<CC> f' f"
     by (intro is_inverseI[OF f' f]) (metis assms(1), metis assms(2))
-  with f show ?thesis by (cs_concl cs_intro: obj_isoI is_arr_isomorphismI)
+  with f show ?thesis 
+    by (cs_concl cs_shallow cs_intro: obj_isoI is_arr_isomorphismI)
 qed
 
 lemma (in category) cat_obj_initial_obj_iso:

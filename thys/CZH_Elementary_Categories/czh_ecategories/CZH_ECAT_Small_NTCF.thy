@@ -170,7 +170,7 @@ subsubsection\<open>Opposite natural transformation of functors with tiny maps\<
 lemma (in is_tm_ntcf) is_tm_ntcf_op: "op_ntcf \<NN> :
   op_cf \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m op_cf \<FF> : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
   by (intro is_tm_ntcfI')
-    (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+    (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)+
 
 lemma (in is_tm_ntcf) is_tm_ntcf_op'[cat_op_intros]: 
   assumes "\<GG>' = op_cf \<GG>"
@@ -317,7 +317,7 @@ proof-
   from assms show ?thesis
     by (intro is_tm_ntcfI)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros smc_small_cs_intros slicing_intros
       )+
@@ -346,7 +346,7 @@ proof-
   from assms show ?thesis
     by (intro is_tm_ntcfI)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros smc_small_cs_intros slicing_intros
       )+
@@ -492,7 +492,10 @@ proof-
     NTDom.HomCod.tiny_cat_in_Vset
   show ?thesis
     by (subst ntcf_def) 
-      (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros
+      )
 qed
 
 lemma small_all_tiny_ntcfs[simp]: 
@@ -574,7 +577,7 @@ proof(intro is_tiny_ntcfI)
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> \<BB>"
     by (intro ntcf_is_ntcf_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "ntcf_ntsmcf \<NN> : 
     cf_smcf \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y cf_smcf \<GG> : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<beta>\<^esub> cat_smc \<BB>"
     by 
@@ -591,7 +594,7 @@ subsubsection\<open>Opposite natural transformation of tiny functors\<close>
 lemma (in is_tiny_ntcf) is_tm_ntcf_op: "op_ntcf \<NN> :
   op_cf \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y op_cf \<FF> : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
   by (intro is_tiny_ntcfI')
-   (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+   (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)+
 
 lemma (in is_tiny_ntcf) is_tiny_ntcf_op'[cat_op_intros]: 
   assumes "\<GG>' = op_cf \<GG>"
