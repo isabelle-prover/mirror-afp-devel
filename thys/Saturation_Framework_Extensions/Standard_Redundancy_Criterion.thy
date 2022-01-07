@@ -21,12 +21,6 @@ counterexample'' property. This material is partly based on Section 4.2 of Bachm
 \emph{Handbook} chapter, but adapted to the saturation framework of Waldmann et al.
 \<close>
 
-subsection \<open>Generic Lemmas about HOL\<close>
-
-lemma wfP_imp_asymp: "wfP R \<Longrightarrow> asymp R"
-  by (metis asymp.intros mem_Collect_eq prod.simps(2) wfP_def wf_asym)
-
-
 subsection \<open>Counterexample-Reducing Inference Systems\<close>
 
 abbreviation main_prem_of :: "'f inference \<Rightarrow> 'f" where
